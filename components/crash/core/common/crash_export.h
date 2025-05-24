@@ -15,11 +15,7 @@
 #endif  // defined(CRASH_CORE_COMMON_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(CRASH_CORE_COMMON_IMPLEMENTATION)
 #define CRASH_EXPORT __attribute__((visibility("default")))
-#else
-#define CRASH_EXPORT
-#endif  // defined(CRASH_CORE_COMMON_IMPLEMENTATION)
 #endif
 
 #else  // defined(COMPONENT_BUILD)

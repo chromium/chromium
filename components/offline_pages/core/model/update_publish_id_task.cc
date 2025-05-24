@@ -59,7 +59,7 @@ UpdatePublishIdTask::UpdatePublishIdTask(
   DCHECK(store_);
 }
 
-UpdatePublishIdTask::~UpdatePublishIdTask() {}
+UpdatePublishIdTask::~UpdatePublishIdTask() = default;
 
 void UpdatePublishIdTask::Run() {
   store_->Execute(

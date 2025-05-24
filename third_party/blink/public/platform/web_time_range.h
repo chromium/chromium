@@ -32,9 +32,9 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_TIME_RANGE_H_
 
 #include <algorithm>
+#include <vector>
 
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
@@ -74,10 +74,30 @@ class WebTimeRange {
   }
 };
 
-class BLINK_PLATFORM_EXPORT WebTimeRanges : public WebVector<WebTimeRange> {
+class BLINK_PLATFORM_EXPORT WebTimeRanges {
  public:
-  // Expose base constructors.
-  using WebVector<WebTimeRange>::WebVector;
+  WebTimeRanges() = default;
+  explicit WebTimeRanges(size_t size) : data_(size) {}
+
+  // Constructs a WebTimeRanges with a single range.
+  WebTimeRanges(double start, double end) : data_({WebTimeRange(start, end)}) {}
+
+  size_t size() const { return data_.size(); }
+  bool empty() const { return data_.empty(); }
+  auto begin() const { return data_.begin(); }
+  auto end() const { return data_.end(); }
+
+  const WebTimeRange& operator[](size_t i) const { return data_[i]; }
+  const WebTimeRange& front() const { return data_.front(); }
+  const WebTimeRange& back() const { return data_.back(); }
+
+  void clear() { data_.clear(); }
+
+#if INSIDE_BLINK
+  // Use this with caution not to break data integrity (e.g. ranges are sorted
+  // and there are no overlapping/contiguous ranges).
+  WebTimeRange& operator[](size_t i) { return data_[i]; }
+#endif
 
   void IntersectWith(const WebTimeRanges& other);
   void UnionWith(const WebTimeRanges& other);
@@ -86,6 +106,9 @@ class BLINK_PLATFORM_EXPORT WebTimeRanges : public WebVector<WebTimeRange> {
   double Nearest(double new_playback_position,
                  double current_playback_position) const;
   void Invert();
+
+ private:
+  std::vector<WebTimeRange> data_;
 };
 
 }  // namespace blink

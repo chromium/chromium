@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.modules.stack_unwinder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 
 /**
@@ -12,22 +13,8 @@ import org.chromium.components.module_installer.builder.ModuleInterface;
 @ModuleInterface(
         module = "stack_unwinder",
         impl = "org.chromium.chrome.modules.stack_unwinder.StackUnwinderModuleContentsImpl")
+@NullMarked
 public interface StackUnwinderModuleContents {
-    /**
-     * Returns the pointer to the CreateMemoryRegionsMap native function within the module, encoded
-     * as a long.
-     */
-    long getCreateMemoryRegionsMapFunction();
 
-    /**
-     * Returns the pointer to the CreateNativeUnwinder native function within the module, encoded as
-     * a long.
-     */
-    long getCreateNativeUnwinderFunction();
-
-    /**
-     * Returns the pointer to the CreateLibunwindstackUnwinder native function within the module,
-     * encoded as a long.
-     */
-    long getCreateLibunwindstackUnwinderFunction();
+    long getDoNothingFunction();
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/ct_log_response_parser.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -40,7 +36,9 @@ TEST(CTLogResponseParserTest, ParsesValidJsonSTH) {
   // Copy the field from the SignedTreeHead because it's not null terminated
   // there and ASSERT_STREQ expects null-terminated strings.
   char actual_hash[kSthRootHashLength + 1];
-  memcpy(actual_hash, tree_head.sha256_root_hash, kSthRootHashLength);
+  base::as_writable_byte_span(actual_hash)
+      .first(kSthRootHashLength)
+      .copy_from(base::as_byte_span(tree_head.sha256_root_hash));
   actual_hash[kSthRootHashLength] = '\0';
   std::string expected_sha256_root_hash = GetSampleSTHSHA256RootHash();
   ASSERT_STREQ(expected_sha256_root_hash.c_str(), actual_hash);

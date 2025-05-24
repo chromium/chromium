@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "services/device/public/cpp/device_features.h"
 #include "services/device/serial/bluetooth_serial_device_enumerator.h"
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 #include "services/device/serial/serial_device_enumerator.h"
@@ -88,11 +87,6 @@ void SerialPortManagerImpl::GetDevices(GetDevicesCallback callback) {
     observed_enumerator_.AddObservation(enumerator_.get());
   }
   auto devices = enumerator_->GetDevices();
-  if (!base::FeatureList::IsEnabled(
-          features::kEnableBluetoothSerialPortProfileInSerialApi)) {
-    std::move(callback).Run(std::move(devices));
-    return;
-  }
   if (!bluetooth_enumerator_) {
     bluetooth_enumerator_ =
         std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);
@@ -127,28 +121,25 @@ void SerialPortManagerImpl::OpenPort(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kEnableBluetoothSerialPortProfileInSerialApi)) {
-    if (!bluetooth_enumerator_) {
-      bluetooth_enumerator_ =
-          std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);
-      observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
-    }
-    std::optional<std::string> address =
-        bluetooth_enumerator_->GetAddressFromToken(token);
-    if (address) {
-      const BluetoothUUID service_class_id =
-          bluetooth_enumerator_->GetServiceClassIdFromToken(token);
-      ui_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &SerialPortManagerImpl::OpenBluetoothSerialPortOnUI,
-              weak_factory_.GetWeakPtr(), *address, service_class_id,
-              std::move(options), std::move(client), std::move(watcher),
-              base::BindOnce(&OnPortOpened, std::move(callback),
-                             base::SequencedTaskRunner::GetCurrentDefault())));
-      return;
-    }
+  if (!bluetooth_enumerator_) {
+    bluetooth_enumerator_ =
+        std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);
+    observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
+  }
+  std::optional<std::string> address =
+      bluetooth_enumerator_->GetAddressFromToken(token);
+  if (address) {
+    const BluetoothUUID service_class_id =
+        bluetooth_enumerator_->GetServiceClassIdFromToken(token);
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &SerialPortManagerImpl::OpenBluetoothSerialPortOnUI,
+            weak_factory_.GetWeakPtr(), *address, service_class_id,
+            std::move(options), std::move(client), std::move(watcher),
+            base::BindOnce(&OnPortOpened, std::move(callback),
+                           base::SequencedTaskRunner::GetCurrentDefault())));
+    return;
   }
 
   std::move(callback).Run(mojo::NullRemote());

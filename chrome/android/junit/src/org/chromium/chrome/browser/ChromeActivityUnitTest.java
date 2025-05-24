@@ -4,36 +4,49 @@
 
 package org.chromium.chrome.browser;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.PictureInPictureUiState;
+import android.app.assist.AssistContent;
+import android.net.Uri;
 import android.util.Pair;
 import android.view.ViewGroup;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
+import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -43,22 +56,29 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.BottomContainer;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for ChromeActivity. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeActivityUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     Activity mActivity;
 
     @Mock RootUiCoordinator mRootUiCoordinatorMock;
     @Mock TabModel mTabModel;
     @Mock Profile mProfile;
     @Mock Tab mActivityTab;
+    @Mock ActivityTabProvider mActivityTabProvider;
     @Mock ReadAloudController mReadAloudController;
     @Mock FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
     @Mock PictureInPictureUiState mPictureInPictureUiState;
+    @Mock EnterpriseInfo mEnterpriseInfo;
 
     ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
@@ -90,13 +110,13 @@ public class ChromeActivityUnitTest {
         }
 
         @Override
-        public @ActivityType int getActivityType() {
-            return ActivityType.TABBED;
+        public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
+            return null;
         }
 
         @Override
-        protected boolean handleBackPressed() {
-            return true;
+        public @ActivityType int getActivityType() {
+            return ActivityType.TABBED;
         }
 
         @Override
@@ -118,7 +138,6 @@ public class ChromeActivityUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
     }
 
@@ -178,5 +197,37 @@ public class ChromeActivityUnitTest {
         when(mPictureInPictureUiState.isStashed()).thenReturn(true);
         chromeActivity.onPictureInPictureUiStateChanged(mPictureInPictureUiState);
         Mockito.verify(mFullscreenVideoPictureInPictureController).onStashReported(true);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.PAGE_CONTENT_PROVIDER})
+    @DisableFeatures({ChromeFeatureList.ANDROID_PDF_ASSIST_CONTENT})
+    public void testPageContentStructuredData() throws JSONException {
+        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        when(chromeActivity.getActivityTab()).thenReturn(mActivityTab);
+        when(chromeActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);
+        when(mActivityTabProvider.get()).thenReturn(mActivityTab);
+        when(mActivityTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
+        when(mActivityTab.getWebContents()).thenReturn(mock(WebContents.class));
+        when(mActivityTab.getWebContents().getMainFrame()).thenReturn(mock(RenderFrameHost.class));
+        // Set enterprise info to report as enterprise owned.
+        EnterpriseInfo.setInstanceForTest(mEnterpriseInfo);
+        EnterpriseInfo.OwnedState enterpriseInfoState =
+                new EnterpriseInfo.OwnedState(
+                        /* isDeviceOwned= */ true, /* isProfileOwned= */ true);
+        when(mEnterpriseInfo.getDeviceEnterpriseInfoSync()).thenReturn(enterpriseInfoState);
+
+        AssistContent result = new AssistContent();
+        chromeActivity.onProvideAssistContent(result);
+
+        assertNotNull(result.getStructuredData());
+
+        JSONObject jsonObject =
+                (JSONObject) new org.json.JSONTokener(result.getStructuredData()).nextValue();
+        var pageMetadata = jsonObject.getJSONObject("page_metadata");
+        var isWorkProfile = pageMetadata.getBoolean("is_work_profile");
+        var contentUri = pageMetadata.getString("content_uri");
+        assertTrue(isWorkProfile);
+        assertEquals("content", Uri.parse(contentUri).getScheme());
     }
 }

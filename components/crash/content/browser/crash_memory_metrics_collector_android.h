@@ -33,7 +33,7 @@ class CrashMemoryMetricsCollector : public base::SupportsUserData::Data {
       content::RenderProcessHost* rph);
 
   // Gets the memory metrics that are filled on the renderer side.
-  const blink::OomInterventionMetrics* MemoryMetrics();
+  blink::OomInterventionMetrics MemoryMetrics();
 
  private:
   base::WritableSharedMemoryMapping metrics_mapping_;

@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/ash/android_sms/android_sms_pairing_state_tracker_impl.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
-#include "chrome/browser/ash/cryptauth/gcm_device_info_provider_impl.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/auth_token_validator_factory.h"
 #include "chrome/browser/ash/multidevice_setup/auth_token_validator_impl.h"
@@ -59,7 +58,7 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
         android_sms_service
             ? android_sms_service->android_sms_pairing_state_tracker()
             : nullptr,
-        GcmDeviceInfoProviderImpl::GetInstance(), is_secondary_user);
+        is_secondary_user);
   }
 
   MultiDeviceSetupService* multidevice_setup_service() {

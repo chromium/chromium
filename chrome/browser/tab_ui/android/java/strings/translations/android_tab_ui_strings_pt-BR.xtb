@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="pt-BR">
+<translation id="1293272072740285747">Mantenha este grupo para adicionar guias mais tarde ou exclua se não precisar mais dele.
+
+Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de guias <ph name="TITLE_OF_GROUP" /> e ele será excluído de todos os dispositivos.</translation>
+<translation id="1340839264183302272">Sair do grupo</translation>
+<translation id="1419023007528516122">Essa ação vai excluir permanentemente o grupo do seu dispositivo</translation>
+<translation id="1501480321619201731">Excluir grupo</translation>
+<translation id="2677748264148917807">Sair</translation>
+<translation id="3547352561153509682">Essa ação vai excluir o grupo de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Desfazer grupo de guias?</translation>
+<translation id="4139634748112164403">As guias vão continuar abertas no dispositivo, mas o grupo será excluído permanentemente.</translation>
+<translation id="4431937619879060901">Você vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />", e ele será excluído de todos seus dispositivos</translation>
+<translation id="4460014764210899310">Desagrupar</translation>
+<translation id="4777866634702576038">Excluir grupo de guias?</translation>
+<translation id="5094423602314093681">Remover guias e excluir grupo?</translation>
+<translation id="5647702255748985085">Quer sair do grupo?</translation>
+<translation id="742664698522525515">Manter grupo?</translation>
+<translation id="750886945254958667">Mantenha este grupo para adicionar guias mais tarde ou saia dele se não quiser mais ter acesso</translation>
+<translation id="8261506727792406068">Excluir</translation>
+<translation id="870736955561925754">Fechar guia e excluir grupo?</translation>
+<translation id="8804742093141782941">Manter grupo</translation>
+<translation id="9169141410816678175">Todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />", e ele será excluído de todos os dispositivos</translation>
+<translation id="9216898458513705996">As guias vão continuar abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Excluir grupo?</translation>
+</translationbundle>

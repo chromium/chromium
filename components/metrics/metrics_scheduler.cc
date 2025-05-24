@@ -21,14 +21,13 @@ const int kInitialIntervalSeconds = 60;
 }  // namespace
 
 MetricsScheduler::MetricsScheduler(const base::RepeatingClosure& task_callback,
-                                   bool fast_startup_for_testing)
+                                   bool fast_startup)
     : task_callback_(task_callback),
-      interval_(base::Seconds(
-          fast_startup_for_testing ? 0 : kInitialIntervalSeconds)),
+      interval_(base::Seconds(fast_startup ? 0 : kInitialIntervalSeconds)),
       running_(false),
       callback_pending_(false) {}
 
-MetricsScheduler::~MetricsScheduler() {}
+MetricsScheduler::~MetricsScheduler() = default;
 
 void MetricsScheduler::Start() {
   running_ = true;

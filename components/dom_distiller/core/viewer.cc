@@ -110,7 +110,8 @@ void EnsureNonEmptyContent(std::string* content) {
 
 std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
                                       const mojom::FontFamily font_family,
-                                      const std::string& csp_nonce) {
+                                      const std::string& csp_nonce,
+                                      bool use_offline_data) {
   std::string html_template =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_DOM_DISTILLER_VIEWER_HTML);
@@ -165,28 +166,27 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
   // and return the local data once a page is loaded.
   css << "<style>" << viewer::GetCss() << "</style>";
   svg << viewer::GetLoadingImage();
-
-  // iOS specific CSP policy to mitigate leaking of data from different
-  // origins.
-  csp << "<meta http-equiv=\"Content-Security-Policy\" content=\"";
-  csp << "default-src 'none'; ";
-  csp << "script-src 'nonce-" << csp_nonce << "'; ";
-  // YouTube videos are embedded as an iframe.
-  csp << "frame-src http://www.youtube.com; ";
-  csp << "style-src 'unsafe-inline' https://fonts.googleapis.com; ";
-  // Allows the fallback font-face from the main stylesheet.
-  csp << "font-src https://fonts.gstatic.com; ";
-  // Images will be inlined as data-uri if they are valid.
-  csp << "img-src data:; ";
-  csp << "form-action 'none'; ";
-  csp << "base-uri 'none'; ";
-  csp << "\">";
-
 #else
   css << "<link rel=\"stylesheet\" href=\"/" << kViewerCssPath << "\">";
   svg << "<img src=\"/" << kViewerLoadingImagePath << "\">";
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS) && !BUILDFLAG(USE_BLINK)
 
+  if (use_offline_data) {
+    // CSP policy to mitigate leaking of data from different origins.
+    csp << "<meta http-equiv=\"Content-Security-Policy\" content=\"";
+    csp << "default-src 'none'; ";
+    csp << "script-src 'nonce-" << csp_nonce << "'; ";
+    // YouTube videos are embedded as an iframe.
+    csp << "frame-src http://www.youtube.com; ";
+    csp << "style-src 'unsafe-inline' https://fonts.googleapis.com; ";
+    // Allows the fallback font-face from the main stylesheet.
+    csp << "font-src https://fonts.gstatic.com; ";
+    // Images will be inlined as data-uri if they are valid.
+    csp << "img-src data:; ";
+    csp << "form-action 'none'; ";
+    csp << "base-uri 'none'; ";
+    csp << "\">";
+  }
   substitutions.push_back(csp.str());  // $1
   substitutions.push_back(css.str());  // $2
   substitutions.push_back(GetThemeCssClass(theme) + " " +
@@ -260,8 +260,10 @@ const std::string GetToggleLoadingIndicatorJs(bool is_last_page) {
 
 const std::string GetArticleTemplateHtml(mojom::Theme theme,
                                          mojom::FontFamily font_family,
-                                         const std::string& csp_nonce) {
-  return ReplaceHtmlTemplateValues(theme, font_family, csp_nonce);
+                                         const std::string& csp_nonce,
+                                         bool use_offline_data) {
+  return ReplaceHtmlTemplateValues(theme, font_family, csp_nonce,
+                                   use_offline_data);
 }
 
 const std::string GetUnsafeArticleContentJs(

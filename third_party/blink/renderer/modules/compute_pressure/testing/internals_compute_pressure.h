@@ -34,8 +34,9 @@ class InternalsComputePressure {
   static ScriptPromise<IDLUndefined> updateVirtualPressureSource(
       ScriptState* script_state,
       Internals&,
-      V8PressureSource posture,
-      V8PressureState state);
+      V8PressureSource source,
+      V8PressureState state,
+      double own_contribution_estimate);
 };
 
 }  // namespace blink

@@ -504,17 +504,9 @@ StreamProvider::GetContainerForMetrics() const {
   return std::optional<container_names::MediaContainerName>();
 }
 
-void StreamProvider::OnEnabledAudioTracksChanged(
+void StreamProvider::OnTracksChanged(
+    DemuxerStream::Type track_type,
     const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  std::vector<DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(streams);
-  DVLOG(1) << "Track changes are not supported.";
-}
-
-void StreamProvider::OnSelectedVideoTrackChanged(
-    const std::vector<media::MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
   std::vector<DemuxerStream*> streams;

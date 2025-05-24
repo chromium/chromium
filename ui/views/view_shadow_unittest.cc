@@ -109,7 +109,7 @@ TEST_F(ViewShadowTest, NoShiftWhenReparentViewLayer) {
   // Reparent the view's layer to another layer.
   View root2;
   root2.SetPaintToLayer();
-  root2.AddChildView(view);
+  root2.AddChildViewRaw(view);
   // Check if the shadow layer shifted.
   EXPECT_EQ(pos, shadow.shadow()->layer()->bounds().origin());
 }

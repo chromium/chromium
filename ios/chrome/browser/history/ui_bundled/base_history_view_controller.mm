@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/history/ui_bundled/base_history_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/cancelable_callback.h"
 #import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -51,7 +53,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
@@ -70,18 +71,36 @@
 using history::BrowsingHistoryService;
 
 namespace {
-typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeHistoryEntry = kItemTypeEnumZero,
-  ItemTypeEntriesStatus,
-  ItemTypeEntriesStatusWithLink,
-  ItemTypeActivityIndicator,
+enum ItemType : NSInteger {
+  kItemTypeHistoryEntry = kItemTypeEnumZero,
+  kItemTypeEntriesStatus,
+  kItemTypeEntriesStatusWithLink,
+  kItemTypeActivityIndicator,
 };
+
+// State machine for the loading indicator.
+enum class IndicatorState {
+  IDLE,
+  FETCHING_RESULTS,
+  SHOWING_LOADING_INDICATOR,
+  WAITING_FOR_RESULTS,
+};
+
 // Section identifier for the header (sync information) section.
 const NSInteger kEntriesStatusSectionIdentifier = kSectionIdentifierEnumZero;
 // Maximum number of entries to retrieve in a single query to history service.
 const int kMaxFetchCount = 100;
 // Separation space between sections.
 const CGFloat kSeparationSpaceBetweenSections = 9;
+
+// Delay to observe before showing a loading indicator when fetching history.
+static const base::TimeDelta kDelayUntilShowLoadingMessageMs =
+    base::Milliseconds(300);
+// Minimum delay to observe before removing the loading indicator. This avoids
+// the loading indicator flashing in the screen.
+static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
+    base::Seconds(1);
+
 }  // namespace
 
 @interface BaseHistoryViewController () <
@@ -90,8 +109,6 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     TableViewLinkHeaderFooterItemDelegate> {
   // Closure to request next page of history.
   base::OnceClosure _query_history_continuation;
-  // Object to manage insertion of history entries into the table view model.
-  HistoryEntryInserter* _entryInserter;
   // The current status message for the tableView, it might be nil.
   NSString* _currentStatusMessage;
   // The current query for visible history entries.
@@ -100,8 +117,20 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   BOOL _finishedLoading;
   // Handler for URL drag interactions.
   TableViewURLDragDropHandler* _dragDropHandler;
-}
 
+  // Results of the last query. Used to cache the information if it's not
+  // possible to show it right away.
+  std::vector<BrowsingHistoryService::HistoryEntry> _results;
+  BrowsingHistoryService::QueryResultsInfo _queryResultsInfo;
+
+  // Indicates the current state of the loading indicator.
+  IndicatorState _indicatorState;
+
+  // Callbacks for the loading indicator delayed tasks. Allows for them to be
+  // canceled if results are displayed between callback runs.
+  base::CancelableOnceCallback<void(void)> _maybeRemoveLoadingIndicatorTask;
+  base::CancelableOnceCallback<void(void)> _displayLoadingIndicatorTask;
+}
 // YES if there are no results to show.
 @property(nonatomic, assign) BOOL empty;
 // YES if the history panel should show a notice about additional forms of
@@ -116,6 +145,8 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     NSMutableArray<NSIndexPath*>* filteredOutEntriesIndexPaths;
 // YES if the table should be filtered by the next received query result.
 @property(nonatomic, assign) BOOL filterQueryResult;
+// Object to manage insertion of history entries into the table view model.
+@property(nonatomic, strong) HistoryEntryInserter* entryInserter;
 @end
 
 @implementation BaseHistoryViewController
@@ -123,15 +154,19 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 #pragma mark - Public
 
 - (instancetype)init {
-  UITableViewStyle style = ChromeTableViewStyle();
-  return [super initWithStyle:style];
+  if ((self = [super initWithStyle:ChromeTableViewStyle()])) {
+    _indicatorState = IndicatorState::IDLE;
+  }
+  return self;
 }
 
 - (void)detachFromBrowser {
   // Clear C++ ivars.
   _browser = nullptr;
   _historyService = nullptr;
-  [self dismissContextMenuCoordinator];
+
+  // Cancel all pending callbacks related to loading indicator.
+  [self cancelIndicatorCallbacks];
 }
 
 #pragma mark - ViewController Lifecycle.
@@ -159,8 +194,6 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   _dragDropHandler.dragDataSource = self;
   self.tableView.dragDelegate = _dragDropHandler;
   self.tableView.dragInteractionEnabled = true;
-
-  [self showHistoryMatchingQuery:nil];
 }
 
 #pragma mark - TableViewModel
@@ -211,6 +244,10 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   return self.empty;
 }
 
+// Fetches history for search text `query`. If `query` is nil or the empty
+// string, all history is fetched. If continuation is false, then the most
+// recent results are fetched, otherwise the results more recent than the
+// previous query will be returned.
 - (void)fetchHistoryForQuery:(NSString*)query continuation:(BOOL)continuation {
   if (!self.browser) {
     return;
@@ -220,29 +257,49 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     return;
   }
 
-  if ([self shouldDisplayLoadingIndicator]) {
-    [self startLoadingIndicatorWithLoadingMessage:l10n_util::GetNSString(
-                                                      IDS_HISTORY_NO_RESULTS)];
+  self.loading = YES;
+
+  // If we've already requested the loading indicator to be shown, then don't
+  // request again.
+  BOOL waiting_for_results = _indicatorState != IndicatorState::IDLE;
+  if ([self shouldDisplayLoadingIndicator] && !waiting_for_results) {
+    // Cancel all pending callbacks related to loading indicator.
+    [self cancelIndicatorCallbacks];
+
+    // Wait for kDelayUntilShowLoadingMessageMs, before displaying the loading
+    // indicator. If the query returns before, then the results are displayed.
+    __weak __typeof(self) weakSelf = self;
+    _displayLoadingIndicatorTask.Reset(base::BindOnce(^{
+      [weakSelf displayLoadingIndicator];
+    }));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, _displayLoadingIndicatorTask.callback(),
+        kDelayUntilShowLoadingMessageMs);
+  }
+
+  // If we were already waiting for results, then don't reset the state machine.
+  if (!waiting_for_results) {
+    _indicatorState = IndicatorState::FETCHING_RESULTS;
   }
 
   if (continuation) {
     DCHECK(_query_history_continuation);
     std::move(_query_history_continuation).Run();
-  } else {
-    _query_history_continuation.Reset();
-
-    BOOL fetchAllHistory = !query || [query isEqualToString:@""];
-    std::u16string queryString =
-        fetchAllHistory ? std::u16string() : base::SysNSStringToUTF16(query);
-    history::QueryOptions options;
-    options.duplicate_policy =
-        fetchAllHistory ? history::QueryOptions::REMOVE_DUPLICATES_PER_DAY
-                        : history::QueryOptions::REMOVE_ALL_DUPLICATES;
-    options.max_count = kMaxFetchCount;
-    options.matching_algorithm =
-        query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
-    self.historyService->QueryHistory(queryString, options);
+    return;
   }
+  _query_history_continuation.Reset();
+
+  BOOL fetchAllHistory = !query || [query isEqualToString:@""];
+  std::u16string queryString =
+      fetchAllHistory ? std::u16string() : base::SysNSStringToUTF16(query);
+  history::QueryOptions options;
+  options.duplicate_policy =
+      fetchAllHistory ? history::QueryOptions::REMOVE_DUPLICATES_PER_DAY
+                      : history::QueryOptions::REMOVE_ALL_DUPLICATES;
+  options.max_count = kMaxFetchCount;
+  options.matching_algorithm =
+      query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
+  self.historyService->QueryHistory(queryString, options);
 }
 
 - (void)updateTableViewAfterDeletingEntries {
@@ -266,145 +323,6 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   [self removeEmptyTableView];
 }
 
-#pragma mark - Context Menu
-
-// Displays a context menu on the cell pressed with gestureRecognizer.
-- (void)displayContextMenuInvokedByGestureRecognizer:
-    (UILongPressGestureRecognizer*)gestureRecognizer {
-  if (!self.browser) {
-    return;
-  }
-  if (gestureRecognizer.numberOfTouches != 1 ||
-      gestureRecognizer.state != UIGestureRecognizerStateBegan) {
-    return;
-  }
-
-  CGPoint touchLocation = [gestureRecognizer locationOfTouch:0
-                                                      inView:self.tableView];
-  NSIndexPath* touchedItemIndexPath =
-      [self.tableView indexPathForRowAtPoint:touchLocation];
-  // If there's no index path, or the index path is for the header item, do not
-  // display a contextual menu.
-  if (!touchedItemIndexPath ||
-      [touchedItemIndexPath isEqual:[NSIndexPath indexPathForItem:0
-                                                        inSection:0]]) {
-    return;
-  }
-
-  HistoryEntryItem* entry = base::apple::ObjCCastStrict<HistoryEntryItem>(
-      [self.tableViewModel itemAtIndexPath:touchedItemIndexPath]);
-
-  __weak BaseHistoryViewController* weakSelf = self;
-  NSString* menuTitle =
-      base::SysUTF16ToNSString(url_formatter::FormatUrl(entry.URL));
-  self.contextMenuCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.navigationController
-                         browser:self.browser
-                           title:menuTitle
-                         message:nil
-                            rect:CGRectMake(touchLocation.x, touchLocation.y,
-                                            1.0, 1.0)
-                            view:self.tableView];
-
-  // Add "Open in New Tab" option.
-  NSString* openInNewTabTitle =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
-  ProceduralBlock openInNewTabAction = ^{
-    [weakSelf openURLInNewTab:entry.URL];
-    [weakSelf dismissContextMenuCoordinator];
-  };
-  [self.contextMenuCoordinator addItemWithTitle:openInNewTabTitle
-                                         action:openInNewTabAction
-                                          style:UIAlertActionStyleDefault];
-
-  if (base::ios::IsMultipleScenesSupported()) {
-    // Add "Open In New Window" option.
-    NSString* openInNewWindowTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
-    ProceduralBlock openInNewWindowAction = ^{
-      [weakSelf openURLInNewWindow:entry.URL];
-    };
-    [self.contextMenuCoordinator addItemWithTitle:openInNewWindowTitle
-                                           action:openInNewWindowAction
-                                            style:UIAlertActionStyleDefault];
-  }
-
-  // Add "Open in New Incognito Tab" option.
-  NSString* openInNewIncognitoTabTitle = l10n_util::GetNSStringWithFixup(
-      IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
-  ProceduralBlock openInNewIncognitoTabAction = ^{
-    [weakSelf openURLInNewIncognitoTab:entry.URL];
-    [weakSelf dismissContextMenuCoordinator];
-  };
-  BOOL incognitoEnabled =
-      !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
-  [self.contextMenuCoordinator addItemWithTitle:openInNewIncognitoTabTitle
-                                         action:openInNewIncognitoTabAction
-                                          style:UIAlertActionStyleDefault
-                                        enabled:incognitoEnabled];
-
-  // Add "Copy URL" option.
-  NSString* copyURLTitle =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_COPY);
-  ProceduralBlock copyURLAction = ^{
-    StoreURLInPasteboard(entry.URL);
-    [weakSelf dismissContextMenuCoordinator];
-  };
-  [self.contextMenuCoordinator addItemWithTitle:copyURLTitle
-                                         action:copyURLAction
-                                          style:UIAlertActionStyleDefault];
-
-  [self.contextMenuCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
-                action:^{
-                  [weakSelf dismissContextMenuCoordinator];
-                }
-                 style:UIAlertActionStyleCancel];
-  [self.contextMenuCoordinator start];
-}
-
-// Opens URL in a new non-incognito tab and dismisses the history view.
-- (void)openURLInNewTab:(const GURL&)URL {
-  base::RecordAction(
-      base::UserMetricsAction("MobileHistoryPage_EntryLinkOpenNewTab"));
-  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
-  __weak __typeof(self) weakSelf = self;
-  [self.delegate dismissViewController:self
-                        withCompletion:^{
-                          [weakSelf
-                              loadAndActivateTabFromHistoryWithParams:params
-                                                            incognito:NO];
-                        }];
-}
-
-// Opens URL in a new non-incognito tab in a new window and dismisses the
-// history view.
-- (void)openURLInNewWindow:(const GURL&)URL {
-  if (!self.browser) {
-    return;
-  }
-  id<ApplicationCommands> windowOpener = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [windowOpener
-      openNewWindowWithActivity:ActivityToLoadURL(WindowActivityHistoryOrigin,
-                                                  URL)];
-}
-
-// Opens URL in a new incognito tab and dismisses the history view.
-- (void)openURLInNewIncognitoTab:(const GURL&)URL {
-  base::RecordAction(base::UserMetricsAction(
-      "MobileHistoryPage_EntryLinkOpenNewIncognitoTab"));
-  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
-  params.in_incognito = YES;
-  __weak __typeof(self) weakSelf = self;
-  [self.delegate dismissViewController:self
-                        withCompletion:^{
-                          [weakSelf
-                              loadAndActivateTabFromHistoryWithParams:params
-                                                            incognito:YES];
-                        }];
-}
-
 #pragma mark - HistoryConsumer
 
 // Tells the consumer that the result of a history query has been retrieved.
@@ -420,12 +338,13 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     return;
   }
 
+  self.loading = NO;
   _query_history_continuation = std::move(continuationClosure);
 
   // If history sync is enabled and there hasn't been a response from synced
   // history, try fetching again.
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
   if (syncService->GetActiveDataTypes().Has(
           syncer::HISTORY_DELETE_DIRECTIVES) &&
       queryResultsInfo.sync_timed_out) {
@@ -433,66 +352,9 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     return;
   }
 
-  // At this point there has been a response, stop the loading indicator.
-  [self stopLoadingIndicatorWithCompletion:nil];
-
-  // If there are no results and no URLs have been loaded, report that no
-  // history entries were found.
-  if ([self checkEmptyHistory:results]) {
-    [self addEmptyTableViewBackground];
-    return;
-  }
-
-  _finishedLoading = queryResultsInfo.reached_beginning;
-  self.empty = NO;
-  [self removeEmptyTableViewBackground];
-
-  // Header section should be updated outside of batch updates, otherwise
-  // loading indicator removal will not be observed.
-  [self updateEntriesStatusMessageWithMessage:nil messageWillContainLink:NO];
-
-  NSMutableArray* resultsItems = [NSMutableArray array];
-  NSString* searchQuery =
-      [base::SysUTF16ToNSString(queryResultsInfo.search_text) copy];
-
-  // There should always be at least a header section present.
-  DCHECK([[self tableViewModel] numberOfSections]);
-  for (const BrowsingHistoryService::HistoryEntry& entry : results) {
-    HistoryEntryItem* item =
-        [[HistoryEntryItem alloc] initWithType:ItemTypeHistoryEntry
-                         accessibilityDelegate:self];
-    item.text = [history::FormattedTitle(entry.title, entry.url) copy];
-    item.detailText = base::SysUTF16ToNSString(
-        url_formatter::
-            FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-                entry.url));
-    item.timeText =
-        [base::SysUTF16ToNSString(base::TimeFormatTimeOfDay(entry.time)) copy];
-    item.URL = entry.url;
-    item.timestamp = entry.time;
-    [resultsItems addObject:item];
-  }
-
-  // There could be child classes that need to filter the results. Child classes
-  // are responsible for implementing this method based on their needs.
-  [self filterResults:resultsItems searchQuery:searchQuery];
-
-  // Insert result items into the model.
-  for (HistoryEntryItem* item in resultsItems) {
-    [_entryInserter insertHistoryEntryItem:item];
-  }
-
-  // Save the currently selected rows to preserve its state after the tableView
-  // is reloaded. Since a query with selected rows can only happen when
-  // scrolling down the tableView this should be safe. If this changes in the
-  // future e.g. being able to search while selected rows exist, we should
-  // update this.
-  NSIndexPath* currentSelectedCells = [self.tableView indexPathForSelectedRow];
-  [self.tableView reloadData];
-  [self.tableView selectRowAtIndexPath:currentSelectedCells
-                              animated:NO
-                        scrollPosition:UITableViewScrollPositionNone];
-  [self updateTableViewAfterDeletingEntries];
+  _results = results;
+  _queryResultsInfo = queryResultsInfo;
+  [self maybeUpdateUIWithResults];
 }
 
 - (void)showNoticeAboutOtherFormsOfBrowsingHistory:(BOOL)shouldShowNotice {
@@ -504,7 +366,11 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 }
 
 - (void)historyWasDeleted {
+  // If history has been deleted, reload history filtering for the current
+  // results. This only observes local changes to history, i.e. removing
+  // history via delete browsing data.
   self.filterQueryResult = YES;
+  [self showHistoryMatchingQuery:_currentQuery];
 }
 
 #pragma mark - HistoryEntriesStatusItemDelegate
@@ -617,8 +483,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
         [self.tableViewModel itemAtIndexPath:indexPath]);
     BrowsingHistoryService::HistoryEntry entry;
     entry.url = object.URL;
-    // TODO(crbug.com/40479288) Remove base::TimeXXX::ToInternalValue().
-    entry.all_timestamps.insert(object.timestamp.ToInternalValue());
+    entry.all_timestamps.insert(object.timestamp);
     entries.push_back(entry);
   }
   self.historyService->RemoveVisits(entries);
@@ -662,8 +527,8 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   DCHECK_EQ(tableView, self.tableView);
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  // Only navigate and record metrics if a ItemTypeHistoryEntry was selected.
-  if (item.type == ItemTypeHistoryEntry) {
+  // Only navigate and record metrics if a kItemTypeHistoryEntry was selected.
+  if (item.type == kItemTypeHistoryEntry) {
     HistoryEntryItem* historyItem =
         base::apple::ObjCCastStrict<HistoryEntryItem>(item);
     [self openURL:historyItem.URL];
@@ -673,7 +538,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  return (item.type == ItemTypeHistoryEntry);
+  return (item.type == kItemTypeHistoryEntry);
 }
 
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
@@ -722,8 +587,8 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   UITableViewCell* cellToReturn = [super tableView:tableView
                              cellForRowAtIndexPath:indexPath];
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  cellToReturn.userInteractionEnabled = !(item.type == ItemTypeEntriesStatus);
-  if (item.type == ItemTypeHistoryEntry) {
+  cellToReturn.userInteractionEnabled = !(item.type == kItemTypeEntriesStatus);
+  if (item.type == kItemTypeHistoryEntry) {
     HistoryEntryItem* URLItem =
         base::apple::ObjCCastStrict<HistoryEntryItem>(item);
     TableViewURLCell* URLCell =
@@ -782,14 +647,14 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     URLInfoAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   switch (item.type) {
-    case ItemTypeHistoryEntry: {
+    case kItemTypeHistoryEntry: {
       HistoryEntryItem* URLItem =
           base::apple::ObjCCastStrict<HistoryEntryItem>(item);
       return [[URLInfo alloc] initWithURL:URLItem.URL title:URLItem.text];
     }
-    case ItemTypeEntriesStatus:
-    case ItemTypeActivityIndicator:
-    case ItemTypeEntriesStatusWithLink:
+    case kItemTypeEntriesStatus:
+    case kItemTypeActivityIndicator:
+    case kItemTypeEntriesStatusWithLink:
       break;
   }
   return nil;
@@ -797,11 +662,175 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 
 #pragma mark - Private methods
 
+// Opens URL in a new non-incognito tab and dismisses the history view.
+- (void)openURLInNewTab:(const GURL&)URL {
+  base::RecordAction(
+      base::UserMetricsAction("MobileHistoryPage_EntryLinkOpenNewTab"));
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  __weak __typeof(self) weakSelf = self;
+  [self.delegate dismissViewController:self
+                        withCompletion:^{
+                          [weakSelf
+                              loadAndActivateTabFromHistoryWithParams:params
+                                                            incognito:NO];
+                        }];
+}
+
+// Opens URL in a new incognito tab and dismisses the history view.
+- (void)openURLInNewIncognitoTab:(const GURL&)URL {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileHistoryPage_EntryLinkOpenNewIncognitoTab"));
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.in_incognito = YES;
+  __weak __typeof(self) weakSelf = self;
+  [self.delegate dismissViewController:self
+                        withCompletion:^{
+                          [weakSelf
+                              loadAndActivateTabFromHistoryWithParams:params
+                                                            incognito:YES];
+                        }];
+}
+
+// Displays the loading indicator for a minimum of
+// `kDelayUntilReadyToRemoveLoadingIndicatorsMs`.
+- (void)displayLoadingIndicator {
+  if (!self.loading) {
+    return;  // UI has been updated in the meaning time.
+  }
+
+  // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
+  // check doesn't fail.
+  CHECK_EQ(_indicatorState, IndicatorState::FETCHING_RESULTS,
+           base::NotFatalUntil::M139);
+  _indicatorState = IndicatorState::SHOWING_LOADING_INDICATOR;
+  [self startLoadingIndicatorWithLoadingMessage:l10n_util::GetNSString(
+                                                    IDS_HISTORY_NO_RESULTS)];
+  __weak __typeof(self) weakSelf = self;
+  _maybeRemoveLoadingIndicatorTask.Reset(base::BindOnce(^{
+    [weakSelf maybeRemoveLoadingIndicator];
+  }));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, _maybeRemoveLoadingIndicatorTask.callback(),
+      kDelayUntilReadyToRemoveLoadingIndicatorsMs);
+}
+
+// Attempts to remove the loading indicator. If the query has returned, then
+// removes the loading indicator and updates the UI with the results. If the
+// query hasn't returned, then no-op.
+- (void)maybeRemoveLoadingIndicator {
+  // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
+  // check doesn't fail.
+  CHECK_EQ(_indicatorState, IndicatorState::SHOWING_LOADING_INDICATOR,
+           base::NotFatalUntil::M139);
+  _indicatorState = IndicatorState::WAITING_FOR_RESULTS;
+
+  // If results have returned, then the UI is updated right away.
+  [self maybeUpdateUIWithResults];
+}
+
+// Attempts to update the UI with results. If the loading indicator hasn't been
+// shown for a minimum time, then no-op. If it has, then updates the UI with the
+// results.
+- (void)maybeUpdateUIWithResults {
+  // Results will be shown at a later stage, when they have been loaded.
+  if (self.loading) {
+    return;
+  }
+
+  // Results will be shown at a later stage, when the loading indicator has been
+  // shown enough time.
+  if (_indicatorState == IndicatorState::SHOWING_LOADING_INDICATOR) {
+    return;
+  }
+
+  // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
+  // check doesn't fail.
+  CHECK(_indicatorState == IndicatorState::WAITING_FOR_RESULTS ||
+            _indicatorState == IndicatorState::FETCHING_RESULTS,
+        base::NotFatalUntil::M139);
+  _indicatorState = IndicatorState::IDLE;
+
+  // Cancel all pending callbacks related to loading indicator.
+  [self cancelIndicatorCallbacks];
+
+  // Remove the loading indicator if it's being displayed.
+  [self stopLoadingIndicatorWithCompletion:nil];
+
+  // If there are no results and no URLs have been loaded, report that no
+  // history entries were found.
+  if ([self checkEmptyHistory:_results]) {
+    [self addEmptyTableViewBackground];
+    [self resetResults];
+    return;
+  }
+
+  _finishedLoading = _queryResultsInfo.reached_beginning;
+  self.empty = NO;
+  [self removeEmptyTableViewBackground];
+
+  // Header section should be updated outside of batch updates, otherwise
+  // loading indicator removal will not be observed.
+  [self updateEntriesStatusMessageWithMessage:nil messageWillContainLink:NO];
+
+  NSMutableArray* resultsItems = [NSMutableArray array];
+  NSString* searchQuery =
+      [base::SysUTF16ToNSString(_queryResultsInfo.search_text) copy];
+
+  // There should always be at least a header section present.
+  DCHECK([[self tableViewModel] numberOfSections]);
+  for (const BrowsingHistoryService::HistoryEntry& entry : _results) {
+    HistoryEntryItem* item =
+        [[HistoryEntryItem alloc] initWithType:kItemTypeHistoryEntry
+                         accessibilityDelegate:self];
+    item.text = [history::FormattedTitle(entry.title, entry.url) copy];
+    item.detailText = base::SysUTF16ToNSString(
+        url_formatter::
+            FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                entry.url));
+    item.timeText =
+        [base::SysUTF16ToNSString(base::TimeFormatTimeOfDay(entry.time)) copy];
+    item.URL = entry.url;
+    item.timestamp = entry.time;
+    [resultsItems addObject:item];
+  }
+
+  // There could be child classes that need to filter the results. Child classes
+  // are responsible for implementing this method based on their needs.
+  [self filterResults:resultsItems searchQuery:searchQuery];
+
+  // Insert result items into the model.
+  for (HistoryEntryItem* item in resultsItems) {
+    [_entryInserter insertHistoryEntryItem:item];
+  }
+
+  // Save the currently selected rows to preserve its state after the tableView
+  // is reloaded. Since a query with selected rows can only happen when
+  // scrolling down the tableView this should be safe. If this changes in the
+  // future e.g. being able to search while selected rows exist, we should
+  // update this.
+  NSIndexPath* currentSelectedCells = [self.tableView indexPathForSelectedRow];
+  [self.tableView reloadData];
+  [self.tableView selectRowAtIndexPath:currentSelectedCells
+                              animated:NO
+                        scrollPosition:UITableViewScrollPositionNone];
+  [self updateTableViewAfterDeletingEntries];
+  [self resetResults];
+}
+
+// Resets the results associated with the last query.
+- (void)resetResults {
+  _results.clear();
+  _queryResultsInfo = {};
+}
+
 // Deletes all items in the tableView which indexes are included in indexArray,
 // if `deleteItemsFromTableView` is YES this method needs to be run inside a
 // performBatchUpdates block.
 - (void)deleteItemsFromTableViewModelWithIndex:(NSArray*)indexArray
                       deleteItemsFromTableView:(BOOL)deleteItemsFromTableView {
+  // Dismiss any context menu so it's not attached to a wrong row.
+  [self.tableView.contextMenuInteraction dismissMenu];
+
   NSArray* sortedIndexPaths =
       [indexArray sortedArrayUsingSelector:@selector(compare:)];
   for (NSIndexPath* indexPath in [sortedIndexPaths reverseObjectEnumerator]) {
@@ -855,11 +884,6 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   }
 }
 
-- (void)dismissContextMenuCoordinator {
-  [self.contextMenuCoordinator stop];
-  self.contextMenuCoordinator = nil;
-}
-
 // Updates header section to provide relevant information about the currently
 // displayed history entries. There should only ever be at most one item in this
 // section.
@@ -878,14 +902,14 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   if (messageWillContainLink) {
     TableViewLinkHeaderFooterItem* header =
         [[TableViewLinkHeaderFooterItem alloc]
-            initWithType:ItemTypeEntriesStatusWithLink];
+            initWithType:kItemTypeEntriesStatusWithLink];
     header.text = message;
     header.urls = @[ [[CrURL alloc] initWithGURL:GURL(kHistoryMyActivityURL)] ];
     item = header;
   } else {
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
-            initWithType:ItemTypeEntriesStatus];
+            initWithType:kItemTypeEntriesStatus];
     header.text = message;
     item = header;
   }
@@ -905,6 +929,14 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 }
 
 #pragma mark - Helper Methods
+
+// Cancels all the callbacks and as a result the tasks associated with showing
+// the loading indicator. At some point, these callbacks were scheduled to run
+// within a delayed task.
+- (void)cancelIndicatorCallbacks {
+  _maybeRemoveLoadingIndicatorTask.Cancel();
+  _displayLoadingIndicatorTask.Cancel();
+}
 
 // Loads and opens a tab using `params`. If `incognito` is YES the tab will be
 // opened in incognito mode.
@@ -932,7 +964,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   bool is_ntp =
       currentWebState && currentWebState->GetVisibleURL() == kChromeUINewTabURL;
   new_tab_page_uma::RecordNTPAction(
-      self.browser->GetBrowserState()->IsOffTheRecord(), is_ntp,
+      self.browser->GetProfile()->IsOffTheRecord(), is_ntp,
       new_tab_page_uma::ACTION_OPENED_HISTORY_ENTRY);
   UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
@@ -949,7 +981,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
-  [self.delegate dismissViewController:self withCompletion:nil];
+  [self.delegate dismissViewController:self];
   return YES;
 }
 
@@ -967,7 +999,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [self.delegate dismissViewController:self withCompletion:nil];
+  [self.delegate dismissViewController:self];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -980,9 +1012,9 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   base::RecordAction(base::UserMetricsAction("IOSHistoryCloseWithSwipe"));
-  // Call the delegate dismissViewController:withCompletion: to
+  // Call the delegate dismissViewController: to
   // clean up state and stop the Coordinator.
-  [self.delegate dismissViewController:self withCompletion:nil];
+  [self.delegate dismissViewController:self];
 }
 
 - (NSMutableArray<NSIndexPath*>*)filteredOutEntriesIndexPaths {

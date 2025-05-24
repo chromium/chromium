@@ -89,7 +89,7 @@ void RecordDeviceLocalAccountsMetric(
 
 }  // namespace
 
-DeviceSettingsService::Observer::~Observer() {}
+DeviceSettingsService::Observer::~Observer() = default;
 
 void DeviceSettingsService::Observer::OwnershipStatusChanged() {}
 
@@ -491,16 +491,6 @@ std::ostream& operator<<(std::ostream& ostream,
     case DeviceSettingsService::OwnershipStatus::kOwnershipTaken:
       return ostream << "kOwnershipTaken";
   }
-}
-
-ScopedTestDeviceSettingsService::ScopedTestDeviceSettingsService() {
-  DeviceSettingsService::Initialize();
-}
-
-ScopedTestDeviceSettingsService::~ScopedTestDeviceSettingsService() {
-  // Clean pending operations.
-  DeviceSettingsService::Get()->UnsetSessionManager();
-  DeviceSettingsService::Shutdown();
 }
 
 }  // namespace ash

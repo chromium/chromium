@@ -144,7 +144,7 @@ PbJsonStreamParser.prototype.parse = function(input) {
           parser.state_ = State.MESSAGES;
           resetJsonStreamParser();
           // Feed the '[' again in the next loop.
-        } else if (input[pos] === ',' || input.substr(pos, 5) == 'null,') {
+        } else if (input[pos] === ',' || input.slice(pos, pos + 5) == 'null,') {
           parser.state_ = State.MESSAGES_DONE;
           // Feed the ',' again in the next loop.
         } else if (input[pos] === ']') {
@@ -173,7 +173,7 @@ PbJsonStreamParser.prototype.parse = function(input) {
         break;
       }
       case State.MESSAGES_DONE: {
-        if (input[pos] === ',' || input.substr(pos, 5) == 'null,') {
+        if (input[pos] === ',' || input.slice(pos, pos + 5) == 'null,') {
           parser.state_ = State.STATUS;
           resetJsonStreamParser();
           // Feed a dummy "[" to match the ending "]".
@@ -236,7 +236,8 @@ PbJsonStreamParser.prototype.parse = function(input) {
    * @return {boolean} return false if no more non-whitespace input character
    */
   function readMore() {
-    while (pos < input.length) {
+    // Only Array and string have length
+    while (pos < /** @type {?} */ (input).length) {
       if (!utils.isJsonWhitespace(input[pos])) {
         return true;
       }

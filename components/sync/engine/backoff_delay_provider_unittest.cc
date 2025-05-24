@@ -48,7 +48,7 @@ TEST(BackoffDelayProviderTest, GetInitialDelay) {
 
   state.last_download_updates_result =
       SyncerError::NetworkError(net::ERR_FAILED);
-  EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
+  EXPECT_EQ(kInitialBackoffShortRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
       SyncerError::ProtocolError(TRANSIENT_ERROR);
@@ -62,7 +62,7 @@ TEST(BackoffDelayProviderTest, GetInitialDelay) {
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
   state.commit_result = SyncerError::NetworkError(net::ERR_FAILED);
-  EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
+  EXPECT_EQ(kInitialBackoffShortRetryTime, delay->GetInitialDelay(state));
 
   state.commit_result = SyncerError::ProtocolError(CONFLICT);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));

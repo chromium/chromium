@@ -12,19 +12,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.build.annotations.CheckDiscard;
-import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.SimpleSelectionController;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 /**
  * Base layout for common suggestion types. Includes support for a configurable suggestion content
@@ -32,14 +35,15 @@ import java.util.Optional;
  *
  * @param <T> The type of View being wrapped by this container.
  */
-@MockedInTests
+@NullMarked
 public class BaseSuggestionView<T extends View> extends SuggestionLayout {
-    public final @NonNull ImageView decorationIcon;
-    public final @NonNull T contentView;
-    public final @NonNull ActionChipsView actionChipsView;
-    public final @NonNull RoundedCornerOutlineProvider decorationIconOutline;
-    private final @NonNull List<ImageView> mActionButtons;
-    private @NonNull Optional<Runnable> mOnFocusViaSelectionListener = Optional.empty();
+    public final ImageView decorationIcon;
+    public final T contentView;
+    public final ActionChipsView actionChipsView;
+    public final RoundedCornerOutlineProvider decorationIconOutline;
+    private final List<ImageView> mActionButtons;
+    private final SimpleSelectionController mActionButtonsHighlighter;
+    private Optional<Runnable> mOnFocusViaSelectionListener = Optional.empty();
 
     /**
      * Constructs a new suggestion view and inflates supplied layout as the contents view.
@@ -81,6 +85,12 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         contentView.setLayoutParams(
                 LayoutParams.forViewType(LayoutParams.SuggestionViewType.CONTENT));
         addView(contentView);
+
+        mActionButtonsHighlighter =
+                new SimpleSelectionController(
+                        this::highlightActionButton,
+                        0,
+                        SimpleSelectionController.Mode.SATURATING_WITH_SENTINEL);
     }
 
     /**
@@ -96,6 +106,8 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         } else if (currentViewCount > desiredViewCount) {
             decreaseActionButtonsCount(desiredViewCount);
         }
+
+        mActionButtonsHighlighter.setItemCount(desiredViewCount);
     }
 
     /**
@@ -103,6 +115,22 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      */
     public List<ImageView> getActionButtons() {
         return mActionButtons;
+    }
+
+    /**
+     * Applies / removes selection hairline from action button.
+     *
+     * @param buttonIndex the index of an action button
+     * @param isSelected whether to apply hairline
+     */
+    private void highlightActionButton(int buttonIndex, boolean isHighlighted) {
+        mActionButtons
+                .get(buttonIndex)
+                .setForeground(
+                        isHighlighted
+                                ? AppCompatResources.getDrawable(
+                                        getContext(), R.drawable.hairline_circle)
+                                : null);
     }
 
     /**
@@ -142,8 +170,26 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         // navigation.
         if (actionChipsView.onKeyDown(keyCode, event)) return true;
         if (KeyNavigationUtil.isEnter(event)) {
+            if (!mActionButtonsHighlighter.isParkedAtSentinel()) {
+                OptionalInt selection = mActionButtonsHighlighter.getPosition();
+                return mActionButtons.get(selection.getAsInt()).performClick();
+            }
             return performClick();
         }
+
+        // Allow browsing through right hand side buttons.
+        if (keyCode == KeyEvent.KEYCODE_TAB) {
+            if (!event.isShiftPressed()) {
+                // Pass the TAB key to Action Buttons, then to Action Chips.
+                return mActionButtonsHighlighter.selectNextItem()
+                        || super_onKeyDown(keyCode, event);
+            } else {
+                // Pass the TAB key to Action Chips, then to Action Buttons.
+                return super_onKeyDown(keyCode, event)
+                        || mActionButtonsHighlighter.selectPreviousItem();
+            }
+        }
+
         return super_onKeyDown(keyCode, event);
     }
 
@@ -156,6 +202,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     @Override
     public void setSelected(boolean selected) {
         super.setSelected(selected);
+        if (mActionButtonsHighlighter != null) mActionButtonsHighlighter.reset();
         if (selected) mOnFocusViaSelectionListener.ifPresent(Runnable::run);
     }
 
@@ -166,17 +213,6 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      */
     void setOnFocusViaSelectionListener(@Nullable Runnable listener) {
         mOnFocusViaSelectionListener = Optional.ofNullable(listener);
-    }
-
-    @Override
-    public boolean isFocused() {
-        return super_isFocused() || isSelected();
-    }
-
-    @CheckDiscard("inlined")
-    @VisibleForTesting
-    /* package */ boolean super_isFocused() {
-        return super.isFocused();
     }
 
     /** Set the lead-in spacing for the action chip carousel. */

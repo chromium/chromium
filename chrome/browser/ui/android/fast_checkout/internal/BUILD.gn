@@ -40,9 +40,11 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/autofill/android:bottom_sheet_utils_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/fast_checkout:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/util:java",
+    "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java",
@@ -66,6 +68,7 @@ android_library("java") {
 android_resources("java_resources") {
   deps = [
     ":java_strings_grd",
+    "//components/autofill/android:autofill_java_resources",
     "//components/browser_ui/widget/android:java_resources",
     "//ui/android:ui_java_resources",
   ]
@@ -128,6 +131,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/fast_checkout:java",
     "//chrome/browser/ui/android/fast_checkout/internal:java_resources",
     "//chrome/test/android:chrome_java_test_support_common",
+    "//components/autofill/android:autofill_browser_resources",
     "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//third_party/android_deps:espresso_java",

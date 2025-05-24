@@ -1,12 +1,19 @@
 Tests the data of user marks trace events
 Recording started
 Tracing complete
-Got a TimeStamp event:
+Got a TimeStamp event with labeled start and end:
 Object: {
 	args: {
 		data: {
+			color: string
+			end: string
 			frame: string
 			message: string
+			name: string
+			sampleTraceId: number
+			start: string
+			track: string
+			trackGroup: string
 		}
 	}
 	cat: string
@@ -17,6 +24,30 @@ Object: {
 	tid: number
 	ts: number
 }
+Got a TimeStamp event with numeric start and end:
+Object: {
+	args: {
+		data: {
+			color: string
+			end: number
+			frame: string
+			message: string
+			name: string
+			sampleTraceId: number
+			start: number
+			track: string
+			trackGroup: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+TimeStamp numeric start and end are correct.
 Got ConsoleTime events:
 Object: {
 	args: {
@@ -37,17 +68,10 @@ Got a performance mark event:
 Object: {
 	args: {
 		data: {
+			callTime: number
 			detail: string
 			navigationId: string
-			stackTrace: [
-				{
-					columnNumber: number
-					functionName: string
-					lineNumber: number
-					scriptId: string
-					url: string
-				}
-			]
+			sampleTraceId: number
 			startTime: number
 		}
 	}
@@ -62,16 +86,9 @@ Object: {
 Got performance measure event:
 Object: {
 	args: {
-		stackTrace: [
-			{
-				columnNumber: number
-				functionName: string
-				lineNumber: number
-				scriptId: string
-				url: string
-			}
-		]
+		callTime: number
 		startTime: number
+		traceId: number
 	}
 	cat: string
 	id2: {
@@ -86,6 +103,21 @@ Object: {
 Phase of begin event: b
 Phase of end event: e
 user timing event ids are equal.
+Got trace for performance measure call:
+Object: {
+	args: {
+		sampleTraceId: number
+		traceId: number
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Performance measure trace matches user timing event by trace id.
 Got a TimerInstall event:
 Object: {
 	args: {

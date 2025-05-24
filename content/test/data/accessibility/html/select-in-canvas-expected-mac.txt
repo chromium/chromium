@@ -1,0 +1,9 @@
+AXWebArea
+++AXGroup
+++++AXPopUpButton AXValue='1'
+++++++AXMenuItem AXValue='1'
+++AXGroup
+++++AXStaticText AXValue='<newline>  '
+++++AXPopUpButton AXValue='1'
+++++++AXMenuItem AXValue='1'
+++++AXStaticText AXValue='<newline>'

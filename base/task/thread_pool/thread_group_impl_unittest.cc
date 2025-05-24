@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -26,7 +25,6 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
-#include "base/task/task_features.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/environment_config.h"
@@ -39,7 +37,6 @@
 #include "base/task/thread_pool/worker_thread_observer.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
@@ -53,8 +50,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 namespace {
 
 constexpr size_t kMaxTasks = 4;
@@ -81,8 +77,9 @@ class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
     delayed_task_manager_.Shutdown();
     service_thread_.Stop();
     task_tracker_.FlushForTesting();
-    if (thread_group_)
+    if (thread_group_) {
       thread_group_->JoinForTesting();
+    }
     mock_pooled_task_runner_delegate_.SetThreadGroup(nullptr);
     thread_group_.reset();
   }
@@ -92,8 +89,8 @@ class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
     service_thread_.Start();
     delayed_task_manager_.Start(service_thread_.task_runner());
     thread_group_ = std::make_unique<ThreadGroupImpl>(
-        "TestThreadGroup", "A", thread_type, task_tracker_.GetTrackedRef(),
-        tracked_ref_factory_.GetTrackedRef());
+        "TestThreadGroup", "A", thread_type, /*thread_group_type=*/0,
+        task_tracker_.GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
     ASSERT_TRUE(thread_group_);
 
     mock_pooled_task_runner_delegate_.SetThreadGroup(thread_group_.get());
@@ -258,8 +255,9 @@ TEST_P(ThreadGroupImplImplTestParam, PostTasksWithOneAvailableWorker) {
       CreatePooledTaskRunnerWithExecutionMode(
           GetParam(), &mock_pooled_task_runner_delegate_),
       GetParam());
-  for (size_t i = 0; i < kNumTasksPostedPerThread; ++i)
+  for (size_t i = 0; i < kNumTasksPostedPerThread; ++i) {
     EXPECT_TRUE(short_task_factory.PostTask(PostNestedTask::NO, OnceClosure()));
+  }
   short_task_factory.WaitForAllTasksToRun();
 
   // Release tasks waiting on |event|.
@@ -337,7 +335,7 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
   test::CreatePooledTaskRunner({TaskPriority::BEST_EFFORT},
                                &mock_pooled_task_runner_delegate_)
       ->PostTask(
-          FROM_HERE, BindLambdaForTesting([&]() {
+          FROM_HERE, BindLambdaForTesting([&] {
             EXPECT_FALSE(thread_group_->ShouldYield(
                 {TaskPriority::BEST_EFFORT, TimeTicks(), /* worker_count=*/1}));
           }));
@@ -353,10 +351,10 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
 
   // Posting a USER_VISIBLE task should cause BEST_EFFORT and USER_VISIBLE with
   // higher worker_count tasks to yield.
-  auto post_user_visible = [&]() {
+  auto post_user_visible = [&] {
     test::CreatePooledTaskRunner({TaskPriority::USER_VISIBLE},
                                  &mock_pooled_task_runner_delegate_)
-        ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+        ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                      EXPECT_FALSE(thread_group_->ShouldYield(
                          {TaskPriority::USER_VISIBLE, TimeTicks(),
                           /* worker_count=*/1}));
@@ -377,10 +375,10 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
 
   // Posting a USER_BLOCKING task should cause BEST_EFFORT, USER_VISIBLE and
   // USER_BLOCKING with higher worker_count tasks to yield.
-  auto post_user_blocking = [&]() {
+  auto post_user_blocking = [&] {
     test::CreatePooledTaskRunner({TaskPriority::USER_BLOCKING},
                                  &mock_pooled_task_runner_delegate_)
-        ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+        ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                      // Once this task got to start, no other task needs to
                      // yield.
                      EXPECT_FALSE(thread_group_->ShouldYield(
@@ -499,16 +497,16 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, PostManyTasks) {
       BindOnce(&TestWaitableEvent::Signal, Unretained(&threads_running)));
   // Posting these tasks should cause new workers to be created.
   for (size_t i = 0; i < kMaxTasks; ++i) {
-    task_runner->PostTask(
-        FROM_HERE, BindLambdaForTesting([&]() {
-          threads_running_barrier.Run();
-          threads_continue.Wait();
-        }));
+    task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
+                            threads_running_barrier.Run();
+                            threads_continue.Wait();
+                          }));
   }
   // Post the remaining |kNumTasksPosted - kMaxTasks| tasks, don't wait for them
   // as they'll be blocked behind the above kMaxtasks.
-  for (size_t i = kMaxTasks; i < kNumTasksPosted; ++i)
+  for (size_t i = kMaxTasks; i < kNumTasksPosted; ++i) {
     task_runner->PostTask(FROM_HERE, DoNothing());
+  }
 
   EXPECT_EQ(0U, thread_group_->NumberOfWorkersForTesting());
 
@@ -533,8 +531,9 @@ class BackgroundThreadGroupImplTest : public ThreadGroupImplImplTest {
       std::optional<int> max_best_effort_tasks = std::nullopt,
       WorkerThreadObserver* worker_observer = nullptr,
       std::optional<TimeDelta> may_block_threshold = std::nullopt) {
-    if (!CanUseBackgroundThreadTypeForWorkerThread())
+    if (!CanUseBackgroundThreadTypeForWorkerThread()) {
       return;
+    }
     CreateThreadGroup(ThreadType::kBackground);
     StartThreadGroup(suggested_reclaim_time, max_tasks, max_best_effort_tasks,
                      worker_observer, may_block_threshold);
@@ -548,8 +547,9 @@ class BackgroundThreadGroupImplTest : public ThreadGroupImplImplTest {
 // Verify that ScopedBlockingCall updates thread type when necessary per
 // shutdown state.
 TEST_F(BackgroundThreadGroupImplTest, UpdatePriorityBlockingStarted) {
-  if (!CanUseBackgroundThreadTypeForWorkerThread())
+  if (!CanUseBackgroundThreadTypeForWorkerThread()) {
     return;
+  }
 
   const scoped_refptr<TaskRunner> task_runner = test::CreatePooledTaskRunner(
       {MayBlock(), WithBaseSyncPrimitives(), TaskPriority::BEST_EFFORT},
@@ -563,26 +563,27 @@ TEST_F(BackgroundThreadGroupImplTest, UpdatePriorityBlockingStarted) {
   TestWaitableEvent blocking_threads_continue;
 
   for (size_t i = 0; i < kMaxTasks; ++i) {
-    task_runner->PostTask(
-        FROM_HERE, BindLambdaForTesting([&]() {
-          EXPECT_EQ(ThreadType::kBackground,
-                    PlatformThread::GetCurrentThreadType());
-          {
-            // ScopedBlockingCall before shutdown doesn't affect priority.
-            ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                    BlockingType::MAY_BLOCK);
-            EXPECT_EQ(ThreadType::kBackground,
-                      PlatformThread::GetCurrentThreadType());
-          }
-          threads_running_barrier.Run();
-          blocking_threads_continue.Wait();
-          // This is reached after StartShutdown(), at which point we expect
-          // ScopedBlockingCall to update thread priority.
-          ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                  BlockingType::MAY_BLOCK);
-          EXPECT_EQ(ThreadType::kDefault,
-                    PlatformThread::GetCurrentThreadType());
-        }));
+    task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
+                            EXPECT_EQ(ThreadType::kBackground,
+                                      PlatformThread::GetCurrentThreadType());
+                            {
+                              // ScopedBlockingCall before shutdown doesn't
+                              // affect priority.
+                              ScopedBlockingCall scoped_blocking_call(
+                                  FROM_HERE, BlockingType::MAY_BLOCK);
+                              EXPECT_EQ(ThreadType::kBackground,
+                                        PlatformThread::GetCurrentThreadType());
+                            }
+                            threads_running_barrier.Run();
+                            blocking_threads_continue.Wait();
+                            // This is reached after StartShutdown(), at which
+                            // point we expect ScopedBlockingCall to update
+                            // thread priority.
+                            ScopedBlockingCall scoped_blocking_call(
+                                FROM_HERE, BlockingType::MAY_BLOCK);
+                            EXPECT_EQ(ThreadType::kDefault,
+                                      PlatformThread::GetCurrentThreadType());
+                          }));
   }
   threads_running.Wait();
 
@@ -673,10 +674,11 @@ class ThreadGroupImplBlockingTest
     std::string str = param_info.param.first == BlockingType::MAY_BLOCK
                           ? "MAY_BLOCK"
                           : "WILL_BLOCK";
-    if (param_info.param.second == OptionalBlockingType::MAY_BLOCK)
+    if (param_info.param.second == OptionalBlockingType::MAY_BLOCK) {
       str += "_MAY_BLOCK";
-    else if (param_info.param.second == OptionalBlockingType::WILL_BLOCK)
+    } else if (param_info.param.second == OptionalBlockingType::WILL_BLOCK) {
       str += "_WILL_BLOCK";
+    }
     return str;
   }
 
@@ -843,7 +845,7 @@ TEST_P(ThreadGroupImplBlockingTest, TooManyBestEffortTasks) {
                                      &mock_pooled_task_runner_delegate_);
     for (size_t i = 0; i < kMaxBestEffortTasks + 1; ++i) {
       best_effort_task_runner->PostTask(
-          FROM_HERE, BindLambdaForTesting([&]() {
+          FROM_HERE, BindLambdaForTesting([&] {
             {
               NestedScopedBlockingCall scoped_blocking_call(GetParam());
               entered_blocking_scope_barrier.Run();
@@ -868,7 +870,7 @@ TEST_P(ThreadGroupImplBlockingTest, TooManyBestEffortTasks) {
   EXPECT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
 
   TestWaitableEvent threads_running;
-  task_runner_->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+  task_runner_->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                            threads_running.Signal();
                            threads_continue.Wait();
                          }));
@@ -1027,7 +1029,7 @@ TEST_P(ThreadGroupImplBlockingTest, ThreadBlockedUnblockedShouldYield) {
   // should cause BEST_EFFORT tasks to yield.
   test::CreatePooledTaskRunner({TaskPriority::USER_VISIBLE},
                                &mock_pooled_task_runner_delegate_)
-      ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+      ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                    EXPECT_FALSE(thread_group_->ShouldYield(
                        {TaskPriority::BEST_EFFORT, TimeTicks()}));
                  }));
@@ -1038,7 +1040,7 @@ TEST_P(ThreadGroupImplBlockingTest, ThreadBlockedUnblockedShouldYield) {
   // should cause USER_VISIBLE tasks to yield.
   test::CreatePooledTaskRunner({TaskPriority::USER_BLOCKING},
                                &mock_pooled_task_runner_delegate_)
-      ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+      ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                    EXPECT_FALSE(thread_group_->ShouldYield(
                        {TaskPriority::USER_VISIBLE, TimeTicks()}));
                  }));
@@ -1206,11 +1208,8 @@ TEST_F(ThreadGroupImplBlockingTest, ThreadBusyShutdown) {
   thread_group_.reset();
 }
 
-enum class ReclaimType { DELAYED_RECLAIM, NO_RECLAIM };
-
-class ThreadGroupImplOverCapacityTest
-    : public ThreadGroupImplImplTestBase,
-      public testing::TestWithParam<ReclaimType> {
+class ThreadGroupImplOverCapacityTest : public ThreadGroupImplImplTestBase,
+                                        public testing::Test {
  public:
   ThreadGroupImplOverCapacityTest() = default;
   ThreadGroupImplOverCapacityTest(const ThreadGroupImplOverCapacityTest&) =
@@ -1219,9 +1218,6 @@ class ThreadGroupImplOverCapacityTest
       const ThreadGroupImplOverCapacityTest&) = delete;
 
   void SetUp() override {
-    if (GetParam() == ReclaimType::NO_RECLAIM) {
-      feature_list.InitAndEnableFeature(kNoWorkerThreadReclaim);
-    }
     CreateThreadGroup();
     task_runner_ =
         test::CreatePooledTaskRunner({MayBlock(), WithBaseSyncPrimitives()},
@@ -1231,7 +1227,6 @@ class ThreadGroupImplOverCapacityTest
   void TearDown() override { ThreadGroupImplImplTestBase::CommonTearDown(); }
 
  protected:
-  base::test::ScopedFeatureList feature_list;
   scoped_refptr<TaskRunner> task_runner_;
   static constexpr size_t kLocalMaxTasks = 3;
 
@@ -1241,7 +1236,8 @@ class ThreadGroupImplOverCapacityTest
     delayed_task_manager_.Start(service_thread_.task_runner());
     thread_group_ = std::make_unique<ThreadGroupImpl>(
         "OverCapacityTestThreadGroup", "A", ThreadType::kDefault,
-        task_tracker_.GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+        /*thread_group_type=*/0, task_tracker_.GetTrackedRef(),
+        tracked_ref_factory_.GetTrackedRef());
     ASSERT_TRUE(thread_group_);
 
     mock_pooled_task_runner_delegate_.SetThreadGroup(thread_group_.get());
@@ -1250,7 +1246,7 @@ class ThreadGroupImplOverCapacityTest
 
 // Verify that workers that become idle due to the thread group being over
 // capacity will eventually cleanup.
-TEST_P(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
+TEST_F(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
   StartThreadGroup(kReclaimTimeForCleanupTests, kLocalMaxTasks);
   TestWaitableEvent threads_running;
   TestWaitableEvent threads_continue;
@@ -1274,8 +1270,9 @@ TEST_P(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
       Unretained(&threads_running_barrier), Unretained(&threads_continue),
       Unretained(&blocked_call_continue));
 
-  for (size_t i = 0; i < kLocalMaxTasks; ++i)
+  for (size_t i = 0; i < kLocalMaxTasks; ++i) {
     task_runner_->PostTask(FROM_HERE, closure);
+  }
 
   threads_running.Wait();
 
@@ -1312,28 +1309,15 @@ TEST_P(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
                                   kReclaimTimeForCleanupTests * i * 0.5);
   }
 
-  if (GetParam() == ReclaimType::DELAYED_RECLAIM) {
-    // Note: one worker above capacity will not get cleaned up since it's on the
-    // front of the idle set.
-    thread_group_->WaitForWorkersCleanedUpForTesting(kLocalMaxTasks - 1);
-    EXPECT_EQ(kLocalMaxTasks + 1, thread_group_->NumberOfWorkersForTesting());
-    threads_continue.Signal();
-  } else {
-    // When workers are't automatically reclaimed after a delay, blocking tasks
-    // need to return for extra workers to be cleaned up.
-    threads_continue.Signal();
-    thread_group_->WaitForWorkersCleanedUpForTesting(kLocalMaxTasks);
-    EXPECT_EQ(kLocalMaxTasks, thread_group_->NumberOfWorkersForTesting());
-  }
+  // When workers are't automatically reclaimed after a delay, blocking tasks
+  // need to return for extra workers to be cleaned up.
+  threads_continue.Signal();
+  thread_group_->WaitForWorkersCleanedUpForTesting(kLocalMaxTasks);
+  EXPECT_EQ(kLocalMaxTasks, thread_group_->NumberOfWorkersForTesting());
 
   threads_continue.Signal();
   task_tracker_.FlushForTesting();
 }
-
-INSTANTIATE_TEST_SUITE_P(ReclaimType,
-                         ThreadGroupImplOverCapacityTest,
-                         ::testing::Values(ReclaimType::DELAYED_RECLAIM,
-                                           ReclaimType::NO_RECLAIM));
 
 // Verify that the maximum number of workers is 256 and that hitting the max
 // leaves the thread group in a valid state with regards to max tasks.
@@ -1460,11 +1444,10 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, MaxBestEffortTasks) {
                                     Unretained(&best_effort_tasks_running)));
 
   for (int i = 0; i < kMaxBestEffortTasks; ++i) {
-    background_runner->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          best_effort_tasks_running_barrier.Run();
-          unblock_best_effort_tasks.Wait();
-        }));
+    background_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                                  best_effort_tasks_running_barrier.Run();
+                                  unblock_best_effort_tasks.Wait();
+                                }));
   }
   best_effort_tasks_running.Wait();
 
@@ -1472,7 +1455,7 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, MaxBestEffortTasks) {
   AtomicFlag extra_best_effort_task_can_run;
   TestWaitableEvent extra_best_effort_task_running;
   background_runner->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
+      FROM_HERE, base::BindLambdaForTesting([&] {
         EXPECT_TRUE(extra_best_effort_task_can_run.IsSet());
         extra_best_effort_task_running.Signal();
       }));
@@ -1508,7 +1491,7 @@ TEST_F(ThreadGroupImplImplStartInBodyTest,
                                    &mock_pooled_task_runner_delegate_);
 
   for (size_t i = 0; i < kLargeNumber; ++i) {
-    runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+    runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                        EXPECT_LE(thread_group_->NumberOfWorkersForTesting(),
                                  kMaxBestEffortTasks + 1);
                      }));
@@ -1539,9 +1522,9 @@ TEST_F(ThreadGroupImplImplStartInBodyTest,
       {MayBlock()}, &mock_pooled_task_runner_delegate_);
 
   for (size_t i = 0; i < kLargeNumber; ++i) {
-    runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+    runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                        runner->PostTask(
-                           FROM_HERE, BindLambdaForTesting([&]() {
+                           FROM_HERE, BindLambdaForTesting([&] {
                              EXPECT_LE(
                                  thread_group_->NumberOfWorkersForTesting(),
                                  kNumWorkers + 1);
@@ -1605,7 +1588,7 @@ TEST_P(ThreadGroupImplBlockingCallAndMaxBestEffortTasksTest,
                               Unretained(&blocking_best_effort_tasks_running)));
   for (int i = 0; i < kMaxBestEffortTasks; ++i) {
     background_runner->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
+        FROM_HERE, base::BindLambdaForTesting([&] {
           blocking_best_effort_tasks_running_barrier.Run();
           ScopedBlockingCall scoped_blocking_call(FROM_HERE, GetParam());
           unblock_blocking_best_effort_tasks.Wait();
@@ -1625,11 +1608,10 @@ TEST_P(ThreadGroupImplBlockingCallAndMaxBestEffortTasksTest,
       kMaxBestEffortTasks, BindOnce(&TestWaitableEvent::Signal,
                                     Unretained(&best_effort_tasks_running)));
   for (int i = 0; i < kMaxBestEffortTasks; ++i) {
-    background_runner->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          best_effort_tasks_running_barrier.Run();
-          unblock_best_effort_tasks.Wait();
-        }));
+    background_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                                  best_effort_tasks_running_barrier.Run();
+                                  unblock_best_effort_tasks.Wait();
+                                }));
   }
   best_effort_tasks_running.Wait();
 
@@ -1695,5 +1677,4 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, RacyCleanup) {
   thread_group_.reset();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

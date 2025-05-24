@@ -1,0 +1,43 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  --toolbar-item-gap: 10px;
+  align-items: center;
+  background-color: var(--viewer-side-background-color);
+  bottom: 0;
+  border-radius: 24px 24px 0 0;
+  display: flex;
+  padding: 12px;
+  position: absolute;
+}
+
+ink-color-selector {
+  padding: 20px;
+}
+
+.toolbar-icon {
+  padding: 2px;
+}
+
+.toolbar-icon:not(:first-child) {
+  padding-inline-start: 4px;
+}
+
+.toolbar-icon:not(:last-child) {
+  padding-inline-end: 4px;
+}
+
+.color-chip {
+  background: var(--ink-brush-color, magenta);
+  border: 1px solid var(--viewer-icon-ink-background-color);
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+}

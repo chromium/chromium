@@ -484,14 +484,21 @@ test(function() {
   test.editContext = editContext;
   test.focus();
   textInputController.setComposition("foo");
+  assert_equals(editContext.text, "foo");
   assert_equals(test.innerHTML, "FOO");
   textInputController.insertText("foo");
   textInputController.setMarkedTextFromExistingText(0, 3);
   textInputController.insertText("bar");
   assert_equals(editContext.text, "bar");
+  assert_equals(test.innerHTML, "BAR");
   textInputController.setMarkedTextFromExistingText(2, 3);
   textInputController.insertText("t");
   assert_equals(editContext.text, "bat");
+  assert_equals(test.innerHTML, "BAT");
+  textInputController.setMarkedTextFromExistingText(2, 2);
+  textInputController.insertText("ndi");
+  assert_equals(editContext.text, "bandit");
+  assert_equals(test.innerHTML, "BANDIT");
 }, 'Testing EditContext SetCompositionFromExistingText');
 
 promise_test(async function() {
@@ -707,6 +714,128 @@ test(function() {
 
   test.remove();
 }, 'firstRectForCharacterRange empty control bounds and empty selection bounds fallbacks');
+
+test(function(){
+  // Webfeature values for textformatupdate event.
+  const kEditContextTextFormatUpdateAddListener = 5552;
+  const kEditContextTextFormatUpdateFireEvent = 5553;
+  const kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone = 5554;
+  const kEditContextTextFormatUnderlineStyle = 5558;
+  const kEditContextTextFormatUnderlineThickness = 5559;
+  internals.clearUseCounter(document, kEditContextTextFormatUpdateAddListener);
+  internals.clearUseCounter(document, kEditContextTextFormatUpdateFireEvent);
+  internals.clearUseCounter(document, kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone);
+  internals.clearUseCounter(document, kEditContextTextFormatUnderlineStyle);
+  internals.clearUseCounter(document, kEditContextTextFormatUnderlineThickness);
+
+  const editContext = new EditContext();
+  const test = document.createElement("div");
+  let textFormats = [];
+  document.body.appendChild(test);
+  test.editContext = editContext;
+  test.focus();
+  textInputController.setComposition("foo");
+
+  assert_false(internals.isUseCounted(document, kEditContextTextFormatUpdateAddListener));
+  assert_false(internals.isUseCounted(document, kEditContextTextFormatUpdateFireEvent));
+  editContext.addEventListener("textformatupdate", e => {
+    textFormats = e.getTextFormats();
+  });
+  assert_true(internals.isUseCounted(document, kEditContextTextFormatUpdateAddListener));
+  assert_false(internals.isUseCounted(document, kEditContextTextFormatUpdateFireEvent));
+
+  textInputController.setComposition("bar");
+
+  assert_true(internals.isUseCounted(document, kEditContextTextFormatUpdateFireEvent));
+  assert_true(internals.isUseCounted(document, kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone));
+  assert_false(internals.isUseCounted(document, kEditContextTextFormatUnderlineStyle));
+  assert_false(internals.isUseCounted(document, kEditContextTextFormatUnderlineThickness));
+
+  assert_equals(textFormats.length, 1);
+  assert_equals(textFormats[0].underlineStyle, "Solid");
+  assert_equals(textFormats[0].underlineThickness, "Thin");
+  assert_true(internals.isUseCounted(document, kEditContextTextFormatUnderlineStyle));
+  assert_true(internals.isUseCounted(document, kEditContextTextFormatUnderlineThickness));
+
+  test.remove();
+}, 'Testing UseCounter for textformatupdate event.');
+
+test(function(){
+  const kEditContextUpdateTextRangePrecedesOrOverlapsSelection = 5582;
+  const kEditContextUpdateTextRangePrecedesCompositionRange = 5583;
+  const kEditContextUpdateTextRangeOverlapsCompositionRange = 5584;
+  internals.clearUseCounter(document, kEditContextUpdateTextRangePrecedesOrOverlapsSelection);
+  internals.clearUseCounter(document, kEditContextUpdateTextRangePrecedesCompositionRange);
+  internals.clearUseCounter(document, kEditContextUpdateTextRangeOverlapsCompositionRange);
+
+  const text = "ABCD";
+  const editContext = new EditContext({text: text, selectionStart: 1, selectionEnd: 1});
+  const test = document.createElement("div");
+  test.textContent = text;
+  document.body.appendChild(test);
+  test.editContext = editContext;
+  test.focus();
+
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesOrOverlapsSelection));
+
+  // UpdateText range is outside the selection range.
+  editContext.updateText(4, 4, "1");
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesOrOverlapsSelection));
+
+  // UpdateText range is less than selection range.
+  editContext.updateText(0, 0, "2");
+  assert_true(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesOrOverlapsSelection));
+
+  editContext.updateSelection(1, 1);
+  textInputController.setComposition("foo");
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesCompositionRange));
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangeOverlapsCompositionRange));
+
+  // UpdeText range is outside the composition range.
+  editContext.updateText(5, 5, "3");
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesCompositionRange));
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangeOverlapsCompositionRange));
+
+  // UpdateText range is less than composition range but does not overlap.
+  editContext.updateText(0, 0, "4");
+  assert_true(internals.isUseCounted(document, kEditContextUpdateTextRangePrecedesCompositionRange));
+  assert_false(internals.isUseCounted(document, kEditContextUpdateTextRangeOverlapsCompositionRange));
+
+  // UpdateText range overlaps with composition range.
+  editContext.updateText(0, 3, "5");
+  assert_true(internals.isUseCounted(document, kEditContextUpdateTextRangeOverlapsCompositionRange));
+
+  test.remove();
+}, 'Testing UseCounter for updateText based on update range and selection/composition range.');
+
+test(function(){
+  const kEditContextUpdateSelectionDuringActiveComposition = 5585;
+  internals.clearUseCounter(document, kEditContextUpdateSelectionDuringActiveComposition);
+
+  const text = "ABCD";
+  const editContext = new EditContext({text: text, selectionStart: 0, selectionEnd: 0});
+  const test = document.createElement("div");
+  test.textContent = text;
+  document.body.appendChild(test);
+  test.editContext = editContext;
+  test.focus();
+
+  // Tracks when selection is updated to new value while a composition is active.
+  assert_false(internals.isUseCounted(document, kEditContextUpdateSelectionDuringActiveComposition));
+  editContext.updateSelection(1, 1);
+  assert_false(internals.isUseCounted(document, kEditContextUpdateSelectionDuringActiveComposition));
+
+  textInputController.setComposition("foo");
+  assert_equals(editContext.selectionStart, 4);
+  assert_equals(editContext.selectionEnd, 4);
+  editContext.updateSelection(4, 4);
+  assert_false(internals.isUseCounted(document, kEditContextUpdateSelectionDuringActiveComposition));
+
+  editContext.updateSelection(2, 2);
+  assert_true(internals.isUseCounted(document, kEditContextUpdateSelectionDuringActiveComposition));
+
+  test.remove();
+}, 'Testing UseCounter for updateSelection during an active composition.');
 </script>
 </body>
 </html>

@@ -4,12 +4,12 @@
 
 #include "components/affiliations/core/browser/affiliation_utils.h"
 
+#include <algorithm>
 #include <map>
 #include <ostream>
 #include <string_view>
 
 #include "base/base64.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -142,7 +142,8 @@ bool CanonicalizeAndroidFacetURI(const std::string& input_uri,
 
   url::Component unused;
   bool success = url::CanonicalizeScheme(
-      input_uri.c_str(), input_parsed.scheme, &canonical_output, &unused);
+      input_parsed.scheme.as_string_view_on(input_uri.c_str()),
+      &canonical_output, &unused);
 
   canonical_output.push_back('/');
   canonical_output.push_back('/');
@@ -192,7 +193,7 @@ bool ParseAndCanonicalizeFacetURI(const std::string& input_uri,
 std::vector<FacetURI> ExtractAndSortFacetURIs(const AffiliatedFacets& facets) {
   std::vector<FacetURI> uris;
   uris.reserve(facets.size());
-  base::ranges::transform(facets, std::back_inserter(uris), &Facet::uri);
+  std::ranges::transform(facets, std::back_inserter(uris), &Facet::uri);
   std::sort(uris.begin(), uris.end());
   return uris;
 }
@@ -449,32 +450,11 @@ std::ostream& operator<<(std::ostream& os, const FacetURI& facet_uri) {
   return os << facet_uri.potentially_invalid_spec();
 }
 
-bool operator==(const FacetBrandingInfo& lhs, const FacetBrandingInfo& rhs) {
-  return std::tie(lhs.name, lhs.icon_url) == std::tie(rhs.name, rhs.icon_url);
-}
-
-bool operator!=(const FacetBrandingInfo& lhs, const FacetBrandingInfo& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator==(const Facet& lhs, const Facet& rhs) {
-  return std::tie(lhs.uri, lhs.branding_info, lhs.main_domain) ==
-         std::tie(rhs.uri, rhs.branding_info, rhs.main_domain);
-}
-
-bool operator!=(const Facet& lhs, const Facet& rhs) {
-  return !(lhs == rhs);
-}
-
 bool operator==(const GroupedFacets& lhs, const GroupedFacets& rhs) {
-  if (!base::ranges::is_permutation(lhs.facets, rhs.facets)) {
+  if (!std::ranges::is_permutation(lhs.facets, rhs.facets)) {
     return false;
   }
   return lhs.branding_info == rhs.branding_info;
-}
-
-bool operator!=(const GroupedFacets& lhs, const GroupedFacets& rhs) {
-  return !(lhs == rhs);
 }
 
 bool AreEquivalenceClassesEqual(const AffiliatedFacets& a,

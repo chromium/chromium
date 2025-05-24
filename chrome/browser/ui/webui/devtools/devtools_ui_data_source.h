@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "content/public/browser/url_data_source.h"
-
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/public_buildflags.h"

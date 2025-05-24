@@ -9,17 +9,35 @@
 
 namespace viz {
 
-ExternalUseClient::ImageContext::ImageContext(
-    const gpu::MailboxHolder& mailbox_holder,
-    const gfx::Size& size,
-    SharedImageFormat format,
-    const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-    sk_sp<SkColorSpace> color_space)
-    : mailbox_holder_(mailbox_holder),
+ExternalUseClient::ImageContext::ImageContext(const gpu::Mailbox& mailbox,
+                                              const gpu::SyncToken& sync_token,
+                                              uint32_t texture_target,
+                                              const gfx::Size& size,
+                                              SharedImageFormat format,
+                                              sk_sp<SkColorSpace> color_space,
+                                              GrSurfaceOrigin origin)
+    : mailbox_(mailbox),
+      sync_token_(sync_token),
+      texture_target_(texture_target),
       size_(size),
       format_(format),
       color_space_(std::move(color_space)),
-      ycbcr_info_(ycbcr_info) {}
+      origin_(origin) {}
+
+ExternalUseClient::ImageContext::ImageContext(
+    const TransferableResource& resource)
+    : mailbox_(resource.mailbox()),
+      sync_token_(resource.sync_token()),
+      texture_target_(resource.texture_target()),
+      size_(resource.size),
+      format_(resource.format),
+      // SkColorSpace covers only RGB portion of the gfx::ColorSpace, YUV
+      // portion is handled via SkYuvColorSpace at places where we create YUV
+      // images.
+      color_space_(resource.color_space.GetAsFullRangeRGB().ToSkColorSpace()),
+      origin_(resource.origin),
+      resource_source_(resource.resource_source),
+      ycbcr_info_(resource.ycbcr_info) {}
 
 ExternalUseClient::ImageContext::~ImageContext() = default;
 
@@ -28,7 +46,7 @@ sk_sp<SkColorSpace> ExternalUseClient::ImageContext::color_space() const {
 }
 
 void ExternalUseClient::ImageContext::OnContextLost() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExternalUseClient::ImageContext::SetImage(

@@ -22,6 +22,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
@@ -73,8 +74,7 @@ keyboard::ContainerType ConvertKeyboardModeToContainerType(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return keyboard::ContainerType::kFullWidth;
+  NOTREACHED();
 }
 
 // Returns the ui::TextInputClient of the active InputMethod or nullptr.
@@ -300,7 +300,7 @@ bool ChromeVirtualKeyboardDelegate::ShowLanguageSettings() {
   base::RecordAction(
       base::UserMetricsAction("VirtualKeyboard.OpenLanguageSettings"));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(),
+      profile_util::GetActiveUserProfile(),
       chromeos::settings::mojom::kInputSubpagePath);
   return true;
 }
@@ -314,7 +314,7 @@ bool ChromeVirtualKeyboardDelegate::ShowSuggestionSettings() {
   base::RecordAction(
       base::UserMetricsAction("VirtualKeyboard.OpenSuggestionSettings"));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(),
+      profile_util::GetActiveUserProfile(),
       chromeos::settings::mojom::kInputSubpagePath);
   return true;
 }
@@ -523,9 +523,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "multiword",
       base::FeatureList::IsEnabled(ash::features::kAssistMultiWord)));
-  features.Append(GenerateFeatureFlag(
-      "stylushandwriting",
-      base::FeatureList::IsEnabled(ash::features::kImeStylusHandwriting)));
+  features.Append(GenerateFeatureFlag("stylushandwriting", false));
   features.Append(GenerateFeatureFlag("roundCorners", false));
   features.Append(
       GenerateFeatureFlag("systemjapanesephysicaltyping",

@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API createContext()
-// META: global=window,dedicatedworker
+// META: global=window,worker
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -48,3 +48,20 @@ promise_test(async t => {
     const ml_context_options = { deviceType: 'cpu', powerPreference: 'high-performance' };
     await navigator.ml.createContext(ml_context_options);
 }, '[createContext] Test creating context with deviceType=cpu, powerPreference=high-performance.');
+
+promise_test(async t => {
+    // Skip the test if WebGPU or an adapter/device is not available.
+    if (!navigator.gpu) {
+        return;
+    }
+    const adapter = await navigator.gpu.requestAdapter();
+    if (!adapter) {
+        return;
+    }
+    const device = await adapter.requestDevice();
+    if (!device) {
+        return;
+    }
+
+    await navigator.ml.createContext(device);
+}, 'Create context with GPUDevice.');

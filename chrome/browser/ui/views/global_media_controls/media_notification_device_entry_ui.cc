@@ -18,7 +18,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/label.h"
 
 namespace {
 
@@ -26,7 +26,7 @@ constexpr int kDeviceIconSize = 20;
 constexpr auto kDeviceIconBorder = gfx::Insets(6);
 
 void ChangeEntryColor(views::ImageView* image_view,
-                      views::StyledLabel* title_view,
+                      views::Label* title_view,
                       views::Label* subtitle_view,
                       const gfx::VectorIcon* icon,
                       SkColor foreground_color,
@@ -36,15 +36,12 @@ void ChangeEntryColor(views::ImageView* image_view,
                                                         kDeviceIconSize));
   }
 
-  title_view->SetDisplayedOnBackgroundColor(background_color);
+  title_view->SetBackgroundColor(background_color);
   if (!title_view->GetText().empty()) {
-    views::StyledLabel::RangeStyleInfo style_info;
-    style_info.text_style = views::style::STYLE_PRIMARY;
-    style_info.override_color = foreground_color;
-    title_view->ClearStyleRanges();
-    title_view->AddStyleRange(gfx::Range(0, title_view->GetText().length()),
-                              style_info);
-    title_view->SizeToFit(0);
+    title_view->SetTextStyleRange(
+        views::style::STYLE_PRIMARY,
+        gfx::Range(0, title_view->GetText().length()));
+    title_view->SetEnabledColor(foreground_color);
   }
 
   if (subtitle_view) {

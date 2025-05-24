@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/functional/bind.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,10 +36,9 @@ void CaptureByteArray(bool* was_callback_invoked,
   *output = std::move(input);
 }
 
-void CaptureResultEnum(
-    bool* was_callback_invoked,
-    FacilitatedPaymentsApiClient::PurchaseActionResult* output,
-    FacilitatedPaymentsApiClient::PurchaseActionResult input) {
+void CaptureResultEnum(bool* was_callback_invoked,
+                       PurchaseActionResult* output,
+                       PurchaseActionResult input) {
   *was_callback_invoked = true;
   *output = input;
 }
@@ -73,19 +73,21 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
        InvokePurchaseActionResultIsFalseByDefault) {
   FacilitatedPaymentsApiClientAndroid apiClient(main_rfh());
   bool was_callback_invoked = false;
-  FacilitatedPaymentsApiClient::PurchaseActionResult purchase_action_result =
-      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk;
+  PurchaseActionResult purchase_action_result = PurchaseActionResult::kResultOk;
   signin::IdentityTestEnvironment identity_test_environment;
+  SecurePayload secure_payload;
+  secure_payload.action_token = {'A', 'c', 't', 'i', 'o', 'n'};
+  secure_payload.secure_data.emplace_back(1, "value_1");
+  secure_payload.secure_data.emplace_back(2, "value_2");
 
   apiClient.InvokePurchaseAction(
       identity_test_environment.MakeAccountAvailable("test@example.test"),
-      std::vector<uint8_t>{'A', 'c', 't', 'i', 'o', 'n'},
+      secure_payload,
       base::BindOnce(&CaptureResultEnum, &was_callback_invoked,
                      &purchase_action_result));
 
   EXPECT_TRUE(was_callback_invoked);
-  EXPECT_EQ(FacilitatedPaymentsApiClient::PurchaseActionResult::kCouldNotInvoke,
-            purchase_action_result);
+  EXPECT_EQ(PurchaseActionResult::kCouldNotInvoke, purchase_action_result);
 }
 
 // Java bridge should invoke exactly one callback per method, but if it does
@@ -98,8 +100,7 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
   apiClient.OnIsAvailable(env, false);
   apiClient.OnGetClientToken(env, nullptr);
   apiClient.OnPurchaseActionResultEnum(
-      env, static_cast<jint>(
-               FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk));
+      env, static_cast<jint>(PurchaseActionResult::kResultOk));
 }
 
 }  // namespace

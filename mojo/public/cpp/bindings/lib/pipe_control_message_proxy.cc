@@ -4,9 +4,6 @@
 
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 
-#include <stddef.h>
-
-#include <tuple>
 #include <utility>
 
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"

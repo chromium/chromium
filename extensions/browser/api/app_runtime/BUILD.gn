@@ -15,12 +15,16 @@ source_set("app_runtime") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
+    "//base",
     "//extensions/common",
-    "//extensions/common/api",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//extensions/browser:browser_sources",
+    "//extensions/common/api",
+    "//url",
+  ]
 
   allow_circular_includes_from = [ "//extensions/browser:browser_sources" ]
 }

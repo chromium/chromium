@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
@@ -268,7 +267,7 @@ void InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall(
 
   current_info->generated_icon_fix =
       generated_icon_fix_util::CreateInitialTimeWindow(
-          GeneratedIconFixSource_SYNC_INSTALL);
+          proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL);
 
   lock_->install_finalizer().FinalizeInstall(
       *current_info, GetFinalizerOptionForSyncInstall(),
@@ -338,7 +337,7 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
         install_error_log_entry_.TakeErrorDict());
   }
 
-  base::UmaHistogramEnumeration("WebApp.InstallResult.Sync", code);
+  base::UmaHistogramEnumeration("Webapp.InstallResult.Sync", code);
   CompleteAndSelfDestruct(
       success ? CommandResult::kSuccess : CommandResult::kFailure, app_id,
       code);

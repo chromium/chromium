@@ -8,12 +8,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 namespace content {
 class WebContents;
 }
+
+class BrowserTabStripTracker;
 
 // TabStripModelStatsRecorder records user tab interaction stats.
 // In particular, we record tab's lifetime and state transition probability to
@@ -27,21 +28,21 @@ class TabStripModelStatsRecorder : public TabStripModelObserver {
   // chrome/android/java/src/org/chromium/chrome/browser/tab/TabUma.java
   enum class TabState {
     // Initial tab state.
-    INITIAL = 0,
+    kInitial = 0,
 
     // For active tabs visible in one of the browser windows.
-    ACTIVE = 1,
+    kActive = 1,
 
     // For inactive tabs which are present in the tab strip, but their contents
     // are not visible.
-    INACTIVE = 2,
+    kInactive = 2,
 
     // Skip 3 to match Chrome for Android implementation.
 
     // For tabs that are about to be closed.
-    CLOSED = 4,
+    kClosed = 4,
 
-    MAX,
+    kMaxValue = kClosed,
   };
 
   TabStripModelStatsRecorder();
@@ -70,7 +71,9 @@ class TabStripModelStatsRecorder : public TabStripModelObserver {
   std::vector<raw_ptr<content::WebContents, VectorExperimental>>
       active_tab_history_;
 
-  BrowserTabStripTracker browser_tab_strip_tracker_;
+  // TODO(crbug.com/364501603): revert smart pointer once the modularization is
+  // complete.
+  std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_STATS_RECORDER_H_

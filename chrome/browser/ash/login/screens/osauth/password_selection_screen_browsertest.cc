@@ -61,8 +61,7 @@ AuthFactorsConfiguration GetFakeAuthFactorConfiguration(
 
 class PasswordSelectionScreenTest : public OobeBaseTest {
  public:
-  PasswordSelectionScreenTest() {
-  }
+  PasswordSelectionScreenTest() = default;
   ~PasswordSelectionScreenTest() override = default;
 
   void SetUpOnMainThread() override {

@@ -8,14 +8,13 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
+#include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #include "chrome/browser/autocomplete/provider_state_service_factory.h"
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
@@ -38,9 +37,12 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -55,6 +57,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
@@ -62,6 +65,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -77,7 +81,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -85,6 +89,8 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/autocomplete/keyword_extensions_delegate_impl.h"
+#include "chrome/browser/autocomplete/unscoped_extension_provider_delegate_impl.h"
+#include "extensions/common/extension_features.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -92,10 +98,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -121,29 +131,53 @@ constexpr auto kChromeSettingsSubPages = std::to_array<base::cstring_view>({
     chrome::kResetProfileSettingsSubPage,
     chrome::kSearchEnginesSubPage,
     chrome::kSyncSetupSubPage,
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     chrome::kImportDataSubPage,
     chrome::kManageProfileSubPage,
     chrome::kPeopleSubPage,
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 });
-#endif  // BUILDFLAG(IS_ANDROID)
+
+content::WebContents* GetWebContents(
+    const ChromeAutocompleteProviderClient::WebContentsGetter&
+        web_contents_getter) {
+  return web_contents_getter ? web_contents_getter.Run() : nullptr;
+}
+
+LensSearchController* GetLensSearchController(
+    content::WebContents* web_contents) {
+  return web_contents ? LensSearchController::FromTabWebContents(web_contents)
+                      : nullptr;
+}
+
+lens::LensSearchboxController* GetLensSearchboxController(
+    content::WebContents* web_contents) {
+  if (auto* lens_search_controller = GetLensSearchController(web_contents)) {
+    return lens_search_controller->lens_searchbox_controller();
+  }
+  return nullptr;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
 ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
     Profile* profile)
+    : ChromeAutocompleteProviderClient(profile, base::NullCallback()) {}
+
+ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
+    Profile* profile,
+    WebContentsGetter web_contents_getter)
     : profile_(profile),
+      web_contents_getter_(std::move(web_contents_getter)),
       scheme_classifier_(profile),
       url_consent_helper_(
-          base::FeatureList::IsEnabled(
-              omnibox::kPrefBasedDataCollectionConsentHelper)
-              ? unified_consent::UrlKeyedDataCollectionConsentHelper::
-                    NewAnonymizedDataCollectionConsentHelper(
-                        profile_->GetPrefs())
-              : unified_consent::UrlKeyedDataCollectionConsentHelper::
-                    NewPersonalizedDataCollectionConsentHelper(
-                        SyncServiceFactory::GetForProfile(profile_))),
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewAnonymizedDataCollectionConsentHelper(profile_->GetPrefs())),
+      personalized_url_consent_helper_(
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewPersonalizedDataCollectionConsentHelper(
+                  SyncServiceFactory::GetForProfile(profile_))),
       tab_matcher_(GetTemplateURLService(), profile_),
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
@@ -229,6 +263,12 @@ ChromeAutocompleteProviderClient::GetTemplateURLService() const {
   return TemplateURLServiceFactory::GetForProfile(profile_);
 }
 
+DocumentSuggestionsService*
+ChromeAutocompleteProviderClient::GetDocumentSuggestionsService() const {
+  return DocumentSuggestionsServiceFactory::GetForProfile(
+      profile_, /*create_if_necessary=*/true);
+}
+
 RemoteSuggestionsService*
 ChromeAutocompleteProviderClient::GetRemoteSuggestionsService(
     bool create_if_necessary) const {
@@ -268,6 +308,19 @@ ChromeAutocompleteProviderClient::GetKeywordExtensionsDelegate(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return std::make_unique<KeywordExtensionsDelegateImpl>(profile_,
                                                          keyword_provider);
+#else
+  return nullptr;
+#endif
+}
+
+std::unique_ptr<UnscopedExtensionProviderDelegate>
+ChromeAutocompleteProviderClient::GetUnscopedExtensionProviderDelegate(
+    UnscopedExtensionProvider* provider) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExperimentalOmniboxLabs));
+  return std::make_unique<UnscopedExtensionProviderDelegateImpl>(profile_,
+                                                                 provider);
 #else
   return nullptr;
 #endif
@@ -359,6 +412,11 @@ ChromeAutocompleteProviderClient::GetProviderStateService() const {
   return ProviderStateServiceFactory::GetForProfile(profile_);
 }
 
+tab_groups::TabGroupSyncService*
+ChromeAutocompleteProviderClient::GetTabGroupSyncService() const {
+  return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_);
+}
+
 bool ChromeAutocompleteProviderClient::IsOffTheRecord() const {
   return profile_->IsOffTheRecord();
 }
@@ -372,7 +430,7 @@ bool ChromeAutocompleteProviderClient::IsGuestSession() const {
 }
 
 bool ChromeAutocompleteProviderClient::SearchSuggestEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return profile_->GetPrefs()->GetBoolean(prefs::kSearchSuggestEnabled) &&
          (!g_browser_process->platform_part() ||
           !g_browser_process->platform_part()->essential_search_manager() ||
@@ -388,16 +446,21 @@ bool ChromeAutocompleteProviderClient::AllowDeletingBrowserHistory() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kAllowDeletingBrowserHistory);
 }
 
+bool ChromeAutocompleteProviderClient::IsUrlDataCollectionActive() const {
+  return url_consent_helper_->IsEnabled();
+}
+
 bool ChromeAutocompleteProviderClient::IsPersonalizedUrlDataCollectionActive()
     const {
-  return url_consent_helper_->IsEnabled();
+  return personalized_url_consent_helper_->IsEnabled();
 }
 
 bool ChromeAutocompleteProviderClient::IsAuthenticated() const {
   const auto* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  return identity_manager &&
-         !identity_manager->GetAccountsInCookieJar().signed_in_accounts.empty();
+  return identity_manager && !identity_manager->GetAccountsInCookieJar()
+                                  .GetPotentiallyInvalidSignedInAccounts()
+                                  .empty();
 }
 
 bool ChromeAutocompleteProviderClient::IsSyncActive() const {
@@ -440,21 +503,26 @@ void ChromeAutocompleteProviderClient::PrefetchImage(const GURL& url) {
 
 void ChromeAutocompleteProviderClient::StartServiceWorker(
     const GURL& destination_url) {
-  if (!SearchSuggestEnabled())
+  if (!SearchSuggestEnabled()) {
     return;
+  }
 
-  if (profile_->IsOffTheRecord())
+  if (profile_->IsOffTheRecord()) {
     return;
+  }
 
   content::StoragePartition* partition = storage_partition_;
-  if (!partition)
+  if (!partition) {
     partition = profile_->GetDefaultStoragePartition();
-  if (!partition)
+  }
+  if (!partition) {
     return;
+  }
 
   content::ServiceWorkerContext* context = partition->GetServiceWorkerContext();
-  if (!context)
+  if (!context) {
     return;
+  }
 
   context->StartServiceWorkerForNavigationHint(
       destination_url,
@@ -487,27 +555,53 @@ bool ChromeAutocompleteProviderClient::IsHistoryEmbeddingsSettingVisible()
   return history_embeddings::IsHistoryEmbeddingsSettingVisible(profile_);
 }
 
+bool ChromeAutocompleteProviderClient::IsLensEnabled() const {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* lens_search_controller =
+          GetLensSearchController(GetWebContents(web_contents_getter_))) {
+    // Guaranteed to exist if lens_search_controller is  not null.
+    return lens_search_controller->GetTabInterface()
+        ->GetBrowserWindowInterface()
+        ->GetFeatures()
+        .lens_overlay_entry_point_controller()
+        ->IsEnabled();
+  }
+#endif
+  return false;
+}
+
+bool ChromeAutocompleteProviderClient::AreLensEntrypointsVisible() const {
+  #if !BUILDFLAG(IS_ANDROID)
+    if (auto* lens_search_controller =
+            GetLensSearchController(GetWebContents(web_contents_getter_))) {
+      // Guaranteed to exist if lens_search_controller is  not null.
+      return lens_search_controller->GetTabInterface()
+          ->GetBrowserWindowInterface()
+          ->GetFeatures()
+          .lens_overlay_entry_point_controller()
+          ->AreVisible();
+    }
+  #endif
+    return false;
+  }
+
+base::CallbackListSubscription
+ChromeAutocompleteProviderClient::GetLensSuggestInputsWhenReady(
+    LensOverlaySuggestInputsCallback callback) const {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* lens_searchbox_controller =
+          GetLensSearchboxController(GetWebContents(web_contents_getter_))) {
+    return lens_searchbox_controller->GetLensSuggestInputsWhenReady(
+        std::move(callback));
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run(std::nullopt);
+  return {};
+}
+
 base::WeakPtr<AutocompleteProviderClient>
 ChromeAutocompleteProviderClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-bool ChromeAutocompleteProviderClient::StrippedURLsAreEqual(
-    const GURL& url1,
-    const GURL& url2,
-    const AutocompleteInput* input) const {
-  AutocompleteInput empty_input;
-  if (!input)
-    input = &empty_input;
-  const TemplateURLService* template_url_service = GetTemplateURLService();
-  return AutocompleteMatch::GURLToStrippedGURL(
-             url1, *input, template_url_service, std::u16string(),
-             /*keep_search_intent_params=*/false,
-             /*normalize_search_terms=*/false) ==
-         AutocompleteMatch::GURLToStrippedGURL(
-             url2, *input, template_url_service, std::u16string(),
-             /*keep_search_intent_params=*/false,
-             /*normalize_search_terms=*/false);
 }
 
 void ChromeAutocompleteProviderClient::OpenSharingHub() {
@@ -545,14 +639,10 @@ void ChromeAutocompleteProviderClient::CloseIncognitoWindows() {
 
 bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) ||
-      !history_clusters::kSidePanelJourneysOpensFromOmnibox.Get()) {
+  Browser* browser = BrowserList::GetInstance()->GetLastActive();
+  if (!browser) {
     return false;
   }
-
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (!browser)
-    return false;
 
   if (auto* history_clusters_side_panel_coordinator =
           HistoryClustersSidePanelCoordinator::BrowserUserData::FromBrowser(
@@ -566,12 +656,45 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
   return false;
 }
 
+void ChromeAutocompleteProviderClient::OpenLensOverlay(bool show) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* lens_search_controller =
+          GetLensSearchController(GetWebContents(web_contents_getter_))) {
+    if (show) {
+      lens_search_controller->OpenLensOverlay(
+          lens::LensOverlayInvocationSource::kOmniboxPageAction);
+    } else {
+      // TODO(crbug.com/402497756): For prototyping, reusing the existing
+      // omnibox entry point. However, for production, create a new invocation
+      // source for this new entry point.
+      lens_search_controller->StartContextualization(
+          lens::LensOverlayInvocationSource::kOmnibox);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ChromeAutocompleteProviderClient::IssueContextualSearchRequest(
+    const GURL& destination_url,
+    AutocompleteMatchType::Type match_type,
+    bool is_zero_prefix_suggestion) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* lens_search_controller =
+          GetLensSearchController(GetWebContents(web_contents_getter_))) {
+    lens_search_controller->IssueContextualSearchRequest(
+        lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion,
+        destination_url, match_type, is_zero_prefix_suggestion);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 void ChromeAutocompleteProviderClient::PromptPageTranslation() {
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   content::WebContents* contents = nullptr;
-  if (browser)
+  if (browser) {
     contents = browser->tab_strip_model()->GetActiveWebContents();
+  }
   if (contents) {
     ChromeTranslateClient* translate_client =
         ChromeTranslateClient::FromWebContents(contents);

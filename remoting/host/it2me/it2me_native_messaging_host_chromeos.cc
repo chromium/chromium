@@ -16,12 +16,13 @@
 namespace remoting {
 
 std::unique_ptr<extensions::NativeMessageHost>
-CreateIt2MeNativeMessagingHostForChromeOS() {
+CreateIt2MeNativeMessagingHostForChromeOS(
+    content::BrowserContext* browser_context) {
   auto browser_interop = base::MakeRefCounted<BrowserInterop>();
 
   return std::make_unique<It2MeNativeMessagingHost>(
       /*needs_elevation=*/false, browser_interop->CreatePolicyWatcher(),
-      browser_interop->CreateChromotingHostContext(),
+      browser_interop->CreateChromotingHostContext(browser_context),
       std::make_unique<It2MeHostFactory>());
 }
 

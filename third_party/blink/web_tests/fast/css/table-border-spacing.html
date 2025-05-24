@@ -62,7 +62,7 @@ function testExplicitBorderSpacing()
 
 function testComputedInferredVerticalBorderSpacing()
 {
-    shouldBeEqualToString('computedStyle(document.getElementById("computed-infer-vertical-border-spacing")).borderSpacing', "11px 11px");
+    shouldBeEqualToString('computedStyle(document.getElementById("computed-infer-vertical-border-spacing")).borderSpacing', "11px");
     shouldBeEqualToString('cssRule("#computed-infer-vertical-border-spacing").style.borderSpacing', "11px"); // Must match border-spacing for #computed-infer-vertical-border-spacing.
 }
 

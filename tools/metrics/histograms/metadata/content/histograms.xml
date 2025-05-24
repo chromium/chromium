@@ -23,17 +23,19 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="ContentAllProviderTypes">
-  <variant name="default"/>
-  <variant name="extension"/>
-  <variant name="installed_webapp_provider"/>
-  <variant name="notification_android"/>
-  <variant name="one_time"/>
-  <variant name="policy"/>
-  <variant name="preference"/>
-  <variant name="supervised_user"/>
-  <variant name="tests"/>
-  <variant name="tests_other"/>
-  <variant name="webui_allowlist"/>
+  <variant name="ComponentExtensionProvider"/>
+  <variant name="CustomExtensionProvider"/>
+  <variant name="DefaultProvider"/>
+  <variant name="InstalledWebappProvider"/>
+  <variant name="JavascriptOptimizerAndroidProvider"/>
+  <variant name="NotificationAndroidProvider"/>
+  <variant name="OneTimePermissionProvider"/>
+  <variant name="OtherProviderForTests"/>
+  <variant name="PolicyProvider"/>
+  <variant name="PrefProvider"/>
+  <variant name="ProviderForTests"/>
+  <variant name="SupervisedProvider"/>
+  <variant name="WebuiAllowlistProvider"/>
 </variants>
 
 <variants name="FeedNetworkRequestType">
@@ -55,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Content.Classification" enum="ContentClassification"
-    expires_after="2025-03-02">
+    expires_after="2025-11-09">
   <owner>sophey@chromium.org</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
@@ -77,23 +79,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentCapture.CaptureContentDelayTime" units="ms"
-    expires_after="2024-12-01">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time between a change in content and when the new capture is sent to the
-    browser process.
-
-    A specific content change is hard to track. This is roughly calculated as
-    the interval from the first content change after a prior capturing content
-    to the first content being sent after the next capture of content.
-  </summary>
-</histogram>
-
 <histogram name="ContentCapture.CaptureContentTime2" units="microseconds"
-    expires_after="2025-02-02">
-  <owner>wangxianzhu@chromium.org</owner>
+    expires_after="2025-12-01">
+  <owner>elabadysayed@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
     The time taken to capture the on-screen content and group them by document.
@@ -103,78 +91,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentCapture.SendContentTime" units="microseconds"
-    expires_after="2025-02-02">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time taken to send the content to the browser process in batch.
-
-    Note that this metrics is only recorded on clients on which a
-    high-resolution clock is available.
-  </summary>
-</histogram>
-
 <histogram name="ContentCapture.SentContentCount2" units="count"
-    expires_after="2025-02-02">
-  <owner>wangxianzhu@chromium.org</owner>
+    expires_after="2025-12-01">
+  <owner>elabadysayed@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>The total number of content captures sent for a document.</summary>
 </histogram>
 
-<histogram name="ContentCapture.TaskDelayTimeInMs" units="ms"
-    expires_after="2025-02-02">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time taken for the task to start after it's scheduled.
-
-    Note: The time of task that was scheduled for the retry wasn't measured
-    because it is always 500ms.
-  </summary>
-</histogram>
-
-<histogram name="ContentCapture.TaskRunsPerCapture" units="runs"
-    expires_after="2025-02-02">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The number of the times the task runs for a content capture session.
-
-    A content capture session begins with capturing on-screen content and ends
-    in sending all changes.
-  </summary>
-</histogram>
-
 <histogram name="ContentNotifications.ClientStatus.Enabled.ByProvider"
-    enum="Boolean" expires_after="2025-03-09">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="Boolean" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     The status of the push notifications client toggle for Content.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.ClientStatus.Sports.ByProvider"
-    enum="Boolean" expires_after="2025-03-09">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="Boolean" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     The status of the push notifications client toggle for Sports.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.DismissAction" enum="Boolean"
-    expires_after="2024-12-21">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>The user has dismissed a content notification.</summary>
 </histogram>
 
 <histogram name="ContentNotifications.EligibilityType"
-    enum="ContentNotificationEligibilityType" expires_after="2025-02-23">
-  <owner>tinazwang@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="ContentNotificationEligibilityType" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     The Type of elegibility for a given user for the Content Notifications
     feature. Includes details about what UI entrypoint type the user is elegible
@@ -183,9 +135,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.Notification.Action"
-    enum="ContentNotificationActionType" expires_after="2024-12-26">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="ContentNotificationActionType" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     Reports what actions has the user taken on a notification. This metric
     matches NAUs sent.
@@ -193,18 +145,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.NotificationActionUpload.Success"
-    enum="Boolean" expires_after="2025-02-16">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="Boolean" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     After a notification action upload, whether the request succeeded or failed.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.OpenURLAction.HasURL" enum="Boolean"
-    expires_after="2024-12-24">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     After a notification interaction, if the URL has successfully been parsed or
     if it has failed.
@@ -212,9 +164,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.Promo.Prompt.Action"
-    enum="ContentNotificationPromptAction" expires_after="2024-12-20">
-  <owner>tinazwang@chromium.org</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="ContentNotificationPromptAction" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     The action taken by the user in response to the Set Up List Content
     Notification OS notification permission prompt.
@@ -224,44 +176,27 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ContentNotifications.Promo.ProvisionalNotifications.Entrypoint"
     enum="ContentNotificationPromoProvisionalEntrypoint"
-    expires_after="2024-12-20">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     Provisional notifications were turned on from the Notifications Promo.
   </summary>
 </histogram>
 
-<histogram name="ContentNotifications.Promo.SetUpList.Action"
-    enum="ContentNotificationSetUpListPromoAction" expires_after="2024-12-29">
-  <owner>tinazwang@chromium.org</owner>
-  <owner>chrome-sherlock@google.com</owner>
-  <summary>
-    The action taken by the user in response to the Set Up List Content
-    Notification promo.
-  </summary>
-</histogram>
-
-<histogram name="ContentNotifications.Promo.SetUpList.Event"
-    enum="ContentNotificationSetUpListPromoEvent" expires_after="2024-12-20">
-  <owner>tinazwang@chromium.org</owner>
-  <owner>chrome-sherlock@google.com</owner>
-  <summary>Log the Set Up List Content Notification promo events.</summary>
-</histogram>
-
 <histogram name="ContentNotifications.Promo.Snackbar.Event"
-    enum="ContentNotificationSnackbarEvent" expires_after="2024-12-20">
-  <owner>tinazwang@chromium.org</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="ContentNotificationSnackbarEvent" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     Log the Set Up List Content Notification confirmation snackbar events.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.Promo.TopOfFeed.Action"
-    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2025-03-02">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     The action taken by the user in response to the Top of Feed Content
     Notifications promo.
@@ -269,18 +204,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.Promo.TopOfFeed.Event"
-    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2024-12-20">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     An event from the the Top of Feed Content Notifications promo.
   </summary>
 </histogram>
 
 <histogram name="ContentNotifications.Registration.BrowserStateUnavailable"
-    enum="Boolean" expires_after="2025-03-09">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="Boolean" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     This logs if a SNo registration has not succeeded due to a BrowserState
     being unavailable at the time due to a Browser not being initialized.
@@ -288,9 +223,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.Settings.Action"
-    enum="ContentNotificationSettingsAction" expires_after="2024-12-20">
-  <owner>guiperez@chromium.org</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    enum="ContentNotificationSettingsAction" expires_after="2026-01-20">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     The action taken by the user in the content notification settings view.
   </summary>
@@ -361,31 +296,21 @@ chromium-metrics-reviews@google.com.
   <owner>wanderview@chromium.org</owner>
   <summary>
     Measures how long a call to network::CookieSettings::GetContentSetting
-    takes. Logged each time a call is made. Note that histogram samples for
-    clients without high-resolution clocks are dropped.
+    takes. Logged each time a call is made. Starting M135 sub-sampled with
+    probability 0.001. Note that histogram samples for clients without
+    high-resolution clocks are dropped.
   </summary>
 </histogram>
 
 <histogram name="ContentSettings.GetCookieSettingInternal.Duration"
-    units="microseconds" expires_after="2025-03-09">
+    units="microseconds" expires_after="2025-07-13">
   <owner>dullweber@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
     Measures how long a call to CookieSettingBase::GetCookieSettingInternal
-    takes. Logged each time a call is made. Note that histogram samples for
-    clients without high-resolution clocks are dropped.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.IsAllowedByTpcdMetadataGrant.Duration"
-    units="microseconds" expires_after="2025-03-09">
-  <owner>trishalfonso@google.com</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    Measures how long a call to content_settings::IsAllowedByTpcdMetadataGrant
-    takes when CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings
-    returns true. Logged each time a call is made. Note that histogram samples
-    for clients without high-resolution clocks are dropped.
+    takes. Logged each time a call is made. Starting M135 sub-sampled with
+    probability 0.1. Note that histogram samples for clients without
+    high-resolution clocks are dropped.
   </summary>
 </histogram>
 
@@ -454,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.Popups.StrongBlockerActions"
-    enum="StrongPopupBlockerAction" expires_after="2025-01-26">
+    enum="StrongPopupBlockerAction" expires_after="2025-10-05">
   <owner>csharrison@chromium.org</owner>
   <summary>
     Counts of various events related to the strong popup blocker (aka abusive
@@ -463,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultAutoVerifySetting"
-    enum="ContentSetting" expires_after="2025-02-23">
+    enum="ContentSetting" expires_after="2025-11-09">
   <owner>ryankalla@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -473,7 +398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultBackgroundSyncSetting"
-    enum="ContentSetting" expires_after="2025-02-16">
+    enum="ContentSetting" expires_after="2025-11-16">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -482,8 +407,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContentSettings.RegularProfile.DefaultJavascriptOptimizationBlockedByOs"
+    enum="Boolean" expires_after="2026-01-01">
+  <owner>pkotwicz@google.com</owner>
+  <owner>src/chrome/browser/site_protection/OWNERS</owner>
+  <summary>
+    Whether an operating system permission disables the javascript-optimizer.
+    Recorded at profile open.
+
+    This histogram is only recorded for regular profiles.
+  </summary>
+</histogram>
+
+<histogram
+    name="ContentSettings.RegularProfile.DefaultJavaScriptOptimizationSetting"
+    enum="ContentSetting" expires_after="2025-10-20">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>src/chrome/browser/site_protection/OWNERS</owner>
+  <summary>
+    The default JavaScript optimization setting at profile open. Records the
+    setting explicitly set by the user and ignores whether the permission is
+    disabled by an operating system permission or enterprise policy.
+
+    This histogram is only recorded for regular profiles.
+  </summary>
+</histogram>
+
 <histogram name="ContentSettings.RegularProfile.DefaultStorageAccessSetting"
-    enum="ContentSetting" expires_after="2024-12-30">
+    enum="ContentSetting" expires_after="2025-09-14">
   <owner>dullweber@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -717,7 +669,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.{RegularProfileFiltered}DefaultRequestDesktopSiteSetting"
-    enum="ContentSetting" expires_after="2025-02-16">
+    enum="ContentSetting" expires_after="2025-10-26">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -852,7 +804,11 @@ chromium-metrics-reviews@google.com.
     <variant name="installed-web-app-metadata"
         summary="Installed web app metadata"/>
     <variant name="javascript" summary="JavaScript exceptions"/>
+    <variant name="javascript-jit" summary="JavaScript JIT"/>
+    <variant name="javascript-optimizer" summary="JavaScript Optimizer"/>
     <variant name="keygen" summary="Keygen exceptions"/>
+    <variant name="local-network-access"
+        summary="Local network access exceptions"/>
     <variant name="media-engagement" summary="Media engagement exceptions"/>
     <variant name="media-stream-camera" summary="Camera exceptions"/>
     <variant name="media-stream-mic" summary="Microphone exceptions"/>
@@ -916,24 +872,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.CanBeShown" enum="BooleanAllowed"
-    expires_after="2024-06-02">
-  <owner>harringtond@chromium.org</owner>
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Whether showing the Feed is permitted. The Feed can be shown if (A) profile
-    policies allow this, (B) the FeedAblationEnabled feature is disabled, and
-    (C) the user has not turned it off in Settings.
-
-    Note that this does not denote (A) whether the Feed is visible at the time
-    the metric is emitted or (B) whether the Feed was ever visible during the
-    browser process lifetime.
-
-    iOS only. Emitted when building a MetricsLog for the current session.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh"
     units="ms" expires_after="2024-01-14">
   <owner>carlosk@chromium.org</owner>
@@ -963,7 +901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication2.Position{Index}"
-    enum="Boolean" expires_after="2024-09-01">
+    enum="Boolean" expires_after="2025-11-30">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -996,8 +934,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAge" units="ms"
-    expires_after="2025-05-21">
-  <owner>birnie@google.com</owner>
+    expires_after="2026-05-21">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: The invalid age lifetime of content fetched from the server.
@@ -1007,8 +945,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent"
-    enum="Boolean" expires_after="2025-05-21">
-  <owner>birnie@google.com</owner>
+    enum="Boolean" expires_after="2026-05-21">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: If the content lifetime of a feed response has a non zero invalid
@@ -1019,8 +957,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAge" units="ms"
-    expires_after="2025-05-21">
-  <owner>birnie@google.com</owner>
+    expires_after="2026-05-21">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: The stale age lifetime of content fetched from the server. Reported
@@ -1030,8 +968,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent"
-    enum="Boolean" expires_after="2025-05-21">
-  <owner>birnie@google.com</owner>
+    enum="Boolean" expires_after="2026-05-21">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: If the content lifetime of a feed response has a non zero stale age
@@ -1041,20 +979,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Controls.Actions"
-    enum="FeedControlsActions" expires_after="never">
-<!-- expires-never: tracked as an important feed metric. -->
-
-  <owner>vincb@google.com</owner>
-  <owner>feed@chromium.org</owner>
-  <owner>src/components/feed/OWNERS</owner>
-  <summary>Actions related to the feed controls.</summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.DisplayStatusOnOpen"
-    enum="ContentSuggestionsDisplayStatus" expires_after="2025-01-19">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+    enum="ContentSuggestionsDisplayStatus" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: The display status of the content suggestions when users open NTPs.
@@ -1134,7 +1061,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="ContentSuggestions.Feed.LoadStepLatency"
+<histogram name="ContentSuggestions.Feed.LoadStepLatency{FeedLoadLatencyStep}"
     units="ms" expires_after="2024-07-21">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1144,14 +1071,27 @@ chromium-metrics-reviews@google.com.
     that ends with the Feed showing up on the UI. All steps added together tally
     to the total time taken.
 
-    Feed v2 only.
+    Feed v2 only. {FeedLoadLatencyStep}
   </summary>
+  <token key="FeedLoadLatencyStep">
+    <variant name=".ActionUpload"
+        summary="Time taken read stored actions and upload them if necessary."/>
+    <variant name=".LoadFromStore"
+        summary="Time taken to load the feed content from local storage."/>
+    <variant name=".QueryRequest"
+        summary="Time taken to request fresh feed content from the network."/>
+    <variant name=".StreamView"
+        summary="Time taken to receive feedback that a Feed item was shown.
+                 Time begins after feed data is loaded from the network or
+                 local storage"/>
+    <variant name=".TaskStart"
+        summary="Time taken to begin executing the load stream task."/>
+  </token>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.LoadMore"
-    enum="FeedLoadStreamStatus" expires_after="2025-01-19">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
+    enum="FeedLoadStreamStatus" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Status of loading additional Feed content onto the bottom of the stream.
@@ -1160,7 +1100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ManualRefreshInterval" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-11-30">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1172,9 +1112,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.Feed.Network.CompressedResponseSizeKB{NetworkRequestType}"
-    units="KB" expires_after="2024-07-28">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+    units="KB" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: The wire size (potentially compressed) of a {NetworkRequestType}
@@ -1187,7 +1126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.Duration{NetworkEvent}"
-    units="ms" expires_after="2025-02-10">
+    units="ms" expires_after="2025-10-26">
   <owner>sczs@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1216,9 +1155,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.RequestSizeKB.Compressed"
-    units="KB" expires_after="2025-02-10">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+    units="KB" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: the size in kb of gzip-compressed requests sent by the Feed's
@@ -1227,9 +1165,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.RequestStatusCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-01-23">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: The integer status code of network requests made by the feed
@@ -1239,9 +1176,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.ResponseSizeKB" units="KB"
-    expires_after="2025-03-09">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+    expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: the uncompressed size in KB of responses received by the Feed's
@@ -1250,9 +1186,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.ResponseStatus{Type}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-02-10">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     The HTTP response status for a network request made by the Feed component.
@@ -1261,9 +1196,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.TokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="2024-01-23">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+    enum="GoogleServiceAuthError" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: failure reason when attempting to fetch an OAuth token for the
@@ -1294,7 +1228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.RefreshTrigger"
-    enum="FeedRefreshTrigger" expires_after="2025-05-22">
+    enum="FeedRefreshTrigger" expires_after="2025-09-28">
   <owner>adamta@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1304,7 +1238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ResourceFetchStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-06-30">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-11-30">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1335,9 +1269,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.TimeSpentInFeed" units="ms"
-    expires_after="2025-03-09">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: key feature metric.  We will need the Engagement
+       type as long as we have a feed, and it will be removed with the
+       feed code if the feed is ever removed. -->
+
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     How long a user used the Feed in one day (local time midnight to midnight).
@@ -1350,7 +1287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UniformityFlag" enum="Boolean"
-    expires_after="2025-02-17">
+    expires_after="2025-10-26">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1388,9 +1325,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UploadActionsBatchStatus"
-    enum="FeedUploadActionsBatchStatus" expires_after="2024-07-28">
-  <owner>iwells@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+    enum="FeedUploadActionsBatchStatus" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Result of attempting to upload a batch of one or more actions.
@@ -1398,9 +1334,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UploadActionsStatus"
-    enum="FeedUploadActionsStatus" expires_after="2025-03-09">
-  <owner>iwells@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+    enum="FeedUploadActionsStatus" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Result of an UploadActionsTask run in which zero or more batches of user
@@ -1432,9 +1367,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserActions" enum="FeedUserActionType"
-    expires_after="2025-03-09">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
+    expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Counts of Feed user actions. e.g. (Open a Card, Hide the Feed, etc.).
@@ -1509,7 +1443,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.Feed.UserJourney.{Surface}.{Status}Duration"
-    units="ms" expires_after="2025-02-02">
+    units="ms" expires_after="2025-10-12">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1544,7 +1478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ViewedCardCountAtManualRefresh"
-    units="count" expires_after="2024-06-30">
+    units="count" expires_after="2025-11-30">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1556,7 +1490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ViewedCardPercentageAtManualRefresh"
-    units="%" expires_after="2024-09-01">
+    units="%" expires_after="2025-11-30">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1770,7 +1704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged"
-    enum="FeedSortType" expires_after="2025-04-28">
+    enum="FeedSortType" expires_after="2025-11-02">
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1781,7 +1715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.UnfollowResult"
-    enum="WebFeedSubscriptionRequestStatus" expires_after="2025-05-22">
+    enum="WebFeedSubscriptionRequestStatus" expires_after="2025-09-28">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1848,7 +1782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.Activity"
-    enum="FeedActivityBucket" expires_after="2025-05-24">
+    enum="FeedActivityBucket" expires_after="2025-09-28">
   <owner>guiperez@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1866,7 +1800,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.Activity.ByProvider"
-    enum="FeedActivityBucket" expires_after="2024-11-17">
+    enum="FeedActivityBucket" expires_after="2025-11-17">
   <owner>guiperez@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1904,8 +1838,7 @@ chromium-metrics-reviews@google.com.
        type as long as we have a feed, and it will be removed with the
        feed code if the feed is ever removed. -->
 
-  <owner>petewil@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Tracks user behavior with {FeedType}. Each bucket is one of two types of
@@ -1948,7 +1881,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.InfoCard.{Action}"
-    enum="FeedInfoCardType" expires_after="2025-05-07">
+    enum="FeedInfoCardType" expires_after="2025-11-30">
   <owner>jianli@chromium.org</owner>
   <owner>adamta@google.com</owner>
   <owner>feed@chromium.org</owner>
@@ -2024,9 +1957,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.{FeedType}.LoadStreamStatus.BackgroundRefresh"
-    enum="FeedLoadStreamStatus" expires_after="2024-07-28">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
+    enum="FeedLoadStreamStatus" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: Status of loading new {FeedType} data in the background. Reported
@@ -2043,9 +1975,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.LoadStreamStatus.Initial"
-    enum="FeedLoadStreamStatus" expires_after="2025-02-02">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
+    enum="FeedLoadStreamStatus" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: Status of loading the initial {FeedType} stream, which happens when
@@ -2061,9 +1992,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.{FeedType}.LoadStreamStatus.InitialFromStore"
-    enum="FeedLoadStreamStatus" expires_after="2025-02-02">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
+    enum="FeedLoadStreamStatus" expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: The status of loading the Feed from the local store. Reported when
@@ -2080,7 +2010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.LoadStreamStatus.ManualRefresh"
-    enum="FeedLoadStreamStatus" expires_after="2024-01-23">
+    enum="FeedLoadStreamStatus" expires_after="2025-11-30">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -2180,8 +2110,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.StreamContentSizeKB" units="KB"
-    expires_after="2024-07-28">
-  <owner>harringtond@chromium.org</owner>
+    expires_after="2025-11-30">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: Reports the total size in KB of all of the {FeedType} content (not

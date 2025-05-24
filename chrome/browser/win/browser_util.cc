@@ -7,9 +7,11 @@
 #include <windows.h>
 
 // sddl.h must come after windows.h.
-#include <sddl.h>
 #include <winternl.h>
 
+#include <sddl.h>
+
+#include <algorithm>
 #include <climits>
 #include <memory>
 #include <optional>
@@ -19,7 +21,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 
@@ -78,7 +79,7 @@ bool IsBrowserAlreadyRunning() {
     return false;
   }
   std::replace(nt_dir_name->begin(), nt_dir_name->end(), '\\', '!');
-  base::ranges::transform(*nt_dir_name, nt_dir_name->begin(), tolower);
+  std::ranges::transform(*nt_dir_name, nt_dir_name->begin(), tolower);
   nt_dir_name = L"Global\\" + nt_dir_name.value();
   if (handle != NULL)
     ::CloseHandle(handle);

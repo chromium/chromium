@@ -44,8 +44,9 @@ std::vector<uint8_t> SerializeUnindexedRulesetWithMultipleRules(
   std::string ruleset_contents;
   google::protobuf::io::StringOutputStream output(&ruleset_contents);
   UnindexedRulesetWriter ruleset_writer(&output);
-  for (const auto& rule : rules)
+  for (const auto& rule : rules) {
     ruleset_writer.AddUrlRule(rule);
+  }
   ruleset_writer.Finish();
 
   auto* data = reinterpret_cast<const uint8_t*>(ruleset_contents.data());
@@ -55,8 +56,9 @@ std::vector<uint8_t> SerializeUnindexedRulesetWithMultipleRules(
 std::vector<uint8_t> SerializeIndexedRulesetWithMultipleRules(
     const std::vector<proto::UrlRule>& rules) {
   RulesetIndexer indexer;
-  for (const auto& rule : rules)
+  for (const auto& rule : rules) {
     EXPECT_TRUE(indexer.AddUrlRule(rule));
+  }
   indexer.Finish();
   return std::vector<uint8_t>(indexer.data().begin(), indexer.data().end());
 }
@@ -101,8 +103,9 @@ void TestRuleset::CorruptByFilling(const TestRuleset& ruleset,
   ASSERT_LE(to, ruleset.contents.size());
 
   std::vector<uint8_t> new_contents = ruleset.contents;
-  for (size_t i = from; i < to; ++i)
+  for (size_t i = from; i < to; ++i) {
     new_contents[i] = fill_with;
+  }
   WriteRulesetContents(new_contents, ruleset.path);
 }
 
@@ -143,8 +146,9 @@ void TestRulesetCreator::CreateRulesetToDisallowURLWithSubstrings(
     TestRulesetPair* test_ruleset_pair) {
   CHECK(test_ruleset_pair);
   std::vector<proto::UrlRule> url_rules;
-  for (const auto& substring : substrings)
+  for (const auto& substring : substrings) {
     url_rules.push_back(CreateSubstringRule(substring));
+  }
   CreateRulesetWithRules(url_rules, test_ruleset_pair);
 }
 

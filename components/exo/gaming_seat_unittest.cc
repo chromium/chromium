@@ -30,7 +30,7 @@ namespace {
 
 class MockGamepadDelegate : public GamepadDelegate {
  public:
-  MockGamepadDelegate() {}
+  MockGamepadDelegate() = default;
 
   // Overridden from GamepadDelegate:
   MOCK_METHOD(void, OnRemoved, (), (override));
@@ -59,7 +59,7 @@ class MockGamingSeatDelegate : public GamingSeatDelegate {
 
 class GamingSeatTest : public test::ExoTestBase {
  public:
-  GamingSeatTest() {}
+  GamingSeatTest() = default;
 
   GamingSeatTest(const GamingSeatTest&) = delete;
   GamingSeatTest& operator=(const GamingSeatTest&) = delete;

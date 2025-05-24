@@ -75,6 +75,8 @@ class NavigationController {
  public:
   using DeletionPredicate =
       base::RepeatingCallback<bool(content::NavigationEntry* entry)>;
+  using WeakNavigationHandleVector =
+      std::vector<base::WeakPtr<NavigationHandle>>;
 
   // Load type used in LoadURLParams.
   //
@@ -332,6 +334,11 @@ class NavigationController {
     // a fresh BrowsingInstance.
     bool force_new_browsing_instance = false;
 
+    // Indicates this navigation should use a new compositor. This is used by
+    // web tests to ensure that input state is fully reset between tests. This
+    // should only be set on the main frame.
+    bool force_new_compositor = false;
+
     // True if the initiator explicitly asked for opener relationships to be
     // preserved, via rel="opener".
     bool has_rel_opener = false;
@@ -398,6 +405,7 @@ class NavigationController {
   // associated with the NavigationController is already initialized, as a
   // FrameTree will always start with the initial NavigationEntry.
   virtual NavigationEntry* GetLastCommittedEntry() = 0;
+  virtual const NavigationEntry* GetLastCommittedEntry() const = 0;
 
   // Returns the index of the last committed entry.
   virtual int GetLastCommittedEntryIndex() = 0;
@@ -476,6 +484,10 @@ class NavigationController {
   //
   // Returns the handle to the navigation for the error page, which may be null
   // if the navigation is immediately canceled.
+  //
+  // TODO(crbug.com/406729265) Restrict this function to only be usable with
+  // main frame interstitial navigations. For loading an error page in any other
+  // scenario, prefer |NavigationControllerImpl::NavigateFrameToErrorPage()|.
   virtual base::WeakPtr<NavigationHandle> LoadPostCommitErrorPage(
       RenderFrameHost* render_frame_host,
       const GURL& url,
@@ -487,13 +499,24 @@ class NavigationController {
   virtual bool CanGoBack() = 0;
   virtual bool CanGoForward() = 0;
   virtual bool CanGoToOffset(int offset) = 0;
-  // `CanGoBack`/`CanGoForward` are preconditions for these respective methods.
-  virtual void GoBack() = 0;
-  virtual void GoForward() = 0;
+
+  // Returns a vector of weak pointers to the NavigationHandles created for this
+  // navigation. There may be multiple NavigationHandles if more than one frame
+  // needs to navigate, or there may be none if the navigation is immediately
+  // canceled. Keep in mind that the NavigationHandles may not immediately start
+  // (e.g., if a beforeunload handler must run) and may be silently deleted if
+  // they are canceled before starting (e.g., subframe traverses canceled by the
+  // navigation API). `CanGoBack`/`CanGoForward` are preconditions for these
+  // respective methods.
+  // TODO(crbug.com/417756996): In cases where the navigation is canceled before
+  // starting, there isn't currently a notification option in the public API.
+  // Existing code polls for this but an API would make this more ergonomic.
+  virtual WeakNavigationHandleVector GoBack() = 0;
+  virtual WeakNavigationHandleVector GoForward() = 0;
 
   // Navigates to the specified absolute index. Should only be used for
   // browser-initiated navigations.
-  virtual void GoToIndex(int index) = 0;
+  virtual WeakNavigationHandleVector GoToIndex(int index) = 0;
 
   // Navigates to the specified offset from the "current entry". Does nothing if
   // the offset is out of bounds.

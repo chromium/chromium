@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
-
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/accessibility/reading/distillable_pages.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,6 +25,7 @@ class MockReadAnythingSidePanelControllerObserver
  public:
   MOCK_METHOD(void, Activate, (bool active), (override));
   MOCK_METHOD(void, OnSidePanelControllerDestroyed, (), (override));
+  MOCK_METHOD(void, OnTabWillDetach, (), (override));
 };
 
 class ReadAnythingSidePanelControllerTest : public InProcessBrowserTest {
@@ -90,6 +90,14 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
 
   EXPECT_CALL(side_panel_controller_observer_, Activate(false)).Times(1);
   side_panel_controller()->OnEntryHidden(entry);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
+                       TabWillDetach_NotfiyObservers) {
+  AddObserver(&side_panel_controller_observer_);
+
+  EXPECT_CALL(side_panel_controller_observer_, OnTabWillDetach()).Times(1);
+  browser()->GetActiveTabInterface()->Close();
 }
 
 class ReadAnythingCUJTest : public InteractiveFeaturePromoTest {

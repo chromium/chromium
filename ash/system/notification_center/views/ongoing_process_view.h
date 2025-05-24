@@ -31,7 +31,7 @@ class ASH_EXPORT OngoingProcessView : public message_center::MessageView {
   METADATA_HEADER(OngoingProcessView, message_center::MessageView)
 
  public:
-  OngoingProcessView(const message_center::Notification& notification);
+  explicit OngoingProcessView(const message_center::Notification& notification);
   OngoingProcessView(const OngoingProcessView&) = delete;
   OngoingProcessView& operator=(const OngoingProcessView&) = delete;
   ~OngoingProcessView() override;
@@ -47,6 +47,7 @@ class ASH_EXPORT OngoingProcessView : public message_center::MessageView {
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
+ private:
   // Owned by the views hierarchy.
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> subtitle_label_ = nullptr;

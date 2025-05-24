@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog_utils.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
@@ -78,8 +79,7 @@ const std::u16string GetDestinationComponent(DlpFileDestination destination) {
       return l10n_util::GetStringUTF16(
           IDS_FILE_BROWSER_DLP_COMPONENT_MICROSOFT_ONEDRIVE);
     case data_controls::Component::kUnknownComponent:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 
@@ -332,7 +332,7 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
   justification_field_container->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   justification_field_container->SetBackground(
-      views::CreateThemedRoundedRectBackground(
+      views::CreateRoundedRectBackground(
           ash::kColorAshControlBackgroundColorInactive, 8, 0));
 
   justification_field_ = justification_field_container->AddChildView(

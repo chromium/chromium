@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/common/gpu_pre_sandbox_hook_linux.h"
 
 #include <dlfcn.h>
@@ -14,6 +9,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include <array>
 #include <memory>
 #include <sstream>
 #include <utility>
@@ -29,7 +25,6 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/common/content_switches.h"
 #include "media/gpu/buildflags.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -54,9 +49,6 @@ namespace content {
 namespace {
 
 inline bool IsChromeOS() {
-  // TODO(b/206464999): for now, we're making the LaCrOS and Ash GPU sandboxes
-  // behave similarly. However, the LaCrOS GPU sandbox could probably be made
-  // tighter.
 #if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
@@ -577,28 +569,28 @@ void LoadArmGpuLibraries() {
     // (ie. not mali or tegra):
     if (!is_mali && !is_tegra &&
         (nullptr != dlopen("libglapi.so.0", dlopen_flag))) {
-      const char* driver_paths[] = {
-        "/usr/lib64/libgallium_dri.so",
+      auto driver_paths = std::to_array<const char*>({
+          "/usr/lib64/libgallium_dri.so",
 #if defined(DRI_DRIVER_DIR)
-        DRI_DRIVER_DIR "/msm_dri.so",
-        DRI_DRIVER_DIR "/panfrost_dri.so",
-        DRI_DRIVER_DIR "/mediatek_dri.so",
-        DRI_DRIVER_DIR "/rockchip_dri.so",
-        DRI_DRIVER_DIR "/asahi_dri.so",
+          DRI_DRIVER_DIR "/msm_dri.so",
+          DRI_DRIVER_DIR "/panfrost_dri.so",
+          DRI_DRIVER_DIR "/mediatek_dri.so",
+          DRI_DRIVER_DIR "/rockchip_dri.so",
+          DRI_DRIVER_DIR "/asahi_dri.so",
 #else
-        "/usr/lib64/dri/msm_dri.so",
-        "/usr/lib64/dri/panfrost_dri.so",
-        "/usr/lib64/dri/mediatek_dri.so",
-        "/usr/lib64/dri/rockchip_dri.so",
-        "/usr/lib64/dri/asahi_dri.so",
-        "/usr/lib/dri/msm_dri.so",
-        "/usr/lib/dri/panfrost_dri.so",
-        "/usr/lib/dri/mediatek_dri.so",
-        "/usr/lib/dri/rockchip_dri.so",
-        "/usr/lib/dri/asahi_dri.so",
+          "/usr/lib64/dri/msm_dri.so",
+          "/usr/lib64/dri/panfrost_dri.so",
+          "/usr/lib64/dri/mediatek_dri.so",
+          "/usr/lib64/dri/rockchip_dri.so",
+          "/usr/lib64/dri/asahi_dri.so",
+          "/usr/lib/dri/msm_dri.so",
+          "/usr/lib/dri/panfrost_dri.so",
+          "/usr/lib/dri/mediatek_dri.so",
+          "/usr/lib/dri/rockchip_dri.so",
+          "/usr/lib/dri/asahi_dri.so",
 #endif
-        nullptr
-      };
+          nullptr,
+      });
 
       for (int i = 0; driver_paths[i] != nullptr; i++)
         dlopen(driver_paths[i], dlopen_flag);

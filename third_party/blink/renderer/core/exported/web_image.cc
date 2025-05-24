@@ -128,7 +128,7 @@ SkBitmap WebImage::DecodeSVG(const WebData& data,
   return bitmap;
 }
 
-WebVector<SkBitmap> WebImage::FramesFromData(const WebData& data) {
+std::vector<SkBitmap> WebImage::FramesFromData(const WebData& data) {
   // This is to protect from malicious images. It should be big enough that it's
   // never hit in practice.
   const wtf_size_t kMaxFrameCount = 8;
@@ -146,7 +146,7 @@ WebVector<SkBitmap> WebImage::FramesFromData(const WebData& data) {
   const wtf_size_t frame_count = decoder->FrameCount();
   gfx::Size last_size;
 
-  WebVector<SkBitmap> frames;
+  std::vector<SkBitmap> frames;
   for (wtf_size_t i = 0; i < std::min(frame_count, kMaxFrameCount); ++i) {
     const gfx::Size frame_size = decoder->FrameSizeAtIndex(i);
     if (frame_size == last_size)
@@ -165,7 +165,7 @@ WebVector<SkBitmap> WebImage::FramesFromData(const WebData& data) {
   return frames;
 }
 
-WebVector<WebImage::AnimationFrame> WebImage::AnimationFromData(
+std::vector<WebImage::AnimationFrame> WebImage::AnimationFromData(
     const WebData& data) {
   const bool data_complete = true;
   std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
@@ -178,7 +178,7 @@ WebVector<WebImage::AnimationFrame> WebImage::AnimationFromData(
   const wtf_size_t frame_count = decoder->FrameCount();
   gfx::Size last_size = decoder->FrameSizeAtIndex(0);
 
-  WebVector<WebImage::AnimationFrame> frames;
+  std::vector<WebImage::AnimationFrame> frames;
   frames.reserve(frame_count);
   for (wtf_size_t i = 0; i < frame_count; ++i) {
     // If frame size changes, this is most likely not an animation and is

@@ -7,7 +7,6 @@
 #include <windows.h>
 
 #include <tlhelp32.h>
-#include <wintrust.h>
 
 #include <limits>
 #include <memory>
@@ -27,6 +26,7 @@
 #include "base/win/pe_image_reader.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/wincrypt_shim.h"
+#include "base/win/wintrust_shim.h"
 #include "crypto/scoped_capi_types.h"
 
 // This must be after wincrypt and wintrust.
@@ -250,11 +250,13 @@ StringMapping GetEnvironmentVariablesMapping(
 
   StringMapping string_mapping;
   for (const std::wstring& variable : environment_variables) {
-    std::string value;
-    if (environment->GetVar(base::WideToASCII(variable).c_str(), &value)) {
-      value = std::string(base::TrimString(value, "\\", base::TRIM_TRAILING));
+    std::optional<std::string> value =
+        environment->GetVar(base::WideToASCII(variable));
+    if (value.has_value()) {
+      std::string_view trimmed_value =
+          base::TrimString(value.value(), "\\", base::TRIM_TRAILING);
       string_mapping.push_back(std::make_pair(
-          base::i18n::ToLower(base::UTF8ToUTF16(value)),
+          base::i18n::ToLower(base::UTF8ToUTF16(trimmed_value)),
           u"%" + base::i18n::ToLower(base::AsString16(variable)) + u"%"));
     }
   }

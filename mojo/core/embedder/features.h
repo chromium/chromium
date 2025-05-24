@@ -49,6 +49,11 @@ COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 BASE_DECLARE_FEATURE(kMojoUseBinder);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
+BASE_DECLARE_FEATURE(kMojoHandleTypeProtections);
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace core
 }  // namespace mojo
 

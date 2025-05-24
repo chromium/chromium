@@ -75,16 +75,9 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // Returns whether or not this tree manager is for a view.
   virtual bool IsView() const;
 
-  // Returns the AXNode with the given |node_id| from the tree that has the
-  // given |tree_id|. This allows for callers to access nodes outside of their
-  // own tree. Returns nullptr if |tree_id| or |node_id| is not found.
-  // TODO(kschmi): Remove |tree_id| parameter, as it's unnecessary.
-  virtual AXNode* GetNodeFromTree(const AXTreeID& tree_id,
-                                  const AXNodeID node_id) const;
-
   // Returns the AXNode in the current tree that has the given |node_id|.
   // Returns nullptr if |node_id| is not found.
-  virtual AXNode* GetNode(const AXNodeID node_id) const;
+  virtual AXNode* GetNode(AXNodeID node_id) const;
 
   // Returns true if the manager has a tree with a valid (not unknown) ID.
   bool HasValidTreeID() const {

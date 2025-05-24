@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/types/optional_util.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_map.h"
@@ -156,7 +157,7 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
   if (is_guest) {
 #if BUILDFLAG(ENABLE_PDF)
     // Allow the PDF Viewer extension to load in guests.
-    if (chrome_pdf::features::IsOopifPdfEnabled() &&
+    if (chrome_pdf::features::IsOopifPdfEnabled() && extension &&
         extension->id() == extension_misc::kPdfExtensionId) {
       *allowed = true;
       return true;

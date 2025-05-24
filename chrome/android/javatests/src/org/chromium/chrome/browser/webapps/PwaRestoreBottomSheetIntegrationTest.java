@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -62,17 +63,17 @@ public class PwaRestoreBottomSheetIntegrationTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    private static @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
+    private static final @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
 
     private static final String ICON_URL1 = "/chrome/test/data/banners/256x256-green.png";
     private static final String ICON_URL2 = "/chrome/test/data/banners/256x256-red.png";
 
-    private static String[][] sDefaultApps = {
+    private static final String[][] sDefaultApps = {
         {"https://example.com/app1/", "App 1", ICON_URL1},
         {"https://example.com/app2/", "App 2", ICON_URL2},
         {"https://example.com/app3/", "App 3", ICON_URL1}
     };
-    private static int[] sDefaultLastUsed = {1, 2, 3};
+    private static final int[] sDefaultLastUsed = {1, 2, 3};
 
     private static final String TAG = "PwaRestoreIntegrTest";
 
@@ -216,6 +217,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    @DisabledTest(message = "Flakey test. See https://crbug.com/416875403")
     public void testBackButton() {
         // This test opens the dialog, clicks the Review button to expand the bottom sheet dialog
         // and then presses the Back in the OS twice to see what happens (first click should
@@ -248,6 +250,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    @DisabledTest(message = "Flakey test. See https://crbug.com/416875403")
     public void testClickForwarding() {
         Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
@@ -283,6 +286,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    @DisabledTest(message = "Flakey test. See https://crbug.com/416875403")
     public void testDeselectAll() throws Exception {
         Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
@@ -333,6 +337,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    @DisabledTest(message = "Flakey test. See https://crbug.com/416875403")
     public void testRestoreClosesUi() throws Exception {
         Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 

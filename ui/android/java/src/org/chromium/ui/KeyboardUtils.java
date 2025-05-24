@@ -5,9 +5,11 @@
 package org.chromium.ui;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.Settings;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -15,10 +17,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Utility methods used for Android's software keyboard. */
+@NullMarked
 public final class KeyboardUtils {
     private static final String TAG = "KeyboardVisibility";
 
@@ -27,6 +31,11 @@ public final class KeyboardUtils {
 
     /** Waiting time between attempts to show the keyboard. */
     private static final long KEYBOARD_RETRY_DELAY_MS = 100;
+
+    public static final int CTRL = 1 << 31;
+    public static final int ALT = 1 << 30;
+    public static final int SHIFT = 1 << 29;
+    public static final int NO_MODIFIER = 0;
 
     /**
      * Tries to show the soft keyboard by using the {@link Context#INPUT_METHOD_SERVICE}.
@@ -117,6 +126,21 @@ public final class KeyboardUtils {
     }
 
     /**
+     * Detects whether the soft keyboard is expected to show when keyboard input is required.
+     *
+     * <p>When there is a physical keyboard and show_ime_with_hard_keyboard is off, the soft
+     * keyboard is not shown.
+     */
+    public static boolean isSoftKeyboardEnabled(Context context) {
+        return !isHardKeyboardConnected(context) || shouldShowImeWithHardwareKeyboard(context);
+    }
+
+    /** Detects whether there is a hardware keyboard connected. */
+    public static boolean isHardKeyboardConnected(Context context) {
+        return context.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY;
+    }
+
+    /**
      * Reports whether Software keyboard is requested to come up while Hardware keyboard is in use.
      * This helps with cases where the Hardware keyboard is unconventional (e.g. Yubikey), and the
      * User explicitly requests the System to show up the Software keyboard when interacting with
@@ -126,5 +150,18 @@ public final class KeyboardUtils {
         return Settings.Secure.getInt(
                         context.getContentResolver(), "show_ime_with_hard_keyboard", 0)
                 != 0;
+    }
+
+    /**
+     * Reports the metaState of a KeyEvent, which gives information about the modifier keys that are
+     * part of the event (e.g. Ctrl).
+     *
+     * @param event A {@link KeyEvent}.
+     * @return Bitmask of the modifier keys included in the event.
+     */
+    public static int getMetaState(KeyEvent event) {
+        return (event.isCtrlPressed() ? CTRL : 0)
+                | (event.isAltPressed() ? ALT : 0)
+                | (event.isShiftPressed() ? SHIFT : 0);
     }
 }

@@ -36,9 +36,10 @@ class DOMTimerTest : public RenderingTest {
   DOMTimerTest()
       : RenderingTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   // Expected time between each iterator for setInterval(..., 1) or nested
-  // setTimeout(..., 1) are 1, 1, 1, 1, 4, 4, ... as a minimum clamp of 4ms
-  // is applied from the 5th iteration onwards.
+  // setTimeout(..., 1) are 1, 1, 1, 1, 1, 1, 4, 4, ... as a minimum clamp
+  // of 4ms is applied from the 7th iteration onwards.
   const Vector<Matcher<double>> kExpectedTimings = {
+      DoubleNear(1., kThreshold), DoubleNear(1., kThreshold),
       DoubleNear(1., kThreshold), DoubleNear(1., kThreshold),
       DoubleNear(1., kThreshold), DoubleNear(1., kThreshold),
       DoubleNear(4., kThreshold), DoubleNear(4., kThreshold),
@@ -55,6 +56,7 @@ class DOMTimerTest : public RenderingTest {
     auto now_ticks = platform()->NowTicks();
     window_performance->SetClocksForTesting(mock_clock, mock_tick_clock);
     window_performance->ResetTimeOriginForTesting(now_ticks);
+    window_performance->SetCrossOriginIsolatedCapabilityForTesting(true);
     GetDocument().GetSettings()->SetScriptEnabled(true);
     auto* loader = GetDocument().Loader();
     loader->GetTiming().SetNavigationStart(now_ticks);
@@ -100,9 +102,6 @@ const char* const kSetTimeout0ScriptText =
 TEST_F(DOMTimerTest, setTimeout_ZeroIsNotClampedToOne) {
   v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kSetTimeoutWithoutClamp);
-
   ExecuteScriptAndWaitUntilIdle(kSetTimeout0ScriptText);
 
   double time = ToDoubleValue(EvalExpression("elapsed"), scope);
@@ -110,13 +109,37 @@ TEST_F(DOMTimerTest, setTimeout_ZeroIsNotClampedToOne) {
   EXPECT_THAT(time, DoubleNear(0., kThreshold));
 }
 
-TEST_F(DOMTimerTest, setTimeout_ZeroIsClampedToOne) {
+const char* const kSetInterval0ScriptText =
+    "var last = performance.now();"
+    "var elapsed;"
+    "var interval;"
+    "function setIntervalCallback() {"
+    "  var current = performance.now();"
+    "  elapsed = current - last;"
+    "  clearInterval(interval);"
+    "}"
+    "interval = setInterval(setIntervalCallback, 0);";
+
+TEST_F(DOMTimerTest, setInterval_ZeroIsNotClampedToOne) {
   v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSetTimeoutWithoutClamp);
+  feature_list.InitAndEnableFeature(features::kSetIntervalWithoutClamp);
 
-  ExecuteScriptAndWaitUntilIdle(kSetTimeout0ScriptText);
+  ExecuteScriptAndWaitUntilIdle(kSetInterval0ScriptText);
+
+  double time = ToDoubleValue(EvalExpression("elapsed"), scope);
+
+  EXPECT_THAT(time, DoubleNear(0., kThreshold));
+}
+
+TEST_F(DOMTimerTest, setInterval_ZeroIsClampedToOne) {
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSetIntervalWithoutClamp);
+
+  ExecuteScriptAndWaitUntilIdle(kSetInterval0ScriptText);
 
   double time = ToDoubleValue(EvalExpression("elapsed"), scope);
 
@@ -131,13 +154,13 @@ const char* const kSetTimeoutNestedScriptText =
     "  var elapsed = current - last;"
     "  last = current;"
     "  times.push(elapsed);"
-    "  if (times.length < 6) {"
+    "  if (times.length < 8) {"
     "    setTimeout(nestSetTimeouts, 1);"
     "  }"
     "}"
     "setTimeout(nestSetTimeouts, 1);";
 
-TEST_F(DOMTimerTest, setTimeout_ClampsAfter4Nestings) {
+TEST_F(DOMTimerTest, setTimeout_ClampsAfter6Nestings) {
   v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   ExecuteScriptAndWaitUntilIdle(kSetTimeoutNestedScriptText);
@@ -155,12 +178,12 @@ const char* const kSetIntervalScriptText =
     "  var elapsed = current - last;"
     "  last = current;"
     "  times.push(elapsed);"
-    "  if (times.length > 5) {"
+    "  if (times.length > 7) {"
     "    clearInterval(id);"
     "  }"
     "}, 1);";
 
-TEST_F(DOMTimerTest, setInterval_ClampsAfter4Iterations) {
+TEST_F(DOMTimerTest, setInterval_ClampsAfter6Iterations) {
   v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   ExecuteScriptAndWaitUntilIdle(kSetIntervalScriptText);

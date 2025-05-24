@@ -27,14 +27,16 @@ class TestMetricsWebContentsObserverEmbedder
 
   // PageLoadMetricsEmbedderInterface:
   bool IsNewTabPageUrl(const GURL& url) override;
-  void RegisterObservers(PageLoadTracker* tracker) override;
+  void RegisterObservers(PageLoadTracker* tracker,
+                         content::NavigationHandle* navigation_handle) override;
   std::unique_ptr<base::OneShotTimer> CreateTimer() override;
   bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
-  bool IsSidePanel(content::WebContents* web_contents) override;
-  bool IsNonTabWebUI() override;
+  bool IsNonTabWebUI(const GURL& url) override;
+  bool ShouldObserveScheme(std::string_view scheme) override;
   PageLoadMetricsMemoryTracker* GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;
+  bool IsIncognito(content::WebContents* web_contents) override;
 
   void set_is_ntp(bool is_ntp) { is_ntp_ = is_ntp; }
 

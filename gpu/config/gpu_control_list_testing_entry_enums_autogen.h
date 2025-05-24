@@ -34,7 +34,7 @@ enum GpuControlListTestingEntryEnum {
   kGpuControlListEntryTest_LexicalDriverVersionEntry = 18,
   kGpuControlListEntryTest_NeedsMoreInfoEntry = 19,
   kGpuControlListEntryTest_NeedsMoreInfoForExceptionsEntry = 20,
-  kGpuControlListEntryTest_NeedsMoreInfoForGlVersionEntry = 21,
+  kGpuControlListEntryTest_NeedsMoreInfoForGLESVersionEntry = 21,
   kGpuControlListEntryTest_FeatureTypeAllEntry = 22,
   kGpuControlListEntryTest_FeatureTypeAllEntryWithExceptions = 23,
   kGpuControlListEntryTest_SingleActiveGPU = 24,
@@ -94,6 +94,12 @@ enum GpuControlListTestingEntryEnum {
   kGpuControlListEntryTest_AnyDriverVersion = 78,
   kGpuControlListEntryTest_ActiveDriverVersion = 79,
   kGpuControlListEntryTest_NativeAngleRenderer = 80,
+  kGpuControlListEntryTest_GlTypeEntry = 81,
+  kGpuControlListEntryTest_GLES30Exception = 82,
+  kGpuControlListEntryTest_WrongANGLEException = 83,
+  kGpuControlListEntryTest_ANGLEException = 84,
+  kGpuControlListEntryTest_GlTypeAngleGl = 85,
+  kGpuControlListEntryTest_GLVersionOnly = 86,
 };
 }  // namespace gpu
 

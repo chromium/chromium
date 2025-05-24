@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
@@ -85,12 +86,15 @@ void InitializeFile(base::File* file, const base::FilePath& file_path) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Use exclusive write to prevent another process from writing the file.
-  file->Initialize(file_path,
-                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
-                       base::File::FLAG_READ |
-                       // Don't allow other processes to write to the file while
-                       // Chrome is writing (Windows-specific).
-                       base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  file->Initialize(
+      file_path,
+      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
+          base::File::FLAG_READ |
+          // Don't allow other processes to write to the file while
+          // Chrome is writing (Windows-specific).
+          base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+          // Allow the file to be renamed or replaced (Windows-specific).
+          base::File::FLAG_WIN_SHARE_DELETE);
 }
 
 void DeleteFileWrapper(const base::FilePath& file_path) {
@@ -617,7 +621,7 @@ void BaseFile::OnQuarantineServiceError(const GURL& source_url,
   OnFileQuarantined(quarantine::SetInternetZoneIdentifierDirectly(
       full_path_, source_url, referrer_url));
 #else   // !BUILDFLAG(IS_WIN)
-  CHECK(false) << "In-process quarantine service should not have failed.";
+  NOTREACHED() << "In-process quarantine service should not have failed.";
 #endif  // !BUILDFLAG(IS_WIN)
 }
 

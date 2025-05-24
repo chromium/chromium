@@ -4,12 +4,17 @@
 
 package org.chromium.components.autofill.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +26,7 @@ import java.util.Objects;
  * <p>Fields not needed by the save card bottom sheet UI on Android are not present.
  */
 @JNINamespace("autofill")
+@NullMarked
 public class AutofillSaveCardUiInfo {
     private final boolean mIsForUpload;
     private final @DrawableRes int mLogoIcon;
@@ -159,14 +165,14 @@ public class AutofillSaveCardUiInfo {
     public static class Builder {
         private boolean mIsForUpload;
         @DrawableRes private int mLogoIcon;
-        private CardDetail mCardDetail;
-        private String mCardDescription;
-        private List<LegalMessageLine> mLegalMessageLines;
-        private String mTitleText;
-        private String mConfirmText;
-        private String mCancelText;
-        private String mDescriptionText;
-        private String mLoadingDescription;
+        private @Nullable CardDetail mCardDetail;
+        private @Nullable String mCardDescription;
+        private @Nullable List<LegalMessageLine> mLegalMessageLines;
+        private @Nullable String mTitleText;
+        private @Nullable String mConfirmText;
+        private @Nullable String mCancelText;
+        private @Nullable String mDescriptionText;
+        private @Nullable String mLoadingDescription;
         private boolean mIsGooglePayBrandingEnabled;
 
         public Builder withIsForUpload(boolean isForUpload) {
@@ -229,16 +235,16 @@ public class AutofillSaveCardUiInfo {
             return new AutofillSaveCardUiInfo(
                     mIsForUpload,
                     mLogoIcon,
-                    mCardDetail.issuerIconDrawableId,
-                    mLegalMessageLines,
+                    assumeNonNull(mCardDetail).issuerIconDrawableId,
+                    assumeNonNull(mLegalMessageLines),
                     mCardDetail.label,
                     mCardDetail.subLabel,
-                    mCardDescription,
-                    mTitleText,
-                    mConfirmText,
-                    mCancelText,
-                    mDescriptionText,
-                    mLoadingDescription,
+                    assumeNonNull(mCardDescription),
+                    assumeNonNull(mTitleText),
+                    assumeNonNull(mConfirmText),
+                    assumeNonNull(mCancelText),
+                    assumeNonNull(mDescriptionText),
+                    assumeNonNull(mLoadingDescription),
                     mIsGooglePayBrandingEnabled);
         }
     }

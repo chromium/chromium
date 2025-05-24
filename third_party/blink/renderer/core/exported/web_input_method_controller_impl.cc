@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/exported/web_input_method_controller_impl.h"
 
+#include <vector>
+
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -53,7 +54,7 @@ void WebInputMethodControllerImpl::SetVirtualKeyboardVisibilityRequest(
 
 bool WebInputMethodControllerImpl::SetComposition(
     const WebString& text,
-    const WebVector<ui::ImeTextSpan>& ime_text_spans,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const WebRange& replacement_range,
     int selection_start,
     int selection_end) {
@@ -136,7 +137,7 @@ bool WebInputMethodControllerImpl::FinishComposingText(
 
 bool WebInputMethodControllerImpl::CommitText(
     const WebString& text,
-    const WebVector<ui::ImeTextSpan>& ime_text_spans,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const WebRange& replacement_range,
     int relative_caret_position) {
   LocalFrame::NotifyUserActivation(
@@ -217,7 +218,7 @@ WebRange WebInputMethodControllerImpl::CompositionRange() const {
 }
 
 bool WebInputMethodControllerImpl::GetCompositionCharacterBounds(
-    WebVector<gfx::Rect>& bounds) {
+    std::vector<gfx::Rect>& bounds) {
   if (IsEditContextActive()) {
     return GetInputMethodController()
         .GetActiveEditContext()
@@ -230,7 +231,7 @@ bool WebInputMethodControllerImpl::GetCompositionCharacterBounds(
 
   int character_count = range.length();
   int offset = range.StartOffset();
-  WebVector<gfx::Rect> result(static_cast<size_t>(character_count));
+  std::vector<gfx::Rect> result(static_cast<size_t>(character_count));
   gfx::Rect rect;
   for (int i = 0; i < character_count; ++i) {
     if (!web_frame_->FirstRectForCharacterRange(offset + i, 1, rect)) {

@@ -77,7 +77,6 @@ PrinterDetector::DetectedPrinter MakeExpectedPrinter(const std::string& name,
                                                      ServiceType service_type) {
   PrinterDetector::DetectedPrinter detected;
   chromeos::Printer& printer = detected.printer;
-  net::IPAddress ip_address = GetIPAddressFor(name);
   int port = GetPortFor(name);
   std::string scheme;
   std::string rp = base::StrCat({name, "_rp"});

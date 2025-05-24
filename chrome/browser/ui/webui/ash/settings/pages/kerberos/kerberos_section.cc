@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/kerberos/kerberos_section.h"
 
-#include "base/no_destructor.h"
+#include <array>
+
+#include "base/containers/span.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/kerberos/kerberos_accounts_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -26,8 +28,8 @@ namespace {
 
 // Provides search tags that are always available when the feature is enabled by
 // policy/flag.
-const std::vector<SearchConcept>& GetFixedKerberosSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetFixedKerberosSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_KERBEROS_SECTION,
        mojom::kKerberosSectionPath,
        mojom::SearchResultIcon::kAuthKey,
@@ -47,13 +49,13 @@ const std::vector<SearchConcept>& GetFixedKerberosSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAddKerberosTicketV2}},
   });
-  return *tags;
+  return tags;
 }
 
 // Provides search tags that are only available when the feature is enabled by
 // policy/flag and there is at least one Kerberos ticket.
-const std::vector<SearchConcept>& GetDynamicKerberosSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDynamicKerberosSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_KERBEROS_REMOVE,
        mojom::kKerberosAccountsV2SubpagePath,
        mojom::SearchResultIcon::kAuthKey,
@@ -67,7 +69,7 @@ const std::vector<SearchConcept>& GetDynamicKerberosSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSetActiveKerberosTicketV2}},
   });
-  return *tags;
+  return tags;
 }
 
 }  // namespace

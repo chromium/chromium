@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -23,7 +22,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
 import org.chromium.components.payments.test_support.PaymentRequestServiceBuilder;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -49,15 +48,15 @@ import java.util.Set;
 /** A test for PaymentRequestService. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES)
+@DisableFeatures({PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES,
+        PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS})
 public class PaymentRequestServiceTest implements PaymentRequestClient {
     private static final int NATIVE_WEB_CONTENTS_ANDROID = 1;
     private static final int NO_PAYMENT_ERROR = PaymentErrorReason.MIN_VALUE;
-    private final BrowserPaymentRequest mBrowserPaymentRequest;
+    private BrowserPaymentRequest mBrowserPaymentRequest;
     private List<PaymentApp> mNotifiedPendingApps;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private NavigationController mNavigationController;
     @Mock private WebContentsImpl.Natives mWebContentsJniMock;
@@ -86,9 +85,9 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private JourneyLogger mJourneyLogger;
     private PaymentRequestWebContentsData mPaymentRequestWebContentsData;
 
-    public PaymentRequestServiceTest() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebContentsImplJni.TEST_HOOKS, mWebContentsJniMock);
+    @Before
+    public void setUp() {
+        WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
         WebContentsImpl webContentsImpl =
                 Mockito.spy(
                         WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));
@@ -98,7 +97,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         mPaymentRequestWebContentsData = new PaymentRequestWebContentsData(webContentsImpl);
         PaymentRequestWebContentsData.setInstanceForTesting(mPaymentRequestWebContentsData);
 
-        mJniMocker.mock(PaymentRequestWebContentsDataJni.TEST_HOOKS, mWebContentsDataJniMock);
+        PaymentRequestWebContentsDataJni.setInstanceForTesting(mWebContentsDataJniMock);
         Mockito.doNothing().when(mWebContentsDataJniMock).recordActivationlessShow(Mockito.any());
         Mockito.doReturn(false).when(mWebContentsDataJniMock).hadActivationlessShow(Mockito.any());
 
@@ -123,7 +122,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         Mockito.doReturn(null)
                 .when(mBrowserPaymentRequest)
                 .showOrSkipAppSelector(Mockito.anyBoolean(), Mockito.any(), Mockito.anyBoolean());
-        Mockito.doReturn(true).when(mBrowserPaymentRequest).onPaymentAppCreated(Mockito.any());
         Mockito.doReturn(true)
                 .when(mBrowserPaymentRequest)
                 .parseAndValidateDetailsFurtherIfNeeded(Mockito.any());
@@ -154,10 +152,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         Mockito.doReturn(apps).when(mBrowserPaymentRequest).getPaymentApps();
 
         mJourneyLogger = Mockito.mock(JourneyLogger.class);
-    }
 
-    @Before
-    public void setUp() {
         PaymentRequestService.resetShowingPaymentRequestForTest();
         DefaultPaymentFeatureConfig.setDefaultFlagConfigurationForTesting();
     }
@@ -451,6 +446,17 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         service.updateWith(details);
         assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
         verifyContinuedShowWithUpdatedDetails(0);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS})
+    public void testOmitDeprecatedParametersNoError() {
+        PaymentRequestService service = defaultBuilder().build();
+        assertNoError();
+
+        show(service);
+        assertNoError();
     }
 
     @Test
@@ -810,7 +816,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Test
     @Feature({"Payments"})
     public void testActivationlessShow() {
-        mJniMocker.mock(PaymentRequestWebContentsDataJni.TEST_HOOKS, mWebContentsDataJniMock);
+        PaymentRequestWebContentsDataJni.setInstanceForTesting(mWebContentsDataJniMock);
         // The first show() with no user gesture is allowed.
         mIsUserGestureShow = false;
         PaymentRequestService service = defaultBuilder().setOptions(new PaymentOptions()).build();
@@ -844,5 +850,35 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
         Mockito.verify(mWebContentsDataJniMock, Mockito.times(1))
                 .recordActivationlessShow(Mockito.any());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK})
+    public void
+            disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason_whenSpcFallbackEnabled() {
+        PaymentRequestService service =
+                defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build();
+
+        service.disconnectFromClientWithDebugMessage(
+                ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+
+        assertErrorAndReason(ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @DisableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK})
+    public void
+            disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason_whenSpcFallbackDisabled() {
+        PaymentRequestService service =
+                defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build();
+
+        service.disconnectFromClientWithDebugMessage(
+                ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+
+        assertErrorAndReason(
+                ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                PaymentErrorReason.NOT_ALLOWED_ERROR);
     }
 }

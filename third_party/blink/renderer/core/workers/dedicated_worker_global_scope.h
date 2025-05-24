@@ -129,8 +129,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       std::unique_ptr<PolicyContainer> policy_container,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
-      network::mojom::CredentialsMode,
-      RejectCoepUnsafeNone reject_coep_unsafe_none) override;
+      network::mojom::CredentialsMode) override;
   bool IsOffMainThreadScriptFetchDisabled() override;
   void WorkerScriptFetchFinished(
       Script& worker_script,
@@ -150,7 +149,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   const String name() const;
   void postMessage(ScriptState*,
                    const ScriptValue& message,
-                   HeapVector<ScriptValue>& transfer,
+                   HeapVector<ScriptObject> transfer,
                    ExceptionState&);
   void postMessage(ScriptState*,
                    const ScriptValue& message,
@@ -158,11 +157,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
                    ExceptionState&);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(message, kMessage)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(messageerror, kMessageerror)
-
-  RejectCoepUnsafeNone ShouldRejectCoepUnsafeNoneTopModuleScript()
-      const override {
-    return reject_coep_unsafe_none_;
-  }
 
   // Called by the Oilpan.
   void Trace(Visitor*) const override;
@@ -229,7 +223,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   bool cross_origin_isolated_capability_;
   bool is_isolated_context_;
   Member<WorkerAnimationFrameProvider> animation_frame_provider_;
-  RejectCoepUnsafeNone reject_coep_unsafe_none_ = RejectCoepUnsafeNone(false);
 
   HeapMojoRemote<mojom::blink::DedicatedWorkerHost> dedicated_worker_host_{
       this};

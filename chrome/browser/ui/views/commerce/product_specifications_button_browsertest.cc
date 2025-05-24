@@ -12,9 +12,11 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -77,13 +79,15 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   TabSearchContainer* tab_search_container() {
-    return browser_view()->tab_strip_region_view()->tab_search_container();
+    return browser_view()
+        ->tab_strip_region_view()
+        ->tab_search_container_for_testing();
   }
 
   ProductSpecificationsButton* product_specifications_button() {
     return browser_view()
         ->tab_strip_region_view()
-        ->product_specifications_button();
+        ->GetProductSpecificationsButton();
   }
 
   MockProductSpecificationsEntryPointController* controller() {
@@ -118,7 +122,13 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ProductSpecificationsButtonOrder) {
   auto* tab_strip_region_view = browser_view()->tab_strip_region_view();
-  if (GetRenderTabSearchBeforeTabStrip()) {
+
+  if (features::IsTabSearchMoving()) {
+    TabStripActionContainer* action_container =
+        browser_view()->tab_strip_region_view()->GetTabStripActionContainer();
+    ASSERT_TRUE(action_container->GetIndexOf(product_specifications_button())
+                    .has_value());
+  } else if (GetRenderTabSearchBeforeTabStrip()) {
     ASSERT_EQ(tab_search_container(), tab_strip_region_view->children()[0]);
     ASSERT_EQ(product_specifications_button(),
               tab_strip_region_view->children()[1]);
@@ -179,6 +189,17 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
   ASSERT_FALSE(product_specifications_button()
                    ->expansion_animation_for_testing()
                    ->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
+                       ShowNotBlockedByCurrentPageEligibility) {
+  EXPECT_CALL(*controller(), ShouldExecuteEntryPointShow()).Times(0);
+
+  ShowButton();
+
+  ASSERT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
@@ -286,4 +307,23 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                   ->IsShowing());
   ASSERT_EQ(product_specifications_button()->GetText(), u"title");
   ASSERT_EQ(product_specifications_button()->GetTooltipText(), u"title");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
+                       NotifyHideEntryPoint) {
+  product_specifications_button()->ShowEntryPointWithTitle(u"title");
+
+  ShowButton();
+  product_specifications_button()->expansion_animation_for_testing()->Reset(1);
+  ASSERT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsShowing());
+
+  product_specifications_button()->HideEntryPoint();
+
+  EXPECT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsClosing());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.ProactiveChipDisqualified"));
 }

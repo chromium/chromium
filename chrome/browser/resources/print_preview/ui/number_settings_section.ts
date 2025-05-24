@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import './print_preview_shared.css.js';
-import './print_preview_vars.css.js';
 import './settings_section.js';
 
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {InputMixin} from './input_mixin.js';
-import {getTemplate} from './number_settings_section.html.js';
+import {getCss} from './number_settings_section.css.js';
+import {getHtml} from './number_settings_section.html.js';
 
 export interface PrintPreviewNumberSettingsSectionElement {
   $: {
@@ -21,7 +21,7 @@ export interface PrintPreviewNumberSettingsSectionElement {
 }
 
 const PrintPreviewNumberSettingsSectionElementBase =
-    WebUiListenerMixin(InputMixin(PolymerElement));
+    WebUiListenerMixinLit(InputMixin(CrLitElement));
 
 export class PrintPreviewNumberSettingsSectionElement extends
     PrintPreviewNumberSettingsSectionElementBase {
@@ -29,61 +29,68 @@ export class PrintPreviewNumberSettingsSectionElement extends
     return 'print-preview-number-settings-section';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       inputValid: {
         type: Boolean,
         notify: true,
-        reflectToAttribute: true,
-        value: true,
+        reflect: true,
       },
 
       currentValue: {
         type: String,
         notify: true,
-        observer: 'onCurrentValueChanged_',
       },
 
-      defaultValue: String,
-
-      maxValue: Number,
-
-      minValue: Number,
-
-      inputLabel: String,
-
-      inputAriaLabel: String,
-
-      hintMessage: String,
-
-      disabled: Boolean,
-
-      errorMessage_: {
-        type: String,
-        computed: 'computeErrorMessage_(hintMessage, inputValid)',
-      },
+      defaultValue: {type: String},
+      maxValue: {type: Number},
+      minValue: {type: Number},
+      inputLabel: {type: String},
+      inputAriaLabel: {type: String},
+      hintMessage: {type: String},
+      disabled: {type: Boolean},
+      errorMessage_: {type: String},
     };
   }
 
-  currentValue: string;
-  defaultValue: string;
-  disabled: boolean;
-  hintMessage: string;
-  inputAriaLabel: string;
-  inputLabel: string;
-  inputValid: boolean;
-  minValue: number;
-  maxValue: number;
-  private errorMessage_: string;
+  accessor currentValue: string = '';
+  accessor defaultValue: string = '';
+  accessor disabled: boolean = false;
+  accessor hintMessage: string = '';
+  accessor inputAriaLabel: string = '';
+  accessor inputLabel: string = '';
+  accessor inputValid: boolean = true;
+  accessor minValue: number|undefined;
+  accessor maxValue: number|undefined;
+  protected accessor errorMessage_: string = '';
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.addEventListener('input-change', e => this.onInputChangeEvent_(e));
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('hintMessage') ||
+        changedProperties.has('inputValid')) {
+      this.errorMessage_ = this.inputValid ? '' : this.hintMessage;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('currentValue')) {
+      this.onCurrentValueChanged_();
+    }
   }
 
   /** @return The cr-input field element for InputBehavior. */
@@ -108,11 +115,11 @@ export class PrintPreviewNumberSettingsSectionElement extends
   /**
    * @return Whether the input should be disabled.
    */
-  private getDisabled_(): boolean {
+  protected getDisabled_(): boolean {
     return this.disabled && this.inputValid;
   }
 
-  private onKeydown_(e: KeyboardEvent) {
+  protected onKeydown_(e: KeyboardEvent) {
     if (['.', 'e', 'E', '-', '+'].includes(e.key)) {
       e.preventDefault();
       return;
@@ -123,7 +130,7 @@ export class PrintPreviewNumberSettingsSectionElement extends
     }
   }
 
-  private onBlur_() {
+  protected onBlur_() {
     if (this.currentValue === '') {
       this.currentValue = this.defaultValue;
       this.inputValid = this.$.userValue.validate();
@@ -140,11 +147,10 @@ export class PrintPreviewNumberSettingsSectionElement extends
     }
     this.resetString();
   }
-
-  private computeErrorMessage_(): string {
-    return this.inputValid ? '' : this.hintMessage;
-  }
 }
+
+export type NumberSettingsSectionElement =
+    PrintPreviewNumberSettingsSectionElement;
 
 declare global {
   interface HTMLElementTagNameMap {

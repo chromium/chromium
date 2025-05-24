@@ -66,6 +66,7 @@ class LiveTabContextBrowserAgent
       const sessions::tab_restore::Tab& tab,
       int tab_index,
       bool select,
+      bool is_restoring_group_or_window,
       sessions::tab_restore::Type original_session_type) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const sessions::tab_restore::Tab& tab) override;
@@ -73,11 +74,10 @@ class LiveTabContextBrowserAgent
 
  private:
   friend class BrowserUserData<LiveTabContextBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit LiveTabContextBrowserAgent(Browser* browser);
 
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   raw_ptr<WebStateList> web_state_list_;
   SessionID session_id_;
 };

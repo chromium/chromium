@@ -614,8 +614,7 @@ NetworkMetadataStore::GetUserTextMessageSuppressionState(
              state_value->GetInt()) {
     return UserTextMessageSuppressionState::kSuppress;
   }
-  NOTREACHED_IN_MIGRATION();
-  return UserTextMessageSuppressionState::kAllow;
+  NOTREACHED();
 }
 
 void NetworkMetadataStore::SetPref(const std::string& network_guid,

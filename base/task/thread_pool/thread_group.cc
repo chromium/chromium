@@ -7,8 +7,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/task_features.h"
@@ -20,12 +20,9 @@
 #include "base/win/scoped_winrt_initializer.h"
 #endif
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
-
-constexpr size_t kMaxNumberOfWorkers = 256;
 
 // In a background thread group:
 // - Blocking calls take more time than in a foreground thread group.
@@ -88,7 +85,7 @@ void ThreadGroup::BaseScopedCommandsExecutor::Flush() {
   // called on their destructor, i.e. before this) to prevent the case where a
   // worker enters its main function, is descheduled because it wasn't woken up
   // yet, and is woken up immediately after.
-  for (auto worker : workers_to_start_) {
+  for (auto& worker : workers_to_start_) {
     worker->Start(outer_->after_start().service_thread_task_runner,
                   outer_->after_start().worker_thread_observer);
     if (outer_->worker_started_for_testing_) {
@@ -137,7 +134,7 @@ ThreadGroup::ThreadGroup(std::string_view histogram_label,
   DCHECK(!thread_group_label_.empty());
 }
 
-void ThreadGroup::StartImpl(
+void ThreadGroup::StartImplLockRequired(
     size_t max_tasks,
     size_t max_best_effort_tasks,
     TimeDelta suggested_reclaim_time,
@@ -154,7 +151,6 @@ void ThreadGroup::StartImpl(
     worker_started_for_testing_->declare_only_used_while_idle();
   }
 
-  in_start().no_worker_reclaim = FeatureList::IsEnabled(kNoWorkerThreadReclaim);
   in_start().may_block_threshold =
       may_block_threshold ? may_block_threshold.value()
                           : (thread_type_hint_ != ThreadType::kBackground
@@ -164,9 +160,6 @@ void ThreadGroup::StartImpl(
       thread_type_hint_ != ThreadType::kBackground
           ? kForegroundBlockedWorkersPoll
           : kBackgroundBlockedWorkersPoll;
-  in_start().max_num_workers_created = base::kMaxNumWorkersCreated.Get();
-
-  CheckedAutoLock auto_lock(lock_);
 
   max_tasks_ = max_tasks;
   baseline_max_tasks_ = max_tasks;
@@ -417,8 +410,9 @@ void ThreadGroup::HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
 bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
   DCHECK(TS_UNCHECKED_READ(max_allowed_sort_key_).is_lock_free());
 
-  if (!task_tracker_->CanRunPriority(sort_key.priority()))
+  if (!task_tracker_->CanRunPriority(sort_key.priority())) {
     return true;
+  }
   // It is safe to read |max_allowed_sort_key_| without a lock since this
   // variable is atomic, keeping in mind that threads may not immediately see
   // the new value when it is updated.
@@ -663,5 +657,4 @@ void ThreadGroup::IncrementMaxBestEffortTasksLockRequired() {
 ThreadGroup::InitializedInStart::InitializedInStart() = default;
 ThreadGroup::InitializedInStart::~InitializedInStart() = default;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

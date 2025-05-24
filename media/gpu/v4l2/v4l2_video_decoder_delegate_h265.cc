@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h265.h"
 
 #include <linux/v4l2-controls.h>
@@ -11,6 +16,7 @@
 #include <type_traits>
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
@@ -31,7 +37,7 @@ class V4L2H265Picture : public H265Picture {
   scoped_refptr<V4L2DecodeSurface> dec_surface() { return dec_surface_; }
 
  private:
-  ~V4L2H265Picture() override {}
+  ~V4L2H265Picture() override = default;
 
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
 };
@@ -52,7 +58,7 @@ scoped_refptr<H265Picture> V4L2VideoDecoderDelegateH265::CreateH265Picture() {
     return nullptr;
   }
 
-  return new V4L2H265Picture(dec_surface);
+  return base::MakeRefCounted<V4L2H265Picture>(dec_surface);
 }
 
 scoped_refptr<H265Picture>
@@ -63,7 +69,7 @@ V4L2VideoDecoderDelegateH265::CreateH265PictureSecure(uint64_t secure_handle) {
     return nullptr;
   }
 
-  return new V4L2H265Picture(dec_surface);
+  return base::MakeRefCounted<V4L2H265Picture>(dec_surface);
 }
 
 std::vector<scoped_refptr<V4L2DecodeSurface>>
@@ -192,6 +198,16 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
     const H265Picture::Vector& ref_pic_set_st_curr_after,
     const H265Picture::Vector& ref_pic_set_st_curr_before,
     scoped_refptr<H265Picture> pic) {
+  drop_frame_ = false;
+  if (pic->no_rasl_output_flag_ &&
+      (slice_hdr->nal_unit_type == H265NALU::RASL_N ||
+       slice_hdr->nal_unit_type == H265NALU::RASL_R)) {
+    // Drop this RASL frame as this is not decodable.
+    DVLOGF(3) << "Drop RASL frame";
+    drop_frame_ = true;
+    return Status::kOk;
+  }
+
   struct v4l2_ext_control ctrl;
   std::vector<struct v4l2_ext_control> ctrls;
 
@@ -506,6 +522,10 @@ H265Decoder::H265Accelerator::Status V4L2VideoDecoderDelegateH265::SubmitSlice(
     const uint8_t* data,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
+  if (drop_frame_) {
+    return Status::kOk;
+  }
+
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H265PictureToV4L2DecodeSurface(pic.get());
 
@@ -532,10 +552,12 @@ H265Decoder::H265Accelerator::Status V4L2VideoDecoderDelegateH265::SubmitSlice(
 
 H265Decoder::H265Accelerator::Status V4L2VideoDecoderDelegateH265::SubmitDecode(
     scoped_refptr<H265Picture> pic) {
+  if (drop_frame_) {
+    return Status::kOk;
+  }
+
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H265PictureToV4L2DecodeSurface(pic.get());
-
-  Reset();
 
   DVLOGF(4) << "Submitting decode for surface: " << dec_surface->ToString();
   surface_handler_->DecodeSurface(dec_surface);
@@ -550,7 +572,9 @@ bool V4L2VideoDecoderDelegateH265::OutputPicture(
   return true;
 }
 
-void V4L2VideoDecoderDelegateH265::Reset() {}
+void V4L2VideoDecoderDelegateH265::Reset() {
+  drop_frame_ = false;
+}
 
 bool V4L2VideoDecoderDelegateH265::IsChromaSamplingSupported(
     VideoChromaSampling chroma_sampling) {

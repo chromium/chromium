@@ -153,8 +153,8 @@ void VideoEncoderStateObserverImpl::OnEncoderCreated(
   CHECK(encoder_state_by_id_
             .insert_or_assign(
                 encoder_id,
-                std::make_unique<EncoderState>(
-                    EncoderState::CodecConfig{config, active_spatial_layers}))
+                std::make_unique<EncoderState>(EncoderState::CodecConfig{
+                    config, std::move(active_spatial_layers)}))
             .second);
   top_encoder_info_ = FindHighestActiveEncoding();
 }

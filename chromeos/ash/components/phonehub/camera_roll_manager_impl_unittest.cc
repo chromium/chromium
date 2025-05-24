@@ -28,8 +28,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -838,5 +837,4 @@ TEST_F(CameraRollManagerImplTest, ItemsClearedWhenDeviceDisconnected) {
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

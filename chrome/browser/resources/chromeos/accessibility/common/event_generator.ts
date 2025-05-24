@@ -2,19 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {KeyCode} from './key_code.js';
+import type {KeyCode} from './key_code.js';
 import {TestImportManager} from './testing/test_import_manager.js';
 
 export interface MouseClickParams {
   // The amount of time to wait between press and release.
   delayMs?: number;
   mouseButton?: chrome.accessibilityPrivate.SyntheticMouseEventButton;
+  clickArgs?: MouseClickArgs;
 }
 
 interface MouseClick {
   x: number;
   y: number;
   params: MouseClickParams;
+}
+
+interface MouseMoveArgs {
+  touchAccessibility?: boolean;
+  useRewriters?: boolean;
+  forceNotSynthetic?: boolean;
+}
+
+interface MouseClickArgs {
+  isDoubleClick?: boolean;
+  isTripleClick?: boolean;
+  forceNotSynthetic?: boolean;
 }
 
 /** Functions to send synthetic key and mouse events. */
@@ -50,10 +63,10 @@ export class EventGenerator {
   static sendKeyDown(
       keyCode: KeyCode,
       modifiers: chrome.accessibilityPrivate.SyntheticKeyboardModifiers = {},
-      useRewriters = false): void {
+      useRewriters = false, isRepeat = false): void {
     const type = chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN;
     chrome.accessibilityPrivate.sendSyntheticKeyEvent(
-        {type, keyCode, modifiers}, useRewriters);
+        {type, keyCode, modifiers}, useRewriters, isRepeat);
   }
 
   /**
@@ -76,15 +89,20 @@ export class EventGenerator {
   /**
    * Sends a synthetic mouse press (a mouse press and and a mouse release)
    *     to simulate a mouse click.
+   * If the optional arg forceNotSynthetic in MouseClickParams params is set to
+   * true, then the generated mouse event will not be marked as synthetic. This
+   * should only be used by FaceGaze.
    */
   static sendMouseClick(x: number, y: number, params: MouseClickParams = {
     delayMs: 0,
     mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT,
+    clickArgs: {},
   }): void {
     const delayMs = params.delayMs ? params.delayMs : 0;
     const mouseButton = params.mouseButton ?
         params.mouseButton :
         chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT;
+    const clickArgs = params.clickArgs ? params.clickArgs : {};
 
     if (EventGenerator.midMouseClickButton !== undefined) {
       // Add it to the queue for later.
@@ -92,12 +110,14 @@ export class EventGenerator {
       return;
     }
 
-    EventGenerator.sendMousePress(x, y, mouseButton);
+    EventGenerator.sendMousePress(x, y, mouseButton, clickArgs);
 
     if (delayMs > 0) {
-      setTimeout(() => EventGenerator.sendMouseRelease(x, y), params.delayMs);
+      setTimeout(() => {
+        EventGenerator.sendMouseRelease(x, y, clickArgs);
+      }, params.delayMs);
     } else {
-      EventGenerator.sendMouseRelease(x, y);
+      EventGenerator.sendMouseRelease(x, y, clickArgs);
     }
   }
 
@@ -105,11 +125,14 @@ export class EventGenerator {
    * Sends a synthetic mouse press event, if we are not in the middle of a
    * mouse click event. If we are in the middle of a mouse click, returns
    * false as no press event was sent.
+   * If the optional arg forceNotSynthetic in MouseClickArgs clickArgs is set to
+   * true, then the generated mouse event will not be marked as synthetic. This
+   * should only be used by FaceGaze.
    */
   static sendMousePress(
       x: number, y: number,
       mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton,
-      isDoubleClick = false): boolean {
+      clickArgs: MouseClickArgs = {}): boolean {
     if (EventGenerator.midMouseClickButton !== undefined) {
       return false;
     }
@@ -121,9 +144,17 @@ export class EventGenerator {
     x = Math.round(x);
     y = Math.round(y);
 
+    const {isDoubleClick, isTripleClick, forceNotSynthetic} = clickArgs;
     const type = chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS;
-    chrome.accessibilityPrivate.sendSyntheticMouseEvent(
-        {type, x, y, mouseButton, isDoubleClick});
+    chrome.accessibilityPrivate.sendSyntheticMouseEvent({
+      type,
+      x,
+      y,
+      mouseButton,
+      isDoubleClick,
+      isTripleClick,
+      forceNotSynthetic,
+    });
     return true;
   }
 
@@ -132,8 +163,11 @@ export class EventGenerator {
    * Will start the next click from the click queue if there is one.
    * If we are not mid mouse click, returns false as no release event
    * was sent.
+   * If the optional arg forceNotSynthetic in MouseClickArgs clickArgs is set to
+   * true, then the generated mouse event will not be marked as synthetic. This
+   * should only be used by FaceGaze.
    */
-  static sendMouseRelease(x: number, y: number, isDoubleClick = false):
+  static sendMouseRelease(x: number, y: number, clickArgs: MouseClickArgs = {}):
       boolean {
     if (EventGenerator.midMouseClickButton === undefined) {
       return false;
@@ -144,6 +178,7 @@ export class EventGenerator {
     x = Math.round(x);
     y = Math.round(y);
 
+    const {isDoubleClick, isTripleClick, forceNotSynthetic} = clickArgs;
     const type = chrome.accessibilityPrivate.SyntheticMouseEventType.RELEASE;
     chrome.accessibilityPrivate.sendSyntheticMouseEvent({
       type,
@@ -151,6 +186,8 @@ export class EventGenerator {
       y,
       mouseButton: EventGenerator.midMouseClickButton,
       isDoubleClick,
+      isTripleClick,
+      forceNotSynthetic,
     });
 
     EventGenerator.midMouseClickButton = undefined;
@@ -163,16 +200,25 @@ export class EventGenerator {
     return true;
   }
 
-  /** Sends a synthetic mouse event to simulate a move or drag event. */
-  static sendMouseMove(x: number, y: number, touchAccessibility = false): void {
-    const type = EventGenerator.midMouseClickButton !== undefined ?
-        chrome.accessibilityPrivate.SyntheticMouseEventType.DRAG :
-        chrome.accessibilityPrivate.SyntheticMouseEventType.MOVE;
+  /**
+   * Sends a synthetic mouse event to simulate a move event.
+   * If the optional arg forceNotSynthetic in MouseMoveArgs optArgs is set to
+   * true, then the generated mouse event will not be marked as synthetic. This
+   * should only be used by FaceGaze.
+   */
+  static sendMouseMove(x: number, y: number, optArgs: MouseMoveArgs = {}):
+      void {
+    const type = chrome.accessibilityPrivate.SyntheticMouseEventType.MOVE;
+    const touchAccessibility = optArgs.touchAccessibility;
+    const useRewriters = optArgs.useRewriters;
+    const forceNotSynthetic = optArgs.forceNotSynthetic;
     chrome.accessibilityPrivate.sendSyntheticMouseEvent({
       type,
       x,
       y,
       touchAccessibility,
+      useRewriters,
+      forceNotSynthetic,
       mouseButton: EventGenerator.midMouseClickButton,
     });
   }

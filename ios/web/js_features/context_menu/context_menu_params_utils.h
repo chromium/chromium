@@ -5,9 +5,8 @@
 #ifndef IOS_WEB_JS_FEATURES_CONTEXT_MENU_CONTEXT_MENU_PARAMS_UTILS_H_
 #define IOS_WEB_JS_FEATURES_CONTEXT_MENU_CONTEXT_MENU_PARAMS_UTILS_H_
 
-#import "ios/web/public/ui/context_menu_params.h"
-
 #import "base/values.h"
+#import "ios/web/public/ui/context_menu_params.h"
 
 namespace web {
 

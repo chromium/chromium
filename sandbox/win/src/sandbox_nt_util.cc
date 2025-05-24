@@ -261,9 +261,8 @@ std::optional<base::span<const uint8_t>> GetGlobalDelegateData() {
   if (!MapGlobalMemory()) {
     return std::nullopt;
   }
-  return base::make_span(
-      reinterpret_cast<const uint8_t*>(g_shared_delegate_data),
-      g_delegate_data_size);
+  return base::span(reinterpret_cast<const uint8_t*>(g_shared_delegate_data),
+                    g_delegate_data_size);
 }
 
 const NtExports* GetNtExports() {

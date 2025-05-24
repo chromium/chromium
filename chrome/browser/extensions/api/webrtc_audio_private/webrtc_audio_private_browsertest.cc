@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(HangoutServicesBrowserTest,
   // others.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server().GetURL("any-subdomain.google.com",
+      https_server().GetURL("meet.google.com",
                             "/extensions/hangout_services_test.html")));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(HangoutServicesBrowserTest,
 
   // Use a test server URL for uploading.
   g_browser_process->webrtc_log_uploader()->SetUploadUrlForTesting(
-      https_server().GetURL("any-subdomain.google.com", kLogUploadUrlPath));
+      https_server().GetURL("meet.google.com", kLogUploadUrlPath));
 
   ASSERT_TRUE(content::ExecJs(tab, "browsertestRunAllTests();"));
 

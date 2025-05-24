@@ -41,10 +41,14 @@ class DisplayStyle {
 
   bool ContentPreventsBoxGeneration() const {
     switch (style_type_) {
+      case kPseudoIdCheckMark:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
-      case kPseudoIdScrollNextButton:
-      case kPseudoIdScrollPrevButton:
+      case kPseudoIdPickerIcon:
+      case kPseudoIdScrollButtonBlockStart:
+      case kPseudoIdScrollButtonInlineStart:
+      case kPseudoIdScrollButtonInlineEnd:
+      case kPseudoIdScrollButtonBlockEnd:
         return ContentBehavesAsNormal();
       case kPseudoIdMarker:
         return content_data_ && content_data_->IsNone();

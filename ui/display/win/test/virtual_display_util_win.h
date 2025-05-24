@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/timer/timer.h"
 #include "third_party/win_virtual_display/controller/display_driver_controller.h"
 #include "third_party/win_virtual_display/driver/public/properties.h"
 #include "ui/display/display_observer.h"
@@ -55,6 +56,9 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
   void StartWaiting();
   void StopWaiting();
 
+  // Ensures that display topology is in extend mode (not mirror).
+  void EnsureExtendMode();
+
   // Creates a new internal display ID to identify the display to the driver.
   static uint8_t SynthesizeInternalDisplayId();
 
@@ -62,6 +66,8 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
   // True if the environment was considered headless during initialization.
   const bool is_headless_;
   std::unique_ptr<base::RunLoop> run_loop_;
+  // Periodically ensures that display topology is in extended mode.
+  base::RepeatingTimer ensure_extended_timer_;
   DisplayDriverController driver_controller_;
   // Contains the last configuration that was set.
   DriverProperties current_config_;

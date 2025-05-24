@@ -29,10 +29,10 @@ class SyncChange {
     ACTION_DELETE,
   };
 
-  // Returns a string representation of |change_type|.
+  // Returns a string representation of `change_type`.
   static std::string ChangeTypeToString(SyncChangeType change_type);
 
-  // Create a new change with the specified sync data. |sync_data| must be
+  // Create a new change with the specified sync data. `sync_data` must be
   // valid.
   SyncChange(const base::Location& from_here,
              SyncChangeType change_type,

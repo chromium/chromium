@@ -189,6 +189,11 @@ void ConnectJob::NotifyDelegateOfProxyAuth(
                               std::move(restart_with_auth_callback), this);
 }
 
+Error ConnectJob::HandleDnsAliasesResolved(
+    const std::set<std::string>& aliases) {
+  return delegate_->OnDestinationDnsAliasesResolved(aliases, this);
+}
+
 void ConnectJob::ResetTimer(base::TimeDelta remaining_time) {
   timer_.Stop();
   if (!remaining_time.is_zero()) {

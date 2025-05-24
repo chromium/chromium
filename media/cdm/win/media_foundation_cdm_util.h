@@ -27,6 +27,11 @@ MEDIA_EXPORT HRESULT CreateMediaFoundationCdm(
     const base::FilePath& cdm_store_path_root,
     Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
 
+MEDIA_EXPORT bool IsMediaFoundationContentTypeSupported(
+    Microsoft::WRL::ComPtr<IMFExtendedDRMTypeSupport> mf_type_support,
+    const std::string& key_system,
+    const std::string& content_type);
+
 }  // namespace media
 
 #endif  // MEDIA_CDM_WIN_MEDIA_FOUNDATION_CDM_UTIL_H_

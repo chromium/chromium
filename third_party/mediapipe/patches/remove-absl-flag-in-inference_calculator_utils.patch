@@ -1,0 +1,65 @@
+From 1bc6a60afc4f514492c8ef8dce797a1951c20618 Mon Sep 17 00:00:00 2001
+From: Victor Hugo Vianna Silva <victorvianna@google.com>
+Date: Wed, 22 Jan 2025 17:41:31 +0000
+Subject: [PATCH] Remove ABSL_FLAG in inference_calculator_utils
+
+This is disallowed in Chromium builds. Use the default flag value instead.
+
+---
+ .../calculators/tensor/inference_calculator_utils.cc       | 7 +------
+ .../calculators/tensor/inference_calculator_utils.h        | 3 ---
+ 2 files changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.cc b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.cc
+index 52c6c8be2206c..d5ee27ba149de 100644
+--- a/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.cc
++++ b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.cc
+@@ -20,7 +20,6 @@
+ #include <string>
+ #include <vector>
+ 
+-#include "absl/flags/flag.h"
+ #include "absl/log/absl_log.h"
+ #include "absl/status/status.h"
+ #include "absl/status/statusor.h"
+@@ -39,10 +38,6 @@
+ #include "tensorflow/lite/portable_type_to_tflitetype.h"
+ #include "tensorflow/lite/string_util.h"
+ 
+-ABSL_FLAG(int, xnnpack_default_num_threads, 0,
+-          "Default number of xnnpack threads to use. If unset, determines a "
+-          "good default number based on the platform.");
+-
+ #if !defined(__EMSCRIPTEN__) || defined(__EMSCRIPTEN_PTHREADS__)
+ #include "mediapipe/util/cpu_util.h"
+ #endif  // !__EMSCRIPTEN__ || __EMSCRIPTEN_PTHREADS__
+@@ -51,7 +46,7 @@ namespace mediapipe {
+ namespace {
+ 
+ int GetXnnpackDefaultNumThreads() {
+-  int default_from_flag = absl::GetFlag(FLAGS_xnnpack_default_num_threads);
++  int default_from_flag = 0;
+   if (default_from_flag > 0) {
+     return default_from_flag;
+   }
+diff --git a/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.h b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.h
+index 93454ed9f7d94..0eff2b854801d 100644
+--- a/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.h
++++ b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_utils.h
+@@ -19,7 +19,6 @@
+ #include <cstdint>
+ #include <string>
+ 
+-#include "absl/flags/declare.h"
+ #include "absl/status/status.h"
+ #include "absl/status/statusor.h"
+ #include "mediapipe/calculators/tensor/inference_calculator.pb.h"
+@@ -29,8 +28,6 @@
+ #include "tensorflow/lite/interpreter.h"
+ #include "tensorflow/lite/util.h"
+ 
+-ABSL_DECLARE_FLAG(int, xnnpack_default_num_threads);
+-
+ namespace mediapipe {
+ 
+ // Returns number of threads to configure XNNPACK delegate with.

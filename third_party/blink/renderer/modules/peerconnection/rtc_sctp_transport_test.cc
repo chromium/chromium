@@ -37,7 +37,7 @@ class MockSctpTransport : public webrtc::SctpTransportInterface {
         .WillByDefault(Invoke(this, &MockSctpTransport::SetObserver));
   }
   MOCK_CONST_METHOD0(dtls_transport,
-                     rtc::scoped_refptr<webrtc::DtlsTransportInterface>());
+                     webrtc::scoped_refptr<webrtc::DtlsTransportInterface>());
   MOCK_CONST_METHOD0(Information, webrtc::SctpTransportInformation());
   MOCK_METHOD1(RegisterObserver, void(webrtc::SctpTransportObserverInterface*));
   MOCK_METHOD0(UnregisterObserver, void());
@@ -99,8 +99,8 @@ TEST_F(RTCSctpTransportTest, CreateFromMocks) {
   V8TestingScope scope;
 
   ExecutionContext* context = scope.GetExecutionContext();
-  rtc::scoped_refptr<webrtc::SctpTransportInterface> mock_native_transport(
-      new rtc::RefCountedObject<NiceMock<MockSctpTransport>>());
+  webrtc::scoped_refptr<webrtc::SctpTransportInterface> mock_native_transport(
+      new webrtc::RefCountedObject<NiceMock<MockSctpTransport>>());
   RTCSctpTransport* transport = MakeGarbageCollected<RTCSctpTransport>(
       context, mock_native_transport, main_thread_, worker_thread_);
   WeakPersistent<RTCSctpTransport> garbage_collection_observer = transport;

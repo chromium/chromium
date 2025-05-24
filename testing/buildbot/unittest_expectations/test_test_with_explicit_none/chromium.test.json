@@ -10,6 +10,7 @@
         "name": "foo_test",
         "swarming": {
           "dimensions": {
+            "integrity": null,
             "kvm": "1",
             "os": "Linux"
           },

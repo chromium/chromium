@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -15,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -39,6 +39,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -63,7 +64,6 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "pdf/pdf_features.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
@@ -90,14 +90,14 @@ void WaitForRenderWidgetHostCount(size_t target_count) {
 
 class SitePerProcessInteractiveBrowserTest : public InProcessBrowserTest {
  public:
-  SitePerProcessInteractiveBrowserTest() {}
+  SitePerProcessInteractiveBrowserTest() = default;
 
   SitePerProcessInteractiveBrowserTest(
       const SitePerProcessInteractiveBrowserTest&) = delete;
   SitePerProcessInteractiveBrowserTest& operator=(
       const SitePerProcessInteractiveBrowserTest&) = delete;
 
-  ~SitePerProcessInteractiveBrowserTest() override {}
+  ~SitePerProcessInteractiveBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
@@ -750,9 +750,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
   EXPECT_EQ("\"child3-focused-input1\"", press_tab_and_wait_for_message(false));
 }
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 // Ensures that renderers know to advance focus to sibling frames and parent
 // frames in the presence of mouse click initiated focus changes.
 // Verifies against regression of https://crbug.com/702330
@@ -967,6 +965,87 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
       << "Unexpected extra focus events.";
 }
 #endif
+
+// Ensure that tab traversal works with crashed frames. Start with
+// a document with an OOPIF and two <input> fields. Crash the child
+// frame renderer and ensure that pressing tab correctly skips the sad
+// frame.
+//                child(sad)
+//             /------------\
+//  1. <input> |            | 2. <input>
+//             \------------/
+IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
+                       TabFocusWithSadRemote) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child);
+
+  content::WaitForHitTestData(child);
+
+  // Assign a name to parent page.
+  EXPECT_TRUE(ExecJs(main_frame, "window.name = 'root';"));
+
+  // This script will insert two <input> fields in the document, one at the
+  // beginning and one at the end. For root frame, this means that we will
+  // have an <input>, <iframe> element and then another <input>.
+  std::string script =
+      "function onFocus(e) {"
+      "  domAutomationController.send(window.name + '-focused-' + e.target.id);"
+      "}"
+      "var input1 = document.createElement('input');"
+      "input1.id = 'input1';"
+      "var input2 = document.createElement('input');"
+      "input2.id = 'input2';"
+      "document.body.insertBefore(input1, document.body.firstChild);"
+      "document.body.appendChild(input2);"
+      "input1.addEventListener('focus', onFocus, false);"
+      "input2.addEventListener('focus', onFocus, false);";
+
+  EXPECT_TRUE(ExecJs(main_frame, script));
+
+  // Simulate a tab press and wait for a focus message.
+  auto press_tab_and_wait_for_message = [web_contents](bool reverse) {
+    content::DOMMessageQueue msg_queue(web_contents);
+    std::string reply;
+    SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
+                     ui::VKEY_TAB, false, reverse /* shift */, false, false);
+    EXPECT_TRUE(msg_queue.WaitForMessage(&reply));
+    return reply;
+  };
+
+  // Press <tab> two times to focus each of the <input> elements in turn.
+  EXPECT_EQ("\"root-focused-input1\"", press_tab_and_wait_for_message(false));
+  EXPECT_EQ(main_frame, web_contents->GetFocusedFrame());
+  EXPECT_EQ("\"root-focused-input2\"", press_tab_and_wait_for_message(false));
+  EXPECT_EQ(main_frame, web_contents->GetFocusedFrame());
+
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    content::RenderProcessHostWatcher child_observer(
+        child->GetProcess(),
+        content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+    // Kill the renderer process of child frame.
+    child->GetProcess()->Shutdown(0);
+    child_observer.Wait();
+  }
+
+  // Press <shift-tab> to navigate focus in the reverse direction.
+  EXPECT_EQ("\"root-focused-input1\"", press_tab_and_wait_for_message(true));
+  EXPECT_EQ(main_frame, web_contents->GetFocusedFrame());
+
+  // Press <tab> to navigate focus to second input skipping sad iframe.
+  EXPECT_EQ("\"root-focused-input2\"", press_tab_and_wait_for_message(false));
+  EXPECT_EQ(main_frame, web_contents->GetFocusedFrame());
+}
 
 namespace {
 
@@ -1242,7 +1321,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
             browser(), ui::VKEY_ESCAPE, false, false, false, false));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     WaitForMultipleFullscreenEvents(expected_events, queue);
     waiter.Wait();
@@ -1471,7 +1550,7 @@ class SitePerProcessInteractivePDFTest
   SitePerProcessInteractivePDFTest& operator=(
       const SitePerProcessInteractivePDFTest&) = delete;
 
-  ~SitePerProcessInteractivePDFTest() override {}
+  ~SitePerProcessInteractivePDFTest() override = default;
 
   void SetUpOnMainThread() override {
     SitePerProcessInteractiveBrowserTest::SetUpOnMainThread();
@@ -1489,7 +1568,7 @@ class SitePerProcessInteractivePDFTest
 
   void TearDownOnMainThread() override {
     test_guest_view_manager_ = nullptr;
-    factory_ = absl::monostate();
+    factory_ = std::monostate();
     SitePerProcessInteractiveBrowserTest::TearDownOnMainThread();
   }
 
@@ -1501,14 +1580,14 @@ class SitePerProcessInteractivePDFTest
   }
 
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() const {
-    return absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
+    return std::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
                factory_)
         ->GetTestPdfViewerStreamManager(
             browser()->tab_strip_model()->GetActiveWebContents());
   }
 
   void CreateTestPdfViewerStreamManager() const {
-    absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
+    std::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
         ->CreatePdfViewerStreamManager(
             browser()->tab_strip_model()->GetActiveWebContents());
   }
@@ -1532,9 +1611,9 @@ class SitePerProcessInteractivePDFTest
   }
 
  private:
-  absl::variant<absl::monostate,
-                std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
-                std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
+  std::variant<std::monostate,
+               std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
+               std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
       factory_;
   raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };

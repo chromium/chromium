@@ -103,8 +103,7 @@ void GetAllChildren(const std::vector<ProcessEntry>& processes,
 
 }  // namespace
 
-MemoryDetails::MemoryDetails() {
-}
+MemoryDetails::MemoryDetails() = default;
 
 ProcessData* MemoryDetails::ChromeBrowser() {
   return &process_data_[0];

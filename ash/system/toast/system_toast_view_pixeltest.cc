@@ -12,6 +12,8 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
@@ -43,7 +45,7 @@ class SystemToastViewPixelTest : public AshTestBase {
         views::Builder<views::FlexLayoutView>()
             .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
             .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-            .SetBackground(views::CreateThemedSolidBackground(
+            .SetBackground(views::CreateSolidBackground(
                 cros_tokens::kCrosSysSystemBaseElevated))
             .Build());
   }
@@ -69,33 +71,49 @@ TEST_F(SystemToastViewPixelTest, TextOnly) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(kTestText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/6, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, WithLeadingIcon) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
-      /*text=*/kTestText, /*dismiss_text=*/std::u16string(),
-      /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
+      /*text=*/kTestText, SystemToastView::ButtonType::kNone,
+      /*button_text=*/std::u16string(),
+      /*button_icon=*/&gfx::VectorIcon::EmptyIcon(),
+      /*button_callback=*/base::DoNothing(),
+      /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/5, GetContentsView()));
+      "screenshot", /*revision_number=*/7, GetContentsView()));
 }
 
-TEST_F(SystemToastViewPixelTest, WithButton) {
+TEST_F(SystemToastViewPixelTest, WithTextButton) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
-      /*text=*/kTestText, /*dismiss_text=*/kTestButtonText));
+      /*text=*/kTestText, SystemToastView::ButtonType::kTextButton,
+      /*button_text=*/kTestButtonText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/6, GetContentsView()));
+      "screenshot", /*revision_number=*/2, GetContentsView()));
 }
 
-TEST_F(SystemToastViewPixelTest, WithLeadingIconAndButton) {
+TEST_F(SystemToastViewPixelTest, WithIconButton) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
-      /*text=*/kTestText, /*dismiss_text=*/kTestButtonText,
-      /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
+      /*text=*/kTestText, SystemToastView::ButtonType::kIconButton,
+      /*button_text=*/kTestButtonText, /*button_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/5, GetContentsView()));
+      "screenshot", /*revision_number=*/2, GetContentsView()));
+}
+
+TEST_F(SystemToastViewPixelTest, WithLeadingIconAndTextButton) {
+  GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
+      /*text=*/kTestText, SystemToastView::ButtonType::kTextButton,
+      /*button_text=*/kTestButtonText,
+      /*button_icon=*/&gfx::VectorIcon::EmptyIcon(),
+      /*button_callback=*/base::DoNothing(),
+      /*leading_icon=*/kTestIcon));
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "screenshot", /*revision_number=*/2, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_TextOnly) {
@@ -103,33 +121,40 @@ TEST_F(SystemToastViewPixelTest, Multiline_TextOnly) {
       std::make_unique<SystemToastView>(kTestLongText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/6, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIcon) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
-      /*text=*/kTestLongText, /*dismiss_text=*/std::u16string(),
-      /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
+      /*text=*/kTestLongText, SystemToastView::ButtonType::kNone,
+      /*button_text=*/std::u16string(),
+      /*button_icon=*/&gfx::VectorIcon::EmptyIcon(),
+      /*button_callback=*/base::DoNothing(),
+      /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/6, GetContentsView()));
 }
 
-TEST_F(SystemToastViewPixelTest, Multiline_WithButton) {
+TEST_F(SystemToastViewPixelTest, Multiline_WithTextButton) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
-      /*text=*/kTestLongText, /*dismiss_text=*/kTestButtonText));
+      /*text=*/kTestLongText, SystemToastView::ButtonType::kTextButton,
+      /*button_text=*/kTestButtonText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/2, GetContentsView()));
 }
 
-TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIconAndButton) {
+TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIconAndTextButton) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
-      /*text=*/kTestLongText, /*dismiss_text=*/kTestButtonText,
-      /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
+      /*text=*/kTestLongText, SystemToastView::ButtonType::kTextButton,
+      /*button_text=*/kTestButtonText,
+      /*button_icon=*/&gfx::VectorIcon::EmptyIcon(),
+      /*button_callback=*/base::DoNothing(),
+      /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/2, GetContentsView()));
 }
 
 }  // namespace ash

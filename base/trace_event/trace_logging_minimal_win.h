@@ -117,10 +117,11 @@
  *     my_provider.Unregister();
  */
 
+#include <variant>
+
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base::trace_event {
 class MultiEtwPayloadHandler;

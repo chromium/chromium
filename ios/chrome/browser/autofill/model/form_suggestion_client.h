@@ -14,10 +14,13 @@ struct FormActivityParams;
 @class FormSuggestion;
 
 // Handles user interaction with a FormSuggestion.
-@protocol FormSuggestionClient<NSObject>
+@protocol FormSuggestionClient <NSObject>
 
 // Called when a suggestion is selected. `index` indicates the position of the
-// selected suggestion among the available suggestions.
+// selected suggestion among the available suggestions. The client needs to get
+// the form activity params from somewhere, so if the client is stateless the
+// params need to be set in the `suggestion` itself, otherwise the client needs
+// to provide the params by tracking them.
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index;
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FUSEBOX_FUSEBOX_SERVER_H_
 
 #include <string>
+#include <variant>
 
 #include "base/containers/circular_deque.h"
 #include "base/files/file.h"
@@ -16,12 +17,10 @@
 #include "base/threading/sequence_bound.h"
 #include "base/values.h"
 #include "chrome/browser/ash/fusebox/fusebox.pb.h"
-#include "chrome/browser/ash/fusebox/fusebox_histograms.h"
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "chrome/browser/ash/system_web_apps/apps/files_internals_debug_json_provider.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Profile;
 
@@ -226,7 +225,7 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
   using PendingFlush = std::pair<FlushRequestProto, FlushCallback>;
   using PendingRead2 = std::pair<Read2RequestProto, Read2Callback>;
   using PendingWrite2 = std::pair<Write2RequestProto, Write2Callback>;
-  using PendingOp = absl::variant<PendingFlush, PendingRead2, PendingWrite2>;
+  using PendingOp = std::variant<PendingFlush, PendingRead2, PendingWrite2>;
 
   struct FuseFileMapEntry {
     FuseFileMapEntry(scoped_refptr<storage::FileSystemContext> fs_context_arg,
@@ -247,7 +246,6 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
             uint64_t fuse_handle);
 
     const scoped_refptr<storage::FileSystemContext> fs_context_;
-    const HistogramEnumFileSystemType histogram_enum_file_system_type_;
     const bool readable_;
     const bool writable_;
 

@@ -6,6 +6,7 @@ include_rules = [
   "+chrome/chrome_elf/blocklist_constants.h",
   "+chrome/chrome_elf/chrome_elf_constants.h",
   "+chrome/install_static",
+  "+chrome/windows_services/elevated_tracing_service/service_integration.h",
   "+components/base32",
   "+components/metrics",
   "+components/version_info/channel.h",

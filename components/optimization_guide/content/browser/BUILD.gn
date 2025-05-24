@@ -6,9 +6,14 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 import("//components/optimization_guide/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("browser") {
   sources = [
+    "page_content_proto_provider.cc",
+    "page_content_proto_provider.h",
+    "page_content_proto_util.cc",
+    "page_content_proto_util.h",
     "page_text_dump_result.cc",
     "page_text_dump_result.h",
     "page_text_observer.cc",
@@ -24,6 +29,7 @@ static_library("browser") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
   ]
   if (build_with_tflite_lib) {
@@ -38,15 +44,41 @@ static_library("browser") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("page_context_eligibility_api") {
+  public = [ "page_context_eligibility_api.h" ]
+  sources = [ "page_context_eligibility_api.cc" ]
+}
+
+static_library("page_context_eligibility") {
+  public = [ "page_context_eligibility.h" ]
+  sources = [ "page_context_eligibility.cc" ]
+
+  public_deps = [
+    ":browser",
+    ":page_context_eligibility_api",
+    "//base",
+    "//components/optimization_guide/core:optimization_guide_library_holder",
+  ]
+
+  if (build_with_internal_optimization_guide) {
+    data_deps = [
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "page_content_proto_util_unittest.cc",
+    "page_context_eligibility_unittest.cc",
     "page_text_dump_result_unittest.cc",
     "page_text_observer_unittest.cc",
   ]
 
   deps = [
     ":browser",
+    ":page_context_eligibility",
     "//components/optimization_guide/core:test_support",
     "//content/test:test_support",
     "//testing/gmock",

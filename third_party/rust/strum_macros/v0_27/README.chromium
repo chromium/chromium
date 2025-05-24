@@ -1,0 +1,10 @@
+Name: strum_macros
+URL: https://crates.io/crates/strum_macros
+Version: 0.27.1
+Revision: 85d0ae61d149472d971e76fd08e6bd9c314ec4b7
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/strum_macros-v0_27/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Helpful macros for working with enums and strings

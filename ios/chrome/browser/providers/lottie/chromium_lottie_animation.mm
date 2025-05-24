@@ -9,6 +9,7 @@
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 #import <Lottie/Lottie.h>
+
 #import "base/check.h"
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 
@@ -54,6 +55,12 @@
 - (void)stop {
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   [_lottieAnimation stop];
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
+}
+
+- (void)pause {
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+  [_lottieAnimation pause];
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 }
 

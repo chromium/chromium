@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_SURFACE_UPDATER_H_
 #define COMPONENTS_FEED_CORE_V2_SURFACE_UPDATER_H_
 
-#include <deque>
 #include <map>
 #include <string>
 #include <vector>

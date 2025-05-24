@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/374320451): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -72,12 +77,12 @@ class HttpAuthHandlerNtlmPortableTest : public PlatformTest {
 
   HttpAuth::AuthorizationResult HandleAnotherChallenge(
       const std::string& challenge) {
-    HttpAuthChallengeTokenizer tokenizer(challenge.begin(), challenge.end());
+    HttpAuthChallengeTokenizer tokenizer(challenge);
     return GetAuthHandler()->HandleAnotherChallenge(&tokenizer);
   }
 
   bool DecodeChallenge(const std::string& challenge, std::string* decoded) {
-    HttpAuthChallengeTokenizer tokenizer(challenge.begin(), challenge.end());
+    HttpAuthChallengeTokenizer tokenizer(challenge);
     return base::Base64Decode(tokenizer.base64_param(), decoded);
   }
 

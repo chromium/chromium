@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_YOUTUBE_MUSIC_TYPES_H_
 #define ASH_SYSTEM_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_YOUTUBE_MUSIC_TYPES_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +12,9 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "google_apis/common/api_error_codes.h"
+#include "google_apis/youtube_music/youtube_music_api_request_types.h"
 #include "ui/base/models/list_model.h"
 #include "url/gurl.h"
 
@@ -209,21 +210,20 @@ struct ASH_EXPORT PlaybackData {
   bool initial_playback;
 };
 
-using GetPlaylistCallback =
-    base::OnceCallback<void(google_apis::ApiErrorCode http_error_code,
-                            std::optional<Playlist> playlist)>;
+using GetPlaylistCallback = base::OnceCallback<void(
+    base::expected<Playlist, google_apis::youtube_music::ApiError> playlist)>;
 
 using GetMusicSectionCallback = base::OnceCallback<void(
-    google_apis::ApiErrorCode http_error_code,
-    std::optional<const std::vector<Playlist>> playlists)>;
+    base::expected<const std::vector<Playlist>,
+                   google_apis::youtube_music::ApiError> playlists)>;
 
 using GetPlaybackContextCallback = base::OnceCallback<void(
-    google_apis::ApiErrorCode http_error_code,
-    std::optional<const PlaybackContext> playback_context)>;
+    base::expected<const PlaybackContext, google_apis::youtube_music::ApiError>
+        playback_context)>;
 
 using ReportPlaybackCallback = base::OnceCallback<void(
-    google_apis::ApiErrorCode http_error_code,
-    std::optional<const std::string> new_playback_reporting_token)>;
+    base::expected<const std::string, google_apis::youtube_music::ApiError>
+        new_playback_reporting_token)>;
 
 }  // namespace ash::youtube_music
 

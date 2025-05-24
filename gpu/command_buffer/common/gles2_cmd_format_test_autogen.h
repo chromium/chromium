@@ -8,6 +8,11 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // This file contains unit tests for gles2 commands
 // It is included by gles2_cmd_format_test.cc
 
@@ -4364,18 +4369,6 @@ TEST_F(GLES2FormatTest, MemoryBarrierByRegion) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(GLES2FormatTest, SwapBuffers) {
-  cmds::SwapBuffers& cmd = *GetBufferAs<cmds::SwapBuffers>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint64>(11), static_cast<GLbitfield>(12));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::SwapBuffers::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint64>(11), cmd.swap_id());
-  EXPECT_EQ(static_cast<GLbitfield>(12), cmd.flags);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 TEST_F(GLES2FormatTest, GetMaxValueInBufferCHROMIUM) {
   cmds::GetMaxValueInBufferCHROMIUM& cmd =
       *GetBufferAs<cmds::GetMaxValueInBufferCHROMIUM>();
@@ -4453,25 +4446,6 @@ TEST_F(GLES2FormatTest, FlushMappedBufferRange) {
   EXPECT_EQ(static_cast<GLenum>(11), cmd.target);
   EXPECT_EQ(static_cast<GLintptr>(12), cmd.offset);
   EXPECT_EQ(static_cast<GLsizeiptr>(13), cmd.size);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, ResizeCHROMIUM) {
-  cmds::ResizeCHROMIUM& cmd = *GetBufferAs<cmds::ResizeCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
-                           static_cast<GLfloat>(13), static_cast<GLboolean>(14),
-                           static_cast<GLuint>(15), static_cast<GLuint>(16),
-                           static_cast<GLsizei>(17));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::ResizeCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLint>(11), cmd.width);
-  EXPECT_EQ(static_cast<GLint>(12), cmd.height);
-  EXPECT_EQ(static_cast<GLfloat>(13), cmd.scale_factor);
-  EXPECT_EQ(static_cast<GLboolean>(14), cmd.alpha);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.shm_id);
-  EXPECT_EQ(static_cast<GLuint>(16), cmd.shm_offset);
-  EXPECT_EQ(static_cast<GLsizei>(17), cmd.color_space_size);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
@@ -5133,10 +5107,10 @@ TEST_F(GLES2FormatTest, CopySharedImageINTERNALImmediate) {
   };
   cmds::CopySharedImageINTERNALImmediate& cmd =
       *GetBufferAs<cmds::CopySharedImageINTERNALImmediate>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
-                           static_cast<GLint>(13), static_cast<GLint>(14),
-                           static_cast<GLsizei>(15), static_cast<GLsizei>(16),
-                           static_cast<GLboolean>(17), data);
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
+              static_cast<GLint>(13), static_cast<GLint>(14),
+              static_cast<GLsizei>(15), static_cast<GLsizei>(16), data);
   EXPECT_EQ(
       static_cast<uint32_t>(cmds::CopySharedImageINTERNALImmediate::kCmdId),
       cmd.header.command);
@@ -5148,7 +5122,6 @@ TEST_F(GLES2FormatTest, CopySharedImageINTERNALImmediate) {
   EXPECT_EQ(static_cast<GLint>(14), cmd.y);
   EXPECT_EQ(static_cast<GLsizei>(15), cmd.width);
   EXPECT_EQ(static_cast<GLsizei>(16), cmd.height);
-  EXPECT_EQ(static_cast<GLboolean>(17), cmd.unpack_flip_y);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
@@ -5193,7 +5166,7 @@ TEST_F(GLES2FormatTest, CopySharedImageToTextureINTERNALImmediate) {
   EXPECT_EQ(static_cast<GLint>(16), cmd.src_y);
   EXPECT_EQ(static_cast<GLsizei>(17), cmd.width);
   EXPECT_EQ(static_cast<GLsizei>(18), cmd.height);
-  EXPECT_EQ(static_cast<GLboolean>(19), cmd.flip_y);
+  EXPECT_EQ(static_cast<GLboolean>(19), cmd.is_dst_origin_top_left);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

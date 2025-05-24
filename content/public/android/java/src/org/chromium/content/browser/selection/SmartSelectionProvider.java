@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.selection;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.RemoteAction;
 import android.content.Context;
@@ -17,11 +19,12 @@ import android.view.textclassifier.TextClassifier;
 import android.view.textclassifier.TextSelection;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content_public.browser.SelectionClient;
@@ -34,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Controls Smart Text selection. Talks to the Android TextClassificationManager API. */
+@NullMarked
 public class SmartSelectionProvider {
     private static final String TAG = "SmartSelProvider";
 
@@ -44,14 +48,14 @@ public class SmartSelectionProvider {
         int SUGGEST_AND_CLASSIFY = 1;
     }
 
-    private SelectionClient.ResultCallback mResultCallback;
-    private WindowAndroid mWindowAndroid;
-    private ClassificationTask mClassificationTask;
-    private TextClassifier mTextClassifier;
+    private final SelectionClient.ResultCallback mResultCallback;
+    private @Nullable WindowAndroid mWindowAndroid;
+    private @Nullable ClassificationTask mClassificationTask;
+    private @Nullable TextClassifier mTextClassifier;
 
-    private Handler mHandler;
-    private Runnable mFailureResponseRunnable;
-    @Nullable private final SmartSelectionEventProcessor mSelectionEventProcessor;
+    private final Handler mHandler;
+    private final Runnable mFailureResponseRunnable;
+    private final @Nullable SmartSelectionEventProcessor mSelectionEventProcessor;
 
     public SmartSelectionProvider(
             SelectionClient.ResultCallback callback,
@@ -59,12 +63,13 @@ public class SmartSelectionProvider {
             @Nullable SmartSelectionEventProcessor selectionEventProcessor) {
         mResultCallback = callback;
         mWindowAndroid = webContents.getTopLevelNativeWindow();
-        WindowEventObserverManager manager = WindowEventObserverManager.from(webContents);
+        WindowEventObserverManager manager = WindowEventObserverManager.maybeFrom(webContents);
         if (manager != null) {
             manager.addObserver(
                     new WindowEventObserver() {
                         @Override
-                        public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
+                        public void onWindowAndroidChanged(
+                                @Nullable WindowAndroid newWindowAndroid) {
                             mWindowAndroid = newWindowAndroid;
                         }
                     });
@@ -96,8 +101,8 @@ public class SmartSelectionProvider {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     public void setTextClassifier(TextClassifier textClassifier) {
+        assumeNonNull(mWindowAndroid);
         mTextClassifier = textClassifier;
 
         Context context = mWindowAndroid.getContext().get();
@@ -110,8 +115,7 @@ public class SmartSelectionProvider {
 
     // TODO(wnwen): Remove this suppression once the constant is added to lint.
     @SuppressLint("WrongConstant")
-    @RequiresApi(Build.VERSION_CODES.O)
-    public TextClassifier getTextClassifier() {
+    public @Nullable TextClassifier getTextClassifier() {
         if (mTextClassifier != null) return mTextClassifier;
 
         if (mWindowAndroid == null) {
@@ -125,12 +129,11 @@ public class SmartSelectionProvider {
                 .getTextClassifier();
     }
 
-    public TextClassifier getCustomTextClassifier() {
+    public @Nullable TextClassifier getCustomTextClassifier() {
         return mTextClassifier;
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private TextClassifier getTextClassificationSession() {
+    private @Nullable TextClassifier getTextClassificationSession() {
         if (mWindowAndroid == null) {
             return null;
         }
@@ -148,7 +151,6 @@ public class SmartSelectionProvider {
         return textClassifierSession;
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private void sendSmartSelectionRequest(
             @RequestType int requestType, CharSequence text, int start, int end) {
         TextClassifier classifier = getTextClassificationSession();
@@ -156,6 +158,7 @@ public class SmartSelectionProvider {
             mHandler.post(mFailureResponseRunnable);
             return;
         }
+        assumeNonNull(mWindowAndroid);
 
         if (mClassificationTask != null) {
             mClassificationTask.cancel(false);
@@ -175,14 +178,13 @@ public class SmartSelectionProvider {
         mClassificationTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private class ClassificationTask extends AsyncTask<SelectionClient.Result> {
         private final TextClassifier mTextClassifier;
         private final @RequestType int mRequestType;
         private final CharSequence mText;
         private final int mOriginalStart;
         private final int mOriginalEnd;
-        private final Context mContext;
+        private final @Nullable Context mContext;
 
         ClassificationTask(
                 TextClassifier classifier,
@@ -190,7 +192,7 @@ public class SmartSelectionProvider {
                 CharSequence text,
                 int start,
                 int end,
-                Context context) {
+                @Nullable Context context) {
             mTextClassifier = classifier;
             mRequestType = requestType;
             mText = text;
@@ -248,7 +250,7 @@ public class SmartSelectionProvider {
         }
 
         private SelectionClient.Result makeResult(
-                int start, int end, TextClassification tc, TextSelection ts) {
+                int start, int end, TextClassification tc, @Nullable TextSelection ts) {
             SelectionClient.Result result = new SelectionClient.Result();
 
             result.text = mText.toString();
@@ -275,7 +277,8 @@ public class SmartSelectionProvider {
         // SmartSelectionProvider. TextClassification#getActions() is only available on P and above,
         // so
         @RequiresApi(Build.VERSION_CODES.P)
-        private List<Drawable> loadIconDrawables(Context context, TextClassification tc) {
+        private @Nullable List<Drawable> loadIconDrawables(
+                @Nullable Context context, TextClassification tc) {
             if (context == null || tc == null) return null;
 
             ArrayList<Drawable> res = new ArrayList<>();

@@ -19,17 +19,21 @@ namespace blink {
 AudioWorkletObjectProxy::AudioWorkletObjectProxy(
     AudioWorkletMessagingProxy* messaging_proxy_weak_ptr,
     ParentExecutionContextTaskRunners* parent_execution_context_task_runners,
-    float context_sample_rate)
+    float context_sample_rate,
+    uint64_t context_sample_frame_at_construction)
     : ThreadedWorkletObjectProxy(
           static_cast<ThreadedWorkletMessagingProxy*>(messaging_proxy_weak_ptr),
           parent_execution_context_task_runners,
           /*parent_agent_group_task_runner=*/nullptr),
-      context_sample_rate_(context_sample_rate) {}
+      context_sample_rate_at_construction_(context_sample_rate),
+      context_sample_frame_at_construction_(
+          context_sample_frame_at_construction) {}
 
 void AudioWorkletObjectProxy::DidCreateWorkerGlobalScope(
     WorkerOrWorkletGlobalScope* global_scope) {
   global_scope_ = To<AudioWorkletGlobalScope>(global_scope);
-  global_scope_->SetSampleRate(context_sample_rate_);
+  global_scope_->SetSampleRate(context_sample_rate_at_construction_);
+  global_scope_->SetCurrentFrame(context_sample_frame_at_construction_);
   global_scope_->SetObjectProxy(*this);
 }
 

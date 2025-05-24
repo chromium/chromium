@@ -4,7 +4,7 @@
 
 import("//tools/typescript/ts_library.gni")
 
-assert(is_chromeos_ash, "Help App is ash-chrome only")
+assert(is_chromeos, "Help App is ChromeOS only")
 
 ts_library("build_ts") {
   in_files = [ "app_bin.ts" ]

@@ -8,13 +8,13 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "content/public/common/main_function_params.h"
 
 namespace code_sign_clone_manager {
 
 BASE_DECLARE_FEATURE(kMacAppCodeSignClone);
+BASE_DECLARE_FEATURE(kMacAppCodeSignCloneRenameAsBundle);
 
 //
 // Manages a temporary copy-on-write clone of an app bundle. The temporary clone
@@ -79,8 +79,11 @@ BASE_DECLARE_FEATURE(kMacAppCodeSignClone);
 // will become inaccessible on the filesystem and their disk blocks will be
 // freed.
 //
+// The clone is given a ".bundle" extension to avoid Launch Services issues; see
+// https://crbug.com/381199182 for more details.
+//
 // Example path to the cloned app bundle:
-//   /private/var/folders/c4/ygf_t4gn0tx0k1y1hm32hh6w00b_4p/X/org.chromium.Chromium.code_sign_clone/code_sign_clone.tKdILk/Chromium.app
+//   /private/var/folders/c4/ygf_t4gn0tx0k1y1hm32hh6w00b_4p/X/org.chromium.Chromium.code_sign_clone/code_sign_clone.tKdILk/Chromium.app.bundle
 //
 // Each clone contains an instance-specific snapshot of an on-disk
 // representation of Chrome. The bundles are verifiable by both dynamic and

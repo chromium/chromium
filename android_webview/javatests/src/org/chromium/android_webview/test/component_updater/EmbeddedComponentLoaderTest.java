@@ -12,6 +12,7 @@ import androidx.test.filters.MediumTest;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,17 +53,19 @@ import java.util.concurrent.TimeUnit;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @JNINamespace("component_updater")
 public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
-    private static CallbackHelper sOnComponentLoadedHelper = new CallbackHelper();
-    private static CallbackHelper sOnComponentLoadFailedHelper = new CallbackHelper();
+    private static final CallbackHelper sOnComponentLoadedHelper = new CallbackHelper();
+    private static final CallbackHelper sOnComponentLoadFailedHelper = new CallbackHelper();
     private static List<String> sNativeErrors;
 
     private static final String TEST_COMPONENT_ID = "jebgalgnebhfojomionfpkfelancnnkf";
     private static final String MANIFEST_JSON_STRING =
-            "{"
-                    + "\n\"manifest_version\": 2,"
-                    + "\n\"name\": \"jebgalgnebhfojomionfpkfelancnnkf\","
-                    + "\n\"version\": \"123.456.789\""
-                    + "\n}";
+            """
+        {
+          "manifest_version": 2,
+          "name": "jebgalgnebhfojomionfpkfelancnnkf",
+          "version": "123.456.789"
+        }
+        """;
 
     // Use AwActivityTestRule to start a browser process and init native library.
     @Rule public AwActivityTestRule mActivityTestRule;
@@ -159,7 +162,7 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
     }
 
     @CalledByNative
-    private static void fail(String error) {
+    private static void fail(@JniType("std::string") String error) {
         sNativeErrors.add(error);
     }
 

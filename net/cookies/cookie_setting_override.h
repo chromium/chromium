@@ -34,16 +34,28 @@ enum class CookieSettingOverride {
   kSkipTopLevelTPCDTrial = 5,
   // When specified, third party cookies should be forced disabled.
   // Other cookie exceptions like the storage access API could result in
-  // third party cookies still being used when this is forced disabled.
-  // Used by WebView.
+  // third party cookies still being used when this is forced disabled. This
+  // override takes precedence over `kForceEnableThirdPartyCookies`.
   kForceDisableThirdPartyCookies = 6,
   // When present, the caller may use an existing Storage Access API grant to
   // access third-party cookies. Note that some integrations which have more
   // stringent requirements, such as the FedCM/SAA integration (which requires
   // the `identity-credentials-get` policy), are not in scope for this variant.
   kStorageAccessGrantEligibleViaHeader = 7,
+  // When present, third-party cookies may be allowed through mitigations.
+  kForceEnableThirdPartyCookieMitigations = 8,
+  // When present, the context is sandboxed in a frame that is same-site
+  // with the top-level up its entire ancestor chain. SameSite=None
+  // cookies should be included in same-site requests from sandboxed contexts
+  // that have the 'allow-same-site-none-cookies' value.
+  kAllowSameSiteNoneCookiesInSandbox = 9,
+  // When specified, third-party cookies should behave as they would when no
+  // setting or OT exists to restrict them. This override is secondary to
+  // `kForceDisableThirdPartyCookies` and will not have any effect if both
+  // exist.
+  kForceEnableThirdPartyCookies = 10,
 
-  kMaxValue = kStorageAccessGrantEligibleViaHeader,
+  kMaxValue = kForceEnableThirdPartyCookies,
 };
 
 using CookieSettingOverrides = base::EnumSet<CookieSettingOverride,

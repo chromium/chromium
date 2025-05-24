@@ -80,7 +80,7 @@ AudioDebugRecordingManager::RegisterDebugRecordingSource(
 void AudioDebugRecordingManager::UnregisterDebugRecordingSource(uint32_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = debug_recording_helpers_.find(id);
-  CHECK(it != debug_recording_helpers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != debug_recording_helpers_.end());
   debug_recording_helpers_.erase(id);
 }
 

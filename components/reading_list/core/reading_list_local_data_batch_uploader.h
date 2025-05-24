@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_READING_LIST_CORE_READING_LIST_LOCAL_DATA_BATCH_UPLOADER_H_
 #define COMPONENTS_READING_LIST_CORE_READING_LIST_LOCAL_DATA_BATCH_UPLOADER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
+
+class GURL;
 
 namespace reading_list {
 
@@ -31,9 +35,13 @@ class ReadingListLocalDataBatchUploader
   void GetLocalDataDescription(
       base::OnceCallback<void(syncer::LocalDataDescription)> callback) override;
   void TriggerLocalDataMigration() override;
+  void TriggerLocalDataMigrationForItems(
+      std::vector<syncer::LocalDataItemModel::DataId> items) override;
 
  private:
   bool CanUpload() const;
+  // Returns the `LocalDataItemModel` corresponding to the given `url`.
+  syncer::LocalDataItemModel DataItemModelFromURL(const GURL& url) const;
 
   const raw_ptr<DualReadingListModel> dual_reading_list_model_;
 };

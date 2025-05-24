@@ -24,6 +24,10 @@ bool DbusPowerManagerSamplingEventSource::Start(
   return true;
 }
 
+base::TimeDelta DbusPowerManagerSamplingEventSource::GetSampleInterval() {
+  return base::Seconds(30);
+}
+
 void DbusPowerManagerSamplingEventSource::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
   callback_.Run();

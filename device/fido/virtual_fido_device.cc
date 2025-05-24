@@ -2,30 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/notreached.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
 
-#include "device/fido/virtual_fido_device.h"
-
+#include <algorithm>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/ec_signature_creator.h"
+#include "crypto/hash.h"
 #include "crypto/openssl_util.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
+#include "device/fido/virtual_fido_device.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -253,10 +254,7 @@ class InvalidForTestingPrivateKey : public VirtualFidoDevice::PrivateKey {
     return {'s', 'i', 'g'};
   }
 
-  std::vector<uint8_t> GetPKCS8PrivateKey() const override {
-    CHECK(false);
-    return {};
-  }
+  std::vector<uint8_t> GetPKCS8PrivateKey() const override { NOTREACHED(); }
 
   std::unique_ptr<PublicKey> GetPublicKey() const override {
     cbor::Value::MapValue map;
@@ -284,8 +282,7 @@ VirtualFidoDevice::PrivateKey::~PrivateKey() = default;
 std::vector<uint8_t> VirtualFidoDevice::PrivateKey::GetX962PublicKey() const {
   // Not generally possible to encode in X9.62 format. Elliptic-specific
   // subclasses can override.
-  CHECK(false);
-  return std::vector<uint8_t>();
+  NOTREACHED();
 }
 
 // static
@@ -349,7 +346,7 @@ VirtualFidoDevice::PrivateKey::FreshInvalidForTestingKey() {
 
 VirtualFidoDevice::RegistrationData::RegistrationData() = default;
 VirtualFidoDevice::RegistrationData::RegistrationData(const std::string& rp_id)
-    : application_parameter(fido_parsing_utils::CreateSHA256Hash(rp_id)) {}
+    : application_parameter(crypto::hash::Sha256(rp_id)) {}
 VirtualFidoDevice::RegistrationData::RegistrationData(
     std::unique_ptr<PrivateKey> private_key,
     base::span<const uint8_t, kRpIdHashLength> application_parameter,
@@ -391,6 +388,20 @@ void VirtualFidoDevice::State::NotifyCredentialCreated(
   }
 }
 
+void VirtualFidoDevice::State::NotifyCredentialDeleted(
+    base::span<const uint8_t> credential_id) {
+  for (Observer& observer : observers_) {
+    observer.OnCredentialDeleted(credential_id);
+  }
+}
+
+void VirtualFidoDevice::State::NotifyCredentialUpdated(
+    const std::pair<base::span<const uint8_t>, RegistrationData*>& credential) {
+  for (Observer& observer : observers_) {
+    observer.OnCredentialUpdated(credential);
+  }
+}
+
 void VirtualFidoDevice::State::NotifyAssertion(const Credential& credential) {
   for (Observer& observer : observers_) {
     observer.OnAssertion(credential);
@@ -421,7 +432,7 @@ bool VirtualFidoDevice::State::InjectResidentKey(
     device::PublicKeyCredentialUserEntity user,
     int32_t signature_counter,
     std::unique_ptr<PrivateKey> private_key) {
-  auto application_parameter = fido_parsing_utils::CreateSHA256Hash(rp.id);
+  auto application_parameter = crypto::hash::Sha256(rp.id);
 
   // Cannot create a duplicate credential for the same (RP ID, user ID) pair.
   for (const auto& registration : registrations) {
@@ -587,9 +598,8 @@ VirtualFidoDevice::GenerateAttestationCertificate(
     case FidoTransportProtocol::kInternal:
       transport_bit = 4;
       break;
-    case FidoTransportProtocol::kAndroidAccessory:
-      transport_bit = 1;
-      break;
+    case FidoTransportProtocol::kDeprecatedAoa:
+      NOTREACHED();
   }
   const uint8_t kTransportTypesContents[] = {
       3,                                            // BIT STRING
@@ -644,7 +654,7 @@ void VirtualFidoDevice::StoreNewKey(
   // virtual authenticator API.
   if (registration_data.application_parameter == device::kBogusAppParam ||
       registration_data.application_parameter ==
-          fido_parsing_utils::CreateSHA256Hash(kDummyRpID)) {
+          crypto::hash::Sha256(kDummyRpID)) {
     return;
   }
 
@@ -666,8 +676,8 @@ VirtualFidoDevice::RegistrationData* VirtualFidoDevice::FindRegistrationData(
   if (it == mutable_state()->registrations.end())
     return nullptr;
 
-  if (!base::ranges::equal(application_parameter,
-                           it->second.application_parameter)) {
+  if (!std::ranges::equal(application_parameter,
+                          it->second.application_parameter)) {
     return nullptr;
   }
 

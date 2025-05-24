@@ -22,7 +22,7 @@ i.onload = () => {
     i.contentWindow.navigation.onnavigate = e => {
       assert_equals(e.navigationType, "traverse");
       assert_false(e.cancelable);
-      assert_false(e.canTransition);
+      assert_false(e.canIntercept);
       assert_true(e.userInitiated);
       assert_false(e.hashChange);
       assert_equals(new URL(e.destination.url).pathname, "/misc/resources/success.html");

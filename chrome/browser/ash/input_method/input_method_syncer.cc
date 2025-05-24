@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/input_method/input_method_syncer.h"
 
+#include <algorithm>
 #include <set>
 #include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_runner.h"
@@ -41,8 +41,8 @@ void CheckAndResolveInputMethodIDs(
   }
 
   // Convert engine IDs to input method extension IDs.
-  base::ranges::transform(values->begin(), values->end(), values->begin(),
-                          extension_ime_util::GetInputMethodIDByEngineID);
+  std::ranges::transform(values->begin(), values->end(), values->begin(),
+                         extension_ime_util::GetInputMethodIDByEngineID);
 
   // Remove values that aren't found in the set of supported input method IDs.
   auto it = values->begin();
@@ -58,14 +58,13 @@ void CheckAndResolveInputMethodIDs(
 
 // Checks whether each language is supported, replacing locales with variants
 // if they are available. Must be called on a thread that allows IO.
-std::string CheckAndResolveLocales(const std::string& languages) {
+std::string CheckAndResolveLocales(const std::string& app_locale,
+                                   const std::string& languages) {
   if (languages.empty()) {
     return languages;
   }
   std::vector<std::string> values = base::SplitString(
       languages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
 
   std::vector<std::string> accept_language_codes;
   l10n_util::GetAcceptLanguagesForLocale(app_locale, &accept_language_codes);
@@ -203,8 +202,8 @@ void InputMethodSyncer::MergeSyncedPrefs() {
   std::vector<std::string> new_token_values;
   new_token_values = base::SplitString(
       preload_engines, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  base::ranges::transform(new_token_values, new_token_values.begin(),
-                          extension_ime_util::GetComponentIDByInputMethodID);
+  std::ranges::transform(new_token_values, new_token_values.begin(),
+                         extension_ime_util::GetComponentIDByInputMethodID);
   std::string preload_engines_syncable = preload_engines_syncable_.GetValue();
   synced_tokens =
       base::SplitStringPiece(preload_engines_syncable, ",",
@@ -224,12 +223,13 @@ void InputMethodSyncer::MergeSyncedPrefs() {
       prefs::kLanguageEnabledImes));
 
   // Remove unsupported locales before updating the local languages preference.
+  const std::string& app_locale = g_browser_process->GetApplicationLocale();
   std::string languages(AddSupportedInputMethodValues(
       preferred_languages_.GetValue(), preferred_languages_syncable,
       language::prefs::kPreferredLanguages));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&CheckAndResolveLocales, languages),
+      base::BindOnce(&CheckAndResolveLocales, app_locale, languages),
       base::BindOnce(&InputMethodSyncer::FinishMerge,
                      weak_factory_.GetWeakPtr()));
 }
@@ -260,8 +260,8 @@ std::string InputMethodSyncer::AddSupportedInputMethodValues(
     }
     CheckAndResolveInputMethodIDs(supported_descriptors, &new_token_values);
   } else if (pref_name != language::prefs::kPreferredLanguages) {
-    NOTREACHED_IN_MIGRATION() << "Attempting to merge an invalid preference.";
     // kPreferredLanguages is checked in CheckAndResolveLocales().
+    NOTREACHED() << "Attempting to merge an invalid preference.";
   }
 
   // Do the actual merging.
@@ -301,8 +301,8 @@ void InputMethodSyncer::OnPreferenceChanged(const std::string& pref_name) {
   std::vector<std::string> engines =
       base::SplitString(preload_engines_.GetValue(), ",", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_ALL);
-  base::ranges::transform(engines, engines.begin(),
-                          extension_ime_util::GetComponentIDByInputMethodID);
+  std::ranges::transform(engines, engines.begin(),
+                         extension_ime_util::GetComponentIDByInputMethodID);
   preload_engines_syncable_.SetValue(base::JoinString(engines, ","));
 }
 

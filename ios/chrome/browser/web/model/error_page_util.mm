@@ -31,8 +31,9 @@ NSString* GetErrorPage(const GURL& url,
   DCHECK_EQ(url, GURL(base::SysNSStringToUTF8(
                      error.userInfo[NSURLErrorFailingURLStringErrorKey])));
   NSError* final_error = base::ios::GetFinalUnderlyingErrorFromError(error);
-  if (!final_error)
+  if (!final_error) {
     final_error = error;
+  }
   int net_error = net::ERR_FAILED;
   if ([final_error.domain isEqualToString:net::kNSErrorDomain]) {
     net_error = final_error.code;
@@ -40,7 +41,7 @@ NSString* GetErrorPage(const GURL& url,
   } else {
     // This function may only be called with an NSError created with
     // web::NetErrorFromError.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Secure DNS is not supported on iOS, so we can assume there is no secure
@@ -51,7 +52,6 @@ NSString* GetErrorPage(const GURL& url,
           /*is_secure_dns_network_error=*/false,
           /*stale_copy_in_cache=*/false,
           /*can_show_network_diagnostics_dialog=*/false, is_off_the_record,
-          /*offline_content_feature_enabled=*/false,
           /*auto_fetch_feature_enabled=*/false,
           /*is_kiosk_mode=*/false,
           GetApplicationContext()->GetApplicationLocale(),
@@ -67,9 +67,10 @@ NSString* GetErrorPage(const GURL& url,
   std::string_view template_html(extracted_string.data(),
                                  extracted_string.size());
 
-  if (template_html.empty())
-    NOTREACHED_IN_MIGRATION()
-        << "unable to load template. ID: " << IDR_NET_ERROR_HTML;
+  if (template_html.empty()) {
+    NOTREACHED() << "unable to load template. ID: " << IDR_NET_ERROR_HTML;
+  }
+
   return base::SysUTF8ToNSString(
       webui::GetLocalizedHtml(template_html, page_state.strings));
 }

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
+
+#include <algorithm>
 #include <iterator>
 #include <string_view>
 #include <utility>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
-#include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_info.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -28,16 +29,16 @@ CrosAppsApiInfo& CrosAppsApiInfo::AddAllowlistedOrigins(
   std::vector<url::Origin> new_origins;
   new_origins.reserve(additions.size());
 
-  base::ranges::transform(additions, std::back_inserter(new_origins),
-                          [](std::string_view str) {
-                            auto ret = url::Origin::Create(GURL(str));
-                            // The provided literal string be the same as the
-                            // parsed origin. It shouldn't contain extra parts
-                            // (e.g. URL path and query) that aren't part of the
-                            // origin.
-                            CHECK_EQ(ret.GetURL().spec(), str);
-                            return ret;
-                          });
+  std::ranges::transform(additions, std::back_inserter(new_origins),
+                         [](std::string_view str) {
+                           auto ret = url::Origin::Create(GURL(str));
+                           // The provided literal string be the same as the
+                           // parsed origin. It shouldn't contain extra parts
+                           // (e.g. URL path and query) that aren't part of the
+                           // origin.
+                           CHECK_EQ(ret.GetURL().spec(), str);
+                           return ret;
+                         });
 
   AddAllowlistedOrigins(std::move(new_origins));
   return *this;
@@ -55,8 +56,8 @@ CrosAppsApiInfo& CrosAppsApiInfo::AddAllowlistedOrigins(
   std::vector<url::Origin> merged_origins;
   merged_origins.reserve(allowed_origins_.size() + additions.size());
 
-  base::ranges::copy(allowed_origins_, std::back_inserter(merged_origins));
-  base::ranges::copy(additions, std::back_inserter(merged_origins));
+  std::ranges::copy(allowed_origins_, std::back_inserter(merged_origins));
+  std::ranges::copy(additions, std::back_inserter(merged_origins));
 
   allowed_origins_ = std::move(merged_origins);
   return *this;

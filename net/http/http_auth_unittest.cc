@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
@@ -38,9 +39,7 @@ std::unique_ptr<HttpAuthHandlerMock> CreateMockHandler(bool connection_based) {
   std::unique_ptr<HttpAuthHandlerMock> auth_handler =
       std::make_unique<HttpAuthHandlerMock>();
   auth_handler->set_connection_based(connection_based);
-  std::string challenge_text = "Basic";
-  HttpAuthChallengeTokenizer challenge(challenge_text.begin(),
-                                         challenge_text.end());
+  HttpAuthChallengeTokenizer challenge("Basic");
   url::SchemeHostPort scheme_host_port(GURL("https://www.example.com"));
   SSLInfo null_ssl_info;
   EXPECT_TRUE(auth_handler->InitFromChallenge(

@@ -227,6 +227,12 @@ chromium-metrics-reviews@google.com.
   <int value="59" label="Select Drive Identity"/>
   <int value="60" label="Add Drive Account"/>
   <int value="61" label="Manage In New Tab"/>
+  <int value="62" label="Recent Activity in Shared Tab Group"/>
+  <int value="63" label="AI Prototyping"/>
+  <int value="64" label="Manage shared tab group"/>
+  <int value="65" label="Share local tab group"/>
+  <int value="66" label="Leave shared tab group"/>
+  <int value="67" label="Delete shared tab group"/>
 </enum>
 
 <enum name="IOSMenuScenario">
@@ -263,6 +269,7 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Tab Group Indicator Entry"/>
   <int value="31" label="Autofill Manual Fallback Plus Address Entry"/>
   <int value="32" label="Tab Group Indicator on NTP Entry"/>
+  <int value="33" label="Last Visited History Entry"/>
 </enum>
 
 <enum name="IOSShareAction">
@@ -289,6 +296,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="LaunchCause">
+  <int value="-1" label="Uninitialized"/>
   <int value="0" label="Other - External"/>
   <int value="1" label="Chrome Custom Tab"/>
   <int value="2" label="Trusted Web Activity"/>
@@ -313,11 +321,18 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="NFC"/>
 </enum>
 
+<!-- LINT.IfChange(LoadPoint) -->
+
 <enum name="LoadPoint">
   <int value="0" label="Native initializition"/>
   <int value="1" label="Policy load"/>
   <int value="2" label="Child account status load"/>
+  <int value="3" label="Load accounts from the device"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninMediator.java:LoadPoint) -->
+
+<!-- LINT.IfChange(MobileDefaultBrowserState) -->
 
 <enum name="MobileDefaultBrowserState">
   <int value="0" label="No default"/>
@@ -330,19 +345,24 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Other app currently default; that app not in original system
              image"/>
+  <int value="5" label="Other Chrome channel default"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/DefaultBrowserInfoUmaRecorder.java:MobileDefaultBrowserState) -->
+
+<!-- LINT.IfChange(MobileFreProgress) -->
 
 <enum name="MobileFreProgress">
   <int value="0" label="FRE started"/>
   <int value="1" label="Welcome shown"/>
   <int value="2" label="Data saver shown (Deprecated 01/2022)"/>
-  <int value="3" label="Sync consent shown"/>
+  <int value="3" label="Sync consent shown (Deprecated 02/2025)"/>
   <int value="4"
       label="The user clicked on the continue button to continue with sync
-             consent"/>
+             consent (Deprecated 02/2025)"/>
   <int value="5"
       label="The user clicked on the |No thanks| button to continue without
-             sync consent"/>
+             sync consent (Deprecated 02/2025)"/>
   <int value="6" label="Search engine choice dialog shown"/>
   <int value="7" label="The user started adding account from welcome screen"/>
   <int value="8"
@@ -361,6 +381,8 @@ chromium-metrics-reviews@google.com.
       label="The user clicked on the |No thanks| button to decline history
              sync"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/first_run/android/java/src/org/chromium/chrome/browser/firstrun/MobileFreProgress.java:MobileFreProgress) -->
 
 <enum name="MobileFreSignInChoice">
   <summary>
@@ -534,6 +556,13 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="Undo provisional unsubscribe button."/>
   <int value="32" label="Commit provisional unsubscribe explicitly."/>
   <int value="33" label="Commit provisional unsubscribe implicitly."/>
+  <int value="34" label="Show original notification button."/>
+  <int value="35" label="Always allow notification button."/>
+  <int value="36" label="Safety hub unsubscribed notifications ack button."/>
+  <int value="37" label="Safety hub unsubscribed notifications review button."/>
+  <int value="38" label="Report as safe notification button"/>
+  <int value="39" label="Report warned notification as spam button."/>
+  <int value="40" label="Report unwarned notification as spam button."/>
 </enum>
 
 <enum name="SystemNotificationType">
@@ -577,6 +606,9 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="Webapk Install Failed"/>
   <int value="39" label="Data Sharing"/>
   <int value="40" label="Unified password manager access loss warning"/>
+  <int value="41" label="Tracing"/>
+  <int value="42" label="Serial"/>
+  <int value="43" label="Safety Check Revoked Notification Permissions"/>
 </enum>
 
 </enums>

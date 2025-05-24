@@ -49,7 +49,7 @@ def main():
   results.extend(querier_instance.GetFlakyOrFailingTryTests())
   aggregated_results = results_processor.AggregateResults(results)
   if args.result_output_file:
-    with open(args.result_output_file, 'w') as outfile:
+    with open(args.result_output_file, 'w', encoding='utf-8') as outfile:
       result_output.GenerateHtmlOutputFile(aggregated_results, outfile)
   else:
     result_output.GenerateHtmlOutputFile(aggregated_results)

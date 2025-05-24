@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/path_service.h"
@@ -30,7 +31,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/pdf_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -45,8 +45,9 @@ PDFExtensionTestBase::PDFExtensionTestBase() = default;
 
 PDFExtensionTestBase::~PDFExtensionTestBase() = default;
 
-void PDFExtensionTestBase::SetUpCommandLine(
-    base::CommandLine* /*command_line*/) {
+void PDFExtensionTestBase::SetUpCommandLine(base::CommandLine* command_line) {
+  extensions::ExtensionApiTest::SetUpCommandLine(command_line);
+
   feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
                                               GetDisabledFeatures());
 }
@@ -66,7 +67,7 @@ void PDFExtensionTestBase::SetUpOnMainThread() {
 }
 
 void PDFExtensionTestBase::TearDownOnMainThread() {
-  factory_ = absl::monostate();
+  factory_ = std::monostate();
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   extensions::ExtensionApiTest::TearDownOnMainThread();
 }
@@ -132,26 +133,6 @@ testing::AssertionResult PDFExtensionTestBase::LoadPdfAllowMultipleFrames(
   return EnsureFullPagePDFHasLoadedWithValidFrameTree(
       GetActiveWebContents(),
       /*allow_multiple_frames=*/true);
-}
-
-// Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
-// for the loaded PDF. Returns nullptr if the load fails.
-MimeHandlerViewGuest* PDFExtensionTestBase::LoadPdfGetMimeHandlerView(
-    const GURL& url) {
-  if (!LoadPdf(url)) {
-    return nullptr;
-  }
-  return GetOnlyMimeHandlerView(GetActiveWebContents());
-}
-
-// Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
-// for the loaded PDF in a new tab. Returns nullptr if the load fails.
-MimeHandlerViewGuest* PDFExtensionTestBase::LoadPdfInNewTabGetMimeHandlerView(
-    const GURL& url) {
-  if (!LoadPdfInNewTab(url)) {
-    return nullptr;
-  }
-  return GetOnlyMimeHandlerView(GetActiveWebContents());
 }
 
 content::RenderFrameHost* PDFExtensionTestBase::LoadPdfGetExtensionHost(
@@ -232,8 +213,7 @@ content::WebContents* PDFExtensionTestBase::GetEmbedderWebContents() {
     return contents;
   }
 
-  MimeHandlerViewGuest* guest =
-      pdf_extension_test_util::GetOnlyMimeHandlerView(contents);
+  MimeHandlerViewGuest* guest = GetOnlyMimeHandlerView(contents);
   return guest ? guest->embedder_web_contents() : nullptr;
 }
 
@@ -246,7 +226,7 @@ TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManagerForProfile(
   if (!profile) {
     profile = browser()->profile();
   }
-  return absl::get<std::unique_ptr<guest_view::TestGuestViewManagerFactory>>(
+  return std::get<std::unique_ptr<guest_view::TestGuestViewManagerFactory>>(
              factory_)
       ->GetOrCreateTestGuestViewManager(
           profile,
@@ -256,14 +236,14 @@ TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManagerForProfile(
 pdf::TestPdfViewerStreamManager*
 PDFExtensionTestBase::GetTestPdfViewerStreamManager(
     content::WebContents* contents) {
-  return absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
+  return std::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
              factory_)
       ->GetTestPdfViewerStreamManager(contents);
 }
 
 void PDFExtensionTestBase::CreateTestPdfViewerStreamManager(
     content::WebContents* contents) {
-  absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
+  std::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
       ->CreatePdfViewerStreamManager(contents);
 }
 

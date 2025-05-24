@@ -69,7 +69,8 @@
           "builder": "gpu-fyi-try-linux-wayland-amd-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Wayland FYI Release (AMD)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -67,7 +67,7 @@ unsigned isqrt32(opus_uint32 _val){
 
 #ifdef FIXED_POINT
 
-opus_val32 frac_div32(opus_val32 a, opus_val32 b)
+opus_val32 frac_div32_q29(opus_val32 a, opus_val32 b)
 {
    opus_val16 rcp;
    opus_val32 result, rem;
@@ -79,6 +79,11 @@ opus_val32 frac_div32(opus_val32 a, opus_val32 b)
    result = MULT16_32_Q15(rcp, a);
    rem = PSHR32(a,2)-MULT32_32_Q31(result, b);
    result = ADD32(result, SHL32(MULT16_32_Q15(rcp, rem),2));
+   return result;
+}
+
+opus_val32 frac_div32(opus_val32 a, opus_val32 b) {
+   opus_val32 result = frac_div32_q29(a,b);
    if (result >= 536870912)       /*  2^29 */
       return 2147483647;          /*  2^31 - 1 */
    else if (result <= -536870912) /* -2^29 */
@@ -121,7 +126,10 @@ opus_val32 celt_sqrt(opus_val32 x)
    int k;
    opus_val16 n;
    opus_val32 rt;
-   static const opus_val16 C[5] = {23175, 11561, -3011, 1699, -664};
+   /* These coeffs are optimized in fixed-point to minimize both RMS and max error
+      of sqrt(x) over .25<x<1 without exceeding 32767.
+      The RMS error is 3.4e-5 and the max is 8.2e-5. */
+   static const opus_val16 C[6] = {23171, 11574, -2901, 1592, -1002, 336};
    if (x==0)
       return 0;
    else if (x>=1073741824)
@@ -129,8 +137,8 @@ opus_val32 celt_sqrt(opus_val32 x)
    k = (celt_ilog2(x)>>1)-7;
    x = VSHR32(x, 2*k);
    n = x-32768;
-   rt = ADD16(C[0], MULT16_16_Q15(n, ADD16(C[1], MULT16_16_Q15(n, ADD16(C[2],
-              MULT16_16_Q15(n, ADD16(C[3], MULT16_16_Q15(n, (C[4])))))))));
+   rt = ADD32(C[0], MULT16_16_Q15(n, ADD16(C[1], MULT16_16_Q15(n, ADD16(C[2],
+              MULT16_16_Q15(n, ADD16(C[3], MULT16_16_Q15(n, ADD16(C[4], MULT16_16_Q15(n, (C[5])))))))))));
    rt = VSHR32(rt,7-k);
    return rt;
 }

@@ -1,0 +1,17 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is a version of size_optimized_cast_receiver_args.gn with the overrides
+# to prefer performance rather than size.
+#
+# To use it do one of the following:
+# * Add the following to your `gn args`:
+#   import("build/config/fuchsia/perf_optimized_cast_receiver_args.gn")
+# * Add the following to `gn_args` in a bot recipe:
+#   'args_file': '//build/config/fuchsia/perf_optimized_cast_receiver_args.gn'
+
+import("//build/config/fuchsia/size_optimized_cast_receiver_args.gn")
+
+chrome_pgo_phase = 2
+optimize_for_size = false

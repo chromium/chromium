@@ -32,7 +32,7 @@ class SyncStoppedReporter {
   ~SyncStoppedReporter();
 
   // Inform the sync server that sync was stopped on this device.
-  // |access_token|, |cache_guid|, and |birthday| must not be empty.
+  // `access_token`, `cache_guid`, and `birthday` must not be empty.
   void ReportSyncStopped(const std::string& access_token,
                          const std::string& cache_guid,
                          const std::string& birthday);

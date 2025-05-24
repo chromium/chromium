@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_specular_lighting_element.h"
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number.h"
@@ -111,13 +110,11 @@ void SVGFESpecularLightingElement::SvgAttributeChanged(
   if (attr_name == svg_names::kSurfaceScaleAttr ||
       attr_name == svg_names::kSpecularConstantAttr ||
       attr_name == svg_names::kSpecularExponentAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }
 
   if (attr_name == svg_names::kInAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

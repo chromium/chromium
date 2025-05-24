@@ -4,21 +4,26 @@
 
 package org.chromium.components.crash;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Assertion handler to report assertions to crash.
  *
- * R8 has a --force-assertions-handler flag which we use to make this class, and specifically the
+ * <p>R8 has a --force-assertions-handler flag which we use to make this class, and specifically the
  * {@link assertionHandler} method, handle every assertion failure.
  */
+@NullMarked
 public class CustomAssertionHandler {
     private CustomAssertionHandler() {}
 
-    private static PureJavaExceptionHandler.JavaExceptionReporterFactory sReporterFactory;
+    private static @MonotonicNonNull PureJavaExceptionHandler.JavaExceptionReporterFactory
+            sReporterFactory;
 
     /**
      * The handler that we tell R8 to forward assertions to via --force-assertions-hander.
      *
-     * The R8 docs say that this function must be a static method, taking one argument, of type
+     * <p>The R8 docs say that this function must be a static method, taking one argument, of type
      * java.lang.Throwable.
      */
     public static void assertionHandler(Throwable exception) {

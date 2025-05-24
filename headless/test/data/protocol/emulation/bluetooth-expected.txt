@@ -1,0 +1,4 @@
+Tests request bluetooth device headless.
+Request to https://test.com/index.html, type: Document
+Bluetooth is available: true
+Bluetooth device name: Test BLE device

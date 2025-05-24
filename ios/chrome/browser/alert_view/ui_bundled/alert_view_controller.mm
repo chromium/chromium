@@ -9,13 +9,18 @@
 #import "base/check_op.h"
 #import "base/ios/ios_util.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/gray_highlight_button.h"
 #import "ios/chrome/browser/shared/ui/elements/text_field_configuration.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -46,9 +51,14 @@ constexpr CGFloat kTitleInsetTrailing = 20;
 constexpr CGFloat kSpinnerInsetTop = 12;
 constexpr CGFloat kSpinnerInsetBottom = 14;
 
+constexpr CGFloat kConfirmationImageMarginBottom = 14;
+constexpr CGFloat kConfirmationSymbolPointSize = 22;
+
 constexpr CGFloat kMessageInsetLeading = 20;
 constexpr CGFloat kMessageInsetBottom = 6;
 constexpr CGFloat kMessageInsetTrailing = 20;
+
+constexpr CGFloat kLottieImageAspectRatio = 105.0f / 270.0f;
 
 constexpr CGFloat kButtonInsetTop = 13;
 constexpr CGFloat kButtonInsetLeading = 20;
@@ -68,6 +78,11 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 // The amount of time (in seconds) to wait before enabling the action buttons.
 // This is only used if `actionButtonsAreInitiallyDisabled` is true.
 constexpr NSTimeInterval kEnableActionButtonsDelay = 0.5;
+
+// String text provider identifiers for the Lottie context image.
+NSString* const kLockScreen = @"lock_screen";
+NSString* const kNotificationCenter = @"notification_center";
+NSString* const kBanners = @"banners";
 
 // Returns the width and height of a single pixel in point.
 CGFloat GetPixelLength() {
@@ -220,22 +235,39 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 // Whether the action buttons should initially be disabled.
 @property(nonatomic, assign) BOOL actionButtonsAreInitiallyDisabled;
 
+// The Lottie image names for the image in the alert.
+@property(nonatomic, copy) NSString* imageLottieName;
+@property(nonatomic, copy) NSString* imageDarkModeLottieName;
+
+// Custom animation view used for the image in this alert.
+@property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
+
+// Custom animation view used for the image in this alert in dark mode.
+@property(nonatomic, strong) id<LottieAnimation> animationViewWrapperDarkMode;
+
 @end
 
-@implementation AlertViewController
+@implementation AlertViewController {
+  // The spinner view shown between the title and the content message, it is
+  // shown only when shouldShowActivityIndicator is true.
+  UIActivityIndicatorView* _spinner;
+  // The checkmark shown when the pending state suggested by the _spinner ends.
+  // It replaces the _spinner in the view.
+  UIImageView* _checkmark;
+}
 
 #pragma mark - Public
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    self.textFieldStackHolder.layer.borderColor =
-        [UIColor colorNamed:kSeparatorColor].CGColor;
+  if (@available(iOS 17, *)) {
+    return;
   }
+
+  [self updateBorderColorOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)loadView {
   [super loadView];
@@ -253,7 +285,7 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   self.contentView.accessibilityIdentifier = self.alertAccessibilityIdentifier;
   self.contentView.clipsToBounds = YES;
   self.contentView.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
+      [UIColor colorNamed:kSecondaryBackgroundColor];
   self.contentView.layer.cornerRadius = kCornerRadius;
   self.contentView.layer.shadowOffset =
       CGSizeMake(kShadowOffsetX, kShadowOffsetY);
@@ -335,10 +367,19 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   }
 
   if (self.shouldShowActivityIndicator) {
-    UIActivityIndicatorView* spinner = GetLargeUIActivityIndicatorView();
-    [spinner startAnimating];
-    [stackView addArrangedSubview:spinner];
-    [stackView setCustomSpacing:kSpinnerInsetBottom afterView:spinner];
+    _spinner = GetLargeUIActivityIndicatorView();
+    [stackView addArrangedSubview:_spinner];
+    [stackView setCustomSpacing:kSpinnerInsetBottom afterView:_spinner];
+
+    _checkmark = [[UIImageView alloc] init];
+    _checkmark.image = DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
+                                                  kConfirmationSymbolPointSize);
+    _checkmark.tintColor = [UIColor systemGreenColor];
+    [stackView addArrangedSubview:_checkmark];
+    [stackView setCustomSpacing:kConfirmationImageMarginBottom
+                      afterView:_checkmark];
+
+    [self setProgressState:ProgressIndicatorStateActivity];
   }
 
   if (self.message.length) {
@@ -358,6 +399,25 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
     AddSameConstraintsToSidesWithInsets(
         messageLabel, self.contentView,
         LayoutSides::kTrailing | LayoutSides::kLeading, messageInsets);
+  }
+
+  if (self.imageLottieName) {
+    [self configureAnimationViewWrapper];
+    [stackView addArrangedSubview:self.animationViewWrapper.animationView];
+    [stackView addSubview:self.animationViewWrapperDarkMode.animationView];
+    AddSameConstraints(self.animationViewWrapperDarkMode.animationView,
+                       self.animationViewWrapper.animationView);
+    // Ensure the image can expand to fill space for larger font sizes.
+    [NSLayoutConstraint activateConstraints:@[
+      [self.animationViewWrapper.animationView.heightAnchor
+          constraintEqualToAnchor:self.animationViewWrapper.animationView
+                                      .widthAnchor
+                       multiplier:kLottieImageAspectRatio],
+      [self.animationViewWrapper.animationView.widthAnchor
+          constraintEqualToAnchor:self.contentView.widthAnchor]
+    ]];
+
+    [self selectImageForCurrentStyle];
   }
 
   if (self.textFieldConfigurations.count) {
@@ -380,7 +440,7 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   }
 
   UIView* lastArrangedView = stackView.arrangedSubviews.lastObject;
-  if (lastArrangedView) {
+  if (lastArrangedView && !self.imageLottieName) {
     [stackView setCustomSpacing:kAlertActionsSpacing
                       afterView:lastArrangedView];
   }
@@ -403,6 +463,24 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
          selector:@selector(handleKeyboardWillHide:)
              name:UIKeyboardWillHideNotification
            object:nil];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+      UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+      UITraitUserInterfaceLevel.class
+    ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateBorderColorOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+
+    traits = TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(selectImageForCurrentStyle)];
+  }
 }
 
 #pragma mark - Getters
@@ -504,6 +582,46 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   return _buttonAlertActionsDictionary;
 }
 
+#pragma mark - AlertConsumer
+
+- (void)setImageLottieName:(NSString*)imageLottieName
+        darkModeLottieName:(NSString*)imageDarkModeLottieName {
+  _imageLottieName = [imageLottieName copy];
+  _imageDarkModeLottieName = [imageDarkModeLottieName copy];
+}
+
+- (void)updateProgressViewsForCurrentState {
+  if (!_shouldShowActivityIndicator || !self.isViewLoaded || !_checkmark ||
+      !_spinner) {
+    return;
+  }
+  if (_progressState == ProgressIndicatorStateActivity) {
+    _checkmark.hidden = YES;
+    _spinner.hidden = NO;
+    [_spinner startAnimating];
+  } else if (_progressState == ProgressIndicatorStateSuccess) {
+    _spinner.hidden = YES;
+    [_spinner stopAnimating];
+    _checkmark.hidden = NO;
+    _checkmark.accessibilityLabel = self.confirmationAccessibilityLabel;
+    _checkmark.isAccessibilityElement =
+        (self.confirmationAccessibilityLabel.length > 0);
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                    _checkmark);
+  } else {
+    _spinner.hidden = YES;
+    [_spinner stopAnimating];
+    _checkmark.hidden = YES;
+  }
+}
+
+- (void)setProgressState:(ProgressIndicatorState)progressState {
+  if (_progressState != progressState) {
+    _progressState = progressState;
+    [self updateProgressViewsForCurrentState];
+  }
+}
+
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
@@ -532,6 +650,51 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 }
 
 #pragma mark - Private
+
+// Configures the image.
+- (void)configureAnimationViewWrapper {
+  self.animationViewWrapper = [self createAnimation:self.imageLottieName];
+  self.animationViewWrapperDarkMode =
+      [self createAnimation:self.imageDarkModeLottieName];
+
+  // Set the text localization.
+  NSDictionary* textProvider = @{
+    kLockScreen : l10n_util::GetNSString(
+        IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_LOCK_SCREEN_TEXT),
+    kNotificationCenter : l10n_util::GetNSString(
+        IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_NOTIFICATION_CENTER_TEXT),
+    kBanners : l10n_util::GetNSString(
+        IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_BANNERS_TEXT)
+  };
+  [self.animationViewWrapper setDictionaryTextProvider:textProvider];
+  [self.animationViewWrapperDarkMode setDictionaryTextProvider:textProvider];
+
+  // Layout the animation view to take up the top half of the view.
+  self.animationViewWrapper.animationView.contentMode =
+      UIViewContentModeScaleAspectFit;
+  self.animationViewWrapperDarkMode.animationView.contentMode =
+      UIViewContentModeScaleAspectFit;
+  self.animationViewWrapperDarkMode.animationView
+      .translatesAutoresizingMaskIntoConstraints = NO;
+}
+
+// Creates and returns the LottieAnimation view for the `animationAssetName`.
+- (id<LottieAnimation>)createAnimation:(NSString*)animationAssetName {
+  LottieAnimationConfiguration* config =
+      [[LottieAnimationConfiguration alloc] init];
+  config.animationName = animationAssetName;
+  config.loopAnimationCount = -1;  // Always loop.
+  return ios::provider::GenerateLottieAnimation(config);
+}
+
+// Selects regular or dark mode animation based on the given style.
+- (void)selectImageForCurrentStyle {
+  if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+    self.animationViewWrapperDarkMode.animationView.hidden = NO;
+  } else {
+    self.animationViewWrapperDarkMode.animationView.hidden = YES;
+  }
+}
 
 // Displays the keyboard.
 - (void)handleKeyboardWillShow:(NSNotification*)notification {
@@ -661,6 +824,18 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 // Enables `button`.
 - (void)enableActionButton:(UIButton*)actionButton {
   actionButton.enabled = YES;
+}
+
+// Updates the `textFieldStackHolder`'s border color when the view controller's
+// UITraits are modified.
+- (void)updateBorderColorOnTraitChange:
+    (UITraitCollection*)previousTraitCollection {
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    self.textFieldStackHolder.layer.borderColor =
+        [UIColor colorNamed:kSeparatorColor].CGColor;
+  }
 }
 
 @end

@@ -1,21 +1,25 @@
+diff --git a/src/google/protobuf/generated_message_util.cc b/src/google/protobuf/generated_message_util.cc
+index 099e927a5d5ea..cb0c341553925 100644
 --- a/src/google/protobuf/generated_message_util.cc
 +++ b/src/google/protobuf/generated_message_util.cc
-@@ -83,6 +83,11 @@ void InitProtobufDefaults() {
-   (void)is_inited;
- }
+@@ -105,6 +105,11 @@ void InitProtobufDefaultsSlow() {
+ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 static std::true_type init_empty_string =
+     (InitProtobufDefaultsSlow(), std::true_type{});
  
 +const std::string& GetEmptyString() {
 +  InitProtobufDefaults();
 +  return GetEmptyStringAlreadyInited();
 +}
 +
- size_t StringSpaceUsedExcludingSelfLong(const std::string& str) {
-   const void* start = &str;
-   const void* end = &str + 1;
+ template <typename T>
+ const T& Get(const void* ptr) {
+   return *static_cast<const T*>(ptr);
+diff --git a/src/google/protobuf/generated_message_util.h b/src/google/protobuf/generated_message_util.h
+index d73edc3be7421..989734e57f5d5 100644
 --- a/src/google/protobuf/generated_message_util.h
 +++ b/src/google/protobuf/generated_message_util.h
-@@ -84,10 +84,7 @@ inline To DownCast(From& f) {
- PROTOBUF_EXPORT void InitProtobufDefaults();
+@@ -77,10 +77,7 @@ PROTOBUF_EXPORT inline void InitProtobufDefaults() {
+ }
  
  // This used by proto1
 -PROTOBUF_EXPORT inline const std::string& GetEmptyString() {
@@ -24,5 +28,5 @@
 -}
 +PROTOBUF_EXPORT const ::std::string& GetEmptyString();
  
- 
- // True if IsInitialized() is true for all elements of t.  Type is expected
+ // Default empty Cord object. Don't use directly. Instead, call
+ // GetEmptyCordAlreadyInited() to get the reference.

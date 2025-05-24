@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -46,7 +45,6 @@ static_library("sync_device_info") {
     "//components/sync/protocol",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/prefs",
@@ -62,7 +60,10 @@ static_library("sync_device_info") {
 
   if (is_chromeos) {
     sources += [ "local_device_info_util_chromeos.cc" ]
-    deps += [ "//chromeos/constants" ]
+    deps += [
+      "//chromeos/ash/components/system",
+      "//chromeos/constants",
+    ]
   }
 
   if (is_ios) {
@@ -87,10 +88,6 @@ static_library("sync_device_info") {
 
   if (is_win) {
     sources += [ "local_device_info_util_win.cc" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/system" ]
   }
 }
 
@@ -128,7 +125,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//components/sync:test_support",
     "//components/version_info:version_string",
@@ -136,7 +132,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/system" ]
   }
 }

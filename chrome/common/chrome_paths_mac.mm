@@ -11,6 +11,7 @@
 #import "base/apple/foundation_util.h"
 #include "base/base_paths.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/free_deleter.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
@@ -66,7 +67,7 @@ char* ProductDirNameForBundle(NSBundle* chrome_bundle) {
 
     // Leaked, but the only caller initializes a static with this result, so it
     // only happens once, and that's OK.
-    return strdup(product_dir_name);
+    return UNSAFE_TODO(strdup(product_dir_name));
   }
 }
 

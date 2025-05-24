@@ -1,0 +1,1 @@
+table.accessibilityVisibleRows=[:3, :6]

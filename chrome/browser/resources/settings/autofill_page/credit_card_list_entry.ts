@@ -49,10 +49,20 @@ export class SettingsCreditCardListEntryElement extends
     return {
       /** A saved credit card. */
       creditCard: Object,
+
+      showNewFopDisplayEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableNewFopDisplay');
+        },
+        readOnly: true,
+      },
     };
   }
 
-  creditCard: chrome.autofillPrivate.CreditCardEntry;
+  declare creditCard: chrome.autofillPrivate.CreditCardEntry;
+
+  declare private showNewFopDisplayEnabled_: boolean;
 
   get dotsMenu(): HTMLElement|null {
     return this.shadowRoot!.getElementById('creditCardMenu');
@@ -117,6 +127,20 @@ export class SettingsCreditCardListEntryElement extends
         this.creditCard.cvc ? 'moreActionsForCreditCardWithCvc' :
                               'moreActionsForCreditCard',
         cardDescription);
+  }
+
+  /**
+   * Returns true if the new FOP display should be shown.
+   */
+  private shouldShowNewFopDisplay_(): boolean {
+    return this.showNewFopDisplayEnabled_;
+  }
+
+  /**
+   * The card has a product description or a nickname.
+   */
+  private hasCardIdentifier_(): boolean {
+    return (this.creditCard.metadata!.summarySublabel || '').length > 0;
   }
 
   /**
@@ -190,17 +214,23 @@ export class SettingsCreditCardListEntryElement extends
   }
 
   /**
+   * Returns expiration date if applicable.
+   */
+  private getExpirationlabel_(): string {
+    return this.isVirtualCardEnrolled_() ? '' :
+                                           ' · ' + this.getCardExpiryDate_();
+  }
+
+  /**
    * Returns one of the following sublabels, based on the card's status:
    *   Virtual card enrollment tag
-   *   Expiration date tag (MM/YY)
    *   'CVC saved' tag
    *   Benefit tag (Place the benefit tag last because it includes a link to
    *                product terms.)
    * e.g., one of the following:
-   *   11/23
-   *   11/23 | CVC saved
-   *   11/23 | Card benefits available (terms apply)
-   *   11/23 | CVC saved | Card benefits available (terms apply)
+   *   CVC saved
+   *   Card benefits available (terms apply)
+   *   CVC saved | Card benefits available (terms apply)
    *   Virtual card turned on
    *   Virtual card turned on | CVC saved
    *   Virtual card turned on | Card benefits available (terms apply)
@@ -211,11 +241,19 @@ export class SettingsCreditCardListEntryElement extends
     const separator = ' | ';
     let summarySublabel = this.isVirtualCardEnrolled_() ?
         this.i18n('virtualCardTurnedOn') :
-        this.getCardExpiryDate_();
+        (this.shouldShowNewFopDisplay_() ? '' : this.getCardExpiryDate_());
     if (this.isCardCvcAvailable_()) {
-      summarySublabel += separator + this.i18n('cvcTagForCreditCardListEntry');
+      if (summarySublabel.length > 0) {
+        summarySublabel += separator;
+      }
+      summarySublabel += this.i18n('cvcTagForCreditCardListEntry');
     }
     return summarySublabel;
+  }
+
+  private hasSummaryAndBenefitSublabel_(): boolean {
+    return this.getSummarySublabel_().length > 0 &&
+        this.isCardBenefitsProductUrlAvailable_();
   }
 
   private getSummaryAriaSublabel_(): string {

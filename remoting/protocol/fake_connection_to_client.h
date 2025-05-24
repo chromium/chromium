@@ -75,7 +75,9 @@ class FakeConnectionToClient : public ConnectionToClient {
       std::unique_ptr<AudioSource> audio_source) override;
 
   ClientStub* client_stub() override;
-  void Disconnect(ErrorCode disconnect_error) override;
+  void Disconnect(ErrorCode error,
+                  std::string_view error_details,
+                  const SourceLocation& error_location) override;
 
   Session* session() override;
 

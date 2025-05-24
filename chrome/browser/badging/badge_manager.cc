@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -97,7 +99,7 @@ void BadgeManager::BindFrameReceiverIfAllowed(
     return;
 
   auto context = std::make_unique<FrameBindingContext>(
-      frame->GetProcess()->GetID(), frame->GetRoutingID());
+      frame->GetProcess()->GetDeprecatedID(), frame->GetRoutingID());
   badge_manager->receivers_.Add(badge_manager, std::move(receiver),
                                 std::move(context));
 }
@@ -124,7 +126,7 @@ void BadgeManager::BindServiceWorkerReceiverIfAllowed(
     return;
 
   auto context = std::make_unique<BadgeManager::ServiceWorkerBindingContext>(
-      service_worker_process_host->GetID(), info.scope);
+      service_worker_process_host->GetDeprecatedID(), info.scope);
 
   badge_manager->receivers_.Add(badge_manager, std::move(receiver),
                                 std::move(context));
@@ -267,7 +269,9 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
 
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
   const std::optional<webapps::AppId> app_id =
-      registrar.FindAppWithUrlInScope(frame->GetLastCommittedURL());
+      registrar.FindBestAppWithUrlInScope(
+          frame->GetLastCommittedURL(),
+          web_app::WebAppFilter::DisplaysBadgeOnOs());
   if (!app_id)
     return std::vector<std::tuple<webapps::AppId, GURL>>{};
   return std::vector<std::tuple<webapps::AppId, GURL>>{std::make_tuple(
@@ -290,7 +294,8 @@ BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
 
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::vector<std::tuple<webapps::AppId, GURL>> app_ids_urls{};
-  for (const auto& app_id : registrar.FindAppsInScope(scope_)) {
+  for (const auto& app_id : registrar.FindAllAppsNestedInUrl(
+           scope_, web_app::WebAppFilter::DisplaysBadgeOnOs())) {
     app_ids_urls.push_back(
         std::make_tuple(app_id, registrar.GetAppStartUrl(app_id)));
   }

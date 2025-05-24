@@ -12,6 +12,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler.LookupResult;
 
 /**
@@ -29,6 +31,7 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiHandler.LookupResult
  * <p>All of these methods can be called on any thread.
  */
 @JNINamespace("safe_browsing")
+@NullMarked
 public final class SafeBrowsingApiBridge {
     private static final String TAG = "SBApiBridge";
     private static final boolean DEBUG = false;
@@ -43,13 +46,13 @@ public final class SafeBrowsingApiBridge {
     private static boolean sSafetyNetApiHandlerInitCalled;
 
     @GuardedBy("sSafetyNetApiHandlerLock")
-    private static SafetyNetApiHandler sSafetyNetApiHandler;
+    private static @Nullable SafetyNetApiHandler sSafetyNetApiHandler;
 
     @GuardedBy("sSafeBrowsingApiHandlerLock")
-    private static SafeBrowsingApiHandler sSafeBrowsingApiHandler;
+    private static @Nullable SafeBrowsingApiHandler sSafeBrowsingApiHandler;
 
     @GuardedBy("sSafeBrowsingApiHandlerLock")
-    private static UrlCheckTimeObserver sSafeBrowsingApiUrlCheckTimeObserver;
+    private static @Nullable UrlCheckTimeObserver sSafeBrowsingApiUrlCheckTimeObserver;
 
     private SafeBrowsingApiBridge() {
         // Util class, do not instantiate.
@@ -143,7 +146,7 @@ public final class SafeBrowsingApiBridge {
     }
 
     @GuardedBy("sSafetyNetApiHandlerLock")
-    private static SafetyNetApiHandler getSafetyNetApiHandler() {
+    private static @Nullable SafetyNetApiHandler getSafetyNetApiHandler() {
         if (!sSafetyNetApiHandlerInitCalled) {
             sSafetyNetApiHandler = initSafetyNetApiHandler();
             sSafetyNetApiHandlerInitCalled = true;
@@ -159,7 +162,7 @@ public final class SafeBrowsingApiBridge {
      * @return the handler if it is usable, or null if the API is not supported.
      */
     @GuardedBy("sSafetyNetApiHandlerLock")
-    private static SafetyNetApiHandler initSafetyNetApiHandler() {
+    private static @Nullable SafetyNetApiHandler initSafetyNetApiHandler() {
         try (TraceEvent t = TraceEvent.scoped("SafeBrowsingApiBridge.initSafetyNetApiHandler")) {
             if (DEBUG) {
                 Log.i(TAG, "initSafetyNetApiHandler");
@@ -189,7 +192,7 @@ public final class SafeBrowsingApiBridge {
                 int threatType,
                 int[] threatAttributes,
                 int responseStatus,
-                long checkDelta) {
+                long checkDeltaUs) {
             if (callbackId == CALLBACK_ID_FOR_STARTUP) {
                 // Not delivering the callback result to native if this is the call for startup. The
                 // native library may not be ready, and there is no one on the native side listening
@@ -198,7 +201,7 @@ public final class SafeBrowsingApiBridge {
             }
             synchronized (sSafeBrowsingApiHandlerLock) {
                 if (sSafeBrowsingApiUrlCheckTimeObserver != null) {
-                    sSafeBrowsingApiUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
+                    sSafeBrowsingApiUrlCheckTimeObserver.onUrlCheckTime(checkDeltaUs);
                     sSafeBrowsingApiUrlCheckTimeObserver = null;
                 }
                 SafeBrowsingApiBridgeJni.get()
@@ -208,7 +211,7 @@ public final class SafeBrowsingApiBridge {
                                 threatType,
                                 threatAttributes,
                                 responseStatus,
-                                checkDelta);
+                                checkDeltaUs);
             }
         }
     }
@@ -226,7 +229,7 @@ public final class SafeBrowsingApiBridge {
             assert sSafetyNetApiHandlerInitCalled;
             assert sSafetyNetApiHandler != null;
             try (TraceEvent t = TraceEvent.scoped("SafeBrowsingApiBridge.startAllowlistLookup")) {
-                return getSafetyNetApiHandler().startAllowlistLookup(uri, threatType);
+                return sSafetyNetApiHandler.startAllowlistLookup(uri, threatType);
             }
         }
     }
@@ -297,7 +300,7 @@ public final class SafeBrowsingApiBridge {
                 int threatType,
                 int[] threatAttributes,
                 int responseStatus,
-                long checkDelta);
+                long checkDeltaUs);
 
         void onVerifyAppsEnabledDone(long callbackId, int result);
     }

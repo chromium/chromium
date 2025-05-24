@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/net/cookies/cookie_store_ios_test_util.h"
+#import "ios/net/cookies/cookie_store_ios_test_util.h"
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/run_loop.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
-#include "base/test/test_simple_task_runner.h"
+#import "base/test/test_simple_task_runner.h"
 #import "ios/net/cookies/cookie_store_ios.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_options.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/cookies/canonical_cookie.h"
+#import "net/cookies/cookie_options.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 
@@ -121,8 +121,9 @@ void RecordCookieChanges(std::vector<net::CanonicalCookie>* out_cookies,
                          const net::CookieChangeInfo& change) {
   DCHECK(out_cookies);
   out_cookies->push_back(change.cookie);
-  if (out_removes)
+  if (out_removes) {
     out_removes->push_back(net::CookieChangeCauseIsDeletion(change.cause));
+  }
 }
 
 void SetCookie(const std::string& cookie_line,
@@ -144,8 +145,9 @@ void ClearCookies() {
   NSHTTPCookieStorage* store = [NSHTTPCookieStorage sharedHTTPCookieStorage];
   [store setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
   NSArray* cookies = [store cookies];
-  for (NSHTTPCookie* cookie in cookies)
+  for (NSHTTPCookie* cookie in cookies) {
     [store deleteCookie:cookie];
+  }
   EXPECT_EQ(0u, [[store cookies] count]);
 }
 

@@ -268,8 +268,9 @@ class MessageLoopForIoPosixReadAndWriteTest
  protected:
   bool CreateSocketPair(ScopedFD* one, ScopedFD* two) {
     int fds[2];
-    if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1)
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
       return false;
+    }
     one->reset(fds[0]);
     two->reset(fds[1]);
     return true;
@@ -528,8 +529,9 @@ TEST_P(FdWatchControllerPosixTest, RunUntilIdle) {
 
   TriggerReadEvent();
 
-  while (!handler.is_readable_)
+  while (!handler.is_readable_) {
     loop.RunUntilIdle();
+  }
 }
 
 void StopWatching(MessagePumpForIO::FdWatchController* controller,

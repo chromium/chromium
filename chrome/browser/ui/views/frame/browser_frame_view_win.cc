@@ -65,7 +65,7 @@ namespace {
 
 // Converts the |image| to a Windows icon and returns the corresponding HICON
 // handle. |image| is resized to desired |width| and |height| if needed.
-base::win::ScopedHICON CreateHICONFromSkBitmapSizedTo(
+base::win::ScopedGDIObject<HICON> CreateHICONFromSkBitmapSizedTo(
     const gfx::ImageSkia& image,
     int width,
     int height) {
@@ -119,7 +119,7 @@ BrowserFrameViewWin::BrowserFrameViewWin(BrowserFrame* frame,
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-    AddChildView(window_title_.get());
+    AddChildViewRaw(window_title_.get());
   }
 
   caption_button_container_ =
@@ -152,7 +152,7 @@ gfx::Rect BrowserFrameViewWin::GetBoundsForTabStripRegion(
 
 gfx::Rect BrowserFrameViewWin::GetBoundsForWebAppFrameToolbar(
     const gfx::Size& toolbar_preferred_size) const {
-  int x = display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME);
+  int x = display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXSIZEFRAME);
   if (IsMaximized()) {
     x += kMaximizedLeftMargin;
   }
@@ -240,12 +240,12 @@ gfx::Size BrowserFrameViewWin::GetMinimumSize() const {
   min_size.Enlarge(0, GetTopInset(false));
 
   gfx::Size titlebar_min_size(
-      display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME) +
+      display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXSIZEFRAME) +
           CaptionButtonsRegionWidth(),
       TitlebarHeight(false));
   if (ShouldShowWindowIcon(TitlebarType::kAny)) {
     titlebar_min_size.Enlarge(
-        display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSMICON) +
+        display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXSMICON) +
             kIconTitleSpacing,
         0);
   }
@@ -321,7 +321,9 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   // pixels at the end of the top and bottom edges trigger diagonal resizing.
   constexpr int kResizeCornerWidth = 16;
 
-  const int top_border_thickness = GetLayoutConstant(TAB_STRIP_PADDING);
+  const int top_border_thickness = browser_view()->GetIsWebAppType()
+                                       ? FrameTopBorderThickness(false)
+                                       : GetLayoutConstant(TAB_STRIP_PADDING);
 
   const int window_component = GetHTComponentForFrame(
       point, gfx::Insets::TLBR(top_border_thickness, 0, 0, 0),
@@ -334,9 +336,9 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   // first so that clicks in a tab don't get treated as sysmenu clicks.
   if (frame_component != HTCLIENT && ShouldShowWindowIcon(TitlebarType::kAny)) {
     gfx::Rect sys_menu_region(
-        0, display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYSIZEFRAME),
-        display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSMICON),
-        display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYSMICON));
+        0, display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CYSIZEFRAME),
+        display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXSMICON),
+        display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CYSMICON));
     if (sys_menu_region.Contains(point)) {
       return HTSYSMENU;
     }
@@ -400,13 +402,8 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
     }
   }
 
-  if (window_component != HTNOWHERE) {
-    return window_component;
-  }
-
   // Fall back to the caption if no other component matches.
-  TabStripRegionView::ReportCaptionHitTestInReservedGrabHandleSpace(false);
-  return HTCAPTION;
+  return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
 }
 
 void BrowserFrameViewWin::UpdateWindowIcon() {
@@ -445,7 +442,7 @@ bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {
   }
 
   content::WebContents* current_tab = browser_view()->GetActiveWebContents();
-  return current_tab && current_tab->IsLoading();
+  return current_tab && current_tab->ShouldShowLoadingUI();
 }
 
 ui::ImageModel BrowserFrameViewWin::GetFaviconForTabIconView() {
@@ -489,7 +486,8 @@ void BrowserFrameViewWin::Layout(PassKey) {
 int BrowserFrameViewWin::FrameBorderThickness() const {
   return (IsMaximized() || frame()->IsFullscreen())
              ? 0
-             : display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME);
+             : display::win::GetScreenWin()->GetSystemMetricsInDIP(
+                   SM_CXSIZEFRAME);
 }
 
 int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
@@ -501,8 +499,7 @@ int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
       // default. When maximized, the OS sizes the window such that the border
       // extends beyond the screen edges. In that case, we must return the
       // default value.
-      const int kTopResizeFrameArea = 0;
-      return kTopResizeFrameArea;
+      return 0;
     }
 
     // There is no top border in tablet mode when the window is "restored"
@@ -521,7 +518,7 @@ int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
   // to fail when it ought to succeed.
   return std::floor(
       FrameTopBorderThicknessPx(restored) /
-      display::win::ScreenWin::GetScaleFactorForHWND(HWNDForView(this)));
+      display::win::GetScreenWin()->GetScaleFactorForHWND(HWNDForView(this)));
 }
 
 int BrowserFrameViewWin::FrameTopBorderThicknessPx(bool restored) const {
@@ -541,8 +538,8 @@ int BrowserFrameViewWin::FrameTopBorderThicknessPx(bool restored) const {
   // Note that this method assumes an equal resize handle thickness on all
   // sides of the window.
   // TODO(dfried): Consider having it return a gfx::Insets object instead.
-  return ui::GetFrameThickness(
-      MonitorFromWindow(HWNDForView(this), MONITOR_DEFAULTTONEAREST));
+  return ui::GetFrameThicknessFromWindow(HWNDForView(this),
+                                         MONITOR_DEFAULTTONEAREST);
 }
 
 int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
@@ -567,7 +564,7 @@ int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
 
 int BrowserFrameViewWin::TitlebarMaximizedVisualHeight() const {
   int maximized_height =
-      display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYCAPTION);
+      display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CYCAPTION);
   // Adding 2 dip of vertical padding puts at least 1 dip of space on the top
   // and bottom of the element.
   constexpr int kVerticalPadding = 2;
@@ -771,14 +768,14 @@ void BrowserFrameViewWin::LayoutTitleBar() {
   }
 
   const int icon_size =
-      display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYSMICON);
+      display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CYSMICON);
   const int titlebar_visual_height =
       IsMaximized() ? TitlebarMaximizedVisualHeight() : TitlebarHeight(false);
   // Don't include the area above the screen when maximized. However it only
   // looks centered if we start from y=0 when restored.
   const int window_top = IsMaximized() ? WindowTopY() : 0;
   int next_leading_x =
-      display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME);
+      display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXSIZEFRAME);
   if (IsMaximized()) {
     next_leading_x += kMaximizedLeftMargin;
   }
@@ -816,11 +813,16 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
           ? 0
           : width() - frame()->GetMinimizeButtonOffset();
 
+  const int height =
+      !browser_view()->GetWebAppFrameToolbarPreferredSize().IsEmpty()
+          ? (TitlebarHeight(false) - WindowTopY())
+          : GetFrameHeight();
+
   caption_button_container_->SetBounds(
       CaptionButtonsOnLeadingEdge()
           ? system_caption_buttons_width
           : width() - system_caption_buttons_width - preferred_size.width(),
-      WindowTopY(), preferred_size.width(), GetFrameHeight());
+      WindowTopY(), preferred_size.width(), height);
 }
 
 void BrowserFrameViewWin::LayoutClientView() {
@@ -850,8 +852,8 @@ void BrowserFrameViewWin::StopThrobber() {
   if (throbber_running_) {
     throbber_running_ = false;
 
-    base::win::ScopedHICON previous_small_icon;
-    base::win::ScopedHICON previous_big_icon;
+    base::win::ScopedGDIObject<HICON> previous_small_icon;
+    base::win::ScopedGDIObject<HICON> previous_big_icon;
     HICON small_icon = nullptr;
     HICON big_icon = nullptr;
 

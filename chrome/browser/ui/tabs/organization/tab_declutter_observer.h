@@ -5,22 +5,26 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DECLUTTER_OBSERVER_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DECLUTTER_OBSERVER_H_
 
+#include <map>
 #include <vector>
 
 #include "base/observer_list_types.h"
+#include "url/gurl.h"
 
 namespace tabs {
-class TabModel;
+class TabInterface;
 }
 
 class TabDeclutterObserver : public base::CheckedObserver {
  public:
-  // Called when all checks pass to be able to show or hide the tab declutter
+  // Called when all checks pass to be able to show the tab declutter
   // nudge to action UI.
-  virtual void OnTriggerDeclutterUIVisibility(bool should_show) {}
+  virtual void OnTriggerDeclutterUIVisibility() {}
 
-  // Called whenevener the service processes the tabstrip for stale tabs.
-  virtual void OnStaleTabsProcessed(std::vector<tabs::TabModel*> tabs) {}
+  // Called whenevener the service processes the tabstrip for unused tabs.
+  virtual void OnUnusedTabsProcessed(
+      std::vector<tabs::TabInterface*> stale_tabs,
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) {}
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DECLUTTER_OBSERVER_H_

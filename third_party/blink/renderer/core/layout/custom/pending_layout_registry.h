@@ -38,7 +38,7 @@ class PendingLayoutRegistry : public GarbageCollected<PendingLayoutRegistry> {
   //
   // NOTE: By the time a layout has been registered, the node may have a
   // different "display" value.
-  using PendingSet = HeapHashSet<WeakMember<Node>>;
+  using PendingSet = GCedHeapHashSet<WeakMember<Node>>;
   using PendingLayoutMap = HeapHashMap<AtomicString, Member<PendingSet>>;
   PendingLayoutMap pending_layouts_;
 };

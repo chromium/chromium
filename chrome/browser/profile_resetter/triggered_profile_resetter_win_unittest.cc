@@ -37,7 +37,7 @@ class TriggeredProfileResetterTest : public testing::Test {
     // Activate the triggered reset field trial for these tests.
     base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
         "TriggeredResetFieldTrial", "On");
-    trial->group();
+    trial->Activate();
   }
 
   content::BrowserTaskEnvironment task_environment_;

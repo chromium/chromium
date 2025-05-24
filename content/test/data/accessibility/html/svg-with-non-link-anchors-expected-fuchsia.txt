@@ -3,7 +3,7 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++UNKNOWN label='Text descendants'
 ++++++++UNKNOWN
-++++++++++UNKNOWN focusable label='focusable'
+++++++++++UNKNOWN focusable
 ++++++++++++STATIC_TEXT label='focusable'
 ++++++++++++++UNKNOWN label='focusable'
 ++++++++UNKNOWN

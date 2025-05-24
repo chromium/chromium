@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
-
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -72,8 +72,9 @@ class LoadFinishedWaiter : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (selection.active_tab_changed())
+    if (selection.active_tab_changed()) {
       content::WebContentsObserver::Observe(selection.new_contents);
+    }
   }
 
   // content::WebContentsObserver:
@@ -103,8 +104,9 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
 
  protected:
   Profile* profile() {
-    if (!profile_)
+    if (!profile_) {
       profile_ = browser()->profile();
+    }
     return profile_;
   }
 
@@ -129,9 +131,10 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(params.has_value());
     params->disposition = WindowOpenDisposition::NEW_POPUP;
 
-    app_browser_ = ash::LaunchSystemWebAppImpl(
+    ash::BrowserDelegate* delegate = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), *params);
+    app_browser_ = delegate ? &delegate->GetBrowser() : nullptr;
   }
 
   Browser* LaunchMockSWA() {
@@ -141,9 +144,10 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(params.has_value());
     params->disposition = WindowOpenDisposition::NEW_WINDOW;
 
-    return ash::LaunchSystemWebAppImpl(
+    ash::BrowserDelegate* delegate = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), *params);
+    return delegate ? &delegate->GetBrowser() : nullptr;
   }
 
   Browser* InstallAndLaunchMockApp() {
@@ -294,8 +298,6 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabLoadNoThemeChange) {
   EXPECT_EQ(GetFrameColor(app_browser_), SK_ColorGREEN);
 }
 
-// App Popups are only used on Chrome OS. See https://crbug.com/1060917.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
                        WhiteThemeForSystemAppPopup) {
   InstallAndLaunchMockPopup();
@@ -360,7 +362,6 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
   InstallAndLaunchMockPopup();
   EXPECT_EQ(app_browser_->window()->GetExtensionsContainer(), nullptr);
 }
-#endif
 
 class AppBrowserControllerChromeUntrustedBrowserTest
     : public InProcessBrowserTest {

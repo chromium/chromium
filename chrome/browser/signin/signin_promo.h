@@ -8,7 +8,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 class GURL;
@@ -31,7 +30,7 @@ extern const char kSignInPromoQueryKeyAutoClose[];
 extern const char kSignInPromoQueryKeyForceKeepData[];
 extern const char kSignInPromoQueryKeyReason[];
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // These functions are only used to unlock the profile from the desktop user
 // manager and the windows credential provider.
 
@@ -49,7 +48,7 @@ GURL GetEmbeddedPromoURL(signin_metrics::AccessPoint access_point,
 GURL GetEmbeddedReauthURLWithEmail(signin_metrics::AccessPoint access_point,
                                    signin_metrics::Reason reason,
                                    const std::string& email);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Controls the information displayed around the Gaia Sign In page via the
 // "flow" url parameter.
@@ -64,6 +63,16 @@ enum class Flow {
   // of providing a page with no outbound links, in order not to be able to open
   // browser page during the signin flow.
   EMBEDDED_PROMO
+};
+
+// Maps to a subset of `signin_metrics::AccessPoint`. Is used for both signin
+// and sync promos.
+enum class SignInPromoType {
+  kPassword,
+  kAddress,
+  kBookmark,
+  kExtension,
+  // Add other types here if other access points will show a signin promo.
 };
 
 // Wraps arguments for `GetChromeSyncURLForDice()`. They are all optional.

@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_TEST_API_H_
 
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_driver_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
 
 namespace autofill {
 

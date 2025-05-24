@@ -47,11 +47,6 @@ import java.util.Map;
 /** A helper class that provides additional Chrome-specific share functionality. */
 public class ShareHelper extends org.chromium.components.browser_ui.share.ShareHelper {
     private static final String TAG = "AndroidShare";
-    // TODO(crbug.com/40063301): Remove when Android OS provides this string.
-    private static final String INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS =
-            "android.intent.extra.CHOOSER_CUSTOM_ACTIONS";
-    private static final String INTENT_EXTRA_CHOOSER_MODIFY_SHARE_ACTION =
-            "android.intent.extra.CHOOSER_MODIFY_SHARE_ACTION";
     // The max number of custom actions supported for custom actions.
     private static final int MAX_CUSTOM_ACTION_SUPPORTED = 5;
     private static final int CUSTOM_ACTION_REQUEST_CODE_BASE = 112;
@@ -352,8 +347,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * saving the chosen component.
      */
     private static class SaveComponentCallback implements TargetChosenCallback {
-        private TargetChosenCallback mOriginalCallback;
-        private Profile mProfile;
+        private final TargetChosenCallback mOriginalCallback;
+        private final Profile mProfile;
 
         public SaveComponentCallback(
                 @Nullable Profile profile, @Nullable TargetChosenCallback originalCallback) {

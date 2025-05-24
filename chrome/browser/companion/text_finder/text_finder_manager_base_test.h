@@ -27,15 +27,20 @@ class MockAnnotationAgentContainer
   ~MockAnnotationAgentContainer() override;
 
   // blink::mojom::AnnotationAgentContainer
-  MOCK_METHOD4(CreateAgent,
+  MOCK_METHOD5(CreateAgent,
                void(mojo::PendingRemote<blink::mojom::AnnotationAgentHost>,
                     mojo::PendingReceiver<blink::mojom::AnnotationAgent>,
                     blink::mojom::AnnotationType,
-                    const std::string& /*serialized_selector*/));
+                    blink::mojom::SelectorPtr,
+                    std::optional<int> /*search_range_start_node_id*/));
 
   MOCK_METHOD2(CreateAgentFromSelection,
                void(blink::mojom::AnnotationType,
                     CreateAgentFromSelectionCallback));
+
+  void RemoveAgentsOfType(blink::mojom::AnnotationType) override {
+    NOTREACHED();
+  }
 
   void MockCreateAgent(
       mojo::PendingRemote<blink::mojom::AnnotationAgentHost> host_remote,

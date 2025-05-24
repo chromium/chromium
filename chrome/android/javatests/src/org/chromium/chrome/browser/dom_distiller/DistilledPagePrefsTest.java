@@ -244,11 +244,11 @@ public class DistilledPagePrefsTest {
 
     private static class TestingObserver implements DistilledPagePrefs.Observer {
         private final AtomicInteger mFontFamily = new AtomicInteger();
-        private Semaphore mFontFamilySemaphore = new Semaphore(0);
+        private final Semaphore mFontFamilySemaphore = new Semaphore(0);
         private final AtomicInteger mTheme = new AtomicInteger();
-        private Semaphore mThemeSemaphore = new Semaphore(0);
+        private final Semaphore mThemeSemaphore = new Semaphore(0);
         private final AtomicDouble mFontScaling = new AtomicDouble();
-        private Semaphore mFontScalingSemaphore = new Semaphore(0);
+        private final Semaphore mFontScalingSemaphore = new Semaphore(0);
 
         public TestingObserver() {}
 

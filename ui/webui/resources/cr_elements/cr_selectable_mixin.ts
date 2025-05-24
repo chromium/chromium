@@ -62,10 +62,10 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
       };
     }
 
-    attrForSelected: string|null = null;
-    selectable?: string;
-    selected?: string|number;
-    selectedAttribute: string|null = null;
+    accessor attrForSelected: string|null = null;
+    accessor selectable: string|undefined;
+    accessor selected: string|number|undefined;
+    accessor selectedAttribute: string|null = null;
 
     // Whether to select items when they or their children are clicked. Note:
     // value is only checked in firstUpdated().
@@ -148,7 +148,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
     }
 
     getSlot(): HTMLSlotElement {
-      const slot = this.shadowRoot!.querySelector('slot');
+      const slot = this.shadowRoot.querySelector('slot');
       assert(slot);
       return slot;
     }

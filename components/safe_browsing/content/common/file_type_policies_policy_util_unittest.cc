@@ -26,9 +26,36 @@ class FileTypePoliciesPolicyUtilTest
   TestingPrefServiceSimple pref_service_;
 };
 
+TEST_F(FileTypePoliciesPolicyUtilTest, InvalidUrlNoOverride) {
+  EXPECT_EQ(ShouldOverrideFileTypePolicies("exe", GURL{}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
+  EXPECT_EQ(
+      ShouldOverrideFileTypePolicies("exe", GURL{"garbage"}, &pref_service_),
+      FileTypePoliciesOverrideResult::kDoNotOverride);
+}
+
+TEST_F(FileTypePoliciesPolicyUtilTest, LocalFileUrlOverride) {
+  EXPECT_EQ(ShouldOverrideFileTypePolicies("exe", GURL{"file:///foo.exe"},
+                                           &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies("txt", GURL{"file:///foo.txt"},
+                                           &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+}
+
+TEST_F(FileTypePoliciesPolicyUtilTest, RemoteFileUrlNoOverride) {
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "exe", GURL{"file://drive.example/foo.exe"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"file://drive.example/foo.txt"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
+}
+
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListIsIgnoredIfNotConfigured) {
-  EXPECT_FALSE(IsInNotDangerousOverrideList(
-      "exe", GURL{"http://www.example.com"}, &pref_service_));
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "exe", GURL{"http://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListIsIgnoredIfNoValuesSet) {
@@ -36,8 +63,9 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListIsIgnoredIfNoValuesSet) {
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
-  EXPECT_FALSE(IsInNotDangerousOverrideList(
-      "exe", GURL{"http://www.example.com"}, &pref_service_));
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "exe", GURL{"http://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest,
@@ -48,8 +76,9 @@ TEST_F(FileTypePoliciesPolicyUtilTest,
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
-  EXPECT_FALSE(IsInNotDangerousOverrideList(
-      "txt", GURL{"http://www.example.com"}, &pref_service_));
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"http://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanUseWildcards) {
@@ -62,16 +91,21 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanUseWildcards) {
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "exe", GURL{"http://www.example.com"}, &pref_service_));
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "jpg", GURL{"http://www.example.com"}, &pref_service_));
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "exe", GURL{"http://www.example1.com"}, &pref_service_));
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "txt", GURL{"http://foo.example.com"}, &pref_service_));
-  EXPECT_FALSE(IsInNotDangerousOverrideList(
-      "txt", GURL{"http://www.example1.com"}, &pref_service_));
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "exe", GURL{"http://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "jpg", GURL{"http://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "exe", GURL{"http://www.example1.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"http://foo.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"http://www.example1.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchExactly) {
@@ -81,10 +115,12 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchExactly) {
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "txt", GURL{"http://www.example.com"}, &pref_service_));
-  EXPECT_FALSE(IsInNotDangerousOverrideList(
-      "txt", GURL{"http://foo.example.com"}, &pref_service_));
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"http://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"http://foo.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchSubPaths) {
@@ -94,9 +130,10 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchSubPaths) {
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "txt", GURL{"http://www.example.com/some/path/file.html"},
-      &pref_service_));
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"http://www.example.com/some/path/file.html"},
+                &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, CanLimitToHTTPS) {
@@ -106,12 +143,15 @@ TEST_F(FileTypePoliciesPolicyUtilTest, CanLimitToHTTPS) {
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "txt", GURL{"https://www.example.com"}, &pref_service_));
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "txt", GURL{"https://foo.example.com"}, &pref_service_));
-  EXPECT_FALSE(IsInNotDangerousOverrideList(
-      "txt", GURL{"http://www.example.com"}, &pref_service_));
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"https://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"https://foo.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"http://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest,
@@ -122,10 +162,12 @@ TEST_F(FileTypePoliciesPolicyUtilTest,
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "txt", GURL{"http://www.example.com"}, &pref_service_));
-  EXPECT_FALSE(IsInNotDangerousOverrideList(
-      "exe", GURL{"http://www.example.com"}, &pref_service_));
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"http://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "exe", GURL{"http://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, ValuesAreNotCaseSensitive) {
@@ -135,10 +177,12 @@ TEST_F(FileTypePoliciesPolicyUtilTest, ValuesAreNotCaseSensitive) {
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "tXt", GURL{"hTTp://wWw.example.cOM"}, &pref_service_));
-  EXPECT_FALSE(IsInNotDangerousOverrideList(
-      "exe", GURL{"hTTp://wWw.example.cOM"}, &pref_service_));
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "tXt", GURL{"hTTp://wWw.example.cOM"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "exe", GURL{"hTTp://wWw.example.cOM"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kDoNotOverride);
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, NormalizesBlobURLs) {
@@ -148,11 +192,13 @@ TEST_F(FileTypePoliciesPolicyUtilTest, NormalizesBlobURLs) {
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
-  ASSERT_TRUE(IsInNotDangerousOverrideList(
-      "txt", GURL{"https://www.example.com"}, &pref_service_));
+  ASSERT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"https://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
   // The blob: version of this URL should also be allowed.
-  EXPECT_TRUE(IsInNotDangerousOverrideList(
-      "txt", GURL{"blob:https://www.example.com"}, &pref_service_));
+  EXPECT_EQ(ShouldOverrideFileTypePolicies(
+                "txt", GURL{"blob:https://www.example.com"}, &pref_service_),
+            FileTypePoliciesOverrideResult::kOverrideAsNotDangerous);
 }
 
 }  // namespace safe_browsing::file_type

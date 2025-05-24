@@ -1,0 +1,8 @@
+AXWebArea
+++AXGroup
+++++AXPopUpButton AXValue='only text'
+++++++AXMenuItem AXValue='only text'
+++++AXPopUpButton AXValue='only text'
+++++++AXMenuItem AXValue='only text'
+++++AXPopUpButton AXValue='only text'
+++++++AXMenuItem AXValue='only text'

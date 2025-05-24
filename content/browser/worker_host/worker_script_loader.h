@@ -29,10 +29,6 @@ namespace net {
 class IsolationInfo;
 }  // namespace net
 
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
-
 namespace content {
 
 class BrowserContext;
@@ -89,8 +85,6 @@ class CONTENT_EXPORT WorkerScriptLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -108,6 +102,10 @@ class CONTENT_EXPORT WorkerScriptLoader
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   void OnFetcherCallbackCalled();
+
+  static network::mojom::URLLoaderFactory* Fallback(
+      base::WeakPtr<WorkerScriptLoader> self,
+      ResponseHeadUpdateParams);
 
   base::WeakPtr<WorkerScriptLoader> GetWeakPtr();
 

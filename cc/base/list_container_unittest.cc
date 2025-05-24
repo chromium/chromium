@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/base/list_container.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -737,7 +733,7 @@ TEST(ListContainerTest, InsertCopyBeforeBegin) {
   auto iter = list.InsertBeforeAndInvalidateAllPointers<SimpleDerivedElement>(
       list.begin(), count, insert_element);
 
-  const int expected_result[] = {100, 100, 0, 1, 2, 3};
+  const auto expected_result = std::to_array<int>({100, 100, 0, 1, 2, 3});
   int iter_index = 0;
   for (iter = list.begin(); iter != list.end(); ++iter) {
     EXPECT_EQ(expected_result[iter_index],
@@ -763,7 +759,7 @@ TEST(ListContainerTest, InsertCopyBeforeEnd) {
   auto iter = list.InsertBeforeAndInvalidateAllPointers<SimpleDerivedElement>(
       list.end(), count, insert_element);
 
-  const int expected_result[] = {0, 1, 2, 3, 100, 100, 100};
+  const auto expected_result = std::to_array<int>({0, 1, 2, 3, 100, 100, 100});
   int iter_index = 0;
   for (iter = list.begin(); iter != list.end(); ++iter) {
     EXPECT_EQ(expected_result[iter_index],
@@ -782,7 +778,7 @@ TEST(ListContainerTest, InsertCopyBeforeEmpty) {
   auto iter = list.InsertBeforeAndInvalidateAllPointers<SimpleDerivedElement>(
       list.end(), count, insert_element);
 
-  const int expected_result[] = {100, 100, 100};
+  const auto expected_result = std::to_array<int>({100, 100, 100});
   int iter_index = 0;
   for (iter = list.begin(); iter != list.end(); ++iter) {
     EXPECT_EQ(expected_result[iter_index],
@@ -822,7 +818,8 @@ TEST(ListContainerTest, InsertCopyBeforeMany) {
       iter++;
   }
 
-  const int expected_result[] = {0, 1, 100, 100, 4, 5, 100, 7, 100, 9};
+  const auto expected_result =
+      std::to_array<int>({0, 1, 100, 100, 4, 5, 100, 7, 100, 9});
   int iter_index = 0;
   for (iter = list.begin(); iter != list.end(); ++iter) {
     EXPECT_EQ(expected_result[iter_index],
@@ -851,7 +848,7 @@ TEST(ListContainerTest, InsertBeforeBegin) {
     ++iter;
   }
 
-  const int expected_result[] = {100, 101, 0, 1, 2, 3};
+  const auto expected_result = std::to_array<int>({100, 101, 0, 1, 2, 3});
   int iter_index = 0;
   for (iter = list.begin(); iter != list.end(); ++iter) {
     EXPECT_EQ(expected_result[iter_index],
@@ -880,7 +877,7 @@ TEST(ListContainerTest, InsertBeforeEnd) {
     ++iter;
   }
 
-  const int expected_result[] = {0, 1, 2, 3, 100, 101, 102};
+  const auto expected_result = std::to_array<int>({0, 1, 2, 3, 100, 101, 102});
   int iter_index = 0;
   for (iter = list.begin(); iter != list.end(); ++iter) {
     EXPECT_EQ(expected_result[iter_index],
@@ -902,7 +899,7 @@ TEST(ListContainerTest, InsertBeforeEmpty) {
     ++iter;
   }
 
-  const int expected_result[] = {100, 101, 102};
+  const auto expected_result = std::to_array<int>({100, 101, 102});
   int iter_index = 0;
   for (iter = list.begin(); iter != list.end(); ++iter) {
     EXPECT_EQ(expected_result[iter_index],
@@ -916,11 +913,11 @@ TEST(ListContainerTest, InsertBeforeMany) {
   ListContainer<DerivedElement> list(kCurrentLargestDerivedElementAlign,
                                      kCurrentLargestDerivedElementSize, 0);
   // Create a partial list of 1,...,99.
-  int initial_list[] = {
+  auto initial_list = std::to_array<int>({
       0,  1,  4,  5,  6,  7,  8,  9,  11, 12, 17, 18, 19, 20, 21, 22,
       23, 24, 25, 26, 27, 28, 29, 30, 32, 34, 36, 37, 51, 52, 54, 56,
       60, 64, 65, 70, 75, 76, 80, 81, 83, 86, 87, 90, 93, 95, 97, 98,
-  };
+  });
   const size_t size = std::size(initial_list);
   for (size_t i = 0; i < size; ++i) {
     SimpleDerivedElement* element =
@@ -978,7 +975,7 @@ TEST(ListContainerTest, InsertAfterBegin) {
     ++iter;
   }
 
-  const int expected_result[] = {0, 100, 101, 1, 2, 3};
+  const auto expected_result = std::to_array<int>({0, 100, 101, 1, 2, 3});
   int iter_index = 0;
   for (iter = list.begin(); iter != list.end(); ++iter) {
     EXPECT_EQ(expected_result[iter_index],
@@ -1007,7 +1004,7 @@ TEST(ListContainerTest, InsertAfterEnd) {
     ++iter;
   }
 
-  const int expected_result[] = {0, 1, 2, 3, 100, 101, 102};
+  const auto expected_result = std::to_array<int>({0, 1, 2, 3, 100, 101, 102});
   int iter_index = 0;
   for (iter = list.begin(); iter != list.end(); ++iter) {
     EXPECT_EQ(expected_result[iter_index],
@@ -1029,7 +1026,7 @@ TEST(ListContainerTest, InsertAfterEmpty) {
     ++iter;
   }
 
-  const int expected_result[] = {100, 101, 102};
+  const auto expected_result = std::to_array<int>({100, 101, 102});
   int iter_index = 0;
   for (iter = list.begin(); iter != list.end(); ++iter) {
     EXPECT_EQ(expected_result[iter_index],
@@ -1043,11 +1040,11 @@ TEST(ListContainerTest, InsertAfterMany) {
   ListContainer<DerivedElement> list(kCurrentLargestDerivedElementAlign,
                                      kCurrentLargestDerivedElementSize, 0);
   // Create a partial list of 1,...,99.
-  int initial_list[] = {
+  auto initial_list = std::to_array<int>({
       0,  1,  4,  5,  6,  7,  8,  9,  11, 12, 17, 18, 19, 20, 21, 22,
       23, 24, 25, 26, 27, 28, 29, 30, 32, 34, 36, 37, 51, 52, 54, 56,
       60, 64, 65, 70, 75, 76, 80, 81, 83, 86, 87, 90, 93, 95, 97, 98,
-  };
+  });
   const size_t size = std::size(initial_list);
   for (size_t i = 0; i < size; ++i) {
     SimpleDerivedElement* element =

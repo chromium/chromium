@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -31,7 +32,12 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
   const auto button_insets =
       layout_provider->GetInsetsMetric(INSETS_PAGE_INFO_HOVER_BUTTON);
   const int vertical_distance =
-      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+      layout_provider->GetDistanceMetric(views::DISTANCE_CONTROL_LIST_VERTICAL);
+  const int bottom_margin =
+      layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+  // The last view is a RichHoverButton, which overrides the bottom
+  // dialog inset in favor of its own.
+  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, bottom_margin, 0));
 
   SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -43,19 +49,21 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
   AddChildView(PageInfoViewFactory::CreateSeparator(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
-  AddChildView(std::make_unique<RichHoverButton>(
-      base::BindRepeating(
-          [](PageInfoAdPersonalizationContentView* view) {
-            view->presenter_->RecordPageInfoAction(
-                page_info::PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
-            view->ui_delegate_->ShowPrivacySandboxSettings();
-          },
-          this),
-      PageInfoViewFactory::GetSiteSettingsIcon(),
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON),
-      std::u16string(),
-      /*tooltip_text=*/std::u16string(), std::u16string(),
-      PageInfoViewFactory::GetLaunchIcon()));
+  auto* manage_ad_privacy_button =
+      AddChildView(std::make_unique<RichHoverButton>(
+          base::BindRepeating(
+              [](PageInfoAdPersonalizationContentView* view) {
+                view->presenter_->RecordPageInfoAction(
+                    page_info::PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
+                view->ui_delegate_->ShowPrivacySandboxSettings();
+              },
+              this),
+          PageInfoViewFactory::GetSiteSettingsIcon(),
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON),
+          std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
+  manage_ad_privacy_button->SetTitleTextStyleAndColor(
+      views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
 
   presenter_->InitializeUiState(this, base::DoNothing());
 }
@@ -79,9 +87,12 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
   auto* description_label =
       info_container_->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(message_id), views::style::CONTEXT_LABEL,
-          views::style::STYLE_SECONDARY));
+          views::style::STYLE_BODY_3));
   description_label->SetMultiLine(true);
+  description_label->SetEnabledColor(kColorPageInfoForeground);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description_label->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_LABEL);
   // TODO(crbug.com/40244046): Figure out why without additional horizontal
   // margin the size is being calculated incorrectly and the topics labels are
   // being cut off.
@@ -99,8 +110,9 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
       auto* topic_label =
           info_container_->AddChildView(std::make_unique<views::Label>(
               topic.GetLocalizedRepresentation(), views::style::CONTEXT_LABEL,
-              views::style::STYLE_PRIMARY));
+              views::style::STYLE_BODY_4));
       topic_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      topic_label->SetEnabledColor(kColorPageInfoSubtitleForeground);
     }
   }
 

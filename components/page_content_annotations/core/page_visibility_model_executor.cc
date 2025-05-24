@@ -6,6 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
@@ -56,13 +57,17 @@ PageVisibilityModelExecutor::Execute(
 
 base::expected<std::unique_ptr<PageVisibilityModelExecutor::ModelExecutionTask>,
                optimization_guide::ExecutionStatus>
-PageVisibilityModelExecutor::BuildModelExecutionTask(
-    base::MemoryMappedFile* model_file) {
+PageVisibilityModelExecutor::BuildModelExecutionTask(base::File& model_file) {
   tflite::task::text::NLClassifierOptions options;
-  *options.mutable_base_options()
-       ->mutable_model_file()
-       ->mutable_file_content() = std::string(
-      reinterpret_cast<const char*>(model_file->data()), model_file->length());
+  auto* mutable_file_descriptor_meta = options.mutable_base_options()
+                                           ->mutable_model_file()
+                                           ->mutable_file_descriptor_meta();
+#if BUILDFLAG(IS_WIN)
+  mutable_file_descriptor_meta->set_handle(
+      reinterpret_cast<uint64_t>(model_file.GetPlatformFile()));
+#else
+  mutable_file_descriptor_meta->set_fd(model_file.GetPlatformFile());
+#endif
   options.mutable_base_options()
       ->mutable_compute_settings()
       ->mutable_tflite_settings()

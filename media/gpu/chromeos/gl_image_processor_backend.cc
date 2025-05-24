@@ -111,7 +111,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
   if (!should_split_planes) {
     auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
         frame->coded_size(), *buffer_format,
-        std::move(gpu_memory_buffer_handle.native_pixmap_handle));
+        std::move(gpu_memory_buffer_handle).native_pixmap_handle());
     DCHECK(native_pixmap->AreDmaBufFdsValid());
 
     // Import the NativePixmap into GL.
@@ -143,7 +143,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
 
   auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
       plane_size, plane_format,
-      std::move(gpu_memory_buffer_handle.native_pixmap_handle));
+      std::move(gpu_memory_buffer_handle).native_pixmap_handle());
   DCHECK(native_pixmap->AreDmaBufFdsValid());
 
   // Import the NativePixmap into GL.
@@ -433,7 +433,7 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   glGenVertexArraysOES(1, &vao_id_);
   CHECK_GT(vao_id_, 0u);
   glBindVertexArrayOES(vao_id_);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
   glEnableVertexAttribArray(0);
 
   // Create a vertex shader program which will be used for both scaling and

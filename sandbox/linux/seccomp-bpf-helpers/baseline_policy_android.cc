@@ -13,6 +13,7 @@
 #include <linux/net.h>
 #include <linux/userfaultfd.h>
 #include <sched.h>
+#include <sys/mman.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
@@ -46,6 +47,18 @@ namespace sandbox {
 
 #ifndef SOCK_NONBLOCK
 #define SOCK_NONBLOCK O_NONBLOCK
+#endif
+
+#ifndef UFFDIO_MOVE
+#define _UFFDIO_MOVE (0x05)
+struct uffdio_move {
+  __u64 dst;
+  __u64 src;
+  __u64 len;
+  __u64 mode;
+  __s64 move;
+};
+#define UFFDIO_MOVE _IOWR(UFFDIO, _UFFDIO_MOVE, struct uffdio_move)
 #endif
 
 namespace {
@@ -111,7 +124,9 @@ ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
       .Cases(
           {// userfaultfd ART GC (https://crbug.com/1300653).
            UFFDIO_REGISTER, UFFDIO_UNREGISTER, UFFDIO_WAKE, UFFDIO_COPY,
-           UFFDIO_ZEROPAGE, UFFDIO_CONTINUE},
+           UFFDIO_ZEROPAGE, UFFDIO_CONTINUE,
+           // crbug.com/393204193
+           UFFDIO_MOVE},
           If(BoolConst(allow_userfaultfd_ioctls), Allow())
               .Else(RestrictIoctl()))
       .Cases(
@@ -249,6 +264,15 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
   if (sysno == __NR_ioctl) {
     return RestrictAndroidIoctl(options_.allow_userfaultfd_ioctls);
   }
+
+#if defined(MADV_PAGEOUT)
+  if (sysno == __NR_madvise) {
+    // Allow MADV_PAGEOUT
+    const Arg<int> advice(2);
+    return If(advice == MADV_PAGEOUT, Allow())
+        .Else(BaselinePolicy::EvaluateSyscall(sysno));
+  }
+#endif
 
   // Ptrace is allowed so the crash reporter can fork in a renderer
   // and then ptrace the parent. https://crbug.com/933418

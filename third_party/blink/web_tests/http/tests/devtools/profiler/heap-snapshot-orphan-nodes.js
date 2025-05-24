@@ -56,7 +56,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
     async function checkStatistics(arg, result) {
       var statistics = await result;
       TestRunner.assertEquals(4610, statistics.total);
-      TestRunner.assertEquals(4610, statistics.v8heap);
+      TestRunner.assertEquals(4610, statistics.v8heap.total);
       TestRunner.addResult('SUCCESS: total size is correct.');
     }
 

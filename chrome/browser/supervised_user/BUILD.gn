@@ -13,12 +13,16 @@ static_library("test_support") {
   ]
   deps = [
     "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
     "//chrome/common:constants",
     "//components/content_settings/core/browser",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
+    "//components/supervised_user/test_support",
   ]
   if (is_android) {
     sources += [ "android/supervised_user_settings_test_bridge.cc" ]
@@ -40,19 +44,12 @@ if (is_android) {
   }
 
   android_library("parent_auth_delegate_java") {
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegate.java",
-      "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegateImpl.java",
-    ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegate.java" ]
     deps = [
       "//base:base_java",
       "//ui/android:ui_no_recycler_view_java",
       "//url:gurl_java",
     ]
-
-    # Add the actual implementation where necessary so that downstream targets
-    # can provide their own implementations.
-    jar_excluded_patterns = [ "*/ParentAuthDelegateImpl.class" ]
   }
 
   android_library("supervised_user_metrics_java") {
@@ -60,16 +57,6 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
-    ]
-  }
-
-  android_library("parent_auth_delegate_impl_java") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegateImpl.java" ]
-    deps = [
-      ":parent_auth_delegate_java",
-      "//base:base_java",
-      "//ui/android:ui_no_recycler_view_java",
-      "//url:gurl_java",
     ]
   }
 
@@ -84,6 +71,7 @@ if (is_android) {
       ":parent_auth_delegate_java",
       ":supervised_user_metrics_java",
       "//base:base_java",
+      "//base:service_loader_java",
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/signin/services/android:java",

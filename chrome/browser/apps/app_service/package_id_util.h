@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 class Profile;
 
@@ -21,14 +21,14 @@ class PackageId;
 
 namespace apps_util {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Generate the package ID for an app using its metadata. When an app has
 // incomplete metadata or a type that package IDs cannot support, we return
 // std::nullopt since a package ID cannot be generated.
 std::optional<apps::PackageId> GetPackageIdForApp(
     Profile* profile,
     const apps::AppUpdate& update);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::optional<std::string> GetAppWithPackageId(
     Profile* profile,

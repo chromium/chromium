@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Հանգուլ Անմատա</translation>
 <translation id="1155759005174418845">Կատալոնական</translation>
 <translation id="1168100932582989117">Google-ի DNS-սերվերներ</translation>
+<translation id="1170788066030116158">Լուսանկարման ամսաթիվը</translation>
 <translation id="1172970565351728681">Մնացել է մոտ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1173916544412572294">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
@@ -72,6 +73,7 @@
 <translation id="1577977504532381335">Ծանոթանալ ադմինիստրատորի կանոններին</translation>
 <translation id="158849752021629804">Հարկավոր է ներքին ցանց</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ՊԲ</translation>
+<translation id="1601786938618212857">Ստեղծել Zip արխիվ</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="162175252992296058">պորտուգալերեն՝ ԱՄՆ միջազգային ստեղնաշարով</translation>
 <translation id="1629521517399325891">Օգտատիրոջ հավաստագիրը հասանելի չէ ցանցային նույնականացման համար։</translation>
@@ -105,6 +107,7 @@
 <translation id="1810764548349082891">Նախադիտումը հասանելի չէ</translation>
 <translation id="1812302367230252929">ամհարերեն (տառադարձություն)</translation>
 <translation id="1813278315230285598">Services</translation>
+<translation id="181434555916624618">Այս պահին մարդկանց մասին տվյալներ պարունակող արդյունքները չեն ցուցադրվի։ Փորձեք այլ հարցում կատարել։</translation>
 <translation id="1829129547161959350">Պինգվին</translation>
 <translation id="183183971458492120">Տեղեկությունները բեռնվում են...</translation>
 <translation id="1832073788765803750">կիսալայն կատականա</translation>
@@ -135,7 +138,6 @@
 <translation id="2084809735218147718">Շնորհակալություն գրող մարդ</translation>
 <translation id="2088690981887365033">VPN ցանց</translation>
 <translation id="209653272837065803">Ֆայլերի համաժամացումը շարունակելու համար բավարար տարածք չկա</translation>
-<translation id="2111134541987263231">Միացրեք <ph name="BEGIN_BOLD" />Թույլ տալ ինկոգնիտո ռեժիմում<ph name="END_BOLD" /> կարգավորումը</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> տարր կջնջվի, և դուք չեք կարողանա վերականգնել դրանք։</translation>
 <translation id="2122305276694332719">Թաքցված ցանցին ավտոմատ միացումը մյուս օգտատերերին թույլ է տալիս տեսնել ձեր սարքը և ցանցային որոշ կարգավորումներ: Այդ իսկ պատճառով Խորհուրդ չի տրվում միացնել այս գործառույթը:</translation>
 <translation id="2125607626296734455">քմերերեն</translation>
@@ -166,7 +168,6 @@
 <translation id="2304820083631266885">Մոլորակ</translation>
 <translation id="2305020378527873881">Չհաջողվեց առբերել <ph name="VOLUME_NAME" /> պանակը։</translation>
 <translation id="2307462900900812319">Կազմաձևել ցանցը</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Հետևյալ ID-ով ընդլայնում չհաջողվեց գտնել՝ <ph name="BEGIN_LIST" /><ph name="END_LIST" />։ Դիմեք ձեր ադմինիստրատորին։}one{Հետևյալ ID-ներով ընդլայնումներ չհաջողվեց գտնել՝ <ph name="BEGIN_LIST" /><ph name="END_LIST" />։ Դիմեք ձեր ադմինիստրատորին։}other{Հետևյալ ID-ներով ընդլայնումներ չհաջողվեց գտնել՝ <ph name="BEGIN_LIST" /><ph name="END_LIST" />։ Դիմեք ձեր ադմինիստրատորին։}}</translation>
 <translation id="2325650632570794183">Ֆայլի այս տեսակը չի աջակցվում: Այցելեք Chrome Web Store, որպեսզի գտնեք համապատասխան հավելված, որը կարող է բացել այս տեսակի ֆայլը:</translation>
 <translation id="2326539130272988168">բուլղարերեն</translation>
 <translation id="233822363739146957">Ձեր բոլոր ֆայլերը համաժամացնելու համար բավարար տարածք չկա</translation>
@@ -238,7 +239,6 @@
 <translation id="290843123675549676">մարաթի</translation>
 <translation id="2923240520113693977">Էստոնական</translation>
 <translation id="2938685643439809023">Մոնղոլական</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Չհաջողվեց գտնել ընդլայնումը}one{Չհաջողվեց գտնել ընդլայնումը}other{Չհաջողվեց գտնել ընդլայնումները}}</translation>
 <translation id="2943503720238418293">Նշեք ավելի կարճ անուն</translation>
 <translation id="2949781154072577687">«<ph name="DRIVE_NAME" />» կրիչը ձևաչափվում է…</translation>
 <translation id="2951236788251446349">Մեդուզա</translation>
@@ -295,7 +295,6 @@
 <translation id="3356580349448036450">Ավարտված է</translation>
 <translation id="3358452157379365236">Կիթառ</translation>
 <translation id="3368922792935385530">Միացված է</translation>
-<translation id="3372635229069101468">Սեղմեք <ph name="BEGIN_BOLD" />Մանրամասներ<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">նեպալերեն (InScript ստեղնաշար)</translation>
 <translation id="338691029516748599">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, կապակցում</translation>
 <translation id="3408072735282270043">Ակտիվացնել, <ph name="NETWORK_NAME" /></translation>
@@ -385,7 +384,6 @@
 <translation id="4124935795427217608">Միաեղջյուր</translation>
 <translation id="4131235941541910880">Ոչ պետքական ֆայլերը տեղափոխեք աղբարկղ</translation>
 <translation id="4134804435730168042">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />։ Ակտիվացրեք՝ սարքը կարգավորելուց հետո</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Միացրեք հետևյալ ընդլայնումը ինկոգնիտո ռեժիմում՝}one{Միացրեք հետևյալ ընդլայնումը ինկոգնիտո ռեժիմում՝}other{Միացրեք հետևյալ ընդլայնումները ինկոգնիտո ռեժիմում՝}}</translation>
 <translation id="4153015322587141338">Ֆայլերը դարակում արագ բացելու համար մկնիկի աջ կոճակով սեղմեք ֆայլի վրա և ընտրեք «<ph name="PIN_COMMAND" />»։</translation>
 <translation id="4157569377477607576">Ադմինիստրատորը խորհուրդ չի տալիս՝</translation>
 <translation id="4159731583141908892">Տեղափոխվեց <ph name="FILE_NAME" /> տարր։</translation>
@@ -393,7 +391,6 @@
 <translation id="4179621117429069925">Այս տարրը ձեր աղբարկղում է</translation>
 <translation id="4186579485882418952">Միացնել անցանց ռեժիմը</translation>
 <translation id="4193154014135846272">Google փաստաթուղթ</translation>
-<translation id="4197674956721858839">Արխիվացնել ընտրված տարրերը</translation>
 <translation id="4202378258276439759">իսպաներեն (Լատինական Ամերիկա)</translation>
 <translation id="4202977638116331303">վրացերեն</translation>
 <translation id="421017592316736757">Այս ֆայլն օգտագործելու համար դուք պետք է առցանց լինեք:</translation>
@@ -421,6 +418,7 @@
 <translation id="4387004326333427325">Իսկորոշման վկայագիրը մերժվել է հեռակա կարգով</translation>
 <translation id="4394214039309501350">Արտաքին հղում</translation>
 <translation id="4394980935660306080">Այս շաբաթվա սկզբին</translation>
+<translation id="4397435965699247285">OneDrive-ը հասանելի չէ անցանց ռեժիմում</translation>
 <translation id="4398096759193130964">Վերականգնեք տարրերը կամ աղբարկղից քաշեք նոր պանակ</translation>
 <translation id="4401287888955153199">Դուրս բերել բոլորը</translation>
 <translation id="4410695710508688828">Չհաջողվեց կատարել արտահանումը։ <ph name="ERROR_MESSAGE" /></translation>
@@ -483,9 +481,7 @@
 <translation id="4801956050125744859">Պահպանել երկուսն էլ</translation>
 <translation id="4804827417948292437">Ավոկադո</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> տարր վերականգնվում է</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Ձեր կազմակերպության կանոնների համաձայն՝ ինկոգնիտո ռեժիմից օգտվելու համար պահանջվում է ընդլայնում}one{Ձեր կազմակերպության կանոնների համաձայն՝ ինկոգնիտո ռեժիմից օգտվելու համար պահանջվում է ընդլայնում}other{Ձեր կազմակերպության կանոնների համաձայն՝ ինկոգնիտո ռեժիմից օգտվելու համար պահանջվում են որոշ ընդլայնումներ}}</translation>
 <translation id="4826849268470072925">թամիլերեն (ITRANS ստեղնաշար)</translation>
-<translation id="482932175346970750">Ձեր դիտարկիչում մուտքագրեք <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Chromebase սարքեր</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="485316830061041779">Գերմանական</translation>
@@ -558,7 +554,6 @@
     ուրիշների հետ մեկ վայրում:<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Վերականգնված ֆայլեր Google Drive-ից</translation>
 <translation id="5278111733643988471">Այս տարրը վերականգնելու համար այն աղբարկղից քաշեք նոր պանակ։ Տարրի սկզբնական պանակը (<ph name="PARENT_FOLDER_NAME" />) ջնջվել է։</translation>
-<translation id="5283101102242354279">Միացրեք ընդլայնումը ինկոգնիտո ռեժիմում՝</translation>
 <translation id="5288441970121584418">Բուրգեր</translation>
 <translation id="5293615890992542006">Ադմինիստրատորն արգելել է տեղափոխել այս ֆայլը</translation>
 <translation id="5305688511332277257">Տեղադրված չկա</translation>
@@ -812,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, մանրամասներ</translation>
 <translation id="7246947237293279874">FTP պրոքսի սերվեր</translation>
 <translation id="7248671827512403053">Հավելված</translation>
-<translation id="7252604552361840748">Գտեք վերևում նշված ընդլայնումը</translation>
 <translation id="7256405249507348194">Չճանաչված սխալ՝ <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Հասանելի ծառայություններ</translation>
 <translation id="7291818353625820805">Ուզո՞ւմ եք, որ ստեղները կրկնվեն։ Ստեղնաշարի կարգավորումներում անջատեք առոգանության նշանները։</translation>

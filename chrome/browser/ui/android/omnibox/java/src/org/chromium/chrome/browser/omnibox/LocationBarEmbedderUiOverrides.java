@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Data class defining UI overrides for the {@link LocationBar}. */
+@NullMarked
 public class LocationBarEmbedderUiOverrides {
     private boolean mForcedPhoneStyleOmnibox;
     private boolean mLensEntrypointAllowed;

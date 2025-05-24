@@ -62,7 +62,7 @@ class ChooserController {
     virtual void OnRefreshStateChanged(bool refreshing) = 0;
 
    protected:
-    virtual ~View() {}
+    virtual ~View() = default;
   };
 
   // Returns the text to be displayed in the chooser title.
@@ -167,6 +167,9 @@ class ChooserController {
 
   // Navigate user to preferences in order to acquire Bluetooth permission.
   virtual void OpenPermissionPreferences() const;
+
+  // Provide help information about system Bluetooth permissions.
+  virtual void OpenBluetoothPermissionHelpUrl() const;
 
   // Return whether the chooser needs to show Bluetooth adapter view.
   virtual bool ShouldShowAdapterOffView() const;

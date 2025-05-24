@@ -119,16 +119,14 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromList(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected version_number: " << version_number;
+      NOTREACHED() << "Unexpected version_number: " << version_number;
   }
 
   if (!serialized[3].is_string())
     return nullptr;
-  std::string absolute_release_time_string = serialized[3].GetString();
 
   int64_t absolute_release_time_us;
-  if (!base::StringToInt64(absolute_release_time_string,
+  if (!base::StringToInt64(serialized[3].GetString(),
                            &absolute_release_time_us)) {
     return nullptr;
   }

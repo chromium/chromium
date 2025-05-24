@@ -42,7 +42,7 @@ class ASH_EXPORT AppListToastView : public views::View {
  public:
   class Builder {
    public:
-    explicit Builder(const std::u16string title);
+    explicit Builder(std::u16string title);
     virtual ~Builder();
 
     std::unique_ptr<AppListToastView> Build();
@@ -52,9 +52,9 @@ class ASH_EXPORT AppListToastView : public views::View {
     Builder& SetIconSize(int icon_size);
     Builder& SetIconBackground(bool has_icon_background);
 
-    Builder& SetSubtitle(const std::u16string subtitle);
+    Builder& SetSubtitle(const std::u16string& subtitle);
     Builder& SetSubtitleMultiline(bool multiline);
-    Builder& SetButton(std::u16string button_text,
+    Builder& SetButton(const std::u16string& button_text,
                        views::Button::PressedCallback button_callback);
     Builder& SetCloseButton(
         views::Button::PressedCallback close_button_callback);
@@ -79,7 +79,7 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Whether `view` is a ToastPillButton.
   static bool IsToastButton(views::View* view);
 
-  AppListToastView(const std::u16string title, bool style_for_tablet_mode);
+  AppListToastView(const std::u16string& title, bool style_for_tablet_mode);
   AppListToastView(const AppListToastView&) = delete;
   AppListToastView& operator=(const AppListToastView&) = delete;
   ~AppListToastView() override;
@@ -95,8 +95,8 @@ class ASH_EXPORT AppListToastView : public views::View {
 
   void SetIcon(const ui::ImageModel& icon);
   void SetIconSize(int icon_size);
-  void SetTitle(const std::u16string title);
-  void SetSubtitle(const std::u16string subtitle);
+  void SetTitle(const std::u16string& title);
+  void SetSubtitle(const std::u16string& subtitle);
   void SetSubtitleMultiline(bool multiline);
   void UpdateInteriorMargins(const gfx::Insets& margins);
 

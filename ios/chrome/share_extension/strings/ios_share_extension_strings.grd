@@ -1,20 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
-This file contains definition of resources that will be translated for each
-locale.  The variables is_win, is_macosx, is_linux, is_ios and is_posix are
-available for making strings OS specific.  Other platform defines such as
-use_titlecase are declared in build/common.gypi.
-
-The strings in this file are specific to iOS, thus is_ios will be true and
-all other OS specific variables will be false.
--->
-
-<grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+<?xml version='1.0' encoding='UTF-8'?>
+<grit base_dir="." latest_public_release="0" current_release="1" source_lang_id="en" enc_check="möl">
+  <!--
+  This file contains definition of resources that will be translated for each
+  locale.  The strings in this file are specific to iOS.
+  -->
   <outputs>
     <output filename="grit/ios_share_extension_strings.h" type="rc_header">
-      <emit emit_type="prepend"></emit>
+      <emit emit_type="prepend" />
     </output>
     <output filename="ios_share_extension_strings_af.pak" type="data_package" lang="af" />
     <output filename="ios_share_extension_strings_am.pak" type="data_package" lang="am" />
@@ -190,24 +182,48 @@ all other OS specific variables will be false.
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
+      <message name="IDS_IOS_ACCESSIBILITY_LABEL_SHARE_EXTENSION" desc="The accessible name for the Chrome logo that appears visually at the top of the Share Chrome extension will be, `Share Chrome, Heading`">
+        Share
+    </message>
+    <message name="IDS_IOS_ADDED_ITEM_SHARE_EXTENSION" desc="Label of the button 'add to' after it has been pressed confirming the action to the user.">
+        Added
+      </message>
+      <message name="IDS_IOS_ADD_BOOKMARKS_SHARE_EXTENSION" desc="Share extension button to add to bookmarks [Length: 30em]" meaning="Button title [Length: 30em]">
+        Add to Bookmarks
+      </message>
       <message name="IDS_IOS_ADD_READING_LIST_SHARE_EXTENSION" desc="Share extension button to add to reading list [Length: 30em]" meaning="Button title [Length: 30em]">
         Add to Reading List
       </message>
-      <message name="IDS_IOS_ADD_BOOKMARKS_SHARE_EXTENSION" desc="Share extension button to add to bookmarks [Length: 30em]" meaning="Button title [Length: 30em]">
-        Add to Bookmarks 
+      <message name="IDS_IOS_CANCEL_BUTTON_SHARE_EXTENSION" desc="Label for the cancel button in the share extension.">
+      Cancel
+    </message>
+    <message name="IDS_IOS_ERROR_MESSAGE_SHARE_EXTENSION" desc="Share extension message to tell the user the URL cannot be processed. The name of the application will be put in place of APPLICATION_NAME">
+        APPLICATION_NAME cannot handle this link.
       </message>
+      <message name="IDS_IOS_MORE_OPTIONS_BUTTON_SHARE_EXTENSION" desc="Label for the more options button in the share extension.">
+      More options
+    </message>
+    <message name="IDS_IOS_OK_BUTTON_SHARE_EXTENSION" desc="Label for the OK button in the share extension.">
+        OK
+      </message>
+    <message name="IDS_IOS_OPEN_IN_BUTTON_SHARE_EXTENSION" desc="Label for the open in button in the share extension.">
+        Open in
+    </message>
       <message name="IDS_IOS_OPEN_IN_CHROME_SHARE_EXTENSION" desc="Share extension button to open link in Chrome [Length: 30em]" meaning="Button title [Length: 30em]">
         Open in Chrome
       </message>
-      <message name="IDS_IOS_ADDED_ITEM_SHARE_EXTENSION" desc="Label of the button 'add to' after it has been pressed confirming the action to the user.">
-        Added
-      </message>
-      <message name="IDS_IOS_ERROR_MESSAGE_SHARE_EXTENSION" desc="Share extension message to tell the user the URL cannot be processed. The name of the application will be put in place of APPLICATION_NAME">
-        APPLICATION_NAME cannot handle this link.
-      </message>
-      <message name="IDS_IOS_OK_BUTTON_SHARE_EXTENSION" desc="Label for the OK button in the share extension.">
-        OK
-      </message>
+    <message name="IDS_IOS_OPEN_IN_INCOGNITO_BUTTON_SHARE_EXTENSION" desc="Label for the open in incognito button in the share extension.">
+      Open in Incognito
+    </message>
+    <message name="IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION" desc="Label for the search in button in the share extension.">
+        Search in
+    </message>
+    <message name="IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION" desc="Label for the search in incognito button in the share extension.">
+        Search in Incognito
+    </message>
+    <message name="IDS_IOS_SEARCH_MAX_LIMIT" desc="String to add to the end of the search text to inform the user that the character limit of a search has been reached.">
+        (Max limit)
+    </message>
     </messages>
   </release>
 </grit>

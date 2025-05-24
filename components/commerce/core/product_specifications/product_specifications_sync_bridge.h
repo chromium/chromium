@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SYNC_BRIDGE_H_
 #define COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SYNC_BRIDGE_H_
 
+#include <set>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -74,8 +76,11 @@ class ProductSpecificationsSyncBridge : public syncer::DataTypeSyncBridge {
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  std::string GetStorageKey(const syncer::EntityData& entity_data) override;
-  std::string GetClientTag(const syncer::EntityData& entity_data) override;
+  std::string GetStorageKey(
+      const syncer::EntityData& entity_data) const override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   std::unique_ptr<syncer::DataBatch> GetDataForCommit(
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
@@ -138,6 +143,9 @@ class ProductSpecificationsSyncBridge : public syncer::DataTypeSyncBridge {
       const std::vector<std::pair<sync_pb::ProductComparisonSpecifics,
                                   syncer::EntityChange::ChangeType>>&
           specifics_to_change);
+
+  void SendInitialSyncData(const std::set<std::string>& server_uuids,
+                           syncer::MetadataChangeList* metadata_change_list);
 
   std::map<std::string, sync_pb::ProductComparisonSpecifics> entries_;
 

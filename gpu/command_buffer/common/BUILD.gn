@@ -95,6 +95,8 @@ source_set("common_sources") {
     "scheduling_priority.h",
     "shared_image_capabilities.cc",
     "shared_image_capabilities.h",
+    "shared_image_pool_id.cc",
+    "shared_image_pool_id.h",
     "shared_image_trace_utils.cc",
     "shared_image_trace_utils.h",
     "shared_image_usage.cc",

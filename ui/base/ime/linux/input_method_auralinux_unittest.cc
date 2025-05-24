@@ -162,13 +162,10 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     cursor_position_ = rect;
   }
 
-  void SetSurroundingText(
-      const std::u16string& text,
-      const gfx::Range& text_range,
-      const gfx::Range& composition_range,
-      const gfx::Range& selection_range,
-      const std::optional<GrammarFragment>& fragment,
-      const std::optional<AutocorrectInfo>& autocorrect) override {
+  void SetSurroundingText(const std::u16string& text,
+                          const gfx::Range& text_range,
+                          const gfx::Range& composition_range,
+                          const gfx::Range& selection_range) override {
     TestResult::GetInstance()->RecordAction(u"surroundingtext:" + text);
     TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(
         base::StringPrintf("textrangestart:%zu", text_range.start())));
@@ -353,8 +350,8 @@ class InputMethodAuraLinuxTest : public testing::Test {
 
   void SetUp() override {
     delegate_ = std::make_unique<InputMethodDelegateForTesting>();
-    input_method_auralinux_ =
-        std::make_unique<InputMethodAuraLinux>(delegate_.get());
+    input_method_auralinux_ = std::make_unique<InputMethodAuraLinux>(
+        delegate_.get(), gfx::kNullAcceleratedWidget);
     input_method_auralinux_->OnFocus();
     context_ = static_cast<LinuxInputMethodContextForTesting*>(
         input_method_auralinux_->GetContextForTesting());

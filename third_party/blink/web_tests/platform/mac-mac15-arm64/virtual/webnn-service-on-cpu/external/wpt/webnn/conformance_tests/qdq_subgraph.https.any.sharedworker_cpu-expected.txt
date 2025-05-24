@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] quantized element-wise binary mul
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear dequantizeLinear mul quantizeLinear dequantizeLinear float32 actual 36.86275100708008 should be close enough to expected 36.86274719238281 by ULP distance: expected a number less than or equal to 0n but got 1n
+Harness: the test ran to completion.
+

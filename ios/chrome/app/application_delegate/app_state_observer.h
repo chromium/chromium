@@ -8,6 +8,7 @@
 
 @class AppState;
 @class SceneState;
+@class ProfileState;
 
 @protocol AppStateObserver <NSObject>
 
@@ -16,25 +17,24 @@
 // Called when a scene is connected.
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState;
 
-// Called when the first scene initializes its UI.
+// Called when a new ProfileState is connected.
 - (void)appState:(AppState*)appState
-    firstSceneHasInitializedUI:(SceneState*)sceneState;
+    profileStateConnected:(ProfileState*)profileState;
+
+// Called when a ProfileState is disconnected.
+- (void)appState:(AppState*)appState
+    profileStateDisconnected:(ProfileState*)profileState;
 
 // Called when the app is about to transition to `nextInitStage`. The init stage
 // of the app at that moment is still `nextInitStage` - 1.
 - (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)nextInitStage;
+    willTransitionToInitStage:(AppInitStage)nextInitStage;
 
 // Called right after the app is transitioned out of to the
 // `previousInitStage`. The init stage of the app at that
 // moment is `previousInitStage` + 1.
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage;
-
-// Called when Scene with activation level SceneActivationLevelForegroundActive
-// is available.
-- (void)appState:(AppState*)appState
-    sceneDidBecomeActive:(SceneState*)sceneState;
+    didTransitionFromInitStage:(AppInitStage)previousInitStage;
 
 @end
 

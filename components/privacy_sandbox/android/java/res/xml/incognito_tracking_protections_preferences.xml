@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:summary="@string/incognito_tracking_protections_page_description"
+        app:allowDividerBelow="false" />
+
+    <PreferenceCategory
+        android:title="@string/incognito_tracking_protections_header"/>
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="incognito_tracking_protections_description"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+      android:key="block_3pcs_toggle"
+      android:title="@string/incognito_tracking_protections_block_3pcs_toggle_label"
+      android:summary="@string/incognito_tracking_protections_block_3pcs_toggle_sublabel"
+      android:enabled="false"/>
+    <Preference
+        android:key="ip_protection"
+        android:title="@string/incognito_tracking_protections_ip_protection_toggle_label"
+        android:fragment="org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment"
+        app:isPreferenceVisible="false" />
+    <Preference
+        android:key="fp_protection"
+        android:title="@string/incognito_tracking_protections_fingerprinting_protection_toggle_label"
+        android:fragment="org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment"
+        app:isPreferenceVisible="false" />
+
+</PreferenceScreen>

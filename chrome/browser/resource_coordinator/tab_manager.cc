@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -49,7 +45,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
-#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/common/chrome_constants.h"
@@ -85,30 +80,7 @@ using LoadingState = TabLoadTracker::LoadingState;
 ////////////////////////////////////////////////////////////////////////////////
 // TabManager
 
-class TabManager::TabManagerSessionRestoreObserver final
-    : public SessionRestoreObserver {
- public:
-  explicit TabManagerSessionRestoreObserver(TabManager* tab_manager)
-      : tab_manager_(tab_manager) {
-    SessionRestore::AddObserver(this);
-  }
-
-  ~TabManagerSessionRestoreObserver() { SessionRestore::RemoveObserver(this); }
-
-  // SessionRestoreObserver implementation:
-  void OnWillRestoreTab(WebContents* web_contents) override {
-    tab_manager_->OnWillRestoreTab(web_contents);
-  }
-
- private:
-  raw_ptr<TabManager> tab_manager_;
-};
-
-TabManager::TabManager() {
-  session_restore_observer_ =
-      std::make_unique<TabManagerSessionRestoreObserver>(this);
-}
-
+TabManager::TabManager() = default;
 TabManager::~TabManager() = default;
 
 void TabManager::Start() {
@@ -117,11 +89,10 @@ void TabManager::Start() {
   // TODO(sebmarchand): Remove the "IsAvailable" check, or merge the TM into the
   // PM. The TM and PM must always exist together.
   if (performance_manager::PerformanceManager::IsAvailable()) {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce([](performance_manager::Graph* graph) {
-          graph->PassToGraph(
-              std::make_unique<TabManagerResourceCoordinatorSignalObserver>());
-        }));
+    performance_manager::Graph* graph =
+        performance_manager::PerformanceManager::GetGraph();
+    graph->PassToGraph(
+        std::make_unique<TabManagerResourceCoordinatorSignalObserver>());
   }
 
   g_browser_process->resource_coordinator_parts()
@@ -140,11 +111,6 @@ LifecycleUnitVector TabManager::GetSortedLifecycleUnits() {
   return sorted_lifecycle_units;
 }
 
-void TabManager::DiscardTab(LifecycleUnitDiscardReason reason,
-                            TabDiscardDoneCB tab_discard_done) {
-  DiscardTabImpl(reason, std::move(tab_discard_done));
-}
-
 WebContents* TabManager::DiscardTabByExtension(content::WebContents* contents) {
   if (contents) {
     TabLifecycleUnitExternal* tab_lifecycle_unit_external =
@@ -160,14 +126,6 @@ WebContents* TabManager::DiscardTabByExtension(content::WebContents* contents) {
   return DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL);
 }
 
-void TabManager::AddObserver(TabLifecycleObserver* observer) {
-  TabLifecycleUnitExternal::AddTabLifecycleObserver(observer);
-}
-
-void TabManager::RemoveObserver(TabLifecycleObserver* observer) {
-  TabLifecycleUnitExternal::RemoveTabLifecycleObserver(observer);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // TabManager, private:
 
@@ -175,15 +133,17 @@ void TabManager::RemoveObserver(TabLifecycleObserver* observer) {
 bool TabManager::IsInternalPage(const GURL& url) {
   // There are many chrome:// UI URLs, but only look for the ones that users
   // are likely to have open. Most of the benefit is the from NTP URL.
-  const char* const kInternalPagePrefixes[] = {
-      chrome::kChromeUIDownloadsURL, chrome::kChromeUIHistoryURL,
-      chrome::kChromeUINewTabURL, chrome::kChromeUISettingsURL};
-  // Prefix-match against the table above. Use strncmp to avoid allocating
-  // memory to convert the URL prefix constants into std::strings.
-  for (size_t i = 0; i < std::size(kInternalPagePrefixes); ++i) {
-    if (!strncmp(url.spec().c_str(), kInternalPagePrefixes[i],
-                 strlen(kInternalPagePrefixes[i])))
+  const auto kInternalPagePrefixes = std::to_array<const char*>({
+      chrome::kChromeUIDownloadsURL,
+      chrome::kChromeUIHistoryURL,
+      chrome::kChromeUINewTabURL,
+      chrome::kChromeUISettingsURL,
+  });
+  // Prefix-match against the table above.
+  for (const char* prefix : kInternalPagePrefixes) {
+    if (base::StartsWith(url.spec(), prefix)) {
       return true;
+    }
   }
   return false;
 }
@@ -210,14 +170,6 @@ content::WebContents* TabManager::DiscardTabImpl(
   }
 
   return nullptr;
-}
-
-void TabManager::OnWillRestoreTab(WebContents* contents) {
-  // TabUIHelper is initialized in TabHelpers::AttachTabHelpers. But this place
-  // gets called earlier than that. So for restored tabs, also initialize their
-  // TabUIHelper here.
-  TabUIHelper::CreateForWebContents(contents);
-  TabUIHelper::FromWebContents(contents)->set_created_by_session_restore(true);
 }
 
 void TabManager::OnLifecycleUnitDestroyed(LifecycleUnit* lifecycle_unit) {

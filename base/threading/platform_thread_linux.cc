@@ -52,7 +52,6 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
   switch (thread_type) {
     case ThreadType::kBackground:
     case ThreadType::kUtility:
-    case ThreadType::kResourceEfficient:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("non-urgent"));
     case ThreadType::kDefault:
       return cgroup_filepath;
@@ -66,7 +65,7 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
 void SetThreadCgroup(PlatformThreadId thread_id,
                      const FilePath& cgroup_directory) {
   FilePath tasks_filepath = cgroup_directory.Append(FILE_PATH_LITERAL("tasks"));
-  std::string tid = NumberToString(thread_id);
+  std::string tid = NumberToString(thread_id.raw());
   if (!WriteFile(tasks_filepath, as_byte_span(tid))) {
     DVLOG(1) << "Failed to add " << tid << " to " << tasks_filepath.value();
   }
@@ -80,8 +79,9 @@ void SetThreadCgroupForThreadType(PlatformThreadId thread_id,
       cgroup_filepath.Append(FILE_PATH_LITERAL("chrome")), thread_type);
 
   // Silently ignore request if cgroup directory doesn't exist.
-  if (!DirectoryExists(cgroup_directory))
+  if (!DirectoryExists(cgroup_directory)) {
     return;
+  }
 
   SetThreadCgroup(thread_id, cgroup_directory);
 }
@@ -95,7 +95,6 @@ const ThreadPriorityToNiceValuePairForTest
         {ThreadPriorityForTest::kRealtimeAudio, -10},
         {ThreadPriorityForTest::kDisplay, -8},
         {ThreadPriorityForTest::kNormal, 0},
-        {ThreadPriorityForTest::kResourceEfficient, 1},
         {ThreadPriorityForTest::kUtility, 2},
         {ThreadPriorityForTest::kBackground, 10},
 };
@@ -106,9 +105,9 @@ const ThreadPriorityToNiceValuePairForTest
 // The uniqueness of the nice value per-type helps to change and restore the
 // scheduling params of threads when their process toggles between FG and BG.
 const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
-    {ThreadType::kBackground, 10},       {ThreadType::kUtility, 2},
-    {ThreadType::kResourceEfficient, 1}, {ThreadType::kDefault, 0},
-    {ThreadType::kDisplayCritical, -8},  {ThreadType::kRealtimeAudio, -10},
+    {ThreadType::kBackground, 10},     {ThreadType::kUtility, 2},
+    {ThreadType::kDefault, 0},         {ThreadType::kDisplayCritical, -8},
+    {ThreadType::kRealtimeAudio, -10},
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {
@@ -179,7 +178,7 @@ bool PlatformThreadLinux::IsThreadBackgroundedForTest(
   FilePath non_urgent_tasks_filepath =
       non_urgent_cgroup_directory.Append(FILE_PATH_LITERAL("tasks"));
 
-  std::string tid = NumberToString(thread_id);
+  std::string tid = NumberToString(thread_id.raw());
   // Check if thread_id is in the urgent cpuset
   std::string urgent_tasks;
   if (!ReadFileToString(urgent_tasks_filepath, &urgent_tasks)) {
@@ -208,8 +207,9 @@ void PlatformThreadBase::SetName(const std::string& name) {
   // the process name for the LWP.  We don't want to do this for the main
   // thread because that would rename the process, causing tools like killall
   // to stop working.
-  if (PlatformThread::CurrentId() == getpid())
+  if (PlatformThread::CurrentId().raw() == getpid()) {
     return;
+  }
 
   // http://0pointer.de/blog/projects/name-your-threads.html
   // Set the name for the LWP (which gets truncated to 15 characters).
@@ -218,8 +218,9 @@ void PlatformThreadBase::SetName(const std::string& name) {
   // that it can set the name of threads other than the current thread.
   int err = prctl(PR_SET_NAME, name.c_str());
   // We expect EPERM failures in sandboxed processes, just ignore those.
-  if (err < 0 && errno != EPERM)
+  if (err < 0 && errno != EPERM) {
     DPLOG(ERROR) << "prctl(PR_SET_NAME)";
+  }
 }
 
 // static
@@ -264,11 +265,11 @@ void SetThreadTypeLinux(ProcessId process_id,
   // global TID.
   PlatformThreadId syscall_tid = thread_id;
   if (thread_id == PlatformThreadLinux::CurrentId()) {
-    syscall_tid = 0;
+    syscall_tid = kInvalidThreadId;
   }
 
   if (thread_type == ThreadType::kRealtimeAudio) {
-    if (sched_setscheduler(syscall_tid, SCHED_RR,
+    if (sched_setscheduler(syscall_tid.raw(), SCHED_RR,
                            &PlatformThreadLinux::kRealTimeAudioPrio) == 0) {
       return;
     }
@@ -277,7 +278,8 @@ void SetThreadTypeLinux(ProcessId process_id,
   }
 
   const int nice_setting = ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
+  if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid.raw()),
+                  nice_setting)) {
     DVPLOG(1) << "Failed to set nice value of thread (" << thread_id << ") to "
               << nice_setting;
   }

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
@@ -35,7 +36,8 @@ class TestCardUnmaskOtpInputDialogView : public CardUnmaskOtpInputDialogView {
 
 class CardUnmaskOtpInputDialogControllerImplTest
     : public testing::Test,
-      public testing::WithParamInterface<CardUnmaskChallengeOptionType> {
+      public testing::WithParamInterface<
+          std::tuple<CardUnmaskChallengeOptionType, CreditCard::RecordType>> {
  public:
   CardUnmaskOtpInputDialogControllerImplTest() = default;
   CardUnmaskOtpInputDialogControllerImplTest(
@@ -46,16 +48,38 @@ class CardUnmaskOtpInputDialogControllerImplTest
 
   void ShowDialog() {
     CardUnmaskChallengeOption challenge_option;
-    challenge_option.type = GetParam();
+    challenge_option.type = std::get<0>(GetParam());
+    CreditCard::RecordType card_type = std::get<1>(GetParam());
     controller_ = std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(
-        challenge_option, /*delegate=*/nullptr);
+        card_type, challenge_option, /*delegate=*/nullptr);
     controller_->ShowDialog(base::BindOnce(
         &CardUnmaskOtpInputDialogControllerImplTest::CreateOtpInputDialogView,
         base::Unretained(this)));
   }
 
   std::string GetOtpAuthType() {
-    return autofill_metrics::GetOtpAuthType(GetParam());
+    switch (std::get<0>(GetParam())) {
+      case CardUnmaskChallengeOptionType::kSmsOtp:
+        return "SmsOtp";
+      case CardUnmaskChallengeOptionType::kEmailOtp:
+        return "EmailOtp";
+      default:
+        NOTREACHED();
+    }
+  }
+
+  std::string GetCardType() {
+    switch (std::get<1>(GetParam())) {
+      case CreditCard::RecordType::kVirtualCard:
+        return "VirtualCard";
+      case CreditCard::RecordType::kFullServerCard:
+      case CreditCard::RecordType::kMaskedServerCard:
+        return "ServerCard";
+      case CreditCard::RecordType::kLocalCard:
+        return "LocalCard";
+      default:
+        NOTREACHED();
+    }
   }
 
   base::WeakPtr<CardUnmaskOtpInputDialogView> CreateOtpInputDialogView() {
@@ -81,14 +105,15 @@ TEST_P(CardUnmaskOtpInputDialogControllerImplTest,
   controller()->OnDialogClosed(/*user_closed_dialog=*/true,
                                /*server_request_succeeded=*/false);
 
+  std::string base_histogram_name = base::StrCat(
+      {"Autofill.OtpInputDialog.", GetCardType(), ".", GetOtpAuthType()});
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() + ".Result",
+      base_histogram_name + ".Result",
       autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserBeforeConfirmation,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() +
-          ".Result.WithNoTemporaryError",
+      base_histogram_name + ".Result.WithNoTemporaryError",
       autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserBeforeConfirmation,
       1);
@@ -104,17 +129,18 @@ TEST_P(CardUnmaskOtpInputDialogControllerImplTest,
   controller()->OnDialogClosed(/*user_closed_dialog=*/true,
                                /*server_request_succeeded=*/false);
 
+  std::string base_histogram_name = base::StrCat(
+      {"Autofill.OtpInputDialog.", GetCardType(), ".", GetOtpAuthType()});
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() + ".ErrorMessageShown",
+      base_histogram_name + ".ErrorMessageShown",
       autofill_metrics::OtpInputDialogError::kOtpMismatchError, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() + ".Result",
+      base_histogram_name + ".Result",
       autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserBeforeConfirmation,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() +
-          ".Result.WithPreviousTemporaryError",
+      base_histogram_name + ".Result.WithPreviousTemporaryError",
       autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserBeforeConfirmation,
       1);
@@ -131,17 +157,18 @@ TEST_P(CardUnmaskOtpInputDialogControllerImplTest,
   controller()->OnDialogClosed(/*user_closed_dialog=*/true,
                                /*server_request_succeeded=*/false);
 
+  std::string base_histogram_name = base::StrCat(
+      {"Autofill.OtpInputDialog.", GetCardType(), ".", GetOtpAuthType()});
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() + ".ErrorMessageShown",
+      base_histogram_name + ".ErrorMessageShown",
       autofill_metrics::OtpInputDialogError::kOtpExpiredError, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() + ".Result",
+      base_histogram_name + ".Result",
       autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserAfterConfirmation,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() +
-          ".Result.WithPreviousTemporaryError",
+      base_histogram_name + ".Result.WithPreviousTemporaryError",
       autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserAfterConfirmation,
       1);
@@ -155,14 +182,15 @@ TEST_P(CardUnmaskOtpInputDialogControllerImplTest, ServerRequestSucceeded) {
   controller()->OnDialogClosed(/*user_closed_dialog=*/false,
                                /*server_request_succeeded=*/true);
 
+  std::string base_histogram_name = base::StrCat(
+      {"Autofill.OtpInputDialog.", GetCardType(), ".", GetOtpAuthType()});
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() + ".Result",
+      base_histogram_name + ".Result",
       autofill_metrics::OtpInputDialogResult::
           kDialogClosedAfterVerificationSucceeded,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() +
-          ".Result.WithNoTemporaryError",
+      base_histogram_name + ".Result.WithNoTemporaryError",
       autofill_metrics::OtpInputDialogResult::
           kDialogClosedAfterVerificationSucceeded,
       1);
@@ -176,17 +204,17 @@ TEST_P(CardUnmaskOtpInputDialogControllerImplTest, ServerRequestFailed) {
   controller()->OnDialogClosed(/*user_closed_dialog=*/false,
                                /*server_request_succeeded=*/false);
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() + ".Result",
-      autofill_metrics::OtpInputDialogResult::
-          kDialogClosedAfterVerificationFailed,
-      1);
-  histogram_tester.ExpectUniqueSample("Autofill.OtpInputDialog." +
-                                          GetOtpAuthType() +
-                                          ".Result.WithNoTemporaryError",
+  std::string base_histogram_name = base::StrCat(
+      {"Autofill.OtpInputDialog.", GetCardType(), ".", GetOtpAuthType()});
+  histogram_tester.ExpectUniqueSample(base_histogram_name + ".Result",
                                       autofill_metrics::OtpInputDialogResult::
                                           kDialogClosedAfterVerificationFailed,
                                       1);
+  histogram_tester.ExpectUniqueSample(
+      base_histogram_name + ".Result.WithNoTemporaryError",
+      autofill_metrics::OtpInputDialogResult::
+          kDialogClosedAfterVerificationFailed,
+      1);
 }
 
 TEST_P(CardUnmaskOtpInputDialogControllerImplTest, NewCodeLinkClicked) {
@@ -196,16 +224,23 @@ TEST_P(CardUnmaskOtpInputDialogControllerImplTest, NewCodeLinkClicked) {
   DCHECK(controller());
   controller()->OnNewCodeLinkClicked();
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OtpInputDialog." + GetOtpAuthType() + ".NewOtpRequested", true,
-      1);
+  std::string base_histogram_name = base::StrCat(
+      {"Autofill.OtpInputDialog.", GetCardType(), ".", GetOtpAuthType()});
+  histogram_tester.ExpectUniqueSample(base_histogram_name + ".NewOtpRequested",
+                                      true, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     CardUnmaskOtpInputDialogControllerImplTest,
-    testing::Values(CardUnmaskChallengeOptionType::kSmsOtp,
-                    CardUnmaskChallengeOptionType::kEmailOtp));
+    testing::ValuesIn({
+        std::make_tuple(CardUnmaskChallengeOptionType::kSmsOtp,
+                        CreditCard::RecordType::kVirtualCard),
+        std::make_tuple(CardUnmaskChallengeOptionType::kSmsOtp,
+                        CreditCard::RecordType::kMaskedServerCard),
+        std::make_tuple(CardUnmaskChallengeOptionType::kEmailOtp,
+                        CreditCard::RecordType::kVirtualCard),
+    }));
 
 }  // namespace
 }  // namespace autofill

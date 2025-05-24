@@ -524,10 +524,9 @@ TEST_P(ScrollableAreaTest, FilterIncomingScrollDuringSmoothUserScroll) {
       MockScrollableArea::Create(ScrollOffset(100, 100), ScrollOffset(0, 0));
   area->set_active_smooth_scroll_type_for_testing(ScrollType::kUser);
   const std::vector<mojom::blink::ScrollType> scroll_types = {
-      ScrollType::kUser,       ScrollType::kProgrammatic,
-      ScrollType::kClamping,   ScrollType::kCompositor,
-      ScrollType::kAnchoring,  ScrollType::kSequenced,
-      ScrollType::kScrollStart};
+      ScrollType::kUser,      ScrollType::kProgrammatic,
+      ScrollType::kClamping,  ScrollType::kCompositor,
+      ScrollType::kAnchoring, ScrollType::kScrollStart};
 
   // ScrollTypes which we do not filter even if there is an active
   // kUser smooth scroll.

@@ -65,19 +65,19 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     };
   }
 
-  protected defaultColor_: Color = EMPTY_COLOR;
-  protected greyDefaultColor_: Color = EMPTY_COLOR;
-  protected colors_: ChromeColor[] = [];
-  private theme_?: Theme;
-  protected selectedColor_: SelectedColor = {type: ColorType.NONE};
-  protected isDefaultColorSelected_: boolean = false;
-  protected isGreyDefaultColorSelected_: boolean = false;
-  protected isCustomColorSelected_: boolean = false;
-  protected customColor_: Color = EMPTY_COLOR;
+  protected accessor defaultColor_: Color = EMPTY_COLOR;
+  protected accessor greyDefaultColor_: Color = EMPTY_COLOR;
+  protected accessor colors_: ChromeColor[] = [];
+  private accessor theme_: Theme|undefined;
+  protected accessor selectedColor_: SelectedColor = {type: ColorType.NONE};
+  protected accessor isDefaultColorSelected_: boolean = false;
+  protected accessor isGreyDefaultColorSelected_: boolean = false;
+  protected accessor isCustomColorSelected_: boolean = false;
+  protected accessor customColor_: Color = EMPTY_COLOR;
   private setThemeListenerId_: number|null = null;
 
-  protected showManagedDialog_: boolean = false;
-  columns: number = 4;
+  protected accessor showManagedDialog_: boolean = false;
+  accessor columns: number = 4;
 
   private handler_: ThemeColorPickerHandlerRemote =
       ThemeColorPickerBrowserProxy.getInstance().handler;
@@ -158,9 +158,9 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
       return {type: ColorType.DEFAULT};
     }
     if (this.theme_.backgroundImageMainColor &&
-        this.theme_.backgroundImageMainColor!.value ===
+        this.theme_.backgroundImageMainColor.value ===
             this.theme_.seedColor.value) {
-        return {type: ColorType.CUSTOM};
+      return {type: ColorType.CUSTOM};
     }
     if (this.colors_.find(
             (color: ChromeColor) =>
@@ -260,6 +260,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     this.customColor_ = {
       background: this.theme_.backgroundColor,
       foreground: this.theme_.foregroundColor!,
+      base: {value: 0},
     };
     this.$.colorPickerIcon.style.setProperty(
         'background-color', skColorToRgba(this.theme_.colorPickerIconColor));

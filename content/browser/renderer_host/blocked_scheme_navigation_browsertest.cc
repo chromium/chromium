@@ -402,7 +402,7 @@ class BlockedSchemeNavigationBrowserTest
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -433,7 +433,7 @@ class BlockedSchemeNavigationBrowserTest
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

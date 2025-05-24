@@ -6,8 +6,10 @@
 #define COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_FACTORY_TEST_API_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 
 namespace content {

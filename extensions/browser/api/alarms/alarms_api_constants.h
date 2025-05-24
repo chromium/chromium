@@ -24,16 +24,6 @@ inline constexpr base::TimeDelta kMV3ReleaseDelayMinimum = base::Seconds(30);
 // with the given unpacked state and `manifest_version`.
 base::TimeDelta GetMinimumDelay(bool is_unpacked, int manifest_version);
 
-inline constexpr char kWarningMinimumDevDelay[] =
-    "Alarm %s is less than the minimum duration of %" PRId64
-    " seconds."
-    " In packed extensions, alarm \"%s\" will fire after the minimum duration.";
-
-inline constexpr char kWarningMinimumReleaseDelay[] =
-    "Alarm %s is less than the minimum duration of %" PRId64
-    " seconds."
-    " Alarm \"%s\" will fire after the minimum duration.";
-
 }  // namespace alarms_api_constants
 }  // namespace extensions
 

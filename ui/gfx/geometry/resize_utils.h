@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "ui/gfx/geometry/geometry_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
@@ -30,11 +30,12 @@ enum class ResizeEdge {
 // |min_window_size| and |max_window_size| are expected to adhere to the
 // given aspect ratio.
 // |aspect_ratio| must be valid and is found using width / height.
-void GEOMETRY_EXPORT SizeRectToAspectRatio(ResizeEdge resize_edge,
-                                           float aspect_ratio,
-                                           const Size& min_window_size,
-                                           std::optional<Size> max_window_size,
-                                           Rect* rect);
+void COMPONENT_EXPORT(GEOMETRY)
+    SizeRectToAspectRatio(ResizeEdge resize_edge,
+                          float aspect_ratio,
+                          const Size& min_window_size,
+                          std::optional<Size> max_window_size,
+                          Rect* rect);
 
 // As above, but computes a size for `rect` such that it has the right aspect
 // ratio after subtracting `excluded_margin` from it.  This lets the aspect
@@ -43,13 +44,13 @@ void GEOMETRY_EXPORT SizeRectToAspectRatio(ResizeEdge resize_edge,
 // rectangle might have a size of (30, 25) or (40, 35).  One could use the
 // margin for drawing in the edges, and the part that's left over would have the
 // proper aspect ratio: 20/20 or 30/30, respectively.
-void GEOMETRY_EXPORT
-SizeRectToAspectRatioWithExcludedMargin(ResizeEdge resize_edge,
-                                        float aspect_ratio,
-                                        const Size& min_window_size,
-                                        std::optional<Size> max_window_size,
-                                        const Size& excluded_margin,
-                                        Rect& rect);
+void COMPONENT_EXPORT(GEOMETRY)
+    SizeRectToAspectRatioWithExcludedMargin(ResizeEdge resize_edge,
+                                            float aspect_ratio,
+                                            const Size& min_window_size,
+                                            std::optional<Size> max_window_size,
+                                            const Size& excluded_margin,
+                                            Rect& rect);
 
 }  // namespace gfx
 

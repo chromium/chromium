@@ -167,6 +167,18 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, SetsScrollOffset) {
   RunTestCase("SetsScrollOffset");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryListTest, AnnouncesExactMatches) {
+  RunTestCase("AnnouncesExactMatches");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryListTest, ScrollingLoadsMore) {
+  RunTestCase("ScrollingLoadsMore");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryListTest, ResizingLoadsMore) {
+  RunTestCase("ResizingLoadsMore");
+}
+
 class HistoryProductSpecificationsListTest : public WebUIMochaBrowserTest {
  protected:
   HistoryProductSpecificationsListTest() {

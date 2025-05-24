@@ -35,6 +35,7 @@
 #include <iosfwd>
 #include <limits>
 #include <optional>
+#include <type_traits>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -354,7 +355,7 @@ class PLATFORM_EXPORT FixedPoint {
   // If we're building ARM 32-bit on GCC we replace the C++ versions with some
   // native ARM assembly for speed.
   constexpr inline void SaturatedSet(int value) {
-    if (IsConstantEvaluated() || sizeof(Storage) > sizeof(int)) {
+    if (std::is_constant_evaluated() || sizeof(Storage) > sizeof(int)) {
       SaturatedSetNonAsm(value);
     } else {
       SaturatedSetAsm(value);
@@ -387,7 +388,7 @@ class PLATFORM_EXPORT FixedPoint {
   }
 
   constexpr inline void SaturatedSet(unsigned value) {
-    if (IsConstantEvaluated() || sizeof(Storage) > sizeof(int)) {
+    if (std::is_constant_evaluated() || sizeof(Storage) > sizeof(int)) {
       SaturatedSetNonAsm(value);
     } else {
       SaturatedSetAsm(value);
@@ -704,6 +705,16 @@ inline FixedPoint<fractional_bits, RawValue>& operator+=(
   return a;
 }
 
+template <unsigned fractional_bits, typename RawValue, typename SourceStorage>
+  requires(sizeof(SourceStorage) <= sizeof(RawValue))
+inline FixedPoint<fractional_bits, RawValue> operator+(
+    const FixedPoint<fractional_bits, RawValue>& a,
+    const FixedPoint<fractional_bits, SourceStorage>& b) {
+  FixedPoint<fractional_bits, RawValue> r = a;
+  r += b;
+  return r;
+}
+
 inline LayoutUnit& operator+=(LayoutUnit& a, std::integral auto b) {
   a = a + LayoutUnit(b);
   return a;
@@ -839,10 +850,6 @@ ALWAYS_INLINE int GetMinSaturatedSetResultForTesting() {
 template <unsigned fractional_bits, typename RawValue>
 PLATFORM_EXPORT std::ostream& operator<<(
     std::ostream&,
-    const FixedPoint<fractional_bits, RawValue>&);
-template <unsigned fractional_bits, typename RawValue>
-PLATFORM_EXPORT WTF::TextStream& operator<<(
-    WTF::TextStream&,
     const FixedPoint<fractional_bits, RawValue>&);
 
 }  // namespace blink

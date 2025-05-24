@@ -15,6 +15,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -29,6 +30,7 @@
 #include "mojo/public/cpp/bindings/map_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "remoting/base/result.h"
+#include "remoting/base/source_location.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
@@ -1480,6 +1482,19 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return remoting::mojom::ProtocolErrorCode::kReauthzPolicyCheckFailed;
       case ::remoting::protocol::ErrorCode::NO_COMMON_AUTH_METHOD:
         return remoting::mojom::ProtocolErrorCode::kNoCommonAuthMethod;
+      case ::remoting::protocol::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED:
+        return remoting::mojom::ProtocolErrorCode::kLoginScreenNotSupported;
+      case ::remoting::protocol::ErrorCode::SESSION_POLICIES_CHANGED:
+        return remoting::mojom::ProtocolErrorCode::kSessionPoliciesChanged;
+      case ::remoting::protocol::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR:
+        return remoting::mojom::ProtocolErrorCode::
+            kUnexpectedAuthenticatorError;
+      case ::remoting::protocol::ErrorCode::INVALID_STATE:
+        return remoting::mojom::ProtocolErrorCode::kInvalidState;
+      case ::remoting::protocol::ErrorCode::INVALID_ARGUMENT:
+        return remoting::mojom::ProtocolErrorCode::kInvalidArgument;
+      case ::remoting::protocol::ErrorCode::NETWORK_FAILURE:
+        return remoting::mojom::ProtocolErrorCode::kNetworkFailure;
     }
 
     NOTREACHED();
@@ -1558,6 +1573,24 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
       case remoting::mojom::ProtocolErrorCode::kNoCommonAuthMethod:
         *out = ::remoting::protocol::ErrorCode::NO_COMMON_AUTH_METHOD;
         return true;
+      case remoting::mojom::ProtocolErrorCode::kLoginScreenNotSupported:
+        *out = ::remoting::protocol::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kSessionPoliciesChanged:
+        *out = ::remoting::protocol::ErrorCode::SESSION_POLICIES_CHANGED;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kUnexpectedAuthenticatorError:
+        *out = ::remoting::protocol::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kInvalidState:
+        *out = ::remoting::protocol::ErrorCode::INVALID_STATE;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kInvalidArgument:
+        *out = ::remoting::protocol::ErrorCode::INVALID_ARGUMENT;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kNetworkFailure:
+        *out = ::remoting::protocol::ErrorCode::NETWORK_FAILURE;
+        return true;
     }
 
     NOTREACHED();
@@ -1617,8 +1650,39 @@ class StructTraits<remoting::mojom::VideoTrackLayoutDataView,
     return {track.x_dpi(), track.y_dpi()};
   }
 
+  static const std::string& display_name(
+      const ::remoting::protocol::VideoTrackLayout& track) {
+    return track.display_name();
+  }
+
   static bool Read(remoting::mojom::VideoTrackLayoutDataView data_view,
                    ::remoting::protocol::VideoTrackLayout* out_track);
+};
+
+template <>
+class StructTraits<remoting::mojom::SourceLocationDataView,
+                   ::remoting::SourceLocation> {
+ public:
+  static std::optional<std::string_view> function_name(
+      const ::remoting::SourceLocation& source_info) {
+    return source_info.function_name()
+               ? std::optional<std::string_view>(source_info.function_name())
+               : std::nullopt;
+  }
+
+  static std::optional<std::string_view> file_name(
+      const ::remoting::SourceLocation& source_info) {
+    return source_info.file_name()
+               ? std::optional<std::string_view>(source_info.file_name())
+               : std::nullopt;
+  }
+
+  static int32_t line_number(const ::remoting::SourceLocation& source_info) {
+    return source_info.line_number();
+  }
+
+  static bool Read(remoting::mojom::SourceLocationDataView data_view,
+                   ::remoting::SourceLocation* out_source_info);
 };
 
 }  // namespace mojo

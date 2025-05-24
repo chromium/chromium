@@ -6,10 +6,13 @@
 
 #include <string_view>
 
+#include "base/profiler/thread_group_profiler.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/task_environment.h"
 #include "base/types/pass_key.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/common/profiler/chrome_thread_group_profiler_client.h"
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_test_suite.h"
@@ -94,7 +97,13 @@ ChromeOSTestChromeMainDelegate::CreateContentUtilityClient() {
 }
 
 void ChromeOSTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
+  // The ThreadGroupProfiler client must be set before thread pool is
+  // created (below).
+  base::ThreadGroupProfiler::SetClient(
+      std::make_unique<ChromeThreadGroupProfilerClient>());
+
   base::test::TaskEnvironment::CreateThreadPool();
+
   // The ThreadProfiler client must be set before main thread profiling is
   // started (below).
   sampling_profiler::ThreadProfiler::SetClient(
@@ -116,6 +125,7 @@ void ChromeOSTestLauncherDelegate::OnDoneRunningTests() {}
 int LaunchChromeOSTests(content::TestLauncherDelegate* delegate,
                         int argc,
                         char** argv) {
+  base::test::AllowCheckIsTestForTesting();
   ChromeCrashReporterClient::Create();
   // Setup a working test environment for the network service in case it's used.
   // Only create this object in the utility process, so that its members don't

@@ -27,7 +27,7 @@ namespace internal {
 struct WorkQueueAndTaskOrder {
   STACK_ALLOCATED();
 
-  public:
+ public:
   WorkQueueAndTaskOrder(WorkQueue& work_queue, const TaskOrder& task_order)
       : queue(&work_queue), order(task_order) {}
 
@@ -42,7 +42,7 @@ class BASE_EXPORT WorkQueueSets {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     virtual void WorkQueueSetBecameEmpty(size_t set_index) = 0;
 

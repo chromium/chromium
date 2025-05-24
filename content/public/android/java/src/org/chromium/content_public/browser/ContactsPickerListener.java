@@ -7,6 +7,8 @@ package org.chromium.content_public.browser;
 import androidx.annotation.IntDef;
 
 import org.chromium.blink.mojom.ContactIconBlob;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.lang.annotation.Retention;
@@ -16,21 +18,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** The callback used to indicate what action the user took in the picker. */
+@NullMarked
 public interface ContactsPickerListener {
     /** A container class for exchanging contact details. */
     public static class Contact {
-        public final List<String> names;
-        public final List<String> emails;
-        public final List<String> tel;
-        public final List<ByteBuffer> serializedAddresses;
-        public final List<ByteBuffer> serializedIcons;
+        public final @Nullable List<String> names;
+        public final @Nullable List<String> emails;
+        public final @Nullable List<String> tel;
+        public final @Nullable List<ByteBuffer> serializedAddresses;
+        public final @Nullable List<ByteBuffer> serializedIcons;
 
         public Contact(
-                List<String> contactNames,
-                List<String> contactEmails,
-                List<String> contactTel,
-                List<PaymentAddress> contactAddresses,
-                List<ContactIconBlob> contactIcons) {
+                @Nullable List<String> contactNames,
+                @Nullable List<String> contactEmails,
+                @Nullable List<String> contactTel,
+                @Nullable List<PaymentAddress> contactAddresses,
+                @Nullable List<ContactIconBlob> contactIcons) {
             names = contactNames;
             emails = contactEmails;
             tel = contactTel;
@@ -84,7 +87,7 @@ public interface ContactsPickerListener {
      */
     void onContactsPickerUserAction(
             @ContactsPickerAction int action,
-            List<Contact> contacts,
+            @Nullable List<Contact> contacts,
             int percentageShared,
             int propertiesSiteRequested,
             int propertiesUserRejected);

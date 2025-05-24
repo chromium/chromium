@@ -23,11 +23,9 @@
 #import "ios/web/js_features/window_error/script_error_message_handler_java_script_feature.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/navigation_java_script_feature.h"
-#import "ios/web/navigation/session_restore_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/text_fragments/text_fragments_java_script_feature.h"
 #import "ios/web/webui/web_ui_messaging_java_script_feature.h"
 
 namespace web {
@@ -90,8 +88,6 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       ErrorEventListenerJavaScriptFeature::GetInstance(),
       GetScriptErrorMessageHandlerJavaScriptFeature(),
       NavigationJavaScriptFeature::GetInstance(),
-      SessionRestoreJavaScriptFeature::FromBrowserState(browser_state),
-      TextFragmentsJavaScriptFeature::GetInstance(),
       WebUIMessagingJavaScriptFeature::GetInstance(),
       AnnotationsJavaScriptFeature::GetInstance()};
 

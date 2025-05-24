@@ -54,6 +54,8 @@ class BLINK_EXPORT WebOptionElement final : public WebElement {
   WebString GetText() const;
   WebString Label() const;
 
+  bool IsEnabled() const;
+
 #if INSIDE_BLINK
   WebOptionElement(HTMLOptionElement*);
   WebOptionElement& operator=(HTMLOptionElement*);

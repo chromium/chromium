@@ -24,17 +24,23 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /** Unit tests for {@link DragAndDropLauncherActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -52,7 +58,7 @@ public class DragAndDropLauncherActivityUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         mContext = ContextUtils.getApplicationContext();
         mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
     }
 
     @Test
@@ -61,7 +67,7 @@ public class DragAndDropLauncherActivityUnitTest {
                 DragAndDropLauncherActivity.getLinkLauncherIntent(
                         mContext,
                         mLinkUrl,
-                        MultiWindowUtils.INVALID_INSTANCE_ID,
+                        TabWindowManager.INVALID_WINDOW_ID,
                         UrlIntentSource.LINK);
         assertEquals(
                 "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
@@ -102,54 +108,24 @@ public class DragAndDropLauncherActivityUnitTest {
 
     @Test
     public void testGetTabIntent_specificWindowId() {
-        Tab tab = MockTab.createAndInitialize(1, mProfile);
-        int windowId = 2;
-        Intent intent = DragAndDropLauncherActivity.getTabIntent(mContext, tab, windowId);
-        assertEquals(
-                "The EXTRA_WINDOW_ID intent extra value should match.",
-                windowId,
-                intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
-        assertEquals(
-                "The EXTRA_URL_SOURCE intent extra value should match.",
-                UrlIntentSource.TAB_IN_STRIP,
-                intent.getIntExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN));
+        testGetTabOrGroupIntent(/* isGroupDrag= */ false, /* destWindowId= */ 2);
     }
 
     @Test
     public void testGetTabIntent_defaultWindowId() {
-        Tab tab = MockTab.createAndInitialize(1, mProfile);
-        Intent intent =
-                DragAndDropLauncherActivity.getTabIntent(
-                        mContext, tab, MultiWindowUtils.INVALID_INSTANCE_ID);
-        assertEquals(
-                "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
-                DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW,
-                intent.getAction());
-        assertNotNull(
-                "The intent creation timestamp should be saved.",
-                DragAndDropLauncherActivity.getIntentCreationTimestampMs());
-        assertEquals(
-                "The intent class should be DragAndDropLauncherActivity.",
-                DragAndDropLauncherActivity.class.getName(),
-                intent.getComponent().getClassName());
-        assertTrue(
-                "The intent should contain the CATEGORY_BROWSABLE category.",
-                intent.getCategories().contains(Intent.CATEGORY_BROWSABLE));
-        assertFalse(
-                "Intent should not contain the EXTRA_WINDOW_ID.",
-                intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
-        assertEquals(
-                "The EXTRA_URL_SOURCE intent extra value should match.",
-                UrlIntentSource.TAB_IN_STRIP,
-                intent.getIntExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN));
-        assertEquals(
-                "The EXTRA_DRAGGED_TAB_ID intent extra value should match.",
-                tab.getId(),
-                intent.getIntExtra(IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID));
-        assertEquals(
-                "The intent data value should match.",
-                Uri.parse(tab.getUrl().getSpec()),
-                intent.getData());
+        testGetTabOrGroupIntent(
+                /* isGroupDrag= */ false, /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
+    }
+
+    @Test
+    public void testGetTabGroupIntent_specificWindowId() {
+        testGetTabOrGroupIntent(/* isGroupDrag= */ true, /* destWindowId= */ 2);
+    }
+
+    @Test
+    public void testGetTabGroupIntent_defaultWindowId() {
+        testGetTabOrGroupIntent(
+                /* isGroupDrag= */ true, /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
     }
 
     @Test
@@ -158,7 +134,7 @@ public class DragAndDropLauncherActivityUnitTest {
                 DragAndDropLauncherActivity.getLinkLauncherIntent(
                         mContext,
                         mLinkUrl,
-                        MultiWindowUtils.INVALID_INSTANCE_ID,
+                        TabWindowManager.INVALID_WINDOW_ID,
                         UrlIntentSource.LINK);
         intent.setAction(Intent.ACTION_VIEW);
         exception.expect(AssertionError.class);
@@ -173,7 +149,7 @@ public class DragAndDropLauncherActivityUnitTest {
                 DragAndDropLauncherActivity.getLinkLauncherIntent(
                         mContext,
                         mLinkUrl,
-                        MultiWindowUtils.INVALID_INSTANCE_ID,
+                        TabWindowManager.INVALID_WINDOW_ID,
                         UrlIntentSource.LINK);
         DragAndDropLauncherActivity.setIntentCreationTimestampMs(null);
         assertFalse(
@@ -181,22 +157,109 @@ public class DragAndDropLauncherActivityUnitTest {
                 DragAndDropLauncherActivity.isIntentValid(intent));
     }
 
-    @Test
-    public void testGetDragDropTypeFromIntent() {
-        testGetDragDropTypeFromIntent(UrlIntentSource.LINK, DragDropType.LINK_TO_NEW_INSTANCE);
-        testGetDragDropTypeFromIntent(
-                UrlIntentSource.TAB_IN_STRIP, DragDropType.TAB_STRIP_TO_NEW_INSTANCE);
-        testGetDragDropTypeFromIntent(
-                UrlIntentSource.UNKNOWN, DragDropType.UNKNOWN_TO_NEW_INSTANCE);
+    private void testGetTabOrGroupIntent(boolean isGroupDrag, int destWindowId) {
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
+        ChromeDropDataAndroid dropData =
+                isGroupDrag
+                        ? createTabGroupDropData(/* allowDragToCreateNewInstance= */ true)
+                        : createTabDropData(tab, /* allowDragToCreateNewInstance= */ true);
+        int sourceWindowId = 1;
+        Intent intent =
+                DragAndDropLauncherActivity.buildTabOrGroupIntent(
+                        dropData, mContext, sourceWindowId, destWindowId);
+        assertEquals(
+                "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
+                DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW,
+                intent.getAction());
+        assertNotNull(
+                "The intent creation timestamp should be saved.",
+                DragAndDropLauncherActivity.getIntentCreationTimestampMs());
+        assertEquals(
+                "The intent class should be DragAndDropLauncherActivity.",
+                DragAndDropLauncherActivity.class.getName(),
+                intent.getComponent().getClassName());
+        assertTrue(
+                "The intent should contain the CATEGORY_BROWSABLE category.",
+                intent.getCategories().contains(Intent.CATEGORY_BROWSABLE));
+        assertEquals(
+                "The EXTRA_DRAGDROP_TAB_WINDOW_ID intent extra value should match.",
+                sourceWindowId,
+                intent.getIntExtra(IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID, -1));
+        if (destWindowId == TabWindowManager.INVALID_WINDOW_ID) {
+            assertFalse(
+                    "Intent should not contain the EXTRA_WINDOW_ID.",
+                    intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
+        } else {
+            assertEquals(
+                    "The EXTRA_WINDOW_ID intent extra value should match.",
+                    destWindowId,
+                    intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
+        }
+        if (isGroupDrag) {
+            assertEquals(
+                    "The EXTRA_URL_SOURCE intent extra value should match.",
+                    UrlIntentSource.TAB_GROUP_IN_STRIP,
+                    intent.getIntExtra(
+                            IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN));
+            assertEquals(
+                    "The TabGroupMetadata intent extra value should match.",
+                    buildTabGroupMetadata(),
+                    IntentHandler.getTabGroupMetadata(intent));
+        } else {
+            assertEquals(
+                    "The EXTRA_URL_SOURCE intent extra value should match.",
+                    UrlIntentSource.TAB_IN_STRIP,
+                    intent.getIntExtra(
+                            IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN));
+            assertEquals(
+                    "The EXTRA_DRAGGED_TAB_ID intent extra value should match.",
+                    tab.getId(),
+                    intent.getIntExtra(IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID));
+            assertEquals(
+                    "The intent data value should match.",
+                    Uri.parse(tab.getUrl().getSpec()),
+                    intent.getData());
+        }
     }
 
-    private void testGetDragDropTypeFromIntent(
-            @UrlIntentSource int intentSrc, @DragDropType int dragDropType) {
-        Intent intent = new Intent();
-        intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, intentSrc);
-        assertEquals(
-                "The DragDropType should match.",
-                dragDropType,
-                DragAndDropLauncherActivity.getDragDropTypeFromIntent(intent));
+    private ChromeDropDataAndroid createTabDropData(Tab tab, boolean allowDragToCreateNewInstance) {
+        return new ChromeTabDropDataAndroid.Builder()
+                .withTab(tab)
+                .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
+                .build();
+    }
+
+    private ChromeDropDataAndroid createTabGroupDropData(boolean allowDragToCreateNewInstance) {
+        return new ChromeTabGroupDropDataAndroid.Builder()
+                .withTabGroupMetadata(buildTabGroupMetadata())
+                .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
+                .build();
+    }
+
+    private TabGroupMetadata buildTabGroupMetadata() {
+        Token tabGroupId = new Token(2L, 2L);
+        String tabGroupTitle = "Regrouped tabs";
+        int rootId = 1;
+        ArrayList<Entry<Integer, String>> tabIdsToUrls =
+                new ArrayList<>(
+                        List.of(
+                                Map.entry(1, "https://www.amazon.com/"),
+                                Map.entry(2, "https://www.youtube.com/"),
+                                Map.entry(3, "https://www.facebook.com/")));
+
+        TabGroupMetadata tabGroupMetadata =
+                new TabGroupMetadata(
+                        rootId,
+                        /* selectedTabId= */ rootId,
+                        /* sourceWindowId= */ TabWindowManager.INVALID_WINDOW_ID,
+                        tabGroupId,
+                        tabIdsToUrls,
+                        /* tabGroupColor= */ 0,
+                        tabGroupTitle,
+                        /* mhtmlTabTitle= */ null,
+                        /* tabGroupCollapsed= */ false,
+                        /* isGroupShared= */ false,
+                        /* isIncognito= */ false);
+        return tabGroupMetadata;
     }
 }

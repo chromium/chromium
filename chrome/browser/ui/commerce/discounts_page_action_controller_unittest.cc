@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "url/gurl.h"
@@ -19,12 +20,15 @@ namespace commerce {
 namespace {
 const char kShoppingURL[] = "https://example.com";
 const char kShoppingURLDomain[] = "example.com";
-}
+}  // namespace
 
 class DiscountsPageActionControllerUnittest : public testing::Test {
  public:
   DiscountsPageActionControllerUnittest()
-      : shopping_service_(std::make_unique<MockShoppingService>()) {}
+      : shopping_service_(std::make_unique<MockShoppingService>()),
+        account_checker_(std::make_unique<MockAccountChecker>()) {
+    shopping_service_->SetAccountChecker(account_checker_.get());
+  }
 
   void SetupDiscountResponseForURL(GURL url) {
     double expiry_time_sec =
@@ -63,10 +67,12 @@ class DiscountsPageActionControllerUnittest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::MockRepeatingCallback<void()> notify_host_callback_;
   std::unique_ptr<MockShoppingService> shopping_service_;
+  std::unique_ptr<MockAccountChecker> account_checker_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DiscountsPageActionControllerUnittest, ShouldShowIcon) {
-  shopping_service_->SetIsDiscountEligibleToShowOnNavigation(true);
+  SetUpDiscountEligibility(&scoped_feature_list_, account_checker_.get(), true);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
 
   DiscountsPageActionController controller(callback, shopping_service_.get());
@@ -88,7 +94,7 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldShowIcon) {
 }
 
 TEST_F(DiscountsPageActionControllerUnittest, ShouldNotShowIcon_NoDiscounts) {
-  shopping_service_->SetIsDiscountEligibleToShowOnNavigation(true);
+  SetUpDiscountEligibility(&scoped_feature_list_, account_checker_.get(), true);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
 
   DiscountsPageActionController controller(callback, shopping_service_.get());
@@ -111,7 +117,8 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldNotShowIcon_NoDiscounts) {
 }
 
 TEST_F(DiscountsPageActionControllerUnittest, ShouldNotShowIcon_NoEligible) {
-  shopping_service_->SetIsDiscountEligibleToShowOnNavigation(false);
+  SetUpDiscountEligibility(&scoped_feature_list_, account_checker_.get(),
+                           false);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
   DiscountsPageActionController controller(callback, shopping_service_.get());
 
@@ -128,7 +135,7 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldNotShowIcon_NoEligible) {
 }
 
 TEST_F(DiscountsPageActionControllerUnittest, ShouldExpandIcon_ShoppyPageOff) {
-  shopping_service_->SetIsDiscountEligibleToShowOnNavigation(true);
+  SetUpDiscountEligibility(&scoped_feature_list_, account_checker_.get(), true);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
 
   DiscountsPageActionController controller(callback, shopping_service_.get());
@@ -150,11 +157,10 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldExpandIcon_ShoppyPageOff) {
 
 TEST_F(DiscountsPageActionControllerUnittest,
        ShouldExpandIcon_ShoppyPageOn_OnNonVisitedDomain) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
       kEnableDiscountInfoApi, {{kDiscountOnShoppyPageParam, "true"}});
+  SetUpDiscountEligibilityForAccount(account_checker_.get(), true);
 
-  shopping_service_->SetIsDiscountEligibleToShowOnNavigation(true);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
 
   DiscountsPageActionController controller(callback, shopping_service_.get());
@@ -183,13 +189,12 @@ TEST_F(DiscountsPageActionControllerUnittest,
 
 TEST_F(DiscountsPageActionControllerUnittest,
        ShouldExpandIcon_ShoppyPageOn_OnBubbleAutoShown) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
+  scoped_feature_list_.InitWithFeaturesAndParameters(
       {{kEnableDiscountInfoApi, {{kDiscountOnShoppyPageParam, "true"}}},
        GetAlwaysAutoShownBubbleParam()},
       /*disabled_features=*/{});
+  SetUpDiscountEligibilityForAccount(account_checker_.get(), true);
 
-  shopping_service_->SetIsDiscountEligibleToShowOnNavigation(true);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
 
   DiscountsPageActionController controller(callback, shopping_service_.get());
@@ -216,11 +221,9 @@ TEST_F(DiscountsPageActionControllerUnittest,
 
 TEST_F(DiscountsPageActionControllerUnittest,
        ShouldNotExpandIcon_ShoppyPageOn_OnVisitedDomain) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
       kEnableDiscountInfoApi, {{kDiscountOnShoppyPageParam, "true"}});
-
-  shopping_service_->SetIsDiscountEligibleToShowOnNavigation(true);
+  SetUpDiscountEligibilityForAccount(account_checker_.get(), true);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
 
   DiscountsPageActionController controller(callback, shopping_service_.get());
@@ -246,11 +249,10 @@ TEST_F(DiscountsPageActionControllerUnittest,
 }
 
 TEST_F(DiscountsPageActionControllerUnittest, ShouldNotAutoShow) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {GetNoAutoShownBubbleParam()},
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kEnableDiscountInfoApi, {}}, GetNoAutoShownBubbleParam()},
       /*disabled_features=*/{});
-  shopping_service_->SetIsDiscountEligibleToShowOnNavigation(true);
+  SetUpDiscountEligibilityForAccount(account_checker_.get(), true);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
 
   DiscountsPageActionController controller(callback, shopping_service_.get());
@@ -261,11 +263,10 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldNotAutoShow) {
 }
 
 TEST_F(DiscountsPageActionControllerUnittest, ShouldAlwaysAutoShow) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {GetAlwaysAutoShownBubbleParam()},
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kEnableDiscountInfoApi, {}}, GetAlwaysAutoShownBubbleParam()},
       /*disabled_features=*/{});
-  shopping_service_->SetIsDiscountEligibleToShowOnNavigation(true);
+  SetUpDiscountEligibilityForAccount(account_checker_.get(), true);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
 
   DiscountsPageActionController controller(callback, shopping_service_.get());
@@ -278,11 +279,10 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldAlwaysAutoShow) {
 TEST_F(DiscountsPageActionControllerUnittest, ShouldAutoShowOnce) {
   constexpr uint64_t discount_id_1 = 123;
   constexpr uint64_t discount_id_2 = 456;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {GetAutoShownOnceBubbleParam()},
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kEnableDiscountInfoApi, {}}, GetAutoShownOnceBubbleParam()},
       /*disabled_features=*/{});
-  shopping_service_->SetIsDiscountEligibleToShowOnNavigation(true);
+  SetUpDiscountEligibilityForAccount(account_checker_.get(), true);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
 
   DiscountsPageActionController controller(callback, shopping_service_.get());

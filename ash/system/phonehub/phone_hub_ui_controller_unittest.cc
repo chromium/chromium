@@ -36,31 +36,28 @@ constexpr char kScreenOnOpenedMetric[] =
     "PhoneHub.BubbleOpened.Connectable.Page";
 constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
 
-class PhoneHubUiControllerTest : public AshTestBase,
+class PhoneHubUiControllerTest : public NoSessionAshTestBase,
                                  public PhoneHubUiController::Observer {
  public:
   PhoneHubUiControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    set_start_session(false);
-  }
+      : NoSessionAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   ~PhoneHubUiControllerTest() override { controller_->RemoveObserver(this); }
 
-  // AshTestBase:
+  // NoSessionAshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {features::kEcheSWA, features::kEcheNetworkConnectionState}, {});
 
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
 
     handler_ = std::make_unique<eche_app::EcheConnectionStatusHandler>();
     phone_hub_manager_.set_host_last_seen_timestamp(std::nullopt);
     phone_hub_manager_.set_eche_connection_handler(handler_.get());
 
-    // Create user 1 session and simulate its login.
-    SimulateUserLogin(kUser1Email);
-    // Create user 2 session.
-    GetSessionControllerClient()->AddUserSession(kUser2Email);
+    // Log into usr1.
+    SimulateUserLogin({kUser1Email});
 
     controller_ = std::make_unique<PhoneHubUiController>();
     controller_->AddObserver(this);
@@ -71,12 +68,6 @@ class PhoneHubUiControllerTest : public AshTestBase,
 
     CHECK(ui_state_changed_);
     ui_state_changed_ = false;
-  }
-
-  void SetLoggedInUser(bool is_primary) {
-    const std::string& email = is_primary ? kUser1Email : kUser2Email;
-    GetSessionControllerClient()->SwitchActiveUser(
-        AccountId::FromUserEmail(email));
   }
 
   phonehub::FakeFeatureStatusProvider* GetFeatureStatusProvider() {
@@ -299,14 +290,14 @@ TEST_F(PhoneHubUiControllerTest, UnavailableScreenLocked) {
 TEST_F(PhoneHubUiControllerTest, UnavailableSecondaryUser) {
   base::HistogramTester histograms;
   // Simulate log in to secondary user.
-  SetLoggedInUser(false /* is_primary */);
+  SimulateUserLogin({kUser2Email});
   EXPECT_TRUE(ui_state_changed_);
   ui_state_changed_ = false;
   EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_->ui_state());
   EXPECT_FALSE(OpenBubbleAndCreateView().get());
 
   // Switch back to primary user.
-  SetLoggedInUser(true /* is_primary */);
+  SwitchActiveUser(AccountId::FromUserEmail(kUser1Email));
   EXPECT_TRUE(ui_state_changed_);
   ui_state_changed_ = false;
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,

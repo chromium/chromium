@@ -89,10 +89,18 @@ bool BluetoothChooserAndroid::CanAskForScanningPermission() {
 
 void BluetoothChooserAndroid::SetAdapterPresence(AdapterPresence presence) {
   JNIEnv* env = AttachCurrentThread();
-  if (presence != AdapterPresence::POWERED_ON) {
-    Java_BluetoothChooserDialog_notifyAdapterTurnedOff(env, java_dialog_);
-  } else {
-    Java_BluetoothChooserDialog_notifyAdapterTurnedOn(env, java_dialog_);
+  switch (presence) {
+    case AdapterPresence::POWERED_OFF:
+      Java_BluetoothChooserDialog_notifyAdapterTurnedOff(env, java_dialog_);
+      break;
+    case AdapterPresence::POWERED_ON:
+      Java_BluetoothChooserDialog_notifyAdapterTurnedOn(env, java_dialog_);
+      break;
+    case AdapterPresence::UNAUTHORIZED:
+      Java_BluetoothChooserDialog_notifyAdapterUnauthorized(env, java_dialog_);
+      break;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -149,7 +157,7 @@ void BluetoothChooserAndroid::OnDialogFinished(
           base::android::ConvertJavaStringToUTF8(env, device_id));
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothChooserAndroid::RestartSearch() {

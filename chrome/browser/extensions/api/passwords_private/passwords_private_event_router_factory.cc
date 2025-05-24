@@ -31,8 +31,8 @@ PasswordsPrivateEventRouterFactory::PasswordsPrivateEventRouterFactory()
           "PasswordsPrivateEventRouter",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
+              // TODO(crbug.com/40257657): Audit whether these should be
+              // redirected or should have their own instance.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
@@ -44,9 +44,10 @@ PasswordsPrivateEventRouterFactory::PasswordsPrivateEventRouterFactory()
 PasswordsPrivateEventRouterFactory::~PasswordsPrivateEventRouterFactory() =
     default;
 
-KeyedService* PasswordsPrivateEventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PasswordsPrivateEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new PasswordsPrivateEventRouter(context);
+  return std::make_unique<PasswordsPrivateEventRouter>(context);
 }
 
 bool PasswordsPrivateEventRouterFactory::

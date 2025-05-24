@@ -9,11 +9,14 @@ import android.util.Log;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 /** Utility methods for calling InputStream methods. These take care of exception handling. */
 @JNINamespace("embedder_support")
+@NullMarked
 class InputStreamUtil {
     private static final String LOGTAG = "InputStreamUtil";
     // The InputStream APIs return -1 in some cases. In order to convey the extra information that

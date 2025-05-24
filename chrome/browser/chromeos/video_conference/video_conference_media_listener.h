@@ -47,6 +47,8 @@ class VideoConferenceMediaListener
                                  bool is_capturing_video) override;
   void OnIsCapturingAudioChanged(content::WebContents* contents,
                                  bool is_capturing_audio) override;
+  void OnIsCapturingTabChanged(content::WebContents* contents,
+                               bool is_capturing_tab) override;
   void OnIsCapturingWindowChanged(content::WebContents* contents,
                                   bool is_capturing_window) override;
   void OnIsCapturingDisplayChanged(content::WebContents* contents,

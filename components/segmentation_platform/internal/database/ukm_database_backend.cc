@@ -28,7 +28,7 @@ namespace {
 
 BASE_FEATURE(kSqlWALModeOnSegmentationDatabase,
              "SqlWALModeOnSegmentationDatabase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Up to 10 updates are batched, because ~10 UKM metrics recorded in db per
 // page load and approximately a commit every page load. This might need update
@@ -80,7 +80,7 @@ std::string BindValuesToStatement(
         statement.BindString(i, UkmUrlTable::GetDatabaseUrlString(*value.url));
         break;
       case processing::ProcessedValue::Type::UNKNOWN:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return debug_string.str();
@@ -91,8 +91,7 @@ float GetSingleFloatOutput(sql::Statement& statement) {
   switch (output_type) {
     case sql::ColumnType::kBlob:
     case sql::ColumnType::kText:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     case sql::ColumnType::kFloat:
       return statement.ColumnDouble(0);
     case sql::ColumnType::kInteger:
@@ -115,13 +114,13 @@ UkmDatabaseBackend::UkmDatabaseBackend(
     : database_path_(database_path),
       in_memory_(in_memory),
       callback_task_runner_(callback_task_runner),
-      db_(sql::DatabaseOptions{.wal_mode = base::FeatureList::IsEnabled(
-                                   kSqlWALModeOnSegmentationDatabase)}),
+      db_(sql::DatabaseOptions().set_wal_mode(
+              base::FeatureList::IsEnabled(kSqlWALModeOnSegmentationDatabase)),
+          /*tag=*/"UKMMetrics"),
       metrics_table_(&db_),
       url_table_(&db_),
       uma_metrics_table_(&db_) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  db_.set_histogram_tag("UKMMetrics");
   db_.set_error_callback(base::BindRepeating(&ErrorCallback));
 }
 
@@ -423,6 +422,9 @@ void UkmDatabaseBackend::RestartTransaction() {
   if (!current_transaction_->Begin()) {
     current_transaction_.reset();
   }
+
+  // Forces the wal file to be in sync with the main database.
+  std::ignore = db_.Execute("PRAGMA wal_checkpoint(TRUNCATE)");
 }
 
 }  // namespace segmentation_platform

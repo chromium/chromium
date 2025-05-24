@@ -105,14 +105,14 @@ export const SettingsBooleanControlMixin = dedupingMixin(
           return ['prefValueChanged_(pref.value)'];
         }
 
-        inverted: boolean;
-        checked: boolean;
-        disabled: boolean;
-        noSetPref: boolean;
-        label: string;
-        subLabel: string;
-        numericUncheckedValues: number[];
-        numericCheckedValue: number;
+        declare inverted: boolean;
+        declare checked: boolean;
+        declare disabled: boolean;
+        declare noSetPref: boolean;
+        declare label: string;
+        declare subLabel: string;
+        declare numericUncheckedValues: number[];
+        declare numericCheckedValue: number;
 
         notifyChangedByUserInteraction() {
           this.dispatchEvent(new CustomEvent(
@@ -133,7 +133,7 @@ export const SettingsBooleanControlMixin = dedupingMixin(
             return;
           }
 
-          this.checked = this.getNewValue_(this.pref!.value);
+          this.checked = this.getNewValue_(this.pref.value);
         }
 
         /** Update the pref to the current |checked| value. */

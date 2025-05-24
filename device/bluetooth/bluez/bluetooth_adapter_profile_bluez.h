@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -95,7 +96,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
                                 const std::string& error_message);
 
   // List of delegates which this profile is multiplexing to.
-  std::map<std::string, bluez::BluetoothProfileServiceProvider::Delegate*>
+  std::map<std::string,
+           raw_ptr<bluez::BluetoothProfileServiceProvider::Delegate,
+                   CtnExperimental>>
       delegates_;
 
   // The UUID that this profile represents.

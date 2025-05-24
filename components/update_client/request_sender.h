@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,12 +16,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "components/client_update_protocol/ecdsa.h"
 #include "components/update_client/network.h"
 #include "url/gurl.h"
-
-namespace client_update_protocol {
-class Ecdsa;
-}
 
 namespace update_client {
 
@@ -70,10 +68,11 @@ class RequestSender : public base::RefCountedThreadSafe<RequestSender> {
   void OnResponseStarted(int response_code, int64_t content_length);
 
   void OnNetworkFetcherComplete(const GURL& original_url,
-                                std::unique_ptr<std::string> response_body,
+                                std::optional<std::string> response_body,
                                 int net_error,
                                 const std::string& header_etag,
                                 const std::string& xheader_cup_server_proof,
+                                const std::string& header_cookie,
                                 int64_t xheader_retry_after_sec);
 
   // Implements the error handling and url fallback mechanism.
@@ -85,6 +84,7 @@ class RequestSender : public base::RefCountedThreadSafe<RequestSender> {
                             const std::string& response_body,
                             const std::string& response_etag,
                             const std::string& response_cup_server_proof,
+                            const std::string& response_cookie,
                             int retry_after_sec);
 
   // Helper function to handle a non-continuable error in Send.
@@ -110,10 +110,9 @@ class RequestSender : public base::RefCountedThreadSafe<RequestSender> {
   bool use_signing_ = false;  // True if CUP signing is used.
   RequestSenderCallback request_sender_callback_;
 
-  std::string public_key_;
   std::vector<GURL>::const_iterator cur_url_;
   std::unique_ptr<NetworkFetcher> network_fetcher_;
-  std::unique_ptr<client_update_protocol::Ecdsa> signer_;
+  client_update_protocol::Ecdsa signer_;
 
   int response_code_ = -1;
 };

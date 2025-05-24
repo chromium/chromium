@@ -10,6 +10,7 @@
 
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -20,14 +21,14 @@ namespace content {
 // permission from a renderer, including important contextual information.
 struct CONTENT_EXPORT PermissionRequestDescription {
   explicit PermissionRequestDescription(
-      const std::vector<blink::PermissionType>& permissions,
+      std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
       bool user_gesture = false,
       const GURL& requesting_origin = GURL(),
       bool embedded_permission_element_initiated = false,
       const std::optional<gfx::Rect>& anchor_element_position = std::nullopt);
 
   explicit PermissionRequestDescription(
-      blink::PermissionType permission,
+      blink::mojom::PermissionDescriptorPtr permissions,
       bool user_gesture = false,
       const GURL& requesting_origin = GURL(),
       bool embedded_permission_element_initiated = false,
@@ -45,8 +46,8 @@ struct CONTENT_EXPORT PermissionRequestDescription {
 
   bool operator==(const PermissionRequestDescription& other) const;
 
-  // Define the list of permissions we will request.
-  std::vector<blink::PermissionType> permissions;
+  // Defines the list of permissions we will request.
+  std::vector<blink::mojom::PermissionDescriptorPtr> permissions;
 
   // Indicates the request is initiated by a user gesture.
   bool user_gesture;

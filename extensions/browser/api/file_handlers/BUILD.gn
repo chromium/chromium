@@ -5,8 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("file_handlers") {
   sources = [
@@ -18,23 +18,26 @@ source_set("file_handlers") {
     "mime_util.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "non_native_file_system_delegate.h" ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//base:base",
-    "//build:chromeos_buildflags",
-    "//components/file_access",
-    "//content/public/browser",
-    "//content/public/common",
+  public_deps = [
+    "//base",
     "//extensions/common",
-    "//extensions/common/api",
-    "//net",
-    "//storage/browser",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//components/file_access",
+    "//components/services/app_service",
+    "//content/public/browser",
+    "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
+    "//net",
+    "//storage/browser",
+    "//storage/common",
+  ]
 }

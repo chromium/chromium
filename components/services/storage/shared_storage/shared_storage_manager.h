@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_STORAGE_SHARED_STORAGE_SHARED_STORAGE_MANAGER_H_
 
 #include <memory>
-#include <queue>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -44,11 +43,13 @@ class SharedStorageManager {
   using InitStatus = SharedStorageDatabase::InitStatus;
   using SetBehavior = SharedStorageDatabase::SetBehavior;
   using OperationResult = SharedStorageDatabase::OperationResult;
+  using BatchUpdateResult = SharedStorageDatabase::BatchUpdateResult;
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
   using TimeResult = SharedStorageDatabase::TimeResult;
   using MetadataResult = SharedStorageDatabase::MetadataResult;
   using EntriesResult = SharedStorageDatabase::EntriesResult;
+  using DataClearSource = SharedStorageDatabase::DataClearSource;
 
   // A callback type to check if a given StorageKey matches a storage policy.
   // Can be passed empty/null where used, which means the StorageKey will always
@@ -165,6 +166,15 @@ class SharedStorageManager {
               std::u16string key,
               base::OnceCallback<void(OperationResult)> callback);
 
+  // Executes `methods_with_options` as a transaction. If any method fails, the
+  // entire batch operation is rolled back. The parameter of `callback` reports
+  // whether the operation is successful.
+  void BatchUpdate(
+      url::Origin context_origin,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      base::OnceCallback<void(BatchUpdateResult)> callback);
+
   // The parameter of `callback` reports the number of entries for
   // `context_origin`, 0 if there are none, or -1 on operation failure.
   void Length(url::Origin context_origin,
@@ -195,7 +205,8 @@ class SharedStorageManager {
   // `browsing_data::SharedStorageHelper::DeleteOrigin()` in order to clear
   // browsing data via the Settings UI.
   void Clear(url::Origin context_origin,
-             base::OnceCallback<void(OperationResult)> callback);
+             base::OnceCallback<void(OperationResult)> callback,
+             DataClearSource source = DataClearSource::kSite);
 
   // The parameter of `callback` reports the number of bytes used by
   // `context_origin` in unexpired entries, 0 if the origin has no unexpired

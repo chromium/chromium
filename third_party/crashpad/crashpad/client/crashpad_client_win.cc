@@ -441,7 +441,8 @@ bool StartHandlerProcess(
   BOOL rv;
   DWORD creation_flags;
   STARTUPINFOEX startup_info = {};
-  startup_info.StartupInfo.dwFlags = STARTF_USESTDHANDLES;
+  startup_info.StartupInfo.dwFlags =
+      STARTF_USESTDHANDLES | STARTF_FORCEOFFFEEDBACK;
   startup_info.StartupInfo.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
   startup_info.StartupInfo.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
   startup_info.StartupInfo.hStdError = GetStdHandle(STD_ERROR_HANDLE);

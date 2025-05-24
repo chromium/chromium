@@ -100,9 +100,9 @@ DnsResourceRecord& DnsResourceRecord::operator=(DnsResourceRecord&& other) {
   return *this;
 }
 
-void DnsResourceRecord::SetOwnedRdata(std::string value) {
+void DnsResourceRecord::SetOwnedRdata(base::span<const uint8_t> value) {
   DCHECK(!value.empty());
-  owned_rdata = std::move(value);
+  owned_rdata.assign(value.begin(), value.end());
   rdata = owned_rdata;
   DCHECK_EQ(owned_rdata.data(), rdata.data());
 }
@@ -263,9 +263,7 @@ bool DnsRecordParser::ReadRecord(DnsResourceRecord* out) {
       reader.ReadU16BigEndian(out->klass) &&
       reader.ReadU32BigEndian(out->ttl) &&  //
       reader.ReadU16BigEndian(rdlen) &&
-      base::OptionalUnwrapTo(reader.Read(rdlen), out->rdata, [](auto span) {
-        return base::as_string_view(span);
-      })) {
+      base::OptionalUnwrapTo(reader.Read(rdlen), out->rdata)) {
     cur_ += consumed + 2u + 2u + 4u + 2u + rdlen;
     ++num_records_parsed_;
     return true;
@@ -462,7 +460,7 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
   // Construct the parser. Only allow parsing up to `num_records` records. If
   // more records are present in the buffer, it's just garbage extra data after
   // the formal end of the response and should be ignored.
-  parser_ = DnsRecordParser(io_buffer_->span().first(nbytes),
+  parser_ = DnsRecordParser(io_buffer_->first(nbytes),
                             kHeaderSize + question.size(), num_records);
   return true;
 }
@@ -483,8 +481,8 @@ bool DnsResponse::InitParseWithoutQuery(size_t nbytes) {
   // Only allow parsing up to `num_records` records. If more records are present
   // in the buffer, it's just garbage extra data after the formal end of the
   // response and should be ignored.
-  parser_ = DnsRecordParser(io_buffer_->span().first(nbytes), kHeaderSize,
-                            num_records);
+  parser_ =
+      DnsRecordParser(io_buffer_->first(nbytes), kHeaderSize, num_records);
 
   unsigned qdcount = base::NetToHost16(header()->qdcount);
   for (unsigned i = 0; i < qdcount; ++i) {
@@ -581,14 +579,13 @@ bool DnsResponse::WriteRecord(base::SpanWriter<uint8_t>* writer,
                               const DnsResourceRecord& record,
                               bool validate_record,
                               bool validate_name_as_internet_hostname) {
-  if (record.rdata != std::string_view(record.owned_rdata)) {
-    VLOG(1) << "record.rdata should point to record.owned_rdata.";
-    return false;
-  }
+  CHECK_EQ(record.rdata.data(), record.owned_rdata.data());
 
   if (validate_record &&
-      !RecordRdata::HasValidSize(record.owned_rdata, record.type)) {
-    VLOG(1) << "Invalid RDATA size for a record.";
+      !RecordRdata::HasValidSize(base::as_byte_span(record.owned_rdata),
+                                 record.type)) {
+    DVLOG(1) << "Mismatch between rdata size (" << record.rdata.size()
+             << ") and owned_rdata size (" << record.owned_rdata.size() << ").";
     return false;
   }
 

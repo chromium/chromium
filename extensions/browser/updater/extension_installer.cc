@@ -66,8 +66,7 @@ std::optional<base::FilePath> ExtensionInstaller::GetInstalledFile(
 }
 
 bool ExtensionInstaller::Uninstall() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 ExtensionInstaller::~ExtensionInstaller() = default;

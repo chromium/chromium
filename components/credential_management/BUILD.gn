@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+source_set("browser") {
+  sources = [
+    "content_credential_manager.cc",
+    "content_credential_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/back_forward_cache",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_credential_manager_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/password_manager/core/common",
+    "//testing/gmock",
+  ]
+}

@@ -87,8 +87,9 @@ class LeakTracker : public base::LinkNode<LeakTracker<T>> {
       base::debug::StackTrace& allocation_stack =
           node->value()->allocation_stack_;
 
-      if (count < kMaxStackTracesToCopyOntoStack)
+      if (count < kMaxStackTracesToCopyOntoStack) {
         stacktraces[count] = allocation_stack;
+      }
 
       ++count;
       if (LOG_IS_ON(ERROR)) {
@@ -102,8 +103,9 @@ class LeakTracker : public base::LinkNode<LeakTracker<T>> {
     // Hack to keep `stacktraces` and `count` alive (so compiler
     // doesn't optimize it out, and it will appear in mini-dumps).
     if (count == 0x1234) {
-      for (size_t i = 0; i < kMaxStackTracesToCopyOntoStack; ++i)
+      for (size_t i = 0; i < kMaxStackTracesToCopyOntoStack; ++i) {
         stacktraces[i].Print();
+      }
     }
   }
 

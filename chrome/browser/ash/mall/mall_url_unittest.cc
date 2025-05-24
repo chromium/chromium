@@ -16,6 +16,7 @@
 #include "chromeos/constants/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -44,12 +45,14 @@ TEST_F(MallUrlTest, GetMallLaunchUrl) {
   ASSERT_EQ(launch_url.host(), GURL(chromeos::kAppMallBaseUrl).host());
 
   std::vector<std::string> query_parts = base::SplitString(
-      launch_url.query(), "=", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      launch_url.query(), "=&", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  ASSERT_EQ(query_parts[0], "context");
+  ASSERT_EQ(query_parts[0], "origin");
+  ASSERT_EQ(query_parts[1], "chrome%3A%2F%2Fmall");
+  ASSERT_EQ(query_parts[2], "context");
 
   std::string proto_string;
-  ASSERT_TRUE(base::Base64Decode(net::UnescapePercentEncodedUrl(query_parts[1]),
+  ASSERT_TRUE(base::Base64Decode(net::UnescapePercentEncodedUrl(query_parts[3]),
                                  &proto_string,
                                  base::Base64DecodePolicy::kStrict));
 
@@ -57,6 +60,40 @@ TEST_F(MallUrlTest, GetMallLaunchUrl) {
   ASSERT_TRUE(decoded_context.ParseFromString(proto_string));
   ASSERT_EQ(decoded_context.device_context().hardware_id(),
             "SHIBA D0G-F4N-C1UB");
+}
+
+TEST_F(MallUrlTest, GetMallLaunchUrl_BasePath) {
+  EXPECT_THAT(
+      GetMallLaunchUrl(apps::DeviceInfo(), "/").spec(),
+      testing::StartsWith(
+          "https://discover.apps.chrome/?origin=chrome%3A%2F%2Fmall&context="));
+}
+
+TEST_F(MallUrlTest, GetMallLaunchUrl_SimplePath) {
+  EXPECT_THAT(GetMallLaunchUrl(apps::DeviceInfo(), "/apps/").spec(),
+              testing::StartsWith("https://discover.apps.chrome/apps/"
+                                  "?origin=chrome%3A%2F%2Fmall&context="));
+}
+
+TEST_F(MallUrlTest, GetMallLaunchUrl_PathWithQuery) {
+  // Query-looking parts of the path parameter should not be interpreted as
+  // query parameters.
+  EXPECT_THAT(GetMallLaunchUrl(apps::DeviceInfo(), "/search?q=netflix").spec(),
+              testing::StartsWith(
+                  "https://discover.apps.chrome/"
+                  "search%3Fq=netflix?origin=chrome%3A%2F%2Fmall&context="));
+}
+
+TEST_F(MallUrlTest, GetMallLaunchUrl_RelativePath) {
+  EXPECT_THAT(GetMallLaunchUrl(apps::DeviceInfo(), "../apps/").spec(),
+              testing::StartsWith("https://discover.apps.chrome/apps/"
+                                  "?origin=chrome%3A%2F%2Fmall&context="));
+}
+
+TEST_F(MallUrlTest, GetMallLaunchUrl_RelativePathHost) {
+  EXPECT_THAT(GetMallLaunchUrl(apps::DeviceInfo(), "//example.com/").spec(),
+              testing::StartsWith("https://discover.apps.chrome//example.com/"
+                                  "?origin=chrome%3A%2F%2Fmall&context="));
 }
 
 }  // namespace ash

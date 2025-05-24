@@ -7,6 +7,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "ui/gfx/overlay_layer_id.h"
 
 namespace viz {
 namespace {
@@ -140,7 +141,7 @@ testing::Matcher<const DrawQuad*> HasLayerId(uint32_t layer_id) {
 }
 
 testing::Matcher<const DrawQuad*> HasLayerNamespaceId(
-    uint32_t layer_namespace_id) {
+    const gfx::OverlayLayerId::NamespaceId& layer_namespace_id) {
   return HasSharedQuadState(testing::Field("layer_namespace_id",
                                            &SharedQuadState::layer_namespace_id,
                                            testing::Eq(layer_namespace_id)));

@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_FILENAME_ELIDER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_FILENAME_ELIDER_H_
 
+#include <stddef.h>
+
 #include <string>
+#include <string_view>
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
@@ -22,7 +25,7 @@ class FilenameElider {
   // Returns the elided text. Equivalent to:
   //   Elide(GetLineLengths(display_rect))
   // See those methods for a detailed description.
-  std::u16string Elide(const std::u16string& text,
+  std::u16string Elide(std::u16string_view text,
                        const gfx::Rect& display_rect) const;
 
   // Returns the start of the image dimensions as typically formatted by
@@ -33,8 +36,7 @@ class FilenameElider {
   //
   // If the result isn't npos, then the character previous to the open paren
   // character is guaranteed to be whitespace.
-  static std::u16string::size_type FindImageDimensions(
-      const std::u16string& text);
+  static size_t FindImageDimensions(std::u16string_view text);
 
  private:
   friend class TabHoverCardBubbleViewFilenameEliderTest;

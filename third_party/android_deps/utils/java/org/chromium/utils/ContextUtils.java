@@ -8,12 +8,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Contains a helper method needed by the AndroidX Fragment library due to bytecode modification we
  * perform at build time.
  */
+@NullMarked
 public class ContextUtils {
     private ContextUtils() {}
 

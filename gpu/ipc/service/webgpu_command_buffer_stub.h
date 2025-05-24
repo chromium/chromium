@@ -36,8 +36,6 @@ class GPU_IPC_SERVICE_EXPORT WebGPUCommandBufferStub final
   base::WeakPtr<CommandBufferStub> AsWeakPtr() override;
 
  private:
-  void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
-
   base::WeakPtrFactory<WebGPUCommandBufferStub> weak_ptr_factory_{this};
 };
 

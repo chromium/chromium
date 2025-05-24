@@ -75,10 +75,12 @@ base::Value::Dict ConvertES256PkeySpkiToJwk(
     return base::Value::Dict();
   }
 
-  std::vector<uint8_t> x_bytes(BN_num_bytes(x.get()));
-  std::vector<uint8_t> y_bytes(BN_num_bytes(y.get()));
-  BN_bn2bin(x.get(), x_bytes.data());
-  BN_bn2bin(y.get(), y_bytes.data());
+  std::vector<uint8_t> x_bytes(32);
+  std::vector<uint8_t> y_bytes(32);
+  if (!BN_bn2bin_padded(x_bytes.data(), x_bytes.size(), x.get()) ||
+      !BN_bn2bin_padded(y_bytes.data(), y_bytes.size(), y.get())) {
+    return base::Value::Dict();
+  }
 
   return base::Value::Dict()
       .Set(kKeyTypeParam, kEcKeyType)

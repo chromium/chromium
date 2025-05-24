@@ -5,14 +5,14 @@
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import './diagnostics_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CanvasDrawingProvider} from './drawing_provider.js';
-import {TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import type {TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 import {getTemplate} from './touchpad_tester.html.js';
 
 export interface TouchpadTesterElement {

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1122068467107743258">Töö</translation>
 <translation id="1275718070701477396">Valitud</translation>
 <translation id="138513070655895675">Teiseks makseviisiks muutmine selle menüü-üksuse all.</translation>
 <translation id="2129442648318919291">Aadresside haldamine.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Tarneaadress</translation>
 <translation id="8873105120914375071">Kas soovite kiiremini maksta?</translation>
 <translation id="9032876013752408138">Lisa minu teave automaatselt</translation>
+<translation id="932327136139879170">Kodu</translation>
 <translation id="984275831282074731">Makseviisid</translation>
 </translationbundle>

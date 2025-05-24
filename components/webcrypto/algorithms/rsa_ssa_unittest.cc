@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/check_op.h"
@@ -70,7 +71,7 @@ void SwapDictMembers(base::Value::Dict& d, const char* a, const char* b) {
 std::string FlipHexByte(std::string_view hex, size_t index) {
   auto bytes = HexStringToBytes(hex);
   bytes[index] ^= 0xff;
-  return base::HexEncode(base::make_span(bytes));
+  return base::HexEncode(base::span(bytes));
 }
 
 blink::WebCryptoAlgorithm RS256Algorithm() {
@@ -259,7 +260,7 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaPrivateKeyJwkToPkcs8RoundTrip) {
 
   // All of the optional parameters (p, q, dp, dq, qi) should be present in the
   // output.
-  const char* expected_jwk =
+  static constexpr char kExpectedJwk[] =
       "{\"alg\":\"RS1\",\"d\":\"M6UEKpCyfU9UUcqbu9C0R3GhAa-IQ0Cu-YhfKku-"
       "kuiUpySsPFaMj5eFOtB8AmbIxqPKCSnx6PESMYhEKfxNmuVf7olqEM5wfD7X5zTkRyejlXRQ"
       "GlMmgxCcKrrKuig8MbS9L1PD7jfjUs7jT55QO9gMBiKtecbc7og1R8ajsyU\",\"dp\":"
@@ -277,9 +278,7 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaPrivateKeyJwkToPkcs8RoundTrip) {
       "\"JxVqukEm0kqB86Uoy_sn9WiG-"
       "ECp9uhuF6RLlP6TGVhLjiL93h5aLjvYqluo2FhBlOshkKz4MrhH8To9JKefTQ\"}";
 
-  EXPECT_BYTES_EQ(
-      base::as_bytes(base::make_span(std::string_view(expected_jwk))),
-      exported_key_jwk);
+  EXPECT_BYTES_EQ(base::byte_span_from_cstring(kExpectedJwk), exported_key_jwk);
 
   ASSERT_EQ(Status::Success(),
             ImportKey(blink::kWebCryptoKeyFormatJwk, exported_key_jwk,
@@ -295,7 +294,7 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaPrivateKeyJwkToPkcs8RoundTrip) {
   ASSERT_EQ(HexStringToBytes(kPrivateKeyPkcs8DerHex), exported_key_pkcs8);
 }
 
-const char kRsa512Jwk_0[] =
+constexpr char kRsa512Jwk_0[] =
     R"({
       "alg": "RS256",
       "d": "DXYeCQ4W_Yv9zN4vCIQQtgvunsoeWfPeRvYEgVAIYdhuNFRmcinD9UuNP70VOoe2qiZ0DNAjsQn-uYCW9TEZ4Q",
@@ -309,7 +308,7 @@ const char kRsa512Jwk_0[] =
       "qi": "kxd6mc-3AhJtuixmzrSywxvwVwChdEG4I6WVTBe_bvE"
    })";
 // Note that the first letter of "d" has been changed.
-const char kRsa512Jwk_0_Damaged[] =
+constexpr char kRsa512Jwk_0_Damaged[] =
     R"({
       "alg": "RS256",
       "d": "EXYeCQ4W_Yv9zN4vCIQQtgvunsoeWfPeRvYEgVAIYdhuNFRmcinD9UuNP70VOoe2qiZ0DNAjsQn-uYCW9TEZ4Q",
@@ -322,7 +321,7 @@ const char kRsa512Jwk_0_Damaged[] =
       "q": "07vkNpoE6SUze7Af2KEP6M_sz8dABZ3EQJuQ6JfiDAs",
       "qi": "kxd6mc-3AhJtuixmzrSywxvwVwChdEG4I6WVTBe_bvE"
    })";
-const char kRsa512Pkcs8_0[] =
+constexpr char kRsa512Pkcs8_0[] =
     "30820156020100300D06092A864886F70D0101010500048201403082013C020100024100C8"
     "BB877EB25BA9448516A854BBBD33E7CE695ABC3520572704271C8F8DEEC063A27AC324C744"
     "96C388F293750D4EEC7900EFBB555094F236FBDB7ED861A3A63B020301000102400D761E09"
@@ -334,7 +333,7 @@ const char kRsa512Pkcs8_0[] =
     "58FC9DB69C99223572311F3E096B6702210093177A99CFB702126DBA2C66CEB4B2C31BF057"
     "00A17441B823A5954C17BF6EF1";
 
-const char kRsa512Jwk_1[] =
+constexpr char kRsa512Jwk_1[] =
     R"({
       "alg": "RS256",
       "d": "phZ8gCMB14I-A35dwg7j16uSd91COBNN4GuwZchy7FPGH0hNzaH2jOYBU3sWy2ORxwWN8PbKqKOkZb8mh4v_gQ",
@@ -347,7 +346,7 @@ const char kRsa512Jwk_1[] =
       "q": "2q2EDZHQQ_dp9-Cx2Z8kWn7sYo8K9caFneAJge8ZpBk",
       "qi": "GT51ibfjUV05KRQhyjiqeCkGT12aAWvLzKRsaV9VE54"
    })";
-const char kRsa512Pkcs8_1[] =
+constexpr char kRsa512Pkcs8_1[] =
     "30820155020100300D06092A864886F70D01010105000482013F3082013B020100024100CE"
     "0E4A177188169F5725D38C0FD233F92782FC255D51E23E813C70D8882977C141D1C26594CC"
     "60EA7DC500BA99ED828F029EEB08BDD5621BBE191F0E9EA84D690203010001024100A6167C"
@@ -577,13 +576,11 @@ TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairRsaBadModulusLength) {
 TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairRsaBadExponent) {
   const unsigned int modulus_length = 1024;
 
-  const char* const kPublicExponents[] = {
+  const auto kPublicExponents = std::to_array<const char*>({
       "11",  // 17 - This is a valid public exponent, but currently disallowed.
-      "00",
-      "01",
-      "02",
+      "00", "01", "02",
       "010000",  // 65536
-  };
+  });
 
   for (auto* const exponent : kPublicExponents) {
     SCOPED_TRACE(&exponent - &kPublicExponents[0]);
@@ -627,7 +624,7 @@ TEST_F(WebCryptoRsaSsaTest, SignVerifyFailures) {
   // Ensure truncated signature does not verify by passing one less byte.
   EXPECT_EQ(Status::Success(),
             Verify(algorithm, public_key,
-                   base::make_span(signature).first(signature.size() - 1), data,
+                   base::span(signature).first(signature.size() - 1), data,
                    &signature_match));
   EXPECT_FALSE(signature_match);
 
@@ -646,7 +643,7 @@ TEST_F(WebCryptoRsaSsaTest, SignVerifyFailures) {
   // Ensure signatures that are greater than the modulus size fail.
   const size_t long_message_size_bytes = 1024;
   DCHECK_GT(long_message_size_bytes, kModulusLengthBits / 8);
-  const unsigned char kLongSignature[long_message_size_bytes] = {0};
+  const unsigned char kLongSignature[long_message_size_bytes] = {};
   EXPECT_EQ(Status::Success(), Verify(algorithm, public_key, kLongSignature,
                                       data, &signature_match));
   EXPECT_FALSE(signature_match);
@@ -883,14 +880,16 @@ TEST_F(WebCryptoRsaSsaTest, ImportExportJwkRsaPublicKey) {
     const blink::WebCryptoKeyUsageMask usage;
     const char* const jwk_alg;
   };
-  const TestCase kTests[] = {{blink::kWebCryptoAlgorithmIdSha1,
-                              blink::kWebCryptoKeyUsageVerify, "RS1"},
-                             {blink::kWebCryptoAlgorithmIdSha256,
-                              blink::kWebCryptoKeyUsageVerify, "RS256"},
-                             {blink::kWebCryptoAlgorithmIdSha384,
-                              blink::kWebCryptoKeyUsageVerify, "RS384"},
-                             {blink::kWebCryptoAlgorithmIdSha512,
-                              blink::kWebCryptoKeyUsageVerify, "RS512"}};
+  const auto kTests = std::to_array<TestCase>({
+      {blink::kWebCryptoAlgorithmIdSha1, blink::kWebCryptoKeyUsageVerify,
+       "RS1"},
+      {blink::kWebCryptoAlgorithmIdSha256, blink::kWebCryptoKeyUsageVerify,
+       "RS256"},
+      {blink::kWebCryptoAlgorithmIdSha384, blink::kWebCryptoKeyUsageVerify,
+       "RS384"},
+      {blink::kWebCryptoAlgorithmIdSha512, blink::kWebCryptoKeyUsageVerify,
+       "RS512"},
+  });
 
   for (const auto& test : kTests) {
     SCOPED_TRACE(&test - &kTests[0]);
@@ -986,8 +985,7 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaSsaJwkBadUsageAndData) {
   blink::WebCryptoKey key;
   ASSERT_EQ(
       Status::ErrorJwkNotDictionary(),
-      ImportKey(blink::kWebCryptoKeyFormatJwk,
-                base::as_bytes(base::make_span(bad_data)),
+      ImportKey(blink::kWebCryptoKeyFormatJwk, base::as_byte_span(bad_data),
                 CreateRsaHashedImportAlgorithm(
                     blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
                     blink::kWebCryptoAlgorithmIdSha256),

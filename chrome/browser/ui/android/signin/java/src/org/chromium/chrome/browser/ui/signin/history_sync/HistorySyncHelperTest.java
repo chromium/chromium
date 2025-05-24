@@ -24,10 +24,8 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -42,13 +40,11 @@ import java.time.Duration;
 import java.util.Set;
 
 /** Unit tests for the {@link HistorySyncHelper} */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class HistorySyncHelperTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private SyncService mSyncServiceMock;
@@ -61,11 +57,11 @@ public class HistorySyncHelperTest {
     @Before
     public void setUp() {
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(any(Profile.class))).thenReturn(mPrefServiceMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mHistorySyncHelper = HistorySyncHelper.getForProfile(mProfileMock);
+                    mHistorySyncHelper = new HistorySyncHelper(mProfileMock);
                 });
     }
 

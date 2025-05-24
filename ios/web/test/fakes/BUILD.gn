@@ -19,7 +19,7 @@ source_set("fakes") {
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//testing/gmock",
-    "//third_party/ocmock:ocmock",
+    "//third_party/ocmock",
   ]
 
   sources = [

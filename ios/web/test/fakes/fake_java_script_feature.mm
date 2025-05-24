@@ -33,8 +33,6 @@ const char kFakeJavaScriptFeaturePostMessageReplyValue[] = "some text";
 // `kFakeJavaScriptFeatureScriptHandlerName`.
 const char kScriptReplyWithPostMessage[] =
     "javaScriptFeatureTest.replyWithPostMessage";
-const char kScriptReplyWithPostMessageCommonJS[] =
-    "javaScriptFeatureTest.replyWithPostMessageCommonHelper";
 
 // The function exposed by the feature JS which returns the count of errors
 // received in the JS error listener.
@@ -68,13 +66,6 @@ void FakeJavaScriptFeature::ReplyWithPostMessage(
     WebFrame* web_frame,
     const base::Value::List& parameters) {
   CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessage, parameters);
-}
-
-void FakeJavaScriptFeature::ReplyWithPostMessageCommonJS(
-    WebFrame* web_frame,
-    const base::Value::List& parameters) {
-  CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessageCommonJS,
-                         parameters);
 }
 
 void FakeJavaScriptFeature::GetErrorCount(

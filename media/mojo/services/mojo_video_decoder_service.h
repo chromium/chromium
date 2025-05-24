@@ -17,7 +17,6 @@
 #include "media/base/decoder_status.h"
 #include "media/base/overlay_info.h"
 #include "media/base/video_decoder.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/mojo_media_client.h"
@@ -43,8 +42,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   explicit MojoVideoDecoderService(
       MojoMediaClient* mojo_media_client,
       MojoCdmServiceContext* mojo_cdm_service_context,
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-          oop_video_decoder_remote);
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder_remote);
 
   MojoVideoDecoderService(const MojoVideoDecoderService&) = delete;
   MojoVideoDecoderService& operator=(const MojoVideoDecoderService&) = delete;
@@ -63,7 +61,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
       const gfx::ColorSpace& target_color_space) final;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
-                  const std::optional<base::UnguessableToken>& cdm_id,
+                  mojom::CdmPtr cdm,
                   InitializeCallback callback) final;
   void Decode(mojom::DecoderBufferPtr buffer, DecodeCallback callback) final;
   void Reset(ResetCallback callback) final;
@@ -132,8 +130,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   // just holds the PendingRemote in between the construction of the
   // MojoVideoDecoderService and the call to
   // |mojo_media_client_|->CreateVideoDecoder().
-  mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-      oop_video_decoder_pending_remote_;
+  mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder_pending_remote_;
 
   InitializeCallback init_cb_;
   ResetCallback reset_cb_;

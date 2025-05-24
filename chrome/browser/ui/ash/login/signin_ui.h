@@ -83,9 +83,6 @@ class SigninUI {
   virtual void ShowSigninError(SigninError error,
                                const std::string& details) = 0;
 
-  // Show the browser data migration UI and start the migration.
-  virtual void StartBrowserDataMigration() = 0;
-
   // Show the SAML Confirm Password screen and continue authentication after
   // that (or show the error screen).
   virtual void SAMLConfirmPassword(

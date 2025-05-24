@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -15,11 +17,11 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/process_iterator.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/activity_impl_util_posix.h"
@@ -77,10 +79,10 @@ bool WaitForUpdaterExit() {
       GetTestProcessNames();
   return WaitFor(
       [&] {
-        return base::ranges::none_of(process_names,
-                                     [](const auto& process_name) {
-                                       return IsProcessRunning(process_name);
-                                     });
+        return std::ranges::none_of(process_names,
+                                    [](const auto& process_name) {
+                                      return IsProcessRunning(process_name);
+                                    });
       },
       [] { VLOG(0) << "Still waiting for updater to exit..."; });
 }
@@ -97,10 +99,10 @@ void Uninstall(UpdaterScope scope) {
 
 void ExpectCandidateUninstalled(UpdaterScope scope) {
   std::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
-  EXPECT_TRUE(path);
-  if (path) {
-    EXPECT_FALSE(base::PathExists(*path));
-  }
+  ASSERT_TRUE(path);
+  ASSERT_TRUE(WaitFor(
+      [&] { return !base::PathExists(*path); },
+      [] { VLOG(0) << "Waiting for the candidate to be uninstalled."; }));
 }
 
 void ExpectInstalled(UpdaterScope scope) {
@@ -119,13 +121,17 @@ void Clean(UpdaterScope scope) {
   }
 
   EXPECT_TRUE(UninstallSystemdUnits(scope));
+
+  if (IsSystemInstall(scope)) {
+    ASSERT_NO_FATAL_FAILURE(UninstallEnterpriseCompanionApp());
+  }
 }
 
 // The uninstaller cannot reliably completely remove the installer directory
 // itself, because it uses the prefs file and writes the log file while it
 // is operating. If the provided path exists, it must be a directory with
 // only these residual files present to be considered "clean".
-void ExpectMostlyClean(const std::optional<base::FilePath>& path) {
+void ExpectMostlyClean(std::optional<base::FilePath> path) {
   EXPECT_TRUE(path);
   if (!path || !base::PathExists(*path)) {
     return;
@@ -135,37 +141,22 @@ void ExpectMostlyClean(const std::optional<base::FilePath>& path) {
   int count = CountDirectoryFiles(*path);
   EXPECT_LE(count, 2);
   if (count >= 1) {
-    EXPECT_TRUE(base::PathExists(path->AppendASCII("updater.log")));
+    EXPECT_TRUE(base::PathExists(path->Append("updater.log")));
   }
   if (count == 2) {
-    EXPECT_TRUE(base::PathExists(path->AppendASCII("prefs.json")));
+    EXPECT_TRUE(base::PathExists(path->Append("prefs.json")));
   }
 }
 
 void ExpectClean(UpdaterScope scope) {
   ExpectCleanProcesses();
   ExpectMostlyClean(GetInstallDirectory(scope));
-  ExpectMostlyClean(GetCacheBaseDirectory(scope));
   EXPECT_FALSE(SystemdUnitsInstalled(scope));
+  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
 }
 
-void EnterTestMode(const GURL& update_url,
-                   const GURL& crash_upload_url,
-                   const GURL& device_management_url,
-                   const GURL& app_logo_url,
-                   const base::TimeDelta& idle_timeout) {
-  ASSERT_TRUE(ExternalConstantsBuilder()
-                  .SetUpdateURL({update_url.spec()})
-                  .SetCrashUploadURL(crash_upload_url.spec())
-                  .SetDeviceManagementURL(device_management_url.spec())
-                  .SetAppLogoURL(app_logo_url.spec())
-                  .SetUseCUP(false)
-                  .SetInitialDelay(base::Milliseconds(100))
-                  .SetServerKeepAliveTime(base::Seconds(2))
-                  .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
-                  .SetOverinstallTimeout(TestTimeouts::action_timeout())
-                  .SetIdleCheckPeriod(idle_timeout)
-                  .Modify());
+base::TimeDelta GetOverinstallTimeoutForEnterTestMode() {
+  return TestTimeouts::action_timeout();
 }
 
 void SetActive(UpdaterScope scope, const std::string& app_id) {
@@ -194,22 +185,24 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
   EXPECT_FALSE(base::PathIsWritable(*path));
 }
 
-base::FilePath GetRealUpdaterLowerVersionPath() {
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
+    const std::string& arch_suffix) {
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
-      exe_path.Append(FILE_PATH_LITERAL("old_updater"));
+      exe_path.Append(FILE_PATH_LITERAL("old_updater"))
+          .Append(base::StrCat({base::ToLowerASCII(BROWSER_NAME_STRING),
+                                "_linux64", arch_suffix}));
 
-#if BUILDFLAG(CHROMIUM_BRANDING)
-  old_updater_path = old_updater_path.AppendASCII("chromium_linux64");
-#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  old_updater_path = old_updater_path.AppendASCII("chrome_linux64");
-#endif
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  old_updater_path = old_updater_path.AppendASCII("cipd");
+  old_updater_path = old_updater_path.Append("cipd");
 #endif
-  return old_updater_path.AppendASCII(
-      base::StrCat({kExecutableName, kExecutableSuffix}));
+
+  // Linux currently does not have a way to get version information for the
+  // executable via `FileVersionInfo`.
+  return {{old_updater_path.Append(
+               base::StrCat({kExecutableName, kExecutableSuffix})),
+           {}}};
 }
 
 void SetupFakeLegacyUpdater(UpdaterScope scope) {

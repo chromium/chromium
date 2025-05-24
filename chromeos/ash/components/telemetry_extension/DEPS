@@ -1,6 +1,11 @@
 include_rules = [
-  "+ash/system/diagnostics",
   "+chromeos/ash/components/audio",
   "+chromeos/ash/components/dbus/debug_daemon",
   "+chromeos/ash/components/mojo_service_manager",
+  "+chromeos/ash/services/cros_healthd/public",
+  "+chromeos/services/network_health/public/mojom",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/system/diagnostics/mojom/input.mojom.h",
 ]

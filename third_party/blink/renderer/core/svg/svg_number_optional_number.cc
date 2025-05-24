@@ -51,17 +51,6 @@ SVGNumberOptionalNumber* SVGNumberOptionalNumber::Clone() const {
                                                        second_number_->Clone());
 }
 
-SVGPropertyBase* SVGNumberOptionalNumber::CloneForAnimation(
-    const String& value) const {
-  float x, y;
-  if (!ParseNumberOptionalNumber(value, x, y)) {
-    x = y = 0;
-  }
-
-  return MakeGarbageCollected<SVGNumberOptionalNumber>(
-      MakeGarbageCollected<SVGNumber>(x), MakeGarbageCollected<SVGNumber>(y));
-}
-
 String SVGNumberOptionalNumber::ValueAsString() const {
   if (first_number_->Value() == second_number_->Value()) {
     return String::Number(first_number_->Value());

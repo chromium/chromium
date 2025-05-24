@@ -4,11 +4,11 @@
 
 #include "components/zucchini/address_translator.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/format_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,11 +54,11 @@ class TestAddressTranslator : public AddressTranslator {
 
       auto first_non_blank = [](const std::string& t) {
         auto is_blank = [](char ch) { return ch == '.'; };
-        return base::ranges::find_if_not(t, is_blank) - t.begin();
+        return std::ranges::find_if_not(t, is_blank) - t.begin();
       };
       auto count_non_special = [](const std::string& t) {
         auto is_special = [](char ch) { return ch == '.' || ch == '!'; };
-        return t.size() - base::ranges::count_if(t, is_special);
+        return t.size() - std::ranges::count_if(t, is_special);
       };
       units.push_back({static_cast<offset_t>(first_non_blank(s1)),
                        static_cast<offset_t>(count_non_special(s1)),

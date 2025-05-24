@@ -1,9 +1,8 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
+assert(is_chromeos, "Telemetry Services are ChromeOS only")
 
 source_set("routines") {
   sources = [

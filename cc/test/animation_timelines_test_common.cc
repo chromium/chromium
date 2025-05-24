@@ -61,8 +61,7 @@ float TestLayer::brightness() const {
       return filter.amount();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 float TestLayer::invert() const {
@@ -72,8 +71,7 @@ float TestLayer::invert() const {
       return filter.amount();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 TestHostClient::TestHostClient(ThreadInstance thread_instance)

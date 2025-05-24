@@ -5,6 +5,7 @@
 #include "components/trusted_vault/securebox.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "crypto/hkdf.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
@@ -44,7 +44,7 @@ const char kHkdfInfoWithoutPublicKey[] = "SHARED HKDF-SHA-256 AES-128-GCM";
 
 // Returns bytes representation of |str| (without trailing \0).
 base::span<const uint8_t> StringToBytes(std::string_view str) {
-  return base::as_bytes(base::make_span(str));
+  return base::as_byte_span(str);
 }
 
 // Concatenates spans in |bytes_spans|.
@@ -58,7 +58,7 @@ std::vector<uint8_t> ConcatBytes(
   std::vector<uint8_t> result(total_size);
   auto output_it = result.begin();
   for (const base::span<const uint8_t>& span : bytes_spans) {
-    output_it = base::ranges::copy(span, output_it);
+    output_it = std::ranges::copy(span, output_it).out;
   }
   return result;
 }
@@ -115,7 +115,7 @@ bssl::UniquePtr<EC_KEY> GenerateECKey(
 // computes the EC-DH secret. Appends the |shared_secret|, and computes HKDF of
 // that. |public_key| and |private_key| might be null, but if either of them is
 // not null, other must be not null as well. |shared_secret| may be empty.
-std::vector<uint8_t> SecureBoxComputeSecret(
+std::array<uint8_t, kAES128KeyLength> SecureBoxComputeSecret(
     const EC_KEY* private_key,
     const EC_POINT* public_key,
     base::span<const uint8_t> shared_secret,
@@ -135,8 +135,8 @@ std::vector<uint8_t> SecureBoxComputeSecret(
   }
 
   std::vector<uint8_t> key_material = ConcatBytes({dh_secret, shared_secret});
-  return crypto::HkdfSha256(key_material, kHkdfSalt, StringToBytes(hkdf_info),
-                            kAES128KeyLength);
+  return crypto::HkdfSha256<kAES128KeyLength>(key_material, kHkdfSalt,
+                                              StringToBytes(hkdf_info));
 }
 
 // This function implements AES-GCM, using AES-128, a 96-bit nonce, and 128-bit
@@ -248,7 +248,7 @@ std::vector<uint8_t> SecureBoxEncryptImpl(
     base::span<const uint8_t> payload,
     const crypto::OpenSSLErrStackTracer& err_tracer) {
   DCHECK_EQ(!!our_key_pair, !!their_public_key);
-  std::vector<uint8_t> secret = SecureBoxComputeSecret(
+  std::array<uint8_t, kAES128KeyLength> secret = SecureBoxComputeSecret(
       our_key_pair, their_public_key, shared_secret, err_tracer);
 
   std::vector<uint8_t> nonce = crypto::RandBytesAsVector(kNonceLength);
@@ -298,7 +298,7 @@ std::optional<std::vector<uint8_t>> SecureBoxDecryptImpl(
     offset += kECPointLength;
   }
 
-  std::vector<uint8_t> secret_key = SecureBoxComputeSecret(
+  std::array<uint8_t, kAES128KeyLength> secret_key = SecureBoxComputeSecret(
       our_private_key, their_ec_public_key_point, shared_secret, err_tracer);
 
   base::span<const uint8_t> nonce =

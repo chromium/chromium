@@ -25,11 +25,10 @@ const {assertString} = goog.require('goog.asserts');
  * @constructor
  * @struct
  * @extends {Mechanism}
- * @implements {Iterable<!Array<string>>}
+ * @implements {Iterable<!string>}
  * @abstract
  */
 const IterableMechanism = function() {
-  'use strict';
   IterableMechanism.base(this, 'constructor');
 };
 goog.inherits(IterableMechanism, Mechanism);
@@ -44,7 +43,6 @@ goog.inherits(IterableMechanism, Mechanism);
  * @return {number} Number of stored elements.
  */
 IterableMechanism.prototype.getCount = function() {
-  'use strict';
   let count = 0;
   for (const key of this) {
     assertString(key);
@@ -83,7 +81,6 @@ IterableMechanism.prototype[Symbol.iterator] = function() {
  * very efficient - it iterates over all keys.
  */
 IterableMechanism.prototype.clear = function() {
-  'use strict';
   // This converts the keys to an array first because otherwise
   // removing while iterating results in unstable ordering of keys and
   // can skip keys or terminate early.

@@ -7,11 +7,13 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/test/values_test_util.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
@@ -43,8 +45,9 @@ void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
                                     base::Value::List results,
                                     const std::string& error,
                                     mojom::ExtraResponseDataPtr) {
-  ASSERT_NE(ExtensionFunction::BAD_MESSAGE, response);
-  response_ = std::make_unique<bool>(response == ExtensionFunction::SUCCEEDED);
+  ASSERT_NE(ExtensionFunction::ResponseType::kBadMessage, response);
+  response_ = std::make_unique<bool>(
+      response == ExtensionFunction::ResponseType::kSucceeded);
   run_loop_.Quit();
 }
 
@@ -119,7 +122,7 @@ base::Value::List ToList(std::optional<base::ValueView> val) {
   }
   base::Value result = val->ToValue();
   if (!result.is_list()) {
-    ADD_FAILURE() << "val is not a dictionary";
+    ADD_FAILURE() << "val is not a list";
     return base::Value::List();
   }
   return std::move(result).TakeList();
@@ -163,8 +166,33 @@ std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
   CHECK(results);
   EXPECT_TRUE(results->empty()) << "Did not expect a result";
   CHECK(function->response_type());
-  EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kFailed,
+            *function->response_type());
   return function->GetError();
+}
+
+base::expected<base::Value::List, std::string> RunFunctionAndReturnExpected(
+    scoped_refptr<ExtensionFunction> function,
+    ArgsType args,
+    content::BrowserContext* context,
+    FunctionMode mode) {
+  RunFunction(function, std::move(args), context, mode);
+
+  CHECK(function->response_type());
+
+  switch (*function->response_type()) {
+    case ExtensionFunction::ResponseType::kBadMessage:
+      // This case ASSERTs in `SendResponseHelper::OnResponse`.
+      NOTREACHED();
+
+    case ExtensionFunction::ResponseType::kFailed:
+      return base::unexpected(function->GetError());
+
+    case ExtensionFunction::ResponseType::kSucceeded:
+      const base::Value::List* results = function->GetResultListForTest();
+      CHECK(results);
+      return results->Clone();
+  }
 }
 
 bool RunFunction(scoped_refptr<ExtensionFunction> function,
@@ -179,10 +207,10 @@ bool RunFunction(scoped_refptr<ExtensionFunction> function,
                  ArgsType args,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  FunctionMode mode) {
-  static_assert(absl::variant_size<ArgsType>::value == 2, "Unhandled variant!");
+  static_assert(std::variant_size<ArgsType>::value == 2, "Unhandled variant!");
   base::Value::List parsed_args =
-      args.index() == 0 ? base::test::ParseJsonList(absl::get<0>(args))
-                        : std::move(absl::get<1>(args));
+      args.index() == 0 ? base::test::ParseJsonList(std::get<0>(args))
+                        : std::move(std::get<1>(args));
   SendResponseHelper response_helper(function.get());
   function->SetArgs(std::move(parsed_args));
 

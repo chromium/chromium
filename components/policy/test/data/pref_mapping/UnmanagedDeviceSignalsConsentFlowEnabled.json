@@ -38,7 +38,7 @@
   },
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
     "reason_for_missing_test": "not supported on CrOS yet"
   }

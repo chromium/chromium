@@ -61,8 +61,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUiTest, OpenMainMenuAndViewHelpItem) {
           kToolbarAppMenuButtonElementId, context);
   BrowserAppMenuButton* const app_menu_button =
       static_cast<BrowserAppMenuButton*>(button_view);
-  DCHECK_EQ(std::string("BrowserAppMenuButton"),
-            std::string(app_menu_button->GetClassName()));
+  DCHECK_EQ("BrowserAppMenuButton", app_menu_button->GetClassName());
 
   // Define a simple sequence of:
   // - spotting the app menu button

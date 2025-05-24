@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] XRSession requestAnimationFrame callbacks can be unregistered with cancelAnimationFrame for immersive sessions - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRSession requestAnimationFrame callbacks can be unregistered with cancelAnimationFrame for immersive sessions - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRSession requestAnimationFrame callbacks can be unregistered with cancelAnimationFrame for non-immersive sessions - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRSession requestAnimationFrame callbacks can be unregistered with cancelAnimationFrame for non-immersive sessions - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

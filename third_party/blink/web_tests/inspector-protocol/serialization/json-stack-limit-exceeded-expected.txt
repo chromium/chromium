@@ -1,0 +1,10 @@
+Tests that serialization of deeply nested objects results in an error
+{
+    error : {
+        code : -32000
+        message : Failed to convert response to JSON: CBOR: stack limit exceeded at position 18752
+    }
+    id : <number>
+    sessionId : <string>
+}
+

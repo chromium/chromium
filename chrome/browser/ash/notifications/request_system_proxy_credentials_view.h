@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -48,8 +49,8 @@ class RequestSystemProxyCredentialsView final
   // in the format scheme://host:port.
   const std::string& GetProxyServer() const;
 
-  std::u16string GetUsername() const;
-  std::u16string GetPassword() const;
+  std::u16string_view GetUsername() const;
+  std::u16string_view GetPassword() const;
 
   views::Textfield* username_textfield_for_testing() {
     return username_textfield_;

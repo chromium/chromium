@@ -42,6 +42,7 @@ class CORE_EXPORT SplitElementCommand final : public SimpleEditCommand {
   void DoUnapply() override;
   void DoReapply() override;
   void ExecuteApply();
+  String ToString() const override;
 
   Member<Element> element1_;
   Member<Element> element2_;

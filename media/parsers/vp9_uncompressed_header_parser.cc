@@ -9,9 +9,11 @@
 
 #include "media/parsers/vp9_uncompressed_header_parser.h"
 
+#include <array>
 #include <type_traits>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace media {
 
@@ -766,10 +768,12 @@ Vp9InterpolationFilter Vp9UncompressedHeaderParser::ReadInterpolationFilter() {
     return Vp9InterpolationFilter::SWITCHABLE;
 
   // The mapping table for next two bits.
-  const Vp9InterpolationFilter table[] = {
-      Vp9InterpolationFilter::EIGHTTAP_SMOOTH, Vp9InterpolationFilter::EIGHTTAP,
-      Vp9InterpolationFilter::EIGHTTAP_SHARP, Vp9InterpolationFilter::BILINEAR,
-  };
+  const auto table = std::to_array<Vp9InterpolationFilter>({
+      Vp9InterpolationFilter::EIGHTTAP_SMOOTH,
+      Vp9InterpolationFilter::EIGHTTAP,
+      Vp9InterpolationFilter::EIGHTTAP_SHARP,
+      Vp9InterpolationFilter::BILINEAR,
+  });
   return table[reader_.ReadLiteral(2)];
 }
 
@@ -852,8 +856,9 @@ bool Vp9UncompressedHeaderParser::ReadSegmentationParams() {
   if (segmentation.update_data) {
     segmentation.abs_or_delta_update = reader_.ReadBool();
 
-    const int kFeatureDataBits[] = {8, 6, 2, 0};
-    const bool kFeatureDataSigned[] = {true, true, false, false};
+    const auto kFeatureDataBits = std::to_array<int>({8, 6, 2, 0});
+    const auto kFeatureDataSigned =
+        std::to_array<bool>({true, true, false, false});
 
     for (size_t i = 0; i < Vp9SegmentationParams::kNumSegments; i++) {
       for (size_t j = 0; j < Vp9SegmentationParams::SEG_LVL_MAX; j++) {
@@ -930,8 +935,7 @@ bool Vp9UncompressedHeaderParser::Parse(const uint8_t* stream,
   DVLOG(2) << "Vp9UncompressedHeaderParser::Parse";
   reader_.Initialize(stream, frame_size);
 
-  fhdr->data = stream;
-  fhdr->frame_size = frame_size;
+  fhdr->data = base::span(stream, base::checked_cast<size_t>(frame_size));
 
   // frame marker
   if (reader_.ReadLiteral(2) != 0x2) {

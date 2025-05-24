@@ -4,11 +4,12 @@
 
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,7 +43,7 @@ const char* kFakeNetworkServicePathPrefix = "/service/cellular1";
 bool PopPendingProfile(HermesEuiccClient::Properties* properties,
                        dbus::ObjectPath carrier_profile_path) {
   std::vector<dbus::ObjectPath> profiles = properties->profiles().value();
-  auto it = base::ranges::find(profiles, carrier_profile_path);
+  auto it = std::ranges::find(profiles, carrier_profile_path);
   if (it == profiles.end()) {
     return false;
   }
@@ -243,7 +244,7 @@ bool FakeHermesEuiccClient::RemoveCarrierProfile(
   // Remove profile from Euicc properties.
   Properties* euicc_properties = GetProperties(euicc_path);
   std::vector<dbus::ObjectPath> profiles = euicc_properties->profiles().value();
-  auto profiles_iter = base::ranges::find(profiles, carrier_profile_path);
+  auto profiles_iter = std::ranges::find(profiles, carrier_profile_path);
   if (profiles_iter == profiles.end()) {
     return false;
   }
@@ -657,7 +658,8 @@ void FakeHermesEuiccClient::DoUninstallProfile(
     return;
   }
 
-  // TODO(azeemarshad): Remove Shill service after removing carrier profile.
+  // TODO(crbug.com/390258073): Remove Shill service after removing carrier
+  // profile.
   bool remove_success = RemoveCarrierProfile(euicc_path, carrier_profile_path);
   std::move(callback).Run(remove_success
                               ? HermesResponseStatus::kSuccess

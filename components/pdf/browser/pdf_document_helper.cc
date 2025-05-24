@@ -17,10 +17,10 @@
 #include "content/public/common/referrer_type_converters.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_features.h"
-#include "ui/base/pointer/touch_editing_controller.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 
 namespace pdf {
 
@@ -35,6 +35,30 @@ void PDFDocumentHelper::BindPdfHost(
     pdf_helper = PDFDocumentHelper::GetForCurrentDocument(rfh);
   }
   pdf_helper->pdf_host_receivers_.Bind(rfh, std::move(pdf_host));
+}
+
+// static
+PDFDocumentHelper* PDFDocumentHelper::MaybeGetForWebContents(
+    content::WebContents* contents) {
+  PDFDocumentHelper* pdf_helper = nullptr;
+
+  // Iterate through each of the render frame hosts, because the frame
+  // associated to a PDFDocumentHelper is not guaranteed to be a specific frame.
+  // For example, if kPdfOopif feature is enabled, the frame is the top frame.
+  // If kPdfOopif is disabled, it is a child frame.
+  contents->ForEachRenderFrameHostWithAction(
+      [&pdf_helper](content::RenderFrameHost* rfh) {
+        auto* possible_pdf_helper =
+            PDFDocumentHelper::GetForCurrentDocument(rfh);
+        if (possible_pdf_helper) {
+          pdf_helper = possible_pdf_helper;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  return pdf_helper;
 }
 
 PDFDocumentHelper::PDFDocumentHelper(
@@ -128,6 +152,15 @@ void PDFDocumentHelper::SetPluginCanSave(bool can_save) {
                             can_save);
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void PDFDocumentHelper::OnSearchifyStarted() {
+  if (!searchify_started_) {
+    searchify_started_ = true;
+    client_->OnSearchifyStarted(&GetWebContents());
+  }
+}
+#endif
+
 void PDFDocumentHelper::DidScroll() {
   if (!touch_selection_controller_client_manager_) {
     InitTouchSelectionClientManager();
@@ -203,24 +236,54 @@ void PDFDocumentHelper::SelectBetweenCoordinates(const gfx::PointF& base,
 }
 
 void PDFDocumentHelper::GetPdfBytes(
+    uint32_t size_limit,
     pdf::mojom::PdfListener::GetPdfBytesCallback callback) {
-  if (!remote_pdf_client_) {
-    std::move(callback).Run(std::vector<uint8_t>());
+  if (!remote_pdf_client_ || !is_document_load_complete_) {
+    std::move(callback).Run(pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed,
+                            /*bytes=*/{}, /*page_count=*/0);
     return;
   }
-  remote_pdf_client_->GetPdfBytes(std::move(callback));
+  remote_pdf_client_->GetPdfBytes(size_limit, std::move(callback));
+}
+
+void PDFDocumentHelper::GetPageText(
+    int32_t page_index,
+    pdf::mojom::PdfListener::GetPageTextCallback callback) {
+  if (!remote_pdf_client_ || !is_document_load_complete_) {
+    std::move(callback).Run(std::u16string());
+    return;
+  }
+  remote_pdf_client_->GetPageText(page_index, std::move(callback));
+}
+
+void PDFDocumentHelper::GetMostVisiblePageIndex(
+    pdf::mojom::PdfListener::GetMostVisiblePageIndexCallback callback) {
+  if (!remote_pdf_client_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  remote_pdf_client_->GetMostVisiblePageIndex(std::move(callback));
+}
+
+void PDFDocumentHelper::RegisterForDocumentLoadComplete(
+    base::OnceClosure callback) {
+  if (is_document_load_complete_) {
+    std::move(callback).Run();
+    return;
+  }
+  document_load_complete_callbacks_.push_back(std::move(callback));
 }
 
 void PDFDocumentHelper::OnSelectionEvent(ui::SelectionEventType event) {
   // Should be handled by `TouchSelectionControllerClientAura`.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PDFDocumentHelper::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
   // Should be handled by `TouchSelectionControllerClientAura`.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<ui::TouchHandleDrawable> PDFDocumentHelper::CreateDrawable() {
@@ -294,7 +357,7 @@ void PDFDocumentHelper::RunContextMenu() {
       widget->GetView()->TransformPointToRootCoordSpaceF(gfx::PointF());
   anchor_point.Offset(-origin.x(), -origin.y());
   widget->ShowContextMenuAtPoint(gfx::ToRoundedPoint(anchor_point),
-                                 ui::MENU_SOURCE_TOUCH_EDIT_MENU);
+                                 ui::mojom::MenuSourceType::kTouchEditMenu);
 
   // Hide selection handles after getting rect-between-bounds from touch
   // selection controller; otherwise, rect would be empty and the above
@@ -330,8 +393,16 @@ void PDFDocumentHelper::InitTouchSelectionClientManager() {
   touch_selection_controller_client_manager_->AddObserver(this);
 }
 
-void PDFDocumentHelper::HasUnsupportedFeature() {
-  client_->OnPDFHasUnsupportedFeature(&GetWebContents());
+void PDFDocumentHelper::OnDocumentLoadComplete() {
+  // Only notify the consumers on first load complete.
+  if (is_document_load_complete_) {
+    return;
+  }
+  is_document_load_complete_ = true;
+  for (auto& callback : document_load_complete_callbacks_) {
+    std::move(callback).Run();
+  }
+  document_load_complete_callbacks_.clear();
 }
 
 void PDFDocumentHelper::SaveUrlAs(const GURL& url,

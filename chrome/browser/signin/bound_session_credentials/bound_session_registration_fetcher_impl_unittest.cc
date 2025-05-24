@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
 
 #include <string_view>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
@@ -24,7 +25,7 @@
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "components/variations/scoped_variations_ids_provider.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "net/http/http_response_headers.h"
@@ -34,7 +35,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
 
@@ -113,7 +113,8 @@ bound_session_credentials::Credential CreateTestBoundSessionCredential(
 }
 
 bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams(
-    const std::string& wrapped_key) {
+    const std::string& wrapped_key,
+    bool is_wsbeta = false) {
   bound_session_credentials::BoundSessionParams params;
   params.set_site("https://google.com/");
   params.set_session_id("007");
@@ -121,6 +122,7 @@ bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams(
   params.set_refresh_url("https://www.google.com/rotate");
   *params.mutable_creation_time() =
       bound_session_credentials::TimeToTimestamp(base::Time::Now());
+  params.set_is_wsbeta(is_wsbeta);
 
   *params.add_credentials() =
       CreateTestBoundSessionCredential("auth_cookie_1P", ".google.com", "/");
@@ -183,10 +185,12 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
     return intercepted_request_body_;
   }
 
-  std::unique_ptr<BoundSessionRegistrationFetcherImpl> CreateFetcher() {
+  std::unique_ptr<BoundSessionRegistrationFetcherImpl> CreateFetcher(
+      bool is_wsbeta = false) {
     BoundSessionRegistrationFetcherParam params =
         BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-            kRegistrationUrl, CreateAlgArray(), std::string(kChallenge));
+            kRegistrationUrl, CreateAlgArray(), std::string(kChallenge),
+            is_wsbeta);
     return std::make_unique<BoundSessionRegistrationFetcherImpl>(
         std::move(params), url_loader_factory_.GetSafeWeakWrapper(),
         unexportable_key_service(), /*is_off_the_record_profile=*/false);
@@ -231,9 +235,9 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
                     // called.
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  // Provides a mock key provider by default.
-  absl::variant<crypto::ScopedMockUnexportableKeyProvider,
-                crypto::ScopedNullUnexportableKeyProvider>
+  // Provides a fake key provider by default.
+  std::variant<crypto::ScopedFakeUnexportableKeyProvider,
+               crypto::ScopedNullUnexportableKeyProvider>
       scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager task_manager_{
       crypto::UnexportableKeyProvider::Config()};
@@ -273,8 +277,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>>
       wrapped_key_to_key_id;
   unexportable_key_service().FromWrappedSigningKeySlowlyAsync(
-      base::make_span(
-          std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end())),
+      base::as_byte_span(wrapped_key),
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       wrapped_key_to_key_id.GetCallback());
   EXPECT_TRUE(wrapped_key_to_key_id.IsReady());
@@ -285,6 +288,26 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   EXPECT_TRUE(signin::VerifyJwtSignature(
       GetRequestBody(), *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInputWsbeta) {
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher =
+      CreateFetcher(/*is_wsbeta=*/true);
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+  SetUpServerResponse(
+      base::StrCat({kXssiPrefix, kBoundSessionParamsValidJson}));
+
+  ASSERT_TRUE(future.Get().has_value());
+  ASSERT_TRUE(bound_session_credentials::AreParamsValid(*future.Get()));
+  EXPECT_THAT(
+      future.Get(),
+      testing::Optional(base::test::EqualsProto(CreateTestBoundSessionParams(
+          future.Get()->wrapped_key(), /*is_wsbeta=*/true))));
+
+  ExpectRecordedMetrics(RegistrationError::kNone);
 }
 
 TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {

@@ -6,6 +6,8 @@ package org.chromium.net;
 
 import android.net.TrafficStats;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -13,6 +15,7 @@ import java.lang.reflect.Method;
  * Class to wrap TrafficStats.setThreadStatsUid(int uid) and TrafficStats.clearThreadStatsUid()
  * which are hidden and so must be accessed via reflection.
  */
+@NullMarked
 public class ThreadStatsUid {
     // Reference to TrafficStats.setThreadStatsUid(int uid).
     private static final Method sSetThreadStatsUid;

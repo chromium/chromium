@@ -6,12 +6,12 @@
 
 #include <string>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {
@@ -59,7 +59,7 @@ void ChromeArcIntentHelperDelegate::HandleUpdateAndroidSettings(
     case mojom::AndroidSetting::kUnknown:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown Android Setting: " << setting;
+  NOTREACHED() << "Unknown Android Setting: " << setting;
 }
 
 void ChromeArcIntentHelperDelegate::UpdateLocationSettings(bool is_enabled) {

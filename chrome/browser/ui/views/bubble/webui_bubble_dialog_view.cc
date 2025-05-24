@@ -113,8 +113,9 @@ WebUIBubbleDialogView::~WebUIBubbleDialogView() {
 }
 
 void WebUIBubbleDialogView::ClearContentsWrapper() {
-  if (!contents_wrapper_)
+  if (!contents_wrapper_) {
     return;
+  }
   DCHECK_EQ(this, contents_wrapper_->GetHost().get());
   DCHECK_EQ(web_view_->web_contents(), contents_wrapper_->web_contents());
   web_view_->SetWebContents(nullptr);
@@ -224,8 +225,9 @@ bool WebUIBubbleDialogView::ShouldDescendIntoChildForEventHandling(
 }
 
 gfx::Rect WebUIBubbleDialogView::GetAnchorRect() const {
-  if (bubble_anchor_)
+  if (bubble_anchor_) {
     return bubble_anchor_.value();
+  }
   return BubbleDialogDelegateView::GetAnchorRect();
 }
 

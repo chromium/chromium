@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_UPDATED_CONFIRMATION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_UPDATED_CONFIRMATION_CONTROLLER_H_
 
+#include <string>
+
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
@@ -15,7 +18,8 @@ class PasskeyUpdatedConfirmationController
  public:
   PasskeyUpdatedConfirmationController(
       base::WeakPtr<PasswordsModelDelegate> delegate,
-      password_manager::metrics_util::UIDisplayDisposition display_disposition);
+      password_manager::metrics_util::UIDisplayDisposition display_disposition,
+      std::string passkey_rp_id);
   ~PasskeyUpdatedConfirmationController() override;
 
   // PasswordBubbleControllerBase:
@@ -32,6 +36,9 @@ class PasskeyUpdatedConfirmationController
   // Dismissal reason for a password bubble.
   password_manager::metrics_util::UIDismissalReason dismissal_reason_ =
       password_manager::metrics_util::NO_DIRECT_INTERACTION;
+
+  // The relying party identifier of the updated passkey.
+  std::string passkey_rp_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_UPDATED_CONFIRMATION_CONTROLLER_H_

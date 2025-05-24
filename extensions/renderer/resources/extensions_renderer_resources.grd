@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/extensions_renderer_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -22,6 +22,7 @@
       <include name="IDR_EXTENSION_OPTIONS_EVENTS_JS" file="guest_view/extension_options/extension_options_events.js" type="BINDATA"/>
       <include name="IDR_FEEDBACK_PRIVATE_CUSTOM_BINDINGS_JS" file="feedback_private_custom_bindings.js" type="BINDATA" />
       <include name="IDR_GUEST_VIEW_ATTRIBUTES_JS" file="guest_view/guest_view_attributes.js" type="BINDATA" />
+      <include name="IDR_GUEST_VIEW_CONSTANTS_JS" file="guest_view/guest_view_constants.js" type="BINDATA" />
       <include name="IDR_GUEST_VIEW_CONTAINER_JS" file="guest_view/guest_view_container.js" type="BINDATA" />
       <include name="IDR_GUEST_VIEW_CONTAINER_ELEMENT_JS" file="guest_view/guest_view_container_element.js" type="BINDATA" />
       <include name="IDR_GUEST_VIEW_DENY_JS" file="guest_view/guest_view_deny.js" type="BINDATA" />

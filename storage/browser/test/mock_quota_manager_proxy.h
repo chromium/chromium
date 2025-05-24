@@ -21,7 +21,6 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -50,7 +49,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   void GetBucketByNameUnsafe(
       const blink::StorageKey& storage_key,
       const std::string& bucket_name,
-      blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
 
@@ -61,7 +59,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
 
   void GetBucketsForStorageKey(
       const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
       bool delete_expired,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback)
@@ -70,11 +67,9 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   // We don't mock them.
   void SetUsageCacheEnabled(QuotaClientType client_id,
                             const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
                             bool enabled) override {}
   void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback) override;
 
@@ -104,15 +99,11 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   void CreateBucketForTesting(
       const blink::StorageKey& storage_key,
       const std::string& bucket_name,
-      blink::mojom::StorageType storage_type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 
   blink::StorageKey last_notified_storage_key() const {
     return last_notified_storage_key_;
-  }
-  blink::mojom::StorageType last_notified_type() const {
-    return last_notified_type_;
   }
 
   int notify_bucket_accessed_count() const { return bucket_accessed_count_; }
@@ -134,8 +125,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   base::Lock lock_;
 
   blink::StorageKey last_notified_storage_key_;
-  blink::mojom::StorageType last_notified_type_ =
-      blink::mojom::StorageType::kUnknown;
 
   int bucket_accessed_count_ = 0;
   int bucket_modified_count_ = 0;

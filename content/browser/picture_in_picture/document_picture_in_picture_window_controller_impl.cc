@@ -7,6 +7,7 @@
 #include <set>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/media_session_impl.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
+#include "media/base/media_switches.h"
 
 namespace content {
 
@@ -110,7 +112,7 @@ void DocumentPictureInPictureWindowControllerImpl::CloseAndFocusInitiator() {
 void DocumentPictureInPictureWindowControllerImpl::OnWindowDestroyed(
     bool should_pause_video) {
   // We instead watch for the WebContents.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 WebContents* DocumentPictureInPictureWindowControllerImpl::GetWebContents() {
@@ -221,6 +223,12 @@ void DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
     return;
   }
 
+  // Allow a command-line flag to opt-out of navigation throttling.
+  if (base::FeatureList::IsEnabled(
+          media::kDocumentPictureInPictureNavigation)) {
+    return;
+  }
+
   // We allow the synchronous about:blank commit to succeed, since that is part
   // of most initial navigations. Subsequent navigations to about:blank are
   // treated like other navigations and close the window.
@@ -251,7 +259,7 @@ void DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
   // should only ever be one PiP window and the duplicated window bypasses some
   // of the controller logic here. This is a regression check for
   // https://crbug.com/1413919.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace content

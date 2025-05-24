@@ -17,32 +17,27 @@ class ContentPasswordManagerDriver;
 // the object will be used by `TouchToFillController` and `CredManController`.
 class KeyboardReplacingSurfaceVisibilityController {
  public:
-  enum class State {
-    kNotShownYet,
-    kVisible,
-    kShownBefore,
-  };
-
   virtual ~KeyboardReplacingSurfaceVisibilityController() = default;
 
-  // Returns `true` iff the state is not shown yet.
-  // (i.e. `state` == `kNotShownYet`)
+  // Returns `true` iff the surface can be shown.
   virtual bool CanBeShown() const = 0;
 
-  // Returns `true` iff the state is visible.
-  // (i.e. `state` == `kVisible`)
+  // Returns `true` iff the surface is visible.
   virtual bool IsVisible() const = 0;
 
-  // Sets the state to `kVisible` if it's not visible. Adds IME suppression
-  // callbacks to the passed `widget_host`.
+  // Sets the surface to visible if it's not visible. Adds IME suppression
+  // callbacks to the passed `frame_driver`.
   virtual void SetVisible(
       base::WeakPtr<password_manager::ContentPasswordManagerDriver>
           frame_driver) = 0;
 
-  // Sets the state to `kShownBefore`.
+  // Sets the surface to shown.
   virtual void SetShown() = 0;
 
-  // Resets the state to the initial (`kNotShownYet`) and removes the added IME
+  // Sets the surface to can be shown.
+  virtual void SetCanBeShown() = 0;
+
+  // Resets the surface to the initial state and removes the added IME
   // suppression if there's one.
   virtual void Reset() = 0;
 

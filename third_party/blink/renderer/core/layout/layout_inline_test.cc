@@ -204,8 +204,8 @@ TEST_F(LayoutInlineTest, RelativePositionedHitTest) {
   const PhysicalOffset hit_location(18, 15);
   HitTestLocation location(hit_location);
 
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
-  Element* span = GetDocument().QuerySelector(AtomicString("span"));
+  Element* div = QuerySelector("div");
+  Element* span = QuerySelector("span");
   Node* text = span->firstChild();
 
   // Shouldn't hit anything in SPAN as it's in another paint layer
@@ -299,7 +299,7 @@ TEST_F(LayoutInlineTest, MultilineRelativePositionedHitTest) {
   {
     PhysicalOffset hit_location(13, 33);
     HitTestLocation location(hit_location);
-    Node* target = GetDocument().QuerySelector(AtomicString("img"));
+    Node* target = QuerySelector("img");
 
     HitTestResult hit_result(hit_request, location);
     bool hit_outcome =
@@ -342,104 +342,6 @@ TEST_F(LayoutInlineTest, HitTestCulledInlinePreWrap) {
   Element* span = GetElementById("span");
   Node* text_node = span->firstChild();
   EXPECT_EQ(hit_result.InnerNode(), text_node);
-}
-
-TEST_F(LayoutInlineTest, VisualRectInDocument) {
-  LoadAhem();
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      body {
-        margin:0px;
-        font: 20px/20px Ahem;
-      }
-    </style>
-    <div style="width: 400px">
-      <span>xx<br>
-        <span id="target">yy
-          <div style="width:111px;height:222px;background:yellow"></div>
-          yy
-        </span>
-      </span>
-    </div>
-  )HTML");
-
-  auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
-  const int width = 400;
-  EXPECT_EQ(PhysicalRect(0, 20, width, 222 + 20 * 2),
-            target->VisualRectInDocument());
-  EXPECT_EQ(PhysicalRect(0, 20, width, 222 + 20 * 2),
-            target->VisualRectInDocument(kUseGeometryMapper));
-}
-
-TEST_F(LayoutInlineTest, VisualRectInDocumentVerticalRL) {
-  LoadAhem();
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      body {
-        margin:0px;
-        font: 20px/20px Ahem;
-      }
-    </style>
-    <div style="width: 400px; height: 400px; writing-mode: vertical-rl">
-      <span>xx<br>
-        <span id="target">yy
-          <div style="width:111px; height:222px; background:yellow"></div>
-          yy
-        </span>
-      </span>
-    </div>
-  )HTML");
-
-  auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
-  const int height = 400;
-  PhysicalRect expected(400 - 111 - 20 * 3, 0, 111 + 20 * 2, height);
-  EXPECT_EQ(expected, target->VisualRectInDocument());
-  EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
-}
-
-TEST_F(LayoutInlineTest, VisualRectInDocumentSVGTspan) {
-  LoadAhem();
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      body {
-        margin:0px;
-        font: 20px/20px Ahem;
-      }
-    </style>
-    <svg>
-      <text x="10" y="50" width="100">
-        <tspan id="target" dx="15" dy="25">tspan</tspan>
-      </text>
-    </svg>
-  )HTML");
-
-  auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
-  const int ascent = 16;
-  PhysicalRect expected(10 + 15, 50 + 25 - ascent, 20 * 5, 20);
-  EXPECT_EQ(expected, target->VisualRectInDocument());
-  EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
-}
-
-TEST_F(LayoutInlineTest, VisualRectInDocumentSVGTspanTB) {
-  LoadAhem();
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      body {
-        margin:0px;
-        font: 20px/20px Ahem;
-      }
-    </style>
-    <svg>
-      <text x="50" y="10" width="100" writing-mode="tb">
-        <tspan id="target" dx="15" dy="25">tspan</tspan>
-      </text>
-    </svg>
-  )HTML");
-
-  auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
-  PhysicalRect expected(50 + 15 - 20 / 2, 10 + 25, 20, 20 * 5);
-  EXPECT_EQ(expected, target->VisualRectInDocument());
-  EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
 }
 
 // When adding focus ring rects, we should avoid adding duplicated rect for

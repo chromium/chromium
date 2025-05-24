@@ -12,8 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "net/base/net_errors.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 WifiLanServerSocket::ServerSocketParameters::ServerSocketParameters(
     const net::IPEndPoint& local_end_point,
@@ -236,5 +235,4 @@ void WifiLanServerSocket::OnFirewallHoleDisconnected() {
   Close();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

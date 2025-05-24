@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
-#import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_transition_driver.h"
+#import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h"
+#import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_transition_driver.h"
+#import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_util.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
@@ -27,8 +27,9 @@
 #pragma mark - OverlayRequestCoordinator
 
 - (void)startAnimated:(BOOL)animated {
-  if (self.started || !self.request)
+  if (self.started || !self.request) {
     return;
+  }
   [self configureModal];
   [self configureViewController];
   __weak InfobarModalOverlayCoordinator* weakSelf = self;
@@ -41,8 +42,9 @@
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   // Mark started as NO before calling dismissal callback to prevent dup
   // stopAnimated: executions.
   self.started = NO;
@@ -113,17 +115,15 @@
 @implementation InfobarModalOverlayCoordinator (ModalConfiguration)
 
 - (OverlayRequestMediator*)modalMediator {
-  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
-  return nullptr;
+  NOTREACHED() << "Subclasses implement.";
 }
 
 - (UIViewController*)modalViewController {
-  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
-  return nil;
+  NOTREACHED() << "Subclasses implement.";
 }
 
 - (void)configureModal {
-  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
+  NOTREACHED() << "Subclasses implement.";
 }
 
 - (void)configureViewController {
@@ -144,7 +144,7 @@
 }
 
 - (void)resetModal {
-  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
+  NOTREACHED() << "Subclasses implement.";
 }
 
 @end

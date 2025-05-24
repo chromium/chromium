@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_text_track_kind.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -72,9 +73,9 @@ TEST_F(MediaControlToggleClosedCaptionsButtonElementTest,
   EXPECT_EQ(String(), GetOverflowMenuSubtitleString());
 
   // After adding a text track, the subtitle string should be off.
-  MediaElement()->addTextTrack(AtomicString("subtitles"),
-                               AtomicString(kEnglishLabel), AtomicString("en"),
-                               ASSERT_NO_EXCEPTION);
+  MediaElement()->addTextTrack(
+      V8TextTrackKind(V8TextTrackKind::Enum::kSubtitles),
+      AtomicString(kEnglishLabel), AtomicString("en"), ASSERT_NO_EXCEPTION);
   EXPECT_EQ(kTextTracksOffString, GetOverflowMenuSubtitleString());
 
   // After selecting the text track, the subtitle string should match the label.

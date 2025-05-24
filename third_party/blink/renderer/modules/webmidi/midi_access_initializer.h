@@ -70,8 +70,7 @@ class MODULES_EXPORT MIDIAccessInitializer
                              midi::mojom::PortState) override;
   void DidStartSession(midi::mojom::Result) override;
   void DidReceiveMIDIData(unsigned port_index,
-                          const unsigned char* data,
-                          wtf_size_t length,
+                          base::span<const uint8_t> data,
                           base::TimeTicks time_stamp) override {}
 
   void Trace(Visitor*) const override;

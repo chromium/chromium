@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.translate;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -16,6 +18,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.LocaleUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
@@ -27,16 +31,17 @@ import java.util.Locale;
 
 /** Manages the auto-translate Snackbar */
 @JNINamespace("translate")
+@NullMarked
 class AutoTranslateSnackbarController implements SnackbarManager.SnackbarController {
     private static final int AUTO_TRANSLATE_SNACKBAR_DURATION_MS = 4000;
 
-    private WeakReference<Activity> mActivity;
-    private long mNativeAutoTranslateSnackbarController;
-    private SnackbarManager mSnackbarManager;
+    private final WeakReference<Activity> mActivity;
+    private final long mNativeAutoTranslateSnackbarController;
+    private final SnackbarManager mSnackbarManager;
 
     @VisibleForTesting
     static class TargetLanguageData {
-        private String mTargetLanguage;
+        private final String mTargetLanguage;
 
         TargetLanguageData(String targetLanguage) {
             mTargetLanguage = targetLanguage;
@@ -59,7 +64,7 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
     // SnackbarController implementation.
     // Called when the user clicks the undo button.
     @Override
-    public void onAction(Object actionData) {
+    public void onAction(@Nullable Object actionData) {
         if (!(actionData instanceof TargetLanguageData)) return;
         if (mNativeAutoTranslateSnackbarController == 0) return;
 
@@ -73,7 +78,7 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
 
     // Called when the snackbar is dismissed by timeout or UI environment change.
     @Override
-    public void onDismissNoAction(Object actionData) {
+    public void onDismissNoAction(@Nullable Object actionData) {
         if (mNativeAutoTranslateSnackbarController == 0) return;
         AutoTranslateSnackbarControllerJni.get()
                 .onDismissNoAction(mNativeAutoTranslateSnackbarController);
@@ -83,14 +88,15 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
     // Create and show a Snackbar for the given target language code.
     @CalledByNative
     public void show(String targetLanguage) {
-        Resources resources = mActivity.get().getResources();
+        Activity activity = mActivity.get();
+        assumeNonNull(activity);
+        Resources resources = activity.getResources();
 
         Locale targetLocale =
                 LocaleUtils.getUpdatedLocaleForChromium(Locale.forLanguageTag(targetLanguage));
         String targetLanguageName = targetLocale.getDisplayLanguage();
         Drawable icon =
-                AppCompatResources.getDrawable(
-                        mActivity.get(), R.drawable.infobar_translate_compact);
+                AppCompatResources.getDrawable(activity, R.drawable.infobar_translate_compact);
 
         TargetLanguageData targetLanguageData = new TargetLanguageData(targetLanguage);
         String title =
@@ -116,7 +122,7 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
     // Static methods called by native.
     /** Create a new AutoTranslateSnackbarController */
     @CalledByNative
-    public static AutoTranslateSnackbarController create(
+    public static @Nullable AutoTranslateSnackbarController create(
             WebContents webContents, long nativeAutoTranslateSnackbarController) {
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) return null;

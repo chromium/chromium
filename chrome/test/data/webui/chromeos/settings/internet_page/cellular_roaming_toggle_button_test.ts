@@ -5,11 +5,12 @@
 import 'chrome://os-settings/lazy_load.js';
 import 'chrome://webui-test/chromeos/network/cr_policy_strings.js';
 
-import {CellularRoamingToggleButtonElement} from 'chrome://os-settings/lazy_load.js';
-import {CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import type {CellularRoamingToggleButtonElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrToggleElement} from 'chrome://os-settings/os_settings.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ManagedBoolean} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
+import type {ManagedBoolean} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -342,17 +343,8 @@ suite('<cellular-roaming-toggle-button>', () => {
                   window.CrPolicyStrings.controlledSettingPolicy,
                   getRoamingTogglePolicyIndicatorText());
               break;
-            case PolicySource.kUserPolicyRecommended:
-            case PolicySource.kDevicePolicyRecommended:
-              assertEquals(
-                  (enforcementCase.managedPropertiesActiveValue ===
-                   enforcementCase.managedPropertiesPolicyValue) ?
-                      window.CrPolicyStrings
-                          .controlledSettingRecommendedMatches :
-                      window.CrPolicyStrings
-                          .controlledSettingRecommendedDiffers,
-                  getRoamingTogglePolicyIndicatorText());
-              break;
+            default:
+              assertNotReached();
           }
           continue;
         }

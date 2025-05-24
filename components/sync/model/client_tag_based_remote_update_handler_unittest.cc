@@ -12,9 +12,9 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -111,7 +111,9 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
       : ClientTagBasedRemoteUpdateHandlerTest(PREFERENCES) {}
 
   explicit ClientTagBasedRemoteUpdateHandlerTest(DataType type)
-      : processor_entity_tracker_(GenerateDataTypeState(), EntityMetadataMap()),
+      : processor_entity_tracker_(type,
+                                  GenerateDataTypeState(),
+                                  EntityMetadataMap()),
         data_type_sync_bridge_(type,
                                change_processor_.CreateForwardingProcessor()),
         remote_update_handler_(type,
@@ -602,7 +604,7 @@ class ClientTagBasedRemoteUpdateHandlerForSharedTest
 
   UpdateResponseData GenerateSharedTabGroupDataUpdate(
       const std::string& guid,
-      const std::string& collaboration_id) {
+      const CollaborationId& collaboration_id) {
     const ClientTagHash client_tag_hash = GetSharedTabGroupDataHash(guid);
     return GenerateSharedTabGroupDataUpdate(client_tag_hash, guid,
                                             collaboration_id);
@@ -611,7 +613,7 @@ class ClientTagBasedRemoteUpdateHandlerForSharedTest
   UpdateResponseData GenerateSharedTabGroupDataUpdate(
       const ClientTagHash& client_tag_hash,
       const std::string& guid,
-      const std::string& collaboration_id) {
+      const CollaborationId& collaboration_id) {
     return worker()->GenerateSharedUpdateData(
         client_tag_hash, GenerateSharedTabGroupSpecifics(guid),
         collaboration_id);
@@ -619,24 +621,24 @@ class ClientTagBasedRemoteUpdateHandlerForSharedTest
 
   UpdateResponseData GenerateSharedTabGroupTabUpdate(
       const std::string& guid,
-      const std::string& collaboration_id) {
+      const CollaborationId& collaboration_id) {
     ClientTagHash client_tag_hash = GetSharedTabGroupDataHash(guid);
     return worker()->GenerateSharedUpdateData(
         client_tag_hash,
         GenerateSharedTabGroupTabSpecifics(
             guid, UniquePosition::InitialPosition(
-                      GenerateUniquePositionSuffix(client_tag_hash))
+                      UniquePosition::GenerateSuffix(client_tag_hash))
                       .ToProto()),
         collaboration_id);
   }
 
   void ProcessSharedSingleUpdate(
       UpdateResponseData update,
-      const std::vector<std::string>& active_collaborations) {
+      const std::vector<CollaborationId>& active_collaborations) {
     sync_pb::GarbageCollectionDirective gc_directive;
-    for (const std::string& active_collaboration : active_collaborations) {
+    for (const CollaborationId& active_collaboration : active_collaborations) {
       gc_directive.mutable_collaboration_gc()->add_active_collaboration_ids(
-          active_collaboration);
+          active_collaboration.value());
     }
     ProcessSingleUpdate(GenerateDataTypeState(), std::move(update),
                         std::move(gc_directive));
@@ -648,12 +650,14 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
   const std::string kGuidInactiveCollaboration = "guid_inactive";
 
   ProcessSharedSingleUpdate(
-      GenerateSharedTabGroupDataUpdate("guid_1", "active_collaboration"),
-      {"active_collaboration"});
-  ProcessSharedSingleUpdate(
-      GenerateSharedTabGroupDataUpdate(kGuidInactiveCollaboration,
-                                       "inactive_collaboration"),
-      {"active_collaboration", "inactive_collaboration"});
+      GenerateSharedTabGroupDataUpdate("guid_1",
+                                       CollaborationId("active_collaboration")),
+      {CollaborationId("active_collaboration")});
+  ProcessSharedSingleUpdate(GenerateSharedTabGroupDataUpdate(
+                                kGuidInactiveCollaboration,
+                                CollaborationId("inactive_collaboration")),
+                            {CollaborationId("active_collaboration"),
+                             CollaborationId("inactive_collaboration")});
   EXPECT_EQ(2U, ProcessorEntityCount());
   EXPECT_EQ(2U, db()->data_change_count());
   EXPECT_EQ(2U, db()->metadata_change_count());
@@ -669,8 +673,9 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
   // Simulate another update to remove entities for the inactive collaboration
   // (only one collaboration remains active).
   ProcessSharedSingleUpdate(
-      GenerateSharedTabGroupDataUpdate("guid_1", "active_collaboration"),
-      {"active_collaboration"});
+      GenerateSharedTabGroupDataUpdate("guid_1",
+                                       CollaborationId("active_collaboration")),
+      {CollaborationId("active_collaboration")});
   EXPECT_EQ(1U, ProcessorEntityCount());
   EXPECT_EQ(3U, db()->data_change_count());
 
@@ -685,8 +690,9 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
 TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
        ShouldCreateDeletionForActiveCollaborationMembership) {
   ProcessSharedSingleUpdate(
-      GenerateSharedTabGroupDataUpdate("guid", "active_collaboration"),
-      {"active_collaboration"});
+      GenerateSharedTabGroupDataUpdate("guid",
+                                       CollaborationId("active_collaboration")),
+      {CollaborationId("active_collaboration")});
   ASSERT_EQ(1U, ProcessorEntityCount());
   ASSERT_EQ(1U, db()->data_change_count());
   ASSERT_EQ(1U, db()->metadata_change_count());
@@ -708,12 +714,12 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
 
 TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
        ShouldProcessUniquePositionForRemoteCreation) {
-  const std::string collaboration_id = "collaboration";
+  const CollaborationId kCollaborationId("collaboration");
   ASSERT_THAT(entity_tracker()->GetEntityForStorageKey("guid"), IsNull());
 
   ProcessSharedSingleUpdate(
-      GenerateSharedTabGroupTabUpdate("guid", collaboration_id),
-      {collaboration_id});
+      GenerateSharedTabGroupTabUpdate("guid", kCollaborationId),
+      {kCollaborationId});
 
   const ProcessorEntity* entity =
       entity_tracker()->GetEntityForStorageKey("guid");
@@ -723,10 +729,10 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
 
 TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
        ShouldProcessUniquePositionForRemoteUpdate) {
-  const std::string collaboration_id = "collaboration";
+  const CollaborationId kCollaborationId("collaboration");
   ProcessSharedSingleUpdate(
-      GenerateSharedTabGroupTabUpdate("guid", collaboration_id),
-      {collaboration_id});
+      GenerateSharedTabGroupTabUpdate("guid", kCollaborationId),
+      {kCollaborationId});
 
   const ProcessorEntity* entity =
       entity_tracker()->GetEntityForStorageKey("guid");
@@ -735,7 +741,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
 
   // Generate update with a new unique position.
   UpdateResponseData update =
-      GenerateSharedTabGroupTabUpdate("guid", collaboration_id);
+      GenerateSharedTabGroupTabUpdate("guid", kCollaborationId);
   *update.entity.specifics.mutable_shared_tab_group_data()
        ->mutable_tab()
        ->mutable_unique_position() =
@@ -744,16 +750,16 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
       update.entity.specifics.shared_tab_group_data().tab().unique_position(),
       Not(EqualsProto(entity->metadata().unique_position())));
   sync_pb::EntitySpecifics specifics_copy = update.entity.specifics;
-  ProcessSharedSingleUpdate(std::move(update), {collaboration_id});
+  ProcessSharedSingleUpdate(std::move(update), {kCollaborationId});
   EXPECT_THAT(
       entity->metadata().unique_position(),
       EqualsProto(
           specifics_copy.shared_tab_group_data().tab().unique_position()));
 
   // Remote update matching data by re-using the same specifics.
-  update = GenerateSharedTabGroupTabUpdate("guid", collaboration_id);
+  update = GenerateSharedTabGroupTabUpdate("guid", kCollaborationId);
   update.entity.specifics = specifics_copy;
-  ProcessSharedSingleUpdate(std::move(update), {collaboration_id});
+  ProcessSharedSingleUpdate(std::move(update), {kCollaborationId});
   EXPECT_THAT(
       entity->metadata().unique_position(),
       EqualsProto(
@@ -762,12 +768,12 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
 
 TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
        ShouldPreferRemoteUniquePositionOverLocalDeletion) {
-  const std::string collaboration_id = "collaboration";
+  const CollaborationId kCollaborationId("collaboration");
   const std::string guid = "guid";
 
   ProcessSharedSingleUpdate(
-      GenerateSharedTabGroupTabUpdate(guid, collaboration_id),
-      {collaboration_id});
+      GenerateSharedTabGroupTabUpdate(guid, kCollaborationId),
+      {kCollaborationId});
   ASSERT_EQ(1U, ProcessorEntityCount());
   ASSERT_TRUE(db()->HasData(guid));
   ASSERT_EQ(1U, db()->HasMetadata(guid));
@@ -784,8 +790,8 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
   ASSERT_FALSE(entity->metadata().has_unique_position());
 
   ProcessSharedSingleUpdate(
-      GenerateSharedTabGroupTabUpdate(guid, collaboration_id),
-      {collaboration_id});
+      GenerateSharedTabGroupTabUpdate(guid, kCollaborationId),
+      {kCollaborationId});
 
   ASSERT_EQ(entity, entity_tracker()->GetEntityForStorageKey(guid));
   ASSERT_FALSE(entity->metadata().is_deleted());
@@ -794,12 +800,12 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
 
 TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
        ShouldPreferRemoteUniquePositionOnConflict) {
-  const std::string collaboration_id = "collaboration";
+  const CollaborationId kCollaborationId("collaboration");
   const std::string guid = "guid";
 
   ProcessSharedSingleUpdate(
-      GenerateSharedTabGroupTabUpdate(guid, collaboration_id),
-      {collaboration_id});
+      GenerateSharedTabGroupTabUpdate(guid, kCollaborationId),
+      {kCollaborationId});
 
   // Mark the local entity as updated for a conflict.
   entity_tracker()->IncrementSequenceNumberForAllExcept({});
@@ -814,14 +820,14 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
 
   // Remote update with a new unique position.
   UpdateResponseData update =
-      GenerateSharedTabGroupTabUpdate(guid, collaboration_id);
+      GenerateSharedTabGroupTabUpdate(guid, kCollaborationId);
   sync_pb::UniquePosition new_unique_position =
       UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
   *update.entity.specifics.mutable_shared_tab_group_data()
        ->mutable_tab()
        ->mutable_unique_position() = new_unique_position;
   ASSERT_THAT(new_unique_position, Not(EqualsProto(original_unique_position)));
-  ProcessSharedSingleUpdate(std::move(update), {collaboration_id});
+  ProcessSharedSingleUpdate(std::move(update), {kCollaborationId});
 
   ASSERT_EQ(entity, entity_tracker()->GetEntityForStorageKey(guid));
   EXPECT_TRUE(entity->metadata().has_unique_position());

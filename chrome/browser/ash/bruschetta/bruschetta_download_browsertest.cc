@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -130,7 +131,8 @@ std::unique_ptr<net::ClientCertStore> CreateEmptyClientCertStore() {
 IN_PROC_BROWSER_TEST_F(BruschettaHttpsDownloadBrowserTest,
                        TestDownloadUrlNotFound) {
   base::test::TestFuture<base::FilePath, std::string> future;
-  auto download = std::make_unique<SimpleURLLoaderDownload>();
+  auto download = std::make_unique<SimpleURLLoaderDownload>(
+      *g_browser_process->local_state());
   download->StartDownload(browser()->profile(), GURL("bad url"),
                           future.GetCallback());
 
@@ -155,7 +157,8 @@ IN_PROC_BROWSER_TEST_F(BruschettaHttpsDownloadBrowserTest, TestHappyPath) {
           base::BindRepeating(&CreateStubClientCertStore));
 
   base::test::TestFuture<base::FilePath, std::string> future;
-  auto download = std::make_unique<SimpleURLLoaderDownload>();
+  auto download = std::make_unique<SimpleURLLoaderDownload>(
+      *g_browser_process->local_state());
   download->StartDownload(browser()->profile(), url_, future.GetCallback());
 
   auto path = future.Get<base::FilePath>();
@@ -185,7 +188,8 @@ IN_PROC_BROWSER_TEST_F(BruschettaHttpsDownloadBrowserTest,
           base::BindRepeating(&CreateEmptyClientCertStore));
 
   base::test::TestFuture<base::FilePath, std::string> future;
-  auto download = std::make_unique<SimpleURLLoaderDownload>();
+  auto download = std::make_unique<SimpleURLLoaderDownload>(
+      *g_browser_process->local_state());
   download->StartDownload(browser()->profile(), url_, future.GetCallback());
 
   auto path = future.Get<base::FilePath>();

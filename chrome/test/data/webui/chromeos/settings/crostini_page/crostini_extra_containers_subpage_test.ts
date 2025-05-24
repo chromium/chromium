@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ContainerInfo, CrostiniBrowserProxyImpl, ExtraContainersCreateDialog, ExtraContainersElement} from 'chrome://os-settings/lazy_load.js';
-import {CrInputElement, CrToggleElement, IronCollapseElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {ContainerInfo, ExtraContainersCreateDialog, ExtraContainersElement} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrInputElement, CrToggleElement, IronCollapseElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,7 +15,8 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {clearBody} from '../utils.js';
 
-import {SharedVmDevices, TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
+import type {SharedVmDevices} from './test_crostini_browser_proxy.js';
+import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
 suite('<settings-crostini-extra-containers>', () => {
   let crostiniBrowserProxy: TestCrostiniBrowserProxy;

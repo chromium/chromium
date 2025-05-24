@@ -4,9 +4,12 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.Serializable;
 
 /** Cookies information for a given origin. */
+@NullMarked
 public class CookiesInfo implements Serializable {
     private int mCookies;
 

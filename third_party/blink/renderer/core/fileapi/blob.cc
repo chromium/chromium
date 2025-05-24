@@ -118,8 +118,7 @@ class BlobFileReaderClient : public GarbageCollected<BlobFileReaderClient>,
       DOMArrayBuffer* result = std::move(contents).AsDOMArrayBuffer();
       resolver_->DowncastTo<DOMArrayBuffer>()->Resolve(result);
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown ReadType supplied to BlobFileReaderClient";
+      NOTREACHED() << "Unknown ReadType supplied to BlobFileReaderClient";
     }
     Done();
   }

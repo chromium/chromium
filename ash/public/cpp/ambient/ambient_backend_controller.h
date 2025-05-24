@@ -127,10 +127,7 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   // `weather_client_id` - the weather client ID that should be passed to the
   // weather request, use nullopt to use the default weather client ID (used
   // for ambient mode).
-  // `prefer_alpha_endpoint` - whether request should use alpha/dev endpoint of
-  // the server providing weather information.
   virtual void FetchWeather(std::optional<std::string> weather_client_id,
-                            bool prefer_alpha_endpoint,
                             FetchWeatherCallback callback) = 0;
 
   // Get stock photo urls to cache in advance in case Ambient mode is started

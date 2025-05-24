@@ -21,7 +21,6 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
     NOT_DESTROYED();
     return true;
   }
-  gfx::SizeF DefaultSize() const;
 
  private:
   bool IsListMarkerImage() const final {
@@ -29,8 +28,8 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
     return true;
   }
 
-  void ComputeIntrinsicSizingInfoByDefaultSize(IntrinsicSizingInfo&) const;
-  void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const final;
+  PhysicalSize DefaultSize() const;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 };
 
 template <>

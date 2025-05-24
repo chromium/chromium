@@ -1,0 +1,12 @@
+<!--
+@SCRIPT:
+  input.accessibilitySelectedTextRange
+  input.accessibilitySelectedText
+-->
+<!DOCTYPE html>
+<input id="input" value="hello world">
+<script>
+  var input = document.querySelector("input");
+  input.focus();
+  input.setSelectionRange(0, 5);
+</script>

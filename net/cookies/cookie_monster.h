@@ -24,15 +24,13 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
-#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster_change_dispatcher.h"
 #include "net/cookies/cookie_store.h"
 #include "net/log/net_log_with_source.h"
@@ -40,7 +38,9 @@
 
 namespace net {
 
+class CanonicalCookie;
 class CookieChangeDispatcher;
+class CookieInclusionStatus;
 
 // The cookie monster is the system for storing and retrieving cookies. It has
 // an in-memory list of all cookies, and synchronizes non-session cookies to an
@@ -60,6 +60,28 @@ class CookieChangeDispatcher;
 class NET_EXPORT CookieMonster : public CookieStore {
  public:
   class PersistentCookieStore;
+
+  // Provides an interface to interact with persistent preferences storage
+  // implemented by the embedder KnownLegacyScopeDomainsPrefDelegate.
+  // This pref delegate is used to store known legacy scope domains.
+  class PrefDelegate {
+   public:
+    virtual ~PrefDelegate() = default;
+
+    // Returns a dict of all domains under legacy mode.
+    virtual const base::Value::Dict& GetLegacyDomains() const = 0;
+
+    // Sets a dict of domain names under legacy scope mode.
+    virtual void SetLegacyDomains(base::Value::Dict dict) = 0;
+
+    // Starts listening for prefs to be loaded. If prefs are already loaded,
+    // `pref_loaded_callback` will be invoked asynchronously. Callback will be
+    // invoked even if prefs fail to load.
+    virtual void WaitForPrefLoad(base::OnceClosure pref_loaded_callback) = 0;
+
+    // Will return true if the pref system is ready to be used.
+    virtual bool IsPrefReady() = 0;
+  };
 
   // Terminology:
   //    * The 'top level domain' (TLD) of an internet domain name is
@@ -159,13 +181,16 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // this class, but it must remain valid for the duration of the cookie
   // monster's existence. If |store| is NULL, then no backing store will be
   // updated. |net_log| must outlive the CookieMonster and can be null.
-  CookieMonster(scoped_refptr<PersistentCookieStore> store, NetLog* net_log);
+  CookieMonster(scoped_refptr<PersistentCookieStore> store,
+                NetLog* net_log,
+                std::unique_ptr<PrefDelegate> pref_delegate = nullptr);
 
   // Only used during unit testing.
   // |net_log| must outlive the CookieMonster.
   CookieMonster(scoped_refptr<PersistentCookieStore> store,
                 base::TimeDelta last_access_threshold,
-                NetLog* net_log);
+                NetLog* net_log,
+                std::unique_ptr<PrefDelegate> pref_delegate);
 
   CookieMonster(const CookieMonster&) = delete;
   CookieMonster& operator=(const CookieMonster&) = delete;
@@ -188,6 +213,9 @@ class NET_EXPORT CookieMonster : public CookieStore {
       SetCookiesCallback callback,
       std::optional<CookieAccessResult> cookie_access_result =
           std::nullopt) override;
+  void SetUnsafeCanonicalCookieForTestAsync(
+      std::unique_ptr<CanonicalCookie> cookie,
+      SetCookiesCallback callback) override;
   void GetCookieListWithOptionsAsync(const GURL& url,
                                      const CookieOptions& options,
                                      const CookiePartitionKeyCollection& s,
@@ -208,20 +236,21 @@ class NET_EXPORT CookieMonster : public CookieStore {
   void FlushStore(base::OnceClosure callback) override;
   void SetForceKeepSessionState() override;
   CookieChangeDispatcher& GetChangeDispatcher() override;
-  void SetCookieableSchemes(const std::vector<std::string>& schemes,
+  void SetCookieableSchemes(std::vector<std::string> schemes,
                             SetCookieableSchemesCallback callback) override;
   std::optional<bool> SiteHasCookieInOtherPartition(
       const net::SchemefulSite& site,
-      const std::optional<CookiePartitionKey>& partition_key) const override;
+      const CookiePartitionKey& partition_key) const override;
 
   // Enables writing session cookies into the cookie database. If this this
   // method is called, it must be called before first use of the instance
   // (i.e. as part of the instance initialization process).
   void SetPersistSessionCookies(bool persist_session_cookies);
 
-  // The default list of schemes the cookie monster can handle.
-  static const char* const kDefaultCookieableSchemes[];
-  static const int kDefaultCookieableSchemesCount;
+  // The default list of schemes the cookie monster can handle. Returns a vector
+  // of strings rather than a span of string_views for easy use with
+  // SetCookieableSchemes().
+  static std::vector<std::string> GetDefaultCookieableSchemes();
 
   // Find a key based on the given domain, which will be used to find all
   // cookies potentially relevant to it. This is used for lookup in cookies_ as
@@ -273,6 +302,20 @@ class NET_EXPORT CookieMonster : public CookieStore {
                            FilterCookiesWithOptionsExcludeShadowingDomains);
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
                            FilterCookiesWithOptionsWarnShadowingDomains);
+
+  // For DeleteAllAliasCookies
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterLegacyScopeTest, DeleteAllAliasCookies);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterLegacyScopeTest,
+                           DeleteAllAliasPartitionedCookies);
+  // For UpdateMostRecentCookies
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterLegacyScopeTest,
+                           UpdateMostRecentlyCreatedCookie);
+
+  // For CheckAndActivateLegacyScopeBehavior
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterLegacyScopeTest,
+                           CheckAndActivateLegacyScopeBehavior);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterLegacyScopeTest,
+                           CheckAndActivateLegacyScopeBehaviorNullPrefDelegate);
 
   // For StoreLoadedCookies behavior with origin-bound cookies.
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest_StoreLoadedCookies,
@@ -327,7 +370,12 @@ class NET_EXPORT CookieMonster : public CookieStore {
     // collection.
     DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN = 13,
 
-    DELETE_COOKIE_LAST_ENTRY = 14,
+    // When legacy scope behavior is active any cookies which alias a
+    // "most recently created" cookie must be deleted. Aliasing is when
+    // cookies share the same LegacyUniqueKey().
+    DELETE_COOKIE_ALIAS = 14,
+
+    DELETE_COOKIE_LAST_ENTRY = 15,
   };
 
   // Used to populate a histogram containing information about the
@@ -392,6 +440,13 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const CookieOptions& options,
       SetCookiesCallback callback,
       std::optional<CookieAccessResult> cookie_access_result = std::nullopt);
+
+  // Sets a canonical cookie, this function should be used for testing only.
+  // It does not perform the normal checks and deletions SetCanonicalCookie
+  // does. This function is dangerous, only use it if SetCanonicalCookie doesn't
+  // fit your test requirements.
+  void SetUnsafeCanonicalCookieForTest(std::unique_ptr<CanonicalCookie> cc,
+                                       SetCookiesCallback callback);
 
   void GetAllCookies(GetAllCookiesCallback callback);
 
@@ -483,11 +538,13 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const CookiePartitionKey& cookie_partition_key,
       const GURL& url);
 
-  void FilterCookiesWithOptions(const GURL url,
-                                const CookieOptions options,
-                                std::vector<CanonicalCookie*>* cookie_ptrs,
-                                CookieAccessResultList* included_cookies,
-                                CookieAccessResultList* excluded_cookies);
+  void FilterCookiesWithOptions(
+      const GURL& url,
+      const CookieOptions& options,
+      const CookiePartitionKeyCollection& cookie_partition_key_collection,
+      std::vector<CanonicalCookie*>& cookie_ptrs,
+      CookieAccessResultList& included_cookies,
+      CookieAccessResultList& excluded_cookies);
 
   // Possibly delete an existing cookie equivalent to |cookie_being_set| (same
   // path, domain, and name).
@@ -517,15 +574,21 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // is the iterator of the CookieMap in |partitioned_cookies_| we should search
   // for duplicates.
   //
+  // The return value is true if the new equivalent `cookie_being_set` results
+  // in a web-observable change. This can occur when inserting a new cookie or
+  // overwriting an existing cookie with new properties observable to the web
+  // platform. It is false when the new cookie does not result in any changes
+  // that are observable to the web platform.
+  //
   // NOTE: There should never be more than a single matching equivalent cookie.
-  void MaybeDeleteEquivalentCookieAndUpdateStatus(
+  bool MaybeDeleteEquivalentCookieAndUpdateStatus(
       const std::string& key,
       const CanonicalCookie& cookie_being_set,
       bool allowed_to_set_secure_cookie,
       bool skip_httponly,
       bool already_expired,
-      base::Time* creation_date_to_inherit,
-      CookieInclusionStatus* status,
+      base::Time& creation_date_to_inherit,
+      CookieInclusionStatus& status,
       std::optional<PartitionedCookieMap::iterator> cookie_partition_it);
 
   // Inserts `cc` into cookies_. Returns an iterator that points to the inserted
@@ -537,11 +600,12 @@ class NET_EXPORT CookieMonster : public CookieStore {
       std::unique_ptr<CanonicalCookie> cc,
       bool sync_to_store,
       const CookieAccessResult& access_result,
-      bool dispatch_change = true);
+      bool dispatch_change = true,
+      bool is_no_change_overwrite = false);
 
   // Returns true if the cookie should be (or is already) synced to the store.
   // Used for cookies during insertion and deletion into the in-memory store.
-  bool ShouldUpdatePersistentStore(CanonicalCookie* cc);
+  bool ShouldUpdatePersistentStore(CanonicalCookie& cc);
 
   // Inserts `cc` into partitioned_cookies_. Should only be used when
   // cc->IsPartitioned() is true.
@@ -550,14 +614,15 @@ class NET_EXPORT CookieMonster : public CookieStore {
       std::unique_ptr<CanonicalCookie> cc,
       bool sync_to_store,
       const CookieAccessResult& access_result,
-      bool dispatch_change = true);
+      bool dispatch_change = true,
+      bool is_no_change_overwrite = false);
 
   // Sets all cookies from |list| after deleting any equivalent cookie.
   // For data gathering purposes, this routine is treated as if it is
   // restoring saved cookies; some statistics are not gathered in this case.
   void SetAllCookies(CookieList list, SetCookiesCallback callback);
 
-  void InternalUpdateCookieAccessTime(CanonicalCookie* cc,
+  void InternalUpdateCookieAccessTime(CanonicalCookie& cc,
                                       const base::Time& current_time);
 
   // |deletion_cause| argument is used for collecting statistics and choosing
@@ -607,14 +672,14 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // |cookies| must be sorted from least-recent to most-recent.
   //
   // Returns the number of cookies deleted.
-  size_t PurgeLeastRecentMatches(CookieItVector* cookies,
+  size_t PurgeLeastRecentMatches(CookieItVector& cookies,
                                  CookiePriority priority,
                                  size_t to_protect,
                                  size_t purge_goal,
                                  bool protect_secure_cookies);
   // Same as above except that for a given {priority, secureness} tuple domain
   // cookies will be deleted before host cookies.
-  size_t PurgeLeastRecentMatchesForOBC(CookieItList* cookies,
+  size_t PurgeLeastRecentMatchesForOBC(CookieItList& cookies,
                                        CookiePriority priority,
                                        size_t to_protect,
                                        size_t purge_goal,
@@ -662,7 +727,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
                                              const base::Time& safe_date,
                                              size_t purge_goal,
                                              CookieItVector cookie_its,
-                                             base::Time* earliest_time);
+                                             base::Time& earliest_time);
 
   bool HasCookieableScheme(const GURL& url);
 
@@ -671,6 +736,33 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // UNKNOWN.
   CookieAccessSemantics GetAccessSemanticsForCookie(
       const CanonicalCookie& cookie) const;
+
+  // Get the domain's scope semantics (LEGACY or NONLEGACY), by checking for a
+  // value from the cookie access delegate, if it is non-null. Otherwise returns
+  // UNKNOWN.
+  CookieScopeSemantics GetScopeSemanticsForCookieDomain(
+      const std::string_view domain) const;
+
+  // This function will use the pref_delegate to help identify if a cookie's
+  // domain is entering or exiting legacy scope mode for the first time. If this
+  // is the first time it is entering legacy mode DeleteAllAliasingCookies will
+  // be called for this cookie's domain.
+  CookieScopeSemantics CheckAndActivateLegacyScopeBehavior(
+      const std::string_view domain);
+
+  // Helper function to delete all aliasing cookies for a given domain.
+  // This function will loop through partitioned and non-partitioned cookie maps
+  // and identify any cookie that is not the most recently created cookie of its
+  // aliases if the cookie is not most recently created it will be deleted.
+  void DeleteAllAliasingCookies(const std::string& domain);
+
+  // Helper function to update the most recent cookie. This is for when cookie
+  // scope semantics is set to legacy scope mode is active, a cookie is
+  // considered the most recent if it is the most recent cookie created.
+  void UpdateMostRecentCookie(
+      const CookieMapItPair& itpair,
+      std::map<UniqueCookieKey, std::pair<base::Time, UniqueCookieKey>>&
+          most_recent_cookies);
 
   // Statistics support
 
@@ -777,11 +869,16 @@ class NET_EXPORT CookieMonster : public CookieStore {
 
   NetLogWithSource net_log_;
 
+  std::unique_ptr<PrefDelegate> pref_delegate_;
+
   scoped_refptr<PersistentCookieStore> store_;
 
   // Minimum delay after updating a cookie's LastAccessDate before we will
   // update it again.
   const base::TimeDelta last_access_threshold_;
+
+  // Local copy of pref's dictionary.
+  std::unique_ptr<base::Value::Dict> pref_delegate_dict_;
 
   // Approximate date of access time of least recently accessed cookie
   // in |cookies_|.  Note that this is not guaranteed to be accurate, only a)
@@ -799,6 +896,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   base::Time last_statistic_record_time_;
 
   bool persist_session_cookies_ = false;
+
+  base::MetricsSubSampler metrics_subsampler_;
 
   THREAD_CHECKER(thread_checker_);
 

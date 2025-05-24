@@ -4,6 +4,7 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.DataPipe.ConsumerHandle;
 import org.chromium.mojo.system.DataPipe.ProducerHandle;
 
@@ -12,6 +13,7 @@ import org.chromium.mojo.system.DataPipe.ProducerHandle;
  * return a handle of the requested type and invalidate this object. No validation is made when the
  * conversion operation is called.
  */
+@NullMarked
 public interface UntypedHandle extends Handle {
 
     /**

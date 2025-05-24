@@ -67,7 +67,7 @@ public class UnuploadedFilesStateLoaderTest {
         Assert.assertEquals(3, crashInfoList.size());
 
         for (CrashInfo crashInfo : crashInfoList) {
-            Assert.assertEquals(crashInfo.localId, LOCAL_ID);
+            Assert.assertEquals(LOCAL_ID, crashInfo.localId);
             Assert.assertEquals(crashInfo.uploadState, UploadState.SKIPPED);
         }
     }
@@ -83,7 +83,7 @@ public class UnuploadedFilesStateLoaderTest {
         Assert.assertEquals(3, crashInfoList.size());
 
         for (CrashInfo crashInfo : crashInfoList) {
-            Assert.assertEquals(crashInfo.localId, LOCAL_ID);
+            Assert.assertEquals(LOCAL_ID, crashInfo.localId);
             Assert.assertEquals(crashInfo.uploadState, UploadState.PENDING);
         }
     }
@@ -99,7 +99,7 @@ public class UnuploadedFilesStateLoaderTest {
         Assert.assertEquals(3, crashInfoList.size());
 
         for (CrashInfo crashInfo : crashInfoList) {
-            Assert.assertEquals(crashInfo.localId, LOCAL_ID);
+            Assert.assertEquals(LOCAL_ID, crashInfo.localId);
             Assert.assertEquals(crashInfo.uploadState, UploadState.PENDING_USER_REQUESTED);
         }
     }

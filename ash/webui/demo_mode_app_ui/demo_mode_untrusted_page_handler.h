@@ -6,10 +6,8 @@
 #define ASH_WEBUI_DEMO_MODE_APP_UI_DEMO_MODE_UNTRUSTED_PAGE_HANDLER_H_
 
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_delegate.h"
-#include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_untrusted_ui.mojom.h"
 #include "base/memory/raw_ptr.h"
-
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/widget/widget.h"
@@ -23,7 +21,7 @@ class DemoModeUntrustedPageHandler
       mojo::PendingReceiver<mojom::demo_mode::UntrustedPageHandler>
           pending_receiver,
       views::Widget* widget,
-      DemoModeAppUntrustedUI* demo_mode_app_untrusted_ui);
+      DemoModeAppDelegate* demo_mode_app_delegate);
   ~DemoModeUntrustedPageHandler() override;
 
   explicit DemoModeUntrustedPageHandler(const UntrustedPageHandler&) = delete;
@@ -40,7 +38,7 @@ class DemoModeUntrustedPageHandler
 
   raw_ptr<views::Widget> widget_;
 
-  raw_ptr<DemoModeAppUntrustedUI> demo_mode_app_untrusted_ui_;
+  raw_ptr<DemoModeAppDelegate> demo_mode_app_delegate_;
 };
 
 }  // namespace ash

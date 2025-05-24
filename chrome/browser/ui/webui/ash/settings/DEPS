@@ -1,12 +1,4 @@
 include_rules = [
-  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
-  # details.
-  "-chrome",
-
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ui/webui/ash/settings",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -69,9 +61,25 @@ specific_include_rules = {
     '+ash/shell_observer.h',
     '+ash/rgb_keyboard/rgb_keyboard_manager.h'
   ],
+  'os_settings_features_util\.cc' : [
+    "+ash/edusumer/graduation_utils.h",
+  ],
   'power_section\.(cc|h)' : [
     '+ash/shell.h',
     '+ash/system/power',
+  ],
+  'privacy_hub_handler.(cc|h)' : [
+    '+ash/shell.h',
+    '+ash/session',
+  ],
+  'search_section\.(cc|h)': [
+    "+ash/lobster",
+    "+ash/scanner",
+    "+ash/shell.h",
+  ],
+  'search_section_unittest\.(cc|h)': [
+    "+ash/scanner",
+    "+ash/shell.h",
   ],
   'select_to_speak_handler\.cc': [
     '+content/public/browser/tts_controller.h',

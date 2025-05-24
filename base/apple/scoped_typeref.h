@@ -161,10 +161,6 @@ class ScopedTypeRef {
     return object_ == that.object_;
   }
 
-  bool operator!=(const ScopedTypeRef& that) const {
-    return object_ != that.object_;
-  }
-
   explicit operator bool() const { return object_ != Traits::InvalidValue(); }
 
   element_type get() const { return object_; }

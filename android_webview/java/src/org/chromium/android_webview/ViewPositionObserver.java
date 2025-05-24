@@ -7,34 +7,35 @@ package org.chromium.android_webview;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 
 /** Used to register listeners that can be notified of changes to the position of a view. */
+@NullMarked
 public class ViewPositionObserver {
     /** Called during predraw if the position of the underlying view has changed. */
     public interface Listener {
         void onPositionChanged(int positionX, int positionY);
     }
 
-    private View mView;
+    private final View mView;
     // Absolute position of the container view relative to its parent window.
     private final int[] mPosition = new int[2];
 
-    private final ArrayList<Listener> mListeners;
-    private ViewTreeObserver.OnPreDrawListener mPreDrawListener;
+    private final ArrayList<Listener> mListeners = new ArrayList<>();
+    private final ViewTreeObserver.OnPreDrawListener mPreDrawListener;
 
-    /** @param view The view to observe. */
+    /**
+     * @param view The view to observe.
+     */
     public ViewPositionObserver(View view) {
         mView = view;
-        mListeners = new ArrayList<Listener>();
         updatePosition();
         mPreDrawListener =
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        updatePosition();
-                        return true;
-                    }
+                () -> {
+                    updatePosition();
+                    return true;
                 };
     }
 

@@ -32,6 +32,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage.h"
@@ -128,9 +129,8 @@ NamedPropertySetterResult StorageArea::setItem(
     return NamedPropertySetterResult::kIntercepted;
   }
   if (!cached_area_->SetItem(key, value, this)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kQuotaExceededError,
-        "Setting the value of '" + key + "' exceeded the quota.");
+    QuotaExceededError::Throw(exception_state, "Setting the value of '" + key +
+                                                   "' exceeded the quota.");
     return NamedPropertySetterResult::kIntercepted;
   }
   return NamedPropertySetterResult::kIntercepted;

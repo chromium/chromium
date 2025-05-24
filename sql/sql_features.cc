@@ -8,9 +8,14 @@
 
 namespace sql::features {
 
-// Enable WAL mode for all SQLite databases.
-BASE_FEATURE(kEnableWALModeByDefault,
-             "EnableWALModeByDefault",
+// Use a fixed memory-map size instead of using the heuristic.
+BASE_FEATURE(kSqlFixedMmapSize,
+             "SqlFixedMmapSize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Explicitly unlock the database on close to ensure lock is released.
+BASE_FEATURE(kUnlockDatabaseOnClose,
+             "UnlockDatabaseOnClose",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace sql::features

@@ -140,14 +140,14 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
   // they all have subtly different uses.
   // TODO(https://crbug.com/40909689): Consolidate this usage.
   gfx::Size buffer_size = GetTextureSize();
-  if (shared_buffer_ && shared_buffer_->size == buffer_size) {
+  if (shared_buffer_ && shared_buffer_->shared_image &&
+      shared_buffer_->shared_image->size() == buffer_size) {
     return true;
   }
 
   if (!shared_buffer_) {
     shared_buffer_ = std::make_unique<device::WebXrSharedBuffer>();
-    shared_buffer_->local_texture.target =
-        device::XrImageTransportBase::SharedBufferTextureTarget();
+    shared_buffer_->local_texture.target = GL_TEXTURE_2D;
     glGenTextures(1, &shared_buffer_->local_texture.id);
   }
 
@@ -198,10 +198,6 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
                                egl_image.get());
   shared_buffer_->local_eglimage = std::move(egl_image);
 
-  // Save size to avoid resize next time.
-  DVLOG(1) << __func__ << ": resized to " << buffer_size.width() << "x"
-           << buffer_size.height();
-  shared_buffer_->size = buffer_size;
   return true;
 }
 
@@ -213,7 +209,6 @@ void GraphicsDelegateAndroid::ResetMemoryBuffer() {
              << shared_buffer_->shared_image->mailbox().ToDebugString();
     mailbox_bridge_->DestroySharedImage(
         shared_buffer_->sync_token, std::move(shared_buffer_->shared_image));
-    shared_buffer_->size = {0, 0};
   }
 }
 

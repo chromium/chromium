@@ -17,7 +17,7 @@ class PrecisionTouchpadBrowserTest;
 
 // Size of the |transforms_| array. The DirectManipulationContent API specifies
 // that the size is always 6 for direct manipulation transforms.
-static constexpr int kTransformMatrixSize = 6;
+inline constexpr int kTransformMatrixSize = 6;
 
 // This class is used for setting up mock content to be used for testing direct
 // manipulation and precision touchpad code paths. Most of its methods aren't

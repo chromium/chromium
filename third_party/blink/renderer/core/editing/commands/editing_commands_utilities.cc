@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 
 #include "third_party/blink/public/web/web_local_frame_client.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/selection_for_undo_step.h"
 #include "third_party/blink/renderer/core/editing/commands/typing_command.h"
@@ -98,14 +97,15 @@ bool IsNodeRendered(const Node& node) {
   if (!layout_object)
     return false;
 
-  return layout_object->Style()->UsedVisibility() == EVisibility::kVisible;
+  return layout_object->Style()->Visibility() == EVisibility::kVisible;
 }
 
 bool IsInlineElement(const Node* node) {
-  if (!node)
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
     return false;
-
-  const ComputedStyle* style = node->GetComputedStyle();
+  }
+  const ComputedStyle* style = element->GetComputedStyle();
   // Should we apply IsDisplayInlineType()?
   return style && (style->Display() == EDisplay::kInline ||
                    style->Display() == EDisplay::kRuby);
@@ -523,7 +523,7 @@ VisibleSelection SelectionForParagraphIteration(
 
 const String& NonBreakingSpaceString() {
   DEFINE_STATIC_LOCAL(String, non_breaking_space_string,
-                      (&kNoBreakSpaceCharacter, 1u));
+                      (base::span_from_ref(kNoBreakSpaceCharacter)));
   return non_breaking_space_string;
 }
 

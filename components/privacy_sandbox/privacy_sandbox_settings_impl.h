@@ -25,6 +25,9 @@ class PrefService;
 namespace content_settings {
 class CookieSettings;
 }
+namespace privacy_sandbox_test_util {
+class PrivacySandboxSettingsTestPeer;
+}
 
 namespace privacy_sandbox {
 
@@ -96,7 +99,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
       const url::Origin& accessing_origin,
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) const override;
-  bool IsLocalUnpartitionedDataAccessAllowed(
+  bool IsFencedStorageReadAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
       content::RenderFrameHost* console_frame) const override;
@@ -128,26 +131,11 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool AreRelatedWebsiteSetsEnabled() const override;
 
  private:
-  // TODO(crbug.com/366168654): Browser tests should not reach into the private
-  // method or states of this class. Consider exposing the required functions
-  // via a test helper class or test only functions.
-  friend class PrivacySandboxSettingsTest;
   friend class PrivacySandboxAttestations;
-  friend class PrivacySandboxAttestationsTestBase;
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxAttestationsBrowserTest,
-      CallComponentReadyWhenRegistrationFindsExistingComponent);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxAttestationsBrowserTest,
-                           SentinelFilePreventsSubsequentParsings);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxAttestationsBrowserTest,
-                           DifferentHistogramAfterAttestationsFileCheck);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxAttestationPreInstallInteractionWithDownloadTest,
-      BothPreinstalledAndDownloadedAttestationsAvailable);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, FledgeJoiningAllowed);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, NonEtldPlusOneBlocked);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
-                           FledgeJoinSettingTimeRangeDeletion);
+  // NOTE: Do not add any new friend classes for testing; tests that need
+  // access to private functions / variables should go through this peer class.
+  friend class privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer;
+
   // Called when the Related Website Sets enabled preference is changed.
   void OnRelatedWebsiteSetsEnabledPrefChanged();
 
@@ -222,7 +210,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool IsFledgeJoiningAllowed(const url::Origin& top_frame_origin) const;
 
   // Whether fenced frame local unpartitioned data access is enabled.
-  Status GetLocalUnpartitionedDataAccessEnabledStatus() const;
+  Status GetFencedStorageReadEnabledStatus() const;
 
   // From TrackingProtectionSettingsObserver.
   void OnBlockAllThirdPartyCookiesChanged() override;

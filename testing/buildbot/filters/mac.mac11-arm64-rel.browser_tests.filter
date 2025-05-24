@@ -57,8 +57,8 @@
 -SaveAsMhtml/SavePageOriginalVsSavedComparisonTest.NestedFrames/0
 -SavePageOriginalVsSavedComparisonTest.AboutBlank/0
 -SavePageOriginalVsSavedComparisonTest.CrossSiteObject/0
--SitePerProcessWebViewTest.ContentScript
--SitePerProcessWebViewTest.ContentScriptInOOPIF
+-SitePerProcessWebViewTest.ContentScript/InnerWebContents
+-SitePerProcessWebViewTest.ContentScript/MPArch
 -SSLUITest.BadCertFollowedByGoodCert
 -StartupBrowserWithWebAppTest.LastUsedProfilesWithWebApp
 -TabRestoreTest.RestoreTabFromClosedWindowByID

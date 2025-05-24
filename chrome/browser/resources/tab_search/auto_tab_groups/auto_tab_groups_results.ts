@@ -18,7 +18,7 @@ import {getHtml} from './auto_tab_groups_results.html.js';
 import type {TabOrganization, TabOrganizationSession} from '../tab_search.mojom-webui.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
-const NON_SCROLLABLE_VERTICAL_SPACING: number = 212;
+const NON_SCROLLABLE_VERTICAL_SPACING: number = 198;
 
 export interface AutoTabGroupsResultsElement {
   $: {
@@ -38,21 +38,14 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     return {
       session: {type: Object},
       availableHeight: {type: Number},
-
-      multiTabOrganization: {
-        type: Boolean,
-        reflect: true,
-      },
-
       feedbackSelectedOption_: {type: Number},
     };
   }
 
-  session?: TabOrganizationSession;
-  availableHeight: number = 0;
-  multiTabOrganization: boolean = false;
+  accessor session: TabOrganizationSession|undefined;
+  accessor availableHeight: number = 0;
 
-  protected feedbackSelectedOption_: CrFeedbackOption =
+  protected accessor feedbackSelectedOption_: CrFeedbackOption =
       CrFeedbackOption.UNSPECIFIED;
 
   static override get styles() {
@@ -83,8 +76,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
       this.onAvailableHeightChange_();
     }
 
-    if (changedProperties.has('session') ||
-        changedProperties.has('multiTabOrganization')) {
+    if (changedProperties.has('session')) {
       this.updateScroll_();
     }
   }
@@ -94,7 +86,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
   }
 
   focusInput() {
-    const group = this.shadowRoot!.querySelector('auto-tab-groups-group');
+    const group = this.shadowRoot.querySelector('auto-tab-groups-group');
     if (!group) {
       return;
     }
@@ -116,11 +108,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     if (!this.session) {
       return [];
     }
-    if (this.multiTabOrganization) {
-      return this.session.organizations;
-    } else {
-      return this.session.organizations.slice(0, 1);
-    }
+    return this.session.organizations;
   }
 
   protected hasMultipleOrganizations_(): boolean {
@@ -148,7 +136,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     event.preventDefault();
 
     const groups =
-        [...this.shadowRoot!.querySelectorAll('auto-tab-groups-group')];
+        [...this.shadowRoot.querySelectorAll('auto-tab-groups-group')];
     const organizations = groups.map((group: AutoTabGroupsGroupElement) => {
       return {
         organizationId: group.organizationId,
@@ -174,7 +162,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
       return;
     }
     const feedbackButtons =
-        this.$.feedbackButtons.shadowRoot!.querySelectorAll(`cr-icon-button`);
+        this.$.feedbackButtons.shadowRoot.querySelectorAll(`cr-icon-button`);
     const focusableElements = [
       this.$.learnMore,
       feedbackButtons[0]!,

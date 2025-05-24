@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
+
+#include <variant>
 
 #include "base/containers/span.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -28,13 +25,10 @@ Vector<uint8_t> CreateTestSerializedDataWithMarker(uint32_t marker) {
   Vector<uint8_t> serialized_data;
   serialized_data.ReserveInitialCapacity(sizeof(CachedMetadataHeader) +
                                          sizeof(kTestData));
-  serialized_data.Append(reinterpret_cast<const uint8_t*>(&marker),
-                         sizeof(uint32_t));
-  serialized_data.Append(reinterpret_cast<const uint8_t*>(&kTestDataTypeId),
-                         sizeof(uint32_t));
-  serialized_data.Append(reinterpret_cast<const uint8_t*>(&kTestTag),
-                         sizeof(uint64_t));
-  serialized_data.Append(kTestData, sizeof(kTestData));
+  serialized_data.AppendSpan(base::byte_span_from_ref(marker));
+  serialized_data.AppendSpan(base::byte_span_from_ref(kTestDataTypeId));
+  serialized_data.AppendSpan(base::byte_span_from_ref(kTestTag));
+  serialized_data.AppendSpan(base::span(kTestData));
   return serialized_data;
 }
 
@@ -49,22 +43,20 @@ void CheckTestCachedMetadata(scoped_refptr<CachedMetadata> cached_metadata) {
   EXPECT_EQ(cached_metadata->DataTypeID(), kTestDataTypeId);
   EXPECT_THAT(cached_metadata->SerializedData(),
               testing::ElementsAreArray(CreateTestSerializedData()));
-  EXPECT_THAT(base::make_span(cached_metadata->Data(), cached_metadata->size()),
-              testing::ElementsAreArray(kTestData));
+  EXPECT_THAT(cached_metadata->Data(), testing::ElementsAreArray(kTestData));
   EXPECT_EQ(cached_metadata->tag(), kTestTag);
   auto drained_data = std::move(*cached_metadata).DrainSerializedData();
 
-  if (absl::holds_alternative<Vector<uint8_t>>(drained_data)) {
-    EXPECT_THAT(absl::get<Vector<uint8_t>>(drained_data),
+  if (std::holds_alternative<Vector<uint8_t>>(drained_data)) {
+    EXPECT_THAT(std::get<Vector<uint8_t>>(drained_data),
                 testing::ElementsAreArray(CreateTestSerializedData()));
     return;
   }
-  CHECK(absl::holds_alternative<mojo_base::BigBuffer>(drained_data));
+  CHECK(std::holds_alternative<mojo_base::BigBuffer>(drained_data));
   mojo_base::BigBuffer drained_big_buffer =
-      std::move(absl::get<mojo_base::BigBuffer>(drained_data));
-  EXPECT_THAT(
-      base::make_span(drained_big_buffer.data(), drained_big_buffer.size()),
-      testing::ElementsAreArray(CreateTestSerializedData()));
+      std::move(std::get<mojo_base::BigBuffer>(drained_data));
+  EXPECT_THAT(base::span(drained_big_buffer),
+              testing::ElementsAreArray(CreateTestSerializedData()));
 }
 
 TEST(CachedMetadataTest, GetSerializedDataHeader) {
@@ -80,14 +72,8 @@ TEST(CachedMetadataTest, GetSerializedDataHeader) {
 }
 
 TEST(CachedMetadataTest, CreateFromBufferWithDataTypeIdAndTag) {
-  CheckTestCachedMetadata(CachedMetadata::Create(kTestDataTypeId, kTestData,
-                                                 sizeof(kTestData), kTestTag));
-}
-
-TEST(CachedMetadataTest, CreateFromSerializedDataBuffer) {
-  Vector<uint8_t> data = CreateTestSerializedData();
   CheckTestCachedMetadata(
-      CachedMetadata::CreateFromSerializedData(data.data(), data.size()));
+      CachedMetadata::Create(kTestDataTypeId, base::span(kTestData), kTestTag));
 }
 
 TEST(CachedMetadataTest, CreateFromSerializedDataVector) {
@@ -105,8 +91,6 @@ TEST(CachedMetadataTest, CreateFromSerializedDataBigBuffer) {
 
 TEST(CachedMetadataTest, CreateFromSerializedDataTooSmall) {
   Vector<uint8_t> data = Vector<uint8_t>(sizeof(CachedMetadataHeader));
-  EXPECT_FALSE(
-      CachedMetadata::CreateFromSerializedData(data.data(), data.size()));
   EXPECT_FALSE(CachedMetadata::CreateFromSerializedData(data));
 
   mojo_base::BigBuffer big_buffer(data);
@@ -119,8 +103,6 @@ TEST(CachedMetadataTest, CreateFromSerializedDataWithInvalidMarker) {
   // Creates a test serialized data with an invalid marker.
   Vector<uint8_t> data = CreateTestSerializedDataWithMarker(
       CachedMetadataHandler::kSingleEntryWithTag + 1);
-  EXPECT_FALSE(
-      CachedMetadata::CreateFromSerializedData(data.data(), data.size()));
   EXPECT_FALSE(CachedMetadata::CreateFromSerializedData(data));
 
   mojo_base::BigBuffer big_buffer(data);

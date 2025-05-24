@@ -35,8 +35,7 @@ TEST_F(MqlsFeatureRegistryTest, RegisterFeature) {
       });
   auto metadata = std::make_unique<MqlsFeatureMetadata>(
       "Test", proto::LogAiDataRequest::FeatureCase::kCompose, enterprise_policy,
-      &kLoggingEnabledFeature, logging_callback,
-      UserVisibleFeatureKey::kCompose);
+      &kLoggingEnabledFeature, logging_callback);
   MqlsFeatureRegistry::GetInstance().Register(std::move(metadata));
 
   const MqlsFeatureMetadata* metadata_from_registry =
@@ -49,8 +48,6 @@ TEST_F(MqlsFeatureRegistryTest, RegisterFeature) {
             metadata_from_registry->get_user_feedback_callback());
   EXPECT_EQ(&kLoggingEnabledFeature,
             metadata_from_registry->field_trial_feature());
-  EXPECT_EQ(UserVisibleFeatureKey::kCompose,
-            metadata_from_registry->user_visible_feature_key());
   EXPECT_FALSE(MqlsFeatureRegistry::GetInstance().GetFeature(
       proto::LogAiDataRequest::FeatureCase::kTabOrganization));
 }
@@ -66,7 +63,7 @@ TEST(MqlsFeatureMetadataTest, LoggingEnabledViaFieldTrial) {
   MqlsFeatureMetadata metadata(
       "Test", proto::LogAiDataRequest::FeatureCase::kCompose,
       EnterprisePolicyPref("policy_name"), &kLoggingEnabledFeature,
-      logging_callback, std::nullopt);
+      logging_callback);
   EXPECT_TRUE(metadata.LoggingEnabledViaFieldTrial());
 }
 
@@ -81,7 +78,7 @@ TEST(MqlsFeatureMetadataTest, LoggingDisabledViaFieldTrial) {
   MqlsFeatureMetadata metadata(
       "Test", proto::LogAiDataRequest::FeatureCase::kCompose,
       EnterprisePolicyPref("policy_name"), &kLoggingEnabledFeature,
-      logging_callback, std::nullopt);
+      logging_callback);
   EXPECT_FALSE(metadata.LoggingEnabledViaFieldTrial());
 }
 

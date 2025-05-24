@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 
@@ -95,7 +96,7 @@ class LocaleSwitchScreen : public BaseScreen,
       access_token_fetcher_;
   std::unique_ptr<OAuth2ApiCallFlow> get_locale_people_api_call_;
 
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   ScreenExitCallback exit_callback_;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   base::ScopedObservation<signin::IdentityManager,

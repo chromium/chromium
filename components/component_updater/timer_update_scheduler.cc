@@ -12,8 +12,8 @@ namespace component_updater {
 TimerUpdateScheduler::TimerUpdateScheduler() = default;
 TimerUpdateScheduler::~TimerUpdateScheduler() = default;
 
-void TimerUpdateScheduler::Schedule(const base::TimeDelta& initial_delay,
-                                    const base::TimeDelta& delay,
+void TimerUpdateScheduler::Schedule(base::TimeDelta initial_delay,
+                                    base::TimeDelta delay,
                                     const UserTask& user_task,
                                     const OnStopTaskCallback& on_stop) {
   timer_.Start(

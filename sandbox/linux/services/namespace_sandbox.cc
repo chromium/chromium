@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/services/namespace_sandbox.h"
 
 #include <sched.h>
@@ -16,6 +11,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,6 +28,10 @@
 #include "sandbox/linux/services/namespace_utils.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
+
+#if defined(LIBC_GLIBC)
+#include <pthread.h>
+#endif
 
 namespace sandbox {
 
@@ -76,7 +76,7 @@ void SetEnvironForNamespaceType(base::EnvironmentMap* environ,
 }
 
 // Linux supports up to 64 signals. This should be updated if that ever changes.
-int g_signal_exit_codes[64];
+std::array<int, 64> g_signal_exit_codes;
 
 void TerminationSignalHandler(int sig) {
   // Return a special exit code so that the process is detected as terminated by

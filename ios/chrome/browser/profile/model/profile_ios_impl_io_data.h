@@ -11,9 +11,9 @@
 #import "components/prefs/pref_store.h"
 #import "ios/chrome/browser/net/model/net_types.h"
 #import "ios/chrome/browser/profile/model/profile_ios_io_data.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class JsonPrefStore;
+class ProfileIOS;
 
 namespace net {
 class CookieStore;
@@ -26,7 +26,7 @@ class ProfileIOSImplIOData : public ProfileIOSIOData {
  public:
   class Handle {
    public:
-    explicit Handle(ChromeBrowserState* browser_state);
+    explicit Handle(ProfileIOS* profile);
 
     Handle(const Handle&) = delete;
     Handle& operator=(const Handle&) = delete;
@@ -41,9 +41,9 @@ class ProfileIOSImplIOData : public ProfileIOSIOData {
               const base::FilePath& profile_path);
 
     // These Create*ContextGetter() functions are only exposed because the
-    // circular relationship between ChromeBrowserState,
+    // circular relationship between ProfileIOS,
     // ProfileIOSIOData::Handle, and the
-    // IOSChromeURLRequestContextGetter factories requires ChromeBrowserState be
+    // IOSChromeURLRequestContextGetter factories requires ProfileIOS be
     // able to call these functions.
     scoped_refptr<IOSChromeURLRequestContextGetter>
     CreateMainRequestContextGetter(ProtocolHandlerMap* protocol_handlers,
@@ -84,7 +84,7 @@ class ProfileIOSImplIOData : public ProfileIOSIOData {
     mutable IOSChromeURLRequestContextGetterMap app_request_context_getter_map_;
     const raw_ptr<ProfileIOSImplIOData> io_data_;
 
-    const raw_ptr<ChromeBrowserState> browser_state_;
+    const raw_ptr<ProfileIOS> profile_;
 
     mutable bool initialized_;
   };

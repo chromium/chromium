@@ -32,7 +32,6 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   ~App();
 
   bool operator==(const App& other) const;
-  bool operator!=(const App& other) const;
 
   std::unique_ptr<App> Clone() const;
 

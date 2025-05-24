@@ -4,7 +4,8 @@
 
 #include "chrome/test/media_router/media_router_ui_for_test_base.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "components/media_router/browser/media_router_factory.h"

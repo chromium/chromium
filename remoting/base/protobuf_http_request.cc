@@ -4,6 +4,8 @@
 
 #include "remoting/base/protobuf_http_request.h"
 
+#include <optional>
+
 #include "remoting/base/protobuf_http_client_messages.pb.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -25,7 +27,7 @@ void ProtobufHttpRequest::SetTimeoutDuration(base::TimeDelta timeout_duration) {
   timeout_duration_ = timeout_duration;
 }
 
-void ProtobufHttpRequest::OnAuthFailed(const ProtobufHttpStatus& status) {
+void ProtobufHttpRequest::OnAuthFailed(const HttpStatus& status) {
   RunResponseCallback(status);
 }
 
@@ -45,9 +47,8 @@ base::TimeDelta ProtobufHttpRequest::GetRequestTimeoutDuration() const {
   return timeout_duration_;
 }
 
-void ProtobufHttpRequest::OnResponse(
-    std::unique_ptr<std::string> response_body) {
-  ProtobufHttpStatus url_loader_status = GetUrlLoaderStatus();
+void ProtobufHttpRequest::OnResponse(std::optional<std::string> response_body) {
+  HttpStatus url_loader_status = GetUrlLoaderStatus();
   // Move variables out of |this| as the callback can potentially delete |this|.
   auto invalidator = std::move(invalidator_);
 
@@ -56,9 +57,9 @@ void ProtobufHttpRequest::OnResponse(
   } else {
     // Parse the status from the response.
     protobufhttpclient::Status api_status;
-    if (response_body && api_status.ParseFromString(*response_body) &&
-        api_status.code() > 0) {
-      RunResponseCallback(ProtobufHttpStatus(api_status, *response_body));
+    if (response_body.has_value() &&
+        api_status.ParseFromString(*response_body) && api_status.code() > 0) {
+      RunResponseCallback(HttpStatus(api_status, *response_body));
     } else {
       // Fallback to just return the status from URL loader.
       RunResponseCallback(url_loader_status);
@@ -69,21 +70,20 @@ void ProtobufHttpRequest::OnResponse(
   std::move(invalidator).Run();
 }
 
-ProtobufHttpStatus ProtobufHttpRequest::ParseResponse(
-    std::unique_ptr<std::string> response_body) {
-  if (!response_body) {
+HttpStatus ProtobufHttpRequest::ParseResponse(
+    std::optional<std::string> response_body) {
+  if (!response_body.has_value()) {
     LOG(ERROR) << "Server returned no response body";
-    return ProtobufHttpStatus(net::ERR_EMPTY_RESPONSE);
+    return HttpStatus(net::ERR_EMPTY_RESPONSE);
   }
   if (!response_message_->ParseFromString(*response_body)) {
     LOG(ERROR) << "Failed to parse response body";
-    return ProtobufHttpStatus(net::ERR_INVALID_RESPONSE);
+    return HttpStatus(net::ERR_INVALID_RESPONSE);
   }
-  return ProtobufHttpStatus::OK();
+  return HttpStatus::OK();
 }
 
-void ProtobufHttpRequest::RunResponseCallback(
-    const ProtobufHttpStatus& status) {
+void ProtobufHttpRequest::RunResponseCallback(const HttpStatus& status) {
   // Drop unowned reference before invoking callback which destroys it.
   response_message_ = nullptr;
   std::move(response_callback_).Run(status);

@@ -22,7 +22,7 @@ public class ValueChangedCallbackTest {
     private int mCallCount;
     private String mOldSuppliedString;
     private String mNewSuppliedString;
-    private ObservableSupplierImpl<String> mSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<String> mSupplier = new ObservableSupplierImpl<>();
 
     @Test
     public void testObserverCaching() {

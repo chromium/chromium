@@ -31,10 +31,10 @@ String InnerHtmlBuilder::Build(HTMLElement& body) {
   return SerializeNodes<EditingStrategy>(body, kIncludeNode);
 }
 
-MarkupAccumulator::EmitChoice InnerHtmlBuilder::WillProcessElement(
+MarkupAccumulator::EmitElementChoice InnerHtmlBuilder::WillProcessElement(
     const Element& e) {
   if (e.IsScriptElement()) {
-    return EmitChoice::kIgnore;
+    return EmitElementChoice::kIgnore;
   }
   return MarkupAccumulator::WillProcessElement(e);
 }

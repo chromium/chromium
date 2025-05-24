@@ -9,13 +9,16 @@ import android.os.Message;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Helper used to post the VIEW_SCROLLED accessibility event.
  *
- * TODO(mkosiba): Investigate whether this is behavior we want to share with the chrome/ layer.
+ * <p>TODO(mkosiba): Investigate whether this is behavior we want to share with the chrome/ layer.
  * TODO(mkosiba): We currently don't handle JS-initiated scrolling for layers other than the root
  * layer.
  */
+@NullMarked
 class ScrollAccessibilityHelper {
     // This is copied straight out of android.view.ViewConfiguration.
     private static final long SEND_RECURRING_ACCESSIBILITY_EVENTS_INTERVAL_MILLIS = 100;
@@ -23,7 +26,7 @@ class ScrollAccessibilityHelper {
     private class HandlerCallback implements Handler.Callback {
         public static final int MSG_VIEW_SCROLLED = 1;
 
-        private View mEventSender;
+        private final View mEventSender;
 
         public HandlerCallback(View eventSender) {
             mEventSender = eventSender;
@@ -44,7 +47,7 @@ class ScrollAccessibilityHelper {
         }
     }
 
-    private Handler mHandler;
+    private final Handler mHandler;
     private boolean mMsgViewScrolledQueued;
     private boolean mIsInAScroll;
     private boolean mEventSentByViewBaseClass;

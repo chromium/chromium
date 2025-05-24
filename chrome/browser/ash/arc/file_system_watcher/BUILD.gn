@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("file_system_watcher") {
   sources = [
@@ -17,11 +17,11 @@ static_library("file_system_watcher") {
   ]
 
   deps = [
-    "//ash/components/arc",
     "//base",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc",
     "//content/public/browser",
   ]
 }
@@ -37,11 +37,11 @@ source_set("unit_tests") {
 
   deps = [
     ":file_system_watcher",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

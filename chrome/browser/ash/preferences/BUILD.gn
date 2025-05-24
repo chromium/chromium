@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("preferences") {
   sources = [
@@ -33,7 +33,6 @@ static_library("preferences") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/child_accounts/parent_access_code",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login",
@@ -41,15 +40,16 @@ static_library("preferences") {
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
+    "//chrome/browser/prefs:util",
     "//chrome/browser/ui/ash/system",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/update_engine:proto",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/timezone",
     "//chromeos/components/disks:prefs",

@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -23,8 +24,9 @@ namespace examples {
 class LoginBubbleDialogView : public BubbleDialogDelegateView,
                               public TextfieldController {
  public:
-  using OnSubmitCallback = base::OnceCallback<void(std::u16string username,
-                                                   std::u16string password)>;
+  using OnSubmitCallback =
+      base::OnceCallback<void(std::u16string_view username,
+                              std::u16string_view password)>;
 
   static void Show(View* anchor_view,
                    BubbleBorder::Arrow anchor_position,
@@ -55,7 +57,7 @@ class LoginBubbleDialogExample : public ExampleBase {
   void CreateExampleView(View* container) override;
 
   // LoginBubbleDialogController:
-  void OnSubmit(std::u16string username, std::u16string password);
+  void OnSubmit(std::u16string_view username, std::u16string_view password);
 
  private:
   raw_ptr<LabelButton> button_ = nullptr;

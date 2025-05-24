@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/374320451): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/cert/internal/trust_store_win.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/containers/span.h"
@@ -12,7 +18,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "net/base/features.h"
@@ -92,7 +97,7 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
   // SAFETY: `usage->rgpszUsageIdentifier` is an array of LPSTR (pointer to null
   // terminated string) of length `usage->cUsageIdentifier`.
   base::span<LPSTR> usage_identifiers = UNSAFE_BUFFERS(
-      base::make_span(usage->rgpszUsageIdentifier, usage->cUsageIdentifier));
+      base::span(usage->rgpszUsageIdentifier, usage->cUsageIdentifier));
   for (std::string_view eku : usage_identifiers) {
     if ((eku == szOID_PKIX_KP_SERVER_AUTH) ||
         (eku == szOID_ANY_ENHANCED_KEY_USAGE)) {
@@ -333,7 +338,7 @@ class TrustStoreWin::Impl {
           x509_util::CertContextAsSpan(cert_from_store);
       // If a cert is in the windows distruted store, it is considered
       // distrusted for all purporses. EKU isn't checked. See crbug.com/1355961.
-      if (base::ranges::equal(cert_span, cert_from_store_span)) {
+      if (std::ranges::equal(cert_span, cert_from_store_span)) {
         return bssl::CertificateTrust::ForDistrusted();
       }
     }
@@ -343,7 +348,7 @@ class TrustStoreWin::Impl {
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
       base::span<const uint8_t> cert_from_store_span =
           x509_util::CertContextAsSpan(cert_from_store);
-      if (base::ranges::equal(cert_span, cert_from_store_span)) {
+      if (std::ranges::equal(cert_span, cert_from_store_span)) {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
         if (IsCertTrustedForServerAuth(cert_from_store)) {
@@ -357,7 +362,7 @@ class TrustStoreWin::Impl {
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
       base::span<const uint8_t> cert_from_store_span =
           x509_util::CertContextAsSpan(cert_from_store);
-      if (base::ranges::equal(cert_span, cert_from_store_span)) {
+      if (std::ranges::equal(cert_span, cert_from_store_span)) {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
         if (IsCertTrustedForServerAuth(cert_from_store)) {

@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -49,7 +48,7 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class AppMenuItemViewBinderRenderTest {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet().value(false, true).name("LiteMode_MenuItemEnabled"),
                     new ParameterSet().value(false, false).name("LiteMode_MenuItemDisabled"),
@@ -84,7 +83,7 @@ public class AppMenuItemViewBinderRenderTest {
 
     private ModelListAdapter.ModelList mMenuList;
     private ModelListAdapter mModelListAdapter;
-    private boolean mMenuItemEnabled;
+    private final boolean mMenuItemEnabled;
 
     public AppMenuItemViewBinderRenderTest(boolean nightMode, boolean menuItemEnabled) {
         mMenuItemEnabled = menuItemEnabled;
@@ -108,26 +107,7 @@ public class AppMenuItemViewBinderRenderTest {
                     sListView = sContentView.findViewById(R.id.app_menu_list);
                     sListView.setAdapter(mModelListAdapter);
 
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.STANDARD,
-                            new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
-                            AppMenuItemViewBinder::bindStandardItem);
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.TITLE_BUTTON,
-                            new LayoutViewBuilder(R.layout.title_button_menu_item),
-                            AppMenuItemViewBinder::bindTitleButtonItem);
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.THREE_BUTTON_ROW,
-                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                            AppMenuItemViewBinder::bindIconRowItem);
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.FOUR_BUTTON_ROW,
-                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                            AppMenuItemViewBinder::bindIconRowItem);
-                    mModelListAdapter.registerType(
-                            AppMenuItemType.FIVE_BUTTON_ROW,
-                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                            AppMenuItemViewBinder::bindIconRowItem);
+                    AppMenuHandlerImpl.registerDefaultViewBinders(mModelListAdapter, true);
                 });
     }
 
@@ -161,7 +141,6 @@ public class AppMenuItemViewBinderRenderTest {
     }
 
     private PropertyModel createTitleMenuItem(
-            int mainMenuId,
             int titleMenuId,
             String title,
             boolean enabled,
@@ -172,38 +151,32 @@ public class AppMenuItemViewBinderRenderTest {
             boolean checked,
             boolean buttonEnabled,
             @Nullable Drawable buttonIcon) {
-        PropertyModel model =
-                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                        .with(AppMenuItemProperties.MENU_ITEM_ID, mainMenuId)
-                        .build();
 
-        ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
         PropertyModel titleModel =
                 new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
                         .with(AppMenuItemProperties.MENU_ITEM_ID, titleMenuId)
                         .with(AppMenuItemProperties.TITLE, title)
                         .with(AppMenuItemProperties.ENABLED, enabled)
+                        .with(AppMenuItemProperties.ICON, menuIcon)
                         .build();
-        if (menuIcon != null) {
-            titleModel.set(AppMenuItemProperties.ICON, menuIcon);
-        }
+
         PropertyModel buttonModel =
-                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_ICON_KEYS)
                         .with(AppMenuItemProperties.MENU_ITEM_ID, buttonMenuId)
                         .with(AppMenuItemProperties.TITLE, buttonTitle)
                         .with(AppMenuItemProperties.CHECKABLE, checkable)
                         .with(AppMenuItemProperties.CHECKED, checked)
                         .with(AppMenuItemProperties.ENABLED, buttonEnabled)
+                        .with(AppMenuItemProperties.ICON, buttonIcon)
                         .build();
-        if (buttonIcon != null) {
-            buttonModel.set(AppMenuItemProperties.ICON, buttonIcon);
-        }
-        subList.add(new ModelListAdapter.ListItem(0, titleModel));
-        subList.add(new ModelListAdapter.ListItem(0, buttonModel));
-        model.set(AppMenuItemProperties.SUBMENU, subList);
-        mMenuList.add(new ModelListAdapter.ListItem(AppMenuItemType.TITLE_BUTTON, model));
 
-        return model;
+        ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
+        subList.add(new ModelListAdapter.ListItem(0, buttonModel));
+        titleModel.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
+
+        mMenuList.add(new ModelListAdapter.ListItem(AppMenuItemType.TITLE_BUTTON, titleModel));
+
+        return titleModel;
     }
 
     private PropertyModel createIconRowMenuItem(
@@ -230,20 +203,18 @@ public class AppMenuItemViewBinderRenderTest {
                         .build();
 
         ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
-        int menutype = AppMenuItemType.THREE_BUTTON_ROW;
+        int menutype = AppMenuItemType.BUTTON_ROW;
         createIconMenuItem(subList, subId1, titleCondensed1, icon1, enabled);
         createIconMenuItem(subList, subId2, titleCondensed2, icon2, enabled);
         createIconMenuItem(subList, subId3, titleCondensed3, icon3, enabled);
         if (subId4 != View.NO_ID) {
             createIconMenuItem(subList, subId4, titleCondensed4, icon4, enabled);
-            menutype = AppMenuItemType.FOUR_BUTTON_ROW;
             if (subId5 != View.NO_ID) {
                 createIconMenuItem(subList, subId5, titleCondensed5, icon5, enabled);
-                menutype = AppMenuItemType.FIVE_BUTTON_ROW;
             }
         }
 
-        model.set(AppMenuItemProperties.SUBMENU, subList);
+        model.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
         mMenuList.add(new ModelListAdapter.ListItem(menutype, model));
 
         return model;
@@ -313,7 +284,6 @@ public class AppMenuItemViewBinderRenderTest {
                                     org.chromium.chrome.browser.ui.appmenu.test.R.drawable
                                             .test_ic_arrow_forward_black_24dp);
                     createTitleMenuItem(
-                            MENU_ID1,
                             MENU_ID2,
                             TITLE_2,
                             mMenuItemEnabled,
@@ -336,7 +306,6 @@ public class AppMenuItemViewBinderRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     createTitleMenuItem(
-                            MENU_ID1,
                             MENU_ID2,
                             TITLE_2,
                             mMenuItemEnabled,
@@ -359,7 +328,6 @@ public class AppMenuItemViewBinderRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     createTitleMenuItem(
-                            MENU_ID1,
                             MENU_ID2,
                             TITLE_2,
                             mMenuItemEnabled,
@@ -387,7 +355,6 @@ public class AppMenuItemViewBinderRenderTest {
                                     org.chromium.chrome.browser.ui.appmenu.test.R.drawable
                                             .test_ic_vintage_filter);
                     createTitleMenuItem(
-                            MENU_ID1,
                             MENU_ID2,
                             TITLE_2,
                             mMenuItemEnabled,

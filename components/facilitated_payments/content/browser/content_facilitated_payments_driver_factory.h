@@ -18,10 +18,6 @@ class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
 
-namespace optimization_guide {
-class OptimizationGuideDecider;
-}  // namespace optimization_guide
-
 namespace payments::facilitated {
 
 class FacilitatedPaymentsClient;
@@ -32,10 +28,8 @@ class FacilitatedPaymentsClient;
 class ContentFacilitatedPaymentsDriverFactory
     : public content::WebContentsObserver {
  public:
-  ContentFacilitatedPaymentsDriverFactory(
-      content::WebContents* web_contents,
-      FacilitatedPaymentsClient* client,
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
+  ContentFacilitatedPaymentsDriverFactory(content::WebContents* web_contents,
+                                          FacilitatedPaymentsClient* client);
   ContentFacilitatedPaymentsDriverFactory(
       const ContentFacilitatedPaymentsDriverFactory&) = delete;
   ContentFacilitatedPaymentsDriverFactory& operator=(
@@ -67,11 +61,6 @@ class ContentFacilitatedPaymentsDriverFactory
 
   // Owner.
   const raw_ref<FacilitatedPaymentsClient> client_;
-
-  // The optimization guide decider to help determine whether the current main
-  // frame URL is eligible for facilitated payments.
-  raw_ptr<optimization_guide::OptimizationGuideDecider>
-      optimization_guide_decider_ = nullptr;
 };
 
 }  // namespace payments::facilitated

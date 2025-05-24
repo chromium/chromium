@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/task_manager/providers/child_process_task.h"
+
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/task_manager/providers/child_process_task.h"
 #include "chrome/browser/task_manager/providers/child_process_task_provider.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
@@ -74,7 +76,7 @@ class ChildProcessTaskTest
   }
 
  protected:
-  std::map<base::ProcessHandle, Task*> provided_tasks_;
+  std::map<base::ProcessHandle, raw_ptr<Task, CtnExperimental>> provided_tasks_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -103,20 +105,19 @@ TEST_F(ChildProcessTaskTest, TestAll) {
 
   // The following process which has handle = base::kNullProcessHandle, won't be
   // added.
-  ChildProcessData data1(0);
+  ChildProcessData data1(0, content::ChildProcessId());
   ASSERT_FALSE(data1.GetProcess().IsValid());
   provider.BrowserChildProcessLaunchedAndConnected(data1);
   EXPECT_TRUE(provided_tasks_.empty());
 
-  const int unique_id = 245;
+  const content::ChildProcessId unique_id(245);
   const std::u16string name(u"Test Task");
   const std::u16string expected_name(
       l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PLUGIN_PREFIX, name));
 
-  ChildProcessData data2(content::PROCESS_TYPE_PPAPI_PLUGIN);
+  ChildProcessData data2(content::PROCESS_TYPE_PPAPI_PLUGIN, unique_id);
   data2.SetProcess(base::Process::Current());
   data2.name = name;
-  data2.id = unique_id;
   provider.BrowserChildProcessLaunchedAndConnected(data2);
   ASSERT_EQ(1U, provided_tasks_.size());
 
@@ -126,14 +127,16 @@ TEST_F(ChildProcessTaskTest, TestAll) {
   EXPECT_EQ(base::GetCurrentProcId(), task->process_id());
   EXPECT_EQ(expected_name, task->title());
   EXPECT_EQ(Task::PLUGIN, task->GetType());
-  EXPECT_EQ(unique_id, task->GetChildProcessUniqueID());
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue() usage.
+  EXPECT_EQ(unique_id.GetUnsafeValue(), task->GetChildProcessUniqueID());
   EXPECT_EQ(std::u16string(), task->GetProfileName());
   EXPECT_FALSE(task->ReportsSqliteMemory());
   EXPECT_FALSE(task->ReportsWebCacheStats());
 
   // Make sure that indexing by child_id works properly.
-  ASSERT_EQ(task, provider.GetTaskOfUrlRequest(unique_id, 0));
-  ASSERT_EQ(task, provider.GetTaskOfUrlRequest(unique_id, 1));
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue() usage.
+  ASSERT_EQ(task, provider.GetTaskOfUrlRequest(unique_id.GetUnsafeValue(), 0));
+  ASSERT_EQ(task, provider.GetTaskOfUrlRequest(unique_id.GetUnsafeValue(), 1));
 
   const int64_t bytes_read = 1024;
   task->OnNetworkBytesRead(bytes_read);
@@ -159,7 +162,7 @@ TEST_F(ChildProcessTaskTest, ProcessTypeToTaskType) {
 
   for (const auto& types_pair : process_task_types_pairs) {
     // Add the task.
-    ChildProcessData data(types_pair.process_type_);
+    ChildProcessData data(types_pair.process_type_, content::ChildProcessId());
     data.SetProcess(base::Process::Current());
     provider.BrowserChildProcessLaunchedAndConnected(data);
     ASSERT_EQ(1U, provided_tasks_.size());

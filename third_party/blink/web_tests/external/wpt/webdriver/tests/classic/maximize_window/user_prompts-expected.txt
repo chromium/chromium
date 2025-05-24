@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_accept[alert-None]
+  assert (800, 600) != (800, 600)
+[FAIL] test_accept[confirm-True]
+  assert (800, 600) != (800, 600)
+[FAIL] test_accept[prompt-]
+  assert (800, 600) != (800, 600)
+[FAIL] test_dismiss[alert-None]
+  assert (800, 600) != (800, 600)
+[FAIL] test_dismiss[confirm-False]
+  assert (800, 600) != (800, 600)
+[FAIL] test_dismiss[prompt-None]
+  assert (800, 600) != (800, 600)
+Harness: the test ran to completion.
+

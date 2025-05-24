@@ -18,7 +18,9 @@ class UploadTests(unittest.TestCase):
   def test_find_screenshots(self):
     screenshots = upload_screenshots.find_screenshots(
         testdata_path,
-        os.path.join(testdata_path, 'translation_expectations.pyl'))
+        os.path.join(testdata_path, 'translation_expectations.pyl'),
+        is_cog = os.getcwd().startswith('/google/cog/cloud')
+    )
     self.assertEqual(2, len(screenshots))
     self.assertEqual(
         os.path.join(testdata_path, 'test_grd', 'IDS_TEST_STRING1.png'),

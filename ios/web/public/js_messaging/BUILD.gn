@@ -4,6 +4,7 @@
 
 import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("js_messaging") {
   deps = [
@@ -36,15 +37,6 @@ source_set("content_world_header") {
   sources = [ "content_world.h" ]
 }
 
-compile_ts("frame_id") {
-  sources = [ "resources/frame_id.ts" ]
-
-  deps = [
-    ":gcrweb",
-    ":util_scripts",
-  ]
-}
-
 compile_ts("util_scripts") {
   sources = [ "resources/utils.ts" ]
 }
@@ -60,6 +52,8 @@ compile_ts("error_reporting") {
 # compiled TypeScript to be used as a dependency by other TypeScript targets.
 compile_ts("gcrweb") {
   sources = [ "resources/gcrweb.ts" ]
+
+  deps = [ ":util_scripts" ]
 }
 
 optimize_js("gcrweb_js") {
@@ -67,6 +61,45 @@ optimize_js("gcrweb_js") {
   primary_script = _script[0]
   sources = _script
   output_name = "gcrweb"
+
+  deps = [ ":gcrweb" ]
+}
+
+source_set("unittests") {
+  testonly = true
+
+  deps = [
+    ":gcrweb_test_api",
+    ":util_test_api",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web/public/test:javascript_test",
+    "//ios/web/public/test:util",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  sources = [
+    "gcrweb_javascript_test.mm",
+    "utils_javascript_test.mm",
+  ]
+}
+
+optimize_ts("util_test_api") {
+  testonly = true
+
+  sources = [ "resources/utils_test_api.ts" ]
+
+  deps = [
+    ":gcrweb",
+    ":util_scripts",
+  ]
+}
+
+optimize_ts("gcrweb_test_api") {
+  testonly = true
+
+  sources = [ "resources/gcrweb_test_api.ts" ]
 
   deps = [ ":gcrweb" ]
 }

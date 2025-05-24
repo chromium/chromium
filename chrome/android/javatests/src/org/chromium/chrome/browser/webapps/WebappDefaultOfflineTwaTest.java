@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
@@ -136,10 +137,11 @@ public class WebappDefaultOfflineTwaTest {
 
         // Ensure that web_app_default_offline.html is showing the correct values.
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-        assertEquals(
-                "\"shortname\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        tab.getWebContents(), "document.title;"));
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        tab.getWebContents(), "document.title;")
+                                .equals("\"shortname\""));
         assertEquals(
                 "\"You're offline\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(

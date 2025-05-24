@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logDialogUserActionMetric;
+
 import android.app.Activity;
 import android.content.Context;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction;
+import org.chromium.chrome.browser.password_manager.HelpUrlLauncher;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -19,13 +24,14 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Mediator for the password access loss dialog meant to be shown in Chrome settings. It handles
  * interactions with the UI.
  */
+@NullMarked
 class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.Controller {
     private final Activity mActivity;
     private final ModalDialogManager mModalDialogManager;
     private final @PasswordAccessLossWarningType int mWarningType;
     private final Callback<Context> mLaunchGmsUpdate;
     private final Runnable mLaunchExportFlow;
-    private final HelpUrlLauncher mHelpUrLauncher;
+    private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     public PasswordAccessLossDialogSettingsMediator(
             Activity activity,
@@ -33,13 +39,13 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
             @PasswordAccessLossWarningType int warningType,
             Callback<Context> launchGmsUpdate,
             Runnable launchExportFlow,
-            CustomTabIntentHelper customTabIntentHelper) {
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mActivity = activity;
         mModalDialogManager = modalDialogManager;
         mWarningType = warningType;
         mLaunchGmsUpdate = launchGmsUpdate;
         mLaunchExportFlow = launchExportFlow;
-        mHelpUrLauncher = new HelpUrlLauncher(customTabIntentHelper);
+        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
     }
 
     private void runPositiveButtonCallback() {
@@ -61,9 +67,10 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
     }
 
     void onHelpButtonClicked() {
+        logDialogUserActionMetric(mWarningType, PasswordAccessLossWarningUserAction.HELP_CENTER);
         switch (mWarningType) {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
-                mHelpUrLauncher.showHelpArticle(
+                mSettingsCustomTabLauncher.openUrlInCct(
                         mActivity, HelpUrlLauncher.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL);
                 return;
             case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:
@@ -73,7 +80,7 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
                 return;
             case PasswordAccessLossWarningType.NO_UPM:
             case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:
-                mHelpUrLauncher.showHelpArticle(
+                mSettingsCustomTabLauncher.openUrlInCct(
                         mActivity,
                         HelpUrlLauncher.KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL);
                 return;
@@ -90,7 +97,11 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
     @Override
     public void onClick(PropertyModel model, int buttonType) {
         if (buttonType == ButtonType.POSITIVE) {
+            logDialogUserActionMetric(
+                    mWarningType, PasswordAccessLossWarningUserAction.MAIN_ACTION);
             runPositiveButtonCallback();
+        } else if (buttonType == ButtonType.NEGATIVE) {
+            logDialogUserActionMetric(mWarningType, PasswordAccessLossWarningUserAction.DISMISS);
         }
         mModalDialogManager.dismissDialog(
                 model,

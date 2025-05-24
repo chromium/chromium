@@ -4,7 +4,11 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 
+#include "base/at_exit.h"
+#include "base/command_line.h"
+#include "base/i18n/icu_util.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/test/fuzztest_support.h"
 #include "base/values.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
@@ -15,6 +19,27 @@ void UpdateManifestCanSuccessfullyParseAnyString(const base::Value& json) {
   auto result = UpdateManifest::CreateFromJson(
       json, GURL("https://example.com/manifest.json"));
 }
+
+class Environment {
+ public:
+  Environment() {
+    // Sets min log level to FATAL for performance.
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
+    // ICU is as of 2024-11-28 reachable from here so we need to initialize ICU
+    // to avoid hitting NOTREACHED()s. See https://crbug.com/381129857.
+    CHECK(base::i18n::InitializeICU());
+    // Parsing URLs requires command line to be available.
+    // See https://crbug.com/386688712
+    base::CommandLine::Init(/*argc=*/0, /*argv=*/nullptr);
+  }
+  // Required by ICU integration according to several other fuzzer environments.
+  // TODO(pbos): Consider breaking out this fuzzer environment to something
+  // shared among most fuzzers. See net/base/fuzzer_test_support.cc and consider
+  // moving something like that into the commons.
+  base::AtExitManager at_exit_manager;
+};
+
+Environment* const environment = new Environment();
 
 FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
     .WithSeeds({*base::JSONReader::Read("{}"), *base::JSONReader::Read(R"({
@@ -28,15 +53,15 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   "versions": [
                     {
                       "version": "1.0.0",
-                      "url": "https://example.com/bundle.swbn"
+                      "src": "https://example.com/bundle.swbn"
                     },
                     {
                       "version": "1.0.3",
-                      "url": "bundle.swbn"
+                      "src": "bundle.swbn"
                     },
                     {
                       "version": "1.0.0",
-                      "url": "https://example.com/bundle2.swbn"
+                      "src": "https://example.com/bundle2.swbn"
                     }
                   ]
                 })"),
@@ -44,7 +69,7 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   "versions": [
                     {
                       "version": "1.0.0",
-                      "url": "https://example.com/bundle.swbn",
+                      "src": "https://example.com/bundle.swbn",
                       "blah": 123
                     }
                   ]
@@ -53,7 +78,7 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   "versions": [
                     {
                       "version": "1.0.0",
-                      "url": "https://example.com/bundle.swbn",
+                      "src": "https://example.com/bundle.swbn",
                       "channels": ["test", "stable", "test"]
                     }
                   ]
@@ -71,7 +96,7 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   "versions": [
                     {
                       "version": "1.0.0",
-                      "url": "https://example.com/bundle.swbn",
+                      "src": "https://example.com/bundle.swbn",
                       "channels": ["test", "stable", "test"]
                     }
                   ]

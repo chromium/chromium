@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
@@ -116,9 +115,18 @@ HTMLFieldSetElement::InvalidateDescendantDisabledStateAndFindFocusedOne(
 }
 
 void HTMLFieldSetElement::DisabledAttributeChanged() {
+  bool was_disabled = IsSelfDisabledIgnoringAncestors();
   // This element must be updated before the style of nodes in its subtree gets
   // recalculated.
   HTMLFormControlElement::DisabledAttributeChanged();
+  if (was_disabled != IsSelfDisabledIgnoringAncestors()) {
+    Document& document = GetDocument();
+    if (was_disabled) {
+      document.DecrementDisabledFieldsetCount();
+    } else {
+      document.IncrementDisabledFieldsetCount();
+    }
+  }
   if (Element* focused_element =
           InvalidateDescendantDisabledStateAndFindFocusedOne(*this))
     focused_element->blur();
@@ -130,6 +138,14 @@ void HTMLFieldSetElement::AncestorDisabledStateWasChanged() {
   // we only invalidate this element's own disabled state and do not traverse
   // the descendants.
   HTMLFormControlElement::DisabledAttributeChanged();
+}
+
+void HTMLFieldSetElement::DidMoveToNewDocument(Document& old_document) {
+  HTMLFormControlElement::DidMoveToNewDocument(old_document);
+  if (IsSelfDisabledIgnoringAncestors()) {
+    old_document.DecrementDisabledFieldsetCount();
+    GetDocument().IncrementDisabledFieldsetCount();
+  }
 }
 
 void HTMLFieldSetElement::ChildrenChanged(const ChildrenChange& change) {
@@ -167,15 +183,6 @@ const AtomicString& HTMLFieldSetElement::FormControlTypeAsString() const {
 
 LayoutObject* HTMLFieldSetElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutFieldset>(this);
-}
-
-LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
-  if (const auto* ng_fieldset = DynamicTo<LayoutFieldset>(GetLayoutBox())) {
-    if (auto* content = ng_fieldset->FindAnonymousFieldsetContentBox()) {
-      return content;
-    }
-  }
-  return HTMLFormControlElement::GetLayoutBoxForScrolling();
 }
 
 void HTMLFieldSetElement::DidRecalcStyle(const StyleRecalcChange change) {

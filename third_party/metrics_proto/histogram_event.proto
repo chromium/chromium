@@ -34,11 +34,13 @@ message HistogramEventProto {
     // bucket's min value (possibly computed per above).  The last bucket in a
     // histogram should always include the max field.
     optional int64 min = 1;
+
     optional int64 max = 2;
 
     // The number of entries in this bucket.  As of M51, when the value of this
     // field would be 1, the field will be omitted instead.
     optional int64 count = 4 [default = 1];
   }
+
   repeated Bucket bucket = 3;
 }

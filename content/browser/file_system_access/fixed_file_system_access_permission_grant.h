@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FIXED_FILE_SYSTEM_ACCESS_PERMISSION_GRANT_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FIXED_FILE_SYSTEM_ACCESS_PERMISSION_GRANT_H_
 
-#include "content/public/browser/file_system_access_permission_grant.h"
-
 #include "base/files/file_path.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/file_system_access_permission_context.h"
+#include "content/public/browser/file_system_access_permission_grant.h"
 
 namespace content {
 
@@ -21,11 +21,12 @@ class CONTENT_EXPORT FixedFileSystemAccessPermissionGrant
     : public FileSystemAccessPermissionGrant {
  public:
   explicit FixedFileSystemAccessPermissionGrant(PermissionStatus status,
-                                                base::FilePath path);
+                                                PathInfo path_info);
 
   // FileSystemAccessPermissionGrant:
   PermissionStatus GetStatus() override;
   base::FilePath GetPath() override;
+  std::string GetDisplayName() override;
   void RequestPermission(
       GlobalRenderFrameHostId frame_id,
       UserActivationState user_activation_state,
@@ -36,7 +37,7 @@ class CONTENT_EXPORT FixedFileSystemAccessPermissionGrant
 
  private:
   const PermissionStatus status_;
-  const base::FilePath path_;
+  const PathInfo path_info_;
 };
 
 }  // namespace content

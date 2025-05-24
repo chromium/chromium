@@ -29,6 +29,11 @@ class PreloadCandidateSelector {
   // If no URL should be preloaded, returns std::nullopt.
   virtual std::optional<GURL> GetURLToPreload(
       const PreloadContext& context) const = 0;
+
+  // Returns true if the feature flag (via command line or Finch) excludes the
+  // url from preloading.
+  // This is used as emergency shutoff in case a WebUI has preloading issue.
+  bool IsUrlExcludedByFlag(const GURL& url) const;
 };
 
 }  // namespace webui

@@ -28,7 +28,9 @@ enum class ActionType {
   kShowNotification = 5,
   kUpdateUserPref = 6,
 
-  kMaxValue = kUpdateUserPref
+  kDryRun = 7,
+
+  kMaxValue = kDryRun
 };
 
 enum class ActionResult {

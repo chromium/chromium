@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/rtl.h"
@@ -17,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
@@ -74,7 +76,7 @@ class PluginInfoHostImplTest : public InProcessBrowserTest {
                                        ->GetActiveWebContents()
                                        ->GetPrimaryMainFrame()
                                        ->GetProcess()
-                                       ->GetID();
+                                       ->GetDeprecatedID();
 
     plugin_info_host_impl_ = std::make_unique<PluginInfoHostImpl>(
         active_render_process_id, browser()->profile());
@@ -110,16 +112,12 @@ class PluginInfoHostImplTest : public InProcessBrowserTest {
 };
 
 #if BUILDFLAG(ENABLE_PDF)
-// Variation that tests under left-to-right and right-to-left directions. The
-// direction affects the PDF viewer extension, as the plugin name is derived
-// from the extension name, and the extension name may be adjusted to include
-// Unicode bidirectional control characters in RTL mode. These extra control
-// characters can break string comparisons (see crbug.com/1404260).
-class PluginInfoHostImplBidiTest : public PluginInfoHostImplTest,
-                                   public testing::WithParamInterface<bool> {
+class PluginInfoHostImplBidiTestBase : public PluginInfoHostImplTest {
  public:
+  virtual bool rtl() const { return false; }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam()) {
+    if (rtl()) {
       // Pass "--force-ui-direction=rtl" instead of setting an RTL locale, as
       // setting a locale requires extra code on GLib platforms. Setting the UI
       // direction has the same effect on the extension name, which is all
@@ -128,6 +126,17 @@ class PluginInfoHostImplBidiTest : public PluginInfoHostImplTest,
                                       switches::kForceDirectionRTL);
     }
   }
+};
+
+// Variation that tests under left-to-right and right-to-left directions. The
+// direction affects the PDF viewer extension, as the plugin name is derived
+// from the extension name, and the extension name may be adjusted to include
+// Unicode bidirectional control characters in RTL mode. These extra control
+// characters can break string comparisons (see crbug.com/1404260).
+class PluginInfoHostImplBidiTest : public PluginInfoHostImplBidiTestBase,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  bool rtl() const override { return GetParam(); }
 };
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -308,7 +317,7 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
 
   // `WebPluginInfo` fields.
   std::u16string expected_plugin_name = kPluginName;
-  if (GetParam()) {
+  if (rtl()) {
     // Extra characters are added by `extensions::Extension::LoadName()`.
     ASSERT_TRUE(
         base::i18n::AdjustStringForLocaleDirection(&expected_plugin_name));
@@ -323,8 +332,8 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
             plugin_info->plugin.type);
   EXPECT_EQ(0, plugin_info->plugin.pepper_permissions);
 
-  // Background color hard-coded in `MimeTypesHandler::GetBackgroundColor()`.
-  EXPECT_EQ(SkColorSetRGB(82, 86, 89), plugin_info->plugin.background_color);
+  // Background color hard-coded in `GetPdfBackgroundColor()`.
+  EXPECT_EQ(SkColorSetRGB(40, 40, 40), plugin_info->plugin.background_color);
 
   // Has PDF MIME type.
   ASSERT_THAT(plugin_info->plugin.mime_types, SizeIs(1));
@@ -406,4 +415,5 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PluginInfoHostImplBidiTest, testing::Bool());
+
 #endif  // BUILDFLAG(ENABLE_PDF)

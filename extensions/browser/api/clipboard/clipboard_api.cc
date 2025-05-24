@@ -102,7 +102,7 @@ bool ClipboardSetImageDataFunction::IsAdditionalItemsParamValid(
         has_text_html = true;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     // Check maximum length of the string data.
     if (item.data.length() > max_item_data_bytes)

@@ -49,7 +49,7 @@ class DomainReliabilityBrowserTest : public InProcessBrowserTest {
   DomainReliabilityBrowserTest& operator=(const DomainReliabilityBrowserTest&) =
       delete;
 
-  ~DomainReliabilityBrowserTest() override {}
+  ~DomainReliabilityBrowserTest() override = default;
 
   // Note: In an ideal world, instead of appending the command-line switch and
   // manually setting discard_uploads to false, Domain Reliability would
@@ -93,9 +93,9 @@ class DomainReliabilityDisabledBrowserTest
       const DomainReliabilityDisabledBrowserTest&) = delete;
 
  protected:
-  DomainReliabilityDisabledBrowserTest() {}
+  DomainReliabilityDisabledBrowserTest() = default;
 
-  ~DomainReliabilityDisabledBrowserTest() override {}
+  ~DomainReliabilityDisabledBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableDomainReliability);
@@ -297,6 +297,7 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, RequestAtShutdown) {
   // doesn't see a connection error before NetworkContext does.
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = hung_url;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   auto simple_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), TRAFFIC_ANNOTATION_FOR_TESTS);
   auto* storage_partition = browser()->profile()->GetDefaultStoragePartition();

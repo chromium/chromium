@@ -19,7 +19,8 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaKeyInformation {
     kOutputRestricted,
     kOutputDownscaled,
     kStatusPending,
-    kInternalError
+    kInternalError,
+    kUsableInFuture,
   };
 
   WebEncryptedMediaKeyInformation();

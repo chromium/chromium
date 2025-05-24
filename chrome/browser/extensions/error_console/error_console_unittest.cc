@@ -36,7 +36,7 @@ using error_test_util::CreateNewRuntimeError;
 class ErrorConsoleUnitTest : public testing::Test {
  public:
   ErrorConsoleUnitTest() : error_console_(nullptr) {}
-  ~ErrorConsoleUnitTest() override {}
+  ~ErrorConsoleUnitTest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();

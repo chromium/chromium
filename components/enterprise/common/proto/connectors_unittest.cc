@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #include "third_party/content_analysis_sdk/src/proto/content_analysis/sdk/
-
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/content_analysis_sdk/src/proto/content_analysis/sdk/analysis.pb.h"

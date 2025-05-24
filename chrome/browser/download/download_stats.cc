@@ -9,9 +9,15 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_content.h"
+#include "components/download/public/common/download_stats.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/safe_browsing/buildflags.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/browser/download/download_stats.h"
+#endif
 
 void RecordDownloadSource(ChromeDownloadSource source) {
   base::UmaHistogramEnumeration("Download.SourcesChrome", source,
@@ -33,9 +39,11 @@ void MaybeRecordDangerousDownloadWarningShown(DownloadUIModel& model) {
   base::UmaHistogramEnumeration("SBClientDownload.TailoredWarningType",
                                 model.GetTailoredWarningType());
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::RecordDangerousDownloadWarningShown(
       model.GetDangerType(), model.GetTargetFilePath(),
       model.GetURL().SchemeIs(url::kHttpsScheme), model.HasUserGesture());
+#endif
 
   model.SetWasUIWarningShown(true);
 }
@@ -48,8 +56,7 @@ void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
   download::DownloadContent download_content =
       download::DownloadContentFromMimeType(
           mime_type_string, /*record_content_subcategory=*/false);
-  base::UmaHistogramEnumeration("Download.Open.ContentType", download_content,
-                                download::DownloadContent::MAX);
+  base::UmaHistogramEnumeration("Download.Open.ContentType", download_content);
 }
 
 void RecordDatabaseAvailability(bool is_available) {
@@ -168,7 +175,6 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     case DownloadCommands::Command::BYPASS_DEEP_SCANNING:
     case DownloadCommands::Command::OPEN_WITH_MEDIA_APP:
     case DownloadCommands::Command::EDIT_WITH_MEDIA_APP:
-      NOTREACHED_IN_MIGRATION();
-      return DownloadShelfContextMenuAction::kNotReached;
+      NOTREACHED();
   }
 }

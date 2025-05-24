@@ -258,7 +258,7 @@ export class HelpBubbleController {
     this.bubble_.focusAnchor = params.focusOnShowHint === false;
 
     if (params.timeout) {
-      this.bubble_.timeoutMs = Number(params.timeout!.microseconds / 1000n);
+      this.bubble_.timeoutMs = Number(params.timeout.microseconds / 1000n);
       assert(this.bubble_.timeoutMs > 0);
     }
 

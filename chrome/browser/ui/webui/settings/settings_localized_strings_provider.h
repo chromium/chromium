@@ -10,7 +10,7 @@ class Profile;
 namespace content {
 class WebUIDataSource;
 class WebContents;
-}
+}  // namespace content
 
 namespace settings {
 

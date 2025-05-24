@@ -11,7 +11,10 @@ import static android.widget.directwriting.IDirectWritingService.KEY_BUNDLE_CONF
 
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This class stores the Configuration values received from Direct Writing service. */
+@NullMarked
 class DirectWritingServiceConfiguration {
     private static final long DEFAULT_HIDE_DW_TOOLBAR_DELAY_MS = 1000L;
     private static final long DEFAULT_KEEP_WRITING_DELAY_MS = 1000L;

@@ -4,16 +4,20 @@
 
 package org.chromium.components.media_router.caf;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import com.google.android.gms.cast.framework.CastContext;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.media_router.MediaRouterClient;
 
 /** Utility methods for Cast. */
+@NullMarked
 public class CastUtils {
     /** Helper method to return the {@link CastContext} instance. */
     public static CastContext getCastContext() {
         return CastContext.getSharedInstance(
-                MediaRouterClient.getInstance().getContextForRemoting());
+                assumeNonNull(MediaRouterClient.getInstance()).getContextForRemoting());
     }
 
     /**

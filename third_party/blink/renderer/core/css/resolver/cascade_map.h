@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_MAP_H_
 
@@ -47,13 +42,15 @@ class CORE_EXPORT CascadeMap {
   const CascadePriority* Find(const CSSPropertyName&, CascadeOrigin) const;
   CascadePriority* FindKnownToExist(const CSSPropertyID id) {
     DCHECK(native_properties_.Bits().Has(id));
-    return &native_properties_.Buffer()[static_cast<size_t>(id)].Top(
-        backing_vector_);
+    return UNSAFE_TODO(
+        &native_properties_.Buffer()[static_cast<size_t>(id)].Top(
+            backing_vector_));
   }
   const CascadePriority* FindKnownToExist(const CSSPropertyID id) const {
     DCHECK(native_properties_.Bits().Has(id));
-    return &native_properties_.Buffer()[static_cast<size_t>(id)].Top(
-        backing_vector_);
+    return UNSAFE_TODO(
+        &native_properties_.Buffer()[static_cast<size_t>(id)].Top(
+            backing_vector_));
   }
   // Similar to Find(name, origin), but returns the CascadePriority from cascade
   // layers below the given priority. The uint64_t is presumed to come from

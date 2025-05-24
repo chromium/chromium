@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.feedback;
 
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  * please ensure the teams that operationalize feedback are aware and supportive. Contact:
  * chrome-gtech@.
  */
+@NullMarked
 public interface FeedbackSource {
     /**
      * Called to get all relevant feedback for this source.

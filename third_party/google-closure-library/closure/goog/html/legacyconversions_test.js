@@ -31,7 +31,7 @@ function assertFunctionReports(conversionFunction) {
     conversionFunction('irrelevant');
     assertTrue('Expected legacy conversion to be reported.', reported);
   } finally {
-    legacyconversions.setReportCallback(goog.nullFunction);
+    legacyconversions.setReportCallback(() => {});
   }
 }
 testSuite({

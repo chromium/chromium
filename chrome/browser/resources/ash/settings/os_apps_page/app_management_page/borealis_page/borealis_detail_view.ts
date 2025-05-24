@@ -8,12 +8,12 @@ import '../../../app_management_icons.html.js';
 import '../permission_item.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppManagementStoreMixin} from '../../../common/app_management/store_mixin.js';
-import {PrefsState} from '../../../common/types.js';
+import type {PrefsState} from '../../../common/types.js';
 import {Router, routes} from '../../../router.js';
 
 import {getTemplate} from './borealis_detail_view.html.js';

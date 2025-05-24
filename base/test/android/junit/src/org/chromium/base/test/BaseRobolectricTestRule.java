@@ -6,6 +6,7 @@ package org.chromium.base.test;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniTestInstancesSnapshot;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -14,12 +15,12 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
-import org.chromium.base.LifetimeAssert;
 import org.chromium.base.PathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner.HelperTestRunner;
@@ -75,6 +76,7 @@ public class BaseRobolectricTestRule implements TestRule {
         // configuring the Application instance, and it does so from within methodBlock rather than
         // classBlock().
         ResettersForTesting.beforeHooksWillExecute();
+        JniTestInstancesSnapshot.clearAllForTesting();
         FeatureList.setDisableNativeForTesting(true);
         CommandLineFlags.ensureInitialized();
         UmaRecorderHolder.setUpNativeUmaRecorder(false);

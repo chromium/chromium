@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/i18n/case_conversion.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -70,7 +71,7 @@ AutocompleteTable::~AutocompleteTable() = default;
 
 // static
 AutocompleteTable* AutocompleteTable::FromWebDatabase(WebDatabase* db) {
-  return static_cast<AutocompleteTable*>(db->GetTable(GetKey()));
+  return static_cast<AutocompleteTable*>(CHECK_DEREF(db).GetTable(GetKey()));
 }
 
 WebDatabaseTable::TypeKey AutocompleteTable::GetTypeKey() const {
@@ -350,7 +351,6 @@ std::optional<AutocompleteEntry> AutocompleteTable::GetAutocompleteEntry(
   AutocompleteEntry entry({name, value},
                           base::Time::FromTimeT(s.ColumnInt64(0)),
                           base::Time::FromTimeT(s.ColumnInt64(1)));
-  DCHECK(!s.Step());
   return entry;
 }
 
@@ -446,6 +446,24 @@ bool AutocompleteTable::InitMainTable() {
            CreateIndex(db(), kAutocompleteTable, {kName, kValueLower});
   }
   return true;
+}
+
+AutocompleteTable::Dropper::Dropper() = default;
+AutocompleteTable::Dropper::~Dropper() = default;
+
+WebDatabaseTable::TypeKey AutocompleteTable::Dropper::GetTypeKey() const {
+  static int table_key = 0;
+  return reinterpret_cast<void*>(&table_key);
+}
+
+bool AutocompleteTable::Dropper::CreateTablesIfNecessary() {
+  return true;
+}
+
+bool AutocompleteTable::Dropper::MigrateToVersion(
+    int version,
+    bool* update_compatible_version) {
+  return DropTableIfExists(db(), kAutocompleteTable);
 }
 
 }  // namespace autofill

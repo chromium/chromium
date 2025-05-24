@@ -66,7 +66,7 @@ const char* ConsentResultToError(ConsentProvider::Consent result) {
     case ConsentProvider::CONSENT_GRANTED:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace file_system_api

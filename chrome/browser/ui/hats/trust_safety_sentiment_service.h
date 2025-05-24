@@ -25,8 +25,8 @@
 using PasswordProtectionUIType = safe_browsing::WarningUIType;
 using PasswordProtectionUIAction = safe_browsing::WarningAction;
 
-const base::TimeDelta kPasswordChangeInactivity = base::Minutes(30);
-const base::TimeDelta kSafetyHubSurveyDelay = base::Minutes(10);
+inline constexpr base::TimeDelta kPasswordChangeInactivity = base::Minutes(30);
+inline constexpr base::TimeDelta kSafetyHubSurveyDelay = base::Minutes(10);
 
 // Service which receives events from Trust & Safety features and determines
 // whether or not to launch a HaTS survey on the NTP for the user.
@@ -126,10 +126,10 @@ class TrustSafetySentimentService
     kBrowsingData = 12,
     kPrivacyGuide = 13,
     kControlGroup = 14,
-    kPrivacySandbox4ConsentAccept = 15,
-    kPrivacySandbox4ConsentDecline = 16,
-    kPrivacySandbox4NoticeOk = 17,
-    kPrivacySandbox4NoticeSettings = 18,
+    // kPrivacySandbox4ConsentAccept = 15, // DEPRECATED.
+    // kPrivacySandbox4ConsentDecline = 16, // DEPRECATED.
+    // kPrivacySandbox4NoticeOk = 17, // DEPRECATED.
+    // kPrivacySandbox4NoticeSettings = 18, // DEPRECATED.
     kSafeBrowsingInterstitial = 19,
     kDownloadWarningUI = 20,
     kPasswordProtectionUI = 21,
@@ -137,10 +137,6 @@ class TrustSafetySentimentService
     kSafetyHubInteracted = 23,
     kMaxValue = kSafetyHubInteracted,
   };
-
-  // Called when the user interacts with Privacy Sandbox 4, `feature_area`
-  // specifies what type of interaction occurred.
-  virtual void InteractedWithPrivacySandbox4(FeatureArea feature_area);
 
   // Called when the user interacts with a safe browsing blocking page.
   virtual void InteractedWithSafeBrowsingInterstitial(

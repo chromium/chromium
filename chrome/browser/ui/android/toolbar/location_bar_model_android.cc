@@ -30,7 +30,7 @@ LocationBarModelAndroid::LocationBarModelAndroid(JNIEnv* env,
                                                  content::kMaxURLDisplayChars)),
       java_object_(obj) {}
 
-LocationBarModelAndroid::~LocationBarModelAndroid() {}
+LocationBarModelAndroid::~LocationBarModelAndroid() = default;
 
 void LocationBarModelAndroid::Destroy(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj) {
@@ -72,8 +72,9 @@ content::WebContents* LocationBarModelAndroid::GetActiveWebContents() const {
 
 bool LocationBarModelAndroid::IsNewTabPage() const {
   GURL url;
-  if (!GetURL(&url))
+  if (!GetURL(&url)) {
     return false;
+  }
 
   // Android Chrome has its own Instant NTP page implementation.
   if (url.SchemeIs(chrome::kChromeNativeScheme) &&

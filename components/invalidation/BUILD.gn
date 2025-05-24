@@ -8,6 +8,7 @@ if (is_android) {
 
 static_library("invalidation") {
   sources = [
+    "invalidation_constants.h",
     "invalidation_factory.cc",
     "invalidation_factory.h",
     "invalidation_listener.cc",

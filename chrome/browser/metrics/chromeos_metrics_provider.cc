@@ -5,11 +5,10 @@
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/arc_features_parser.h"
-#include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/barrier_closure.h"
@@ -40,6 +39,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/ash/experiences/arc/arc_features_parser.h"
+#include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -109,8 +110,7 @@ void ChromeOSMetricsProvider::LogCrash(const std::string& crash_type,
     IncrementPrefValue(prefs::kStabilitySystemUncleanShutdownCount,
                        num_samples);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Unexpected Chrome OS crash type " << crash_type;
+    NOTREACHED() << "Unexpected Chrome OS crash type " << crash_type;
   }
 
   // Wake up metrics logs sending if necessary now that new
@@ -158,13 +158,6 @@ void ChromeOSMetricsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
   cros_system_profile_provider_->ProvideSystemProfileMetrics(
       system_profile_proto);
-}
-
-void ChromeOSMetricsProvider::ProvideAccessibilityMetrics() {
-  bool is_spoken_feedback_enabled =
-      ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.CrosSpokenFeedback.EveryReport",
-                        is_spoken_feedback_enabled);
 }
 
 void ChromeOSMetricsProvider::ProvideSuggestedContentMetrics() {
@@ -219,7 +212,6 @@ void ChromeOSMetricsProvider::ProvideStabilityMetrics(
 
 void ChromeOSMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  ProvideAccessibilityMetrics();
   ProvideSuggestedContentMetrics();
   ProvideMetrics(uma_proto->mutable_system_profile(),
                  /*should_include_arc_metrics=*/!emitted_);

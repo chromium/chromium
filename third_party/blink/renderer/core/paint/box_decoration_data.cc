@@ -26,9 +26,23 @@ BackgroundBleedAvoidance BoxDecorationData::ComputeBleedAvoidance() const {
       layout_box_.IsDocumentElement())
     return kBackgroundBleedNone;
 
+  const bool has_border_image = style_.CanRenderBorderImage();
   const bool has_border_radius = style_.HasBorderRadius();
-  if (!should_paint_border_ || !has_border_radius ||
-      style_.CanRenderBorderImage()) {
+  if (!should_paint_border_ || !has_border_radius || has_border_image) {
+    if (has_border_image) {
+      // Border images are not affected by border radius, and thus clipping to
+      // the border box would break the border image.
+      if (has_border_radius) {
+        return kBackgroundBleedNone;
+      }
+      // If a border image has a non-zero border image outset, it will extend
+      // outside the border box, which means that the "clip" bleed avoidance
+      // strategies will not work since they will end up clipping the border
+      // image.
+      if (!style_.ImageOutsets(style_.BorderImage()).IsZero()) {
+        return kBackgroundBleedNone;
+      }
+    }
     if (layout_box_.BackgroundShouldAlwaysBeClipped())
       return kBackgroundBleedClipOnly;
     // Border radius clipping may require layer bleed avoidance if we are going

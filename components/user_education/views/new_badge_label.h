@@ -6,11 +6,12 @@
 #define COMPONENTS_USER_EDUCATION_VIEWS_NEW_BADGE_LABEL_H_
 
 #include <memory>
+#include <string_view>
 
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/badge_painter.h"
 #include "ui/views/controls/label.h"
@@ -76,7 +77,7 @@ class NewBadgeLabel : public views::Label {
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
   void OnPaint(gfx::Canvas* canvas) override;
-  void SetText(const std::u16string& text) override;
+  void SetText(std::u16string_view text) override;
 
   void SetDisplayNewBadgeForTesting(bool display_new_badge);
 

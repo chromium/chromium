@@ -5,8 +5,6 @@
 #ifndef IOS_WEB_COMMON_CRW_WEB_VIEW_CONTENT_VIEW_H_
 #define IOS_WEB_COMMON_CRW_WEB_VIEW_CONTENT_VIEW_H_
 
-#import <WebKit/WebKit.h>
-
 #import "ios/web/common/crw_content_view.h"
 #import "ios/web/common/crw_viewport_adjustment.h"
 

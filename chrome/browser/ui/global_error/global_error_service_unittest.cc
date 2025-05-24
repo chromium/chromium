@@ -51,9 +51,7 @@ int BaseError::count_ = 0;
 class MenuError : public BaseError {
  public:
   explicit MenuError(int command_id, Severity severity)
-      : command_id_(command_id),
-        severity_(severity) {
-  }
+      : command_id_(command_id), severity_(severity) {}
 
   MenuError(const MenuError&) = delete;
   MenuError& operator=(const MenuError&) = delete;
@@ -70,7 +68,7 @@ class MenuError : public BaseError {
   Severity severity_;
 };
 
-} // namespace
+}  // namespace
 
 // Test adding errors to the global error service.
 TEST(GlobalErrorServiceTest, AddError) {

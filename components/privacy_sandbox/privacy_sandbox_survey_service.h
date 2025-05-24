@@ -5,31 +5,24 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SURVEY_SERVICE_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SURVEY_SERVICE_H_
 
-#include "base/memory/raw_ptr.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_service.h"
-
 namespace privacy_sandbox {
 
-// This service manages survey eligibility determination, ensuring surveys are
-// surfaced only when specific criteria are met.
-class PrivacySandboxSurveyService : public KeyedService {
+class PrivacySandboxSurveyService{
  public:
-  explicit PrivacySandboxSurveyService(PrefService* pref_service);
-  ~PrivacySandboxSurveyService() override;
-  PrivacySandboxSurveyService(const PrivacySandboxSurveyService&) = delete;
-  PrivacySandboxSurveyService& operator=(const PrivacySandboxSurveyService&) =
-      delete;
-
-  // Determines if the sentiment survey should be surfaced. Returning `true`
-  // does not guarantee that a survey is shown.
-  bool ShouldShowSentimentSurvey();
-
-  // Called after the sentiment survey is successfully shown to the user.
-  void OnSuccessfulSentimentSurvey();
-
- private:
-  raw_ptr<PrefService> pref_service_;
+  // Records the survey's status when attempting to surface a
+  // sentiment survey.
+  //
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
+  // LINT.IfChange(PrivacySandboxSentimentSurveyStatus)
+  enum class PrivacySandboxSentimentSurveyStatus {
+    kSurveyShown = 0,          // Survey was successfully shown.
+    kFeatureDisabled = 1,      // Sentiment Survey feature disabled.
+    kHatsServiceFailed = 2,    // Could not initialize HaTS service.
+    kSurveyLaunchFailed = 3,   // Survey invite failed to launch.
+    kInvalidSurveyConfig = 4,  // Failed to initialize survey config.
+    kMaxValue = kInvalidSurveyConfig,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/privacy/enums.xml)
 };
 
 }  // namespace privacy_sandbox

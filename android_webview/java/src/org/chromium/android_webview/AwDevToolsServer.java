@@ -10,10 +10,12 @@ import org.jni_zero.NativeMethods;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.CommandLine;
+import org.chromium.build.annotations.NullMarked;
 
 /** Controller for Remote Web Debugging (Developer Tools). */
 @Lifetime.Singleton
 @JNINamespace("android_webview")
+@NullMarked
 public class AwDevToolsServer {
 
     public void setRemoteDebuggingEnabled(boolean enabled) {

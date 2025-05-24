@@ -20,12 +20,12 @@ URLFetcherBlockAdapter::URLFetcherBlockAdapter(
       url_loader_factory_(std::move(url_loader_factory)),
       completion_handler_(completion_handler) {}
 
-URLFetcherBlockAdapter::~URLFetcherBlockAdapter() {
-}
+URLFetcherBlockAdapter::~URLFetcherBlockAdapter() {}
 
 void URLFetcherBlockAdapter::Start() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url_;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  NO_TRAFFIC_ANNOTATION_YET);
@@ -47,8 +47,8 @@ void URLFetcherBlockAdapter::OnURLLoadComplete(
 
   url_loader_.reset();
 
-  NSData* data =
-      [NSData dataWithBytes:response.c_str() length:response.length()];
+  NSData* data = [NSData dataWithBytes:response.c_str()
+                                length:response.length()];
   completion_handler_(data, this);
 }
 

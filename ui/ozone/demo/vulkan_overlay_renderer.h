@@ -6,6 +6,8 @@
 #define UI_OZONE_DEMO_VULKAN_OVERLAY_RENDERER_H_
 
 #include <vulkan/vulkan_core.h>
+
+#include <array>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -111,7 +113,7 @@ class VulkanOverlayRenderer : public RendererBase {
   uint64_t frame_sequence_ = 0;
   int next_buffer_ = 0;
   size_t in_use_buffers_ = 0;
-  std::unique_ptr<Buffer> buffers_[2];
+  std::array<std::unique_ptr<Buffer>, 2> buffers_;
 
   std::unique_ptr<PlatformWindowSurface> window_surface_;
 

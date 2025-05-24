@@ -72,7 +72,7 @@ class WEB_DIALOGS_EXPORT WebDialogUI : public WebDialogUIBase,
   WebDialogUI(const WebDialogUI&) = delete;
   WebDialogUI& operator=(const WebDialogUI&) = delete;
 
- private:
+ protected:
   // content::WebUIController:
   void WebUIRenderFrameCreated(
       content::RenderFrameHost* render_frame_host) override;
@@ -80,8 +80,8 @@ class WEB_DIALOGS_EXPORT WebDialogUI : public WebDialogUIBase,
 
 // Displays file URL contents inside a modal web dialog while also enabling
 // Mojo calls to be made from within the dialog.
-class WEB_DIALOGS_EXPORT MojoWebDialogUI : public WebDialogUIBase,
-                                           public MojoWebUIController {
+class WEB_DIALOGS_EXPORT MojoWebDialogUI : public WebDialogUI,
+                                           public ui::EnableMojoWebUI {
  public:
   // When created, the delegate should already be set as user data on the
   // WebContents.

@@ -23,18 +23,27 @@ DesktopDataControlsDialogTestHelper::~DesktopDataControlsDialogTestHelper() =
     default;
 
 void DesktopDataControlsDialogTestHelper::OnConstructed(
-    DesktopDataControlsDialog* dialog) {
+    DesktopDataControlsDialog* dialog,
+    views::DialogDelegate* dialog_delegate) {
   ASSERT_FALSE(dialog_)
       << "Only one DesktopDataControlsDialog should be opened at a time for a "
          "test using this helper class.";
+  ASSERT_FALSE(dialog_delegate_)
+      << "Only one views::DialogDelegate should be opened at a time for a "
+         "test using this helper class.";
   dialog_ = dialog;
+  dialog_delegate_ = dialog_delegate;
   ASSERT_EQ(dialog->type(), expected_dialog_type_);
 }
 
 void DesktopDataControlsDialogTestHelper::OnWidgetInitialized(
-    DesktopDataControlsDialog* dialog) {
+    DesktopDataControlsDialog* dialog,
+    views::DialogDelegate* dialog_delegate) {
   ASSERT_TRUE(dialog);
+  ASSERT_TRUE(dialog_delegate);
+
   ASSERT_EQ(dialog, dialog_);
+  ASSERT_EQ(dialog_delegate, dialog_delegate_);
 
   std::move(dialog_init_callback_).Run();
 }
@@ -42,8 +51,10 @@ void DesktopDataControlsDialogTestHelper::OnWidgetInitialized(
 void DesktopDataControlsDialogTestHelper::OnDestructed(
     DesktopDataControlsDialog* dialog) {
   ASSERT_TRUE(dialog);
+
   ASSERT_EQ(dialog, dialog_);
   dialog_ = nullptr;
+  dialog_delegate_ = nullptr;
 
   std::move(dialog_close_callback_).Run();
 }
@@ -52,27 +63,31 @@ DesktopDataControlsDialog* DesktopDataControlsDialogTestHelper::dialog() {
   return dialog_;
 }
 
+views::DialogDelegate* DesktopDataControlsDialogTestHelper::dialog_delegate() {
+  return dialog_delegate_;
+}
+
 void DesktopDataControlsDialogTestHelper::BypassWarning() {
   // Some platforms crash if the dialog has been accepted/cancelled before fully
   // launching modally, so to avoid that issue accepting/cancelling the dialog
   // is done asynchronously.
-  ASSERT_TRUE(dialog_);
+  ASSERT_TRUE(dialog_delegate_);
   ASSERT_TRUE(dialog_->type() ==
                   DataControlsDialog::Type::kClipboardPasteWarn ||
               dialog_->type() == DataControlsDialog::Type::kClipboardCopyWarn);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&DesktopDataControlsDialog::CancelDialog,
-                                base::Unretained(dialog_)));
+      FROM_HERE, base::BindOnce(&views::DialogDelegate::CancelDialog,
+                                base::Unretained(dialog_delegate_)));
 }
 
 void DesktopDataControlsDialogTestHelper::CloseDialogWithoutBypass() {
   // Some platforms crash if the dialog has been accepted/cancelled before fully
   // launching modally, so to avoid that issue accepting/cancelling the dialog
   // is done asynchronously.
-  ASSERT_TRUE(dialog_);
+  ASSERT_TRUE(dialog_delegate_);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&DesktopDataControlsDialog::AcceptDialog,
-                                base::Unretained(dialog_)));
+      FROM_HERE, base::BindOnce(&views::DialogDelegate::AcceptDialog,
+                                base::Unretained(dialog_delegate_)));
 }
 
 void DesktopDataControlsDialogTestHelper::WaitForDialogToInitialize() {
@@ -83,6 +98,9 @@ void DesktopDataControlsDialogTestHelper::WaitForDialogToInitialize() {
 void DesktopDataControlsDialogTestHelper::WaitForDialogToClose() {
   ASSERT_TRUE(dialog_close_loop_);
   dialog_close_loop_->Run();
+
+  dialog_ = nullptr;
+  dialog_delegate_ = nullptr;
 }
 
 }  // namespace data_controls

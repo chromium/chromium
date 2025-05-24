@@ -32,11 +32,9 @@ base::android::ScopedJavaLocalRef<jobject> CreateNativeCredential(
                 IDS_PASSWORDS_VIA_FEDERATION,
                 base::ASCIIToUTF16(password_form.federation_origin.host()))
           : std::string();
-  return Java_Credential_createCredential(
-      env, ConvertUTF16ToJavaString(env, password_form.username_value),
-      ConvertUTF16ToJavaString(env, password_form.display_name),
-      ConvertUTF8ToJavaString(env, origin_url),
-      ConvertUTF8ToJavaString(env, federation), position);
+  return Java_Credential_createCredential(env, password_form.username_value,
+                                          password_form.display_name,
+                                          origin_url, federation, position);
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray> CreateNativeCredentialArray(

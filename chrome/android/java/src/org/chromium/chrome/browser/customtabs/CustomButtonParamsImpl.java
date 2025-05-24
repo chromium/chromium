@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -44,12 +45,12 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     private static final String TAG = "CustomTabs";
 
     private final PendingIntent mPendingIntent;
-    private int mId;
+    private final int mId;
     private Bitmap mIcon;
     private String mDescription;
-    private boolean mShouldTint;
+    private final boolean mShouldTint;
     private boolean mIsOnToolbar;
-    private @ButtonType int mType;
+    private final @ButtonType int mType;
 
     @VisibleForTesting
     static final String SHOW_ON_TOOLBAR = "android.support.customtabs.customaction.SHOW_ON_TOOLBAR";
@@ -107,6 +108,17 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         }
     }
 
+    @Override
+    public Drawable getIcon(Context context, ColorStateList tint) {
+        if (mShouldTint) {
+            TintedDrawable icon = new TintedDrawable(context, mIcon);
+            icon.setTint(tint);
+            return icon;
+        } else {
+            return new BitmapDrawable(context.getResources(), mIcon);
+        }
+    }
+
     /**
      * @return The content description for the customized button.
      */
@@ -134,11 +146,15 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
      *
      * @param parent The parent that the inflated {@link ImageButton}.
      * @param listener {@link OnClickListener} that should be used with the button.
+     * @param buttonIconTint tint to be applied to button icon, if icon should be tinted.
      * @return Parsed list of {@link CustomButtonParams}, which is empty if the input is invalid.
      */
     @Override
     public ImageButton buildBottomBarButton(
-            Context context, ViewGroup parent, OnClickListener listener) {
+            Context context,
+            ViewGroup parent,
+            OnClickListener listener,
+            ColorStateList buttonIconTint) {
         assert !mIsOnToolbar;
 
         ImageButton button =
@@ -146,7 +162,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.custom_tabs_bottombar_item, parent, false);
         button.setId(mId);
-        button.setImageDrawable(getIcon(context));
+        button.setImageDrawable(getIcon(context, buttonIconTint));
         button.setContentDescription(mDescription);
         if (mPendingIntent == null) {
             button.setEnabled(false);
@@ -317,7 +333,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     @VisibleForTesting
     public static CustomButtonParams createShareButton(Context context, int backgroundColor) {
         int id = CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID;
-        String description = context.getResources().getString(R.string.share);
+        String description = context.getString(R.string.share);
         Intent shareIntent = new Intent(context, CustomTabsShareBroadcastReceiver.class);
         PendingIntent pendingIntent =
                 PendingIntent.getBroadcast(
@@ -347,8 +363,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     public static CustomButtonParams createOpenInBrowserButton(
             Context context, int backgroundColor) {
         int id = CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID;
-        String description =
-                context.getResources().getString(R.string.menu_open_in_product_default);
+        String description = context.getString(R.string.menu_open_in_product_default);
 
         TintedDrawable drawable =
                 TintedDrawable.constructTintedDrawable(

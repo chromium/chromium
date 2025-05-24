@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AwPermissionQueryApiTest extends AwParameterizedTest {
 
     // Script template to query a permission and report the result back using the injected listener.
+    @SuppressWarnings("InlineFormatString")
     private static final String QUERY_API_PERMISSION =
             """
           <html>
@@ -54,7 +55,11 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
           }).catch(e => {
             if (e instanceof TypeError && e.message.includes("is not enabled")) {
                 resultListener.postMessage("not_enabled");
-            } else {
+            }
+            else if (e instanceof TypeError && e.message.includes("isn't available on Android")) {
+                resultListener.postMessage("not_available");
+            }
+            else {
                 resultListener.postMessage("" + e);
             }
           });
@@ -174,6 +179,7 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("gyroscope", "granted");
         runTestCase("midi", "granted");
         runTestCase("magnetometer", "granted");
+        runTestCase("clipboard-write", "granted");
     }
 
     @Test
@@ -182,7 +188,6 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
     public void testPermissionsPrompt() throws Exception {
         // These permissions require a user prompt.
         runTestCase("camera", "prompt");
-        runTestCase("clipboard-write", "prompt");
         runTestCase("geolocation", "prompt");
         runTestCase("microphone", "prompt");
         runTestCase("midi-sysex", "prompt", "{\"name\": \"midi\", \"sysex\": true}");
@@ -212,9 +217,7 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("display-capture", "denied");
         runTestCase("idle-detection", "denied");
         runTestCase("periodic-background-sync", "denied");
-        runTestCase("keyboard-lock", "denied");
         runTestCase("push", "denied", "{\"name\": \"push\", \"userVisibleOnly\": true}");
-        runTestCase("pointer-lock", "denied");
         runTestCase(
                 "fullscreen",
                 "denied",
@@ -228,11 +231,19 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         // These permissions are blocked behind feature flags that are not enabled
         // in WebView.
         runTestCase("ambient-light-sensor", "not_enabled");
-        runTestCase("accessibility-events", "not_enabled");
         runTestCase("system-wake-lock", "not_enabled");
         runTestCase("local-fonts", "not_enabled");
         runTestCase("captured-surface-control", "not_enabled");
         runTestCase("speaker-selection", "not_enabled");
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testPermissionsNotAvailable() throws Exception {
+        // These permissions aren't available on Android.
+        runTestCase("pointer-lock", "not_available");
+        runTestCase("keyboard-lock", "not_available");
     }
 
     @Test

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // devguid requires Windows.h be imported first.
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 
@@ -171,13 +166,13 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
 
   if (device_descriptor->VendorIdOffset &&
       output_buf[device_descriptor->VendorIdOffset]) {
-    device.vendor.assign(output_buf.data() + device_descriptor->VendorIdOffset);
+    device.vendor.assign(&output_buf[device_descriptor->VendorIdOffset]);
   }
 
   std::string product_id;
   if (device_descriptor->ProductIdOffset &&
       output_buf[device_descriptor->ProductIdOffset]) {
-    device.model.assign(output_buf.data() + device_descriptor->ProductIdOffset);
+    device.model.assign(&output_buf[device_descriptor->ProductIdOffset]);
   }
 
   device_list->data.push_back(std::move(device));

@@ -61,7 +61,7 @@ class CompanionAppBrokerImplUnitTest : public AshTestBase,
   }
 
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin(kUserEmail, user_type);
+    SimulateUserLogin({kUserEmail, user_type});
   }
 
   void SetIdentityManager(signin::IdentityManager* identity_manager) {

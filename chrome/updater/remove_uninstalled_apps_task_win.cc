@@ -23,13 +23,18 @@ namespace updater {
 std::optional<int> RemoveUninstalledAppsTask::GetUnregisterReason(
     const std::string& app_id,
     const base::FilePath& /*ecp*/) const {
-  base::win::RegKey key;
-  if (key.Open(IsSystemInstall(scope_) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER,
-               GetAppClientsKey(app_id).c_str(),
-               Wow6432(KEY_READ)) == ERROR_FILE_NOT_FOUND) {
-    return std::make_optional(kUninstallPingReasonUninstalled);
+  const HKEY root = UpdaterScopeToHKeyRoot(scope_);
+  const std::wstring app_clients_key = GetAppClientsKey(app_id);
+
+  for (const auto& access_mask : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+    if (base::win::RegKey().Open(root, app_clients_key.c_str(),
+                                 KEY_READ | access_mask) !=
+        ERROR_FILE_NOT_FOUND) {
+      return {};
+    }
   }
-  return std::nullopt;
+
+  return kUninstallPingReasonUninstalled;
 }
 
 }  // namespace updater

@@ -190,6 +190,9 @@
     <message name="IDS_PAYMENTS_CANCEL_PAYMENT" desc="Label of the secondary button in payment request editors. Clicking that button closes the dialog and aborts the payment request completely. Sentence-cased.">
       Cancel payment
     </message>
+    <message name="IDS_PAYMENTS_CONFIRM_BUTTON" desc="Label of the primary button in a payment confirmation UI. Pressing the button indicates acceptance of the payment details shown. Sentence-cased." formatter_data="android_java">
+      Confirm
+    </message>
   </if>  <!-- not use_titlecase -->
   <!-- Buttons, Title-Cased -->
   <if expr="use_titlecase">
@@ -216,6 +219,9 @@
     </message>
     <message name="IDS_PAYMENTS_CANCEL_PAYMENT" desc="Label of the secondary button in payment request editors. Clicking that button closes the dialog and aborts the payment request completely. Title-Cased.">
       Cancel Payment
+    </message>
+    <message name="IDS_PAYMENTS_CONFIRM_BUTTON" desc="Label of the primary button in a payment confirmation UI. Pressing the button indicates acceptance of the payment details shown. Title-Cased.">
+      Confirm
     </message>
   </if>  <!-- use_titlecase -->
 
@@ -479,6 +485,9 @@
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Continue', and clicking 'Continue' will open the system interface to verify their identity, for example with their fingerprint." formatter_data="android_java">
         Verify your purchase
     </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INFORM_ONLY_TITLE" desc="The title string on a payment confirmation dialog that confirms the details of the payment." formatter_data="android_java">
+        Confirm your purchase
+    </message>
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_DESCRIPTION" desc="The description string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user will verify the purchase using an OS-level system (e.g., Touch ID).">
       Complete your purchase using your device
     </message>
@@ -542,6 +551,9 @@
   <if expr="is_android">
     <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment." formatter_data="android_java">
         <ph name="URL">%1$s<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE" desc="Footnote on a secure payment confirmation dialog that explains what will happen next and provides a link to verify by another way." formatter_data="android_java">
+        Unlock your screen in the next step, typically using your fingerprint. Or you can <ph name="BEGIN_LINK">BEGIN_LINK</ph>verify another way<ph name="END_LINK">END_LINK</ph>.
     </message>
   </if>
   <if expr="not is_android">

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import org.chromium.blink.mojom.RpContext;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
@@ -20,6 +21,7 @@ import java.util.List;
  * This component supports accounts selection for WebID. It shows a list of
  * accounts to the user which can select one of them or dismiss it.
  */
+@NullMarked
 public interface AccountSelectionComponent {
     /**
      * This delegate is called when the AccountSelection component is interacted with (e.g.
@@ -27,10 +29,9 @@ public interface AccountSelectionComponent {
      */
     interface Delegate {
         /**
-         * Called when the user select one of the accounts shown in the
-         * AccountSelectionComponent.
+         * Called when the user select one of the accounts shown in the AccountSelectionComponent.
          */
-        void onAccountSelected(GURL idpConfigUrl, Account account);
+        void onAccountSelected(Account account);
 
         /**
          * Called when the user dismisses the AccountSelectionComponent. Not called if a suggestion
@@ -65,18 +66,16 @@ public interface AccountSelectionComponent {
      * Displays the given accounts in a new bottom sheet.
      *
      * @param rpEtldPlusOne The {@link String} for the relying party.
-     * @param idpEtldPlusOne The {@link String} for the identity provider.
      * @param accounts A list of {@link Account}s that will be displayed.
-     * @param idpData The information about the identity provider.
-     * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
+     * @param idpDataList The list with information about the identity providers.
      * @param newAccounts The newly logged in accounts.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showAccounts(
+    boolean showAccounts(
             String rpEtldPlusOne,
-            String idpEtldPlusOne,
             List<Account> accounts,
-            IdentityProviderData idpData,
-            boolean isAutoReauthn,
+            List<IdentityProviderData> idpDataList,
             List<Account> newAccounts);
 
     /**
@@ -89,8 +88,10 @@ public interface AccountSelectionComponent {
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is an enum representing the desired text to be used in the title of the
      *     FedCM prompt: "signin", "continue", etc.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showFailureDialog(
+    boolean showFailureDialog(
             String rpForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
@@ -107,8 +108,10 @@ public interface AccountSelectionComponent {
      *     FedCM prompt: "signin", "continue", etc.
      * @param IdentityCredentialTokenError is contains the error code and url to display in the
      *     FedCM prompt.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showErrorDialog(
+    boolean showErrorDialog(
             String rpForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
@@ -122,9 +125,19 @@ public interface AccountSelectionComponent {
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param rpContext is an enum representing the desired text to be used in the title of the
      *     FedCM prompt: "signin", "continue", etc.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showLoadingDialog(
+    boolean showLoadingDialog(
             String rpForDisplay, String idpForDisplay, @RpContext.EnumType int rpContext);
+
+    /**
+     * Displays the verifying UI in a new bottom sheet.
+     *
+     * @param account An {@link Account} that will be displayed.
+     * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
+     */
+    boolean showVerifyingDialog(Account account, boolean isAutoReauthn);
 
     /**
      * Closes the outstanding bottom sheet or the popup, depending on what this object corresponds

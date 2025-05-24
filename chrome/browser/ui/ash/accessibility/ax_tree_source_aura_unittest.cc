@@ -47,8 +47,9 @@ size_t GetSize(AXAuraObjWrapper* tree) {
   std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>> out_children;
   tree->GetChildren(&out_children);
 
-  for (size_t i = 0; i < out_children.size(); ++i)
+  for (size_t i = 0; i < out_children.size(); ++i) {
     count += GetSize(out_children[i]);
+  }
 
   return count;
 }
@@ -58,12 +59,12 @@ size_t GetSize(AXAuraObjWrapper* tree) {
 // AXTreeSourceViewsTest.
 class AXTreeSourceAuraTest : public ChromeViewsTestBase {
  public:
-  AXTreeSourceAuraTest() {}
+  AXTreeSourceAuraTest() = default;
 
   AXTreeSourceAuraTest(const AXTreeSourceAuraTest&) = delete;
   AXTreeSourceAuraTest& operator=(const AXTreeSourceAuraTest&) = delete;
 
-  ~AXTreeSourceAuraTest() override {}
+  ~AXTreeSourceAuraTest() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -84,7 +85,7 @@ class AXTreeSourceAuraTest : public ChromeViewsTestBase {
 
     textfield_ = new Textfield();
     textfield_->SetText(u"Value");
-    content_->AddChildView(textfield_.get());
+    content_->AddChildViewRaw(textfield_.get());
     widget_->Show();
   }
 
@@ -137,8 +138,9 @@ TEST_F(AXTreeSourceAuraTest, Accessors) {
   // Try walking up the tree to the root.
   AXAuraObjWrapper* test_root = nullptr;
   for (AXAuraObjWrapper* root_finder = ax_tree.GetParent(content); root_finder;
-       root_finder = ax_tree.GetParent(root_finder))
+       root_finder = ax_tree.GetParent(root_finder)) {
     test_root = root_finder;
+  }
   ASSERT_EQ(ax_tree.GetRoot(), test_root);
 }
 
@@ -188,7 +190,7 @@ TEST_F(AXTreeSourceAuraTest, Serialize) {
 
   // Try removing some child views and re-adding which should fire some events.
   content_->RemoveAllChildViewsWithoutDeleting();
-  content_->AddChildView(textfield_.get());
+  content_->AddChildViewRaw(textfield_.get());
 
   // Grab the textfield since serialization only walks up the tree (not down
   // from root).
@@ -205,8 +207,9 @@ TEST_F(AXTreeSourceAuraTest, Serialize) {
 
   int text_field_update_index = -1;
   for (size_t i = 0; i < node_count; ++i) {
-    if (textfield_wrapper->GetUniqueId() == out_update2.nodes[i].id)
+    if (textfield_wrapper->GetUniqueId() == out_update2.nodes[i].id) {
       text_field_update_index = i;
+    }
   }
 
   ASSERT_NE(-1, text_field_update_index);
@@ -222,8 +225,9 @@ TEST_F(AXTreeSourceAuraTest, SerializeWindowSetsClipsChildren) {
   ui::AXNodeData node_data;
   ax_tree.SerializeNode(widget_wrapper, &node_data);
   EXPECT_EQ(ax::mojom::Role::kWindow, node_data.role);
-  bool clips_children = false;
-  EXPECT_TRUE(node_data.GetBoolAttribute(
-      ax::mojom::BoolAttribute::kClipsChildren, &clips_children));
+  EXPECT_TRUE(
+      node_data.HasBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren));
+  bool clips_children =
+      node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren);
   EXPECT_TRUE(clips_children);
 }

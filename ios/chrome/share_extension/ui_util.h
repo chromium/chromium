@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_SHARE_EXTENSION_UI_UTIL_H_
 #define IOS_CHROME_SHARE_EXTENSION_UI_UTIL_H_
 
+#import <UIKit/UIKit.h>
+
 namespace ui_util {
 
 // Standard animation timing for the extension.

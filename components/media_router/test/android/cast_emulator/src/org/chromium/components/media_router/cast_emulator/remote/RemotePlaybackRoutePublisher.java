@@ -226,11 +226,6 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             return false;
         }
 
-        /**
-         * @param intent
-         * @param callback
-         * @return
-         */
         private boolean handleSyncStatus(Intent intent, ControlRequestCallback callback) {
             String sid = intent.getStringExtra(MediaControlIntent.EXTRA_SESSION_ID);
             Log.v(TAG, "%s: Received syncStatus request, sid=%s", mRouteId, sid);

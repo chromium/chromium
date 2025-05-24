@@ -15,7 +15,7 @@ import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import '/shared/nearby_page_template.js';
 import '/shared/nearby_preview.js';
 import '/shared/nearby_progress.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import type {ConfirmationManagerInterface, PayloadPreview, ShareTarget, TransferUpdateListenerInterface, TransferUpdateListenerPendingReceiver} from '/shared/nearby_share.mojom-webui.js';
 import {TransferStatus, TransferUpdateListenerReceiver} from '/shared/nearby_share.mojom-webui.js';

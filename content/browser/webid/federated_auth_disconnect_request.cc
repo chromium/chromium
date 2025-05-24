@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/federated_auth_disconnect_request.h"
 
+#include "base/notreached.h"
+#include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
@@ -88,8 +90,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
       // Intentional fall-through.
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   if (error_disconnect_status) {
     Complete(DisconnectStatus::kError, *error_disconnect_status);
@@ -106,11 +107,16 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
     return;
   }
 
-  provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
+  config_fetcher_ = std::make_unique<FedCmConfigFetcher>(
       *render_frame_host_, network_manager_.get());
   GURL config_url = options_->config->config_url;
-  provider_fetcher_->Start(
-      {GURL(config_url)}, blink::mojom::RpMode::kWidget, /*icon_ideal_size=*/0,
+  // TODO(crbug.com/390626180): It seems ok to ignore the well-known checks in
+  // all cases here. However, keeping this unchanged for now when the IDP
+  // registration API is not enabled since we only really need this for that
+  // case.
+  config_fetcher_->Start(
+      {{config_url, IsFedCmIdPRegistrationEnabled()}},
+      blink::mojom::RpMode::kPassive, /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindOnce(
           &FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched,
@@ -118,20 +124,17 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
 }
 
 void FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched(
-    std::vector<FederatedProviderFetcher::FetchResult> fetch_results) {
-  provider_fetcher_.reset();
-  DCHECK(fetch_results.size() == 1u);
-  const FederatedProviderFetcher::FetchResult& fetch_result = fetch_results[0];
+    std::vector<FedCmConfigFetcher::FetchResult> fetch_results) {
+  config_fetcher_.reset();
+  DCHECK_EQ(fetch_results.size(), 1u);
+  const FedCmConfigFetcher::FetchResult& fetch_result = fetch_results[0];
   if (fetch_result.error) {
-    const FederatedProviderFetcher::FetchError& fetch_error =
-        *fetch_result.error;
+    const FedCmConfigFetcher::FetchError& fetch_error = *fetch_result.error;
     if (fetch_error.additional_console_error_message) {
       render_frame_host_->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           *fetch_error.additional_console_error_message);
     }
-
-    // TODO (crbug.com/1473134): add devtools issues and console errors.
 
     FedCmDisconnectStatus status;
     switch (fetch_error.result) {
@@ -180,11 +183,9 @@ void FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched(
         break;
       }
       default: {
-        status = FedCmDisconnectStatus::kUnhandledRequest;
-        // The FederatedProviderFetcher does not return any other type of
+        // The FedCmConfigFetcher does not return any other type of
         // result.
-        CHECK(false);
-        break;
+        NOTREACHED();
       }
     }
     Complete(DisconnectStatus::kError, status);
@@ -249,9 +250,10 @@ void FederatedAuthDisconnectRequest::Complete(
           ? std::optional<base::TimeDelta>{base::TimeTicks::Now() - start_time_}
           : std::nullopt;
   metrics_->RecordDisconnectMetrics(
-      disconnect_status_for_metrics, duration, *render_frame_host_, origin_,
-      embedding_origin_, options_->config->config_url,
-      webid::GetNewSessionID());
+      disconnect_status_for_metrics, duration,
+      webid::ComputeRequesterFrameType(*render_frame_host_, origin_,
+                                       embedding_origin_),
+      options_->config->config_url);
 
   std::move(callback_).Run(status);
 }

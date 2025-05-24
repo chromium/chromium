@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace bookmarks {
@@ -178,7 +178,7 @@ TEST(BookmarkStorageTest, RecordTimeSinceLastScheduledSave) {
 
 TEST(BookmarkStorageTest, ShouldSaveAccountNodes) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
   model->CreateAccountPermanentFolders();
@@ -211,7 +211,7 @@ TEST(BookmarkStorageTest, ShouldSaveAccountNodes) {
 
 TEST(BookmarkStorageTest, ShouldSaveDespiteAccountBookmarksEmpty) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
   ASSERT_EQ(nullptr, model->account_bookmark_bar_node());

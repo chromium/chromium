@@ -99,7 +99,7 @@ class DiskCacheTestWithCache : public DiskCacheTest {
 
   void SetMask(uint32_t mask) { mask_ = mask; }
 
-  void SetMaxSize(int64_t size, bool should_succeed = true);
+  void SetMaxSize(int64_t size);
 
   // Returns value last given to SetMaxSize (or 0).
   int MaxSize() const { return size_; }

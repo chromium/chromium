@@ -13,17 +13,14 @@ namespace test_switches {
 extern const char kForceRealSystemIdentityManager[];
 
 // Switch used to add identities when starting the fake SystemIdentityManager.
-// The value comes from `+[FakeSystemIdentity encodeIdentitiesToBase64:]`.
+// The value comes from `+[FakeSystemIdentity encodeIdentitiesToBase64:]`.
+// Alternatively, if no value is passed, `fakeIdentity1` is used by default.
 //
 // Ignored if kForceRealSystemIdentityManager is used.
 extern const char kAddFakeIdentitiesAtStartup[];
 
-// Switch used to record an identity at startup to avoid automatic sign out.
-// Only uses the identities from the `kAddFakeIdentitiesAtStartup` switch if
-// the switch is set, otherwise` fakeIdentity1` is used by default.
-//
-// Ignored if kForceRealSystemIdentityManager is used.
-extern const char kSignInAtStartup[];
+// Switch used to simulate a post device restore in EG tests.
+extern const char kSimulatePostDeviceRestore[];
 
 // Switch used to enable FakeTabGroupSyncService for testing. The feature
 // kTabGroupSync should be enabled as well.
@@ -36,10 +33,6 @@ extern const char kFamilyStatus[];
 // Switch used to enable a certain IPH for testing. The value should be the IPH
 // feature to enable. Leave blank/empty value to enable all IPH in testing.
 extern const char kEnableIPH[];
-
-// Switch used to enable `FakePlusAddressService` for testing.
-// TODO(crbug.com/327838014): Adapt tests and get rid of the switch.
-extern const char kAddFakePlusAddressService[];
 
 }  // namespace test_switches
 

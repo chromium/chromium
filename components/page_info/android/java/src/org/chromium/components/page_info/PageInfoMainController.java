@@ -6,16 +6,18 @@ package org.chromium.components.page_info;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
 /** Interface for a page info main page controller. */
+@NullMarked
 public interface PageInfoMainController {
     /**
      * Launches the PageInfoSubpage provided by |pageInfoCookiesController|.
+     *
      * @param controller The controller providing a PageInfoSubpage.
      */
     void launchSubpage(PageInfoSubpageController controller);
@@ -37,14 +39,19 @@ public interface PageInfoMainController {
     @ConnectionSecurityLevel
     int getSecurityLevel();
 
-    /** @return A BrowserContext for this dialog. */
+    /**
+     * @return A BrowserContext for this dialog.
+     */
     BrowserContextHandle getBrowserContext();
 
-    /** @return The Activity associated with the controller. */
-    @Nullable
-    Activity getActivity();
+    /**
+     * @return The Activity associated with the controller.
+     */
+    @Nullable Activity getActivity();
 
-    /** @return The GURL of the page associated with the controller. */
+    /**
+     * @return The GURL of the page associated with the controller.
+     */
     GURL getURL();
 
     /** Dismiss the page info dialog. */

@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 
+#include "base/check_deref.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -55,8 +57,7 @@ NavigationThrottle::ThrottleCheckResult ExecuteNavigationEvent(
     case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
       return throttle->WillCommitWithoutUrlLoader();
   }
-  NOTREACHED_IN_MIGRATION();
-  return NavigationThrottle::CANCEL_AND_IGNORE;
+  NOTREACHED();
 }
 
 const char* GetEventName(NavigationThrottleRunner::Event event) {
@@ -75,8 +76,7 @@ const char* GetEventName(NavigationThrottleRunner::Event event) {
     case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
       return "NavigationThrottle::WillCommitWithoutUrlLoader";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* GetEventNameForHistogram(NavigationThrottleRunner::Event event) {
@@ -95,8 +95,7 @@ const char* GetEventNameForHistogram(NavigationThrottleRunner::Event event) {
     case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
       return "WillCommitWithoutUrlLoader";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 base::TimeDelta RecordHistogram(NavigationThrottleRunner::Event event,
@@ -126,7 +125,9 @@ NavigationThrottleRunner::NavigationThrottleRunner(Delegate* delegate,
                                                    bool is_primary_main_frame)
     : delegate_(delegate),
       navigation_id_(navigation_id),
-      is_primary_main_frame_(is_primary_main_frame) {}
+      is_primary_main_frame_(is_primary_main_frame) {
+  CHECK(delegate_);
+}
 
 NavigationThrottleRunner::~NavigationThrottleRunner() {
   base::UmaHistogramTimes("Navigation.ThrottleTotalDeferTime",
@@ -139,8 +140,31 @@ NavigationThrottleRunner::~NavigationThrottleRunner() {
                               defer_count_for_request_);
 }
 
+NavigationHandle& NavigationThrottleRunner::GetNavigationHandle() {
+  // TODO(https://crbug.com/412524375): Change the NavigationThrottleRunner
+  // to take a NavigationRequest instead of a Delegate. Then use the request
+  // to get the NavigationHandle safely here.
+  // See https://crrev.com/c/6478853/comment/4217a4c3_3e0f336b/.
+  return *static_cast<NavigationRequest*>(delegate_);
+}
+
+void NavigationThrottleRunner::AddThrottle(
+    std::unique_ptr<NavigationThrottle> navigation_throttle) {
+  CHECK(navigation_throttle);
+  TRACE_EVENT1("navigation", "NavigationThrottleRunner::AddThrottle",
+               "navigation_throttle", navigation_throttle->GetNameForLogging());
+  throttles_.push_back(std::move(navigation_throttle));
+}
+
+void NavigationThrottleRunner::MaybeAddThrottle(
+    std::unique_ptr<NavigationThrottle> navigation_throttle) {
+  if (navigation_throttle) {
+    AddThrottle(std::move(navigation_throttle));
+  }
+}
+
 void NavigationThrottleRunner::ProcessNavigationEvent(Event event) {
-  DCHECK_NE(Event::kNoEvent, event);
+  CHECK_NE(Event::kNoEvent, event);
   current_event_ = event;
   next_index_ = 0;
   ProcessInternal();
@@ -148,7 +172,13 @@ void NavigationThrottleRunner::ProcessNavigationEvent(Event event) {
 
 void NavigationThrottleRunner::ResumeProcessingNavigationEvent(
     NavigationThrottle* deferring_throttle) {
-  DCHECK_EQ(GetDeferringThrottle(), deferring_throttle);
+  if (GetDeferringThrottle() != deferring_throttle) {
+    // TODO(https://crbug.com/411238078): Upgrade to CHECK_EQ once remaining
+    // known cases are fixed. Until then, collect dump data and ignore the
+    // resume request to avoid bypassing required throttle checks.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
   base::TimeDelta defer_time =
       RecordDeferTimeHistogram(current_event_, defer_start_time_);
   total_defer_duration_time_ += defer_time;
@@ -188,23 +218,23 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // NavigationRequest.
   NavigationRequest* request = static_cast<NavigationRequest*>(delegate_);
 
-  throttles_ = request->GetDelegate()->CreateThrottlesForNavigation(request);
+  request->GetDelegate()->CreateThrottlesForNavigation(*this);
 
   // Check for renderer-inititated main frame navigations to blocked URL schemes
   // (data, filesystem). This is done early as it may block the main frame
   // navigation altogether.
-  AddThrottle(
+  MaybeAddThrottle(
       BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(request));
 
 #if !BUILDFLAG(IS_ANDROID)
   // Prevent cross-document navigations from document picture-in-picture
   // windows.
-  AddThrottle(
+  MaybeAddThrottle(
       DocumentPictureInPictureNavigationThrottle::MaybeCreateThrottleFor(
           request));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  AddThrottle(AncestorThrottle::MaybeCreateThrottleFor(request));
+  MaybeAddThrottle(AncestorThrottle::MaybeCreateThrottleFor(request));
 
   // Check for mixed content. This is done after the AncestorThrottle and the
   // FormSubmissionThrottle so that when folks block mixed content with a CSP
@@ -222,14 +252,15 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   }
 
   // Block certain requests that are not permitted for prerendering.
-  AddThrottle(PrerenderNavigationThrottle::MaybeCreateThrottleFor(request));
+  MaybeAddThrottle(
+      PrerenderNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Defer cross-origin subframe loading during prerendering state.
-  AddThrottle(
+  MaybeAddThrottle(
       PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Prevent navigations to/from Isolated Web Apps.
-  AddThrottle(IsolatedWebAppThrottle::MaybeCreateThrottleFor(request));
+  MaybeAddThrottle(IsolatedWebAppThrottle::MaybeCreateThrottleFor(request));
 
   for (auto& throttle :
        devtools_instrumentation::CreateNavigationThrottles(request)) {
@@ -240,34 +271,33 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // commit an error page instead. Note that this should take lower priority
   // than other throttles that might care about those navigations, e.g.
   // throttles handling pages with 407 errors that require extra authentication.
-  AddThrottle(HttpErrorNavigationThrottle::MaybeCreateThrottleFor(*request));
+  MaybeAddThrottle(
+      HttpErrorNavigationThrottle::MaybeCreateThrottleFor(*request));
 
   // Wait for renderer-initiated navigation cancelation window to end. This will
   // wait for the JS task that starts the navigation to finish, so add it close
   // to the end to not delay running other throttles.
-  AddThrottle(RendererCancellationThrottle::MaybeCreateThrottleFor(request));
+  MaybeAddThrottle(
+      RendererCancellationThrottle::MaybeCreateThrottleFor(request));
 
   // Defer any cross-document subframe history navigations if there is an
   // associated main-frame same-document history navigation in progress, until
   // the main frame has had an opportunity to fire a navigate event in the
   // renderer. If the navigate event cancels the history navigation, the
   // subframe navigations should not proceed.
-  AddThrottle(
+  MaybeAddThrottle(
       SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Defer subframe navigation in bfcached page if it hasn't sent a network
   // request.
   // This must be the last throttle to run. See https://crrev.com/c/5316738.
-  if (base::FeatureList::IsEnabled(
-          features::kEnableBackForwardCacheForOngoingSubframeNavigation)) {
-    AddThrottle(
-        BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
-            request));
-  }
+  MaybeAddThrottle(
+      BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
+          request));
 
   // Add a throttle to manage top-frame navigations from a partitioned popin.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  AddThrottle(
+  MaybeAddThrottle(
       PartitionedPopinsNavigationThrottle::MaybeCreateThrottleFor(request));
   // DO NOT ADD any throttles after this line.
 
@@ -302,22 +332,20 @@ void NavigationThrottleRunner::
   // the main frame has had an opportunity to fire a navigate event in the
   // renderer. If the navigate event cancels the history navigation, the
   // subframe navigations should not proceed.
-  AddThrottle(
+  MaybeAddThrottle(
       SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Defer cross-origin about:srcdoc subframe loading during prerendering state.
-  AddThrottle(
+  MaybeAddThrottle(
       PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Defer subframe navigation in bfcached page.
-  if (base::FeatureList::IsEnabled(
-          features::kEnableBackForwardCacheForOngoingSubframeNavigation)) {
-    AddThrottle(
-        BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
-            request));
-  }
+  MaybeAddThrottle(
+      BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
+          request));
 
-  AddThrottle(RendererCancellationThrottle::MaybeCreateThrottleFor(request));
+  MaybeAddThrottle(
+      RendererCancellationThrottle::MaybeCreateThrottleFor(request));
 
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),
@@ -332,19 +360,9 @@ NavigationThrottle* NavigationThrottleRunner::GetDeferringThrottle() const {
   return throttles_[next_index_ - 1].get();
 }
 
-void NavigationThrottleRunner::AddThrottle(
-    std::unique_ptr<NavigationThrottle> navigation_throttle) {
-  if (navigation_throttle) {
-    TRACE_EVENT1("navigation", "NavigationThrottleRunner::AddThrottle",
-                 "navigation_throttle",
-                 navigation_throttle->GetNameForLogging());
-    throttles_.push_back(std::move(navigation_throttle));
-  }
-}
-
 void NavigationThrottleRunner::ProcessInternal() {
   TRACE_EVENT0("navigation", "NavigationThrottleRunner::ProcessInternal");
-  DCHECK_NE(Event::kNoEvent, current_event_);
+  CHECK_NE(Event::kNoEvent, current_event_);
   base::Time start_time = base::Time::Now();
   if (!event_process_start_time_.has_value()) {
     event_process_start_time_ = start_time;

@@ -69,7 +69,6 @@ class SVGTransform final : public SVGListablePropertyBase {
   ~SVGTransform() override;
 
   SVGTransform* Clone() const;
-  SVGPropertyBase* CloneForAnimation(const String&) const override;
 
   SVGTransformType TransformType() const { return transform_type_; }
 

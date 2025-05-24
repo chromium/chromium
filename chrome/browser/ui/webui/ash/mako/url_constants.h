@@ -11,6 +11,7 @@ extern const char kChromeUIMakoHost[];
 extern const char kChromeUIMakoURL[];
 extern const char kChromeUIMakoOrcaURL[];
 extern const char kChromeUIMakoPrivacyURL[];
+extern const char kChromeUILobsterURL[];
 
 extern const char kOrcaModeParamKey[];
 extern const char kOrcaWriteMode[];
@@ -26,6 +27,16 @@ extern const char kOrcaResizingEnabledParamKey[];
 extern const char kOrcaHostLanguageParamKey[];
 
 extern const char kOrcaMagicBoostParamKey[];
+
+extern const char kLobsterPromptParamKey[];
+
+extern const char kLobsterModeParamKey[];
+
+extern const char kLobsterDownloadModeValue[];
+
+extern const char kLobsterInsertModeValue[];
+
+extern const char kLobsterFeedbackEnabledParamKey[];
 
 }  // namespace ash
 

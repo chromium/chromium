@@ -1,0 +1,108 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Rewriter API
+// https://github.com/explainers-by-googlers/writing-assistance-apis
+
+enum RewriterTone { "as-is", "more-formal", "more-casual" };
+enum RewriterFormat { "as-is", "plain-text", "markdown" };
+enum RewriterLength { "as-is", "shorter", "longer" };
+
+dictionary RewriterCreateCoreOptions {
+  RewriterTone tone = "as-is";
+  RewriterFormat format = "as-is";
+  RewriterLength length = "as-is";
+
+  sequence<DOMString> expectedInputLanguages;
+  sequence<DOMString> expectedContextLanguages;
+  DOMString outputLanguage;
+};
+
+dictionary RewriterCreateOptions : RewriterCreateCoreOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+  DOMString sharedContext;
+};
+
+dictionary RewriterRewriteOptions {
+  DOMString context;
+  AbortSignal signal;
+};
+
+[
+  Exposed(Window AIRewriterAPI, Worker AIRewriterAPIForWorkers),
+  RuntimeEnabled=AIRewriterAPI,
+  SecureContext
+]
+interface Rewriter {
+  [
+    MeasureAs=Rewriter_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Availability> availability(
+    optional RewriterCreateCoreOptions options = {}
+  );
+
+  [
+    MeasureAs=Rewriter_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Rewriter> create(optional RewriterCreateOptions options = {});
+
+  [
+    MeasureAs=Rewriter_Rewrite,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DOMString> rewrite(
+    DOMString input,
+    optional RewriterRewriteOptions options = {}
+  );
+
+  [
+    MeasureAs=Rewriter_RewriteStreaming,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  ReadableStream rewriteStreaming(
+    DOMString input,
+    optional RewriterRewriteOptions options = {}
+  );
+
+  [
+    MeasureAs=Rewriter_MeasureInputUsage,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional RewriterRewriteOptions options = {}
+  );
+
+  [
+    MeasureAs=Rewriter_Destroy,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  void destroy();
+
+  [MeasureAs=Rewriter_SharedContext]
+  readonly attribute DOMString sharedContext;
+  [MeasureAs=Rewriter_Tone]
+  readonly attribute RewriterTone tone;
+  [MeasureAs=Rewriter_Format]
+  readonly attribute RewriterFormat format;
+  [MeasureAs=Rewriter_Length]
+  readonly attribute RewriterLength length;
+  [MeasureAs=Rewriter_ExpectedInputLanguages]
+  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
+  [MeasureAs=Rewriter_ExpectedContextLanguages]
+  readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
+  [MeasureAs=Rewriter_OutputLanguage]
+  readonly attribute DOMString? outputLanguage;
+  [MeasureAs=Rewriter_InputQuota]
+  readonly attribute unrestricted double inputQuota;
+};

@@ -10,6 +10,19 @@
 
 namespace ui {
 
+// EnableMojoWebUI is intended for WebUI pages that use Mojo. Inherit from this
+// class in addition to WebUIController (or other WebUIController subclass) to
+// enable Mojo for a given WebUI page. See below for expectations.
+class EnableMojoWebUI {
+ public:
+  explicit EnableMojoWebUI(content::WebUI* contents, bool enable_chrome_send);
+
+  EnableMojoWebUI(const EnableMojoWebUI&) = delete;
+  EnableMojoWebUI& operator=(const EnableMojoWebUI&) = delete;
+
+  virtual ~EnableMojoWebUI();
+};
+
 // MojoWebUIController is intended for WebUI pages that use Mojo. It is
 // expected that subclasses will:
 // . Add all Mojo Bindings Resources via AddResourcePath(), eg:
@@ -23,7 +36,8 @@ namespace ui {
 //   BinderMap:
 //     - chrome/browser/chrome_browser_interface_binders.cc for chrome/ WebUIs;
 //     - content/browser/browser_interface_binders.cc for content/ WebUIs.
-class MojoWebUIController : public content::WebUIController {
+class MojoWebUIController : public content::WebUIController,
+                            public EnableMojoWebUI {
  public:
   // By default MojoWebUIControllers do not have normal WebUI bindings. Pass
   // |enable_chrome_send| as true if these are needed.

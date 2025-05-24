@@ -92,7 +92,7 @@ function titleAndAlertAriaLabel(tabData: TabData): string {
 export function ariaLabel(itemData: ItemData): string {
   if (itemData instanceof TabGroupData &&
       itemData.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
-    const tabGroup = itemData.tabGroup as RecentlyClosedTabGroup;
+    const tabGroup = itemData.tabGroup;
     const tabCountText = loadTimeData.getStringF(
         tabGroup.tabCount === 1 ? 'oneTab' : 'tabCount', tabGroup.tabCount);
     return `${tabGroup.title} ${tabCountText} ${

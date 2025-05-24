@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_tray.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -39,7 +40,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -54,6 +54,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
@@ -124,8 +125,7 @@ bool IsPreviewable(const std::unique_ptr<HoldingSpaceItem>& item) {
 }
 
 // Creates a model representing a foreground `tray` image with the specified
-// `vector_icon`. Note that when Jelly is enabled, the image must be repainted
-// on changes to `tray` activation.
+// `vector_icon`. The image must be repainted on changes to `tray` activation.
 ui::ImageModel CreateForegroundImageModel(const HoldingSpaceTray* tray,
                                           const gfx::VectorIcon& vector_icon) {
   // `tray` activation affects color.
@@ -227,6 +227,11 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
   }
   SetProperty(views::kElementIdentifierKey, kHoldingSpaceTrayElementId);
 
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
+
+  // Accessibility.
+  GetViewAccessibility().SetName(GetAccessibleNameForBubble());
+
   // Default icon.
   default_tray_icon_ =
       tray_container()->AddChildView(CreateDefaultTrayIcon(this));
@@ -297,20 +302,10 @@ void HoldingSpaceTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 
-std::u16string HoldingSpaceTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringFUTF16(
-      IDS_ASH_HOLDING_SPACE_A11Y_NAME,
-      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
-}
-
 views::View* HoldingSpaceTray::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   // Tooltip events should be handled top level, not by descendents.
   return HitTestPoint(point) ? this : nullptr;
-}
-
-std::u16string HoldingSpaceTray::GetTooltipText(const gfx::Point& point) const {
-  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
 }
 
 void HoldingSpaceTray::HandleLocaleChange() {
@@ -443,9 +438,7 @@ void HoldingSpaceTray::PerformDrop(
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kDragAndDropToPin);
 
-  HoldingSpaceController::Get()->client()->PinFiles(
-      unpinned_file_paths,
-      holding_space_metrics::EventSource::kHoldingSpaceTray);
+  HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
 
   did_drop_to_pin_ = true;
   output_drag_op = DragOperation::kCopy;
@@ -516,7 +509,7 @@ void HoldingSpaceTray::UpdateVisibility() {
   // app chip has never been pressed.
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
   SetVisiblePreferred(
-      base::ranges::any_of(model->items(), IsPreviewable) ||
+      std::ranges::any_of(model->items(), IsPreviewable) ||
       (prefs && holding_space_prefs::GetTimeOfFirstAdd(prefs) &&
        !holding_space_prefs::GetTimeOfFirstPin(prefs) &&
        !holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs)));
@@ -528,7 +521,9 @@ void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {
 }
 
 std::u16string HoldingSpaceTray::GetAccessibleNameForBubble() {
-  return GetAccessibleNameForTray();
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_HOLDING_SPACE_A11Y_NAME,
+      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
 }
 
 bool HoldingSpaceTray::ShouldEnableExtraKeyboardAccessibility() {
@@ -606,7 +601,7 @@ void HoldingSpaceTray::OnHoldingSpaceItemsAdded(
   // holding space tray should bounce in (if it isn't already visible) and
   // previews should be animated.
   if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    const bool has_initialized_item = base::ranges::any_of(
+    const bool has_initialized_item = std::ranges::any_of(
         items,
         [](const HoldingSpaceItem* item) { return item->IsInitialized(); });
     if (has_initialized_item)
@@ -622,7 +617,7 @@ void HoldingSpaceTray::OnHoldingSpaceItemsRemoved(
   // If an initialized holding space item is removed from the model mid-session,
   // the holding space tray should animate updates.
   if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    const bool has_initialized_item = base::ranges::any_of(
+    const bool has_initialized_item = std::ranges::any_of(
         items,
         [](const HoldingSpaceItem* item) { return item->IsInitialized(); });
     if (has_initialized_item)
@@ -668,8 +663,9 @@ void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {
   // so that we don't attempt to destroy the bubble widget before the associated
   // drag event has been fully initialized.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&HoldingSpaceTray::CloseBubble,
-                                weak_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&HoldingSpaceTray::CloseBubble, weak_factory_.GetWeakPtr(),
+                     TrayBackgroundView::CloseReason::kUnspecified));
 }
 
 void HoldingSpaceTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
@@ -734,9 +730,8 @@ void HoldingSpaceTray::UpdatePreviewsState() {
 
 void HoldingSpaceTray::UpdatePreviewsVisibility() {
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  const bool show_previews =
-      IsPreviewsEnabled() && model &&
-      base::ranges::any_of(model->items(), IsPreviewable);
+  const bool show_previews = IsPreviewsEnabled() && model &&
+                             std::ranges::any_of(model->items(), IsPreviewable);
 
   if (PreviewsShown() == show_previews)
     return;

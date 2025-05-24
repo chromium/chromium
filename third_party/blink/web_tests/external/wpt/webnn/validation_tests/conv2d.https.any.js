@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API conv2d operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -550,8 +550,8 @@ tests.forEach(
           context.opSupportLimits().conv2d.input.dataTypes.includes(
               test.input.dataType)) {
         const output = builder.conv2d(input, filter, test.options);
-        assert_equals(output.dataType(), test.output.dataType);
-        assert_array_equals(output.shape(), test.output.shape);
+        assert_equals(output.dataType, test.output.dataType);
+        assert_array_equals(output.shape, test.output.shape);
       } else {
         const regrexp = /\[conv_2d_\*\]/;
         assert_throws_with_label(

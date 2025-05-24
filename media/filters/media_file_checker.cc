@@ -60,8 +60,9 @@ bool MediaFileChecker::Start(base::TimeDelta check_time) {
   if (!glue.OpenContext())
     return false;
 
-  if (avformat_find_stream_info(format_context, NULL) < 0)
+  if (avformat_find_stream_info(format_context, nullptr) < 0) {
     return false;
+  }
 
   // Remember the codec context for any decodable audio or video streams.
   bool found_streams = false;

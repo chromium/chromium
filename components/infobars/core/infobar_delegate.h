@@ -32,7 +32,7 @@ class TranslateInfoBarDelegate;
 namespace gfx {
 class Image;
 struct VectorIcon;
-}
+}  // namespace gfx
 
 namespace ui {
 class ImageModel;
@@ -58,17 +58,17 @@ class InfoBarDelegate {
 
   // Unique identifier for every InfoBarDelegate subclass.  Use suffixes to mark
   // infobars specific to particular OSes/platforms.
-  // KEEP IN SYNC WITH THE InfoBarIdentifier ENUM IN enums.xml.
   // NEW VALUES MUST BE APPENDED AND AVOID CHANGING ANY PRE-EXISTING VALUES.
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.infobar
+  // LINT.IfChange(InfoBarIdentifier)
   enum InfoBarIdentifier {
     INVALID = -1,
     TEST_INFOBAR = 0,
     // Removed: APP_BANNER_INFOBAR_DELEGATE = 1,
     // Removed: APP_BANNER_INFOBAR_DELEGATE_DESKTOP = 2,
     // Removed: ANDROID_DOWNLOAD_MANAGER_DUPLICATE_INFOBAR_DELEGATE = 3,
-    DUPLICATE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID = 4,
+    // Removed: DUPLICATE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID = 4,
     // Removed: DOWNLOAD_REQUEST_INFOBAR_DELEGATE_ANDROID = 5,
     // Removed: FULLSCREEN_INFOBAR_DELEGATE = 6,
     HUNG_PLUGIN_INFOBAR_DELEGATE = 7,
@@ -125,17 +125,17 @@ class InfoBarDelegate {
     SYNC_ERROR_INFOBAR_DELEGATE_IOS = 58,
     UPGRADE_INFOBAR_DELEGATE_IOS = 59,
     // Removed: WINDOW_ERROR_INFOBAR_DELEGATE_ANDROID = 60,
-    DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_ANDROID = 61,
+    // Removed: DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_ANDROID = 61,
     // Removed: DESKTOP_SEARCH_REDIRECTION_INFOBAR_DELEGATE = 62,
     // Removed: UPDATE_PASSWORD_INFOBAR_DELEGATE_MOBILE = 63,
     // Removed: DATA_REDUCTION_PROMO_INFOBAR_DELEGATE_ANDROID = 64,
     // Removed: AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_DELEGATE_ANDROID = 65,
-    ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID = 66,
+    // Removed: ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID = 66,
     // Removed: INSTANT_APPS_INFOBAR_DELEGATE_ANDROID = 67,
     // Removed: DATA_REDUCTION_PROXY_PREVIEW_INFOBAR_DELEGATE = 68,
     // Removed: SCREEN_CAPTURE_INFOBAR_DELEGATE_ANDROID = 69,
     PERMISSION_INFOBAR_DELEGATE_ANDROID = 70,
-    OFFLINE_PAGE_INFOBAR_DELEGATE_ANDROID = 71,
+    // Removed: OFFLINE_PAGE_INFOBAR_DELEGATE_ANDROID = 71,
     SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_DELEGATE_ANDROID = 72,
     AUTOMATION_INFOBAR_DELEGATE = 73,
     // Removed: VR_SERVICES_UPGRADE_ANDROID = 74,
@@ -143,10 +143,10 @@ class InfoBarDelegate {
     // Removed: VR_FEEDBACK_INFOBAR_ANDROID = 76,
     // Removed: FRAMEBUST_BLOCK_INFOBAR_ANDROID = 77,
     // Removed: SURVEY_INFOBAR_ANDROID = 78,
-    NEAR_OOM_INFOBAR_ANDROID = 79,
+    // Removed: NEAR_OOM_INFOBAR_ANDROID = 79,
     INSTALLABLE_AMBIENT_BADGE_INFOBAR_DELEGATE = 80,
     // Removed: PAGE_LOAD_CAPPING_INFOBAR_DELEGATE = 81,
-    DOWNLOAD_PROGRESS_INFOBAR_ANDROID = 82,
+    // Removed: DOWNLOAD_PROGRESS_INFOBAR_ANDROID = 82,
     // Removed: AR_CORE_UPGRADE_ANDROID = 83,
     BLOATED_RENDERER_INFOBAR_DELEGATE = 84,
     // Removed: SUPERVISED_USERS_DEPRECATED_INFOBAR_DELEGATE = 85,
@@ -158,11 +158,11 @@ class InfoBarDelegate {
     // Removed: FLASH_DEPRECATION_INFOBAR_DELEGATE = 91,
     SEND_TAB_TO_SELF_INFOBAR_DELEGATE = 92,
     TAB_SHARING_INFOBAR_DELEGATE = 93,
-    SAFETY_TIP_INFOBAR_DELEGATE = 94,
+    // Removed SAFETY_TIP_INFOBAR_DELEGATE = 94,
     WEBOTP_SERVICE_INFOBAR_DELEGATE = 95,
     KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE = 96,
     // Removed: SYNC_ERROR_INFOBAR_DELEGATE_ANDROID = 97,
-    INSECURE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID = 98,
+    // Removed: INSECURE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID = 98,
     // Removed: CONDITIONAL_TAB_STRIP_INFOBAR_ANDROID = 99,
     // Removed: LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR_ANDROID = 100,
     // Removed: SYSTEM_INFOBAR_DELEGATE_MAC = 101,
@@ -181,12 +181,16 @@ class InfoBarDelegate {
     TAB_PICKUP_INFOBAR_DELEGATE = 114,
     LOCAL_TEST_POLICIES_APPLIED_INFOBAR = 115,
     BIDDING_AND_AUCTION_CONSENTED_DEBUGGING_DELEGATE = 116,
-    PARCEL_TRACKING_INFOBAR_DELEGATE = 117,
+    // Removed: PARCEL_TRACKING_INFOBAR_DELEGATE = 117,
     TEST_THIRD_PARTY_COOKIE_PHASEOUT_DELEGATE = 118,
     ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE = 119,
     DEV_TOOLS_SHARED_PROCESS_DELEGATE = 120,
     ENHANCED_SAFE_BROWSING_INFOBAR_DELEGATE = 121,
+    CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_IOS = 122,
+    PDF_INFOBAR_DELEGATE = 123,
+    INSTALLER_DOWNLOADER_INFOBAR_DELEGATE = 124,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:InfoBarIdentifier)
 
   // Describes navigation events, used to decide whether infobars should be
   // dismissed.
@@ -281,12 +285,18 @@ class InfoBarDelegate {
   // default.
   virtual bool ShouldAnimate() const;
 
+  // Returns true if the InfoBar should hide when the browser is in fullscreen
+  // mode. True by default.
+  virtual bool ShouldHideInFullscreen() const;
+
   // Type-checking downcast routines:
   virtual ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate();
   virtual blocked_content::PopupBlockedInfoBarDelegate*
   AsPopupBlockedInfoBarDelegate();
   virtual ThemeInstalledInfoBarDelegate* AsThemePreviewInfobarDelegate();
+#if BUILDFLAG(IS_IOS)
   virtual translate::TranslateInfoBarDelegate* AsTranslateInfoBarDelegate();
+#endif
 #if BUILDFLAG(IS_ANDROID)
   virtual offline_pages::OfflinePageInfoBarDelegate*
   AsOfflinePageInfoBarDelegate();

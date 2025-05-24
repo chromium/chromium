@@ -1,0 +1,68 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("ios") {
+  deps = [
+    ":passkey_controller_js",
+    "//base",
+    "//components/webauthn/core/browser:passkey_model",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+
+  sources = [
+    "passkey_java_script_feature.h",
+    "passkey_java_script_feature.mm",
+    "passkey_tab_helper.h",
+    "passkey_tab_helper.mm",
+  ]
+}
+
+optimize_ts("passkey_controller_js") {
+  visibility = [
+    ":ios",
+    ":js_tests",
+  ]
+
+  sources = [ "resources/passkey_controller.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "passkey_tab_helper_unittest.mm" ]
+  deps = [
+    ":ios",
+    ":js_tests",
+    "//base/test:test_support",
+    "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/core/browser:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
+
+source_set("js_tests") {
+  testonly = true
+  sources = [ "passkey_controller_javascript_test.mm" ]
+  deps = [
+    ":passkey_controller_js",
+    "//ios/web/public/test:javascript_test",
+    "//ios/web/public/test:util",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -79,8 +79,6 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
     void Trace(Visitor*) const;
 
    private:
-    void ReportException(ExceptionState*);
-
     Member<CSSLayoutDefinition> definition_;
     TraceWrapperV8Reference<v8::Value> instance_;
   };
@@ -104,7 +102,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
 
   ScriptState* GetScriptState() const { return script_state_.Get(); }
 
-  virtual void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const;
 
   const char* NameInHeapSnapshot() const override {
     return "CSSLayoutDefinition";

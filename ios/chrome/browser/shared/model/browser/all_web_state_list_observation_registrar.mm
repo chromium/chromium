@@ -86,7 +86,7 @@ AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
                                           Mode::ALL) {}
 
 AllWebStateListObservationRegistrar::~AllWebStateListObservationRegistrar() {
-  // If the owning browser state has already shut down, `browser_list_` should
+  // If the owning profile has already shut down, `browser_list_` should
   // be nullptr; otherwise, stop observing it.
   if (browser_list_) {
     browser_list_->RemoveObserver(this);

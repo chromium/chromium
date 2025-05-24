@@ -6,10 +6,13 @@ package org.chromium.base.jank_tracker;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
+@NullMarked
 public class JankScenario {
     /**
      * A list of jank scenarios to be tracked, each scenario corresponds to a specific user journey

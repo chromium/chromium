@@ -370,35 +370,35 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
     web_task_environment_ = std::make_unique<web::WebTaskEnvironment>(
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-    // Create a test ChromeBrowserState and an object to track the files
+    // Create a test ProfileIOS and an object to track the files
     // that are created by the session restoration service operations.
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    file_tracker_.Start(browser_state_->GetStatePath());
+    profile_ = TestProfileIOS::Builder().Build();
+    file_tracker_.Start(profile_->GetStatePath());
 
     SessionServiceIOS* session_service_ios = [[SessionServiceIOS alloc]
         initWithSaveDelay:kSaveDelay
                taskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
 
     WebSessionStateCache* web_session_state_cache =
-        WebSessionStateCacheFactory::GetForBrowserState(browser_state_.get());
+        WebSessionStateCacheFactory::GetForProfile(profile_.get());
 
     // Create the service, force enabling features support.
     service_ = std::make_unique<LegacySessionRestorationService>(
         /*enable_pinned_tabs=*/true,
-        /*enable_tab_groups=*/true, browser_state_->GetStatePath(),
+        /*enable_tab_groups=*/true, profile_->GetStatePath(),
         session_service_ios, web_session_state_cache);
   }
 
   ~LegacySessionRestorationServiceTest() override { service_->Shutdown(); }
 
-  // Returns the ChromeBrowserState used for tests.
-  ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  // Returns the ProfileIOS used for tests.
+  ProfileIOS* profile() { return profile_.get(); }
 
   // Returns the service under test.
   SessionRestorationService* service() { return service_.get(); }
 
   // Returns the BrowserState's storage path.
-  base::FilePath storage_path() { return browser_state_->GetStatePath(); }
+  base::FilePath storage_path() { return profile_->GetStatePath(); }
 
   // Inserts WebStates into `browser` each one loading a new URL from `urls`
   // and wait until all the WebStates are done with the navigation.
@@ -411,7 +411,7 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
     WebStateList* web_state_list = browser.GetWebStateList();
     for (std::string_view url : urls) {
       std::unique_ptr<web::WebState> web_state =
-          web::WebState::Create(web::WebState::CreateParams(browser_state()));
+          web::WebState::Create(web::WebState::CreateParams(profile()));
 
       web_state_observer.Observe(web_state.get());
 
@@ -448,16 +448,16 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
   }
 
   // Take a snapshot of the existing files.
-  void SnapshotFiles() { file_tracker_.Start(browser_state_->GetStatePath()); }
+  void SnapshotFiles() { file_tracker_.Start(profile_->GetStatePath()); }
 
   // Returns the list of modified files.
   FilePathSet ModifiedFiles() const {
-    return file_tracker_.ModifiedFiles(browser_state_->GetStatePath());
+    return file_tracker_.ModifiedFiles(profile_->GetStatePath());
   }
 
   // Returns the list of deleted files.
   FilePathSet DeletedFiles() const {
-    return file_tracker_.DeletedFiles(browser_state_->GetStatePath());
+    return file_tracker_.DeletedFiles(profile_->GetStatePath());
   }
 
  private:
@@ -468,7 +468,7 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
   std::unique_ptr<web::ScopedTestingWebClient> scoped_web_client_;
   std::unique_ptr<web::WebTaskEnvironment> web_task_environment_;
 
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<LegacySessionRestorationService> service_;
 };
 
@@ -491,7 +491,7 @@ TEST_F(LegacySessionRestorationServiceTest, SetSessionID) {
   observer.Observe(service());
 
   // Check that calling SetSessionID() does not load the session.
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
   service()->SetSessionID(&browser, kIdentifier0);
   EXPECT_FALSE(observer.restore_started());
 
@@ -513,12 +513,12 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession) {
   // Check that when a Browser is modified, the changes are reflected to the
   // storage after a delay.
   {
-    TestBrowser browser = TestBrowser(browser_state());
+    TestBrowser browser = TestBrowser(profile());
     service()->SetSessionID(&browser, kIdentifier0);
     EXPECT_FALSE(observer.restore_started());
 
     // Insert a few WebState in the Browser's WebStateList.
-    InsertTabsWithUrls(browser, base::make_span(kURLs));
+    InsertTabsWithUrls(browser, base::span(kURLs));
 
     // Check that the session was written to disk.
     WaitForSessionSaveComplete();
@@ -548,7 +548,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession) {
   // Check that the session can be reloaded and that it contains the same
   // state as when it was saved.
   {
-    TestBrowser browser = TestBrowser(browser_state());
+    TestBrowser browser = TestBrowser(profile());
     service()->SetSessionID(&browser, kIdentifier0);
     EXPECT_FALSE(observer.restore_started());
 
@@ -593,7 +593,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession_EmptySession) {
   // Check that the session can be loaded even if non-existent and that the
   // Browser is unmodified (but the observers notified).
   {
-    TestBrowser browser = TestBrowser(browser_state());
+    TestBrowser browser = TestBrowser(profile());
     service()->SetSessionID(&browser, kIdentifier0);
     EXPECT_FALSE(observer.restore_started());
 
@@ -616,7 +616,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession_MissingSession) {
   // Check that the session can be loaded even if non-existent and that the
   // Browser is unmodified (but the observers notified).
   {
-    TestBrowser browser = TestBrowser(browser_state());
+    TestBrowser browser = TestBrowser(profile());
     service()->SetSessionID(&browser, kIdentifier0);
     EXPECT_FALSE(observer.restore_started());
 
@@ -635,13 +635,13 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession_MissingSession) {
 TEST_F(LegacySessionRestorationServiceTest, SaveSessionOfModifiedBrowser) {
   // Register multiple Browser and modify one of them. Check that
   // only data for the modified Browser is written to disk.
-  TestBrowser browser0 = TestBrowser(browser_state());
-  TestBrowser browser1 = TestBrowser(browser_state());
+  TestBrowser browser0 = TestBrowser(profile());
+  TestBrowser browser1 = TestBrowser(profile());
   service()->SetSessionID(&browser0, kIdentifier0);
   service()->SetSessionID(&browser1, kIdentifier1);
 
   // Insert a few WebState in browser1's WebStateList.
-  InsertTabsWithUrls(browser1, base::make_span(kURLs));
+  InsertTabsWithUrls(browser1, base::span(kURLs));
 
   // Check that only browser1's session was written to disk.
   WaitForSessionSaveComplete();
@@ -657,9 +657,9 @@ TEST_F(LegacySessionRestorationServiceTest, SaveSessionOfModifiedBrowser) {
 TEST_F(LegacySessionRestorationServiceTest,
        SaveSessionChangesOnlyRequiredFiles) {
   // Create a Browser and add a few WebStates to it.
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
   service()->SetSessionID(&browser, kIdentifier0);
-  InsertTabsWithUrls(browser, base::make_span(kURLs));
+  InsertTabsWithUrls(browser, base::span(kURLs));
 
   // Check that the session was written to disk.
   WaitForSessionSaveComplete();
@@ -693,11 +693,11 @@ TEST_F(LegacySessionRestorationServiceTest, AdoptUnrealizedWebStateOnMove) {
   // add some WebState, wait for the session to be serialized. The session
   // can then be loaed to get unrealized WebStates.
   {
-    TestBrowser browser = TestBrowser(browser_state());
+    TestBrowser browser = TestBrowser(profile());
     service()->SetSessionID(&browser, kIdentifier0);
 
     // Insert a few WebState in the Browser's WebStateList.
-    InsertTabsWithUrls(browser, base::make_span(kURLs));
+    InsertTabsWithUrls(browser, base::span(kURLs));
 
     // Check that the session was written to disk.
     WaitForSessionSaveComplete();
@@ -716,8 +716,8 @@ TEST_F(LegacySessionRestorationServiceTest, AdoptUnrealizedWebStateOnMove) {
 
   // Load the session created before, and then move the tabs from the first
   // browser to the second one. Check that the session files have been copied.
-  TestBrowser browser0 = TestBrowser(browser_state());
-  TestBrowser browser1 = TestBrowser(browser_state());
+  TestBrowser browser0 = TestBrowser(profile());
+  TestBrowser browser1 = TestBrowser(profile());
   service()->SetSessionID(&browser0, kIdentifier0);
   service()->SetSessionID(&browser1, kIdentifier1);
 
@@ -792,9 +792,9 @@ TEST_F(LegacySessionRestorationServiceTest, AdoptUnrealizedWebStateOnMove) {
 // Tests that the service save pending changes on disconnect.
 TEST_F(LegacySessionRestorationServiceTest, SavePendingChangesOnDisconnect) {
   // Create a Browser and add a few WebStates to it.
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
   service()->SetSessionID(&browser, kIdentifier0);
-  InsertTabsWithUrls(browser, base::make_span(kURLs));
+  InsertTabsWithUrls(browser, base::span(kURLs));
 
   // Inserting the tabs may take more time than the save delay. Always
   // wait for the state to be saved so that the test is deterministic.
@@ -839,9 +839,9 @@ TEST_F(LegacySessionRestorationServiceTest, RecordHistograms) {
   {
     // Create a Browser and add a few WebStates to it and wait for all
     // pending scheduled tasks to complete.
-    TestBrowser browser = TestBrowser(browser_state());
+    TestBrowser browser = TestBrowser(profile());
     service()->SetSessionID(&browser, kIdentifier0);
-    InsertTabsWithUrls(browser, base::make_span(kURLs));
+    InsertTabsWithUrls(browser, base::span(kURLs));
     WaitForSessionSaveComplete();
 
     // Check that session is saved and histogram is recorded when making
@@ -860,7 +860,7 @@ TEST_F(LegacySessionRestorationServiceTest, RecordHistograms) {
   }
 
   // Create a Browser.
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
   service()->SetSessionID(&browser, kIdentifier0);
 
   // Load the session and check that the time spent loading was logged.
@@ -880,7 +880,7 @@ TEST_F(LegacySessionRestorationServiceTest, RecordHistograms) {
 // is correctly saved to the disk.
 TEST_F(LegacySessionRestorationServiceTest, CreateUnrealizedWebState) {
   // Create a Browser.
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
   service()->SetSessionID(&browser, kIdentifier0);
 
   // Create an unrealized WebState.
@@ -926,8 +926,8 @@ TEST_F(LegacySessionRestorationServiceTest, SaveSessionsCallableAtAnyTime) {
 
   // Check that calling SaveSessions() when Browser are registered with no
   // changes updates the session on disk unconditionally.
-  TestBrowser browser0 = TestBrowser(browser_state());
-  TestBrowser browser1 = TestBrowser(browser_state());
+  TestBrowser browser0 = TestBrowser(profile());
+  TestBrowser browser1 = TestBrowser(profile());
   service()->SetSessionID(&browser0, kIdentifier0);
   service()->SetSessionID(&browser1, kIdentifier1);
 
@@ -949,7 +949,7 @@ TEST_F(LegacySessionRestorationServiceTest, SaveSessionsCallableAtAnyTime) {
   // to automatically be saved (this is because loading the pages will
   // take time and may cause automatically saving the session).
   {
-    InsertTabsWithUrls(browser0, base::make_span(kURLs));
+    InsertTabsWithUrls(browser0, base::span(kURLs));
     WaitForSessionSaveComplete();
 
     EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForBrowser(
@@ -1001,8 +1001,8 @@ TEST_F(LegacySessionRestorationServiceTest, ScheduleSaveSessions) {
 
   // Check that calling ScheduleSaveSessions() when Browser are registered
   // with no changes is a no-op.
-  TestBrowser browser0 = TestBrowser(browser_state());
-  TestBrowser browser1 = TestBrowser(browser_state());
+  TestBrowser browser0 = TestBrowser(profile());
+  TestBrowser browser1 = TestBrowser(profile());
   service()->SetSessionID(&browser0, kIdentifier0);
   service()->SetSessionID(&browser1, kIdentifier1);
 
@@ -1024,7 +1024,7 @@ TEST_F(LegacySessionRestorationServiceTest, ScheduleSaveSessions) {
   // to automatically be saved (this is because loading the pages will
   // take time and may cause automatically saving the session).
   {
-    InsertTabsWithUrls(browser0, base::make_span(kURLs));
+    InsertTabsWithUrls(browser0, base::span(kURLs));
     WaitForSessionSaveComplete();
 
     EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForBrowser(
@@ -1073,13 +1073,13 @@ TEST_F(LegacySessionRestorationServiceTest, ScheduleSaveSessions) {
 // Tests that calling DeleteDataForDiscardedSessions() deletes data for
 // discarded sessions and accept inexistant sessions identifiers.
 TEST_F(LegacySessionRestorationServiceTest, DeleteDataForDiscardedSessions) {
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
   service()->SetSessionID(&browser, kIdentifier0);
 
   // Insert a few WebStage in one of the Browser and wait for the changes
   // to automatically be saved (this is because loading the pages will
   // take time and may cause automatically saving the session).
-  InsertTabsWithUrls(browser, base::make_span(kURLs));
+  InsertTabsWithUrls(browser, base::span(kURLs));
   WaitForSessionSaveComplete();
 
   EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForBrowser(
@@ -1108,18 +1108,18 @@ TEST_F(LegacySessionRestorationServiceTest, DeleteDataForDiscardedSessions) {
 // delete any native WKWebView sessions that are not associated to a
 // Browser's WebState.
 TEST_F(LegacySessionRestorationServiceTest, PurgeUnassociatedData) {
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
 
   // PurgeUnassociatedData requires the Browser to be registered with
   // the BrowserList (as it uses it to detect all the Browsers).
-  BrowserListFactory::GetForBrowserState(browser_state())->AddBrowser(&browser);
+  BrowserListFactory::GetForProfile(profile())->AddBrowser(&browser);
 
   service()->SetSessionID(&browser, kIdentifier0);
 
   // Insert a few WebStage in the Browser and wait for the changes to
   // automatically be saved (this is because loading the pages will
   // take time and may cause automatically saving the session).
-  InsertTabsWithUrls(browser, base::make_span(kURLs));
+  InsertTabsWithUrls(browser, base::span(kURLs));
   WaitForSessionSaveComplete();
 
   EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForBrowser(
@@ -1158,8 +1158,7 @@ TEST_F(LegacySessionRestorationServiceTest, PurgeUnassociatedData) {
   EXPECT_EQ(DeletedFiles(), native_session_paths);
 
   // Unregister the Browser before destruction.
-  BrowserListFactory::GetForBrowserState(browser_state())
-      ->RemoveBrowser(&browser);
+  BrowserListFactory::GetForProfile(profile())->RemoveBrowser(&browser);
   service()->Disconnect(&browser);
 }
 
@@ -1168,10 +1167,10 @@ TEST_F(LegacySessionRestorationServiceTest, LoadWebStateData) {
   // Insert a few WebState in a Browser, wait for the changes to be saved,
   // then destroy the Browser.
   {
-    TestBrowser browser = TestBrowser(browser_state());
+    TestBrowser browser = TestBrowser(profile());
     service()->SetSessionID(&browser, kIdentifier0);
 
-    InsertTabsWithUrls(browser, base::make_span(kURLs));
+    InsertTabsWithUrls(browser, base::span(kURLs));
     WaitForSessionSaveComplete();
 
     service()->Disconnect(&browser);
@@ -1179,7 +1178,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadWebStateData) {
 
   // Create a new Browser and load the session. There should be at least
   // one unrealized WebState.
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
   service()->SetSessionID(&browser, kIdentifier0);
   service()->LoadSession(&browser);
 
@@ -1215,10 +1214,10 @@ TEST_F(LegacySessionRestorationServiceTest, LoadWebStateData_Disconnected) {
   // Insert a few WebState in a Browser, wait for the changes to be saved,
   // then destroy the Browser.
   {
-    TestBrowser browser = TestBrowser(browser_state());
+    TestBrowser browser = TestBrowser(profile());
     service()->SetSessionID(&browser, kIdentifier0);
 
-    InsertTabsWithUrls(browser, base::make_span(kURLs));
+    InsertTabsWithUrls(browser, base::span(kURLs));
     WaitForSessionSaveComplete();
 
     service()->Disconnect(&browser);
@@ -1226,7 +1225,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadWebStateData_Disconnected) {
 
   // Create a new Browser and load the session. There should be at least
   // one unrealized WebState.
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
   service()->SetSessionID(&browser, kIdentifier0);
   service()->LoadSession(&browser);
 
@@ -1254,10 +1253,10 @@ TEST_F(LegacySessionRestorationServiceTest, AttachBackup) {
   // Insert a few WebState in a Browser, wait for the changes to be saved,
   // then destroy the Browser.
   {
-    TestBrowser browser = TestBrowser(browser_state());
+    TestBrowser browser = TestBrowser(profile());
     service()->SetSessionID(&browser, kIdentifier0);
 
-    InsertTabsWithUrls(browser, base::make_span(kURLs));
+    InsertTabsWithUrls(browser, base::span(kURLs));
     WaitForSessionSaveComplete();
 
     service()->Disconnect(&browser);
@@ -1265,7 +1264,7 @@ TEST_F(LegacySessionRestorationServiceTest, AttachBackup) {
   }
 
   // Create a new Browser and load the session.
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
   service()->SetSessionID(&browser, kIdentifier0);
   service()->LoadSession(&browser);
   WaitForSessionSaveComplete();
@@ -1275,7 +1274,7 @@ TEST_F(LegacySessionRestorationServiceTest, AttachBackup) {
   // Create another Browser and attach it as a backup for `browser`. Check
   // that only the browser metadata file changes when tabs are moved from
   // `browser` to `backup`.
-  TestBrowser backup = TestBrowser(browser_state());
+  TestBrowser backup = TestBrowser(profile());
   service()->AttachBackup(&browser, &backup);
 
   // Nothing is saved when attaching the backup.
@@ -1345,10 +1344,10 @@ TEST_F(LegacySessionRestorationServiceTest, LoadDataFromStorage) {
   // to the timestamp of the last navigation.
   WebStateIDToTime expected_times;
   {
-    TestBrowser browser = TestBrowser(browser_state());
+    TestBrowser browser = TestBrowser(profile());
     service()->SetSessionID(&browser, kIdentifier0);
 
-    InsertTabsWithUrls(browser, base::make_span(kURLs));
+    InsertTabsWithUrls(browser, base::span(kURLs));
     WaitForSessionSaveComplete();
 
     expected_times = CollectLastCommittedItemTimestampFromWebStateList(
@@ -1359,7 +1358,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadDataFromStorage) {
   }
 
   // Create a new Browser and load the session.
-  TestBrowser browser = TestBrowser(browser_state());
+  TestBrowser browser = TestBrowser(profile());
   service()->SetSessionID(&browser, kIdentifier0);
   service()->LoadSession(&browser);
 

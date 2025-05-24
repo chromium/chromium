@@ -10,7 +10,7 @@
 <translation id="1468038450257740950">WebGL समर्थित छैन।</translation>
 <translation id="1610570795592207282">स्क्रिप्टको css '<ph name="RELATIVE_PATH" />' लोड गर्न सकिएन।</translation>
 <translation id="1803557475693955505">पृष्ठभूमि पृष्ठ '<ph name="BACKGROUND_PAGE" />' लोड गर्न सकिएन।</translation>
-<translation id="2159915644201199628">छवि डिकोड गर्न सकिएन: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2159915644201199628">फोटो डिकोड गर्न सकिएन: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">अनुवाद प्रयोग गरिएको, तर सूचीमा पूर्वनिर्धारित_लोकेल तोकिएको</translation>
 <translation id="2576842806987913196">त्यहाँ पहिले नै यो नाम भएको CRX फाइल उपस्थित छ।</translation>
 <translation id="2785530881066938471">सामग्री स्क्रिप्टको लागि फाइल '<ph name="RELATIVE_PATH" />' लोड गर्न सकेन। त्यो UFT-8 इन्कोडेड छैन।</translation>
@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">निजी कुञ्जीको लागि आगत मूल्य वैध मार्ग हुनैपर्छ।</translation>
 <translation id="388442998277590542">विकल्पहरूको पृष्ठ '<ph name="OPTIONS_PAGE" />' लोड गर्न सकिएन।</translation>
 <translation id="3984413272403535372">विस्तार साइनइन गर्दा त्रुटि भयो।</translation>
-<translation id="4115165561519362854">यो मेसिनको व्यवस्थापकलाई <ph name="EXTENSION_VERSION" /> को एक न्यूनतम संस्करण हुनको लागि <ph name="EXTENSION_NAME" /> को आवश्यकता छ। यो त्यो संस्करण (वा माथि) मा अद्यावधिक नभएसम्म सक्षम हुन सक्दैन।</translation>
 <translation id="4233778200880751280">पृष्ठ बारे '<ph name="ABOUT_PAGE" />'लाई लोड गर्न सकिएन।</translation>
 <translation id="471800408830181311">निजी कुञ्जी निर्यात गर्न असफल।</translation>
 <translation id="4811956658694082538">स्थापना प्याकेज स्थापना गर्न सकिएन किनकि एक उपयोगिता प्रक्रिया क्र्याश भयो।  Chrome लाई रिस्टार्ट गर्ने प्रयास गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
@@ -50,12 +49,14 @@
 <translation id="7068383018033524534">म्यानिफेस्ट फाइल अमान्य छ</translation>
 <translation id="7217838517480956708">स्थापना हुनको लागि यस मेसिनको व्यवस्थापकले <ph name="EXTENSION_NAME" /> को आवश्यकता जनाउँछ। यसलाई हटाउन वा परिमार्जन गर्न सकिँदैन।</translation>
 <translation id="7612608473764576263">निजी कुञ्जीको इनपुट मान अनिवार्य रूपमा मान्य ढाँचा हुनु पर्छ (PKCS#8-ढाँचा PEM-इनकोड गरिएको RSA कुञ्जी)।</translation>
+<translation id="7876803335449432072">कन्टेन्ट स्क्रिप्टका रूपमा प्रयोग गर्नका लागि '<ph name="RELATIVE_PATH" />' फाइल लोड गर्न सकिएन। .css फाइलहरू जस्ता कम्प्याटिबल स्टाइल सिट फाइलबाट मात्र कन्टेन्ट स्क्रिप्ट स्टाइल सिटहरू लोड गर्न सकिन्छ।</translation>
 <translation id="7939686037314084444">यो विस्तार ठिकसँग लोड हुन सकेन। यसले नेटवर्कसम्बन्धी अनुरोधहरू रोक्न सक्षम नहुन सक्छ।</translation>
 <translation id="7972881773422714442">विकल्पहरू: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">प्रयोगकर्तातिर फर्काइको</translation>
 <translation id="8047248493720652249">यस विस्तारले डाउनलोड "<ph name="ATTEMPTED_FILENAME" />" लाई नाम दिन असफल भयो किनभने अर्को विस्तार (<ph name="EXTENSION_NAME" />) ले एक फरक फाइलनाम "<ph name="ACTUAL_FILENAME" />" पत्ता लगायो।</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />बाट<ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">म्यानिफेस्ट फाइल हराइरहेको छ वा पढ्न नमिल्ने छ</translation>
+<translation id="8621383749470166852">कन्टेन्ट स्क्रिप्टका रूपमा प्रयोग गर्नका लागि '<ph name="RELATIVE_PATH" />' फाइल लोड गर्न सकिएन। .js फाइलहरू जस्ता कम्प्याटिबल JavaScript फाइलबाट मात्र कन्टेन्ट स्क्रिप्ट लोड गर्न सकिन्छ।</translation>
 <translation id="8636666366616799973">प्याकेज अवैध छ। विवरणहरू: '<ph name="ERROR_MESSAGE" />'।</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ले तपाईंका डिभाइसहरू मध्ये एक माथिको पहुँचका लागि अनुरोध गरिरहेको छ:</translation>
 <translation id="8885905466771744233">तोकिएकै विस्तार लागि एक निजी कुञ्जी पहिले नै अवस्थित छ। त्यो कुञ्जी पुनः प्रयोग गर्नुहोस् वा त्यसलाई पहिले मेटाउनुहोस् ।</translation>

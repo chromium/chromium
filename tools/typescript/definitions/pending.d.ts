@@ -80,3 +80,8 @@ declare interface Matrix {
   /** The values as a flattened one-dimensional array. */
   data: number[];
 }
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/
+interface Set<T> {
+  difference(other: Set<T>): Set<T>;
+}

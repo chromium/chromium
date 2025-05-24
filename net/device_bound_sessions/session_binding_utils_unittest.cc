@@ -12,11 +12,12 @@
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
 #include "crypto/signature_verifier.h"
-#include "net/device_bound_sessions/test_util.h"
+#include "net/device_bound_sessions/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -41,7 +42,7 @@ TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
   std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
       "test_challenge", GURL("https://accounts.example.test/RegisterKey"),
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256, spki,
-      base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
+      base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123), "");
   ASSERT_TRUE(result.has_value());
 
   std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
@@ -53,7 +54,40 @@ TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
       Base64UrlEncodedJsonToValue(header_and_payload[1]);
 
   base::Value::Dict expected_header =
-      base::Value::Dict().Set("alg", "RS256").Set("typ", "jwt");
+      base::Value::Dict().Set("alg", "RS256").Set("typ", "dbsc+jwt");
+  base::Value::Dict expected_payload =
+      base::Value::Dict()
+          .Set("aud", "https://accounts.example.test/RegisterKey")
+          .Set("jti", "test_challenge")
+          .Set("iat", 17280000)
+          .Set("key", base::JSONReader::Read(jwk).value())
+          .Set("authorization", "");
+
+  EXPECT_EQ(actual_header, expected_header);
+  EXPECT_EQ(actual_payload, expected_payload);
+}
+
+TEST(SessionBindingUtilsTest,
+     CreateKeyRegistrationHeaderAndPayloadWithNullAuth) {
+  auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
+
+  std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
+      "test_challenge", GURL("https://accounts.example.test/RegisterKey"),
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256, spki,
+      base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123),
+      /*authorization=*/std::nullopt);
+  ASSERT_TRUE(result.has_value());
+
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
+      *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(header_and_payload.size(), 2U);
+  base::Value actual_header =
+      Base64UrlEncodedJsonToValue(header_and_payload[0]);
+  base::Value actual_payload =
+      Base64UrlEncodedJsonToValue(header_and_payload[1]);
+
+  base::Value::Dict expected_header =
+      base::Value::Dict().Set("alg", "RS256").Set("typ", "dbsc+jwt");
   base::Value::Dict expected_payload =
       base::Value::Dict()
           .Set("aud", "https://accounts.example.test/RegisterKey")
@@ -98,6 +132,23 @@ TEST(SessionBindingUtilsTest,
       "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, std::nullopt);
+}
+
+TEST(SessionBindingUtilsTest, TestIsSecureUrl) {
+  const std::vector<GURL> secure_connection_urls = {
+      GURL("https://example.test/"), GURL("https://localhost:8080/"),
+      GURL("http://localhost:8080/")};
+  const std::vector<GURL> insecure_connection_urls = {
+      GURL("http://example.test/"),
+  };
+  for (const auto& url : secure_connection_urls) {
+    SCOPED_TRACE(base::StringPrintf("url: %s", url.spec()));
+    EXPECT_TRUE(IsSecure(url));
+  }
+  for (const auto& url : insecure_connection_urls) {
+    SCOPED_TRACE(base::StringPrintf("url: %s", url.spec()));
+    EXPECT_FALSE(IsSecure(url));
+  }
 }
 
 }  // namespace net::device_bound_sessions

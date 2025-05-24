@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/autofill/payments/webauthn_dialog.h"
+
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ui/autofill/payments/webauthn_dialog.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -42,8 +43,9 @@ class WebauthnDialogBrowserTest : public DialogBrowserTest {
   }
 
   WebauthnDialogView* GetWebauthnDialogView() {
-    if (!controller())
+    if (!controller()) {
       return nullptr;
+    }
 
     WebauthnDialog* dialog = controller()->dialog();
     if (!dialog) {
@@ -55,8 +57,9 @@ class WebauthnDialogBrowserTest : public DialogBrowserTest {
 
   WebauthnDialogControllerImpl* controller() {
     if (!browser() || !browser()->tab_strip_model() ||
-        !browser()->tab_strip_model()->GetActiveWebContents())
+        !browser()->tab_strip_model()->GetActiveWebContents()) {
       return nullptr;
+    }
 
     return WebauthnDialogControllerImpl::GetForPage(
         web_contents()->GetPrimaryPage());

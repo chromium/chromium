@@ -20,7 +20,6 @@ class WaylandMenuUtils : public PlatformMenuUtils {
   ~WaylandMenuUtils() override;
 
   int GetCurrentKeyModifiers() const override;
-  std::string ToDBusKeySym(KeyboardCode code) const override;
 
  private:
   const raw_ptr<WaylandConnection, LeakedDanglingUntriaged> connection_;

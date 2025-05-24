@@ -47,8 +47,9 @@ bool TestTabStripModelDelegate::IsTabStripEditable() {
   return true;
 }
 
-void TestTabStripModelDelegate::DuplicateContentsAt(int index) {
-}
+void TestTabStripModelDelegate::DuplicateContentsAt(int index) {}
+
+void TestTabStripModelDelegate::DuplicateSplit(split_tabs::SplitTabId split) {}
 
 void TestTabStripModelDelegate::MoveToExistingWindow(
     const std::vector<int>& indices,
@@ -102,7 +103,7 @@ bool TestTabStripModelDelegate::CanReload() const {
 }
 
 void TestTabStripModelDelegate::AddToReadLater(
-    content::WebContents* web_contents) {}
+    std::vector<content::WebContents*> web_contentses) {}
 
 bool TestTabStripModelDelegate::SupportsReadLater() {
   return true;
@@ -124,13 +125,16 @@ bool TestTabStripModelDelegate::IsNormalWindow() {
   return true;
 }
 
+void TestTabStripModelDelegate::NewSplitTab(std::vector<int> indices) {}
+
 BrowserWindowInterface* TestTabStripModelDelegate::GetBrowserWindowInterface() {
-  return nullptr;
+  return browser_window_interface_;
 }
 
 void TestTabStripModelDelegate::OnGroupsDestruction(
     const std::vector<tab_groups::TabGroupId>& group_ids,
-    base::OnceCallback<void()> callback) {
+    base::OnceCallback<void()> callback,
+    bool delete_groups) {
   std::move(callback).Run();
 }
 

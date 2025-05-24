@@ -6,6 +6,11 @@
 
 namespace base {
 
+void CheckPThreadStackMinIsSafe() {
+  static_assert(__builtin_constant_p(PTHREAD_STACK_MIN),
+                "Always constant on iOS");
+}
+
 void RaiseProcessToHighPriority() {
   // Impossible on iOS. Do nothing.
 }

@@ -55,17 +55,14 @@ class GpuMojoMediaClientAndroid final : public GpuMojoMediaClient {
       ref_counted_lock = base::MakeRefCounted<gpu::RefCountedLock>();
     }
 
-    std::unique_ptr<SharedImageVideoProvider> image_provider =
+    // Wrap |image_provider| in a pool.
+    auto image_provider = PooledSharedImageVideoProvider::Create(
+        gpu_task_runner_, traits.get_command_buffer_stub_cb,
         std::make_unique<DirectSharedImageVideoProvider>(
             gpu_task_runner_, traits.get_command_buffer_stub_cb,
-            ref_counted_lock);
+            ref_counted_lock),
+        ref_counted_lock);
 
-    if (base::FeatureList::IsEnabled(kUsePooledSharedImageVideoProvider)) {
-      // Wrap |image_provider| in a pool.
-      image_provider = PooledSharedImageVideoProvider::Create(
-          gpu_task_runner_, traits.get_command_buffer_stub_cb,
-          std::move(image_provider), ref_counted_lock);
-    }
     // TODO(liberato): Create this only if we're using Vulkan, else it's
     // ignored.  If we can tell that here, then VideoFrameFactory can use it
     // as a signal about whether it's supposed to get YCbCrInfo rather than

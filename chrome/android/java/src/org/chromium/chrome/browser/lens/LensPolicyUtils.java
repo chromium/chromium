@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.lens;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.policy.PolicyCache;
 
 /** Provides Lens policy utility functions. */
+@NullMarked
 public class LensPolicyUtils {
     private static final String LENS_CAMERA_ASSISTED_SEARCH_ENABLED_POLICY_NAME =
             "policy.lens_camera_assisted_search_enabled";

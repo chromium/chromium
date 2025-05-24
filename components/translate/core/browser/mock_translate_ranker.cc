@@ -10,9 +10,9 @@
 namespace translate {
 namespace testing {
 
-MockTranslateRanker::MockTranslateRanker() {}
+MockTranslateRanker::MockTranslateRanker() = default;
 
-MockTranslateRanker::~MockTranslateRanker() {}
+MockTranslateRanker::~MockTranslateRanker() = default;
 
 uint32_t MockTranslateRanker::GetModelVersion() const {
   return model_version_;

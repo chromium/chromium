@@ -5,6 +5,7 @@
 #include "base/sequence_token.h"
 
 #include "base/atomic_sequence_num.h"
+#include "base/check.h"
 
 namespace base {
 namespace internal {
@@ -24,10 +25,6 @@ constinit thread_local bool current_task_is_running_synchronously = false;
 
 bool SequenceToken::operator==(const SequenceToken& other) const {
   return token_ == other.token_ && IsValid();
-}
-
-bool SequenceToken::operator!=(const SequenceToken& other) const {
-  return !(*this == other);
 }
 
 bool SequenceToken::IsValid() const {

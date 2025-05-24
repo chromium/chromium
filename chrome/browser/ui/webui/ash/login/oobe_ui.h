@@ -13,7 +13,7 @@
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -150,13 +150,12 @@ class OobeUI : public ui::MojoWebUIController {
   THandler* GetHandler() {
     OobeScreenId expected_screen = THandler::kScreenId;
     for (BaseScreenHandler* handler : screen_handlers_) {
-      if (expected_screen == handler->oobe_screen())
+      if (expected_screen == handler->oobe_screen()) {
         return static_cast<THandler*>(handler);
+      }
     }
 
-    NOTREACHED_IN_MIGRATION()
-        << "Unable to find handler for screen " << expected_screen;
-    return nullptr;
+    NOTREACHED() << "Unable to find handler for screen " << expected_screen;
   }
 
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface

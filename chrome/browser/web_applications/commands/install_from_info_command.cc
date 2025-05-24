@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/jobs/install_from_info_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -46,7 +47,8 @@ InstallFromInfoCommand::InstallFromInfoCommand(
                           webapps::InstallResultCode::
                               kCancelledOnWebAppProviderShuttingDown)),
       profile_(*profile),
-      app_id_(GetAppId(*install_info)) {
+      app_id_(GetAppId(*install_info)),
+      diy_app_(install_info->is_diy_app) {
   GetMutableDebugValue().Set("manifest_id", install_info->manifest_id().spec());
   GetMutableDebugValue().Set("app_id", app_id_);
   install_from_info_job_ = std::make_unique<InstallFromInfoJob>(
@@ -73,6 +75,9 @@ void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 void InstallFromInfoCommand::OnInstallFromInfoJobCompleted(
     webapps::AppId app_id,
     webapps::InstallResultCode code) {
+  RecordInstallMetrics(InstallCommand::kInstallFromInfo,
+                       diy_app_ ? WebAppType::kDiyApp : WebAppType::kCraftedApp,
+                       code, install_from_info_job_->install_surface());
   bool was_install_success = webapps::IsSuccess(code);
   if (!was_install_success) {
     CompleteAndSelfDestruct(CommandResult::kFailure, app_id_, code);

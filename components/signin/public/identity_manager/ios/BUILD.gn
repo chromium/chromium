@@ -10,6 +10,7 @@ source_set("ios") {
 
   public_deps = [
     "//base",
+    "//google_apis",
     "//third_party/abseil-cpp:absl",
   ]
 }

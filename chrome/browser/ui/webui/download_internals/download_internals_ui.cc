@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui.h"
 
 #include <utility>
@@ -29,15 +24,14 @@ DownloadInternalsUI::DownloadInternalsUI(content::WebUI* web_ui)
           Profile::FromWebUI(web_ui), chrome::kChromeUIDownloadInternalsHost);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
+      "script-src chrome://resources 'self';");
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate;");
+      "trusted-types lit-html-desktop;");
 
   // Required resources.
   html_source->UseStringsJs();
-  html_source->AddResourcePaths(base::make_span(
-      kDownloadInternalsResources, kDownloadInternalsResourcesSize));
+  html_source->AddResourcePaths(kDownloadInternalsResources);
   html_source->AddResourcePath("",
                                IDR_DOWNLOAD_INTERNALS_DOWNLOAD_INTERNALS_HTML);
 

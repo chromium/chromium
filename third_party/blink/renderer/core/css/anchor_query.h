@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ANCHOR_QUERY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ANCHOR_QUERY_H_
 
+#include <variant>
+
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
@@ -27,7 +28,7 @@ class CORE_EXPORT AnchorQuery {
   AnchorQuery(CSSAnchorQueryType query_type,
               const AnchorSpecifierValue* anchor_specifier,
               float percentage,
-              absl::variant<CSSAnchorValue, CSSAnchorSizeValue> value)
+              std::variant<CSSAnchorValue, CSSAnchorSizeValue> value)
       : query_type_(query_type),
         anchor_specifier_(anchor_specifier),
         percentage_(percentage),
@@ -41,7 +42,7 @@ class CORE_EXPORT AnchorQuery {
   }
   CSSAnchorValue AnchorSide() const {
     DCHECK_EQ(query_type_, CSSAnchorQueryType::kAnchor);
-    return absl::get<CSSAnchorValue>(value_);
+    return std::get<CSSAnchorValue>(value_);
   }
   float AnchorSidePercentage() const {
     DCHECK_EQ(query_type_, CSSAnchorQueryType::kAnchor);
@@ -54,7 +55,7 @@ class CORE_EXPORT AnchorQuery {
   }
   CSSAnchorSizeValue AnchorSize() const {
     DCHECK_EQ(query_type_, CSSAnchorQueryType::kAnchorSize);
-    return absl::get<CSSAnchorSizeValue>(value_);
+    return std::get<CSSAnchorSizeValue>(value_);
   }
 
   bool operator==(const AnchorQuery& other) const;
@@ -65,7 +66,7 @@ class CORE_EXPORT AnchorQuery {
   CSSAnchorQueryType query_type_;
   Member<const AnchorSpecifierValue> anchor_specifier_;
   float percentage_;
-  absl::variant<CSSAnchorValue, CSSAnchorSizeValue> value_;
+  std::variant<CSSAnchorValue, CSSAnchorSizeValue> value_;
 };
 
 }  // namespace blink

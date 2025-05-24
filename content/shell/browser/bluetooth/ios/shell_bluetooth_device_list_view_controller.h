@@ -17,7 +17,7 @@
 // The ViewController that has UITableView to show the bluetooth device list.
 @interface ShellDeviceListViewController
     : UITableViewController <ShellBluetoothDeviceListConsumer,
-                             UIPopoverPresentationControllerDelegate>
+                             UIAdaptivePresentationControllerDelegate>
 
 // The view controller this coordinator was initialized with.
 @property(weak, nonatomic, readonly) UIViewController* baseViewController;

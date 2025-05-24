@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeTouchpads, fakeTouchpads2, PerDeviceSubsectionHeaderElement, SettingsPerDeviceTouchpadElement} from 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
+
+import type {SettingsPerDeviceTouchpadElement} from 'chrome://os-settings/lazy_load.js';
+import {PerDeviceSubsectionHeaderElement} from 'chrome://os-settings/lazy_load.js';
+import {fakeTouchpads, fakeTouchpads2} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -39,7 +43,7 @@ suite('<settings-per-device-touchpad>', () => {
   });
 
   test(
-      'Display correct name used for internal/external touchpads', async () => {
+      'Display correct name used for internal/external touchpads', () => {
         const subsections = perDeviceTouchpadPage.shadowRoot!.querySelectorAll(
             'settings-per-device-touchpad-subsection');
         for (let i = 0; i < subsections.length; i++) {

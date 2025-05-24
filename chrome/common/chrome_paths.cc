@@ -4,6 +4,8 @@
 
 #include "chrome/common/chrome_paths.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
@@ -42,15 +44,9 @@
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/command_line.h"
-#include "chrome/common/chrome_switches.h"
-#include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
-#include "chromeos/lacros/lacros_paths.h"
-#include "chromeos/startup/startup.h"  // nogncheck
-#endif
-
 namespace {
+
+std::optional<bool> g_override_using_default_data_directory_for_testing;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // The path to the external extension <id>.json files.
@@ -72,11 +68,13 @@ const base::FilePath::CharType kComponentUpdatedWidevineCdmHint[] =
     FILE_PATH_LITERAL("latest-component-updated-widevine-cdm");
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const base::FilePath::CharType kChromeOSTPMFirmwareUpdateLocation[] =
     FILE_PATH_LITERAL("/run/tpm_firmware_update_location");
 const base::FilePath::CharType kChromeOSTPMFirmwareUpdateSRKVulnerableROCA[] =
     FILE_PATH_LITERAL("/run/tpm_firmware_update_srk_vulnerable_roca");
+const base::FilePath::CharType kDeviceRefreshTokenFilePath[] =
+    FILE_PATH_LITERAL("/home/chronos/device_refresh_token");
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
 const base::FilePath::CharType kChromeOSCryptohomeMountRoot[] =
     FILE_PATH_LITERAL("/home/user");
@@ -107,12 +105,7 @@ bool GetChromeOsCrdDataDirInternal(base::FilePath* result,
 #endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const base::FilePath::CharType kLacrosLogDirectory[] =
-    FILE_PATH_LITERAL("/var/log/lacros");
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::FilePath& GetInvalidSpecifiedUserDataDirInternal() {
   static base::NoDestructor<base::FilePath> s;
@@ -192,12 +185,6 @@ bool PathProvider(int key, base::FilePath* result) {
   base::FilePath cur;
   switch (key) {
     case chrome::DIR_USER_DATA:
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && DCHECK_IS_ON()
-      // Check that the user data directory is not accessed before
-      // initialization when prelaunching at login screen.
-      DCHECK(chromeos::lacros_paths::IsInitializedUserDataDir() ||
-             !chromeos::IsLaunchedWithPostLoginParams());
-#endif
       if (!GetDefaultUserDataDirectory(&cur)) {
         return false;
       }
@@ -247,25 +234,17 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
       break;
     case chrome::DIR_CRASH_METRICS:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      cur = base::FilePath(kLacrosLogDirectory);
-#else
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
         return false;
       }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       break;
     case chrome::DIR_CRASH_DUMPS:
-// Only use /var/log/{chrome,lacros} on IS_CHROMEOS_DEVICE builds. For
-// non-device builds we fall back to the #else below and store relative to the
+// Only use /var/log/chrome on IS_CHROMEOS_DEVICE builds. For non-device
+// ChromeOS builds we fall back to the #else below and store relative to the
 // default user-data directory.
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       // ChromeOS uses a separate directory. See http://crosbug.com/25089
       cur = base::FilePath("/var/log/chrome");
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      cur = base::FilePath(kLacrosLogDirectory);
-#endif  // BUILDFlAG(IS_CHROMEOS_ASH)
 #elif BUILDFLAG(IS_ANDROID)
       if (!base::android::GetCacheDirectory(&cur)) {
         return false;
@@ -417,13 +396,7 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
 
     case chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM: {
-      int components_dir =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          static_cast<int>(chromeos::lacros_paths::LACROS_SHARED_DIR);
-#else
-          chrome::DIR_USER_DATA;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      if (!base::PathService::Get(components_dir, &cur)) {
+      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
         return false;
       }
       cur = cur.AppendASCII(kWidevineCdmBaseDirectory);
@@ -465,23 +438,7 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
       break;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    case chrome::FILE_RESOURCES_FOR_SHARING_PACK:
-      if (!GetDefaultUserDataDirectory(&cur)) {
-        return false;
-      }
-      cur = cur.Append(FILE_PATH_LITERAL(crosapi::kSharedResourcesPackName));
-      break;
-    case chrome::FILE_ASH_RESOURCES_PACK:
-      if (!base::PathService::Get(chromeos::lacros_paths::ASH_RESOURCES_DIR,
-                                  &cur)) {
-        return false;
-      }
-      cur = cur.Append("resources.pak");
-      break;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case chrome::DIR_CHROMEOS_WALLPAPERS:
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
         return false;
@@ -541,18 +498,20 @@ bool PathProvider(int key, base::FilePath* result) {
         return false;
       }
       break;
+#if BUILDFLAG(IS_MAC)
+    case chrome::DIR_OUTER_BUNDLE: {
+      cur = base::apple::OuterBundlePath();
+      break;
+    }
+#endif
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OPENBSD)
     case chrome::DIR_POLICY_FILES: {
       cur = base::FilePath(policy::kPolicyPath);
       break;
     }
 #endif
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_CHROMEOS_ASH) ||                              \
-    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-     BUILDFLAG(CHROMIUM_BRANDING)) ||                          \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING))
     case chrome::DIR_USER_EXTERNAL_EXTENSIONS: {
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
         return false;
@@ -635,12 +594,15 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(kGCMStoreDirname);
       break;
 #endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_LOCATION:
       cur = base::FilePath(kChromeOSTPMFirmwareUpdateLocation);
       break;
     case chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA:
       cur = base::FilePath(kChromeOSTPMFirmwareUpdateSRKVulnerableROCA);
+      break;
+    case chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN:
+      cur = base::FilePath(kDeviceRefreshTokenFilePath);
       break;
     case chrome::DIR_CHROMEOS_HOMEDIR_MOUNT:
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
@@ -652,7 +614,7 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(kFakeCryptohomeMountRootDirname);
 #endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
       break;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     case chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS:
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
         return false;
@@ -673,6 +635,29 @@ bool PathProvider(int key, base::FilePath* result) {
 
   *result = cur;
   return true;
+}
+
+std::optional<bool> IsUsingDefaultDataDirectory() {
+  if (g_override_using_default_data_directory_for_testing.has_value()) {
+    return g_override_using_default_data_directory_for_testing.value();
+  }
+
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+    return std::nullopt;
+  }
+
+  base::FilePath default_user_data_dir;
+  if (!chrome::GetDefaultUserDataDirectory(&default_user_data_dir)) {
+    return std::nullopt;
+  }
+
+  return user_data_dir == default_user_data_dir;
+}
+
+void SetUsingDefaultUserDataDirectoryForTesting(
+    std::optional<bool> is_default) {
+  g_override_using_default_data_directory_for_testing = is_default;
 }
 
 // This cannot be done as a static initializer sadly since Visual Studio will

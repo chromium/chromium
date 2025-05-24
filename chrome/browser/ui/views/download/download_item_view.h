@@ -23,10 +23,11 @@
 #include "chrome/browser/icon_loader.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/geometry/size.h"
@@ -84,12 +85,12 @@ class DownloadItemView : public views::View,
   void Layout(PassKey) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // DownloadUIModel::Delegate:
   void OnDownloadUpdated() override;
@@ -106,6 +107,9 @@ class DownloadItemView : public views::View,
 
   std::u16string GetStatusTextForTesting() const;
   void OpenItemForTesting();
+
+  // Tooltip text is only displayed when not showing a warning dialog.
+  void UpdateTooltipText();
 
  protected:
   // views::View:
@@ -215,7 +219,7 @@ class DownloadItemView : public views::View,
   // Shows the context menu at the specified location. |point| is in the view's
   // coordinate system.
   void ShowContextMenuImpl(const gfx::Rect& rect,
-                           ui::MenuSourceType source_type);
+                           ui::mojom::MenuSourceType source_type);
 
   // Opens a file while async scanning is still pending.
   void OpenDownloadDuringAsyncScanning();
@@ -226,6 +230,13 @@ class DownloadItemView : public views::View,
   void UpdateAccessibleName();
 
   std::u16string CalculateAccessibleName() const;
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  static constexpr int kButtonsCount = 5;
+#else
+  static constexpr int kButtonsCount = 4;
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  std::array<raw_ptr<views::MdTextButton>, kButtonsCount> buttons() const;
 
   // The model controlling this object's state.
   const DownloadUIModel::DownloadUIModelPtr model_;

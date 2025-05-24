@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/task/download_task_types.h"
@@ -26,7 +27,8 @@ using TaskFinishedCallback = base::OnceCallback<void(bool)>;
 
 #if BUILDFLAG(IS_IOS)
 // Identifier for background download service.
-extern const char kBackgroundDownloadIdentifierPrefix[];
+inline constexpr char kBackgroundDownloadIdentifierPrefix[] =
+    "background_download";
 #endif  // BUILDFLAG(IS_IOS)
 
 // A service responsible for helping facilitate the scheduling and downloading
@@ -38,7 +40,8 @@ extern const char kBackgroundDownloadIdentifierPrefix[];
 // interface so this class knows who to contact when a download completes after
 // a process restart.
 // See the embedder specific factories for creation options.
-class BackgroundDownloadService : public KeyedService {
+class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE)
+    BackgroundDownloadService : public KeyedService {
  public:
   // The current status of the Service.
   enum class ServiceStatus {

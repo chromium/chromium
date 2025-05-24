@@ -5,12 +5,33 @@
 package org.chromium.chrome.browser.browser_controls;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
 
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** An interface for retrieving and monitoring browser controls state. */
+@NullMarked
 public interface BrowserControlsStateProvider {
+    /**
+     * The possible positions of the control container, which contains the browsing mode toolbar.
+     */
+    @IntDef({ControlsPosition.TOP, ControlsPosition.BOTTOM, ControlsPosition.NONE})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ControlsPosition {
+        /** Controls are top-anchored. */
+        int TOP = 0;
+
+        /** Controls are bottom-anchored. */
+        int BOTTOM = 1;
+
+        /** Controls are not present, eg NoTouchActivity. */
+        int NONE = 2;
+    }
+
     /** An observer to be notified of browser controls changes */
     interface Observer {
         /**
@@ -21,19 +42,26 @@ public interface BrowserControlsStateProvider {
          *     min-height is changing with an animation, this will be a value between the old and
          *     the new min-heights, which is the current visible min-height. Otherwise, this will be
          *     equal to {@link #getTopControlsMinHeight()}.
+         * @param topControlsMinHeightChanged If current top controls min-height is different from
+         *     the value in the previous frame.
          * @param bottomOffset The new value of the offset from the top of the bottom control in px.
          * @param bottomControlsMinHeightOffset The current bottom controls min-height in px. If the
          *     min-height is changing with an animation, this will be a value between the old and
          *     the new min-heights, which is the current visible min-height. Otherwise, this will be
          *     equal to {@link #getBottomControlsMinHeight()}.
-         * @param needsAnimate Whether the caller is driving an animation with further updates.
+         * @param bottomControlsMinHeightChanged If current bottom controls min-height is different
+         *     from the value in the previous frame.
+         * @param requestNewFrame Whether we will explicitly request to submit a new frame.
+         * @param isVisibilityForced Whether the browser is forcing the controls to be shown/hidden.
          */
         default void onControlsOffsetChanged(
                 int topOffset,
                 int topControlsMinHeightOffset,
+                boolean topControlsMinHeightChanged,
                 int bottomOffset,
                 int bottomControlsMinHeightOffset,
-                boolean needsAnimate,
+                boolean bottomControlsMinHeightChanged,
+                boolean requestNewFrame,
                 boolean isVisibilityForced) {}
 
         /** Called when the height of the bottom controls are changed. */
@@ -57,14 +85,19 @@ public interface BrowserControlsStateProvider {
          *     the controls will no longer be moved by viz, which happens only when the browser is
          *     forcing the controls to be fully shown/hidden.
          * @param constraints the visibility constraints of the browser controls.
+         * @param shouldUpdateOffsets should the offset be updated with the renderer's offset.
          */
         default void onControlsConstraintsChanged(
                 BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                 BrowserControlsOffsetTagsInfo offsetTagsInfo,
-                @BrowserControlsState int constraints) {}
+                @BrowserControlsState int constraints,
+                boolean shouldUpdateOffsets) {}
 
         /** Called when the background color of the controls container changes. */
         default void onBottomControlsBackgroundColorChanged(@ColorInt int color) {}
+
+        /** Called when the current position of the control container changes. */
+        default void onControlsPositionChanged(@ControlsPosition int controlsPosition) {}
     }
 
     /**
@@ -81,9 +114,15 @@ public interface BrowserControlsStateProvider {
     void removeObserver(Observer obs);
 
     /**
-     * @return The height of the top controls in pixels.
+     * @return The height of the top controls in pixels. During an animation that changes the
+     *     height, this function returns the final height after animation completes.
      */
     int getTopControlsHeight();
+
+    /**
+     * @return The height of the toolbar's hairline.
+     */
+    int getTopControlsHairlineHeight();
 
     /**
      * @return The minimum visible height top controls can have in pixels.
@@ -149,4 +188,11 @@ public interface BrowserControlsStateProvider {
 
     /** Returns the View visibility of the controls container. */
     int getAndroidControlsVisibility();
+
+    /**
+     * Get the current position of the controls, one of {@link ControlsPosition}. This value can
+     * change at runtime; changes can be observed with {@link Observer#onControlsPositionChanged}
+     */
+    @ControlsPosition
+    int getControlsPosition();
 }

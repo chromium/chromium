@@ -20,9 +20,11 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -154,8 +156,7 @@ class InstallAppLocallyCommandTest : public WebAppTest {
     EXPECT_TRUE(icon_color.has_value());
     return icon_color.value();
 #else
-    NOTREACHED_IN_MIGRATION() << "Shortcuts not supported for other OS";
-    return SK_ColorTRANSPARENT;
+    NOTREACHED() << "Shortcuts not supported for other OS";
 #endif
   }
 
@@ -180,7 +181,8 @@ TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
 
   if (HasShortcutsOsIntegration()) {
     ASSERT_FALSE(os_integration_state.has_shortcut());
@@ -194,9 +196,13 @@ TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
   auto updated_state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(updated_state.has_value());
-  const proto::WebAppOsIntegrationState& updated_os_states =
+  const proto::os_state::WebAppOsIntegration& updated_os_states =
       updated_state.value();
   ASSERT_TRUE(updated_os_states.has_shortcut());
+
+  EXPECT_TRUE(
+      provider().registrar_unsafe().GetAppById(app_id)->GetSources().Has(
+          WebAppManagement::kUserInstalled));
 
   // OS integration should be triggered now.
   if (HasShortcutsOsIntegration()) {
@@ -220,9 +226,7 @@ TEST_F(InstallAppLocallyCommandTest, AppNotInRegistrar) {
   base::test::TestFuture<void> test_future;
   provider().scheduler().InstallAppLocally(app_id, test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
-      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 }
 
 }  // namespace

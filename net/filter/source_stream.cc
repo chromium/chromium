@@ -6,7 +6,7 @@
 
 namespace net {
 
-SourceStream::SourceStream(SourceType type) : type_(type) {}
+SourceStream::SourceStream(SourceStreamType type) : type_(type) {}
 
 SourceStream::~SourceStream() = default;
 

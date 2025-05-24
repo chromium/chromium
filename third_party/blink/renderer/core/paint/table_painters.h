@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -15,7 +16,6 @@ class BoxDecorationData;
 class LayoutBox;
 class PhysicalBoxFragment;
 struct PaintInfo;
-struct PhysicalOffset;
 struct PhysicalRect;
 
 class TablePainter {
@@ -58,7 +58,7 @@ class TableSectionPainter {
   void PaintColumnsBackground(const PaintInfo&,
                               const PhysicalOffset& section_paint_offset,
                               const PhysicalRect& columns_paint_rect,
-                              const TableFragmentData::ColumnGeometries&);
+                              const TableColumnGeometries&);
 
  private:
   const PhysicalBoxFragment& fragment_;
@@ -86,7 +86,7 @@ class TableRowPainter {
   void PaintColumnsBackground(const PaintInfo&,
                               const PhysicalOffset& row_paint_offset,
                               const PhysicalRect& columns_paint_rect,
-                              const TableFragmentData::ColumnGeometries&);
+                              const TableColumnGeometries&);
 
  private:
   const PhysicalBoxFragment& fragment_;

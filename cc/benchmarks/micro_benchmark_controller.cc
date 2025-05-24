@@ -4,12 +4,12 @@
 
 #include "cc/benchmarks/micro_benchmark_controller.h"
 
+#include <algorithm>
 #include <limits>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "cc/benchmarks/invalidation_benchmark.h"
@@ -79,7 +79,7 @@ int MicroBenchmarkController::GetNextIdAndIncrement() {
 }
 
 bool MicroBenchmarkController::SendMessage(int id, base::Value::Dict message) {
-  auto it = base::ranges::find(benchmarks_, id, &MicroBenchmark::id);
+  auto it = std::ranges::find(benchmarks_, id, &MicroBenchmark::id);
   if (it == benchmarks_.end())
     return false;
   return (*it)->ProcessMessage(std::move(message));

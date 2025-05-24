@@ -1,0 +1,104 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "ephemeral_kiosk_browsertest.cc",
+    "kiosk_accessibility_extension_browsertest.cc",
+    "kiosk_arcvm_app_manager_browsertest.cc",
+    "kiosk_auto_login_bailout_browsertest.cc",
+    "kiosk_browsertest.cc",
+    "kiosk_chrome_app_browsertest.cc",
+    "kiosk_chrome_app_offline_network_prompt_browsertest.cc",
+    "kiosk_chrome_app_update_browsertest.cc",
+    "kiosk_chrome_app_usb_update_browsertest.cc",
+    "kiosk_file_system_volumes_browsertest.cc",
+    "kiosk_identity_browsertest.cc",
+    "kiosk_installed_apps_browsertest.cc",
+    "kiosk_iwa_browsertest.cc",
+    "kiosk_iwa_device_attributes_browsertest.cc",
+    "kiosk_iwa_permissions_browsertest.cc",
+    "kiosk_iwa_update_browsertest.cc",
+    "kiosk_iwa_version_management_browsertest.cc",
+    "kiosk_misconfigured_user_browsertest.cc",
+    "kiosk_multi_chrome_app_browsertest.cc",
+    "kiosk_self_hosted_chrome_app_browsertest.cc",
+    "kiosk_settings_browsertest.cc",
+    "kiosk_untrusted_cros_settings_browsertest.cc",
+    "kiosk_web_app_offline_enabled_browsertest.cc",
+    "minimum_chrome_version_browsertest.cc",
+    "new_windows_in_kiosk_allowed_browsertest.cc",
+    "required_platform_version_browsertest.cc",
+    "splash_screen_browsertest.cc",
+    "virtual_keyboard_features_browsertest.cc",
+  ]
+  deps = [
+    ":test_support",
+    "//ash/constants",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service:app_service",
+    "//chrome/browser/ash/app_mode/arcvm_app",
+    "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/login/app_mode/test:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/chromeos/app_mode",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/policy/device_local_account",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/web_package",
+    "//components/web_package/test_support",
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
+    "//content/test:test_support",
+    "//extensions/components/native_app_window",
+    "//testing/gtest",
+    "//ui/events:test_support",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_cws_chrome_apps.cc",
+    "fake_cws_chrome_apps.h",
+    "kiosk_mixin.cc",
+    "kiosk_mixin.h",
+    "kiosk_test_utils.cc",
+    "kiosk_test_utils.h",
+    "network_state_mixin.cc",
+    "network_state_mixin.h",
+    "scoped_device_settings.cc",
+    "scoped_device_settings.h",
+  ]
+
+  deps = [
+    "//apps:test_support",
+    "//chrome/browser",
+    "//chrome/browser/app_mode/test:test_support",
+    "//chrome/browser/ash/app_mode:test_support",
+    "//chrome/browser/ash/app_mode/isolated_web_app",
+    "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos/app_mode",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/policy/device_local_account",
+    "//components/web_package",
+  ]
+}

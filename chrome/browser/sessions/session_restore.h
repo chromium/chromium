@@ -122,9 +122,6 @@ class SessionRestore {
   // without session restore started.
   static void OnTabLoaderFinishedLoadingTabs();
 
-  // Is called when session restore is going to restore a tab.
-  static void OnWillRestoreTab(content::WebContents* web_contents);
-
   // Is called when windows are read from the last session restore file.
   static void OnGotSession(Profile* profile, bool for_apps, int window_count);
 

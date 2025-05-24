@@ -6,6 +6,7 @@
 #define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
@@ -118,7 +119,7 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView,
 
   // Handles finished editing event from the text field, updates `task_title_`
   // and propagates new `title` to the server.
-  void OnFinishedEditing(const std::u16string& title);
+  void OnFinishedEditing(std::u16string_view title);
 
   // Handles completion of running `save_callback_` callback.
   // `task` - newly created or updated task.

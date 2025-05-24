@@ -121,10 +121,12 @@ int ScopedVariant::Compare(const VARIANT& other, bool ignore_case) const {
   const bool other_is_empty = other.vt == VT_EMPTY || other.vt == VT_NULL;
 
   // 1. VT_NULL and VT_EMPTY is always considered less-than any other VARTYPE.
-  if (this_is_empty)
+  if (this_is_empty) {
     return other_is_empty ? 0 : -1;
-  if (other_is_empty)
+  }
+  if (other_is_empty) {
     return 1;
+  }
 
   // 2. If both VARIANTS have either VT_UNKNOWN or VT_DISPATCH even if the
   //    VARTYPEs do not match, the address of its IID_IUnknown is compared to
@@ -141,16 +143,18 @@ int ScopedVariant::Compare(const VARIANT& other, bool ignore_case) const {
     Microsoft::WRL::ComPtr<IUnknown> other_unknown;
     V_UNKNOWN(&var_)->QueryInterface(IID_PPV_ARGS(&this_unknown));
     V_UNKNOWN(&other)->QueryInterface(IID_PPV_ARGS(&other_unknown));
-    if (this_unknown.Get() == other_unknown.Get())
+    if (this_unknown.Get() == other_unknown.Get()) {
       return 0;
+    }
     // std::less for any pointer type yields a strict total order even if the
     // built-in operator< does not.
     return std::less<>{}(this_unknown.Get(), other_unknown.Get()) ? -1 : 1;
   }
 
   // 3. If the VARTYPEs do not match, then the value of the VARTYPE is compared.
-  if (V_VT(&var_) != V_VT(&other))
+  if (V_VT(&var_) != V_VT(&other)) {
     return (V_VT(&var_) < V_VT(&other)) ? -1 : 1;
+  }
 
   const VARTYPE shared_vartype = V_VT(&var_);
   // 4. Comparing VT_BSTR values is a lexicographical comparison of the contents
@@ -254,8 +258,9 @@ void ScopedVariant::Set(IDispatch* disp) {
   DCHECK(!IsLeakableVarType(var_.vt)) << "leaking variant: " << var_.vt;
   var_.vt = VT_DISPATCH;
   var_.pdispVal = disp;
-  if (disp)
+  if (disp) {
     disp->AddRef();
+  }
 }
 
 void ScopedVariant::Set(bool b) {
@@ -268,8 +273,9 @@ void ScopedVariant::Set(IUnknown* unk) {
   DCHECK(!IsLeakableVarType(var_.vt)) << "leaking variant: " << var_.vt;
   var_.vt = VT_UNKNOWN;
   var_.punkVal = unk;
-  if (unk)
+  if (unk) {
     unk->AddRef();
+  }
 }
 
 void ScopedVariant::Set(SAFEARRAY* array) {
@@ -292,8 +298,9 @@ void ScopedVariant::Set(const VARIANT& var) {
 }
 
 ScopedVariant& ScopedVariant::operator=(ScopedVariant&& var) {
-  if (var.ptr() != &var_)
+  if (var.ptr() != &var_) {
     Reset(var.Release());
+  }
   return *this;
 }
 

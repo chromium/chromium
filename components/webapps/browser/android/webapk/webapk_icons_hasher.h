@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/webapps/browser/android/webapk/webapk_single_icon_hasher.h"
-#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

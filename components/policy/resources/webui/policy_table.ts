@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import './policy_precedence_row.js';
 import './policy_row.js';
 
@@ -118,7 +118,7 @@ export class PolicyTableElement extends CustomElement {
       const precedenceRowOld =
           this.shadowRoot!.querySelectorAll('.policy-precedence-data');
       precedenceRowOld.forEach(row => mainContent.removeChild(row));
-      if (this.dataModel.precedenceOrder != undefined) {
+      if (this.dataModel.precedenceOrder != null) {
         const precedenceRow = document.createElement('policy-precedence-row');
         precedenceRow.initialize(this.dataModel.precedenceOrder);
         mainContent.appendChild(precedenceRow);
@@ -143,13 +143,13 @@ export class PolicyTableElement extends CustomElement {
    */
   filter() {
     const showUnset =
-        (getRequiredElement('show-unset') as HTMLInputElement)!.checked;
+        getRequiredElement<HTMLInputElement>('show-unset').checked;
     const policies = this.shadowRoot!.querySelectorAll('.policy-data');
     for (let i = 0; i < policies.length; i++) {
       const policyDisplay = policies[i] as PolicyRowElement;
-      policyDisplay!.hidden =
-          policyDisplay!.policy!.value === undefined && !showUnset ||
-          policyDisplay!.policy!.name.toLowerCase().indexOf(
+      policyDisplay.hidden =
+          policyDisplay.policy.value === undefined && !showUnset ||
+          policyDisplay.policy.name.toLowerCase().indexOf(
               this.filterPattern) === -1;
     }
     this.getRequiredElement<HTMLElement>('.no-policy').hidden =

@@ -24,7 +24,7 @@ class StabilityMetricsProviderTest : public testing::Test {
   StabilityMetricsProviderTest& operator=(const StabilityMetricsProviderTest&) =
       delete;
 
-  ~StabilityMetricsProviderTest() override {}
+  ~StabilityMetricsProviderTest() override = default;
 
  protected:
   TestingPrefServiceSimple prefs_;

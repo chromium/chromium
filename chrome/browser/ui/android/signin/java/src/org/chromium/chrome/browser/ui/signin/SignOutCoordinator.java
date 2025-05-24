@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.IntDef;
@@ -13,7 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -35,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.stream.IntStream;
 
 /** A coordinator to handle sign-out. */
+@NullMarked
 public class SignOutCoordinator {
     /**
      * Starts the sign-out flow. The caller must verify existence of a signed-in account and whether
@@ -66,6 +69,53 @@ public class SignOutCoordinator {
             @SignoutReason int signOutReason,
             boolean showConfirmDialog,
             Runnable onSignOut) {
+        startSignOutFlow(
+                context,
+                profile,
+                fragmentManager,
+                dialogManager,
+                snackbarManager,
+                signOutReason,
+                showConfirmDialog,
+                onSignOut,
+                false);
+    }
+
+    // TODO: crbug.com/343933167 - The @param suppressSnackbar removed upon being able to show the
+    // settings
+    // signout snackbar from here, which means after fixing b/343933167.
+    /**
+     * Starts the sign-out flow. The caller must verify existence of a signed-in account and whether
+     * sign-out is allowed before calling. Child users may only call this method if there is an
+     * account with {@link ConsentLevel#SYNC}. It can show three different UIs depending on user
+     * state:
+     * <li>A snackbar indicating user has signed-out.
+     * <li>A confirmation dialog indicating user has unsaved data.
+     * <li>A confirmation dialog indicating that user may be signed-out as a side-effect of some
+     *     action (e.g., toggling 'Allow Chrome sign-in').
+     *
+     * @param context Context to create the view.
+     * @param profile The Profile to sign out of.
+     * @param fragmentManager FragmentManager used by {@link SignOutDialogCoordinator}.
+     * @param dialogManager A ModalDialogManager that manages the dialog.
+     * @param signOutReason The access point to sign out from.
+     * @param showConfirmDialog Whether a confirm dialog should be shown before sign-out.
+     * @param onSignOut A {@link Runnable} to run when the user presses the confirm button. Will be
+     *     called on the UI thread when the sign-out flow finishes. If sign-out fails it will not be
+     *     called.
+     * @param suppressSnackbar Indicates whether the snackbar should be suppressed.
+     */
+    @MainThread
+    public static void startSignOutFlow(
+            Context context,
+            Profile profile,
+            FragmentManager fragmentManager,
+            ModalDialogManager dialogManager,
+            SnackbarManager snackbarManager,
+            @SignoutReason int signOutReason,
+            boolean showConfirmDialog,
+            Runnable onSignOut,
+            boolean suppressSnackbar) {
         ThreadUtils.assertOnUiThread();
         assert snackbarManager != null;
         assert onSignOut != null;
@@ -73,11 +123,14 @@ public class SignOutCoordinator {
 
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
+        assumeNonNull(identityManager);
         if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             throw new IllegalStateException("There is no signed-in account");
         }
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        assumeNonNull(signinManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        assumeNonNull(syncService);
         syncService.getTypesWithUnsyncedData(
                 unsyncedTypes -> {
                     switch (getUiState(
@@ -88,7 +141,8 @@ public class SignOutCoordinator {
                                 signinManager,
                                 syncService,
                                 signOutReason,
-                                onSignOut);
+                                onSignOut,
+                                suppressSnackbar);
                         case UiState.UNSAVED_DATA -> showUnsavedDataDialog(
                                 context, dialogManager, signinManager, signOutReason, onSignOut);
                         case UiState.SHOW_CONFIRM_DIALOG -> showConfirmDialog(
@@ -172,8 +226,7 @@ public class SignOutCoordinator {
 
     private static @UiState int getUiState(
             IdentityManager identityManager, boolean hasUnsavedData, boolean showConfirmDialog) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                || identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
             return UiState.LEGACY_DIALOG;
         }
         if (hasUnsavedData) {
@@ -286,7 +339,8 @@ public class SignOutCoordinator {
             SigninManager signinManager,
             SyncService syncService,
             @SignoutReason int signOutReason,
-            Runnable onSignOut) {
+            Runnable onSignOut,
+            boolean supressSnackbar) {
         signOut(
                 signinManager,
                 signOutReason,
@@ -294,7 +348,9 @@ public class SignOutCoordinator {
                     PostTask.runOrPostTask(
                             TaskTraits.UI_DEFAULT,
                             () -> {
-                                showSnackbar(context, snackbarManager, syncService);
+                                if (!supressSnackbar) {
+                                    showSnackbar(context, snackbarManager, syncService);
+                                }
                                 onSignOut.run();
                             });
                 });

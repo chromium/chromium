@@ -32,30 +32,33 @@ CardUnmaskPromptView* CreateCardUnmaskPromptView(
 CardUnmaskPromptViewAndroid::CardUnmaskPromptViewAndroid(
     CardUnmaskPromptController* controller,
     content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents) {
-}
+    : controller_(controller), web_contents_(web_contents) {}
 
 CardUnmaskPromptViewAndroid::~CardUnmaskPromptViewAndroid() {
-  if (controller_)
+  if (controller_) {
     controller_->OnUnmaskDialogClosed();
+  }
 }
 
 void CardUnmaskPromptViewAndroid::Show() {
   auto java_object = GetOrCreateJavaObject();
-  if (!java_object)
+  if (!java_object) {
     return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
-  if (view_android == nullptr || view_android->GetWindowAndroid() == nullptr)
+  if (view_android == nullptr || view_android->GetWindowAndroid() == nullptr) {
     return;
+  }
 
   Java_CardUnmaskBridge_show(env, java_object,
                              view_android->GetWindowAndroid()->GetJavaObject());
 }
 
 void CardUnmaskPromptViewAndroid::Dismiss() {
-  if (!java_object_internal_)
+  if (!java_object_internal_) {
     return;
+  }
   Java_CardUnmaskBridge_dismiss(base::android::AttachCurrentThread(),
                                 java_object_internal_);
 }
@@ -82,8 +85,9 @@ void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   auto java_object = GetOrCreateJavaObject();
-  if (!java_object)
+  if (!java_object) {
     return;
+  }
   controller_->NewCardLinkClicked();
   Java_CardUnmaskBridge_update(env, java_object,
                                base::android::ConvertUTF16ToJavaString(
@@ -112,8 +116,9 @@ void CardUnmaskPromptViewAndroid::ControllerGone() {
 
 void CardUnmaskPromptViewAndroid::DisableAndWaitForVerification() {
   auto java_object = GetOrCreateJavaObject();
-  if (!java_object)
+  if (!java_object) {
     return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CardUnmaskBridge_disableAndWaitForVerification(env, java_object);
 }
@@ -122,12 +127,14 @@ void CardUnmaskPromptViewAndroid::GotVerificationResult(
     const std::u16string& error_message,
     bool allow_retry) {
   auto java_object = GetOrCreateJavaObject();
-  if (!java_object)
+  if (!java_object) {
     return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> message;
-  if (!error_message.empty())
-      message = base::android::ConvertUTF16ToJavaString(env, error_message);
+  if (!error_message.empty()) {
+    message = base::android::ConvertUTF16ToJavaString(env, error_message);
+  }
 
   Java_CardUnmaskBridge_verificationFinished(env, java_object, message,
                                              allow_retry);

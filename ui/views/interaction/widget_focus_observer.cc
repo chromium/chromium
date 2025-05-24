@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace views::test {
 
@@ -74,7 +75,7 @@ WidgetFocusObserver::~WidgetFocusObserver() = default;
 gfx::NativeView WidgetFocusObserver::GetStateObserverInitialState() const {
   auto* const widget =
       internal::WidgetFocusSupplierFrame::GetCurrentFrame()->GetActiveWidget();
-  return widget ? widget->GetNativeView() : nullptr;
+  return widget ? widget->GetNativeView() : gfx::NativeView();
 }
 
 void WidgetFocusObserver::OnWidgetFocusChanged(gfx::NativeView focused_now) {

@@ -48,7 +48,6 @@ class FakeSyncScheduler : public SyncScheduler {
   void OnReceivedCustomNudgeDelays(
       const std::map<DataType, base::TimeDelta>& nudge_delays) override;
   void OnSyncProtocolError(const SyncProtocolError& error) override;
-  void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override;
   void OnReceivedMigrationRequest(DataTypeSet types) override;
   void OnReceivedQuotaParamsForExtensionTypes(
       std::optional<int> max_tokens,

@@ -21,6 +21,7 @@ export function getHtml(this: TabSearchPageElement) {
       </label>
       <input id="searchInput" aria-labelledby="searchLabel"
           autofocus autocomplete="off"
+          maxlength="${this.searchQueryMaxLength_}"
           @search="${this.onSearchTermSearch}"
           @input="${this.onSearchTermInput}"
           type="search" spellcheck="false" role="combobox"

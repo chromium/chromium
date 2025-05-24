@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/credential_provider/gaiacp/user_policies_manager.h"
 
 #include <limits>
@@ -219,7 +224,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   }
 
   // Make the fetch policies HTTP request.
-  std::optional<base::Value> request_result;
+  std::optional<base::Value::Dict> request_result;
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       user_policies_url, access_token, {}, {},
       kDefaultFetchPoliciesRequestTimeout, kMaxNumHttpRetries, &request_result);
@@ -231,7 +236,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   }
 
   std::string policy_data;
-  if (request_result && request_result->is_dict()) {
+  if (request_result) {
     if (!base::JSONWriter::Write(*request_result, &policy_data)) {
       LOGFN(ERROR) << "base::JSONWriter::Write failed";
       return (fetch_status_ = E_FAIL);
@@ -287,16 +292,16 @@ bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
   policy_file->Read(0, buffer.data(), buffer.size());
   policy_file.reset();
 
-  std::optional<base::Value> policy_data =
-      base::JSONReader::Read(std::string_view(buffer.data(), buffer.size()),
-                             base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!policy_data || !policy_data->is_dict()) {
+  std::optional<base::Value::Dict> policy_data =
+      base::JSONReader::ReadDict(std::string_view(buffer.data(), buffer.size()),
+                                 base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!policy_data) {
     LOGFN(ERROR) << "Failed to read policy data from file!";
     return false;
   }
 
   const base::Value::Dict* policies =
-      policy_data->GetDict().FindDict(kPolicyFetchResponseKeyName);
+      policy_data->FindDict(kPolicyFetchResponseKeyName);
   if (!policies) {
     LOGFN(ERROR) << "User policies not found!";
     return false;

@@ -8,7 +8,6 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "extensions/common/api/file_handlers.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
@@ -278,13 +277,7 @@ bool WebFileHandlersParser::Validate(
 
 // static
 bool WebFileHandlers::SupportsWebFileHandlers(const Extension& extension) {
-  // An MV3+ extension is required.
-  if (extension.manifest_version() < 3 || !extension.is_extension()) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(
-      extensions_features::kExtensionWebFileHandlers);
+  return extension.manifest_version() >= 3 && extension.is_extension();
 }
 
 // static

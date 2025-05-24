@@ -51,7 +51,7 @@ scoped_refptr<base::SingleThreadTaskRunner> IceTransportHost::host_thread()
 }
 
 void IceTransportHost::OnGatheringStateChanged(
-    cricket::IceGatheringState new_state) {
+    webrtc::IceGatheringState new_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   PostCrossThreadTask(
       *proxy_thread_, FROM_HERE,
@@ -59,8 +59,7 @@ void IceTransportHost::OnGatheringStateChanged(
                           new_state));
 }
 
-void IceTransportHost::OnCandidateGathered(
-    const cricket::Candidate& candidate) {
+void IceTransportHost::OnCandidateGathered(const webrtc::Candidate& candidate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   PostCrossThreadTask(
       *proxy_thread_, FROM_HERE,
@@ -76,7 +75,7 @@ void IceTransportHost::OnStateChanged(webrtc::IceTransportState new_state) {
 }
 
 void IceTransportHost::OnSelectedCandidatePairChanged(
-    const std::pair<cricket::Candidate, cricket::Candidate>&
+    const std::pair<webrtc::Candidate, webrtc::Candidate>&
         selected_candidate_pair) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   PostCrossThreadTask(

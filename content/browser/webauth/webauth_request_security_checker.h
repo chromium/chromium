@@ -23,7 +23,8 @@ class Value;
 
 namespace network {
 class SimpleURLLoader;
-}
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace content {
 
@@ -60,6 +61,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
     static std::unique_ptr<RemoteValidation> Create(
         const url::Origin& caller_origin,
         const std::string& relying_party_id,
+        scoped_refptr<network::SharedURLLoaderFactory>
+            shared_url_loader_factory,
         base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 
     // ValidateWellKnownJSON implements the core of remote validation. It isn't
@@ -115,8 +118,12 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   // effective domain. In this case the callback will be called before this
   // function returns.
   //
-  // If `remote_destop_client_override` is non-null, this method also validates
-  // whether `caller_origin` is authorized to use that extension.
+  // If `remote_desktop_client_override_origin` is present, this method
+  // validates whether `caller_origin` is authorized to use that extension
+  // through enterprise policy allowlists. This prevents untrusted renderer
+  // processes from being able to impersonate arbitrary origins for WebAuthn
+  // operations. The `remote_desktop_client_override_origin` comes from the
+  // renderer and must not be trusted without this validation.
   //
   // If the RP ID cannot be validated using the rule above then a remote
   // validation will be attempted by fetching `.well-known/webauthn`
@@ -132,8 +139,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
       const url::Origin& caller_origin,
       const std::string& relying_party_id,
       RequestType request_type,
-      const blink::mojom::RemoteDesktopClientOverridePtr&
-          remote_desktop_client_override,
+      const std::optional<url::Origin>& remote_desktop_client_override_origin,
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 
   // Validates whether `caller_origin` is authorized to claim the U2F AppID
@@ -153,6 +159,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
 
   [[nodiscard]] bool DeduplicateCredentialDescriptorListAndValidateLength(
       std::vector<device::PublicKeyCredentialDescriptor>* list);
+
+  static bool& UseSystemSharedURLLoaderFactoryForTesting();
 
  protected:
   friend class base::RefCounted<WebAuthRequestSecurityChecker>;

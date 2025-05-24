@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
@@ -35,25 +40,30 @@ import java.util.Collections;
 import java.util.List;
 
 /** Contains the logic to set the state of the model and react to events like clicks. */
+@NullMarked
 public class RestoreTabsMediator {
-    private RestoreTabsControllerDelegate mDelegate;
+    // These fields are all effectively final and are set in initialize().
     private PropertyModel mModel;
-    private ForeignSessionHelper mForeignSessionHelper;
+    private Profile mProfile;
     private TabCreatorManager mTabCreatorManager;
     private BottomSheetController mBottomSheetController;
     private BottomSheetObserver mBottomSheetDismissedObserver;
-    private Profile mProfile;
-    private ForeignSession mDefaultSelectedSession;
 
+    private @Nullable RestoreTabsControllerDelegate mDelegate;
+    private @Nullable ForeignSessionHelper mForeignSessionHelper;
+    private @Nullable ForeignSession mDefaultSelectedSession;
+
+    @Initializer
     public void initialize(
             PropertyModel model,
             Profile profile,
             TabCreatorManager tabCreatorManager,
             BottomSheetController bottomSheetController) {
+        mModel = model;
+        mProfile = profile;
         mTabCreatorManager = tabCreatorManager;
         mBottomSheetController = bottomSheetController;
-        mProfile = profile;
-        mModel = model;
+
         mModel.set(RestoreTabsProperties.HOME_SCREEN_DELEGATE, createHomeScreenDelegate());
         mModel.set(
                 RestoreTabsProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER,
@@ -130,8 +140,8 @@ public class RestoreTabsMediator {
         }
 
         assert foreignSessionHelper != null && delegate != null && sessions.size() != 0;
-        mForeignSessionHelper = foreignSessionHelper;
         mDelegate = delegate;
+        mForeignSessionHelper = foreignSessionHelper;
         setDeviceListItems(sessions);
         setTabListItems();
 
@@ -382,6 +392,7 @@ public class RestoreTabsMediator {
         }
 
         // Get the tab switcher's current tab list model size.
+        assumeNonNull(mDelegate);
         int currentGTSTabListModelSize = mDelegate.getGTSTabListModelSize();
 
         // TODO(crbug.com/40261552): Consider adding a spinner if restoring the tabs becomes

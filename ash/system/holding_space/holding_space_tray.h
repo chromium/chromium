@@ -25,8 +25,8 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -67,9 +67,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void Initialize() override;
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
-  std::u16string GetAccessibleNameForTray() override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  std::u16string GetTooltipText(const gfx::Point& point) const override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;

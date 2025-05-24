@@ -28,7 +28,7 @@ UiaAccessibilityEventWaiter::UiaAccessibilityEventWaiter(
   initialization_loop.Run();
 }
 
-UiaAccessibilityEventWaiter::~UiaAccessibilityEventWaiter() {}
+UiaAccessibilityEventWaiter::~UiaAccessibilityEventWaiter() = default;
 
 void UiaAccessibilityEventWaiter::Wait() {
   // Pump messages via |shutdown_loop_| until the thread is complete.
@@ -44,9 +44,9 @@ void UiaAccessibilityEventWaiter::WaitWithTimeout(base::TimeDelta timeout) {
   base::PlatformThread::Join(thread_handle_);
 }
 
-UiaAccessibilityEventWaiter::Thread::Thread() {}
+UiaAccessibilityEventWaiter::Thread::Thread() = default;
 
-UiaAccessibilityEventWaiter::Thread::~Thread() {}
+UiaAccessibilityEventWaiter::Thread::~Thread() = default;
 
 void UiaAccessibilityEventWaiter::Thread::SendShutdownSignal() {
   shutdown_signal_.Signal();
@@ -152,9 +152,9 @@ void UiaAccessibilityEventWaiter::Thread::ThreadMain() {
   std::move(shutdown_complete_).Run();
 }
 
-UiaAccessibilityEventWaiter::Thread::EventHandler::EventHandler() {}
+UiaAccessibilityEventWaiter::Thread::EventHandler::EventHandler() = default;
 
-UiaAccessibilityEventWaiter::Thread::EventHandler::~EventHandler() {}
+UiaAccessibilityEventWaiter::Thread::EventHandler::~EventHandler() = default;
 
 void UiaAccessibilityEventWaiter::Thread::EventHandler::Init(
     UiaAccessibilityEventWaiter::Thread* owner,

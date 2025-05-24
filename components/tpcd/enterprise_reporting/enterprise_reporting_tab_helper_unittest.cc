@@ -94,7 +94,7 @@ TEST_F(EnterpriseReportingTabHelperTest,
   // feature is disabled.
   net::CookieInclusionStatus status;
   status.AddWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
   content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
       {{cookie_, net::CookieAccessResult(status)}}, 1u);
@@ -128,7 +128,7 @@ TEST_F(
 
   net::CookieInclusionStatus status;
   status.AddExclusionReason(
-      net::CookieInclusionStatus::
+      net::CookieInclusionStatus::ExclusionReason::
           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
   content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
@@ -161,8 +161,8 @@ TEST_F(EnterpriseReportingTabHelperTest,
           web_contents());
 
   net::CookieInclusionStatus status;
-  status.AddExclusionReason(
-      net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+  status.AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_THIRD_PARTY_PHASEOUT);
   content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
       {{cookie_, net::CookieAccessResult(status)}}, 1u);
@@ -195,7 +195,7 @@ TEST_F(EnterpriseReportingTabHelperTest,
 
   net::CookieInclusionStatus status;
   status.AddWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
   content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kRead, kUrl_, kUrl_,
       {{cookie_, net::CookieAccessResult(status)}}, 1u);
@@ -244,7 +244,7 @@ TEST_F(EnterpriseReportingTabHelperTest,
   // feature is disabled.
   net::CookieInclusionStatus status;
   status.AddWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
   content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
       {{cookie_, net::CookieAccessResult(status)}}, 1u);
@@ -277,7 +277,7 @@ TEST_F(
 
   net::CookieInclusionStatus status;
   status.AddExclusionReason(
-      net::CookieInclusionStatus::
+      net::CookieInclusionStatus::ExclusionReason::
           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
   content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
@@ -309,8 +309,8 @@ TEST_F(EnterpriseReportingTabHelperTest,
           web_contents());
 
   net::CookieInclusionStatus status;
-  status.AddExclusionReason(
-      net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+  status.AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_THIRD_PARTY_PHASEOUT);
   content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
       {{cookie_, net::CookieAccessResult(status)}}, 1u);
@@ -342,7 +342,7 @@ TEST_F(EnterpriseReportingTabHelperTest,
 
   net::CookieInclusionStatus status;
   status.AddWarningReason(
-      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+      net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
   content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
       {{cookie_, net::CookieAccessResult(status)}}, 1u);

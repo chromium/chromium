@@ -31,52 +31,18 @@ std::unique_ptr<Module> Module::Load() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_StackUnwinderModuleProvider_ensureNativeLoaded(env);
 
-  CreateMemoryRegionsMapFunction create_memory_regions_map =
-      reinterpret_cast<CreateMemoryRegionsMapFunction>(
-          Java_StackUnwinderModuleProvider_getCreateMemoryRegionsMapFunction(
-              env));
+  DoNothingFunction do_nothing = reinterpret_cast<DoNothingFunction>(
+      Java_StackUnwinderModuleProvider_getDoNothingFunction(env));
 
-  CreateNativeUnwinderFunction create_native_unwinder =
-      reinterpret_cast<CreateNativeUnwinderFunction>(
-          Java_StackUnwinderModuleProvider_getCreateNativeUnwinderFunction(
-              env));
-
-  CreateLibunwindstackUnwinderFunction create_libunwindstack_unwinder =
-      reinterpret_cast<CreateLibunwindstackUnwinderFunction>(
-          Java_StackUnwinderModuleProvider_getCreateLibunwindstackUnwinderFunction(
-              env));
-
-  return base::WrapUnique(new Module(create_memory_regions_map,
-                                     create_native_unwinder,
-                                     create_libunwindstack_unwinder));
+  return base::WrapUnique(new Module(do_nothing));
 }
 
-std::unique_ptr<base::NativeUnwinderAndroidMemoryRegionsMap>
-Module::CreateMemoryRegionsMap() {
-  return create_memory_regions_map_();
+void Module::DoNothing() {
+  return do_nothing_();
 }
 
-std::unique_ptr<base::Unwinder> Module::CreateNativeUnwinder(
-    base::NativeUnwinderAndroidMapDelegate* map_delegate,
-    uintptr_t exclude_module_with_base_address) {
-  return create_native_unwinder_(map_delegate,
-                                 exclude_module_with_base_address);
-}
-
-std::unique_ptr<base::Unwinder> Module::CreateLibunwindstackUnwinder() {
-  return create_libunwindstack_unwinder_();
-}
-
-Module::Module(
-    CreateMemoryRegionsMapFunction create_memory_regions_map,
-    CreateNativeUnwinderFunction create_native_unwinder,
-    CreateLibunwindstackUnwinderFunction create_libunwindstack_unwinder)
-    : create_memory_regions_map_(create_memory_regions_map),
-      create_native_unwinder_(create_native_unwinder),
-      create_libunwindstack_unwinder_(create_libunwindstack_unwinder) {
-  DCHECK(create_memory_regions_map);
-  DCHECK(create_native_unwinder);
-  DCHECK(create_libunwindstack_unwinder);
+Module::Module(DoNothingFunction do_nothing) : do_nothing_(do_nothing) {
+  DCHECK(do_nothing);
 }
 
 }  // namespace stack_unwinder

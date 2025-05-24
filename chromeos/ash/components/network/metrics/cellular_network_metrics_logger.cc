@@ -170,13 +170,21 @@ CellularNetworkMetricsLogger::~CellularNetworkMetricsLogger() = default;
 
 // static
 void CellularNetworkMetricsLogger::LogCreateCustomApnResult(
-    bool success,
-    chromeos::network_config::mojom::ApnPropertiesPtr apn) {
-  base::UmaHistogramBoolean(kCreateCustomApnResultHistogram, success);
+    CreateCustomApnResult result,
+    chromeos::network_config::mojom::ApnPropertiesPtr apn,
+    const std::optional<std::string>& shill_error) {
+  base::UmaHistogramEnumeration(kCreateCustomApnResultHistogram, result);
 
   // Only emit APN property metrics if the APN was successfully added.
-  if (!success)
+  if (result != CreateCustomApnResult::kSuccess) {
+    if (shill_error) {
+      ShillConnectResult connect_result =
+          ShillErrorToConnectResult(*shill_error);
+      base::UmaHistogramEnumeration(kCreateCustomApnShillErrorHistogram,
+                                    connect_result);
+    }
     return;
+  }
 
   base::UmaHistogramEnumeration(kCreateCustomApnAuthenticationTypeHistogram,
                                 apn->authentication);

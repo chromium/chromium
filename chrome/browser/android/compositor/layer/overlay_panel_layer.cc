@@ -504,8 +504,7 @@ OverlayPanelLayer::OverlayPanelLayer(ui::ResourceManager* resource_manager)
   progress_bar_->SetFillCenter(true);
 }
 
-OverlayPanelLayer::~OverlayPanelLayer() {
-}
+OverlayPanelLayer::~OverlayPanelLayer() = default;
 
 scoped_refptr<cc::slim::Layer> OverlayPanelLayer::layer() {
   return layer_;

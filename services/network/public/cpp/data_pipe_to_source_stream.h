@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_DATA_PIPE_TO_SOURCE_STREAM_H_
 
 #include "base/component_export.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
@@ -16,7 +17,10 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_CPP) DataPipeToSourceStream final
     : public net::SourceStream {
  public:
-  explicit DataPipeToSourceStream(mojo::ScopedDataPipeConsumerHandle body);
+  explicit DataPipeToSourceStream(
+      mojo::ScopedDataPipeConsumerHandle body,
+      scoped_refptr<base::SequencedTaskRunner> task_runner =
+          base::SequencedTaskRunner::GetCurrentDefault());
 
   DataPipeToSourceStream(const DataPipeToSourceStream&) = delete;
   DataPipeToSourceStream& operator=(const DataPipeToSourceStream&) = delete;

@@ -12,23 +12,63 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_buffer_provider.h"
-#include "cc/trees/raster_capabilities.h"
 
 namespace base {
-class WaitableEvent;
 namespace trace_event {
 class ConvertableToTraceFormat;
 }
 }
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace cc {
+
+// RasterBuffer for the zero copy upload, which is given to the raster worker
+// threads for raster/upload.
+class ZeroCopyRasterBufferImpl : public RasterBuffer {
+ public:
+  ZeroCopyRasterBufferImpl(
+      const ResourcePool::InUsePoolResource& in_use_resource,
+      scoped_refptr<gpu::SharedImageInterface> sii,
+      bool resource_has_previous_content,
+      bool is_software);
+
+  ZeroCopyRasterBufferImpl(const ZeroCopyRasterBufferImpl&) = delete;
+
+  ~ZeroCopyRasterBufferImpl() override;
+
+  ZeroCopyRasterBufferImpl& operator=(const ZeroCopyRasterBufferImpl&) = delete;
+
+  // Overridden from RasterBuffer:
+  void Playback(const RasterSource* raster_source,
+                const gfx::Rect& raster_full_rect,
+                const gfx::Rect& raster_dirty_rect,
+                uint64_t new_content_id,
+                const gfx::AxisTransform2d& transform,
+                const RasterSource::PlaybackSettings& playback_settings,
+                const GURL& url) override;
+
+  bool SupportsBackgroundThreadPriority() const override;
+
+ private:
+  // These fields are safe to access on both the compositor and worker thread.
+  raw_ptr<ResourcePool::Backing> backing_;
+  const scoped_refptr<gpu::SharedImageInterface> sii_;
+  bool failed_to_map_shared_image_ = false;
+  bool resource_has_previous_content_ = false;
+  bool is_software_ = false;
+};
 
 class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
  public:
   ZeroCopyRasterBufferProvider(
-      viz::RasterContextProvider* compositor_context_provider,
-      const RasterCapabilities& raster_caps);
+      const scoped_refptr<gpu::SharedImageInterface>& shared_image_interface,
+      bool is_software);
+
   ZeroCopyRasterBufferProvider(const ZeroCopyRasterBufferProvider&) = delete;
   ~ZeroCopyRasterBufferProvider() override;
 
@@ -43,8 +83,6 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override;
-  viz::SharedImageFormat GetFormat() const override;
-  bool IsResourcePremultiplied() const override;
   bool CanPartialRasterIntoProvidedResource() const override;
   bool IsResourceReadyToDraw(
       const ResourcePool::InUsePoolResource& resource) override;
@@ -52,7 +90,6 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
       const std::vector<const ResourcePool::InUsePoolResource*>& resources,
       base::OnceClosure callback,
       uint64_t pending_callback_id) override;
-  void SetShutdownEvent(base::WaitableEvent* shutdown_event) override;
   void Shutdown() override;
 
  protected:
@@ -62,9 +99,8 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()
       const;
 
-  raw_ptr<base::WaitableEvent> shutdown_event_ = nullptr;
-  raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
-  const viz::SharedImageFormat tile_format_;
+  bool is_software_ = false;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 };
 
 }  // namespace cc

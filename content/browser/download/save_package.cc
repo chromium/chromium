@@ -147,10 +147,9 @@ const std::string GetMimeTypeForSaveType(SavePageType save_type) {
       return "multipart/related";
     case SAVE_PAGE_TYPE_UNKNOWN:
     case SAVE_PAGE_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 WebContents* GetWebContents(Page* page) {
@@ -309,7 +308,7 @@ void SavePackage::InternalInit() {
   ukm_source_id_ = page_->GetMainDocument().GetPageUkmSourceId();
   ukm_download_id_ = download::GetUniqueDownloadId();
   download::DownloadUkmHelper::RecordDownloadStarted(
-      ukm_download_id_, ukm_source_id_, download::DownloadContent::TEXT,
+      ukm_download_id_, ukm_source_id_, download::DownloadContent::kText,
       download::DownloadSource::UNKNOWN,
       download::CheckDownloadConnectionSecurity(
           page_->GetMainDocument().GetLastCommittedURL(),
@@ -331,14 +330,14 @@ bool SavePackage::Init(
   BrowserContext* browser_context =
       page_->GetMainDocument().GetBrowserContext();
   if (!browser_context) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   RenderFrameHost& frame_host = page_->GetMainDocument();
   download_manager_->CreateSavePackageDownloadItem(
-      saved_main_file_path_, page_url_, GetMimeTypeForSaveType(save_type_),
-      frame_host.GetProcess()->GetID(), frame_host.GetRoutingID(),
+      saved_main_file_path_, saved_main_file_display_name_, page_url_,
+      GetMimeTypeForSaveType(save_type_),
+      frame_host.GetProcess()->GetDeprecatedID(), frame_host.GetRoutingID(),
       base::BindOnce(&CancelSavePackage, weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SavePackage::InitWithDownloadItem,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -774,10 +773,11 @@ void SavePackage::RenameIfAllowed(bool allowed) {
     final_names.insert(std::make_pair(it.first, it.second->full_path()));
 
   download::GetDownloadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&SaveFileManager::RenameAllFiles, file_manager_,
-                                final_names, dir,
-                                page_->GetMainDocument().GetProcess()->GetID(),
-                                page_->GetMainDocument().GetRoutingID(), id()));
+      FROM_HERE,
+      base::BindOnce(&SaveFileManager::RenameAllFiles, file_manager_,
+                     final_names, dir,
+                     page_->GetMainDocument().GetProcess()->GetDeprecatedID(),
+                     page_->GetMainDocument().GetRoutingID(), id()));
 }
 
 // Successfully finished all items of this SavePackage.
@@ -939,7 +939,7 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
         save_item_ptr->id(), save_item_ptr->url(), save_item_ptr->referrer(),
         save_item_ptr->isolation_info(), save_item_ptr->request_mode(),
         save_item_ptr->is_outermost_main_frame(),
-        requester_frame->GetProcess()->GetID(),
+        requester_frame->GetProcess()->GetDeprecatedID(),
         requester_frame->render_view_host()->GetRoutingID(),
         requester_frame->GetRoutingID(), save_item_ptr->save_source(),
         save_item_ptr->full_path(),
@@ -1239,7 +1239,7 @@ void SavePackage::GetSavableResourceLinks() {
   wait_state_ = RESOURCES_LIST;
 
   DCHECK_EQ(0, number_of_frames_pending_response_);
-  page_->GetMainDocument().ForEachRenderFrameHost(
+  page_->GetMainDocument().ForEachRenderFrameHostImpl(
       [this](RenderFrameHostImpl* rfh) {
         GetSavableResourceLinksForRenderFrameHost(rfh);
       });
@@ -1505,6 +1505,15 @@ void SavePackage::OnPathPicked(
     return;
   // Ensure the filename is safe.
   saved_main_file_path_ = params.file_path;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (saved_main_file_path_.IsContentUri()) {
+    save_type_ = SAVE_PAGE_TYPE_AS_MHTML;
+    saved_main_file_display_name_ = params.display_name;
+    Init(std::move(download_created_callback));
+    return;
+  }
+#endif
   // TODO(asanka): This call may block on IO and shouldn't be made
   // from the UI thread.  See http://crbug.com/61827.
   std::string mime_type =

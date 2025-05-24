@@ -48,6 +48,8 @@ class PasswordProtectionCommitDeferringCondition
   // invoked (via `ResumeNavigation()`).
   Result WillCommitNavigation(base::OnceClosure resume) override;
 
+  const char* TraceEventName() const override;
+
   // Called by the PasswordProtectionService when it decides this navigation no
   // longer needs to be deferred (e.g. because a ping resulted in not showing a
   // modal, or a shown modal was dismissed by the user). If called after this

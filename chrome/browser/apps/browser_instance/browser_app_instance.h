@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/browser_app_instance_update.h"
 #include "components/services/app_service/public/cpp/browser_window_instance_update.h"
 
@@ -28,8 +27,6 @@ namespace apps {
 struct BrowserAppInstance {
   using Type = BrowserAppInstanceUpdate::Type;
 
-  // Update message from Lacros.
-
   BrowserAppInstance(base::UnguessableToken id,
                      Type type,
                      std::string app_id,
@@ -39,7 +36,6 @@ struct BrowserAppInstance {
                      bool is_web_contents_active,
                      uint32_t browser_session_id,
                      uint32_t restored_browser_session_id);
-  BrowserAppInstance(BrowserAppInstanceUpdate update, aura::Window* window);
   ~BrowserAppInstance();
   BrowserAppInstance(const BrowserAppInstance&) = delete;
   BrowserAppInstance& operator=(const BrowserAppInstance&) = delete;
@@ -54,7 +50,6 @@ struct BrowserAppInstance {
 
   BrowserAppInstanceUpdate ToUpdate() const;
 
-  // TODO(b/332628771): Hide this behind BUILDFLAG(IS_CHROMEOS_ASH) in M127.
   // Checks if `window` is the active window.
   bool is_browser_active() const;
 
@@ -83,7 +78,6 @@ struct BrowserWindowInstance {
                         uint32_t browser_session_id,
                         uint32_t restored_browser_session_id,
                         bool is_incognito,
-                        uint64_t lacros_profile_id,
                         bool is_active);
   BrowserWindowInstance(BrowserWindowInstanceUpdate update,
                         aura::Window* window);
@@ -95,11 +89,8 @@ struct BrowserWindowInstance {
 
   BrowserWindowInstanceUpdate ToUpdate() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string GetAppId() const;
-#endif
 
-  // TODO(b/332628771): Hide this behind BUILDFLAG(IS_CHROMEOS_ASH) in M127.
   // Checks if `window` is the active window.
   bool is_active() const;
 
@@ -108,8 +99,6 @@ struct BrowserWindowInstance {
   const uint32_t browser_session_id;
   const uint32_t restored_browser_session_id;
   const bool is_incognito;
-  // This value will only be non-zero when refer to a lacros browser instance.
-  const uint64_t lacros_profile_id;
 
   // TODO(b/332628771): Remove this in M127.
   // Do not add code which uses this state but use `is_active()` instead.

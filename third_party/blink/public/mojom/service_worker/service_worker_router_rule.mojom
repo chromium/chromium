@@ -97,7 +97,7 @@ struct ServiceWorkerRouterNetworkSource {
 // https://w3c.github.io/ServiceWorker/#dom-routersourceenum-race-network-and-fetch-handler
 // TODO(crbug.com/1371756): implement fields in the full picture.
 // https://github.com/WICG/service-worker-static-routing-api
-struct ServiceWorkerRouterRaceSource {
+struct ServiceWorkerRouterRaceNetworkAndFetchEventSource {
 };
 
 // This is used for explicitly running the fetch event listeners.
@@ -116,15 +116,25 @@ struct ServiceWorkerRouterCacheSource {
   string? cache_name;
 };
 
+// This source is used when the browser should allow a network source and
+// the response should be retrieved from the cache storage to race, allowing
+// the first one to respond to service the request.
+// https://github.com/WICG/service-worker-static-routing-api
+struct ServiceWorkerRouterRaceNetworkAndCacheSource {
+   // Cache source information.
+   ServiceWorkerRouterCacheSource cache_source;
+};
+
 // This represents a source of the router rule.
 // https://w3c.github.io/ServiceWorker/#typedefdef-routersource
 // TODO(crbug.com/1371756): implement other sources in the full picture.
 // https://github.com/WICG/service-worker-static-routing-api
 union ServiceWorkerRouterSource {
   ServiceWorkerRouterNetworkSource network_source;
-  ServiceWorkerRouterRaceSource race_source;
+  ServiceWorkerRouterRaceNetworkAndFetchEventSource race_network_and_fetch_event_source;
   ServiceWorkerRouterFetchEventSource fetch_event_source;
   ServiceWorkerRouterCacheSource cache_source;
+  ServiceWorkerRouterRaceNetworkAndCacheSource race_network_and_cache_source;
 };
 
 // This represents a ServiceWorker static routing API's router rule.

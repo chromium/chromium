@@ -82,7 +82,7 @@ class AccountChooserDialogAndroidTest : public ChromeRenderViewHostTestHarness {
   AccountChooserDialogAndroidTest& operator=(
       const AccountChooserDialogAndroidTest&) = delete;
 
-  ~AccountChooserDialogAndroidTest() override {}
+  ~AccountChooserDialogAndroidTest() override = default;
 
   void SetUp() override;
 

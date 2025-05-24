@@ -13,12 +13,10 @@
 #include <stddef.h>
 #include <string.h>  // For |memcpy()|.
 
-#include <limits>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
@@ -358,9 +356,11 @@ struct ArraySerializer<
                         MojomTypeCategory::kAssociatedInterfaceRequest>::value
               ? VALIDATION_ERROR_UNEXPECTED_INVALID_INTERFACE_ID
               : VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE;
-      MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-          !validate_params->element_is_nullable &&
-              !IsHandleOrInterfaceValid(output->at(i)),
+
+      MOJO_INTERNAL_CHECK_SERIALIZATION(
+          SendValidation::kDefault,
+          !(!validate_params->element_is_nullable &&
+            !IsHandleOrInterfaceValid(output->at(i))),
           kError,
           MakeMessageWithArrayIndex("invalid handle or interface ID in array "
                                     "expecting valid handles or interface IDs",
@@ -413,8 +413,10 @@ struct ArraySerializer<MojomType,
                                     validate_params->element_validate_params);
       fragment->at(i).Set(data_fragment.is_null() ? nullptr
                                                   : data_fragment.data());
-      MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-          !validate_params->element_is_nullable && data_fragment.is_null(),
+
+      MOJO_INTERNAL_CHECK_SERIALIZATION(
+          SendValidation::kDefault,
+          !(!validate_params->element_is_nullable && data_fragment.is_null()),
           VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
           MakeMessageWithArrayIndex("null in array expecting valid pointers",
                                     size, i));
@@ -486,9 +488,11 @@ struct ArraySerializer<MojomType,
       inlined_union_element.Claim(fragment->storage() + i);
       decltype(auto) next = input->GetNext();
       Serialize<Element>(next, inlined_union_element, true);
-      MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-          !validate_params->element_is_nullable &&
-              inlined_union_element.is_null(),
+
+      MOJO_INTERNAL_CHECK_SERIALIZATION(
+          SendValidation::kDefault,
+          !(!validate_params->element_is_nullable &&
+            inlined_union_element.is_null()),
           VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
           MakeMessageWithArrayIndex("null in array expecting valid unions",
                                     size, i));
@@ -525,13 +529,16 @@ struct Serializer<ArrayDataView<Element>, MaybeConstUserType> {
       return;
 
     const size_t size = Traits::GetSize(input);
-    MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-        validate_params->expected_num_elements != 0 &&
-            size != validate_params->expected_num_elements,
-        internal::VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER,
-        internal::MakeMessageWithExpectedArraySize(
+
+    MOJO_INTERNAL_CHECK_SERIALIZATION(
+        SendValidation::kDefault,
+        !(validate_params->expected_num_elements != 0 &&
+          size != validate_params->expected_num_elements),
+        VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER,
+        MakeMessageWithExpectedArraySize(
             "fixed-size array has wrong number of elements", size,
             validate_params->expected_num_elements));
+
     fragment.AllocateArrayData(size);
     ArrayIterator<Traits, MaybeConstUserType> iterator(input);
     Impl::SerializeElements(&iterator, fragment, validate_params);

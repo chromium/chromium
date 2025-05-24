@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
-#include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -24,7 +24,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
-
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -103,8 +103,8 @@ class SystemProxyHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   ScopedTestingLocalState local_state_;
+  ash::ScopedTestDeviceSettingsService device_settings_service_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  ash::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<SystemProxyHandler> system_proxy_handler_;

@@ -493,7 +493,7 @@ TEST_F(WaylandAuraShellServerTest, SetCanMaximizeAndFullscreen) {
 }
 
 // TODO(crbug.com/40284737): Re-enable this when flakiness is resolved.
-TEST_F(WaylandAuraShellServerTest, DISABLED_SetUnSetFloat) {
+TEST_F(WaylandAuraShellServerTest, SetUnSetFloat) {
   UpdateDisplay("800x600");
 
   auto keys = SetupClientSurfaces();
@@ -515,7 +515,7 @@ TEST_F(WaylandAuraShellServerTest, DISABLED_SetUnSetFloat) {
   views::Widget* widget = xdg_surface->shell_surface->GetWidget();
   auto* window_state = ash::WindowState::Get(widget->GetNativeWindow());
   window_state->window()->SetProperty(chromeos::kAppTypeKey,
-                                      chromeos::AppType::LACROS);
+                                      chromeos::AppType::BROWSER);
   ASSERT_FALSE(window_state->IsFloated());
 
   // Location 0 is bottom right. Test that the window is floated and in the

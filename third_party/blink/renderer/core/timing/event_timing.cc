@@ -49,12 +49,10 @@ bool ShouldReportForEventTiming(WindowPerformance* performance) {
 EventTiming::EventTiming(base::TimeTicks processing_start,
                          WindowPerformance* performance,
                          const Event& event,
-                         EventTarget* original_event_target)
-    : processing_start_(processing_start),
-      performance_(performance),
-      event_(&event),
-      original_event_target_(original_event_target) {
-  performance_->SetCurrentEventTimingEvent(&event);
+                         EventTarget* hit_test_target)
+    : performance_(performance), event_(&event) {
+  performance_->EventTimingProcessingStart(event, processing_start,
+                                           hit_test_target);
 }
 
 // static
@@ -100,14 +98,13 @@ bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
 }
 
 // static
-std::unique_ptr<EventTiming> EventTiming::Create(
+std::optional<EventTiming> EventTiming::TryCreate(
     LocalDOMWindow* window,
     const Event& event,
-    EventTarget* original_event_target) {
+    EventTarget* hit_test_target) {
   auto* performance = DOMWindowPerformance::performance(*window);
-  if (!performance || (!IsEventTypeForEventTiming(event) &&
-                       event.type() != event_type_names::kPointermove)) {
-    return nullptr;
+  if (!performance || !IsEventTypeForEventTiming(event)) {
+    return std::nullopt;
   }
 
   // Most events track their performance in EventDispatcher::Dispatch but
@@ -115,7 +112,7 @@ std::unique_ptr<EventTiming> EventTiming::Create(
   // where they may be filtered. This condition check ensures we don't create
   // two EventTiming objects for the same Event.
   if (performance->GetCurrentEventTimingEvent() == &event)
-    return nullptr;
+    return std::nullopt;
 
   if (!RuntimeEnabledFeatures::
           ContinueEventTimingRecordingWhenBufferIsFullEnabled()) {
@@ -125,25 +122,25 @@ std::unique_ptr<EventTiming> EventTiming::Create(
     bool should_log_event = ShouldLogEvent(event);
 
     if (!should_report_for_event_timing && !should_log_event) {
-      return nullptr;
+      return std::nullopt;
     }
 
     base::TimeTicks processing_start = Now();
-
     HandleInputDelay(window, event, processing_start);
 
-    return should_report_for_event_timing
-               ? std::make_unique<EventTiming>(processing_start, performance,
-                                               event, original_event_target)
-               : nullptr;
-  } else {
-    base::TimeTicks processing_start = Now();
-
-    HandleInputDelay(window, event, processing_start);
-
-    return std::make_unique<EventTiming>(processing_start, performance, event,
-                                         original_event_target);
+    if (!should_report_for_event_timing && !should_log_event) {
+      return std::nullopt;
+    }
+    return EventTiming(processing_start, performance, event, hit_test_target);
   }
+
+  base::TimeTicks processing_start = Now();
+
+  // TODO(mmocny): Move this out of ::TryCreate and into the Constructor,
+  // or even further in window_performance / responsiveness_metrics
+  HandleInputDelay(window, event, processing_start);
+
+  return EventTiming(processing_start, performance, event, hit_test_target);
 }
 
 // static
@@ -152,20 +149,10 @@ void EventTiming::SetTickClockForTesting(const base::TickClock* clock) {
 }
 
 EventTiming::~EventTiming() {
-  // Register Event Timing for the event.
-  const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event_.Get());
-  base::TimeTicks event_timestamp =
-      pointer_event ? pointer_event->OldestPlatformTimeStamp()
-                    : event_->PlatformTimeStamp();
-
-  // `event->target()` is assigned as part of EventDispatch, and will be unset
-  // whenever we skip dispatch. (See: crbug.com/1367329).
-  // In those cases, we may still have an `original_event_target` which was the
-  // result of the original HitTest.  Use that as fallback only.
-  EventTarget* event_target =
-      event_->target() ? event_->target() : original_event_target_.Get();
-  performance_->RegisterEventTiming(*event_, event_target, event_timestamp,
-                                    processing_start_, Now());
+  // event_ might potentially be null if this is std::move()-ed.
+  if (event_) {
+    performance_->EventTimingProcessingEnd(*event_, Now());
+  }
 }
 
 }  // namespace blink

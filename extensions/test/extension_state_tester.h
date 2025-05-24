@@ -75,8 +75,9 @@ class ExtensionStateTester {
 
   // Expects the extension to be disabled with exactly the specified
   // `disable_reasons`.
-  [[nodiscard]] bool ExpectDisabledWithReasons(const ExtensionId& extension_id,
-                                               int disable_reasons);
+  [[nodiscard]] bool ExpectDisabledWithReasons(
+      const ExtensionId& extension_id,
+      const DisableReasonSet& disable_reasons);
 
   // Expects the extension to be blocklisted.
   [[nodiscard]] bool ExpectBlocklisted(const ExtensionId& extension_id);

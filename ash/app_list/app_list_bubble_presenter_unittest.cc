@@ -6,6 +6,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -32,6 +33,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -47,6 +49,10 @@ using views::Widget;
 
 namespace ash {
 namespace {
+
+constexpr std::string_view kNoAssistantForNewEntryPoint =
+    "Assistant is not available if new entry point is enabled. "
+    "crbug.com/388361414";
 
 // Distance under which two points are considered "near" each other.
 constexpr int kNearDistanceDips = 20;
@@ -70,8 +76,7 @@ size_t NumberOfWidgetsInAppListContainer(int64_t display_id) {
   aura::Window* root = Shell::GetRootWindowForDisplayId(display_id);
   aura::Window* container =
       Shell::GetContainer(root, kShellWindowId_AppListContainer);
-  std::set<raw_ptr<views::Widget, SetExperimental>> widgets;
-  views::Widget::GetAllChildWidgets(container, &widgets);
+  views::Widget::Widgets widgets = views::Widget::GetAllChildWidgets(container);
   return widgets.size();
 }
 
@@ -430,6 +435,10 @@ TEST_F(AppListBubblePresenterTest, DismissWhileWaitingForZeroStateSearch) {
 
 // Regression test for https://crbug.com/1275755
 TEST_F(AppListBubblePresenterTest, AssistantKeyOpensToAssistantPage) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   // Simulate production behavior for animations, assistant, and zero-state
   // search results.
   ui::ScopedAnimationDurationScaleMode duration(
@@ -458,6 +467,10 @@ TEST_F(AppListBubblePresenterTest, AssistantKeyOpensToAssistantPage) {
 }
 
 TEST_F(AppListBubblePresenterTest, AssistantKeyOpensAssistantPageWhenCached) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   // Show and hide the widget to force it to be cached.
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
@@ -480,6 +493,10 @@ TEST_F(AppListBubblePresenterTest, AssistantKeyOpensAssistantPageWhenCached) {
 }
 
 TEST_F(AppListBubblePresenterTest, AppsPageVisibleAfterShowingAssistant) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   // Simulate production behavior for animations, assistant, and zero-state
   // search results.
   ui::ScopedAnimationDurationScaleMode duration(

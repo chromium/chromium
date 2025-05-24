@@ -12,11 +12,11 @@ source_set("coordinator") {
   deps = [
     ":ui",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/presenters/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/presenters",
-    "//ios/chrome/browser/ui/toolbar/accessory",
+    "//ios/chrome/browser/toolbar/ui_bundled/accessory",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model/font_size",
     "//ios/chrome/common/ui/colors",

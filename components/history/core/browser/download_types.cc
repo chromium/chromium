@@ -22,11 +22,9 @@ DownloadState IntToDownloadState(int state) {
 
     case DownloadState::INVALID:
     case DownloadState::BUG_140687:
-      NOTREACHED_IN_MIGRATION();
-      return DownloadState::INVALID;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return DownloadState::INVALID;
+  NOTREACHED();
 }
 
 int DownloadStateToInt(DownloadState state) {
@@ -49,8 +47,7 @@ std::ostream& operator<<(std::ostream& stream, DownloadState state) {
     case DownloadState::INTERRUPTED:
       return stream << "history::DownloadState::INTERRUPTED";
   }
-  NOTREACHED_IN_MIGRATION();
-  return stream;
+  NOTREACHED();
 }
 
 DownloadDangerType IntToDownloadDangerType(int danger_type) {
@@ -82,11 +79,9 @@ DownloadDangerType IntToDownloadDangerType(int danger_type) {
       return static_cast<DownloadDangerType>(danger_type);
 
     case DownloadDangerType::INVALID:
-      NOTREACHED_IN_MIGRATION();
-      return DownloadDangerType::INVALID;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return DownloadDangerType::INVALID;
+  NOTREACHED();
 }
 
 int DownloadDangerTypeToInt(DownloadDangerType danger_type) {
@@ -153,8 +148,7 @@ std::ostream& operator<<(std::ostream& stream, DownloadDangerType danger_type) {
     case DownloadDangerType::BLOCKED_SCAN_FAILED:
       return stream << "history::DownloadDangerType::BLOCKED_SCAN_FAILED";
   }
-  NOTREACHED_IN_MIGRATION();
-  return stream;
+  NOTREACHED();
 }
 
 DownloadInterruptReason IntToDownloadInterruptReason(int interrupt_reason) {

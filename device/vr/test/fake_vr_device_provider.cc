@@ -4,7 +4,8 @@
 
 #include "device/vr/test/fake_vr_device_provider.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "device/vr/vr_device_base.h"
 
 namespace device {
@@ -24,7 +25,7 @@ void FakeVRDeviceProvider::AddDevice(std::unique_ptr<VRDeviceBase> device) {
 }
 
 void FakeVRDeviceProvider::RemoveDevice(mojom::XRDeviceId device_id) {
-  auto it = base::ranges::find(devices_, device_id, &VRDeviceBase::GetId);
+  auto it = std::ranges::find(devices_, device_id, &VRDeviceBase::GetId);
   if (initialized_)
     client_->RemoveRuntime(device_id);
   devices_.erase(it);

@@ -70,11 +70,6 @@ void EventLoop::RunEndOfMicrotaskCheckpointTasks() {
 void EventLoop::PerformMicrotaskCheckpoint() {
   if (ScriptForbiddenScope::IsScriptForbidden())
     return;
-  if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
-    CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  } else {
-    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  }
 
   microtask_queue_->PerformCheckpoint(isolate_);
 }
@@ -82,26 +77,6 @@ void EventLoop::PerformMicrotaskCheckpoint() {
 // static
 void EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(v8::Isolate* isolate) {
   v8::MicrotasksScope::PerformCheckpoint(isolate);
-}
-
-void EventLoop::Disable() {
-  loop_enabled_ = false;
-
-  for (auto* scheduler : schedulers_) {
-    scheduler->SetPreemptedForCooperativeScheduling(
-        FrameOrWorkerScheduler::Preempted(true));
-  }
-  // TODO(keishi): Disable microtaskqueue too.
-}
-
-void EventLoop::Enable() {
-  loop_enabled_ = true;
-
-  for (auto* scheduler : schedulers_) {
-    scheduler->SetPreemptedForCooperativeScheduling(
-        FrameOrWorkerScheduler::Preempted(false));
-  }
-  // TODO(keishi): Enable microtaskqueue too.
 }
 
 void EventLoop::AttachScheduler(FrameOrWorkerScheduler* scheduler) {

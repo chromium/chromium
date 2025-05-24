@@ -1,36 +1,12 @@
 ﻿#region Copyright notice and license
 // Protocol Buffers - Google's data interchange format
 // Copyright 2015 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 #endregion
 
-using System.Collections.Generic;
 using Google.Protobuf.Collections;
 using Google.Protobuf.TestProtos;
 using NUnit.Framework;
@@ -430,7 +406,97 @@ namespace Google.Protobuf
             Merge(new FieldMaskTree().AddFieldPath("payload.single_int32"),
                 sourceWithPayloadInt32Unset, destination, options, useDynamicMessage);
             Assert.IsNotNull(destination.Payload);
+
+            // Clear unset primitive fields even if source payload is cleared
+            destination = source.Clone();
+            Merge(new FieldMaskTree().AddFieldPath("payload.single_int32"),
+                clearedSource, destination, options, useDynamicMessage);
+            Assert.AreEqual(0, destination.Payload.SingleInt32);
         }
 
+        [Test]
+        public void MergeWrapperFieldsWithNonNullFieldsInSource()
+        {
+            // Instantiate a destination with wrapper-based field types.
+            var destination = new TestWellKnownTypes()
+            {
+                StringField = "Hello",
+                Int32Field = 12,
+                Int64Field = 24,
+                BoolField = true,
+            };
+
+            // Set up a targeted update.
+            var source = new TestWellKnownTypes()
+            {
+                StringField = "Hi",
+                Int64Field = 240
+            };
+
+            Merge(new FieldMaskTree().AddFieldPath("string_field").AddFieldPath("int64_field"),
+                source,
+                destination,
+                new FieldMask.MergeOptions(),
+                false);
+
+            // Make sure the targeted fields changed.
+            Assert.AreEqual("Hi", destination.StringField);
+            Assert.AreEqual(240, destination.Int64Field);
+
+            // Prove that non-targeted fields stay intact...
+            Assert.AreEqual(12, destination.Int32Field);
+            Assert.IsTrue(destination.BoolField);
+
+            // ...including default values which were not explicitly set in the destination object.
+            Assert.IsNull(destination.FloatField);
+        }
+
+        [Test]
+        [TestCase(false, "Hello", 24)]
+        [TestCase(true, null, null)]
+        public void MergeWrapperFieldsWithNullFieldsInSource(
+            bool replaceMessageFields,
+            string expectedStringValue,
+            long? expectedInt64Value)
+        {
+            // Instantiate a destination with wrapper-based field types.
+            var destination = new TestWellKnownTypes()
+            {
+                StringField = "Hello",
+                Int32Field = 12,
+                Int64Field = 24,
+                BoolField = true,
+            };
+
+            // Set up a targeted update with null valued fields.
+            var source = new TestWellKnownTypes()
+            {
+                StringField = null,
+                Int64Field = null
+            };
+
+            Merge(new FieldMaskTree().AddFieldPath("string_field").AddFieldPath("int64_field"),
+                source,
+                destination,
+                new FieldMask.MergeOptions()
+                {
+                    ReplaceMessageFields = replaceMessageFields
+                },
+                false);
+
+            // Make sure the targeted fields changed according to our expectations, depending on the value of ReplaceMessageFields.
+            // When ReplaceMessageFields is false, the null values are not applied to the destination, because, although wrapped types
+            // are semantically primitives, FieldMaskTree.Merge still treats them as message types in order to maintain consistency with other Protobuf
+            // libraries such as Java and C++.
+            Assert.AreEqual(expectedStringValue, destination.StringField);
+            Assert.AreEqual(expectedInt64Value, destination.Int64Field);
+
+            // Prove that non-targeted fields stay intact...
+            Assert.AreEqual(12, destination.Int32Field);
+            Assert.IsTrue(destination.BoolField);
+
+            // ...including default values which were not explicitly set in the destination object.
+            Assert.IsNull(destination.FloatField);
+        }
     }
 }

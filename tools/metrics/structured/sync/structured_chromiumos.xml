@@ -1023,6 +1023,22 @@
         Indicates the time in milliseconds, device last connected successfully to the internet.
       </summary>
     </metric>
+    <metric name="modem_bus_type" type="int">
+      <summary>
+        Bus Type used to connect the modem.
+        Options are UNKNOWN == 0, PCI == 1, USB == 2, SOC == 3.
+      </summary>
+    </metric>
+    <metric name="modem_vendor_id" type="int">
+      <summary>
+        The vendor id of the modem.
+      </summary>
+    </metric>
+    <metric name="modem_product_id" type="int">
+      <summary>
+        The Product id of the modem.
+      </summary>
+    </metric>
   </event>
   <event name="ModemFwdFwInstallResult">
     <summary>
@@ -1700,10 +1716,16 @@
         Random ID generated at boot time to detect reboots.
       </summary>
     </metric>
-    <metric name="ConnectionId" type="hmac-string">
+    <metric name="Usb2ConnectionId" type="hmac-string">
       <summary>
         Unique device connection ID based on boot information, busnum and
-        devnum.
+        devnum for USB 2.0 devices.
+      </summary>
+    </metric>
+    <metric name="Usb3ConnectionId" type="hmac-string">
+      <summary>
+        Unique device connection ID based on boot information, busnum and
+        devnum for USB 3.2 devices.
       </summary>
     </metric>
     <metric name="VendorId" type="int">
@@ -1768,10 +1790,16 @@
         Random ID generated at boot time to detect reboots.
       </summary>
     </metric>
-    <metric name="ConnectionId" type="hmac-string">
+    <metric name="Usb2ConnectionId" type="hmac-string">
       <summary>
         Unique device connection ID based on boot information, busnum and
-        devnum.
+        devnum for USB 2.0 devices.
+      </summary>
+    </metric>
+    <metric name="Usb3ConnectionId" type="hmac-string">
+      <summary>
+        Unique device connection ID based on boot information, busnum and
+        devnum for USB 3.2 devices.
       </summary>
     </metric>
     <metric name="VendorId" type="int">

@@ -12,8 +12,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -89,9 +91,7 @@ bool FileExists(const base::FilePath& path) {
 }
 
 int64_t GetLocalFileSize(const base::FilePath& path) {
-  int64_t size;
-  EXPECT_TRUE(base::GetFileSize(path, &size));
-  return size;
+  return base::GetFileSize(path).value_or(0);
 }
 
 // After a move, the dest exists and the source doesn't.
@@ -241,8 +241,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
     quota_manager_ = base::MakeRefCounted<QuotaManager>(
         is_incognito(), data_dir_.GetPath(), quota_manager_task_runner_,
-        /*quota_change_callback=*/base::DoNothing(), storage_policy_,
-        GetQuotaSettingsFunc());
+        storage_policy_, GetQuotaSettingsFunc());
 
     quota_manager_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(
@@ -421,8 +420,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
         FROM_HERE, base::BindOnce(
                        [](const scoped_refptr<QuotaManager>& quota_manager,
                           SandboxFileSystemTestHelper* sandbox_file_system) {
-                         quota_manager->ResetUsageTracker(
-                             sandbox_file_system->storage_type());
+                         quota_manager->ResetUsageTracker();
                        },
                        quota_manager_, &sandbox_file_system_));
     base::FileErrorOr<base::FilePath> path =
@@ -1500,9 +1498,9 @@ TEST_P(ObfuscatedFileUtilTest, TestCopyOrMoveFileSuccess) {
   const int64_t kSourceLength = 5;
   const int64_t kDestLength = 50;
 
-  for (size_t i = 0; i < std::size(kCopyMoveTestCases); ++i) {
-    SCOPED_TRACE(testing::Message() << "kCopyMoveTestCase " << i);
-    const CopyMoveTestCaseRecord& test_case = kCopyMoveTestCases[i];
+  size_t count = 0u;
+  for (const auto& test_case : kCopyMoveTestCases) {
+    SCOPED_TRACE(testing::Message() << "kCopyMoveTestCase " << count++);
     SCOPED_TRACE(testing::Message()
                  << "\t is_copy_not_move " << test_case.is_copy_not_move);
     SCOPED_TRACE(testing::Message()
@@ -1754,11 +1752,10 @@ TEST_P(ObfuscatedFileUtilTest, TestStorageKeyEnumerator) {
   std::set<blink::StorageKey> storage_keys_expected;
   storage_keys_expected.insert(storage_key());
 
-  for (size_t i = 0; i < std::size(kOriginEnumerationTestRecords); ++i) {
+  size_t count = 0u;
+  for (const auto& record : kOriginEnumerationTestRecords) {
     SCOPED_TRACE(testing::Message()
-                 << "Validating kOriginEnumerationTestRecords " << i);
-    const OriginEnumerationTestRecord& record =
-        kOriginEnumerationTestRecords[i];
+                 << "Validating kOriginEnumerationTestRecords " << count++);
     blink::StorageKey storage_key =
         blink::StorageKey::CreateFromStringForTesting(record.origin_url);
     storage_keys_expected.insert(storage_key);
@@ -1831,9 +1828,9 @@ TEST_P(ObfuscatedFileUtilTest, TestRevokeUsageCache) {
 
   int64_t expected_quota = 0;
 
-  for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
-    SCOPED_TRACE(testing::Message() << "Creating kRegularTestCase " << i);
-    const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
+  size_t count = 0u;
+  for (const auto& test_case : kRegularFileSystemTestCases) {
+    SCOPED_TRACE(testing::Message() << "Creating kRegularTestCase " << count++);
     base::FilePath file_path(test_case.path);
     expected_quota += ObfuscatedFileUtil::ComputeFilePathCost(file_path);
     if (test_case.is_directory) {
@@ -1945,9 +1942,11 @@ TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {
 }
 
 TEST_P(ObfuscatedFileUtilTest, TestIncompleteDirectoryReading) {
-  const FileSystemURL kPath[] = {CreateURLFromUTF8("foo"),
-                                 CreateURLFromUTF8("bar"),
-                                 CreateURLFromUTF8("baz")};
+  const auto kPath = std::to_array<FileSystemURL>({
+      CreateURLFromUTF8("foo"),
+      CreateURLFromUTF8("bar"),
+      CreateURLFromUTF8("baz"),
+  });
   const FileSystemURL empty_path = CreateURL(base::FilePath());
   std::unique_ptr<FileSystemOperationContext> context;
 

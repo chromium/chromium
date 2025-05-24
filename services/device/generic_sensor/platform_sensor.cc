@@ -160,8 +160,8 @@ bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
   // previous value.
   if (GetReportingMode() == mojom::ReportingMode::ON_CHANGE &&
       last_rounded_reading_.has_value() &&
-      base::ranges::equal(rounded_reading.raw.values,
-                          last_rounded_reading_->raw.values)) {
+      std::ranges::equal(rounded_reading.raw.values,
+                         last_rounded_reading_->raw.values)) {
     return false;
   }
   // Save rounded value for next comparison.
@@ -278,7 +278,7 @@ bool PlatformSensor::IsSignificantlyDifferent(const SensorReading& lhs,
     case mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
     case mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION:
     case mojom::SensorType::MAGNETOMETER:
-      return !base::ranges::equal(lhs.raw.values, rhs.raw.values);
+      return !std::ranges::equal(lhs.raw.values, rhs.raw.values);
   }
 }
 

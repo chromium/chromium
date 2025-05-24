@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_MANAGER_H_
 
+#include "components/autofill/core/common/field_data_manager.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -25,10 +26,7 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
 
   // PasswordManagerInterface:
   MOCK_METHOD(void, DropFormManagers, (), (override));
-  MOCK_METHOD((const PasswordFormCache*),
-              GetPasswordFormCache,
-              (),
-              (const override));
+  MOCK_METHOD((PasswordFormCache*), GetPasswordFormCache, (), (override));
   MOCK_METHOD(bool, IsPasswordFieldDetectedOnPage, (), (const override));
 #if BUILDFLAG(USE_BLINK)
   MOCK_METHOD(void,
@@ -98,6 +96,13 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
        (const base::flat_map<autofill::FieldGlobalId,
                              autofill::AutofillType::ServerPrediction>&)),
       (override));
+  MOCK_METHOD(
+      void,
+      ProcessClassificationModelPredictions,
+      (PasswordManagerDriver*,
+       const autofill::FormData&,
+       (const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&)),
+      (override));
   MOCK_METHOD(PasswordManagerClient*, GetClient, (), (override));
   MOCK_METHOD(const PasswordForm*,
               GetParsedObservedForm,
@@ -119,6 +124,7 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
   MOCK_METHOD(void,
               UpdateStateOnUserInput,
               (password_manager::PasswordManagerDriver*,
+               const autofill::FieldDataManager&,
                std::optional<autofill::FormRendererId>,
                autofill::FieldRendererId,
                const std::u16string&),
@@ -142,6 +148,7 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
               (const autofill::FieldDataManager&, const PasswordManagerDriver*),
               (override));
 #endif
+  MOCK_METHOD(bool, IsFormManagerPendingPasswordUpdate, (), (const override));
 };
 }  // namespace password_manager
 

@@ -15,15 +15,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.AnimRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -31,10 +34,12 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
+import java.util.function.BooleanSupplier;
+
 /**
- * Class responsible for how the Partial Chrome Custom Tabs are displayed on the screen.
- * It creates and handles the supported size strategies for Partial Chrome Custom Tabs based on the
- * intent extras values provided by the embedder, the window size, and the device state.
+ * Class responsible for how the Partial Chrome Custom Tabs are displayed on the screen. It creates
+ * and handles the supported size strategies for Partial Chrome Custom Tabs based on the intent
+ * extras values provided by the embedder, the window size, and the device state.
  */
 public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
         implements ConfigurationChangedObserver {
@@ -66,10 +71,13 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
     private View mToolbarCoordinatorView;
     private CustomTabToolbar mCustomTabToolbar;
     private int mToolbarCornerRadius;
+    private CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
     private PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
     private SizeStrategyCreator mSizeStrategyCreator = this::createSizeStrategy;
-    private Supplier<TouchEventProvider> mTouchEventProvider;
-    private Supplier<Tab> mTab;
+    private final Supplier<TouchEventProvider> mTouchEventProvider;
+    private final Supplier<Tab> mTab;
+    private boolean mIsInPip;
+    private final BooleanSupplier mIsEnteringPip;
 
     public PartialCustomTabDisplayManager(
             Activity activity,
@@ -80,6 +88,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
             OnActivityLayoutCallback onActivityLayoutCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             FullscreenManager fullscreenManager,
+            BooleanSupplier isEnteringPip,
             boolean isTablet) {
         mActivity = activity;
         mIntentData = intentData;
@@ -89,6 +98,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
         mOnActivityLayoutCallback = onActivityLayoutCallback;
         mFullscreenManager = fullscreenManager;
         mIsTablet = isTablet;
+        mIsEnteringPip = isEnteringPip;
         mActivityLifecycleDispatcher = lifecycleDispatcher;
         lifecycleDispatcher.register(this);
 
@@ -120,25 +130,33 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
             mStrategy = mSizeStrategyCreator.createForType(type, mIntentData, startMaximized);
             mCurrentPartialCustomTabType = type;
             mStrategy.setToolbar(mToolbarCoordinatorView, mCustomTabToolbar);
-            new Handler()
-                    .postDelayed(
-                            () -> {
-                                mStrategy.onToolbarInitialized(
-                                        mToolbarCoordinatorView,
-                                        mCustomTabToolbar,
-                                        mToolbarCornerRadius);
-                                mStrategy.onPostInflationStartup();
-                                // TODO(http://crbug.com/1406107): Creating a new strategy type is
-                                // basically a resize so we need to make sure to call
-                                // #onActivityResized here as
-                                // well
-                            },
-                            CREATE_STRATEGY_DELAY_CONFIG_CHANGE_MS);
+
+            // Some delay is required to switch height types. Not necessary for the transition
+            // from/to PIP.
+            if (mIsInPip || mIsEnteringPip.getAsBoolean()) {
+                relayoutStrategy();
+            } else {
+                new Handler()
+                        .postDelayed(
+                                this::relayoutStrategy, CREATE_STRATEGY_DELAY_CONFIG_CHANGE_MS);
+            }
+            mIsInPip = mIsEnteringPip.getAsBoolean();
         } else {
             // If the type of PCCT strategy did not change we can just call into the equivalent
             // method for the given strategy.
             mStrategy.onConfigurationChanged(newConfig.orientation);
         }
+    }
+
+    private void relayoutStrategy() {
+        mStrategy.onToolbarInitialized(
+                mToolbarCoordinatorView,
+                mCustomTabToolbar,
+                mToolbarCornerRadius,
+                mToolbarButtonsCoordinator);
+        mStrategy.onPostInflationStartup();
+        // TODO(http://crbug.com/40887082): Creating a new strategy type is basically a resize
+        // so we need to make sure to call #onActivityResized here as well
     }
 
     /**
@@ -159,18 +177,25 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
      * Provide this class with the required views and values so it can set up the strategy.
      *
      * @param coordinatorView Coordinator view to insert the UI handle for the users to resize the
-     *                        custom tab.
+     *     custom tab.
      * @param toolbar The {@link CustomTabToolbar} to set up the strategy.
      * @param toolbarCornerRadius The custom tab corner radius in pixels.
+     * @param toolbarButtonsCoordinator The {@link CustomTabToolbarButtonsCoordinator} to
+     *     communicate with the toolbar buttons.
      */
     @Override
     public void onToolbarInitialized(
-            View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
+            View coordinatorView,
+            CustomTabToolbar toolbar,
+            @Px int toolbarCornerRadius,
+            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         mToolbarCoordinatorView = coordinatorView;
         mCustomTabToolbar = toolbar;
         mToolbarCornerRadius = toolbarCornerRadius;
+        mToolbarButtonsCoordinator = toolbarButtonsCoordinator;
 
-        mStrategy.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
+        mStrategy.onToolbarInitialized(
+                coordinatorView, toolbar, toolbarCornerRadius, toolbarButtonsCoordinator);
     }
 
     /**
@@ -181,13 +206,9 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
         return mStrategy.handleCloseAnimation(finishRunnable);
     }
 
-    /**
-     * Set the scrim value to apply to partial CCT UI.
-     * @param scrimFraction Scrim fraction.
-     */
     @Override
-    public void setScrimFraction(float scrimFraction) {
-        mStrategy.setScrimFraction(scrimFraction);
+    public void setScrimColor(@ColorInt int scrimColor) {
+        mStrategy.setScrimColor(scrimColor);
     }
 
     // FindToolbarObserver implementation.
@@ -271,7 +292,9 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
         // |calculatePartialCustomTabType| won't need the object and will early out.
         Supplier<Integer> displayWidthDpSupplier =
                 () -> {
-                    var versionCompat = PartialCustomTabVersionCompat.create(activity, () -> {});
+                    var versionCompat =
+                            PartialCustomTabVersionCompat.create(
+                                    activity, CallbackUtils.emptyRunnable());
                     return versionCompat.getDisplayWidthDp();
                 };
         @PartialCustomTabType

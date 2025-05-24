@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "components/push_notification/push_notification_client.h"
 
 namespace push_notification {
@@ -50,7 +51,8 @@ class PushNotificationClientManager {
  private:
   void FlushPendingMessageStore(ClientId client_id);
 
-  base::flat_map<ClientId, PushNotificationClient*> client_id_to_client_map_;
+  base::flat_map<ClientId, raw_ptr<PushNotificationClient, CtnExperimental>>
+      client_id_to_client_map_;
 
   // Messages for clients that have not registered with the service yet. After a
   // client registers, `FlushPendingMessageStore()` iterates through this vector

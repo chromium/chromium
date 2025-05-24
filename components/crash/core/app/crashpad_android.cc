@@ -165,8 +165,8 @@ class SandboxedHandler {
     restore_previous_handler_ =
         build_info->sdk_int() < base::android::SDK_VERSION_JELLY_BEAN_MR2 ||
         build_info->sdk_int() >= base::android::SDK_VERSION_OREO ||
-        strcmp(build_info->build_type(), "eng") == 0 ||
-        strcmp(build_info->build_type(), "userdebug") == 0;
+        build_info->build_type() == "eng" ||
+        build_info->build_type() == "userdebug";
 
     bool signal_stack_initialized =
         CrashpadClient::InitializeSignalStackForThread();
@@ -298,7 +298,6 @@ void SetBuildInfoAnnotations(std::map<std::string, std::string>* annotations) {
   (*annotations)["board"] = info->board();
   (*annotations)["installer_package_name"] = info->installer_package_name();
   (*annotations)["abi_name"] = info->abi_name();
-  (*annotations)["custom_themes"] = info->custom_themes();
   (*annotations)["resources_version"] = info->resources_version();
   (*annotations)["gms_core_version"] = info->gms_version_code();
 
@@ -390,19 +389,23 @@ bool BuildEnvironmentWithApk(bool use_64_bit,
 
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   static constexpr char kClasspathVar[] = "CLASSPATH";
-  std::string current_classpath;
-  env->GetVar(kClasspathVar, &current_classpath);
-  classpath += ":" + current_classpath;
+  std::optional<std::string> current_classpath = env->GetVar(kClasspathVar);
+  if (current_classpath.has_value()) {
+    classpath += ":" + current_classpath.value();
+  }
 
   static constexpr char kLdLibraryPathVar[] = "LD_LIBRARY_PATH";
-  std::string current_library_path;
-  env->GetVar(kLdLibraryPathVar, &current_library_path);
-  library_path += ":" + current_library_path;
+  std::optional<std::string> current_library_path =
+      env->GetVar(kLdLibraryPathVar);
+  if (current_library_path.has_value()) {
+    library_path += ":" + current_library_path.value();
+  }
 
   static constexpr char kRuntimeRootVar[] = "ANDROID_RUNTIME_ROOT";
-  std::string runtime_root;
-  if (env->GetVar(kRuntimeRootVar, &runtime_root)) {
-    library_path += ":" + runtime_root + (use_64_bit ? "/lib64" : "/lib");
+  std::optional<std::string> runtime_root = env->GetVar(kRuntimeRootVar);
+  if (runtime_root.has_value()) {
+    library_path +=
+        ":" + runtime_root.value() + (use_64_bit ? "/lib64" : "/lib");
   }
 
   result->push_back("CLASSPATH=" + classpath);
@@ -435,13 +438,10 @@ void BuildHandlerArgs(CrashReporterClient* crash_reporter_client,
   // TODO(jperaza): Set URL for Android when Crashpad takes over report upload.
   *url = std::string();
 
-  std::string product_name;
-  std::string product_version;
-  std::string channel;
-  crash_reporter_client->GetProductNameAndVersion(&product_name,
-                                                  &product_version, &channel);
-  (*process_annotations)["prod"] = product_name;
-  (*process_annotations)["ver"] = product_version;
+  ProductInfo product_info;
+  crash_reporter_client->GetProductInfo(&product_info);
+  (*process_annotations)["prod"] = product_info.product_name;
+  (*process_annotations)["ver"] = product_info.version;
 
   SetBuildInfoAnnotations(process_annotations);
 
@@ -451,8 +451,8 @@ void BuildHandlerArgs(CrashReporterClient* crash_reporter_client,
 #else
   const bool allow_empty_channel = false;
 #endif
-  if (allow_empty_channel || !channel.empty()) {
-    (*process_annotations)["channel"] = channel;
+  if (allow_empty_channel || !product_info.channel.empty()) {
+    (*process_annotations)["channel"] = product_info.channel;
   }
 
   (*process_annotations)["plat"] = std::string("Android");
@@ -486,10 +486,9 @@ bool SetLdLibraryPath(const base::FilePath& lib_path) {
 
   static constexpr char kLibraryPathVar[] = "LD_LIBRARY_PATH";
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string old_path;
-  if (env->GetVar(kLibraryPathVar, &old_path)) {
-    library_path.push_back(':');
-    library_path.append(old_path);
+  std::optional<std::string> old_path = env->GetVar(kLibraryPathVar);
+  if (old_path.has_value()) {
+    library_path += ":" + old_path.value();
   }
 
   if (!env->SetVar(kLibraryPathVar, library_path)) {

@@ -15,8 +15,7 @@ SessionRestoreTestHelper::SessionRestoreTestHelper()
                           weak_ptr_factory.GetWeakPtr()));
 }
 
-SessionRestoreTestHelper::~SessionRestoreTestHelper() {
-}
+SessionRestoreTestHelper::~SessionRestoreTestHelper() = default;
 
 void SessionRestoreTestHelper::Wait() {
   if (restore_notification_seen_)

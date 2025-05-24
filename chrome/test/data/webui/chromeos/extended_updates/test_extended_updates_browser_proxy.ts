@@ -4,7 +4,7 @@
 
 import type {App} from 'chrome://extended-updates-dialog/extended_updates.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://extended-updates-dialog/extended_updates.mojom-webui.js';
-import {ExtendedUpdatesBrowserProxy} from 'chrome://extended-updates-dialog/extended_updates_browser_proxy.js';
+import type {ExtendedUpdatesBrowserProxy} from 'chrome://extended-updates-dialog/extended_updates_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 

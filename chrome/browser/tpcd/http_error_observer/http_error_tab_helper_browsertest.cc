@@ -205,9 +205,10 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, TPCBlockedIframeErr) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SetThirdPartyCookieBlocking(true);
-  content::SetCookie(browser()->profile(),
-                     https_server()->GetURL(kHostB, "/no_real_image.html"),
-                     "thirdparty=1;SameSite=None;Secure");
+  ASSERT_TRUE(
+      content::SetCookie(browser()->profile(),
+                         https_server()->GetURL(kHostB, "/no_real_image.html"),
+                         "thirdparty=1;SameSite=None;Secure"));
   NavigateToURLAndIFrame(
       /*host=*/kHostA,
       /*iframe_url=*/https_server()->GetURL(kHostB, "/no_real_image.html"));
@@ -224,10 +225,10 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, TPCBlocked5xxErr) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SetThirdPartyCookieBlocking(true);
-  content::SetCookie(
+  ASSERT_TRUE(content::SetCookie(
       browser()->profile(),
       https_server()->GetURL(kHostB, "/echo-cookie-with-status?status=500"),
-      "thirdparty=1;SameSite=None;Secure");
+      "thirdparty=1;SameSite=None;Secure"));
   NavigateToURLAndIFrame(
       /*host=*/kHostA,
       /*iframe_url=*/
@@ -246,9 +247,9 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, TPCBlocked4xxErr) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SetThirdPartyCookieBlocking(true);
-  content::SetCookie(browser()->profile(),
-                     https_server()->GetURL(kHostB, "/not-real.html"),
-                     "thirdparty=1;SameSite=None;Secure");
+  ASSERT_TRUE(content::SetCookie(
+      browser()->profile(), https_server()->GetURL(kHostB, "/not-real.html"),
+      "thirdparty=1;SameSite=None;Secure"));
   NavigateToURLAndIFrame(
       /*host=*/kHostA,
       /*iframe_url=*/https_server()->GetURL(kHostB, "/not-real.html"));
@@ -267,9 +268,9 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, DISABLED_MultiErrs) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SetThirdPartyCookieBlocking(true);
-  content::SetCookie(browser()->profile(),
-                     https_server()->GetURL(kHostB, "/page404.html"),
-                     "thirdparty=1;SameSite=None;Secure");
+  ASSERT_TRUE(content::SetCookie(
+      browser()->profile(), https_server()->GetURL(kHostB, "/page404.html"),
+      "thirdparty=1;SameSite=None;Secure"));
   NavigateToURLAndIFrame(
       /*host=*/kHostA,
       /*iframe_url=*/https_server()->GetURL(kHostB, "/page404.html"));

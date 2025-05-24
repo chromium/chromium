@@ -1,0 +1,15 @@
+Name: Checker Qual
+Short Name: checker-qual
+URL: https://checkerframework.org
+Version: 3.25.0
+License: Apache-2.0, MIT, GPL-2.0-with-classpath-exception
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+checker-qual contains annotations (type qualifiers) that a programmer writes to specify Java code for type-checking by the Checker Framework.
+
+Local Modifications:
+No modifications.

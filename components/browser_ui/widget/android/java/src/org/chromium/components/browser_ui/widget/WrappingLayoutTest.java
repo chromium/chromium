@@ -122,7 +122,7 @@ public class WrappingLayoutTest {
     }
 
     private static class WrappingLayoutSubclass extends WrappingLayout {
-        Context mContext;
+        final Context mContext;
         int mRequestedWidth;
         int mRequestedHeight;
         View mViewA;
@@ -345,11 +345,11 @@ public class WrappingLayoutTest {
         }
     }
 
-    private class ViewExpectation {
-        private int mExpectedLeft;
-        private int mExpectedTop;
-        private int mExpectedWidth;
-        private int mExpectedHeight;
+    private static class ViewExpectation {
+        private final int mExpectedLeft;
+        private final int mExpectedTop;
+        private final int mExpectedWidth;
+        private final int mExpectedHeight;
 
         public ViewExpectation(
                 int expectedLeft, int expectedTop, int expectedWidth, int expectedHeight) {

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
@@ -19,11 +18,14 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
-#include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
-#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/plus_addresses/fake_plus_address_allocator.h"
+#include "components/plus_addresses/plus_address_suggestion_generator.h"
+#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,61 +42,30 @@ using ::testing::Return;
 using CellIndex = PopupViewViews::CellIndex;
 using CellType = PopupRowView::CellType;
 
-// Creates the typical structure of a Autofill address profile children
-// suggestions. This is not suppose to represent perfectly all the suggestions
-// added to the submenu. but the goal is to be close enough.
-std::vector<Suggestion> CreateTypicalAutofillProfileChildSuggestions() {
+// Creates the typical structure of credential subpopup suggestions. The result
+// is not supposed to mimic the exact structure of the credential subpopup
+// suggestions, but the goal is to be close enough.
+std::vector<Suggestion> CreateTypicalPasswordChildSuggestions() {
   std::vector<Suggestion> suggestions;
 
   // Fill name fields child suggestions
-  Suggestion fill_full_name(
+  Suggestion fill_username(u"username",
+                           SuggestionType::kPasswordFieldByFieldFilling);
+  suggestions.push_back(std::move(fill_username));
+
+  Suggestion fill_password(
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED),
-      SuggestionType::kFillFullName);
-  fill_full_name.main_text.is_primary = Suggestion::Text::IsPrimary(false);
-  suggestions.push_back(std::move(fill_full_name));
-  suggestions.emplace_back(u"Charles",
-                           SuggestionType::kAddressFieldByFieldFilling);
-  suggestions.emplace_back(u"Stewart",
-                           SuggestionType::kAddressFieldByFieldFilling);
+          IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
+      SuggestionType::kFillPassword);
+  suggestions.emplace_back(std::move(fill_password));
+
   suggestions.emplace_back(SuggestionType::kSeparator);
 
-  // Fill address fields child suggestions
-  Suggestion fill_full_address(
+  Suggestion view_password_details(
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED),
-      SuggestionType::kFillFullAddress);
-  fill_full_address.main_text.is_primary = Suggestion::Text::IsPrimary(false);
-  suggestions.push_back(std::move(fill_full_address));
-  // Also add another child suggestions layer.
-  Suggestion street_address(u"123 Apple St.",
-                            SuggestionType::kAddressFieldByFieldFilling);
-  Suggestion street_name(u"Apple St.",
-                         SuggestionType::kAddressFieldByFieldFilling);
-  street_name.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}};
-  street_address.children = {std::move(street_name)};
-
-  suggestions.push_back(std::move(street_address));
-  suggestions.emplace_back(u"Munich",
-                           SuggestionType::kAddressFieldByFieldFilling);
-  suggestions.emplace_back(u"8951",
-                           SuggestionType::kAddressFieldByFieldFilling);
-  suggestions.emplace_back(SuggestionType::kSeparator);
-
-  Suggestion edit_profile_suggestion(
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED),
-      SuggestionType::kDeleteAddressProfile);
-  edit_profile_suggestion.icon = Suggestion::Icon::kDelete;
-  suggestions.push_back(std::move(edit_profile_suggestion));
-
-  Suggestion delete_profile_suggestion(
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED),
-      SuggestionType::kDeleteAddressProfile);
-  delete_profile_suggestion.icon = Suggestion::Icon::kDelete;
-  suggestions.push_back(std::move(delete_profile_suggestion));
+          IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_VIEW_DETAILS_ENTRY),
+      SuggestionType::kViewPasswordDetails);
+  suggestions.emplace_back(std::move(view_password_details));
 
   return suggestions;
 }
@@ -137,17 +108,19 @@ std::vector<Suggestion> CreateCreditCardSuggestions() {
   return suggestions;
 }
 
-std::vector<Suggestion> CreatePasswordSuggestions(bool is_deactivated = false) {
+std::vector<Suggestion> CreatePasswordSuggestions(
+    Suggestion::Acceptability acceptability =
+        Suggestion::Acceptability::kAcceptable) {
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(u"Title suggestion", SuggestionType::kTitle);
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
 
   suggestions.emplace_back(u"Password main text",
                            SuggestionType::kPasswordEntry);
   suggestions.back().labels = {
       {Suggestion::Text(u"example.username@gmail.com")}};
   suggestions.back().icon = Suggestion::Icon::kGlobe;
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
 
   suggestions.emplace_back(autofill::SuggestionType::kSeparator);
 
@@ -156,36 +129,38 @@ std::vector<Suggestion> CreatePasswordSuggestions(bool is_deactivated = false) {
       SuggestionType::kAllSavedPasswordsEntry);
   suggestions.back().icon = Suggestion::Icon::kSettings;
   suggestions.back().trailing_icon = Suggestion::Icon::kGooglePasswordManager;
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
 
   return suggestions;
 }
 
-std::vector<Suggestion> CreateWebAuthnSuggestions(bool is_deactivated = false) {
+std::vector<Suggestion> CreateWebAuthnSuggestions(
+    Suggestion::Acceptability acceptability =
+        Suggestion::Acceptability::kAcceptable) {
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(
       "cool passkey",
       {{Suggestion::Text(
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE))}},
       Suggestion::Icon::kGlobe, SuggestionType::kWebauthnCredential));
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
 
   suggestions.push_back(Suggestion(
       "coolest passkey",
       {{Suggestion::Text(l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER))}},
       Suggestion::Icon::kGlobe, SuggestionType::kWebauthnCredential));
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
 
   suggestions.emplace_back(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY),
       SuggestionType::kWebauthnSignInWithAnotherDevice);
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
   suggestions.emplace_back(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_AND_PASSKEYS),
       SuggestionType::kAllSavedPasswordsEntry);
-  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.back().acceptability = acceptability;
   suggestions.back().icon = Suggestion::Icon::kSettings;
   suggestions.back().trailing_icon = Suggestion::Icon::kGooglePasswordManager;
 
@@ -193,12 +168,13 @@ std::vector<Suggestion> CreateWebAuthnSuggestions(bool is_deactivated = false) {
 }
 
 std::vector<Suggestion> CreatePasswordAndWebAuthnSuggestions(
-    bool is_deactivated = false) {
+    Suggestion::Acceptability acceptability =
+        Suggestion::Acceptability::kAcceptable) {
   std::vector<Suggestion> suggestions =
-      CreatePasswordSuggestions(is_deactivated);
+      CreatePasswordSuggestions(acceptability);
   suggestions.pop_back();
   std::vector<Suggestion> webauthn_suggestions =
-      CreateWebAuthnSuggestions(is_deactivated);
+      CreateWebAuthnSuggestions(acceptability);
   suggestions.insert(suggestions.end(), webauthn_suggestions.begin(),
                      webauthn_suggestions.end());
   return suggestions;
@@ -276,13 +252,7 @@ class PopupViewViewsBrowsertestBase
   std::unique_ptr<PopupViewViews> popup_parent_;
 };
 
-class PopupViewViewsBrowsertest : public PopupViewViewsBrowsertestBase {
- public:
-  ~PopupViewViewsBrowsertest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using PopupViewViewsBrowsertest = PopupViewViewsBrowsertestBase;
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
   PrepareSuggestions(CreateAutocompleteSuggestions());
@@ -322,13 +292,6 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_AutofillProfile_ChildSuggestions) {
-  PrepareSuggestions(CreateTypicalAutofillProfileChildSuggestions());
-  PrepareSelectedCell(CellIndex{0, CellType::kContent});
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_AutofillProfile_Selected_Footer) {
   PrepareSuggestions(CreateAutofillProfileSuggestions());
   PrepareSelectedCell(CellIndex{3, CellType::kContent});
@@ -359,6 +322,13 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Passwords) {
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_Passwords_ChildSuggestions) {
+  PrepareSuggestions(CreateTypicalPasswordChildSuggestions());
+  PrepareSelectedCell(CellIndex{0, CellType::kContent});
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Passwords_And_WebAuthn) {
   PrepareSuggestions(CreatePasswordAndWebAuthnSuggestions());
   ShowAndVerifyUi();
@@ -366,8 +336,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Passwords_And_WebAuthn_Deactivated) {
-  PrepareSuggestions(
-      CreatePasswordAndWebAuthnSuggestions(/*is_deactivated=*/true));
+  PrepareSuggestions(CreatePasswordAndWebAuthnSuggestions(
+      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle));
   ShowAndVerifyUi();
 }
 
@@ -480,6 +450,15 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, SearchBarViewProvided) {
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       PopupHeightIsLimitedWithSearchBarView) {
+  controller().set_suggestions({100, SuggestionType::kAddressEntry});
+  ShowAndVerifyUi(
+      /*popup_has_parent=*/false,
+      AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
+                                         .no_results_message = u""});
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        SearchBarViewNoSuggestionsFound) {
   // This set imitates empty search result, it contains footer suggestions only.
   controller().set_suggestions(
@@ -496,17 +475,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          Combine(Bool(), Bool()),
                          PopupViewViewsBrowsertestBase::GetTestSuffix);
 
-class PopupViewViewsBrowsertestShowAutocompleteDeleteButton
-    : public PopupViewViewsBrowsertestBase {
- public:
-  PopupViewViewsBrowsertestShowAutocompleteDeleteButton() {
-    feature_list_.InitAndDisableFeature(features::kAutofillMoreProminentPopup);
-  }
-  ~PopupViewViewsBrowsertestShowAutocompleteDeleteButton() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using PopupViewViewsBrowsertestShowAutocompleteDeleteButton =
+    PopupViewViewsBrowsertestBase;
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
                        InvokeUi_Autocomplete) {
@@ -530,6 +500,69 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
+                         Combine(Bool(), Bool()),
+                         PopupViewViewsBrowsertestBase::GetTestSuffix);
+
+class PopupViewViewsPlusAddressSuggestionBrowsertest
+    : public PopupViewViewsBrowsertestBase {
+ public:
+  PopupViewViewsPlusAddressSuggestionBrowsertest() {
+    setting_service().set_is_plus_addresses_enabled(true);
+  }
+
+ protected:
+  plus_addresses::FakePlusAddressAllocator& allocator() { return allocator_; }
+  plus_addresses::FakePlusAddressSettingService& setting_service() {
+    return setting_service_;
+  }
+
+  std::vector<Suggestion> GetPlusAddressSuggestion(
+      const std::vector<std::string>& affiliated_plus_addresses) {
+    plus_addresses::PlusAddressSuggestionGenerator generator(
+        &setting_service(), &allocator(),
+        url::Origin::Create(GURL("https://foo.bar")));
+    FormData form = autofill::test::CreateTestSignupFormData();
+    return generator.GetSuggestions(
+        affiliated_plus_addresses,
+        /*is_creation_enabled=*/true, form, form.fields()[0],
+        /*form_field_type_groups=*/{}, PasswordFormClassification(),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  }
+
+ private:
+  autofill::test::AutofillUnitTestEnvironment autofill_env_;
+
+  plus_addresses::FakePlusAddressAllocator allocator_;
+  plus_addresses::FakePlusAddressSettingService setting_service_;
+};
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
+                       FirstTimeCreation) {
+  setting_service().set_has_accepted_notice(false);
+  PrepareSuggestions(
+      GetPlusAddressSuggestion(/*affiliated_plus_addresses=*/{}));
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
+                       InlineGenerationWithPreallocatedAddresses) {
+  setting_service().set_has_accepted_notice(true);
+  allocator().set_is_next_allocation_synchronous(true);
+  PrepareSuggestions(
+      GetPlusAddressSuggestion(/*affiliated_plus_addresses=*/{}));
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
+                       Filling) {
+  setting_service().set_has_accepted_notice(true);
+  PrepareSuggestions(
+      GetPlusAddressSuggestion(/*affiliated_plus_addresses=*/{"foo@moo.com"}));
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PopupViewViewsPlusAddressSuggestionBrowsertest,
                          Combine(Bool(), Bool()),
                          PopupViewViewsBrowsertestBase::GetTestSuffix);
 

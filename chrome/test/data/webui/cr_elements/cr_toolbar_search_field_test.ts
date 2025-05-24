@@ -62,11 +62,11 @@ suite('cr-toolbar-search-field', function() {
     field.click();
     await field.updateComplete;
     assertTrue(field.showingSearch);
-    assertEquals(searchInput, field.shadowRoot!.activeElement);
+    assertEquals(searchInput, field.shadowRoot.activeElement);
 
     pressAndReleaseKeyOn(searchInput, 27, [], 'Escape');
     assertFalse(field.showingSearch, 'Pressing escape closes field.');
-    assertNotEquals(searchInput, field.shadowRoot!.activeElement);
+    assertNotEquals(searchInput, field.shadowRoot.activeElement);
   });
 
   test('clear search button clears and refocuses input', async function() {
@@ -77,12 +77,12 @@ suite('cr-toolbar-search-field', function() {
     const searchInputClearedEventPromise =
         eventToPromise('search-term-cleared', field);
     const clearSearch =
-        field.shadowRoot!.querySelector<HTMLElement>('#clearSearch')!;
+        field.shadowRoot.querySelector<HTMLElement>('#clearSearch')!;
     clearSearch.focus();
     clearSearch.click();
     assertTrue(field.showingSearch);
     assertEquals('', field.getValue());
-    assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
+    assertEquals(field.$.searchInput, field.shadowRoot.activeElement);
     assertFalse(field.hasSearchText);
     assertFalse(field.spinnerActive);
     await searchInputClearedEventPromise;
@@ -94,7 +94,7 @@ suite('cr-toolbar-search-field', function() {
     await field.updateComplete;
     assertEquals('query1', field.getValue());
 
-    field.shadowRoot!.querySelector<HTMLElement>('#clearSearch')!.click();
+    field.shadowRoot.querySelector<HTMLElement>('#clearSearch')!.click();
     assertTrue(field.showingSearch);
     assertEquals('', field.getValue());
 
@@ -201,7 +201,7 @@ suite('cr-toolbar-search-field', function() {
     assertTrue(field.hasSearchText);
 
     const clearSearch =
-        field.shadowRoot!.querySelector<HTMLElement>('#clearSearch')!;
+        field.shadowRoot.querySelector<HTMLElement>('#clearSearch')!;
     assertFalse(clearSearch.hidden);
     assertTrue(field.showingSearch);
   });

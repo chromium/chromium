@@ -52,7 +52,8 @@ LorgnetteNotificationController::LorgnetteNotificationController(
     Profile* profile)
     : dlc_observer_(this),
       supported_dlc_ids_(
-          std::set<std::string>({lorgnette::kSaneBackendsPfuDlcId})),
+          std::set<std::string>({lorgnette::kSaneBackendsPfuDlcId,
+                                 lorgnette::kSaneBackendsCanonDlcId})),
       profile_(profile) {
   DCHECK(profile);
   dlc_observer_.Observe(DlcserviceClient::Get());
@@ -94,8 +95,7 @@ void LorgnetteNotificationController::OnDlcStateChanged(
                          << dlc_state.last_error_code();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   std::unique_ptr<message_center::Notification> notification =
       CreateNotification(dlc_state.id());
@@ -121,7 +121,7 @@ LorgnetteNotificationController::CreateNotification(const std::string& dlc_id) {
     case DlcState::kIdle:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LorgnetteNotificationController::DisplayNotification(

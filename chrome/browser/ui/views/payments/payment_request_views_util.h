@@ -30,25 +30,25 @@ namespace payments {
 class PaymentsProfileComparator;
 enum class PaymentShippingType;
 
-constexpr int kPaymentRequestRowHorizontalInsets = 16;
-constexpr int kPaymentRequestRowVerticalInsets = 8;
+inline constexpr int kPaymentRequestRowHorizontalInsets = 16;
+inline constexpr int kPaymentRequestRowVerticalInsets = 8;
 
 // Extra inset relative to the header when a right edge should line up with the
 // close button's X rather than its invisible right edge.
-constexpr int kPaymentRequestRowExtraRightInset = 8;
-constexpr int kPaymentRequestButtonSpacing = 10;
+inline constexpr int kPaymentRequestRowExtraRightInset = 8;
+inline constexpr int kPaymentRequestButtonSpacing = 10;
 
 // Dimensions of the dialog itself.
-constexpr int kDialogMinWidth = 512;
-constexpr int kDialogHeight = 450;
+inline constexpr int kDialogMinWidth = 512;
+inline constexpr int kDialogHeight = 450;
 
 // Preferred dimensions of the payment handler dialog in pixels.
-constexpr int kPreferredPaymentHandlerDialogWidth = 608;
-constexpr int kPreferredPaymentHandlerDialogHeight = 600;
+inline constexpr int kPreferredPaymentHandlerDialogWidth = 608;
+inline constexpr int kPreferredPaymentHandlerDialogHeight = 600;
 
 // Fixed width of the amount sections in the payment sheet and the order summary
 // sheet, in pixels.
-constexpr int kAmountSectionWidth = 96;
+inline constexpr int kAmountSectionWidth = 96;
 
 // Returns an instrument image view for the given |icon_bitmap| or
 // |icon_resource_id| and wanted |opacity|. Includes a rounded rect border.

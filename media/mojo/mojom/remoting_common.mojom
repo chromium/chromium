@@ -42,6 +42,7 @@ enum RemotingSinkVideoCapability {
   CODEC_VP8,
   CODEC_VP9,
   CODEC_HEVC,
+  CODEC_AV1
 };
 
 struct RemotingSinkMetadata {

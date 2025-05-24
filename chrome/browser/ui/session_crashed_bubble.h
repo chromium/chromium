@@ -23,10 +23,10 @@ class SessionCrashedBubble {
   SessionCrashedBubble(const SessionCrashedBubble&) = delete;
   SessionCrashedBubble& operator=(const SessionCrashedBubble&) = delete;
 
-  virtual ~SessionCrashedBubble() {}
+  virtual ~SessionCrashedBubble() = default;
 
  protected:
-  SessionCrashedBubble() {}
+  SessionCrashedBubble() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_SESSION_CRASHED_BUBBLE_H_

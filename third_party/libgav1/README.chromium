@@ -2,8 +2,8 @@ Name: libgav1
 Short Name: libgav1
 URL: https://chromium.googlesource.com/codecs/libgav1/
 Version: N/A
-Revision: a2f139e9123bdb5edf7707ac6f1b73b3aa5038dd
-License: Apache 2.0
+Revision: c05bf9be660cf170d7c26bd06bb42b3322180e58
+License: Apache-2.0
 License File: src/LICENSE
 Security Critical: yes
 Shipped: yes

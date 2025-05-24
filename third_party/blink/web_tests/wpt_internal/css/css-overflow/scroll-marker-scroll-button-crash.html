@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+    <script src="/dom/events/scroll_support.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+  </head>
+  <body>
+    <style>
+      .scroller {
+        height: 100px;
+        width: 100px;
+        border: solid;
+        overflow-x: scroll;
+        white-space: nowrap;
+        scroll-snap-type: x mandatory;
+        scroll-marker-group: after;
+        display: grid;
+        grid-template-columns: 220px 220px;
+        &::scroll-marker-group {
+          width: 100px;
+          height: 35px;
+          border: solid;
+          overflow-x: scroll;
+        }
+        &::scroll-button(*) {
+          height: 50px;
+          width: 50px;
+          background-color: green;
+          border: solid;
+        }
+        &::scroll-button(inline-start) {
+          content: "<";
+        }
+        &::scroll-button(inline-end) {
+          content: ">";
+        }
+      }
+      .box {
+        height: 75px;
+        width: 75px;
+        background-color: blue;
+        margin-inline: 50px;
+        scroll-snap-align: start;
+        &::scroll-marker {
+          content: "O";
+          width: 20px;
+          height: 20px;
+          background-color: pink;
+          margin-inline: 100px;
+        }
+        &::scroll-marker:target-current {
+          background-color: green;
+        }
+      }
+    </style>
+    <p>This test passes if it does not crash.</p>
+    <div id="smoothscroller" class="smooth scroller">
+      <div class="box"><p>1</p></div>
+      <div class="box" id="box2"><p>2</p></div>
+    </div>
+    <script>
+      promise_test(async (t) => {
+        const mouse_promise = new Promise(resolve, () => {
+          document.addEventListener("mouseup", resolve, {once: true});
+        });
+        const SCROLL_BUTTON_HEIGHT = 50;
+        // Place the mouse so as to click on the right scroll-button, which is
+        // just below the right half of the scroll container.
+        const mousex = smoothscroller.offsetLength / 4;
+        const mousey = smoothscroller.offsetHeight / 2 +
+          SCROLL_BUTTON_HEIGHT / 2;
+        await new test_driver.Action()
+          .pointerMove(mousex, mousey, {origin: smoothscroller})
+          .pointerDown()
+          .pointerUp()
+          .send();
+        await mouse_promise;
+      }, "This test passes if it does not crash.");
+    </script>
+  </body>
+</html>

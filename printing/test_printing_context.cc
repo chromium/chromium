@@ -68,9 +68,10 @@ std::string TestPrintingContextDelegate::GetAppLocale() {
   return std::string();
 }
 
-TestPrintingContext::TestPrintingContext(Delegate* delegate,
-                                         ProcessBehavior process_behavior)
-    : PrintingContext(delegate, process_behavior) {}
+TestPrintingContext::TestPrintingContext(
+    Delegate* delegate,
+    OutOfProcessBehavior out_of_process_behavior)
+    : PrintingContext(delegate, out_of_process_behavior) {}
 
 TestPrintingContext::~TestPrintingContext() = default;
 
@@ -234,7 +235,8 @@ mojom::ResultCode TestPrintingContext::NewDocument(
   DCHECK(!in_print_job_);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls &&
+  if (out_of_process_behavior() ==
+          OutOfProcessBehavior::kEnabledPerformSystemCalls &&
       !settings_->system_print_dialog_data().empty()) {
     // Mimic the update when system print dialog settings are provided to
     // Print Backend service from the browser process.
@@ -254,8 +256,8 @@ mojom::ResultCode TestPrintingContext::NewDocument(
   in_print_job_ = true;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  const bool make_system_calls =
-      process_behavior() != ProcessBehavior::kOopEnabledSkipSystemCalls;
+  const bool make_system_calls = out_of_process_behavior() !=
+                                 OutOfProcessBehavior::kEnabledSkipSystemCalls;
 #else
   const bool make_system_calls = true;
 #endif

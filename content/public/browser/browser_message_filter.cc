@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -114,9 +115,9 @@ BrowserMessageFilter::BrowserMessageFilter(uint32_t message_class_to_filter)
 BrowserMessageFilter::BrowserMessageFilter(
     const uint32_t* message_classes_to_filter,
     size_t num_message_classes_to_filter)
-    : message_classes_to_filter_(
-          message_classes_to_filter,
-          message_classes_to_filter + num_message_classes_to_filter) {
+    : message_classes_to_filter_(message_classes_to_filter,
+                                 UNSAFE_TODO(message_classes_to_filter +
+                                             num_message_classes_to_filter)) {
   DCHECK(num_message_classes_to_filter);
 }
 
@@ -165,7 +166,7 @@ void BrowserMessageFilter::ShutdownForBadMessage() {
 
   if (base::Process::Current().Handle() == peer_process_.Handle()) {
     // Just crash in single process. Matches RenderProcessHostImpl behavior.
-    CHECK(false);
+    NOTREACHED();
   }
 
   ChildProcessLauncher::TerminateProcess(

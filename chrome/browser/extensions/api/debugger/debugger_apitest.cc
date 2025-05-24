@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,11 +21,11 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -72,9 +72,9 @@
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -93,6 +93,7 @@ std::vector<std::string> GetTargetUrlsWithoutPorts(
 }
 }  // namespace
 
+using testing::ElementsAre;
 using testing::Eq;
 
 class DebuggerApiTest : public ExtensionApiTest {
@@ -651,14 +652,14 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
 
  private:
   void SetUpOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     DebuggerApiTest::SetUpOnMainThread();
-    profile_manager_ = g_browser_process->profile_manager();
+    ProfileManager* const profile_manager = profile_util::GetProfileManager();
 
     other_profile_ = &profiles::testing::CreateProfileSync(
-        profile_manager_, profile_manager_->GenerateNextProfileDirectoryPath());
+        profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
     otr_profile_ = profile()->GetPrimaryOTRProfile(true);
   }
 
@@ -667,7 +668,6 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
     DebuggerApiTest::TearDownOnMainThread();
   }
 
-  raw_ptr<ProfileManager, DanglingUntriaged> profile_manager_ = nullptr;
   raw_ptr<Profile, DanglingUntriaged> other_profile_ = nullptr;
   raw_ptr<Profile, DanglingUntriaged> otr_profile_ = nullptr;
 };
@@ -688,10 +688,9 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
             get_targets_function.get(), "[]", profile()));
 
     ASSERT_TRUE(value.is_list());
-    const base::Value::List targets = std::move(value).TakeList();
-    ASSERT_THAT(targets, testing::SizeIs(1));
-    EXPECT_THAT(targets[0].GetDict(), base::test::DictionaryHasValue(
-                                          "url", base::Value("about:blank")));
+    EXPECT_THAT(std::move(value).TakeList(),
+                ElementsAre(base::test::DictionaryHasValue(
+                    "url", base::Value("about:blank"))));
   }
 
   {
@@ -935,8 +934,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToBlob) {
 // Tests that navigation to a forbidden URL is properly denied and
 // does not cause a crash.
 // This is a regression test for https://crbug.com/1188889.
-// TODO(crbug.com/41490490): Re-enable this test.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/41483732): Re-enable this test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NavigateToForbiddenUrl DISABLED_NavigateToForbiddenUrl
 #else
 #define MAYBE_NavigateToForbiddenUrl NavigateToForbiddenUrl

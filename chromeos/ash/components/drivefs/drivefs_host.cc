@@ -74,10 +74,8 @@ class DriveFsHost::MountState : public DriveFsSession {
         bool{host->account_token_delegate_->GetCachedAccessToken()};
     search_ = std::make_unique<DriveFsSearch>(
         drivefs_interface(), host_->network_connection_tracker_, host_->clock_);
-    if (base::FeatureList::IsEnabled(ash::features::kDriveFsChromeNetworking)) {
-      http_client_ = std::make_unique<DriveFsHttpClient>(
-          host_->delegate_->GetURLLoaderFactory());
-    }
+    http_client_ = std::make_unique<DriveFsHttpClient>(
+        host_->delegate_->GetURLLoaderFactory());
   }
 
   MountState(const MountState&) = delete;
@@ -105,7 +103,6 @@ class DriveFsHost::MountState : public DriveFsSession {
         delegate->GetLostAndFoundDirectoryName(),
         base::FeatureList::IsEnabled(ash::features::kDriveFsMirroring),
         delegate->IsVerboseLoggingEnabled(),
-        base::FeatureList::IsEnabled(ash::features::kDriveFsChromeNetworking),
         base::FeatureList::IsEnabled(ash::features::kDriveFsShowCSEFiles)
             ? mojom::CSESupport::kListing
             : mojom::CSESupport::kNone,

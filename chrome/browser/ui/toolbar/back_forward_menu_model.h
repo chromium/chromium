@@ -28,7 +28,7 @@ struct FaviconImageResult;
 namespace content {
 class NavigationEntry;
 class WebContents;
-}
+}  // namespace content
 
 ///////////////////////////////////////////////////////////////////////////////
 //

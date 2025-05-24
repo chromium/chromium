@@ -41,7 +41,7 @@ public class CookieUtils {
             }
         }
 
-        private OnResultHelper<T> mOnResultHelper;
+        private final OnResultHelper<T> mOnResultHelper;
 
         public TestCallback() {
             mOnResultHelper = new OnResultHelper<T>();

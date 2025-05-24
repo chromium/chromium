@@ -17,11 +17,6 @@
 
 namespace blink {
 
-constexpr const char* kBoxOptionBorderBox = "border-box";
-constexpr const char* kBoxOptionContentBox = "content-box";
-constexpr const char* kBoxOptionDevicePixelContentBox =
-    "device-pixel-content-box";
-
 ResizeObserver* ResizeObserver::Create(ScriptState* script_state,
                                        V8ResizeObserverCallback* callback) {
   return MakeGarbageCollected<ResizeObserver>(
@@ -58,15 +53,17 @@ ResizeObserver::ResizeObserver(Delegate* delegate, LocalDOMWindow* window)
   }
 }
 
-ResizeObserverBoxOptions ResizeObserver::ParseBoxOptions(
-    const String& box_options) {
-  if (box_options == kBoxOptionBorderBox)
-    return ResizeObserverBoxOptions::kBorderBox;
-  if (box_options == kBoxOptionContentBox)
-    return ResizeObserverBoxOptions::kContentBox;
-  if (box_options == kBoxOptionDevicePixelContentBox)
-    return ResizeObserverBoxOptions::kDevicePixelContentBox;
-  return ResizeObserverBoxOptions::kContentBox;
+ResizeObserverBoxOptions ResizeObserver::V8EnumToBoxOptions(
+    V8ResizeObserverBoxOptions::Enum box_options) {
+  switch (box_options) {
+    case V8ResizeObserverBoxOptions::Enum::kBorderBox:
+      return ResizeObserverBoxOptions::kBorderBox;
+    case V8ResizeObserverBoxOptions::Enum::kContentBox:
+      return ResizeObserverBoxOptions::kContentBox;
+    case V8ResizeObserverBoxOptions::Enum::kDevicePixelContentBox:
+      return ResizeObserverBoxOptions::kDevicePixelContentBox;
+  }
+  NOTREACHED();
 }
 
 void ResizeObserver::observeInternal(Element* target,
@@ -101,7 +98,8 @@ void ResizeObserver::observeInternal(Element* target,
 
 void ResizeObserver::observe(Element* target,
                              const ResizeObserverOptions* options) {
-  ResizeObserverBoxOptions box_option = ParseBoxOptions(options->box());
+  ResizeObserverBoxOptions box_option =
+      V8EnumToBoxOptions(options->box().AsEnum());
   observeInternal(target, box_option);
 }
 

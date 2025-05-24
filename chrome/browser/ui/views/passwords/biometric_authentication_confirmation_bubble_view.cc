@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
@@ -34,7 +35,7 @@ BiometricAuthenticationConfirmationBubbleView::
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_CONFIRMATION_DESCRIPTION_MAC,
 #elif BUILDFLAG(IS_WIN)
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_CONFIRMATION_DESCRIPTION_WIN,
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_CONFIRMATION_DESCRIPTION_CHROMEOS,
 #endif
       /*link_message_id=*/
@@ -66,3 +67,6 @@ void BiometricAuthenticationConfirmationBubbleView::StyledLabelLinkClicked() {
   controller_.OnNavigateToSettingsLinkClicked();
   CloseBubble();
 }
+
+BEGIN_METADATA(BiometricAuthenticationConfirmationBubbleView)
+END_METADATA

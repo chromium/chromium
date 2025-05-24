@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VARIATIONS_VARIATIONS_MURMUR_HASH_H_
 #define COMPONENTS_VARIATIONS_VARIATIONS_MURMUR_HASH_H_
 
+#include <stddef.h>
+
 #include <cstdint>
 #include <string_view>
 #include <vector>

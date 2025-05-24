@@ -128,6 +128,8 @@ void AXTreeExtractor::OnScreen2xReady(
   screen2x_main_content_extractor_.reset_on_disconnect();
   screen2x_main_content_extractor_.reset_on_idle_timeout(
       kScreenAIIdleDisconnectDelay);
+  screen2x_main_content_extractor_->SetClientType(
+      screen_ai::mojom::MceClientType::kMahi);
 }
 
 void AXTreeExtractor::ExtractContent(
@@ -170,7 +172,6 @@ void AXTreeExtractor::GetContentSize(
 
     screen2x_main_content_extractor_->ExtractMainContent(
         content_size_request->snapshot.value(),
-        content_size_request->ukm_source_id.value(),
         base::BindOnce(&AXTreeExtractor::OnGetScreen2xResult,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(content_node_ids),
@@ -216,7 +217,6 @@ void AXTreeExtractor::ExtractContentFromSnapshot(
 
     screen2x_main_content_extractor_->ExtractMainContent(
         extraction_request->snapshot.value(),
-        extraction_request->ukm_source_id.value(),
         base::BindOnce(&AXTreeExtractor::OnGetScreen2xResult,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(content_node_ids),

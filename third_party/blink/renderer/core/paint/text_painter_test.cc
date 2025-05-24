@@ -137,8 +137,8 @@ TEST_F(TextPainterTest,
       CSSPropertyID::kWebkitTextStrokeColor, CSSValueID::kLime);
   GetDocument().body()->SetInlineStyleProperty(
       CSSPropertyID::kTextEmphasisColor, CSSValueID::kBlue);
-  GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyID::kWebkitPrintColorAdjust, CSSValueID::kEconomy);
+  GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kPrintColorAdjust,
+                                               CSSValueID::kEconomy);
   GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
   gfx::SizeF page_size(500, 800);
   GetFrame().StartPrinting(WebPrintParams(page_size));
@@ -164,8 +164,8 @@ TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
       CSSPropertyID::kWebkitTextStrokeColor, "rgb(220, 255, 220)");
   GetDocument().body()->SetInlineStyleProperty(
       CSSPropertyID::kTextEmphasisColor, "rgb(220, 220, 255)");
-  GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyID::kWebkitPrintColorAdjust, CSSValueID::kEconomy);
+  GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kPrintColorAdjust,
+                                               CSSValueID::kEconomy);
   GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
   gfx::SizeF page_size(500, 800);
   GetFrame().StartPrinting(WebPrintParams(page_size));
@@ -187,8 +187,8 @@ TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
 TEST_F(TextPainterTest, CachedTextBlob) {
   auto& persistent_data =
       GetDocument().View()->GetPaintControllerPersistentDataForTesting();
-  auto* item =
-      DynamicTo<DrawingDisplayItem>(persistent_data.GetDisplayItemList()[1]);
+  auto* item = DynamicTo<DrawingDisplayItem>(
+      UNSAFE_TODO(persistent_data.GetDisplayItemList()[1]));
   ASSERT_TRUE(item);
   auto* op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
@@ -199,7 +199,8 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   // Should reuse text blob on color change.
   GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
   UpdateAllLifecyclePhasesForTest();
-  item = DynamicTo<DrawingDisplayItem>(persistent_data.GetDisplayItemList()[1]);
+  item = DynamicTo<DrawingDisplayItem>(
+      UNSAFE_TODO(persistent_data.GetDisplayItemList()[1]));
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
@@ -212,7 +213,8 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kFontSize,
                                                "30px");
   UpdateAllLifecyclePhasesForTest();
-  item = DynamicTo<DrawingDisplayItem>(persistent_data.GetDisplayItemList()[1]);
+  item = DynamicTo<DrawingDisplayItem>(
+      UNSAFE_TODO(persistent_data.GetDisplayItemList()[1]));
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
@@ -224,7 +226,8 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   // Should not reuse text blob on text content change.
   GetDocument().body()->firstChild()->setTextContent("Hello, Hello");
   UpdateAllLifecyclePhasesForTest();
-  item = DynamicTo<DrawingDisplayItem>(persistent_data.GetDisplayItemList()[1]);
+  item = DynamicTo<DrawingDisplayItem>(
+      UNSAFE_TODO(persistent_data.GetDisplayItemList()[1]));
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
@@ -235,7 +238,8 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   // In dark mode, the text should be drawn with dark mode flags.
   GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
   UpdateAllLifecyclePhasesForTest();
-  item = DynamicTo<DrawingDisplayItem>(persistent_data.GetDisplayItemList()[1]);
+  item = DynamicTo<DrawingDisplayItem>(
+      UNSAFE_TODO(persistent_data.GetDisplayItemList()[1]));
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());

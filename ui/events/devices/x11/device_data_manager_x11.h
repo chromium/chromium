@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_DEVICES_X11_DEVICE_DATA_MANAGER_X11_H_
 #define UI_EVENTS_DEVICES_X11_DEVICE_DATA_MANAGER_X11_H_
 
+#include <array>
 #include <bitset>
 #include <functional>
 #include <map>
@@ -346,6 +347,8 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
       DeviceDataManagerX11::ScrollInfo::AxisInfo* axis,
       double valuator) const;
 
+  void SelectDeviceEvents(x11::Input::XIEventMask event_mask);
+
   static const int kMaxXIEventType = 32;
   static const int kMaxSlotNum = 10;
 
@@ -366,22 +369,22 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   std::unique_ptr<std::set<KeyboardCode>> blocked_keyboard_allowed_keys_;
 
   // Number of valuators on the specific device.
-  int valuator_count_[kMaxDeviceNum];
+  std::array<int, kMaxDeviceNum> valuator_count_;
 
   // Index table to find valuator number, min and max for DataType on the
   // specific device by valuator_lookup_[device_id][data_type].
-  std::vector<ValuatorInfo> valuator_lookup_[kMaxDeviceNum];
+  std::array<std::vector<ValuatorInfo>, kMaxDeviceNum> valuator_lookup_;
 
   // Indicates if the user has disabled high precision scrolling support.
   bool high_precision_scrolling_disabled_;
 
   // Index table to find the horizontal and vertical scroll valuator
   // numbers, scroll increments and scroll position.
-  ScrollInfo scroll_data_[kMaxDeviceNum];
+  std::array<ScrollInfo, kMaxDeviceNum> scroll_data_;
 
   // Index table to find the DataType for valuator on the specific device
   // by data_type_lookup_[device_id][valuator].
-  std::vector<int> data_type_lookup_[kMaxDeviceNum];
+  std::array<std::vector<int>, kMaxDeviceNum> data_type_lookup_;
 
   // Table to keep track of the last seen value for the specified valuator for
   // a specified slot of a device. Defaults to 0 if the valuator for that slot
@@ -390,7 +393,8 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   // event. So it is necessary to remember these valuators so that chrome
   // doesn't think X/device doesn't know about the valuators. We currently
   // use this only on touchscreen devices.
-  std::vector<double> last_seen_valuator_[kMaxDeviceNum][kMaxSlotNum];
+  std::array<std::array<std::vector<double>, kMaxSlotNum>, kMaxDeviceNum>
+      last_seen_valuator_;
 
   // Map that stores meta-data for blocked keyboards. This is needed to restore
   // devices when they are re-enabled.

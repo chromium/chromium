@@ -4,15 +4,16 @@
 
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <vector>
 
 #include "base/android/build_info.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -25,13 +26,11 @@
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_util.h"
 #include "media/parsers/h264_parser.h"
-#include "media/video/fake_gpu_memory_buffer.h"
+#include "media/parsers/vp9_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 
-#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
-    NDK_MEDIA_CODEC_MIN_API)
 using testing::Return;
 
 namespace media {
@@ -40,6 +39,11 @@ struct VideoParams {
   VideoCodecProfile profile;
   VideoPixelFormat pixel_format;
 };
+
+// We're putting this *after* VideoParams, so that it can be used with
+// ::testing::ValuesIn without triggering -Wunguarded-availability warnings.
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
+    NDK_MEDIA_CODEC_MIN_API)
 
 class NdkVideoEncoderAcceleratorTest
     : public ::testing::TestWithParam<VideoParams>,
@@ -113,7 +117,7 @@ class NdkVideoEncoderAcceleratorTest
 
     const base::UnsafeSharedMemoryRegion& region = buffer->GetRegion();
     auto mapping = region.Map();
-    memset(mapping.memory(), 0, mapping.size());
+    UNSAFE_TODO(memset(mapping.memory(), 0, mapping.size()));
 
     auto id = ++last_buffer_id_;
     accelerator_->UseOutputBitstreamBuffer(
@@ -256,9 +260,29 @@ class NdkVideoEncoderAcceleratorTest
         }
         break;
       }
+      case VideoCodec::kVP9: {
+        Vp9Parser parser;
+        parser.SetStream(data.data(), data.size(), nullptr);
+
+        int num_parsed_frames = 0;
+        while (true) {
+          Vp9FrameHeader frame;
+          gfx::Size size;
+          std::unique_ptr<DecryptConfig> frame_decrypt_config;
+          Vp9Parser::Result res =
+              parser.ParseNextFrame(&frame, &size, &frame_decrypt_config);
+          if (res == Vp9Parser::kEOStream) {
+            EXPECT_GT(num_parsed_frames, 0);
+            break;
+          }
+          EXPECT_EQ(res, Vp9Parser::kOk);
+          ++num_parsed_frames;
+        }
+        break;
+      }
       default: {
         EXPECT_TRUE(
-            base::ranges::any_of(data, [](uint8_t x) { return x != 0; }));
+            std::ranges::any_of(data, [](uint8_t x) { return x != 0; }));
       }
     }
   }
@@ -292,7 +316,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, InitializeAndDestroy) {
   accelerator_ = MakeNdkAccelerator();
   EXPECT_CALL(*this, OnRequireBuffer()).WillOnce(Return(false));
 
-  bool result = accelerator_->Initialize(config, this, NullLog());
+  bool result = accelerator_->Initialize(config, this, NullLog()).is_ok();
   ASSERT_TRUE(result);
   Run();
   EXPECT_GE(id_to_buffer_.size(), 1u);
@@ -306,7 +330,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, HandleEncodingError) {
   EXPECT_CALL(*this, OnRequireBuffer()).WillOnce(Return(true));
   EXPECT_CALL(*this, OnError()).WillOnce(Return(false));
 
-  bool result = accelerator_->Initialize(config, this, NullLog());
+  bool result = accelerator_->Initialize(config, this, NullLog()).is_ok();
   ASSERT_TRUE(result);
 
   auto size = config.input_visible_size;
@@ -332,7 +356,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
     return false;
   });
 
-  bool result = accelerator_->Initialize(config, this, NullLog());
+  bool result = accelerator_->Initialize(config, this, NullLog()).is_ok();
   ASSERT_TRUE(result);
 
   uint32_t color = 0x964050;
@@ -354,13 +378,16 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   // is unreliable in inserting keyframes at our request we can't test
   // for it. In practice it usually works, just not always.
 
+  std::vector<uint8_t> stream;
   for (auto& output : outputs_) {
     auto& mapping = id_to_buffer_[output.id]->GetMapping();
     EXPECT_GE(mapping.size(), output.md.payload_size_bytes);
     EXPECT_GT(output.md.payload_size_bytes, 0u);
-    auto span = mapping.GetMemoryAsSpan<uint8_t>();
-    ValidateStream(span);
+    auto span =
+        mapping.GetMemoryAsSpan<uint8_t>().first(output.md.payload_size_bytes);
+    stream.insert(stream.end(), span.begin(), span.end());
   }
+  ValidateStream(stream);
 }
 
 std::string PrintTestParams(const testing::TestParamInfo<VideoParams>& info) {
@@ -376,6 +403,10 @@ std::string PrintTestParams(const testing::TestParamInfo<VideoParams>& info) {
 VideoParams kParams[] = {
     {VP8PROFILE_MIN, PIXEL_FORMAT_I420},
     {VP8PROFILE_MIN, PIXEL_FORMAT_NV12},
+    {VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
+    {VP9PROFILE_PROFILE0, PIXEL_FORMAT_NV12},
+    {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420},
+    {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_NV12},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
     {H264PROFILE_MAIN, PIXEL_FORMAT_I420},
     {H264PROFILE_HIGH, PIXEL_FORMAT_I420},

@@ -15,24 +15,6 @@ midl("elevation_service_idl") {
   writes_tlb = true
 }
 
-# Must be in a config because of how GN orders flags (otherwise /W4 will appear
-# after this, and turn it back on).
-config("no-missing-braces") {
-  # Macros invoked by WRL CoCreatableClass omit optional braces.
-  cflags = [ "-Wno-missing-braces" ]
-}
-
-# This service needs to work with Windows 7, so explicitly setting the defines
-# to reflect this. Otherwise, WRL uses APIs that are only available in later
-# Windows versions.
-config("winver") {
-  defines = [
-    "NTDDI_VERSION=NTDDI_WIN7",
-    "_WIN32_WINNT=_WIN32_WINNT_WIN7",
-    "WINVER=_WIN32_WINNT_WIN7",
-  ]
-}
-
 executable("elevation_service") {
   sources = [
     "elevation_service.cc",
@@ -44,25 +26,18 @@ executable("elevation_service") {
     "//build/config/win:console",
   ]
   configs += [ "//build/config/win:windowed" ]
-  configs += [ ":no-missing-braces" ]
-  configs -= [ "//build/config/win:winver" ]
-  configs += [ ":winver" ]
 
   deps = [
     ":lib",
+    ":service_lib",
     ":version_resources",
-    "//base",
     "//build/win:default_exe_manifest",
-    "//chrome/common/win:eventlog_provider",
-    "//chrome/install_static:install_static_util",
-    "//chrome/install_static:primary_module",
-    "//components/crx_file",
-    "//third_party/zlib/google:zip",
+    "//chrome/windows_services/service_program:service_program_without_crashpad",
   ]
 }
 
 source_set("public_headers") {
-  sources = [ "elevator.h" ]
+  public = [ "elevator.h" ]
 
   deps = [ "//base" ]
 
@@ -72,26 +47,22 @@ source_set("public_headers") {
 source_set("lib") {
   visibility = [ ":*" ]
 
-  sources = [
-    "caller_validation.cc",
+  public = [
     "caller_validation.h",
-    "elevated_recovery_impl.cc",
     "elevated_recovery_impl.h",
-    "elevator.cc",
-    "service_main.cc",
-    "service_main.h",
   ]
 
-  configs += [ ":no-missing-braces" ]
-  configs -= [ "//build/config/win:winver" ]
-  configs += [ ":winver" ]
+  sources = [
+    "caller_validation.cc",
+    "elevated_recovery_impl.cc",
+    "elevator.cc",
+  ]
 
   deps = [
-    "//base",
-    "//base/version_info:channel",
     "//base/version_info:version_info",
     "//chrome/install_static:install_static_util",
-    "//components/crx_file:crx_file",
+    "//chrome/windows_services/service_program:common",
+    "//components/crx_file",
     "//third_party/zlib/google:zip",
   ]
 
@@ -99,11 +70,33 @@ source_set("lib") {
     deps += [ "//chrome/elevation_service/internal" ]
   }
 
-  public_deps = [ ":public_headers" ]
+  public_deps = [
+    ":public_headers",
+    "//base",
+  ]
 
   libs = [
     "crypt32.lib",
     "rpcrt4.lib",
+  ]
+}
+
+source_set("service_lib") {
+  visibility = [ ":*" ]
+
+  public = [ "elevation_service_delegate.h" ]
+  public_deps = [ "//chrome/windows_services/service_program:delegate" ]
+  sources = [ "elevation_service_delegate.cc" ]
+  configs -= [ "//build/config/win:winver" ]
+  configs += [
+    "//chrome/windows_services/service_program:classic_com",
+    "//chrome/windows_services/service_program:winver",
+  ]
+  deps = [
+    ":lib",
+    "//base",
+    "//chrome/common/win:eventlog_provider",
+    "//chrome/install_static:install_static_util",
   ]
 }
 
@@ -129,24 +122,22 @@ test("elevation_service_unittests") {
     "elevated_recovery_unittest.cc",
     "elevator_unittest.cc",
     "run_all_unittests.cc",
-    "scoped_mock_context.cc",
-    "scoped_mock_context.h",
     "service_main_unittest.cc",
   ]
 
-  configs -= [ "//build/config/win:winver" ]
-  configs += [ ":winver" ]
-
   deps = [
+    ":elevation_service_idl",
     ":lib",
+    ":service_lib",
     "//base",
     "//base/test:test_support",
     "//chrome/elevation_service:elevation_service_idl",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
+    "//chrome/windows_services/service_program:lib",
+    "//chrome/windows_services/service_program/test_support",
     "//components/crx_file",
     "//testing/gtest",
-    "//third_party/zlib/google:zip",
   ]
 
   if (is_chrome_branded) {

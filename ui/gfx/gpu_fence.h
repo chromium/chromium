@@ -5,8 +5,8 @@
 #ifndef UI_GFX_GPU_FENCE_H_
 #define UI_GFX_GPU_FENCE_H_
 
+#include "base/component_export.h"
 #include "build/build_config.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
 extern "C" typedef struct _ClientGpuFence* ClientGpuFence;
@@ -19,7 +19,7 @@ namespace gfx {
 
 // GpuFence objects own a GpuFenceHandle and release the resources in it when
 // going out of scope as appropriate.
-class GFX_EXPORT GpuFence {
+class COMPONENT_EXPORT(GFX) GpuFence {
  public:
   // Constructor takes ownership of the source handle's resources.
   explicit GpuFence(GpuFenceHandle handle);

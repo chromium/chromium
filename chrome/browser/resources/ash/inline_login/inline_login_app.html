@@ -28,7 +28,7 @@
     margin-bottom: calc(3 * 32px);
   }
   /* Make distance to the top 64px. */
-  #welcome, #arcAccountPicker, #signinBlockedByPolicy, #signinError {
+  #welcome, #signinBlockedByPolicy, #signinError {
     margin-top: calc(64px - var(--dialog-top-border-size));
   }
 
@@ -68,14 +68,8 @@
     <!-- Show welcome screen on Chrome OS to clarify that account will be
          available in ARC. -->
     <div id="[[viewEnum_.WELCOME]]" slot="view">
-      <welcome-page-app is-available-in-arc="{{isAvailableInArc_}}"
-          on-opened-new-window="closeDialog_">
+      <welcome-page-app on-opened-new-window="closeDialog_">
       </welcome-page-app>
-    </div>
-    <div id="[[viewEnum_.ARC_ACCOUNT_PICKER]]" slot="view">
-      <arc-account-picker-app on-opened-new-window="closeDialog_"
-          on-add-account="goToWelcomeScreen_">
-      </arc-account-picker-app>
     </div>
     <div id="[[viewEnum_.SIGNIN_BLOCKED_BY_POLICY]]" slot="view">
       <signin-blocked-by-policy-page email="[[email_]]"
@@ -121,9 +115,9 @@
   </div>
 
   <cr-button class="next-button action-button rounded-button"
-      aria-label="[[getNextButtonLabel_(currentView_, isArcAccountRestrictionsEnabled_)]]"
+      aria-label="[[i18n('ok')]]"
       on-click="onOkButtonClick_"
       hidden$="[[!shouldShowOkButton_(currentView_)]]">
-    [[getNextButtonLabel_(currentView_, isArcAccountRestrictionsEnabled_)]]
+    [[i18n('ok')]]
   </cr-button>
 </div>

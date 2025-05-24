@@ -62,14 +62,14 @@ Network.responseReceived{
         charset : 
         connectionId : <number>
         connectionReused : true
-        encodedDataLength : 261
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : false
         fromServiceWorker : false
         headers : {
             Accept-Ranges : bytes
             Connection : Keep-Alive
-            Content-Length : 441
+            Content-Length : <string>
             Content-Type : text/html
             Date : <string>
             ETag : <string>
@@ -83,7 +83,7 @@ Network.responseReceived{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : <object>
@@ -98,14 +98,14 @@ Network.responseReceivedExtraInfo{
     cookiePartitionKey : {
         hasCrossSiteAncestor : false
         topLevelSite : https://127.0.0.1
-    } 
+    }
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive
-        Content-Length : 441
+        Content-Length : <string>
         Content-Type : text/html
         Date : <string>
         ETag : <string>
@@ -119,7 +119,7 @@ Network.responseReceivedExtraInfo{
     statusCode : 200
 }
 Network.loadingFinished{
-    encodedDataLength : 702
+    encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }
@@ -166,8 +166,8 @@ Network.requestWillBeSentExtraInfo{
         Host : 127.0.0.1:8443
         Purpose : prefetch
         Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?url=%2Fresources%2Fredirect.php%3Furl%3D%252Fresources%252Fblank.html
-        Sec-Fetch-Dest : empty
-        Sec-Fetch-Mode : no-cors
+        Sec-Fetch-Dest : document
+        Sec-Fetch-Mode : navigate
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
         Upgrade-Insecure-Requests : 1
@@ -194,13 +194,13 @@ Network.requestWillBeSent{
         charset : 
         connectionId : <number>
         connectionReused : true
-        encodedDataLength : 226
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : false
         fromServiceWorker : false
         headers : {
             Connection : Keep-Alive
-            Content-Length : 0
+            Content-Length : <string>
             Content-Type : text/html
             Date : <string>
             Keep-Alive : timeout=10
@@ -214,7 +214,7 @@ Network.requestWillBeSent{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 302
         statusText : Found
         timing : <object>
@@ -247,13 +247,13 @@ Network.responseReceivedExtraInfo{
     cookiePartitionKey : {
         hasCrossSiteAncestor : false
         topLevelSite : https://127.0.0.1
-    } 
+    }
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]
     headers : {
         Connection : Keep-Alive
-        Content-Length : 0
+        Content-Length : <string>
         Content-Type : text/html
         Date : <string>
         Keep-Alive : timeout=10
@@ -278,8 +278,8 @@ Network.requestWillBeSentExtraInfo{
         Host : 127.0.0.1:8443
         Purpose : prefetch
         Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?url=%2Fresources%2Fredirect.php%3Furl%3D%252Fresources%252Fblank.html
-        Sec-Fetch-Dest : empty
-        Sec-Fetch-Mode : no-cors
+        Sec-Fetch-Dest : document
+        Sec-Fetch-Mode : navigate
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
         Upgrade-Insecure-Requests : 1
@@ -301,14 +301,14 @@ Network.responseReceived{
         charset : 
         connectionId : <number>
         connectionReused : true
-        encodedDataLength : 257
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : true
         fromServiceWorker : false
         headers : {
             Accept-Ranges : bytes
             Connection : Keep-Alive
-            Content-Length : 0
+            Content-Length : <string>
             Content-Type : text/html
             Date : <string>
             ETag : <string>
@@ -322,7 +322,7 @@ Network.responseReceived{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : <object>
@@ -337,14 +337,14 @@ Network.responseReceivedExtraInfo{
     cookiePartitionKey : {
         hasCrossSiteAncestor : false
         topLevelSite : https://127.0.0.1
-    } 
+    }
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive
-        Content-Length : 0
+        Content-Length : <string>
         Content-Type : text/html
         Date : <string>
         ETag : <string>
@@ -358,7 +358,7 @@ Network.responseReceivedExtraInfo{
     statusCode : 200
 }
 Network.loadingFinished{
-    encodedDataLength : 257
+    encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }

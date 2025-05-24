@@ -123,7 +123,7 @@ class SystemInfoCardProvider : public SearchProvider,
   // Keeps track of the size of each storage item. Adding 1 since we are also
   // saving the system storage here
   int64_t storage_items_total_bytes_
-      [::ash::settings::SizeCalculator::kCalculationTypeCount + 1] = {0};
+      [::ash::settings::SizeCalculator::kCalculationTypeCount + 1] = {};
 
   // Controls if the size of each storage item has been calculated.
   std::bitset<::ash::settings::SizeCalculator::kCalculationTypeCount>

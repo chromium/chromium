@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
- * Encapsulates the state of a recent Tap gesture; x, y position and the timestamp.
- * Instances of this class are immutable.
+ * Encapsulates the state of a recent Tap gesture; x, y position and the timestamp. Instances of
+ * this class are immutable.
  */
+@NullMarked
 class ContextualSearchTapState {
     private final float mX;
     private final float mY;

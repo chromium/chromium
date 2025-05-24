@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig_base.json",
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": false,
+    "noUnusedLocals": false,
+    "strictPropertyInitialization": false,
+    "useDefineForClassFields": false
+  }
+}

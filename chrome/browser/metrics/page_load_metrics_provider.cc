@@ -8,9 +8,9 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 
-PageLoadMetricsProvider::PageLoadMetricsProvider() {}
+PageLoadMetricsProvider::PageLoadMetricsProvider() = default;
 
-PageLoadMetricsProvider::~PageLoadMetricsProvider() {}
+PageLoadMetricsProvider::~PageLoadMetricsProvider() = default;
 
 void PageLoadMetricsProvider::OnAppEnterBackground() {
   for (const TabModel* model : TabModelList::models()) {

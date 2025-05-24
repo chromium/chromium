@@ -24,7 +24,8 @@ StylusBatteryView::StylusBatteryView() {
   icon_ = AddChildView(std::make_unique<views::ImageView>());
 
   if (stylus_battery_delegate_.IsBatteryStatusStale()) {
-    icon_->SetImage(stylus_battery_delegate_.GetBatteryStatusUnknownImage());
+    icon_->SetImage(ui::ImageModel::FromImageSkia(
+        stylus_battery_delegate_.GetBatteryStatusUnknownImage()));
     icon_->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_STATUS_STALE_TOOLTIP));
   }
@@ -36,6 +37,7 @@ StylusBatteryView::StylusBatteryView() {
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label_);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kLabelText);
+  UpdateAccessibleName();
 }
 
 void StylusBatteryView::OnThemeChanged() {
@@ -46,24 +48,25 @@ void StylusBatteryView::OnThemeChanged() {
   OnBatteryLevelUpdated();
 }
 
-void StylusBatteryView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(l10n_util::GetStringFUTF16(
-      IDS_ASH_STYLUS_BATTERY_PERCENT_ACCESSIBLE,
-      base::NumberToString16(
-          stylus_battery_delegate_.battery_level().value_or(0))));
-}
-
 void StylusBatteryView::OnBatteryLevelUpdated() {
   if (stylus_battery_delegate_.ShouldShowBatteryStatus() != GetVisible()) {
     SetVisible(stylus_battery_delegate_.ShouldShowBatteryStatus());
   }
 
-  icon_->SetImage(
-      stylus_battery_delegate_.GetBatteryImage(icon_->GetColorProvider()));
+  icon_->SetImage(ui::ImageModel::FromImageSkia(
+      stylus_battery_delegate_.GetBatteryImage(icon_->GetColorProvider())));
   label_->SetVisible(stylus_battery_delegate_.IsBatteryLevelLow() &&
                      stylus_battery_delegate_.IsBatteryStatusEligible() &&
                      !stylus_battery_delegate_.IsBatteryStatusStale() &&
                      !stylus_battery_delegate_.IsBatteryCharging());
+  UpdateAccessibleName();
+}
+
+void StylusBatteryView::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+      IDS_ASH_STYLUS_BATTERY_PERCENT_ACCESSIBLE,
+      base::NumberToString16(
+          stylus_battery_delegate_.battery_level().value_or(0))));
 }
 
 BEGIN_METADATA(StylusBatteryView)

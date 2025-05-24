@@ -7,15 +7,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 #include "chrome/browser/extensions/webstore_installer_test.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -32,10 +29,9 @@ constexpr char kTestExtensionId[] = "ecglahbcnmdpdciemllbhojghbkagdje";
 constexpr char kTestDataPath[] = "extensions/api_test/webstore_inline_install";
 constexpr char kCrxFilename[] = "extension.crx";
 
-// The values of the mock protobuf response should match those in the JSON API
-// that's stored in "chrome/test/data/extensions/api_test/" +
-// "webstore_inline_install/inlineinstall/detail/" +
-// "ecglahbcnmdpdciemllbhojghbkagdje".
+// The following values are used to mock a protobuf response to the item
+// snippets API and should match the values for the test extension stored in
+// "chrome/test/data/extensions/api_test/webstore_inline_install/extension".
 constexpr char kMockTitle[] = "Inline Install Test Extension";
 constexpr char kMockUserCountString[] = "371,674";
 constexpr double kMockAverageRating = 4.36;
@@ -74,11 +70,8 @@ class WebstoreReinstallerBrowserTest : public WebstoreInstallerTest {
                               kTestDataPath,
                               kCrxFilename,
                               kAppDomain,
-                              kNonAppDomain) {
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kUseItemSnippetsAPI);
-  }
-  ~WebstoreReinstallerBrowserTest() override {}
+                              kNonAppDomain) {}
+  ~WebstoreReinstallerBrowserTest() override = default;
 
   void OnInstallCompletion(base::OnceClosure quit_closure,
                            bool success,
@@ -88,8 +81,7 @@ class WebstoreReinstallerBrowserTest : public WebstoreInstallerTest {
   bool last_install_result() const { return last_install_result_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  bool last_install_result_;
+  bool last_install_result_ = false;
 };
 
 void WebstoreReinstallerBrowserTest::OnInstallCompletion(
@@ -101,8 +93,9 @@ void WebstoreReinstallerBrowserTest::OnInstallCompletion(
   std::move(quit_closure).Run();
 }
 
-// TODO(crbug.com/325314721): Remove this test once we stop using the old item
-// JSON API to fetch webstore data.
+// Tests that reinstalls for corrupted extensions work when using the item
+// snippets API, which returns a protobuf object for web store data (the API
+// return is mocked for this test).
 IN_PROC_BROWSER_TEST_F(WebstoreReinstallerBrowserTest, TestWebstoreReinstall) {
   // Build an extension with the same id as our test extension and add it.
   const std::string kExtensionName("ReinstallerExtension");
@@ -119,90 +112,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerBrowserTest, TestWebstoreReinstall) {
                   .Set("update_url",
                        "https://clients2.google.com/service/update2/crx"))
           .Build();
-  extension_service()->AddExtension(extension.get());
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  ASSERT_TRUE(registry->enabled_extensions().GetByID(kTestExtensionId));
-
-  // WebstoreReinstaller expects corrupted extension.
-  extension_service()->DisableExtension(kTestExtensionId,
-                                        disable_reason::DISABLE_CORRUPTED);
-
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(active_web_contents);
-
-  // Start by canceling the repair prompt.
-  AutoCancelInstall();
-
-  // Create and run a WebstoreReinstaller.
-  base::RunLoop run_loop;
-  auto reinstaller = base::MakeRefCounted<WebstoreReinstaller>(
-      active_web_contents, kTestExtensionId,
-      base::BindOnce(&WebstoreReinstallerBrowserTest::OnInstallCompletion,
-                     base::Unretained(this), run_loop.QuitClosure()));
-  reinstaller->BeginReinstall();
-  run_loop.Run();
-
-  // We should have failed, and the old extension should still be present.
-  EXPECT_FALSE(last_install_result());
-  extension = registry->disabled_extensions().GetByID(kTestExtensionId);
-  ASSERT_TRUE(extension.get());
-  EXPECT_EQ(kExtensionName, extension->name());
-
-  // Now accept the repair prompt.
-  AutoAcceptInstall();
-  base::RunLoop run_loop2;
-  reinstaller = base::MakeRefCounted<WebstoreReinstaller>(
-      active_web_contents, kTestExtensionId,
-      base::BindOnce(&WebstoreReinstallerBrowserTest::OnInstallCompletion,
-                     base::Unretained(this), run_loop2.QuitClosure()));
-  reinstaller->BeginReinstall();
-  run_loop2.Run();
-
-  // The reinstall should have succeeded, and the extension should have been
-  // "updated" (which in this case means that it should have been replaced with
-  // the inline install test extension, since that's the id we used).
-  EXPECT_TRUE(last_install_result());
-  extension = registry->enabled_extensions().GetByID(kTestExtensionId);
-  ASSERT_TRUE(extension.get());
-  // The name should not match, since the extension changed.
-  EXPECT_NE(kExtensionName, extension->name());
-}
-
-class WebstoreReinstallerItemSnippetsBrowserTest
-    : public WebstoreReinstallerBrowserTest {
- public:
-  WebstoreReinstallerItemSnippetsBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kUseItemSnippetsAPI);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// A version of the WebstoreReinstallerBrowserTest test with the same name
-// except this tests that reinstalls for corrupted extensions work when using
-// the new item snippets API which returns a protobuf object for web store data
-// (the API return is mocked for this test).
-IN_PROC_BROWSER_TEST_F(WebstoreReinstallerItemSnippetsBrowserTest,
-                       TestWebstoreReinstall) {
-  // Build an extension with the same id as our test extension and add it.
-  const std::string kExtensionName("ReinstallerExtension");
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder()
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .SetID(kTestExtensionId)
-          .SetManifest(
-              base::Value::Dict()
-                  .Set("name", kExtensionName)
-                  .Set("description", "Foo")
-                  .Set("manifest_version", 2)
-                  .Set("version", "1.0")
-                  .Set("update_url",
-                       "https://clients2.google.com/service/update2/crx"))
-          .Build();
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension.get());
 
   auto mock_response = CreateMockResponse(kTestExtensionId);
   WebstoreDataFetcher::SetMockItemSnippetReponseForTesting(mock_response.get());
@@ -211,11 +121,10 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerItemSnippetsBrowserTest,
   ASSERT_TRUE(registry->enabled_extensions().GetByID(kTestExtensionId));
 
   // WebstoreReinstaller expects corrupted extension.
-  extension_service()->DisableExtension(kTestExtensionId,
-                                        disable_reason::DISABLE_CORRUPTED);
+  extension_registrar()->DisableExtension(kTestExtensionId,
+                                          {disable_reason::DISABLE_CORRUPTED});
 
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
 
   // Start by canceling the repair prompt.

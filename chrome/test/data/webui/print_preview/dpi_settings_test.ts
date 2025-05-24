@@ -7,14 +7,14 @@ import 'chrome://print/print_preview.js';
 import type {LabelledDpiCapability, PrintPreviewDpiSettingsElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
 suite('DpiSettingsTest', function() {
   let dpiSection: PrintPreviewDpiSettingsElement;
 
-  const dpi = getCddTemplate('FooPrinter')!.capabilities!.printer!.dpi;
+  const dpi = getCddTemplate('FooPrinter').capabilities!.printer.dpi;
   assert(dpi);
 
   const dpiCapability: LabelledDpiCapability = dpi as LabelledDpiCapability;
@@ -31,24 +31,22 @@ suite('DpiSettingsTest', function() {
     document.body.appendChild(model);
 
     dpiSection = document.createElement('print-preview-dpi-settings');
-    dpiSection.settings = model.settings;
     dpiSection.capability = dpiCapability;
     dpiSection.disabled = false;
-    model.set('settings.dpi.available', true);
-    fakeDataBind(model, dpiSection, 'settings');
+    model.setSettingAvailableForTesting('dpi', true);
     document.body.appendChild(dpiSection);
   });
 
   test('settings select', function() {
     const settingsSelect =
-        dpiSection.shadowRoot!.querySelector('print-preview-settings-select')!;
+        dpiSection.shadowRoot.querySelector('print-preview-settings-select')!;
     assertFalse(settingsSelect.disabled);
 
     assertDeepEquals(expectedCapabilityWithLabels, settingsSelect.capability);
     assertEquals('dpi', settingsSelect.settingName);
   });
 
-  test('update from setting', function() {
+  test('update from setting', async function() {
     const highQualityOption = dpiCapability.option[0];
     const lowQualityOption = dpiCapability.option[1];
     const highQualityWithLabel = expectedCapabilityWithLabels.option[0];
@@ -56,16 +54,18 @@ suite('DpiSettingsTest', function() {
 
     // Set the setting to the printer default.
     dpiSection.setSetting('dpi', highQualityOption);
+    await microtasksFinished();
 
     // Default is 200 dpi.
     const settingsSelect =
-        dpiSection.shadowRoot!.querySelector('print-preview-settings-select')!;
+        dpiSection.shadowRoot.querySelector('print-preview-settings-select')!;
     assertDeepEquals(
         highQualityWithLabel, JSON.parse(settingsSelect.selectedValue));
     assertDeepEquals(highQualityOption, dpiSection.getSettingValue('dpi'));
 
     // Change to 100
     dpiSection.setSetting('dpi', lowQualityOption);
+    await microtasksFinished();
     assertDeepEquals(
         lowQualityWithLabel, JSON.parse(settingsSelect.selectedValue));
 
@@ -77,6 +77,7 @@ suite('DpiSettingsTest', function() {
       vertical_dpi: 400,
     };
     dpiSection.setSetting('dpi', unavailableOption);
+    await microtasksFinished();
 
     // The section should reset the setting to the printer's default
     // value with label, since the printer does not support 400 DPI.

@@ -12,7 +12,7 @@ namespace extensions {
 // Implements the chrome.settingsPrivate.setPref method.
 class SettingsPrivateSetPrefFunction : public ExtensionFunction {
  public:
-  SettingsPrivateSetPrefFunction() {}
+  SettingsPrivateSetPrefFunction() = default;
 
   SettingsPrivateSetPrefFunction(const SettingsPrivateSetPrefFunction&) =
       delete;
@@ -31,7 +31,7 @@ class SettingsPrivateSetPrefFunction : public ExtensionFunction {
 // Implements the chrome.settingsPrivate.getAllPrefs method.
 class SettingsPrivateGetAllPrefsFunction : public ExtensionFunction {
  public:
-  SettingsPrivateGetAllPrefsFunction() {}
+  SettingsPrivateGetAllPrefsFunction() = default;
 
   SettingsPrivateGetAllPrefsFunction(
       const SettingsPrivateGetAllPrefsFunction&) = delete;
@@ -51,7 +51,7 @@ class SettingsPrivateGetAllPrefsFunction : public ExtensionFunction {
 // Implements the chrome.settingsPrivate.getPref method.
 class SettingsPrivateGetPrefFunction : public ExtensionFunction {
  public:
-  SettingsPrivateGetPrefFunction() {}
+  SettingsPrivateGetPrefFunction() = default;
 
   SettingsPrivateGetPrefFunction(const SettingsPrivateGetPrefFunction&) =
       delete;
@@ -70,7 +70,7 @@ class SettingsPrivateGetPrefFunction : public ExtensionFunction {
 // Implements the chrome.settingsPrivate.getDefaultZoom method.
 class SettingsPrivateGetDefaultZoomFunction : public ExtensionFunction {
  public:
-  SettingsPrivateGetDefaultZoomFunction() {}
+  SettingsPrivateGetDefaultZoomFunction() = default;
 
   SettingsPrivateGetDefaultZoomFunction(
       const SettingsPrivateGetDefaultZoomFunction&) = delete;
@@ -90,7 +90,7 @@ class SettingsPrivateGetDefaultZoomFunction : public ExtensionFunction {
 // Implements the chrome.settingsPrivate.setDefaultZoom method.
 class SettingsPrivateSetDefaultZoomFunction : public ExtensionFunction {
  public:
-  SettingsPrivateSetDefaultZoomFunction() {}
+  SettingsPrivateSetDefaultZoomFunction() = default;
 
   SettingsPrivateSetDefaultZoomFunction(
       const SettingsPrivateSetDefaultZoomFunction&) = delete;

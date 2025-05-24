@@ -56,8 +56,8 @@ export class RunOnOsLoginItemElement extends CrLitElement {
     };
   }
 
-  loginModeLabel: string = '';
-  app: App = createDummyApp();
+  accessor loginModeLabel: string = '';
+  accessor app: App = createDummyApp();
 
   override firstUpdated() {
     this.addEventListener('click', this.onClick_);
@@ -83,7 +83,7 @@ export class RunOnOsLoginItemElement extends CrLitElement {
   }
 
   private onClick_() {
-    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.click();
+    this.shadowRoot.querySelector<ToggleRowElement>('#toggle-row')!.click();
   }
 
   private toggleOsLoginMode_() {

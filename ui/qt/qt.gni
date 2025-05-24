@@ -6,27 +6,20 @@ import("//build/config/cast.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 
+# TODO(crbug.com/40260415): Allow QT in MSAN builds once QT is
+# added to the instrumented libraries.
 declare_args() {
-  # TODO(crbug.com/40260415): Allow QT in MSAN builds once QT is
-  # added to the instrumented libraries.
-  use_qt = is_linux && !is_castos && !is_msan
+  use_qt5 = use_sysroot && is_linux && !is_castos && !is_msan
+  use_qt6 = use_sysroot && is_linux && !is_castos && !is_msan
 }
 
 declare_args() {
-  if (!use_sysroot && use_qt) {
+  if (!use_sysroot && use_qt5) {
     moc_qt5_path = ""
   }
-}
-
-declare_args() {
-  use_qt6 = use_qt && use_sysroot
-}
-
-declare_args() {
   if (!use_sysroot && use_qt6) {
     moc_qt6_path = ""
   }
 }
 
-# use_qt6 => use_qt
-assert(!use_qt6 || use_qt)
+use_qt = use_qt5 || use_qt6

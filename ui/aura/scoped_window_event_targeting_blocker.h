@@ -30,6 +30,8 @@ class AURA_EXPORT ScopedWindowEventTargetingBlocker : public WindowObserver {
   // WindowObserver:
   void OnWindowDestroying(Window* window) override;
 
+  aura::Window* window() { return window_.get(); }
+
  private:
   raw_ptr<Window> window_;
 };

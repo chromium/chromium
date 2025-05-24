@@ -31,7 +31,7 @@ class NetworkStatusListener {
     Observer& operator=(const Observer&) = delete;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   NetworkStatusListener(const NetworkStatusListener&) = delete;

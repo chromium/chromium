@@ -7,10 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/component_export.h"
-#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ui {
 
@@ -27,10 +24,6 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformMenuUtils {
   // Returns a bitmask of EventFlags showing the state of Alt, Shift and Ctrl
   // keys that came with the most recent UI event.
   virtual int GetCurrentKeyModifiers() const;
-
-  // Converts the keyboard code into a keysym label compatible with DBus menu
-  // protocol.
-  virtual std::string ToDBusKeySym(KeyboardCode code) const;
 };
 
 }  // namespace ui

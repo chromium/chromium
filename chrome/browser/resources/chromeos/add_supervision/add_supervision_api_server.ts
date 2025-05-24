@@ -4,8 +4,10 @@
 
 import {PostMessageApiServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
 
-import {AddSupervisionHandler, AddSupervisionHandlerRemote} from './add_supervision.mojom-webui.js';
-import {AddSupervisionUi, isLocalHostForTesting} from './add_supervision_ui.js';
+import type {AddSupervisionHandlerRemote} from './add_supervision.mojom-webui.js';
+import {AddSupervisionHandler} from './add_supervision.mojom-webui.js';
+import type {AddSupervisionUi} from './add_supervision_ui.js';
+import {isLocalHostForTesting} from './add_supervision_ui.js';
 
 /**
  * Class that implements the server side of the AddSupervision postMessage

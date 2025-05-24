@@ -1,0 +1,88 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("reporting") {
+  sources = [
+    "ios_realtime_reporting_client.h",
+    "ios_realtime_reporting_client.mm",
+    "ios_realtime_reporting_client_factory.h",
+    "ios_realtime_reporting_client_factory.mm",
+    "ios_reporting_event_router_factory.h",
+    "ios_reporting_event_router_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/enterprise/connectors/core",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/profile_metrics",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/connectors:util",
+    "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web/public",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("util") {
+  sources = [
+    "reporting_util.h",
+    "reporting_util.mm",
+  ]
+
+  deps = [
+    ":reporting",
+    "//base",
+    "//components/enterprise/connectors/core",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//ios/chrome/browser/enterprise/connectors:features",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/components/security_interstitials/safe_browsing",
+    "//ios/web/public",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ios_realtime_reporting_client_unittest.mm",
+    "ios_reporting_event_router_unittest.mm",
+  ]
+  deps = [
+    ":reporting",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise:test_support",
+    "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:constants",
+    "//components/enterprise/connectors/core:test_support",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/safe_browsing/core/common",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

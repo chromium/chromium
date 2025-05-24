@@ -29,7 +29,8 @@ class ServiceWorkerContentSettingsProxyImpl final
   ServiceWorkerContentSettingsProxyImpl(
       const GURL& script_url,
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-      mojo::PendingReceiver<blink::mojom::WorkerContentSettingsProxy> receiver);
+      mojo::PendingReceiver<blink::mojom::WorkerContentSettingsProxy> receiver,
+      blink::StorageKey storage_key);
 
   ~ServiceWorkerContentSettingsProxyImpl() override;
 
@@ -44,6 +45,7 @@ class ServiceWorkerContentSettingsProxyImpl final
   const url::Origin origin_;
   scoped_refptr<ServiceWorkerContextWrapper> context_wrapper_;
   mojo::Receiver<blink::mojom::WorkerContentSettingsProxy> receiver_;
+  const blink::StorageKey storage_key_;
 };
 
 }  // namespace content

@@ -11,7 +11,8 @@
 class NotificationDisplayService;
 
 // Id of the announcement notification.
-constexpr char kAnnouncementNotificationId[] = "announcement_notification";
+inline constexpr char kAnnouncementNotificationId[] =
+    "announcement_notification";
 
 // Default delegate for AnnouncementNotificationService that works on
 // non-Android platforms.

@@ -81,19 +81,15 @@ namespace autofill {
 // If the user made no attempt at formatting the number (it consists only of
 // characters of the set [+0123456789], no whitespaces, no parentheses, no
 // hyphens, no slashes, etc), we will make an attempt to format the number in a
-// proper way. If AutofillInferCountryCallingCode is enabled, we will infer the
-// country code and also store that in the formatted number.
-// If a website contains <input autocomplete="tel"> this is what we fill. I.e.,
-// the phone number representation the user tried to give us.
-// With AutofillInferCountryCallingCode, the GetInfo() representation always
-// contains a country code. So for filling purposes, PHONE_HOME_WHOLE_NUMBER is
-// in international format.
-// If we reformat the number ourselves, the GetRawInfo() contains the inferred
-// country code. If we don't reformat the number, the GetRawInfo()
-// representation remains without one. In all countries but the US and Canada,
-// formatting will put a + in front of the country code.
-// TODO(crbug.com/40220393) Clean this up once AutofillInferCountryCallingCode
-// is launched.
+// proper way. We will infer the country code and also store that in the
+// formatted number. If a website contains <input autocomplete="tel"> this is
+// what we fill. I.e., the phone number representation the user tried to give
+// us. The GetInfo() representation always contains a country code. So for
+// filling purposes, PHONE_HOME_WHOLE_NUMBER is in international format. If we
+// reformat the number ourselves, the GetRawInfo() contains the inferred country
+// code. If we don't reformat the number, the GetRawInfo() representation
+// remains without one. In all countries but the US and Canada, formatting will
+// put a + in front of the country code.
 //
 // PHONE_HOME_EXTENSION: Extensions are detected, but not filled. This would
 //   be the part that comes after a PHONE_HOME_WHOLE_NUMBER or
@@ -438,7 +434,10 @@ enum FieldType {
   // Departamento).
   ADDRESS_HOME_APT_TYPE = 157,
 
-  // Reserved for a server-side-only use: 158-159
+  // Loyalty program card or membeship ID.
+  LOYALTY_MEMBERSHIP_ID = 158,
+
+  // Reserved for a server-side-only use: 159
 
   // Similar to `SINGLE_USERNAME`, but for the case when there are additional
   // fields between single username and password forms.
@@ -461,7 +460,70 @@ enum FieldType {
   // This type is a metatype and does not correspond to a specific sort of
   // data.
   // It should not take precedence over existing types.
+  // TODO(crbug.com/389629676): Deprecate this field type.
   IMPROVED_PREDICTION = 162,
+
+  // Types to represent alternative names (e.g. phonetic name in Japanese).
+  ALTERNATIVE_FULL_NAME = 163,
+  ALTERNATIVE_GIVEN_NAME = 164,
+  ALTERNATIVE_FAMILY_NAME = 165,
+
+  // Prefix of the last name, e.g. "van" in the Netherlands.
+  // This is the first child of NAME_LAST.
+  NAME_LAST_PREFIX = 166,
+
+  // Type to represent the core part of the last name.
+  // More technically it contains the last name without the prefix.
+  // NAME_LAST_CORE: NAME_LAST_FIRST + NAME_LAST_CONJUNCTION + NAME_LAST_SECOND.
+  // Don't use this type unless there is NAME_LAST_PREFIX present in the form.
+  // E.g. "Gogh" in "Vincent van Gogh".
+  NAME_LAST_CORE = 167,
+
+  // Types corresponding to the "Passport" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  // *TAG field types are merely placeholder tagging that the type belongs to
+  // the passport entity, but that the existing Autofill classification or logic
+  // should be used.
+  PASSPORT_NAME_TAG = 168,
+  PASSPORT_NUMBER = 169,
+  PASSPORT_ISSUING_COUNTRY = 170,
+  PASSPORT_EXPIRATION_DATE = 171,
+  PASSPORT_ISSUE_DATE = 172,
+
+  // Types corresponding to the "Loyalty card" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  LOYALTY_MEMBERSHIP_PROGRAM = 173,
+  LOYALTY_MEMBERSHIP_PROVIDER = 174,
+  // The member ID is represented by LOYALTY_MEMBERSHIP_ID.
+
+  // Types corresponding to the "Car" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  VEHICLE_OWNER_TAG = 175,
+  VEHICLE_LICENSE_PLATE = 176,
+  VEHICLE_VIN = 177,
+  VEHICLE_MAKE = 178,
+  VEHICLE_MODEL = 179,
+
+  // Types corresponding to the "Drivers license" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  DRIVERS_LICENSE_NAME_TAG = 180,
+  DRIVERS_LICENSE_REGION = 181,
+  DRIVERS_LICENSE_NUMBER = 182,
+  DRIVERS_LICENSE_EXPIRATION_DATE = 183,
+  DRIVERS_LICENSE_ISSUE_DATE = 184,
+
+  VEHICLE_YEAR = 185,
+  VEHICLE_PLATE_STATE = 186,
+
+  // Types 187 and 188 are not used yet on the client, but will likely be added
+  // in the future.
+
+  // For fields that can contain either email or loyalty membership ID. This
+  // type is neither voted for by the client nor emitted by the server. The
+  // client will vote for either EMAIL_ADDRESS or LOYALTY_MEMBERSHIP_ID and the
+  // server will emit both types in the response. The joined type is built by
+  // the client.
+  EMAIL_OR_LOYALTY_MEMBERSHIP_ID = 189,
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
@@ -473,7 +535,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 163,
+  MAX_VALID_FIELD_TYPE = 190,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -491,16 +553,14 @@ enum class FieldTypeGroup {
   kUnfillable,
   kIban,
   kStandaloneCvcField,
-  kPredictionImprovements,
-  kMaxValue = kPredictionImprovements,
+  kAutofillAi,
+  kLoyaltyCard,
+  kMaxValue = kLoyaltyCard,
 };
 
 template <>
-struct DenseSetTraits<FieldType> {
-  static constexpr FieldType kMinValue = NO_SERVER_DATA;
-  static constexpr FieldType kMaxValue = MAX_VALID_FIELD_TYPE;
-  static constexpr bool kPacked = false;
-};
+struct DenseSetTraits<FieldType>
+    : EnumDenseSetTraits<FieldType, NO_SERVER_DATA, MAX_VALID_FIELD_TYPE> {};
 
 using FieldTypeSet = DenseSet<FieldType>;
 
@@ -519,8 +579,8 @@ std::string_view FieldTypeToStringView(FieldType type);
 // Returns a string describing `type`.
 std::string FieldTypeToString(FieldType type);
 
-// Inverse FieldTypeToStringView(). Checks that only valid FieldType string
-// representations are being passed.
+// Inverse FieldTypeToStringView(). Returns UNKNOWN_TYPE for unknown FieldType
+// string representations.
 FieldType TypeNameToFieldType(std::string_view type_name);
 
 // Returns a string view describing `type`. The devtools UI uses this string to
@@ -569,8 +629,10 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 117 && t != 127 &&
            !(130 <= t && t <= 132) && t != 134 && !(137 <= t && t <= 139) &&
-           !(147 <= t && t <= 149) && t != 155 && t != 158 &&
-           t != 159 && t != 161;
+           !(147 <= t && t <= 149) && t != 155 && t != 159 && t != 161 &&
+           // Types for the country for driver's license and vehicle are not
+           // used yet, but will likely be added in the future.
+           !(187 <= t && t <= 188);
   };
   return IsValid(raw_value) ? static_cast<FieldType>(raw_value)
                             : fallback_value;
@@ -616,6 +678,8 @@ constexpr HtmlFieldTypeSet kAllHtmlFieldTypes = [] {
   }
   return fields;
 }();
+
+bool IsDateFieldType(FieldType field_type);
 
 }  // namespace autofill
 

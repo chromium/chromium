@@ -20,10 +20,10 @@
 #include "url/gurl.h"
 
 class ChromePermissionsClient;
-class DIPSNavigationHandle;
-class DIPSServiceImpl;
 class PermissionUmaUtil;
 class PlatformNotificationServiceImpl;
+class PersistentNotificationHandler;
+class NonPersistentNotificationHandler;
 
 namespace apps {
 class WebsiteMetrics;
@@ -34,6 +34,8 @@ class UkmRecorderInterface;
 }  // namespace metrics
 
 namespace content {
+class BtmNavigationHandle;
+class BtmServiceImpl;
 class FedCmMetrics;
 class PaymentAppProviderUtil;
 class RenderFrameHostImpl;
@@ -123,9 +125,10 @@ class METRICS_EXPORT UkmRecorder {
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL
   // from the redirect chain. This method should only be called in the
-  // DIPSNavigationHandle class.
-  static SourceId GetSourceIdForRedirectUrl(base::PassKey<DIPSNavigationHandle>,
-                                            const GURL& redirect_url);
+  // BtmNavigationHandle class.
+  static SourceId GetSourceIdForRedirectUrl(
+      base::PassKey<content::BtmNavigationHandle>,
+      const GURL& redirect_url);
 
   // Gets a new SourceId of EXTENSION_ID type and updates the source URL
   // from the extension message port. This method should only be called by
@@ -138,9 +141,9 @@ class METRICS_EXPORT UkmRecorder {
       const GURL& extension_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL to the
-  // given domain. This method should only be called in the DIPSServiceImpl
+  // given domain. This method should only be called in the BtmServiceImpl
   // class for sites in the DIPS database. `site` must be a registrable domain.
-  static SourceId GetSourceIdForDipsSite(base::PassKey<DIPSServiceImpl>,
+  static SourceId GetSourceIdForDipsSite(base::PassKey<content::BtmServiceImpl>,
                                          const std::string& site);
 
   // Gets a new SourceId of CHROMEOS_WEBSITE_ID type. This should be only
@@ -151,16 +154,28 @@ class METRICS_EXPORT UkmRecorder {
 
   // Gets a new SourceId of NOTIFICATION_ID type. This should only be
   // used for recording Permission UKM events related to persistent and
-  // nonpersistent notifications. `origin` is the domain that uses the Push API.
+  // nonpersistent notifications. `url` is the domain that uses the Push API.
   static SourceId GetSourceIdForNotificationPermission(
       base::PassKey<ChromePermissionsClient>,
-      const GURL& origin);
+      const GURL& url);
 
   // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
   // for recording persistent and nonpersistent notification UKM events.
   static SourceId GetSourceIdForNotificationEvent(
       base::PassKey<PlatformNotificationServiceImpl>,
-      const GURL& origin);
+      const GURL& url);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording persistent notification UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<PersistentNotificationHandler>,
+      const GURL& url);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording nonpersistent notification UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<NonPersistentNotificationHandler>,
+      const GURL& url);
 
   // This method should be called when the system is about to shutdown, but
   // `UkmRecorder` is still available to record metrics.

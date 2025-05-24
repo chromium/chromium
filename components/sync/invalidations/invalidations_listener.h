@@ -14,7 +14,7 @@ namespace syncer {
 // This class provides an interface to handle received invalidations.
 class InvalidationsListener : public base::CheckedObserver {
  public:
-  // Called on each invalidation. |payload| is passed as is without any parsing.
+  // Called on each invalidation. `payload` is passed as is without any parsing.
   virtual void OnInvalidationReceived(const std::string& payload) = 0;
 };
 

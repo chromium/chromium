@@ -10,11 +10,12 @@ import android.widget.RadioGroup;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
@@ -23,6 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A radio button group toggling the opt-in status for Third Party support. */
+@NullMarked
 public final class RadioButtonGroupThirdPartyPreference extends Preference {
     /** Enums that represent the status of radio buttons inside this Preference. */
     @IntDef({ThirdPartyOption.DEFAULT, ThirdPartyOption.USE_OTHER_PROVIDER})
@@ -48,8 +50,6 @@ public final class RadioButtonGroupThirdPartyPreference extends Preference {
      * If the buttons aren't available yet, the selected option will have an effect during binding.
      * This method invokes change listeners if the selected option changes and it is a noop if the
      * option is unchanged.
-     *
-     * @return A {@link ThirdPartyOption}
      */
     void setSelectedOption(@ThirdPartyOption int selectedOption) {
         if (mDefaultOption != null) {

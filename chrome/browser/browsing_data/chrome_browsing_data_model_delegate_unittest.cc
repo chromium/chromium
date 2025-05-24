@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 
+#include <variant>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
@@ -210,7 +211,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, GetAllDataKeysAndGetDataOwner) {
   std::vector<blink::StorageKey> expected_keys = {StorageKey1(), StorageKey2()};
   for (const auto& entry : delegate_entries) {
     const blink::StorageKey* storage_key =
-        absl::get_if<blink::StorageKey>(&entry.data_key);
+        std::get_if<blink::StorageKey>(&entry.data_key);
     ASSERT_TRUE(storage_key);
     EXPECT_THAT(expected_keys, Contains(*storage_key));
     std::erase(expected_keys, *storage_key);
@@ -228,7 +229,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, GetAllDataKeysAndGetDataOwner) {
                                     kMediaDeviceSalt));
     ASSERT_TRUE(owner.has_value());
 
-    const std::string* str_owner = absl::get_if<std::string>(&*owner);
+    const std::string* str_owner = std::get_if<std::string>(&*owner);
     ASSERT_TRUE(str_owner);
     EXPECT_EQ(*str_owner, storage_key->origin().host());
   }

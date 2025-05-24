@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -218,7 +219,7 @@ std::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
     }
 
     if (response_error_code == kResponseErrorNotFirstTimeChromebookUser) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     } else if (response_error_code == kResponseErrorNotEnoughApps) {
       // TODO(thanhdng): Add a UMA histogram here.
     } else {

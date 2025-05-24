@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -54,6 +55,9 @@ const CGFloat kLogoLabelFontSize = 18;
 
 // The margin between the bottom of the content and the collection view.
 const CGFloat kContentBottomMargin = 16;
+
+// The margin between groups of items within a section.
+const CGFloat kSectionBottomMargin = 16;
 
 // Threshold for how long a view is onscreen to count as visible.
 const base::TimeDelta kVisibleTimeThreshold = base::Milliseconds(10);
@@ -248,6 +252,12 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   [self.sheetDisplayController
       setContentHeight:[self preferredHeightForContent]];
 
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(notifyDelegateOfTraitChange)];
+  }
+
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(accessibilityReduceTransparencySettingDidChange)
@@ -346,11 +356,16 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   [self setCollectionViewScrollIndicatorInsets];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
 
-  [self.traitCollectionDelegate traitCollectionDidChangeForViewController:self];
+  [self notifyDelegateOfTraitChange];
 }
+#endif
 
 // Removes the white-ish background color of one of UIVisualEffectView's
 // subviews that is not desired for this feature.
@@ -448,6 +463,12 @@ UIImage* CloseButtonImage(BOOL highlighted) {
                        _bottomToolbarHeight + kContentBottomMargin, 0);
 }
 
+// Notifies `traitCollectionDelegate` of a change in UITraits via
+// `traitCollectionDidChangeForViewController`.
+- (void)notifyDelegateOfTraitChange {
+  [self.traitCollectionDelegate traitCollectionDidChangeForViewController:self];
+}
+
 #pragma mark - View Initialization
 
 // Creates the layout for the collection view.
@@ -471,6 +492,9 @@ UIImage* CloseButtonImage(BOOL highlighted) {
 
   NSCollectionLayoutSection* section =
       [NSCollectionLayoutSection sectionWithGroup:group];
+
+  section.interGroupSpacing = kSectionBottomMargin;
+
   return [[UICollectionViewCompositionalLayout alloc] initWithSection:section];
 }
 

@@ -24,7 +24,7 @@ class EchoDialogListener {
   virtual void OnMoreInfoLinkClicked() = 0;
 
  protected:
-  virtual ~EchoDialogListener() {}
+  virtual ~EchoDialogListener() = default;
 };
 
 }  // namespace ash

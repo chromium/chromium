@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_
 
+#include <memory>
 #include <optional>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "content/public/browser/context_menu_params.h"
 
 class RenderViewContextMenu;
@@ -45,6 +48,24 @@ class ContextMenuNotificationObserver {
   MenuShownCallback callback_;
 };
 
+// Observe whether a command is executed or not.
+class CommandExecutionObserver : public RenderViewContextMenuObserver {
+ public:
+  explicit CommandExecutionObserver(RenderViewContextMenu* context_menu,
+                                    int command_id);
+  ~CommandExecutionObserver() override;
+
+  void CommandWillBeExecuted(int command_id) override;
+  void CommandBlocked(int command_id) override;
+
+  std::optional<bool> IsCommandExecuted() const;
+
+ private:
+  raw_ptr<RenderViewContextMenu> context_menu_;
+  int command_id_;
+  std::optional<bool> executed_;
+};
+
 class ContextMenuWaiter {
  public:
   ContextMenuWaiter();
@@ -62,6 +83,11 @@ class ContextMenuWaiter {
   const std::vector<int>& GetCapturedCommandIds() const;
   const std::vector<int>& GetCapturedEnabledCommandIds() const;
 
+  // A `nullopt` return value indicates the command has not yet been checked
+  // whether it is allowed to execute. Or there is no command to execute by
+  // `ContextMenuWaiter`.
+  std::optional<bool> IsCommandExecuted() const;
+
   // Wait until the context menu is opened and closed.
   void WaitForMenuOpenAndClose();
 
@@ -77,6 +103,7 @@ class ContextMenuWaiter {
   base::RunLoop run_loop_;
   const std::optional<int> maybe_command_to_execute_;
   base::OnceClosure before_execute_;
+  std::unique_ptr<CommandExecutionObserver> execution_observer_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_

@@ -43,6 +43,7 @@
 #include "cc/slim/layer_tree.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "components/input/utils.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -115,7 +116,6 @@ gpu::ContextCreationAttribs GetCompositorContextAttributes() {
 }
 
 void CreateContextProviderAfterGpuChannelEstablished(
-    gpu::SurfaceHandle handle,
     gpu::SharedMemoryLimits shared_memory_limits,
     Compositor::ContextProviderCallback callback,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
@@ -136,7 +136,7 @@ void CreateContextProviderAfterGpuChannelEstablished(
 
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          std::move(gpu_channel_host), stream_id, stream_priority, handle,
+          std::move(gpu_channel_host), stream_id, stream_priority,
           GURL(std::string("chrome://gpu/Compositor::CreateContextProvider")),
           automatic_flushes, support_locking, shared_memory_limits, attributes,
           viz::command_buffer_metrics::ContextType::UNKNOWN);
@@ -192,35 +192,6 @@ class CompositorImpl::ScopedCachedBackBuffer {
   uint32_t cache_id_;
 };
 
-class CompositorImpl::ReadbackRefImpl
-    : public ui::WindowAndroidCompositor::ReadbackRef {
- public:
-  ReadbackRefImpl(base::WeakPtr<CompositorImpl> weakptr,
-                  const viz::SurfaceId& surface_id_to_copy);
-  ~ReadbackRefImpl() override;
-
- private:
-  base::WeakPtr<CompositorImpl> compositor_weakptr_;
-  std::unique_ptr<cc::slim::LayerTree::ScopedKeepSurfaceAlive> keep_alive_;
-};
-
-CompositorImpl::ReadbackRefImpl::ReadbackRefImpl(
-    base::WeakPtr<CompositorImpl> weakptr,
-    const viz::SurfaceId& surface_id_to_copy)
-    : compositor_weakptr_(std::move(weakptr)) {
-  DCHECK(compositor_weakptr_);
-  DCHECK(compositor_weakptr_->host_);
-  keep_alive_ = compositor_weakptr_->host_->CreateScopedKeepSurfaceAlive(
-      surface_id_to_copy);
-}
-
-CompositorImpl::ReadbackRefImpl::~ReadbackRefImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (compositor_weakptr_) {
-    compositor_weakptr_->DecrementPendingReadbacks();
-  }
-}
-
 // static
 Compositor* Compositor::Create(CompositorClient* client,
                                gfx::NativeWindow root_window) {
@@ -235,12 +206,11 @@ void Compositor::Initialize() {
 
 // static
 void Compositor::CreateContextProvider(
-    gpu::SurfaceHandle handle,
     gpu::SharedMemoryLimits shared_memory_limits,
     ContextProviderCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserGpuChannelHostFactory::instance()->EstablishGpuChannel(
-      base::BindOnce(&CreateContextProviderAfterGpuChannelEstablished, handle,
+      base::BindOnce(&CreateContextProviderAfterGpuChannelEstablished,
                      shared_memory_limits, std::move(callback)));
 }
 
@@ -272,7 +242,7 @@ CompositorImpl::~CompositorImpl() {
 
   DetachRootWindow();
   // Clean-up any surface references.
-  SetSurface(nullptr, false);
+  SetSurface(nullptr, false, nullptr);
 
   BrowserGpuChannelHostFactory::instance()->MaybeCloseChannel();
 }
@@ -310,12 +280,14 @@ void CompositorImpl::SetRootWindow(gfx::NativeWindow root_window) {
   root_window_ = root_window;
   root_window_->SetLayer(root_layer ? root_layer : cc::slim::Layer::Create());
   root_window_->GetLayer()->SetBounds(size_);
-  root_window->AttachCompositor(this);
   if (!host_) {
     CreateLayerTreeHost();
     resource_manager_.Init(host_->GetUIResourceManager());
   }
+  // Attach compositor after `LayerTreeHost` has been created.
+  root_window->AttachCompositor(this);
   OnUpdateOverlayTransform();
+  OnAdaptiveRefreshRateInfoChanged();
   host_->SetRoot(root_window_->GetLayer());
   host_->SetViewportRectAndScale(gfx::Rect(size_), root_window_->GetDipScale(),
                                  GenerateLocalSurfaceId());
@@ -332,8 +304,10 @@ void CompositorImpl::SetRootLayer(scoped_refptr<cc::slim::Layer> root_layer) {
   }
 }
 
-void CompositorImpl::SetSurface(const base::android::JavaRef<jobject>& surface,
-                                bool can_be_used_with_surface_control) {
+std::optional<gpu::SurfaceHandle> CompositorImpl::SetSurface(
+    const base::android::JavaRef<jobject>& surface,
+    bool can_be_used_with_surface_control,
+    const base::android::JavaRef<jobject>& host_input_token) {
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
 
   if (window_) {
@@ -347,13 +321,17 @@ void CompositorImpl::SetSurface(const base::android::JavaRef<jobject>& surface,
   gl::ScopedJavaSurface scoped_surface(surface, /*auto_release=*/false);
   gl::ScopedANativeWindow window(scoped_surface);
 
-  if (window) {
-    window_ = std::move(window);
-    // Register first, SetVisible() might create a LayerTreeFrameSink.
-    surface_handle_ = tracker->AddSurfaceForNativeWidget(gpu::SurfaceRecord(
-        std::move(scoped_surface), can_be_used_with_surface_control));
-    SetVisible(true);
+  if (!window) {
+    return std::nullopt;
   }
+
+  window_ = std::move(window);
+  // Register first, SetVisible() might create a LayerTreeFrameSink.
+  surface_handle_ = tracker->AddSurfaceForNativeWidget(
+      gpu::SurfaceRecord(std::move(scoped_surface),
+                         can_be_used_with_surface_control, host_input_token));
+  SetVisible(true);
+  return surface_handle_;
 }
 
 void CompositorImpl::SetBackgroundColor(int color) {
@@ -407,7 +385,7 @@ void CompositorImpl::TearDownDisplayAndUnregisterRootFrameSink() {
   // Make a best effort to try to complete pending readbacks.
   // TODO(crbug.com/40480324): Consider doing this in a better way,
   // ideally with the guarantee of readbacks completing.
-  if (display_private_ && pending_readbacks_) {
+  if (display_private_ && !pending_surface_copies_.empty()) {
     // Note that while this is not a Sync IPC, the call to
     // InvalidateFrameSinkId below will end up triggering a sync call to
     // FrameSinkManager::DestroyCompositorFrameSink, as this is the root
@@ -557,7 +535,6 @@ void CompositorImpl::OnGpuChannelEstablished(
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           std::move(gpu_channel_host), stream_id, stream_priority,
-          gpu::kNullSurfaceHandle,
           GURL(std::string("chrome://gpu/CompositorImpl::") +
                std::string("CompositorContextProvider")),
           automatic_flushes, support_locking,
@@ -637,12 +614,19 @@ void CompositorImpl::DidLoseLayerTreeFrameSink() {
   client_->DidSwapFrame(0);
 }
 
-std::unique_ptr<ui::WindowAndroidCompositor::ReadbackRef>
-CompositorImpl::TakeReadbackRef(const viz::SurfaceId& surface_id) {
+ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
+CompositorImpl::TakeScopedKeepSurfaceAliveCallback(
+    const viz::SurfaceId& surface_id) {
   DCHECK(surface_id.is_valid());
-  ++pending_readbacks_;
-  return std::make_unique<ReadbackRefImpl>(weak_factory_.GetWeakPtr(),
-                                           surface_id);
+  CHECK(pending_surface_copies_.find(pending_surface_copy_id_) ==
+        pending_surface_copies_.end());
+  pending_surface_copies_[pending_surface_copy_id_] =
+      host_->CreateScopedKeepSurfaceAlive(surface_id);
+  PendingSurfaceCopyId pending_surface_copy_id(pending_surface_copy_id_);
+  ++(*pending_surface_copy_id_);
+  return base::BindOnce(&CompositorImpl::RemoveScopedKeepSurfaceAlive,
+                        weak_factory_.GetWeakPtr(),
+                        std::move(pending_surface_copy_id));
 }
 
 void CompositorImpl::RequestCopyOfOutputOnRootLayer(
@@ -662,6 +646,10 @@ void CompositorImpl::SetNeedsAnimate() {
 
 viz::FrameSinkId CompositorImpl::GetFrameSinkId() {
   return frame_sink_id_;
+}
+
+gpu::SurfaceHandle CompositorImpl::GetSurfaceHandle() {
+  return surface_handle_;
 }
 
 void CompositorImpl::AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) {
@@ -720,17 +708,6 @@ bool CompositorImpl::IsDrawingFirstVisibleFrame() const {
   return !has_submitted_frame_since_became_visible_;
 }
 
-void CompositorImpl::SetVSyncPaused(bool paused) {
-  if (vsync_paused_ == paused) {
-    return;
-  }
-
-  vsync_paused_ = paused;
-  if (display_private_) {
-    display_private_->SetVSyncPaused(paused);
-  }
-}
-
 void CompositorImpl::OnUpdateRefreshRate(float refresh_rate) {
   if (display_private_) {
     display_private_->UpdateRefreshRate(refresh_rate);
@@ -741,6 +718,19 @@ void CompositorImpl::OnUpdateSupportedRefreshRates(
     const std::vector<float>& supported_refresh_rates) {
   if (display_private_) {
     display_private_->SetSupportedRefreshRates(supported_refresh_rates);
+  }
+}
+
+void CompositorImpl::OnAdaptiveRefreshRateInfoChanged() {
+  if (root_window_ && display_private_) {
+    ui::WindowAndroid::AdaptiveRefreshRateInfo arr_info =
+        root_window_->adaptive_refresh_rate_info();
+    display_private_->SetAdaptiveRefreshRateInfo(
+        arr_info.supports_adaptive_refresh_rate,
+        arr_info.suggested_frame_rate_high,
+        display::Screen::GetScreen()
+            ->GetDisplayNearestWindow(root_window_)
+            .device_scale_factor());
   }
 }
 
@@ -800,6 +790,9 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   root_params->gpu_compositing = true;
   root_params->renderer_settings = renderer_settings;
   root_params->refresh_rate = root_window_->GetRefreshRate();
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
+    root_params->create_input_receiver = true;
+  }
 
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
       std::move(root_params));
@@ -809,15 +802,14 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   display_private_->SetDisplayVisible(true);
   display_private_->Resize(size_);
   display_private_->SetDisplayColorSpaces(display_color_spaces_);
-  display_private_->SetVSyncPaused(vsync_paused_);
   display_private_->SetSupportedRefreshRates(
       root_window_->GetSupportedRefreshRates());
   MaybeUpdateObserveBeginFrame();
+  OnAdaptiveRefreshRateInfoChanged();
 
   auto frame_sink = cc::slim::FrameSink::Create(
       std::move(sink_remote), std::move(client_receiver),
       std::move(context_provider), std::move(task_runner),
-      BrowserGpuChannelHostFactory::instance()->GetGpuMemoryBufferManager(),
       BrowserMainLoop::GetInstance()->GetIOThreadId());
   host_->SetFrameSink(std::move(frame_sink));
 }
@@ -849,13 +841,13 @@ void CompositorImpl::OnFatalOrSurfaceContextCreationFailure(
   }
 
   if (context_result == gpu::ContextResult::kSurfaceFailure) {
-    SetSurface(nullptr, false);
+    SetSurface(nullptr, false, nullptr);
     client_->RecreateSurface();
   }
 }
 
 void CompositorImpl::OnFirstSurfaceActivation(const viz::SurfaceInfo& info) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CompositorImpl::CacheBackBufferForCurrentSurface() {
@@ -902,11 +894,6 @@ void CompositorImpl::SetDidSwapBuffersCallbackEnabled(bool enable) {
   }
 }
 
-void CompositorImpl::DecrementPendingReadbacks() {
-  DCHECK_GT(pending_readbacks_, 0u);
-  --pending_readbacks_;
-}
-
 void CompositorImpl::AddSimpleBeginFrameObserver(
     ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
   DCHECK(obs);
@@ -940,6 +927,13 @@ void CompositorImpl::MaybeUpdateObserveBeginFrame() {
       GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   display_private_->SetStandaloneBeginFrameObserver(
       host_begin_frame_observer_->GetBoundRemote());
+}
+
+void CompositorImpl::RemoveScopedKeepSurfaceAlive(
+    const PendingSurfaceCopyId& scoped_keep_surface_alive_id) {
+  CHECK(pending_surface_copies_.find(scoped_keep_surface_alive_id) !=
+        pending_surface_copies_.end());
+  pending_surface_copies_.erase(scoped_keep_surface_alive_id);
 }
 
 void CompositorImpl::AddFrameSubmissionObserver(

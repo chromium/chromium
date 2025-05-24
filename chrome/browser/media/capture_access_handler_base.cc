@@ -4,28 +4,31 @@
 
 #include "chrome/browser/media/capture_access_handler_base.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/common/extension.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension.h"
+#endif
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::BrowserThread;
 
@@ -131,7 +134,7 @@ std::list<CaptureAccessHandlerBase::Session>::iterator
 CaptureAccessHandlerBase::FindSession(int render_process_id,
                                       int render_frame_id,
                                       int page_request_id) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       sessions_, [render_process_id, render_frame_id,
                   page_request_id](const Session& session) {
         return session.request_process_id == render_process_id &&
@@ -319,12 +322,13 @@ void CaptureAccessHandlerBase::UpdateVideoScreenCaptureStatus(
   }
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
     const extensions::Extension* extension) {
   if (!extension)
     return false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string hash = base::SHA1HashString(extension->id());
   std::string hex_hash = base::HexEncode(hash);
 
@@ -335,8 +339,9 @@ bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
          hex_hash == "81986D4F846CEDDDB962643FA501D1780DD441BB";
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 bool CaptureAccessHandlerBase::IsBuiltInFeedbackUI(const GURL& origin) {
   return origin.spec() == chrome::kChromeUIFeedbackURL;

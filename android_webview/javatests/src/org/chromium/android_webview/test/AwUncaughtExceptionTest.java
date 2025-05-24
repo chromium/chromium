@@ -23,6 +23,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwThreadUtils;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.common.crash.AwCrashReporterClient;
 import org.chromium.base.JniAndroid;
 import org.chromium.base.ThreadUtils;
@@ -52,7 +53,8 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
         mActivityTestRule =
                 new AwActivityTestRule(param.getMutation()) {
                     @Override
-                    public boolean needsAwBrowserContextCreated() {
+                    public boolean needsNativeInitialized() {
+                        // Don't initialize native until we start the background thread.
                         return false;
                     }
 
@@ -72,7 +74,7 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
                 };
     }
 
-    private class BackgroundThread extends Thread {
+    private static class BackgroundThread extends Thread {
         private Looper mLooper;
 
         BackgroundThread(String name) {
@@ -126,14 +128,13 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
     @Before
     public void setUp() throws Exception {
         disableLifecycleThreadAssertion();
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         mBackgroundThread = new BackgroundThread("background");
         mBackgroundThread.start();
         // Once the background thread looper exists, it has been
         // designated as the main thread.
         mBackgroundThread.getLooper();
-        mActivityTestRule.createAwBrowserContext();
         mActivityTestRule.startBrowserProcess();
 
         // Clearing the UI thread isn't really supported so we're not left in a state where we can
@@ -317,4 +318,3 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
                 latch.await(SCALED_WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
     }
 }
-;

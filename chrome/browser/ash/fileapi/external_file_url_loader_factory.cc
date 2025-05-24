@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/377326291): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/fileapi/external_file_url_loader_factory.h"
 
 #include <algorithm>
@@ -12,7 +17,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_resolver.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -48,7 +52,7 @@ constexpr size_t kDefaultPipeSize = 65536;
 class MojoPipeIOBuffer : public net::IOBuffer {
  public:
   MojoPipeIOBuffer(void* data, size_t size)
-      : net::IOBuffer(base::make_span(static_cast<char*>(data), size)) {}
+      : net::IOBuffer(base::span(static_cast<char*>(data), size)) {}
 
   MojoPipeIOBuffer(const MojoPipeIOBuffer&) = delete;
   MojoPipeIOBuffer& operator=(const MojoPipeIOBuffer&) = delete;
@@ -223,8 +227,6 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
       const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
  private:
   explicit ExternalFileURLLoader(

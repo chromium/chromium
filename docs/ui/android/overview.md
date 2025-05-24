@@ -34,3 +34,9 @@ The following guides introduce MVC in Chrome for Android:
  * [Simple Lists in MVC Land](mvc_simple_list_tutorial.md)
  * [Simple RecyclerView use in MVC](mvc_simple_recycler_view_tutorial.md)
  * [So, you want to test MVC...](mvc_testing.md)
+
+## Styles and widgets shared with WebView
+
+Styles and widgets in //ui/android/ may be used by WebView. UI shown in WebView is inflated using the host Activity as the Context, so Chrome's custom theme attributes won't be set and android theme attributes may or may not be set. When creating new styles/widgets or modifying styles/widgets used by WebView, either avoid theme attributes or define a fallback if the theme attribute cannot be resolved.
+
+Note that limiting use of theme attributes to //chrome/android/ or other directories is not sufficient for Monochrome builds where Chrome and WebView are packaged in a single APK and therefore have a single set of resources. See https://crbug.com/361587111.

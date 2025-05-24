@@ -6,9 +6,13 @@ package org.chromium.support_lib_boundary;
 
 import android.os.Handler;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import java.lang.reflect.InvocationHandler;
 
 /** Boundary interface for WebMessagePort. */
+@NullMarked
 public interface WebMessagePortBoundaryInterface {
     void postMessage(/* WebMessage */ InvocationHandler message);
 
@@ -17,5 +21,5 @@ public interface WebMessagePortBoundaryInterface {
     void setWebMessageCallback(/* WebMessageCallback */ InvocationHandler callback);
 
     void setWebMessageCallback(
-            /* WebMessageCallback */ InvocationHandler callback, Handler handler);
+            /* WebMessageCallback */ InvocationHandler callback, @Nullable Handler handler);
 }

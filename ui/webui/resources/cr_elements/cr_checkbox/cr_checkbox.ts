@@ -74,11 +74,11 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     };
   }
 
-  checked: boolean = false;
-  disabled: boolean = false;
-  override ariaDescription: string|null = null;
-  ariaLabelOverride?: string;
-  override tabIndex: number = 0;
+  accessor checked: boolean = false;
+  accessor disabled: boolean = false;
+  override accessor ariaDescription: string|null = null;
+  accessor ariaLabelOverride: string|undefined;
+  override accessor tabIndex: number = 0;
 
   override firstUpdated() {
     this.addEventListener('click', this.onClick_.bind(this));
@@ -138,6 +138,18 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
   private hideRipple_() {
     this.getRipple().clear();
   }
+
+  // <if expr="is_win">
+  // This click handler just forwards clicks to the host to fix a bug in NVDA
+  // where the lack of a click handler on a focusable element does not
+  // propagate clicks to a host element.
+  // See https://github.com/nvaccess/nvda/issues/17855.
+  protected onCheckboxClick_(e: Event) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.click();
+  }
+  // </if>
 
   private async onClick_(e: Event) {
     if (this.disabled || (e.target as HTMLElement).tagName === 'A') {

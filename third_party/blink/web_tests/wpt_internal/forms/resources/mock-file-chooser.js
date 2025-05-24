@@ -65,7 +65,11 @@ class MockFileChooser {
   chooseFiles_(resolve) {
     const file_info_list = [];
     for (const path of this.paths_) {
-      const nativeFile = {filePath: toFilePath(path), displayName: {data: []}};
+      const nativeFile = {
+        filePath: toFilePath(path),
+        displayName: {data: []},
+        baseSubdirs: []
+      };
       file_info_list.push({nativeFile});
     }
     const basePath = this.baseDir_ || '';

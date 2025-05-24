@@ -4,15 +4,14 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
-import {WallpaperGridItemElement} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
+import type {WallpaperGridItemElement} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {getSeaPenTemplates} from 'chrome://resources/ash/common/sea_pen/constants.js';
-import {SeaPenPaths, SeaPenRouterElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
-import {SeaPenTemplateQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_template_query_element.js';
+import type {SeaPenRouterElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
+import {SeaPenPaths} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
+import type {SeaPenTemplateQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_template_query_element.js';
 import {setTransitionsEnabled} from 'chrome://resources/ash/common/sea_pen/transition.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {VcBackgroundApp} from 'chrome://vc-background/js/vc_background_app.js';
-import {VcBackgroundBreadcrumbElement} from 'chrome://vc-background/js/vc_background_breadcrumb_element.js';
+import type {VcBackgroundApp} from 'chrome://vc-background/js/vc_background_app.js';
+import type {VcBackgroundBreadcrumbElement} from 'chrome://vc-background/js/vc_background_breadcrumb_element.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -25,7 +24,7 @@ suite('VcBackgroundUITest', () => {
   function getVcBackgroundApp(): VcBackgroundApp {
     const vcBackgroundApp = document.body.querySelector('vc-background-app');
     assertTrue(!!vcBackgroundApp, 'vc-background-app exists');
-    return vcBackgroundApp!;
+    return vcBackgroundApp;
   }
 
   function getVcBackgroundBreadcrumbs(): VcBackgroundBreadcrumbElement {
@@ -33,12 +32,12 @@ suite('VcBackgroundUITest', () => {
         getVcBackgroundApp().shadowRoot!.querySelector(
             'vc-background-breadcrumb')!;
     assertTrue(!!vcBackgroundBreadcrumb, 'vc-background-breadcrumb exists');
-    return vcBackgroundBreadcrumb!;
+    return vcBackgroundBreadcrumb;
   }
 
   function getVcBackgroundBreadcrumbsText(): string[] {
     const breadcrumbElements =
-        getVcBackgroundBreadcrumbs().shadowRoot!.querySelectorAll('cr-button')!;
+        getVcBackgroundBreadcrumbs().shadowRoot!.querySelectorAll('cr-button');
     return Array.from(breadcrumbElements).map(el => el.textContent!);
   }
 
@@ -62,7 +61,7 @@ suite('VcBackgroundUITest', () => {
         'wallpaper-grid-item:not([hidden])'));
   }
 
-  test('initial breadcrumbs', async () => {
+  test('initial breadcrumbs', () => {
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
         [getVcBackgroundBreadcrumbs().i18n('vcBackgroundLabel')]);
@@ -145,8 +144,9 @@ suite('VcBackgroundUITest', () => {
         assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query exists');
 
         // Click on the 'Create' button.
-        const createButton = seaPenTemplateQuery.shadowRoot?.querySelector(
-                                 'cr-button#searchButton')! as HTMLElement;
+        const createButton =
+            seaPenTemplateQuery.shadowRoot?.querySelector<HTMLButtonElement>(
+                'cr-button#searchButton')!;
         createButton.click();
 
         await waitAfterNextRender(seaPenTemplateQuery);
@@ -162,38 +162,6 @@ suite('VcBackgroundUITest', () => {
           'Classic art',
         ]);
       });
-
-  test('verifies breadcrumbs when routing to Freeform subpages', async () => {
-    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
-    const seaPenRouter = getSeaPenRouter();
-    seaPenRouter.goToRoute(SeaPenPaths.FREEFORM);
-    await waitAfterNextRender(seaPenRouter);
-
-    assertEquals(
-        'chrome://vc-background/freeform', window.location.href,
-        'routed to Freeform page');
-    assertTrue(!!getVcBackgroundBreadcrumbs(), 'breadcrumb should display');
-    assertArrayEquals(getVcBackgroundBreadcrumbsText(), ['AI Prompting']);
-
-    // Search for a freeform query.
-    const seaPenInputQuery =
-        seaPenRouter.shadowRoot?.querySelector<HTMLElement>(
-            'sea-pen-input-query');
-    assertTrue(!!seaPenInputQuery, 'input query element exists');
-    const inputElement =
-        seaPenInputQuery.shadowRoot?.querySelector<CrInputElement>(
-            '#queryInput');
-    assertTrue(!!inputElement, 'freeform input displays');
-    inputElement!.value = 'a cool castle';
-    seaPenInputQuery.shadowRoot?.getElementById('searchButton')!.click();
-
-    assertEquals(
-        'chrome://vc-background/freeform', window.location.href,
-        'should stay in the same Freeform page');
-
-    // Breadcrumbs remain the same for Freeform page.
-    assertArrayEquals(getVcBackgroundBreadcrumbsText(), ['AI Prompting']);
-  });
 
   test('allows changing templates via breadcrumbs dropdown menu', async () => {
     // Navigate directly to a results page with template in breadcrumbs.
@@ -212,7 +180,7 @@ suite('VcBackgroundUITest', () => {
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!dropdownMenu);
-    assertFalse(dropdownMenu!.open, 'the action menu should not open yet');
+    assertFalse(dropdownMenu.open, 'the action menu should not open yet');
 
     // Verify the selected template.
     const selectedElement =
@@ -220,17 +188,19 @@ suite('VcBackgroundUITest', () => {
     assertEquals(
         1, selectedElement.length, 'there should be one template selected');
     assertEquals(
-        classicArtTitle, (selectedElement[0] as HTMLElement)!.innerText.trim(),
+        classicArtTitle, (selectedElement[0] as HTMLElement).innerText.trim(),
         `selected template in the dropdown should be ${classicArtTitle}`);
 
     // Activate the dropdown menu.
-    const lastBreadcrumb = breadcrumbElement.shadowRoot!.querySelector(
-                               'cr-button#breadcrumb1') as HTMLElement;
+    const lastBreadcrumb =
+        breadcrumbElement.shadowRoot!.querySelector<HTMLElement>(
+            'cr-button#breadcrumb1');
+    assertTrue(!!lastBreadcrumb);
     lastBreadcrumb.click();
 
     await waitAfterNextRender(breadcrumbElement);
 
-    assertTrue(dropdownMenu!.open, 'the action menu should be open');
+    assertTrue(dropdownMenu.open, 'the action menu should be open');
 
     // The dropdown should show the sea pen templates.
     const allMenuItems = dropdownMenu.querySelectorAll('button');

@@ -44,7 +44,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     virtual std::string GetEncryptionBootstrapToken() const = 0;
   };
 
-  // |delegate| and |trusted_vault_client| must not be null and must outlive
+  // `delegate` and `trusted_vault_client` must not be null and must outlive
   // this object.
   SyncServiceCrypto(Delegate* delegate,
                     trusted_vault::TrustedVaultClient* trusted_vault_client);
@@ -76,8 +76,8 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // Returns the actual passphrase type being used for encryption.
   std::optional<PassphraseType> GetPassphraseType() const;
 
-  // Used to provide the engine when it is initialized, |engine| must not be
-  // null and must outlive the |this| or the Reset() call. Should not be called
+  // Used to provide the engine when it is initialized, `engine` must not be
+  // null and must outlive the `this` or the Reset() call. Should not be called
   // second time, unless Reset() is called first.
   void SetSyncEngine(const CoreAccountInfo& account_info, SyncEngine* engine);
 
@@ -130,7 +130,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   void FetchTrustedVaultKeys(bool is_second_fetch_attempt);
 
   // Called at various stages of asynchronously fetching and processing trusted
-  // vault encryption keys. |is_second_fetch_attempt| is useful for the case
+  // vault encryption keys. `is_second_fetch_attempt` is useful for the case
   // where multiple passes (up to two) are needed to fetch the keys from the
   // client.
   void TrustedVaultKeysFetchedFromClient(
@@ -141,7 +141,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   void FetchTrustedVaultKeysCompletedButInsufficient();
 
   // Updates required user action and notifies observers via
-  // |notify_required_user_action_changed_|.
+  // `notify_required_user_action_changed_`.
   void UpdateRequiredUserActionAndNotify(
       RequiredUserAction new_required_user_action);
 
@@ -152,9 +152,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // TrustedVaultClient::GetIsRecoverabilityDegraded().
   void GetIsRecoverabilityDegradedCompleted(bool is_recoverability_degraded);
 
-  // Attempts decryption of |cached_pending_keys| with a |nigori| and, if
+  // Attempts decryption of `cached_pending_keys` with a `nigori` and, if
   // successful, resolves the kPassphraseRequired state and populates the
-  // |nigori| to engine. Should never be called when there is no cached pending
+  // `nigori` to engine. Should never be called when there is no cached pending
   // keys. Returns true if successful. Doesn't update bootstrap token.
   bool SetDecryptionKeyWithoutUpdatingBootstrapToken(
       std::unique_ptr<Nigori> nigori);

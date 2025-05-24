@@ -1,30 +1,102 @@
-# Copyright 2022 The Chromium Authors
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
-android_library("delegate_java") {
+source_set("android") {
   sources = [
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarkIterator.java",
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksDelegate.java",
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksDelegateImpl.java",
+    "partner_bookmarks_reader.h",
+    "partner_bookmarks_shim.h",
   ]
-
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-
-  resources_package = "org.chromium.chrome.browser.partnerbookmarks"
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [ "*/PartnerBookmarksDelegateImpl.class" ]
+  public_deps = [
+    ":jni_headers",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/favicon_base",
+    "//components/url_formatter",
+    "//ui/base",
+    "//url",
+  ]
 }
 
-android_library("delegate_public_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksDelegateImpl.java" ]
+source_set("android_impl") {
+  sources = [
+    "partner_bookmarks_reader.cc",
+    "partner_bookmarks_shim.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":android",
+    ":java_enums",
+    ":jni_headers",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/favicon:favicon",
+    "//chrome/browser/profiles:profile",
+    "//components/favicon/core:core",
+    "//components/pref_registry:pref_registry",
+  ]
+}
+
+android_library("delegate_java") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/partnerbookmarks/Placeholder.java" ]
+}
+
+android_library("java") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmark.java",
+    "android/java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksFaviconThrottle.java",
+    "android/java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksProviderIterator.java",
+    "android/java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java",
+    "android/java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksShim.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//base/version_info/android:version_constants_java",
+    "//chrome/browser/partnercustomizations:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/embedder_support/android:util_java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  srcjar_deps = [
+    ":java_enums",
+    ":jni_headers",
+  ]
+  resources_package = "org.chromium.chrome.browser.partnerbookmarks"
+}
+
+java_cpp_enum("java_enums") {
+  sources = [ "partner_bookmarks_reader.h" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.partnerbookmarks"
+
+  sources = [
+    "android/junit/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksFaviconThrottleTest.java",
+    "android/junit/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReaderTest.java",
+  ]
 
   deps = [
-    ":delegate_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/partnercustomizations:java",
+    "//chrome/browser/profiles/android:java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
   ]
 }

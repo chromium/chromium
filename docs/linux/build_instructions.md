@@ -17,10 +17,17 @@ Are you a Google employee? See
     \>=32GB/>=16GB of swap for machines with 8GB/16GB of RAM respectively.
 * At least 100GB of free disk space. It does not have to be on the same drive;
  Allocate ~50-80GB on HDD for build.
-* You must have Git and Python v3.8+ installed already (and `python3` must point
-    to a Python v3.8+ binary). Depot_tools bundles an appropriate version
+* You must have Git and Python v3.9+ installed already (and `python3` must point
+    to a Python v3.9+ binary). Depot_tools bundles an appropriate version
     of Python in `$depot_tools/python-bin`, if you don't have an appropriate
     version already on your system.
+* Chromium's build infrastructure and `depot_tools` currently use Python 3.11.
+  If something is broken with an older Python version, feel free to report or
+  send us fixes.
+* `libc++` is currently the only supported STL. `clang` is the only
+  officially-supported compiler, though external community members generally
+  keep things building with `gcc`. For more details, see the
+  [supported toolchains doc](../toolchain_support.md).
 
 Most development is done on Ubuntu (Chromium's build infrastructure currently
 runs 22.04, Jammy Jellyfish). There are some instructions for other distros
@@ -121,7 +128,8 @@ development and testing purposes.
 
 ## Setting up the build
 
-Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
+Chromium uses [Siso](https://pkg.go.dev/go.chromium.org/infra/build/siso#section-readme)
+as its main build tool along with
 a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
 to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. To create a build directory, run:
@@ -130,7 +138,7 @@ with different configurations. To create a build directory, run:
 $ gn gen out/Default
 ```
 
-* You only have to run this once for each new build directory, Ninja will
+* You only have to run this once for each new build directory, Siso will
   update the build files as needed.
 * You can replace `Default` with another name, but
   it should be a subdirectory of `out`.
@@ -146,7 +154,7 @@ $ gn gen out/Default
 This section contains some things you can change to speed up your builds,
 sorted so that the things that make the biggest difference are first.
 
-#### Use Reclient
+#### Use Remote Execution
 
 *** note
 **Warning:** If you are a Google employee, do not follow the instructions below.
@@ -159,31 +167,32 @@ Chromium's build can be sped up significantly by using a remote execution system
 compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
 you to benefit from remote caching and executing many build actions in parallel
 on a shared cluster of workers.
+Chromium's build uses a client developed by Google called
+[Siso](https://pkg.go.dev/go.chromium.org/infra/build/siso#section-readme)
+to remotely execute build actions.
 
+To get started, you need access to an REAPI-compatible backend.
+
+The following instructions assume that you received an invitation from Google
+to use Chromium's RBE service and were granted access to it.
 For contributors who have
 [tryjob access](https://www.chromium.org/getting-involved/become-a-committer/#try-job-access)
 , please ask a Googler to email accounts@chromium.org on your behalf to access
-RBE backend paid by Google. Note that reclient for external contributors is a
-best-effort process. We do not guarantee when you will be invited. Reach out to
-[reclient-users@chromium.org](https://groups.google.com/a/chromium.org/g/reclient-users)
-if you have any questions about reclient usage.
+RBE backend paid by Google. Note that remote execution for external
+contributors is a best-effort process. We do not guarantee when you will be
+invited.
 
-To get started, you need access to an REAPI-compatible backend. The following
-instructions assume that you received an invitation from Google to use
-Chromium's RBE service and were granted access to it. However, you are welcome
+For others who have no access to Google's RBE backends, you are welcome
 to use any of the
 [other compatible backends](https://github.com/bazelbuild/remote-apis#servers),
 in which case you will have to adapt the following instructions regarding the
 authentication method, instance name, etc. to work with your backend.
 
-Chromium's build uses a client developed by Google called
-[reclient](https://github.com/bazelbuild/reclient) to remotely execute build
-actions. If you would like to use `reclient` with RBE, you'll first need to:
+If you would like to use `siso` with Google's RBE,
+you'll first need to:
 
-1. [Install the gcloud CLI](https://cloud.google.com/sdk/docs/install). You can
-   pick any installation method from that page that works best for you.
-2. Run `gcloud auth login --update-adc` and login with your authorized
-   account. Ignore the message about the `--update-adc` flag being deprecated.
+1. Run `siso login` and login with your authorized account.
+If it is blocked in OAuth2 flow, run `gcloud auth login` instead.
 
 Next, you'll have to specify your `rbe_instance` in your `.gclient`
 configuration to use the correct one for Chromium contributors:
@@ -211,31 +220,29 @@ solutions = [
 ```
 
 And run `gclient sync`. This will regenerate the config files in
-`buildtools/reclient_cfgs` to use the `rbe_instance` that you just added to your
-`.gclient` file.
+`build/config/siso/backend_config/backend.star` to use the `rbe_instance`
+that you just added to your `.gclient` file.
+
+If `rbe_instance` is not owned by Google, you may need to create your
+own `backend.star`. See
+[build/config/siso/backend_config/README.md](../../build/config/siso/backend_config/README.md).
 
 Then, add the following GN args to your `args.gn`:
 
 ```
 use_remoteexec = true
-reclient_cfg_dir = "../../buildtools/reclient_cfgs/linux"
+use_siso = true
 ```
 
-*** note
-If you are building an older version of Chrome with reclient you will need to
-use `rbe_cfg_dir = "../../buildtools/reclient_cfgs_linux"`
-***
+If `args.gn` contains `use_reclient=true`, drop it or replace it with
+`use_reclient=false`.
 
 That's it. Remember to always use `autoninja` for building Chromium as described
-below, which handles the startup and shutdown of the reproxy daemon process
-that's required during the build, instead of directly invoking `ninja`.
+below, instead of directly invoking `siso` or `ninja`.
 
-#### Disable NaCl
-
-By default, the build includes support for
-[Native Client (NaCl)](https://developer.chrome.com/native-client), but
-most of the time you won't need it. You can set the GN argument
-`enable_nacl=false` and it won't be built.
+Reach out to
+[build@chromium.org](https://groups.google.com/a/chromium.org/g/build)
+if you have any questions about remote execution usage.
 
 #### Include fewer debug symbols
 
@@ -256,7 +263,7 @@ can improve build speeds by setting the GN arg `v8_symbol_level=0`.
 
 [Icecc](https://github.com/icecc/icecream) is the distributed compiler with a
 central scheduler to share build load. Currently, many external contributors use
-it. e.g. Intel, Opera, Samsung (this is not useful if you're using Reclient).
+it. e.g. Intel, Opera, Samsung (this is not useful if you're using Siso).
 
 In order to use `icecc`, set the following GN args:
 
@@ -275,7 +282,7 @@ See [related bug](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=808181).
 #### ccache
 
 You can use [ccache](https://ccache.dev) to speed up local builds (again,
-this is not useful if you're using Reclient).
+this is not useful if you're using Siso).
 
 Increase your ccache hit rate by setting `CCACHE_BASEDIR` to a parent directory
 that the working directories all have in common (e.g.,
@@ -338,23 +345,23 @@ mode, with the GN arg `is_official_build = true`.
 
 ## Build Chromium
 
-Build Chromium (the "chrome" target) with Ninja using the command:
+Build Chromium (the "chrome" target) with Siso or Ninja using the command:
 
 ```shell
 $ autoninja -C out/Default chrome
 ```
 
 (`autoninja` is a wrapper that automatically provides optimal values for the
-arguments passed to `ninja`.)
+arguments passed to `siso` or `ninja`.)
 
 You can get a list of all of the other build targets from GN by running `gn ls
-out/Default` from the command line. To compile one, pass the GN label to Ninja
-with no preceding "//" (so, for `//chrome/test:unit_tests` use `autoninja -C
-out/Default chrome/test:unit_tests`).
+out/Default` from the command line. To compile one, pass the GN label to
+Siso/Ninja with no preceding "//" (so, for `//chrome/test:unit_tests` use
+`autoninja -C out/Default chrome/test:unit_tests`).
 
 ## Compile a single file
 
-Ninja supports a special [syntax `^`][ninja hat syntax] to compile a single object file specyfing
+Siso/Ninja supports a special [syntax `^`][ninja hat syntax] to compile a single object file specifying
 the source file. For example, `autoninja -C out/Default ../../base/logging.cc^`
 compiles `obj/base/base/logging.o`.
 
@@ -732,7 +739,10 @@ WORKDIR /chromium/src
 
 # Expose any necessary ports (if needed)
 # EXPOSE 8080
-RUN useradd -u 1000 chrom-d
+
+# Create a dummy user and group to avoid permission issues
+RUN groupadd -g 1001 chrom-d && \
+    useradd -u 1000 -g 1001 -m chrom-d
 
 # Create normal user with name "chrom-d". Optional and you can use root but
 # not advised.
@@ -754,7 +764,7 @@ $ docker build -t chrom-b .
 3. Run container as root to install dependencies
 
 ```shell
-$ docker run --rm \ # close instance upon exit
+$ docker run
   -it \ # Run docker interactively
   --name chrom-b \ # with name "chrom-b"
   -u root \ # with user root
@@ -762,6 +772,11 @@ $ docker run --rm \ # close instance upon exit
   -v /path/on/machine/to/depot_tools:/depot_tools \ # With depot_tools mounted
   chrom-b # Run container with image name "chrom-b"
 ```
+
+*** note
+**Note:** When running the command as a single line in bash, please remove the
+comments (after the `#`) to avoid breaking the command.
+***
 
 4. Install dependencies:
 
@@ -771,13 +786,32 @@ $ docker run --rm \ # close instance upon exit
 
 5. [Run hooks](#run-the-hooks) (On docker or machine if you installed depot_tools on machine)
 
+*** note
+**Before running hooks:** Ensure that all directories within
+`third_party` are added as safe directories in Git. This is required
+when running in the container because the ownership of the `src/`
+directory (e.g., `chrom-b`) differs from the current user
+(e.g., `root`). To prevent Git **warnings** about "dubious ownership"
+run the following command after installing the dependencies:
+
+```shell
+# Loop through each directory in /chromium/src/third_party and add
+# them as safe directories in Git
+$ for dir in /chromium/src/third_party/*; do
+    if [ -d "$dir" ]; then
+        git config --global --add safe.directory "$dir"
+    fi
+done
+```
+***
+
 6. Exit container
 
 7. Save container image with tag-id name `dpv1.0`. Run this on the machine, not in container
 
 ```shell
-# Get docker running instances, copy the id you get
-$ docker ps
+# Get docker running/stopped containers, copy the "chrom-b" id
+$ docker container ls -a
 # Save/tag running docker container with name "chrom-b" with "dpv1.0"
 # You can choose any tag name you want but propagate name accordingly
 # You will need to create new tags when working on different parts of
@@ -799,3 +833,8 @@ $ docker run --rm \ # close instance upon exit
   -v /path/on/machine/to/depot_tools:/depot_tools \ # With depot_tools mounted
   chrom-b:dpv1.0 # Run container with image name "chrom-b" and tag dpv1.0
 ```
+
+*** note
+**Note:** When running the command as a single line in bash, please remove the
+comments (after the `#`) to avoid breaking the command.
+***

@@ -11,6 +11,8 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_EXPORT, ash::WindowState*)
 
 namespace ash {
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kDisableResizeShadow, false)
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideDuringWindowDragging, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kOverrideWindowIconResourceIdKey, -1)
@@ -23,8 +25,13 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kOverviewUiKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kStayInOverviewOnActivationKey, false)
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kWebAuthnRequestId, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kWebAuthnRequestId)
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowState, kWindowStateKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kWindowResizeHistogramName)
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string,
+                                   kWindowResizeMaxLatencyHistogramName)
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowState, kWindowStateKey)
 
 }  // namespace ash

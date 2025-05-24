@@ -78,6 +78,13 @@ mojom("mojom") {
     ]
   }
 
+  if (allow_oop_video_decoder) {
+    sources += [
+      "cdm_context_for_oopvd.mojom",
+      "video_decoder_factory_process.mojom",
+    ]
+  }
+
   public_deps = [
     ":audio_data",
     ":encryption_pattern",
@@ -85,7 +92,6 @@ mojom("mojom") {
     ":web_speech_recognition",
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
-    "//media/mojo/mojom/stable:stable_video_decoder",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//services/media_session/public/mojom",
@@ -109,12 +115,12 @@ mojom("mojom") {
   }
 
   enabled_features = []
-  if (is_linux || is_chromeos) {
-    enabled_features += [ "is_linux_or_chromeos" ]
-  }
-
   if (allow_oop_video_decoder) {
     enabled_features += [ "allow_oop_video_decoder" ]
+  }
+
+  if (use_linux_video_acceleration) {
+    enabled_features += [ "allow_linux_video_acceleration" ]
   }
 
   # Help select ServiceSandbox for media_service.mojom.
@@ -163,6 +169,16 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.AutoPipInfo"
+          cpp = "::media::PictureInPictureEventsInfo::AutoPipInfo"
+        },
+      ]
+      traits_headers = [ "picture_in_picture_events_info_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
+    },
+    {
+      types = [
+        {
           mojom = "media.mojom.FullscreenVideoStatus"
           cpp = "::blink::WebFullscreenVideoStatus"
         },
@@ -194,6 +210,14 @@ mojom("mojom") {
       traits_public_deps = [ ":shared_mojom_traits" ]
     },
   ]
+
+  # The dependencies for |media.mojom.VideoFrame| traits are different on
+  # different platforms. This sets a variable for the dependencies since
+  # |cpp_typemaps| is statically declared.
+  video_frame_mojom_traits_public_deps = [ "//ui/gfx/geometry/mojom" ]
+  if (is_linux || is_chromeos) {
+    video_frame_mojom_traits_public_deps += [ "//media/gpu:buffer_validation" ]
+  }
 
   cpp_typemaps = [
     {
@@ -651,13 +675,17 @@ mojom("mojom") {
       ]
       traits_headers = [ "video_frame_mojom_traits.h" ]
       traits_sources = [ "video_frame_mojom_traits.cc" ]
-      traits_public_deps = [ "//ui/gfx/geometry/mojom" ]
+      traits_public_deps = video_frame_mojom_traits_public_deps
     },
     {
       types = [
         {
           mojom = "media.mojom.CdmCapability"
           cpp = "::media::CdmCapability"
+        },
+        {
+          mojom = "media.mojom.CdmCapabilityQueryStatus"
+          cpp = "::media::CdmCapabilityQueryStatus"
         },
       ]
       traits_headers = [ "cdm_capability_mojom_traits.h" ]
@@ -690,6 +718,10 @@ mojom("mojom") {
           mojom = "media.mojom.RendererType"
           cpp = "::media::RendererType"
         },
+        {
+          mojom = "media.mojom.DemuxerType"
+          cpp = "::media::DemuxerType"
+        },
       ]
       traits_headers = [ "media_types_enum_mojom_traits.h" ]
     },
@@ -703,6 +735,24 @@ mojom("mojom") {
       traits_headers = [ "media_types_enum_mojom_traits.h" ]
     },
   ]
+
+  if (is_chromeos) {
+    shared_typemaps += [
+      {
+        types = [
+          {
+            mojom = "media.mojom.DecryptStatus"
+            cpp = "::media::Decryptor::Status"
+          },
+          {
+            mojom = "media.mojom.CdmContextEvent"
+            cpp = "::media::CdmContext::Event"
+          },
+        ]
+        traits_headers = [ "cdm_context_for_oopvd_types_mojom_traits.h" ]
+      },
+    ]
+  }
 
   if (is_win) {
     cpp_typemaps += [
@@ -842,6 +892,7 @@ mojom("speech_recognition") {
   public_deps = [
     ":audio_data",
     ":speech_recognition_audio_forwarder",
+    ":speech_recognition_recognition_context",
     ":web_speech_recognition",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
@@ -849,10 +900,43 @@ mojom("speech_recognition") {
   ]
 }
 
+mojom("speech_recognition_recognition_context") {
+  generate_java = true
+  sources = [ "speech_recognition_recognition_context.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.mojom.SpeechRecognitionPhrase"
+          cpp = "::media::SpeechRecognitionPhrase"
+        },
+        {
+          mojom = "media.mojom.SpeechRecognitionRecognitionContext"
+          cpp = "::media::SpeechRecognitionRecognitionContext"
+        },
+      ]
+      traits_headers = [
+        "speech_recognition_recognition_context.h",
+        "speech_recognition_recognition_context_mojom_traits.h",
+      ]
+      traits_sources = [
+        "speech_recognition_recognition_context.cc",
+        "speech_recognition_recognition_context_mojom_traits.cc",
+      ]
+      traits_public_deps = [ "//base" ]
+    },
+  ]
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
+}
+
 source_set("shared_mojom_traits") {
   sources = [
     "audio_processing_mojom_traits.cc",
     "audio_processing_mojom_traits.h",
+    "picture_in_picture_events_info_mojom_traits.cc",
+    "picture_in_picture_events_info_mojom_traits.h",
     "video_frame_metadata_mojom_traits.cc",
     "video_frame_metadata_mojom_traits.h",
   ]
@@ -882,8 +966,22 @@ mojom("remoting") {
 
 mojom("test_interfaces") {
   testonly = true
-  sources = [ "traits_test_service.mojom" ]
+  sources = [ "traits_test_service.test-mojom" ]
   public_deps = [ ":mojom" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "buffer_handle_test_util.cc",
+      "buffer_handle_test_util.h",
+    ]
+    deps += [ "//base/test:test_support" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -893,6 +991,8 @@ source_set("unit_tests") {
     "audio_decoder_config_mojom_traits_unittest.cc",
     "audio_processing_mojom_traits_unittest.cc",
     "cdm_key_information_mojom_traits_unittest.cc",
+    "picture_in_picture_events_info_mojom_traits_unittest.cc",
+    "speech_recognition_recognition_context_mojom_traits_unittest.cc",
     "video_decoder_config_mojom_traits_unittest.cc",
     "video_encode_accelerator_mojom_traits_unittest.cc",
     "video_frame_metadata_mojom_traits_unittest.cc",
@@ -905,8 +1005,10 @@ source_set("unit_tests") {
 
   deps = [
     ":speech_recognition",
+    ":speech_recognition_recognition_context",
     "//base",
     "//base/test:test_support",
+    "//gpu:test_support",
     "//media:test_support",
     "//media/mojo:test_support",
     "//mojo/public/cpp/test_support:test_utils",
@@ -929,6 +1031,7 @@ mojom("web_speech_recognition") {
 
   deps = [
     ":speech_recognition_audio_forwarder",
+    ":speech_recognition_recognition_context",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]

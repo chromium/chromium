@@ -362,6 +362,14 @@ void GL_BINDING_CALL MockGLInterface::Mock_glBlitFramebufferNV(GLint srcX0,
                               dstY1, mask, filter);
 }
 
+void GL_BINDING_CALL
+MockGLInterface::Mock_glBlobCacheCallbacksANGLE(GLSETBLOBPROCANGLE set,
+                                                GLGETBLOBPROCANGLE get,
+                                                const void* userData) {
+  MakeGlMockFunctionUnique("glBlobCacheCallbacksANGLE");
+  interface_->BlobCacheCallbacksANGLE(set, get, userData);
+}
+
 void GL_BINDING_CALL MockGLInterface::Mock_glBufferData(GLenum target,
                                                         GLsizeiptr size,
                                                         const void* data,
@@ -4665,7 +4673,7 @@ MockGLInterface::Mock_glWindowRectanglesEXT(GLenum mode,
 }
 
 static void MockGlInvalidFunction() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 GLFunctionPointerType GL_BINDING_CALL
@@ -4768,6 +4776,10 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBlitFramebufferANGLE);
   if (strcmp(name, "glBlitFramebufferNV") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBlitFramebufferNV);
+  if (strcmp(name, "glBlobCacheCallbacksANGLE") == 0) {
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_glBlobCacheCallbacksANGLE);
+  }
   if (strcmp(name, "glBufferData") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBufferData);
   if (strcmp(name, "glBufferSubData") == 0)

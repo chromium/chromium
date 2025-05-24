@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <vector>
 
@@ -145,7 +146,7 @@ class TestSessionStateAnimator : public SessionStateAnimator {
   void AbortAnimation(SessionStateAnimator::Container container);
 
   // Used for easy iteration over all the containers.
-  static const SessionStateAnimator::Container kAllContainers[];
+  static const std::array<SessionStateAnimator::Container, 7> kAllContainers;
 
   // A map of currently active animations.
   ActiveAnimationsMap active_animations_;

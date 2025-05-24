@@ -38,7 +38,7 @@ NSString* CreateLocalBlockingJsonRuleList() {
       ],
     } mutableCopy],
     @"action" : @{
-      @"type" : @"allow",
+      @"type" : @"ignore-previous-rules",
     },
   } mutableCopy];
 

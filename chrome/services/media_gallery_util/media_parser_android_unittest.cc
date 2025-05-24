@@ -10,6 +10,7 @@
 #include "chrome/services/media_gallery_util/media_parser_android.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -106,8 +107,7 @@ class MediaParserAndroidTest : public testing::Test {
   chrome::mojom::ExtractVideoFrameResultPtr ExtractFrame(
       const base::FilePath& file_path,
       const std::string& mime_type) {
-    int64_t size = 0;
-    EXPECT_TRUE(base::GetFileSize(file_path, &size));
+    int64_t size = base::GetFileSize(file_path).value_or(0);
 
     mojo::PendingRemote<chrome::mojom::MediaDataSource> remote_data_source;
     TestMediaDataSource test_data_source(
@@ -141,14 +141,12 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionH264) {
       ExtractFrame(media::GetTestDataFilePath("bear.mp4"), "video/mp4");
   ASSERT_TRUE(result);
 
-  if (media::IsBuiltInVideoCodec(media::VideoCodec::kH264)) {
+  if (media::IsDecoderBuiltInVideoCodec(media::VideoCodec::kH264)) {
     const auto& frame = result->frame_data->get_decoded_frame();
     ASSERT_TRUE(frame);
     EXPECT_TRUE(HasValidYUVData(*frame));
     EXPECT_TRUE(frame->IsMappable());
-    EXPECT_FALSE(frame->HasTextures());
-    EXPECT_EQ(frame->storage_type(),
-              media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY);
+    EXPECT_FALSE(frame->HasSharedImage());
   } else {
     EXPECT_EQ(result->frame_data->which(),
               chrome::mojom::VideoFrameData::Tag::kEncodedData);
@@ -180,7 +178,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionVp8) {
   ASSERT_TRUE(frame);
   EXPECT_TRUE(HasValidYUVData(*frame));
   EXPECT_TRUE(frame->IsMappable());
-  EXPECT_FALSE(frame->HasTextures());
+  EXPECT_FALSE(frame->HasSharedImage());
   EXPECT_EQ(frame->storage_type(),
             media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY);
 }
@@ -198,7 +196,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionVp8WithAlphaPlane) {
   ASSERT_TRUE(frame);
   EXPECT_TRUE(HasValidYUVData(*frame));
   EXPECT_TRUE(frame->IsMappable());
-  EXPECT_FALSE(frame->HasTextures());
+  EXPECT_FALSE(frame->HasSharedImage());
   EXPECT_EQ(frame->storage_type(),
             media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY);
 }
@@ -213,7 +211,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionVp9) {
   ASSERT_TRUE(frame);
   EXPECT_TRUE(HasValidYUVData(*frame));
   EXPECT_TRUE(frame->IsMappable());
-  EXPECT_FALSE(frame->HasTextures());
+  EXPECT_FALSE(frame->HasSharedImage());
   EXPECT_EQ(frame->storage_type(),
             media::VideoFrame::StorageType::STORAGE_UNOWNED_MEMORY);
 }
@@ -228,7 +226,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionAv1) {
   ASSERT_TRUE(frame);
   EXPECT_TRUE(HasValidYUVData(*frame));
   EXPECT_TRUE(frame->IsMappable());
-  EXPECT_FALSE(frame->HasTextures());
+  EXPECT_FALSE(frame->HasSharedImage());
   EXPECT_EQ(frame->storage_type(),
             media::VideoFrame::StorageType::STORAGE_UNOWNED_MEMORY);
 }

@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_validation.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -37,7 +38,7 @@ class ModelValidatorKeyedService : public KeyedService,
 
   // Calls ExecuteModel on the on-device validation session.
   void ExecuteModel(
-      std::unique_ptr<google::protobuf::MessageLite> request_metadata);
+      std::unique_ptr<optimization_guide::proto::ExecuteRequest> request);
 
   // Invoked when model execution completes.
   void OnModelExecuteResponse(OptimizationGuideModelExecutionResult result,
@@ -45,6 +46,7 @@ class ModelValidatorKeyedService : public KeyedService,
 
   // Invoked when on-device model execution completes.
   void OnDeviceModelExecuteResponse(
+      const std::unique_ptr<optimization_guide::proto::ExecuteRequest>& request,
       OptimizationGuideModelStreamingExecutionResult result);
 
   // signin::IdentityManager::Observer:

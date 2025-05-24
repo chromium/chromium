@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -19,29 +21,26 @@ namespace autofill {
 namespace {
 // Returns the ICU sort key corresponding to |str| for the given |collator|.
 // Uses |buffer| as temporary storage, and might resize |buffer| as a side-
-// effect. |buffer_size| should specify the |buffer|'s size, and is updated if
-// the |buffer| is resized.
+// effect.
 const std::string GetSortKey(const icu::Collator& collator,
                              const std::u16string& str,
-                             std::unique_ptr<uint8_t[]>* buffer,
-                             int32_t* buffer_size) {
+                             base::HeapArray<uint8_t>* buffer) {
   DCHECK(buffer);
-  DCHECK(buffer_size);
 
   icu::UnicodeString icu_str(str.c_str(), str.length());
-  int32_t expected_size =
-      collator.getSortKey(icu_str, buffer->get(), *buffer_size);
-  if (expected_size > *buffer_size) {
+  size_t expected_size = static_cast<size_t>(
+      collator.getSortKey(icu_str, buffer->data(), buffer->size()));
+  if (expected_size > buffer->size()) {
     // If there wasn't enough space, grow the buffer and try again.
-    *buffer_size = expected_size;
-    *buffer = std::make_unique<uint8_t[]>(*buffer_size);
-    DCHECK(buffer->get());
+    *buffer = base::HeapArray<uint8_t>::WithSize(expected_size);
+    DCHECK(buffer->data());
 
-    expected_size = collator.getSortKey(icu_str, buffer->get(), *buffer_size);
-    DCHECK_EQ(*buffer_size, expected_size);
+    expected_size =
+        collator.getSortKey(icu_str, buffer->data(), buffer->size());
+    DCHECK_EQ(buffer->size(), expected_size);
   }
 
-  return std::string(reinterpret_cast<const char*>(buffer->get()));
+  return std::string(base::as_string_view(buffer->first(expected_size)));
 }
 
 // Creates collator for |locale| and sets its attributes as needed.
@@ -71,15 +70,13 @@ std::map<std::string, std::string> GetLocalizedNames(
     return std::map<std::string, std::string>();
 
   std::map<std::string, std::string> localized_names;
-  int32_t buffer_size = 1000;
-  auto buffer = std::make_unique<uint8_t[]>(buffer_size);
+  auto buffer = base::HeapArray<uint8_t>::WithSize(1000);
 
   for (const std::string& country_code :
        CountryDataMap::GetInstance()->country_codes()) {
     std::u16string country_name =
         l10n_util::GetDisplayNameForCountry(country_code, locale);
-    std::string sort_key =
-        GetSortKey(*collator, country_name, &buffer, &buffer_size);
+    std::string sort_key = GetSortKey(*collator, country_name, &buffer);
 
     localized_names.insert(std::make_pair(sort_key, country_code));
   }
@@ -108,10 +105,8 @@ const std::string CountryNamesForLocale::GetCountryCode(
   if (!collator_)
     return std::string();
 
-  int32_t buffer_size = country_name.size() * 4;
-  auto buffer = std::make_unique<uint8_t[]>(buffer_size);
-  std::string sort_key =
-      GetSortKey(*collator_, country_name, &buffer, &buffer_size);
+  auto buffer = base::HeapArray<uint8_t>::WithSize(country_name.size() * 4);
+  std::string sort_key = GetSortKey(*collator_, country_name, &buffer);
 
   auto result = localized_names_.find(sort_key);
 

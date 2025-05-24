@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/saved_tab_groups_unsupported_resources.h",
+    "grit/saved_tab_groups_unsupported_resources_map.h",
+    "grit/saved_tab_groups_unsupported_resources_map.cc",
+    "saved_tab_groups_unsupported_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "saved_tab_groups_unsupported"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [ "unsupported.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+}

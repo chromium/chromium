@@ -103,15 +103,9 @@ FacetManager::FacetManager(const FacetURI& facet_uri,
     last_update_time_ = affiliations.last_update_time;
 }
 
-FacetManager::~FacetManager() {
-  // The manager will be destroyed while there are pending requests only if the
-  // entire backend is going away. Fail pending requests in this case.
-  for (auto& request_info : pending_requests_)
-    ServeRequestWithFailure(std::move(request_info));
-}
+FacetManager::~FacetManager() = default;
 
 void FacetManager::GetAffiliationsAndBranding(
-    StrategyOnCacheMiss cache_miss_strategy,
     AffiliationService::ResultCallback callback,
     const scoped_refptr<base::TaskRunner>& callback_task_runner) {
   RequestInfo request_info;
@@ -126,13 +120,6 @@ void FacetManager::GetAffiliationsAndBranding(
     }
     DCHECK_EQ(affiliation.last_update_time, last_update_time_) << facet_uri_;
     ServeRequestWithSuccess(std::move(request_info), affiliation.facets);
-  } else if (cache_miss_strategy == StrategyOnCacheMiss::FETCH_OVER_NETWORK) {
-    pending_requests_.push_back(std::move(request_info));
-    backend_->SignalNeedNetworkRequest();
-  } else if (cache_miss_strategy ==
-             StrategyOnCacheMiss::TRY_ONCE_OVER_NETWORK) {
-    pending_one_time_requests_.push_back(std::move(request_info));
-    backend_->SignalNeedNetworkRequest();
   } else {
     ServeRequestWithFailure(std::move(request_info));
   }
@@ -163,28 +150,12 @@ void FacetManager::CancelPrefetch(const base::Time& keep_fresh_until) {
     keep_fresh_until_thresholds_.erase(iter);
 }
 
-void FacetManager::OnFetchSucceeded(
-    const AffiliatedFacetsWithUpdateTime& affiliation) {
-  last_update_time_ = affiliation.last_update_time;
+void FacetManager::UpdateLastFetchTime(base::Time last_update_time) {
+  last_update_time_ = last_update_time;
   DCHECK(IsCachedDataFresh()) << facet_uri_;
-  for (auto& request_info : pending_requests_)
-    ServeRequestWithSuccess(std::move(request_info), affiliation.facets);
-  pending_requests_.clear();
-  for (auto& request_info : pending_one_time_requests_) {
-    ServeRequestWithSuccess(std::move(request_info), affiliation.facets);
-  }
-  pending_one_time_requests_.clear();
-
   base::Time next_required_fetch(GetNextRequiredFetchTimeDueToPrefetch());
   if (next_required_fetch < base::Time::Max())
     backend_->RequestNotificationAtTime(facet_uri_, next_required_fetch);
-}
-
-void FacetManager::OnFetchFailed() {
-  for (auto& request_info : pending_one_time_requests_) {
-    ServeRequestWithFailure(std::move(request_info));
-  }
-  pending_one_time_requests_.clear();
 }
 
 void FacetManager::NotifyAtRequestedTime() {
@@ -202,8 +173,7 @@ void FacetManager::NotifyAtRequestedTime() {
 }
 
 bool FacetManager::CanBeDiscarded() const {
-  return pending_requests_.empty() && pending_one_time_requests_.empty() &&
-         GetMaximumKeepFreshUntilThreshold() <= clock_->Now();
+  return GetMaximumKeepFreshUntilThreshold() <= clock_->Now();
 }
 
 bool FacetManager::CanCachedDataBeDiscarded() const {
@@ -212,9 +182,7 @@ bool FacetManager::CanCachedDataBeDiscarded() const {
 }
 
 bool FacetManager::DoesRequireFetch() const {
-  return ((!pending_requests_.empty() || !pending_one_time_requests_.empty()) &&
-          !IsCachedDataFresh()) ||
-         GetNextRequiredFetchTimeDueToPrefetch() <= clock_->Now();
+  return GetNextRequiredFetchTimeDueToPrefetch() <= clock_->Now();
 }
 
 bool FacetManager::IsCachedDataFresh() const {

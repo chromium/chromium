@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
+
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -14,13 +16,12 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
-#include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -48,6 +49,11 @@
 class MemorySaverChipViewBrowserTest
     : public MemorySaverBrowserTestMixin<InProcessBrowserTest> {
  public:
+  MemorySaverChipViewBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kPageActionsMigration,
+                                              false);
+  }
+
   void SetUpOnMainThread() override {
     MemorySaverBrowserTestMixin::SetUpOnMainThread();
 
@@ -74,8 +80,14 @@ class MemorySaverChipViewBrowserTest
         ->GetInkDrop()
         ->GetTargetInkDropState();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/376283619): Remove this test (and entire file) after the page
+// action is migrated to the new framework, and sufficient ink-drop test
+// coverage is present in the framework itself.
 IN_PROC_BROWSER_TEST_F(MemorySaverChipViewBrowserTest,
                        ShowAndHideInkDropOnDialog) {
   PageActionIconView* chip = GetMemorySaverChipView();

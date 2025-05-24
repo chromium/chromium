@@ -102,6 +102,8 @@ class POLICY_EXPORT CloudPolicyCore {
   // Shuts down the cloud connection.
   void Disconnect();
 
+  bool IsConnected() const { return client() && service(); }
+
   // Starts a remote commands service, with the provided factory. Will attempt
   // to fetch commands immediately, thus requiring the cloud policy client to
   // be registered.

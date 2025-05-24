@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/config.h"
@@ -87,7 +86,7 @@ DocViewDigest CreateDigest(std::vector<feedstore::DocView> all_views) {
       }
     }
 
-    base::ranges::sort(latest_view_to_docid);
+    std::ranges::sort(latest_view_to_docid);
 
     std::vector<uint64_t> docids_to_remove;
     docids_to_remove.reserve(remove_count);

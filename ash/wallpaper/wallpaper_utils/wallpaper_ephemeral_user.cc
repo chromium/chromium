@@ -22,7 +22,7 @@ bool IsEphemeralUser(const AccountId& account_id) {
 
   if (account_id == user_manager::StubAccountId()) {
     // Stub user is never ephemeral. Mirrors the logic in
-    // UserManagerBase::IsEphemeralAccountId.
+    // UserManagerImpl::IsEphemeralAccountId.
     return false;
   }
 

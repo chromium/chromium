@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The original version of this file lives in the Chromium repository at:
+// src/components/arc/mojom/crosh.mojom
+
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// Next Method ID: 1
+[Stable]
+interface ArcShellExecutionInstance {
+  // Request a command execution on ARC shell and receive its raw result.
+  Exec@0(ArcShellExecutionRequest request) => (ArcShellExecutionResult result);
+};
+
+// Next Enum ID: 3
+// Supported shell commands to execute on ARC shell.
+// It corresponds to ArcShellCommand, a D-Bus message in system_api.
+[Extensible, Stable]
+enum ArcShellCommand {
+  [Default] unknown = -1,
+  kTop = 0,
+  kCpuinfo = 1,
+  kMeminfo = 2,
+};
+
+[Stable]
+struct ArcShellExecutionRequest {
+  // Shell command to execute on ARC shell.
+  ArcShellCommand command@0;
+};
+
+// It contains the execution result of ArcShellExecutionInstance.Exec.
+// It corresponds to ArcShellExecutionResult, a D-Bus message in system_api.
+[Stable]
+union ArcShellExecutionResult {
+  // Acquired output if the execution succeeds.
+  string stdout@0;
+
+  // Error message if the execution fails.
+  string error@1;
+};

@@ -1,10 +1,8 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 component("growth") {
   sources = [
@@ -25,14 +23,21 @@ component("growth") {
   deps = [
     ":utils",
     "//ash/constants",
+    "//ash/resources/vector_icons",
+    "//ash/webui/mall/resources:resources_grit",
+    "//ash/webui/personalization_app/resources:resources_grit",
+    "//ash/webui/print_management/resources:resources_grit",
     "//base",
     "//build:branding_buildflags",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/demo_mode",
+    "//chromeos/ash/components/scalable_iph:buildflags",
     "//chromeos/ash/resources",
     "//chromeos/ui/vector_icons",
     "//components/account_id",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:tribool",
     "//components/user_manager",
     "//components/version_info",
     "//third_party/re2",
@@ -101,6 +106,7 @@ source_set("unit_tests") {
     "//components/account_id",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:tribool",
     "//components/user_manager:test_support",
     "//components/version_info",
     "//testing/gmock",

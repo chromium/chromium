@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/socket/tcp_socket.h"
 
 #include <errno.h>
@@ -22,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/win/windows_version.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"
@@ -102,6 +98,13 @@ bool SetNonBlockingAndGetError(int fd, int* os_error) {
   *os_error = WSAGetLastError();
 
   return ret;
+}
+
+bool UseTcpPortRandomization() {
+  return base::FeatureList::IsEnabled(features::kTcpPortRandomizationWin) &&
+         base::win::GetVersion() >=
+             static_cast<base::win::Version>(
+                 features::kTcpPortRandomizationWinVersionMinimum.Get());
 }
 
 }  // namespace
@@ -187,7 +190,7 @@ class TCPSocketDefaultWin::CoreImpl : public TCPSocketWin::Core {
   // TODO(mmenke): Can writes be switched to WSAEventSelect as well? That would
   // allow removing this class. The only concern is whether that would have a
   // negative perf impact.
-  OVERLAPPED write_overlapped_;
+  OVERLAPPED write_overlapped_ = {};
 
   // The buffers used in Read() and Write().
   scoped_refptr<IOBuffer> read_iobuffer_;
@@ -246,7 +249,6 @@ TCPSocketDefaultWin::CoreImpl::CoreImpl(TCPSocketDefaultWin* socket)
       socket_(socket),
       reader_(this),
       writer_(this) {
-  memset(&write_overlapped_, 0, sizeof(write_overlapped_));
   write_overlapped_.hEvent = WSACreateEvent();
 }
 
@@ -258,7 +260,6 @@ TCPSocketDefaultWin::CoreImpl::~CoreImpl() {
   // in Detach().
   write_watcher_.StopWatching();
   WSACloseEvent(write_overlapped_.hEvent);
-  memset(&write_overlapped_, 0xaf, sizeof(write_overlapped_));
 }
 
 void TCPSocketDefaultWin::CoreImpl::WatchForRead() {
@@ -448,10 +449,11 @@ int TCPSocketWin::Bind(const IPEndPoint& address) {
   DCHECK_NE(socket_, INVALID_SOCKET);
 
   SockaddrStorage storage;
-  if (!address.ToSockAddr(storage.addr, &storage.addr_len))
+  if (!address.ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
 
-  int result = bind(socket_, storage.addr, storage.addr_len);
+  int result = bind(socket_, storage.addr(), storage.addr_len);
   int os_error = WSAGetLastError();
   if (result < 0) {
     PLOG(ERROR) << "bind() returned an error";
@@ -715,12 +717,13 @@ int TCPSocketWin::GetLocalAddress(IPEndPoint* address) const {
   DCHECK(address);
 
   SockaddrStorage storage;
-  if (getsockname(socket_, storage.addr, &storage.addr_len)) {
+  if (getsockname(socket_, storage.addr(), &storage.addr_len)) {
     int os_error = WSAGetLastError();
     return MapSystemError(os_error);
   }
-  if (!address->FromSockAddr(storage.addr, storage.addr_len))
+  if (!address->FromSockAddr(storage.addr(), storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
 
   return OK;
 }
@@ -857,7 +860,7 @@ void TCPSocketWin::StartLoggingMultipleConnectAttempts(
     logging_multiple_connect_attempts_ = true;
     LogConnectBegin(addresses);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -866,7 +869,7 @@ void TCPSocketWin::EndLoggingMultipleConnectAttempts(int net_error) {
     LogConnectEnd(net_error);
     logging_multiple_connect_attempts_ = false;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -893,7 +896,7 @@ void TCPSocketWin::CloseSocketDescriptorForTesting() {
 int TCPSocketWin::AcceptInternal(std::unique_ptr<TCPSocketWin>* socket,
                                  IPEndPoint* address) {
   SockaddrStorage storage;
-  int new_socket = accept(socket_, storage.addr, &storage.addr_len);
+  int new_socket = accept(socket_, storage.addr(), &storage.addr_len);
   int os_error = WSAGetLastError();
   if (new_socket < 0) {
     int net_error = MapSystemError(os_error);
@@ -903,13 +906,8 @@ int TCPSocketWin::AcceptInternal(std::unique_ptr<TCPSocketWin>* socket,
   }
 
   IPEndPoint ip_end_point;
-  if (!ip_end_point.FromSockAddr(storage.addr, storage.addr_len)) {
-    NOTREACHED_IN_MIGRATION();
-    if (closesocket(new_socket) < 0)
-      PLOG(ERROR) << "closesocket";
-    int net_error = ERR_ADDRESS_INVALID;
-    net_log_.EndEventWithNetErrorCode(NetLogEventType::TCP_ACCEPT, net_error);
-    return net_error;
+  if (!ip_end_point.FromSockAddr(storage.addr(), storage.addr_len)) {
+    NOTREACHED();
   }
   auto tcp_socket =
       TCPSocketWin::Create(nullptr, net_log_.net_log(), net_log_.source());
@@ -967,20 +965,20 @@ int TCPSocketWin::DoConnect() {
   WSAEventSelect(socket_, core_->GetConnectEvent(), FD_CONNECT);
 
   SockaddrStorage storage;
-  if (!peer_address_->ToSockAddr(storage.addr, &storage.addr_len))
+  if (!peer_address_->ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
 
   // Set option to choose a random port, if the socket is not already bound.
   // Ignore failures, which may happen if the socket was already bound.
-  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1 &&
-      base::FeatureList::IsEnabled(features::kEnableTcpPortRandomization)) {
+  if (UseTcpPortRandomization()) {
     BOOL randomize_port = TRUE;
     setsockopt(socket_, SOL_SOCKET, SO_RANDOMIZE_PORT,
                reinterpret_cast<const char*>(&randomize_port),
                sizeof(randomize_port));
   }
 
-  if (!connect(socket_, storage.addr, storage.addr_len)) {
+  if (!connect(socket_, storage.addr(), storage.addr_len)) {
     // Connected without waiting!
     //
     // The MSDN page for connect says:
@@ -989,13 +987,8 @@ int TCPSocketWin::DoConnect() {
     //   WSAGetLastError will return WSAEWOULDBLOCK.
     // which implies that for a nonblocking socket, connect never returns 0.
     // It's not documented whether the event object will be signaled or not
-    // if connect does return 0.  So the code below is essentially dead code
-    // and we don't know if it's correct.
-    NOTREACHED_IN_MIGRATION();
-
-    if (ResetEventIfSignaled(core_->GetConnectEvent())) {
-      return OK;
-    }
+    // if connect does return 0.
+    NOTREACHED();
   } else {
     int os_error = WSAGetLastError();
     if (os_error != WSAEWOULDBLOCK) {

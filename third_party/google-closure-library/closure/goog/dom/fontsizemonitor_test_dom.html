@@ -12,11 +12,11 @@ This div has a script in it that creates a FontSizeMonitor.  This ensures that
 we do not get an "Operation abort" error in IE.
 -->
 <div>
-  <script>
+  <script nonce="CSP+Nonce+For+Tests+Only">
     var operationAbortTester = new goog.dom.FontSizeMonitor();
     // Close script tag before disposing.
   </script>
-  <script>
+  <script nonce="CSP+Nonce+For+Tests+Only">
     operationAbortTester.dispose();
   </script>
 </div>

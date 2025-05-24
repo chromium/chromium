@@ -34,8 +34,8 @@ void EnterpriseAuthenticationAppLinkManager::OnPolicyUpdated() {
       pref_service_->GetList(prefs::kEnterpriseAuthAppLinkPolicy);
 
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
-  url_matcher::util::AddAllowFilters(url_matcher_.get(),
-                                     authentication_urls_policy);
+  url_matcher::util::AddAllowFiltersWithLimit(url_matcher_.get(),
+                                              authentication_urls_policy);
 }
 
 bool EnterpriseAuthenticationAppLinkManager::IsEnterpriseAuthenticationUrl(

@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/policy/core/browser/webui/json_generation.h"
 
@@ -89,12 +90,12 @@ class SupportPacketMetadata {
       const char* chrome_metadata_key,
       const char* support_packet_key);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Is called when machine statistics is loaded. Puts `machine_serial` on
   // `metadata_` and runs `on_metadata_contents_populated`.
   void OnMachineStatisticsLoaded(
       base::OnceClosure on_metadata_contents_populated);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns the string of `timestamp` in a numeric date and time with time zone
   // such as "12/13/52 2:44:30 PM PST".

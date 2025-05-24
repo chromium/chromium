@@ -39,7 +39,9 @@ class TestCases extends LiteTestCases {
    *     !ReadableStreamDefaultController<string>}}
    * @override
    */
-  newReadableStreamWithController(underlyingSource = {}, strategy = {}) {
+  newReadableStreamWithController(
+      underlyingSource = /** @type {!ReadableStreamUnderlyingSource} */ ({}),
+      strategy = /** @type {!ReadableStreamStrategy} */ ({})) {
     let controller;
     const start = underlyingSource.start;
     underlyingSource = Object.assign({}, underlyingSource, {

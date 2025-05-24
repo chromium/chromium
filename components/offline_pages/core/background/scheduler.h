@@ -27,8 +27,8 @@ class Scheduler {
     bool require_unmetered_network;
   };
 
-  Scheduler() {}
-  virtual ~Scheduler() {}
+  Scheduler() = default;
+  virtual ~Scheduler() = default;
 
   // Schedules the triggering of a task subject to |trigger_conditions|.
   // This may overwrite any previous scheduled task with a new one for

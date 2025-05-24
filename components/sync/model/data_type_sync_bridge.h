@@ -131,7 +131,7 @@ class DataTypeSyncBridge {
   // different from GetStorageKey(). Only the hash of this value is kept.
   //
   // IsEntityDataValid() is guaranteed to hold for the `entity_data`.
-  virtual std::string GetClientTag(const EntityData& entity_data) = 0;
+  virtual std::string GetClientTag(const EntityData& entity_data) const = 0;
 
   // Must not be called unless SupportsGetStorageKey() returns true.
   //
@@ -146,7 +146,7 @@ class DataTypeSyncBridge {
   // it contains invalid data).
   //
   // IsEntityDataValid() is guaranteed to hold for the `entity_data`.
-  virtual std::string GetStorageKey(const EntityData& entity_data) = 0;
+  virtual std::string GetStorageKey(const EntityData& entity_data) const = 0;
 
   // Whether or not the bridge is capable of producing a client tag from
   // `EntityData` (usually remote changes), via GetClientTag(). Most bridges do,
@@ -241,6 +241,8 @@ class DataTypeSyncBridge {
   // TODO(crbug.com/40253395): Consider changing the default to preserve unknown
   // fields at least.
   // By default, empty EntitySpecifics is returned.
+  // Refer to the following documentation before implementing this method:
+  // https://www.chromium.org/developers/design-documents/sync/old-sync-clients-data-override-protection/
   virtual sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const;
 

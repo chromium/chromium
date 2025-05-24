@@ -35,6 +35,10 @@ std::string GetErrorMessageName(PasswordStoreBackendErrorType error_type) {
       return "GMSCoreOutdatedSavingPossible";
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:
       return "GMSCoreOutdatedSavingDisabled";
+    case PasswordStoreBackendErrorType::kEmptySecurityDomain:
+      return "EmptySecurityDomain";
+    case PasswordStoreBackendErrorType::kIrretrievableSecurityDomain:
+      return "IrretrievableSecurityDomain";
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
       // Other error types aren't supported.
@@ -137,10 +141,14 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
   message_ =
       CreateMessage(web_contents, error_type, std::move(dismissal_callback));
   error_type_ = error_type;
+  // TODO(crbug.com/379762002): Replace all the switches with passing-in
+  // an already customized "handler".
   switch (error_type) {
     case PasswordStoreBackendErrorType::kAuthErrorResolvable:
     case PasswordStoreBackendErrorType::kAuthErrorUnresolvable:
     case PasswordStoreBackendErrorType::kKeyRetrievalRequired:
+    case PasswordStoreBackendErrorType::kEmptySecurityDomain:
+    case PasswordStoreBackendErrorType::kIrretrievableSecurityDomain:
       SetVerifyItIsYouMessageContent(message_.get(), flow_type);
       break;
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
@@ -150,7 +158,7 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
       // Other error types aren't supported.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
@@ -166,6 +174,8 @@ bool PasswordManagerErrorMessageDelegate::ShouldShowErrorUI(
     case PasswordStoreBackendErrorType::kAuthErrorResolvable:
     case PasswordStoreBackendErrorType::kAuthErrorUnresolvable:
     case PasswordStoreBackendErrorType::kKeyRetrievalRequired:
+    case PasswordStoreBackendErrorType::kEmptySecurityDomain:
+    case PasswordStoreBackendErrorType::kIrretrievableSecurityDomain:
       return helper_bridge_->ShouldShowSignInErrorUI(web_contents);
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:
@@ -217,6 +227,8 @@ void PasswordManagerErrorMessageDelegate::HandleActionButtonClicked(
       helper_bridge_->StartUpdateAccountCredentialsFlow(web_contents);
       break;
     case PasswordStoreBackendErrorType::kKeyRetrievalRequired:
+    case PasswordStoreBackendErrorType::kEmptySecurityDomain:
+    case PasswordStoreBackendErrorType::kIrretrievableSecurityDomain:
       helper_bridge_->StartTrustedVaultKeyRetrievalFlow(web_contents);
       break;
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
@@ -226,6 +238,6 @@ void PasswordManagerErrorMessageDelegate::HandleActionButtonClicked(
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
       // Other error types aren't supported.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }

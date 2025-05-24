@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
@@ -121,8 +122,14 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsBrowserTestWithSiteLeavingSet,
                          "foo=bar;SameSite=None;Secure;Max-Age=2147483647"));
 }
 
+// TODO(crbug.com/376799234): Re-enable this.
+#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
+#define MAYBE_CookieDeleted DISABLED_CookieDeleted
+#else
+#define MAYBE_CookieDeleted CookieDeleted
+#endif
 IN_PROC_BROWSER_TEST_F(FirstPartySetsBrowserTestWithSiteLeavingSet,
-                       CookieDeleted) {
+                       MAYBE_CookieDeleted) {
   // After restart, check the cookies of b.test. Since b.test moved out of the
   // Related Website Sets, its cookies are going to be deleted.
   EXPECT_EQ("",

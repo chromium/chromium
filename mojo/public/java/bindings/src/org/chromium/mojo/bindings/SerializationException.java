@@ -4,7 +4,10 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Error that can be thrown when serializing a mojo message. */
+@NullMarked
 public class SerializationException extends RuntimeException {
 
     /** Constructs a new serialization exception with the specified detail message. */

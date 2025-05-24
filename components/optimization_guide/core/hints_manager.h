@@ -216,6 +216,12 @@ class HintsManager : public OptimizationHintsComponentObserver,
                          proto::OptimizationType optimization_type,
                          const std::optional<OptimizationMetadata>& metadata);
 
+  // Add hints to be returned for on-demand hints requests.
+  void AddOnDemandHintForTesting(
+      const GURL& url,
+      proto::OptimizationType optimization_type,
+      const OptimizationGuideDecisionWithMetadata& decision);
+
  private:
   friend class ::OptimizationGuideTestAppInterfaceWrapper;
   friend class HintsManagerTest;
@@ -510,6 +516,12 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // The hint cache that holds both hints received from the component and
   // fetched from the remote Optimization Guide Service.
   std::unique_ptr<HintCache> hint_cache_;
+
+  // For testing only. Stores hints to be returned for on-demand hint requests.
+  base::flat_map<GURL,
+                 base::flat_map<proto::OptimizationType,
+                                OptimizationGuideDecisionWithMetadata>>
+      on_demand_hints_for_testing_;
 
   // The fetcher that handles making requests for hints for active tabs from
   // the remote Optimization Guide Service.

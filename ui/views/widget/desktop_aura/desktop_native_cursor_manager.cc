@@ -79,6 +79,12 @@ void DesktopNativeCursorManager::SetCursorSize(
   NOTIMPLEMENTED();
 }
 
+void DesktopNativeCursorManager::SetLargeCursorSizeInDip(
+    int large_cursor_size_in_dip,
+    wm::NativeCursorManagerDelegate* delegate) {
+  NOTIMPLEMENTED();
+}
+
 void DesktopNativeCursorManager::SetMouseEventsEnabled(
     bool enabled,
     wm::NativeCursorManagerDelegate* delegate) {
@@ -98,6 +104,12 @@ void DesktopNativeCursorManager::SetMouseEventsEnabled(
 void DesktopNativeCursorManager::InitCursorSizeObserver(
     wm::NativeCursorManagerDelegate* delegate) {
   NOTREACHED();
+}
+
+void DesktopNativeCursorManager::SetCursorColor(
+    SkColor color,
+    wm::NativeCursorManagerDelegate* delegate) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace views

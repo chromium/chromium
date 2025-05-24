@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
+import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
@@ -45,6 +46,8 @@ source_set("sync") {
     "sync_service_factory.h",
     "sync_startup_tracker.cc",
     "sync_startup_tracker.h",
+    "sync_ui_util.cc",
+    "sync_ui_util.h",
     "user_event_service_factory.cc",
     "user_event_service_factory.h",
   ]
@@ -55,6 +58,7 @@ source_set("sync") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//components/browser_sync",
+    "//components/collaboration/public",
     "//components/favicon/core",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -77,8 +81,15 @@ source_set("sync") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/plus_addresses",
+
+    # TODO(crbug.com/374910357): Investigate for a better dependency injection.
+    "//chrome/browser/autofill",
     "//chrome/browser/favicon",
+    "//chrome/browser/prefs:util",
+    "//chrome/browser/profiles",
     "//chrome/browser/promos:utils",
+    "//chrome/browser/reading_list",
     "//chrome/browser/search_engines",
     "//chrome/browser/tab_group_sync:utils",
     "//chrome/browser/ui:ui_features",
@@ -104,15 +115,12 @@ source_set("sync") {
     "//components/plus_addresses/webdata",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:tracking_protection_prefs",
-    "//components/saved_tab_groups:core",
-    "//components/saved_tab_groups:model",
+    "//components/saved_tab_groups/public",
     "//components/send_tab_to_self",
     "//components/sharing_message",
     "//components/spellcheck:buildflags",
     "//components/spellcheck/browser",
     "//components/strings:components_strings_grit",
-    "//components/supervised_user/core/browser",
-    "//components/supervised_user/core/common",
     "//components/sync_bookmarks",
     "//components/sync_user_events",
     "//components/user_manager",
@@ -129,6 +137,13 @@ source_set("sync") {
     deps += [ "//chrome/browser/web_applications" ]
   }
 
+  if (enable_supervised_users) {
+    deps += [
+      "//components/supervised_user/core/browser",
+      "//components/supervised_user/core/common",
+    ]
+  }
+
   if (is_android) {
     sources += [
       "glue/synced_tab_delegate_android.cc",
@@ -140,7 +155,10 @@ source_set("sync") {
       "glue/web_contents_state_synced_tab_delegate.cc",
       "glue/web_contents_state_synced_tab_delegate.h",
     ]
-    deps += [ "//chrome/browser/sync/android:jni_headers" ]
+    deps += [
+      "//chrome/browser/sync/android:jni_headers",
+      "//chrome/browser/ui/android/tab_model",
+    ]
   } else {
     sources += [
       "glue/extension_data_type_controller.cc",
@@ -149,15 +167,15 @@ source_set("sync") {
       "glue/extension_setting_data_type_controller.h",
       "sessions/browser_list_router_helper.cc",
       "sessions/browser_list_router_helper.h",
-      "sync_ui_util.cc",
-      "sync_ui_util.h",
     ]
     public_deps += [
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
     ]
     deps += [
+      "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/themes",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/web_applications",
     ]
 
@@ -170,7 +188,7 @@ source_set("sync") {
       ]
     }
   }
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "desk_sync_service_factory.cc",
       "desk_sync_service_factory.h",
@@ -178,17 +196,15 @@ source_set("sync") {
       "wifi_configuration_sync_service_factory.h",
     ]
     deps += [
-      "//ash/components/arc:arc_base_utils",
       "//ash/constants",
       "//ash/public/cpp",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
-      "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/tracing",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/floating_sso",
-      "//chrome/browser/ash/floating_workspace",
+      "//chrome/browser/ash/floating_workspace:utils",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/login/session",
       "//chrome/browser/ash/printing",
@@ -198,15 +214,19 @@ source_set("sync") {
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/sync_wifi",
       "//chromeos/ash/components/tether",
+      "//chromeos/ash/experiences/arc:arc_base_utils",
       "//components/desks_storage",
       "//ui/events/ash",
     ]
     allow_circular_includes_from = [
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
-      "//chrome/browser/ash/floating_workspace",
       "//chrome/browser/ash/login/session",
     ]
+  }
+
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
   }
 }
 

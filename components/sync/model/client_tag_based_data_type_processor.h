@@ -28,6 +28,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/processor_entity_tracker.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace sync_pb {
 class DataTypeState;
@@ -86,7 +87,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   void OnModelStarting(DataTypeSyncBridge* bridge) override;
   void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) override;
   bool IsTrackingMetadata() const override;
-  std::string TrackedAccountId() const override;
+  GaiaId TrackedGaiaId() const override;
   std::string TrackedCacheGuid() const override;
   void ReportError(const ModelError& error) override;
   std::optional<ModelError> GetError() const override;
@@ -128,11 +129,11 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
       override;
 
   // DataTypeControllerDelegate implementation.
-  // |start_callback| will never be called synchronously.
+  // `start_callback` will never be called synchronously.
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
-  void HasUnsyncedData(base::OnceCallback<void(bool)> callback) override;
+  void GetUnsyncedDataCount(base::OnceCallback<void(size_t)> callback) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
@@ -208,8 +209,8 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
-  // Caches EntityData from the |data_batch| in the entity and checks
-  // that every entity in |storage_keys_to_load| was successfully loaded (or is
+  // Caches EntityData from the `data_batch` in the entity and checks
+  // that every entity in `storage_keys_to_load` was successfully loaded (or is
   // not tracked by the processor any more). Reports failed checks to UMA.
   void ConsumeDataBatch(std::unordered_set<std::string> storage_keys_to_load,
                         std::unique_ptr<DataBatch> data_batch);
@@ -220,8 +221,8 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // Nudges worker if there are any local entities to be committed.
   void NudgeForCommitIfNeeded();
 
-  // Looks up the client tag hash for the given |storage_key|, and regenerates
-  // with |data| if the lookup finds nothing. Does not update the storage key to
+  // Looks up the client tag hash for the given `storage_key`, and regenerates
+  // with `data` if the lookup finds nothing. Does not update the storage key to
   // client tag hash mapping.
   ClientTagHash GetClientTagHash(const std::string& storage_key,
                                  const EntityData& data) const;
@@ -231,13 +232,13 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // tell the bridge to delete the actual data.
   void ExpireAllEntries(MetadataChangeList* metadata_changes);
 
-  // Removes entity with specified |storage_key| and clears metadata for it from
-  // |metadata_change_list|. |storage_key| must not be empty.
+  // Removes entity with specified `storage_key` and clears metadata for it from
+  // `metadata_change_list`. `storage_key` must not be empty.
   void RemoveEntity(const std::string& storage_key,
                     MetadataChangeList* metadata_change_list);
 
   // Resets the internal state of the processor to the one right after calling
-  // the ctor (with the exception of |bridge_| which remains intact).
+  // the ctor (with the exception of `bridge_` which remains intact).
   // TODO(jkrcal): Replace the helper function by grouping the state naturally
   // into a few structs / nested classes so that the state can be reset by
   // resetting these structs.
@@ -259,8 +260,14 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // the metadata was cleared.
   bool ClearPersistedMetadataIfInvalid(const MetadataBatch& metadata);
 
-  // Reports error and records a metric about |site| where the error occurred.
+  // Reports error and records a metric about `site` where the error occurred.
   void ReportErrorImpl(const ModelError& error, ErrorSite site);
+
+  // Generates some consistent unique position on best effort if it can't be
+  // calculated. Unique positions are stored in sync metadata and loaded from
+  // the disk on browser startup, so they should not be CHECKed for validness.
+  sync_pb::UniquePosition GenerateFallbackUniquePosition(
+      const ClientTagHash& client_tag_hash) const;
 
   /////////////////////
   // Processor state //
@@ -301,7 +308,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   ////////////////
 
   // Stores the start callback in between OnSyncStarting() and ReadyToConnect().
-  // |start_callback_| will never be called synchronously.
+  // `start_callback_` will never be called synchronously.
   StartCallback start_callback_;
 
   // The request context passed in as part of OnSyncStarting().

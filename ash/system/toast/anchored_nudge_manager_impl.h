@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_education_controller.h"
@@ -57,7 +58,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  const std::u16string& GetNudgeBodyTextForTest(const std::string& id);
+  std::u16string_view GetNudgeBodyTextForTest(const std::string& id);
   views::View* GetNudgeAnchorViewForTest(const std::string& id);
   views::LabelButton* GetNudgePrimaryButtonForTest(const std::string& id);
   views::LabelButton* GetNudgeSecondaryButtonForTest(const std::string& id);

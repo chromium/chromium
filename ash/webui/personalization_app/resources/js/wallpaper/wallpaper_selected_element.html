@@ -82,6 +82,11 @@
     padding: 8px 20px 20px 20px;
   }
 
+  #descriptionDialogLearnMore {
+    align-self: center;
+    margin-inline-end: auto;
+  }
+
   #descriptionDialog div[slot='button-container'] cr-button {
     border-radius: 18px;
     font: var(--cros-button-2-font);
@@ -178,10 +183,23 @@
       </google-photos-shared-album-dialog>
     </template>
     <template is="dom-if" if="[[showDescriptionDialog_]]" restamp>
-      <cr-dialog id="descriptionDialog" on-close="closeDescriptionDialog_" show-on-attach>
-        <h3 slot="title">[[image_.descriptionTitle]]</h3>
+      <cr-dialog aria-description-text="[[image_.descriptionContent]]"
+          id="descriptionDialog"
+          on-close="closeDescriptionDialog_"
+          show-on-attach>
+        <h3 slot="title" id="descriptionDialogTitle">[[image_.descriptionTitle]]</h3>
         <p slot="body" id="descriptionDialogBody">[[image_.descriptionContent]]</p>
         <div slot="button-container">
+          <template is="dom-if" if="[[actionUrl_]]" restamp>
+            <div id="descriptionDialogLearnMore">
+              <a aria-describedby="descriptionDialogTitle"
+                  aria-label="$i18n{descriptionDialogLearnMoreAriaLabel}"
+                  href$="[[actionUrl_]]"
+                  target="_blank">
+                $i18n{descriptionDialogLearnMore}
+              </a>
+            </div>
+          </template>
           <cr-button class="primary action-button" id="dialogCloseButton"
               on-click="closeDescriptionDialog_">
             $i18n{descriptionDialogClose}

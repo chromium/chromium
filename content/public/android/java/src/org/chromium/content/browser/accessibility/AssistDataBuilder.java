@@ -14,6 +14,8 @@ import android.view.ViewStructure.HtmlInfo;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -26,6 +28,7 @@ import java.util.Arrays;
  * provide to the Android framework.
  */
 @JNINamespace("content")
+@NullMarked
 public class AssistDataBuilder {
     private static final String CSS_DISPLAY_BUNDLE_KEY = "display";
     private static final String METADATA_BUNDLE_KEY = "metadata";
@@ -84,7 +87,11 @@ public class AssistDataBuilder {
                         absoluteLeft + absoluteWidth,
                         absoluteTop + absoluteHeight);
         AccessibilityNodeInfoBuilder.convertWebRectToAndroidCoordinates(
-                rect, node.getExtras(), accessibilityCoordinates, view);
+                rect,
+                node.getExtras(),
+                accessibilityCoordinates,
+                view,
+                /* isScreenCoordinates= */ true);
 
         node.setDimens(rect.left, rect.top, 0, 0, rect.width(), rect.height());
     }

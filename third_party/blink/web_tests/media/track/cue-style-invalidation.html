@@ -36,7 +36,7 @@ async_test(function(t) {
         ascendant.offsetTop;
         ascendant.classList.add("cue");
         if (window.internals)
-            assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 12);
+            assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 14);
         assert_equals(getComputedStyle(cueNode).backgroundColor, green);
 
         assert_equals(getComputedStyle(cNode).backgroundColor, red);

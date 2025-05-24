@@ -1,9 +1,9 @@
 Name: Metrics Protos
 Short Name: metrics_proto
 URL: This is the canonical public repository
-Version: 676897813
-Date: 2024-09-20 UTC
-License: BSD
+Version: 760814420
+Date: 2025-05-19
+License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes
 Security Critical: Yes

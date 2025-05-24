@@ -6,9 +6,13 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/test_push_notification_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -41,8 +45,16 @@ class PushNotificationClientManagerTest : public PlatformTest {
           GetClient(manager_, 0)->GetClientId());
     }
   }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  const scoped_refptr<base::SequencedTaskRunner> main_task_runner_{
+      base::SequencedTaskRunner::GetCurrentDefault()};
+
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<PushNotificationClientManager> manager_ =
-      std::make_unique<PushNotificationClientManager>();
+      std::make_unique<PushNotificationClientManager>(main_task_runner_);
 };
 
 TEST_F(PushNotificationClientManagerTest, AddClient) {
@@ -59,44 +71,12 @@ TEST_F(PushNotificationClientManagerTest, AddMultipleClients) {
   ASSERT_EQ(number_of_clients, manager_->GetPushNotificationClients().size());
 }
 
-TEST_F(PushNotificationClientManagerTest, HandleNotificationReception) {
-  GenerateClients(manager_, 1);
-  ASSERT_EQ(UIBackgroundFetchResultNoData,
-            manager_->HandleNotificationReception(nil));
-}
-
 TEST_F(PushNotificationClientManagerTest,
-       HandleNotificationReceptionWithNewData) {
+       HandleNotificationReceptionWithInvalidData) {
   const unsigned long number_of_clients = 5;
   GenerateClients(manager_, number_of_clients);
 
-  TestPushNotificationClient* client = GetClient(manager_, 0);
-  client->SetBackgroundFetchResult(UIBackgroundFetchResultNewData);
-  ASSERT_EQ(UIBackgroundFetchResultNewData,
-            manager_->HandleNotificationReception(nil));
-}
-
-TEST_F(PushNotificationClientManagerTest,
-       HandleNotificationReceptionWithFailure) {
-  const unsigned long number_of_clients = 5;
-  GenerateClients(manager_, number_of_clients);
-
-  TestPushNotificationClient* client = GetClient(manager_, 0);
-  client->SetBackgroundFetchResult(UIBackgroundFetchResultFailed);
   ASSERT_EQ(UIBackgroundFetchResultFailed,
-            manager_->HandleNotificationReception(nil));
-}
-
-TEST_F(PushNotificationClientManagerTest,
-       HandleNotificationReceptionWithNewDataAndFailure) {
-  const unsigned long number_of_clients = 5;
-  GenerateClients(manager_, number_of_clients);
-
-  GetClient(manager_, 0)
-      ->SetBackgroundFetchResult(UIBackgroundFetchResultNewData);
-  GetClient(manager_, 1)
-      ->SetBackgroundFetchResult(UIBackgroundFetchResultFailed);
-  ASSERT_EQ(UIBackgroundFetchResultNewData,
             manager_->HandleNotificationReception(nil));
 }
 
@@ -124,4 +104,16 @@ TEST_F(PushNotificationClientManagerTest, BrowserReady) {
   EXPECT_FALSE(GetClient(manager_, 0)->IsBrowserReady());
   manager_->OnSceneActiveForegroundBrowserReady();
   EXPECT_TRUE(GetClient(manager_, 0)->IsBrowserReady());
+}
+
+TEST_F(PushNotificationClientManagerTest, GetClientForNotification) {
+  GenerateClients(manager_, 3);
+  GetClient(manager_, 0)->SetCanHandleNotification(false);
+  GetClient(manager_, 1)->SetCanHandleNotification(true);
+  GetClient(manager_, 2)->SetCanHandleNotification(false);
+
+  id mock_notification = OCMClassMock([UNNotification class]);
+
+  EXPECT_EQ(manager_->GetClientForNotification(mock_notification),
+            GetClient(manager_, 1));
 }

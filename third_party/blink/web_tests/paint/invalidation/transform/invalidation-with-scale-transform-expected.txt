@@ -4,10 +4,43 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "invalidations": [
-        [85, 70, 91, 91]
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (children-inline) DIV id='zoom' class='zoom-div'",
+      "bounds": [784, 46],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='target'",
+      "position": [42, 67],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
       ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [0.899999976158142, 0, 0, 0],
+        [0, 0.899999976158142, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [392, 22.75]
     }
   ]
 }

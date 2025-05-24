@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/init/web_main_runner.h"
-
 #import "build/blink_buildflags.h"
 #import "ios/web/init/web_main_runner_impl.h"
+#import "ios/web/public/init/web_main_runner.h"
 
 #if BUILDFLAG(USE_BLINK)
 #import "ios/web/content/init/ios_content_main_runner.h"

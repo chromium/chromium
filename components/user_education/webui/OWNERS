@@ -1,4 +1,6 @@
 file://components/user_education/OWNERS
 
+per-file *whats_new*=mickeyburks@chromium.org
+
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

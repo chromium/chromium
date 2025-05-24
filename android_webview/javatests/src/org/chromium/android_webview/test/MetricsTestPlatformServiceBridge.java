@@ -35,7 +35,7 @@ public class MetricsTestPlatformServiceBridge extends PlatformServiceBridge {
     @Override
     public void queryMetricsSetting(Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
-        callback.onResult(/* enabled= */ true);
+        callback.onResult(/* result= */ true);
     }
 
     @Override

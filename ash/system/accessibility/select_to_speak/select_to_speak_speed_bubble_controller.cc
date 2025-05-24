@@ -66,7 +66,7 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
     bubble_view_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
     speed_view_ = new SelectToSpeakSpeedView(this, speech_rate);
-    bubble_view_->AddChildView(speed_view_.get());
+    bubble_view_->AddChildViewRaw(speed_view_.get());
 
     bubble_widget_ =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);

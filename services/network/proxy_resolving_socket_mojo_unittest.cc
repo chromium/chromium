@@ -309,7 +309,7 @@ TEST_P(ProxyResolvingSocketTest, BasicReadWrite) {
       size_t actually_written_bytes = 0;
       EXPECT_EQ(MOJO_RESULT_OK,
                 client_socket_send_handle->WriteData(
-                    base::as_byte_span(kTestMsg).subspan(i, 1),
+                    base::as_byte_span(kTestMsg).subspan(i, 1u),
                     MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
       // Flush the 1 byte write.
       base::RunLoop().RunUntilIdle();

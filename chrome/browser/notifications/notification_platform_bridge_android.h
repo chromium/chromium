@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
@@ -84,6 +85,53 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       std::string& profile_id,
       jboolean incognito);
 
+  // Called by Java tests for testing both suspicious and non-suspicious
+  // notification behaviour when showing warnings for suspicious notifications
+  // is enabled.
+  void SetIsSuspiciousParameterForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_object,
+      bool is_suspicious);
+
+  // Called by the Java implementation when the user decides they want to report
+  // their notification contents as safe to the server.
+  void OnReportNotificationAsSafe(
+      JNIEnv* env,
+      const jni_zero::JavaParamRef<jobject>& java_object,
+      std::string& notification_id,
+      std::string& origin,
+      std::string& profile_id,
+      jboolean incognito);
+
+  // Called by the Java implementation when the user decides they want to report
+  // their warned notification contents as spam to the server.
+  void OnReportWarnedNotificationAsSpam(
+      JNIEnv* env,
+      const jni_zero::JavaParamRef<jobject>& java_object,
+      std::string& notification_id,
+      std::string& origin,
+      std::string& profile_id,
+      jboolean incognito);
+
+  // Called by the Java implementation when the user decides they want to report
+  // their unwarned notification contents as spam to the server.
+  void OnReportUnwarnedNotificationAsSpam(
+      JNIEnv* env,
+      const jni_zero::JavaParamRef<jobject>& java_object,
+      std::string& notification_id,
+      std::string& origin,
+      std::string& profile_id,
+      jboolean incognito);
+
+  // Called by the Java implementation when the user decides they no longer want
+  // to receive warnings for suspicious notifications that come from `origin`.
+  void OnNotificationAlwaysAllowFromOrigin(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_object,
+      std::string& origin,
+      std::string& profile_id,
+      jboolean incognito);
+
   // NotificationPlatformBridge implementation.
   void Display(NotificationHandler::Type notification_type,
                Profile* profile,
@@ -102,6 +150,13 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
+  void OnNotificationProcessed(const std::string& notification_id);
+
+  // Change user setting so that suspicious notifications from `url` are always
+  // sent to the user. Then, send a new notification from Chrome to the user
+  // informing them that their choice to "always allow" has been applied.
+  void AlwaysAllowNotifications(const GURL& url, Profile* profile);
+
   // Contains information necessary in order to enable closing notifications
   // that were not created by this instance of the manager. This list may not
   // contain the notifications that have not been interacted with since the last
@@ -133,6 +188,14 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       regenerated_notification_infos_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
+  // When `should_use_test_is_suspicious_value_` is true, use the
+  // `test_is_suspicious_value_` value to tell the front end whether to display
+  // a warning notification or the original notification.
+  bool should_use_test_is_suspicious_value_ = false;
+  bool test_is_suspicious_value_ = false;
+
+  base::WeakPtrFactory<NotificationPlatformBridgeAndroid> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_ANDROID_H_

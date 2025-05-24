@@ -8,8 +8,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // static
 void ScreenLockManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -33,5 +32,4 @@ void ScreenLockManagerImpl::SetLockStatusInternal(LockStatus lock_status) {
   NotifyScreenLockChanged();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

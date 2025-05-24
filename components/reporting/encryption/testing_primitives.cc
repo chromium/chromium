@@ -49,7 +49,7 @@ void PerformSymmetricDecryption(const uint8_t symmetric_key[kKeySize],
   CHECK_EQ(aead.KeyLength(), kKeySize);
 
   // Use the symmetric key for data decryption.
-  aead.Init(base::make_span(symmetric_key, kKeySize));
+  aead.Init(base::span(symmetric_key, kKeySize));
 
   // Get nonce at the head of input_data.
   CHECK_EQ(aead.NonceLength(), kNonceSize);

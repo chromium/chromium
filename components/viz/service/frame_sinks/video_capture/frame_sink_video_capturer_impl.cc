@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <limits>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -366,6 +362,18 @@ void FrameSinkVideoCapturerImpl::SetMinSizeChangePeriod(
                       "min_size_change_period", min_period);
 
   oracle_->SetMinSizeChangePeriod(min_period);
+}
+
+void FrameSinkVideoCapturerImpl::SetAnimationFpsLockIn(
+    bool enabled,
+    float majority_damaged_pixel_min_ratio) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  TRACE_EVENT_INSTANT("gpu.capture", "SetAnimationFpsLockIn", "enabled",
+                      enabled, "majority_damaged_pixel_min_ratio",
+                      majority_damaged_pixel_min_ratio);
+
+  oracle_->SetAnimationFpsLockIn(enabled, majority_damaged_pixel_min_ratio);
 }
 
 void FrameSinkVideoCapturerImpl::SetResolutionConstraints(
@@ -939,6 +947,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   metadata.reference_time = event_time;
   metadata.frame_sequence =
       frame_metadata.begin_frame_ack.frame_id.sequence_number;
+  metadata.source_id = frame_metadata.begin_frame_ack.frame_id.source_id;
   metadata.device_scale_factor = frame_metadata.device_scale_factor;
   metadata.page_scale_factor = frame_metadata.page_scale_factor;
   metadata.root_scroll_offset_x = frame_metadata.root_scroll_offset.x();
@@ -1107,13 +1116,14 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   if (capture_texture_results) {
     TRACE_EVENT("gpu.capture", "PopulateBlitRequest");
 
-    auto& mailbox_holder = frame_capture.frame->mailbox_holder(0);
+    auto sync_token = frame_capture.frame->acquire_sync_token();
+    auto mailbox = frame_capture.frame->shared_image()->mailbox();
 
     // TODO(crbug.com/41350322): change the capturer to only request the
     // parts of the frame that have changed whenever possible.
     blit_request =
         BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
-                    mailbox_holder.mailbox, mailbox_holder.sync_token, true);
+                    mailbox, sync_token, true);
 
     // We haven't captured the frame yet, but let's pretend that we did for
     // the sake of blend information computation. We will be asking for an
@@ -1139,12 +1149,6 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
           overlay->bitmap().asImage());
     }
   }
-
-  // Note: Externally-sampled images are readonly and hence we should never be
-  // creating VideoFrames with external sampling for this use case (and the
-  // creation flow of `frame` will not do so).
-  CHECK_NE(frame_capture.frame->shared_image_format_type(),
-           media::SharedImageFormatType::kSharedImageFormatExternalSampler);
 
   // Request a copy of the next frame from the frame sink.
   auto request = std::make_unique<CopyOutputRequest>(
@@ -1198,7 +1202,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
 
   const SubtreeCaptureId subtree_id =
       IsSubtreeCapture(target_->sub_target)
-          ? absl::get<SubtreeCaptureId>(target_->sub_target)
+          ? std::get<SubtreeCaptureId>(target_->sub_target)
           : SubtreeCaptureId();
 
   resolved_target_->RequestCopyOfOutput(
@@ -1269,16 +1273,26 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     CHECK_EQ(content_rect.height() % 2, 0);
     // Populate the VideoFrame from the CopyOutputResult.
     const int y_stride = frame->stride(VideoFrame::Plane::kY);
-    uint8_t* const y = frame->GetWritableVisibleData(VideoFrame::Plane::kY) +
-                       content_rect.y() * y_stride + content_rect.x();
+    const size_t y_subrect_offset =
+        content_rect.y() * y_stride + content_rect.x();
+    const base::span<uint8_t> y =
+        frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kY)
+            .subspan(y_subrect_offset);
+
     const int u_stride = frame->stride(VideoFrame::Plane::kU);
-    uint8_t* const u = frame->GetWritableVisibleData(VideoFrame::Plane::kU) +
-                       (content_rect.y() / 2) * u_stride +
-                       (content_rect.x() / 2);
+    const size_t u_subrect_offset =
+        (content_rect.y() / 2) * u_stride + (content_rect.x() / 2);
+    const base::span<uint8_t> u =
+        frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kU)
+            .subspan(u_subrect_offset);
+
     const int v_stride = frame->stride(VideoFrame::Plane::kV);
-    uint8_t* const v = frame->GetWritableVisibleData(VideoFrame::Plane::kV) +
-                       (content_rect.y() / 2) * v_stride +
-                       (content_rect.x() / 2);
+    const size_t v_subrect_offset =
+        (content_rect.y() / 2) * v_stride + (content_rect.x() / 2);
+    const base::span<uint8_t> v =
+        frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kV)
+            .subspan(v_subrect_offset);
+
     bool success =
         result->ReadI420Planes(y, y_stride, u, u_stride, v, v_stride);
     if (success) {
@@ -1297,9 +1311,11 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       int stride = frame->stride(VideoFrame::Plane::kARGB);
       // Note: ResultFormat::RGBA CopyOutputResult's format currently is
       // kN32_SkColorType, which can be RGBA or BGRA depending on the platform.
-      uint8_t* const pixels =
-          frame->GetWritableVisibleData(VideoFrame::Plane::kARGB) +
+      const size_t subrect_offset =
           content_rect.y() * stride + content_rect.x() * 4;
+      const base::span<uint8_t> pixels =
+          frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kARGB)
+              .subspan(subrect_offset);
       bool success = result->ReadRGBAPlane(pixels, stride);
       if (success) {
         frame->set_color_space(result->GetRGBAColorSpace());

@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/widget/native_widget_aura.h"
+#include "ui/views/widget/widget_observer.h"
 
 class BrowserFrame;
 class BrowserView;
@@ -16,7 +18,8 @@ class BrowserView;
 // BrowserFrameAsh provides the frame for Chrome browser windows on Chrome OS
 // under classic ash.
 class BrowserFrameAsh : public views::NativeWidgetAura,
-                        public NativeBrowserFrame {
+                        public NativeBrowserFrame,
+                        public views::WidgetObserver {
  public:
   BrowserFrameAsh(BrowserFrame* browser_frame, BrowserView* browser_view);
 
@@ -31,7 +34,8 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
   void OnWindowTargetVisibilityChanged(bool visible) override;
 
   // Overridden from NativeBrowserFrame:
-  views::Widget::InitParams GetWidgetParams() override;
+  views::Widget::InitParams GetWidgetParams(
+      views::Widget::InitParams::Ownership ownership) override;
   bool UseCustomFrame() const override;
   bool UsesNativeSystemMenu() const override;
   int GetMinimizeButtonOffset() const override;
@@ -45,6 +49,9 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
   bool ShouldRestorePreviousBrowserWidgetState() const override;
   bool ShouldUseInitialVisibleOnAllWorkspaces() const override;
 
+  // views::WidgetObserver:
+  void OnWidgetDestroyed(views::Widget* widget) override;
+
  private:
   // Set the window into the auto managed mode.
   void SetWindowAutoManaged();
@@ -54,6 +61,9 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
 
   // Set true when dragging a tab to create a browser window.
   bool created_from_drag_ = false;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_

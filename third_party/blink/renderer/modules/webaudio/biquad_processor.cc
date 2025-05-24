@@ -40,13 +40,13 @@ BiquadProcessor::BiquadProcessor(float sample_rate,
                                  AudioParamHandler& q,
                                  AudioParamHandler& gain,
                                  AudioParamHandler& detune)
-    : AudioDSPKernelProcessor(sample_rate,
-                              number_of_channels,
-                              render_quantum_frames),
-      parameter1_(&frequency),
+    : parameter1_(&frequency),
       parameter2_(&q),
       parameter3_(&gain),
-      parameter4_(&detune) {}
+      parameter4_(&detune),
+      number_of_channels_(number_of_channels),
+      sample_rate_(sample_rate),
+      render_quantum_frames_(render_quantum_frames) {}
 
 BiquadProcessor::~BiquadProcessor() {
   if (IsInitialized()) {
@@ -54,7 +54,7 @@ BiquadProcessor::~BiquadProcessor() {
   }
 }
 
-std::unique_ptr<AudioDSPKernel> BiquadProcessor::CreateKernel() {
+std::unique_ptr<BiquadDSPKernel> BiquadProcessor::CreateKernel() {
   return std::make_unique<BiquadDSPKernel>(this);
 }
 
@@ -107,8 +107,32 @@ void BiquadProcessor::CheckForDirtyCoefficients() {
 }
 
 void BiquadProcessor::Initialize() {
-  AudioDSPKernelProcessor::Initialize();
+  if (IsInitialized()) {
+    return;
+  }
+
+  base::AutoLock locker(process_lock_);
+  DCHECK(!kernels_.size());
+
+  // Create processing kernels, one per channel.
+  for (unsigned i = 0; i < NumberOfChannels(); ++i) {
+    kernels_.push_back(CreateKernel());
+  }
+
+  initialized_ = true;
+
   has_just_reset_ = true;
+}
+
+void BiquadProcessor::Uninitialize() {
+  if (!IsInitialized()) {
+    return;
+  }
+
+  base::AutoLock locker(process_lock_);
+  kernels_.clear();
+
+  initialized_ = false;
 }
 
 void BiquadProcessor::Process(const AudioBus* source,
@@ -149,15 +173,66 @@ void BiquadProcessor::ProcessOnlyAudioParams(uint32_t frames_to_process) {
 
   float values[render_quantum_frames_expected];
 
-  parameter1_->CalculateSampleAccurateValues(values, frames_to_process);
-  parameter2_->CalculateSampleAccurateValues(values, frames_to_process);
-  parameter3_->CalculateSampleAccurateValues(values, frames_to_process);
-  parameter4_->CalculateSampleAccurateValues(values, frames_to_process);
+  parameter1_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  parameter2_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  parameter3_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  parameter4_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
 }
 
 void BiquadProcessor::Reset() {
-  AudioDSPKernelProcessor::Reset();
+  DCHECK(IsMainThread());
+  if (!IsInitialized()) {
+    return;
+  }
+
+  base::AutoLock locker(process_lock_);
+  for (auto& kernel : kernels_) {
+    kernel->Reset();
+  }
+
   has_just_reset_ = true;
+}
+
+void BiquadProcessor::SetNumberOfChannels(unsigned number_of_channels) {
+  if (number_of_channels == number_of_channels_) {
+    return;
+  }
+
+  DCHECK(!IsInitialized());
+  number_of_channels_ = number_of_channels;
+}
+
+bool BiquadProcessor::RequiresTailProcessing() const {
+  // Always return true even if the tail time and latency might both be zero.
+  return true;
+}
+
+double BiquadProcessor::TailTime() const {
+  DCHECK(!IsMainThread());
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
+    // It is expected that all the kernels have the same tailTime.
+    return !kernels_.empty() ? kernels_.front()->TailTime() : 0;
+  }
+  // Since we don't want to block the Audio Device thread, we return a large
+  // value instead of trying to acquire the lock.
+  return std::numeric_limits<double>::infinity();
+}
+
+double BiquadProcessor::LatencyTime() const {
+  DCHECK(!IsMainThread());
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
+    // It is expected that all the kernels have the same latencyTime.
+    return !kernels_.empty() ? kernels_.front()->LatencyTime() : 0;
+  }
+  // Since we don't want to block the Audio Device thread, we return a large
+  // value instead of trying to acquire the lock.
+  return std::numeric_limits<double>::infinity();
 }
 
 void BiquadProcessor::SetType(FilterType type) {

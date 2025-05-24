@@ -89,7 +89,7 @@ void BrowserContextKeyedAPIFactory<HistoryAPI>::DeclareFactoryDependencies();
 // Base class for history function APIs.
 class HistoryFunction : public ExtensionFunction {
  protected:
-  ~HistoryFunction() override {}
+  ~HistoryFunction() override = default;
 
   bool ValidateUrl(const std::string& url_string,
                    GURL* url,
@@ -117,7 +117,7 @@ class HistoryGetVisitsFunction : public HistoryFunctionWithCallback {
   DECLARE_EXTENSION_FUNCTION("history.getVisits", HISTORY_GETVISITS)
 
  protected:
-  ~HistoryGetVisitsFunction() override {}
+  ~HistoryGetVisitsFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -131,7 +131,7 @@ class HistorySearchFunction : public HistoryFunctionWithCallback {
   DECLARE_EXTENSION_FUNCTION("history.search", HISTORY_SEARCH)
 
  protected:
-  ~HistorySearchFunction() override {}
+  ~HistorySearchFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -145,7 +145,7 @@ class HistoryAddUrlFunction : public HistoryFunction {
   DECLARE_EXTENSION_FUNCTION("history.addUrl", HISTORY_ADDURL)
 
  protected:
-  ~HistoryAddUrlFunction() override {}
+  ~HistoryAddUrlFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -156,7 +156,7 @@ class HistoryDeleteAllFunction : public HistoryFunctionWithCallback {
   DECLARE_EXTENSION_FUNCTION("history.deleteAll", HISTORY_DELETEALL)
 
  protected:
-  ~HistoryDeleteAllFunction() override {}
+  ~HistoryDeleteAllFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -171,7 +171,7 @@ class HistoryDeleteUrlFunction : public HistoryFunction {
   DECLARE_EXTENSION_FUNCTION("history.deleteUrl", HISTORY_DELETEURL)
 
  protected:
-  ~HistoryDeleteUrlFunction() override {}
+  ~HistoryDeleteUrlFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -182,7 +182,7 @@ class HistoryDeleteRangeFunction : public HistoryFunctionWithCallback {
   DECLARE_EXTENSION_FUNCTION("history.deleteRange", HISTORY_DELETERANGE)
 
  protected:
-  ~HistoryDeleteRangeFunction() override {}
+  ~HistoryDeleteRangeFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

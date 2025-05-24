@@ -13,7 +13,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "components/reading_list/core/offline_url_utils.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_viewer_interface.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
@@ -31,7 +31,7 @@ const char kDistilledPdfContent[] = "123456789";
 const char kBadImageUrl[] = "http://image/bad";
 const char kGoodImageUrl[] = "http://image/good";
 
-class DistillerViewerTest : public dom_distiller::DistillerViewerInterface {
+class DistillerViewerTest : public DistillerViewerInterface {
  public:
   DistillerViewerTest(const GURL& url,
                       DistillationFinishedCallback callback,
@@ -39,7 +39,7 @@ class DistillerViewerTest : public dom_distiller::DistillerViewerInterface {
                       const std::string& html,
                       const GURL& redirect_url,
                       const std::string& mime_type)
-      : dom_distiller::DistillerViewerInterface(nil) {
+      : DistillerViewerInterface(nil) {
     std::vector<ImageInfo> images;
     ImageInfo image;
 
@@ -57,15 +57,13 @@ class DistillerViewerTest : public dom_distiller::DistillerViewerInterface {
     if (!mime_type.empty()) {
       delegate->DistilledPageHasMimeType(url, mime_type);
     }
-    std::move(callback).Run(url, html, images, "title", GetCspNonce());
+    std::move(callback).Run(url, html, images, "title", "");
   }
 
   void OnArticleReady(
       const dom_distiller::DistilledArticleProto* article_proto) override {}
 
   void SendJavaScript(const std::string& buffer) override {}
-
-  std::string GetCspNonce() override { return std::string(); }
 };
 
 void RemoveOfflineFilesDirectory(base::FilePath base_directory) {
@@ -81,7 +79,6 @@ class MockURLDownloader : public URLDownloader {
       base::FilePath path,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : URLDownloader(nullptr,
-                      nullptr,
                       nullptr,
                       path,
                       std::move(url_loader_factory),
@@ -127,7 +124,7 @@ class MockURLDownloader : public URLDownloader {
     }
     original_url_ = url;
     saved_size_ = 0;
-    distiller_.reset(new DistillerViewerTest(
+    distiller_viewer_.reset(new DistillerViewerTest(
         url,
         base::BindRepeating(&URLDownloader::DistillerCallback,
                             base::Unretained(this)),

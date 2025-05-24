@@ -9,14 +9,21 @@
 
 #import "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
 
-class AuthenticationService;
+class ChromeAccountManagerService;
 class PrefService;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 // Configuration object used by the MailtoHandlerService.
 @interface MailtoHandlerConfiguration : NSObject
 
-// AuthenticationService used by MailtoHandlerService.
-@property(nonatomic, assign) AuthenticationService* authService;
+// IdentityManager used by MailtoHandlerService.
+@property(nonatomic, assign) signin::IdentityManager* identityManager;
+
+// ChromeAccountManagerService used by MailtoHandlerService.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManager;
 
 // PrefService used by MailtoHandlerService.
 @property(nonatomic, assign) PrefService* localState;

@@ -33,6 +33,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="observe via fetch-like api"/>
   <int value="4" label="get via iframe attribute api"/>
   <int value="5" label="observe via iframe attribute api"/>
+  <int value="6" label="get via img attribute api"/>
+  <int value="7" label="observe via img attribute api"/>
 </enum>
 
 <enum name="BrowsingTopicsCalculatorResultStatus">

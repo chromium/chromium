@@ -77,7 +77,6 @@ class InfobarOverlayRequestInserter
 
  private:
   friend class web::WebStateUserData<InfobarOverlayRequestInserter>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // Constructor for an inserter that uses `factory` to construct
   // OverlayRequests to insert into `web_state`'s OverlayRequestQueues.

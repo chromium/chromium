@@ -5,17 +5,25 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_H_
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "base/component_export.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
-#include "components/ip_protection/common/ip_protection_token_manager.h"
+#include "components/content_settings/core/common/content_settings.h"
+class GURL;
+
+namespace net {
+
+class ProxyChain;
+class NetworkAnonymizationKey;
+
+}  // namespace net
 
 namespace ip_protection {
+
+struct BlindSignedAuthToken;
 
 // Core business logic for IP Protection.
 class IpProtectionCore {
@@ -24,10 +32,30 @@ class IpProtectionCore {
 
   virtual bool IsIpProtectionEnabled() = 0;
 
+  // Check whether the masked domain list is populated.
+  virtual bool IsMdlPopulated() = 0;
+
+  // Check whether the given request URL and NAK should be proxied.
+  virtual bool RequestShouldBeProxied(
+      const GURL& request_url,
+      const net::NetworkAnonymizationKey& network_anonymization_key) = 0;
+
   // Check whether tokens are available in all token caches.
   //
   // This function is called on every URL load, so it should complete quickly.
   virtual bool AreAuthTokensAvailable() = 0;
+
+  // Check whether probabilistic reveal tokens are available.
+  // This function is called during the URL loads, so it should complete
+  // quickly.
+  virtual bool IsProbabilisticRevealTokenAvailable() = 0;
+
+  // Check whether the tokens in either cache have ever been filled.
+  //
+  // If even one cache has not been filled at least once, this method should
+  // return false. Also, this method will ALWAYS return false if the proxy list
+  // is unavailable.
+  virtual bool WereTokenCachesEverFilled() = 0;
 
   // Get a token, if one is available.
   //
@@ -36,6 +64,15 @@ class IpProtectionCore {
   // `IsAuthTokenAvailable()` recently returned `true`.
   virtual std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) = 0;
+
+  // Get a serialized and base64 encoded probabilistic reveal token if one is
+  // available.
+  //
+  // Returns `nullopt` if no token is available, whether for a transient or
+  // permanent reason, or if the serialization fails.
+  virtual std::optional<std::string> GetProbabilisticRevealToken(
+      const std::string& top_level,
+      const std::string& third_party) = 0;
 
   // Check whether a proxy chain list is available.
   virtual bool IsProxyListAvailable() = 0;
@@ -57,6 +94,21 @@ class IpProtectionCore {
   // `IpProtectionTokenManager` to signal a possible geo change due to a
   // refreshed proxy list or refill of tokens.
   virtual void GeoObserved(const std::string& geo_id) = 0;
+
+  // Returns whether `first_party_url` has a tracking protection exception. This
+  // url can match a subdomain of an exception (i.e. an exception for
+  // example.com covers all domains in this pattern: [*.]example.com).
+  virtual bool HasTrackingProtectionException(
+      const GURL& first_party_url) const = 0;
+
+  // Sets the TRACKING_PROTECTION content settings list to `settings`.
+  virtual void SetTrackingProtectionContentSetting(
+      const ContentSettingsForOneType& settings) = 0;
+
+  // Check whether the given request URL is eligible to receive
+  // ProbabilisticRevealToken headers.
+  virtual bool ShouldRequestIncludeProbabilisticRevealToken(
+      const GURL& request_url) = 0;
 };
 
 }  // namespace ip_protection

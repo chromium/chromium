@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/site_per_process_browsertest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -912,7 +915,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessPerOriginIsolatedSandboxedIframeTest,
       child->current_frame_host()->GetSiteInstance();
   EXPECT_NE(site_instance_root, site_instance2);
   EXPECT_NE(site_instance1, site_instance2);
-  EXPECT_NE(site_instance1->GetProcess(), site_instance2->GetProcess());
+  EXPECT_NE(site_instance1->GetOrCreateProcess(), site_instance2->GetProcess());
 }
 
 // Test that navigating cross-origin from a non-sandboxed iframe to a CSP
@@ -1208,6 +1211,45 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                    .is_sandboxed());
 }
 
+// Ensure a navigation that is from the initial empty document, is main frame,
+// cross-SiteInstance and same-SiteInstanceGroup succeeds.
+IN_PROC_BROWSER_TEST_P(SitePerProcessNotIsolatedSandboxedIframeTest,
+                       CrossSiteInstanceNavigationFromInitialEmptyDocument) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed data: URL which allows scripts and popups.
+  std::string js_str = base::StringPrintf(
+      "var frame = document.createElement('iframe'); "
+      "frame.sandbox = 'allow-scripts allow-popups'; "
+      "frame.src = 'data:text/html,foo'; "
+      "document.body.appendChild(frame);");
+  EXPECT_TRUE(ExecJs(shell(), js_str));
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // The data: subframe opens a popup, which inherits the sandbox bit.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  ShellAddedObserver new_shell_observer;
+  std::string js_open_popup = base::StringPrintf("var popup = window.open();");
+  EXPECT_TRUE(ExecJs(child, js_open_popup));
+  Shell* popup_shell = new_shell_observer.GetShell();
+  EXPECT_TRUE(popup_shell);
+
+  // Navigate the popup to the same URL as the main frame. Though the URL is the
+  // same, the sandbox bit means it is not same-SiteInstance.
+  // This navigation is cross-SiteInstance, same-SiteInstanceGroup,
+  // local-to-local, starts from the initial empty document and does not depend
+  // on RenderDocument level.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  std::string js_navigate_popup1 =
+      base::StringPrintf("popup.location = '%s';", url1.spec().c_str());
+  TestNavigationObserver observer2(popup_shell->web_contents());
+  EXPECT_TRUE(ExecJs(child, js_navigate_popup1));
+  observer2.Wait();
+}
+
 // Test to make sure that javascript: urls don't execute in a sandboxed iframe.
 IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                        SandboxedIframeWithJSUrl) {
@@ -1409,16 +1451,21 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
     ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   }
 
-  // Verify parent and child frames share a non-sandboxed SiteInstance.
+  // Verify parent and child frames share a non-sandboxed SiteInstanceGroup.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1U, root->child_count());
+  SiteInstanceImpl* root_site_instance =
+      root->current_frame_host()->GetSiteInstance();
   FrameTreeNode* child = root->child_at(0);
-  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
-  EXPECT_FALSE(child->current_frame_host()
-                   ->GetSiteInstance()
-                   ->GetSiteInfo()
-                   .is_sandboxed());
+  SiteInstanceImpl* child_site_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(root_site_instance->group(), child_site_instance->group());
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(root_site_instance, child_site_instance);
+  } else {
+    EXPECT_EQ(root_site_instance, child_site_instance);
+  }
+  EXPECT_FALSE(child_site_instance->GetSiteInfo().is_sandboxed());
 
   // Now make the subframe sandboxed.
   {

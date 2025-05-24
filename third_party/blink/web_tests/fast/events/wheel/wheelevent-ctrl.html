@@ -2,7 +2,6 @@
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<script src="../../../resources/percent-based-util.js"></script>
 <style>
   #scroller {
     border: solid 1px green;
@@ -32,8 +31,7 @@ const scroller = document.getElementById('scroller');
 const insideScroller = elementCenter(scroller);
 const outsideScroller =
     elementCenter(document.getElementById('outsideScroller'));
-const expectedWheelTickDelta =
-      (isPercentBasedScrollingEnabled() ? 100 : pixelsPerTick());
+const expectedWheelTickDelta = pixelsPerTick();
 
 // Each test gets a fresh wheel promise.
 let wheelPromise;
@@ -81,11 +79,9 @@ promise_test(async () => {
 
 promise_test(async () => {
   await reset();
-  const expectedContainerScroll =
-      calculateExpectedScroll(scroller, 0, pixelsPerTick()).y;
   const event = await wheelTickAndScroll(insideScroller, scroller);
-  assert_equals(scroller.scrollTop, expectedContainerScroll);
-  assert_approx_equals(event.deltaY, expectedWheelTickDelta, 0.00001);
+  assert_equals(scroller.scrollTop, expectedWheelTickDelta);
+  assert_equals(event.deltaY, expectedWheelTickDelta);
   assert_false(event.ctrlKey);
 }, "Scroll container: No-Ctrl wheel scrolls.");
 
@@ -102,12 +98,9 @@ promise_test(async () => {
 
 promise_test(async () => {
   await reset();
-  const expectedDocumentScroll =
-      calculateExpectedScroll(document.scrollingElement,
-      0, pixelsPerTick()).y;
   const event = await wheelTickAndScroll(outsideScroller, document);
-  assert_equals(window.scrollY, expectedDocumentScroll);
-  assert_approx_equals(event.deltaY, expectedWheelTickDelta, 0.00001);
+  assert_equals(window.scrollY, expectedWheelTickDelta);
+  assert_equals(event.deltaY, expectedWheelTickDelta);
   assert_false(event.ctrlKey);
 }, "Doc: No-Ctrl wheel scrolls.");
 
@@ -116,7 +109,6 @@ promise_test(async () => {
 // control is down, rather than zooming.
 promise_test(async () => {
   await reset();
-  const expectedPreciseScroll = pixelsPerTick();
   const scrollPromise = waitForScrollendEvent(document);
   const source = GestureSourceType.MOUSE_INPUT;
   const gesturePromise =
@@ -125,13 +117,12 @@ promise_test(async () => {
                          true /* precise_scrolling_deltas */,
                          false /* scroll_by_page */,
                          true /* cursor_visible */,
-                         false /* scroll_by_percentage */,
                          Modifiers.CONTROL);
   const event  =
       await Promise.all([ gesturePromise, wheelPromise, scrollPromise ])
           .then(responses => { return responses[1]; });
-  assert_equals(window.scrollY, expectedPreciseScroll);
-  assert_equals(event.deltaY, expectedPreciseScroll);
+  assert_equals(window.scrollY, expectedWheelTickDelta);
+  assert_equals(event.deltaY, expectedWheelTickDelta);
   assert_true(event.ctrlKey);
 }, "Doc: Ctrl+high precision touchpad scroll scrolls.");
 

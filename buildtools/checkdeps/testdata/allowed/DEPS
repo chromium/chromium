@@ -5,7 +5,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_unittest\.cc": [
+  ".*_unittest\\.cc": [
     "+buildtools/checkdeps/testdata/disallowed/teststuff",
     "!buildtools/checkdeps/testdata/bongo/temp_allowed_for_tests.h",
   ]

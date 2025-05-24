@@ -144,10 +144,10 @@ TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
 }
 
 TEST_F(SafariImporterTest, CanImport) {
-  uint16_t items = importer::NONE;
+  uint16_t items = user_data_importer::NONE;
   EXPECT_TRUE(SafariImporterCanImport(
       GetTestSafariLibraryPath("default"), &items));
-  EXPECT_EQ(items, importer::FAVORITES);
+  EXPECT_EQ(items, user_data_importer::FAVORITES);
 
   // Check that we don't import anything from a bogus library directory.
   base::ScopedTempDir fake_library_dir;

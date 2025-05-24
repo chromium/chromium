@@ -9,8 +9,7 @@
 namespace sync_file_system {
 namespace drive_backend {
 
-CallbackTracker::CallbackTracker() {
-}
+CallbackTracker::CallbackTracker() = default;
 
 CallbackTracker::~CallbackTracker() {
   AbortAll();

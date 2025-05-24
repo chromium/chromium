@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -125,6 +125,10 @@ struct PasswordNote {
 
   friend bool operator==(const PasswordNote& lhs,
                          const PasswordNote& rhs) = default;
+  friend auto operator<=>(const PasswordNote&, const PasswordNote&) = default;
+
+  static constexpr char16_t kPasswordChangeBackupNoteName[] =
+      u"PasswordChangeBackup";
 
   // The name displayed in the UI labeling this note. Currently unused and added
   // for future compatibility.
@@ -190,8 +194,10 @@ struct PasswordForm {
     kManuallyAdded = 3,
     kImported = 4,
     kReceivedViaSharing = 5,
+    kImportedViaCredentialExchange = 6,
+    kChangeSubmission = 7,
     kMinValue = kFormSubmission,
-    kMaxValue = kReceivedViaSharing,
+    kMaxValue = kChangeSubmission,
   };
 
   // Enum to keep track of what information has been sent to the server about
@@ -289,14 +295,6 @@ struct PasswordForm {
   // The renderer id of the username input element. It is set during the new
   // form parsing and not persisted.
   autofill::FieldRendererId username_element_renderer_id;
-
-  // True if the server-side classification was successful.
-  bool server_side_classification_successful = false;
-
-  // True if the server-side classification believes that the field may be
-  // pre-filled with a placeholder in the value attribute. It is set during
-  // form parsing and not persisted.
-  bool username_may_use_prefilled_placeholder = false;
 
   // When parsing an HTML form, this is typically empty unless the site
   // has implemented some form of autofill.
@@ -549,12 +547,21 @@ struct PasswordForm {
   // Returns true when |password_value| or |new_password_value| are non-empty.
   bool HasNonEmptyPasswordValue() const;
 
-  // Returns the value of the note with an empty `unique_display_name`, returns
-  // an empty string if none exists.
+  // Returns the value of the note with an empty `unique_display_name`,
+  // returns an empty string if none exists.
   std::u16string GetNoteWithEmptyUniqueDisplayName() const;
 
   // Updates the note with an empty `unique_display_name`.
   void SetNoteWithEmptyUniqueDisplayName(const std::u16string& new_note_value);
+
+  // Returns the value of the note with a password change backup specific
+  // `unique_display_name`.
+  // returns an empty string if none exists.
+  std::u16string GetPasswordBackupNote() const;
+
+  // Updates the note with a password change backup specific
+  // `unique_display_name`.
+  void SetPasswordBackupNote(const std::u16string& new_note_value);
 
   PasswordForm();
   PasswordForm(const PasswordForm& other);
@@ -568,8 +575,6 @@ struct PasswordForm {
   // An exact equality comparison of all the fields is only useful for tests.
   // Production code should be using `ArePasswordFormUniqueKeysEqual` instead.
   friend bool operator==(const PasswordForm&, const PasswordForm&) = default;
-  friend bool operator!=(const PasswordForm& lhs,
-                         const PasswordForm& rhs) = default;
 #endif
 };
 

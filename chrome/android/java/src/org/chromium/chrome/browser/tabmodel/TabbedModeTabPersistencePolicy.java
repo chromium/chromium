@@ -25,12 +25,13 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -375,11 +376,13 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         TabModelSelector selector =
                 TabWindowManagerSingleton.getInstance().getTabModelSelectorById(index);
         if (selector != null) {
-            // Remove all the tabs from the instance if it is in running state to be able to
-            // delete the corresponding tab state file.
             for (int i = 0; i < selector.getModels().size(); i++) {
                 TabModel tabModel = selector.getModels().get(i);
-                while (tabModel.getCount() > 0) tabModel.removeTab(tabModel.getTabAt(0));
+                if (tabModel.getCount() != 0) {
+                    throw new IllegalStateException(
+                            "A running instance that is being cleaned up should have closed all its"
+                                    + " tabs.");
+                }
             }
         }
         synchronized (CLEAN_UP_TASK_LOCK) {
@@ -455,7 +458,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
         private String[] mTabFileNames;
         private String[] mThumbnailFileNames;
-        private Supplier<SparseBooleanArray> mOtherTabSupplier;
+        private final Supplier<SparseBooleanArray> mOtherTabSupplier;
         private SparseBooleanArray mOtherTabIds; // Tab in use by other selectors, not be deleted.
 
         CleanUpTabStateDataTask(
@@ -537,7 +540,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
         @Override
         protected void onCancelled(Void result) {
-            super.onCancelled(result);
+            super.onCancelled(null);
             synchronized (CLEAN_UP_TASK_LOCK) {
                 sCleanupTask = null;
             }

@@ -27,7 +27,7 @@ public class CapturedSitesInstructions {
             EXTERNAL_PREFIX + "android_webview/tools/captured_sites_tests/test/data/";
 
     // Stores the actions in order for processing.
-    private Queue<Action> mActions;
+    private final Queue<Action> mActions;
 
     public CapturedSitesInstructions(String jsonUrl) throws Throwable {
         mActions = new LinkedList<Action>();

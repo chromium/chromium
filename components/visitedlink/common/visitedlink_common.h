@@ -82,7 +82,7 @@ class VisitedLinkCommon {
 
   // Looks up the given key in the table. Returns true if found. Does not
   // modify the hashtable.
-  bool IsVisited(const std::string_view canonical_url) const;
+  bool IsVisited(std::string_view canonical_url) const;
   bool IsVisited(const GURL& url) const;
   // To check if a link is visited in a partitioned table, callers MUST
   // provide <link url, top-level site, frame origin> AND the origin salt.
@@ -163,7 +163,7 @@ class VisitedLinkCommon {
   // Computes the fingerprint of the given partition key. Used when constructing
   // the partitioned :visited link hashtable.
   static Fingerprint ComputePartitionedFingerprint(
-      const GURL& link_url,
+      std::string_view canonical_link_url,
       const net::SchemefulSite& top_level_site,
       const url::Origin& frame_origin,
       uint64_t salt);

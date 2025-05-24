@@ -19,7 +19,7 @@ namespace trace_event {
 class MemoryAllocatorDump;
 class MemoryAllocatorDumpGuid;
 class ProcessMemoryDump;
-}
+}  // namespace trace_event
 
 // SharedMemoryTracker tracks shared memory usage.
 class BASE_EXPORT SharedMemoryTracker : public trace_event::MemoryDumpProvider {

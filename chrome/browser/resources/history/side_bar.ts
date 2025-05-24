@@ -8,12 +8,12 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
 import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_icons.html.js';
 import './shared_vars.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -69,7 +69,10 @@ export class HistorySideBarElement extends PolymerElement {
         notify: true,
       },
 
-      guestSession_: Boolean,
+      guestSession_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isGuestSession'),
+      },
 
       historyClustersVisibleManagedByPolicy_: {
         type: Boolean,
@@ -94,21 +97,23 @@ export class HistorySideBarElement extends PolymerElement {
             'historyClustersEnabled, historyClustersVisible)',
       },
 
-      compareHistoryEnabled_: Boolean,
+      compareHistoryEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('compareHistoryEnabled'),
+      },
     };
   }
 
-  footerInfo: FooterInfo;
-  historyClustersEnabled: boolean;
-  historyClustersVisible: boolean;
-  selectedPage: string;
-  selectedTab: number;
-  private guestSession_ = loadTimeData.getBoolean('isGuestSession');
-  private historyClustersVisibleManagedByPolicy_: boolean;
-  private showFooter_: boolean;
-  private showHistoryClusters_: boolean;
-  private compareHistoryEnabled_: boolean =
-      loadTimeData.getBoolean('compareHistoryEnabled');
+  declare footerInfo: FooterInfo;
+  declare historyClustersEnabled: boolean;
+  declare historyClustersVisible: boolean;
+  declare selectedPage: string;
+  declare selectedTab: number;
+  declare private guestSession_;
+  declare private historyClustersVisibleManagedByPolicy_: boolean;
+  declare private showFooter_: boolean;
+  declare private showHistoryClusters_: boolean;
+  declare private compareHistoryEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -132,7 +137,7 @@ export class HistorySideBarElement extends PolymerElement {
   private onClearBrowsingDataClick_(e: Event) {
     const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('InitClearBrowsingData');
-    browserService.openClearBrowsingData();
+    browserService.handler.openClearBrowsingDataDialog();
     e.preventDefault();
   }
 

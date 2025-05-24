@@ -7,8 +7,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -18,6 +16,8 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
@@ -577,9 +577,7 @@ void ArcFileSystemOperationRunner::OnWatcherAdded(
     return;
   }
   if (watcher_callbacks_.count(watcher_id)) {
-    NOTREACHED_IN_MIGRATION();
-    std::move(callback).Run(-1);
-    return;
+    NOTREACHED();
   }
   watcher_callbacks_.insert(std::make_pair(watcher_id, watcher_callback));
   std::move(callback).Run(watcher_id);

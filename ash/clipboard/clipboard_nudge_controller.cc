@@ -7,7 +7,6 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -19,7 +18,6 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -282,7 +280,7 @@ void ClipboardNudgeController::OnClipboardHistoryItemAdded(
     }
   }
 
-  if (chromeos::features::IsClipboardHistoryRefreshEnabled() && is_duplicate &&
+  if (is_duplicate &&
       ShouldShowCappedNudge(*prefs, ClipboardNudgeType::kDuplicateCopyNudge)) {
     ShowNudge(ClipboardNudgeType::kDuplicateCopyNudge);
   }
@@ -291,7 +289,7 @@ void ClipboardNudgeController::OnClipboardHistoryItemAdded(
 std::optional<base::Time> ClipboardNudgeController::GetNudgeLastTimeShown()
     const {
   const base::Time& nudge_last_time_shown =
-      base::ranges::max(
+      std::ranges::max(
           {&duplicate_copy_nudge_recorder_, &onboarding_nudge_recorder_,
            &screenshot_nudge_recorder_, &zero_state_nudge_recorder_},
           /*comp=*/{}, /*proj=*/&NudgeTimeDeltaRecorder::nudge_shown_time)
@@ -357,11 +355,9 @@ void ClipboardNudgeController::OnClipboardHistoryMenuShown(
   AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
       NudgeCatalogName::kClipboardHistoryZeroState);
 
-  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    duplicate_copy_nudge_recorder_.OnClipboardHistoryMenuShown();
-    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
-        NudgeCatalogName::kClipboardHistoryDuplicateCopy);
-  }
+  duplicate_copy_nudge_recorder_.OnClipboardHistoryMenuShown();
+  AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+      NudgeCatalogName::kClipboardHistoryDuplicateCopy);
 }
 
 void ClipboardNudgeController::OnClipboardHistoryPasted() {
@@ -369,9 +365,7 @@ void ClipboardNudgeController::OnClipboardHistoryPasted() {
   zero_state_nudge_recorder_.OnClipboardHistoryPasted();
   screenshot_nudge_recorder_.OnClipboardHistoryPasted();
 
-  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    duplicate_copy_nudge_recorder_.OnClipboardHistoryPasted();
-  }
+  duplicate_copy_nudge_recorder_.OnClipboardHistoryPasted();
 }
 
 void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
@@ -401,7 +395,6 @@ void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
     case ClipboardNudgeType::kScreenshotNotificationNudge:
       NOTREACHED();
     case ClipboardNudgeType::kDuplicateCopyNudge:
-      CHECK(chromeos::features::IsClipboardHistoryRefreshEnabled());
       duplicate_copy_nudge_recorder_.OnNudgeShown();
       base::UmaHistogramBoolean(kClipboardHistoryDuplicateCopyNudgeShowCount,
                                 true);

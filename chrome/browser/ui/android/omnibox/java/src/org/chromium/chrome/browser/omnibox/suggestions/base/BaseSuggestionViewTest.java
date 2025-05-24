@@ -18,10 +18,12 @@ import android.view.ViewGroup;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -35,6 +37,7 @@ import org.chromium.chrome.browser.omnibox.test.R;
 public class BaseSuggestionViewTest {
     private static final int CONTENT_VIEW_REPORTED_HEIGHT_PX = 10;
     // Used as a (fixed) width of a refine icon.
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private int mActionIconWidthPx;
     private int mSemicompactSuggestionViewHeight;
     private int mCompactSuggestionViewHeight;
@@ -84,8 +87,6 @@ public class BaseSuggestionViewTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mContentView = new View(mActivity);
         mContentView.setMinimumHeight(CONTENT_VIEW_REPORTED_HEIGHT_PX);

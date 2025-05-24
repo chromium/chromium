@@ -17,7 +17,7 @@ import java.util.List;
 public class NightModeTestUtils {
     /** {@link ParameterProvider} used for parameterized test that provides the night mode state. */
     public static class NightModeParams implements ParameterProvider {
-        private static List<ParameterSet> sNightModeParams =
+        private static final List<ParameterSet> sNightModeParams =
                 Arrays.asList(
                         new ParameterSet().value(false).name("NightModeDisabled"),
                         new ParameterSet().value(true).name("NightModeEnabled"));

@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/cstring_view.h"
 #include "chrome/installer/util/work_item.h"
 
 namespace base {
@@ -82,6 +83,14 @@ class InstallServiceWorkItem : public WorkItem {
                             const std::wstring& registry_path,
                             const std::vector<GUID>& clsids,
                             const std::vector<GUID>& iids);
+
+  // Returns true if a cursory check appears to indicate that the service
+  // hosting `clsid` is installed.
+  static bool IsComServiceInstalled(const GUID& clsid);
+
+  // Returns the current name of the service as registered with the SCM.
+  static std::wstring GetCurrentServiceName(base::wcstring_view service_name,
+                                            base::wcstring_view registry_path);
 
  private:
   friend class InstallServiceWorkItemTest;

@@ -11,7 +11,7 @@ import {UnitLabelAlign} from './line_chart/constants.js';
 import {DataSeries} from './line_chart/data_series.js';
 import {LineChart} from './line_chart/line_chart.js';
 import {UnitLabel} from './line_chart/unit_label.js';
-import {CounterType, DataSeriesSet, GeneralCpuType, GeneralInfoType, GeneralMemoryType, GeneralZramType, MemoryDataSeriesSet, ZramDataSeriesSet} from './types.js';
+import {CounterType, DataSeriesSet, GeneralCpuType, GeneralGpuType, GeneralInfoType, GeneralMemoryType, GeneralNpuType, GeneralZramType, MemoryDataSeriesSet, ZramDataSeriesSet} from './types.js';
 
 /** @type {!DataSeriesSet} */
 const dataSeries = initDataSeries();
@@ -152,6 +152,8 @@ function initGeneralInfo() {
       orig: 0,
       total: 0,
     },
+    gpu: null,
+    npu: null,
   };
 }
 
@@ -191,6 +193,8 @@ export function handleUpdateData(data, timestamp) {
   updateCpuData(data.cpus, timestamp);
   updateMemoryData(data.memory, timestamp);
   updateZramData(data.zram, timestamp);
+  updateGpuData(data.gpu, timestamp);
+  updateNpuData(data.npu, timestamp);
 
   if (isInfoPage()) {
     updateInfoPage();
@@ -318,6 +322,47 @@ function updateZramData(zram, timestamp) {
 }
 
 /**
+ * Handle the new gpu data.
+ * @param {?SysInfoApiGpuResult} gpu
+ * @param {number} timestamp
+ */
+function updateGpuData(gpu, timestamp) {
+  if (gpu === null) {
+    generalInfo.gpu = null;
+    return;
+  }
+
+  const busyMsPerSec =
+      getDiffPerSecAndUpdateCounter('gpuBusy', gpu.busy, timestamp);
+
+  // When the system is busy, the time drift between sampling in C++ and calling
+  // Data.now() in JS may make the value slightly over 1.0.
+  const usage = Math.min(busyMsPerSec / 1000, 1.0);
+  generalInfo.gpu = {usage};
+}
+
+
+/**
+ * Handle the new npu data.
+ * @param {?SysInfoApiNpuResult} npu
+ * @param {number} timestamp
+ */
+function updateNpuData(npu, timestamp) {
+  if (npu === null) {
+    generalInfo.npu = null;
+    return;
+  }
+
+  const busyMsPerSec =
+      getDiffPerSecAndUpdateCounter('npuBusy', npu.busy, timestamp);
+
+  // When the system is busy, the time drift between sampling in C++ and calling
+  // Data.now() in JS may make the value slightly over 1.0.
+  const usage = Math.min(busyMsPerSec / 1000, 1.0);
+  generalInfo.npu = {usage};
+}
+
+/**
  * Get the increments from the last value to the current value. Return the
  * increments, and store the current value.
  * @param {string} name - The key to identify the counter.
@@ -385,24 +430,36 @@ export function updateInfoPage() {
     setTextById(id, getValueWithUnit(value, UNITS_MEMORY, UNITBASE_MEMORY));
   };
 
-  const /** !GeneralCpuType */ cpu = generalInfo.cpu;
+  const cpu = generalInfo.cpu;
   setTextById('infopage-num-of-cpu', cpu.core.toString());
   setPercentageById('infopage-cpu-usage', cpu.usage);
   setPercentageById('infopage-cpu-kernel', cpu.kernel);
   setPercentageById('infopage-cpu-user', cpu.user);
   setPercentageById('infopage-cpu-idle', cpu.idle);
 
-  const /** !GeneralMemoryType */ memory = generalInfo.memory;
+  const memory = generalInfo.memory;
   setMemoryById('infopage-memory-total', memory.total);
   setMemoryById('infopage-memory-used', memory.used);
   setMemoryById('infopage-memory-swap-total', memory.swapTotal);
   setMemoryById('infopage-memory-swap-used', memory.swapUsed);
 
-  const /** !GeneralZramType */ zram = generalInfo.zram;
+  const zram = generalInfo.zram;
   setMemoryById('infopage-zram-total', zram.total);
   setMemoryById('infopage-zram-orig', zram.orig);
   setMemoryById('infopage-zram-compr', zram.compr);
   setPercentageById('infopage-zram-compr-ratio', zram.comprRatio);
+
+  const gpu = generalInfo.gpu;
+  $('infopage-panel-gpu').classList.toggle('hidden', gpu === null);
+  if (gpu !== null) {
+    setPercentageById('infopage-gpu-usage', gpu.usage)
+  }
+
+  const npu = generalInfo.npu;
+  $('infopage-panel-npu').classList.toggle('hidden', npu === null);
+  if (npu !== null) {
+    setPercentageById('infopage-npu-usage', npu.usage)
+  }
 }
 
 /**

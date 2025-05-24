@@ -75,7 +75,6 @@ Browser* DialogTestBrowserWindow::FindBrowser() const {
     if (browser->window() == this)
       return browser;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 

@@ -11,9 +11,9 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "chrome/common/importer/importer_url_row.h"
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/user_data_importer/common/importer_url_row.h"
 
 struct ImportedBookmarkEntry;
 
@@ -28,7 +28,7 @@ class SafariImporter : public Importer {
   SafariImporter& operator=(const SafariImporter&) = delete;
 
   // Importer:
-  void StartImport(const importer::SourceProfile& source_profile,
+  void StartImport(const user_data_importer::SourceProfile& source_profile,
                    uint16_t items,
                    ImporterBridge* bridge) override;
 

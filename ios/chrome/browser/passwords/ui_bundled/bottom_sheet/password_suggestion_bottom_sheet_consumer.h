@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @class FormSuggestion;
 
@@ -26,9 +27,6 @@
 // called for every consumer, in which case they might set their own defaults or
 // not display it all.
 - (void)setAvatarImage:(UIImage*)avatarImage;
-
-// Request to dismiss the bottom sheet.
-- (void)dismiss;
 
 // Sets the primary action label.
 - (void)setPrimaryActionString:(NSString*)primaryActionString;

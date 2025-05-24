@@ -80,9 +80,7 @@ EnumTraits<device::mojom::GamepadHapticActuatorType,
           GamepadHapticActuatorTypeTriggerRumble;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return device::mojom::GamepadHapticActuatorType::
-      GamepadHapticActuatorTypeVibration;
+  NOTREACHED();
 }
 
 // static
@@ -105,8 +103,7 @@ bool EnumTraits<device::mojom::GamepadHapticActuatorType,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -191,8 +188,7 @@ EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping>::ToMojom(
       return device::mojom::GamepadMapping::GamepadMappingXRStandard;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return device::mojom::GamepadMapping::GamepadMappingNone;
+  NOTREACHED();
 }
 
 // static
@@ -211,8 +207,7 @@ bool EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping>::
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -228,8 +223,7 @@ EnumTraits<device::mojom::GamepadHand, device::GamepadHand>::ToMojom(
       return device::mojom::GamepadHand::GamepadHandRight;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return device::mojom::GamepadHand::GamepadHandNone;
+  NOTREACHED();
 }
 
 // static
@@ -248,8 +242,7 @@ bool EnumTraits<device::mojom::GamepadHand, device::GamepadHand>::FromMojom(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -260,7 +253,7 @@ StructTraits<device::mojom::GamepadDataView, device::Gamepad>::id(
   while (id_length < device::Gamepad::kIdLengthCap && r.id[id_length] != 0) {
     id_length++;
   }
-  return base::make_span(reinterpret_cast<const uint16_t*>(r.id), id_length);
+  return base::span(reinterpret_cast<const uint16_t*>(r.id), id_length);
 }
 
 // static

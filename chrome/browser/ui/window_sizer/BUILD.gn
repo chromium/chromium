@@ -12,6 +12,7 @@ source_set("window_sizer") {
   public_deps = [
     "//base",
     "//ui/base:types",
+    "//ui/base/mojom:ui_base_types",
     "//ui/gfx/geometry",
   ]
 
@@ -23,7 +24,10 @@ source_set("window_sizer") {
 source_set("impl") {
   sources = [ "window_sizer.cc" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//ui/base/mojom:ui_base_types",
+  ]
 
   deps = [
     ":window_sizer",
@@ -46,7 +50,6 @@ source_set("impl") {
     if (is_chromeos) {
       sources += [ "window_sizer_chromeos.cc" ]
       deps += [
-        "//build:chromeos_buildflags",
         "//chrome/common:constants",
         "//ui/aura",
       ]
@@ -69,10 +72,10 @@ source_set("unit_tests") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/ui",
     "//chrome/common:non_code_constants",
     "//testing/gtest",
+    "//ui/base/mojom:ui_base_types",
     "//ui/display",
   ]
 
@@ -80,7 +83,7 @@ source_set("unit_tests") {
     deps += [ "//ui/aura" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "window_sizer_chromeos_unittest.cc" ]
     deps += [
       "//ash",
@@ -100,7 +103,7 @@ source_set("unit_tests") {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("browser_tests") {
     testonly = true
 

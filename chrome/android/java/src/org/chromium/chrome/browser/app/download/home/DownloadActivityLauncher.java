@@ -18,7 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 import java.lang.annotation.Retention;
@@ -35,7 +35,7 @@ public class DownloadActivityLauncher implements ApplicationStatus.ActivityState
     private static final String EXTRA_SHOW_PREFETCHED_CONTENT =
             "org.chromium.chrome.browser.download.SHOW_PREFETCHED_CONTENT";
     private @DownloadActivityStatus int mActivityStatus = DownloadActivityStatus.NOT_CREATED;
-    private List<Callback<Activity>> mActivityCallbacks = new ArrayList();
+    private final List<Callback<Activity>> mActivityCallbacks = new ArrayList();
 
     /** A set of states that represent the last state change of an Activity. */
     @Retention(RetentionPolicy.SOURCE)
@@ -73,23 +73,23 @@ public class DownloadActivityLauncher implements ApplicationStatus.ActivityState
      * Launches the download activity on phones.
      *
      * @param activity The current activity is available.
-     * @param otrProfileID The {@link OTRProfileID} to determine whether download home should be
+     * @param otrProfileId The {@link OtrProfileId} to determine whether download home should be
      *     opened in incognito mode. Only used when no valid current or recent tab presents.
      * @param showPrefetchedContent Whether the manager should start with prefetched content section
      *     expanded.
      */
     public void showDownloadActivity(
             @Nullable Activity activity,
-            @Nullable OTRProfileID otrProfileID,
+            @Nullable OtrProfileId otrProfileId,
             boolean showPrefetchedContent) {
         Context appContext = ContextUtils.getApplicationContext();
 
         Intent intent = new Intent();
         intent.setClass(appContext, DownloadActivity.class);
         intent.putExtra(EXTRA_SHOW_PREFETCHED_CONTENT, showPrefetchedContent);
-        if (otrProfileID != null) {
+        if (otrProfileId != null) {
             intent.putExtra(
-                    DownloadUtils.EXTRA_OTR_PROFILE_ID, OTRProfileID.serialize(otrProfileID));
+                    DownloadUtils.EXTRA_OTR_PROFILE_ID, OtrProfileId.serialize(otrProfileId));
         }
 
         if (activity == null) {

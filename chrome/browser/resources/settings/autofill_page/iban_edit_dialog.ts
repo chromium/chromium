@@ -112,12 +112,12 @@ export class SettingsIbanEditDialogElement extends
     };
   }
 
-  iban: chrome.autofillPrivate.IbanEntry|null;
-  private title_: string;
-  private value_?: string;
-  private nickname_?: string;
-  private sanitizedIban_: string;
-  private ibanValidationState_: IbanValidationState;
+  declare iban: chrome.autofillPrivate.IbanEntry|null;
+  declare private title_: string;
+  declare private value_?: string;
+  declare private nickname_?: string;
+  declare private sanitizedIban_: string;
+  declare private ibanValidationState_: IbanValidationState;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
 

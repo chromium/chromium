@@ -4,8 +4,9 @@
 
 #include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "content/browser/devtools/shared_storage_worklet_devtools_agent_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"

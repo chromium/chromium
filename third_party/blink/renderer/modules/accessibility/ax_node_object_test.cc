@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 
 namespace blink {
@@ -159,6 +160,84 @@ TEST_F(AccessibilityTest,
   // space is of length 7.
   EXPECT_EQ(7, ax_css_generated->TextOffsetInFormattingContext(0));
   EXPECT_EQ(8, ax_css_generated->TextOffsetInFormattingContext(1));
+}
+
+TEST_F(AccessibilityTest, ScrollButtonAccessibilityRole) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #carousel {
+      scroll-marker-group: after;
+
+      &::scroll-button(inline-start) {
+        content: '<';
+      }
+      &::scroll-button(inline-end) {
+        content: '>' / 'next';
+      }
+    }
+    </style>
+
+    <div id=carousel>
+      <div>One</div>
+      <div>Two</div>
+    </div>)HTML");
+
+  const AXObject* left_button =
+      GetAXObjectByElementId("carousel", kPseudoIdScrollButtonInlineStart);
+  ASSERT_NE(nullptr, left_button);
+  ASSERT_EQ(ax::mojom::Role::kButton, left_button->RoleValue());
+
+  const AXObject* right_button =
+      GetAXObjectByElementId("carousel", kPseudoIdScrollButtonInlineEnd);
+  ASSERT_NE(nullptr, right_button);
+  ASSERT_EQ(ax::mojom::Role::kButton, right_button->RoleValue());
+}
+
+TEST_F(AccessibilityTest, ScrollButtonAndMarkerGroupParent) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #carousel {
+      scroll-marker-group: after;
+      overflow: scroll;
+
+      &::scroll-button(inline-start) {
+        content: '<';
+      }
+      & > .item {
+        &::scroll-marker {
+          content: '';
+        }
+      }
+    }
+    </style>
+
+    <div id=wrapper>
+      <div id=carousel>
+        <div class=item>One</div>
+        <div class=item>Two</div>
+      </div>
+    </div>)HTML");
+
+  const AXObject* wrapper = GetAXObjectByElementId("wrapper");
+  ASSERT_NE(nullptr, wrapper);
+
+  // Check that button's parent is wrapper.
+  const AXObject* button =
+      GetAXObjectByElementId("carousel", kPseudoIdScrollButtonInlineStart);
+  ASSERT_NE(nullptr, button);
+
+  const Node* button_parent = AXObject::GetParentNodeForComputeParent(
+      button->AXObjectCache(), button->GetNode());
+  EXPECT_EQ(button_parent, wrapper->GetNode());
+
+  // Check that marker group's parent is wrapper.
+  const AXObject* marker_group =
+      GetAXObjectByElementId("carousel", kPseudoIdScrollMarkerGroupAfter);
+  ASSERT_NE(nullptr, marker_group);
+
+  const Node* marker_group_parent = AXObject::GetParentNodeForComputeParent(
+      marker_group->AXObjectCache(), marker_group->GetNode());
+  EXPECT_EQ(marker_group_parent, wrapper->GetNode());
 }
 
 }  // namespace test

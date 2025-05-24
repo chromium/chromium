@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!--
+Test for https://crbug.com/398401905 - Null-dereference READ Crash>
+-->
+
+<style>
+  * {
+    display: inline;
+  }
+
+  #target {
+    mask: none, top;
+    -webkit-mask-position-x: 1%;
+  }
+</style>
+
+<script>
+  window.onload = function () {
+    document.designMode = "on";
+    document.execCommand("SelectAll");
+    document.execCommand("JustifyRight");
+  };
+</script>
+
+<div id="target">Test passes if it does not crash.</div>

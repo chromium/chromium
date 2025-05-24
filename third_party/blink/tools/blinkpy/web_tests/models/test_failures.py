@@ -31,8 +31,7 @@ from six.moves import cPickle
 from typing import ClassVar
 
 from blinkpy.web_tests.controllers import repaint_overlay
-from blinkpy.web_tests.models.typ_types import ResultType
-from blinkpy.web_tests.models.failure_reason import FailureReason
+from blinkpy.web_tests.models.typ_types import FailureReason, ResultType
 from blinkpy.common.html_diff import html_diff
 from blinkpy.common.unified_diff import unified_diff
 

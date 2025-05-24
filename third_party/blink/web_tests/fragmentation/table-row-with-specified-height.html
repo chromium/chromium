@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div id="multicol" style="columns:3; column-fill:auto; column-gap:0; height:90px; line-height:20px;">
+<div id="multicol" style="columns:3; column-fill:auto; gap:0; width:450px; height:90px; line-height:20px;">
     <br>
     <br>
     <table cellspacing="0" cellpadding="0">
@@ -26,30 +26,36 @@
     // layout pass between each check, to verify that it's stable.
 
     test(() => {
-        assert_equals(cell.offsetTop, 50);
+        assert_equals(cell.offsetLeft, 150);
+        assert_equals(cell.offsetTop, -40);
         assert_equals(cell.offsetHeight, 61);
-        assert_equals(row.offsetTop, 50);
+        assert_equals(row.offsetLeft, 150);
+        assert_equals(row.offsetTop, -40);
         assert_equals(row.offsetHeight, 61);
     }, "Row height should be as specified.");
 
     test(() => {
         // Change width and verify that layout remains the same, block direction-wise.
-        multicol.style.width = "500px";
+        multicol.style.width = "480px";
 
-        assert_equals(cell.offsetTop, 50);
+        assert_equals(cell.offsetLeft, 160);
+        assert_equals(cell.offsetTop, -40);
         assert_equals(cell.offsetHeight, 61);
-        assert_equals(row.offsetTop, 50);
+        assert_equals(row.offsetLeft, 160);
+        assert_equals(row.offsetTop, -40);
         assert_equals(row.offsetHeight, 61);
 
     }, "Row height should be as specified after relayout.");
 
     test(() => {
         // Change width and verify that layout remains the same, block direction-wise.
-        multicol.style.width = "550px";
+        multicol.style.width = "510px";
 
-        assert_equals(cell.offsetTop, 50);
+        assert_equals(cell.offsetLeft, 170);
+        assert_equals(cell.offsetTop, -40);
         assert_equals(cell.offsetHeight, 61);
-        assert_equals(row.offsetTop, 50);
+        assert_equals(row.offsetLeft, 170);
+        assert_equals(row.offsetTop, -40);
         assert_equals(row.offsetHeight, 61);
 
     }, "Row height should be as specified after another relayout.");
@@ -58,9 +64,11 @@
         // Change width and verify that layout remains the same, block direction-wise.
         multicol.style.width = "600px";
 
-        assert_equals(cell.offsetTop, 50);
+        assert_equals(cell.offsetLeft, 200);
+        assert_equals(cell.offsetTop, -40);
         assert_equals(cell.offsetHeight, 61);
-        assert_equals(row.offsetTop, 50);
+        assert_equals(row.offsetLeft, 200);
+        assert_equals(row.offsetTop, -40);
         assert_equals(row.offsetHeight, 61);
 
     }, "Row height should be as specified after yet another relayout.");

@@ -10,9 +10,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
@@ -97,12 +97,11 @@ void DesktopTabModelURLVisitDataFetcher::FetchURLVisitData(
         }
         tab_data.tab_count += 1;
       }
-      TabRendererData tab_renderer_data =
-          TabRendererData::FromTabInModel(tab_strip_model, i);
-      tab_data.pinned = tab_data.pinned || tab_renderer_data.pinned;
-      tab_data.in_group =
-          tab_data.in_group ||
-          (tab_strip_model->GetTabGroupForTab(i) != std::nullopt);
+
+      tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+
+      tab_data.pinned = tab_data.pinned || tab->IsPinned();
+      tab_data.in_group = tab_data.in_group || tab->GetGroup().has_value();
     }
   }
 

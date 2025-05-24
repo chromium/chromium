@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/settings/pages/main/os_settings_hats_handler.h"
+
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"

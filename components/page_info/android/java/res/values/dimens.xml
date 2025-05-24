@@ -13,6 +13,4 @@ found in the LICENSE file.
     <dimen name="page_info_popup_corners_radius">16dp</dimen>
     <dimen name="page_info_popup_button_padding_sides">8dp</dimen>
 
-    <!-- Page Info Background Elevation -->
-    <dimen name="page_info_bg_elev">@dimen/default_elevation_0</dimen>
 </resources>

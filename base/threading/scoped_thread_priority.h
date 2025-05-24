@@ -31,11 +31,11 @@ enum class ThreadType : int;
 //   }
 //   Bar();
 //
-// The macro raises the thread priority to NORMAL for the scope if no other
-// thread has completed the current scope already (multiple threads can racily
-// begin the initialization and will all be boosted for it). On Windows, loading
-// a DLL on a background thread can lead to a priority inversion on the loader
-// lock and cause huge janks.
+// The macro raises the thread priority to match ThreadType::kDefault for the
+// scope if no other thread has completed the current scope already (multiple
+// threads can racily begin the initialization and will all be boosted for it).
+// On Windows, loading a DLL on a background thread can lead to a priority
+// inversion on the loader lock and cause huge janks.
 #define SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY()                  \
   static std::atomic_bool BASE_UNIQUIFY(already_loaded){false};           \
   base::internal::ScopedMayLoadLibraryAtBackgroundPriority BASE_UNIQUIFY( \
@@ -51,7 +51,9 @@ enum class ThreadType : int;
       scoped_may_load_library_at_background_priority)(FROM_HERE, nullptr);
 
 // Boosts the current thread's priority to match the priority of threads of
-// |target_thread_type| in this scope.
+// `target_thread_type` in this scope. `target_thread_type` must be lower
+// priority than kRealtimeAudio, since realtime priority should only be used by
+// dedicated media threads.
 class BASE_EXPORT ScopedBoostPriority {
  public:
   explicit ScopedBoostPriority(ThreadType target_thread_type);
@@ -68,8 +70,8 @@ namespace internal {
 
 class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
  public:
-  // Boosts thread priority to NORMAL within its scope if |already_loaded| is
-  // nullptr or set to false.
+  // Boosts thread priority to match ThreadType::kDefault within its scope if
+  // `already_loaded` is nullptr or set to false.
   explicit ScopedMayLoadLibraryAtBackgroundPriority(
       const Location& from_here,
       std::atomic_bool* already_loaded);

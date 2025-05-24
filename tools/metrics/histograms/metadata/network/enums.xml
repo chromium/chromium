@@ -234,6 +234,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Aborted"/>
 </enum>
 
+<enum name="CreateCustomApnResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network not found"/>
+  <int value="2" label="Shill error"/>
+</enum>
+
 <enum name="DnsProxy.DnsOverHttpsMode">
   <int value="0" label="Unknown"/>
   <int value="1" label="Off"/>
@@ -524,6 +530,9 @@ chromium-metrics-reviews@google.com.
              not available."/>
   <int value="13"
       label="kUnknownError: Hotspot disabled due to an unknown error."/>
+  <int value="14"
+      label="kResourceBusy: Hotspot disabled due to concurrency resource
+             conflict."/>
 </enum>
 
 <enum name="HotspotSetConfigResult">
@@ -580,6 +589,15 @@ chromium-metrics-reviews@google.com.
   <int value="13"
       label="kInvalid: The enable hotspot operation is invalid due to an
              ongoing disable operation."/>
+  <int value="14"
+      label="kBusy: The enable hotspot operation failed due to an ongoing
+             request."/>
+  <int value="15"
+      label="kConcurrencyNotSupported: The enable hotspot operation failed
+             due to concurrency conflict."/>
+  <int value="16"
+      label="kOperationFailure: The enable hotspot operation failed
+             internally."/>
 </enum>
 
 <enum name="HotspotSupport">
@@ -639,14 +657,79 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Proxy B"/>
 </enum>
 
+<enum name="IpProtectionProxyResolutionResult">
+  <int value="0"
+      label="The MDL is not populated, so an eligility decision could not be
+             made"/>
+  <int value="1" label="The request did not match the MDL"/>
+  <int value="2"
+      label="DEPRECATED: The EnableIpProtectionProxy feature is not enabled"/>
+  <int value="3" label="The IP Protection setting is disabled"/>
+  <int value="4" label="Proxy List is unavailable"/>
+  <int value="5"
+      label="Proxy List is available but tokens have never been available"/>
+  <int value="6"
+      label="Proxy List is available but tokens in the cache have been
+             exhausted"/>
+  <int value="7" label="The request was resolved to the IP Protection proxies"/>
+  <int value="8"
+      label="A site exception created by User Bypass disables protections"/>
+</enum>
+
 <enum name="IpProtectionTokenBatchRequestError">
   <int value="58877100" label="Failed to read timestamp"/>
+  <int value="159430335" label="GetInitialDataRequest failed: 499 (CANCELLED)"/>
   <int value="354921842" label="At least one extension is required"/>
+  <int value="774920404" label="GetInitialDataRequest failed: 5xx (INTERNAL)"/>
+  <int value="788650824" label="GetInitialDataRequest failed: 409 (ABORTED)"/>
+  <int value="882579398" label="AuthAndSign failed: 504 (DEADLINE_EXCEEDED)"/>
   <int value="1218093704" label="Failed to read extensions"/>
+  <int value="1324062375" label="AuthAndSign failed: 403 (PERMISSION_DENIED)"/>
+  <int value="1359797045" label="AuthAndSign failed: 416 (OUT_OF_RANGE)"/>
+  <int value="1392994811"
+      label="GetInitialDataRequest failed: 4xx (FAILED_PRECONDITION)"/>
+  <int value="1560305329"
+      label="GetInitialDataRequest failed: invalid response"/>
+  <int value="1570178381"
+      label="GetInitialDataRequest failed: 429 (RESOURCE_EXHAUSTED)"/>
+  <int value="1632191523"
+      label="GetInitialDataRequest failed: 1xx/3xx (UNKNOWN)"/>
+  <int value="1632242186" label="AuthAndSign failed: 429 (RESOURCE_EXHAUSTED)"/>
+  <int value="1637757426"
+      label="GetInitialDataRequest failed: 401 (UNAUTHENTICATED)"/>
+  <int value="1741288262" label="AuthAndSign failed: 499 (CANCELLED)"/>
+  <int value="1782033339" label="AuthAndSign failed: invalid response"/>
+  <int value="1916829389"
+      label="GetInitialDataRequest failed: 404 (NOT_FOUND)"/>
+  <int value="2040698924" label="AuthAndSign failed: 404 (NOT_FOUND)"/>
+  <int value="2073947853" label="AuthAndSign failed: 401 (UNAUTHENTICATED)"/>
+  <int value="2141269466" label="Failed to validate extensions"/>
+  <int value="2339897637"
+      label="GetInitialDataRequest failed: 503 (UNAVAILABLE)"/>
+  <int value="2408268044" label="AuthAndSign failed"/>
   <int value="2528366448" label="Failed to parse GetInitialDataResponse"/>
+  <int value="2528411010"
+      label="GetInitialDataRequest failed: 416 (OUT_OF_RANGE)"/>
+  <int value="2594877687"
+      label="GetInitialDataRequest failed: 504 (DEADLINE_EXCEEDED)"/>
+  <int value="2766613933" label="AuthAndSign failed: 503 (UNAVAILABLE)"/>
   <int value="2867080750" label="Failed to read timestamp_precision"/>
+  <int value="2906092890"
+      label="GetInitialDataRequest failed: 501 (UNIMPLEMENTED)"/>
+  <int value="3024523150" label="AuthAndSign failed: 5xx (INTERNAL)"/>
+  <int value="3118017018" label="AuthAndSign failed: 501 (UNIMPLEMENTED)"/>
+  <int value="3172166369" label="AuthAndSign failed: 1xx/3xx (UNKNOWN)"/>
   <int value="3336018440"
       label="Non-Privacy Pass tokens are no longer supported"/>
+  <int value="3359657202"
+      label="GetInitialDataRequest failed: 400 (INVALID_ARGUMENT)"/>
+  <int value="3506031840" label="AuthAndSign failed: 400 (INVALID_ARGUMENT)"/>
+  <int value="3831429430" label="AuthAndSign failed: 409 (ABORTED)"/>
+  <int value="4053847635" label="GetInitialDataRequest failed"/>
+  <int value="4107556447"
+      label="AuthAndSign failed: 4xx (FAILED_PRECONDITION)"/>
+  <int value="4198175771"
+      label="GetInitialDataRequest failed: 403 (PERMISSION_DENIED)"/>
 </enum>
 
 <enum name="IpProtectionTokenBatchRequestResult">
@@ -779,6 +862,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="eSIM profile not found"/>
   <int value="6" label="Enable profile failed"/>
   <int value="7" label="Timeout waiting for connectable"/>
+  <int value="8" label="SIM locked"/>
 </enum>
 
 <enum name="NetworkCellularPSimActivationResult">
@@ -934,6 +1018,28 @@ chromium-metrics-reviews@google.com.
 <enum name="NetworkConnectionState">
   <int value="0" label="Connected"/>
   <int value="1" label="Disconnected without explicit user action"/>
+</enum>
+
+<enum name="NetworkEapConnectionEvent">
+  <int value="0" label="No Record"/>
+  <int value="1" label="Auth Completed Success"/>
+  <int value="2" label="Auth Local TLS Failure"/>
+  <int value="3" label="Auth Remote TLS Failure"/>
+  <int value="4" label="Auth Failure"/>
+  <int value="5" label="Unexpected Failure"/>
+  <int value="6" label="TLS Status Alert"/>
+  <int value="7" label="Cert Verification Success"/>
+  <int value="8" label="First Cert Verification Failure"/>
+  <int value="9" label="Cert Verification Retry Attempt"/>
+  <int value="10" label="Cert Verification Failure Before Retry"/>
+  <int value="11" label="Cert Verification Failure After Retry"/>
+  <int value="12" label="Cert Verification Load Failure"/>
+  <int value="13" label="Cert Verification Unexpected Parameter"/>
+  <int value="14" label="Cert Verification Issuer Cert Absent"/>
+  <int value="15" label="Pin Missing"/>
+  <int value="16" label="Auth Failure Pin Missing"/>
+  <int value="17" label="Auth Attempt"/>
+  <int value="18" label="Proposed Auth Method Accepted"/>
 </enum>
 
 <enum name="NetworkEligibilityStatus">
@@ -1267,10 +1373,19 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="System Disconnect"/>
   <int value="1" label="User Disconnect"/>
   <int value="2" label="Suspend"/>
-  <int value="3" label="Switch Network"/>
+  <int value="3" label="Select Network"/>
   <int value="4" label="Disable"/>
   <int value="5" label="Service Unload"/>
   <int value="6" label="Disconnect On Ethernet"/>
+  <int value="7" label="Clear Credential"/>
+  <int value="8" label="No Endpoint Left"/>
+  <int value="9" label="New WiFi Device"/>
+  <int value="10" label="IP Config Failure"/>
+  <int value="11" label="Pending Service Timeout"/>
+  <int value="12" label="4-way Handshake Timeout"/>
+  <int value="13" label="Reconnect Timeout"/>
+  <int value="14" label="Roaming to Incorrect BSSID"/>
+  <int value="15" label="Shill"/>
 </enum>
 
 <enum name="NotificationSuppressionState">
@@ -1395,6 +1510,103 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="No Connectivity"/>
   <int value="12" label="Online"/>
 </enum>
+
+<!-- LINT.IfChange(PrefetchMatchesResourceRequestField) -->
+
+<enum name="PrefetchMatchesResourceRequestField">
+  <int value="0" label="unknown"/>
+  <int value="1" label="method"/>
+  <int value="2" label="url"/>
+  <int value="3" label="site_for_cookies"/>
+  <int value="4" label="update_first_party_url_on_redirect"/>
+  <int value="5" label="request_initiator"/>
+  <int value="6" label="isolated_world_origin"/>
+  <int value="7" label="navigation_redirect_chain"/>
+  <int value="8" label="referrer"/>
+  <int value="9" label="referrer_policy"/>
+  <int value="10" label="headers"/>
+  <int value="11" label="cors_exempt_headers"/>
+  <int value="12" label="load_flags"/>
+  <int value="13" label="resource_type"/>
+  <int value="14" label="priority"/>
+  <int value="15" label="priority_incremental"/>
+  <int value="16" label="cors_preflight_policy"/>
+  <int value="17" label="originated_from_service_worker"/>
+  <int value="18" label="skip_service_worker"/>
+  <int value="19" label="mode"/>
+  <int value="20" label="required_ip_address_space"/>
+  <int value="21" label="credentials_mode"/>
+  <int value="22" label="redirect_mode"/>
+  <int value="23" label="fetch_integrity"/>
+  <int value="24" label="destination"/>
+  <int value="25" label="original_destination"/>
+  <int value="26" label="request_body"/>
+  <int value="27" label="keepalive"/>
+  <int value="28" label="browsing_topics"/>
+  <int value="29" label="ad_auction_headers"/>
+  <int value="30" label="shared_storage_writable_eligible"/>
+  <int value="31" label="has_user_gesture"/>
+  <int value="32" label="enable_load_timing"/>
+  <int value="33" label="enable_upload_progress"/>
+  <int value="34" label="do_not_prompt_for_login"/>
+  <int value="35" label="is_outermost_main_frame"/>
+  <int value="36" label="transition_type"/>
+  <int value="37" label="previews_state"/>
+  <int value="38" label="upgrade_if_insecure"/>
+  <int value="39" label="is_revalidating"/>
+  <int value="40" label="throttling_profile_id"/>
+  <int value="41" label="custom_proxy_pre_cache_headers (deprecated)"/>
+  <int value="42" label="custom_proxy_post_cache_headers (deprecated)"/>
+  <int value="43" label="fetch_window_id"/>
+  <int value="44" label="devtools_request_id"/>
+  <int value="45" label="devtools_stack_id"/>
+  <int value="46" label="is_fetch_like_api"/>
+  <int value="47" label="is_fetch_later_api"/>
+  <int value="48" label="is_favicon"/>
+  <int value="49" label="recursive_prefetch_token"/>
+  <int value="50" label="trusted_params"/>
+  <int value="51" label="trust_token_params"/>
+  <int value="52" label="web_bundle_token_params"/>
+  <int value="53" label="devtools_accepted_stream_types"/>
+  <int value="54" label="net_log_create_info"/>
+  <int value="55" label="net_log_reference_info"/>
+  <int value="56" label="target_ip_address_space"/>
+  <int value="57" label="storage_access_api_status"/>
+  <int value="58" label="attribution_reporting_support"/>
+  <int value="59" label="attribution_reporting_eligibility"/>
+  <int value="60" label="shared_dictionary_writer_enabled"/>
+  <int value="61" label="attribution_reporting_src_token"/>
+  <int value="62" label="is_ad_tagged"/>
+  <int value="63" label="keepalive_token"/>
+  <int value="64" label="expected_public_keys"/>
+  <int value="65" label="permissions_policy"/>
+  <int value="66" label="client_side_content_decoding_enabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/prefetch_matches.cc:FieldsForUma) -->
+
+<!-- LINT.IfChange(ProbabilisticRevealTokensResult) -->
+
+<enum name="ProbabilisticRevealTokensResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Net Not Ok"/>
+  <int value="2" label="Net Ok Null Response"/>
+  <int value="3" label="Null Response"/>
+  <int value="4" label="Response Parsing Failed"/>
+  <int value="5" label="Invalid Token Version"/>
+  <int value="6" label="Invalid Token Size"/>
+  <int value="7" label="Too Few Tokens"/>
+  <int value="8" label="Too Many Tokens"/>
+  <int value="9" label="Expiration Too Soon"/>
+  <int value="10" label="Expiration Too Late"/>
+  <int value="11" label="Invalid Public Key"/>
+  <int value="12" label="Invalid Num Tokens With Signal"/>
+  <int value="13" label="Request Backed Off"/>
+  <int value="14" label="No Google Chrome Branding"/>
+  <int value="15" label="Invalid Epoch ID Size"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/ip_protection/common/ip_protection_data_types.h:TryGetProbabilisticRevealTokensStatus) -->
 
 <enum name="PSimSetupFlowResult">
   <int value="0" label="SUCCESS"/>
@@ -2092,6 +2304,12 @@ chromium-metrics-reviews@google.com.
   <int value="681" label="97"/>
 </enum>
 
+<enum name="SharedDictionaryDocumentRequestCacheResult">
+  <int value="0" label="Cache Miss"/>
+  <int value="1" label="Hit from LRU Cache"/>
+  <int value="2" label="Hit from Active Dictionary List"/>
+</enum>
+
 <enum name="SharedDictionaryEncodingType">
   <int value="0" label="Not Used"/>
   <int value="1" label="Shared Brotli"/>
@@ -2688,6 +2906,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="FullScan didn't connect"/>
   <int value="6" label="FullScan connected"/>
   <int value="7" label="Internal error"/>
+</enum>
+
+<enum name="WiFiSecurityType">
+  <int value="0" label="Unmanaged Open"/>
+  <int value="1" label="Managed Open"/>
+  <int value="2" label="Unmanaged PSK"/>
+  <int value="3" label="Managed PSK"/>
+  <int value="4" label="Unmanaged Certificate"/>
+  <int value="5" label="Managed Certificate"/>
+  <int value="6" label="Unknown"/>
 </enum>
 
 <enum name="WiFiSessionTagState">

@@ -513,8 +513,7 @@ TranslateState TranslateMetricsLoggerImpl::ConvertToTranslateState(
   if (is_translated && is_ui_shown)
     return TranslateState::kTranslatedUIShown;
 
-  NOTREACHED_IN_MIGRATION();
-  return TranslateState::kUninitialized;
+  NOTREACHED();
 }
 
 void TranslateMetricsLoggerImpl::UpdateTimeTranslated(bool was_translated,

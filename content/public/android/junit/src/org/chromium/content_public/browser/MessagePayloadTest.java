@@ -24,17 +24,17 @@ public class MessagePayloadTest {
     public void testString() {
         final String testStr = "TestStr";
         MessagePayload messagePayload = new MessagePayload(testStr);
-        Assert.assertEquals(messagePayload.getAsString(), testStr);
-        Assert.assertEquals(messagePayload.getType(), MessagePayloadType.STRING);
+        Assert.assertEquals(testStr, messagePayload.getAsString());
+        Assert.assertEquals(MessagePayloadType.STRING, messagePayload.getType());
 
-        Assert.assertEquals(messagePayload.getType(), MessagePayloadType.STRING);
+        Assert.assertEquals(MessagePayloadType.STRING, messagePayload.getType());
     }
 
     @Test
     public void testStringCanBeNull() {
         MessagePayload jsValue = new MessagePayload((String) null);
         Assert.assertNull(jsValue.getAsString());
-        Assert.assertEquals(jsValue.getType(), MessagePayloadType.STRING);
+        Assert.assertEquals(MessagePayloadType.STRING, jsValue.getType());
     }
 
     @Test
@@ -42,7 +42,7 @@ public class MessagePayloadTest {
         final byte[] bytes = "TestStr".getBytes("UTF-8");
         MessagePayload jsValue = new MessagePayload(bytes);
         Assert.assertEquals(jsValue.getAsArrayBuffer(), bytes);
-        Assert.assertEquals(jsValue.getType(), MessagePayloadType.ARRAY_BUFFER);
+        Assert.assertEquals(MessagePayloadType.ARRAY_BUFFER, jsValue.getType());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class MessagePayloadTest {
     @Test
     public void testWrongValueTypeString() throws UnsupportedEncodingException {
         MessagePayload jsValue = new MessagePayload("TestStr".getBytes("UTF-8"));
-        Assert.assertEquals(jsValue.getType(), MessagePayloadType.ARRAY_BUFFER);
+        Assert.assertEquals(MessagePayloadType.ARRAY_BUFFER, jsValue.getType());
         try {
             jsValue.getAsString();
             Assert.fail("Should throw exception");
@@ -70,7 +70,7 @@ public class MessagePayloadTest {
     @Test
     public void testWrongValueTypeArrayBuffer() {
         MessagePayload jsValue = new MessagePayload("TestStr");
-        Assert.assertEquals(jsValue.getType(), MessagePayloadType.STRING);
+        Assert.assertEquals(MessagePayloadType.STRING, jsValue.getType());
         try {
             jsValue.getAsArrayBuffer();
             Assert.fail("Should throw exception");

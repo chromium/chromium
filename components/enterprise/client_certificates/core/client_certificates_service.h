@@ -16,10 +16,12 @@ class CertificateProvisioningService;
 class ClientCertificatesService : public net::ClientCertStore {
  public:
   // Returns an instance of the service which will aggregate certificates from
-  // both the managed `certificate_provisioning_service` and the OS'
+  // the managed `profile_certificate_provisioning_service`,
+  // `browser_certificate_provisioning_service`, and the OS'
   // `platform_certificate_store`.
   static std::unique_ptr<ClientCertificatesService> Create(
-      CertificateProvisioningService* certificate_provisioning_service,
+      CertificateProvisioningService* profile_certificate_provisioning_service,
+      CertificateProvisioningService* browser_certificate_provisioning_service,
       std::unique_ptr<net::ClientCertStore> platform_certificate_store);
 };
 

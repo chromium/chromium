@@ -4,6 +4,7 @@
 
 #include "components/paint_preview/common/serial_utils.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -165,8 +166,8 @@ TEST(PaintPreviewSerialUtils, TestSerialAndroidSystemTypeface) {
   EXPECT_GT(typeface_ctx.finished.count(typeface->uniqueID()), 0U);
   auto original_data = typeface->serialize();
   ASSERT_EQ(original_data->size(), final_data->size());
-  ASSERT_EQ(
-      0, memcmp(original_data->data(), final_data->data(), final_data->size()));
+  ASSERT_EQ(0, UNSAFE_TODO(memcmp(original_data->data(), final_data->data(),
+                                  final_data->size())));
 }
 #endif
 
@@ -212,8 +213,13 @@ TEST(PaintPreviewSerialUtils, TestImageContextLimitBudget) {
   PictureSerializationContext picture_ctx;
   TypefaceUsageMap usage_map;
   TypefaceSerializationContext typeface_ctx(&usage_map);
+
+  // Set the `remaining_image_size` budget to a value that will allow
+  // 2 images (rather than all 3 images).  This value depends on the
+  // implementation details of a PNG encoder (and therefore may need
+  // to be tweaked after changing the encoder or encoding settings).
   ImageSerializationContext ictx;
-  ictx.remaining_image_size = 200;
+  ictx.remaining_image_size = 220;
 
   SkSerialProcs serial_procs =
       MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);

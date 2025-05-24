@@ -8,11 +8,14 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A class with this name was part of the cacheinvalidation library, which isn't used anymore and
  * has been deleted. However, this service is exported in the AndroidManifest.xml and thus is part
  * of Chrome's public API, so we need to keep this placeholder class around.
  */
+@NullMarked
 public class GcmRegistrationTaskService extends GcmTaskService {
     @Override
     public int onRunTask(TaskParams params) {

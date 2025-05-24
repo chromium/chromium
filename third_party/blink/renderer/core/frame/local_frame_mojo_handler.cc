@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -214,24 +209,23 @@ v8::Local<v8::String> ErrorToString(ScriptState* script_state,
 class JavaScriptExecuteRequestForTestsHandler
     : public GarbageCollected<JavaScriptExecuteRequestForTestsHandler> {
  public:
-  class PromiseCallback : public ScriptFunction::Callable {
+  class PromiseCallback : public ThenCallable<IDLAny, PromiseCallback> {
    public:
     PromiseCallback(JavaScriptExecuteRequestForTestsHandler& handler,
                     mojom::blink::JavaScriptExecutionResultType type)
         : handler_(handler), type_(type) {}
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    void React(ScriptState* script_state, ScriptValue value) {
       DCHECK(script_state);
       if (type_ == mojom::blink::JavaScriptExecutionResultType::kSuccess)
         handler_->SendSuccess(script_state, value.V8Value());
       else
         handler_->SendException(script_state, value.V8Value());
-      return {};
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(handler_);
-      ScriptFunction::Callable::Trace(visitor);
+      ThenCallable<IDLAny, PromiseCallback>::Trace(visitor);
     }
 
    private:
@@ -254,20 +248,16 @@ class JavaScriptExecuteRequestForTestsHandler
     }
   }
 
-  ScriptFunction* CreateResolveCallback(ScriptState* script_state,
-                                        LocalFrame* frame) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<PromiseCallback>(
-            *this, mojom::blink::JavaScriptExecutionResultType::kSuccess));
+  PromiseCallback* CreateResolveCallback(ScriptState* script_state,
+                                         LocalFrame* frame) {
+    return MakeGarbageCollected<PromiseCallback>(
+        *this, mojom::blink::JavaScriptExecutionResultType::kSuccess);
   }
 
-  ScriptFunction* CreateRejectCallback(ScriptState* script_state,
-                                       LocalFrame* frame) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<PromiseCallback>(
-            *this, mojom::blink::JavaScriptExecutionResultType::kException));
+  PromiseCallback* CreateRejectCallback(ScriptState* script_state,
+                                        LocalFrame* frame) {
+    return MakeGarbageCollected<PromiseCallback>(
+        *this, mojom::blink::JavaScriptExecutionResultType::kException);
   }
 
   void SendSuccess(ScriptState* script_state, v8::Local<v8::Value> value) {
@@ -578,6 +568,15 @@ void LocalFrameMojoHandler::NotifyVirtualKeyboardOverlayRect(
                         keyboard_rect.height() / scale_factor);
 
   frame_->NotifyVirtualKeyboardOverlayRectObservers(scaled_rect);
+}
+
+void LocalFrameMojoHandler::NotifyContextMenuInsetsObservers(
+    const gfx::Rect& safe_area) {
+  frame_->NotifyContextMenuInsetsObservers(safe_area);
+}
+
+void LocalFrameMojoHandler::ShowInterestInElement(int nodeID) {
+  frame_->ShowInterestInElement(nodeID);
 }
 
 void LocalFrameMojoHandler::AddMessageToConsole(
@@ -918,7 +917,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
       if (resolve_promises && !value.IsEmpty() && value->IsPromise()) {
         auto promise = ScriptPromise<IDLAny>::FromV8Promise(
             script_state->GetIsolate(), value.As<v8::Promise>());
-        promise.Then(handler->CreateResolveCallback(script_state, frame_),
+        promise.Then(script_state,
+                     handler->CreateResolveCallback(script_state, frame_),
                      handler->CreateRejectCallback(script_state, frame_));
       } else {
         handler->SendSuccess(script_state, value);
@@ -963,7 +963,7 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
 
   WebScriptSource web_script_source(javascript);
   frame_->RequestExecuteScript(
-      world_id, {&web_script_source, 1u},
+      world_id, base::span_from_ref(web_script_source),
       mojom::blink::UserActivationOption::kDoNotActivate,
       mojom::blink::EvaluationTiming::kSynchronous,
       mojom::blink::LoadEventBlockingOption::kDoNotBlock,
@@ -1139,8 +1139,9 @@ void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
     // within the page that the user wishes to point the recipient to. Canonical URLs generally
     // don't and can't contain this state, so try to match user expectations a little more closely
     // here by splicing the fragment identifier (if there is one) into the shared URL.
-    if (doc_url.HasFragmentIdentifier() && !canon_url.HasFragmentIdentifier())
-      canon_url.SetFragmentIdentifier(doc_url.FragmentIdentifier());
+    if (doc_url.HasFragmentIdentifier() && !canon_url.HasFragmentIdentifier()) {
+      canon_url.SetFragmentIdentifier(doc_url.FragmentIdentifier().ToString());
+    }
   }
   std::move(callback).Run(canon_url.IsNull() ? std::nullopt
                                              : std::make_optional(canon_url));
@@ -1286,7 +1287,7 @@ void LocalFrameMojoHandler::PluginActionAt(
           WebPlugin::RotationType::k90Counterclockwise);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LocalFrameMojoHandler::SetInitialFocus(bool reverse) {
@@ -1305,23 +1306,22 @@ void LocalFrameMojoHandler::ZoomToFindInPageRect(
 void LocalFrameMojoHandler::InstallCoopAccessMonitor(
     const FrameToken& accessed_window,
     network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-        coop_reporter_params,
-    bool is_in_same_virtual_coop_related_group) {
+        coop_reporter_params) {
   blink::Frame* accessed_frame = Frame::ResolveFrame(accessed_window);
   // The Frame might have been deleted during the cross-process communication.
   if (!accessed_frame)
     return;
 
   accessed_frame->DomWindow()->InstallCoopAccessMonitor(
-      frame_, std::move(coop_reporter_params),
-      is_in_same_virtual_coop_related_group);
+      frame_, std::move(coop_reporter_params));
 }
 
 void LocalFrameMojoHandler::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate,
-    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
+    const std::optional<cc::BrowserControlsOffsetTagModifications>&
+        offset_tag_modifications) {
   DCHECK(frame_->IsOutermostMainFrame());
   TRACE_EVENT2("renderer", "LocalFrame::UpdateBrowserControlsState",
                "Constraint", static_cast<int>(constraints), "Current",
@@ -1330,11 +1330,17 @@ void LocalFrameMojoHandler::UpdateBrowserControlsState(
                        "animated", animate);
 
   frame_->GetWidgetForLocalRoot()->UpdateBrowserControlsState(
-      constraints, current, animate, offset_tags_info);
+      constraints, current, animate, offset_tag_modifications);
 }
 
 void LocalFrameMojoHandler::Discard() {
   frame_->Discard();
+}
+
+void LocalFrameMojoHandler::FinalizeNavigationConfidence(
+    double randomized_trigger_rate,
+    mojom::blink::ConfidenceLevel confidence) {
+  frame_->SetNavigationConfidence(randomized_trigger_rate, confidence);
 }
 
 void LocalFrameMojoHandler::SetV8CompileHints(
@@ -1348,13 +1354,12 @@ void LocalFrameMojoHandler::SetV8CompileHints(
   if (!mapping.IsValid()) {
     return;
   }
-  const int64_t* memory = mapping.GetMemoryAs<int64_t>();
-  if (memory == nullptr) {
+  base::span<const int64_t> memory = mapping.GetMemoryAsSpan<int64_t>();
+  if (memory.empty()) {
     return;
   }
 
-  page->GetV8CrowdsourcedCompileHintsConsumer().SetData(memory,
-                                                        mapping.size() / 8);
+  page->GetV8CrowdsourcedCompileHintsConsumer().SetData(memory);
 }
 
 void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(
@@ -1424,6 +1429,12 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
   info->is_secure_transport = is_secure_transport;
   info->timing = std::move(load_timing_info);
   subframe->Owner()->AddResourceTiming(std::move(info));
+}
+
+void LocalFrameMojoHandler::GetScrollPosition(
+    GetScrollPositionCallback callback) {
+  std::move(callback).Run(gfx::ToFlooredPoint(
+      frame_->LocalFrameRoot().View()->LayoutViewport()->ScrollPosition()));
 }
 
 void LocalFrameMojoHandler::RequestFullscreenVideoElement() {

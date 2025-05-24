@@ -63,7 +63,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   bool IsBitmapImage() const override { return true; }
 
-  bool CurrentFrameHasSingleSecurityOrigin() const override;
+  bool HasSingleSecurityOrigin() const override;
 
   gfx::Size SizeWithConfig(SizeConfig) const override;
   bool GetHotSpot(gfx::Point&) const override;
@@ -87,18 +87,16 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   scoped_refptr<Image> ImageForDefaultFrame() override;
 
-  // TODO(khushalsagar): These names are bogus, we don't know what the current
-  // frame is.
-  bool CurrentFrameKnownToBeOpaque() override;
-  bool CurrentFrameIsComplete() override;
-  bool CurrentFrameIsLazyDecoded() override;
+  bool IsOpaque() override;
+  bool FirstFrameIsComplete() override;
+  bool IsLazyDecoded() override;
   size_t FrameCount() override;
   PaintImage PaintImageForCurrentFrame() override;
-  ImageOrientation CurrentFrameOrientation() const override;
+  ImageOrientation Orientation() const override;
 
   PaintImage PaintImageForTesting();
   void AdvanceAnimationForTesting() override {
-    NOTREACHED_IN_MIGRATION() << "Supported only with svgs";
+    NOTREACHED() << "Supported only with svgs";
   }
   void SetDecoderForTesting(std::unique_ptr<DeferredImageDecoder> decoder) {
     decoder_ = std::move(decoder);
@@ -107,6 +105,9 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   // Records the decoded image type in a UseCounter. |use_counter| may be a null
   // pointer.
   void RecordDecodedImageType(UseCounter* use_counter);
+
+  // Records the presence of a C2PA Manifest in a UseCounter.
+  void RecordDecodedImageC2PA(UseCounter* use_counter);
 
  protected:
   bool IsSizeAvailable() override;

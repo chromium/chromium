@@ -33,7 +33,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/test_storage_partition.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "net/cookies/canonical_cookie.h"
@@ -80,13 +80,17 @@ RotationDebugInfo::FailureInfo* AddFirstFailureInfo(
     RotationDebugInfo& info,
     base::Time timestamp,
     RotationDebugInfo::FailureType type,
-    bool received_challenge) {
+    bool received_challenge,
+    const base::flat_set<std::string>& missing_cookies) {
   RotationDebugInfo::FailureInfo* first_failure =
       info.mutable_first_failure_info();
   *first_failure->mutable_failure_time() =
       bound_session_credentials::TimeToTimestamp(timestamp);
   first_failure->set_type(type);
   first_failure->set_received_challenge(received_challenge);
+  for (const std::string& cookie_name : missing_cookies) {
+    first_failure->add_missing_cookies(cookie_name);
+  }
   return first_failure;
 }
 
@@ -224,9 +228,9 @@ class BoundSessionCookieControllerImplTest
     on_bound_session_throttler_params_changed_call_count_++;
   }
 
-  void OnPersistentErrorEncountered(
-      BoundSessionCookieController* controller) override {
-    on_persistent_error_encountered_called_ = true;
+  void OnPersistentErrorEncountered(BoundSessionCookieController* controller,
+                                    Result refresh_error) override {
+    on_persistent_error_encountered_refresh_error_ = refresh_error;
   }
 
   void SetExpirationTimeAndNotify(const std::string& cookie_name,
@@ -293,8 +297,8 @@ class BoundSessionCookieControllerImplTest
     return on_bound_session_throttler_params_changed_call_count_;
   }
 
-  bool on_persistent_error_encountered_called() {
-    return on_persistent_error_encountered_called_;
+  std::optional<Result> on_persistent_error_encountered_refresh_error() {
+    return on_persistent_error_encountered_refresh_error_;
   }
 
   void ResetOnBoundSessionThrottlerParamsChangedCallCount() {
@@ -375,7 +379,7 @@ class BoundSessionCookieControllerImplTest
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
-  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_{
       crypto::UnexportableKeyProvider::Config()};
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
@@ -385,7 +389,7 @@ class BoundSessionCookieControllerImplTest
   std::unique_ptr<BoundSessionCookieControllerImpl>
       bound_session_cookie_controller_;
   size_t on_bound_session_throttler_params_changed_call_count_ = 0;
-  bool on_persistent_error_encountered_called_ = false;
+  std::optional<Result> on_persistent_error_encountered_refresh_error_;
 };
 
 TEST_F(BoundSessionCookieControllerImplTest, KeyLoadedOnStartup) {
@@ -578,7 +582,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 TEST_F(BoundSessionCookieControllerImplTest,
        RequestBlockedOnCookieRefreshFailedWithPersistentError) {
   CompletePendingRefreshRequestIfAny();
-  EXPECT_FALSE(on_persistent_error_encountered_called());
+  EXPECT_FALSE(on_persistent_error_encountered_refresh_error());
 
   BoundSessionCookieController* controller = bound_session_cookie_controller();
   task_environment()->FastForwardBy(base::Minutes(12));
@@ -597,7 +601,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
   // Simulate refresh completes with persistent failure.
   SimulateCompleteRefreshRequest(Result::kServerPersistentError, std::nullopt);
   task_environment()->RunUntilIdle();
-  EXPECT_TRUE(on_persistent_error_encountered_called());
+  EXPECT_EQ(on_persistent_error_encountered_refresh_error(),
+            Result::kServerPersistentError);
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(),
             ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure);
@@ -653,7 +658,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
     RunTestStep(step);
   }
 
-  EXPECT_FALSE(on_persistent_error_encountered_called());
+  EXPECT_FALSE(on_persistent_error_encountered_refresh_error());
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
@@ -1147,7 +1152,7 @@ TEST_F(BoundSessionCookieControllerImplTest, UpdateDebugInfo) {
   SimulateCompleteRefreshRequest(Result::kConnectionError, std::nullopt);
   AddFirstFailureInfo(expected_info, base::Time::Now(),
                       RotationDebugInfo::CONNECTION_ERROR,
-                      /*received_challenge=*/false);
+                      /*received_challenge=*/false, /*missing_cookies=*/{});
   RotationDebugInfo::FailureCounter* connection_error_counter =
       AddFailureCounter(expected_info, RotationDebugInfo::CONNECTION_ERROR);
   EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
@@ -1173,12 +1178,63 @@ TEST_F(BoundSessionCookieControllerImplTest, UpdateDebugInfo) {
   AddFailureCounter(expected_info, RotationDebugInfo::TIMEOUT);
   EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
 
+  // CONNECTION_ERROR: 2
+  // SERVER_ERROR: 1
+  // TIMEOUT: 1
+  // SUCCESS_WITH_MISSING_COOKIES: 1
+  trigger_rotation();
+  SimulateCompleteRefreshRequest(Result::kServerUnexepectedResponse,
+                                 std::nullopt);
+  AddFailureCounter(expected_info,
+                    RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES);
+  EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
+
   // CONNECTION_ERROR: 3
   // SERVER_ERROR: 1
   // TIMEOUT: 1
+  // SUCCESS_WITH_MISSING_COOKIES: 1
   trigger_rotation();
   SimulateCompleteRefreshRequest(Result::kConnectionError, std::nullopt);
   connection_error_counter->set_count(3);
+  EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
+
+  // Debug info is cleared on success.
+  trigger_rotation();
+  EXPECT_TRUE(CompletePendingRefreshRequestIfAny());
+  EXPECT_THAT(debug_info(), base::test::EqualsProto(RotationDebugInfo()));
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       UpdateDebugInfoWithMissingCookies) {
+  RotationDebugInfo expected_info;
+  // Debug info is empty on startup.
+  EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
+
+  auto trigger_rotation = [&]() {
+    EXPECT_FALSE(AreAllCookiesFresh());
+    task_environment()->FastForwardBy(base::Seconds(2));
+    bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+        base::DoNothing());
+  };
+
+  // SUCCESS_WITH_MISSING_COOKIES: 1
+  trigger_rotation();
+  SimulateCompleteRefreshRequest(Result::kServerUnexepectedResponse,
+                                 std::nullopt);
+  AddFirstFailureInfo(
+      expected_info, base::Time::Now(),
+      RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES,
+      /*received_challenge=*/false,
+      /*missing_cookies=*/{k1PSIDTSCookieName, k3PSIDTSCookieName});
+  RotationDebugInfo::FailureCounter* missing_cookies_error_counter =
+      AddFailureCounter(expected_info,
+                        RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES);
+  EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
+
+  // SUCCESS_WITH_MISSING_COOKIES: 2
+  SimulateCompleteRefreshRequest(Result::kServerUnexepectedResponse,
+                                 std::nullopt);
+  missing_cookies_error_counter->set_count(2);
   EXPECT_THAT(debug_info(), base::test::EqualsProto(expected_info));
 
   // Debug info is cleared on success.
@@ -1346,7 +1402,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 TEST_F(BoundSessionCookieControllerImplTest,
        ThrottlingPausedDifferentCookieRotationErrors) {
   TriggerThrottlingPausedAndVerify();
-  const size_t kCookieRotationResultSize = 7;
+  const size_t kCookieRotationResultSize = 8;
   Result cookie_rotation_result[kCookieRotationResultSize] = {
       Result::kConnectionError,
       Result::kServerTransientError,
@@ -1354,7 +1410,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
       Result::kServerUnexepectedResponse,
       Result::kChallengeRequiredUnexpectedFormat,
       Result::kChallengeRequiredLimitExceeded,
-      Result::kSignChallengeFailed};
+      Result::kSignChallengeFailed,
+      Result::kChallengeRequiredSessionIdMismatch};
 
   ASSERT_TRUE(
       bound_session_cookie_controller()->ShouldPauseThrottlingRequests());

@@ -10,7 +10,11 @@
 <translation id="2447485272386224171">Chrome je omogućio <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />, projekt otvorenog koda i drugi <ph name="BEGIN_LINK_OSS" />softveri otvorenog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logotip Chrome</translation>
 <translation id="3444832043240812445">Ova stranica prikazuje samo informacije o vašim nedavnim padovima ako <ph name="BEGIN_LINK" />omogućite izvješćivanja o padu<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Te su stranice namijenjene razvojnim programerima Chromea i možda se ne održavaju ili testiraju aktivno. Da biste ih omogućili, otvorite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb za omogućivanje stranica za otklanjanje pogrešaka, a zatim se ponovo vratite na ovu stranicu.</translation>
 <translation id="3875312571075912821">U postavkama vatrozida ili antivirusnog programa omogućite Chromeu da pristupa mreži.</translation>
+<translation id="4949828774841497663">Idite na Aplikacije &gt; Postavke sustava &gt; Mreža, odaberite
+          aktivnu mrežu, kliknite gumb Pojedinosti... i poništite odabir svih proxyja
+          koji su možda odabrani.</translation>
 <translation id="5005121315113832363">Chrome je blokirao ovu stranicu</translation>
 <translation id="6011049234605203654">Idite na
           izbornik Chrome &gt;
@@ -38,9 +42,6 @@
           Postavke LAN-a
           pa poništite odabir potvrdnog okvira "Upotrijebi proxy poslužitelj za LAN".</translation>
 <translation id="7230956101631259640">Gledate sigurnu stranicu Chromea</translation>
-<translation id="8187289872471304532">Idite na
-          Aplikacije &gt; Postavke sustava &gt; Mreža &gt; Napredno &gt; Proxy poslužitelji
-          i poništite odabir proxy poslužitelja.</translation>
 <translation id="8232971017369963250">Chrome je omogućio <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />, projekt otvorenog izvornog koda.</translation>
 <translation id="8279509328145658601">Chrome je omogućio i drugi <ph name="BEGIN_LINK_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome pokušava izmijeniti postavke za popunjavanje načina plaćanja.</translation>

@@ -75,8 +75,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     /**
      * Tests that the offset of the SERP is unaffected by whether we are showing Related Searches in
      * the Bar or not. See https://crbug.com/1250546.
-     *
-     * @throws Exception
      */
     @Test
     @SmallTest

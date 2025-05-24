@@ -27,8 +27,8 @@ const char* EXTDisjointTimerQuery::ExtensionName() {
 
 WebGLTimerQueryEXT* EXTDisjointTimerQuery::createQueryEXT() {
   WebGLExtensionScopedContext scoped(this);
-  if (scoped.IsLost())
-    return nullptr;
+
+  // Object creation must be infallible even if the context is lost.
 
   return MakeGarbageCollected<WebGLTimerQueryEXT>(scoped.Context());
 }
@@ -38,7 +38,7 @@ void EXTDisjointTimerQuery::deleteQueryEXT(WebGLTimerQueryEXT* query) {
   if (!query || scoped.IsLost())
     return;
 
-  if (!query->Validate(nullptr, scoped.Context())) {
+  if (!query->Validate(scoped.Context())) {
     scoped.Context()->SynthesizeGLError(
         GL_INVALID_OPERATION, "delete",
         "object does not belong to this context");
@@ -61,7 +61,7 @@ void EXTDisjointTimerQuery::deleteQueryEXT(WebGLTimerQueryEXT* query) {
 bool EXTDisjointTimerQuery::isQueryEXT(WebGLTimerQueryEXT* query) {
   WebGLExtensionScopedContext scoped(this);
   if (!query || scoped.IsLost() || query->MarkedForDeletion() ||
-      !query->Validate(nullptr, scoped.Context())) {
+      !query->Validate(scoped.Context())) {
     return false;
   }
 

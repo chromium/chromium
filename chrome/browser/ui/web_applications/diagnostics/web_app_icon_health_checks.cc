@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/web_applications/diagnostics/web_app_icon_health_checks.h"
 
+#include <algorithm>
+
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
@@ -21,8 +22,7 @@ namespace web_app {
 
 WebAppIconHealthChecks::WebAppIconHealthChecks(Profile* profile)
     : profile_(profile),
-      app_type_(WebAppPublisherHelper::GetWebAppType()),
-      web_apps_published_event_(profile, app_type_) {}
+      web_apps_published_event_(profile, apps::AppType::kWeb) {}
 
 WebAppIconHealthChecks::~WebAppIconHealthChecks() = default;
 
@@ -71,8 +71,9 @@ void WebAppIconHealthChecks::SaveDiagnosticForApp(
     webapps::AppId app_id,
     std::optional<WebAppIconDiagnosticResult> result) {
   apps_running_icon_diagnostics_.erase(app_id);
-  if (result)
+  if (result) {
     results_.push_back(*std::move(result));
+  }
   run_complete_callback_.Run();
 }
 
@@ -81,7 +82,7 @@ void WebAppIconHealthChecks::RecordDiagnosticResults() {
 
   using Result = WebAppIconDiagnosticResult;
   auto count = [&](auto member) {
-    return base::ranges::count(results_, true, member);
+    return std::ranges::count(results_, true, member);
   };
 
   base::UmaHistogramCounts100("WebApp.Icon.AppsWithEmptyDownloadedIconSizes",

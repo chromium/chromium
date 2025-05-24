@@ -165,6 +165,10 @@ class MediaNotificationService
 
   void RemoveDeviceListHost(int host);
 
+  // Checks if the given `request_id` should always be blocked (i.e.
+  // notification hidden). Mainly used for glic.
+  bool IsIdBlocked(const std::string& request_id) const;
+
   const raw_ptr<Profile> profile_;
 
   std::unique_ptr<global_media_controls::MediaItemManager> item_manager_;

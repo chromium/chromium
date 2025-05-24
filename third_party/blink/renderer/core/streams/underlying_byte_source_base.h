@@ -33,9 +33,8 @@ class CORE_EXPORT UnderlyingByteSourceBase
       ReadableByteStreamController* controller,
       ExceptionState&) = 0;
 
-  virtual ScriptPromise<IDLUndefined> Cancel(ExceptionState&) = 0;
-  virtual ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
-                                             ExceptionState&) = 0;
+  virtual ScriptPromise<IDLUndefined> Cancel() = 0;
+  virtual ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) = 0;
 
   // Returns the ScriptState associated with this UnderlyingByteSource.
   virtual ScriptState* GetScriptState() = 0;

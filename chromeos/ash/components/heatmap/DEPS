@@ -1,4 +1,5 @@
 include_rules = [
+  "+chromeos/services/machine_learning/public",
   "+content/public/test/browser_task_environment.h",
   "+ui/events/ozone/evdev/heatmap_palm_detector.h",
 ]

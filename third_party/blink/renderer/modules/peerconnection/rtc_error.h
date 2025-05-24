@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_detail_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -23,7 +24,7 @@ class RTCError final : public DOMException {
   RTCError(const RTCErrorInit* init, String message);
   explicit RTCError(webrtc::RTCError);
 
-  const String& errorDetail() const;
+  V8RTCErrorDetailType errorDetail() const;
   std::optional<int32_t> sdpLineNumber() const { return sdp_line_number_; }
   std::optional<int32_t> httpRequestStatusCode() const {
     return http_request_status_code_;
@@ -34,7 +35,7 @@ class RTCError final : public DOMException {
 
  private:
   // idl enum RTCErrorDetailType.
-  String error_detail_;
+  V8RTCErrorDetailType::Enum error_detail_;
   std::optional<int32_t> sdp_line_number_;
   std::optional<int32_t> http_request_status_code_;
   std::optional<int32_t> sctp_cause_code_;

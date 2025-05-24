@@ -58,6 +58,8 @@ class UpdaterTestService(win32serviceutil.ServiceFramework):
     _svc_name_ = 'UpdaterTestService'
     _svc_display_name_ = 'Updater Test Service'
     _svc_description_ = 'Service for browser updater tests'
+    _exe_name_ = os.path.join(os.path.dirname(os.path.abspath(sys.executable)),
+                              'pythonservice.exe')
 
     def SvcStop(self):
         """Called by service framework to stop this service."""

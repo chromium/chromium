@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -24,13 +23,10 @@ import org.chromium.content_public.browser.NavigationHandle;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Inject;
-
 /**
  * Checks whether the currently seen web page belongs to a verified origin and notifies any
  * observers.
  */
-@ActivityScope
 public class CurrentPageVerifier implements NativeInitObserver {
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -80,24 +76,23 @@ public class CurrentPageVerifier implements NativeInitObserver {
                 }
             };
 
-    @Inject
     public CurrentPageVerifier(
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            TabObserverRegistrar tabObserverRegistrar,
-            CustomTabActivityTabProvider tabProvider,
+            CustomTabActivityTabProvider customTabActivityTabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
-            Verifier delegate) {
-        mTabProvider = tabProvider;
+            Verifier verifier,
+            TabObserverRegistrar tabObserverRegistrar,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mTabProvider = customTabActivityTabProvider;
         mIntentDataProvider = intentDataProvider;
-        mDelegate = delegate;
+        mDelegate = verifier;
 
         tabObserverRegistrar.registerActivityTabObserver(mVerifyOnPageLoadObserver);
         lifecycleDispatcher.register(this);
     }
 
     /**
-     * @return the {@link VerificationState} of the page we are currently on.
-     * Since verification may require native, may return null before native is loaded.
+     * @return the {@link VerificationState} of the page we are currently on. Since verification may
+     *     require native, may return null before native is loaded.
      */
     public @Nullable VerificationState getState() {
         return mState;

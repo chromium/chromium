@@ -14,12 +14,14 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/overlay_layer_id.h"
 
 namespace viz {
 namespace {
@@ -46,7 +48,7 @@ const std::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
 }
 
 ResolvedQuadData::ResolvedQuadData(const DrawQuad& quad)
-    : remapped_resources(quad.resources) {}
+    : remapped_resource_id(quad.resource_id) {}
 
 FixedPassData::FixedPassData() = default;
 FixedPassData::FixedPassData(FixedPassData&& other) = default;
@@ -132,8 +134,10 @@ float ResolvedFrameData::device_scale_factor() const {
   return surface_->device_scale_factor();
 }
 
-uint32_t ResolvedFrameData::GetClientNamespaceId() const {
-  return static_cast<uint32_t>(child_resource_id_);
+gfx::OverlayLayerId::NamespaceId ResolvedFrameData::GetClientNamespaceId()
+    const {
+  return {surface_id_.frame_sink_id().client_id(),
+          surface_id_.frame_sink_id().sink_id()};
 }
 
 void ResolvedFrameData::ForceReleaseResource() {
@@ -236,7 +240,8 @@ void ResolvedFrameData::UpdateActiveFrame(
       }
 
       draw_quads.emplace_back(*quad);
-      for (ResourceId& resource_id : draw_quads.back().remapped_resources) {
+      if (ResourceId& resource_id = draw_quads.back().remapped_resource_id;
+          resource_id != kInvalidResourceId) {
         // If we're using a resource which was not declared in the
         // |resource_list| then this is an invalid frame, we can abort.
         auto iter = child_to_parent_map.find(resource_id);
@@ -248,7 +253,7 @@ void ResolvedFrameData::UpdateActiveFrame(
 
         referenced_resources.push_back(resource_id);
 
-        // Update `ResolvedQuadData::remapped_resources` to have the remapped
+        // Update `ResolvedQuadData::remapped_resource_id` to have the remapped
         // display resource_id.
         resource_id = iter->second;
       }
@@ -397,6 +402,15 @@ void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
         auto& tag_data = offset_tag_data_[sqs->offset_tag];
         if (!tag_data.current_offset.IsZero()) {
           sqs->quad_to_target_transform.PostTranslate(tag_data.current_offset);
+
+          if (!sqs->mask_filter_info.IsEmpty()) {
+            // Slim compositor enforces that mask filter info isn't added on
+            // a fixed parent layer that has a child layer with offset tag, so
+            // we can assume the mask filter info should also be translated.
+            // See crbug.com/361804880 for details.
+            sqs->mask_filter_info.ApplyTransform(
+                gfx::Transform::MakeTranslation(tag_data.current_offset));
+          }
         }
       }
     }

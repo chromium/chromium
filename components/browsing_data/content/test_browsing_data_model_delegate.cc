@@ -4,6 +4,8 @@
 
 #include "components/browsing_data/content/test_browsing_data_model_delegate.h"
 
+#include <variant>
+
 namespace browsing_data {
 TestBrowsingDataModelDelegate::TestBrowsingDataModelDelegate() = default;
 TestBrowsingDataModelDelegate::~TestBrowsingDataModelDelegate() = default;
@@ -40,8 +42,8 @@ TestBrowsingDataModelDelegate::GetDataOwner(
     BrowsingDataModel::StorageType storage_type) const {
   if (static_cast<StorageType>(storage_type) ==
           StorageType::kTestDelegateType &&
-      absl::holds_alternative<url::Origin>(data_key)) {
-    return absl::get<url::Origin>(data_key).host();
+      std::holds_alternative<url::Origin>(data_key)) {
+    return std::get<url::Origin>(data_key).host();
   }
   return std::nullopt;
 }

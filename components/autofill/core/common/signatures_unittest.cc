@@ -39,6 +39,47 @@ TEST(SignaturesTest, StripDigits) {
       CalculateFormSignature(actual_form).value());
 }
 
+// Tests that <input type={checkbox,radio,date}> do not count towards
+// FormSignatures.
+TEST(SignaturesTest, IgnoreCheckboxRadioDate) {
+  FormData form;
+  form.set_url(GURL("http://foo.com"));
+  form.set_name(u"form_name");
+
+  {
+    FormFieldData field;
+    field.set_form_control_type(FormControlType::kInputText);
+    field.set_name(u"field1");
+    test_api(form).Append(field);
+  }
+
+  {
+    FormFieldData field;
+    field.set_form_control_type(FormControlType::kInputCheckbox);
+    field.set_name(u"field2");
+    field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
+    test_api(form).Append(field);
+  }
+
+  {
+    FormFieldData field;
+    field.set_form_control_type(FormControlType::kInputRadio);
+    field.set_name(u"field1");
+    field.set_check_status(FormFieldData::CheckStatus::kChecked);
+    test_api(form).Append(field);
+  }
+
+  {
+    FormFieldData field;
+    field.set_form_control_type(FormControlType::kInputDate);
+    field.set_name(u"field2");
+    test_api(form).Append(field);
+  }
+
+  EXPECT_EQ(StrToHash64Bit("http://foo.com&form_name&field1"),
+            CalculateFormSignature(form).value());
+}
+
 TEST(SignaturesTest, AlternativeFormSignatureLarge) {
   FormData large_form;
   large_form.set_url(GURL("http://foo.com/login?q=a#ref"));

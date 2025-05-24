@@ -38,8 +38,6 @@ class FakeGeolocationProvider : public GeolocationProvider {
     return {};
   }
 
-  bool HighAccuracyLocationInUse() override { return false; }
-
   void OverrideLocationForTesting(mojom::GeopositionResultPtr result) override {
   }
 

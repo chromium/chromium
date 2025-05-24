@@ -40,8 +40,6 @@ std::ostream& operator<<(std::ostream& out, NetworkRequestType value) {
       return out << "kSingleWebFeedListContents";
     case NetworkRequestType::kQueryWebFeed:
       return out << "kQueryWebFeed";
-    case NetworkRequestType::kSupervisedFeed:
-      return out << "kSupervisedFeed";
   }
 #endif
   return out << (static_cast<int>(value));
@@ -116,6 +114,8 @@ std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
       return out << "kLoadNotAllowedDisabled";
     case LoadStreamStatus::kLoadNotAllowedDisabledByDse:
       return out << "kLoadNotAllowedDisabledByDse";
+    case LoadStreamStatus::kNoCardReceived:
+      return out << "kNoCardReceived";
   }
 #else
   return out << (static_cast<int>(value));
@@ -159,6 +159,7 @@ bool IsLoadingSuccessfulAndFresh(LoadStreamStatus status) {
     case LoadStreamStatus::kNetworkFetchTimedOut:
     case LoadStreamStatus::kLoadNotAllowedDisabled:
     case LoadStreamStatus::kLoadNotAllowedDisabledByDse:
+    case LoadStreamStatus::kNoCardReceived:
       return false;
   }
 }

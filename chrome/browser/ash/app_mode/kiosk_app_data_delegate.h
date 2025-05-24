@@ -7,16 +7,16 @@
 
 #include <string>
 
-namespace base {
-class FilePath;
-}
+#include "base/files/file_path.h"
 
 namespace ash {
 
 class KioskAppDataDelegate {
  public:
+  virtual ~KioskAppDataDelegate() = default;
+
   // Invoked to get the root directory for storing cached icon files.
-  virtual void GetKioskAppIconCacheDir(base::FilePath* cache_dir) = 0;
+  virtual base::FilePath GetKioskAppIconCacheDir() = 0;
 
   // Invoked when kiosk app data or status has changed.
   virtual void OnKioskAppDataChanged(const std::string& app_id) = 0;
@@ -27,9 +27,6 @@ class KioskAppDataDelegate {
   // Invoked when the data which is stored in ExternalCache for current app is
   // damaged.
   virtual void OnExternalCacheDamaged(const std::string& app_id) = 0;
-
- protected:
-  virtual ~KioskAppDataDelegate() = default;
 };
 
 }  // namespace ash

@@ -391,7 +391,7 @@ TEST_F(KeyboardBrightnessControllerTest,
   EXPECT_FALSE(HasKeyboardBrightnessPrefValue(known_user, account_id));
 
   // Simulate user login.
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
   run_loop_.RunUntilIdle();
 
   // After login, the brightness pref should have a value equal to the initial
@@ -430,6 +430,51 @@ TEST_F(KeyboardBrightnessControllerTest,
   // stored.
   EXPECT_EQ(GetKeyboardBrightnessPrefValue(known_user, account_id),
             settings_brightness_change_percent);
+}
+
+TEST_F(KeyboardBrightnessControllerTest,
+       Prefs_OnLogin_DoNotSaveBrightnessWhenLidClosed) {
+  // Set initial brightness.
+  power_manager_client()->set_screen_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Clear user sessions and reset to the primary login screen.
+  ClearLogin();
+
+  // Create a KnownUser for this Local State.
+  user_manager::KnownUser known_user(local_state());
+
+  // On the login screen, focus the user.
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  LoginScreenFocusAccount(account_id);
+
+  // Verify no brightness preference exists yet
+  EXPECT_FALSE(HasKeyboardBrightnessPrefValue(known_user, account_id));
+
+  KeyboardBrightnessController* controller =
+      static_cast<KeyboardBrightnessController*>(
+          keyboard_brightness_control_delegate());
+
+  {
+    // Simulate lid closed and verify that brightness pref is not saved.
+    power_manager_client()->set_keyboard_brightness_percent(0.0);
+    controller->LidEventReceived(chromeos::PowerManagerClient::LidState::CLOSED,
+                                 base::TimeTicks::Now());
+    controller->OnActiveUserSessionChanged(account_id);
+    run_loop_.RunUntilIdle();
+    EXPECT_FALSE(HasKeyboardBrightnessPrefValue(known_user, account_id))
+        << "Brightness should not be saved to preferences when lid is closed";
+  }
+  {
+    // Simulate lid open and verify that brightness pref is saved.
+    power_manager_client()->set_keyboard_brightness_percent(60.0);
+    controller->LidEventReceived(chromeos::PowerManagerClient::LidState::OPEN,
+                                 base::TimeTicks::Now());
+    controller->OnActiveUserSessionChanged(account_id);
+    run_loop_.RunUntilIdle();
+    EXPECT_TRUE(HasKeyboardBrightnessPrefValue(known_user, account_id))
+        << "Brightness should be saved to preferences when lid is open";
+  }
 }
 
 TEST_F(KeyboardBrightnessControllerTest, SavePrefToKnownUserMultipleUser) {
@@ -764,7 +809,7 @@ TEST_F(KeyboardBrightnessControllerTest,
   AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   login_data_dispatcher()->NotifyFocusPod(account_id);
   LoginScreenFocusAccount(account_id);
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // The ambient light sensor should be enabled by default.
   EXPECT_TRUE(
@@ -833,10 +878,10 @@ TEST_F(KeyboardBrightnessControllerTest,
   ClearLogin();
 
   // On the login screen, select and login with an existing user.
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  AccountId account_id = AccountId::FromUserEmail({kUserEmail});
   login_data_dispatcher()->NotifyFocusPod(account_id);
   LoginScreenFocusAccount(account_id);
-  SimulateUserLogin(kUserEmail);
+  SimulateUserLogin({kUserEmail});
 
   // The ambient light sensor should be enabled by default.
   EXPECT_TRUE(
@@ -926,9 +971,8 @@ TEST_F(KeyboardBrightnessControllerTest,
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Set ALS to false, and set the disabled reason to be
   // USER_REQUEST_SETTINGS_APP.
@@ -992,9 +1036,8 @@ TEST_F(KeyboardBrightnessControllerTest,
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Set ALS to false by brightness key, and set the disabled reason to be
   // BRIGHTNESS_USER_REQUEST.
@@ -1055,9 +1098,8 @@ TEST_F(KeyboardBrightnessControllerTest,
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Disable ALS using the brightness key.
   SetKeyboardAmbientLightSensorEnabled(
@@ -1097,9 +1139,8 @@ TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettings_NoSensor) {
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Disable ALS
   SetKeyboardAmbientLightSensorEnabled(
@@ -1152,9 +1193,8 @@ TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettings_HasSensor) {
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Set ALS to false.
   SetKeyboardAmbientLightSensorEnabled(
@@ -1207,7 +1247,7 @@ TEST_F(KeyboardBrightnessControllerTest,
 
   // Log in.
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  AccountId account_id = AccountId::FromUserEmail({kUserEmail});
   LoginScreenFocusAccount(account_id);
   histogram_tester_->ExpectBucketCount(
       "ChromeOS.Keyboard.Startup.AmbientLightSensorEnabled", true, 1);
@@ -1462,9 +1502,8 @@ TEST_F(KeyboardBrightnessControllerTest,
 
   // Log in
   ClearLogin();
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
   user_manager::KnownUser known_user(local_state());
-  SimulateUserLogin(kUserEmail);
+  AccountId account_id = SimulateUserLogin({kUserEmail});
 
   // Set keyboard brightness.
   known_user.SetPath(account_id, prefs::kKeyboardBrightnessPercent,

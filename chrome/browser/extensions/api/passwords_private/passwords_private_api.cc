@@ -541,17 +541,6 @@ ResponseAction PasswordsPrivateGetPasswordCheckStatusFunction::Run() {
           GetDelegate(browser_context())->GetPasswordCheckStatus())));
 }
 
-// PasswordsPrivateIsAccountStoreDefaultFunction
-ResponseAction PasswordsPrivateIsAccountStoreDefaultFunction::Run() {
-  if (!GetDelegate(browser_context())) {
-    return RespondNow(Error(kNoDelegateError));
-  }
-
-  return RespondNow(
-      WithArguments(GetDelegate(browser_context())
-                        ->IsAccountStoreDefault(GetSenderWebContents())));
-}
-
 // PasswordsPrivateGetUrlCollectionFunction:
 ResponseAction PasswordsPrivateGetUrlCollectionFunction::Run() {
   if (!GetDelegate(browser_context())) {

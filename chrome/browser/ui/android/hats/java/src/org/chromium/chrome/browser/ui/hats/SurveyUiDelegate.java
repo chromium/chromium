@@ -4,16 +4,20 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Interface representing the survey invitation UI responsible to show the survey to the user.
  * Client features wanting to customize the survey presentation can override this interface.
  */
+@NullMarked
 public interface SurveyUiDelegate {
     /**
-     * Called by SurveyClient when the survey is downloaded and ready to present. When survey
-     * is shown, the given runnable(s) are be used to notify SurveyClient the outcome of
-     * the survey invitation.
+     * Called by SurveyClient when the survey is downloaded and ready to present. When survey is
+     * shown, the given runnable(s) are be used to notify SurveyClient the outcome of the survey
+     * invitation.
      *
+     * @param surveyConfig Config of the survey.
      * @param onSurveyAccepted Callback to run when survey invitation is accepted.
      * @param onSurveyDeclined Callback to run when survey invitation is declined.
      * @param onSurveyPresentationFailed Callback to run when survey invitation failed to show.

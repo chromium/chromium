@@ -27,9 +27,9 @@ class CSVPasswordParserImplTest : public testing::Test {
     parser_ = std::make_unique<CSVPasswordParserImpl>(std::move(receiver));
   }
 
-  void ParseCSV(const std::string& raw_json,
+  void ParseCSV(const std::string& raw_csv,
                 mojom::CSVPasswordParser::ParseCSVCallback callback) {
-    parser_->ParseCSV(raw_json, std::move(callback));
+    parser_->ParseCSV(raw_csv, std::move(callback));
   }
 
  private:
@@ -124,6 +124,146 @@ TEST_F(CSVPasswordParserImplTest, ParseFileMissingFields) {
         EXPECT_EQ("132", sequence->csv_passwords[0].GetPassword());
         EXPECT_THAT(sequence->csv_passwords[0].GetURL(),
                     base::test::ErrorIs(""));
+      }));
+}
+
+TEST_F(CSVPasswordParserImplTest, SkipsEmptyLines) {
+  const std::string csv =
+      "Display Name,Login,Secret Question,Password,URL,Timestamp\n"
+      "\n"
+      "\t\t\t\r\n"
+      "            \n"
+      "non_empty,pwd\n"
+      "non_empty,pwd\n"
+      "    ";
+
+  ParseCSV(
+      csv,
+      base::BindLambdaForTesting([&](mojom::CSVPasswordSequencePtr sequence) {
+        EXPECT_TRUE(sequence);
+        EXPECT_EQ(2u, sequence->csv_passwords.size());
+        EXPECT_EQ("pwd", sequence->csv_passwords[0].GetUsername());
+        EXPECT_EQ("pwd", sequence->csv_passwords[1].GetUsername());
+      }));
+}
+
+TEST_F(CSVPasswordParserImplTest, Iteration) {
+  const std::string csv =
+      "Display Name,,Login,Secret Question,Password,URL,Timestamp,Note\n"
+      "DN,value-of-an-empty-named-column,user,?,pwd,http://"
+      "example.com,123,\"Note\nwith two lines\"\n"
+      ",<,Alice,123?,even,https://example.net,213,,past header count = "
+      "ignored\n"
+      ":),,Bob,ABCD!,odd,https://example.org,132,regular note\n";
+  struct ExpectedCredential {
+    std::string_view url;
+    std::string_view username;
+    std::string_view password;
+    std::string_view note;
+  };
+  constexpr auto kExpectedCredentials = std::to_array<ExpectedCredential>(
+      {{"http://example.com", "user", "pwd", "Note\nwith two lines"},
+       {"https://example.net", "Alice", "even", ""},
+       {"https://example.org", "Bob", "odd", "regular note"}});
+
+  ParseCSV(csv, base::BindLambdaForTesting(
+                    [&](mojom::CSVPasswordSequencePtr sequence) {
+                      EXPECT_TRUE(sequence);
+                      EXPECT_EQ(3u, sequence->csv_passwords.size());
+
+                      size_t order = 0;
+                      for (const CSVPassword& pwd : sequence->csv_passwords) {
+                        ASSERT_LT(order, std::size(kExpectedCredentials));
+                        const auto& expected = kExpectedCredentials[order];
+                        EXPECT_EQ(GURL(expected.url), pwd.GetURL());
+                        EXPECT_EQ(expected.username, pwd.GetUsername());
+                        EXPECT_EQ(expected.password, pwd.GetPassword());
+                        EXPECT_EQ(expected.note, pwd.GetNote());
+                        ++order;
+                      }
+                    }));
+}
+
+TEST_F(CSVPasswordParserImplTest, MissingEolAtEof) {
+  const std::string csv = "url,login,password\nhttp://a.com,l,p";
+
+  ParseCSV(
+      csv,
+      base::BindLambdaForTesting([&](mojom::CSVPasswordSequencePtr sequence) {
+        EXPECT_TRUE(sequence);
+        EXPECT_EQ(1u, sequence->csv_passwords.size());
+
+        EXPECT_EQ(GURL("http://a.com"), sequence->csv_passwords[0].GetURL());
+        EXPECT_EQ("l", sequence->csv_passwords[0].GetUsername());
+        EXPECT_EQ("p", sequence->csv_passwords[0].GetPassword());
+      }));
+}
+
+TEST_F(CSVPasswordParserImplTest, AcceptsDifferentNoteColumnNames) {
+  const std::string note_column_names[] = {"note", "notes", "comment",
+                                           "comments"};
+  for (auto const& note_column_name : note_column_names) {
+    const std::string csv =
+        "url,login,password," + note_column_name + "\nhttp://a.com,l,p,n";
+
+    ParseCSV(csv, base::BindLambdaForTesting(
+                      [&](mojom::CSVPasswordSequencePtr sequence) {
+                        EXPECT_TRUE(sequence);
+                        EXPECT_EQ(1u, sequence->csv_passwords.size());
+
+                        EXPECT_EQ("n", sequence->csv_passwords[0].GetNote());
+                      }));
+  }
+}
+
+TEST_F(CSVPasswordParserImplTest, ContainsMultipleAcceptableNoteColumns) {
+  // In such cases note column names priority should be taken into account.
+  // note > notes > comment > comments
+  const std::string csv =
+      "url,login,password,comment,note,notes\n"
+      "http://a.com,l,p,note a,note b,note c";
+
+  ParseCSV(csv, base::BindLambdaForTesting(
+                    [&](mojom::CSVPasswordSequencePtr sequence) {
+                      EXPECT_TRUE(sequence);
+                      EXPECT_EQ(1u, sequence->csv_passwords.size());
+
+                      EXPECT_EQ("note b", sequence->csv_passwords[0].GetNote());
+                    }));
+}
+
+TEST_F(CSVPasswordParserImplTest, NonASCIICharacters) {
+  const std::string csv =
+      "username,password,note,origin\n"
+      "\x07\t\x0B\x1F,$\xc2\xa2\xe2\x98\x83\xf0\xa4\xad\xa2,\"A\"\n";
+
+  ParseCSV(
+      csv,
+      base::BindLambdaForTesting([&](mojom::CSVPasswordSequencePtr sequence) {
+        EXPECT_TRUE(sequence);
+        EXPECT_EQ(1u, sequence->csv_passwords.size());
+
+        EXPECT_EQ("\x07\t\x0B\x1F", sequence->csv_passwords[0].GetUsername());
+        EXPECT_EQ("$\xc2\xa2\xe2\x98\x83\xf0\xa4\xad\xa2",
+                  sequence->csv_passwords[0].GetPassword());
+        EXPECT_EQ("A", sequence->csv_passwords[0].GetNote());
+      }));
+}
+
+TEST_F(CSVPasswordParserImplTest, EscapedCharacters) {
+  const std::string csv =
+      "username, password, note, origin\n"
+      "\"A\rB\",\"B\nC\",\"C\r\nD\",\"D\n";
+
+  ParseCSV(
+      csv,
+      base::BindLambdaForTesting([&](mojom::CSVPasswordSequencePtr sequence) {
+        EXPECT_TRUE(sequence);
+        EXPECT_EQ(1u, sequence->csv_passwords.size());
+
+        EXPECT_EQ("A\rB", sequence->csv_passwords[0].GetUsername());
+        EXPECT_EQ("B\nC", sequence->csv_passwords[0].GetPassword());
+        EXPECT_EQ("C\r\nD", sequence->csv_passwords[0].GetNote());
       }));
 }
 

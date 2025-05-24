@@ -4,6 +4,8 @@
 
 package org.chromium.device.geolocation;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -17,6 +19,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 
 import java.util.List;
 
@@ -27,10 +32,11 @@ import java.util.List;
  *
  * [1] https://developer.android.com/reference/android/location/package-summary.html
  */
+@NullMarked
 public class LocationProviderAndroid implements LocationListener, LocationProvider {
     private static final String TAG = "LocationProvider";
 
-    private LocationManager mLocationManager;
+    private @Nullable LocationManager mLocationManager;
     private boolean mIsRunning;
 
     LocationProviderAndroid() {}
@@ -85,14 +91,15 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
                 (LocationManager)
                         ContextUtils.getApplicationContext()
                                 .getSystemService(Context.LOCATION_SERVICE);
-        if (mLocationManager == null) {
-            Log.e(TAG, "Could not get location manager.");
-        }
     }
 
     /** Registers this object with the location service. */
     private void registerForLocationUpdates(boolean enableHighAccuracy) {
         createLocationManagerIfNeeded();
+        if (mLocationManager == null) {
+            Log.e(TAG, "Could not get location manager.");
+            return;
+        }
         if (usePassiveOneShotLocation()) return;
 
         assert !mIsRunning;
@@ -133,9 +140,11 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
     private void unregisterFromLocationUpdates() {
         if (!mIsRunning) return;
         mIsRunning = false;
+        assumeNonNull(mLocationManager);
         mLocationManager.removeUpdates(this);
     }
 
+    @RequiresNonNull("mLocationManager")
     private boolean usePassiveOneShotLocation() {
         if (!isOnlyPassiveLocationProviderEnabled()) {
             return false;
@@ -157,6 +166,7 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
      * Checks if the passive location provider is the only provider available
      * in the system.
      */
+    @RequiresNonNull("mLocationManager")
     private boolean isOnlyPassiveLocationProviderEnabled() {
         final List<String> providers = mLocationManager.getProviders(true);
         return providers != null

@@ -51,14 +51,18 @@ void MockClipboardHost::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
 
 std::vector<std::u16string> MockClipboardHost::ReadStandardFormatNames() {
   std::vector<std::u16string> types;
-  if (!plain_text_.empty())
-    types.push_back(base::ASCIIToUTF16(ui::kMimeTypeText));
-  if (!html_text_.empty())
-    types.push_back(base::ASCIIToUTF16(ui::kMimeTypeHTML));
-  if (!svg_text_.empty())
-    types.push_back(base::ASCIIToUTF16(ui::kMimeTypeSvg));
-  if (!png_.empty())
-    types.push_back(base::ASCIIToUTF16(ui::kMimeTypePNG));
+  if (!plain_text_.empty()) {
+    types.push_back(ui::kMimeTypePlainText16);
+  }
+  if (!html_text_.empty()) {
+    types.push_back(ui::kMimeTypeHtml16);
+  }
+  if (!svg_text_.empty()) {
+    types.push_back(ui::kMimeTypeSvg16);
+  }
+  if (!png_.empty()) {
+    types.push_back(ui::kMimeTypePng16);
+  }
   for (auto& it : custom_data_) {
     CHECK(!base::Contains(types, it.first));
     types.push_back(it.first);
@@ -137,6 +141,7 @@ void MockClipboardHost::WriteText(const std::u16string& text) {
   if (needs_reset_)
     Reset();
   plain_text_ = text;
+  OnClipboardDataChanged();
 }
 
 void MockClipboardHost::WriteHtml(const std::u16string& markup,
@@ -145,6 +150,7 @@ void MockClipboardHost::WriteHtml(const std::u16string& markup,
     Reset();
   html_text_ = markup;
   url_ = url;
+  OnClipboardDataChanged();
 }
 
 void MockClipboardHost::WriteSvg(const std::u16string& markup) {
@@ -173,7 +179,9 @@ void MockClipboardHost::WriteBookmark(const std::string& url,
 void MockClipboardHost::WriteImage(const SkBitmap& bitmap) {
   if (needs_reset_)
     Reset();
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_);
+  png_ =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false)
+          .value_or(std::vector<uint8_t>());
 }
 
 void MockClipboardHost::CommitWrite() {
@@ -210,8 +218,20 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
   // Append the "web " prefix since it is removed by the clipboard writer during
   // write.
   std::u16string web_format =
-      base::StrCat({base::ASCIIToUTF16(ui::kWebClipboardFormatPrefix), format});
+      base::StrCat({ui::kWebClipboardFormatPrefix16, format});
   unsanitized_custom_data_map_[web_format] = std::move(data_copy);
+}
+
+void MockClipboardHost::RegisterClipboardListener(
+    mojo::PendingRemote<blink::mojom::ClipboardListener> listener) {
+  clipboard_listener_.reset();
+  clipboard_listener_.Bind(std::move(listener));
+}
+
+void MockClipboardHost::OnClipboardDataChanged() {
+  if (clipboard_listener_) {
+    clipboard_listener_->OnClipboardDataChanged();
+  }
 }
 
 #if BUILDFLAG(IS_MAC)

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -92,7 +93,7 @@ class MockHttpAuthObserver : public HttpAuthObserver {
 
   MOCK_METHOD0(OnLoginModelDestroying, void());
   MOCK_METHOD2(OnAutofillDataAvailable,
-               void(const std::u16string&, const std::u16string&));
+               void(std::u16string_view, std::u16string_view));
 };
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {
@@ -177,8 +178,8 @@ TEST_P(HttpAuthManagerTest, HttpAuthFilling) {
   EXPECT_CALL(*store_, GetLogins(_, _)).WillOnce(SaveArg<1>(&consumer));
   httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
                                                        observed_form);
-  EXPECT_CALL(observer, OnAutofillDataAvailable(std::u16string(u"user"),
-                                                std::u16string(u"1234")));
+  EXPECT_CALL(observer, OnAutofillDataAvailable(std::u16string_view(u"user"),
+                                                std::u16string_view(u"1234")));
   ASSERT_TRUE(consumer);
   std::vector<PasswordForm> result;
   result.push_back(stored_form);

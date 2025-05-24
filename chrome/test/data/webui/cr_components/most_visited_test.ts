@@ -15,8 +15,7 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertStyle, keydown} from './most_visited_test_support.js';
 
@@ -28,7 +27,7 @@ let callbackRouterRemote: MostVisitedPageRemote;
 const mediaListenerLists: Map<number, FakeMediaQueryList> = new Map();
 
 function queryAll<E extends Element = Element>(q: string): E[] {
-  return Array.from(mostVisited.shadowRoot!.querySelectorAll<E>(q));
+  return Array.from(mostVisited.shadowRoot.querySelectorAll<E>(q));
 }
 
 function queryTiles(): HTMLAnchorElement[] {
@@ -113,7 +112,7 @@ function createWindowProxy() {
     const result = query.match(/\(min-width: (\d+)px\)/);
     assertTrue(!!result);
     const mediaListenerList = new FakeMediaQueryList(query);
-    mediaListenerLists.set(parseInt(result![1]!), mediaListenerList);
+    mediaListenerLists.set(parseInt(result[1]!), mediaListenerList);
     return mediaListenerList;
   });
   MostVisitedWindowProxy.setInstance(windowProxy);
@@ -126,9 +125,9 @@ function updateScreenWidth(isWide: boolean, isMedium: boolean) {
   const mediaListenerMediumWidth = mediaListenerLists.get(560);
   assertTrue(!!mediaListenerWideWidth);
   assertTrue(!!mediaListenerMediumWidth);
-  mediaListenerWideWidth!.matches = isWide;
-  mediaListenerMediumWidth!.matches = isMedium;
-  mediaListenerMediumWidth!.dispatchEvent(new Event('change'));
+  mediaListenerWideWidth.matches = isWide;
+  mediaListenerMediumWidth.matches = isMedium;
+  mediaListenerMediumWidth.dispatchEvent(new Event('change'));
   return microtasksFinished();
 }
 
@@ -672,11 +671,11 @@ suite('Modification', () => {
     test('toast shown on save', async () => {
       inputUrl.value = 'url';
       await inputUrl.updateComplete;
-      assertFalse(mostVisited.$.toast.open);
+      assertFalse(mostVisited.$.toastManager.isToastOpen);
       const addCalled = handler.whenCalled('addMostVisitedTile');
       saveButton.click();
       await addCalled;
-      assertTrue(mostVisited.$.toast.open);
+      assertTrue(mostVisited.$.toastManager.isToastOpen);
     });
 
     test('toast has undo buttons when action successful', async () => {
@@ -688,10 +687,10 @@ suite('Modification', () => {
       saveButton.click();
       await handler.whenCalled('addMostVisitedTile');
       await microtasksFinished();
-      assertFalse($$<HTMLElement>(mostVisited, '#undo')!.hidden);
+      assertFalse($$<HTMLElement>(mostVisited, '#undo').hidden);
     });
 
-    test('toast has no undo buttons when action successful', async () => {
+    test('toast has no undo buttons when action not successful', async () => {
       handler.setResultFor('addMostVisitedTile', Promise.resolve({
         success: false,
       }));
@@ -700,7 +699,7 @@ suite('Modification', () => {
       saveButton.click();
       await handler.whenCalled('addMostVisitedTile');
       await microtasksFinished();
-      assertFalse(!!$$(mostVisited, '#undo'));
+      assertFalse(isVisible($$(mostVisited, '#undo')));
     });
 
     test('save name and URL', async () => {
@@ -801,7 +800,7 @@ suite('Modification', () => {
     queryTiles()[0]!.querySelector<HTMLElement>('#actionMenuButton')!.click();
     assertTrue(actionMenu.open);
     assertFalse(dialog.open);
-    $$<HTMLElement>(mostVisited, '#actionMenuEdit')!.click();
+    $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
     assertFalse(actionMenu.open);
     assertTrue(dialog.open);
   });
@@ -824,7 +823,7 @@ suite('Modification', () => {
       tile = queryTiles()[1]!;
       actionMenuButton = tile.querySelector<HTMLElement>('#actionMenuButton')!;
       actionMenuButton.click();
-      $$<HTMLElement>(mostVisited, '#actionMenuEdit')!.click();
+      $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
     });
 
     test('edit a tile URL', async () => {
@@ -840,16 +839,16 @@ suite('Modification', () => {
     test('toast shown when tile editted', async () => {
       inputUrl.value = 'updated-url';
       await inputUrl.updateComplete;
-      assertFalse(mostVisited.$.toast.open);
+      assertFalse(mostVisited.$.toastManager.isToastOpen);
       saveButton.click();
       await handler.whenCalled('updateMostVisitedTile');
-      assertTrue(mostVisited.$.toast.open);
+      assertTrue(mostVisited.$.toastManager.isToastOpen);
     });
 
-    test('no toast when not editted', async () => {
-      assertFalse(mostVisited.$.toast.open);
+    test('no toast when not editted', () => {
+      assertFalse(mostVisited.$.toastManager.isToastOpen);
       saveButton.click();
-      assertFalse(mostVisited.$.toast.open);
+      assertFalse(mostVisited.$.toastManager.isToastOpen);
     });
 
     test('edit a tile title', async () => {
@@ -869,7 +868,7 @@ suite('Modification', () => {
       saveButton.click();
       // Reopen dialog and edit URL.
       actionMenuButton.click();
-      $$<HTMLElement>(mostVisited, '#actionMenuEdit')!.click();
+      $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
       inputUrl.value = 'updated-url';
       await inputUrl.updateComplete;
       saveButton.click();
@@ -896,7 +895,7 @@ suite('Modification', () => {
 
   test('remove with action menu', async () => {
     const actionMenu = mostVisited.$.actionMenu;
-    const removeButton = $$<HTMLElement>(mostVisited, '#actionMenuRemove')!;
+    const removeButton = $$<HTMLElement>(mostVisited, '#actionMenuRemove');
     await addTiles(2);
     const secondTile = queryTiles()[1]!;
     const actionMenuButton =
@@ -905,19 +904,19 @@ suite('Modification', () => {
     actionMenuButton.click();
     assertTrue(actionMenu.open);
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
-    assertFalse(mostVisited.$.toast.open);
+    assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
     assertFalse(actionMenu.open);
     assertEquals('https://b/', (await deleteCalled).url);
-    assertTrue(mostVisited.$.toast.open);
+    assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are visible.
-    assertTrue(!!$$(mostVisited, '#undo'));
-    assertTrue(!!$$(mostVisited, '#restore'));
+    assertTrue(isVisible($$(mostVisited, '#undo')));
+    assertTrue(isVisible($$(mostVisited, '#restore')));
   });
 
   test('remove query with action menu', async () => {
     const actionMenu = mostVisited.$.actionMenu;
-    const removeButton = $$<HTMLElement>(mostVisited, '#actionMenuRemove')!;
+    const removeButton = $$<HTMLElement>(mostVisited, '#actionMenuRemove');
     await addTiles([{
       title: 'title',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
@@ -932,13 +931,13 @@ suite('Modification', () => {
     actionMenuButton.click();
     assertTrue(actionMenu.open);
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
-    assertFalse(mostVisited.$.toast.open);
+    assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
     assertEquals('https://search-url/', (await deleteCalled).url);
-    assertTrue(mostVisited.$.toast.open);
+    assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are visible.
-    assertTrue(!!$$(mostVisited, '#undo'));
-    assertTrue(!!$$(mostVisited, '#restore'));
+    assertTrue(isVisible($$(mostVisited, '#undo')));
+    assertTrue(isVisible($$(mostVisited, '#restore')));
   });
 
   test('remove with icon button (customLinksEnabled=false)', async () => {
@@ -946,13 +945,13 @@ suite('Modification', () => {
     const removeButton =
         queryTiles()[0]!.querySelector<HTMLElement>('#removeButton')!;
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
-    assertFalse(mostVisited.$.toast.open);
+    assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
     assertEquals('https://a/', (await deleteCalled).url);
-    assertTrue(mostVisited.$.toast.open);
+    assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are visible.
-    assertTrue(!!$$(mostVisited, '#undo'));
-    assertTrue(!!$$(mostVisited, '#restore'));
+    assertTrue(isVisible($$(mostVisited, '#undo')));
+    assertTrue(isVisible($$(mostVisited, '#restore')));
   });
 
   test('remove query with icon button (customLinksEnabled=false)', async () => {
@@ -969,41 +968,41 @@ suite('Modification', () => {
     const removeButton =
         queryTiles()[0]!.querySelector<HTMLElement>('#removeButton')!;
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
-    assertFalse(mostVisited.$.toast.open);
+    assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
     assertEquals('https://search-url/', (await deleteCalled).url);
-    assertTrue(mostVisited.$.toast.open);
+    assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are not visible.
-    assertFalse(!!$$(mostVisited, '#undo'));
-    assertFalse(!!$$(mostVisited, '#restore'));
+    assertFalse(isVisible($$(mostVisited, '#undo')));
+    assertFalse(isVisible($$(mostVisited, '#restore')));
   });
 
   test('tile url is set to href of <a>', async () => {
     await addTiles(1);
     const tile = queryTiles()[0]!;
-    assertEquals('https://a/', tile!.querySelector('a')!.href);
+    assertEquals('https://a/', tile.querySelector('a')!.href);
   });
 
   test('delete first tile', async () => {
     await addTiles(1);
     const tile = queryTiles()[0]!;
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
-    assertFalse(mostVisited.$.toast.open);
+    assertFalse(mostVisited.$.toastManager.isToastOpen);
     keydown(tile, 'Delete');
     assertEquals('https://a/', (await deleteCalled).url);
-    assertTrue(mostVisited.$.toast.open);
+    assertTrue(mostVisited.$.toastManager.isToastOpen);
   });
 
   test('ctrl+z triggers undo and hides toast', async () => {
-    const toast = mostVisited.$.toast;
-    assertFalse(toast.open);
+    const toastManager = mostVisited.$.toastManager;
+    assertFalse(toastManager.isToastOpen);
 
     // Add a tile and remove it to show the toast.
     await addTiles(1);
     const tile = queryTiles()[0]!;
     keydown(tile, 'Delete');
     await handler.whenCalled('deleteMostVisitedTile');
-    assertTrue(toast.open);
+    assertTrue(toastManager.isToastOpen);
 
     const undoCalled = handler.whenCalled('undoMostVisitedTileAction');
     mostVisited.dispatchEvent(new KeyboardEvent('keydown', {
@@ -1013,12 +1012,12 @@ suite('Modification', () => {
       metaKey: isMac,
     }));
     await undoCalled;
-    assertFalse(toast.open);
+    assertFalse(toastManager.isToastOpen);
   });
 
   test('ctrl+z does nothing if toast buttons are not showing', async () => {
-    const toast = mostVisited.$.toast;
-    assertFalse(toast.open);
+    const toastManager = mostVisited.$.toastManager;
+    assertFalse(toastManager.isToastOpen);
 
     // A failed attempt at adding a shortcut to show the toast with no buttons.
     handler.setResultFor('addMostVisitedTile', Promise.resolve({
@@ -1026,7 +1025,7 @@ suite('Modification', () => {
     }));
     mostVisited.$.addShortcut.click();
     await microtasksFinished();
-    const inputUrl = $$<CrInputElement>(mostVisited, '#dialogInputUrl')!;
+    const inputUrl = $$<CrInputElement>(mostVisited, '#dialogInputUrl');
     inputUrl.value = 'url';
     await inputUrl.updateComplete;
     const saveButton =
@@ -1034,7 +1033,7 @@ suite('Modification', () => {
     saveButton.click();
     await handler.whenCalled('addMostVisitedTile');
 
-    assertTrue(toast.open);
+    assertTrue(toastManager.isToastOpen);
     mostVisited.dispatchEvent(new KeyboardEvent('keydown', {
       bubbles: true,
       ctrlKey: !isMac,
@@ -1043,13 +1042,13 @@ suite('Modification', () => {
     }));
     await microtasksFinished();
     assertEquals(0, handler.getCallCount('undoMostVisitedTileAction'));
-    assertTrue(toast.open);
+    assertTrue(toastManager.isToastOpen);
   });
 
   test('toast restore defaults button', async () => {
     const wait = handler.whenCalled('restoreMostVisitedDefaults');
-    const toast = mostVisited.$.toast;
-    assertFalse(toast.open);
+    const toastManager = mostVisited.$.toastManager;
+    assertFalse(toastManager.isToastOpen);
 
     // Add a tile and remove it to show the toast.
     await addTiles(1);
@@ -1057,16 +1056,16 @@ suite('Modification', () => {
     keydown(tile, 'Delete');
     await handler.whenCalled('deleteMostVisitedTile');
 
-    assertTrue(toast.open);
-    toast.querySelector<HTMLElement>('#restore')!.click();
+    assertTrue(toastManager.isToastOpen);
+    mostVisited.$.toastManager.querySelector<HTMLElement>('#restore')!.click();
     await wait;
-    assertFalse(toast.open);
+    assertFalse(toastManager.isToastOpen);
   });
 
   test('toast undo button', async () => {
     const wait = handler.whenCalled('undoMostVisitedTileAction');
-    const toast = mostVisited.$.toast;
-    assertFalse(toast.open);
+    const toastManager = mostVisited.$.toastManager;
+    assertFalse(toastManager.isToastOpen);
 
     // Add a tile and remove it to show the toast.
     await addTiles(1);
@@ -1074,10 +1073,10 @@ suite('Modification', () => {
     keydown(tile, 'Delete');
     await handler.whenCalled('deleteMostVisitedTile');
 
-    assertTrue(toast.open);
-    toast.querySelector<HTMLElement>('#undo')!.click();
+    assertTrue(toastManager.isToastOpen);
+    mostVisited.$.toastManager.querySelector<HTMLElement>('#undo')!.click();
     await wait;
-    assertFalse(toast.open);
+    assertFalse(toastManager.isToastOpen);
   });
 });
 

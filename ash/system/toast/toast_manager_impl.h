@@ -26,14 +26,6 @@ namespace ash {
 
 class ScopedToastPause;
 
-namespace eche_app {
-class LaunchAppHelperTest;
-}
-
-namespace video_conference {
-class VideoConferenceIntegrationTest;
-}
-
 // Class managing toast requests.
 class ASH_EXPORT ToastManagerImpl : public ToastManager,
                                     public ToastOverlay::Delegate,
@@ -50,9 +42,9 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   // ToastManager:
   void Show(ToastData data) override;
   void Cancel(std::string_view id) override;
-  bool RequestFocusOnActiveToastDismissButton(std::string_view id) override;
+  bool RequestFocusOnActiveToastButton(std::string_view id) override;
   bool IsToastShown(std::string_view id) const override;
-  bool IsToastDismissButtonFocused(std::string_view id) const override;
+  bool IsToastButtonFocused(std::string_view id) const override;
   std::unique_ptr<ScopedToastPause> CreateScopedPause() override;
 
   // ToastOverlay::Delegate:
@@ -62,17 +54,14 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
+  ToastOverlay* GetCurrentOverlayForTesting(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows());
+
  private:
   class PausableTimer;
-  friend class AutoConnectNotifierTest;
-  friend class BluetoothNotificationControllerTest;
-  friend class DesksTestApi;
-  friend class LoginScreenControllerTest;
   friend class ToastManagerImplTest;
+  // Uses `CloseAllToastsWithoutAnimation()`.
   friend class BatterySaverControllerTest;
-  friend class BatteryNotificationTest;
-  friend class eche_app::LaunchAppHelperTest;
-  friend class video_conference::VideoConferenceIntegrationTest;
 
   void ShowLatest();
 
@@ -89,9 +78,6 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   // Checks whether any values in `root_window_to_overlay_` are not empty.
   bool HasActiveToasts() const;
-
-  ToastOverlay* GetCurrentOverlayForTesting(
-      aura::Window* root_window = Shell::GetRootWindowForNewWindows());
 
   int serial_for_testing() const { return serial_; }
   void ResetSerialForTesting() { serial_ = 0; }

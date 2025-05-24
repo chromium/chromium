@@ -156,7 +156,7 @@ RequestQueueTest::RequestQueueTest()
       task_runner_(new base::TestMockTimeTaskRunner),
       task_runner_current_default_handle_(task_runner_) {}
 
-RequestQueueTest::~RequestQueueTest() {}
+RequestQueueTest::~RequestQueueTest() = default;
 
 void RequestQueueTest::SetUp() {
   auto store = std::make_unique<TestRequestQueueStore>();

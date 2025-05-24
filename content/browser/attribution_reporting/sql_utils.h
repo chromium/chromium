@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -20,7 +21,6 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 namespace attribution_reporting {
@@ -31,8 +31,12 @@ class EventReportWindows;
 class FilterData;
 class MaxEventLevelReports;
 class SuitableOrigin;
-class TriggerSpecs;
+class TriggerDataSet;
 }  // namespace attribution_reporting
+
+namespace base {
+class Time;
+}  // namespace base
 
 namespace sql {
 class Statement;
@@ -55,17 +59,13 @@ url::Origin DeserializeOrigin(std::string_view origin);
 std::optional<attribution_reporting::mojom::SourceType> DeserializeSourceType(
     int val);
 
-// Exposed for use with earlier DB migrations that only contained a subset of
-// fields.
-void SetReadOnlySourceData(const attribution_reporting::EventReportWindows*,
-                           attribution_reporting::MaxEventLevelReports,
-                           proto::AttributionReadOnlySourceData&);
-
 std::string SerializeReadOnlySourceData(
-    const attribution_reporting::TriggerSpecs&,
+    const attribution_reporting::TriggerDataSet&,
+    const attribution_reporting::EventReportWindows&,
+    attribution_reporting::MaxEventLevelReports,
     double randomized_response_rate,
     attribution_reporting::mojom::TriggerDataMatching,
-    bool debug_cookie_set,
+    bool cookie_based_debug_allowed,
     absl::uint128 aggregatable_debug_key_piece);
 
 CONTENT_EXPORT std::optional<proto::AttributionReadOnlySourceData>
@@ -77,10 +77,12 @@ std::optional<attribution_reporting::FilterData> DeserializeFilterData(
     sql::Statement&,
     int col);
 
-std::optional<attribution_reporting::TriggerSpecs> DeserializeTriggerSpecs(
+std::optional<attribution_reporting::TriggerDataSet> DeserializeTriggerDataSet(
     const proto::AttributionReadOnlySourceData&,
-    attribution_reporting::mojom::SourceType,
-    attribution_reporting::MaxEventLevelReports);
+    attribution_reporting::mojom::SourceType);
+
+std::optional<attribution_reporting::EventReportWindows>
+DeserializeEventReportWindows(const proto::AttributionReadOnlySourceData&);
 
 std::string SerializeAggregationKeys(
     const attribution_reporting::AggregationKeys&);
@@ -88,8 +90,9 @@ std::string SerializeAggregationKeys(
 std::optional<attribution_reporting::AggregationKeys>
 DeserializeAggregationKeys(sql::Statement&, int col);
 
-std::string SerializeEventLevelReportMetadata(uint32_t trigger_data,
-                                              int64_t priority);
+CONTENT_EXPORT std::string SerializeEventLevelReportMetadata(
+    uint32_t trigger_data,
+    int64_t priority);
 
 std::string SerializeAggregatableReportMetadata(
     const std::optional<attribution_reporting::SuitableOrigin>&
@@ -109,19 +112,25 @@ std::optional<AttributionReport::EventLevelData>
 DeserializeEventLevelReportMetadata(base::span<const uint8_t>,
                                     const StoredSource&);
 
-std::optional<AttributionReport::AggregatableAttributionData>
+std::optional<AttributionReport::AggregatableData>
 DeserializeAggregatableReportMetadata(base::span<const uint8_t>,
                                       const StoredSource&);
 
-std::optional<AttributionReport::NullAggregatableData>
+std::optional<AttributionReport::AggregatableData>
     DeserializeNullAggregatableReportMetadata(base::span<const uint8_t>);
 
 std::string SerializeAttributionScopesData(
     const attribution_reporting::AttributionScopesData&);
 
 base::expected<std::optional<attribution_reporting::AttributionScopesData>,
-               absl::monostate>
+               std::monostate>
 DeserializeAttributionScopesData(sql::Statement&, int col);
+
+std::string SerializeAggregatableNamedBudgets(
+    const StoredSource::AggregatableNamedBudgets&);
+
+std::optional<StoredSource::AggregatableNamedBudgets>
+DeserializeAggregatableNamedBudgets(sql::Statement& stmt, int col);
 
 void DeduplicateSourceIds(std::vector<StoredSource::Id>&);
 

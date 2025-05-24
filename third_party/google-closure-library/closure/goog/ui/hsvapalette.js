@@ -214,12 +214,16 @@ goog.ui.HsvaPalette.prototype.updateUi = function() {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.ui.HsvaPalette.prototype.updateInput = function() {
   'use strict';
   if (!goog.array.equals(
           [this.color, this.alpha_],
           goog.ui.HsvaPalette.parseUserInput_(this.inputElement.value))) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.inputElement.value = this.getColorRgbaHex();
   }
 };
@@ -255,6 +259,7 @@ goog.ui.HsvaPalette.prototype.handleMouseMoveA_ = function(b, e) {
   'use strict';
   e.preventDefault();
   var vportPos = this.getDomHelper().getDocumentScroll();
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var newA =
       (b.top + b.height -
        Math.min(Math.max(vportPos.y + e.clientY, b.top), b.top + b.height)) /
@@ -266,6 +271,7 @@ goog.ui.HsvaPalette.prototype.handleMouseMoveA_ = function(b, e) {
 /** @override */
 goog.ui.HsvaPalette.prototype.handleInput = function(e) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var parsed = goog.ui.HsvaPalette.parseUserInput_(this.inputElement.value);
   if (parsed) {
     this.setColorAlphaHelper_(parsed[0], parsed[1]);

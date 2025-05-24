@@ -7,13 +7,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 
 #include "base/json/json_writer.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -22,7 +22,7 @@ namespace extensions {
 
 // An abstract base class for permissions that are represented by the
 // disjunction of a set of conditions.  Each condition is represented by a
-// |PermissionDataType| (e.g. SocketPermissionData).  If an
+// `PermissionDataType` (e.g. SocketPermissionData).  If an
 // APIPermission::CheckParam matches any of the conditions in the set, the
 // permission is granted.
 //
@@ -48,7 +48,7 @@ class SetDisjunctionPermission : public APIPermission {
     CHECK(rhs->info() == info());
     const SetDisjunctionPermission* perm =
         static_cast<const SetDisjunctionPermission*>(rhs);
-    return base::ranges::includes(data_set_, perm->data_set_);
+    return std::ranges::includes(data_set_, perm->data_set_);
   }
 
   bool Equal(const APIPermission* rhs) const override {

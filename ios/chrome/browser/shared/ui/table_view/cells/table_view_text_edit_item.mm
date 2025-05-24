@@ -137,6 +137,10 @@ const CGFloat kSymbolSize = 15;
         self.identifyingIconAccessibilityLabel;
   }
 
+  if ([self.cellAccessibilityLabel length]) {
+    cell.accessibilityLabelValue = self.cellAccessibilityLabel;
+  }
+
   // If the TextField or IconButton are enabled, the cell needs to make its
   // inner TextField or button accessible to voice over. In order to achieve
   // this the cell can't be an A11y element.
@@ -147,8 +151,7 @@ const CGFloat kSymbolSize = 15;
 #pragma mark Actions
 
 - (void)textFieldChanged:(UITextField*)textField {
-  self.textFieldValue = textField.text;
-  [self.delegate tableViewItemDidChange:self];
+  [self updateTextFieldValue:textField.text];
 }
 
 - (void)textFieldBeginEditing:(UITextField*)textField {
@@ -166,6 +169,11 @@ const CGFloat kSymbolSize = 15;
     return;
   }
   _hasValidText = hasValidText;
+}
+
+- (void)updateTextFieldValue:(NSString*)textFieldValue {
+  _textFieldValue = textFieldValue;
+  [self.delegate tableViewItemDidChange:self];
 }
 
 @end
@@ -299,6 +307,17 @@ const CGFloat kSymbolSize = 15;
     [self updateForAccessibilityContentSizeCategory:
               UIContentSizeCategoryIsAccessibilityCategory(
                   self.traitCollection.preferredContentSizeCategory)];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.class ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -333,8 +352,7 @@ const CGFloat kSymbolSize = 15;
       _editIconHeightConstraint.constant = kErrorIconLength;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -360,18 +378,15 @@ const CGFloat kSymbolSize = 15;
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  BOOL isCurrentCategoryAccessibility =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory);
-  if (isCurrentCategoryAccessibility !=
-      UIContentSizeCategoryIsAccessibilityCategory(
-          previousTraitCollection.preferredContentSizeCategory)) {
-    [self updateForAccessibilityContentSizeCategory:
-              isCurrentCategoryAccessibility];
+  if (@available(iOS 17, *)) {
+    return;
   }
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - UITableViewCell
 
@@ -403,6 +418,10 @@ const CGFloat kSymbolSize = 15;
 #pragma mark Accessibility
 
 - (NSString*)accessibilityLabel {
+  if ([self.accessibilityLabelValue length]) {
+    return self.accessibilityLabelValue;
+  }
+
   // If `textFieldSecureTextEntry` is
   // YES, the voice over should not read the text value.
   NSString* textFieldText =
@@ -439,6 +458,20 @@ const CGFloat kSymbolSize = 15;
 // Returns the error icon image.
 - (UIImage*)errorImage {
   return DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
+}
+
+// Updates the view's accessiblity properties when the device's
+// UITraitPreferredContentSizeCategory is modified.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  BOOL isCurrentCategoryAccessibility =
+      UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+  if (isCurrentCategoryAccessibility !=
+      UIContentSizeCategoryIsAccessibilityCategory(
+          previousTraitCollection.preferredContentSizeCategory)) {
+    [self updateForAccessibilityContentSizeCategory:
+              isCurrentCategoryAccessibility];
+  }
 }
 
 @end

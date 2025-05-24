@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.password_manager;
 import android.app.PendingIntent;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 
 import java.util.Optional;
 
 /** Interface for the helper responsible for Password Checkup operations. */
+@NullMarked
 public interface PasswordCheckupClientHelper {
     /** Serves as a general exception for failed requests to the password checkup backend. */
     class PasswordCheckBackendException extends Exception {
@@ -52,7 +55,7 @@ public interface PasswordCheckupClientHelper {
      */
     default void getPasswordCheckupIntent(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<PendingIntent> successCallback,
             Callback<Exception> failureCallback) {}
 
@@ -86,7 +89,7 @@ public interface PasswordCheckupClientHelper {
      */
     default void runPasswordCheckupInBackground(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
             Callback<Void> successCallback,
             Callback<Exception> failureCallback) {}
 
@@ -118,7 +121,37 @@ public interface PasswordCheckupClientHelper {
      */
     default void getBreachedCredentialsCount(
             @PasswordCheckReferrer int referrer,
-            String accountName,
+            @Nullable String accountName,
+            Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {}
+
+    /**
+     * Asynchronously returns the number of weak credentials for the provided account.
+     *
+     * @param referrer the place that requested number of weak credentials.
+     * @param accountName the account name that is syncing passwords. If no value was provided local
+     *     account will be used.
+     * @param successCallback callback called with the number of weak passwords.
+     * @param failureCallback callback called if encountered an error.
+     */
+    default void getWeakCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            @Nullable String accountName,
+            Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {}
+
+    /**
+     * Asynchronously returns the number of reused credentials for the provided account.
+     *
+     * @param referrer the place that requested number of reused credentials.
+     * @param accountName the account name that is syncing passwords. If no value was provided local
+     *     account will be used.
+     * @param successCallback callback called with the number of reused passwords.
+     * @param failureCallback callback called if encountered an error.
+     */
+    default void getReusedCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            @Nullable String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {}
 }

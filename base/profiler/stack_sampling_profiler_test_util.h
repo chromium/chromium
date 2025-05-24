@@ -44,7 +44,7 @@ class TargetThread : public PlatformThread::Delegate {
   SamplingProfilerThreadToken thread_token() const { return thread_token_; }
 
  private:
-  SamplingProfilerThreadToken thread_token_ = {0};
+  SamplingProfilerThreadToken thread_token_ = {kInvalidThreadId};
   OnceClosure to_run_;
   PlatformThreadHandle target_thread_handle_;
 };

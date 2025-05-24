@@ -4,9 +4,9 @@
 
 #include "device/gamepad/hid_haptic_gamepad.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "device/gamepad/hid_writer.h"
 
 namespace device {
@@ -78,10 +78,9 @@ std::unique_ptr<HidHapticGamepad> HidHapticGamepad::Create(
 
 // static
 bool HidHapticGamepad::IsHidHaptic(uint16_t vendor_id, uint16_t product_id) {
-  return base::ranges::any_of(
-      kHapticReportData, [=](const HapticReportData& d) {
-        return d.vendor_id == vendor_id && d.product_id == product_id;
-      });
+  return std::ranges::any_of(kHapticReportData, [=](const HapticReportData& d) {
+    return d.vendor_id == vendor_id && d.product_id == product_id;
+  });
 }
 
 // static
@@ -89,7 +88,7 @@ const HidHapticGamepad::HapticReportData* HidHapticGamepad::GetHapticReportData(
     uint16_t vendor_id,
     uint16_t product_id) {
   const auto* find_it =
-      base::ranges::find_if(kHapticReportData, [=](const HapticReportData& d) {
+      std::ranges::find_if(kHapticReportData, [=](const HapticReportData& d) {
         return d.vendor_id == vendor_id && d.product_id == product_id;
       });
   return find_it == std::end(kHapticReportData) ? nullptr : &*find_it;
@@ -115,8 +114,8 @@ void HidHapticGamepad::SetVibration(mojom::GamepadEffectParametersPtr params) {
     // Vibration magnitude must not overrun the report buffer.
     DCHECK_LE(strong_offset_bytes_ + vibration_bytes.size(),
               report_length_bytes_);
-    base::ranges::copy(vibration_bytes,
-                       control_report.begin() + strong_offset_bytes_);
+    std::ranges::copy(vibration_bytes,
+                      control_report.begin() + strong_offset_bytes_);
   } else {
     // Dual channel vibration.
     std::vector<uint8_t> left_bytes;
@@ -134,10 +133,9 @@ void HidHapticGamepad::SetVibration(mojom::GamepadEffectParametersPtr params) {
     // The strong and weak vibration magnitude fields must not overlap.
     DCHECK(strong_offset_bytes_ + left_bytes.size() <= weak_offset_bytes_ ||
            weak_offset_bytes_ + right_bytes.size() <= strong_offset_bytes_);
-    base::ranges::copy(left_bytes,
-                       control_report.begin() + strong_offset_bytes_);
-    base::ranges::copy(right_bytes,
-                       control_report.begin() + weak_offset_bytes_);
+    std::ranges::copy(left_bytes,
+                      control_report.begin() + strong_offset_bytes_);
+    std::ranges::copy(right_bytes, control_report.begin() + weak_offset_bytes_);
   }
   writer_->WriteOutputReport(control_report);
 }

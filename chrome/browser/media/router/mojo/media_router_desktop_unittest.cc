@@ -245,10 +245,11 @@ TEST_F(MediaRouterDesktopTest, CreateRoute) {
 // Tests that MediaRouter is aware when a route is created, even if
 // MediaRouteProvider doesn't call OnRoutesUpdated().
 TEST_F(MediaRouterDesktopTest, RouteRecognizedAfterCreation) {
-  MockMediaRoutesObserver routes_observer(router());
+  MockMediaRoutesObserver routes_observer1(router());
+  MockMediaRoutesObserver routes_observer2(router());
 
-  EXPECT_CALL(routes_observer, OnRoutesUpdated(SizeIs(0)));
-  EXPECT_CALL(routes_observer, OnRoutesUpdated(SizeIs(1)));
+  EXPECT_CALL(routes_observer2, OnRoutesUpdated(SizeIs(0)));
+  EXPECT_CALL(routes_observer2, OnRoutesUpdated(SizeIs(1)));
 
   // TestCreateRoute() does not explicitly call OnRoutesUpdated() on the router.
   TestCreateRoute();
@@ -986,14 +987,13 @@ TEST_F(MediaRouterDesktopTest, TestGetCurrentRoutes) {
   std::vector<MediaRoute> routes = {route1, route2};
 
   EXPECT_TRUE(router()->GetCurrentRoutes().empty());
-  router()->internal_routes_observer_->OnRoutesUpdated(routes);
+  router()->current_routes_ = routes;
   std::vector<MediaRoute> current_routes = router()->GetCurrentRoutes();
   ASSERT_EQ(current_routes.size(), 2u);
   EXPECT_EQ(current_routes[0], route1);
   EXPECT_EQ(current_routes[1], route2);
 
-  router()->internal_routes_observer_->OnRoutesUpdated(
-      std::vector<MediaRoute>());
+  router()->current_routes_ = std::vector<MediaRoute>();
   EXPECT_TRUE(router()->GetCurrentRoutes().empty());
 }
 

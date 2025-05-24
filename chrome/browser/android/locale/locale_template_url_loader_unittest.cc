@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -19,6 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 const char kTestCountryCode[] = "JP";
 
@@ -29,7 +29,7 @@ class MockLocaleTemplateUrlLoader : public LocaleTemplateUrlLoader {
                               Profile* profile)
       : LocaleTemplateUrlLoader(locale, service, profile) {}
 
-  ~MockLocaleTemplateUrlLoader() override {}
+  ~MockLocaleTemplateUrlLoader() override = default;
 
  protected:
   std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines()
@@ -51,7 +51,7 @@ class MockLocaleTemplateUrlLoader : public LocaleTemplateUrlLoader {
 
 class LocaleTemplateUrlLoaderTest : public testing::Test {
  public:
-  LocaleTemplateUrlLoaderTest() {}
+  LocaleTemplateUrlLoaderTest() = default;
 
   LocaleTemplateUrlLoaderTest(const LocaleTemplateUrlLoaderTest&) = delete;
   LocaleTemplateUrlLoaderTest& operator=(const LocaleTemplateUrlLoaderTest&) =

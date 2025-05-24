@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HTML_CANVAS_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HTML_CANVAS_PAINTER_H_
 
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class LayoutHTMLCanvas;
 struct PaintInfo;
-struct PhysicalOffset;
 
 class HTMLCanvasPainter {
   STACK_ALLOCATED();

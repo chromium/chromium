@@ -4,8 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrSettingsPrefs, MultitaskingSettingsCardElement, Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {MultitaskingSettingsCardElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -28,9 +28,6 @@ suite('<multitasking-settings-card>', () => {
   }
 
   async function createCardElement(): Promise<void> {
-    loadTimeData.overrideValues({
-      shouldShowMultitasking: true,
-    });
     multitaskingSettingsCard =
         document.createElement('multitasking-settings-card');
     multitaskingSettingsCard.prefs = getFakePrefs();

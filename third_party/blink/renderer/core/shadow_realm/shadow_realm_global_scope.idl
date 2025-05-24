@@ -5,5 +5,8 @@
 // https://github.com/tc39/proposal-shadowrealm
 
 [
+    Exposed=ShadowRealm,
     Global=ShadowRealm
 ] interface ShadowRealmGlobalScope {};
+
+ShadowRealmGlobalScope includes UniversalGlobalScope;

@@ -8,7 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.MenuItem;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This component is responsible for handling the UI logic for the password check. */
+@NullMarked
 public interface PasswordCheckComponentUi {
     /** A delegate that handles native tasks for the UI component. */
     interface Delegate {

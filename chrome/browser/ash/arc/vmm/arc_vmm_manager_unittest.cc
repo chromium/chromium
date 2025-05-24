@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
+
 #include <memory>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -19,6 +17,9 @@
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,10 +42,11 @@ class TestConciergeClient : public ash::FakeConciergeClient {
 
   static void Shutdown() { ash::ConciergeClient::Shutdown(); }
 
-  void SwapVm(const vm_tools::concierge::SwapVmRequest& request,
-              chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
-                  callback) override {
-    vm_tools::concierge::SwapVmResponse response;
+  void SwapVm(
+      const vm_tools::concierge::SwapVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
+    vm_tools::concierge::SuccessFailureResponse response;
     switch (request.operation()) {
       case SwapOperation::ENABLE:
         enable_count_++;
@@ -73,15 +75,15 @@ class TestConciergeClient : public ash::FakeConciergeClient {
 
   void SetAggressiveBalloonLatencyAndResponse(
       std::optional<base::TimeDelta> latency,
-      std::optional<vm_tools::concierge::AggressiveBalloonResponse> response) {
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response) {
     aggressive_balloon_latency_ = latency;
     aggressive_balloon_response_ = response;
   }
 
   void AggressiveBalloon(
       const vm_tools::concierge::AggressiveBalloonRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::concierge::AggressiveBalloonResponse> callback) override {
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
     if (!aggressive_balloon_latency_.has_value()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
@@ -106,7 +108,7 @@ class TestConciergeClient : public ash::FakeConciergeClient {
       : ash::FakeConciergeClient(fake_cicerone_client) {}
 
   std::optional<base::TimeDelta> aggressive_balloon_latency_;
-  std::optional<vm_tools::concierge::AggressiveBalloonResponse>
+  std::optional<vm_tools::concierge::SuccessFailureResponse>
       aggressive_balloon_response_;
 
   int enable_count_ = 0;
@@ -160,7 +162,7 @@ class ArcVmmManagerTest : public testing::Test {
   }
 
   void InitAggressiveBallonResponse(bool delay_response) {
-    vm_tools::concierge::AggressiveBalloonResponse response;
+    vm_tools::concierge::SuccessFailureResponse response;
     response.set_success(true);
     if (delay_response) {
       client()->SetAggressiveBalloonLatencyAndResponse(base::Seconds(5),

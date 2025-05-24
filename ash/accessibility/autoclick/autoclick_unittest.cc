@@ -32,6 +32,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -107,12 +108,22 @@ class AutoclickTest : public AshTestBase {
         ->menu_view_;
   }
 
+  AutoclickScrollBubbleController* GetAutoclickScrollBubbleController() {
+    return GetAutoclickController()
+        ->GetMenuBubbleControllerForTesting()
+        ->scroll_bubble_controller_.get();
+  }
+
   AutoclickScrollView* GetAutoclickScrollView() {
     AutoclickScrollBubbleController* controller =
-        GetAutoclickController()
-            ->GetMenuBubbleControllerForTesting()
-            ->scroll_bubble_controller_.get();
+        GetAutoclickScrollBubbleController();
     return controller ? controller->scroll_view_.get() : nullptr;
+  }
+
+  AutoclickScrollBubbleView* GetAutoclickScrollBubbleView() {
+    AutoclickScrollBubbleController* controller =
+        GetAutoclickScrollBubbleController();
+    return controller ? controller->bubble_view_.get() : nullptr;
   }
 
   views::Widget* GetAutoclickBubbleWidget() {
@@ -1298,6 +1309,28 @@ TEST_F(AutoclickTest, ScrollMenuBubblePostioning) {
   Shell::Get()->accessibility_controller()->SetAutoclickMenuPosition(
       FloatingMenuPosition::kBottomRight);
   EXPECT_EQ(GetAutoclickScrollView()->GetBoundsInScreen(), scroll_bounds);
+}
+
+TEST_F(AutoclickTest, ScrollBubbleViewAccessibleName) {
+  GetAutoclickController()->SetEnabled(true,
+                                       /*show_confirmation_dialog=*/false);
+  GetAutoclickController()->SetAutoclickEventType(
+      AutoclickEventType::kLeftClick);
+  EXPECT_FALSE(GetAutoclickScrollView());
+  EXPECT_FALSE(GetAutoclickScrollBubbleView());
+
+  // Enable scroll.
+  GetAutoclickController()->SetAutoclickEventType(AutoclickEventType::kScroll);
+  ASSERT_TRUE(GetAutoclickScrollView());
+  ASSERT_TRUE(GetAutoclickScrollBubbleView());
+
+  AutoclickScrollBubbleController* controller =
+      GetAutoclickScrollBubbleController();
+  AutoclickScrollBubbleView* bubble_view = GetAutoclickScrollBubbleView();
+  ui::AXNodeData node_data;
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            controller->GetAccessibleNameForBubble());
 }
 
 }  // namespace ash

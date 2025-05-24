@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
-
 namespace blink {
 
 unsigned ScriptForbiddenScope::g_main_thread_counter_ = 0;

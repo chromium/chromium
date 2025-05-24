@@ -19,7 +19,7 @@
 
 namespace net {
 
-constexpr base::TimeDelta kDnsDefaultFallbackPeriod = base::Seconds(1);
+inline constexpr base::TimeDelta kDnsDefaultFallbackPeriod = base::Seconds(1);
 
 // DnsConfig stores configuration of the system resolver.
 struct NET_EXPORT DnsConfig {

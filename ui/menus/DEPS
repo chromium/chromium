@@ -1,0 +1,9 @@
+include_rules = [
+  "+ui/actions",
+  "+ui/base",
+  "+ui/gfx",
+  "+ui/events",
+  "+ui/strings/grit/ui_strings.h",
+  "+third_party/skia",
+  "+ui/color",
+]

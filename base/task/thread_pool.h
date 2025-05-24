@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base_export.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -223,6 +224,16 @@ class BASE_EXPORT ThreadPool {
       SingleThreadTaskRunnerThreadMode thread_mode =
           SingleThreadTaskRunnerThreadMode::SHARED);
 #endif  // BUILDFLAG(IS_WIN)
+
+  // Returns a SequencedTaskRunner whose PostTask invocations result in
+  // scheduling tasks using |traits|. Tasks run one at a time in posting order.
+  // Returns the existing `SequenceTaskRunner` for 'path', or creates it.
+  // Ensures tasks accessing the same `path` are sequenced, even if posted from
+  // `SequencedTaskRunner`s obtained in different contexts. The same `traits`
+  // must be provided to all calls with the same `path`.
+  static scoped_refptr<SequencedTaskRunner>
+  CreateSequencedTaskRunnerForResource(const TaskTraits& traits,
+                                       const base::FilePath& path);
 };
 
 }  // namespace base

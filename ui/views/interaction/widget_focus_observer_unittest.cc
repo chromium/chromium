@@ -119,7 +119,8 @@ TEST_F(WidgetFocusObserverTest, Bubble) {
   visible_waiter.Wait();
 
   auto bubble = std::make_unique<BubbleDialogDelegateView>(
-      widget->GetRootView(), BubbleBorder::LEFT_CENTER);
+      BubbleDialogDelegateView::CreatePassKey(), widget->GetRootView(),
+      BubbleBorder::LEFT_CENTER);
   auto* const bubble_widget =
       BubbleDialogDelegate::CreateBubble(std::move(bubble));
   test::WidgetVisibleWaiter visible_waiter2(bubble_widget);

@@ -11,7 +11,7 @@ namespace vr {
 
 class VR_BASE_EXPORT SchedulerUiInterface {
  public:
-  virtual ~SchedulerUiInterface() {}
+  virtual ~SchedulerUiInterface() = default;
 
   virtual void OnWebXrFrameAvailable() = 0;
   virtual void OnWebXrTimedOut() = 0;

@@ -87,7 +87,7 @@ is primarily useful in unit tests.
 ```c++
 scoped_refptr<const Extension> extension =
     ExtensionBuilder("my extension name")
-        .AddPermission("tabs")
+        .AddAPIPermission("tabs")
         .AddContentScript("script.js", {"*://*.example/*"})
         .SetVersion("1.0")
         .Build();

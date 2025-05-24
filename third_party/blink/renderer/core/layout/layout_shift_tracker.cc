@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -168,7 +169,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   if (object.IsSVGChild())
     return false;
 
-  if (object.StyleRef().UsedVisibility() != EVisibility::kVisible) {
+  if (object.StyleRef().Visibility() != EVisibility::kVisible) {
     return false;
   }
 
@@ -177,8 +178,9 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
       return false;
     if (object.IsBR())
       return false;
-    if (object.StyleRef().GetFont().ShouldSkipDrawing())
+    if (object.StyleRef().GetFont()->ShouldSkipDrawing()) {
       return false;
+    }
     return true;
   }
 
@@ -567,8 +569,9 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
     ReportShift(score_delta, weighted_score_delta);
   }
 
-  if (!region_.IsEmpty() && !timer_.IsActive())
+  if (!region_.IsEmpty() && !HasRecentInput()) {
     SendLayoutShiftRectsToHud(region_.GetRects());
+  }
 }
 
 void LayoutShiftTracker::NotifyPrePaintFinished() {
@@ -614,7 +617,7 @@ void LayoutShiftTracker::SubmitPerformanceEntry(double score_delta,
 void LayoutShiftTracker::ReportShift(double score_delta,
                                      double weighted_score_delta) {
   LocalFrame& frame = frame_view_->GetFrame();
-  bool had_recent_input = timer_.IsActive();
+  bool had_recent_input = HasRecentInput();
 
   if (!had_recent_input) {
     score_ += score_delta;
@@ -678,9 +681,11 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
   if (should_trigger_shift_exclusion) {
     observed_input_or_scroll_ = true;
 
-    // This cancels any previously scheduled task from the same timer.
-    timer_.StartOneShot(kTimerDelay, FROM_HERE);
-    UpdateInputTimestamp(event.TimeStamp());
+    if (!RuntimeEnabledFeatures::TimestampBasedCLSTrackingEnabled()) {
+      // This cancels any previously scheduled task from the same timer.
+      timer_.StartOneShot(kTimerDelay, FROM_HERE);
+    }
+    UpdateInputTimestamps(event.TimeStamp());
   }
 
   if (event_type_stops_pointerdown_buffering || release_all_mouse_buttons ||
@@ -696,13 +701,29 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
     pointerdown_pending_data_.num_pressed_mouse_buttons++;
 }
 
-void LayoutShiftTracker::UpdateInputTimestamp(base::TimeTicks timestamp) {
-  if (!most_recent_input_timestamp_initialized_) {
-    most_recent_input_timestamp_ = timestamp;
-    most_recent_input_timestamp_initialized_ = true;
-  } else if (timestamp > most_recent_input_timestamp_) {
-    most_recent_input_timestamp_ = timestamp;
+void LayoutShiftTracker::UpdateInputTimestamps(base::TimeTicks timestamp) {
+  most_recent_input_timestamp_initialized_ = true;
+  most_recent_input_timestamp_ =
+      std::max(timestamp, most_recent_input_timestamp_);
+  most_recent_input_processing_timestamp_ = base::TimeTicks::Now();
+}
+
+bool LayoutShiftTracker::HasRecentInput() {
+  if (!RuntimeEnabledFeatures::TimestampBasedCLSTrackingEnabled()) {
+    return timer_.IsActive();
   }
+  if (most_recent_input_processing_timestamp_.is_null()) {
+    return false;
+  }
+  base::TimeDelta time_since_last_input =
+      blink::Thread::Current()->CurrentTaskStartTime() -
+      most_recent_input_processing_timestamp_;
+
+  bool has_recent_input = time_since_last_input <= kTimerDelay;
+  if (!has_recent_input) {
+    most_recent_input_processing_timestamp_ = base::TimeTicks();
+  }
+  return has_recent_input;
 }
 
 void LayoutShiftTracker::NotifyScroll(mojom::blink::ScrollType scroll_type,
@@ -736,8 +757,10 @@ void LayoutShiftTracker::NotifyBrowserInitiatedSameDocumentNavigation() {
 
 void LayoutShiftTracker::UpdateTimerAndInputTimestamp() {
   // This cancels any previously scheduled task from the same timer.
-  timer_.StartOneShot(kTimerDelay, FROM_HERE);
-  UpdateInputTimestamp(base::TimeTicks::Now());
+  UpdateInputTimestamps(base::TimeTicks::Now());
+  if (!RuntimeEnabledFeatures::TimestampBasedCLSTrackingEnabled()) {
+    timer_.StartOneShot(kTimerDelay, FROM_HERE);
+  }
 }
 
 double LayoutShiftTracker::LastInputTimestamp() const {
@@ -805,20 +828,26 @@ void LayoutShiftTracker::SendLayoutShiftRectsToHud(
     if (!cc_layer->layer_tree_host()->GetDebugState().show_layout_shift_regions)
       return;
     if (cc_layer->layer_tree_host()->hud_layer()) {
-      WebVector<gfx::Rect> rects;
+      std::vector<gfx::Rect> rects;
       cc::Region blink_region;
       for (const gfx::Rect& rect : int_rects)
         blink_region.Union(rect);
       for (gfx::Rect rect : blink_region)
         rects.emplace_back(rect);
-      cc_layer->layer_tree_host()->hud_layer()->SetLayoutShiftRects(
-          rects.ReleaseVector());
+      cc_layer->layer_tree_host()->hud_layer()->SetLayoutShiftRects(rects);
       cc_layer->layer_tree_host()->hud_layer()->SetNeedsPushProperties();
     }
   }
 }
 
+void LayoutShiftTracker::Dispose() {
+  if (!RuntimeEnabledFeatures::TimestampBasedCLSTrackingEnabled()) {
+    timer_.Stop();
+  }
+}
+
 void LayoutShiftTracker::ResetTimerForTesting() {
+  most_recent_input_processing_timestamp_ = base::TimeTicks();
   timer_.Stop();
 }
 

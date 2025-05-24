@@ -56,4 +56,13 @@ found in the LICENSE file.
         </LinearLayout>
     </org.chromium.chrome.browser.readaloud.player.expanded.MaxHeightScrollView>
 
+    <TextView
+        android:id="@+id/readaloud_menu_footer"
+        android:text="@string/readaloud_negative_feedback_menu_disclaimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/readaloud_menu_title_margin_start"
+        android:layout_marginEnd="@dimen/readaloud_menu_margin_horizontal"
+        android:visibility="gone" />
+
 </org.chromium.chrome.browser.readaloud.player.expanded.Menu>

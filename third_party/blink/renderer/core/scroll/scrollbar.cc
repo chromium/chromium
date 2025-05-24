@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -271,15 +272,12 @@ ScrollDirectionPhysical Scrollbar::PressedPartScrollDirectionPhysical() {
 }
 
 ui::ScrollGranularity Scrollbar::PressedPartScrollGranularity() {
-  if (pressed_part_ == kBackButtonStartPart ||
-      pressed_part_ == kBackButtonEndPart ||
-      pressed_part_ == kForwardButtonStartPart ||
-      pressed_part_ == kForwardButtonEndPart) {
-    return RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-               ? ui::ScrollGranularity::kScrollByPercentage
-               : ui::ScrollGranularity::kScrollByLine;
-  }
-  return ui::ScrollGranularity::kScrollByPage;
+  return (pressed_part_ == kBackButtonStartPart ||
+          pressed_part_ == kBackButtonEndPart ||
+          pressed_part_ == kForwardButtonStartPart ||
+          pressed_part_ == kForwardButtonEndPart)
+             ? ui::ScrollGranularity::kScrollByLine
+             : ui::ScrollGranularity::kScrollByPage;
 }
 
 void Scrollbar::MoveThumb(int pos, bool dragging_document) {
@@ -623,10 +621,9 @@ void Scrollbar::MouseDown(const WebMouseEvent& evt) {
 
 void Scrollbar::InjectScrollGestureForPressedPart(
     WebInputEvent::Type gesture_type) {
-  ui::ScrollGranularity granularity = PressedPartScrollGranularity();
-  ScrollOffset delta =
-      ToScrollDelta(PressedPartScrollDirectionPhysical(),
-                    ScrollableArea::DirectionBasedScrollDelta(granularity));
+  const ui::ScrollGranularity granularity = PressedPartScrollGranularity();
+  const ScrollOffset delta =
+      ToScrollDelta(PressedPartScrollDirectionPhysical(), 1);
   InjectScrollGesture(gesture_type, delta, granularity);
 }
 
@@ -915,9 +912,28 @@ EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
   return EScrollbarWidth::kAuto;
 }
 
+std::optional<blink::Color> Scrollbar::RootScrollbarThemeColor() const {
+  if (RuntimeEnabledFeatures::RootScrollbarFollowsBrowserThemeEnabled() &&
+      scrollable_area_ && scrollable_area_->IsGlobalRootNonOverlayScroller()) {
+    if (const auto* layout_box = GetLayoutBox()) {
+      if (const auto theme_color = layout_box->GetDocument()
+                                       .GetSettings()
+                                       ->GetRootScrollbarThemeColor()) {
+        return blink::Color::FromRGBA32(theme_color.value());
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 std::optional<blink::Color> Scrollbar::ScrollbarThumbColor() const {
-  if (style_source_) {
+  if (style_source_ &&
+      style_source_->StyleRef().ScrollbarThumbColorResolved()) {
     return style_source_->StyleRef().ScrollbarThumbColorResolved();
+  }
+  if (theme_.UsesFluentScrollbars() && !InForcedColorsMode() &&
+      !ScrollbarTrackColor().has_value()) {
+    return RootScrollbarThemeColor();
   }
   return std::nullopt;
 }

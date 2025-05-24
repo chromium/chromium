@@ -93,8 +93,7 @@ class AppId {
   apps::AppType app_type() const { return app_type_; }
   const std::string& app_id() const { return app_id_; }
 
-  bool operator==(const AppId&) const;
-  bool operator!=(const AppId&) const;
+  friend bool operator==(const AppId&, const AppId&) = default;
   bool operator<(const AppId&) const;
   friend std::ostream& operator<<(std::ostream&, const AppId&);
 

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
-
 #import "base/at_exit.h"
 #import "base/i18n/icu_util.h"
+#import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 
 struct Environment {
   Environment() { CHECK(base::i18n::InitializeICU()); }
@@ -19,8 +18,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   NSString* formatted_string = [NSString stringWithFormat:@"%s", str.c_str()];
   NSURL* url = [NSURL URLWithString:formatted_string];
-  [ChromeAppStartupParameters startupParametersWithURL:url
-                                     sourceApplication:nil];
+  [ChromeAppStartupParameters
+      startupParametersWithURL:url
+             sourceApplication:nil
+               applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+          forceApplicationMode:NO];
 
   return 0;
 }

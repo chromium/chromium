@@ -30,8 +30,7 @@ std::optional<DWORD> GetIntegrityLevelRid(IntegrityLevel integrity_level) {
       return std::nullopt;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 DWORD SetObjectIntegrityLabel(HANDLE handle,

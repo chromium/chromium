@@ -21,7 +21,6 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
@@ -58,13 +57,13 @@ bool IsUsernameAlreadyUsed(
                                    &new_username](const auto& pair) {
     const password_manager::PasswordForm form = pair.second;
     return new_username == form.username_value &&
-           base::ranges::any_of(forms_to_check, [&form](const auto& old_form) {
+           std::ranges::any_of(forms_to_check, [&form](const auto& old_form) {
              return form.signon_realm == old_form.signon_realm &&
                     form.IsUsingAccountStore() ==
                         old_form.IsUsingAccountStore();
            });
   };
-  return base::ranges::any_of(key_to_forms, has_conflicting_username);
+  return std::ranges::any_of(key_to_forms, has_conflicting_username);
 }
 
 password_manager::PasswordForm GenerateFormFromCredential(
@@ -98,7 +97,7 @@ password_manager::PasswordStoreChangeList GetChangesForAddedForms(
 }
 
 bool MergeDeleteAllResultsFromPasswordStores(std::vector<bool> results) {
-  return base::ranges::all_of(results, [](bool result) { return result; });
+  return std::ranges::all_of(results, [](bool result) { return result; });
 }
 
 }  // namespace
@@ -236,11 +235,11 @@ SavedPasswordsPresenter::GetExpectedAddResult(
       };
 
   bool existing_credential_profile =
-      base::ranges::any_of(sort_key_to_password_forms_,
-                           have_equal_username_and_realm_in_profile_store);
+      std::ranges::any_of(sort_key_to_password_forms_,
+                          have_equal_username_and_realm_in_profile_store);
   bool existing_credential_account =
-      base::ranges::any_of(sort_key_to_password_forms_,
-                           have_equal_username_and_realm_in_account_store);
+      std::ranges::any_of(sort_key_to_password_forms_,
+                          have_equal_username_and_realm_in_account_store);
 
   if (!existing_credential_profile && !existing_credential_account) {
     return AddResult::kSuccess;
@@ -252,7 +251,7 @@ SavedPasswordsPresenter::GetExpectedAddResult(
            credential.password == pair.second.password_value;
   };
 
-  if (base::ranges::any_of(sort_key_to_password_forms_, have_exact_match)) {
+  if (std::ranges::any_of(sort_key_to_password_forms_, have_exact_match)) {
     return AddResult::kExactMatch;
   }
 
@@ -304,12 +303,12 @@ void SavedPasswordsPresenter::AddCredentials(
   }
 
   std::vector<PasswordForm> password_forms;
-  base::ranges::transform(credentials, std::back_inserter(password_forms),
-                          [&](const CredentialUIEntry& credential) {
-                            return GenerateFormFromCredential(credential, type);
-                          });
+  std::ranges::transform(credentials, std::back_inserter(password_forms),
+                         [&](const CredentialUIEntry& credential) {
+                           return GenerateFormFromCredential(credential, type);
+                         });
 
-  CHECK(base::ranges::all_of(password_forms, [&](const PasswordForm& form) {
+  CHECK(std::ranges::all_of(password_forms, [&](const PasswordForm& form) {
     return password_forms[0].in_store == form.in_store;
   }));
 
@@ -326,7 +325,7 @@ void SavedPasswordsPresenter::UpdatePasswordForms(
     return;
   }
 
-  CHECK(base::ranges::all_of(password_forms, [&](const PasswordForm& form) {
+  CHECK(std::ranges::all_of(password_forms, [&](const PasswordForm& form) {
     return password_forms[0].in_store == form.in_store;
   }));
 
@@ -425,10 +424,12 @@ SavedPasswordsPresenter::GetCorrespondingPasswordForms(
 #if BUILDFLAG(IS_ANDROID)
   const auto range =
       sort_key_to_password_forms_.equal_range(CreateSortKey(credential));
-  base::ranges::transform(range.first, range.second, std::back_inserter(forms),
-                          [](const auto& pair) { return pair.second; });
+  std::ranges::transform(range.first, range.second, std::back_inserter(forms),
+                         [](const auto& pair) { return pair.second; });
 #else
+  passwords_grouper_->CheckHeapIntegrity();
   forms = passwords_grouper_->GetPasswordFormsFor(credential);
+  passwords_grouper_->CheckHeapIntegrity();
 #endif
   return forms;
 }
@@ -521,6 +522,8 @@ void SavedPasswordsPresenter::OnPasskeyModelShuttingDown() {
   passkey_store_observation_.Reset();
 }
 
+void SavedPasswordsPresenter::OnPasskeyModelIsReady(bool is_ready) {}
+
 void SavedPasswordsPresenter::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
@@ -607,18 +610,22 @@ void SavedPasswordsPresenter::MaybeGroupCredentials(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Notify observers after grouping is complete.
+  passwords_grouper_->CheckHeapIntegrity();
   passwords_grouper_->GroupCredentials(
       std::move(all_forms), std::move(passkeys),
       metrics_util::TimeCallback(std::move(completion),
                                  "PasswordManager.PasswordsGrouping.Time"));
+  passwords_grouper_->CheckHeapIntegrity();
 }
 
 SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPasskey(
     const CredentialUIEntry& updated_credential) {
   CHECK(!updated_credential.passkey_credential_id.empty());
   CHECK(passkey_store_);
+  passwords_grouper_->CheckHeapIntegrity();
   std::optional<PasskeyCredential> original_credential =
       passwords_grouper_->GetPasskeyFor(updated_credential);
+  passwords_grouper_->CheckHeapIntegrity();
   if (!original_credential) {
     return EditResult::kNotFound;
   }

@@ -138,8 +138,9 @@ int32_t WebrtcAudioModule::StartPlayout() {
   base::AutoLock auto_lock(lock_);
   if (!playing_ && audio_task_runner_) {
     audio_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&WebrtcAudioModule::StartPlayoutOnAudioThread,
-                                  rtc::scoped_refptr<WebrtcAudioModule>(this)));
+        FROM_HERE,
+        base::BindOnce(&WebrtcAudioModule::StartPlayoutOnAudioThread,
+                       webrtc::scoped_refptr<WebrtcAudioModule>(this)));
     playing_ = true;
   }
   return 0;
@@ -149,8 +150,9 @@ int32_t WebrtcAudioModule::StopPlayout() {
   base::AutoLock auto_lock(lock_);
   if (playing_) {
     audio_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&WebrtcAudioModule::StopPlayoutOnAudioThread,
-                                  rtc::scoped_refptr<WebrtcAudioModule>(this)));
+        FROM_HERE,
+        base::BindOnce(&WebrtcAudioModule::StopPlayoutOnAudioThread,
+                       webrtc::scoped_refptr<WebrtcAudioModule>(this)));
     playing_ = false;
   }
   return 0;

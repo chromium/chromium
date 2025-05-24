@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/frame_size_estimator.h"
+
+#include <array>
 
 #include "media/gpu/h264_rate_control_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,14 +42,21 @@ class FrameSizeEstimatorTest : public testing::Test {
                       int fps,
                       int frame_count,
                       int start_frame_index) {
-    constexpr uint32_t kQpValues[] = {22, 24, 26, 28, 26, 24};
+    constexpr auto kQpValues =
+        std::to_array<uint32_t>({22, 24, 26, 28, 26, 24});
     size_t common_frame_size = avg_bitrate / 8 / fps;
 
     base::TimeDelta timestamp = base::Microseconds(
         start_frame_index * base::Time::kMicrosecondsPerSecond / fps);
     for (int i = 0; i < frame_count; ++i) {
-      uint32_t qp = kQpValues[(i + 1) % (sizeof(kQpValues) / sizeof(uint32_t))];
-      uint32_t qp_prev = kQpValues[i % (sizeof(kQpValues) / sizeof(uint32_t))];
+      uint32_t qp =
+          kQpValues[(i + 1) % ((kQpValues.size() *
+                                sizeof(decltype(kQpValues)::value_type)) /
+                               sizeof(uint32_t))];
+      uint32_t qp_prev =
+          kQpValues[i % ((kQpValues.size() *
+                          sizeof(decltype(kQpValues)::value_type)) /
+                         sizeof(uint32_t))];
       size_t encoded_size = 0.625 * 16 * common_frame_size /
                             h264_rate_control_util::QP2QStepSize(qp);
 
@@ -107,15 +112,31 @@ TEST_F(FrameSizeEstimatorTest, RunBasicFrameSizeEstimatorTest) {
 // The test updates the buffer with predefined sample sequence and checks the
 // estimated frame size values.
 TEST_F(FrameSizeEstimatorTest, CheckEstimatorStates) {
-  constexpr size_t kEstimatedFrameSizeValues[] = {4556, 3874, 2663, 5259, 4916,
-                                                  5540, 2352, 3095, 2655, 5250};
-  constexpr uint32_t kQpValues[] = {22, 24, 26, 28, 26, 24};
+  constexpr auto kEstimatedFrameSizeValues = std::to_array<size_t>({
+      4556,
+      3874,
+      2663,
+      5259,
+      4916,
+      5540,
+      2352,
+      3095,
+      2655,
+      5250,
+  });
+  constexpr auto kQpValues = std::to_array<uint32_t>({22, 24, 26, 28, 26, 24});
 
   size_t common_frame_size = kCommonAvgBitrate / 8 / kCommonFps;
   base::TimeDelta timestamp = base::Microseconds(0);
   for (int i = 0; i < 10; ++i) {
-    uint32_t qp = kQpValues[(i + 1) % (sizeof(kQpValues) / sizeof(uint32_t))];
-    uint32_t qp_prev = kQpValues[i % (sizeof(kQpValues) / sizeof(uint32_t))];
+    uint32_t qp =
+        kQpValues[(i + 1) % ((kQpValues.size() *
+                              sizeof(decltype(kQpValues)::value_type)) /
+                             sizeof(uint32_t))];
+    uint32_t qp_prev =
+        kQpValues[i % ((kQpValues.size() *
+                        sizeof(decltype(kQpValues)::value_type)) /
+                       sizeof(uint32_t))];
     size_t encoded_size = 0.625 * 16 * common_frame_size /
                           h264_rate_control_util::QP2QStepSize(qp);
 

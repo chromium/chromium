@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] e.style['color'] = "hwb(calc(110deg + (sign(1em - 10px) * 10deg)) 30% 50% / 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(calc(110deg + (10deg * sign(1em - 10px))) 30 50 / 0.5)" but got "hwb(calc(110deg + (10deg * sign(1em - 10px))) 0.3 0.5 / 0.5)"
+[FAIL] e.style['color'] = "hwb(120deg 30% 50% / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(120 30 50 / calc(50% + (10% * sign(1em - 10px))))" but got "hwb(120 0.3 0.5 / calc(50% + (10% * sign(1em - 10px))))"
+Harness: the test ran to completion.
+

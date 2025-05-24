@@ -57,7 +57,8 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
   // with the |boost_type| boost type.
   virtual void ReportFrameTime(
       base::TimeDelta frame_time,
-      base::flat_set<base::PlatformThreadId> thread_ids,
+      base::flat_set<base::PlatformThreadId> animation_thread_ids,
+      base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
       base::TimeTicks draw_start,
       HintSession::BoostType boost_type) = 0;
 

@@ -30,7 +30,7 @@ MockDownloadFile::MockDownloadFile() {
           PostSuccessRun(base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
 
-MockDownloadFile::~MockDownloadFile() {}
+MockDownloadFile::~MockDownloadFile() = default;
 
 void MockDownloadFile::AddInputStream(std::unique_ptr<InputStream> input_stream,
                                       int64_t offset) {

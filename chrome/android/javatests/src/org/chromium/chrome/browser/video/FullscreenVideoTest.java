@@ -23,10 +23,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -68,16 +65,7 @@ public class FullscreenVideoTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Flaky https://crbug.com/458368 https://crbug.com/1331504")
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testExitFullscreenNotifiesTabObservers() {
-        testExitFullscreenNotifiesTabObserversInternal();
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "Flaky https://crbug.com/458368 https://crbug.com/1331504")
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testExitFullscreenNotifiesTabObservers_backGestureRefactor() {
         testExitFullscreenNotifiesTabObserversInternal();
     }
 

@@ -27,6 +27,7 @@
 
 using testing::_;
 using testing::Eq;
+using testing::Gt;
 using testing::IsEmpty;
 using testing::StrEq;
 
@@ -121,7 +122,7 @@ class LockUnlockTestHelper {
 class LockUnlockReporterTest
     : public ::testing::TestWithParam<LockUnlockReporterTestCase> {
  protected:
-  LockUnlockReporterTest() {}
+  LockUnlockReporterTest() = default;
 
   void SetUp() override { test_helper_.Init(); }
 
@@ -155,8 +156,7 @@ TEST_F(LockUnlockReporterTest, ReportUnaffiliatedUserId) {
   EXPECT_FALSE(record.has_unlock_event());
   EXPECT_FALSE(record.has_affiliated_user());
   EXPECT_TRUE(record.has_unaffiliated_user());
-  EXPECT_TRUE(record.unaffiliated_user().has_user_id());
-  EXPECT_THAT(record.unaffiliated_user().user_id(), Not(IsEmpty()));
+  EXPECT_TRUE(record.unaffiliated_user().has_user_id_num());
   EXPECT_TRUE(record.has_lock_event());
 }
 

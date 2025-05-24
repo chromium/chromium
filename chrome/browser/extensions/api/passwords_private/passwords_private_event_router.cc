@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,7 +27,7 @@ PasswordsPrivateEventRouter::PasswordsPrivateEventRouter(
   event_router_ = EventRouter::Get(context_);
 }
 
-PasswordsPrivateEventRouter::~PasswordsPrivateEventRouter() {}
+PasswordsPrivateEventRouter::~PasswordsPrivateEventRouter() = default;
 
 void PasswordsPrivateEventRouter::OnSavedPasswordsListChanged(
     const std::vector<api::passwords_private::PasswordUiEntry>& entries) {

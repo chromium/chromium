@@ -2,4 +2,5 @@ include_rules = [
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/locks",
+    "+third_party/blink/renderer/modules/shared_storage",
 ]

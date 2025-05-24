@@ -1,0 +1,9 @@
+Tests Bluetooth removing an unknown service id
+{
+    error : {
+        code : -32000
+        message : Failed to remove service represented by unknown service id
+    }
+    id : <number>
+}
+

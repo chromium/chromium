@@ -72,6 +72,12 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
     case AutofillErrorDialogType::kVirtualCardNotEligibleError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_TITLE);
+    case AutofillErrorDialogType::kCardInfoRetrievalTemporaryError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_INFO_RETRIEVAL_TEMPORARY_ERROR_TITLE);
+    case AutofillErrorDialogType::kCardInfoRetrievalPermanentError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_TITLE);
     case AutofillErrorDialogType::
         kMaskedServerCardRiskBasedUnmaskingNetworkError:
     case AutofillErrorDialogType::
@@ -95,6 +101,10 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)
+    case AutofillErrorDialogType::kBnplTemporaryError:
+    case AutofillErrorDialogType::kBnplPermanentError:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE);
+
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
   }
@@ -121,6 +131,12 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
     case AutofillErrorDialogType::kVirtualCardNotEligibleError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_DESCRIPTION);
+    case AutofillErrorDialogType::kCardInfoRetrievalTemporaryError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_INFO_RETRIEVAL_TEMPORARY_ERROR_DESCRIPTION);
+    case AutofillErrorDialogType::kCardInfoRetrievalPermanentError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_DESCRIPTION);
     case AutofillErrorDialogType::
         kMaskedServerCardRiskBasedUnmaskingNetworkError:
       return l10n_util::GetStringUTF16(
@@ -146,6 +162,12 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)
+    case AutofillErrorDialogType::kBnplTemporaryError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_TEMPORARY_ERROR_DESCRIPTION);
+    case AutofillErrorDialogType::kBnplPermanentError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_PERMANENT_ERROR_DESCRIPTION);
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
   }

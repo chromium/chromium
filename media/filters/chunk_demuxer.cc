@@ -672,13 +672,8 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(
   }
 
   DCHECK(init_cb_);
-
-  std::string expected_codec = GetCodecName(audio_config->codec());
-  std::unique_ptr<media::StreamParser> stream_parser(
-      media::StreamParserFactory::Create(std::move(audio_config)));
-  DCHECK(stream_parser);
-
-  return AddIdInternal(id, std::move(stream_parser), expected_codec);
+  return AddIdInternal(id, StreamParserFactory::Create(std::move(audio_config)),
+                       std::nullopt);
 }
 
 ChunkDemuxer::Status ChunkDemuxer::AddId(
@@ -700,13 +695,8 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(
   }
 
   DCHECK(init_cb_);
-
-  std::string expected_codec = GetCodecName(video_config->codec());
-  std::unique_ptr<media::StreamParser> stream_parser(
-      media::StreamParserFactory::Create(std::move(video_config)));
-  DCHECK(stream_parser);
-
-  return AddIdInternal(id, std::move(stream_parser), expected_codec);
+  return AddIdInternal(id, StreamParserFactory::Create(std::move(video_config)),
+                       std::nullopt);
 }
 
 ChunkDemuxer::Status ChunkDemuxer::AddId(const std::string& id,
@@ -859,7 +849,7 @@ Ranges<base::TimeDelta> ChunkDemuxer::GetBufferedRanges(
 
   auto itr = source_state_map_.find(id);
 
-  CHECK(itr != source_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(itr != source_state_map_.end());
   return itr->second->GetBufferedRanges(duration_, state_ == ENDED);
 }
 
@@ -870,7 +860,7 @@ base::TimeDelta ChunkDemuxer::GetLowestPresentationTimestamp(
 
   auto itr = source_state_map_.find(id);
 
-  CHECK(itr != source_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(itr != source_state_map_.end());
   return itr->second->GetLowestPresentationTimestamp();
 }
 
@@ -881,15 +871,14 @@ base::TimeDelta ChunkDemuxer::GetHighestPresentationTimestamp(
 
   auto itr = source_state_map_.find(id);
 
-  CHECK(itr != source_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(itr != source_state_map_.end());
   return itr->second->GetHighestPresentationTimestamp();
 }
 
-void ChunkDemuxer::FindAndEnableProperTracks(
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    DemuxerStream::Type track_type,
-    TrackChangeCB change_completed_cb) {
+void ChunkDemuxer::OnTracksChanged(DemuxerStream::Type track_type,
+                                   const std::vector<MediaTrack::Id>& track_ids,
+                                   base::TimeDelta curr_time,
+                                   TrackChangeCB change_completed_cb) {
   base::AutoLock auto_lock(lock_);
 
   std::set<ChunkDemuxerStream*> enabled_streams;
@@ -922,22 +911,6 @@ void ChunkDemuxer::FindAndEnableProperTracks(
   std::vector<DemuxerStream*> streams(enabled_streams.begin(),
                                       enabled_streams.end());
   std::move(change_completed_cb).Run(streams);
-}
-
-void ChunkDemuxer::OnEnabledAudioTracksChanged(
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  FindAndEnableProperTracks(track_ids, curr_time, DemuxerStream::AUDIO,
-                            std::move(change_completed_cb));
-}
-
-void ChunkDemuxer::OnSelectedVideoTrackChanged(
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  FindAndEnableProperTracks(track_ids, curr_time, DemuxerStream::VIDEO,
-                            std::move(change_completed_cb));
 }
 
 void ChunkDemuxer::DisableCanChangeType() {

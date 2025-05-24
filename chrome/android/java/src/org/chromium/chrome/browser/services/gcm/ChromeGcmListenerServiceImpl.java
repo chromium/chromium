@@ -143,7 +143,8 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
     private static void scheduleBackgroundTask(GCMMessage message) {
         // TODO(peter): Add UMA for measuring latency introduced by the BackgroundTaskScheduler.
         TaskInfo backgroundTask =
-                TaskInfo.createOneOffTask(TaskIds.GCM_BACKGROUND_TASK_JOB_ID, /* immediately= */ 0)
+                TaskInfo.createOneOffTask(
+                                TaskIds.GCM_BACKGROUND_TASK_JOB_ID, /* windowEndTimeMs= */ 0)
                         .setExtras(message.toPersistableBundle())
                         .build();
         BackgroundTaskSchedulerFactory.getScheduler()

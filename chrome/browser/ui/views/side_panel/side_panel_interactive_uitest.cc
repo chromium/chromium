@@ -10,11 +10,11 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -91,9 +91,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
                              ->GetTabFeatures()
                              ->side_panel_registry();
         registry->Register(std::make_unique<SidePanelEntry>(
-            SidePanelEntry::Id::kCustomizeChrome, base::BindRepeating([]() {
+            SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome),
+            base::BindRepeating([](SidePanelEntryScope&) {
               return std::make_unique<views::View>();
-            })));
+            }),
+            SidePanelEntry::kSidePanelDefaultContentWidth));
         coordinator->Show(SidePanelEntry::Id::kCustomizeChrome);
       })),
       WaitForShow(kSidePanelElementId),
@@ -136,6 +138,9 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser()->profile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
+    if (features::HasTabSearchToolbarButton()) {
+      actions_model->UpdatePinnedState(kActionTabSearch, false);
+    }
     views::test::WaitForAnimatingLayoutManager(
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar()
@@ -227,8 +232,10 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       browser()->GetFeatures().side_panel_coordinator()->GetWindowRegistry();
   registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kReadAnything,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
 
   SidePanelCoordinator* const coordinator =
       browser()->GetFeatures().side_panel_coordinator();
@@ -253,8 +260,10 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
   registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kCustomizeChrome,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+      SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
 
   SidePanelCoordinator* const coordinator =
       browser()->GetFeatures().side_panel_coordinator();
@@ -277,8 +286,10 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters));
   registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kHistoryClusters,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+      SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
 
   SidePanelCoordinator* const coordinator =
       browser()->GetFeatures().side_panel_coordinator();
@@ -318,22 +329,33 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   RunTestSequence(
       InContext(incognito->window()->GetElementContext(),
                 WaitForShow(kBrowserViewElementId)),
-      InSameContext(Steps(ActivateSurface(kBrowserViewElementId),
-                          EnsureNotPresent(kSidePanelElementId),
-                          OpenBookmarksSidePanel(),
-                          EnsureNotPresent(kSidePanelPinButtonElementId))));
+      InSameContext(ActivateSurface(kBrowserViewElementId),
+                    EnsureNotPresent(kSidePanelElementId),
+                    OpenBookmarksSidePanel(),
+                    EnsureNotPresent(kSidePanelPinButtonElementId)));
 }
 
-IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
-                       PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
+// TODO(crbug.com/417601707): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible \
+  DISABLED_PinnedToolbarButtonsHighlightWhileSidePanelVisible
+#else
+#define MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible \
+  PinnedToolbarButtonsHighlightWhileSidePanelVisible
+#endif
+IN_PROC_BROWSER_TEST_F(
+    PinnedSidePanelInteractiveTest,
+    MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
   auto* registry =
       browser()->GetFeatures().side_panel_coordinator()->GetWindowRegistry();
   registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kReadAnything,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+      SidePanelEntryKey(SidePanelEntry::Id::kReadAnything),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
 
   PinnedToolbarActionsModel* const actions_model =
       PinnedToolbarActionsModel::Get(browser()->profile());

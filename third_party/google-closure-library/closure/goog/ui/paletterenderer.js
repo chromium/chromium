@@ -10,7 +10,6 @@
 
 goog.provide('goog.ui.PaletteRenderer');
 
-goog.forwardDeclare('goog.ui.Palette');
 goog.require('goog.a11y.aria');
 goog.require('goog.a11y.aria.Role');
 goog.require('goog.a11y.aria.State');
@@ -27,7 +26,9 @@ goog.require('goog.style');
 goog.require('goog.ui.ControlRenderer');
 goog.require('goog.userAgent');
 goog.requireType('goog.math.Size');
+goog.requireType('goog.ui.Control');
 goog.requireType('goog.ui.ControlContent');
+goog.requireType('goog.ui.Palette');
 
 
 
@@ -91,10 +92,12 @@ goog.ui.PaletteRenderer.GRID_WIDTH_ATTRIBUTE = 'gridWidth';
  * @param {goog.ui.Control} palette goog.ui.Palette to render.
  * @return {!Element} Root element for the palette.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.PaletteRenderer.prototype.createDom = function(palette) {
   'use strict';
   var classNames = this.getClassNames(palette);
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var element = palette.getDomHelper().createDom(
       goog.dom.TagName.DIV, classNames,
       this.createGrid(
@@ -214,6 +217,9 @@ goog.ui.PaletteRenderer.prototype.maybeUpdateAriaLabel_ = function(cell) {
   var node;
   while (!label && (node = goog.iter.nextOrValue(iter, null))) {
     if (node.nodeType == goog.dom.NodeType.ELEMENT) {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       label =
           goog.a11y.aria.getLabel(/** @type {!Element} */ (node)) || node.title;
     }
@@ -264,6 +270,7 @@ goog.ui.PaletteRenderer.prototype.decorate = function(palette, element) {
  * @param {goog.ui.ControlContent} content Array of items to replace existing
  *     palette items.
  * @override
+ * @suppress {strictPrimitiveOperators}
  */
 goog.ui.PaletteRenderer.prototype.setContent = function(element, content) {
   'use strict';
@@ -326,6 +333,7 @@ goog.ui.PaletteRenderer.prototype.setContent = function(element, content) {
  * @param {goog.ui.Palette} palette Palette in which to look for the item.
  * @param {Node} node Node to look for.
  * @return {Node} The corresponding palette item (null if not found).
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.PaletteRenderer.prototype.getContainingItem = function(palette, node) {
   'use strict';

@@ -11,15 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-#include "chrome/browser/background/background_mode_manager.h"
-#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
 namespace {
 
@@ -94,8 +89,9 @@ RelaunchNotificationController::RelaunchNotificationController(
 }
 
 void RelaunchNotificationController::OnUpgradeRecommended() {
-  if (last_notification_style_ == NotificationStyle::kNone)
+  if (last_notification_style_ == NotificationStyle::kNone) {
     return;
+  }
 
   UpgradeDetector::UpgradeNotificationAnnoyanceLevel current_level =
       upgrade_detector_->upgrade_notification_stage();
@@ -140,8 +136,9 @@ void RelaunchNotificationController::OnUpgradeRecommended() {
 
 void RelaunchNotificationController::OnRelaunchOverriddenToRequired(
     bool overridden) {
-  if (notification_type_required_overridden_ == overridden)
+  if (notification_type_required_overridden_ == overridden) {
     return;
+  }
   notification_type_required_overridden_ = overridden;
   HandleCurrentStyle();
 }
@@ -166,12 +163,14 @@ void RelaunchNotificationController::HandleCurrentStyle() {
   }
 
   // Nothing to do if there has been no change in the notification style.
-  if (notification_style == last_notification_style_)
+  if (notification_style == last_notification_style_) {
     return;
+  }
 
   // Close the bubble or dialog if either is open.
-  if (last_notification_style_ != NotificationStyle::kNone)
+  if (last_notification_style_ != NotificationStyle::kNone) {
     CloseRelaunchNotification();
+  }
 
   // Reset state so that a notifications is shown anew in a new style if needed.
   last_level_ = UpgradeDetector::UPGRADE_ANNOYANCE_NONE;
@@ -256,8 +255,10 @@ void RelaunchNotificationController::HandleRelaunchRequiredState(
   if (level == last_level_ && timer_.IsRunning()) {
     const base::Time& desired_run_time = timer_.desired_run_time();
     DCHECK(!desired_run_time.is_null());
-    if (high_deadline <= now && desired_run_time - now <= kRelaunchGracePeriod)
+    if (high_deadline <= now &&
+        desired_run_time - now <= kRelaunchGracePeriod) {
       return;
+    }
   }
 
   base::Time deadline = high_deadline;
@@ -269,8 +270,9 @@ void RelaunchNotificationController::HandleRelaunchRequiredState(
     // a) The device goes to sleep before the first notification and wakes up
     // after the deadline.
     // b) A change in policy value moves the deadline in the past.
-    if (high_deadline <= now)
+    if (high_deadline <= now) {
       deadline = now + kRelaunchGracePeriod;
+    }
     // (re)Start the timer to perform the relaunch when the deadline is reached.
     timer_.Start(FROM_HERE, deadline, this,
                  &RelaunchNotificationController::OnRelaunchDeadlineExpired);
@@ -348,7 +350,7 @@ void RelaunchNotificationController::DoNotifyRelaunchRequired(
     base::Time relaunch_deadline,
     base::OnceCallback<base::Time()> on_visible) {
   platform_impl_.NotifyRelaunchRequired(relaunch_deadline,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                                         notification_type_required_overridden_,
 #endif
                                         std::move(on_visible));

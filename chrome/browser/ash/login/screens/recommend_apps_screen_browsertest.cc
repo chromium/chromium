@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -29,9 +28,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -122,7 +123,7 @@ class StubRecommendAppsFetcher : public apps::RecommendAppsFetcher {
     EXPECT_FALSE(started_);
     started_ = true;
   }
-  void Retry() override { NOTREACHED_IN_MIGRATION(); }
+  void Retry() override { NOTREACHED(); }
 
  protected:
   const raw_ptr<apps::RecommendAppsFetcherDelegate> delegate_;
@@ -378,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, ParseError) {
 class RecommendAppsScreenManagedTest : public RecommendAppsScreenTest {
  protected:
   const LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId("user@example.com", "1111")};
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("1111"))};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_user_.account_id};
 };
 

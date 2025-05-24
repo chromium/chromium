@@ -37,7 +37,6 @@ struct PasswordFieldPrediction {
   PasswordFieldPrediction(autofill::FieldRendererId renderer_id,
                           autofill::FieldSignature signature,
                           autofill::FieldType type,
-                          bool may_use_prefilled_placeholder,
                           bool is_override);
   PasswordFieldPrediction(const PasswordFieldPrediction&);
   PasswordFieldPrediction& operator=(const PasswordFieldPrediction&);
@@ -48,7 +47,6 @@ struct PasswordFieldPrediction {
   autofill::FieldRendererId renderer_id;
   autofill::FieldSignature signature;
   autofill::FieldType type;
-  bool may_use_prefilled_placeholder;
   bool is_override;
 
   friend bool operator==(const PasswordFieldPrediction& lhs,

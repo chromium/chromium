@@ -162,30 +162,29 @@ using web::WebThread;
                          completionHandler:(web::PolicyDecisionHandler)handler {
   DCHECK_CURRENTLY_ON(WebThread::UI);
   DCHECK(handler);
-  web::GetIOThreadTaskRunner({})
-      ->PostTask(FROM_HERE, base::BindOnce(^{
-                   // `loadPolicyForRejectedTrustResult:certStatus:serverTrust
-                   // :host:` can only be called on IO thread.
-                   net::CertStatus certStatus =
-                       [self certStatusFromTrustResult:trustResult
-                                            trustError:trustError];
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        // `loadPolicyForRejectedTrustResult:certStatus:serverTrust
+        // :host:` can only be called on IO thread.
+        net::CertStatus certStatus =
+            [self certStatusFromTrustResult:trustResult trustError:trustError];
 
-                   web::CertAcceptPolicy policy =
-                       [self loadPolicyForRejectedTrustResult:trustResult
-                                                   certStatus:certStatus
-                                                  serverTrust:trust.get()
-                                                         host:host];
+        web::CertAcceptPolicy policy =
+            [self loadPolicyForRejectedTrustResult:trustResult
+                                        certStatus:certStatus
+                                       serverTrust:trust.get()
+                                              host:host];
 
-                   // TODO(crbug.com/40588591): This should use
-                   // PostTask to post to WebThread::UI with
-                   // BLOCK_SHUTDOWN once shutdown behaviors are
-                   // supported on the UI thread. BLOCK_SHUTDOWN is
-                   // necessary because WKWebView throws an exception
-                   // if the completion handler doesn't run.
-                   dispatch_async(dispatch_get_main_queue(), ^{
-                     handler(policy, certStatus);
-                   });
-                 }));
+        // TODO(crbug.com/40588591): This should use
+        // PostTask to post to WebThread::UI with
+        // BLOCK_SHUTDOWN once shutdown behaviors are
+        // supported on the UI thread. BLOCK_SHUTDOWN is
+        // necessary because WKWebView throws an exception
+        // if the completion handler doesn't run.
+        dispatch_async(dispatch_get_main_queue(), ^{
+          handler(policy, certStatus);
+        });
+      }));
 }
 
 - (void)verifyTrust:(base::apple::ScopedCFTypeRef<SecTrustRef>)trust
@@ -202,8 +201,10 @@ using web::WebThread;
         base::apple::ScopedCFTypeRef<CFErrorRef> trustError;
         bool isTrusted =
             SecTrustEvaluateWithError(trust.get(), trustError.InitializeInto());
-        if (SecTrustGetTrustResult(trust.get(), &trustResult) != errSecSuccess)
+        if (SecTrustGetTrustResult(trust.get(), &trustResult) !=
+            errSecSuccess) {
           trustResult = kSecTrustResultInvalid;
+        }
         DCHECK_EQ(isTrusted, (trustResult == kSecTrustResultProceed ||
                               trustResult == kSecTrustResultUnspecified));
         // TODO(crbug.com/40588591): This should use PostTask to post to
@@ -243,8 +244,9 @@ using web::WebThread;
               secCertificate, base::scoped_policy::RETAIN),
           {});
 
-  if (!leafCert)
+  if (!leafCert) {
     return web::CERT_ACCEPT_POLICY_NON_RECOVERABLE_ERROR;
+  }
 
   web::CertPolicy::Judgment judgment = _certPolicyCache->QueryPolicy(
       leafCert.get(), base::SysNSStringToUTF8(host), certStatus);

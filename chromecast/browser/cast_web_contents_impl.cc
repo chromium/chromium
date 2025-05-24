@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/cast_web_contents_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -66,7 +66,7 @@ size_t next_id = 0;
 // Remove the given CastWebContents pointer from the global instance vector.
 void RemoveCastWebContents(CastWebContents* instance) {
   auto& all_cast_web_contents = CastWebContents::GetAll();
-  auto it = base::ranges::find(all_cast_web_contents, instance);
+  auto it = std::ranges::find(all_cast_web_contents, instance);
   if (it != all_cast_web_contents.end()) {
     all_cast_web_contents.erase(it);
   }
@@ -95,8 +95,8 @@ std::vector<CastWebContents*>& CastWebContents::GetAll() {
 CastWebContents* CastWebContents::FromWebContents(
     content::WebContents* web_contents) {
   auto& all_cast_web_contents = CastWebContents::GetAll();
-  auto it = base::ranges::find(all_cast_web_contents, web_contents,
-                               &CastWebContents::web_contents);
+  auto it = std::ranges::find(all_cast_web_contents, web_contents,
+                              &CastWebContents::web_contents);
   if (it == all_cast_web_contents.end()) {
     return nullptr;
   }
@@ -131,13 +131,6 @@ void CastWebContentsImpl::RemoveRenderProcessHostObserver() {
 
 CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
                                          mojom::CastWebViewParamsPtr params)
-    : CastWebContentsImpl(web_contents,
-                          std::move(params),
-                          nullptr /* parent */) {}
-
-CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
-                                         mojom::CastWebViewParamsPtr params,
-                                         CastWebContents* parent)
     : web_contents_(web_contents),
       params_(std::move(params)),
       page_state_(PageState::IDLE),
@@ -148,7 +141,6 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
                          ? std::make_unique<CastMediaBlocker>(web_contents_)
                          : nullptr),
       main_process_host_(nullptr),
-      parent_cast_web_contents_(parent),
       tab_id_(params_->is_root_window ? 0 : next_tab_id++),
       id_(next_id++),
       main_frame_loaded_(false),
@@ -931,7 +923,7 @@ void CastWebContentsImpl::InnerWebContentsCreated(
   params->enabled_for_dev = params_->enabled_for_dev;
   params->background_color = params_->background_color;
   auto result = inner_contents_.insert(std::unique_ptr<CastWebContentsImpl>(
-      new CastWebContentsImpl(inner_web_contents, std::move(params), this)));
+      new CastWebContentsImpl(inner_web_contents, std::move(params))));
 
   // Notifies remote observers.
   for (auto& observer : observers_) {

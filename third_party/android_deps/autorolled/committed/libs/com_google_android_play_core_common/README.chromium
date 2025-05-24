@@ -1,0 +1,15 @@
+Name: core-common
+Short Name: core-common
+URL: https://developers.google.com/android/guides/setup
+Version: 2.0.3
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Play core common pulled in via gradle.
+
+Local Modifications:
+No modifications.

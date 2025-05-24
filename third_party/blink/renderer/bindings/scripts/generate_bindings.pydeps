@@ -54,6 +54,7 @@ bind_gen/sync_iterator.py
 bind_gen/task_queue.py
 bind_gen/typedef.py
 bind_gen/union.py
+bind_gen/union_name_mapper.py
 generate_bindings.py
 web_idl/__init__.py
 web_idl/argument.py

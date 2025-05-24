@@ -6,7 +6,10 @@ package org.chromium.components.browser_ui.widget;
 
 import android.view.MotionEvent;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Observer interface for any object that needs to process touch events. */
+@NullMarked
 public interface TouchEventObserver {
     /**
      * Determine if touch events should be forwarded to the observing object. Should return {@link

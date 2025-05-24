@@ -52,14 +52,14 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
 
   ~WindowsEventRouter() override;
 
-  // |window_controller| is NULL to indicate a focused window has lost focus.
+  // `window_controller` is NULL to indicate a focused window has lost focus.
   void OnActiveWindowChanged(WindowController* window_controller);
 
  private:
-  // extensions::AppWindowRegistry::Observer:
-  void OnAppWindowAdded(extensions::AppWindow* app_window) override;
-  void OnAppWindowRemoved(extensions::AppWindow* app_window) override;
-  void OnAppWindowActivated(extensions::AppWindow* app_window) override;
+  // AppWindowRegistry::Observer:
+  void OnAppWindowAdded(AppWindow* app_window) override;
+  void OnAppWindowRemoved(AppWindow* app_window) override;
+  void OnAppWindowActivated(AppWindow* app_window) override;
 
   // WindowControllerListObserver methods:
   void OnWindowControllerAdded(WindowController* window_controller) override;
@@ -80,7 +80,7 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
                      WindowController* window_controller,
                      base::Value::List args);
   bool HasEventListener(const std::string& event_name);
-  void AddAppWindow(extensions::AppWindow* app_window);
+  void AddAppWindow(AppWindow* app_window);
 
   // The main profile that owns this event router.
   raw_ptr<Profile, DanglingUntriaged> profile_;

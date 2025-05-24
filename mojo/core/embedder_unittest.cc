@@ -69,7 +69,7 @@ MojoResult CreateSharedBufferFromRegion(T&& region, MojoHandle* handle) {
   *handle = Core::Get()->AddDispatcher(std::move(buffer));
   return MOJO_RESULT_OK;
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 
@@ -89,7 +89,7 @@ MojoResult ExtractRegionFromSharedBuffer(MojoHandle handle, T* region) {
     auto* buffer = static_cast<SharedBufferDispatcher*>(dispatcher.get());
     platform_region = buffer->PassPlatformSharedMemoryRegion();
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 

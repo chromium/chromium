@@ -46,7 +46,8 @@ void KeepFullscreenForUrlChecker::OnPrefChanged() {
   }
 
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
-  url_matcher::util::AddAllowFilters(url_matcher_.get(), url_allow_list);
+  url_matcher::util::AddAllowFiltersWithLimit(url_matcher_.get(),
+                                              url_allow_list);
 }
 
 }  // namespace chromeos

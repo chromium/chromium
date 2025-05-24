@@ -11,8 +11,8 @@
 #import "base/time/time.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 using DownloadDirectoryTest = PlatformTest;
 

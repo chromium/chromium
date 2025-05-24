@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 
 /** An interface that retrieves and sets information on the custom message card view. */
+@NullMarked
 public interface CustomMessageCardProvider {
     /** Returns the specific message type for this custom message card. */
     public int getMessageType();

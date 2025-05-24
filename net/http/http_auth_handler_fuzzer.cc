@@ -50,7 +50,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   if (handler) {
     auto followup = data_provider.ConsumeRemainingBytesAsString();
-    net::HttpAuthChallengeTokenizer tokenizer{followup.begin(), followup.end()};
+    net::HttpAuthChallengeTokenizer tokenizer{followup};
     handler->HandleAnotherChallenge(&tokenizer);
   }
   return 0;

@@ -11,7 +11,6 @@
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -97,7 +96,7 @@ void UiElement::Render(UiElementRenderer* renderer,
   // draw phase set to kPhaseNone and should, consequently, be filtered out when
   // the UiRenderer collects elements to draw. Therefore, if we invoke this
   // function, it is an error.
-  NOTREACHED_IN_MIGRATION() << "element: " << DebugName();
+  NOTREACHED() << "element: " << DebugName();
 }
 
 void UiElement::Initialize(SkiaSurfaceProvider* provider) {}
@@ -449,8 +448,8 @@ std::unique_ptr<UiElement> UiElement::ReplaceChild(
   to_remove->parent_ = nullptr;
   size_t old_size = children_.size();
 
-  auto it = base::ranges::find(children_, to_remove,
-                               &std::unique_ptr<UiElement>::get);
+  auto it =
+      std::ranges::find(children_, to_remove, &std::unique_ptr<UiElement>::get);
   DCHECK(it != std::end(children_));
 
   std::unique_ptr<UiElement> removed(it->release());
@@ -503,7 +502,7 @@ void UiElement::OnTransformAnimated(const gfx::TransformOperations& operations,
   } else if (target_property_id == LAYOUT_OFFSET) {
     layout_offset_ = operations;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   local_transform_ = layout_offset_.Apply() * transform_operations_.Apply();
   world_space_transform_dirty_ = true;

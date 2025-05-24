@@ -89,7 +89,7 @@ TEST_F(DeviceAuthenticatorAndroidTest, CanAuthenticateCallsBridge) {
   EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometrics());
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.BiometricAuthPwdFill.CanAuthenticate",
+      "Android.DeviceAuthenticator.CanAuthenticateWithBiometrics",
       BiometricsAvailability::kAvailable, 1);
 }
 
@@ -103,7 +103,7 @@ TEST_F(
   EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
 
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", 0);
+      "Android.DeviceAuthenticator.CanAuthenticateWithBiometrics", 0);
 }
 
 TEST_F(DeviceAuthenticatorAndroidTest, AuthenticateRecordsSource) {
@@ -205,7 +205,7 @@ TEST_F(DeviceAuthenticatorAndroidTest,
        GetBiometricAvailabilityStatusAvailable) {
   EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
       .WillOnce(Return(BiometricsAvailability::kAvailable));
-  EXPECT_EQ(device_reauth::BiometricStatus::kAvailable,
+  EXPECT_EQ(device_reauth::BiometricStatus::kBiometricsAvailable,
             authenticator()->GetBiometricAvailabilityStatus());
 }
 
@@ -215,7 +215,7 @@ TEST_F(DeviceAuthenticatorAndroidTest,
       .WillOnce(Return(BiometricsAvailability::kNotEnrolled));
   EXPECT_CALL(bridge(), CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_EQ(device_reauth::BiometricStatus::kAvailableLSKF,
+  EXPECT_EQ(device_reauth::BiometricStatus::kOnlyLskfAvailable,
             authenticator()->GetBiometricAvailabilityStatus());
 }
 

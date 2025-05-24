@@ -5,6 +5,7 @@
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 
 #import "base/check.h"
+#import "base/time/time.h"
 
 namespace {
 
@@ -164,8 +165,15 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
   return self;
 }
 
+#pragma mark - Credential
+
 - (BOOL)isPasskey {
   return self.credentialId.length > 0;
+}
+
+- (NSDate*)creationDate {
+  base::TimeDelta timeInterval = base::Milliseconds(self.creationTime);
+  return [NSDate dateWithTimeIntervalSince1970:timeInterval.InSeconds()];
 }
 
 // TODO(crbug.com/330355124): Convenience getter to have a valid URL for
@@ -179,6 +187,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 - (NSString*)serviceIdentifier {
   return self.isPasskey ? _rpId : _serviceIdentifier;
 }
+
+#pragma mark - NSObject
 
 - (BOOL)isEqual:(id)other {
   if (other == self) {

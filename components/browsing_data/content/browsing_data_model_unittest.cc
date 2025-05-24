@@ -4,6 +4,8 @@
 
 #include "components/browsing_data/content/browsing_data_model.h"
 
+#include <variant>
+
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
@@ -385,7 +387,7 @@ class OriginOwnershipDelegate final : public BrowsingDataModel::Delegate {
   std::optional<BrowsingDataModel::DataOwner> GetDataOwner(
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override {
-    const url::Origin* origin = absl::get_if<url::Origin>(&data_key);
+    const url::Origin* origin = std::get_if<url::Origin>(&data_key);
     if (origin && origin->host() == origin_owned_host_) {
       return *origin;
     }
@@ -599,6 +601,9 @@ TEST_F(BrowsingDataModelTest, ThirdPartyCookieTypes) {
   content::AttributionDataModel::DataKey attribution_reporting_key{kSiteOrigin};
   content::PrivateAggregationDataModel::DataKey private_aggregation_key{
       kSiteOrigin};
+  net::device_bound_sessions::SessionKey device_bound_session_key(
+      net::SchemefulSite(kSiteOrigin.GetURL()),
+      net::device_bound_sessions::SessionKey::Id("session_id"));
 
   std::map<BrowsingDataModel::StorageType, BrowsingDataModel::DataKey>
       third_party_cookie_types = {
@@ -612,7 +617,9 @@ TEST_F(BrowsingDataModelTest, ThirdPartyCookieTypes) {
            unpartitioned_session_storage_usage},
           {BrowsingDataModel::StorageType::kSharedWorker,
            unpartitioned_shared_worker_info},
-          {BrowsingDataModel::StorageType::kCookie, *unpartitioned_cookie}};
+          {BrowsingDataModel::StorageType::kCookie, *unpartitioned_cookie},
+          {BrowsingDataModel::StorageType::kDeviceBoundSession,
+           device_bound_session_key}};
 
   std::map<BrowsingDataModel::StorageType, BrowsingDataModel::DataKey>
       non_third_party_cookie_types = {

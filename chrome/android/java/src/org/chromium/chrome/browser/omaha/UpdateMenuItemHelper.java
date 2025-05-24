@@ -50,7 +50,7 @@ public class UpdateMenuItemHelper {
     private static UpdateMenuItemHelper sInstanceForTesting;
     private static ProfileKeyedMap<UpdateMenuItemHelper> sProfileMap;
 
-    private static Object sGetInstanceLock = new Object();
+    private static final Object sGetInstanceLock = new Object();
 
     private final Profile mProfile;
     private final ObserverList<Runnable> mObservers = new ObserverList<>();

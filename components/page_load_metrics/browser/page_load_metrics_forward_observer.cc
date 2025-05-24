@@ -237,6 +237,8 @@ void PageLoadMetricsForwardObserver::OnParseStop(
 
 void PageLoadMetricsForwardObserver::OnConnectStart(
     const mojom::PageLoadTiming& timing) {}
+void PageLoadMetricsForwardObserver::OnConnectEnd(
+    const mojom::PageLoadTiming& timing) {}
 void PageLoadMetricsForwardObserver::OnDomainLookupStart(
     const mojom::PageLoadTiming& timing) {}
 void PageLoadMetricsForwardObserver::OnDomainLookupEnd(
@@ -305,12 +307,10 @@ void PageLoadMetricsForwardObserver::OnFeaturesUsageObserved(
   parent_observer_->OnFeaturesUsageObserved(rfh, features);
 }
 
-// SetUpSharedMemoryForSmoothness is called only for the outermost page.
-void PageLoadMetricsForwardObserver::SetUpSharedMemoryForSmoothness(
-    const base::ReadOnlySharedMemoryRegion& shared_memory) {
-  // See also MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness and
-  // the relevant TODO. Currently, information from OOPIFs and FencedFrames are
-  // not handled.
+// SetUpSharedMemoryForUkms is called only for the outermost page.
+void PageLoadMetricsForwardObserver::SetUpSharedMemoryForUkms(
+    const base::ReadOnlySharedMemoryRegion& smoothness_memory,
+    const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) {
   // TODO(crbug.com/40895492): Investigate whether this should truly be
   // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
   // they are not all necessarily hit.
@@ -500,6 +500,10 @@ void PageLoadMetricsForwardObserver::OnAdAuctionComplete(
   }
   parent_observer_->OnAdAuctionComplete(is_server_auction, is_on_device_auction,
                                         result);
+}
+
+void PageLoadMetricsForwardObserver::OnPrimaryPageRenderProcessGone() {
+  DUMP_WILL_BE_NOTREACHED() << "Not supported.";
 }
 
 }  // namespace page_load_metrics

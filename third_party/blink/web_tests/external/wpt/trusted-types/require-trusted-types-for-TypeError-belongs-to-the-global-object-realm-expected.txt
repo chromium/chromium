@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Setting innerHTML on a node adopted from a subframe.
+  assert_throws_js: function "_ => divAdoptedFromIframe.innerHTML = 'unsafe'" threw object "TypeError: Failed to set the 'innerHTML' property on 'Element': This document requires 'TrustedHTML' assignment." ("TypeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+Harness: the test ran to completion.
+

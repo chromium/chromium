@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_ALGORITHM_H_
 
+#include <array>
+
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 
@@ -74,18 +76,14 @@ enum WebCryptoAlgorithmId {
   kWebCryptoAlgorithmIdPbkdf2,
   kWebCryptoAlgorithmIdEd25519,
   kWebCryptoAlgorithmIdX25519,
-#if INSIDE_BLINK
   kWebCryptoAlgorithmIdLast = kWebCryptoAlgorithmIdX25519,
-#endif
 };
 
 enum WebCryptoNamedCurve {
   kWebCryptoNamedCurveP256,
   kWebCryptoNamedCurveP384,
   kWebCryptoNamedCurveP521,
-#if INSIDE_BLINK
   kWebCryptoNamedCurveLast = kWebCryptoNamedCurveP521,
-#endif
 };
 
 enum WebCryptoAlgorithmParamsType {
@@ -119,8 +117,8 @@ struct WebCryptoAlgorithmInfo {
 
   // A map from the operation to the expected parameter type of the algorithm.
   // If an operation is not applicable for the algorithm, set to Undefined.
-  const ParamsTypeOrUndefined
-      operation_to_params_type[kWebCryptoOperationLast + 1];
+  const std::array<ParamsTypeOrUndefined, kWebCryptoOperationLast + 1>
+      operation_to_params_type;
 };
 
 class WebCryptoAesCbcParams;
@@ -153,11 +151,9 @@ class WebCryptoAlgorithmPrivate;
 // methods on it (other than destruction, assignment, or IsNull()).
 class BLINK_PLATFORM_EXPORT WebCryptoAlgorithm {
  public:
-#if INSIDE_BLINK
   WebCryptoAlgorithm() = default;
   WebCryptoAlgorithm(WebCryptoAlgorithmId,
                      std::unique_ptr<WebCryptoAlgorithmParams>);
-#endif
 
   static WebCryptoAlgorithm CreateNull();
   static WebCryptoAlgorithm AdoptParamsAndCreate(WebCryptoAlgorithmId,

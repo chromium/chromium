@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test that setActionHandler("togglescreenshare") succeeds
+  Failed to execute 'setActionHandler' on 'MediaSession': The provided value 'togglescreenshare' is not a valid enum value of type MediaSessionAction.
+[FAIL] Test that setActionHandler("voiceactivity") succeeds
+  Failed to execute 'setActionHandler' on 'MediaSession': The provided value 'voiceactivity' is not a valid enum value of type MediaSessionAction.
+Harness: the test ran to completion.
+

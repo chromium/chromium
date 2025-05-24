@@ -14,12 +14,13 @@ import './cups_printer_dialog_error.js';
 import './cups_printer_shared.css.js';
 import './cups_printers_browser_proxy.js';
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cups_add_print_server_dialog.html.js';
 import {getPrintServerErrorText} from './cups_printer_dialog_util.js';
-import {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, PrintServerResult} from './cups_printers_browser_proxy.js';
+import type {CupsPrintersBrowserProxy, CupsPrintersList} from './cups_printers_browser_proxy.js';
+import {CupsPrintersBrowserProxyImpl, PrintServerResult} from './cups_printers_browser_proxy.js';
 
 export class AddPrintServerDialogElement extends PolymerElement {
   static get is() {

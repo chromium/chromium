@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
-#include "components/enterprise/common/proto/legacy_tech_events.pb.h"
+#include "components/enterprise/common/proto/synced/legacy_tech_events.pb.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "url/gurl.h"
 

@@ -42,4 +42,9 @@ UserPermission UserPermissionServiceAsh::CanCollectSignals() const {
   return UserPermission::kUnsupported;
 }
 
+UserPermission UserPermissionServiceAsh::CanCollectReportSignals() const {
+  // Ash/ChromeOS are out of scope for signals reporting for now.
+  return UserPermission::kUnsupported;
+}
+
 }  // namespace device_signals

@@ -112,29 +112,35 @@ class HookManager {
   void RegisterHook() {
     AutoLock auto_lock(lock_);
     ++init_count_;
-    if (disabled_)
+    if (disabled_) {
       return;
-    if (init_count_ == 1)
+    }
+    if (init_count_ == 1) {
       WriteHook();
+    }
   }
 
   void UnregisterHook() {
     AutoLock auto_lock(lock_);
     DCHECK_NE(0U, init_count_);
     --init_count_;
-    if (disabled_)
+    if (disabled_) {
       return;
-    if (init_count_ == 0)
+    }
+    if (init_count_ == 0) {
       RevertHook();
+    }
   }
 
   void DisableCOMChecksForProcess() {
     AutoLock auto_lock(lock_);
-    if (disabled_)
+    if (disabled_) {
       return;
+    }
     disabled_ = true;
-    if (init_count_ > 0)
+    if (init_count_ > 0) {
       RevertHook();
+    }
   }
 
  private:
@@ -159,8 +165,9 @@ class HookManager {
     DCHECK(!ole32_library_);
     ole32_library_ = ::LoadLibrary(L"ole32.dll");
 
-    if (!ole32_library_)
+    if (!ole32_library_) {
       return;
+    }
 
     // See banner comment above why this subtracts 5 bytes.
     co_create_instance_padded_address_ =
@@ -205,8 +212,9 @@ class HookManager {
         reinterpret_cast<void*>(co_create_instance_padded_address_),
         reinterpret_cast<void*>(&structured_hotpatch_),
         sizeof(structured_hotpatch_));
-    if (patch_result == NO_ERROR)
+    if (patch_result == NO_ERROR) {
       hotpatch_placeholder_format_ = format;
+    }
   }
 
   void RevertHook() {
@@ -215,16 +223,18 @@ class HookManager {
     DWORD revert_result = NO_ERROR;
     switch (hotpatch_placeholder_format_) {
       case HotpatchPlaceholderFormat::INT3:
-        if (WasHotpatchChanged())
+        if (WasHotpatchChanged()) {
           return;
+        }
         revert_result = internal::ModifyCode(
             reinterpret_cast<void*>(co_create_instance_padded_address_),
             reinterpret_cast<const void*>(&g_hotpatch_placeholder_int3),
             sizeof(g_hotpatch_placeholder_int3));
         break;
       case HotpatchPlaceholderFormat::NOP:
-        if (WasHotpatchChanged())
+        if (WasHotpatchChanged()) {
           return;
+        }
         revert_result = internal::ModifyCode(
             reinterpret_cast<void*>(co_create_instance_padded_address_),
             reinterpret_cast<const void*>(&g_hotpatch_placeholder_nop),
@@ -340,8 +350,8 @@ class HookManager {
   HotpatchPlaceholderFormat hotpatch_placeholder_format_ =
       HotpatchPlaceholderFormat::UNKNOWN;
   StructuredHotpatch structured_hotpatch_;
-  static decltype(
-      ::CoCreateInstance)* original_co_create_instance_body_function_;
+  static decltype(::CoCreateInstance)*
+      original_co_create_instance_body_function_;
 };
 
 decltype(::CoCreateInstance)*

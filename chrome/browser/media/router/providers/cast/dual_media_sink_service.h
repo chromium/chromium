@@ -28,7 +28,6 @@ class CastMediaSinkService;
 class CastMediaSinkServiceImpl;
 class DialMediaSinkService;
 class DialMediaSinkServiceImpl;
-class MediaSinkServiceBase;
 
 // This class uses DialMediaSinkService and CastMediaSinkService to discover
 // sinks used by the Cast MediaRouteProvider. It also encapsulates the setup
@@ -60,8 +59,6 @@ class DualMediaSinkService {
   DialMediaSinkServiceImpl* GetDialMediaSinkServiceImpl();
 
   // Used by CastMediaRouteProvider only.
-  MediaSinkServiceBase* GetCastMediaSinkServiceBase();
-
   CastMediaSinkServiceImpl* GetCastMediaSinkServiceImpl();
 
   CastAppDiscoveryService* cast_app_discovery_service() {

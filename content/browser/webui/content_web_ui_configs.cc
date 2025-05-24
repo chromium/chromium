@@ -51,8 +51,9 @@ void RegisterContentWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<WebXrInternalsUIConfig>());
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
   map.AddWebUIConfig(std::make_unique<TraceReportInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<TraceReportInternalsLegacyUIConfig>());
   map.AddWebUIConfig(std::make_unique<TracingUIConfig>());
 #endif
 }

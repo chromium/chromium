@@ -43,7 +43,7 @@ extern const char kOnConnectExternalEvent[];
 extern const char kOnUserScriptConnectEvent[];
 extern const char kOnConnectNativeEvent[];
 
-extern const int kNoFrameId;
+inline constexpr int kNoFrameId = -1;
 
 // Parses the message from a v8 value, returning null on failure. On error,
 // will populate `error_out`.

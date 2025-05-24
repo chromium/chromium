@@ -9,6 +9,7 @@
 
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <optional>
@@ -29,7 +30,6 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/task_time_observer.h"
@@ -44,10 +44,10 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 namespace {
 
 // Whether SequenceManagerImpl records crash keys. Enable via Finch when needed
@@ -115,10 +115,7 @@ namespace {
 
 constexpr TimeDelta kLongTaskTraceEventThreshold = Milliseconds(50);
 // Proportion of tasks which will record thread time for metrics.
-const double kTaskSamplingRateForRecordingCPUTime = 0.01;
-// Proprortion of SequenceManagers which will record thread time for each task,
-// enabling advanced metrics.
-const double kThreadSamplingRateForRecordingCPUTime = 0.0001;
+const double kTaskSamplingRateForRecordingCPUTime = 0.001;
 
 void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue, LazyNow* lazy_now) {
   queue->ReclaimMemory(lazy_now->Now());
@@ -126,20 +123,11 @@ void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue, LazyNow* lazy_now) {
   // will still be valid but the work queues will have been removed by
   // TaskQueueImpl::UnregisterTaskQueue.
   if (queue->delayed_work_queue()) {
-    queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
-    queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
+    queue->delayed_work_queue()->RemoveCancelledTasks(
+        WorkQueue::RemoveCancelledTasksPolicy::kFront);
+    queue->immediate_work_queue()->RemoveCancelledTasks(
+        WorkQueue::RemoveCancelledTasksPolicy::kFront);
   }
-}
-
-SequenceManager::MetricRecordingSettings InitializeMetricRecordingSettings(
-    bool randomised_sampling_enabled) {
-  if (!randomised_sampling_enabled)
-    return SequenceManager::MetricRecordingSettings(0);
-  bool records_cpu_time_for_each_task =
-      base::RandDouble() < kThreadSamplingRateForRecordingCPUTime;
-  return SequenceManager::MetricRecordingSettings(
-      records_cpu_time_for_each_task ? 1
-                                     : kTaskSamplingRateForRecordingCPUTime);
 }
 
 // Writes |address| in hexadecimal ("0x11223344") form starting from |output|
@@ -163,10 +151,6 @@ char* PrependHexAddress(char* output, const void* address) {
 // feature list is available.
 std::atomic_bool g_record_crash_keys = false;
 
-#if BUILDFLAG(IS_WIN)
-bool g_explicit_high_resolution_timer_win = true;
-#endif  // BUILDFLAG(IS_WIN)
-
 }  // namespace
 
 // static
@@ -185,10 +169,7 @@ SequenceManagerImpl::SequenceManagerImpl(
     : associated_thread_(controller->GetAssociatedThread()),
       controller_(std::move(controller)),
       settings_(std::move(settings)),
-      metric_recording_settings_(InitializeMetricRecordingSettings(
-          settings_.randomised_sampling_enabled)),
       add_queue_time_to_tasks_(settings_.add_queue_time_to_tasks),
-
       empty_queues_to_reload_(associated_thread_),
       main_thread_only_(this, associated_thread_, settings_, settings_.clock),
       clock_(settings_.clock) {
@@ -236,12 +217,14 @@ SequenceManagerImpl::~SequenceManagerImpl() {
 
   // In the case of an early startup exits or in some tests a NestingObserver
   // may not have been registered.
-  if (main_thread_only().nesting_observer_registered_)
+  if (main_thread_only().nesting_observer_registered_) {
     controller_->RemoveNestingObserver(this);
+  }
 
   // Let interested parties have one last shot at accessing this.
-  for (auto& observer : main_thread_only().destruction_observers)
+  for (auto& observer : main_thread_only().destruction_observers) {
     observer.WillDestroyCurrentMessageLoop();
+  }
 
   // OK, now make it so that no one can find us.
   if (GetMessagePump()) {
@@ -261,11 +244,7 @@ SequenceManagerImpl::MainThreadOnly::MainThreadOnly(
       wake_up_queue(std::make_unique<DefaultWakeUpQueue>(associated_thread,
                                                          sequence_manager)),
       non_waking_wake_up_queue(
-          std::make_unique<NonWakingWakeUpQueue>(associated_thread)) {
-  if (settings.randomised_sampling_enabled) {
-    metrics_subsampler = base::MetricsSubSampler();
-  }
-}
+          std::make_unique<NonWakingWakeUpQueue>(associated_thread)) {}
 
 SequenceManagerImpl::MainThreadOnly::~MainThreadOnly() = default;
 
@@ -301,10 +280,6 @@ void SequenceManagerImpl::InitializeFeatures() {
   TaskQueueImpl::InitializeFeatures();
   MessagePump::InitializeFeatures();
   ThreadControllerWithMessagePumpImpl::InitializeFeatures();
-#if BUILDFLAG(IS_WIN)
-  g_explicit_high_resolution_timer_win =
-      FeatureList::IsEnabled(kExplicitHighResolutionTimerWin);
-#endif  // BUILDFLAG(IS_WIN)
 
   g_record_crash_keys.store(
       FeatureList::IsEnabled(kRecordSequenceManagerCrashKeys),
@@ -339,8 +314,9 @@ void SequenceManagerImpl::BindToCurrentThread() {
 scoped_refptr<SequencedTaskRunner>
 SequenceManagerImpl::GetTaskRunnerForCurrentTask() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (main_thread_only().task_execution_stack.empty())
+  if (main_thread_only().task_execution_stack.empty()) {
     return nullptr;
+  }
   return main_thread_only()
       .task_execution_stack.back()
       .pending_task.task_runner;
@@ -391,11 +367,11 @@ SequenceManagerImpl::CreateTaskQueueImpl(const TaskQueue::Spec& spec) {
 }
 
 void SequenceManagerImpl::SetAddQueueTimeToTasks(bool enable) {
-  base::subtle::NoBarrier_Store(&add_queue_time_to_tasks_, enable ? 1 : 0);
+  add_queue_time_to_tasks_.store(enable, std::memory_order_relaxed);
 }
 
 bool SequenceManagerImpl::GetAddQueueTimeToTasks() {
-  return base::subtle::NoBarrier_Load(&add_queue_time_to_tasks_);
+  return add_queue_time_to_tasks_.load(std::memory_order_relaxed);
 }
 
 void SequenceManagerImpl::SetObserver(Observer* observer) {
@@ -456,8 +432,9 @@ void SequenceManagerImpl::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
 
 void SequenceManagerImpl::OnBeginNestedRunLoop() {
   main_thread_only().nesting_depth++;
-  if (main_thread_only().observer)
+  if (main_thread_only().observer) {
     main_thread_only().observer->OnBeginNestedRunLoop();
+  }
 }
 
 void SequenceManagerImpl::OnExitNestedRunLoop() {
@@ -486,8 +463,9 @@ void SequenceManagerImpl::OnExitNestedRunLoop() {
       main_thread_only().non_nestable_task_queue.pop_back();
     }
   }
-  if (main_thread_only().observer)
+  if (main_thread_only().observer) {
     main_thread_only().observer->OnExitNestedRunLoop();
+  }
 }
 
 void SequenceManagerImpl::ScheduleWork() {
@@ -512,8 +490,9 @@ void SequenceManagerImpl::MaybeEmitTaskDetails(
   const uint8_t* scheduler_category_enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("scheduler");
 
-  if (!*scheduler_category_enabled)
+  if (!*scheduler_category_enabled) {
     return;
+  }
   auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
   auto* sequence_manager_task = event->set_sequence_manager_task();
   sequence_manager_task->set_priority(
@@ -559,12 +538,14 @@ void SequenceManagerImpl::LogTaskDebugInfo(
     case Settings::TaskLogging::kEnabledWithBacktrace: {
       std::array<const void*, PendingTask::kTaskBacktraceLength + 1> task_trace;
       task_trace[0] = task->posted_from.program_counter();
-      ranges::copy(task->task_backtrace, task_trace.begin() + 1);
+      std::ranges::copy(task->task_backtrace, task_trace.begin() + 1);
       size_t length = 0;
-      while (length < task_trace.size() && task_trace[length])
+      while (length < task_trace.size() && task_trace[length]) {
         ++length;
-      if (length == 0)
+      }
+      if (length == 0) {
         break;
+      }
       LOG(INFO) << "#" << static_cast<uint64_t>(task->enqueue_order()) << " "
                 << selected_work_queue->task_queue()->GetName()
                 << (task->cross_thread_ ? " Run crossthread " : " Run ")
@@ -577,8 +558,9 @@ void SequenceManagerImpl::LogTaskDebugInfo(
       main_thread_only().selector.CollectSkippedOverLowerPriorityTasks(
           selected_work_queue, &skipped_tasks);
 
-      if (skipped_tasks.empty())
+      if (skipped_tasks.empty()) {
         break;
+      }
 
       LOG(INFO) << "#" << static_cast<uint64_t>(task->enqueue_order()) << " "
                 << selected_work_queue->task_queue()->GetName()
@@ -621,11 +603,13 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
         AsValueWithSelectorResultForTracing(work_queue,
                                             /* force_verbose */ false));
 
-    if (!work_queue)
+    if (!work_queue) {
       return std::nullopt;
+    }
 
     // If the head task was canceled, remove it and run the selector again.
-    if (work_queue->RemoveAllCanceledTasksFromFront()) [[unlikely]] {
+    if (work_queue->RemoveCancelledTasks(
+            WorkQueue::RemoveCancelledTasksPolicy::kFront)) [[unlikely]] {
       continue;
     }
 
@@ -677,8 +661,9 @@ void SequenceManagerImpl::DidRunTask(LazyNow& lazy_now) {
   NotifyDidProcessTask(&executing_task, &lazy_now);
   main_thread_only().task_execution_stack.pop_back();
 
-  if (main_thread_only().nesting_depth == 0)
+  if (main_thread_only().nesting_depth == 0) {
     CleanUpQueues();
+  }
 }
 
 void SequenceManagerImpl::RemoveAllCanceledDelayedTasksFromFront(
@@ -729,8 +714,9 @@ std::optional<WakeUp> SequenceManagerImpl::GetNextDelayedWakeUpWithOption(
     SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
-  if (option == SelectTaskOption::kSkipDelayedTask)
+  if (option == SelectTaskOption::kSkipDelayedTask) {
     return std::nullopt;
+  }
   return GetNextDelayedWakeUp();
 }
 
@@ -738,17 +724,20 @@ std::optional<WakeUp> SequenceManagerImpl::AdjustWakeUp(
     std::optional<WakeUp> wake_up,
     LazyNow* lazy_now) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (!wake_up)
+  if (!wake_up) {
     return std::nullopt;
+  }
   // Overdue work needs to be run immediately.
-  if (lazy_now->Now() >= wake_up->earliest_time())
+  if (lazy_now->Now() >= wake_up->earliest_time()) {
     return WakeUp{};
+  }
   // If |time_domain| is present, we don't want an actual OS level delayed wake
   // up scheduled, so pretend we have no more work. This will result in
   // appearing idle and |time_domain| will decide what to do in
   // MaybeFastForwardToWakeUp().
-  if (main_thread_only().time_domain)
+  if (main_thread_only().time_domain) {
     return std::nullopt;
+  }
   return *wake_up;
 }
 
@@ -758,29 +747,27 @@ void SequenceManagerImpl::MaybeAddLeewayToTask(Task& task) const {
   }
 }
 
-// TODO(crbug.com/40204558): Rename once ExplicitHighResolutionTimerWin
-// experiment is shipped.
-bool SequenceManagerImpl::HasPendingHighResolutionTasks() {
+#if BUILDFLAG(IS_WIN)
+bool SequenceManagerImpl::NextWakeUpNeedsHighRes() {
   // Only consider high-res tasks in the |wake_up_queue| (ignore the
   // |non_waking_wake_up_queue|).
-#if BUILDFLAG(IS_WIN)
-  if (g_explicit_high_resolution_timer_win) {
-    std::optional<WakeUp> wake_up =
-        main_thread_only().wake_up_queue->GetNextDelayedWakeUp();
-    if (!wake_up)
-      return false;
-    // Under the kExplicitHighResolutionTimerWin experiment, rely on leeway
-    // being larger than the minimum time of a low resolution timer (16ms). This
-    // way, we don't need to activate the high resolution timer for precise
-    // tasks that will run in more than 16ms if there are non precise tasks in
-    // front of them.
-    DCHECK_GE(MessagePump::GetLeewayIgnoringThreadOverride(),
-              Milliseconds(Time::kMinLowResolutionThresholdMs));
-    return wake_up->delay_policy == subtle::DelayPolicy::kPrecise;
+  std::optional<WakeUp> wake_up =
+      main_thread_only().wake_up_queue->GetNextDelayedWakeUp();
+  if (!wake_up) {
+    return false;
   }
-#endif  // BUILDFLAG(IS_WIN)
-  return main_thread_only().wake_up_queue->has_pending_high_resolution_tasks();
+  // Rely on leeway being larger than the minimum time of a low resolution timer
+  // (16ms). This guarantees that we only need high-res if the next wakeup is
+  // kPrecise as wakeups are sorted by their latest deadline and a flexible
+  // wakeup being in front of the queue implies that there isn't a kPrecise
+  // wakeup within [now, now + leeway] (as any flexible wakeup with a latest
+  // deadline within that range would have been eligible to run just now, before
+  // going idle).
+  DCHECK_GE(MessagePump::GetLeewayIgnoringThreadOverride(),
+            Milliseconds(Time::kMinLowResolutionThresholdMs));
+  return wake_up->delay_policy == subtle::DelayPolicy::kPrecise;
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 void SequenceManagerImpl::OnBeginWork() {
   work_tracker_.OnBeginWork();
@@ -817,16 +804,26 @@ void SequenceManagerImpl::WillQueueTask(Task* pending_task) {
 
 TaskQueue::TaskTiming SequenceManagerImpl::InitializeTaskTiming(
     internal::TaskQueueImpl* task_queue) {
-  bool records_wall_time =
-      ShouldRecordTaskTiming(task_queue) == TimeRecordingPolicy::DoRecord;
-  bool records_thread_time = records_wall_time && ShouldRecordCPUTimeForTask();
+  bool records_wall_time = false;
+  bool records_thread_time = false;
+
+  if (ShouldRecordTaskTiming(task_queue) == TimeRecordingPolicy::DoRecord) {
+    records_wall_time = true;
+    if (ThreadTicks::IsSupported()) {
+      records_thread_time =
+          settings_.sample_cpu_time &&
+          ShouldRecordSubsampledMetric(kTaskSamplingRateForRecordingCPUTime);
+    }
+  }
+
   return TaskQueue::TaskTiming(records_wall_time, records_thread_time);
 }
 
 TimeRecordingPolicy SequenceManagerImpl::ShouldRecordTaskTiming(
     const internal::TaskQueueImpl* task_queue) {
-  if (task_queue->RequiresTaskTiming())
+  if (task_queue->RequiresTaskTiming()) {
     return TimeRecordingPolicy::DoRecord;
+  }
   if (main_thread_only().nesting_depth == 0 &&
       !main_thread_only().task_time_observers.empty()) {
     return TimeRecordingPolicy::DoRecord;
@@ -843,16 +840,19 @@ void SequenceManagerImpl::NotifyWillProcessTask(ExecutingTask* executing_task,
     RecordCrashKeys(executing_task->pending_task);
   }
 
-  if (executing_task->task_queue->GetQuiescenceMonitored())
+  if (executing_task->task_queue->GetQuiescenceMonitored()) {
     main_thread_only().task_was_run_on_quiescence_monitored_queue = true;
+  }
 
   TimeRecordingPolicy recording_policy =
       ShouldRecordTaskTiming(executing_task->task_queue);
-  if (recording_policy == TimeRecordingPolicy::DoRecord)
+  if (recording_policy == TimeRecordingPolicy::DoRecord) {
     executing_task->task_timing.RecordTaskStart(time_before_task);
+  }
 
-  if (!executing_task->task_queue->GetShouldNotifyObservers())
+  if (!executing_task->task_queue->GetShouldNotifyObservers()) {
     return;
+  }
 
   const bool was_blocked_or_low_priority =
       executing_task->task_queue->WasBlockedOrLowPriority(
@@ -874,14 +874,16 @@ void SequenceManagerImpl::NotifyWillProcessTask(ExecutingTask* executing_task,
         executing_task->pending_task, was_blocked_or_low_priority);
   }
 
-  if (recording_policy != TimeRecordingPolicy::DoRecord)
+  if (recording_policy != TimeRecordingPolicy::DoRecord) {
     return;
+  }
 
   if (main_thread_only().nesting_depth == 0) {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                  "SequenceManager.WillProcessTaskTimeObservers");
-    for (auto& observer : main_thread_only().task_time_observers)
+    for (auto& observer : main_thread_only().task_time_observers) {
       observer.WillProcessTask(executing_task->task_timing.start_time());
+    }
   }
 
   {
@@ -896,8 +898,9 @@ void SequenceManagerImpl::NotifyDidProcessTask(ExecutingTask* executing_task,
                                                LazyNow* time_after_task) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "SequenceManagerImpl::NotifyDidProcessTaskObservers");
-  if (!executing_task->task_queue->GetShouldNotifyObservers())
+  if (!executing_task->task_queue->GetShouldNotifyObservers()) {
     return;
+  }
 
   TaskQueue::TaskTiming& task_timing = executing_task->task_timing;
 
@@ -931,8 +934,9 @@ void SequenceManagerImpl::NotifyDidProcessTask(ExecutingTask* executing_task,
   {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                  "SequenceManager.DidProcessTaskObservers");
-    for (auto& observer : main_thread_only().task_observers)
+    for (auto& observer : main_thread_only().task_observers) {
       observer.DidProcessTask(executing_task->pending_task);
+    }
   }
 
   {
@@ -1013,8 +1017,9 @@ Value::Dict SequenceManagerImpl::AsValueWithSelectorResult(
   state.Set("active_queues", std::move(active_queues));
   Value::List shutdown_queues;
   Value::List queues_to_delete;
-  for (const auto& pair : main_thread_only().queues_to_delete)
+  for (const auto& pair : main_thread_only().queues_to_delete) {
     queues_to_delete.Append(pair.first->AsValue(now, force_verbose));
+  }
   state.Set("queues_to_delete", std::move(queues_to_delete));
   state.Set("selector", main_thread_only().selector.AsValue());
   if (selected_work_queue) {
@@ -1035,8 +1040,9 @@ void SequenceManagerImpl::OnTaskQueueEnabled(internal::TaskQueueImpl* queue) {
   DCHECK(queue->IsQueueEnabled());
   // Only schedule DoWork if there's something to do.
   if (queue->HasTaskToRunImmediatelyOrReadyDelayedTask() &&
-      !queue->BlockedByFence())
+      !queue->BlockedByFence()) {
     ScheduleWork();
+  }
 }
 
 void SequenceManagerImpl::OnWorkAvailable() {
@@ -1044,8 +1050,9 @@ void SequenceManagerImpl::OnWorkAvailable() {
 }
 
 void SequenceManagerImpl::MaybeReclaimMemory() {
-  if (!main_thread_only().memory_reclaim_scheduled)
+  if (!main_thread_only().memory_reclaim_scheduled) {
     return;
+  }
 
   TRACE_EVENT0("sequence_manager", "SequenceManagerImpl::MaybeReclaimMemory");
   ReclaimMemory();
@@ -1086,20 +1093,6 @@ TimeTicks SequenceManagerImpl::NowTicks() const {
   return any_thread_clock()->NowTicks();
 }
 
-bool SequenceManagerImpl::ShouldRecordCPUTimeForTask() {
-  DCHECK(ThreadTicks::IsSupported() ||
-         !metric_recording_settings_.records_cpu_time_for_some_tasks());
-  return metric_recording_settings_.records_cpu_time_for_some_tasks() &&
-         main_thread_only().metrics_subsampler->ShouldSample(
-             metric_recording_settings_
-                 .task_sampling_rate_for_recording_cpu_time);
-}
-
-const SequenceManager::MetricRecordingSettings&
-SequenceManagerImpl::GetMetricRecordingSettings() const {
-  return metric_recording_settings_;
-}
-
 void SequenceManagerImpl::SetTaskExecutionAllowedInNativeNestedLoop(
     bool allowed) {
   controller_->SetTaskExecutionAllowedInNativeNestedLoop(allowed);
@@ -1120,8 +1113,10 @@ bool SequenceManagerImpl::IsIdleForTesting() {
 
   // Make sure that canceled tasks don't affect the return value.
   for (internal::TaskQueueImpl* queue : main_thread_only().active_queues) {
-    queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
-    queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
+    queue->delayed_work_queue()->RemoveCancelledTasks(
+        WorkQueue::RemoveCancelledTasksPolicy::kFront);
+    queue->immediate_work_queue()->RemoveCancelledTasks(
+        WorkQueue::RemoveCancelledTasksPolicy::kFront);
   }
 
   return !main_thread_only().selector.GetHighestPendingPriority().has_value();
@@ -1153,11 +1148,6 @@ std::string SequenceManagerImpl::DescribeAllPendingTasks() const {
   std::string result;
   JSONWriter::Write(value, &result);
   return result;
-}
-
-void SequenceManagerImpl::PrioritizeYieldingToNative(
-    base::TimeTicks prioritize_until) {
-  controller_->PrioritizeYieldingToNative(prioritize_until);
 }
 
 void SequenceManagerImpl::AddDestructionObserver(
@@ -1212,8 +1202,9 @@ void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
 #if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID)
   // SetCrashKeyString is a no-op even if the crash key is null, but we'd still
   // have construct the std::string_view that is passed in.
-  if (!main_thread_only().async_stack_crash_key)
+  if (!main_thread_only().async_stack_crash_key) {
     return;
+  }
 
   // Write the async stack trace onto a crash key as whitespace-delimited hex
   // addresses. These will be symbolized by the crash reporting system. With
@@ -1245,8 +1236,9 @@ void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
 
 internal::TaskQueueImpl* SequenceManagerImpl::currently_executing_task_queue()
     const {
-  if (main_thread_only().task_execution_stack.empty())
+  if (main_thread_only().task_execution_stack.empty()) {
     return nullptr;
+  }
   return main_thread_only().task_execution_stack.rbegin()->task_queue;
 }
 
@@ -1257,5 +1249,4 @@ TaskQueue::QueuePriority SequenceManagerImpl::GetPriorityCount() const {
 constexpr TimeDelta SequenceManagerImpl::kReclaimMemoryInterval;
 
 }  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

@@ -4,36 +4,41 @@
 
 #include "chrome/browser/upgrade_detector/upgrade_detector_impl.h"
 
+#include <array>
 #include <initializer_list>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/upgrade_detector/installed_version_poller.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
+#include "chrome/browser/upgrade_detector/version_history_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/network_time/network_time_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/install_modes.h"
@@ -139,11 +144,15 @@ class UpgradeDetectorImplTest : public ::testing::Test {
         scoped_local_state_(TestingBrowserProcess::GetGlobal()),
         scoped_poller_disabler_(
             InstalledVersionPoller::MakeScopedDisableForTesting()) {
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        url_loader_factory_.GetSafeWeakWrapper());
     // Disable the detector's check to see if autoupdates are enabled.
     // Without this, tests put the detector into an invalid state by detecting
     // upgrades before the detection task completes.
     scoped_local_state_.Get()->SetUserPref(prefs::kAttemptedToEnableAutoupdate,
                                            std::make_unique<base::Value>(true));
+    scoped_local_state_.Get()->SetUserPref(
+        network_time::prefs::kNetworkTimeQueriesEnabled, base::Value(false));
     UpgradeDetector::GetInstance()->Init();
   }
 
@@ -158,6 +167,10 @@ class UpgradeDetectorImplTest : public ::testing::Test {
 
   const base::TickClock* GetMockTickClock() {
     return task_environment_.GetMockTickClock();
+  }
+
+  network::TestURLLoaderFactory& GetTestURLLoaderFactory() {
+    return url_loader_factory_;
   }
 
   // Sets the browser.relaunch_notification_period preference in Local State to
@@ -192,6 +205,12 @@ class UpgradeDetectorImplTest : public ::testing::Test {
                                               base::Value(std::move(dict)));
   }
 
+  // Sets the browser.relaunch_fast_if_outdated preference in Local State.
+  void SetRelaunchFastIfOutdatedPref(int days) {
+    scoped_local_state_.Get()->SetManagedPref(
+        prefs::kRelaunchFastIfOutdated, base::Value(days));
+  }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   // Fast-forwards virtual time by |delta|.
@@ -200,17 +219,17 @@ class UpgradeDetectorImplTest : public ::testing::Test {
   }
 
  private:
+  // Override the brand code so that the test appears to be a non-organic brand
+  // in order to suppress the outdated build detector.
+  google_brand::BrandForTesting non_organic_{"BBBB"};
   content::BrowserTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory url_loader_factory_;
   ScopedTestingLocalState scoped_local_state_;
   InstalledVersionPoller::ScopedDisableForTesting scoped_poller_disabler_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage dm_token_storage_;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_F(UpgradeDetectorImplTest, VariationsChanges) {
@@ -255,6 +274,49 @@ TEST_F(UpgradeDetectorImplTest, VariationsCriticalChanges) {
   RunUntilIdle();
 
   detector.Shutdown();
+}
+
+TEST_F(UpgradeDetectorImplTest, RelaunchFastIfOutdated) {
+  SetRelaunchFastIfOutdatedPref(7);
+
+  TestUpgradeDetectorImpl upgrade_detector(GetMockClock(), GetMockTickClock());
+  ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);
+  upgrade_detector.Init();
+
+  // Pretend that an upgrade was just detected now. Initially the period is
+  // 7 days.
+  upgrade_detector.UpgradeDetected(
+      TestUpgradeDetectorImpl::UPGRADE_AVAILABLE_REGULAR);
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            base::Days(7));
+
+  base::Time end_time = base::Time::Now() - base::Days(7) - base::Hours(1);
+
+  // This should've fired off a URL request to the VersionHistory API. After
+  // it completes, the period should change to 2 hours.
+  GURL version_history_url = GetVersionReleasesUrl(version_info::GetVersion());
+  EXPECT_TRUE(GetTestURLLoaderFactory().IsPending(version_history_url.spec()));
+  GetTestURLLoaderFactory().AddResponse(
+      version_history_url.spec(),
+      base::StringPrintf(R"({
+        "releases": [{
+          "serving": {
+            "endTime": "%s"
+          }
+        }]
+      })",
+                         base::TimeFormatAsIso8601(end_time)),
+      net::HTTP_OK);
+  RunUntilIdle();
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            base::Hours(2));
+
+  // Execute tasks posted by |detector| referencing it while it's still in
+  // scope.
+  RunUntilIdle();
+  upgrade_detector.Shutdown();
 }
 
 // Tests that the proper notifications are sent for the expected stages as the
@@ -490,9 +552,9 @@ class UpgradeDetectorImplTimerTest : public UpgradeDetectorImplTest,
   }
 
  private:
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage dm_token_storage_;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -515,7 +577,7 @@ TEST_P(UpgradeDetectorImplTimerTest, TestNotificationTimer) {
   detector.UpgradeDetected(TestUpgradeDetectorImpl::UPGRADE_AVAILABLE_REGULAR);
 
   // Cache the thresholds for the detector's annoyance levels.
-  const base::TimeDelta thresholds[5] = {
+  const std::array<base::TimeDelta, 5> thresholds = {
       detector.GetThresholdForLevel(
           UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
       detector.GetThresholdForLevel(UpgradeDetector::UPGRADE_ANNOYANCE_LOW),

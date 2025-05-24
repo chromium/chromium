@@ -38,11 +38,9 @@ const char* GetNameForEffectiveConnectionType(EffectiveConnectionType type) {
     case EFFECTIVE_CONNECTION_TYPE_4G:
       return kEffectiveConnectionType4G;
     case EFFECTIVE_CONNECTION_TYPE_LAST:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(

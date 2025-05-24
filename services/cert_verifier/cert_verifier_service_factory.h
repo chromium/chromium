@@ -68,6 +68,7 @@ class CertVerifierServiceFactoryImpl
   void UpdateCtLogList(std::vector<network::mojom::CTLogInfoPtr> log_list,
                        base::Time update_time,
                        UpdateCtLogListCallback callback) override;
+  void DisableCtEnforcement(DisableCtEnforcementCallback callback) override;
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void UpdateChromeRootStore(mojo_base::ProtoWrapper new_root_store,
@@ -76,16 +77,18 @@ class CertVerifierServiceFactoryImpl
   // version of Chrome.
   void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;
 
+#if !BUILDFLAG(IS_CHROMEOS)
   void GetPlatformRootStoreInfo(
       GetPlatformRootStoreInfoCallback callback) override;
 #endif
-  void UpdateNetworkTime(base::Time system_time,
-                         base::TimeTicks system_ticks,
-                         base::Time current_time) override;
+#endif
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   void SetUseChromeRootStore(bool use_crs,
                              SetUseChromeRootStoreCallback callback) override;
 #endif
+  void UpdateNetworkTime(base::Time system_time,
+                         base::TimeTicks system_ticks,
+                         base::Time current_time) override;
 
   // Remove a CertVerifyService from needing updates to the Chrome Root Store.
   void RemoveService(internal::CertVerifierServiceImpl* service_impl);
@@ -94,7 +97,11 @@ class CertVerifierServiceFactoryImpl
     return proc_params_;
   }
 
+  base::WeakPtr<CertVerifierServiceFactoryImpl> GetWeakPtr();
+
  private:
+  void InitializeRootStoreDataIfNecessary();
+
   // Update all the `verifier_services_` with the current data.
   void UpdateVerifierServices();
 

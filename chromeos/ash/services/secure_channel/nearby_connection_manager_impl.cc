@@ -169,11 +169,10 @@ void NearbyConnectionManagerImpl::SetAuthenticatingChannel(
   PauseConnectionAttemptsToDevice(remote_device_id);
 
   if (DoesAuthenticatingChannelExist(remote_device_id)) {
-    PA_LOG(ERROR) << "A new channel was created, one already exists for the "
-                  << "same remote device ID. ID: "
-                  << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
-                         remote_device_id);
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "A new channel was created, one already exists for the "
+                 << "same remote device ID. ID: "
+                 << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
+                        remote_device_id);
   }
 
   SecureChannel* secure_channel_raw = secure_channel.get();
@@ -237,20 +236,17 @@ std::string NearbyConnectionManagerImpl::GetRemoteDeviceIdForSecureChannel(
       return map_entry.first;
   }
 
-  PA_LOG(ERROR) << "No remote device ID mapped to the provided SecureChannel.";
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED() << "No remote device ID mapped to the provided SecureChannel.";
 }
 
 void NearbyConnectionManagerImpl::HandleSecureChannelDisconnection(
     const std::string& remote_device_id,
     bool was_authenticating) {
   if (!DoesAuthenticatingChannelExist(remote_device_id)) {
-    PA_LOG(ERROR) << "HandleSecureChannelDisconnection(): Disconnected channel "
-                  << "not present in map. Remote device ID: "
-                  << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
-                         remote_device_id);
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "HandleSecureChannelDisconnection(): Disconnected channel "
+                 << "not present in map. Remote device ID: "
+                 << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
+                        remote_device_id);
   }
 
   for (const auto& pair : GetDeviceIdPairsForRemoteDevice(remote_device_id)) {

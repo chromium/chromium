@@ -6,13 +6,16 @@
 #define BASE_NUMERICS_OSTREAM_OPERATORS_H_
 
 #include <ostream>
+#include <type_traits>
 
 namespace base {
 namespace internal {
 
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class ClampedNumeric;
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class StrictNumeric;
 
 // Overload the ostream output operator to make logging work nicely.

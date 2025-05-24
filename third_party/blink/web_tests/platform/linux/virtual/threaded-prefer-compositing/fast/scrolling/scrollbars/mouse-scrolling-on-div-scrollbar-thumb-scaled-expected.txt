@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test mouse drags while page scaled on div scrollbar thumb.
+  assert_approx_equals: Vertical thumb drag downwards did not scroll as expected expected 183 +/- 1 but got 120
+[FAIL] Test mouse drags with page scale on div with rotation scrollbar thumb.
+  assert_approx_equals: Vertical thumb drag downwards on rotated scroller did not scroll as expected expected 183 +/- 1 but got 120
+Harness: the test ran to completion.
+

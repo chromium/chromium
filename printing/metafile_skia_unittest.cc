@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span_reader.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
@@ -14,8 +15,8 @@
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/codec/SkCodec.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -33,6 +34,7 @@
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
+#include "ui/gfx/skia_span_util.h"
 
 namespace printing {
 
@@ -80,7 +82,7 @@ TEST(MetafileSkiaTest, FrameContent) {
   // Get the complete picture by replacing the placeholder.
   PictureDeserializationContext subframes;
   subframes[content_id] = picture;
-  SkDeserialProcs procs = DeserializationProcs(&subframes, nullptr);
+  SkDeserialProcs procs = DeserializationProcs(&subframes, nullptr, nullptr);
   sk_sp<SkPicture> pic = SkPicture::MakeFromStream(metafile_stream, &procs);
   ASSERT_TRUE(pic);
 
@@ -153,7 +155,7 @@ TEST(MetafileSkiaTest, MultiPictureDocumentTypefaces) {
   ContentProxySet serialize_typeface_ctx;
   PictureDeserializationContext subframes;
   TypefaceDeserializationContext typefaces;
-  SkDeserialProcs procs = DeserializationProcs(&subframes, &typefaces);
+  SkDeserialProcs procs = DeserializationProcs(&subframes, &typefaces, nullptr);
 
   // The typefaces which will be reused across the multiple (duplicate) pages.
   constexpr char kTypefaceName1[] = "sans-serif";
@@ -254,13 +256,25 @@ TEST(MetafileSkiaTest, SerializeUnencodedRasterImageAsPNG) {
 
     // Use the image serialization proc and assert that we get encoded data back
     PictureSerializationContext subframes;
-    SkSerialProcs procs = SerializationProcs(&subframes, nullptr);
+    ImageSerializationContext images;
+    SkSerialProcs procs = SerializationProcs(&subframes, nullptr, &images);
 
-    sk_sp<SkData> encoded_data = (*procs.fImageProc)(image.get(), nullptr);
+    sk_sp<SkData> encoded_data =
+        (*procs.fImageProc)(image.get(), procs.fImageCtx);
     ASSERT_TRUE(encoded_data);
+    EXPECT_GT(encoded_data->size(), sizeof(uint32_t));
+
+    base::SpanReader reader{gfx::SkDataToSpan(encoded_data)};
+
+    uint32_t img_id;
+    ASSERT_TRUE(reader.ReadU32NativeEndian(img_id));
+    EXPECT_EQ(img_id, image->uniqueID());
+    ASSERT_TRUE(images.contains(img_id));
 
     // We expect unencoded images to be encoded as PNG.
-    ASSERT_TRUE(SkPngDecoder::IsPng(encoded_data->data(), encoded_data->size()));
+    auto encoded_image = reader.remaining_span();
+    ASSERT_TRUE(
+        SkPngDecoder::IsPng(encoded_image.data(), encoded_image.size()));
 }
 
 TEST(MetafileSkiaTest, SkipEncodingAsPngWhenImageIsAlreadyEncoded) {
@@ -288,12 +302,96 @@ TEST(MetafileSkiaTest, SkipEncodingAsPngWhenImageIsAlreadyEncoded) {
 
     // Call serialization proc on the JPEG image
     PictureSerializationContext subframes;
-    SkSerialProcs procs = SerializationProcs(&subframes, nullptr);
-    sk_sp<SkData> encoded_data = (*procs.fImageProc)(jpeg_img.get(), nullptr);
+    ImageSerializationContext images;
+    SkSerialProcs procs = SerializationProcs(&subframes, nullptr, &images);
+    sk_sp<SkData> encoded_data =
+        (*procs.fImageProc)(jpeg_img.get(), procs.fImageCtx);
     ASSERT_TRUE(encoded_data);
+    EXPECT_GT(encoded_data->size(), sizeof(uint32_t));
+
+    base::SpanReader reader{gfx::SkDataToSpan(encoded_data)};
+
+    uint32_t img_id;
+    ASSERT_TRUE(reader.ReadU32NativeEndian(img_id));
+    EXPECT_EQ(img_id, jpeg_img->uniqueID());
+    ASSERT_TRUE(images.contains(img_id));
 
     // Make sure the data is still encoded as JPEG
-    ASSERT_TRUE(SkJpegDecoder::IsJpeg(encoded_data->data(), encoded_data->size()));
+    auto encoded_image = reader.remaining_span();
+    ASSERT_TRUE(
+        SkJpegDecoder::IsJpeg(encoded_image.data(), encoded_image.size()));
+}
+
+TEST(MetafileSkiaTest, SerializeUniqueImages) {
+  // Make raster surface
+  sk_sp<SkSurface> surface =
+      SkSurfaces::Raster(SkImageInfo::MakeN32(100, 50, kOpaque_SkAlphaType));
+  SkCanvas* canvas = surface->getCanvas();
+
+  // Draw to it
+  SkPaint paint;
+  paint.setColor(SK_ColorGREEN);
+  canvas->clear(SK_ColorYELLOW);
+  canvas->drawRect(SkRect::MakeSize(SkSize::Make(75, 25)), paint);
+
+  // Get an image that is not encoded
+  sk_sp<SkImage> unencoded_img = surface->makeImageSnapshot();
+  ASSERT_FALSE(unencoded_img->refEncodedData());
+
+  // Call serialization proc on the image for the first time.
+  PictureSerializationContext subframes;
+  ImageSerializationContext images;
+  SkSerialProcs procs = SerializationProcs(&subframes, nullptr, &images);
+
+  sk_sp<SkData> encoded_data1 =
+      (*procs.fImageProc)(unencoded_img.get(), procs.fImageCtx);
+  ASSERT_TRUE(encoded_data1);
+  EXPECT_GT(encoded_data1->size(), sizeof(uint32_t));
+
+  {
+    base::SpanReader reader{gfx::SkDataToSpan(encoded_data1)};
+    uint32_t img_id;
+    ASSERT_TRUE(reader.ReadU32NativeEndian(img_id));
+    EXPECT_EQ(img_id, unencoded_img->uniqueID());
+    ASSERT_TRUE(images.contains(img_id));
+
+    // The image is expected to be encoded as PNG.
+    auto encoded_image = reader.remaining_span();
+    ASSERT_FALSE(encoded_image.empty());
+    ASSERT_TRUE(
+        SkPngDecoder::IsPng(encoded_image.data(), encoded_image.size()));
+  }
+
+  // Call the serialization proc on the image for the second time.
+  sk_sp<SkData> encoded_data2 =
+      (*procs.fImageProc)(unencoded_img.get(), procs.fImageCtx);
+  ASSERT_TRUE(encoded_data2);
+  EXPECT_EQ(encoded_data2->size(), sizeof(uint32_t));
+
+  {
+    // The second serialization should only return image id.
+    base::SpanReader reader{gfx::SkDataToSpan(encoded_data2)};
+    uint32_t img_id;
+    ASSERT_TRUE(reader.ReadU32NativeEndian(img_id));
+    EXPECT_EQ(img_id, unencoded_img->uniqueID());
+    EXPECT_FALSE(reader.remaining());
+  }
+
+  // Deserialization.
+  SkCodecs::Register(SkPngDecoder::Decoder());
+  PictureDeserializationContext d_subframes;
+  ImageDeserializationContext d_images;
+  SkDeserialProcs d_procs =
+      DeserializationProcs(&d_subframes, nullptr, &d_images);
+
+  sk_sp<SkImage> decoded_image1 = (*d_procs.fImageProc)(
+      encoded_data1->data(), encoded_data1->size(), d_procs.fImageCtx);
+  ASSERT_TRUE(decoded_image1);
+
+  sk_sp<SkImage> decoded_image2 = (*d_procs.fImageProc)(
+      encoded_data2->data(), encoded_data2->size(), d_procs.fImageCtx);
+  ASSERT_TRUE(decoded_image2);
+  EXPECT_EQ(decoded_image1->uniqueID(), decoded_image2->uniqueID());
 }
 
 }  // namespace printing

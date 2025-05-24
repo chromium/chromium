@@ -69,11 +69,7 @@
     [MeasureAs=ElementTogglePopover,RaisesException] boolean togglePopover(optional (TogglePopoverOptions or boolean) options);
     [MeasureAs=ElementShowPopover,RaisesException] void showPopover(optional ShowPopoverOptions options);
     [MeasureAs=ElementHidePopover,RaisesException] void hidePopover();
-
-    // See crbug.com/1418144. We need to change ReflectOnly based on a runtime flag, which isn't possible.
-    // See also crbug.com/1416284. When HTMLPopoverHint is removed as a flag, we should be able to go back to using [Reflect].
-    // [CEReactions,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
-    [CEReactions] attribute DOMString? popover;
+    [CEReactions,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
 
     // Non-standard APIs
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([LegacyNullToEmptyString] DOMString or TrustedScript) innerText;

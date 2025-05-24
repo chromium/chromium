@@ -14,21 +14,21 @@
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
-namespace {
 
 // WidgetDelegate that is resizable and creates ash's NonClientFrameView
 // implementation.
-class TestWidgetDelegate : public views::WidgetDelegateView {
+class TestWidgetBuilderDelegate : public views::WidgetDelegateView {
  public:
-  TestWidgetDelegate() {
+  TestWidgetBuilderDelegate() {
     SetCanFullscreen(true);
     SetCanMaximize(true);
     SetCanMinimize(true);
     SetCanResize(true);
   }
-  TestWidgetDelegate(const TestWidgetDelegate& other) = delete;
-  TestWidgetDelegate& operator=(const TestWidgetDelegate& other) = delete;
-  ~TestWidgetDelegate() override = default;
+  TestWidgetBuilderDelegate(const TestWidgetBuilderDelegate& other) = delete;
+  TestWidgetBuilderDelegate& operator=(const TestWidgetBuilderDelegate& other) =
+      delete;
+  ~TestWidgetBuilderDelegate() override = default;
 
   // views::WidgetDelegateView:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
@@ -36,8 +36,6 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
     return Shell::Get()->CreateDefaultNonClientFrameView(widget);
   }
 };
-
-}  // namespace
 
 TestWidgetBuilder::TestWidgetBuilder() = default;
 
@@ -116,7 +114,7 @@ TestWidgetBuilder& TestWidgetBuilder::SetShow(bool show) {
 }
 
 TestWidgetBuilder& TestWidgetBuilder::SetTestWidgetDelegate() {
-  widget_init_params_.delegate = new TestWidgetDelegate();
+  widget_init_params_.delegate = new TestWidgetBuilderDelegate();
   return *this;
 }
 

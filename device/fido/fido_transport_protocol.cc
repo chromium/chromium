@@ -4,6 +4,8 @@
 
 #include "device/fido/fido_transport_protocol.h"
 
+#include "base/notreached.h"
+
 namespace device {
 
 std::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
@@ -34,10 +36,8 @@ std::string_view ToString(FidoTransportProtocol protocol) {
       return kHybrid;
     case FidoTransportProtocol::kInternal:
       return kInternal;
-    case FidoTransportProtocol::kAndroidAccessory:
-      // The Android accessory transport is not exposed to the outside world and
-      // is considered a flavour of caBLE.
-      return kHybrid;
+    case FidoTransportProtocol::kDeprecatedAoa:
+      NOTREACHED();
   }
 }
 
@@ -50,8 +50,9 @@ AuthenticatorAttachment AuthenticatorAttachmentFromTransport(
     case FidoTransportProtocol::kNearFieldCommunication:
     case FidoTransportProtocol::kBluetoothLowEnergy:
     case FidoTransportProtocol::kHybrid:
-    case FidoTransportProtocol::kAndroidAccessory:
       return AuthenticatorAttachment::kCrossPlatform;
+    case FidoTransportProtocol::kDeprecatedAoa:
+      NOTREACHED();
   }
 }
 

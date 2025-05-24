@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "services/screen_ai/screen_ai_library_wrapper_impl.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
-#include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace screen_ai {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void HandleLibraryLogging(int severity, const char* message) {
   switch (severity) {
     case logging::LOGGING_VERBOSE:
@@ -68,7 +71,7 @@ bool ScreenAILibraryWrapperImpl::Load(const base::FilePath& library_path) {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!LoadFunction(set_logger_, "SetLogger")) {
     return false;
   }
@@ -87,6 +90,7 @@ bool ScreenAILibraryWrapperImpl::Load(const base::FilePath& library_path) {
   }
 
   if (!LoadFunction(init_ocr_, "InitOCRUsingCallback") ||
+      !LoadFunction(get_max_image_dimension_, "GetMaxImageDimension") ||
       !LoadFunction(perform_ocr_, "PerformOCR")) {
     return false;
   }
@@ -101,7 +105,7 @@ bool ScreenAILibraryWrapperImpl::Load(const base::FilePath& library_path) {
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 NO_SANITIZE("cfi-icall")
 void ScreenAILibraryWrapperImpl::ScreenAILibraryWrapperImpl::SetLogger() {
   CHECK(set_logger_);
@@ -133,6 +137,12 @@ void ScreenAILibraryWrapperImpl::EnableDebugMode() {
 }
 
 NO_SANITIZE("cfi-icall")
+uint32_t ScreenAILibraryWrapperImpl::GetMaxImageDimension() {
+  CHECK(get_max_image_dimension_);
+  return get_max_image_dimension_();
+}
+
+NO_SANITIZE("cfi-icall")
 bool ScreenAILibraryWrapperImpl::InitOCR() {
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Accessibility.ScreenAI.OCR.InitializationLatency");
@@ -153,13 +163,6 @@ std::optional<chrome_screen_ai::VisualAnnotation>
 ScreenAILibraryWrapperImpl::PerformOcr(const SkBitmap& image) {
   CHECK(perform_ocr_);
   CHECK(free_library_allocated_char_array_);
-
-  // Report image specifications in case the call crashes.
-  static crash_reporter::CrashKeyString<50> image_info("ocr_image_info");
-  image_info.Set(base::StringPrintf(
-      "W:%5i, H:%5i, CT:%2i, BPP:%2i, RB:%5zu, DN:%i", image.width(),
-      image.height(), static_cast<int>(image.colorType()),
-      image.bytesPerPixel(), image.rowBytes(), image.drawsNothing()));
 
   std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
 

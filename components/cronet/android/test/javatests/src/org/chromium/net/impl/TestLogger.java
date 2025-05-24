@@ -4,7 +4,10 @@
 
 package org.chromium.net.impl;
 
+import android.os.Build;
 import android.os.ConditionVariable;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
 import org.chromium.net.impl.CronetLogger.CronetSource;
@@ -17,21 +20,21 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Records the last engine creation (and traffic info) call it has received. */
 public final class TestLogger extends CronetLogger {
-    private AtomicInteger mNextId = new AtomicInteger();
+    private final AtomicInteger mNextId = new AtomicInteger();
     private final AtomicInteger mCallsToLogCronetEngineBuilderInitializedInfo = new AtomicInteger();
     private final AtomicInteger mCallsToCronetInitializedInfo = new AtomicInteger();
-    private AtomicInteger mCallsToLogCronetEngineCreation = new AtomicInteger();
-    private AtomicInteger mCallsToLogCronetTrafficInfo = new AtomicInteger();
-    private AtomicLong mCronetEngineId = new AtomicLong();
-    private AtomicLong mCronetRequestId = new AtomicLong();
+    private final AtomicInteger mCallsToLogCronetEngineCreation = new AtomicInteger();
+    private final AtomicInteger mCallsToLogCronetTrafficInfo = new AtomicInteger();
+    private final AtomicLong mCronetEngineId = new AtomicLong();
+    private final AtomicLong mCronetRequestId = new AtomicLong();
     private final AtomicReference<CronetEngineBuilderInitializedInfo>
             mCronetEngineBuilderInitializedInfo = new AtomicReference<>();
     private final AtomicReference<CronetInitializedInfo> mCronetInitializedInfo =
             new AtomicReference<>();
-    private AtomicReference<CronetTrafficInfo> mTrafficInfo = new AtomicReference<>();
-    private AtomicReference<CronetEngineBuilderInfo> mBuilderInfo = new AtomicReference<>();
-    private AtomicReference<CronetVersion> mVersion = new AtomicReference<>();
-    private AtomicReference<CronetSource> mSource = new AtomicReference<>();
+    private final AtomicReference<CronetTrafficInfo> mTrafficInfo = new AtomicReference<>();
+    private final AtomicReference<CronetEngineBuilderInfo> mBuilderInfo = new AtomicReference<>();
+    private final AtomicReference<CronetVersion> mVersion = new AtomicReference<>();
+    private final AtomicReference<CronetSource> mSource = new AtomicReference<>();
     private final ConditionVariable mCronetInitializedInfoCalled = new ConditionVariable();
     private final ConditionVariable mBlock = new ConditionVariable();
 
@@ -78,6 +81,7 @@ public final class TestLogger extends CronetLogger {
         return mCallsToLogCronetEngineBuilderInitializedInfo.get();
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     public int callsToLogCronetTrafficInfo() {
         return mCallsToLogCronetTrafficInfo.get();
     }

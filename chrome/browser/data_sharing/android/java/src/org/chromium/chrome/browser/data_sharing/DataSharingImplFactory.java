@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingSDKDelegate;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 
+@NullMarked
 public interface DataSharingImplFactory {
     DataSharingUIDelegate createUiDelegate(Profile profile);
 

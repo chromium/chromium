@@ -29,7 +29,7 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
       delete;
 
  protected:
-  ~InputDeviceSettingsImplOzone() override {}
+  ~InputDeviceSettingsImplOzone() override = default;
 
  private:
   // Overridden from InputDeviceSettings.

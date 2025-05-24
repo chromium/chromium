@@ -102,7 +102,7 @@ std::vector<std::string> FilterProperties(base::Value::Dict& properties,
 
 bool CanChangeSharedConfig(const Extension* extension,
                            mojom::ContextType context) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return context == mojom::ContextType::kWebUi;
 #else
   return true;

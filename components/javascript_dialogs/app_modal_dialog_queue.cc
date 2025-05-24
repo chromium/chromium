@@ -49,7 +49,7 @@ bool AppModalDialogQueue::HasActiveDialog() const {
 AppModalDialogQueue::AppModalDialogQueue()
     : active_dialog_(nullptr), showing_modal_dialog_(false) {}
 
-AppModalDialogQueue::~AppModalDialogQueue() {}
+AppModalDialogQueue::~AppModalDialogQueue() = default;
 
 void AppModalDialogQueue::ShowModalDialog(AppModalDialogController* dialog) {
   // Be sure and set the active_dialog_ field first, otherwise if

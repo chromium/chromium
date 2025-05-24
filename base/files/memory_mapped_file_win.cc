@@ -31,14 +31,16 @@ bool MemoryMappedFile::MapImageToMemory(Access access) {
   // ::MapViewOfFile() need to be self consistent as far as access rights and
   // type of mapping or one or more of them will fail in non-obvious ways.
 
-  if (!file_.IsValid())
+  if (!file_.IsValid()) {
     return false;
+  }
 
   file_mapping_.Set(::CreateFileMapping(file_.GetPlatformFile(), nullptr,
                                         PAGE_READONLY | SEC_IMAGE_NO_EXECUTE, 0,
                                         0, NULL));
-  if (!file_mapping_.is_valid())
+  if (!file_mapping_.is_valid()) {
     return false;
+  }
 
   auto* ptr = static_cast<uint8_t*>(
       ::MapViewOfFile(file_mapping_.get(), FILE_MAP_READ, 0, 0, 0));
@@ -67,8 +69,9 @@ bool MemoryMappedFile::MapFileRegionToMemory(
 
   DCHECK(access != READ_CODE_IMAGE || region == Region::kWholeFile);
 
-  if (!file_.IsValid())
+  if (!file_.IsValid()) {
     return false;
+  }
 
   DWORD view_access;
   DWORD flags = 0;
@@ -97,8 +100,9 @@ bool MemoryMappedFile::MapFileRegionToMemory(
 
   file_mapping_.Set(::CreateFileMapping(file_.GetPlatformFile(), NULL, flags,
                                         size.HighPart, size.LowPart, NULL));
-  if (!file_mapping_.is_valid())
+  if (!file_mapping_.is_valid()) {
     return false;
+  }
 
   ULARGE_INTEGER map_start = {};
   SIZE_T map_size = 0u;
@@ -182,10 +186,12 @@ void MemoryMappedFile::CloseHandles() {
   if (!bytes_.empty()) {
     ::UnmapViewOfFile(bytes_.data());
   }
-  if (file_mapping_.is_valid())
+  if (file_mapping_.is_valid()) {
     file_mapping_.Close();
-  if (file_.IsValid())
+  }
+  if (file_.IsValid()) {
     file_.Close();
+  }
 
   bytes_ = base::span<uint8_t>();
 }

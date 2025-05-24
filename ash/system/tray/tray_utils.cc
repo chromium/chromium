@@ -61,7 +61,7 @@ void SetupConnectedScrollListItem(HoverHighlightView* view,
 
   view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
 
-  view->sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysPositive);
+  view->sub_text_label()->SetEnabledColor(cros_tokens::kCrosSysPositive);
   ash::TypographyProvider::Get()->StyleLabel(
       ash::TypographyToken::kCrosAnnotation1, *view->sub_text_label());
 }
@@ -78,7 +78,7 @@ void SetWarningSubText(HoverHighlightView* view, std::u16string subtext) {
 
   view->SetSubText(subtext);
   view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
-  view->sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysWarning);
+  view->sub_text_label()->SetEnabledColor(cros_tokens::kCrosSysWarning);
   ash::TypographyProvider::Get()->StyleLabel(
       ash::TypographyToken::kCrosAnnotation1, *view->sub_text_label());
 }
@@ -176,9 +176,7 @@ TrayBubbleView::InitParams CreateInitParamsForTrayBubble(
   init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;
   init_params.translucent = true;
-  if (!features::IsBubbleCornerRadiusUpdateEnabled()) {
-    init_params.corner_radius = kTrayItemCornerRadius;
-  }
+  init_params.corner_radius = kTrayItemCornerRadius;
   init_params.reroute_event_handler = true;
   init_params.anchor_to_shelf_corner = anchor_to_shelf_corner;
 

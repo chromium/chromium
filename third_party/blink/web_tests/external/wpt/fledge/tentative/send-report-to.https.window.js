@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -6,7 +7,7 @@
 // META: variant=?1-5
 // META: variant=?6-last
 
-"use strict;"
+"use strict";
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);

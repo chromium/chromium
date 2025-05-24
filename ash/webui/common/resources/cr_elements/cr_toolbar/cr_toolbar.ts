@@ -15,7 +15,7 @@ import './cr_toolbar_search_field.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_toolbar.html.js';
-import {CrToolbarSearchFieldElement} from './cr_toolbar_search_field.js';
+import type {CrToolbarSearchFieldElement} from './cr_toolbar_search_field.js';
 
 export interface CrToolbarElement {
   $: {

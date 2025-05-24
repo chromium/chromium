@@ -129,6 +129,13 @@ struct InstallConstants {
   // elevation functionality.
   IID elevator_iid;
 
+  // The CLSID of the COM server that provides ETW tracing functionality.
+  CLSID tracing_service_clsid;
+
+  // The IID and the TypeLib of the ISystemTraceSession interface that provides
+  // ETW tracing functionality.
+  IID tracing_service_iid;
+
   // The default name for this mode's update channel.
   const wchar_t* default_channel_name;
 

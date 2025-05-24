@@ -23,6 +23,8 @@
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -117,19 +119,7 @@ TEST_F(BrowserTaskExecutorTest, GetTaskRunnerWithBrowserTaskTraits) {
   BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(BrowserThread::UI);
 }
 
-// Helper to perform the same tets for all BrowserThread::ID values.
-class BrowserTaskTraitsMappingTest : public BrowserTaskExecutorTest {
- protected:
-  class TestExecutor : public BaseBrowserTaskExecutor {
-   public:
-    ~TestExecutor() override = default;
-  };
-
- private:
-  TestExecutor test_executor_;
-};
-
-TEST_F(BrowserTaskTraitsMappingTest, BrowserTaskTraitsMapToProperPriorities) {
+TEST_F(BrowserTaskExecutorTest, BrowserTaskTraitsMapToProperPriorities) {
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({TaskPriority::BEST_EFFORT}),
             QueueType::kBestEffort);
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({TaskPriority::USER_VISIBLE}),
@@ -146,8 +136,7 @@ TEST_F(BrowserTaskTraitsMappingTest, BrowserTaskTraitsMapToProperPriorities) {
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({}), QueueType::kUserBlocking);
 }
 
-TEST_F(BrowserTaskTraitsMappingTest,
-       UIThreadTaskRunnerHasSamePriorityAsUIBlocking) {
+TEST_F(BrowserTaskExecutorTest, UIThreadTaskRunnerHasSamePriorityAsUIBlocking) {
   auto ui_blocking = GetUIThreadTaskRunner({TaskPriority::USER_BLOCKING});
   auto thread_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
 
@@ -179,9 +168,10 @@ class BrowserTaskExecutorWithCustomSchedulerTest : public testing::Test {
               base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler =
           BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
+
       DeferredInitFromSubclass(
           browser_ui_thread_scheduler->GetHandle()->GetBrowserTaskRunner(
-              QueueType::kUserBlocking));
+              QueueType::kDefault));
       BrowserTaskExecutor::CreateForTesting(
           std::move(browser_ui_thread_scheduler),
           BrowserIOThreadDelegate::CreateForTesting(sequence_manager()));
@@ -241,6 +231,124 @@ TEST_F(BrowserTaskExecutorWithCustomSchedulerTest,
   BrowserTaskExecutor::OnStartupComplete();
   EXPECT_CALL(best_effort, Run).Times(4);
   task_environment_.FastForwardBy(base::Milliseconds(100));
+}
+
+TEST_F(BrowserTaskExecutorWithCustomSchedulerTest,
+       OnlyDefaultTaskRunnerActiveAfterCreationForIO) {
+  StrictMockTask task;
+  for (size_t i = 0; i < BrowserTaskQueues::kNumQueueTypes; ++i) {
+    auto queue_type = static_cast<QueueType>(i);
+    if (queue_type != QueueType::kDefault) {
+      BrowserTaskExecutor::Get()
+          ->browser_io_thread_handle_->GetBrowserTaskRunner(queue_type)
+          ->PostTask(FROM_HERE, task.Get());
+    }
+  }
+
+  StrictMockTask default_task;
+  BrowserTaskExecutor::Get()
+      ->browser_io_thread_handle_->GetDefaultTaskRunner()
+      ->PostTask(FROM_HERE, default_task.Get());
+  EXPECT_CALL(default_task, Run);
+  BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(BrowserThread::IO);
+}
+
+class BrowserTaskExecutorWithCustomClientTest : public testing::Test {
+ private:
+  // We can't use the BrowserTaskEnvironment because it has a lot of logic
+  // which end up enabling the queues.
+  class CustomTaskEnvironment : public base::test::TaskEnvironment {
+   public:
+    CustomTaskEnvironment()
+        : base::test::TaskEnvironment(
+              internal::CreateBrowserTaskPrioritySettings(),
+              SubclassCreatesDefaultTaskRunner{},
+              base::test::TaskEnvironment::MainThreadType::UI,
+              base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+      std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler =
+          BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
+      DeferredInitFromSubclass(
+          browser_ui_thread_scheduler->GetHandle()->GetBrowserTaskRunner(
+              QueueType::kDefault));
+      BrowserTaskExecutor::CreateForTesting(
+          std::move(browser_ui_thread_scheduler),
+          BrowserIOThreadDelegate::CreateForTesting(sequence_manager()));
+    }
+  };
+
+  class TaskRunnerNotEnabledContentBrowserClient : public ContentBrowserClient {
+   public:
+    TaskRunnerNotEnabledContentBrowserClient() {
+      old_browser_client_ = SetBrowserClientForTesting(this);
+    }
+    ~TaskRunnerNotEnabledContentBrowserClient() override {
+      EXPECT_EQ(this, SetBrowserClientForTesting(old_browser_client_));
+    }
+    void RunStartupCompleteCallback() { std::move(callback_).Run(); }
+
+   private:
+    raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
+    base::OnceClosure callback_;
+    void OnUiTaskRunnerReady(
+        base::OnceClosure enable_native_ui_task_execution_callback) override {
+      callback_ = std::move(enable_native_ui_task_execution_callback);
+    }
+  };
+
+ public:
+  ~BrowserTaskExecutorWithCustomClientTest() override {
+    BrowserTaskExecutor::ResetForTesting();
+  }
+
+ protected:
+  TaskRunnerNotEnabledContentBrowserClient content_browser_client_;
+  CustomTaskEnvironment task_environment_;
+};
+
+TEST_F(BrowserTaskExecutorWithCustomClientTest,
+       TasksNotRunIfContentClientDoesNotRunCallback) {
+  StrictMockTask task;
+
+  GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+      ->PostTask(FROM_HERE, task.Get());
+  GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+      ->PostTask(FROM_HERE, task.Get());
+
+  BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(BrowserThread::UI);
+
+  content_browser_client_.RunStartupCompleteCallback();
+
+  EXPECT_CALL(task, Run).Times(2);
+  BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(BrowserThread::UI);
+}
+
+class BrowserTaskExecutorWithNoContentClientTest : public testing::Test {
+ public:
+  BrowserTaskExecutorWithNoContentClientTest() {
+    old_client_ = GetContentClientForTesting();
+    SetContentClient(nullptr);
+    task_environment_ = std::make_unique<BrowserTaskEnvironment>();
+  }
+  ~BrowserTaskExecutorWithNoContentClientTest() override {
+    SetContentClient(old_client_);
+    BrowserTaskExecutor::ResetForTesting();
+  }
+
+ private:
+  raw_ptr<ContentClient> old_client_ = nullptr;
+  std::unique_ptr<BrowserTaskEnvironment> task_environment_ = nullptr;
+};
+
+TEST_F(BrowserTaskExecutorWithNoContentClientTest,
+       TasksRunIfContentClientNotSet) {
+  StrictMockTask task;
+  GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+      ->PostTask(FROM_HERE, task.Get());
+  GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+      ->PostTask(FROM_HERE, task.Get());
+
+  EXPECT_CALL(task, Run).Times(2);
+  BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(BrowserThread::UI);
 }
 
 }  // namespace content

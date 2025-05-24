@@ -15,7 +15,7 @@ const char kDeviceEventLogEntry[] = "device_event_log";
 DeviceEventLogSource::DeviceEventLogSource()
     : SystemLogsSource("DeviceEvent") {}
 
-DeviceEventLogSource::~DeviceEventLogSource() {}
+DeviceEventLogSource::~DeviceEventLogSource() = default;
 
 void DeviceEventLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

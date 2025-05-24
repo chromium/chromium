@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -39,7 +38,9 @@
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/utils/base_string.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/mime_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 
 namespace extensions {
 
@@ -51,39 +52,47 @@ using content_verifier_utils::CanonicalRelativePath;
 // This function converts paths like "//foo/bar", "./foo/bar", and
 // "/foo/bar" to "foo/bar". It also converts path separators to "/".
 base::FilePath NormalizeRelativePath(const base::FilePath& path) {
-  if (path.ReferencesParent())
-    return base::FilePath();
+  // Remove leading separator characters.
+  auto path_trimmed_separators = base::FilePath(base::TrimString(
+      path.value(), base::FilePath::kSeparators, base::TRIM_LEADING));
 
-  std::vector<base::FilePath::StringType> parts = path.GetComponents();
-  if (parts.empty())
+  // Ideally, we shouldn't end up here with an absolute path, but it can happen.
+  // For example, an extension's manifest may contain:
+  //
+  // "icons": { "48": "C:/icon.png" }
+  //
+  // In this case, such icon path is rejected on installation, but not when an
+  // installed extension is loaded.
+  //
+  // TODO(https://crbug.com/407932132): Make sure we only reach here with
+  // relative paths and replace this with a CHECK.
+  if (path_trimmed_separators.IsAbsolute()) {
     return base::FilePath();
+  }
 
-  // Remove the first component if it is '.' or '/' or '//'.
-  const base::FilePath::StringType separators(
-      base::FilePath::kSeparators, base::FilePath::kSeparatorsLength);
-  if (!parts[0].empty() &&
-      (parts[0] == base::FilePath::kCurrentDirectory ||
-       parts[0].find_first_not_of(separators) == std::string::npos))
+  base::FilePath path_normalized =
+      content_verifier_utils::NormalizePathComponents(path_trimmed_separators);
+
+  std::vector<base::FilePath::StringType> parts =
+      path_normalized.GetComponents();
+
+  // Remove all parent directory components from the beginning of the path,
+  // since they're ignored when using the path in the request url, e.g.
+  // chrome-extension://<extension_id>/../foo/bar.html is resolved as
+  // chrome-extension://<extension_id>/foo/bar.html.
+  while (!parts.empty() && parts[0] == base::FilePath::kParentDirectory) {
     parts.erase(parts.begin());
+  }
 
   // Note that elsewhere we always normalize path separators to '/' so this
   // should work for all platforms.
   base::FilePath::StringType normalized_relative_path =
       base::JoinString(parts, base::FilePath::StringType(1, '/'));
   // Preserve trailing separator, if present.
-  if (path.EndsWithSeparator())
-    normalized_relative_path.append(1, '/');
+  if (path.EndsWithSeparator() && !normalized_relative_path.empty()) {
+    normalized_relative_path.push_back('/');
+  }
   return base::FilePath(normalized_relative_path);
-}
-
-bool HasScriptFileExt(const base::FilePath& requested_path) {
-  return requested_path.MatchesExtension(FILE_PATH_LITERAL(".js"));
-}
-
-bool HasPageFileExt(const base::FilePath& requested_path) {
-  base::FilePath::StringType file_extension = requested_path.Extension();
-  return requested_path.MatchesExtension(FILE_PATH_LITERAL(".html")) ||
-         requested_path.MatchesExtension(FILE_PATH_LITERAL(".htm"));
 }
 
 std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
@@ -456,13 +465,18 @@ class ContentVerifier::VerifiedFileTypeHelper {
       return ContentVerifier::VerifiedFileType::kContentScript;
     }
 
-    // JavaScript and HTML files should always be verified.
-    if (HasScriptFileExt(relative_path)) {
-      return ContentVerifier::VerifiedFileType::kMiscJsFile;
-    }
+    const base::FilePath canonical_path(canonical_path_value.value());
 
-    if (HasPageFileExt(relative_path)) {
-      return ContentVerifier::VerifiedFileType::kMiscHtmlFile;
+    // JavaScript and HTML files should always be verified.
+    std::string mime_type;
+    if (net::GetWellKnownMimeTypeFromFile(canonical_path, &mime_type)) {
+      if (blink::IsSupportedJavascriptMimeType(mime_type)) {
+        return ContentVerifier::VerifiedFileType::kMiscJsFile;
+      }
+
+      if (mime_type == "text/html") {
+        return ContentVerifier::VerifiedFileType::kMiscHtmlFile;
+      }
     }
 
     // The browser re-writes image files during extension load, so they can't
@@ -478,7 +492,6 @@ class ContentVerifier::VerifiedFileTypeHelper {
       return ContentVerifier::VerifiedFileType::kNone;
     }
 
-    const base::FilePath canonical_path(canonical_path_value.value());
     if (locales_relative_dir_.IsParent(canonical_path)) {
       // TODO(asargent) - see if we can cache this list longer to avoid
       // having to fetch it more than once for a given run of the
@@ -711,28 +724,17 @@ void ContentVerifier::VerifyFailed(
 
     // TODO(crbug.com/325613709): Remove docs offline specific logging after a
     // few milestones.
-    if (extension_id == extension_misc::kDocsOfflineExtensionId) {
-      if (manifest_version == 2) {
-        base::UmaHistogramEnumeration(
-            base::StringPrintf("Extensions.ContentVerification."
-                               "VerifyFailedOnFileMV2.GoogleDocsOffline.%s",
-                               histogram_suffix),
-            reason, ContentVerifyJob::FAILURE_REASON_MAX);
-        base::UmaHistogramEnumeration(
-            "Extensions.ContentVerification.VerifyFailedOnFileTypeMV2."
-            "GoogleDocsOffline",
-            file_type);
-      } else if (manifest_version == 3) {
-        base::UmaHistogramEnumeration(
-            base::StringPrintf("Extensions.ContentVerification."
-                               "VerifyFailedOnFileMV3.GoogleDocsOffline.%s",
-                               histogram_suffix),
-            reason, ContentVerifyJob::FAILURE_REASON_MAX);
-        base::UmaHistogramEnumeration(
-            "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3."
-            "GoogleDocsOffline",
-            file_type);
-      }
+    if (extension_id == extension_misc::kDocsOfflineExtensionId &&
+        manifest_version == 3) {
+      base::UmaHistogramEnumeration(
+          base::StringPrintf("Extensions.ContentVerification."
+                             "VerifyFailedOnFileMV3.GoogleDocsOffline.%s",
+                             histogram_suffix),
+          reason, ContentVerifyJob::FAILURE_REASON_MAX);
+      base::UmaHistogramEnumeration(
+          "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3."
+          "GoogleDocsOffline",
+          file_type);
     }
   }
 
@@ -893,7 +895,7 @@ void ContentVerifier::OnFetchComplete(
   auto record_hash_mismatch = [&data, &did_hash_mismatch](
                                   const char* mv2_histogram,
                                   const char* mv3_histogram) {
-    if (data->manifest_version == 2) {
+    if (mv2_histogram && data->manifest_version == 2) {
       base::UmaHistogramBoolean(mv2_histogram, did_hash_mismatch);
     } else if (data->manifest_version == 3) {
       base::UmaHistogramBoolean(mv3_histogram, did_hash_mismatch);
@@ -908,8 +910,7 @@ void ContentVerifier::OnFetchComplete(
   // milestones.
   if (extension_id == extension_misc::kDocsOfflineExtensionId) {
     record_hash_mismatch(
-        "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2."
-        "GoogleDocsOffline",
+        nullptr,  // No MV2 Google Docs Offline version.
         "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3."
         "GoogleDocsOffline");
   }
@@ -1015,7 +1016,7 @@ bool ContentVerifier::ShouldVerifyAnyPathsForTesting(
   }
   VerifiedFileTypeHelper helper(*data);
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       relative_unix_paths, [&helper](const base::FilePath& path) {
         return helper.GetVerifiedFileType(path) != VerifiedFileType::kNone;
       });

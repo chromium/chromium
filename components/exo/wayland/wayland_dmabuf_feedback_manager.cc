@@ -385,8 +385,7 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufV3) &&
-      !base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufV4)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufV4)) {
     version_ = ZWP_LINUX_BUFFER_PARAMS_V1_CREATE_IMMED_SINCE_VERSION;
     return;
   }

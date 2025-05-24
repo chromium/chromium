@@ -16,13 +16,9 @@ namespace client_hints {
 InMemoryClientHintsControllerDelegate::InMemoryClientHintsControllerDelegate(
     network::NetworkQualityTracker* network_quality_tracker,
     base::RepeatingCallback<bool(const GURL&)> is_javascript_allowed_callback,
-    base::RepeatingCallback<bool(const GURL&)>
-        are_third_party_cookies_blocked_callback,
     blink::UserAgentMetadata user_agent_metadata)
     : network_quality_tracker_(network_quality_tracker),
       is_javascript_allowed_callback_(is_javascript_allowed_callback),
-      are_third_party_cookies_blocked_callback_(
-          are_third_party_cookies_blocked_callback),
       user_agent_metadata_(user_agent_metadata) {}
 
 InMemoryClientHintsControllerDelegate::
@@ -90,12 +86,6 @@ bool InMemoryClientHintsControllerDelegate::IsJavaScriptAllowed(
     const GURL& url,
     content::RenderFrameHost* parent_rfh) {
   return is_javascript_allowed_callback_.Run(url);
-}
-
-bool InMemoryClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
-    const GURL& url,
-    content::RenderFrameHost* rfh) {
-  return are_third_party_cookies_blocked_callback_.Run(url);
 }
 
 blink::UserAgentMetadata

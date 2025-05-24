@@ -31,7 +31,7 @@ TabListSceneLayer::TabListSceneLayer(JNIEnv* env, const JavaRef<jobject>& jobj)
   layer()->AddChild(own_tree_);
 }
 
-TabListSceneLayer::~TabListSceneLayer() {}
+TabListSceneLayer::~TabListSceneLayer() = default;
 
 void TabListSceneLayer::BeginBuildingFrame(JNIEnv* env,
                                            const JavaParamRef<jobject>& jobj) {
@@ -153,7 +153,7 @@ void TabListSceneLayer::PutBackgroundLayer(
     jint top_offset) {
   int ui_resource_id = resource_manager_->GetUIResourceId(
       ui::ANDROID_RESOURCE_TYPE_DYNAMIC, resource_id);
-  if (ui_resource_id == 0) {
+  if (ui_resource_id == ui::Resource::kInvalidResourceId) {
     return;
   }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/tiles/picture_layer_tiling.h"
 
 #include <stddef.h>
@@ -290,8 +285,9 @@ void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
                                              bool recreate_tiles) {
   // We only invalidate the active tiling when it's orphaned: it has no pending
   // twin, so it's slated for removal in the future.
-  if (live_tiles_rect_.IsEmpty())
+  if (current_eventually_rect_.IsEmpty()) {
     return;
+  }
 
   base::flat_map<TileIndex, gfx::Rect> remove_tiles;
   gfx::Rect expanded_eventually_rect =

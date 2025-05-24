@@ -12,10 +12,6 @@
 #include "extensions/browser/mock_extension_system.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
-
 class ExtensionPrefValueMap;
 class PrefService;
 
@@ -85,10 +81,6 @@ class ExtensionsTest : public testing::Test {
   // constructor to initialize all other members out-of-line.
   explicit ExtensionsTest(
       std::unique_ptr<content::BrowserTaskEnvironment> task_environment);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
-#endif
 
   std::unique_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<content::BrowserContext> incognito_context_;

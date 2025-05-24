@@ -13,8 +13,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -30,6 +33,10 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_class_properties.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#endif
 
 namespace {
 
@@ -56,15 +63,13 @@ std::unique_ptr<gfx::MultiAnimation> CreateTabRecordingIndicatorAnimation() {
   gfx::MultiAnimation::Parts parts;
   for (size_t i = 0; i < kFadeInFadeOutCycles; ++i) {
     // Fade-in:
-    parts.push_back(gfx::MultiAnimation::Part(kIndicatorFadeInDuration,
-                                              gfx::Tween::EASE_IN));
+    parts.emplace_back(kIndicatorFadeInDuration, gfx::Tween::EASE_IN);
     // Fade-out (from 1 to 0):
-    parts.push_back(gfx::MultiAnimation::Part(kIndicatorFadeOutDuration,
-                                              gfx::Tween::EASE_IN, 1.0, 0.0));
+    parts.emplace_back(kIndicatorFadeOutDuration, gfx::Tween::EASE_IN, 1.0,
+                       0.0);
   }
   // Finish by fading in to show the indicator.
-  parts.push_back(
-      gfx::MultiAnimation::Part(kIndicatorFadeInDuration, gfx::Tween::EASE_IN));
+  parts.emplace_back(kIndicatorFadeInDuration, gfx::Tween::EASE_IN);
 
   auto animation =
       std::make_unique<gfx::MultiAnimation>(parts, kIndicatorFrameInterval);
@@ -87,31 +92,16 @@ bool IsShiftOrControlDown(const ui::Event& event) {
 }
 
 ui::ImageModel GetTabAlertIndicatorImageForPressedState(
-    TabAlertState alert_state,
+    tabs::TabAlert alert_state,
     ui::ColorId button_color) {
-  switch (alert_state) {
-    case TabAlertState::AUDIO_PLAYING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          TabAlertState::AUDIO_MUTING, button_color);
-    case TabAlertState::AUDIO_MUTING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          TabAlertState::AUDIO_PLAYING, button_color);
-    case TabAlertState::MEDIA_RECORDING:
-    case TabAlertState::AUDIO_RECORDING:
-    case TabAlertState::VIDEO_RECORDING:
-    case TabAlertState::TAB_CAPTURING:
-    case TabAlertState::BLUETOOTH_CONNECTED:
-    case TabAlertState::USB_CONNECTED:
-    case TabAlertState::PIP_PLAYING:
-    case TabAlertState::DESKTOP_CAPTURING:
-    case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
-    case TabAlertState::HID_CONNECTED:
-    case TabAlertState::SERIAL_CONNECTED:
-    case TabAlertState::VR_PRESENTING_IN_HEADSET:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(alert_state,
-                                                             button_color);
+  tabs::TabAlert pressed_alert_state = alert_state;
+  if (alert_state == tabs::TabAlert::AUDIO_PLAYING) {
+    alert_state = tabs::TabAlert::AUDIO_MUTING;
+  } else if (alert_state == tabs::TabAlert::AUDIO_MUTING) {
+    alert_state = tabs::TabAlert::AUDIO_PLAYING;
   }
-  NOTREACHED();
+
+  return tabs::GetAlertImageModel(pressed_alert_state, button_color);
 }
 
 }  // namespace
@@ -158,22 +148,22 @@ AlertIndicatorButton::AlertIndicatorButton(Tab* parent_tab)
 AlertIndicatorButton::~AlertIndicatorButton() = default;
 
 void AlertIndicatorButton::TransitionToAlertState(
-    std::optional<TabAlertState> next_state) {
+    std::optional<tabs::TabAlert> next_state) {
   if (next_state == alert_state_) {
     return;
   }
 
-  std::optional<TabAlertState> previous_alert_showing_state =
+  std::optional<tabs::TabAlert> previous_alert_showing_state =
       showing_alert_state_;
 
   if (next_state) {
     UpdateIconForAlertState(next_state.value());
   }
 
-  if ((alert_state_ == TabAlertState::AUDIO_PLAYING &&
-       next_state == TabAlertState::AUDIO_MUTING) ||
-      (alert_state_ == TabAlertState::AUDIO_MUTING &&
-       next_state == TabAlertState::AUDIO_PLAYING)) {
+  if ((alert_state_ == tabs::TabAlert::AUDIO_PLAYING &&
+       next_state == tabs::TabAlert::AUDIO_MUTING) ||
+      (alert_state_ == tabs::TabAlert::AUDIO_MUTING &&
+       next_state == tabs::TabAlert::AUDIO_PLAYING)) {
     // Instant user feedback: No fade animation.
     showing_alert_state_ = next_state;
     fade_animation_.reset();
@@ -204,8 +194,8 @@ void AlertIndicatorButton::UpdateEnabledForMuteToggle() {
   const bool was_enabled = GetEnabled();
 
   bool enable = base::FeatureList::IsEnabled(media::kEnableTabMuting) &&
-                (alert_state_ == TabAlertState::AUDIO_PLAYING ||
-                 alert_state_ == TabAlertState::AUDIO_MUTING);
+                (alert_state_ == tabs::TabAlert::AUDIO_PLAYING ||
+                 alert_state_ == tabs::TabAlert::AUDIO_MUTING);
 
   // If the tab is not the currently-active tab, make sure it is wide enough
   // before enabling click-to-mute.  This ensures that there is enough click
@@ -225,8 +215,8 @@ void AlertIndicatorButton::UpdateEnabledForMuteToggle() {
 }
 
 void AlertIndicatorButton::OnParentTabButtonColorChanged() {
-  if (alert_state_ == TabAlertState::AUDIO_PLAYING ||
-      alert_state_ == TabAlertState::AUDIO_MUTING) {
+  if (alert_state_ == tabs::TabAlert::AUDIO_PLAYING ||
+      alert_state_ == tabs::TabAlert::AUDIO_MUTING) {
     UpdateIconForAlertState(alert_state_.value());
   }
 }
@@ -264,13 +254,13 @@ void AlertIndicatorButton::NotifyClick(const ui::Event& event) {
   // instant feedback.  In the very unlikely event that the mute toggle fails,
   // TransitionToAlertState() will be called again, via another code path, to
   // set the image to be consistent with the final outcome.
-  if (alert_state_ == TabAlertState::AUDIO_PLAYING) {
+  if (alert_state_ == tabs::TabAlert::AUDIO_PLAYING) {
     base::RecordAction(base::UserMetricsAction("AlertIndicatorButton_Mute"));
-    TransitionToAlertState(TabAlertState::AUDIO_MUTING);
+    TransitionToAlertState(tabs::TabAlert::AUDIO_MUTING);
   } else {
-    DCHECK(alert_state_ == TabAlertState::AUDIO_MUTING);
+    DCHECK(alert_state_ == tabs::TabAlert::AUDIO_MUTING);
     base::RecordAction(base::UserMetricsAction("AlertIndicatorButton_Unmute"));
-    TransitionToAlertState(TabAlertState::AUDIO_PLAYING);
+    TransitionToAlertState(tabs::TabAlert::AUDIO_PLAYING);
   }
 
   GetTab()->controller()->ToggleTabAudioMute(GetTab());
@@ -321,17 +311,15 @@ gfx::ImageSkia AlertIndicatorButton::GetImageToPaint() {
 
 std::unique_ptr<gfx::Animation>
 AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
-    std::optional<TabAlertState> alert_state) {
-  if (alert_state == TabAlertState::MEDIA_RECORDING ||
-      alert_state == TabAlertState::AUDIO_RECORDING ||
-      alert_state == TabAlertState::VIDEO_RECORDING ||
-      alert_state == TabAlertState::TAB_CAPTURING ||
-      alert_state == TabAlertState::DESKTOP_CAPTURING) {
-    if (base::FeatureList::IsEnabled(
-            content_settings::features::kImprovedSemanticsActivityIndicators) &&
-        (alert_state == TabAlertState::MEDIA_RECORDING ||
-         alert_state == TabAlertState::AUDIO_RECORDING ||
-         alert_state == TabAlertState::VIDEO_RECORDING) &&
+    std::optional<tabs::TabAlert> alert_state) {
+  if (alert_state == tabs::TabAlert::MEDIA_RECORDING ||
+      alert_state == tabs::TabAlert::AUDIO_RECORDING ||
+      alert_state == tabs::TabAlert::VIDEO_RECORDING ||
+      alert_state == tabs::TabAlert::TAB_CAPTURING ||
+      alert_state == tabs::TabAlert::DESKTOP_CAPTURING) {
+    if ((alert_state == tabs::TabAlert::MEDIA_RECORDING ||
+         alert_state == tabs::TabAlert::AUDIO_RECORDING ||
+         alert_state == tabs::TabAlert::VIDEO_RECORDING) &&
         camera_mic_indicator_start_time_ == base::Time()) {
       camera_mic_indicator_start_time_ = base::Time::Now();
     }
@@ -347,9 +335,7 @@ AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
   gfx::MultiAnimation::Parts parts;
   const bool is_for_fade_in = alert_state.has_value();
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kImprovedSemanticsActivityIndicators) &&
-      !is_for_fade_in && camera_mic_indicator_start_time_ != base::Time()) {
+  if (!is_for_fade_in && camera_mic_indicator_start_time_ != base::Time()) {
     base::TimeDelta delay =
         base::Time::Now() - camera_mic_indicator_start_time_;
     camera_mic_indicator_start_time_ = base::Time();
@@ -359,11 +345,11 @@ AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
                      kIndicatorFadeOutDuration);
 
     fadeout_animation_duration_for_testing_ = delay;
-    parts.push_back(gfx::MultiAnimation::Part(delay, gfx::Tween::EASE_IN));
+    parts.emplace_back(delay, gfx::Tween::EASE_IN);
   } else {
-    parts.push_back(gfx::MultiAnimation::Part(
+    parts.emplace_back(
         is_for_fade_in ? kIndicatorFadeInDuration : kIndicatorFadeOutDuration,
-        gfx::Tween::EASE_IN));
+        gfx::Tween::EASE_IN);
   }
 
   auto animation =
@@ -377,91 +363,9 @@ Tab* AlertIndicatorButton::GetTab() {
   return parent_tab_;
 }
 
-// Returns a cached image, to be shown by the alert indicator for the given
-// |alert_state|.  Uses the global ui::ResourceBundle shared instance.
-ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
-    TabAlertState alert_state,
-    ui::ColorId button_color) {
-  const gfx::VectorIcon* icon = nullptr;
-  int image_width = GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
-  switch (alert_state) {
-    case TabAlertState::AUDIO_PLAYING:
-        icon = &vector_icons::kVolumeUpChromeRefreshIcon;
-      break;
-    case TabAlertState::AUDIO_MUTING:
-        icon = &vector_icons::kVolumeOffChromeRefreshIcon;
-      break;
-    case TabAlertState::MEDIA_RECORDING:
-    case TabAlertState::AUDIO_RECORDING:
-    case TabAlertState::VIDEO_RECORDING:
-    case TabAlertState::DESKTOP_CAPTURING:
-        icon = &vector_icons::kRadioButtonCheckedIcon;
-      break;
-    case TabAlertState::TAB_CAPTURING:
-        icon = &vector_icons::kCaptureIcon;
-
-      // Tab capturing and presenting icon uses a different width compared to
-      // the other tab alert indicator icons.
-      image_width = GetLayoutConstant(TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH);
-      break;
-    case TabAlertState::BLUETOOTH_CONNECTED:
-        icon = &vector_icons::kBluetoothConnectedIcon;
-      break;
-    case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
-        icon = &vector_icons::kBluetoothScanningChromeRefreshIcon;
-      break;
-    case TabAlertState::USB_CONNECTED:
-        icon = &vector_icons::kUsbChromeRefreshIcon;
-      icon = &kTabUsbConnectedIcon;
-      break;
-    case TabAlertState::HID_CONNECTED:
-        icon = &vector_icons::kVideogameAssetChromeRefreshIcon;
-      break;
-    case TabAlertState::SERIAL_CONNECTED:
-        icon = &vector_icons::kSerialPortChromeRefreshIcon;
-      break;
-    case TabAlertState::PIP_PLAYING:
-        icon = &vector_icons::kPictureInPictureAltIcon;
-      break;
-    case TabAlertState::VR_PRESENTING_IN_HEADSET:
-        icon = &vector_icons::kCardboardIcon;
-      break;
-  }
-  DCHECK(icon);
-  return ui::ImageModel::FromVectorIcon(*icon, button_color, image_width);
-}
-
-ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
-    TabAlertState alert_state) {
-  switch (alert_state) {
-    case TabAlertState::MEDIA_RECORDING:
-    case TabAlertState::AUDIO_RECORDING:
-    case TabAlertState::VIDEO_RECORDING:
-    case TabAlertState::DESKTOP_CAPTURING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          alert_state, kColorHoverCardTabAlertMediaRecordingIcon);
-    case TabAlertState::TAB_CAPTURING:
-    case TabAlertState::PIP_PLAYING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          alert_state, kColorHoverCardTabAlertPipPlayingIcon);
-    case TabAlertState::AUDIO_PLAYING:
-    case TabAlertState::AUDIO_MUTING:
-    case TabAlertState::BLUETOOTH_CONNECTED:
-    case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
-    case TabAlertState::USB_CONNECTED:
-    case TabAlertState::HID_CONNECTED:
-    case TabAlertState::SERIAL_CONNECTED:
-    case TabAlertState::VR_PRESENTING_IN_HEADSET:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          alert_state, kColorHoverCardTabAlertAudioPlayingIcon);
-  }
-  NOTREACHED();
-}
-
-void AlertIndicatorButton::UpdateIconForAlertState(TabAlertState state) {
+void AlertIndicatorButton::UpdateIconForAlertState(tabs::TabAlert state) {
   const ui::ColorId color = parent_tab_->GetAlertIndicatorColor(state);
-  const ui::ImageModel indicator_image =
-      GetTabAlertIndicatorImage(state, color);
+  const ui::ImageModel indicator_image = tabs::GetAlertImageModel(state, color);
   SetImageModel(views::Button::STATE_NORMAL, indicator_image);
   SetImageModel(views::Button::STATE_DISABLED, indicator_image);
   SetImageModel(views::Button::STATE_PRESSED,

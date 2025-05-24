@@ -8,29 +8,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
 #include "chrome/common/pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace {
-constexpr char MicrosoftOneDriveMountAllowed[] = "allowed";
-constexpr char MicrosoftOneDriveNoAccountRestriction[] = "common";
-
-}  // namespace
-
 namespace chromeos::cloud_storage {
-
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kMicrosoftOneDriveMount,
-                               MicrosoftOneDriveMountAllowed);
-
-  base::Value::List account_restrictions_default;
-  account_restrictions_default.Append(MicrosoftOneDriveNoAccountRestriction);
-  registry->RegisterListPref(prefs::kMicrosoftOneDriveAccountRestrictions,
-                             std::move(account_restrictions_default));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(prefs::kAllowUserToRemoveODFS, true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
 
 extensions::api::odfs_config_private::Mount GetMicrosoftOneDriveMount(
     const Profile* profile) {

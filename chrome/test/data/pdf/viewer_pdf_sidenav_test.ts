@@ -9,6 +9,11 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 function createSidenav(): ViewerPdfSidenavElement {
   document.body.innerHTML = '';
   const sidenav = document.createElement('viewer-pdf-sidenav');
+  sidenav.strings = {
+    'tooltipThumbnails': 'Thumbnails',
+    'tooltipDocumentOutline': 'Document outline',
+    'tooltipAttachments': 'Attachments',
+  };
   document.body.appendChild(sidenav);
   return sidenav;
 }
@@ -33,9 +38,9 @@ const tests = [
 
     await microtasksFinished();
 
-    const icons = sidenav.shadowRoot!.querySelector('#icons')!;
-    const content = sidenav.shadowRoot!.querySelector('#content')!;
-    const buttons = sidenav.shadowRoot!.querySelectorAll('cr-icon-button');
+    const icons = sidenav.shadowRoot.querySelector('#icons')!;
+    const content = sidenav.shadowRoot.querySelector('#content')!;
+    const buttons = sidenav.shadowRoot.querySelectorAll('cr-icon-button');
     chrome.test.assertEq(3, buttons.length);
 
     const thumbnailButton = buttons[0]!;
@@ -53,6 +58,11 @@ const tests = [
         'pdf:doc-outline', outlineButton.getAttribute('iron-icon'));
     chrome.test.assertEq(
         'pdf:attach-file', attachmentButton.getAttribute('iron-icon'));
+
+    // Verify button titles.
+    chrome.test.assertEq('Thumbnails', thumbnailButton.title);
+    chrome.test.assertEq('Document outline', outlineButton.title);
+    chrome.test.assertEq('Attachments', attachmentButton.title);
 
     function assertThumbnailView() {
       chrome.test.assertTrue(
@@ -184,9 +194,9 @@ const tests = [
     ];
 
     await microtasksFinished();
-    const icons = sidenav.shadowRoot!.querySelector('#icons')!;
-    const content = sidenav.shadowRoot!.querySelector('#content')!;
-    const buttons = sidenav.shadowRoot!.querySelectorAll('cr-icon-button');
+    const icons = sidenav.shadowRoot.querySelector('#icons')!;
+    const content = sidenav.shadowRoot.querySelector('#content')!;
+    const buttons = sidenav.shadowRoot.querySelectorAll('cr-icon-button');
     chrome.test.assertEq(2, buttons.length);
 
     const thumbnailButton = buttons[0]!;
@@ -279,9 +289,9 @@ const tests = [
 
     await microtasksFinished();
 
-    const icons = sidenav.shadowRoot!.querySelector('#icons')!;
-    const content = sidenav.shadowRoot!.querySelector('#content')!;
-    const buttons = sidenav.shadowRoot!.querySelectorAll('cr-icon-button');
+    const icons = sidenav.shadowRoot.querySelector('#icons')!;
+    const content = sidenav.shadowRoot.querySelector('#content')!;
+    const buttons = sidenav.shadowRoot.querySelectorAll('cr-icon-button');
     chrome.test.assertEq(2, buttons.length);
 
     const thumbnailButton = buttons[0]!;

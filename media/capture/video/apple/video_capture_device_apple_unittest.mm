@@ -5,6 +5,8 @@
 #include "media/capture/video/apple/video_capture_device_apple.h"
 
 #include "base/apple/scoped_cftyperef.h"
+#import "base/memory/ref_counted.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -135,6 +137,8 @@ TEST(VideoCaptureDeviceMacTest, FindBestCaptureFormat) {
 class MockImageCaptureClient
     : public base::RefCountedThreadSafe<MockImageCaptureClient> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // GMock doesn't support move-only arguments, so we use this forward method.
   void DoOnGetPhotoState(mojom::PhotoStatePtr received_state) {
     state = std::move(received_state);
@@ -154,7 +158,7 @@ class VideoCaptureDeviceMacWithImageCaptureTest : public ::testing::Test {
 
  protected:
   VideoCaptureDeviceMacWithImageCaptureTest()
-      : image_capture_client_(new MockImageCaptureClient()) {}
+      : image_capture_client_(base::MakeRefCounted<MockImageCaptureClient>()) {}
 
   VideoCaptureDeviceApple* GetFirstAvailableDevice() {
     VideoCaptureDeviceFactoryApple video_capture_device_factory;

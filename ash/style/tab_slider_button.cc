@@ -12,6 +12,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -107,7 +108,7 @@ void TabSliderButton::SetSelected(bool selected) {
   OnSelectedChanged();
 }
 
-SkColor TabSliderButton::GetColorIdOnButtonState() {
+ui::ColorId TabSliderButton::GetColorIdOnButtonState() {
   const bool enabled = GetEnabled();
   return selected()
              ? (enabled ? kSelectedColorId : kDisabledSelectedColorId)
@@ -192,7 +193,7 @@ LabelSliderButton::LabelSliderButton(PressedCallback callback,
 LabelSliderButton::~LabelSliderButton() = default;
 
 void LabelSliderButton::UpdateLabelColor() {
-  label_->SetEnabledColorId(GetColorIdOnButtonState());
+  label_->SetEnabledColor(GetColorIdOnButtonState());
   SchedulePaint();
 }
 
@@ -281,8 +282,31 @@ IconLabelSliderButton::IconLabelSliderButton(PressedCallback callback,
 
 IconLabelSliderButton::~IconLabelSliderButton() = default;
 
+gfx::Size IconLabelSliderButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  // TODO(crbug.com/400028865): this is a workaround for label preferred size
+  // calculation. This should be remove once the issue is fixed.
+  //
+  // Return 0 width to avoid overflow.
+  //
+  // View subtree:
+  // . SetValueEffectSlider (vertical BoxLayout, stretch cross axis)
+  //    . Title
+  //    . TabSlider (TableLayout)
+  //      . IconLabelSliderButton
+  //      . IconLabelSliderButton
+  //      ...
+  //
+  //
+  // The button contains a single-line label that can be very long.
+  // When the available width is small than the full width, the
+  // label refuses to shrink (i.e., it still returns full width for the
+  // preferred width). This causes TabSlider to overflow.
+  return {0, GetMinimumSize().height()};
+}
+
 void IconLabelSliderButton::UpdateColors() {
-  label_->SetEnabledColorId(GetColorIdOnButtonState());
+  label_->SetEnabledColor(GetColorIdOnButtonState());
   // `SchedulePaint()` will result in the `gfx::VectorIcon` for `image_view_`
   // getting re-generated with the proper color.
   SchedulePaint();

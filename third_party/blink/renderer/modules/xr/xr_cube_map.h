@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_CUBE_MAP_H_
 
 #include "base/types/pass_key.h"
-#include "device/vr/public/mojom/rgba_tuple_f16.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 
@@ -30,12 +29,12 @@ class XRCubeMap {
 
  private:
   uint32_t width_and_height_ = 0;
-  WTF::Vector<device::RgbaTupleF16> positive_x_;
-  WTF::Vector<device::RgbaTupleF16> negative_x_;
-  WTF::Vector<device::RgbaTupleF16> positive_y_;
-  WTF::Vector<device::RgbaTupleF16> negative_y_;
-  WTF::Vector<device::RgbaTupleF16> positive_z_;
-  WTF::Vector<device::RgbaTupleF16> negative_z_;
+  WTF::Vector<uint16_t> positive_x_;
+  WTF::Vector<uint16_t> negative_x_;
+  WTF::Vector<uint16_t> positive_y_;
+  WTF::Vector<uint16_t> negative_y_;
+  WTF::Vector<uint16_t> positive_z_;
+  WTF::Vector<uint16_t> negative_z_;
 };
 
 }  // namespace blink

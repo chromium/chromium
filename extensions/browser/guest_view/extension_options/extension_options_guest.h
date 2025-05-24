@@ -32,10 +32,12 @@ class ExtensionOptionsGuest
   explicit ExtensionOptionsGuest(content::RenderFrameHost* owner_rfh);
 
   // GuestViewBase implementation.
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) final;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       scoped_refptr<content::SiteInstance> site_instance,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;
+  void DidAttachToEmbedder() final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
   void GuestViewDidStopLoading() final;
@@ -43,6 +45,11 @@ class ExtensionOptionsGuest
   int GetTaskPrefix() const final;
   bool IsPreferredSizeModeEnabled() const final;
   void OnPreferredSizeChanged(const gfx::Size& pref_size) final;
+
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
+  void GuestClose() final;
 
   // content::WebContentsDelegate implementation.
   content::WebContents* AddNewContents(
@@ -63,6 +70,7 @@ class ExtensionOptionsGuest
                          const content::ContextMenuParams& params) final;
   bool ShouldResumeRequestsForCreatedWindow() override;
   bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,

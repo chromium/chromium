@@ -184,6 +184,9 @@ OSStatus FakeAppleKeychainV2::ItemCopyMatching(CFDictionaryRef query,
   CFTypeRef query_application_tag =
       CFDictionaryGetValue(query, kSecAttrApplicationTag);
 
+  CFStringRef query_attr_service =
+      base::apple::GetValueFromDictionary<CFStringRef>(query, kSecAttrService);
+
   // Filter the items based on `query`.
   base::apple::ScopedCFTypeRef<CFMutableArrayRef> items(
       CFArrayCreateMutable(nullptr, items_.size(), &kCFTypeArrayCallBacks));
@@ -205,13 +208,19 @@ OSStatus FakeAppleKeychainV2::ItemCopyMatching(CFDictionaryRef query,
             item.get(), kSecAttrApplicationLabel);
     CFTypeRef item_application_tag =
         CFDictionaryGetValue(item.get(), kSecAttrApplicationTag);
+    CFStringRef item_attr_service =
+        base::apple::GetValueFromDictionary<CFStringRef>(item.get(),
+                                                         kSecAttrService);
     if ((query_label && (!item_label || !CFEqual(query_label, item_label))) ||
         (query_application_label &&
          (!item_application_label ||
           !CFEqual(query_application_label, item_application_label))) ||
         (query_application_tag &&
          (!item_application_tag ||
-          !CFEqual(query_application_tag, item_application_tag)))) {
+          !CFEqual(query_application_tag, item_application_tag))) ||
+        (query_attr_service &&
+         (!item_attr_service ||
+          !CFEqual(query_attr_service, item_attr_service)))) {
       continue;
     }
     if (match_all) {
@@ -307,6 +316,7 @@ FakeAppleKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_IOS_TVOS)
 BOOL FakeAppleKeychainV2::LAContextCanEvaluatePolicy(
     LAPolicy policy,
     NSError* __autoreleasing* error) {
@@ -324,5 +334,6 @@ BOOL FakeAppleKeychainV2::LAContextCanEvaluatePolicy(
       return false;
   }
 }
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
 
 }  // namespace crypto

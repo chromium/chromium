@@ -43,6 +43,18 @@ SSLClientSessionCache::Key MakeTestKey(const std::string& str) {
   return key;
 }
 
+SSLClientSessionCache::Key AddProxyChain(SSLClientSessionCache::Key key) {
+  key.proxy_chain = ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS,
+                                                      "proxy", 999);
+  key.proxy_chain_index = 0;
+  return key;
+}
+
+SSLClientSessionCache::Key WithProxyUsage(SSLClientSessionCache::Key key) {
+  key.session_usage = SessionUsage::kProxy;
+  return key;
+}
+
 class SSLClientSessionCacheTest : public testing::Test {
  public:
   SSLClientSessionCacheTest() : ssl_ctx_(SSL_CTX_new(TLS_method())) {}
@@ -82,6 +94,8 @@ TEST_F(SSLClientSessionCacheTest, Basic) {
   bssl::UniquePtr<SSL_SESSION> session1 = NewSSLSession();
   bssl::UniquePtr<SSL_SESSION> session2 = NewSSLSession();
   bssl::UniquePtr<SSL_SESSION> session3 = NewSSLSession();
+  bssl::UniquePtr<SSL_SESSION> session4 = NewSSLSession();
+  bssl::UniquePtr<SSL_SESSION> session5 = NewSSLSession();
 
   EXPECT_EQ(nullptr, cache.Lookup(MakeTestKey("key1")).get());
   EXPECT_EQ(nullptr, cache.Lookup(MakeTestKey("key2")).get());
@@ -102,10 +116,24 @@ TEST_F(SSLClientSessionCacheTest, Basic) {
   EXPECT_EQ(session2.get(), cache.Lookup(MakeTestKey("key2")).get());
   EXPECT_EQ(2u, cache.size());
 
+  cache.Insert(AddProxyChain(MakeTestKey("key1")), bssl::UpRef(session4));
+  EXPECT_EQ(session3.get(), cache.Lookup(MakeTestKey("key1")).get());
+  EXPECT_EQ(session4.get(),
+            cache.Lookup(AddProxyChain(MakeTestKey("key1"))).get());
+  EXPECT_EQ(3u, cache.size());
+
+  cache.Insert(WithProxyUsage(MakeTestKey("key1")), bssl::UpRef(session5));
+  EXPECT_EQ(session3.get(), cache.Lookup(MakeTestKey("key1")).get());
+  EXPECT_EQ(session5.get(),
+            cache.Lookup(WithProxyUsage(MakeTestKey("key1"))).get());
+  EXPECT_EQ(4u, cache.size());
+
   cache.Flush();
   EXPECT_EQ(nullptr, cache.Lookup(MakeTestKey("key1")).get());
   EXPECT_EQ(nullptr, cache.Lookup(MakeTestKey("key2")).get());
   EXPECT_EQ(nullptr, cache.Lookup(MakeTestKey("key3")).get());
+  EXPECT_EQ(nullptr, cache.Lookup(AddProxyChain(MakeTestKey("key1"))).get());
+  EXPECT_EQ(nullptr, cache.Lookup(WithProxyUsage(MakeTestKey("key1"))).get());
   EXPECT_EQ(0u, cache.size());
 }
 

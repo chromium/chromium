@@ -31,7 +31,7 @@ class SessionId;
 
 class SessionsGetRecentlyClosedFunction : public ExtensionFunction {
  protected:
-  ~SessionsGetRecentlyClosedFunction() override {}
+  ~SessionsGetRecentlyClosedFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("sessions.getRecentlyClosed",
                              SESSIONS_GETRECENTLYCLOSED)
@@ -49,7 +49,7 @@ class SessionsGetRecentlyClosedFunction : public ExtensionFunction {
 
 class SessionsGetDevicesFunction : public ExtensionFunction {
  protected:
-  ~SessionsGetDevicesFunction() override {}
+  ~SessionsGetDevicesFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("sessions.getDevices", SESSIONS_GETDEVICES)
 
@@ -70,7 +70,7 @@ class SessionsGetDevicesFunction : public ExtensionFunction {
 
 class SessionsRestoreFunction : public ExtensionFunction {
  protected:
-  ~SessionsRestoreFunction() override {}
+  ~SessionsRestoreFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("sessions.restore", SESSIONS_RESTORE)
 

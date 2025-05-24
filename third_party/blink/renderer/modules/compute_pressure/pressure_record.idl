@@ -18,6 +18,7 @@ enum PressureState {
 ] interface PressureRecord {
   readonly attribute PressureSource source;
   readonly attribute PressureState state;
+  [RuntimeEnabled=ComputePressureOwnContributionEstimate]readonly attribute double? ownContributionEstimate;
   readonly attribute DOMHighResTimeStamp time;
   [CallWith=ScriptState] object toJSON();
 };

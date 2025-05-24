@@ -24,7 +24,8 @@ class NativeBrowserFrame {
   virtual ~NativeBrowserFrame() = default;
 
   // Returns the platform specific InitParams for initializing our widget.
-  virtual views::Widget::InitParams GetWidgetParams() = 0;
+  virtual views::Widget::InitParams GetWidgetParams(
+      views::Widget::InitParams::Ownership ownership) = 0;
 
   // Returns |true| if we should use the custom frame.
   virtual bool UseCustomFrame() const = 0;

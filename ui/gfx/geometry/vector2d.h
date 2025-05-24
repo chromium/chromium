@@ -15,12 +15,12 @@
 #include <iosfwd>
 #include <string>
 
-#include "ui/gfx/geometry/geometry_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
 
-class GEOMETRY_EXPORT Vector2d {
+class COMPONENT_EXPORT(GEOMETRY) Vector2d {
  public:
   constexpr Vector2d() : x_(0), y_(0) {}
   constexpr Vector2d(int x, int y) : x_(x), y_(y) {}
@@ -78,7 +78,7 @@ class GEOMETRY_EXPORT Vector2d {
   int y_;
 };
 
-GEOMETRY_EXPORT Vector2d operator-(const Vector2d&);
+COMPONENT_EXPORT(GEOMETRY) Vector2d operator-(const Vector2d&);
 
 inline Vector2d operator+(const Vector2d& lhs, const Vector2d& rhs) {
   Vector2d result = lhs;
@@ -103,4 +103,4 @@ void PrintTo(const Vector2d& vector, ::std::ostream* os);
 
 }  // namespace gfx
 
-#endif // UI_GFX_GEOMETRY_VECTOR2D_H_
+#endif  // UI_GFX_GEOMETRY_VECTOR2D_H_

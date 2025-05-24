@@ -46,6 +46,13 @@ void DummySegmentationPlatformService::GetAnnotatedNumericResult(
                      AnnotatedNumericResult(PredictionStatus::kFailed)));
 }
 
+void DummySegmentationPlatformService::GetInputKeysForModel(
+    const std::string& segmentation_key,
+    InputContextKeysCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::set<std::string>()));
+}
+
 SegmentSelectionResult DummySegmentationPlatformService::GetCachedSegmentResult(
     const std::string& segmentation_key) {
   return SegmentSelectionResult();

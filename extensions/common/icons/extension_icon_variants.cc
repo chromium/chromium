@@ -15,17 +15,20 @@ using Diagnostic = diagnostics::icon_variants::Diagnostic;
 
 ExtensionIconVariants::ExtensionIconVariants() = default;
 
+ExtensionIconVariants::~ExtensionIconVariants() = default;
+
 ExtensionIconVariants::ExtensionIconVariants(ExtensionIconVariants&& other) =
     default;
 
-ExtensionIconVariants::~ExtensionIconVariants() = default;
+ExtensionIconVariants::ExtensionIconVariants(
+    const ExtensionIconVariants& other) = default;
 
 void ExtensionIconVariants::Parse(const base::Value::List* list) {
   // Parse each icon variant in `icon_variants`.
   for (auto& entry : *list) {
     std::string issue;
     std::unique_ptr<ExtensionIconVariant> icon_variant =
-        ExtensionIconVariant::Parse(entry, &issue);
+        ExtensionIconVariant::Parse(entry);
     if (!icon_variant) {
       diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
           diagnostics::icon_variants::Feature::kIconVariants,
@@ -51,12 +54,19 @@ void ExtensionIconVariants::Parse(const base::Value::List* list) {
 }
 
 bool ExtensionIconVariants::IsEmpty() const {
-  return list_.size() == 0;
+  return list_.empty();
 }
 
 void ExtensionIconVariants::Add(
     std::unique_ptr<ExtensionIconVariant> icon_variant) {
   list_.emplace_back(std::move(*icon_variant));
+}
+
+void ExtensionIconVariants::AddDiagnostic(
+    diagnostics::icon_variants::Feature feature,
+    diagnostics::icon_variants::Id id) {
+  diagnostics_.emplace_back(
+      diagnostics::icon_variants::GetDiagnostic(feature, id));
 }
 
 }  //  namespace extensions

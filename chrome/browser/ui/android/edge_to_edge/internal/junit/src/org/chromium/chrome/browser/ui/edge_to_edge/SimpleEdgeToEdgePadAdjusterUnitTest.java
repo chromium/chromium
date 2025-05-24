@@ -38,7 +38,7 @@ public class SimpleEdgeToEdgePadAdjusterUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Rule public MockitoRule mockitoJUnit = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
 
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     private TestActivity mActivity;
@@ -131,5 +131,34 @@ public class SimpleEdgeToEdgePadAdjusterUnitTest {
 
         padAdjuster.destroy();
         verify(mEdgeToEdgeController).unregisterAdjuster(padAdjuster);
+    }
+
+    @Test
+    public void testDestroyResetPadding() {
+        ScrollView view = new ScrollView(mActivity);
+
+        int left = 1;
+        int top = 2;
+        int right = 3;
+        int bottom = 4;
+        view.setPadding(left, top, right, bottom);
+
+        var padAdjuster = new SimpleEdgeToEdgePadAdjuster(view, true);
+
+        int bottomInsets = 100;
+        padAdjuster.overrideBottomInset(bottomInsets);
+        assertEquals(left, view.getPaddingLeft());
+        assertEquals(top, view.getPaddingTop());
+        assertEquals(right, view.getPaddingRight());
+        assertEquals(bottom + bottomInsets, view.getPaddingBottom());
+        assertFalse(
+                "clipToPadding should be set to false when insets > 0.", view.getClipToPadding());
+
+        padAdjuster.destroy();
+        assertEquals(left, view.getPaddingLeft());
+        assertEquals(top, view.getPaddingTop());
+        assertEquals(right, view.getPaddingRight());
+        assertEquals(bottom, view.getPaddingBottom());
+        assertTrue("clipToPadding should be reset to true.", view.getClipToPadding());
     }
 }

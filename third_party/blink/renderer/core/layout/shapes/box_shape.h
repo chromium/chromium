@@ -31,7 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_BOX_SHAPE_H_
 
 #include "third_party/blink/renderer/core/layout/shapes/shape.h"
-#include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 
 namespace blink {
 
@@ -40,7 +40,7 @@ class WritingModeConverter;
 class BoxShape final : public Shape {
  public:
   // `bounds` is a logical rounded rectangle.
-  BoxShape(const FloatRoundedRect& bounds) : Shape(), bounds_(bounds) {}
+  BoxShape(const ContouredRect& bounds) : Shape(), bounds_(bounds) {}
 
   LogicalRect ShapeMarginLogicalBoundingBox() const override;
   bool IsEmpty() const override { return bounds_.IsEmpty(); }
@@ -48,14 +48,14 @@ class BoxShape final : public Shape {
                                   LayoutUnit logical_height) const override;
   void BuildDisplayPaths(DisplayPaths&) const override;
 
-  [[nodiscard]] static FloatRoundedRect ToLogical(
-      const FloatRoundedRect& rect,
+  [[nodiscard]] static ContouredRect ToLogical(
+      const ContouredRect& rect,
       const WritingModeConverter& converter);
 
  private:
-  FloatRoundedRect ShapeMarginBounds() const;
+  ContouredRect ShapeMarginBounds() const;
 
-  FloatRoundedRect bounds_;
+  ContouredRect bounds_;
 };
 
 }  // namespace blink

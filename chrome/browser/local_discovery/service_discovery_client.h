@@ -59,7 +59,7 @@ class ServiceWatcher {
       base::RepeatingCallback<void(UpdateType, const std::string&)>;
 
   // Listening will automatically stop when the destructor is called.
-  virtual ~ServiceWatcher() {}
+  virtual ~ServiceWatcher() = default;
 
   // Start the service type watcher.
   virtual void Start() = 0;
@@ -88,7 +88,7 @@ class ServiceResolver {
       ResolveCompleteCallback;
 
   // Listening will automatically stop when the destructor is called.
-  virtual ~ServiceResolver() {}
+  virtual ~ServiceResolver() = default;
 
   // Start the service reader.
   virtual void StartResolving() = 0;
@@ -103,14 +103,14 @@ class LocalDomainResolver {
                                   const net::IPAddress& /*address_ipv6*/)>
       IPAddressCallback;
 
-  virtual ~LocalDomainResolver() {}
+  virtual ~LocalDomainResolver() = default;
 
   virtual void Start() = 0;
 };
 
 class ServiceDiscoveryClient {
  public:
-  virtual ~ServiceDiscoveryClient() {}
+  virtual ~ServiceDiscoveryClient() = default;
 
   // Create a service watcher object listening for DNS-SD service announcements
   // on service type |service_type|.

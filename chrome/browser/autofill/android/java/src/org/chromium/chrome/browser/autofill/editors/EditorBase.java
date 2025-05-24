@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.autofill.editors;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,13 +19,13 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  *
  * @param <T> the class which extends EditableOption
  */
+@NullMarked
 public abstract class EditorBase<T extends EditableOption> {
-    @Nullable protected EditorDialogView mEditorDialog;
-    @Nullable protected Context mContext;
-    @Nullable protected PropertyModel mEditorModel;
-
-    @Nullable
-    protected PropertyModelChangeProcessor<PropertyModel, EditorDialogView, PropertyKey> mEditorMCP;
+    protected @Nullable EditorDialogView mEditorDialog;
+    protected @Nullable Context mContext;
+    protected @Nullable PropertyModel mEditorModel;
+    protected @Nullable PropertyModelChangeProcessor<PropertyModel, EditorDialogView, PropertyKey>
+            mEditorMCP;
 
     /**
      * Sets the user interface to be used for editing contact information.
@@ -46,12 +46,12 @@ public abstract class EditorBase<T extends EditableOption> {
      * @param doneCallback The callback to invoke when confirming the edit dialog, with the complete
      *     and valid information.
      * @param cancelCallback The callback to invoke when cancelling the edit dialog. Can be called
-     *     with null (|toEdit| was null), incomplete information (|toEdit| was incomplete), invalid
-     *     information (|toEdit| was invalid), or even with complete and valid information (|toEdit|
+     *     with null (`toEdit` was null), incomplete information (`toEdit` was incomplete), invalid
+     *     information (`toEdit` was invalid), or even with complete and valid information (`toEdit`
      *     was both complete and valid to begin with).
-     *     <p>TODO(crbug.com/40259080) Rename this method to showEditPrompt.
      */
-    protected void edit(@Nullable T toEdit, Callback<T> doneCallback, Callback<T> cancelCallback) {
+    protected void showEditPrompt(
+            @Nullable T toEdit, Callback<T> doneCallback, Callback<T> cancelCallback) {
         assert doneCallback != null;
         assert cancelCallback != null;
         assert mEditorDialog != null;
@@ -64,8 +64,10 @@ public abstract class EditorBase<T extends EditableOption> {
     }
 
     protected void reset() {
-        mEditorMCP.destroy();
-        mEditorMCP = null;
+        if (mEditorMCP != null) {
+            mEditorMCP.destroy();
+            mEditorMCP = null;
+        }
         mEditorModel = null;
     }
 }

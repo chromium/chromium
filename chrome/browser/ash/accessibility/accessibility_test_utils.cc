@@ -9,7 +9,6 @@
 #include "base/timer/timer.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -78,7 +77,7 @@ size_t ExtensionConsoleErrorObserver::GetErrorsAndWarningsCount() const {
   return errors_.size();
 }
 
-HistogramWaiter::HistogramWaiter(const char* metric_name) {
+HistogramWaiter::HistogramWaiter(std::string_view metric_name) {
   histogram_observer_ =
       std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
           metric_name,
@@ -94,9 +93,10 @@ void HistogramWaiter::Wait() {
   run_loop_.Run();
 }
 
-void HistogramWaiter::OnHistogramCallback(const char* metric_name,
-                                          uint64_t name_hash,
-                                          base::HistogramBase::Sample sample) {
+void HistogramWaiter::OnHistogramCallback(
+    std::string_view metric_name,
+    uint64_t name_hash,
+    base::HistogramBase::Sample32 sample) {
   run_loop_.Quit();
   histogram_observer_.reset();
 }

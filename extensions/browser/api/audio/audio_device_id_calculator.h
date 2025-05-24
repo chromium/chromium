@@ -20,7 +20,7 @@ namespace extensions {
 // to stable ID values exposable to apps using chrome.audio API.
 // Problem with stable device IDs provided by audio service is that they can be
 // globally unique for audio devices and thus can be used by apps to identify a
-// particular device. |AudioDeviceCalculator| provides stable mapping (saved in
+// particular device. `AudioDeviceCalculator` provides stable mapping (saved in
 // user prefs) from potentially globally unique ID to an ordinal ID (devices are
 // assigned IDs incrementally, as they are added to the mapping) scoped to a
 // browser context.
@@ -34,7 +34,7 @@ class AudioDeviceIdCalculator {
   virtual ~AudioDeviceIdCalculator();
 
   // Gets audio API stable device ID for the audio device whose stable device ID
-  // equals |audio_service_stable_id|.
+  // equals `audio_service_stable_id`.
   std::string GetStableDeviceId(uint64_t audio_service_stable_id);
 
  private:
@@ -44,7 +44,7 @@ class AudioDeviceIdCalculator {
   void LoadStableIdMap();
 
   // Generates and persists audio API stable device ID for the device whose
-  // audio service stable device ID equals |audio_service_stable_id|.
+  // audio service stable device ID equals `audio_service_stable_id`.
   // Returns the generated ID.
   std::string GenerateNewStableDeviceId(
       const std::string& audio_service_stable_id);

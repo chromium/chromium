@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/memory/mem_entry_impl.h"
 
 #include <algorithm>
@@ -128,13 +123,11 @@ int MemEntryImpl::GetStorageSize() const {
   return storage_size;
 }
 
-void MemEntryImpl::UpdateStateOnUse(EntryModified modified_enum) {
+void MemEntryImpl::UpdateStateOnUse() {
   if (!doomed_ && backend_)
     backend_->OnEntryUpdated(this);
 
   last_used_ = MemBackendImpl::Now(backend_);
-  if (modified_enum == ENTRY_WAS_MODIFIED)
-    last_modified_ = last_used_;
 }
 
 void MemEntryImpl::Doom() {
@@ -175,10 +168,6 @@ std::string MemEntryImpl::GetKey() const {
 
 Time MemEntryImpl::GetLastUsed() const {
   return last_used_;
-}
-
-Time MemEntryImpl::GetLastModified() const {
-  return last_modified_;
 }
 
 int32_t MemEntryImpl::GetDataSize(int index) const {
@@ -296,8 +285,7 @@ MemEntryImpl::MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,
     : key_(key),
       child_id_(child_id),
       parent_(parent),
-      last_modified_(MemBackendImpl::Now(backend)),
-      last_used_(last_modified_),
+      last_used_(MemBackendImpl::Now(backend)),
       backend_(backend) {
   backend_->OnEntryInserted(this);
   net_log_ = net::NetLogWithSource::Make(
@@ -338,15 +326,17 @@ int MemEntryImpl::InternalReadData(int index, int offset, IOBuffer* buf,
   int entry_size = data_[index].size();
   if (offset >= entry_size || offset < 0 || !buf_len)
     return 0;
+  unsigned u_offset = static_cast<unsigned>(offset);
 
   int end_offset;
   if (!base::CheckAdd(offset, buf_len).AssignIfValid(&end_offset) ||
       end_offset > entry_size)
     buf_len = entry_size - offset;
 
-  UpdateStateOnUse(ENTRY_WAS_NOT_MODIFIED);
-  std::copy(data_[index].begin() + offset,
-            data_[index].begin() + offset + buf_len, buf->data());
+  UpdateStateOnUse();
+  buf->span().copy_prefix_from(
+      base::as_byte_span(data_[index])
+          .subspan(u_offset, base::checked_cast<size_t>(buf_len)));
   return buf_len;
 }
 
@@ -362,6 +352,9 @@ int MemEntryImpl::InternalWriteData(int index, int offset, IOBuffer* buf,
   if (offset < 0 || buf_len < 0)
     return net::ERR_INVALID_ARGUMENT;
 
+  unsigned u_offset = static_cast<unsigned>(offset);
+  unsigned u_buf_len = static_cast<unsigned>(buf_len);
+
   const int max_file_size = backend_->MaxFileSize();
 
   int end_offset;
@@ -371,13 +364,23 @@ int MemEntryImpl::InternalWriteData(int index, int offset, IOBuffer* buf,
     return net::ERR_FAILED;
   }
 
+  // Trim to the portion of the buffer we're actually asked to work on.
+  // We need to be careful here since `buf` may be null if the length is 0;
+  // this may still affect the file if it gets truncated or extended.
+  base::span<uint8_t> to_write;
+  if (buf) {
+    to_write = buf->first(u_buf_len);
+  }
+
   std::vector<char>& data = data_[index];
   const int old_data_size = base::checked_cast<int>(data.size());
 
   // Overwrite any data that fits inside the existing file.
-  if (offset < old_data_size && buf_len > 0) {
-    const int bytes_to_copy = std::min(old_data_size - offset, buf_len);
-    std::copy(buf->data(), buf->data() + bytes_to_copy, data.begin() + offset);
+  if (u_offset < data.size() && !to_write.empty()) {
+    auto overwrite_chunk =
+        to_write.first(std::min(data.size() - u_offset, to_write.size()));
+    base::as_writable_byte_span(data).subspan(u_offset).copy_prefix_from(
+        overwrite_chunk);
   }
 
   const int delta = end_offset - old_data_size;
@@ -401,12 +404,14 @@ int MemEntryImpl::InternalWriteData(int index, int offset, IOBuffer* buf,
     }
     // Append any data after the old end of the file.
     if (end_offset > current_size) {
-      data.insert(data.end(), buf->data() + current_size - offset,
-                  buf->data() + buf_len);
+      auto append_chunk =
+          to_write.subspan(base::checked_cast<size_t>(current_size - offset));
+
+      data.insert(data.end(), append_chunk.begin(), append_chunk.end());
     }
   }
 
-  UpdateStateOnUse(ENTRY_WAS_MODIFIED);
+  UpdateStateOnUse();
 
   return buf_len;
 }
@@ -471,7 +476,7 @@ int MemEntryImpl::InternalReadSparseData(int64_t offset,
     io_buf->DidConsume(ret);
   }
 
-  UpdateStateOnUse(ENTRY_WAS_NOT_MODIFIED);
+  UpdateStateOnUse();
   return io_buf->BytesConsumed();
 }
 
@@ -543,7 +548,7 @@ int MemEntryImpl::InternalWriteSparseData(int64_t offset,
     io_buf->DidConsume(ret);
   }
 
-  UpdateStateOnUse(ENTRY_WAS_MODIFIED);
+  UpdateStateOnUse();
   return io_buf->BytesConsumed();
 }
 

@@ -17,8 +17,7 @@ using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 namespace {
 
@@ -153,5 +152,4 @@ TEST_F(CrashLoggingTest, MultipleCrashKeysInSameScope) {
   EXPECT_EQ("Got 2 crash keys.", stream.str());
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

@@ -15,9 +15,13 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/system_monitor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
@@ -50,7 +54,9 @@ using blink::mojom::MediaDeviceType;
 using media::mojom::DeviceEnumerationResult;
 using media::mojom::SubCaptureTargetType;
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::SaveArg;
 
 namespace content {
@@ -101,9 +107,7 @@ class MockAudioManager : public media::FakeAudioManager {
  public:
   MockAudioManager()
       : FakeAudioManager(std::make_unique<media::TestAudioThread>(),
-                         &fake_audio_log_factory_),
-        num_output_devices_(2),
-        num_input_devices_(kNumAudioInputDevices) {}
+                         &fake_audio_log_factory_) {}
 
   MockAudioManager(const MockAudioManager&) = delete;
   MockAudioManager& operator=(const MockAudioManager&) = delete;
@@ -147,6 +151,9 @@ class MockAudioManager : public media::FakeAudioManager {
       --num_devices_to_create;
     }
     MockGetAudioInputDeviceNames(device_names);
+    if (bogus_invalidation_closure_) {
+      bogus_invalidation_closure_.Run();
+    }
   }
 
   void GetAudioOutputDeviceNames(
@@ -192,13 +199,18 @@ class MockAudioManager : public media::FakeAudioManager {
     communications_device_id_ = device_id;
   }
 
+  void SetBogusInvalidationClosure(base::RepeatingClosure closure) {
+    bogus_invalidation_closure_ = std::move(closure);
+  }
+
  private:
   media::FakeAudioLogFactory fake_audio_log_factory_;
-  size_t num_output_devices_;
-  size_t num_input_devices_;
+  size_t num_output_devices_ = 2;
+  size_t num_input_devices_ = kNumAudioInputDevices;
   std::string default_device_id_;
   std::string communications_device_id_;
   std::set<std::string> removed_input_audio_device_ids_;
+  base::RepeatingClosure bogus_invalidation_closure_;
 };
 
 // This class mocks the video capture device factory and overrides some methods
@@ -206,8 +218,8 @@ class MockAudioManager : public media::FakeAudioManager {
 class MockVideoCaptureDeviceFactory
     : public media::FakeVideoCaptureDeviceFactory {
  public:
-  MockVideoCaptureDeviceFactory() {}
-  ~MockVideoCaptureDeviceFactory() override {}
+  MockVideoCaptureDeviceFactory() = default;
+  ~MockVideoCaptureDeviceFactory() override = default;
 
   MOCK_METHOD0(MockGetDevicesInfo, void());
   void GetDevicesInfo(GetDevicesInfoCallback callback) override {
@@ -218,7 +230,7 @@ class MockVideoCaptureDeviceFactory
 
 class MockMediaDevicesListener : public blink::mojom::MediaDevicesListener {
  public:
-  MockMediaDevicesListener() {}
+  MockMediaDevicesListener() = default;
 
   MOCK_METHOD2(OnDevicesChanged,
                void(MediaDeviceType, const blink::WebMediaDeviceInfoArray&));
@@ -278,6 +290,10 @@ class MockMediaDevicesDispatcherHost
   MOCK_METHOD(void,
               GetAudioInputCapabilities,
               (GetAudioInputCapabilitiesCallback callback));
+  MOCK_METHOD(void,
+              SelectAudioOutput,
+              (const std::string& device_id,
+               SelectAudioOutputCallback callback));
   MOCK_METHOD(
       void,
       AddMediaDevicesListener,
@@ -288,6 +304,10 @@ class MockMediaDevicesDispatcherHost
   MOCK_METHOD(void,
               SetCaptureHandleConfig,
               (::blink::mojom::CaptureHandleConfigPtr config));
+  MOCK_METHOD(void,
+              SetPreferredSinkId,
+              (const std::string& sink_id,
+               SetPreferredSinkIdCallback callback));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MOCK_METHOD(void, CloseFocusWindowOfOpportunity, (const std::string& label));
   MOCK_METHOD(void,
@@ -315,8 +335,7 @@ class MockBrowserClient : public ContentBrowserClient {
 
 class MediaDevicesManagerTest : public ::testing::Test {
  public:
-  MediaDevicesManagerTest()
-      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
+  MediaDevicesManagerTest() = default;
 
   MediaDevicesManagerTest(const MediaDevicesManagerTest&) = delete;
   MediaDevicesManagerTest& operator=(const MediaDevicesManagerTest&) = delete;
@@ -409,7 +428,7 @@ class MediaDevicesManagerTest : public ::testing::Test {
         std::move(video_capture_device_factory));
 
     auto mock_video_capture_provider =
-        std::make_unique<MockVideoCaptureProvider>();
+        std::make_unique<NiceMock<MockVideoCaptureProvider>>();
     mock_video_capture_provider_ = mock_video_capture_provider.get();
     // By default, forward calls to the real video_capture_system.
     ON_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
@@ -434,13 +453,21 @@ class MediaDevicesManagerTest : public ::testing::Test {
         base::BindRepeating(&GetSaltAndOrigin));
     media_devices_manager_->SetPermissionChecker(
         std::make_unique<MediaDevicesPermissionChecker>(true));
+    media_devices_manager_->StartMonitoring();
   }
 
-  void TearDown() override { video_capture_device_factory_ = nullptr; }
+  void TearDown() override {
+    video_capture_device_factory_ = nullptr;
+    media_devices_manager_ = nullptr;
+  }
 
   void EnableCache(MediaDeviceType type) {
     media_devices_manager_->SetCachePolicy(
         type, MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  }
+
+  MediaDevicesManager::CachePolicy GetCachePolicy(MediaDeviceType type) {
+    return media_devices_manager_->cache_policies_[static_cast<size_t>(type)];
   }
 
   void ExpectVideoEnumerationHistogramReport(int success_count,
@@ -466,10 +493,41 @@ class MediaDevicesManagerTest : public ::testing::Test {
     media_devices_manager_->OnDevicesChanged(type);
     task_environment_.RunUntilIdle();
   }
+  const base::flat_map<
+      GlobalRenderFrameHostId,
+      std::set<blink::WebMediaDeviceInfo,
+               MediaDevicesManager::WebMediaDeviceInfoComparator>>&
+  GetAudioDeviceOriginMap() {
+    return media_devices_manager_->audio_device_origin_map_;
+  }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  void InitVideoCaptureDevicesChangedObserver() {
+    media_devices_manager_->video_capture_service_device_changed_observer_ =
+        std::make_unique<
+            MediaDevicesManager::VideoCaptureDevicesChangedObserver>(
+            /*disconnect_cb=*/base::BindRepeating([]() {}),
+            /*listener_cb=*/base::BindRepeating([]() {}));
+  }
+
+  bool IsDisconnectVideoSourceProviderTimerRunning() {
+    return media_devices_manager_->disconnect_video_source_provider_timer_
+        .IsRunning();
+  }
+
+  bool IsVideoCaptureServiceDeviceChangedObserverInitialized() {
+    return media_devices_manager_
+               ->video_capture_service_device_changed_observer_ != nullptr;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 
   // Must outlive MediaDevicesManager as ~MediaDevicesManager() verifies it's
   // running on the IO thread.
-  BrowserTaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_{
+      BrowserTaskEnvironment::IO_MAINLOOP,
+      BrowserTaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<MediaDevicesManager> media_devices_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
@@ -480,7 +538,8 @@ class MediaDevicesManagerTest : public ::testing::Test {
   testing::StrictMock<MockMediaDevicesManagerClient>
       media_devices_manager_client_;
   std::set<std::string> removed_device_ids_;
-  raw_ptr<MockVideoCaptureProvider> mock_video_capture_provider_ = nullptr;
+  raw_ptr<NiceMock<MockVideoCaptureProvider>> mock_video_capture_provider_ =
+      nullptr;
   std::unique_ptr<media::VideoCaptureSystemImpl> video_capture_system_;
   HistogramTester histogram_tester_;
   RenderViewHostTestEnabler rvh_test_enabler_;
@@ -1601,5 +1660,241 @@ TEST_F(MediaDevicesManagerTest, DevicePropertyChanges) {
   video_capture_device_factory_->SetToCustomDevicesConfig(device_config);
   FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 }
+
+TEST_F(MediaDevicesManagerTest, RelaxedCacheMode) {
+  if (!MediaDevicesManager::IsRelaxedCacheFeatureEnabled()) {
+    return;
+  }
+
+  // Enable the cache, which triggers an initial enumeration.
+  EXPECT_CALL(media_devices_manager_client_, InputDevicesChangedUI(_, _));
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo());
+  EnableCache(MediaDeviceType::kMediaVideoInput);
+
+  // Fire enough spurious invalidations to make the cache enter relaxed mode.
+  // These invalidations trigger enumerations.
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
+      .Times(MediaDevicesManager::kMaxSpuriousInvalidations);
+  for (int i = 0; i < MediaDevicesManager::kMaxSpuriousInvalidations; i++) {
+    media_devices_manager_->OnDevicesChanged(
+        base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+    task_environment_.RunUntilIdle();
+  }
+
+  // In relaxed mode, invalidations should not trigger enumerations.
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo()).Times(0);
+  media_devices_manager_->OnDevicesChanged(
+      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  task_environment_.RunUntilIdle();
+
+  // Move time shortly before the relaxed mode expire time. Invalidations should
+  // still not trigger enumerations.
+  task_environment_.FastForwardBy(
+      MediaDevicesManager::kExpireTimeInRelaxedMode - base::Milliseconds(1));
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo()).Times(0);
+  media_devices_manager_->OnDevicesChanged(
+      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  task_environment_.RunUntilIdle();
+
+  // Move time shortly past the expiration time of relaxed mode. Invalidations
+  // trigger enumerations again.
+  task_environment_.FastForwardBy(base::Milliseconds(2));
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo());
+  media_devices_manager_->OnDevicesChanged(
+      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(MediaDevicesManagerTest, AddAudioDeviceToOriginMap) {
+  blink::WebMediaDeviceInfo device_info;
+  device_info.device_id = "test_device_id";
+
+  media_devices_manager_->AddAudioDeviceToOriginMap(kRenderFrameHostId,
+                                                    device_info);
+
+  // Access the map using the helper function.
+  const auto& map = GetAudioDeviceOriginMap();
+
+  auto it = map.find(kRenderFrameHostId);
+  ASSERT_NE(it, map.end());
+  EXPECT_EQ(it->second.size(), 1u);
+  EXPECT_EQ(it->second.begin()->device_id, "test_device_id");
+}
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(MediaDevicesManagerTest, VideoSourceProviderTimer) {
+  InitVideoCaptureDevicesChangedObserver();
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_
+      .InitFromCommandLine(/*enable_features=*/
+                           "ReleaseVideoSourceProviderIfNotInUse",
+                           /*disable_features=*/"");
+
+  // The timer should not be running initially.
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  media_devices_manager_->UpdateVideoCaptureHostsEmptyState(false);
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  // With VideoCaptureHosts set is empty, the timer should be started.
+  media_devices_manager_->UpdateVideoCaptureHostsEmptyState(true);
+  EXPECT_TRUE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  media_devices_manager_->UpdateVideoCaptureHostsEmptyState(false);
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  // Add device-change event listeners.
+  MockMediaDevicesListener listener_all;
+  MediaDevicesManager::BoolDeviceTypes all_devices_to_subscribe;
+  all_devices_to_subscribe[static_cast<size_t>(
+      MediaDeviceType::kMediaAudioInput)] = true;
+  all_devices_to_subscribe[static_cast<size_t>(
+      MediaDeviceType::kMediaVideoInput)] = true;
+  all_devices_to_subscribe[static_cast<size_t>(
+      MediaDeviceType::kMediaAudioOutput)] = true;
+  uint32_t subscription_id =
+      media_devices_manager_->SubscribeDeviceChangeNotifications(
+          kRenderFrameHostId, all_devices_to_subscribe,
+          listener_all.CreateInterfacePtrAndBind());
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  MockMediaDevicesListener listener_video;
+  MediaDevicesManager::BoolDeviceTypes video_devices_to_subscribe;
+  video_devices_to_subscribe[static_cast<size_t>(
+      MediaDeviceType::kMediaVideoInput)] = true;
+  uint32_t video_subscription_id =
+      media_devices_manager_->SubscribeDeviceChangeNotifications(
+          kRenderFrameHostId, all_devices_to_subscribe,
+          listener_video.CreateInterfacePtrAndBind());
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  media_devices_manager_->UnsubscribeDeviceChangeNotifications(subscription_id);
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  // VideoCaptureHosts set is empty, but subscriptions is not empty, the timer
+  // should not be running
+  media_devices_manager_->UpdateVideoCaptureHostsEmptyState(true);
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  // Both VideoCaptureHosts set and subscriptions are empty, the timer should be
+  // running
+  media_devices_manager_->UnsubscribeDeviceChangeNotifications(
+      video_subscription_id);
+  EXPECT_TRUE(IsDisconnectVideoSourceProviderTimerRunning());
+}
+
+TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
+  // Adjusting features in order to skip calling
+  // VideoCaptureDevicesChangedObserver and AudioServiceDeviceListener in
+  // order not to start service processes.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_
+      .InitFromCommandLine(/*enable_features=*/
+                           "RunVideoCaptureServiceInBrowserProcess",
+                           /*disable_features=*/"AudioServiceOutOfProcess");
+  auto system_monitor = std::make_unique<base::SystemMonitor>();
+
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+
+  // Monitor video only.
+  media_devices_manager_->StartMonitoring(
+      MediaDevicesManager::DeviceStartMonitoringMode::kStartVideo);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+
+  // Monitor audio only on top of the video monitoring.
+  media_devices_manager_->StartMonitoring(
+      MediaDevicesManager::DeviceStartMonitoringMode::kStartAudio);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+
+  // Stop monitoring video only.
+  media_devices_manager_->StopMonitoring(
+      MediaDevicesManager::DeviceStopMonitoringMode::kStopVideo);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+
+  // Stop audio.
+  media_devices_manager_->StopMonitoring(
+      MediaDevicesManager::DeviceStopMonitoringMode::kStopAudio);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+
+  // Start audio and video monitoring.
+  media_devices_manager_->StartMonitoring(
+      MediaDevicesManager::DeviceStartMonitoringMode::kStartAudioAndVideo);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+
+  // Stop audio and video will reset all.
+  media_devices_manager_->StopMonitoring(
+      MediaDevicesManager::DeviceStopMonitoringMode::kStopAudioAndVideo);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+}
+
+TEST_F(MediaDevicesManagerTest, StopMonitoringReleaseVideoChangedObserver) {
+  // Tests that VideoCaptureDevicesChangedObserver is released when
+  // StopMonitoring is called.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_
+      .InitFromCommandLine(/*enable_features=*/
+                           "RunVideoCaptureServiceInBrowserProcess,"
+                           "ReleaseVideoSourceProviderIfNotInUse",
+                           /*disable_features=*/"AudioServiceOutOfProcess");
+
+  // StopMonitoring will reset VideoChangedObserver as well as its
+  // disconnect video source provider timer.
+  auto system_monitor = std::make_unique<base::SystemMonitor>();
+  media_devices_manager_->StartMonitoring(
+      MediaDevicesManager::DeviceStartMonitoringMode::kStartVideo);
+
+  // Create VideoCaptureDevicesChangedObserver manually.
+  InitVideoCaptureDevicesChangedObserver();
+  EXPECT_TRUE(IsVideoCaptureServiceDeviceChangedObserverInitialized());
+
+  // With VideoCaptureHosts set is empty, the timer should be started.
+  media_devices_manager_->UpdateVideoCaptureHostsEmptyState(true);
+  EXPECT_TRUE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  // StopMonitoring will reset VideoCaptureDevicesChangedObserver and
+  // disconnect video source provider timer.
+  media_devices_manager_->StopMonitoring(
+      MediaDevicesManager::DeviceStopMonitoringMode::kStopVideo);
+
+  EXPECT_FALSE(IsVideoCaptureServiceDeviceChangedObserverInitialized());
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 }  // namespace content

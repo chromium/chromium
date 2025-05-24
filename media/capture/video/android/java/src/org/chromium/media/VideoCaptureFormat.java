@@ -9,9 +9,12 @@ import android.graphics.PixelFormat;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@NullMarked
 class VideoCaptureFormat {
     // A Non-exhaustive list mirroring the ImageFormat.Format IntDef. Necessary to avoid suppressing
     // related lint errors, see https://crbug.com/1410903 for context.

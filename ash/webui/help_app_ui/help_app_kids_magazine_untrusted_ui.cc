@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 
 #include <string_view>
@@ -43,14 +38,12 @@ void CreateAndAddHelpAppKidsMagazineUntrustedDataSource(
   source->SetDefaultResource(IDR_HELP_APP_KIDS_MAGAZINE_INDEX_HTML);
   source->DisableTrustedTypesCSP();
 
-  for (size_t i = 0; i < kChromeosHelpAppKidsMagazineBundleResourcesSize; i++) {
+  for (const auto& resource : kChromeosHelpAppKidsMagazineBundleResources) {
     // While the JS and CSS file are stored in /kids_magazine/static/..., the
     // HTML file references /static/... directly. We need to strip the
     // "kids_magazine" prefix from the path.
-    source->AddResourcePath(
-        StripPrefix(kChromeosHelpAppKidsMagazineBundleResources[i].path,
-                    kKidsMagazinePathPrefix),
-        kChromeosHelpAppKidsMagazineBundleResources[i].id);
+    source->AddResourcePath(StripPrefix(resource.path, kKidsMagazinePathPrefix),
+                            resource.id);
   }
 
   // Add chrome://help-app and chrome-untrusted://help-app as frame ancestors.

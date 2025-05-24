@@ -6,27 +6,33 @@ package org.chromium.components.privacy_sandbox;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** Interface implemented by the embedder to access embedder-specific logic. */
+@NullMarked
 public interface TrackingProtectionDelegate {
-    /** @return whether block all 3PCD pref is enabled. */
-    boolean isBlockAll3PCDEnabled();
+    /**
+     * @return whether block all 3PC pref is enabled.
+     */
+    boolean isBlockAll3pcEnabled();
 
-    /** Set the value of the block all 3PCD pref. */
-    void setBlockAll3PCD(boolean enabled);
+    /** Set the value of the block all 3PC pref. */
+    void setBlockAll3pc(boolean enabled);
 
-    /** @return whether the Do Not Track pref is enabled. */
+    /**
+     * @return whether the Do Not Track pref is enabled.
+     */
     boolean isDoNotTrackEnabled();
 
     /** Set the value of the Do Not Track Pref. */
     void setDoNotTrack(boolean enabled);
 
     /**
-     * @return whether the IP protection preference should be shown.
+     * @return whether the IP protection UX is enabled.
      */
-    boolean shouldDisplayIpProtection();
+    boolean isIpProtectionUxEnabled();
 
     /**
      * @return whether the IP protection is enabled.
@@ -37,9 +43,24 @@ public interface TrackingProtectionDelegate {
     void setIpProtection(boolean enabled);
 
     /**
-     * @return whether the fingerprinting protection preference should be shown.
+     * @return whether IP protection is disabled for users on enterprise devices.
      */
-    boolean shouldDisplayFingerprintingProtection();
+    boolean isIpProtectionDisabledForEnterprise();
+
+    /**
+     * @return whether IP protection is managed.
+     */
+    boolean isIpProtectionManaged();
+
+    /**
+     * @return whether fingerprinting protection is managed.
+     */
+    boolean isFingerprintingProtectionManaged();
+
+    /**
+     * @return whether the fingerprinting protection UX is enabled.
+     */
+    boolean isFingerprintingProtectionUxEnabled();
 
     /**
      * @return whether the fingerprinting protection is enabled.

@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -63,10 +64,12 @@ namespace device {
 
 struct BluetoothSocketWin::ServiceRegData {
   ServiceRegData() {
-    ZeroMemory(&address, sizeof(address));
-    ZeroMemory(&address_info, sizeof(address_info));
-    ZeroMemory(&uuid, sizeof(uuid));
-    ZeroMemory(&service, sizeof(service));
+    UNSAFE_TODO({
+      ZeroMemory(&address, sizeof(address));
+      ZeroMemory(&address_info, sizeof(address_info));
+      ZeroMemory(&uuid, sizeof(uuid));
+      ZeroMemory(&service, sizeof(service));
+    });
   }
 
   SOCKADDR_BTH address;
@@ -193,7 +196,7 @@ void BluetoothSocketWin::DoConnect(base::OnceClosure success_callback,
   net::EnsureWinsockInit();
   SOCKET socket_fd = socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM);
   SOCKADDR_BTH sa;
-  ZeroMemory(&sa, sizeof(sa));
+  UNSAFE_TODO(ZeroMemory(&sa, sizeof(sa)));
   sa.addressFamily = AF_BTH;
   sa.port = rfcomm_channel_;
   sa.btAddr = bth_addr_;
@@ -262,7 +265,7 @@ void BluetoothSocketWin::DoListen(const BluetoothUUID& uuid,
   SOCKADDR_BTH sa;
   struct sockaddr* sock_addr = reinterpret_cast<struct sockaddr*>(&sa);
   int sock_addr_len = sizeof(sa);
-  ZeroMemory(&sa, sock_addr_len);
+  UNSAFE_TODO(ZeroMemory(&sa, sock_addr_len));
   sa.addressFamily = AF_BTH;
   sa.port = rfcomm_channel ? rfcomm_channel : BT_PORT_ANY;
   if (bind(socket_fd, sock_addr, sock_addr_len) < 0) {

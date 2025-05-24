@@ -20,13 +20,12 @@ enum GpuFeatureType {
   GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL,
   GPU_FEATURE_TYPE_ACCELERATED_GL,
   GPU_FEATURE_TYPE_VULKAN,
-  GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION,
   GPU_FEATURE_TYPE_ACCELERATED_WEBGPU,
   GPU_FEATURE_TYPE_SKIA_GRAPHITE,
   GPU_FEATURE_TYPE_WEBNN,
   NUMBER_OF_GPU_FEATURE_TYPES
 };
-static_assert(GpuFeatureType::NUMBER_OF_GPU_FEATURE_TYPES == 13,
+static_assert(GpuFeatureType::NUMBER_OF_GPU_FEATURE_TYPES == 12,
               "Please update the mojo definition of the length of "
               "GpuFeatureInfo.status_values");
 

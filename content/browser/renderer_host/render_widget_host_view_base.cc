@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/input/event_with_latency_info.h"
@@ -121,8 +122,7 @@ void RenderWidgetHostViewBase::SelectionBoundsChanged(
         this, anchor_rect, anchor_dir, focus_rect, focus_dir, bounding_box,
         is_anchor_first);
 #else
-  NOTREACHED_IN_MIGRATION()
-      << "Selection bounds should be routed through the compositor.";
+  NOTREACHED() << "Selection bounds should be routed through the compositor.";
 #endif
 }
 
@@ -139,6 +139,11 @@ void RenderWidgetHostViewBase::SelectionChanged(const std::u16string& text,
 
 gfx::Size RenderWidgetHostViewBase::GetRequestedRendererSize() {
   return GetViewBounds().size();
+}
+
+gfx::Size RenderWidgetHostViewBase::GetRequestedRendererSizeDevicePx() {
+  return gfx::ScaleToCeiledSize(GetRequestedRendererSize(),
+                                GetDeviceScaleFactor());
 }
 
 uint32_t RenderWidgetHostViewBase::GetCaptureSequenceNumber() const {
@@ -168,11 +173,10 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
     return;
 
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "RenderWidgetHostViewAndroid::CopyFromSurface calls "
          "DelegatedFrameHostAndroid::CopyFromCompositingSurface directly, "
          "and popups are not supported.";
-  return;
 #else
   if (!popup_host || !popup_frame_host) {
     // No popup - just call CopyFromCompositingSurface once.
@@ -251,6 +255,17 @@ void RenderWidgetHostViewBase::CopyFromExactSurface(
   NOTIMPLEMENTED_LOG_ONCE();
   std::move(callback).Run(SkBitmap());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void RenderWidgetHostViewBase::CopyFromExactSurfaceWithIpcDelay(
+    const gfx::Rect& src_rect,
+    const gfx::Size& output_size,
+    base::OnceCallback<void(const SkBitmap&)> callback,
+    base::TimeDelta ipc_delay) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  std::move(callback).Run(SkBitmap());
+}
+#endif
 
 std::unique_ptr<viz::ClientFrameSinkVideoCapturer>
 RenderWidgetHostViewBase::CreateVideoCapturer() {
@@ -365,14 +380,12 @@ RenderWidgetHostViewBase::GetKeyboardLayoutMap() {
 }
 
 bool RenderWidgetHostViewBase::HasFallbackSurface() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 viz::SurfaceId RenderWidgetHostViewBase::GetFallbackSurfaceIdForTesting()
     const {
-  NOTREACHED_IN_MIGRATION();
-  return viz::SurfaceId();
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewBase::SetWidgetType(WidgetType widget_type) {
@@ -390,19 +403,19 @@ gfx::AcceleratedWidget
 
 gfx::NativeViewAccessible
     RenderWidgetHostViewBase::AccessibilityGetNativeViewAccessible() {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible
 RenderWidgetHostViewBase::AccessibilityGetNativeViewAccessibleForWindow() {
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 bool RenderWidgetHostViewBase::ShouldInitiateStylusWriting() {
   return false;
 }
 
-bool RenderWidgetHostViewBase::RequestRepaintForTesting() {
+bool RenderWidgetHostViewBase::RequestRepaintOnNewSurface() {
   return false;
 }
 
@@ -568,7 +581,7 @@ display::ScreenInfos RenderWidgetHostViewBase::GetScreenInfos() const {
 void RenderWidgetHostViewBase::ResetGestureDetection() {}
 
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
-  return screen_infos_.current().device_scale_factor;
+  return GetScreenInfos().current().device_scale_factor;
 }
 
 base::WeakPtr<input::RenderWidgetHostViewInput>
@@ -616,6 +629,10 @@ RenderWidgetHostViewBase::GetDevicePosturePlatformProvider() {
 
 gfx::Size RenderWidgetHostViewBase::GetVisibleViewportSize() {
   return GetViewBounds().size();
+}
+
+gfx::Size RenderWidgetHostViewBase::GetVisibleViewportSizeDevicePx() {
+  return gfx::ScaleToCeiledSize(GetViewBounds().size(), GetDeviceScaleFactor());
 }
 
 void RenderWidgetHostViewBase::SetInsets(const gfx::Insets& insets) {
@@ -701,11 +718,11 @@ void RenderWidgetHostViewBase::ProcessGestureEvent(
 }
 
 gfx::PointF RenderWidgetHostViewBase::TransformPointToRootCoordSpaceF(
-    const gfx::PointF& point) {
-  return point;
+    const gfx::PointF& point) const {
+  return RenderWidgetHostViewInput::TransformPointToRootCoordSpaceF(point);
 }
 
-bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() {
+bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() const {
   return false;
 }
 
@@ -742,11 +759,10 @@ void RenderWidgetHostViewBase::ImeCancelComposition() {
 
 void RenderWidgetHostViewBase::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::optional<std::vector<gfx::Rect>>& character_bounds,
-    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& character_bounds) {
   if (GetTextInputManager()) {
-    GetTextInputManager()->ImeCompositionRangeChanged(
-        this, range, character_bounds, line_bounds);
+    GetTextInputManager()->ImeCompositionRangeChanged(this, range,
+                                                      character_bounds);
   }
 }
 
@@ -768,6 +784,16 @@ TextInputManager* RenderWidgetHostViewBase::GetTextInputManager() {
 
 TouchSelectionControllerClientManager*
 RenderWidgetHostViewBase::GetTouchSelectionControllerClientManager() {
+  return nullptr;
+}
+
+TouchSelectionControllerInputObserver*
+RenderWidgetHostViewBase::GetTouchSelectionControllerInputObserver() {
+  return nullptr;
+}
+
+RenderWidgetHost::InputEventObserver*
+RenderWidgetHostViewBase::GetInputTransferHandlerObserver() {
   return nullptr;
 }
 

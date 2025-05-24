@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SHARED_WORKER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SHARED_WORKER_IMPL_H_
 
-#include "third_party/blink/public/web/web_shared_worker.h"
-
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
@@ -43,11 +41,13 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
+#include "third_party/blink/public/web/web_shared_worker.h"
 #include "third_party/blink/public/web/web_shared_worker_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_reporting_proxy.h"
@@ -106,7 +106,7 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       bool is_constructor_secure_context,
       const WebString& user_agent,
       const blink::UserAgentMetadata& ua_metadata,
-      const WebVector<WebContentSecurityPolicy>& content_security_policies,
+      const std::vector<WebContentSecurityPolicy>& content_security_policies,
       const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
       const base::UnguessableToken& devtools_worker_token,
       CrossVariantMojoRemote<
@@ -120,7 +120,11 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
       ukm::SourceId ukm_source_id,
-      bool require_cross_site_request_for_cookies);
+      bool require_cross_site_request_for_cookies,
+      CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
+          coep_reporting_observer,
+      CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
+          dip_reporting_observer);
 
   void DispatchPendingConnections();
   void ConnectToChannel(int connection_request_id,

@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 
 // Item to represent and configure an AutofillEditItem.
 @interface AutofillCreditCardEditItem : TableViewTextEditItem

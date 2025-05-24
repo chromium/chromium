@@ -92,7 +92,6 @@ constexpr char kErrorOnlyKioskModeAllowed[] =
     "API available only for ChromeOS kiosk mode.";
 constexpr char kErrorOnlyFirstExtensionAllowed[] =
     "Not the first extension to call this API.";
-constexpr char kErrorInvalidStatus[] = "Invalid restart request status.";
 constexpr char kErrorRequestedTooSoon[] =
     "Restart was requested too soon. It was throttled instead.";
 
@@ -295,9 +294,9 @@ void RuntimeAPI::Shutdown() {
       ->RemoveObserver(this);
 }
 
-void RuntimeAPI::OnAppUpdateAvailable(const Extension* extension) {
+void RuntimeAPI::OnAppUpdateAvailable(const Extension& extension) {
   RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
-      browser_context_, extension->id(), extension->manifest()->value());
+      browser_context_, extension.id(), extension.manifest()->value());
 }
 
 void RuntimeAPI::OnChromeUpdateAvailable() {
@@ -768,8 +767,7 @@ ExtensionFunction::ResponseAction RuntimeRestartAfterDelayFunction::Run() {
       return RespondNow(NoArguments());
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return RespondNow(Error(kErrorInvalidStatus));
+  NOTREACHED();
 }
 
 ExtensionFunction::ResponseAction RuntimeGetPlatformInfoFunction::Run() {
@@ -962,9 +960,7 @@ int RuntimeGetContextsFunction::GetTabId(content::WebContents& web_contents) {
 }
 
 int RuntimeGetContextsFunction::GetFrameId(content::RenderFrameHost& host) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&host);
-  mojom::ViewType view_type = extensions::GetViewType(web_contents);
+  mojom::ViewType view_type = extensions::GetViewType(&host);
 
   if (view_type == extensions::mojom::ViewType::kDeveloperTools) {
     return -1;

@@ -36,10 +36,6 @@ struct OmniboxPopupSelection {
   // selected first when tabbing through the popup. They are not persisted
   // anywhere and can be freely changed.
   enum LineState {
-    // This means the Header above this row is highlighted, and the
-    // header collapse/expand button is focused.
-    FOCUSED_BUTTON_HEADER,
-
     // NORMAL means the row is focused, and Enter key navigates to the match.
     NORMAL,
 
@@ -62,6 +58,11 @@ struct OmniboxPopupSelection {
     // FOCUSED_BUTTON_REMOVE_SUGGESTION state means the Remove Suggestion (X)
     // button is focused. Pressing enter will attempt to remove this suggestion.
     FOCUSED_BUTTON_REMOVE_SUGGESTION,
+
+    // `NULL_RESULT_MESSAGE` IPH match types are not normally focusable, but
+    // their links still need to be tab-accessible, so this state is available
+    // when such a match has an IPH URL link.
+    FOCUSED_IPH_LINK,
 
     // Whenever new line state is added, accessibility label for current
     // selection should be revisited
@@ -94,9 +95,10 @@ struct OmniboxPopupSelection {
                                  size_t action_index = 0)
       : line(line), state(state), action_index(action_index) {}
 
-  bool operator==(const OmniboxPopupSelection&) const;
-  bool operator!=(const OmniboxPopupSelection&) const;
-  bool operator<(const OmniboxPopupSelection&) const;
+  friend bool operator==(const OmniboxPopupSelection&,
+                         const OmniboxPopupSelection&) = default;
+  friend auto operator<=>(const OmniboxPopupSelection&,
+                          const OmniboxPopupSelection&) = default;
 
   // Returns true if going to this selection from given `from` selection
   // results in activation of keyword state when it wasn't active before.
@@ -119,7 +121,8 @@ struct OmniboxPopupSelection {
       const PrefService* pref_service,
       TemplateURLService* template_url_service,
       Direction direction,
-      Step step) const;
+      Step step,
+      bool force_hide_row_header = false) const;
 
  private:
   //  This is a utility function to support `GetNextSelection`.
@@ -128,7 +131,8 @@ struct OmniboxPopupSelection {
       const PrefService* pref_service,
       TemplateURLService* template_url_service,
       Direction direction,
-      Step step);
+      Step step,
+      bool force_hide_row_header);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_SELECTION_H_

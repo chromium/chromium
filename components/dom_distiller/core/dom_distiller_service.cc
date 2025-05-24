@@ -4,12 +4,12 @@
 
 #include "components/dom_distiller/core/dom_distiller_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "components/dom_distiller/core/distilled_content_store.h"
@@ -114,8 +114,7 @@ TaskTracker* DomDistillerService::CreateTaskTracker(const ArticleEntry& entry) {
 }
 
 void DomDistillerService::CancelTask(TaskTracker* task) {
-  auto it =
-      base::ranges::find(tasks_, task, &std::unique_ptr<TaskTracker>::get);
+  auto it = std::ranges::find(tasks_, task, &std::unique_ptr<TaskTracker>::get);
   if (it != tasks_.end()) {
     it->release();
     tasks_.erase(it);

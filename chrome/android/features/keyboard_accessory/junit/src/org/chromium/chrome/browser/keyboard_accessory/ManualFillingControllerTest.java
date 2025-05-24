@@ -15,7 +15,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
@@ -55,14 +54,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
@@ -92,7 +93,9 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.display.DisplayAndroid;
@@ -110,6 +113,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ManualFillingControllerTest {
     private static final int sKeyboardHeightDp = 100;
     private static final int sAccessoryHeightDp = 48;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Captor ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
 
     @Mock private ChromeWindow mMockWindow;
     @Mock private ChromeActivity mMockActivity;
@@ -129,10 +136,7 @@ public class ManualFillingControllerTest {
     @Mock private InsetObserver mInsetObserver;
     @Mock private BackPressManager mMockBackPressManager;
     @Mock private EdgeToEdgeController mMockEdgeToEdgeController;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
-    @Captor ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
+    @Mock private MultiWindowModeStateDispatcher mMockMultiWindowModeStateDispatcher;
 
     private final ManualFillingCoordinator mController = new ManualFillingCoordinator();
     private final ManualFillingMediator mMediator = mController.getMediatorForTesting();
@@ -234,9 +238,18 @@ public class ManualFillingControllerTest {
                             /* warning= */ "");
             UserInfo userInfo = new UserInfo("", false);
             userInfo.addField(
-                    new UserInfoField("(No username)", "No username", /* id= */ "", false, null));
+                    new UserInfoField.Builder()
+                            .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
+                            .setDisplayText("(No username)")
+                            .setA11yDescription("No username")
+                            .build());
             userInfo.addField(
-                    new UserInfoField(passwordString, "Password", /* id= */ "", true, null));
+                    new UserInfoField.Builder()
+                            .setSuggestionType(AccessorySuggestionType.CREDENTIAL_PASSWORD)
+                            .setDisplayText(passwordString)
+                            .setA11yDescription("Password")
+                            .setIsObfuscated(true)
+                            .build());
             sheetData.getUserInfoList().add(userInfo);
             mAccessorySheetDataProvider.notifyObservers(sheetData);
         }
@@ -305,7 +318,6 @@ public class ManualFillingControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mMockWindow.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
         mInsetSupplier.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
         mInsetSupplier.setKeyboardAccessoryInsetSupplier(mController.getBottomInsetSupplier());
@@ -314,7 +326,7 @@ public class ManualFillingControllerTest {
         when(mMockActivity.getTabModelSelector()).thenReturn(mMockTabModelSelector);
         when(mMockActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);
         BrowserControlsManager browserControlsManager =
-                new BrowserControlsManager(mMockActivity, 0);
+                new BrowserControlsManager(mMockActivity, 0, mMockMultiWindowModeStateDispatcher);
         when(mMockActivity.getBrowserControlsManager()).thenReturn(browserControlsManager);
         when(mMockActivity.getFullscreenManager()).thenReturn(mMockFullscreenManager);
         doNothing().when(mMockFullscreenManager).addObserver(mFullscreenObserverCaptor.capture());
@@ -328,10 +340,10 @@ public class ManualFillingControllerTest {
                 .thenReturn(RuntimeEnvironment.application.getPackageManager());
         when(mMockActivity.findViewById(android.R.id.content)).thenReturn(mMockContentView);
         when(mMockContentView.getRootView()).thenReturn(mock(View.class));
-        mLastMockWebContents = mock(WebContents.class);
+        mLastMockWebContents = mock(MockWebContents.class);
         when(mMockActivity.getCurrentWebContents()).then(i -> mLastMockWebContents);
 
-        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
+        ProfileJni.setInstanceForTesting(mProfileJniMock);
         when(mProfileJniMock.fromWebContents(any())).thenReturn(mMockProfile);
 
         when(mMockWindow.getInsetObserver()).thenReturn(mInsetObserver);
@@ -558,7 +570,9 @@ public class ManualFillingControllerTest {
         // Simulate closing the tab (uncommitted):
         mMediator.getTabModelObserverForTesting().willCloseTab(tab, true);
         mMediator.getTabObserverForTesting().onHidden(tab, TabHidingType.CHANGED_TABS);
-        getStateForBrowserTab().getWebContentsObserverForTesting().wasHidden();
+        getStateForBrowserTab()
+                .getWebContentsObserverForTesting()
+                .onVisibilityChanged(Visibility.HIDDEN);
         // The state should be kept if the closure wasn't committed.
         assertThat(getStateForBrowserTab().getTabs().length, is(1));
         mLastMockWebContents = null;
@@ -917,14 +931,14 @@ public class ManualFillingControllerTest {
         // minimumVisibleHeightDp, test that the visible area is correctly deduced to be 200 - 100 <
         // minimumVisibleHeightDp so the sheet should be restricted in height.
         assertEquals(
-                (int) mController.getBottomInsetSupplier().get(), accessorySheetHeightDp * density);
+                accessorySheetHeightDp * density, (int) mController.getBottomInsetSupplier().get());
         simulateLayoutSizeChange(
                 density,
                 initialHeightDp,
                 initialWidthDp,
                 /* keyboardShown= */ false,
                 VirtualKeyboardMode.RESIZES_VISUAL);
-        assertEquals(mLastMockWebContents.getHeight(), initialWidthDp);
+        assertEquals(initialWidthDp, mLastMockWebContents.getHeight());
 
         // 200 - 128 = 72
         int expectedSheetHeightDp = initialWidthDp - minimumVisibleHeightDp;
@@ -978,14 +992,14 @@ public class ManualFillingControllerTest {
         // sheet will cause a resize to the web contents.  WebContents.getHeight <
         // minimumVisibleHeightDp so the sheet should be restricted in height.
         assertEquals(
-                (int) mController.getBottomInsetSupplier().get(), accessorySheetHeightDp * density);
+                accessorySheetHeightDp * density, (int) mController.getBottomInsetSupplier().get());
         simulateLayoutSizeChange(
                 density,
                 initialHeightDp,
                 initialWidthDp,
                 /* keyboardShown= */ false,
                 VirtualKeyboardMode.RESIZES_CONTENT);
-        assertEquals(mLastMockWebContents.getHeight(), initialWidthDp - accessorySheetHeightDp);
+        assertEquals(initialWidthDp - accessorySheetHeightDp, mLastMockWebContents.getHeight());
 
         // 200 - 128 = 72
         int expectedSheetHeightDp = initialWidthDp - minimumVisibleHeightDp;
@@ -1056,6 +1070,39 @@ public class ManualFillingControllerTest {
         // Ensure it's not insetting the page.
         assertEquals(
                 sAccessoryHeightDp * density, (int) mController.getBottomInsetSupplier().get());
+    }
+
+    @Test
+    public void testAdjustsOffsetAndHeightExcludesSheetShadowHeight() {
+        final int density = 2;
+        final int accessorySheetHeightDp = 100; // The height of a large keyboard.
+        final int initialWidthDp = 200;
+        final int initialHeightDp = 300;
+        final int shadowHeightDp = 8;
+        when(mMockResources.getDimensionPixelSize(R.dimen.toolbar_shadow_height))
+                .thenReturn(shadowHeightDp * density);
+
+        addBrowserTab(mMediator, 1234, null);
+
+        // Resize the screen to 200x300@2.f.
+        simulateLayoutSizeChange(
+                density,
+                initialWidthDp,
+                initialHeightDp,
+                /* keyboardShown= */ false,
+                VirtualKeyboardMode.RESIZES_VISUAL);
+
+        // Now simulate showing the accessory sheet.
+        when(mMockKeyboardAccessory.empty()).thenReturn(false);
+        when(mMockKeyboardAccessory.isShown()).thenReturn(true);
+        when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(true);
+        when(mMockAccessorySheet.getHeight()).thenReturn(accessorySheetHeightDp * density);
+        mModel.set(SHOW_WHEN_VISIBLE, true);
+        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET);
+
+        assertEquals(
+                accessorySheetHeightDp * density - shadowHeightDp * density,
+                (int) mController.getBottomInsetSupplier().get());
     }
 
     @Test
@@ -1373,8 +1420,8 @@ public class ManualFillingControllerTest {
 
     @Test
     public void testCallsHelperToConfirmDeletion() {
-        Runnable testConfirmRunnable = () -> {};
-        Runnable testDeclineRunnable = () -> {};
+        Runnable testConfirmRunnable = CallbackUtils.emptyRunnable();
+        Runnable testDeclineRunnable = CallbackUtils.emptyRunnable();
         mMediator.confirmOperation(
                 "Suggestion", "Delete it?", testConfirmRunnable, testDeclineRunnable);
         verify(mMockConfirmationHelper)
@@ -1429,14 +1476,18 @@ public class ManualFillingControllerTest {
         if (lastTab != null) {
             lastId = lastTab.getId();
             mediator.getTabObserverForTesting().onHidden(lastTab, TabHidingType.CHANGED_TABS);
-            mCache.getStateFor(mLastMockWebContents).getWebContentsObserverForTesting().wasHidden();
+            mCache.getStateFor(mLastMockWebContents)
+                    .getWebContentsObserverForTesting()
+                    .onVisibilityChanged(Visibility.HIDDEN);
         }
         Tab tab = mock(Tab.class);
         when(tab.getId()).thenReturn(id);
         when(tab.getUserDataHost()).thenReturn(mUserDataHost);
-        mLastMockWebContents = mock(WebContents.class);
+        mLastMockWebContents = mock(MockWebContents.class);
         when(tab.getWebContents()).thenReturn(mLastMockWebContents);
-        mCache.getStateFor(tab).getWebContentsObserverForTesting().wasShown();
+        mCache.getStateFor(tab)
+                .getWebContentsObserverForTesting()
+                .onVisibilityChanged(Visibility.VISIBLE);
         when(tab.getContentView()).thenReturn(mMockContentView);
         when(mMockTabModelSelector.getCurrentTab()).thenReturn(tab);
         mActivityTabProvider.set(tab);
@@ -1462,10 +1513,14 @@ public class ManualFillingControllerTest {
         if (from != null) {
             lastId = from.getId();
             mediator.getTabObserverForTesting().onHidden(from, TabHidingType.CHANGED_TABS);
-            mCache.getStateFor(mLastMockWebContents).getWebContentsObserverForTesting().wasHidden();
+            mCache.getStateFor(mLastMockWebContents)
+                    .getWebContentsObserverForTesting()
+                    .onVisibilityChanged(Visibility.HIDDEN);
         }
         mLastMockWebContents = to.getWebContents();
-        mCache.getStateFor(to).getWebContentsObserverForTesting().wasShown();
+        mCache.getStateFor(to)
+                .getWebContentsObserverForTesting()
+                .onVisibilityChanged(Visibility.VISIBLE);
         when(mMockTabModelSelector.getCurrentTab()).thenReturn(to);
         mediator.getTabModelObserverForTesting().didSelectTab(to, FROM_USER, lastId);
         mediator.getTabObserverForTesting().onShown(to, FROM_USER);
@@ -1480,7 +1535,9 @@ public class ManualFillingControllerTest {
     private void closeBrowserTab(ManualFillingMediator mediator, Tab tabToBeClosed) {
         mediator.getTabModelObserverForTesting().willCloseTab(tabToBeClosed, true);
         mediator.getTabObserverForTesting().onHidden(tabToBeClosed, TabHidingType.CHANGED_TABS);
-        mCache.getStateFor(mLastMockWebContents).getWebContentsObserverForTesting().wasHidden();
+        mCache.getStateFor(mLastMockWebContents)
+                .getWebContentsObserverForTesting()
+                .onVisibilityChanged(Visibility.HIDDEN);
         mLastMockWebContents = null;
         mediator.getTabModelObserverForTesting().tabClosureCommitted(tabToBeClosed);
         mediator.getTabObserverForTesting().onDestroyed(tabToBeClosed);
@@ -1502,7 +1559,8 @@ public class ManualFillingControllerTest {
         when(mLastMockWebContents.getHeight()).thenReturn(heightDp);
         when(mLastMockWebContents.getWidth()).thenReturn(widthDp);
         // Return the correct keyboard_accessory_height for the current density:
-        when(mMockResources.getDimensionPixelSize(anyInt())).thenReturn((int) (density * 48));
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_height))
+                .thenReturn((int) (density * 48));
     }
 
     /**

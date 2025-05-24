@@ -11,9 +11,7 @@
 namespace ash {
 
 FakeHidPreservingBluetoothStateController::
-    FakeHidPreservingBluetoothStateController() {
-  CHECK(features::IsBluetoothDisconnectWarningEnabled());
-}
+    FakeHidPreservingBluetoothStateController() = default;
 
 FakeHidPreservingBluetoothStateController::
     ~FakeHidPreservingBluetoothStateController() = default;

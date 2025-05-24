@@ -40,8 +40,9 @@ SkBitmap CreateBlankBitmapForScale(int size_dip,
 }
 
 SkBitmap EnsureBitmapSize(const SkBitmap& original, int size) {
-  if (original.width() == size && original.height() == size)
+  if (original.width() == size && original.height() == size) {
     return original;
+  }
 
   SkBitmap resized = skia::ImageOperations::Resize(
       original, skia::ImageOperations::RESIZE_LANCZOS3, size, size);
@@ -107,17 +108,20 @@ class ExtensionIconImageTest : public ExtensionsTest,
     std::unique_ptr<base::Value> valid_value =
         deserializer.Deserialize(&error_code, &error);
     EXPECT_EQ(0, error_code) << error;
-    if (error_code != 0)
+    if (error_code != 0) {
       return nullptr;
+    }
 
     EXPECT_TRUE(valid_value);
-    if (!valid_value)
+    if (!valid_value) {
       return nullptr;
+    }
 
     const base::Value::Dict* valid_dict = valid_value->GetIfDict();
     EXPECT_TRUE(valid_dict);
-    if (!valid_dict)
+    if (!valid_dict) {
       return nullptr;
+    }
 
     return Extension::Create(test_file, location, *valid_dict,
                              Extension::NO_FLAGS, &error);
@@ -126,8 +130,9 @@ class ExtensionIconImageTest : public ExtensionsTest,
   // IconImage::Delegate overrides:
   void OnExtensionIconImageChanged(IconImage* image) override {
     image_loaded_count_++;
-    if (quit_in_image_loaded_)
+    if (quit_in_image_loaded_) {
       std::move(quit_closure_).Run();
+    }
   }
 
   gfx::ImageSkia GetDefaultIcon() {

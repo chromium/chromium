@@ -12,7 +12,6 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
   "+chrome/browser/apps/app_service",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/login/wizard_controller.h",
@@ -26,8 +25,10 @@ include_rules = [
   "+chrome/browser/extensions/chrome_test_extension_loader.h",
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/extensions/extension_browsertest.h",
+  "+chrome/browser/extensions/extension_error_controller.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/external_provider_impl.h",
+  "+chrome/browser/extensions/external_provider_manager.h",
   "+chrome/browser/extensions/pending_extension_manager.h",
   "+chrome/browser/extensions/policy_test_utils.h",
   "+chrome/browser/extensions/test_extension_service.h",

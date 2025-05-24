@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_ref.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -74,6 +75,7 @@ class MockFetchContext : public FetchContext {
   std::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
+      network::mojom::RequestMode request_mode,
       const KURL& url,
       const ResourceLoaderOptions& options,
       ReportingDisposition reporting_disposition,
@@ -84,6 +86,7 @@ class MockFetchContext : public FetchContext {
   std::optional<ResourceRequestBlockedReason> CheckAndEnforceCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
+      network::mojom::RequestMode request_mode,
       const KURL& url,
       const ResourceLoaderOptions& options,
       ReportingDisposition reporting_disposition,
@@ -131,6 +134,15 @@ class MockFetchContext : public FetchContext {
     return potentially_unused_preloads_;
   }
 
+  void SetPermissionsPolicy(
+      std::unique_ptr<network::PermissionsPolicy> policy) {
+    permissions_policy_ = std::move(policy);
+  }
+
+  const network::PermissionsPolicy* GetPermissionsPolicy() const override {
+    return permissions_policy_.get();
+  }
+
  private:
   raw_ptr<mojom::ResourceLoadInfoNotifier> resource_load_info_notifier_ =
       nullptr;
@@ -139,6 +151,7 @@ class MockFetchContext : public FetchContext {
   Vector<String> blocked_urls_;
   Vector<String> tagged_urls_;
   Vector<KURL> potentially_unused_preloads_;
+  std::unique_ptr<network::PermissionsPolicy> permissions_policy_;
 };
 
 }  // namespace blink

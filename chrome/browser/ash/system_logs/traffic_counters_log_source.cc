@@ -62,7 +62,7 @@ TrafficCountersLogSource::TrafficCountersLogSource()
       network_health_service_.BindNewPipeAndPassReceiver());
 }
 
-TrafficCountersLogSource::~TrafficCountersLogSource() {}
+TrafficCountersLogSource::~TrafficCountersLogSource() = default;
 
 void TrafficCountersLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

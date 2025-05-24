@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] Identity reference space provides correct poses for inline sessions - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Identity reference space provides correct poses for inline sessions - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Identity reference space provides correct poses for immersive sessions - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Identity reference space provides correct poses for immersive sessions - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

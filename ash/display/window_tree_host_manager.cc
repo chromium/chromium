@@ -48,11 +48,9 @@
 #include "ui/base/class_property.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
-#include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_transform.h"
 #include "ui/display/manager/display_configurator.h"
@@ -78,16 +76,17 @@ namespace {
 // This is initialized in the constructor, and then in CreatePrimaryHost().
 int64_t primary_display_id = -1;
 
-// The compositor memory limit when display size is larger than a threshold.
+// The compositor memory limit when display size is larger than
+// `kUICompositorMemoryLimitDisplaySizeThreshold`.
 constexpr int kUICompositorLargeDisplayMemoryLimitMB = 1024;
-// The compositor memory limit when both the display size and device memory
-// are greater than some thresholds.
-constexpr int kUICompositorLargeDisplayandRamMemoryLimitMB = 2048;
+// The compositor memory limit when the device memory is greater than
+// `kUICompositorMemoryLimitRamCapacityThreshold`.
+constexpr int kUICompositorLargeRamMemoryLimitMB = 2048;
 // The display size threshold, above which the larger memory limits are used.
 // Pixel size was chosen to trigger for 4K+ displays. See: crbug.com/1261776
 constexpr int kUICompositorMemoryLimitDisplaySizeThreshold = 3500;
-// The RAM capacity threshold in MB. When the device has a 4k+ display and
-// 16GB+ of memory, configure the compositor to use a higher memory limit.
+// The RAM capacity threshold in MB. When the device has 16GB+ of memory,
+// configure the compositor to use a higher memory limit.
 constexpr int kUICompositorMemoryLimitRamCapacityThreshold = 16 * 1024;
 
 // An UMA signal for the current effective resolution/dpi is sent at this rate.
@@ -336,9 +335,7 @@ void WindowTreeHostManager::Start() {
 }
 
 void WindowTreeHostManager::ShutdownRoundedDisplays() {
-  if (display::features::IsRoundedDisplayEnabled()) {
-    rounded_display_providers_map_.clear();
-  }
+  rounded_display_providers_map_.clear();
 }
 
 void WindowTreeHostManager::Shutdown() {
@@ -402,13 +399,11 @@ void WindowTreeHostManager::InitHosts() {
     }
   }
 
-  if (display::features::IsRoundedDisplayEnabled()) {
-    // We need to initialize rounded display providers after we have initialized
-    // the root controllers for each display.
-    for (size_t i = 0; i < display_manager->GetNumDisplays(); ++i) {
-      const display::Display& display = display_manager->GetDisplayAt(i);
-      EnableRoundedCorners(display);
-    }
+  // We need to initialize rounded display providers after we have initialized
+  // the root controllers for each display.
+  for (size_t i = 0; i < display_manager->GetNumDisplays(); ++i) {
+    const display::Display& display = display_manager->GetDisplayAt(i);
+    EnableRoundedCorners(display);
   }
 }
 
@@ -454,16 +449,6 @@ aura::Window::Windows WindowTreeHostManager::GetAllRootWindows() {
       windows.push_back(GetWindow(it->second));
   }
   return windows;
-}
-
-gfx::Insets WindowTreeHostManager::GetOverscanInsets(int64_t display_id) const {
-  return GetDisplayManager()->GetOverscanInsets(display_id);
-}
-
-void WindowTreeHostManager::SetOverscanInsets(
-    int64_t display_id,
-    const gfx::Insets& insets_in_dip) {
-  GetDisplayManager()->SetOverscanInsets(display_id, insets_in_dip);
 }
 
 std::vector<RootWindowController*>
@@ -663,9 +648,7 @@ void WindowTreeHostManager::CreateDisplay(const display::Display& display) {
     RootWindowController::CreateForSecondaryDisplay(ash_host);
   }
 
-  if (display::features::IsRoundedDisplayEnabled()) {
-    EnableRoundedCorners(display);
-  }
+  EnableRoundedCorners(display);
 }
 
 void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
@@ -696,9 +679,7 @@ void WindowTreeHostManager::RemoveDisplay(const display::Display& display) {
   AshWindowTreeHost* host_to_delete = window_tree_hosts_[display.id()];
   CHECK(host_to_delete) << display.ToString();
 
-  if (display::features::IsRoundedDisplayEnabled()) {
-    RemoveRoundedDisplayProvider(display);
-  }
+  RemoveRoundedDisplayProvider(display);
 
   // When the primary root window's display is removed, move the primary
   // root to the other display.
@@ -777,12 +758,10 @@ void WindowTreeHostManager::UpdateDisplayMetrics(
                  DM::DISPLAY_METRIC_DEVICE_SCALE_FACTOR);
   SetDisplayPropertiesOnHost(ash_host, display, needs_redraw);
 
-  if (display::features::IsRoundedDisplayEnabled()) {
-    // We need to update the surface on which rounded display mask textures are
-    // rendered when ever the display device scale factor or display rotation
-    // changes.
-    MaybeUpdateRoundedDisplaySurface(display);
-  }
+  // We need to update the surface on which rounded display mask textures are
+  // rendered when ever the display device scale factor or display rotation
+  // changes.
+  MaybeUpdateRoundedDisplaySurface(display);
 }
 
 void WindowTreeHostManager::EnableRoundedCorners(
@@ -854,6 +833,12 @@ void WindowTreeHostManager::OnHostResized(aura::WindowTreeHost* host) {
     mirror_window_controller_->UpdateWindow();
     cursor_window_controller_->UpdateContainer();
   }
+}
+
+void WindowTreeHostManager::OnLocalSurfaceIdChanged(
+    aura::WindowTreeHost* host,
+    const viz::LocalSurfaceId& id) {
+  mirror_window_controller_->UpdateWindow();
 }
 
 void WindowTreeHostManager::OnDisplaySecurityMaybeChanged(int64_t display_id,
@@ -1068,10 +1053,13 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
                display.GetSizeInPixel().height()) >
       kUICompositorMemoryLimitDisplaySizeThreshold) {
     params_with_bounds.compositor_memory_limit_mb =
-        base::SysInfo::AmountOfPhysicalMemoryMB() >=
-                kUICompositorMemoryLimitRamCapacityThreshold
-            ? kUICompositorLargeDisplayandRamMemoryLimitMB
-            : kUICompositorLargeDisplayMemoryLimitMB;
+        kUICompositorLargeDisplayMemoryLimitMB;
+  }
+
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() >=
+      kUICompositorMemoryLimitRamCapacityThreshold) {
+    params_with_bounds.compositor_memory_limit_mb =
+        kUICompositorLargeRamMemoryLimitMB;
   }
 
   // The AshWindowTreeHost ends up owned by the RootWindowControllers created

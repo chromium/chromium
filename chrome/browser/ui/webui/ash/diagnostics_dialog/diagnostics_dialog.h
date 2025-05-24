@@ -15,7 +15,7 @@ namespace {
 // ID used to lookup existing DiagnosticsDialog instance from
 // SystemWebDialogDelegate list and ensure only one instance of
 // DiagnosticsDialog exists at a time.
-constexpr char kDiagnosticsDialogId[] = "diagnostics-dialog";
+inline constexpr char kDiagnosticsDialogId[] = "diagnostics-dialog";
 
 }  // namespace
 

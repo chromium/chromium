@@ -40,7 +40,7 @@ export class DeviceMonitor {
    * Indicates whether the device list has been updated at least once
    * since initialization.
    */
-  private hasUpdated: boolean = false;
+  private hasUpdated = false;
 
   constructor(private readonly listener: (devices: DeviceInfo[]) => void) {
     if (loadTimeData.getBoard() === 'grunt') {

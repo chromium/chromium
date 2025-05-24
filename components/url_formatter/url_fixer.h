@@ -6,6 +6,7 @@
 #define COMPONENTS_URL_FORMATTER_URL_FIXER_H_
 
 #include <string>
+#include <string_view>
 
 #include "url/gurl.h"
 
@@ -16,7 +17,7 @@ class FilePath;
 namespace url {
 struct Component;
 struct Parsed;
-}
+}  // namespace url
 
 // These methods process user typed input that is meant to be a URL - like user
 // typing in the URL bar or command line switches. The output is NOT guaranteed
@@ -32,7 +33,7 @@ namespace url_formatter {
 // segments. Currently does not segment "file" schemes.
 // Returns the canonicalized scheme, or the empty string when |text| is only
 // whitespace.
-std::string SegmentURL(const std::string& text, url::Parsed* parts);
+std::string SegmentURL(std::string_view text, url::Parsed* parts);
 std::u16string SegmentURL(const std::u16string& text, url::Parsed* parts);
 
 // Attempts to fix common problems in user-typed text, making some "smart"

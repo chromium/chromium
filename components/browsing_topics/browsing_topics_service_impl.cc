@@ -4,6 +4,7 @@
 
 #include "components/browsing_topics/browsing_topics_service_impl.h"
 
+#include <algorithm>
 #include <random>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
@@ -270,7 +270,14 @@ enum class BrowsingTopicsApiActionType {
   // <iframe src=[url] browsingtopics> request.
   kObserveViaIframeAttributeApi = 5,
 
-  kMaxValue = kObserveViaIframeAttributeApi,
+  // Get topics via <img src=[url] browsingtopics>.
+  kGetViaImgAttributeApi = 6,
+
+  // Observe topics via the "Sec-Browsing-Topics: ?1" response header for the
+  // <img src=[url] browsingtopics> request.
+  kObserveViaImgAttributeApi = 7,
+
+  kMaxValue = kObserveViaImgAttributeApi,
 };
 
 void RecordBrowsingTopicsApiActionTypeMetrics(ApiCallerSource caller_source,
@@ -310,6 +317,24 @@ void RecordBrowsingTopicsApiActionTypeMetrics(ApiCallerSource caller_source,
     base::UmaHistogramEnumeration(
         kBrowsingTopicsApiActionTypeHistogramId,
         BrowsingTopicsApiActionType::kObserveViaIframeAttributeApi);
+
+    return;
+  }
+
+  if (caller_source == ApiCallerSource::kImgAttribute) {
+    if (get_topics) {
+      DCHECK(!observe);
+
+      base::UmaHistogramEnumeration(
+          kBrowsingTopicsApiActionTypeHistogramId,
+          BrowsingTopicsApiActionType::kGetViaImgAttributeApi);
+      return;
+    }
+
+    DCHECK(observe);
+    base::UmaHistogramEnumeration(
+        kBrowsingTopicsApiActionTypeHistogramId,
+        BrowsingTopicsApiActionType::kObserveViaImgAttributeApi);
 
     return;
   }
@@ -630,26 +655,6 @@ void BrowsingTopicsServiceImpl::ValidateCalculationSchedule() {
         "HoursSinceScheduledTime",
         elapsed_since_scheduled_time.InHours(),
         /*exclusive_max=*/30);
-    base::UmaHistogramBoolean(
-        "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
-        "CalculationTimerIsRunning",
-        schedule_calculate_timer_.IsRunning());
-
-    base::TimeDelta remaining_time_in_calculator_timer =
-        schedule_calculate_timer_.desired_run_time() - base::Time::Now();
-
-    base::UmaHistogramBoolean(
-        "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
-        "RemainingTimeInCalculationTimerIsPositive",
-        remaining_time_in_calculator_timer.is_positive());
-
-    if (remaining_time_in_calculator_timer.is_positive()) {
-      base::UmaHistogramExactLinear(
-          "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
-          "RemainingDaysInCalculationTimer",
-          remaining_time_in_calculator_timer.InDays(),
-          /*exclusive_max=*/30);
-    }
 
     recorded_calculation_did_not_occur_metrics_ = true;
   }
@@ -720,13 +725,10 @@ const BrowsingTopicsState& BrowsingTopicsServiceImpl::browsing_topics_state() {
 void BrowsingTopicsServiceImpl::ScheduleBrowsingTopicsCalculation(
     bool is_manually_triggered,
     int previous_timeout_count,
-    base::TimeDelta delay,
-    bool persist_calculation_time) {
+    base::TimeDelta delay) {
   DCHECK(browsing_topics_state_loaded_);
 
-  if (persist_calculation_time) {
-    browsing_topics_state_.UpdateNextScheduledCalculationTime(delay);
-  }
+  browsing_topics_state_.UpdateNextScheduledCalculationTime(delay);
 
   // `this` owns the timer, which is automatically cancelled on destruction, so
   // base::Unretained(this) is safe.
@@ -795,8 +797,7 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
     }
 
     ScheduleBrowsingTopicsCalculation(is_manually_triggered,
-                                      previous_timeout_count + 1, delay,
-                                      /*persist_calculation_time=*/true);
+                                      previous_timeout_count + 1, delay);
     return;
   }
 
@@ -826,8 +827,7 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
   ScheduleBrowsingTopicsCalculation(
       /*is_manually_triggered=*/false,
       /*previous_timeout_count=*/0,
-      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get(),
-      /*persist_calculation_time=*/true);
+      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
 
   for (auto& callback : get_state_for_webui_callbacks_) {
     site_data_manager_->GetContextDomainsFromHashedContextDomains(
@@ -870,8 +870,7 @@ void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
 
   ScheduleBrowsingTopicsCalculation(
       /*is_manually_triggered=*/false,
-      /*previous_timeout_count=*/0, decision.next_calculation_delay,
-      /*persist_calculation_time=*/false);
+      /*previous_timeout_count=*/0, decision.next_calculation_delay);
 }
 
 void BrowsingTopicsServiceImpl::Shutdown() {
@@ -1032,7 +1031,7 @@ void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUiHelper(
   }
 
   // Reorder the epochs from latest to oldest.
-  base::ranges::reverse(webui_state->epochs);
+  std::ranges::reverse(webui_state->epochs);
 
   std::move(callback).Run(
       mojom::WebUIGetBrowsingTopicsStateResult::NewBrowsingTopicsState(

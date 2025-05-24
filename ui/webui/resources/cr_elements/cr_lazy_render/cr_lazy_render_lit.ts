@@ -42,9 +42,9 @@ export class CrLazyRenderLitElement<T extends HTMLElement> extends
     };
   }
 
-  private rendered_: boolean = false;
+  private accessor rendered_: boolean = false;
 
-  template: () => TemplateResult = () => html``;
+  accessor template: () => TemplateResult = () => html``;
   private child_: T|null = null;
 
   override render() {

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/config/chrome_untrusted_web_ui_configs_chromeos.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
@@ -11,8 +13,8 @@
 #include "ash/webui/focus_mode/focus_mode_untrusted_ui.h"
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
+#include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 #include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/annotator/untrusted_annotator_ui_config.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/boca_web_app_config.h"
@@ -72,6 +74,8 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(std::make_unique<MakoUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<ScalableIphDebugUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<FocusModeUntrustedUIConfig>());
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<ScannerFeedbackUntrustedUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddUntrustedWebUIConfig(
       std::make_unique<SampleSystemWebAppUntrustedUIConfig>());

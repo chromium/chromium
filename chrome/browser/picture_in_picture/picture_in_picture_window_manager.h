@@ -21,6 +21,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/types/pass_key.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager_uma_helper.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
@@ -219,6 +220,13 @@ class PictureInPictureWindowManager {
   // example, might result in a misleading window title.
   static bool IsSupportedForDocumentPictureInPicture(const GURL& url);
 
+#if !BUILDFLAG(IS_ANDROID)
+  void set_uma_helper_for_testing(
+      std::unique_ptr<PictureInPictureWindowManagerUmaHelper> uma_helper) {
+    uma_helper_ = std::move(uma_helper);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;
   class VideoWebContentsObserver;
@@ -280,6 +288,16 @@ class PictureInPictureWindowManager {
   void RecordPictureInPictureDisallowed(PictureInPictureDisallowedType type);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Records the total time spent on a picture in picture window, regardless of
+  // the Picture-in-Picture window type (document vs video) and the reason for
+  // closing the window (UI interaction, returning back to opener tab, etc.).
+  //
+  // The metric is recorded using the `PictureInPictureWindowManagerUmaHelper`,
+  // which this method will create if one does not already exist.
+  void MaybeRecordPictureInPictureChanged(bool is_picture_in_picture);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   PictureInPictureWindowManager();
   ~PictureInPictureWindowManager();
 
@@ -296,6 +314,8 @@ class PictureInPictureWindowManager {
   // existence. If at least one exists, then picture-in-picture windows will be
   // blocked.
   uint32_t number_of_existing_scoped_disallow_picture_in_pictures_ = 0;
+
+  std::unique_ptr<PictureInPictureWindowManagerUmaHelper> uma_helper_;
 #endif  //! BUILDFLAG(IS_ANDROID)
 
   raw_ptr<content::PictureInPictureWindowController, DanglingUntriaged>

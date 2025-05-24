@@ -122,10 +122,10 @@ class PrivacySandboxAdsAPIsM1OverrideBrowserTest
   PrivacySandboxAdsAPIsM1OverrideBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kPrivacySandboxAdsAPIsM1Override,
-         blink::features::kBrowsingTopics,
+         network::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsDocumentAPI,
-         blink::features::kInterestGroupStorage, blink::features::kFencedFrames,
-         blink::features::kSharedStorageAPI},
+         network::features::kInterestGroupStorage,
+         blink::features::kFencedFrames, network::features::kSharedStorageAPI},
         /*disabled_features=*/{});
   }
 
@@ -164,10 +164,10 @@ class PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest
     feature_list_.InitWithFeatures(
         {features::kPrivacySandboxAdsAPIsM1Override},
         {attribution_reporting::features::kConversionMeasurement,
-         blink::features::kBrowsingTopics,
+         network::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsDocumentAPI,
-         blink::features::kInterestGroupStorage, blink::features::kFencedFrames,
-         blink::features::kSharedStorageAPI});
+         network::features::kInterestGroupStorage,
+         blink::features::kFencedFrames, network::features::kSharedStorageAPI});
   }
 
  private:

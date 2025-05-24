@@ -119,7 +119,6 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   // GetLastUsed() should not be called in net::APP_CACHE mode since the times
   // are not updated.
   base::Time GetLastUsed() const override;
-  base::Time GetLastModified() const override;
   int32_t GetDataSize(int index) const override;
   int ReadData(int stream_index,
                int offset,
@@ -378,12 +377,11 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   const bool use_optimistic_operations_;
   std::optional<std::string> key_;
 
-  // |last_used_|, |last_modified_| and |data_size_| are copied from the
+  // |last_used_|  and |data_size_| are copied from the
   // synchronous entry at the completion of each item of asynchronous IO.
   // TODO(clamy): Unify last_used_ with data in the index.
   base::Time last_used_;
-  base::Time last_modified_;
-  int32_t data_size_[kSimpleEntryStreamCount];
+  std::array<int32_t, kSimpleEntryStreamCount> data_size_;
   int32_t sparse_data_size_ = 0;
 
   // Number of times this object has been returned from Backend::OpenEntry() and
@@ -409,12 +407,12 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   // a single entry reader that reads serially through the entire file.
   // Extending this to multiple readers is possible, but isn't currently worth
   // it; see http://crbug.com/488076#c3 for details.
-  int32_t crc32s_end_offset_[kSimpleEntryStreamCount];
-  uint32_t crc32s_[kSimpleEntryStreamCount];
+  std::array<int32_t, kSimpleEntryStreamCount> crc32s_end_offset_;
+  std::array<uint32_t, kSimpleEntryStreamCount> crc32s_;
 
   // If |have_written_[index]| is true, we have written to the file that
   // contains stream |index|.
-  bool have_written_[kSimpleEntryStreamCount];
+  std::array<bool, kSimpleEntryStreamCount> have_written_;
 
   // The |synchronous_entry_| is the worker thread object that performs IO on
   // entries. It's owned by this SimpleEntryImpl whenever |executing_operation_|

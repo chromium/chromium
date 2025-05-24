@@ -26,7 +26,7 @@ web::WebUIIOSDataSource* CreateUkmInternalsUIHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUIURLKeyedMetricsHost);
 
-  source->AddResourcePaths(base::make_span(kUkmResources, kUkmResourcesSize));
+  source->AddResourcePaths(kUkmResources);
   source->SetDefaultResource(IDR_UKM_UKM_INTERNALS_HTML);
   return source;
 }
@@ -67,8 +67,9 @@ void UkmMessageHandler::HandleRequestUkmData(const base::Value::List& args) {
       ukm::debug::UkmDebugDataExtractor::GetStructuredData(ukm_service_);
 
   std::string callback_id;
-  if (!args.empty() && args[0].is_string())
+  if (!args.empty() && args[0].is_string()) {
     callback_id = args[0].GetString();
+  }
 
   web_ui()->ResolveJavascriptCallback(base::Value(callback_id),
                                       std::move(ukm_debug_data));

@@ -33,6 +33,8 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -46,21 +48,26 @@ class WTF_EXPORT StringUTF8Adaptor final {
   DISALLOW_NEW();
 
  public:
-  explicit StringUTF8Adaptor(StringView string,
-                             UTF8ConversionMode mode = kLenientUTF8Conversion);
+  using iterator = base::raw_span<const char>::iterator;
+
+  explicit StringUTF8Adaptor(
+      StringView string,
+      Utf8ConversionMode mode = Utf8ConversionMode::kLenient);
   ~StringUTF8Adaptor();
 
-  const char* data() const { return data_; }
-  wtf_size_t size() const { return size_; }
+  const char* data() const { return span_.data(); }
+  wtf_size_t size() const { return span_.size(); }
 
-  std::string_view AsStringView() const {
-    return std::string_view(data_, size_);
-  }
+  // Iterators, so this type meets the requirements of
+  // `std::ranges::contiguous_range`.
+  iterator begin() const { return span_.begin(); }
+  iterator end() const { return span_.end(); }
+
+  std::string_view AsStringView() const { return base::as_string_view(span_); }
 
  private:
   std::string utf8_buffer_;
-  const char* data_ = nullptr;
-  wtf_size_t size_ = 0;
+  base::raw_span<const char> span_;
 };
 
 }  // namespace WTF

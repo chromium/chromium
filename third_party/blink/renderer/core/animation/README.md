@@ -1571,15 +1571,6 @@ The Blink animation engine interacts with Blink/Chrome in the following ways:
 
 [InspectorAnimationAgent]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/inspector/InspectorAnimationAgent.h
 
-*   ### SVG
-
-    The `element.animate()` API supports targeting SVG attributes in its
-    keyframes. This is an experimental implementation guarded by the
-    WebAnimationsSVG flag and not exposed on the web.
-
-    This feature should provide a high fidelity alternative to our SMIL
-    implementation.
-
 ## Architecture
 
 ### Animation Timing Model

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/style_variant.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 
@@ -77,14 +78,12 @@ class CORE_EXPORT TextPainter {
               const SvgContextPaints* svg_context_paints,
               const Font& font,
               const gfx::Rect& visual_rect,
-              const LineRelativeOffset& text_origin,
-              bool horizontal)
+              const LineRelativeOffset& text_origin)
       : graphics_context_(context),
         svg_context_paints_(svg_context_paints),
         font_(font),
         visual_rect_(visual_rect),
-        text_origin_(text_origin),
-        horizontal_(horizontal) {}
+        text_origin_(text_origin) {}
   ~TextPainter() = default;
 
   enum ShadowMode { kBothShadowsAndTextProper, kShadowsOnly, kTextProperOnly };
@@ -122,7 +121,7 @@ class CORE_EXPORT TextPainter {
                                           const ComputedStyle&,
                                           const PaintInfo&);
 
-  void SetEmphasisMark(const AtomicString&, TextEmphasisPosition);
+  void SetEmphasisMark(const AtomicString&, LineLogicalSide);
 
  protected:
   const Font& font() const { return font_; }
@@ -146,7 +145,6 @@ class CORE_EXPORT TextPainter {
   const Font& font_;
   const gfx::Rect visual_rect_;
   const LineRelativeOffset text_origin_;
-  const bool horizontal_;
   std::optional<SvgTextPaintState> svg_text_paint_state_;
   AtomicString emphasis_mark_;
   int emphasis_mark_offset_ = 0;

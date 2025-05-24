@@ -117,7 +117,7 @@ class SyncManager {
   SyncManager();
   virtual ~SyncManager();
 
-  // Initialize the sync manager using arguments from |args|.
+  // Initialize the sync manager using arguments from `args`.
   //
   // Note, args is passed by non-const pointer because it contains objects like
   // unique_ptr.
@@ -144,7 +144,7 @@ class SyncManager {
   // any configuration tasks needed as determined by the params. Once complete,
   // syncer will remain in CONFIGURATION_MODE until StartSyncingNormally is
   // called.
-  // |ready_task| is invoked when the configuration completes.
+  // `ready_task` is invoked when the configuration completes.
   virtual void ConfigureSyncer(ConfigureReason reason,
                                DataTypeSet to_download,
                                SyncFeatureState sync_feature_state,

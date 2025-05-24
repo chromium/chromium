@@ -11,12 +11,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/extension_creator.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 // Manages packing an extension on the file thread and reporting the result
 // back to the UI.
-// Ownership note: In "asynchronous" mode, |Client| has to make sure this
+// Ownership note: In "asynchronous" mode, `Client` has to make sure this
 // class's instances are kept alive until OnPackSuccess|OnPackFailure is called.
 // Therefore this class assumes that posting task with base::Unretained(this)
 // is safe.
@@ -31,7 +34,7 @@ class PackExtensionJob {
                                ExtensionCreator::ErrorType error_type) = 0;
 
    protected:
-    virtual ~Client() {}
+    virtual ~Client() = default;
   };
 
   PackExtensionJob(Client* client,
@@ -56,7 +59,7 @@ class PackExtensionJob {
  private:
   enum class RunMode { SYNCHRONOUS, ASYNCHRONOUS };
 
-  // If |run_mode_| is SYNCHRONOUS, this is run on whichever thread calls it.
+  // If `run_mode_` is SYNCHRONOUS, this is run on whichever thread calls it.
   void Run(scoped_refptr<base::SequencedTaskRunner> async_reply_task_runner);
   void ReportSuccessOnClientSequence(
       std::unique_ptr<base::FilePath> crx_file_out,
@@ -71,7 +74,7 @@ class PackExtensionJob {
   int run_flags_;  // Bitset of ExtensionCreator::RunFlags values - we always
                    // assume kRequireModernManifestVersion, though.
 
-  // Used to check methods that run on |client_|'s sequence.
+  // Used to check methods that run on `client_`'s sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

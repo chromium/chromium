@@ -24,13 +24,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -46,8 +46,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LogoMediatorUnitTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
 
     @Mock LogoBridge.Natives mLogoBridgeJniMock;
@@ -73,8 +73,6 @@ public class LogoMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mContext = ApplicationProvider.getApplicationContext();
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
@@ -83,7 +81,7 @@ public class LogoMediatorUnitTest {
         when(mTemplateUrlService.getDefaultSearchEngineTemplateUrl()).thenReturn(mTemplateUrl);
         when(mTemplateUrl.getKeyword()).thenReturn(null);
 
-        mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridgeJniMock);
+        LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(true));
@@ -101,20 +99,6 @@ public class LogoMediatorUnitTest {
         mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
 
         verify(mLogoBridge, times(1)).getCurrentLogo(any());
-    }
-
-    @Test
-    public void testDseChangedAndGoogleIsDseAndDoodleIsNotSupported() {
-        // If doodle isn't supported, getSearchProviderLogo() shouldn't be called by
-        // onTemplateURLServiceChanged().
-        LogoMediator logoMediator = createMediator(false);
-        Assert.assertNotNull(logoMediator.getDefaultGoogleLogo(mContext));
-
-        verify(mTemplateUrlService)
-                .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
-        mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
-
-        verify(mLogoBridge, times(0)).getCurrentLogo(any());
     }
 
     @Test
@@ -166,7 +150,7 @@ public class LogoMediatorUnitTest {
 
     @Test
     public void testInitWithNativeWhenParentSurfaceIsVisible() {
-        LogoMediator logoMediator = createMediatorWithoutNative(true);
+        LogoMediator logoMediator = createMediatorWithoutNative();
         logoMediator.updateVisibility(/* animationEnabled= */ false);
 
         Assert.assertTrue(logoMediator.isLogoVisible());
@@ -182,7 +166,7 @@ public class LogoMediatorUnitTest {
 
     @Test
     public void testInitWithoutNativeWhenDseDoesNotHaveLogo() {
-        LogoMediator logoMediator = createMediatorWithoutNative(true);
+        LogoMediator logoMediator = createMediatorWithoutNative();
         boolean originKeyValue =
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(
@@ -225,25 +209,18 @@ public class LogoMediatorUnitTest {
         verify(mTemplateUrlService).removeObserver(logoMediator);
     }
 
-    private LogoMediator createMediator(boolean shouldFetchDoodle) {
-        LogoMediator logoMediator = createMediatorWithoutNative(shouldFetchDoodle);
-        logoMediator.initWithNative(mProfile);
-        return logoMediator;
-    }
-
     private LogoMediator createMediator() {
-        LogoMediator logoMediator = createMediatorWithoutNative(true);
+        LogoMediator logoMediator = createMediatorWithoutNative();
         logoMediator.initWithNative(mProfile);
         return logoMediator;
     }
 
-    private LogoMediator createMediatorWithoutNative(boolean shouldFetchDoodle) {
+    private LogoMediator createMediatorWithoutNative() {
         LogoMediator logoMediator =
                 new LogoMediator(
                         mContext,
                         mLogoClickedCallback,
                         mLogoModel,
-                        shouldFetchDoodle,
                         mOnLogoAvailableCallback,
                         null,
                         new CachedTintedBitmap(

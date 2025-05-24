@@ -4,9 +4,10 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrToolbarSearchFieldElement, IronDropdownElement, IronListElement, OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, OsSettingsSearchBoxElement, personalizationSearchMojom, Router, routes, routesMojom, searchMojom, searchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojom, setUserActionRecorderForTesting, ToolbarElement} from 'chrome://os-settings/os_settings.js';
+import type {CrToolbarSearchFieldElement, IronDropdownElement, IronListElement, OsSettingsSearchBoxElement, ToolbarElement} from 'chrome://os-settings/os_settings.js';
+import {OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, personalizationSearchMojom, Router, routes, routesMojom, searchMojom, searchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojom, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

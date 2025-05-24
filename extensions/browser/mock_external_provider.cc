@@ -70,6 +70,24 @@ bool MockExternalProvider::HasExtension(const std::string& id) const {
          base::Contains(url_extension_map_, id);
 }
 
+bool MockExternalProvider::HasExtensionWithLocation(
+    const std::string& id,
+    mojom::ManifestLocation location) const {
+  if (auto it = file_extension_map_.find(id); it != file_extension_map_.end()) {
+    if (it->second->crx_location == location) {
+      return true;
+    }
+  }
+
+  if (auto it = url_extension_map_.find(id); it != url_extension_map_.end()) {
+    if (it->second->download_location == location) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool MockExternalProvider::GetExtensionDetails(
     const std::string& id,
     mojom::ManifestLocation* location,

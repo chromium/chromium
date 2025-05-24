@@ -1,15 +1,40 @@
 Configurations supported by the toolchain team
 ==============================================
 
-This document describes considerations to follow when adding a new build
-config. A build config is something like a new compiler / linker configuration,
-a new test binary, a new `target_os`, a new `target_cpu`, etc.
+This document describes the existing supported build configs, and considerations
+to follow when adding a new one. A build config is something like a new compiler
+/ linker configuration, a new test binary, a new `target_os`, a new
+`target_cpu`, etc.
 
-Background
-----------
+Existing toolchain support
+--------------------------
+
+Chromium prioritizes user benefits (safety, performance) and maintainability
+over theoretical purity (e.g. standards compliance for its own sake). Currently,
+the best way to achieve those goals is to support a single compiler (`clang`)
+and STL implementation (`libc++`).
+* We use clang-specific extensions (e.g. the
+  `[[clang::lifetimebound]]` C++ attribute)
+* We rely on guarantees in libc++ beyond what the STL requires (e.g.
+  deterministically crashing for certain cases of UB; having a
+  trivially-relocatable `std::string` implementation)
+
+Even within clang/libc++, we often rely on recent bugfixes and feature
+additions, so generally only the most recent LLVM version is supported. Building
+Chromium with an unsupported toolchain will fail to compile at best; at worst,
+it will compile, but have bugs, security holes, or reduced performance.
+
+We currently allow community-contributed patches that support building with gcc,
+since this is a requirement for many Linux environments and can be accommodated
+without much maintainability cost or risk of introducing unsafe behavior. As of
+M138, however, even gcc builds will only work with libc++.
+
+Toolchain updates
+-----------------
 
 We update our toolchain (the C/C++/Objective-C compiler `clang`, the linker
-`lld`, and a small assortment of helper binaries) every 2-4 weeks.
+`lld`, the STL implementation `libc++`, and a small assortment of helper
+binaries) every 2-4 weeks.
 
 This toolchain is used to build Chromium for **7+ platforms** (Android,
 Chromecast, Chrome OS, Fuchsia, iOS, Linux, macOS, Windows) targeting
@@ -31,7 +56,6 @@ opt-in trybots.
 The toolchain team has established contacts to most platform owners in
 Chromium, so that we can ask for help quickly when needed.
 
-
 Toolchain guarantees
 --------------------
 
@@ -47,7 +71,6 @@ For configurations that don't have a clang tip-of-tree (ToT) bot or that aren't
 covered on the CQ, **we won't revert toolchain updates**. We will do our best
 to fix things quickly (see below for how to file a good bug) and to fix forward
 to get you unblocked.
-
 
 Talk to the toolchain team to make sure your new config is supported
 --------------------------------------------------------------------

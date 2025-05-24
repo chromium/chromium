@@ -177,6 +177,11 @@ class CloudPolicyInvalidator
       return highest_handled_invalidation_version_;
     }
 
+    bool IsCoreReady() const {
+      return core_->IsConnected() && core_->refresh_scheduler() &&
+             core_->store();
+    }
+
    private:
     void set_max_fetch_delay(int delay);
 
@@ -199,7 +204,7 @@ class CloudPolicyInvalidator
     const PolicyInvalidationScope scope_;
 
     // The cloud policy core.
-    raw_ptr<CloudPolicyCore> core_;
+    const raw_ptr<CloudPolicyCore> core_;
 
     // The time that invalidations became enabled.
     std::optional<base::Time> invalidations_enabled_time_;

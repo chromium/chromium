@@ -26,19 +26,18 @@ class WebServiceWorkerFetchContextImplTest : public testing::Test {
 
   class FakeURLLoaderThrottleProvider : public URLLoaderThrottleProvider {
     std::unique_ptr<URLLoaderThrottleProvider> Clone() override {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
 
-    WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+    std::vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
         base::optional_ref<const blink::LocalFrameToken> local_frame_token,
         const network::ResourceRequest& request) override {
-      WebVector<std::unique_ptr<URLLoaderThrottle>> throttles;
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles;
       throttles.emplace_back(std::make_unique<FakeURLLoaderThrottle>());
       return throttles;
     }
 
-    void SetOnline(bool is_online) override { NOTREACHED_IN_MIGRATION(); }
+    void SetOnline(bool is_online) override { NOTREACHED(); }
   };
   test::TaskEnvironment task_environment_;
 };
@@ -53,7 +52,7 @@ TEST_F(WebServiceWorkerFetchContextImplTest, SkipThrottling) {
       std::make_unique<FakeURLLoaderThrottleProvider>(),
       /*websocket_handshake_throttle_provider=*/nullptr, mojo::NullReceiver(),
       mojo::NullReceiver(),
-      /*cors_exempt_header_list=*/WebVector<WebString>(),
+      /*cors_exempt_header_list=*/std::vector<WebString>(),
       /*is_third_party_context*/ false);
 
   {
@@ -61,7 +60,7 @@ TEST_F(WebServiceWorkerFetchContextImplTest, SkipThrottling) {
     network::ResourceRequest request;
     request.url = GURL(kScriptUrl);
     request.destination = network::mojom::RequestDestination::kServiceWorker;
-    WebVector<std::unique_ptr<URLLoaderThrottle>> throttles =
+    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles =
         context->CreateThrottles(request);
     EXPECT_EQ(1u, throttles.size());
   }
@@ -70,7 +69,7 @@ TEST_F(WebServiceWorkerFetchContextImplTest, SkipThrottling) {
     network::ResourceRequest request;
     request.url = GURL(kScriptUrlToSkipThrottling);
     request.destination = network::mojom::RequestDestination::kServiceWorker;
-    WebVector<std::unique_ptr<URLLoaderThrottle>> throttles =
+    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles =
         context->CreateThrottles(request);
     EXPECT_TRUE(throttles.empty());
   }

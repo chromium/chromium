@@ -30,10 +30,11 @@ SigninMetricsServiceFactory* SigninMetricsServiceFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* SigninMetricsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SigninMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new SigninMetricsService(
+  return std::make_unique<SigninMetricsService>(
       *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
       g_browser_process->active_primary_accounts_metrics_recorder());
 }

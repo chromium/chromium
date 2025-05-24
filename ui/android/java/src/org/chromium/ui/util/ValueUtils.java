@@ -9,7 +9,10 @@ import android.util.TypedValue;
 
 import androidx.annotation.DimenRes;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper functions for working with {@TypedValue}s. */
+@NullMarked
 public final class ValueUtils {
 
     /** Private constructor to stop instantiation. */

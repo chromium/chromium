@@ -23,4 +23,19 @@ DocumentIsolationPolicy& DocumentIsolationPolicy::operator=(
 bool DocumentIsolationPolicy::operator==(
     const DocumentIsolationPolicy& other) const = default;
 
+bool DIPCompatibleWithCrossOriginIsolated(const DocumentIsolationPolicy& dip) {
+  return DIPCompatibleWithCrossOriginIsolated(dip.value);
+}
+
+bool DIPCompatibleWithCrossOriginIsolated(
+    mojom::DocumentIsolationPolicyValue value) {
+  switch (value) {
+    case mojom::DocumentIsolationPolicyValue::kNone:
+      return false;
+    case mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless:
+    case mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp:
+      return true;
+  }
+}
+
 }  // namespace network

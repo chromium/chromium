@@ -20,11 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
 #include "base/metrics/histogram_macros.h"
@@ -43,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
 #include "third_party/blink/renderer/core/loader/frame_fetch_context.h"
 #include "third_party/blink/renderer/core/loader/http_equiv.h"
@@ -428,8 +424,8 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
                             WebFeature::kInteractiveWidgetResizesVisual);
         } break;
         case ui::mojom::blink::VirtualKeyboardMode::kUnset: {
-          NOTREACHED_IN_MIGRATION();
-        } break;
+          NOTREACHED();
+        }
       }
     } else {
       description.virtual_keyboard_mode =
@@ -444,7 +440,7 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
 }
 
 static const char* ViewportErrorMessageTemplate(ViewportErrorCode error_code) {
-  static const char* const kErrors[] = {
+  static constexpr auto kErrors = std::to_array<const char*>({
       "The key \"%replacement1\" is not recognized and ignored.",
       "The value \"%replacement1\" for key \"%replacement2\" is invalid, and "
       "has been ignored.",
@@ -454,8 +450,7 @@ static const char* ViewportErrorMessageTemplate(ViewportErrorCode error_code) {
       "been clamped.",
       "The key \"target-densitydpi\" is not supported.",
       "The value \"%replacement1\" for key \"viewport-fit\" is not supported.",
-  };
-
+  });
   return kErrors[error_code];
 }
 
@@ -471,8 +466,7 @@ static mojom::ConsoleMessageLevel ViewportErrorMessageLevel(
       return mojom::ConsoleMessageLevel::kWarning;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return mojom::ConsoleMessageLevel::kError;
+  NOTREACHED();
 }
 
 void HTMLMetaElement::ReportViewportWarning(Document* document,
@@ -558,8 +552,8 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
   } else if (EqualIgnoringASCIICase(name_value, "supports-reduced-motion")) {
     GetDocument().SupportsReducedMotionMetaChanged();
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
-             EqualIgnoringASCIICase(name_value, "app-title")) {
-    GetDocument().UpdateAppTitle();
+             EqualIgnoringASCIICase(name_value, "application-title")) {
+    GetDocument().UpdateApplicationTitle();
   }
 }
 
@@ -734,9 +728,9 @@ void HTMLMetaElement::ProcessContent() {
                         WebFeature::kHTMLMetaElementMonetization);
     }
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
-             EqualIgnoringASCIICase(name_value, "app-title")) {
+             EqualIgnoringASCIICase(name_value, "application-title")) {
     UseCounter::Count(&GetDocument(), WebFeature::kWebAppTitle);
-    GetDocument().UpdateAppTitle();
+    GetDocument().UpdateApplicationTitle();
   }
 }
 

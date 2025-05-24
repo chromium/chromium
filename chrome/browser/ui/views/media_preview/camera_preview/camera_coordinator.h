@@ -14,8 +14,14 @@
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_coordinator.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/views/view_tracker.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "chrome/browser/ui/views/media_preview/camera_preview/blur_switch_view_controller.h"
+#endif
 
 // Acts as a middle man between the ViewController and the Mediator.
 // Maintains the lifetime of its views.
@@ -24,8 +30,8 @@ class CameraCoordinator {
   CameraCoordinator(views::View& parent_view,
                     bool needs_borders,
                     const std::vector<std::string>& eligible_camera_ids,
-                    PrefService& prefs,
                     bool allow_device_selection,
+                    base::WeakPtr<content::BrowserContext> browser_context,
                     const media_preview_metrics::Context& metrics_context);
   CameraCoordinator(const CameraCoordinator&) = delete;
   CameraCoordinator& operator=(const CameraCoordinator&) = delete;
@@ -51,18 +57,22 @@ class CameraCoordinator {
 
   void ResetViewController();
 
-  CameraMediator camera_mediator_;
+  raw_ptr<PrefService> prefs_;
   views::ViewTracker camera_view_tracker_;
   ui::SimpleComboboxModel combobox_model_;
+  CameraMediator camera_mediator_;
   std::string active_device_id_;
   base::flat_set<std::string> eligible_camera_ids_;
   // This list must be kept in sync with the `combobox_model_` so that indices
   // align.
   std::vector<media::VideoCaptureDeviceInfo> eligible_device_infos_;
-  raw_ptr<PrefService> prefs_;
+  base::WeakPtr<content::BrowserContext> browser_context_;
   const bool allow_device_selection_;
   const media_preview_metrics::Context metrics_context_;
   std::optional<CameraViewController> camera_view_controller_;
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  std::optional<BlurSwitchViewController> blur_switch_view_controller_;
+#endif
   std::optional<VideoStreamCoordinator> video_stream_coordinator_;
 };
 

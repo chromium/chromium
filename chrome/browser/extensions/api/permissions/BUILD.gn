@@ -11,6 +11,12 @@ source_set("permissions") {
   sources = [
     "permissions_api.cc",
     "permissions_api.h",
+    "permissions_api_helpers.cc",
+    "permissions_api_helpers.h",
+    "permissions_event_router.cc",
+    "permissions_event_router.h",
+    "permissions_event_router_factory.cc",
+    "permissions_event_router_factory.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

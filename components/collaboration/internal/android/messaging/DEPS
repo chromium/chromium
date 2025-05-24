@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/data_sharing/public",
+  "+components/tab_groups",
+]

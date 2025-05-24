@@ -16,12 +16,12 @@
 namespace extensions {
 
 // Traits for template paramater of |BaseSetOperators<T>|. Specializations
-// should define |ElementType| for the type of elements to store in the set,
-// and |EmementIDType| for the type of element identifiers.
+// should define `ElementType` for the type of elements to store in the set,
+// and `EmementIDType` for the type of element identifiers.
 template <typename T>
 struct BaseSetOperatorsTraits {};
 
-// Set operations shared by |APIPermissionSet| and |ManifestPermissionSet|.
+// Set operations shared by `APIPermissionSet` and `ManifestPermissionSet`.
 //
 // TODO(rpaquay): It would be nice to remove the need for the sub-classes and
 // instead directly use this class where needed.
@@ -75,8 +75,8 @@ class BaseSetOperators {
   };
 
   BaseSetOperators() {
-    // Ensure |T| is convertible to us, so we can safely downcast when calling
-    // methods that must exist in |T|.
+    // Ensure `T` is convertible to us, so we can safely downcast when calling
+    // methods that must exist in `T`.
     static_assert(std::is_convertible<T*, BaseSetOperators<T>*>::value,
                   "U ptr must implicitly convert to T ptr");
   }

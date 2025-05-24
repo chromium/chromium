@@ -56,6 +56,9 @@ CWV_EXPORT
 // `addMessageHandler:forCommand:`.
 - (void)removeMessageHandlerForCommand:(NSString*)nsCommand;
 
+// Whether or not the command already has a message handler registered to it.
+- (BOOL)isMessageHandlerRegisteredForCommand:(NSString*)nsCommand;
+
 @end
 
 NS_ASSUME_NONNULL_END

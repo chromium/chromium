@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
+#import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/no_destructor.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/web_view/internal/app/application_context.h"
-#include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
+#import "base/no_destructor.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
-#include "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
+#import "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
 
 namespace ios_web_view {
 

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 
@@ -15,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -24,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,6 +40,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -137,6 +136,10 @@ class BaseTest : public testing::Test {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
     ContentAnalysisDelegate::DisableUIForTesting();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{safe_browsing::kEnhancedFieldsForSecOps,
+                              kEnterpriseIframeDlpRulesSupport},
+        /*disabled_features=*/{});
   }
 
   void ScanUpload(content::WebContents* web_contents,
@@ -158,7 +161,7 @@ class BaseTest : public testing::Test {
     for (const auto& file_name : file_names) {
       base::FilePath path = temp_dir_.GetPath().Append(file_name);
       base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-      file.WriteAtCurrentPos(content.data(), content.size());
+      file.WriteAtCurrentPos(base::as_byte_span(content));
       data->paths.emplace_back(path);
     }
   }
@@ -569,10 +572,12 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
             ? it->second
             : test::FakeContentAnalysisDelegate::SuccessfulResponse([this]() {
                 std::set<std::string> tags;
-                if (include_dlp_ && !dlp_response_.has_value())
+                if (include_dlp_ && !dlp_response_.has_value()) {
                   tags.insert("dlp");
-                if (include_malware_)
+                }
+                if (include_malware_) {
                   tags.insert("malware");
+                }
                 return tags;
               }());
 
@@ -1488,8 +1493,9 @@ TEST_P(ContentAnalysisDelegateResultHandlingTest, Test) {
   // This is not a desktop platform don't try the non-cloud case since it
   // is not supported.
 #if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-  if (!is_cloud())
+  if (!is_cloud()) {
     return;
+  }
 #endif
 
   GURL url(kTestUrl);
@@ -1693,30 +1699,5 @@ TEST_F(ContentAnalysisDelegateWithLocalClient, FailClosed) {
   EXPECT_TRUE(called);
 }
 #endif
-
-// Calling GetRequestData() twice should return the same valid region.
-TEST(StringAnalysisRequest, GetRequestData) {
-  std::string contents("contents");
-  StringAnalysisRequest request(AnalysisSettings().cloud_or_local_settings,
-                                contents, base::DoNothing());
-
-  safe_browsing::BinaryUploadService::Request::Data data1;
-  request.GetRequestData(base::BindLambdaForTesting(
-      [&data1](safe_browsing::BinaryUploadService::Result result,
-               safe_browsing::BinaryUploadService::Request::Data data) {
-        data1 = std::move(data);
-      }));
-
-  safe_browsing::BinaryUploadService::Request::Data data2;
-  request.GetRequestData(base::BindLambdaForTesting(
-      [&data2](safe_browsing::BinaryUploadService::Result result,
-               safe_browsing::BinaryUploadService::Request::Data data) {
-        data2 = std::move(data);
-      }));
-
-  ASSERT_EQ(data1.size, data2.size);
-  ASSERT_EQ(data1.size, contents.size());
-  ASSERT_EQ(data1.contents, data2.contents);
-}
 
 }  // namespace enterprise_connectors

@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="hy">
+<translation id="1293272072740285747">Պահպանեք այս խումբը՝ հետագայում ներդիրներ ավելացնելու համար, կամ ջնջեք խումբը, եթե այն այլևս պետք չէ ձեզ։
+
+Եթե ջնջեք, բոլորին անմիջապես անհասանելի կդառնա ներդիրների «<ph name="TITLE_OF_GROUP" />» խումբը, և այն կջնջվի բոլոր սարքերից։</translation>
+<translation id="1340839264183302272">Լքել խումբը</translation>
+<translation id="1419023007528516122">Խումբն ընդմիշտ կջնջվի ձեր սարքից</translation>
+<translation id="1501480321619201731">Ջնջել խումբը</translation>
+<translation id="2677748264148917807">Դուրս գալ էջից</translation>
+<translation id="3547352561153509682">Խումբը կջնջվի բոլոր սարքերում, որոնցում մտել եք <ph name="USER_EMAIL" /> հաշիվ</translation>
+<translation id="381219490185664296">Ապախմբավորե՞լ ներդիրների խումբը</translation>
+<translation id="4139634748112164403">Այս սարքում ներդիրները կմնան բացված, սակայն խումբն ընդմիշտ կջնջվի</translation>
+<translation id="4431937619879060901">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
+<translation id="4460014764210899310">Ապախմբավորել</translation>
+<translation id="4777866634702576038">Ջնջե՞լ ներդիրների խումբը</translation>
+<translation id="5094423602314093681">Հեռացնե՞լ ներդիր(ներ)ը և ջնջե՞լ խումբը</translation>
+<translation id="5647702255748985085">Լքե՞լ խումբը</translation>
+<translation id="742664698522525515">Պահպանե՞լ խումբը</translation>
+<translation id="750886945254958667">Պահպանեք այս խումբը՝ հետագայում ներդիրներ ավելացնելու համար, կամ լքեք այն, եթե այլևս չեք ուզում օգտվել դրանից</translation>
+<translation id="8261506727792406068">Ջնջել</translation>
+<translation id="870736955561925754">Փակե՞լ ներդիրը և ջնջել խումբը</translation>
+<translation id="8804742093141782941">Պահպանել խումբը</translation>
+<translation id="9169141410816678175">Բոլորին անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի բոլոր սարքերից</translation>
+<translation id="9216898458513705996">Այս սարքում ներդիրները կմնան բացված, սակայն խումբը կջնջվի բոլոր սարքերից, որոնցում մուտք եք գործել <ph name="USER_EMAIL" /> հաշիվ</translation>
+<translation id="94870150074703282">Ջնջե՞լ խումբը</translation>
+</translationbundle>

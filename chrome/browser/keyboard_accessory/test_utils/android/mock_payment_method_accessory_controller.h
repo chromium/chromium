@@ -44,7 +44,6 @@ class MockPaymentMethodAccessoryController
               (autofill::AccessoryAction, bool),
               (override));
   MOCK_METHOD(void, RefreshSuggestions, (), (override));
-  MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
 
   base::WeakPtr<PaymentMethodAccessoryController> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

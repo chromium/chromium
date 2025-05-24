@@ -22,20 +22,23 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** Toolbar used in the tab grid dialog see {@link TabGridDialogCoordinator}. */
+@NullMarked
 public class TabGridDialogToolbarView extends FrameLayout {
     private ChromeImageView mNewTabButton;
     private ChromeImageView mBackButton;
@@ -44,8 +47,8 @@ public class TabGridDialogToolbarView extends FrameLayout {
     private LinearLayout mMainContent;
     private FrameLayout mColorIconContainer;
     private ImageView mColorIcon;
-    private @Nullable FrameLayout mShareButtonContainer;
-    private @Nullable ButtonCompat mShareButton;
+    private @MonotonicNonNull FrameLayout mShareButtonContainer;
+    private @MonotonicNonNull ButtonCompat mShareButton;
     private @Nullable FrameLayout mImageTilesContainer;
 
     public TabGridDialogToolbarView(Context context, AttributeSet attrs) {
@@ -161,7 +164,7 @@ public class TabGridDialogToolbarView extends FrameLayout {
         mMainContent.setBackgroundColor(color);
     }
 
-    void setTint(ColorStateList tint) {
+    void setTint(@Nullable ColorStateList tint) {
         ImageViewCompat.setImageTintList(mBackButton, tint);
         ImageViewCompat.setImageTintList(mNewTabButton, tint);
         if (mTitleTextView != null) mTitleTextView.setTextColor(tint);
@@ -220,6 +223,14 @@ public class TabGridDialogToolbarView extends FrameLayout {
         }
     }
 
+    void setShareButtonStringRes(@StringRes int stringRes) {
+        if (mShareButtonContainer == null || mShareButton == null) return;
+
+        stringRes =
+                stringRes != Resources.ID_NULL ? stringRes : R.string.tab_grid_share_button_text;
+        mShareButton.setText(stringRes);
+    }
+
     void setShareButtonClickListener(OnClickListener listener) {
         if (mShareButton == null) return;
         mShareButton.setOnClickListener(listener);
@@ -232,28 +243,22 @@ public class TabGridDialogToolbarView extends FrameLayout {
 
     /** Set the color icon of type {@link TabGroupColorId} on the tab group card view. */
     void setColorIconColor(@TabGroupColorId int colorId, boolean isIncognito) {
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            mColorIconContainer.setVisibility(View.VISIBLE);
+        mColorIconContainer.setVisibility(View.VISIBLE);
+        final @ColorInt int color =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        getContext(), colorId, isIncognito);
 
-            final @ColorInt int color =
-                    ColorPickerUtils.getTabGroupColorPickerItemColor(
-                            getContext(), colorId, isIncognito);
+        GradientDrawable gradientDrawable = (GradientDrawable) mColorIcon.getBackground();
+        gradientDrawable.setColor(color);
 
-            GradientDrawable gradientDrawable = (GradientDrawable) mColorIcon.getBackground();
-            gradientDrawable.setColor(color);
-
-            // Set accessibility content for the color icon.
-            Resources res = getContext().getResources();
-            final @StringRes int colorDescRes =
-                    ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
-            String colorDesc = res.getString(colorDescRes);
-            String contentDescription =
-                    res.getString(
-                            R.string.accessibility_tab_group_color_icon_description, colorDesc);
-            mColorIconContainer.setContentDescription(contentDescription);
-        } else {
-            mColorIconContainer.setVisibility(View.GONE);
-        }
+        // Set accessibility content for the color icon.
+        Resources res = getContext().getResources();
+        final @StringRes int colorDescRes =
+                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+        String colorDesc = res.getString(colorDescRes);
+        String contentDescription =
+                res.getString(R.string.accessibility_tab_group_color_icon_description, colorDesc);
+        mColorIconContainer.setContentDescription(contentDescription);
     }
 
     void setColorIconOnClickListener(OnClickListener listener) {

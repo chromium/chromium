@@ -72,7 +72,7 @@ class WorkerInspectorController final
   WorkerInspectorController& operator=(const WorkerInspectorController&) =
       delete;
   ~WorkerInspectorController() override;
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   CoreProbeSink* GetProbeSink() const { return probe_sink_.Get(); }
   DevToolsAgent* GetDevToolsAgent() const { return agent_.Get(); }
@@ -111,7 +111,7 @@ class WorkerInspectorController final
   base::UnguessableToken worker_devtools_token_;
   base::UnguessableToken parent_devtools_token_;
   KURL url_;
-  const PlatformThreadId worker_thread_id_;
+  const base::PlatformThreadId worker_thread_id_;
 };
 
 }  // namespace blink

@@ -48,8 +48,6 @@ class DelayedCallbackRunnerTest : public testing::Test {
   }
 
  protected:
-  DelayedCallbackRunnerTest() {}
-
   void SetUp() override {
     instance_ = std::make_unique<safe_browsing::DelayedCallbackRunner>(
         base::TimeDelta(), base::SingleThreadTaskRunner::GetCurrentDefault());

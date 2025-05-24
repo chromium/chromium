@@ -6,10 +6,7 @@
 #define CONTENT_BROWSER_QUOTA_QUOTA_MANAGER_HOST_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/quota/quota_change_dispatcher.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom.h"
 
@@ -37,10 +34,8 @@ namespace content {
 class QuotaManagerHost : public blink::mojom::QuotaManagerHost {
  public:
   // The owner must guarantee that `quota_manager` outlives this instance.
-  QuotaManagerHost(
-      const blink::StorageKey& storage_key,
-      storage::QuotaManager* quota_manager,
-      scoped_refptr<QuotaChangeDispatcher> quota_change_dispatcher);
+  QuotaManagerHost(const blink::StorageKey& storage_key,
+                   storage::QuotaManager* quota_manager);
 
   QuotaManagerHost(const QuotaManagerHost&) = delete;
   QuotaManagerHost& operator=(const QuotaManagerHost&) = delete;
@@ -48,9 +43,6 @@ class QuotaManagerHost : public blink::mojom::QuotaManagerHost {
   ~QuotaManagerHost() override;
 
   // blink::mojom::QuotaManagerHost:
-  void AddChangeListener(
-      mojo::PendingRemote<blink::mojom::QuotaChangeListener> mojo_listener,
-      AddChangeListenerCallback callback) override;
   void QueryStorageUsageAndQuota(
       QueryStorageUsageAndQuotaCallback callback) override;
 
@@ -68,8 +60,6 @@ class QuotaManagerHost : public blink::mojom::QuotaManagerHost {
   // QuotaManagerHost owner holds a reference to the QuotaManager. Therefore
   // the QuotaManager is guaranteed to outlive this QuotaManagerHost.
   const raw_ptr<storage::QuotaManager> quota_manager_;
-
-  scoped_refptr<QuotaChangeDispatcher> quota_change_dispatcher_;
 
   base::WeakPtrFactory<QuotaManagerHost> weak_factory_{this};
 };

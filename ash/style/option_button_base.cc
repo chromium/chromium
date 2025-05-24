@@ -86,7 +86,7 @@ gfx::Size OptionButtonBase::GetMinimumSize() const {
 }
 
 void OptionButtonBase::SetLabelColorId(ui::ColorId color_id) {
-  label()->SetEnabledColorId(color_id);
+  label()->SetEnabledColor(color_id);
 }
 
 void OptionButtonBase::Layout(PassKey) {
@@ -143,8 +143,8 @@ SkColor OptionButtonBase::GetIconImageColor() const {
 }
 
 void OptionButtonBase::UpdateTextColor() {
-  SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
-  SetTextColorId(ButtonState::STATE_DISABLED, KColorAshTextDisabledColor);
+  SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
+  SetTextColor(ButtonState::STATE_DISABLED, KColorAshTextDisabledColor);
 }
 
 void OptionButtonBase::SetAndUpdateAccessibleDefaultActionVerb() {

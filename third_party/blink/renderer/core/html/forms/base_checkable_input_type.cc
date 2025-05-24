@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -53,12 +54,13 @@ InputTypeView* BaseCheckableInputType::CreateView() {
 }
 
 FormControlState BaseCheckableInputType::SaveFormControlState() const {
-  return FormControlState(GetElement().Checked() ? "on" : "off");
+  return FormControlState(GetElement().Checked() ? keywords::kOn
+                                                 : keywords::kOff);
 }
 
 void BaseCheckableInputType::RestoreFormControlState(
     const FormControlState& state) {
-  GetElement().SetChecked(state[0] == "on");
+  GetElement().SetChecked(state[0] == keywords::kOn);
 }
 
 void BaseCheckableInputType::AppendToFormData(FormData& form_data) const {
@@ -126,8 +128,7 @@ void BaseCheckableInputType::HandleBlurEvent() {
   // that is in :active state. In that case the control should
   // remain :active to avoid crbug.com/40934455.
   HTMLInputElement& element = GetElement();
-  if (!RuntimeEnabledFeatures::KeepActiveIfLabelActiveEnabled() ||
-      !element.HasActiveLabel()) {
+  if (!element.HasActiveLabel()) {
     element.SetActive(false);
   }
 }

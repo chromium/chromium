@@ -315,7 +315,7 @@ void InputInjectorMac::Core::InjectTextEvent(const TextEvent& event) {
   }
 
   while (grapheme_iterator.Advance()) {
-    std::u16string_view grapheme = grapheme_iterator.GetStringView();
+    std::u16string_view grapheme = grapheme_iterator.GetString();
 
     if (grapheme.length() == 1 && grapheme[0] == '\n') {
       // On Mac, the return key sends "\r" rather than "\n", so handle it

@@ -75,21 +75,19 @@ SyncAccountInfo DetermineAccountToUse(
 
 }  // namespace
 
-SyncAuthManager::SyncAuthManager(
-    signin::IdentityManager* identity_manager,
-    const AccountStateChangedCallback& account_state_changed,
-    const CredentialsChangedCallback& credentials_changed)
+SyncAuthManager::SyncAuthManager(signin::IdentityManager* identity_manager,
+                                 Delegate* delegate)
     : identity_manager_(identity_manager),
-      account_state_changed_callback_(account_state_changed),
-      credentials_changed_callback_(credentials_changed),
+      delegate_(delegate),
       request_access_token_backoff_(
           &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy) {
-  // |identity_manager_| can be null if local Sync is enabled.
+  CHECK(delegate_);
+  // `identity_manager_` can be null if local Sync is enabled.
 }
 
 SyncAuthManager::~SyncAuthManager() {
   if (registered_for_auth_notifications_) {
-    identity_manager_->RemoveObserver(this);
+    identity_manager_observation_.Reset();
   }
 }
 
@@ -97,7 +95,7 @@ void SyncAuthManager::RegisterForAuthNotifications() {
   DCHECK(!registered_for_auth_notifications_);
   DCHECK(sync_account_.account_info.account_id.empty());
 
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
   registered_for_auth_notifications_ = true;
 
   // Also initialize the sync account here, but *without* notifying the
@@ -123,7 +121,7 @@ bool SyncAuthManager::IsActiveAccountInfoFullyLoaded() const {
 }
 
 SyncAccountInfo SyncAuthManager::GetActiveAccountInfo() const {
-  // Note: |sync_account_| should generally be identical to the result of a
+  // Note: `sync_account_` should generally be identical to the result of a
   // DetermineAccountToUse() call, but there are a few edge cases when it isn't:
   // E.g. when another identity observer gets notified before us and calls in
   // here, or when we're currently switching accounts in
@@ -200,7 +198,7 @@ void SyncAuthManager::ConnectionStatusChanged(ConnectionStatus status) {
       // state is inconsistent on sync and token server. In that case, we
       // backoff token requests exponentially to avoid hammering token server
       // too much and to avoid getting same token due to token server's caching
-      // policy. |request_access_token_retry_timer_| is used to backoff request
+      // policy. `request_access_token_retry_timer_` is used to backoff request
       // triggered by both auth error and failure talking to GAIA server.
       // Therefore, we're likely to reach the backoff ceiling more quickly than
       // you would expect from looking at the BackoffPolicy if both types of
@@ -243,8 +241,7 @@ void SyncAuthManager::ConnectionStatusChanged(ConnectionStatus status) {
       break;
     case CONNECTION_NOT_ATTEMPTED:
       // The connection status should never change to "not attempted".
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -260,7 +257,7 @@ void SyncAuthManager::InvalidateAccessToken() {
       signin::ScopeSet{GaiaConstants::kChromeSyncOAuth2Scope}, access_token_);
 
   access_token_.clear();
-  credentials_changed_callback_.Run();
+  delegate_->SyncAuthCredentialsChanged();
 }
 
 void SyncAuthManager::ClearAccessTokenAndRequest() {
@@ -331,14 +328,14 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
     // that's not going to happen in this case.
     SetLastAuthError(token_error);
 
-    credentials_changed_callback_.Run();
+    delegate_->SyncAuthCredentialsChanged();
   } else if (last_auth_error_ != GoogleServiceAuthError::AuthErrorNone()) {
     DCHECK(last_auth_error_.IsPersistentError());
     // Conversely, if we just exited the paused state, we need to reset the last
     // auth error and tell our client (i.e. the SyncService) so that it'll know
     // to resume syncing (if appropriate).
     SetLastAuthError(GoogleServiceAuthError::AuthErrorNone());
-    credentials_changed_callback_.Run();
+    delegate_->SyncAuthCredentialsChanged();
 
     // If we have an open connection to the server, then also get a new access
     // token now.
@@ -379,18 +376,24 @@ void SyncAuthManager::OnRefreshTokensLoaded() {
   DCHECK(IsActiveAccountInfoFullyLoaded());
 
   if (UpdateSyncAccountIfNecessary()) {
-    // |account_state_changed_callback_| has already been called, no need to
+    // `account_state_changed_callback_` has already been called, no need to
     // consider calling it again.
     return;
   }
 
   if (sync_account_.account_info.account_id.empty()) {
-    // Nothing actually changed, so |account_state_changed_callback_| hasn't
+    // Nothing actually changed, so `account_state_changed_callback_` hasn't
     // been called yet. However, this is the first time we can reliably tell the
     // user is signed out, exposed via IsActiveAccountInfoFullyLoaded(), so
     // let's treat it as account state change.
-    account_state_changed_callback_.Run();
+    delegate_->SyncAuthAccountStateChanged();
   }
+}
+
+void SyncAuthManager::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  CHECK_EQ(identity_manager, identity_manager_);
+  identity_manager_observation_.Reset();
 }
 
 bool SyncAuthManager::IsRetryingAccessTokenFetchForTest() const {
@@ -409,19 +412,20 @@ SyncAccountInfo SyncAuthManager::DetermineAccountToUse() const {
 bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
   DCHECK(registered_for_auth_notifications_);
 
-  SyncAccountInfo new_account = DetermineAccountToUse();
+  const SyncAccountInfo new_account = DetermineAccountToUse();
+
   if (new_account.account_info.account_id ==
       sync_account_.account_info.account_id) {
     // We're already using this account (or there was and is no account to use).
-    // If the |is_sync_consented| bit hasn't changed either, then there's
+    // If the `is_sync_consented` bit hasn't changed either, then there's
     // nothing to do.
     if (new_account.is_sync_consented == sync_account_.is_sync_consented) {
       return false;
     }
-    // The |is_sync_consented| bit *has* changed, so update our state and
+    // The `is_sync_consented` bit *has* changed, so update our state and
     // notify.
     sync_account_ = new_account;
-    account_state_changed_callback_.Run();
+    delegate_->SyncAuthAccountStateChanged();
     return true;
   }
 
@@ -433,7 +437,7 @@ bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
     sync_account_ = SyncAccountInfo();
     // Let the client (SyncService) know of the removed account *before*
     // throwing away the access token, so it can do "unregister" tasks.
-    account_state_changed_callback_.Run();
+    delegate_->SyncAuthAccountStateChanged();
     // Also clear any pending request or auth errors we might have, since they
     // aren't meaningful anymore.
     partial_token_status_ = SyncTokenStatus();
@@ -445,7 +449,7 @@ bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
   if (!new_account.account_info.account_id.empty()) {
     DCHECK_EQ(GoogleServiceAuthError::NONE, last_auth_error_.state());
     sync_account_ = new_account;
-    account_state_changed_callback_.Run();
+    delegate_->SyncAuthAccountStateChanged();
   }
 
   return true;
@@ -518,7 +522,7 @@ void SyncAuthManager::AccessTokenFetched(
     SetLastAuthError(error);
   }
 
-  credentials_changed_callback_.Run();
+  delegate_->SyncAuthCredentialsChanged();
 }
 
 void SyncAuthManager::SetLastAuthError(const GoogleServiceAuthError& error) {

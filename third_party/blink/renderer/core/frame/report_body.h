@@ -17,7 +17,7 @@ class CORE_EXPORT ReportBody : public ScriptWrappable {
  public:
   ~ReportBody() override = default;
 
-  ScriptValue toJSON(ScriptState* script_state) const;
+  ScriptObject toJSON(ScriptState* script_state) const;
 
   // This function is public for use in Report::toJSON
   virtual void BuildJSONValue(V8ObjectBuilder& builder) const = 0;
@@ -25,6 +25,10 @@ class CORE_EXPORT ReportBody : public ScriptWrappable {
   // Provides a hash-like value for identifying reports with same content.
   // Collision of match id is possible.
   virtual unsigned MatchId() const { return 0; }
+
+  // Returns true if this report body would contain an extension URL as the
+  // report source.
+  virtual bool IsExtensionSource() const { return false; }
 };
 
 }  // namespace blink

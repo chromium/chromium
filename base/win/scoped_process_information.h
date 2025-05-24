@@ -20,6 +20,9 @@ class BASE_EXPORT ScopedProcessInformation {
   ScopedProcessInformation();
   explicit ScopedProcessInformation(const PROCESS_INFORMATION& process_info);
 
+  ScopedProcessInformation(ScopedProcessInformation&&);
+  ScopedProcessInformation& operator=(ScopedProcessInformation&&);
+
   ScopedProcessInformation(const ScopedProcessInformation&) = delete;
   ScopedProcessInformation& operator=(const ScopedProcessInformation&) = delete;
 

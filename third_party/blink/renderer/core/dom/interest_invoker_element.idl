@@ -5,5 +5,4 @@
 [RuntimeEnabled=HTMLInterestTargetAttribute]
 interface mixin InterestInvokerElement {
   [CEReactions,Reflect=interesttarget] attribute Element? interestTargetElement;
-  [CEReactions,Reflect=interestaction] attribute DOMString interestAction;
 };

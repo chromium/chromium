@@ -38,7 +38,7 @@ class SESSIONS_EXPORT SerializedNavigationDriver {
       const std::string& page_state) const = 0;
 
  protected:
-  virtual ~SerializedNavigationDriver() {}
+  virtual ~SerializedNavigationDriver() = default;
 };
 
 }  // namespace sessions

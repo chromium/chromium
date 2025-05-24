@@ -8,20 +8,25 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/performance_manager/public/side_panel_loading_policy.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
-SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
+SidePanelWebUIView::SidePanelWebUIView(SidePanelEntryScope& scope,
+                                       base::RepeatingClosure on_show_cb,
                                        base::RepeatingClosure close_cb,
                                        WebUIContentsWrapper* contents_wrapper)
     : on_show_cb_(std::move(on_show_cb)),
@@ -33,6 +38,30 @@ SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
   SetID(kSidePanelWebViewId);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
+
+  // The mechanism that ensure the Side Panel will load at high priority even
+  // while it is still not visible requires the WebContents to be tagged.
+  performance_manager::execution_context_priority::MarkAsSidePanel(
+      contents_wrapper_->web_contents());
+
+  // For per-window side panels the scoped browser does not change. The browser
+  // is cleared automatically when the browser is closed.
+  if (scope.get_scope_type() == SidePanelEntryScope::ScopeType::kBrowser) {
+    webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
+                                     &scope.GetBrowserWindowInterface());
+  } else if (scope.get_scope_type() == SidePanelEntryScope::ScopeType::kTab) {
+    webui::SetTabInterface(contents_wrapper_->web_contents(),
+                           &scope.GetTabInterface());
+    // TODO(crbug.com/371950942): Once the new discard implementation has landed
+    // there is no need to re-set the interface on discard and this can be
+    // removed.
+    tab_will_discard_subscription_ =
+        scope.GetTabInterface().RegisterWillDiscardContents(base::BindRepeating(
+            [](tabs::TabInterface* tab, content::WebContents* old_contents,
+               content::WebContents* new_contents) {
+              webui::SetTabInterface(new_contents, tab);
+            }));
+  }
 }
 
 SidePanelWebUIView::~SidePanelWebUIView() = default;
@@ -42,20 +71,23 @@ void SidePanelWebUIView::ViewHierarchyChanged(
   WebView::ViewHierarchyChanged(details);
   // Ensure the WebContents is in a visible state after being added to the
   // side panel so the correct lifecycle hooks are triggered.
-  if (details.is_add && details.child == this)
+  if (details.is_add && details.child == this) {
     contents_wrapper_->web_contents()->WasShown();
+  }
 }
 
 void SidePanelWebUIView::ShowUI() {
   SetVisible(true);
   SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(true);
-  if (on_show_cb_)
+  if (on_show_cb_) {
     on_show_cb_.Run();
+  }
 }
 
 void SidePanelWebUIView::CloseUI() {
-  if (close_cb_)
+  if (close_cb_) {
     close_cb_.Run();
+  }
 }
 
 void SidePanelWebUIView::ShowCustomContextMenu(
@@ -68,13 +100,14 @@ void SidePanelWebUIView::ShowCustomContextMenu(
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
   context_menu_runner_->RunMenuAt(
       GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
-      views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE,
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse,
       contents_wrapper_->web_contents()->GetContentNativeView());
 }
 
 void SidePanelWebUIView::HideCustomContextMenu() {
-  if (context_menu_runner_)
+  if (context_menu_runner_) {
     context_menu_runner_->Cancel();
+  }
 }
 
 bool SidePanelWebUIView::HandleKeyboardEvent(

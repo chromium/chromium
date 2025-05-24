@@ -38,10 +38,8 @@ const char kBreadcrumbOverlayJsAlert[] = "#js-alert";
 const char kBreadcrumbOverlayJsConfirm[] = "#js-confirm";
 const char kBreadcrumbOverlayJsPrompt[] = "#js-prompt";
 
-BROWSER_USER_DATA_KEY_IMPL(BreadcrumbManagerBrowserAgent)
-
 BreadcrumbManagerBrowserAgent::BreadcrumbManagerBrowserAgent(Browser* browser)
-    : browser_(browser) {
+    : BrowserUserData(browser), browser_(browser) {
   browser_->AddObserver(this);
   browser_->GetWebStateList()->AddObserver(this);
 
@@ -188,7 +186,7 @@ void BreadcrumbManagerBrowserAgent::WillShowOverlay(OverlayPresenter* presenter,
   } else if (request->GetConfig<alert_overlays::AlertRequest>()) {
     event.push_back(kBreadcrumbOverlayAlert);
   } else {
-    NOTREACHED_IN_MIGRATION();  // Missing breadcrumbs for the dialog.
+    NOTREACHED();  // Missing breadcrumbs for the dialog.
   }
 
   if (!initial_presentation) {

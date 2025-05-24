@@ -4,12 +4,7 @@
 
 #include "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 
-#include <utility>
-
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/sync/model/data_type_store_service_impl.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
@@ -19,35 +14,22 @@ DataTypeStoreServiceFactory* DataTypeStoreServiceFactory::GetInstance() {
 }
 
 // static
-syncer::DataTypeStoreService* DataTypeStoreServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 syncer::DataTypeStoreService* DataTypeStoreServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<syncer::DataTypeStoreService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<syncer::DataTypeStoreService>(
+      profile, /*create=*/true);
 }
 
 DataTypeStoreServiceFactory::DataTypeStoreServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "DataTypeStoreService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("DataTypeStoreService",
+                                    ProfileSelection::kRedirectedInIncognito) {}
 
-DataTypeStoreServiceFactory::~DataTypeStoreServiceFactory() {}
+DataTypeStoreServiceFactory::~DataTypeStoreServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 DataTypeStoreServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<syncer::DataTypeStoreServiceImpl>(
-      browser_state->GetStatePath(), browser_state->GetPrefs());
-}
-
-web::BrowserState* DataTypeStoreServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
+      profile->GetStatePath(), profile->GetPrefs());
 }

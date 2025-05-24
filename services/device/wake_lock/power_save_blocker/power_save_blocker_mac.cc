@@ -78,8 +78,7 @@ void PowerSaveBlocker::Delegate::ApplyBlock() {
       level = kIOPMAssertionTypeNoDisplaySleep;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   if (level) {
     base::apple::ScopedCFTypeRef<CFStringRef> cf_description(

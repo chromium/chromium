@@ -49,6 +49,8 @@ namespace {
 constexpr SkColor kHUDDisabledButtonColor =
     SkColorSetA(kHUDDefaultColor, 0xFF * 0.5);
 
+constexpr float kActionButtonCornerRadius = 2;
+
 // Thickness of border around settings.
 constexpr int kHUDSettingsBorderWidth = 1;
 
@@ -362,7 +364,6 @@ void AnimationSpeedControl::Layout(PassKey) {
 
 class HUDActionButton : public views::LabelButton {
   METADATA_HEADER(HUDActionButton, views::LabelButton)
-
  public:
   HUDActionButton(views::Button::PressedCallback::Callback callback,
                   const std::u16string& text)
@@ -370,9 +371,8 @@ class HUDActionButton : public views::LabelButton {
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetEnabledTextColors(kHUDBackground);
     SetProperty(kHUDClickHandler, HTCLIENT);
-    constexpr float kActionButtonCournerRadius = 2;
     SetBackground(views::CreateRoundedRectBackground(
-        kHUDDefaultColor, kActionButtonCournerRadius));
+        kHUDDefaultColor, kActionButtonCornerRadius));
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     on_enabled_changed_subscription_ =
         AddEnabledChangedCallback(base::BindRepeating(
@@ -411,11 +411,9 @@ class HUDActionButton : public views::LabelButton {
   }
 
   void UpdateBackgroundColor() override {
-    if (GetVisualState() == STATE_DISABLED) {
-      GetBackground()->SetNativeControlColor(kHUDDisabledButtonColor);
-    } else {
-      GetBackground()->SetNativeControlColor(kHUDDefaultColor);
-    }
+    GetBackground()->SetColor(GetVisualState() == STATE_DISABLED
+                                  ? kHUDDisabledButtonColor
+                                  : kHUDDefaultColor);
   }
 
  private:

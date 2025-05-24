@@ -7,10 +7,13 @@ package org.chromium.components.autofill;
 import android.util.SparseArray;
 import android.view.autofill.VirtualViewFillInfo;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This class works as a workaround for a bug (b/299532529) in the framework for autofill. DON'T use
  * elsewhere. It should be removed once we drop support for Android U.
  */
+@NullMarked
 class SparseArrayWithWorkaround extends SparseArray<VirtualViewFillInfo> {
 
     @Override

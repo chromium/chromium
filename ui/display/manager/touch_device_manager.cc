@@ -4,6 +4,7 @@
 
 #include "ui/display/manager/touch_device_manager.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <tuple>
@@ -12,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -43,8 +43,9 @@ bool IsDeviceConnectedViaUsb(const base::FilePath& path) {
     // in the kernel, this would no longer be needed. All evdi displays are USB
     // right now. This might change in the future however.
     // See https://crbug.com/923165 for more info.
-    if (base::StartsWith(component, "evdi", base::CompareCase::SENSITIVE))
+    if (component.starts_with("evdi")) {
       return true;
+    }
   }
   return false;
 }
@@ -106,7 +107,7 @@ bool IsInternalDevice(const ui::TouchscreenDevice& device) {
 // Returns a pointer to the internal display from the list of |displays|. Will
 // return null if there is no internal display in the list.
 ManagedDisplayInfo* GetInternalDisplay(ManagedDisplayInfoList* displays) {
-  auto it = base::ranges::find_if(*displays, &IsInternalDisplay);
+  auto it = std::ranges::find_if(*displays, &IsInternalDisplay);
   return it == displays->end() ? nullptr : *it;
 }
 
@@ -223,18 +224,6 @@ TouchDeviceIdentifier& TouchDeviceIdentifier::operator=(
   return *this;
 }
 
-bool TouchDeviceIdentifier::operator<(const TouchDeviceIdentifier& rhs) const {
-  return std::tie(id_, secondary_id_) < std::tie(rhs.id_, rhs.secondary_id_);
-}
-
-bool TouchDeviceIdentifier::operator==(const TouchDeviceIdentifier& rhs) const {
-  return id_ == rhs.id_ && secondary_id_ == rhs.secondary_id_;
-}
-
-bool TouchDeviceIdentifier::operator!=(const TouchDeviceIdentifier& rhs) const {
-  return !(*this == rhs);
-}
-
 std::string TouchDeviceIdentifier::ToString() const {
   return base::NumberToString(id_);
 }
@@ -285,9 +274,9 @@ bool TouchCalibrationData::IsEmpty() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 // TouchDeviceManager
-TouchDeviceManager::TouchDeviceManager() {}
+TouchDeviceManager::TouchDeviceManager() = default;
 
-TouchDeviceManager::~TouchDeviceManager() {}
+TouchDeviceManager::~TouchDeviceManager() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // TouchDeviceManager
@@ -415,7 +404,7 @@ void TouchDeviceManager::AssociateDevicesWithCollision(
 
     // Find the display associated with |display_id| from |displays|.
     ManagedDisplayInfoList::iterator display_it =
-        base::ranges::find(*displays, display_id, &ManagedDisplayInfo::id);
+        std::ranges::find(*displays, display_id, &ManagedDisplayInfo::id);
 
     if (display_it != displays->end()) {
       VLOG(2) << "=> Matched device " << (*device_it).name << " to display "
@@ -491,7 +480,7 @@ void TouchDeviceManager::AssociateSameSizeDevices(
     const gfx::Size native_size = display->GetNativeModeSize();
 
     // Try to find an input device with roughly the same size as the display.
-    DeviceList::iterator device_it = base::ranges::find_if(
+    DeviceList::iterator device_it = std::ranges::find_if(
         *devices, [&native_size](const ui::TouchscreenDevice& device) {
           // Allow 1 pixel difference between screen and touchscreen
           // resolutions. Because in some cases for monitor resolution

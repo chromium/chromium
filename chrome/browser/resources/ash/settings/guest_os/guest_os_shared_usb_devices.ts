@@ -10,21 +10,25 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import './guest_os_shared_usb_devices_add_dialog.js';
+import './guest_os_confirmation_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists, cast, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {ContainerInfo, getVMNameForGuestOsType, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, GuestOsType} from './guest_os_browser_proxy.js';
+import type {ContainerInfo, GuestId, GuestOsBrowserProxy, GuestOsSharedUsbDevice, GuestOsType} from './guest_os_browser_proxy.js';
+import {getVMNameForGuestOsType, GuestOsBrowserProxyImpl} from './guest_os_browser_proxy.js';
 import {containerLabel, equalContainerId} from './guest_os_container_select.js';
 import {getTemplate} from './guest_os_shared_usb_devices.html.js';
 
@@ -119,23 +123,19 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
           return [];
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kGuestUsbNotification,
-          Setting.kGuestUsbPersistentPassthrough,
-        ]),
-      },
     };
   }
 
   defaultGuestId: GuestId;
   guestOsType: GuestOsType;
   hasContainers: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kGuestUsbNotification,
+    Setting.kGuestUsbPersistentPassthrough,
+  ]);
+
   private allContainers_: ContainerInfo[];
   private browserProxy_: GuestOsBrowserProxy;
   private reassignDevice_: GuestOsSharedUsbDevice|null;
@@ -209,7 +209,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
         this.get('prefs.guest_os.usb_persistent_passthrough_enabled.value');
     if (!target.checked && persistentPassthroughEnabled) {
       const deviceIdentifier = `${parseInt(device.vendorId, 16)}:${
-          parseInt(device.productId)}:${device.serialNumber}`;
+          parseInt(device.productId, 16)}:${device.serialNumber}`;
       // Return value of deletion is agnostic to presence of key existence, so
       // nothing to return/check here.
       this.deletePrefDictEntry(

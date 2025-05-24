@@ -42,6 +42,7 @@ class JavaScriptTabModalDialogManagerDelegateDesktop
   void SetTabNeedsAttention(bool attention) override;
   bool IsWebContentsForemost() override;
   bool IsApp() override;
+  bool CanShowModalUI() override;
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;

@@ -1,0 +1,231 @@
+This is a testharness.js-based test.
+Found 114 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] 0.5 - 1.0: PointerEvent.click.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: PointerEvent.click.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: PointerEvent.click.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: PointerEvent.click.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: PointerEvent.click.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: PointerEvent.click.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: PointerEvent.auxclick.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: PointerEvent.auxclick.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: PointerEvent.auxclick.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: PointerEvent.auxclick.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: PointerEvent.auxclick.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: PointerEvent.auxclick.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: PointerEvent.contextmenu.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: PointerEvent.contextmenu.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: PointerEvent.contextmenu.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: PointerEvent.contextmenu.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: PointerEvent.contextmenu.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: PointerEvent.contextmenu.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.click.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.click.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.click.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.click.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.click.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.click.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.auxclick.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.auxclick.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.auxclick.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.auxclick.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.auxclick.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.auxclick.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.contextmenu.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.contextmenu.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.contextmenu.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.contextmenu.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.contextmenu.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.contextmenu.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.mousedown.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.mousedown.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.mousedown.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.mousedown.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.mousedown.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.mousedown.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.mousemove.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.mousemove.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.mousemove.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.mousemove.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.mousemove.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.mousemove.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.mouseup.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.mouseup.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.mouseup.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.mouseup.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.mouseup.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.mouseup.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.mouseover.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.mouseover.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.mouseover.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.mouseover.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.mouseover.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.mouseover.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.mouseout.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.mouseout.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.mouseout.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.mouseout.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.mouseout.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.mouseout.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.mouseenter.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.mouseenter.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.mouseenter.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.mouseenter.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.mouseenter.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.mouseenter.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.mouseleave.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.mouseleave.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.mouseleave.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.mouseleave.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.mouseleave.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.mouseleave.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: MouseEvent.dblclick.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: MouseEvent.dblclick.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: MouseEvent.dblclick.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: MouseEvent.dblclick.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: MouseEvent.dblclick.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: MouseEvent.dblclick.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: DragEvent.dragstart.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: DragEvent.dragstart.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: DragEvent.dragstart.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: DragEvent.dragstart.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: DragEvent.dragstart.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: DragEvent.dragstart.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: DragEvent.dragover.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: DragEvent.dragover.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: DragEvent.dragover.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: DragEvent.dragover.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: DragEvent.dragover.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: DragEvent.dragover.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: DragEvent.dragend.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: DragEvent.dragend.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: DragEvent.dragend.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: DragEvent.dragend.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: DragEvent.dragend.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: DragEvent.dragend.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: DragEvent.drop.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: DragEvent.drop.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: DragEvent.drop.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: DragEvent.drop.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: DragEvent.drop.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: DragEvent.drop.offsetY
+  assert_equals: expected -2 but got -1
+[FAIL] 0.5 - 1.0: WheelEvent.wheel.offsetX
+  assert_equals: expected 0 but got 1
+[FAIL] 0.5 - 1.0: WheelEvent.wheel.offsetY
+  assert_equals: expected 0 but got 1
+[FAIL] -0.5 - 0.0: WheelEvent.wheel.offsetX
+  assert_equals: expected -1 but got -0
+[FAIL] -0.5 - 0.0: WheelEvent.wheel.offsetY
+  assert_equals: expected -1 but got -0
+[FAIL] -1.5 - -1.0: WheelEvent.wheel.offsetX
+  assert_equals: expected -2 but got -1
+[FAIL] -1.5 - -1.0: WheelEvent.wheel.offsetY
+  assert_equals: expected -2 but got -1
+Harness: the test ran to completion.

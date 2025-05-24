@@ -77,6 +77,11 @@ void CurrentThread::EnableMessagePumpTimeKeeperMetrics(
       thread_name, wall_time_based_metrics_enabled_for_testing);
 }
 
+IOWatcher* CurrentThread::GetIOWatcher() {
+  DCHECK(current_->IsBoundToCurrentThread());
+  return current_->GetMessagePump()->GetIOWatcher();
+}
+
 void CurrentThread::AddTaskObserver(TaskObserver* task_observer) {
   DCHECK(current_->IsBoundToCurrentThread());
   current_->AddTaskObserver(task_observer);
@@ -215,9 +220,8 @@ MessagePumpForIO* CurrentIOThread::GetMessagePumpForIO() const {
 #if !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_WIN)
-HRESULT CurrentIOThread::RegisterIOHandler(
-    HANDLE file,
-    MessagePumpForIO::IOHandler* handler) {
+bool CurrentIOThread::RegisterIOHandler(HANDLE file,
+                                        MessagePumpForIO::IOHandler* handler) {
   DCHECK(current_->IsBoundToCurrentThread());
   return GetMessagePumpForIO()->RegisterIOHandler(file, handler);
 }
@@ -241,7 +245,8 @@ bool CurrentIOThread::WatchFileDescriptor(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(CRONET_BUILD))
+#if BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_IOS) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS))
 bool CurrentIOThread::WatchMachReceivePort(
     mach_port_t port,
     MessagePumpForIO::MachPortWatchController* controller,

@@ -100,8 +100,6 @@ ConstraintSpace CreateConstraintSpaceForFloat(
 
   builder.SetAvailableSize(unpositioned_float.available_size);
   builder.SetPercentageResolutionSize(unpositioned_float.percentage_size);
-  builder.SetReplacedPercentageResolutionSize(
-      unpositioned_float.replaced_percentage_size);
   return builder.ToConstraintSpace();
 }
 

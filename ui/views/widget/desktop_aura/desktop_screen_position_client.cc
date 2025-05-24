@@ -13,8 +13,9 @@ namespace {
 // Returns true if bounds passed to window in SetBounds should be treated as
 // though they are in screen coordinates.
 bool PositionWindowInScreenCoordinates(aura::Window* window) {
-  if (window->GetType() == aura::client::WINDOW_TYPE_POPUP)
+  if (window->GetType() == aura::client::WINDOW_TYPE_POPUP) {
     return true;
+  }
 
   Widget* widget = Widget::GetWidgetForNativeView(window);
   return widget && widget->is_top_level();

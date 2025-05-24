@@ -4,29 +4,26 @@
 
 /**
  * Regex to escape regex special characters in a string.
- * @type {RegExp}
  */
-const REGEX_ESCAPER = /([.?*+^$[\]\\(){}|-])/g;
+const REGEX_ESCAPER: RegExp = /([.?*+^$[\]\\(){}|-])/g;
 
 /**
  * Creates the regex needed to find the text.
- * @param {string} findText Phrase to look for.
- * @return {RegExp} regex needed to find the text.
+ * @param findText Phrase to look for.
+ * @return regex needed to find the text.
  */
-function createRegex(findText: string): RegExp {
+export function createRegex(findText: string): RegExp {
   const escapedText = findText.replace(REGEX_ESCAPER, '\\$1');
   const regexString = '(' + escapedText + ')';
   return new RegExp(regexString, 'ig');
-};
+}
 
 /**
- * @param {string} text Text to escape.
- * @return {string} escaped text.
+ * @param text Text to escape.
+ * @return escaped text.
  */
-function escapeHTML(text: string): string {
-  let unusedDiv = document.createElement('div');
+export function escapeHTML(text: string): string {
+  const unusedDiv = document.createElement('div');
   unusedDiv.innerText = text;
   return unusedDiv.innerHTML;
-};
-
-export {createRegex, escapeHTML}
+}

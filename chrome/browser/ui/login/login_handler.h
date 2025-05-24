@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -54,7 +55,7 @@ class LoginHandler : public content::LoginDelegate {
   static std::unique_ptr<LoginHandler> Create(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
-      LoginAuthRequiredCallback auth_required_callback);
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
   // Call after `Create()` to show the dialog.
   void ShowLoginPrompt(const GURL& request_url);
@@ -64,7 +65,7 @@ class LoginHandler : public content::LoginDelegate {
 
   // Resend the request with authentication credentials.
   // This function can be called from either thread.
-  void SetAuth(const std::u16string& username, const std::u16string& password);
+  void SetAuth(std::u16string_view username, std::u16string_view password);
 
   // Display the error page without asking for credentials again. Setting
   // `notify_others` to `true` will close all other login handlers as well.
@@ -78,9 +79,10 @@ class LoginHandler : public content::LoginDelegate {
   content::WebContents* web_contents() { return web_contents_.get(); }
 
  protected:
-  LoginHandler(const net::AuthChallengeInfo& auth_info,
-               content::WebContents* web_contents,
-               LoginAuthRequiredCallback auth_required_callback);
+  LoginHandler(
+      const net::AuthChallengeInfo& auth_info,
+      content::WebContents* web_contents,
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
   // Implement this to initialize the underlying platform specific view. If
   // |login_model_data| is not null, the contained LoginModel and PasswordForm
@@ -97,8 +99,8 @@ class LoginHandler : public content::LoginDelegate {
   virtual void NotifyAuthNeeded();
 
   // Notify observers that authentication is supplied.
-  virtual void NotifyAuthSupplied(const std::u16string& username,
-                                  const std::u16string& password);
+  virtual void NotifyAuthSupplied(std::u16string_view username,
+                                  std::u16string_view password);
 
   // Notify observers that authentication is cancelled.
   virtual void NotifyAuthCancelled();
@@ -112,8 +114,8 @@ class LoginHandler : public content::LoginDelegate {
   // to dismiss itself if it was waiting for the same authentication.
   void OtherHandlerFinished(bool supplied,
                             LoginHandler* other_handler,
-                            const std::u16string& username,
-                            const std::u16string& password);
+                            std::u16string_view username,
+                            std::u16string_view password);
 
   // Returns the PasswordManagerClient from the web content.
   password_manager::PasswordManagerClient*
@@ -165,7 +167,7 @@ class LoginHandler : public content::LoginDelegate {
   // or rejected.  This should only be accessed on the UI loop.
   password_manager::PasswordForm password_form_;
 
-  LoginAuthRequiredCallback auth_required_callback_;
+  content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback_;
 
   base::WeakPtrFactory<LoginHandler> weak_factory_{this};
 };

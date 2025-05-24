@@ -34,5 +34,6 @@ message Entry {
     optional fixed64 metric_hash = 1;
     optional int64 value = 2;
   }
+
   repeated Metric metrics = 5;
 }

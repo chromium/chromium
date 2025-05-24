@@ -96,19 +96,20 @@ void ResetEventSourceForTesting() {
 EventLogMessage::EventLogMessage(const char* file,
                                  int line,
                                  LogSeverity severity)
-    : log_message_(file, line, severity) {
-}
+    : log_message_(file, line, severity) {}
 
 EventLogMessage::~EventLogMessage() {
-  if (!g_logging_enabled)
+  if (!g_logging_enabled) {
     return;
+  }
 
 #if BUILDFLAG(IS_WIN)
   // If g_event_source_name is nullptr (which it is per default) SYSLOG will
   // degrade gracefully to regular LOG. If you see this happening most probably
   // you are using SYSLOG before you called SetEventSourceName.
-  if (g_event_source_name == nullptr)
+  if (g_event_source_name == nullptr) {
     return;
+  }
 
   ScopedEventLogHandle event_log_handle(
       RegisterEventSourceA(nullptr, g_event_source_name->c_str()));
@@ -147,8 +148,9 @@ EventLogMessage::~EventLogMessage() {
     stream() << " !!NOT ADDED TO EVENTLOG!!";
   }
 
-  if (user_sid != nullptr)
+  if (user_sid != nullptr) {
     ::LocalFree(user_sid);
+  }
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const char kEventSource[] = "chrome";
   openlog(kEventSource, LOG_NOWAIT | LOG_PID, LOG_USER);

@@ -24,38 +24,40 @@ static const char* kDescription = "SomeDescription";
 
 class AccessibleView : public View {
  public:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = role_;
-    node_data->SetNameChecked(name_);
-    if (description_) {
-      if (description_->empty())
-        node_data->SetDescriptionExplicitlyEmpty();
-      else
-        node_data->SetDescription(*description_);
-    }
+  AccessibleView() {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+    GetViewAccessibility().SetName(kDialogName);
+    GetViewAccessibility().SetDescription(kDescription);
   }
 
   ViewAXPlatformNodeDelegate* GetPlatformNodeDelegate() {
     return static_cast<ViewAXPlatformNodeDelegate*>(&GetViewAccessibility());
   }
 
-  void SetDescription(const std::optional<std::string>& descritpion) {
-    description_ = descritpion;
+  void SetDescription(const std::optional<std::string>& description) {
+    if (description.has_value()) {
+      if (description.value().empty()) {
+        GetViewAccessibility().SetDescription(
+            std::string(),
+            ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+      } else {
+        GetViewAccessibility().SetDescription(*description);
+      }
+    } else {
+      GetViewAccessibility().ClearDescriptionAndDescriptionFrom();
+    }
   }
-  const std::optional<std::string>& GetDescription() const {
-    return description_;
+  std::string GetDescription() const {
+    return base::UTF16ToUTF8(GetViewAccessibility().GetCachedDescription());
   }
 
-  void SetNameChecked(const std::string& name) { name_ = name; }
-  const std::string& GetName() const { return name_; }
+  std::string GetName() const {
+    return base::UTF16ToUTF8(GetViewAccessibility().GetCachedName());
+  }
 
-  void SetRole(ax::mojom::Role role) { role_ = role; }
-  ax::mojom::Role GetRole() const { return role_; }
-
- private:
-  std::optional<std::string> description_ = kDescription;
-  std::string name_ = kDialogName;
-  ax::mojom::Role role_ = ax::mojom::Role::kDialog;
+  ax::mojom::Role GetRole() const {
+    return GetViewAccessibility().GetCachedRole();
+  }
 };
 
 }  // namespace
@@ -89,24 +91,24 @@ class ViewAXPlatformNodeDelegateMacTest : public ViewsTestBase {
 TEST_F(ViewAXPlatformNodeDelegateMacTest,
        GetNameReturnsNodeNameWhenNameAndTitleAreEqual) {
   EXPECT_NE(view()->GetPlatformNodeDelegate()->GetName(),
-            *view()->GetDescription());
+            view()->GetDescription());
 }
 
 TEST_F(ViewAXPlatformNodeDelegateMacTest,
        GetNameReturnsNodeNameWhenNameAndTitleAreDifferent) {
   EXPECT_NE(view()->GetPlatformNodeDelegate()->GetName(),
-            *view()->GetDescription());
+            view()->GetDescription());
 
-  view()->SetNameChecked(kDifferentNodeName);
+  view()->GetViewAccessibility().SetName(kDifferentNodeName);
 
   EXPECT_EQ(view()->GetPlatformNodeDelegate()->GetName(), kDifferentNodeName);
 }
 
 TEST_F(ViewAXPlatformNodeDelegateMacTest, GetNameReturnsNodeNameForNonDialog) {
   EXPECT_NE(view()->GetPlatformNodeDelegate()->GetName(),
-            *view()->GetDescription());
+            view()->GetDescription());
 
-  view()->SetRole(ax::mojom::Role::kDesktop);
+  view()->GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
 
   EXPECT_EQ(view()->GetPlatformNodeDelegate()->GetName(), kDialogName);
 }
@@ -114,7 +116,7 @@ TEST_F(ViewAXPlatformNodeDelegateMacTest, GetNameReturnsNodeNameForNonDialog) {
 TEST_F(ViewAXPlatformNodeDelegateMacTest,
        GetNameReturnsNodeNameWhenDescriptionIsNotSet) {
   EXPECT_NE(view()->GetPlatformNodeDelegate()->GetName(),
-            *view()->GetDescription());
+            view()->GetDescription());
 
   view()->SetDescription(std::nullopt);
 
@@ -124,7 +126,7 @@ TEST_F(ViewAXPlatformNodeDelegateMacTest,
 TEST_F(ViewAXPlatformNodeDelegateMacTest,
        GetNameReturnsNodeNameWhenDescriptionIsAnEmptyString) {
   EXPECT_NE(view()->GetPlatformNodeDelegate()->GetName(),
-            *view()->GetDescription());
+            view()->GetDescription());
 
   view()->SetDescription("");
 

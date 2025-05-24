@@ -25,16 +25,19 @@ source_set("webcam_private") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//chromeos/dbus/ip_peripheral",
-    "//components/media_device_salt",
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//extensions/browser:browser_sources",
     "//extensions/browser/api/serial",
     "//extensions/common",
     "//extensions/common/api",
     "//mojo/public/cpp/bindings",
-    "//services/device/public/mojom",
-    "//services/service_manager/public/cpp",
+    "//url",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//chromeos/dbus/ip_peripheral",
+    "//components/media_device_salt",
+  ]
 }

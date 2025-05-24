@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 
 #include <string>
@@ -14,15 +9,18 @@
 
 #include "base/feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
+#include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_history_clusters_resources.h"
 #include "chrome/grit/side_panel_history_clusters_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
@@ -37,19 +35,26 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 HistoryClustersSidePanelUIConfig::HistoryClustersSidePanelUIConfig()
     : DefaultTopChromeWebUIConfig(
           content::kChromeUIScheme,
           chrome::kChromeUIHistoryClustersSidePanelHost) {}
 
-bool HistoryClustersSidePanelUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys);
-}
-
 bool HistoryClustersSidePanelUIConfig::IsPreloadable() {
   return true;
+}
+
+bool HistoryClustersSidePanelUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  auto* history_clusters_service =
+      HistoryClustersServiceFactory::GetForBrowserContext(browser_context);
+  // Keep in sync with history_clusters.mojom.PageHandler registration.
+  // If the WebUI is enabled without registering the PageHandler, the WebUI will
+  // crash on getting the PageHandler remote.
+  return history_clusters_service &&
+         history_clusters_service->is_journeys_feature_flag_enabled();
 }
 
 std::optional<int> HistoryClustersSidePanelUIConfig::GetCommandIdForTesting() {
@@ -72,15 +77,13 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableHistoryEmbeddings",
       history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile) &&
-          history_embeddings::kEnableSidePanel.Get());
+          history_embeddings::GetFeatureParameters().enable_side_panel);
+  history_embeddings::PopulateSourceForWebUI(source, profile);
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelHistoryClustersResources,
-                      kSidePanelHistoryClustersResourcesSize),
+      source, kSidePanelHistoryClustersResources,
       IDR_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(kSidePanelSharedResources);
 }
 
 HistoryClustersSidePanelUI::~HistoryClustersSidePanelUI() = default;
@@ -90,6 +93,10 @@ WEB_UI_CONTROLLER_TYPE_IMPL(HistoryClustersSidePanelUI)
 void HistoryClustersSidePanelUI::SetBrowserWindowInterface(
     BrowserWindowInterface* browser_window_interface) {
   browser_window_interface_ = browser_window_interface;
+  // The page handler may already exist if preloaded.
+  if (history_clusters_handler_) {
+    history_clusters_handler_->SetContextInterface(browser_window_interface);
+  }
 }
 
 void HistoryClustersSidePanelUI::BindInterface(
@@ -121,6 +128,15 @@ void HistoryClustersSidePanelUI::BindInterface(
   image_service_handler_ =
       std::make_unique<page_image_service::ImageServiceHandler>(
           std::move(pending_page_handler), std::move(image_service_weak));
+}
+
+void HistoryClustersSidePanelUI::BindInterface(
+    mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
+        pending_page_handler) {
+  history_embeddings_handler_ = std::make_unique<HistoryEmbeddingsHandler>(
+      std::move(pending_page_handler),
+      Profile::FromWebUI(web_ui())->GetWeakPtr(), web_ui(),
+      /*for_side_panel=*/true);
 }
 
 base::WeakPtr<HistoryClustersSidePanelUI>

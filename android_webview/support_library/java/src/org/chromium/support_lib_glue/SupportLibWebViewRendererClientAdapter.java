@@ -24,8 +24,8 @@ import java.lang.reflect.Proxy;
  */
 @Lifetime.WebView
 class SupportLibWebViewRendererClientAdapter extends SharedWebViewRendererClientAdapter {
-    private WebViewRendererClientBoundaryInterface mImpl;
-    private String[] mSupportedFeatures;
+    private final WebViewRendererClientBoundaryInterface mImpl;
+    private final String[] mSupportedFeatures;
 
     public SupportLibWebViewRendererClientAdapter(
             /* WebViewRendererClient */ InvocationHandler invocationHandler) {

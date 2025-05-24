@@ -18,7 +18,7 @@ namespace blink {
 // an FFT on every Process call. Therefore, the processing delay of
 // the SimpleFFTConvolver is the same as that of the DirectConvolver and thus
 // smaller than that of the FFTConvolver.
-class SimpleFFTConvolver {
+class SimpleFFTConvolver final {
   USING_FAST_MALLOC(SimpleFFTConvolver);
 
  public:

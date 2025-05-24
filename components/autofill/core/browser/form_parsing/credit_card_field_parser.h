@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
@@ -23,7 +22,7 @@ class AutofillScanner;
 
 class CreditCardFieldParser : public FormFieldParser {
  public:
-  explicit CreditCardFieldParser();
+  CreditCardFieldParser();
 
   CreditCardFieldParser(const CreditCardFieldParser&) = delete;
   CreditCardFieldParser& operator=(const CreditCardFieldParser&) = delete;
@@ -115,7 +114,7 @@ class CreditCardFieldParser : public FormFieldParser {
   // It can be either a date or both the month and the year.
   bool HasExpiration() const;
 
-  raw_ptr<AutofillField> cardholder_;  // Optional.
+  std::optional<FieldAndMatchInfo> cardholder_;
 
   // Occasionally pages have separate fields for the cardholder's first and
   // last names; for such pages |cardholder_| holds the first name field and
@@ -124,25 +123,24 @@ class CreditCardFieldParser : public FormFieldParser {
   // so because the text patterns for matching a cardholder name are different
   // than for ordinary names, and because cardholder names never have titles,
   // middle names or suffixes.)
-  raw_ptr<AutofillField> cardholder_last_;
+  std::optional<FieldAndMatchInfo> cardholder_last_;
 
-  raw_ptr<AutofillField> type_;          // Optional.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>>
-      numbers_;  // Required.
+  std::optional<FieldAndMatchInfo> type_;
+  std::vector<FieldAndMatchInfo> numbers_;
 
   // The 3-digit card verification number; we don't currently fill this.
-  raw_ptr<AutofillField> verification_;
+  std::optional<FieldAndMatchInfo> verification_;
 
   // Either |expiration_date_| or both |expiration_month_| and
   // |expiration_year_| are required.
-  raw_ptr<AutofillField> expiration_month_;
-  raw_ptr<AutofillField> expiration_year_;
-  raw_ptr<AutofillField> expiration_date_;
+  std::optional<FieldAndMatchInfo> expiration_month_;
+  std::optional<FieldAndMatchInfo> expiration_year_;
+  std::optional<FieldAndMatchInfo> expiration_date_;
 
   // For combined expiration field having year as 2-digits we store here
   // |CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR|; otherwise we store
   // |CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR|.
-  FieldType exp_year_type_;
+  FieldType exp_year_type_ = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
 };
 
 }  // namespace autofill

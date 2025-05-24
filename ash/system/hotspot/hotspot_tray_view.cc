@@ -69,16 +69,12 @@ HotspotTrayView::~HotspotTrayView() {
 }
 
 std::u16string HotspotTrayView::GetAccessibleNameString() const {
-  return tooltip_;
+  return GetTooltipText();
 }
 
 views::View* HotspotTrayView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   return GetLocalBounds().Contains(point) ? this : nullptr;
-}
-
-std::u16string HotspotTrayView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_;
 }
 
 void HotspotTrayView::OnThemeChanged() {
@@ -133,7 +129,7 @@ void HotspotTrayView::OnGetHotspotInfo(HotspotInfoPtr hotspot_info) {
   }
 
   SetVisible(true);
-  tooltip_ = ComputeHotspotTooltip(hotspot_info->client_count);
+  SetTooltipText(ComputeHotspotTooltip(hotspot_info->client_count));
   UpdateAccessibleName();
 
   if (hotspot_info->state == HotspotState::kEnabling) {
@@ -148,7 +144,7 @@ void HotspotTrayView::OnGetHotspotInfo(HotspotInfoPtr hotspot_info) {
 }
 
 void HotspotTrayView::UpdateAccessibleName() {
-  GetViewAccessibility().SetName(tooltip_);
+  GetViewAccessibility().SetName(GetTooltipText());
 }
 
 BEGIN_METADATA(HotspotTrayView)

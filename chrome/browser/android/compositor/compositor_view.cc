@@ -13,9 +13,13 @@
 #include "base/android/jni_android.h"
 #include "base/command_line.h"
 #include "base/containers/id_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
@@ -79,7 +83,8 @@ CompositorView::CompositorView(JNIEnv* env,
       content_width_(0),
       content_height_(0),
       overlay_video_mode_(false),
-      overlay_immersive_ar_mode_(false) {
+      overlay_immersive_ar_mode_(false),
+      overlay_xr_full_screen_mode_(false) {
   content::BrowserChildProcessObserver::Add(this);
   obj_.Reset(env, obj);
   compositor_.reset(content::Compositor::Create(this, window_android));
@@ -123,14 +128,25 @@ base::android::ScopedJavaLocalRef<jobject> CompositorView::GetResourceManager(
 
 void CompositorView::RecreateSurface() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  compositor_->SetSurface(nullptr, false);
+  compositor_->SetSurface(nullptr, false, nullptr);
   Java_CompositorView_recreateSurface(env, obj_);
 }
 
 void CompositorView::UpdateLayerTreeHost() {
+  std::optional<base::ElapsedTimer> timer;
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    timer.emplace();
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
   // TODO(wkorman): Rename JNI interface to onCompositorUpdateLayerTreeHost.
   Java_CompositorView_onCompositorLayout(env, obj_);
+
+  if (timer) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Android.Compositor.UpdateLayerTree.Duration.Subsampled",
+        timer->Elapsed(), base::Microseconds(1), base::Milliseconds(30), 50);
+  }
 }
 
 void CompositorView::DidSwapFrame(int pending_frames) {
@@ -164,28 +180,45 @@ void CompositorView::SurfaceCreated(JNIEnv* env,
 
 void CompositorView::SurfaceDestroyed(JNIEnv* env,
                                       const JavaParamRef<jobject>& object) {
-  compositor_->SetSurface(nullptr, false);
+  compositor_->SetSurface(nullptr, false, nullptr);
   current_surface_format_ = 0;
   tab_content_manager_->OnUIResourcesWereEvicted();
 }
 
-void CompositorView::SurfaceChanged(JNIEnv* env,
-                                    const JavaParamRef<jobject>& object,
-                                    jint format,
-                                    jint width,
-                                    jint height,
-                                    bool can_be_used_with_surface_control,
-                                    const JavaParamRef<jobject>& surface) {
+std::optional<int> CompositorView::SurfaceChanged(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& object,
+    jint format,
+    jint width,
+    jint height,
+    bool can_be_used_with_surface_control,
+    const JavaParamRef<jobject>& surface,
+    const JavaParamRef<jobject>& browser_input_token) {
+  // Java View layout sometimes unexpectedly cause CompositorView to be sized so
+  // large that it exceeds the max texture size and memory on the device. This
+  // then subsequently causes the GPU process to crash loop. See
+  // crbug.com/369374760. Ignore these which is probably less bad than crashing
+  // the GPU process.
+  constexpr int kExcessiveSurfaceSize = 1000000;
+  if (width >= kExcessiveSurfaceSize || height >= kExcessiveSurfaceSize ||
+      width <= 0 || height <= 0) {
+    LOG(WARNING) << "Ignoring invalid surface size " << width << "x" << height;
+    return std::nullopt;
+  }
+
+  std::optional<int> surface_handle = std::nullopt;
   DCHECK(surface);
   if (current_surface_format_ != format) {
     current_surface_format_ = format;
-    compositor_->SetSurface(surface, can_be_used_with_surface_control);
+    surface_handle = compositor_->SetSurface(
+        surface, can_be_used_with_surface_control, browser_input_token);
   }
   gfx::Size size = gfx::Size(width, height);
   compositor_->SetWindowBounds(size);
   content_width_ = size.width();
   content_height_ = size.height();
   root_layer_->SetBounds(gfx::Size(content_width_, content_height_));
+  return surface_handle;
 }
 
 void CompositorView::OnPhysicalBackingSizeChanged(
@@ -271,6 +304,22 @@ void CompositorView::SetOverlayImmersiveArMode(
   compositor_->SetNeedsComposite();
 }
 
+void CompositorView::SetOverlayXrFullScreenMode(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& object,
+    bool enabled) {
+  if (overlay_xr_full_screen_mode_ == enabled) {
+    return;
+  }
+
+  overlay_xr_full_screen_mode_ = enabled;
+
+  // XR full screen mode requires a transparent background.
+  compositor_->SetBackgroundColor(enabled ? SK_ColorTRANSPARENT
+                                          : SK_ColorWHITE);
+  compositor_->SetNeedsComposite();
+}
+
 void CompositorView::SetSceneLayer(JNIEnv* env,
                                    const JavaParamRef<jobject>& object,
                                    const JavaParamRef<jobject>& jscene_layer) {
@@ -293,7 +342,7 @@ void CompositorView::SetSceneLayer(JNIEnv* env,
     root_layer_->InsertChild(scene_layer->layer(), 0);
   }
 
-  if (overlay_immersive_ar_mode_) {
+  if (overlay_xr_full_screen_mode_ || overlay_immersive_ar_mode_) {
     // Suppress the scene background's default background which breaks
     // transparency. TODO(crbug.com/40098084): Remove this workaround
     // once the issue with StaticTabSceneLayer's unexpected background is
@@ -347,7 +396,7 @@ void CompositorView::BrowserChildProcessKilled(
           base::android::SDK_VERSION_R &&
       data.process_type == content::PROCESS_TYPE_GPU) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    compositor_->SetSurface(nullptr, false);
+    compositor_->SetSurface(nullptr, false, nullptr);
     Java_CompositorView_recreateSurface(env, obj_);
   }
 }
@@ -379,11 +428,11 @@ void CompositorView::OnTabChanged(
   if (!compositor_) {
     return;
   }
-  std::unique_ptr<input::PeakGpuMemoryTracker> tracker =
+  std::unique_ptr<viz::PeakGpuMemoryTracker> tracker =
       content::PeakGpuMemoryTrackerFactory::Create(
-          input::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
+          viz::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
   compositor_->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-      [](std::unique_ptr<input::PeakGpuMemoryTracker> tracker,
+      [](std::unique_ptr<viz::PeakGpuMemoryTracker> tracker,
          const viz::FrameTimingDetails& frame_timing_details) {
         // This callback will be ran once the content::Compositor presents the
         // next frame. The destruction of |tracker| will get the peak GPU memory

@@ -6,9 +6,9 @@ import 'chrome://diagnostics/keyboard_tester.js';
 import 'chrome://diagnostics/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {ConnectionType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey} from 'chrome://diagnostics/input.mojom-webui.js';
+import {BottomLeftLayout, BottomRightLayout, ConnectionType, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey} from 'chrome://diagnostics/input.mojom-webui.js';
 import {KeyEventType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
-import {KeyboardTesterElement} from 'chrome://diagnostics/keyboard_tester.js';
+import type {KeyboardTesterElement} from 'chrome://diagnostics/keyboard_tester.js';
 import {KeyboardDiagramElement, TopRightKey as DiagramTopRightKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
@@ -33,6 +33,9 @@ suite('keyboardTesterTestSuite', function() {
     topRowKeys: [],
     topRightKey: TopRightKey.kPower,
     regionCode: 'jp',
+    bottomLeftLayout: BottomLeftLayout.kUnknown,
+    bottomRightLayout: BottomRightLayout.kUnknown,
+    numpadLayout: NumpadLayout.kUnknown,
   };
 
   setup(() => {

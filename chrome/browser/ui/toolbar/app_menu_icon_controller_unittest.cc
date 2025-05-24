@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -76,17 +75,18 @@ bool operator==(const AppMenuIconController::TypeAndSeverity& a,
 // builds, there does not appear to be an easy way to run the test as if it were
 // a different channel.
 class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
- protected:
-  AppMenuIconControllerTest()
-#if BUILDFLAG(IS_WIN)
-      : install_details_(false, GetParam())
-#endif
-  {
-  }
-
+ public:
   AppMenuIconControllerTest(const AppMenuIconControllerTest&) = delete;
   AppMenuIconControllerTest& operator=(const AppMenuIconControllerTest&) =
       delete;
+
+ protected:
+  AppMenuIconControllerTest()
+#if BUILDFLAG(IS_WIN)
+      : install_details_(false, GetParam()){}
+#else
+      = default;
+#endif
 
   UpgradeDetector* upgrade_detector() { return &upgrade_detector_; }
   Profile* profile() { return &profile_; }
@@ -192,34 +192,4 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Range(0, static_cast<int>(install_static::NUM_INSTALL_MODES)));
 #else
 INSTANTIATE_TEST_SUITE_P(All, AppMenuIconControllerTest, ::testing::Values(0));
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-class AppMenuControllerDefaultPromptTest : public BrowserWithTestWindowTest {
- public:
-  AppMenuControllerDefaultPromptTest()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDefaultBrowserPromptRefresh,
-        {{features::kShowDefaultBrowserAppMenuChip.name, "true"}});
-    BrowserWithTestWindowTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AppMenuControllerDefaultPromptTest, SetsDefaultPromptTypeAndSeverity) {
-  ::testing::StrictMock<MockAppMenuIconControllerDelegate> mock_delegate;
-  AppMenuIconController controller(profile(), &mock_delegate);
-
-  EXPECT_CALL(mock_delegate,
-              UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                  AppMenuIconController::IconType::DEFAULT_BROWSER_PROMPT,
-                  AppMenuIconController::Severity::LOW}));
-  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
-}
 #endif

@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
@@ -122,6 +121,10 @@ base::Value::Dict MappedHostResolver::GetDnsConfigAsValue() const {
 
 void MappedHostResolver::SetRequestContext(URLRequestContext* request_context) {
   impl_->SetRequestContext(request_context);
+}
+
+bool MappedHostResolver::IsHappyEyeballsV3Enabled() const {
+  return impl_->IsHappyEyeballsV3Enabled();
 }
 
 HostResolverManager* MappedHostResolver::GetManagerForTesting() {

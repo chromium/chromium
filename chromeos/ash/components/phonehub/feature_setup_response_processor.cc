@@ -9,8 +9,7 @@
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FeatureSetupResponseProcessor::FeatureSetupResponseProcessor(
     MessageReceiver* message_receiver,
@@ -65,5 +64,4 @@ void FeatureSetupResponseProcessor::OnFeatureSetupResponseReceived(
   }
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

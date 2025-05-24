@@ -19,7 +19,7 @@ import java.io.File;
 /** Mock service that feeds mock data to components download directory. */
 public class MockAwComponentUpdateService extends Service {
     public static ResultReceiver sFinishCallback;
-    private static CallbackHelper sServiceFinishedCallbackHelper = new CallbackHelper();
+    private static final CallbackHelper sServiceFinishedCallbackHelper = new CallbackHelper();
     public static final String MOCK_COMPONENT_A_NAME = "MockComponent A";
     public static final String MOCK_COMPONENT_A_VERSION = "1.1.1.1";
     public static final String MOCK_COMPONENT_B_NAME = "MockComponent B";

@@ -19,7 +19,7 @@ MarkAttemptCompletedTask::MarkAttemptCompletedTask(
     : UpdateRequestTask(store, request_id, std::move(callback)),
       fail_state_(fail_state) {}
 
-MarkAttemptCompletedTask::~MarkAttemptCompletedTask() {}
+MarkAttemptCompletedTask::~MarkAttemptCompletedTask() = default;
 
 void MarkAttemptCompletedTask::UpdateRequestImpl(
     UpdateRequestsResult read_result) {

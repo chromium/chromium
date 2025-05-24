@@ -344,7 +344,9 @@ export class BaseStore<State> {
   protected reduce(action: Action) {
     const isDebugStore = isDebugStoreEnabled();
     if (isDebugStore) {
+      // eslint-disable-next-line no-console
       console.groupCollapsed(`Action: ${action.type}`);
+      // eslint-disable-next-line no-console
       console.dir(action.payload);
     }
 
@@ -367,6 +369,7 @@ export class BaseStore<State> {
     }
 
     if (isDebugStore) {
+      // eslint-disable-next-line no-console
       console.groupEnd();
     }
   }

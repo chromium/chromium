@@ -41,10 +41,10 @@ export class CrGridElement extends CrLitElement {
     };
   }
 
-  columns: number = 1;
-  disableArrowNavigation: boolean = false;
-  focusSelector?: string;
-  ignoreModifiedKeyEvents: boolean = false;
+  accessor columns: number = 1;
+  accessor disableArrowNavigation: boolean = false;
+  accessor focusSelector: string|undefined;
+  accessor ignoreModifiedKeyEvents: boolean = false;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
@@ -119,6 +119,7 @@ export class CrGridElement extends CrLitElement {
           item;
       assert(toFocus);
       toFocus.focus();
+      this.fire('cr-grid-focus-changed', toFocus);
     }
 
     if (['Enter', ' '].includes(e.key)) {

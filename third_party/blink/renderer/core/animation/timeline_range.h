@@ -64,11 +64,18 @@ class CORE_EXPORT TimelineRange {
   };
 
   TimelineRange() = default;
-  explicit TimelineRange(ScrollOffsets offsets, ViewOffsets view_offsets)
-      : offsets_(offsets), view_offsets_(view_offsets) {}
+  // The `limits` parameter represents the full scroll range,
+  // and `offsets` a segment of that range. (See class description.)
+  explicit TimelineRange(ScrollOffsets limits,
+                         ScrollOffsets offsets,
+                         ViewOffsets view_offsets)
+      : scroll_limits_(limits),
+        offsets_(offsets),
+        view_offsets_(view_offsets) {}
 
   bool operator==(const TimelineRange& other) const {
-    return offsets_ == other.offsets_ && view_offsets_ == other.view_offsets_;
+    return offsets_ == other.offsets_ && view_offsets_ == other.view_offsets_ &&
+           scroll_limits_ == other.scroll_limits_;
   }
 
   bool operator!=(const TimelineRange& other) const {
@@ -85,6 +92,15 @@ class CORE_EXPORT TimelineRange {
   // https://drafts.csswg.org/scroll-animations-1/#view-timelines-ranges
   ScrollOffsets ConvertNamedRange(NamedRange) const;
 
+  // Scroll offsets corresponding to the entire scroll range of the scroll
+  // container backing the timeline in the axis of the timeline.
+  // For a ScrollTimeline, it is the same as |offsets_|.
+  ScrollOffsets scroll_limits_;
+  // For a ScrollTimeline: this corresponds to the entire scroll range of the
+  // scroll container backing the timeline and is the same as |scroll_limits_|.
+  // For a ViewTimeline: this corresponds to the boundaries of the view progress
+  // of the subject within the scroll container backing the timeline. It is a
+  // segment of |scroll_limits_|.
   ScrollOffsets offsets_;
   ViewOffsets view_offsets_;
 };

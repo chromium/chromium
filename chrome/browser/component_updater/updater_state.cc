@@ -27,10 +27,6 @@
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/update_client_errors.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/updater/util/win_util.h"
-#endif
-
 namespace component_updater {
 namespace {
 
@@ -56,21 +52,15 @@ std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
           [is_machine]() -> std::unique_ptr<StateReader> {
         // Create a `StateReaderChromiumUpdater` instance only if a prefs.json
         // file for the updater can be found and parsed successfully.
-        const updater::UpdaterScope updater_scope =
-            is_machine ? updater::UpdaterScope::kSystem
-                       : updater::UpdaterScope::kUser;
         const std::optional<base::FilePath> global_prefs_dir =
-#if BUILDFLAG(IS_WIN)
-            // Google Chrome ships with an x86 updater.
-            updater::GetInstallDirectoryX86(updater_scope);
-#else
-            updater::GetInstallDirectory(updater_scope);
-#endif  //  IS_WIN
+            updater::GetInstallDirectory(is_machine
+                                             ? updater::UpdaterScope::kSystem
+                                             : updater::UpdaterScope::kUser);
         if (!global_prefs_dir)
           return nullptr;
         std::string contents;
-        constexpr char kUpdaterPrefsFilename[] = "prefs.json";
-        constexpr int kMaxPrefsFileSize = 0x20000;  // 128KiB.
+        static constexpr char kUpdaterPrefsFilename[] = "prefs.json";
+        static constexpr int kMaxPrefsFileSize = 0x20000;  // 128KiB.
         if (!base::ReadFileToStringWithMaxSize(
                 global_prefs_dir->AppendASCII(kUpdaterPrefsFilename), &contents,
                 kMaxPrefsFileSize)) {
@@ -140,14 +130,14 @@ int UpdaterState::StateReaderChromiumUpdater::GetUpdatePolicy() const {
 update_client::CategorizedError
 UpdaterState::StateReaderChromiumUpdater::GetLastUpdateCheckError() const {
   return {
-      .category_ = static_cast<update_client::ErrorCategory>(
+      .category = static_cast<update_client::ErrorCategory>(
           parsed_json_
               .FindInt(update_client::kLastUpdateCheckErrorCategoryPreference)
               .value_or(0)),
-      .code_ =
+      .code =
           parsed_json_.FindInt(update_client::kLastUpdateCheckErrorPreference)
               .value_or(0),
-      .extra_ =
+      .extra =
           parsed_json_
               .FindInt(update_client::kLastUpdateCheckErrorExtraCode1Preference)
               .value_or(0)};
@@ -218,17 +208,17 @@ UpdaterState::Attributes UpdaterState::Serialize() const {
 
     attributes["updatepolicy"] = base::NumberToString(state_->update_policy);
     attributes["lastupdatecheckerrorcode"] =
-        state_->last_update_check_error.code_;
+        state_->last_update_check_error.code;
     attributes["lastupdatecheckerrorcat"] =
-        static_cast<int>(state_->last_update_check_error.category_);
+        static_cast<int>(state_->last_update_check_error.category);
     attributes["lastupdatecheckextracode1"] =
-        state_->last_update_check_error.extra_;
+        state_->last_update_check_error.extra;
   }
 
   return attributes;
 }
 
-std::string UpdaterState::NormalizeTimeDelta(const base::TimeDelta& delta) {
+std::string UpdaterState::NormalizeTimeDelta(base::TimeDelta delta) {
   const base::TimeDelta two_weeks = base::Days(14);
   const base::TimeDelta two_months = base::Days(56);
 

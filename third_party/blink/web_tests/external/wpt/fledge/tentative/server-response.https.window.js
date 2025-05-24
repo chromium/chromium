@@ -1,22 +1,30 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/ba-fledge-util.sub.js
 // META: script=resources/fledge-util.sub.js
 // META: script=third_party/cbor-js/cbor.js
 // META: script=/common/subset-tests.js
 // META: timeout=long
-// META: variant=?1-4
-// META: variant=?5-8
-// META: variant=?9-12
-// META: variant=?13-16
-// META: variant=?17-20
-// META: variant=?21-24
-// META: variant=?25-28
-// META: variant=?29-32
-// META: variant=?33-36
-// META: variant=?37-40
-// META: variant=?41-44
-// META: variant=?45-48
+// META: variant=?1-6
+// META: variant=?7-10
+// META: variant=?11-14
+// META: variant=?15-18
+// META: variant=?19-22
+// META: variant=?23-26
+// META: variant=?27-30
+// META: variant=?31-34
+// META: variant=?35-38
+// META: variant=?39-42
+// META: variant=?43-46
+// META: variant=?47-50
+// META: variant=?51-54
+// META: variant=?55-58
+// META: variant=?59-62
+// META: variant=?63-66
+// META: variant=?67-70
+
+"use strict";
 
 // These tests focus on the serverResponse field in AuctionConfig, e.g.
 // auctions involving bidding and auction services.
@@ -29,8 +37,10 @@ subsetTest(promise_test, async test => {
       [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
   await joinInterestGroup(test, uuid, {ads: adsArray});
 
-  const result = await navigator.getInterestGroupAdAuctionData(
-      {seller: window.location.origin});
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: window.location.origin
+  });
   assert_true(result.requestId !== null);
   assert_true(result.request.length > 0);
 
@@ -69,8 +79,90 @@ subsetTest(promise_test, async test => {
       [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
   await joinInterestGroup(test, uuid, {ads: adsArray});
 
-  const result = await navigator.getInterestGroupAdAuctionData(
-      {seller: window.location.origin});
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: window.location.origin
+  });
+  assert_true(result.requestId !== null);
+  assert_true(result.request.length > 0);
+
+  let decoded = await BA.decodeInterestGroupData(result.request);
+
+  let serverResponseMsg = {
+    'nonce': uuid,
+    'biddingGroups': {},
+    'adRenderURL': adsArray[0].renderURL,
+    'interestGroupName': DEFAULT_INTEREST_GROUP_NAME,
+    'interestGroupOwner': window.location.origin,
+  };
+  serverResponseMsg.biddingGroups[window.location.origin] = [0];
+
+  let serverResponse =
+      await BA.encodeServerResponse(serverResponseMsg, decoded);
+
+  let hashString = await BA.payloadHash(serverResponse);
+  await BA.authorizeServerResponseNonces([uuid]);
+
+  let auctionResult = await navigator.runAdAuction({
+    'seller': window.location.origin,
+    'requestId': result.requestId,
+    'serverResponse': serverResponse,
+    'resolveToConfig': true,
+  });
+  expectSuccess(auctionResult);
+  createAndNavigateFencedFrame(test, auctionResult);
+  await waitForObservedRequests(uuid, [adA]);
+}, 'Basic B&A auction - nonces');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const adA = createTrackerURL(window.location.origin, uuid, 'track_get', 'a');
+  const adB = createTrackerURL(window.location.origin, uuid, 'track_get', 'b');
+  const adsArray =
+      [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
+  await joinInterestGroup(test, uuid, {ads: adsArray});
+
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: window.location.origin
+  });
+  assert_true(result.requestId !== null);
+  assert_true(result.request.length > 0);
+
+  let decoded = await BA.decodeInterestGroupData(result.request);
+
+  let serverResponseMsg = {
+    'biddingGroups': {},
+    'adRenderURL': adsArray[0].renderURL,
+    'interestGroupName': DEFAULT_INTEREST_GROUP_NAME,
+    'interestGroupOwner': window.location.origin,
+  };
+  serverResponseMsg.biddingGroups[window.location.origin] = [0];
+
+  let serverResponse =
+      await BA.encodeServerResponse(serverResponseMsg, decoded);
+
+  let auctionResult = await navigator.runAdAuction({
+    'seller': window.location.origin,
+    'requestId': result.requestId,
+    'serverResponse': serverResponse,
+    'resolveToConfig': true,
+  });
+  expectNoWinner(auctionResult);
+}, 'Basic B&A auction - not authorized');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const adA = createTrackerURL(window.location.origin, uuid, 'track_get', 'a');
+  const adB = createTrackerURL(window.location.origin, uuid, 'track_get', 'b');
+  const adsArray =
+      [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
+  await joinInterestGroup(test, uuid, {ads: adsArray});
+
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: window.location.origin
+  });
   assert_true(result.requestId !== null);
   assert_true(result.request.length > 0);
 
@@ -78,6 +170,9 @@ subsetTest(promise_test, async test => {
 
   const trackSeller = createSellerReportURL(uuid);
   const trackBuyer = createBidderReportURL(uuid);
+  // This one should still work since the server may have run an auction with
+  // components on its own.
+  const trackComponentSeller = createSellerReportURL(uuid, 'component');
   let serverResponseMsg = {
     'biddingGroups': {},
     'adRenderURL': adsArray[1].renderURL,
@@ -85,7 +180,8 @@ subsetTest(promise_test, async test => {
     'interestGroupOwner': window.location.origin,
     'winReportingURLs': {
       'buyerReportingURLs': {'reportingURL': trackBuyer},
-      'topLevelSellerReportingURLs': {'reportingURL': trackSeller}
+      'topLevelSellerReportingURLs': {'reportingURL': trackSeller},
+      'componentSellerReportingURLs': {'reportingURL': trackComponentSeller}
     }
   };
   serverResponseMsg.biddingGroups[window.location.origin] = [0];
@@ -104,7 +200,8 @@ subsetTest(promise_test, async test => {
   });
   expectSuccess(auctionResult);
   createAndNavigateFencedFrame(test, auctionResult);
-  await waitForObservedRequests(uuid, [adB, trackBuyer, trackSeller]);
+  await waitForObservedRequests(
+      uuid, [adB, trackBuyer, trackSeller, trackComponentSeller]);
 }, 'Basic B&A auction with reporting URLs');
 
 subsetTest(promise_test, async test => {
@@ -118,8 +215,10 @@ subsetTest(promise_test, async test => {
     biddingLogicURL: createBiddingScriptURL({allowComponentAuction: true})
   });
 
-  const result = await navigator.getInterestGroupAdAuctionData(
-      {seller: window.location.origin});
+  const result = await navigator.getInterestGroupAdAuctionData({
+      coordinatorOrigin: await BA.configureCoordinator(),
+      seller: window.location.origin
+  });
   assert_true(result.requestId !== null);
   assert_true(result.request.length > 0);
 
@@ -179,8 +278,10 @@ subsetTest(promise_test, async test => {
     biddingLogicURL: createBiddingScriptURL({allowComponentAuction: true})
   });
 
-  const result = await navigator.getInterestGroupAdAuctionData(
-      {seller: window.location.origin});
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: window.location.origin
+  });
   assert_true(result.requestId !== null);
   assert_true(result.request.length > 0);
 
@@ -190,6 +291,8 @@ subsetTest(promise_test, async test => {
   // win over the client-side component auctions bid of 9.
   const trackServerSeller = createSellerReportURL(uuid);
   const trackBuyer = createBidderReportURL(uuid);
+  // This one shouldn't show up.
+  const trackTopLevelServerSeller = createSellerReportURL(uuid, 'top');
   let serverResponseMsg = {
     'biddingGroups': {},
     'adRenderURL': adsArray[1].renderURL,
@@ -199,7 +302,8 @@ subsetTest(promise_test, async test => {
     'bid': 10,
     'winReportingURLs': {
       'buyerReportingURLs': {'reportingURL': trackBuyer},
-      'componentSellerReportingURLs': {'reportingURL': trackServerSeller}
+      'componentSellerReportingURLs': {'reportingURL': trackServerSeller},
+      'topLevelSellerReportingURLs': {'reportingURL': trackTopLevelServerSeller}
     }
   };
   serverResponseMsg.biddingGroups[window.location.origin] = [0];
@@ -248,8 +352,10 @@ async function runFaultInjectTest(test, fault) {
       [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
   await joinInterestGroup(test, uuid, {ads: adsArray});
 
-  const result = await navigator.getInterestGroupAdAuctionData(
-      {seller: window.location.origin});
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: window.location.origin
+  });
   assert_true(result.requestId !== null);
   assert_true(result.request.length > 0);
 
@@ -302,8 +408,10 @@ subsetTest(promise_test, async test => {
       [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
   await joinInterestGroup(test, uuid, {ads: adsArray});
 
-  const result = await navigator.getInterestGroupAdAuctionData(
-      {seller: window.location.origin});
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: window.location.origin
+  });
   assert_true(result.requestId !== null);
   assert_true(result.request.length > 0);
 
@@ -344,8 +452,10 @@ subsetTest(promise_test, async test => {
       [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
   await joinInterestGroup(test, uuid, {ads: adsArray});
 
-  const result =
-      await navigator.getInterestGroupAdAuctionData({seller: OTHER_ORIGIN1});
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: OTHER_ORIGIN1
+  });
   assert_true(result.requestId !== null);
   assert_true(result.request.length > 0);
 
@@ -382,8 +492,10 @@ subsetTest(promise_test, async test => {
       [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
   await joinInterestGroup(test, uuid, {ads: adsArray});
 
-  const result = await navigator.getInterestGroupAdAuctionData(
-      {seller: window.location.origin});
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: window.location.origin
+  });
   assert_true(result.requestId !== null);
   assert_true(result.request.length > 0);
 
@@ -412,246 +524,303 @@ subsetTest(promise_test, async test => {
   expectNoWinner(auctionResult);
 }, 'Basic B&A auction - Wrong request Id');
 
-// Runs responseMutator on a minimal correct server response, and expects
-// either success/failure based on expectWin.
-async function testWithMutatedServerResponse(test, expectWin, responseMutator,
-                                             igMutator = undefined) {
-  const uuid = generateUuid(test);
-  const adA = createTrackerURL(window.location.origin, uuid, 'track_get', 'a');
-  const adB = createTrackerURL(window.location.origin, uuid, 'track_get', 'b');
-  const adsArray =
-      [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
-  let ig = {ads: adsArray};
-  if (igMutator) {
-    igMutator(ig);
-  }
-  await joinInterestGroup(test, uuid, ig);
-
-  const result = await navigator.getInterestGroupAdAuctionData(
-      {seller: window.location.origin});
-  assert_true(result.requestId !== null);
-  assert_true(result.request.length > 0);
-
-  let decoded = await BA.decodeInterestGroupData(result.request);
-
-  let serverResponseMsg = {
-    'biddingGroups': {},
-    'adRenderURL': adsArray[0].renderURL,
-    'interestGroupName': DEFAULT_INTEREST_GROUP_NAME,
-    'interestGroupOwner': window.location.origin,
-  };
-  serverResponseMsg.biddingGroups[window.location.origin] = [0];
-  await responseMutator(serverResponseMsg);
-
-  let serverResponse =
-      await BA.encodeServerResponse(serverResponseMsg, decoded);
-
-  let hashString = await BA.payloadHash(serverResponse);
-  await BA.authorizeServerResponseHashes([hashString]);
-
-  let auctionResult = await navigator.runAdAuction({
-    'seller': window.location.origin,
-    'interestGroupBuyers': [window.location.origin],
-    'requestId': result.requestId,
-    'serverResponse': serverResponse,
-    'resolveToConfig': true,
-  });
-  if (expectWin) {
-    expectSuccess(auctionResult);
-    return auctionResult;
-  } else {
-    expectNoWinner(auctionResult);
-  }
-}
-
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ false, msg => {msg.error = {}});
 }, 'Basic B&A auction - response marked as error');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ true, msg => {
+  await BA.testWithMutatedServerResponse(test, /*expectSuccess=*/ true, msg => {
     msg.error = 4;
   });
 }, 'Basic B&A auction - nonsense error field');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ false, msg => {
-    msg.error = {message: 'oh no'};
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {
+        msg.error = {message: 'oh no'};
+      });
 }, 'Basic B&A auction - response marked as error, with message');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ false, msg => {
-    msg.error = {message: {}};
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {
+        msg.error = {message: {}};
+      });
 }, 'Basic B&A auction - response marked as error, with bad message');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ false, msg => {msg.isChaff = true});
 }, 'Basic B&A auction - response marked as chaff');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ true, msg => {msg.isChaff = false});
 }, 'Basic B&A auction - response marked as non-chaff');
 
-// Disabled while spec clarifying expected behavior is in-progress.
-//
-// subsetTest(promise_test, async test => {
-//   await testWithMutatedServerResponse(
-//       test, /*expectSuccess=*/ true, msg => {msg.isChaff = 'yes'});
-// }, 'Basic B&A auction - response marked as chaff incorrectly');
+subsetTest(promise_test, async test => {
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {msg.isChaff = 'yes'});
+}, 'Basic B&A auction - response marked as chaff incorrectly');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ false,
       msg => {msg.topLevelSeller = 'https://example.org/'});
 }, 'Basic B&A auction - incorrectly includes topLevelSeller');
 
-// Disabled while spec clarifying expected behavior is in-progress.
-//
-// subsetTest(promise_test, async test => {
-//   await testWithMutatedServerResponse(
-//       test, /*expectSuccess=*/ true, msg => {msg.topLevelSeller = 1});
-// }, 'Basic B&A auction - non-string top-level seller ignored');
+subsetTest(promise_test, async test => {
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {msg.topLevelSeller = 1});
+}, 'Basic B&A auction - non-string top-level seller invalid');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ false,
       msg => {msg.topLevelSeller = 'http://example.org/'});
 }, 'Basic B&A auction - http:// topLevelSeller is bad, too');
 
-// Disabled while spec clarifying expected behavior is in-progress.
-//
-// subsetTest(promise_test, async test => {
-//   await testWithMutatedServerResponse(
-//       test, /*expectSuccess=*/ true, msg => {msg.bid = '10 cents'});
-// }, 'Basic B&A auction - non-number bid is ignored');
+subsetTest(promise_test, async test => {
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {msg.bid = '10 cents'});
+}, 'Basic B&A auction - non-number bid is invalid');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ true, msg => {msg.bid = 50});
 }, 'Basic B&A auction - positive bid is good');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ false, msg => {msg.bid = -50});
 }, 'Basic B&A auction - negative bid is bad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ false, msg => {msg.bid = 0});
 }, 'Basic B&A auction - zero bid is bad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ false,
       msg => {msg.biddingGroups[window.location.origin] = []});
 }, 'Basic B&A auction - winning group did not bid');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ false,
       msg => {msg.biddingGroups[window.location.origin] = [-1, 0]});
 }, 'Basic B&A auction - negative bidding group index');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ false,
       msg => {msg.biddingGroups[window.location.origin] = [0, 1]});
 }, 'Basic B&A auction - too large bidding group index');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ false, msg => {
-    msg.interestGroupName += 'not';
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {
+        msg.interestGroupName += 'not';
+      });
 }, 'Basic B&A auction - wrong IG name');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(
+  await BA.testWithMutatedServerResponse(
       test, /*expectSuccess=*/ false, async msg => {
         await leaveInterestGroup();
       });
 }, 'Basic B&A auction - left IG in the middle');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ false, msg => {
-    msg.adRenderURL += 'not';
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {
+        msg.adRenderURL += 'not';
+      });
 }, 'Basic B&A auction - ad URL not in ad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ false, msg => {
-    msg.buyerReportingId = 'bid1';
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {
+        msg.buyerReportingId = 'bid1';
+      });
 }, 'Basic B&A auction - buyerReportingId not in ad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ true, msg => {
-    msg.buyerReportingId = 'bid1';
-  }, ig => {
-    ig.ads[0].buyerReportingId = 'bid1';
-    ig.ads[1].buyerReportingId = 'bid2';
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ true,
+      msg => {
+        msg.buyerReportingId = 'bid1';
+      },
+      ig => {
+        ig.ads[0].buyerReportingId = 'bid1';
+        ig.ads[1].buyerReportingId = 'bid2';
+      });
 }, 'Basic B&A auction - buyerReportingId in ad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ false, msg => {
-    msg.buyerReportingId = 'bid2';
-  }, ig => {
-    ig.ads[0].buyerReportingId = 'bid1';
-    ig.ads[1].buyerReportingId = 'bid2';
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false,
+      msg => {
+        msg.buyerReportingId = 'bid2';
+      },
+      ig => {
+        ig.ads[0].buyerReportingId = 'bid1';
+        ig.ads[1].buyerReportingId = 'bid2';
+      });
 }, 'Basic B&A auction - buyerReportingId in wrong ad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ false, msg => {
-    msg.buyerAndSellerReportingId = 'bsid1';
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {
+        msg.buyerAndSellerReportingId = 'bsid1';
+      });
 }, 'Basic B&A auction - buyerAndSellerReportingId not in ad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ true, msg => {
-    msg.buyerAndSellerReportingId = 'bsid1';
-  }, ig => {
-    ig.ads[0].buyerAndSellerReportingId = 'bsid1';
-    ig.ads[1].buyerAndSellerReportingId = 'bsid2';
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ true,
+      msg => {
+        msg.buyerAndSellerReportingId = 'bsid1';
+      },
+      ig => {
+        ig.ads[0].buyerAndSellerReportingId = 'bsid1';
+        ig.ads[1].buyerAndSellerReportingId = 'bsid2';
+      });
 }, 'Basic B&A auction - buyerAndSellerReportingId in ad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ false, msg => {
-    msg.buyerAndSellerReportingId = 'bsid2';
-  }, ig => {
-    ig.ads[0].buyerAndSellerReportingId = 'bsid1';
-    ig.ads[1].buyerAndSellerReportingId = 'bsid2';
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false,
+      msg => {
+        msg.buyerAndSellerReportingId = 'bsid2';
+      },
+      ig => {
+        ig.ads[0].buyerAndSellerReportingId = 'bsid1';
+        ig.ads[1].buyerAndSellerReportingId = 'bsid2';
+      });
 }, 'Basic B&A auction - buyerAndSellerReportingId in wrong ad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ false, msg => {
-    msg.components = ["https://example.org"];
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {
+        msg.components = ['https://example.org'];
+      });
 }, 'Basic B&A auction - ad component URL not in ad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ true, msg => {
-    msg.components = ['https://example.org'];
-  }, ig => {
-    ig.adComponents = [{renderURL: 'https://example.org/'}];
-  });
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ true,
+      msg => {
+        msg.components = ['https://example.org'];
+      },
+      ig => {
+        ig.adComponents = [{renderURL: 'https://example.org/'}];
+      });
 }, 'Basic B&A auction - ad component URL in ad');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ false, msg => {
-    msg.bidCurrency = 'cents';
-  });
+  let savedUuid;
+  let savedExpectUrls;
+  let result = await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ true,
+      (msg, uuid) => {
+        savedUuid = uuid;
+        msg.components = [
+          createTrackerURL(window.location.origin, uuid, 'track_get', 'c_a'),
+          createTrackerURL(window.location.origin, uuid, 'track_get', 'c_c')
+        ];
+        savedExpectUrls = msg.components;
+      },
+      (ig, uuid) => {
+        ig.ads[0].renderURL = createRenderURL(uuid, `
+          const componentAds = window.fence.getNestedConfigs();
+          // Limit the number of fenced frames we try to load at once, since loading too many
+          // completely breaks some Chrome test set ups, and we only really care about 3 of them
+          // anyway.
+          //
+          // See https://crbug.com/370533823 for more context.
+          const limit = 5;
+          for (var i = 0; i < Math.min(limit, componentAds.length); ++i) {
+            let fencedFrame = document.createElement("fencedframe");
+            fencedFrame.mode = "opaque-ads";
+            fencedFrame.config = componentAds[i];
+            document.body.appendChild(fencedFrame);
+          }`);
+        ig.adComponents = [
+          {
+            renderURL: createTrackerURL(
+                window.location.origin, uuid, 'track_get', 'c_a')
+          },
+          {
+            renderURL: createTrackerURL(
+                window.location.origin, uuid, 'track_get', 'c_c')
+          },
+          {
+            renderURL: createTrackerURL(
+                window.location.origin, uuid, 'track_get', 'c_c')
+          }
+        ];
+      });
+  createAndNavigateFencedFrame(test, result);
+  await waitForObservedRequests(savedUuid, savedExpectUrls);
+}, 'Basic B&A auction - loading winning component ads');
+
+
+subsetTest(promise_test, async test => {
+  let savedUuid;
+  let result = await BA.testWithMutatedServerResponse(
+      test, /*expectWin=*/ true,
+      (msg, uuid) => {
+        savedUuid = uuid;
+        msg.winReportingURLs = {
+          'buyerReportingURLs': {
+            'interactionReportingURLs': {
+              'click': createBidderBeaconURL(uuid, 'i'),
+              'cluck': createBidderBeaconURL(uuid, 'u')
+            }
+          },
+          'topLevelSellerReportingURLs': {
+            'interactionReportingURLs': {
+              'click': createSellerBeaconURL(uuid, 'i'),
+              'cluck': createSellerBeaconURL(uuid, 'u')
+            }
+          }
+        };
+      },
+      (ig, uuid) => {
+        ig.ads[0].renderURL = createRenderURL(uuid, `window.fence.reportEvent({
+              eventType: 'click',
+              eventData: 'click_body',
+              destination: ['seller', 'buyer']
+            });
+            window.fence.reportEvent({
+              eventType: 'cluck',
+              eventData: 'cluck_body',
+              destination: ['direct-seller']
+            });`);
+      });
+
+  createAndNavigateFencedFrame(test, result);
+  // The script triggers seller and buyer 'click', and seller 'cluck'.
+  // No tracker for page itself.
+  await waitForObservedRequests(savedUuid, [
+    createBidderBeaconURL(savedUuid, 'i') + ', body: click_body',
+    createSellerBeaconURL(savedUuid, 'i') + ', body: click_body',
+    createSellerBeaconURL(savedUuid, 'u') + ', body: cluck_body'
+  ]);
+}, 'Basic B&A auction --- beacon reporting');
+
+subsetTest(promise_test, async test => {
+  await BA.testWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, msg => {
+        msg.bidCurrency = 'cents';
+      });
 }, 'Basic B&A auction - invalid ad currency');
 
 subsetTest(promise_test, async test => {
-  await testWithMutatedServerResponse(test, /*expectSuccess=*/ true, msg => {
+  await BA.testWithMutatedServerResponse(test, /*expectSuccess=*/ true, msg => {
     msg.bidCurrency = 'USD';
   });
 }, 'Basic B&A auction - valid ad currency');
@@ -680,8 +849,10 @@ async function testHybridAuctionWithMutatedServerResponse(
   }
   await joinInterestGroup(test, uuid, interestGroup);
 
-  const result = await navigator.getInterestGroupAdAuctionData(
-      {seller: window.location.origin});
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: window.location.origin
+  });
   assert_true(result.requestId !== null);
   assert_true(result.request.length > 0);
 
@@ -692,7 +863,7 @@ async function testHybridAuctionWithMutatedServerResponse(
   // mutators did made the server response unacceptable).
   let serverResponseMsg = {
     'biddingGroups': {},
-    'adRenderURL': adsArray[1].renderURL,
+    'adRenderURL': interestGroup.ads[1].renderURL,
     'interestGroupName': DEFAULT_INTEREST_GROUP_NAME,
     'interestGroupOwner': window.location.origin,
     'topLevelSeller': window.location.origin,
@@ -883,20 +1054,383 @@ subsetTest(promise_test, async test => {
       });
 }, 'Hybrid B&A auction --- bid info passed to top-level reporting');
 
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ true, {
+        igMutator: (ig, uuid) => {
+          ig.ads[1].renderURL =
+              createRenderURL(uuid, `window.fence.reportEvent({
+                eventType: 'click',
+                eventData: 'click_body',
+                destination: ['component-seller', 'buyer']
+              });
+              window.fence.reportEvent({
+                eventType: 'clack',
+                eventData: 'clack_body',
+                destination: ['direct-seller']
+              });`);
+        },
+        responseMutator: (response, uuid) => {
+          response.winReportingURLs = {
+            'buyerReportingURLs': {
+              'interactionReportingURLs': {
+                'click': createBidderBeaconURL(uuid, 'i'),
+                'clack': createBidderBeaconURL(uuid, 'a')
+              }
+            },
+            'componentSellerReportingURLs': {
+              'interactionReportingURLs': {
+                'click': createSellerBeaconURL(uuid, 'i'),
+                'clack': createSellerBeaconURL(uuid, 'a')
+              }
+            }
+          };
+        },
+        expectUrlsMutator: (expectUrls, uuid) => {
+          // The script triggers seller and buyer 'click', and seller 'clack'.
+          // No tracker for page itself.
+          expectUrls.pop();
+          expectUrls.push(
+              createBidderBeaconURL(uuid, 'i') + ', body: click_body',
+              createSellerBeaconURL(uuid, 'i') + ', body: click_body',
+              createSellerBeaconURL(uuid, 'a') + ', body: clack_body');
+        }
+      });
+}, 'Hybrid B&A auction --- beacon reporting');
+
+/////////////////////////////////////////////////////////////////////////////
+// updateIfOlderThanMs tests
+//
+// NOTE: Due to the lack of mock time in wpt, these tests just exercise the code
+// paths and ensure that no crash occurs -- they don't otherwise verify
+// behavior.
+/////////////////////////////////////////////////////////////////////////////
+
+subsetTest(promise_test, async test => {
+  await BA.testWithMutatedServerResponse(test, /*expectSuccess=*/ true, msg => {
+    msg.updateGroups =
+        {[window.location.origin]: [{index: 2048, updateIfOlderThanMs: 1000}]};
+  });
+}, 'Basic B&A auction - updateIfOlderThanMs - invalid index');
+
+
+subsetTest(promise_test, async test => {
+  await BA.testWithMutatedServerResponse(test, /*expectSuccess=*/ true, msg => {
+    msg.updateGroups = {
+      [window.location.origin]: [
+        {index: 0, updateIfOlderThanMs: 1000},
+        {index: 1, updateIfOlderThanMs: 10000}
+      ]
+    };
+  });
+}, 'Basic B&A auction - updateIfOlderThanMs');
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// K-anonymity support tests
+//
+/////////////////////////////////////////////////////////////////////////////
+
+// Runs responseMutator on a minimal correct server response, and expects
+// either success/failure based on expectWin.
+async function kAnonTestWithMutatedServerResponse(
+    test, expectWin, responseMutator, igMutator = undefined) {
+  const uuid = generateUuid(test);
+  const adA = createTrackerURL(window.location.origin, uuid, 'track_get', 'a');
+  const adB = createTrackerURL(window.location.origin, uuid, 'track_get', 'b');
+  const adsArray =
+      [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
+  let ig = {
+    owner: window.location.origin,
+    name: DEFAULT_INTEREST_GROUP_NAME,
+    ads: adsArray,
+    biddingLogicURL: createBiddingScriptURL({allowComponentAuction: true})
+  };
+  if (igMutator) {
+    igMutator(ig, uuid);
+  }
+
+  const encoder = new TextEncoder();
+  const adARenderKAnonKey =
+      encoder.encode(`AdBid\n${ig.owner}/\n${ig.biddingLogicURL}\n${adA}`);
+  const adBRenderKAnonKey =
+      encoder.encode(`AdBid\n${ig.owner}/\n${ig.biddingLogicURL}\n${adB}`);
+  const adARenderKAnonKeyHash = new Uint8Array(
+      await window.crypto.subtle.digest('SHA-256', adARenderKAnonKey));
+  const adBRenderKAnonKeyHash = new Uint8Array(
+      await window.crypto.subtle.digest('SHA-256', adBRenderKAnonKey));
+
+  const adANameReportingIdKAnonKey = encoder.encode(
+      `NameReport\n${ig.owner}/\n${ig.biddingLogicURL}\n${adA}\n${ig.name}`);
+  const adBNameReportingIdKAnonKey = encoder.encode(
+      `NameReport\n${ig.owner}/\n${ig.biddingLogicURL}\n${adB}\n${ig.name}`);
+  const adANameReportingIdKAnonKeyHash = new Uint8Array(
+      await window.crypto.subtle.digest('SHA-256', adANameReportingIdKAnonKey));
+  const adBNameReportingIdKAnonKeyHash = new Uint8Array(
+      await window.crypto.subtle.digest('SHA-256', adBNameReportingIdKAnonKey));
+
+  const adABuyerReportingIdKAnonKey = encoder.encode(`BuyerReportId\n${
+      ig.owner}/\n${ig.biddingLogicURL}\n${adA}\n${adA.buyerReportingId}`);
+  const adBBuyerReportingIdKAnonKey = encoder.encode(`BuyerReportId\n${
+      ig.owner}/\n${ig.biddingLogicURL}\n${adB}\n${adB.buyerReportingId}`);
+  const adABuyerReportingIdKAnonKeyHash =
+      new Uint8Array(await window.crypto.subtle.digest(
+          'SHA-256', adABuyerReportingIdKAnonKey));
+  const adBBuyerReportingIdKAnonKeyHash =
+      new Uint8Array(await window.crypto.subtle.digest(
+          'SHA-256', adBBuyerReportingIdKAnonKey));
+
+  const adABASReportingIdKAnonKey =
+      encoder.encode(`BuyerAndSellerReportId\n${ig.owner}/\n${
+          ig.biddingLogicURL}\n${adA}\n${adA.buyerAndSellerReportingId}`);
+  const adBBASReportingIdKAnonKey =
+      encoder.encode(`BuyerAndSellerReportId\n${ig.owner}/\n${
+          ig.biddingLogicURL}\n${adB}\n${adB.buyerAndSellerReportingId}`);
+  const adABASReportingIdKAnonKeyHash = new Uint8Array(
+      await window.crypto.subtle.digest('SHA-256', adABASReportingIdKAnonKey));
+  const adBBASReportingIdKAnonKeyHash = new Uint8Array(
+      await window.crypto.subtle.digest('SHA-256', adBBASReportingIdKAnonKey));
+
+  const hashes = {
+    adARenderKAnonKeyHash: adARenderKAnonKeyHash,
+    adBRenderKAnonKeyHash: adBRenderKAnonKeyHash,
+    adANameReportingIdKAnonKeyHash: adANameReportingIdKAnonKeyHash,
+    adBNameReportingIdKAnonKeyHash: adBNameReportingIdKAnonKeyHash,
+    adABuyerReportingIdKAnonKeyHash: adABuyerReportingIdKAnonKeyHash,
+    adBBuyerReportingIdKAnonKeyHash: adBBuyerReportingIdKAnonKeyHash,
+    adABASReportingIdKAnonKeyHash: adABASReportingIdKAnonKeyHash,
+    adBBASReportingIdKAnonKeyHash: adBBASReportingIdKAnonKeyHash
+  };
+
+  await joinInterestGroup(test, uuid, ig);
+
+  const result = await navigator.getInterestGroupAdAuctionData({
+    coordinatorOrigin: await BA.configureCoordinator(),
+    seller: window.location.origin
+  });
+  assert_true(result.requestId !== null);
+  assert_true(result.request.length > 0);
+
+  let decoded = await BA.decodeInterestGroupData(result.request);
+
+  let serverResponseMsg = {
+    'biddingGroups': {},
+    'adRenderURL': ig.ads[0].renderURL,
+    'interestGroupName': DEFAULT_INTEREST_GROUP_NAME,
+    'interestGroupOwner': window.location.origin,
+  };
+  serverResponseMsg.biddingGroups[window.location.origin] = [0];
+
+  await responseMutator(serverResponseMsg, ig, hashes, uuid);
+
+  let serverResponse =
+      await BA.encodeServerResponse(serverResponseMsg, decoded);
+
+  let hashString = await BA.payloadHash(serverResponse);
+  await BA.authorizeServerResponseHashes([hashString]);
+
+  let auctionResult = await navigator.runAdAuction({
+    'seller': window.location.origin,
+    'interestGroupBuyers': [window.location.origin],
+    'requestId': result.requestId,
+    'serverResponse': serverResponse,
+    'resolveToConfig': true,
+  });
+  if (expectWin) {
+    expectSuccess(auctionResult);
+    return auctionResult;
+  } else {
+    expectNoWinner(auctionResult);
+  }
+}
+
+subsetTest(promise_test, async test => {
+  await kAnonTestWithMutatedServerResponse(
+      test, /*expectSuccess=*/ true, (msg, ig, hashes) => {
+        msg.kAnonWinnerJoinCandidates = {
+          adRenderURLHash: hashes.adARenderKAnonKeyHash,
+          reportingIdHash: hashes.adANameReportingIdKAnonKeyHash,
+        };
+      });
+}, 'Basic B&A auction - winner with candidates');
+
+subsetTest(promise_test, async test => {
+  await kAnonTestWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, (msg, ig, hashes) => {
+        msg.kAnonWinnerJoinCandidates = {
+          adRenderURLHash: new Uint8Array(),
+          reportingIdHash: hashes.adANameReportingIdKAnonKeyHash,
+        };
+      });
+}, 'Basic B&A auction - winner with bad render hash');
+
+subsetTest(promise_test, async test => {
+  await kAnonTestWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, (msg, ig, hashes) => {
+        msg.kAnonWinnerJoinCandidates = {
+          adRenderURLHash: hashes.adARenderKAnonKeyHash,
+          reportingIdHash: new Uint8Array(),
+        };
+      });
+}, 'Basic B&A auction - winner with bad reporting hash');
+
+subsetTest(promise_test, async test => {
+  await kAnonTestWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, (msg, ig, hashes) => {
+        delete msg.adRenderURL;
+        delete msg.interestGroupName;
+        delete msg.interestGroupOwner;
+        msg.kAnonGhostWinners = [{
+          kAnonJoinCandidates: {
+            // missing adRenderURLHash
+            reportingIdHash: hashes.adANameReportingIdKAnonKeyHash,
+          },
+          interestGroupIndex: 0,
+          owner: window.location.origin,
+        }]
+      });
+}, 'Basic B&A auction - invalid ghost winner');
+
+subsetTest(promise_test, async test => {
+  await kAnonTestWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, (msg, ig, hashes) => {
+        delete msg.adRenderURL;
+        delete msg.interestGroupName;
+        delete msg.interestGroupOwner;
+        msg.kAnonGhostWinners = [{
+          kAnonJoinCandidates: {
+            adRenderURLHash: hashes.adARenderKAnonKeyHash,
+            reportingIdHash: hashes.adANameReportingIdKAnonKeyHash,
+          },
+          interestGroupIndex: 0,
+          owner: window.location.origin,
+        }]
+      });
+}, 'Basic B&A auction - only ghost winner');
+
+subsetTest(promise_test, async test => {
+  await kAnonTestWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, (msg, ig, hashes) => {
+        delete msg.adRenderURL;
+        delete msg.interestGroupName;
+        delete msg.interestGroupOwner;
+        msg.kAnonGhostWinners = [
+          {
+            kAnonJoinCandidates: {
+              adRenderURLHash: hashes.adARenderKAnonKeyHash,
+              reportingIdHash: hashes.adANameReportingIdKAnonKeyHash,
+            },
+            interestGroupIndex: 0,
+            owner: window.location.origin,
+          },
+          {
+            kAnonJoinCandidates: {
+              adRenderURLHash: hashes.adBRenderKAnonKeyHash,
+              reportingIdHash: hashes.adBNameReportingIdKAnonKeyHash,
+            },
+            interestGroupIndex: 0,
+            owner: window.location.origin,
+          }
+        ]
+      });
+}, 'Basic B&A auction - multiple ghost winners');
+
+subsetTest(promise_test, async test => {
+  await kAnonTestWithMutatedServerResponse(
+      test, /*expectSuccess=*/ false, (msg, ig, hashes) => {
+        delete msg.adRenderURL;
+        delete msg.interestGroupName;
+        delete msg.interestGroupOwner;
+        msg.kAnonGhostWinners = [
+          {
+            kAnonJoinCandidates: {
+              adRenderURLHash: hashes.adARenderKAnonKeyHash,
+              reportingIdHash: hashes.adANameReportingIdKAnonKeyHash,
+            },
+            interestGroupIndex: 0,
+            owner: window.location.origin,
+          },
+          {
+            kAnonJoinCandidates: {
+              // missing adRenderURLHash
+              reportingIdHash: hashes.adBNameReportingIdKAnonKeyHash,
+            },
+            interestGroupIndex: 0,
+            owner: window.location.origin,
+          }
+        ]
+      });
+}, 'Basic B&A auction - second ghost winner invalid');
+
+subsetTest(promise_test, async test => {
+  await kAnonTestWithMutatedServerResponse(
+      test, /*expectSuccess=*/ true, (msg, ig, hashes) => {
+        msg.kAnonWinnerJoinCandidates = {
+          adRenderURLHash: hashes.adARenderKAnonKeyHash,
+          reportingIdHash: hashes.adANameReportingIdKAnonKeyHash,
+        };
+        msg.kAnonGhostWinners = [{
+          kAnonJoinCandidates: {
+            adRenderURLHash: hashes.adBRenderKAnonKeyHash,
+            reportingIdHash: hashes.adBNameReportingIdKAnonKeyHash,
+          },
+          interestGroupIndex: 0,
+          owner: window.location.origin,
+        }];
+      });
+}, 'Basic B&A auction - winner with ghost winner');
+
+subsetTest(promise_test, async test => {
+  await kAnonTestWithMutatedServerResponse(
+      test, /*expectSuccess=*/ true, (msg, ig, hashes) => {
+        msg.kAnonWinnerJoinCandidates = {
+          adRenderURLHash: hashes.adARenderKAnonKeyHash,
+          reportingIdHash: hashes.adANameReportingIdKAnonKeyHash,
+        };
+        msg.kAnonGhostWinners = [{
+          kAnonJoinCandidates: {
+            adRenderURLHash: hashes.adBRenderKAnonKeyHash,
+            reportingIdHash: hashes.adBNameReportingIdKAnonKeyHash,
+          },
+          interestGroupIndex: 0,
+          owner: window.location.origin,
+          ghostWinnerForTopLevelAuction: {
+            // missing adRenderURL
+            modifiedBid: 100,
+          },
+        }];
+      });
+}, 'Basic B&A auction - invalid GhostWinnerForTopLevelAuction');
+
+subsetTest(promise_test, async test => {
+  await kAnonTestWithMutatedServerResponse(
+      test, /*expectSuccess=*/ true, (msg, ig, hashes) => {
+        msg.kAnonWinnerJoinCandidates = {
+          adRenderURLHash: hashes.adARenderKAnonKeyHash,
+          reportingIdHash: hashes.adANameReportingIdKAnonKeyHash,
+        };
+        msg.kAnonGhostWinners = [{
+          kAnonJoinCandidates: {
+            adRenderURLHash: hashes.adBRenderKAnonKeyHash,
+            reportingIdHash: hashes.adBNameReportingIdKAnonKeyHash,
+          },
+          interestGroupIndex: 0,
+          owner: window.location.origin,
+          ghostWinnerForTopLevelAuction: {
+            adRenderURL: ig.ads[1].renderURL,
+            modifiedBid: 100,
+          },
+        }];
+      });
+}, 'Basic B&A auction - winner with full ghost winner');
+
+// TODO(behamilton): Add Multi-seller k-anon tests.
+// TODO(behamilton): Add k-anon tests with different reporting IDs.
+
 /* Some things that are not currently tested that probably should be; this is
    not exhaustive, merely to keep track of things that come to mind as tests are
    written:
 
-   - Reporting event/beacon operation.
-
-   - Actually loading component ad --- see stuff in components-ads.https...
-     for examples.
-
-   - Check that topLevelSellerReportingURLs doesn't do anything in a component
-     auction? The code is actually a little suspect; need to check the spec
-     at any rate.
-
-   - forDebugOnly diff between server_filtered or not (and also componentWin)?
-     forDebugOnly in general may be too hard to test given sampling. I should
-     probably ask Qingxin for his opinion.
+   - forDebugOnly --- it will be straightforward now, but will break.
+   - Some of the parsing details that need to match the spec language exactly.
 */

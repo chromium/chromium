@@ -9,28 +9,33 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
-struct AutocompleteMatch;
 class AutocompleteClassifier;
 class AutocompleteSchemeClassifier;
-class RemoteSuggestionsService;
+class AutocompleteScoringModelService;
+class DocumentSuggestionsService;
+class UnscopedExtensionProvider;
+class UnscopedExtensionProviderDelegate;
 class GURL;
 class InMemoryURLIndex;
 class KeywordExtensionsDelegate;
 class KeywordProvider;
 class OmniboxPedalProvider;
 class OmniboxTriggeredFeatureService;
+class OnDeviceTailModelService;
 class PrefService;
+class RemoteSuggestionsService;
 class ShortcutsBackend;
 class TabMatcher;
 class ZeroSuggestCacheService;
-class AutocompleteScoringModelService;
-class OnDeviceTailModelService;
+struct AutocompleteMatch;
 struct ProviderStateService;
 
 namespace bookmarks {
@@ -39,8 +44,8 @@ class BookmarkModel;
 
 namespace history {
 class HistoryService;
-class URLDatabase;
 class TopSites;
+class URLDatabase;
 }  // namespace history
 
 namespace history_clusters {
@@ -63,11 +68,15 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace tab_groups {
+class TabGroupSyncService;
+}
+
 class TemplateURLService;
 
 class AutocompleteProviderClient : public OmniboxAction::Client {
  public:
-  virtual ~AutocompleteProviderClient() {}
+  virtual ~AutocompleteProviderClient() = default;
 
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
@@ -86,6 +95,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual InMemoryURLIndex* GetInMemoryURLIndex() = 0;
   virtual TemplateURLService* GetTemplateURLService() = 0;
   virtual const TemplateURLService* GetTemplateURLService() const = 0;
+  virtual DocumentSuggestionsService* GetDocumentSuggestionsService() const;
   virtual RemoteSuggestionsService* GetRemoteSuggestionsService(
       bool create_if_necessary) const = 0;
   virtual ZeroSuggestCacheService* GetZeroSuggestCacheService() = 0;
@@ -95,12 +105,17 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() = 0;
   virtual std::unique_ptr<KeywordExtensionsDelegate>
   GetKeywordExtensionsDelegate(KeywordProvider* keyword_provider) = 0;
+  virtual std::unique_ptr<UnscopedExtensionProviderDelegate>
+  GetUnscopedExtensionProviderDelegate(UnscopedExtensionProvider* provider) = 0;
   virtual OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
       const = 0;
   virtual AutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const = 0;
   virtual OnDeviceTailModelService* GetOnDeviceTailModelService() const = 0;
   virtual ProviderStateService* GetProviderStateService() const = 0;
+  virtual base::CallbackListSubscription GetLensSuggestInputsWhenReady(
+      LensOverlaySuggestInputsCallback callback) const = 0;
+  virtual tab_groups::TabGroupSyncService* GetTabGroupSyncService() const = 0;
 
   // The value to use for Accept-Languages HTTP header when making an HTTP
   // request.
@@ -143,11 +158,19 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // True for almost all users except ones with a specific enterprise policy.
   virtual bool AllowDeletingBrowserHistory() const;
 
-  // Returns whether personalized URL data collection is enabled.  I.e.,
-  // the user has consented to have URLs recorded keyed by their Google account.
-  // In this case, the user has agreed to share browsing data with Google and so
-  // this state can be used to govern features such as sending the current page
-  // URL with omnibox suggest requests.
+  // Returns whether *anonymized* data collection is enabled.
+  // This is used by the client to check whether the user has granted consent
+  // for *anonymized* URL-keyed data collection. This currently governs
+  // whether we send Suggest requests that include information about the
+  // current page URL (when the user has enabled the MSBB opt-in).
+  virtual bool IsUrlDataCollectionActive() const = 0;
+
+  // Returns whether *personalized* data collection is enabled.
+  // This is used by the client to check whether the user has granted consent
+  // for *personalized* URL-keyed data collection keyed by their Google account.
+  // This currently governs whether we send Suggest requests that include
+  // information about the current page title (when the user has enabled the
+  // History Sync opt-in).
   virtual bool IsPersonalizedUrlDataCollectionActive() const = 0;
 
   // This function returns true if the user is signed in.
@@ -201,6 +224,13 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
 
   // Returns true if history embeddings is enabled and user can opt in/out.
   virtual bool IsHistoryEmbeddingsSettingVisible() const;
+
+  // Returns true if the current profile is eligible for Lens.
+  virtual bool IsLensEnabled() const;
+
+  // Returns true if the Lens entrypoints can be shown to the user. That is if
+  // Lens is not already active.
+  virtual bool AreLensEntrypointsVisible() const;
 
   // Returns whether the app is currently in the background state (Mobile only).
   virtual bool in_background_state() const;

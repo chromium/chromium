@@ -59,13 +59,12 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
     const std::bitset<8> bools(provider.ConsumeIntegral<uint8_t>());
     const bool generate_prediction = bools[0];
     const bool pick_meaningful_type = bools[1];
-    const bool use_placeholder = bools[2];
 
     if (generate_prediction) {
       predictions.fields.emplace_back(
           field.renderer_id(), autofill::FieldSignature(123),
           GeneratePredictionType(pick_meaningful_type, provider),
-          use_placeholder, /*is_override=*/false);
+          /*is_override=*/false);
     }
   }
 
@@ -74,7 +73,6 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
   for (size_t i = 0; i < num_predictions; ++i) {
     const std::bitset<8> bools(provider.ConsumeIntegral<uint8_t>());
     const bool pick_meaningful_type = bools[0];
-    const bool use_placeholder = bools[1];
 
     // Generate unique `renderer_id` not matching any existing field
     // renderer_id.
@@ -92,7 +90,7 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
     autofill::FieldSignature signature(provider.ConsumeIntegralInRange(0, 500));
     predictions.fields.emplace_back(
         renderer_id, signature,
-        GeneratePredictionType(pick_meaningful_type, provider), use_placeholder,
+        GeneratePredictionType(pick_meaningful_type, provider),
         /*is_override=*/false);
   }
 

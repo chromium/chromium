@@ -6,8 +6,7 @@
 
 #include <utility>
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 Task::Task(const Location& posted_from,
            OnceClosure task,
@@ -48,5 +47,4 @@ Task::Task(Task&& other) noexcept : PendingTask(std::move(other)) {}
 
 Task& Task::operator=(Task&& other) = default;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

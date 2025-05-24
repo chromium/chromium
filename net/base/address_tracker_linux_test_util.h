@@ -12,6 +12,9 @@
 #include <cstddef>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+
 bool operator==(const struct ifaddrmsg& lhs, const struct ifaddrmsg& rhs);
 
 namespace net {
@@ -26,19 +29,15 @@ class NetlinkMessage {
  public:
   explicit NetlinkMessage(uint16_t type);
   ~NetlinkMessage();
-  void AddPayload(const void* data, size_t length);
-  template <typename T>
-  void AddPayload(const T& data) {
-    AddPayload(&data, sizeof(data));
-  }
-  void AddAttribute(uint16_t type, const void* data, size_t length);
+  void AddPayload(base::span<const uint8_t> data);
+  void AddAttribute(uint16_t type, base::span<const uint8_t> data);
   void AppendTo(NetlinkBuffer* output) const;
 
  private:
-  void Append(const void* data, size_t length);
+  void Append(base::span<const uint8_t> data);
   void Align();
-  struct nlmsghdr* header() {
-    return reinterpret_cast<struct nlmsghdr*>(buffer_.data());
+  nlmsghdr* header() {
+    return UNSAFE_TODO(reinterpret_cast<nlmsghdr*>(buffer_.data()));
   }
 
   NetlinkBuffer buffer_;

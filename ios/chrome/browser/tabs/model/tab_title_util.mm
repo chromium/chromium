@@ -19,26 +19,30 @@ namespace {
 
 // Returns whether `web_state` only has a download in-progress.
 bool WebStateHasDownloadInProgress(const web::WebState* web_state) {
-  if (!web_state->IsRealized())
+  if (!web_state->IsRealized()) {
     return false;
+  }
 
   const web::NavigationManager* navigation_manager =
       web_state->GetNavigationManager();
-  if (!navigation_manager)
+  if (!navigation_manager) {
     return false;
+  }
 
-  if (navigation_manager->GetVisibleItem())
+  if (navigation_manager->GetVisibleItem()) {
     return false;
+  }
 
   const DownloadManagerTabHelper* download_tab_helper =
       DownloadManagerTabHelper::FromWebState(web_state);
-  if (!download_tab_helper)
+  if (!download_tab_helper) {
     return false;
+  }
 
   return download_tab_helper->has_download_task();
 }
 
-}
+}  // namespace
 
 NSString* GetTabTitle(const web::WebState* web_state) {
   if (WebStateHasDownloadInProgress(web_state)) {
@@ -46,8 +50,9 @@ NSString* GetTabTitle(const web::WebState* web_state) {
   }
 
   const std::u16string& title = web_state->GetTitle();
-  if (!title.empty())
+  if (!title.empty()) {
     return base::SysUTF16ToNSString(title);
+  }
 
   return l10n_util::GetNSString(IDS_DEFAULT_TAB_TITLE);
 }

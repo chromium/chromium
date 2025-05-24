@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -54,7 +55,7 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
 
     notification_header_view_ =
         new NotificationHeaderView(views::Button::PressedCallback());
-    container->AddChildView(notification_header_view_.get());
+    container->AddChildViewRaw(notification_header_view_.get());
 
     widget_.Show();
   }
@@ -279,7 +280,7 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
   notification_header_view_->SetExpandButtonEnabled(true);
   notification_header_view_->SetExpanded(false);
 
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   ui::AXNodeData data;
 
   // Initially the view is collapsed and there are no expanded-changed events.
@@ -441,7 +442,7 @@ TEST_F(NotificationHeaderViewTest, AccessibleDescription) {
 
   EXPECT_EQ(
       notification_header_view_->GetViewAccessibility().GetCachedDescription(),
-      u"Example Summary " + timestamp_view->GetText());
+      base::StrCat({u"Example Summary ", timestamp_view->GetText()}));
 
   int progress = 1;
   notification_header_view_->SetProgress(progress);
@@ -450,7 +451,7 @@ TEST_F(NotificationHeaderViewTest, AccessibleDescription) {
       notification_header_view_->GetViewAccessibility().GetCachedDescription(),
       l10n_util::GetStringFUTF16Int(
           IDS_MESSAGE_CENTER_NOTIFICATION_PROGRESS_PERCENTAGE, progress) +
-          u" " + timestamp_view->GetText());
+          base::StrCat({u" ", timestamp_view->GetText()}));
 
   int count = 4;
   notification_header_view_->SetOverflowIndicator(count);
@@ -460,7 +461,7 @@ TEST_F(NotificationHeaderViewTest, AccessibleDescription) {
       l10n_util::GetStringFUTF16Int(
           IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR,
           count) +
-          u" " + timestamp_view->GetText());
+          base::StrCat({u" ", timestamp_view->GetText()}));
 }
 
 TEST_F(NotificationHeaderViewTest, MetadataTest) {

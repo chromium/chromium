@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.CanMakePaymentQueryResult;
 import org.chromium.payments.mojom.HasEnrolledInstrumentQueryResult;
@@ -19,8 +21,9 @@ import org.chromium.payments.mojom.PaymentValidationErrors;
  * An implementation of PaymentRequest that immediately rejects all connections.
  * Necessary because Mojo does not handle null returned from createImpl().
  */
+@NullMarked
 public final class InvalidPaymentRequest implements PaymentRequest {
-    private PaymentRequestClient mClient;
+    private @Nullable PaymentRequestClient mClient;
 
     @Override
     public void init(

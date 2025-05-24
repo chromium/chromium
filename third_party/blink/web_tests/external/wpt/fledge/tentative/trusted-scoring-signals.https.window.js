@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -12,8 +13,9 @@
 // META: variant=?31-35
 // META: variant=?36-40
 // META: variant=?41-45
-// META: variant=?45-50
-// META: variant=?50-last
+// META: variant=?46-50
+// META: variant=?51-55
+// META: variant=?56-last
 
 "use strict";
 
@@ -634,23 +636,24 @@ subsetTest(promise_test, async test => {
 /////////////////////////////////////////////////////////////////////////////
 // maxTrustedBiddingSignalsURLLength tests
 /////////////////////////////////////////////////////////////////////////////
+// To detect whether two signals are fetched together or separately, the trusted scoring signals
+// Python server will return the request URL as the signal value if the request URL contains the
+// string `url` in its query parameters.
 
 // Trusted scoring signals can be retrieved when `maxTrustedScoringSignalsURLLength` is set to 0.
-// In the following three tests, the generated request URL contains approximately 294 characters.
-// The target of the tests is primarily to make sure the signals were fetched with the full URL.
+// Check if the returned signal contains value of `renderURL` to make sure the signal is fetched
+// with the full URL.
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
-  const renderURL = createRenderURL(uuid, /*script=*/null, 'url');
+  const renderURL = createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url');
   const interestGroupOverrides = { ads: [{ renderURL: renderURL }] };
   const auctionConfigOverrides = {
       trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
       maxTrustedScoringSignalsURLLength: 0,
       decisionLogicURL:
         createDecisionScriptURL(uuid, {
-            // Check the URL length is within an approximate range to ensure the URL is not truncated.
             scoreAd:
-              `if (trustedScoringSignals.renderURL["${renderURL}"].length < 280 ||
-                  trustedScoringSignals.renderURL["${renderURL}"].length > 300)
+              `if (!trustedScoringSignals.renderURL["${renderURL}"].includes(encodeURIComponent("${renderURL}")))
                 throw "error";`
         })
   };
@@ -665,20 +668,19 @@ subsetTest(promise_test, async test => {
 }, 'Trusted scoring signals request works with a URL length limit set to 0.');
 
 // Trusted scoring signals can be retrieved when `maxTrustedScoringSignalsURLLength` is set to
-// a non-zero value smaller than the length of the request URL.
+// a non-zero value smaller than the length of the request URL. Check if the returned signal
+// contains value of `renderURL` to make sure the signal was fetched with the full URL.
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
-  const renderURL = createRenderURL(uuid, /*script=*/null, 'url');
+  const renderURL = createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url');
   const interestGroupOverrides = { ads: [{ renderURL: renderURL }] };
   const auctionConfigOverrides = {
       trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
       maxTrustedScoringSignalsURLLength: 1,
       decisionLogicURL:
         createDecisionScriptURL(uuid, {
-            // Check the URL length is within an approximate range to ensure the URL is not truncated.
             scoreAd:
-              `if (trustedScoringSignals.renderURL["${renderURL}"].length < 280 ||
-                  trustedScoringSignals.renderURL["${renderURL}"].length > 300)
+              `if (!trustedScoringSignals.renderURL["${renderURL}"].includes(encodeURIComponent("${renderURL}")))
                 throw "error";`
         })
   };
@@ -693,17 +695,20 @@ subsetTest(promise_test, async test => {
 }, 'Trusted scoring signals request works with a URL length limit smaller than the URL length.');
 
 // Trusted scoring signals can be retrieved when `maxTrustedScoringSignalsURLLength` is set to
-// a value larger than the length of the request URL.
+// a value larger than the length of the request URL. Check if the returned signal contains
+// value of `renderURL` to make sure the signal was fetched with the full URL.
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
-  const renderURL = createRenderURL(uuid, /*script=*/null, 'url');
+  const renderURL = createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url');
   const interestGroupOverrides = { ads: [{ renderURL: renderURL }] };
   const auctionConfigOverrides = {
       trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
       maxTrustedScoringSignalsURLLength: 1000,
       decisionLogicURL:
         createDecisionScriptURL(uuid, {
-            scoreAd: `if (trustedScoringSignals.renderURL["${renderURL}"].length > 300) throw "error";`
+            scoreAd:
+              `if (!trustedScoringSignals.renderURL["${renderURL}"].includes(encodeURIComponent("${renderURL}")))
+                throw "error";`
         })
   };
 
@@ -718,25 +723,25 @@ subsetTest(promise_test, async test => {
 
 // Test whether an oversized trusted scoring signals request URL, generated from two interest
 // groups, will be split into two parts when `maxTrustedScoringSignalsURLLength` is set to a
-// value larger than a single URL length and smaller than the combined URL length. A request
-// URL from a single interest group contains about 294 characters, while a request URL from
-// two interest groups contains about 466 characters.
+// value larger than a single URL length and smaller than the combined URL length. Check the returned
+// signal for interest group `group 1` only contains string `group1` but not `group2` to ensure the
+// fetch requests are not combined together.
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
-  const renderURL1 = createRenderURL(uuid, /*script=*/null, 'url,group1');
-  const renderURL2 = createRenderURL(uuid, /*script=*/null, 'url,group2');
+  const renderURL1 = createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url,group1');
+  const renderURL2 = createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url,group2');
   const auctionConfigOverrides = {
       trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
       maxTrustedScoringSignalsURLLength: 300,
       decisionLogicURL:
         createDecisionScriptURL(uuid, {
-            // This will make the auction reject `renderURL2`, and if `renderURL1` passes the URL
-            // length check, we consider `renderURL2` is fetched by itself in the trusted scoring
-            // signals request.
+            // This will make the auction reject `renderURL2`, and if `renderURL1` passes check,
+            // we consider `renderURL2` is fetched by itself in the trusted scoring signals request.
             scoreAd:
-              `if (!trustedScoringSignals.renderURL.has("${renderURL1}") ||
-                  trustedScoringSignals.renderURL.has("${renderURL2}") ||
-                  trustedScoringSignals.renderURL["${renderURL1}"].length > 300) {
+              `if (!trustedScoringSignals.renderURL.hasOwnProperty("${renderURL1}") ||
+                  trustedScoringSignals.renderURL.hasOwnProperty("${renderURL2}") ||
+                  trustedScoringSignals.renderURL["${renderURL1}"].includes('group2') ||
+                  !trustedScoringSignals.renderURL["${renderURL1}"].includes('group1')) {
                 throw "error";
               }`
         })
@@ -747,25 +752,29 @@ subsetTest(promise_test, async test => {
         joinInterestGroup(test, uuid, { name: 'group 2', ads: [{ renderURL: renderURL2 }] }) ]
   );
 
-  runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides);
+  await runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides);
 }, 'Trusted scoring signals splits the request if the combined URL length exceeds the limit of regular value.');
 
 // Test whether an oversized trusted scoring signals request URL, generated from two interest
 // groups, will be split into two parts when `maxTrustedScoringSignalsURLLength` is set to a
-// value smaller than a single URL length.
+// value smaller than a single URL length. Check the returned signal for interest group `group 1`
+// only contains `group1` but not `group2` to ensure the fetch requests are not combined together.
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
-  const renderURL1 = createRenderURL(uuid, /*script=*/null, 'url,group1');
-  const renderURL2 = createRenderURL(uuid, /*script=*/null, 'url,group2');
+  const renderURL1 = createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url,group1');
+  const renderURL2 = createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url,group2');
   const auctionConfigOverrides = {
       trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
       maxTrustedScoringSignalsURLLength: 1,
       decisionLogicURL:
         createDecisionScriptURL(uuid, {
+            // This will make the auction reject `renderURL2`, and if `renderURL1` passes check,
+            // we consider `renderURL2` is fetched by itself in the trusted scoring signals request.
             scoreAd:
-              `if (!trustedScoringSignals.renderURL.has("${renderURL1}") ||
-                  trustedScoringSignals.renderURL.has("${renderURL2}") ||
-                  trustedScoringSignals.renderURL["${renderURL1}"].length > 300) {
+              `if (!trustedScoringSignals.renderURL.hasOwnProperty("${renderURL1}") ||
+                  trustedScoringSignals.renderURL.hasOwnProperty("${renderURL2}") ||
+                  trustedScoringSignals.renderURL["${renderURL1}"].includes('group2') ||
+                  !trustedScoringSignals.renderURL["${renderURL1}"].includes('group1')) {
                 throw "error";
               }`
         })
@@ -776,5 +785,329 @@ subsetTest(promise_test, async test => {
         joinInterestGroup(test, uuid, { name: 'group 2', ads: [{ renderURL: renderURL2 }] }) ]
   );
 
-  runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides);
+  await runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides);
 }, 'Trusted scoring signals splits the request if the combined URL length exceeds the limit of small value.');
+
+// A little helper to extract out trusted signals query params echoed back
+// by trusted-scoring-signals.py; sticks them in a map named `parsed`.
+function makeParseHelper(renderURL) {
+  return `
+    let payload = trustedScoringSignals.renderURL['${renderURL}'];
+    payload = payload.substring(payload.indexOf('?') + 1).split('&');
+    let parsed = new Map();
+    for (let entry of payload) {
+      let kv = entry.split('=');
+      parsed.set(kv[0], decodeURIComponent(kv[1]));
+    }
+  `;
+}
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const renderURL =
+      createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url');
+
+  const bidder_origin = OTHER_ORIGIN1;
+
+  await joinCrossOriginInterestGroup(test, uuid, bidder_origin, {
+    ads: [{
+      renderURL: renderURL,
+      creativeScanningMetadata: 'hello',
+      buyerAndSellerReportingId: 'chair'
+    }]
+  });
+
+  const scoreAdBody = `
+    ${makeParseHelper(renderURL)}
+    if (parsed.get('renderUrls') !== '${renderURL}')
+      throw 'Wrong URL';
+    if (parsed.get('adCreativeScanningMetadata') !== 'hello')
+      throw 'Wrong creative scanning metadata';
+    if (parsed.get('adBuyerAndSellerReportingIds') !== 'chair')
+      throw 'Wrong BSRID';
+    if (parsed.get('adSizes') !== ',')
+      throw 'Wrong adSizes';
+    if (parsed.get('adBuyer') !== '${bidder_origin}')
+      throw 'Wrong adBuyer';
+    if (parsed.has('adComponentRenderUrls'))
+      throw 'Unexpected adComponentRenderUrls';
+    if (parsed.has('adComponentCreativeScanningMetadata'))
+      throw 'Unexpected adComponentCreativeScanningMetadata';
+    if (parsed.has('adComponentSizes'))
+      throw 'Unexpected adComponentSizes';
+    if (parsed.has('adComponentBuyer'))
+      throw 'Unexpected adComponentBuyer';
+  `;
+
+  const auctionConfigOverrides = {
+    interestGroupBuyers : [bidder_origin],
+    trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
+    sendCreativeScanningMetadata: true,
+    decisionLogicURL: createDecisionScriptURL(uuid, {scoreAd: scoreAdBody})
+  };
+
+  await runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides);
+}, 'Creative scanning metadata - basic data flow');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const renderURL =
+      createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url');
+
+  const bidder_origin = OTHER_ORIGIN1;
+
+  await joinCrossOriginInterestGroup(
+      test, uuid, bidder_origin,
+      {ads: [{renderURL: renderURL, buyerAndSellerReportingId: 'sofa'}]});
+
+  const scoreAdBody = `
+    ${makeParseHelper(renderURL)}
+    if (parsed.get('renderUrls') !== '${renderURL}')
+      throw 'Wrong URL';
+    if (parsed.get('adCreativeScanningMetadata') !== '')
+      throw 'Wrong creative scanning metadata';
+    if (parsed.get('adBuyerAndSellerReportingIds') !== 'sofa')
+      throw 'Wrong BSRID';
+    if (parsed.get('adSizes') !== ',')
+      throw 'Wrong adSizes';
+    if (parsed.get('adBuyer') !== '${bidder_origin}')
+      throw 'Wrong adBuyer';
+    if (parsed.has('adComponentRenderUrls'))
+      throw 'Unexpected adComponentRenderUrls';
+    if (parsed.has('adComponentCreativeScanningMetadata'))
+      throw 'Unexpected adComponentCreativeScanningMetadata';
+    if (parsed.has('adComponentSizes'))
+      throw 'Unexpected adComponentSizes';
+    if (parsed.has('adComponentBuyer'))
+      throw 'Unexpected adComponentBuyer';
+  `;
+
+  const auctionConfigOverrides = {
+    interestGroupBuyers : [bidder_origin],
+    trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
+    sendCreativeScanningMetadata: true,
+    decisionLogicURL: createDecisionScriptURL(uuid, {scoreAd: scoreAdBody})
+  };
+
+  await runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides);
+}, 'Creative scanning metadata - sending enabled but no metadata specified');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const renderURL =
+      createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url');
+
+  await joinInterestGroup(
+      test, uuid,
+      {ads: [{renderURL: renderURL, creativeScanningMetadata: 'hello'}]});
+
+  const scoreAdBody = `
+    ${makeParseHelper(renderURL)}
+    if (parsed.get('renderUrls') !== '${renderURL}')
+      throw 'Wrong URL';
+    if (parsed.has('adCreativeScanningMetadata'))
+      throw 'Unexpected creative scanning metadata';
+    if (parsed.has('adBuyerAndSellerReportingIds'))
+      throw 'Unexpected BSRID';
+    if (parsed.has('adSizes'))
+      throw 'Unexpected adSizes';
+    if (parsed.has('adBuyer'))
+      throw 'Unexpected adBuyer';
+    if (parsed.has('adComponentRenderUrls'))
+      throw 'Unexpected adComponentRenderUrls';
+    if (parsed.has('adComponentCreativeScanningMetadata'))
+      throw 'Unexpected adComponentCreativeScanningMetadata';
+    if (parsed.has('adComponentSizes'))
+      throw 'Unexpected adComponentSizes';
+    if (parsed.has('adComponentBuyer'))
+      throw 'Unexpected adComponentBuyer';
+  `;
+
+  const auctionConfigOverrides = {
+    trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
+    sendCreativeScanningMetadata: false,
+    decisionLogicURL: createDecisionScriptURL(uuid, {scoreAd: scoreAdBody})
+  };
+
+  await runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides);
+}, 'Creative scanning metadata - disabled');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const renderURL =
+      createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url');
+
+  const generateBidBody = `
+    return {
+      bid: 1,
+      render: {
+        url: interestGroup.ads[0].renderURL,
+        width: '100px',
+        height: '10sh'
+      }
+    };
+  `;
+
+  await joinInterestGroup(test, uuid, {
+    ads: [{
+      renderURL: renderURL,
+      creativeScanningMetadata: 'hello',
+      sizeGroup: 'flexible'
+    }],
+    sizeGroups: {'flexible': ['small', 'big']},
+    adSizes: {
+      'small': {width: '100px', height: '10sh'},
+      'big': {width: '50sw', height: '200px'},
+    },
+    biddingLogicURL: createBiddingScriptURL({generateBid: generateBidBody})
+  });
+
+  const scoreAdBody = `
+    ${makeParseHelper(renderURL)}
+    if (parsed.get('renderUrls') !== '${renderURL}')
+      throw 'Wrong URL';
+    if (parsed.get('adCreativeScanningMetadata') !== 'hello')
+      throw 'Wrong creative scanning metadata';
+    if (parsed.get('adBuyerAndSellerReportingIds') !== '')
+      throw 'Wrong BSRID';
+    if (parsed.get('adSizes') !== '100px,10sh')
+      throw 'Wrong adSizes';
+    if (parsed.get('adBuyer') !== '${window.location.origin}')
+      throw 'Wrong adBuyer';
+    if (parsed.has('adComponentRenderUrls'))
+      throw 'Unexpected adComponentRenderUrls';
+    if (parsed.has('adComponentCreativeScanningMetadata'))
+      throw 'Unexpected adComponentCreativeScanningMetadata';
+    if (parsed.has('adComponentSizes'))
+      throw 'Unexpected adComponentSizes';
+    if (parsed.has('adComponentBuyer'))
+      throw 'Unexpected adComponentBuyer';
+  `;
+
+  const auctionConfigOverrides = {
+    trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
+    sendCreativeScanningMetadata: true,
+    decisionLogicURL: createDecisionScriptURL(uuid, {scoreAd: scoreAdBody})
+  };
+
+  await runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides);
+}, 'Creative scanning metadata - ad size');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const renderURL =
+      createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'url');
+  const componentURL1 = createRenderURL(
+      uuid, /*script=*/null, /*signalsParam=*/'url,component1');
+  const componentURL2 = createRenderURL(
+      uuid, /*script=*/null, /*signalsParam=*/'url,component2');
+
+  const generateBidBody = `
+    return {
+      bid: 1,
+      render: {
+        url: interestGroup.ads[0].renderURL,
+      },
+      'adComponents': [
+        {url: '${componentURL1}'},
+        {url: '${componentURL2}', width: '50sw', height: '200px'},
+      ]
+    };
+  `;
+
+  await joinInterestGroup(test, uuid, {
+    ads: [{
+      renderURL: renderURL,
+      creativeScanningMetadata: 'hello',
+      sizeGroup: 'flexible'
+    }],
+    adComponents: [
+      {
+        renderURL: componentURL1,
+        sizeGroup: 'flexible',
+        creativeScanningMetadata: 'c1'
+      },
+      {
+        renderURL: componentURL2,
+        sizeGroup: 'flexible',
+        creativeScanningMetadata: 'c2'
+      }
+    ],
+    sizeGroups: {'flexible': ['small', 'big']},
+    adSizes: {
+      'small': {width: '100px', height: '10sh'},
+      'big': {width: '50sw', height: '200px'},
+    },
+    biddingLogicURL: createBiddingScriptURL({generateBid: generateBidBody})
+  });
+
+  const scoreAdBody = `
+    ${makeParseHelper(renderURL)}
+    if (parsed.get('renderUrls') !== '${renderURL}')
+      throw 'Wrong URL';
+    if (parsed.get('adCreativeScanningMetadata') !== 'hello')
+      throw 'Wrong creative scanning metadata';
+    if (parsed.get('adBuyerAndSellerReportingIds') !== '')
+      throw 'Wrong BSRID';
+    if (parsed.get('adSizes') !== ',')
+      throw 'Wrong adSizes';
+    if (parsed.get('adBuyer') !== '${window.location.origin}')
+      throw 'Wrong adBuyer';
+
+    // We have to be careful here since we don't order which order the
+    // components are going to be reported in; so we normalize them and sort
+    // them.
+    let adComponentRenderUrls = parsed.get('adComponentRenderUrls').split(',');
+    let adComponentCreativeScanningMetadata =
+        parsed.get('adComponentCreativeScanningMetadata').split(',');
+    let adComponentSizes = parsed.get('adComponentSizes').split(',');
+    let adComponentBuyer = parsed.get('adComponentBuyer').split(',');
+
+    if (adComponentCreativeScanningMetadata.length !=
+        adComponentRenderUrls.length) {
+      throw 'Wrong adComponentCreativeScanningMetadata.length';
+    }
+
+    if (adComponentSizes.length !== 2 * adComponentRenderUrls.length) {
+      throw 'Wrong adComponentSizes.length';
+    }
+
+    if (adComponentBuyer.length !== adComponentRenderUrls.length) {
+      throw 'Wrong adComponentBuyer.length';
+    }
+
+    let composed = [];
+    for (let i = 0; i < adComponentRenderUrls.length; ++i) {
+      let entry = 'url:' + adComponentRenderUrls[i] +
+          '; creativeScanningMetadata:' +
+          adComponentCreativeScanningMetadata[i] +
+          '; size:' + adComponentSizes[2*i] + 'x' + adComponentSizes[2*i+1] +
+          '; buyer:' + adComponentBuyer[i];
+      entry = entry.replaceAll('${componentURL1}', 'componentURL1');
+      entry = entry.replaceAll('${componentURL2}', 'componentURL2');
+      entry = entry.replaceAll('${window.location.origin}', 'buyer');
+      composed.push(entry);
+    }
+    composed.sort();
+    if (composed.length !== 2) {
+      throw 'Wrong # of component entries overall';
+    }
+    if (composed[0] !==
+        'url:componentURL1; creativeScanningMetadata:c1; size:x; buyer:buyer') {
+      throw 'Wrong component 0';
+    }
+    if (composed[1] !==
+        'url:componentURL2; creativeScanningMetadata:c2; size:50swx200px; ' +
+        'buyer:buyer') {
+      throw 'Wrong component 1';
+    }
+  `;
+
+  const auctionConfigOverrides = {
+    trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
+    sendCreativeScanningMetadata: true,
+    decisionLogicURL: createDecisionScriptURL(uuid, {scoreAd: scoreAdBody})
+  };
+
+  await runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides);
+}, 'Creative scanning metadata - ad components');

@@ -6,7 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/unwind.gni")
 
-source_set("libc++abi") {
+target(libcxxabi_target_type, "libc++abi") {
   if (export_libcxxabi_from_executables) {
     visibility = [ "//build/config:executable_deps" ]
   } else {
@@ -63,9 +63,7 @@ source_set("libc++abi") {
 
     # Android's bionic libc added support for '__cxa_thread_atexit_impl' as of
     # API level 23.
-    if (is_android &&
-        ((!android_64bit_target_cpu && android32_ndk_api_level >= 23) ||
-         (android_64bit_target_cpu && android64_ndk_api_level >= 23))) {
+    if (is_android && android_ndk_api_level >= 23) {
       defines += [ "HAVE___CXA_THREAD_ATEXIT_IMPL" ]
     }
   }

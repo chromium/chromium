@@ -27,8 +27,8 @@ class BluetoothManifestPermission : public ManifestPermission {
   BluetoothManifestPermission();
   ~BluetoothManifestPermission() override;
 
-  // Tries to construct the info based on |value|, as it would have appeared in
-  // the manifest. Sets |error| and returns an empty scoped_ptr on failure.
+  // Tries to construct the info based on `value`, as it would have appeared in
+  // the manifest. Sets `error` and returns an empty scoped_ptr on failure.
   static std::unique_ptr<BluetoothManifestPermission> FromValue(
       const base::Value& value,
       std::u16string* error);

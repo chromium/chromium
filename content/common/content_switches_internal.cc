@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/common/content_switches_internal.h"
 
 #include <string>
@@ -64,14 +69,6 @@ std::string FromNativeString(const std::string& string) {
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
-
-bool IsPinchToZoomEnabled() {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-
-  // Enable pinch everywhere unless it's been explicitly disabled.
-  return !command_line.HasSwitch(switches::kDisablePinch);
-}
 
 blink::mojom::V8CacheOptions GetV8CacheOptions() {
   const base::CommandLine& command_line =

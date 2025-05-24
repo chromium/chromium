@@ -13,8 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
@@ -27,20 +25,17 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.ActionData;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.NotificationData;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -68,12 +63,10 @@ public class PriceDropNotifierUnitTest {
         private final NotificationWrapperBuilder mMockNotificationBuilder;
 
         TestPriceDropNotifier(
-                Context context,
                 Profile profile,
                 ImageFetcher imageFetcher,
-                NotificationWrapperBuilder notificationBuilder,
-                NotificationManagerProxy notificationManager) {
-            super(context, profile, notificationManager);
+                NotificationWrapperBuilder notificationBuilder) {
+            super(profile);
             mMockImageFetcher = imageFetcher;
             mMockNotificationBuilder = notificationBuilder;
         }
@@ -108,13 +101,9 @@ public class PriceDropNotifierUnitTest {
     @Before
     public void setUp() {
         ShadowLog.stream = System.out;
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManagerProxy);
         mPriceDropNotifier =
-                new TestPriceDropNotifier(
-                        ContextUtils.getApplicationContext(),
-                        mProfile,
-                        mImageFetcher,
-                        mNotificationBuilder,
-                        mNotificationManagerProxy);
+                new TestPriceDropNotifier(mProfile, mImageFetcher, mNotificationBuilder);
         mPriceDropNotifier.setPriceDropNotificationManagerForTesting(mPriceDropNotificationManager);
         mIntent = new Intent();
         ChromeBrowserInitializer.setForTesting(mChromeInitializer);
@@ -157,15 +146,6 @@ public class PriceDropNotifierUnitTest {
     private void invokeImageFetcherCallback(Bitmap bitmap) {
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
-    }
-
-    private void sendPendingIntent(PendingIntent pendingIntent) {
-        // Simulate to send a PendingIntent by manually starting the TrampolineActivity.
-        ShadowPendingIntent shadowPendingIntent = Shadows.shadowOf(pendingIntent);
-        Robolectric.buildActivity(
-                        PriceDropNotificationManagerImpl.TrampolineActivity.class,
-                        shadowPendingIntent.getSavedIntent())
-                .create();
     }
 
     private void verifySetNotificationProperties() {

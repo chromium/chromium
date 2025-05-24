@@ -145,23 +145,23 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
   SetGlobalSets(net::GlobalFirstPartySets(
       base::Version("0.0"),
       {{primary1_site,
-        {net::FirstPartySetEntry(primary1_site, net::SiteType::kPrimary,
-                                 std::nullopt)}},
+        {net::FirstPartySetEntry(primary1_site, net::SiteType::kPrimary)}},
        {associate_site,
-        {net::FirstPartySetEntry(primary1_site, net::SiteType::kAssociated,
-                                 0)}}},
+        {net::FirstPartySetEntry(primary1_site, net::SiteType::kAssociated)}}},
       {{primary1_cctld, primary1_site}}));
 
   // The context config of the profile adds a new set:
   // { primary: "https://primary2.test",
   // serviceSites: ["https://service.test"}
-  SetContextConfig(net::FirstPartySetsContextConfig(
-      {{primary2_site,
-        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-            primary2_site, net::SiteType::kPrimary, std::nullopt))},
-       {service_site,
-        net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-            primary2_site, net::SiteType::kService, std::nullopt))}}));
+  SetContextConfig(
+      net::FirstPartySetsContextConfig::Create(
+          {{primary2_site,
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                primary2_site, net::SiteType::kPrimary))},
+           {service_site,
+            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                primary2_site, net::SiteType::kService))}})
+          .value());
 
   service()->InitForTesting();
   base::Value::List expected =
@@ -198,23 +198,19 @@ TEST_F(RelatedWebsiteSetsSourceTest, SubsetsAreSorted) {
       base::Version("0.0"),
       {
           {primary,
-           {net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kPrimary)}},
           {associated3,
-           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 2)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated)}},
           {associated1,
-           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 0)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated)}},
           {associated2,
-           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 1)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated)}},
           {service2,
-           {net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kService)}},
           {service1,
-           {net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kService)}},
           {service3,
-           {net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                    std::nullopt)}},
+           {net::FirstPartySetEntry(primary, net::SiteType::kService)}},
       },
       {}));
 

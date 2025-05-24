@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
@@ -24,7 +26,6 @@
 #include "ash/capture_mode/fake_folder_selection_dialog_factory.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
-#include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -50,13 +51,11 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/window_state.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "chromeos/ui/frame/frame_header.h"
@@ -125,7 +124,7 @@ bool IsWindowStackedRightBelow(aura::Window* window, aura::Window* sibling) {
   DCHECK_EQ(window->parent(), sibling->parent());
   const auto& children = window->parent()->children();
   const int sibling_index =
-      base::ranges::find(children, sibling) - children.begin();
+      std::ranges::find(children, sibling) - children.begin();
   return sibling_index > 0 && children[sibling_index - 1] == window;
 }
 
@@ -1792,10 +1791,7 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInRegion) {
   // capture button.
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
-  // The index of the focused item depends on whether the recording type drop
-  // down button exists or not.
-  const size_t expected_index = features::IsGifRecordingEnabled() ? 1u : 0u;
-  EXPECT_EQ(expected_index, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
 
   // Shift tab again until the focus is moved from the capture button back to
   // the resize button inside the camera preview.
@@ -4238,7 +4234,7 @@ TEST_F(CameraPreviewWithNotificationTest,
 
 class CameraPreviewWithHoldingSpaceTest : public CaptureModeCameraTest {
  public:
-  CameraPreviewWithHoldingSpaceTest() = default;
+  CameraPreviewWithHoldingSpaceTest() { set_start_session(false); }
   CameraPreviewWithHoldingSpaceTest(const CameraPreviewWithHoldingSpaceTest&) =
       delete;
   CameraPreviewWithHoldingSpaceTest& operator=(
@@ -4264,13 +4260,10 @@ class CameraPreviewWithHoldingSpaceTest : public CaptureModeCameraTest {
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
         user_account, client(), model());
 
-    TestSessionControllerClient* session = GetSessionControllerClient();
-    session->AddUserSession(kTestUser);
-    holding_space_prefs::MarkTimeOfFirstAvailability(
-        session->GetUserPrefService(user_account));
-    holding_space_prefs::MarkTimeOfFirstAdd(
-        session->GetUserPrefService(user_account));
-    session->SwitchActiveUser(user_account);
+    auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
+    holding_space_prefs::MarkTimeOfFirstAvailability(pref_service.get());
+    holding_space_prefs::MarkTimeOfFirstAdd(pref_service.get());
+    SimulateUserLogin({}, user_account, std::move(pref_service));
   }
 
   void TearDown() override {
@@ -4743,7 +4736,7 @@ TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
   {
     base::RunLoop loop;
     camera_controller->SetOnCameraListReceivedForTesting(loop.QuitClosure());
-    SimulateUserLogin("example@gmail.com", user_manager::UserType::kRegular);
+    SimulateUserLogin({"example@gmail.com"});
     loop.Run();
   }
 

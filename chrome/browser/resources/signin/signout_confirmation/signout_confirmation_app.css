@@ -1,0 +1,51 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --dialog-padding: 20px;
+}
+
+#signoutConfirmationDialog {
+  display: flex;
+  flex-direction: column;
+  padding: var(--dialog-padding);
+}
+
+#title {
+  color: var(--cr-primary-text-color);
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 0;
+}
+
+#subtitle {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+extensions-section {
+  margin-bottom: 1em;
+}
+
+#action-row {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+<if expr="is_macosx or is_linux">
+#action-row {
+  flex-flow: row-reverse;
+  justify-content: flex-start;
+}
+</if>

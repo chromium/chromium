@@ -7,7 +7,7 @@
 
 #import <memory>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+class ProfileIOS;
 
 namespace ntp_tiles {
 class MostVisitedSites;
@@ -16,7 +16,7 @@ class MostVisitedSites;
 class IOSMostVisitedSitesFactory {
  public:
   static std::unique_ptr<ntp_tiles::MostVisitedSites> NewForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_TILES_MODEL_IOS_MOST_VISITED_SITES_FACTORY_H_

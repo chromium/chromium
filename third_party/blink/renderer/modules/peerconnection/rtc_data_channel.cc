@@ -36,6 +36,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_priority_type.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -66,9 +68,9 @@
 namespace WTF {
 
 template <>
-struct CrossThreadCopier<rtc::scoped_refptr<webrtc::DataChannelInterface>>
+struct CrossThreadCopier<webrtc::scoped_refptr<webrtc::DataChannelInterface>>
     : public CrossThreadCopierPassThrough<
-          rtc::scoped_refptr<webrtc::DataChannelInterface>> {
+          webrtc::scoped_refptr<webrtc::DataChannelInterface>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -209,7 +211,7 @@ static void ThrowSendBufferFullException(ExceptionState* exception_state) {
 RTCDataChannel::Observer::Observer(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     RTCDataChannel* blink_channel,
-    rtc::scoped_refptr<webrtc::DataChannelInterface> channel)
+    webrtc::scoped_refptr<webrtc::DataChannelInterface> channel)
     : main_thread_(main_thread),
       blink_channel_(blink_channel),
       webrtc_channel_(std::move(channel)) {
@@ -220,7 +222,7 @@ RTCDataChannel::Observer::~Observer() {
   CHECK(!is_registered()) << "Reference to blink channel hasn't been released.";
 }
 
-const rtc::scoped_refptr<webrtc::DataChannelInterface>&
+const webrtc::scoped_refptr<webrtc::DataChannelInterface>&
 RTCDataChannel::Observer::channel() const {
   return webrtc_channel_;
 }
@@ -291,7 +293,7 @@ void RTCDataChannel::EnsureThreadWrappersForWorkerThread() {
 
 RTCDataChannel::RTCDataChannel(
     ExecutionContext* context,
-    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel)
+    webrtc::scoped_refptr<webrtc::DataChannelInterface> data_channel)
     : ActiveScriptWrappable<RTCDataChannel>({}),
       ExecutionContextLifecycleObserver(context),
       observer_(base::MakeRefCounted<Observer>(
@@ -393,35 +395,34 @@ std::optional<uint16_t> RTCDataChannel::id() const {
   return id;
 }
 
-String RTCDataChannel::priority() const {
+V8RTCPriorityType RTCDataChannel::priority() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   webrtc::PriorityValue priority = channel()->priority();
   if (priority <= webrtc::PriorityValue(webrtc::Priority::kVeryLow)) {
-    return "very-low";
+    return V8RTCPriorityType(V8RTCPriorityType::Enum::kVeryLow);
   }
   if (priority <= webrtc::PriorityValue(webrtc::Priority::kLow)) {
-    return "low";
+    return V8RTCPriorityType(V8RTCPriorityType::Enum::kLow);
   }
   if (priority <= webrtc::PriorityValue(webrtc::Priority::kMedium)) {
-    return "medium";
+    return V8RTCPriorityType(V8RTCPriorityType::Enum::kMedium);
   }
-  return "high";
+  return V8RTCPriorityType(V8RTCPriorityType::Enum::kHigh);
 }
 
-String RTCDataChannel::readyState() const {
+V8RTCDataChannelState RTCDataChannel::readyState() const {
   switch (state_) {
     case webrtc::DataChannelInterface::kConnecting:
-      return "connecting";
+      return V8RTCDataChannelState(V8RTCDataChannelState::Enum::kConnecting);
     case webrtc::DataChannelInterface::kOpen:
-      return "open";
+      return V8RTCDataChannelState(V8RTCDataChannelState::Enum::kOpen);
     case webrtc::DataChannelInterface::kClosing:
-      return "closing";
+      return V8RTCDataChannelState(V8RTCDataChannelState::Enum::kClosing);
     case webrtc::DataChannelInterface::kClosed:
-      return "closed";
+      return V8RTCDataChannelState(V8RTCDataChannelState::Enum::kClosed);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 unsigned RTCDataChannel::bufferedAmount() const {
@@ -436,28 +437,12 @@ void RTCDataChannel::setBufferedAmountLowThreshold(unsigned threshold) {
   buffered_amount_low_threshold_ = threshold;
 }
 
-String RTCDataChannel::binaryType() const {
-  switch (binary_type_) {
-    case kBinaryTypeBlob:
-      return "blob";
-    case kBinaryTypeArrayBuffer:
-      return "arraybuffer";
-  }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+V8BinaryType RTCDataChannel::binaryType() const {
+  return V8BinaryType(binary_type_);
 }
 
-void RTCDataChannel::setBinaryType(const String& binary_type,
-                                   ExceptionState& exception_state) {
-  if (binary_type == "arraybuffer") {
-    binary_type_ = kBinaryTypeArrayBuffer;
-    return;
-  }
-  if (binary_type == "blob") {
-    binary_type_ = kBinaryTypeBlob;
-    return;
-  }
-  NOTREACHED();
+void RTCDataChannel::setBinaryType(const V8BinaryType& binary_type) {
+  binary_type_ = binary_type.AsEnum();
 }
 
 bool RTCDataChannel::ValidateSendLength(uint64_t length,
@@ -581,7 +566,7 @@ bool RTCDataChannel::IsTransferable() {
          is_transferable_;
 }
 
-rtc::scoped_refptr<webrtc::DataChannelInterface>
+webrtc::scoped_refptr<webrtc::DataChannelInterface>
 RTCDataChannel::TransferUnderlyingChannel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -706,6 +691,12 @@ void RTCDataChannel::OnStateChange(
       if (!error.ok()) {
         LOG(ERROR) << "DataChannel error: \"" << error.message() << "\""
                    << ", code: " << error.sctp_cause_code().value_or(-1);
+
+        if (error.error_detail() == webrtc::RTCErrorDetailType::NONE) {
+          error.set_error_detail(
+              webrtc::RTCErrorDetailType::DATA_CHANNEL_FAILURE);
+        }
+
         IncrementErrorCounter(error);
         DispatchEvent(*MakeGarbageCollected<RTCErrorEvent>(
             event_type_names::kError, error));
@@ -735,26 +726,26 @@ void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (buffer.binary) {
-    if (binary_type_ == kBinaryTypeBlob) {
-      auto blob_data = std::make_unique<BlobData>();
-      blob_data->AppendBytes(base::make_span(buffer.data));
-      uint64_t blob_size = blob_data->length();
-      auto* blob = MakeGarbageCollected<Blob>(
-          BlobDataHandle::Create(std::move(blob_data), blob_size));
-      DispatchEvent(*MessageEvent::Create(blob));
-      return;
+    switch (binary_type_) {
+      case V8BinaryType::Enum::kBlob: {
+        auto blob_data = std::make_unique<BlobData>();
+        blob_data->AppendBytes(base::span(buffer.data));
+        uint64_t blob_size = blob_data->length();
+        auto* blob = MakeGarbageCollected<Blob>(
+            BlobDataHandle::Create(std::move(blob_data), blob_size));
+        DispatchEvent(*MessageEvent::Create(blob));
+        return;
+      }
+      case V8BinaryType::Enum::kArraybuffer: {
+        DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(buffer.data);
+        DispatchEvent(*MessageEvent::Create(dom_buffer));
+        return;
+      }
     }
-    if (binary_type_ == kBinaryTypeArrayBuffer) {
-      DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(buffer.data);
-      DispatchEvent(*MessageEvent::Create(dom_buffer));
-      return;
-    }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   } else {
     String text =
-        buffer.data.size() > 0
-            ? String::FromUTF8(buffer.data.cdata<char>(), buffer.data.size())
-            : g_empty_string;
+        buffer.data.size() > 0 ? String::FromUTF8(buffer.data) : g_empty_string;
     if (!text) {
       LOG(ERROR) << "Failed convert received data to UTF16";
       return;
@@ -775,7 +766,7 @@ void RTCDataChannel::Dispose() {
   }
 }
 
-const rtc::scoped_refptr<webrtc::DataChannelInterface>&
+const webrtc::scoped_refptr<webrtc::DataChannelInterface>&
 RTCDataChannel::channel() const {
   return observer_->channel();
 }
@@ -783,7 +774,7 @@ RTCDataChannel::channel() const {
 void RTCDataChannel::SendRawData(const char* data, size_t length) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!was_transferred_);
-  rtc::CopyOnWriteBuffer buffer(data, length);
+  webrtc::CopyOnWriteBuffer buffer(data, length);
   webrtc::DataBuffer data_buffer(buffer, true);
   RecordMessageSent(*channel().get(), data_buffer.size());
 
@@ -877,12 +868,13 @@ void RTCDataChannel::PendingMessage::Trace(Visitor* visitor) const {
 void RTCDataChannel::BlobReader::DidFinishLoading(FileReaderData data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DOMArrayBuffer* array_buffer = std::move(data).AsDOMArrayBuffer();
-  rtc::CopyOnWriteBuffer buffer(
+  webrtc::CopyOnWriteBuffer buffer(
       static_cast<const char*>((array_buffer->Data())),
       array_buffer->ByteLength());
   message_->buffer_ = webrtc::DataBuffer(buffer, true);
   message_->type_ = RTCDataChannel::PendingMessage::Type::kBufferReady;
   data_channel_->ProcessSendQueue();
+  Dispose();
 }
 
 void RTCDataChannel::BlobReader::DidFail(FileErrorCode error) {
@@ -893,6 +885,7 @@ void RTCDataChannel::BlobReader::DidFail(FileErrorCode error) {
       "Couldn't read Blob content, skipping message."));
   message_->type_ = RTCDataChannel::PendingMessage::Type::kBlobFailure;
   data_channel_->ProcessSendQueue();
+  Dispose();
 }
 
 RTCDataChannel::BlobReader::BlobReader(ExecutionContext* context,
@@ -903,7 +896,8 @@ RTCDataChannel::BlobReader::BlobReader(ExecutionContext* context,
           this,
           GetExecutionContext()->GetTaskRunner(TaskType::kFileReading))),
       data_channel_(data_channel),
-      message_(message) {}
+      message_(message),
+      keep_alive_(this) {}
 
 RTCDataChannel::BlobReader::~BlobReader() = default;
 
@@ -928,6 +922,12 @@ bool RTCDataChannel::BlobReader::HasFinishedLoading() const {
 void RTCDataChannel::BlobReader::ContextDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   loader_->Cancel();
+  Dispose();
+}
+
+void RTCDataChannel::BlobReader::Dispose() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  keep_alive_.Clear();
 }
 
 }  // namespace blink

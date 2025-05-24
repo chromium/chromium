@@ -44,7 +44,7 @@ size_t GetDemuxerStreamAudioMemoryLimit(
 }
 
 size_t GetDemuxerStreamVideoMemoryLimit(
-    Demuxer::DemuxerTypes /*demuxer_type*/,
+    DemuxerType /*demuxer_type*/,
     const VideoDecoderConfig* /*video_config*/) {
   static const size_t limit =
       SelectLimit(internal::kDemuxerStreamVideoMemoryLimitDefault,
@@ -54,7 +54,7 @@ size_t GetDemuxerStreamVideoMemoryLimit(
   return limit;
 }
 
-size_t GetDemuxerMemoryLimit(Demuxer::DemuxerTypes demuxer_type) {
+size_t GetDemuxerMemoryLimit(DemuxerType demuxer_type) {
   return GetDemuxerStreamAudioMemoryLimit(nullptr) +
          GetDemuxerStreamVideoMemoryLimit(demuxer_type, nullptr);
 }

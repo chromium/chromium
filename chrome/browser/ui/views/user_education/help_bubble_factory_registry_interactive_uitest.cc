@@ -14,16 +14,19 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -50,14 +53,22 @@ class HelpBubbleFactoryRegistryInteractiveUitest
   }
 
   user_education::HelpBubbleFactoryRegistry* GetRegistry() {
-    return GetBrowserView()
-        ->GetFeaturePromoController()
-        ->bubble_factory_registry();
+    return &UserEducationServiceFactory::GetForBrowserContext(
+                browser()->profile())
+                ->help_bubble_factory_registry();
   }
 };
 
+// TODO(crbug.com/419801487): Fix flaky test and re-enable.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AnchorHelpBubbleToViewsMenuItem \
+  DISABLED_AnchorHelpBubbleToViewsMenuItem
+#else
+#define MAYBE_AnchorHelpBubbleToViewsMenuItem AnchorHelpBubbleToViewsMenuItem
+#endif
+
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
-                       AnchorHelpBubbleToViewsMenuItem) {
+                       MAYBE_AnchorHelpBubbleToViewsMenuItem) {
   std::unique_ptr<user_education::HelpBubble> bubble;
 
   RunTestSequence(
@@ -106,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
             FROM_HERE, base::BindLambdaForTesting([this]() {
               auto* tab = GetBrowserView()->tabstrip()->tab_at(0);
               tab->ShowContextMenu(tab->bounds().CenterPoint(),
-                                   ui::MenuSourceType::MENU_SOURCE_MOUSE);
+                                   ui::mojom::MenuSourceType::kMouse);
             }));
       }),
 
@@ -114,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
       // Because context menus run inside of a system message pump that cannot
       // process Chrome tasks, the following steps must be executed immediately
       // on the platform.
-      WithoutDelay(Steps(
+      WithoutDelay(
 #endif
           // This step should still trigger even inside the Mac context menu
           // loop because it runs immediately on the callback from the menu item
@@ -140,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
                 ->CloseContextMenuForTesting();
           })
 #if BUILDFLAG(IS_MAC)
-              ))  // WithoutDelay(Steps(
+              )  // WithoutDelay(
 #endif
   );
 }

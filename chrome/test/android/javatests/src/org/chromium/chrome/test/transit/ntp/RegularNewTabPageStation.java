@@ -6,13 +6,25 @@ package org.chromium.chrome.test.transit.ntp;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+import static org.chromium.base.test.transit.Condition.whether;
 
-import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewSpec;
+import android.util.Pair;
+import android.view.View;
+
+import org.chromium.base.test.transit.Element;
+import org.chromium.base.test.transit.SimpleConditions;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
+import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
+import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
+import org.chromium.chrome.test.transit.page.NativePageCondition;
 import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.List;
 
@@ -21,33 +33,46 @@ import java.util.List;
  * WebContents.
  */
 public class RegularNewTabPageStation extends PageStation {
-    public static final ViewSpec SEARCH_LOGO = viewSpec(withId(R.id.search_provider_logo));
-    public static final ViewSpec SEARCH_BOX = viewSpec(withId(R.id.search_box));
-    public static final ViewSpec MOST_VISITED_TILES_CONTAINER =
-            viewSpec(withId(R.id.mv_tiles_container));
+    public ViewElement<View> searchBoxElement;
+    public ViewElement<UrlBar> urlBarElement;
+    public ViewElement<View> logoElement;
+    public Element<NewTabPage> nativePageElement;
 
     protected <T extends RegularNewTabPageStation> RegularNewTabPageStation(Builder<T> builder) {
-        super(builder.withIncognito(false));
+        super(builder.withIncognito(false).withExpectedUrlSubstring(UrlConstants.NTP_URL));
+
+        declareElementFactory(
+                mActivityElement,
+                delayedElements -> {
+                    if (mActivityElement.get().isTablet()
+                            || OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
+                        urlBarElement = delayedElements.declareView(URL_BAR);
+                    } else {
+                        delayedElements.declareNoView(URL_BAR);
+                    }
+                });
+
+        logoElement = declareView(withId(R.id.search_provider_logo));
+        searchBoxElement = declareView(withId(R.id.search_box));
+
+        nativePageElement =
+                declareEnterConditionAsElement(
+                        new NativePageCondition<>(NewTabPage.class, loadedTabElement));
+        declareEnterCondition(
+                SimpleConditions.uiThreadCondition(
+                        "Regular NTP is loaded",
+                        nativePageElement,
+                        nativePage -> whether(nativePage.isLoadedForTests())));
     }
 
     public static Builder<RegularNewTabPageStation> newBuilder() {
         return new Builder<>(RegularNewTabPageStation::new);
     }
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-
-        elements.declareView(SEARCH_LOGO);
-        elements.declareView(SEARCH_BOX);
-        elements.declareView(MOST_VISITED_TILES_CONTAINER);
-
-        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));
-    }
-
     /** Opens the app menu by pressing the toolbar "..." button */
     public RegularNewTabPageAppMenuFacility openAppMenu() {
-        return enterFacilitySync(new RegularNewTabPageAppMenuFacility(), MENU_BUTTON::click);
+        return enterFacilitySync(
+                new RegularNewTabPageAppMenuFacility(), menuButtonElement.getClickTrigger());
     }
 
     /**
@@ -60,5 +85,16 @@ public class RegularNewTabPageStation extends PageStation {
     public MvtsFacility focusOnMvts(List<SiteSuggestion> siteSuggestions) {
         // Assume MVTs are on the screen; if this assumption changes, make sure to scroll to them.
         return enterFacilitySync(new MvtsFacility(siteSuggestions), /* trigger= */ null);
+    }
+
+    /** Click the URL bar to enter the Omnibox. */
+    public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox(
+            FakeOmniboxSuggestions fakeSuggestions) {
+        OmniboxFacility omniboxFacility =
+                new OmniboxFacility(/* incognito= */ false, fakeSuggestions);
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
+        enterFacilitiesSync(
+                List.of(omniboxFacility, softKeyboard), searchBoxElement.getClickTrigger());
+        return Pair.create(omniboxFacility, softKeyboard);
     }
 }

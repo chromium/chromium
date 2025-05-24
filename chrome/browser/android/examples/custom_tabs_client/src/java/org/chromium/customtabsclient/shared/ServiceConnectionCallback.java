@@ -6,7 +6,10 @@ package org.chromium.customtabsclient.shared;
 
 import androidx.browser.customtabs.CustomTabsClient;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Callback for events when connecting and disconnecting from Custom Tabs Service. */
+@NullMarked
 public interface ServiceConnectionCallback {
     /**
      * Called when the service is connected.

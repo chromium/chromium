@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientState, emptyState as emptyAmbientState} from './ambient/ambient_state.js';
-import {emptyState as emptyKeyboardBacklightState, KeyboardBacklightState} from './keyboard_backlight/keyboard_backlight_state.js';
-import {emptyState as emptyThemeState, ThemeState} from './theme/theme_state.js';
-import {emptyState as emptyUserState, UserState} from './user/user_state.js';
-import {emptyState as emptyWallpaperState, WallpaperState} from './wallpaper/wallpaper_state.js';
+import type {AmbientState} from './ambient/ambient_state.js';
+import {emptyState as emptyAmbientState} from './ambient/ambient_state.js';
+import type {KeyboardBacklightState} from './keyboard_backlight/keyboard_backlight_state.js';
+import {emptyState as emptyKeyboardBacklightState} from './keyboard_backlight/keyboard_backlight_state.js';
+import type {ThemeState} from './theme/theme_state.js';
+import {emptyState as emptyThemeState} from './theme/theme_state.js';
+import type {UserState} from './user/user_state.js';
+import {emptyState as emptyUserState} from './user/user_state.js';
+import type {WallpaperState} from './wallpaper/wallpaper_state.js';
+import {emptyState as emptyWallpaperState} from './wallpaper/wallpaper_state.js';
 
 /**
  * Interface for an error.

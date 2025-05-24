@@ -14,11 +14,11 @@
 typedef NS_ENUM(NSInteger, BubbleAlignment);
 typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 typedef NS_ENUM(NSInteger, BubbleViewType);
+typedef NS_ENUM(NSInteger, BubblePageControlPage);
 
 // Used for the bubble's dismissal callback.
 using CallbackWithIPHDismissalReasonType =
-    void (^)(IPHDismissalReasonType reason,
-             feature_engagement::Tracker::SnoozeAction action);
+    void (^)(IPHDismissalReasonType reason);
 
 @class BubbleViewController;
 
@@ -63,19 +63,23 @@ using CallbackWithIPHDismissalReasonType =
 // will be ignored if set to 0 or smaller.
 @property(nonatomic, assign) NSTimeInterval customBubbleVisibilityDuration;
 
+// An override for the pan gesture availability.
+// The default is `NO`. If set, the pan gesture for IPH dismissal will be
+// suppressed, ignoring the pan gesture ablation experiment.
+@property(nonatomic, assign) BOOL forceDisablePanGestureRecognizer;
+
 // Initializes the presenter. `text` is the text displayed by the bubble.
-// `titleString` is the title displayed by the bubble. `image` is the image
-// displayed by the bubble. `arrowDirection` is the direction the bubble's arrow
-// is pointing. `alignment` is the position of the arrow on the bubble. `type`
-// is the type of bubble content. `dismissalCallback` is a block invoked when
-// the bubble is dismissed (manual and automatic dismissal). `dismissalCallback`
-// is optional.
+// `titleString` is the title displayed by the bubble. `arrowDirection` is the
+// direction the bubble's arrow is pointing. `alignment` is the position of the
+// arrow on the bubble. `type` is the type of bubble content.
+// `dismissalCallback` is a block invoked when the bubble is dismissed (manual
+// and automatic dismissal). `dismissalCallback` is optional.
 - (instancetype)initWithText:(NSString*)text
                        title:(NSString*)titleString
-                       image:(UIImage*)image
               arrowDirection:(BubbleArrowDirection)arrowDirection
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
+             pageControlPage:(BubblePageControlPage)page
            dismissalCallback:
                (CallbackWithIPHDismissalReasonType)dismissalCallback
     NS_DESIGNATED_INITIALIZER;

@@ -36,8 +36,7 @@ uint8_t Depth(gfx::BufferFormat format) {
     case gfx::BufferFormat::BGRA_8888:
       return 32;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -46,8 +45,7 @@ uint8_t Bpp(gfx::BufferFormat format) {
     case gfx::BufferFormat::BGRA_8888:
       return 32;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

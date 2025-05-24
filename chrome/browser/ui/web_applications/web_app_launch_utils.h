@@ -13,11 +13,14 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/stack_allocated.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/navigation_handle.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Profile;
@@ -35,6 +38,17 @@ class WebContents;
 }
 
 namespace web_app {
+// This function moves `contents` from the `source_browser` to the
+// `target_browser`. In doing so, it attempts to ensure that any logic that
+// needs to occur when transitioning between 'app' and 'browser' windows occurs,
+// and the all session restore logic is correctly updated. `contents` is not
+// required to be the active web contents in `source_browser`.
+//
+// Note: This will CHECK-fail if `contents` is not in `source_browser`.
+void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
+                                        content::WebContents* contents,
+                                        Browser* target_browser,
+                                        bool insert_as_pinned_home_tab = false);
 
 class AppBrowserController;
 class WithAppResources;
@@ -45,18 +59,6 @@ enum class LaunchedAppType {
   kDiy = 0,
   kCrafted = 1,
   kMaxValue = kCrafted,
-};
-
-// Returns information useful for the browser to show UI affordances, provided a
-// web app handles the navigation.
-struct AppNavigationResult {
-  Browser* browser = nullptr;
-  int tab_index = -1;
-  bool enqueue_launch_params = false;
-  bool show_iph = false;
-  base::Value::Dict debug_value;
-
-  STACK_ALLOCATED();
 };
 
 std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser);
@@ -117,8 +119,7 @@ Browser* CreateWebAppWindowMaybeWithHomeTab(
     const webapps::AppId& app_id,
     const Browser::CreateParams& params);
 
-content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
-                                                NavigateParams& nav_params);
+content::WebContents* NavigateWebAppUsingParams(NavigateParams& nav_params);
 
 // RecordLaunchMetrics methods report UMA metrics. It shouldn't have other
 // side-effects (e.g. updating app launch time).
@@ -142,31 +143,18 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
-// Returns whether the navigation should be handled by a web app. If so, returns
-// an optional AppNavigationResult with the details pertinent to how to handle
-// it. See https://wicg.github.io/web-app-launch/#launchqueue-interface. This
-// function may create a browser instance, an app window or a new tab as needed.
-//
-// A value of std::nullopt means that the web app system cannot handle the
-// navigation, and as such, would allow the "normal" workflow to identify a
-// browser to perform navigation in to proceed. See Navigate() for more
-// information.
-std::optional<AppNavigationResult> MaybeHandleAppNavigation(
-    const NavigateParams& navigate_params);
-
 // Will enqueue the given url in the launch params for this web contents. Does
 // not check if the url is within scope of the app.
 void EnqueueLaunchParams(content::WebContents* contents,
                          const webapps::AppId& app_id,
                          const GURL& url,
-                         bool wait_for_navigation_to_complete);
+                         bool wait_for_navigation_to_complete,
+                         base::TimeTicks time_navigation_started);
 
-// Handle navigation-related tasks for the app, like enqueuing launch params
-// and showing a navigation capturing IPH bubble, after the appropriate
-// app-scoped WebContents has been identified and prepared for navigation.
-void OnWebAppNavigationAfterWebContentsCreation(
-    web_app::AppNavigationResult& app_navigation_result,
-    const NavigateParams& params);
+// Focus the app container depending on whether the `browser` is an app window
+// or if it is a normal tabbed browser. `browser` shouldn't be a nullptr, and
+// the `tab_index` should be a valid index for a tab inside `browser`.
+void FocusAppContainer(Browser* browser, int tab_index);
 
 }  // namespace web_app
 

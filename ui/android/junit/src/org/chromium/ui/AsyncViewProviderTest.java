@@ -97,17 +97,17 @@ public class AsyncViewProviderTest {
         mAsyncViewStub.inflate();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         AsyncViewProvider<View> provider = AsyncViewProvider.of(mAsyncViewStub, INFLATED_VIEW_ID);
-        assertEquals(mEventCount.get(), 0);
+        assertEquals(0, mEventCount.get());
         provider.whenLoaded(
                 (View v) -> {
                     mEventCount.incrementAndGet();
                 });
-        assertEquals(mEventCount.get(), 1);
+        assertEquals(1, mEventCount.get());
         provider.whenLoaded(
                 (View v) -> {
                     mEventCount.incrementAndGet();
                 });
-        assertEquals(mEventCount.get(), 2);
+        assertEquals(2, mEventCount.get());
     }
 
     @Test
@@ -120,26 +120,26 @@ public class AsyncViewProviderTest {
         mAsyncViewStub.inflate();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         // ensure callback gets called.
-        assertEquals(mEventCount.get(), 1);
+        assertEquals(1, mEventCount.get());
     }
 
     @Test
     public void testCallsListenersInOrder() {
         mAsyncViewProvider.whenLoaded(
                 (View v) -> {
-                    assertEquals(mEventCount.incrementAndGet(), 1);
+                    assertEquals(1, mEventCount.incrementAndGet());
                 });
         mAsyncViewProvider.whenLoaded(
                 (View v) -> {
-                    assertEquals(mEventCount.incrementAndGet(), 2);
+                    assertEquals(2, mEventCount.incrementAndGet());
                 });
         mAsyncViewProvider.whenLoaded(
                 (View v) -> {
-                    assertEquals(mEventCount.decrementAndGet(), 1);
+                    assertEquals(1, mEventCount.decrementAndGet());
                 });
-        assertEquals(mEventCount.get(), 0);
+        assertEquals(0, mEventCount.get());
         mAsyncViewStub.inflate();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(mEventCount.get(), 1);
+        assertEquals(1, mEventCount.get());
     }
 }

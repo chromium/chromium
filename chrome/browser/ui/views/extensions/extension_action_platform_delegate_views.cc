@@ -47,8 +47,9 @@ ExtensionActionPlatformDelegateViews::~ExtensionActionPlatformDelegateViews() {
 
 void ExtensionActionPlatformDelegateViews::RegisterCommand() {
   // If we've already registered, do nothing.
-  if (action_keybinding_)
+  if (action_keybinding_) {
     return;
+  }
 
   extensions::Command extension_command;
   views::FocusManager* focus_manager =
@@ -63,8 +64,9 @@ void ExtensionActionPlatformDelegateViews::RegisterCommand() {
 
 void ExtensionActionPlatformDelegateViews::UnregisterCommand() {
   // If we've already unregistered, do nothing.
-  if (!action_keybinding_)
+  if (!action_keybinding_) {
     return;
+  }
 
   views::FocusManager* focus_manager =
       GetDelegateViews()->GetFocusManagerForAccelerator();
@@ -82,7 +84,7 @@ void ExtensionActionPlatformDelegateViews::ShowPopup(
   // performs the flipping in RTL cases.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
 
-  ExtensionPopup::ShowPopup(std::move(host),
+  ExtensionPopup::ShowPopup(controller_->browser(), std::move(host),
                             GetDelegateViews()->GetReferenceButtonForPopup(),
                             arrow, show_action, std::move(callback));
 }
@@ -90,11 +92,13 @@ void ExtensionActionPlatformDelegateViews::ShowPopup(
 void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(
     const std::string& extension_id,
     const extensions::Command& command) {
-  if (extension_id != controller_->extension()->id())
+  if (extension_id != controller_->extension()->id()) {
     return;  // Not this action's extension.
+  }
 
-  if (!extensions::Command::IsActionRelatedCommand(command.command_name()))
+  if (!extensions::Command::IsActionRelatedCommand(command.command_name())) {
     return;
+  }
 
   RegisterCommand();
 }
@@ -102,15 +106,18 @@ void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(
 void ExtensionActionPlatformDelegateViews::OnExtensionCommandRemoved(
     const std::string& extension_id,
     const extensions::Command& command) {
-  if (extension_id != controller_->extension()->id())
+  if (extension_id != controller_->extension()->id()) {
     return;
+  }
 
-  if (!extensions::Command::IsActionRelatedCommand(command.command_name()))
+  if (!extensions::Command::IsActionRelatedCommand(command.command_name())) {
     return;
+  }
 
   extensions::Command extension_command;
-  if (controller_->GetExtensionCommand(&extension_command))
+  if (controller_->GetExtensionCommand(&extension_command)) {
     return;  // Command has not been removed.
+  }
 
   UnregisterCommand();
 }

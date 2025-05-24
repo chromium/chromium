@@ -13,6 +13,15 @@
 
 namespace ash {
 
+// static
+std::unique_ptr<TestingPrefServiceSimple>
+TestPrefServiceProvider::CreateUserPrefServiceSimple() {
+  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
+  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
+                           /*for_test=*/true);
+  return pref_service;
+}
+
 TestPrefServiceProvider::TestPrefServiceProvider() = default;
 TestPrefServiceProvider::~TestPrefServiceProvider() = default;
 
@@ -36,28 +45,43 @@ PrefService* TestPrefServiceProvider::GetSigninPrefs() {
   return signin_prefs_.get();
 }
 
-void TestPrefServiceProvider::CreateUserPrefs(const AccountId& account_id) {
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
-                           /*for_test=*/true);
-  SetUserPrefs(account_id, std::move(pref_service));
-}
-
 void TestPrefServiceProvider::SetUserPrefs(
     const AccountId& account_id,
     std::unique_ptr<PrefService> pref_service) {
-  const auto pair =
-      user_prefs_map_.emplace(account_id, std::move(pref_service));
-  DCHECK(pair.second);
+  CHECK_EQ(GetUserPrefs(account_id), nullptr);
+
+  user_prefs_map_.emplace(account_id, std::move(pref_service));
+}
+
+void TestPrefServiceProvider::SetUnownedUserPrefs(
+    const AccountId& account_id,
+    raw_ptr<PrefService> unowned_pref_service) {
+  CHECK_EQ(GetUserPrefs(account_id), nullptr);
+
+  unowned_user_prefs_map_.emplace(account_id, std::move(unowned_pref_service));
 }
 
 PrefService* TestPrefServiceProvider::GetUserPrefs(
     const AccountId& account_id) {
   auto it = user_prefs_map_.find(account_id);
-  if (it == user_prefs_map_.end())
-    return nullptr;
+  if (it != user_prefs_map_.end()) {
+    return it->second.get();
+  }
 
-  return it->second.get();
+  auto unowned_it = unowned_user_prefs_map_.find(account_id);
+  if (unowned_it != unowned_user_prefs_map_.end()) {
+    return unowned_it->second.get();
+  }
+
+  return nullptr;
+}
+
+void TestPrefServiceProvider::ClearUnownedUserPrefs(
+    const AccountId& account_id) {
+  auto unowned_it = unowned_user_prefs_map_.find(account_id);
+  CHECK(unowned_it != unowned_user_prefs_map_.end());
+
+  unowned_user_prefs_map_.erase(unowned_it);
 }
 
 }  // namespace ash

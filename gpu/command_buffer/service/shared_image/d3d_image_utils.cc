@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_finch_features.h"
 
@@ -46,7 +47,7 @@ wgpu::Texture CreateDawnSharedTexture(
     const wgpu::SharedTextureMemory& shared_texture_memory,
     wgpu::TextureUsage usage,
     wgpu::TextureUsage internal_usage,
-    base::span<wgpu::TextureFormat> view_formats) {
+    base::span<const wgpu::TextureFormat> view_formats) {
   wgpu::SharedTextureMemoryProperties properties;
   shared_texture_memory.GetProperties(&properties);
 
@@ -63,15 +64,7 @@ wgpu::Texture CreateDawnSharedTexture(
   wgpu_texture_desc.viewFormats = view_formats.data();
 
   wgpu::DawnTextureInternalUsageDescriptor wgpu_internal_usage_desc;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    wgpu_internal_usage_desc.internalUsage = internal_usage;
-  } else {
-    // We need to have internal usages of CopySrc for copies,
-    // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser
-    // if texture format allows these usages.
-    wgpu_internal_usage_desc.internalUsage = properties.usage;
-  }
+  wgpu_internal_usage_desc.internalUsage = internal_usage;
   wgpu_texture_desc.nextInChain = &wgpu_internal_usage_desc;
 
   return shared_texture_memory.CreateTexture(&wgpu_texture_desc);
@@ -92,8 +85,11 @@ wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
 
   shared_texture_memory = device.ImportSharedTextureMemory(&desc);
 
-  if (!shared_texture_memory || shared_texture_memory.IsDeviceLost()) {
-    LOG(ERROR) << "Failed to create shared texture memory";
+  // If ImportSharedTextureMemory is not successful and the device is not lost,
+  // an error SharedTextureMemory object will be returned, which will cause an
+  // error upon usage.
+  if (shared_texture_memory.IsDeviceLost()) {
+    LOG(ERROR) << "Failed to create shared texture memory due to device loss.";
     return nullptr;
   }
 
@@ -102,18 +98,23 @@ wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
 
 wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
     const wgpu::Device& device,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture) {
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+    bool requires_dawn_signal_fence) {
   wgpu::SharedTextureMemory shared_texture_memory;
   SharedTextureMemoryD3D11Texture2DDescriptor texture2d_desc;
   texture2d_desc.texture = texture;
+  texture2d_desc.requiresEndAccessFence = requires_dawn_signal_fence;
 
   wgpu::SharedTextureMemoryDescriptor desc;
   desc.nextInChain = &texture2d_desc;
   desc.label = "SharedImageD3D_SharedTextureMemory_Texture2D";
   shared_texture_memory = device.ImportSharedTextureMemory(&desc);
 
-  if (!shared_texture_memory || shared_texture_memory.IsDeviceLost()) {
-    LOG(ERROR) << "Failed to create shared texture memory";
+  // If ImportSharedTextureMemory is not successful and the device is not lost,
+  // an error SharedTextureMemory object will be returned, which will cause an
+  // error upon usage.
+  if (shared_texture_memory.IsDeviceLost()) {
+    LOG(ERROR) << "Failed to create shared texture memory due to device loss.";
     return nullptr;
   }
 
@@ -145,12 +146,14 @@ wgpu::SharedBufferMemory CreateDawnSharedBufferMemory(
   desc.label = "SharedBufferD3D_SharedBufferMemory_Resource";
   shared_buffer_memory = device.ImportSharedBufferMemory(&desc);
 
-  if (!shared_buffer_memory) {
-    LOG(ERROR) << "Failed to create shared buffer memory";
+  // If ImportSharedBufferMemory is not successful and the device is not lost,
+  // an error SharedBufferMemory object will be returned, which will cause an
+  // error upon usage.
+  if (shared_buffer_memory.IsDeviceLost()) {
+    LOG(ERROR) << "Failed to create shared buffer memory due to device loss.";
     return nullptr;
   }
 
-  DCHECK(!shared_buffer_memory.IsDeviceLost());
   return shared_buffer_memory;
 }
 
@@ -165,11 +168,17 @@ wgpu::SharedFence CreateDawnSharedFence(
 
   shared_fence = device.ImportSharedFence(&fence_desc);
 
-  if (!shared_fence) {
-    LOG(ERROR) << "Failed to create shared fence.";
-    return nullptr;
-  }
-
   return shared_fence;
 }
+
+std::string D3D11TextureDescToString(const D3D11_TEXTURE2D_DESC& desc) {
+  return base::StringPrintf(
+      "width=%u,height=%u,miplevels=%u,arraysize=%u,format=%u,samplecount=%u,"
+      "samplequality=%u,usage=%u,bindflags=%08x,cpuaccessflags=%08x,"
+      "miscflags=%08x",
+      desc.Width, desc.Height, desc.MipLevels, desc.ArraySize, desc.Format,
+      desc.SampleDesc.Count, desc.SampleDesc.Quality, desc.Usage,
+      desc.BindFlags, desc.CPUAccessFlags, desc.MiscFlags);
+}
+
 }  // namespace gpu

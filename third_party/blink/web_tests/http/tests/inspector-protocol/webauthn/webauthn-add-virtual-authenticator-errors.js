@@ -92,5 +92,20 @@
   });
   testRunner.log(largeBlobRequiresCtap2_1Error);
 
+  const internalAuthenticator = await dp.WebAuthn.addVirtualAuthenticator({
+    options: {
+      protocol: "ctap2",
+      transport: "internal",
+    },
+  });
+  testRunner.log(internalAuthenticator.error || "Created first internal authenticator");
+  const alreadyHasInternalAuthenticatorError = await dp.WebAuthn.addVirtualAuthenticator({
+    options: {
+      protocol: "ctap2",
+      transport: "internal",
+    },
+  });
+  testRunner.log(alreadyHasInternalAuthenticatorError);
+
   testRunner.completeTest();
 })

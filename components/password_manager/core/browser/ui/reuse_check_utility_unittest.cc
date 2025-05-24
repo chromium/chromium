@@ -24,12 +24,12 @@ CredentialUIEntry CreateCredential(
   CredentialUIEntry credential;
   credential.username = username;
   credential.password = password;
-  base::ranges::transform(signon_realms, std::back_inserter(credential.facets),
-                          [](const std::string& signon_realm) {
-                            CredentialFacet facet;
-                            facet.signon_realm = signon_realm;
-                            return facet;
-                          });
+  std::ranges::transform(signon_realms, std::back_inserter(credential.facets),
+                         [](const std::string& signon_realm) {
+                           CredentialFacet facet;
+                           facet.signon_realm = signon_realm;
+                           return facet;
+                         });
   return credential;
 }
 

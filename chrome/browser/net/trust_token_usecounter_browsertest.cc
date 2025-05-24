@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -11,7 +10,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
@@ -28,9 +26,7 @@ namespace content {
 
 class TrustTokenUseCountersBrowsertest : public InProcessBrowserTest {
  public:
-  TrustTokenUseCountersBrowsertest() {
-    features_.InitAndEnableFeature(network::features::kPrivateStateTokens);
-  }
+  TrustTokenUseCountersBrowsertest() = default;
 
   void SetUpOnMainThread() override {
     server_.AddDefaultHandlers(
@@ -39,8 +35,6 @@ class TrustTokenUseCountersBrowsertest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList features_;
-
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 

@@ -9,10 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/proto/remoting/v1/telemetry_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -92,7 +92,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 constexpr char kCreateLogEntryPath[] = "/v1/telemetry:createlogentry";
 
 using CreateLogEntryResponseCallback =
-    base::OnceCallback<void(const ProtobufHttpStatus&,
+    base::OnceCallback<void(const HttpStatus&,
                             std::unique_ptr<apis::v1::CreateLogEntryResponse>)>;
 
 class TelemetryClient {
@@ -197,7 +197,7 @@ void RemotingLogToServer::SendLogRequestWithBackoff(
 void RemotingLogToServer::OnSendLogRequestResult(
     const apis::v1::CreateLogEntryRequest& request,
     int attempts_left,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<apis::v1::CreateLogEntryResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status.ok()) {

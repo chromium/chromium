@@ -4,6 +4,9 @@ include_rules = [
   # TODO(qinmin): move it to services/download when download becomes a service.
   "+components/download/public/common",
   "+components/file_access",
+  "+components/language_detection/content/browser",
+  "+components/language_detection/content/common",
+  "+components/language_detection/core/browser",
   "+components/services/storage/privileged",
   "+components/services/storage/public",
   "+components/viz/common",
@@ -21,6 +24,7 @@ include_rules = [
   "+services/resource_coordinator/public",
   "+services/tracing/public/mojom",
   "+services/video_capture/public/mojom",
+  "+services/video_effects/public/cpp/buildflags.h",
   "+services/video_effects/public/mojom",
   "+services/viz/public/mojom",
   "+third_party/jni_zero",
@@ -41,8 +45,10 @@ specific_include_rules = {
   "authenticator_request_client_delegate\.*": [
     "+device/fido",
   ],
-
   "digital_credentials_cross_device\.h": [
+    "+device/fido",
+  ],
+  "web_authentication_delegate\.*": [
     "+device/fido",
   ],
 
@@ -50,12 +56,6 @@ specific_include_rules = {
     # desktop_capture.h creates a DesktopCaptureOptions to share between
     # content/browser and chrome/browser.
     "+third_party/webrtc/modules/desktop_capture/desktop_capture_options.h",
-  ],
-
-  "gpu_utils\.cc": [
-    # For using chromeos::BrowserParamsProxy which is needed on LaCrOS to decide
-    # if the GPU process sandbox needs to be started early.
-    "+chromeos/startup/browser_params_proxy.h",
   ],
 
   ".*unittest\.cc": [

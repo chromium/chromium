@@ -111,8 +111,9 @@ class WebAppOpaqueBrowserFrameViewTest : public web_app::WebAppBrowserTestBase {
 #if BUILDFLAG(IS_LINUX)
     DCHECK(is_opaque_browser_frame_view);
 #else
-    if (!is_opaque_browser_frame_view)
+    if (!is_opaque_browser_frame_view) {
       return false;
+    }
 #endif
 
     opaque_browser_frame_view_ =
@@ -140,10 +141,11 @@ class WebAppOpaqueBrowserFrameViewTest : public web_app::WebAppBrowserTestBase {
 #endif
     ThemeService* theme_service =
         ThemeServiceFactory::GetForProfile(browser()->profile());
-    if (theme_mode == ThemeMode::kSystem)
+    if (theme_mode == ThemeMode::kSystem) {
       theme_service->UseSystemTheme();
-    else
+    } else {
       theme_service->UseDefaultTheme();
+    }
     ASSERT_EQ(theme_service->UsingDefaultTheme(),
               theme_mode == ThemeMode::kDefault);
   }
@@ -245,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, StaticTitleBarHeight) {
 
   // Add taller children to the web app frame toolbar RHS.
   const int container_height = web_app_frame_toolbar_->height();
-  web_app_frame_toolbar_->get_right_container_for_testing()->AddChildView(
+  web_app_frame_toolbar_->get_right_container_for_testing()->AddChildViewRaw(
       new views::StaticSizedView(gfx::Size(1, title_bar_height * 2)));
   RunScheduledLayouts();
 
@@ -336,8 +338,9 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     bool is_opaque_browser_frame_view =
         views::IsViewClass<OpaqueBrowserFrameView>(frame_view);
 
-    if (!is_opaque_browser_frame_view)
+    if (!is_opaque_browser_frame_view) {
       return false;
+    }
 
     opaque_browser_frame_view_ =
         static_cast<OpaqueBrowserFrameView*>(frame_view);
@@ -371,8 +374,9 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        CaptionButtonsTooltip) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay()) {
     GTEST_SKIP() << "Skip test if it is not a OpaqueBrowserFrameView";
+  }
 
   auto* minimize_button = static_cast<const views::Button*>(
       opaque_browser_frame_view_->GetViewByID(VIEW_ID_MINIMIZE_BUTTON));
@@ -412,8 +416,9 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        CaptionButtonHitTest) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay()) {
     GTEST_SKIP() << "Skip test if it is not a OpaqueBrowserFrameView";
+  }
 
   opaque_browser_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
 

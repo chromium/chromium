@@ -11,10 +11,9 @@ import './supported_links_dialog.js';
 import './supported_links_overlapping_apps_dialog.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
-import {AppManagementUserAction, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {castExists, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import type {LocalizedLinkElement} from 'chrome://resources/cr_components/localized_link/localized_link.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
@@ -31,7 +30,7 @@ import type {SupportedLinksOverlappingAppsDialogElement} from './supported_links
 import {createDummyApp} from './web_app_settings_utils.js';
 
 type PreferenceType = 'preferred'|'browser';
-const PREFERRED_APP_PREF = 'preferred' as const;
+const PREFERRED_APP_PREF = 'preferred';
 
 export interface SupportedLinksItemElement {
   $: {
@@ -84,15 +83,15 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
     };
   }
 
-  app: App = createDummyApp();
-  apps: AppMap = {};
-  override hidden: boolean = false;
-  protected disabled_: boolean = false;
-  protected overlappingAppsWarning_: string = '';
-  protected overlappingAppIds_: string[] = [];
-  protected showOverlappingAppsDialog_: boolean = false;
-  protected showOverlappingAppsWarning_: boolean = false;
-  protected showSupportedLinksDialog_: boolean = false;
+  accessor app: App = createDummyApp();
+  accessor apps: AppMap = {};
+  override accessor hidden: boolean = false;
+  protected accessor disabled_: boolean = false;
+  protected accessor overlappingAppsWarning_: string = '';
+  protected accessor overlappingAppIds_: string[] = [];
+  protected accessor showOverlappingAppsDialog_: boolean = false;
+  protected accessor showOverlappingAppsWarning_: boolean = false;
+  protected accessor showSupportedLinksDialog_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -120,8 +119,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
    * in the browser.
    */
   private isDisabled_(): boolean {
-    return this.app.type === AppType.kWeb &&
-        this.app.windowMode === WindowMode.kBrowser;
+    return this.app.disableUserChoiceNavigationCapturing;
   }
 
   protected getCurrentPreferredApp_(): string {
@@ -251,7 +249,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
     this.showOverlappingAppsDialog_ = false;
 
     const overlapDialog = castExists(
-        this.shadowRoot!
+        this.shadowRoot
             .querySelector<SupportedLinksOverlappingAppsDialogElement>(
                 '#overlapDialog'));
     if (overlapDialog.wasConfirmed()) {
@@ -260,8 +258,8 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
       focusWithoutInk(this.$.preferredRadioButton);
     } else {
       // Reset the radio button.
-      this.shadowRoot!.querySelector<CrRadioGroupElement>(
-                          '#radioGroup')!.selected =
+      this.shadowRoot.querySelector<CrRadioGroupElement>(
+                         '#radioGroup')!.selected =
           this.getCurrentPreferredApp_();
       // Return keyboard focus to the browser radio button.
       focusWithoutInk(this.$.browserRadioButton);

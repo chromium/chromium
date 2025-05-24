@@ -7,18 +7,38 @@ package org.chromium.chrome.browser.history;
 import org.junit.Assert;
 
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.ItemViewType;
+import org.chromium.components.browser_ui.widget.DateDividedAdapter.TimedItem;
 
 /** Util class for functions and helper classes that share between different test files. */
 public class HistoryTestUtils {
     static void checkAdapterContents(
-            HistoryAdapter adapter, boolean hasHeader, boolean hasFooter, Object... items) {
+            HistoryAdapter adapter,
+            boolean hasStandardHeader,
+            boolean hasFooter,
+            TimedItem... items) {
+        checkAdapterContents(
+                adapter, hasStandardHeader, /* hasPersistentHeader= */ false, hasFooter, items);
+    }
+
+    static void checkAdapterContents(
+            HistoryAdapter adapter,
+            boolean hasStandardHeader,
+            boolean hasPersistentHeader,
+            boolean hasFooter,
+            TimedItem... items) {
         Assert.assertEquals(items.length, adapter.getItemCount());
-        Assert.assertEquals(hasHeader, adapter.hasListHeader());
+        Assert.assertEquals(hasStandardHeader || hasPersistentHeader, adapter.hasListHeader());
         Assert.assertEquals(hasFooter, adapter.hasListFooter());
+        int persistentHeaderPosition = hasPersistentHeader ? (hasStandardHeader ? 1 : 0) : -1;
 
         for (int i = 0; i < items.length; i++) {
-            if (i == 0 && hasHeader) {
-                Assert.assertEquals(ItemViewType.HEADER, adapter.getItemViewType(i));
+            if (i == 0 && hasStandardHeader) {
+                Assert.assertEquals(ItemViewType.STANDARD_HEADER, adapter.getItemViewType(i));
+                continue;
+            }
+
+            if (i == persistentHeaderPosition) {
+                Assert.assertEquals(ItemViewType.PERSISTENT_HEADER, adapter.getItemViewType(i));
                 continue;
             }
 

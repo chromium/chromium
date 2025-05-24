@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -120,17 +120,14 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
                                 "})")
             .As<v8::Proxy>();
 
-    ExceptionState exception_state_from_proxy(
-        scope.GetIsolate(), v8::ExceptionContext::kOperation,
-        "NativeValueTraitsImplTest", "IDLRecordTest");
+    v8::TryCatch try_catch(scope.GetIsolate());
     const auto& record_from_proxy =
         NativeValueTraits<IDLRecord<IDLString, IDLLong>>::NativeValue(
-            scope.GetIsolate(), proxy, exception_state_from_proxy);
+            scope.GetIsolate(), proxy,
+            PassThroughException(scope.GetIsolate()));
     EXPECT_EQ(0U, record_from_proxy.size());
-    EXPECT_TRUE(exception_state_from_proxy.HadException());
-    EXPECT_TRUE(exception_state_from_proxy.Message().empty());
-    v8::Local<v8::Value> v8_exception =
-        exception_state_from_proxy.GetException();
+    EXPECT_TRUE(try_catch.HasCaught());
+    v8::Local<v8::Value> v8_exception = try_catch.Exception();
     EXPECT_TRUE(v8_exception->IsString());
     EXPECT_TRUE(
         V8String(scope.GetIsolate(), "bogus!")
@@ -395,8 +392,9 @@ TEST(NativeValueTraitsImplTest, IDLBigint) {
 template <typename Arr>
 v8::Local<Arr> MakeArray(v8::Isolate* isolate, size_t size) {
   auto arr = Arr::New(isolate, size);
-  uint8_t* it = static_cast<uint8_t*>(arr->Data());
-  std::iota(it, it + arr->ByteLength(), 0);
+  v8::MemorySpan<uint8_t> span(static_cast<uint8_t*>(arr->Data()),
+                               arr->ByteLength());
+  std::iota(span.begin(), span.end(), 0);
   return arr;
 }
 

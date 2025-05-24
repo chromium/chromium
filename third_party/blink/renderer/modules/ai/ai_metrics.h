@@ -14,19 +14,22 @@ class AIMetrics {
   // This class contains all the supported session types.
   // LINT.IfChange(AISessionType)
   enum class AISessionType {
-    kAssistant = 0,
+    kLanguageModel = 0,
     kWriter = 1,
     kRewriter = 2,
     kSummarizer = 3,
-    kMaxValue = kSummarizer,
+    kTranslator = 4,
+    kLanguageDetector = 5,
+    kProofreader = 6,
+    kMaxValue = kProofreader,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histogram.xml:AIAPI)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histograms.xml:SessionType)
 
   // This class contains all the model execution API supported.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // TODO(crbug.com/355967885): update the enums when adding metrics for
-  // assistant API.
+  // language model API.
   // LINT.IfChange(AIAPI)
   enum class AIAPI {
     kCanCreateSession = 0,
@@ -48,14 +51,16 @@ class AIMetrics {
     kSummarizerCreate = 16,
     kSummarizerDestroy = 17,
     kSessionCountPromptTokens = 18,
+    kProofreaderProofread = 19,
+    kProofreaderCreate = 20,
+    kProofreaderDestroy = 21,
 
-    kMaxValue = kSessionCountPromptTokens,
+    kMaxValue = kProofreaderDestroy,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIAPI)
 
   static std::string GetAIAPIUsageMetricName(AISessionType session_type);
-  static std::string GetAICapabilityAvailabilityMetricName(
-      AISessionType session_type);
+  static std::string GetAvailabilityMetricName(AISessionType session_type);
   static std::string GetAISessionRequestSizeMetricName(
       AISessionType session_type);
   static std::string GetAISessionResponseStatusMetricName(

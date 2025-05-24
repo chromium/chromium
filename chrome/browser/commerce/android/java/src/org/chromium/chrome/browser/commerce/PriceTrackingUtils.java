@@ -11,6 +11,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 // to its
 //                appropriate component.
 @JNINamespace("commerce")
+@NullMarked
 public class PriceTrackingUtils {
     /** Private constructor to prevent initialization. */
     private PriceTrackingUtils() {}

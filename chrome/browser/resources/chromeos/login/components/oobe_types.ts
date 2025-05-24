@@ -91,6 +91,7 @@ export namespace OobeTypes {
     isChildAccount: boolean;
     hasLoginSupport: boolean;
     usingPinAsMainSignInFactor: boolean;
+    isRecoveryMode: boolean;
   }
 
   /**

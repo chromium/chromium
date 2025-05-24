@@ -23,6 +23,8 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="LevelDBClient">
+  <variant name="AutofillAiModelCache"
+      summary="Database that acts as a cache for AutofillAI model responses"/>
   <variant name="BudgetManager"
       summary="Database for storing budget information for origins."/>
   <variant name="CachedImageFetcherDatabase"

@@ -52,7 +52,7 @@ GuardedPageAllocator* gpa = nullptr;
 extern AllocatorDispatch g_allocator_dispatch;
 
 void* AllocFn(size_t size, void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size))
       return allocation;
   }
@@ -61,7 +61,7 @@ void* AllocFn(size_t size, void* context) {
 }
 
 void* AllocUncheckedFn(size_t size, void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size))
       return allocation;
   }
@@ -70,7 +70,7 @@ void* AllocUncheckedFn(size_t size, void* context) {
 }
 
 void* AllocZeroInitializedFn(size_t n, size_t size, void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     base::CheckedNumeric<size_t> checked_total = size;
     checked_total *= n;
     if (!checked_total.IsValid()) [[unlikely]] {
@@ -89,7 +89,7 @@ void* AllocZeroInitializedFn(size_t n, size_t size, void* context) {
 }
 
 void* AllocAlignedFn(size_t alignment, size_t size, void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment))
       return allocation;
   }
@@ -160,6 +160,44 @@ void FreeFn(void* address, void* context) {
   g_allocator_dispatch.next->free_function(address, context);
 }
 
+void FreeWithSizeFn(void* address, size_t size, void* context) {
+  if (gpa->PointerIsMine(address)) [[unlikely]] {
+    // TODO(vtsyrklevich): Perform this check in GuardedPageAllocator and report
+    // failed checks using the same pipeline.
+    CHECK_EQ(size, gpa->GetRequestedSize(address));
+    gpa->Deallocate(address);
+    return;
+  }
+
+  g_allocator_dispatch.next->free_with_size_function(address, size, context);
+}
+
+void FreeWithAlignmentFn(void* address, size_t alignment, void* context) {
+  if (gpa->PointerIsMine(address)) [[unlikely]] {
+    gpa->Deallocate(address);
+    return;
+  }
+
+  g_allocator_dispatch.next->free_with_alignment_function(address, alignment,
+                                                          context);
+}
+
+void FreeWithSizeAndAlignmentFn(void* address,
+                                size_t size,
+                                size_t alignment,
+                                void* context) {
+  if (gpa->PointerIsMine(address)) [[unlikely]] {
+    // TODO(vtsyrklevich): Perform this check in GuardedPageAllocator and report
+    // failed checks using the same pipeline.
+    CHECK_EQ(size, gpa->GetRequestedSize(address));
+    gpa->Deallocate(address);
+    return;
+  }
+
+  g_allocator_dispatch.next->free_with_size_and_alignment_function(
+      address, size, alignment, context);
+}
+
 size_t GetSizeEstimateFn(void* address, void* context) {
   if (gpa->PointerIsMine(address)) [[unlikely]] {
     return gpa->GetRequestedSize(address);
@@ -212,19 +250,6 @@ void BatchFreeFn(void** to_be_freed, unsigned num_to_be_freed, void* context) {
                                                  context);
 }
 
-void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
-  if (gpa->PointerIsMine(address)) [[unlikely]] {
-    // TODO(vtsyrklevich): Perform this check in GuardedPageAllocator and report
-    // failed checks using the same pipeline.
-    CHECK_EQ(size, gpa->GetRequestedSize(address));
-    gpa->Deallocate(address);
-    return;
-  }
-
-  g_allocator_dispatch.next->free_definite_size_function(address, size,
-                                                         context);
-}
-
 void TryFreeDefaultFn(void* address, void* context) {
   if (gpa->PointerIsMine(address)) [[unlikely]] {
     gpa->Deallocate(address);
@@ -235,7 +260,7 @@ void TryFreeDefaultFn(void* address, void* context) {
 }
 
 static void* AlignedMallocFn(size_t size, size_t alignment, void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment))
       return allocation;
   }
@@ -247,7 +272,7 @@ static void* AlignedMallocFn(size_t size, size_t alignment, void* context) {
 static void* AlignedMallocUncheckedFn(size_t size,
                                       size_t alignment,
                                       void* context) {
-  if (sampling_state.Sample()) [[unlikely]] {
+  if (sampling_state.Sample(size)) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment)) {
       return allocation;
     }
@@ -335,12 +360,14 @@ AllocatorDispatch g_allocator_dispatch = {
     &ReallocFn,
     &ReallocUncheckedFn,
     &FreeFn,
+    &FreeWithSizeFn,
+    &FreeWithAlignmentFn,
+    &FreeWithSizeAndAlignmentFn,
     &GetSizeEstimateFn,
     &GoodSizeFn,
     &ClaimedAddressFn,
     &BatchMallocFn,
     &BatchFreeFn,
-    &FreeDefiniteSizeFn,
     &TryFreeDefaultFn,
     &AlignedMallocFn,
     &AlignedMallocUncheckedFn,
@@ -364,6 +391,9 @@ void InstallMallocHooks(const AllocatorSettings& settings,
   gpa->Init(settings, std::move(callback), false);
   malloc_crash_key.Set(gpa->GetCrashKey());
   sampling_state.Init(settings.sampling_frequency);
+  sampling_state.SetSampleSizeRestriction(settings.sampling_min_size,
+                                          settings.sampling_max_size);
+
   allocator_shim::InsertAllocatorDispatch(&g_allocator_dispatch);
 }
 

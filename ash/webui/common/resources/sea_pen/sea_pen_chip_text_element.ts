@@ -110,7 +110,7 @@ export class SeaPenChipTextElement extends PolymerElement {
   private changeChipText_(chipElement: HTMLElement, newText: string) {
     assert(!!chipElement);
     const currentChipWidth = chipElement.clientWidth;
-    const currentLetterElements = this.getLettersAsElements_(chipElement!);
+    const currentLetterElements = this.getLettersAsElements_(chipElement);
     // Animates the letters of old chip text out.
     for (let i = 0; i < currentLetterElements.length; i++) {
       this.animateLetterOut_(currentLetterElements, i);
@@ -120,7 +120,7 @@ export class SeaPenChipTextElement extends PolymerElement {
     // value animation.
     setTimeout(() => {
       this.removeLetterElementsFromChip_(currentLetterElements.length);
-      chipElement!.innerHTML = sanitizeInnerHtml(newText);
+      chipElement.innerHTML = sanitizeInnerHtml(newText);
       const newLetterElements = this.getLettersAsElements_(chipElement);
       const newChipWidth = chipElement.clientWidth;
 
@@ -149,13 +149,13 @@ export class SeaPenChipTextElement extends PolymerElement {
       }
       // Update the chip innerHTML with the new chip text value if its value is
       // not automatically updated.
-      if (chip!.innerHTML !== newText) {
-        chip!.innerHTML = sanitizeInnerHtml(newText);
+      if (chip.innerHTML !== newText) {
+        chip.innerHTML = sanitizeInnerHtml(newText);
       }
       return;
     }
-    chip!.innerHTML = sanitizeInnerHtml(oldText);
-    this.changeChipText_(chip!, newText);
+    chip.innerHTML = sanitizeInnerHtml(oldText);
+    this.changeChipText_(chip, newText);
   }
 }
 

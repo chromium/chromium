@@ -17,9 +17,12 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
 
-class OverviewGroupContainerView;
 class OverviewSession;
 
 // This class implements `OverviewItemBase` and represents a window group in
@@ -108,7 +111,7 @@ class OverviewGroupItem : public OverviewItemBase,
   std::vector<std::unique_ptr<OverviewItem>> overview_items_;
 
   // The contents view of the `item_widget_`.
-  raw_ptr<OverviewGroupContainerView> overview_group_container_view_ = nullptr;
+  raw_ptr<views::View> overview_group_container_view_ = nullptr;
 
   base::WeakPtrFactory<OverviewGroupItem> weak_ptr_factory_{this};
 };

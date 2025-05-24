@@ -4,12 +4,12 @@
 
 #include "components/enterprise/idle/idle_timeout_policy_handler.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string>
 #include <vector>
 
 #include "base/json/values_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -53,7 +53,7 @@ class IdleTimeoutPolicyHandlerTest : public testing::Test {
         timeout_handler_.CheckPolicySettings(policies_, &errors_),
         actions_handler_.CheckPolicySettings(policies_, &errors_),
     };
-    return base::ranges::all_of(base::span(results), std::identity{});
+    return std::ranges::all_of(base::span(results), std::identity{});
   }
 
   void ApplyPolicySettings() {
@@ -73,8 +73,8 @@ class IdleTimeoutPolicyHandlerTest : public testing::Test {
 
   std::vector<std::u16string> errors() {
     std::vector<std::u16string> strings;
-    base::ranges::transform(errors_, std::back_inserter(strings),
-                            [](const auto& it) { return it.second.message; });
+    std::ranges::transform(errors_, std::back_inserter(strings),
+                           [](const auto& it) { return it.second.message; });
     return strings;
   }
 

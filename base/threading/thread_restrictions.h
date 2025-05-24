@@ -171,7 +171,6 @@ class ScopedAllowInitGLBindings;
 class VizCompositorThreadRunnerWebView;
 }  // namespace android_webview
 namespace ash {
-class BrowserDataBackMigrator;
 class LoginEventRecorder;
 class StartupCustomizationDocument;
 class StartupUtils;
@@ -202,7 +201,6 @@ class NonMainThreadImpl;
 }
 }  // namespace blink
 namespace cc {
-class CategorizedWorkerPoolImpl;
 class CategorizedWorkerPoolJob;
 class CategorizedWorkerPool;
 class CompletionEvent;
@@ -246,12 +244,12 @@ class SandboxHostLinux;
 class ScopedAllowWaitForDebugURL;
 class ServiceWorkerContextClient;
 class ShellPathProvider;
+class SlowWebPreferenceCache;
 class SynchronousCompositor;
 class SynchronousCompositorHost;
 class SynchronousCompositorSyncCallBridge;
 class ScopedAllowBlockingForViewAura;
 class TextInputClientMac;
-class WebContentsImpl;
 class WebContentsViewMac;
 base::File CreateFileForDrop(base::FilePath*);
 }  // namespace content
@@ -259,9 +257,6 @@ namespace cronet {
 class CronetPrefsManager;
 class CronetContext;
 }  // namespace cronet
-namespace crosapi {
-class LacrosThreadTypeDelegate;
-}  // namespace crosapi
 namespace crypto {
 class ScopedAllowBlockingForNSS;
 }
@@ -292,12 +287,20 @@ class UnpackedInstaller;
 namespace font_service::internal {
 class MappedFontFile;
 }
+
+namespace gfx {
+class WUCBackdrop;
+}
+
 namespace gl {
 struct GLImplementationParts;
 namespace init {
 bool InitializeStaticGLBindings(GLImplementationParts);
 }
 }  // namespace gl
+namespace gpu {
+class GpuMemoryBufferImplDXGI;
+}
 namespace history_report {
 class HistoryReportJniBridge;
 }
@@ -331,6 +334,7 @@ template <class WorkerInterface,
 class CodecWorkerImpl;
 class FileVideoCaptureDeviceFactory;
 class GpuMojoMediaClientWin;
+class MailboxVideoFrameConverter;
 class MojoVideoEncodeAccelerator;
 class PaintCanvasVideoRenderer;
 class V4L2DevicePoller;  // TODO(crbug.com/41486289): remove this.
@@ -371,7 +375,7 @@ class ScopedAllowBlockingForSettingGetter;
 namespace internal {
 class AddressTrackerLinux;
 class PemFileCertStore;
-}
+}  // namespace internal
 }  // namespace net
 namespace printing {
 class LocalPrinterHandlerDefault;
@@ -533,15 +537,9 @@ class BooleanWithOptionalStack {
 #endif
 };
 
-namespace internal {
-
-// Asserts that blocking calls are allowed in the current scope. This is an
-// internal call, external code should use ScopedBlockingCall instead, which
-// serves as a precise annotation of the scope that may/will block.
+// Asserts that blocking calls are allowed in the current scope.
 NOT_TAIL_CALLED BASE_EXPORT void AssertBlockingAllowed();
 NOT_TAIL_CALLED BASE_EXPORT void AssertBlockingDisallowedForTesting();
-
-}  // namespace internal
 
 // Disallows blocking on the current thread.
 NOT_TAIL_CALLED BASE_EXPORT void DisallowBlocking();
@@ -585,7 +583,6 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class ::WebEngineBrowserMainParts;
   friend class android_webview::AwBrowserContext;
   friend class android_webview::ScopedAllowInitGLBindings;
-  friend class ash::BrowserDataBackMigrator;
   friend class ash::LoginEventRecorder;
   friend class ash::StartupCustomizationDocument;  // http://crosbug.com/11103
   friend class ash::StartupUtils;
@@ -616,7 +613,6 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class content::WebContentsViewMac;
   friend class cronet::CronetContext;
   friend class cronet::CronetPrefsManager;
-  friend class crosapi::LacrosThreadTypeDelegate;
   friend class crypto::ScopedAllowBlockingForNSS;  // http://crbug.com/59847
   friend class drive::FakeDriveService;
   friend class extensions::InstalledLoader;
@@ -657,8 +653,9 @@ class BASE_EXPORT ScopedAllowBlocking {
 #endif
 #if BUILDFLAG(IS_WIN)
   friend class base::win::OSInfo;
-  friend class content::WebContentsImpl;  // http://crbug.com/1262162
-  friend class media::GpuMojoMediaClientWin;  // https://crbug.com/360642944
+  friend class content::SlowWebPreferenceCache;  // http://crbug.com/1262162
+  friend class media::GpuMojoMediaClientWin;     // https://crbug.com/360642944
+  friend class gfx::WUCBackdrop;
 #endif
 #if BUILDFLAG(IS_IOS)
   friend class ::BrowserStateDirectoryBuilder;
@@ -755,7 +752,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class blink::VideoTrackRecorderImplContextProvider;
   friend class blink::WorkerThread;
   friend class blink::scheduler::NonMainThreadImpl;
-  friend class cc::CategorizedWorkerPoolImpl;
   friend class cc::CategorizedWorkerPoolJob;
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessIOThread;
@@ -800,8 +796,8 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
       OverlayProcessorWebView;                     // http://crbug.com/341151462
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
   friend class viz::
-      DisplayCompositorMemoryAndTaskController;  // http://crbug.com/341151462
-  friend class viz::SkiaOutputSurfaceImpl;       // http://crbug.com/341151462
+      DisplayCompositorMemoryAndTaskController;    // http://crbug.com/341151462
+  friend class viz::SkiaOutputSurfaceImpl;         // http://crbug.com/341151462
   friend class viz::SharedImageInterfaceProvider;  // http://crbug.com/341151462
 
   ScopedAllowBaseSyncPrimitives();
@@ -851,7 +847,6 @@ class BASE_EXPORT
   friend class blink::RTCVideoDecoderAdapter;
   friend class blink::RTCVideoEncoder;
   friend class blink::WebRtcVideoFrameAdapter;
-  friend class cc::CategorizedWorkerPoolImpl;
   friend class cc::CategorizedWorkerPoolJob;
   friend class cc::CategorizedWorkerPool;
   friend class cc::TileTaskManagerImpl;
@@ -864,8 +859,10 @@ class BASE_EXPORT
   friend class content::SynchronousCompositor;
   friend class content::SynchronousCompositorHost;
   friend class content::SynchronousCompositorSyncCallBridge;
+  friend class gpu::GpuMemoryBufferImplDXGI;
   friend class media::AudioInputDevice;
   friend class media::AudioOutputDevice;
+  friend class media::MailboxVideoFrameConverter;
   friend class media::PaintCanvasVideoRenderer;
   friend class media::V4L2DevicePoller;  // TODO(crbug.com/41486289): remove
                                          // this.
@@ -883,14 +880,14 @@ class BASE_EXPORT
   friend class base::Thread;                      // http://crbug.com/918039
   friend class cc::CompletionEvent;               // http://crbug.com/902653
   friend class content::
-      BrowserGpuChannelHostFactory;                 // http://crbug.com/125248
-  friend class content::TextInputClientMac;         // http://crbug.com/121917
-  friend class dbus::Bus;                           // http://crbug.com/125222
+      BrowserGpuChannelHostFactory;          // http://crbug.com/125248
+  friend class content::TextInputClientMac;  // http://crbug.com/121917
+  friend class dbus::Bus;                    // http://crbug.com/125222
   friend class discardable_memory::
-      ClientDiscardableSharedMemoryManager;         // http://crbug.com/1396355
-  friend class disk_cache::BackendImpl;             // http://crbug.com/74623
-  friend class disk_cache::InFlightIO;              // http://crbug.com/74623
-  friend class midi::TaskService;                   // https://crbug.com/796830
+      ClientDiscardableSharedMemoryManager;  // http://crbug.com/1396355
+  friend class disk_cache::BackendImpl;      // http://crbug.com/74623
+  friend class disk_cache::InFlightIO;       // http://crbug.com/74623
+  friend class midi::TaskService;            // https://crbug.com/796830
   friend class net::
       MultiThreadedProxyResolverScopedAllowJoinOnIO;  // http://crbug.com/69710
   friend class net::NetworkChangeNotifierApple;       // http://crbug.com/125097

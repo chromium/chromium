@@ -36,6 +36,7 @@ export interface CertificateSubpageV2Element {
 export class SubpageCertificateList {
   headerText: string;
   certSource: CertificateSource;
+  certMetadataEditable?: boolean;
   hideExport?: boolean;
   showImport?: boolean;
   showImportAndBind?: boolean;
@@ -58,14 +59,19 @@ export class CertificateSubpageV2Element extends
   static get properties() {
     return {
       subpageTitle: String,
-      subpageCertLists: Array,
+
+      subpageCertLists: {
+        type: Array,
+        value: () => [],
+      },
+
       navigateBackTarget: Page,
     };
   }
 
-  subpageTitle: string;
-  subpageCertLists: SubpageCertificateList[] = [];
-  navigateBackTarget: Page;
+  declare subpageTitle: string;
+  declare subpageCertLists: SubpageCertificateList[];
+  declare navigateBackTarget: Page;
   navigateBackSource: Page;
 
   // Sets initial keyboard focus of the subpage. Assumes that subpage elements

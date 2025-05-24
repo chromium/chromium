@@ -5,7 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_CONTAINERS_OF_NULLABLE_TYPES_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_TESTS_CONTAINERS_OF_NULLABLE_TYPES_MOJOM_TRAITS_H_
 
-#include "mojo/public/interfaces/bindings/tests/containers_of_nullable_types.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/containers_of_nullable_types.test-mojom.h"
 
 namespace mojo::test::containers_of_nullable_types {
 

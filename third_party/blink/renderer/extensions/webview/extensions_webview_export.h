@@ -33,11 +33,7 @@
 #endif  // defined(COMPILER_MSVC)
 
 #if defined(COMPILER_GCC)
-#if BLINK_EXTENSIONS_WEBVIEW_IMPLEMENTATION
 #define EXTENSIONS_WEBVIEW_EXPORT __attribute__((visibility("default")))
-#else
-#define EXTENSIONS_WEBVIEW_EXPORT
-#endif
 #endif  // defined(COMPILER_GCC)
 
 #endif  // !defined(COMPONENT_BUILD)

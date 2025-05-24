@@ -15,7 +15,7 @@ template<class T>
 class RefCountedVector
     : public base::RefCountedThreadSafe<RefCountedVector<T> > {
  public:
-  RefCountedVector() {}
+  RefCountedVector() = default;
   explicit RefCountedVector(const std::vector<T>& initializer)
       : data(initializer) {}
 
@@ -26,7 +26,7 @@ class RefCountedVector
 
  private:
   friend class base::RefCountedThreadSafe<RefCountedVector<T>>;
-  ~RefCountedVector() {}
+  ~RefCountedVector() = default;
 };
 
 #endif  // CHROME_COMMON_REF_COUNTED_UTIL_H__

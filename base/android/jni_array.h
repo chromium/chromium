@@ -34,6 +34,7 @@ BASE_EXPORT size_t SafeGetArrayLength(JNIEnv* env,
 }
 
 // Returns a new Java byte array converted from the given bytes array.
+// PRECONDITIONS: `bytes` must point to `len` valid bytes.
 UNSAFE_BUFFER_USAGE BASE_EXPORT ScopedJavaLocalRef<jbyteArray>
 ToJavaByteArray(JNIEnv* env, const uint8_t* bytes, size_t len);
 

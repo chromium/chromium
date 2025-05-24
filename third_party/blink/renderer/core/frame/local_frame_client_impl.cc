@@ -32,7 +32,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client_impl.h"
 
 #include <utility>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
@@ -42,7 +44,6 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -56,11 +57,11 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_dom_event.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_manifest_manager.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
@@ -354,16 +355,17 @@ void LocalFrameClientImpl::Detached(FrameDetachType type) {
   // place at this point since we are no longer associated with the Page.
   web_frame_->SetClient(nullptr);
 
-  client->WillDetach((type == FrameDetachType::kSwap)
-                         ? DetachReason::kNavigation
-                         : DetachReason::kFrameDeletion);
+  DetachReason detach_reason = (type == FrameDetachType::kRemove)
+                                   ? DetachReason::kFrameDeletion
+                                   : DetachReason::kNavigation;
+  client->WillDetach(detach_reason);
 
   // We only notify the browser process when the frame is being detached for
   // removal, not after a swap.
   if (type == FrameDetachType::kRemove)
     web_frame_->GetFrame()->GetLocalFrameHostRemote().Detach();
 
-  client->FrameDetached();
+  client->FrameDetached(detach_reason);
 
   if (type == FrameDetachType::kRemove)
     ToCoreFrame(web_frame_)->DetachFromParent();
@@ -398,8 +400,6 @@ std::optional<KURL> LocalFrameClientImpl::DispatchWillSendRequest(
 void LocalFrameClientImpl::DispatchDidDispatchDOMContentLoadedEvent() {
   if (web_frame_->Client())
     web_frame_->Client()->DidDispatchDOMContentLoadedEvent();
-
-  web_frame_->DidDispatchDOMContentLoadedEvent();
 }
 
 void LocalFrameClientImpl::DispatchDidLoadResourceFromMemoryCache(
@@ -421,7 +421,8 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     bool is_synchronously_committed,
     mojom::blink::SameDocumentNavigationType same_document_navigation_type,
     bool is_client_redirect,
-    bool is_browser_initiated) {
+    bool is_browser_initiated,
+    bool should_skip_screenshot) {
   bool should_create_history_entry = commit_type == kWebStandardCommit;
   // TODO(dglazkov): Does this need to be called for subframes?
   web_frame_->ViewImpl()->DidCommitLoad(should_create_history_entry, true);
@@ -446,7 +447,12 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
       CHECK(frame_widget);
       frame_widget->PropagateHistorySequenceNumberToCompositor();
 
-      if (commit_type != kWebHistoryInertCommit &&
+      // When the navigation call goes through the browser,
+      // should_skip_screenshot makes the remaining checks redundant. However,
+      // some navigations originate in the renderer and do not involve a commit
+      // IPC from the browser (e.g., navigations to an anchor from an HTML
+      // element)
+      if (!should_skip_screenshot && commit_type != kWebHistoryInertCommit &&
           !web_frame_->GetFrame()->GetSettings()->GetPrefersReducedMotion()) {
         navigation_with_screenshot = true;
         if (RuntimeEnabledFeatures::
@@ -514,7 +520,7 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
     HistoryItem* item,
     WebHistoryCommitType commit_type,
     bool should_reset_browser_interface_broker,
-    const blink::ParsedPermissionsPolicy& permissions_policy_header,
+    const network::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header) {
   if (!web_frame_->Parent()) {
     web_frame_->ViewImpl()->DidCommitLoad(commit_type == kWebStandardCommit,
@@ -554,10 +560,13 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
             web_frame_->GetDocument().GetUkmSourceId(),
             KURL(web_frame_->Client()->LastCommittedUrlForUKM()));
 
-        auto shmem = frame_widget->CreateSharedMemoryForSmoothnessUkm();
-        if (shmem.IsValid()) {
-          web_frame_->Client()->SetUpSharedMemoryForSmoothness(
-              std::move(shmem));
+        auto smoothness_shmem =
+            frame_widget->CreateSharedMemoryForSmoothnessUkm();
+        auto dropped_frames_shmem =
+            frame_widget->CreateSharedMemoryForDroppedFramesUkm();
+        if (smoothness_shmem.IsValid() && dropped_frames_shmem.IsValid()) {
+          web_frame_->Client()->SetUpSharedMemoryForUkms(
+              std::move(smoothness_shmem), std::move(dropped_frames_shmem));
         }
       }
     }
@@ -602,6 +611,7 @@ void LocalFrameClientImpl::BeginNavigation(
         should_check_main_world_content_security_policy,
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token,
     base::TimeTicks input_start_time,
+    base::TimeTicks actual_navigation_start,
     const String& href_translate,
     const std::optional<Impression>& impression,
     const LocalFrameToken* initiator_frame_token,
@@ -634,6 +644,7 @@ void LocalFrameClientImpl::BeginNavigation(
       should_check_main_world_content_security_policy;
   navigation_info->blob_url_token = std::move(blob_url_token);
   navigation_info->input_start = input_start_time;
+  navigation_info->actual_navigation_start = actual_navigation_start;
   navigation_info->initiator_frame_token =
       base::OptionalFromPtr(initiator_frame_token);
   navigation_info->initiator_navigation_state_keep_alive_handle =
@@ -825,11 +836,10 @@ void LocalFrameClientImpl::DidObserveUserInteraction(
     base::TimeTicks max_event_queued_main_thread,
     base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_end,
-    UserInteractionType interaction_type,
     uint64_t interaction_offset) {
   web_frame_->Client()->DidObserveUserInteraction(
       max_event_start, max_event_queued_main_thread, max_event_commit_finish,
-      max_event_end, interaction_type, interaction_offset);
+      max_event_end, interaction_offset);
 }
 
 void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time) {
@@ -879,8 +889,8 @@ void LocalFrameClientImpl::SelectorMatchChanged(
     const Vector<String>& added_selectors,
     const Vector<String>& removed_selectors) {
   if (WebLocalFrameClient* client = web_frame_->Client()) {
-    client->DidMatchCSS(WebVector<WebString>(added_selectors),
-                        WebVector<WebString>(removed_selectors));
+    client->DidMatchCSS(base::ToVector(added_selectors, ToWebString),
+                        base::ToVector(removed_selectors, ToWebString));
   }
 }
 
@@ -958,8 +968,8 @@ WebPluginContainerImpl* LocalFrameClientImpl::CreatePlugin(
   WebPluginParams params;
   params.url = url;
   params.mime_type = mime_type;
-  params.attribute_names = param_names;
-  params.attribute_values = param_values;
+  params.attribute_names = base::ToVector(param_names, ToWebString);
+  params.attribute_values = base::ToVector(param_values, ToWebString);
   params.load_manually = load_manually;
 
   WebPlugin* web_plugin = web_frame_->Client()->CreatePlugin(params);
@@ -993,9 +1003,9 @@ std::unique_ptr<WebMediaPlayer> LocalFrameClientImpl::CreateWebMediaPlayer(
       web_frame->Client(), html_media_element, source, client);
 }
 
-WebRemotePlaybackClient* LocalFrameClientImpl::CreateWebRemotePlaybackClient(
+RemotePlaybackClient* LocalFrameClientImpl::CreateRemotePlaybackClient(
     HTMLMediaElement& html_media_element) {
-  return CoreInitializer::GetInstance().CreateWebRemotePlaybackClient(
+  return CoreInitializer::GetInstance().CreateRemotePlaybackClient(
       html_media_element);
 }
 
@@ -1167,17 +1177,16 @@ v8::Local<v8::Object> LocalFrameClientImpl::GetScriptableObject(
 }
 
 scoped_refptr<WebWorkerFetchContext>
-LocalFrameClientImpl::CreateWorkerFetchContext() {
+LocalFrameClientImpl::CreateWorkletFetchContext() {
   DCHECK(web_frame_->Client());
-  return web_frame_->Client()->CreateWorkerFetchContext();
+  return web_frame_->Client()->CreateWorkletFetchContext();
 }
 
 scoped_refptr<WebWorkerFetchContext>
-LocalFrameClientImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
+LocalFrameClientImpl::CreateWorkerFetchContext(
     WebDedicatedWorkerHostFactoryClient* factory_client) {
   DCHECK(web_frame_->Client());
-  return web_frame_->Client()->CreateWorkerFetchContextForPlzDedicatedWorker(
-      factory_client);
+  return web_frame_->Client()->CreateWorkerFetchContext(factory_client);
 }
 
 std::unique_ptr<WebContentSettingsClient>

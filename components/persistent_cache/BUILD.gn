@@ -1,0 +1,82 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("persistent_cache") {
+  sources = [
+    "backend.cc",
+    "backend.h",
+    "backend_params.cc",
+    "backend_params.h",
+    "backend_params_manager.cc",
+    "backend_params_manager.h",
+    "entry.cc",
+    "entry.h",
+    "entry_metadata.h",
+    "persistent_cache.h",
+    "sqlite/sqlite_entry_impl.cc",
+    "sqlite/sqlite_entry_impl.h",
+  ]
+
+  if (is_fuchsia) {
+    sources += [ "persistent_cache_fuchsia.cc" ]
+  }
+
+  # Cross-process file locks are not available on Fuchsia.
+  if (!is_fuchsia) {
+    sources += [
+      "persistent_cache.cc",
+      "sqlite/sqlite_backend_impl.cc",
+      "sqlite/sqlite_backend_impl.h",
+      "sqlite/vfs/sandboxed_file.cc",
+      "sqlite/vfs/sandboxed_file.h",
+      "sqlite/vfs/sqlite_database_vfs_file_set.cc",
+      "sqlite/vfs/sqlite_database_vfs_file_set.h",
+      "sqlite/vfs/sqlite_sandboxed_vfs.cc",
+      "sqlite/vfs/sqlite_sandboxed_vfs.h",
+    ]
+  }
+
+  # See base/component_export.h
+  defines = [ "IS_PERSISTENT_CACHE_IMPL" ]
+
+  deps = [
+    "//base",
+    "//sql",
+    "//third_party/sqlite",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "backend_params_manager_unittest.cc",
+    "entry_unittest.cc",
+    "mock/mock_backend_impl.cc",
+    "mock/mock_backend_impl.h",
+    "mock/mock_entry_impl.cc",
+    "mock/mock_entry_impl.h",
+    "sqlite/sqlite_entry_unittest.cc",
+  ]
+
+  # Cross-process file locks are not available on Fuchsia.
+  if (!is_fuchsia) {
+    sources += [
+      "persistent_cache_unittest.cc",
+      "sqlite/test_utils.cc",
+      "sqlite/test_utils.h",
+      "sqlite/vfs/sqlite_sandboxed_vfs_unittest.cc",
+    ]
+  }
+
+  deps = [
+    ":persistent_cache",
+    "//base",
+    "//base/test:test_support",
+    "//sql",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/sqlite",
+  ]
+}

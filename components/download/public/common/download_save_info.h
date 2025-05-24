@@ -95,6 +95,10 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadSaveInfo {
 
   // Whether the file contents need to be obfuscated.
   bool needs_obfuscation = false;
+
+  // The size of the response body. If content-length response header is not
+  // presented or can't be parse, set to 0.
+  int64_t total_bytes = 0;
 };
 
 }  // namespace download

@@ -5,9 +5,10 @@
 import 'chrome://diagnostics/touchscreen_tester.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {DialogType, SCREEN_MAX_LENGTH, TouchEventType, TouchscreenTesterElement} from 'chrome://diagnostics/touchscreen_tester.js';
+import type {TouchscreenTesterElement} from 'chrome://diagnostics/touchscreen_tester.js';
+import {DialogType, SCREEN_MAX_LENGTH, TouchEventType} from 'chrome://diagnostics/touchscreen_tester.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';

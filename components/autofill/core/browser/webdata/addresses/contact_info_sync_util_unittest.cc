@@ -8,11 +8,11 @@
 #include "base/hash/hash.h"
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,10 +36,10 @@ AutofillProfile ConstructBaseProfile(
   AutofillProfile profile(kGuid, AutofillProfile::RecordType::kAccount,
                           country_code);
 
-  profile.set_use_count(123);
-  profile.set_use_date(kUseDate, 1);
-  profile.set_use_date(kUseDate2, 2);
-  profile.set_modification_date(kModificationDate);
+  profile.usage_history().set_use_count(123);
+  profile.usage_history().set_use_date(kUseDate, 1);
+  profile.usage_history().set_use_date(kUseDate2, 2);
+  profile.usage_history().set_modification_date(kModificationDate);
   profile.set_language_code("en");
   profile.set_profile_label("profile_label");
   profile.set_initial_creator_id(
@@ -51,7 +51,7 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"K.",
                                            VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Doe",
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"von Doe",
                                            VerificationStatus::kFormatted);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_FIRST, u"D",
                                            VerificationStatus::kParsed);
@@ -59,7 +59,17 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_SECOND, u"e",
                                            VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. Doe",
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_PREFIX, u"von",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_CORE, u"Doe",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. von Doe",
+                                           VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"Doe",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"John",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME, u"John Doe",
                                            VerificationStatus::kUserVerified);
 
   // Set address-related values and statuses.
@@ -343,15 +353,25 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_name_middle(), "K.",
            ContactInfoSpecifics::OBSERVED);
-  SetToken(specifics.mutable_name_last(), "Doe",
+  SetToken(specifics.mutable_name_last(), "von Doe",
            ContactInfoSpecifics::FORMATTED);
+  SetToken(specifics.mutable_name_last_prefix(), "von",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_name_last_core(), "Doe",
+           ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_last_first(), "D",
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_last_conjunction(), "o",
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_last_second(), "e",
            ContactInfoSpecifics::PARSED);
-  SetToken(specifics.mutable_name_full(), "John K. Doe",
+  SetToken(specifics.mutable_name_full(), "John K. von Doe",
+           ContactInfoSpecifics::USER_VERIFIED);
+  SetToken(specifics.mutable_alternative_family_name(), "Doe",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_alternative_given_name(), "John",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_alternative_full_name(), "John Doe",
            ContactInfoSpecifics::USER_VERIFIED);
 
   // Set address-related values and statuses.
@@ -670,20 +690,18 @@ enum class I18nCountryModel {
   kMX = 5
 };
 
-// The tests are parametrized with a country to assert that all custom address
+// The tests are parameterized with a country to assert that all custom address
 // models are supported.
 class ContactInfoSyncUtilTest
     : public testing::Test,
       public testing::WithParamInterface<I18nCountryModel> {
  public:
   ContactInfoSyncUtilTest() {
-    features_.InitWithFeatures({features::kAutofillUseAUAddressModel,
-                                features::kAutofillUseCAAddressModel,
-                                features::kAutofillUseDEAddressModel,
-                                features::kAutofillUseFRAddressModel,
+    features_.InitWithFeatures({features::kAutofillUseFRAddressModel,
                                 features::kAutofillUseINAddressModel,
-                                features::kAutofillUseITAddressModel,
-                                features::kAutofillTrackMultipleUseDates},
+                                features::kAutofillUseNLAddressModel,
+                                features::kAutofillSupportPhoneticNameForJP,
+                                features::kAutofillSupportLastNamePrefix},
                                {});
   }
 

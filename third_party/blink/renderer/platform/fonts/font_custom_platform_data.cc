@@ -75,18 +75,6 @@ RetrieveVariationDesignParametersByTag(sk_sp<SkTypeface> base_typeface,
   return std::nullopt;
 }
 
-std::unique_ptr<SkFontArguments::Palette::Override[]>
-ConvertPaletteOverridesToSkiaOverrides(
-    Vector<blink::FontPalette::FontPaletteOverride> color_overrides) {
-  auto sk_overrides = std::make_unique<SkFontArguments::Palette::Override[]>(
-      color_overrides.size());
-  for (wtf_size_t i = 0; i < color_overrides.size(); i++) {
-    SkColor sk_color = color_overrides[i].color.toSkColor4f().toSkColor();
-    sk_overrides[i] = {color_overrides[i].index, sk_color};
-  }
-  return sk_overrides;
-}
-
 }  // namespace
 
 namespace blink {
@@ -153,11 +141,13 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       FontSelectionRange wght_range = {
           FontSelectionValue(wght_parameters->min),
           FontSelectionValue(wght_parameters->max)};
-      weight_coordinate = {
-          kWghtTag,
-          SkFloatToScalar(wght_range.clampToRange(selection_request.weight))};
-      synthetic_bold = bold && wght_range.maximum < kBoldThreshold &&
-                       selection_request.weight >= kBoldThreshold;
+      if (wght_range.IsValid()) {
+        weight_coordinate = {
+            kWghtTag,
+            SkFloatToScalar(wght_range.clampToRange(selection_request.weight))};
+        synthetic_bold = bold && wght_range.maximum < kBoldThreshold &&
+                         selection_request.weight >= kBoldThreshold;
+      }
     }
 
     SkFontArguments::VariationPosition::Coordinate width_coordinate = {
@@ -169,9 +159,11 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       FontSelectionRange wdth_range = {
           FontSelectionValue(wdth_parameters->min),
           FontSelectionValue(wdth_parameters->max)};
-      width_coordinate = {
-          kWdthTag,
-          SkFloatToScalar(wdth_range.clampToRange(selection_request.width))};
+      if (wdth_range.IsValid()) {
+        width_coordinate = {
+            kWdthTag,
+            SkFloatToScalar(wdth_range.clampToRange(selection_request.width))};
+      }
     }
     // CSS and OpenType have opposite definitions of direction of slant
     // angle. In OpenType positive values turn counter-clockwise, negative
@@ -187,11 +179,13 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       FontSelectionRange slnt_range = {
           FontSelectionValue(slnt_parameters->min),
           FontSelectionValue(slnt_parameters->max)};
-      slant_coordinate = {
-          kSlntTag,
-          SkFloatToScalar(slnt_range.clampToRange(-selection_request.slope))};
-      synthetic_italic = italic && slnt_range.maximum < kItalicSlopeValue &&
-                         selection_request.slope >= kItalicSlopeValue;
+      if (slnt_range.IsValid()) {
+        slant_coordinate = {
+            kSlntTag,
+            SkFloatToScalar(slnt_range.clampToRange(-selection_request.slope))};
+        synthetic_italic = italic && slnt_range.maximum < kItalicSlopeValue &&
+                           selection_request.slope >= kItalicSlopeValue;
+      }
     }
 
     variation.push_back(weight_coordinate);
@@ -269,7 +263,12 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       sk_palette.index = *palette_index;
 
       if (color_overrides.size()) {
-        sk_overrides = ConvertPaletteOverridesToSkiaOverrides(color_overrides);
+        sk_overrides = std::make_unique<SkFontArguments::Palette::Override[]>(
+            color_overrides.size());
+        for (wtf_size_t i = 0; i < color_overrides.size(); i++) {
+          SkColor sk_color = color_overrides[i].color.toSkColor4f().toSkColor();
+          sk_overrides[i] = {color_overrides[i].index, sk_color};
+        }
         sk_palette.overrides = sk_overrides.get();
         sk_palette.overrideCount = color_overrides.size();
       }
@@ -283,10 +282,8 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     }
   }
   return MakeGarbageCollected<FontPlatformData>(
-      std::move(return_typeface), std::string(), size,
-      synthetic_bold && !base_typeface_->isBold(),
-      synthetic_italic && !base_typeface_->isItalic(), text_rendering,
-      resolved_font_features, orientation);
+      std::move(return_typeface), std::string(), size, synthetic_bold,
+      synthetic_italic, text_rendering, resolved_font_features, orientation);
 }
 
 Vector<VariationAxis> FontCustomPlatformData::GetVariationAxes() const {
@@ -306,8 +303,18 @@ String FontCustomPlatformData::FamilyNameForInspector() const {
     }
   }
   font_family_iterator->unref();
-  return String::FromUTF8(localized_string.fString.c_str(),
-                          localized_string.fString.size());
+  return String::FromUTF8(base::as_byte_span(localized_string.fString));
+}
+
+String FontCustomPlatformData::GetPostScriptNameOrFamilyNameForInspector()
+    const {
+  SkString postscript_name;
+  bool success = base_typeface_->getPostScriptName(&postscript_name);
+  if (!success) {
+    return FamilyNameForInspector();
+  }
+
+  return postscript_name.c_str();
 }
 
 FontCustomPlatformData* FontCustomPlatformData::Create(
@@ -328,41 +335,6 @@ FontCustomPlatformData* FontCustomPlatformData::Create(
     size_t data_size) {
   return MakeGarbageCollected<FontCustomPlatformData>(
       PassKey(), std::move(typeface), data_size);
-}
-
-bool FontCustomPlatformData::MayBeIconFont() const {
-  if (!may_be_icon_font_computed_) {
-    // We observed that many icon fonts define almost all of their glyphs in the
-    // Unicode Private Use Area, while non-icon fonts rarely use PUA. We use
-    // this as a heuristic to determine if a font is an icon font.
-
-    // We first obtain the list of glyphs mapped from PUA codepoint range:
-    // https://unicode.org/charts/PDF/UE000.pdf
-    // Note: The two supplementary PUA here are too long but not used much by
-    // icon fonts, so we don't include them in this heuristic.
-    wtf_size_t pua_length =
-        kPrivateUseLastCharacter - kPrivateUseFirstCharacter + 1;
-    Vector<SkUnichar> pua_codepoints(pua_length);
-    for (wtf_size_t i = 0; i < pua_length; ++i)
-      pua_codepoints[i] = kPrivateUseFirstCharacter + i;
-
-    Vector<SkGlyphID> glyphs(pua_codepoints.size());
-    base_typeface_->unicharsToGlyphs(pua_codepoints.data(),
-                                     pua_codepoints.size(), glyphs.data());
-
-    // Deduplicate and exclude glyph ID 0 (which means undefined glyph)
-    std::sort(glyphs.begin(), glyphs.end());
-    glyphs.erase(std::unique(glyphs.begin(), glyphs.end()), glyphs.end());
-    if (!glyphs[0])
-      glyphs.EraseAt(0);
-
-    // We use the heuristic that if more than half of the define glyphs are in
-    // PUA, then the font may be an icon font.
-    wtf_size_t pua_glyph_count = glyphs.size();
-    wtf_size_t total_glyphs = base_typeface_->countGlyphs();
-    may_be_icon_font_ = pua_glyph_count * 2 > total_glyphs;
-  }
-  return may_be_icon_font_;
 }
 
 }  // namespace blink

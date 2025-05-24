@@ -60,8 +60,7 @@ class ConnectionManagerTest : public testing::Test {
       if (url == GetAndroidMessagesURLOld())
         return old_url_service_worker_;
 
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
 
     raw_ptr<content::FakeServiceWorkerContext> new_url_service_worker_;

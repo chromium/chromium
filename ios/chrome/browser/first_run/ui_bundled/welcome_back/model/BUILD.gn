@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "welcome_back_prefs.h",
+    "welcome_back_prefs.mm",
+  ]
+  public_deps = [ "//components/prefs" ]
+  deps = [
+    "//ios/chrome/browser/first_run/ui_bundled/best_features/ui:best_features_item",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,7 +35,10 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -52,9 +54,9 @@
 #include "net/base/network_change_notifier.h"
 #include "ui/base/ui_base_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
+#include "ash/wm/window_pin_util.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -62,11 +64,19 @@
 #include "chrome/common/chrome_features.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#endif
+
 namespace chrome {
 
 class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
  public:
-  BrowserCommandControllerBrowserTest() {}
+  BrowserCommandControllerBrowserTest() = default;
 
   BrowserCommandControllerBrowserTest(
       const BrowserCommandControllerBrowserTest&) = delete;
@@ -76,7 +86,7 @@ class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
   ~BrowserCommandControllerBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line->AppendSwitch(
         ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
@@ -121,22 +131,8 @@ class BrowserCommandControllerBrowserTestRefreshOnly
   }
 };
 // Test case for actions behind Toolbar Pinning.
-class BrowserCommandControllerBrowserTestToolbarPinningOnly
-    : public BrowserCommandControllerBrowserTestRefreshOnly {
- public:
-  BrowserCommandControllerBrowserTestToolbarPinningOnly() {
-    scoped_feature_list_.InitWithFeatures({features::kToolbarPinning}, {});
-  }
-  BrowserCommandControllerBrowserTestToolbarPinningOnly(
-      const BrowserCommandControllerBrowserTestToolbarPinningOnly&) = delete;
-  BrowserCommandControllerBrowserTestToolbarPinningOnly& operator=(
-      const BrowserCommandControllerBrowserTestToolbarPinningOnly&) = delete;
-
-  ~BrowserCommandControllerBrowserTestToolbarPinningOnly() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using BrowserCommandControllerBrowserTestToolbarPinningOnly =
+    BrowserCommandControllerBrowserTestRefreshOnly;
 
 // Verify that showing a constrained window disables find.
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, DisableFind) {
@@ -199,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        NewAvatarMenuEnabledInGuestMode) {
   EXPECT_EQ(1U, BrowserList::GetInstance()->size());
@@ -212,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class BrowserCommandControllerBrowserTestLockedFullscreen
     : public BrowserCommandControllerBrowserTest {
  protected:
@@ -249,6 +245,9 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
     browser()->command_controller()->FullscreenStateChanged();
     browser()->command_controller()->PrintingStateChanged();
     browser()->command_controller()->ExtensionStateChanged();
+    browser()->command_controller()->FindBarVisibilityChanged();
+    browser()->command_controller()->UpdateReloadStopState(/*is_loading=*/true,
+                                                           /*force=*/false);
   }
 
   void ExitLockedFullscreen() {
@@ -315,9 +314,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestLockedFullscreen,
       IDC_CUT, IDC_COPY, IDC_PASTE,
       // Page navigation commands.
       IDC_BACK, IDC_FORWARD, IDC_RELOAD, IDC_RELOAD_BYPASSING_CACHE,
-      IDC_RELOAD_CLEARING_CACHE,
+      IDC_RELOAD_CLEARING_CACHE, IDC_STOP,
       // Tab navigation commands.
-      IDC_SELECT_NEXT_TAB, IDC_SELECT_PREVIOUS_TAB};
+      IDC_SELECT_NEXT_TAB, IDC_SELECT_PREVIOUS_TAB,
+      // Find content commands.
+      IDC_FIND, IDC_FIND_NEXT, IDC_FIND_PREVIOUS, IDC_CLOSE_FIND_OR_STOP};
 
   // Go through all the command ids and ensure only allowlisted commands are
   // enabled.
@@ -421,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteProfileMenuCustomizeChrome) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_CUSTOMIZE_CHROME));
@@ -461,9 +462,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteShowCustomizeChrome) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  if (!features::IsToolbarPinningEnabled()) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://new-tab-page/")));
-  }
   content::WaitForLoadStop(web_contents);
   EXPECT_TRUE(
       chrome::ExecuteCommand(browser(), IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL));
@@ -477,9 +475,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteShowCustomizeChromeToolbar) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  if (!features::IsToolbarPinningEnabled()) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://new-tab-page/")));
-  }
   content::WaitForLoadStop(web_contents);
   EXPECT_TRUE(
       chrome::ExecuteCommand(browser(), IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR));
@@ -595,15 +590,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestToolbarPinningOnly,
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-class CreateShortcutBrowserCommandControllerNavTest
-    : public BrowserCommandControllerBrowserTest {
- public:
-  CreateShortcutBrowserCommandControllerNavTest() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kShortcutsNotApps};
-};
+using CreateShortcutBrowserCommandControllerNavTest =
+    BrowserCommandControllerBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
                        ErrorUrlDisabled) {
@@ -617,5 +605,126 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
+// Tests for comparison table submenu.
+class BrowserCommandControllerBrowserTestCompare
+    : public BrowserCommandControllerBrowserTest {
+ public:
+  BrowserCommandControllerBrowserTestCompare() {
+    scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestCompare,
+                       AddToTableMenu_UrlSchemeHttp) {
+  GURL url = GURL("http://example.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  browser()->command_controller()->TabStateChanged();
+
+  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(
+      IDC_ADD_TO_COMPARISON_TABLE_MENU));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestCompare,
+                       AddToTableMenu_UrlSchemeHttps) {
+  GURL url = GURL("https://example.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  browser()->command_controller()->TabStateChanged();
+
+  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(
+      IDC_ADD_TO_COMPARISON_TABLE_MENU));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestCompare,
+                       AddToTableMenu_UrlSchemeNotHttpOrHttps) {
+  GURL url = GURL("chrome://history");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  browser()->command_controller()->TabStateChanged();
+
+  EXPECT_FALSE(browser()->command_controller()->IsCommandEnabled(
+      IDC_ADD_TO_COMPARISON_TABLE_MENU));
+}
+
+#if BUILDFLAG(ENABLE_GLIC)
+class BrowserCommandControllerBrowserTestGlic
+    : public BrowserCommandControllerBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton}, {});
+    BrowserCommandControllerBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Bypass glic eligibility check.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
+                       ExecuteGlicTogglePin) {
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  profile_prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
+
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_GLIC_TOGGLE_PIN));
+  EXPECT_TRUE(profile_prefs->GetBoolean(glic::prefs::kGlicPinnedToTabstrip));
+
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_GLIC_TOGGLE_PIN));
+  EXPECT_FALSE(profile_prefs->GetBoolean(glic::prefs::kGlicPinnedToTabstrip));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
+                       EnabledInRegularProfile) {
+  ASSERT_TRUE(browser()->profile()->IsRegularProfile());
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_GLIC_TOGGLE_PIN));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
+                       DisabledInIncognitoProfile) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_FALSE(
+      chrome::IsCommandEnabled(incognito_browser, IDC_GLIC_TOGGLE_PIN));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
+                       DisabledInGuestProfile) {
+  Browser* guest_browser = CreateGuestBrowser();
+  EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
+  EXPECT_FALSE(chrome::IsCommandEnabled(guest_browser, IDC_GLIC_TOGGLE_PIN));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
+                       ThreeDotMenuItemEnabledInRegularProfile) {
+  ASSERT_TRUE(browser()->profile()->IsRegularProfile());
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPEN_GLIC));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
+                       ExecuteGlicThreeDotMenuItem) {
+  // Bypass glic eligibility check.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  profile_prefs->SetInteger(
+      ::prefs::kGeminiSettings,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+  // Bypass fre.
+  profile_prefs->SetInteger(glic::prefs::kGlicCompletedFre,
+                            static_cast<int>(glic::prefs::FreStatus::kCompleted));
+
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GLIC));
+  ASSERT_TRUE(
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+          ->IsWindowShowing());
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace chrome

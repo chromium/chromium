@@ -121,9 +121,8 @@ void ScrollbarAnimationController::StopAnimation() {
 
 void ScrollbarAnimationController::PostDelayedAnimation(
     AnimationChange animation_change) {
-  // If fade duration is zero we are in a test environment and should not
-  // animate.
-  if (fade_duration_.is_zero()) {
+  // If fade duration is the max value, do not start a timer.
+  if (fade_delay_.is_max()) {
     return;
   }
 

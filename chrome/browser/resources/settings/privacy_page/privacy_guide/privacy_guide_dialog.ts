@@ -44,6 +44,8 @@ export class SettingsPrivacyGuideDialogElement extends PolymerElement {
     };
   }
 
+  declare prefs: {[key: string]: any};
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -51,7 +53,7 @@ export class SettingsPrivacyGuideDialogElement extends PolymerElement {
 
     const elementToFocus =
         this.shadowRoot!.querySelector<HTMLElement>('#backToSettingsButton')!;
-    afterNextRender(this, () => elementToFocus!.focus());
+    afterNextRender(this, () => elementToFocus.focus());
   }
 
   private onDialogCancel_(e: Event) {

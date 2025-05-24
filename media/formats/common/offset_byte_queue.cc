@@ -47,7 +47,6 @@ void OffsetByteQueue::Pop(int count) {
 }
 
 void OffsetByteQueue::PeekAt(int64_t offset, const uint8_t** buf, int* size) {
-  DCHECK(offset >= head());
   if (offset < head() || offset >= tail()) {
     *buf = nullptr;
     *size = 0;
@@ -68,7 +67,7 @@ bool OffsetByteQueue::Trim(int64_t max_offset) {
 }
 
 void OffsetByteQueue::Sync() {
-  queue_.Peek(&buf_, &size_);
+  queue_.Peek(&buf_.AsEphemeralRawAddr(), &size_);
 }
 
 }  // namespace media

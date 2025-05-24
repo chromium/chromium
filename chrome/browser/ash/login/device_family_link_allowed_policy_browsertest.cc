@@ -26,17 +26,18 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace {
 
 const char kFamilyLinkUser[] = "fl@gmail.com";
-const char kFamilyLinkGaiaID[] = "111111";
+const GaiaId::Literal kFamilyLinkGaiaID("111111");
 const char kRegularUser[] = "regular@gmail.com";
-const char kRegularGaiaID[] = "222222";
+const GaiaId::Literal kRegularGaiaID("222222");
 const char kSchoolUser[] = "student@edu.com";
-const char kSchoolGaiaID[] = "333333";
+const GaiaId::Literal kSchoolGaiaID("333333");
 const char kSchoolAllowlist[] = "*@edu.com";
 
 }  // namespace

@@ -89,7 +89,8 @@ TEST_F(PrefBasedQuietPermissionUiSelectorTest, FeatureAndPrefCombinations) {
 
     permissions::MockPermissionRequest mock_request(
         GURL("http://example.com"), permissions::RequestType::kNotifications);
-    pref_selector()->SelectUiToUse(&mock_request, mock_callback.Get());
+    pref_selector()->SelectUiToUse(/*web_contents=*/nullptr, &mock_request,
+                                   mock_callback.Get());
     callback_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&mock_callback);
 

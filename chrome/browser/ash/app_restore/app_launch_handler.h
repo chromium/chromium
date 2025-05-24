@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_RESTORE_APP_LAUNCH_HANDLER_H_
 #define CHROME_BROWSER_ASH_APP_RESTORE_APP_LAUNCH_HANDLER_H_
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -47,7 +49,13 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   Profile* profile() { return profile_; }
   const Profile* profile() const { return profile_; }
 
-  ::app_restore::RestoreData* restore_data() { return restore_data_.get(); }
+  ::app_restore::RestoreData* restore_data() {
+    return const_cast<::app_restore::RestoreData*>(
+        std::as_const(*this).restore_data());
+  }
+  const ::app_restore::RestoreData* restore_data() const {
+    return restore_data_.get();
+  }
 
  protected:
   // Note: LaunchApps does not launch browser windows, this is handled

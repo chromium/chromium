@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://github.com/w3c/longtasks/blob/loaf-explainer/loaf-explainer.md
-[Exposed=Window, RuntimeEnabled=LongAnimationFrameTiming]
+[Exposed=Window]
 interface PerformanceLongAnimationFrameTiming : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp renderStart;
     readonly attribute DOMHighResTimeStamp styleAndLayoutStart;
@@ -13,3 +13,5 @@ interface PerformanceLongAnimationFrameTiming : PerformanceEntry {
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
+
+PerformanceLongAnimationFrameTiming includes PaintTimingMixin;

@@ -236,10 +236,8 @@ TEST(InspectorSessionStateTest, MultipleAgents) {
   // Show that the keys for the field values are prefixed with the domain name
   // passed to AgentState so that the stored values won't collide.
   DevToolsSessionStatePtr cookie = dev_tools_session.CloneCookie();
-  Vector<WTF::String> keys;
-  WTF::CopyKeysToVector(cookie->entries, keys);
-
-  EXPECT_THAT(keys, UnorderedElementsAre("map_agents.1/Pi", "simple_agent.4/"));
+  EXPECT_THAT(cookie->entries.Keys(),
+              UnorderedElementsAre("map_agents.1/Pi", "simple_agent.4/"));
 
   {  // Renderer session, maps_agent clears its fields, and show that it will
     // clear the agent's fields, but no other fields.

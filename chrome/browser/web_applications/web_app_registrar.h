@@ -16,6 +16,8 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -27,18 +29,22 @@
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Profile;
 
 namespace apps {
+namespace proto {
 struct ShareTarget;
+}  // namespace proto
 }  // namespace apps
 
 namespace content {
@@ -70,10 +76,28 @@ struct ValueWithPolicy {
 using DiyAppCount = base::StrongAlias<class DiyAppCountTag, int>;
 using InstallableAppCount =
     base::StrongAlias<class InstallableAppCountTag, int>;
+using NonSyncingAppCount = base::StrongAlias<class NonSyncingAppCountTag, int>;
+
+// Enabling this will force all apps that are exclusively preinstalled and open
+// in a browser tab to have the default navigation capturing setting be 'on'.
+// This is needed for use-cases where a preinstalled app needs to capture
+// navigations by default even though other apps do not.
+BASE_DECLARE_FEATURE(kPreinstalledBrowserTabWebAppsCaptureOnDefault);
+
+// Enabling this will force all apps that are exclusively preinstalled and open
+// in a browser tab to have the default navigation capturing setting be 'off'.
+// This is a safety switch in case something goes wrong with navigation
+// capturing launch.
+BASE_DECLARE_FEATURE(kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff);
 
 // A registry model. This is a read-only container, which owns WebApp objects.
 class WebAppRegistrar {
  public:
+  // Returns if the given display mode is supported for navigation capturing.
+  // TODO(crbug.com/375504532): Support tabbed mode on desktop.
+  static bool IsSupportedDisplayModeForNavigationCapture(
+      blink::mojom::DisplayMode display_mode);
+
   explicit WebAppRegistrar(Profile* profile);
   WebAppRegistrar(const WebAppRegistrar&) = delete;
   WebAppRegistrar& operator=(const WebAppRegistrar&) = delete;
@@ -108,8 +132,10 @@ class WebAppRegistrar {
       WebAppManagement::Type install_source,
       const GURL& install_url) const;
 
-  // Returns true if the given app_id is not in the registrar.
-  bool IsNotInRegistrar(const webapps::AppId& app_id) const;
+  // Returns true if the given `app_id` is in the registrar. Important: This
+  // function should not be used to check whether an app is installed or not.
+  // Please consider GetInstallState() instead of this function for that.
+  bool IsInRegistrar(const webapps::AppId& app_id) const;
 
   // Returns the install state of the given `app_id`, or std::nullopt if it is
   // not in the registrar.
@@ -122,45 +148,29 @@ class WebAppRegistrar {
       const webapps::AppId& app_id,
       std::initializer_list<proto::InstallState> allowed_states) const;
 
-  // This struct can be used `FindBestAppWithUrlInScope` and possible future
-  // methods to filter apps.
-  struct AppFilterOptions {
-    // If false, removes apps that will be launched in a browser tab.
-    bool include_open_in_browser_tab = true;
-    // If false, removes DIY apps.
-    bool include_diy = true;
-    // TODO(crbug.com/341337420): Change this to default true.
-    bool include_extended_scope = false;
-  };
+  // Returns true if an app exists in the registry with `app_id` and matches the
+  // filter provided.
+  //
+  // Example usage:
+  //     AppMatches(app_id, WebAppFilter::OpensInBrowserTab())
+  bool AppMatches(const webapps::AppId&,
+                  const WebAppFilter& capabilities) const;
 
-  // Returns the app id of an app in the registry in one of the given
-  // `allowed_states` and the longest scope that is a prefix of `url`. Will
-  // CHECK-fail if `allowed_states` is empty.
-  // The 'best' criteria is a combination of the following:
-  // - The length of the scope of the potential controlling app.
-  // - If the app is a shortcut app or not.
-  // TODO(crbug.com/341316725): Remove shortcut apps.
+  // Returns the AppId of an app that best matches the specified filter.
+  // 'Best' is determined by the longest scope that is a prefix of `url`.
+  //
+  // Example usage:
+  //    std::optional<webapps::AppId> app_ip = FindBestAppWithUrlInScope(
+  //        url, WebAppFilter::OpensInBrowserTab());
   std::optional<webapps::AppId> FindBestAppWithUrlInScope(
       const GURL& url,
-      std::initializer_list<proto::InstallState> allowed_states) const;
-  // Same as above but with more filtering options.
-  std::optional<webapps::AppId> FindBestAppWithUrlInScope(
-      const GURL& url,
-      std::initializer_list<proto::InstallState> allowed_states,
-      AppFilterOptions options) const;
-
-  // Finds all apps that have the given `url` in scope and are in one of the
-  // given `allowed_states`. Will CHECK-fail if `allowed_states` is empty.
-  std::vector<webapps::AppId> FindAllAppsWithUrlInScope(
-      const GURL& url,
-      std::initializer_list<proto::InstallState> allowed_states) const;
+      const WebAppFilter& filter) const;
 
   // Finds all apps that have scopes that are nested within the given
-  // `outer_scope`, and are in one of the given `allowed_states`. Will
-  // CHECK-fail if `allowed_states` is empty.
+  // `outer_scope`, and match the specified filter.
   std::vector<webapps::AppId> FindAllAppsNestedInUrl(
       const GURL& outer_scope,
-      std::initializer_list<proto::InstallState> allowed_states) const;
+      const WebAppFilter& filter) const;
 
   // Returns true if there exists at least one app installed under `scope` that
   // is in the given `allowed_states`.
@@ -169,28 +179,16 @@ class WebAppRegistrar {
       const GURL& scope,
       std::initializer_list<proto::InstallState> allowed_states) const;
 
-  // Returns whether the app with |app_id| is currently listed in the registry.
-  // ie. we have data for web app manifest and icons, and this |app_id| can be
-  // used in other registrar methods.
-  // TODO(crbug.com/340952100): Remove & replace callers with `IsInstallState`.
-  bool IsInstalled(const webapps::AppId& app_id) const;
-
   // Returns whether the app is currently being uninstalled. This will be true
   // after uninstall has begun but before the OS integration hooks for uninstall
   // have completed. It will return false after uninstallation has completed.
   bool IsUninstalling(const webapps::AppId& app_id) const;
 
-  // Returns true if the app was actively installed, meaning the app has
-  // involved some form of user or administrator action to either install it or
-  // configure it to behave like an app.
-  // TODO(crbug.com/340952100): Remove & replace callers with `IsInstallState`.
-  bool IsActivelyInstalled(const webapps::AppId& app_id) const;
-
   // Returns the permissions policy declared as declared in the manifest for
   // the app with |app_id|. This permissions policy is not yet parsed by the
   // PermissionsPolicyParser, and thus may contain invalid permissions and/or
   // origin allowlists.
-  blink::ParsedPermissionsPolicy GetPermissionsPolicy(
+  network::ParsedPermissionsPolicy GetPermissionsPolicy(
       const webapps::AppId& app_id) const;
 
   // Returns true if there exists a currently installed app that has been
@@ -200,12 +198,6 @@ class WebAppRegistrar {
   // Returns true if an installed app was installed via policy, regardless of
   // other install sources.
   bool IsInstalledByPolicy(const webapps::AppId& app_id) const;
-
-  // Returns true if the app was preinstalled and NOT installed via any other
-  // mechanism.
-  // TODO(crbug.com/340952100): Remove after os integration isn't based on
-  // management.
-  bool WasInstalledByDefaultOnly(const webapps::AppId& app_id) const;
 
   // Returns true if the app was installed by user, false if default installed.
   bool WasInstalledByUser(const webapps::AppId& app_id) const;
@@ -296,11 +288,25 @@ class WebAppRegistrar {
   bool IsAppFileHandlerPermissionBlocked(const webapps::AppId& app_id) const;
   bool IsIsolated(const webapps::AppId& app_id) const;
 
-  // Returns the state of the File Handling API for the given app.
+  // Returns approval state for File Handling API including
+  // DefaultHandlersForFileExtensions policy check.
   ApiApprovalState GetAppFileHandlerApprovalState(
+      const webapps::AppId& app_id,
+      std::optional<std::string> file_extension) const;
+
+  bool IsAppPolicyDefinedHandlerForFileExtension(
+      const webapps::AppId& app_id,
+      const std::string file_extension) const;
+
+  bool IsAppSetAsPolicyDefinedFileHandlerForAnyFileExtension(
       const webapps::AppId& app_id) const;
-  // Returns true iff it's expected that File Handlers have been, **or are in
-  // the process of being**, registered with the OS.
+
+  // Returns the state of the File Handling API for the given app.
+  ApiApprovalState GetAppFileHandlerUserApprovalState(
+      const webapps::AppId& app_id) const;
+
+  // Returns true iff it's expected that File Handlers have been, **or are
+  // in the process of being**, registered with the OS.
   bool ExpectThatFileHandlersAreRegisteredWithOs(
       const webapps::AppId& app_id) const;
 
@@ -315,9 +321,6 @@ class WebAppRegistrar {
       const webapps::AppId& app_id) const;
   std::vector<DisplayMode> GetAppDisplayModeOverride(
       const webapps::AppId& app_id) const;
-
-  // Returns the "url_handlers" field from the app manifest.
-  apps::UrlHandlers GetAppUrlHandlers(const webapps::AppId& app_id) const;
 
   // Returns the `scope_extensions` field from the app manifest, ignoring
   // validation.
@@ -337,6 +340,7 @@ class WebAppRegistrar {
   base::Time GetAppLastBadgingTime(const webapps::AppId& app_id) const;
   base::Time GetAppLastLaunchTime(const webapps::AppId& app_id) const;
   base::Time GetAppFirstInstallTime(const webapps::AppId& app_id) const;
+  base::Time GetAppLatestInstallTime(const webapps::AppId& app_id) const;
 
   std::optional<webapps::WebappInstallSource> GetLatestAppInstallSource(
       const webapps::AppId& app_id) const;
@@ -397,44 +401,6 @@ class WebAppRegistrar {
   int GetUrlInAppScopeScore(const std::string& url_spec,
                             const webapps::AppId& app_id) const;
 
-  // Returns the app id of an app in the registry with the longest scope that is
-  // a prefix of |url|, if any.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `FindBestAppWithUrlInScope`.
-  std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
-
-  // Returns true if there exists at least one app installed under |scope|.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `DoesScopeContainAnyApp` with install states.
-  bool DoesScopeContainAnyApp(const GURL& scope) const;
-
-  // Finds all apps that are installed under `outer_scope`.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `FindAllAppsNestedInUrl`.
-  std::vector<webapps::AppId> FindAppsInScope(const GURL& outer_scope) const;
-
-  // Returns the app id of an installed app in the registry with the longest
-  // scope that is a prefix of |url|, if any. If |window_only| is specified,
-  // only apps that open in app windows will be considered. If
-  // |exclude_diy_apps| is true, then DIY apps will not be taken into account
-  // while looking for installed apps whose url is in scope.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `FindBestAppWithUrlInScope`.
-  std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
-      const GURL& url,
-      bool window_only = false,
-      bool exclude_diy_apps = false) const;
-
-  // Returns true if there is an app that is not locally installed that has
-  // a scope which is a prefix of |url|.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `FindBestAppWithUrlInScope`.
-  bool IsNonLocallyInstalledAppWithUrlInScope(const GURL& url) const;
-
-  // Returns whether the app is a shortcut app (as opposed to a PWA).
-  // TODO(crbug.com/341316725): Remove shortcut apps.
-  bool IsShortcutApp(const webapps::AppId& app_id) const;
-
   // Returns whether the app is pending successful navigation in order to
   // complete installation via the ExternallyManagedAppManager.
   bool IsPlaceholderApp(const webapps::AppId& app_id,
@@ -472,8 +438,12 @@ class WebAppRegistrar {
   std::optional<GURL> GetAppPinnedHomeTabUrl(
       const webapps::AppId& app_id) const;
 
-  // Returns the current WebAppOsIntegrationState stored in the web_app DB.
-  std::optional<proto::WebAppOsIntegrationState>
+  // Returns true if the given `url` is in scope for the home tab for the given
+  // app, if it has tabbed mode enabled.
+  bool IsUrlInHomeTabScope(const GURL& url, const webapps::AppId& app_id) const;
+
+  // Returns the current WebAppOsIntegration stored in the web_app DB.
+  std::optional<proto::os_state::WebAppOsIntegration>
   GetAppCurrentOsIntegrationState(const webapps::AppId& app_id) const;
 
   // Returns the StoragePartitionConfig of all StoragePartitions used by
@@ -493,13 +463,15 @@ class WebAppRegistrar {
       const std::string& partition_name);
 
   // Returns if the given app_id would ever be eligible to capture links in
-  // its scope. This returns false for apps that aren't installed or for
-  // "Create Shortcut..." apps.
+  // its scope. This returns false for apps that aren't installed.
   bool CanCaptureLinksInScope(const webapps::AppId& app_id) const;
 
+  // ChromeOS stores the per-app capturing setting in PreferredAppsImpl, not
+  // here.
+#if !BUILDFLAG(IS_CHROMEOS)
   // Returns true if a web app is set to be the default app to
-  // capture links by the user. If an app is not locally installed or is a
-  // shortcut, this returns false.
+  // capture links by the user. If an app is not locally installed, this returns
+  // false.
   bool CapturesLinksInScope(const webapps::AppId& app_id) const;
 
   // Searches for all apps that can control this url, and chooses the best one
@@ -524,21 +496,28 @@ class WebAppRegistrar {
   bool AppScopesMatchForUserLinkCapturing(const webapps::AppId& app_id1,
                                           const webapps::AppId& app_id2) const;
 
+  bool IsPreferredAppForCapturingUrl(const GURL& url,
+                                     const webapps::AppId& app_id);
+#endif
+
   // Returns information about apps that controls the input url, i.e. the app's
   // scope is a substring of the url passed to the API.
   base::flat_map<webapps::AppId, std::string> GetAllAppsControllingUrl(
       const GURL& url) const;
 
-  bool IsPreferredAppForCapturingUrl(const GURL& url,
-                                     const webapps::AppId& app_id);
-
   bool IsDiyApp(const webapps::AppId& app_id) const;
+
+  std::vector<blink::Manifest::RelatedApplication> GetRelatedApplications(
+      const webapps::AppId& app_id) const;
 
 #if BUILDFLAG(IS_MAC)
   bool AlwaysShowToolbarInFullscreen(const webapps::AppId& app_id) const;
   void NotifyAlwaysShowToolbarInFullscreenChanged(const webapps::AppId& app_id,
                                                   bool show);
 #endif
+
+  // Returns whether the DIY app's icons are marked as masked on Mac.
+  bool IsDiyAppIconsMarkedMaskedOnMac(const webapps::AppId& app_id) const;
 
   void AddObserver(WebAppRegistrarObserver* observer);
   void RemoveObserver(WebAppRegistrarObserver* observer);
@@ -676,8 +655,9 @@ class WebAppRegistrar {
   int CountUserInstalledNotLocallyInstalledApps() const;
 
   // Count number of all apps which are installed by user, including DIY apps.
+  // Also counts which ones of these are not included in sync.
   // Requires app registry to be in a ready state.
-  std::tuple<DiyAppCount, InstallableAppCount>
+  std::tuple<DiyAppCount, InstallableAppCount, NonSyncingAppCount>
   CountTotalUserInstalledAppsIncludingDiy() const;
 
   const raw_ptr<Profile> profile_;

@@ -31,7 +31,28 @@ TEST(ChromeDelayLoadHookTest, HooksAreSetAtLinkTime) {
 // This test verifies DelayLoadFailureHook crashes for a failure.
 TEST(ChromeDelayLoadHookTest, DllLoadFailureCrashes) {
   DelayLoadInfo dli = {.szDll = "test.dll"};
-  EXPECT_CHECK_DEATH({ __pfnDliFailureHook2(dliFailLoadLib, &dli); });
+  EXPECT_NOTREACHED_DEATH({ __pfnDliFailureHook2(dliFailLoadLib, &dli); });
+}
+
+// This test verifies that DelayLoadFailureHook does not crash for known
+// DLLs.
+TEST(ChromeDelayLoadHookTest, DllLoadFailureDoesNotCrash) {
+  {
+    DelayLoadInfo dli = {.szDll = "MF.dll"};
+    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
+  }
+  {
+    DelayLoadInfo dli = {.szDll = "MFPlat.dll"};
+    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
+  }
+  {
+    DelayLoadInfo dli = {.szDll = "MFReadWrite.dll"};
+    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
+  }
+  {
+    DelayLoadInfo dli = {.szDll = "bthprops.cpl"};
+    EXPECT_EQ(__pfnDliFailureHook2(dliFailLoadLib, &dli), nullptr);
+  }
 }
 
 // This test verifies that if a DLL is failing to load because of lack of

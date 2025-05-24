@@ -164,4 +164,20 @@ TEST(HistogramMacro, SplitByProcessPriorityMacro) {
   }
 }
 
+TEST(HistogramMacro, TimerSubsamplingMacro) {
+  HistogramTester tester;
+
+  // Sampling the histogram should increase the total count.
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS_SUBSAMPLED("Test.SubsampledTimer", true);
+  }
+  tester.ExpectTotalCount("Test.SubsampledTimer", 1);
+
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS_SUBSAMPLED("Test.SubsampledTimer", false);
+  }
+  // Inversely, not sampling the histogram should not increase the total count.
+  tester.ExpectTotalCount("Test.SubsampledTimer", 1);
+}
+
 }  // namespace base

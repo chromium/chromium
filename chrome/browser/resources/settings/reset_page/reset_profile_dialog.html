@@ -1,5 +1,5 @@
-    <style include="settings-shared action-link">
-      paper-spinner-lite {
+    <style include="settings-shared action-link cr-spinner-style">
+      .spinner {
         margin: 0 8px;
       }
 
@@ -22,8 +22,7 @@
             target="_blank">$i18n{learnMore}</a>
       </div>
       <div slot="button-container">
-        <paper-spinner-lite id="resetSpinner" active="[[clearingInProgress_]]">
-        </paper-spinner-lite>
+        <div class="spinner" hidden$="[[!clearingInProgress_]]"></div>
         <cr-button class="cancel-button" on-click="onCancelClick_"
             id="cancel" disabled="[[clearingInProgress_]]">
           $i18n{cancel}

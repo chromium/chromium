@@ -1,0 +1,21 @@
+rootWebArea focusable name='Done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable
+++++++++genericContainer name='one'
+++++++++++staticText name='One'
+++++++++++++inlineTextBox name='One'
+++++++++genericContainer name='two'
+++++++++++staticText name='Two'
+++++++++++++inlineTextBox name='Two'
+++++++++genericContainer name='scroll target name'
+++++++++++staticText name='Three'
+++++++++++++inlineTextBox name='Three'
+++++++++genericContainer
+++++++++++staticText name='Four'
+++++++++++++inlineTextBox name='Four'
+++++++tabList horizontal setSize=4 controlsIds=genericContainer
+++++++++tab focusable name='alt text name' setSize=4 posInSet=1 selected=true detailsIds=genericContainer
+++++++++tab focusable name='<<content text name2' setSize=4 posInSet=2 selected=false detailsIds=genericContainer
+++++++++tab focusable name='scroll target name' setSize=4 posInSet=3 selected=false detailsIds=genericContainer
+++++++++tab focusable setSize=4 posInSet=4 selected=false detailsIds=genericContainer

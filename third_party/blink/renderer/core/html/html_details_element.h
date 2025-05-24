@@ -48,7 +48,8 @@ class HTMLDetailsElement final : public HTMLElement {
   // setting the open attribute.
   static bool ExpandDetailsAncestors(const Node&);
 
-  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool IsValidBuiltinCommand(HTMLElement& invoker,
+                             CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
 
@@ -67,7 +68,6 @@ class HTMLDetailsElement final : public HTMLElement {
   HeapVector<Member<HTMLDetailsElement>> OtherElementsInNameGroup();
   void MaybeCloseForExclusivity();
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
   void AttributeChanged(const AttributeModificationParams&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;

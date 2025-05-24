@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR կոդ</translation>
 <translation id="2244252133441425811">Միացնել վայրկյանում կադրերի հաճախականության ընտրիչը տեսանյութերի համար</translation>
 <translation id="2271433936731426666">Միացնել տեսանյութի կադրերի սկզբնական չափով լուսանկարումը</translation>
-<translation id="2281736597583450397">Լավացված մասշտաբի օգնությամբ ստացեք հստակեցված մանրամասներ</translation>
 <translation id="2320741269052147773">Տեղաշարժել ձախ</translation>
 <translation id="2360840973209616515">Տեսախցիկի հավելվածը կառավարվում է ձեր ադմինիստրատորի կողմից։
         Մանրամասների համար դիմեք ադմինիստրատորին։</translation>
@@ -88,7 +87,7 @@
 <translation id="4892746741161549733">Պատճենել հղման հասցեն՝ <ph name="URL" /></translation>
 <translation id="495170559598752135">Գործողություններ</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
-<translation id="5034763830503483128">Լուսանկարի կողմերի հարաբերակցություն</translation>
+<translation id="5034763830503483128">Լուսանկարի կողմերի հարաբերություն</translation>
 <translation id="5057360777601936059">Ձեր տեսախցիկն այս պահին հասանելի չէ:
         Ստուգեք՝ արդյոք տեսախցիկը ճիշտ է միացված:</translation>
 <translation id="5157591164390831335">URL է հայտնաբերվել։</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Փոքրացնել</translation>
 <translation id="5976160379964388480">Այլ</translation>
 <translation id="6073451960410192870">Դադարեցնել տեսագրումը</translation>
-<translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6197807149213783179">Պահել մետատվյալները</translation>
 <translation id="6233780560267770709">3-ը 3-ի</translation>
 <translation id="6243827288366940320">Ոսկե հատում</translation>
@@ -122,7 +120,6 @@
 Եթե ձեր կարծիքը պատկերի կամ տեսանյութի որակին է վերաբերում, ապա կցեք խնդրին առնչվող օրինակի ֆայլը (օր․՝ լուսանկարը շատ մուգ է կամ ֆոկուսից դուրս)։</translation>
 <translation id="6519884562954018934">Միանալ <ph name="WIFINAME" /> ցանցին</translation>
 <translation id="6527303717912515753">Կիսվել</translation>
-<translation id="6586509689874700895">Մեծացնելու համար նախ սեղմեք <ph name="BUTTON_NAME" /> կոճակը։ Այնուհետև, լուսանկարելուց հետո դուք կտեսնեք լավացված մանրամասներ։</translation>
 <translation id="659539649712855529">Պատճենվեց <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Ցույց տալ լուծաչափի բոլոր տարբերակները</translation>
 <translation id="6631515515009660915">Հայելապատճենման ռեժիմն անջատված է</translation>
@@ -168,7 +165,6 @@
 <translation id="8609951387004618906">Բացել հղումը՝ <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Միացնել/անջատել խոսափողը։ Խոսափողն անջատված է։</translation>
-<translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8732462232047530626">Դիտել մետատվյալները</translation>
 <translation id="874854738381978209">Wi-Fi ցանց է հայտնաբերվել։</translation>

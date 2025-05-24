@@ -27,9 +27,8 @@ MPNowPlayingPlaybackState PlaybackStatusToMPNowPlayingPlaybackState(
     case SystemMediaControls::PlaybackStatus::kStopped:
       return MPNowPlayingPlaybackStateStopped;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return MPNowPlayingPlaybackStateUnknown;
 }
 
 }  // anonymous namespace

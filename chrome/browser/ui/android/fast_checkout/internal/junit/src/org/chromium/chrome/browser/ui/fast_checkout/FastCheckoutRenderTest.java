@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -42,6 +41,7 @@ import org.chromium.chrome.browser.ui.suggestion.Icon;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -68,7 +68,8 @@ public class FastCheckoutRenderTest {
                     /* city= */ "New York",
                     /* postalCode= */ "12345",
                     /* email= */ "john.moe@gmail.com",
-                    /* phoneNumber= */ "(345) 543-645");
+                    /* phoneNumber= */ "(345) 543-645",
+                    /* recordType= */ RecordType.ACCOUNT);
     private static final FastCheckoutCreditCard LOCAL_CREDIT_CARD =
             FastCheckoutTestUtils.createDetailedLocalCreditCard(
                     /* guid= */ "123",
@@ -92,7 +93,7 @@ public class FastCheckoutRenderTest {
                     /* issuerIcon= */ Icon.CARD_VISA);
 
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet().value(false, false).name("Default"),
                     new ParameterSet().value(false, true).name("RTL"),
@@ -126,7 +127,6 @@ public class FastCheckoutRenderTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
         mBottomSheetController =

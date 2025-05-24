@@ -22,7 +22,7 @@ base::TimeDelta BoostManager::GetFrameDurationAndMaybeUpdateBoostType(
       case BoostType::kWakeUpBoost:
         return target_duration * 1.5;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   MaybeUpdateBoostType(draw_start, preferable_boost_type);
@@ -50,7 +50,7 @@ void BoostManager::MaybeUpdateBoostType(base::TimeTicks draw_start,
       boost_type_ = boost_type;
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace viz

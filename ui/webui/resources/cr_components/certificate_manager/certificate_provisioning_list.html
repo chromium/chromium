@@ -1,9 +1,12 @@
-<style include="cr-shared-style iron-flex ">
+<style include="cr-shared-style certificate-shared">
   .header-box {
     align-items: center;
     display: flex;
     margin-top: 16px;
     min-height: 24px;
+  }
+
+  .padding {
     padding: 0 20px;
   }
 
@@ -18,7 +21,7 @@
   </certificate-provisioning-details-dialog>
 </template>
 
-<div class="header-box" aria-role="heading" aria-labelledby="headingLabel"
+<div class$="[[headerClassList_(removeHeaderPadding)]]" role="heading" aria-labelledby="headingLabel"
     hidden="[[!hasCertificateProvisioningEntries_(provisioningProcesses_)]]">
   <span id="headingLabel" class="flex">
     [[i18n('certificateProvisioningListHeader')]]

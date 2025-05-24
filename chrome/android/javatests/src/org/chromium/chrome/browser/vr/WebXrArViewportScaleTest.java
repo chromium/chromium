@@ -38,12 +38,12 @@ import java.util.concurrent.Callable;
 })
 public class WebXrArViewportScaleTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             ArTestRuleUtils.generateDefaultTestRuleParameters();
 
     @Rule public RuleChain mRuleChain;
 
-    private ChromeActivityTestRule mTestRule;
+    private final ChromeActivityTestRule mTestRule;
     private WebXrArTestFramework mWebXrArTestFramework;
 
     public WebXrArViewportScaleTest(Callable<ChromeActivityTestRule> callable) throws Exception {

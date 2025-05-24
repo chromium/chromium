@@ -6,9 +6,9 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_REUSE_MANAGER_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 namespace password_manager {
 class PasswordReuseManager;
@@ -16,12 +16,8 @@ class PasswordReuseManager;
 
 // Creates instances of PasswordReuseManager per profile.
 class IOSChromePasswordReuseManagerFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static password_manager::PasswordReuseManager* GetForBrowserState(
-      ProfileIOS* profile);
-
   static password_manager::PasswordReuseManager* GetForProfile(
       ProfileIOS* profile);
   static IOSChromePasswordReuseManagerFactory* GetInstance();
@@ -33,8 +29,6 @@ class IOSChromePasswordReuseManagerFactory
   ~IOSChromePasswordReuseManagerFactory() override;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

@@ -12,6 +12,7 @@ else
 fi
 
 # Exports list taken from cipd/google-java-format.jar/META-INF/MANIFEST.MG
+# Use GOOGLE_JAVA_FORMAT_ARGS=--skip-javadoc-formatting to skip javadoc.
 exec "$JAVA" \
     -Xms512M \
     -cp "$THIS_DIR/chromium-overrides.jar:$THIS_DIR/cipd/google-java-format.jar" \
@@ -21,5 +22,5 @@ exec "$JAVA" \
     --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
     --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
     --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED \
-    com.google.googlejavaformat.java.Main \
+    com.google.googlejavaformat.java.Main $GOOGLE_JAVA_FORMAT_ARGS \
     "$@"

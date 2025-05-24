@@ -7,7 +7,8 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -16,13 +17,9 @@ namespace blink {
 
 class CSSVisibilityNonInterpolableValue final : public NonInterpolableValue {
  public:
+  CSSVisibilityNonInterpolableValue(EVisibility start, EVisibility end)
+      : start_(start), end_(end), is_single_(start_ == end_) {}
   ~CSSVisibilityNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSVisibilityNonInterpolableValue> Create(
-      EVisibility start,
-      EVisibility end) {
-    return base::AdoptRef(new CSSVisibilityNonInterpolableValue(start, end));
-  }
 
   EVisibility Visibility() const {
     DCHECK(is_single_);
@@ -41,9 +38,6 @@ class CSSVisibilityNonInterpolableValue final : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSVisibilityNonInterpolableValue(EVisibility start, EVisibility end)
-      : start_(start), end_(end), is_single_(start_ == end_) {}
-
   const EVisibility start_;
   const EVisibility end_;
   const bool is_single_;
@@ -67,7 +61,6 @@ class UnderlyingVisibilityChecker final
       : visibility_(visibility) {}
 
   ~UnderlyingVisibilityChecker() final = default;
-
 
  private:
   bool IsValid(const StyleResolverState& state,
@@ -103,7 +96,8 @@ InterpolationValue CSSVisibilityInterpolationType::CreateVisibilityValue(
     EVisibility visibility) const {
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(0),
-      CSSVisibilityNonInterpolableValue::Create(visibility, visibility));
+      MakeGarbageCollected<CSSVisibilityNonInterpolableValue>(visibility,
+                                                              visibility));
 }
 
 InterpolationValue CSSVisibilityInterpolationType::MaybeConvertNeutral(
@@ -114,7 +108,7 @@ InterpolationValue CSSVisibilityInterpolationType::MaybeConvertNeutral(
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   double underlying_fraction =
       To<InterpolableNumber>(*underlying.interpolable_value)
-          .Value(CSSToLengthConversionData());
+          .Value(CSSToLengthConversionData(/*element=*/nullptr));
   EVisibility underlying_visibility =
       To<CSSVisibilityNonInterpolableValue>(*underlying.non_interpolable_value)
           .Visibility(underlying_fraction);
@@ -142,7 +136,7 @@ InterpolationValue CSSVisibilityInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSVisibilityInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers& conversion_checkers) const {
   const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (!identifier_value)
@@ -182,10 +176,11 @@ PairwiseInterpolationValue CSSVisibilityInterpolationType::MaybeMergeSingles(
       end_visibility != EVisibility::kVisible) {
     return nullptr;
   }
-  return PairwiseInterpolationValue(MakeGarbageCollected<InterpolableNumber>(0),
-                                    MakeGarbageCollected<InterpolableNumber>(1),
-                                    CSSVisibilityNonInterpolableValue::Create(
-                                        start_visibility, end_visibility));
+  return PairwiseInterpolationValue(
+      MakeGarbageCollected<InterpolableNumber>(0),
+      MakeGarbageCollected<InterpolableNumber>(1),
+      MakeGarbageCollected<CSSVisibilityNonInterpolableValue>(start_visibility,
+                                                              end_visibility));
 }
 
 void CSSVisibilityInterpolationType::Composite(
@@ -193,7 +188,7 @@ void CSSVisibilityInterpolationType::Composite(
     double underlying_fraction,
     const InterpolationValue& value,
     double interpolation_fraction) const {
-  underlying_value_owner.Set(*this, value);
+  underlying_value_owner.Set(this, value);
 }
 
 void CSSVisibilityInterpolationType::ApplyStandardPropertyValue(

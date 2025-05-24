@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-
 namespace content {
 class RenderProcessHost;
 class WebContents;

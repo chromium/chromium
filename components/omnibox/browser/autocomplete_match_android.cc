@@ -11,11 +11,15 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
+#include "base/uuid.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
 #include "components/omnibox/browser/clipboard_provider.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -55,10 +59,6 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
     description_class_styles.push_back(description_class_item.style);
   }
 
-  base::android::ScopedJavaLocalRef<jobject> janswer;
-  if (answer)
-    janswer = answer->CreateJavaObject(answer_type);
-
   ScopedJavaLocalRef<jbyteArray> j_answer_template;
   if (answer_template) {
     std::string str_answer_template;
@@ -96,18 +96,24 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
     actions_list = ToJavaOmniboxActionsList(env, actions);
   }
 
+  int icon_type = omnibox::SuggestTemplateInfo::IconType::
+      SuggestTemplateInfo_IconType_ICON_TYPE_UNSPECIFIED;
+
+  if (suggest_template.has_value()) {
+    icon_type = suggest_template.value().type_icon();
+  }
+
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
       Java_AutocompleteMatch_build(
           env, reinterpret_cast<intptr_t>(this), type,
-          ToJavaIntArray(env, temp_subtypes), IsSearchType(type), relevance,
+          ToJavaIntArray(env, temp_subtypes), IsSearchType(type), icon_type,
           transition, ConvertUTF16ToJavaString(env, contents),
           ToJavaIntArray(env, contents_class_offsets),
           ToJavaIntArray(env, contents_class_styles),
           ConvertUTF16ToJavaString(env, description),
           ToJavaIntArray(env, description_class_offsets),
-          ToJavaIntArray(env, description_class_styles), janswer,
-          j_answer_template, answer_type,
-          ConvertUTF16ToJavaString(env, fill_into_edit),
+          ToJavaIntArray(env, description_class_styles), j_answer_template,
+          answer_type, ConvertUTF16ToJavaString(env, fill_into_edit),
           url::GURLAndroid::FromNativeGURL(env, destination_url),
           url::GURLAndroid::FromNativeGURL(env, image_url),
           j_image_dominant_color, SupportsDeletion(), j_post_content_type,
@@ -116,7 +122,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           has_tab_match.value_or(false), actions_list,
           allowed_to_be_default_match,
           ConvertUTF16ToJavaString(env, inline_autocompletion),
-          ConvertUTF16ToJavaString(env, additional_text)));
+          ConvertUTF16ToJavaString(env, additional_text),
+          tab_groups::UuidToJavaString(
+              env, matching_tab_group_uuid.value_or(base::Uuid()))));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }
@@ -218,21 +226,15 @@ void AutocompleteMatch::UpdateJavaDestinationUrl() {
 void AutocompleteMatch::UpdateJavaAnswer() {
   if (java_match_) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
+    if (answer_template) {
       ScopedJavaLocalRef<jbyteArray> j_answer_template;
-      if (answer_template) {
-        std::string str_answer_template;
-        if (answer_template->SerializeToString(&str_answer_template)) {
-          j_answer_template =
-              base::android::ToJavaByteArray(env, str_answer_template);
-        }
+      std::string str_answer_template;
+      if (answer_template->SerializeToString(&str_answer_template)) {
+        j_answer_template =
+            base::android::ToJavaByteArray(env, str_answer_template);
       }
       Java_AutocompleteMatch_setAnswerTemplate(
           env, *java_match_, answer_template ? j_answer_template : nullptr);
-    } else {
-      Java_AutocompleteMatch_setAnswer(
-          env, *java_match_,
-          answer ? answer->CreateJavaObject(answer_type) : nullptr);
     }
     Java_AutocompleteMatch_setAnswerType(env, *java_match_, answer_type);
   }

@@ -1,0 +1,39 @@
+<style>
+  #error-screen {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: flex-start;
+    padding: 26px 24px 20px;
+  }
+
+  .google-logo {
+    width: 100px;
+  }
+
+  .error-text {
+    align-items: center;
+    color: var(--cros-color-secondary);
+    display: flex;
+    font-size: 14px;
+    margin-top: 26px;
+  }
+
+  .error-title {
+    font-family: var(--cros-font-family-google-sans);
+    font-size: 24px;
+    font-weight: 500;
+    margin-top: 32px;
+  }
+</style>
+<!-- This is a clone of chrome/b/r/c/supervision/supervised_user_error.html and
+should be kept in alignment with that file until the two are unified.
+b/369166857: Use shared screens.-->
+<div id="error-screen">
+  <img class="google-logo" src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90"
+    alt="Google">
+  </img>
+  <div class="error-title">$i18n{errorPageTitle}</div>
+  <div class="error-text">$i18n{errorPageDescription}</div>
+</div>

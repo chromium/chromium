@@ -113,7 +113,7 @@ void CameraRollView::CameraRollItemsView::AddCameraRollItem(
     views::View* camera_roll_item) {
   size_t view_size = camera_roll_items_.view_size();
   camera_roll_items_.Add(camera_roll_item, view_size);
-  AddChildView(camera_roll_item);
+  AddChildViewRaw(camera_roll_item);
 }
 
 void CameraRollView::CameraRollItemsView::Reset() {

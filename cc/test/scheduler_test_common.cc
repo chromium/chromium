@@ -12,28 +12,19 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
-#include "cc/debug/rendering_stats_instrumentation.h"
 
 namespace cc {
 
 std::unique_ptr<FakeCompositorTimingHistory>
 FakeCompositorTimingHistory::Create(
     bool using_synchronous_renderer_compositor) {
-  std::unique_ptr<RenderingStatsInstrumentation>
-      rendering_stats_instrumentation = RenderingStatsInstrumentation::Create();
-  return base::WrapUnique(new FakeCompositorTimingHistory(
-      using_synchronous_renderer_compositor,
-      std::move(rendering_stats_instrumentation)));
+  return base::WrapUnique(
+      new FakeCompositorTimingHistory(using_synchronous_renderer_compositor));
 }
 
 FakeCompositorTimingHistory::FakeCompositorTimingHistory(
-    bool using_synchronous_renderer_compositor,
-    std::unique_ptr<RenderingStatsInstrumentation>
-        rendering_stats_instrumentation)
-    : CompositorTimingHistory(CompositorTimingHistory::NULL_UMA,
-                              rendering_stats_instrumentation.get()),
-      rendering_stats_instrumentation_owned_(
-          std::move(rendering_stats_instrumentation)) {}
+    bool using_synchronous_renderer_compositor)
+    : CompositorTimingHistory(CompositorTimingHistory::NULL_UMA) {}
 
 FakeCompositorTimingHistory::~FakeCompositorTimingHistory() = default;
 

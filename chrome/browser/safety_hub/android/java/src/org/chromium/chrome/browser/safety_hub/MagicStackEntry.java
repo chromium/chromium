@@ -9,10 +9,13 @@ import androidx.annotation.StringDef;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Data container class that contains the module type and its description. */
+@NullMarked
 class MagicStackEntry {
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({

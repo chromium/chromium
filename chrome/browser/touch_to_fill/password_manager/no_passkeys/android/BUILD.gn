@@ -14,6 +14,7 @@ source_set("public") {
     "//base",
     "//chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android:jni",
     "//ui/android:android",
+    "//ui/gfx",
   ]
 }
 

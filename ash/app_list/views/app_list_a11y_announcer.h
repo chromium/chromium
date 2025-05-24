@@ -5,7 +5,7 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_LIST_A11Y_ANNOUNCER_H_
 #define ASH_APP_LIST_VIEWS_APP_LIST_A11Y_ANNOUNCER_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 
@@ -36,21 +36,21 @@ class AppListA11yAnnouncer {
 
   // Modifies the announcement view to verbalize that the focused view has new
   // updates, based on the item having a notification badge.
-  void AnnounceItemNotificationBadge(const std::u16string& selected_view_title);
+  void AnnounceItemNotificationBadge(std::u16string_view selected_view_title);
 
   // Modifies the announcement view to verbalize that the current drag will move
   // |moving_view_title| and create a folder or move it into an existing folder
   // with |target_view_title|.
-  void AnnounceFolderDrop(const std::u16string& moving_view_title,
-                          const std::u16string& target_view_title,
+  void AnnounceFolderDrop(std::u16string_view moving_view_title,
+                          std::u16string_view target_view_title,
                           bool target_is_folder);
 
   // Modifies the announcement view to verbalize that the most recent keyboard
   // foldering action has either moved |moving_view_title| into
   // |target_view_title| folder or that |moving_view_title| and
   // |target_view_title| have formed a new folder.
-  void AnnounceKeyboardFoldering(const std::u16string& moving_view_title,
-                                 const std::u16string& target_view_title,
+  void AnnounceKeyboardFoldering(std::u16string_view moving_view_title,
+                                 std::u16string_view target_view_title,
                                  bool target_is_folder);
 
   // Modifies the announcement view to verbalize that an apps grid item has been
@@ -68,7 +68,7 @@ class AppListA11yAnnouncer {
   void AnnounceFolderClosed();
 
   // Modifies the announcement view to verbalize the provided announcement.
-  void Announce(const std::u16string& announcement);
+  void Announce(std::u16string_view announcement);
 
  private:
   // The view used to send accessibility announcements. Owned by the parent's

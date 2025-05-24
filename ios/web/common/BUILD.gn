@@ -9,6 +9,7 @@ source_set("common") {
     "annotations_utils.h",
     "annotations_utils.mm",
     "crw_content_view.h",
+    "crw_edit_menu_builder.h",
     "crw_input_view_provider.h",
     "crw_viewport_adjustment.h",
     "crw_viewport_adjustment_container.h",
@@ -24,7 +25,6 @@ source_set("common") {
 
   deps = [
     "//base",
-    "//ios/third_party/webkit",
     "//ios/web/public/navigation",
     "//net",
     "//services/network/public/cpp",
@@ -65,6 +65,7 @@ source_set("web_view_creation_util") {
   deps = [
     ":user_agent",
     "//base",
+    "//ios/third_party/webkit",
     "//ios/web/web_state:web_view_internal_creation_util",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
   ]

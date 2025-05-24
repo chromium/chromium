@@ -27,5 +27,3 @@ void CaptivePortalTabHelper::DisplayCaptivePortalLoginPage(GURL landing_url) {
 }
 
 CaptivePortalTabHelper::~CaptivePortalTabHelper() = default;
-
-WEB_STATE_USER_DATA_KEY_IMPL(CaptivePortalTabHelper)

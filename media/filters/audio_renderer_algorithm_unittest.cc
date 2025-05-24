@@ -19,6 +19,7 @@
 #include <stdint.h>
 
 #include <algorithm>  // For std::min().
+#include <array>
 #include <cmath>
 #include <memory>
 #include <vector>
@@ -176,7 +177,7 @@ class AudioRendererAlgorithmTest : public testing::Test {
             1, 1, frame_size, kFrameSize, kNoTimestamp);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "Unrecognized format " << sample_format_;
+        NOTREACHED() << "Unrecognized format " << sample_format_;
     }
     return buffer;
   }
@@ -202,8 +203,9 @@ class AudioRendererAlgorithmTest : public testing::Test {
   bool VerifyAudioData(AudioBus* bus, int offset, int frames, float value) {
     for (int ch = 0; ch < bus->channels(); ++ch) {
       for (int i = offset; i < offset + frames; ++i) {
-        if (bus->channel(ch)[i] != value)
+        if (bus->channel(ch)[i] != value) {
           return false;
+        }
       }
     }
     return true;
@@ -274,7 +276,10 @@ class AudioRendererAlgorithmTest : public testing::Test {
       // if at very first buffer-fill only one frame is written, that is zero
       // which might cause exception in CheckFakeData().
       if (!first_fill_buffer || frames_written > 1)
-        ASSERT_FALSE(AudioDataIsMuted(bus.get(), frames_written, dest_offset));
+        if (!bus->is_bitstream_format()) {
+          ASSERT_FALSE(
+              AudioDataIsMuted(bus.get(), frames_written, dest_offset));
+        }
       first_fill_buffer = false;
       frames_remaining -= frames_written;
 
@@ -873,7 +878,8 @@ TEST_F(AudioRendererAlgorithmTest, FillBufferOffset) {
   // Verify that the first half of |bus| remains zero and the last half is
   // filled appropriately at normal, above normal, and below normal.
   const int kHalfSize = kFrameSize / 2;
-  const float kAudibleRates[] = {1.0f, 2.0f, 0.5f, 5.0f, 0.25f};
+  const auto kAudibleRates =
+      std::to_array<float>({1.0f, 2.0f, 0.5f, 5.0f, 0.25f});
   for (size_t i = 0; i < std::size(kAudibleRates); ++i) {
     SCOPED_TRACE(kAudibleRates[i]);
     bus->Zero();

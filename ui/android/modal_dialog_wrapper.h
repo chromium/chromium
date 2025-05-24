@@ -32,6 +32,15 @@ namespace ui {
 // not included since it is not supported in android dialogs.
 class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost {
  public:
+  // Mirrors Java's `ModalDialogProperties#ButtonStyles`.
+  // TODO(crbug.com/392977703): IntDef that enum in C++.
+  enum class ModalDialogButtonStyles {
+    kPrimaryOutlineNegativeOutline = 0,
+    kPrimaryFilledNegativeOutline = 1,
+    kPrimaryOutlineNegativeFilled = 2,
+    kPrimaryFilledNoNegative = 3,
+  };
+
   static void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
                            ui::WindowAndroid* window);
 

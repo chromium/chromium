@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/accessibility/platform/iaccessible2/scoped_co_mem_array.h"
 #include "ui/accessibility/platform/inspect/ax_optional.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 #include "ui/accessibility/platform/inspect/ax_target_win.h"
@@ -40,53 +41,53 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
 
   // Invokes a property node for a given AXElement.
   AXOptionalObject InvokeForAXElement(
-      IAccessibleComPtr target,
+      const IAccessibleComPtr& target,
       const AXPropertyNode& property_node) const;
 
   // Invoke for a given interface.
-  AXOptionalObject InvokeForIA2(IA2ComPtr target,
+  AXOptionalObject InvokeForIA2(const IA2ComPtr& target,
                                 const AXPropertyNode& property_node) const;
   AXOptionalObject InvokeForIA2Hypertext(
-      IA2HypertextComPtr target,
+      const IA2HypertextComPtr& target,
       const AXPropertyNode& property_node) const;
-  AXOptionalObject InvokeForIA2Table(IA2TableComPtr target,
+  AXOptionalObject InvokeForIA2Table(const IA2TableComPtr& target,
                                      const AXPropertyNode& property_node) const;
   AXOptionalObject InvokeForIA2TableCell(
-      IA2TableCellComPtr target,
+      const IA2TableCellComPtr& target,
       const AXPropertyNode& property_node) const;
   AXOptionalObject InvokeForIA2TextSelectionContainer(
-      IA2TextSelectionContainerComPtr target,
+      const IA2TextSelectionContainerComPtr& target,
       const AXPropertyNode& property_node) const;
-  AXOptionalObject InvokeForIA2Text(IA2TextComPtr target,
+  AXOptionalObject InvokeForIA2Text(const IA2TextComPtr& target,
                                     const AXPropertyNode& property_node) const;
-  AXOptionalObject InvokeForIA2Value(IA2ValueComPtr target,
+  AXOptionalObject InvokeForIA2Value(const IA2ValueComPtr& target,
                                      const AXPropertyNode& property_node) const;
 
   // IUnknown functionality.
-  AXOptionalObject QueryInterface(const IAccessibleComPtr target,
+  AXOptionalObject QueryInterface(const IAccessibleComPtr& target,
                                   std::string interface_name) const;
 
   // IAccessible functionality.
-  AXOptionalObject GetRole(IAccessibleComPtr target) const;
-  AXOptionalObject GetName(const IAccessibleComPtr target) const;
-  AXOptionalObject GetDescription(const IAccessibleComPtr target) const;
-  AXOptionalObject HasState(const IAccessibleComPtr target,
+  AXOptionalObject GetRole(const IAccessibleComPtr& target) const;
+  AXOptionalObject GetName(const IAccessibleComPtr& target) const;
+  AXOptionalObject GetDescription(const IAccessibleComPtr& target) const;
+  AXOptionalObject HasState(const IAccessibleComPtr& target,
                             std::string state) const;
 
   // IAccessible2 functionality.
-  AXOptionalObject GetIA2Role(IA2ComPtr target) const;
-  AXOptionalObject GetIA2Attribute(const IA2ComPtr target,
+  AXOptionalObject GetIA2Role(const IA2ComPtr& target) const;
+  AXOptionalObject GetIA2Attribute(const IA2ComPtr& target,
                                    const AXPropertyNode& property_node) const;
-  AXOptionalObject HasIA2State(const IA2ComPtr target,
+  AXOptionalObject HasIA2State(const IA2ComPtr& target,
                                const AXPropertyNode& property_node) const;
 
   // AccessibleTable functionality
-  AXOptionalObject GetSelectedColumns(const IA2TableComPtr target) const;
+  AXOptionalObject GetSelectedColumns(const IA2TableComPtr& target) const;
 
   // IAccessibleSelectionContainer functionality.
   AXOptionalObject GetSelections(
-      const IA2TextSelectionContainerComPtr target) const;
-  AXOptionalObject SetSelections(const IA2TextSelectionContainerComPtr target,
+      const IA2TextSelectionContainerComPtr& target) const;
+  AXOptionalObject SetSelections(const IA2TextSelectionContainerComPtr& target,
                                  const AXPropertyNode& property_node) const;
 
   bool IsIAccessibleAndNotNull(const Target& target) const;
@@ -111,7 +112,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
   std::optional<IA2TextSelection> PropertyNodeToIA2TextSelection(
       const AXPropertyNode& node) const;
 
-  std::vector<IA2TextSelection> PropertyNodeToIA2TextSelectionArray(
+  ScopedCoMemArray<IA2TextSelection> PropertyNodeToIA2TextSelectionArray(
       const AXPropertyNode& node) const;
 
   // Map between IAccessible objects and their DOMIds/accessible tree

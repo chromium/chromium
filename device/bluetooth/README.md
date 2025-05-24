@@ -11,7 +11,7 @@ have interfaces for both, e.g. `BluetoothAdapter` & `BluetoothDevice`.
 
 |           | Classic |  Low Energy |
 |-----------|:-------:|:-----------:|
-| Android   |   no    |     yes     |
+| Android   |   some  |     yes     |
 | Chrome OS |   yes   |     yes     |
 | Linux     |   yes   |     yes     |
 | Mac       |   yes   |     yes     |
@@ -69,7 +69,7 @@ owns Devices, Services, etc. Java counter parts interface with the Android
 Bluetooth objects. E.g.
 
 For testing, the Android objects are __wrapped__ in:
-`android/java/src/org/chromium/device/bluetooth/Wrappers.java`. <br>
+`android/java/src/org/chromium/device/bluetooth/wrapper/`. <br>
 and __fakes__ implemented in:
 `test/android/java/src/org/chromium/device/bluetooth/Fakes.java`.
 
@@ -77,23 +77,23 @@ Thus:
 
 * `bluetooth_adapter_android.h` owns:
     * `android/.../ChromeBluetoothAdapter.java` uses:
-        * `android/.../Wrappers.java`: `BluetoothAdapterWrapper`
+        * `android/.../wrapper/BluetoothAdapterWrapper.java`
             * Which under test is a `FakeBluetoothAdapter`
-    * `bluetooth_device_android.h` owns:
-        * `android/.../ChromeBluetoothDevice.java` uses:
-            * `android/.../Wrappers.java`: `BluetoothDeviceWrapper`
-                * Which under test is a `FakeBluetoothDevice`
-        * `bluetooth_gatt_service_android.h` owns:
-            * `android/.../ChromeBluetoothService.java` uses:
-                * `android/.../Wrappers.java`: `BluetoothServiceWrapper`
-                    * Which under test is a `FakeBluetoothService`
-            * ... and so on for characteristics and descriptors.
+* `bluetooth_device_android.h` owns:
+    * `android/.../ChromeBluetoothDevice.java` uses:
+        * `android/.../wrapper/BluetoothDeviceWrapper.java`
+            * Which under test is a `FakeBluetoothDevice`
+* `bluetooth_gatt_service_android.h` owns:
+    * `android/.../ChromeBluetoothRemoteGattService.java` uses:
+        * `android/.../wrapper/BluetoothGattServiceWrapper.java`
+            * Which under test is a `FakeBluetoothGattService`
+    * ... and so on for characteristics and descriptors.
 
 Fake objects are controlled by `bluetooth_test_android.cc`.
 
 See also: [Class Diagram of Web Bluetooth through Bluetooth Android][Class]
 
-[Class]: https://sites.google.com/a/chromium.org/dev/developers/design-documents/bluetooth-design-docs/web-bluetooth-through-bluetooth-android-class-diagram
+[Class]: https://www.chromium.org/developers/design-documents/bluetooth-design-docs/web-bluetooth-through-bluetooth-android-class-diagram/
 
 ## ChromeOS
 Within this directory, [BluetoothAdapter](https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/bluetooth_adapter.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f) exposes Bluetooth stack agnostic APIs for performing various operations and this is implemented by various platform specific classes. For ChromeOS, BluetoothAdapter is implemented by [BluetoothAdapterFloss](https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/floss/bluetooth_adapter_floss.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f) and [BluetoothAdapterBluez] (https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/bluez/bluetooth_adapter_bluez.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f).

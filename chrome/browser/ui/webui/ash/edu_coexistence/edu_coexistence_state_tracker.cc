@@ -53,8 +53,9 @@ void EduCoexistenceStateTracker::SetEduConsentCallback(
 }
 
 void EduCoexistenceStateTracker::OnDialogClosed(const content::WebUI* web_ui) {
-  if (!base::Contains(state_tracker_, web_ui))
+  if (!base::Contains(state_tracker_, web_ui)) {
     return;
+  }
 
   FlowState& state = state_tracker_[web_ui];
 
@@ -62,8 +63,9 @@ void EduCoexistenceStateTracker::OnDialogClosed(const content::WebUI* web_ui) {
   // then EduCoexistenceLoginHandler has not received a parental consent logged
   // signal. Notify |EduCoexistenceChildSigninHelper| that we weren't able to
   // successfully log the parental consent so that it can clean up after itself.
-  if (state.consent_logged_callback)
+  if (state.consent_logged_callback) {
     std::move(state.consent_logged_callback).Run(/* success */ false);
+  }
 
   const std::string& histogram_name =
       state.is_onboarding ? kEduCoexistenceV2OnboardingFlowResult
@@ -114,8 +116,9 @@ void EduCoexistenceStateTracker::OnWebUiStateChanged(
 const EduCoexistenceStateTracker::FlowState*
 EduCoexistenceStateTracker::GetInfoForWebUIForTest(
     const content::WebUI* web_ui) const {
-  if (!base::Contains(state_tracker_, web_ui))
+  if (!base::Contains(state_tracker_, web_ui)) {
     return nullptr;
+  }
   return &state_tracker_.at(web_ui);
 }
 

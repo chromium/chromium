@@ -18,7 +18,7 @@ const base::TimeDelta kInactivityTimeoutForTesting = base::Seconds(1);
 // Mock class for |DesktopSessionDurationTracker| for testing.
 class MockDesktopSessionDurationTracker : public DesktopSessionDurationTracker {
  public:
-  MockDesktopSessionDurationTracker() {}
+  MockDesktopSessionDurationTracker() = default;
 
   MockDesktopSessionDurationTracker(const MockDesktopSessionDurationTracker&) =
       delete;
@@ -44,7 +44,7 @@ class MockDesktopSessionDurationTracker : public DesktopSessionDurationTracker {
 class MockDesktopSessionObserver
     : public metrics::DesktopSessionDurationTracker::Observer {
  public:
-  MockDesktopSessionObserver() {}
+  MockDesktopSessionObserver() = default;
 
   MockDesktopSessionObserver(const MockDesktopSessionObserver&) = delete;
   MockDesktopSessionObserver& operator=(const MockDesktopSessionObserver&) =
@@ -70,7 +70,7 @@ class MockDesktopSessionObserver
 
 class DesktopSessionDurationTrackerTest : public testing::Test {
  public:
-  DesktopSessionDurationTrackerTest() {}
+  DesktopSessionDurationTrackerTest() = default;
 
   DesktopSessionDurationTrackerTest(const DesktopSessionDurationTrackerTest&) =
       delete;

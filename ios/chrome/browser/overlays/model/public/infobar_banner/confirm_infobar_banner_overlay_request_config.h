@@ -4,9 +4,8 @@
 
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_INFOBAR_BANNER_CONFIRM_INFOBAR_BANNER_OVERLAY_REQUEST_CONFIG_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_INFOBAR_BANNER_CONFIRM_INFOBAR_BANNER_OVERLAY_REQUEST_CONFIG_H_
-#import "ios/chrome/browser/overlays/model/public/infobar_banner/confirm_infobar_banner_overlay_request_config_storage.h"
-
 #import "components/infobars/core/confirm_infobar_delegate.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_banner/confirm_infobar_banner_overlay_request_config_storage.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_user_data.h"
 
@@ -25,7 +24,7 @@ class ConfirmBannerRequestConfig
   ~ConfirmBannerRequestConfig() override;
 
  private:
-  OVERLAY_USER_DATA_SETUP(ConfirmBannerRequestConfig);
+  friend class OverlayUserData<ConfirmBannerRequestConfig>;
   explicit ConfirmBannerRequestConfig(infobars::InfoBar* infobar);
 
   // OverlayUserData:

@@ -13,14 +13,17 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
 /** Java interface to the C++ ProfileManager. */
+@NullMarked
 public class ProfileManager {
-    private static Profile sLastUsedProfileForTesting;
+    private static @Nullable Profile sLastUsedProfileForTesting;
 
-    private static ObserverList<Observer> sObservers;
+    private static @Nullable ObserverList<Observer> sObservers;
     private static boolean sInitialized;
 
     /** Observer for Profile creation. */
@@ -131,7 +134,7 @@ public class ProfileManager {
 
     @NativeMethods
     public interface Natives {
-        Object getLastUsedRegularProfile();
+        Profile getLastUsedRegularProfile();
 
         void onProfileActivated(@JniType("Profile*") Profile profile);
 

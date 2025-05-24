@@ -17,8 +17,9 @@
 
 namespace {
 
-std::u16string GetTaskTitle(content::RenderFrameHost* render_frame_host,
-                            task_manager::RendererTask* parent_task) {
+std::u16string GetTaskTitle(
+    content::RenderFrameHost* render_frame_host,
+    base::WeakPtr<task_manager::RendererTask> parent_task) {
   content::SiteInstance* site_instance = render_frame_host->GetSiteInstance();
 
   const bool is_incognito =
@@ -29,12 +30,14 @@ std::u16string GetTaskTitle(content::RenderFrameHost* render_frame_host,
   const GURL& site_url = site_instance->GetSiteURL();
   const std::u16string name = base::UTF8ToUTF16(site_url.spec());
 
+  const bool is_main_frame = !parent_task;
   int message_id;
-  if (parent_task == nullptr) {
+  if (is_main_frame) {
     message_id = is_incognito
                      ? IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_PREFIX
                      : IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX;
   } else {
+    // Otherwise, it is a subframe.
     message_id =
         is_incognito
             ? IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_SUBFRAME_PREFIX
@@ -43,23 +46,25 @@ std::u16string GetTaskTitle(content::RenderFrameHost* render_frame_host,
   return l10n_util::GetStringFUTF16(message_id, name);
 }
 
-}  // anonymous namespace
+}  // namespace
 
 namespace task_manager {
 
 BackForwardCacheTask::BackForwardCacheTask(
     content::RenderFrameHost* render_frame_host,
-    RendererTask* parent_task,
+    base::WeakPtr<RendererTask> parent_task,
     WebContentsTaskProvider* task_provider)
     : RendererTask(
           GetTaskTitle(render_frame_host, parent_task),
           nullptr,  // TODO(crbug.com/40775860): Set Favicon for main frames.
           render_frame_host),
-      parent_task_(parent_task),
+      parent_task_(std::move(parent_task)),
       task_provider_(task_provider) {}
 
+BackForwardCacheTask::~BackForwardCacheTask() = default;
+
 // For the top level BackForwardCacheTask |parent_task_| is nullptr.
-Task* BackForwardCacheTask::GetParentTask() const {
+base::WeakPtr<Task> BackForwardCacheTask::GetParentTask() const {
   return parent_task_ ? parent_task_
                       : task_provider_->GetTaskOfFrame(
                             web_contents()->GetPrimaryMainFrame());

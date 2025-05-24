@@ -106,7 +106,8 @@ TestClientCertSamlIdpMixin::~TestClientCertSamlIdpMixin() = default;
 
 GURL TestClientCertSamlIdpMixin::GetSamlPageUrl() const {
   EXPECT_TRUE(saml_server_.Started());
-  return saml_server_.GetURL(std::string("/") + kSamlPageUrlPath);
+  return saml_with_client_certs_server_.GetURL(std::string("/") +
+                                               kSamlWithClientCertsPageUrlPath);
 }
 
 void TestClientCertSamlIdpMixin::SetUpOnMainThread() {

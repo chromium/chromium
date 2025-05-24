@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool_group.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_timing_info.h"
@@ -15,8 +16,10 @@
 #include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_with_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
@@ -24,7 +27,8 @@ namespace net {
 namespace {
 
 bool IsNegotiatedProtocolTextBased(NextProto next_proto) {
-  return next_proto == kProtoUnknown || next_proto == kProtoHTTP11;
+  return next_proto == NextProto::kProtoUnknown ||
+         next_proto == NextProto::kProtoHTTP11;
 }
 
 void RecordNetLogClosingSocket(const StreamSocket& stream_socket,
@@ -71,13 +75,16 @@ HttpStreamPool::Group::IdleStreamSocket::IdleStreamSocket(
 
 HttpStreamPool::Group::IdleStreamSocket::~IdleStreamSocket() = default;
 
-HttpStreamPool::Group::Group(HttpStreamPool* pool,
-                             HttpStreamKey stream_key,
-                             SpdySessionKey spdy_session_key)
+HttpStreamPool::Group::Group(
+    HttpStreamPool* pool,
+    HttpStreamKey stream_key,
+    std::optional<QuicSessionAliasKey> quic_session_alias_key)
     : pool_(pool),
       stream_key_(std::move(stream_key)),
-      spdy_session_key_(std::move(spdy_session_key)),
-      quic_session_key_(stream_key_.ToQuicSessionKey()),
+      spdy_session_key_(stream_key_.CalculateSpdySessionKey()),
+      quic_session_alias_key_(quic_session_alias_key.has_value()
+                                  ? std::move(*quic_session_alias_key)
+                                  : stream_key_.CalculateQuicSessionAliasKey()),
       net_log_(
           NetLogWithSource::Make(http_network_session()->net_log(),
                                  NetLogSourceType::HTTP_STREAM_POOL_GROUP)),
@@ -101,66 +108,20 @@ HttpStreamPool::Group::~Group() {
 
 std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
     Job::Delegate* delegate,
-    NextProto expected_protocol,
-    bool is_http1_allowed,
-    ProxyInfo proxy_info) {
-  EnsureAttemptManager();
-  return std::make_unique<Job>(delegate, attempt_manager_.get(),
-                               expected_protocol, is_http1_allowed,
-                               std::move(proxy_info));
-}
-
-void HttpStreamPool::Group::StartJob(
-    Job* job,
-    RequestPriority priority,
-    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-    RespectLimits respect_limits,
-    bool enable_ip_based_pooling,
-    bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
-    const NetLogWithSource& net_log) {
-  MaybeUpdateQuicVersionWhenForced(quic_version);
-  net_log_.AddEvent(
-      NetLogEventType::HTTP_STREAM_POOL_GROUP_START_JOB, [&] {
-        base::Value::Dict dict;
-        dict.Set("priority", priority);
-        base::Value::List allowed_bad_certs_list;
-        for (const auto& cert_and_status : allowed_bad_certs) {
-          allowed_bad_certs_list.Append(
-              cert_and_status.cert->subject().GetDisplayName());
-        }
-        dict.Set("allowed_bad_certs", std::move(allowed_bad_certs_list));
-        dict.Set("enable_ip_based_pooling", enable_ip_based_pooling);
-        dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
-        net_log.source().AddToEventParameters(dict);
-        return dict;
-      });
-  net_log.AddEventReferencingSource(
-      NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_BOUND, net_log_.source());
-  EnsureAttemptManager();
-  attempt_manager_->StartJob(
-      job, priority, allowed_bad_certs, respect_limits, enable_ip_based_pooling,
-      enable_alternative_services, quic_version, net_log);
+    NextProto expected_protocol,
+    const NetLogWithSource& request_net_log) {
+  return std::make_unique<Job>(delegate, this, quic_version, expected_protocol,
+                               request_net_log);
 }
 
-int HttpStreamPool::Group::Preconnect(size_t num_streams,
-                                      quic::ParsedQuicVersion quic_version,
-                                      CompletionOnceCallback callback) {
-  MaybeUpdateQuicVersionWhenForced(quic_version);
-  net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_PRECONNECT, [&] {
-    base::Value::Dict dict;
-    dict.Set("num_streams", static_cast<int>(num_streams));
-    dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
-    return dict;
-  });
-
-  if (ActiveStreamSocketCount() >= num_streams) {
-    return OK;
+void HttpStreamPool::Group::OnJobComplete(Job* job) {
+  if (attempt_manager_) {
+    attempt_manager_->OnJobComplete(job);
+    // `this` may be deleted.
+  } else {
+    MaybeComplete();
   }
-
-  EnsureAttemptManager();
-  return attempt_manager_->Preconnect(num_streams, quic_version,
-                                      std::move(callback));
 }
 
 std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
@@ -170,10 +131,19 @@ std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
 
+  net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_HANDLE_CREATED,
+                    [&] {
+                      base::Value::Dict dict;
+                      socket->NetLog().source().AddToEventParameters(dict);
+                      dict.Set("reuse_type", static_cast<int>(reuse_type));
+                      return dict;
+                    });
+
   auto handle = std::make_unique<HttpStreamPoolHandle>(
       weak_ptr_factory_.GetWeakPtr(), std::move(socket), generation_);
   handle->set_connect_timing(connect_timing);
   handle->set_reuse_type(reuse_type);
+
   return handle;
 }
 
@@ -202,30 +172,32 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
                               : kClosedConnectionReturnedToPool;
   } else if (generation != generation_) {
     not_reusable_reason = kSocketGenerationOutOfDate;
+  } else if (ReachedMaxStreamLimit() || pool_->ReachedMaxStreamLimit()) {
+    not_reusable_reason = kExceededSocketLimits;
   } else {
     reusable = true;
   }
 
   if (reusable) {
     AddIdleStreamSocket(std::move(socket));
-    ProcessPendingRequest();
   } else {
     RecordNetLogClosingSocket(*socket, not_reusable_reason);
     socket.reset();
   }
 
   pool_->ProcessPendingRequestsInGroups();
+  MaybeComplete();
 }
 
 void HttpStreamPool::Group::AddIdleStreamSocket(
     std::unique_ptr<StreamSocket> socket) {
-  CHECK(socket->IsConnectedAndIdle());
   CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
   CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
 
   idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
   pool_->IncrementTotalIdleStreamCount();
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
+  ProcessPendingRequest();
 }
 
 std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
@@ -269,6 +241,7 @@ std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
 }
 
 void HttpStreamPool::Group::ProcessPendingRequest() {
+  // TODO(crbug.com/381742472): Ensure what we should do when failing.
   if (!attempt_manager_) {
     return;
   }
@@ -280,14 +253,23 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
     return false;
   }
 
+  RecordNetLogClosingSocket(*idle_stream_sockets_.front().stream_socket,
+                            kExceededSocketLimits);
   idle_stream_sockets_.pop_front();
   pool_->DecrementTotalIdleStreamCount();
+  // Use MaybeCompleteLater since MaybeComplete() may delete `this`, and this
+  // method could be called while iterating all groups.
+  MaybeCompleteLater();
   return true;
+}
+
+size_t HttpStreamPool::Group::ConnectingStreamSocketCount() const {
+  return attempt_manager_ ? attempt_manager_->TcpBasedAttemptCount() : 0;
 }
 
 size_t HttpStreamPool::Group::ActiveStreamSocketCount() const {
   return handed_out_stream_count_ + idle_stream_sockets_.size() +
-         (attempt_manager_ ? attempt_manager_->InFlightAttemptCount() : 0);
+         ConnectingStreamSocketCount();
 }
 
 bool HttpStreamPool::Group::ReachedMaxStreamLimit() const {
@@ -307,18 +289,19 @@ HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
 
 void HttpStreamPool::Group::FlushWithError(
     int error,
+    StreamSocketCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
-  Refresh(net_log_close_reason_utf8);
+  Refresh(net_log_close_reason_utf8, attempt_cancel_reason);
   CancelJobs(error);
 }
 
-void HttpStreamPool::Group::Refresh(
-    std::string_view net_log_close_reason_utf8) {
+void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
+                                    StreamSocketCloseReason cancel_reason) {
   ++generation_;
-  CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
   if (attempt_manager_) {
-    attempt_manager_->CancelInFlightAttempts();
+    attempt_manager_->CancelTcpBasedAttempts(cancel_reason);
   }
+  CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
 }
 
 void HttpStreamPool::Group::CloseIdleStreams(
@@ -332,15 +315,32 @@ void HttpStreamPool::Group::CancelJobs(int error) {
   }
 }
 
-void HttpStreamPool::Group::OnRequiredHttp11() {
-  if (attempt_manager_) {
-    attempt_manager_->OnRequiredHttp11();
+HttpStreamPool::AttemptManager* HttpStreamPool::Group::EnsureAttemptManager() {
+  if (!attempt_manager_) {
+    attempt_manager_ = std::make_unique<AttemptManager>(
+        this, http_network_session()->net_log());
   }
+  return attempt_manager_.get();
 }
 
-void HttpStreamPool::Group::OnAttemptManagerComplete() {
-  CHECK(attempt_manager_);
-  attempt_manager_.reset();
+void HttpStreamPool::Group::OnAttemptManagerShuttingDown(
+    AttemptManager* attempt_manager) {
+  CHECK_EQ(attempt_manager_.get(), attempt_manager);
+  shutting_down_attempt_managers_.emplace(std::move(attempt_manager_));
+  CHECK(!attempt_manager_.get());
+}
+
+void HttpStreamPool::Group::OnAttemptManagerComplete(
+    AttemptManager* attempt_manager) {
+  auto it = shutting_down_attempt_managers_.find(attempt_manager);
+  if (it != shutting_down_attempt_managers_.end()) {
+    CHECK_NE(attempt_manager_.get(), attempt_manager);
+    shutting_down_attempt_managers_.erase(it);
+  } else {
+    CHECK_EQ(attempt_manager_.get(), attempt_manager);
+    attempt_manager_.reset();
+  }
+
   MaybeComplete();
 }
 
@@ -348,24 +348,18 @@ base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
   base::Value::Dict dict;
   dict.Set("active_socket_count", static_cast<int>(ActiveStreamSocketCount()));
   dict.Set("idle_socket_count", static_cast<int>(IdleStreamSocketCount()));
+  dict.Set("handed_out_socket_count",
+           static_cast<int>(HandedOutStreamSocketCount()));
+  dict.Set("attempt_manager_alive", !!attempt_manager_);
   if (attempt_manager_) {
-    dict.Merge(attempt_manager_->GetInfoAsValue());
+    dict.Set("attempt_state", attempt_manager_->GetInfoAsValue());
   }
+
   return dict;
 }
 
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, "For testing");
-}
-
-void HttpStreamPool::Group::MaybeUpdateQuicVersionWhenForced(
-    quic::ParsedQuicVersion& quic_version) {
-  if (!quic_version.IsKnown() && force_quic_) {
-    quic_version = http_network_session()
-                       ->context()
-                       .quic_context->params()
-                       ->supported_versions[0];
-  }
 }
 
 void HttpStreamPool::Group::CleanupIdleStreamSockets(
@@ -389,23 +383,31 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(
       ++it;
     }
   }
+  // Use MaybeCompleteLater since MaybeComplete() may delete `this`, and this
+  // method could be called while iterating all groups.
+  MaybeCompleteLater();
 }
 
-void HttpStreamPool::Group::EnsureAttemptManager() {
-  if (attempt_manager_) {
-    return;
-  }
-  attempt_manager_ =
-      std::make_unique<AttemptManager>(this, http_network_session()->net_log());
+bool HttpStreamPool::Group::CanComplete() const {
+  return ActiveStreamSocketCount() == 0 && !attempt_manager_ &&
+         shutting_down_attempt_managers_.empty();
 }
 
 void HttpStreamPool::Group::MaybeComplete() {
-  if (ActiveStreamSocketCount() > 0) {
+  if (!CanComplete()) {
     return;
   }
 
   pool_->OnGroupComplete(this);
   // `this` is deleted.
+}
+
+void HttpStreamPool::Group::MaybeCompleteLater() {
+  if (CanComplete()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 }  // namespace net

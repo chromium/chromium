@@ -125,15 +125,15 @@
             invalid="{{isModelInvalid_}}">
         </cr-searchable-drop-down>
       </div>
-      <div id="ppdLabel" class="cr-form-field-label"
-           hidden="[[pendingPrinter_.isManaged]]">
+      <div id="ppdLabel" class="cr-form-field-label">
         <div class="select-ppd-and-view">
           <cr-button class="ppd-button" on-click="onViewPpd_"
                      disabled="[[printerInfoChanged_]]">
             $i18n{cupsPrintersViewPpd}
           </cr-button>
           <localized-link localized-string="$i18n{selectDriver}"
-                          link-url="$i18n{printingCUPSPrintPpdLearnMoreUrl}">
+                          link-url="$i18n{printingCUPSPrintPpdLearnMoreUrl}"
+                          hidden="[[pendingPrinter_.isManaged]]">
           </localized-link>
         </div>
       </div>

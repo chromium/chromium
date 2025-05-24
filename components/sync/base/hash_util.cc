@@ -4,28 +4,15 @@
 
 #include "components/sync/base/hash_util.h"
 
-#include "base/base64.h"
-#include "base/hash/sha1.h"
-#include "base/notreached.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
-#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 
 namespace syncer {
-
-std::string GenerateUniquePositionSuffix(const ClientTagHash& client_tag_hash) {
-  // TODO(crbug.com/351357559): move this logic closer to UniquePosition class
-  // (use ClientTagHash instead of suffixes in API).
-  std::string result = base::Base64Encode(
-      base::SHA1Hash(base::as_byte_span(client_tag_hash.value())));
-  CHECK_EQ(result.size(), UniquePosition::kSuffixLength);
-  return result;
-}
 
 std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
     const sync_pb::AutofillWalletSpecifics& specifics) {
@@ -45,10 +32,19 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
           {"payment_instrument:",
            base::NumberToString(
                specifics.payment_instrument().instrument_id())});
+    case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT_CREATION_OPTION:
+      // Append a string to the ID since the ID is randomly generated without
+      // restrictions so it could be a duplicate ID of another type.
+      return base::StrCat(
+          {"payment_instrument_creation_option:",
+           specifics.payment_instrument_creation_option().id()});
     case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
       return std::string();
     case sync_pb::AutofillWalletSpecifics::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
+      DVLOG(1) << "New or unknown Autofill Wallet Specifics type is sent from "
+                  "the sync server side while not handled by Chrome. This is "
+                  "expected when the new type is not yet supported on current "
+                  "chrome version.";
       return std::string();
   }
   return std::string();
@@ -57,6 +53,11 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
 std::string GetUnhashedClientTagFromAutofillOfferSpecifics(
     const sync_pb::AutofillOfferSpecifics& specifics) {
   return base::NumberToString(specifics.id());
+}
+
+std::string GetUnhashedClientTagFromAutofillValuableSpecifics(
+    const sync_pb::AutofillValuableSpecifics& specifics) {
+  return specifics.id();
 }
 
 }  // namespace syncer

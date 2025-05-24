@@ -148,6 +148,20 @@ TEST(GwpAsanTest, GetOutOfRangeAllocatorSettings) {
   EXPECT_FALSE(settings.has_value());
 }
 
+TEST(GwpAsanTest, GetOutOfRangeSamplingMinMaxSize) {
+  std::map<std::string, std::string> bad_parameters;
+  // `SamplingMinSize` exceeds `SamplingMaxSize`, forcing failure.
+  bad_parameters["SamplingMinSize"] = "2048";
+  bad_parameters["SamplingMaxSize"] = "512";
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeatureWithParameters(kTestFeature3,
+                                                    bad_parameters);
+
+  const auto settings =
+      GetAllocatorSettingsImpl(kTestFeature3, false, kDummyProcessType);
+  EXPECT_FALSE(settings.has_value());
+}
+
 TEST(GwpAsanTest, GetProcessSpecificAllocatorSettings) {
   std::map<std::string, std::string> process_specific_parameters;
   // Set to weird and distinctive values.

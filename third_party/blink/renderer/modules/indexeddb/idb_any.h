@@ -27,8 +27,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_ANY_H_
 
 #include <memory>
+#include <optional>
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_record_array.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -48,7 +50,7 @@ class IDBObjectStore;
 //  * source of IDBCursor (IDBObjectStore or IDBIndex)
 //  * source of IDBRequest (IDBObjectStore, IDBIndex, IDBCursor, or null)
 //  * result of IDBRequest (IDBDatabase, IDBCursor, undefined, integer,
-//    key or value)
+//    key, value, array of values or array of records)
 //
 // This allows for lazy conversion to script values (via IDBBindingUtilities),
 // and avoids the need for many dedicated union types.
@@ -65,6 +67,7 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
     kKeyType,
     kIDBValueType,
     kIDBValueArrayType,
+    kIDBRecordArrayType,
   };
 
   explicit IDBAny(Type);
@@ -74,6 +77,7 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
   explicit IDBAny(Vector<std::unique_ptr<IDBValue>>);
   explicit IDBAny(std::unique_ptr<IDBValue>);
   explicit IDBAny(int64_t);
+  explicit IDBAny(IDBRecordArray);
   ~IDBAny();
 
   void Trace(Visitor*) const;
@@ -86,6 +90,7 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
   IDBDatabase* IdbDatabase() const;
   IDBValue* Value() const;
   const Vector<std::unique_ptr<IDBValue>>& Values() const;
+  const IDBRecordArray& Records() const;
   int64_t Integer() const;
   const IDBKey* Key() const;
 
@@ -105,6 +110,7 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
   const std::unique_ptr<IDBKey> idb_key_;
   const std::unique_ptr<IDBValue> idb_value_;
   const Vector<std::unique_ptr<IDBValue>> idb_values_;
+  std::optional<IDBRecordArray> idb_records_;
   const int64_t integer_ = 0;
 };
 

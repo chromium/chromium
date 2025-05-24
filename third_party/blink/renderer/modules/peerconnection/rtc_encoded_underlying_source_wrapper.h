@@ -30,10 +30,10 @@ class MODULES_EXPORT RTCEncodedUnderlyingSourceWrapper
           WTF::CrossThreadOnceClosure());
 
   // UnderlyingSourceBase
-  ScriptPromiseUntyped Pull(ScriptState*, ExceptionState&) override;
-  ScriptPromiseUntyped Cancel(ScriptState*,
-                              ScriptValue reason,
-                              ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Pull(ScriptState*, ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Cancel(ScriptState*,
+                                     ScriptValue reason,
+                                     ExceptionState&) override;
   void Close();
 
   void CreateAudioUnderlyingSource(

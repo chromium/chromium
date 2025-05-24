@@ -31,6 +31,12 @@ struct ManagementState {
 
   bool is_profile_managed() const { return user_level_domain.has_value(); }
 
+  // True is both the browser and user are from the same hosted domain.
+  bool is_managed_by_same_entity() const {
+    return machine_level_domain.has_value() && user_level_domain.has_value() &&
+           machine_level_domain.value() == user_level_domain.value();
+  }
+
   // True if one or more policies are set in this browser, *specifically* at the
   // machine level.
   bool has_machine_level_policy;

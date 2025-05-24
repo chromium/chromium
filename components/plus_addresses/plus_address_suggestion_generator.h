@@ -9,12 +9,12 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "url/origin.h"
 
 namespace autofill {
-class FormFieldData;
+class FormData;
 struct Suggestion;
 }  // namespace autofill
 
@@ -33,20 +33,24 @@ class PlusAddressSuggestionGenerator final {
   PlusAddressSuggestionGenerator(
       const PlusAddressSettingService* setting_service,
       PlusAddressAllocator* allocator,
-      url::Origin origin,
-      std::string primary_email);
+      url::Origin origin);
   ~PlusAddressSuggestionGenerator();
 
-  // Returns the suggestions to be offered on the `focused_field` with Password
-  // Manager classification `focused_form_classification`. `affiliated_profiles`
-  // are assumed to be the plus profiles affiliated with the primary main frame
-  // origin.
+  // Returns the suggestions to be offered on the field in `focused_form` with
+  // `focused_field_id` with Password Manager classification
+  // `focused_form_classification`. `affiliated_profiles` are assumed to be the
+  // plus profiles affiliated with the primary main frame origin.
+  // Note that the method CHECKs that a field with `focused_field_id` is
+  // contained in `focused_form`.
   [[nodiscard]] std::vector<autofill::Suggestion> GetSuggestions(
+      const std::vector<std::string>& affiliated_plus_addresses,
       bool is_creation_enabled,
-      const autofill::PasswordFormClassification& focused_form_classification,
+      const autofill::FormData& focused_form,
       const autofill::FormFieldData& focused_field,
-      autofill::AutofillSuggestionTriggerSource trigger_source,
-      std::vector<PlusProfile> affiliated_profiles);
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+          form_field_type_groups,
+      const autofill::PasswordFormClassification& focused_form_classification,
+      autofill::AutofillSuggestionTriggerSource trigger_source);
 
   // Updates `suggestion` with a refreshed plus address by setting a new
   // payload.
@@ -67,6 +71,10 @@ class PlusAddressSuggestionGenerator final {
       const PlusAddress& plus_address,
       autofill::Suggestion& suggestion);
 
+  // Updates the `suggestion`'s style to indicate whether it `is_loading`.
+  static void SetLoadingStateForSuggestion(bool is_loading,
+                                           autofill::Suggestion& suggestion);
+
  private:
   // Returns a suggestion to create a new plus address.
   autofill::Suggestion CreateNewPlusAddressSuggestion();
@@ -78,16 +86,17 @@ class PlusAddressSuggestionGenerator final {
   // Returns a suggestion to generate a new plus address inline. If there are
   // pre-allocated plus addresses, it adds the next suggested plus address as
   // payload. Otherwise, the payload is left empty (and the UI will need to
-  // request a suggested plus address on showing the suggestion).
-  autofill::Suggestion CreateNewPlusAddressInlineSuggestion();
+  // request a suggested plus address on showing the suggestion). If
+  // `refreshed_suggestion` is true, the function will return a plus address
+  // that's different to the last one that was offered.
+  autofill::Suggestion CreateNewPlusAddressInlineSuggestion(
+      bool refreshed_suggestion);
 
   const raw_ref<const PlusAddressSettingService> setting_service_;
   const raw_ref<PlusAddressAllocator> allocator_;
   // TODO(crbug.com/362445807): Eliminate this parameter once the allocator
   // no longer needs it.
   const url::Origin origin_;
-  // The primary email address of the user.
-  const std::string primary_email_;
 };
 
 }  // namespace plus_addresses

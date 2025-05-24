@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,8 +29,6 @@ class AccessCodeCastSinkServiceFactoryTest : public testing::Test {
   ~AccessCodeCastSinkServiceFactoryTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({},
-                                   {features::kAccessCodeCastRememberDevices});
     TestingProfile::Builder profile_builder;
     auto pref_service =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -67,7 +65,6 @@ class AccessCodeCastSinkServiceFactoryTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingProfile> profile_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AccessCodeCastSinkServiceFactoryTest, PrefDisabledReturnsNullPtr) {

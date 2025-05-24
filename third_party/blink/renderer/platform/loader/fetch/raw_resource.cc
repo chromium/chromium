@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -100,7 +101,7 @@ RawResource::RawResource(const ResourceRequest& resource_request,
     : Resource(resource_request, type, options) {}
 
 void RawResource::AppendData(
-    absl::variant<SegmentedBuffer, base::span<const char>> data) {
+    std::variant<SegmentedBuffer, base::span<const char>> data) {
   if (GetResourceRequest().UseStreamOnResponse())
     return;
 
@@ -123,19 +124,13 @@ class RawResource::PreloadBytesConsumerClient final
       return;
     }
     while (resource_->HasClient(client)) {
-      const char* buffer = nullptr;
-      size_t available = 0;
-      auto result = bytes_consumer_->BeginRead(&buffer, &available);
+      base::span<const char> buffer;
+      auto result = bytes_consumer_->BeginRead(buffer);
       if (result == BytesConsumer::Result::kShouldWait)
         return;
       if (result == BytesConsumer::Result::kOk) {
-        client->DataReceived(resource_,
-                             // SAFETY: `BeginRead` must ensure that `buffer`
-                             // has `available` bytes available.
-                             // TODO(crbug.com/40284755): Capture this invariant
-                             // by making it return an actual span.
-                             UNSAFE_BUFFERS(base::span(buffer, available)));
-        result = bytes_consumer_->EndRead(available);
+        client->DataReceived(resource_, buffer);
+        result = bytes_consumer_->EndRead(buffer.size());
       }
       if (result != BytesConsumer::Result::kOk) {
         return;

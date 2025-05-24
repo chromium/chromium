@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "components/autofill/core/browser/test_autofill_client.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/test_matchers.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -14,6 +13,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory_test_api.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -106,9 +106,7 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
     web_state_.SetContentIsHTML(true);
     web_state_.SetBrowserState(GetBrowserState());
     web_frames_manager().AddObserver(&pre_factory_);
-    ASSERT_FALSE(AutofillDriverIOSFactory::FromWebState(&web_state_));
-    AutofillDriverIOSFactory::CreateForWebState(&web_state_, &client_, nil,
-                                                "en-US");
+    client_ = std::make_unique<TestAutofillClientIOS>(&web_state_, nil);
     factory().AddObserver(&factory_observer_);
     web_frames_manager().AddObserver(&post_factory_);
   }
@@ -121,7 +119,7 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
 
   std::unique_ptr<web::FakeWebFrame> CreateFrame(bool is_main_frame) {
     std::unique_ptr<web::FakeWebFrame> frame = web::FakeWebFrame::Create(
-        test::MakeLocalFrameToken().ToString(), is_main_frame, GURL());
+        test::MakeLocalFrameToken().ToString(), is_main_frame);
     frame->set_browser_state(GetBrowserState());
     return frame;
   }
@@ -145,7 +143,7 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
   }
 
   AutofillDriverIOSFactory& factory() {
-    return *AutofillDriverIOSFactory::FromWebState(&web_state_);
+    return client_->GetAutofillDriverFactory();
   }
 
   MockWebFramesManagerObserver& pre_factory() { return pre_factory_; }
@@ -170,7 +168,7 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
   MockWebFramesManagerObserver pre_factory_;
   MockWebFramesManagerObserver post_factory_;
   MockAutofillDriverIOSFactoryObserver factory_observer_;
-  TestAutofillClient client_;
+  std::unique_ptr<TestAutofillClientIOS> client_;
   web::FakeWebState web_state_;
 };
 

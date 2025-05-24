@@ -5,7 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_TRACING_AW_TRACING_DELEGATE_H_
 #define ANDROID_WEBVIEW_BROWSER_TRACING_AW_TRACING_DELEGATE_H_
 
-#include <optional>
+#include <memory>
 
 #include "content/public/browser/tracing_delegate.h"
 
@@ -26,12 +26,9 @@ class AwTracingDelegate : public content::TracingDelegate {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // content::TracingDelegate implementation:
-  bool OnBackgroundTracingActive(bool requires_anonymized_data) override;
-  bool OnBackgroundTracingIdle(bool requires_anonymized_data) override;
+  bool IsRecordingAllowed(bool requires_anonymized_data) const override;
 
  private:
-  bool IsAllowedToStartScenario() const;
-
   std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
 };
 

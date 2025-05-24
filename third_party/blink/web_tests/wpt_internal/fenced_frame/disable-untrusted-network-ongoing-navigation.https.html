@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<title>Test window.fence.disableUntrustedNetwork does not resolve if descendant
+  frames have ongoing navigation.</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+promise_test(async () => {
+  const url = new URL('/wpt_internal/fenced_frame/resources/slow.py?delay=100',
+    location.href);
+  await fetch(url)
+    .then(function (response) {
+      assert_equals(response.status, 200);
+      assert_equals(response.headers.get('Supports-Loading-Mode'),
+        'fenced-frame');
+    });
+}, "Sanity test for the request handler.");
+
+promise_test(async () => {
+  const fenced_frame = await attachFencedFrameContext();
+  await fenced_frame.execute(async () => {
+    const iframe = attachIFrame();
+
+    // Request to this URL will hang for a long time. The URL is exempted from
+    // network revocation to simulate a nested frame with ongoing navigation.
+    // Otherwise, once `window.fence.disableUntrustedNetwork()` is invoked, the
+    // ongoing navigation is cancelled immediately.
+    const url = new URL(
+      '/wpt_internal/fenced_frame/resources/slow.py?delay=100000',
+      location.href);
+    await window.internals.exemptUrlFromNetworkRevocation(url);
+
+    const result = await Promise.race([
+      new Promise((resolve) => setTimeout(() => resolve('timeout'), 2000)),
+      new Promise((resolve) => {
+        iframe.src = url;
+        iframe.onload = () => resolve('nested iframe loaded');
+      }),
+      new Promise((resolve) => setTimeout(() => {
+        // Delay the disable network call a bit to make sure the nested frame
+        // has the navigation initiated.
+        window.fence.disableUntrustedNetwork().then(() => {
+          resolve('network revoked');
+        })
+      }, 100)),
+    ]);
+
+    assert_equals(result, 'timeout',
+      "The disableUntrustedNetwork() promise does not resolve while there " +
+      "is ongoing navigation in descendant iframes.");
+  });
+}, 'window.fence.disableUntrustedNetwork does not resolve while there is ' +
+'ongoing navigation in descendant iframes.');
+
+promise_test(async () => {
+  const fenced_frame = await attachFencedFrameContext();
+  await fenced_frame.execute(async () => {
+    const nested_fenced_frame = attachFencedFrame();
+
+    // Request to this URL will hang for a long time. The URL is exempted from
+    // network revocation to simulate a nested frame with ongoing navigation.
+    // Otherwise, once `window.fence.disableUntrustedNetwork()` is invoked, the
+    // ongoing navigation is cancelled immediately.
+    const url = new URL(
+      '/wpt_internal/fenced_frame/resources/slow.py?delay=100000',
+      location.href);
+    await window.internals.exemptUrlFromNetworkRevocation(url);
+
+    const result = await Promise.race([
+      new Promise((resolve) => setTimeout(() => resolve('timeout'), 2000)),
+      new Promise((resolve) => {
+        nested_fenced_frame.config = new FencedFrameConfig(url);
+        nested_fenced_frame.onload = () =>
+          resolve('nested fenced frame loaded');
+      }),
+      new Promise((resolve) => setTimeout(() => {
+        // Delay the disable network call a bit to make sure the nested frame
+        // has the navigation initiated.
+        window.fence.disableUntrustedNetwork().then(() => {
+          resolve('network revoked');
+        })
+      }, 100)),
+    ]);
+
+    assert_equals(result, 'timeout',
+      "The disableUntrustedNetwork() promise does not resolve while there " +
+      "is ongoing navigation in descendant fenced frames.");
+  });
+}, 'window.fence.disableUntrustedNetwork does not resolve while there is ' +
+'ongoing navigation in descendant fenced frames.');
+
+// When a navigation request is reset, the frame tree untrusted network status
+// should be recalculated. In this test, the nested iframe initiates a
+// navigation that hangs, then it changes to navigate to another URL that will
+// receive a 204 response code. When the navigation request reset takes place,
+// the promise returned by `window.fence.disableUntrustedNetwork()` at the
+// parent fenced frame should resolve.
+//
+// The second navigation is configured to receive a 204 response code so that it
+// will never commit. This makes sure it is the navigation reset that triggers
+// the recalculation of the frame tree untrusted network status, instead of the
+// one in navigation commit.
+promise_test(async () => {
+  const fenced_frame = await attachFencedFrameContext();
+  await fenced_frame.execute(async () => {
+    const iframe = attachIFrame();
+
+    // Request to `slow_url` will hang for a long time. Request to
+    // `no_content_url` will get a 204 response code. These URLs are exempted
+    // from network revocation to simulate a nested frame with ongoing
+    // navigation. Otherwise, once `window.fence.disableUntrustedNetwork()` is
+    // invoked, the ongoing navigation is cancelled immediately.
+    const slow_url = new URL(
+      '/wpt_internal/fenced_frame/resources/slow.py?delay=100000',
+      location.href);
+    const no_content_url = new URL(
+      '/wpt_internal/fenced_frame/resources/response-204.py',
+      location.href);
+    await window.internals.exemptUrlFromNetworkRevocation(slow_url);
+    await window.internals.exemptUrlFromNetworkRevocation(no_content_url);
+
+    const result = await Promise.race([
+      new Promise((resolve) => setTimeout(() => resolve('timeout'), 5000)),
+      new Promise(() => {
+        // Start a navigation that hangs, then after a while it changes to
+        // navigate to another URL which will receive a 204 response code.
+        iframe.src = slow_url;
+        setTimeout(() => {
+          iframe.src = no_content_url;
+        }, 2500)
+      }),
+      new Promise((resolve) => setTimeout(() => {
+        // Delay the disable network call a bit to make sure the nested frame
+        // has the navigation initiated.
+        window.fence.disableUntrustedNetwork().then(() => {
+          resolve('network revoked');
+        })
+      }, 100)),
+    ]);
+
+    assert_equals(result, 'network revoked',
+      'The disableUntrustedNetwork() promise resolves once descendant iframes '
+      + 'do not have any ongoing navigation.');
+  });
+}, 'window.fence.disableUntrustedNetwork resolves once descendant iframes ' +
+'do not have any ongoing navigation.');
+</script>
+</body>

@@ -224,7 +224,6 @@ declare global {
           Promise<void>;
       export function startPasswordCheck(): Promise<void>;
       export function getPasswordCheckStatus(): Promise<PasswordCheckStatus>;
-      export function isAccountStoreDefault(): Promise<boolean>;
       export function getUrlCollection(url: string):
           Promise<UrlCollection|null>;
       export function addPassword(options: AddPasswordOptions): Promise<void>;

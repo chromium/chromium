@@ -24,7 +24,7 @@ class MockTimer : public MockableTime::Timer {
     DCHECK(time);
   }
 
-  ~MockTimer() override {}
+  ~MockTimer() override = default;
 
   // MockableTime::Timer implementation:
   void Start(const base::Location& posted_from,
@@ -124,7 +124,7 @@ MockTime::MockTime()
   VLOG(1) << "Creating mock time: T=" << elapsed_sec() << "s";
 }
 
-MockTime::~MockTime() {}
+MockTime::~MockTime() = default;
 
 base::Time MockTime::Now() const {
   return now_;

@@ -12,14 +12,13 @@
 #include "media/mojo/services/mojo_media_log.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
 namespace {
 
 bool HasAudio(MediaResource* media_resource) {
-  DCHECK(media_resource->GetType() == MediaResource::Type::kStream);
-
   const auto media_streams = media_resource->GetAllStreams();
   for (const media::DemuxerStream* stream : media_streams) {
     if (stream->type() == media::DemuxerStream::Type::AUDIO)
@@ -208,11 +207,8 @@ void MediaFoundationRendererWrapper::OnFramePoolInitialized(
   auto pool_params = media::mojom::FramePoolInitializationParameters::New();
   for (auto& texture : frame_textures) {
     auto frame_info = media::mojom::FrameTextureInfo::New();
-    gfx::GpuMemoryBufferHandle gpu_handle;
-
-    gpu_handle.dxgi_handle = std::move(texture.dxgi_handle);
-    gpu_handle.dxgi_token = gfx::DXGIHandleToken();
-    gpu_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
+    gfx::GpuMemoryBufferHandle gpu_handle(
+        gfx::DXGIHandle(std::move(texture.dxgi_handle)));
 
     frame_info->token = texture.token;
     frame_info->texture_handle = std::move(gpu_handle);

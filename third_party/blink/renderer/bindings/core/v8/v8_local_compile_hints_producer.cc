@@ -91,7 +91,7 @@ void V8LocalCompileHintsProducer::GenerateData(bool final_data) {
                                        CachedMetadataHandler::kClearLocally);
     cache_handler->SetCachedMetadata(
         code_cache_host, V8CodeCache::TagForCompileHints(cache_handler),
-        data->data, data->length);
+        ToSpan(*data));
   }
   if (final_data) {
     cache_handlers_.clear();

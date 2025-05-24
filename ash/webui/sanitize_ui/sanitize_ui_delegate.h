@@ -5,6 +5,8 @@
 #ifndef ASH_WEBUI_SANITIZE_UI_SANITIZE_UI_DELEGATE_H_
 #define ASH_WEBUI_SANITIZE_UI_SANITIZE_UI_DELEGATE_H_
 
+#include "base/functional/callback.h"
+
 namespace ash {
 
 // A delegate which exposes the functionality to //chrome
@@ -13,6 +15,9 @@ class SanitizeUIDelegate {
   virtual ~SanitizeUIDelegate() = default;
 
   virtual void PerformSanitizeSettings() = 0;
+
+  virtual void SetAttemptRestartForTesting(
+      const base::RepeatingClosure& restart_attempt) = 0;
 };
 
 }  // namespace ash

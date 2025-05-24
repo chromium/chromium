@@ -1,0 +1,15 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  sources = [
+    "credential_provider_settings_utils.h",
+    "credential_provider_settings_utils.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
+  ]
+  frameworks = [ "AuthenticationServices.framework" ]
+}

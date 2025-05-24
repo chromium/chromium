@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 

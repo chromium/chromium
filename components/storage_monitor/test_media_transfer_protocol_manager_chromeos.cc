@@ -23,10 +23,10 @@ TestMediaTransferProtocolManagerChromeOS::GetFakeMtpManager() {
 }
 
 TestMediaTransferProtocolManagerChromeOS::
-    TestMediaTransferProtocolManagerChromeOS() {}
+    TestMediaTransferProtocolManagerChromeOS() = default;
 
 TestMediaTransferProtocolManagerChromeOS::
-    ~TestMediaTransferProtocolManagerChromeOS() {}
+    ~TestMediaTransferProtocolManagerChromeOS() = default;
 
 void TestMediaTransferProtocolManagerChromeOS::AddReceiver(
     mojo::PendingReceiver<device::mojom::MtpManager> receiver) {

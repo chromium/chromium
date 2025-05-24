@@ -6,25 +6,29 @@
 
 #include <string>
 
+#include "cc/paint/paint_record.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class SkCanvas;
 struct SkSize;
 
+namespace cc {
+class PaintCanvas;
+}
+
 namespace gfx {
-class Canvas;
 class RenderText;
 class Rect;
-class FontList;
 }  // namespace gfx
 
 namespace enterprise_watermark {
 
-struct WatermarkStyle {
-  int block_width;
-  int text_size;
-  SkColor fill_color;
-  SkColor outline_color;
+// A page watermark consists of a unique pattern/object/text, rendered
+// repeatedly over the page. We refer to this object as a "Watermark Block".
+struct WatermarkBlock {
+  cc::PaintRecord record;
+  int width;
+  int height;
 };
 
 // Utility function to get height of a watermark block. The block height is
@@ -47,29 +51,43 @@ std::unique_ptr<gfx::RenderText> CreateOutlineRenderText(
     const std::u16string& text,
     const SkColor color);
 
-// Draws a watermark on the surface represented by the gfx::Canvas instance.
-// In this direct refactor, text_fill and text_outline should have the same
-// state with the exception of the fill style.
-void DrawWatermark(gfx::Canvas* canvas,
-                   gfx::RenderText* text_fill,
-                   gfx::RenderText* text_outline,
+// Draws a watermark on the surface represented by the cc::PaintCanvas instance.
+// `block_width` and `block_height` are the dimensions of the watermark block
+// represented by the cc::PaintRecord. `contents_bounds` represents the
+// dimensions of the area over which the watermark is drawn.
+void DrawWatermark(cc::PaintCanvas* canvas,
+                   cc::PaintRecord* record,
+                   int block_width,
                    int block_height,
-                   const gfx::Rect& contents_bounds,
-                   int block_width);
+                   const SkSize& contents_bounds);
 
-// Convenience function that creates the required RenderText instances and
-// computes the required block_height based on inputs. This overload is useful
-// for the case of print where those values are not cached as they are in
-// WatermarkView.
+// Draws a watermark on the surface represented by the SkCanvas instance.
+// `block_width` and `block_height` are the dimensions of the watermark block
+// represented by the SkPicture. `contents_bounds` represents the
+// dimensions of the area over which the watermark is drawn.
+void DrawWatermark(SkCanvas* canvas,
+                   SkPicture* picture,
+                   int block_width,
+                   int block_height,
+                   const SkSize& contents_bounds);
+
+// Draws a watermark onto a PaintRecord and stores it along with the block's
+// width and height so that it can be rendered in processes other than the
+// browser.
+WatermarkBlock DrawWatermarkToPaintRecord(const std::string& watermark_text,
+                                          SkColor fill_color,
+                                          SkColor outlint_color);
+
+// Previously: a convenience function that creates the required RenderText
+// instances and computes the required block_height based on inputs. This
+// overload is useful for the case of print where those values are not cached as
+// they are in WatermarkView. Will be removed in favour of one of the other
+// overloads above.
 void DrawWatermark(SkCanvas* canvas,
                    SkSize size,
                    const std::string& text,
                    int block_width,
                    int text_size);
-
-// Returns the default, hard-coded font list for Chrome watermarks.
-const gfx::FontList& WatermarkFontList();
-
 }  // namespace enterprise_watermark
 
 #endif  // COMPONENTS_ENTERPRISE_WATERMARKING_WATERMARK_H_

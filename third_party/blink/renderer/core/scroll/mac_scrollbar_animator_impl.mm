@@ -20,9 +20,11 @@ typedef HeapHashMap<WeakMember<const Scrollbar>, MacScrollbarImplV2*>
     ScrollbarToAnimatorV2Map;
 
 ScrollbarToAnimatorV2Map& GetScrollbarToAnimatorV2Map() {
-  DEFINE_STATIC_LOCAL(Persistent<ScrollbarToAnimatorV2Map>, map,
-                      (MakeGarbageCollected<ScrollbarToAnimatorV2Map>()));
-  return *map;
+  using ScrollbarToAnimatorV2MapHolder =
+      DisallowNewWrapper<ScrollbarToAnimatorV2Map>;
+  DEFINE_STATIC_LOCAL(Persistent<ScrollbarToAnimatorV2MapHolder>, holder,
+                      (MakeGarbageCollected<ScrollbarToAnimatorV2MapHolder>()));
+  return holder->Value();
 }
 
 blink::ScrollbarThemeMac* MacOverlayScrollbarTheme(

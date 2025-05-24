@@ -482,6 +482,16 @@ TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
   EXPECT_EQ(survey_data.survey_bits_data.at(
                 permissions::kPermissionsPromptSurveyHadGestureKey),
             true);
+  EXPECT_EQ(survey_data.survey_bits_data.at(
+                permissions::kPermissionPromptSurveyPreviewVisibleKey),
+            false);
+  EXPECT_EQ(
+      survey_data.survey_bits_data.at(
+          permissions::kPermissionPromptSurveyPreviewDropdownInteractedKey),
+      false);
+  EXPECT_EQ(survey_data.survey_bits_data.at(
+                permissions::kPermissionPromptSurveyPreviewWasCombinedKey),
+            false);
   EXPECT_EQ(survey_data.survey_string_data.at(
                 permissions::kPermissionsPromptSurveyPromptDispositionKey),
             "AnchoredBubble");
@@ -505,6 +515,87 @@ TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
   EXPECT_EQ(survey_data.survey_string_data.at(
                 permissions::kPermissionPromptSurveyUrlKey),
             trigger_gurl);
+  EXPECT_EQ(survey_data.survey_string_data.at(
+                permissions::kPermissionPromptSurveyPreviewTimeToDecisionKey),
+            "");
+  EXPECT_EQ(survey_data.survey_string_data.at(
+                permissions::kPermissionPromptSurveyPreviewTimeToVisibleKey),
+            "");
+}
+
+TEST_F(PermissionHatsTriggerUnitTest, ExtraProductSpecificFieldsAreReported) {
+  FeatureParams params;
+  params.action_filter = "Accepted";
+  params.request_type_filter = "VideoCapture";
+  params.prompt_disposition_filter = "AnchoredBubble";
+  params.prompt_disposition_reason_filter = "DefaultFallback";
+  params.had_gesture_filter = "true";
+  params.release_channel_filter = "beta";
+  SetupFeatureParams(params);
+
+  auto survey_data = permissions::PermissionHatsTriggerHelper::
+      SurveyProductSpecificData::PopulateFrom(
+          permissions::PermissionHatsTriggerHelper::PromptParametersForHats(
+              permissions::RequestType::kCameraStream,
+              permissions::PermissionAction::GRANTED,
+              permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
+              permissions::PermissionPromptDispositionReason::DEFAULT_FALLBACK,
+              permissions::PermissionRequestGestureType::GESTURE, "beta",
+              permissions::kOnPromptResolved, base::Minutes(1),
+              permissions::PermissionHatsTriggerHelper::
+                  OneTimePermissionPromptsDecidedBucket::BUCKET_6_10,
+              trigger_gurl, std::nullopt, CONTENT_SETTING_DEFAULT,
+              std::make_optional<permissions::PermissionHatsTriggerHelper::
+                                     PreviewParametersForHats>(
+                  /*was_visible=*/true, /*dropdown_was_interacted=*/false,
+                  /*was_prompt_combined=*/true,
+                  /*time_to_decision=*/base::Milliseconds(12345),
+                  /*time_to_visible=*/base::Milliseconds(98765))));
+
+  EXPECT_EQ(survey_data.survey_bits_data.at(
+                permissions::kPermissionsPromptSurveyHadGestureKey),
+            true);
+  EXPECT_EQ(survey_data.survey_bits_data.at(
+                permissions::kPermissionPromptSurveyPreviewVisibleKey),
+            true);
+  EXPECT_EQ(
+      survey_data.survey_bits_data.at(
+          permissions::kPermissionPromptSurveyPreviewDropdownInteractedKey),
+      false);
+  EXPECT_EQ(survey_data.survey_bits_data.at(
+                permissions::kPermissionPromptSurveyPreviewWasCombinedKey),
+            true);
+  EXPECT_EQ(survey_data.survey_string_data.at(
+                permissions::kPermissionsPromptSurveyPromptDispositionKey),
+            "AnchoredBubble");
+  EXPECT_EQ(
+      survey_data.survey_string_data.at(
+          permissions::kPermissionsPromptSurveyPromptDispositionReasonKey),
+      "DefaultFallback");
+  EXPECT_EQ(survey_data.survey_string_data.at(
+                permissions::kPermissionsPromptSurveyActionKey),
+            "Accepted");
+  EXPECT_EQ(survey_data.survey_string_data.at(
+                permissions::kPermissionsPromptSurveyRequestTypeKey),
+            "VideoCapture");
+  EXPECT_EQ(survey_data.survey_string_data.at(
+                permissions::kPermissionsPromptSurveyReleaseChannelKey),
+            "beta");
+  EXPECT_EQ(
+      survey_data.survey_string_data.at(
+          permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey),
+      "6_10");
+  EXPECT_EQ(survey_data.survey_string_data.at(
+                permissions::kPermissionPromptSurveyUrlKey),
+            trigger_gurl);
+  // Time deltas should be stringified and rounded to the nearest
+  // 100-millisecond interval:
+  EXPECT_EQ(survey_data.survey_string_data.at(
+                permissions::kPermissionPromptSurveyPreviewTimeToDecisionKey),
+            "12300");  // N.B.: rounded down
+  EXPECT_EQ(survey_data.survey_string_data.at(
+                permissions::kPermissionPromptSurveyPreviewTimeToVisibleKey),
+            "98800");  // N.B.: rounded up
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, VerifyIgnoreSafeguardFunctionality) {

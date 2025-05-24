@@ -6,11 +6,14 @@ package org.chromium.components.messages;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
- * A class providing basic info required for messages to trigger stacking animation.
- * This is essentially a wrapper and proxy of {@link View}, exposing necessary info fulfilling the
- * minimum requirement.
+ * A class providing basic info required for messages to trigger stacking animation. This is
+ * essentially a wrapper and proxy of {@link View}, exposing necessary info fulfilling the minimum
+ * requirement.
  */
+@NullMarked
 public class MessageDimens {
     static MessageDimens from(MessageContainer container, View currentView) {
         View siblingView = container.getSiblingView(currentView);

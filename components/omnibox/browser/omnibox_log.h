@@ -43,7 +43,16 @@ struct OmniboxLog {
              base::TimeDelta elapsed_time_since_last_change_to_default_match,
              const AutocompleteResult& result,
              const GURL& destination_url,
-             bool is_incognito);
+             bool is_incognito,
+             bool zero_prefix_suggestions_shown_in_session,
+             bool zero_prefix_search_suggestions_shown_in_session,
+             bool zero_prefix_url_suggestions_shown_in_session,
+             bool typed_search_suggestions_shown_in_session,
+             bool typed_url_suggestions_shown_in_session,
+             bool contextual_search_suggestions_selected_in_session,
+             bool contextual_search_suggestions_shown_in_session,
+             bool lens_action_selected_in_session,
+             bool lens_action_shown_in_session);
   ~OmniboxLog();
 
   // The user's input text in the omnibox.
@@ -87,6 +96,12 @@ struct OmniboxLog {
   // The type of page (e.g., new tab page, regular web page) that the
   // user was viewing before going somewhere with the omnibox.
   metrics::OmniboxEventProto::PageClassification current_page_classification;
+
+  // The amount of time since the user focused the omnibox. Recorded regardless
+  // of whether the omnibox popup is open. If a match is opened without
+  // triggering a focus event, e.g., when a user drags a URL to the omnibox to
+  // navigate, this elapsed time is set to -1 milliseconds.
+  base::TimeDelta elapsed_time_since_user_focused_omnibox;
 
   // The amount of time since the user first began modifying the text
   // in the omnibox.  If at some point after modifying the text, the
@@ -137,6 +152,32 @@ struct OmniboxLog {
   // Whether the item selection happened on an off-the-record/incognito profile.
   // This is used to disable logging of scoring signals in incognito mode.
   bool is_incognito;
+
+  // Whether at least one zero-prefix suggestion was shown in the current
+  // Omnibox session. This is used for metrics logging.
+  bool zero_prefix_suggestions_shown_in_session = false;
+
+  // Whether at least one zero-prefix Search/URL suggestion was shown in the
+  // current Omnibox session. This is used in order to ensure that the relevant
+  // client-side metrics logging code emits the proper values.
+  bool zero_prefix_search_suggestions_shown_in_session = false;
+  bool zero_prefix_url_suggestions_shown_in_session = false;
+
+  // Whether at least one typed Search/URL suggestion was shown in the current
+  // Omnibox session. This is used in order to ensure that the relevant
+  // client-side metrics logging code emits the proper values.
+  bool typed_search_suggestions_shown_in_session = false;
+  bool typed_url_suggestions_shown_in_session = false;
+
+  // Whether at least one contextual search suggestion was selected/shown in the
+  // session.
+  bool contextual_search_suggestions_selected_in_session = false;
+  bool contextual_search_suggestions_shown_in_session = false;
+
+  // Whether the "Ask Google Lens about this page" action was selected/shown at
+  // least once in the session.
+  bool lens_action_selected_in_session = false;
+  bool lens_action_shown_in_session = false;
 
   // The preferred steady state (unfocused) omnibox position. Only logged on
   // iOS phones.

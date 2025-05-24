@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -57,11 +58,6 @@
 #include "ui/gfx/presentation_feedback.h"
 
 namespace exo {
-
-BASE_FEATURE(kExoDisableBeginFrameAcks,
-             "ExoDisableBeginFrameAcks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 class CustomWindowTargeter : public aura::WindowTargeter {
@@ -136,6 +132,9 @@ SurfaceTreeHost::~SurfaceTreeHost() {
   context_provider_->RemoveObserver(this);
 
   SetRootSurface(nullptr);
+  // We can delete frame_timing_history_ give that we don't
+  // care about metrics at this point.
+  layer_tree_frame_sink_holder_->DeleteFrameTimingHistory();
   LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
       std::move(layer_tree_frame_sink_holder_));
   CleanUpCallbacks();
@@ -284,7 +283,7 @@ SecurityDelegate* SurfaceTreeHost::GetSecurityDelegate() {
 void SurfaceTreeHost::OnDidProcessDisplayChanges(
     const DisplayConfigurationChange& configuration_change) {
   // The output of the surface may change when the primary display changes.
-  const bool primary_changed = base::ranges::any_of(
+  const bool primary_changed = std::ranges::any_of(
       configuration_change.display_metrics_changes,
       [](const DisplayManagerObserver::DisplayMetricsChange& change) {
         return change.changed_metrics &
@@ -379,9 +378,6 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
           ? std::nullopt
           : std::make_optional(GetScaleFactor()),
       &frame);
-
-  // Update after resource is updated.
-  UpdateHostLayerOpacity();
 
   std::vector<GLbyte*> sync_tokens;
   // We track previously verified tokens and set them to be verified to avoid
@@ -493,17 +489,8 @@ void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
     root_surface_->window()->SetBounds(updated_bounds);
   }
 
-  UpdateHostWindowOpaqueRegion();
-}
-
-void SurfaceTreeHost::UpdateHostLayerOpacity() {
-  ui::Layer* commit_target_layer = GetCommitTargetLayer();
-
   if (commit_target_layer == host_window_->layer()) {
     UpdateHostWindowOpaqueRegion();
-  } else if (commit_target_layer) {
-    commit_target_layer->SetFillsBoundsOpaquely(
-        ContentsFillsHostWindowOpaquely());
   }
 }
 
@@ -564,16 +551,8 @@ SurfaceTreeHost::CreateLayerTreeFrameSink() {
       frame_sink_id_, std::move(sink_receiver), std::move(client_remote));
 
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
-  params.gpu_memory_buffer_manager =
-      aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
   params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
-
-  // Disable merge of frame acks with begin frame so that clients of exo can
-  // get frame callbacks and resources reclaimed as soon as possible.
-  if (base::FeatureList::IsEnabled(kExoDisableBeginFrameAcks)) {
-    params.wants_begin_frame_acks = false;
-  }
 
   params.auto_needs_begin_frame =
       base::FeatureList::IsEnabled(kExoReactiveFrameSubmission);

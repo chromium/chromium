@@ -8,9 +8,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_manager.h"
@@ -18,6 +15,12 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/grit/extensions_browser_resources.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#endif
 
 namespace task_manager {
 
@@ -33,8 +36,7 @@ ExtensionTask::ExtensionTask(content::WebContents* web_contents,
   LoadExtensionIcon(extension);
 }
 
-ExtensionTask::~ExtensionTask() {
-}
+ExtensionTask::~ExtensionTask() = default;
 
 void ExtensionTask::UpdateTitle() {
   // The title of the extension should not change as a result of title change
@@ -47,6 +49,7 @@ void ExtensionTask::UpdateFavicon() {
 }
 
 void ExtensionTask::Activate() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // This task represents the extension view of (for example) a background page
   // or browser action button, so there is no top-level window to bring to the
   // front. Instead, when this task is double-clicked, we bring up the
@@ -71,6 +74,10 @@ void ExtensionTask::Activate() {
     return;
 
   chrome::ShowExtensions(browser, extension->id());
+#else
+  // TODO(crbug.com/417512763): Support activation on desktop Android.
+  NOTIMPLEMENTED();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 Task::Type ExtensionTask::GetType() const {

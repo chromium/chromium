@@ -8,9 +8,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 /** An interface that provides and notifies about night mode state. */
+@NullMarked
 public interface NightModeStateProvider {
     /** Observes night mode state changes. */
     interface Observer {
@@ -22,10 +23,10 @@ public interface NightModeStateProvider {
     boolean isInNightMode();
 
     /** @param observer The {@link Observer} to be registered to this provider. */
-    void addObserver(@NonNull Observer observer);
+    void addObserver(Observer observer);
 
     /** @param observer The {@link Observer} to be unregistered to this provider. */
-    void removeObserver(@NonNull Observer observer);
+    void removeObserver(Observer observer);
 
     /**
      * @return Whether or not {@link Configuration#uiMode} should be overridden for night mode by

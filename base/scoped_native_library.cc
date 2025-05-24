@@ -12,12 +12,12 @@ void NativeLibraryTraits::Free(NativeLibrary library) {
 
 using BaseClass = ScopedGeneric<NativeLibrary, NativeLibraryTraits>;
 
-ScopedNativeLibrary::ScopedNativeLibrary() : BaseClass(), error_() {}
+ScopedNativeLibrary::ScopedNativeLibrary() = default;
 
 ScopedNativeLibrary::~ScopedNativeLibrary() = default;
 
 ScopedNativeLibrary::ScopedNativeLibrary(NativeLibrary library)
-    : BaseClass(library), error_() {}
+    : BaseClass(library) {}
 
 ScopedNativeLibrary::ScopedNativeLibrary(const FilePath& library_path)
     : ScopedNativeLibrary() {
@@ -25,11 +25,12 @@ ScopedNativeLibrary::ScopedNativeLibrary(const FilePath& library_path)
 }
 
 ScopedNativeLibrary::ScopedNativeLibrary(ScopedNativeLibrary&& scoped_library)
-    : BaseClass(scoped_library.release()), error_() {}
+    : BaseClass(scoped_library.release()) {}
 
 void* ScopedNativeLibrary::GetFunctionPointer(const char* function_name) const {
-  if (!is_valid())
+  if (!is_valid()) {
     return nullptr;
+  }
   return GetFunctionPointerFromNativeLibrary(get(), function_name);
 }
 

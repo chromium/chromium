@@ -20,7 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -36,6 +37,8 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 public class SaveBitmapDelegateTest {
     private SaveBitmapDelegate mSaveBitmapDelegate;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -48,8 +51,6 @@ public class SaveBitmapDelegateTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         mActivityTestRule.launchActivity(null);
         Activity activity = mActivityTestRule.getActivity();
         mPermissionDelegate =
@@ -107,20 +108,16 @@ public class SaveBitmapDelegateTest {
     }
 
     /** Test implementation of {@link WindowAndroid}. */
-    private class TestWindowAndroid extends WindowAndroid {
+    private static class TestWindowAndroid extends WindowAndroid {
         private boolean mHasPermission;
         private boolean mCanRequestPermission;
 
         private boolean mCalledHasPermission;
         private boolean mCalledCanRequestPermission;
-        private int mPermissionResult = PackageManager.PERMISSION_GRANTED;
+        private final int mPermissionResult = PackageManager.PERMISSION_GRANTED;
 
         public TestWindowAndroid(Context context) {
-            super(context);
-        }
-
-        public void setPermissionResults(int result) {
-            mPermissionResult = result;
+            super(context, /* trackOcclusion= */ true);
         }
 
         public void setHasPermission(boolean hasPermission) {

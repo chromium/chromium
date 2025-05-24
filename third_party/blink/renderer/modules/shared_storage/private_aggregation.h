@@ -48,9 +48,21 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
     HeapMojoRemote<mojom::blink::PrivateAggregationHost>
         private_aggregation_host;
 
+    // Contributions that should be forwarded if and only if an uncaught
+    // exception occurs.
+    Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
+        contributions_conditional_on_uncaught_error;
+
     void Trace(Visitor* visitor) const {
       visitor->Trace(private_aggregation_host);
     }
+  };
+
+  // Indicates whether the operation was terminated due to an uncaught error or
+  // not.
+  enum class TerminationStatus {
+    kNoUncaughtError,
+    kUncaughtError,
   };
 
   explicit PrivateAggregation(SharedStorageWorkletGlobalScope* global_scope);
@@ -63,6 +75,11 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
   void contributeToHistogram(ScriptState*,
                              const PrivateAggregationHistogramContribution*,
                              ExceptionState&);
+  void contributeToHistogramOnEvent(
+      ScriptState*,
+      const String&,
+      const PrivateAggregationHistogramContribution*,
+      ExceptionState&);
   void enableDebugMode(ScriptState*, ExceptionState&);
   void enableDebugMode(ScriptState*,
                        const PrivateAggregationDebugModeOptions*,
@@ -71,18 +88,29 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
   void OnOperationStarted(
       int64_t operation_id,
       mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details);
-  void OnOperationFinished(int64_t operation_id);
+  void OnOperationFinished(int64_t operation_id,
+                           TerminationStatus termination_status);
 
   void OnWorkletDestroyed();
 
  private:
+  // Returns the parsed contribution. In the case of an exception, throws the
+  // exception using `exception_state` and returns `nullpr`.
+  mojom::blink::AggregatableReportHistogramContributionPtr ParseContribution(
+      const PrivateAggregationHistogramContribution* contribution,
+      ExceptionState& exception_state);
+
+  OperationState& GetCurrentOperationState();
+
   void EnsureGeneralUseCountersAreRecorded();
   void EnsureEnableDebugModeUseCounterIsRecorded();
   void EnsureFilteringIdUseCounterIsRecorded();
+  void EnsureErrorReportingUseCounterIsRecorded();
 
   bool has_recorded_general_use_counters_ = false;
   bool has_recorded_enable_debug_mode_use_counter_ = false;
   bool has_recorded_filtering_id_use_counter_ = false;
+  bool has_recorded_error_reporting_use_counter_ = false;
 
   Member<SharedStorageWorkletGlobalScope> global_scope_;
   HeapHashMap<int64_t,

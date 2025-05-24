@@ -47,7 +47,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   // AuthenticatorGetAssertion().
   bool InjectDiscoverableCredential(base::span<const uint8_t> credential_id,
                                     device::PublicKeyCredentialRpEntity rp,
-                                    device::PublicKeyCredentialUserEntity user);
+                                    device::PublicKeyCredentialUserEntity user,
+                                    std::optional<std::string> provider_name);
 
   // Inject the return value for WinWebAuthnApi::IsAvailable().
   void set_available(bool available) { is_available_ = available; }
@@ -102,6 +103,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   // attachment=undefined.
   void set_preferred_attachment(int preferred_attachment) {
     preferred_attachment_ = preferred_attachment;
+  }
+
+  const std::map<std::vector<uint8_t>,
+                 RegistrationData,
+                 fido_parsing_utils::RangeLess>&
+  registrations() {
+    return registrations_;
   }
 
   // WinWebAuthnApi:

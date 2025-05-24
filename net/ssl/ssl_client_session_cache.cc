@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "net/ssl/ssl_client_session_cache.h"
 
@@ -24,7 +20,8 @@ namespace {
 // Returns a tuple of references to fields of |key|, for comparison purposes.
 auto TieKeyFields(const SSLClientSessionCache::Key& key) {
   return std::tie(key.server, key.dest_ip_addr, key.network_anonymization_key,
-                  key.privacy_mode);
+                  key.privacy_mode, key.session_usage, key.proxy_chain,
+                  key.proxy_chain_index);
 }
 
 }  // namespace

@@ -20,7 +20,7 @@ DMGIterator::DMGIterator(ReadStream* stream)
       hfs_() {
 }
 
-DMGIterator::~DMGIterator() {}
+DMGIterator::~DMGIterator() = default;
 
 bool DMGIterator::Open() {
   if (!udif_.Parse()) {

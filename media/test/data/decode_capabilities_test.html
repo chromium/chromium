@@ -10,12 +10,26 @@
     console.log(message);
   }
 
-  function runTest(configuration) {
+  function runTest(configuration, is_key_system_specified = false) {
     try {
       navigator.mediaCapabilities.decodingInfo(configuration)
         .then((result) => {
-          log('Decoding is '
-              + (result.supported ? '' : 'un') + 'supported');
+          log('Decoding is ' + (result.supported ? '' : 'un') + 'supported');
+
+          // Verify that result has a keySystemAccess object if key system is
+          // specified and supported.
+          if(is_key_system_specified && result.supported &&
+             result.keySystemAccess == null) {
+            document.title = "ERROR";
+            return;
+          }
+
+          // Verify that if result is not supported OR if the key system is not
+          // specified, result does not have a keySystemAccess object.
+          if((!is_key_system_specified || !result.supported) && result.keySystemAccess) {
+            document.title = "ERROR";
+            return;
+          }
 
           document.title = result.supported ? 'SUPPORTED' : 'UNSUPPORTED';
         })
@@ -105,6 +119,7 @@
         hdrMetadataType : hdrMetadataType,
         colorGamut : colorGamut,
         transferFunction : transferFunction,
+
         // Any reasonable value will do.
         width : 640,
         height : 480,
@@ -144,4 +159,122 @@
 
     runTest(configuration);
   }
+
+  function testVideoConfigWithHdrMetadataAndKeySystem(
+    hdrMetadataType,
+    colorGamut,
+    transferFunction,
+    keySystem,
+    queryType,
+    contentType) {
+    // Clear previous test result from title.
+    document.title = '';
+
+    log("Testing video content type: " + contentType +
+        ", HDR metadata type: " + hdrMetadataType +
+        ", color gamut: " + colorGamut +
+        ", transfer function: " + transferFunction +
+        ", key system: " + keySystem);
+
+    const configuration = {
+        type: queryType,
+        video: {
+            contentType: contentType,
+            hdrMetadataType: hdrMetadataType,
+            colorGamut: colorGamut,
+            transferFunction: transferFunction,
+
+            // Any reasonable value will do.
+            width: 640,
+            height: 480,
+            bitrate: 10000,
+            framerate: 30
+        },
+        keySystemConfiguration: {
+            keySystem: keySystem
+        },
+    };
+
+    runTest(configuration, /* is_key_system_specified= */ true);
+}
+
+function testVideoConfigWithKeySystem(
+  keySystem,
+  queryType,
+  contentType) {
+    // Clear previous test result from title.
+    document.title = '';
+
+    log("Testing video content type: " + contentType +
+        ", key system: " + keySystem);
+
+    const configuration = {
+        type: queryType,
+        video: {
+            contentType: contentType,
+
+            // Any reasonable value will do.
+            width: 1920,
+            height: 1080,
+            bitrate: 3382000,
+            framerate: 24
+        },
+        keySystemConfiguration: {
+            keySystem: keySystem
+        },
+    };
+
+    runTest(configuration, /* is_key_system_specified= */ true);
+}
+
+function testAudioConfigWithKeySystem(
+  keySystem,
+  queryType,
+  contentType) {
+    // Clear previous test result from title.
+    document.title = '';
+
+    log("Testing audio-only encrypted content: " + contentType +
+        ", key system: " + keySystem);
+
+    const configuration = {
+        type: queryType,
+        audio: {
+            contentType: contentType,
+        },
+        keySystemConfiguration: {
+            keySystem: keySystem,
+        }
+    };
+
+    runTest(configuration, /* is_key_system_specified= */ true);
+}
+
+function testAudioAndVideoConfig(audioContentType, queryType, videoContentType) {
+  // Clear previous test result from title.
+  document.title = '';
+
+  log("Testing combined audio/video configuration:");
+  log("- Video content type: " + videoContentType);
+  log("- Audio content type: " + audioContentType);
+
+  const configuration = {
+    type: queryType,
+    video: {
+      contentType: videoContentType,
+
+      // Any reasonable value will do.
+      width: 640,
+      height: 480,
+      bitrate: 10000,
+      framerate: 30
+    },
+    audio: {
+      contentType: audioContentType
+    }
+  };
+
+  runTest(configuration);
+}
+
 </script>

@@ -15,7 +15,14 @@ namespace autofill {
 class EmailFieldParserTest : public FormFieldParserTestBase,
                              public ::testing::Test {
  public:
-  EmailFieldParserTest() = default;
+  EmailFieldParserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillParseEmailLabelAndPlaceholder,
+                              features::kAutofillEnableLoyaltyCardsFilling,
+                              features::
+                                  kAutofillEnableEmailOrLoyaltyCardsFilling},
+        /*disabled_features=*/{});
+  }
   EmailFieldParserTest(const EmailFieldParserTest&) = delete;
   EmailFieldParserTest& operator=(const EmailFieldParserTest&) = delete;
 
@@ -26,8 +33,7 @@ class EmailFieldParserTest : public FormFieldParserTestBase,
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillParseEmailLabelAndPlaceholder};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a field whose label has the format of an email address is parsed
@@ -35,6 +41,15 @@ class EmailFieldParserTest : public FormFieldParserTestBase,
 TEST_F(EmailFieldParserTest, ParseEmailAddressLabel) {
   AddTextFormFieldData(/*name=*/"username", /*label=*/"some@foo.com",
                        EMAIL_ADDRESS);
+  ClassifyAndVerify(ParseResult::kParsed);
+}
+
+// Tests that a field that accepts email or loyalty card fields are parsed as
+// `EMAIL_OR_LOYALTY_MEMBERSHIP_ID`.
+TEST_F(EmailFieldParserTest, ParseEmailOrLoyaltyCardAddressLabel) {
+  AddTextFormFieldData(/*name=*/"email-or-loyalty-card",
+                       /*label=*/"email-or-loyalty-card",
+                       EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
   ClassifyAndVerify(ParseResult::kParsed);
 }
 

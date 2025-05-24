@@ -42,13 +42,13 @@ void SharedDictionaryWriterOnDisk::Initialize() {
   }
 }
 
-void SharedDictionaryWriterOnDisk::Append(const char* buf, int num_bytes) {
-  DCHECK_GT(num_bytes, 0);
+void SharedDictionaryWriterOnDisk::Append(base::span<const uint8_t> data) {
+  DCHECK_GT(data.size(), 0u);
   if (state_ == State::kFailed) {
     return;
   }
   base::CheckedNumeric<size_t> checked_total_size = total_size_;
-  checked_total_size += num_bytes;
+  checked_total_size += data.size();
   if (checked_total_size.ValueOrDefault(std::numeric_limits<size_t>::max()) >
       shared_dictionary::GetDictionarySizeLimit()) {
     OnFailed(Result::kErrorSizeExceedsLimit);
@@ -56,24 +56,20 @@ void SharedDictionaryWriterOnDisk::Append(const char* buf, int num_bytes) {
   }
 
   total_size_ = checked_total_size.ValueOrDie();
-  secure_hash_->Update(buf, num_bytes);
+  secure_hash_->Update(data);
   switch (state_) {
     case State::kBeforeInitialize:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case State::kInitializing:
       pending_write_buffers_.push_back(
-          base::MakeRefCounted<net::StringIOBuffer>(
-              std::string(buf, num_bytes)));
+          base::MakeRefCounted<net::VectorIOBuffer>(data));
       break;
     case State::kInitialized: {
       DCHECK(entry_);
-      WriteData(base::MakeRefCounted<net::StringIOBuffer>(
-          std::string(buf, num_bytes)));
+      WriteData(base::MakeRefCounted<net::VectorIOBuffer>(data));
     } break;
     case State::kFailed:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -104,14 +100,14 @@ void SharedDictionaryWriterOnDisk::OnEntry(disk_cache::EntryResult result) {
   }
 
   while (!pending_write_buffers_.empty()) {
-    scoped_refptr<net::StringIOBuffer> buffer = *pending_write_buffers_.begin();
+    scoped_refptr<net::IOBuffer> buffer = *pending_write_buffers_.begin();
     pending_write_buffers_.pop_front();
     WriteData(std::move(buffer));
   }
 }
 
 void SharedDictionaryWriterOnDisk::WriteData(
-    scoped_refptr<net::StringIOBuffer> buffer) {
+    scoped_refptr<net::IOBuffer> buffer) {
   DCHECK_NE(State::kBeforeInitialize, state_);
   DCHECK_NE(State::kInitializing, state_);
   if (state_ != State::kInitialized) {
@@ -176,7 +172,7 @@ void SharedDictionaryWriterOnDisk::MaybeFinish() {
   entry_.reset();
   DCHECK_EQ(written_size_, total_size_);
   net::SHA256HashValue sha256;
-  secure_hash_->Finish(sha256.data, sizeof(sha256.data));
+  secure_hash_->Finish(sha256);
   std::move(callback_).Run(Result::kSuccess, total_size_, sha256);
 }
 

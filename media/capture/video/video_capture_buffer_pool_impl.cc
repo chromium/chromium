@@ -54,8 +54,7 @@ VideoCaptureBufferPoolImpl::DuplicateAsUnsafeRegion(int buffer_id) {
 
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
-    return {};
+    NOTREACHED() << "Invalid buffer_id.";
   }
   return tracker->DuplicateAsUnsafeRegion();
 }
@@ -66,8 +65,7 @@ VideoCaptureBufferPoolImpl::GetHandleForInProcessAccess(int buffer_id) {
 
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
-    return nullptr;
+    NOTREACHED() << "Invalid buffer_id.";
   }
 
   return tracker->GetMemoryMappedAccess();
@@ -78,8 +76,7 @@ gfx::GpuMemoryBufferHandle VideoCaptureBufferPoolImpl::GetGpuMemoryBufferHandle(
   base::AutoLock lock(lock_);
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
-    return gfx::GpuMemoryBufferHandle();
+    NOTREACHED() << "Invalid buffer_id.";
   }
 
   return tracker->GetGpuMemoryBufferHandle();
@@ -115,8 +112,7 @@ void VideoCaptureBufferPoolImpl::RelinquishProducerReservation(int buffer_id) {
   base::AutoLock lock(lock_);
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
-    return;
+    NOTREACHED() << "Invalid buffer_id.";
   }
   tracker->SetHeldByProducer(false);
 }
@@ -194,8 +190,7 @@ void VideoCaptureBufferPoolImpl::HoldForConsumers(int buffer_id,
   base::AutoLock lock(lock_);
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
-    return;
+    NOTREACHED() << "Invalid buffer_id.";
   }
   tracker->AddConsumerHolds(num_clients);
   // Note: The buffer will stay held by the producer until
@@ -208,8 +203,7 @@ void VideoCaptureBufferPoolImpl::RelinquishConsumerHold(int buffer_id,
   base::AutoLock lock(lock_);
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
-    return;
+    NOTREACHED() << "Invalid buffer_id.";
   }
   tracker->RemoveConsumerHolds(num_clients);
 }

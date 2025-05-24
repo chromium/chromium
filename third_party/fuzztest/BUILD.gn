@@ -19,12 +19,14 @@ import("//build_overrides/build.gni")
 # optimizations set for the fuzz target.
 fuzztest_remove_configs = fuzzing_engine_remove_configs +
                           [ "//build/config/compiler:default_optimization" ]
-fuzztest_add_configs =
-    fuzzing_engine_add_configs + [ "//build/config/compiler:optimize" ]
+fuzztest_add_configs = fuzzing_engine_add_configs + [
+                         "//build/config/compiler:optimize",
+                         ":fuzztest_internal_config",
+                         ":fuzztest_public_config",
+                       ]
 
 config("fuzztest_internal_config") {
   cflags = [
-    "-Wno-sign-compare",  # https://github.com/google/centipede/issues/487,
     "-Wno-unused-private-field",
     "-Wno-unreachable-code-return",
     "-Wno-unused-but-set-variable",
@@ -41,17 +43,38 @@ config("fuzztest_internal_config") {
   if (current_cpu == "x64") {
     cflags += [ "-msse4.2" ]
   }
+}
+
+config("fuzztest_public_config") {
   include_dirs = [ "src" ]
 
-  # Riegeli is a library which centipede can use to store data more
-  # efficiently. It's not yet available in Chromium, so disable
-  # for now.
-  defines = [ "CENTIPEDE_DISABLE_RIEGELI" ]
+  defines = [
+    # Riegeli is a library which centipede can use to store data more
+    # efficiently. It's not yet available in Chromium, so disable
+    # for now.
+    "CENTIPEDE_DISABLE_RIEGELI",
+  ]
+  if (!enable_fuzztest_fuzz) {
+    defines += [
+      # In fuzztest's unit-test mode, coverage collection doesn't work
+      # with multiple DSOs, which Chromium needs even in non-component
+      # builds. Note that this doesn't impact actual fuzzing mode e.g.
+      # centipede.
+      "FUZZTEST_NO_LEGACY_COVERAGE",
+    ]
+  }
   if (use_centipede) {
     defines += [ "FUZZTEST_USE_CENTIPEDE" ]
   } else if (use_fuzzing_engine && fuzzing_engine_supports_custom_main) {
     defines += [ "FUZZTEST_COMPATIBILITY_MODE" ]
   }
+
+  # These flags will be applied to Chrome test code, so keep to the minimum
+  # set required to compile fuzztest's headers. Those required to compile
+  # fuzztest .cc files should go into fuzztest_internal_config
+  cflags = [
+    "-Wno-sign-compare",  # https://github.com/google/centipede/issues/487,
+  ]
 }
 
 if (use_centipede) {
@@ -64,8 +87,6 @@ if (use_centipede) {
       "src/centipede/byte_array_mutator.h",
       "src/centipede/command.cc",
       "src/centipede/control_flow.cc",
-      "src/centipede/early_exit.cc",
-      "src/centipede/early_exit.h",
       "src/centipede/execution_metadata.cc",
       "src/centipede/execution_metadata.h",
       "src/centipede/feature.cc",
@@ -82,12 +103,13 @@ if (use_centipede) {
       "src/centipede/runner_result.h",
       "src/centipede/shared_memory_blob_sequence.cc",
       "src/centipede/shared_memory_blob_sequence.h",
+      "src/centipede/stop.cc",
+      "src/centipede/stop.h",
       "src/centipede/symbol_table.cc",
       "src/centipede/util.cc",
     ]
     deps = [ "//third_party/abseil-cpp:absl_full" ]
     public_deps = [ ":common" ]
-    configs += [ ":fuzztest_internal_config" ]
     configs -= fuzztest_remove_configs
     configs += fuzztest_add_configs
   }
@@ -113,7 +135,6 @@ if (use_centipede) {
       ":centipede_common",
       "//third_party/abseil-cpp:absl_full",
     ]
-    configs += [ ":fuzztest_internal_config" ]
     configs -= fuzztest_remove_configs
     configs += fuzztest_add_configs
 
@@ -133,7 +154,8 @@ if (use_centipede) {
       ":centipede_runner_no_main",
       "//third_party/abseil-cpp:absl",
     ]
-    configs += [ ":fuzztest_internal_config" ]
+    configs -= fuzztest_remove_configs
+    configs += fuzztest_add_configs
     sources = [ "src/centipede/runner_main.cc" ]
   }
 
@@ -141,17 +163,17 @@ if (use_centipede) {
   # but are also now built into fuzztests themselves so that they no longer
   # depend on an external runner
   source_set("centipede_executable_engine") {
-    configs += [ ":fuzztest_internal_config" ]
     configs -= fuzztest_remove_configs
     configs += fuzztest_add_configs
     include_dirs = [ "src" ]
     testonly = true
     public_deps = [ ":centipede_common" ]
-    libs = [ "atomic" ]
+    if (is_linux) {
+      libs = [ "atomic" ]
+    }
     deps = [
       ":fuzztest_internal",
       "//third_party/abseil-cpp:absl_full",
-      "//third_party/boringssl",
     ]
     sources = [
       "src/centipede/analyze_corpora.cc",
@@ -190,7 +212,6 @@ if (use_centipede) {
   # The centipede out-of-process runner executable.
   executable("centipede") {
     testonly = true
-    configs += [ ":fuzztest_internal_config" ]
     configs -= fuzztest_remove_configs
     configs += fuzztest_add_configs
     deps = [
@@ -239,9 +260,9 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/domains/aggregate_of_impl.h",
     "src/fuzztest/internal/domains/arbitrary_impl.h",
     "src/fuzztest/internal/domains/bit_flag_combination_of_impl.h",
+    "src/fuzztest/internal/domains/bit_gen_ref.h",
     "src/fuzztest/internal/domains/container_mutation_helpers.h",
     "src/fuzztest/internal/domains/container_of_impl.h",
-    "src/fuzztest/internal/domains/domain_base.cc",
     "src/fuzztest/internal/domains/domain_base.h",
     "src/fuzztest/internal/domains/element_of_impl.h",
     "src/fuzztest/internal/domains/filter_impl.h",
@@ -249,6 +270,7 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/domains/in_grammar_impl.cc",
     "src/fuzztest/internal/domains/in_grammar_impl.h",
     "src/fuzztest/internal/domains/in_range_impl.h",
+    "src/fuzztest/internal/domains/in_regexp_impl.cc",
     "src/fuzztest/internal/domains/in_regexp_impl.h",
     "src/fuzztest/internal/domains/map_impl.h",
     "src/fuzztest/internal/domains/one_of_impl.h",
@@ -263,6 +285,8 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/domains/variant_of_impl.h",
     "src/fuzztest/internal/fixture_driver.cc",
     "src/fuzztest/internal/fixture_driver.h",
+    "src/fuzztest/internal/fuzzing_bit_gen.cc",
+    "src/fuzztest/internal/fuzzing_bit_gen.h",
     "src/fuzztest/internal/googletest_adaptor.cc",
     "src/fuzztest/internal/googletest_adaptor.h",
     "src/fuzztest/internal/io.cc",
@@ -270,6 +294,8 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/logging.cc",
     "src/fuzztest/internal/logging.h",
     "src/fuzztest/internal/meta.h",
+    "src/fuzztest/internal/register_fuzzing_mocks.cc",
+    "src/fuzztest/internal/register_fuzzing_mocks.h",
     "src/fuzztest/internal/registration.h",
     "src/fuzztest/internal/registry.cc",
     "src/fuzztest/internal/registry.h",
@@ -314,13 +340,14 @@ source_set("fuzztest_internal") {
     "$protobuf_target_prefix:protobuf_lite",
   ]
 
-  public_configs = [ ":fuzztest_internal_config" ]
   configs -= fuzztest_remove_configs
   configs += fuzztest_add_configs
 }
 
 source_set("common") {
   sources = [
+    "src/common/bazel.cc",
+    "src/common/bazel.h",
     "src/common/blob_file.cc",
     "src/common/blob_file.h",
     "src/common/defs.h",
@@ -330,13 +357,13 @@ source_set("common") {
     "src/common/remote_file.cc",
     "src/common/remote_file.h",
     "src/common/remote_file_oss.cc",
+    "src/common/sha1.cc",
+    "src/common/sha1.h",
+    "src/common/temp_dir.cc",
+    "src/common/temp_dir.h",
   ]
 
-  deps = [
-    "//third_party/abseil-cpp:absl_full",
-    "//third_party/boringssl",
-  ]
-  public_configs = [ ":fuzztest_internal_config" ]
+  deps = [ "//third_party/abseil-cpp:absl_full" ]
   configs -= fuzztest_remove_configs
   configs += fuzztest_add_configs
 }
@@ -379,7 +406,8 @@ source_set("fuzztest") {
   }
   public_deps = [ ":fuzztest_internal" ]
   configs -= fuzztest_remove_configs
-  configs += fuzztest_add_configs + [ ":fuzztest_internal_config" ]
+  configs += fuzztest_add_configs
+  public_configs = [ ":fuzztest_public_config" ]
   testonly = true
 }
 
@@ -396,7 +424,7 @@ source_set("init_fuzztest") {
   ]
   public_deps = [ ":fuzztest_internal" ]
   configs -= fuzztest_remove_configs
-  configs += fuzztest_add_configs + [ ":fuzztest_internal_config" ]
+  configs += fuzztest_add_configs
   testonly = true
 }
 
@@ -407,6 +435,8 @@ source_set("fuzztest_gtest_main") {
     "//third_party/abseil-cpp:absl_full",
   ]
   sources = [ "src/fuzztest/fuzztest_gtest_main.cc" ]
+  configs -= fuzztest_remove_configs
+  configs += fuzztest_add_configs
   public_deps = [
     ":init_fuzztest",
     "//testing/gtest",

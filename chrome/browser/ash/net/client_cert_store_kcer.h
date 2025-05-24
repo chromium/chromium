@@ -9,10 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/kcer/kcer.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/kcer/kcer.h"
+#include "net/ssl/client_cert_matcher.h"
 #include "net/ssl/client_cert_store.h"
 
 namespace chromeos {
@@ -27,9 +28,13 @@ class ClientCertStoreKcer : public net::ClientCertStore {
   // access to user and/or device certs depending on how it was created). `kcer`
   // will only return certs that are allowed to be used in the current context.
   // It will additionally return certificates provided by `cert_provider`.
+  // `issuer_source_getter` will be used to get the issuer sources for
+  // pathbuilding. It may run its callback either synchronously or
+  // asynchronously.
   ClientCertStoreKcer(
       std::unique_ptr<chromeos::CertificateProvider> cert_provider,
-      base::WeakPtr<kcer::Kcer> kcer);
+      base::WeakPtr<kcer::Kcer> kcer,
+      net::ClientCertIssuerSourceGetter issuer_source_getter);
 
   ClientCertStoreKcer(const ClientCertStoreKcer&) = delete;
   ClientCertStoreKcer& operator=(const ClientCertStoreKcer&) = delete;
@@ -54,9 +59,14 @@ class ClientCertStoreKcer : public net::ClientCertStore {
                     net::ClientCertIdentityList additional_certs,
                     std::vector<scoped_refptr<const kcer::Cert>> kcer_certs,
                     base::flat_map<kcer::Token, kcer::Error> kcer_errors);
-  void GotAllCerts(scoped_refptr<const net::SSLCertRequestInfo> request,
-                   ClientCertListCallback callback,
-                   net::ClientCertIdentityList certs);
+  void GotAllClientCerts(scoped_refptr<const net::SSLCertRequestInfo> request,
+                         ClientCertListCallback callback,
+                         net::ClientCertIdentityList certs);
+  void GotAllCertsAndIssuers(
+      scoped_refptr<const net::SSLCertRequestInfo> request,
+      ClientCertListCallback callback,
+      net::ClientCertIdentityList certs,
+      net::ClientCertIssuerSourceCollection issuer_sources);
   void ReturnClientCerts(ClientCertListCallback callback,
                          net::ClientCertIdentityList identities);
 
@@ -67,6 +77,10 @@ class ClientCertStoreKcer : public net::ClientCertStore {
   // but it's hard to verify and enforce, so `kcer_` should be checked before
   // usage for safety.
   base::WeakPtr<kcer::Kcer> kcer_;
+
+  // Factory to create the issuer source collection to use during path
+  // building.
+  net::ClientCertIssuerSourceGetter issuer_source_getter_;
 
   base::WeakPtrFactory<ClientCertStoreKcer> weak_factory_{this};
 };

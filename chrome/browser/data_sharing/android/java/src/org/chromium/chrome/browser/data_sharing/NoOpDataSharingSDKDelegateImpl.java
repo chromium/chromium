@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.data_sharing;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.data_sharing.DataSharingNetworkLoader;
 import org.chromium.components.data_sharing.DataSharingSDKDelegate;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateProtoResponseCallback;
@@ -15,11 +16,14 @@ import org.chromium.components.data_sharing.protocol.AddAccessTokenParams;
 import org.chromium.components.data_sharing.protocol.AddMemberParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupParams;
 import org.chromium.components.data_sharing.protocol.DeleteGroupParams;
+import org.chromium.components.data_sharing.protocol.LeaveGroupParams;
 import org.chromium.components.data_sharing.protocol.LookupGaiaIdByEmailParams;
+import org.chromium.components.data_sharing.protocol.ReadGroupWithTokenParams;
 import org.chromium.components.data_sharing.protocol.ReadGroupsParams;
 import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
 
 /** Implementation of {@link DataSharingSDKDelegate}. */
+@NullMarked
 public class NoOpDataSharingSDKDelegateImpl implements DataSharingSDKDelegate {
 
     @Override
@@ -46,6 +50,16 @@ public class NoOpDataSharingSDKDelegateImpl implements DataSharingSDKDelegate {
     }
 
     @Override
+    public void readGroupWithToken(
+            ReadGroupWithTokenParams params, DataSharingSDKDelegateProtoResponseCallback callback) {
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.run(new byte[0], Status.FAILURE);
+                });
+    }
+
+    @Override
     public void addMember(AddMemberParams params, Callback<Integer> callback) {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
@@ -56,6 +70,15 @@ public class NoOpDataSharingSDKDelegateImpl implements DataSharingSDKDelegate {
 
     @Override
     public void removeMember(RemoveMemberParams params, Callback<Integer> callback) {
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.onResult(Status.FAILURE);
+                });
+    }
+
+    @Override
+    public void leaveGroup(LeaveGroupParams params, Callback<Integer> callback) {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {

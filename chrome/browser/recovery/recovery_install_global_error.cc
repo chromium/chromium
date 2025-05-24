@@ -45,7 +45,7 @@ RecoveryInstallGlobalError::RecoveryInstallGlobalError(Profile* profile)
           base::Unretained(this)));
 }
 
-RecoveryInstallGlobalError::~RecoveryInstallGlobalError() {}
+RecoveryInstallGlobalError::~RecoveryInstallGlobalError() = default;
 
 void RecoveryInstallGlobalError::Shutdown() {
   GlobalErrorServiceFactory::GetForProfile(profile_)->RemoveUnownedGlobalError(

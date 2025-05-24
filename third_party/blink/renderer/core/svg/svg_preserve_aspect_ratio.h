@@ -21,7 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PRESERVE_ASPECT_RATIO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PRESERVE_ASPECT_RATIO_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -35,8 +35,7 @@ namespace blink {
 class AffineTransform;
 class SVGPreserveAspectRatioTearOff;
 
-class SVGPreserveAspectRatio final
-    : public SVGPropertyHelper<SVGPreserveAspectRatio> {
+class SVGPreserveAspectRatio final : public SVGPropertyBase {
  public:
   enum SVGPreserveAspectRatioType {
     kSvgPreserveaspectratioUnknown = 0,
@@ -62,7 +61,7 @@ class SVGPreserveAspectRatio final
 
   SVGPreserveAspectRatio();
 
-  virtual SVGPreserveAspectRatio* Clone() const;
+  SVGPreserveAspectRatio* Clone() const;
 
   bool operator==(const SVGPreserveAspectRatio&) const;
   bool operator!=(const SVGPreserveAspectRatio& other) const {
@@ -84,8 +83,8 @@ class SVGPreserveAspectRatio final
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);
-  bool Parse(const UChar*& ptr, const UChar* end, bool validate);
-  bool Parse(const LChar*& ptr, const LChar* end, bool validate);
+  bool Parse(base::span<const UChar>& span, bool validate);
+  bool Parse(base::span<const LChar>& span, bool validate);
 
   void Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
@@ -102,14 +101,13 @@ class SVGPreserveAspectRatio final
   static AnimatedPropertyType ClassType() {
     return kAnimatedPreserveAspectRatio;
   }
+  AnimatedPropertyType GetType() const override { return ClassType(); }
 
   void SetDefault();
 
  private:
   template <typename CharType>
-  SVGParsingError ParseInternal(const CharType*& ptr,
-                                const CharType* end,
-                                bool validate);
+  SVGParsingError ParseInternal(base::span<CharType>& span, bool validate);
 
   SVGPreserveAspectRatioType align_;
   SVGMeetOrSliceType meet_or_slice_;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/storage/durable_storage_permission_context.h"
 
+#include <memory>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -18,8 +19,11 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -56,20 +60,19 @@ class TestDurablePermissionContext : public DurableStoragePermissionContext {
 
  private:
   // NotificationPermissionContext:
-  void NotifyPermissionSet(const permissions::PermissionRequestID& id,
-                           const GURL& requesting_origin,
-                           const GURL& embedder_origin,
-                           permissions::BrowserPermissionCallback callback,
-                           bool persist,
-                           ContentSetting content_setting,
-                           bool is_one_time,
-                           bool is_final_decision) override {
+  void NotifyPermissionSet(
+      const permissions::PermissionRequestData& request_data,
+      permissions::BrowserPermissionCallback callback,
+      bool persist,
+      ContentSetting content_setting,
+      bool is_one_time,
+      bool is_final_decision) override {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
     last_permission_set_setting_ = content_setting;
     DurableStoragePermissionContext::NotifyPermissionSet(
-        id, requesting_origin, embedder_origin, std::move(callback), persist,
-        content_setting, is_one_time, is_final_decision);
+        request_data, std::move(callback), persist, content_setting,
+        is_one_time, is_final_decision);
   }
 
   int permission_set_count_;
@@ -105,8 +108,9 @@ TEST_F(DurableStoragePermissionContextTest, Bookmarked) {
             permission_context.last_permission_set_setting());
 
   permission_context.DecidePermission(
-      permissions::PermissionRequestData(&permission_context, id,
-                                         /*user_gesture=*/true, url, url),
+      std::make_unique<permissions::PermissionRequestData>(
+          &permission_context, id,
+          /*user_gesture=*/true, url, url),
       base::DoNothing());
   // Success.
   EXPECT_EQ(1, permission_context.permission_set_count());
@@ -132,8 +136,9 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
             permission_context.last_permission_set_setting());
 
   permission_context.DecidePermission(
-      permissions::PermissionRequestData(&permission_context, id,
-                                         /*user_gesture=*/true, url, url),
+      std::make_unique<permissions::PermissionRequestData>(
+          &permission_context, id,
+          /*user_gesture=*/true, url, url),
       base::DoNothing());
   // Success.
   EXPECT_EQ(1, permission_context.permission_set_count());
@@ -161,8 +166,9 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndNonPrimaryOTRProfile) {
             permission_context.last_permission_set_setting());
 
   permission_context.DecidePermission(
-      permissions::PermissionRequestData(&permission_context, id,
-                                         /*user_gesture=*/true, url, url),
+      std::make_unique<permissions::PermissionRequestData>(
+          &permission_context, id,
+          /*user_gesture=*/true, url, url),
       base::DoNothing());
   // Success.
   EXPECT_EQ(1, permission_context.permission_set_count());
@@ -186,8 +192,9 @@ TEST_F(DurableStoragePermissionContextTest, NoBookmark) {
             permission_context.last_permission_set_setting());
 
   permission_context.DecidePermission(
-      permissions::PermissionRequestData(&permission_context, id,
-                                         /*user_gesture=*/true, url, url),
+      std::make_unique<permissions::PermissionRequestData>(
+          &permission_context, id,
+          /*user_gesture=*/true, url, url),
       base::DoNothing());
 
   // We shouldn't be granted.
@@ -218,8 +225,9 @@ TEST_F(DurableStoragePermissionContextTest, CookiesNotAllowed) {
             permission_context.last_permission_set_setting());
 
   permission_context.DecidePermission(
-      permissions::PermissionRequestData(&permission_context, id,
-                                         /*user_gesture=*/true, url, url),
+      std::make_unique<permissions::PermissionRequestData>(
+          &permission_context, id,
+          /*user_gesture=*/true, url, url),
       base::DoNothing());
   // We shouldn't be granted.
   EXPECT_EQ(1, permission_context.permission_set_count());
@@ -245,9 +253,9 @@ TEST_F(DurableStoragePermissionContextTest, EmbeddedFrame) {
             permission_context.last_permission_set_setting());
 
   permission_context.DecidePermission(
-      permissions::PermissionRequestData(&permission_context, id,
-                                         /*user_gesture=*/true, requesting_url,
-                                         url),
+      std::make_unique<permissions::PermissionRequestData>(
+          &permission_context, id,
+          /*user_gesture=*/true, requesting_url, url),
       base::DoNothing());
   // We shouldn't be granted.
   EXPECT_EQ(1, permission_context.permission_set_count());
@@ -260,8 +268,15 @@ TEST_F(DurableStoragePermissionContextTest, NonsecureOrigin) {
   TestDurablePermissionContext permission_context(profile());
   GURL url("http://www.google.com");
 
-  EXPECT_EQ(PermissionStatus::DENIED,
-            permission_context
-                .GetPermissionStatus(nullptr /* render_frame_host */, url, url)
-                .status);
+  EXPECT_EQ(
+      PermissionStatus::DENIED,
+      permission_context
+          .GetPermissionStatus(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      permissions::PermissionUtil::
+                          ContentSettingsTypeToPermissionType(
+                              permission_context.content_settings_type())),
+              nullptr /* render_frame_host */, url, url)
+          .status);
 }

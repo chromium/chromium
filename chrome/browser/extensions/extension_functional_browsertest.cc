@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,8 +22,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,8 +36,7 @@ namespace extensions {
 
 class ExtensionFunctionalTest : public ExtensionBrowserTest {
  public:
-  void InstallExtensionSilently(ExtensionService* service,
-                                const char* filename) {
+  void InstallExtensionSilently(const char* filename) {
     ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
     size_t num_before = registry->enabled_extensions().size();
 
@@ -45,7 +44,8 @@ class ExtensionFunctionalTest : public ExtensionBrowserTest {
 
     TestExtensionRegistryObserver extension_observer(registry);
 
-    scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service));
+    scoped_refptr<CrxInstaller> installer(
+        CrxInstaller::CreateSilent(profile()));
     installer->set_is_gallery_install(false);
     installer->set_allow_silent_install(true);
     installer->set_install_source(mojom::ManifestLocation::kInternal);
@@ -72,27 +72,27 @@ class ExtensionFunctionalTest : public ExtensionBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest, TestSetExtensionsState) {
-  InstallExtensionSilently(extension_service(), "google_talk.crx");
+  InstallExtensionSilently("google_talk.crx");
 
   // Disable the extension and verify.
   util::SetIsIncognitoEnabled(last_loaded_extension_id(), profile(), false);
-  ExtensionService* service = extension_service();
-  service->DisableExtension(last_loaded_extension_id(),
-                            disable_reason::DISABLE_USER_ACTION);
-  EXPECT_FALSE(service->IsExtensionEnabled(last_loaded_extension_id()));
+  auto* registrar = ExtensionRegistrar::Get(profile());
+  registrar->DisableExtension(last_loaded_extension_id(),
+                              {disable_reason::DISABLE_USER_ACTION});
+  EXPECT_FALSE(registrar->IsExtensionEnabled(last_loaded_extension_id()));
 
   // Enable the extension and verify.
   util::SetIsIncognitoEnabled(last_loaded_extension_id(), profile(), false);
-  service->EnableExtension(last_loaded_extension_id());
-  EXPECT_TRUE(service->IsExtensionEnabled(last_loaded_extension_id()));
+  registrar->EnableExtension(last_loaded_extension_id());
+  EXPECT_TRUE(registrar->IsExtensionEnabled(last_loaded_extension_id()));
 
   // Allow extension in incognito mode and verify.
-  service->EnableExtension(last_loaded_extension_id());
+  registrar->EnableExtension(last_loaded_extension_id());
   util::SetIsIncognitoEnabled(last_loaded_extension_id(), profile(), true);
   EXPECT_TRUE(util::IsIncognitoEnabled(last_loaded_extension_id(), profile()));
 
   // Disallow extension in incognito mode and verify.
-  service->EnableExtension(last_loaded_extension_id());
+  registrar->EnableExtension(last_loaded_extension_id());
   util::SetIsIncognitoEnabled(last_loaded_extension_id(), profile(), false);
   EXPECT_FALSE(util::IsIncognitoEnabled(last_loaded_extension_id(), profile()));
 }

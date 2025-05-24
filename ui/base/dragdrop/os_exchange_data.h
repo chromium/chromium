@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -60,9 +61,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
 #if defined(USE_AURA)
     HTML = 1 << 5,
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
-    DATA_TRANSFER_ENDPOINT = 1 << 6,
-#endif
   };
 
   OSExchangeData();
@@ -104,9 +102,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   //            the order of enumeration in our IEnumFORMATETC implementation!
   //            This comes into play when selecting the best (most preferable)
   //            data type for insertion into a DropTarget.
-  void SetString(const std::u16string& data);
+  void SetString(std::u16string_view data);
   // A URL can have an optional title in some exchange formats.
-  void SetURL(const GURL& url, const std::u16string& title);
+  void SetURL(const GURL& url, std::u16string_view title);
   // A full path to a file.
   void SetFilename(const base::FilePath& path);
   // Full path to one or more files. See also SetFilenames() in Provider.

@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -231,9 +232,7 @@ class RequestInterceptor {
         got_all_data = true;
         break;
       default:
-        CHECK(false) << "Unexpected mojo error: " << result;
-        got_all_data = true;
-        break;
+        NOTREACHED() << "Unexpected mojo error: " << result;
     }
 
     if (!got_all_data) {

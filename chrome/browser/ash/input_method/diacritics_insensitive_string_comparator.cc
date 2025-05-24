@@ -12,46 +12,37 @@ namespace ash {
 namespace input_method {
 
 DiacriticsInsensitiveStringComparator::DiacriticsInsensitiveStringComparator() {
-  UErrorCode status = U_ZERO_ERROR;
-  UParseError parse_error;
-
   // Intentionally only covering Latin-script accented letters likely found in
   // French, Spanish, Dutch, Swedish, Norwegian, Danish, and Catalan.
-  diacritics_stripper_ = base::WrapUnique(icu::Transliterator::createFromRules(
-      UNICODE_STRING_SIMPLE("DiacriticStripper"),
-      icu::UnicodeString::fromUTF8("::NFC; "
-                                   "[ á à â ä ā å ] > a; "
-                                   "[ Á À Â Ä Ā Å ] > A; "
-                                   "[ é è ê ë ē   ] > e; "
-                                   "[ É È Ê Ë Ē   ] > E; "
-                                   "[ í ì î ï ī   ] > i; "
-                                   "[ Í Ì Î Ï Ī   ] > I; "
-                                   "[ ó ò ô ö ō ø ] > o; "
-                                   "[ Ó Ò Ô Ö Ō Ø ] > O; "
-                                   "[ ú ù û ü ū   ] > u; "
-                                   "[ Ú Ù Û Ü Ū   ] > U; "
-                                   "[ ý ỳ ŷ ÿ ȳ   ] > y; "
-                                   "[ Ý Ỳ Ŷ Ÿ Ȳ   ] > Y; "
-                                   "ç > c; ñ > n; æ > ae; œ > oe; "
-                                   "Ç > C; Ñ > N; Æ > AE; Œ > OE; "),
-      UTRANS_FORWARD, parse_error, status));
-
-  DCHECK_EQ(status, U_ZERO_ERROR);
+  diacritics_stripper_ = base::i18n::CreateTransliteratorFromRules(
+      "DiacriticStripper",
+      "::NFC; "
+      "[ á à â ä ā å ] > a; "
+      "[ Á À Â Ä Ā Å ] > A; "
+      "[ é è ê ë ē   ] > e; "
+      "[ É È Ê Ë Ē   ] > E; "
+      "[ í ì î ï ī   ] > i; "
+      "[ Í Ì Î Ï Ī   ] > I; "
+      "[ ó ò ô ö ō ø ] > o; "
+      "[ Ó Ò Ô Ö Ō Ø ] > O; "
+      "[ ú ù û ü ū   ] > u; "
+      "[ Ú Ù Û Ü Ū   ] > U; "
+      "[ ý ỳ ŷ ÿ ȳ   ] > y; "
+      "[ Ý Ỳ Ŷ Ÿ Ȳ   ] > Y; "
+      "ç > c; ñ > n; æ > ae; œ > oe; "
+      "Ç > C; Ñ > N; Æ > AE; Œ > OE; ");
 }
 
 DiacriticsInsensitiveStringComparator::
-    ~DiacriticsInsensitiveStringComparator() {}
+    ~DiacriticsInsensitiveStringComparator() = default;
 
 bool DiacriticsInsensitiveStringComparator::Equal(
     const std::u16string& a,
     const std::u16string& b) const {
-  icu::UnicodeString unicode_str_a(a.c_str(), a.length());
-  icu::UnicodeString unicode_str_b(b.c_str(), b.length());
+  std::u16string result_a = diacritics_stripper_->Transliterate(a);
+  std::u16string result_b = diacritics_stripper_->Transliterate(b);
 
-  diacritics_stripper_->transliterate(unicode_str_a);
-  diacritics_stripper_->transliterate(unicode_str_b);
-
-  return unicode_str_a.compare(unicode_str_b) == 0;
+  return result_a.compare(result_b) == 0;
 }
 
 }  // namespace input_method

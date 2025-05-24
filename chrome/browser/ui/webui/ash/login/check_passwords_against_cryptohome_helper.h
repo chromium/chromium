@@ -28,8 +28,8 @@ class CheckPasswordsAgainstCryptohomeHelper : public AuthStatusConsumer {
       OnCheckPasswordsAgainstCryptohomeHelperSuccessCallback
           on_check_passwords_against_cryptohome_helper_success_callback);
 
-  CheckPasswordsAgainstCryptohomeHelper(const CheckPasswordsAgainstCryptohomeHelper&) =
-      delete;
+  CheckPasswordsAgainstCryptohomeHelper(
+      const CheckPasswordsAgainstCryptohomeHelper&) = delete;
   CheckPasswordsAgainstCryptohomeHelper& operator=(
       const CheckPasswordsAgainstCryptohomeHelper&) = delete;
 

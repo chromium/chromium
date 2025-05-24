@@ -13,8 +13,9 @@ VideoTrack::VideoTrack(const String& id,
                        const AtomicString& label,
                        const AtomicString& language,
                        bool selected)
-    : TrackBase(WebMediaPlayer::kVideoTrack, kind, label, language, id),
-      selected_(selected) {}
+    : TrackBase(WebMediaPlayer::kVideoTrack, label, language, id),
+      selected_(selected),
+      kind_(kind) {}
 
 VideoTrack::~VideoTrack() = default;
 

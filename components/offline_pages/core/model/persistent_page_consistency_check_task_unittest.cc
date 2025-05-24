@@ -30,8 +30,8 @@ using PersistentPageConsistencyCheckCallback =
 
 class PersistentPageConsistencyCheckTaskTest : public ModelTaskTestBase {
  public:
-  PersistentPageConsistencyCheckTaskTest() {}
-  ~PersistentPageConsistencyCheckTaskTest() override {}
+  PersistentPageConsistencyCheckTaskTest() = default;
+  ~PersistentPageConsistencyCheckTaskTest() override = default;
 
   void SetUp() override {
     ModelTaskTestBase::SetUp();

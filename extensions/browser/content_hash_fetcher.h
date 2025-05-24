@@ -54,7 +54,7 @@ class ContentHashFetcher {
   ContentHashFetcher(const ContentHashFetcher&) = delete;
   ContentHashFetcher& operator=(const ContentHashFetcher&) = delete;
 
-  // Note: |this| is deleted once OnSimpleLoaderComplete() completes.
+  // Note: `this` is deleted once OnSimpleLoaderComplete() completes.
   void Start(HashFetcherCallback hash_fetcher_callback);
 
  private:

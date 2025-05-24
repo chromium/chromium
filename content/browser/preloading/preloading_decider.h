@@ -49,12 +49,16 @@ class CONTENT_EXPORT PreloadingDecider
   //  Receives and processes ML model score for 'url' target link.
   void OnPreloadingHeuristicsModelDone(const GURL& url, float score);
 
+  // Receives and processes 'url' selected by viewport heuristic.
+  void OnViewportHeuristicTriggered(const GURL& url);
+
   // Sets the new preloading decider observer for testing and returns the old
   // one.
   PreloadingDeciderObserverForTesting* SetObserverForTesting(
       PreloadingDeciderObserverForTesting* observer);
 
-  // Returns the prerenderer for testing.
+  // Returns subcomponents for testing.
+  Prefetcher& GetPrefetcherForTesting() { return prefetcher_; }
   Prerenderer& GetPrerendererForTesting();
 
   // Sets the new prerenderer for testing and returns the old one.
@@ -95,9 +99,22 @@ class CONTENT_EXPORT PreloadingDecider
                            PreloadingConfidence confidence,
                            bool fallback_to_preconnect);
 
-  // Prefetches the |url| if it is safe and eligible to be prefetched. Returns
-  // false if no suitable (given |enacting_predictor|) on-standby candidate is
-  // found for the given |url|, or the Prefetcher does not accept the candidate.
+  // TODO(crbug.com/381687257): 1. Inline the logic in
+  // `GetMatchedPreloadingCandidate` to reduce redundant code. 2. Support NVS
+  // matching logic.
+  // Returns a vector of std::optional<string> of candidates which will be
+  // enacted by the given parameter. This function is used for non-eager
+  // candidates only.
+  std::vector<std::optional<std::string>>
+  GetMergedSpeculationTagsFromSuitableCandidates(
+      const PreloadingDecider::SpeculationCandidateKey& lookup_key,
+      const PreloadingPredictor& enacting_predictor,
+      PreloadingConfidence confidence);
+
+  // Prefetches the |url| if it is safe and eligible to be prefetched.
+  // Returns false if no suitable (given |enacting_predictor|) on-standby
+  // candidate is found for the given |url|, or the Prefetcher does not
+  // accept the candidate.
   bool MaybePrefetch(const GURL& url,
                      const PreloadingPredictor& enacting_predictor,
                      PreloadingConfidence confidence);

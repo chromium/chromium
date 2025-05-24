@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
@@ -61,8 +60,12 @@ source_set("common") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
     "chromeos_status.h",
+    "dmabuf_video_frame_converter.cc",
+    "dmabuf_video_frame_converter.h",
     "dmabuf_video_frame_pool.cc",
     "dmabuf_video_frame_pool.h",
+    "frame_registry.cc",
+    "frame_registry.h",
     "frame_resource_converter.cc",
     "frame_resource_converter.h",
     "gl_image_processor_backend.cc",
@@ -78,8 +81,6 @@ source_set("common") {
     "image_processor_with_pool.h",
     "libyuv_image_processor_backend.cc",
     "libyuv_image_processor_backend.h",
-    "mailbox_frame_registry.cc",
-    "mailbox_frame_registry.h",
     "mailbox_video_frame_converter.cc",
     "mailbox_video_frame_converter.h",
     "native_pixmap_frame_resource.cc",
@@ -87,8 +88,8 @@ source_set("common") {
     "oop_video_decoder.h",
     "platform_video_frame_pool.cc",
     "platform_video_frame_pool.h",
-    "registered_mailbox_frame_converter.cc",
-    "registered_mailbox_frame_converter.h",
+    "registered_frame_converter.cc",
+    "registered_frame_converter.h",
     "shaders/shaders.h",
     "vd_video_decode_accelerator.cc",
     "vd_video_decode_accelerator.h",
@@ -103,14 +104,13 @@ source_set("common") {
     ":video_frame_resource",
     ":video_frame_utils",
     "//gpu/ipc/service",
-    "//media/mojo/mojom/stable:stable_video_decoder",
+    "//media/mojo/mojom:mojom",
     "//ui/ozone",
   ]
 
   deps = [
     ":fourcc",
     "//base",
-    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
     "//media",
@@ -188,8 +188,6 @@ source_set("video_frame_resource") {
 source_set("video_frame_utils") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "chromeos_compressed_gpu_memory_buffer_video_frame_utils.cc",
-    "chromeos_compressed_gpu_memory_buffer_video_frame_utils.h",
     "platform_video_frame_utils.cc",
     "platform_video_frame_utils.h",
   ]
@@ -197,6 +195,7 @@ source_set("video_frame_utils") {
   deps = [
     "//base",
     "//build/config/linux/libdrm",
+    "//components/viz/common:shared_image_format",
     "//gpu/ipc/common:common",
     "//media",
     "//media/gpu:buffer_validation",
@@ -206,6 +205,7 @@ source_set("video_frame_utils") {
     "//ui/gfx:memory_buffer",
     "//ui/gfx/linux:drm",
     "//ui/gfx/linux:gbm",
+    "//ui/ozone",
   ]
 }
 
@@ -236,29 +236,14 @@ if (is_chromeos) {
   }
 }
 
-source_set(
-    "chromeos_compressed_gpu_memory_buffer_video_frame_utils_test_support") {
-  testonly = true
-  sources = [
-    "fake_chromeos_intel_compressed_gpu_memory_buffer.cc",
-    "fake_chromeos_intel_compressed_gpu_memory_buffer.h",
-  ]
-  deps = [
-    ":common",
-    "//base",
-    "//build/config/linux/libdrm",
-    "//ui/gfx",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   deps = [
-    ":chromeos_compressed_gpu_memory_buffer_video_frame_utils_test_support",
     ":common",
     "//base",
     "//base/test:test_support",
     "//build/config/linux/libdrm",
+    "//gpu:test_support",
     "//gpu/ipc/service:service",
     "//media",
     "//media:test_support",
@@ -271,17 +256,18 @@ source_set("unit_tests") {
     "//ui/gfx/geometry",
   ]
   sources = [
-    "chromeos_compressed_gpu_memory_buffer_video_frame_utils_unittest.cc",
     "fourcc_unittests.cc",
-    "mailbox_frame_registry_unittest.cc",
+    "frame_registry_unittest.cc",
     "mailbox_video_frame_converter_unittest.cc",
+    "mock_native_pixmap_dmabuf.cc",
+    "mock_native_pixmap_dmabuf.h",
     "native_pixmap_frame_resource_unittest.cc",
     "platform_video_frame_pool_unittest.cc",
     "platform_video_frame_utils_unittest.cc",
     "video_decoder_pipeline_unittest.cc",
     "video_frame_resource_unittest.cc",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps +=
         [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
@@ -307,7 +293,7 @@ test("image_processor_test") {
   deps = [
     ":chromeos",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
+    "//gpu:test_support",
     "//media:test_support",
     "//media/gpu:buildflags",
     "//media/gpu:video_frame_mapper_common",
@@ -340,10 +326,12 @@ if (use_v4l2_codec) {
       ":chromeos",
       ":perf_test_utils",
       "//base/test:test_support",
+      "//gpu:test_support",
       "//media:test_support",
       "//media/gpu:video_frame_mapper_common",
       "//media/gpu/test:helpers",
       "//media/gpu/test:video_test_environment",
+      "//testing/gmock",
       "//testing/gtest",
       "//testing/perf",
       "//third_party/libyuv",
@@ -363,6 +351,7 @@ if (use_v4l2_codec && enable_vulkan) {
       ":chromeos",
       ":perf_test_utils",
       "//base/test:test_support",
+      "//gpu:test_support",
       "//gpu/command_buffer/service:gles2",
       "//media:test_support",
       "//media/gpu:video_frame_mapper_common",

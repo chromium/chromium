@@ -18,21 +18,20 @@ TEST(BuildGroupPolicyTemplateTest, AdmxFilesEqual) {
   base::FilePath test_data_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_root);
   base::CommandLine command(
-      test_data_root.AppendASCII("chrome")
-          .AppendASCII("updater")
-          .AppendASCII("enterprise")
-          .AppendASCII("win")
-          .AppendASCII("google")
-          .AppendASCII("build_group_policy_template_unittest.py"));
-  const base::FilePath test_enterprise_dir = test::GetTestFilePath("enterprise")
-                                                 .AppendASCII("win")
-                                                 .AppendASCII("google");
+      test_data_root.Append(L"chrome")
+          .Append(L"updater")
+          .Append(L"enterprise")
+          .Append(L"win")
+          .Append(L"google")
+          .Append(L"build_group_policy_template_unittest.py"));
+  const base::FilePath test_enterprise_dir =
+      test::GetTestFilePath("enterprise").Append(L"win").Append(L"google");
   command.AppendSwitchPath("--test_gold_adm_file",
-                           test_enterprise_dir.AppendASCII("test_gold.adm"));
+                           test_enterprise_dir.Append(L"test_gold.adm"));
   command.AppendSwitchPath("--test_gold_admx_file",
-                           test_enterprise_dir.AppendASCII("test_gold.admx"));
+                           test_enterprise_dir.Append(L"test_gold.admx"));
   command.AppendSwitchPath("--test_gold_adml_file",
-                           test_enterprise_dir.AppendASCII("test_gold.adml"));
+                           test_enterprise_dir.Append(L"test_gold.adml"));
   base::ScopedTempDir output_path;
   ASSERT_TRUE(output_path.CreateUniqueTempDir());
   command.AppendSwitchPath("--output_path", output_path.GetPath());

@@ -13,6 +13,28 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 
+namespace {
+
+// Compare two optional TimeDelta and return the minimum of the two, but
+// consider that std::nullopt is greater than any other TimeDelta (this
+// is the opposite of operator <(...) which consider std::nullopt smaller
+// than any defined value).
+std::optional<base::TimeDelta> MinimumTimeDelta(
+    std::optional<base::TimeDelta> lhs,
+    std::optional<base::TimeDelta> rhs) {
+  if (!lhs.has_value()) {
+    return rhs;
+  }
+
+  if (!rhs.has_value()) {
+    return lhs;
+  }
+
+  return std::min(*lhs, *rhs);
+}
+
+}  // namespace
+
 BOOL IsDockingPromoForcedForDisplay() {
   NSString* forced_promo_name = experimental_flags::GetForcedPromoToDisplay();
 
@@ -55,18 +77,10 @@ BOOL CanShowDockingPromo(base::TimeDelta time_since_last_foreground) {
 
 std::optional<base::TimeDelta> MinTimeSinceLastForeground(
     NSArray<SceneState*>* foregroundScenes) {
-  std::optional<base::TimeDelta> minTimeSinceLastForeground = std::nullopt;
-
+  std::optional<base::TimeDelta> minimum;
   for (SceneState* scene in foregroundScenes) {
-    const base::TimeDelta timeSinceLastForeground =
-        GetTimeSinceMostRecentTabWasOpenForSceneState(scene);
-
-    if (!minTimeSinceLastForeground.has_value()) {
-      minTimeSinceLastForeground = timeSinceLastForeground;
-    } else if (timeSinceLastForeground < minTimeSinceLastForeground.value()) {
-      minTimeSinceLastForeground = timeSinceLastForeground;
-    }
+    minimum = MinimumTimeDelta(
+        minimum, GetTimeSinceMostRecentTabWasOpenForSceneState(scene));
   }
-
-  return minTimeSinceLastForeground;
+  return minimum;
 }

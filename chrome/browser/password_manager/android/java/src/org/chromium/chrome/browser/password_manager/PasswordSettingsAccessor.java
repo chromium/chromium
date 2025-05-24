@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.password_manager;
 import android.accounts.Account;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Optional;
 
 /** Interface for the object mediating access to the password settings. */
+@NullMarked
 public interface PasswordSettingsAccessor {
     /**
      * Asynchronously retrieves the value of the "Offer to save passwords" setting.

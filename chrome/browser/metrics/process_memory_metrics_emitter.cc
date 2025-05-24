@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
 
+#include <array>
 #include <set>
 #include <string>
 #include <string_view>
@@ -25,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -141,6 +138,27 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      EmitTo::kSizeInUmaOnly,
      /*ukm_setter=*/nullptr,
      {1, 1000000}},
+    {"accessibility/ax_platform_win_dormant_node",
+     "AXPlatformWinDormantNodeCount",
+     MetricSize::kCustom,
+     MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly,
+     /*ukm_setter=*/nullptr,
+     {1, 1000000}},
+    {"accessibility/ax_platform_win_ghost_node",
+     "AXPlatformWinGhostNodeCount",
+     MetricSize::kCustom,
+     MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly,
+     /*ukm_setter=*/nullptr,
+     {1, 1000000}},
+    {"accessibility/ax_platform_win_live_node",
+     "AXPlatformWinLiveNodeCount",
+     MetricSize::kCustom,
+     MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly,
+     /*ukm_setter=*/nullptr,
+     {1, 1000000}},
     {"blink_gc", "BlinkGC", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetBlinkGC},
     {"blink_gc", "BlinkGC.AllocatedObjects", MetricSize::kLarge,
@@ -234,6 +252,23 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetFontCaches},
     {"gpu/dawn", "DawnSharedContext", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/dawn/textures", "DawnSharedContext.Textures", MetricSize::kLarge,
+     kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/dawn/textures/depth_stencil", "DawnSharedContext.DepthStencil",
+     MetricSize::kLarge, kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/dawn/textures/msaa", "DawnSharedContext.MSAA", MetricSize::kLarge,
+     kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/dawn/textures/msaa",
+     "DawnSharedContext.MSAA.Count",
+     MetricSize::kCustom,
+     MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly,
+     nullptr,
+     {0, 10000}},
+    {"gpu/dawn/textures/msaa", "DawnSharedContext.MSAA.Largest",
+     MetricSize::kLarge, "biggest_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/dawn/buffers", "DawnSharedContext.Buffers", MetricSize::kLarge,
+     kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/discardable_cache", "ServiceDiscardableManager", MetricSize::kCustom,
      kSize, EmitTo::kSizeInUmaOnly, nullptr, ImageSizeMetricRange},
     {"gpu/discardable_cache", "ServiceDiscardableManager.AvgImageSize",
@@ -241,6 +276,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      ImageSizeMetricRange},
     {"gpu/gl", "CommandBuffer", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetCommandBuffer},
+    {"gpu/shader_cache/graphite_cache", "Gpu.GraphiteShaderCache",
+     MetricSize::kSmall, kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/gr_shader_cache", "Gpu.GrShaderCache", MetricSize::kSmall,
      kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/mapped_memory", "GpuMappedMemory", MetricSize::kSmall, kEffectiveSize,
@@ -997,7 +1034,7 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
       case EmitTo::kIgnored:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -1029,6 +1066,18 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
   MEMORY_METRICS_HISTOGRAM_MB(std::string(kMemoryHistogramPrefix) +
                                   process_name + ".PrivateSwapFootprint",
                               pmd.os_dump().private_footprint_swap_kb / kKiB);
+  // We expect counts to be capped at ~65k on most systems, as this is the
+  // default maximum in the kernel.
+  base::UmaHistogramCounts100000(
+      base::StrCat({std::string(kMemoryHistogramPrefix), process_name,
+                    ".MappingsCount"}),
+      pmd.os_dump().mappings_count);
+  base::UmaHistogramMemoryMB(
+      base::StrCat({kMemoryHistogramPrefix, process_name, ".Pss"}),
+      pmd.os_dump().pss_kb / kKiB);
+  base::UmaHistogramMemoryMB(
+      base::StrCat({kMemoryHistogramPrefix, process_name, ".SwapPss"}),
+      pmd.os_dump().swap_pss_kb / kKiB);
 #endif
 
   if (record_uma) {
@@ -1043,11 +1092,11 @@ void EmitSummedGpuMemory(const GlobalMemoryDump::ProcessDump& pmd,
                          Memory_Experimental* builder,
                          bool record_uma) {
   // Combine several categories together to sum up Chrome-reported gpu memory.
-  static const char* gpu_categories[] = {
+  static auto gpu_categories = std::to_array<const char*>({
       "gpu/gl",
       "gpu/shared_images",
       "skia/gpu_resources",
-  };
+  });
   Metric synthetic_metric = {nullptr,
                              "GpuMemory",
                              MetricSize::kLarge,
@@ -1257,23 +1306,10 @@ void ProcessMemoryMetricsEmitter::FetchAndEmitProcessMemoryMetrics() {
     }
   }
 
-  // Use a lambda adapter to post the results back to this sequence.
-  GetProcessToPageInfoMapCallback callback2 = base::BindOnce(
-      [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-         scoped_refptr<ProcessMemoryMetricsEmitter> pmme,
-         std::vector<ProcessInfo> process_infos) -> void {
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ProcessMemoryMetricsEmitter::ReceivedProcessInfos,
-                           pmme, std::move(process_infos)));
-      },
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      scoped_refptr<ProcessMemoryMetricsEmitter>(this));
-
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(&ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap,
-                     std::move(callback2)));
+  performance_manager::Graph* graph =
+      performance_manager::PerformanceManager::GetGraph();
+  auto process_infos = GetProcessToPageInfoMap(graph);
+  ReceivedProcessInfos(std::move(process_infos));
 }
 
 void ProcessMemoryMetricsEmitter::MarkServiceRequestsInProgress() {
@@ -1283,7 +1319,7 @@ void ProcessMemoryMetricsEmitter::MarkServiceRequestsInProgress() {
   get_process_urls_in_progress_ = true;
 }
 
-ProcessMemoryMetricsEmitter::~ProcessMemoryMetricsEmitter() {}
+ProcessMemoryMetricsEmitter::~ProcessMemoryMetricsEmitter() = default;
 
 void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
     bool success,
@@ -1347,7 +1383,7 @@ int ProcessMemoryMetricsEmitter::GetNumberOfExtensions(base::ProcessId pid) {
   }
 
   const extensions::Extension* extension =
-      process_map->GetEnabledExtensionByProcessID(rph->GetID());
+      process_map->GetEnabledExtensionByProcessID(rph->GetDeprecatedID());
   // Only include this extension if it's not a hosted app.
   return (extension && !extension->is_hosted_app()) ? 1 : 0;
 #else
@@ -1381,6 +1417,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 
   uint32_t private_footprint_total_kb = 0;
 #if BUILDFLAG(IS_ANDROID)
+  uint32_t private_swap_footprint_total_kb = 0;
+  uint32_t renderer_private_swap_footprint_total_kb = 0;
   uint32_t private_footprint_excluding_waived_total_kb = 0;
   uint32_t renderer_private_footprint_excluding_waived_total_kb = 0;
   uint32_t private_footprint_visible_or_higher_total_kb = 0;
@@ -1405,6 +1443,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
     uint32_t process_pmf_kb = pmd.os_dump().private_footprint_kb;
     private_footprint_total_kb += process_pmf_kb;
 #if BUILDFLAG(IS_ANDROID)
+    uint32_t process_swap_kb = pmd.os_dump().private_footprint_swap_kb;
+    private_swap_footprint_total_kb += process_swap_kb;
     bool is_waived_renderer = false;
     bool is_less_than_visible_renderer = false;
     auto renderer_binding_state_android =
@@ -1438,6 +1478,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
       case memory_instrumentation::mojom::ProcessType::RENDERER: {
         renderer_private_footprint_total_kb += process_pmf_kb;
 #if BUILDFLAG(IS_ANDROID)
+        renderer_private_swap_footprint_total_kb += process_swap_kb;
         renderer_private_footprint_excluding_waived_total_kb +=
             is_waived_renderer ? 0 : process_pmf_kb;
         renderer_private_footprint_visible_or_higher_total_kb +=
@@ -1590,6 +1631,13 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         "UMA.Pseudo.Memory.Total.PrivateMemoryFootprint",
         metrics::GetPseudoMetricsSample(
             static_cast<double>(private_footprint_total_kb) / kKiB));
+#if BUILDFLAG(IS_ANDROID)
+    UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.PrivateSwapFootprint",
+                                  private_swap_footprint_total_kb / kKiB);
+    UMA_HISTOGRAM_MEMORY_LARGE_MB(
+        "Memory.Total.RendererPrivateSwapFootprint",
+        renderer_private_swap_footprint_total_kb / kKiB);
+#endif  // BUILDFLAG(IS_ANDROID)
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererPrivateMemoryFootprint",
                                   renderer_private_footprint_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererMalloc",
@@ -1667,8 +1715,8 @@ bool HostsMainFrame(const performance_manager::ProcessNode* process,
 
 }  // namespace
 
-void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
-    GetProcessToPageInfoMapCallback callback,
+std::vector<ProcessMemoryMetricsEmitter::ProcessInfo>
+ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
     performance_manager::Graph* graph) {
   std::vector<ProcessInfo> process_infos;
   // Assign page nodes unique IDs within this lookup only.
@@ -1692,6 +1740,7 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
     base::flat_set<const performance_manager::PageNode*> page_nodes =
         performance_manager::GraphOperations::GetAssociatedPageNodes(
             process_node);
+    const base::TimeTicks now = base::TimeTicks::Now();
     for (const performance_manager::PageNode* page_node : page_nodes) {
       if (page_node->GetUkmSourceID() == ukm::kInvalidSourceId)
         continue;
@@ -1711,12 +1760,12 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
       page_info.hosts_main_frame = HostsMainFrame(process_node, page_node);
       page_info.is_visible = page_node->IsVisible();
       page_info.time_since_last_visibility_change =
-          page_node->GetTimeSinceLastVisibilityChange();
+          now - page_node->GetLastVisibilityChangeTime();
       page_info.time_since_last_navigation =
           page_node->GetTimeSinceLastNavigation();
     }
   }
-  std::move(callback).Run(std::move(process_infos));
+  return process_infos;
 }
 
 ProcessMemoryMetricsEmitter::ProcessInfo::ProcessInfo() = default;

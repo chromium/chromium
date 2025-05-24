@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom-forward.h"
 #include "chrome/common/webui_url_constants.h"
-#include "content/public/browser/webui_config.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -17,11 +17,10 @@ class OmniboxPageHandler;
 
 class OmniboxUI;
 
-class OmniboxUIConfig : public content::DefaultWebUIConfig<OmniboxUI> {
+class OmniboxUIConfig : public content::DefaultInternalWebUIConfig<OmniboxUI> {
  public:
   OmniboxUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIOmniboxHost) {}
+      : DefaultInternalWebUIConfig(chrome::kChromeUIOmniboxHost) {}
 };
 
 // The UI for chrome://omnibox/

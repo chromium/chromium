@@ -5,12 +5,17 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
-#import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation LocationBarBadgesContainerView {
   UIStackView* _containerStackView;
+
+  /// Whether the contextual panel entrypoint should be visible. The placeholder
+  /// view trumps the entrypoint when kLensOverlayPriceInsightsCounterfactual is
+  /// enabled.
+  BOOL _contextualPanelEntrypointShouldBeVisible;
 }
 
 - (instancetype)init {
@@ -59,6 +64,7 @@
 
 - (void)setContextualPanelEntrypointHidden:(BOOL)hidden {
   _contextualPanelEntrypointView.hidden = hidden;
+  _contextualPanelEntrypointShouldBeVisible = !hidden;
   [self updatePlaceholderVisibility];
 }
 
@@ -112,12 +118,11 @@
   _placeholderView = placeholderView;
   if (_placeholderView) {
     _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
-    _placeholderView.isAccessibilityElement = NO;
     _placeholderView.hidden = YES;
     [_containerStackView addArrangedSubview:_placeholderView];
     [NSLayoutConstraint activateConstraints:@[
-      [_badgeView.heightAnchor
-          constraintEqualToAnchor:_placeholderView.heightAnchor]
+      [_placeholderView.heightAnchor
+          constraintEqualToAnchor:_containerStackView.heightAnchor]
     ]];
   }
   [self updatePlaceholderVisibility];
@@ -131,10 +136,32 @@
                             !self.contextualPanelEntrypointView.hidden) ||
                            (self.badgeView && !self.badgeView.hidden);
 
+  if (base::FeatureList::IsEnabled(kLensOverlayPriceInsightsCounterfactual)) {
+    // Show the lens overlay entrypoint only when the price insights entrypoint
+    // should have been shown.
+    BOOL placeholderVisible = _contextualPanelEntrypointShouldBeVisible &&
+                              (!self.badgeView || self.badgeView.hidden);
+    placeholderHidden = !placeholderVisible;
+    if (placeholderVisible) {
+      self.contextualPanelEntrypointView.hidden = YES;
+    }
+  }
+
+  if (!_placeholderView || placeholderHidden == _placeholderView.hidden) {
+    return;
+  }
+
   _placeholderView.hidden = placeholderHidden;
-  if (!_placeholderView.hidden && IsLensOverlayAvailable()) {
-    [self.helpCommandsHandler
-        presentInProductHelpWithType:InProductHelpType::kLensOverlayEntrypoint];
+
+  // Records why the placeholder view is hidden. These are not mutually
+  // exclusive, price tracking will take precedence over messages.
+  if (placeholderHidden) {
+    if (self.contextualPanelEntrypointView &&
+        !self.contextualPanelEntrypointView.hidden) {
+      RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kPriceTracking);
+    } else if (self.badgeView && !self.badgeView.hidden) {
+      RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kMessage);
+    }
   }
 }
 

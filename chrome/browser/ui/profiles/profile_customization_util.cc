@@ -17,7 +17,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -43,17 +42,13 @@ void FinalizeNewProfileSetup(Profile* profile,
   CHECK(entry);
   CHECK(!profile_name.empty());
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // We don't expect this to be run for profiles where the user already had a
-  // chance to set a custom profile name. One exception might be post-migration
-  // Lacros silent first run, see crbug.com/1443026.
+  // chance to set a custom profile name.
   DCHECK(entry->IsUsingDefaultName());
-#endif
 
   entry->SetLocalProfileName(profile_name, is_default_name);
 
-  if (signin_util::IsForceSigninEnabled() &&
-      base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+  if (signin_util::IsForceSigninEnabled()) {
     // Managed accounts do not need to have Sync consent set.
     // TODO(crbug.com/40280466): Align Managed and Consumer accounts.
     if (!entry->CanBeManaged()) {

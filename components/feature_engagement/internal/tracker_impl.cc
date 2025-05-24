@@ -23,7 +23,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/blocked_iph_features.h"
 #include "components/feature_engagement/internal/chrome_variations_configuration.h"
@@ -45,6 +44,7 @@
 #include "components/feature_engagement/internal/system_time_provider.h"
 #include "components/feature_engagement/internal/testing_clock_time_provider.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/feature_activation.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_constants.h"
@@ -79,8 +79,22 @@ void MaybeGetEventData(Tracker::EventList& result,
 }  // namespace
 
 std::unique_ptr<Tracker> CreateDemoModeTracker(
-    std::string chosen_feature_name) {
-  DVLOG(2) << "Enabling demo mode. Chosen feature: " << chosen_feature_name;
+    feature_engagement::FeatureActivation feature_activation) {
+  feature_engagement::FeatureActivation::State state =
+      feature_activation.get_state();
+
+  switch (state) {
+    case feature_engagement::FeatureActivation::State::kAllEnabled:
+      DVLOG(2) << "Enabling demo mode. All features enabled ";
+      break;
+    case feature_engagement::FeatureActivation::State::kAllDisabled:
+      DVLOG(2) << "Enabling demo mode. All features disabled ";
+      break;
+    case feature_engagement::FeatureActivation::State::kSingleFeatureEnabled:
+      DVLOG(2) << "Enabling demo mode. Chosen feature: "
+               << feature_activation.get_unique_feature_name();
+      break;
+  }
 
   std::unique_ptr<EditableConfiguration> configuration =
       std::make_unique<EditableConfiguration>();
@@ -89,14 +103,20 @@ std::unique_ptr<Tracker> CreateDemoModeTracker(
   // OnceConditionValidator acknowledges that thet meet conditions once.
   std::vector<const base::Feature*> features = GetAllFeatures();
   for (auto* feature : features) {
+    FeatureConfig feature_config;
     // If a particular feature has been chosen to use with demo mode, only
     // mark that feature with a valid configuration.
-    bool valid_config = chosen_feature_name.empty()
-                            ? true
-                            : chosen_feature_name == feature->name;
-
-    FeatureConfig feature_config;
-    feature_config.valid = valid_config;
+    switch (state) {
+      case feature_engagement::FeatureActivation::State::kAllEnabled:
+        feature_config.valid = true;
+        break;
+      case feature_engagement::FeatureActivation::State::kAllDisabled:
+        feature_config.valid = false;
+        break;
+      case feature_engagement::FeatureActivation::State::kSingleFeatureEnabled:
+        feature_config.valid =
+            feature_activation.get_unique_feature_name() == feature->name;
+    }
     feature_config.trigger.name = feature->name + std::string("_trigger");
     configuration->SetConfiguration(feature, feature_config);
   }
@@ -113,11 +133,11 @@ std::unique_ptr<Tracker> CreateDemoModeTracker(
       std::make_unique<SystemTimeProvider>(), nullptr, nullptr);
 }
 
-// This method is declared in //components/feature_engagement/public/
-//     feature_engagement.h
+// This method is declared in
+// //components/feature_engagement/public/tracker.h
 // and should be linked in to any binary using Tracker::Create.
 // static
-Tracker* Tracker::Create(
+std::unique_ptr<Tracker> Tracker::Create(
     const base::FilePath& storage_dir,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
@@ -127,10 +147,14 @@ Tracker* Tracker::Create(
   DVLOG(2) << "Creating Tracker";
   if (base::FeatureList::IsEnabled(kIPHDemoMode)) {
     // GetFieldTrialParamValueByFeature returns an empty string if the param is
-    // not set.
+    // not set. In this case, we want to enable all features.
     std::string chosen_feature_name = base::GetFieldTrialParamValueByFeature(
         kIPHDemoMode, kIPHDemoModeFeatureChoiceParam);
-    return CreateDemoModeTracker(chosen_feature_name).release();
+    feature_engagement::FeatureActivation feature_action =
+        chosen_feature_name.empty()
+            ? feature_engagement::FeatureActivation::AllEnabled()
+            : feature_engagement::FeatureActivation(chosen_feature_name);
+    return CreateDemoModeTracker(feature_action);
   }
 
   base::FilePath event_storage_dir =
@@ -172,7 +196,7 @@ Tracker* Tracker::Create(
   auto availability_model = std::make_unique<AvailabilityModelImpl>(
       std::move(availability_store_loader));
 
-  return new TrackerImpl(
+  return std::make_unique<TrackerImpl>(
       std::move(event_model), std::move(availability_model),
       std::move(configuration), std::make_unique<DisplayLockControllerImpl>(),
       std::move(condition_validator), std::move(time_provider),
@@ -461,7 +485,7 @@ void TrackerImpl::UnregisterPriorityNotificationHandler(
   priority_notification_handlers_.erase(feature.name);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void TrackerImpl::UpdateConfig(const base::Feature& feature,
                                const ConfigurationProvider* provider) {
   CHECK(IsInitialized());
@@ -548,6 +572,8 @@ void TrackerImpl::RecordShownTime(const base::Feature& feature) {
 
   UmaHistogramTimes("InProductHelp.ShownTime." + feature_name,
                     time_provider_->Now() - iter->second);
+  UmaHistogramMediumTimes("InProductHelp.ShownTime2." + feature_name,
+                          time_provider_->Now() - iter->second);
   start_times_.erase(feature_name);
 }
 

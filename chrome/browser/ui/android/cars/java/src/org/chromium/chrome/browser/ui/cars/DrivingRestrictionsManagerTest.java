@@ -27,7 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @Config(manifest = Config.NONE)
 public class DrivingRestrictionsManagerTest {
     private DrivingRestrictionsManager mManager;
-    @Spy private DrivingRestrictionsDelegateImpl mSpyDelegate;
+    @Spy private DrivingRestrictionsDelegate mSpyDelegate;
 
     @Before
     public void setUp() {

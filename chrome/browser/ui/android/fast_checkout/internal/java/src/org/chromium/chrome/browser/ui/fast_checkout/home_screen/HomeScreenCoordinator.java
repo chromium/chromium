@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.ui.fast_checkout.home_screen;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the home screen of the Fast Checkout bottom sheet. */
+@NullMarked
 public class HomeScreenCoordinator {
     /** The delegate of the class. */
     public interface Delegate {

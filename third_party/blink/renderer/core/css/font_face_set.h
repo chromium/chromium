@@ -25,6 +25,7 @@ namespace blink {
 
 class Font;
 class FontFaceCache;
+class V8FontFaceSetLoadStatus;
 
 using FontFaceSetIterable = ValueSyncIterable<FontFaceSet>;
 
@@ -68,7 +69,7 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
   void AddFontFacesToFontFaceCache(FontFaceCache*);
 
   wtf_size_t size() const;
-  virtual AtomicString status() const = 0;
+  V8FontFaceSetLoadStatus status() const;
 
   void Trace(Visitor*) const override;
 
@@ -76,7 +77,7 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
   static const int kDefaultFontSize;
   static const AtomicString& DefaultFontFamily();
 
-  virtual bool ResolveFontStyle(const String&, Font&) = 0;
+  virtual const Font* ResolveFontStyle(const String&) = 0;
   virtual bool InActiveContext() const = 0;
   virtual FontSelector* GetFontSelector() const = 0;
   virtual const HeapLinkedHashSet<Member<FontFace>>& CSSConnectedFontFaceList()

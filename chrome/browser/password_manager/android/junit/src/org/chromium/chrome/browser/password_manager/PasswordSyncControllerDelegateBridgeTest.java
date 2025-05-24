@@ -19,13 +19,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 
 /**
  * Tests that bridge calls as invoked by the password sync controller delegate reach the delegate
@@ -44,7 +44,7 @@ public class PasswordSyncControllerDelegateBridgeTest {
     private static final Exception EXPECTED_API_EXCEPTION =
             new ApiException(new Status(EXPECTED_API_ERROR_CODE, ""));
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private PasswordSyncControllerDelegateBridgeImpl.Natives mBridgeJniMock;
     @Mock private PasswordSyncControllerDelegate mDelegateMock;
@@ -53,8 +53,7 @@ public class PasswordSyncControllerDelegateBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(PasswordSyncControllerDelegateBridgeImplJni.TEST_HOOKS, mBridgeJniMock);
+        PasswordSyncControllerDelegateBridgeImplJni.setInstanceForTesting(mBridgeJniMock);
         mDelegateBridge =
                 new PasswordSyncControllerDelegateBridgeImpl(sFakeNativePointer, mDelegateMock);
     }

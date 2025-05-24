@@ -24,11 +24,8 @@ class MqlsFeatureMetadata;
 
 namespace {
 
-std::unique_ptr<proto::LogAiDataRequest> BuildComposeLogAiDataRequest() {
-  auto log = std::make_unique<proto::LogAiDataRequest>();
-  proto::ComposeLoggingData compose_data;
-  *(log->mutable_compose()) = compose_data;
-  return log;
+void AddComposeLoggingData(proto::LogAiDataRequest* log) {
+  *(log->mutable_compose()) = proto::ComposeLoggingData();
 }
 
 class TestModelQualityLogsUploaderService
@@ -91,47 +88,18 @@ class ModelQualityLogEntryTest : public testing::Test {
   TestModelQualityLogsUploaderService uploader_;
 };
 
-// Test ModelQualityLogEntry initialization and logging_metadata().
-TEST_F(ModelQualityLogEntryTest, Initialize) {
-  std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
-      new proto::LogAiDataRequest());
-  optimization_guide::proto::LoggingMetadata* logging_metadata =
-      log_ai_data_request.get()->mutable_logging_metadata();
-
-  ModelQualityLogEntry log_entry(std::move(log_ai_data_request), nullptr);
-
-  EXPECT_EQ(log_entry.log_ai_data_request()->mutable_logging_metadata(),
-            logging_metadata);
-}
-
-// Test client id is correctly set.
-TEST_F(ModelQualityLogEntryTest, ClientId) {
-  std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
-      std::make_unique<proto::LogAiDataRequest>());
-  int64_t client_id =
-      log_ai_data_request.get()->mutable_logging_metadata()->client_id();
-
-  ModelQualityLogEntry log_entry(std::move(log_ai_data_request), nullptr);
-
-  EXPECT_EQ(
-      log_entry.log_ai_data_request()->mutable_logging_metadata()->client_id(),
-      client_id);
-}
-
 TEST_F(ModelQualityLogEntryTest, UploadOnDestruction) {
   {
-    auto data = BuildComposeLogAiDataRequest();
-    auto log =
-        std::make_unique<ModelQualityLogEntry>(std::move(data), uploader());
+    auto log = std::make_unique<ModelQualityLogEntry>(uploader());
+    AddComposeLoggingData(log->log_ai_data_request());
   }  // ModelQualityLogEntry destroyed, this should trigger an upload.
 
   EXPECT_EQ(1, NumPendingUploads());
 }
 
 TEST_F(ModelQualityLogEntryTest, Upload_WithNonEmptyLog_SchedulesAnUpload) {
-  auto data = BuildComposeLogAiDataRequest();
-  auto log =
-      std::make_unique<ModelQualityLogEntry>(std::move(data), uploader());
+  auto log = std::make_unique<ModelQualityLogEntry>(uploader());
+  AddComposeLoggingData(log->log_ai_data_request());
 
   ModelQualityLogEntry::Upload(std::move(log));
 
@@ -139,23 +107,27 @@ TEST_F(ModelQualityLogEntryTest, Upload_WithNonEmptyLog_SchedulesAnUpload) {
 }
 
 TEST_F(ModelQualityLogEntryTest, Upload_WithEmptyLog_DoesNotScheduleAnUpload) {
-  std::unique_ptr<proto::LogAiDataRequest> data;
-  auto log =
-      std::make_unique<ModelQualityLogEntry>(std::move(data), uploader());
-
-  ModelQualityLogEntry::Upload(std::move(log));
+  ModelQualityLogEntry::Upload(
+      std::make_unique<ModelQualityLogEntry>(uploader()));
 
   EXPECT_EQ(0, NumPendingUploads());
 }
 
+TEST_F(ModelQualityLogEntryTest, Upload_WithNullEntry_DoesNotCrash) {
+  ModelQualityLogEntry::Upload(nullptr);
+}
+
 TEST_F(ModelQualityLogEntryTest, Drop_WithNonEmptyLog_DoesNotScheduleAnUpload) {
-  auto data = BuildComposeLogAiDataRequest();
-  auto log =
-      std::make_unique<ModelQualityLogEntry>(std::move(data), uploader());
+  auto log = std::make_unique<ModelQualityLogEntry>(uploader());
+  AddComposeLoggingData(log->log_ai_data_request());
 
   ModelQualityLogEntry::Drop(std::move(log));
 
   EXPECT_EQ(0, NumPendingUploads());
+}
+
+TEST_F(ModelQualityLogEntryTest, Drop_WithNullEntry_DoesNotCrash) {
+  ModelQualityLogEntry::Drop(nullptr);
 }
 
 }  // namespace optimization_guide

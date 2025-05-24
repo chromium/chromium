@@ -18,15 +18,15 @@
 @synthesize TTSPlayer = _TTSPlayer;
 
 - (void)dealloc {
-  [self cancelPlayback];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  self.enabled = NO;
 }
 
 #pragma mark Accessors
 
 - (void)setEnabled:(BOOL)enabled {
-  if (_enabled == enabled)
+  if (_enabled == enabled) {
     return;
+  }
   _enabled = enabled;
   if (_enabled) {
     [[NSNotificationCenter defaultCenter]

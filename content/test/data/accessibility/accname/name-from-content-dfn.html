@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<body>
+<h2>Checkbox and implicit term role</h2>
+<!--
+  The input type=checkbox will get its name from the associated label and the
+  label will get its name from the name from contents computation. Since the
+  name of labelText is not shown in the expectation files, we test the name of
+  the input instead.
+-->
+<label>
+  <input id="test" type="checkbox">
+  <span>This is an <dfn>example</dfn></span>
+</label>
+</body>
+</html>

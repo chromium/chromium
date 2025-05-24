@@ -119,7 +119,7 @@ export type SelectFolderAction = Action&{
 
 export function selectFolder(id: string, nodes?: NodeMap): SelectFolderAction|
     null {
-  if (nodes && (id === ROOT_NODE_ID || !nodes[id] || nodes[id]!.url)) {
+  if (nodes && (id === ROOT_NODE_ID || !nodes[id] || nodes[id].url)) {
     console.warn('Tried to select invalid folder: ' + id);
     return null;
   }
@@ -209,7 +209,7 @@ export function selectItem(
 export function selectAll(
     ids: string[], state: BookmarksPageState,
     anchor?: string): SelectItemsAction {
-  const finalAnchor: string = anchor ? anchor! : state.selection!.anchor!;
+  const finalAnchor: string = anchor ? anchor : state.selection.anchor!;
   return {
     name: 'select-items',
     clear: true,

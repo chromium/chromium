@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1122068467107743258">Darba</translation>
 <translation id="1275718070701477396">Atlasīta</translation>
 <translation id="138513070655895675">Mainīt maksājuma veidu uz citu, kas pieejams šajā izvēlnes vienumā.</translation>
 <translation id="2129442648318919291">Pārvaldīt adreses.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Piegādes adrese</translation>
 <translation id="8873105120914375071">Vai vēlaties norēķināties ātrāk?</translation>
 <translation id="9032876013752408138">Automātiski aizpildīt informāciju</translation>
+<translation id="932327136139879170">Sākums</translation>
 <translation id="984275831282074731">Maksājumu veidi</translation>
 </translationbundle>

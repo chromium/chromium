@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/sensor/orientation_sensor.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_dommatrix_float32array_float64array.h"
@@ -31,7 +26,7 @@ void DoPopulateMatrix(T* target_matrix,
                       double y,
                       double z,
                       double w) {
-  auto out = target_matrix->Data();
+  auto out = target_matrix->AsSpan();
   out[0] = 1.0 - 2 * (y * y + z * z);
   out[1] = 2 * (x * y - z * w);
   out[2] = 2 * (x * z + y * w);
@@ -131,7 +126,7 @@ OrientationSensor::OrientationSensor(
     const SpatialSensorOptions* options,
     ExceptionState& exception_state,
     device::mojom::blink::SensorType type,
-    const Vector<mojom::blink::PermissionsPolicyFeature>& features)
+    const Vector<network::mojom::PermissionsPolicyFeature>& features)
     : Sensor(execution_context, options, exception_state, type, features),
       reading_dirty_(true) {}
 

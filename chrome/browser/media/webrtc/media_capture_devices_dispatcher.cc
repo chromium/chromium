@@ -15,8 +15,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -41,15 +41,17 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+#include "chrome/browser/media/webrtc/display_media_access_handler.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/common/content_features.h"
-#else
-#include "chrome/browser/media/webrtc/display_media_access_handler.h"
 #endif  //  BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/media/chromeos_login_and_lock_media_access_handler.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/controlled_frame/controlled_frame_media_access_handler.h"
@@ -65,18 +67,6 @@ using blink::MediaStreamDevices;
 using content::BrowserThread;
 using content::MediaCaptureDevices;
 
-namespace {
-
-content::WebContents* WebContentsFromIds(int render_process_id,
-                                         int render_frame_id) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
-  return web_contents;
-}
-
-}  // namespace
-
 MediaCaptureDevicesDispatcher* MediaCaptureDevicesDispatcher::GetInstance() {
   return base::Singleton<MediaCaptureDevicesDispatcher>::get();
 }
@@ -86,13 +76,18 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
       media_stream_capture_indicator_(new MediaStreamCaptureIndicator()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  if (base::FeatureList::IsEnabled(kAndroidMediaPicker)) {
+    media_access_handlers_.push_back(
+        std::make_unique<DisplayMediaAccessHandler>());
+  }
+#elif !BUILDFLAG(IS_ANDROID)
   media_access_handlers_.push_back(
       std::make_unique<DisplayMediaAccessHandler>());
-#endif  //  BUILDFLAG(IS_ANDROID)
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   media_access_handlers_.push_back(
       std::make_unique<ChromeOSLoginAndLockMediaAccessHandler>());
 #endif
@@ -108,7 +103,7 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
       std::make_unique<PermissionBubbleMediaAccessHandler>());
 }
 
-MediaCaptureDevicesDispatcher::~MediaCaptureDevicesDispatcher() {}
+MediaCaptureDevicesDispatcher::~MediaCaptureDevicesDispatcher() = default;
 
 void MediaCaptureDevicesDispatcher::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -150,10 +145,13 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
   }
 #endif
 
+  auto* render_frame_host = content::RenderFrameHost::FromID(
+      request.render_process_id, request.render_frame_id);
+
   for (const auto& handler : media_access_handlers_) {
-    if (handler->SupportsStreamType(web_contents, request.video_type,
+    if (handler->SupportsStreamType(render_frame_host, request.video_type,
                                     extension) ||
-        handler->SupportsStreamType(web_contents, request.audio_type,
+        handler->SupportsStreamType(render_frame_host, request.audio_type,
                                     extension)) {
       handler->HandleRequest(web_contents, request, std::move(callback),
                              extension);
@@ -164,6 +162,17 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
                           blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
                           nullptr);
 }
+
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_FUCHSIA)
+void MediaCaptureDevicesDispatcher::ProcessSelectAudioOutputRequest(
+    Browser* browser,
+    const content::SelectAudioOutputRequest& request,
+    content::SelectAudioOutputCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  picker_views_ = SelectAudioOutputPicker::Create(request);
+  picker_views_->Show(browser, request, std::move(callback));
+}
+#endif
 
 bool MediaCaptureDevicesDispatcher::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
@@ -181,9 +190,7 @@ bool MediaCaptureDevicesDispatcher::CheckMediaAccessPermission(
     const extensions::Extension* extension) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& handler : media_access_handlers_) {
-    if (handler->SupportsStreamType(
-            content::WebContents::FromRenderFrameHost(render_frame_host), type,
-            extension)) {
+    if (handler->SupportsStreamType(render_frame_host, type, extension)) {
       return handler->CheckMediaAccessPermission(
           render_frame_host, security_origin, type, extension);
     }
@@ -330,9 +337,9 @@ void MediaCaptureDevicesDispatcher::UpdateMediaRequestStateOnUIThread(
     content::MediaRequestState state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& handler : media_access_handlers_) {
-    if (handler->SupportsStreamType(
-            WebContentsFromIds(render_process_id, render_frame_id), stream_type,
-            nullptr)) {
+    if (handler->SupportsStreamType(content::RenderFrameHost::FromID(
+                                        render_process_id, render_frame_id),
+                                    stream_type, nullptr)) {
       handler->UpdateMediaRequestState(render_process_id, render_frame_id,
                                        page_request_id, stream_type, state);
       break;
@@ -405,9 +412,9 @@ void MediaCaptureDevicesDispatcher::UpdateVideoScreenCaptureStatus(
   DCHECK(blink::IsVideoScreenCaptureMediaType(stream_type));
 
   for (const auto& handler : media_access_handlers_) {
-    if (handler->SupportsStreamType(
-            WebContentsFromIds(render_process_id, render_frame_id), stream_type,
-            nullptr)) {
+    if (handler->SupportsStreamType(content::RenderFrameHost::FromID(
+                                        render_process_id, render_frame_id),
+                                    stream_type, nullptr)) {
       handler->UpdateVideoScreenCaptureStatus(
           render_process_id, render_frame_id, page_request_id, is_secure);
       break;

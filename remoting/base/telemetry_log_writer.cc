@@ -145,7 +145,7 @@ void TelemetryLogWriter::DoSend(const apis::v1::CreateEventRequest& request) {
 }
 
 void TelemetryLogWriter::OnSendLogResult(
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<apis::v1::CreateEventResponse> response) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!status.ok()) {

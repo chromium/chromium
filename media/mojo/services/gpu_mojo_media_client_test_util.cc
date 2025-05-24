@@ -22,7 +22,7 @@ namespace media {
 
 void AddSupplementalCodecsForTesting(gpu::GpuPreferences gpu_preferences) {
 #if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) || \
-    BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+    BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
   const gpu::GpuDriverBugWorkarounds dummy_workarounds;
   const gpu::GPUInfo gpu_info = []() {
     gpu::GPUInfo info;
@@ -50,10 +50,10 @@ void AddSupplementalCodecsForTesting(gpu::GpuPreferences gpu_preferences) {
     supported_audio_types.emplace(config.codec, config.profile,
                                   /*spatial_rendering=*/false);
   }
-  UpdateDefaultSupportedAudioTypes(supported_audio_types);
+  UpdateDefaultDecoderSupportedAudioTypes(supported_audio_types);
 #endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
 
-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
   base::flat_set<VideoCodecProfile> supported_video_profiles;
   for (const auto& config : client->GetSupportedVideoDecoderConfigs()) {
     for (int profile = config.profile_min; profile <= config.profile_max;
@@ -61,10 +61,10 @@ void AddSupplementalCodecsForTesting(gpu::GpuPreferences gpu_preferences) {
       supported_video_profiles.insert(static_cast<VideoCodecProfile>(profile));
     }
   }
-  UpdateDefaultSupportedVideoProfiles(supported_video_profiles);
-#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+  UpdateDefaultDecoderSupportedVideoProfiles(supported_video_profiles);
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
 #endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) || \
-        // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+        // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
 }
 
 }  // namespace media

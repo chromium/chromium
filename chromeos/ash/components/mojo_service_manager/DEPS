@@ -1,0 +1,4 @@
+include_rules = [
+  "+chromeos/ash/services/cros_healthd/public/cpp",
+  "+content/public/common/content_switches.h",
+]

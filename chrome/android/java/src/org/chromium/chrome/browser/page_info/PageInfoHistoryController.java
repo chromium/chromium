@@ -62,7 +62,7 @@ public class PageInfoHistoryController
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
-        mTitle = mRowView.getContext().getResources().getString(R.string.page_info_history_title);
+        mTitle = mRowView.getContext().getString(R.string.page_info_history_title);
         mHost = mainController.getURL().getHost();
         mTabSupplier = tabSupplier;
 
@@ -100,7 +100,8 @@ public class PageInfoHistoryController
                         new BrowsingHistoryBridge(profile),
                         null,
                         /* launchedForApp= */ false,
-                        /* showAppFilter= */ false);
+                        /* showAppFilter= */ false,
+                        /* openHistoryItemCallback= */ null);
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }
@@ -174,7 +175,7 @@ public class PageInfoHistoryController
     @Override
     public void clearData() {
         // TODO(crbug.com/40746014): Add functionality for clear history for this site.
-        return;
+
     }
 
     @Override
@@ -193,7 +194,6 @@ public class PageInfoHistoryController
     @Override
     public void onItemClicked(HistoryItem item) {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_HISTORY_ENTRY_CLICKED);
-        return;
     }
 
     // HistoryContentManager.Observer
@@ -214,7 +214,7 @@ public class PageInfoHistoryController
     public void onClearBrowsingDataClicked() {
         // TODO(crbug.com/40746014): Add functionality for "clear history" button click and
         // change the name of the current clear browsing data button.
-        return;
+
     }
 
     // HistoryContentManager.Observer

@@ -46,8 +46,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SessionRestoreFinishReason">
   <int value="0"
-      label="SessionRestore.ForegroundTabFirstPaint4_XX successfully
-             recorded."/>
+      label="SessionRestore.ForegroundTabFirstPaint4 successfully recorded."/>
   <int value="1"
       label="No tabs were visible the whole time before first paint."/>
   <int value="2" label="No restored tabs were painted."/>

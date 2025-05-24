@@ -178,7 +178,7 @@ class LargeIconService : public KeyedService {
   // postpones the automatic eviction of the favicon from the database.
   virtual void TouchIconFromGoogleServer(const GURL& icon_url) = 0;
  protected:
-  LargeIconService() {}
+  LargeIconService() = default;
 };
 
 }  // namespace favicon

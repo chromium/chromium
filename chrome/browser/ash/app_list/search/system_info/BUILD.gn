@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("system_info") {
   sources = [
@@ -26,6 +26,7 @@ static_library("system_info") {
   ]
 
   deps = [
+    "//ash/app_list/vector_icons",
     "//ash/public/cpp",
     "//ash/strings",
     "//ash/webui/diagnostics_ui:url_constants",
@@ -34,7 +35,6 @@ static_library("system_info") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
-    "//chrome/browser/ash/app_list/vector_icons",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/ash/settings/pages/storage",
@@ -67,7 +67,6 @@ source_set("unit_tests") {
 
   deps = [
     ":system_info",
-    "//ash/components/arc/session",
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
@@ -86,6 +85,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/launcher_search",
     "//chromeos/ash/components/mojo_service_manager:test_support",
     "//chromeos/ash/components/system_info",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus/power",

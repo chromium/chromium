@@ -7,7 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 
 // Delegate for the coordinator.
 @protocol PasswordSuggestionCoordinatorDelegate
@@ -27,6 +29,7 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
                         passwordSuggestion:(NSString*)passwordSuggestion
+                                     frame:(base::WeakPtr<web::WebFrame>)frame
                            decisionHandler:
                                (void (^)(BOOL accept))decisionHandler
                                  proactive:(BOOL)proactive

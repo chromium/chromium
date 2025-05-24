@@ -25,6 +25,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/download/public/common/download_target_info.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "content/public/browser/download_manager.h"
@@ -38,7 +39,7 @@
 #include "chrome/browser/download/android/download_message_bridge.h"
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #endif
@@ -170,7 +171,7 @@ class ChromeDownloadManagerDelegate
 
   DownloadPrefs* download_prefs() { return download_prefs_.get(); }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // The state of a safebrowsing check.
   class SafeBrowsingState : public DownloadCompletionBlocker {
    public:
@@ -193,7 +194,7 @@ class ChromeDownloadManagerDelegate
   // Callback function after scanning completes for a save package.
   void CheckSavePackageScanningDone(uint32_t download_id,
                                     safe_browsing::DownloadCheckResult result);
-#endif  // FULL_SAFE_BROWSING
+#endif  // SAFE_BROWSING_DOWNLOAD_PROTECTION
 
   base::WeakPtr<ChromeDownloadManagerDelegate> GetWeakPtr();
 
@@ -205,18 +206,21 @@ class ChromeDownloadManagerDelegate
   bool ShouldBlockFile(download::DownloadItem* item,
                        download::DownloadDangerType danger_type) const;
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Schedules the ephemeral warning download to be canceled. It will only be
+  // Schedules an ephemeral warning download to be canceled. It will only be
   // canceled if it continues to be an ephemeral warning that hasn't been acted
-  // on when the scheduled time arrives.
+  // on when the scheduled time arrives. This should be scheduled after the user
+  // sees the warning in the UI, i.e. should not be scheduled before the user
+  // has a chance to see the warning.
+  // Note: Any scheduled cancellations will be abandoned at browser shutdown,
+  // but the cancellation should occur when the browser next starts up, in
+  // CancelAllEphemeralWarnings().
   void ScheduleCancelForEphemeralWarning(const std::string& guid);
-#endif
 
   // Returns true if |path| should open in the browser.
   virtual bool IsOpenInBrowserPreferredForFile(const base::FilePath& path);
 
  protected:
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   virtual safe_browsing::DownloadProtectionService*
       GetDownloadProtectionService();
 #endif
@@ -303,6 +307,13 @@ class ChromeDownloadManagerDelegate
   void ShouldCompleteDownloadInternal(uint32_t download_id,
                                       base::OnceClosure user_complete_callback);
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  // Called when obfuscated download files are deobfuscated.
+  void OnDeobfuscationComplete(
+      base::OnceClosure callback,
+      base::expected<void, enterprise_obfuscation::Error> deobfuscation_result);
+#endif
+
   // Sets the next download id based on download database records, and runs all
   // cached id callbacks.
   void SetNextId(uint32_t id);
@@ -338,7 +349,6 @@ class ChromeDownloadManagerDelegate
   // multiple downloads are associated with the same file path.
   bool IsMostRecentDownloadItemAtFilePath(download::DownloadItem* download);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Cancels a download if it's still an ephemeral warning (and has not been
   // acted on by the user).
   void CancelForEphemeralWarning(const std::string& guid);
@@ -346,7 +356,6 @@ class ChromeDownloadManagerDelegate
   // that were not cleaned up. This function cleans them up on startup, when the
   // download manager is initialized.
   void CancelAllEphemeralWarnings();
-#endif
 
   // content::DownloadManager::Observer
   void OnManagerInitialized() override;
@@ -359,6 +368,17 @@ class ChromeDownloadManagerDelegate
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       download::PathValidationResult result,
       const base::FilePath& target_path);
+  // Return true if the mime type is pdf and Chrome supports open this pdf.
+  bool IsPdfAndSupported(const std::string& mime_type,
+                         content::WebContents* web_contents);
+
+  // Called after user interacted on the incognito download confirmation message
+  // before proceeding to save a package.
+  void RequestIncognitoSavePackageConfirmationDone(
+      const GURL& url,
+      const base::FilePath& suggested_path,
+      content::SavePackagePathPickedCallback callback,
+      bool accept);
 #endif
 
   raw_ptr<Profile, DanglingUntriaged> profile_;

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -15,6 +16,8 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace chromeos {
+
+BASE_DECLARE_FEATURE(kRefreshTokenV3Feature);
 
 // ChromeOS specific implementation of the DeviceOAuth2TokenStore interface used
 // by the DeviceOAuth2TokenService to store and retrieve encrypted device-level
@@ -68,6 +71,17 @@ class DeviceOAuth2TokenStoreChromeOS : public DeviceOAuth2TokenStore {
 
   // Invoked by CrosSettings when the robot account ID becomes available.
   void OnServiceAccountIdentityChanged();
+
+  // Invoked on enrollment when the refresh_token is obtained from the server.
+  void StoreRefreshTokenV3();
+
+  // Invoked when the store of the refresh token is done, with |success|
+  // representing the result of store operation.
+  void OnStoreTokenV3Done(bool success);
+
+  // Invoked after the refresh_token load attempt was done.
+  void OnRefreshTokenLoadedV3(InitCallback callback,
+                              const std::string& refresh_token);
 
   State state_ = State::STOPPED;
 

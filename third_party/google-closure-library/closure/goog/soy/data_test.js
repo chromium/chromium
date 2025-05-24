@@ -8,6 +8,7 @@ goog.module('goog.soy.dataTest');
 goog.setTestOnly();
 
 const SafeHtml = goog.require('goog.html.SafeHtml');
+const SafeStyle = goog.require('goog.html.SafeStyle');
 const SafeStyleSheet = goog.require('goog.html.SafeStyleSheet');
 const SafeUrl = goog.require('goog.html.SafeUrl');
 const TrustedResourceUrl = goog.require('goog.html.TrustedResourceUrl');
@@ -37,9 +38,13 @@ testSuite({
   },
 
   testToSafeStyleSheet() {
-    /** @suppress {checkTypes} suppression added to enable type checking */
-    const url = example.sanitizedCssTemplate().toSafeStyleSheet();
-    assertEquals('html{display:none}', SafeStyleSheet.unwrap(url));
+    const styleSheet = example.sanitizedCssTemplate({}).toSafeStyleSheet();
+    assertEquals('html{display:none}', SafeStyleSheet.unwrap(styleSheet));
+  },
+
+  testToSafeStyle() {
+    const style = example.sanitizedStyleTemplate({}).toSafeStyle();
+    assertEquals('display:none;', SafeStyle.unwrap(style));
   },
 
   testToTrustedResourceUrl() {

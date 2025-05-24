@@ -15,8 +15,6 @@
 # limitations under the License.
 """Simple HTTP server.
 """
-
-from __future__ import print_function
 import SimpleHTTPServer
 import SocketServer
 

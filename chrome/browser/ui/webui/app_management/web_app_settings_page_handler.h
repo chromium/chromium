@@ -16,8 +16,9 @@
 class Profile;
 
 namespace web_app {
+class WebAppProvider;
 class WebAppRegistrar;
-}
+}  // namespace web_app
 
 // PageHandler for the chrome://app-settings page. Connects directly to the
 // WebAppProvider to manage settings for web apps.
@@ -49,7 +50,6 @@ class WebAppSettingsPageHandler : public AppManagementPageHandlerBase,
   void GetOverlappingPreferredApps(
       const std::string& app_id,
       GetOverlappingPreferredAppsCallback callback) override;
-  void UpdateAppSize(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::WindowMode window_mode) override;
   void SetRunOnOsLoginMode(
@@ -74,6 +74,8 @@ class WebAppSettingsPageHandler : public AppManagementPageHandlerBase,
   app_management::mojom::AppPtr CreateApp(const std::string& app_id) override;
 
  private:
+  web_app::WebAppProvider& provider();
+
   const raw_ref<Delegate> delegate_;
 
   base::ScopedObservation<web_app::WebAppRegistrar,

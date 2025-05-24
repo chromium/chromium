@@ -5,12 +5,17 @@
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 
 #include "base/command_line.h"
+#include "base/test/gtest_util.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace autofill {
 namespace payments {
+
+using IssuerId = autofill::BnplIssuer::IssuerId;
 
 TEST(PaymentsServiceSandboxUrl, CheckSandboxUrls) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -45,6 +50,15 @@ TEST(PaymentsServiceUrl, UrlWithInstrumentId) {
       "payment_methods&id=123";
 
   EXPECT_EQ(kExpectedURL, GetManageInstrumentUrl(/*instrument_id=*/123).spec());
+}
+
+TEST(PaymentsServiceUrl, BnplTermsUrl) {
+  const char kExpectedURL[] =
+      "https://support.google.com/googlepay?p=bnpl_autofill_chrome";
+
+  EXPECT_EQ(kExpectedURL, GetBnplTermsUrl(IssuerId::kBnplAffirm));
+  EXPECT_EQ(kExpectedURL, GetBnplTermsUrl(IssuerId::kBnplZip));
+  EXPECT_NOTREACHED_DEATH(GetBnplTermsUrl(IssuerId::kBnplAfterpay));
 }
 
 }  // namespace payments

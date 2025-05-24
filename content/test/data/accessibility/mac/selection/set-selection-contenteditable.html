@@ -1,13 +1,14 @@
 <!--
 @SCRIPT:
-  // Select the 1st word via text marker associated with container AXGroup.
+  // Select the 1st word via text marker associated with container AXTextArea.
   text_range:= ce1.AXTextMarkerRangeForUIElement(ce1)
   marker_0:= text_range.anchor
   marker_1:= ce1.AXNextWordEndTextMarkerForTextMarker(marker_0)
   target_selected_marker_range:= ce1.AXTextMarkerRangeForUnorderedTextMarkers([marker_0, marker_1])
   ce1.AXSelectedTextMarkerRange = target_selected_marker_range
-  wait for AXSelectedTextChanged on AXGroup
+  wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
+  ce1.accessibilitySelectedText
 
 @SCRIPT:
   // Select the 2nd word via the marker associated with AXStaticText.
@@ -20,8 +21,9 @@
   marker_3:= text.AXPreviousWordStartTextMarkerForTextMarker(marker_2)
   target_selected_marker_range:= text.AXTextMarkerRangeForUnorderedTextMarkers([marker_2, marker_3])
   ce1.AXSelectedTextMarkerRange = target_selected_marker_range
-  wait for AXSelectedTextChanged on AXGroup
+  wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
+  ce1.accessibilitySelectedText
 
 @SCRIPT:
   // Select text inside a span.
@@ -33,8 +35,9 @@
   marker_2:= text.AXPreviousTextMarkerForTextMarker(marker_1)
   target_selected_marker_range:= text.AXTextMarkerRangeForUnorderedTextMarkers([marker_0, marker_2])
   ce1.AXSelectedTextMarkerRange = target_selected_marker_range
-  wait for AXSelectedTextChanged on AXGroup
+  wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
+  ce1.accessibilitySelectedText
 
 @SCRIPT:
   // Select the text inside the block with incorrect grammar.
@@ -42,8 +45,9 @@
   text.AXValue
   text_range:= text.AXTextMarkerRangeForUIElement(text)
   ce1.AXSelectedTextMarkerRange = text_range
-  wait for AXSelectedTextChanged on AXGroup
+  wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
+  ce1.accessibilitySelectedText
 
 @SCRIPT:
   // Select the text after a forced break.
@@ -54,8 +58,9 @@
   marker_1:= text.AXNextWordEndTextMarkerForTextMarker(marker_0)
   target_selected_marker_range:= text.AXTextMarkerRangeForUnorderedTextMarkers([marker_0, marker_1])
   ce2.AXSelectedTextMarkerRange = target_selected_marker_range
-  wait for AXSelectedTextChanged on AXGroup
+  wait for AXSelectedTextChanged on AXTextArea
   ce2.AXSelectedText
+  ce2.accessibilitySelectedText
 -->
 <!DOCTYPE html>
 <html>

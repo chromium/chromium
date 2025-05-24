@@ -6,7 +6,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -16,6 +18,17 @@
 class SafetyHubHatsServiceTest : public testing::Test {
  public:
   SafetyHubHatsServiceTest() = default;
+
+  void SetUp() override {
+    // A profile password store is required to launch the password status check
+    // service, which is used to get the password card data, which is part of
+    // the retrieved PSD.
+    CreateAndUseTestPasswordStore(profile());
+    safety_hub_test_util::CreateAndUsePasswordStatusService(profile());
+
+    safety_hub_test_util::CreateRevokedPermissionsService(profile());
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+  }
 
  protected:
   TestingProfile* profile() { return &profile_; }
@@ -30,14 +43,6 @@ class SafetyHubHatsServiceTest : public testing::Test {
 };
 
 TEST_F(SafetyHubHatsServiceTest, SafetyHubInteractionState) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(features::kSafetyHub);
-
-  // A profile password store is required to launch the password status check
-  // service, which is used to get the password card data, which is part of the
-  // retrieved PSD.
-  CreateAndUseTestPasswordStore(profile());
-
   EXPECT_FALSE(service()
                    ->GetSafetyHubProductSpecificData()
                    .find("User visited Safety Hub page")
@@ -65,7 +70,8 @@ TEST_F(SafetyHubHatsServiceTest, SafetyHubInteractionState) {
                    .find("User interacted with Safety Hub")
                    ->second);
 
-  service()->SafetyHubNotificationClicked();
+  service()->SafetyHubNotificationClicked(
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
   EXPECT_TRUE(service()
                   ->GetSafetyHubProductSpecificData()
                   .find("User visited Safety Hub page")
@@ -73,6 +79,10 @@ TEST_F(SafetyHubHatsServiceTest, SafetyHubInteractionState) {
   EXPECT_TRUE(service()
                   ->GetSafetyHubProductSpecificData()
                   .find("User clicked Safety Hub notification")
+                  ->second);
+  EXPECT_TRUE(service()
+                  ->GetSafetyHubProductSpecificData()
+                  .find("Is notification module revoked permissions")
                   ->second);
   EXPECT_FALSE(service()
                    ->GetSafetyHubProductSpecificData()

@@ -11,12 +11,16 @@ import android.widget.TextView;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Contains the basic functionality that should be shared by all CheckBoxPreference in Chrome. */
+@NullMarked
 public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
     /** Indicates if the preference uses a custom layout. */
     private final boolean mHasCustomLayout;
 
-    private ManagedPreferenceDelegate mManagedPrefDelegate;
+    private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /** Constructor for use in Java. */
     public ChromeBaseCheckBoxPreference(Context context) {
@@ -24,7 +28,7 @@ public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
     }
 
     /** Constructor for inflating from XML. */
-    public ChromeBaseCheckBoxPreference(Context context, AttributeSet attrs) {
+    public ChromeBaseCheckBoxPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
     }

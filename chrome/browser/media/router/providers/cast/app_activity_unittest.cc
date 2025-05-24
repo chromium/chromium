@@ -54,7 +54,7 @@ class AppActivityTest : public CastActivityTestBase {
     activity_ = std::make_unique<AppActivity>(
         MediaRoute(kRouteId, MediaSource("https://example.com/receiver.html"),
                    kSinkId, "", false),
-        kAppId, &message_handler_, &session_tracker_);
+        kAppId, &message_handler_, &session_tracker_, logger_, debugger_);
   }
 
   void SetUpSession() { activity_->SetOrUpdateSession(*session_, sink_, ""); }

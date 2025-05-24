@@ -5,7 +5,6 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace browser_shutdown {

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function recordIt()
+{
+    var select = document.getElementById("select");
+    var res = document.getElementById("res");
+    if (res.innerText != "FAIL")
+        res.innerText = "PASS";
+}
+
+function testIt(ch, expectedValue)
+{
+    var select = document.getElementById("select");
+    select.focus();
+    eventSender.keyDown(ch);
+    if (select.value != expectedValue)
+        document.getElementById("res").innerText = "FAIL";
+}
+
+function test()
+{
+    if (!window.testRunner)
+        return;
+
+    testRunner.dumpAsText();
+    testIt("c", "cherry");
+}
+</script>
+</head>
+<body onload="test()">
+Verify type ahead selection fires onchange event.
+<ol>
+<li>Set focus to select element</li>
+<li>Type "c"</li>
+<li>You see "cherry" in select element and "PASS" below select element.</li>
+</ol>
+<select id="select" onchange="recordIt()">
+    <option>apple</option>
+    <option>banana</option>
+    <option>cherry</option>
+</select><br />
+<div id="res"></div>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+</html>
+

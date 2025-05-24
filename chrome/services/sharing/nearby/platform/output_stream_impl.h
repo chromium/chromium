@@ -21,8 +21,7 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // An implementation of a Nearby Connections OutputStream that writes to the
 // Mojo DataPipe, |send_stream|, passed into the constructor by the specified
@@ -72,7 +71,6 @@ class OutputStreamImpl : public OutputStream {
   base::WaitableEvent write_waitable_event_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_OUTPUT_STREAM_IMPL_H_

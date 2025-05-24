@@ -14,29 +14,37 @@ struct PrinterBasicInfo {
   string printer_name;
   string display_name;
   string printer_description;
-  int32 printer_status;
-  bool is_default;
   map<string, string> options;
+};
+
+// Margins for a paper.
+// Corresponds to `printing::PaperMargins` in
+// printing/backend/print_backend.h.
+[EnableIf=is_chromeos]
+struct PaperMargins {
+  int32 top_margin_um;
+  int32 right_margin_um;
+  int32 bottom_margin_um;
+  int32 left_margin_um;
 };
 
 // Paper used by printer semantic capabilities and defaults.
 // Corresponds to `printing::PrinterSemanticCapsAndDefaults::Paper` in
 // printing/backend/print_backend.h.
-// For backwards compatibility, `printable_area_um` must be optional.
-[Stable]
 struct Paper {
   string display_name;
   string vendor_id;
   gfx.mojom.Size size_um;
-  [MinVersion=1] gfx.mojom.Rect? printable_area_um;
-  [MinVersion=2] int32 max_height_um;
-  [MinVersion=3] bool has_borderless_variant;
+  gfx.mojom.Rect printable_area_um;
+  int32 max_height_um;
+  bool has_borderless_variant;
+  [EnableIf=is_chromeos]
+  PaperMargins? supported_margins_um;
 };
 
 // Media type used by printer semantic capabilities and defaults.
 // Corresponds to `printing::PrinterSemanticCapsAndDefaults::MediaType` in
 // printing/backend/print_backend.h.
-[Stable]
 struct MediaType {
   string display_name;
   string vendor_id;
@@ -46,7 +54,7 @@ struct MediaType {
 // Paper used by printer semantic capabilities and defaults.
 // Corresponds to `printing::AdvancedCapabilityValue` in
 // printing/backend/print_backend.h.
-[Stable, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 struct AdvancedCapabilityValue {
   string name;
   string display_name;
@@ -55,9 +63,9 @@ struct AdvancedCapabilityValue {
 // The type of the values for advanced capabilities.
 // Corresponds to `printing::AdvancedCapability::Type` in
 // printing/backend/print_backend.h.
-[Stable, Extensible, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 enum AdvancedCapabilityType {
-  [Default] kString,
+  kString,
   kBoolean,
   kFloat,
   kInteger,
@@ -66,7 +74,7 @@ enum AdvancedCapabilityType {
 // An advanced capability for ChromeOS printing.
 // Corresponds to `printing::AdvancedCapability` in
 // printing/backend/print_backend.h.
-[Stable, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 struct AdvancedCapability {
   string name;
   string display_name;
@@ -78,7 +86,7 @@ struct AdvancedCapability {
 // Attributes of a Page Output Quality of XPS printer for Windows printing.
 // Corresponds to `printing::PageOutpuQualityAttribute` in
 // printing/backend/print_backend.h.
-[Stable, EnableIf=is_win]
+[EnableIf=is_win]
 struct PageOutputQualityAttribute {
   string display_name;
   string name;
@@ -86,7 +94,7 @@ struct PageOutputQualityAttribute {
 
 // Page Output Quality from XPS printer for Windows printing. Corresponds to
 // `printing::PageOutputQuality` in printing/backend/print_backend.h.
-[Stable, EnableIf=is_win]
+[EnableIf=is_win]
 struct PageOutputQuality {
   array<PageOutputQualityAttribute> qualities;  // No duplicates.
   string? default_quality;  // Default selection of `qualities`.
@@ -96,7 +104,6 @@ struct PageOutputQuality {
 // The semantic capabilities and defaults used for a printer.
 // Corresponds to `printing::PrinterSemanticCapsAndDefaults` in
 // printing/backend/print_backend.h.
-[Stable]
 struct PrinterSemanticCapsAndDefaults {
   bool collate_capable = false;
   bool collate_default = false;
@@ -120,11 +127,15 @@ struct PrinterSemanticCapsAndDefaults {
 
   // Null if feature flag `kReadPrinterCapabilitiesWithXps` is disabled.
   // Null if printer doesn't have this capability.
-  [EnableIf=is_win, MinVersion=1]
+  [EnableIf=is_win]
   PageOutputQuality? page_output_quality;
 
-  [MinVersion=2]
   array<MediaType>? media_types;  // Allowed to be empty.
-  [MinVersion=2]
   MediaType? default_media_type;
+
+  // Print scaling capability
+  [EnableIf=is_chromeos]
+  array<PrintScalingType> print_scaling_types;  // Allowed to be empty.
+  [EnableIf=is_chromeos]
+  PrintScalingType print_scaling_type_default = kUnknownPrintScalingType;
 };

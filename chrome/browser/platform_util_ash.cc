@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/platform_util.h"
-
+#include "ash/wm/window_pin_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/browser_thread.h"

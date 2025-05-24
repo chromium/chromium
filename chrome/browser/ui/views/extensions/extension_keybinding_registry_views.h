@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_KEYBINDING_REGISTRY_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_KEYBINDING_REGISTRY_VIEWS_H_
 
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -49,10 +47,10 @@ class ExtensionKeybindingRegistryViews
 
  private:
   // Overridden from ExtensionKeybindingRegistry:
-  void AddExtensionKeybindings(const extensions::Extension* extension,
-                               const std::string& command_name) override;
-  void RemoveExtensionKeybindingImpl(const ui::Accelerator& accelerator,
-                                     const std::string& command_name) override;
+  bool PopulateCommands(const extensions::Extension* extension,
+                        ui::CommandMap* commands) override;
+  bool RegisterAccelerator(const ui::Accelerator& accelerator) override;
+  void UnregisterAccelerator(const ui::Accelerator& accelerator) override;
   void OnShortcutHandlingSuspended(bool suspended) override;
 
   // Weak pointer to the our profile. Not owned by us.

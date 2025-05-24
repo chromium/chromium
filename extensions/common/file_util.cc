@@ -62,8 +62,8 @@ bool g_report_error_for_invisible_icon = false;
 
 // Returns true if the given file path exists and is not zero-length.
 bool ValidateFilePath(const base::FilePath& path) {
-  int64_t size = 0;
-  return base::PathExists(path) && base::GetFileSize(path, &size) && size != 0;
+  std::optional<int64_t> size = base::GetFileSize(path);
+  return size.has_value() && size.value() != 0;
 }
 
 // Returns true if the extension installation should flush all files and the
@@ -599,6 +599,19 @@ std::vector<base::FilePath> GetReservedMetadataFilePaths(
   return {GetVerifiedContentsPath(extension_path),
           GetComputedHashesPath(extension_path),
           extension_path.Append(GetIndexedRulesetDirectoryRelativePath())};
+}
+
+void MaybeCleanupMetadataFolder(const base::FilePath& extension_path) {
+  const std::vector<base::FilePath> reserved_filepaths =
+      GetReservedMetadataFilePaths(extension_path);
+  for (const auto& file : reserved_filepaths) {
+    base::DeletePathRecursively(file);
+  }
+
+  const base::FilePath& metadata_dir = extension_path.Append(kMetadataFolder);
+  if (base::IsDirectoryEmpty(metadata_dir)) {
+    base::DeletePathRecursively(metadata_dir);
+  }
 }
 
 }  // namespace extensions::file_util

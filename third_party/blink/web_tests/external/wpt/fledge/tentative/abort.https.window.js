@@ -1,9 +1,10 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: timeout=long
 
-"use strict;"
+"use strict";
 
 promise_test(async test => {
   const uuid = generateUuid(test);

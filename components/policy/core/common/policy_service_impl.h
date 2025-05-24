@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_SERVICE_IMPL_H_
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_SERVICE_IMPL_H_
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -63,15 +64,6 @@ class POLICY_EXPORT PolicyServiceImpl
     kMachine,
     // Policy applicable only to the current signed-in user.
     kUser,
-  };
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class CloudUserAffiliationStatus {
-    kUserOnly = 0,
-    kDeviceAndUserUnaffiliated = 1,
-    kDeviceAndUserAffiliated = 2,
-    kMaxValue = kDeviceAndUserAffiliated,
   };
 
   // Creates a new PolicyServiceImpl with the list of
@@ -188,10 +180,6 @@ class POLICY_EXPORT PolicyServiceImpl
   // Invokes all the refresh callbacks if there are no more refreshes pending.
   void CheckRefreshComplete();
 
-  // Records histogram for the user's affiliation status determined by the
-  // presence and contents of the device and user affiliation IDs.
-  void RecordUserAffiliationStatus();
-
   // The providers, in order of decreasing priority.
   Providers providers_;
   raw_ptr<ConfigurationPolicyProvider> local_test_policy_provider_ = nullptr;
@@ -207,7 +195,7 @@ class POLICY_EXPORT PolicyServiceImpl
       observers_;
 
   // The status of all the providers for the indexed policy domain.
-  PolicyDomainStatus policy_domain_status_[POLICY_DOMAIN_SIZE];
+  std::array<PolicyDomainStatus, POLICY_DOMAIN_SIZE> policy_domain_status_;
 
   // Set of providers that have a pending update that was triggered by a
   // call to RefreshPolicies().

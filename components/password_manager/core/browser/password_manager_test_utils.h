@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_TEST_UTILS_H_
 
 #include <iosfwd>
+#include <variant>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
@@ -127,12 +128,12 @@ MATCHER_P(UnorderedPasswordFormElementsAre, expectations, "") {
 }
 
 MATCHER_P(LoginsResultsOrErrorAre, expectations, "") {
-  if (absl::holds_alternative<PasswordStoreBackendError>(arg)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(arg)) {
     return false;
   }
 
   return ContainsEqualPasswordFormsUnordered(
-      *expectations, std::move(absl::get<LoginsResult>(arg)),
+      *expectations, std::move(std::get<LoginsResult>(arg)),
       result_listener->stream());
 }
 

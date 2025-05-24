@@ -1,0 +1,6 @@
+{
+  "extends": "../../../../tools/typescript/tsconfig_base_mixed.json",
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": true
+  }
+}

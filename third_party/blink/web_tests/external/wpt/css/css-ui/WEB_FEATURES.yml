@@ -5,3 +5,9 @@ features:
 - name: appearance
   files:
   - appearance-*
+- name: outline
+  files:
+  - outline-*
+- name: user-select
+  files:
+  - user-select-*

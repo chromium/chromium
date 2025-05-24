@@ -90,7 +90,7 @@ ui::ImageModel RelaunchRecommendedBubbleView::GetWindowIcon() {
   return ui::ImageModel::FromVectorIcon(
       vector_icons::kBusinessIcon, ui::kColorIcon,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
+          views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }
 
 void RelaunchRecommendedBubbleView::Init() {
@@ -110,7 +110,7 @@ void RelaunchRecommendedBubbleView::Init() {
                                    ->GetInsetsMetric(views::INSETS_DIALOG_TITLE)
                                    .left() +
                            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE);
+                               views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE);
   label->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, title_offset - margins().left(), 0, 0)));
 

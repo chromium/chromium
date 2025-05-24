@@ -1,4 +1,0 @@
-# capitalized ngram suggestion test data (Unicode version) for
-# Sf.net Bug ID 1463589, reported by Frederik Fouvry.
-SET UTF-8
-MAXNGRAMSUGS 1

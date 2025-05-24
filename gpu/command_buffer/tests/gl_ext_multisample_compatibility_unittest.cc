@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include <GLES2/gl2.h>
@@ -12,6 +12,7 @@
 #include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/containers/contains.h"
@@ -51,11 +52,28 @@ class EXTMultisampleCompatibilityTest : public testing::Test {
     GLuint vbo = 0;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    static float vertices[] = {
-        1.0f,  1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    static auto vertices = std::to_array<float>({
+        1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+    });
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]),
+                 vertices.data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(position_loc);
     glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -168,7 +186,7 @@ TEST_F(EXTMultisampleCompatibilityTest, DrawAndResolve) {
   // values. These might be due to different MSAA sample counts causing
   // different samples to hit.  Other option is driver bugs. Just test that
   // disabling multisample causes a difference.
-  std::unique_ptr<uint8_t[]> results[3];
+  std::array<std::unique_ptr<uint8_t[]>, 3> results;
   const GLint kResultSize = kWidth * kHeight * 4;
   for (int pass = 0; pass < 3; pass++) {
     PrepareForDraw();
@@ -230,7 +248,7 @@ TEST_F(EXTMultisampleCompatibilityTest, DrawAlphaOneAndResolve) {
   // even approximate sample values is not that easy.  Thus, just test
   // representative positions which have fractional pixels, inspecting that
   // normal rendering is different to SAMPLE_ALPHA_TO_ONE rendering.
-  std::unique_ptr<uint8_t[]> results[3];
+  std::array<std::unique_ptr<uint8_t[]>, 3> results;
   const GLint kResultSize = kWidth * kHeight * 4;
 
   for (int pass = 0; pass < 3; ++pass) {

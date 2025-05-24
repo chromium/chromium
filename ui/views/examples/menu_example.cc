@@ -13,7 +13,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -123,12 +124,14 @@ ExampleMenuModel::ExampleMenuModel() : ui::SimpleMenuModel(this) {
 
 bool ExampleMenuModel::IsCommandIdChecked(int command_id) const {
   // Radio items.
-  if (command_id == current_encoding_command_id_)
+  if (command_id == current_encoding_command_id_) {
     return true;
+  }
 
   // Check items.
-  if (checked_fruits_.find(command_id) != checked_fruits_.end())
+  if (checked_fruits_.find(command_id) != checked_fruits_.end()) {
     return true;
+  }
 
   return false;
 }
@@ -168,12 +171,13 @@ void ExampleMenuModel::ExecuteCommand(int command_id, int event_flags) {
     case COMMAND_CHECK_KIWI: {
       // Print what fruit is checked.
       const char* checked_fruit = "";
-      if (command_id == COMMAND_CHECK_APPLE)
+      if (command_id == COMMAND_CHECK_APPLE) {
         checked_fruit = "Apple";
-      else if (command_id == COMMAND_CHECK_ORANGE)
+      } else if (command_id == COMMAND_CHECK_ORANGE) {
         checked_fruit = "Orange";
-      else if (command_id == COMMAND_CHECK_KIWI)
+      } else if (command_id == COMMAND_CHECK_KIWI) {
         checked_fruit = "Kiwi";
+      }
 
       // Update the check status.
       auto iter = checked_fruits_.find(command_id);
@@ -208,12 +212,13 @@ void ExampleMenuButton::ButtonPressed() {
 
   menu_runner_->RunMenuAt(GetWidget()->GetTopLevelWidget(), button_controller(),
                           bounds, MenuAnchorPosition::kTopLeft,
-                          ui::MENU_SOURCE_NONE);
+                          ui::mojom::MenuSourceType::kNone);
 }
 
 ui::SimpleMenuModel* ExampleMenuButton::GetMenuModel() {
-  if (!menu_model_)
+  if (!menu_model_) {
     menu_model_ = std::make_unique<ExampleMenuModel>();
+  }
   return menu_model_.get();
 }
 
@@ -233,7 +238,7 @@ void MenuExample::CreateExampleView(View* container) {
                                  .Build();
 
   example_menu_button->SetBorder(CreatePaddedBorder(
-      CreateThemedRoundedRectBorder(1, 5, kColorMenuButtonExampleBorder),
+      CreateRoundedRectBorder(1, 5, kColorMenuButtonExampleBorder),
       LayoutProvider::Get()->GetInsetsMetric(
           InsetsMetric::INSETS_LABEL_BUTTON)));
 

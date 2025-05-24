@@ -1,0 +1,5 @@
+# Although this directory is owned by the Payments team, please loop in the
+# WebView OWNERS from //android_webview/OWNERS for changes that materially
+# affect WebView's behaviour.
+
+file://components/payments/OWNERS

@@ -187,7 +187,7 @@ CastContentRendererClient::GetSupportedKeySystems(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-bool CastContentRendererClient::IsSupportedAudioType(
+bool CastContentRendererClient::IsDecoderSupportedAudioType(
     const ::media::AudioType& type) {
 #if BUILDFLAG(IS_ANDROID)
   if (type.spatial_rendering)
@@ -216,7 +216,7 @@ bool CastContentRendererClient::IsSupportedAudioType(
            supported_bitstream_audio_codecs_info_.codecs;
   }
 
-  return ::media::IsDefaultSupportedAudioType(type);
+  return ::media::IsDefaultDecoderSupportedAudioType(type);
 #else
   if (type.profile == ::media::AudioCodecProfile::kXHE_AAC)
     return false;
@@ -239,7 +239,7 @@ bool CastContentRendererClient::IsSupportedAudioType(
 #endif
 }
 
-bool CastContentRendererClient::IsSupportedVideoType(
+bool CastContentRendererClient::IsDecoderSupportedVideoType(
     const ::media::VideoType& type) {
   // TODO(servolk): make use of eotf.
 

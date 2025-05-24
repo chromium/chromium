@@ -4,22 +4,24 @@
 
 #include "components/omnibox/browser/autocomplete_controller_metrics.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,7 +59,7 @@ class FakeAutocompleteProviderDelayed : public FakeAutocompleteProvider {
 };
 }  // namespace
 
-class AutocompleteControllerMetricsTest : public testing::Test {
+class AutocompleteControllerMetricsTest : public testing::TestWithParam<bool> {
  public:
   AutocompleteControllerMetricsTest()
       : controller_(&task_environment_),
@@ -65,6 +67,8 @@ class AutocompleteControllerMetricsTest : public testing::Test {
     controller_.providers_ = {
         base::MakeRefCounted<FakeAutocompleteProviderDelayed>(
             AutocompleteProvider::Type::TYPE_BOOKMARK, &task_environment_)};
+
+    scoped_optimization_config_.Get().enabled = GetParam();
 
     // Allow tests to simulate an initial update with no changes. Since the
     // 0-matches cases is special handled, tests can't simply do
@@ -116,7 +120,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
   // Simulates `AutocompleteController::Stop()`.
   void SimulateOnStop() {
     task_environment_.FastForwardBy(base::Milliseconds(1));
-    controller_.Stop(false);
+    controller_.Stop(AutocompleteStopReason::kInteraction);
   }
 
   // Convenience function to be called before/after EXPECT'ing histograms to
@@ -132,7 +136,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
   // when the controller is interrupted in which case metrics are expected to be
   // logged. Does not check provider or cross stability metrics.
   void StopAndExpectNoSuggestionFinalizationMetrics() {
-    controller_.Stop(false, false);
+    controller_.Stop(AutocompleteStopReason::kClobbered);
     ExpectNoSuggestionFinalizationMetrics();
   }
 
@@ -210,13 +214,16 @@ class AutocompleteControllerMetricsTest : public testing::Test {
 
   // Used to control time passed between calls. Many metrics tested are timing
   // metrics.
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::AutocompleteControllerMetricsOptimization>
+      scoped_optimization_config_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeAutocompleteController controller_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_SyncInput) {
+TEST_P(AutocompleteControllerMetricsTest, SuggestionFinalization_SyncInput) {
   // Sync inputs should not log metrics.
   SetInputSync(true);
   SimulateStart(true, {CreateMatch(1)});
@@ -224,7 +231,7 @@ TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_SyncInput) {
   ExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest,
+TEST_P(AutocompleteControllerMetricsTest,
        SuggestionFinalization_OnlySyncUpdate) {
   // Sync updates should log metrics.
   SimulateStart(true, {CreateMatch(1)});
@@ -232,7 +239,7 @@ TEST_F(AutocompleteControllerMetricsTest,
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest,
+TEST_P(AutocompleteControllerMetricsTest,
        SuggestionFinalization_OnlySyncUpdateWithNoChanges) {
   // Sync updates without changes should log metrics.
   SimulateStart(true, {CreateMatch(0)});
@@ -240,7 +247,7 @@ TEST_F(AutocompleteControllerMetricsTest,
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest,
+TEST_P(AutocompleteControllerMetricsTest,
        SuggestionFinalization_SyncAnd3AsyncUpdate) {
   // This is the typical flow: 1 sync update followed by multiple async updates.
   SimulateStart(false, {CreateMatch(1)});
@@ -254,7 +261,7 @@ TEST_F(AutocompleteControllerMetricsTest,
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest,
+TEST_P(AutocompleteControllerMetricsTest,
        SuggestionFinalization_SyncAnd3AsyncUpdateWithNoChanges) {
   // 1 sync and 3 async updates, none of the 4 has a change.
   SimulateStart(false, {CreateMatch(0)});
@@ -268,7 +275,7 @@ TEST_F(AutocompleteControllerMetricsTest,
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(
+TEST_P(
     AutocompleteControllerMetricsTest,
     SuggestionFinalization_UnchangedSyncAnd2UnchangedAnd1ChangedAsyncUpdates) {
   // 1 sync and 3 async updates, only the last of the 4 has a change.
@@ -283,7 +290,7 @@ TEST_F(
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(
+TEST_P(
     AutocompleteControllerMetricsTest,
     SuggestionFinalization_UnchangedSyncAnd1ChangedAnd2UnchangedAsyncUpdates) {
   // 1 sync and 3 async updates, only the 2nd of the 4 has a change. Because of
@@ -299,7 +306,7 @@ TEST_F(
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(
+TEST_P(
     AutocompleteControllerMetricsTest,
     SuggestionFinalization_UnchangedSyncAnd1ChangedAnd2UnchangedAsyncUpdates_ChangeAppliedBeforeDone) {
   // 1 sync and 3 async updates, only the 2nd of the 4 has a change. The
@@ -316,7 +323,7 @@ TEST_F(
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest,
+TEST_P(AutocompleteControllerMetricsTest,
        SuggestionFinalization_ChangedSyncAnd3UnchangedAsyncUpdates) {
   // 1 sync and 3 async updates, only the 1st of the 4 has a change.
   SimulateStart(false, {CreateMatch(1)});
@@ -330,7 +337,7 @@ TEST_F(AutocompleteControllerMetricsTest,
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest,
+TEST_P(AutocompleteControllerMetricsTest,
        SuggestionFinalization_StopTimerReached) {
   // Simulates the case where the async updates take longer than the 1.5s stop
   // timer. It's not possible for the sync update to take longer, as the stop
@@ -345,7 +352,7 @@ TEST_F(AutocompleteControllerMetricsTest,
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_Interrupted) {
+TEST_P(AutocompleteControllerMetricsTest, SuggestionFinalization_Interrupted) {
   // Start 1st input.
   SimulateStart(false, {CreateMatch(1)});
   // 1 async update for 1st input.
@@ -371,7 +378,7 @@ TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_Interrupted) {
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_ExpireTimer) {
+TEST_P(AutocompleteControllerMetricsTest, SuggestionFinalization_ExpireTimer) {
   SimulateStart(true, {CreateMatch(0), CreateMatch(1)});
   ResetHistogramTester();
   // A sync update without matches. The transferred match should remain.
@@ -386,7 +393,7 @@ TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_ExpireTimer) {
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest,
+TEST_P(AutocompleteControllerMetricsTest,
        SuggestionFinalization_MatchDeletion) {
   SimulateStart(true, {CreateMatch(0), CreateMatch(1)});
   ResetHistogramTester();
@@ -406,7 +413,7 @@ TEST_F(AutocompleteControllerMetricsTest,
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest,
+TEST_P(AutocompleteControllerMetricsTest,
        SuggestionFinalization_DefaultUnchanged) {
   // Sync update with a default match change.
   SimulateStart(false, {CreateMatch(1)});
@@ -420,7 +427,7 @@ TEST_F(AutocompleteControllerMetricsTest,
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
 
-TEST_F(AutocompleteControllerMetricsTest, Provider_SyncAndAsyncCompletion) {
+TEST_P(AutocompleteControllerMetricsTest, Provider_SyncAndAsyncCompletion) {
   controller_.providers_ = {
       base::MakeRefCounted<FakeAutocompleteProviderDelayed>(
           AutocompleteProvider::Type::TYPE_BOOKMARK, &task_environment_, true),
@@ -471,7 +478,7 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_SyncAndAsyncCompletion) {
   }
 }
 
-TEST_F(AutocompleteControllerMetricsTest,
+TEST_P(AutocompleteControllerMetricsTest,
        Provider_1ProviderWithMultipleUpdates) {
   // Sync update without completion.
   controller_.GetFakeProvider().done_ = true;
@@ -488,7 +495,7 @@ TEST_F(AutocompleteControllerMetricsTest,
   ExpectNoProviderMetrics(controller_.GetFakeProvider().GetName());
 }
 
-TEST_F(AutocompleteControllerMetricsTest, Provider_Interrupted) {
+TEST_P(AutocompleteControllerMetricsTest, Provider_Interrupted) {
   controller_.providers_ = {
       base::MakeRefCounted<FakeAutocompleteProviderDelayed>(
           AutocompleteProvider::Type::TYPE_BOOKMARK, &task_environment_),
@@ -513,10 +520,10 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_Interrupted) {
   ExpectSingleCountSuggestionFinalizationMetrics(3, 0, 0, false);
 }
 
-TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
+TEST_P(AutocompleteControllerMetricsTest, MatchStability) {
   auto create_result = [&](std::vector<int> ids) {
     std::vector<AutocompleteMatch> matches;
-    base::ranges::transform(ids, std::back_inserter(matches), [&](int id) {
+    std::ranges::transform(ids, std::back_inserter(matches), [&](int id) {
       auto match = CreateMatch(id);
       match.relevance -= id;
       return match;
@@ -655,3 +662,7 @@ TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
               testing::ElementsAre(base::Bucket(0, 1)));
   ResetHistogramTester();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutocompleteControllerMetricsTest,
+                         ::testing::Values(false, true));

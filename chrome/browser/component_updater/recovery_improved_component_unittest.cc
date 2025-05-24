@@ -79,9 +79,8 @@ base::CommandLine TestActionHandler::MakeCommandLine(
 
 void TestActionHandler::PrepareFiles(const base::FilePath& unpack_path) const {}
 
-// This test fixture only tests the per-user execution flow.
 void TestActionHandler::Elevate(Callback callback) {
-  NOTREACHED_IN_MIGRATION();
+  ADD_FAILURE() << "This test fixture only tests the per-user execution flow.";
 }
 
 }  // namespace
@@ -115,7 +114,7 @@ TEST_F(RecoveryImprovedActionHandlerTest, HandleSuccess) {
       base::BindRepeating(&unzip::LaunchInProcessUnzipper));
 
   // Tests that the recovery program runs and it returns an expected value.
-  constexpr char kActionRunFileName[] = "ChromeRecovery.crx3";
+  static constexpr char kActionRunFileName[] = "ChromeRecovery.crx3";
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   const base::FilePath from_path =
       update_client::GetTestFilePath(kActionRunFileName);

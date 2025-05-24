@@ -58,10 +58,10 @@ class BackgroundInfo : public Extension::ManifestData {
     return has_background_page() && !is_persistent_;
   }
 
-  bool Parse(const Extension* extension, std::u16string* error);
+  bool Parse(Extension* extension, std::u16string* error);
 
  private:
-  bool LoadBackgroundScripts(const Extension* extension,
+  bool LoadBackgroundScripts(Extension* extension,
                              const std::string& key,
                              std::u16string* error);
   bool LoadBackgroundPage(const Extension* extension,

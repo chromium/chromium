@@ -1,5 +1,5 @@
 // META: title=test WebNN API transpose operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -20,14 +20,34 @@
 //     MLOperand input, optional MLTransposeOptions options = {});
 
 
-const getTransposePrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
+const getTransposePrecisionTolerance = () => {
+  return {metricType: 'ULP', value: 0};
 };
 
 const transposeTests = [
+  {
+    'name': 'transpose float32 0D constant tensor default options',
+    'graph': {
+      'inputs': {
+        'transposeInput': {
+          'data': [-45.67443084716797],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'transpose',
+        'arguments': [{'input': 'transposeInput'}],
+        'outputs': 'transposeOutput'
+      }],
+      'expectedOutputs': {
+        'transposeOutput': {
+          'data': [-45.67443084716797],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
   {
     'name': 'transpose float32 1D constant tensor default options',
     'graph': {
@@ -478,13 +498,212 @@ const transposeTests = [
         }
       }
     }
+  },
+
+  // float16 tests
+  {
+    'name': 'transpose float16 1D constant tensor default options',
+    'graph': {
+      'inputs': {
+        'transposeInput': {
+          'data': [
+            -45.6875, 53.46875, -60.125,  38.09375, 78.625,     -69.25,
+            1.84375,  92.8125,  56.09375, 77.0625,  57.46875,   -84.75,
+            46.375,   -84.875,  56.71875, -25.6875, 5.62109375, -25.65625,
+            99.4375,  -87.5625, -65.375,  -66,      38.46875,   2.19921875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'transpose',
+        'arguments': [{'input': 'transposeInput'}],
+        'outputs': 'transposeOutput'
+      }],
+      'expectedOutputs': {
+        'transposeOutput': {
+          'data': [
+            -45.6875, 53.46875, -60.125,  38.09375, 78.625,     -69.25,
+            1.84375,  92.8125,  56.09375, 77.0625,  57.46875,   -84.75,
+            46.375,   -84.875,  56.71875, -25.6875, 5.62109375, -25.65625,
+            99.4375,  -87.5625, -65.375,  -66,      38.46875,   2.19921875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'transpose float16 1D tensor default options',
+    'graph': {
+      'inputs': {
+        'transposeInput': {
+          'data': [
+            -45.6875, 53.46875, -60.125,  38.09375, 78.625,     -69.25,
+            1.84375,  92.8125,  56.09375, 77.0625,  57.46875,   -84.75,
+            46.375,   -84.875,  56.71875, -25.6875, 5.62109375, -25.65625,
+            99.4375,  -87.5625, -65.375,  -66,      38.46875,   2.19921875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'transpose',
+        'arguments': [{'input': 'transposeInput'}],
+        'outputs': 'transposeOutput'
+      }],
+      'expectedOutputs': {
+        'transposeOutput': {
+          'data': [
+            -45.6875, 53.46875, -60.125,  38.09375, 78.625,     -69.25,
+            1.84375,  92.8125,  56.09375, 77.0625,  57.46875,   -84.75,
+            46.375,   -84.875,  56.71875, -25.6875, 5.62109375, -25.65625,
+            99.4375,  -87.5625, -65.375,  -66,      38.46875,   2.19921875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'transpose float16 3D tensor default options',
+    'graph': {
+      'inputs': {
+        'transposeInput': {
+          'data': [
+            -45.6875, 53.46875, -60.125,  38.09375, 78.625,     -69.25,
+            1.84375,  92.8125,  56.09375, 77.0625,  57.46875,   -84.75,
+            46.375,   -84.875,  56.71875, -25.6875, 5.62109375, -25.65625,
+            99.4375,  -87.5625, -65.375,  -66,      38.46875,   2.19921875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'transpose',
+        'arguments': [{'input': 'transposeInput'}],
+        'outputs': 'transposeOutput'
+      }],
+      'expectedOutputs': {
+        'transposeOutput': {
+          'data': [
+            -45.6875, 46.375,   78.625,  5.62109375, 56.09375, -65.375,
+            53.46875, -84.875,  -69.25,  -25.65625,  77.0625,  -66,
+            -60.125,  56.71875, 1.84375, 99.4375,    57.46875, 38.46875,
+            38.09375, -25.6875, 92.8125, -87.5625,   -84.75,   2.19921875
+          ],
+          'descriptor': {shape: [4, 3, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'transpose float16 5D tensor default options',
+    'graph': {
+      'inputs': {
+        'transposeInput': {
+          'data': [
+            -45.6875, 53.46875, -60.125,  38.09375, 78.625,     -69.25,
+            1.84375,  92.8125,  56.09375, 77.0625,  57.46875,   -84.75,
+            46.375,   -84.875,  56.71875, -25.6875, 5.62109375, -25.65625,
+            99.4375,  -87.5625, -65.375,  -66,      38.46875,   2.19921875
+          ],
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'transpose',
+        'arguments': [{'input': 'transposeInput'}],
+        'outputs': 'transposeOutput'
+      }],
+      'expectedOutputs': {
+        'transposeOutput': {
+          'data': [
+            -45.6875, 46.375,   78.625,  5.62109375, 56.09375, -65.375,
+            53.46875, -84.875,  -69.25,  -25.65625,  77.0625,  -66,
+            -60.125,  56.71875, 1.84375, 99.4375,    57.46875, 38.46875,
+            38.09375, -25.6875, 92.8125, -87.5625,   -84.75,   2.19921875
+          ],
+          'descriptor': {shape: [4, 3, 1, 2, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'transpose float16 1D tensor options.permutation',
+    'graph': {
+      'inputs': {
+        'transposeInput': {
+          'data': [
+            -45.6875, 53.46875, -60.125,  38.09375, 78.625,     -69.25,
+            1.84375,  92.8125,  56.09375, 77.0625,  57.46875,   -84.75,
+            46.375,   -84.875,  56.71875, -25.6875, 5.62109375, -25.65625,
+            99.4375,  -87.5625, -65.375,  -66,      38.46875,   2.19921875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'transpose',
+        'arguments':
+            [{'input': 'transposeInput'}, {'options': {'permutation': [0]}}],
+        'outputs': 'transposeOutput'
+      }],
+      'expectedOutputs': {
+        'transposeOutput': {
+          'data': [
+            -45.6875, 53.46875, -60.125,  38.09375, 78.625,     -69.25,
+            1.84375,  92.8125,  56.09375, 77.0625,  57.46875,   -84.75,
+            46.375,   -84.875,  56.71875, -25.6875, 5.62109375, -25.65625,
+            99.4375,  -87.5625, -65.375,  -66,      38.46875,   2.19921875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'transpose float16 5D tensor options.permutation',
+    'graph': {
+      'inputs': {
+        'transposeInput': {
+          'data': [
+            -45.6875, 53.46875, -60.125,  38.09375, 78.625,     -69.25,
+            1.84375,  92.8125,  56.09375, 77.0625,  57.46875,   -84.75,
+            46.375,   -84.875,  56.71875, -25.6875, 5.62109375, -25.65625,
+            99.4375,  -87.5625, -65.375,  -66,      38.46875,   2.19921875
+          ],
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'transpose',
+        'arguments': [
+          {'input': 'transposeInput'},
+          {'options': {'permutation': [1, 3, 0, 4, 2]}}
+        ],
+        'outputs': 'transposeOutput'
+      }],
+      'expectedOutputs': {
+        'transposeOutput': {
+          'data': [
+            -45.6875, 53.46875, -60.125,  38.09375, 78.625,     -69.25,
+            1.84375,  92.8125,  56.09375, 77.0625,  57.46875,   -84.75,
+            46.375,   -84.875,  56.71875, -25.6875, 5.62109375, -25.65625,
+            99.4375,  -87.5625, -65.375,  -66,      38.46875,   2.19921875
+          ],
+          'descriptor': {shape: [2, 3, 1, 4, 1], dataType: 'float16'}
+        }
+      }
+    }
   }
 ];
 
 if (navigator.ml) {
   transposeTests.forEach((test) => {
     webnn_conformance_test(
-        buildGraphAndCompute, getTransposePrecisionTolerance, test);
+        buildAndExecuteGraph, getTransposePrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

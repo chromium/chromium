@@ -4,53 +4,45 @@
 
 #include "services/device/public/cpp/usb/usb_ids.h"
 
-#include <stdlib.h>
+#include <algorithm>
 
 namespace device {
 
-namespace {
-
-static int CompareVendors(const void* a, const void* b) {
-  const UsbVendor* vendor_a = static_cast<const UsbVendor*>(a);
-  const UsbVendor* vendor_b = static_cast<const UsbVendor*>(b);
-  return vendor_a->id - vendor_b->id;
-}
-
-static int CompareProducts(const void* a, const void* b) {
-  const UsbProduct* product_a = static_cast<const UsbProduct*>(a);
-  const UsbProduct* product_b = static_cast<const UsbProduct*>(b);
-  return product_a->id - product_b->id;
-}
-
-}  // namespace
-
+// static
 const UsbVendor* UsbIds::FindVendor(uint16_t vendor_id) {
-  const UsbVendor key = {nullptr, nullptr, vendor_id, 0};
-  void* result = bsearch(&key, vendors_, vendor_size_, sizeof(vendors_[0]),
-                         &CompareVendors);
-  if (!result)
-    return NULL;
-  return static_cast<const UsbVendor*>(result);
+  const UsbVendor key = {/*name=*/{}, /*products=*/{}, vendor_id};
+  auto it = std::ranges::lower_bound(
+      vendors_, key, [](const auto& a, const auto& b) { return a.id < b.id; });
+  if (it == vendors_.end() || it->id != vendor_id) {
+    return nullptr;
+  }
+  return &*it;
 }
 
+// static
 const char* UsbIds::GetVendorName(uint16_t vendor_id) {
   const UsbVendor* vendor = FindVendor(vendor_id);
-  if (!vendor)
-    return NULL;
+  if (!vendor) {
+    return nullptr;
+  }
   return vendor->name;
 }
 
+// static
 const char* UsbIds::GetProductName(uint16_t vendor_id, uint16_t product_id) {
   const UsbVendor* vendor = FindVendor(vendor_id);
-  if (!vendor || !vendor->products)
-    return NULL;
+  if (!vendor || vendor->products.empty()) {
+    return nullptr;
+  }
 
-  const UsbProduct key = {product_id, nullptr};
-  void* result = bsearch(&key, vendor->products, vendor->product_size,
-                         sizeof(vendor->products[0]), &CompareProducts);
-  if (!result)
-    return NULL;
-  return static_cast<const UsbProduct*>(result)->name;
+  const UsbProduct key = {product_id, /*name=*/{}};
+  auto it = std::ranges::lower_bound(
+      vendor->products, key,
+      [](const auto& a, const auto& b) { return a.id < b.id; });
+  if (it == vendor->products.end() || it->id != product_id) {
+    return nullptr;
+  }
+  return it->name;
 }
 
 }  // namespace device

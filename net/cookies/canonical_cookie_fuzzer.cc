@@ -2,71 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "net/cookies/canonical_cookie.h"
 
-#include <fuzzer/FuzzedDataProvider.h>
-
-#include <limits>
 #include <memory>
 
-#include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_constants.h"
-#include "net/cookies/cookie_util.h"
-#include "net/cookies/parsed_cookie.h"
+#include "base/check.h"
+#include "net/cookies/canonical_cookie.pb.h"
+#include "net/cookies/canonical_cookie_proto_converter.h"
+#include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
 namespace net {
-const base::Time getRandomTime(FuzzedDataProvider* data_provider) {
-  const uint64_t max = std::numeric_limits<uint64_t>::max();
-  return base::Time::FromTimeT(
-      data_provider->ConsumeIntegralInRange<uint64_t>(0, max));
-}
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  FuzzedDataProvider data_provider(data, size);
-
-  const std::string name = data_provider.ConsumeRandomLengthString(
-      net::ParsedCookie::kMaxCookieNamePlusValueSize + 10);
-  const std::string value = data_provider.ConsumeRandomLengthString(
-      net::ParsedCookie::kMaxCookieNamePlusValueSize + 10);
-  const std::string domain = data_provider.ConsumeRandomLengthString(
-      net::ParsedCookie::kMaxCookieAttributeValueSize + 10);
-  const std::string path = data_provider.ConsumeRandomLengthString(
-      net::ParsedCookie::kMaxCookieAttributeValueSize + 10);
-
-  const GURL url(data_provider.ConsumeRandomLengthString(800));
-  if (!url.is_valid())
-    return 0;
-
-  const base::Time creation = getRandomTime(&data_provider);
-  const base::Time expiration = getRandomTime(&data_provider);
-  const base::Time last_access = getRandomTime(&data_provider);
-
-  const CookieSameSite same_site =
-      data_provider.PickValueInArray<CookieSameSite>({
-          CookieSameSite::UNSPECIFIED,
-          CookieSameSite::NO_RESTRICTION,
-          CookieSameSite::LAX_MODE,
-          CookieSameSite::STRICT_MODE,
-      });
-
-  const CookiePriority priority =
-      data_provider.PickValueInArray<CookiePriority>({
-          CookiePriority::COOKIE_PRIORITY_LOW,
-          CookiePriority::COOKIE_PRIORITY_MEDIUM,
-          CookiePriority::COOKIE_PRIORITY_HIGH,
-      });
-
-  const auto partition_key = std::make_optional<CookiePartitionKey>(
-      CookiePartitionKey::FromURLForTesting(
-          GURL(data_provider.ConsumeRandomLengthString(800))));
-
-  const std::unique_ptr<const CanonicalCookie> sanitized_cookie =
-      CanonicalCookie::CreateSanitizedCookie(
-          url, name, value, domain, path, creation, expiration, last_access,
-          data_provider.ConsumeBool() /* secure */,
-          data_provider.ConsumeBool() /* httponly */, same_site, priority,
-          partition_key, /*status=*/nullptr);
+DEFINE_BINARY_PROTO_FUZZER(
+    const canonical_cookie_proto::CanonicalCookie& cookie) {
+  std::unique_ptr<CanonicalCookie> sanitized_cookie =
+      canonical_cookie_proto::Convert(cookie);
 
   if (sanitized_cookie) {
     CHECK(sanitized_cookie->IsCanonical());
@@ -75,9 +26,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     const CanonicalCookie copied_cookie = *sanitized_cookie;
     CHECK(sanitized_cookie->IsEquivalent(copied_cookie));
     CHECK(sanitized_cookie->IsEquivalentForSecureCookieMatching(copied_cookie));
-    CHECK(!sanitized_cookie->PartialCompare(copied_cookie));
   }
-
-  return 0;
 }
+
 }  // namespace net

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 
 #include <memory>
@@ -103,9 +98,8 @@ base::FilePath CrowdDenyComponentInstallerPolicy::GetRelativeInstallDir()
 
 void CrowdDenyComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(
-      kCrowdDenyPublicKeySHA256,
-      kCrowdDenyPublicKeySHA256 + std::size(kCrowdDenyPublicKeySHA256));
+  hash->assign(std::begin(kCrowdDenyPublicKeySHA256),
+               std::end(kCrowdDenyPublicKeySHA256));
 }
 
 std::string CrowdDenyComponentInstallerPolicy::GetName() const {

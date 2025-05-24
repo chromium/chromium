@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -114,12 +116,14 @@ std::string UserEventReporterHelper::GetDeviceDmToken() const {
   return std::string();
 }
 
-std::string UserEventReporterHelper::GetUniqueUserIdForThisDevice(
+std::optional<uint32_t> UserEventReporterHelper::GetUniqueUserIdForThisDevice(
     std::string_view user_email) const {
   const std::string device_dm_token = GetDeviceDmToken();
-  return device_dm_token.empty()
-             ? device_dm_token
-             : base::NumberToString(base::PersistentHash(
-                   base::StrCat({user_email, device_dm_token})));
+
+  if (device_dm_token.empty()) {
+    return std::nullopt;
+  }
+
+  return base::PersistentHash(base::StrCat({user_email, device_dm_token}));
 }
 }  // namespace reporting

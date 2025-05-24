@@ -5,7 +5,6 @@
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 
 #include "base/notreached.h"
-#include "ui/ozone/platform/wayland/test/test_augmented_subsurface.h"
 
 namespace wl {
 
@@ -57,8 +56,6 @@ TestSubSurface::~TestSubSurface() {
   auto* mock_surface = GetUserDataAs<MockSurface>(surface_);
   if (mock_surface)
     mock_surface->set_sub_surface(nullptr);
-  if (augmented_subsurface_ && augmented_subsurface_->resource())
-    wl_resource_destroy(augmented_subsurface_->resource());
 }
 
 void TestSubSurface::SetPositionImpl(float x, float y) {

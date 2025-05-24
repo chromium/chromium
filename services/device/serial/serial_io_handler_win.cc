@@ -153,8 +153,10 @@ bool SerialIoHandlerWin::PostOpen() {
   DCHECK(!read_context_);
   DCHECK(!write_context_);
 
-  base::CurrentIOThread::Get()->RegisterIOHandler(file().GetPlatformFile(),
-                                                  this);
+  if (!base::CurrentIOThread::Get()->RegisterIOHandler(file().GetPlatformFile(),
+                                                       this)) {
+    return false;
+  }
 
   read_context_ = std::make_unique<base::MessagePumpForIO::IOContext>();
   write_context_ = std::make_unique<base::MessagePumpForIO::IOContext>();
@@ -192,7 +194,7 @@ void SerialIoHandlerWin::ReadImpl() {
 
   if (!ReadFile(file().GetPlatformFile(), pending_read_buffer().data(),
                 pending_read_buffer().size(), nullptr,
-                &read_context_->overlapped) &&
+                read_context_->GetOverlapped()) &&
       GetLastError() != ERROR_IO_PENDING) {
     OnIOCompleted(read_context_.get(), 0, GetLastError());
   }
@@ -204,7 +206,7 @@ void SerialIoHandlerWin::WriteImpl() {
 
   if (!WriteFile(file().GetPlatformFile(), pending_write_buffer().data(),
                  pending_write_buffer().size(), nullptr,
-                 &write_context_->overlapped) &&
+                 write_context_->GetOverlapped()) &&
       GetLastError() != ERROR_IO_PENDING) {
     OnIOCompleted(write_context_.get(), 0, GetLastError());
   }
@@ -323,7 +325,7 @@ void SerialIoHandlerWin::OnIOCompleted(
       WriteCompleted(0, mojom::SerialSendError::SYSTEM_ERROR);
     }
   } else {
-    NOTREACHED_IN_MIGRATION() << "Invalid IOContext";
+    NOTREACHED() << "Invalid IOContext";
   }
 }
 

@@ -8,12 +8,12 @@
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/public_buildflags.h"
+#include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/selection_controller.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/gesture_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
-#include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -110,8 +110,7 @@ HitTestRequest::HitTestRequestType GestureManager::GetHitTypeForGestureType(
       // FIXME: Shouldn't LongTap and TwoFingerTap clear the Active state?
       return hit_type | HitTestRequest::kActive | HitTestRequest::kReadOnly;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return hit_type | HitTestRequest::kActive | HitTestRequest::kReadOnly;
+      NOTREACHED();
   }
 }
 
@@ -161,7 +160,7 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
     case WebInputEvent::Type::kGestureTapUnconfirmed:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return WebInputEventResult::kNotHandled;
@@ -375,11 +374,13 @@ WebInputEventResult GestureManager::HandleGestureTap(
 
   if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled() &&
       current_hit_test.InnerNodeFrame()) {
-    current_hit_test.InnerNodeFrame()->View()->UpdateLifecycleToPrePaintClean(
-        DocumentUpdateReason::kHitTest);
+    current_hit_test.InnerNodeFrame()
+        ->View()
+        ->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kHitTest);
     current_hit_test = event_handling_util::HitTestResultInFrame(
         frame_, HitTestLocation(adjusted_point), hit_type);
-    if (TextFragmentHandler::IsOverTextFragment(current_hit_test) &&
+    if (AnnotationAgentImpl::IsOverAnnotation(current_hit_test) ==
+            mojom::blink::AnnotationType::kSharedHighlight &&
         event_result == WebInputEventResult::kNotHandled) {
       return SendContextMenuEventForGesture(targeted_event);
     }
@@ -413,8 +414,9 @@ WebInputEventResult GestureManager::HandleGestureShortPress(
   // timeout which causes GestureRecognizer to suppress long-press detection.
   if (TouchDragAndContextMenuEnabled(frame_) &&
       RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
-    drag_in_progress_ =
-        mouse_event_manager_->HandleDragDropIfPossible(targeted_event);
+    drag_in_progress_ = mouse_event_manager_->HandleDragDropIfPossible(
+        targeted_event,
+        GetPointerIdFromWebGestureEvent(targeted_event.Event()));
   }
   return drag_in_progress_ ? WebInputEventResult::kHandledSystem
                            : WebInputEventResult::kNotHandled;
@@ -439,18 +441,25 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   if (TouchDragAndContextMenuEnabled(frame_)) {
     if (!RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
-      drag_in_progress_ =
-          mouse_event_manager_->HandleDragDropIfPossible(targeted_event);
+      drag_in_progress_ = mouse_event_manager_->HandleDragDropIfPossible(
+          targeted_event,
+          GetPointerIdFromWebGestureEvent(targeted_event.Event()));
     }
   } else if (frame_->GetSettings() &&
              frame_->GetSettings()->GetTouchDragDropEnabled() &&
              frame_->View()) {
-    bool hit_test_contains_links =
-        hit_test_result.URLElement() ||
-        !hit_test_result.AbsoluteImageURL().IsNull() ||
-        !hit_test_result.AbsoluteMediaURL().IsNull();
-    if (!hit_test_contains_links &&
-        mouse_event_manager_->HandleDragDropIfPossible(targeted_event)) {
+    // Dragging is suppressed on links and images in favor of opening a context
+    // menu on long press. In Windows, a drag is started and the context menu
+    // is opened if the drop happens in the same spot.
+    const bool should_open_context_menu_now =
+        !frame_->GetSettings()->GetTouchDragEndContextMenu() &&
+        (hit_test_result.URLElement() ||
+         !hit_test_result.AbsoluteImageURL().IsNull() ||
+         !hit_test_result.AbsoluteMediaURL().IsNull());
+    if (!should_open_context_menu_now &&
+        mouse_event_manager_->HandleDragDropIfPossible(
+            targeted_event,
+            GetPointerIdFromWebGestureEvent(targeted_event.Event()))) {
       gesture_context_menu_deferred_ = true;
       return WebInputEventResult::kHandledSystem;
     }
@@ -569,10 +578,7 @@ WebInputEventResult GestureManager::HandleGestureShowPress() {
   LocalFrameView* view = frame_->View();
   if (!view)
     return WebInputEventResult::kNotHandled;
-  const LocalFrameView::ScrollableAreaMap* areas = view->UserScrollableAreas();
-  if (!areas)
-    return WebInputEventResult::kNotHandled;
-  for (PaintLayerScrollableArea* scrollable_area : areas->Values()) {
+  for (auto& scrollable_area : view->ScrollableAreas().Values()) {
     if (scrollable_area->ScrollsOverflow())
       scrollable_area->CancelScrollAnimation();
   }

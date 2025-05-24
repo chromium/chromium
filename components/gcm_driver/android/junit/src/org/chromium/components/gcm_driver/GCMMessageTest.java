@@ -207,7 +207,7 @@ public class GCMMessageTest {
             JSONObject messageJSON = message.toJSON();
 
             // Version must be written to JSON.
-            assertEquals(messageJSON.get("version"), GCMMessage.VERSION);
+            assertEquals(GCMMessage.VERSION, messageJSON.get("version"));
             GCMMessage copiedMessage = GCMMessage.createFromJSON(messageJSON);
 
             assertMessageEquals(message, copiedMessage);

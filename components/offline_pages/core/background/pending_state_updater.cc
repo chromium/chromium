@@ -15,7 +15,7 @@ PendingStateUpdater::PendingStateUpdater(
     : request_coordinator_(request_coordinator),
       requests_pending_another_download_(false) {}
 
-PendingStateUpdater::~PendingStateUpdater() {}
+PendingStateUpdater::~PendingStateUpdater() = default;
 
 void PendingStateUpdater::UpdateRequestsOnLossOfNetwork() {
   requests_pending_another_download_ = false;

@@ -157,16 +157,25 @@ void BlinkPlatformImpl::RecordAction(const blink::UserMetricsAction& name) {
     child_thread->RecordComputedAction(name.Action());
 }
 
+bool BlinkPlatformImpl::HasDataResource(int resource_id) const {
+  return GetContentClient()->HasDataResource(resource_id);
+}
+
 WebData BlinkPlatformImpl::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
   std::string_view resource =
       GetContentClient()->GetDataResource(resource_id, scale_factor);
-  return WebData(resource.data(), resource.size());
+  return WebData(base::as_byte_span(resource));
 }
 
 std::string BlinkPlatformImpl::GetDataResourceString(int resource_id) {
   return GetContentClient()->GetDataResourceString(resource_id);
+}
+
+base::RefCountedMemory* BlinkPlatformImpl::GetDataResourceBytes(
+    int resource_id) {
+  return GetContentClient()->GetDataResourceBytes(resource_id);
 }
 
 WebString BlinkPlatformImpl::QueryLocalizedString(int resource_id) {

@@ -38,8 +38,6 @@ net::CertStatus MapToCertStatus(
     case chrome_browser_ssl::DynamicInterstitial::
         ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return net::CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED;
-    case chrome_browser_ssl::DynamicInterstitial::ERR_CERT_SYMANTEC_LEGACY:
-      return net::CERT_STATUS_SYMANTEC_LEGACY;
     case chrome_browser_ssl::DynamicInterstitial::ERR_CERT_REVOKED:
       return net::CERT_STATUS_REVOKED;
     case chrome_browser_ssl::DynamicInterstitial::ERR_CERT_INVALID:
@@ -180,14 +178,14 @@ DynamicInterstitialInfo::DynamicInterstitialInfo(
       show_only_for_nonoverridable_errors(show_only_for_nonoverridable_errors) {
 }
 
-DynamicInterstitialInfo::~DynamicInterstitialInfo() {}
+DynamicInterstitialInfo::~DynamicInterstitialInfo() = default;
 
 DynamicInterstitialInfo::DynamicInterstitialInfo(
     const DynamicInterstitialInfo& other) = default;
 
-SSLErrorAssistant::SSLErrorAssistant() {}
+SSLErrorAssistant::SSLErrorAssistant() = default;
 
-SSLErrorAssistant::~SSLErrorAssistant() {}
+SSLErrorAssistant::~SSLErrorAssistant() = default;
 
 bool SSLErrorAssistant::IsKnownCaptivePortalCertificate(
     const net::SSLInfo& ssl_info) {

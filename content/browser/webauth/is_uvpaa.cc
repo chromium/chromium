@@ -4,15 +4,16 @@
 
 #include "content/browser/webauth/is_uvpaa.h"
 
-#include "base/feature_list.h"
+#include <optional>
+#include <utility>
+
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/common/content_client.h"
-#include "device/fido/features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/web_authentication_delegate.h"
 #include "device/fido/mac/authenticator.h"
 #endif
 

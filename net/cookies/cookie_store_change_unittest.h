@@ -350,6 +350,39 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, Overwrite) {
   EXPECT_EQ(2u, cookie_changes.size());
 }
 
+TYPED_TEST_P(CookieStoreChangeGlobalTest, NoChangeOverwrite) {
+  if (!TypeParam::supports_global_cookie_tracking) {
+    GTEST_SKIP() << "Global cookie event subscriptions not supported.";
+  }
+
+  CookieStore* cs = this->GetCookieStore();
+  std::vector<CookieChangeInfo> cookie_changes;
+  std::unique_ptr<CookieChangeSubscription> subscription =
+      cs->GetChangeDispatcher().AddCallbackForAllChanges(base::BindRepeating(
+          &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
+          base::Unretained(&cookie_changes)));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(0u, cookie_changes.size());
+
+  EXPECT_TRUE(this->SetCookie(cs, this->http_www_foo_.url(), "A=B"));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(1u, cookie_changes.size());
+  cookie_changes.clear();
+
+  EXPECT_TRUE(this->SetCookie(cs, this->http_www_foo_.url(), "A=B"));
+  this->DeliverChangeNotifications();
+  EXPECT_EQ(2u, cookie_changes.size());
+  ASSERT_TRUE(
+      cookie_changes[0].cookie.IsWebEquivalentTo(cookie_changes[1].cookie));
+  EXPECT_EQ("A", cookie_changes[0].cookie.Name());
+  EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
+                                 cookie_changes[0].cause));
+  EXPECT_EQ("A", cookie_changes[1].cookie.Name());
+  EXPECT_TRUE(
+      this->MatchesCause(CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE,
+                         cookie_changes[1].cause));
+}
+
 TYPED_TEST_P(CookieStoreChangeGlobalTest, OverwriteWithHttpOnly) {
   if (!TypeParam::supports_global_cookie_tracking)
     return;
@@ -1087,6 +1120,41 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, Overwrite) {
   EXPECT_EQ("C", cookie_changes[1].cookie.Value());
 
   EXPECT_EQ(2u, cookie_changes.size());
+}
+
+TYPED_TEST_P(CookieStoreChangeUrlTest, NoChangeOverwrite) {
+  if (!TypeParam::supports_url_cookie_tracking) {
+    GTEST_SKIP() << "Cookie event subscriptions for a given URL not supported.";
+  }
+
+  CookieStore* cs = this->GetCookieStore();
+  std::vector<CookieChangeInfo> cookie_changes;
+  std::unique_ptr<CookieChangeSubscription> subscription =
+      cs->GetChangeDispatcher().AddCallbackForUrl(
+          this->http_www_foo_.url(), std::nullopt /* cookie_partition_key */,
+          base::BindRepeating(
+              &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
+              base::Unretained(&cookie_changes)));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(0u, cookie_changes.size());
+
+  EXPECT_TRUE(this->SetCookie(cs, this->http_www_foo_.url(), "A=B"));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(1u, cookie_changes.size());
+  cookie_changes.clear();
+
+  EXPECT_TRUE(this->SetCookie(cs, this->http_www_foo_.url(), "A=B"));
+  this->DeliverChangeNotifications();
+  EXPECT_EQ(2u, cookie_changes.size());
+  ASSERT_TRUE(
+      cookie_changes[0].cookie.IsWebEquivalentTo(cookie_changes[1].cookie));
+  EXPECT_EQ("A", cookie_changes[0].cookie.Name());
+  EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
+                                 cookie_changes[0].cause));
+  EXPECT_EQ("A", cookie_changes[1].cookie.Name());
+  EXPECT_TRUE(
+      this->MatchesCause(CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE,
+                         cookie_changes[1].cause));
 }
 
 TYPED_TEST_P(CookieStoreChangeUrlTest, OverwriteFiltering) {
@@ -2232,6 +2300,47 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, Overwrite) {
   EXPECT_EQ(2u, cookie_changes.size());
 }
 
+TYPED_TEST_P(CookieStoreChangeNamedTest, NoChangeOverwrite) {
+  if (!TypeParam::supports_named_cookie_tracking) {
+    GTEST_SKIP()
+        << "Cookie event subscriptions for a given name not supported.";
+  }
+
+  CookieStore* cs = this->GetCookieStore();
+  std::vector<CookieChangeInfo> cookie_changes;
+  std::unique_ptr<CookieChangeSubscription> subscription =
+      cs->GetChangeDispatcher().AddCallbackForCookie(
+          this->http_www_foo_.url(), "abc",
+          std::nullopt /* cookie_partition_key */,
+          base::BindRepeating(
+              &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
+              base::Unretained(&cookie_changes)));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(0u, cookie_changes.size());
+
+  EXPECT_TRUE(this->SetCookie(cs, this->http_www_foo_.url(), "abc=123"));
+  this->DeliverChangeNotifications();
+  ASSERT_EQ(1u, cookie_changes.size());
+  cookie_changes.clear();
+
+  EXPECT_TRUE(this->SetCookie(cs, this->http_www_foo_.url(), "abc=123"));
+  this->DeliverChangeNotifications();
+  if (TypeParam::dispatches_events_on_no_change_overwrite) {
+    EXPECT_EQ(2u, cookie_changes.size());
+    ASSERT_TRUE(
+        cookie_changes[0].cookie.IsWebEquivalentTo(cookie_changes[1].cookie));
+    EXPECT_EQ("abc", cookie_changes[0].cookie.Name());
+    EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
+                                   cookie_changes[0].cause));
+    EXPECT_EQ("abc", cookie_changes[1].cookie.Name());
+    EXPECT_TRUE(
+        this->MatchesCause(CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE,
+                           cookie_changes[1].cause));
+  } else {
+    EXPECT_EQ(0u, cookie_changes.size());
+  }
+}
+
 TYPED_TEST_P(CookieStoreChangeNamedTest, OverwriteFiltering) {
   if (!TypeParam::supports_named_cookie_tracking)
     return;
@@ -3167,6 +3276,7 @@ REGISTER_TYPED_TEST_SUITE_P(CookieStoreChangeGlobalTest,
                             DeleteOne,
                             DeleteTwo,
                             Overwrite,
+                            NoChangeOverwrite,
                             OverwriteWithHttpOnly,
                             Deregister,
                             DeregisterMultiple,
@@ -3187,6 +3297,7 @@ REGISTER_TYPED_TEST_SUITE_P(CookieStoreChangeUrlTest,
                             DeleteTwo,
                             DeleteFiltering,
                             Overwrite,
+                            NoChangeOverwrite,
                             OverwriteFiltering,
                             OverwriteWithHttpOnly,
                             Deregister,
@@ -3213,6 +3324,7 @@ REGISTER_TYPED_TEST_SUITE_P(CookieStoreChangeNamedTest,
                             DeleteTwo,
                             DeleteFiltering,
                             Overwrite,
+                            NoChangeOverwrite,
                             OverwriteFiltering,
                             OverwriteWithHttpOnly,
                             Deregister,

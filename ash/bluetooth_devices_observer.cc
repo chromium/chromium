@@ -38,6 +38,11 @@ void BluetoothDevicesObserver::AdapterPoweredChanged(
   adapter_or_device_changed_callback_.Run(/*device=*/nullptr);
 }
 
+void BluetoothDevicesObserver::DeviceAdded(device::BluetoothAdapter* adapter,
+                                           device::BluetoothDevice* device) {
+  adapter_or_device_changed_callback_.Run(device);
+}
+
 void BluetoothDevicesObserver::DeviceChanged(device::BluetoothAdapter* adapter,
                                              device::BluetoothDevice* device) {
   adapter_or_device_changed_callback_.Run(device);

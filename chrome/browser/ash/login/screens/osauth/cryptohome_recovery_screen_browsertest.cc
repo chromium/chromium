@@ -34,6 +34,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -210,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
   EXPECT_TRUE(IsMounted());
 }
 
-// Verifies that recovery is skipped and GaiaPasswordChangedScreen is shown when
+// Verifies that recovery is skipped and EnterOldPasswordScreen is shown when
 // recovery factor is not configured.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenNoRecoveryTest,
                        NoRecoveryFactor) {

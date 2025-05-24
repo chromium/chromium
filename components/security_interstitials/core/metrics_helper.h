@@ -15,7 +15,7 @@
 namespace history {
 class HistoryService;
 struct VisibleVisitCountToHostResult;
-}
+}  // namespace history
 
 namespace security_interstitials {
 
@@ -28,6 +28,9 @@ namespace security_interstitials {
 //
 // If |extra_suffix| is not empty, MetricsHelper will append ".<extra_suffix>"
 // to generate an additional 2 or 4 more metrics.
+// If |extra_extra_Suffix| is ALSO not empty, MetricsHelper will append
+// ".<extra_extra_suffix>" to generate an additional metrics beyond what
+// |extra_suffix| will produce.
 class MetricsHelper {
  public:
   // These enums are used for histograms.  Don't reorder, delete, or insert
@@ -55,6 +58,7 @@ class MetricsHelper {
     SHOW_ENHANCED_PROTECTION,
     OPEN_ENHANCED_PROTECTION,
     CLOSE_INTERSTITIAL_WITHOUT_UI,
+    OPEN_ADVANCED_PROTECTION_SETTINGS,
     MAX_INTERACTION
   };
 
@@ -73,6 +77,7 @@ class MetricsHelper {
     ~ReportDetails();
     std::string metric_prefix;
     std::string extra_suffix;
+    std::string extra_extra_suffix;
     std::optional<base::TimeTicks> blocked_page_shown_timestamp;
   };
 

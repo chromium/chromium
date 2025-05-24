@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/flex/devtools_flex_info.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -41,7 +40,9 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -52,76 +53,86 @@ namespace blink {
 
 namespace {
 
-class PathBuilder {
+class HighlightPathBuilder {
   STACK_ALLOCATED();
 
  public:
-  PathBuilder() : path_(protocol::ListValue::create()) {}
-  PathBuilder(const PathBuilder&) = delete;
-  PathBuilder& operator=(const PathBuilder&) = delete;
-  virtual ~PathBuilder() = default;
+  HighlightPathBuilder() : path_(protocol::ListValue::create()) {}
+  HighlightPathBuilder(const HighlightPathBuilder&) = delete;
+  HighlightPathBuilder& operator=(const HighlightPathBuilder&) = delete;
+  virtual ~HighlightPathBuilder() = default;
 
   std::unique_ptr<protocol::ListValue> Release() { return std::move(path_); }
 
   void AppendPath(const Path& path, float scale) {
-    Path transform_path(path);
-    transform_path.Transform(AffineTransform().Scale(scale));
-    transform_path.Apply(this, &PathBuilder::AppendPathElement);
+    ApplyInfo apply_info{this, scale};
+    path.Apply(&apply_info, &HighlightPathBuilder::AppendPathElement);
   }
 
  protected:
   virtual gfx::PointF TranslatePoint(const gfx::PointF& point) { return point; }
 
  private:
-  static void AppendPathElement(void* path_builder,
-                                const PathElement& path_element) {
-    static_cast<PathBuilder*>(path_builder)->AppendPathElement(path_element);
+  struct ApplyInfo {
+    STACK_ALLOCATED();
+
+   public:
+    HighlightPathBuilder* builder;
+    float scale;
+  };
+
+  static void AppendPathElement(void* info, const PathElement& path_element) {
+    const ApplyInfo* apply_info = static_cast<ApplyInfo*>(info);
+    apply_info->builder->AppendPathElement(path_element, apply_info->scale);
   }
 
-  void AppendPathElement(const PathElement&);
+  void AppendPathElement(const PathElement&, float scale);
   void AppendPathCommandAndPoints(const char* command,
-                                  base::span<const gfx::PointF> points);
+                                  base::span<const gfx::PointF> points,
+                                  float scale);
 
   std::unique_ptr<protocol::ListValue> path_;
 };
 
-void PathBuilder::AppendPathCommandAndPoints(
+void HighlightPathBuilder::AppendPathCommandAndPoints(
     const char* command,
-    base::span<const gfx::PointF> points) {
+    base::span<const gfx::PointF> points,
+    float scale) {
   path_->pushValue(protocol::StringValue::create(command));
   for (const auto& orig_point : points) {
-    gfx::PointF point = TranslatePoint(orig_point);
+    gfx::PointF point = TranslatePoint(gfx::ScalePoint(orig_point, scale));
     path_->pushValue(protocol::FundamentalValue::create(point.x()));
     path_->pushValue(protocol::FundamentalValue::create(point.y()));
   }
 }
 
-void PathBuilder::AppendPathElement(const PathElement& path_element) {
+void HighlightPathBuilder::AppendPathElement(const PathElement& path_element,
+                                             float scale) {
   switch (path_element.type) {
     // The points member will contain 1 value.
     case kPathElementMoveToPoint:
-      AppendPathCommandAndPoints("M", path_element.points);
+      AppendPathCommandAndPoints("M", path_element.points, scale);
       break;
     // The points member will contain 1 value.
     case kPathElementAddLineToPoint:
-      AppendPathCommandAndPoints("L", path_element.points);
+      AppendPathCommandAndPoints("L", path_element.points, scale);
       break;
     // The points member will contain 3 values.
     case kPathElementAddCurveToPoint:
-      AppendPathCommandAndPoints("C", path_element.points);
+      AppendPathCommandAndPoints("C", path_element.points, scale);
       break;
     // The points member will contain 2 values.
     case kPathElementAddQuadCurveToPoint:
-      AppendPathCommandAndPoints("Q", path_element.points);
+      AppendPathCommandAndPoints("Q", path_element.points, scale);
       break;
     // The points member will contain no values.
     case kPathElementCloseSubpath:
-      AppendPathCommandAndPoints("Z", path_element.points);
+      AppendPathCommandAndPoints("Z", path_element.points, scale);
       break;
   }
 }
 
-class ShapePathBuilder : public PathBuilder {
+class ShapePathBuilder : public HighlightPathBuilder {
  public:
   ShapePathBuilder(LocalFrameView& view,
                    LayoutObject& layout_object,
@@ -165,35 +176,35 @@ std::unique_ptr<protocol::Array<double>> BuildArrayForQuad(
 }
 
 Path QuadToPath(const gfx::QuadF& quad) {
-  Path quad_path;
-  quad_path.MoveTo(quad.p1());
-  quad_path.AddLineTo(quad.p2());
-  quad_path.AddLineTo(quad.p3());
-  quad_path.AddLineTo(quad.p4());
-  quad_path.CloseSubpath();
-  return quad_path;
+  return PathBuilder()
+      .MoveTo(quad.p1())
+      .LineTo(quad.p2())
+      .LineTo(quad.p3())
+      .LineTo(quad.p4())
+      .Close()
+      .Finalize();
 }
 
 Path RowQuadToPath(const gfx::QuadF& quad, bool draw_end_line) {
-  Path quad_path;
+  PathBuilder quad_path;
   quad_path.MoveTo(quad.p1());
-  quad_path.AddLineTo(quad.p2());
+  quad_path.LineTo(quad.p2());
   if (draw_end_line) {
     quad_path.MoveTo(quad.p3());
-    quad_path.AddLineTo(quad.p4());
+    quad_path.LineTo(quad.p4());
   }
-  return quad_path;
+  return quad_path.Finalize();
 }
 
 Path ColumnQuadToPath(const gfx::QuadF& quad, bool draw_end_line) {
-  Path quad_path;
+  PathBuilder quad_path;
   quad_path.MoveTo(quad.p1());
-  quad_path.AddLineTo(quad.p4());
+  quad_path.LineTo(quad.p4());
   if (draw_end_line) {
     quad_path.MoveTo(quad.p3());
-    quad_path.AddLineTo(quad.p2());
+    quad_path.LineTo(quad.p2());
   }
-  return quad_path;
+  return quad_path.Finalize();
 }
 
 gfx::PointF FramePointToViewport(const LocalFrameView* view,
@@ -365,10 +376,14 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
     }
   }
   if (pseudo_element) {
-    if (pseudo_element->GetPseudoId() == kPseudoIdBefore) {
+    if (pseudo_element->GetPseudoId() == kPseudoIdCheckMark) {
+      class_names.Append("::checkmark");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdBefore) {
       class_names.Append("::before");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdAfter) {
       class_names.Append("::after");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdPickerIcon) {
+      class_names.Append("::picker-icon");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdMarker) {
       class_names.Append("::marker");
     } else if (pseudo_element->GetPseudoIdForStyling() ==
@@ -376,10 +391,17 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
       class_names.Append("::scroll-marker-group");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollMarker) {
       class_names.Append("::scroll-marker");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollNextButton) {
-      class_names.Append("::scroll-next-button");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollPrevButton) {
-      class_names.Append("::scroll-prev-button");
+    } else if (pseudo_element->GetPseudoId() ==
+               kPseudoIdScrollButtonBlockStart) {
+      class_names.Append("::scroll-button(block-start)");
+    } else if (pseudo_element->GetPseudoId() ==
+               kPseudoIdScrollButtonInlineStart) {
+      class_names.Append("::scroll-button(inline-start)");
+    } else if (pseudo_element->GetPseudoId() ==
+               kPseudoIdScrollButtonInlineEnd) {
+      class_names.Append("::scroll-button(inline-end)");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollButtonBlockEnd) {
+      class_names.Append("::scroll-button(block-end)");
     }
   }
   if (!class_names.empty())
@@ -400,7 +422,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
   element_info->setString("nodeHeight", String::Number(bounding_box.height()));
 
   element_info->setBoolean("isKeyboardFocusable",
-                           element->IsKeyboardFocusable());
+                           element->IsKeyboardFocusableSlow());
   element_info->setString("accessibleName",
                           element->ComputedNameNoLifecycleUpdate());
   element_info->setString("accessibleRole",
@@ -660,7 +682,7 @@ std::unique_ptr<protocol::ListValue> BuildPathFromQuad(
     const blink::LocalFrameView* containing_view,
     gfx::QuadF quad) {
   FrameQuadToViewport(containing_view, quad);
-  PathBuilder builder;
+  HighlightPathBuilder builder;
   builder.AppendPath(QuadToPath(quad),
                      DeviceScaleFromFrameView(containing_view));
   return builder.Release();
@@ -915,7 +937,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(
                         end_row - start_row - row_gap_offset);
       gfx::QuadF area_quad = grid->LocalRectToAbsoluteQuad({position, size});
       FrameQuadToViewport(containing_view, area_quad);
-      PathBuilder area_builder;
+      HighlightPathBuilder area_builder;
       area_builder.AppendPath(QuadToPath(area_quad), scale);
 
       area_paths->setValue(name, area_builder.Release());
@@ -1000,16 +1022,18 @@ int GetRotationAngle(LayoutObject* layout_object) {
 
 String GetWritingMode(const ComputedStyle& computed_style) {
   // The grid overlay uses this to flip the grid lines and labels accordingly.
-  // lr, lr-tb, rl, rl-tb, tb, and tb-rl are deprecated and not handled here.
-  // sideways-lr and sideways-rl are not supported yet and not handled here.
-  WritingMode writing_mode = computed_style.GetWritingMode();
-  if (writing_mode == WritingMode::kVerticalLr) {
-    return "vertical-lr";
+  switch (computed_style.GetWritingMode()) {
+    case WritingMode::kVerticalLr:
+      return "vertical-lr";
+    case WritingMode::kVerticalRl:
+      return "vertical-rl";
+    case WritingMode::kSidewaysLr:
+      return "sideways-lr";
+    case WritingMode::kSidewaysRl:
+      return "sideways-rl";
+    case WritingMode::kHorizontalTb:
+      return "horizontal-tb";
   }
-  if (writing_mode == WritingMode::kVerticalRl) {
-    return "vertical-rl";
-  }
-  return "horizontal-tb";
 }
 
 // Gets the list of authored track size values resolving repeat() functions
@@ -1044,15 +1068,19 @@ Vector<String> GetAuthoredGridTrackSizes(const CSSValue* value,
 
     if (auto* repeated_values =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(list_value.Get())) {
-      size_t repetitions = repeated_values->Repetitions();
-      for (size_t i = 0; i < repetitions; ++i) {
-        for (auto repeated_value : *repeated_values) {
-          if (repeated_value->IsGridLineNamesValue())
-            continue;
-          result.push_back(repeated_value->CssText());
+      std::optional<wtf_size_t> repetitions =
+          repeated_values->GetRepetitionsIfKnown();
+      if (repetitions.has_value()) {
+        for (size_t i = 0; i < *repetitions; ++i) {
+          for (auto repeated_value : *repeated_values) {
+            if (repeated_value->IsGridLineNamesValue()) {
+              continue;
+            }
+            result.push_back(repeated_value->CssText());
+          }
         }
+        continue;
       }
-      continue;
     }
 
     if (list_value->IsGridLineNamesValue())
@@ -1148,7 +1176,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
       protocol::DictionaryValue::create();
 
   // Create the path for the flex container
-  PathBuilder container_builder;
+  HighlightPathBuilder container_builder;
   PhysicalRect content_box = layout_box->PhysicalContentBoxRect();
   gfx::QuadF content_quad = layout_object->LocalRectToAbsoluteQuad(content_box);
   FrameQuadToViewport(containing_view, content_quad);
@@ -1172,7 +1200,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
       gfx::QuadF item_margin_quad =
           layout_object->LocalRectToAbsoluteQuad(item_data.rect);
       FrameQuadToViewport(containing_view, item_margin_quad);
-      PathBuilder item_builder;
+      HighlightPathBuilder item_builder;
       item_builder.AppendPath(QuadToPath(item_margin_quad), scale);
 
       item_info->setValue("itemBorder", item_builder.Release());
@@ -1284,8 +1312,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   // The last column in RTL will not go to the extent of the grid if not
   // necessary, and will stop sooner if the tracks don't take up the full size
   // of the grid.
-  LayoutUnit rtl_offset = grid->LogicalWidth() - columns.back() -
-                          grid->BorderAndPaddingLogicalRight();
+  LayoutUnit rtl_offset =
+      grid->LogicalWidth() - columns.back() - grid->BorderAndPaddingInlineEnd();
 
   if (grid_highlight_config.show_track_sizes) {
     StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
@@ -1317,8 +1345,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
 
   bool is_ltr = grid->StyleRef().IsLeftToRightDirection();
 
-  PathBuilder row_builder;
-  PathBuilder row_gap_builder;
+  HighlightPathBuilder row_builder;
+  HighlightPathBuilder row_gap_builder;
   LayoutUnit row_left = columns.front();
   if (!is_ltr) {
     row_left += rtl_offset;
@@ -1348,8 +1376,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   grid_info->setValue("rows", row_builder.Release());
   grid_info->setValue("rowGaps", row_gap_builder.Release());
 
-  PathBuilder column_builder;
-  PathBuilder column_gap_builder;
+  HighlightPathBuilder column_builder;
+  HighlightPathBuilder column_gap_builder;
   LayoutUnit column_top = rows.front();
   LayoutUnit column_height = rows.back() - rows.front();
   for (wtf_size_t i = 1; i < columns.size(); ++i) {
@@ -1428,7 +1456,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   }
 
   // Grid border
-  PathBuilder grid_border_builder;
+  HighlightPathBuilder grid_border_builder;
   PhysicalOffset grid_position(row_left, column_top);
   PhysicalSize grid_size(row_width, column_height);
   PhysicalRect grid_rect(grid_position, grid_size);
@@ -1666,7 +1694,7 @@ void InspectorHighlightBase::AppendQuad(const gfx::QuadF& quad,
                                         const Color& outline_color,
                                         const String& name) {
   Path path = QuadToPath(quad);
-  PathBuilder builder;
+  HighlightPathBuilder builder;
   builder.AppendPath(path, scale_);
   AppendPath(builder.Release(), fill_color, outline_color, name);
 }
@@ -1816,9 +1844,11 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
     } else {
       for (PseudoId pseudo_id :
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
-            kPseudoIdBefore, kPseudoIdAfter, kPseudoIdScrollMarkerGroupAfter,
-            kPseudoIdScrollMarker, kPseudoIdScrollNextButton,
-            kPseudoIdScrollPrevButton}) {
+            kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
+            kPseudoIdPickerIcon, kPseudoIdScrollMarkerGroupAfter,
+            kPseudoIdScrollMarker, kPseudoIdScrollButtonBlockStart,
+            kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonInlineEnd,
+            kPseudoIdScrollButtonBlockEnd}) {
         if (Node* pseudo_node = element->GetPseudoElement(pseudo_id))
           VisitAndCollectDistanceInfo(pseudo_node);
       }
@@ -1836,7 +1866,6 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
 void InspectorHighlight::VisitAndCollectDistanceInfo(
     PseudoId pseudo_id,
     LayoutObject* layout_object) {
-  protocol::DOM::PseudoType pseudo_type;
   if (pseudo_id == kPseudoIdNone)
     return;
   for (LayoutObject* child = layout_object->SlowFirstChild(); child;
@@ -2330,7 +2359,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildContainerQueryContainerInfo(
   std::unique_ptr<protocol::DictionaryValue> container_query_container_info =
       protocol::DictionaryValue::create();
 
-  PathBuilder container_builder;
+  HighlightPathBuilder container_builder;
   auto content_box = layout_box->PhysicalContentBoxRect();
   gfx::QuadF content_quad = layout_box->LocalRectToAbsoluteQuad(content_box);
   FrameQuadToViewport(containing_view, content_quad);

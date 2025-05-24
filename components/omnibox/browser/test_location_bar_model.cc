@@ -18,7 +18,7 @@ TestLocationBarModel::TestLocationBarModel()
       should_display_url_(true) {
 }
 
-TestLocationBarModel::~TestLocationBarModel() {}
+TestLocationBarModel::~TestLocationBarModel() = default;
 
 std::u16string TestLocationBarModel::GetFormattedFullURL() const {
   if (!formatted_full_url_)
@@ -73,9 +73,4 @@ bool TestLocationBarModel::IsOfflinePage() const {
 
 bool TestLocationBarModel::ShouldPreventElision() const {
   return should_prevent_elision_;
-}
-
-bool TestLocationBarModel::ShouldUseUpdatedConnectionSecurityIndicators()
-    const {
-  return false;
 }

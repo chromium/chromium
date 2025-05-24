@@ -9,6 +9,7 @@ import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
+import type {TextLayerBase} from 'chrome-untrusted://lens-overlay/text_layer_base.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
@@ -16,7 +17,7 @@ import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_sup
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {simulateClick, simulateDrag} from '../utils/selection_utils.js';
-import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
+import {createLine, createParagraph, createText, createWord, getHighlightedNodesForTesting, getWordNodesForTesting} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -56,8 +57,14 @@ suite('TextSelection', function() {
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
     // Remove the extra word margins to make testing easier.
-    loadTimeData.overrideValues(
-        {'verticalTextMarginPx': 0, 'horizontalTextMarginPx': 0});
+    loadTimeData.overrideValues({
+      'verticalTextMarginPx': 0,
+      'horizontalTextMarginPx': 0,
+      // TODO(crbug.com/398040980): After launching simplified
+      // selection, the tests in this file should be removed as text
+      // selection will no longer be supported.
+      'simplifiedSelectionEnabled': false,
+    });
 
     // Turn off the shimmer. Since the shimmer is resource intensive, turn off
     // to prevent from causing issues in the tests.
@@ -79,6 +86,10 @@ suite('TextSelection', function() {
     await addWords();
   });
 
+  function getTextSelectionLayer(): TextLayerBase {
+    return selectionOverlayElement.getTextSelectionLayerForTesting();
+  }
+
   // Normalizes the given values to the size of selection overlay.
   function normalizedBox(box: RectF): RectF {
     const boundingRect = selectionOverlayElement.getBoundingClientRect();
@@ -91,6 +102,11 @@ suite('TextSelection', function() {
   }
 
   async function addWords() {
+    const formula = createWord(  // X from 5 to 35, Y from 210 to 220.
+        '(x + 2) / 4 = 4',
+        normalizedBox({x: 20, y: 215, width: 30, height: 10}));
+    formula.formulaMetadata = {latex: '\\frac{x + 2}{4} = 4'};
+
     const text = createText([
       createParagraph([
         createLine([
@@ -118,6 +134,9 @@ suite('TextSelection', function() {
               'HEADING', normalizedBox({x: 320, y: 50, width: 80, height: 30})),
         ]),
       ]),
+      createParagraph([
+        createLine([formula]),
+      ]),
     ]);
     callbackRouterRemote.textReceived(text);
     await flushTasks();
@@ -125,19 +144,19 @@ suite('TextSelection', function() {
   }
 
   function getRenderedWords(): NodeListOf<Element> {
-    return selectionOverlayElement.$.textSelectionLayer
-        .getWordNodesForTesting();
+    return getWordNodesForTesting(
+        getTextSelectionLayer().getElementForTesting());
   }
 
   function getHighlightedLines(): NodeListOf<Element> {
-    return selectionOverlayElement.$.textSelectionLayer
-        .getHighlightedNodesForTesting();
+    return getHighlightedNodesForTesting(
+        getTextSelectionLayer().getElementForTesting());
   }
 
-  test('verify that text renders on the page', async () => {
+  test('verify that text renders on the page', () => {
     const wordsOnPage = getRenderedWords();
 
-    assertEquals(8, wordsOnPage.length);
+    assertEquals(9, wordsOnPage.length);
   });
 
   test('verify that dragging over a word highlights the word', async () => {
@@ -325,6 +344,46 @@ suite('TextSelection', function() {
     const textQuery =
         await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
     assertEquals('line FAKE HEADING', textQuery);
+  });
+
+  test('verify that selecting formula works', async () => {
+    const wordsOnPage = getRenderedWords();
+    const formulaBoundingBox = wordsOnPage[8]!.getBoundingClientRect();
+
+    // Drag from beginning of first word to end of first word.
+    await simulateDrag(
+        selectionOverlayElement,
+        {x: formulaBoundingBox.left + 2, y: formulaBoundingBox.top + 2},
+        {x: formulaBoundingBox.right - 2, y: formulaBoundingBox.top + 2});
+
+    const highlightedLines = getHighlightedLines();
+    assertEquals(1, highlightedLines.length);
+
+    assertSameRenderedPixel(
+        formulaBoundingBox.left,
+        highlightedLines[0]!.getBoundingClientRect().left);
+    assertSameRenderedPixel(
+        formulaBoundingBox.top,
+        highlightedLines[0]!.getBoundingClientRect().top);
+
+    // Verify the correct request was made.
+    const textQuery =
+        await testBrowserProxy.handler.whenCalled('issueMathSelectionRequest');
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction', UserAction.kMathSelection));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kMathSelection));
+    assertEquals('(x + 2) / 4 = 4', textQuery[0]);
+    assertEquals('\\frac{x + 2}{4} = 4', textQuery[1]);
+    const action = await testBrowserProxy.handler.whenCalled(
+        'recordUkmAndTaskCompletionForLensOverlayInteraction');
+    assertEquals(UserAction.kMathSelection, action);
   });
 
   test('verify that starting a drag off a word does nothing', async () => {

@@ -61,7 +61,7 @@ public class TabCreationDelegateImplUnitTest {
     public void testNavigateUrlDeferred() {
         mTabCreationDelegate = new TabCreationDelegateImpl(mTabCreator, mNavigationTracker);
         mTabCreationDelegate.navigateToUrl(
-                mTab1, TEST_URL, TEST_TITLE, /* isForegroundedTab= */ false);
+                mTab1, TEST_URL, TEST_TITLE, /* isForegroundTab= */ false);
         verify(mTab1).freezeAndAppendPendingNavigation(any(), eq(TEST_TITLE));
     }
 
@@ -69,7 +69,7 @@ public class TabCreationDelegateImplUnitTest {
     public void testNavigateUrlInCurrentTab() {
         mTabCreationDelegate = new TabCreationDelegateImpl(mTabCreator, mNavigationTracker);
         mTabCreationDelegate.navigateToUrl(
-                mTab1, TEST_URL, TEST_TITLE, /* isForegroundedTab= */ true);
+                mTab1, TEST_URL, TEST_TITLE, /* isForegroundTab= */ true);
         verify(mTab1).loadUrl(any());
     }
 }

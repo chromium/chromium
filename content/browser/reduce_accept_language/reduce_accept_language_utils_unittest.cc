@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
+#include "content/public/browser/reduce_accept_language_utils.h"
 
 #include <array>
 
@@ -102,8 +102,8 @@ class MockOriginTrialsDelegate
 
   void ClearPersistedTokens() override { persisted_trials_.clear(); }
 
-  void AddPersistedTrialForTest(const std::string_view url,
-                                const std::string_view trial_name) {
+  void AddPersistedTrialForTest(std::string_view url,
+                                std::string_view trial_name) {
     url::Origin key = url::Origin::Create(GURL(url));
     persisted_trials_[key].emplace(trial_name);
   }
@@ -256,7 +256,8 @@ TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
 
   MockReduceAcceptLanguageControllerDelegate delegate =
       MockReduceAcceptLanguageControllerDelegate("en,zh");
-  ReduceAcceptLanguageUtils reduce_language_utils(delegate);
+  ReduceAcceptLanguageUtils reduce_language_utils =
+      ReduceAcceptLanguageUtils::CreateForTesting(delegate);
 
   GURL url = GURL("https://example.com");
   contents()->NavigateAndCommit(url);
@@ -349,7 +350,8 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
     // Verify parse return correct values.
     MockReduceAcceptLanguageControllerDelegate delegate =
         MockReduceAcceptLanguageControllerDelegate("en,zh");
-    ReduceAcceptLanguageUtils reduce_language_utils(delegate);
+    ReduceAcceptLanguageUtils reduce_language_utils =
+        ReduceAcceptLanguageUtils::CreateForTesting(delegate);
     net::HttpRequestHeaders headers;
     auto parsed_headers = network::mojom::ParsedHeaders::New();
 
@@ -460,7 +462,8 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
       MockReduceAcceptLanguageControllerDelegate delegate =
           MockReduceAcceptLanguageControllerDelegate(
               test.user_accept_languages);
-      ReduceAcceptLanguageUtils reduce_language_utils(delegate);
+      ReduceAcceptLanguageUtils reduce_language_utils =
+          ReduceAcceptLanguageUtils::CreateForTesting(delegate);
       // Verify whether needs to resend request
       bool actual_resend_request =
           ParseAndPersist(url, reduce_language_utils,
@@ -530,7 +533,8 @@ TEST_F(AcceptLanguageUtilsTests, VerifyClearAcceptLanguage) {
 
   MockReduceAcceptLanguageControllerDelegate delegate =
       MockReduceAcceptLanguageControllerDelegate("zh,ja,en-US");
-  ReduceAcceptLanguageUtils reduce_language_utils(delegate);
+  ReduceAcceptLanguageUtils reduce_language_utils =
+      ReduceAcceptLanguageUtils::CreateForTesting(delegate);
 
   ParseAndPersist(url, reduce_language_utils,
                   /*accept_language=*/"zh",
@@ -591,6 +595,8 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
 
   MockReduceAcceptLanguageControllerDelegate delegate =
       MockReduceAcceptLanguageControllerDelegate("en,zh");
+  ReduceAcceptLanguageUtils reduce_language_utils =
+      ReduceAcceptLanguageUtils::CreateForTesting(delegate);
 
   GURL request_url = GURL(kFirstPartyUrl);
   contents()->NavigateAndCommit(request_url);
@@ -599,7 +605,8 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
 
   MockOriginTrialsDelegate origin_trials_delegate;
   ReduceAcceptLanguageThrottle throttle = ReduceAcceptLanguageThrottle(
-      delegate, &origin_trials_delegate, root->frame_tree_node_id());
+      std::move(reduce_language_utils), &origin_trials_delegate,
+      root->frame_tree_node_id());
 
   // User's first prefer language.
   std::string language = delegate.GetUserAcceptLanguages()[0];

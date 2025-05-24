@@ -14,6 +14,7 @@
 #include "extensions/browser/api/offscreen/lifetime_enforcer_factories.h"
 #include "extensions/browser/api/offscreen/offscreen_document_lifetime_enforcer.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/offscreen_document_host.h"
@@ -44,7 +45,7 @@ class OffscreenDocumentManagerFactory
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
@@ -54,6 +55,8 @@ OffscreenDocumentManagerFactory::OffscreenDocumentManagerFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionRegistryFactory::GetInstance());
   DependsOn(ProcessManagerFactory::GetInstance());
+  // Indirectly depends on ExtensionService via ChromeExtensionSystem.
+  DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
 OffscreenDocumentManager* OffscreenDocumentManagerFactory::GetForBrowserContext(
@@ -67,13 +70,13 @@ OffscreenDocumentManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   // Use the `context` passed in; this service has separate instances in
   // on-the-record and incognito.
-  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-      context, /*force_guest_profile=*/true);
+  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
 }
 
-KeyedService* OffscreenDocumentManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OffscreenDocumentManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new OffscreenDocumentManager(context);
+  return std::make_unique<OffscreenDocumentManager>(context);
 }
 
 }  // namespace
@@ -133,8 +136,8 @@ OffscreenDocumentHost* OffscreenDocumentManager::CreateOffscreenDocument(
 
   scoped_refptr<content::SiteInstance> site_instance =
       process_manager_->GetSiteInstanceForURL(url);
-  data.host = std::make_unique<OffscreenDocumentHost>(extension,
-                                                      site_instance.get(), url);
+  data.host = std::make_unique<OffscreenDocumentHost>(
+      extension, site_instance.get(), browser_context_, url);
   OffscreenDocumentHost* host = data.host.get();
 
   // The following Unretained()s are safe because this class owns the offscreen

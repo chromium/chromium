@@ -32,19 +32,18 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
-import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.payments.mojom.ItemDetails;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -72,13 +71,9 @@ public class DigitalGoodsTest {
         // Native needs to be initialized to start the test server.
         LibraryLoader.getInstance().ensureInitialized();
 
-        ChromeAppComponent component = ChromeApplicationImpl.getComponent();
-        component
-                .resolvePermissionManager()
-                .addDelegateApp(
-                        Origin.createOrThrow(TWA_SERVICE_SCOPE),
-                        "org.chromium.chrome.tests.support");
-        mClient = component.resolveTrustedWebActivityClient();
+        InstalledWebappPermissionManager.addDelegateApp(
+                Origin.createOrThrow(TWA_SERVICE_SCOPE), "org.chromium.chrome.tests.support");
+        mClient = TrustedWebActivityClient.getInstance();
 
         // TWAs only work with HTTPS.
         mTestServer =
@@ -98,7 +93,7 @@ public class DigitalGoodsTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET})
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void javaImplConnected() throws TimeoutException {
         FakeDigitalGoods fake = new FakeDigitalGoods();
         DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(fake);
@@ -153,8 +148,7 @@ public class DigitalGoodsTest {
         // To work around this, we create our own DigitalGoodsImpl with a custom Delegate that
         // provides the URL we want to see.
         DigitalGoodsImpl.Delegate delegate = () -> new GURL(TWA_SERVICE_SCOPE);
-        DigitalGoodsAdapter adapter = new DigitalGoodsAdapter(mClient);
-        return new DigitalGoodsImpl(adapter, delegate);
+        return new DigitalGoodsImpl(delegate);
     }
 
     private void setTwaServiceResponse(String name, Bundle args) throws TimeoutException {
@@ -198,7 +192,7 @@ public class DigitalGoodsTest {
                     try {
                         Assert.assertNotEquals("null", exec(variable));
                     } catch (TimeoutException e) {
-                        Assert.fail();
+                        throw new RuntimeException(e);
                     }
                 });
     }

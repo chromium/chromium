@@ -8,12 +8,16 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace extensions {
 
 // A mock around CrxInstaller to track extension installations.
 class MockCrxInstaller : public CrxInstaller {
  public:
-  explicit MockCrxInstaller(ExtensionService* frontend);
+  explicit MockCrxInstaller(content::BrowserContext* context);
 
   MOCK_METHOD(void, InstallCrxFile, (const CRXFileInfo& info), (override));
 

@@ -92,7 +92,7 @@ std::vector<history::Cluster> GetTestClusters() {
 
   history::Cluster has_image_not_known_to_sync = meets_all_criteria;
   has_image_not_known_to_sync.cluster_id = 11;
-  base::ranges::for_each(
+  std::ranges::for_each(
       has_image_not_known_to_sync.visits, [&](auto& cluster_visit) {
         cluster_visit.annotated_visit.visit_row.is_known_to_sync = false;
       });
@@ -100,7 +100,7 @@ std::vector<history::Cluster> GetTestClusters() {
   history::Cluster meets_all_criteria_but_not_after_skipped_visits =
       meets_all_criteria;
   meets_all_criteria_but_not_after_skipped_visits.cluster_id = 12;
-  base::ranges::for_each(
+  std::ranges::for_each(
       meets_all_criteria_but_not_after_skipped_visits.visits,
       [&](auto& cluster_visit) { cluster_visit.score = 0.0; });
 
@@ -154,7 +154,7 @@ TEST_F(FilterClusterProcessorTest,
       /*engagement_score_provider_is_valid=*/true);
 
   std::vector<history::Cluster> clusters = GetTestClusters();
-  base::ranges::for_each(clusters, [&](auto& cluster) {
+  std::ranges::for_each(clusters, [&](auto& cluster) {
     cluster.should_show_on_prominent_ui_surfaces = false;
   });
   cluster_processor->ProcessClusters(&clusters);

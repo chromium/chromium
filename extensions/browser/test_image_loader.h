@@ -22,8 +22,8 @@ class TestImageLoader {
 
   ~TestImageLoader();
 
-  // Loads an image to be used in test from |extension|.
-  // The image will be loaded from the relative path |image_path|.
+  // Loads an image to be used in test from `extension`.
+  // The image will be loaded from the relative path `image_path`.
   static SkBitmap LoadAndGetExtensionBitmap(const Extension* extension,
                                             const std::string& image_path,
                                             int size);

@@ -34,8 +34,9 @@ NetworkContextOwner::NetworkContextOwner(
 
 NetworkContextOwner::~NetworkContextOwner() {
   DCHECK_CURRENTLY_ON(WebThread::IO);
-  if (request_context_)
+  if (request_context_) {
     request_context_->RemoveObserver(this);
+  }
 }
 
 void NetworkContextOwner::InitializeOnIOThread(

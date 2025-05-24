@@ -13,6 +13,7 @@ namespace blink {
 class Entry;
 
 using EntryHeapVector = HeapVector<Member<Entry>>;
+using GCedEntryHeapVector = GCedHeapVector<Member<Entry>>;
 
 }  // namespace blink
 

@@ -19,18 +19,23 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "net/base/backoff_entry.h"
 
 class GURL;
 class Profile;
@@ -46,7 +51,8 @@ class IsolatedWebAppURLLoaderFactory;
 class WebAppProvider;
 
 namespace {
-constexpr base::TimeDelta kDefaultUpdateDiscoveryFrequency = base::Hours(5);
+inline constexpr base::TimeDelta kDefaultUpdateDiscoveryFrequency =
+    base::Hours(5);
 }
 
 // This enum lists the error types that can occur during the update of an
@@ -70,6 +76,23 @@ enum class IsolatedWebAppUpdateError {
   kMaxValue = kUpdateApplyFailed
 };
 
+struct IsolatedWebAppUpdateOptions {
+  IsolatedWebAppUpdateOptions(
+      const GURL& update_manifest_url,
+      UpdateChannel update_channel,
+      bool allow_downgrades,
+      const std::optional<base::Version>& pinned_version);
+
+  IsolatedWebAppUpdateOptions(const IsolatedWebAppUpdateOptions& other);
+  IsolatedWebAppUpdateOptions& operator=(IsolatedWebAppUpdateOptions&& other);
+  ~IsolatedWebAppUpdateOptions();
+
+  GURL update_manifest_url;
+  UpdateChannel update_channel;
+  bool allow_downgrades;
+  std::optional<base::Version> pinned_version;
+};
+
 // The `IsolatedWebAppUpdateManager` is responsible for discovery, download, and
 // installation of Isolated Web App updates. Currently, it is only updating
 // policy-installed IWAs on ChromeOS.
@@ -83,6 +106,19 @@ class IsolatedWebAppUpdateManager
     : public WebAppInstallManagerObserver,
       public IwaKeyDistributionInfoProvider::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnUpdateDiscoveryTaskCompleted(
+        const webapps::AppId& app_id,
+        IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {}
+
+    // Will be invoked only if the discovery task finished with
+    // `kUpdateFoundAndSavedInDatabase`.
+    virtual void OnUpdateApplyTaskCompleted(
+        const webapps::AppId& app_id,
+        IsolatedWebAppUpdateApplyTask::CompletionStatus status) {}
+  };
+
   explicit IsolatedWebAppUpdateManager(
       Profile& profile,
       base::TimeDelta update_discovery_frequency =
@@ -137,10 +173,26 @@ class IsolatedWebAppUpdateManager
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
 
-  // Queues an update discovery task for the provided `app_id`. Returns a
-  // boolean indicating whether an update discovery task was queued
-  // successfully.
+  // Queues an update discovery task for the provided `app_id`, assuming that
+  // the corresponding app is policy-installed (prod mode). Returns a boolean
+  // indicating whether an update discovery task was queued successfully.
   bool MaybeDiscoverUpdatesForApp(const webapps::AppId& app_id);
+
+  // Queues an update discovery task (and potentially an apply update task
+  // afterwards if the discovery leads to a pending update) for the provided
+  // `url_info.app_id` and `update_channel`.
+  // If `pinned_version` is set, this specifies the version to which the IWA
+  // should be pinned, otherwise defaults to the latest version.
+  // Version pinning prevents any updates to a different version,
+  // effectively locking the IWA to the specified version.
+  // The result of the discover & apply chain will be communicated via
+  // observers.
+  void DiscoverUpdatesForApp(const IsolatedWebAppUrlInfo& url_info,
+                             const GURL& update_manifest_url,
+                             const UpdateChannel& update_channel,
+                             bool allow_downgrades,
+                             const std::optional<base::Version>& pinned_version,
+                             bool dev_mode);
 
   // Used to queue update discovery tasks manually from the
   // chrome://web-app-internals page. Returns the number of tasks queued.
@@ -168,6 +220,9 @@ class IsolatedWebAppUpdateManager
       IsolatedWebAppUpdateApplyTask::CompletionStatus status) const {
     TrackResultOfUpdateApplyTask(status);
   }
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   // This queue manages update discovery and apply tasks. Tasks can be added to
@@ -248,8 +303,10 @@ class IsolatedWebAppUpdateManager
   };
 
   // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(
-      const base::Version& component_version) override;
+  void OnComponentUpdateSuccess(const base::Version& version,
+                                bool is_preloaded) override;
+
+  void QueueUpdatesForIwasAffectedByKeyRotation();
 
   bool IsAnyIwaInstalled();
 
@@ -262,11 +319,9 @@ class IsolatedWebAppUpdateManager
   // not an Isolated Web App.
   bool MaybeQueueUpdateDiscoveryTask(
       const WebApp& web_app,
-      const base::flat_map<web_package::SignedWebBundleId, GURL>&
-          id_to_update_manifest_map);
-
-  base::flat_map<web_package::SignedWebBundleId, GURL>
-  GetForceInstalledBundleIdToUpdateManifestUrlMap();
+      const base::flat_map<web_package::SignedWebBundleId,
+                           IsolatedWebAppUpdateOptions>&
+          id_to_update_options_map);
 
   void MaybeScheduleUpdateDiscoveryCheck();
   void MaybeResetScheduledUpdateDiscoveryCheck();
@@ -356,9 +411,14 @@ class IsolatedWebAppUpdateManager
                           IwaKeyDistributionInfoProvider::Observer>
       key_distribution_info_observation_{this};
 
+  // Provides retry logic for updates initiated by key rotation.
+  net::BackoffEntry key_rotation_backoff_retry_entry_;
+
   class LocalDevModeUpdateDiscoverer;
   std::unique_ptr<LocalDevModeUpdateDiscoverer>
       local_dev_mode_update_discoverer_;
+
+  base::ObserverList<Observer> task_observers_;
 
   base::WeakPtrFactory<IsolatedWebAppUpdateManager> weak_factory_{this};
 

@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_branding.h"
@@ -33,8 +34,6 @@ base::FilePath GetUpdaterFolderName() {
 
 }  // namespace
 
-const char kLauncherName[] = "launcher";
-
 base::FilePath GetExecutableRelativePath() {
   return base::FilePath(base::StrCat({kExecutableName, kExecutableSuffix}));
 }
@@ -56,7 +55,7 @@ std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
 
 std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope) {
   std::optional<base::FilePath> path = GetInstallDirectory(scope);
-  return path ? std::optional<base::FilePath>(path->AppendASCII(kLauncherName))
+  return path ? std::optional<base::FilePath>(path->Append(kLauncherName))
               : std::nullopt;
 }
 
@@ -66,6 +65,18 @@ bool MigrateLegacyUpdaters(
         register_callback) {
   // There is no legacy update client for Linux.
   return true;
+}
+
+std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
+    UpdaterScope scope) {
+  std::optional<base::FilePath> install_dir =
+      GetVersionedInstallDirectory(scope);
+  if (!install_dir) {
+    return std::nullopt;
+  }
+
+  return install_dir->Append(
+      base::StrCat({enterprise_companion::kExecutableName, kExecutableSuffix}));
 }
 
 }  // namespace updater

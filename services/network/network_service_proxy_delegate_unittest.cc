@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ip_protection/mojom/data_types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/network_anonymization_key.h"
@@ -122,8 +123,9 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
     loop.Run();
   }
 
-  mojom::BlindSignedAuthTokenPtr MakeAuthToken(std::string content) {
-    auto token = mojom::BlindSignedAuthToken::New();
+  ip_protection::mojom::BlindSignedAuthTokenPtr MakeAuthToken(
+      std::string content) {
+    auto token = ip_protection::mojom::BlindSignedAuthToken::New();
     token->token = std::move(content);
     return token;
   }

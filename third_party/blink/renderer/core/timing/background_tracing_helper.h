@@ -28,8 +28,7 @@ class PerformanceMark;
 class CORE_EXPORT BackgroundTracingHelper final
     : public GarbageCollected<BackgroundTracingHelper> {
  public:
-  using MarkHashSet = HashSet<uint32_t>;
-  using SiteMarkHashMap = HashMap<uint32_t, MarkHashSet>;
+  using SiteHashSet = HashSet<uint32_t>;
 
   explicit BackgroundTracingHelper(ExecutionContext* context);
   ~BackgroundTracingHelper();
@@ -40,25 +39,25 @@ class CORE_EXPORT BackgroundTracingHelper final
   // Implements GarbageCollected:
   void Trace(Visitor*) const;
 
+  // Parses a comma separated `allow_list` composed of `target_site_hash`
+  // (`MD5Hash32()` of eTLD+1 represented in ASCII) and returns a set. This uses
+  // std::string because it is interacting with Finch code, which doesn't use
+  // WTF primitives.
+  static SiteHashSet ParsePerformanceMarkSiteHashes(
+      std::string_view allow_list);
+
  protected:
-  struct SiteMarkHashMapContainer;
   friend class BackgroundTracingHelperTest;
 
-  // Returns a reference to a thread-safe static singleton `SiteMarkHashMap`,
+  // Returns a reference to a thread-safe static singleton `SiteHashSet`,
   // with all of the configured allow-listed sites and marks. This object is
   // populated with parsed data upon first access.
-  static const SiteMarkHashMap& GetSiteMarkHashMap();
+  static const SiteHashSet& GetSiteHashSet();
 
-  // Returns a pointer to the `MarkHashSet` contain allow-listed hashes for the
-  // provided |site_hash|. This will be nullptr if there are no allow-listed
-  // mark hashes for the given |site_hash|. This is threadsafe.
-  static const MarkHashSet* GetMarkHashSetForSiteHash(uint32_t site_hash);
-
-  // Splits a string and an optional numeric suffix preceded by an underscore.
-  // This is used by the "sequence number" mechanism for mark names. Returns
-  // the location of the underscore if a split is to occur, otherwise returns
-  // 0.
-  static size_t GetSequenceNumberPos(std::string_view string);
+  // Splits a string and an optional numeric suffix preceded by an
+  // underscore. Returns the location of the underscore if a split is to
+  // occur, otherwise returns 0.
+  static size_t GetIdSuffixPos(StringView string);
 
   // Generates a 32-bit MD5 hash of the given string piece. This will return a
   // value that is equivalent to the first 8 bytes of a full MD5 hash. In bash
@@ -75,33 +74,15 @@ class CORE_EXPORT BackgroundTracingHelper final
   // interacting with Finch code, which doesn't use WTF primitives.
   static uint32_t MD5Hash32(std::string_view string);
 
-  // Given a mark name with an optional sequence number suffix, parses out the
-  // suffix and hashes the mark name.
-  static void GetMarkHashAndSequenceNumber(std::string_view mark_name,
-                                           uint32_t sequence_number_offset,
-                                           uint32_t* mark_hash,
-                                           uint32_t* sequence_number);
-
-  // For the given |target_site_hash| (`MD5Hash32()` of eTLD+1 represented in
-  // ASCII), and the provided background-tracing performance.mark |allow_list|
-  // (also represented as an ASCII std::string), populates vector
-  // |allow_listed_mark_hashes| of allowed performance.mark event names, as
-  // 32-bit hashes. Returns true on success, or false if any errors were
-  // observed in the input data. If this returns false the
-  // |allow_listed_mark_hashes| will be returned empty. This uses
-  // std::string because it is interacting with Finch code, which doesn't use
-  // WTF primitives.
-  static bool ParseBackgroundTracingPerformanceMarkHashes(
-      std::string_view allow_list,
-      SiteMarkHashMap& allow_listed_hashes);
+  // Given a mark name with an optional numeric suffix, parses out the base name
+  // and suffix.
+  static std::pair<StringView, std::optional<uint32_t>> SplitMarkNameAndId(
+      StringView mark_name);
 
  private:
-  String site_;
+  std::string site_;
   uint32_t site_hash_ = 0;
   uint32_t execution_context_id_ = 0;
-  uint32_t sequence_number_offset_ = 0;
-  // This points to a thread-safe global singleton.
-  const MarkHashSet* mark_hashes_ = nullptr;
 };
 
 }  // namespace blink

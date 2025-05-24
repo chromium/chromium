@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * An interface which a client can use to listen to changes to password and password exception
  * lists.
  */
+@NullMarked
 public interface PasswordListObserver {
     /**
      * Called when passwords list is updated.

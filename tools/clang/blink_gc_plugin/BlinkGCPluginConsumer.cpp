@@ -89,6 +89,7 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
   // Only check structures in blink, cppgc and pdfium.
   options_.checked_namespaces.insert("blink");
   options_.checked_namespaces.insert("cppgc");
+  options_.checked_namespaces.insert("v8");
 
   // Add Pdfium subfolders containing GCed classes.
   options_.checked_directories.push_back("fpdfsdk/");
@@ -456,6 +457,14 @@ void BlinkGCPluginConsumer::CheckDispatch(RecordInfo* info) {
     visitor.TraverseStmt(defn->getBody());
     if (!visitor.dispatched_to_receiver())
       reporter_.MissingFinalizeDispatch(defn, info);
+  }
+
+  if (info->HasMultipleTraceDispatchMethods()) {
+    reporter_.RedundantTraceDispatchMethod(info, base);
+  }
+
+  if (info->HasMultipleFinalizeDispatchMethods()) {
+    reporter_.RedundantFinalizeDispatchMethod(info, base);
   }
 }
 

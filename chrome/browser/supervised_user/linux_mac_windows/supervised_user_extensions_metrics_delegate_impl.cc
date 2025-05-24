@@ -14,7 +14,7 @@
 namespace {
 
 int GetExtensionsCount(const extensions::ExtensionSet& extensions) {
-  return base::ranges::count_if(extensions, [](const auto& extension) {
+  return std::ranges::count_if(extensions, [](const auto& extension) {
     return !extensions::Manifest::IsComponentLocation(extension->location()) &&
            (extension->is_extension() || extension->is_theme());
   });

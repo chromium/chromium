@@ -11,7 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -40,6 +40,7 @@ class OneDriveUploadHandler
 
   OneDriveUploadHandler(Profile* profile,
                         const storage::FileSystemURL& source_url,
+                        UploadType upload_type,
                         UploadCallback callback,
                         base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
   ~OneDriveUploadHandler() override;

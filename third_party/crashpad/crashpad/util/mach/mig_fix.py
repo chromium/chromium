@@ -69,7 +69,7 @@ def _fix_user_implementation(implementation, fixed_implementation, header,
     file = open(implementation, 'r+' if fixed_implementation is None else 'r')
     contents = file.read()
 
-    pattern = re.compile('^(\t} __Reply);$', re.MULTILINE)
+    pattern = re.compile('^(\t} __Reply);$', flags=re.MULTILINE)
     contents = pattern.sub(r'\1 __attribute__((unused));', contents)
 
     if fixed_header is not None:
@@ -112,7 +112,7 @@ def _fix_server_implementation(implementation, fixed_implementation, header,
 
     # Find interesting declarations.
     declaration_pattern = re.compile(
-        '^mig_internal (kern_return_t __MIG_check__.*)$', re.MULTILINE)
+        '^mig_internal (kern_return_t __MIG_check__.*)$', flags=re.MULTILINE)
     declarations = declaration_pattern.findall(contents)
 
     # Remove “__attribute__((__unused__))” from the declarations, and call them

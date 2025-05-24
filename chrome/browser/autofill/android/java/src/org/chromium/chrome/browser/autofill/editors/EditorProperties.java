@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_HINT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
@@ -12,12 +13,15 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 
 import android.text.TextWatcher;
-import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
+
+import com.google.common.collect.ObjectArrays;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -30,11 +34,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 /** Properties defined here reflect the visible state of the {@link EditorDialog}. */
+@NullMarked
 public class EditorProperties {
     /** Contains information needed by {@link EditorDialogView} to display fields. */
     public static class FieldItem extends ListItem {
@@ -60,8 +63,6 @@ public class EditorProperties {
             new ReadableObjectPropertyKey<>("delete_confirmation_title");
     public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TEXT =
             new ReadableObjectPropertyKey<>("delete_confirmation_text");
-    public static final ReadableBooleanPropertyKey SHOW_REQUIRED_INDICATOR =
-            new ReadableBooleanPropertyKey("show_required_indicator");
 
     public static final WritableObjectPropertyKey<ListModel<FieldItem>> EDITOR_FIELDS =
             new WritableObjectPropertyKey<>("editor_fields");
@@ -88,7 +89,6 @@ public class EditorProperties {
         FOOTER_MESSAGE,
         DELETE_CONFIRMATION_TITLE,
         DELETE_CONFIRMATION_TEXT,
-        SHOW_REQUIRED_INDICATOR,
         EDITOR_FIELDS,
         DONE_RUNNABLE,
         CANCEL_RUNNABLE,
@@ -110,28 +110,6 @@ public class EditorProperties {
         int DROPDOWN = 1;
         // User can fill in a sequence of characters subject to input type restrictions.
         int TEXT_INPUT = 2;
-    }
-
-    /** A convenience class for displaying keyed values in a dropdown. */
-    public static class DropdownKeyValue extends Pair<String, String> {
-        public DropdownKeyValue(String key, String value) {
-            super(key, value);
-        }
-
-        /** @return The key identifier. */
-        public String getKey() {
-            return super.first;
-        }
-
-        /** @return The human-readable localized display value. */
-        public String getValue() {
-            return super.second;
-        }
-
-        @Override
-        public String toString() {
-            return super.second.toString();
-        }
     }
 
     /** Field properties common to every field. */
@@ -170,10 +148,8 @@ public class EditorProperties {
         };
 
         public static final PropertyKey[] DROPDOWN_ALL_KEYS =
-                Stream.concat(
-                                Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
-                                Arrays.stream(DROPDOWN_SPECIFIC_KEYS))
-                        .toArray(PropertyKey[]::new);
+                ObjectArrays.concat(
+                        FieldProperties.FIELD_ALL_KEYS, DROPDOWN_SPECIFIC_KEYS, PropertyKey.class);
     }
 
     /** Properties specific for the text fields. */
@@ -190,10 +166,8 @@ public class EditorProperties {
         };
 
         public static final PropertyKey[] TEXT_ALL_KEYS =
-                Stream.concat(
-                                Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
-                                Arrays.stream(TEXT_SPECIFIC_KEYS))
-                        .toArray(PropertyKey[]::new);
+                ObjectArrays.concat(
+                        FieldProperties.FIELD_ALL_KEYS, TEXT_SPECIFIC_KEYS, PropertyKey.class);
     }
 
     public static boolean isDropdownField(ListItem fieldItem) {
@@ -201,26 +175,25 @@ public class EditorProperties {
     }
 
     public static @Nullable String getDropdownKeyByValue(
-            PropertyModel dropdownField, String value) {
-        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST).stream()
-                .filter(
-                        keyValue -> {
-                            return keyValue.getValue().equals(value);
-                        })
-                .map(DropdownKeyValue::getKey)
-                .findAny()
-                .orElse(null);
+            PropertyModel dropdownField, @Nullable String value) {
+        for (DropdownKeyValue keyValue :
+                dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)) {
+            if (keyValue.getValue().equals(value)) {
+                return keyValue.getKey();
+            }
+        }
+        return null;
     }
 
-    public static @Nullable String getDropdownValueByKey(PropertyModel dropdownField, String key) {
-        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST).stream()
-                .filter(
-                        keyValue -> {
-                            return keyValue.getKey().equals(key);
-                        })
-                .map(DropdownKeyValue::getValue)
-                .findAny()
-                .orElse(null);
+    public static @Nullable String getDropdownValueByKey(
+            PropertyModel dropdownField, @Nullable String key) {
+        for (DropdownKeyValue keyValue :
+                dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)) {
+            if (keyValue.getKey().equals(key)) {
+                return keyValue.getValue();
+            }
+        }
+        return null;
     }
 
     public static void setDropdownKey(PropertyModel dropdownField, @Nullable String key) {
@@ -232,7 +205,7 @@ public class EditorProperties {
         Callback<String> fieldCallback =
                 dropdownField.get(DropdownFieldProperties.DROPDOWN_CALLBACK);
         if (fieldCallback != null) {
-            fieldCallback.onResult(key);
+            fieldCallback.onResult(assumeNonNull(key));
         }
     }
 

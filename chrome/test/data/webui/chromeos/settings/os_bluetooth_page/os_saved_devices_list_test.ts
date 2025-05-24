@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsSavedDevicesListElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsSavedDevicesListElement} from 'chrome://os-settings/lazy_load.js';
 import {OsBluetoothDevicesSubpageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

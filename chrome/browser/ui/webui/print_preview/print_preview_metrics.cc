@@ -14,14 +14,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/crosapi/mojom/extension_printer.mojom-shared.h"
-#endif
 
 namespace printing {
 
@@ -82,14 +77,17 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
                                     : PrintSettingsBuckets::kPortrait);
   }
 
-  if (print_settings.FindInt(kSettingCopies).value_or(1) > 1)
+  if (print_settings.FindInt(kSettingCopies).value_or(1) > 1) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kCopies);
+  }
 
-  if (preview_settings.FindInt(kSettingPagesPerSheet).value_or(1) != 1)
+  if (preview_settings.FindInt(kSettingPagesPerSheet).value_or(1) != 1) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPagesPerSheet);
+  }
 
-  if (print_settings.FindBool(kSettingCollate).value_or(false))
+  if (print_settings.FindBool(kSettingCollate).value_or(false)) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kCollate);
+  }
 
   std::optional<int> duplex_mode_opt =
       print_settings.FindInt(kSettingDuplexMode);
@@ -124,11 +122,13 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
     }
   }
 
-  if (preview_settings.FindInt(kSettingMarginsType).value_or(0) != 0)
+  if (preview_settings.FindInt(kSettingMarginsType).value_or(0) != 0) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kNonDefaultMargins);
+  }
 
-  if (preview_settings.FindBool(kSettingHeaderFooterEnabled).value_or(false))
+  if (preview_settings.FindBool(kSettingHeaderFooterEnabled).value_or(false)) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kHeadersAndFooters);
+  }
 
   if (preview_settings.FindBool(kSettingShouldPrintBackgrounds)
           .value_or(false)) {
@@ -140,8 +140,9 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
     ReportPrintSettingHistogram(PrintSettingsBuckets::kSelectionOnly);
   }
 
-  if (preview_settings.FindBool(kSettingRasterizePdf).value_or(false))
+  if (preview_settings.FindBool(kSettingRasterizePdf).value_or(false)) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPrintAsImage);
+  }
 
   ScalingType scaling_type =
       static_cast<ScalingType>(preview_settings.FindInt(kSettingScalingType)
@@ -151,10 +152,11 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
   }
 
   if (is_pdf) {
-    if (scaling_type == ScalingType::FIT_TO_PAGE)
+    if (scaling_type == ScalingType::FIT_TO_PAGE) {
       ReportPrintSettingHistogram(PrintSettingsBuckets::kFitToPage);
-    else if (scaling_type == ScalingType::FIT_TO_PAPER)
+    } else if (scaling_type == ScalingType::FIT_TO_PAPER) {
       ReportPrintSettingHistogram(PrintSettingsBuckets::kFitToPaper);
+    }
   }
 
   int dpi_horizontal =
@@ -173,10 +175,11 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (print_settings.FindString(kSettingPinValue))
+#if BUILDFLAG(IS_CHROMEOS)
+  if (print_settings.FindString(kSettingPinValue)) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPin);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ReportUserActionHistogram(UserActionBuckets event) {
@@ -186,7 +189,7 @@ void ReportUserActionHistogram(UserActionBuckets event) {
 
 void RecordGetPrintersTimeHistogram(mojom::PrinterType printer_type,
                                     const base::TimeTicks& start_time) {
-  std::string printer_type_metric;
+  std::string_view printer_type_metric;
   switch (printer_type) {
     case mojom::PrinterType::kExtension:
       printer_type_metric = "Extension";
@@ -197,23 +200,13 @@ void RecordGetPrintersTimeHistogram(mojom::PrinterType printer_type,
     case mojom::PrinterType::kLocal:
       printer_type_metric = "Local";
       break;
-    case mojom::PrinterType::kPrivetDeprecated:
-    case mojom::PrinterType::kCloudDeprecated:
-      NOTREACHED();
   }
+  CHECK(!printer_type_metric.empty());
   base::UmaHistogramCustomTimes(
       base::StrCat({"PrintPreview.GetPrintersTime.", printer_type_metric}),
       /*sample=*/base::TimeTicks::Now() - start_time,
       /*min=*/base::Milliseconds(1),
       /*max=*/base::Minutes(1), /*buckets=*/50);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void ReportLacrosExtensionPrintJobStatusFromAshHistogram(
-    crosapi::mojom::StartPrintStatus status) {
-  base::UmaHistogramEnumeration("Printing.LacrosExtensions.FromAsh.Job.Result",
-                                status);
-}
-#endif
 
 }  // namespace printing

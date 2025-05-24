@@ -20,31 +20,7 @@ TrustedTypePolicy::TrustedTypePolicy(const String& policy_name,
   DCHECK(policy_options_);
 }
 
-TrustedHTML* TrustedTypePolicy::createHTML(ScriptState* script_state,
-                                           const String& input,
-                                           const HeapVector<ScriptValue>& args,
-                                           ExceptionState& exception_state) {
-  return CreateHTML(script_state->GetIsolate(), input, args, exception_state);
-}
-
-TrustedScript* TrustedTypePolicy::createScript(
-    ScriptState* script_state,
-    const String& input,
-    const HeapVector<ScriptValue>& args,
-    ExceptionState& exception_state) {
-  return CreateScript(script_state->GetIsolate(), input, args, exception_state);
-}
-
-TrustedScriptURL* TrustedTypePolicy::createScriptURL(
-    ScriptState* script_state,
-    const String& input,
-    const HeapVector<ScriptValue>& args,
-    ExceptionState& exception_state) {
-  return CreateScriptURL(script_state->GetIsolate(), input, args,
-                         exception_state);
-}
-
-TrustedHTML* TrustedTypePolicy::CreateHTML(v8::Isolate* isolate,
+TrustedHTML* TrustedTypePolicy::createHTML(v8::Isolate* isolate,
                                            const String& input,
                                            const HeapVector<ScriptValue>& args,
                                            ExceptionState& exception_state) {
@@ -63,7 +39,7 @@ TrustedHTML* TrustedTypePolicy::CreateHTML(v8::Isolate* isolate,
   return MakeGarbageCollected<TrustedHTML>(html);
 }
 
-TrustedScript* TrustedTypePolicy::CreateScript(
+TrustedScript* TrustedTypePolicy::createScript(
     v8::Isolate* isolate,
     const String& input,
     const HeapVector<ScriptValue>& args,
@@ -85,7 +61,7 @@ TrustedScript* TrustedTypePolicy::CreateScript(
   return MakeGarbageCollected<TrustedScript>(script);
 }
 
-TrustedScriptURL* TrustedTypePolicy::CreateScriptURL(
+TrustedScriptURL* TrustedTypePolicy::createScriptURL(
     v8::Isolate* isolate,
     const String& input,
     const HeapVector<ScriptValue>& args,

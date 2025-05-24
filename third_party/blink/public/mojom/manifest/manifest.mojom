@@ -9,7 +9,7 @@ import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "third_party/blink/public/mojom/manifest/capture_links.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/safe_url_pattern.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
@@ -81,11 +81,6 @@ struct Manifest {
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/URLProtocolHandler/explainer.md
   array<ManifestProtocolHandler> protocol_handlers;
 
-  // TODO(crbug.com/1072058): This field is non-standard and part of an
-  // experiment. See:
-  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
-  array<ManifestUrlHandler> url_handlers;
-
   // TODO(crbug.com/1250011): This field is non-standard and part of an
   // experiment. See:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
@@ -128,7 +123,7 @@ struct Manifest {
   // As such, this field should not be exposed by default.
   CaptureLinks capture_links;
 
-  array<ParsedPermissionsPolicyDeclaration> permissions_policy;
+  array<network.mojom.ParsedPermissionsPolicyDeclaration> permissions_policy;
 
   // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
   // experiment. See:
@@ -157,6 +152,11 @@ struct Manifest {
   // TODO(crbug.com/1444407): This field is non-standard and part of an
   // experiment. See: https://github.com/WICG/isolated-web-apps
   mojo_base.mojom.String16? version;
+
+  // Represent a string value which when provided will be used to trigger a
+  // manifest update.
+  // TODO(crbug.com/403252969): Add explainer here once complete.
+  mojo_base.mojom.String16? update_token;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -234,14 +234,6 @@ struct ManifestFileFilter {
 struct ManifestProtocolHandler {
   mojo_base.mojom.String16 protocol;
   url.mojom.Url url;
-};
-
-struct ManifestUrlHandler {
-  url.mojom.Origin origin;
-  // A boolean that is used to show if a wildcard is present for the origin.
-  // If true, the application indicates that it wants to handle all subdomains
-  // of |origin|. If false, the application only wants to handle |origin|.
-  bool has_origin_wildcard;
 };
 
 struct ManifestScopeExtension {

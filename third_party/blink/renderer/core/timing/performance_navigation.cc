@@ -70,12 +70,12 @@ uint16_t PerformanceNavigation::redirectCount() const {
   return timing.RedirectCount();
 }
 
-ScriptValue PerformanceNavigation::toJSONForBinding(
+ScriptObject PerformanceNavigation::toJSONForBinding(
     ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddNumber("type", type());
   result.AddNumber("redirectCount", redirectCount());
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void PerformanceNavigation::Trace(Visitor* visitor) const {

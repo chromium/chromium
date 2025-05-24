@@ -40,11 +40,11 @@ class ManifestHandler {
 
   // Validate that files associated with this manifest key exist.
   // Validation takes place after parsing. May also append a series of
-  // warning messages to |warnings|.
+  // warning messages to `warnings`.
   // This may perform IO operations.
   //
   // Otherwise, returns false, and a description of the error is
-  // returned in |error|.
+  // returned in `error`.
   // TODO(yoz): Change error to std::u16string. See crbug.com/71980.
   virtual bool Validate(const Extension* extension,
                         std::string* error,
@@ -66,14 +66,14 @@ class ManifestHandler {
   // Defaults to empty.
   virtual const std::vector<std::string> PrerequisiteKeys() const;
 
-  // Creates a |ManifestPermission| instance for the given manifest key |name|.
+  // Creates a `ManifestPermission` instance for the given manifest key `name`.
   // The returned permission does not contain any permission data, so this
-  // method is usually used before calling |FromValue| or |Read|. Returns
-  // |NULL| if the manifest handler does not support custom permissions.
+  // method is usually used before calling `FromValue` or `Read`. Returns
+  // `NULL` if the manifest handler does not support custom permissions.
   virtual ManifestPermission* CreatePermission();
 
-  // Creates a |ManifestPermission| instance containing the initial set of
-  // required manifest permissions for the given |extension|. Returns |NULL| if
+  // Creates a `ManifestPermission` instance containing the initial set of
+  // required manifest permissions for the given `extension`. Returns `NULL` if
   // the manifest handler does not support custom permissions or if there was
   // no manifest key in the extension manifest for this handler.
   virtual ManifestPermission* CreateInitialRequiredPermission(
@@ -98,15 +98,15 @@ class ManifestHandler {
                                 std::string* error,
                                 std::vector<InstallWarning>* warnings);
 
-  // Calls |CreatePermission| on the manifest handler for |key|. Returns |NULL|
-  // if there is no manifest handler for |key| or if the manifest handler for
-  // |key| does not support custom permissions.
+  // Calls `CreatePermission` on the manifest handler for `key`. Returns `NULL`
+  // if there is no manifest handler for `key` or if the manifest handler for
+  // `key` does not support custom permissions.
   static ManifestPermission* CreatePermission(const std::string& key);
 
-  // Calls |CreateInitialRequiredPermission| on all registered manifest handlers
-  // and adds the returned permissions to |permission_set|. Note this should be
+  // Calls `CreateInitialRequiredPermission` on all registered manifest handlers
+  // and adds the returned permissions to `permission_set`. Note this should be
   // called after all manifest data elements have been read, parsed and stored
-  // in the manifest data property of |extension|, as manifest handlers need
+  // in the manifest data property of `extension`, as manifest handlers need
   // access to their manifest data to initialize their required manifest
   // permission.
   static void AddExtensionInitialRequiredPermissions(

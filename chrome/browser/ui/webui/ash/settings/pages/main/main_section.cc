@@ -10,6 +10,7 @@
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -36,12 +36,14 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::settings {
 
@@ -182,17 +184,15 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isOSSettings", true);
 
   // Add app-wide feature flags
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-  html_source->AddBoolean("isRevampWayfindingEnabled", kIsRevampEnabled);
-  html_source->AddString("chromeRefresh2023Attribute",
-                         kIsRevampEnabled ? "chrome-refresh-2023" : "");
+  html_source->AddString("chromeRefresh2023Attribute", "chrome-refresh-2023");
 
-  html_source->AddBoolean("isGuest", IsGuestModeActive());
-  html_source->AddBoolean(
-      "isKioskModeActive",
-      user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
-  html_source->AddBoolean("isChild", IsChildUser());
+  const auto& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
+  html_source->AddBoolean("isGuest", IsGuestModeActive(user));
+  html_source->AddBoolean("isKioskModeActive", IsKioskModeActive(user));
+  html_source->AddBoolean("isKioskOldA11ySettingsRedirectionEnabled",
+                          IsKioskOldA11ySettingsRedirectionEnabled(user));
+  html_source->AddBoolean("isChild", IsChildUser(user));
 
   // Add the System Web App resources for Settings.
   html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);

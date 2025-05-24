@@ -8,6 +8,7 @@
 #include "ash/detachable_base/detachable_base_observer.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -48,9 +49,7 @@ void DetachableBaseHandler::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 DetachableBaseHandler::DetachableBaseHandler(PrefService* local_state)
-    : local_state_(local_state),
-      hammerd_observation_(this),
-      power_manager_observation_(this) {
+    : local_state_(local_state) {
   if (HammerdClient::Get())  // May be null in tests
     hammerd_observation_.Observe(HammerdClient::Get());
   chromeos::PowerManagerClient* power_manager_client =
@@ -60,6 +59,12 @@ DetachableBaseHandler::DetachableBaseHandler(PrefService* local_state)
   power_manager_client->GetSwitchStates(
       base::BindOnce(&DetachableBaseHandler::OnGotPowerManagerSwitchStates,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  if (SessionController::Get()) {
+    session_observation_.Observe(SessionController::Get());
+  } else {
+    CHECK_IS_TEST();
+  }
 
   if (GetPairingStatus() != DetachableBasePairingStatus::kNone)
     NotifyPairingStatusChanged();
@@ -73,15 +78,6 @@ void DetachableBaseHandler::AddObserver(DetachableBaseObserver* observer) {
 
 void DetachableBaseHandler::RemoveObserver(DetachableBaseObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void DetachableBaseHandler::RemoveUserData(const UserInfo& user) {
-  last_used_devices_.erase(user.account_id);
-
-  if (local_state_) {
-    ScopedDictPrefUpdate update(local_state_, prefs::kDetachableBaseDevices);
-    update->Remove(GetKeyForPrefs(user.account_id));
-  }
 }
 
 DetachableBasePairingStatus DetachableBaseHandler::GetPairingStatus() const {
@@ -176,6 +172,12 @@ void DetachableBaseHandler::TabletModeEventReceived(
     chromeos::PowerManagerClient::TabletMode mode,
     base::TimeTicks timestamp) {
   UpdateTabletMode(mode);
+}
+
+void DetachableBaseHandler::OnUserToBeRemoved(const AccountId& account_id) {
+  last_used_devices_.erase(account_id);
+  ScopedDictPrefUpdate update(local_state_, prefs::kDetachableBaseDevices);
+  update->Remove(GetKeyForPrefs(account_id));
 }
 
 void DetachableBaseHandler::OnGotPowerManagerSwitchStates(

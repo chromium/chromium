@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -16,19 +18,21 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ViewEventSink.InternalAccessDelegate;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.MotionEventUtils;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.ui.base.EventForwarder;
+import org.chromium.ui.util.MotionEventUtils;
 
 /**
- * Called from native to handle UI events that need access to various Java layer
- * content components.
+ * Called from native to handle UI events that need access to various Java layer content components.
  */
 @JNINamespace("content")
+@NullMarked
 public class ContentUiEventHandler implements UserData {
     private final WebContentsImpl mWebContents;
     private InternalAccessDelegate mEventDelegate;
@@ -40,8 +44,11 @@ public class ContentUiEventHandler implements UserData {
     }
 
     public static ContentUiEventHandler fromWebContents(WebContents webContents) {
-        return ((WebContentsImpl) webContents)
-                .getOrSetUserData(ContentUiEventHandler.class, UserDataFactoryLazyHolder.INSTANCE);
+        ContentUiEventHandler ret =
+                webContents.getOrSetUserData(
+                        ContentUiEventHandler.class, UserDataFactoryLazyHolder.INSTANCE);
+        assert ret != null;
+        return ret;
     }
 
     public ContentUiEventHandler(WebContents webContents) {
@@ -57,6 +64,7 @@ public class ContentUiEventHandler implements UserData {
         return contentUiEventHandler;
     }
 
+    @Initializer
     public void setEventDelegate(InternalAccessDelegate delegate) {
         mEventDelegate = delegate;
     }
@@ -88,7 +96,7 @@ public class ContentUiEventHandler implements UserData {
 
     private boolean isTrackpadEventThatNeedsConversion(MotionEvent event) {
         return mWebContents.getEventForwarder().isTrackpadToMouseEventConversionEnabled()
-                && EventForwarder.isTrackpadClickOrClickAndDragEvent(event);
+                && EventForwarder.isTrackpadToMouseConversionEvent(event);
     }
 
     private void onMouseWheelEvent(MotionEvent event) {
@@ -101,7 +109,9 @@ public class ContentUiEventHandler implements UserData {
                         event.getX(),
                         event.getY(),
                         event.getAxisValue(MotionEvent.AXIS_HSCROLL),
-                        event.getAxisValue(MotionEvent.AXIS_VSCROLL));
+                        event.getAxisValue(MotionEvent.AXIS_VSCROLL),
+                        event.getMetaState(),
+                        event.getSource());
     }
 
     private boolean onMouseEvent(MotionEvent event, boolean shouldConvertToMouseEvent) {
@@ -199,7 +209,10 @@ public class ContentUiEventHandler implements UserData {
         // It's a very real (and valid) possibility that a fling may still
         // be active when programatically scrolling. Cancelling the fling in
         // such cases ensures a consistent gesture event stream.
-        if (GestureListenerManagerImpl.fromWebContents(mWebContents).hasActiveFlingScroll()) {
+        GestureListenerManagerImpl gestureManager =
+                GestureListenerManagerImpl.fromWebContents(mWebContents);
+        assumeNonNull(gestureManager);
+        if (gestureManager.hasActiveFlingScroll()) {
             ContentUiEventHandlerJni.get()
                     .cancelFling(mNativeContentUiEventHandler, ContentUiEventHandler.this, time);
         }
@@ -232,7 +245,9 @@ public class ContentUiEventHandler implements UserData {
                 float x,
                 float y,
                 float ticksX,
-                float ticksY);
+                float ticksY,
+                int metaState,
+                int source);
 
         void sendMouseEvent(
                 long nativeContentUiEventHandler,

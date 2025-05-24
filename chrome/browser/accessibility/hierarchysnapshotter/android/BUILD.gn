@@ -5,22 +5,10 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/accessibility/hierarchysnapshotter/HierarchySnapshotter.java" ]
-
-  public_deps = [ ":delegate_java" ]
-}
-
-android_library("delegate_java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/accessibility/hierarchysnapshotter/HierarchySnapshotter.java",
     "java/src/org/chromium/chrome/browser/accessibility/hierarchysnapshotter/HierarchySnapshotterDelegate.java",
-    "java/src/org/chromium/chrome/browser/accessibility/hierarchysnapshotter/HierarchySnapshotterDelegateImpl.java",
   ]
 
-  jar_excluded_patterns = [ "*/HierarchySnapshotterDelegateImpl.class" ]
-}
-
-android_library("delegate_public_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/accessibility/hierarchysnapshotter/HierarchySnapshotterDelegateImpl.java" ]
-
-  deps = [ ":delegate_java" ]
+  deps = [ "//base:service_loader_java" ]
 }

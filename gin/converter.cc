@@ -154,10 +154,9 @@ bool Converter<std::string>::FromV8(Isolate* isolate,
   if (!val->IsString())
     return false;
   Local<String> str = Local<String>::Cast(val);
-  int length = str->Utf8Length(isolate);
+  size_t length = str->Utf8LengthV2(isolate);
   out->resize(length);
-  str->WriteUtf8(isolate, &(*out)[0], length, NULL,
-                 String::NO_NULL_TERMINATION);
+  str->WriteUtf8V2(isolate, out->data(), length);
   return true;
 }
 
@@ -175,12 +174,11 @@ bool Converter<std::u16string>::FromV8(Isolate* isolate,
   if (!val->IsString())
     return false;
   Local<String> str = Local<String>::Cast(val);
-  int length = str->Length();
-  // Note that the reinterpret cast is because on Windows string16 is an alias
-  // to wstring, and hence has character type wchar_t not uint16_t.
-  str->Write(isolate,
-             reinterpret_cast<uint16_t*>(base::WriteInto(out, length + 1)), 0,
-             length);
+  uint32_t length = str->Length();
+  out->resize(length);
+  static_assert(sizeof(char16_t) == sizeof(uint16_t),
+                "char16_t isn't the same as uint16_t");
+  str->WriteV2(isolate, 0, length, reinterpret_cast<uint16_t*>(out->data()));
   return true;
 }
 

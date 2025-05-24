@@ -60,7 +60,7 @@ void ColorChooserUIController::OpenUI() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   OpenColorChooser();
 #else
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "ColorChooserUIController should only be used on Android or iOS";
 #endif
 }
@@ -78,6 +78,10 @@ void ColorChooserUIController::EndChooser() {
 
 AXObject* ColorChooserUIController::RootAXObject(Element* popup_owner) {
   return nullptr;
+}
+
+bool ColorChooserUIController::IsPickerVisible() const {
+  return chooser_.is_bound();
 }
 
 void ColorChooserUIController::DidChooseColor(uint32_t color) {

@@ -7,7 +7,10 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_UTIL_H_
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_UTIL_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/buildflags.h"
@@ -18,6 +21,8 @@
 #include "net/cert/x509_certificate.h"
 
 namespace safe_browsing {
+
+class DeepScanningMetadata;
 
 // Enum to keep track why a particular download verdict was chosen.
 // Used for UMA metrics. Do not reorder.
@@ -64,6 +69,7 @@ enum DownloadCheckResultReason {
   REASON_LOCAL_DECRYPTION_PROMPT = 37,
   REASON_LOCAL_DECRYPTION_FAILED = 38,
   REASON_IMMEDIATE_DEEP_SCAN = 39,
+  REASON_IGNORED_VERDICT = 40,
   REASON_MAX  // Always add new values before this one.
 };
 
@@ -105,7 +111,24 @@ enum class DeepScanEvent {
   kIncorrectPassword = 8,
   kMaxValue = kIncorrectPassword,
 };
+
+// Describes whether a given download may send a download ping.
+enum class MayCheckDownloadResult {
+  // The download may not send a ping. This may be due to properties of the
+  // download/file itself (see DownloadCheckResultReason) or due to other logic
+  // applied by DownloadProtection{Service,Delegate}.
+  kMayNotCheckDownload,
+  // The download may send a ping, but only a "light" ping may be sent if the
+  // download is sampled.
+  kMaySendSampledPingOnly,
+  // The download is fully supported for CheckClientDownload and may send a full
+  // download ping.
+  kMayCheckDownload,
+};
+
 void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event);
+void LogDeepScanEvent(const DeepScanningMetadata& metadata,
+                      DeepScanEvent event);
 void LogLocalDecryptionEvent(DeepScanEvent event);
 
 // Callback type which is invoked once the download request is done.
@@ -172,15 +195,23 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
     const content::FileSystemAccessWriteItem& item,
     int user_gesture_limit);
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-// Sends dangerous download report if the following conditions are met:
-// (1) it is a dangerous download.
-// (2) user is NOT in incognito mode.
-// (3) user is opted-in for extended reporting.
-// (4) there is a download ping token associated with the download (i.e.
-//     Safe Browsing returns a dangerous verdict).
-bool ShouldSendDangerousDownloadReport(download::DownloadItem* item);
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+// Returns true if dangerous download report should be sent.
+bool ShouldSendDangerousDownloadReport(
+    download::DownloadItem* item,
+    ClientSafeBrowsingReportRequest::ReportType report_type);
 #endif
+
+// If the item should be uploaded for deep scanning, this returns the content
+// analysis settings to use. If the item should not be uploaded, this returns
+// nullopt.
+std::optional<enterprise_connectors::AnalysisSettings>
+ShouldUploadBinaryForDeepScanning(download::DownloadItem* item);
+
+// Returns whether the filetype is eligible for a full download protection ping,
+// based only on the file name extension.
+bool IsFiletypeSupportedForFullDownloadProtection(
+    const base::FilePath& file_name);
 
 }  // namespace safe_browsing
 

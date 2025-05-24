@@ -1,0 +1,6 @@
+include_rules = [
+  "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
+  "+ios/chrome/browser/url_loading/model/url_loading_params.h",
+  "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
+  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+]

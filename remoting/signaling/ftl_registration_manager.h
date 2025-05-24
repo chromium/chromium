@@ -53,7 +53,7 @@ class FtlRegistrationManager final : public RegistrationManager {
 
  private:
   using SignInGaiaResponseCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
+      base::OnceCallback<void(const HttpStatus&,
                               std::unique_ptr<ftl::SignInGaiaResponse>)>;
 
   friend class FtlRegistrationManagerTest;
@@ -73,7 +73,7 @@ class FtlRegistrationManager final : public RegistrationManager {
 
   void DoSignInGaia(DoneCallback on_done);
   void OnSignInGaiaResponse(DoneCallback on_done,
-                            const ProtobufHttpStatus& status,
+                            const HttpStatus& status,
                             std::unique_ptr<ftl::SignInGaiaResponse> response);
 
   std::unique_ptr<RegistrationClient> registration_client_;

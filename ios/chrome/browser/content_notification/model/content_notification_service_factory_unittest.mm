@@ -4,31 +4,29 @@
 
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 class ContentNotificationServiceFactoryTest : public PlatformTest {
  public:
   ContentNotificationServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : profile_(TestProfileIOS::Builder().Build()) {}
 
-  ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
 
-  ChromeBrowserState* otr_browser_state() {
-    return browser_state_->GetOffTheRecordChromeBrowserState();
-  }
+  ProfileIOS* otr_profile() { return profile_->GetOffTheRecordProfile(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests that the factory returns a non-null instance for regular BrowserStates.
 TEST_F(ContentNotificationServiceFactoryTest, CreateInstance) {
   ContentNotificationService* const service =
-      ContentNotificationServiceFactory::GetForBrowserState(browser_state());
+      ContentNotificationServiceFactory::GetForProfile(profile());
   EXPECT_NE(service, nullptr);
 }
 
@@ -36,7 +34,6 @@ TEST_F(ContentNotificationServiceFactoryTest, CreateInstance) {
 // BrowserStates.
 TEST_F(ContentNotificationServiceFactoryTest, CreateOTRInstance) {
   ContentNotificationService* const service =
-      ContentNotificationServiceFactory::GetForBrowserState(
-          otr_browser_state());
+      ContentNotificationServiceFactory::GetForProfile(otr_profile());
   EXPECT_EQ(service, nullptr);
 }

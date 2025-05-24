@@ -9,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
+#import "components/webui/chrome_urls/pref_names.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
 #import "ios/chrome/browser/webui/ui_bundled/web_ui_test_utils.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -25,6 +26,13 @@
   config.additional_args.push_back(
       std::string("--") + optimization_guide::switches::kDebugLoggingEnabled);
   return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  // Enables internal only UIs.
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:chrome_urls::kInternalOnlyUisEnabled];
 }
 
 // Tests that chrome://optimization-guide-internals loads when debug logs flag

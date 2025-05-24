@@ -2,26 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/arc/bluetooth/arc_floss_bridge.h"
+
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/l2cap.h>
 #include <bluetooth/rfcomm.h>
 
-#include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/arc/bluetooth/arc_floss_bridge.h"
+#include "chromeos/ash/experiences/arc/bluetooth/bluetooth_type_converters.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "device/bluetooth/bluetooth_socket.h"
-#include "device/bluetooth/floss/floss_dbus_manager.h"
-#include "device/bluetooth/floss/floss_socket_manager.h"
-
-#include "base/logging.h"
-
-#include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_sdp_types.h"
+#include "device/bluetooth/floss/floss_socket_manager.h"
 
 using device::BluetoothUUID;
 using floss::BluetoothDeviceFloss;
@@ -213,11 +210,11 @@ void ArcFlossBridge::CloseBluetoothConnectingSocket(
 void ArcFlossBridge::SdpSearchComplete(
     const floss::FlossDeviceId device,
     const device::BluetoothUUID uuid,
-    const std::vector<floss::BtSdpRecord> records) {
+    const std::vector<floss::BtSdpRecord>& records) {
   mojom::BluetoothAddressPtr address =
       mojom::BluetoothAddress::From(device.address);
   std::vector<bluez::BluetoothServiceRecordBlueZ> records_bluez;
-  for (auto record : records) {
+  for (const auto& record : records) {
     records_bluez.push_back(
         mojo::TypeConverter<bluez::BluetoothServiceRecordBlueZ,
                             floss::BtSdpRecord>::Convert(record));

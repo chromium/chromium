@@ -6,6 +6,7 @@
 
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -32,10 +33,10 @@ const int kSanitizeWindowHeight = 680;
 void SanitizeDialog::ShowDialog(SanitizeDialog::SanitizePage page,
                                 gfx::NativeWindow parent) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* browser =
-      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::OS_SANITIZE);
+  auto* browser = ash::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::OS_SANITIZE, ash::BrowserType::kApp);
   if (browser) {
-    browser->window()->Close();
+    browser->Close();
   }
   // Close any existing Sanitize dialog before reopening.
   MaybeCloseExistingDialog();

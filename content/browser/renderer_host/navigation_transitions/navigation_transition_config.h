@@ -25,6 +25,13 @@ class NavigationTransitionConfig {
 
   // Provides the duration for a cache to be invisible before its evicted.
   static base::TimeDelta GetCleanupDelayForInvisibleCaches();
+
+  // Whether to wait for quiescence to start compressing a screenshot.
+  static bool ShouldCompressScreenshotWhenQuiet();
+
+  // How long to wait after obtaining a copy of the contents in the GPU process
+  // before sending it to the browser process.
+  static base::TimeDelta ScreenshotSendResultDelay();
 };
 
 }  // namespace content

@@ -58,6 +58,7 @@
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -101,8 +102,6 @@ class TitleView : public views::View {
 
  public:
   explicit TitleView(PaletteTray* palette_tray) : palette_tray_(palette_tray) {
-    // TODO(tdanderson|jdufault): Use TriView to handle the layout of the title.
-    // See crbug.com/614453.
     auto box_layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, kTitleViewPadding,
         kTitleViewChildSpacing);
@@ -113,7 +112,7 @@ class TitleView : public views::View {
     auto* title_label = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetEnabledColorId(kColorAshTextColorPrimary);
+    title_label->SetEnabledColor(kColorAshTextColorPrimary);
     title_label->SetAutoColorReadabilityEnabled(false);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                           *title_label);
@@ -214,6 +213,9 @@ PaletteTray::PaletteTray(Shelf* shelf)
   Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 
   shelf->AddObserver(this);
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
 }
 
 PaletteTray::~PaletteTray() {
@@ -399,10 +401,6 @@ void PaletteTray::OnThemeChanged() {
   UpdateTrayIcon();
 }
 
-std::u16string PaletteTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE);
-}
-
 void PaletteTray::HandleLocaleChange() {
   icon_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
 }
@@ -469,7 +467,7 @@ void PaletteTray::BubbleViewDestroyed() {
 }
 
 std::u16string PaletteTray::GetAccessibleNameForBubble() {
-  return GetAccessibleNameForTray();
+  return l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE);
 }
 
 bool PaletteTray::ShouldEnableExtraKeyboardAccessibility() {
@@ -552,10 +550,6 @@ void PaletteTray::ShowBubble() {
   TrayBubbleView::InitParams init_params = CreateInitParamsForTrayBubble(this);
   init_params.preferred_width = kPaletteWidth;
 
-  // TODO(tdanderson): Refactor into common row layout code.
-  // TODO(tdanderson|jdufault): Add material design ripple effects to the menu
-  // rows.
-
   // Create and customize bubble view.
   auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
   bubble_view->SetBorder(views::CreateEmptyBorder(
@@ -572,11 +566,9 @@ void PaletteTray::ShowBubble() {
       kPaddingBetweenTitleAndSeparator, 0, kMenuSeparatorVerticalPadding, 0)));
 
   // Add palette tools.
-  // TODO(tdanderson|jdufault): Use SystemMenuButton to get the material design
-  // ripples.
   std::vector<PaletteToolView> views = palette_tool_manager_->CreateViews();
   for (const PaletteToolView& view : views) {
-    bubble_view->AddChildView(view.view.get());
+    bubble_view->AddChildViewRaw(view.view.get());
   }
 
   // Show the bubble.
@@ -622,10 +614,10 @@ void PaletteTray::UpdateTrayIcon() {
   color = GetColorProvider()->GetColor(
       is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                   : cros_tokens::kCrosSysOnSurface);
-  icon_->SetImage(CreateVectorIcon(
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
       palette_tool_manager_->GetActiveTrayIcon(
           palette_tool_manager_->GetActiveTool(PaletteGroup::MODE)),
-      kTrayIconSize, color));
+      color, kTrayIconSize));
 }
 
 void PaletteTray::OnPaletteEnabledPrefChanged() {

@@ -108,14 +108,17 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
   }
 
   // Check if we need to split VP9 superframes.
+  auto curr_buffer_span = base::span(*curr_buffer);
   if (needs_vp9_superframe_splitting_ &&
-      Vp9Parser::IsSuperframe(curr_buffer->data(),
-                              base::checked_cast<off_t>(curr_buffer->size()),
-                              curr_buffer->decrypt_config())) {
+      Vp9Parser::IsSuperframe(
+          curr_buffer_span.data(),
+          base::checked_cast<off_t>(curr_buffer_span.size()),
+          curr_buffer->decrypt_config())) {
     base::circular_deque<Vp9Parser::FrameInfo> frames =
-        Vp9Parser::ExtractFrames(curr_buffer->data(),
-                                 base::checked_cast<off_t>(curr_buffer->size()),
-                                 curr_buffer->decrypt_config());
+        Vp9Parser::ExtractFrames(
+            curr_buffer_span.data(),
+            base::checked_cast<off_t>(curr_buffer_span.size()),
+            curr_buffer->decrypt_config());
     if (frames.empty()) {
       LOG(ERROR) << "Failure in Vp9 superframe splitting";
       OnBufferTranscrypted(Decryptor::kError, nullptr);
@@ -144,7 +147,10 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
     current_transcrypt_task_->buffer->set_duration(superframe->duration());
     current_transcrypt_task_->buffer->set_is_key_frame(
         superframe->is_key_frame());
-    current_transcrypt_task_->buffer->set_side_data(superframe->side_data());
+    if (superframe->side_data()) {
+      current_transcrypt_task_->buffer->set_side_data(
+          superframe->side_data()->Clone());
+    }
     if (frames.front().decrypt_config) {
       current_transcrypt_task_->buffer->set_decrypt_config(
           std::move(frames.front().decrypt_config));
@@ -167,7 +173,9 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
       buffer->set_timestamp(superframe->timestamp());
       buffer->set_duration(superframe->duration());
       buffer->set_is_key_frame(superframe->is_key_frame());
-      buffer->set_side_data(superframe->side_data());
+      if (superframe->side_data()) {
+        buffer->set_side_data(superframe->side_data()->Clone());
+      }
       if (frames.back().decrypt_config) {
         buffer->set_decrypt_config(std::move(frames.back().decrypt_config));
       }
@@ -179,8 +187,7 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
   }
 
   // If we've already attached a secure buffer, don't do it again.
-  if (!curr_buffer->has_side_data() ||
-      !curr_buffer->side_data()->secure_handle) {
+  if (!curr_buffer->side_data() || !curr_buffer->side_data()->secure_handle) {
     auto status =
         decoder_->AttachSecureBuffer(current_transcrypt_task_->buffer);
     if (status == CroStatus::Codes::kSecureBufferPoolEmpty) {
@@ -193,8 +200,7 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
       return;
     }
 
-    if (curr_buffer->has_side_data() &&
-        curr_buffer->side_data()->secure_handle) {
+    if (curr_buffer->side_data() && curr_buffer->side_data()->secure_handle) {
       // Wrap the callback so we can release the secure buffer when decoding is
       // done.
       current_transcrypt_task_->decode_done_cb =

@@ -11,6 +11,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/country_codes/country_codes.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -20,6 +22,12 @@ class PolicyService;
 }
 namespace variations {
 class VariationsService;
+}
+namespace regional_capabilities {
+class RegionalCapabilitiesService;
+}
+namespace TemplateURLPrepopulateData {
+class Resolver;
 }
 
 class PrefRegistrySimple;
@@ -32,14 +40,56 @@ namespace search_engines {
 // for the country information).
 class SearchEngineChoiceService : public KeyedService {
  public:
-  // This constructor should only be used in tests.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnSavedGuestSearchChanged() = 0;
+  };
+
+  // Interface allowing SearchEngineChoiceService to have access to
+  // dependencies from higher level layers or that's can't be passed in
+  // at construction time, for example due to incompatible lifecycles.
+  class Client {
+   public:
+    virtual ~Client();
+
+    // Returns the Variations (Finch) country ID for this current run, or an
+    // invalid country ID if it's not available.
+    virtual country_codes::CountryId GetVariationsCountry() = 0;
+
+    // Returns whether this profile type is compatible with the
+    // Guest-specific default search engine propagation.
+    virtual bool IsProfileEligibleForDseGuestPropagation() = 0;
+
+    // Returns whether Chrome detected in this current run that its data has
+    // been transferred / restored to a new device.
+    //
+    // In practice, this function is not reliable on desktop. That's because
+    // "detected in current session" happens asynchronously, so it's possible
+    // to call this function and get a "false" value in a session where it will
+    // end up returning true at some point. And in the next session, "detected
+    // in current session" would be false too. It's possible to miss an actual
+    // true value due to timing of calls to this function.
+    virtual bool IsDeviceRestoreDetectedInCurrentSession() = 0;
+
+    // Returns whether the search engine choice described in `choice_metadata`
+    // predates the Chrome data having been transferred or restored to this
+    // device.
+    virtual bool DoesChoicePredateDeviceRestore(
+        const ChoiceCompletionMetadata& choice_metadata) = 0;
+
+   protected:
+    // Helper for subclass to have the possibility to share some of the
+    // implementation of `GetVariationsCountry()`.
+    static country_codes::CountryId GetVariationsLatestCountry(
+        variations::VariationsService* variations_service);
+  };
+
   SearchEngineChoiceService(
+      std::unique_ptr<Client> client,
       PrefService& profile_prefs,
       PrefService* local_state,
-      int variations_country_id = country_codes::kCountryIDUnknown);
-  SearchEngineChoiceService(PrefService& profile_prefs,
-                            PrefService* local_state,
-                            variations::VariationsService* variations_service);
+      regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
+      TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver);
   ~SearchEngineChoiceService() override;
 
   // Returns the choice screen eligibility condition most relevant for the
@@ -61,10 +111,11 @@ class SearchEngineChoiceService : public KeyedService {
       bool is_regular_profile,
       const TemplateURLService& template_url_service);
 
-  // Returns the country ID to use in the context of any search engine choice
-  // logic. Can be overridden using `switches::kSearchEngineChoiceCountry`.
-  // See `//components/country_codes` for the Country ID format.
-  int GetCountryId();
+  // Returns key information needed to show a search engine choice screen, like
+  // the template URLs for the engines to show. See
+  // `search_engines::ChoiceScreenData` for more details.
+  std::unique_ptr<search_engines::ChoiceScreenData> GetChoiceScreenData(
+      const SearchTermsData& search_terms_data);
 
   // Records that the choice was made by settings the timestamp if applicable.
   // Records the location from which the choice was made and the search engine
@@ -87,9 +138,35 @@ class SearchEngineChoiceService : public KeyedService {
       const ChoiceScreenDisplayState& display_state,
       bool is_from_cached_state = false);
 
+  // Clear state e.g. when a guest session is closed.
+  void ResetState();
+
   // Clears the country id cache to be able to change countries multiple times
   // in tests.
+  // TODO(crbug.com/328040066): Move to `//components/regional_capabilities`.
   void ClearCountryIdCacheForTesting();
+
+  // Returns a reference to the `SearchEngineChoiceService::Client` owned and
+  // used by this service.
+  Client& GetClientForTesting();
+
+  // Returns whether the profile is eligible for the default search engine to be
+  // used across all guest sessions.
+  bool IsDsePropagationAllowedForGuest() const;
+
+  // Returns the previously chosen default search engine configured to be
+  // propagated to new guest sessions. Returns nullopt if the profile is
+  // not eligible for DSE propagation or no DSE choice was previously stored.
+  std::optional<int> GetSavedSearchEngineBetweenGuestSessions() const;
+
+  // Save the `prepopulated_id` of the chosen search engine to be used for all
+  // guest sessions. Pass nullopt to reset the search engine choice.
+  void SetSavedSearchEngineBetweenGuestSessions(
+      std::optional<int> prepopulated_id);
+
+  void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
+
+  void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
   // Register Local state preferences in `registry`.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -100,16 +177,16 @@ class SearchEngineChoiceService : public KeyedService {
   // the choice are cleared, which triggers a reprompt on the next page load.
   void PreprocessPrefsForReprompt();
 
-  void ProcessPendingChoiceScreenDisplayState(PrefService* local_state);
+  void ProcessPendingChoiceScreenDisplayState();
 
-  int GetCountryIdInternal();
-
-#if BUILDFLAG(IS_ANDROID)
-  void ProcessGetCountryResponseFromPlayApi(int country_id);
-#endif
-
+  std::unique_ptr<Client> client_;
   const raw_ref<PrefService> profile_prefs_;
-  const int variations_country_id_;
+  const raw_ptr<PrefService> local_state_;
+  const raw_ref<regional_capabilities::RegionalCapabilitiesService>
+      regional_capabilities_service_;
+  const raw_ref<TemplateURLPrepopulateData::Resolver>
+      prepopulate_data_resolver_;
+  base::ObserverList<Observer> observers_;
 
   // Used to ensure that the value returned from `GetCountryId` never changes
   // in runtime (different runs can still return different values, though).

@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.supervised_user.website_approval;
 import android.graphics.Bitmap;
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Properties defined here reflect the visible state of the WebsiteApproval components. */
+@NullMarked
 class WebsiteApprovalProperties {
     static final PropertyModel.WritableObjectPropertyKey<String> CHILD_NAME =
             new PropertyModel.WritableObjectPropertyKey<>("child_name");

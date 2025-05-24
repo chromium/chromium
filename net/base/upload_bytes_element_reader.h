@@ -5,6 +5,7 @@
 #ifndef NET_BASE_UPLOAD_BYTES_ELEMENT_READER_H_
 #define NET_BASE_UPLOAD_BYTES_ELEMENT_READER_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <string>
@@ -12,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "net/base/net_export.h"
 #include "net/base/upload_element_reader.h"
 
@@ -39,8 +41,8 @@ class NET_EXPORT UploadBytesElementReader : public UploadElementReader {
            CompletionOnceCallback callback) override;
 
  private:
-  const base::span<const uint8_t> bytes_;
-  uint64_t offset_ = 0;
+  const base::raw_span<const uint8_t, DanglingUntriaged> bytes_;
+  size_t offset_ = 0;
 };
 
 // A subclass of UplodBytesElementReader which owns the data given as a vector.

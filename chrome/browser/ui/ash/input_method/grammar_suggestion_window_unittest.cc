@@ -16,8 +16,8 @@ namespace ime {
 
 class GrammarSuggestionWindowTest : public ChromeViewsTestBase {
  public:
-  GrammarSuggestionWindowTest() {}
-  ~GrammarSuggestionWindowTest() override {}
+  GrammarSuggestionWindowTest() = default;
+  ~GrammarSuggestionWindowTest() override = default;
 
  protected:
   void SetUp() override {

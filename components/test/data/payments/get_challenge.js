@@ -164,7 +164,7 @@ function createPaymentRequest(
  * @return {PaymentDetails} - The payment details with the given total amount.
  */
 function createDetails(totalAmount, withModifier, modifierAmount) {
-  let result = {
+  const result = {
     total: {label: 'TEST', amount: {currency: 'USD', value: totalAmount}},
   };
   if (withModifier) {

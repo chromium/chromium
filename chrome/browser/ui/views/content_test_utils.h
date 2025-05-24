@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTENT_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTENT_TEST_UTILS_H_
 
-
 namespace content {
 class WebContents;
 }

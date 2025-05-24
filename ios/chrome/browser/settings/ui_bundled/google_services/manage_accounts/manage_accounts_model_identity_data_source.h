@@ -1,0 +1,35 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_MODEL_IDENTITY_DATA_SOURCE_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_MODEL_IDENTITY_DATA_SOURCE_H_
+
+#include <vector>
+
+struct CoreAccountInfo;
+enum class IdentityAvatarSize;
+@class IdentityViewItem;
+@class LegacyAccountsTableViewController;
+@protocol SystemIdentity;
+
+// Identity data source for ManageAccountsTableViewController instance, to
+// manage the model.
+@protocol ManageAccountsModelIdentityDataSource <NSObject>
+
+// Provides identity info with gaiaID.
+- (id<SystemIdentity>)identityWithGaiaID:(NSString*)gaiaID;
+
+// Provides identity avatar.
+- (UIImage*)identityAvatarWithSizeForIdentity:(id<SystemIdentity>)identity
+                                         size:(IdentityAvatarSize)size;
+
+// Returns the primary identity view item.
+- (IdentityViewItem*)primaryIdentityViewItem;
+
+// Provides identity view items for all available identities.
+- (std::vector<IdentityViewItem*>)identityViewItems;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_MODEL_IDENTITY_DATA_SOURCE_H_

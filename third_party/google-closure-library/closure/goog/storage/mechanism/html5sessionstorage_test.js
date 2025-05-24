@@ -8,16 +8,16 @@ goog.module('goog.storage.mechanism.HTML5SessionStorageTest');
 goog.setTestOnly();
 
 const HTML5SessionStorage = goog.require('goog.storage.mechanism.HTML5SessionStorage');
-const iterableMechanismTester = goog.require('goog.storage.mechanism.iterableMechanismTester');
-/** @suppress {extraRequire} */
-const mechanismSeparationTester = goog.require('goog.storage.mechanism.mechanismSeparationTester');
-/** @suppress {extraRequire} */
-const mechanismSharingTester = goog.require('goog.storage.mechanism.mechanismSharingTester');
-/** @suppress {extraRequire} */
-const mechanismTestDefinition = goog.require('goog.storage.mechanism.mechanismTestDefinition');
+const iterableMechanismTests = goog.require('goog.storage.mechanism.iterableMechanismTests');
+const mechanismSharingTests = goog.require('goog.storage.mechanism.mechanismSharingTests');
+const mechanismTests = goog.require('goog.storage.mechanism.mechanismTests');
 const product = goog.require('goog.userAgent.product');
 const testSuite = goog.require('goog.testing.testSuite');
 const userAgent = goog.require('goog.userAgent');
+
+let mechanism;
+let mechanismShared;
+let minimumQuota;
 
 testSuite({
   shouldRunTests() {
@@ -30,30 +30,21 @@ testSuite({
   setUp() {
     const sessionStorage = new HTML5SessionStorage();
     if (sessionStorage.isAvailable()) {
-      /** @suppress {const} suppression added to enable type checking */
       mechanism = sessionStorage;
       // There should be at least 2 MiB.
-      /** @suppress {const} suppression added to enable type checking */
       minimumQuota = 2 * 1024 * 1024;
-      /** @suppress {const} suppression added to enable type checking */
-      mechanism_shared = new HTML5SessionStorage();
+      mechanismShared = new HTML5SessionStorage();
     }
   },
 
-  /**
-     @suppress {strictMissingProperties} suppression added to enable type
-     checking
-   */
   tearDown() {
     if (!!mechanism) {
       mechanism.clear();
-      /** @suppress {const} suppression added to enable type checking */
       mechanism = null;
     }
-    if (!!mechanism_shared) {
-      mechanism_shared.clear();
-      /** @suppress {const} suppression added to enable type checking */
-      mechanism_shared = null;
+    if (!!mechanismShared) {
+      mechanismShared.clear();
+      mechanismShared = null;
     }
   },
 
@@ -67,34 +58,32 @@ testSuite({
         userAgent.IE) {
       assertNotNull(mechanism);
       assertTrue(mechanism.isAvailable());
-      assertNotNull(mechanism_shared);
-      assertTrue(mechanism_shared.isAvailable());
+      assertNotNull(mechanismShared);
+      assertTrue(mechanismShared.isAvailable());
     }
   },
 
-  testCount() {
-    assertNotNull(mechanism);
-    iterableMechanismTester.testCount(
-        /** @type {!HTML5SessionStorage} */ (mechanism));
-  },
-  testIteratorBasics() {
-    assertNotNull(mechanism);
-    iterableMechanismTester.testIteratorBasics(
-        /** @type {!HTML5SessionStorage} */ (mechanism));
-  },
-  testIteratorWithTwoValues() {
-    assertNotNull(mechanism);
-    iterableMechanismTester.testIteratorWithTwoValues(
-        /** @type {!HTML5SessionStorage} */ (mechanism));
-  },
-  testClear() {
-    assertNotNull(mechanism);
-    iterableMechanismTester.testClear(
-        /** @type {!HTML5SessionStorage} */ (mechanism));
-  },
-  testClearClear() {
-    assertNotNull(mechanism);
-    iterableMechanismTester.testClearClear(
-        /** @type {!HTML5SessionStorage} */ (mechanism));
-  },
+  ...mechanismTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+    getMinimumQuota: function() {
+      return minimumQuota;
+    },
+  }),
+
+  ...iterableMechanismTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+  }),
+
+  ...mechanismSharingTests.register({
+    getMechanism: function() {
+      return mechanism;
+    },
+    getMechanismShared: function() {
+      return mechanismShared;
+    },
+  }),
 });

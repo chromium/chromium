@@ -9,9 +9,10 @@ dictionary IdentityCredentialDisconnectOptions : IdentityProviderConfig {
 
 [Exposed=Window, SecureContext]
 interface IdentityCredential : Credential {
-  static Promise<undefined> disconnect(optional IdentityCredentialDisconnectOptions options = {});
+  static Promise<undefined> disconnect(IdentityCredentialDisconnectOptions options);
   readonly attribute USVString? token;
   readonly attribute boolean isAutoSelected;
+  readonly attribute USVString configURL;
 };
 
 dictionary DisconnectedAccount {
@@ -29,9 +30,15 @@ enum IdentityCredentialRequestOptionsContext {
   "continue"
 };
 
+enum IdentityCredentialRequestOptionsMode {
+  "active",
+  "passive"
+};
+
 dictionary IdentityCredentialRequestOptions {
   required sequence<IdentityProviderRequestOptions> providers;
   IdentityCredentialRequestOptionsContext context = "signin";
+  IdentityCredentialRequestOptionsMode mode = "passive";
 };
 
 dictionary IdentityProviderConfig {
@@ -43,10 +50,14 @@ dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   USVString nonce;
   DOMString loginHint;
   DOMString domainHint;
+  sequence<USVString> fields;
+  any params;
 };
 
 dictionary IdentityProviderWellKnown {
-  required sequence<USVString> provider_urls;
+  sequence<USVString> provider_urls;
+  USVString accounts_endpoint;
+  USVString login_url;
 };
 
 dictionary IdentityProviderIcon {
@@ -63,29 +74,34 @@ dictionary IdentityProviderBranding {
 
 dictionary IdentityProviderAPIConfig {
   required USVString accounts_endpoint;
-  required USVString client_metadata_endpoint;
+  USVString client_metadata_endpoint;
   required USVString id_assertion_endpoint;
   required USVString login_url;
   USVString disconnect_endpoint;
   IdentityProviderBranding branding;
+  USVString account_label;
 };
 
 dictionary IdentityProviderAccount {
   required USVString id;
-  required USVString name;
-  required USVString email;
+  USVString name;
+  USVString email;
+  USVString tel;
+  USVString username;
   USVString given_name;
   USVString picture;
   sequence<USVString> approved_clients;
   sequence<DOMString> login_hints;
   sequence<DOMString> domain_hints;
+  sequence<DOMString> label_hints;
 };
 dictionary IdentityProviderAccountList {
   sequence<IdentityProviderAccount> accounts;
 };
 
-dictionary IdentityProviderToken {
-  required USVString token;
+dictionary IdentityAssertionResponse {
+  USVString token;
+  USVString continue_on;
 };
 
 dictionary IdentityProviderClientMetadata {
@@ -100,7 +116,12 @@ dictionary IdentityUserInfo {
   USVString picture;
 };
 
+dictionary IdentityResolveOptions {
+  USVString accountId;
+};
+
 [Exposed=Window, SecureContext] interface IdentityProvider {
     static undefined close();
+    static undefined resolve(DOMString token, optional IdentityResolveOptions options = {});
     static Promise<sequence<IdentityUserInfo>> getUserInfo(IdentityProviderConfig config);
 };

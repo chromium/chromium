@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isChromeOS, isLacros, isLinux, isMac, isWindows} from 'chrome://resources/js/platform.js';
 import {getFavicon, getFaviconForPageURL, getFileIconUrl} from 'chrome://resources/js/icon.js';
+import {isAndroid, isChromeOS, isLinux, isMac, isWindows} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('IconTest', function() {
@@ -18,10 +18,15 @@ suite('IconTest', function() {
           encodeURIComponent(url) + '&allowGoogleServerFallback=0") 2x)';
       const expectedOther = 'image-set(' +
           `url("chrome://favicon2/?size=${size}&scaleFactor=1x&pageUrl=` +
+          encodeURIComponent(url) + '&allowGoogleServerFallback=0") 1x, ' +
+          `url("chrome://favicon2/?size=${size}&` +
+          `scaleFactor=${window.devicePixelRatio}x&pageUrl=` +
           encodeURIComponent(url) + '&allowGoogleServerFallback=0") ' +
-          window.devicePixelRatio + 'x)';
+          `${window.devicePixelRatio}x)`;
 
-      const isDesktop = isMac || isChromeOS || isWindows || isLinux || isLacros;
+      // Android simulator returns true for isLinux, so also check isAndroid.
+      const isDesktop =
+          (isMac || isChromeOS || isWindows || isLinux) && !isAndroid;
       return isDesktop ? expectedDesktop : expectedOther;
     }
 
@@ -51,10 +56,15 @@ suite('IconTest', function() {
         encodeURIComponent('http://foo.com/foo.ico') + '") 2x)';
     const expectedOther = 'image-set(' +
         'url("chrome://favicon2/?size=16&scaleFactor=1x&iconUrl=' +
+        encodeURIComponent('http://foo.com/foo.ico') + '") 1x, ' +
+        'url("chrome://favicon2/?size=16&' +
+        `scaleFactor=${window.devicePixelRatio}x&iconUrl=` +
         encodeURIComponent('http://foo.com/foo.ico') + '") ' +
-        window.devicePixelRatio + 'x)';
+        `${window.devicePixelRatio}x)`;
 
-    const isDesktop = isMac || isChromeOS || isWindows || isLinux || isLacros;
+    // Android simulator returns true for isLinux, so also check isAndroid.
+    const isDesktop =
+        (isMac || isChromeOS || isWindows || isLinux) && !isAndroid;
     const expected = isDesktop ? expectedDesktop : expectedOther;
     assertEquals(expected, getFavicon(url));
   });

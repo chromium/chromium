@@ -6,6 +6,8 @@ import("//build/config/python.gni")
 import("//build_overrides/build.gni")
 import("private_code_test.gni")
 
+testonly = true
+
 action("private_paths") {
   script = "list_gclient_deps.py"
   outputs = [ "$target_gen_dir/private_paths.txt" ]
@@ -34,6 +36,9 @@ if (!is_component_build) {
 
   shared_library("private_code_test_inputs") {
     deps = [ "//v8" ]
+
+    # This is unnecessary, but used to make this test-only target
+    # lighter-weight.
     ldflags = [ "--collect-inputs-only" ]
   }
 

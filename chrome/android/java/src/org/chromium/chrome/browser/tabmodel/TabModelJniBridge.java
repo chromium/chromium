@@ -4,27 +4,26 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.CallSuper;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /** Bridges between the C++ and Java {@link TabModel} interfaces. */
-public abstract class TabModelJniBridge implements TabModel {
+@NullMarked
+public abstract class TabModelJniBridge implements TabModelInternal {
     private final Profile mProfile;
 
     /** The type of the Activity for which this tab model works. */
@@ -43,7 +42,7 @@ public abstract class TabModelJniBridge implements TabModel {
      *     the model from broadcasting sync updates.
      */
     public TabModelJniBridge(
-            @NonNull Profile profile, @ActivityType int activityType, boolean isArchivedTabModel) {
+            Profile profile, @ActivityType int activityType, boolean isArchivedTabModel) {
         mProfile = profile;
         mActivityType = activityType;
         mIsArchivedTabModel = isArchivedTabModel;
@@ -63,6 +62,7 @@ public abstract class TabModelJniBridge implements TabModel {
     }
 
     @Override
+    @CallSuper
     public void destroy() {
         if (isNativeInitialized()) {
             // This will invalidate all other native references to this object in child classes.
@@ -87,13 +87,39 @@ public abstract class TabModelJniBridge implements TabModel {
     }
 
     @Override
+    @CalledByNative
+    public abstract int index();
+
+    @Override
+    @CalledByNative
+    public abstract int getCount();
+
+    @Override
+    @CalledByNative
+    public abstract @Nullable Tab getTabAt(int index);
+
+    @Override
     public Profile getProfile() {
         return mProfile;
     }
 
+    @CalledByNative
+    @Override
+    public abstract boolean isActiveModel();
+
+    /** Returns whether the model is done initializing itself and should be used. */
+    public abstract boolean isInitializationComplete();
+
+    /**
+     * Required to be called before this object is ready for most usage. Used to indicate all tabs
+     * have been loaded and native is ready.
+     */
+    public abstract void completeInitialization();
+
     /** Broadcast a native-side notification that all tabs are now loaded from storage. */
     public void broadcastSessionRestoreComplete() {
         assert isNativeInitialized();
+        assert isInitializationComplete();
         TabModelJniBridgeJni.get()
                 .broadcastSessionRestoreComplete(mNativeTabModelJniBridge, TabModelJniBridge.this);
     }
@@ -119,29 +145,23 @@ public abstract class TabModelJniBridge implements TabModel {
         TabModelUtils.setIndex(this, index);
     }
 
-    @Override
+    /**
+     * Closes all tabs. This bypasses protections for shared tab groups where placeholder tabs are
+     * created to ensure collaboration data is not destroyed. Prefer {@link #closeTabAt()} to ensure
+     * collaboration data is not destroyed by mistake. This is primarily intended for test usage
+     * where the loss of collaboration data is acceptable.
+     */
     @CalledByNative
-    public abstract Tab getTabAt(int index);
+    protected abstract void forceCloseAllTabs();
 
     /**
      * Closes the Tab at a particular index.
+     *
      * @param index Index of the tab to close.
      * @return Whether the was successfully closed.
      */
     @CalledByNative
     protected abstract boolean closeTabAt(int index);
-
-    /**
-     * Returns a tab creator for this {@link TabModel}.
-     *
-     * Please note that, the {@link TabCreator} and {@TabModelImpl} are separate instances for
-     * {@link ChromeTabbedActivity} and {@link CustomTabActivity} across both regular and Incognito
-     * modes which allows us to pass the boolean directly.
-     *
-     * @param incognito A boolean to indicate whether to return IncognitoTabCreator or
-     *         RegularTabCreator.
-     */
-    protected abstract TabCreator getTabCreator(boolean incognito);
 
     /**
      * Creates a Tab with the given WebContents.
@@ -156,7 +176,7 @@ public abstract class TabModelJniBridge implements TabModel {
             Tab parent, Profile profile, WebContents webContents, boolean select);
 
     @CalledByNative
-    protected abstract void openNewTab(
+    public abstract void openNewTab(
             Tab parent,
             GURL url,
             @Nullable Origin initiatorOrigin,
@@ -168,53 +188,41 @@ public abstract class TabModelJniBridge implements TabModel {
 
     /**
      * Creates a Tab with the given WebContents for DevTools.
+     *
      * @param url URL to show.
+     * @param newWindow Whether to open the new tab in a new window.
+     * @return The created tab or null if the tab could not be created.
      */
     @CalledByNative
-    protected Tab createNewTabForDevTools(GURL url) {
-        return getTabCreator(/* incognito= */ false)
-                .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI, null);
-    }
+    protected abstract @Nullable Tab createNewTabForDevTools(GURL url, boolean newWindow);
 
-    /** Returns whether supplied Tab instance has been grouped together with other Tabs. */
+    /**
+     * Returns the count of non-custom tabs that have a {@link
+     * Tab#getLastNavigationCommittedTimestampMillis()} within the time range [beginTimeMs,
+     * endTimeMs).
+     */
     @CalledByNative
-    @VisibleForTesting
-    static boolean isTabInTabGroup(@NonNull Tab tab) {
-        final TabModelFilter filter = TabModelUtils.getTabModelFilterByTab(tab);
-        if (filter == null) return false;
+    protected abstract int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
 
-        assert filter instanceof TabGroupModelFilter;
-        final TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
-
-        return groupingFilter.isTabInTabGroup(tab);
-    }
-
-    @Override
+    /**
+     * Closes non-custom tabs that have a {@link Tab#getLastNavigationCommittedTimestampMillis()}
+     * within the time range [beginTimeMs, endTimeMs).
+     */
     @CalledByNative
-    public abstract int getCount();
-
-    @Override
-    @CalledByNative
-    public abstract int index();
+    protected abstract void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
 
     /** Returns whether or not a sync session is currently being restored. */
     @CalledByNative
     protected abstract boolean isSessionRestoreInProgress();
 
+    /**
+     * Opens a tab programmatically
+     *
+     * @param url URL to show.
+     * @param index Index for the tab, it will ignore if it is invalid.
+     */
     @CalledByNative
-    @Override
-    public abstract boolean isActiveModel();
-
-    @Override
-    public abstract void setActive(boolean active);
-
-    @Override
-    @CalledByNative
-    public abstract int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
-
-    @Override
-    @CalledByNative
-    public abstract void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
+    protected abstract void openTabProgrammatically(GURL url, int index);
 
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -223,7 +231,7 @@ public abstract class TabModelJniBridge implements TabModel {
                 TabModelJniBridge caller,
                 @JniType("Profile*") Profile profile,
                 @ActivityType int activityType,
-                boolean trackInNativeModelList);
+                boolean isArchivedTabModel);
 
         void broadcastSessionRestoreComplete(
                 long nativeTabModelJniBridge, TabModelJniBridge caller);

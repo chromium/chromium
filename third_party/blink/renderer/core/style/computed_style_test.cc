@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -43,6 +42,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
 #include "ui/base/ui_base_features.h"
@@ -70,6 +70,10 @@ class ComputedStyleTest : public testing::Test {
     return ComputedStyleBuilder(style);
   }
 
+  const ComputedStyle& StyleForElement(const char* id) {
+    return GetDocument().getElementById(AtomicString(id))->ComputedStyleRef();
+  }
+
  private:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
@@ -87,8 +91,8 @@ TEST_F(ComputedStyleTest, ShapeOutsideBoxEqual) {
 }
 
 TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
-  scoped_refptr<BasicShapeCircle> circle1 = BasicShapeCircle::Create();
-  scoped_refptr<BasicShapeCircle> circle2 = BasicShapeCircle::Create();
+  BasicShapeCircle* circle1 = MakeGarbageCollected<BasicShapeCircle>();
+  BasicShapeCircle* circle2 = MakeGarbageCollected<BasicShapeCircle>();
   auto* shape1 = MakeGarbageCollected<ShapeValue>(std::move(circle1),
                                                   CSSBoxType::kContent);
   auto* shape2 = MakeGarbageCollected<ShapeValue>(std::move(circle2),
@@ -101,7 +105,7 @@ TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
 }
 
 TEST_F(ComputedStyleTest, ClipPathEqual) {
-  scoped_refptr<BasicShapeCircle> shape = BasicShapeCircle::Create();
+  BasicShapeCircle* shape = MakeGarbageCollected<BasicShapeCircle>();
   ShapeClipPathOperation* path1 = MakeGarbageCollected<ShapeClipPathOperation>(
       shape, GeometryBox::kBorderBox);
   ShapeClipPathOperation* path2 = MakeGarbageCollected<ShapeClipPathOperation>(
@@ -573,7 +577,7 @@ TEST_F(ComputedStyleTest, AnimationFlags) {
   TEST_ANIMATION_FLAG(HasCurrentOpacityAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentFilterAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentBackdropFilterAnimation, kNonInherited);
-  TEST_ANIMATION_FLAG(SubtreeWillChangeContents, kNonInherited);
+  TEST_ANIMATION_FLAG(SubtreeWillChangeContents, kInherited);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTransformAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningScaleAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningRotateAnimationOnCompositor);
@@ -1580,9 +1584,9 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
        {CSSValueID::kNone, CSSValueID::kLayout, CSSValueID::kPaint,
         CSSValueID::kSize, CSSValueID::kStyle}) {
     html->SetInlineStyleProperty(CSSPropertyID::kContain,
-                                 getValueName(contain));
+                                 GetCSSValueNameAs<String>(contain));
     body->SetInlineStyleProperty(CSSPropertyID::kContain,
-                                 getValueName(contain));
+                                 GetCSSValueNameAs<String>(contain));
     for (auto html_display : display_types) {
       html->SetInlineStyleProperty(CSSPropertyID::kDisplay, html_display);
       for (auto body_display : display_types) {
@@ -1596,8 +1600,8 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
         EXPECT_EQ(html->GetLayoutObject()->ShouldApplyAnyContainment(),
                   html->GetLayoutObject()->StyleRef().ShouldApplyAnyContainment(
                       *html))
-            << "html contain:" << getValueName(contain)
-            << " display:" << getValueName(html_display);
+            << "html contain:" << GetCSSValueName(contain)
+            << " display:" << GetCSSValueName(html_display);
         if (!body->GetLayoutObject()) {
           if (const auto* body_style = body->GetComputedStyle()) {
             EXPECT_EQ(body_style->Display(), EDisplay::kContents);
@@ -1609,8 +1613,8 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
         EXPECT_EQ(body->GetLayoutObject()->ShouldApplyAnyContainment(),
                   body->GetLayoutObject()->StyleRef().ShouldApplyAnyContainment(
                       *body))
-            << "body contain:" << getValueName(contain)
-            << " display:" << getValueName(body_display);
+            << "body contain:" << GetCSSValueName(contain)
+            << " display:" << GetCSSValueName(body_display);
       }
     }
   }
@@ -1660,14 +1664,14 @@ TEST_F(ComputedStyleTest, DerivedDebugDiff) {
   ASSERT_EQ(2u, style1->DebugDiffFields(*style2).size());
 
   EXPECT_EQ(DebugField::forces_stacking_context_,
-            style1->DebugDiffFields(*style2)[0].field);
-  EXPECT_EQ("1", style1->DebugDiffFields(*style2)[0].actual);
-  EXPECT_EQ("0", style1->DebugDiffFields(*style2)[0].correct);
+            style1->DebugDiffFields(*style2)[1].field);
+  EXPECT_EQ("1", style1->DebugDiffFields(*style2)[1].actual);
+  EXPECT_EQ("0", style1->DebugDiffFields(*style2)[1].correct);
 
   EXPECT_EQ(DebugField::is_stacking_context_without_containment_,
-            style1->DebugDiffFields(*style2)[1].field);
-  EXPECT_EQ("true", style1->DebugDiffFields(*style2)[1].actual);
-  EXPECT_EQ("false", style1->DebugDiffFields(*style2)[1].correct);
+            style1->DebugDiffFields(*style2)[0].field);
+  EXPECT_EQ("true", style1->DebugDiffFields(*style2)[0].actual);
+  EXPECT_EQ("false", style1->DebugDiffFields(*style2)[0].correct);
 }
 
 TEST_F(ComputedStyleTest, DerivedDebugDiffLazy) {
@@ -1996,7 +2000,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToConstrainedHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(standard, constrained-high, 70%)");
+            "dynamic-range-limit-mix(standard 30%, constrained 70%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2030,7 +2034,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(standard, high, 60%)");
+            "dynamic-range-limit-mix(standard 40%, no-limit 60%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2064,7 +2068,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixConstrainedHighToHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(constrained-high, high, 45%)");
+            "dynamic-range-limit-mix(constrained 55%, no-limit 45%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2097,9 +2101,9 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
           false /* allow_visited_style */, CSSValuePhase::kComputedValue);
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
-  EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(standard, "
-            "dynamic-range-limit-mix(constrained-high, high, 25%), 80%)");
+  EXPECT_EQ(
+      dynamic_range_limit_mix_value->CssText(),
+      "dynamic-range-limit-mix(standard 20%, constrained 60%, no-limit 20%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2207,4 +2211,206 @@ TEST_F(ComputedStyleTest, ColorSchemeFlagsIsNormal_WithMeta) {
                    .ColorSchemeFlagsIsNormal());
 }
 
+TEST_F(ComputedStyleTest, BottomRelativeToSafeAreaInset) {
+  Document& document = GetDocument();
+  document.body()->setInnerHTML(R"HTML(
+    <div id="f1" style="bottom: 5px"></div>
+    <div id="f2" style="bottom: calc(5px + 5px)"></div>
+    <div id="f3" style="bottom: env(safe-area-inset-top)"></div>
+    <div id="f4" style="bottom: calc(env(safe-area-inset-top))"></div>
+    <div id="f5" style="bottom: calc(env(safe-area-inset-bottom) * 2)"></div>
+    <div id="f5" style="bottom: calc(env(safe-area-inset-bottom) + 2)"></div>
+    <div id="f6" style="bottom: calc(-env(safe-area-inset-bottom))"></div>
+    <div id="f7" style="bottom: calc(env( safe-area-inset-bottom ,3px )*11px+ 22px+ 33px)"></div>
+    <div id="f8" style="bottom: calc(env( safe-area-inset-bottom, 2px)+ env(-foo) )"></div>
+    <div id="f9" style="bottom: calc(env( safe-area-inset-bottom, 2px)+ var(-foo) )"></div>
+    <div id="f10" style="--foo:env(safe-area-inset-bottom,2px); bottom: calc(var(--foo) - 2px)"></div>
+    <div id="f11" style="--foo:1px; bottom: calc(var(--foo) - 1px + 4 * env(safe-area-inset-bottom))"></div>
+    <div id="f12" style="--foo:3; bottom: calc(var(--foo) * env(safe-area-inset-bottom))"></div>
+
+    <div id="t1" style="bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t2" style="bottom: env( safe-area-inset-bottom )"></div>
+    <div id="t3" style="bottom: env(safe-area-inset-bottom,0px)"></div>
+    <div id="t4" style="bottom:   env(  safe-area-inset-bottom , 2px )"></div>
+
+    <div id="t5" style="bottom: calc(env(safe-area-inset-bottom))"></div>
+    <div id="t6" style="bottom:  calc( env( safe-area-inset-bottom ) )"></div>
+    <div id="t7" style="bottom: calc(env(safe-area-inset-bottom,2px))"></div>
+    <div id="t8" style="bottom: calc( env( safe-area-inset-bottom, 2px ) )"></div>
+    <div id="t9" style="bottom: calc(1px - env(safe-area-inset-bottom, 2px))"></div>
+    <div id="t10" style="bottom: calc( env(safe-area-inset-bottom, 1px ) + 999px )"></div>
+    <div id="t11" style="bottom: calc( env(safe-area-inset-bottom ,3px) + 999px)"></div>
+    <div id="t12" style="bottom: calc(11px - 22em + env( safe-area-inset-bottom, 3px) + 35ch + 3cqw)"></div>
+    <div id="t13" style="bottom: calc(env(safe-area-inset-bottom) + env(safe-area-max-inset-bottom))"></div>
+    <div id="t14" style="bottom: calc(env(safe-area-inset-bottom, 2px) - env(safe-area-max-inset-bottom, 1px))"></div>
+
+    <div id="t15" style="--foo:1px; bottom: calc(env(safe-area-inset-bottom, 2px) - var(--foo))"></div>
+    <div id="t16" style="--foo: 1px;  bottom: calc(env(safe-area-inset-bottom,3px) - var( --foo ) - var(--foo))"></div>
+    <div id="t17" style="--foo:1px; bottom: calc(env(safe-area-inset-bottom, 3px) + var(--foo) + 1px - 2em + 3cqw)"></div>
+    <div id="t18" style="--foo:1px; bottom: calc(var(--foo) - 1px + 2em + env(safe-area-inset-bottom) + env(safe-area-max-inset-bottom))"></div>
+    <div id="t19" style="--foo:1px; bottom: calc(env(safe-area-inset-bottom) + env(safe-area-max-inset-bottom) + var(--foo)  - 1px +  2cqw)"></div>
+
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(StyleForElement("f1").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f2").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f3").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f4").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f5").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f6").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f7").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f8").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f9").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f10").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f11").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f12").IsBottomRelativeToSafeAreaInset());
+
+  EXPECT_TRUE(StyleForElement("t1").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t2").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t3").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t4").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t5").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t6").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t7").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t8").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t9").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t10").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t11").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t12").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t13").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t14").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t15").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t16").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t17").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t18").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t19").IsBottomRelativeToSafeAreaInset());
+}
+
+TEST_F(ComputedStyleTest, HasEnvSafeAreaInsetBottom) {
+  Document& document = GetDocument();
+  document.body()->setInnerHTML(R"HTML(
+    <div id="f1" style="bottom: 5px"></div>
+    <div id="f2" style="bottom: calc(5px + 5px)"></div>
+    <div id="f3" style="bottom: env(safe-area-inset-top)"></div>
+    <div id="f4" style="bottom: calc(env(safe-area-inset-top))"></div>
+    <div id="f5" style="padding: env(safe-area-inset-left)"></div>
+    <div id="f6" style="padding-bottom: env(safe-area-inset-top)"></div>
+    <div id="f7" style="margin-bottom: env(safe-area-inset-top)"></div>
+    <div id="f8" style="height: calc(env(safe-area-inset-top) + 30px)"></div>
+
+    <div id="t1" style="bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t2" style="bottom: calc(env(safe-area-inset-bottom))"></div>
+    <div id="t3" style="padding: env(safe-area-inset-bottom)"></div>
+    <div id="t4" style="padding-bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t5" style="margin-bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t6" style="height: calc(env(safe-area-inset-bottom) + 30px)"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(StyleForElement("f1").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f2").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f3").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f4").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f5").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f6").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f7").HasEnvSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f8").HasEnvSafeAreaInsetBottom());
+
+  EXPECT_TRUE(StyleForElement("t1").HasEnvSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t2").HasEnvSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t3").HasEnvSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t4").HasEnvSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t5").HasEnvSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t6").HasEnvSafeAreaInsetBottom());
+}
+
+TEST_F(ComputedStyleTest, CursorInheritance) {
+  Document& document = GetDocument();
+  document.body()->setInnerHTML(R"HTML(
+    <style>
+      #parent {
+        cursor: pointer;
+      }
+      #child-no-inherit {
+        cursor: pointer;
+      }
+      #outer {
+      cursor: initial;
+    }
+    </style>
+    <div id="parent">
+      <div id="child-no-inherit"></div>
+      <div id="child-inherit"></div>
+    </div>
+    <div id="outer"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  const auto& parent = StyleForElement("parent");
+  EXPECT_EQ(parent.Cursor(), ECursor::kPointer);
+  EXPECT_FALSE(parent.CursorIsInherited());
+
+  const auto& child_no_inherit = StyleForElement("child-no-inherit");
+  EXPECT_EQ(child_no_inherit.Cursor(), ECursor::kPointer);
+  EXPECT_FALSE(child_no_inherit.CursorIsInherited());
+
+  const auto& child_inherit = StyleForElement("child-inherit");
+  EXPECT_EQ(child_inherit.Cursor(), ECursor::kPointer);
+  EXPECT_TRUE(child_inherit.CursorIsInherited());
+
+  const auto& outer = StyleForElement("outer");
+  EXPECT_EQ(outer.Cursor(), ECursor::kAuto);
+  EXPECT_FALSE(outer.CursorIsInherited());
+}
+
+TEST_F(ComputedStyleTest, HasGapRule) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  Document& document = GetDocument();
+  document.body()->setInnerHTML(R"HTML(
+    <style>
+      #multi-col {
+        columns: 4;
+        column-rule-style: solid;
+        row-rule-style: solid;
+      }
+      #grid {
+        display: grid;
+        grid-template: repeat(3, 1fr) / repeat(2, 1fr);
+        column-rule-style: solid;
+        row-rule-style: solid;
+      }
+      #flex {
+        display: flex;
+        column-rule-style: solid;
+        row-rule-style: solid;
+      }
+      #no-rule {
+        column-rule-style: solid;
+        row-rule-style: solid;
+      }
+    </style>
+    <div id="multi-col"></div>
+    <div id="grid"></div>
+    <div id="flex"></div>
+    <div id="no-rule"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  const auto& multi_col = StyleForElement("multi-col");
+  EXPECT_TRUE(multi_col.HasColumnRule());
+  EXPECT_TRUE(multi_col.HasRowRule());
+
+  const auto& grid = StyleForElement("grid");
+  EXPECT_TRUE(grid.HasColumnRule());
+  EXPECT_TRUE(grid.HasRowRule());
+
+  const auto& flex = StyleForElement("flex");
+  EXPECT_TRUE(flex.HasColumnRule());
+  EXPECT_TRUE(flex.HasRowRule());
+
+  const auto& no_rule = StyleForElement("no-rule");
+  EXPECT_FALSE(no_rule.HasColumnRule());
+  EXPECT_FALSE(no_rule.HasRowRule());
+}
 }  // namespace blink

@@ -38,7 +38,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     private final MostVisitedTilesMediator mMediator;
     private final WindowAndroid mWindowAndroid;
     private final UiConfig mUiConfig;
-    private final PropertyModelChangeProcessor mModelChangeProcessor;
     private TileRenderer mRenderer;
     private ContextMenuManager mContextMenuManager;
     private OfflinePageBridge mOfflinePageBridge;
@@ -71,12 +70,10 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
 
         mUiConfig = new UiConfig(tilesLayout);
         PropertyModel propertyModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
-        mModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        propertyModel,
-                        new MostVisitedTilesViewBinder.ViewHolder(
-                                mvTilesContainerLayout, tilesLayout),
-                        MostVisitedTilesViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                propertyModel,
+                new MostVisitedTilesViewBinder.ViewHolder(mvTilesContainerLayout, tilesLayout),
+                MostVisitedTilesViewBinder::bind);
         mRenderer =
                 new TileRenderer(
                         mActivity, SuggestionsConfig.getTileStyle(mUiConfig), TITLE_LINES, null);

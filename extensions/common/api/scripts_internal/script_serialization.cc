@@ -108,7 +108,7 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
   // `matchOriginAsFallback`.
   serialized_script.match_origin_as_fallback =
       user_script.match_origin_as_fallback() ==
-      MatchOriginAsFallbackBehavior::kAlways;
+      mojom::MatchOriginAsFallbackBehavior::kAlways;
 
   // `runAt`.
   serialized_script.run_at =
@@ -162,8 +162,7 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
           serialized_script.id, UserScript::kManifestContentScriptPrefix);
       break;
     case api::scripts_internal::Source::kNone:
-      NOTREACHED_IN_MIGRATION();  // This should have been caught by our
-                                  // parsing.
+      NOTREACHED();  // This should have been caught by our parsing.
   }
 
   if (!source_matches_id) {
@@ -214,8 +213,8 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
   if (serialized_script.match_origin_as_fallback.has_value()) {
     user_script->set_match_origin_as_fallback(
         *serialized_script.match_origin_as_fallback
-            ? MatchOriginAsFallbackBehavior::kAlways
-            : MatchOriginAsFallbackBehavior::kNever);
+            ? mojom::MatchOriginAsFallbackBehavior::kAlways
+            : mojom::MatchOriginAsFallbackBehavior::kNever);
   }
   // `runAt`.
   user_script->set_run_location(ConvertRunLocation(serialized_script.run_at));

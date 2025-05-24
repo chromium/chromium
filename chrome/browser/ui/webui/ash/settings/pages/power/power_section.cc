@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/power/power_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -17,7 +19,6 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kDeviceSectionPath;
 using ::chromeos::settings::mojom::kPowerSubpagePath;
 using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::Section;
@@ -27,8 +28,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDefaultSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POWER,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -52,11 +53,11 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_ON_BATTERY_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPowerWithBatterySearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPowerWithBatterySearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POWER_SOURCE,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -66,11 +67,11 @@ const std::vector<SearchConcept>& GetPowerWithBatterySearchConcepts() {
        {IDS_OS_SETTINGS_TAG_POWER_SOURCE_ALT1,
         IDS_OS_SETTINGS_TAG_POWER_SOURCE_ALT2, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPowerWithLaptopLidSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPowerWithLaptopLidSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POWER_SLEEP_COVER_CLOSED,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -81,11 +82,11 @@ const std::vector<SearchConcept>& GetPowerWithLaptopLidSearchConcepts() {
         IDS_OS_SETTINGS_TAG_POWER_SLEEP_COVER_CLOSED_ALT2,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPowerWithAdaptiveChargingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPowerWithAdaptiveChargingSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POWER_ADAPTIVE_CHARGING,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -93,11 +94,11 @@ const std::vector<SearchConcept>& GetPowerWithAdaptiveChargingSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAdaptiveCharging}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPowerWithBatterySaverModeSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPowerWithBatterySaverModeSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POWER_BATTERY_SAVER,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -105,7 +106,7 @@ const std::vector<SearchConcept>& GetPowerWithBatterySaverModeSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kBatterySaver}},
   });
-  return *tags;
+  return tags;
 }
 
 }  // namespace
@@ -148,9 +149,6 @@ PowerSection::~PowerSection() {
 }
 
 void PowerSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kPowerStrings[] = {
       {"calculatingPower", IDS_SETTINGS_POWER_SOURCE_CALCULATING},
       {"powerAdaptiveChargingLabel",
@@ -166,15 +164,11 @@ void PowerSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"powerIdleWhileChargingAriaLabel",
        IDS_SETTINGS_POWER_IDLE_WHILE_CHARGING_ARIA_LABEL},
       {"powerInactiveWhilePluggedInLabel",
-       kIsRevampEnabled
-           ? IDS_OS_SETTINGS_REVAMP_POWER_INACTIVE_WHILE_PLUGGED_IN_LABEL
-           : IDS_SETTINGS_POWER_IDLE_WHILE_CHARGING_LABEL},
+       IDS_OS_SETTINGS_POWER_INACTIVE_WHILE_PLUGGED_IN_LABEL},
       {"powerIdleWhileOnBatteryAriaLabel",
        IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_ARIA_LABEL},
       {"powerInactiveWhileOnBatteryLabel",
-       kIsRevampEnabled
-           ? IDS_OS_SETTINGS_REVAMP_POWER_INACTIVE_WHILE_ON_BATTERY_LABEL
-           : IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_LABEL},
+       IDS_OS_SETTINGS_POWER_INACTIVE_WHILE_ON_BATTERY_LABEL},
       {"powerLidShutDownLabel", IDS_SETTINGS_POWER_LID_CLOSED_SHUT_DOWN_LABEL},
       {"powerLidSignOutLabel", IDS_SETTINGS_POWER_LID_CLOSED_SIGN_OUT_LABEL},
       {"powerLidSleepLabel", IDS_SETTINGS_POWER_LID_CLOSED_SLEEP_LABEL},
@@ -212,14 +206,9 @@ int PowerSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section PowerSection::GetSection() const {
-  // Note: This is a subsection that exists under Device or System Preferences.
-  // This section will no longer exist under the Device section once the
-  // OsSettingsRevampWayfinding feature is fully launched.
   // This is not a top-level section and does not have a respective declaration
   // in chromeos::settings::mojom::Section.
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kSystemPreferences
-             : mojom::Section::kDevice;
+  return mojom::Section::kSystemPreferences;
 }
 
 mojom::SearchResultIcon PowerSection::GetSectionIcon() const {
@@ -227,9 +216,7 @@ mojom::SearchResultIcon PowerSection::GetSectionIcon() const {
 }
 
 const char* PowerSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kSystemPreferencesSectionPath
-             : mojom::kDeviceSectionPath;
+  return mojom::kSystemPreferencesSectionPath;
 }
 
 bool PowerSection::LogMetric(mojom::Setting setting, base::Value& value) const {

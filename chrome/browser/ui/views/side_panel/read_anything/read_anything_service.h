@@ -22,6 +22,9 @@ class ReadAnythingService : public KeyedService, public BrowserListObserver {
   ~ReadAnythingService() override;
 
   static ReadAnythingService* Get(Profile* profile);
+#if !BUILDFLAG(IS_CHROMEOS)
+  static void InstallComponent(const base::FilePath& new_dir);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Called by the per-tab ReadAnythingSidePanelController.
   void OnReadAnythingSidePanelEntryShown();
@@ -30,7 +33,12 @@ class ReadAnythingService : public KeyedService, public BrowserListObserver {
  private:
   void InstallGDocsHelperExtension();
   void RemoveGDocsHelperExtension();
+  void InstallTtsDownloadExtension();
+  void RemoveTtsDownloadExtension();
   void OnLocalSidePanelSwitchDelayTimeout();
+#if !BUILDFLAG(IS_CHROMEOS)
+  void SetupDesktopEngine();
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;

@@ -5,6 +5,7 @@
 #include "ash/style/rounded_label_widget.h"
 
 #include <memory>
+#include <variant>
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/style/rounded_label.h"
@@ -49,9 +50,9 @@ void RoundedLabelWidget::Init(InitParams params) {
   SetContentsView(std::make_unique<RoundedLabel>(
       params.horizontal_padding, params.vertical_padding, params.rounding_dp,
       params.preferred_height,
-      absl::holds_alternative<std::u16string>(params.message)
-          ? absl::get<std::u16string>(params.message)
-          : l10n_util::GetStringUTF16(absl::get<int>(params.message))));
+      std::holds_alternative<std::u16string>(params.message)
+          ? std::get<std::u16string>(params.message)
+          : l10n_util::GetStringUTF16(std::get<int>(params.message))));
   Show();
 }
 

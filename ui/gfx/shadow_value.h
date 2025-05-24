@@ -9,10 +9,10 @@
 #include <tuple>
 #include <vector>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -24,7 +24,7 @@ typedef std::vector<ShadowValue> ShadowValues;
 
 // ShadowValue encapsulates parameters needed to define a shadow, including the
 // shadow's offset, blur amount and color.
-class GFX_EXPORT ShadowValue {
+class COMPONENT_EXPORT(GFX) ShadowValue {
  public:
   constexpr ShadowValue() = default;
   constexpr ShadowValue(const gfx::Vector2d& offset, double blur, SkColor color)

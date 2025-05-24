@@ -155,6 +155,7 @@ class PLATFORM_EXPORT PaintController {
   const PropertyTreeStateOrAlias& CurrentPaintChunkProperties() const {
     return paint_chunker_.CurrentPaintChunkProperties();
   }
+
   void SetCurrentEffectivelyInvisible(bool invisible) {
     paint_chunker_.SetCurrentEffectivelyInvisible(invisible);
   }
@@ -197,6 +198,9 @@ class PLATFORM_EXPORT PaintController {
   }
   const gfx::Rect& LastChunkBounds() const {
     return new_paint_artifact_->GetPaintChunks().back().bounds;
+  }
+  const TraceablePropertyTreeStateOrAlias& LastChunkProperties() const {
+    return new_paint_artifact_->GetPaintChunks().back().properties;
   }
 
   void MarkClientForValidation(const DisplayItemClient& client);

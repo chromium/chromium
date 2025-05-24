@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {OsSettingsCellularSetupDialogElement} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsCellularSetupDialogElement} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 

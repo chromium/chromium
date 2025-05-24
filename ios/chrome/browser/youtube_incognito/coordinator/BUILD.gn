@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "youtube_incognito_coordinator.h",
+    "youtube_incognito_coordinator.mm",
+    "youtube_incognito_coordinator_delegate.h",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/app/application_delegate:tab_opening",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito:util",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/chrome/browser/youtube_incognito/ui",
+  ]
+}

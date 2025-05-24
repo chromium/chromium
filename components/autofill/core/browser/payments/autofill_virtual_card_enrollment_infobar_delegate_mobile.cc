@@ -23,7 +23,7 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::
     ~AutofillVirtualCardEnrollmentInfoBarDelegateMobile() {
   if (!had_user_interaction_) {
-    OnInfobarClosed(PaymentsBubbleClosedReason::kNotInteracted);
+    OnInfobarClosed(PaymentsUiClosedReason::kNotInteracted);
   }
 }
 
@@ -56,6 +56,26 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIssuerIcon() const {
   return virtual_card_enroll_bubble_controller_->GetUiModel()
       .enrollment_fields()
       .card_art_image;
+}
+
+int AutofillVirtualCardEnrollmentInfoBarDelegateMobile::
+    GetNetworkIconResourceId() const {
+  return CreditCard::IconResourceId(
+      virtual_card_enroll_bubble_controller_->GetUiModel()
+          .enrollment_fields()
+          .credit_card.network());
+}
+
+GURL AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIssuerIconUrl()
+    const {
+  const CreditCard& credit_card =
+      virtual_card_enroll_bubble_controller_->GetUiModel()
+          .enrollment_fields()
+          .credit_card;
+  if (credit_card.HasRichCardArtImageFromMetadata()) {
+    return credit_card.card_art_url();
+  }
+  return GURL();
 }
 
 std::u16string
@@ -123,29 +143,28 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetButtonLabel(
     return virtual_card_enroll_bubble_controller_->GetUiModel()
         .cancel_action_text();
   }
-  NOTREACHED_IN_MIGRATION() << "Unsupported button label requested.";
-  return std::u16string();
+  NOTREACHED() << "Unsupported button label requested.";
 }
 
 void AutofillVirtualCardEnrollmentInfoBarDelegateMobile::InfoBarDismissed() {
-  OnInfobarClosed(PaymentsBubbleClosedReason::kCancelled);
+  OnInfobarClosed(PaymentsUiClosedReason::kCancelled);
   virtual_card_enroll_bubble_controller_->OnDeclineButton();
 }
 
 bool AutofillVirtualCardEnrollmentInfoBarDelegateMobile::Cancel() {
-  OnInfobarClosed(PaymentsBubbleClosedReason::kCancelled);
+  OnInfobarClosed(PaymentsUiClosedReason::kCancelled);
   virtual_card_enroll_bubble_controller_->OnDeclineButton();
   return true;
 }
 
 bool AutofillVirtualCardEnrollmentInfoBarDelegateMobile::Accept() {
-  OnInfobarClosed(PaymentsBubbleClosedReason::kAccepted);
+  OnInfobarClosed(PaymentsUiClosedReason::kAccepted);
   virtual_card_enroll_bubble_controller_->OnAcceptButton();
   return true;
 }
 
 void AutofillVirtualCardEnrollmentInfoBarDelegateMobile::OnInfobarClosed(
-    PaymentsBubbleClosedReason closed_reason) {
+    PaymentsUiClosedReason closed_reason) {
   DCHECK(!had_user_interaction_);
 
   virtual_card_enroll_bubble_controller_->OnBubbleClosed(closed_reason);

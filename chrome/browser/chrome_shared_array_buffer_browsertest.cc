@@ -34,7 +34,6 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
         // Disabled:
         {
             features::kSharedArrayBuffer,
-            features::kSharedArrayBufferOnDesktop,
         });
   }
 
@@ -66,8 +65,10 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
     SelectFirstBrowser();
     ASSERT_EQ(browser(), new_browser);
 
-    // Navigate the new browser to 'localhost', so the tests will get new
-    // renderer processes when they navigate to xxx.com origins.
+    // Clear existing spares and navigate the new browser to 'localhost', so the
+    // tests will get new renderer processes when they navigate to xxx.com
+    // origins.
+    content::SpareRenderProcessHostManager::Get().CleanupSparesForTesting();
     GURL local_host = embedded_test_server()->GetURL("/empty.html");
     EXPECT_TRUE(NavigateToURL(web_contents(), local_host));
   }
@@ -79,8 +80,6 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     ASSERT_FALSE(base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
-    ASSERT_FALSE(
-        base::FeatureList::IsEnabled(features::kSharedArrayBufferOnDesktop));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) final {

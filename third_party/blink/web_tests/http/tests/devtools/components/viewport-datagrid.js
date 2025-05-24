@@ -149,7 +149,9 @@ import * as DataGrid from 'devtools/ui/legacy/components/data_grid/data_grid.js'
   dumpNodes();
 
   // crbug.com/542553 -- the below should not produce exceptions.
-  dataGrid.setStickToBottom(true);
+  // TODO(crbug.com/377763109): clean it up once crrev.com/c/6001603 lands
+  dataGrid.setStickToBottom?.(true);
+  dataGrid.setEnableAutoScrollToBottom?.(true);
   for (var i = 0; i < 500; ++i) {
     var xn = new DataGrid.ViewportDataGrid.ViewportDataGridNode({id: 'x' + i});
     root.appendChild(xn);
@@ -168,7 +170,9 @@ import * as DataGrid from 'devtools/ui/legacy/components/data_grid/data_grid.js'
     root.appendChild(xn);
   }
   dataGrid.updateInstantly();
-  dataGrid.setStickToBottom(false);
+  // TODO(crbug.com/377763109): clean it up once crrev.com/c/6001603 lands
+  dataGrid.setStickToBottom?.(false);
+  dataGrid.setEnableAutoScrollToBottom?.(false);
   var children = root.children.slice();
   root.removeChildren();
   // Assure wheelTarget is anything but null, otherwise it happily bypasses crashing code.

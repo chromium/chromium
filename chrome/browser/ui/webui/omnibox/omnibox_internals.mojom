@@ -75,6 +75,7 @@ struct AutocompleteMatch {
   string inline_autocompletion;
   string destination_url;
   string stripped_destination_url;
+  string icon;
   string image;
   string contents;
   array<ACMatchClassification> contents_class;
@@ -171,7 +172,8 @@ interface OmniboxPage {
 
   // Asynchronously notifies the page of the image data URLs for previous
   // omnibox responses.
-  HandleAnswerImageData(AutocompleteControllerType autocomplete_controller_type,
-                        string image_url,
-                        string image_data);
+  HandleAnswerIconImageData(
+    AutocompleteControllerType autocomplete_controller_type,
+    string image_url,
+    string image_data);
 };

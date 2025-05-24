@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, fakePointingSticks, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPerDevicePointingStickSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
+
+import type {SettingsPerDevicePointingStickSubsectionElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakePointingSticks, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -68,7 +72,7 @@ suite('<settings-per-device-pointing-stick-subsection>', () => {
     updatedPointingSticks = await provider.getConnectedPointingStickSettings();
     assertEquals(
         updatedPointingSticks[0]!.settings.sensitivity,
-        pointingStickSpeedSlider.pref!.value);
+        pointingStickSpeedSlider.pref.value);
   });
 
   /**

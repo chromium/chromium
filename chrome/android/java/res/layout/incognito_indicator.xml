@@ -10,6 +10,7 @@ found in the LICENSE file.
     android:layout_height="match_parent"
     android:layout_width="wrap_content"
     android:clickable="false"
+    android:focusable="true"
     android:visibility="gone"
     android:gravity="center_vertical"
     android:paddingStart="@dimen/incognito_indicator_lateral_start_padding"

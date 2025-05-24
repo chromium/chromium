@@ -50,6 +50,13 @@ bool BaseFormActivityParams::FromMessage(const web::ScriptMessage& message,
 bool BaseFormActivityParams::operator==(const BaseFormActivityParams&) const =
     default;
 
+std::ostream& operator<<(std::ostream& os,
+                         const BaseFormActivityParams& params) {
+  os << "frame_id: " << params.frame_id;
+  os << ", is_main_frame: " << params.is_main_frame;
+  return os;
+}
+
 bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
                                      FormActivityParams* params) {
   const base::Value::Dict* message_body = nullptr;
@@ -120,6 +127,19 @@ bool FormActivityParams::operator==(const FormActivityParams& params) const {
          (field_renderer_id == params.field_renderer_id) &&
          (field_type == params.field_type) && (value == params.value) &&
          (type == params.type) && (has_user_gesture == params.has_user_gesture);
+}
+
+std::ostream& operator<<(std::ostream& os, const FormActivityParams& params) {
+  os << static_cast<const BaseFormActivityParams&>(params);
+  os << ", form_name: " << params.form_name;
+  os << ", form_renderer_id: " << params.form_renderer_id;
+  os << ", field_identifier: " << params.field_identifier;
+  os << ", field_renderer_id: " << params.field_renderer_id;
+  os << ", field_type: " << params.field_type;
+  os << ", value: " << params.value;
+  os << ", type: " << params.type;
+  os << ", has_user_gesture: " << params.has_user_gesture;
+  return os;
 }
 
 bool FormRemovalParams::FromMessage(const web::ScriptMessage& message,

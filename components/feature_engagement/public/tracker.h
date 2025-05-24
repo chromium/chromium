@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/default_session_controller.h"
@@ -39,11 +38,14 @@ class ProtoDatabaseProvider;
 namespace feature_engagement {
 
 class Configuration;
+class FeatureActivation;
 class Tracker;
 class SessionController;
 
-// Creates a Tracker that is usable for a demo mode.
-std::unique_ptr<Tracker> CreateDemoModeTracker(std::string chosen_feature_name);
+// Creates a Tracker that is usable for a demo mode. `feature_activation`
+// decides which features are enabled.
+std::unique_ptr<Tracker> CreateDemoModeTracker(
+    FeatureActivation feature_activation);
 
 // A handle for the display lock. While this is unreleased, no in-product help
 // can be displayed.
@@ -156,7 +158,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // The |background_task_runner| will be used for all disk reads and writes.
   // If `configuration_providers` is not specified, a default set of providers
   // will be provided.
-  static Tracker* Create(
+  static std::unique_ptr<Tracker> Create(
       const base::FilePath& storage_dir,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
@@ -302,7 +304,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // invoked exactly one time.
   virtual void AddOnInitializedCallback(OnInitializedCallback callback) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Updates the config of a specific feature after initialization. The new
   // config will replace the existing cofig.
   // Calling this method requires the Tracker to already have been initialized.

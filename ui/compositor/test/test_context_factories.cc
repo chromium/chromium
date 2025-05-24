@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gl/gl_implementation.h"
@@ -21,9 +20,8 @@ TestContextFactories::TestContextFactories(bool enable_pixel_output,
     enable_pixel_output = true;
   if (enable_pixel_output)
     disable_null_draw_ = std::make_unique<gl::DisableNullDrawGLBindings>();
-  shared_bitmap_manager_ = std::make_unique<viz::ServerSharedBitmapManager>();
   frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
-      viz::FrameSinkManagerImpl::InitParams(shared_bitmap_manager_.get()));
+      viz::FrameSinkManagerImpl::InitParams());
   host_frame_sink_manager_ = std::make_unique<viz::HostFrameSinkManager>();
   implicit_factory_ = std::make_unique<InProcessContextFactory>(
       host_frame_sink_manager_.get(), frame_sink_manager_.get(),

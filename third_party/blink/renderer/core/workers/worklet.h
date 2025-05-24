@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_credentials.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope_proxy.h"
@@ -75,7 +76,7 @@ class CORE_EXPORT Worklet : public ScriptWrappable,
 
  private:
   virtual void FetchAndInvokeScript(const KURL& module_url_record,
-                                    const String& credentials,
+                                    V8RequestCredentials::Enum credentials,
                                     WorkletPendingTasks*);
 
   // Returns true if there are no global scopes or additional global scopes are

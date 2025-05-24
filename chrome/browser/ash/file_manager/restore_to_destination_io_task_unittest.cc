@@ -20,16 +20,13 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/ash/components/trash_service/public/cpp/trash_service.h"
-#include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom-forward.h"
-#include "chromeos/ash/components/trash_service/trash_service_impl.h"
+#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -43,7 +40,7 @@ using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::Field;
 
-class RestoreToDestinationIOTaskTest : public TrashBaseTest {
+class RestoreToDestinationIOTaskTest : public TrashBaseIOTest {
  public:
   RestoreToDestinationIOTaskTest() = default;
 
@@ -53,15 +50,7 @@ class RestoreToDestinationIOTaskTest : public TrashBaseTest {
       const RestoreToDestinationIOTaskTest&) = delete;
 
   void SetUp() override {
-    TrashBaseTest::SetUp();
-
-    // The TrashService launches a sandboxed process to perform parsing in, in
-    // unit tests this is not possible. So instead override the launcher to
-    // start an in-process TrashService and have `LaunchTrashService` invoke it.
-    ash::trash_service::SetTrashServiceLaunchOverrideForTesting(
-        base::BindRepeating(
-            &RestoreToDestinationIOTaskTest::CreateInProcessTrashService,
-            base::Unretained(this)));
+    TrashBaseIOTest::SetUp();
 
     // Setup the destination directory where the files will be restored to.
     destination_path_ = temp_dir_.GetPath().Append("dest_folder");
@@ -108,24 +97,13 @@ class RestoreToDestinationIOTaskTest : public TrashBaseTest {
     EXPECT_EQ(expected_contents, contents);
   }
 
- private:
-  mojo::PendingRemote<ash::trash_service::mojom::TrashService>
-  CreateInProcessTrashService() {
-    mojo::PendingRemote<ash::trash_service::mojom::TrashService> remote;
-    trash_service_impl_ =
-        std::make_unique<ash::trash_service::TrashServiceImpl>(
-            remote.InitWithNewPipeAndPassReceiver());
-    return remote;
-  }
-
   std::string GenerateTrashInfoContents(const std::string& restore_file) {
     return base::StrCat({"[Trash Info]\nPath=", "/Downloads/bar/", restore_file,
                          "\nDeletionDate=",
                          base::TimeFormatAsIso8601(base::Time::UnixEpoch())});
   }
 
-  // Maintains ownership of the in-process parsing service.
-  std::unique_ptr<ash::trash_service::TrashServiceImpl> trash_service_impl_;
+  content::BrowserTaskEnvironment task_environment_;
   // Directory where the files will be restored to.
   base::FilePath destination_path_;
 };

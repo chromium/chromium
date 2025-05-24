@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -79,8 +80,7 @@ UrlLoader::UrlLoader(base::WeakPtr<Client> client)
 UrlLoader::~UrlLoader() = default;
 
 // Modeled on `content::PepperURLLoaderHost::OnHostMsgOpen()`.
-void UrlLoader::Open(const UrlRequest& request,
-                     base::OnceCallback<void(int)> callback) {
+void UrlLoader::Open(const UrlRequest& request, OpenCallback callback) {
   DCHECK_EQ(state_, LoadingState::kWaitingToOpen);
   DCHECK(callback);
   state_ = LoadingState::kOpening;
@@ -104,8 +104,7 @@ void UrlLoader::Open(const UrlRequest& request,
 
   // Note: The PDF plugin doesn't set the `X-Requested-With` header.
   if (!request.headers.empty()) {
-    net::HttpUtil::HeadersIterator it(request.headers.begin(),
-                                      request.headers.end(), "\n\r");
+    net::HttpUtil::HeadersIterator it(request.headers, "\n\r");
     while (it.GetNext()) {
       blink_request.AddHttpHeaderField(blink::WebString::FromUTF8(it.name()),
                                        blink::WebString::FromUTF8(it.values()));
@@ -115,7 +114,7 @@ void UrlLoader::Open(const UrlRequest& request,
   if (!request.body.empty()) {
     blink::WebHTTPBody body;
     body.Initialize();
-    body.AppendData(request.body);
+    body.AppendData(blink::WebData(base::as_byte_span(request.body)));
     blink_request.SetHttpBody(body);
   }
 
@@ -242,7 +241,7 @@ void UrlLoader::DidFail(const blink::WebURLError& error) {
          state_ == LoadingState::kStreamingData)
       << static_cast<int>(state_);
 
-  int32_t pp_error = Result::kErrorFailed;
+  Result pp_error = Result::kErrorFailed;
   switch (error.reason()) {
     case net::ERR_ACCESS_DENIED:
     case net::ERR_NETWORK_ACCESS_DENIED:
@@ -258,8 +257,8 @@ void UrlLoader::DidFail(const blink::WebURLError& error) {
   AbortLoad(pp_error);
 }
 
-void UrlLoader::AbortLoad(int32_t result) {
-  DCHECK_LT(result, 0);
+void UrlLoader::AbortLoad(Result result) {
+  CHECK_NE(result, Result::kSuccess);
 
   SetLoadComplete(result);
   buffer_.clear();
@@ -303,9 +302,8 @@ void UrlLoader::RunReadCallback() {
   std::move(read_callback_).Run(num_bytes);
 }
 
-void UrlLoader::SetLoadComplete(int32_t result) {
+void UrlLoader::SetLoadComplete(Result result) {
   DCHECK_NE(state_, LoadingState::kLoadComplete);
-  DCHECK_LE(result, 0);
 
   state_ = LoadingState::kLoadComplete;
   complete_result_ = result;

@@ -67,8 +67,7 @@ void RestoreToDestinationIOTask::Execute(
   }
 
   progress_.state = State::kInProgress;
-  validator_ =
-      std::make_unique<trash::TrashInfoValidator>(profile_, base_path_);
+  validator_ = std::make_unique<trash::TrashInfoValidator>(profile_);
   validator_->SetDisconnectHandler(
       base::BindOnce(&RestoreToDestinationIOTask::Complete,
                      weak_ptr_factory_.GetWeakPtr(), State::kError));

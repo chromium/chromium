@@ -44,7 +44,7 @@ TEST(ByteBufferQueueTest, ReadIntoEmpty) {
   test::TaskEnvironment task_environment;
   ByteBufferQueue buffer_queue;
   Vector<uint8_t> data(100);
-  EXPECT_EQ(0u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(0u, buffer_queue.ReadInto(base::span(data)));
 }
 
 TEST(ByteBufferQueueTest, ReadIntoLessThanOneSegment) {
@@ -52,7 +52,7 @@ TEST(ByteBufferQueueTest, ReadIntoLessThanOneSegment) {
   ByteBufferQueue buffer_queue;
   buffer_queue.Append({1, 2, 3});
   Vector<uint8_t> data(2);
-  EXPECT_EQ(2u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(2u, buffer_queue.ReadInto(base::span(data)));
   EXPECT_EQ(1u, buffer_queue.size());
   EXPECT_THAT(data, ElementsAre(1, 2));
 }
@@ -62,7 +62,7 @@ TEST(ByteBufferQueueTest, ReadIntoExactOneSegmentSize) {
   ByteBufferQueue buffer_queue;
   buffer_queue.Append({1, 2, 3});
   Vector<uint8_t> data(3);
-  EXPECT_EQ(3u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(3u, buffer_queue.ReadInto(base::span(data)));
   EXPECT_EQ(0u, buffer_queue.size());
   EXPECT_THAT(data, ElementsAre(1, 2, 3));
 }
@@ -72,7 +72,7 @@ TEST(ByteBufferQueueTest, ReadIntoOverOneSegmentSize) {
   ByteBufferQueue buffer_queue;
   buffer_queue.Append({1, 2, 3});
   Vector<uint8_t> data(5);
-  EXPECT_EQ(3u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(3u, buffer_queue.ReadInto(base::span(data)));
   EXPECT_EQ(0u, buffer_queue.size());
   EXPECT_THAT(data, ElementsAre(1, 2, 3, 0, 0));
 }
@@ -82,7 +82,7 @@ TEST(ByteBufferQueueTest, ReadIntoEmptyData) {
   ByteBufferQueue buffer_queue;
   buffer_queue.Append({1, 2, 3});
   Vector<uint8_t> data;
-  EXPECT_EQ(0u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(0u, buffer_queue.ReadInto(base::span(data)));
   EXPECT_EQ(3u, buffer_queue.size());
 }
 
@@ -92,7 +92,7 @@ TEST(ByteBufferQueueTest, ReadIntoExactlyTwoSegments) {
   buffer_queue.Append({1, 2, 3});
   buffer_queue.Append({4, 5});
   Vector<uint8_t> data(5);
-  EXPECT_EQ(5u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(5u, buffer_queue.ReadInto(base::span(data)));
   EXPECT_EQ(0u, buffer_queue.size());
   EXPECT_THAT(data, ElementsAre(1, 2, 3, 4, 5));
 }
@@ -104,13 +104,13 @@ TEST(ByteBufferQueueTest, ReadIntoAcrossTwoSegmentsMisaligned) {
   buffer_queue.Append({4, 5});
 
   Vector<uint8_t> data(2);
-  EXPECT_EQ(2u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(2u, buffer_queue.ReadInto(base::span(data)));
   EXPECT_THAT(data, ElementsAre(1, 2));
 
-  EXPECT_EQ(2u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(2u, buffer_queue.ReadInto(base::span(data)));
   EXPECT_THAT(data, ElementsAre(3, 4));
 
-  EXPECT_EQ(1u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(1u, buffer_queue.ReadInto(base::span(data)));
   EXPECT_THAT(data, ElementsAre(5, 4));
 }
 
@@ -128,14 +128,14 @@ TEST(ByteBufferQueueTest, ReadIntoAfterClearThenAppend) {
 
   buffer_queue.Append({1, 2, 3});
   Vector<uint8_t> data(2);
-  buffer_queue.ReadInto(base::make_span(data));
+  buffer_queue.ReadInto(base::span(data));
 
   buffer_queue.Clear();
   EXPECT_EQ(0u, buffer_queue.size());
-  EXPECT_EQ(0u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(0u, buffer_queue.ReadInto(base::span(data)));
 
   buffer_queue.Append({4, 5});
-  EXPECT_EQ(2u, buffer_queue.ReadInto(base::make_span(data)));
+  EXPECT_EQ(2u, buffer_queue.ReadInto(base::span(data)));
   EXPECT_THAT(data, ElementsAre(4, 5));
 }
 

@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.components.embedder_support.view.ContentView;
 
 public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
@@ -34,12 +35,15 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
      * @param areControlsHidden Supplier of a flag indicating if browser controls are hidden.
      * @param exitFullscreenOnStop Whether fullscreen mode should exit on stop - should be true for
      *     Activities that are not always fullscreen.
+     * @param multiWindowDispatcher multi window mode observer allows to exit fullscreen when user
+     *     drag the window out of edge-to-edge fullscreen
      */
     public FullscreenHtmlApiHandlerLegacy(
             Activity activity,
             ObservableSupplier<Boolean> areControlsHidden,
-            boolean exitFullscreenOnStop) {
-        super(activity, areControlsHidden, exitFullscreenOnStop);
+            boolean exitFullscreenOnStop,
+            MultiWindowModeStateDispatcher multiWindowDispatcher) {
+        super(activity, areControlsHidden, exitFullscreenOnStop, multiWindowDispatcher);
     }
 
     // View.OnSystemUiVisibilityChangeListener
@@ -70,22 +74,22 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
     void hideSystemBars(View contentView, FullscreenOptions fullscreenOptions) {
         setSystemUiVisibility(
                 contentView,
-                applyEnterFullscreenUIFlags(
+                applyEnterFullscreenUiFlags(
                         contentView.getSystemUiVisibility(), fullscreenOptions));
     }
 
     @Override
     void showSystemBars(View contentView) {
         setSystemUiVisibility(
-                contentView, applyExitFullscreenUIFlags(contentView.getSystemUiVisibility()));
+                contentView, applyExitFullscreenUiFlags(contentView.getSystemUiVisibility()));
     }
 
     @Override
     void adjustSystemBarsInFullscreenMode(View contentView, FullscreenOptions fullscreenOptions) {
         setSystemUiVisibility(
                 contentView,
-                applyEnterFullscreenUIFlags(
-                        applyExitFullscreenUIFlags(contentView.getSystemUiVisibility()),
+                applyEnterFullscreenUiFlags(
+                        applyExitFullscreenUiFlags(contentView.getSystemUiVisibility()),
                         fullscreenOptions));
     }
 
@@ -181,11 +185,12 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
         }
     }
 
-    /*
+    /**
      * Returns system ui flags to enable fullscreen mode based on the current options.
+     *
      * @return fullscreen flags to be applied to system UI visibility.
      */
-    private int applyEnterFullscreenUIFlags(
+    private int applyEnterFullscreenUiFlags(
             int systemUiVisibility, FullscreenOptions fullscreenOptions) {
         boolean showNavigationBar =
                 fullscreenOptions != null && fullscreenOptions.showNavigationBar;
@@ -209,12 +214,13 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
         return flags | systemUiVisibility;
     }
 
-    /*
+    /**
      * Returns system ui flags with any flags that might have been set during
-     * applyEnterFullscreenUIFlags masked off.
+     * applyEnterFullscreenUiFlags masked off.
+     *
      * @return fullscreen flags to be applied to system UI visibility.
      */
-    private static int applyExitFullscreenUIFlags(int systemUiVisibility) {
+    private static int applyExitFullscreenUiFlags(int systemUiVisibility) {
         int maskOffFlags =
                 SYSTEM_UI_FLAG_LOW_PROFILE
                         | SYSTEM_UI_FLAG_FULLSCREEN

@@ -6,7 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_VIEWS_HELP_BUBBLE_FACTORY_MAC_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/user_education/common/help_bubble_factory.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory.h"
 
 namespace user_education {
 

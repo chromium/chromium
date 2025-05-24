@@ -203,7 +203,8 @@ bool SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault() {
   // features::kOriginKeyedProcessesByDefault is checked outside of tests.
   return base::FeatureList::IsEnabled(
              features::kOriginKeyedProcessesByDefault) &&
-         UseDedicatedProcessesForAllSites();
+         UseDedicatedProcessesForAllSites() &&
+         !GetContentClient()->browser()->ShouldDisableOriginIsolation();
 }
 
 // static

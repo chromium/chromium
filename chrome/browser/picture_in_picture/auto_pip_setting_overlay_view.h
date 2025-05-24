@@ -72,7 +72,7 @@ class AutoPipSettingOverlayView : public views::View,
 
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     virtual void OnAutoPipSettingOverlayViewHidden() = 0;
   };
 

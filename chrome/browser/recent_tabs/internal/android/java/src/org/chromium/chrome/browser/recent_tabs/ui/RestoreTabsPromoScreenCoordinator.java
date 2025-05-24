@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.recent_tabs.ui;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the home screen of the Restore Tabs on FRE promo. */
+@NullMarked
 public class RestoreTabsPromoScreenCoordinator {
     /** The delegate of the class. */
     public interface Delegate {

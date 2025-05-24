@@ -61,9 +61,7 @@ if (sysroot == "") {
         _script_arch = "amd64"
       }
       assert(
-          exec_script("//build/dir_exists.py",
-                      [ rebase_path(sysroot) ],
-                      "string") == "True",
+          path_exists(sysroot),
           "Missing sysroot ($sysroot). To fix, run: build/linux/sysroot_scripts/install-sysroot.py --arch=$_script_arch")
     }
   } else if (is_mac) {

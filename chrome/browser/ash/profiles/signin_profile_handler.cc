@@ -16,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -24,7 +23,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/crx_file/id_util.h"
 #include "components/user_manager/user_manager.h"
-#include "extensions/browser/extension_system.h"
 
 namespace ash {
 namespace {
@@ -145,9 +143,7 @@ void SigninProfileHandler::ClearSigninProfile(base::OnceClosure callback) {
   const std::set<std::string> allowed_ids_hashes(
       std::begin(kNonRiskyExtensionsIdsHashes),
       std::end(kNonRiskyExtensionsIdsHashes));
-  auto* component_loader = extensions::ExtensionSystem::Get(signin_profile)
-                               ->extension_service()
-                               ->component_loader();
+  auto* component_loader = extensions::ComponentLoader::Get(signin_profile);
   const std::vector<std::string> loaded_extensions =
       component_loader->GetRegisteredComponentExtensionsIds();
   for (const auto& el : loaded_extensions) {

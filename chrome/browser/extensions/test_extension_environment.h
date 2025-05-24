@@ -33,6 +33,7 @@ namespace extensions {
 
 class Extension;
 class ExtensionPrefs;
+class ExtensionRegistrar;
 class ExtensionService;
 class TestExtensionSystem;
 
@@ -40,7 +41,7 @@ class TestExtensionSystem;
 // extensions and tabs for extension-related unittests.
 class TestExtensionEnvironment {
  public:
-  // Fetches the TestExtensionSystem in |profile| and creates a default
+  // Fetches the TestExtensionSystem in `profile` and creates a default
   // ExtensionService there,
   static ExtensionService* CreateExtensionServiceForProfile(
       TestingProfile* profile);
@@ -59,7 +60,7 @@ class TestExtensionEnvironment {
     kCreate,
   };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   enum class OSSetupType {
     kNoSetUp,
     kSetUp,
@@ -69,7 +70,7 @@ class TestExtensionEnvironment {
   explicit TestExtensionEnvironment(
       Type type = Type::kWithTaskEnvironment,
       ProfileCreationType profile_creation_type = ProfileCreationType::kCreate
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       ,
       OSSetupType os_setup_type = OSSetupType::kSetUp
 #endif
@@ -87,13 +88,13 @@ class TestExtensionEnvironment {
   // Returns the TestExtensionSystem created by the TestingProfile.
   TestExtensionSystem* GetExtensionSystem();
 
-  // Returns an ExtensionService created (and owned) by the
-  // TestExtensionSystem created by the TestingProfile.
-  ExtensionService* GetExtensionService();
-
   // Returns ExtensionPrefs created (and owned) by the
   // TestExtensionSystem created by the TestingProfile.
   ExtensionPrefs* GetExtensionPrefs();
+
+  // Returns ExtensionRegistrar created (and owned) by the
+  // TestExtensionSystem created by the TestingProfile.
+  ExtensionRegistrar* GetExtensionRegistrar();
 
   // Creates an Extension and registers it with the ExtensionService.
   // The Extension has a default manifest of {name: "Extension",
@@ -106,8 +107,8 @@ class TestExtensionEnvironment {
   const Extension* MakeExtension(const base::Value::Dict& manifest_extra,
                                  const std::string& id);
 
-  // Generates a valid packaged app manifest with the given ID. If |install|
-  // it gets added to the ExtensionService in |profile|.
+  // Generates a valid packaged app manifest with the given ID. If `install`
+  // it gets added to the ExtensionService in `profile`.
   scoped_refptr<const Extension> MakePackagedApp(const std::string& id,
                                                  bool install);
 
@@ -117,16 +118,22 @@ class TestExtensionEnvironment {
   // Deletes the testing profile to test profile teardown.
   void DeleteProfile();
 
+  void ProfileMarkedForPermanentDeletionForTest();
+
  private:
   class ChromeOSEnv;
 
   void Init();
 
-  // If |task_environment_| is needed, then it needs to constructed before
-  // |profile_| and destroyed after |profile_|.
+  // Returns an ExtensionService created (and owned) by the
+  // TestExtensionSystem created by the TestingProfile.
+  ExtensionService* GetExtensionService();
+
+  // If `task_environment_` is needed, then it needs to constructed before
+  // `profile_` and destroyed after `profile_`.
   const std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const std::unique_ptr<ChromeOSEnv> chromeos_env_;
 #endif
 

@@ -69,6 +69,7 @@ TEST(SystemTrustStoreChrome, SystemDistrustOverridesChromeTrust) {
   std::unique_ptr<TrustStoreChrome> test_trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
           base::span<const ChromeRootCertInfo>(kChromeRootCertList),
+          base::span(kEutlRootCertList),
           /*version=*/1);
 
   std::unique_ptr<net::PlatformTrustStore> test_platform_trust_store =
@@ -112,6 +113,7 @@ TEST(SystemTrustStoreChrome, SystemLeafTrustDoesNotOverrideChromeTrust) {
   std::unique_ptr<TrustStoreChrome> test_trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
           base::span<const ChromeRootCertInfo>(kChromeRootCertList),
+          base::span(kEutlRootCertList),
           /*version=*/1);
 
   std::unique_ptr<net::PlatformTrustStore> test_platform_trust_store =

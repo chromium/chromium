@@ -41,7 +41,15 @@ using GskRenderNodeType = enum {
   GSK_TEXT_NODE,
   GSK_BLUR_NODE,
   GSK_DEBUG_NODE,
-  GSK_GL_SHADER_NODE
+  GSK_GL_SHADER_NODE,
+  GSK_TEXTURE_SCALE_NODE,
+  GSK_MASK_NODE,
+  GSK_FILL_NODE,
+  GSK_STROKE_NODE,
+  GSK_SUBSURFACE_NODE,
+
+  // Not defined in GTK.
+  GSK_RENDER_NODE_MAX_VALUE = GSK_SUBSURFACE_NODE,
 };
 
 enum GdkMemoryFormat : int;
@@ -59,6 +67,11 @@ using GdkToplevel = struct _GdkToplevel;
 constexpr GdkMemoryFormat GDK_MEMORY_B8G8R8A8 = static_cast<GdkMemoryFormat>(3);
 
 constexpr GdkModifierType GDK_ALT_MASK = GDK_MOD1_MASK;
+
+// This is a macro instead of a constexpr variable to workaround an
+// enum-constexpr-conversion error caused by creating a GtkStateFlags outside
+// the range of values defined by in the enum.
+#define GTK_STATE_FLAG_FOCUS_WITHIN static_cast<GtkStateFlags>(1 << 14)
 #elif GTK_MAJOR_VERSION == 4
 enum GtkWidgetHelpType : int;
 enum GtkWindowType : int;
@@ -94,6 +107,9 @@ struct _GdkColor {
   guint16 green;
   guint16 blue;
 };
+
+// Not defined in GTK.
+constexpr int GSK_RENDER_NODE_MAX_VALUE = GSK_SUBSURFACE_NODE;
 
 constexpr int GTK_ICON_LOOKUP_USE_BUILTIN = 1 << 2;
 constexpr int GTK_ICON_LOOKUP_GENERIC_FALLBACK = 1 << 3;

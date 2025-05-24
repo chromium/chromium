@@ -112,6 +112,26 @@ OnscreenContentProviderAndroid::OnscreenContentProviderAndroid(
 
 OnscreenContentProviderAndroid::~OnscreenContentProviderAndroid() = default;
 
+void OnscreenContentProviderAndroid::FlushCaptureContent(
+    const ContentCaptureSession& parent_session,
+    const ContentCaptureFrame& data) {
+  JNIEnv* env = AttachCurrentThread();
+  DCHECK(java_ref_.obj());
+
+  auto* web_contents = GetWebContents();
+  DCHECK(web_contents);
+  const int offset_y = Java_OnscreenContentProvider_getOffsetY(
+      env, java_ref_, web_contents->GetJavaWebContents());
+  ScopedJavaLocalRef<jobject> jdata =
+      ToJavaObjectOfContentCaptureFrame(env, data, offset_y);
+  if (jdata.is_null()) {
+    return;
+  }
+  Java_OnscreenContentProvider_flushCaptureContent(
+      env, java_ref_,
+      ToJavaArrayOfContentCaptureFrame(env, parent_session, offset_y), jdata);
+}
+
 void OnscreenContentProviderAndroid::DidCaptureContent(
     const ContentCaptureSession& parent_session,
     const ContentCaptureFrame& data) {
@@ -211,10 +231,6 @@ void OnscreenContentProviderAndroid::DidUpdateFavicon(
 }
 
 bool OnscreenContentProviderAndroid::ShouldCapture(const GURL& url) {
-  // Capture all urls for experiment, the url will be checked
-  // before the content is sent to the consumers.
-  if (features::ShouldTriggerContentCaptureForExperiment())
-    return true;
   JNIEnv* env = AttachCurrentThread();
   return Java_OnscreenContentProvider_shouldCapture(
       env, java_ref_, ConvertUTF8ToJavaString(env, url.spec()));

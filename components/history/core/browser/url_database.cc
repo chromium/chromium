@@ -55,7 +55,7 @@ URLDatabase::~URLDatabase() = default;
 bool URLDatabase::FillURLRow(sql::Statement& s, URLRow* i) {
   DCHECK(i);
 
-  GURL url(s.ColumnString(1));
+  GURL url(s.ColumnStringView(1));
   if (!url.is_valid()) {
     return false;
   }
@@ -67,55 +67,6 @@ bool URLDatabase::FillURLRow(sql::Statement& s, URLRow* i) {
   i->set_typed_count(s.ColumnInt(4));
   i->set_last_visit(s.ColumnTime(5));
   i->set_hidden(s.ColumnInt(6) != 0);
-  return true;
-}
-
-bool URLDatabase::MigrateKeywordsSearchTermsLowerTermColumn() {
-  // Create a temporary keyword search terms table.
-  if (!GetDB().Execute(
-          "CREATE TABLE temp_keyword_search_terms ("
-          "keyword_id INTEGER NOT NULL,"  // ID of the TemplateURL.
-          "url_id INTEGER NOT NULL,"      // ID of the url.
-          "term LONGVARCHAR NOT NULL,"    // The actual search term.
-          // The search term, in lower case, and with whitespaces collapsed.
-          "normalized_term LONGVARCHAR NOT NULL)")) {
-    return false;
-  }
-
-  // Extract rows from the keyword search terms table, convert lower_term to
-  // normalized_term, and insert them into the temporary table.
-  sql::Statement select_statement(
-      GetDB().GetCachedStatement(SQL_FROM_HERE,
-                                 "SELECT keyword_id, url_id, lower_term, term "
-                                 "FROM keyword_search_terms"));
-  while (select_statement.Step()) {
-    sql::Statement insert_statement(GetDB().GetCachedStatement(
-        SQL_FROM_HERE,
-        "INSERT INTO temp_keyword_search_terms "
-        "(keyword_id, url_id, term, normalized_term) VALUES (?,?,?,?)"));
-    insert_statement.BindInt64(0, select_statement.ColumnInt64(0));
-    insert_statement.BindInt64(1, select_statement.ColumnInt64(1));
-    insert_statement.BindString16(2, select_statement.ColumnString16(3));
-    insert_statement.BindString16(
-        3, base::CollapseWhitespace(select_statement.ColumnString16(2), false));
-    if (!insert_statement.Run())
-      return false;
-  }
-  if (!select_statement.Succeeded())
-    return false;
-
-  // Replace the keyword search terms table with the temporary one.
-  if (!GetDB().Execute("DROP TABLE keyword_search_terms"))
-    return false;
-  if (!GetDB().Execute("ALTER TABLE temp_keyword_search_terms RENAME TO "
-                       "keyword_search_terms")) {
-    return false;
-  }
-
-  // Index the table, this is faster than creating the index first and then
-  // inserting into it.
-  CreateKeywordSearchTermsIndices();
-
   return true;
 }
 
@@ -214,7 +165,7 @@ bool URLDatabase::URLTableContainsAutoincrement() {
   if (!statement.Step())
     return false;
 
-  std::string urls_schema = statement.ColumnString(0);
+  std::string_view urls_schema = statement.ColumnStringView(0);
   // We check if the whole schema contains "AUTOINCREMENT", since
   // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume no
   // other columns could contain "AUTOINCREMENT".
@@ -277,8 +228,7 @@ bool URLDatabase::CommitTemporaryURLTable() {
     return false;
   }
   if (!GetDB().Execute("ALTER TABLE temp_urls RENAME TO urls")) {
-    NOTREACHED_IN_MIGRATION() << GetDB().GetErrorMessage();
-    return false;
+    NOTREACHED() << GetDB().GetErrorMessage();
   }
 
   // Re-create the index over the now permanent URLs table -- this was not there
@@ -716,8 +666,7 @@ bool URLDatabase::CreateURLTable(bool is_temporary) {
       return true;
     }
     if (!GetDB().Execute("DROP TABLE temp_urls")) {
-      NOTREACHED_IN_MIGRATION() << GetDB().GetErrorMessage();
-      return false;
+      NOTREACHED() << GetDB().GetErrorMessage();
     }
   }
 
@@ -752,8 +701,7 @@ bool URLDatabase::CreateMainURLIndex() {
 bool URLDatabase::RecreateURLTableWithAllContents() {
   // Create a temporary table to contain the new URLs table.
   if (!CreateTemporaryURLTable()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Copy the contents.

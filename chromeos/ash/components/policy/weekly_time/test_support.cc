@@ -16,11 +16,15 @@
 
 namespace policy::weekly_time {
 
+const char* DayToString(WeeklyTimeChecked::Day day_of_week) {
+  int day_of_week_index = static_cast<int>(day_of_week) - 1;
+  return WeeklyTimeChecked::kWeekDays[day_of_week_index];
+}
+
 base::Value::Dict BuildWeeklyTimeCheckedDict(WeeklyTimeChecked::Day day_of_week,
                                              int milliseconds_since_midnight) {
   base::Value::Dict dict;
-  int day_of_week_index = static_cast<int>(day_of_week) - 1;
-  const char* day_of_week_str = WeeklyTimeChecked::kWeekDays[day_of_week_index];
+  const char* day_of_week_str = DayToString(day_of_week);
   EXPECT_TRUE(dict.Set(WeeklyTimeChecked::kDayOfWeek, day_of_week_str));
   EXPECT_TRUE(dict.Set(WeeklyTimeChecked::kMillisecondsSinceMidnight,
                        milliseconds_since_midnight));

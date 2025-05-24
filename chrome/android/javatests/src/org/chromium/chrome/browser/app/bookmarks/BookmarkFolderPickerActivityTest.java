@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.app.bookmarks;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -16,10 +15,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import android.content.Intent;
-
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -33,18 +31,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -76,6 +74,7 @@ public class BookmarkFolderPickerActivityTest {
     private static BookmarkId sOtherFolderId;
     private static BookmarkId sLocalOrSyncableReadingListFolder;
 
+    private final BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
     private BookmarkFolderPickerActivity mActivity;
 
     @BeforeClass
@@ -114,6 +113,7 @@ public class BookmarkFolderPickerActivityTest {
         BookmarkId bookmark =
                 addBookmark(sMobileFolderId, 0, "bookmark", new GURL("https://google.com"));
         BookmarkId folder = addFolder(sMobileFolderId, 1, "folder");
+
         startFolderPickerActivity(bookmark);
 
         ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.addObserver(mBookmarkModelObserver));
@@ -187,28 +187,16 @@ public class BookmarkFolderPickerActivityTest {
     }
 
     private void startFolderPickerActivity(BookmarkId... ids) {
-        Intent intent =
-                new Intent(sActivityTestRule.getActivity(), BookmarkFolderPickerActivity.class);
-        intent.putStringArrayListExtra(
-                BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
-                BookmarkUtils.bookmarkIdsToStringList(ids));
-        sActivityTestRule.getActivity().startActivity(intent);
-
-        CriteriaHelper.pollUiThread(
-                () ->
-                        ApplicationStatus.getLastTrackedFocusedActivity()
-                                instanceof BookmarkFolderPickerActivity,
-                "Timed out waiting for BookmarkFolderPickerActivity");
         mActivity =
-                (BookmarkFolderPickerActivity) ApplicationStatus.getLastTrackedFocusedActivity();
-        CriteriaHelper.pollUiThread(
-                () -> ApplicationStatus.getStateForActivity(mActivity) == ActivityState.RESUMED,
-                "Timed out waiting for activity to enter the RESUMED state.");
-    }
-
-    // Clicks the "Go back" button in the selectable list layout.
-    private void clickToolbarBackButton() {
-        onView(withContentDescription("Navigate up")).perform(click());
+                ApplicationTestUtils.waitForActivityWithClass(
+                        BookmarkFolderPickerActivity.class,
+                        Stage.RESUMED,
+                        () -> {
+                            mBookmarkManagerOpener.startFolderPickerActivity(
+                                    sActivityTestRule.getActivity(),
+                                    sActivityTestRule.getProfile(false),
+                                    ids);
+                        });
     }
 
     private void verifyBookmarkMoved(

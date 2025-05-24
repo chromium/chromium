@@ -1,0 +1,10 @@
+{
+  "name": "theme with bad mime type image",
+  "manifest_version": 3,
+  "version": "1",
+  "theme": {
+    "images": {
+      "theme_frame": "files/bad_icon.txt"
+    }
+  }
+}

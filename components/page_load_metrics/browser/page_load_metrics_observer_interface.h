@@ -108,11 +108,13 @@ struct ExtraRequestCompleteInfo {
 struct FailedProvisionalLoadInfo {
   FailedProvisionalLoadInfo(base::TimeDelta interval,
                             net::Error error,
+                            int net_extended_error_code,
                             content::NavigationDiscardReason discard_reason);
   ~FailedProvisionalLoadInfo();
 
   base::TimeDelta time_to_failed_provisional_load;
   net::Error error;
+  int net_extended_error_code;
   content::NavigationDiscardReason discard_reason;
 };
 
@@ -401,6 +403,7 @@ class PageLoadMetricsObserverInterface {
   virtual void OnParseStart(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnParseStop(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnConnectStart(const mojom::PageLoadTiming& timing) = 0;
+  virtual void OnConnectEnd(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnDomainLookupStart(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnDomainLookupEnd(const mojom::PageLoadTiming& timing) = 0;
 
@@ -449,11 +452,13 @@ class PageLoadMetricsObserverInterface {
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& features) = 0;
 
-  // The smoothness metrics is shared over shared-memory. The observer should
-  // create a mapping (by calling |shared_memory.Map()|) so that they are able
-  // to read from the shared memory.
-  virtual void SetUpSharedMemoryForSmoothness(
-      const base::ReadOnlySharedMemoryRegion& shared_memory) = 0;
+  // The smoothness and dropped frame count metrics are shared over
+  // shared-memory. The observer should create a mapping (by calling
+  // |shared_memory.Map()|) so that they are able to read from the shared
+  // memory.
+  virtual void SetUpSharedMemoryForUkms(
+      const base::ReadOnlySharedMemoryRegion& smoothness_memory,
+      const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) = 0;
 
   // Invoked when there is data use for loading a resource on the page
   // for a given RenderFrameHost. This only contains resources that have had
@@ -631,6 +636,9 @@ class PageLoadMetricsObserverInterface {
   virtual void OnAdAuctionComplete(bool is_server_auction,
                                    bool is_on_device_auction,
                                    content::AuctionResult result) = 0;
+
+  // Called when the renderer process for the primary main frame is gone.
+  virtual void OnPrimaryPageRenderProcessGone() = 0;
 
  private:
   base::WeakPtrFactory<PageLoadMetricsObserverInterface> weak_factory_{this};

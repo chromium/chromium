@@ -87,7 +87,7 @@ namespace exo {
 namespace test {
 namespace {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(Holder, kBuilderResourceHolderKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(Holder, kBuilderResourceHolderKey)
 
 Holder* FindHolder(Surface* surface) {
   aura::Window* window = surface->window();
@@ -373,7 +373,7 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
         break;
       default:
         // Other states are not supported as initial state in ShellSurface.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -442,7 +442,7 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
         shell_surface->SetPip();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

@@ -233,16 +233,13 @@ SkFont FontPlatformData::CreateSkFont(
     }
   }
 
-  if (WebTestSupport::IsRunningWebTest()) {
+  if (WebTestSupport::IsRunningWebTest() ||
+      RuntimeEnabledFeatures::NoFontAntialiasingEnabled()) {
     should_smooth_fonts = false;
     should_antialias =
         should_antialias && WebTestSupport::IsFontAntialiasingEnabledForTest();
     should_subpixel_position =
         WebTestSupport::IsTextSubpixelPositioningAllowedForTest();
-  }
-
-  if (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem()) {
-    should_antialias = false;
   }
 
   SkFont skfont(typeface_);

@@ -44,6 +44,7 @@ WebSandboxFlags ParseWebSandboxToken(std::string_view token) {
            kTopNavigationByUserActivation},
           {"allow-top-navigation-to-custom-protocols",
            kTopNavigationToCustomProtocols},
+          {"allow-same-site-none-cookies", kAllowSameSiteNoneCookies},
       });
 
   std::string lowered_token = base::ToLowerASCII(token);

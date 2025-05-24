@@ -16,6 +16,7 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_PROCESSOR_EMBEDDING_POSTPROCESSOR_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_TASK_PROCESSOR_EMBEDDING_POSTPROCESSOR_H_
 
+#include <cstdint>
 #include <initializer_list>
 #include <memory>
 
@@ -84,8 +85,8 @@ absl::Status EmbeddingPostprocessor::Postprocess(T* embedding) {
   embedding->set_output_index(tensor_indices_.at(0));
   auto* feature_vector = embedding->mutable_feature_vector();
   if (GetTensor()->type == kTfLiteUInt8) {
-    const uint8* output_data =
-        engine_->interpreter()->typed_output_tensor<uint8>(
+    const uint8_t* output_data =
+        engine_->interpreter()->typed_output_tensor<uint8_t>(
             tensor_indices_.at(0));
     // Get the zero_point and scale parameters from the tensor metadata.
     const int output_tensor_index =

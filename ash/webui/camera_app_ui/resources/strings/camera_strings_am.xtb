@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">የQR ኮድ</translation>
 <translation id="2244252133441425811">ቪድዮ ክ/ሴ መራጭን አንቃ</translation>
 <translation id="2271433936731426666">ባለሙሉ መጠን የቪዲዮ ቅጽበተ-ፎቶን አንቃ</translation>
-<translation id="2281736597583450397">በተሻሻለ ማጉላት ጋር ይበልጥ ጥርት ያሉ ዝርዝሮችን ያግኙ</translation>
 <translation id="2320741269052147773">ወደ ግራ ያንፏቅቁ</translation>
 <translation id="2360840973209616515">የካሜራ መተግበሪያው በአስተዳዳሪዎ ነው የሚተዳደረው።
         ለዝርዝሮች አስተዳዳሪውን ያነጋግሩ።</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">አሳንስ</translation>
 <translation id="5976160379964388480">ሌሎች</translation>
 <translation id="6073451960410192870">መቅረጽ አቁም</translation>
-<translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6197807149213783179">የዲበ ውሂብ አስቀምጥ</translation>
 <translation id="6233780560267770709">3 በ 3</translation>
 <translation id="6243827288366940320">ወርቃማ ውድር</translation>
@@ -122,7 +120,6 @@
 የእርስዎ ግብረመልስ ስለምስል ወይም ቪዲዮ ጥራት ከሆነ እባክዎ ናሙና ፎቶ ወይም ቪዲዮ ያያይዙ እና ምን ችግር እንዳለበት ያብራሩ። (ለምሳሌ፣ ፎቶ በጣም ጨለማ ነው ወይም የፎቶው ዋና አካል በትኩረት ላይ አይደለም።)</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" />ን ይቀላቀሉ</translation>
 <translation id="6527303717912515753">አጋራ</translation>
-<translation id="6586509689874700895">በመጀመሪያ፣ ለማጉላት <ph name="BUTTON_NAME" /> የሚለውን ይጫኑ። ከዚያ፣ ፎቶ ካነሱ በኋላ፣ የተሻሻሉ ዝርዝሮችን ያያሉ።</translation>
 <translation id="659539649712855529"><ph name="CONTENT" /> ተቀድቷል</translation>
 <translation id="6617916774429601017">ሁሉንም ጥራቶች አሳይ</translation>
 <translation id="6631515515009660915">መስታወት ጠፍቷል</translation>
@@ -168,7 +165,6 @@
 <translation id="8609951387004618906"><ph name="URL" /> ይክፈቱ</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">የማይክሮፎን ድምጸ-ከል መቀያየሪያ ድምጸ-ከል በርቷል</translation>
-<translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8732462232047530626">የቅድመ ዕይታ ዲበ ውሂብ</translation>
 <translation id="874854738381978209">የWi-Fi አውታረ መረብ ተገኝቷል።</translation>

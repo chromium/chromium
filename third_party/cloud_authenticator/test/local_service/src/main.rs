@@ -25,6 +25,7 @@ extern crate handshake;
 extern crate hex;
 extern crate processor;
 
+use base64::Engine;
 use cbor::{cbor, Value};
 use crypto::P256Scalar;
 use processor::{ClientState, StateUpdate};
@@ -200,7 +201,7 @@ fn write_msg(conn: &TcpStream, msg: &[u8]) -> bool {
 /// connection. See https://datatracker.ietf.org/doc/html/rfc6455#section-1.3
 fn calculate_websocket_accept(key: &[u8]) -> String {
     let digest = crypto::sha1_two_part(key, b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-    base64::encode(digest)
+    base64::engine::general_purpose::STANDARD.encode(digest)
 }
 
 struct EnclaveServer {
@@ -306,8 +307,10 @@ impl EnclaveServer {
             })
             .unwrap_or(ClientState::Initial);
 
+        let mut metrics = processor::MetricsUpdate::default();
         let cbor_response = match processor::process_client_msg(
             client_state,
+            &mut metrics,
             processor::ExternalContext {
                 // This timestamp is fixed so that any XML files submitted by tests will be
                 // considered unexpired.
@@ -337,6 +340,8 @@ impl EnclaveServer {
 
                 let err = match err {
                     processor::Error::UnknownClient => Value::Int(0),
+                    processor::Error::UnknownKey => Value::Int(1),
+                    processor::Error::SignatureVerificationFailed => Value::Int(2),
                     processor::Error::Str(s) => Value::String(String::from(s)),
                     _ => Value::String(format!("{:?}", err)),
                 };

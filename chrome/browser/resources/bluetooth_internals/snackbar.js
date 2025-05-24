@@ -261,10 +261,13 @@ function show(snackbar) {
   document.body.querySelector('#snackbar-container').appendChild(snackbar);
 
   snackbar.addEventListener('dismissed', function() {
-    document.body.querySelector('#snackbar-container').removeChild(current);
+    const container = document.body.querySelector('#snackbar-container');
+    if (container) {
+      container.removeChild(current);
+    }
 
     const newSnackbar = queue.shift();
-    if (newSnackbar) {
+    if (container && newSnackbar) {
       show(newSnackbar);
       return;
     }

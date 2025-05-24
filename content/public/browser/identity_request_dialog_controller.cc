@@ -13,10 +13,12 @@ namespace content {
 
 ClientMetadata::ClientMetadata(const GURL& terms_of_service_url,
                                const GURL& privacy_policy_url,
-                               const GURL& brand_icon_url)
+                               const GURL& brand_icon_url,
+                               const gfx::Image& brand_decoded_icon)
     : terms_of_service_url{terms_of_service_url},
       privacy_policy_url(privacy_policy_url),
-      brand_icon_url(brand_icon_url) {}
+      brand_icon_url(brand_icon_url),
+      brand_decoded_icon(brand_decoded_icon) {}
 ClientMetadata::ClientMetadata(const ClientMetadata& other) = default;
 ClientMetadata::~ClientMetadata() = default;
 
@@ -30,16 +32,24 @@ IdentityProviderData::IdentityProviderData(
     const IdentityProviderMetadata& idp_metadata,
     const ClientMetadata& client_metadata,
     blink::mojom::RpContext rp_context,
+    std::optional<blink::mojom::Format> format,
     const std::vector<IdentityRequestDialogDisclosureField>& disclosure_fields,
     bool has_login_status_mismatch)
     : idp_for_display{idp_for_display},
       idp_metadata{idp_metadata},
       client_metadata{client_metadata},
       rp_context(rp_context),
+      format(format),
       disclosure_fields(disclosure_fields),
       has_login_status_mismatch(has_login_status_mismatch) {}
 
 IdentityProviderData::~IdentityProviderData() = default;
+
+RelyingPartyData::RelyingPartyData(const std::u16string& rp_for_display,
+                                   const std::u16string& iframe_for_display)
+    : rp_for_display(rp_for_display), iframe_for_display(iframe_for_display) {}
+RelyingPartyData::RelyingPartyData(const RelyingPartyData& other) = default;
+RelyingPartyData::~RelyingPartyData() = default;
 
 int IdentityRequestDialogController::GetBrandIconIdealSize(
     blink::mojom::RpMode rp_mode) {
@@ -56,10 +66,9 @@ void IdentityRequestDialogController::SetIsInterceptionEnabled(bool enabled) {
 }
 
 bool IdentityRequestDialogController::ShowAccountsDialog(
-    const std::string& rp_for_display,
+    content::RelyingPartyData rp_data,
     const std::vector<scoped_refptr<content::IdentityProviderData>>& idp_list,
     const std::vector<scoped_refptr<content::IdentityRequestAccount>>& accounts,
-    content::IdentityRequestAccount::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
     const std::vector<scoped_refptr<content::IdentityRequestAccount>>&
         new_accounts,
@@ -75,7 +84,7 @@ bool IdentityRequestDialogController::ShowAccountsDialog(
 }
 
 bool IdentityRequestDialogController::ShowFailureDialog(
-    const std::string& rp_for_display,
+    const RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -90,7 +99,7 @@ bool IdentityRequestDialogController::ShowFailureDialog(
 }
 
 bool IdentityRequestDialogController::ShowErrorDialog(
-    const std::string& rp_for_display,
+    const RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -106,13 +115,26 @@ bool IdentityRequestDialogController::ShowErrorDialog(
 }
 
 bool IdentityRequestDialogController::ShowLoadingDialog(
-    const std::string& rp_for_display,
+    const RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
     DismissCallback dismiss_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
+    return false;
+  }
+  return true;
+}
+
+bool IdentityRequestDialogController::ShowVerifyingDialog(
+    const content::RelyingPartyData& rp_data,
+    const scoped_refptr<IdentityProviderData>& idp_data,
+    const scoped_refptr<content::IdentityRequestAccount>& account,
+    content::IdentityRequestAccount::SignInMode sign_in_mode,
+    blink::mojom::RpMode rp_mode,
+    AccountsDisplayedCallback accounts_displayed_callback) {
+  if (!is_interception_enabled_) {
     return false;
   }
   return true;
@@ -150,5 +172,7 @@ void IdentityRequestDialogController::RequestIdPRegistrationPermision(
     base::OnceCallback<void(bool accepted)> callback) {
   std::move(callback).Run(false);
 }
+
+void IdentityRequestDialogController::NotifyAutofillSourceReadyForTesting() {}
 
 }  // namespace content

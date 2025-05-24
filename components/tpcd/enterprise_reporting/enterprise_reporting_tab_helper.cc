@@ -4,10 +4,12 @@
 
 #include "components/tpcd/enterprise_reporting/enterprise_reporting_tab_helper.h"
 
+#include "base/feature_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace tpcd::enterprise_reporting {
@@ -43,24 +45,24 @@ base::Value::Dict CreateReportBody(const ReportDetails& report_details) {
 
 bool ShouldReport(const net::CookieInclusionStatus& status) {
   return status.HasExclusionReason(
-             net::CookieInclusionStatus::
+             net::CookieInclusionStatus::ExclusionReason::
                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
-         status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT) ||
-         status.HasWarningReason(
-             net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+         status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                       EXCLUDE_THIRD_PARTY_PHASEOUT) ||
+         status.HasWarningReason(net::CookieInclusionStatus::WarningReason::
+                                     WARN_THIRD_PARTY_PHASEOUT);
 }
 
 std::string GetReportType(const net::CookieInclusionStatus& status) {
   if (status.HasExclusionReason(
-          net::CookieInclusionStatus::
+          net::CookieInclusionStatus::ExclusionReason::
               EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
-      status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
+      status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_THIRD_PARTY_PHASEOUT)) {
     return kEnterpriseErrorReportType;
   } else {
     DCHECK(status.HasWarningReason(
-        net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+        net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
     return kEnterpriseWarningReportType;
   }
 }

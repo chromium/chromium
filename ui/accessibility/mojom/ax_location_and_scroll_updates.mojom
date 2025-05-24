@@ -1,0 +1,30 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom;
+
+import "ui/accessibility/mojom/ax_relative_bounds.mojom";
+import "ui/accessibility/mojom/ax_tree_id.mojom";
+
+struct AXLocationChange {
+  // ID of the object whose location is changing.
+  int32 id;
+
+  // The object's new location info.
+  ax.mojom.AXRelativeBounds new_location;
+};
+
+struct AXScrollChange {
+  // ID of the object whose scroll position is changing.
+  int32 id;
+
+  // The object's new scroll info
+  int32 scroll_x;
+  int32 scroll_y;
+};
+
+struct AXLocationAndScrollUpdates {
+  array<AXLocationChange> location_changes;
+  array<AXScrollChange> scroll_changes;
+};

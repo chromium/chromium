@@ -5,13 +5,13 @@
 #include "ash/login/ui/login_pin_input_view.h"
 
 #include <optional>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/access_code_input.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -59,8 +59,6 @@ class LoginPinInput : public FixedLengthCodeInput {
                           const ui::GestureEvent& gesture_event) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
-  // views::view
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   void UpdateAccessibleDescription();
@@ -96,6 +94,8 @@ LoginPinInput::LoginPinInput(int length,
       AddActiveInputIndexChanged(base::BindRepeating(
           &LoginPinInput::UpdateAccessibleDescription, base::Unretained(this)));
 
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF8(
+      IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME));
   UpdateAccessibleDescription();
 }
 
@@ -148,12 +148,6 @@ bool LoginPinInput::HandleKeyEvent(views::Textfield* sender,
 
   // Delegate all other key events to the base class.
   return FixedLengthCodeInput::HandleKeyEvent(sender, key_event);
-}
-
-void LoginPinInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  FixedLengthCodeInput::GetAccessibleNodeData(node_data);
-  node_data->SetName(l10n_util::GetStringUTF8(
-      IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME));
 }
 
 void LoginPinInput::UpdateAccessibleDescription() {
@@ -218,7 +212,7 @@ void LoginPinInputView::Init(const OnPinSubmit& on_submit,
   on_changed_ = on_changed;
 }
 
-void LoginPinInputView::SubmitPin(const std::u16string& pin) {
+void LoginPinInputView::SubmitPin(std::u16string_view pin) {
   DCHECK(on_submit_);
   on_submit_.Run(pin);
 }

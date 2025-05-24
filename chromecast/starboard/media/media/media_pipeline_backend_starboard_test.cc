@@ -8,6 +8,7 @@
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/public/volume_control.h"
+#include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/mock_starboard_api_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -99,8 +100,12 @@ class MediaPipelineBackendStarboardTest : public ::testing::Test {
     // Sets up default behavior for the mock functions that return values, so
     // that tests that do not care about this functionality can ignore them.
     ON_CALL(*starboard_, CreatePlayer).WillByDefault(Return(&fake_player_));
+    ON_CALL(*starboard_, CreateDrmSystem)
+        .WillByDefault(Return(&fake_drm_system_));
     ON_CALL(*starboard_, EnsureInitialized).WillByDefault(Return(true));
     ON_CALL(*starboard_, SetPlaybackRate).WillByDefault(Return(true));
+
+    StarboardDrmWrapper::SetSingletonForTesting(starboard_.get());
   }
 
   ~MediaPipelineBackendStarboardTest() override = default;
@@ -110,9 +115,12 @@ class MediaPipelineBackendStarboardTest : public ::testing::Test {
   // This will be passed to the MediaPipelineBackendStarboard, and all calls to
   // Starboard will go through it. Thus, we can mock out those calls.
   std::unique_ptr<MockStarboardApiWrapper> starboard_;
-  // Since SbPlayer is just an opaque blob to the MPB, we will simply use an int
-  // to represent it.
+  // Since SbPlayer is just an opaque blob to cast code, we will simply use an
+  // int to represent it.
   int fake_player_ = 1;
+  // Since SbDrmSystem is just an opaque blob to cast code, we will simply use
+  // an int to represent it.
+  int fake_drm_system_ = 2;
   StarboardVideoPlane video_plane_;
   MediaPipelineDeviceParams device_params_;
 };

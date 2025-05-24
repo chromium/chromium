@@ -10,43 +10,49 @@
 
 #include <optional>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "extensions/browser/extension_function.h"
-
-// API function that is called when the Select-to-Speak wants to perform a
-// clipboard copy in a Lacros Google Doc.
-class AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction
-    : public ExtensionFunction {
-  ~AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction() override {
-  }
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION(
-      "accessibilityPrivate.clipboardCopyInActiveLacrosGoogleDoc",
-      ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC)
-};
 
 // API function that darkens or undarkens the screen.
 class AccessibilityPrivateDarkenScreenFunction : public ExtensionFunction {
-  ~AccessibilityPrivateDarkenScreenFunction() override {}
+  ~AccessibilityPrivateDarkenScreenFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.darkenScreen",
                              ACCESSIBILITY_PRIVATE_DARKENSCREEN)
 };
 
+// API function that enables the DragEventRewriter. While the event rewriter is
+// enabled, it will convert all mouse moved events into mouse dragged events.
+class AccessibilityPrivateEnableDragEventRewriterFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateEnableDragEventRewriterFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.enableDragEventRewriter",
+                             ACCESSIBILITY_PRIVATE_ENABLEDRAGEVENTREWRITER)
+};
+
 // API function that enables or disables mouse events in ChromeVox / Magnifier /
 // FaceGaze.
 class AccessibilityPrivateEnableMouseEventsFunction : public ExtensionFunction {
-  ~AccessibilityPrivateEnableMouseEventsFunction() override {}
+  ~AccessibilityPrivateEnableMouseEventsFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.enableMouseEvents",
                              ACCESSIBILITY_PRIVATE_ENABLEMOUSEEVENTS)
 };
 
+// API function that enables or disables the live caption feature.
+class AccessibilityPrivateEnableLiveCaptionFunction : public ExtensionFunction {
+  ~AccessibilityPrivateEnableLiveCaptionFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.enableLiveCaption",
+                             ACCESSIBILITY_PRIVATE_ENABLELIVECAPTION)
+};
+
 // API function that sets the cursor position on the screen in absolute
 // coordinates.
 class AccessibilityPrivateSetCursorPositionFunction : public ExtensionFunction {
-  ~AccessibilityPrivateSetCursorPositionFunction() override {}
+  ~AccessibilityPrivateSetCursorPositionFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setCursorPosition",
                              ACCESSIBILITY_PRIVATE_SETCURSORPOSITION)
@@ -54,7 +60,7 @@ class AccessibilityPrivateSetCursorPositionFunction : public ExtensionFunction {
 
 // API function that gets the bounds of the displays in absolute coordinates.
 class AccessibilityPrivateGetDisplayBoundsFunction : public ExtensionFunction {
-  ~AccessibilityPrivateGetDisplayBoundsFunction() override {}
+  ~AccessibilityPrivateGetDisplayBoundsFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.getDisplayBounds",
                              ACCESSIBILITY_PRIVATE_GETDISPLAYBOUNDS)
@@ -64,7 +70,8 @@ class AccessibilityPrivateGetDisplayBoundsFunction : public ExtensionFunction {
 // Access extension.
 class AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction() override {}
+  ~AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction() override =
+      default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION(
       "accessibilityPrivate.forwardKeyEventsToSwitchAccess",
@@ -121,7 +128,8 @@ class AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction
 // scrollable bounds.
 class AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction() override {}
+  ~AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction() override =
+      default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION(
       "accessibilityPrivate.handleScrollableBoundsForPointFound",
@@ -168,7 +176,7 @@ class AccessibilityPrivateInstallPumpkinForDictationFunction
 
 // API function that determines if an accessibility feature is enabled.
 class AccessibilityPrivateIsFeatureEnabledFunction : public ExtensionFunction {
-  ~AccessibilityPrivateIsFeatureEnabledFunction() override {}
+  ~AccessibilityPrivateIsFeatureEnabledFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.isFeatureEnabled",
                              ACCESSIBILITY_PRIVATE_ISFEATUREENABLED)
@@ -178,7 +186,7 @@ class AccessibilityPrivateIsFeatureEnabledFunction : public ExtensionFunction {
 // the magnifier viewport on a passed-in point.
 class AccessibilityPrivateMagnifierCenterOnPointFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateMagnifierCenterOnPointFunction() override {}
+  ~AccessibilityPrivateMagnifierCenterOnPointFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.magnifierCenterOnPoint",
                              ACCESSIBILITY_PRIVATE_MAGNIFIERCENTERONPOINT)
@@ -188,7 +196,7 @@ class AccessibilityPrivateMagnifierCenterOnPointFunction
 // the magnifier viewport on a passed-in rect.
 class AccessibilityPrivateMoveMagnifierToRectFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateMoveMagnifierToRectFunction() override {}
+  ~AccessibilityPrivateMoveMagnifierToRectFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.moveMagnifierToRect",
                              ACCESSIBILITY_PRIVATE_MOVEMAGNIFIERTORECT)
@@ -197,7 +205,7 @@ class AccessibilityPrivateMoveMagnifierToRectFunction
 // Opens a specified subpage in Chrome settings.
 class AccessibilityPrivateOpenSettingsSubpageFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateOpenSettingsSubpageFunction() override {}
+  ~AccessibilityPrivateOpenSettingsSubpageFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.openSettingsSubpage",
                              ACCESSIBILITY_PRIVATE_OPENSETTINGSSUBPAGE)
@@ -206,7 +214,7 @@ class AccessibilityPrivateOpenSettingsSubpageFunction
 // API function that performs an accelerator action.
 class AccessibilityPrivatePerformAcceleratorActionFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivatePerformAcceleratorActionFunction() override {}
+  ~AccessibilityPrivatePerformAcceleratorActionFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.performAcceleratorAction",
                              ACCESSIBILITY_PRIVATE_PERFORMACCELERATORACTION)
@@ -215,7 +223,7 @@ class AccessibilityPrivatePerformAcceleratorActionFunction
 // API function that injects key events.
 class AccessibilityPrivateSendSyntheticKeyEventFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateSendSyntheticKeyEventFunction() override {}
+  ~AccessibilityPrivateSendSyntheticKeyEventFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.sendSyntheticKeyEvent",
                              ACCESSIBILITY_PRIVATE_SENDSYNTHETICKEYEVENT)
@@ -224,7 +232,7 @@ class AccessibilityPrivateSendSyntheticKeyEventFunction
 // API function that injects mouse events.
 class AccessibilityPrivateSendSyntheticMouseEventFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateSendSyntheticMouseEventFunction() override {}
+  ~AccessibilityPrivateSendSyntheticMouseEventFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.sendSyntheticMouseEvent",
                              ACCESSIBILITY_PRIVATE_SENDSYNTHETICMOUSEEVENT)
@@ -232,7 +240,7 @@ class AccessibilityPrivateSendSyntheticMouseEventFunction
 
 // API function that scrolls at a point in the specified direction.
 class AccessibilityPrivateScrollAtPointFunction : public ExtensionFunction {
-  ~AccessibilityPrivateScrollAtPointFunction() override {}
+  ~AccessibilityPrivateScrollAtPointFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.scrollAtPoint",
                              ACCESSIBILITY_PRIVATE_SCROLLATPOINT)
@@ -240,7 +248,7 @@ class AccessibilityPrivateScrollAtPointFunction : public ExtensionFunction {
 
 // API function that sets the location of the accessibility focus ring.
 class AccessibilityPrivateSetFocusRingsFunction : public ExtensionFunction {
-  ~AccessibilityPrivateSetFocusRingsFunction() override {}
+  ~AccessibilityPrivateSetFocusRingsFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setFocusRings",
                              ACCESSIBILITY_PRIVATE_SETFOCUSRING)
@@ -248,7 +256,7 @@ class AccessibilityPrivateSetFocusRingsFunction : public ExtensionFunction {
 
 // API function that sets the location of the accessibility highlights.
 class AccessibilityPrivateSetHighlightsFunction : public ExtensionFunction {
-  ~AccessibilityPrivateSetHighlightsFunction() override {}
+  ~AccessibilityPrivateSetHighlightsFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setHighlights",
                              ACCESSIBILITY_PRIVATE_SETHIGHLIGHTS)
@@ -256,7 +264,7 @@ class AccessibilityPrivateSetHighlightsFunction : public ExtensionFunction {
 
 // API function that is called when the ChromeVox focus changes.
 class AccessibilityPrivateSetChromeVoxFocusFunction : public ExtensionFunction {
-  ~AccessibilityPrivateSetChromeVoxFocusFunction() override {}
+  ~AccessibilityPrivateSetChromeVoxFocusFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setChromeVoxFocus",
                              ACCESSIBILITY_PRIVATE_SETCHROMEVOXFOCUS)
@@ -266,7 +274,7 @@ class AccessibilityPrivateSetChromeVoxFocusFunction : public ExtensionFunction {
 // changes.
 class AccessibilityPrivateSetSelectToSpeakFocusFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateSetSelectToSpeakFocusFunction() override {}
+  ~AccessibilityPrivateSetSelectToSpeakFocusFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setSelectToSpeakFocus",
                              ACCESSIBILITY_PRIVATE_SETSELECTTOSPEAKFOCUS)
@@ -275,7 +283,7 @@ class AccessibilityPrivateSetSelectToSpeakFocusFunction
 // API function that sets keyboard capture mode.
 class AccessibilityPrivateSetKeyboardListenerFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateSetKeyboardListenerFunction() override {}
+  ~AccessibilityPrivateSetKeyboardListenerFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setKeyboardListener",
                              ACCESSIBILITY_PRIVATE_SETKEYBOARDLISTENER)
@@ -284,11 +292,16 @@ class AccessibilityPrivateSetKeyboardListenerFunction
 // API function that enables or disables web content accessibility support.
 class AccessibilityPrivateSetNativeAccessibilityEnabledFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateSetNativeAccessibilityEnabledFunction() override {}
+ public:
+  AccessibilityPrivateSetNativeAccessibilityEnabledFunction();
+
+ private:
+  ~AccessibilityPrivateSetNativeAccessibilityEnabledFunction() override;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION(
       "accessibilityPrivate.setNativeAccessibilityEnabled",
       ACCESSIBILITY_PRIVATE_SETNATIVEACCESSIBILITYENABLED)
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 };
 
 // API function that sets native ChromeVox ARC support.
@@ -308,7 +321,7 @@ class AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction
 // API function that is called to start or end point scanning of the
 // Switch Access extension.
 class AccessibilityPrivateSetPointScanStateFunction : public ExtensionFunction {
-  ~AccessibilityPrivateSetPointScanStateFunction() override {}
+  ~AccessibilityPrivateSetPointScanStateFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setPointScanState",
                              ACCESSIBILITY_PRIVATE_SETPOINTSCANSTATE)
@@ -317,7 +330,7 @@ class AccessibilityPrivateSetPointScanStateFunction : public ExtensionFunction {
 // API function that is called when the Select-to-Speak extension state changes.
 class AccessibilityPrivateSetSelectToSpeakStateFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateSetSelectToSpeakStateFunction() override {}
+  ~AccessibilityPrivateSetSelectToSpeakStateFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setSelectToSpeakState",
                              ACCESSIBILITY_PRIVATE_SETSELECTTOSPEAKSTATE)
@@ -326,7 +339,7 @@ class AccessibilityPrivateSetSelectToSpeakStateFunction
 // API function that opens or closes the virtual keyboard.
 class AccessibilityPrivateSetVirtualKeyboardVisibleFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateSetVirtualKeyboardVisibleFunction() override {}
+  ~AccessibilityPrivateSetVirtualKeyboardVisibleFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setVirtualKeyboardVisible",
                              ACCESSIBILITY_PRIVATE_SETVIRTUALKEYBOARDVISIBLE)
@@ -363,7 +376,7 @@ class AccessibilityPrivateSilenceSpokenFeedbackFunction
 // API function that is called when a user toggles Dictation from another
 // acessibility feature.
 class AccessibilityPrivateToggleDictationFunction : public ExtensionFunction {
-  ~AccessibilityPrivateToggleDictationFunction() override {}
+  ~AccessibilityPrivateToggleDictationFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.toggleDictation",
                              ACCESSIBILITY_PRIVATE_TOGGLEDICTATION)
@@ -399,17 +412,10 @@ class AccessibilityPrivateUpdateSelectToSpeakPanelFunction
 // API function that is called to show or hide one of the Switch Access bubbles.
 class AccessibilityPrivateUpdateSwitchAccessBubbleFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateUpdateSwitchAccessBubbleFunction() override {}
+  ~AccessibilityPrivateUpdateSwitchAccessBubbleFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.updateSwitchAccessBubble",
                              ACCESSIBILITY_PRIVATE_UPDATESWITCHACCESSBUBBLE)
-};
-
-class AccessibilityPrivateIsLacrosPrimaryFunction : public ExtensionFunction {
-  ~AccessibilityPrivateIsLacrosPrimaryFunction() override = default;
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.isLacrosPrimary",
-                             ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY)
 };
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_ASH_H_

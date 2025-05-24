@@ -23,14 +23,15 @@ namespace internal {
 //
 // Sets |filename| and |font_name| respectively. If a field is not present
 // or could not be parsed, the corresponding parameter will be cleared.
-void GFX_EXPORT ParseFontLinkEntry(const std::string& entry,
-                                   std::string* filename,
-                                   std::string* font_name);
+void COMPONENT_EXPORT(GFX) ParseFontLinkEntry(const std::string& entry,
+                                              std::string* filename,
+                                              std::string* font_name);
 
 // Parses a font |family| in the format "FamilyFoo & FamilyBar (TrueType)".
 // Splits by '&' and strips off the trailing parenthesized expression.
-void GFX_EXPORT ParseFontFamilyString(const std::string& family,
-                                      std::vector<std::string>* font_names);
+void COMPONENT_EXPORT(GFX)
+    ParseFontFamilyString(const std::string& family,
+                          std::vector<std::string>* font_names);
 
 }  // namespace internal
 

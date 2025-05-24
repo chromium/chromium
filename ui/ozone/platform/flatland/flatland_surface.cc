@@ -8,6 +8,8 @@
 #include <lib/zx/eventpair.h>
 #include <zircon/types.h>
 
+#include <variant>
+
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
@@ -94,12 +96,7 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
     case gfx::OVERLAY_TRANSFORM_INVALID:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return {
-      .translation = {rounded_bounds.x(), rounded_bounds.y()},
-      .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
-      .image_flip = fuchsia::ui::composition::ImageFlip::NONE,
-  };
+  NOTREACHED();
 }
 
 // Converts a gfx size to the associated Fuchsia size, and accounts for any
@@ -199,7 +196,7 @@ void FlatlandSurface::Present(
         overlay.pixmap.get(), /*is_primary_plane=*/false);
     const auto image_id = flatland_ids.image_id;
     const auto transform_id = flatland_ids.transform_id;
-    const auto overlay_plane_transform = absl::get<gfx::OverlayTransform>(
+    const auto overlay_plane_transform = std::get<gfx::OverlayTransform>(
         overlay.overlay_plane_data.plane_transform);
 
     if (overlay.gpu_fence) {

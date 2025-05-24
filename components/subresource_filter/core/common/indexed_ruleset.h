@@ -32,7 +32,7 @@ namespace url_pattern_index {
 namespace proto {
 class UrlRule;
 }
-}
+}  // namespace url_pattern_index
 
 namespace subresource_filter {
 

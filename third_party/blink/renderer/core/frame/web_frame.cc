@@ -5,6 +5,8 @@
 #include "third_party/blink/public/web/web_frame.h"
 
 #include <algorithm>
+
+#include "base/containers/to_vector.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
@@ -38,9 +40,11 @@ bool WebFrame::Swap(
         remote_frame_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::RemoteFrameInterfaceBase>
         remote_frame_receiver,
-    blink::mojom::FrameReplicationStatePtr replicated_state) {
+    blink::mojom::FrameReplicationStatePtr replicated_state,
+    const std::optional<base::UnguessableToken>& devtools_frame_token) {
   bool res = ToCoreFrame(*this)->Swap(frame, std::move(remote_frame_host),
-                                      std::move(remote_frame_receiver));
+                                      std::move(remote_frame_receiver),
+                                      devtools_frame_token);
   if (!res)
     return false;
 
@@ -62,10 +66,10 @@ mojom::blink::InsecureRequestPolicy WebFrame::GetInsecureRequestPolicy() const {
   return ToCoreFrame(*this)->GetSecurityContext()->GetInsecureRequestPolicy();
 }
 
-WebVector<unsigned> WebFrame::GetInsecureRequestToUpgrade() const {
+std::vector<unsigned> WebFrame::GetInsecureRequestToUpgrade() const {
   const SecurityContext::InsecureNavigationsSet& set =
       ToCoreFrame(*this)->GetSecurityContext()->InsecureNavigationsToUpgrade();
-  return SecurityContext::SerializeInsecureNavigationSet(set);
+  return base::ToVector(SecurityContext::SerializeInsecureNavigationSet(set));
 }
 
 WebFrame* WebFrame::Opener() const {
@@ -153,15 +157,14 @@ WebFrame::WebFrame(mojom::blink::TreeScopeType scope,
   DCHECK(frame_token.value());
 }
 
-void WebFrame::Close() {}
+void WebFrame::Close(DetachReason detach_reason) {}
 
 Frame* WebFrame::ToCoreFrame(const WebFrame& frame) {
   if (auto* web_local_frame = DynamicTo<WebLocalFrameImpl>(&frame))
     return web_local_frame->GetFrame();
   if (frame.IsWebRemoteFrame())
     return To<WebRemoteFrameImpl>(frame).GetFrame();
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace blink

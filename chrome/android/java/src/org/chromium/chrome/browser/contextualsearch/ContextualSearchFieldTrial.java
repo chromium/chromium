@@ -8,11 +8,14 @@ import android.text.TextUtils;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.variations.VariationsAssociatedData;
 
 /** Provides Field Trial support for the Contextual Search application within Chrome for Android. */
+@NullMarked
 public class ContextualSearchFieldTrial {
     private static final String FIELD_TRIAL_NAME = "ContextualSearch";
     private static final String DISABLED_PARAM = "disabled";
@@ -31,12 +34,11 @@ public class ContextualSearchFieldTrial {
             "contextual_search_minimum_page_height_dp";
 
     // Cached values to avoid repeated and redundant JNI operations.
-    private static Boolean sEnabled;
+    private static @MonotonicNonNull Boolean sEnabled;
 
     /**
-     * Current Variations parameters associated with the ContextualSearch Field Trial or a
-     * Chrome Feature to determine if the service is enabled
-     * (whether Contextual Search is enabled or not).
+     * Current Variations parameters associated with the ContextualSearch Field Trial or a Chrome
+     * Feature to determine if the service is enabled (whether Contextual Search is enabled or not).
      */
     public static boolean isEnabled() {
         if (sEnabled == null) sEnabled = detectEnabled();

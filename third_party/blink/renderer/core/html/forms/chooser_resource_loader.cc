@@ -15,8 +15,7 @@ Vector<char> ChooserResourceLoader::GetSuggestionPickerStyleSheet() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_SUGGESTION_PICKER_CSS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -24,8 +23,7 @@ Vector<char> ChooserResourceLoader::GetSuggestionPickerJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_SUGGESTION_PICKER_JS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -33,8 +31,7 @@ Vector<char> ChooserResourceLoader::GetPickerCommonStyleSheet() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_PICKER_COMMON_CSS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -42,8 +39,7 @@ Vector<char> ChooserResourceLoader::GetPickerCommonJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_PICKER_COMMON_JS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -51,8 +47,7 @@ Vector<char> ChooserResourceLoader::GetCalendarPickerStyleSheet() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_CALENDAR_PICKER_CSS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -60,8 +55,7 @@ Vector<char> ChooserResourceLoader::GetCalendarPickerJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_CALENDAR_PICKER_JS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -69,8 +63,7 @@ Vector<char> ChooserResourceLoader::GetMonthPickerJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_MONTH_PICKER_JS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -78,8 +71,7 @@ Vector<char> ChooserResourceLoader::GetTimePickerStyleSheet() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_TIME_PICKER_CSS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -87,8 +79,7 @@ Vector<char> ChooserResourceLoader::GetTimePickerJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_TIME_PICKER_JS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -96,8 +87,7 @@ Vector<char> ChooserResourceLoader::GetDateTimeLocalPickerJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_DATETIMELOCAL_PICKER_JS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -105,8 +95,7 @@ Vector<char> ChooserResourceLoader::GetColorSuggestionPickerStyleSheet() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_COLOR_SUGGESTION_PICKER_CSS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -114,8 +103,7 @@ Vector<char> ChooserResourceLoader::GetColorSuggestionPickerJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_COLOR_SUGGESTION_PICKER_JS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -123,8 +111,7 @@ Vector<char> ChooserResourceLoader::GetColorPickerStyleSheet() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_COLOR_PICKER_CSS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -132,8 +119,7 @@ Vector<char> ChooserResourceLoader::GetColorPickerJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_COLOR_PICKER_JS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -141,8 +127,7 @@ Vector<char> ChooserResourceLoader::GetColorPickerCommonJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_COLOR_PICKER_COMMON_JS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -150,8 +135,7 @@ Vector<char> ChooserResourceLoader::GetListPickerStyleSheet() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_LIST_PICKER_CSS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 
@@ -159,8 +143,7 @@ Vector<char> ChooserResourceLoader::GetListPickerJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_LIST_PICKER_JS);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return Vector<char>();
+  NOTREACHED();
 #endif
 }
 

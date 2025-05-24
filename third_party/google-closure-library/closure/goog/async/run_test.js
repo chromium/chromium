@@ -7,11 +7,13 @@
 goog.module('goog.async.runTest');
 goog.setTestOnly();
 
+const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const run = goog.require('goog.async.run');
 const testSuite = goog.require('goog.testing.testSuite');
 
 let mockClock;
+let stubs = new PropertyReplacer();
 /** @type {?} */
 let futureCallback1;
 /** @type {?} */
@@ -40,6 +42,7 @@ testSuite({
     futureCallback2 = null;
     futurePromise1 = null;
     futurePromise2 = null;
+    stubs.reset();
   },
 
   tearDownPage() {

@@ -30,33 +30,33 @@ class APITypeReferenceMap {
 
   ~APITypeReferenceMap();
 
-  // Adds the |spec| to the map under the given |name|.
+  // Adds the `spec` to the map under the given `name`.
   void AddSpec(const std::string& name, std::unique_ptr<ArgumentSpec> spec);
 
-  // Returns the spec for the given |name|.
+  // Returns the spec for the given `name`.
   const ArgumentSpec* GetSpec(const std::string& name) const;
 
-  // Adds the |signature| to the map under the given |name|. |name| is expected
+  // Adds the `signature` to the map under the given `name`. `name` is expected
   // to be fully qualified with the API and method name, e.g. tabs.create.
   void AddAPIMethodSignature(const std::string& name,
                              std::unique_ptr<APISignature> signature);
 
-  // Returns the signature for the given |name|. |name| is expected
+  // Returns the signature for the given `name`. `name` is expected
   // to be fully qualified with the API and method name, e.g. tabs.create.
   const APISignature* GetAPIMethodSignature(const std::string& name) const;
 
-  // Adds the |signature| to the map under the given |name|. |name| is expected
+  // Adds the `signature` to the map under the given `name`. `name` is expected
   // to be fully qualified with API, type, and method (e.g.
   // storage.StorageArea.get).
   void AddTypeMethodSignature(const std::string& name,
                               std::unique_ptr<APISignature> signature);
 
-  // Returns the signature for the given |name|. |name| is expected
+  // Returns the signature for the given `name`. `name` is expected
   // to be fully qualified with API, type, and method (e.g.
   // storage.StorageArea.get).
   const APISignature* GetTypeMethodSignature(const std::string& name) const;
 
-  // Returns true if the map has a signature for the given |name|. Unlike
+  // Returns true if the map has a signature for the given `name`. Unlike
   // GetTypeMethodSignature(), this will not try to fetch the type by loading
   // an API.
   bool HasTypeMethodSignature(const std::string& name) const;
@@ -75,7 +75,7 @@ class APITypeReferenceMap {
   // Retrieves a signature for an API event with the given `event_name`.
   const APISignature* GetEventSignature(const std::string& event_name) const;
 
-  // Returns the associated APISignature for the given |name|. Logic differs
+  // Returns the associated APISignature for the given `name`. Logic differs
   // slightly from a normal GetAPIMethodSignature as we don't want to initialize
   // a new type if the signature is not found.
   const APISignature* GetAsyncResponseSignature(const std::string& name) const;

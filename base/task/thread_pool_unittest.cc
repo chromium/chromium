@@ -22,7 +22,7 @@ TEST(ThreadPool, PostTaskAndReplyWithResultThreeArgs) {
 
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce([]() { return 3; }),
+      FROM_HERE, base::BindOnce([] { return 3; }),
       base::OnceCallback<void(int)>(
           base::BindLambdaForTesting([&run_loop](int x) {
             EXPECT_EQ(x, 3);
@@ -36,7 +36,7 @@ TEST(ThreadPool, PostTaskAndReplyWithResultFourArgs) {
 
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, /*traits=*/{}, base::BindOnce([]() { return 3; }),
+      FROM_HERE, /*traits=*/{}, base::BindOnce([] { return 3; }),
       base::OnceCallback<void(int)>(
           base::BindLambdaForTesting([&run_loop](int x) {
             EXPECT_EQ(x, 3);
@@ -62,7 +62,7 @@ TEST(ThreadPool, BindPostTaskFizzlesOnShutdown) {
     auto bound_callback =
         base::BindPostTask(base::ThreadPool::CreateSequencedTaskRunner(
                                {TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-                           base::BindOnce([]() { ADD_FAILURE(); }));
+                           base::BindOnce([] { ADD_FAILURE(); }));
     base::ThreadPoolInstance::Get()->Shutdown();
   }
 
@@ -98,11 +98,11 @@ TEST(ThreadPool, PostTaskAndReplyFizzlesOnShutdown) {
     // Post a task to the BLOCK_SHUTDOWN thread pool sequence to setup the test.
     base::TestWaitableEvent event;
     blocking_task_runner->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
+        FROM_HERE, base::BindLambdaForTesting([&] {
           // Enqueue a task whose only purpose is to exit the run loop, ensuring
           // the following task is never run.
           executor.task_runner()->PostTask(FROM_HERE,
-                                           base::BindLambdaForTesting([&]() {
+                                           base::BindLambdaForTesting([&] {
                                              event.Wait();
                                              run_loop.Quit();
                                            }));
@@ -110,8 +110,8 @@ TEST(ThreadPool, PostTaskAndReplyFizzlesOnShutdown) {
           // Post the task for which the reply will trigger the `DeleteSoon`
           // from `~PostTaskAndReplyRelay`.
           executor.task_runner()->PostTaskAndReply(
-              FROM_HERE, base::BindOnce([]() { ADD_FAILURE(); }),
-              base::BindOnce([]() { ADD_FAILURE(); }));
+              FROM_HERE, base::BindOnce([] { ADD_FAILURE(); }),
+              base::BindOnce([] { ADD_FAILURE(); }));
 
           event.Signal();
         }));

@@ -12,12 +12,12 @@
 #include "base/win/windows_version.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/win/setup/setup.h"
+#include "chrome/updater/win/setup/win_setup.h"
 
 namespace updater {
 
-void InstallCandidate(UpdaterScope scope,
-                      base::OnceCallback<void(int)> callback) {
+void InstallPlatformCandidate(UpdaterScope scope,
+                              base::OnceCallback<void(int)> callback) {
   if (base::win::GetVersion() < base::win::Version::WIN10) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

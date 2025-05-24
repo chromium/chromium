@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.MainThread;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -20,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * A Coordinator to display the dialogs the user may encounter when switching to/from or signing
  * into/out of a managed account.
  */
+@NullMarked
 public class ConfirmManagedSyncDataDialogCoordinator {
     /**
      * A listener to allow the Dialog to report on the action taken. Either {@link

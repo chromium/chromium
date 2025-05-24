@@ -73,7 +73,7 @@
 #include "ui/display/screen_info.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/native_theme_utils.h"
 
 using blink::WebURLRequest;
 
@@ -122,7 +122,7 @@ class RenderFrameImplTest : public RenderViewTest {
     mojom::CreateFrameWidgetParamsPtr widget_params =
         mojom::CreateFrameWidgetParams::New();
     widget_params->routing_id = kSubframeWidgetRouteId;
-    widget_params->visual_properties.new_size = gfx::Size(100, 100);
+    widget_params->visual_properties.new_size_device_px = gfx::Size(100, 100);
     widget_params->visual_properties.screen_infos =
         display::ScreenInfos(display::ScreenInfo());
 
@@ -168,7 +168,8 @@ class RenderFrameImplTest : public RenderViewTest {
         GetMainRenderFrame()->GetWebFrame()->FirstChild())
         ->Unload(false, frame_replication_state->Clone(), remote_child_token,
                  std::move(remote_frame_interfaces),
-                 std::move(remote_main_frame_interfaces));
+                 std::move(remote_main_frame_interfaces),
+                 /*devtools_frame_token=*/std::nullopt);
     MockPolicyContainerHost mock_policy_container_host;
     RenderFrameImpl::CreateFrame(
         *agent_scheduling_group_, child_frame_token_, kSubframeRouteId,
@@ -178,9 +179,10 @@ class RenderFrameImplTest : public RenderViewTest {
         /*web_view=*/nullptr,
         /*previous_frame_token=*/std::nullopt,
         /*opener_frame_token=*/std::nullopt,
-        /*parent_frame_token=*/remote_child_token,
+        /*parent_frame_token=*/blink::FrameToken(remote_child_token),
         /*previous_sibling_frame_token=*/std::nullopt,
         base::UnguessableToken::Create(),
+        /*navigation_metrics_token=*/std::nullopt,
         blink::mojom::TreeScopeType::kDocument,
         std::move(frame_replication_state), std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),
@@ -285,9 +287,9 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
   gfx::Size widget_size(400, 200);
   gfx::Size visible_size(350, 170);
-  visual_properties.new_size = widget_size;
+  visual_properties.new_size_device_px = widget_size;
   visual_properties.compositor_viewport_pixel_rect = gfx::Rect(widget_size);
-  visual_properties.visible_viewport_size = visible_size;
+  visual_properties.visible_viewport_size_device_px = visible_size;
 
   blink::WebFrameWidget* main_frame_widget =
       GetMainRenderFrame()->GetLocalRootWebFrameWidget();
@@ -548,7 +550,6 @@ struct SourceAnnotation {
     return document_url == rhs.document_url &&
            render_frame_event == rhs.render_frame_event;
   }
-  bool operator!=(const SourceAnnotation& rhs) const { return !(*this == rhs); }
 };
 
 std::ostream& operator<<(std::ostream& out, const SourceAnnotation& s) {

@@ -26,9 +26,8 @@ class SearchBoxView;
 class SearchResultPageDialogController;
 class SearchResultImageListView;
 
-// The search results view for productivity launcher. Contains a scrolling list
-// of search results. Does not include the search box, which is owned by a
-// parent view.
+// Contains a scrolling list of search results. Does not include the search box,
+// which is owned by a parent view.
 class ASH_EXPORT AppListSearchView : public views::View,
                                      public SearchResultContainerView::Delegate,
                                      public AppListModelProvider::Observer {

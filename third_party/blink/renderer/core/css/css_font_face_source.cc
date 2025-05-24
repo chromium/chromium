@@ -40,7 +40,7 @@ const SimpleFontData* CSSFontFaceSource::GetFontData(
     const FontSelectionCapabilities& font_selection_capabilities) {
   // If the font hasn't loaded or an error occurred, then we've got nothing.
   if (!IsValid()) {
-    ReportFontLookup(font_description, nullptr);
+    ReportFontLookup(font_description);
     return nullptr;
   }
 

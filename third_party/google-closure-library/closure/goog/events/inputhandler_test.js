@@ -32,7 +32,7 @@ function fireFakeInputEvent(input) {
   // Simulate the input event that IE fires on focus when a placeholder
   // is present.
   input.focus();
-  if (userAgent.IE && userAgent.isVersionOrHigher(10)) {
+  if (userAgent.IE) {
     // IE fires an input event with keycode 0
     fireInputEvent(input, 0);
   }
@@ -44,6 +44,7 @@ function fireInputEvent(input, keyCode) {
   inputEvent.charCode = keyCode;
   events.fireBrowserEvent(inputEvent);
 }
+
 testSuite({
   setUp() {
     eventHandler = new EventHandler();

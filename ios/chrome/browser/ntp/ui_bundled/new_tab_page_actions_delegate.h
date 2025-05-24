@@ -35,8 +35,14 @@
 // The Safety Check module was tapped.
 - (void)safetyCheckOpened;
 
-// The Parcel Tracking module was tapped.
-- (void)parcelTrackingOpened;
+// The Price Tracking Promo module was tapped.
+- (void)priceTrackingPromoOpened;
+
+// The Tips module was tapped.
+- (void)tipsOpened;
+
+// The ShopCard module was tapped.
+- (void)shopCardOpened;
 
 @end
 

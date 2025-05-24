@@ -135,7 +135,7 @@ extern const base::FeatureParam<std::string>
 // the overall number of surfaces will exceed this limit, but based on prior
 // measurements these cases account for a tiny fraction of the entire
 // population.
-constexpr int kMaxIdentifiabilityStudyExpectedSurfaceCount = 1500;
+inline constexpr int kMaxIdentifiabilityStudyExpectedSurfaceCount = 1500;
 
 // The limit for the optimistic naive budget for the identifiability study.
 //
@@ -160,7 +160,7 @@ extern const base::FeatureParam<int> kIdentifiabilityStudyActiveSurfaceBudget;
 //
 // This restriction prevents `active_surface_budget_` being increased past this
 // hardcoded limit from a server-side configuration.
-constexpr int kMaxIdentifiabilityStudyActiveSurfaceBudget = 40;
+inline constexpr int kMaxIdentifiabilityStudyActiveSurfaceBudget = 40;
 
 // Relative cost of individual surfaces.
 //
@@ -338,7 +338,7 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeCost;
 // If, in the finch client configuration, a surface appears with total
 // probability higher than this threshold, the study will be deactivated for
 // this client and this client will not report any surface.
-constexpr double kMaxProbabilityPerSurface = 0.5;
+inline constexpr double kMaxProbabilityPerSurface = 0.5;
 
 }  // namespace features
 

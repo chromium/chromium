@@ -64,7 +64,7 @@ UserPolicySigninService::UserPolicySigninService(
     profile_manager_observation_.Observe(profile_manager);
 }
 
-UserPolicySigninService::~UserPolicySigninService() {}
+UserPolicySigninService::~UserPolicySigninService() = default;
 
 void UserPolicySigninService::ShutdownCloudPolicyManager() {
   CancelPendingRegistration();
@@ -196,10 +196,6 @@ void UserPolicySigninService::UpdateLastPolicyCheckTime() {
   // Persist the current time as the last policy registration attempt time.
   profile_->GetPrefs()->SetInt64(policy_prefs::kLastPolicyCheckTime,
                                  base::Time::Now().ToInternalValue());
-}
-
-signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
-  return signin::ConsentLevel::kSignin;
 }
 
 }  // namespace policy

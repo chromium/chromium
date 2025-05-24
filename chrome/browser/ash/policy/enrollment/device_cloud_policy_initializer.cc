@@ -56,15 +56,19 @@ void DeviceCloudPolicyInitializer::Init() {
   policy_store_->AddObserver(this);
   policy_manager_observer_.Observe(policy_manager_.get());
 
-  // If FRE is enabled, we want to obtain state keys before proceeding.
-  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
-  state_keys_update_subscription_ =
-      state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
-          &DeviceCloudPolicyInitializer::TryToStartConnection,
-          base::Unretained(this)));
+  // If state keys are supported but not available, we need to obtain them
+  // before proceeding.
+  // Background: `DeviceCloudPolicyManagerAsh::StartConnection` expects state
+  // keys to be present if they are supported).
+  if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported() &&
+      !state_keys_broker_->available()) {
+    state_keys_update_subscription_ =
+        state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
+            &DeviceCloudPolicyInitializer::TryToStartConnection,
+            base::Unretained(this)));
+    return;
   }
 
-  // TODO(b/333951800): This could be an else to the if, check if warranted.
   TryToStartConnection();
 }
 
@@ -118,8 +122,6 @@ void DeviceCloudPolicyInitializer::TryToStartConnection() {
     policy_manager_->OnPolicyStoreReady(install_attributes_);
   }
 
-  // TODO(crbug.com/1304636): Move this and all other checks from here to a
-  // separate method.
   if (!policy_manager_->HasSchemaRegistry()) {
     // crbug.com/1295871: `policy_manager_` might not have schema registry on
     // start connection attempt. This may happen on chrome restart when
@@ -129,10 +131,8 @@ void DeviceCloudPolicyInitializer::TryToStartConnection() {
     return;
   }
 
-  // TODO(b/181140445): If we had a separate state keys upload request to DM
-  // Server we could drop the `state_keys_broker_->available()` requirement.
   if (state_keys_broker_->available() ||
-      !AutoEnrollmentTypeChecker::IsFREEnabled()) {
+      !AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
     StartConnection(CreateClient(enterprise_service_));
   }
 }

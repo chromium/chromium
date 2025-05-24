@@ -4,13 +4,15 @@
 
 package org.chromium.components.commerce.core;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Optional;
 
 /** A data container for discount info provided by the shopping service. */
+@NullMarked
 public final class DiscountInfo {
     @DiscountClusterType public final int clusterType;
 
@@ -23,7 +25,7 @@ public final class DiscountInfo {
     public final Optional<String> discountCode;
     public final long id;
     public final boolean isMerchantWide;
-    public final double expiryTimeSec;
+    public final Optional<Double> expiryTimeSec;
     public final long offerId;
 
     // Constructor
@@ -38,6 +40,7 @@ public final class DiscountInfo {
             @Nullable String discountCode,
             long id,
             boolean isMerchantWide,
+            boolean hasExpiryTime,
             double expiryTimeSec,
             long offerId) {
         this.clusterType = clusterType;
@@ -50,7 +53,7 @@ public final class DiscountInfo {
         this.discountCode = discountCode == null ? Optional.empty() : Optional.of(discountCode);
         this.id = id;
         this.isMerchantWide = isMerchantWide;
-        this.expiryTimeSec = expiryTimeSec;
+        this.expiryTimeSec = !hasExpiryTime ? Optional.empty() : Optional.of(expiryTimeSec);
         this.offerId = offerId;
     }
 }

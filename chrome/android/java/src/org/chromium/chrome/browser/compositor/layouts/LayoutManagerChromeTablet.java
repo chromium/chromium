@@ -18,36 +18,34 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
-/**
- * {@link LayoutManagerChromeTablet} is the specialization of {@link LayoutManagerChrome} for the
- * tablet.
- */
+/** LayoutManagerChromeTablet is the specialization of LayoutManagerChrome for the tablet. */
 public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     // Tab Strip
     private StripLayoutHelperManager mTabStripLayoutHelperManager;
 
     // Internal State
-    /** A {@link LayerTitleCache} instance that stores all title/favicon bitmaps as CC resources. */
+    /** A LayerTitleCache instance that stores all title/favicon bitmaps as CC resources. */
     // This cache should not be cleared in LayoutManagerImpl#emptyCachesExcept(), since that method
     // is currently called when returning to the static layout, which is when these titles will be
     // visible. See https://crbug.com/1329293.
@@ -55,30 +53,33 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
 
     protected ObservableSupplierImpl<LayerTitleCache> mLayerTitleCacheSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     /**
-     * Creates an instance of a {@link LayoutManagerChromePhone}.
+     * Creates an instance of a LayoutManagerChromePhone.
      *
-     * @param host A {@link LayoutManagerHost} instance.
-     * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
+     * @param host A LayoutManagerHost instance.
+     * @param contentContainer A ViewGroup for Android views to be bound to.
      * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher.
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
-     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
-     *     controls.
-     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
-     * @param lifecycleDispatcher @{@link ActivityLifecycleDispatcher} to be passed to TabStrip
-     *     helper.
-     * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
-     * @param multiInstanceManager @{link MultiInstanceManager} passed to @{link StripLayoutHelper}
-     *     to support tab drag and drop.
-     * @param dragAndDropDelegate @{@link DragAndDropDelegate} passed to {@link
-     *     StripLayoutHelperManager} to initiate tab drag and drop.
-     * @param toolbarContainerView @{link View} passed to @{link StripLayoutHelper} to support tab
+     * @param browserControlsStateProvider The BrowserControlsStateProvider for top controls.
+     * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
+     * @param topUiThemeColorProvider ThemeColorProvider for top UI.
+     * @param lifecycleDispatcher ActivityLifecycleDispatcher to be passed to TabStrip helper.
+     * @param hubLayoutDependencyHolder The dependency holder for creating HubLayout.
+     * @param multiInstanceManager MultiInstanceManager passed to StripLayoutHelper to support tab
      *     drag and drop.
-     * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
-     * @param toolbarManager The {@link ToolbarManager} instance.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the app header.
+     * @param dragAndDropDelegate DragAndDropDelegate passed to StripLayoutHelperManager to initiate
+     *     tab drag and drop.
+     * @param toolbarContainerView View passed to StripLayoutHelper to support tab drag and drop.
+     * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
+     * @param tabStripTooltipViewStub The ViewStub representing the tooltip for NTB or MSB.
+     * @param toolbarManager The ToolbarManager instance.
+     * @param desktopWindowStateManager The DesktopWindowStateManager for the app header.
+     * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
+     * @param dataSharingTabManager The {@link DataSharingTabManager} for shared groups.
+     * @param bottomSheetController The {@link BottomSheetController} used to show bottom sheets.
+     * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -95,10 +96,14 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             DragAndDropDelegate dragAndDropDelegate,
             View toolbarContainerView,
             @NonNull ViewStub tabHoverCardViewStub,
+            @NonNull ViewStub tabStripTooltipViewStub,
             @NonNull WindowAndroid windowAndroid,
             @NonNull ToolbarManager toolbarManager,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
-            ActionConfirmationManager actionConfirmationManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            ActionConfirmationManager actionConfirmationManager,
+            DataSharingTabManager dataSharingTabManager,
+            @NonNull BottomSheetController bottomSheetController,
+            @NonNull Supplier<ShareDelegate> shareDelegateSupplier) {
         super(
                 host,
                 contentContainer,
@@ -120,15 +125,20 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         dragAndDropDelegate,
                         toolbarContainerView,
                         tabHoverCardViewStub,
+                        tabStripTooltipViewStub,
                         tabContentManagerSupplier,
                         browserControlsStateProvider,
                         windowAndroid,
                         toolbarManager,
-                        desktopWindowStateProvider,
-                        actionConfirmationManager);
+                        desktopWindowStateManager,
+                        actionConfirmationManager,
+                        dataSharingTabManager,
+                        bottomSheetController,
+                        shareDelegateSupplier);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
+        mTabStripHeightSupplier = toolbarManager.getTabStripHeightSupplier();
 
         setNextLayout(null, true);
     }
@@ -165,35 +175,26 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     }
 
     @Override
-    public void onTabsAllClosing(boolean incognito) {
-        if (getActiveLayout() == mStaticLayout && !incognito) {
-            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
-        }
-        super.onTabsAllClosing(incognito);
-    }
-
-    @Override
-    protected void tabModelSwitched(boolean incognito) {
-        super.tabModelSwitched(incognito);
-        getTabModelSelector().commitAllTabClosures();
-        if (getActiveLayout() == mStaticLayout
-                && !incognito
-                && getTabModelSelector().getModel(false).getCount() == 0
-                && getNextLayoutType() != LayoutType.TAB_SWITCHER) {
-            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
-        }
-    }
-
-    @Override
     public void init(
             TabModelSelector selector,
             TabCreatorManager creator,
             ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider) {
-        super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
+            TopUiThemeColorProvider topUiColorProvider,
+            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
+        super.init(
+                selector,
+                creator,
+                controlContainer,
+                dynamicResourceLoader,
+                topUiColorProvider,
+                bottomControlsOffsetSupplier);
         if (DeviceClassManager.enableLayerDecorationCache()) {
-            mLayerTitleCache = new LayerTitleCache(mHost.getContext(), getResourceManager());
+            mLayerTitleCache =
+                    new LayerTitleCache(
+                            mHost.getContext(),
+                            getResourceManager(),
+                            mTabStripHeightSupplier.get());
             // TODO: TitleCache should be a part of the ResourceManager.
             mLayerTitleCache.setTabModelSelector(selector);
             mLayerTitleCacheSupplier.set(mLayerTitleCache);
@@ -213,5 +214,10 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     @Override
     public StripLayoutHelperManager getStripLayoutHelperManager() {
         return mTabStripLayoutHelperManager;
+    }
+
+    @Override
+    public boolean hasTabletUi() {
+        return true;
     }
 }

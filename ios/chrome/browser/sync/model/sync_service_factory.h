@@ -8,8 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace syncer {
 class SyncServiceImpl;
@@ -18,21 +17,18 @@ class SyncService;
 
 // Singleton that owns all SyncServices and associates them with
 // ProfileIOS.
-class SyncServiceFactory : public BrowserStateKeyedServiceFactory {
+class SyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358299863): Remove when fully migrated.
-  static syncer::SyncService* GetForBrowserState(ProfileIOS* profile);
-
   static syncer::SyncService* GetForProfile(ProfileIOS* profile);
   static syncer::SyncService* GetForProfileIfExists(ProfileIOS* profile);
-
-  static syncer::SyncServiceImpl* GetAsSyncServiceImplForBrowserStateForTesting(
+  static syncer::SyncServiceImpl* GetForProfileAsSyncServiceImplForTesting(
       ProfileIOS* profile);
 
   static SyncServiceFactory* GetInstance();
 
-  // Returns the default factory, useful in tests where it's null by default.
-  static TestingFactory GetDefaultFactory();
+  // Iterates over all profiles that have been loaded so far and extract their
+  // SyncService if present. Returned pointers are guaranteed to be not null.
+  static std::vector<const syncer::SyncService*> GetAllSyncServices();
 
  private:
   friend class base::NoDestructor<SyncServiceFactory>;

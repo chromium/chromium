@@ -32,6 +32,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
@@ -39,8 +40,10 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -147,8 +150,7 @@ void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
       break;
     }
     case CSSBoxType::kMissing:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   new_reference_box_logical_size.ClampNegativeToZero();
@@ -193,23 +195,6 @@ static PhysicalRect GetShapeImagePhysicalMarginRect(
       margin_border_padding.VerticalSum() + reference_physical_size.height);
 }
 
-static LogicalRect GetShapeImageMarginRect(
-    const LayoutBox& layout_box,
-    const LogicalSize& reference_box_logical_size) {
-  LogicalOffset margin_box_origin(-layout_box.MarginInlineStart() -
-                                      layout_box.BorderAndPaddingLogicalLeft(),
-                                  -layout_box.MarginBlockStart() -
-                                      layout_box.BorderBlockStart() -
-                                      layout_box.PaddingBlockStart());
-  LogicalSize margin_rect_size = reference_box_logical_size;
-  margin_rect_size.Expand(layout_box.MarginLogicalWidth() +
-                              layout_box.BorderAndPaddingLogicalWidth(),
-                          layout_box.MarginLogicalHeight() +
-                              layout_box.BorderAndPaddingLogicalHeight());
-  margin_rect_size.ClampNegativeToZero();
-  return LogicalRect(margin_box_origin, margin_rect_size);
-}
-
 PhysicalSize ShapeOutsideInfo::ReferenceBoxPhysicalSize() const {
   return ToPhysicalSize(
       reference_box_logical_size_,
@@ -230,44 +215,30 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   const gfx::SizeF image_size = style_image->ImageSize(
       layout_box_->StyleRef().EffectiveZoom(),
-      RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
-          ? gfx::SizeF(reference_physical_size)
-          : gfx::SizeF(reference_box_logical_size_.inline_size.ToFloat(),
-                       reference_box_logical_size_.block_size.ToFloat()),
-      respect_orientation);
+      gfx::SizeF(reference_physical_size), respect_orientation);
 
-  LogicalRect margin_rect;
-  if (RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()) {
-    WritingModeConverter converter({writing_mode, TextDirection::kLtr},
-                                   reference_physical_size);
-    margin_rect = converter.ToLogical(
-        GetShapeImagePhysicalMarginRect(*layout_box_, reference_physical_size));
-    margin_rect.size.inline_size =
-        margin_rect.size.inline_size.ClampNegativeToZero();
-    margin_rect.size.block_size =
-        margin_rect.size.block_size.ClampNegativeToZero();
-  } else {
-    margin_rect =
-        GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
-  }
+  WritingModeConverter converter({writing_mode, TextDirection::kLtr},
+                                 reference_physical_size);
+  LogicalRect margin_rect = converter.ToLogical(
+      GetShapeImagePhysicalMarginRect(*layout_box_, reference_physical_size));
+  margin_rect.size.inline_size =
+      margin_rect.size.inline_size.ClampNegativeToZero();
+  margin_rect.size.block_size =
+      margin_rect.size.block_size.ClampNegativeToZero();
 
-  gfx::Rect image_rect;
   const PhysicalRect image_physical_rect =
       layout_box_->IsLayoutImage()
           ? To<LayoutImage>(layout_box_.Get())->ReplacedContentRect()
           : PhysicalRect({}, PhysicalSize::FromSizeFRound(image_size));
-  if (RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()) {
-    WritingModeConverter converter({writing_mode, TextDirection::kLtr},
-                                   reference_physical_size);
-    image_rect =
-        ToPixelSnappedLogicalRect(converter.ToLogical(image_physical_rect));
-  } else {
-    image_rect = ToPixelSnappedRect(image_physical_rect);
-  }
+  gfx::Rect image_rect =
+      ToPixelSnappedLogicalRect(converter.ToLogical(image_physical_rect));
 
-  scoped_refptr<Image> image =
-      style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
-                            layout_box_->StyleRef(), image_size);
+  const Node* node = layout_box_->GetNode();
+  if (!node) {
+    node = &layout_box_->GetDocument();
+  }
+  scoped_refptr<Image> image = style_image->GetImage(
+      *layout_box_, *node, layout_box_->StyleRef(), image_size);
 
   return Shape::CreateRasterShape(
       image.get(), shape_image_threshold,
@@ -319,16 +290,11 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
                                    shape_image_threshold, writing_mode, margin);
       break;
     case ShapeValue::kBox: {
-      // TODO(layout-dev): It seems incorrect to pass logical size to
-      // RoundedBorderGeometry().
-      PhysicalSize size =
-          RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
-              ? ReferenceBoxPhysicalSize()
-              : PhysicalSize(reference_box_logical_size_.inline_size,
-                             reference_box_logical_size_.block_size);
-      const FloatRoundedRect& shape_rect = RoundedBorderGeometry::RoundedBorder(
-          style, PhysicalRect(PhysicalOffset(), size));
-      shape_ = Shape::CreateLayoutBoxShape(shape_rect, writing_mode, margin);
+      shape_ = Shape::CreateLayoutBoxShape(
+          ContouredBorderGeometry::ContouredBorder(
+              style,
+              PhysicalRect(PhysicalOffset(), ReferenceBoxPhysicalSize())),
+          writing_mode, margin);
       break;
     }
   }
@@ -354,8 +320,7 @@ LayoutUnit ShapeOutsideInfo::BlockStartOffset() const {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 LayoutUnit ShapeOutsideInfo::InlineStartOffset() const {
@@ -375,8 +340,7 @@ LayoutUnit ShapeOutsideInfo::InlineStartOffset() const {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {
@@ -439,9 +403,10 @@ gfx::PointF ShapeOutsideInfo::ShapeToLayoutObjectPoint(
 
 // static
 ShapeOutsideInfo::InfoMap& ShapeOutsideInfo::GetInfoMap() {
-  DEFINE_STATIC_LOCAL(Persistent<InfoMap>, static_info_map,
-                      (MakeGarbageCollected<InfoMap>()));
-  return *static_info_map;
+  using InfoMapHolder = DisallowNewWrapper<InfoMap>;
+  DEFINE_STATIC_LOCAL(Persistent<InfoMapHolder>, holder,
+                      (MakeGarbageCollected<InfoMapHolder>()));
+  return holder->Value();
 }
 
 void ShapeOutsideInfo::Trace(Visitor* visitor) const {

@@ -15,7 +15,9 @@ namespace ash {
 // for SeaPen wallpaper.
 // @see //components/manta
 struct ASH_PUBLIC_EXPORT SeaPenImage {
-  SeaPenImage(std::string jpg_bytes, uint32_t id);
+  SeaPenImage(std::string jpg_bytes,
+              uint32_t id,
+              std::string generative_prompt = "");
 
   SeaPenImage(SeaPenImage&& other);
   SeaPenImage& operator=(SeaPenImage&& other);
@@ -30,6 +32,10 @@ struct ASH_PUBLIC_EXPORT SeaPenImage {
 
   // A unique identifier for this image. Set by the Manta API.
   uint32_t id;
+
+  // The prompt used to generate the image. This is not always the same as the
+  // user-provided prompt.
+  std::string generative_prompt;
 };
 
 }  // namespace ash

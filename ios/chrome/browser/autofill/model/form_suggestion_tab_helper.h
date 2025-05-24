@@ -39,8 +39,6 @@ class FormSuggestionTabHelper
 
   // The Objective-C password controller instance.
   __strong FormSuggestionController* controller_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_FORM_SUGGESTION_TAB_HELPER_H_

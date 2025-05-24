@@ -19,6 +19,7 @@
 #include "base/uuid.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/messaging/message_port.h"
+#include "extensions/browser/message_tracker.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_id.h"
@@ -47,11 +48,12 @@ struct PortContext;
 class ExtensionMessagePort : public MessagePort {
  public:
   // Create a port that is tied to frame(s) in a single tab.
-  ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
-                       const PortId& port_id,
-                       const ExtensionId& extension_id,
-                       content::RenderFrameHost* render_frame_host,
-                       bool include_child_frames);
+  static std::unique_ptr<ExtensionMessagePort> CreateForTab(
+      base::WeakPtr<ChannelDelegate> channel_delegate,
+      const PortId& port_id,
+      const ExtensionId& extension_id,
+      content::RenderFrameHost* render_frame_host,
+      bool include_child_frames);
 
   // Create a port that is tied to all frames and service workers of an
   // extension. Should only be used for a receiver port.
@@ -98,7 +100,9 @@ class ExtensionMessagePort : public MessagePort {
                          const MessagingEndpoint& source_endpoint,
                          const std::string& target_extension_id,
                          const GURL& source_url,
-                         std::optional<url::Origin> source_origin) override;
+                         std::optional<url::Origin> source_origin,
+                         const std::set<base::UnguessableToken>&
+                             open_channel_tracking_ids) override;
   void DispatchOnDisconnect(const std::string& error_message) override;
   void DispatchOnMessage(const Message& message) override;
   void IncrementLazyKeepaliveCount(Activity::Type activity_type) override;
@@ -108,7 +112,7 @@ class ExtensionMessagePort : public MessagePort {
   void NotifyResponsePending() override;
 
  private:
-  class FrameTracker;
+  class ContextTracker;
   struct IPCTarget;
 
   // Registers a frame as a receiver / sender.
@@ -144,8 +148,19 @@ class ExtensionMessagePort : public MessagePort {
 
   bool ShouldSkipFrameForBFCache(content::RenderFrameHost* render_frame_host);
 
-  void OnConnectResponse(bool success);
-  void Prune();
+  void OnConnectResponse(
+      const PortContext& port_context,
+      const base::UnguessableToken& connect_dispatch_tracking_id,
+      bool success);
+  void Prune(const PortContext& port_context,
+             const base::UnguessableToken& connect_dispatch_tracking_id);
+
+  void ReportOpenChannelResult(
+      MessageTracker::OpenChannelMessagePipelineResult emit_value);
+
+  void ReportOpenChannelConnectDispatchResult(
+      const base::UnguessableToken& tracking_id,
+      MessageTracker::OpenChannelMessagePipelineResult emit_value);
 
   ExtensionId extension_id_;
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
@@ -192,7 +207,18 @@ class ExtensionMessagePort : public MessagePort {
 
   // Used in IncrementLazyKeepaliveCount
   raw_ptr<ExtensionHost, DanglingUntriaged> background_host_ptr_ = nullptr;
-  std::unique_ptr<FrameTracker> frame_tracker_;
+  std::unique_ptr<ContextTracker> context_tracker_;
+
+  // The set of PortContexts for which we're waiting on a response to
+  // OnConnectResponse().
+  std::set<PortContext> pending_contexts_to_respond_;
+  // Tracking ID to every metric to emit once the result of the channel opening
+  // is determined.
+  std::set<base::UnguessableToken> pending_open_channel_tracking_ids_;
+  // Tracking ID to every metric to emit if the channel (this class) closes
+  // (destructs) before each port has responded to DispatchOnConnect IPC.
+  std::set<base::UnguessableToken>
+      pending_open_channel_connect_dispatch_tracking_ids_;
 
   base::WeakPtrFactory<ExtensionMessagePort> weak_ptr_factory_{this};
 };

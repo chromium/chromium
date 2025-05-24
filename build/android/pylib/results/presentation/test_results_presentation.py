@@ -28,7 +28,7 @@ BASE_DIR = os.path.abspath(os.path.join(
 
 sys.path.append(os.path.join(BASE_DIR, 'build', 'android'))
 from pylib.results.presentation import standard_gtest_merge
-from pylib.utils import google_storage_helper  # pylint: disable=import-error
+from lib.common import google_storage_helper  # pylint: disable=import-error
 
 sys.path.append(os.path.join(BASE_DIR, 'third_party'))
 import jinja2  # pylint: disable=import-error

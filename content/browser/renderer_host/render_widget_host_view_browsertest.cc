@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
-
-#include <stdint.h>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -23,7 +23,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/surface_layer.h"
 #include "components/viz/common/features.h"
@@ -36,6 +35,7 @@
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -583,6 +583,20 @@ viz::SurfaceId GetFallbackSurfaceId(RenderWidgetHostView* view) {
   return surface_id;
 }
 
+viz::SurfaceId GetBFCacheFallbackSurfaceId(RenderWidgetHostView* view) {
+  viz::SurfaceId surface_id;
+#if BUILDFLAG(IS_ANDROID)
+  ui::DelegatedFrameHostAndroid* dfh = GetDelegatedFrameHost(view);
+  EXPECT_TRUE(dfh);
+  surface_id = dfh->GetBFCacheFallbackSurfaceIdForTesting();
+#else
+  DelegatedFrameHost* dfh = GetDelegatedFrameHost(view);
+  EXPECT_TRUE(dfh);
+  surface_id = dfh->GetBFCacheFallbackSurfaceIdForTesting();
+#endif
+  return surface_id;
+}
+
 class BFCachedRenderWidgetHostViewBrowserTest
     : public NoCompositingRenderWidgetHostViewBrowserTest {
  public:
@@ -604,10 +618,6 @@ class BFCachedRenderWidgetHostViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
                        BFCacheRestoredPageHasNewLocalSurfaceId) {
-  if (!base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    return;
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
@@ -673,10 +683,6 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     BFCachedRenderWidgetHostViewBrowserTest,
     BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback) {
-  if (!base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    return;
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
@@ -738,10 +744,6 @@ IN_PROC_BROWSER_TEST_F(
 // Same as above, except that the resize operation is a no-op.
 IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
                        BFCachedPageNoopResizedWhileHiddenHasPreservedFallback) {
-  if (!base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    return;
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
@@ -809,10 +811,6 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
                        BFCachedViewShouldNotBeEvicted) {
-  if (!base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    return;
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
@@ -860,6 +858,37 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
             ->CollectSurfaceIdsForEviction();
     ASSERT_TRUE(base::Contains(evicted_ids, id_after_cached));
   }
+}
+
+// Tests that if a page is evicted from BFCache, it notifies the
+// DelegatedFrameHost{Android} to clear all the BFCached states.
+IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
+                       EvictedPageShouldNotifyDelegatedFrameHost) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  RenderFrameHostWrapper rfh1(shell()->web_contents()->GetPrimaryMainFrame());
+  const auto embedded_id =
+      GetCurrentSurfaceIdOnDelegatedFrameHost(rfh1->GetView());
+  EXPECT_TRUE(embedded_id.is_valid());
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_TRUE(
+      static_cast<RenderFrameHostImpl*>(rfh1.get())->IsInBackForwardCache());
+  // The fallback ID of the BFCached page should be equal to the embedded ID
+  // before entering the BFCache.
+  const auto bfcache_fallback = GetBFCacheFallbackSurfaceId(rfh1->GetView());
+  EXPECT_TRUE(bfcache_fallback.is_valid());
+  EXPECT_EQ(embedded_id, bfcache_fallback);
+
+  const uint64_t reason = DisallowActivationReasonId::kForTesting;
+  EXPECT_TRUE(rfh1->IsInactiveAndDisallowActivation(reason));
+  const auto bfcache_fallback_after_eviction =
+      GetBFCacheFallbackSurfaceId(rfh1->GetView());
+  EXPECT_FALSE(bfcache_fallback_after_eviction.is_valid());
+  EXPECT_EQ(bfcache_fallback_after_eviction.local_surface_id(),
+            viz::LocalSurfaceId());
 }
 
 // Tests that if a pending commit attempts to swap from a RenderFrameHost which
@@ -1337,9 +1366,8 @@ class CompositingRenderWidgetHostViewBrowserTestTabCapture
         CASE_LOG_READBACK_WARNING(READBACK_NO_TEST_COLORS);
         CASE_LOG_READBACK_WARNING(READBACK_INCORRECT_RESULT_SIZE);
         default:
-          LOG(ERROR)
+          NOTREACHED()
               << "Invalid readback response value: " << readback_result_;
-          NOTREACHED_IN_MIGRATION();
       }
       // clang-format on
     } while (readback_result_ != READBACK_SUCCESS &&
@@ -1497,7 +1525,7 @@ IN_PROC_BROWSER_TEST_P(
   PerformTestWithLeftRightRects(html_rect_size, copy_rect, output_size);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // On ChromeOS there is no software compositing.
 static const auto kTestCompositingModes = testing::Values(GL_COMPOSITING);
 #else
@@ -1632,14 +1660,8 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(crbug.com/353234554): Flaky on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Show DISABLED_Show
-#else
-#define MAYBE_Show Show
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
-                       MAYBE_Show) {
+                       Show) {
   CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
   ExpectPresentationFeedback(TabSwitchResult::kSuccess);
@@ -1665,14 +1687,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
   ExpectNoPresentationFeedback();
 }
 
-// TODO(crbug.com/353234554): Flaky on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ShowWhileCapturing DISABLED_ShowWhileCapturing
-#else
-#define MAYBE_ShowWhileCapturing ShowWhileCapturing
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
-                       MAYBE_ShowWhileCapturing) {
+                       ShowWhileCapturing) {
   // Frame is captured and then becomes visible.
   CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(
@@ -1761,9 +1777,18 @@ void CheckSurfaceRangeRemovedAfterCopy(viz::SurfaceRange range,
                                        CompositorImpl* compositor,
                                        base::RepeatingClosure resume_test,
                                        const SkBitmap& btimap) {
-  ASSERT_FALSE(!compositor->GetLayerTreeForTesting()
-                    ->GetSurfaceRangesForTesting()
-                    .contains(range));
+  // The surface range is removed first when the browser receives the result
+  // of the copy request. Then the result callback (including this function) is
+  // run.
+  auto iter =
+      compositor->GetLayerTreeForTesting()->GetSurfaceRangesForTesting().find(
+          range);
+  ASSERT_NE(
+      iter,
+      compositor->GetLayerTreeForTesting()->GetSurfaceRangesForTesting().end());
+  // In DelegatedFrameHostAndroid we keep an extra ref for visible surfaces to
+  // make sure tab capture works, so this should be 1, not 0.
+  EXPECT_EQ(iter->second, 1);
   std::move(resume_test).Run();
 }
 
@@ -1813,9 +1838,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
       gfx::Rect(), gfx::Size(),
       base::BindOnce(&CheckSurfaceRangeRemovedAfterCopy, range_for_copy,
                      compositor, run_loop.QuitClosure()));
+
+  // In DelegatedFrameHostAndroid we keep an extra ref for visible
+  // surfaces to make sure tab capture works.
   EXPECT_THAT(
       compositor->GetLayerTreeForTesting()->GetSurfaceRangesForTesting(),
-      testing::UnorderedElementsAre(std::make_pair(range_for_copy, 1),
+      testing::UnorderedElementsAre(std::make_pair(range_for_copy, 2),
                                     std::make_pair(range_for_mainframe, 1)));
   run_loop.Run(FROM_HERE);
 }
@@ -1950,11 +1978,6 @@ class RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest
     command_line->AppendSwitch(switches::kSitePerProcess);
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
-    base::test::FeatureRefAndParams must_enable(
-        /*feature=*/features::kInvalidateLocalSurfaceIdPreCommit,
-        /*params=*/std::map<std::string, std::string>());
-    enabled_features.push_back(std::move(must_enable));
-
     bool bfcache_enabled = GetParam();
     if (bfcache_enabled) {
       scoped_feature_list_.InitWithFeaturesAndParameters(

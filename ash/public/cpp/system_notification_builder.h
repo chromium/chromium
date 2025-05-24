@@ -13,6 +13,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -232,7 +233,7 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
       scoped_refptr<message_center::NotificationDelegate> delegate);
 
   // Set the small image shown in the notification.
-  // Default: kNoneIcon
+  // Default: VectorIcon::EmptyIcon()
   SystemNotificationBuilder& SetSmallImage(const gfx::VectorIcon& small_image);
 
   // Set additional optional fields.
@@ -279,7 +280,7 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
   std::optional<message_center::NotifierId> notifier_id_;
   NotificationCatalogName catalog_name_ = NotificationCatalogName::kNone;
   scoped_refptr<message_center::NotificationDelegate> delegate_ = nullptr;
-  raw_ptr<const gfx::VectorIcon> small_image_ = &gfx::kNoneIcon;
+  raw_ptr<const gfx::VectorIcon> small_image_ = &gfx::VectorIcon::EmptyIcon();
   message_center::RichNotificationData optional_fields_;
   message_center::SystemNotificationWarningLevel warning_level_ =
       message_center::SystemNotificationWarningLevel::NORMAL;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/browser_caption_button_container_win.h"
 
+#include <windows.h>
+
 #include <memory>
 
 #include "chrome/browser/ui/frame/window_frame_util.h"
@@ -33,7 +35,8 @@ std::unique_ptr<WindowsCaptionButton> CreateCaptionButton(
 
 bool HitTestCaptionButton(WindowsCaptionButton* button,
                           const gfx::Point& point) {
-  return button && button->GetVisible() && button->bounds().Contains(point);
+  return button && button->GetVisible() &&
+         button->GetMirroredBounds().Contains(point);
 }
 
 }  // anonymous namespace

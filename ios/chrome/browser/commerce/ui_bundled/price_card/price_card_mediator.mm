@@ -5,18 +5,20 @@
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_mediator.h"
 
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_item.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/web/public/web_state.h"
 
 PriceCardItem* CreatePriceCardItem(web::WebState* web_state) {
-  if (!web_state)
+  if (!web_state) {
     return nil;
+  }
   ShoppingPersistedDataTabHelper* shoppingHelper =
       ShoppingPersistedDataTabHelper::FromWebState(web_state);
   if (!shoppingHelper || !shoppingHelper->GetPriceDrop() ||
       !shoppingHelper->GetPriceDrop()->current_price ||
-      !shoppingHelper->GetPriceDrop()->previous_price)
+      !shoppingHelper->GetPriceDrop()->previous_price) {
     return nil;
+  }
   return [[PriceCardItem alloc]
       initWithPrice:shoppingHelper->GetPriceDrop()->current_price
       previousPrice:shoppingHelper->GetPriceDrop()->previous_price];
@@ -38,8 +40,9 @@ PriceCardItem* CreatePriceCardItem(web::WebState* web_state) {
     web::WebState* webState = self.webStateList->GetWebStateAt(i);
     ShoppingPersistedDataTabHelper* shoppingHelper =
         ShoppingPersistedDataTabHelper::FromWebState(webState);
-    if (!shoppingHelper)
+    if (!shoppingHelper) {
       continue;
+    }
     shoppingHelper->LogMetrics(priceDropLogId);
   }
 }

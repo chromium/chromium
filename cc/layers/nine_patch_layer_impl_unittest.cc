@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/layers/nine_patch_layer_impl.h"
+
 #include <stddef.h>
 
 #include <algorithm>
@@ -9,8 +11,9 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
-#include "cc/layers/nine_patch_layer_impl.h"
+#include "cc/layers/draw_mode.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
@@ -67,12 +70,14 @@ void NinePatchLayerLayoutTest(const gfx::Size& bitmap_size,
   host_impl.CreateUIResource(uid, bitmap);
   layer->SetUIResourceId(uid);
   layer->SetImageBounds(bitmap_size);
-  layer->SetLayout(aperture_rect, border, gfx::Rect(), fill_center, false);
+  layer->SetLayout(aperture_rect, border, gfx::Rect(), fill_center);
   host_impl.active_tree()->SetRootLayerForTesting(std::move(layer));
   UpdateDrawProperties(host_impl.active_tree());
 
   AppendQuadsData data;
-  host_impl.active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);
+  host_impl.active_tree()->root_layer()->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify quad rects
   const auto& quads = render_pass->quad_list;
@@ -179,12 +184,14 @@ void NinePatchLayerLayoutTestWithOcclusion(const gfx::Size& bitmap_size,
   host_impl.CreateUIResource(uid, bitmap);
   layer->SetUIResourceId(uid);
   layer->SetImageBounds(bitmap_size);
-  layer->SetLayout(aperture_rect, border, occlusion, false, false);
+  layer->SetLayout(aperture_rect, border, occlusion, false);
   host_impl.active_tree()->SetRootLayerForTesting(std::move(layer));
   UpdateDrawProperties(host_impl.active_tree());
 
   AppendQuadsData data;
-  host_impl.active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);
+  host_impl.active_tree()->root_layer()->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false}, render_pass.get(),
+      &data);
 
   // Verify quad rects
   const auto& quads = render_pass->quad_list;
@@ -369,7 +376,7 @@ TEST(NinePatchLayerImplTest, Occlusion) {
 
   gfx::Rect aperture = gfx::Rect(3, 3, 4, 4);
   gfx::Rect border = gfx::Rect(300, 300, 400, 400);
-  nine_patch_layer_impl->SetLayout(aperture, border, gfx::Rect(), true, false);
+  nine_patch_layer_impl->SetLayout(aperture, border, gfx::Rect(), true);
 
   impl.CalcDrawProps(viewport_size);
 
@@ -447,8 +454,7 @@ TEST(NinePatchLayerImplTest, OpaqueRect) {
 
     gfx::Rect aperture = gfx::Rect(3, 3, 4, 4);
     gfx::Rect border = gfx::Rect(300, 300, 400, 400);
-    nine_patch_layer_impl->SetLayout(aperture, border, gfx::Rect(), true,
-                                     false);
+    nine_patch_layer_impl->SetLayout(aperture, border, gfx::Rect(), true);
 
     impl.AppendQuadsWithOcclusion(nine_patch_layer_impl, gfx::Rect());
 

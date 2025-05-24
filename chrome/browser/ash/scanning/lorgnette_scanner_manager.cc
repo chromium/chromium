@@ -60,7 +60,9 @@ constexpr char kEpsonNoFlipModels[] =
     "|DS-900WN"
     "|DS-C420W"
     "|DS-C480W"
+    "|EM-C7100"
     "|EM-C800"
+    "|EM-C8100"
     "|ES-C320W"
     "|ES-C380W"
     "|LM-C400"
@@ -80,6 +82,10 @@ constexpr char kEpsonNoFlipModels[] =
     "|PX-M7090FX"
     "|PX-M7110F"
     "|PX-M7110FP"
+    "|PX-M7120F"
+    "|PX-M7120FP"
+    "|PX-M8000FX"
+    "|PX-M8010FX"
     "|PX-M860F"
     "|PX-M880FX"
     "|PX-M890FX"
@@ -98,6 +104,7 @@ constexpr char kEpsonNoFlipModels[] =
     "|WF-C21000c"
     "|WF-C579R"
     "|WF-C579Ra"
+    "|WF-C5891"
     "|WF-C8610"
     "|WF-C8690"
     "|WF-C8690a"
@@ -538,7 +545,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // `list_response` based on `open_response` and will call `VerifyScanners`
   // once that has happened to verify any remaining scanners.
   void OnVerifyScanner(
-      const std::string client_id,
+      std::string client_id,
       std::vector<lorgnette::ScannerInfo> scanners_to_verify,
       lorgnette::ListScannersResponse list_response,
       GetScannerInfoListCallback callback,

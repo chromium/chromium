@@ -6,6 +6,7 @@
 
 #include <fuchsia/intl/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
+
 #include <string>
 #include <vector>
 
@@ -37,7 +38,7 @@ FuchsiaIntlProfileWatcher::FuchsiaIntlProfileWatcher(
                           << "Profile changes will not be monitored.";
   });
 
-  property_provider_.events().OnChange = [this]() {
+  property_provider_.events().OnChange = [this] {
     property_provider_->GetProfile(
         [this](Profile profile) { on_profile_changed_.Run(profile); });
   };

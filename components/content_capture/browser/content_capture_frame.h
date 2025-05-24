@@ -65,10 +65,6 @@ struct ContentCaptureFrame {
   std::string favicon;
 
   bool operator==(const ContentCaptureFrame& other) const;
-
-  bool operator!=(const ContentCaptureFrame& other) const {
-    return !(*this == other);
-  }
 };
 
 // This defines a session, is a list of frames from current frame to root.

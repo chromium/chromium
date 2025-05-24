@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.supervised_user.website_approval;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +13,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.DialogTitle;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.supervised_user.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -24,6 +27,7 @@ import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
 
 /** Bottom sheet content for the screen which allows a parent to approve or deny a website. */
+@NullMarked
 class WebsiteApprovalSheetContent implements BottomSheetContent {
     private static final String ELLIPSIS = "...";
     static final int MAX_HOST_SIZE = 256;
@@ -67,11 +71,6 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public float getHalfHeightRatio() {
         return HeightMode.DISABLED;
     }
@@ -97,23 +96,23 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.parent_website_approval_content_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.parent_website_approval_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // Half-height is disabled so no need for an accessibility string.
-        return 0;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.parent_website_approval_full_height;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.parent_website_approval_closed;
     }
 

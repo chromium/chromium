@@ -35,7 +35,7 @@ bool CanShowContextMenuForParams(const web::ContextMenuParams& params) {
   }
   return false;
 }
-}
+}  // namespace
 
 namespace web {
 
@@ -81,7 +81,6 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
   EXPECT_NSEQ(params.title_attribute, @(kTitle));
   EXPECT_NSEQ(params.alt_text, @(kAlt));
 }
-
 
 // Tests that a context menu will not be shown for empty params.
 TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestEmptyDictionary) {

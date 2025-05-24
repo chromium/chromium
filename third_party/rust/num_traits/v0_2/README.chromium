@@ -1,0 +1,10 @@
+Name: num-traits
+URL: https://crates.io/crates/num-traits
+Version: 0.2.19
+Revision: 7ec3d41d39b28190ec1d42db38021107b3951f3a
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/num-traits-v0_2/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Numeric traits for generic mathematics

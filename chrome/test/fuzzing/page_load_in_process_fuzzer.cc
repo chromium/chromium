@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 #include <fuzzer/FuzzedDataProvider.h>
 #include <google/protobuf/descriptor.h>
+
 #include <memory>
+
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
@@ -33,7 +35,8 @@
 // * run servers on 3+ different ports to support cross-origin navigations
 
 class PageLoadInProcessFuzzer
-    : public InProcessProtoFuzzer<test::fuzzing::page_load_fuzzing::FuzzCase> {
+    : public InProcessTextProtoFuzzer<
+          test::fuzzing::page_load_fuzzing::FuzzCase> {
  public:
   using WhichServer = test::fuzzing::page_load_fuzzing::WhichServer;
   PageLoadInProcessFuzzer();
@@ -70,7 +73,7 @@ class PageLoadInProcessFuzzer
 REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER(PageLoadInProcessFuzzer)
 
 PageLoadInProcessFuzzer::PageLoadInProcessFuzzer()
-    : InProcessProtoFuzzer({
+    : InProcessTextProtoFuzzer({
           RunLoopTimeoutBehavior::kDeclareInfiniteLoop,
           base::Seconds(180),
       }),
@@ -188,11 +191,21 @@ int PageLoadInProcessFuzzer::Fuzz(
         test_url = https_test_server2_.GetURL(path);
         break;
       default:
-        LOG(FATAL) << "Unexpected proto value for which server";
+        return -1;
     }
   }
-
-  base::IgnoreResult(ui_test_utils::NavigateToURL(browser(), test_url));
+  int browser_test_flags =
+      ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_LOAD_STOP;
+  if (!test_url.is_empty() && !test_url.is_valid()) {
+    // Calling `NavigateToURLWithDisposition` with
+    // `BROWSER_TEST_WAIT_FOR_LOAD_STOP` causes hangs on invalid urls. Set
+    // `browser_test_flags` to `BROWSER_TEST_NO_WAIT` to workaround this issue.
+    browser_test_flags =
+        ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_NO_WAIT;
+  }
+  base::IgnoreResult(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_url, WindowOpenDisposition::CURRENT_TAB,
+      browser_test_flags));
   return 0;
 }
 

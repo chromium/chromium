@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
+#include "third_party/blink/renderer/platform/text/layout_locale.h"
 
 namespace blink {
 
@@ -18,9 +19,7 @@ V8RenderingContext* HTMLCanvasElementModule::getContext(
     const String& context_id,
     const CanvasContextCreationAttributesModule* attributes,
     ExceptionState& exception_state) {
-  if (canvas.IsOffscreenCanvasRegistered() && !canvas.LowLatencyEnabled()) {
-    // The existence of canvas surfaceLayerBridge indicates that
-    // HTMLCanvasElement.transferControlToOffscreen() has been called.
+  if (canvas.IsOffscreenCanvasRegistered()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot get context from a canvas that "
                                       "has transferred its control to "
@@ -73,11 +72,12 @@ OffscreenCanvas* HTMLCanvasElementModule::TransferControlToOffscreenInternal(
     ExceptionState& exception_state) {
   OffscreenCanvas* offscreen_canvas =
       OffscreenCanvas::Create(script_state, canvas.width(), canvas.height());
-  offscreen_canvas->SetFilterQuality(canvas.FilterQuality());
 
   DOMNodeId canvas_id = canvas.GetDomNodeId();
   canvas.RegisterPlaceholderCanvas(static_cast<int>(canvas_id));
   offscreen_canvas->SetPlaceholderCanvasId(canvas_id);
+  offscreen_canvas->SetTextDirection(canvas.GetTextDirection(nullptr));
+  offscreen_canvas->SetLocale(canvas.GetLocale());
 
   SurfaceLayerBridge* bridge = canvas.SurfaceLayerBridge();
   if (bridge) {

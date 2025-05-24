@@ -126,7 +126,7 @@ void PopulateUploadRecord(const ::reporting::UploadEncryptedRecordCall& source,
 }
 
 void PopulateBlockedRecord(const ::reporting::BlockedRecordCall& source,
-    enterprise_reporting::mojom::ErpHistoryEvent& dest){
+                           enterprise_reporting::mojom::ErpHistoryEvent& dest) {
   dest.call = "BlockedRecord";
   dest.parameters.emplace_back(
       enterprise_reporting::mojom::ErpHistoryEventParameter::New(
@@ -179,7 +179,7 @@ mojo::StructPtr<enterprise_reporting::mojom::ErpHistoryData> ConvertHistory(
         break;
       case ::reporting::HealthDataHistory::RecordCase::kBlockedRecordCall:
         PopulateBlockedRecord(history.blocked_record_call(),
-            *result->events.back());
+                              *result->events.back());
         break;
       case ::reporting::HealthDataHistory::RecordCase::
           kBlockedDestinationsUpdatedCall:

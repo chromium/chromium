@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 
 #include "ash/constants/ash_features.h"
@@ -21,13 +22,12 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "device/udev_linux/scoped_udev.h"
-#include "ui/base/accelerators/ash/right_alt_event_property.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -200,10 +200,10 @@ constexpr struct ModifierRemapping {
      {EF_NONE, DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT,
       VKEY_ASSISTANT}},
     {EF_NONE,
-     ui::mojom::ModifierKey::kRightAlt,
+     ui::mojom::ModifierKey::kQuickInsert,
      nullptr,
      {EF_NONE, DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT,
-      VKEY_RIGHT_ALT}},
+      VKEY_QUICK_INSERT}},
     {EF_FUNCTION_DOWN,
      ui::mojom::ModifierKey::kFunction,
      nullptr,
@@ -581,8 +581,7 @@ void RecordSearchPlusDigitFKeyRewrite(ui::EventType event_type,
       base::RecordAction(base::UserMetricsAction("SearchPlusDigitRewrite_F12"));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -629,8 +628,7 @@ void RecordSixPackEventRewrites(EventRewriterAsh::Delegate* delegate,
             base::UserMetricsAction("SearchBasedKeyRewrite_PageDown"));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   } else {
     switch (key_code) {
@@ -657,8 +655,7 @@ void RecordSixPackEventRewrites(EventRewriterAsh::Delegate* delegate,
             base::UserMetricsAction("AltBasedKeyRewrite_PageDown"));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -730,8 +727,7 @@ void RecordFunctionKeyFromKeyCode(ui::KeyboardCode key_code,
                                 event_enum);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -1031,7 +1027,7 @@ bool MaybeNotifyTopRowKeyBlockedByFnKey(
   }
   const auto& scan_code_vector = *scan_code_vector_ptr;
   const auto& key_iter =
-      base::ranges::find(scan_code_vector, key_event.scan_code());
+      std::ranges::find(scan_code_vector, key_event.scan_code());
 
   // If the scan code appears in the top row mapping it is an action key then
   // notify the user the key has been blocked.
@@ -1242,11 +1238,11 @@ void EventRewriterAsh::BuildRewrittenKeyEvent(
   if (key_event.properties()) {
     key_event_ptr->SetProperties(*key_event.properties());
   }
-  // Rewrite to VKEY_RIGHT_ALT and set the property on the event to mark it as
-  // being VKEY_RIGHT_ALT.
-  if (state.key_code == VKEY_RIGHT_ALT) {
+  // Rewrite to VKEY_QUICK_INSERT and set the property on the event to mark it
+  // as being VKEY_QUICK_INSERT.
+  if (state.key_code == VKEY_QUICK_INSERT) {
     key_event_ptr->set_key_code(VKEY_ASSISTANT);
-    SetRightAltProperty(key_event_ptr.get());
+    SetQuickInsertProperty(key_event_ptr.get());
   }
   *rewritten_event = std::move(key_event_ptr);
 }
@@ -1398,9 +1394,9 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
                          prefs::kLanguageRemapBackspaceKeyTo, delegate_);
       break;
     case DomCode::LAUNCH_ASSISTANT:
-      if (keyboard_capability_->HasRightAltKey(device_id)) {
-        remapped_key = GetRemappedKey(device_id, mojom::ModifierKey::kRightAlt,
-                                      "", delegate_);
+      if (keyboard_capability_->HasQuickInsertKey(device_id)) {
+        remapped_key = GetRemappedKey(
+            device_id, mojom::ModifierKey::kQuickInsert, "", delegate_);
         break;
       }
       remapped_key =
@@ -1479,9 +1475,10 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
     // same, too, but actually CapsLock will trigger to change the
     // EF_CAPS_LOCK_ON flag of the original event. Instead, check whether the
     // current key is already pressed or not.
-    bool is_repeat = base::ranges::find(
+    bool is_repeat = std::ranges::find(
                          pressed_key_states_,
-                         std::tuple(key_event.code(), key_event.GetDomKey(),
+                         std::tuple(key_event.code(),
+                                    DomKey::Base{key_event.GetDomKey()},
                                     key_event.key_code()),
                          [](auto entry) {
                            return std::tuple(entry.first.code, entry.first.key,
@@ -1698,7 +1695,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
         if (should_record_modifier_key_press_metrics) {
           RecordModifierKeyPressedAfterRemapping(
               *keyboard_capability_, device_id, state.code, key_event.code(),
-              state.key_code == VKEY_RIGHT_ALT);
+              state.key_code == VKEY_QUICK_INSERT);
         }
         // Early exit with completed event.
         BuildRewrittenKeyEvent(key_event, state, rewritten_event);
@@ -1711,7 +1708,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
   if (should_record_modifier_key_press_metrics) {
     RecordModifierKeyPressedAfterRemapping(*keyboard_capability_, device_id,
                                            state.code, key_event.code(),
-                                           state.key_code == VKEY_RIGHT_ALT);
+                                           state.key_code == VKEY_QUICK_INSERT);
   }
 
   if (delegate_ &&
@@ -2208,8 +2205,7 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
         rewritten_event ? static_cast<const KeyEvent*>(rewritten_event.get())
                         : &key_event);
     MutableKeyState original_key_state(&key_event);
-    auto iter =
-        base::ranges::find_if(pressed_key_states_, key_state_comparator);
+    auto iter = std::ranges::find_if(pressed_key_states_, key_state_comparator);
 
     // When a key is pressed, store |current_key_state| if it is not stored
     // before.
@@ -2292,7 +2288,7 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
   current_key_state = MutableKeyState(
       rewritten_event ? static_cast<const KeyEvent*>(rewritten_event.get())
                       : &key_event);
-  auto iter = base::ranges::find_if(pressed_key_states_, key_state_comparator);
+  auto iter = std::ranges::find_if(pressed_key_states_, key_state_comparator);
   if (iter != pressed_key_states_.end()) {
     pressed_key_states_.erase(iter);
 
@@ -2368,7 +2364,7 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
 
   const auto& scan_code_vector = *scan_code_vector_ptr;
   const auto& key_iter =
-      base::ranges::find(scan_code_vector, key_event.scan_code());
+      std::ranges::find(scan_code_vector, key_event.scan_code());
 
   // If the scan code appears in the top row mapping it is an action key.
   const bool is_action_key = (key_iter != scan_code_vector.end());

@@ -61,10 +61,6 @@ export class SignalImpl<T> extends Signal<T> implements Parent {
     return this.valueInternal;
   }
 
-  peek(): T {
-    return this.valueInternal;
-  }
-
   set value(newValue: T) {
     if (newValue !== this.valueInternal) {
       this.valueInternal = newValue;
@@ -76,6 +72,10 @@ export class SignalImpl<T> extends Signal<T> implements Parent {
       }
       Effect.processBatchedEffect();
     }
+  }
+
+  peek(): T {
+    return this.valueInternal;
   }
 
   maybeUpdate(): void {
@@ -132,20 +132,20 @@ export class ComputedImpl<T> extends Signal<T> implements Parent, Child {
     return this.peek();
   }
 
-  peek(): T {
-    assert(this.state !== DirtyState.DISPOSED);
-
-    this.maybeUpdate();
-
-    return this.valueInternal;
-  }
-
   set value(val: T) {
     assert(
       this.set !== undefined,
       'value setter called on computed without set',
     );
     this.set(val);
+  }
+
+  peek(): T {
+    assert(this.state !== DirtyState.DISPOSED);
+
+    this.maybeUpdate();
+
+    return this.valueInternal;
   }
 
   markDirty(): void {
@@ -291,6 +291,7 @@ export class Effect implements Child {
   private execute() {
     this.disconnect();
     const oldComputing = currentComputing;
+
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     currentComputing = this;
     this.callback({dispose: this.dispose});

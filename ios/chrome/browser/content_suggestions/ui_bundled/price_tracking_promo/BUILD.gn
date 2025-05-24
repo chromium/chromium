@@ -1,0 +1,118 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("price_tracking_promo") {
+  sources = [
+    "price_tracking_promo_action_delegate.h",
+    "price_tracking_promo_commands.h",
+    "price_tracking_promo_favicon_consumer_source.h",
+    "price_tracking_promo_item.h",
+    "price_tracking_promo_item.mm",
+    "price_tracking_promo_mediator.h",
+    "price_tracking_promo_mediator.mm",
+    "price_tracking_promo_prefs.h",
+    "price_tracking_promo_prefs.mm",
+    "price_tracking_promo_view.h",
+    "price_tracking_promo_view.mm",
+  ]
+  deps = [
+    ":price_tracking_promo_constants",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core/subscriptions",
+    "//components/image_fetcher/core",
+    "//components/power_bookmarks/core",
+    "//components/prefs/ios",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
+    "//ios/chrome/browser/settings/ui_bundled/notifications:utils",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/util",
+    "//ios/third_party/material_components_ios",
+    "//ios/web/public/thread",
+    "//ui/base",
+  ]
+}
+
+source_set("price_tracking_promo_constants") {
+  sources = [
+    "price_tracking_promo_constants.h",
+    "price_tracking_promo_constants.mm",
+  ]
+  deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "price_tracking_promo_mediator+testing.h",
+    "price_tracking_promo_mediator_unittest.mm",
+    "price_tracking_promo_view+testing.h",
+    "price_tracking_promo_view_unittest.mm",
+  ]
+  deps = [
+    ":price_tracking_promo",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/image_fetcher/core",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/push_notification:push_notification_api",
+    "//ios/testing:block_swizzler",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "price_tracking_promo_view_egtest.mm" ]
+  deps = [
+    ":price_tracking_promo_constants",
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//components/segmentation_platform/embedder/home_modules:constants",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/push_notification/ui_bundled:test_support",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

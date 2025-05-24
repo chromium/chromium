@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
 
 // This class presents a list of credit cards in a table view.
-@interface CardViewController : FallbackViewController<ManualFillCardConsumer>
+@interface CardViewController : FallbackViewController <ManualFillCardConsumer>
 
 @end
 

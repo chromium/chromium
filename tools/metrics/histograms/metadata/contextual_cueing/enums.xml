@@ -1,0 +1,122 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(NudgeDecision) -->
+
+<enum name="ContextualCueingNudgeDecision">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">
+    Success in determining a nudge for the page. It is not guaranteed that the
+    nudge was shown to the user.
+  </int>
+  <int value="2" label="Server data unavailable">
+    The server did not have data for this page.
+  </int>
+  <int value="3" label="Server data malformed">
+    The server had data for the page but it was malformed.
+  </int>
+  <int value="4" label="Client conditions unmet">
+    The server had data for the page but the client conditions to show the nudge
+    were unmet.
+  </int>
+  <int value="5" label="Not enough page loads since last nudge">
+    The page was eligible for the nudge, but not enough page loads have been
+    navigated to since the last nudge shown to the user.
+  </int>
+  <int value="6" label="Not enough time has elapsed since last nudge dismissal">
+    The page was eligible for the nudge, but not enough time has elapsed since
+    the last nudge shown to the user after an explicit dismissal.
+  </int>
+  <int value="7" label="Too many nudges shown to the user">
+    The page was eligible for the nudge, but too many nudges have been shown to
+    the user recently.
+  </int>
+  <int value="8" label="Too many nudges shown to the user, for the domain">
+    The page was eligible for the nudge, but too many nudges have been shown to
+    the user recently for the domain.
+  </int>
+  <int value="9" label="The Nudge was not shown as IPH was alraedy being Shown">
+    The page was eligible for the nudge, but the user was currently being
+    presented the IPH.
+  </int>
+  <int value="10"
+      label="The nudge was not shown as the user already has the feature
+             window open">
+    The page was eligible for the nudge, but the user already has the feature
+    window open.
+  </int>
+  <int value="11"
+      label="User closes the tab/window as a nudge decision is being computed">
+    User closes the tab/window as a nudge decision is being computed.
+  </int>
+  <int value="12"
+      label="Not enough time has elapsed since last time nudge was shown">
+    The page was eligible for the nudge, but not enough time has elapsed since
+    the last nudge shown to the user.
+  </int>
+  <int value="13"
+      label="The nudge was not shown as the user has another window level call
+             to action UI shown in this window.">
+    The page was eligible for the nudge, but the user already has a window modal
+    UI showing.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeDecision) -->
+
+<!-- LINT.IfChange(NudgeInteraction) -->
+
+<enum name="ContextualCueingNudgeInteraction">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Shown">
+    The server sent data and we successfully showed the nudge.
+  </int>
+  <int value="2" label="Not Shown due to wrong webcontents">
+    The server sent data, but for a different web contents so we did not nudge.
+  </int>
+  <int value="3" label="Clicked">The user clicked on a shown nudge.</int>
+  <int value="4" label="Dismissed">
+    The user dismissed the nudge with the close button.
+  </int>
+  <int value="5" label="Closed via new tab">
+    The nudge was dismissed by the tab changing.
+  </int>
+  <int value="6" label="Closed via new navigation">
+    The nudge was dismissed by the navigation changing.
+  </int>
+  <int value="7" label="Not Shown due to existing call to action in window">
+    The server sent data, but another window level call to action UI was already
+    shown.&quot;&gt;
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeInteraction) -->
+
+</enums>
+
+</histogram-configuration>

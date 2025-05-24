@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 // This small program is used to measure the performance of the various
@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/command_line.h"
@@ -44,14 +45,14 @@ struct StringMethodPair {
   skia::ImageOperations::ResizeMethod method;
 };
 #define ADD_METHOD(x) { #x, skia::ImageOperations::RESIZE_##x }
-const StringMethodPair resize_methods[] = {
-  ADD_METHOD(GOOD),
-  ADD_METHOD(BETTER),
-  ADD_METHOD(BEST),
-  ADD_METHOD(BOX),
-  ADD_METHOD(HAMMING1),
-  ADD_METHOD(LANCZOS3),
-};
+constexpr auto resize_methods = std::to_array<StringMethodPair>({
+    ADD_METHOD(GOOD),
+    ADD_METHOD(BETTER),
+    ADD_METHOD(BEST),
+    ADD_METHOD(BOX),
+    ADD_METHOD(HAMMING1),
+    ADD_METHOD(LANCZOS3),
+});
 
 // converts a string into one of the image operation method to resize.
 // Returns true on success, false otherwise.

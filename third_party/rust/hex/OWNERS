@@ -1,0 +1,3 @@
+# This encoding-focused crate has been brought into `chromium_crates_io`
+# as a dependency of `//third_party/cloud_authenticator`.
+file://third_party/cloud_authenticator/OWNERS

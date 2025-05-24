@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 
 namespace app_list {
@@ -37,8 +38,9 @@ void LogStatusUma(Status status) {
 
 }  // namespace
 
-ImageContentAnnotator::ImageContentAnnotator() {
+ImageContentAnnotator::ImageContentAnnotator(IcaDisconnectedCallback callback) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  ica_disconnected_callback_ = std::move(callback);
 }
 
 ImageContentAnnotator::~ImageContentAnnotator() = default;
@@ -62,7 +64,9 @@ void ImageContentAnnotator::EnsureAnnotatorIsConnected() {
 
   if (!image_content_annotator_.is_bound()) {
     ConnectToImageAnnotator();
-    image_content_annotator_.reset_on_disconnect();
+    image_content_annotator_.set_disconnect_handler(
+        base::BindOnce(&ImageContentAnnotator::OnIcaDisconnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -104,8 +108,7 @@ void ImageContentAnnotator::ConnectToImageAnnotator() {
               LOG(ERROR) << "Language not supported error.";
               LogStatusUma(Status::kLanguageNotSupportedError);
             } else {
-              NOTREACHED_IN_MIGRATION()
-                  << "Implement logging for new error codes.";
+              NOTREACHED() << "Implement logging for new error codes.";
             }
             *ica_dlc_initialized = false;
           },
@@ -117,28 +120,43 @@ void ImageContentAnnotator::DisconnectAnnotator() {
   image_content_annotator_.reset();
 }
 
+void ImageContentAnnotator::OnIcaDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  image_content_annotator_.reset();
+
+  // Informs `image_annotation_worker` ica is disconnected.
+  ica_disconnected_callback_.Run();
+}
+
 void ImageContentAnnotator::AnnotateEncodedImage(
     const base::FilePath& image_path,
     base::OnceCallback<void(ImageAnnotationResultPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Making a MemoryMappedFile.";
+  LogIcaUma(IcaStatus::kAnnotateStart);
   base::MemoryMappedFile data;
   if (!data.Initialize(image_path)) {
+    LogIcaUma(IcaStatus::kDataInitFailed);
     LOG(ERROR) << "Could not create a memory mapped file for an "
                   "image file to generate annotations";
   }
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(data.length());
-  // It's safe to early return here as the caller function
-  // `ImageAnnotationWorker::OnDecodeImageFile()` has started the
-  // `timeout_timer_` and it will continue the process when the timer gets
-  // timeout.
+  // It's safe to early return here as we have triggered
+  // `ica_disconnected_callback_` and `image_annotation_worker` will continue
+  // the process.
   if (!mapped_region.IsValid()) {
+    LogIcaUma(IcaStatus::kMappedRegionInvalid);
+    LOG(ERROR) << "Mapped region is not valid";
+
+    // Informs `image_annotation_worker`.
+    ica_disconnected_callback_.Run();
     return;
   }
   base::span(mapped_region.mapping).copy_from(data.bytes());
 
   EnsureAnnotatorIsConnected();
+  LogIcaUma(IcaStatus::kRequestSent);
   image_content_annotator_->AnnotateEncodedImage(
       std::move(mapped_region.region), std::move(callback));
 }

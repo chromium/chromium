@@ -20,6 +20,9 @@
           va "LAN uchun proksi serveri ishlatish" katakchasidan belgini olib tashlang.</translation>
 <translation id="4622039161600275920">Bu sahifa Chromium tomonidan bloklandi</translation>
 <translation id="48558539577516920">Himoya devori va antivirus dasturlari sozlamalarida Chromium tarmoqqa ulanishiga ruxsat bering.</translation>
+<translation id="4949828774841497663">Ilovalar &gt; tizim sozlamalari &gt; tarmoq sahifasini ochib,
+          faol tarmoqni tanlang, keyin Tafsilotlar... tugmasini bosing va tanlanishi mumkin har qanday
+          proksi tanlovini bekor qiling.</translation>
 <translation id="580822234363523061">Bu yerga o‘ting:
           Chromium menyusi &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +32,7 @@
           <ph name="PROXIES_TITLE" />
           va “proksi-serversiz” yoki “to‘g‘ridan-to‘g‘ri” sozlamalaridan biri
           belgilanganligiga ishonch xosil qiling.</translation>
+<translation id="648062525172759633">Bu sahifalar Chromium dastur ishlab chiquvchilari foydalanishi uchun moʻljallangan va faol ishlatish yoki sinovdan oʻtkazish mumkin emas. Ularni yoqish uchun <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> havolasiga oʻting, debag sahifalarini yoqish uchun tugmani bosib, keyin yana bu sahifaga oʻting.</translation>
 <translation id="6549378540556750549">Chromium paydo boʻlishida boshqa <ph name="BEGIN_LINK_OSS" />ochiq kodli dastur<ph name="END_LINK_OSS" /> taʼminotining katta oʻrni bor.</translation>
 <translation id="6613594504749178791">O‘zgartirishlar Chromium qaytadan ishga tushirilganda kuchga kiradi.</translation>
 <translation id="691026815377248078">Chromium ulanishi uchun Bluetooth orqali kirish ruxsati 
@@ -42,9 +46,6 @@
           va "<ph name="NO_PREFETCH_DESCRIPTION" />"dan tanlanishni olib tashlang.
           Shunda muammo hal bo‘lmasa, samaradorlikni oshirish uchun
           yana shu parametrni tanlashni tavsiya qilamiz.</translation>
-<translation id="8187289872471304532">Bu yerga o‘ting
-          Dasturlar &gt; Tizim sozlamalari &gt; Tarmoq &gt; Qo‘shimcha &gt; Proksi
-          va barcha proksi-serverlardan bayroqchalarni yechib qo‘ying.</translation>
 <translation id="8597726643333341451">Xavfsiz Chrome for Testing sahifasidasiz.</translation>
 <translation id="8684913864886094367">Chromium faoliyati noto‘g‘ri yakunlandi.</translation>
 </translationbundle>

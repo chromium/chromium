@@ -24,6 +24,7 @@ class BASE_EXPORT IOPMPowerSourceSamplingEventSource
 
   // SamplingEventSource:
   bool Start(SamplingEventCallback callback) override;
+  TimeDelta GetSampleInterval() override;
 
  private:
   static void OnNotification(void* context,

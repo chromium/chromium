@@ -14,7 +14,9 @@ mojom("mojom") {
 
   if (safe_browsing_mode == 1) {
     sources += [ "safe_archive_analyzer.mojom" ]
-    enabled_features += [ "full_safe_browsing" ]
+
+    # This is equivalent to SAFE_BROWSING_DOWNLOAD_PROTECTION && !IS_ANDROID.
+    enabled_features += [ "safe_browsing_desktop_download_protection" ]
   }
 
   public_deps = [
@@ -22,7 +24,7 @@ mojom("mojom") {
     "//sandbox/policy/mojom",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "zip_file_creator.mojom" ]
     public_deps += [ "//components/services/filesystem/public/mojom" ]
   }

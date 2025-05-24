@@ -20,10 +20,10 @@
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/supports_user_data.h"
-#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -49,16 +50,14 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
-#include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom-forward.h"
+#include "media/mojo/mojom/video_decoder.mojom-forward.h"
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -90,6 +89,14 @@ namespace network {
 struct CrossOriginEmbedderPolicy;
 struct DocumentIsolationPolicy;
 }  // namespace network
+
+namespace perfetto {
+template <typename MessageType>
+class TracedProto;
+namespace protos::pbzero {
+class RenderProcessHost;
+}
+}  // namespace perfetto
 
 namespace storage {
 struct BucketLocator;
@@ -132,7 +139,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
-  using iterator = base::IDMap<RenderProcessHost*>::iterator;
+  using iterator = base::IDMap<RenderProcessHost*, ChildProcessId>::iterator;
 
   // Crash reporting mode for ShutdownForBadMessage.
   enum class CrashReportMode {
@@ -220,6 +227,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void OnBoostForLoadingAdded() = 0;
   virtual void OnBoostForLoadingRemoved() = 0;
 
+  // Called when an Immersive WebXR session is started or stopped. This is used
+  // to prevent a process from being unnecessarily backgrounded when it is
+  // responsible for a WebXR session. Such sessions can take over fullscreen
+  // rendering and may be backgrounded unnecessarily without this call.
+  virtual void OnImmersiveXrSessionStarted() = 0;
+  virtual void OnImmersiveXrSessionStopped() = 0;
+
   // Indicates whether the current RenderProcessHost is exclusively hosting
   // guest RenderFrames. Not all guest RenderFrames are created equal.  A guest,
   // as indicated by BrowserPluginGuest::IsGuest, may coexist with other
@@ -236,6 +250,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // AreV8OptimizationsDisabled() only disables the higher-tier V8 optimizers,
   // leaving the basic JIT compiler in V8 (and the wasm JIT compiler) enabled.
   virtual bool AreV8OptimizationsDisabled() = 0;
+
+  // Indicates whether the current RenderProcessHost disallows overrides of
+  // v8 feature flags.
+  virtual bool DisallowV8FeatureFlagOverrides() = 0;
 
   // Indicates whether the current RenderProcessHost exclusively hosts PDF
   // content.
@@ -256,15 +274,24 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Returns true if shutdown was started by calling |Shutdown()|.
   virtual bool ShutdownRequested() = 0;
 
-  // Try to shut down the associated renderer process as fast as possible.
-  // If a non-zero |page_count| value is provided, then a fast shutdown will
-  // only happen if the count matches the active view count. If
-  // |skip_unload_handlers| is false and this renderer has any RenderViews with
-  // unload handlers, then this function does nothing. Otherwise, the function
-  // will ingnore checking for those handlers. Returns true if it was able to do
-  // fast shutdown.
+  // Try to shut down the associated renderer process as fast as possible. If a
+  // non-zero |page_count| value is provided, then a fast shutdown will only
+  // happen if the count matches the active view count. Returns true if it was
+  // able to do fast shutdown.
+  // If |skip_unload_handlers| is false and this renderer has any RenderViews
+  // with unload handlers, then this function does nothing. Otherwise, the
+  // function will ignore checking for those handlers.
+  // If |ignore_workers| is false and this renderer has any workers, then this
+  // function does nothing. Otherwise, the function will ignore checking for
+  // worker references.
+  // If |ignore_keep_alive| is false and this renderer has any keep-alive ref
+  // counts, then this function does nothing. Otherwise, the function will
+  // ignore checking for keep-alive references. This can be removed once
+  // keep-alive migration has landed (see crbug.com/40236167).
   virtual bool FastShutdownIfPossible(size_t page_count = 0,
-                                      bool skip_unload_handlers = false) = 0;
+                                      bool skip_unload_handlers = false,
+                                      bool ignore_workers = false,
+                                      bool ignore_keep_alive = false) = 0;
 
   // Returns true if fast shutdown was started for the renderer.
   virtual bool FastShutdownStarted() = 0;
@@ -303,7 +330,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // plugins, etc.
   //
   // This will never return ChildProcessHost::kInvalidUniqueID.
-  virtual int GetID() const = 0;
+  virtual ChildProcessId GetID() const = 0;
+
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
+  virtual int GetDeprecatedID() const = 0;
 
   // Returns a SafeRef to `this`. It should only be used in non-owning cases,
   // where the caller is not expected to outlive `this`.
@@ -367,6 +398,16 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual bool HasPriorityOverride() = 0;
   virtual void ClearPriorityOverride() = 0;
 #endif
+
+  // Sets whether to consider the process as a spare renderer when
+  // calculating the priority. Note that this is not exactly the same
+  // as IsSpare(). The value will be kept true after the spare renderer
+  // is taken in navigation. It will not be reset until the navigation
+  // correctly sets the priority.
+  // The function is exported only for supporting MockRenderProcessHost
+  // and should not be called outside of content/.
+  virtual void SetHasSpareRendererPriority(
+      bool has_spare_renderer_priority) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
   // Return the highest importance of all widgets in this process.
@@ -456,7 +497,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual const base::TimeTicks& GetLastInitTime() = 0;
 
   // Returns the priority of this process.
-  virtual base::Process::Priority GetPriority() = 0;
+  virtual base::Process::Priority GetPriority() const = 0;
 
   // Returns a list of durations for active KeepAlive requests.
   // For debugging only. TODO(wjmaclean): Remove once the causes behind
@@ -533,6 +574,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void IncrementPendingReuseRefCount() = 0;
   virtual void DecrementPendingReuseRefCount() = 0;
 
+  // Returns the pending reuse ref count.
+  virtual int GetPendingReuseRefCountForTesting() const = 0;
+
   // Sets all the various process lifetime ref counts to zero (e.g., keep alive,
   // worker, etc). Called when the browser context will be destroyed so this
   // RenderProcessHost can immediately die.
@@ -607,6 +651,8 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter_remote,
       const network::DocumentIsolationPolicy& document_isolation_policy,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter_remote,
       const storage::BucketLocator& bucket_locator,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) = 0;
   virtual void BindFileSystemManager(
@@ -673,9 +719,8 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver) = 0;
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  virtual void CreateStableVideoDecoder(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-          receiver) = 0;
+  virtual void CreateOOPVideoDecoder(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) = 0;
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   // Returns the current number of active views in this process.  Excludes
@@ -731,7 +776,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void DumpProfilingData(base::OnceClosure callback) {}
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Reinitializes the child process's logging with the given settings. This
   // is needed on Chrome OS, which switches to a log file in the user's home
   // directory once they log in.
@@ -752,41 +797,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual uint64_t GetPrivateMemoryFootprint() = 0;
 
   // Static management functions -----------------------------------------------
-
-  // Possibly start an unbound, spare RenderProcessHost. A subsequent creation
-  // of a RenderProcessHost with a matching browser_context may use this
-  // preinitialized RenderProcessHost, improving performance.
-  //
-  // It is safe to call this multiple times or when it is not certain that the
-  // spare renderer will be used, although calling this too eagerly may reduce
-  // performance as unnecessary RenderProcessHosts are created. The spare
-  // renderer will only be used if it using the default StoragePartition of a
-  // matching BrowserContext.
-  //
-  // The spare RenderProcessHost is meant to be created in a situation where a
-  // navigation is imminent and it is unlikely an existing RenderProcessHost
-  // will be used, for example in a cross-site navigation when a Service Worker
-  // will need to be started.  Note that if ContentBrowserClient opts into
-  // strict site isolation (via ShouldEnableStrictSiteIsolation), then the
-  // //content layer will maintain a warm spare process host at all times
-  // (without a need for separate calls to WarmupSpareRenderProcessHost).
-  static void WarmupSpareRenderProcessHost(BrowserContext* browser_context);
-
-  // Return the spare RenderProcessHost, if it exists. There is at most one
-  // globally-used spare RenderProcessHost at any time.
-  // TODO(crbug.com/41492171): remove the non-test method once the performance
-  // investigation is finished.
-  static RenderProcessHost* GetSpareRenderProcessHost();
-  static RenderProcessHost* GetSpareRenderProcessHostForTesting();
-
-  // Registers a callback to be notified when the spare RenderProcessHost is
-  // changed. If a new spare RenderProcessHost is created, the callback is made
-  // when the host is ready (RenderProcessHostObserver::RenderProcessReady). If
-  // the spare RenderProcessHost is promoted to be a "real" RenderProcessHost or
-  // discarded for any reason, the callback is made with a null pointer.
-  static base::CallbackListSubscription
-  RegisterSpareRenderProcessHostChangedCallback(
-      const base::RepeatingCallback<void(RenderProcessHost*)>& cb);
 
   // Flag to run the renderer in process.  This is primarily
   // for debugging purposes.  When running "in process", the
@@ -814,6 +824,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
 
   // Returns the RenderProcessHost given its ID.  Returns nullptr if the ID does
   // not correspond to a live RenderProcessHost.
+  static RenderProcessHost* FromID(ChildProcessId render_process_id);
+
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
   static RenderProcessHost* FromID(int render_process_id);
 
   // Returns the RenderProcessHost given its renderer's service instance ID,
@@ -843,7 +857,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   static void SetHungRendererAnalysisFunction(
       AnalyzeHungRendererFunction analyze_hung_renderer);
 
-  // Counts current RenderProcessHost(s), ignoring the spare process.
+  // Counts current RenderProcessHost(s), ignoring all spare processes.
   static int GetCurrentRenderProcessCountForTesting();
 
   // Allows tests to override host interface binding behavior. Any interface
@@ -851,7 +865,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // IOThreadHostImpl::BindHostReceiver() will pass through |callback| first if
   // non-null. |callback| is only called from the IO thread.
   using BindHostReceiverInterceptor =
-      base::RepeatingCallback<void(int render_process_id,
+      base::RepeatingCallback<void(ChildProcessId render_process_id,
                                    mojo::GenericPendingReceiver* receiver)>;
   static void InterceptBindHostReceiverForTesting(
       BindHostReceiverInterceptor callback);

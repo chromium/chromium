@@ -155,7 +155,10 @@ if (is_chromeos) {
       "src/context_test.cc",
       "src/error_params_test.cc",
       "src/galois_key_test.cc",
-      "src/int256_test.cc",
+
+      # Add this again once we have
+      # https://github.com/google/shell-encryption/pull/22
+      #"src/int256_test.cc",
       "src/montgomery_test.cc",
       "src/ntt_parameters_test.cc",
       "src/polynomial_test.cc",

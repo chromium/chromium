@@ -111,10 +111,6 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     //
     // Return true when successful, false otherwise.
     virtual bool OutputPicture(scoped_refptr<VP9Picture> pic) = 0;
-
-    // Return true if the accelerator requires us to provide the compressed
-    // header fully parsed.
-    virtual bool NeedsCompressedHeaderParsed() const = 0;
   };
 
   explicit VP9Decoder(

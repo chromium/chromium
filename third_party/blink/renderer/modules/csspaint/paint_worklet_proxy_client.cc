@@ -45,11 +45,13 @@ PaintWorkletProxyClient* PaintWorkletProxyClient::Create(LocalDOMWindow* window,
   PaintWorklet* paint_worklet = PaintWorklet::From(*window);
   scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue;
   base::WeakPtr<PaintWorkletPaintDispatcher> compositor_paint_dispatcher;
-  if (WebLocalFrameImpl* local_frame =
-          WebLocalFrameImpl::FromFrame(window->GetFrame())) {
-    compositor_paint_dispatcher =
-        local_frame->LocalRootFrameWidget()->EnsureCompositorPaintDispatcher(
-            &compositor_host_queue);
+  if (Thread::CompositorThread()) {
+    if (WebLocalFrameImpl* local_frame =
+            WebLocalFrameImpl::FromFrame(window->GetFrame())) {
+      compositor_paint_dispatcher =
+          local_frame->LocalRootFrameWidget()->EnsureCompositorPaintDispatcher(
+              &compositor_host_queue);
+    }
   }
   return MakeGarbageCollected<PaintWorkletProxyClient>(
       worklet_id, paint_worklet,

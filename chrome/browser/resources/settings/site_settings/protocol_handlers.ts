@@ -15,8 +15,7 @@ import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '../controls/settings_toggle_button.js';
 import '../privacy_icons.html.js';
 import '../privacy_page/collapse_radio_button.js';
@@ -50,6 +49,7 @@ export interface AppHandlerEntry {
   protocol_display_name: string;
   spec: string;
   app_id: string;
+  app_name?: string;
 }
 
 export interface AppProtocolEntry {
@@ -138,15 +138,16 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
     };
   }
 
-  protocols: ProtocolEntry[];
-  appAllowedProtocols: AppProtocolEntry[];
-  appDisallowedProtocols: AppProtocolEntry[];
-  private showAppsProtocolHandlersTitle_: boolean;
-  private actionMenuModel_: HandlerEntry|null;
-  toggleOffLabel: string;
-  toggleOnLabel: string;
-  ignoredProtocols: HandlerEntry[];
-  private handlersEnabledPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare protocols: ProtocolEntry[];
+  declare appAllowedProtocols: AppProtocolEntry[];
+  declare appDisallowedProtocols: AppProtocolEntry[];
+  declare private showAppsProtocolHandlersTitle_: boolean;
+  declare private actionMenuModel_: HandlerEntry|null;
+  declare toggleOffLabel: string;
+  declare toggleOnLabel: string;
+  declare ignoredProtocols: HandlerEntry[];
+  declare private handlersEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
 
   override ready() {
     super.ready();
@@ -305,6 +306,14 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
     this.actionMenuModel_ = event.model.item;
     this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
         event.target as HTMLElement);
+  }
+
+  private getNameCssClass_(item: AppHandlerEntry): string {
+    return item.app_name ? '' : 'url-directionality';
+  }
+
+  private getNameText_(item: AppHandlerEntry): string {
+    return item.app_name || item.host;
   }
 }
 

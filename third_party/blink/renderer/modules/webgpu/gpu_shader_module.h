@@ -38,7 +38,7 @@ class GPUShaderModule : public DawnObject<wgpu::ShaderModule> {
       wgpu::CompilationInfoRequestStatus status,
       const wgpu::CompilationInfo* info);
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

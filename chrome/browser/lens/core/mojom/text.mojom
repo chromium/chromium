@@ -28,7 +28,7 @@ enum Alignment {
 
 struct Text {
   // Information regarding the layout and position of text.
-  TextLayout text_layout;
+  TextLayout? text_layout;
 
   // Dominant content language of the text. Language code is CLDR/BCP-47.
   string? content_language;
@@ -122,6 +122,9 @@ struct TranslatedParagraph {
   // amount of lines returned in the detected text. See comment in `Paragraph`
   // struct.
   array<TranslatedLine> lines;
+
+  // Size of the resized screenshot in pixels.
+  gfx.mojom.Size resized_bitmap_size;
 
   // Optional. The alignment of the text in the paragraph.
   Alignment? alignment;

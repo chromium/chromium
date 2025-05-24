@@ -31,9 +31,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // not empty.
   std::optional<api::passwords_private::UrlCollection> GetUrlCollection(
       const std::string& url) override;
-  // Fake implementation. This returns the value set by
-  // `SetIsAccountStoreDefault`.
-  bool IsAccountStoreDefault(content::WebContents* web_contents) override;
   // Fake implementation of AddPassword. This returns true if `url` and
   // `password` aren't empty.
   bool AddPassword(const std::string& url,
@@ -117,7 +114,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   void SetProfile(Profile* profile);
   void SetAccountStorageEnabled(bool enabled);
-  void SetIsAccountStoreDefault(bool is_default);
   void AddCompromisedCredential(int id);
 
   void ClearSavedPasswordsList() { current_entries_.clear(); }
@@ -197,7 +193,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   bool is_account_storage_enabled_ = false;
-  bool is_account_store_default_ = false;
 
   // Flags for detecting whether password sharing operations have been invoked.
   bool fetch_family_members_triggered_ = false;

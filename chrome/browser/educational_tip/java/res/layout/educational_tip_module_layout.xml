@@ -11,14 +11,14 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/educational_tip_module_layout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/home_module_height"
+    android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/single_tab_module_padding_top"
     android:layout_marginStart="@dimen/single_tab_module_lateral_margin"
     android:layout_marginEnd="@dimen/single_tab_module_lateral_margin"
     android:paddingStart="@dimen/single_tab_module_padding_bottom"
     android:paddingEnd="@dimen/single_tab_module_padding_bottom"
     android:paddingTop="@dimen/single_tab_module_padding_top"
-    android:paddingBottom="@dimen/educational_tip_module_padding_bottom"
+    android:paddingBottom="@dimen/single_tab_module_padding_top"
     android:background="@drawable/home_surface_ui_background"
     android:foreground="@drawable/single_tab_card_ripple"
     android:orientation="vertical">
@@ -37,7 +37,7 @@ found in the LICENSE file.
             android:singleLine="true"
             android:text="@string/educational_tip_module_title"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary" />
     </LinearLayout>
 
     <LinearLayout
@@ -109,13 +109,12 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/educational_tip_module_button"
         style="@style/FilledButton"
-        android:layout_width="@dimen/educational_tip_module_button_width"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/educational_tip_module_button_height"
         android:paddingStart="@dimen/educational_tip_module_button_padding_start"
         android:paddingEnd="@dimen/educational_tip_module_button_padding_start"
         android:ellipsize="end"
         android:layout_gravity="bottom|end"
         android:singleLine="true"
-        android:textAppearance="@style/TextAppearance.Button.Text.Filled"
         android:text="@string/educational_tip_module_button" />
 </org.chromium.chrome.browser.educational_tip.EducationalTipModuleView>

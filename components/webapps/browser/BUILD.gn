@@ -14,6 +14,7 @@ source_set("constants") {
     "install_result_code.h",
     "uninstall_result_code.cc",
     "uninstall_result_code.h",
+    "web_app_error_page_constants.h",
   ]
 }
 
@@ -47,6 +48,8 @@ source_set("browser") {
     "banners/web_app_banner_data.h",
     "features.cc",
     "features.h",
+    "image_visual_diff.cc",
+    "image_visual_diff.h",
     "installable/installable_data.cc",
     "installable/installable_data.h",
     "installable/installable_data_fetcher.cc",
@@ -79,6 +82,11 @@ source_set("browser") {
     "installable/ml_install_result_reporter.h",
     "installable/ml_installability_promoter.cc",
     "installable/ml_installability_promoter.h",
+    "launch_queue/launch_params.cc",
+    "launch_queue/launch_params.h",
+    "launch_queue/launch_queue.cc",
+    "launch_queue/launch_queue.h",
+    "launch_queue/launch_queue_delegate.h",
     "pwa_install_path_tracker.cc",
     "pwa_install_path_tracker.h",
     "web_contents/web_app_url_loader.cc",
@@ -205,6 +213,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "banners/app_banner_settings_helper_unittest.cc",
+    "image_visual_diff_unittest.cc",
     "install_result_code_unittest.cc",
     "installable/installable_evaluator_unittest.cc",
     "installable/installable_task_queue_unittest.cc",

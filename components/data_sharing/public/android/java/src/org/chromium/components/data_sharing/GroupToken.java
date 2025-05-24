@@ -7,25 +7,33 @@ package org.chromium.components.data_sharing;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Information about a member of a group. */
 @JNINamespace("data_sharing")
+@NullMarked
 public class GroupToken {
+    @Deprecated(since = "Use collaborationId instead")
     public final String groupId;
-    public final String accessToken;
+
+    public final String collaborationId;
+    public final @Nullable String accessToken;
 
     /**
      * Constructor for a {@link GroupToken} object.
      *
-     * @param groupId The ID associated with the group.
+     * @param collaborationId The sharing ID associated with the group.
      * @param accessToken The access token associated with the group.
      */
-    public GroupToken(String groupId, String accessToken) {
-        this.groupId = groupId;
+    public GroupToken(String collaborationId, @Nullable String accessToken) {
+        this.groupId = collaborationId;
+        this.collaborationId = collaborationId;
         this.accessToken = accessToken;
     }
 
     @CalledByNative
-    private static GroupToken createGroupToken(String groupId, String accessToken) {
-        return new GroupToken(groupId, accessToken);
+    private static GroupToken createGroupToken(String collaborationId, String accessToken) {
+        return new GroupToken(collaborationId, accessToken);
     }
 }

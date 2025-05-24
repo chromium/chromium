@@ -110,6 +110,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -141,7 +142,7 @@ class Observer {
 
   const T& GetValue() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return value_;
+    return *value_;
   }
 
  private:
@@ -155,7 +156,7 @@ class Observer {
   const scoped_refptr<subtle::ObservableInternals<T>> internals_;
   // Note: value_ is a const ref to the value copy for this sequence, stored in
   // SequenceOwnedInfo.
-  const T& value_;
+  const raw_ref<const T> value_;
   base::RepeatingClosure on_update_callback_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -281,9 +282,7 @@ class ObservableInternals
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       DCHECK(observer);
       DCHECK(base::Contains(observers_, observer));
-      observers_.erase(
-          std::remove(observers_.begin(), observers_.end(), observer),
-          observers_.end());
+      std::erase(observers_, observer);
     }
 
     bool Empty() const {

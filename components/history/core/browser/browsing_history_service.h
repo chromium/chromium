@@ -94,8 +94,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     std::string client_id;
 
     // Timestamps of all local or remote visits the same URL on the same day.
-    // TODO(skym): These should probably be converted to base::Time.
-    std::set<int64_t> all_timestamps;
+    std::set<base::Time> all_timestamps;
 
     // If true, this entry is a search result.
     bool is_search_result;
@@ -272,9 +271,6 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
   // Tracker for delete requests to the history service.
   base::CancelableTaskTracker delete_task_tracker_;
-
-  // The list of URLs that are in the process of being deleted.
-  std::set<GURL> urls_to_be_deleted_;
 
   // Timer used to implement a timeout on a Web History response.
   std::unique_ptr<base::OneShotTimer> web_history_timer_;

@@ -63,8 +63,8 @@ message DataTypeState {
   // and disabling sync is supposed to clear sync metadata.
   optional string cache_guid = 5;
 
-  // Syncing account ID, representing the user.
-  optional string authenticated_account_id = 6;
+  // Syncing account obfuscated Gaia ID, representing the user.
+  optional string authenticated_obfuscated_gaia_id = 6;
 
   message Invalidation {
     // Opaque field, which has to be provided as part of resulting GetUpdates

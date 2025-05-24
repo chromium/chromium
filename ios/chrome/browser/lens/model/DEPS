@@ -4,9 +4,9 @@ include_rules = [
 
 specific_include_rules = {
   "^lens_browser_agent.mm": [
-    "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
+    "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   ],
   "^lens_tab_helper.mm": [
-    "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
+    "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   ],
 }

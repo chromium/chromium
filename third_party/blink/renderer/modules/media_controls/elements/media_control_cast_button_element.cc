@@ -55,9 +55,6 @@ void MediaControlCastButtonElement::TryShowOverlay() {
   if (ElementFromCenter(*this) != &MediaElement()) {
     SetIsWanted(false);
   }
-
-  base::UmaHistogramBoolean("Media.Controls.OverlayCastButtonIsCovered",
-                            !IsWanted());
 }
 
 void MediaControlCastButtonElement::UpdateDisplayType() {

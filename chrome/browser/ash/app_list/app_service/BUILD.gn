@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("app_service") {
   sources = [
@@ -39,6 +39,7 @@ static_library("app_service") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/plugin_vm",
@@ -81,7 +82,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/app_service",
-    "//chrome/browser/ash/app_list/internal_app",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/borealis/testing:test_support",
@@ -139,11 +139,6 @@ source_set("browser_tests") {
     "//ash:test_support",
     "//ash/app_list",
     "//ash/app_list/model:app_list_model",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc/mojom",
-    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -156,6 +151,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/profiles:profile",
@@ -166,6 +162,11 @@ source_set("browser_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//chromeos/constants",
     "//components/account_id",
     "//components/services/app_service",

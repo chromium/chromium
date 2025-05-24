@@ -17,7 +17,7 @@ namespace emoji {
 
 // Simple struct for storing a search weighting for a particular emoji.
 struct EmojiSearchEntry {
-  double weighting;
+  float weighting;
   std::string emoji_string;
 
   friend void PrintTo(const EmojiSearchEntry& entry, std::ostream* os) {

@@ -6,10 +6,11 @@
  * @fileoverview Tests for text_annotation_list.ts.
  */
 
-import {TextAnnotationList, TextViewportAnnotation} from '//ios/web/annotations/resources/text_annotation_list.js';
+import type {TextViewportAnnotation} from '//ios/web/annotations/resources/text_annotation_list.js';
+import {TextAnnotationList} from '//ios/web/annotations/resources/text_annotation_list.js';
 import {expectEq, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
-class TestTextAnnotationList extends TestSuite {
+export class TestTextAnnotationList extends TestSuite {
   annotation(start: number, end: number): TextViewportAnnotation {
     return {start, end, text: '', type: 'EMAIL', data: '#' + start};
   }
@@ -95,5 +96,3 @@ class TestTextAnnotationList extends TestSuite {
     expectEq('#90', list.cancelled[2]!.data);
   }
 }
-
-export {TestTextAnnotationList}

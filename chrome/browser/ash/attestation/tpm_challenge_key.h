@@ -25,7 +25,8 @@ namespace attestation {
 
 // Prefix for naming machine keys used for SignedPublicKeyAndChallenge when
 // challenging the EMK with register=true.
-const char kEnterpriseMachineKeyForSpkacPrefix[] = "attest-ent-machine-";
+inline constexpr char kEnterpriseMachineKeyForSpkacPrefix[] =
+    "attest-ent-machine-";
 
 //========================= TpmChallengeKeyFactory =============================
 

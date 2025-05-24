@@ -82,10 +82,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
 };
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-size_t ComputeSerializedMessageSize(uint32_t flags,
-                                    size_t payload_size,
-                                    size_t payload_interface_id_count,
-                                    int64_t creation_timeticks_us);
+size_t ComputeSerializedMessageSize(size_t payload_size,
+                                    size_t payload_interface_id_count);
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 size_t EstimateSerializedMessageSize(uint32_t message_name,

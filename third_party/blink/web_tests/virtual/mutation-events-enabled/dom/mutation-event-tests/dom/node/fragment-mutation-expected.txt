@@ -1,0 +1,21 @@
+CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+This test creates a fragment containing three elements: "B", "U", and "P", attempts to appendChild this fragment and studies effects of mutation events on the fragment.
+
+Inserting an element in front of the next item in fragment should not affect the result: PASS
+Appending an element at the end of the fragment should not affect the result: PASS
+Continually re-appending removed element to the fragment should eventually throw NOT_FOUND_ERR: PASS
+
+
+
+This test creates a fragment containing three elements: "B", "U", and "P", attempts to insertBefore this fragment and studies effects of mutation events on the fragment.
+
+Inserting an element in front of the next item in fragment should not affect the result: PASS
+Appending an element at the end of the fragment should not affect the result: PASS
+Continually re-appending removed element to the fragment should eventually throw NOT_FOUND_ERR: PASS
+
+

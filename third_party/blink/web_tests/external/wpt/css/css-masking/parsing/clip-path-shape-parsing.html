@@ -24,15 +24,20 @@ test_valid_value("clip-path", "shape(from 1ch -50px, line to -10% 12px)");
 test_valid_value("clip-path", "shape(from 10px 10px, move by 10px 5px, line by 20px 40%, close)");
 test_valid_value("clip-path", "shape(from 10px 10px, hline by 10px, vline to 5rem)");
 test_valid_value("clip-path", "shape(from 10px 10px, vline by 5%, hline to 1vw)");
-test_valid_value("clip-path", "shape(from 10px 10px, curve to 50px 20px via 10rem 1%)");
-test_valid_value("clip-path", "shape(from 10px 10px, curve to 50px 20px via 10rem 1px 20vh 1ch)");
-test_valid_value("clip-path", "shape(from 10px 10px, curve by 50px 20px via 10rem 1px 20vh 1ch)");
-test_valid_value("clip-path", "shape(from 10px 10px, smooth to 50px 20px via 10rem 1%)");
+test_valid_value("clip-path", "shape(from 10px 10px, curve to 50px 20px with 10rem 1%)");
+test_valid_value("clip-path", "shape(from 10px 10px, curve to 50px 20px with 10rem 1px / 20vh 1ch)");
+test_valid_value("clip-path", "shape(from 10px 10px, curve by 50px 20px with 10rem 1px / 20vh 1ch)");
+test_valid_value("clip-path", "shape(from 10px 10px, smooth to 50px 20px with 10rem 1%)");
 test_valid_value("clip-path", "shape(from 10px 10px, smooth to 50px 1pt)");
 test_valid_value("clip-path", "shape(from 10px 10px, arc to 50px 1pt of 10px 10px)", "shape(from 10px 10px, arc to 50px 1pt of 10px)");
 test_valid_value("clip-path", "shape(from 10px 10px, arc to 50px 1pt of 10px 10px small rotate 0deg)", "shape(from 10px 10px, arc to 50px 1pt of 10px)");
 test_valid_value("clip-path", "shape(from 10% 1rem, arc to 50px 1pt of 20% cw large rotate 25deg)", "shape(from 10% 1rem, arc to 50px 1pt of 20% cw large rotate 25deg)");
 test_valid_value("clip-path", "shape(evenodd from 0px 0px, close)");
+
+// arc with wrong order
+test_invalid_value("clip-path", "shape(from 10% 1rem, arc of 20% 1pt to 50px cw large rotate 25deg)");
+test_invalid_value("clip-path", "shape(from 10% 1rem, arc cw to 50px of 20% 1pt large rotate 25deg)");
+test_invalid_value("clip-path", "shape(from 10% 1rem, arc rotate 25deg to 50px 1pt of 20% cw large )");
 
 // nonsense
 test_invalid_value("clip-path", "shape(evenodd from 0px 0px, close path)");

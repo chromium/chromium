@@ -27,15 +27,20 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/features/scam_detection.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "net/base/ip_address.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -60,16 +65,23 @@ enum class SBClientDetectionClassifyThresholdsResult {
   kMaxValue = kModelLabelNotFound,
 };
 
+using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
+using ScamDetectionResponse = optimization_guide::proto::ScamDetectionResponse;
+
 // Main service which pushes models to the renderers, responds to classification
 // requests. This owns two ModelLoader objects.
 class ClientSideDetectionService
     : public KeyedService,
-      public content::RenderProcessHostCreationObserver {
+      public content::RenderProcessHostCreationObserver,
+      public content::RenderProcessHostObserver {
  public:
   // void(GURL phishing_url, bool is_phishing,
-  // std::optional<net::HttpStatusCode> response_code).
-  typedef base::OnceCallback<
-      void(GURL, bool, std::optional<net::HttpStatusCode>)>
+  // std::optional<net::HttpStatusCode> response_code,
+  // std::optional<IntelligentScanVerdict> intelligent_scan_verdict).
+  typedef base::OnceCallback<void(GURL,
+                                  bool,
+                                  std::optional<net::HttpStatusCode>,
+                                  std::optional<IntelligentScanVerdict>)>
       ClientReportPhishingRequestCallback;
 
   // Delegate which allows to provide embedder specific implementations.
@@ -86,12 +98,25 @@ class ClientSideDetectionService
     GetSafeBrowsingURLLoaderFactory() = 0;
     virtual bool ShouldSendModelToBrowserContext(
         content::BrowserContext* context) = 0;
+    // Starts listening to the on-device model update through OptimizationGuide.
+    // A check will be made in the delegate to confirm that it's not listening
+    // for availability before subscribing. This will be called when the user
+    // preferences change and the user is subscribed to Enhanced Safe Browsing.
+    virtual void StartListeningToOnDeviceModelUpdate() = 0;
+    // Stops listening to the on-device model update through OptimizationGuide.
+    // A check is handled in the delegate if the user is already stopped
+    // listening for on-device model updates.
+    virtual void StopListeningToOnDeviceModelUpdate() = 0;
+    // Returns the on-device model session which allows us to execute the model.
+    virtual std::unique_ptr<
+        optimization_guide::OptimizationGuideModelExecutor::Session>
+    GetModelExecutorSession() = 0;
+    virtual void LogOnDeviceModelEligibilityReason() = 0;
   };
 
   ClientSideDetectionService(
       std::unique_ptr<Delegate> delegate,
-      optimization_guide::OptimizationGuideModelProvider* opt_guide,
-      const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
+      optimization_guide::OptimizationGuideModelProvider* opt_guide);
 
   ClientSideDetectionService(const ClientSideDetectionService&) = delete;
   ClientSideDetectionService& operator=(const ClientSideDetectionService&) =
@@ -204,6 +229,33 @@ class ClientSideDetectionService
   // debugging metadata.
   int GetTriggerModelVersion();
 
+  // Called from the delegate when the on-device model is available to create a
+  // session.
+  void NotifyOnDeviceModelAvailable();
+
+  // Returns |on_device_model_available_| which indicates the availability of
+  // on-device model session creation.
+  bool IsOnDeviceModelAvailable();
+
+  // Calls the delegate's |LogOnDeviceModelEligibilityReason|.
+  virtual void LogOnDeviceModelEligibilityReason();
+
+  // Resets the session that's created by the on-device model. This occurs when
+  // there is a new page navigation and at the start and end of
+  // |InquireOnDeviceModel|.
+  void ResetOnDeviceSession(bool inquiry_complete);
+
+  // Called from the host class when the proper requirements are met to inquire
+  // the on-device model.
+  virtual void InquireOnDeviceModel(
+      std::string rendered_texts,
+      base::OnceCallback<
+          void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
+          callback);
+
+  // For testing the on-device model flow in unit test.
+  void SetOnDeviceAvailabilityForTesting(bool available);
+
  private:
   friend class ClientSideDetectionServiceTest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
@@ -218,6 +270,16 @@ class ClientSideDetectionService
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest, GetNumReportTestESB);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
                            TestModelFollowsPrefs);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
+                           TestOnDeviceModelFetchCall);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
+                           TestSessionCreationFailure);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
+                           TestSessionCreationSuccess);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
+                           TestSessionExecutionSuccess);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
+                           TestSessionExecutionFailure);
 
   // CacheState holds all information necessary to respond to a caller without
   // actually making a HTTP request.
@@ -241,6 +303,11 @@ class ClientSideDetectionService
   // downloading the model after a delay.  In all cases, each render process is
   // updated to match the state
   void OnPrefsUpdated();
+
+  // Unsubscribes to model subscriptions. Currently we unsubscribe to the image
+  // embedding model as well as the on device model depending on user
+  // preferences.
+  void UnsubscribeToModelSubscription();
 
   // Starts sending the request to the client-side detection frontends.
   // This method takes ownership of both pointers.
@@ -269,8 +336,7 @@ class ClientSideDetectionService
   bool AddPhishingReport(base::Time timestamp);
 
   // Populates |phishing_report_times_| with the data stored in local prefs.
-  // Return bool value represents whether the load was successful or not.
-  bool LoadPhishingReportTimesFromPrefs();
+  void LoadPhishingReportTimesFromPrefs();
 
   // Returns the URL that will be used for phishing requests.
   static GURL GetClientReportUrl(const std::string& report_url);
@@ -278,10 +344,13 @@ class ClientSideDetectionService
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* rph) override;
 
-  // If we fail to load the report times, we will not know how many pings the
-  // user has sent already. In this case, we will assume the user has sent
-  // enough pings and skip the phishing URL check.
-  bool skip_phishing_request_check_ = true;
+  //  content::RenderProcessHostObserver
+  void RenderProcessHostDestroyed(content::RenderProcessHost* rph) override;
+  void RenderProcessReady(content::RenderProcessHost* rph) override;
+
+  void ModelExecutionCallback(
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult
+          result);
 
   // Whether the service is running or not.  When the service is not running,
   // it won't download the model nor report detected phishing URLs.
@@ -335,6 +404,22 @@ class ClientSideDetectionService
   base::CallbackListSubscription update_model_subscription_;
 
   std::unique_ptr<ClientSidePhishingModel> client_side_phishing_model_;
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      observed_render_process_hosts_{this};
+
+  // This is used to check before fetching the session when the correct trigger
+  // is called to generate the on-device model LLM. This is set through the
+  // delegate.
+  bool on_device_model_available_ = false;
+
+  base::TimeTicks session_execution_start_time_;
+  // The underlying session provided by optimization guide component.
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+      session_;
+  base::OnceCallback<void(
+      std::optional<optimization_guide::proto::ScamDetectionResponse>)>
+      inquire_on_device_model_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -69,9 +69,6 @@ class SyncCycle {
     virtual void OnSyncProtocolError(
         const SyncProtocolError& sync_protocol_error) = 0;
 
-    // Called when server wants to schedule a retry GU.
-    virtual void OnReceivedGuRetryDelay(const base::TimeDelta& delay) = 0;
-
     // Called when server requests a migration.
     virtual void OnReceivedMigrationRequest(DataTypeSet types) = 0;
 
@@ -117,7 +114,7 @@ class SyncCycle {
   }
 
  private:
-  // The context for this cycle, guaranteed to outlive |this|.
+  // The context for this cycle, guaranteed to outlive `this`.
   const raw_ptr<SyncCycleContext, DanglingUntriaged> context_;
 
   // The delegate for this cycle, must never be null.

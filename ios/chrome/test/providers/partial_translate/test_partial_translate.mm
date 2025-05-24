@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/test/providers/partial_translate/test_partial_translate.h"
+
+#import <UIKit/UIKit.h>
 
 #import "ios/public/provider/chrome/browser/partial_translate/partial_translate_api.h"
 

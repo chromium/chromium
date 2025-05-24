@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * An interface for models notifying about changes to a list of items. Note that ListObservable
@@ -16,6 +17,7 @@ import androidx.annotation.Nullable;
  * @param <P> The parameter type for the payload for partial updates. Use {@link Void} for
  *         implementations that don't support partial updates.
  */
+@NullMarked
 public interface ListObservable<P> {
     /**
      * @param observer An observer to be notified of changes to the model.

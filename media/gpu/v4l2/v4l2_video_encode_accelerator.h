@@ -21,6 +21,9 @@
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/ipc/service/command_buffer_stub.h"
+#include "media/base/encoder_status.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
@@ -54,9 +57,9 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
 
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
-  bool Initialize(const Config& config,
-                  Client* client,
-                  std::unique_ptr<MediaLog> media_log) override;
+  EncoderStatus Initialize(const Config& config,
+                           Client* client,
+                           std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(
@@ -70,6 +73,12 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
+  void SetCommandBufferHelperCB(
+      base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+          get_command_buffer_helper_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) override;
+  void SetSharedImageInterfaceForTesting(
+      scoped_refptr<gpu::SharedImageInterface> sii) override;
 
  private:
   // Auto-destroy reference for BitstreamBuffer, for tracking buffers passed to
@@ -275,6 +284,9 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // Initializes input_memory_type_.
   bool InitInputMemoryType(const Config& config);
 
+  void OnSharedImageInterfaceAvailable(
+      scoped_refptr<gpu::SharedImageInterface> sii);
+
   // Having too many encoder instances at once may cause us to run out of FDs
   // and subsequently crash (crbug.com/1289465). To avoid that, we limit the
   // maximum number of encoder instances that can exist at once.
@@ -387,6 +399,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // |child_task_runner_|.
   base::WeakPtr<Client> client_;
   std::unique_ptr<base::WeakPtrFactory<Client>> client_ptr_factory_;
+  scoped_refptr<gpu::SharedImageInterface> sii_;
 
   // WeakPtr<> pointing to |this| for use in posting tasks to
   // |encoder_task_runner_|.

@@ -22,6 +22,7 @@
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_error_details.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/reconnect_notifier.h"
 #include "net/base/session_usage.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -48,6 +49,26 @@
 #include "net/url_request/static_http_user_agent_settings.h"
 
 namespace net::test {
+
+class TestConnectionChangeObserver : public ConnectionChangeNotifier::Observer {
+ public:
+  void OnSessionClosed() override;
+  void OnConnectionFailed() override;
+  void OnNetworkEvent(NetworkChangeEvent event) override;
+
+  int session_closed() const { return session_closed_; }
+  int connection_failed() const { return connection_failed_; }
+  int network_event() const { return network_event_; }
+  std::optional<NetworkChangeEvent> last_network_event() const {
+    return last_network_event_;
+  }
+
+ private:
+  int session_closed_ = 0;
+  int connection_failed_ = 0;
+  int network_event_ = 0;
+  std::optional<NetworkChangeEvent> last_network_event_;
+};
 
 class QuicSessionPoolTestBase : public WithTaskEnvironment {
  public:
@@ -128,6 +149,8 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     NetErrorDetails net_error_details;
     CompletionOnceCallback failed_on_default_network_callback;
     CompletionOnceCallback callback;
+
+    std::optional<ConnectionManagementConfig> connection_management_config;
 
     // The resulting request.
     QuicSessionRequest request;
@@ -274,6 +297,8 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
   NetErrorDetails net_error_details_;
   StaticHttpUserAgentSettings http_user_agent_settings_ = {"test-lang",
                                                            "test-ua"};
+
+  std::unique_ptr<TestConnectionChangeObserver> connection_change_observer_;
 
   raw_ptr<QuicParams> quic_params_;
   base::test::ScopedFeatureList scoped_feature_list_;

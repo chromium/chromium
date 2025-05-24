@@ -7,11 +7,8 @@
 
 #include "content/public/browser/file_system_access_permission_context.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace content {
+struct PathInfo;
 class WebContents;
 }  // namespace content
 
@@ -27,7 +24,7 @@ class Origin;
 // extension. `callback` is called when the dialog is dismissed.
 void ShowFileSystemAccessDangerousFileDialog(
     const url::Origin& origin,
-    const base::FilePath& path,
+    const content::PathInfo& path_info,
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback,
@@ -36,7 +33,7 @@ void ShowFileSystemAccessDangerousFileDialog(
 std::unique_ptr<ui::DialogModel>
 CreateFileSystemAccessDangerousFileDialogForTesting(
     const url::Origin& origin,
-    const base::FilePath& path,
+    const content::PathInfo& path_info,
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback);

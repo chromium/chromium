@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
+
 #include <string>
 
-#include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
 #include "ui/base/ui_base_switches.h"
 
 PixelTestConfigurationMixin::PixelTestConfigurationMixin(
@@ -26,7 +27,7 @@ void PixelTestConfigurationMixin::SetUpCommandLine(
     const std::string language = "ar-XB";
     command_line->AppendSwitchASCII(switches::kLang, language);
 
-    // On Linux & Lacros the command line switch has no effect, we need to use
+    // On Linux the command line switch has no effect, we need to use
     // environment variables to change the language.
     scoped_env_override_ =
         std::make_unique<base::ScopedEnvironmentVariableOverride>("LANGUAGE",

@@ -169,7 +169,7 @@ const tests = {
   // no effect.
   rangeStart: UsePropertyTest(animation => animation.rangeStart),
   rangeEnd:  UsePropertyTest(animation => animation.rangeEnd),
-  progress: UsePropertyTest(animation => animation.progress),
+  overallProgress: UsePropertyTest(animation => animation.overallProgress),
   replaceState: UsePropertyTest(animation => animation.replaceState),
   ready: UsePropertyTest(animation => animation.ready),
   finished: UsePropertyTest(animation => {
@@ -306,6 +306,13 @@ const tests = {
         ),
     });
   },
+  trigger: UsePropertyTest(animation => {
+    // Get the trigger property.
+    animation.trigger;
+
+    // Set the trigger property.
+    animation.trigger = new AnimationTrigger();
+  })
 };
 
 // Check that each enumerable property and the constructor follow the

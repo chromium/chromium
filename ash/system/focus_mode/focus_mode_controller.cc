@@ -30,8 +30,10 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/ash/components/audio/system_sounds_delegate.h"
@@ -54,6 +56,12 @@ constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(25);
 constexpr base::TimeDelta kSessionEndSoundDelay = base::Milliseconds(200);
 
 constexpr base::TimeDelta kEndingMomentBounceAnimationDelay = base::Minutes(1);
+
+// YouTube Music API playlist name prefix.
+constexpr std::string_view kPlaylistIdPrefix = "playlists/";
+constexpr std::string_view kBasePlaylistUrl =
+    "https://music.youtube.com/playlist?list=";
+constexpr std::string_view kYouTubeMusicUrl = "https://music.youtube.com/";
 
 bool IsQuietModeOnSetByFocusMode() {
   auto* message_center = message_center::MessageCenter::Get();
@@ -141,6 +149,25 @@ void OnTaskFetched(FocusModeTasksModel::Delegate::FetchTaskCallback callback,
   }
 
   std::move(callback).Run(task);
+}
+
+// Returns the direct URL to view info for the associated YouTube Music
+// `playlist`.
+GURL GetYouTubeMusicPlaylistUrl(focus_mode_util::SelectedPlaylist playlist) {
+  CHECK_EQ(playlist.type, focus_mode_util::SoundType::kYouTubeMusic);
+
+  if (playlist.id.starts_with(kPlaylistIdPrefix)) {
+    // Strip the prefix from `playlist.id` to get the actual playlist id and
+    // construct the URL.
+    return GURL(base::StrCat(
+        {kBasePlaylistUrl, playlist.id.substr(kPlaylistIdPrefix.length())}));
+  }
+
+  // The expected api playlist name should have the prefix "playlists/". Check
+  // the playlists api documentation:
+  // https://developers.google.com/youtube/mediaconnect/reference/rest/v1/playlists#Playlist"
+  LOG(WARNING) << "YTM playlist name format is invalid";
+  return GURL(kYouTubeMusicUrl);
 }
 
 }  // namespace
@@ -430,7 +457,7 @@ void FocusModeController::ResetFocusSession() {
   }
 }
 
-void FocusModeController::OnEndingBubbleShown() {
+void FocusModeController::OnEndingBubbleShowing() {
   if (!in_ending_moment()) {
     return;
   }
@@ -877,6 +904,14 @@ bool FocusModeController::MaybeCreateMediaWidget() {
   web_view_params.source_title =
       focus_mode_util::GetSourceTitleForMediaControls(
           focus_mode_sounds_controller_->selected_playlist());
+  // Provide the playlist source URL to show for when users click on the media
+  // controls view.
+  if (focus_mode_sounds_controller_->selected_playlist().type ==
+      focus_mode_util::SoundType::kYouTubeMusic) {
+    web_view_params.activation_url = GetYouTubeMusicPlaylistUrl(
+        focus_mode_sounds_controller_->selected_playlist());
+  }
+
   focus_mode_media_view_ = media_widget_->SetContentsView(
       AshWebViewFactory::Get()->Create(web_view_params));
   focus_mode_media_view_->Navigate(GURL(chrome::kChromeUIFocusModeMediaURL));

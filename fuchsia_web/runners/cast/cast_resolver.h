@@ -6,6 +6,7 @@
 #define FUCHSIA_WEB_RUNNERS_CAST_CAST_RESOLVER_H_
 
 #include <fidl/fuchsia.component.resolution/cpp/fidl.h>
+#include <lib/fidl/cpp/wire/unknown_interaction_handler.h>
 
 // fuchsia.component.resolution.Resolver implementation for Cast applications.
 class CastResolver final
@@ -23,6 +24,10 @@ class CastResolver final
   void ResolveWithContext(
       ResolveWithContextRequest& request,
       ResolveWithContextCompleter::Sync& completer) override;
+  void handle_unknown_method(
+      fidl::UnknownMethodMetadata<fuchsia_component_resolution::Resolver>
+          metadata,
+      fidl::UnknownMethodCompleter::Sync& completer) override;
 };
 
 #endif  // FUCHSIA_WEB_RUNNERS_CAST_CAST_RESOLVER_H_

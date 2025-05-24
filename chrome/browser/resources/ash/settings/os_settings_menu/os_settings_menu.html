@@ -3,14 +3,10 @@
     box-sizing: border-box;
     display: block;
     padding-bottom: 2px;
-    padding-top: 8px;
-    width: var(--settings-menu-width);
-  }
-
-  :host-context(body.revamp-wayfinding-enabled):host {
     padding-inline-end: var(--settings-menu-padding-inline-end);
     padding-inline-start: var(--settings-menu-padding-inline-start);
     padding-top: var(--settings-menu-padding-top);
+    width: var(--settings-menu-width);
   }
 
   :host * {
@@ -22,49 +18,6 @@
     background-color: transparent;
   }
 
-  #advancedButton {
-    --ink-color: var(--cros-text-color-primary);
-    align-items: center;
-    background: none;
-    border: none;
-    border-radius: initial;
-    box-shadow: none;
-    color: var(--cros-text-color-primary);
-    display: flex;
-    font: var(--cros-button-1-font);
-    height: unset;
-    margin-inline-end: 2px;
-    margin-top: 8px;
-    padding-inline-end: 0;
-    padding-inline-start: 20px;
-    text-transform: none;
-  }
-
-  #advancedButton:focus {
-    outline: none;
-  }
-
-  :host-context(.focus-outline-visible) #advancedButton:focus {
-    border-radius: 0 20px 20px 0;
-    outline: var(--settings-menu-item-border-width) solid
-        var(--cros-focus-ring-color);
-  }
-
-  :host-context([dir=rtl]):host-context(.focus-outline-visible)
-      #advancedButton:focus {
-    border-radius: 20px 0 0 20px;
-  }
-
-  #advancedButton > span {
-    flex: 1;
-  }
-
-  #advancedButton > iron-icon {
-    height: var(--cr-icon-size);
-    margin-inline-end: 14px;  /* 16px - 2px from margin for outline. */
-    width: var(--cr-icon-size);
-  }
-
   #menuSeparator {
     border-bottom: var(--cr-separator-line);
     margin-bottom: 8px;
@@ -73,17 +26,6 @@
 
   #topMenu > os-settings-menu-item {
     margin-bottom: 8px;
-  }
-
-  :host-context(body:not(.revamp-wayfinding-enabled))
-      #topMenu > os-settings-menu-item {
-    margin-inline-end: 2px;
-  }
-
-  :host-context(body:not(.revamp-wayfinding-enabled))
-      #advancedSubmenu > os-settings-menu-item {
-    margin-bottom: 8px;
-    margin-inline-end: 2px;
   }
 
   #topMenu > os-settings-menu-item:last-of-type {
@@ -101,42 +43,12 @@
     on-iron-activate="onItemActivated_"
     on-iron-select="onItemSelected_"
     on-iron-deselect="onItemDeselected_">
-  <template id="topMenuRepeat" is="dom-repeat" items="[[basicMenuItems_]]">
+  <template id="topMenuRepeat" is="dom-repeat" items="[[menuItems_]]">
     <os-settings-menu-item path="[[item.path]]"
         icon="[[item.icon]]"
         label="[[item.label]]"
         sublabel="[[item.sublabel]]"
         tooltip-position="[[getMenuItemTooltipPosition_(isRtl_)]]">
-    </os-settings-menu-item>
-  </template>
-
-  <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-    <cr-button id="advancedButton"
-        aria-expanded$="[[boolToString_(advancedOpened)]]"
-        on-click="onAdvancedButtonToggle_">
-      <span>$i18n{advancedPageTitle}</span>
-      <iron-icon icon="[[arrowState_(advancedOpened)]]" slot="suffix-icon">
-      </iron-icon>
-    </cr-button>
-    <iron-collapse id="advancedCollapse" opened="[[advancedOpened]]">
-      <iron-selector id="advancedSubmenu"
-          role="navigation"
-          selectable="os-settings-menu-item"
-          attr-for-selected="path"
-          selected="[[selectedItemPath_]]">
-        <template is="dom-repeat" items="[[advancedMenuItems_]]">
-          <os-settings-menu-item path="[[item.path]]"
-              icon="[[item.icon]]"
-              label="[[item.label]]"
-              sublabel="[[item.sublabel]]"
-              tooltip-position="[[getMenuItemTooltipPosition_(isRtl_)]]">
-          </os-settings-menu-item>
-        </template>
-      </iron-selector>
-    </iron-collapse>
-    <div id="menuSeparator"></div>
-    <os-settings-menu-item path="[[aboutMenuItemPath_]]"
-        label="$i18n{aboutOsPageTitle}">
     </os-settings-menu-item>
   </template>
 </iron-selector>

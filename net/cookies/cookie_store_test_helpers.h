@@ -67,6 +67,14 @@ class DelayedCookieMonster : public CookieStore {
       const std::optional<CookieAccessResult> cookie_access_result =
           std::nullopt) override;
 
+  // This function is for test purposes only.
+  // Call the asynchronous CookieMonster function, expect it to immediately
+  // invoke the internal callback.
+  // Post a delayed task to invoke the original callback with the results.
+  void SetUnsafeCanonicalCookieForTestAsync(
+      std::unique_ptr<CanonicalCookie> cookie,
+      SetCookiesCallback callback) override;
+
   void GetCookieListWithOptionsAsync(
       const GURL& url,
       const CookieOptions& options,
@@ -93,7 +101,7 @@ class DelayedCookieMonster : public CookieStore {
 
   CookieChangeDispatcher& GetChangeDispatcher() override;
 
-  void SetCookieableSchemes(const std::vector<std::string>& schemes,
+  void SetCookieableSchemes(std::vector<std::string> schemes,
                             SetCookieableSchemesCallback callback) override;
 
  private:

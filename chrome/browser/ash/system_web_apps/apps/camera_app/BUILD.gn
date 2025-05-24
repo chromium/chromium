@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("camera_app") {
   sources = [
@@ -26,9 +26,9 @@ static_library("camera_app") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/hats",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
     "//chrome/services/pdf/public/mojom",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//content/public/browser",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings",

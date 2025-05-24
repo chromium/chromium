@@ -20,13 +20,15 @@ using SignalInfo = ExtensionTelemetryReportRequest_SignalInfo;
 using CallDetails =
     ExtensionTelemetryReportRequest_SignalInfo_TabsApiInfo_CallDetails;
 
-constexpr const char* kExtensionIds[] = {"aaaaaaaabbbbbbbbccccccccdddddddd",
-                                         "eeeeeeeeffffffffgggggggghhhhhhhh",
-                                         "aaaaeeeebbbbffffccccggggddddhhhh"};
+constexpr const auto kExtensionIds = std::to_array<const char*>({
+    "aaaaaaaabbbbbbbbccccccccdddddddd",
+    "eeeeeeeeffffffffgggggggghhhhhhhh",
+    "aaaaeeeebbbbffffccccggggddddhhhh",
+});
 constexpr auto kApiMethods = std::to_array(
     {TabsApiInfo::CREATE, TabsApiInfo::UPDATE, TabsApiInfo::REMOVE});
-constexpr const char* kUrls[] = {"http://www.example1.com/",
-                                 "https://www.example2.com/"};
+constexpr const auto kUrls = std::to_array<const char*>(
+    {"http://www.example1.com/", "https://www.example2.com/"});
 
 class TabsApiSignalProcessorTest : public ::testing::Test {
  protected:

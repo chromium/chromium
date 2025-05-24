@@ -1,6 +1,5 @@
-danielng@google.com
-marcheu@google.com
-mrfemi@google.com
+asriniva@google.com
+davidriley@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

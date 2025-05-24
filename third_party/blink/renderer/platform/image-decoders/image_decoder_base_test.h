@@ -9,9 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
-
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 namespace blink {

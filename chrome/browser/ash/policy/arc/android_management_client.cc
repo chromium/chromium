@@ -131,8 +131,7 @@ std::ostream& operator<<(std::ostream& os,
     case AndroidManagementClient::Result::ERROR:
       return os << "ERROR";
   }
-  NOTREACHED_IN_MIGRATION();
-  return os;
+  NOTREACHED();
 }
 
 }  // namespace policy

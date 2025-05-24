@@ -11,10 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -25,6 +26,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import java.util.List;
 
 /** Coordinator class of the app filter bottom sheet UI for history page. */
+@NullMarked
 class AppFilterCoordinator implements View.OnLayoutChangeListener {
     // Maximum number of app filter items shown on the sheet at once if screen dimension allows.
     static final int MAX_VISIBLE_ITEM_COUNT = 5;
@@ -50,10 +52,10 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
     /** Data class for individual app item in the filter list. */
     public static class AppInfo {
         public final String id;
-        public final Drawable icon;
+        public final @Nullable Drawable icon;
         public final CharSequence label;
 
-        public AppInfo(String id, Drawable icon, CharSequence label) {
+        public AppInfo(String id, @Nullable Drawable icon, CharSequence label) {
             this.id = id;
             this.icon = icon;
             this.label = label;
@@ -77,7 +79,7 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
          * @param appInfo {@link AppInfo} containing the app information. May be {@code null} if no
          *     app is selected.
          */
-        void onAppUpdated(AppInfo appInfo);
+        void onAppUpdated(@Nullable AppInfo appInfo);
     }
 
     /**
@@ -184,7 +186,7 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
         return Math.min(visibleRowCount * rowHeight, maxHeight);
     }
 
-    private void closeSheet(AppInfo appInfo) {
+    private void closeSheet(@Nullable AppInfo appInfo) {
         mBottomSheetController.hideContent(mSheetContent, true);
         mCloseCallback.onAppUpdated(appInfo);
     }
@@ -205,7 +207,7 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
         mMediator.setCurrentAppForTesting(appId); // IN-TEST
     }
 
-    String getCurrentAppIdForTesting() {
+    @Nullable String getCurrentAppIdForTesting() {
         return mMediator.getCurrentAppIdForTesting(); // IN-TEST
     }
 }

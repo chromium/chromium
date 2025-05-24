@@ -148,19 +148,20 @@ enum class Error;
 struct CrxUpdateItem;
 
 enum class ComponentState {
-  kNew,
-  kChecking,
-  kCanUpdate,
+  kNew,          // The component has not yet been checked for updates.
+  kChecking,     // The component is being checked for updates now.
+  kCanUpdate,    // An update is available and will soon be processed.
+  kDownloading,  // An update is being downloaded.
+  kUpdating,     // An update is being installed.
+  kUpdated,      // An update was successfully applied.
+  kUpToDate,     // The component was already up to date.
+  kUpdateError,  // The service encountered an error.
+  kRun,          // The component is running a server-specified action.
+
+  // TODO(crbug.com/353249967): These states are unsent by the engine and can
+  // be removed, along with translations and mappings associated with them.
   kDownloadingDiff,
-  kDownloading,
-  kDownloaded,
   kUpdatingDiff,
-  kUpdating,
-  kUpdated,
-  kUpToDate,
-  kUpdateError,
-  kPingOnly,
-  kRun,
   kLastStatus
 };
 
@@ -171,20 +172,20 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
   struct Result {
     Result() = default;
     explicit Result(int error, int extended_error = 0)
-        : result({.category_ = error == 0 ? ErrorCategory::kNone
-                                          : ErrorCategory::kInstall,
-                  .code_ = error,
-                  .extra_ = extended_error}) {}
+        : result({.category = error == 0 ? ErrorCategory::kNone
+                                         : ErrorCategory::kInstall,
+                  .code = error,
+                  .extra = extended_error}) {}
     explicit Result(InstallError error, int extended_error = 0)
-        : result({.category_ = error == InstallError::NONE
-                                   ? ErrorCategory::kNone
-                                   : ErrorCategory::kInstall,
-                  .code_ = static_cast<int>(error),
-                  .extra_ = extended_error}) {}
+        : result({.category = error == InstallError::NONE
+                                  ? ErrorCategory::kNone
+                                  : ErrorCategory::kInstall,
+                  .code = static_cast<int>(error),
+                  .extra = extended_error}) {}
     explicit Result(CategorizedError error) : result(error) {}
 
-    // The install is successful if and only if result.category_ is kNone.
-    // result.code_ may be non-zero for a successful install.
+    // The install is successful if and only if result.category is kNone.
+    // result.code may be non-zero for a successful install.
     CategorizedError result;
 
     // Localized text displayed to the user, if applicable.
@@ -303,6 +304,9 @@ struct CrxComponent {
   // flavor, branding, or provenance of the software.
   std::string brand;
 
+  // Optional. `lang` is the display language for the app.
+  std::string lang;
+
   // If populated, the `install_data_index` is sent to the update server as part
   // of the `data` element. The server will provide corresponding installer data
   // in the update response. This data is then provided to the installer when
@@ -392,57 +396,19 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
 
   // Called when state changes occur during an Install or Update call.
   using CrxStateChangeCallback =
-      base::RepeatingCallback<void(CrxUpdateItem item)>;
+      base::RepeatingCallback<void(const CrxUpdateItem& item)>;
 
   // Defines an interface to observe the UpdateClient. It provides
   // notifications when state changes occur for the service itself or for the
   // registered CRXs.
   class Observer {
    public:
-    enum class Events {
-      // Sent before the update client does an update check.
-      COMPONENT_CHECKING_FOR_UPDATES = 1,
-
-      // Sent when there is a new version of a registered CRX. The CRX will be
-      // downloaded after the notification unless the update client inserts
-      // a wait because of a throttling policy.
-      COMPONENT_UPDATE_FOUND,
-
-      // Sent when a CRX is in the update queue but it can't be acted on
-      // right away, because the update client spaces out CRX updates due to a
-      // throttling policy.
-      COMPONENT_WAIT,
-
-      // Sent after the new CRX has been downloaded but before the install
-      // or the upgrade is attempted.
-      COMPONENT_UPDATE_READY,
-
-      // Sent when a CRX has been successfully updated.
-      COMPONENT_UPDATED,
-
-      // Sent when a CRX has not been updated because there was no update
-      // available for this component.
-      COMPONENT_ALREADY_UP_TO_DATE,
-
-      // Sent when an error ocurred during an update for any reason, including
-      // the update check itself failed, or the download of the update payload
-      // failed, or applying the update failed.
-      COMPONENT_UPDATE_ERROR,
-
-      // Sent when CRX bytes are being downloaded.
-      COMPONENT_UPDATE_DOWNLOADING,
-
-      // Sent when install progress is received from the CRX installer.
-      COMPONENT_UPDATE_UPDATING,
-    };
-
     virtual ~Observer() = default;
 
-    // Called by the update client when a state change happens.
-    // If an |id| is specified, then the event is fired on behalf of the
-    // specific CRX. The implementors of this interface are
-    // expected to filter the relevant events based on the id of the CRX.
-    virtual void OnEvent(Events event, const std::string& id) = 0;
+    // Called by the update client when a component makes progress. This could
+    // be a state change or progress within a state, such as additional
+    // downloaded bytes or installer progress.
+    virtual void OnEvent(const CrxUpdateItem& item) = 0;
   };
 
   // Packs the parameters for sending a ping.
@@ -463,15 +429,15 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   // the observers are being notified.
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Installs the specified CRX. Calls back on |callback| after the
+  // Installs the specified CRX. Calls `callback` on the same sequence after the
   // update has been handled. Provides state change notifications through
-  // invocations of the optional |crx_state_change_callback| callback.
-  // The |error| parameter of the |callback| contains an error code in the case
+  // invocations of the optional `crx_state_change_callback` callback.
+  // The `error` parameter of the `callback` contains an error code in the case
   // of a run-time error, or 0 if the install has been handled successfully.
   // Overlapping calls of this function are executed concurrently, as long as
   // the id parameter is different, meaning that installs of different
   // components are parallelized.
-  // The |Install| function is intended to be used for foreground installs of
+  // The `Install` function is intended to be used for foreground installs of
   // one CRX. These cases are usually associated with on-demand install
   // scenarios, which are triggered by user actions. Installs are never
   // queued up.

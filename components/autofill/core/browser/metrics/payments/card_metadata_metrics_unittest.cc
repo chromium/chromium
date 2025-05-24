@@ -4,12 +4,13 @@
 
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,7 +89,7 @@ class CardMetadataFormEventMetricsTest
   void TearDown() override { TearDownHelper(); }
 
   std::string GetHistogramName(const std::string& issuer_or_network,
-                               const std::string_view event) {
+                               std::string_view event) {
     return base::StrCat({"Autofill.CreditCard.",
                          GetCardIssuerIdOrNetworkSuffix(issuer_or_network) != ""
                              ? GetCardIssuerIdOrNetworkSuffix(issuer_or_network)
@@ -161,10 +162,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
       GetHistogramName(card().issuer_id(), ".ShownWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadata"),
+      GetHistogramName(kMasterCard, ".ShownWithMetadata"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".ShownWithMetadataOnce"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard..ShownWithMetadata",
                                       card_metadata_available(), 0);
@@ -193,10 +194,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
       GetHistogramName(card().issuer_id(), ".ShownWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadata"),
+      GetHistogramName(kMasterCard, ".ShownWithMetadata"),
       card_metadata_available(), 2);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".ShownWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".ShownWithMetadataOnce"),
       card_metadata_available(), 1);
 }
 
@@ -220,10 +221,11 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       form(), form().fields().back().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
                              SuggestionType::kCreditCardEntry);
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().back(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form(),
+      form().fields().back().global_id(),
+      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
+      AutofillTriggerSource::kPopup);
 
   // Verify that:
   // 1. if the card suggestion selected had metadata,
@@ -259,20 +261,21 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       GetHistogramName(card().issuer_id(), ".SelectedWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadata"),
+      GetHistogramName(kMasterCard, ".SelectedWithMetadata"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".SelectedWithMetadataOnce"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard..SelectedWithMetadata", card_metadata_available(),
       0);
 
   // Select the suggestion again.
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().back(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form(),
+      form().fields().back().global_id(),
+      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
+      AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -293,10 +296,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       GetHistogramName(card().issuer_id(), ".SelectedWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadata"),
+      GetHistogramName(kMasterCard, ".SelectedWithMetadata"),
       card_metadata_available(), 2);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".SelectedWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".SelectedWithMetadataOnce"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
       GetHistogramName(card().issuer_id(),
@@ -304,8 +307,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       true,
       card_metadata_available() && registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard,
-                       ".SelectedWithIssuerMetadataPresentOnce"),
+      GetHistogramName(kMasterCard, ".SelectedWithIssuerMetadataPresentOnce"),
       true, card_metadata_available() ? 1 : 0);
 
   // Only test non-Amex because for Amex case it will log true in
@@ -326,14 +328,13 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
       form(), form().fields().back().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
                              SuggestionType::kCreditCardEntry);
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().back(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
-  test_api(autofill_manager())
-      .OnCreditCardFetched(form(), form().fields().back(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce(base::test::RunOnceCallback<1>(card()));
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form(),
+      form().fields().back().global_id(),
+      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
+      AutofillTriggerSource::kPopup);
 
   // Verify that:
   // 1. if the card suggestion filled had metadata,
@@ -369,19 +370,22 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
       GetHistogramName(card().issuer_id(), ".FilledWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadata"),
+      GetHistogramName(kMasterCard, ".FilledWithMetadata"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".FilledWithMetadataOnce"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard..FilledWithMetadata",
                                       card_metadata_available(), 0);
 
   // Fill the suggestion again.
-  test_api(autofill_manager())
-      .OnCreditCardFetched(form(), form().fields().back(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce(base::test::RunOnceCallback<1>(card()));
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form(),
+      form().fields().back().global_id(),
+      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
+      AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -402,10 +406,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
       GetHistogramName(card().issuer_id(), ".FilledWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadata"),
+      GetHistogramName(kMasterCard, ".FilledWithMetadata"),
       card_metadata_available(), 2);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".FilledWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".FilledWithMetadataOnce"),
       card_metadata_available(), 1);
 }
 
@@ -416,14 +420,13 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
   // Simulate filling and then submitting the card.
   autofill_manager().OnAskForValuesToFillTest(
       form(), form().fields().back().global_id());
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().back(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
-  test_api(autofill_manager())
-      .OnCreditCardFetched(form(), form().fields().back(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce(base::test::RunOnceCallback<1>(card()));
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form(),
+      form().fields().back().global_id(),
+      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
+      AutofillTriggerSource::kPopup);
   SubmitForm(form());
 
   // Verify that:
@@ -458,39 +461,31 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
       GetHistogramName(card().issuer_id(), ".SubmittedWithMetadataOnce"),
       card_metadata_available(), registered_card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".WillSubmitWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".WillSubmitWithMetadataOnce"),
       card_metadata_available(), 1);
   histogram_tester.ExpectUniqueSample(
-      GetHistogramName(autofill::kMasterCard, ".SubmittedWithMetadataOnce"),
+      GetHistogramName(kMasterCard, ".SubmittedWithMetadataOnce"),
       card_metadata_available(), 1);
 }
 
 // Params:
-// 1) Whether card product name feature flag is enabled.
-// 2) whether card art image feature flag is enabled.
-// 3) Whether card metadata (both product name and card art image) are provided.
-// 4) Whether the card has linked virtual card (only card art is provided).
+// 1) Whether card metadata (both product name and card art image) are provided.
+// 2) Whether the card has linked virtual card (only card art is provided).
 class CardMetadataLatencyMetricsTest
     : public AutofillMetricsBaseTest,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   CardMetadataLatencyMetricsTest() = default;
   ~CardMetadataLatencyMetricsTest() override = default;
 
-  bool card_product_name_enabled() { return std::get<0>(GetParam()); }
-  bool card_art_image_enabled() { return std::get<1>(GetParam()); }
-  bool card_metadata_available() { return std::get<2>(GetParam()); }
-  bool card_has_static_art_image() { return std::get<3>(GetParam()); }
+  bool card_metadata_available() { return std::get<0>(GetParam()); }
+  bool card_has_static_art_image() { return std::get<1>(GetParam()); }
 
   FormData form() { return form_; }
 
   void SetUp() override {
     SetUpHelper();
-    feature_list_card_product_name_.InitWithFeatureState(
-        features::kAutofillEnableCardProductName, card_product_name_enabled());
-    feature_list_card_art_image_.InitWithFeatureState(
-        features::kAutofillEnableCardArtImage, card_art_image_enabled());
     // Set up the form data. Reset form action to skip the IsFormMixedContent
     // check.
     form_ =
@@ -502,7 +497,7 @@ class CardMetadataLatencyMetricsTest
                            .action = ""});
 
     CreditCard masked_server_card = test::GetMaskedServerCard();
-    masked_server_card.SetNetworkForMaskedCard(autofill::kMasterCard);
+    masked_server_card.SetNetworkForMaskedCard(kMasterCard);
     masked_server_card.set_guid(kTestMaskedCardId);
     masked_server_card.set_issuer_id(kCapitalOneCardIssuerId);
     if (card_has_static_art_image()) {
@@ -525,15 +520,12 @@ class CardMetadataLatencyMetricsTest
 
  private:
   base::test::ScopedFeatureList feature_list_card_product_name_;
-  base::test::ScopedFeatureList feature_list_card_art_image_;
   FormData form_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CardMetadataLatencyMetricsTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool()));
 
 // Test to ensure that we log card metadata related metrics only when card
@@ -547,35 +539,26 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
                              SuggestionType::kCreditCardEntry);
   task_environment_.FastForwardBy(base::Seconds(2));
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields().front(),
-      *personal_data().payments_data_manager().GetCreditCardByGUID(
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form(),
+      form().fields().front().global_id(),
+      personal_data().payments_data_manager().GetCreditCardByGUID(
           kTestMaskedCardId),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   std::string latency_histogram_prefix =
       "Autofill.CreditCard.SelectionLatencySinceShown.";
 
   std::string latency_histogram_suffix;
-  // Card product name is shown when card_metadata_available() and
-  // card_product_name_enabled() both return true.
+  // Card product name is shown when card_metadata_available() return true.
   // Card art image is shown when 1. card_has_linked_virtual_card() or
-  // 2. card_metadata_available() and card_art_image_enabled() both return true.
+  // 2. card_metadata_available() returns true.
+  // TODO(crbug.com/387391138): Determine appropriate cases and modify test
+  // coverage accordingly.
   if (card_metadata_available()) {
-    if (card_product_name_enabled() && card_art_image_enabled()) {
-      latency_histogram_suffix =
-          autofill_metrics::kProductNameAndArtImageBothShownSuffix;
-    } else if (card_product_name_enabled()) {
-      latency_histogram_suffix = autofill_metrics::kProductNameShownOnlySuffix;
-    } else if (card_art_image_enabled()) {
-      latency_histogram_suffix = autofill_metrics::kArtImageShownOnlySuffix;
-    } else {
-      latency_histogram_suffix =
-          autofill_metrics::kProductNameAndArtImageNotShownSuffix;
-    }
+    latency_histogram_suffix = kProductNameAndArtImageBothShownSuffix;
   } else {
-    latency_histogram_suffix =
-        autofill_metrics::kProductNameAndArtImageNotShownSuffix;
+    latency_histogram_suffix = kProductNameAndArtImageNotShownSuffix;
   }
   histogram_tester.ExpectUniqueSample(
       latency_histogram_prefix + latency_histogram_suffix, 2000, 1);
@@ -599,10 +582,13 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Params:
 // 1. Whether card benefit feature flag is enabled.
-// 2. Issuer id of the card with a benefit available.
+// 2. Whether card benefit source sync feature flag is enabled.
+// 3. Issuer id of the card with a benefit available.
+// 4. Benefit source of the card with a benefit available.
 class CardBenefitFormEventMetricsTest
     : public AutofillMetricsBaseTest,
-      public testing::TestWithParam<std::tuple<bool, std::string_view>> {
+      public testing::TestWithParam<
+          std::tuple<bool, bool, std::string_view, std::string_view>> {
  public:
   CardBenefitFormEventMetricsTest() = default;
   ~CardBenefitFormEventMetricsTest() override = default;
@@ -624,10 +610,15 @@ class CardBenefitFormEventMetricsTest
     personal_data().payments_data_manager().AddCreditCard(local_card);
   }
 
-  // Adding an additional card from the same issuer with benefit available.
+  // Adding an additional card from the same benefit source or issuer with
+  // benefit available.
   void AddAdditionalCardWithBenefit() {
     CreditCard card = test::GetMaskedServerCard2();
-    card.set_issuer_id(issuer_id());
+    if (is_card_benefits_source_sync_enabled()) {
+      card_.set_benefit_source(benefit_source());
+    } else {
+      card_.set_issuer_id(issuer_id());
+    }
     personal_data().test_payments_data_manager().AddServerCreditCard(card);
 
     AddBenefitToCard(card);
@@ -644,20 +635,22 @@ class CardBenefitFormEventMetricsTest
   // Simulate selecting a card from a list of suggestions.
   void ShowSuggestionsAndSelectCard(const CreditCard* card) {
     ShowCardSuggestions();
-    autofill_manager().AuthenticateThenFillCreditCardForm(
-        form(), form().fields()[credit_card_number_field_index()], *card,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+    autofill_manager().FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form(),
+        form().fields()[credit_card_number_field_index()].global_id(), card,
+        AutofillTriggerSource::kPopup);
   }
 
   // Simulating selecting and filling the given `card` from a list of
   // suggestions.
   void ShowSuggestionsThenSelectAndFillCard(const CreditCard* card) {
-    ShowSuggestionsAndSelectCard(card);
-    test_api(autofill_manager())
-        .OnCreditCardFetched(form(),
-                             form().fields()[credit_card_number_field_index()],
-                             AutofillTriggerSource::kPopup,
-                             /*result=*/CreditCardFetchResult::kSuccess, card);
+    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+        .WillOnce(base::test::RunOnceCallback<1>(*card));
+    ShowCardSuggestions();
+    autofill_manager().FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form(),
+        form().fields()[credit_card_number_field_index()].global_id(), card,
+        AutofillTriggerSource::kPopup);
   }
 
   const CreditCard* GetCreditCard() {
@@ -680,16 +673,24 @@ class CardBenefitFormEventMetricsTest
 
     // Add a masked server card.
     card_ = test::GetMaskedServerCard();
-    card_.set_issuer_id(issuer_id());
+    if (is_card_benefits_source_sync_enabled()) {
+      card_.set_benefit_source(benefit_source());
+    } else {
+      card_.set_issuer_id(issuer_id());
+    }
     personal_data().test_payments_data_manager().AddServerCreditCard(card_);
 
     // Initialize features based on test params.
     scoped_feature_list_.InitWithFeatureStates(
         /*feature_states=*/
         {{features::kAutofillEnableCardBenefitsSync, true},
-         {features::kAutofillEnableCardBenefitsForCapitalOne,
-          card_benefits_are_enabled()},
+         {features::kAutofillEnableCardBenefitsSourceSync,
+          is_card_benefits_source_sync_enabled()},
          {features::kAutofillEnableCardBenefitsForAmericanExpress,
+          card_benefits_are_enabled()},
+         {features::kAutofillEnableCardBenefitsForBmo,
+          card_benefits_are_enabled()},
+         {features::kAutofillEnableFlatRateCardBenefitsFromCurinos,
           card_benefits_are_enabled()}});
   }
 
@@ -697,8 +698,14 @@ class CardBenefitFormEventMetricsTest
 
   // Return whether the benefit feature flag is enabled.
   bool card_benefits_are_enabled() const { return std::get<0>(GetParam()); }
+  // Returns whether the benefit source sync feature flag is enabled.
+  bool is_card_benefits_source_sync_enabled() const {
+    return std::get<1>(GetParam());
+  }
   // Return the issuer id of the card saved on the client.
-  std::string_view issuer_id() const { return std::get<1>(GetParam()); }
+  std::string_view issuer_id() const { return std::get<2>(GetParam()); }
+  // Return the benefit source of the card saved on the client.
+  std::string_view benefit_source() const { return std::get<3>(GetParam()); }
 
   const FormData& form() const { return form_; }
   CreditCard& card() { return card_; }
@@ -707,10 +714,16 @@ class CardBenefitFormEventMetricsTest
     return credit_card_number_field_index_;
   }
 
-  // Returns the histogram name for issuer-specific benefits form events.
-  const std::string GetIssuerFormEventHistogram() const {
-    return base::StrCat({"Autofill.FormEvents.CreditCard.WithBenefits.",
-                         GetCardIssuerIdOrNetworkSuffix(card_.issuer_id())});
+  // Returns the histogram name for benefit source or issuer specific form
+  // events.
+  const std::string GetCardBenefitFormEventHistogram() const {
+    if (is_card_benefits_source_sync_enabled()) {
+      return base::StrCat({"Autofill.FormEvents.CreditCard.WithBenefits.",
+                           GetCardBenefitSourceSuffix(card_.benefit_source())});
+    } else {
+      return base::StrCat({"Autofill.FormEvents.CreditCard.WithBenefits.",
+                           GetCardIssuerIdOrNetworkSuffix(card_.issuer_id())});
+    }
   }
 
  private:
@@ -725,12 +738,18 @@ INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     CardBenefitFormEventMetricsTest,
     testing::Combine(testing::Bool(),
-                     testing::Values(kCapitalOneCardIssuerId,
-                                     kAmexCardIssuerId)),
+                     testing::Bool(),
+                     testing::Values(kAmexCardIssuerId, kBmoCardIssuerId),
+                     testing::Values(kAmexCardBenefitSource,
+                                     kBmoCardBenefitSource,
+                                     kCurinosCardBenefitSource)),
     [](auto& info) {
       return base::StrCat({std::get<0>(info.param) ? "BenefitFeatureEnabled_"
                                                    : "BenefitFeatureDisabled_",
-                           std::get<1>(info.param)});
+                           std::get<1>(info.param)
+                               ? "BenefitSourceSyncFeatureEnabled_"
+                               : "BenefitSourceSyncFeatureDisabled_",
+                           std::get<2>(info.param), std::get<3>(info.param)});
     });
 
 // Tests that when the card suggestion shown had a benefit available,
@@ -771,12 +790,12 @@ TEST_P(CardBenefitFormEventMetricsTest, LogShownMetrics_SuggestionHasBenefits) {
 }
 
 // Tests that when we have multiple cards with benefits that share the same
-// issuer id, we only log
+// issuer or benefit source, we only log
 // FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE once for all
-// cards in that issuer id's benefits histogram.
+// cards in that benefit source's benefits histogram.
 TEST_P(
     CardBenefitFormEventMetricsTest,
-    LogShownMetrics_IssuerHistogram_MultipleSuggestionsWithSameIssuerHaveBenefits) {
+    LogShownMetrics_BenefitHistogram_MultipleSuggestionsWithSameBenefitSourceHaveBenefits) {
   base::HistogramTester histogram_tester;
   AddBenefitToCard(card());
 
@@ -785,7 +804,7 @@ TEST_P(
   // Simulate activating the autofill popup for the credit card field.
   ShowCardSuggestions();
   EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      histogram_tester.GetAllSamples(GetCardBenefitFormEventHistogram()),
       BucketsAre(Bucket(
           FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
           1)));
@@ -865,14 +884,16 @@ TEST_P(CardBenefitFormEventMetricsTest,
 }
 
 // Tests that when a masked server card with a benefit is selected from a list
-// of card suggestions containing a benefit from the same issuer,
+// of card suggestions containing a benefit from the same issuer or benefit
+// source,
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE`
 // and
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE`
-// are logged only once in the issuer specific histogram for card benefits.
+// are logged only once in the issuer or benefit source specific histogram for
+// card benefits.
 TEST_P(
     CardBenefitFormEventMetricsTest,
-    LogSelectedMetrics_IssuerHistogram_MultipleSuggestionsWithSameIssuerHaveBenefits) {
+    LogSelectedMetrics_BenefitHistogram_MultipleSuggestionsWithSameBenefitSourceHaveBenefits) {
   base::HistogramTester histogram_tester;
   AddBenefitToCard(card());
   AddAdditionalCardWithBenefit();
@@ -881,7 +902,7 @@ TEST_P(
   ShowSuggestionsAndSelectCard(GetCreditCard());
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      histogram_tester.GetAllSamples(GetCardBenefitFormEventHistogram()),
       BucketsInclude(
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE,
@@ -894,7 +915,7 @@ TEST_P(
   ShowSuggestionsAndSelectCard(GetCreditCard());
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      histogram_tester.GetAllSamples(GetCardBenefitFormEventHistogram()),
       BucketsInclude(
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE,
@@ -910,10 +931,10 @@ TEST_P(
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE`
 // is not logged and
 // 'FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE'
-// is logged for the issuer with benefits available.
+// is logged for the issuer or benefit source with benefits available.
 TEST_P(
     CardBenefitFormEventMetricsTest,
-    LogSelectedMetrics_IssuerHistogram_SelectedNoBenefits_OtherSuggestionHasBenefits) {
+    LogSelectedMetrics_BenefitHistogram_SelectedNoBenefits_OtherSuggestionHasBenefits) {
   base::HistogramTester histogram_tester;
   AddBenefitToCard(card());
 
@@ -924,7 +945,7 @@ TEST_P(
   ShowSuggestionsAndSelectCard(&second_card);
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      histogram_tester.GetAllSamples(GetCardBenefitFormEventHistogram()),
       BucketsInclude(
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE,
@@ -1054,14 +1075,15 @@ TEST_P(CardBenefitFormEventMetricsTest,
 }
 
 // Tests that when a masked server card with a benefit is filled from a list of
-// card suggestions containing a benefit from the same issuer,
+// card suggestions containing a benefit from the same issuer or benefit source,
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE`
 // and
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE`
-// are logged only once in the issuer specific histogram for card benefits.
+// are logged only once in the issuer or benefit source specific histogram for
+// card benefits.
 TEST_P(
     CardBenefitFormEventMetricsTest,
-    LogFilledMetrics_IssuerHistogram_MultipleSuggestionsWithSameIssuerHaveBenefits) {
+    LogFilledMetrics_BenefitHistogram_MultipleSuggestionsWithSameBenefitSourceHaveBenefits) {
   base::HistogramTester histogram_tester;
   AddBenefitToCard(card());
   AddAdditionalCardWithBenefit();
@@ -1069,7 +1091,7 @@ TEST_P(
   // Simulate filling the card.
   ShowSuggestionsThenSelectAndFillCard(GetCreditCard());
   EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      histogram_tester.GetAllSamples(GetCardBenefitFormEventHistogram()),
       BucketsInclude(
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE,
@@ -1081,7 +1103,7 @@ TEST_P(
   // Fill the card suggestion again.
   ShowSuggestionsThenSelectAndFillCard(GetCreditCard());
   EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      histogram_tester.GetAllSamples(GetCardBenefitFormEventHistogram()),
       BucketsInclude(
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE,
@@ -1097,10 +1119,11 @@ TEST_P(
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE`
 // is not logged and
 // 'FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE'
-// is logged in the issuer specific histogram for card benefits.
+// is logged in the issuer or benefit source specific histogram for card
+// benefits.
 TEST_P(
     CardBenefitFormEventMetricsTest,
-    LogFilledMetrics_IssuerHistogram_FilledNoBenefits_OtherSuggestionHasBenefits) {
+    LogFilledMetrics_BenefitHistogram_FilledNoBenefits_OtherSuggestionHasBenefits) {
   base::HistogramTester histogram_tester;
   AddBenefitToCard(card());
 
@@ -1112,7 +1135,7 @@ TEST_P(
   ShowSuggestionsThenSelectAndFillCard(&second_card);
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      histogram_tester.GetAllSamples(GetCardBenefitFormEventHistogram()),
       BucketsInclude(
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE,
@@ -1227,10 +1250,9 @@ TEST_P(CardBenefitFormEventMetricsTest,
                      Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-      BucketsInclude(
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED,
-              1)));
+      BucketsInclude(Bucket(
+          FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED,
+          1)));
 }
 
 // Tests that when a form is submitted after a masked server card with a
@@ -1265,14 +1287,15 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
 // Tests that when a form is submitted after a masked server card with a
 // benefit is filled from a list of suggestions containing a list of masked
-// server cards with a benefit from the same issuer,
+// server cards with a benefit from the same issuer or benefit source,
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE`
 // and
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE`
-// are logged only once in the issuer specific histogram for card benefits.
+// are logged only once in the issuer or benefit source specific histogram for
+// card benefits.
 TEST_P(
     CardBenefitFormEventMetricsTest,
-    LogSubmittedMetrics_IssuerHistogram_MultipleSuggestionsWithSameIssuerHaveBenefits) {
+    LogSubmittedMetrics_BenefitHistogram_MultipleSuggestionsWithSameBenefitSourceHaveBenefits) {
   base::HistogramTester histogram_tester;
   AddBenefitToCard(card());
   AddAdditionalCardWithBenefit();
@@ -1281,7 +1304,7 @@ TEST_P(
   ShowSuggestionsThenSelectAndFillCard(GetCreditCard());
   SubmitForm(form());
   EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      histogram_tester.GetAllSamples(GetCardBenefitFormEventHistogram()),
       BucketsInclude(
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
@@ -1297,10 +1320,11 @@ TEST_P(
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE`
 // is not logged and
 // 'FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE'
-// is logged in the issuer specific histogram for card benefits.
+// is logged in the issuer or benefit source specific histogram for card
+// benefits.
 TEST_P(
     CardBenefitFormEventMetricsTest,
-    LogSubmittedMetrics_IssuerHistogram_FilledNoBenefits_OtherSuggestionHasBenefits_SameIssuer) {
+    LogSubmittedMetrics_BenefitHistogram_FilledNoBenefits_OtherSuggestionHasBenefits_SameBenefitSource) {
   base::HistogramTester histogram_tester;
   AddBenefitToCard(card());
 
@@ -1312,7 +1336,7 @@ TEST_P(
   SubmitForm(form());
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      histogram_tester.GetAllSamples(GetCardBenefitFormEventHistogram()),
       BucketsInclude(
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE,

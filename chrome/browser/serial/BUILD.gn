@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("serial") {
+  sources = [
+    "chrome_serial_delegate.h",
+    "serial_blocklist.h",
+    "serial_chooser_context.h",
+    "serial_chooser_context_factory.h",
+    "serial_chooser_histograms.h",
+    "serial_policy_allowed_ports.h",
+    "web_serial_chooser.h",
+  ]
+
+  if (!is_android) {
+    sources += [ "web_serial_chooser_desktop.h" ]
+  } else {
+    sources += [ "android/web_serial_chooser_android.h" ]
+  }
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/permissions",
+    "//components/prefs",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+}

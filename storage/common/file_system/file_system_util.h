@@ -107,7 +107,7 @@ std::string GetFileSystemTypeString(FileSystemType type);
 // Sets type to FileSystemType enum that corresponds to the string name.
 // Returns false if the |type_string| is invalid.
 COMPONENT_EXPORT(STORAGE_COMMON)
-bool GetFileSystemPublicType(std::string type_string,
+bool GetFileSystemPublicType(const std::string& type_string,
                              blink::WebFileSystemType* type);
 
 // Encodes |file_path| to a string.

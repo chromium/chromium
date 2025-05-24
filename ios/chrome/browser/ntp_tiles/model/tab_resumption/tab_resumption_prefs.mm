@@ -8,10 +8,10 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_constants.h"
 #import "url/gurl.h"
 
 namespace tab_resumption_prefs {
@@ -19,36 +19,43 @@ namespace tab_resumption_prefs {
 // The maximum length of the last distant tab URL.
 size_t kMaxLengthTabURL = 2 * 1024;
 
-const char kTabResumptioDisabledPref[] = "tab_resumption.disabled";
+const char kTabResumptionDisabledPref[] = "tab_resumption.disabled";
 const char kTabResumptionLastOpenedTabURLPref[] =
     "tab_resumption.last_opened_tab_url";
+const char kTabResumptionRegularUrlImpressions[] =
+    "tab_resumption.regular.url_impressions";
+const char kTabResumptionWithPriceDropUrlImpressions[] =
+    "tab_resumption.price_drop.url_impressions";
+const char kTabResumptionWithPriceTrackableUrlImpressions[] =
+    "tab_resumption.price_trackable.url_impressions";
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kTabResumptioDisabledPref, false);
+  // TODO(crbug.com/395840133): Remove `kTabResumptionDisabledPref` registration
+  // from local-state Prefs after successfully migrating to profile Prefs.
+  registry->RegisterBooleanPref(kTabResumptionDisabledPref, false);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kTabResumptionLastOpenedTabURLPref,
                                std::string());
+  // Added 02/2025
+  registry->RegisterBooleanPref(kTabResumptionDisabledPref, false);
+  registry->RegisterDictionaryPref(kTabResumptionRegularUrlImpressions);
+  registry->RegisterDictionaryPref(kTabResumptionWithPriceDropUrlImpressions);
+  registry->RegisterDictionaryPref(
+      kTabResumptionWithPriceTrackableUrlImpressions);
 }
 
 bool IsTabResumptionDisabled(PrefService* prefs) {
-  if (IsHomeCustomizationEnabled()) {
-    return !prefs->GetBoolean(
-        prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
-  }
-  return prefs->GetBoolean(kTabResumptioDisabledPref);
+  return !prefs->GetBoolean(
+      prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
 }
 
 void DisableTabResumption(PrefService* prefs) {
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
                             ContentSuggestionsModuleType::kTabResumption);
-  if (IsHomeCustomizationEnabled()) {
-    prefs->SetBoolean(prefs::kHomeCustomizationMagicStackTabResumptionEnabled,
-                      false);
-  } else {
-    prefs->SetBoolean(kTabResumptioDisabledPref, true);
-  }
+  prefs->SetBoolean(prefs::kHomeCustomizationMagicStackTabResumptionEnabled,
+                    false);
 }
 
 bool IsLastOpenedURL(GURL URL, PrefService* prefs) {

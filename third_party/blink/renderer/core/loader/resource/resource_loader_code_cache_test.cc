@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "base/task/single_thread_task_runner.h"
@@ -90,19 +90,16 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
         kNoCompileHintsProducer = nullptr;
     constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
         kNoCompileHintsConsumer = nullptr;
-    constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabledFeature = false;
     resource_ = ScriptResource::Fetch(
         params, fetcher, nullptr, isolate, ScriptResource::kNoStreaming,
         kNoCompileHintsProducer, kNoCompileHintsConsumer,
-        kNoV8CompileHintsMagicCommentRuntimeEnabledFeature);
+        v8_compile_hints::MagicCommentMode::kNone);
     loader_ = resource_->Loader();
 
     response_ = ResourceResponse(url);
     response_.SetHttpStatusCode(200);
     response_.SetResponseTime(base::Time::Now());
   }
-
-  static const size_t kSha256Bytes = 256 / 8;
 
   std::vector<uint8_t> MakeSerializedCodeCacheData(base::span<uint8_t> data) {
     const size_t kSerializedDataSize =
@@ -131,8 +128,10 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     if (source_text.has_value()) {
       std::unique_ptr<ParkableStringImpl::SecureDigest> hash =
           ParkableStringImpl::HashString(source_text->Impl());
-      CHECK_EQ(hash->size(), kSha256Bytes);
-      memcpy(outer_header->hash, hash->data(), kSha256Bytes);
+      CHECK_EQ(hash->size(),
+               ScriptCachedMetadataHandlerWithHashing::kSha256Bytes);
+      memcpy(outer_header->hash, hash->data(),
+             ScriptCachedMetadataHandlerWithHashing::kSha256Bytes);
     }
     CachedMetadataHeader* inner_header =
         reinterpret_cast<CachedMetadataHeader*>(
@@ -257,8 +256,9 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckSuccess) {
   scoped_refptr<CachedMetadata> cached_metadata =
       resource_->CacheHandler()->GetCachedMetadata(0);
   EXPECT_TRUE(cached_metadata.get());
-  EXPECT_EQ(cached_metadata->size(), cache_data.size());
-  EXPECT_EQ(*(cached_metadata->Data() + 2), cache_data[2]);
+  base::span<const uint8_t> metadata = cached_metadata->Data();
+  EXPECT_EQ(metadata.size(), cache_data.size());
+  EXPECT_EQ(metadata[2], cache_data[2]);
 
   // But trying to load the metadata with the wrong data_type_id fails.
   EXPECT_FALSE(resource_->CacheHandler()->GetCachedMetadata(4));

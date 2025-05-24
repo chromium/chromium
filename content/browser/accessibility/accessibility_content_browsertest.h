@@ -5,7 +5,10 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_CONTENT_BROWSERTEST_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_CONTENT_BROWSERTEST_H_
 
+#include <optional>
+
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
 
@@ -21,17 +24,19 @@ class WebContentsImpl;
 
 class AccessibilityContentBrowserTest : public ContentBrowserTest {
  protected:
-  void LoadInitialAccessibilityTreeFromUrl(
-      const GURL& url,
-      ui::AXMode accessibility_mode = ui::kAXModeComplete);
+  AccessibilityContentBrowserTest();
+  ~AccessibilityContentBrowserTest() override;
+
+  // ContentBrowserTest:
+  void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
+
+  void LoadInitialAccessibilityTreeFromUrl(const GURL& url);
 
   void LoadInitialAccessibilityTreeFromHtmlFilePath(
-      const std::string& html_file_path,
-      ui::AXMode accessibility_mode = ui::kAXModeComplete);
+      const std::string& html_file_path);
 
-  void LoadInitialAccessibilityTreeFromHtml(
-      const std::string& html,
-      ui::AXMode accessibility_mode = ui::kAXModeComplete);
+  void LoadInitialAccessibilityTreeFromHtml(const std::string& html);
 
   WebContents* GetWebContentsAndAssertNonNull() const;
 
@@ -49,6 +54,8 @@ class AccessibilityContentBrowserTest : public ContentBrowserTest {
       ui::BrowserAccessibility* node,
       const ax::mojom::Role role,
       const std::string& name_or_value) const;
+
+  std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 
 }  // namespace content

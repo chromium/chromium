@@ -16,6 +16,14 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
   mixer[kColorProductSpecificationsButtonBackground] = {ui::kColorSysSurface2};
   mixer[kColorProductSpecificationsCitationBackground] = {
       ui::kColorSysBaseContainer};
+  mixer[kColorProductSpecificationsCitationPopupBackground] = {
+      ui::kColorSysSurface1};
+  mixer[kColorProductSpecificationsCitationPopupText] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorProductSpecificationsCitationPopupTitle] = {
+      ui::kColorSysOnSurface};
+  mixer[kColorProductSpecificationsComparisonTableListBackground] = {
+      ui::kColorSysSurface5};
   mixer[kColorProductSpecificationsDetailChipBackground] = {
       ui::kColorSysBaseContainer};
   mixer[kColorProductSpecificationsDisclosureBackground] = {
@@ -40,14 +48,12 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateHoverOnSubtle};
   mixer[kColorProductSpecificationsLink] = {ui::kColorSysPrimary};
   mixer[kColorProductSpecificationsPageBackground] = {ui::kColorSysSurface2};
-  mixer[kColorProductSpecificationsPrimaryTitle] = {
-      ui::kColorPrimaryForeground};
-  mixer[kColorProductSpecificationsSecondaryTitle] = {
-      ui::kColorSysOnSurfaceSecondary};
   mixer[kColorProductSpecificationsSummaryBackground] = {
       ui::kColorPrimaryBackground};
   mixer[kColorProductSpecificationsSummaryBackgroundDragging] = {
-      ui::kColorSysStateRippleNeutralOnSubtle};
+      ui::kColorSysStateHoverOnSubtle};
   mixer[kColorProductSpecificationsTonalButtonBackground] = {
       ui::kColorSysTonalContainer};
+  mixer[kColorProductSpecificationsTonalButtonIcon] = {
+      ui::kColorSysOnTonalContainer};
 }

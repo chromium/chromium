@@ -44,6 +44,8 @@ class AppDialogView : public views::BubbleDialogDelegateView {
   void SetSubtitleText(const std::u16string& text);
 
  private:
+  friend class AppDialogViewBrowserTest;
+
   // BubbleDialogDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
 

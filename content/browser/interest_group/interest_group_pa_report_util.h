@@ -25,7 +25,7 @@ class PrivateAggregationManager;
 
 struct CONTENT_EXPORT PrivateAggregationRequestWithEventType {
   PrivateAggregationRequestWithEventType(
-      auction_worklet::mojom::PrivateAggregationRequestPtr request,
+      auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request,
       std::optional<std::string> event_type);
 
   PrivateAggregationRequestWithEventType(
@@ -35,7 +35,7 @@ struct CONTENT_EXPORT PrivateAggregationRequestWithEventType {
 
   ~PrivateAggregationRequestWithEventType();
 
-  auction_worklet::mojom::PrivateAggregationRequestPtr request;
+  auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request;
 
   // Event type of the private aggregation request. Set to std::nullopt if it's
   // a reserved event type.
@@ -49,13 +49,27 @@ struct CONTENT_EXPORT PrivateAggregationTimings {
 };
 
 struct CONTENT_EXPORT PrivateAggregationParticipantData {
+  PrivateAggregationParticipantData();
+  PrivateAggregationParticipantData(const PrivateAggregationParticipantData&);
+  PrivateAggregationParticipantData& operator=(
+      const PrivateAggregationParticipantData&);
+  PrivateAggregationParticipantData(PrivateAggregationParticipantData&&);
+  PrivateAggregationParticipantData& operator=(
+      PrivateAggregationParticipantData&&);
+
   // These metrics are set on bidders only; on sellers they are always 0.
 
   // Number of interest groups that got selected to make bids (after filtering,
   // capabilities checks, discarding those w/o ads, etc).
   int participating_interest_group_count = 0;
-
   double percent_igs_cumulative_timeout = 0;
+  base::TimeDelta cumulative_buyer_time;
+  int regular_igs = 0;
+  double percent_regular_igs_quota_used = 0;
+  int negative_igs = 0;
+  double percent_negative_igs_quota_used = 0;
+  size_t igs_storage_used = 0;
+  double percent_igs_storage_quota_used = 0;
 
   // These metrics are set for both bidders and sellers.
   base::TimeDelta average_code_fetch_time;
@@ -136,6 +150,12 @@ FillInPrivateAggregationRequest(
     const PrivateAggregationTimings& timings,
     bool is_winner);
 
+// Returns true if `request` should only be kept (i.e. not dropped) if this is
+// the chosen execution for the "reserved.once" event type. Note that this is
+// used for both "reserved.once" and aggregate error reporting.
+CONTENT_EXPORT bool ShouldKeepRequestOnlyIfReservedOnceRep(
+    const auction_worklet::mojom::PrivateAggregationRequest& request);
+
 // Returns true if `request` is a for-event contribution with "reserved.once"
 // event type.
 CONTENT_EXPORT bool IsPrivateAggregationRequestReservedOnce(
@@ -144,7 +164,8 @@ CONTENT_EXPORT bool IsPrivateAggregationRequestReservedOnce(
 // Splits a vector of requests into those with matching debug mode details and
 // then forwards to a new mojo pipe.
 CONTENT_EXPORT void SplitContributionsIntoBatchesThenSendToHost(
-    std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
+    std::vector<auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>
+        requests,
     PrivateAggregationManager& pa_manager,
     const url::Origin& reporting_origin,
     std::optional<url::Origin> aggregation_coordinator_origin,
@@ -162,6 +183,13 @@ CONTENT_EXPORT bool IsValidFilteringId(std::optional<uint64_t> filtering_id);
 CONTENT_EXPORT std::optional<std::string> ValidatePrivateAggregationRequests(
     const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
         pa_requests);
+
+// Returns the equivalent error event, converted to the type for use in the
+// Private Aggregation layer. Returns nullopt iff nullopt is passed in.
+CONTENT_EXPORT std::optional<blink::mojom::PrivateAggregationErrorEvent>
+ConvertErrorEventToPAggType(
+    std::optional<auction_worklet::mojom::ReservedErrorEventType>
+        reserved_error_event);
 
 }  // namespace content
 

@@ -22,7 +22,7 @@ class CORE_EXPORT NotRestoredReasonDetails : public ScriptWrappable {
 
   const String reason() { return reason_; }
 
-  ScriptValue toJSON(ScriptState* script_state) const;
+  ScriptObject toJSON(ScriptState* script_state) const;
 
  private:
   String reason_;

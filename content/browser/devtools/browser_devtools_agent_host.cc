@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 
+#include "base/auto_reset.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -38,7 +39,7 @@
 #include "content/browser/devtools/protocol/visual_debugger_handler.h"
 #endif
 
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
 #include "content/browser/devtools/protocol/native_profiling_handler.h"
 #endif
 
@@ -184,8 +185,7 @@ BrowserDevToolsAgentHost::~BrowserDevToolsAgentHost() {
   BrowserDevToolsAgentHostInstances().erase(this);
 }
 
-bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
-                                             bool acquire_wake_lock) {
+bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   if (!session->GetClient()->IsTrusted())
     return false;
 
@@ -220,7 +220,7 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->CreateAndAddHandler<protocol::TracingHandler>(
       this, GetIOContext(), /* root_session */ nullptr);
 
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
   session->CreateAndAddHandler<protocol::NativeProfilingHandler>();
 #endif
 

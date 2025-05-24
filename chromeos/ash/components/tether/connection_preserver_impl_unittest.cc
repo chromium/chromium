@@ -4,13 +4,13 @@
 
 #include "chromeos/ash/components/tether/connection_preserver_impl.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -57,9 +57,9 @@ class ConnectionPreserverImplTest : public testing::Test {
  protected:
   ConnectionPreserverImplTest()
       : test_remote_devices_(multidevice::CreateRemoteDeviceRefListForTest(3)) {
-    base::ranges::transform(test_remote_devices_,
-                            std::back_inserter(test_remote_device_ids_),
-                            &multidevice::RemoteDeviceRef::GetDeviceId);
+    std::ranges::transform(test_remote_devices_,
+                           std::back_inserter(test_remote_device_ids_),
+                           &multidevice::RemoteDeviceRef::GetDeviceId);
   }
 
   void SetUp() override {

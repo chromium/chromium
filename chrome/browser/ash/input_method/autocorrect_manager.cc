@@ -15,13 +15,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/input_method/assistive_input_denylist.h"
 #include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
-#include "chrome/browser/ash/input_method/field_trial.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -344,15 +341,7 @@ bool UserInAutocorrectByDefaultBucket(const PrefService& prefs,
 AutocorrectManager::AutocorrectManager(
     SuggestionHandlerInterface* suggestion_handler,
     Profile* profile)
-    : denylist_(DenylistAdditions{
-          .autocorrect_denylist_json =
-              GetFieldTrialParam(features::kAutocorrectByDefault,
-                                 ParamName::kDenylist),
-          .multi_word_denylist_json =
-              GetFieldTrialParam(features::kAssistMultiWord,
-                                 ParamName::kDenylist)}),
-      suggestion_handler_(suggestion_handler),
-      profile_(profile) {
+    : suggestion_handler_(suggestion_handler), profile_(profile) {
   undo_button_.id = ui::ime::ButtonId::kUndo;
   undo_button_.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
   learn_more_button_.id = ui::ime::ButtonId::kLearnMore;
@@ -712,8 +701,7 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
   auto autocorrect_pref =
       GetPhysicalKeyboardAutocorrectPref(*pref_service, engine_id);
 
-  if (!crosapi::browser_util::IsLacrosEnabled() &&
-      base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
+  if (base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
       autocorrect_pref == AutocorrectPreference::kDefault &&
       IsUsEnglishId(engine_id) &&
       // This class is instantiated with NativeInputMethodEngineObserver, which
@@ -869,10 +857,6 @@ void AutocorrectManager::OnSurroundingTextChanged(
 
   // If cursor is inside autocorrect range (inclusive), show undo window and
   // record relevant metrics.
-  // On Lacros, the async behaviors accidentally delay the update of autocorrect
-  // range after the onSurroundingTextChanged. When users delete a few
-  // characters of the suggested words, this code still uses the outdated range,
-  // hence allowing the undo window to show.
   // TODO(b/278616918): Consider remove the
   // IsAutocorrectSuggestionInSurroundingText logic once async behaviors are
   // corrected.
@@ -901,9 +885,7 @@ void AutocorrectManager::OnFocus(int context_id) {
   }
 
   if (base::FeatureList::IsEnabled(ash::features::kImeRuleConfig)) {
-    GetTextFieldContextualInfo(
-        base::BindOnce(&AutocorrectManager::OnTextFieldContextualInfoChanged,
-                       base::Unretained(this)));
+    OnTextFieldContextualInfoChanged(GetTextFieldContextualInfo());
   }
 
   num_handled_autocorrect_in_text_field_ = 0;
@@ -995,18 +977,8 @@ void AutocorrectManager::UndoAutocorrect() {
     const uint32_t after =
         autocorrect_range.end() - surrounding_text.selection_range.end();
 
-    if (base::FeatureList::IsEnabled(
-            features::kAutocorrectUseReplaceSurroundingText) &&
-        !crosapi::browser_util::IsLacrosEnabled()) {
-      input_context->ReplaceSurroundingText(
-          before, after, pending_autocorrect_->original_text);
-    } else {
-      input_context->DeleteSurroundingText(before, after);
-      // Replace with the original text.
-      input_context->CommitText(
-          pending_autocorrect_->original_text,
-          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-    }
+    input_context->ReplaceSurroundingText(before, after,
+                                          pending_autocorrect_->original_text);
   }
 
   MeasureAndLogAssistiveAutocorrectQualityBreakdown(

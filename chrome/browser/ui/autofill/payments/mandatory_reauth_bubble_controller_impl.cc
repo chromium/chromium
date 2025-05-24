@@ -128,7 +128,7 @@ std::u16string MandatoryReauthBubbleControllerImpl::GetExplanationText() const {
 }
 
 void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
-    PaymentsBubbleClosedReason closed_reason) {
+    PaymentsUiClosedReason closed_reason) {
   set_bubble_view(nullptr);
 
 // After resetting the raw pointer to the view in the base class, the Android
@@ -141,7 +141,7 @@ void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
     autofill_metrics::MandatoryReauthOptInBubbleResult metric =
         autofill_metrics::MandatoryReauthOptInBubbleResult::kUnknown;
     switch (closed_reason) {
-      case PaymentsBubbleClosedReason::kAccepted:
+      case PaymentsUiClosedReason::kAccepted:
         metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kAccepted;
         // We must set the `current_bubble_type_` before running the callback,
         // as the callback is not always asynchronous (for example, in the case
@@ -152,7 +152,7 @@ void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
         current_bubble_type_ = MandatoryReauthBubbleType::kConfirmation;
         std::move(accept_mandatory_reauth_callback_).Run();
         break;
-      case PaymentsBubbleClosedReason::kCancelled:
+      case PaymentsUiClosedReason::kCancelled:
         metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kCancelled;
         // We must set the `current_bubble_type_` before running the callback,
         // as the callback is not always asynchronous (for example, in the case
@@ -163,18 +163,18 @@ void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
         current_bubble_type_ = MandatoryReauthBubbleType::kInactive;
         std::move(cancel_mandatory_reauth_callback_).Run();
         break;
-      case PaymentsBubbleClosedReason::kClosed:
+      case PaymentsUiClosedReason::kClosed:
         metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kClosed;
         close_mandatory_reauth_callback_.Run();
         break;
-      case PaymentsBubbleClosedReason::kNotInteracted:
+      case PaymentsUiClosedReason::kNotInteracted:
         metric =
             autofill_metrics::MandatoryReauthOptInBubbleResult::kNotInteracted;
         break;
-      case PaymentsBubbleClosedReason::kLostFocus:
+      case PaymentsUiClosedReason::kLostFocus:
         metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kLostFocus;
         break;
-      case PaymentsBubbleClosedReason::kUnknown:
+      case PaymentsUiClosedReason::kUnknown:
         metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kUnknown;
         break;
     }
@@ -191,8 +191,7 @@ void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
 #if BUILDFLAG(IS_ANDROID)
 void MandatoryReauthBubbleControllerImpl::OnClosed(JNIEnv* env,
                                                    jint closed_reason) {
-  OnBubbleClosed(
-      static_cast<autofill::PaymentsBubbleClosedReason>(closed_reason));
+  OnBubbleClosed(static_cast<autofill::PaymentsUiClosedReason>(closed_reason));
 }
 #endif
 

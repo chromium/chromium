@@ -21,6 +21,7 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_impl_impl.h"
 #include "chrome/updater/util/util.h"
+#include "components/policy/core/common/policy_types.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/util/win_util.h"
@@ -40,9 +41,10 @@ void UpdateServiceImpl::GetVersion(
   delegate_->GetVersion(std::move(callback));
 }
 
-void UpdateServiceImpl::FetchPolicies(base::OnceCallback<void(int)> callback) {
+void UpdateServiceImpl::FetchPolicies(policy::PolicyFetchReason reason,
+                                      base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_->FetchPolicies(std::move(callback));
+  delegate_->FetchPolicies(reason, std::move(callback));
 }
 
 void UpdateServiceImpl::RegisterApp(const RegistrationRequest& request,
@@ -74,6 +76,7 @@ void UpdateServiceImpl::CheckForUpdate(
     const std::string& app_id,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -82,18 +85,23 @@ void UpdateServiceImpl::CheckForUpdate(
     std::move(callback).Run(Result::kEulaRequiredOrOemMode);
     return;
   }
-  delegate_->FetchPolicies(base::BindPostTaskToCurrentDefault(base::BindOnce(
-      [](scoped_refptr<UpdateServiceImplImpl> delegate,
-         const std::string& app_id, Priority priority,
-         PolicySameVersionUpdate policy_same_version_update,
-         base::RepeatingCallback<void(const UpdateState&)> state_update,
-         base::OnceCallback<void(Result)> callback, int policy_fetch_result) {
-        VLOG(1) << "Policy fetch result: " << policy_fetch_result;
-        delegate->CheckForUpdate(app_id, priority, policy_same_version_update,
-                                 state_update, std::move(callback));
-      },
-      delegate_, app_id, priority, policy_same_version_update, state_update,
-      std::move(callback))));
+  delegate_->FetchPolicies(
+      policy::PolicyFetchReason::kUserRequest,
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          [](scoped_refptr<UpdateServiceImplImpl> delegate,
+             const std::string& app_id, Priority priority,
+             PolicySameVersionUpdate policy_same_version_update,
+             const std::string& language,
+             base::RepeatingCallback<void(const UpdateState&)> state_update,
+             base::OnceCallback<void(Result)> callback,
+             int policy_fetch_result) {
+            VLOG(1) << "Policy fetch result: " << policy_fetch_result;
+            delegate->CheckForUpdate(app_id, priority,
+                                     policy_same_version_update, language,
+                                     state_update, std::move(callback));
+          },
+          delegate_, app_id, priority, policy_same_version_update, language,
+          state_update, std::move(callback))));
 }
 
 void UpdateServiceImpl::Update(
@@ -101,6 +109,7 @@ void UpdateServiceImpl::Update(
     const std::string& install_data_index,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -110,7 +119,7 @@ void UpdateServiceImpl::Update(
     return;
   }
   delegate_->Update(app_id, install_data_index, priority,
-                    policy_same_version_update, state_update,
+                    policy_same_version_update, language, state_update,
                     std::move(callback));
 }
 
@@ -131,13 +140,14 @@ void UpdateServiceImpl::Install(
     const std::string& client_install_data,
     const std::string& install_data_index,
     Priority priority,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   // Online installers can only be downloaded after ToS acceptance.
   AcceptEula();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_->Install(registration, client_install_data, install_data_index,
-                     priority, state_update, std::move(callback));
+                     priority, language, state_update, std::move(callback));
 }
 
 void UpdateServiceImpl::CancelInstalls(const std::string& app_id) {
@@ -151,12 +161,14 @@ void UpdateServiceImpl::RunInstaller(
     const std::string& install_args,
     const std::string& install_data,
     const std::string& install_settings,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   // Offline installs are always permitted, to support OEM cases.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_->RunInstaller(app_id, installer_path, install_args, install_data,
-                          install_settings, state_update, std::move(callback));
+                          install_settings, language, state_update,
+                          std::move(callback));
 }
 
 void UpdateServiceImpl::AcceptEula() {

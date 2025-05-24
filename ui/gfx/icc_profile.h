@@ -36,7 +36,6 @@ class COLOR_SPACE_EXPORT ICCProfile {
   ICCProfile& operator=(const ICCProfile& other);
   ~ICCProfile();
   bool operator==(const ICCProfile& other) const;
-  bool operator!=(const ICCProfile& other) const;
 
   // Returns true if this profile was successfully parsed by SkICC and will
   // return a valid ColorSpace.

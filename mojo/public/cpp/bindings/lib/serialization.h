@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_H_
 
-#include <string.h>
-
 #include <type_traits>
 
-#include "base/numerics/safe_math.h"
 #include "mojo/public/cpp/bindings/array_traits_span.h"
 #include "mojo/public/cpp/bindings/array_traits_stl.h"
 #include "mojo/public/cpp/bindings/lib/array_serialization.h"

@@ -1,0 +1,40 @@
+<style include="cr-hidden-style print-preview-shared">
+  :host {
+    border-top: var(--print-preview-settings-border);
+    display: block;
+  }
+
+  :host([disabled]) {
+    pointer-events: none;
+  }
+
+  div {
+    align-items: center;
+    display: flex;
+    font: inherit;
+    margin: 0;
+    min-height: 48px;
+  }
+
+  :host cr-expand-button {
+    flex: 1;
+    /* Padding here as cr-expand-button has a background on hover. */
+    padding-inline-end: calc(var(--print-preview-sidebar-margin) + 6px);
+    padding-inline-start: var(--print-preview-sidebar-margin);
+    --cr-expand-button-size: 28px;
+  }
+
+  :host([hidden]) {
+    display: none;
+  }
+
+  :host([disabled]) #label {
+    opacity: var(--cr-disabled-opacity);
+  }
+</style>
+<div on-click="toggleExpandButton_" actionable>
+  <cr-expand-button aria-label="$i18n{moreOptionsLabel}"
+      expanded="{{settingsExpandedByUser}}" disabled="[[disabled]]">
+    <div id="label">$i18n{moreOptionsLabel}</div>
+  </cr-expand-button>
+</div>

@@ -153,9 +153,12 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, DisableThenEnable) {
 
   // Disable the policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kExtensibleEnterpriseSSOEnabled,
+  base::Value extensibleEnterpriseSSOBlocklistValues(base::Value::Type::LIST);
+  extensibleEnterpriseSSOBlocklistValues.GetList().Append("all");
+  policies.Set(policy::key::kExtensibleEnterpriseSSOBlocklist,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-               policy::POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
+               policy::POLICY_SOURCE_CLOUD,
+               std::move(extensibleEnterpriseSSOBlocklistValues), nullptr);
   policy_provider_.UpdateChromePolicy(policies);
 
   EXPECT_EQ(/*Disabled*/ 0,
@@ -167,9 +170,10 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, DisableThenEnable) {
   ASSERT_FALSE(manager.IsEnabled());
 
   // Enable the policy.
-  policies.Set(policy::key::kExtensibleEnterpriseSSOEnabled,
+  policies.Set(policy::key::kExtensibleEnterpriseSSOBlocklist,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-               policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(base::Value::Type::LIST), nullptr);
   policy_provider_.UpdateChromePolicy(policies);
 
   EXPECT_EQ(/*Enabled*/ 1,
@@ -200,9 +204,12 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, DisableThenUnset) {
 
   // Disable the policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kExtensibleEnterpriseSSOEnabled,
+  base::Value extensibleEnterpriseSSOBlocklistValues(base::Value::Type::LIST);
+  extensibleEnterpriseSSOBlocklistValues.GetList().Append("all");
+  policies.Set(policy::key::kExtensibleEnterpriseSSOBlocklist,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-               policy::POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
+               policy::POLICY_SOURCE_CLOUD,
+               std::move(extensibleEnterpriseSSOBlocklistValues), nullptr);
   policy_provider_.UpdateChromePolicy(policies);
 
   EXPECT_EQ(/*Disabled*/ 0,
@@ -214,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, DisableThenUnset) {
   ASSERT_FALSE(manager.IsEnabled());
 
   // Unset the policy.
-  policies.Erase(policy::key::kExtensibleEnterpriseSSOEnabled);
+  policies.Erase(policy::key::kExtensibleEnterpriseSSOBlocklist);
   policy_provider_.UpdateChromePolicy(policies);
 
   EXPECT_EQ(/*Enabled*/ 1,

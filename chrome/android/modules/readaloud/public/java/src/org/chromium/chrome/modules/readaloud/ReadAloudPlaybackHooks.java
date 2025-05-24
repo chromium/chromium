@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.modules.readaloud;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.contentjs.Extractor;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Interface for creating ReadAloud playback. */
+@NullMarked
 public interface ReadAloudPlaybackHooks {
     /** Interface to receive createPlayback result. */
     interface CreatePlaybackCallback {

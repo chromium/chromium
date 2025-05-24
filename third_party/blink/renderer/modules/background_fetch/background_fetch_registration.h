@@ -25,6 +25,8 @@ class CacheQueryOptions;
 class ExceptionState;
 class ScriptState;
 class ServiceWorkerRegistration;
+class V8BackgroundFetchFailureReason;
+class V8BackgroundFetchResult;
 
 // Represents an individual Background Fetch registration. Gives developers
 // access to its properties, options, and enables them to abort the fetch.
@@ -76,8 +78,8 @@ class BackgroundFetchRegistration final
   uint64_t downloadTotal() const;
   uint64_t downloaded() const;
   bool recordsAvailable() const;
-  const String result() const;
-  const String failureReason() const;
+  V8BackgroundFetchResult result() const;
+  V8BackgroundFetchFailureReason failureReason() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(progress, kProgress)
 

@@ -16,4 +16,5 @@ java_binary("unused_resources") {
     "//third_party/r8:r8_java",
   ]
   wrapper_script_name = "helper/unused_resources"
+  enable_errorprone = false
 }

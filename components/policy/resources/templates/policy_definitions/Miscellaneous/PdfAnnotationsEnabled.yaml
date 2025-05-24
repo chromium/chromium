@@ -22,5 +22,6 @@ schema:
   type: boolean
 supported_on:
 - chrome_os:91-
+- chrome.*:138-
 tags: []
 type: main

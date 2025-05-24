@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <sys/uio.h>
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/posix/safe_strerror.h"
 #include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -110,7 +110,7 @@ bool IsVividLoaded() {
   std::vector<std::string_view> lines = base::SplitStringPieceUsingSubstr(
       output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  return base::ranges::any_of(lines, [](const auto& line) {
+  return std::ranges::any_of(lines, [](const auto& line) {
     return base::StartsWith(line, "vivid", base::CompareCase::SENSITIVE);
   });
 }
@@ -984,7 +984,7 @@ void CameraHalDelegate::OnGotCameraInfoOnIpcThread(
   }
 }
 
-int32_t CameraHalDelegate::GetMaskedModuleID(const std::string module_id) {
+int32_t CameraHalDelegate::GetMaskedModuleID(const std::string& module_id) {
   if (module_id.size() == 9) {
     int vid = strtol(module_id.substr(0, 4).c_str(), nullptr, 16);
     int pid = strtol(module_id.substr(5, 8).c_str(), nullptr, 16);
@@ -1048,7 +1048,7 @@ void CameraHalDelegate::CameraDeviceStatusChange(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected new status " << new_status;
+      NOTREACHED() << "Unexpected new status " << new_status;
   }
 }
 

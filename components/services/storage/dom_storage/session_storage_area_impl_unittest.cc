@@ -76,8 +76,8 @@ class SessionStorageAreaImplTest : public testing::Test {
         metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
         test_storage_key1_, &save_tasks);
     DCHECK(map_id->KeyPrefix() == StdStringToUint8Vector("map-0-"));
-    leveldb_database_->RunBatchDatabaseTasks(std::move(save_tasks),
-                                             base::DoNothing());
+    leveldb_database_->RunBatchDatabaseTasks(
+        RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
   }
   ~SessionStorageAreaImplTest() override = default;
 
@@ -87,8 +87,8 @@ class SessionStorageAreaImplTest : public testing::Test {
     std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
     auto map_data =
         metadata_.RegisterNewMap(namespace_entry, storage_key, &save_tasks);
-    leveldb_database_->RunBatchDatabaseTasks(std::move(save_tasks),
-                                             base::DoNothing());
+    leveldb_database_->RunBatchDatabaseTasks(
+        RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
     return map_data;
   }
 
@@ -227,8 +227,8 @@ TEST_F(SessionStorageAreaImplTest, Cloning) {
   metadata_.RegisterShallowClonedNamespace(
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_), &save_tasks);
-  leveldb_database_->RunBatchDatabaseTasks(std::move(save_tasks),
-                                           base::DoNothing());
+  leveldb_database_->RunBatchDatabaseTasks(
+      RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
   auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_));
 
@@ -332,8 +332,8 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllOnShared) {
   metadata_.RegisterShallowClonedNamespace(
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_), &save_tasks);
-  leveldb_database_->RunBatchDatabaseTasks(std::move(save_tasks),
-                                           base::DoNothing());
+  leveldb_database_->RunBatchDatabaseTasks(
+      RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
   auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_));
 
@@ -421,8 +421,8 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBindingOnShared) {
   metadata_.RegisterShallowClonedNamespace(
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_), &save_tasks);
-  leveldb_database_->RunBatchDatabaseTasks(std::move(save_tasks),
-                                           base::DoNothing());
+  leveldb_database_->RunBatchDatabaseTasks(
+      RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
   auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(
       metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_));
 

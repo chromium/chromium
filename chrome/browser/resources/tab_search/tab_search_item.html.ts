@@ -30,7 +30,7 @@ export function getHtml(this: TabSearchItemElement) {
       <div class="separator">•</div>
     ` : ''}
     <div id="secondaryText" ?hidden="${this.hideUrl}"></div>
-    ${!this.inSuggestedGroup ? html`
+    ${!this.hideTimestamp ? html`
       <div class="separator" ?hidden="${!this.data.hostname || this.hideUrl}">•
       </div>
       <div id="secondaryTimestamp">${this.data.tab.lastActiveElapsedText}</div>

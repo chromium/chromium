@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_player+subclassing.h"
 #import "ios/chrome/browser/voice/ui_bundled/voice_search_notification_names.h"
 
-@interface TextToSpeechPlayer ()<AVAudioPlayerDelegate> {
+@interface TextToSpeechPlayer () <AVAudioPlayerDelegate> {
   // The audio data to be played.
   NSData* _audioData;
   // The AVAudioPlayer playing TTS audio data.
@@ -61,8 +61,9 @@
 #pragma mark - Public
 
 - (void)prepareToPlayAudioData:(NSData*)audioData {
-  if (self.playingAudio)
+  if (self.playingAudio) {
     [self cancelPlayback];
+  }
   _audioData = audioData;
   [[NSNotificationCenter defaultCenter]
       postNotificationName:kTTSAudioReadyForPlaybackNotification
@@ -71,8 +72,9 @@
 
 - (void)beginPlayback {
   // no-op when audio is already playing.
-  if (self.playingAudio || !self.readyForPlayback)
+  if (self.playingAudio || !self.readyForPlayback) {
     return;
+  }
   // Create the AVAudioPlayer and initiate playback.
   _player = [[AVAudioPlayer alloc] initWithData:_audioData error:nil];
   [_player setMeteringEnabled:YES];
@@ -111,8 +113,9 @@
 #pragma mark -
 
 - (void)cancelPlaybackAndSendNotification:(BOOL)sendNotification {
-  if (_playbackFinished)
+  if (_playbackFinished) {
     return;
+  }
   _playbackFinished = YES;
   [_player stop];
   _audioData = nil;

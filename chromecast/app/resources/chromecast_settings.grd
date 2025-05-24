@@ -5,7 +5,7 @@ This file contains the strings for Chromecast settings.
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/chromecast_settings.h" type="rc_header">
       <emit emit_type='prepend'></emit>

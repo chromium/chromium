@@ -4,9 +4,12 @@
 
 package org.chromium.components.media_router;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /** An interface provided to DiscoveryCallback in order to receive sinks. */
+@NullMarked
 public interface DiscoveryDelegate {
     /**
      * Called when a new information about sinks availability becomes known.

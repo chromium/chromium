@@ -31,6 +31,8 @@ MockPrefetchServiceDelegate::MockPrefetchServiceDelegate(
   ON_CALL(*this, IsDataSaverEnabled).WillByDefault(testing::Return(false));
   ON_CALL(*this, IsBatterySaverEnabled).WillByDefault(testing::Return(false));
   ON_CALL(*this, IsContaminationExempt).WillByDefault(testing::Return(false));
+  ON_CALL(*this, IsContaminationExemptPerOrigin)
+      .WillByDefault(testing::Return(false));
   ON_CALL(*this, IsDomainInPrefetchAllowList(testing::_))
       .WillByDefault(testing::Return(true));
 

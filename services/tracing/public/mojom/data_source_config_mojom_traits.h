@@ -50,6 +50,14 @@ class StructTraits<tracing::mojom::DataSourceConfigDataView,
       const perfetto::DataSourceConfig& src) {
     return src.etw_config_raw();
   }
+  static const std::string& system_metrics_config_raw(
+      const perfetto::DataSourceConfig& src) {
+    return src.chromium_system_metrics_raw();
+  }
+  static const std::string& histogram_samples_config_raw(
+      const perfetto::DataSourceConfig& src) {
+    return src.chromium_histogram_samples_raw();
+  }
 
   static std::optional<perfetto::protos::gen::InterceptorConfig>
   interceptor_config(const perfetto::DataSourceConfig& src) {

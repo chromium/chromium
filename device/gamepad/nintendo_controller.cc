@@ -10,10 +10,10 @@
 #include "device/gamepad/nintendo_controller.h"
 
 #include <algorithm>
+#include <array>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_id_list.h"
@@ -122,19 +122,20 @@ struct VibrationFrequency {
   uint16_t hf;
   uint8_t lf;
   int freq_hz;  // rounded
-} kVibrationFrequency[] = {
-    // The linear resonant actuators (LRAs) on Switch devices are capable of
-    // producing vibration effects at a wide range of frequencies, but the
-    // Gamepad API assumes "dual-rumble" style vibration which is typically
-    // implemented by a pair of eccentric rotating mass (ERM) actuators. To
-    // simulate "dual-rumble" with Switch LRAs, the strong and weak vibration
-    // magnitudes are translated into low and high frequency vibration effects.
-    // Only the frequencies used for this translation are included; unused
-    // frequencies have been removed.
-    //
-    // This list must be kept sorted.
-    {0x0068, 0x3a, 141},
-    {0x0098, 0x46, 182}};
+};
+auto kVibrationFrequency = std::to_array<VibrationFrequency>(
+    {// The linear resonant actuators (LRAs) on Switch devices are capable of
+     // producing vibration effects at a wide range of frequencies, but the
+     // Gamepad API assumes "dual-rumble" style vibration which is typically
+     // implemented by a pair of eccentric rotating mass (ERM) actuators. To
+     // simulate "dual-rumble" with Switch LRAs, the strong and weak vibration
+     // magnitudes are translated into low and high frequency vibration effects.
+     // Only the frequencies used for this translation are included; unused
+     // frequencies have been removed.
+     //
+     // This list must be kept sorted.
+     {0x0068, 0x3a, 141},
+     {0x0098, 0x46, 182}});
 const size_t kVibrationFrequencySize = std::size(kVibrationFrequency);
 
 // https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/blob/master/rumble_data_table.md
@@ -142,7 +143,8 @@ struct VibrationAmplitude {
   uint8_t hfa;
   uint16_t lfa;
   int amp;  // rounded, max 1000 (kVibrationAmplitudeMax)
-} kVibrationAmplitude[]{
+};
+auto kVibrationAmplitude = std::to_array<VibrationAmplitude>({
     // Only include safe amplitudes.
     {0x00, 0x0040, 0},   {0x02, 0x8040, 10},   {0x04, 0x0041, 12},
     {0x06, 0x8041, 14},  {0x08, 0x0042, 17},   {0x0a, 0x8042, 20},
@@ -178,7 +180,7 @@ struct VibrationAmplitude {
     {0xba, 0x806e, 862}, {0xbc, 0x006f, 881},  {0xbe, 0x806f, 900},
     {0xc0, 0x0070, 920}, {0xc2, 0x8070, 940},  {0xc4, 0x0071, 960},
     {0xc6, 0x8071, 981}, {0xc8, 0x0072, 1000},
-};
+});
 const size_t kVibrationAmplitudeSize = std::size(kVibrationAmplitude);
 
 // Define indices for the additional buttons on Switch controllers.
@@ -619,7 +621,7 @@ void UpdateButtonForLeftSide(const Gamepad& src_pad,
       case BUTTON_INDEX_LEFT_THUMBSTICK:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        DUMP_WILL_BE_NOTREACHED();
         break;
     }
   }
@@ -675,8 +677,7 @@ void UpdateButtonForRightSide(const Gamepad& src_pad,
       case BUTTON_INDEX_RIGHT_TRIGGER:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   dst_pad.buttons[remapped_index] = src_pad.buttons[button_index];
@@ -708,8 +709,7 @@ void UpdateAxisForLeftSide(const Gamepad& src_pad,
         remapped_index = AXIS_INDEX_LEFT_STICK_X;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   dst_pad.axes[remapped_index] = axis_value;
@@ -741,8 +741,7 @@ void UpdateAxisForRightSide(const Gamepad& src_pad,
         remapped_index = AXIS_INDEX_LEFT_STICK_X;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   dst_pad.axes[remapped_index] = axis_value;
@@ -997,8 +996,7 @@ GamepadHand NintendoController::GetGamepadHand() const {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return GamepadHand::kNone;
+  NOTREACHED();
 }
 
 bool NintendoController::IsUsable() const {
@@ -1018,8 +1016,7 @@ bool NintendoController::IsUsable() const {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool NintendoController::HasGuid(const std::string& guid) const {
@@ -1116,8 +1113,7 @@ void NintendoController::UpdateGamepadState(Gamepad& pad) const {
         UpdateRightGamepadState(pad, false);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     pad.connected = pad_.connected;
   }
@@ -1126,7 +1122,7 @@ void NintendoController::UpdateGamepadState(Gamepad& pad) const {
 void NintendoController::UpdateLeftGamepadState(Gamepad& pad,
                                                 bool horizontal) const {
   // Buttons associated with the left Joy-Con.
-  const size_t kLeftButtonIndices[] = {
+  const auto kLeftButtonIndices = std::to_array<size_t>({
       BUTTON_INDEX_LEFT_SHOULDER,  // ZL button
       BUTTON_INDEX_LEFT_TRIGGER,   // L button
       BUTTON_INDEX_BACK_SELECT,    // - button
@@ -1134,16 +1130,18 @@ void NintendoController::UpdateLeftGamepadState(Gamepad& pad,
       BUTTON_INDEX_DPAD_UP,    // D-pad directions for the composite gamepad
       BUTTON_INDEX_DPAD_DOWN,  // assume the Joy-Con is held in the vertical
       BUTTON_INDEX_DPAD_LEFT,  // orientation or is attached to a grip.
-      BUTTON_INDEX_DPAD_RIGHT,      SWITCH_BUTTON_INDEX_CAPTURE,
-      SWITCH_BUTTON_INDEX_LEFT_SL,  SWITCH_BUTTON_INDEX_LEFT_SR,
-  };
+      BUTTON_INDEX_DPAD_RIGHT,
+      SWITCH_BUTTON_INDEX_CAPTURE,
+      SWITCH_BUTTON_INDEX_LEFT_SL,
+      SWITCH_BUTTON_INDEX_LEFT_SR,
+  });
   const size_t kLeftButtonIndicesSize = std::size(kLeftButtonIndices);
 
   // Axes associated with the left Joy-Con thumbstick.
-  const size_t kLeftAxisIndices[] = {
+  const auto kLeftAxisIndices = std::to_array<size_t>({
       AXIS_INDEX_LEFT_STICK_X,  // Axes assume the Joy-Con is held vertically
       AXIS_INDEX_LEFT_STICK_Y,  // or is attached to a grip.
-  };
+  });
   const size_t kLeftAxisIndicesSize = std::size(kLeftAxisIndices);
 
   if (pad_.buttons_length == SWITCH_BUTTON_INDEX_COUNT) {
@@ -1162,7 +1160,7 @@ void NintendoController::UpdateLeftGamepadState(Gamepad& pad,
 void NintendoController::UpdateRightGamepadState(Gamepad& pad,
                                                  bool horizontal) const {
   // Buttons associated with the right Joy-Con.
-  const size_t kRightButtonIndices[]{
+  const auto kRightButtonIndices = std::to_array<size_t>({
       BUTTON_INDEX_PRIMARY,         // B button
       BUTTON_INDEX_SECONDARY,       // A button
       BUTTON_INDEX_TERTIARY,        // Y button
@@ -1174,14 +1172,14 @@ void NintendoController::UpdateRightGamepadState(Gamepad& pad,
       BUTTON_INDEX_META,  // Home button
       SWITCH_BUTTON_INDEX_RIGHT_SL,
       SWITCH_BUTTON_INDEX_RIGHT_SR,
-  };
+  });
   const size_t kRightButtonIndicesSize = std::size(kRightButtonIndices);
 
   // Axes associated with the right Joy-Con thumbstick.
-  const size_t kRightAxisIndices[] = {
+  const auto kRightAxisIndices = std::to_array<size_t>({
       AXIS_INDEX_RIGHT_STICK_X,  // Axes assume the Joy-Con is held vertically
       AXIS_INDEX_RIGHT_STICK_Y,  // or is attached to a grip.
-  };
+  });
   const size_t kRightAxisIndicesSize = std::size(kRightAxisIndices);
 
   if (pad_.buttons_length == SWITCH_BUTTON_INDEX_COUNT) {
@@ -1239,8 +1237,7 @@ void NintendoController::StartInitSequence() {
       MakeInitSequenceRequests(kPendingSetPlayerLights);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -1480,8 +1477,7 @@ void NintendoController::ContinueInitSequence(
       break;
     case kInitialized:
     case kUninitialized:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
       break;
   }
@@ -1539,8 +1535,7 @@ void NintendoController::MakeInitSequenceRequests(InitializationState state) {
     case kInitialized:
     case kUninitialized:
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -1561,7 +1556,7 @@ void NintendoController::SubCommand(uint8_t sub_command,
   report_bytes[8] = 0x40;
   report_bytes[9] = sub_command;
   DCHECK_LT(bytes.size() + kSubCommandDataOffset, output_report_size_bytes_);
-  base::ranges::copy(bytes, &report_bytes[kSubCommandDataOffset - 1]);
+  std::ranges::copy(bytes, &report_bytes[kSubCommandDataOffset - 1]);
   WriteOutputReport(kReportIdOutput01, report_bytes, true);
 }
 

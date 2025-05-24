@@ -30,10 +30,11 @@ class AwComponentInstallerPolicy
   void OnCustomUninstall() final;
 
  private:
-  base::FilePath GetComponentsProviderServiceDirectory();
 
   // Virtual for testing.
   virtual void IncrementComponentsUpdatedCount();
+  virtual base::FilePath GetComponentsProviderServiceDirectory();
+  virtual int GetHighestSequenceNumber(base::FilePath cps_component_base_path);
 };
 
 }  // namespace android_webview

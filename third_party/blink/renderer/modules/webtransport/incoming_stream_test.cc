@@ -16,11 +16,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
-#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -80,8 +80,7 @@ class IncomingStreamTest : public ::testing::Test {
       ADD_FAILURE() << "chunk is not an Uint8Array";
       return ret;
     }
-    ret.Append(static_cast<uint8_t*>(value->Data()),
-               static_cast<wtf_size_t>(value->byteLength()));
+    ret.AppendSpan(value->ByteSpan());
     return ret;
   }
 
@@ -95,8 +94,7 @@ class IncomingStreamTest : public ::testing::Test {
   static Iterator Read(V8TestingScope& scope,
                        ReadableStreamDefaultReader* reader) {
     auto* script_state = scope.GetScriptState();
-    ScriptPromiseUntyped read_promise =
-        reader->read(script_state, ASSERT_NO_EXCEPTION);
+    auto read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, read_promise);
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsFulfilled());
@@ -107,8 +105,7 @@ class IncomingStreamTest : public ::testing::Test {
                        ReadableStreamBYOBReader* reader,
                        NotShared<DOMArrayBufferView> view) {
     auto* script_state = scope.GetScriptState();
-    ScriptPromiseUntyped read_promise =
-        reader->read(script_state, view, ASSERT_NO_EXCEPTION);
+    auto read_promise = reader->read(script_state, view, ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, read_promise);
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsFulfilled());
@@ -171,8 +168,7 @@ TEST_F(IncomingStreamTest, ReadArrayBufferWithBYOBReader) {
       script_state, ASSERT_NO_EXCEPTION);
   NotShared<DOMArrayBufferView> view =
       NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
-  ScriptPromiseUntyped read_promise =
-      reader->read(script_state, view, ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(script_state, view, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
   EXPECT_FALSE(tester.IsFulfilled());
 
@@ -251,8 +247,7 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithoutFin) {
   // data.
   EXPECT_THAT(result2.value, ElementsAre('C'));
 
-  ScriptPromiseUntyped result3 =
-      reader->read(script_state, ASSERT_NO_EXCEPTION);
+  auto result3 = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester result3_tester(script_state, result3);
   result3_tester.WaitUntilSettled();
   EXPECT_TRUE(result3_tester.IsRejected());
@@ -347,8 +342,7 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithoutFin) {
   EXPECT_FALSE(result1.done);
   EXPECT_THAT(result1.value, ElementsAre('F'));
 
-  ScriptPromiseUntyped result2 =
-      reader->read(script_state, ASSERT_NO_EXCEPTION);
+  auto result2 = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester result2_tester(script_state, result2);
   result2_tester.WaitUntilSettled();
   EXPECT_TRUE(result2_tester.IsRejected());
@@ -368,8 +362,7 @@ TEST_F(IncomingStreamTest, WriteToPipeWithPendingRead) {
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromiseUntyped read_promise =
-      reader->read(script_state, ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 
   test::RunPendingTasks();
@@ -394,8 +387,7 @@ TEST_F(IncomingStreamTest, Cancel) {
 
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromiseUntyped promise =
-      reader->cancel(script_state, ASSERT_NO_EXCEPTION);
+  auto promise = reader->cancel(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, promise);
 
   test::RunPendingTasks();
@@ -416,11 +408,11 @@ TEST_F(IncomingStreamTest, CancelWithWebTransportError) {
   v8::Local<v8::Value> error =
       WebTransportError::Create(isolate,
                                 /*stream_error_code=*/std::nullopt, "foobar",
-                                WebTransportError::Source::kStream);
+                                V8WebTransportErrorSource::Enum::kStream);
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromiseUntyped promise = reader->cancel(
-      script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
+  auto promise = reader->cancel(script_state, ScriptValue(isolate, error),
+                                ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, promise);
 
   test::RunPendingTasks();
@@ -438,13 +430,14 @@ TEST_F(IncomingStreamTest, CancelWithWebTransportErrorWithCode) {
 
   EXPECT_CALL(mock_on_abort_, Run(std::make_optional<uint8_t>(19)));
 
-  v8::Local<v8::Value> error = WebTransportError::Create(
-      isolate,
-      /*stream_error_code=*/19, "foobar", WebTransportError::Source::kStream);
+  v8::Local<v8::Value> error =
+      WebTransportError::Create(isolate,
+                                /*stream_error_code=*/19, "foobar",
+                                V8WebTransportErrorSource::Enum::kStream);
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromiseUntyped promise = reader->cancel(
-      script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
+  auto promise = reader->cancel(script_state, ScriptValue(isolate, error),
+                                ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, promise);
 
   test::RunPendingTasks();

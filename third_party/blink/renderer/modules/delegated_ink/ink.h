@@ -11,7 +11,6 @@
 
 namespace blink {
 class DelegatedInkTrailPresenter;
-class ExceptionState;
 class InkPresenterParam;
 class Navigator;
 class ScriptState;
@@ -26,8 +25,7 @@ class Ink : public ScriptWrappable, public Supplement<Navigator> {
   explicit Ink(Navigator&);
   ScriptPromise<DelegatedInkTrailPresenter> requestPresenter(
       ScriptState* state,
-      InkPresenterParam* presenter_param,
-      ExceptionState& exception_state);
+      InkPresenterParam* presenter_param);
 
   void Trace(blink::Visitor*) const override;
 };

@@ -21,6 +21,8 @@
 #import "ios/web/public/web_state_user_data.h"
 #import "url/gurl.h"
 
+@protocol ParentAccessCommands;
+
 namespace web {
 class WebState;
 }
@@ -92,6 +94,10 @@ class SupervisedUserErrorContainer
   // SupervisedUserServiceObserver override:
   void OnURLFilterChanged() override;
 
+  // Sets the parent access bottom sheet CommandDispatcher.
+  void SetParentAccessBottomSheetHandler(
+      id<ParentAccessCommands> commands_handler);
+
  private:
   friend class web::WebStateUserData<SupervisedUserErrorContainer>;
 
@@ -101,12 +107,11 @@ class SupervisedUserErrorContainer
                         const GURL& url,
                         bool successfully_created_request);
   void MaybeUpdatePendingApprovals();
-  void URLFilterCheckCallback(const GURL& url,
-                              supervised_user::FilteringBehavior behavior,
-                              supervised_user::FilteringBehaviorReason reason,
-                              bool uncertain);
-  WEB_STATE_USER_DATA_KEY_DECL();
+  void URLFilterCheckCallback(
+      supervised_user::SupervisedUserURLFilter::Result result);
 
+  // Handler used to request showing the parent access bottom sheet.
+  __weak id<ParentAccessCommands> commands_handler_;
   std::unique_ptr<SupervisedUserErrorInfo> supervised_user_error_info_;
   raw_ref<supervised_user::SupervisedUserService> supervised_user_service_;
   raw_ptr<web::WebState> web_state_;
@@ -142,12 +147,6 @@ class SupervisedUserInterstitialBlockingPage
 
   // web::WebStateObserver implementation:
   void WebStateDestroyed(web::WebState* web_state) override;
-  void PageLoaded(
-      web::WebState* web_state,
-      web::PageLoadCompletionStatus load_completion_status) override;
-
-  // Marks the SU interstitial first time banner as shown for a visible page.
-  void MaybeUpdateFirstTimeInterstitialBanner();
 
   const std::unique_ptr<supervised_user::SupervisedUserInterstitial>
       interstitial_;

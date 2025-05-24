@@ -42,7 +42,7 @@ using QueryWordVector = std::vector<query_parser::QueryWord>;
 // really isn't meant for external usage.
 class QueryNode {
  public:
-  virtual ~QueryNode() {}
+  virtual ~QueryNode() = default;
 
   // Serialize ourselves out to a string that can be passed to SQLite. Returns
   // the number of words in this node.

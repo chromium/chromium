@@ -14,6 +14,8 @@
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/socket/next_proto.h"
@@ -146,6 +148,24 @@ struct NET_EXPORT SSLConfig {
   // logic ensures tickets are resolved early, but can interfere with some unit
   // tests.
   bool disable_post_handshake_peek_for_testing = false;
+
+  // The proxy chain involving this SSL session, and the session's position
+  // within that chain. If the session is to the destination, or (for QUIC) the
+  // proxy chain only includes a prefix of the proxies, then `proxy_chain_index`
+  // may be equal to `proxy_chain.length()`.
+  ProxyChain proxy_chain = ProxyChain::Direct();
+  size_t proxy_chain_index = 0;
+
+  // The usage of this session. This supports distinguishing connections to a
+  // proxy as an endpoint from connections to that same proxy as a proxy.
+  SessionUsage session_usage = SessionUsage::kDestination;
+
+  // If non-empty, a list of TLS Trust Anchor IDs in wire format
+  // (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-tls-extension),
+  // i.e. a series of non-empty, 8-bit length-prefixed strings. If non-empty,
+  // these trust anchor IDs will be sent on the TLS ClientHello message to help
+  // the server select a certificate that the client will accept.
+  std::vector<uint8_t> trust_anchor_ids;
 };
 
 }  // namespace net

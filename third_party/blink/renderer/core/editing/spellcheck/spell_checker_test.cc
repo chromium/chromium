@@ -42,8 +42,7 @@ void SpellCheckerTest::ForceLayout() {
 TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithEmptyInputNoCrash) {
   SetBodyContent("<input placeholder='placeholder'>abc");
   UpdateAllLifecyclePhasesForTest();
-  Element* input = GetDocument().QuerySelector(AtomicString("input"));
-  input->Focus();
+  QuerySelector("input")->Focus();
   // Do not crash in advanceToNextMisspelling.
   GetSpellChecker().AdvanceToNextMisspelling(false);
 }
@@ -57,7 +56,7 @@ TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithImageInTableNoCrash) {
       "</td></tr></table>"
       "zz zz zz"
       "</div>");
-  GetDocument().QuerySelector(AtomicString("div"))->Focus();
+  QuerySelector("div")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   // Do not crash in advanceToNextMisspelling.
@@ -68,7 +67,7 @@ TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithImageInTableNoCrash) {
 TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
   SetBodyContent("<div contenteditable>  zz zz zz  </div>");
 
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   div->Focus();
   Selection().SetSelection(SelectionInDOMTree::Builder()
                                .Collapse(Position::LastPositionInNode(*div))
@@ -79,10 +78,49 @@ TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
   GetSpellChecker().AdvanceToNextMisspelling(false);
 }
 
+// https://issues.chromium.org/issues/398288325
+TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithCrossEditableNoCrash) {
+  SetBodyContent(
+      "<div contenteditable>"
+      "<div contenteditable='false'>"
+      "<div contenteditable id='div'>"
+      "</div></div></div>");
+  Element* div = GetElementById("div");
+  div->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  // Do not crash in AdvanceToNextMisspelling.
+  GetSpellChecker().AdvanceToNextMisspelling(false);
+  // in design mode
+  GetDocument().setDesignMode("on");
+  div->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  // Do not crash in AdvanceToNextMisspelling.
+  GetSpellChecker().AdvanceToNextMisspelling(false);
+}
+
+// https://issues.chromium.org/issues/398431390
+// The test is used to check for the presence of an infinite loop. There are no
+// `EXPECT_*` in this test. If the test does not hang, it is considered to have
+// passed.
+TEST_F(SpellCheckerTest, AdvanceToNextMisspellingNoUnresponsive) {
+  SetBodyContent(
+      "<div contenteditable>"
+      "<div contenteditable='false'>"
+      "<div contenteditable id='div'></div>"
+      "<div style='height: 100px;'></div>"
+      "</div>"
+      "<div>test</div>"
+      "</div>");
+  Element* div = GetElementById("div");
+  div->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  // No unresponsive in AdvanceToNextMisspelling
+  GetSpellChecker().AdvanceToNextMisspelling(false);
+}
+
 TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   SetBodyContent("<input>");
-  auto* input =
-      To<HTMLInputElement>(GetDocument().QuerySelector(AtomicString("input")));
+  auto* input = To<HTMLInputElement>(QuerySelector("input"));
   input->Focus();
   input->SetValue("Hello, input field");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
@@ -105,7 +143,7 @@ TEST_F(SpellCheckerTest, MarkAndReplaceForHandlesMultipleReplacements) {
       "<div contenteditable>"
       "spllchck"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
   EphemeralRange range_to_check =
       EphemeralRange(Position(text, 0), Position(text, 8));
@@ -135,7 +173,7 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_FirstCharSelected) {
       "<div contenteditable>"
       "spllchck"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -163,7 +201,7 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_LastCharSelected) {
       "<div contenteditable>"
       "spllchck"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -192,7 +230,7 @@ TEST_F(SpellCheckerTest,
       "<div contenteditable>"
       "s"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -221,7 +259,7 @@ TEST_F(SpellCheckerTest,
       "<div contenteditable>"
       "s"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -250,7 +288,7 @@ TEST_F(SpellCheckerTest,
       "<div contenteditable>"
       "s"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -279,7 +317,7 @@ TEST_F(SpellCheckerTest,
       "<div contenteditable>"
       "spllchck"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -308,7 +346,7 @@ TEST_F(SpellCheckerTest,
       "<div contenteditable>"
       "spllchck"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -336,7 +374,7 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_CaretMiddleOfWord) {
       "<div contenteditable>"
       "spllchck"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -365,7 +403,7 @@ TEST_F(SpellCheckerTest,
       "<div contenteditable>"
       "a spllchck"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -390,7 +428,7 @@ TEST_F(SpellCheckerTest,
       "<div contenteditable>"
       "spllchck a"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -414,7 +452,7 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_MultiNodeMisspell) {
       "<div contenteditable>"
       "spl<b>lc</b>hck"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* first_text = div->firstChild();
   Node* second_text = first_text->nextSibling()->firstChild();
   Node* third_text = div->lastChild();
@@ -453,8 +491,7 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_MultiNodeMisspell) {
 TEST_F(SpellCheckerTest, PasswordFieldsAreIgnored) {
   // Check that spellchecking is enabled for an input type="text".
   SetBodyContent("<input type=\"text\">");
-  auto* input =
-      To<HTMLInputElement>(GetDocument().QuerySelector(AtomicString("input")));
+  auto* input = To<HTMLInputElement>(QuerySelector("input"));
   input->Focus();
   input->SetValue("spllchck");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);

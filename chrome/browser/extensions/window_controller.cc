@@ -62,8 +62,7 @@ WindowController::WindowController(ui::BaseWindow* window, Profile* profile)
     : window_(window), profile_(profile) {
 }
 
-WindowController::~WindowController() {
-}
+WindowController::~WindowController() = default;
 
 Browser* WindowController::GetBrowser() const {
   return nullptr;

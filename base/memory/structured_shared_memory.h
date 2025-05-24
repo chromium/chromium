@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapper.h"
@@ -112,7 +113,7 @@ class StructuredSharedMemory {
       SharedMemoryMapper* mapper = nullptr);
 
   // Returns a pointer to the object stored in the mapped region.
-  T* WritablePtr() const {
+  T* WritablePtr() {
     CHECK(writable_mapping_.IsValid());
     return writable_mapping_.GetMemoryAs<T>();
   }
@@ -122,12 +123,12 @@ class StructuredSharedMemory {
   }
 
   // Returns a reference to the object stored in the mapped region.
-  T& WritableRef() const {
+  T& WritableRef() LIFETIME_BOUND {
     T* ptr = WritablePtr();
     CHECK(ptr);
     return *ptr;
   }
-  const T& ReadOnlyRef() const {
+  const T& ReadOnlyRef() const LIFETIME_BOUND {
     const T* ptr = ReadOnlyPtr();
     CHECK(ptr);
     return *ptr;
@@ -182,7 +183,7 @@ class StructuredSharedMemory<T>::ReadOnlyMapping {
   }
 
   // Returns a reference to the object stored in the mapped region.
-  const T& ReadOnlyRef() const {
+  const T& ReadOnlyRef() const LIFETIME_BOUND {
     const T* ptr = ReadOnlyPtr();
     CHECK(ptr);
     return *ptr;

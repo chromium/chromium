@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/gamepad/gamepad_comparisons.h"
 
+#include <array>
+
 #include "base/test/task_environment.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,8 +58,8 @@ class GamepadComparisonsTest : public testing::Test {
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
     list[0] = gamepad;
     return list;
@@ -70,8 +72,8 @@ class GamepadComparisonsTest : public testing::Test {
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
     list[0] = gamepad;
     return list;
@@ -84,8 +86,8 @@ class GamepadComparisonsTest : public testing::Test {
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
     list[0] = gamepad;
     return list;
@@ -103,8 +105,8 @@ class GamepadComparisonsTest : public testing::Test {
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
     list[0] = gamepad;
     return list;
@@ -122,8 +124,8 @@ class GamepadComparisonsTest : public testing::Test {
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
     list[0] = gamepad;
     return list;
@@ -154,10 +156,10 @@ class GamepadComparisonsTest : public testing::Test {
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
-    gamepad->SetTouchEvents(1, &touch);
+    gamepad->SetTouchEvents(base::span_from_ref(touch));
     list[0] = gamepad;
     return list;
   }
@@ -165,16 +167,16 @@ class GamepadComparisonsTest : public testing::Test {
   GamepadList CreateGamepadListWithTopLeftTouchesTouchId1() {
     double axes[1] = {0.0};
     device::GamepadButton buttons[1] = {{false, false, 0.0}};
-    device::GamepadTouch touch[2];
+    std::array<device::GamepadTouch, 2> touch;
     initTouch(0.0f, 0.0f, 0, 0, false, 0, 0, touch[0]);
     initTouch(0.0f, 0.0f, 0, 1, false, 0, 0, touch[1]);
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
-    gamepad->SetTouchEvents(2, touch);
+    gamepad->SetTouchEvents(touch);
     list[0] = gamepad;
     return list;
   }
@@ -182,16 +184,16 @@ class GamepadComparisonsTest : public testing::Test {
   GamepadList CreateGamepadListWithTopLeftTouchesTouchId3() {
     double axes[1] = {0.0};
     device::GamepadButton buttons[1] = {{false, false, 0.0}};
-    device::GamepadTouch touch[2];
+    std::array<device::GamepadTouch, 2> touch;
     initTouch(0.0f, 0.0f, 0, 0, false, 0, 0, touch[0]);
     initTouch(0.0f, 0.0f, 0, 3, false, 0, 0, touch[1]);
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
-    gamepad->SetTouchEvents(2, touch);
+    gamepad->SetTouchEvents(touch);
     list[0] = gamepad;
     return list;
   }
@@ -204,10 +206,10 @@ class GamepadComparisonsTest : public testing::Test {
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
-    gamepad->SetTouchEvents(1, &touch);
+    gamepad->SetTouchEvents(base::span_from_ref(touch));
     list[0] = gamepad;
     return list;
   }
@@ -220,10 +222,10 @@ class GamepadComparisonsTest : public testing::Test {
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
-    gamepad->SetTouchEvents(1, &touch);
+    gamepad->SetTouchEvents(base::span_from_ref(touch));
     list[0] = gamepad;
     return list;
   }
@@ -236,10 +238,10 @@ class GamepadComparisonsTest : public testing::Test {
     auto list = CreateEmptyGamepadList();
     auto* gamepad = CreateGamepad();
     gamepad->SetId("gamepad");
-    gamepad->SetAxes(1, axes);
-    gamepad->SetButtons(1, buttons);
+    gamepad->SetAxes(axes);
+    gamepad->SetButtons(buttons);
     gamepad->SetConnected(true);
-    gamepad->SetTouchEvents(1, &touch);
+    gamepad->SetTouchEvents(base::span_from_ref(touch));
     list[0] = gamepad;
     return list;
   }

@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "chrome/browser/ash/policy/status_collector/child_status_collector.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -35,7 +37,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
-#include "chrome/browser/ash/policy/status_collector/child_status_collector.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -44,6 +45,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
@@ -65,6 +67,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -199,8 +202,6 @@ class ChildStatusCollectorTest : public testing::Test {
     std::unique_ptr<base::Environment> env(base::Environment::Create());
     env->SetVar("TZ", "UTC");
 
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-
     // Use FakeUpdateEngineClient.
     ash::UpdateEngineClient::InitializeFakeForTest();
     ash::CiceroneClient::InitializeFake();
@@ -221,7 +222,6 @@ class ChildStatusCollectorTest : public testing::Test {
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::UpdateEngineClient::Shutdown();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     // Finish pending tasks.
     content::RunAllTasksUntilIdle();
@@ -367,8 +367,9 @@ class ChildStatusCollectorTest : public testing::Test {
     auto* user_manager = GetFakeUserManager();
     auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, is_affiliated, user_type, testing_profile_.get());
-    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
+    user_manager->UserLoggedIn(
+        user->GetAccountId(),
+        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   }
 
   void AddChildUser(const AccountId& account_id) {
@@ -420,6 +421,10 @@ class ChildStatusCollectorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  // scoped_testing_local_state_ should be destructed after TestingProfile.
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+
   ChromeContentClient content_client_;
   ChromeContentBrowserClient browser_content_client_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -427,8 +432,6 @@ class ChildStatusCollectorTest : public testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::FakeOwnerSettingsService owner_settings_service_{
       scoped_testing_cros_settings_.device_settings(), nullptr};
-  // local_state_ should be destructed after TestingProfile.
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> testing_profile_;
   user_manager::ScopedUserManager user_manager_enabler_;
   em::ChildStatusReportRequest child_status_;

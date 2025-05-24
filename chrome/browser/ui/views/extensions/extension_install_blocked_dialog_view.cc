@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -28,7 +29,8 @@ void ShowExtensionInstallBlockedDialog(
   dialog_builder
       .SetTitle(l10n_util::GetStringFUTF16(
           IDS_EXTENSION_BLOCKED_BY_POLICY_PROMPT_TITLE,
-          base::UTF8ToUTF16(extension_name), base::UTF8ToUTF16(extension_id)))
+          extensions::util::GetFixupExtensionNameForUIDisplay(extension_name),
+          base::UTF8ToUTF16(extension_id)))
       .SetIcon(ui::ImageModel::FromImageSkia(
           gfx::ImageSkiaOperations::CreateResizedImage(
               icon, skia::ImageOperations::ResizeMethod::RESIZE_BEST,

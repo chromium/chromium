@@ -85,14 +85,7 @@ class MessagePopupViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
     MessageCenter::Initialize();
     MessageCenter::Get()->DisableTimersForTest();
-
-    notification_ = std::make_unique<Notification>(
-        NOTIFICATION_TYPE_SIMPLE, "id", u"title", u"test message",
-        ui::ImageModel(), /*display_source=*/std::u16string(), GURL(),
-        NotifierId(), RichNotificationData(), /*delegate=*/nullptr);
   }
-
-  Notification& GetNotification() { return *notification_.get(); }
 
   void TearDown() override {
     notification_.reset();
@@ -108,12 +101,51 @@ class MessagePopupViewTest : public views::ViewsTestBase {
 };
 
 TEST_F(MessagePopupViewTest, AccessibleAttributes) {
-  MockMessagePopupCollection popup_collection;
-  MessagePopupView* popup = popup_collection.CreatePopup(GetNotification());
+  Notification notification(
+      NOTIFICATION_TYPE_SIMPLE, "id", u"title", u"message", ui::ImageModel(),
+      /*display_source=*/std::u16string(), GURL(), NotifierId(),
+      RichNotificationData(), /*delegate=*/nullptr);
 
-  ui::AXNodeData data;
-  popup->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.role, ax::mojom::Role::kAlertDialog);
+  MockMessagePopupCollection popup_collection;
+  MessagePopupView* popup = popup_collection.CreatePopup(notification);
+  MessageView* message_view = popup->message_view();
+
+  ui::AXNodeData popup_data;
+  popup->GetViewAccessibility().GetAccessibleNodeData(&popup_data);
+  EXPECT_EQ(popup_data.role, ax::mojom::Role::kAlertDialog);
+
+  ui::AXNodeData message_data;
+  message_view->GetViewAccessibility().GetAccessibleNodeData(&message_data);
+
+  EXPECT_FALSE(
+      popup_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
+          .empty());
+  EXPECT_FALSE(
+      message_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
+          .empty());
+  EXPECT_EQ(
+      popup_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      message_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(popup_data.GetString16Attribute(
+                ax::mojom::StringAttribute::kRoleDescription),
+            message_data.GetString16Attribute(
+                ax::mojom::StringAttribute::kRoleDescription));
+
+  Notification new_notification(
+      NOTIFICATION_TYPE_SIMPLE, "id", u"new title", u"new message",
+      ui::ImageModel(), /*display_source=*/std::u16string(), GURL(),
+      NotifierId(), RichNotificationData(), /*delegate=*/nullptr);
+
+  popup_data = ui::AXNodeData();
+  message_data = ui::AXNodeData();
+  message_view->UpdateWithNotification(new_notification);
+  popup->GetViewAccessibility().GetAccessibleNodeData(&popup_data);
+  message_view->GetViewAccessibility().GetAccessibleNodeData(&message_data);
+
+  EXPECT_EQ(
+      popup_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      message_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
   popup->Close();
 }
 

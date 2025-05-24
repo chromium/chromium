@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
@@ -28,11 +29,10 @@ const char kUploadCardRequestFormatWithoutCvc[] =
 }  // namespace
 
 UploadCardRequest::UploadCardRequest(
-    const PaymentsNetworkInterface::UploadCardRequestDetails& request_details,
+    const UploadCardRequestDetails& request_details,
     const bool full_sync_enabled,
-    base::OnceCallback<void(
-        PaymentsAutofillClient::PaymentsRpcResult,
-        const PaymentsNetworkInterface::UploadCardResponseDetails&)> callback)
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                            const UploadCardResponseDetails&)> callback)
     : request_details_(request_details),
       full_sync_enabled_(full_sync_enabled),
       callback_(std::move(callback)) {}
@@ -114,7 +114,7 @@ std::string UploadCardRequest::GetRequestContent() {
                                    true)
             .c_str());
   }
-  VLOG(3) << "savecard request body: " << request_content;
+  DVLOG(3) << "savecard request body: " << request_content;
   return request_content;
 }
 
@@ -156,7 +156,7 @@ void UploadCardRequest::ParseResponse(const base::Value::Dict& response) {
       const auto* virtual_card_enrollment_data =
           virtual_card_metadata->FindDict("virtual_card_enrollment_data");
       if (virtual_card_enrollment_data) {
-        PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
+        GetDetailsForEnrollmentResponseDetails
             get_details_for_enrollment_response_details;
         const base::Value::Dict* google_legal_message =
             virtual_card_enrollment_data->FindDict("google_legal_message");

@@ -9,16 +9,21 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
+namespace {
 
-const char kResultHistogramName[] =
+using testing::Eq;
+
+constexpr char kResultHistogramName[] =
     "Signin.Extensions.GaiaRemoteConsentFlowResult";
+constexpr GaiaId::Literal kGaiaId("fake_gaia_id");
+constexpr char kConsentResult[] = "CAESCUVOQ1JZUFRFRBoMZmFrZV9nYWlhX2lk";
 
-const char kGaiaId[] = "fake_gaia_id";
-const char kConsentResult[] = "CAESCUVOQ1JZUFRFRBoMZmFrZV9nYWlhX2lk";
+}  // namespace
 
 class FakeWebAuthFlow : public WebAuthFlow {
  public:
@@ -54,8 +59,7 @@ class MockGaiaRemoteConsentFlowDelegate
   MOCK_METHOD1(OnGaiaRemoteConsentFlowFailed,
                void(GaiaRemoteConsentFlow::Failure failure));
   MOCK_METHOD2(OnGaiaRemoteConsentFlowApproved,
-               void(const std::string& consent_result,
-                    const std::string& gaia_id));
+               void(const std::string& consent_result, const GaiaId& gaia_id));
 };
 
 class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
@@ -76,8 +80,8 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
   std::unique_ptr<TestGaiaRemoteConsentFlow> CreateTestFlow(
       GaiaRemoteConsentFlow::Delegate* delegate) {
     CoreAccountInfo user_info;
-    user_info.account_id = CoreAccountId::FromGaiaId("account_id");
-    user_info.gaia = "account_id";
+    user_info.gaia = GaiaId("account_id");
+    user_info.account_id = CoreAccountId::FromGaiaId(user_info.gaia);
     user_info.email = "email";
 
     ExtensionTokenKey token_key("extension_id", user_info,
@@ -99,7 +103,7 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
 TEST_F(IdentityGaiaRemoteConsentFlowTest, ConsentResult) {
   std::unique_ptr<TestGaiaRemoteConsentFlow> flow = CreateTestFlow();
   EXPECT_CALL(delegate_,
-              OnGaiaRemoteConsentFlowApproved(kConsentResult, kGaiaId));
+              OnGaiaRemoteConsentFlowApproved(kConsentResult, Eq(kGaiaId)));
   flow->ReactToConsentResult(kConsentResult);
   histogram_tester()->ExpectUniqueSample(kResultHistogramName,
                                          GaiaRemoteConsentFlow::NONE, 1);
@@ -111,11 +115,12 @@ TEST_F(IdentityGaiaRemoteConsentFlowTest, ConsentResult_TwoWindows) {
   std::unique_ptr<TestGaiaRemoteConsentFlow> flow2 = CreateTestFlow(&delegate2);
 
   const char kConsentResult2[] = "CAESCkVOQ1JZUFRFRDI";
-  EXPECT_CALL(delegate2, OnGaiaRemoteConsentFlowApproved(kConsentResult2, ""));
+  EXPECT_CALL(delegate2,
+              OnGaiaRemoteConsentFlowApproved(kConsentResult2, GaiaId()));
   flow2->ReactToConsentResult(kConsentResult2);
 
   EXPECT_CALL(delegate_,
-              OnGaiaRemoteConsentFlowApproved(kConsentResult, kGaiaId));
+              OnGaiaRemoteConsentFlowApproved(kConsentResult, Eq(kGaiaId)));
   flow->ReactToConsentResult(kConsentResult);
   histogram_tester()->ExpectUniqueSample(kResultHistogramName,
                                          GaiaRemoteConsentFlow::NONE, 2);

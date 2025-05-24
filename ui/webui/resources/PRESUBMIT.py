@@ -86,7 +86,6 @@ def CheckNoDisallowedJS(input_api, output_api):
   # Also exempt any externs or eslint files, which must be in JS.
   EXCLUDE_PATH_SUFFIXES = [
     '_externs.js',
-    '.eslintrc.js',
   ]
 
   def allow_js(f):
@@ -102,6 +101,22 @@ def CheckNoDisallowedJS(input_api, output_api):
   from web_dev_style import presubmit_support
   return presubmit_support.DisallowNewJsFiles(input_api, output_api,
                                               lambda f: not allow_js(f))
+
+
+def CheckNoNewPolymer(input_api, output_api):
+  IGNORE_FILES = [
+    # These files are needed for testing Polymer specific ESLint rules in
+    # ui/webui/resources/tools/webui_eslint_plugin.js.
+    'ui/webui/resources/tools/tests/eslint_ts/with_webui_plugin_polymer_property_class_member_violations.ts',
+    'ui/webui/resources/tools/tests/eslint_ts/with_webui_plugin_polymer_violations.ts',
+  ]
+
+  def ignore_filter(affected_file):
+    return affected_file.LocalPath().replace("\\", "/") not in IGNORE_FILES
+
+  from web_dev_style import presubmit_support
+  return presubmit_support.DisallowNewPolymerElements(
+      input_api, output_api, file_filter=ignore_filter)
 
 
 def CheckPatchFormatted(input_api, output_api):

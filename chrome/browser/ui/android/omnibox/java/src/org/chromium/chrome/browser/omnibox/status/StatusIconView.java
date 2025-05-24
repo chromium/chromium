@@ -10,10 +10,12 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.base.ViewUtils;
 
 /** StatusIconView is a custom view displaying the status icon in the location bar. */
+@NullMarked
 public class StatusIconView extends LinearLayout {
     private View mIconViewFrame;
     private Space mStatusIconHoldingSpace;

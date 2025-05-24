@@ -8,13 +8,17 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
+
+POLICY_EXPORT BASE_DECLARE_FEATURE(kUploadRealtimeReportingEventsUsingProto);
 
 class CloudPolicyClient;
 
@@ -51,6 +55,14 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
 
   ~RealtimeReportingJobConfiguration() override;
 
+  // ReportingJobConfigurationBase.
+  std::string GetPayload() override;
+
+  std::string GetContentType() override;
+
+  // Add a new Event proto to the payload.
+  bool AddRequest(::chrome::cros::reporting::proto::UploadEventsRequest event);
+
   // Add a new report to the payload.  A report is a dictionary that
   // contains two keys: "events" and "context".  The first key is a list of
   // dictionaries, where dictionary is defined by the Event message described at
@@ -60,7 +72,7 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   // is not specific to the event.
   //
   // Returns true if the report was added successfully.
-  bool AddReport(base::Value::Dict report);
+  bool AddReportDeprecated(base::Value::Dict report);
 
  protected:
   // ReportingJobConfigurationBase
@@ -74,10 +86,16 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   std::string GetUmaString() const override;
 
  private:
+  void InitializeUploadRequest(CloudPolicyClient* client,
+                               bool include_device_info);
   // Does one time initialization of the payload when the configuration is
   // created.
   void InitializePayloadInternal(CloudPolicyClient* client,
                                  bool include_device_info);
+
+  // The request to be sent to the server, use this instead of |payload_| for
+  // realtime reporting.
+  ::chrome::cros::reporting::proto::UploadEventsRequest upload_request_;
 
   // Gathers the ids of the uploads that failed
   std::set<std::string> GetFailedUploadIds(

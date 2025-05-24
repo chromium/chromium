@@ -178,7 +178,8 @@
           value="{{nameServersInput_}}"
           property="[[managedProperties_.staticIpConfig.nameServers]]">
       </network-config-input>
-      <network-config-select label="[[i18n('OncVPN-WireGuard-Key')]]"
+      <network-config-select id="wireguard-key-type"
+          label="[[i18n('OncVPN-WireGuard-Key')]]"
           value="{{wireguardKeyType_}}" items="[[wireguardKeyTypeItems_]]"
           onc-prefix="VPN.WireGuard.Key">
       </network-config-select>
@@ -313,7 +314,7 @@
       </template>
       <cr-toggle id="autoConnect" checked="{{autoConnect_}}"
           disabled="[[autoConnectDisabled_(globalPolicy_)]]"
-          aria-labeledby="autoConnectLabel">
+          aria-labelledby="autoConnectLabel">
       </cr-toggle>
     </div>
   </template>

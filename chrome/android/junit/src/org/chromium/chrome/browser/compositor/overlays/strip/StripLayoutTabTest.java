@@ -8,12 +8,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
+
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.filters.SmallTest;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -23,7 +27,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
@@ -34,9 +38,16 @@ import org.chromium.ui.util.ColorUtils;
 /** Tests for {@link StripLayoutTab}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
+// TODO(crbug.com/419289558): Re-enable color surface feature flags
+@Features.DisableFeatures({
+    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE
+})
 public class StripLayoutTabTest {
 
     private static final String TAG = "StripLayoutTabTest";
+    private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.3f;
 
     private Context mContext;
     private StripLayoutTab mNormalTab;
@@ -64,7 +75,7 @@ public class StripLayoutTabTest {
                 mNormalTab.getTint(true, false));
 
         // Normal inactive tab color.
-        expectedColor = ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_0);
+        expectedColor = SemanticColorUtils.getDefaultBgColor(mContext);
         assertEquals(
                 "Folio inactive tab containers should be Surface-0.",
                 expectedColor,
@@ -109,7 +120,6 @@ public class StripLayoutTabTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING})
     public void testGetTint_Startup() {
         @ColorInt int expectedColor;
 
@@ -146,6 +156,26 @@ public class StripLayoutTabTest {
     }
 
     @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE)
+    public void testGetTint_SurfaceColorUpdate() {
+        @ColorInt int expectedColor;
+
+        // Normal active tab color.
+        expectedColor = SemanticColorUtils.getColorSurfaceContainerHigh(mContext);
+        assertEquals(
+                "Normal active folio should match the Surface-0 color.",
+                expectedColor,
+                mNormalTab.getTint(true, false));
+
+        // Incognito active tab color.
+        expectedColor = mContext.getColor(R.color.toolbar_background_primary_dark);
+        assertEquals(
+                "Incognito active folio should match the baseline color.",
+                expectedColor,
+                mIncognitoTab.getTint(true, false));
+    }
+
+    @Test
     public void testGetDividerTint() {
         @ColorInt int expectedColor;
 
@@ -153,13 +183,13 @@ public class StripLayoutTabTest {
         expectedColor =
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(mContext),
-                        StripLayoutTab.DIVIDER_FOLIO_LIGHT_OPACITY);
+                        DIVIDER_FOLIO_LIGHT_OPACITY);
         assertEquals(
                 "Light mode divider uses 20% icon color",
                 expectedColor, mNormalTab.getDividerTint());
 
         // Incognito.
-        expectedColor = mContext.getColor(R.color.divider_line_bg_color_light);
+        expectedColor = mContext.getColor(R.color.tab_strip_tablet_divider_bg_incognito);
         assertEquals(
                 "Incognito dividers use the baseline color.",
                 expectedColor,
@@ -220,7 +250,24 @@ public class StripLayoutTabTest {
                 mNormalTab.needsAccessibilityDescriptionUpdate(null, resId));
     }
 
+    @Test
+    @SmallTest
+    public void testAnchorRect() {
+        int folioFootLengthPx =
+                Math.round(
+                        mContext.getResources().getDisplayMetrics().density * FOLIO_FOOT_LENGTH_DP);
+        int widthWithoutFolio = 20;
+        int width = folioFootLengthPx + widthWithoutFolio; // Should be > than folioFootLengthPx
+        int height = 10; // Arbitrary
+        mNormalTab.setWidth(width);
+        mNormalTab.setHeight(10);
+
+        Rect rect = new Rect();
+        mNormalTab.getAnchorRect(rect);
+        assertEquals(new Rect(folioFootLengthPx, 0, widthWithoutFolio, height), rect);
+    }
+
     private StripLayoutTab createStripLayoutTab(boolean incognito) {
-        return new StripLayoutTab(mContext, 0, null, null, null, incognito);
+        return new StripLayoutTab(mContext, 0, null, null, null, null, incognito);
     }
 }

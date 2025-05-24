@@ -6,6 +6,8 @@
 
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 namespace declarative_net_request {
 

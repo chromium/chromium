@@ -42,19 +42,6 @@ TEST(BrowsingContextGroupSwap, CreateCoopSwap) {
   EXPECT_EQ(ShouldSwapBrowsingInstance::kYes_ForceSwap, coop_swap.reason());
 }
 
-TEST(BrowsingContextGroupSwap, CreateRelatedCoopSwap) {
-  BrowsingContextGroupSwap related_coop_swap =
-      BrowsingContextGroupSwap::CreateRelatedCoopSwap();
-
-  EXPECT_EQ(BrowsingContextGroupSwapType::kRelatedCoopSwap,
-            related_coop_swap.type());
-  EXPECT_TRUE(related_coop_swap.ShouldSwap());
-  EXPECT_FALSE(related_coop_swap.ShouldClearProxiesOnCommit());
-  EXPECT_TRUE(related_coop_swap.ShouldClearWindowName());
-  EXPECT_EQ(ShouldSwapBrowsingInstance::kYes_ForceSwap,
-            related_coop_swap.reason());
-}
-
 TEST(BrowsingContextGroupSwap, CreateSecuritySwap) {
   BrowsingContextGroupSwap security_swap =
       BrowsingContextGroupSwap::CreateSecuritySwap();

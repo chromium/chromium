@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
@@ -311,6 +310,13 @@ void SlotAssignment::RecalcAssignment() {
 
         if (HTMLSlotElement* slot = FindSlotByName(child.SlotName())) {
           slot->AppendAssignedNode(child);
+          // If changing tree scope, recompute the a11y subtree.
+          // This normally occurs when the slottable node is removed
+          // from the flat tree via the below call to RemovedFromFlatTree(),
+          // which calls DetachLayoutTree().
+          if (cache) {
+            cache->RemoveSubtree(&child);
+          }
         } else {
           child.ClearFlatTreeNodeData();
           child.RemovedFromFlatTree();

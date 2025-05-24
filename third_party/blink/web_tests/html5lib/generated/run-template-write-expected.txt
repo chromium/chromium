@@ -1,1 +1,15 @@
-../resources/template.dat: PASS
+../resources/template.dat:
+109
+
+Test 109 of 112 in ../resources/template.dat failed. Input:
+<template><form><input name="q"></form><div>second</div></template>
+Got:
+| 
+Expected:
+| <template>
+|   content
+|     <form>
+|       <input>
+|         name="q"
+|     <div>
+|       "second"

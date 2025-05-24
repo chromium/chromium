@@ -5,16 +5,17 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_DISABLED_UI_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_DISABLED_UI_H_
 
+class Profile;
+
 namespace extensions {
 
 class Extension;
-class ExtensionService;
 
 // Adds a global error to inform the user that an extension was
 // disabled after upgrading to higher permissions.
-// If |is_remote_install| is true, the extension was disabled because
+// If `is_remote_install` is true, the extension was disabled because
 // it was installed remotely.
-void AddExtensionDisabledError(ExtensionService* service,
+void AddExtensionDisabledError(Profile* profile,
                                const Extension* extension,
                                bool is_remote_install);
 

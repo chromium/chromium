@@ -78,6 +78,8 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
   bool HasMaxContent() const;
   bool HasFitContent() const;
 
+  bool HasOnlyFixedAndPercent() const;
+
   float Pixels() const {
     DCHECK(!IsExpression());
     return data_.value.pixels;

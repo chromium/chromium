@@ -19,7 +19,6 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crosapi {
@@ -49,7 +48,6 @@ class FakeVcManagerMojoClient : public mojom::VideoConferenceManagerClient {
   void StopAllScreenShare() override {}
 
   mojo::Receiver<mojom::VideoConferenceManagerClient> receiver_{this};
-  mojo::Remote<mojom::VideoConferenceManager> remote_;
   base::UnguessableToken id_{base::UnguessableToken::Create()};
 };
 
@@ -78,22 +76,6 @@ class FakeVcManagerCppClient : public mojom::VideoConferenceManagerClient {
 
   base::UnguessableToken id_{base::UnguessableToken::Create()};
 };
-
-// Calls all crosapi::mojom::VideoConference methods over mojo.
-void CallVcManagerAshMethods(FakeVcManagerMojoClient& client) {
-  base::test::TestFuture<bool> future1;
-  client.remote_->NotifyMediaUsageUpdate(
-      crosapi::mojom::VideoConferenceMediaUsageStatus::New(
-          client.id_, true, false, true, false, true, false),
-      future1.GetCallback());
-  EXPECT_TRUE(future1.Take());
-
-  base::test::TestFuture<bool> future2;
-  client.remote_->NotifyDeviceUsedWhileDisabled(
-      crosapi::mojom::VideoConferenceMediaDevice::kCamera, u"Test App",
-      future2.GetCallback());
-  EXPECT_TRUE(future2.Take());
-}
 
 // Calls all crosapi::mojom::VideoConference methods directly.
 void CallVcManagerAshMethods(FakeVcManagerCppClient& client,
@@ -141,37 +123,12 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAshBrowserTest, Basics) {
   auto* vc_manager =
       CrosapiManager::Get()->crosapi_ash()->video_conference_manager_ash();
   {
-    FakeVcManagerMojoClient mojo_client1;
-    vc_manager->BindReceiver(mojo_client1.remote_.BindNewPipeAndPassReceiver());
-
-    base::test::TestFuture<bool> future1;
-    mojo_client1.remote_->RegisterMojoClient(
-        mojo_client1.receiver_.BindNewPipeAndPassRemote(), mojo_client1.id_,
-        future1.GetCallback());
-    EXPECT_TRUE(future1.Take());
-
     FakeVcManagerCppClient cpp_client1;
     vc_manager->RegisterCppClient(&cpp_client1, cpp_client1.id_);
-
-    CallVcManagerAshMethods(mojo_client1);
     CallVcManagerAshMethods(cpp_client1, vc_manager);
   }
-
-  // Disconnect old clients and try again to ensure manager's API doesn't crash
-  // after any client disconnects.
-  FakeVcManagerMojoClient mojo_client2;
-  vc_manager->BindReceiver(mojo_client2.remote_.BindNewPipeAndPassReceiver());
-
-  base::test::TestFuture<bool> future2;
-  mojo_client2.remote_->RegisterMojoClient(
-      mojo_client2.receiver_.BindNewPipeAndPassRemote(), mojo_client2.id_,
-      future2.GetCallback());
-  EXPECT_TRUE(future2.Take());
-
   FakeVcManagerCppClient cpp_client2;
   vc_manager->RegisterCppClient(&cpp_client2, cpp_client2.id_);
-
-  CallVcManagerAshMethods(mojo_client2);
   CallVcManagerAshMethods(cpp_client2, vc_manager);
 }
 

@@ -1,4 +1,4 @@
-UNKNOWN_TYPE | email | Enter your email address |  | email_1
+EMAIL_ADDRESS | email | Enter your email address |  | email_1
 
 UNKNOWN_TYPE | payment_group | Payment Type We accept Visa, Mastercard, Discover, American Express, and PayPal. | cc | payment_group_1
 UNKNOWN_TYPE | payment_group | Payment Type We accept Visa, Mastercard, Discover, American Express, and PayPal. | paypal | payment_group_1

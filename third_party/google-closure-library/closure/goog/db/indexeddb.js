@@ -84,6 +84,7 @@ goog.db.IndexedDb.prototype.dispatchError_ = function(ev) {
   'use strict';
   const idbRequest = /** @type {?IDBRequest} */ (ev.target);
   const domError = idbRequest && idbRequest.error;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const /** ?number */ errorCode = domError && domError.severity;
   this.dispatchEvent({
     type: goog.db.IndexedDb.EventType.ERROR,

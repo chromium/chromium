@@ -21,7 +21,15 @@ enum RunOnOsLoginMode {
   kMinimized = 2,
 };
 
+enum AppType {
+  kWebApp = 0,
+  kIsolatedWebApp = 1,
+  kDeprecatedChromeApp = 2,
+};
+
 struct AppInfo {
+  // The type of the app.
+  AppType app_type;
   // The app id.
   string id;
   // The first url to load when app start launching.
@@ -43,8 +51,6 @@ struct AppInfo {
   bool open_in_window;
   // Whether this app can be uninstalled by user.
   bool may_uninstall;
-  // If this app is a deprecated chrome app.
-  bool is_deprecated_app;
   // If this is an extension that came from the web store.
   url.mojom.Url? store_page_url;
 };

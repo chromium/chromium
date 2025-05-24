@@ -7,8 +7,15 @@
 
 #include <delayimp.h>
 
+#include <algorithm>
+#include <string_view>
+
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/win/delay_load_failure_support.h"
 
@@ -20,15 +27,30 @@ namespace {
 // to delay load will trigger an exception handled by the delay load runtime and
 // this won't generate a crash report.
 FARPROC WINAPI DelayLoadFailureHook(unsigned reason, DelayLoadInfo* dll_info) {
-  char dll_name[MAX_PATH];
-  base::strlcpy(dll_name, dll_info->szDll, std::size(dll_name));
-  // It's not an error if "bthprops.cpl" fails to be loaded, there's a custom
-  // exception handler in 'device/bluetooth/bluetooth_init_win.cc" that will
-  // intercept the exception triggered by the delay load runtime. Returning 0
-  // will tell the runtime that this failure hasn't been handled and it'll cause
-  // the exception to be raised.
-  if (base::CompareCaseInsensitiveASCII(dll_name, "bthprops.cpl") == 0)
-    return 0;
+  std::string_view raw_dll_name(dll_info->szDll);
+  if (raw_dll_name.size() < MAX_PATH) {
+    // It's not an error if these optional modules fail to be loaded, there are
+    // custom exception handlers in `device/bluetooth/bluetooth_init_win.cc` and
+    // `media/base/win/mf_initializer.cc` that will intercept the exception
+    // triggered by the delay load runtime. Returning 0 will tell the runtime
+    // that this failure hasn't been handled and it'll cause the exception to be
+    // raised.
+    static constexpr auto kOptionalModules =
+        base::MakeFixedFlatSet<std::string_view>(
+            {"bthprops.cpl", "mf.dll", "mfplat.dll", "mfreadwrite.dll"});
+    // Copy and transform the module name into lower case.
+    char dll_name_buffer[MAX_PATH];
+    base::span<char> dll_name_buffer_span(dll_name_buffer);
+    auto out_end =
+        std::ranges::transform(raw_dll_name, dll_name_buffer_span.begin(),
+                               [](char c) { return base::ToLowerASCII(c); })
+            .out;
+    auto len =
+        base::checked_cast<size_t>(out_end - dll_name_buffer_span.begin());
+    if (kOptionalModules.contains({&dll_name_buffer_span.front(), len})) {
+      return 0;
+    }
+  }
 
   return HandleDelayLoadFailureCommon(reason, dll_info);
 }

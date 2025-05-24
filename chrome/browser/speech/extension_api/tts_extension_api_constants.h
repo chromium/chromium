@@ -12,18 +12,23 @@ extern const char kCharIndexKey[];
 extern const char kLengthKey[];
 extern const char kDesiredEventTypesKey[];
 extern const char kEnqueueKey[];
+extern const char kErrorKey[];
 extern const char kErrorMessageKey[];
 extern const char kEventTypeKey[];
 extern const char kEventTypesKey[];
 extern const char kExtensionIdKey[];
 extern const char kGenderKey[];
+extern const char kIdKey[];
+extern const char kInstallStatusKey[];
 extern const char kIsFinalEventKey[];
 extern const char kLangKey[];
 extern const char kOnEventKey[];
 extern const char kPitchKey[];
 extern const char kRateKey[];
 extern const char kRemoteKey[];
+extern const char kUninstallImmediatelyKey[];
 extern const char kRequiredEventTypesKey[];
+extern const char kSourceKey[];
 extern const char kSrcIdKey[];
 extern const char kVoiceNameKey[];
 extern const char kVolumeKey[];
@@ -43,6 +48,13 @@ extern const char kEventTypeResume[];
 extern const char kEventTypeSentence[];
 extern const char kEventTypeStart[];
 extern const char kEventTypeWord[];
+
+// Used by TtsEngine Extension to communicate installation status of voices for
+// a specific language
+extern const char kVoicePackStatusNotInstalled[];
+extern const char kVoicePackStatusInstalling[];
+extern const char kVoicePackStatusInstalled[];
+extern const char kVoicePackStatusFailed[];
 
 extern const char kErrorExtensionIdMismatch[];
 extern const char kErrorInvalidLang[];

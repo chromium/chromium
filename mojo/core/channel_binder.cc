@@ -16,6 +16,7 @@
 #include <optional>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/android/binder.h"
@@ -39,9 +40,9 @@
 #include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/core/embedder/features.h"
+#include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/public/cpp/platform/binder_exchange.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo::core {
 
@@ -148,8 +149,7 @@ base::android::BinderStatusOr<void> WriteMessagePayload(
   if (!mapping.IsValid()) {
     return base::unexpected(STATUS_NO_MEMORY);
   }
-
-  memcpy(mapping.memory(), bytes.data(), bytes.size());
+  mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(bytes);
 
   RETURN_IF_ERROR(
       out.WriteInt32(static_cast<int32_t>(WirePayloadType::kSharedMemory)));
@@ -161,7 +161,7 @@ struct PayloadBuffer {
   size_t size;
 };
 using ReceivedPayload =
-    absl::variant<PayloadBuffer, base::ReadOnlySharedMemoryMapping>;
+    std::variant<PayloadBuffer, base::ReadOnlySharedMemoryMapping>;
 base::android::BinderStatusOr<ReceivedPayload> ReadMessagePayload(
     const base::android::ParcelReader& in) {
   ASSIGN_OR_RETURN(const auto type, in.ReadInt32());
@@ -254,7 +254,7 @@ void ChannelBinder::Start() {
   std::optional<base::android::BinderRef> exchange;
   {
     base::AutoLock lock(lock_);
-    exchange = absl::get<PendingExchange>(peer_).binder;
+    exchange = std::get<PendingExchange>(peer_).binder;
     CHECK(exchange);
     peer_ = PendingConnection{};
     receiver_ = base::MakeRefCounted<Receiver>(this);
@@ -285,8 +285,8 @@ void ChannelBinder::ShutDownImpl() {
     receiver_.swap(receiver);
     outgoing_messages_.swap(outgoing_messages);
     peer_.swap(peer);
-    if (leak_peer_ && absl::holds_alternative<Receiver::Proxy>(peer)) {
-      std::ignore = absl::get<Receiver::Proxy>(peer).release();
+    if (leak_peer_ && std::holds_alternative<Receiver::Proxy>(peer)) {
+      std::ignore = std::get<Receiver::Proxy>(peer).release();
     }
   }
   receiver->ShutDown();
@@ -332,19 +332,19 @@ base::android::BinderStatusOr<void> ChannelBinder::WriteOrEnqueue(
   std::optional<Receiver::Proxy> receiver;
   {
     base::AutoLock lock(lock_);
-    if (absl::holds_alternative<Disconnected>(peer_) || reject_writes_) {
+    if (std::holds_alternative<Disconnected>(peer_) || reject_writes_) {
       return base::ok();
     }
 
-    if (absl::holds_alternative<PendingExchange>(peer_) ||
-        absl::holds_alternative<PendingConnection>(peer_) ||
+    if (std::holds_alternative<PendingExchange>(peer_) ||
+        std::holds_alternative<PendingConnection>(peer_) ||
         !outgoing_messages_.empty() || is_writing_) {
       outgoing_messages_.push_back(std::move(message));
       return base::ok();
     }
 
     is_writing_ = true;
-    receiver = absl::get<Receiver::Proxy>(peer_);
+    receiver = std::get<Receiver::Proxy>(peer_);
   }
 
   // If this returns on error, `is_writing_` will remain true. This is fine
@@ -361,12 +361,12 @@ base::android::BinderStatusOr<void> ChannelBinder::WriteOrEnqueue(
 base::android::BinderStatusOr<void> ChannelBinder::FlushOutgoingMessages()
     EXCLUSIVE_LOCKS_REQUIRED(lock_) {
   DCHECK(is_writing_);
-  if (absl::holds_alternative<Disconnected>(peer_)) {
+  if (std::holds_alternative<Disconnected>(peer_)) {
     // If we're already disconnected we don't need to do any flushing.
     return base::ok();
   }
 
-  Receiver::Proxy receiver = absl::get<Receiver::Proxy>(peer_);
+  Receiver::Proxy receiver = std::get<Receiver::Proxy>(peer_);
   while (!outgoing_messages_.empty()) {
     base::circular_deque<MessagePtr> messages;
     messages.swap(outgoing_messages_);
@@ -385,12 +385,12 @@ base::android::BinderStatusOr<void> ChannelBinder::FlushOutgoingMessages()
 
 void ChannelBinder::SetPeerReceiver(base::android::BinderRef receiver) {
   base::AutoLock lock(lock_);
-  if (absl::holds_alternative<Disconnected>(peer_)) {
+  if (std::holds_alternative<Disconnected>(peer_)) {
     // Channel is already shutdown. Silently drop the peer endpoint.
     return;
   }
 
-  DCHECK(absl::holds_alternative<PendingConnection>(peer_));
+  DCHECK(std::holds_alternative<PendingConnection>(peer_));
   if (!receiver) {
     // Connection failed.
     peer_ = Disconnected{};
@@ -418,7 +418,7 @@ void ChannelBinder::Receive(base::span<const uint8_t> bytes,
                             std::vector<PlatformHandle> handles) {
   size_t ignored_size_hint;
   const DispatchResult result = TryDispatchMessage(
-      base::as_chars(bytes), std::move(handles), &ignored_size_hint);
+      base::as_chars(bytes), std::move(handles), nullptr, &ignored_size_hint);
   if (result != DispatchResult::kOK) {
     OnError(Error::kReceivedMalformedData);
   }
@@ -434,8 +434,8 @@ base::android::BinderStatusOr<void> ChannelBinder::SendMessageToReceiver(
   ASSIGN_OR_RETURN(auto parcel, receiver.PrepareTransaction());
   const base::android::ParcelWriter writer(parcel);
 
-  const auto bytes = base::make_span(
-      static_cast<const uint8_t*>(message->data()), message->data_num_bytes());
+  const auto bytes = base::span(static_cast<const uint8_t*>(message->data()),
+                                message->data_num_bytes());
   RETURN_IF_ERROR(WriteMessagePayload(writer, bytes));
 
   auto handles = message->TakeHandles();
@@ -488,7 +488,7 @@ ChannelBinder::Receiver::OnBinderTransaction(
   }
 
   ASSIGN_OR_RETURN(const auto payload, ReadMessagePayload(in));
-  const auto bytes = absl::visit(
+  const auto bytes = std::visit(
       base::Overloaded{
           [](const PayloadBuffer& payload) {
             return base::span<const uint8_t>(payload.data.get(), payload.size);

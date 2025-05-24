@@ -18,7 +18,7 @@
 // determination.
 class AutocompleteSchemeClassifier {
  public:
-  virtual ~AutocompleteSchemeClassifier() {}
+  virtual ~AutocompleteSchemeClassifier() = default;
 
   // Checks |scheme| and returns the type of the input if the scheme is known
   // and not blocked. Returns metrics::OmniboxInputType::EMPTY if it's unknown

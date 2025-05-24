@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("user_added_removed") {
   sources = [
@@ -16,7 +16,6 @@ static_library("user_added_removed") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/reporting",
     "//chrome/browser/ash/policy/status_collector",

@@ -35,11 +35,9 @@
   background-image: url(../../../../../ui/webui/resources/images/extension.svg);
 }
 
-<if expr="chromeos_ash">
 .controlled-setting-indicator[controlled-by='shared'] > div {
   background-image: url(../../../../../ui/webui/resources/images/group.svg);
 }
-</if>
 
 .controlled-setting-indicator[controlled-by='child-custodian'] > div {
   background-image: url(../../../../../ui/webui/resources/images/account_child_invert.svg);

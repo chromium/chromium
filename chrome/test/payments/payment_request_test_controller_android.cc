@@ -48,38 +48,38 @@ void PaymentRequestTestController::SetUpOnMainThread() {
   // Java.
   SetUseNativeObserverOnPaymentRequestForTesting(
       base::BindRepeating(&PaymentRequestTestController::OnCanMakePaymentCalled,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           &PaymentRequestTestController::OnCanMakePaymentReturned,
-          base::Unretained(this)),
+          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           &PaymentRequestTestController::OnHasEnrolledInstrumentCalled,
-          base::Unretained(this)),
+          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           &PaymentRequestTestController::OnHasEnrolledInstrumentReturned,
-          base::Unretained(this)),
+          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PaymentRequestTestController::OnAppListReady,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PaymentRequestTestController::set_app_descriptions,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           &PaymentRequestTestController::set_shipping_section_visible,
-          base::Unretained(this)),
+          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           &PaymentRequestTestController::set_contact_section_visible,
-          base::Unretained(this)),
+          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PaymentRequestTestController::OnErrorDisplayed,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PaymentRequestTestController::OnNotSupportedError,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PaymentRequestTestController::OnConnectionTerminated,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PaymentRequestTestController::OnAbortCalled,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PaymentRequestTestController::OnCompleteCalled,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PaymentRequestTestController::OnUIDisplayed,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
 
   SetUseDelegateOnPaymentRequestForTesting(is_off_the_record_, valid_ssl_,
                                            can_make_payment_pref_,

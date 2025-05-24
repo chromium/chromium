@@ -13,6 +13,7 @@ source_set("test") {
     "mock_bookmark_model_observer.h",
     "test_bookmark_client.cc",
     "test_bookmark_client.h",
+    "test_matchers.h",
   ]
 
   deps = [

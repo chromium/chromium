@@ -5,6 +5,8 @@
 #ifndef REMOTING_BASE_PROTOBUF_HTTP_REQUEST_H_
 #define REMOTING_BASE_PROTOBUF_HTTP_REQUEST_H_
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +23,7 @@ class ProtobufHttpRequest final : public ProtobufHttpRequestBase {
  public:
   template <typename ResponseType>
   using ResponseCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus& status,
+      base::OnceCallback<void(const HttpStatus& status,
                               std::unique_ptr<ResponseType> response)>;
 
   explicit ProtobufHttpRequest(
@@ -41,8 +43,7 @@ class ProtobufHttpRequest final : public ProtobufHttpRequestBase {
     response_message_ = response.get();
     response_callback_ = base::BindOnce(
         [](std::unique_ptr<ResponseType> response,
-           ResponseCallback<ResponseType> callback,
-           const ProtobufHttpStatus& status) {
+           ResponseCallback<ResponseType> callback, const HttpStatus& status) {
           if (!status.ok()) {
             response.reset();
           }
@@ -53,20 +54,20 @@ class ProtobufHttpRequest final : public ProtobufHttpRequestBase {
 
  private:
   // ProtobufHttpRequestBase implementations.
-  void OnAuthFailed(const ProtobufHttpStatus& status) override;
+  void OnAuthFailed(const HttpStatus& status) override;
   void StartRequestInternal(
       network::mojom::URLLoaderFactory* loader_factory) override;
   base::TimeDelta GetRequestTimeoutDuration() const override;
 
-  void OnResponse(std::unique_ptr<std::string> response_body);
+  void OnResponse(std::optional<std::string> response_body);
 
   // Parses |response_body| and writes it to |response_message_|.
-  ProtobufHttpStatus ParseResponse(std::unique_ptr<std::string> response_body);
+  HttpStatus ParseResponse(std::optional<std::string> response_body);
 
-  void RunResponseCallback(const ProtobufHttpStatus& status);
+  void RunResponseCallback(const HttpStatus& status);
 
   base::TimeDelta timeout_duration_ = base::Seconds(30);
-  base::OnceCallback<void(const ProtobufHttpStatus&)> response_callback_;
+  base::OnceCallback<void(const HttpStatus&)> response_callback_;
 
   // This is owned by |response_callback_|.
   raw_ptr<google::protobuf::MessageLite> response_message_;

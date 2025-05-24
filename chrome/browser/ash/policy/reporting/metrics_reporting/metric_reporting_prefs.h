@@ -26,29 +26,29 @@ namespace ash::reporting {
 
 // A list pref that controls app inventory event reporting for the specified app
 // types.
-constexpr char kReportAppInventory[] = "reporting.report_app_inventory";
+inline constexpr char kReportAppInventory[] = "reporting.report_app_inventory";
 
 // A list pref that controls app usage telemetry reporting for the specified app
 // types.
-constexpr char kReportAppUsage[] = "reporting.report_app_usage";
+inline constexpr char kReportAppUsage[] = "reporting.report_app_usage";
 
 // An integer pref that controls the collection frequency of app usage
 // telemetry.
-constexpr char kReportAppUsageCollectionRateMs[] =
+inline constexpr char kReportAppUsageCollectionRateMs[] =
     "reporting.report_app_usage_collection_rate_ms";
 
 // A list pref used to track installed apps for a particular user.
-constexpr char kAppsInstalled[] = "reporting.apps_installed";
+inline constexpr char kAppsInstalled[] = "reporting.apps_installed";
 
 // Application category types tracked by the app metric reporting user policies.
-constexpr char kAppCategoryAndroidApps[] = "android_apps";
-constexpr char kAppCategoryBrowser[] = "browser";
-constexpr char kAppCategoryChromeAppsExtensions[] =
+inline constexpr char kAppCategoryAndroidApps[] = "android_apps";
+inline constexpr char kAppCategoryBrowser[] = "browser";
+inline constexpr char kAppCategoryChromeAppsExtensions[] =
     "chrome_apps_and_extensions";
-constexpr char kAppCategoryGames[] = "games";
-constexpr char kAppCategoryLinuxApps[] = "linux_apps";
-constexpr char kAppCategoryPWA[] = "progressive_web_apps";
-constexpr char kAppCategorySystemApps[] = "system_apps";
+inline constexpr char kAppCategoryGames[] = "games";
+inline constexpr char kAppCategoryLinuxApps[] = "linux_apps";
+inline constexpr char kAppCategoryPWA[] = "progressive_web_apps";
+inline constexpr char kAppCategorySystemApps[] = "system_apps";
 
 void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/strings/grit/search_engine_descriptions_strings.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 // This file is generated using
 // http://go/chrome-search-engines-marketing-snippets-script.
@@ -27,20 +27,8 @@ int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::google.keyword) {
     return IDS_GOOGLE_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword == TemplateURLPrepopulateData::karma.keyword) {
-    return IDS_KARMA_SEARCH_DESCRIPTION;
-  }
   if (engine_keyword == TemplateURLPrepopulateData::lilo.keyword) {
     return IDS_LILO_SEARCH_DESCRIPTION;
-  }
-  if (engine_keyword == TemplateURLPrepopulateData::metager_de.keyword) {
-    return IDS_METAGER_SEARCH_DESCRIPTION;
-  }
-  if (engine_keyword == TemplateURLPrepopulateData::oceanhero.keyword) {
-    return IDS_OCEANHERO_SEARCH_DESCRIPTION;
-  }
-  if (engine_keyword == TemplateURLPrepopulateData::panda.keyword) {
-    return IDS_PANDA_SEARCH_DESCRIPTION;
   }
   if (engine_keyword == TemplateURLPrepopulateData::privacywall.keyword) {
     return IDS_PRIVACYWALL_SEARCH_DESCRIPTION;
@@ -48,11 +36,11 @@ int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::qwant.keyword) {
     return IDS_QWANT_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword == TemplateURLPrepopulateData::seznam_cz.keyword) {
+  if (engine_keyword == TemplateURLPrepopulateData::seznam.keyword) {
     return IDS_SEZNAM_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword == TemplateURLPrepopulateData::seznam_sk.keyword) {
-    return IDS_SEZNAM_SEARCH_DESCRIPTION;
+  if (engine_keyword == TemplateURLPrepopulateData::startpage.keyword) {
+    return IDS_STARTPAGE_SEARCH_DESCRIPTION;
   }
   if (engine_keyword == TemplateURLPrepopulateData::yahoo.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
@@ -150,8 +138,8 @@ int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::yahoo_uk.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword == TemplateURLPrepopulateData::you.keyword) {
-    return IDS_YOU_SEARCH_DESCRIPTION;
+  if (engine_keyword == TemplateURLPrepopulateData::yep.keyword) {
+    return IDS_YEP_SEARCH_DESCRIPTION;
   }
   return -1;
 }

@@ -17,11 +17,6 @@ void FakeDataDecoderService::BindImageDecoder(
   FAIL();
 }
 
-void FakeDataDecoderService::BindJsonParser(
-    mojo::PendingReceiver<data_decoder::mojom::JsonParser> receiver) {
-  FAIL();
-}
-
 void FakeDataDecoderService::BindStructuredHeadersParser(
     mojo::PendingReceiver<data_decoder::mojom::StructuredHeadersParser>
         receiver) {
@@ -55,11 +50,11 @@ void FakeDataDecoderService::BindPixCodeValidator(
   FAIL();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FakeDataDecoderService::BindBleScanParser(
     mojo::PendingReceiver<mojom::BleScanParser> receiver) {
   FAIL();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace data_decoder

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("on_device_controls") {
   sources = [
@@ -67,7 +67,6 @@ source_set("unit_tests") {
 
   deps = [
     ":on_device_controls",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//ash/public/cpp:test_support",
     "//ash/webui/settings/public/constants:mojom",
@@ -82,6 +81,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/aura",

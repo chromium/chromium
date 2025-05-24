@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace syncer {
 
@@ -43,12 +44,10 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
 
   // Please keep all methods below in the same order as the @NativeMethods in
   // SyncServiceImpl.java.
-  void SetSyncRequested(JNIEnv* env);
   jboolean IsSyncFeatureEnabled(JNIEnv* env);
   jboolean IsSyncFeatureActive(JNIEnv* env);
   jboolean IsSyncDisabledByEnterprisePolicy(JNIEnv* env);
   jboolean IsEngineInitialized(JNIEnv* env);
-  jboolean IsTransportStateActive(JNIEnv* env);
   void SetSetupInProgress(JNIEnv* env, jboolean in_progress);
   jboolean IsInitialSyncFeatureSetupComplete(JNIEnv* env);
   void SetInitialSyncFeatureSetupComplete(JNIEnv* env, jint source);
@@ -79,6 +78,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   jboolean IsTrustedVaultRecoverabilityDegraded(JNIEnv* env);
   jboolean IsUsingExplicitPassphrase(JNIEnv* env);
   jint GetPassphraseType(JNIEnv* env);
+  jint GetTransportState(JNIEnv* env);
   void SetEncryptionPassphrase(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& passphrase);
@@ -89,7 +89,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   jlong GetExplicitPassphraseTime(JNIEnv* env);
   void GetAllNodes(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& callback);
-  jint GetAuthError(JNIEnv* env);
+  GoogleServiceAuthError GetAuthError(JNIEnv* env);
   jboolean HasUnrecoverableError(JNIEnv* env);
   jboolean RequiresClientUpgrade(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetAccountInfo(JNIEnv* env);

@@ -38,13 +38,13 @@ constexpr bool kIsTrapHandlerSupported = false;
 
 class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
  public:
-  WasmTrapHandlerBrowserTest() {}
+  WasmTrapHandlerBrowserTest() = default;
 
   WasmTrapHandlerBrowserTest(const WasmTrapHandlerBrowserTest&) = delete;
   WasmTrapHandlerBrowserTest& operator=(const WasmTrapHandlerBrowserTest&) =
       delete;
 
-  ~WasmTrapHandlerBrowserTest() override {}
+  ~WasmTrapHandlerBrowserTest() override = default;
 
  protected:
   void RunJSTest(const std::string& js) const {

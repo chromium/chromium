@@ -25,15 +25,12 @@ crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_clear
 # Also, with a native GPU, sometimes R & B channels are incorrectly swapped in
 # texture readback. (Canvas readback does not exhibit this issue.)
 crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.html [ Skip ]
-crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.worker.html [ Skip ]
 
-# Linux does not yet properly support readback on shared images.
+# Linux does not fully support WebGPU yet.
 crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.worker.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba8.https.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba8.https.worker.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba16f.https.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba16f.https.worker.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation-offscreen.https.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation-worker.https.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation.https.html [ Skip ]
 
 # Test fails due to scaling precision issues
 crbug.com/1515185 wpt_internal/webgpu/web_platform/reftests/canvas_image_rendering.https.html [ Failure ]
@@ -50,3 +47,10 @@ crbug.com/1405548 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_color
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba16float.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Failure ]
+
+# Test failus due to drop last frame after gpu device is destroyed/lost.
+crbug.com/370694819 wpt_internal/webgpu/web_platform/reftests/canvas_display_after_device_lost.https.html [ Failure ]
+
+# Crashes due to the upgrade from Win10/old driver -> Win11/new driver for NVIDIA GTX 1660.
+crbug.com/418169213 [ Win11 ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Crash ]
+crbug.com/418169213 [ Win11 ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Crash ]

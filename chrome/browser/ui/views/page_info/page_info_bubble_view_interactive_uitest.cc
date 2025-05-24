@@ -4,11 +4,13 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
@@ -25,14 +27,24 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "url/origin.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
+#endif
 
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 const char kFirstPermissionRow[] = "FirstPermissionRow";
+#if BUILDFLAG(IS_CHROMEOS)
+const char kSecondPermissionRow[] = "SecondPermissionRow";
+#endif
 
 // Clicks the location icon to open the page info bubble.
 void OpenPageInfoBubble(Browser* browser) {
@@ -60,8 +72,9 @@ class FocusTracker {
   // is already in the desired state, returns immediately, otherwise waits until
   // it is.
   void WaitForFocus(bool target_state_is_focused) {
-    if (focused_ == target_state_is_focused)
+    if (focused_ == target_state_is_focused) {
       return;
+    }
     target_state_is_focused_ = target_state_is_focused;
     run_loop_.Run();
   }
@@ -72,14 +85,16 @@ class FocusTracker {
 
   void OnFocused() {
     focused_ = true;
-    if (run_loop_.running() && target_state_is_focused_ == focused_)
+    if (run_loop_.running() && target_state_is_focused_ == focused_) {
       run_loop_.Quit();
+    }
   }
 
   void OnBlurred() {
     focused_ = false;
-    if (run_loop_.running() && target_state_is_focused_ == focused_)
+    if (run_loop_.running() && target_state_is_focused_ == focused_) {
       run_loop_.Quit();
+    }
   }
 
  private:
@@ -113,10 +128,12 @@ class WebContentsFocusTracker : public FocusTracker,
  private:
   static bool IsWebContentsFocused(content::WebContents* web_contents) {
     Browser* const browser = chrome::FindBrowserWithTab(web_contents);
-    if (!browser)
+    if (!browser) {
       return false;
-    if (browser->tab_strip_model()->GetActiveWebContents() != web_contents)
+    }
+    if (browser->tab_strip_model()->GetActiveWebContents() != web_contents) {
       return false;
+    }
     return BrowserView::GetBrowserViewForBrowser(browser)
         ->contents_web_view()
         ->HasFocus();
@@ -292,6 +309,29 @@ class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
         }));
   }
 
+  auto DeleteGrant(ElementSpecifier row) {
+    return WithElement(
+        row, base::BindOnce([](ui::TrackedElement* el) {
+          views::test::InteractionTestUtilSimulatorViews::PressButton(
+              static_cast<views::Button*>(
+                  AsView<ChosenObjectView>(el)->GetDeleteButtonForTesting()));
+        }));
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  auto EnsureSmartCardReaderGrantStatus(const std::string& reader_name,
+                                        bool is_granted) {
+    return CheckResult(
+        base::BindLambdaForTesting([this, reader_name]() {
+          return SmartCardPermissionContextFactory::GetForProfile(
+                     *browser()->profile())
+              .HasReaderPermission(url::Origin::Create(GetURL()), reader_name);
+        }),
+        is_granted,
+        "Checking if the smart card reader permission matches the expectation");
+  }
+#endif
+
   auto CheckContentSettings(ContentSettingsType type, ContentSetting setting) {
     return CheckResult(
         base::BindLambdaForTesting([type, this]() {
@@ -322,7 +362,23 @@ class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
         ContentSettingsPattern::Wildcard(), type, setting);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void GrantSmartCardReaderPermission(const std::string& reader_name) {
+    SmartCardPermissionContextFactory::GetForProfile(*browser()->profile())
+        .GrantPersistentReaderPermission(url::Origin::Create(GetURL()),
+                                         reader_name);
+  }
+
+  void ResetSmartCardReaderGrants() {
+    SmartCardPermissionContextFactory::GetForProfile(*browser()->profile())
+        .RevokeAllPermissions();
+  }
+#endif
+
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_list_{blink::features::kSmartCard};
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
@@ -535,3 +591,41 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
                         &PermissionToggleRowView::GetRowSubTitleForTesting,
                         u""));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+                       SmartCardGrantsShowCorrectly) {
+  GrantSmartCardReaderPermission("Reader 1");
+  GrantSmartCardReaderPermission("Reader 2");
+
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
+      // A view with permissions in PageInfo.
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      // Set id to the first child of `kPermissionsElementId` -
+      // should be first reader grant.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the first row is the Reader 1 grant.
+      CheckViewProperty(kFirstPermissionRow,
+                        &ChosenObjectView::GetObjectNameForTesting,
+                        u"Reader 1"),
+      // Set id to the second child of `kPermissionsElementId` -
+      // should be the second reader grant.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kSecondPermissionRow, 1u),
+      // Verify the second row is the Reader 2 grant.
+      CheckViewProperty(kSecondPermissionRow,
+                        &ChosenObjectView::GetObjectNameForTesting,
+                        u"Reader 2"),
+      // Click the button deleting grant.
+      DeleteGrant(kFirstPermissionRow),
+      // Row with Reader 1 should disappear.
+      WaitForHide(kFirstPermissionRow),
+      // Permissions should align with what is visible.
+      EnsureSmartCardReaderGrantStatus("Reader 1", false),
+      EnsureSmartCardReaderGrantStatus("Reader 2", true));
+
+  ResetSmartCardReaderGrants();
+}
+#endif

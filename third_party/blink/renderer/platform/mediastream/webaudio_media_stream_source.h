@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_WEBAUDIO_MEDIA_STREAM_SOURCE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_push_fifo.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
@@ -35,10 +35,6 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
 
   ~WebAudioMediaStreamSource() override;
 
-  void SetMediaStreamSource(MediaStreamSource* media_stream_source) {
-    media_stream_source_ = media_stream_source;
-  }
-
  private:
   // WebAudioDestinationConsumer implementation.
   //
@@ -55,17 +51,9 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
   void DeliverRebufferedAudio(const media::AudioBus& audio_bus,
                               int frame_delay);
 
-  // MediaStreamAudioSource implementation.
-  bool EnsureSourceIsStarted() final;
-  void EnsureSourceIsStopped() final;
-
   // In debug builds, check that all methods that could cause object graph
   // or data flow changes are being called on the main thread.
   THREAD_CHECKER(thread_checker_);
-
-  // True while this WebAudioMediaStreamSource is registered with
-  // |media_stream_source_| and is consuming audio.
-  bool is_registered_consumer_;
 
   // A wrapper used for providing audio to |fifo_|.
   std::unique_ptr<media::AudioBus> wrapper_bus_;
@@ -79,10 +67,6 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
   // Used to pass the reference timestamp between DeliverDecodedAudio() and
   // DeliverRebufferedAudio().
   base::TimeTicks current_reference_time_;
-
-  // This object registers with a MediaStreamSource. We keep track of
-  // that in order to be able to deregister before stopping this source.
-  Persistent<MediaStreamSource> media_stream_source_;
 };
 
 }  // namespace blink

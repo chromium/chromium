@@ -1,0 +1,18 @@
+wireplumber.profiles = {
+  ## Syntax:
+  ## <profile> = {
+  ##   # optional is the default
+  ##   <feature name> = [ required | optional | disabled ]
+  ##   ...
+  ## }
+
+  chrome-remote-desktop = {
+    check.no-media-session = required
+    support.log-settings = required
+    metadata.sm-objects = required
+    hardware.audio = disabled
+    hardware.bluetooth = disabled
+    hardware.video-capture = disabled
+    policy.standard = required
+  }
+}

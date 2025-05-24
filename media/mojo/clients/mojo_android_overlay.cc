@@ -5,6 +5,7 @@
 #include "media/mojo/clients/mojo_android_overlay.h"
 
 #include <utility>
+#include <variant>
 
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -58,14 +59,14 @@ void MojoAndroidOverlay::OnSurfaceReady(uint64_t surface_key) {
   auto surface_record =
       gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_key);
   DCHECK(!surface_record.can_be_used_with_surface_control);
-  if (!absl::holds_alternative<gl::ScopedJavaSurface>(
+  if (!std::holds_alternative<gl::ScopedJavaSurface>(
           surface_record.surface_variant)) {
     config_.is_failed(this);
     // |this| may be deleted.
     return;
   }
 
-  surface_ = std::move(absl::get<gl::ScopedJavaSurface>(
+  surface_ = std::move(std::get<gl::ScopedJavaSurface>(
       std::move(surface_record.surface_variant)));
 
   // If no surface was returned, then fail instead.

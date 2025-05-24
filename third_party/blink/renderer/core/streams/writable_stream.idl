@@ -4,7 +4,7 @@
 
 // https://streams.spec.whatwg.org/#ws-class
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=*
 ] interface WritableStream {
     [CallWith=ScriptState, RaisesException, MeasureAs=WritableStreamConstructor] constructor(optional any underlyingSink, optional any strategy);
     readonly attribute boolean locked;

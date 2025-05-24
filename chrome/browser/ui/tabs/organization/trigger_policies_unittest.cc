@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
+
+#include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -52,6 +52,17 @@ TEST_F(UsageTickClockTest, TestClock) {
   tracker->OnVisibilityChanged(false, base::TimeDelta());
   inner_clock()->Advance(base::Minutes(1));
   EXPECT_EQ(base::Minutes(2), clock()->NowTicks() - start_time);
+}
+
+TEST_F(UsageTickClockTest, TestClockWithoutInitialization) {
+  metrics::DesktopSessionDurationTracker::CleanupForTesting();
+
+  // Time moves since tracker is not initialized.
+  inner_clock()->Advance(base::Minutes(1));
+  EXPECT_EQ(inner_clock()->NowTicks(), clock()->NowTicks());
+
+  // Create the tracker again to safely clean test.
+  metrics::DesktopSessionDurationTracker::Initialize();
 }
 
 class FakeBackoffLevelProvider final : public BackoffLevelProvider {

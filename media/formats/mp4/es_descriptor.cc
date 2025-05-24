@@ -101,7 +101,7 @@ std::vector<uint8_t> ESDescriptor::CreateEsds(
   EncodeDescriptorSize(aac_extra_data.size(),
                        esds->decoder_config.extra_data.size);
 
-  base::ranges::copy(aac_extra_data, esds_data.begin() + sizeof(EsDescriptor));
+  std::ranges::copy(aac_extra_data, esds_data.begin() + sizeof(EsDescriptor));
 
   DCHECK(ESDescriptor().Parse(esds_data));
   return esds_data;

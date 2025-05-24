@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] cross-origin, setting location.href
-  promise_test: Unhandled rejection with value: object "SecurityError: Failed to set the 'href' property on 'Location': The current window does not have permission to navigate the target frame to 'javascript:parent.postMessage("boo", "*")'."
+  promise_test: Unhandled rejection with value: object "SecurityError: Failed to set a named property 'href' on 'Location': The current window does not have permission to navigate the target frame to 'javascript:parent.postMessage("boo", "*")'."
 [FAIL] cross-origin-domain but same-origin, setting location.href
-  promise_test: Unhandled rejection with value: object "SecurityError: Failed to set the 'href' property on 'Location': The current window does not have permission to navigate the target frame to 'javascript:parent.postMessage("boo", "*")'."
+  promise_test: Unhandled rejection with value: object "SecurityError: Failed to set a named property 'href' on 'Location': The current window does not have permission to navigate the target frame to 'javascript:parent.postMessage("boo", "*")'."
 Harness: the test ran to completion.
 

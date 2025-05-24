@@ -6,27 +6,17 @@
 #define IOS_CHROME_BROWSER_SHARING_MESSAGE_MODEL_IOS_SHARING_MESSAGE_BRIDGE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class SharingMessageBridge;
 
 // Singleton that owns all SharingMessageBridge and associates them with
 // Profile.
-class IOSSharingMessageBridgeFactory : public BrowserStateKeyedServiceFactory {
+class IOSSharingMessageBridgeFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static SharingMessageBridge* GetForBrowserState(ProfileIOS* profile);
-
   static SharingMessageBridge* GetForProfile(ProfileIOS* profile);
-  static SharingMessageBridge* GetForProfileIfExists(
-      ChromeBrowserState* browser_state);
+  static SharingMessageBridge* GetForProfileIfExists(ProfileIOS* profile);
   static IOSSharingMessageBridgeFactory* GetInstance();
-
-  IOSSharingMessageBridgeFactory(const IOSSharingMessageBridgeFactory&) =
-      delete;
-  IOSSharingMessageBridgeFactory& operator=(
-      const IOSSharingMessageBridgeFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSSharingMessageBridgeFactory>;

@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     return account_key_;
   }
 
-  void set_account_key(std::vector<uint8_t> account_key) {
+  void set_account_key(const std::vector<uint8_t>& account_key) {
     account_key_ = account_key;
   }
 

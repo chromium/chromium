@@ -36,7 +36,6 @@ class LocalizedError {
     bool is_offline_error = false;
     bool reload_button_shown = false;
     bool download_button_shown = false;
-    bool offline_content_feature_enabled = false;
     bool auto_fetch_allowed = false;
   };
 
@@ -55,7 +54,6 @@ class LocalizedError {
                                 bool stale_copy_in_cache,
                                 bool can_show_network_diagnostics_dialog,
                                 bool is_incognito,
-                                bool offline_content_feature_enabled,
                                 bool auto_fetch_feature_enabled,
                                 bool is_kiosk_mode,
                                 const std::string& locale,

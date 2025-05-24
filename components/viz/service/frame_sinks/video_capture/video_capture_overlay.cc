@@ -517,8 +517,7 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -688,8 +687,7 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

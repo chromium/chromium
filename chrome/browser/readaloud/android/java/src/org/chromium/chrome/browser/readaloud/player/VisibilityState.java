@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.readaloud.player;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Visibility and animation states for a player. */
+@NullMarked
 @IntDef({
     VisibilityState.GONE,
     VisibilityState.SHOWING,

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -265,6 +266,8 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
             AshColorProvider::ContentLayerType::kIconColorProminent));
   }
 
+  progress_bar_->SetProperty(views::kElementIdentifierKey,
+                             kTrayDetailedViewProgressBarElementId);
   progress_bar_->SetValue(value);
   progress_bar_->SetVisible(visible);
   children()[size_t{kTitleRowProgressBarIndex}]->SetVisible(!visible);
@@ -308,7 +311,7 @@ std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(int string_id) {
 
   auto* title_label = TrayPopupUtils::CreateDefaultLabel();
   title_label->SetText(l10n_util::GetStringUTF16(string_id));
-  title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
                                              *title_label);
   tri_view->AddView(TriView::Container::CENTER, title_label);

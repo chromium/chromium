@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 
@@ -99,6 +100,7 @@ void HotspotNotifier::OnHotspotTurnedOff(DisableReason disable_reason) {
     case DisableReason::kDownstreamNetworkDisconnect:
     case DisableReason::kStartTimeout:
     case DisableReason::kUpstreamNotAvailable:
+    case DisableReason::kResourceBusy:
     case DisableReason::kUnknownError:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
       message_id = IDS_ASH_HOTSPOT_INTERNAL_ERROR_MESSAGE;
@@ -287,7 +289,7 @@ HotspotNotifier::CreateNotification(
     const bool use_hotspot_icon,
     scoped_refptr<message_center::NotificationDelegate> delegate) {
   const gfx::VectorIcon& icon =
-      use_hotspot_icon ? kHotspotOnIcon : gfx::kNoneIcon;
+      use_hotspot_icon ? kHotspotOnIcon : gfx::VectorIcon::EmptyIcon();
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title_id,

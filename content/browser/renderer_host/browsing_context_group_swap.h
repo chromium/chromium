@@ -19,13 +19,6 @@ enum class BrowsingContextGroupSwapType {
   kNoSwap,
   // Used for swaps forced by a non matching COOP policy.
   kCoopSwap,
-  // Used for some swaps forced by a non matching COOP: restrict-properties
-  // policy. It puts the new document into a related browsing context group.
-  //
-  // Contrary to unrelated BrowsingContext groups, the communication in between
-  // two related browsing context groups is possible, but limited to using
-  // Window.postMessage() and Window.closed only.
-  kRelatedCoopSwap,
   // Used for swaps forced by a non-COOP security reason. This could be a
   // navigation from a WebUI page to a normal page for example.
   kSecuritySwap,
@@ -48,20 +41,11 @@ class CONTENT_EXPORT BrowsingContextGroupSwap {
   static BrowsingContextGroupSwap CreateProactiveSwap(
       ShouldSwapBrowsingInstance reason);
 
-  // CreateRelatedCoopSwap() should only be used in cases where we can
-  // guarantee that we will not reuse the current browsing context group as part
-  // of the CoopRelatedGroup reuse mechanism. If the browsing context group ends
-  // up being reused, this will very likely cause a crash. Cases with
-  // CoopSwapResult::kRelatedSwap should provide such guarantees.
-  static BrowsingContextGroupSwap CreateRelatedCoopSwap();
-
   BrowsingContextGroupSwapType type() const { return type_; }
   ShouldSwapBrowsingInstance reason() const { return reason_.value(); }
 
   // Returns whether we should use a different browsing context group for the
-  // navigation. Note that this does not indicate whether it should stay in the
-  // same CoopRelatedGroup. To know if it should, verify type() ==
-  // kRelatedCoopSwap.
+  // navigation.
   bool ShouldSwap() const;
 
   // Indicates whether the proxies to other documents in this browsing context

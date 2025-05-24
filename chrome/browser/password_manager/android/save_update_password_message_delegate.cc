@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/android/build_info.h"
-#include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -17,9 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
-#include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,7 +32,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
@@ -55,38 +51,18 @@ const int kMessageDismissDurationMs = 20000;
 constexpr base::TimeDelta kUpdateGMSCoreMessageDisplayDelay =
     base::Milliseconds(500);
 
-void TryToShowPasswordMigrationWarning(
-    base::RepeatingCallback<
-        void(gfx::NativeWindow,
-             Profile*,
-             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-        callback,
-    raw_ptr<content::WebContents> web_contents) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    callback.Run(
-        web_contents->GetTopLevelNativeWindow(),
-        Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-        password_manager::metrics_util::PasswordMigrationWarningTriggers::
-            kPasswordSaveUpdateMessage);
-  }
-}
-
 void TryToShowAccessLossWarning(content::WebContents* web_contents,
                                 PasswordAccessLossWarningBridge* bridge) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    PrefService* prefs = profile->GetPrefs();
-    if (profile && bridge->ShouldShowAccessLossNoticeSheet(
-                       prefs, /*called_at_startup=*/false)) {
-      bridge->MaybeShowAccessLossNoticeSheet(
-          prefs, web_contents->GetTopLevelNativeWindow(), profile,
-          /*called_at_startup=*/false);
-    }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
+  if (profile && bridge->ShouldShowAccessLossNoticeSheet(
+                     prefs, /*called_at_startup=*/false)) {
+    bridge->MaybeShowAccessLossNoticeSheet(
+        prefs, web_contents->GetTopLevelNativeWindow(), profile,
+        /*called_at_startup=*/false,
+        password_manager_android_util::PasswordAccessLossWarningTriggers::
+            kPasswordSaveUpdateMessage);
   }
 }
 
@@ -94,19 +70,11 @@ void TryToShowAccessLossWarning(content::WebContents* web_contents,
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
     : SaveUpdatePasswordMessageDelegate(
-          base::BindRepeating(PasswordEditDialogBridge::Create),
-          base::BindRepeating(&local_password_migration::ShowWarning)) {}
+          base::BindRepeating(PasswordEditDialogBridge::Create)) {}
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
-    PasswordEditDialogFactory password_edit_dialog_factory,
-    base::RepeatingCallback<
-        void(gfx::NativeWindow,
-             Profile*,
-             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-        create_migration_warning_callback)
+    PasswordEditDialogFactory password_edit_dialog_factory)
     : password_edit_dialog_factory_(std::move(password_edit_dialog_factory)),
-      create_migration_warning_callback_(
-          std::move(create_migration_warning_callback)),
       device_lock_bridge_(std::make_unique<DeviceLockBridge>()),
       access_loss_bridge_(
           std::make_unique<PasswordAccessLossWarningBridgeImpl>()) {}
@@ -114,15 +82,9 @@ SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
     base::PassKey<class SaveUpdatePasswordMessageDelegateTest>,
     PasswordEditDialogFactory password_edit_dialog_factory,
-    base::RepeatingCallback<
-        void(gfx::NativeWindow,
-             Profile*,
-             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-        create_migration_warning_callback,
     std::unique_ptr<DeviceLockBridge> device_lock_bridge,
     std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_bridge)
-    : SaveUpdatePasswordMessageDelegate(password_edit_dialog_factory,
-                                        create_migration_warning_callback) {
+    : SaveUpdatePasswordMessageDelegate(password_edit_dialog_factory) {
   device_lock_bridge_ = std::move(device_lock_bridge);
   access_loss_bridge_ = std::move(access_loss_bridge);
 }
@@ -142,10 +104,9 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  std::optional<AccountInfo> account_info =
-      password_manager::GetAccountInfoForPasswordMessages(
-          SyncServiceFactory::GetForProfile(profile),
-          IdentityManagerFactory::GetForProfile(profile));
+  std::optional<AccountInfo> account_info = GetAccountInfoForPasswordMessages(
+      SyncServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile));
   DisplaySaveUpdatePasswordPromptInternal(
       web_contents, std::move(form_to_save), std::move(account_info),
       update_password, password_manager_client);
@@ -338,9 +299,6 @@ int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
 unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
     std::vector<std::u16string>* usernames) {
   unsigned int selected_username_index = 0;
-  // TODO(crbug.com/40675711): Fix the update logic to use all best matches,
-  // rather than current_forms which is best_matches without PSL-matched
-  // credentials.
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
       password_forms = passwords_state_.GetCurrentForms();
   const std::u16string& default_username =
@@ -387,8 +345,6 @@ void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
             &SaveUpdatePasswordMessageDelegate::MaybeNudgeToUpdateGmsCore,
             weak_ptr_factory_.GetWeakPtr()),
         kUpdateGMSCoreMessageDisplayDelay);
-    TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
-                                      web_contents_);
     TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
   }
   ClearState();
@@ -449,8 +405,6 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
   if (!(device_lock_bridge_->ShouldShowDeviceLockUi() &&
         web_contents_->GetNativeView()->GetWindowAndroid())) {
     if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION) {
-      TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
-                                        web_contents_);
       TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
     }
     ClearState();
@@ -458,9 +412,6 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
 }
 
 bool SaveUpdatePasswordMessageDelegate::HasMultipleCredentialsStored() {
-  // TODO(crbug.com/40675711): Fix the update logic to use all best matches,
-  // rather than current_forms which is best_matches without PSL-matched
-  // credentials.
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
       password_forms = passwords_state_.GetCurrentForms();
   return password_forms.size() > 1;
@@ -484,8 +435,6 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
   // callback.
   if (!(device_lock_bridge_->ShouldShowDeviceLockUi() &&
         web_contents_->GetNativeView()->GetWindowAndroid())) {
-    TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
-                                      web_contents_);
     TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
     ClearState();
   }
@@ -505,15 +454,22 @@ bool SaveUpdatePasswordMessageDelegate::IsUsingAccountStorage(
     return false;
   }
 
-  // Pre-UPM the profile storage was used in fact as the account store (when
-  // sync is on). So this is the cut-off for the users who are not using UPM
-  // (this evaluates to using account store when the user is syncing and using
-  // profile store when they are not syncing).
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  if (!UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
+
+  // Pre-UPM there was a single storage, which would either store account
+  // storage credentials (when sync was on for passwords) or local passwords.
+  // After login db deprecation, pre-UPM clients can no longer save passwords,
+  // so this code is only reached for clients that have access to split stores.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid) &&
+      !UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
     return account_email_.has_value();
   }
+
+  // After UPM, an updated credential can be saved either to the local or
+  // account storage, so the credential itself needs to be checked to determine
+  // whether account storage messaging needs to be displayed.
 
   // Copy the pending password form here and assign the new username.
   password_manager::PasswordForm updated_credentials =

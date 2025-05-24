@@ -14,17 +14,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class PrefService;
 class Profile;
@@ -61,7 +64,7 @@ class WebAppPolicyManager {
     provider_ = &provider;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetSystemWebAppDelegateMap(
       const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
 #endif
@@ -83,19 +86,18 @@ class WebAppPolicyManager {
   // disabled and notifies sync_bridge_ about the current app state.
   void OnDisableListPolicyChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Gets system web apps disabled by SystemFeaturesDisableList policy.
-  const std::set<ash::SystemWebAppType>& GetDisabledSystemWebApps() const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  const absl::flat_hash_set<ash::SystemWebAppType>& GetDisabledSystemWebApps()
+      const;
 
-  // Gets ids of web apps disabled by SystemFeaturesDisableList policy.
-  const std::set<webapps::AppId>& GetDisabledWebAppsIds() const;
+  // Checks if UI mode of disabled web apps is hidden for `system_app_type`.
+  bool IsDisabledAppsModeHidden(
+      std::optional<ash::SystemWebAppType> system_app_type) const;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Checks if web app is disabled by SystemFeaturesDisableList policy.
   bool IsWebAppInDisabledList(const webapps::AppId& app_id) const;
-
-  // Checks if UI mode of disabled web apps is hidden.
-  bool IsDisabledAppsModeHidden() const;
 
   RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicy(
       const webapps::AppId& app_id) const;
@@ -140,7 +142,7 @@ class WebAppPolicyManager {
     std::optional<std::vector<blink::Manifest::ImageResource>> icons;
   };
 
-  void InitChangeRegistrarAndRefreshPolicy(bool enable_pwa_support);
+  void InitChangeRegistrarAndRefreshPolicy();
 
   void RefreshPolicyInstalledApps(bool allow_close_and_relaunch = false);
   void ParsePolicySettings();
@@ -184,20 +186,24 @@ class WebAppPolicyManager {
   raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
       system_web_apps_delegate_map_ = nullptr;
 #endif
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // List of disabled system web apps, containing app types.
-  std::set<ash::SystemWebAppType> disabled_system_apps_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  absl::flat_hash_set<ash::SystemWebAppType> disabled_system_apps_;
+
+  // List of disabled system web apps that shouldn't be hidden, containing app
+  // types. Should be a subset of `disabled_system_apps_`.
+  absl::flat_hash_set<ash::SystemWebAppType> disabled_system_apps_not_hidden_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // List of disabled system and progressive web apps, containing app ids.
-  std::set<webapps::AppId> disabled_web_apps_;
+  absl::flat_hash_set<webapps::AppId> disabled_web_apps_;
 
   // Testing callbacks
   base::OnceClosure refresh_policy_settings_completed_;

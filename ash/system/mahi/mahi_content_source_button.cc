@@ -46,7 +46,7 @@ MahiContentSourceButton::MahiContentSourceButton() {
           base::BindRepeating(&MahiContentSourceButton::OpenContentSourcePage,
                               weak_ptr_factory_.GetWeakPtr()))
       .SetImageLabelSpacing(kContentSourceImageLabelSpacing)
-      .SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurfaceVariant)
+      .SetEnabledTextColors(cros_tokens::kCrosSysOnSurfaceVariant)
       .SetBorder(views::CreateEmptyBorder(kContentSourceButtonBorderInsets))
       .SetBackground(StyleUtil::CreateThemedFullyRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBase1))
@@ -69,7 +69,12 @@ void MahiContentSourceButton::RefreshContentSourceInfo() {
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromImageSkia(image_util::ResizeAndCropImage(
           mahi_manager->GetContentIcon(), mahi_constants::kContentIconSize)));
-  SetText(mahi_manager->GetContentTitle());
+  const std::u16string selected_text = mahi_manager->GetSelectedText();
+  if (!selected_text.empty()) {
+    SetText(selected_text);
+  } else {
+    SetText(mahi_manager->GetContentTitle());
+  }
 
   if (GetViewAccessibility().GetCachedName().empty()) {
     GetViewAccessibility().SetName(l10n_util::GetStringUTF16(

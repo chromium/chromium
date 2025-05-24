@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_view.h"
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/media_router/presentation_receiver_window_delegate.h"
@@ -26,7 +25,7 @@
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -55,8 +54,9 @@ class FakeReceiverDelegate final : public PresentationReceiverWindowDelegate {
 
   // PresentationReceiverWindowDelegate overrides.
   void WindowClosed() final {
-    if (closed_callback_)
+    if (closed_callback_) {
       std::move(closed_callback_).Run();
+    }
   }
   content::WebContents* web_contents() const final {
     return web_contents_.get();
@@ -68,13 +68,14 @@ class FakeReceiverDelegate final : public PresentationReceiverWindowDelegate {
 };
 
 class PresentationReceiverWindowViewBrowserTest : public InProcessBrowserTest {
- protected:
-  PresentationReceiverWindowViewBrowserTest() = default;
-
+ public:
   PresentationReceiverWindowViewBrowserTest(
       const PresentationReceiverWindowViewBrowserTest&) = delete;
   PresentationReceiverWindowViewBrowserTest& operator=(
       const PresentationReceiverWindowViewBrowserTest&) = delete;
+
+ protected:
+  PresentationReceiverWindowViewBrowserTest() = default;
 
   PresentationReceiverWindowView* CreateReceiverWindowView(
       PresentationReceiverWindowDelegate* delegate,
@@ -114,7 +115,7 @@ class PresentationReceiverWindowViewBrowserTest : public InProcessBrowserTest {
       receiver_view_ = nullptr;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
                        ChromeOSHardwareFullscreenButton) {
   // Bypass ExclusiveAccessContext and default accelerator to simulate hardware
@@ -153,8 +154,9 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
     void OnViewVisibilityChanged(views::View* observed_view) {
       bool fullscreen = !observed_view->GetVisible();
       EXPECT_EQ(fullscreen, receiver_view_->IsFullscreen());
-      if (fullscreen == (await_type_ == AwaitType::kIntoFullscreen))
+      if (fullscreen == (await_type_ == AwaitType::kIntoFullscreen)) {
         std::move(fullscreen_callback_).Run();
+      }
     }
 
     const raw_ptr<PresentationReceiverWindowView> receiver_view_;

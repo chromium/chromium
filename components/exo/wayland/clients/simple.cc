@@ -12,6 +12,7 @@
 #include <presentation-time-client-protocol.h>
 #include <single-pixel-buffer-v1-client-protocol.h>
 
+#include <algorithm>
 #include <climits>
 #include <cstdint>
 #include <iostream>
@@ -19,7 +20,6 @@
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -81,8 +81,8 @@ void FeedbackDiscarded(void* data, struct wp_presentation_feedback* feedback) {
   Presentation* presentation = static_cast<Presentation*>(data);
   DCHECK_GT(presentation->submitted_frames.size(), 0u);
   auto it =
-      base::ranges::find(presentation->submitted_frames, feedback,
-                         [](Frame& frame) { return frame.feedback.get(); });
+      std::ranges::find(presentation->submitted_frames, feedback,
+                        [](Frame& frame) { return frame.feedback.get(); });
   CHECK(it != presentation->submitted_frames.end(), base::NotFatalUntil::M130);
   presentation->submitted_frames.erase(it);
 }

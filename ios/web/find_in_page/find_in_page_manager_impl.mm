@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/web/find_in_page/find_in_page_manager_impl.h"
+
 #import <UIKit/UIKit.h>
 
-#import "ios/web/find_in_page/find_in_page_manager_impl.h"
 #import "ios/web/find_in_page/find_in_page_metrics.h"
 #import "ios/web/public/find_in_page/crw_find_interaction.h"
 #import "ios/web/public/find_in_page/crw_find_session.h"
@@ -16,14 +17,30 @@
 namespace {
 
 // Default delay between each call to `PollActiveFindSession`.
-auto kPollActiveFindSessionDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kPollActiveFindSessionDelay = base::Milliseconds(100);
 
 }  // namespace
 
 namespace web {
 
-FindInPageManagerImpl::FindInPageManagerImpl(web::WebState* web_state)
-    : poll_active_find_session_delay_(kPollActiveFindSessionDelay),
+// static
+std::unique_ptr<FindInPageManager> FindInPageManager::Create(
+    WebState* web_state) {
+  return FindInPageManager::Create(web_state, kPollActiveFindSessionDelay);
+}
+
+// static
+std::unique_ptr<FindInPageManager> FindInPageManager::Create(
+    WebState* web_state,
+    base::TimeDelta poll_active_find_session_delay) {
+  return std::make_unique<FindInPageManagerImpl>(
+      web_state, poll_active_find_session_delay);
+}
+
+FindInPageManagerImpl::FindInPageManagerImpl(
+    web::WebState* web_state,
+    base::TimeDelta poll_active_find_session_delay)
+    : poll_active_find_session_delay_(poll_active_find_session_delay),
       web_state_(web_state),
       weak_factory_(this) {
   web_state_->AddObserver(this);
@@ -84,20 +101,20 @@ void FindInPageManagerImpl::StartSearch(NSString* query)
   // Stop polling Find session in case search is already ongoing.
   StopPollingActiveFindSession();
 
-    id<CRWFindInteraction> find_interaction = GetOrCreateFindInteraction();
-    // If a Find interaction should be used, prepopulate the Find navigator and
-    // present it. If it is already presented, only present it again if the
-    // query is different.
-    if (!find_interaction.isFindNavigatorVisible ||
-        ![query isEqualToString:current_query_]) {
-      // For some reason, in some cases, presenting the Find navigator
-      // synchronously results in inability to type in the Find navigator input
-      // field. Presenting asynchronously instead solves this issue.
-      dispatch_async(dispatch_get_main_queue(), ^{
-        find_interaction.searchText = query;
-        [find_interaction presentFindNavigatorShowingReplace:NO];
-      });
-    }
+  id<CRWFindInteraction> find_interaction = GetOrCreateFindInteraction();
+  // If a Find interaction should be used, prepopulate the Find navigator and
+  // present it. If it is already presented, only present it again if the
+  // query is different.
+  if (!find_interaction.isFindNavigatorVisible ||
+      ![query isEqualToString:current_query_]) {
+    // For some reason, in some cases, presenting the Find navigator
+    // synchronously results in inability to type in the Find navigator input
+    // field. Presenting asynchronously instead solves this issue.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      find_interaction.searchText = query;
+      [find_interaction presentFindNavigatorShowingReplace:NO];
+    });
+  }
 
   // Reset latest reported Find session data.
   current_query_ = [query copy];
@@ -123,18 +140,18 @@ void FindInPageManagerImpl::StopSearch() API_AVAILABLE(ios(16)) {
   id<CRWFindSession> find_session = GetActiveFindSession();
   [find_session invalidateFoundResults];
 
-    id<CRWFindInteraction> find_interaction = web_state_->GetFindInteraction();
-    // If there is a Find interaction, dismiss the Find navigator. This will
-    // also stop and free the active Find session stored within the Find
-    // interaction.
-    [find_interaction dismissFindNavigator];
+  id<CRWFindInteraction> find_interaction = web_state_->GetFindInteraction();
+  // If there is a Find interaction, dismiss the Find navigator. This will
+  // also stop and free the active Find session stored within the Find
+  // interaction.
+  [find_interaction dismissFindNavigator];
 
-    if (delegate_) {
-      // Calling `DidHighlightMatches` with zero matches and no query to respond
-      // to `StopFinding`.
-      delegate_->DidHighlightMatches(this, web_state_, /*match_count=*/0,
-                                     /*query=*/nil);
-    }
+  if (delegate_) {
+    // Calling `DidHighlightMatches` with zero matches and no query to respond
+    // to `StopFinding`.
+    delegate_->DidHighlightMatches(this, web_state_, /*match_count=*/0,
+                                   /*query=*/nil);
+  }
 }
 
 void FindInPageManagerImpl::StopFinding() {
@@ -257,7 +274,5 @@ void FindInPageManagerImpl::WebStateDestroyed(WebState* web_state) {
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(FindInPageManager)
 
 }  // namespace web

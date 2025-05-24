@@ -1,0 +1,11 @@
+include_rules = [
+  "+ios/chrome/browser/dom_distiller/model",
+  "+ios/chrome/browser/contextual_panel/model",
+  "+third_party/dom_distiller_js",
+  "+ios/web/navigation/wk_navigation_util.h"
+]
+specific_include_rules = {
+  "^reader_mode_test.mm" : [
+    "+ios/web/js_messaging/java_script_feature_manager.h",
+  ]
+}

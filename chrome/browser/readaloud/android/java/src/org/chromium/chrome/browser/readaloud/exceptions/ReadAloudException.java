@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.readaloud.exceptions;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Base class for ReadAloud exceptions reported from the service. */
+@NullMarked
 public class ReadAloudException extends Exception {
 
     private final @ReadAloudErrorCode int mStatusCode;

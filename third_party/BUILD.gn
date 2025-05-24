@@ -55,10 +55,12 @@ group("jpeg_includes") {
 component("freetype_harfbuzz") {
   public_configs = []
   public_deps = []
-  if (use_system_freetype) {
-    public_configs += [ "//build/linux:freetype_from_pkgconfig" ]
-  } else {
-    public_deps += [ "//third_party/freetype:freetype_source" ]
+  if (enable_freetype) {
+    if (use_system_freetype) {
+      public_configs += [ "//build/linux:freetype_from_pkgconfig" ]
+    } else {
+      public_deps += [ "//third_party/freetype:freetype_source" ]
+    }
   }
   if (use_system_harfbuzz) {
     public_configs += [ "//third_party/harfbuzz-ng:harfbuzz_from_pkgconfig" ]
@@ -69,5 +71,8 @@ component("freetype_harfbuzz") {
 
 buildflag_header("freetype_buildflags") {
   header = "freetype_buildflags.h"
-  flags = [ "USE_SYSTEM_FREETYPE=$use_system_freetype" ]
+  flags = [
+    "USE_SYSTEM_FREETYPE=$use_system_freetype",
+    "ENABLE_FREETYPE=$enable_freetype",
+  ]
 }

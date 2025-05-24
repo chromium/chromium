@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
-import './strings.m.js';
+import '/strings.m.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
@@ -67,15 +67,15 @@ export class ComposeTextareaElement extends PolymerElement {
     };
   }
 
-  allowExitingReadonlyMode: boolean;
+  declare allowExitingReadonlyMode: boolean;
   private animator_: ComposeTextareaAnimator;
-  inputParams: ConfigurableParams;
-  readonly: boolean;
-  private invalidInput_: boolean;
-  private tooLong_: boolean;
-  private tooShort_: boolean;
+  declare inputParams: ConfigurableParams;
+  declare readonly: boolean;
+  declare private invalidInput_: boolean;
+  declare private tooLong_: boolean;
+  declare private tooShort_: boolean;
   private placeholderText_: string;
-  value: string;
+  declare value: string;
 
   constructor() {
     super();

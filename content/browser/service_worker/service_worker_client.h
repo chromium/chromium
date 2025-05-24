@@ -20,11 +20,17 @@
 #include "content/public/browser/service_worker_client_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom-forward.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_running_status_callback.mojom-forward.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+struct ResourceRequest;
+}  // namespace network
 
 namespace content {
 class ScopedServiceWorkerClient;
@@ -43,10 +49,9 @@ struct PolicyContainerPolicies;
 // Example:
 // When a new service worker registration is created, the browser process
 // iterates over all ServiceWorkerClients to find clients (frames,
-// dedicated workers if PlzDedicatedWorker is enabled, and shared workers) with
-// a URL inside the registration's scope, and has the container host watch the
-// registration in order to resolve navigator.serviceWorker.ready once the
-// registration settles, if need.
+// dedicated workers, and shared workers) with a URL inside the registration's
+// scope, and has the container host watch the registration in order to resolve
+// navigator.serviceWorker.ready once the registration settles, if need.
 class CONTENT_EXPORT ServiceWorkerClient final
     : public ServiceWorkerRegistration::Listener {
  public:
@@ -55,7 +60,13 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // Constructor for window clients.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
                       bool is_parent_frame_secure,
-                      FrameTreeNodeId frame_tree_node_id);
+                      FrameTreeNodeId ongoing_navigation_frame_tree_node_id);
+
+  // Constructor for window clients for prefetch.
+  ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
+                      bool is_parent_frame_secure,
+                      scoped_refptr<network::SharedURLLoaderFactory>
+                          network_url_loader_factory_for_prefetch);
 
   // Constructor for worker clients.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
@@ -65,7 +76,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   ServiceWorkerClient(const ServiceWorkerClient& other) = delete;
   ServiceWorkerClient& operator=(const ServiceWorkerClient& other) = delete;
 
-  virtual ~ServiceWorkerClient();
+  ~ServiceWorkerClient();
 
   ServiceWorkerContainerHostForClient* container_host() {
     return container_host_.get();
@@ -149,6 +160,8 @@ class CONTENT_EXPORT ServiceWorkerClient final
       const PolicyContainerPolicies& policy_container_policies,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       ukm::SourceId ukm_source_id);
 
   // For service worker window clients. Called after the navigation commits to a
@@ -157,7 +170,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   void OnEndNavigationCommit();
 
   // Must be called before `CommitResponse()`.
-  void UpdateUrls(const GURL& url,
+  void UpdateUrls(const GURL& creation_url,
                   const std::optional<url::Origin>& top_frame_origin,
                   const blink::StorageKey& storage_key);
 
@@ -168,6 +181,14 @@ class CONTENT_EXPORT ServiceWorkerClient final
       const GURL& url,
       const std::optional<url::Origin>& top_frame_origin,
       const blink::StorageKey& storage_key);
+
+  // The storage key to be used for `UpdateUrls()`.
+  // For other purposes, use `key()` instead.
+  // `isolation_info_from_handle` is
+  // `ServiceWorkerMainResourceHandle::isolation_info_`.
+  blink::StorageKey CalculateStorageKeyForUpdateUrls(
+      const GURL& url,
+      const net::IsolationInfo& isolation_info_from_handle) const;
 
   // For service worker clients. Makes this client be controlled by
   // |registration|'s active worker, or makes this client be not
@@ -181,8 +202,8 @@ class CONTENT_EXPORT ServiceWorkerClient final
   mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
   GetRunningStatusCallbackReceiver();
 
-  // |registration| claims the client (document, dedicated worker when
-  // PlzDedicatedWorker is enabled, or shared worker) to be controlled.
+  // `registration` claims the client (document, dedicated worker, or shared
+  // worker) to be controlled.
   void ClaimedByRegistration(
       scoped_refptr<ServiceWorkerRegistration> registration);
 
@@ -198,6 +219,14 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // is_response_committed() is true, the URL should no longer change.
   const GURL& url() const { return url_; }
 
+  // The creation_url is the same as the url property above, but without
+  // having the URL fragment removed. This is necessary for the
+  // JS ServiceWorkerClient.url() property.
+  // See https://html.spec.whatwg.org/C/#concept-environment-creation-url
+  //
+  // TODO(crbug.com/384759487): Consider merging `url()` into `creation_url()`.
+  const GURL& creation_url() const { return creation_url_; }
+
   // The origin of the top frame of the client. This is more specific than the
   // `top_frame_site` in the storage key, so must be passed separately.
   // For shared worker it is the origin of the document that created the worker.
@@ -209,8 +238,9 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // The StorageKey for this context. Any service worker registrations/versions
   // that are persisted from this context (e.x., via `register()`) are
-  // associated with this particular StorageKey. Note: This doesn't hold true
-  // when "disable-web-security" is active, see
+  // associated with this particular StorageKey. Corresponds to
+  // https://storage.spec.whatwg.org/#obtain-a-storage-key.
+  // Note: This doesn't hold true when "disable-web-security" is active, see
   // `service_worker_security_utils::GetCorrectStorageKeyForWebSecurityState()`
   // and its usages for more details.
   const blink::StorageKey& key() const { return key_; }
@@ -269,8 +299,31 @@ class CONTENT_EXPORT ServiceWorkerClient final
   NavigationRequest* GetOngoingNavigationRequestBeforeCommit(
       base::PassKey<StoragePartitionImpl>) const;
 
+  // Creates a navigational network URLLoaderFactory for window client. This
+  // should be called before the navigation is committed.
+  enum class CreateNetworkURLLoaderFactoryType {
+    kNavigationPreload,
+    kRaceNetworkRequest,
+    kSyntheticNetworkRequest,
+  };
+  scoped_refptr<network::SharedURLLoaderFactory> CreateNetworkURLLoaderFactory(
+      CreateNetworkURLLoaderFactoryType type,
+      StoragePartitionImpl* storage_partition,
+      const network::ResourceRequest& resource_request);
+
+  // For service worker clients.
+  // The type of `ongoing_navigation_frame_tree_node_id_` (if any) for metrics.
+  std::string GetFrameTreeNodeTypeStringBeforeCommit() const;
+
   // For service worker clients.
   const std::string& client_uuid() const;
+
+  // The client ID used as `FetchEvent.resultingClientID`.
+  // https://w3c.github.io/ServiceWorker/#fetch-event-resultingclientid
+  //
+  // Prefetch expects the value to be empty.
+  // See: crbug.com/404294123
+  std::string client_uuid_for_resulting_client_id() const;
 
   // For service worker clients. Returns this client's controller.
   ServiceWorkerVersion* controller() const;
@@ -299,16 +352,23 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // For service worker clients. Returns the URL that is used for scope matching
   // algorithm. This can be different from url() in the case of blob URL
-  // workers. In that case, url() may be like "blob://https://a.test" and the
-  // scope matching URL is "https://a.test", inherited from the parent container
-  // host.
+  // workers or srcdoc/about:blank iframes. In that case, url() may be like
+  // "blob://https://a.test" or "about:srcdoc" and the scope matching URL is
+  // "https://a.test", inherited from the parent container host.
   const GURL& GetUrlForScopeMatch() const;
 
-  // For service worker clients that are dedicated workers. Inherits the
-  // controller of the creator document or worker. Used when the client was
-  // created with a blob URL.
+  // For service worker clients that are dedicated workers and srcdoc iframe.
+  // Inherits the controller of the creator document or worker. Used when the
+  // client was created with a blob, about:srcdoc or about:blank URL.
   void InheritControllerFrom(ServiceWorkerClient& creator_host,
-                             const GURL& blob_url);
+                             const GURL& client_url);
+
+  // For Window service worker clients served by ServiceWorker-controlled
+  // prefetch. Inherits the controller used for prefetching from
+  // `client_for_prefetch`, while setting `navigation_url`, similar to
+  // `InheritControllerFrom()`.
+  void InheritControllerFromPrefetch(ServiceWorkerClient& client_for_prefetch,
+                                     const GURL& navigation_url);
 
   void SetContainerReady();
 
@@ -336,6 +396,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-execution-ready-flag
   void SetExecutionReady();
 
+  // Sets test url loader factory. When set, |url_loader_factory| will be
+  // returned when CreateNetworkURLLoaderFactory is called.
+  void SetNetworkURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   base::WeakPtr<ServiceWorkerClient> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -345,7 +410,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   friend class ServiceWorkerContainerHostTest;
 
-  void UpdateUrlsInternal(const GURL& url,
+  void UpdateUrlsInternal(const GURL& creation_url,
                           const std::optional<url::Origin>& top_frame_origin,
                           const blink::StorageKey& storage_key);
 
@@ -438,6 +503,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // See comments for the getter functions.
   GURL url_;
+  GURL creation_url_;
   std::optional<url::Origin> top_frame_origin_;
   blink::StorageKey key_;
 
@@ -454,6 +520,12 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // the document does not have a parent frame, is_parent_frame_secure_| is
   // true.
   const bool is_parent_frame_secure_;
+
+  // |is_initiated_by_prefetch_| is true if ServiceWorkerClient is initiated
+  // by prefetch.  This is used for changing the resulting client ID behavior
+  // on prefetch.
+  // See: crbug.com/404294123
+  const bool is_initiated_by_prefetch_;
 
   // The phase that this container host is on.
   ClientPhase client_phase_ = ClientPhase::kInitial;
@@ -488,11 +560,12 @@ class CONTENT_EXPORT ServiceWorkerClient final
   base::flat_set<PendingUpdateVersion> versions_to_update_;
 
   // The type of client.
-  std::optional<ServiceWorkerClientInfo> client_info_;
+  ServiceWorkerClientInfo client_info_;
 
   // The URL used for service worker scope matching. It is empty except in the
-  // case of a service worker client with a blob URL.
-  GURL scope_match_url_for_blob_client_;
+  // case of a service worker client with a blob, about:blank or about:srcdoc
+  // URL.
+  GURL scope_match_url_for_client_;
 
   // Become true if the container is inherited by other container.
   bool is_inherited_ = false;
@@ -506,6 +579,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // If CountFeature() is called before |container_| gets ready, features are
   // kept here, and flushed in SetContainerReady().
   std::set<blink::mojom::WebFeature> buffered_used_features_;
+
+  // Test url loader factory used for testing. When set, it is returned from
+  // CreateNetworkURLLoaderFactory instead of a real one.
+  scoped_refptr<network::SharedURLLoaderFactory>
+      network_url_loader_factory_override_for_testing_;
 
   // For worker clients only ---------------------------------------------------
 
@@ -539,6 +617,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // The frame tree node ID that is set in the constructor and is reset in
   // CommitResponse().
   FrameTreeNodeId ongoing_navigation_frame_tree_node_id_;
+
+  // URLLoaderFactory used for navigation preload etc.
+  // Only set/used for clients for prefetch.
+  scoped_refptr<network::SharedURLLoaderFactory>
+      network_url_loader_factory_for_prefetch_;
 
   // For all instances --------------------------------------------------------
 

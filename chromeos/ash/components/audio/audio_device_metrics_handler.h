@@ -456,7 +456,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   // A helper function to record user overrides system decision metrics and
   // directly calls uma histogram function.
   void RecordUserOverrideMetricsHelper(
-      const std::string_view histogram_name,
+      std::string_view histogram_name,
       AudioSelectionEvents audio_selection_event,
       int time_delta_since_system_decision) const;
 

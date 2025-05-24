@@ -282,4 +282,4 @@ class AutocorrectManager {
 }  // namespace input_method
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_AUTOCORRECT_MANAGER_H_:w
+#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_AUTOCORRECT_MANAGER_H_

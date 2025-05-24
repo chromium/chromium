@@ -4,6 +4,7 @@
 
 #include "components/payments/content/payment_request_state.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 #include <vector>
@@ -15,16 +16,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/address_normalizer.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
@@ -94,7 +94,7 @@ PaymentRequestState::PaymentRequestState(
   spec_->AddObserver(this);
 }
 
-PaymentRequestState::~PaymentRequestState() {}
+PaymentRequestState::~PaymentRequestState() = default;
 
 content::WebContents* PaymentRequestState::GetWebContents() {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
@@ -183,7 +183,7 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
   if (IsInTwa()) {
     // If a preferred payment app is present (e.g. Play Billing within a TWA),
     // all other payment apps are ignored.
-    bool has_preferred_app = base::ranges::any_of(
+    bool has_preferred_app = std::ranges::any_of(
         available_apps_, [](const auto& app) { return app->IsPreferred(); });
     if (has_preferred_app) {
       std::erase_if(available_apps_,
@@ -199,7 +199,7 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
   SetDefaultProfileSelections();
 
   get_all_apps_finished_ = true;
-  has_enrolled_instrument_ = base::ranges::any_of(
+  has_enrolled_instrument_ = std::ranges::any_of(
       available_apps_,
       [](const auto& app) { return app->HasEnrolledInstrument(); });
   are_requested_methods_supported_ |= !available_apps_.empty();
@@ -408,9 +408,6 @@ void PaymentRequestState::RecordUseStats() {
           *selected_contact_profile_);
     }
   }
-
-  if (selected_app_)
-    selected_app_->RecordUse();
 }
 
 void PaymentRequestState::SetAvailablePaymentAppForRetry() {
@@ -587,6 +584,18 @@ base::WeakPtr<PaymentRequestState> PaymentRequestState::AsWeakPtr() {
 void PaymentRequestState::PopulateProfileCache() {
   std::vector<const autofill::AutofillProfile*> profiles =
       personal_data_manager_->address_data_manager().GetProfilesToSuggest();
+
+  // Remove home and work profiles since they are non-editable.
+  std::erase_if(profiles, [](const autofill::AutofillProfile* profile) {
+    switch (profile->record_type()) {
+      case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
+      case autofill::AutofillProfile::RecordType::kAccount:
+        return false;
+      case autofill::AutofillProfile::RecordType::kAccountHome:
+      case autofill::AutofillProfile::RecordType::kAccountWork:
+        return true;
+    }
+  });
 
   std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
       raw_profiles_for_filtering;

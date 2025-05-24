@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/android_app_communication_test_support_chrome_os.h"
-
 #include <utility>
 
-#include "ash/components/arc/pay/arc_payment_app_bridge.h"
-#include "ash/components/arc/test/arc_payment_app_bridge_test_support.h"
-#include "ash/public/cpp/external_arc/overlay/test/test_arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/overlay/test/test_arc_overlay_manager.h"
+#include "chromeos/ash/experiences/arc/pay/arc_payment_app_bridge.h"
+#include "chromeos/ash/experiences/arc/test/arc_payment_app_bridge_test_support.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
+#include "components/payments/content/android_app_communication_test_support_chrome_os.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"

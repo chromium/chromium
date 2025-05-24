@@ -22,6 +22,7 @@ API_AVAILABLE(macos(13.3))
 @property(nonatomic, copy) NSString* name;
 @property(nonatomic, copy) NSString* relyingParty;
 @property(nonatomic, copy) NSData* userHandle;
+@property(nonatomic, copy) NSString* providerName;
 @end
 
 @implementation FakeBrowserPlatformPublicKeyCredential
@@ -29,6 +30,7 @@ API_AVAILABLE(macos(13.3))
 @synthesize name = _name;
 @synthesize relyingParty = _relyingParty;
 @synthesize userHandle = _userHandle;
+@synthesize providerName = _providerName;
 @end
 
 API_AVAILABLE(macos(13.3))
@@ -58,17 +60,15 @@ API_AVAILABLE(macos(13.3))
 }
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
-  NOTREACHED_IN_MIGRATION();
-  return self;
+  NOTREACHED();
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (id)copyWithZone:(NSZone*)zone {
-  NOTREACHED_IN_MIGRATION();
-  return self;
+  NOTREACHED();
 }
 @end
 
@@ -94,17 +94,15 @@ API_AVAILABLE(macos(13.3))
 }
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
-  NOTREACHED_IN_MIGRATION();
-  return self;
+  NOTREACHED();
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (id)copyWithZone:(NSZone*)zone {
-  NOTREACHED_IN_MIGRATION();
-  return self;
+  NOTREACHED();
 }
 @end
 
@@ -126,6 +124,11 @@ void FakeSystemInterface::set_next_auth_state(AuthState next_auth_state) {
   next_auth_state_ = next_auth_state;
 }
 
+void FakeSystemInterface::SetMakeCredentialCallback(
+    base::RepeatingCallback<void(const CtapMakeCredentialRequest&)> callback) {
+  create_callback_ = std::move(callback);
+}
+
 void FakeSystemInterface::SetMakeCredentialResult(
     base::span<const uint8_t> attestation_object_bytes,
     base::span<const uint8_t> credential_id) {
@@ -139,6 +142,11 @@ void FakeSystemInterface::SetMakeCredentialResult(
 void FakeSystemInterface::SetMakeCredentialError(int code) {
   CHECK(!make_credential_attestation_object_bytes_);
   make_credential_error_code_ = code;
+}
+
+void FakeSystemInterface::SetGetAssertionCallback(
+    base::RepeatingCallback<void(const CtapGetAssertionRequest&)> callback) {
+  get_callback_ = std::move(callback);
 }
 
 void FakeSystemInterface::SetGetAssertionResult(
@@ -193,6 +201,8 @@ void FakeSystemInterface::GetPlatformCredentials(
     cred.relyingParty = base::SysUTF8ToNSString(rp_id);
     cred.name = base::SysUTF8ToNSString(cred_values.user.name.value_or(""));
     [ret addObject:cred];
+    cred.providerName = base::SysUTF8ToNSString(
+        cred_values.provider_name.value_or("(Not provided)"));
   }
 
   block(ret);
@@ -202,6 +212,10 @@ void FakeSystemInterface::MakeCredential(
     NSWindow* window,
     CtapMakeCredentialRequest request,
     base::OnceCallback<void(ASAuthorization*, NSError*)> callback) {
+  if (create_callback_) {
+    create_callback_.Run(request);
+  }
+
   auto attestation_object_bytes =
       std::move(make_credential_attestation_object_bytes_);
   make_credential_attestation_object_bytes_.reset();
@@ -238,6 +252,10 @@ void FakeSystemInterface::GetAssertion(
     NSWindow* window,
     CtapGetAssertionRequest request,
     base::OnceCallback<void(ASAuthorization*, NSError*)> callback) {
+  if (get_callback_) {
+    get_callback_.Run(request);
+  }
+
   if (get_assertion_error_) {
     NSError* error = [[NSError alloc]
         initWithDomain:@""

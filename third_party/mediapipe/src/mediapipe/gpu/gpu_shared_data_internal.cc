@@ -42,6 +42,17 @@
 
 namespace mediapipe {
 
+namespace {
+
+inline constexpr char kGpuExecutorName[] = "__gpu";
+
+// Returns the executor name from a context key .
+std::string GetExecutorNameFromContextKey(const std::string& context_key) {
+  return absl::StrCat(kGpuExecutorName, "_", context_key);
+}
+
+}  // namespace
+
 #if __APPLE__
 static constexpr bool kGlContextUseDedicatedThread = false;
 #elif defined(__EMSCRIPTEN__)
@@ -97,6 +108,13 @@ GpuResources::StatusOrGpuResources GpuResources::Create(
   return gpu_resources;
 }
 
+GpuResources::StatusOrGpuResources GpuResources::Create(
+    const GpuResources& gpu_resources,
+    const MultiPoolOptions* gpu_buffer_pool_options) {
+  return Create(gpu_resources.gl_context()->native_context(),
+                gpu_buffer_pool_options);
+}
+
 GpuResources::GpuResources(std::shared_ptr<GlContext> gl_context,
                            const MultiPoolOptions* gpu_buffer_pool_options)
     : gl_key_context_(new GlContextMapType(),
@@ -130,7 +148,9 @@ GpuResources::GpuResources(std::shared_ptr<GlContext> gl_context,
 #endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
 {
   gl_key_context_->insert({SharedContextKey(), gl_context});
-  named_executors_[kGpuExecutorName] =
+  const std::string executor_name =
+      GetExecutorNameFromContextKey(SharedContextKey());
+  named_executors_[executor_name] =
       std::make_shared<GlContextExecutor>(gl_context.get());
 #if __APPLE__
 #if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
@@ -144,7 +164,9 @@ GpuResources::GpuResources(std::shared_ptr<GlContext> gl_context,
 
 absl::StatusOr<std::shared_ptr<Executor>> GpuResources::GetDefaultGpuExecutor()
     const {
-  const auto it = named_executors_.find(kGpuExecutorName);
+  const std::string executor_name =
+      GetExecutorNameFromContextKey(SharedContextKey());
+  const auto it = named_executors_.find(executor_name);
   RET_CHECK(it != named_executors_.end()) << "Can't find default gpu executor.";
   return it->second;
 }
@@ -207,8 +229,8 @@ absl::Status GpuResources::PrepareGpuNode(CalculatorNode* node) {
                       GetOrCreateGlContext(context_key));
 
   if (kGlContextUseDedicatedThread) {
-    std::string executor_name =
-        absl::StrCat(kGpuExecutorName, "_", context_key);
+    const std::string executor_name =
+        GetExecutorNameFromContextKey(context_key);
     node->SetExecutor(executor_name);
     if (!ContainsKey(named_executors_, executor_name)) {
       named_executors_.emplace(
@@ -224,9 +246,10 @@ absl::Status GpuResources::PrepareGpuNode(CalculatorNode* node) {
 // TODO: expose and use an actual ID instead of using the
 // canonicalized name.
 const std::shared_ptr<GlContext>& GpuResources::gl_context(
-    CalculatorContext* cc) {
+    CalculatorContext* cc) const {
   if (cc) {
-    auto it = gl_key_context_->find(node_key_[cc->NodeName()]);
+    const auto node_key_it = node_key_.find(cc->NodeName());
+    const auto it = gl_key_context_->find(node_key_it->second);
     if (it != gl_key_context_->end()) {
       return it->second;
     }

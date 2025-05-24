@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
+#include "media/audio/cras/cras_util.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/media_switches.h"
 
@@ -116,9 +117,7 @@ CrasInputStream::~CrasInputStream() {
 
 AudioInputStream::OpenOutcome CrasInputStream::Open() {
   if (client_) {
-    NOTREACHED_IN_MIGRATION() << "CrasInputStream already open";
-    ReportStreamOpenResult(StreamOpenResult::kCallbackOpenClientAlreadyOpen);
-    return OpenOutcome::kAlreadyOpen;
+    NOTREACHED() << "CrasInputStream already open";
   }
 
   // Sanity check input values.
@@ -147,7 +146,7 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
     return OpenOutcome::kFailed;
   }
 
-  if (libcras_client_connect(client_)) {
+  if (libcras_client_connect_timeout(client_, kCrasConnectTimeoutMs)) {
     DLOG(WARNING) << "Couldn't connect CRAS client.\n";
     ReportStreamOpenResult(
         StreamOpenResult::kCallbackOpenCannotConnectToCrasClient);
@@ -181,7 +180,6 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
     if (is_loopback_without_chrome_) {
       uint32_t client_types = 0;
       client_types |= 1 << CRAS_CLIENT_TYPE_CHROME;
-      client_types |= 1 << CRAS_CLIENT_TYPE_LACROS;
       client_types = ~client_types;
       rc = pin_device_ = libcras_client_get_floop_dev_idx_by_client_types(
           client_, client_types);

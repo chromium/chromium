@@ -1,18 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] ReportBody interface: existence and properties of interface object
-  assert_own_property: self does not have own property "ReportBody" expected property "ReportBody" missing
-[FAIL] ReportBody interface object length
-  assert_own_property: self does not have own property "ReportBody" expected property "ReportBody" missing
-[FAIL] ReportBody interface object name
-  assert_own_property: self does not have own property "ReportBody" expected property "ReportBody" missing
-[FAIL] ReportBody interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "ReportBody" expected property "ReportBody" missing
-[FAIL] ReportBody interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "ReportBody" expected property "ReportBody" missing
-[FAIL] ReportBody interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "ReportBody" expected property "ReportBody" missing
-[FAIL] ReportBody interface: operation toJSON()
-  assert_own_property: self does not have own property "ReportBody" expected property "ReportBody" missing
 [FAIL] Report interface: existence and properties of interface object
   assert_own_property: self does not have own property "Report" expected property "Report" missing
 [FAIL] Report interface object length

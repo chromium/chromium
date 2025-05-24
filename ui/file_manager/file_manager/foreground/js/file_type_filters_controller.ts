@@ -9,6 +9,7 @@ import {isSameEntry} from '../../common/js/entry_utils.js';
 import type {FakeEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str, strf} from '../../common/js/translations.js';
+import {isSearchEmpty} from '../../state/ducks/search.js';
 import type {State} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 
@@ -80,7 +81,7 @@ export class FileTypeFiltersController {
   onStateChanged(state: State) {
     if (this.inRecent_) {
       const search = state.search;
-      this.container_.hidden = !!(search?.query);
+      this.container_.hidden = (search !== undefined) && !isSearchEmpty(search);
     }
   }
 

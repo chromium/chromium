@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.hub;
 
 import com.google.common.collect.ImmutableSet;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** The default {@link PaneOrderController}. */
+@NullMarked
 public class DefaultPaneOrderController implements PaneOrderController {
     @Override
     public ImmutableSet<Integer> getPaneOrder() {
@@ -15,6 +18,7 @@ public class DefaultPaneOrderController implements PaneOrderController {
                 PaneId.INCOGNITO_TAB_SWITCHER,
                 PaneId.TAB_GROUPS,
                 PaneId.CROSS_DEVICE,
+                PaneId.HISTORY,
                 PaneId.BOOKMARKS);
     }
 }

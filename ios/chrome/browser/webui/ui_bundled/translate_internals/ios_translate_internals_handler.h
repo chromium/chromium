@@ -8,24 +8,21 @@
 #include <string>
 #include <string_view>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/translate/translate_internals/translate_internals_handler.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 namespace web {
 class WebState;
 }  // namespace web
 
-class AllWebStateListObservationRegistrar;
-
 // The handler for JavaScript messages for chrome://translate-internals.
 class IOSTranslateInternalsHandler
     : public translate::TranslateInternalsHandler,
       public web::WebUIIOSMessageHandler,
-
       public language::IOSLanguageDetectionTabHelper::Observer {
  public:
   IOSTranslateInternalsHandler();
@@ -52,32 +49,24 @@ class IOSTranslateInternalsHandler
   void IOSLanguageDetectionTabHelperWasDestroyed(
       language::IOSLanguageDetectionTabHelper* tab_helper) override;
 
+ private:
+  // Inner observer class used to observe all WebStates' tab helpers.
+  class Observer;
+
+  friend class Observer;
+
   // Adds this instance as an observer of the IOSLanguageDetectionTabHelper
   // associated with `web_state`.
   void AddLanguageDetectionObserverForWebState(web::WebState* web_state);
+
   // Removes this instance as an observer of the IOSLanguageDetectionTabHelper
   // associated with `web_state`.
   void RemoveLanguageDetectionObserverForWebState(web::WebState* web_state);
 
- private:
-  // Inner observer class, owned by the `registrar_`.
-  class Observer : public WebStateListObserver {
-   public:
-    explicit Observer(IOSTranslateInternalsHandler* handler);
-    Observer(const Observer&) = delete;
-    Observer& operator=(const Observer&) = delete;
-    ~Observer() override;
+  // Removes this instance as an observer of all IOSLanguageDetectionTabHelper.
+  void RemoveAllLanguageDetectionObservers();
 
-   private:
-    // WebStateListObserver:
-    void WebStateListDidChange(WebStateList* web_state_list,
-                               const WebStateListChange& change,
-                               const WebStateListStatus& status) override;
-
-    raw_ptr<IOSTranslateInternalsHandler> handler_;
-  };
-
-  std::unique_ptr<AllWebStateListObservationRegistrar> registrar_;
+  std::unique_ptr<Observer> observer_;
   base::ScopedMultiSourceObservation<
       language::IOSLanguageDetectionTabHelper,
       language::IOSLanguageDetectionTabHelper::Observer>

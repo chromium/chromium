@@ -1,0 +1,1042 @@
+This is a testharness.js-based test.
+Found 519 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] DIV.setAttribute(onabort, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onabort" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onabort, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onabort" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onabort, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onabort" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onabort, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onabort" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onabort, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onabort" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onabort, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onabort" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onauxclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onauxclick" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onauxclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onauxclick" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onauxclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onauxclick" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onauxclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onauxclick" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onauxclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onauxclick" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onauxclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onauxclick" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onbeforeinput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeinput" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onbeforeinput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeinput" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onbeforeinput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeinput" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onbeforeinput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeinput" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onbeforeinput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeinput" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onbeforeinput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeinput" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onbeforematch, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforematch" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onbeforematch, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforematch" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onbeforematch, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforematch" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onbeforematch, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforematch" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onbeforematch, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforematch" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onbeforematch, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforematch" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onbeforetoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforetoggle" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onbeforetoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforetoggle" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onbeforetoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforetoggle" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onbeforetoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforetoggle" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onbeforetoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforetoggle" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onbeforetoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforetoggle" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onblur, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onblur" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onblur, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onblur" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onblur, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onblur" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onblur, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onblur" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onblur, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onblur" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onblur, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onblur" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncancel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncancel" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncancel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncancel" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncancel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncancel" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncancel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncancel" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncancel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncancel" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncancel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncancel" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncanplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplay" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncanplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplay" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncanplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplay" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncanplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplay" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncanplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplay" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncanplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplay" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncanplaythrough, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplaythrough" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncanplaythrough, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplaythrough" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncanplaythrough, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplaythrough" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncanplaythrough, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplaythrough" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncanplaythrough, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplaythrough" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncanplaythrough, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncanplaythrough" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onchange" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onchange" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onchange" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onchange" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onchange" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onchange" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclick" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclick" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclick" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclick" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclick" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclick" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onclose, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclose" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onclose, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclose" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onclose, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclose" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onclose, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclose" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onclose, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclose" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onclose, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onclose" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncontextlost, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextlost" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncontextlost, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextlost" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncontextlost, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextlost" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncontextlost, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextlost" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncontextlost, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextlost" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncontextlost, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextlost" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncontextmenu, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextmenu" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncontextmenu, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextmenu" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncontextmenu, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextmenu" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncontextmenu, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextmenu" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncontextmenu, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextmenu" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncontextmenu, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextmenu" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncontextrestored, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextrestored" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncontextrestored, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextrestored" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncontextrestored, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextrestored" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncontextrestored, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextrestored" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncontextrestored, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextrestored" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncontextrestored, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncontextrestored" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncopy, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncopy" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncopy, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncopy" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncopy, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncopy" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncopy, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncopy" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncopy, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncopy" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncopy, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncopy" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncuechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncuechange" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncuechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncuechange" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncuechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncuechange" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncuechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncuechange" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncuechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncuechange" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncuechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncuechange" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncut, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncut" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncut, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncut" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncut, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncut" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncut, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncut" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncut, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncut" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncut, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncut" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ondblclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondblclick" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ondblclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ondblclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondblclick" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ondblclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ondblclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondblclick" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ondblclick, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ondrag, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrag" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ondrag, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrag" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ondrag, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrag" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ondrag, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrag" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ondrag, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrag" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ondrag, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrag" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ondragend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragend" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ondragend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragend" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ondragend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragend" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ondragend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragend" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ondragend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragend" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ondragend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragend" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ondragenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragenter" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ondragenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragenter" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ondragenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragenter" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ondragenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragenter" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ondragenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragenter" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ondragenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragenter" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ondragleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragleave" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ondragleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragleave" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ondragleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragleave" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ondragleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragleave" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ondragleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragleave" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ondragleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragleave" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ondragover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragover" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ondragover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragover" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ondragover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragover" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ondragover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragover" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ondragover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragover" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ondragover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragover" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ondragstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragstart" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ondragstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragstart" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ondragstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragstart" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ondragstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragstart" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ondragstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragstart" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ondragstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondragstart" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ondrop, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrop" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ondrop, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrop" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ondrop, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrop" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ondrop, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrop" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ondrop, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrop" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ondrop, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondrop" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ondurationchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondurationchange" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ondurationchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondurationchange" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ondurationchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondurationchange" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ondurationchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondurationchange" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ondurationchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondurationchange" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ondurationchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ondurationchange" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onemptied, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onemptied" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onemptied, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onemptied" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onemptied, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onemptied" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onemptied, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onemptied" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onemptied, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onemptied" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onemptied, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onemptied" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onended, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onended" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onended, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onended" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onended, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onended" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onended, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onended" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onended, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onended" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onended, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onended" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onerror, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onerror" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onerror, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onerror" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onerror, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onerror" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onerror, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onerror" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onerror, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onerror" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onerror, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onerror" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onfocus, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onfocus" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onfocus, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onfocus" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onfocus, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onfocus" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onfocus, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onfocus" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onfocus, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onfocus" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onfocus, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onfocus" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onformdata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onformdata" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onformdata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onformdata" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onformdata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onformdata" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onformdata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onformdata" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onformdata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onformdata" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onformdata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onformdata" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oninput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninput" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oninput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninput" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oninput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninput" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oninput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninput" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oninput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninput" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oninput, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninput" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oninvalid, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninvalid" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oninvalid, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninvalid" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oninvalid, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninvalid" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oninvalid, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninvalid" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oninvalid, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninvalid" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oninvalid, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oninvalid" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onkeydown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeydown" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onkeydown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeydown" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onkeydown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeydown" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onkeydown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeydown" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onkeydown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeydown" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onkeydown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeydown" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onkeypress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeypress" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onkeypress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeypress" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onkeypress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeypress" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onkeypress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeypress" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onkeypress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeypress" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onkeypress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeypress" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onkeyup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeyup" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onkeyup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeyup" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onkeyup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeyup" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onkeyup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeyup" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onkeyup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeyup" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onkeyup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onkeyup" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onload" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onload" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onload" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onload" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onload" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onload" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onloadeddata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadeddata" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onloadeddata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadeddata" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onloadeddata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadeddata" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onloadeddata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadeddata" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onloadeddata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadeddata" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onloadeddata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadeddata" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onloadedmetadata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadedmetadata" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onloadedmetadata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadedmetadata" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onloadedmetadata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadedmetadata" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onloadedmetadata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadedmetadata" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onloadedmetadata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadedmetadata" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onloadedmetadata, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadedmetadata" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onloadstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadstart" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onloadstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadstart" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onloadstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadstart" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onloadstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadstart" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onloadstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadstart" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onloadstart, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onloadstart" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onmousedown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousedown" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onmousedown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onmousedown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousedown" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onmousedown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onmousedown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousedown" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onmousedown, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onmouseenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseenter" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onmouseenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseenter" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onmouseenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseenter" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onmouseenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseenter" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onmouseenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseenter" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onmouseenter, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseenter" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onmouseleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseleave" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onmouseleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseleave" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onmouseleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseleave" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onmouseleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseleave" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onmouseleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseleave" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onmouseleave, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseleave" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onmousemove, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousemove" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onmousemove, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousemove" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onmousemove, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousemove" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onmousemove, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousemove" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onmousemove, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousemove" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onmousemove, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmousemove" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onmouseout, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseout" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onmouseout, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseout" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onmouseout, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseout" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onmouseout, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseout" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onmouseout, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseout" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onmouseout, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseout" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onmouseover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseover" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onmouseover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseover" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onmouseover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseover" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onmouseover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseover" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onmouseover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseover" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onmouseover, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseover" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onmouseup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseup" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onmouseup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseup" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onmouseup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseup" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onmouseup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseup" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onmouseup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseup" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onmouseup, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmouseup" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onpaste, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpaste" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onpaste, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpaste" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onpaste, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpaste" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onpaste, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpaste" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onpaste, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpaste" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onpaste, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpaste" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onpause, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpause" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onpause, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpause" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onpause, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpause" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onpause, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpause" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onpause, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpause" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onpause, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpause" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplay" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplay" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplay" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplay" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplay" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onplay, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplay" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onplaying, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplaying" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onplaying, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplaying" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onplaying, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplaying" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onplaying, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplaying" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onplaying, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplaying" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onplaying, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onplaying" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onprogress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onprogress" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onprogress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onprogress" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onprogress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onprogress" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onprogress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onprogress" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onprogress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onprogress" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onprogress, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onprogress" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onratechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onratechange" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onratechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onratechange" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onratechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onratechange" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onratechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onratechange" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onratechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onratechange" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onratechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onratechange" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onreset, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onreset" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onreset, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onreset" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onreset, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onreset" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onreset, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onreset" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onreset, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onreset" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onreset, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onreset" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onresize, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onresize" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onresize, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onresize" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onresize, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onresize" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onresize, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onresize" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onresize, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onresize" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onresize, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onresize" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onscroll, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscroll" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onscroll, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscroll" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onscroll, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscroll" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onscroll, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscroll" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onscroll, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscroll" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onscroll, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscroll" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onscrollend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscrollend" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onscrollend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscrollend" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onscrollend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscrollend" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onscrollend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscrollend" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onscrollend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscrollend" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onscrollend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onscrollend" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onsecuritypolicyviolation, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsecuritypolicyviolation" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onsecuritypolicyviolation, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsecuritypolicyviolation" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onsecuritypolicyviolation, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsecuritypolicyviolation" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onsecuritypolicyviolation, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsecuritypolicyviolation" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onsecuritypolicyviolation, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsecuritypolicyviolation" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onsecuritypolicyviolation, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsecuritypolicyviolation" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onseeked, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeked" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onseeked, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeked" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onseeked, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeked" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onseeked, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeked" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onseeked, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeked" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onseeked, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeked" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onseeking, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeking" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onseeking, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeking" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onseeking, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeking" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onseeking, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeking" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onseeking, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeking" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onseeking, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onseeking" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onselect, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onselect" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onselect, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onselect" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onselect, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onselect" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onselect, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onselect" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onselect, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onselect" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onselect, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onselect" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onslotchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onslotchange" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onslotchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onslotchange" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onslotchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onslotchange" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onslotchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onslotchange" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onslotchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onslotchange" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onslotchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onslotchange" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onstalled, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onstalled" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onstalled, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onstalled" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onstalled, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onstalled" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onstalled, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onstalled" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onstalled, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onstalled" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onstalled, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onstalled" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onsubmit, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsubmit" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onsubmit, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsubmit" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onsubmit, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsubmit" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onsubmit, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsubmit" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onsubmit, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsubmit" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onsubmit, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsubmit" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onsuspend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsuspend" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onsuspend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsuspend" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onsuspend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsuspend" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onsuspend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsuspend" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onsuspend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsuspend" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onsuspend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onsuspend" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ontimeupdate, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontimeupdate" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ontimeupdate, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontimeupdate" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ontimeupdate, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontimeupdate" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ontimeupdate, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontimeupdate" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ontimeupdate, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontimeupdate" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ontimeupdate, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontimeupdate" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(ontoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontoggle" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(ontoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontoggle" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(ontoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontoggle" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(ontoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontoggle" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(ontoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontoggle" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(ontoggle, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ontoggle" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onvolumechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onvolumechange" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onvolumechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onvolumechange" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onvolumechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onvolumechange" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onvolumechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onvolumechange" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onvolumechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onvolumechange" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onvolumechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onvolumechange" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onwaiting, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaiting" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onwaiting, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaiting" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onwaiting, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaiting" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onwaiting, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaiting" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onwaiting, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaiting" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onwaiting, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaiting" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(onwheel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwheel" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(onwheel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwheel" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(onwheel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwheel" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(onwheel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwheel" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(onwheel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwheel" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(onwheel, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwheel" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onafterprint, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onafterprint" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onafterprint, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onafterprint" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onafterprint, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onafterprint" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onafterprint, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onafterprint" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onbeforeprint, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeprint" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onbeforeprint, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeprint" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onbeforeprint, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeprint" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onbeforeprint, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeprint" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onbeforeunload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeunload" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onbeforeunload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeunload" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onbeforeunload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeunload" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onbeforeunload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbeforeunload" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onhashchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onhashchange" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onhashchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onhashchange" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onhashchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onhashchange" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onhashchange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onhashchange" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onlanguagechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onlanguagechange" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onlanguagechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onlanguagechange" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onlanguagechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onlanguagechange" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onlanguagechange, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onlanguagechange" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onmessage, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmessage" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onmessage, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmessage" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onmessage, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmessage" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onmessage, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmessage" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onmessageerror, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmessageerror" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onmessageerror, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmessageerror" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onmessageerror, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmessageerror" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onmessageerror, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onmessageerror" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onoffline, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onoffline" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onoffline, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onoffline" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onoffline, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onoffline" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onoffline, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onoffline" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(ononline, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ononline" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(ononline, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ononline" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(ononline, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ononline" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(ononline, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element ononline" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onpagehide, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpagehide" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onpagehide, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpagehide" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onpagehide, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpagehide" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onpagehide, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpagehide" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onpageshow, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpageshow" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onpageshow, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpageshow" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onpageshow, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpageshow" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onpageshow, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpageshow" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onpopstate, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpopstate" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onpopstate, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpopstate" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onpopstate, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpopstate" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onpopstate, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onpopstate" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onrejectionhandled, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onrejectionhandled" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onrejectionhandled, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onrejectionhandled" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onrejectionhandled, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onrejectionhandled" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onrejectionhandled, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onrejectionhandled" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onstorage, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onstorage" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onstorage, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onstorage" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onstorage, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onstorage" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onstorage, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onstorage" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onunhandledrejection, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onunhandledrejection" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onunhandledrejection, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onunhandledrejection" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onunhandledrejection, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onunhandledrejection" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onunhandledrejection, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onunhandledrejection" but got "Element setAttributeNS"
+[FAIL] BODY.setAttribute(onunload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onunload" but got "Element setAttribute"
+[FAIL] BODY.setAttributeNS(onunload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onunload" but got "Element setAttributeNS"
+[FAIL] FRAMESET.setAttribute(onunload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onunload" but got "Element setAttribute"
+[FAIL] FRAMESET.setAttributeNS(onunload, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onunload" but got "Element setAttributeNS"
+[FAIL] AUDIO.setAttribute(onencrypted, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onencrypted" but got "Element setAttribute"
+[FAIL] AUDIO.setAttributeNS(onencrypted, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onencrypted" but got "Element setAttributeNS"
+[FAIL] VIDEO.setAttribute(onencrypted, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onencrypted" but got "Element setAttribute"
+[FAIL] VIDEO.setAttributeNS(onencrypted, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onencrypted" but got "Element setAttributeNS"
+[FAIL] AUDIO.setAttribute(onwaitingforkey, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaitingforkey" but got "Element setAttribute"
+[FAIL] AUDIO.setAttributeNS(onwaitingforkey, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaitingforkey" but got "Element setAttributeNS"
+[FAIL] VIDEO.setAttribute(onwaitingforkey, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaitingforkey" but got "Element setAttribute"
+[FAIL] VIDEO.setAttributeNS(onwaitingforkey, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaitingforkey" but got "Element setAttributeNS"
+[FAIL] animation.setAttribute(onbegin, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbegin" but got "Element setAttribute"
+[FAIL] animation.setAttributeNS(onbegin, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbegin" but got "Element setAttributeNS"
+[FAIL] animation.setAttribute(onend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onend" but got "Element setAttribute"
+[FAIL] animation.setAttributeNS(onend, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onend" but got "Element setAttributeNS"
+[FAIL] animation.setAttribute(onrepeat, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onrepeat" but got "Element setAttribute"
+[FAIL] animation.setAttributeNS(onrepeat, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onrepeat" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute("onafterprint", "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onafterprint" but got "Element setAttribute"
+[FAIL] DIV.setAttribute("onwaitingforkey", "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onwaitingforkey" but got "Element setAttribute"
+[FAIL] DIV.setAttribute("onbegin", "unsafe_handler()") calls default policy
+  assert_equals: expected "Element onbegin" but got "Element setAttribute"
+[FAIL] DIV.setAttribute("onreadystatechange", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] DIV.setAttribute("onvisibilitychange", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] DIV.setAttribute("ondevicemotion", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] DIV.setAttribute("ondeviceorientation", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] DIV.setAttribute("ondeviceorientationabsolute", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] DIV.setAttribute("onopen", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+Harness: the test ran to completion.
+

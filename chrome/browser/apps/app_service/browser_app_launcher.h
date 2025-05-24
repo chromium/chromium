@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 
 class Profile;
@@ -55,7 +54,7 @@ class BrowserAppLauncher {
   // TODO(crbug.com/40211799): Remove this interface if all usages are removed.
   content::WebContents* LaunchAppWithParamsForTesting(AppLaunchParams params);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Launches Play Store with Extensions. ARC and Extensions share the same app
   // id for Play Store, and App Service only registered the play store ARC app
   // (see blocklist in
@@ -63,7 +62,7 @@ class BrowserAppLauncher {
   // for more details). Therefore we need this interface to launch Play Store
   // with Extensions when ARC is not enabled.
   void LaunchPlayStoreWithExtensions();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   const raw_ptr<Profile> profile_;

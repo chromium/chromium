@@ -57,6 +57,15 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
                 ui::GetChromeOSDeviceName());
   builder->Add("discoverPinSetupPinAsMainFactorSkip",
                IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SKIP);
+  builder->Add("discoverPinSetupResetTitle", IDS_DISCOVER_PIN_RESET_TITLE);
+  builder->Add("discoverPinSetupResetSubtitle",
+               IDS_DISCOVER_PIN_RESET_SUBTITLE);
+  builder->Add("discoverPinSetupResetSubtitleChild",
+               IDS_DISCOVER_PIN_RESET_SUBTITLE_CHILD);
+  builder->Add("discoverPinSetupResetDoneTitle",
+               IDS_DISCOVER_PIN_RESET_DONE_TITLE);
+  builder->Add("discoverPinSetupResetDoneTitleChild",
+               IDS_DISCOVER_PIN_RESET_DONE_TITLE_CHILD);
 
   // Format numbers to be used on the pin keyboard.
   for (int j = 0; j <= 9; j++) {
@@ -66,6 +75,8 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
   builder->Add("pinKeyboardPlaceholderPin", IDS_PIN_KEYBOARD_HINT_TEXT_PIN);
   builder->Add("pinKeyboardPlaceholderPinPassword",
                IDS_PIN_KEYBOARD_HINT_TEXT_PIN_PASSWORD);
+  builder->Add("showPin", IDS_AUTH_SETUP_SHOW_PIN);
+  builder->Add("hidePin", IDS_AUTH_SETUP_HIDE_PIN);
   builder->Add("pinKeyboardDeleteAccessibleName",
                IDS_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME);
   builder->Add("configurePinMismatched",
@@ -85,16 +96,14 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
 void PinSetupScreenHandler::Show(const std::string& token,
                                  bool is_child_account,
                                  bool has_login_support,
-                                 bool using_pin_as_main_factor) {
+                                 bool using_pin_as_main_factor,
+                                 bool is_recovery_mode) {
   ShowInWebUI(base::Value::Dict()
                   .Set("authToken", base::Value(token))
                   .Set("isChildAccount", is_child_account)
                   .Set("hasLoginSupport", has_login_support)
-                  .Set("usingPinAsMainSignInFactor", using_pin_as_main_factor));
-}
-
-void PinSetupScreenHandler::SetLoginSupportAvailable(bool available) {
-  CallExternalAPI("setHasLoginSupport", available);
+                  .Set("usingPinAsMainSignInFactor", using_pin_as_main_factor)
+                  .Set("isRecoveryMode", is_recovery_mode));
 }
 
 base::WeakPtr<PinSetupScreenView> PinSetupScreenHandler::AsWeakPtr() {

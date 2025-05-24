@@ -37,3 +37,10 @@
   /* Push the button to the right in flex layout. */
   margin-inline-start: auto;
 }
+
+.app-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 13px 0;
+}

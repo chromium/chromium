@@ -82,22 +82,10 @@ export interface PowerManagementSettings {
   batterySaverFeatureEnabled: boolean;
 }
 
-/**
- * A note app's availability for running as note handler app from lock screen.
- * Mirrors `ash::LockScreenAppSupport`.
- */
-export enum NoteAppLockScreenSupport {
-  NOT_SUPPORTED = 0,
-  NOT_ALLOWED_BY_POLICY = 1,
-  SUPPORTED = 2,
-  ENABLED = 3,
-}
-
 export interface NoteAppInfo {
   name: string;
   value: string;
   preferred: boolean;
-  lockScreenSupport: NoteAppLockScreenSupport;
 }
 
 export interface ExternalStorage {
@@ -177,12 +165,6 @@ export interface DevicePageBrowserProxy {
    *     |onNoteTakingAppsUpdated| callback.
    */
   setPreferredNoteTakingApp(appId: string): void;
-
-  /**
-   * Sets whether the preferred note taking app should be enabled to run as a
-   * lock screen note action handler.
-   */
-  setPreferredNoteTakingAppEnabledOnLockScreen(enabled: boolean): void;
 
   /** Requests an external storage list update. */
   updateExternalStorages(): void;
@@ -291,10 +273,6 @@ export class DevicePageBrowserProxyImpl implements DevicePageBrowserProxy {
 
   setPreferredNoteTakingApp(appId: string): void {
     chrome.send('setPreferredNoteTakingApp', [appId]);
-  }
-
-  setPreferredNoteTakingAppEnabledOnLockScreen(enabled: boolean): void {
-    chrome.send('setPreferredNoteTakingAppEnabledOnLockScreen', [enabled]);
   }
 
   updateExternalStorages(): void {

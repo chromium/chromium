@@ -22,14 +22,13 @@ IOSFamilyLinkUserMetricsProvider::~IOSFamilyLinkUserMetricsProvider() = default;
 
 bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
   std::vector<supervised_user::FamilyLinkUserLogRecord> records;
-  for (ChromeBrowserState* browser_state :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(browser_state);
+        SupervisedUserServiceFactory::GetForProfile(profile);
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
-        IdentityManagerFactory::GetForProfile(browser_state),
-        *browser_state->GetPrefs(),
-        *ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state),
+        IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
+        *ios::HostContentSettingsMapFactory::GetForProfile(profile),
         service ? service->GetURLFilter() : nullptr));
   }
   return supervised_user::EmitLogRecordHistograms(records);

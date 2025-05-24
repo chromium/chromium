@@ -37,8 +37,7 @@ NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
 
   // Assign sort type to NTP state from prefs.
   PrefService* pref_service =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState())
-          ->GetPrefs();
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
   ntp_state_.followingFeedSortType =
       (FollowingFeedSortType)pref_service->GetInteger(
           prefs::kNTPFollowingFeedSortType);
@@ -136,5 +135,3 @@ void NewTabPageTabHelper::SetActive(bool active) {
 
   [delegate_ newTabPageHelperDidChangeVisibility:this forWebState:web_state_];
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(NewTabPageTabHelper)

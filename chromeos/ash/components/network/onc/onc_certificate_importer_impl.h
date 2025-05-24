@@ -85,6 +85,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
   // Synchronously imports all server/authority and client certificates from
   // |certificates| into |nssdb|. This will be executed on the
   // |io_task_runner_|.
+  // TODO(crbug.com/40928765): Remove ability for server certs to be imported
+  // into NSS after features::kEnableCertManagementUIV2Write is defaulted to on
+  // for ChromeOS.
   static bool StoreAllCertificatesUserInitiated(
       const std::vector<
           chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate>&

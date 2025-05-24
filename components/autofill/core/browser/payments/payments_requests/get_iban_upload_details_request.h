@@ -20,7 +20,6 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
       const bool full_sync_enabled,
       const std::string& app_locale,
       int64_t billing_customer_number,
-      int billable_service_number,
       const std::string& country_code,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::u16string& validation_regex,
@@ -52,7 +51,6 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
   std::u16string validation_regex_;
   std::unique_ptr<base::Value::Dict> legal_message_;
   const int64_t billing_customer_number_;
-  const int billable_service_number_;
   std::string country_code_;
   base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                           const std::u16string& validation_regex,

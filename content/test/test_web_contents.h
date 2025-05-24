@@ -64,8 +64,17 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                     uint32_t max_bitmap_size,
                     bool bypass_cache,
                     ImageDownloadCallback callback) override;
-  const GURL& GetLastCommittedURL() override;
+  int DownloadImageInFrame(
+      const GlobalRenderFrameHostId& initiator_frame_routing_id,
+      const GURL& url,
+      bool is_favicon,
+      const gfx::Size& preferred_size,
+      uint32_t max_bitmap_size,
+      bool bypass_cache,
+      ImageDownloadCallback callback) override;
+  const GURL& GetLastCommittedURL() const override;
   const std::u16string& GetTitle() override;
+  int GetCurrentlyPlayingVideoCount() const override;
 
   // Override to cache the tab switch start time without going through
   // VisibleTimeRequestTrigger.
@@ -82,6 +91,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void NavigateAndFail(const GURL& url, int error_code) override;
   void TestSetIsLoading(bool value) override;
   void SetOpener(WebContents* opener) override;
+  void SetOriginalOpener(WebContents* opener) override;
   void SetIsCrashed(base::TerminationStatus status, int error_code) override;
   const std::string& GetSaveFrameHeaders() override;
   const std::u16string& GetSuggestedFileName() override;
@@ -113,7 +123,9 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   bool CreateRenderViewForRenderManager(
       RenderViewHost* render_view_host,
       const std::optional<blink::FrameToken>& opener_frame_token,
-      RenderFrameProxyHost* proxy_host) override;
+      RenderFrameProxyHost* proxy_host,
+      const std::optional<base::UnguessableToken>& navigation_metrics_token)
+      override;
 
   // Returns a clone of this TestWebContents. The returned object is also a
   // TestWebContents. The caller owns the returned object.
@@ -192,6 +204,10 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   void SetMediaCaptureRawDeviceIdsOpened(blink::mojom::MediaStreamType type,
                                          std::vector<std::string> ids) override;
+  void SetCurrentlyPlayingVideoCount(int count) override;
+
+  void OnIgnoredUIEvent() override;
+  bool GetIgnoredUIEventCalled() const;
 
  protected:
   // The deprecated WebContentsTester still needs to subclass this.
@@ -214,11 +230,12 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
       override;
-  void ShowCreatedWindow(RenderFrameHostImpl* opener,
-                         int route_id,
-                         WindowOpenDisposition disposition,
-                         const blink::mojom::WindowFeatures& window_features,
-                         bool user_gesture) override;
+  WebContents* ShowCreatedWindow(
+      RenderFrameHostImpl* opener,
+      int route_id,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture) override;
   void ShowCreatedWidget(int process_id,
                          int route_id,
                          const gfx::Rect& initial_rect,
@@ -256,6 +273,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   bool overscroll_enabled_ = true;
   base::flat_map<blink::mojom::MediaStreamType, std::vector<std::string>>
       media_capture_raw_device_ids_opened_;
+  std::optional<int> playing_video_count_;
+  bool ignored_ui_event_called_ = false;
 };
 
 }  // namespace content

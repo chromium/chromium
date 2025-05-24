@@ -6,7 +6,7 @@ import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 # Record constants for use with the reporting messaging library.
-proto_library("record_constants") {
+fuzzable_proto_library("record_constants") {
   proto_in_dir = "//"
 
   # Generate JS so it can be used by chrome extensions
@@ -16,7 +16,7 @@ proto_library("record_constants") {
 }
 
 # Record definitions for reporting.
-proto_library("record_proto") {
+fuzzable_proto_library("record_proto") {
   proto_in_dir = "//"
 
   # Generate JS so it can be used by chrome extensions
@@ -38,14 +38,14 @@ proto_library("interface_proto") {
 
   sources = [ "synced/interface.proto" ]
 
-  proto_deps = [
+  deps = [
     ":record_constants",
     ":record_proto",
     ":status_proto",
   ]
 }
 
-proto_library("health_proto") {
+fuzzable_proto_library("health_proto") {
   proto_in_dir = "//"
 
   # Generate JS so it can be used by chrome extensions
@@ -82,12 +82,13 @@ proto_library("metric_data_proto") {
 
   sources = [ "synced/metric_data.proto" ]
 
-  link_deps = [ "//components/services/app_service/public/protos" ]
-
-  deps = [ ":session_affiliated_user_proto" ]
+  deps = [
+    ":session_affiliated_user_proto",
+    "//components/services/app_service/public/protos",
+  ]
 }
 
-proto_library("status_proto") {
+fuzzable_proto_library("status_proto") {
   proto_in_dir = "//"
 
   # Generate JS so it can be used by chrome extensions
@@ -96,7 +97,7 @@ proto_library("status_proto") {
   sources = [ "synced/status.proto" ]
 }
 
-proto_library("upload_tracker_proto") {
+fuzzable_proto_library("upload_tracker_proto") {
   proto_in_dir = "//"
 
   sources = [ "synced/upload_tracker.proto" ]
@@ -104,7 +105,7 @@ proto_library("upload_tracker_proto") {
   deps = [ ":status_proto" ]
 }
 
-proto_library("configuration_file_proto") {
+fuzzable_proto_library("configuration_file_proto") {
   proto_in_dir = "//"
 
   sources = [ "synced/configuration_file.proto" ]

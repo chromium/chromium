@@ -12,6 +12,8 @@
 enum class AccountErrorUserActionableType {
   // No action to take.
   kNoAction,
+  // User needs to reauthenticate to resolve a persistent auth error.
+  kReauthToResolveSigninError,
   // User needs to enter their passphrase.
   kEnterPassphrase,
   // User needs to reauthenticate for the fetch keys.

@@ -61,7 +61,6 @@ static_library("signaling") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//crypto",
     "//google_apis",
     "//net",
@@ -116,6 +115,7 @@ source_set("unit_tests") {
     ":test_support",
     "//net:test_support",
     "//remoting/base:base",
+    "//remoting/base:test_support",
     "//services/network/public/cpp:cpp",
     "//testing/gmock",
     "//testing/gtest",

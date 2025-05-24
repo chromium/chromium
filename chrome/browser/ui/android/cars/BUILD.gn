@@ -5,32 +5,16 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/cars/DrivingRestrictionsManager.java" ]
-
-  deps = [ "//base:base_java" ]
-
-  public_deps = [ ":delegate_java" ]
-}
-
-android_library("delegate_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/cars/DrivingRestrictionsDelegate.java",
-    "java/src/org/chromium/chrome/browser/ui/cars/DrivingRestrictionsDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/cars/DrivingRestrictionsDelegateFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/cars/DrivingRestrictionsManager.java",
+    "java/src/org/chromium/chrome/browser/ui/cars/FallbackDrivingRestrictionsDelegate.java",
   ]
 
-  deps = [ "//base:base_java" ]
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [ "*/DrivingRestrictionsDelegateImpl.class" ]
-}
-
-android_library("delegate_public_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/cars/DrivingRestrictionsDelegateImpl.java" ]
-
   deps = [
-    ":delegate_java",
     "//base:base_java",
+    "//base:service_loader_java",
   ]
 }
 

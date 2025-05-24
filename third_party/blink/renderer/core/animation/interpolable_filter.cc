@@ -31,8 +31,7 @@ double ClampParameter(double value, FilterOperation::OperationType type) {
       return value;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -79,7 +78,7 @@ InterpolableNumber* CreateDefaultValue(CSSValueID type) {
       return MakeGarbageCollected<InterpolableNumber>(
           0, CSSPrimitiveValue::UnitType::kDegrees);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -138,8 +137,7 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
       return nullptr;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 
   if (!value)
@@ -150,8 +148,7 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
 // static
 InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
     const CSSValue& css_value,
-    mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) {
+    const StyleResolverState& state) {
   if (css_value.IsURIValue())
     return nullptr;
 
@@ -182,13 +179,11 @@ InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
       break;
 
     case FilterOperation::OperationType::kDropShadow:
-      value = InterpolableShadow::MaybeConvertCSSValue(
-          filter.Item(0), color_scheme, color_provider);
+      value = InterpolableShadow::MaybeConvertCSSValue(filter.Item(0), state);
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 
   if (!value)
@@ -230,8 +225,7 @@ InterpolableFilter* InterpolableFilter::CreateInitialValue(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 
   return MakeGarbageCollected<InterpolableFilter>(value, type);
@@ -275,8 +269,7 @@ FilterOperation* InterpolableFilter::CreateFilterOperation(
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

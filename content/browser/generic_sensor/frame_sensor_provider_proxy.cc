@@ -10,10 +10,10 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/device/public/mojom/sensor_provider.mojom-shared.h"
-#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 using device::mojom::SensorType;
@@ -21,35 +21,35 @@ using device::mojom::SensorType;
 namespace features {
 BASE_FEATURE(kAllowSensorsToEnterBfcache,
              "AllowSensorsToEnterBfcache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
 namespace content {
 
 namespace {
 
-constexpr std::vector<blink::mojom::PermissionsPolicyFeature>
+constexpr std::vector<network::mojom::PermissionsPolicyFeature>
 SensorTypeToPermissionsPolicyFeatures(SensorType type) {
   switch (type) {
     case SensorType::AMBIENT_LIGHT:
-      return {blink::mojom::PermissionsPolicyFeature::kAmbientLightSensor};
+      return {network::mojom::PermissionsPolicyFeature::kAmbientLightSensor};
     case SensorType::ACCELEROMETER:
     case SensorType::LINEAR_ACCELERATION:
     case SensorType::GRAVITY:
-      return {blink::mojom::PermissionsPolicyFeature::kAccelerometer};
+      return {network::mojom::PermissionsPolicyFeature::kAccelerometer};
     case SensorType::GYROSCOPE:
-      return {blink::mojom::PermissionsPolicyFeature::kGyroscope};
+      return {network::mojom::PermissionsPolicyFeature::kGyroscope};
     case SensorType::MAGNETOMETER:
-      return {blink::mojom::PermissionsPolicyFeature::kMagnetometer};
+      return {network::mojom::PermissionsPolicyFeature::kMagnetometer};
     case SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
     case SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
-      return {blink::mojom::PermissionsPolicyFeature::kAccelerometer,
-              blink::mojom::PermissionsPolicyFeature::kGyroscope,
-              blink::mojom::PermissionsPolicyFeature::kMagnetometer};
+      return {network::mojom::PermissionsPolicyFeature::kAccelerometer,
+              network::mojom::PermissionsPolicyFeature::kGyroscope,
+              network::mojom::PermissionsPolicyFeature::kMagnetometer};
     case SensorType::RELATIVE_ORIENTATION_EULER_ANGLES:
     case SensorType::RELATIVE_ORIENTATION_QUATERNION:
-      return {blink::mojom::PermissionsPolicyFeature::kAccelerometer,
-              blink::mojom::PermissionsPolicyFeature::kGyroscope};
+      return {network::mojom::PermissionsPolicyFeature::kAccelerometer,
+              network::mojom::PermissionsPolicyFeature::kGyroscope};
   }
 }
 
@@ -72,9 +72,9 @@ void FrameSensorProviderProxy::OnMojoConnectionError() {
 
 void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
                                          GetSensorCallback callback) {
-  const bool passes_permissions_policy_check = base::ranges::all_of(
+  const bool passes_permissions_policy_check = std::ranges::all_of(
       SensorTypeToPermissionsPolicyFeatures(type),
-      [this](blink::mojom::PermissionsPolicyFeature feature) {
+      [this](network::mojom::PermissionsPolicyFeature feature) {
         return render_frame_host().IsFeatureEnabled(feature);
       });
 
@@ -89,7 +89,10 @@ void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
           &render_frame_host(),
-          PermissionRequestDescription(blink::PermissionType::SENSORS),
+          PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::SENSORS)),
           base::BindOnce(
               &FrameSensorProviderProxy::OnPermissionRequestCompleted,
               weak_factory_.GetWeakPtr(), type, std::move(callback)));

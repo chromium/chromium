@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -30,9 +31,9 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
@@ -77,7 +78,8 @@ void StartRecordAnimationSmoothness(
     return;
   }
 
-  tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
+  tracker.emplace(
+      widget->GetCompositor()->RequestNewCompositorMetricsTracker());
   tracker->Start(ash::metrics_util::ForSmoothnessV3(
       base::BindRepeating([](int smoothness) {
         base::UmaHistogramPercentage(
@@ -310,7 +312,8 @@ const views::ImageView* ReturnToAppButton::expand_indicator_for_testing()
 }
 
 void ReturnToAppButton::UpdateAccessibleName() {
-  auto accessible_name = GetPeripheralsAccessibleName() + GetLabelText();
+  auto accessible_name =
+      base::StrCat({GetPeripheralsAccessibleName(), GetLabelText()});
 
   if (is_top_row()) {
     accessible_name += l10n_util::GetStringUTF16(
@@ -351,7 +354,7 @@ ReturnToAppPanel::ReturnToAppContainer::ReturnToAppContainer()
   layout_manager_ = SetLayoutManager(std::move(flex_layout));
   AdjustLayoutForExpandCollapseState(/*expanded=*/false);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kReturnToAppPanelRadius));
 }
 

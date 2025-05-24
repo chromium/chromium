@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,12 +87,11 @@ class IdentityUtilsTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   IdentityTestEnvironment identity_test_env_;
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(IdentityUtilsTest, AreGoogleCookiesRebuiltAfterClearingWhenSignedIn) {
   // Signed out.
   EXPECT_TRUE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
@@ -108,10 +108,11 @@ TEST_F(IdentityUtilsTest, AreGoogleCookiesRebuiltAfterClearingWhenSignedIn) {
   // Sync.
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
-      ConsentLevel::kSync, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
-  EXPECT_FALSE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
+      ConsentLevel::kSync, signin_metrics::AccessPoint::kSettings);
+  EXPECT_TRUE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
       *identity_manager(), *pref_service()));
 }
+#endif
 
 TEST_F(IdentityUtilsIsUsernameAllowedTest, EmptyPatterns) {
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, "");
@@ -167,77 +168,97 @@ TEST_F(IdentityUtilsIsUsernameAllowedTest, MatchingWildcardPatterns) {
 }
 
 TEST_F(IdentityUtilsTest, GetAllGaiaIdsForKeyedPreferences) {
-  AccountsInCookieJarInfo cookie_info;
   const int cookie_accounts_count = 3;
   std::vector<gaia::ListedAccount> cookie_accounts(cookie_accounts_count);
   for (int i = 0; i < cookie_accounts_count; ++i) {
-    cookie_accounts[i].gaia_id = base::NumberToString(i);
+    cookie_accounts[i].gaia_id = GaiaId(base::NumberToString(i));
   }
+  // Mark one account as signed out and another one as invalid to make sure that
+  // all accounts are handled correctly, regardless of their status.
+  cookie_accounts[1].signed_out = true;
+  cookie_accounts[2].valid = false;
 
   // No accounts in cookie, no identity manager.
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(/*identity_manager=*/nullptr,
-                                               cookie_info),
-              testing::UnorderedElementsAre());
+  EXPECT_THAT(
+      GetAllGaiaIdsForKeyedPreferences(/*identity_manager=*/nullptr,
+                                       AccountsInCookieJarInfo(true, {})),
+      testing::UnorderedElementsAre());
 
   // No accounts in cookie, empty identity manager.
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(), AccountsInCookieJarInfo(true, {})),
               testing::UnorderedElementsAre());
 
   // Signed in cookie, empty identity manager.
-  cookie_info.signed_in_accounts = {cookie_accounts[0]};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
-              testing::UnorderedElementsAre("0"));
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(),
+                  AccountsInCookieJarInfo(true, {cookie_accounts[0]})),
+              testing::UnorderedElementsAre(GaiaId("0")));
 
   // Signed out cookie, empty identity manager.
-  cookie_info.signed_in_accounts = {};
-  cookie_info.signed_out_accounts = {cookie_accounts[0]};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
-              testing::UnorderedElementsAre("0"));
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(),
+                  AccountsInCookieJarInfo(true, {cookie_accounts[1]})),
+              testing::UnorderedElementsAre(GaiaId("1")));
 
-  // Signed out and signed in cookies, empty identity manager.
-  cookie_info.signed_in_accounts = {cookie_accounts[0], cookie_accounts[1]};
-  cookie_info.signed_out_accounts = {cookie_accounts[2]};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
-              testing::UnorderedElementsAre("0", "1", "2"));
+  // Signed in, signed out and invalid accounts in cookies, empty identity
+  // manager.
+  EXPECT_THAT(
+      GetAllGaiaIdsForKeyedPreferences(
+          identity_manager(),
+          AccountsInCookieJarInfo(true, {cookie_accounts[0], cookie_accounts[1],
+                                         cookie_accounts[2]})),
+      testing::UnorderedElementsAre(GaiaId("0"), GaiaId("1"), GaiaId("2")));
 
   AccountInfo account_info = MakePrimaryAccountAvailable();
   gaia::ListedAccount cookie_for_primary_account;
   cookie_for_primary_account.gaia_id = account_info.gaia;
 
   // No accounts in cookie, primary account in identity manager.
-  cookie_info.signed_in_accounts = {};
-  cookie_info.signed_out_accounts = {};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(), AccountsInCookieJarInfo(true, {})),
               testing::UnorderedElementsAre(account_info.gaia));
 
   // Primary account is valid in cookies.
-  cookie_info.signed_in_accounts = {cookie_for_primary_account,
-                                    cookie_accounts[0]};
-  cookie_info.signed_out_accounts = {cookie_accounts[1]};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
-              testing::UnorderedElementsAre(account_info.gaia, "0", "1"));
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(
+                  identity_manager(),
+                  AccountsInCookieJarInfo(
+                      true, {cookie_for_primary_account, cookie_accounts[0],
+                             cookie_accounts[1]})),
+              testing::UnorderedElementsAre(account_info.gaia, GaiaId("0"),
+                                            GaiaId("1")));
 
   // Primary account is invalid in cookies.
-  cookie_info.signed_in_accounts = {cookie_accounts[0]};
-  cookie_info.signed_out_accounts = {cookie_accounts[1],
-                                     cookie_for_primary_account};
-  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
-              testing::UnorderedElementsAre(account_info.gaia, "0", "1"));
+  gaia::ListedAccount cookie_invalid_primary_account;
+  cookie_invalid_primary_account.gaia_id = account_info.gaia;
+  cookie_invalid_primary_account.valid = false;
+  EXPECT_THAT(
+      GetAllGaiaIdsForKeyedPreferences(
+          identity_manager(),
+          AccountsInCookieJarInfo(true, {cookie_accounts[0], cookie_accounts[1],
+                                         cookie_invalid_primary_account})),
+      testing::UnorderedElementsAre(account_info.gaia, GaiaId("0"),
+                                    GaiaId("1")));
+
+  // Primary account is signed out in cookies.
+  gaia::ListedAccount cookie_signed_out_primary_account;
+  cookie_signed_out_primary_account.gaia_id = account_info.gaia;
+  cookie_signed_out_primary_account.signed_out = true;
+  EXPECT_THAT(
+      GetAllGaiaIdsForKeyedPreferences(
+          identity_manager(),
+          AccountsInCookieJarInfo(true, {cookie_accounts[0], cookie_accounts[1],
+                                         cookie_signed_out_primary_account})),
+      testing::UnorderedElementsAre(account_info.gaia, GaiaId("0"),
+                                    GaiaId("1")));
 }
 
 class IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled
-    : public testing::Test,
-      public base::test::WithFeatureOverride {
+    : public testing::Test {
  public:
   IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled()
-      : base::test::WithFeatureOverride(
-            switches::kExplicitBrowserSigninUIOnDesktop),
-        identity_test_env_(/*test_url_loader_factory=*/nullptr,
+      : identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            &pref_service_) {}
-
-  bool IsExplicitBrowserSigninDisabled() const {
-    return !IsParamFeatureEnabled();
-  }
 
   void MakePrimaryAccountAvailable() {
     static const std::string kTestEmail = "test@gmail.com";
@@ -267,29 +288,39 @@ class IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled
   IdentityTestEnvironment identity_test_env_;
 };
 
-TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
+TEST_F(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
        NoPrimaryAccount) {
   ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   EXPECT_FALSE(GetExplicitBrowserSigninPref());
-  EXPECT_EQ(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
-                                                      pref_service()),
-            IsExplicitBrowserSigninDisabled());
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_FALSE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                         pref_service()));
+#else
+  EXPECT_TRUE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                        pref_service()));
+#endif
 }
 
-TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
+TEST_F(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
        PrimaryAccountExplicitSignin) {
   MakePrimaryAccountAvailable();
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   SetExplicitBrowserSigninPref(true);
   ASSERT_TRUE(GetExplicitBrowserSigninPref());
 
-  EXPECT_EQ(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
-                                                      pref_service()),
-            IsExplicitBrowserSigninDisabled());
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+  EXPECT_FALSE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                         pref_service()));
+#else
+  EXPECT_TRUE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                        pref_service()));
+#endif
 }
 
 // Test for users that are already signed in implicitly.
-TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
+TEST_F(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
        PrimaryAccountDiceImplicitSignin) {
   MakePrimaryAccountAvailable();
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -299,8 +330,5 @@ TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
   EXPECT_TRUE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
                                                         pref_service()));
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled);
 
 }  // namespace signin

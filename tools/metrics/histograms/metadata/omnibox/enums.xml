@@ -60,7 +60,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unknown"/>
   <int value="2" label="Not allowed because feature disabled"/>
   <int value="3" label="Not allowed because the suggest setting is disabled"/>
-  <int value="4" label="Not allowed because the Drive setting is disabled"/>
+  <int value="4"
+      label="Not allowed because the Drive setting is disabled (obsolete)"/>
   <int value="5" label="Not allowed because the profile is off the record"/>
   <int value="6" label="Not allowed because the user is not logged in"/>
   <int value="7" label="Not allowed because the user is not Syncing"/>
@@ -69,6 +70,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Not allowed because the input is a focus or is empty"/>
   <int value="11" label="Not allowed because the input length is too short"/>
   <int value="12" label="Not allowed because the input looks like a URL"/>
+  <int value="13"
+      label="Not allowed because the user is not enterprise eligible"/>
 </enum>
 
 <enum name="DocumentSuggestRequestEvent">
@@ -113,6 +116,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="@history starter pack engine"/>
   <int value="4" label="@tabs starter pack engine"/>
   <int value="5" label="@gemini starter pack engine"/>
+  <int value="6" label="@page starter pack engine"/>
 </enum>
 
 <enum name="OmniboxEnteredKeywordMode2">
@@ -167,6 +171,21 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Android EEA"/>
 </enum>
 
+<!-- LINT.IfChange(RemoteRequestType) -->
+
+<enum name="RemoteRequestType">
+  <int value="0" label="search suggestion"/>
+  <int value="1" label="search suggestion warm-up"/>
+  <int value="2" label="search suggestion for images"/>
+  <int value="3" label="zero-prefix suggestion"/>
+  <int value="4" label="zero-prefix suggestion prefetching"/>
+  <int value="5" label="document suggestion"/>
+  <int value="6" label="suggestion deletion"/>
+  <int value="7" label="enterprise search aggregator suggestion"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/remote_suggestions_service.h:RemoteRequestType) -->
+
 <!-- LINT.IfChange(SearchPrefetchCacheAliasFallbackReasonEnum) -->
 
 <enum name="SearchPrefetchCacheAliasFallbackReason">
@@ -219,7 +238,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SearchPrefetchStatus">
   <int value="0" label="Not started"/>
-  <int value="1" label="In flight"/>
+  <int value="1" label="In flight (Obsolete)"/>
   <int value="2" label="Headers received (for streaming responses)"/>
   <int value="3"
       label="Headers received and user navigated to search terms (for
@@ -334,16 +353,6 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="Customize search engines"/>
   <int value="39" label="Manage ChromeOS accessibility"/>
   <int value="40" label="Set Chrome as default browser"/>
-</enum>
-
-<enum name="SuggestRequestType">
-  <int value="0" label="search suggestion"/>
-  <int value="1" label="search suggestion warm-up"/>
-  <int value="2" label="search suggestion for images"/>
-  <int value="3" label="zero-prefix suggestion"/>
-  <int value="4" label="zero-prefix suggestion prefetching"/>
-  <int value="5" label="document suggestion"/>
-  <int value="6" label="suggestion deletion"/>
 </enum>
 
 <enum name="ZeroSuggestEligibility">

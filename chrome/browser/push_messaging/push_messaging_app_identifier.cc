@@ -176,8 +176,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByAppId(
   if (!DisassemblePrefValue(*map_value, &origin,
                             &service_worker_registration_id,
                             &expiration_time)) {
-    NOTREACHED_IN_MIGRATION();
-    return PushMessagingAppIdentifier();
+    NOTREACHED();
   }
 
   PushMessagingAppIdentifier app_identifier(
@@ -249,7 +248,7 @@ PushMessagingAppIdentifier::PushMessagingAppIdentifier(
       service_worker_registration_id_(service_worker_registration_id),
       expiration_time_(expiration_time) {}
 
-PushMessagingAppIdentifier::~PushMessagingAppIdentifier() {}
+PushMessagingAppIdentifier::~PushMessagingAppIdentifier() = default;
 
 bool PushMessagingAppIdentifier::IsExpired() const {
   return (expiration_time_) ? *expiration_time_ < base::Time::Now() : false;

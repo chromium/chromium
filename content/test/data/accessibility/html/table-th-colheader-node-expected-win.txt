@@ -1,1 +1,0 @@
-ROLE_SYSTEM_COLUMNHEADER name='Firstname' table-cell-index:0 column_headers='<Firstname>'

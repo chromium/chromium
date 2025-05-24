@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/new_window_delegate.h"
-#include "components/arc/intent_helper/control_camera_app_delegate.h"
+#include "chromeos/ash/experiences/arc/intent_helper/control_camera_app_delegate.h"
 #include "url/gurl.h"
 
 // Handles opening new tabs and windows on behalf of ash (over mojo) and the
@@ -50,9 +50,12 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   void OpenPersonalizationHub() override;
   void OpenCaptivePortalSignin(const GURL& url) override;
   void OpenFile(const base::FilePath& file_path) override;
+  void ToggleGeminiApp() override;
 
   // arc::ControlCameraAppDelegate:
-  void LaunchCameraApp(const std::string& queries, int32_t task_id) override;
+  void LaunchCameraApp(const std::string& queries,
+                       bool launch_in_dialog,
+                       int32_t task_id) override;
   void CloseCameraApp() override;
   bool IsCameraAppEnabled() override;
 

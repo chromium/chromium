@@ -5,6 +5,7 @@ include_rules = {
   "+chrome/common/chromeos/extensions",
   "+components/web_package",
   "+components/webapps/services/web_app_origin_association",
+  "+components/webapps/isolated_web_apps",
   "+content/browser/background_fetch",
   "+mojo/core/embedder",
   "+mojo/public/cpp/bindings",

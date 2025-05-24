@@ -13,7 +13,13 @@ namespace base {
 
 BooleanWithOptionalStack::BooleanWithOptionalStack(bool value) : value_(value) {
 #if CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES()
-  stack_.emplace();
+  // The most useful stack traces are captured when `value` is true. If `value`
+  // is false we are in a SyncAllow primitive and the asserts that dcheck for
+  // allowing blocking calls will pass so there is no need to capture a stack
+  // trace. See https://crbug.com/404645680.
+  if (value) {
+    stack_.emplace();
+  }
 #endif  // CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES()
 }
 
@@ -34,7 +40,11 @@ std::ostream& operator<<(std::ostream& out,
 // or behaves as DCHECK in DCHECK-enabled builds. Unlike DUMP_WILL_BE_CHECK,
 // there is no intent to transform those into CHECKs. Used to report potential
 // performance issues.
-#define DUMP_OR_DCHECK DUMP_WILL_BE_CHECK
+//
+// TODO(crbug.com/363049758): This is temporarily a `DCHECK` to avoid getting a
+// lot of crash reports while known issues are being addressed. Change to
+// `DUMP_WILL_BE_CHECK` once known issues are addressed.
+#define DUMP_OR_DCHECK DCHECK
 
 namespace {
 
@@ -46,8 +56,6 @@ constinit thread_local BooleanWithOptionalStack
     tls_cpu_intensive_work_disallowed;
 
 }  // namespace
-
-namespace internal {
 
 void AssertBlockingAllowed() {
   DUMP_OR_DCHECK(!tls_blocking_disallowed)
@@ -63,8 +71,6 @@ void AssertBlockingDisallowedForTesting() {
   DCHECK(tls_blocking_disallowed)
       << "tls_blocking_disallowed " << tls_blocking_disallowed;
 }
-
-}  // namespace internal
 
 void DisallowBlocking() {
   tls_blocking_disallowed = BooleanWithOptionalStack(true);

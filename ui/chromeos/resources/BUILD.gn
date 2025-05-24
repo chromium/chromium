@@ -4,6 +4,8 @@
 
 import("//tools/grit/grit_rule.gni")
 
+assert(is_chromeos)
+
 grit("resources") {
   source = "ui_chromeos_resources.grd"
   outputs = [

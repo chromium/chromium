@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -17,22 +18,14 @@
 
 namespace em = enterprise_management;
 
-using testing::_;
-using testing::Invoke;
-using testing::SizeIs;
-
 namespace ash::cert_provisioning {
 
 namespace {
 
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
+using base::test::EqualsProto;
+using testing::_;
+using testing::Invoke;
+using testing::SizeIs;
 
 // A fake CloudPolicyClient that can record cert provisioning actions and
 // provides the test a way to supply a response by saving the callbacks passed

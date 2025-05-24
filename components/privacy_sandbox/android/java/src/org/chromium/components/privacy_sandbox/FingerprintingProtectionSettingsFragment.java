@@ -4,25 +4,20 @@
 
 package org.chromium.components.privacy_sandbox;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Browser;
-import android.view.View;
 
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.Preference;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
-import org.chromium.ui.text.SpanApplier;
+import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 
 /**
  * PreferenceFragment for managing fingerprinting protection settings.
@@ -31,32 +26,45 @@ import org.chromium.ui.text.SpanApplier;
  * with a {@link TrackingProtectionDelegate} to access and modify fingerprinting protection
  * preferences.
  */
-public class FingerprintingProtectionSettingsFragment extends PreferenceFragmentCompat
-        implements SettingsPage {
+@NullMarked
+public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBaseFragment {
     // Must match key in fp_protection_preferences.xml.
     private static final String PREF_FP_PROTECTION_SWITCH = "fp_protection_switch";
-
-    private static final String PREF_FP_PROTECTION_LEARN_MORE = "fp_protection_learn_more";
-
-    // TODO(b/325599577): Update the URL once it's finalized.
-    public static final String LEARN_MORE_URL =
-            "https://support.google.com/chrome/?p=tracking_protection";
 
     protected static final String FP_PROTECTION_PREF_HISTOGRAM_NAME =
             "Settings.FingerprintingProtection.Enabled";
 
     private TrackingProtectionDelegate mDelegate;
 
-    private CustomTabIntentHelper mCustomTabIntentHelper;
-
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.fp_protection_preferences);
-        mPageTitle.set(getString(R.string.tracking_protection_fingerprinting_protection_title));
+        mPageTitle.set(
+                getString(
+                        R.string
+                                .incognito_tracking_protections_fingerprinting_protection_toggle_label));
 
-        setupPreferences();
+        ChromeSwitchPreference fpProtectionSwitch = findPreference(PREF_FP_PROTECTION_SWITCH);
+        fpProtectionSwitch.setChecked(mDelegate.isFingerprintingProtectionEnabled());
+        fpProtectionSwitch.setManagedPreferenceDelegate(
+                new ForwardingManagedPreferenceDelegate(
+                        mDelegate
+                                .getSiteSettingsDelegate(getContext())
+                                .getManagedPreferenceDelegate()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return mDelegate.isFingerprintingProtectionManaged();
+                    }
+                });
+        fpProtectionSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    mDelegate.setFingerprintingProtection((boolean) newValue);
+                    RecordHistogram.recordBooleanHistogram(
+                            FP_PROTECTION_PREF_HISTOGRAM_NAME, (boolean) newValue);
+                    return true;
+                });
     }
 
     @Override
@@ -70,66 +78,13 @@ public class FingerprintingProtectionSettingsFragment extends PreferenceFragment
      *
      * @param delegate {@link TrackingProtectionDelegate} to set.
      */
+    @Initializer
     public void setTrackingProtectionDelegate(TrackingProtectionDelegate delegate) {
         mDelegate = delegate;
     }
 
-    private void setupPreferences() {
-        ChromeSwitchPreference fpProtectionSwitch = findPreference(PREF_FP_PROTECTION_SWITCH);
-        TextMessagePreference fpProtectionLearnMore = findPreference(PREF_FP_PROTECTION_LEARN_MORE);
-
-        fpProtectionSwitch.setChecked(mDelegate.isFingerprintingProtectionEnabled());
-        fpProtectionSwitch.setOnPreferenceChangeListener(
-                (preference, newValue) -> {
-                    mDelegate.setFingerprintingProtection((boolean) newValue);
-                    RecordHistogram.recordBooleanHistogram(
-                            FP_PROTECTION_PREF_HISTOGRAM_NAME, (boolean) newValue);
-                    return true;
-                });
-
-        fpProtectionLearnMore.setSummary(
-                SpanApplier.applySpans(
-                        getResources()
-                                .getString(
-                                        R.string
-                                                .tracking_protection_fingerprinting_protection_learn_more),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
-    }
-
-    private void onLearnMoreClicked(View view) {
-        openUrlInCct(LEARN_MORE_URL);
-    }
-
-    /**
-     * Sets the {@link CustomTabIntentHelper} to handle urls in CCT.
-     *
-     * <p>TODO(b/329317221) Note: this logic will be refactored as a part of CCT handlers refactor
-     * effort. It's duplicated across three fragments right now.
-     *
-     * @param helper {@link CustomTabIntentHelper} helper for handling CCTs.
-     */
-    public void setCustomTabIntentHelper(CustomTabIntentHelper helper) {
-        mCustomTabIntentHelper = helper;
-    }
-
-    // TODO(b/329317221) This logic will be refactored as a part of other effort.
-    private void openUrlInCct(String url) {
-        assert (mCustomTabIntentHelper != null)
-                : "CCT helpers must be set on FingerprintingProtectionSettingsFragment before"
-                        + " opening a link";
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(true).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent =
-                mCustomTabIntentHelper.createCustomTabActivityIntent(
-                        getContext(), customTabIntent.intent);
-        intent.setPackage(getContext().getPackageName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-        IntentUtils.safeStartActivity(getContext(), intent);
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

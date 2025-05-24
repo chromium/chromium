@@ -4,6 +4,7 @@
 
 #include "media/capture/video/win/sink_filter_win.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "media/capture/video/win/sink_input_pin_win.h"
 
 namespace media {
@@ -12,7 +13,7 @@ SinkFilterObserver::~SinkFilterObserver() {
 }
 
 SinkFilter::SinkFilter(SinkFilterObserver* observer) {
-  input_pin_ = new SinkInputPin(this, observer);
+  input_pin_ = base::MakeRefCounted<SinkInputPin>(this, observer);
 }
 
 void SinkFilter::SetRequestedMediaFormat(VideoPixelFormat pixel_format,

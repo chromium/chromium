@@ -75,7 +75,7 @@ const char* MatchVerificationPointToString(int verification_point) {
     case MatchVerificationPoint::INVALID:
       return "Invalid";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool sInvalidMatchMetricsUploaded = false;

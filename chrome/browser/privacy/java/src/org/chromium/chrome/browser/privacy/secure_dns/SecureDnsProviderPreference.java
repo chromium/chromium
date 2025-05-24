@@ -25,6 +25,10 @@ import androidx.preference.PreferenceViewHolder;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsBridge.Entry;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
@@ -34,9 +38,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * SecureDnsProviderPreference is the user interface that is shown when Secure DNS is enabled.
- * When Secure DNS is disabled, the SecureDnsProviderPreference is hidden.
+ * SecureDnsProviderPreference is the user interface that is shown when Secure DNS is enabled. When
+ * Secure DNS is disabled, the SecureDnsProviderPreference is hidden.
  */
+@NullMarked
 class SecureDnsProviderPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener,
                 AdapterView.OnItemSelectedListener,
@@ -50,25 +55,25 @@ class SecureDnsProviderPreference extends Preference
     private final List<Entry> mOptions;
 
     // UI elements.  These fields are assigned only once, in onBindViewHolder.
-    private RadioButtonWithDescriptionLayout mGroup;
-    private RadioButtonWithDescription mAutomaticButton;
-    private RadioButtonWithDescription mSecureButton;
-    private Spinner mServerMenu;
-    private TextView mPrivacyPolicy;
-    private EditText mCustomServer;
-    private TextInputLayout mCustomServerLayout;
+    private @MonotonicNonNull RadioButtonWithDescriptionLayout mGroup;
+    private @MonotonicNonNull RadioButtonWithDescription mAutomaticButton;
+    private @MonotonicNonNull RadioButtonWithDescription mSecureButton;
+    private @MonotonicNonNull Spinner mServerMenu;
+    private @MonotonicNonNull TextView mPrivacyPolicy;
+    private @MonotonicNonNull EditText mCustomServer;
+    private @MonotonicNonNull TextInputLayout mCustomServerLayout;
 
     // All variable UI state for SecureDnsProviderPreference is encapsulated in this field.
     // To ensure that the UI is updated whenever the state changes, this field
     // should only be modified by setState().
-    private State mState;
+    private State mState = new State(false, "", false);
 
     // Checks whether the current template is actually reachable, and updates
     // mCustomServerLayout's error state.
     private final Runnable mProbeRunner = this::startServerProbe;
 
     /**
-     * State is an immutable representation of the control's current UI state.  It can represent
+     * State is an immutable representation of the control's current UI state. It can represent
      * states that are invalid, which are required when editing the template or changing modes.
      */
     static class State {
@@ -79,7 +84,7 @@ class SecureDnsProviderPreference extends Preference
         // Whether the selected template is valid.
         public final boolean valid;
 
-        State(boolean secure, @NonNull String config, boolean valid) {
+        State(boolean secure, String config, boolean valid) {
             this.secure = secure;
             this.config = config;
             this.valid = valid;
@@ -96,27 +101,16 @@ class SecureDnsProviderPreference extends Preference
             return false;
         }
 
-        @Override
-        public int hashCode() {
-            // This method is not used, but is defined here for consistency with equals().
-            return toString().hashCode();
-        }
-
         State withSecure(boolean secure) {
             return new State(secure, config, valid);
         }
 
-        State withConfig(@NonNull String config) {
+        State withConfig(String config) {
             return new State(secure, config, valid);
         }
 
         State withValid(boolean valid) {
             return new State(secure, config, valid);
-        }
-
-        @Override
-        public @NonNull String toString() {
-            return String.format("State(%b, %s, %b)", secure, config, valid);
         }
     }
 
@@ -130,6 +124,20 @@ class SecureDnsProviderPreference extends Preference
         mInvalidWarning = context.getString(R.string.settings_secure_dns_custom_format_error);
         mProbeWarning = context.getString(R.string.settings_secure_dns_custom_connection_error);
         mOptions = makeOptions(context);
+    }
+
+    @EnsuresNonNull({
+        "mGroup",
+        "mAutomaticButton",
+        "mSecureButton",
+        "mServerMenu",
+        "mPrivacyPolicy",
+        "mCustomServer",
+        "mCustomServerLayout"
+    })
+    @SuppressWarnings("NullAway") // Checking one is good enough.
+    private void assertBound() {
+        assert mGroup != null;
     }
 
     private static List<Entry> makeOptions(Context context) {
@@ -188,6 +196,7 @@ class SecureDnsProviderPreference extends Preference
 
     // Returns the index of the dropdown entry that matches the current template,
     // or 0 if none match (i.e. a custom template).
+    @RequiresNonNull("mServerMenu")
     private int matchingDropdownIndex() {
         for (int i = 1; i < mServerMenu.getCount(); ++i) {
             Entry entry = (Entry) mServerMenu.getItemAtPosition(i);
@@ -204,6 +213,7 @@ class SecureDnsProviderPreference extends Preference
             // Not yet bound to view holder.
             return;
         }
+        assertBound();
 
         if (mSecureButton.isChecked() != mState.secure) {
             mSecureButton.setChecked(mState.secure);
@@ -264,6 +274,7 @@ class SecureDnsProviderPreference extends Preference
         if (group.isEmpty() || !mState.valid || !mState.secure) {
             return;
         }
+        assertBound();
         // probeConfig() is a blocking network call that uses WaitableEvent, so it cannot run
         // on the UI thread, nor via the Java PostTask bindings, which do not expose
         // base::WithBaseSyncPrimitives.  Instead, it runs on a fresh Java thread.
@@ -293,6 +304,7 @@ class SecureDnsProviderPreference extends Preference
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        assertBound();
         int oldPos = matchingDropdownIndex();
         if (oldPos == pos) {
             // This is the same item that was already in effect.  Ignore spurious event.
@@ -325,6 +337,7 @@ class SecureDnsProviderPreference extends Preference
 
     @Override
     public void afterTextChanged(Editable s) {
+        assertBound();
         tryUpdate(mState.withConfig(s.toString()));
 
         mCustomServer.removeCallbacks(mProbeRunner);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/sensor_info/sensor_page_handler.h"
 
 #include <string>
@@ -14,6 +9,7 @@
 
 #include "ash/sensor_info/sensor_provider.h"
 #include "ash/sensor_info/sensor_types.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -99,9 +95,8 @@ void SensorPageHandler::OnSensorUpdated(const ash::SensorUpdate& update) {
     auto sensor_callback = base::BindOnce(
         [](const ash::SensorUpdate& update, base::File* file_ptr) {
           std::string update_output = GenerateString(update, base::Time::Now());
-          if (file_ptr->WriteAtCurrentPosAndCheck(base::span<uint8_t>(
-                  reinterpret_cast<uint8_t*>(update_output.data()),
-                  update_output.size()))) {
+          if (file_ptr->WriteAtCurrentPosAndCheck(
+                  base::as_byte_span(update_output))) {
             LOG(ERROR) << "Write Unsuccessful.";
           }
         },

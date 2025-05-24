@@ -9,11 +9,11 @@ goog.setTestOnly();
 
 const NumberFormat = goog.require('goog.i18n.NumberFormat');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
-const RawCurrencyInfo = goog.require('goog.i18n.currency.CurrencyInfo');
 const currency = goog.require('goog.i18n.currency');
 const googObject = goog.require('goog.object');
 const testSuite = goog.require('goog.testing.testSuite');
 
+const RawCurrencyInfo = currency.CurrencyInfo;
 let CurrencyInfo = RawCurrencyInfo;
 
 const stubs = new PropertyReplacer();

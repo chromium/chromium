@@ -25,6 +25,10 @@
 #include "content/public/browser/download_manager.h"
 #include "extensions/buildflags/buildflags.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #endif
@@ -40,7 +44,7 @@ using content::DownloadManagerDelegate;
 DownloadCoreServiceImpl::DownloadCoreServiceImpl(Profile* profile)
     : download_manager_created_(false), profile_(profile) {}
 
-DownloadCoreServiceImpl::~DownloadCoreServiceImpl() {}
+DownloadCoreServiceImpl::~DownloadCoreServiceImpl() = default;
 
 ChromeDownloadManagerDelegate*
 DownloadCoreServiceImpl::GetDownloadManagerDelegate() {
@@ -82,9 +86,11 @@ DownloadCoreServiceImpl::GetDownloadManagerDelegate() {
   download_ui_ = std::make_unique<DownloadUIController>(
       manager, std::unique_ptr<DownloadUIController::Delegate>());
 
-#if !BUILDFLAG(IS_ANDROID)
-  download_shelf_controller_ =
-      std::make_unique<DownloadShelfController>(profile_);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!ash::features::IsOfflineItemsInNotificationsEnabled()) {
+    download_shelf_controller_ =
+        std::make_unique<DownloadShelfController>(profile_);
+  }
 #endif
 
   // Include this download manager in the set monitored by the

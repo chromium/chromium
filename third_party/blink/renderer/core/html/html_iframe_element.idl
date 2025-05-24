@@ -28,7 +28,7 @@
     HTMLConstructor
 ] interface HTMLIFrameElement : HTMLElement {
     [CEReactions, Reflect, URL] attribute USVString src;
-    [CEReactions, Reflect, RaisesException=Setter] attribute HTMLString srcdoc;
+    [CEReactions, Reflect] attribute HTMLString srcdoc;
     [CEReactions, Reflect] attribute DOMString name;
     [PutForwards=value] readonly attribute DOMTokenList sandbox;
     // Note: The seamless attribute was once supported, but was removed.

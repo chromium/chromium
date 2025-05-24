@@ -15,17 +15,19 @@ ScopedWinrtInitializer::ScopedWinrtInitializer()
     : hr_(::RoInitialize(RO_INIT_MULTITHREADED)) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 #if DCHECK_IS_ON()
-  if (SUCCEEDED(hr_))
+  if (SUCCEEDED(hr_)) {
     AssertComApartmentType(ComApartmentType::MTA);
-  else
+  } else {
     DCHECK_NE(RPC_E_CHANGED_MODE, hr_) << "Invalid COM thread model change";
+  }
 #endif
 }
 
 ScopedWinrtInitializer::~ScopedWinrtInitializer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (SUCCEEDED(hr_))
+  if (SUCCEEDED(hr_)) {
     ::RoUninitialize();
+  }
 }
 
 bool ScopedWinrtInitializer::Succeeded() const {

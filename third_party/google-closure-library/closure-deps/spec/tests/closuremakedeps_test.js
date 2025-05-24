@@ -21,6 +21,8 @@ const fs = require('fs');
 const jasmineDiff = require('jasmine-diff');
 const os = require('os');
 
+const {normalizePath} = require('../../lib/normalize');
+
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 
 // By default assume this is running based on the structure of the git repo.
@@ -59,7 +61,8 @@ function sortLines(str) {
 
 describe('closure-make-deps', function() {
   const tempFile = path.join(os.tmpdir(), 'closuremakejsdepstmp.js');
-  const tempFileRelativePath = path.relative(CLOSURE_PATH, tempFile);
+  const tempFileRelativePath =
+      normalizePath(path.relative(CLOSURE_PATH, tempFile));
 
   const closureDepsContents =
       fs.readFileSync(path.resolve(CLOSURE_PATH, 'deps.js'), {

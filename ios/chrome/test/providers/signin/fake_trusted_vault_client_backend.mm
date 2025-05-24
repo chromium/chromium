@@ -9,11 +9,19 @@
 #import "base/check.h"
 #import "base/functional/callback.h"
 
+namespace {
+
 using CompletionBlock = TrustedVaultClientBackend::CompletionBlock;
+
+// Domain for fake trusted vault client backend errors.
+NSString* const kFakeTrustedVaultClientBackendErrorDomain =
+    @"FakeTrustedVaultClientBackendErrorDomain";
+
+}  // namespace
 
 @interface FakeTrustedVaultClientBackendViewController : UIViewController
 
-// Completion to call once the view controller is dismiss.
+// Completion to call once the view controller is dismissed.
 @property(nonatomic, copy) CompletionBlock completion;
 
 - (instancetype)initWithCompletion:(CompletionBlock)completion
@@ -68,8 +76,14 @@ void FakeTrustedVaultClientBackend::
 void FakeTrustedVaultClientBackend::FetchKeys(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,
-    KeyFetchedCallback completion) {
-  // Do nothing.
+    KeysFetchedCallback completion) {
+  // Return the keys for passkeys domain, so the `UpdateGPMPinForAccount` can be
+  // tested.
+  if (security_domain_id == trusted_vault::SecurityDomainId::kPasskeys) {
+    std::move(completion).Run({{1, 2, 3}});
+  }
+
+  // Otherwise do nothing.
 }
 
 void FakeTrustedVaultClientBackend::MarkLocalKeysAsStale(
@@ -83,7 +97,13 @@ void FakeTrustedVaultClientBackend::GetDegradedRecoverabilityStatus(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,
     base::OnceCallback<void(bool)> completion) {
-  // Do nothing.
+  // Return the non-degraded status for passkeys domain, so the
+  // `UpdateGPMPinForAccount` can be tested.
+  if (security_domain_id == trusted_vault::SecurityDomainId::kPasskeys) {
+    std::move(completion).Run(false);
+  }
+
+  // Otherwise do nothing.
 }
 
 FakeTrustedVaultClientBackend::CancelDialogCallback
@@ -140,6 +160,24 @@ void FakeTrustedVaultClientBackend::GetPublicKeyForIdentity(
     id<SystemIdentity> identity,
     GetPublicKeyCallback completion) {
   // Do nothing.
+}
+
+void FakeTrustedVaultClientBackend::UpdateGPMPinForAccount(
+    id<SystemIdentity> identity,
+    trusted_vault::SecurityDomainId security_domain_id,
+    UINavigationController* navigationController,
+    UIView* brandedNavigationItemTitleView,
+    UpdateGPMPinCompletionCallback completion) {
+  CHECK_EQ(security_domain_id, trusted_vault::SecurityDomainId::kPasskeys);
+
+  // Since the real update view controller cannot be displayed, return an error.
+  // This should be handled on the caller side and can be tested.
+  // TODO(crbug.com/358342483): Add method to set what kind of error should be
+  // returned. Same for FetchKeys() and GetDegradedRecoverabilityStatus().
+  std::move(completion)
+      .Run([NSError errorWithDomain:kFakeTrustedVaultClientBackendErrorDomain
+                               code:1
+                           userInfo:nil]);
 }
 
 void FakeTrustedVaultClientBackend::SimulateUserCancel() {

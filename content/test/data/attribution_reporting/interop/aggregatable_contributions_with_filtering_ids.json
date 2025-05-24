@@ -1,8 +1,5 @@
 {
   "description": "Aggregatable contributions creation with filtering ids",
-  "api_config": {
-    "needs_aggregatable_filtering_ids": true
-  },
   "input": {
     "registrations": [
       {

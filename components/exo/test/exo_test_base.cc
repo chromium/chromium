@@ -51,7 +51,10 @@ ExoTestBase::ExoTestBase() = default;
 ExoTestBase::~ExoTestBase() = default;
 
 void ExoTestBase::SetUp() {
-  SetUp(nullptr);
+  AshTestBase::SetUp();
+  wm_helper_ = std::make_unique<WMHelper>();
+  wm_helper_->RegisterAppPropertyResolver(
+      base::WrapUnique(new TestPropertyResolver()));
 
   if (task_environment()->UsesMockTime()) {
     // Reduce the refresh rate to save cost for fast forwarding when mock time
@@ -63,14 +66,6 @@ void ExoTestBase::SetUp() {
 void ExoTestBase::TearDown() {
   wm_helper_.reset();
   AshTestBase::TearDown();
-}
-
-void ExoTestBase::SetUp(
-    std::unique_ptr<ash::TestShellDelegate> shell_delegate) {
-  AshTestBase::SetUp(std::move(shell_delegate));
-  wm_helper_ = std::make_unique<WMHelper>();
-  wm_helper_->RegisterAppPropertyResolver(
-      base::WrapUnique(new TestPropertyResolver()));
 }
 
 viz::SurfaceManager* ExoTestBase::GetSurfaceManager() {

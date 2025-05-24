@@ -48,10 +48,16 @@ template("ios_eg2_test_app_host") {
     if (xcode_version_int >= 1300) {
       extra_system_frameworks += [
         "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestCore.framework",
-        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework",
         "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
         "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
       ]
+
+      # Xcode 16.3 moved XCUIAutomation.framework
+      if (xcode_version_int < 1630) {
+        extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework" ]
+      } else {
+        extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/Frameworks/XCUIAutomation.framework" ]
+      }
     }
 
     # XCTestSupport framework is required for running EG tests with Xcode 14.3 or later.

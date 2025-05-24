@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_CANDIDATE_H_
 
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -18,7 +19,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/overlay_type.h"
@@ -128,6 +129,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // If true, we need to run a detiling image processor on the quad before we
   // can scan it out.
   bool needs_detiling : 1 = false;
+
+  // If true, this candidate uses low latency rendering and we need
+  // to increase its overlay priority.
+  bool low_latency_rendering : 1 = false;
 
   // Rect in content space that, when combined with |transform|, is the bounds
   // to position the overlay to. When |transform| is a |gx::OverlayTransform|,
@@ -251,14 +256,15 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // |tracking_id|.
   TrackingId tracking_id = kDefaultTrackingId;
 
-  // A layer ID packing that includes the namespace.
-  // See |SharedQuadState::layer_id| and |SharedQuadState::layer_namespace_id|.
-  uint64_t aggregated_layer_id = 0;
+#if BUILDFLAG(IS_WIN)
+  // Used to identify overlays that originate from the same cc layer.
+  gfx::OverlayLayerId layer_id;
+#endif
 
   // Transformation to apply to layer during composition.
   // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
   // does not affect |display_rect|.
-  absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
+  std::variant<gfx::OverlayTransform, gfx::Transform> transform =
       gfx::OVERLAY_TRANSFORM_NONE;
 
   // Default overlay type.

@@ -52,6 +52,8 @@ found in the LICENSE file.
     <dimen name="readaloud_control_button_spacing">12dp</dimen>
     <dimen name="readaloud_controls_portrait_padding">60dp</dimen>
     <dimen name="readaloud_controls_landscape_padding">0dp</dimen>
+    <dimen name="readaloud_playback_mode_selector_diameter">48dp</dimen>
+    <dimen name="readaloud_playback_thumb_up_down_dimen">48dp</dimen>
 
     <!-- Menu buttons -->
     <dimen name="readaloud_menu_buttons_width">28dp</dimen>
@@ -72,4 +74,8 @@ found in the LICENSE file.
     <!-- Error layout-->
     <dimen name="error_layour_portrait_height">330dp</dimen>
     <dimen name="error_layour_landscape_height">260dp</dimen>
+
+    <!-- Loading layout -->
+    <dimen name="readaloud_expanded_player_loading_text_margin_bottom">27dp</dimen>
+    <dimen name="readaloud_expanded_player_loading_text_margin_start">84dp</dimen>
 </resources>

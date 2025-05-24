@@ -30,8 +30,7 @@ PersistedTabDataConfigAndroid::Get(const void* user_data_key,
             ->GetForBrowserContext(profile),
         kSensitivityId);
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown UserDataKey";
-  return nullptr;
+  NOTREACHED() << "Unknown UserDataKey";
 }
 
 std::unique_ptr<std::vector<PersistedTabDataStorageAndroid*>>

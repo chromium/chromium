@@ -51,12 +51,19 @@ template <typename TextContainerType>
 void ShapeResultSpacing<TextContainerType>::SetSpacingAndExpansion(
     const FontDescription& font_description) {
   // Available only for TextRun since it has expansion data.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 template <>
 void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(
     const FontDescription& font_description) {
+  SetSpacingAndExpansion(font_description, text_.NormalizeSpace());
+}
+
+template <typename TextContentType>
+void ShapeResultSpacing<TextContentType>::SetSpacingAndExpansion(
+    const FontDescription& font_description,
+    bool normalize_space) {
   letter_spacing_ = TextRunLayoutUnit(font_description.LetterSpacing());
   word_spacing_ = TextRunLayoutUnit(font_description.WordSpacing());
   expansion_ = InlineLayoutUnit();
@@ -64,7 +71,7 @@ void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(
   if (!has_spacing_)
     return;
 
-  normalize_space_ = text_.NormalizeSpace();
+  normalize_space_ = normalize_space;
   allow_tabs_ = false;
 }
 
@@ -98,8 +105,7 @@ void ShapeResultSpacing<TextContainerType>::ComputeExpansion(
 template <typename TextContainerType>
 TextRunLayoutUnit ShapeResultSpacing<TextContainerType>::NextExpansion() {
   if (!expansion_opportunity_count_) {
-    NOTREACHED_IN_MIGRATION();
-    return TextRunLayoutUnit();
+    NOTREACHED();
   }
 
   is_after_expansion_ = true;
@@ -117,7 +123,8 @@ TextRunLayoutUnit ShapeResultSpacing<TextContainerType>::NextExpansion() {
 template <typename TextContainerType>
 TextRunLayoutUnit ShapeResultSpacing<TextContainerType>::ComputeSpacing(
     const ComputeSpacingParameters& parameters,
-    float& offset) {
+    float& offset,
+    bool is_cursive_script) {
   DCHECK(has_spacing_);
   unsigned index = parameters.index;
   UChar32 character = text_[index];
@@ -132,12 +139,21 @@ TextRunLayoutUnit ShapeResultSpacing<TextContainerType>::ComputeSpacing(
   TextRunLayoutUnit spacing;
 
   bool has_letter_spacing = letter_spacing_;
-  if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character))
+  bool apply_letter_spacing =
+      RuntimeEnabledFeatures::IgnoreLetterSpacingInCursiveScriptsEnabled()
+          ? !is_cursive_script
+          : true;
+  if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character) &&
+      apply_letter_spacing) {
     spacing += letter_spacing_;
+    is_letter_spacing_applied_ = true;
+  }
 
   if (treat_as_space && (allow_word_spacing_anywhere_ || index ||
-                         character == kNoBreakSpaceCharacter))
+                         character == kNoBreakSpaceCharacter)) {
     spacing += word_spacing_;
+    is_word_spacing_applied_ = true;
+  }
 
   if (!HasExpansion())
     return spacing;

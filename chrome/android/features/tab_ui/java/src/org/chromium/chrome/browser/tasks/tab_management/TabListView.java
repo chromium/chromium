@@ -17,13 +17,15 @@ import android.widget.ImageView;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 
 // TODO(crbug.com/339038505): De-dupe logic in TabGridView.
 /** Holds the view for a tab list. */
-public class TabListView extends SelectableItemViewBase<Integer> {
+@NullMarked
+public class TabListView extends SelectableItemViewBase<TabListEditorItemSelectionId> {
     private @TabActionState int mTabActionState = TabActionState.UNSET;
     private ImageView mActionButton;
 

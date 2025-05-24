@@ -37,6 +37,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -53,7 +54,7 @@ namespace ash {
 namespace {
 
 constexpr char kTestUserName[] = "test@test.test";
-constexpr char kTestUserGaiaId[] = "123456";
+constexpr GaiaId::Literal kTestUserGaiaId("123456");
 
 constexpr char kDueDate[] = "2 Aug 2025 10:00 GMT";
 

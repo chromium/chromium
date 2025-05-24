@@ -4,7 +4,8 @@
 
 #include "components/password_manager/core/browser/sharing/password_sender_service_impl.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 #include "components/sync/model/data_type_controller_delegate.h"

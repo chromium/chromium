@@ -95,7 +95,7 @@ testSuite({
       return;
     }
 
-    const range = createRangeIterable(0, 3);
+    const range = createRangeIterator(0, 3);
 
     const callback = recordFunction();
     iters.forEach(range, callback);
@@ -166,14 +166,6 @@ testSuite({
     assertObjectEquals({value: undefined, done: true}, iter.next());
   },
 
-  testMap_index() {
-    // Use something besides consecutive integers to make sure we're actually
-    // being passed the index here.
-    const someNumbers = [5, 5, 5, 5, 5];
-    assertArrayEquals(
-        [0, 2, 4, 6, 8], [...iters.map(someNumbers, (n, index) => index * 2)]);
-  },
-
   testFilter() {
     function isEven(val) {
       return val % 2 == 0;
@@ -201,13 +193,6 @@ testSuite({
       assertUndefined(nextObj.value);
       assertTrue(nextObj.done);
     }
-  },
-
-  testFilterEveryOther() {
-    const tenNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    assertArrayEquals(
-        [1, 3, 5, 7, 9],
-        [...iters.filter(tenNumbers, (n, index) => index % 2 == 0)]);
   },
 
   testFilterLongGap() {
@@ -315,4 +300,9 @@ testSuite({
 
     assertArrayEquals([...array1, ...array2], [...concatIter]);
   },
+
+  testToArray() {
+    assertArrayEquals(
+        [0, 1, 2, 3, 4], iters.toArray(createRangeIterator(0, 5)));
+  }
 });

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -37,11 +38,12 @@ public class PaneBackStackHandlerUnitTest {
     @Mock private Pane mBookmarksPane;
     @Mock private DisplayButtonData mReferenceButtonData;
 
-    private ObservableSupplierImpl<DisplayButtonData> mEmptyReferenceButtonDataSupplier =
+    private final ObservableSupplierImpl<DisplayButtonData> mEmptyReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
+    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
+            new ObservableSupplierImpl<>();
 
     private PaneManager mPaneManager;
     private PaneBackStackHandler mBackStackHandler;
@@ -294,6 +296,34 @@ public class PaneBackStackHandlerUnitTest {
 
         assertEquals(BackPressResult.SUCCESS, mBackStackHandler.handleBackPress());
         assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    @SmallTest
+    public void testBackStackIsIgnoredByEscape() {
+        mBackStackHandler = new PaneBackStackHandler(mPaneManager);
+        assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
+        ShadowLooper.runUiThreadTasks();
+
+        assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
+
+        // Focus each of three panes.
+        assertTrue(mPaneManager.focusPane(PaneId.TAB_SWITCHER));
+        assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
+        assertEquals(mTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
+
+        assertTrue(mPaneManager.focusPane(PaneId.BOOKMARKS));
+        assertTrue(mBackStackHandler.getHandleBackPressChangedSupplier().get());
+        assertEquals(mBookmarksPane, mPaneManager.getFocusedPaneSupplier().get());
+
+        assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
+        assertTrue(mBackStackHandler.getHandleBackPressChangedSupplier().get());
+        assertEquals(mIncognitoTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
+
+        // Ensure Escape key presses do not navigate back in stack.
+        assertNull(mBackStackHandler.handleEscPress());
+        assertTrue(mBackStackHandler.getHandleBackPressChangedSupplier().get());
+        assertEquals(mIncognitoTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
     }
 
     private boolean hasObservers(ObservableSupplier<Pane> paneSupplier) {

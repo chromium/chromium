@@ -22,8 +22,8 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForCookiesTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 

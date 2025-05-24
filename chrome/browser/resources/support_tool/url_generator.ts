@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './support_tool_shared.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -47,10 +47,6 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
         type: Array,
         value: () => [],
       },
-      generatedURL_: {
-        type: String,
-        value: '',
-      },
       errorMessage_: {
         type: String,
         value: '',
@@ -72,13 +68,13 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
     };
   }
 
-  private caseId_: string;
+  declare private caseId_: string;
   private generatedResult_: string;
-  private errorMessage_: string;
-  private buttonDisabled_: boolean;
-  private copiedToastMessage_: string;
-  private dataCollectors_: DataCollectorItem[];
-  private selectAll_: boolean;
+  declare private errorMessage_: string;
+  declare private buttonDisabled_: boolean;
+  declare private copiedToastMessage_: string;
+  declare private dataCollectors_: DataCollectorItem[];
+  declare private selectAll_: boolean;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {
@@ -97,7 +93,7 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
 
   private hasDataCollectorSelected(): boolean {
     for (let index = 0; index < this.dataCollectors_.length; index++) {
-      if (this.dataCollectors_[index]!.isIncluded) {
+      if (this.dataCollectors_[index].isIncluded) {
         return true;
       }
     }

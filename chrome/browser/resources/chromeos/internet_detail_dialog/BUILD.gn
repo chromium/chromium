@@ -11,7 +11,7 @@ build_webui("build") {
   # Files holding a Polymer element definition AND have an equivalent .html file.
   web_component_files = [ "internet_detail_dialog.ts" ]
 
-  non_web_component_files = [ "internet_detail_dialog_browser_proxy.ts" ]
+  ts_files = [ "internet_detail_dialog_browser_proxy.ts" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 

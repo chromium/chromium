@@ -10,7 +10,7 @@ Note: Another name for static initializers is "global constructors".
 
 # How Static Initializers are Checked
 
-* For Linux and Mac:
+* For Linux, Mac and iOS:
   * The expected count is stored in [//testing/scripts/check_static_initializers.py](https://source.chromium.org/chromium/chromium/src/+/main:testing/scripts/check_static_initializers.py)
 * For Android:
   * The expected count is stored in [//chrome/android/static_initializers.gni](https://cs.chromium.org/chromium/src/chrome/android/static_initializers.gni)

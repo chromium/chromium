@@ -6,19 +6,49 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/app/chrome_overlay_window.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
-using SafeModeCoordinatorTest = PlatformTest;
+class SafeModeCoordinatorTest : public PlatformTest {
+ public:
+  SafeModeCoordinatorTest()
+      : scene_state_([[SceneState alloc] initWithAppState:nil]) {
+    scene_session_mock_ = OCMClassMock([UISceneSession class]);
+    OCMStub([scene_session_mock_ persistentIdentifier])
+        .andReturn([[NSUUID UUID] UUIDString]);
+    scene_mock_ = OCMClassMock([UIWindowScene class]);
+    OCMStub([scene_mock_ session]).andReturn(scene_session_mock_);
+    scene_state_.scene = scene_mock_;
+  }
+
+ protected:
+  // The scene state that the agent works with.
+  SceneState* scene_state_;
+  // Mock for scene_state_'s underlying UIWindowScene.
+  id scene_mock_;
+  // Mock for scene_mock_'s underlying UISceneSession.
+  id scene_session_mock_;
+};
 
 TEST_F(SafeModeCoordinatorTest, RootVC) {
   // Expect that starting a safe mode coordinator will populate the root view
   // controller.
-  UIWindow* window =
-      [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-  EXPECT_TRUE([window rootViewController] == nil);
+  UIWindow* window = [[ChromeOverlayWindow alloc] init];
+  ;
+
+  id applicationWindowMock = nil;
+  OCMStub([scene_mock_ windows]).andReturn(@[ window ]);
+
+  UIViewController* initial_root_view_controller =
+      scene_state_.rootViewController;
+  EXPECT_EQ(scene_state_.rootViewController, initial_root_view_controller);
   SafeModeCoordinator* safe_mode_coordinator =
-      [[SafeModeCoordinator alloc] initWithWindow:window];
+      [[SafeModeCoordinator alloc] initWithSceneState:scene_state_];
   [safe_mode_coordinator start];
-  EXPECT_FALSE([window rootViewController] == nil);
+  EXPECT_NE(scene_state_.rootViewController, initial_root_view_controller);
+
+  [applicationWindowMock stopMocking];
 }

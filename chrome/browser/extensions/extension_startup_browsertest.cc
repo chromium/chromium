@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
@@ -36,6 +35,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -51,12 +51,13 @@
 #include "extensions/test/test_content_script_load_waiter.h"
 #include "net/base/filename_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
-using extensions::FeatureSwitch;
+using extensions::ExtensionRegistrar;
 using extensions::ExtensionRegistry;
+using extensions::FeatureSwitch;
 
 // This file contains high-level startup tests for the extensions system. We've
 // had many silly bugs where command line flags did not get propagated correctly
@@ -182,6 +183,10 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
     return found_extensions;
   }
 
+  ExtensionRegistrar* GetExtensionRegistrar() {
+    return ExtensionRegistrar::Get(browser()->profile());
+  }
+
   void WaitForServicesToStart(int num_expected_extensions,
                               bool expect_extensions_enabled) {
     extensions::ExtensionSystem* extension_system =
@@ -197,7 +202,7 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
               GetNonComponentEnabledExtensionCount(browser()->profile()));
 
     ASSERT_EQ(expect_extensions_enabled,
-              extension_system->extension_service()->extensions_enabled());
+              GetExtensionRegistrar()->extensions_enabled());
 
     if (num_expected_extensions == 0)
       return;
@@ -344,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadTest, Test) {
   TestInjection(true, true);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionsLoadTest,
                        SigninProfileCommandLineExtensionsDontLoad) {
@@ -354,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadTest,
                    ash::ProfileHelper::GetSigninProfile()));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // ExtensionsLoadMultipleTest
 // Ensures that we can startup the browser with multiple extensions
@@ -396,63 +401,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadMultipleTest, Test) {
   TestInjection(true, true);
 }
 
-// TODO(catmullings): Remove test in future chrome release, perhaps M59.
-class DeprecatedLoadComponentExtensionSwitchBrowserTest
-    : public extensions::ExtensionBrowserTest {
- public:
-  DeprecatedLoadComponentExtensionSwitchBrowserTest() {}
-
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
-  ExtensionRegistry* GetExtensionRegistry() {
-    return ExtensionRegistry::Get(browser()->profile());
-  }
-};
-
-void DeprecatedLoadComponentExtensionSwitchBrowserTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-  base::FilePath fp1(test_data_dir_.AppendASCII("app_dot_com_app/"));
-  base::FilePath fp2(test_data_dir_.AppendASCII("app/"));
-
-  command_line->AppendSwitchASCII(
-      "load-component-extension",
-      fp1.AsUTF8Unsafe() + "," + fp2.AsUTF8Unsafe());
-}
-
-// Tests that the --load-component-extension flag is not supported.
-IN_PROC_BROWSER_TEST_F(DeprecatedLoadComponentExtensionSwitchBrowserTest,
-                       DefunctLoadComponentExtensionFlag) {
-  EXPECT_TRUE(extension_service()->extensions_enabled());
-
-  // Checks that the extensions loaded with the --load-component-extension flag
-  // are not installed.
-  bool is_app_dot_com_extension_installed = false;
-  bool is_app_test_extension_installed = false;
-  for (const scoped_refptr<const extensions::Extension>& extension :
-       GetExtensionRegistry()->enabled_extensions()) {
-    if (extension->name() == "App Dot Com: The App") {
-      is_app_dot_com_extension_installed = true;
-    } else if (extension->name() == "App Test") {
-      is_app_test_extension_installed = true;
-    } else {
-      EXPECT_TRUE(
-          extensions::Manifest::IsComponentLocation(extension->location()));
-    }
-  }
-  EXPECT_FALSE(is_app_dot_com_extension_installed);
-  EXPECT_FALSE(is_app_test_extension_installed);
-}
-
 class DisableExtensionsExceptBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  DisableExtensionsExceptBrowserTest() {}
+  DisableExtensionsExceptBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   ExtensionRegistry* GetExtensionRegistry() {
     return ExtensionRegistry::Get(browser()->profile());
+  }
+
+  ExtensionRegistrar* GetExtensionRegistrar() {
+    return ExtensionRegistrar::Get(browser()->profile());
   }
 };
 
@@ -463,7 +424,7 @@ void DisableExtensionsExceptBrowserTest::SetUpCommandLine(
   base::FilePath fp2(test_data_dir_.AppendASCII("app/"));
 
   command_line->AppendSwitchASCII(
-      switches::kDisableExtensionsExcept,
+      extensions::switches::kDisableExtensionsExcept,
       fp1.AsUTF8Unsafe() + "," + fp2.AsUTF8Unsafe());
 
   command_line->AppendSwitch(switches::kNoErrorDialogs);
@@ -473,7 +434,7 @@ void DisableExtensionsExceptBrowserTest::SetUpCommandLine(
 // (--disable-extensions-except).
 IN_PROC_BROWSER_TEST_F(DisableExtensionsExceptBrowserTest,
                        DisableExtensionsExceptFlag) {
-  EXPECT_FALSE(extension_service()->extensions_enabled());
+  EXPECT_FALSE(GetExtensionRegistrar()->extensions_enabled());
 
   // Checks that the extensions loaded with the --disable-extensions-except flag
   // are enabled.

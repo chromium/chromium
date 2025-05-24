@@ -41,6 +41,7 @@ class ExceptionState;
 class OscillatorOptions;
 class PeriodicWave;
 class PeriodicWaveImpl;
+class V8OscillatorType;
 
 // OscillatorNode is an audio generator of periodic waveforms.
 class OscillatorNode final : public AudioScheduledSourceNode {
@@ -60,8 +61,8 @@ class OscillatorNode final : public AudioScheduledSourceNode {
                  PeriodicWave* wave_table);
   void Trace(Visitor*) const override;
 
-  String type() const;
-  void setType(const String&, ExceptionState&);
+  V8OscillatorType type() const;
+  void setType(const V8OscillatorType&, ExceptionState&);
   AudioParam* frequency();
   AudioParam* detune();
   void setPeriodicWave(PeriodicWave*);

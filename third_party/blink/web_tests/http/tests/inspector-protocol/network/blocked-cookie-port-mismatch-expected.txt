@@ -1,0 +1,27 @@
+Verifies that Cookie blocks when ports do not match.
+
+Cookie ports do not match:[
+    [0] : {
+        blockedReasons : [
+            [0] : PortMismatch
+        ]
+        cookie : {
+            domain : example.test
+            expires : -1
+            httpOnly : false
+            name : foo
+            path : /
+            priority : Medium
+            sameParty : false
+            sameSite : None
+            secure : true
+            session : true
+            size : 6
+            sourcePort : 10
+            sourceScheme : Secure
+            value : bar
+        }
+        exemptionReason : None
+    }
+]
+

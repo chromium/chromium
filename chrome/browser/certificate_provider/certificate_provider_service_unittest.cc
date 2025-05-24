@@ -87,7 +87,7 @@ class TestDelegate : public CertificateProviderService::Delegate {
  public:
   enum class RequestType { NONE, SIGN, GET_CERTIFICATES };
 
-  TestDelegate() {}
+  TestDelegate() = default;
   TestDelegate(const TestDelegate&) = delete;
   TestDelegate& operator=(const TestDelegate&) = delete;
 

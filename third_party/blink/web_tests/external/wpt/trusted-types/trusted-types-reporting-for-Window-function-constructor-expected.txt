@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Violation report for AsyncFunction with plain string.
+  assert_equals: expected "Function|(\\n) {\\nreturn;;;;;;;;;;;;;;;;;;;;;;;;;;;;" but got "eval|(async function anonymous(\\n) {\\nreturn;;;"
+[FAIL] Violation report for GeneratorFunction with plain string.
+  assert_equals: expected "Function|(\\n) {\\nreturn;;;;;;;;;;;;;;;;;;;;;;;;;;;;" but got "eval|(function* anonymous(\\n) {\\nreturn;;;;;;;;"
+[FAIL] Violation report for AsyncGeneratorFunction with plain string.
+  assert_equals: expected "Function|(\\n) {\\nreturn;;;;;;;;;;;;;;;;;;;;;;;;;;;;" but got "eval|(async function* anonymous(\\n) {\\nreturn;;"
+Harness: the test ran to completion.
+

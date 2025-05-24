@@ -6,7 +6,11 @@
 
 #include <utility>
 
+#include "base/debug/debugger.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/cdm/cdm_module.h"
 #include "media/media_buildflags.h"
@@ -21,6 +25,11 @@
 #endif
 
 namespace media {
+
+namespace {
+const char kUmaNameForDebuggerAttached[] =
+    "Media.EME.CdmProcessDebuggerAttached";
+}
 
 CdmServiceBroker::CdmServiceBroker(
     std::unique_ptr<CdmService::Client> client,
@@ -49,14 +58,21 @@ void CdmServiceBroker::GetService(
 #endif  // BUILDFLAG(IS_MAC)
       cdm_path);
 
-  if (!success) {
-    client_.reset();
-    return;
-  }
-
   DCHECK(!cdm_service_);
   cdm_service_ = std::make_unique<CdmService>(std::move(client_),
                                               std::move(service_receiver));
+  DVLOG(1) << __func__ << ": success=" << success;
+  if (!success) {
+    // We don't want to terminate the service immediately but with a delay so
+    // that we can give a chance to the CDM creation operation to inspect the
+    // actual reason. i.e., LoadCdm failed.
+    const base::TimeDelta kServiceTerminationDelay = base::Seconds(5);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&CdmServiceBroker::TerminateService,
+                       weak_factory_.GetWeakPtr()),
+        kServiceTerminationDelay);
+  }
 }
 
 bool CdmServiceBroker::InitializeAndEnsureSandboxed(
@@ -90,6 +106,15 @@ bool CdmServiceBroker::InitializeAndEnsureSandboxed(
 
   CdmModule* instance = CdmModule::GetInstance();
 
+  // Need to call `BeingDebugged()` before sealing sandbox for Mac, otherwise
+  // behavior does not work.
+  if (base::debug::BeingDebugged()) {
+    instance->SetDebuggerAttached(true);
+    base::UmaHistogramBoolean(kUmaNameForDebuggerAttached, true);
+  } else {
+    base::UmaHistogramBoolean(kUmaNameForDebuggerAttached, false);
+  }
+
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
   std::vector<CdmHostFilePath> cdm_host_file_paths;
   client_->AddCdmHostFilePaths(&cdm_host_file_paths);
@@ -112,6 +137,12 @@ bool CdmServiceBroker::InitializeAndEnsureSandboxed(
     instance->InitializeCdmModule();
 
   return success;
+}
+
+void CdmServiceBroker::TerminateService() {
+  DVLOG(1) << __func__;
+  DCHECK(cdm_service_);
+  cdm_service_.reset();
 }
 
 }  // namespace media

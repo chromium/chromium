@@ -18,7 +18,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.process_launcher.ChildProcessConnection;
-import org.chromium.base.process_launcher.FileDescriptorInfo;
+import org.chromium.base.process_launcher.IFileDescriptorInfo;
 import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 
@@ -87,7 +87,7 @@ public class ChildProcessLauncherTestHelperService extends Service {
                 ChildProcessLauncherTestUtils.startForTesting(
                         /* sandboxed= */ true,
                         commandLine,
-                        new FileDescriptorInfo[0],
+                        new IFileDescriptorInfo[0],
                         /* doSetupConnection= */ true);
 
         // Poll the launcher until the connection is set up. The main test in

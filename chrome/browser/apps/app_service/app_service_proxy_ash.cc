@@ -26,13 +26,14 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
+#include "chrome/browser/ash/child_accounts/child_user_service.h"
+#include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -78,17 +79,6 @@ AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
     : AppServiceProxyBase(profile),
       icon_reader_(profile),
       icon_writer_(profile) {
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    browser_app_instance_tracker_ =
-        std::make_unique<apps::BrowserAppInstanceTracker>(profile_,
-                                                          app_registry_cache_);
-    browser_app_instance_registry_ =
-        std::make_unique<apps::BrowserAppInstanceRegistry>(
-            *browser_app_instance_tracker_);
-    browser_app_instance_app_service_updater_ =
-        std::make_unique<apps::InstanceRegistryUpdater>(
-            *browser_app_instance_registry_, instance_registry_);
-  }
   instance_registry_observer_.Observe(&instance_registry_);
 }
 
@@ -154,15 +144,6 @@ void AppServiceProxyAsh::Initialize() {
 
   publisher_host_ = std::make_unique<PublisherHost>(this);
 
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      ash::ProfileHelper::IsPrimaryProfile(profile_)) {
-    auto* browser_manager = crosapi::BrowserManager::Get();
-    // In unit tests, it is possible that the browser manager is not created.
-    if (browser_manager) {
-      keep_alive_ = browser_manager->KeepAlive(
-          crosapi::BrowserManager::Feature::kAppService);
-    }
-  }
   if (!profile_->AsTestingProfile() &&
       (!::ash::features::IsShimlessRMA3pDiagnosticsEnabled() ||
        !::ash::IsShimlessRmaAppBrowserContext(profile_))) {
@@ -197,34 +178,16 @@ AppServiceProxyAsh::AppPlatformMetricsService() {
 
 apps::BrowserAppInstanceTracker*
 AppServiceProxyAsh::BrowserAppInstanceTracker() {
-  return browser_app_instance_tracker_.get();
+  return nullptr;
 }
 
 apps::BrowserAppInstanceRegistry*
 AppServiceProxyAsh::BrowserAppInstanceRegistry() {
-  return browser_app_instance_registry_.get();
-}
-
-apps::StandaloneBrowserApps* AppServiceProxyAsh::StandaloneBrowserApps() {
-  return publisher_host_ ? publisher_host_->StandaloneBrowserApps() : nullptr;
+  return nullptr;
 }
 
 apps::AppInstallService& AppServiceProxyAsh::AppInstallService() {
   return *app_install_service_;
-}
-
-void AppServiceProxyAsh::RegisterCrosApiSubScriber(
-    SubscriberCrosapi* subscriber) {
-  crosapi_subscriber_ = subscriber;
-
-  crosapi_subscriber_->InitializeApps();
-
-  // Initialise the Preferred Apps in the `crosapi_subscriber_` on register.
-  if (preferred_apps_impl_ &&
-      preferred_apps_impl_->preferred_apps_list().IsInitialized()) {
-    crosapi_subscriber_->InitializePreferredApps(
-        preferred_apps_impl_->preferred_apps_list().GetValue());
-  }
 }
 
 void AppServiceProxyAsh::SetPublisherUnavailable(AppType app_type) {
@@ -273,10 +236,6 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
         base::Contains(uninstall_dialogs_, delta->app_id)) {
       uninstall_dialogs_[delta->app_id]->CloseDialog();
     }
-  }
-
-  if (crosapi_subscriber_) {
-    crosapi_subscriber_->OnApps(deltas, app_type, should_notify_initialized);
   }
 
   AppServiceProxyBase::OnApps(std::move(deltas), app_type,
@@ -521,8 +480,6 @@ void AppServiceProxyAsh::SetAppLocale(const std::string& app_id,
 }
 
 void AppServiceProxyAsh::Shutdown() {
-  crosapi_subscriber_ = nullptr;
-
   app_platform_metrics_service_.reset();
 
   uninstall_dialogs_.clear();
@@ -592,26 +549,6 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
   uninstall_dialogs_.erase(it);
 }
 
-void AppServiceProxyAsh::InitializePreferredAppsForAllSubscribers() {
-  AppServiceProxyBase::InitializePreferredAppsForAllSubscribers();
-  if (crosapi_subscriber_ && preferred_apps_impl_) {
-    crosapi_subscriber_->InitializePreferredApps(
-        preferred_apps_impl_->preferred_apps_list().GetValue());
-  }
-}
-
-void AppServiceProxyAsh::OnPreferredAppsChanged(
-    PreferredAppChangesPtr changes) {
-  if (!crosapi_subscriber_) {
-    AppServiceProxyBase::OnPreferredAppsChanged(std::move(changes));
-    return;
-  }
-
-  DCHECK(changes);
-  AppServiceProxyBase::OnPreferredAppsChanged(changes->Clone());
-  crosapi_subscriber_->OnPreferredAppsChanged(std::move(changes));
-}
-
 bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
     const apps::AppUpdate& update) {
   if (update.AppId() == app_constants::kChromeAppId) {
@@ -647,13 +584,12 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
   if (update.Paused().value_or(false) ||
       pending_pause_requests_.IsPaused(update.AppId())) {
     ash::app_time::AppTimeLimitInterface* app_limit =
-        ash::app_time::AppTimeLimitInterface::Get(profile_);
+        ash::ChildUserServiceFactory::GetForBrowserContext(profile_);
     DCHECK(app_limit);
     auto time_limit =
         app_limit->GetTimeLimitForApp(update.AppId(), update.AppType());
     if (!time_limit.has_value()) {
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
     }
     PauseData pause_data;
     pause_data.hours = time_limit.value().InHours();
@@ -811,8 +747,14 @@ void AppServiceProxyAsh::PerformPostUninstallTasks(
 
 void AppServiceProxyAsh::PerformPostLaunchTasks(
     apps::LaunchSource launch_source) {
-  if (apps_util::IsHumanLaunch(launch_source)) {
-    ash::full_restore::FullRestoreService::MaybeCloseNotification(profile_);
+  if (!apps_util::IsHumanLaunch(launch_source)) {
+    return;
+  }
+
+  if (auto* full_restore_service =
+          ash::full_restore::FullRestoreServiceFactory::GetForProfile(
+              profile_)) {
+    full_restore_service->MaybeCloseNotification();
   }
 }
 

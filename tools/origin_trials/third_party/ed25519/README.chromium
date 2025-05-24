@@ -1,7 +1,8 @@
 Name: Ed25519: high-speed high-security signatures
 Short Name: Ed25519
 URL: http://ed25519.cr.yp.to/software.html
-Version: 0
+Version: N/A
+Date: 2017-01-22
 License: Public Domain
 License File: LICENSE
 Security Critical: no
@@ -21,4 +22,5 @@ purposes in the future.
 Local Modifications:
 Minimal python3 compatibility modifications were made. Specifically, division
 operators were modified to use python 2 and 3-compatible integer division rather
-than python3's default of floating point division.
+than python3's default of floating point division. Also, encoding operations
+were modified to use the `bytes()` method.

@@ -248,7 +248,7 @@ TimeTicks TimeTicks::Now() {
 
 // static
 TimeTicks TimeTicks::UnixEpoch() {
-  static const TimeTicks epoch([]() {
+  static const TimeTicks epoch([] {
     return subtle::TimeTicksNowIgnoringOverride() -
            (subtle::TimeNowIgnoringOverride() - Time::UnixEpoch());
   }());

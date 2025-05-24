@@ -50,7 +50,7 @@ std::string DevToolsCustomPath(const std::string& path) {
 class TestDevToolsDataSource : public DevToolsDataSource {
  public:
   TestDevToolsDataSource() : DevToolsDataSource(nullptr) {}
-  ~TestDevToolsDataSource() override {}
+  ~TestDevToolsDataSource() override = default;
 
   void StartNetworkRequest(
       const GURL& url,
@@ -76,7 +76,7 @@ class DevToolsUIDataSourceTest : public testing::Test {
   DevToolsUIDataSourceTest& operator=(const DevToolsUIDataSourceTest&) = delete;
 
  protected:
-  DevToolsUIDataSourceTest() {}
+  DevToolsUIDataSourceTest() = default;
   ~DevToolsUIDataSourceTest() override = default;
 
   void SetUp() override {

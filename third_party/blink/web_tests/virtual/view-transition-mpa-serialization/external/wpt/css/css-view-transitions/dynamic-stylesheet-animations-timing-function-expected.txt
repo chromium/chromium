@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] The sizing properties with linear on ::view-transition-group()
+  assert_equals: width at 50% expected "200px" but got "100px"
+[FAIL] Changing the timing function of ::view-transition-group() when animating
+  assert_equals: transform at 50% with linear expected "matrix(1, 0, 0, 1, 200, 0)" but got "matrix(1, 0, 0, 1, 100, 0)"
+Harness: the test ran to completion.
+

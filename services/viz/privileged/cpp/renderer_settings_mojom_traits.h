@@ -65,6 +65,11 @@ struct StructTraits<viz::mojom::OcclusionCullerSettingsDataView,
     return input.minimum_fragments_reduced;
   }
 
+  static bool generate_complex_occluder_for_rounded_corners(
+      const viz::RendererSettings::OcclusionCullerSettings& input) {
+    return input.generate_complex_occluder_for_rounded_corners;
+  }
+
   static bool Read(viz::mojom::OcclusionCullerSettingsDataView data,
                    viz::RendererSettings::OcclusionCullerSettings* out);
 };

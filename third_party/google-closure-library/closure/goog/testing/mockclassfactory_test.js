@@ -57,8 +57,7 @@ function TopLevelBaseClass() {}
 
 fake.ChildClass.prototype.overridden = function() {
   /**
-   * @suppress {strictMissingProperties} suppression added to enable type
-   * checking
+   * @suppress {missingProperties} suppression added to enable type checking
    */
   const superResult = fake.ChildClass.base(this, 'overridden');
   if (superResult != 42) {

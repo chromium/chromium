@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "base/base64.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -49,6 +50,11 @@ bool CanAccessMantaFeaturesWithoutMinorRestrictions(Profile* profile) {
           manta::FeatureSupportStatus::kSupported;
   return canAccessMantaFeaturesWithoutMinorRestrictions;
 }
+
+constexpr auto kSeaPenTextInputSupportedLanguages =
+    base::MakeFixedFlatSet<std::string_view>({"en", "fr", "de", "ja", "es",
+                                              "nl", "it", "sv", "nb", "da",
+                                              "fi", "pt"});
 }  // namespace
 
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
@@ -102,6 +108,7 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
   switch (user->GetType()) {
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       return false;
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
@@ -113,10 +120,17 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
   }
 }
 
-bool IsSystemInEnglishLanguage() {
-  return g_browser_process != nullptr &&
-         language::ExtractBaseLanguage(
-             g_browser_process->GetApplicationLocale()) == "en";
+bool IsSystemInSupportedLanguage() {
+  if (!g_browser_process) {
+    LOG(WARNING) << __func__ << " no browser process";
+    return false;
+  }
+  const std::string_view language =
+      language::ExtractBaseLanguage(g_browser_process->GetApplicationLocale());
+  if (ash::features::IsSeaPenTextInputTranslationEnabled()) {
+    return kSeaPenTextInputSupportedLanguages.contains(language);
+  }
+  return language == "en";
 }
 
 bool IsEligibleForSeaPen(Profile* profile) {
@@ -126,27 +140,6 @@ bool IsEligibleForSeaPen(Profile* profile) {
 
   if (!profile->GetProfilePolicyConnector()->IsManaged()) {
     return true;
-  }
-
-  // TODO(b/365134596): remove the exception for Googlers and Demo Mode once the
-  // SeaPenEnterprise flag is removed.
-  if (gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())) {
-    DVLOG(1) << __func__ << " Google internal account";
-    return true;
-  }
-
-  if (features::IsSeaPenDemoModeEnabled() &&
-      DemoSession::IsDeviceInDemoMode()) {
-    DVLOG(1) << __func__ << " demo mode";
-    const auto* user = GetUser(profile);
-    return DemoSession::Get() && user &&
-           user->GetType() == user_manager::UserType::kPublicAccount;
-  }
-
-  if (!features::IsSeaPenEnterpriseEnabled()) {
-    // Without the experiment, managed users are not allowed for SeaPen.
-    DVLOG(1) << __func__ << " managed profile";
-    return false;
   }
 
   return CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
@@ -181,6 +174,7 @@ bool IsAllowedToInstallSeaPen(Profile* profile) {
   switch (user->GetType()) {
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
     case user_manager::UserType::kChild:
     // Demo mode retail devices are type kPublicAccount and may have been
     // handled earlier in this function. But not all kPublicAccount users are in
@@ -190,11 +184,6 @@ bool IsAllowedToInstallSeaPen(Profile* profile) {
     case user_manager::UserType::kGuest:
       return false;
     case user_manager::UserType::kRegular:
-      if (profile->GetProfilePolicyConnector()->IsManaged()) {
-        // Without the experiment, managed users are not allowed for SeaPen.
-        DVLOG(1) << __func__ << " managed profile";
-        return features::IsSeaPenEnterpriseEnabled();
-      }
       return true;
   }
 }
@@ -241,16 +230,16 @@ bool IsEligibleForSeaPenTextInput(Profile* profile) {
     DVLOG(1) << __func__ << " SeaPenTextInput disabled";
     return false;
   }
-  if (!IsSystemInEnglishLanguage()) {
-    // The feature only supports English users.
-    DVLOG(1) << __func__ << " system not in English language";
+  if (!IsSystemInSupportedLanguage()) {
+    // The feature only supports a limited number of languages.
+    DVLOG(1) << __func__ << " system not in supported language";
     return false;
   }
   return IsEligibleForSeaPen(profile) &&
          CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
 }
 
-GURL GetJpegDataUrl(const std::string_view encoded_jpg_data) {
+GURL GetJpegDataUrl(std::string_view encoded_jpg_data) {
   return GURL(base::StrCat(
       {"data:image/jpeg;base64,", base::Base64Encode(encoded_jpg_data)}));
 }

@@ -27,9 +27,6 @@ public class SpnegoAuthenticator extends AbstractAccountAuthenticator {
     private static final String TAG = Constants.TAG;
     private final Context mContext;
 
-    /**
-     * @param context
-     */
     public SpnegoAuthenticator(Context context) {
         super(context);
         mContext = context;

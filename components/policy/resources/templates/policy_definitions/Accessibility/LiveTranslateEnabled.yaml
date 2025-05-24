@@ -1,0 +1,33 @@
+caption: Enable Live Translate
+default: null
+desc: |-
+  Enable translation of live captions. Captions will be sent to Google for translation.
+
+  If this policy is set to Enabled, Live Translate will always be turned on.
+
+  If this policy is set to Disabled, Live Translate will always be turned off.
+
+  If you set this policy as mandatory, users cannot change or override it.
+
+  If this policy is left unset, Live Translate is disabled initially but can be enabled by the user anytime.
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable Live Translate
+  value: true
+- caption: Disable Live Translate
+  value: false
+- caption: Allow the user to decide
+  value: null
+owners:
+- evliu@google.com
+- chrome-media-ux@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:133-
+tags: []
+type: main

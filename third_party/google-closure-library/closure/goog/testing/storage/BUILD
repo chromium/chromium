@@ -6,8 +6,9 @@ licenses(["notice"])
 
 closure_js_library(
     name = "fakemechanism",
-    testonly = False,
+    testonly = True,
     srcs = ["fakemechanism.js"],
+    lenient = True,
     deps = [
         "//closure/goog/iter",
         "//closure/goog/iter:es6",

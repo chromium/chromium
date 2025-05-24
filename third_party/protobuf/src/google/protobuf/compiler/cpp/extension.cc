@@ -1,45 +1,27 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 // Author: kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
-#include <google/protobuf/compiler/cpp/extension.h>
+#include "google/protobuf/compiler/cpp/extension.h"
 
-#include <map>
+#include <string>
+#include <vector>
 
-#include <google/protobuf/io/printer.h>
-#include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/compiler/cpp/helpers.h>
-#include <google/protobuf/descriptor.pb.h>
+#include "absl/log/absl_check.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_replace.h"
+#include "google/protobuf/compiler/cpp/helpers.h"
+#include "google/protobuf/compiler/cpp/options.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/descriptor.pb.h"
+#include "google/protobuf/io/printer.h"
 
 namespace google {
 namespace protobuf {
@@ -59,9 +41,7 @@ ExtensionGenerator::ExtensionGenerator(const FieldDescriptor* descriptor,
     case FieldDescriptor::CPPTYPE_ENUM:
       type_traits_.append("EnumTypeTraits< ");
       type_traits_.append(ClassName(descriptor_->enum_type(), true));
-      type_traits_.append(", ");
-      type_traits_.append(ClassName(descriptor_->enum_type(), true));
-      type_traits_.append("_IsValid>");
+      type_traits_.append(">");
       break;
     case FieldDescriptor::CPPTYPE_STRING:
       type_traits_.append("StringTypeTraits");
@@ -77,114 +57,240 @@ ExtensionGenerator::ExtensionGenerator(const FieldDescriptor* descriptor,
       type_traits_.append(" >");
       break;
   }
-  SetCommonVars(options, &variables_);
   SetCommonMessageDataVariables(descriptor_->containing_type(), &variables_);
   variables_["extendee"] =
       QualifiedClassName(descriptor_->containing_type(), options_);
   variables_["type_traits"] = type_traits_;
-  std::string name = descriptor_->name();
-  variables_["name"] = ResolveKeyword(name);
+  variables_["name"] = ResolveKnownNameCollisions(
+      descriptor_->name(),
+      descriptor_->extension_scope() != nullptr ? NameContext::kMessage
+                                                : NameContext::kFile,
+      NameKind::kValue);
   variables_["constant_name"] = FieldConstantName(descriptor_);
   variables_["field_type"] =
-      StrCat(static_cast<int>(descriptor_->type()));
+      absl::StrCat(static_cast<int>(descriptor_->type()));
+  // Downgrade string to bytes if it is not UTF8 validated.
+  if (descriptor_->type() == FieldDescriptor::TYPE_STRING &&
+      !descriptor_->requires_utf8_validation()) {
+    variables_["field_type"] =
+        absl::StrCat(static_cast<int>(FieldDescriptor::TYPE_BYTES));
+  }
+  variables_["repeated"] = descriptor_->is_repeated() ? "true" : "false";
   variables_["packed"] = descriptor_->is_packed() ? "true" : "false";
+  variables_["dllexport_decl"] = options.dllexport_decl;
 
-  std::string scope =
-      IsScoped() ? ClassName(descriptor_->extension_scope(), false) + "::" : "";
+  std::string scope;
+  if (IsScoped()) {
+    scope =
+        absl::StrCat(ClassName(descriptor_->extension_scope(), false), "::");
+  }
+
   variables_["scope"] = scope;
   variables_["scoped_name"] = ExtensionName(descriptor_);
-  variables_["number"] = StrCat(descriptor_->number());
-
-  bool add_verify_fn =
-      // Only verify msgs.
-      descriptor_->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE &&
-      // Options say to verify.
-      ShouldVerify(descriptor_->message_type(), options_, scc_analyzer_) &&
-      ShouldVerify(descriptor_->containing_type(), options_, scc_analyzer_);
-
-  variables_["verify_fn"] =
-      add_verify_fn
-          ? StrCat("&", FieldMessageTypeName(descriptor_, options_),
-                         "::InternalVerify")
-          : "nullptr";
+  variables_["number"] = absl::StrCat(descriptor_->number());
 }
 
-ExtensionGenerator::~ExtensionGenerator() {}
+ExtensionGenerator::~ExtensionGenerator() = default;
 
 bool ExtensionGenerator::IsScoped() const {
   return descriptor_->extension_scope() != nullptr;
 }
 
-void ExtensionGenerator::GenerateDeclaration(io::Printer* printer) const {
-  Formatter format(printer, variables_);
-
-  // If this is a class member, it needs to be declared "static".  Otherwise,
-  // it needs to be "extern".  In the latter case, it also needs the DLL
-  // export/import specifier.
-  std::string qualifier;
-  if (!IsScoped()) {
-    qualifier = "extern";
-    if (!options_.dllexport_decl.empty()) {
-      qualifier = options_.dllexport_decl + " " + qualifier;
-    }
-  } else {
-    qualifier = "static";
-  }
-
-  format(
-      "static const int $constant_name$ = $number$;\n"
-      "$1$ ::$proto_ns$::internal::ExtensionIdentifier< $extendee$,\n"
-      "    ::$proto_ns$::internal::$type_traits$, $field_type$, $packed$ >\n"
-      "  ${2$$name$$}$;\n",
-      qualifier, descriptor_);
+void ExtensionGenerator::GenerateDeclaration(io::Printer* p) const {
+  auto var = p->WithVars(variables_);
+  auto annotate = p->WithAnnotations({{"name", descriptor_}});
+  p->Emit({{"constant_qualifier",
+            // If this is a class member, it needs to be declared
+            //   `static constexpr`.
+            // Otherwise, it will be
+            //   `inline constexpr`.
+            IsScoped() ? "static" : ""},
+           {"id_qualifier",
+            // If this is a class member, it needs to be declared "static".
+            // Otherwise, it needs to be "extern".  In the latter case, it
+            // also needs the DLL export/import specifier.
+            IsScoped() ? "static"
+            : options_.dllexport_decl.empty()
+                ? "extern"
+                : absl::StrCat(options_.dllexport_decl, " extern")}},
+          R"cc(
+            inline $constant_qualifier $constexpr int $constant_name$ =
+                $number$;
+            $id_qualifier$ $pbi$::ExtensionIdentifier<
+                $extendee$, $pbi$::$type_traits$, $field_type$, $packed$>
+                $name$;
+          )cc");
 }
 
-void ExtensionGenerator::GenerateDefinition(io::Printer* printer) {
-  // If we are building for lite with implicit weak fields, we want to skip over
-  // any custom options (i.e. extensions of messages from descriptor.proto).
-  // This prevents the creation of any unnecessary linker references to the
-  // descriptor messages.
-  if (options_.lite_implicit_weak_fields &&
-      descriptor_->containing_type()->file()->name() ==
-          "net/proto2/proto/descriptor.proto") {
-    return;
-  }
+void ExtensionGenerator::GenerateDefinition(io::Printer* p) {
+  auto vars = p->WithVars(variables_);
+  auto generate_default_string = [&] {
+    if (descriptor_->cpp_type() == FieldDescriptor::CPPTYPE_STRING) {
+      // We need to declare a global string which will contain the default
+      // value. We cannot declare it at class scope because that would require
+      // exposing it in the header which would be annoying for other reasons. So
+      // we replace :: with _ in the name and declare it as a global.
+      return absl::StrReplaceAll(variables_["scoped_name"], {{"::", "_"}}) +
+             "_default";
+    } else if (descriptor_->message_type()) {
+      // We have to initialize the default instance for extensions at
+      // registration time.
+      return absl::StrCat("&", QualifiedDefaultInstanceName(
+                                   descriptor_->message_type(), options_));
+    } else {
+      return DefaultValue(options_, descriptor_);
+    }
+  };
 
-  Formatter format(printer, variables_);
-  std::string default_str;
-  // If this is a class member, it needs to be declared in its class scope.
-  if (descriptor_->cpp_type() == FieldDescriptor::CPPTYPE_STRING) {
-    // We need to declare a global string which will contain the default value.
-    // We cannot declare it at class scope because that would require exposing
-    // it in the header which would be annoying for other reasons.  So we
-    // replace :: with _ in the name and declare it as a global.
-    default_str =
-        StringReplace(variables_["scoped_name"], "::", "_", true) + "_default";
-    format("const std::string $1$($2$);\n", default_str,
-           DefaultValue(options_, descriptor_));
-  } else if (descriptor_->message_type()) {
-    // We have to initialize the default instance for extensions at registration
-    // time.
-    default_str =
-        FieldMessageTypeName(descriptor_, options_) + "::default_instance()";
-  } else {
-    default_str = DefaultValue(options_, descriptor_);
-  }
+  auto local_var = p->WithVars({
+      {"default_str", generate_default_string()},
+      {"default_val", DefaultValue(options_, descriptor_)},
+      {"message_type", descriptor_->message_type() != nullptr
+                           ? FieldMessageTypeName(descriptor_, options_)
+                           : ""},
+  });
+  p->Emit(
+      {
+          {"declare_default_str",
+           [&] {
+             if (descriptor_->cpp_type() != FieldDescriptor::CPPTYPE_STRING)
+               return;
 
-  // Likewise, class members need to declare the field constant variable.
-  if (IsScoped()) {
-    format(
-        "#if !defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912)\n"
-        "const int $scope$$constant_name$;\n"
-        "#endif\n");
-  }
+             // If this is a class member, it needs to be declared in its class
+             // scope.
+             p->Emit(R"cc(
+               const std::string $default_str$($default_val$);
+             )cc");
+           }},
+      },
+      R"cc(
+        $declare_default_str$;
+        PROTOBUF_CONSTINIT$ dllexport_decl$
+            PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 ::_pbi::ExtensionIdentifier<
+                $extendee$, ::_pbi::$type_traits$, $field_type$, $packed$>
+                $scoped_name$($constant_name$, $default_str$);
+      )cc");
+}
 
-  format(
-      "PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 "
-      "::$proto_ns$::internal::ExtensionIdentifier< $extendee$,\n"
-      "    ::$proto_ns$::internal::$type_traits$, $field_type$, $packed$>\n"
-      "  $scoped_name$($constant_name$, $1$, $verify_fn$);\n",
-      default_str);
+bool ExtensionGenerator::WillGenerateRegistration(InitPriority priority) {
+  // When not using weak descriptors we initialize everything on priority 102.
+  if (!UsingImplicitWeakDescriptor(descriptor_->file(), options_)) {
+    return priority == kInitPriority102;
+  }
+  return true;
+}
+
+void ExtensionGenerator::GenerateRegistration(io::Printer* p,
+                                              InitPriority priority) {
+  ABSL_CHECK(WillGenerateRegistration(priority));
+  const bool using_implicit_weak_descriptors =
+      UsingImplicitWeakDescriptor(descriptor_->file(), options_);
+  const auto find_index = [](auto* desc) {
+    const std::vector<const Descriptor*> msgs =
+        FlattenMessagesInFile(desc->file());
+    return absl::c_find(msgs, desc) - msgs.begin();
+  };
+  auto vars = p->WithVars(variables_);
+  auto vars2 = p->WithVars({{
+      {"extendee_table",
+       DescriptorTableName(descriptor_->containing_type()->file(), options_)},
+      {"extendee_index", find_index(descriptor_->containing_type())},
+      {"preregister", priority == kInitPriority101},
+  }});
+  switch (descriptor_->cpp_type()) {
+    case FieldDescriptor::CPPTYPE_ENUM:
+      if (using_implicit_weak_descriptors) {
+        p->Emit({{"enum_name", ClassName(descriptor_->enum_type(), true)}},
+                R"cc(
+                  (::_pbi::ExtensionSet::ShouldRegisterAtThisTime(
+                       {{&$extendee_table$, $extendee_index$}}, $preregister$)
+                       ? ::_pbi::ExtensionSet::RegisterEnumExtension(
+                             ::_pbi::GetPrototypeForWeakDescriptor(
+                                 &$extendee_table$, $extendee_index$, true),
+                             $number$, $field_type$, $repeated$, $packed$,
+                             $enum_name$_internal_data_)
+                       : (void)0),
+                )cc");
+      } else if (priority == kInitPriority102) {
+        p->Emit({{"enum_name", ClassName(descriptor_->enum_type(), true)}},
+                R"cc(
+                  ::_pbi::ExtensionSet::RegisterEnumExtension(
+                      &$extendee$::default_instance(), $number$, $field_type$,
+                      $repeated$, $packed$, $enum_name$_internal_data_),
+                )cc");
+      }
+
+      break;
+    case FieldDescriptor::CPPTYPE_MESSAGE: {
+      const bool should_verify =
+          // Only verify msgs.
+          descriptor_->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE &&
+          // Options say to verify.
+          ShouldVerify(descriptor_->message_type(), options_, scc_analyzer_) &&
+          ShouldVerify(descriptor_->containing_type(), options_, scc_analyzer_);
+      const auto message_type = FieldMessageTypeName(descriptor_, options_);
+      auto v = p->WithVars(
+          {{"verify", should_verify
+                          ? absl::StrCat("&", message_type, "::InternalVerify")
+                          : "nullptr"},
+           {"message_type", message_type},
+           {"lazy", "kUndefined"}});
+      if (using_implicit_weak_descriptors) {
+        p->Emit(
+            {
+                {"extension_table",
+                 DescriptorTableName(descriptor_->message_type()->file(),
+                                     options_)},
+                {"extension_index", find_index(descriptor_->message_type())},
+            },
+            R"cc(
+              (::_pbi::ExtensionSet::ShouldRegisterAtThisTime(
+                   {{&$extendee_table$, $extendee_index$},
+                    {&$extension_table$, $extension_index$}},
+                   $preregister$)
+                   ? ::_pbi::ExtensionSet::RegisterMessageExtension(
+                         ::_pbi::GetPrototypeForWeakDescriptor(
+                             &$extendee_table$, $extendee_index$, true),
+                         $number$, $field_type$, $repeated$, $packed$,
+                         ::_pbi::GetPrototypeForWeakDescriptor(
+                             &$extension_table$, $extension_index$, true),
+                         $verify$, ::_pbi::LazyAnnotation::$lazy$)
+                   : (void)0),
+            )cc");
+      } else if (priority == kInitPriority102) {
+        p->Emit(R"cc(
+          ::_pbi::ExtensionSet::RegisterMessageExtension(
+              &$extendee$::default_instance(), $number$, $field_type$,
+              $repeated$, $packed$, &$message_type$::default_instance(),
+              $verify$, ::_pbi::LazyAnnotation::$lazy$),
+        )cc");
+      }
+      break;
+    }
+
+    default:
+      if (using_implicit_weak_descriptors) {
+        p->Emit(R"cc(
+          (::_pbi::ExtensionSet::ShouldRegisterAtThisTime(
+               {{&$extendee_table$, $extendee_index$}}, $preregister$)
+               ? ::_pbi::ExtensionSet::RegisterExtension(
+                     ::_pbi::GetPrototypeForWeakDescriptor(&$extendee_table$,
+                                                           $extendee_index$,
+                                                           true),
+                     $number$, $field_type$, $repeated$, $packed$)
+               : (void)0),
+        )cc");
+      } else if (priority == kInitPriority102) {
+        p->Emit(
+            R"cc(
+              ::_pbi::ExtensionSet::RegisterExtension(
+                  &$extendee$::default_instance(), $number$, $field_type$,
+                  $repeated$, $packed$),
+            )cc");
+      }
+
+      break;
+  }
 }
 
 }  // namespace cpp

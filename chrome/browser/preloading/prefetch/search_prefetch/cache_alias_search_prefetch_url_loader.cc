@@ -73,10 +73,10 @@ void CacheAliasSearchPrefetchURLLoader::SetUpForwardingClient(
       weak_factory_.GetWeakPtr()));
   forwarding_client_.Bind(std::move(forwarding_client));
 
-  StartPrefetchRequest();
+  StartLoadCachedPrefetchResponse();
 }
 
-void CacheAliasSearchPrefetchURLLoader::StartPrefetchRequest() {
+void CacheAliasSearchPrefetchURLLoader::StartLoadCachedPrefetchResponse() {
   network::ResourceRequest prefetch_request = *resource_request_;
 
   prefetch_request.load_flags |= net::LOAD_ONLY_FROM_CACHE;
@@ -127,9 +127,6 @@ void CacheAliasSearchPrefetchURLLoader::RestartDirect(
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
       &CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
       base::Unretained(this)));
-  if (paused_) {
-    network_url_loader_->PauseReadingBodyFromNet();
-  }
 }
 
 void CacheAliasSearchPrefetchURLLoader::OnReceiveEarlyHints(
@@ -189,7 +186,7 @@ void CacheAliasSearchPrefetchURLLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // We only handle GETs.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CacheAliasSearchPrefetchURLLoader::OnTransferSizeUpdated(
@@ -219,7 +216,7 @@ void CacheAliasSearchPrefetchURLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
   // This should never be called for a non-network service URLLoader.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CacheAliasSearchPrefetchURLLoader::SetPriority(
@@ -231,22 +228,6 @@ void CacheAliasSearchPrefetchURLLoader::SetPriority(
   }
 
   resource_request_->priority = priority;
-}
-
-void CacheAliasSearchPrefetchURLLoader::PauseReadingBodyFromNet() {
-  // Pass through.
-  if (network_url_loader_) {
-    network_url_loader_->PauseReadingBodyFromNet();
-  }
-  paused_ = true;
-}
-
-void CacheAliasSearchPrefetchURLLoader::ResumeReadingBodyFromNet() {
-  // Pass through.
-  if (network_url_loader_) {
-    network_url_loader_->ResumeReadingBodyFromNet();
-  }
-  paused_ = false;
 }
 
 void CacheAliasSearchPrefetchURLLoader::MojoDisconnectForPrefetch() {

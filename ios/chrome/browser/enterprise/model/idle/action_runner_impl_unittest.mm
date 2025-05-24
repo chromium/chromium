@@ -55,7 +55,7 @@ class MockAction : public Action {
   explicit MockAction(ActionType action_type)
       : Action(static_cast<int>(action_type)) {}
 
-  MOCK_METHOD2(Run, void(ChromeBrowserState*, Continuation));
+  MOCK_METHOD2(Run, void(ProfileIOS*, Continuation));
 };
 
 // testing::InvokeArgument<N> does not work with base::OnceCallback, so we
@@ -70,14 +70,14 @@ ACTION_P(RunContinuation, success) {
 class IdleActionRunnerTest : public PlatformTest {
  protected:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
   }
 
   void TearDown() override {
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();
-    browser_state_.reset();
+    profile_.reset();
   }
 
   void SetIdleTimeoutActions(std::vector<ActionType> action_types) {
@@ -85,16 +85,16 @@ class IdleActionRunnerTest : public PlatformTest {
     for (auto action_type : action_types) {
       actions.Append(static_cast<int>(action_type));
     }
-    browser_state()->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
-                                         std::move(actions));
+    profile()->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
+                                   std::move(actions));
   }
 
-  TestChromeBrowserState* browser_state() { return browser_state_.get(); }
+  TestProfileIOS* profile() { return profile_.get(); }
 
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests that the order of actions in the pref doesn't matter. They still run
@@ -104,7 +104,7 @@ TEST_F(IdleActionRunnerTest, PrefOrderDoesNotMatter) {
       std::make_unique<FakeActionFactory>();
   base::MockCallback<ActionRunner::ActionsCompletedCallback>
       actions_completed_callback;
-  ActionRunnerImpl runner(browser_state());
+  ActionRunnerImpl runner(profile());
   SetIdleTimeoutActions({ActionType::kCloseTabs,
                          ActionType::kClearBrowsingHistory,
                          ActionType::kSignOut});
@@ -115,12 +115,10 @@ TEST_F(IdleActionRunnerTest, PrefOrderDoesNotMatter) {
   auto sign_out = std::make_unique<MockAction>(ActionType::kSignOut);
 
   testing::InSequence in_sequence;
-  EXPECT_CALL(*clear_history, Run(browser_state(), _))
+  EXPECT_CALL(*clear_history, Run(profile(), _))
       .WillOnce(RunContinuation(true));
-  EXPECT_CALL(*close_tabs, Run(browser_state(), _))
-      .WillOnce(RunContinuation(true));
-  EXPECT_CALL(*sign_out, Run(browser_state(), _))
-      .WillOnce(RunContinuation(true));
+  EXPECT_CALL(*close_tabs, Run(profile(), _)).WillOnce(RunContinuation(true));
+  EXPECT_CALL(*sign_out, Run(profile(), _)).WillOnce(RunContinuation(true));
 
   action_factory->Associate(ActionType::kCloseTabs, std::move(close_tabs));
   action_factory->Associate(ActionType::kClearBrowsingHistory,
@@ -139,7 +137,7 @@ TEST_F(IdleActionRunnerTest, OtherActionsDontRunOnFailure) {
       std::make_unique<base::HistogramTester>();
   std::unique_ptr<FakeActionFactory> action_factory =
       std::make_unique<FakeActionFactory>();
-  ActionRunnerImpl runner(browser_state());
+  ActionRunnerImpl runner(profile());
   base::MockCallback<ActionRunner::ActionsCompletedCallback>
       actions_completed_callback;
   SetIdleTimeoutActions({ActionType::kCloseTabs, ActionType::kSignOut});
@@ -149,8 +147,7 @@ TEST_F(IdleActionRunnerTest, OtherActionsDontRunOnFailure) {
 
   // "sign_out" shouldn't run, because "close_tabs" fails.
   testing::InSequence in_sequence;
-  EXPECT_CALL(*close_tabs, Run(browser_state(), _))
-      .WillOnce(RunContinuation(false));
+  EXPECT_CALL(*close_tabs, Run(profile(), _)).WillOnce(RunContinuation(false));
   EXPECT_CALL(*sign_out, Run(_, _)).Times(0);
 
   action_factory->Associate(ActionType::kCloseTabs, std::move(close_tabs));
@@ -167,7 +164,7 @@ TEST_F(IdleActionRunnerTest, OtherActionsDontRunOnFailure) {
 TEST_F(IdleActionRunnerTest, DoNothingWithEmptyPref) {
   std::unique_ptr<FakeActionFactory> action_factory =
       std::make_unique<FakeActionFactory>();
-  ActionRunnerImpl runner(browser_state());
+  ActionRunnerImpl runner(profile());
   base::MockCallback<ActionRunner::ActionsCompletedCallback>
       actions_completed_callback;
 

@@ -10,7 +10,11 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
-/** The content of the PasswordMigrationWarning that needs to be scrollable. */
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+/** The content of the post password migration sheet that needs to be scrollable. */
+@NullMarked
 public class ScrollablePasswordMigrationWarningContent extends RelativeLayout {
     private ScrollView mScrollView;
 
@@ -18,7 +22,8 @@ public class ScrollablePasswordMigrationWarningContent extends RelativeLayout {
         this(context, null);
     }
 
-    public ScrollablePasswordMigrationWarningContent(Context context, AttributeSet attrs) {
+    public ScrollablePasswordMigrationWarningContent(
+            Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -29,13 +34,13 @@ public class ScrollablePasswordMigrationWarningContent extends RelativeLayout {
      * @return The vertical scroll offset of the sheet content.
      */
     int getVerticalScrollOffset() {
-        View v = findViewById(R.id.touch_to_fill_sheet_header_image);
+        View v = findViewById(R.id.sheet_header_image);
         return v == null ? 0 : -(v.getTop() - mScrollView.getPaddingTop());
     }
 
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        mScrollView = findViewById(R.id.pwd_migration_warning_scroll_view);
+        mScrollView = findViewById(R.id.post_pwd_migration_sheet_scroll_view);
     }
 }

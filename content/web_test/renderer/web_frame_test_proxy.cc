@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/web_test/renderer/web_frame_test_proxy.h"
-#include "base/memory/raw_ptr.h"
 
+#include "base/memory/raw_ptr.h"
+#include "base/strings/to_string.h"
 #include "components/plugins/renderer/plugin_placeholder.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/web_test/common/web_test_string_util.h"
@@ -119,7 +120,7 @@ void PrintFrameUserGestureStatus(WebFrameTestProxy* frame_proxy,
   bool is_user_gesture = frame->HasTransientUserActivation();
   frame_proxy->GetWebTestControlHostRemote()->PrintMessage(
       std::string("Frame with user gesture \"") +
-      (is_user_gesture ? "true" : "false") + "\"" + msg);
+      base::ToString(is_user_gesture) + "\"" + msg);
 }
 
 class TestRenderFrameObserver : public RenderFrameObserver {
@@ -721,8 +722,7 @@ void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
     case ax::mojom::Event::kWindowDeactivated:
     case ax::mojom::Event::kWindowVisibilityChanged:
       // Never fired from Blink.
-      NOTREACHED_IN_MIGRATION()
-          << "Event not expected from Blink: " << event.event_type;
+      NOTREACHED() << "Event not expected from Blink: " << event.event_type;
   }
 
   blink::WebDocument document = GetWebFrame()->GetDocument();
@@ -731,19 +731,17 @@ void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
                                      event.event_intents);
 }
 
-void WebFrameTestProxy::CheckIfAudioSinkExistsAndIsAuthorized(
-    const blink::WebString& sink_id,
-    blink::WebSetSinkIdCompleteCallback completion_callback) {
+std::optional<media::OutputDeviceStatus>
+WebFrameTestProxy::CheckIfAudioSinkExistsAndIsAuthorized(
+    const blink::WebString& sink_id) {
   std::string device_id = sink_id.Utf8();
-  if (device_id == "valid" || device_id.empty())
-    std::move(completion_callback).Run(/*error =*/std::nullopt);
-  else if (device_id == "unauthorized")
-    std::move(completion_callback)
-        .Run(blink::WebSetSinkIdError::kNotAuthorized);
-  else
-    std::move(completion_callback).Run(blink::WebSetSinkIdError::kNotFound);
-
-  // Intentionally does not call RenderFrameImpl.
+  if (device_id == "valid" || device_id.empty()) {
+    return media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK;
+  } else if (device_id == "unauthorized") {
+    return media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED;
+  } else {
+    return media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND;
+  }
 }
 
 void WebFrameTestProxy::DidClearWindowObject() {
@@ -767,7 +765,7 @@ void WebFrameTestProxy::DidClearWindowObject() {
 void WebFrameTestProxy::DidCommitNavigation(
     blink::WebHistoryCommitType commit_type,
     bool should_reset_browser_interface_broker,
-    const blink::ParsedPermissionsPolicy& permissions_policy_header,
+    const network::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header) {
   if (should_block_parsing_in_next_commit_) {
     should_block_parsing_in_next_commit_ = false;

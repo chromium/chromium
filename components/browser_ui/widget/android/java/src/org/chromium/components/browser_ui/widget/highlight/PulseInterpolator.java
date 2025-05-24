@@ -6,10 +6,13 @@ package org.chromium.components.browser_ui.widget.highlight;
 
 import android.view.animation.Interpolator;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * An {@link Interpolator} that pulses a value based on the passed in {@link Interpolator}.  The
  * pulse will fade in and out after a delay.
  */
+@NullMarked
 public class PulseInterpolator implements Interpolator {
     private final Interpolator mInterpolator;
 

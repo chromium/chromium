@@ -13,7 +13,7 @@ namespace switches {
 
 // All switches in alphabetical order. The switches should be documented
 // alongside the definition of their values in the .cc file.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kAppShellAllowRoaming[];
 extern const char kAppShellHostWindowSize[];
 extern const char kAppShellPreferredNetwork[];

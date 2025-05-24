@@ -47,14 +47,14 @@ class TestGamepad : public Gamepad {
 
 class MockGamepadObserver : public GamepadObserver {
  public:
-  MockGamepadObserver() {}
+  MockGamepadObserver() = default;
   // Overridden from GamepadObserver:
   MOCK_METHOD(void, OnGamepadDestroying, (Gamepad * gamepad), (override));
 };
 
 class MockGamepadDelegate : public GamepadDelegate {
  public:
-  MockGamepadDelegate() {}
+  MockGamepadDelegate() = default;
 
   // Overridden from GamepadDelegate:
   MOCK_METHOD(void, OnRemoved, (), (override));

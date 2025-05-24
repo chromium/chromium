@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "google_apis/gaia/gaia_id.h"
+
 namespace ash::eche_app {
 
 // Stores system information for Eche app.
@@ -21,7 +23,7 @@ class SystemInfo {
     std::unique_ptr<SystemInfo> Build();
     Builder& SetBoardName(const std::string& board_name);
     Builder& SetDeviceName(const std::string& device_name);
-    Builder& SetGaiaId(const std::string& gaia_id);
+    Builder& SetGaiaId(const GaiaId& gaia_id);
     Builder& SetDeviceType(const std::string& device_type);
     Builder& SetOsVersion(const std::string& os_version);
     Builder& SetChannel(const std::string& channel);
@@ -29,7 +31,7 @@ class SystemInfo {
    private:
     std::string board_name_;
     std::string device_name_;
-    std::string gaia_id_;
+    GaiaId gaia_id_;
     std::string device_type_;
     std::string os_version_;
     std::string channel_;
@@ -40,7 +42,7 @@ class SystemInfo {
 
   std::string GetDeviceName() const { return device_name_; }
   std::string GetBoardName() const { return board_name_; }
-  std::string GetGaiaId() const { return gaia_id_; }
+  GaiaId GetGaiaId() const { return gaia_id_; }
   std::string GetDeviceType() const { return device_type_; }
   std::string GetOsVersion() const { return os_version_; }
   std::string GetChannel() const { return channel_; }
@@ -48,7 +50,7 @@ class SystemInfo {
  protected:
   SystemInfo(const std::string& device_name,
              const std::string& board_name,
-             const std::string& gaia_id,
+             const GaiaId& gaia_id,
              const std::string& device_type,
              const std::string& os_version,
              const std::string& channel);
@@ -56,7 +58,7 @@ class SystemInfo {
  private:
   std::string device_name_;
   std::string board_name_;
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::string device_type_;
   std::string os_version_;
   std::string channel_;

@@ -28,16 +28,14 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/buildflags.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_platform_specific_tab_data.h"
 #include "components/sessions/core/live_tab_context.h"
@@ -45,6 +43,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/web_contents.h"
@@ -54,10 +53,6 @@
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/tab_loader.h"
 #endif
-
-#if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif  // defined(TOOLKIT_VIEWS)
 
 using content::NavigationController;
 using content::SessionStorageNamespace;
@@ -71,14 +66,16 @@ namespace {
 // app window in those cases.
 bool ShouldCreateAppWindowForAppName(Profile* profile,
                                      const std::string& app_name) {
-  if (app_name.empty())
+  if (app_name.empty()) {
     return false;
+  }
 
   // Only need to check that the app is installed if |app_name| is for a
   // platform app or web app. (|app_name| could also be for a devtools window.)
   const std::string app_id = web_app::GetAppIdFromApplicationName(app_name);
-  if (app_id.empty())
+  if (app_id.empty()) {
     return true;
+  }
 
   return apps::IsInstalledApp(profile, app_id);
 }
@@ -126,19 +123,7 @@ sessions::LiveTab* BrowserLiveTabContext::GetActiveLiveTab() const {
 
 std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
     int index) const {
-  std::map<std::string, std::string> extra_data;
-
-#if defined(TOOLKIT_VIEWS)
-  if (IsSideSearchEnabled(browser_->profile())) {
-    std::optional<std::pair<std::string, std::string>> side_search_data =
-        side_search::MaybeGetSideSearchTabRestoreData(
-            browser_->tab_strip_model()->GetWebContentsAt(index));
-    if (side_search_data.has_value())
-      extra_data.insert(side_search_data.value());
-  }
-#endif  // defined(TOOLKIT_VIEWS)
-
-  return extra_data;
+  return std::map<std::string, std::string>();
 }
 
 std::map<std::string, std::string>
@@ -154,19 +139,18 @@ std::optional<tab_groups::TabGroupId> BrowserLiveTabContext::GetTabGroupForTab(
 const tab_groups::TabGroupVisualData*
 BrowserLiveTabContext::GetVisualDataForGroup(
     const tab_groups::TabGroupId& group) const {
-  return browser_->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group)
-      ->visual_data();
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  CHECK(tab_strip_model);
+  TabGroupModel* group_model = tab_strip_model->group_model();
+  CHECK(group_model);
+  TabGroup* tab_group = group_model->GetTabGroup(group);
+  CHECK(tab_group);
+  return tab_group->visual_data();
 }
 
 const std::optional<base::Uuid>
 BrowserLiveTabContext::GetSavedTabGroupIdForGroup(
     const tab_groups::TabGroupId& group) const {
-  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-    return std::nullopt;
-  }
-
   Profile* profile = browser_->profile();
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
@@ -186,8 +170,12 @@ bool BrowserLiveTabContext::IsTabPinned(int index) const {
 void BrowserLiveTabContext::SetVisualDataForGroup(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& visual_data) {
-  browser_->tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
-      std::move(visual_data));
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  CHECK(tab_strip_model);
+  TabGroupModel* group_model = tab_strip_model->group_model();
+  CHECK(group_model);
+  CHECK(group_model->ContainsTabGroup(group));
+  tab_strip_model->ChangeTabGroupVisuals(group, std::move(visual_data));
 }
 
 const gfx::Rect BrowserLiveTabContext::GetRestoredBounds() const {
@@ -206,6 +194,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     const sessions::tab_restore::Tab& tab,
     int tab_index,
     bool select,
+    bool is_restoring_group_or_window,
     sessions::tab_restore::Type original_session_type) {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
@@ -218,7 +207,11 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
                 ->session_storage_namespace()
           : nullptr;
 
-  std::optional<tab_groups::TabGroupId> group_id = tab.group;
+  // If the browser does not support tabs groups, restore the grouped tab as a
+  // normal tab instead. See crbug.com/368139715.
+  std::optional<tab_groups::TabGroupId> group_id =
+      browser_->tab_strip_model()->SupportsTabGroups() ? tab.group
+                                                       : std::nullopt;
   std::optional<base::Uuid> saved_group_id = tab.saved_group_id;
   content::WebContents* web_contents = nullptr;
 
@@ -229,7 +222,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       group_id.has_value() && saved_group_id.has_value() &&
       !tab_group_service->GetGroup(saved_group_id.value()).has_value();
   if (is_normal_tab || is_grouped_tab_unsaved || group_deleted_from_model) {
-    // This is either a normal tab or tab in an unsaved group.
+    // Add the tab to the browser.
     web_contents = chrome::AddRestoredTab(
         browser_, tab.navigations, tab_index, tab.normalized_navigation_index(),
         tab.extension_app_id, group_id, select, tab.pinned, base::TimeTicks(),
@@ -237,76 +230,60 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
         tab.extra_data,
         /*from_session_restore=*/false, /*is_active_browser=*/std::nullopt);
 
-    if (is_grouped_tab_unsaved || group_deleted_from_model) {
+    if (group_id.has_value() &&
+        !tab_group_service->GetGroup(group_id.value()).has_value()) {
+      // It's possible a tab's group was deleted or was unsaved before this tab
+      // was restored. In that case, if the local group didn't become saved add
+      // the visual metadata and save it manually.
       browser_->live_tab_context()->SetVisualDataForGroup(
           group_id.value(), tab.group_visual_data.value());
-
-      // Save the group if it was not saved.
-      if (!tab_group_service->GetGroup(group_id.value()).has_value() &&
-          tab_groups::IsTabGroupsSaveV2Enabled()) {
-        tab_group_service->AddGroup(
-            tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-                tab.group.value()));
-
-        if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-          // Ensure we listen for changes to the newly created group.
-          // This is done automatically for the old service, not the new one.
-          std::optional<tab_groups::SavedTabGroup> s =
-              tab_group_service->GetGroup(group_id.value());
-          tab_group_service->ConnectLocalTabGroup(s->saved_guid(),
-                                                  group_id.value());
-        }
-      }
+      tab_group_service->SaveGroup(
+          tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+              tab.group.value()));
     }
   } else {
-    CHECK(tab_group_service->GetGroup(saved_group_id.value()).has_value());
-
-    const std::optional<tab_groups::SavedTabGroup> saved_group =
+    std::optional<tab_groups::SavedTabGroup> saved_group =
         tab_group_service->GetGroup(saved_group_id.value());
+    CHECK(saved_group);
     group_id = saved_group->local_group_id();
 
-    if (!group_id.has_value()) {
-      // Open the group in this browser if it is closed.
-      tab_group_service->OpenTabGroup(
-          saved_group_id.value(),
-          std::make_unique<tab_groups::TabGroupActionContextDesktop>(
-              browser_, tab_groups::OpeningSource::kOpenedFromTabRestore));
-
-      group_id =
-          tab_group_service->GetGroup(saved_group_id.value())->local_group_id();
-    } else {
+    if (group_id) {
       Browser* source_browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
               group_id.value());
-      CHECK(source_browser);
       tab_groups::SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
           group_id.value());
+
+      // Move the group into `browser_` if it is open in a different browser.
       if (source_browser != browser_) {
-        // Move the group to this browser if it was open somewhere else.
-        tab_groups::SavedTabGroupUtils::MoveGroupToExistingWindow(
-            source_browser, browser_, group_id.value(), saved_group_id.value());
+        chrome::MoveGroupToExistingWindow(source_browser, browser_,
+                                          group_id.value());
       }
+    } else {
+      // Open the group in this browser if it is closed.
+      group_id = tab_group_service->OpenTabGroup(
+          saved_group_id.value(),
+          std::make_unique<tab_groups::TabGroupActionContextDesktop>(
+              browser_, tab_groups::OpeningSource::kOpenedFromTabRestore));
     }
 
-    std::unordered_set<std::string> saved_urls =
-        tab_groups::SavedTabGroupUtils::GetURLsInSavedTabGroup(
-            browser_->profile(), saved_group_id.value());
-    const sessions::SerializedNavigationEntry& entry =
-        tab.navigations.at(tab.normalized_navigation_index());
-    if (!saved_urls.contains(entry.virtual_url().spec())) {
-      // Restore the tab at the end of the group if we don't have it.
-      tab_index = browser_->tab_strip_model()->count();
-      web_contents = chrome::AddRestoredTab(
-          browser_, tab.navigations, tab_index,
-          tab.normalized_navigation_index(), tab.extension_app_id, group_id,
-          select, tab.pinned, base::TimeTicks(), base::Time(),
-          storage_namespace, tab.user_agent_override, tab.extra_data,
-          /*from_session_restore=*/false, /*is_active_browser=*/std::nullopt);
-    } else {
-      // Do nothing if the tab wasn't added to the group.
+    if (is_restoring_group_or_window) {
+      // Open the saved tab group as-is if the tab is being restored from a
+      // group or window context. This is to enforce that SavedTabGroups are
+      // the source or truth.
       return nullptr;
     }
+
+    // Add the saved tab to the end of group.
+    web_contents = chrome::AddRestoredTab(
+        browser_, tab.navigations, browser_->tab_strip_model()->count(),
+        tab.normalized_navigation_index(), tab.extension_app_id, group_id,
+        select, tab.pinned, base::TimeTicks(), base::Time(), storage_namespace,
+        tab.user_agent_override, tab.extra_data,
+        /*from_session_restore=*/false, /*is_active_browser=*/std::nullopt);
   }
+
+  CHECK(web_contents);
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   // The tab may have been made active even if `select` is false if it is the

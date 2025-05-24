@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -45,9 +46,14 @@ class NET_EXPORT GZipHeader {
   // yet constitute a complete gzip header, return
   // INCOMPLETE_HEADER. If these bytes do not constitute a *valid*
   // gzip header, return INVALID_HEADER. When we've seen a complete
-  // gzip header, return COMPLETE_HEADER and set the pointer pointed
-  // to by header_end to the first byte beyond the gzip header.
-  Status ReadMore(const char* inbuf, size_t inbuf_len, const char** header_end);
+  // gzip header, return COMPLETE_HEADER and set `header_end` to the offset
+  // of the first byte beyond the gzip header (i.e., it's the number of bytes of
+  // `inbuf` the are part of the header).
+  Status ReadMore(base::span<const uint8_t> inbuf, size_t& header_end);
+
+  // Returns true if `inbuf` starts with a gzip header, possibly followed by
+  // additional bytes.
+  static bool HasGZipHeader(base::span<const uint8_t> inbuf);
 
  private:
   enum {                       // flags (see RFC)
@@ -85,8 +91,6 @@ class NET_EXPORT GZipHeader {
 
     IN_DONE,
   };
-
-  static const uint8_t magic[];  // gzip magic header
 
   int    state_;  // our current State in the parsing FSM: an int so we can ++
   uint8_t flags_;  // the flags byte of the header ("FLG" in the RFC)

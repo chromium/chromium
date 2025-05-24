@@ -12,7 +12,6 @@
 
 @class AppLaunchManager;
 
-
 // Protocol that test cases can implement to be notified by AppLaunchManager.
 @protocol AppLaunchManagerObserver
 @optional

@@ -58,7 +58,7 @@ class SnapshotController {
     virtual void StartSnapshot() = 0;
 
    protected:
-    virtual ~Client() {}
+    virtual ~Client() = default;
   };
 
   SnapshotController(

@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR コード</translation>
 <translation id="2244252133441425811">動画 FPS 選択ツールをオンにする</translation>
 <translation id="2271433936731426666">フルサイズの動画スナップショットを有効にする</translation>
-<translation id="2281736597583450397">高度なズーム機能で細部を鮮明に</translation>
 <translation id="2320741269052147773">左にパン</translation>
 <translation id="2360840973209616515">カメラアプリは管理者によって管理されています。
         詳しくは、管理者にお問い合わせください。</translation>
@@ -106,13 +105,12 @@
 <translation id="5753488212459587150">エキスパート モードを有効にする</translation>
 <translation id="5759254179196327752">ドキュメント スキャン</translation>
 <translation id="5775960006311140197">エキスパート モード</translation>
-<translation id="5860033963881614850">OFF</translation>
+<translation id="5860033963881614850">オフ</translation>
 <translation id="5869546221129391014">グリッド</translation>
-<translation id="5916664084637901428">ON</translation>
+<translation id="5916664084637901428">オン</translation>
 <translation id="5975083100439434680">縮小する</translation>
 <translation id="5976160379964388480">その他</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
-<translation id="6165508094623778733">詳細</translation>
 <translation id="6197807149213783179">メタデータを保存</translation>
 <translation id="6233780560267770709">3 かける 3</translation>
 <translation id="6243827288366940320">黄金比</translation>
@@ -122,7 +120,6 @@
 画質に関するフィードバックの場合は、サンプルの写真や動画を添付し、問題の内容を詳しくご説明ください（写真が暗すぎる、ピントが合わないなど）。</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" /> に参加</translation>
 <translation id="6527303717912515753">共有</translation>
-<translation id="6586509689874700895">最初に <ph name="BUTTON_NAME" /> を押してズームインしてから撮影すると、高精細な写真が撮れます。</translation>
 <translation id="659539649712855529"><ph name="CONTENT" /> をコピーしました</translation>
 <translation id="6617916774429601017">すべての解像度を表示</translation>
 <translation id="6631515515009660915">ミラーをオフにする</translation>
@@ -168,7 +165,6 @@
 <translation id="8609951387004618906"><ph name="URL" /> を開く</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">マイクのミュートを切り替えます。ミュートはオンです</translation>
-<translation id="8712637175834984815">理解した</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8732462232047530626">メタデータのプレビュー</translation>
 <translation id="874854738381978209">Wi-Fi ネットワークが検出されました。</translation>

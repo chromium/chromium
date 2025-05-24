@@ -47,7 +47,9 @@
 namespace blink {
 
 class PostMessageOptions;
+class ScriptObject;
 class ScriptState;
+class V8ServiceWorkerState;
 
 class MODULES_EXPORT ServiceWorker final
     : public AbstractWorker,
@@ -76,7 +78,7 @@ class MODULES_EXPORT ServiceWorker final
 
   void postMessage(ScriptState*,
                    const ScriptValue& message,
-                   HeapVector<ScriptValue>& transfer,
+                   HeapVector<ScriptObject> transfer,
                    ExceptionState&);
   void postMessage(ScriptState*,
                    const ScriptValue& message,
@@ -84,7 +86,7 @@ class MODULES_EXPORT ServiceWorker final
                    ExceptionState&);
 
   String scriptURL() const;
-  String state() const;
+  V8ServiceWorkerState state() const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(statechange, kStatechange)
 
   ServiceWorker* ToServiceWorker() override { return this; }

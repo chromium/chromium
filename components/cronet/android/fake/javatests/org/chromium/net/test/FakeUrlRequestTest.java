@@ -421,6 +421,26 @@ public class FakeUrlRequestTest {
 
     @Test
     @SmallTest
+    public void testNotModifiedStatusWithoutBodyAllowed() {
+        FakeUrlResponse response = new FakeUrlResponse.Builder().setHttpStatusCode(304).build();
+
+        String url = "TEST_URL";
+        mFakeCronetController.addResponseForUrl(response, url);
+
+        // Run the request.
+        TestUrlRequestCallback.SimpleSucceedingCallback callback =
+                new TestUrlRequestCallback.SimpleSucceedingCallback();
+        FakeUrlRequest request =
+                (FakeUrlRequest)
+                        mFakeCronetEngine
+                                .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                                .build();
+        request.start();
+        callback.done.block();
+    }
+
+    @Test
+    @SmallTest
     public void testResponseLongerThanBuffer() {
         // Build a long response string that is 3x the buffer size.
         final int bufferStringLengthMultiplier = 3;

@@ -11,6 +11,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/version_info/channel.h"
@@ -37,11 +38,7 @@ void PasswordManagerClient::ShowPasswordManagerErrorMessage(
 
 void PasswordManagerClient::ShowKeyboardReplacingSurface(
     PasswordManagerDriver* driver,
-    const PasswordFillingParams& password_filling_params,
-    bool is_webauthn_form,
-    base::OnceCallback<void(bool)> shown_cb) {
-  std::move(shown_cb).Run(false);
-}
+    const autofill::PasswordSuggestionRequest& request) {}
 #endif
 
 bool PasswordManagerClient::IsReauthBeforeFillingRequired(
@@ -73,18 +70,7 @@ void PasswordManagerClient::AutofillHttpAuth(
     const PasswordFormManagerForUI* form_manager) {}
 
 void PasswordManagerClient::NotifyUserCredentialsWereLeaked(
-    password_manager::CredentialLeakType leak_type,
-    const GURL& origin,
-    const std::u16string& username,
-    bool in_account_store) {}
-
-void PasswordManagerClient::TriggerReauthForPrimaryAccount(
-    signin_metrics::ReauthAccessPoint access_point,
-    base::OnceCallback<void(ReauthSucceeded)> reauth_callback) {
-  std::move(reauth_callback).Run(ReauthSucceeded(false));
-}
-
-void PasswordManagerClient::TriggerSignIn(signin_metrics::AccessPoint) {}
+    LeakedPasswordDetails details) {}
 
 bool PasswordManagerClient::WasLastNavigationHTTPError() const {
   return false;
@@ -98,6 +84,11 @@ void PasswordManagerClient::PromptUserToEnableAutosignin() {}
 
 bool PasswordManagerClient::IsOffTheRecord() const {
   return false;
+}
+
+password_manager::LeakDetectionInitiator
+PasswordManagerClient::GetLeakDetectionInitiator() {
+  return password_manager::LeakDetectionInitiator::kSignInCheck;
 }
 
 profile_metrics::BrowserProfileType PasswordManagerClient::GetProfileType()
@@ -141,7 +132,7 @@ bool PasswordManagerClient::IsCommittedMainFrameSecure() const {
   return false;
 }
 
-autofill::LogManager* PasswordManagerClient::GetLogManager() {
+autofill::LogManager* PasswordManagerClient::GetCurrentLogManager() {
   return nullptr;
 }
 
@@ -190,6 +181,9 @@ PasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
 
 void PasswordManagerClient::MarkSharedCredentialsAsNotified(const GURL& url) {}
 
+SmsOtpBackend* PasswordManagerClient::GetSmsOtpBackend() const {
+  return nullptr;
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 version_info::Channel PasswordManagerClient::GetChannel() const {
@@ -200,11 +194,7 @@ void PasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded() const {
   // For most implementations settings do not need to be refreshed.
 }
 
-void PasswordManagerClient::ShowCredentialsInAmbientBubble(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
-    int credential_type_flags,
-    CredentialsCallback callback) {
-  std::move(callback).Run(nullptr);
-}
+void PasswordManagerClient::TriggerSignIn(
+    signin_metrics::AccessPoint access_point) const {}
 
 }  // namespace password_manager

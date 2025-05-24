@@ -15,6 +15,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
 
 import java.lang.annotation.Retention;
@@ -22,10 +24,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /**
- * The global application language controller that uses the locale from
- * {@link AppLocaleUtils#getAppLanguagePref} to override the locales in
- * {@link ChromeApplication} and {@link ChromeActivity} and default Locale.
+ * The global application language controller that uses the locale from {@link
+ * AppLocaleUtils#getAppLanguagePref} to override the locales in {@link ChromeApplication} and
+ * {@link ChromeActivity} and default Locale.
  */
+@NullUnmarked
 public class GlobalAppLocaleController {
     private static final GlobalAppLocaleController INSTANCE = new GlobalAppLocaleController();
 
@@ -55,7 +58,7 @@ public class GlobalAppLocaleController {
 
     // Set the original system language before Locale.getDefault() is overridden.
     private Locale mOriginalSystemLocale = Locale.getDefault();
-    private String mOverrideLanguage;
+    private @Nullable String mOverrideLanguage;
     private boolean mIsOverridden;
 
     private GlobalAppLocaleController() {}
@@ -63,6 +66,7 @@ public class GlobalAppLocaleController {
     /**
      * Sets the global override language and override state based on the {@link AppLocaleUitls}
      * shared preference. Should be called very early in {@link ChromeActivity#attachBaseContext}.
+     *
      * @param context The Context to use to get the shared preference from.
      * @return boolean Whether or not an override language is set.
      */
@@ -92,6 +96,7 @@ public class GlobalAppLocaleController {
     /**
      * If the application locale should be overridden returns an updated override Configuration.
      * Called early in {@link ChromeActivity#attachBaseContext}.
+     *
      * @param base The base Context for the application and has the system locales.
      * @return Configuration to override application context with or null.
      */

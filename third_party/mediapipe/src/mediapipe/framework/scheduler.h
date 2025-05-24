@@ -16,6 +16,7 @@
 #define MEDIAPIPE_FRAMEWORK_SCHEDULER_H_
 
 #include <atomic>
+#include <deque>
 #include <functional>
 #include <map>
 #include <memory>

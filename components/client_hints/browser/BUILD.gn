@@ -15,7 +15,7 @@ source_set("browser") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//content/public/browser",
     "//services/network/public/cpp",
     "//third_party/blink/public/common:headers",

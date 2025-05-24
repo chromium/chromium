@@ -8,6 +8,22 @@
 
 namespace blink {
 
+namespace {
+V8GPUCompilationMessageType::Enum FromDawnEnum(
+    wgpu::CompilationMessageType type) {
+  switch (type) {
+    case wgpu::CompilationMessageType::Error:
+      return V8GPUCompilationMessageType::Enum::kError;
+    case wgpu::CompilationMessageType::Warning:
+      return V8GPUCompilationMessageType::Enum::kWarning;
+    case wgpu::CompilationMessageType::Info:
+      return V8GPUCompilationMessageType::Enum::kInfo;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 GPUCompilationMessage::GPUCompilationMessage(String message,
                                              wgpu::CompilationMessageType type,
                                              uint64_t line_num,
@@ -15,21 +31,10 @@ GPUCompilationMessage::GPUCompilationMessage(String message,
                                              uint64_t offset,
                                              uint64_t length)
     : message_(message),
+      type_(FromDawnEnum(type)),
       line_num_(line_num),
       line_pos_(line_pos),
       offset_(offset),
-      length_(length) {
-  switch (type) {
-    case wgpu::CompilationMessageType::Error:
-      type_string_ = "error";
-      break;
-    case wgpu::CompilationMessageType::Warning:
-      type_string_ = "warning";
-      break;
-    case wgpu::CompilationMessageType::Info:
-      type_string_ = "info";
-      break;
-  }
-}
+      length_(length) {}
 
 }  // namespace blink

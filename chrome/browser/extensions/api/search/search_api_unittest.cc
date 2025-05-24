@@ -65,7 +65,7 @@ class SearchApiUnitTest : public ExtensionServiceTestBase {
   TabStripModel* GetTabStripModel() { return browser_->tab_strip_model(); }
   extensions::SearchQueryFunction* function() { return function_.get(); }
   void RunFunctionAndExpectError(const std::string& input,
-                                 const std::string_view expected);
+                                 std::string_view expected);
 
  private:
   void SetUp() override;
@@ -110,9 +110,8 @@ void SearchApiUnitTest::TearDown() {
   ExtensionServiceTestBase::TearDown();
 }
 
-void SearchApiUnitTest::RunFunctionAndExpectError(
-    const std::string& input,
-    const std::string_view expected) {
+void SearchApiUnitTest::RunFunctionAndExpectError(const std::string& input,
+                                                  std::string_view expected) {
   auto result = api_test_utils::RunFunctionAndReturnError(function(), input,
                                                           browser()->profile());
   EXPECT_EQ(expected, result);

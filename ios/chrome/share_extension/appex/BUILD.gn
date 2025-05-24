@@ -13,7 +13,11 @@ assert(
     "ios_enable_share_extension must be true to depend on //ios/chrome/share_extension")
 
 tweak_info_plist("tweak_info_plist") {
-  info_plist = "Info.plist"
+  if (ios_enable_extended_share_extension) {
+    info_plist = "ExtendedInfo.plist"
+  } else {
+    info_plist = "Info.plist"
+  }
 }
 
 compile_entitlements("entitlements") {

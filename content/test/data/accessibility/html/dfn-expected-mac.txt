@@ -1,5 +1,5 @@
 AXWebArea
 ++AXGroup
-++++AXGroup AXSubrole=AXTerm
+++++AXGroup AXSubrole=AXTerm AXTitle='Web Browser'
 ++++++AXStaticText AXValue='Web Browser'
 ++++AXStaticText AXValue=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

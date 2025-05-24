@@ -11,16 +11,20 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/card_swipe_view_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/swipe_view.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
-#import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_snapshot_providing.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/side_swipe_toolbar_snapshot_providing.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
@@ -64,8 +68,7 @@ const CGFloat kResizeFactor = 4;
   raw_ptr<WebStateList> _webStateList;
 }
 
-@synthesize delegate = _delegate;
-@synthesize topMargin = _topMargin;
+#pragma mark - Public
 
 - (instancetype)initWithFrame:(CGRect)frame
                     topMargin:(CGFloat)topMargin
@@ -93,12 +96,12 @@ const CGFloat kResizeFactor = 4;
 
     background.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
 
-    _rightCard =
-        [[SwipeView alloc] initWithFrame:CGRectZero topMargin:topMargin];
+    _rightCard = [[SwipeView alloc] initWithFrame:CGRectZero
+                                        topMargin:topMargin];
     _rightCard.layer.cornerRadius = kCardCornerRadius;
     _rightCard.layer.masksToBounds = YES;
-    _leftCard =
-        [[SwipeView alloc] initWithFrame:CGRectZero topMargin:topMargin];
+    _leftCard = [[SwipeView alloc] initWithFrame:CGRectZero
+                                       topMargin:topMargin];
     _leftCard.layer.cornerRadius = kCardCornerRadius;
     _leftCard.layer.masksToBounds = YES;
     [_rightCard setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -111,24 +114,6 @@ const CGFloat kResizeFactor = 4;
   return self;
 }
 
-- (void)setTopMargin:(CGFloat)topMargin {
-  _topMargin = topMargin;
-  _leftCard.topMargin = topMargin;
-  _rightCard.topMargin = topMargin;
-}
-
-- (void)updateConstraints {
-  [super updateConstraints];
-  CGFloat topInset = self.safeAreaInsets.top;
-  _backgroundTopConstraint.constant = -topInset;
-}
-
-- (CGFloat)cardWidth {
-  return CGRectGetWidth(self.bounds);
-}
-
-// Set up left and right card views depending on current WebState and swipe
-// direction.
 - (void)updateViewsForDirection:(UISwipeGestureRecognizerDirection)direction {
   _direction = direction;
   int currentIndex = _webStateList->active_index();
@@ -140,6 +125,66 @@ const CGFloat kResizeFactor = 4;
     [self setupCard:_leftCard withIndex:currentIndex];
     [self setupCard:_rightCard withIndex:currentIndex + offset];
   }
+}
+
+- (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
+      actionBeforeTabSwitch:(TabSwipeHandler)actionBeforeTabSwitch {
+  _currentPoint = [gesture locationInView:self];
+  _currentPoint.x -= gesture.swipeOffset;
+
+  // Since it's difficult to touch the very edge of the screen (touches tend to
+  // sit near x ~ 4), push the touch towards the edge.
+  CGFloat width = [self cardWidth];
+  CGFloat half = floor(width / 2);
+  CGFloat padding = floor(std::abs(_currentPoint.x - half) / half);
+
+  // Push towards the edges.
+  if (_currentPoint.x > half) {
+    _currentPoint.x += padding;
+  } else {
+    _currentPoint.x -= padding;
+  }
+
+  // But don't go past the edges.
+  if (_currentPoint.x < 0) {
+    _currentPoint.x = 0;
+  } else if (_currentPoint.x > width) {
+    _currentPoint.x = width;
+  }
+
+  [self updateCardPositions];
+
+  if (gesture.state == UIGestureRecognizerStateEnded ||
+      gesture.state == UIGestureRecognizerStateCancelled ||
+      gesture.state == UIGestureRecognizerStateFailed) {
+    [self finishPanWithActionBeforeTabSwitch:actionBeforeTabSwitch];
+  }
+}
+
+- (void)disconnect {
+  _webStateList = nullptr;
+}
+
+#pragma mark - Properties
+
+- (void)setTopMargin:(CGFloat)topMargin {
+  _topMargin = topMargin;
+  _leftCard.topMargin = topMargin;
+  _rightCard.topMargin = topMargin;
+}
+
+#pragma mark - UIView
+
+- (void)updateConstraints {
+  [super updateConstraints];
+  CGFloat topInset = self.safeAreaInsets.top;
+  _backgroundTopConstraint.constant = -topInset;
+}
+
+#pragma mark - Private
+
+- (CGFloat)cardWidth {
+  return CGRectGetWidth(self.bounds);
 }
 
 // Build a `kResizeFactor` sized greyscaled version of `image`.
@@ -174,6 +219,35 @@ const CGFloat kResizeFactor = 4;
   [card setHidden:NO];
 
   web::WebState* webState = _webStateList->GetWebStateAt(index);
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+  PrefService* prefs =
+      ProfileIOS::FromBrowserState(webState->GetBrowserState())->GetPrefs();
+  // Lens overlay displays content fullscreen and hides the vertical toolbars.
+  if (IsLensOverlayAvailable(prefs)) {
+    if (LensOverlayTabHelper* lensOverlayTabHelper =
+            LensOverlayTabHelper::FromWebState(webState)) {
+      BOOL lensOverlayShown;
+
+      if (IsLensOverlaySameTabNavigationEnabled(prefs)) {
+        lensOverlayShown =
+            lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
+      } else {
+        lensOverlayShown =
+            lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+      }
+
+      UIImage* lensOverlaySnapshot =
+          lensOverlayTabHelper->GetViewportSnapshot();
+      if (lensOverlayShown && lensOverlaySnapshot) {
+        [self enableFullscreenCard:card];
+        [self colorSnapshotRetrieved:lensOverlaySnapshot
+                                card:card
+                        weakWebState:weakWebState];
+        return;
+      }
+    }
+  }
+
   UIImage* topToolbarSnapshot = [self.toolbarSnapshotProvider
       toolbarSideSwipeSnapshotForWebState:webState
                           withToolbarType:ToolbarType::kPrimary];
@@ -184,11 +258,18 @@ const CGFloat kResizeFactor = 4;
   [card setBottomToolbarImage:bottomToolbarSnapshot];
 
   __weak CardSideSwipeView* weakSelf = self;
-  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(^(
       UIImage* image) {
     [weakSelf colorSnapshotRetrieved:image card:card weakWebState:weakWebState];
   });
+}
+
+// Helper method that turns a card fullscreen by removing the vertical margins
+// and the toolbar images.
+- (void)enableFullscreenCard:(SwipeView*)card {
+  [card setTopMargin:0];
+  [card setTopToolbarImage:nil];
+  [card setBottomToolbarImage:nil];
 }
 
 // Helper method that is invoked once the color snapshot has been fetched
@@ -253,39 +334,6 @@ const CGFloat kResizeFactor = 4;
   }
 }
 
-// Update layout with new touch event.
-- (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
-      actionBeforeTabSwitch:(TabSwipeHandler)actionBeforeTabSwitch {
-  _currentPoint = [gesture locationInView:self];
-  _currentPoint.x -= gesture.swipeOffset;
-
-  // Since it's difficult to touch the very edge of the screen (touches tend to
-  // sit near x ~ 4), push the touch towards the edge.
-  CGFloat width = [self cardWidth];
-  CGFloat half = floor(width / 2);
-  CGFloat padding = floor(std::abs(_currentPoint.x - half) / half);
-
-  // Push towards the edges.
-  if (_currentPoint.x > half)
-    _currentPoint.x += padding;
-  else
-    _currentPoint.x -= padding;
-
-  // But don't go past the edges.
-  if (_currentPoint.x < 0)
-    _currentPoint.x = 0;
-  else if (_currentPoint.x > width)
-    _currentPoint.x = width;
-
-  [self updateCardPositions];
-
-  if (gesture.state == UIGestureRecognizerStateEnded ||
-      gesture.state == UIGestureRecognizerStateCancelled ||
-      gesture.state == UIGestureRecognizerStateFailed) {
-    [self finishPanWithActionBeforeTabSwitch:actionBeforeTabSwitch];
-  }
-}
-
 // Returns whether the current card is an edge card based on swipe direction.
 - (BOOL)isEdgeSwipe {
   int currentIndex = _webStateList->active_index();
@@ -301,8 +349,9 @@ const CGFloat kResizeFactor = 4;
   int currentIndex = _webStateList->active_index();
   // Something happened and now there is not active WebState.  End card side let
   // swipe and BVC show no tabs UI.
-  if (currentIndex == WebStateList::kInvalidIndex)
-    return [_delegate sideSwipeViewDismissAnimationDidEnd:self];
+  if (currentIndex == WebStateList::kInvalidIndex) {
+    return [self.delegate sideSwipeViewDismissAnimationDidEnd:self];
+  }
 
   CGFloat width = [self cardWidth];
   CGAffineTransform rightTransform, leftTransform;
@@ -359,20 +408,22 @@ const CGFloat kResizeFactor = 4;
   __weak CardSideSwipeView* weakSelf = self;
   [UIView animateWithDuration:kAnimationDuration
       animations:^{
-        [weakSelf animatePanWithLeftCardTransform:leftTransform
-                               rightCardTransform:rightTransform];
+        [weakSelf updateCardsWithLeftTransform:leftTransform
+                                rightTransform:rightTransform];
       }
       completion:^(BOOL finished) {
         [weakSelf onAnimatePanComplete:destinationWebStateIndex];
       }];
 }
 
-- (void)animatePanWithLeftCardTransform:(CGAffineTransform)leftCardTransform
-                     rightCardTransform:(CGAffineTransform)rightCardTransform {
+// Updates the left/right cards with transforms.
+- (void)updateCardsWithLeftTransform:(CGAffineTransform)leftCardTransform
+                      rightTransform:(CGAffineTransform)rightCardTransform {
   _leftCard.transform = leftCardTransform;
   _rightCard.transform = rightCardTransform;
 }
 
+// Called when the pan animation is done, to handle cleanup.
 - (void)onAnimatePanComplete:(int)destinationWebStateIndex {
   [_leftCard setImage:nil];
   [_rightCard setImage:nil];
@@ -380,13 +431,13 @@ const CGFloat kResizeFactor = 4;
   [_rightCard setTopToolbarImage:nil];
   [_leftCard setBottomToolbarImage:nil];
   [_rightCard setBottomToolbarImage:nil];
-  [_delegate sideSwipeViewDismissAnimationDidEnd:self];
+  [self.delegate sideSwipeViewDismissAnimationDidEnd:self];
   // Changing the model even when the webstate is the same at the end of
   // the animation allows the UI to recover.  This call must come last,
   // because ActivateWebStateAt triggers behavior that depends on the view
   // hierarchy being reassembled, which happens in
   // sideSwipeViewDismissAnimationDidEnd.
-  if (destinationWebStateIndex < _webStateList->count()) {
+  if (_webStateList && destinationWebStateIndex < _webStateList->count()) {
     // It seems possible that sometimes `destinationWebStateIndex` is bigger
     // than the last tab, probably because tabs were programmatically closed
     // during the swipe. See crbug.com/333961615.

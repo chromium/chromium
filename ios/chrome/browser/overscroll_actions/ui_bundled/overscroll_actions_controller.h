@@ -29,7 +29,7 @@ enum class OverscrollState {
 // to allow overscroll actions.
 // Finally the overscrollActionsController:didTriggerActionAtIndex: method is
 // called when an action has been triggered.
-@protocol OverscrollActionsControllerDelegate<NSObject>
+@protocol OverscrollActionsControllerDelegate <NSObject>
 // Called when a New Tab action has been triggered.
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller;
 // Called when a Close Tab action has been triggered.
@@ -84,7 +84,7 @@ enum class OverscrollState {
 //    this second mode will typically be used in native tabs like the error
 //    tabs or the NTP.
 
-@interface OverscrollActionsController : NSObject<UIScrollViewDelegate>
+@interface OverscrollActionsController : NSObject <UIScrollViewDelegate>
 
 // Initializes the OverscrollActionsController with a proxy to the web
 // view scrollview. The CRWWebViewProxy must not be nil.
@@ -113,10 +113,6 @@ enum class OverscrollState {
 // notifications. After this call the controller ceases to function and will
 // clear its delegate.
 - (void)invalidate;
-// Schedules call to `invalidate` at the end of the current action. This lets
-// the animation finish before invalidating the controller.
-// If no action is running, calls `invalidate` immediately.
-- (void)scheduleInvalidate;
 // Force the controller to switch to NO_PULL_STARTED state.
 - (void)clear;
 // Disabling overscroll actions will stop showing the overscroll actions view on

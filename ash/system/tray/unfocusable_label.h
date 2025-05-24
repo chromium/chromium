@@ -16,13 +16,12 @@ class ASH_EXPORT UnfocusableLabel : public views::Label {
   METADATA_HEADER(UnfocusableLabel, views::Label)
 
  public:
-  UnfocusableLabel() = default;
+  UnfocusableLabel();
 
   UnfocusableLabel(const UnfocusableLabel&) = delete;
   UnfocusableLabel& operator=(const UnfocusableLabel&) = delete;
 
   ~UnfocusableLabel() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 }  // namespace ash

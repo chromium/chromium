@@ -13,6 +13,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics/external_metrics.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
+#include "chrome/browser/ash/performance/doze_mode_power_status_scheduler.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 
@@ -28,24 +29,23 @@ class ArcServiceLauncher;
 class ContainerAppKiller;
 }  // namespace arc
 
-namespace chromeos::default_app_order {
+namespace chromeos {
+class MahiWebContentsManager;
+
+namespace default_app_order {
 class ExternalLoader;
-}  // namespace chromeos::default_app_order
+}  // namespace default_app_order
+
+}  // namespace chromeos
 
 namespace crosapi {
 class BrowserManager;
 class CrosapiManager;
-class LacrosAvailabilityPolicyObserver;
-class LacrosDataBackwardMigrationModePolicyObserver;
 }  // namespace crosapi
 
 namespace crostini {
 class CrostiniUnsupportedActionNotifier;
 }  // namespace crostini
-
-namespace lock_screen_apps {
-class StateController;
-}
 
 namespace policy {
 class LockToSingleUserManager;
@@ -77,6 +77,7 @@ class KioskController;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class AuthEventsRecorder;
+class MagicBoostControllerAsh;
 class MultiCaptureNotifications;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
@@ -93,6 +94,8 @@ class SuspendPerfReporter;
 class SystemTokenCertDBInitializer;
 class VideoConferenceAppServiceClient;
 class VideoConferenceAshFeatureClient;
+class DozeModePowerStatusScheduler;
+class UserLoginPermissionTracker;
 
 namespace carrier_lock {
 class CarrierLockManager;
@@ -192,6 +195,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<ShutdownPolicyForwarder> shutdown_policy_forwarder_;
 
+  std::unique_ptr<ash::UserLoginPermissionTracker>
+      user_login_permission_tracker_;
+
   std::unique_ptr<EventRewriterDelegateImpl> event_rewriter_delegate_;
 
   std::unique_ptr<carrier_lock::CarrierLockManager> carrier_lock_manager_;
@@ -201,6 +207,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       accessibility_event_rewriter_delegate_;
 
   scoped_refptr<ExternalMetrics> external_metrics_;
+
+  std::unique_ptr<DozeModePowerStatusScheduler>
+      doze_mode_power_status_scheduler_;
 
   std::unique_ptr<arc::ArcServiceLauncher> arc_service_launcher_;
 
@@ -219,14 +228,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<ChromeKeyboardControllerClient>
       chrome_keyboard_controller_client_;
 
-  std::unique_ptr<lock_screen_apps::StateController>
-      lock_screen_apps_state_controller_;
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   std::unique_ptr<crosapi::BrowserManager> browser_manager_;
-  std::unique_ptr<crosapi::LacrosAvailabilityPolicyObserver>
-      lacros_availability_policy_observer_;
-  std::unique_ptr<crosapi::LacrosDataBackwardMigrationModePolicyObserver>
-      lacros_data_backward_migration_mode_policy_observer_;
 
   std::unique_ptr<VideoConferenceAppServiceClient> vc_app_service_client_;
   std::unique_ptr<VideoConferenceAshFeatureClient> vc_ash_feature_client_;
@@ -258,6 +261,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<cros_healthd::internal::DataCollector>
       cros_healthd_data_collector_;
+
+  std::unique_ptr<chromeos::MahiWebContentsManager> mahi_web_contents_manager_;
 
   // Set when PreProfileInit() is called. If PreMainMessageLoopRun() exits
   // early, this will be false during PostMainMessageLoopRun(), etc.
@@ -297,6 +302,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       video_conference_manager_client_;
 
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
+
+  std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

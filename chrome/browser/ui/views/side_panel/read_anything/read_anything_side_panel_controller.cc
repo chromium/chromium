@@ -27,7 +27,7 @@
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_types.h"
@@ -54,16 +54,17 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything)));
 
   auto side_panel_entry = std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kReadAnything,
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything),
       base::BindRepeating(&ReadAnythingSidePanelController::CreateContainerView,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      SidePanelEntry::kSidePanelDefaultContentWidth);
   side_panel_entry->AddObserver(this);
   side_panel_registry_->Register(std::move(side_panel_entry));
 
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(
       base::BindRepeating(&ReadAnythingSidePanelController::TabWillDetach,
                           weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&ReadAnythingSidePanelController::TabForegrounded,
                           weak_factory_.GetWeakPtr())));
   Observe(tab_->GetContents());
@@ -144,7 +145,8 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
 }
 
 std::unique_ptr<views::View>
-ReadAnythingSidePanelController::CreateContainerView() {
+ReadAnythingSidePanelController::CreateContainerView(
+    SidePanelEntryScope& scope) {
   // If there was an old WebView, clear the reference.
   if (web_view_) {
     web_view_->contents_wrapper()->web_contents()->RemoveUserData(
@@ -152,7 +154,7 @@ ReadAnythingSidePanelController::CreateContainerView() {
   }
 
   auto web_view = std::make_unique<ReadAnythingSidePanelWebView>(
-      tab_->GetBrowserWindowInterface()->GetProfile());
+      tab_->GetBrowserWindowInterface()->GetProfile(), scope);
 
   ReadAnythingSidePanelControllerGlue::CreateForWebContents(
       web_view->contents_wrapper()->web_contents(), this);
@@ -180,6 +182,12 @@ void ReadAnythingSidePanelController::TabForegrounded(tabs::TabInterface* tab) {
 void ReadAnythingSidePanelController::TabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
+  observers_.Notify(
+      &ReadAnythingSidePanelController::Observer::OnTabWillDetach);
+
+  if (!tab_->IsActivated()) {
+    return;
+  }
   auto* coordinator =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   // TODO(https://crbug.com/360163254): BrowserWithTestWindowTest currently does
@@ -191,7 +199,7 @@ void ReadAnythingSidePanelController::TabWillDetach(
   }
   if (coordinator->IsSidePanelEntryShowing(
           SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
-    coordinator->Close(/*suppress_animation=*/true);
+    coordinator->Close(/*suppress_animations=*/true);
   }
 }
 
@@ -210,25 +218,21 @@ void ReadAnythingSidePanelController::PrimaryPageChanged(content::Page& page) {
 }
 
 void ReadAnythingSidePanelController::UpdateIphVisibility() {
-  if (!tab_->IsInForeground()) {
+  if (!tab_->IsActivated()) {
     return;
   }
 
   bool should_show_iph = loading_ ? previous_page_distillable_ : distillable_;
 
   // Promo controller does not exist for incognito windows.
-  auto* promo_controller =
-      tab_->GetBrowserWindowInterface()->GetFeaturePromoController();
-  if (!promo_controller) {
-    return;
-  }
+  auto* const user_ed =
+      tab_->GetBrowserWindowInterface()->GetUserEducationInterface();
 
   if (should_show_iph) {
-    promo_controller->MaybeShowPromo(
+    user_ed->MaybeShowFeaturePromo(
         feature_engagement::kIPHReadingModeSidePanelFeature);
   } else {
-    promo_controller->EndPromo(
-        feature_engagement::kIPHReadingModeSidePanelFeature,
-        user_education::EndFeaturePromoReason::kAbortPromo);
+    user_ed->AbortFeaturePromo(
+        feature_engagement::kIPHReadingModeSidePanelFeature);
   }
 }

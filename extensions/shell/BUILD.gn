@@ -39,6 +39,7 @@ source_set("app_shell_lib") {
     "//apps",
     "//base",
     "//build:chromeos_buildflags",
+    "//components/embedder_support:user_agent",
     "//components/feedback",
     "//components/feedback/content:factory",
     "//components/guest_view/browser",
@@ -63,6 +64,9 @@ source_set("app_shell_lib") {
     "//extensions:extensions_resources",
     "//extensions:shell_and_test_pak",
     "//extensions/browser",
+    "//extensions/browser/api:extensions_api_client",
+    "//extensions/browser/api/system_display:display_info_provider",
+    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/kiosk",
     "//extensions/browser/updater",
     "//extensions/common",
@@ -176,7 +180,7 @@ source_set("app_shell_lib") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "browser/shell_audio_controller_chromeos.cc",
       "browser/shell_audio_controller_chromeos.h",
@@ -202,12 +206,12 @@ source_set("app_shell_lib") {
       "//ui/wm",
       "//ui/wm/public",
     ]
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//ui/ozone" ]
     }
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "browser/api/file_system/shell_file_system_delegate.cc",
       "browser/api/file_system/shell_file_system_delegate.h",
@@ -225,7 +229,7 @@ source_set("app_shell_lib") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "browser/shell_screen.cc",
       "browser/shell_screen.h",
@@ -246,9 +250,6 @@ source_set("app_shell_lib") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros/dbus" ]
-  }
   if (enable_nacl) {
     sources += [
       "browser/shell_nacl_browser_delegate.cc",
@@ -365,7 +366,7 @@ test("app_shell_unittests") {
     deps += [ "//chromeos/dbus/power" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "browser/shell_audio_controller_chromeos_unittest.cc",
       "browser/shell_screen_unittest.cc",
@@ -428,10 +429,6 @@ source_set("browser_tests") {
     "//ui/base",
   ]
 
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
-
   if (use_aura) {
     sources += [ "browser/shell_desktop_controller_aura_browsertest.cc" ]
     deps += [ "//ui/aura" ]
@@ -449,7 +446,7 @@ source_set("unit_tests") {
     "//extensions/browser",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//components/keyed_service/content" ]
   }
 }

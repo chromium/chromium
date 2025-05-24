@@ -99,39 +99,4 @@ base::Value ShareTarget::AsDebugValue() const {
   return base::Value(std::move(root));
 }
 
-bool operator==(const ShareTarget& share_target1,
-                const ShareTarget& share_target2) {
-  return std::tie(share_target1.action, share_target1.method,
-                  share_target1.enctype, share_target1.params) ==
-         std::tie(share_target2.action, share_target2.method,
-                  share_target2.enctype, share_target2.params);
-}
-
-bool operator==(const ShareTarget::Params& params1,
-                const ShareTarget::Params& params2) {
-  return std::tie(params1.title, params1.text, params1.url, params1.files) ==
-         std::tie(params2.title, params2.text, params2.url, params2.files);
-}
-
-bool operator==(const ShareTarget::Files& files1,
-                const ShareTarget::Files& files2) {
-  return std::tie(files1.name, files1.accept) ==
-         std::tie(files2.name, files2.accept);
-}
-
-bool operator!=(const ShareTarget& share_target1,
-                const ShareTarget& share_target2) {
-  return !(share_target1 == share_target2);
-}
-
-bool operator!=(const ShareTarget::Params& params1,
-                const ShareTarget::Params& params2) {
-  return !(params1 == params2);
-}
-
-bool operator!=(const ShareTarget::Files& files1,
-                const ShareTarget::Files& files2) {
-  return !(files1 == files2);
-}
-
 }  // namespace apps

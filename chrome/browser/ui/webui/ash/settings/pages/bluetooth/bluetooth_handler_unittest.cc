@@ -31,7 +31,7 @@ class TestBluetoothHandler : public BluetoothHandler {
 
 class BluetoothHandlerTest : public testing::Test {
  protected:
-  BluetoothHandlerTest() {}
+  BluetoothHandlerTest() = default;
   BluetoothHandlerTest(const BluetoothHandlerTest&) = delete;
   BluetoothHandlerTest& operator=(const BluetoothHandlerTest&) = delete;
   ~BluetoothHandlerTest() override = default;

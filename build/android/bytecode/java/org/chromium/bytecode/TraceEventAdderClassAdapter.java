@@ -4,7 +4,7 @@
 
 package org.chromium.bytecode;
 
-import static org.objectweb.asm.Opcodes.ASM7;
+import static org.objectweb.asm.Opcodes.ASM9;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -20,7 +20,7 @@ class TraceEventAdderClassAdapter extends ClassVisitor {
     private String mShortClassName;
 
     TraceEventAdderClassAdapter(ClassVisitor visitor, ArrayList<MethodDescription> methodsToTrace) {
-        super(ASM7, visitor);
+        super(ASM9, visitor);
         mMethodsToTrace = methodsToTrace;
     }
 

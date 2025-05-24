@@ -12,9 +12,9 @@
 #define _GNU_SOURCE
 #endif
 
-#include "base/process/set_process_title.h"
-
 #include <stddef.h>
+
+#include "base/process/set_process_title.h"
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_SOLARIS)
 #include <limits.h>
@@ -54,10 +54,12 @@ void SetProcessTitleFromCommandLine(const char** main_argv) {
   bool have_argv0 = false;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  DCHECK_EQ(base::PlatformThread::CurrentId(), getpid());
+  DCHECK_EQ(base::PlatformThread::CurrentId(),
+            base::PlatformThreadId(getpid()));
 
-  if (main_argv)
+  if (main_argv) {
     setproctitle_init(main_argv);
+  }
 
   // In Linux we sometimes exec ourselves from /proc/self/exe, but this makes us
   // show up as "exe" in process listings. Read the symlink /proc/self/exe and
@@ -71,8 +73,9 @@ void SetProcessTitleFromCommandLine(const char** main_argv) {
     // If the binary has since been deleted, Linux appends " (deleted)" to the
     // symlink target. Remove it, since this is not really part of our name.
     const std::string kDeletedSuffix = " (deleted)";
-    if (base::EndsWith(title, kDeletedSuffix, base::CompareCase::SENSITIVE))
+    if (base::EndsWith(title, kDeletedSuffix, base::CompareCase::SENSITIVE)) {
       title.resize(title.size() - kDeletedSuffix.size());
+    }
 
     base::FilePath::StringType base_name =
         base::FilePath(title).BaseName().value();
@@ -93,8 +96,9 @@ void SetProcessTitleFromCommandLine(const char** main_argv) {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   for (size_t i = 1; i < command_line->argv().size(); ++i) {
-    if (!title.empty())
+    if (!title.empty()) {
       title += " ";
+    }
     title += command_line->argv()[i];
   }
   // Disable prepending argv[0] with '-' if we prepended it ourselves above.

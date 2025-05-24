@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -225,6 +226,9 @@ constexpr char kFakeDataWithSixFiles[] = R"({
     }
   ]
 })";
+
+const char kBaseFileIconUrl[] =
+    "https://drive-thirdparty.googleusercontent.com/32/type/";
 }  // namespace
 
 // static
@@ -232,7 +236,7 @@ const char DriveService::kLastDismissedTimePrefName[] =
     "NewTabPage.Drive.LastDimissedTime";
 
 // static
-const base::TimeDelta DriveService::kDismissDuration = base::Days(14);
+const base::TimeDelta DriveService::kDismissDuration = base::Hours(12);
 
 DriveService::~DriveService() = default;
 
@@ -322,7 +326,10 @@ void DriveService::GetDriveFilesInternal() {
       base::BindOnce(&DriveService::OnTokenReceived,
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-      signin::ConsentLevel::kSync);
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpDriveModuleNoSyncRequirement)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync);
 }
 
 void DriveService::DismissModule() {
@@ -399,7 +406,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
                      token_info.token),
       kMaxResponseSize);
   base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
-                           base::PersistentHash("drive"));
+                           base::PersistentHash(ntp_modules::kDriveModuleId));
 }
 
 void DriveService::OnJsonReceived(const std::string& token,
@@ -488,10 +495,11 @@ void DriveService::OnJsonParsed(
     }
     auto mojo_drive_doc = file_suggestion::mojom::File::New();
     mojo_drive_doc->title = *title;
-    mojo_drive_doc->mime_type = *mime_type;
+    mojo_drive_doc->icon_url = GURL(kBaseFileIconUrl + *mime_type);
     mojo_drive_doc->justification_text = justification_text;
     mojo_drive_doc->id = *id;
     mojo_drive_doc->item_url = GURL(*item_url);
+    mojo_drive_doc->recommendation_type = std::nullopt;
     document_list.push_back(std::move(mojo_drive_doc));
   }
   base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",

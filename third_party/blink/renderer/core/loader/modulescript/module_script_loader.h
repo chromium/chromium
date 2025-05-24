@@ -77,7 +77,9 @@ class CORE_EXPORT ModuleScriptLoader final
                      ModuleGraphLevel,
                      ModuleScriptCustomFetchType);
 
-  void AdvanceState(State new_state);
+  void AdvanceState(
+      State new_state,
+      ModuleImportPhase import_phase = ModuleImportPhase::kEvaluation);
 
   using PassKey = base::PassKey<ModuleScriptLoader>;
   // PassKey should be private and cannot be accessed from outside, but allow

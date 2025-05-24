@@ -4,6 +4,7 @@
 
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.h"
 
+#include "build/build_config.h"
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_device_list_delegate.h"
 
 // Has device information to display it on a cell of UITableView.
@@ -62,9 +63,35 @@
   }
   _selectedRowIndex = -1;
   _listTitle = [title copy];
+#if BUILDFLAG(IS_IOS_TVOS)
+  // On tvOS, the modal view has transparent background by default.
+  // Set the background color so that the texts from the dialog don't overlap
+  // the web page.
+  self.view.backgroundColor = [UIColor systemGrayColor];
+#endif
+  self.tableView.bounces = NO;
+
+#if !BUILDFLAG(IS_IOS_TVOS)
+  // Add Up/Down swipe actions to close this modal dialog.
+  // On tvOS, do not add any specific actions to close the dialog since
+  // the dialog is closed with a back button from a remote controller and
+  // swipe actions are used for focus navigation.
+  UISwipeGestureRecognizer* swipeUpDown = [[UISwipeGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(recognizeSwipe:)];
+  [swipeUpDown setDirection:(UISwipeGestureRecognizerDirectionUp |
+                             UISwipeGestureRecognizerDirectionDown)];
+  [self.view addGestureRecognizer:swipeUpDown];
+#endif
 
   return self;
 }
+
+#if !BUILDFLAG(IS_IOS_TVOS)
+- (void)recognizeSwipe:(UITapGestureRecognizer*)gesture {
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+#endif
 
 - (NSString*)tableView:(UITableView*)tableView
     titleForHeaderInSection:(NSInteger)section {

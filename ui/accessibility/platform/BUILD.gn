@@ -31,9 +31,17 @@ component("platform") {
 
   defines = [ "IS_AX_PLATFORM_IMPL" ]
 
-  visibility = [ "//ui/accessibility" ]
+  visibility = [
+    "//chrome/browser/ui/webui/accessibility",
+    "//ui/accessibility",
+    "//ui/views:views",
+  ]
 
   sources = [
+    "assistive_tech.cc",
+    "assistive_tech.h",
+    "ax_mode_observer.cc",
+    "ax_mode_observer.h",
     "ax_node_id_delegate.h",
     "ax_platform.cc",
     "ax_platform.h",
@@ -76,6 +84,11 @@ component("platform") {
     "inspect/ax_tree_indexer.h",
   ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//ui/strings:auto_image_annotation_strings",
     "//ui/strings:ax_strings",
@@ -116,7 +129,7 @@ component("platform") {
     ]
   }
 
-  if (is_android || is_chromeos_ash) {
+  if (is_android || is_chromeos) {
     sources += [
       "ax_android_constants.cc",
       "ax_android_constants.h",
@@ -207,6 +220,7 @@ component("platform") {
         "browser_accessibility_manager_win.h",
         "browser_accessibility_win.cc",
         "browser_accessibility_win.h",
+        "iaccessible2/scoped_co_mem_array.cc",
         "iaccessible2/scoped_co_mem_array.h",
         "inspect/ax_call_statement_invoker_win.cc",
         "inspect/ax_call_statement_invoker_win.h",
@@ -273,6 +287,7 @@ component("platform") {
         "inspect/ax_tree_formatter_mac.h",
         "inspect/ax_tree_formatter_mac.mm",
         "inspect/ax_tree_indexer_mac.h",
+        "inspect/ax_tree_indexer_mac.mm",
       ]
 
       deps += [ "//ui/accelerated_widget_mac" ]
@@ -337,6 +352,7 @@ component("platform") {
 
       if (use_glib) {
         configs += [ "//build/config/linux:glib" ]
+        deps += [ "//ui/base/glib" ]
       }
       if (use_gio) {
         configs += [ "//build/linux:gio_config" ]

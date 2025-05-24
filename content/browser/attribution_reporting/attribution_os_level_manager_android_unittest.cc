@@ -45,6 +45,8 @@ class AttributionOsLevelManagerAndroidTest : public ::testing::Test {
   BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<AttributionOsLevelManager> manager_;
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_{
+      std::nullopt};
 };
 
 TEST_F(AttributionOsLevelManagerAndroidTest, GetMeasurementStatusTimeMetric) {

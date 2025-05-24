@@ -68,7 +68,7 @@ int WebFaviconDriver::DownloadImage(const GURL& url,
 
 void WebFaviconDriver::DownloadManifest(const GURL& url,
                                         ManifestDownloadCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool WebFaviconDriver::IsOffTheRecord() {
@@ -151,7 +151,5 @@ void WebFaviconDriver::SetFaviconStatus(
   NotifyFaviconUpdatedObservers(notification_icon_type, favicon_status.url,
                                 icon_url_changed, favicon_status.image);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(WebFaviconDriver)
 
 }  // namespace favicon

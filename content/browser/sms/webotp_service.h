@@ -37,6 +37,11 @@ class CONTENT_EXPORT WebOTPService
     : public DocumentService<blink::mojom::WebOTPService>,
       public SmsFetcher::Subscriber {
  public:
+  using FailureType = SmsFetchFailureType;
+  using OriginList = SmsFetcher::OriginList;
+  using SmsParsingStatus = SmsParser::SmsParsingStatus;
+  using UserConsent = SmsFetcher::UserConsent;
+
   // Return value indicates success. Creation can fail if origin requirements
   // are not met.
   static bool Create(SmsFetcher*,
@@ -52,10 +57,6 @@ class CONTENT_EXPORT WebOTPService
   WebOTPService& operator=(const WebOTPService&) = delete;
 
   ~WebOTPService() override;
-
-  using FailureType = SmsFetchFailureType;
-  using SmsParsingStatus = SmsParser::SmsParsingStatus;
-  using UserConsent = SmsFetcher::UserConsent;
 
   // content::DocumentService:
   void WillBeDestroyed(DocumentServiceDestructionReason) override;

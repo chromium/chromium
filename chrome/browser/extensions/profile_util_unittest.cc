@@ -7,12 +7,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/testing_profile.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using extensions::profile_util::ProfileCanUseNonComponentExtensions;
 
@@ -26,26 +25,26 @@ class ProfileUtilUnitTest : public ExtensionServiceUserTestBase {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileUtilUnitTest, ProfileCanUseNonComponentExtensions_RegularUser) {
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
       GetFakeUserManager()->AddUser(account_id_), account_id_));
 
-  EXPECT_TRUE(ProfileCanUseNonComponentExtensions(testing_profile()));
+  EXPECT_TRUE(ProfileCanUseNonComponentExtensions(profile()));
 }
 
 TEST_F(ProfileUtilUnitTest, ProfileCanUseNonComponentExtensions_ChildUser) {
   const user_manager::User* user =
       GetFakeUserManager()->AddChildUser(account_id_);
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(user, account_id_));
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(user, account_id_));
 
-  EXPECT_TRUE(ProfileCanUseNonComponentExtensions(testing_profile()));
+  EXPECT_TRUE(ProfileCanUseNonComponentExtensions(profile()));
 }
 
 TEST_F(ProfileUtilUnitTest, ProfileCannotUseNonComponentExtensions_GuestUser) {
   ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/true));
 
-  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(testing_profile()));
+  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(profile()));
 }
 
 // TODO(crbug.com/40878021): Test a signin, lockscreen, or lockscreen app
@@ -56,31 +55,31 @@ TEST_F(ProfileUtilUnitTest,
 
 TEST_F(ProfileUtilUnitTest,
        ProfileCannotUseNonComponentExtensions_KioskAppUser) {
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
       GetFakeUserManager()->AddKioskAppUser(account_id_), account_id_));
 
-  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(testing_profile()));
+  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(profile()));
 }
 
 TEST_F(ProfileUtilUnitTest,
        ProfileCannotUseNonComponentExtensions_WebKioskAppUser) {
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
       GetFakeUserManager()->AddWebKioskAppUser(account_id_), account_id_));
 
-  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(testing_profile()));
+  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(profile()));
 }
 
 TEST_F(ProfileUtilUnitTest, ProfileCannotUseNonComponentExtensions_PublicUser) {
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
       GetFakeUserManager()->AddPublicAccountUser(account_id_), account_id_));
 
-  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(testing_profile()));
+  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(profile()));
 }
 #else
 TEST_F(ProfileUtilUnitTest,
        ProfileCanUseNonComponentExtensions_RegularProfile) {
-  // testing_profile() defaults to a regular profile.
-  EXPECT_TRUE(ProfileCanUseNonComponentExtensions(testing_profile()));
+  // profile() defaults to a regular profile.
+  EXPECT_TRUE(ProfileCanUseNonComponentExtensions(profile()));
 }
 
 TEST_F(ProfileUtilUnitTest,
@@ -91,25 +90,17 @@ TEST_F(ProfileUtilUnitTest,
 TEST_F(ProfileUtilUnitTest,
        ProfileCannotUseNonComponentExtensions_GuestProfile) {
   ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/true));
-  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(testing_profile()));
+  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(profile()));
 }
 
 TEST_F(ProfileUtilUnitTest,
        Browser_ProfileCannotUseNonComponentExtensions_IncognitoProfile) {
-  TestingProfile* incognito_test_profile =
-      TestingProfile::Builder().BuildIncognito(testing_profile());
-  ASSERT_TRUE(incognito_test_profile);
+  auto* incognito_test_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(incognito_test_profile->IsIncognitoProfile());
   EXPECT_FALSE(ProfileCanUseNonComponentExtensions(incognito_test_profile));
 }
 
-TEST_F(ProfileUtilUnitTest,
-       Browser_ProfileCannotUseNonComponentExtensions_OTRProfile) {
-  TestingProfile* otr_test_profile =
-      TestingProfile::Builder().BuildOffTheRecord(
-          testing_profile(), Profile::OTRProfileID::CreateUniqueForTesting());
-  ASSERT_TRUE(otr_test_profile);
-  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(otr_test_profile));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

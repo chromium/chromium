@@ -7,8 +7,7 @@ package org.chromium.ui;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.IntDef;
 import androidx.core.graphics.Insets;
 import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
@@ -21,46 +20,58 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.base.ImmutableWeakReference;
 
-import java.util.ArrayList;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
- * The purpose of this class is to store the system window insets (OSK, status bar) for
- * later use.
+ * The purpose of this class is to store the system window insets (OSK, status bar) for later use.
  */
+@NullMarked
 public class InsetObserver implements OnApplyWindowInsetsListener {
     private final Rect mWindowInsets;
     private final Rect mCurrentSafeArea;
     private int mKeyboardInset;
+    private final Rect mSystemGestureInsets;
     protected final ObserverList<WindowInsetObserver> mObservers;
     private final KeyboardInsetObservableSupplier mKeyboardInsetSupplier;
     private final WindowInsetsAnimationCompat.Callback mWindowInsetsAnimationProxyCallback;
     private final ObserverList<WindowInsetsAnimationListener> mWindowInsetsAnimationListeners =
             new ObserverList<>();
-    private final List<WindowInsetsConsumer> mInsetsConsumers = new ArrayList<>();
+    private final @Nullable WindowInsetsConsumer[] mInsetsConsumers =
+            new WindowInsetsConsumer[InsetConsumerSource.COUNT];
+
     private final ImmutableWeakReference<View> mRootViewReference;
     // Insets to be added to the current safe area.
     private int mBottomInsetsForEdgeToEdge;
     private final Rect mDisplayCutoutRect;
 
     // Cached state
-    private WindowInsetsCompat mLastSeenRawWindowInset;
+    private @Nullable WindowInsetsCompat mLastSeenRawWindowInset;
     private static @Nullable WindowInsetsCompat sInitialRawWindowInsetsForTesting;
 
     /** Allows observing changes to the window insets from Android system UI. */
     public interface WindowInsetObserver {
         /**
-         * Triggered when the window insets have changed.
-         *
-         * @param left The left inset.
-         * @param top The top inset.
-         * @param right The right inset (but it feels so wrong).
-         * @param bottom The bottom inset.
+         * Triggered when the window insets for the system bars have changed, after all consumers
+         * has consumed the corresponding insets during {@link #onApplyWindowInsets}.
          */
-        default void onInsetChanged(int left, int top, int right, int bottom) {}
+        default void onInsetChanged() {}
 
+        default void onSystemGestureInsetsChanged(int left, int top, int right, int bottom) {}
+
+        /**
+         * Called when the keyboard inset changes. Note that the keyboard inset passed to this
+         * method does not take inset consumption into account so this value represents the raw IME
+         * inset received from the system.
+         *
+         * @param inset The raw, non-consumed keyboard inset.
+         */
         default void onKeyboardInsetChanged(int inset) {}
 
         /** Called when a new Display Cutout safe area is applied. */
@@ -68,7 +79,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     }
 
     /**
-     * Alias for {@link  androidx.core.view.OnApplyWindowInsetsListener} to emphasize that an
+     * Alias for {@link androidx.core.view.OnApplyWindowInsetsListener} to emphasize that an
      * implementing class expects to consume insets, not just observe them. "Consuming" means "my
      * view/component will adjust its size to account for the space required by the inset." For
      * instance, the omnibox could "consume" the IME (keyboard) inset by adjusting the height of its
@@ -77,27 +88,59 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * enable custom behavior, e.g. you want to shield a specific view from inset changes by
      * consuming them elsewhere.
      */
-    public interface WindowInsetsConsumer extends androidx.core.view.OnApplyWindowInsetsListener {}
+    public interface WindowInsetsConsumer extends androidx.core.view.OnApplyWindowInsetsListener {
+
+        // Consumers will be given the opportunity to process applied insets based on the priority
+        // defined here. A lower value of the consumer source means that insets will be forwarded to
+        // this consumer before others with a higher value. Be cautious about impact on existing
+        // consumers in case a reordering is required while adding a new consumer source.
+        @IntDef({
+            InsetConsumerSource.TEST_SOURCE,
+            InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK,
+            InsetConsumerSource.APP_HEADER_COORDINATOR_CAPTION,
+            InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL,
+            InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR,
+            InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM,
+            InsetConsumerSource.COUNT
+        })
+        @Retention(RetentionPolicy.SOURCE)
+        @interface InsetConsumerSource {
+            // For testing only.
+            int TEST_SOURCE = 0;
+
+            int DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK = 1;
+            // The AppHeaderCoordinator should get highest priority to process and potentially
+            // consume caption bar insets (and overlapping status bar insets) because this is
+            // critical to drawing the tab strip in the caption bar area in a desktop window
+            // correctly.
+            int APP_HEADER_COORDINATOR_CAPTION = 2;
+            int EDGE_TO_EDGE_CONTROLLER_IMPL = 3;
+            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 4;
+            int APP_HEADER_COORDINATOR_BOTTOM = 5;
+
+            // Update this whenever a consumer source is added or removed.
+            int COUNT = 6;
+        }
+    }
 
     /**
-     * Interface equivalent of {@link  WindowInsetsAnimationCompat.Callback}. This allows
+     * Interface equivalent of {@link WindowInsetsAnimationCompat.Callback}. This allows
      * implementers to be notified of inset animation progress, enabling synchronization of browser
      * UI changes with system inset changes. This synchronization is potentially imperfect on API
      * level <30. Note that the interface version currently disallows modification of the insets
      * dispatched to the subtree. See {@link WindowInsetsAnimationCompat.Callback} for more.
      */
     public interface WindowInsetsAnimationListener {
-        void onPrepare(@NonNull WindowInsetsAnimationCompat animation);
+        void onPrepare(WindowInsetsAnimationCompat animation);
 
         void onStart(
-                @NonNull WindowInsetsAnimationCompat animation,
-                @NonNull WindowInsetsAnimationCompat.BoundsCompat bounds);
+                WindowInsetsAnimationCompat animation,
+                WindowInsetsAnimationCompat.BoundsCompat bounds);
 
         void onProgress(
-                @NonNull WindowInsetsCompat windowInsetsCompat,
-                @NonNull List<WindowInsetsAnimationCompat> list);
+                WindowInsetsCompat windowInsetsCompat, List<WindowInsetsAnimationCompat> list);
 
-        void onEnd(@NonNull WindowInsetsAnimationCompat animation);
+        void onEnd(WindowInsetsAnimationCompat animation);
     }
 
     private static class KeyboardInsetObservableSupplier extends ObservableSupplierImpl<Integer>
@@ -119,6 +162,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         mCurrentSafeArea = new Rect();
         mDisplayCutoutRect = new Rect();
         mKeyboardInset = 0;
+        mSystemGestureInsets = new Rect();
         mObservers = new ObserverList<>();
         mKeyboardInsetSupplier = new KeyboardInsetObservableSupplier();
         addObserver(mKeyboardInsetSupplier);
@@ -126,7 +170,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
                 new WindowInsetsAnimationCompat.Callback(
                         WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP) {
                     @Override
-                    public void onPrepare(@NonNull WindowInsetsAnimationCompat animation) {
+                    public void onPrepare(WindowInsetsAnimationCompat animation) {
                         for (WindowInsetsAnimationListener listener :
                                 mWindowInsetsAnimationListeners) {
                             listener.onPrepare(animation);
@@ -134,11 +178,9 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
                         super.onPrepare(animation);
                     }
 
-                    @NonNull
                     @Override
                     public BoundsCompat onStart(
-                            @NonNull WindowInsetsAnimationCompat animation,
-                            @NonNull BoundsCompat bounds) {
+                            WindowInsetsAnimationCompat animation, BoundsCompat bounds) {
                         for (WindowInsetsAnimationListener listener :
                                 mWindowInsetsAnimationListeners) {
                             listener.onStart(animation, bounds);
@@ -147,7 +189,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
                     }
 
                     @Override
-                    public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
+                    public void onEnd(WindowInsetsAnimationCompat animation) {
                         for (WindowInsetsAnimationListener listener :
                                 mWindowInsetsAnimationListeners) {
                             listener.onEnd(animation);
@@ -155,11 +197,10 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
                         super.onEnd(animation);
                     }
 
-                    @NonNull
                     @Override
                     public WindowInsetsCompat onProgress(
-                            @NonNull WindowInsetsCompat windowInsetsCompat,
-                            @NonNull List<WindowInsetsAnimationCompat> list) {
+                            WindowInsetsCompat windowInsetsCompat,
+                            List<WindowInsetsAnimationCompat> list) {
                         for (WindowInsetsAnimationListener listener :
                                 mWindowInsetsAnimationListeners) {
                             listener.onProgress(windowInsetsCompat, list);
@@ -192,26 +233,45 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     }
 
     /**
-     * Add a consumer of window insets. Consumers are given the opportunity to consume insets in
-     * the order they're added.
+     * Add a consumer of window insets. Consumers are given the opportunity to consume insets in the
+     * order of a pre-defined priority value.
      */
-    public void addInsetsConsumer(@NonNull WindowInsetsConsumer insetConsumer) {
-        mInsetsConsumers.add(insetConsumer);
+    public void addInsetsConsumer(
+            WindowInsetsConsumer insetConsumer, @InsetConsumerSource int source) {
+        assert mInsetsConsumers[source] == null : "Inset consumer source has already been added.";
+        mInsetsConsumers[source] = insetConsumer;
     }
 
-    /** Remove a consumer of window insets.*/
-    public void removeInsetsConsumer(@NonNull WindowInsetsConsumer insetConsumer) {
-        mInsetsConsumers.remove(insetConsumer);
+    /** Remove a consumer of window insets. */
+    public void removeInsetsConsumer(WindowInsetsConsumer insetConsumer) {
+        for (int i = 0; i < mInsetsConsumers.length; i++) {
+            if (mInsetsConsumers[i] == insetConsumer) {
+                mInsetsConsumers[i] = null;
+                return;
+            }
+        }
+    }
+
+    /**
+     * Call {@link #onApplyWindowInsets(View, WindowInsetsCompat)} with the last seen raw window
+     * insets, if {@link #getLastRawWindowInsets()} is not null.
+     *
+     * <p>WARNING: This is used when an inset consumer is added / removed after the initial insets
+     * are populated. The added / removed inset consumer may change the consumed inset for the
+     * following consumer and observers.
+     */
+    public void retriggerOnApplyWindowInsets() {
+        if (mLastSeenRawWindowInset == null || mRootViewReference.get() == null) return;
+        onApplyWindowInsets(mRootViewReference.get(), mLastSeenRawWindowInset);
     }
 
     /** Add a listener for inset animations. */
-    public void addWindowInsetsAnimationListener(@NonNull WindowInsetsAnimationListener listener) {
+    public void addWindowInsetsAnimationListener(WindowInsetsAnimationListener listener) {
         mWindowInsetsAnimationListeners.addObserver(listener);
     }
 
     /** Remove a listener for inset animations. */
-    public void removeWindowInsetsAnimationListener(
-            @NonNull WindowInsetsAnimationListener listener) {
+    public void removeWindowInsetsAnimationListener(WindowInsetsAnimationListener listener) {
         mWindowInsetsAnimationListeners.removeObserver(listener);
     }
 
@@ -231,8 +291,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * This should only be used for clients interested in reading a specific type of the insets;
      * otherwise, the client should be registered as a {@link WindowInsetsConsumer}.
      */
-    @Nullable
-    public WindowInsetsCompat getLastRawWindowInsets() {
+    public @Nullable WindowInsetsCompat getLastRawWindowInsets() {
         return mLastSeenRawWindowInset;
     }
 
@@ -248,10 +307,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         return mWindowInsetsAnimationProxyCallback;
     }
 
-    @NonNull
     @Override
-    public WindowInsetsCompat onApplyWindowInsets(
-            @NonNull View view, @NonNull WindowInsetsCompat insets) {
+    public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
         mLastSeenRawWindowInset = insets;
 
         updateDisplayCutoutRect(insets);
@@ -261,6 +318,12 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
         onInsetChanged(
                 systemInsets.left, systemInsets.top, systemInsets.right, systemInsets.bottom);
+        Insets systemGestureInsets = insets.getInsets(WindowInsetsCompat.Type.systemGestures());
+        onSystemGestureInsetsChanged(
+                systemGestureInsets.left,
+                systemGestureInsets.top,
+                systemGestureInsets.right,
+                systemGestureInsets.bottom);
         insets =
                 WindowInsetsCompat.toWindowInsetsCompat(
                         view.onApplyWindowInsets(insets.toWindowInsets()));
@@ -276,17 +339,30 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * @param bottom The updated bottom inset.
      */
     private void onInsetChanged(int left, int top, int right, int bottom) {
-        if (mWindowInsets.left == left
-                && mWindowInsets.top == top
-                && mWindowInsets.right == right
-                && mWindowInsets.bottom == bottom) {
+        if (mWindowInsets.left != left
+                || mWindowInsets.top != top
+                || mWindowInsets.right != right
+                || mWindowInsets.bottom != bottom) {
+            mWindowInsets.set(left, top, right, bottom);
+        }
+
+        for (WindowInsetObserver observer : mObservers) {
+            observer.onInsetChanged();
+        }
+    }
+
+    private void onSystemGestureInsetsChanged(int left, int top, int right, int bottom) {
+        if (mSystemGestureInsets.left == left
+                && mSystemGestureInsets.top == top
+                && mSystemGestureInsets.right == right
+                && mSystemGestureInsets.bottom == bottom) {
             return;
         }
 
-        mWindowInsets.set(left, top, right, bottom);
+        mSystemGestureInsets.set(left, top, right, bottom);
 
         for (WindowInsetObserver observer : mObservers) {
-            observer.onInsetChanged(left, top, right, bottom);
+            observer.onSystemGestureInsetsChanged(left, top, right, bottom);
         }
     }
 
@@ -312,18 +388,26 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         if (rootView == null) return insets;
 
         for (WindowInsetsConsumer consumer : mInsetsConsumers) {
+            if (consumer == null) continue;
             insets = consumer.onApplyWindowInsets(rootView, insets);
         }
         return insets;
     }
 
-    /**
-     * Get the safe area from the WindowInsets, store it and notify any observers.
-     *
-     * @param insets The WindowInsets containing the safe area.
-     */
+    /** Get the safe area from the WindowInsets, store it and notify any observers. */
     private void updateCurrentSafeArea() {
-        Rect newSafeArea = new Rect(mDisplayCutoutRect);
+        // When display cutout already included in the system bar insets, do not consider it as safe
+        // area.
+        Insets systemBarInsets =
+                getLastRawWindowInsets() == null
+                        ? Insets.NONE
+                        : getLastRawWindowInsets().getInsets(WindowInsetsCompat.Type.systemBars());
+        Rect newSafeArea =
+                new Rect(
+                        Math.max(0, mDisplayCutoutRect.left - systemBarInsets.left),
+                        Math.max(0, mDisplayCutoutRect.top - systemBarInsets.top),
+                        Math.max(0, mDisplayCutoutRect.right - systemBarInsets.right),
+                        Math.max(0, mDisplayCutoutRect.bottom - systemBarInsets.bottom));
         newSafeArea.bottom += mBottomInsetsForEdgeToEdge;
         // If the safe area has not changed then we should stop now.
         if (newSafeArea.equals(mCurrentSafeArea)) {
@@ -372,7 +456,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         ResettersForTesting.register(() -> sInitialRawWindowInsetsForTesting = null);
     }
 
-    private View getRootView() {
+    private @Nullable View getRootView() {
         return mRootViewReference.get();
     }
 }

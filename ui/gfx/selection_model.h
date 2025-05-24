@@ -6,12 +6,12 @@
 #define UI_GFX_SELECTION_MODEL_H_
 
 #include <stddef.h>
-#include <vector>
 
 #include <iosfwd>
 #include <string>
+#include <vector>
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/range/range.h"
 
 namespace gfx {
@@ -62,7 +62,7 @@ enum LogicalCursorDirection {
 // is given by a "caret affinity" which is either CURSOR_BACKWARD (indicating
 // the trailing half of the 'c' in this case) or CURSOR_FORWARD (indicating
 // the leading half of the 'D').
-class GFX_EXPORT SelectionModel {
+class COMPONENT_EXPORT(GFX) SelectionModel {
  public:
   // Create a default SelectionModel to be overwritten later.
   SelectionModel();
@@ -98,8 +98,8 @@ class GFX_EXPORT SelectionModel {
   // considering the effect on the caret affinity.
   void set_selection_start(uint32_t pos) { selection_.set_start(pos); }
 
-  bool operator==(const SelectionModel& sel) const;
-  bool operator!=(const SelectionModel& sel) const { return !(*this == sel); }
+  friend bool operator==(const SelectionModel&,
+                         const SelectionModel&) = default;
 
   std::string ToString() const;
 
@@ -128,8 +128,8 @@ class GFX_EXPORT SelectionModel {
   LogicalCursorDirection caret_affinity_;
 };
 
-GFX_EXPORT std::ostream& operator<<(std::ostream& out,
-                                    const SelectionModel& model);
+COMPONENT_EXPORT(GFX)
+std::ostream& operator<<(std::ostream& out, const SelectionModel& model);
 
 }  // namespace gfx
 

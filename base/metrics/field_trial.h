@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // The FieldTrial class handles the lower level configuration of running A/B
 // tests.
 //
@@ -87,6 +82,7 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -189,10 +185,10 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
 
     // Return a pointer to the data area immediately following the entry.
     uint8_t* GetPickledDataPtr() {
-      return reinterpret_cast<uint8_t*>(this + 1);
+      return UNSAFE_TODO(reinterpret_cast<uint8_t*>(this + 1));
     }
     const uint8_t* GetPickledDataPtr() const {
-      return reinterpret_cast<const uint8_t*>(this + 1);
+      return UNSAFE_TODO(reinterpret_cast<const uint8_t*>(this + 1));
     }
 
     // Whether or not this field trial is activated. This is really just a
@@ -259,7 +255,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   void AppendGroup(const std::string& name, Probability group_probability);
 
   // Return the name of the FieldTrial (excluding the group name).
-  const std::string& trial_name() const { return trial_name_; }
+  const std::string& trial_name() const LIFETIME_BOUND { return trial_name_; }
 
   // Finalizes the group assignment and notifies any/all observers. This is a
   // no-op if the trial is already active. Note this will force an instance to
@@ -269,12 +265,12 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
 
   // If the group's name is empty, a string version containing the group number
   // is used as the group name. This causes a winner to be chosen if none was.
-  const std::string& group_name();
+  const std::string& group_name() LIFETIME_BOUND;
 
   // Finalizes the group choice and returns the chosen group, but does not mark
   // the trial as active - so its state will not be reported until group_name()
   // or similar is called.
-  const std::string& GetGroupNameWithoutActivation();
+  const std::string& GetGroupNameWithoutActivation() LIFETIME_BOUND;
 
   // Set the field trial as forced, meaning that it was setup earlier than
   // the hard coded registration of the field trial to override it.
@@ -409,7 +405,9 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   void GetStateWhileLocked(PickleState* field_trial_state);
 
   // Returns the group_name. A winner need not have been chosen.
-  const std::string& group_name_internal() const { return group_name_; }
+  const std::string& group_name_internal() const LIFETIME_BOUND {
+    return group_name_;
+  }
 
   // The name of the field trial, as can be found via the FieldTrialList.
   const std::string trial_name_;
@@ -800,7 +798,9 @@ class BASE_EXPORT FieldTrialList {
   static void ActivateFieldTrialEntryWhileLocked(FieldTrial* field_trial);
 
   // A map from FieldTrial names to the actual instances.
-  typedef std::map<std::string, FieldTrial*, std::less<>> RegistrationMap;
+  typedef std::
+      map<std::string, raw_ptr<FieldTrial, CtnExperimental>, std::less<>>
+          RegistrationMap;
 
   // Helper function should be called only while holding lock_.
   FieldTrial* PreLockedFind(std::string_view name)

@@ -16,9 +16,25 @@ const char kExternalStorageDisabled[] = "hardware.external_storage_disabled";
 // storage to read-only mode for the user.
 const char kExternalStorageReadOnly[] = "hardware.external_storage_read_only";
 
+// A list of VID:PID pairs which specify USB mass storage devices which are
+// exempt from `kExternalStorageDisabled` and `kExternalStorageReadOnly`.
+// Example content:
+// [
+//   {
+//     "vendor_id": 0x1234,
+//     "product_id": 0x5678
+//   },
+//   {
+//     "vendor_id": 0x9abc,
+//     "product_id": 0xdef0
+//   }
+// ]
+const char kExternalStorageAllowlist[] = "hardware.external_storage_allowlist";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kExternalStorageDisabled, false);
   registry->RegisterBooleanPref(kExternalStorageReadOnly, false);
+  registry->RegisterListPref(kExternalStorageAllowlist);
 }
 
 }  // namespace disks::prefs

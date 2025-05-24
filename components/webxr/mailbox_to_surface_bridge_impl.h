@@ -47,20 +47,10 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
 
   bool IsConnected() override;
 
-  bool IsGpuWorkaroundEnabled(int32_t workaround) override;
-
-  void CreateSurface(gl::SurfaceTexture*) override;
-
   void CreateAndBindContextProvider(base::OnceClosure callback) override;
 
   // All other public methods below must be called on the GL thread
   // (except when marked otherwise).
-
-  void ResizeSurface(int width, int height) override;
-
-  bool CopyMailboxToSurfaceAndSwap(const gpu::MailboxHolder& mailbox,
-                                   const gfx::Transform& uv_transform) override;
-
   void GenSyncToken(gpu::SyncToken* out_sync_token) override;
 
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
@@ -87,31 +77,14 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
   void BindContextProviderToCurrentThread();
   void OnContextAvailableOnUiThread(
       scoped_refptr<viz::ContextProvider> provider);
-  void InitializeRenderer();
-  void DestroyContext();
-  void DrawQuad(unsigned int textureHandle, const gfx::Transform& uv_transform);
 
   scoped_refptr<viz::ContextProvider> context_provider_;
   raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
   raw_ptr<gpu::ContextSupport> context_support_ = nullptr;
-  int surface_handle_ = gpu::kNullSurfaceHandle;
+
   // TODO(crbug.com/41385307): shouldn't have both of these closures
   // in the same class like this.
   base::OnceClosure on_context_bound_;
-
-  // Only initialized if we have Surface (i.e surface_handle_ is not null).
-  int surface_width_ = 0;
-  int surface_height_ = 0;
-
-  // If true, surface width/height is the intended size that should be applied
-  // to the surface once it's ready for use.
-  bool needs_resize_ = false;
-
-  // A swap ID which is passed to GL swap. Incremented each call.
-  uint64_t swap_id_ = 0;
-
-  // Uniform handle for the UV transform used by DrawQuad.
-  uint32_t uniform_uv_transform_handle_ = 0;
 
   // A task runner for the GL thread
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;

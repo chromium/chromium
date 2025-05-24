@@ -1,0 +1,1040 @@
+{
+  "comments": false,
+  "dataAttributes": false,
+  "elements": [
+    "a",
+    "abbr",
+    "acronym",
+    "address",
+    "area",
+    "article",
+    "aside",
+    "audio",
+    "b",
+    "basefont",
+    "bdi",
+    "bdo",
+    "bgsound",
+    "big",
+    "blockquote",
+    "body",
+    "br",
+    "button",
+    "canvas",
+    "caption",
+    "center",
+    "cite",
+    "code",
+    "col",
+    "colgroup",
+    "command",
+    "data",
+    "datalist",
+    "dd",
+    "del",
+    "details",
+    "dfn",
+    "dir",
+    "dialog",
+    "div",
+    "dl",
+    "dt",
+    "em",
+    "fencedframe",
+    "fieldset",
+    "figcaption",
+    "figure",
+    "font",
+    "footer",
+    "form",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "head",
+    "header",
+    "hgroup",
+    "hr",
+    "html",
+    "i",
+    "image",
+    "img",
+    "input",
+    "ins",
+    "kbd",
+    "keygen",
+    "label",
+    "layer",
+    "legend",
+    "li",
+    "link",
+    "listing",
+    "main",
+    "map",
+    "mark",
+    "marquee",
+    "menu",
+    "meta",
+    "meter",
+    "nav",
+    "nobr",
+    "ol",
+    "optgroup",
+    "option",
+    "output",
+    "p",
+    "permission",
+    "picture",
+    "plaintext",
+    "pre",
+    "progress",
+    "q",
+    "rb",
+    "rp",
+    "rt",
+    "rtc",
+    "ruby",
+    "s",
+    "samp",
+    "search",
+    "section",
+    "select",
+    "slot",
+    "small",
+    "source",
+    "span",
+    "strike",
+    "strong",
+    "style",
+    "sub",
+    "summary",
+    "sup",
+    "table",
+    "tbody",
+    "td",
+    "template",
+    "textarea",
+    "tfoot",
+    "th",
+    "thead",
+    "time",
+    "title",
+    "tr",
+    "track",
+    "tt",
+    "u",
+    "ul",
+    "var",
+    "video",
+    "wbr",
+    "xmp",
+    "noscript",
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "annotation"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "annotation-xml"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "maction"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "malignmark"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "math"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mroot"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "msqrt"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "merror"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mfrac"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mglyph"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "msub"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "msup"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "msubsup"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mmultiscripts"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mprescripts"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mi"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mn"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mo"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mpadded"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mphantom"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mrow"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "ms"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mspace"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mstyle"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mtable"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mtd"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mtr"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mtext"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "mover"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "munder"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "munderover"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "semantics"
+    },
+    {
+      "namespace": "http://www.w3.org/1998/Math/MathML",
+      "name": "none"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "a"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "animate"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "animateColor"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "animateMotion"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "animateTransform"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "set"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "circle"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "clipPath"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "defs"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "desc"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "ellipse"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feBlend"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feColorMatrix"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feComponentTransfer"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feComposite"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feConvolveMatrix"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feDiffuseLighting"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feDisplacementMap"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feDistantLight"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feDropShadow"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feFlood"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feFuncA"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feFuncB"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feFuncG"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feFuncR"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feGaussianBlur"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feImage"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feMerge"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feMergeNode"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feMorphology"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feOffset"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "fePointLight"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feSpecularLighting"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feSpotLight"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feTile"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "feTurbulence"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "filter"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "foreignObject"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "g"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "image"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "line"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "linearGradient"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "marker"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "mask"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "metadata"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "mpath"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "path"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "pattern"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "polygon"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "polyline"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "radialGradient"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "rect"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "stop"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "style"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "svg"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "switch"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "symbol"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "text"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "textPath"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "title"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "tspan"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "use"
+    },
+    {
+      "namespace": "http://www.w3.org/2000/svg",
+      "name": "view"
+    }
+  ],
+  "attributes": [
+    "abbr",
+    "accent",
+    "accentunder",
+    "accept",
+    "accept-charset",
+    "accesskey",
+    "accumulate",
+    "action",
+    "adauctionheaders",
+    "additive",
+    "align",
+    "alignment-baseline",
+    "alink",
+    "allow",
+    "allowfullscreen",
+    "allowpaymentrequest",
+    "alt",
+    "amplitude",
+    "anchor",
+    "animate",
+    "archive",
+    "aria-activedescendant",
+    "aria-atomic",
+    "aria-autocomplete",
+    "aria-braillelabel",
+    "aria-brailleroledescription",
+    "aria-busy",
+    "aria-checked",
+    "aria-colcount",
+    "aria-colindex",
+    "aria-colindextext",
+    "aria-colspan",
+    "aria-controls",
+    "aria-current",
+    "aria-describedby",
+    "aria-description",
+    "aria-details",
+    "aria-disabled",
+    "aria-errormessage",
+    "aria-expanded",
+    "aria-flowto",
+    "aria-haspopup",
+    "aria-hidden",
+    "aria-invalid",
+    "aria-keyshortcuts",
+    "aria-label",
+    "aria-labeledby",
+    "aria-labelledby",
+    "aria-level",
+    "aria-live",
+    "aria-modal",
+    "aria-multiline",
+    "aria-multiselectable",
+    "aria-orientation",
+    "aria-owns",
+    "aria-placeholder",
+    "aria-posinset",
+    "aria-pressed",
+    "aria-readonly",
+    "aria-relevant",
+    "aria-required",
+    "aria-roledescription",
+    "aria-rowcount",
+    "aria-rowindex",
+    "aria-rowindextext",
+    "aria-rowspan",
+    "aria-selected",
+    "aria-setsize",
+    "aria-sort",
+    "aria-valuemax",
+    "aria-valuemin",
+    "aria-valuenow",
+    "aria-valuetext",
+    "aria-virtualcontent",
+    "as",
+    "async",
+    "attributeName",
+    "attributeType",
+    "attributionsrc",
+    "autocapitalize",
+    "autocomplete",
+    "autocorrect",
+    "autofocus",
+    "autoplay",
+    "axis",
+    "azimuth",
+    "background",
+    "baseFrequency",
+    "baseProfile",
+    "baseline-shift",
+    "begin",
+    "behavior",
+    "bgcolor",
+    "bias",
+    "blocking",
+    "border",
+    "bordercolor",
+    "browsingtopics",
+    "buffered-rendering",
+    "by",
+    "calcMode",
+    "capture",
+    "cellpadding",
+    "cellspacing",
+    "challenge",
+    "char",
+    "charoff",
+    "charset",
+    "checked",
+    "cite",
+    "class",
+    "classid",
+    "clear",
+    "clip",
+    "clip-path",
+    "clip-rule",
+    "clipPathUnits",
+    "code",
+    "codebase",
+    "codetype",
+    "color",
+    "color-interpolation",
+    "color-interpolation-filters",
+    "color-rendering",
+    "cols",
+    "colspan",
+    "columnspan",
+    "command",
+    "commandfor",
+    "compact",
+    "content",
+    "contenteditable",
+    "controls",
+    "controlslist",
+    "coords",
+    "credentialless",
+    "crossorigin",
+    "csp",
+    "cursor",
+    "cx",
+    "cy",
+    "d",
+    "data",
+    "data-src",
+    "datetime",
+    "declare",
+    "decoding",
+    "default",
+    "defer",
+    "definitionURL",
+    "delegatesfocus",
+    "depth",
+    "diffuseConstant",
+    "dir",
+    "direction",
+    "dirname",
+    "disabled",
+    "disablepictureinpicture",
+    "disableremoteplayback",
+    "display",
+    "displaystyle",
+    "divisor",
+    "dominant-baseline",
+    "download",
+    "draggable",
+    "dur",
+    "dx",
+    "dy",
+    "edgeMode",
+    "elementtiming",
+    "elevation",
+    "encoding",
+    "enctype",
+    "end",
+    "enterkeyhint",
+    "event",
+    "exponent",
+    "exportparts",
+    "face",
+    "fetchpriority",
+    "fill",
+    "fill-opacity",
+    "fill-rule",
+    "filter",
+    "filterUnits",
+    "flood-color",
+    "flood-opacity",
+    "focusgroup",
+    "font-family",
+    "font-size",
+    "font-size-adjust",
+    "font-stretch",
+    "font-style",
+    "font-variant",
+    "font-weight",
+    "for",
+    "form",
+    "formaction",
+    "format",
+    "formenctype",
+    "formmethod",
+    "formnovalidate",
+    "formtarget",
+    "fr",
+    "frame",
+    "frameborder",
+    "from",
+    "fx",
+    "fy",
+    "g1",
+    "g2",
+    "glyphRef",
+    "gradientTransform",
+    "gradientUnits",
+    "headers",
+    "height",
+    "hidden",
+    "high",
+    "href",
+    "hreflang",
+    "hreftranslate",
+    "hspace",
+    "http-equiv",
+    "id",
+    "image-rendering",
+    "imagesizes",
+    "imagesrcset",
+    "in",
+    "in2",
+    "incremental",
+    "inert",
+    "inputmode",
+    "integrity",
+    "intercept",
+    "interestaction",
+    "interesttarget",
+    "invisible",
+    "is",
+    "ismap",
+    "itemprop",
+    "k",
+    "k1",
+    "k2",
+    "k3",
+    "k4",
+    "kernelMatrix",
+    "kernelUnitLength",
+    "keyPoints",
+    "keySplines",
+    "keyTimes",
+    "keytype",
+    "kind",
+    "label",
+    "lang",
+    "language",
+    "largeop",
+    "latencyhint",
+    "leftmargin",
+    "lengthAdjust",
+    "letter-spacing",
+    "lighting-color",
+    "limitingConeAngle",
+    "linethickness",
+    "link",
+    "list",
+    "loading",
+    "local",
+    "longdesc",
+    "loop",
+    "low",
+    "lowsrc",
+    "lspace",
+    "manifest",
+    "marginheight",
+    "marginwidth",
+    "marker-end",
+    "marker-mid",
+    "marker-start",
+    "markerHeight",
+    "markerUnits",
+    "markerWidth",
+    "mask",
+    "mask-type",
+    "maskContentUnits",
+    "maskUnits",
+    "mathbackground",
+    "mathcolor",
+    "mathsize",
+    "mathvariant",
+    "max",
+    "maxlength",
+    "maxsize",
+    "mayscript",
+    "media",
+    "method",
+    "min",
+    "minlength",
+    "minsize",
+    "mode",
+    "movablelimits",
+    "multiple",
+    "muted",
+    "name",
+    "nohref",
+    "nomodule",
+    "nonce",
+    "noresize",
+    "noshade",
+    "novalidate",
+    "nowrap",
+    "numOctaves",
+    "object",
+    "offset",
+    "opacity",
+    "open",
+    "operator",
+    "optimum",
+    "order",
+    "orient",
+    "origin",
+    "overflow",
+    "paint-order",
+    "parseparts",
+    "part",
+    "path",
+    "pathLength",
+    "pattern",
+    "patternContentUnits",
+    "patternTransform",
+    "patternUnits",
+    "ping",
+    "placeholder",
+    "playsinline",
+    "pointer-events",
+    "points",
+    "pointsAtX",
+    "pointsAtY",
+    "pointsAtZ",
+    "policy",
+    "popover",
+    "popovertarget",
+    "popovertargetaction",
+    "poster",
+    "preload",
+    "preserveAlpha",
+    "preserveAspectRatio",
+    "primitiveUnits",
+    "privatetoken",
+    "property",
+    "pseudo",
+    "r",
+    "radius",
+    "readonly",
+    "refX",
+    "refY",
+    "referrerpolicy",
+    "rel",
+    "repeatCount",
+    "repeatDur",
+    "required",
+    "requiredExtensions",
+    "requiredFeatures",
+    "restart",
+    "result",
+    "rev",
+    "reversed",
+    "role",
+    "rotate",
+    "rows",
+    "rowspan",
+    "rspace",
+    "rules",
+    "rx",
+    "ry",
+    "sandbox",
+    "scale",
+    "scheme",
+    "scope",
+    "scriptlevel",
+    "scrollamount",
+    "scrolldelay",
+    "scrolling",
+    "seed",
+    "select",
+    "selected",
+    "shadowroot",
+    "shadowrootclonable",
+    "shadowrootdelegatesfocus",
+    "shadowrootmode",
+    "shadowrootserializable",
+    "shape",
+    "shape-rendering",
+    "sharedstoragewritable",
+    "size",
+    "sizes",
+    "slope",
+    "slot",
+    "spacing",
+    "span",
+    "specularConstant",
+    "specularExponent",
+    "spellcheck",
+    "spreadMethod",
+    "src",
+    "srcdoc",
+    "srclang",
+    "srcset",
+    "standby",
+    "start",
+    "startOffset",
+    "stdDeviation",
+    "step",
+    "stitchTiles",
+    "stop-color",
+    "stop-opacity",
+    "stretchy",
+    "stroke",
+    "stroke-dasharray",
+    "stroke-dashoffset",
+    "stroke-linecap",
+    "stroke-linejoin",
+    "stroke-miterlimit",
+    "stroke-opacity",
+    "stroke-width",
+    "style",
+    "summary",
+    "surfaceScale",
+    "symmetric",
+    "systemLanguage",
+    "tabindex",
+    "tableValues",
+    "target",
+    "targetX",
+    "targetY",
+    "text",
+    "text-anchor",
+    "text-decoration",
+    "text-rendering",
+    "textLength",
+    "title",
+    "to",
+    "topmargin",
+    "transform",
+    "transform-origin",
+    "translate",
+    "truespeed",
+    "type",
+    "u1",
+    "u2",
+    "unicode-bidi",
+    "usemap",
+    "valign",
+    "value",
+    "values",
+    "valuetype",
+    "vector-effect",
+    "version",
+    "viewBox",
+    "virtualkeyboardpolicy",
+    "visibility",
+    "vlink",
+    "voffset",
+    "vspace",
+    "webkitdirectory",
+    "width",
+    "word-spacing",
+    "wrap",
+    "writing-mode",
+    "writingsuggestions",
+    "x",
+    "x1",
+    "x2",
+    "xChannelSelector",
+    "y",
+    "y1",
+    "y2",
+    "yChannelSelector",
+    "z",
+    "zoomAndPan",
+    {
+      "name": "href",
+      "namespace": "http://www.w3.org/1999/xlink"
+    },
+    {
+      "name": "role",
+      "namespace": "http://www.w3.org/1999/xlink"
+    },
+    {
+      "name": "lang",
+      "namespace": "http://www.w3.org/XML/1998/namespace"
+    },
+    {
+      "name": "type",
+      "namespace": "http://www.w3.org/1999/xlink"
+    },
+    {
+      "name": "title",
+      "namespace": "http://www.w3.org/1999/xlink"
+    },
+    {
+      "name": "actuate",
+      "namespace": "http://www.w3.org/1999/xlink"
+    },
+    {
+      "name": "xmlns",
+      "namespace": "http://www.w3.org/2000/xmlns/"
+    },
+    {
+      "name": "arcrole",
+      "namespace": "http://www.w3.org/1999/xlink"
+    },
+    {
+      "name": "space",
+      "namespace": "http://www.w3.org/XML/1998/namespace"
+    },
+    {
+      "name": "show",
+      "namespace": "http://www.w3.org/1999/xlink"
+    }
+  ]
+}

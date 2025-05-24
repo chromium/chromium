@@ -59,8 +59,6 @@ class WallpaperProfileHelper {
 // Manages wallpaper preferences and tracks the currently configured wallpaper.
 class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
  public:
-  // Returns the name of the syncable pref of the user's wallpaper info.
-  static const char* GetSyncPrefName();
   // Determines whether the wallpaper info is syncable and should be stored in
   // synced prefs.
   static bool ShouldSyncOut(const WallpaperInfo& local_info);
@@ -128,7 +126,7 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
 
   // Returns the cached KMeans color value for the wallpaper at `location`.
   virtual std::optional<SkColor> GetCachedKMeanColor(
-      const std::string_view location) const = 0;
+      std::string_view location) const = 0;
 
   virtual void RemoveKMeanColor(const AccountId& account_id) = 0;
 
@@ -137,7 +135,7 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
                                 SkColor celebi_color) = 0;
   // Returns the cached celebi color for the wallpaper at `location`.
   virtual std::optional<SkColor> GetCelebiColor(
-      const std::string_view location) const = 0;
+      std::string_view location) const = 0;
   virtual void RemoveCelebiColor(const AccountId& account_id) = 0;
 
   virtual bool SetDailyGooglePhotosWallpaperIdCache(
@@ -163,15 +161,6 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
   virtual bool SetSyncedWallpaperInfo(const AccountId& account_id,
                                       const WallpaperInfo& info) = 0;
 
-  // Gets the wallpaper info from the deprecated synced prefs
-  // `kSyncableWallpaperInfo`.
-  virtual bool GetSyncedWallpaperInfoFromDeprecatedPref(
-      const AccountId& account_id,
-      WallpaperInfo* info) const = 0;
-
-  // Clears the deprecated synced prefs `kSyncableWallpaperInfo`.
-  virtual void ClearDeprecatedPref(const AccountId& account_id) = 0;
-
   // Returns the delta for the next daily refresh update for `account_id`.
   virtual base::TimeDelta GetTimeToNextDailyRefreshUpdate(
       const AccountId& account_id) const = 0;
@@ -182,4 +171,4 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
 
 }  // namespace ash
 
-#endif  //  ASH_WALLPAPER_WALLPAPER_PREF_MANAGER_H_
+#endif  // ASH_WALLPAPER_WALLPAPER_PREF_MANAGER_H_

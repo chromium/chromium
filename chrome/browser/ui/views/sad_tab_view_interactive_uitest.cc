@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/sad_tab_view.h"
-
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -12,6 +10,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -45,7 +44,7 @@ class SadTabViewTestApi {
 
 class SadTabViewInteractiveUITest : public InProcessBrowserTest {
  public:
-  SadTabViewInteractiveUITest() {}
+  SadTabViewInteractiveUITest() = default;
 
   SadTabViewInteractiveUITest(const SadTabViewInteractiveUITest&) = delete;
   SadTabViewInteractiveUITest& operator=(const SadTabViewInteractiveUITest&) =
@@ -115,8 +114,9 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
     content::WebContents* web_contents =
         tab_strip_model->GetActiveWebContents();
-    while (!IsFocusedViewOnActionButtonInSadTab())
+    while (!IsFocusedViewOnActionButtonInSadTab()) {
       PressTab();
+    }
 
     // SadTab has a DCHECK that it's been painted at least once
     // before the action button can be pressed, bypass that.
@@ -160,8 +160,9 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
   ASSERT_TRUE(IsFocusedViewInsideBrowserToolbar());
 
   // Keep pressing the Tab key and make sure we make it back to the sad tab.
-  while (!IsFocusedViewInsideSadTab())
+  while (!IsFocusedViewInsideSadTab()) {
     PressTab();
+  }
   ASSERT_FALSE(IsFocusedViewInsideBrowserToolbar());
 
   // Press Shift-Tab and ensure we end up back in the toolbar.

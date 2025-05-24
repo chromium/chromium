@@ -31,7 +31,7 @@ class PageVisibilityModelExecutor
       const std::string& input) override;
   base::expected<std::unique_ptr<ModelExecutionTask>,
                  optimization_guide::ExecutionStatus>
-  BuildModelExecutionTask(base::MemoryMappedFile* model_file) override;
+  BuildModelExecutionTask(base::File& model_file) override;
 
  private:
   // -1 tells TFLite to use its own default number of threads.

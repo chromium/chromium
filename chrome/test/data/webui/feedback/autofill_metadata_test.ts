@@ -50,7 +50,7 @@ suite('AutofillMetadataTest', function() {
 
   test('Check entries parsed from dialog arguments.', async function() {
     const keyValuePairViewer =
-        app.shadowRoot!.querySelector('key-value-pair-viewer');
+        app.shadowRoot.querySelector('key-value-pair-viewer');
     await microtasksFinished();
     assertTrue(!!keyValuePairViewer);
     const entries = keyValuePairViewer.entries;

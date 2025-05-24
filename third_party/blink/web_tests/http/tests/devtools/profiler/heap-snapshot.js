@@ -31,24 +31,8 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
     };
   }
 
-  function runTestSuiteInWorker() {
+  async function runTestSuiteInWorker() {
     var testSuite = [
-      function postOrderIndexBug() {
-        var builder = new HeapProfilerTestRunner.HeapSnapshotBuilder();
-        var node1 = new HeapProfilerTestRunner.HeapNode('Node1');
-        var node2 = new HeapProfilerTestRunner.HeapNode('Node2');
-        builder.rootNode.linkNode(node1, HeapProfilerTestRunner.HeapEdge.Type.internal);
-        builder.rootNode.linkNode(node2, HeapProfilerTestRunner.HeapEdge.Type.internal);
-        node2.linkNode(node1, HeapProfilerTestRunner.HeapEdge.Type.internal);
-        var snapshot = builder.createJSHeapSnapshot();
-        var postOrderIndexes = snapshot.buildPostOrderIndex().nodeOrdinal2PostOrderIndex;
-        var nodeOrdinals = snapshot.buildPostOrderIndex().postOrderIndex2NodeOrdinal;
-        TestRunner.assertEquals(
-            JSON.stringify(new Uint32Array([2, 0, 1])), JSON.stringify(postOrderIndexes), 'postOrderIndexes');
-        TestRunner.assertEquals(
-            JSON.stringify(new Uint32Array([1, 2, 0])), JSON.stringify(nodeOrdinals), 'nodeOrdinals');
-      },
-
       function heapSnapshotNodeSimpleTest() {
         var snapshot = HeapProfilerTestRunner.createJSHeapSnapshotMockObject();
         var nodeRoot = snapshot.createNode(snapshot.rootNodeIndex);
@@ -98,7 +82,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
         TestRunner.assertEquals(false, nodeE.edges().hasNext(), 'empty edge iterator');
       },
 
-      function heapSnapshotNodeAndEdgeTest() {
+      async function heapSnapshotNodeAndEdgeTest() {
         var snapshotMock = HeapProfilerTestRunner.createJSHeapSnapshotMockObject();
         var nodeRoot = snapshotMock.createNode(snapshotMock.rootNodeIndex);
         var names = [];
@@ -117,22 +101,22 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
         // Now check against a real HeapSnapshot instance.
         names = [];
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
         depthFirstTraversal(snapshot.rootNode());
         TestRunner.assertEquals(reference, names.join(','), 'snapshot traversal');
       },
 
-      function heapSnapshotSimpleTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+      async function heapSnapshotSimpleTest() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
         TestRunner.assertEquals(6, snapshot.nodeCount, 'node count');
         TestRunner.assertEquals(20, snapshot.totalSize, 'total size');
       },
 
-      function heapSnapshotContainmentEdgeIndexesTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+      async function heapSnapshotContainmentEdgeIndexesTest() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
         var actual = snapshot.firstEdgeIndexes;
         var expected = [0, 6, 12, 18, 21, 21, 21];
         TestRunner.assertEquals(expected.length, actual.length, 'Edge indexes size');
@@ -140,29 +124,18 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
           TestRunner.assertEquals(expected[i], actual[i], 'Edge indexes');
       },
 
-      function heapSnapshotPostOrderIndexTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
-        var postOrderIndex2NodeOrdinal = snapshot.buildPostOrderIndex().postOrderIndex2NodeOrdinal;
-        var expected = [5, 3, 4, 2, 1, 0];
-        for (var i = 0; i < expected.length; ++i)
-          TestRunner.assertEquals(expected[i], postOrderIndex2NodeOrdinal[i], 'Post ordered indexes');
-      },
-
-      function heapSnapshotDominatorsTreeTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
-        var result = snapshot.buildPostOrderIndex();
-        var dominatorsTree =
-            snapshot.buildDominatorTree(result.postOrderIndex2NodeOrdinal, result.nodeOrdinal2PostOrderIndex);
+      async function heapSnapshotDominatorsTreeTest() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
+        var dominatorsTree = snapshot.dominatorsTree;
         var expected = [0, 0, 0, 0, 2, 3];
         for (var i = 0; i < expected.length; ++i)
           TestRunner.assertEquals(expected[i], dominatorsTree[i], 'Dominators Tree');
       },
 
-      function heapSnapshotLocations() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+      async function heapSnapshotLocations() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
         const expected = new Map([
           [0, new HeapSnapshotModel.HeapSnapshotModel.Location(1, 2, 3)],
           [18, new HeapSnapshotModel.HeapSnapshotModel.Location(2, 3, 4)],
@@ -176,9 +149,9 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
         });
       },
 
-      function heapSnapshotRetainedSizeTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+      async function heapSnapshotRetainedSizeTest() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
         var actualRetainedSizes = new Array(snapshot.nodeCount);
         for (var nodeOrdinal = 0; nodeOrdinal < snapshot.nodeCount; ++nodeOrdinal)
           actualRetainedSizes[nodeOrdinal] = snapshot.retainedSizes[nodeOrdinal];
@@ -187,7 +160,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
             JSON.stringify(expectedRetainedSizes), JSON.stringify(actualRetainedSizes), 'Retained sizes');
       },
 
-      function heapSnapshotLargeRetainedSize(next) {
+      async function heapSnapshotLargeRetainedSize() {
         var builder = new HeapProfilerTestRunner.HeapSnapshotBuilder();
         var node = builder.rootNode;
 
@@ -199,15 +172,15 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
           node = newNode;
         }
 
-        var snapshot = builder.createJSHeapSnapshot();
+        var snapshot = await builder.createJSHeapSnapshot();
         TestRunner.assertEquals(
             iterations * nodeSize, snapshot.rootNode().retainedSize(),
             'Ensure that root node retained size supports values exceeding 2^32 bytes.');
       },
 
-      function heapSnapshotDominatedNodesTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+      async function heapSnapshotDominatedNodesTest() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
 
         var expectedDominatedNodes = [21, 14, 7, 28, 35];
         var actualDominatedNodes = snapshot.dominatedNodes;
@@ -223,7 +196,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
           TestRunner.assertEquals(expectedDominatedNodeIndex[i], actualDominatedNodeIndex[i], 'Dominated Nodes Index');
       },
 
-      function heapSnapshotPageOwnedTest(next) {
+      async function heapSnapshotPageOwnedTest() {
         var builder = new HeapProfilerTestRunner.HeapSnapshotBuilder();
         var rootNode = builder.rootNode;
 
@@ -240,7 +213,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
         var debuggerOwnedNode = new HeapProfilerTestRunner.HeapNode('debuggerOwnedNode');
         debuggerNode.linkNode(debuggerOwnedNode, HeapProfilerTestRunner.HeapEdge.Type.element);
 
-        var snapshot = builder.createJSHeapSnapshot();
+        var snapshot = await builder.createJSHeapSnapshot();
         snapshot.flags = new Array(snapshot.nodeCount);
         for (var i = 0; i < snapshot.nodeCount; ++i)
           snapshot.flags[i] = 0;
@@ -252,9 +225,9 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
             'We are expecting that only window(third element) and PageOwnedNode(forth element) have flag === 4.');
       },
 
-      function heapSnapshotRetainersTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+      async function heapSnapshotRetainersTest() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
         var expectedRetainers = {'': [], 'A': [''], 'B': ['', 'A'], 'C': ['A', 'B'], 'D': ['B'], 'E': ['C']};
         for (var nodes = snapshot.allNodes(); nodes.hasNext(); nodes.next()) {
           var names = [];
@@ -267,23 +240,23 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
         }
       },
 
-      function heapSnapshotAggregatesTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+      async function heapSnapshotAggregatesTest() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
         var expectedAggregates = {
-          'A': {count: 1, self: 2, maxRet: 2, type: 'object', name: 'A'},
-          'B': {count: 1, self: 3, maxRet: 8, type: 'object', name: 'B'},
-          'C': {count: 1, self: 4, maxRet: 10, type: 'object', name: 'C'},
-          'D': {count: 1, self: 5, maxRet: 5, type: 'object', name: 'D'},
-          'E': {count: 1, self: 6, maxRet: 6, type: 'object', name: 'E'}
+          'A': {count: 1, self: 2, maxRet: 2, name: 'A'},
+          'B': {count: 1, self: 3, maxRet: 8, name: 'B'},
+          'C': {count: 1, self: 4, maxRet: 10, name: 'C'},
+          'D': {count: 1, self: 5, maxRet: 5, name: 'D'},
+          'E': {count: 1, self: 6, maxRet: 6, name: 'E'}
         };
-        var aggregates = snapshot.getAggregatesByClassName(false);
-        for (var name in aggregates) {
-          var aggregate = aggregates[name];
-          var expectedAggregate = expectedAggregates[name];
+        var aggregates = snapshot.getAggregatesByClassKey(false);
+        for (var key in aggregates) {
+          var aggregate = aggregates[key];
+          var expectedAggregate = expectedAggregates[aggregate.name];
           for (var parameter in expectedAggregate)
             TestRunner.assertEquals(
-                expectedAggregate[parameter], aggregate[parameter], 'parameter ' + parameter + ' of "' + name + '"');
+                expectedAggregate[parameter], aggregate[parameter], 'parameter ' + parameter + ' of "' + aggregate.name + '"');
         }
         var expectedIndexes = {
           // Index of corresponding node in the raw snapshot:
@@ -293,17 +266,17 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
           'D': [28],  // 50
           'E': [35]   // 57
         };
-        var indexes = snapshot.getAggregatesByClassName(true);
-        for (var name in aggregates) {
-          var aggregate = aggregates[name];
-          var expectedIndex = expectedIndexes[name];
-          TestRunner.assertEquals(expectedIndex.join(','), aggregate.idxs.join(','), 'indexes of "' + name + '"');
+        var indexes = snapshot.getAggregatesByClassKey(true);
+        for (var key in aggregates) {
+          var aggregate = aggregates[key];
+          var expectedIndex = expectedIndexes[aggregate.name];
+          TestRunner.assertEquals(expectedIndex.join(','), aggregate.idxs.join(','), 'indexes of "' + aggregate.name + '"');
         }
       },
 
-      function heapSnapshotFlagsTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMockWithDOM(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+      async function heapSnapshotFlagsTest() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMockWithDOM());
         var expectedCanBeQueried = {
           '': false,
           'A': true,
@@ -325,9 +298,9 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
         }
       },
 
-      function heapSnapshotNodesProviderTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+      async function heapSnapshotNodesProviderTest() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
 
         var allNodeIndexes = [];
         for (var i = 0; i < snapshot.nodes.length; i += snapshot.nodeFieldCount)
@@ -343,9 +316,9 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
         TestRunner.assertEquals('E,D,C,B,A,', names.join(','), 'nodes provider names');
       },
 
-      function heapSnapshotEdgesProviderTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
+      async function heapSnapshotEdgesProviderTest() {
+        var snapshot = await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+            HeapProfilerTestRunner.createHeapSnapshotMock());
 
         function edgeFilter(edge) {
           return edge.name() === 'b';
@@ -372,16 +345,18 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
         for (var i = 0, l = sourceStringified.length; i < l; i += partSize)
           loader.write(sourceStringified.slice(i, i + partSize));
         loader.close();
-        await 0;  // Make sure loader parses the input.
-        var result = loader.buildSnapshot(false);
+        await loader.parsingComplete;
+        const channel = new MessageChannel();
+        new HeapSnapshotWorker.HeapSnapshot.SecondaryInitManager(channel.port2);
+        var result = await loader.buildSnapshot(channel.port1);
         result.nodes = new Uint32Array(result.nodes);
         result.containmentEdges = new Uint32Array(result.containmentEdges);
         function assertSnapshotEquals(reference, actual) {
           TestRunner.assertEquals(JSON.stringify(reference), JSON.stringify(actual));
         }
         assertSnapshotEquals(
-            new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-                HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress(), false),
+            await await HeapSnapshotWorker.HeapSnapshot.createJSHeapSnapshotForTesting(
+                HeapProfilerTestRunner.createHeapSnapshotMock()),
             result);
       },
     ];
@@ -392,9 +367,9 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
       result.push('');
       result.push('Running: ' + test.name);
       try {
-        test();
+        await test();
       } catch (e) {
-        result.push('FAIL: ' + e);
+        result.push('FAIL: ' + e + '\n' + e.stack);
       }
     }
     return result.join('\n');

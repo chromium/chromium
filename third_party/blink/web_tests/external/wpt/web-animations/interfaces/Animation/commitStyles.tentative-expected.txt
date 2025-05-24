@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] Commits styles
+  assert_approx_equals: expected 0.2 +/- 0.0001 but got 0.1
+[FAIL] Commits styles for backwards animation
+  assert_approx_equals: expected 0.5 +/- 0.0001 but got 0.1
+[FAIL] Commits the intermediate value of an animation in the middle of stack
+  assert_approx_equals: expected 0.4 +/- 0.0001 but got 0.2
+[FAIL] Commits the intermediate value of an animation up to the middle of the stack
+  assert_approx_equals: expected 0.4 +/- 0.0001 but got 0.1
+[FAIL] Commits styles for an animation that has been removed
+  assert_approx_equals: expected 0.2 +/- 0.0001 but got 0.1
+[FAIL] Commit composites on top of the underlying value
+  assert_approx_equals: expected 0.5 +/- 0.0001 but got 0.3
+[FAIL] Commits logical properties
+  assert_equals: expected "20px" but got "10px"
+[FAIL] Commits logical properties as physical properties
+  assert_equals: expected "20px" but got "10px"
+[FAIL] Commits em units as pixel values
+  assert_approx_equals: expected 100 +/- 0.0001 but got 784
+[FAIL] Commits custom variables
+  assert_approx_equals: expected 0.8 +/- 0.0001 but got 0.5
+[FAIL] Commits variable references as their computed values
+  assert_approx_equals: expected 0.5 +/- 0.0001 but got 1
+[FAIL] Commits relative line-height
+  assert_approx_equals: expected 15 +/- 0.0001 but got NaN
+[FAIL] Commits transforms
+  assert_equals: expected "matrix(1, 0, 0, 1, 20, 20)" but got "none"
+[FAIL] Commits styles for individual transform properties
+  assert_equals: expected "200px" but got "100px"
+[FAIL] Commits transforms as a transform list
+  assert_equals: expected "translate(20px, 20px)" but got "none"
+[FAIL] Commits shorthand styles
+  assert_equals: expected "20px" but got "10px"
+[FAIL] Triggers mutation observers when updating style
+  assert_equals: Should have one mutation record expected 1 but got 0
+Harness: the test ran to completion.
+

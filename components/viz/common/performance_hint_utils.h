@@ -12,6 +12,24 @@
 
 namespace viz {
 
+// Browser and Renderers use this struct to pass information about threads
+// involved in frame production to Viz. Viz then uses the Android
+// PerformanceHint API to optimize these threads' scheduling.
+struct VIZ_COMMON_EXPORT Thread {
+  enum class Type {
+    kMain,
+    kIO,
+    kCompositor,
+    kVideo,
+    kOther,
+  };
+
+  base::PlatformThreadId id;
+  Type type;
+
+  friend constexpr bool operator==(const Thread&, const Thread&) = default;
+};
+
 // Check that thread IDs in `thread_ids_from_sandboxed_process` are not in
 // current process. This function should be called from the Browser and the GPU
 // processes. Android OS will check that thread IDs used for performance hint

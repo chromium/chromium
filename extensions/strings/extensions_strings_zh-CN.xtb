@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">私有密钥的输入值必须是有效的路径。</translation>
 <translation id="388442998277590542">无法加载选项页“<ph name="OPTIONS_PAGE" />”。</translation>
 <translation id="3984413272403535372">为扩展程序签名时出错。</translation>
-<translation id="4115165561519362854">此设备的管理员要求“<ph name="EXTENSION_NAME" />”的最低版本为 <ph name="EXTENSION_VERSION" />。此扩展程序必须更新到该版本（或更高版本）后才能启用。</translation>
 <translation id="4233778200880751280">无法加载简介页面“<ph name="ABOUT_PAGE" />”。</translation>
 <translation id="471800408830181311">无法输出私有密钥。</translation>
 <translation id="4811956658694082538">某个实用程序进程崩溃了，因此软件包无法安装。请重新启动 Chrome，然后重试。</translation>
@@ -50,12 +49,14 @@
 <translation id="7068383018033524534">清单文件无效</translation>
 <translation id="7217838517480956708">此计算机的管理员要求安装 <ph name="EXTENSION_NAME" />。该扩展程序无法删除或修改。</translation>
 <translation id="7612608473764576263">私钥的输入值必须采用有效格式（必须是采用 PKCS#8 格式且经过 PEM 编码的 RSA 密钥）。</translation>
+<translation id="7876803335449432072">无法为内容脚本加载“<ph name="RELATIVE_PATH" />”文件，内容脚本样式表只能从受支持的样式表文件（例如 .css 文件）加载。</translation>
 <translation id="7939686037314084444">此扩展程序未能正确加载。它可能无法拦截网络请求。</translation>
 <translation id="7972881773422714442">选项：<ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">前置</translation>
 <translation id="8047248493720652249">此扩展程序无法将下载的文件命名为“<ph name="ATTEMPTED_FILENAME" />”，因为另一扩展程序 (<ph name="EXTENSION_NAME" />) 已将此文件命名为“<ph name="ACTUAL_FILENAME" />”。</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" />（<ph name="VENDOR_NAME" />）</translation>
 <translation id="8517576857589387417">清单文件缺失或不可读取</translation>
+<translation id="8621383749470166852">无法为内容脚本加载“<ph name="RELATIVE_PATH" />”文件，内容脚本只能从受支持的 JavaScript 文件（例如 .js 文件）加载。</translation>
 <translation id="8636666366616799973">程序包无效。详细信息：“<ph name="ERROR_MESSAGE" />”。</translation>
 <translation id="8761756413268424715">“<ph name="APP_NAME" />”请求访问您的其中一台设备：</translation>
 <translation id="8885905466771744233">指定扩展程序的私有密钥已存在。请重复使用该密钥，或者先删除它。</translation>

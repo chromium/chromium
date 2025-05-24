@@ -6,7 +6,6 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/check.h"
@@ -20,7 +19,6 @@
 #include "base/test/gtest_tags.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
@@ -192,8 +190,9 @@ class RecordingServiceBrowserTest : public InProcessBrowserTest {
     std::string file_content;
     EXPECT_TRUE(base::ReadFileToString(path, &file_content));
 
-    if (allow_empty && file_content.empty())
+    if (allow_empty && file_content.empty()) {
       return;
+    }
 
     EXPECT_FALSE(file_content.empty());
     EXPECT_TRUE(WebmVerifier().Verify(file_content));
@@ -381,15 +380,7 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
 // -----------------------------------------------------------------------------
 // GifRecordingBrowserTest:
 
-class GifRecordingBrowserTest : public InProcessBrowserTest {
- public:
-  GifRecordingBrowserTest()
-      : scoped_feature_list_(ash::features::kGifRecording) {}
-  ~GifRecordingBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using GifRecordingBrowserTest = InProcessBrowserTest;
 
 // Records a GIF image of a region that fills the entire screen, then attempts
 // to decode the resulting file to verify the GIF encoding was successful.

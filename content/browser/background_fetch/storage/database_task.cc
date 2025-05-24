@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_data_manager_observer.h"
@@ -90,8 +91,7 @@ void DatabaseTask::IsQuotaAvailable(const blink::StorageKey& storage_key,
   DCHECK_GT(size, 0);
 
   quota_manager_proxy()->GetUsageAndQuota(
-      storage_key, blink::mojom::StorageType::kTemporary,
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      storage_key, base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindOnce(&DidGetUsageAndQuota, std::move(callback), size));
 }
 

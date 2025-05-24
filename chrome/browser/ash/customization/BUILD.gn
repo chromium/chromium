@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("customization") {
   sources = [
@@ -71,6 +71,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/prefs",
     "//chrome/test:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",

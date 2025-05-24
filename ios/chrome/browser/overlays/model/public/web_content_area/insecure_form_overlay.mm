@@ -44,8 +44,6 @@ std::unique_ptr<OverlayResponse> CreateInsecureFormDialogResponse(
 
 #pragma mark - InsecureFormOverlayRequestConfig
 
-OVERLAY_USER_DATA_SETUP_IMPL(InsecureFormOverlayRequestConfig);
-
 InsecureFormOverlayRequestConfig::InsecureFormOverlayRequestConfig() = default;
 
 InsecureFormOverlayRequestConfig::~InsecureFormOverlayRequestConfig() = default;
@@ -72,8 +70,6 @@ void InsecureFormOverlayRequestConfig::CreateAuxiliaryData(
 }
 
 #pragma mark - InsecureFormDialogResponse
-
-OVERLAY_USER_DATA_SETUP_IMPL(InsecureFormDialogResponse);
 
 InsecureFormDialogResponse::InsecureFormDialogResponse(bool allow_send)
     : allow_send_(allow_send) {}

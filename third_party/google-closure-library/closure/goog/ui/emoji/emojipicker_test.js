@@ -261,6 +261,7 @@ function getImageUrl(element) {
  * the default img.
  * @param {!EmojiPalette} page The page of the picker to check
  * @param {string} defaultImgUrl The url of the default img
+ * @suppress {missingProperties} "length" on vague type
  */
 function checkContentIsDefaultImg(page, defaultImgUrl) {
   const content = page.getContent();

@@ -13,8 +13,9 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/camera_roll_item.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/canvas.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -40,9 +41,10 @@ class ASH_EXPORT CameraRollThumbnail : public views::MenuButton,
   CameraRollThumbnail operator=(CameraRollThumbnail&) = delete;
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // views::MenuButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;

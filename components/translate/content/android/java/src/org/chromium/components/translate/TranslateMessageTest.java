@@ -17,7 +17,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -30,7 +29,6 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -57,8 +55,6 @@ public final class TranslateMessageTest {
     private static final String PRIMARY_TEXT_UNDO = "Undo";
     private static final String DESCRIPTION = "French to English";
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock WebContents mWebContents;
     @Mock TranslateMessage.Natives mMockJni;
     @Mock Context mContext;
@@ -70,7 +66,7 @@ public final class TranslateMessageTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(TranslateMessageJni.TEST_HOOKS, mMockJni);
+        TranslateMessageJni.setInstanceForTesting(mMockJni);
     }
 
     @Test

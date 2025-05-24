@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_request_data.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 
 class GURL;
@@ -67,30 +68,29 @@ class TopLevelStorageAccessPermissionContext
 
   // Exposes `DecidePermission` for tests.
   void DecidePermissionForTesting(
-      permissions::PermissionRequestData request_data,
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback);
 
  private:
   // PermissionContextBase:
   void DecidePermission(
-      permissions::PermissionRequestData request_data,
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
-  void NotifyPermissionSet(const permissions::PermissionRequestID& id,
-                           const GURL& requesting_origin,
-                           const GURL& embedding_origin,
-                           permissions::BrowserPermissionCallback callback,
-                           bool persist,
-                           ContentSetting content_setting,
-                           bool is_one_time,
-                           bool is_final_decision) override;
-  void UpdateContentSetting(const GURL& requesting_origin,
-                            const GURL& embedding_origin,
-                            ContentSetting content_setting,
-                            bool is_one_time) override;
+  void NotifyPermissionSet(
+      const permissions::PermissionRequestData& request_data,
+      permissions::BrowserPermissionCallback callback,
+      bool persist,
+      ContentSetting content_setting,
+      bool is_one_time,
+      bool is_final_decision) override;
+  void UpdateContentSetting(
+      const permissions::PermissionRequestData& request_data,
+      ContentSetting content_setting,
+      bool is_one_time) override;
 
   // Internal implementation for NotifyPermissionSet.
   void NotifyPermissionSetInternal(
@@ -105,7 +105,7 @@ class TopLevelStorageAccessPermissionContext
   // Checks First-Party Sets metadata to determine whether the request should be
   // auto-rejected or auto-denied.
   void CheckForAutoGrantOrAutoDenial(
-      permissions::PermissionRequestData request_data,
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback,
       net::FirstPartySetMetadata metadata);
 

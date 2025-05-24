@@ -12,7 +12,6 @@
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/power_monitor/power_observer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -94,7 +93,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   };
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)) || BUILDFLAG(IS_WIN)
   void PlatformInit();
   void PlatformDestroy();
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
@@ -117,7 +116,6 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
 #if BUILDFLAG(IS_ANDROID)
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState()
       const override;
-  int GetRemainingBatteryCapacity() const override;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

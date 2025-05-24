@@ -38,7 +38,7 @@ class DeviceTrustConnectorService : public KeyedService {
     virtual void OnInlinePolicyDisabled(DTCPolicyLevel level) {}
 
    protected:
-    virtual ~PolicyObserver() {}
+    virtual ~PolicyObserver() = default;
   };
 
   explicit DeviceTrustConnectorService(PrefService* profile_prefs);

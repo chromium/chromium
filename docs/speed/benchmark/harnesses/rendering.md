@@ -30,7 +30,7 @@ These benchmarks are run on the [Chromium Perf Waterfall](https://ci.chromium.or
 Rendering metrics are [written in Javascript](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/). The list of all metrics and their meanings should be documented in the files they are defined in.
 
 -   [cpu\_utilization.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/cpu_utilization.html): `cpu_time_per_frame` and `tasks_per_frame`
--   [pixels.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/pixels.html): `mean_pixels_approximated` and `mean_pixels_checkerboarded`
+-   [pixels.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/pixels.html): `mean_pixels_approximated`
 -   [queueing\_duration.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/queueing_duration.html): `queueing_durations`
 
 ## How to run rendering benchmarks on local devices

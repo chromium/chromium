@@ -50,6 +50,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.scrollable_viewport_size;
   }
 
+  static gfx::Size visible_viewport_size(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.visible_viewport_size;
+  }
+
   static gfx::ContentColorUsage content_color_usage(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.content_color_usage;
@@ -72,6 +77,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   static bool is_handling_interaction(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.is_handling_interaction;
+  }
+
+  static bool is_handling_animation(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.is_handling_animation;
   }
 
   static SkColor4f root_background_color(
@@ -119,6 +129,13 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.min_page_scale_factor;
   }
 
+  static std::optional<base::TimeDelta> preferred_frame_interval(
+      const viz::CompositorFrameMetadata& metadata) {
+    DCHECK(!metadata.preferred_frame_interval ||
+           metadata.preferred_frame_interval.value() >= base::TimeDelta());
+    return metadata.preferred_frame_interval;
+  }
+
   static bool top_controls_visible_height_set(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.top_controls_visible_height.has_value();
@@ -132,6 +149,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   static gfx::OverlayTransform display_transform_hint(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.display_transform_hint;
+  }
+
+  static bool is_mobile_optimized(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.is_mobile_optimized;
   }
 
   static const std::unique_ptr<gfx::DelegatedInkMetadata>&

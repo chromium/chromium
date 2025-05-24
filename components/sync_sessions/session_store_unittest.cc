@@ -130,28 +130,8 @@ std::unique_ptr<MetadataBatch> ReadAllPersistedMetadataFrom(
 
 std::map<std::string, SessionSpecifics> ReadAllPersistedDataFrom(
     DataTypeStore* store) {
-  std::unique_ptr<DataTypeStore::RecordList> records;
-  base::RunLoop loop;
-  store->ReadAllData(base::BindOnce(
-      [](std::unique_ptr<DataTypeStore::RecordList>* output_records,
-         base::RunLoop* loop, const std::optional<syncer::ModelError>& error,
-         std::unique_ptr<DataTypeStore::RecordList> input_records) {
-        EXPECT_FALSE(error) << error->ToString();
-        EXPECT_THAT(input_records, NotNull());
-        *output_records = std::move(input_records);
-        loop->Quit();
-      },
-      &records, &loop));
-  loop.Run();
-  std::map<std::string, SessionSpecifics> result;
-  if (records) {
-    for (const DataTypeStore::Record& record : *records) {
-      SessionSpecifics specifics;
-      EXPECT_TRUE(specifics.ParseFromString(record.value));
-      result.emplace(record.id, specifics);
-    }
-  }
-  return result;
+  return syncer::DataTypeStoreTestUtil::ReadAllDataAsProtoAndWait<
+      SessionSpecifics>(*store);
 }
 
 class SessionStoreOpenTest : public ::testing::Test {
@@ -269,6 +249,10 @@ class SessionStoreTest : public SessionStoreOpenTest {
 
   SessionStore* session_store() { return session_store_.get(); }
 
+  std::unique_ptr<SessionStore> TakeSessionStore() {
+    return std::move(session_store_);
+  }
+
  private:
   std::unique_ptr<SessionStore> session_store_;
 };
@@ -279,8 +263,52 @@ TEST_F(SessionStoreTest, ShouldClearLegacySessionsGuidFromPrefs) {
       kLegacySyncSessionsGUID);
   ASSERT_THAT(session_sync_prefs_.GetLegacySyncSessionsGUID(),
               Eq(kLegacySyncSessionsGUID));
-  session_store()->DeleteAllDataAndMetadata();
+  SessionStore::DeleteAllDataAndMetadata(TakeSessionStore());
   EXPECT_THAT(session_sync_prefs_.GetLegacySyncSessionsGUID(), IsEmpty());
+}
+
+TEST_F(SessionStoreTest, ShouldRecreateEmptyStore) {
+  const SessionStore::SessionInfo original_local_session_info =
+      session_store()->local_session_info();
+
+  // Put some data into the store.
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      session_store()->CreateWriteBatch(/*error_handler=*/base::DoNothing());
+  ASSERT_THAT(batch, NotNull());
+  SessionSpecifics header;
+  header.set_session_tag(kLocalCacheGuid);
+  header.mutable_header()->add_window()->set_window_id(1);
+  header.mutable_header()->mutable_window(0)->add_tab(2);
+  ASSERT_TRUE(SessionStore::AreValidSpecifics(header));
+  batch->PutAndUpdateTracker(header, base::Time::Now());
+  SessionStore::WriteBatch::Commit(std::move(batch));
+  ASSERT_THAT(ReadAllPersistedDataFrom(underlying_store_.get()),
+              Not(IsEmpty()));
+
+  auto recreate_store_callback =
+      SessionStore::DeleteAllDataAndMetadata(TakeSessionStore());
+
+  // Re-create the store with a new cache GUID / session tag.
+  const std::string kNewLocalCacheGuid = "new_cache_guid";
+  ASSERT_NE(kLocalCacheGuid, kNewLocalCacheGuid);
+  std::unique_ptr<SessionStore> new_store =
+      std::move(recreate_store_callback)
+          .Run(kNewLocalCacheGuid, mock_sync_sessions_client_.get());
+
+  // The newly (re)created store should be empty.
+  EXPECT_THAT(ReadAllPersistedDataFrom(underlying_store_.get()), IsEmpty());
+
+  const SessionStore::SessionInfo new_local_session_info =
+      new_store->local_session_info();
+  // The session tag (aka cache GUID) should've been updated.
+  EXPECT_EQ(new_local_session_info.session_tag, kNewLocalCacheGuid);
+  // The remaining local session fields should be unchanged.
+  EXPECT_EQ(original_local_session_info.client_name,
+            new_local_session_info.client_name);
+  EXPECT_EQ(original_local_session_info.device_type,
+            new_local_session_info.device_type);
+  EXPECT_EQ(original_local_session_info.device_form_factor,
+            new_local_session_info.device_form_factor);
 }
 
 TEST_F(SessionStoreTest, ShouldCreateLocalSession) {
@@ -417,6 +445,74 @@ TEST_F(SessionStoreTest, ShouldUpdateTrackerWithForeignData) {
                EntityDataHasSpecifics(MatchesTab(kForeignSessionTag, kWindowId,
                                                  kTabId2, kTabNodeId2,
                                                  /*urls=*/_)))));
+}
+
+TEST_F(SessionStoreTest, ShouldUpdateTrackerWithForeignDataAndInvalidURL) {
+  const std::string kForeignSessionTag = "SomeForeignTag";
+  const int kWindowId = 5;
+  const int kTabId1 = 7;
+  const int kTabNodeId1 = 2;
+  const GURL kValidURL("http://validurl.com/");
+  const GURL kInvalidURL("http:google.com:foo");
+
+  ASSERT_TRUE(kValidURL.is_valid());
+  ASSERT_FALSE(kInvalidURL.is_empty());
+  ASSERT_FALSE(kInvalidURL.is_valid());
+  ASSERT_FALSE(kInvalidURL.possibly_invalid_spec().empty());
+
+  ASSERT_THAT(session_store()->tracker()->LookupAllForeignSessions(
+                  SyncedSessionTracker::RAW),
+              IsEmpty());
+
+  const std::string header_storage_key =
+      SessionStore::GetHeaderStorageKey(kForeignSessionTag);
+  const std::string tab_storage_key1 =
+      SessionStore::GetTabStorageKey(kForeignSessionTag, kTabNodeId1);
+  ASSERT_THAT(BatchToEntityDataMap(session_store()->GetSessionDataForKeys(
+                  {header_storage_key, tab_storage_key1})),
+              IsEmpty());
+
+  // Populate with data.
+  SessionSpecifics header;
+  header.set_session_tag(kForeignSessionTag);
+  header.mutable_header()->add_window()->set_window_id(kWindowId);
+  header.mutable_header()->mutable_window(0)->add_tab(kTabId1);
+  ASSERT_TRUE(SessionStore::AreValidSpecifics(header));
+
+  SessionSpecifics tab1;
+  tab1.set_session_tag(kForeignSessionTag);
+  tab1.set_tab_node_id(kTabNodeId1);
+  tab1.mutable_tab()->set_window_id(kWindowId);
+  tab1.mutable_tab()->set_tab_id(kTabId1);
+  // Having a non-empty, invalid URL in storage is unlikely, but may happen if
+  // there was disk corruption.
+  tab1.mutable_tab()->add_navigation()->set_virtual_url(
+      kInvalidURL.possibly_invalid_spec());
+  tab1.mutable_tab()->add_navigation()->set_virtual_url(kValidURL.spec());
+  ASSERT_TRUE(SessionStore::AreValidSpecifics(tab1));
+
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      session_store()->CreateWriteBatch(/*error_handler=*/base::DoNothing());
+  ASSERT_THAT(batch, NotNull());
+  batch->PutAndUpdateTracker(header, base::Time::Now());
+  batch->PutAndUpdateTracker(tab1, base::Time::Now());
+  SessionStore::WriteBatch::Commit(std::move(batch));
+
+  EXPECT_THAT(
+      session_store()->tracker()->LookupAllForeignSessions(
+          SyncedSessionTracker::RAW),
+      ElementsAre(MatchesSyncedSession(
+          kForeignSessionTag, {{kWindowId, std::vector<int>{kTabId1}}})));
+  EXPECT_THAT(BatchToEntityDataMap(session_store()->GetSessionDataForKeys(
+                  {header_storage_key, tab_storage_key1})),
+              UnorderedElementsAre(
+                  Pair(header_storage_key,
+                       EntityDataHasSpecifics(MatchesHeader(
+                           kForeignSessionTag, {kWindowId}, {kTabId1}))),
+                  Pair(tab_storage_key1,
+                       EntityDataHasSpecifics(MatchesTab(
+                           kForeignSessionTag, kWindowId, kTabId1, kTabNodeId1,
+                           ElementsAre("", kValidURL.spec()))))));
 }
 
 TEST_F(SessionStoreTest, ShouldWriteAndRestoreForeignData) {

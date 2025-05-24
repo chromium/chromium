@@ -34,7 +34,7 @@ class WaitForBackgroundTasksTaskObserver : public base::TaskObserver {
   // is true if a task has been processed.
   bool processed_a_task_ = false;
 };
-}
+}  // namespace
 
 namespace web {
 namespace test {
@@ -53,15 +53,17 @@ void WaitForBackgroundTasks() {
     // Yield to the iOS message queue, e.g. [NSObject performSelector:]
     // events.
     if (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, true) ==
-        kCFRunLoopRunHandledSource)
+        kCFRunLoopRunHandledSource) {
       activity_seen = true;
+    }
 
     // Yield to the Chromium message queue, e.g. WebThread::PostTask()
     // events.
     observer.clear_has_processed_task();
     base::RunLoop().RunUntilIdle();
-    if (observer.has_processed_task())
+    if (observer.has_processed_task()) {
       activity_seen = true;
+    }
 
   } while (activity_seen);
   message_loop->RemoveTaskObserver(&observer);

@@ -20,11 +20,12 @@
 
 namespace gpu {
 
-constexpr uint32_t kVendorARM = 0x13b5;
-constexpr uint32_t kVendorQualcomm = 0x5143;
-constexpr uint32_t kVendorImagination = 0x1010;
-constexpr uint32_t kVendorGoogle = 0x1AE0;
-constexpr uint32_t kDeviceSwiftShader = 0xC0DE;
+inline constexpr uint32_t kVendorARM = 0x13b5;
+inline constexpr uint32_t kVendorQualcomm = 0x5143;
+inline constexpr uint32_t kVendorImagination = 0x1010;
+inline constexpr uint32_t kVendorIntel = 0x8086;
+inline constexpr uint32_t kVendorGoogle = 0x1AE0;
+inline constexpr uint32_t kDeviceSwiftShader = 0xC0DE;
 
 struct GPUInfo;
 

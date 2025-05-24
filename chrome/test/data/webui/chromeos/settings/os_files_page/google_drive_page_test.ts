@@ -4,7 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {ConfirmationDialogType, CrButtonElement, CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, PaperTooltipElement, SettingsGoogleDriveSubpageElement, SettingsPrefsElement, SettingsToggleButtonElement, Stage} from 'chrome://os-settings/os_settings.js';
+import type {SettingsGoogleDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {ConfirmationDialogType} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, GoogleDrivePageRemote, PaperTooltipElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, Stage} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -49,7 +52,7 @@ suite('<settings-google-drive-subpage>', function() {
   let connectDisconnectButton: CrButtonElement;
   let testBrowserProxy: GoogleDriveTestBrowserProxy;
   let bulkPinningToggle: SettingsToggleButtonElement;
-  let offlineStorageSubtitle: HTMLDivElement;
+  let offlineStorageSubtitle: HTMLElement;
   let clearOfflineStorageButton: CrButtonElement;
   let driveDisabledOverCellularToggle: SettingsToggleButtonElement;
 
@@ -107,7 +110,7 @@ suite('<settings-google-drive-subpage>', function() {
         querySelectorShadow(page.shadowRoot!, ['#driveBulkPinning']) as
         SettingsToggleButtonElement;
 
-    offlineStorageSubtitle = page.shadowRoot!.querySelector<HTMLDivElement>(
+    offlineStorageSubtitle = page.shadowRoot!.querySelector<HTMLElement>(
         '#drive-offline-storage-row .secondary')!;
 
     clearOfflineStorageButton = page.shadowRoot!.querySelector<CrButtonElement>(
@@ -124,13 +127,13 @@ suite('<settings-google-drive-subpage>', function() {
   });
 
   suite('with bulk pinning disabled', () => {
-    suiteSetup(async () => {
+    suiteSetup(() => {
       loadTimeData.overrideValues({
         enableDriveFsBulkPinning: false,
       });
     });
 
-    test('file sync should not show when bulk pinning disabled', async () => {
+    test('file sync should not show when bulk pinning disabled', () => {
       assertEquals(bulkPinningToggle, null);
     });
 
@@ -261,7 +264,7 @@ suite('<settings-google-drive-subpage>', function() {
   });
 
   suite('with bulk pinning enabled', () => {
-    suiteSetup(async () => {
+    suiteSetup(() => {
       loadTimeData.overrideValues({
         enableDriveFsBulkPinning: true,
       });
@@ -349,7 +352,7 @@ suite('<settings-google-drive-subpage>', function() {
               subTitleElement =
                   bulkPinningToggle.shadowRoot!.querySelector<HTMLElement>(
                       '#sub-label-text');
-              return subTitleElement !== null && fn(subTitleElement!.innerText);
+              return subTitleElement !== null && fn(subTitleElement.innerText);
             }, 5000);
           };
 

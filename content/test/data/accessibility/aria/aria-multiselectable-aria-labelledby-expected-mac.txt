@@ -1,0 +1,15 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='None selected listbox'
+++AXList AXTitle='None selected listbox'
+++++AXMenuItem AXValue='Example 1 not selected'
+++++AXMenuItem AXValue='Example 2 not selected'
+++++AXMenuItem AXValue='Example 3 not selected'
+++++AXMenuItem AXValue='Example 4 not selected'
+++AXGroup
+++++AXStaticText AXValue='Some selected listbox'
+++AXList AXTitle='Some selected listbox'
+++++AXMenuItem AXValue='Example 1 not selected'
+++++AXMenuItem AXValue='Example 2 selected'
+++++AXMenuItem AXValue='Example 3 not selected'
+++++AXMenuItem AXValue='Example 4 selected'

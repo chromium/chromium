@@ -370,9 +370,46 @@ class InstallTest(XcodeUtilTest):
                     ios_version='15.0',
                     xcode_build_version='15a123')
 
-    mock_delete_least_recently_used_simulator_runtimes.assert_called_once_with()
+    mock_delete_least_recently_used_simulator_runtimes.assert_not_called()
     mock_get_simulator_runtime_info_by_build.assert_called_once_with('20C52')
     mock__install_runtime_dmg.assert_not_called()
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch('xcode_util.version', return_value=('', 'TestXcodeVersion'))
+  @mock.patch(
+      'iossim_util.get_simulator_runtime_info_by_build', return_value=object())
+  @mock.patch('xcode_util.get_latest_runtime_build_cipd', return_value=object())
+  @mock.patch('xcode_util.install')
+  def test_local_run(self, mock_install, mock_get_latest_runtime_build_cipd, _1,
+                     _2, _3):
+    ios_version = '14.4'
+    install_success, is_legacy_xcode = xcode_util.install_xcode(
+        self.mac_toolchain, self.xcode_build_version, self.xcode_app_path, '',
+        ios_version)
+    self.assertTrue(install_success)
+    self.assertFalse(is_legacy_xcode)
+    mock_get_latest_runtime_build_cipd.assert_called_once_with(
+        self.xcode_build_version, ios_version)
+    self.assertFalse(mock_install.called)
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch('xcode_util.version', return_value=('', 'TestXcodeVersion'))
+  @mock.patch(
+      'iossim_util.get_simulator_runtime_info_by_build', return_value=object())
+  @mock.patch('xcode_util.get_latest_runtime_build_cipd', return_value=None)
+  @mock.patch('xcode_util.install')
+  def test_local_run_no_cipd_runtime(self, mock_install,
+                                     mock_get_latest_runtime_build_cipd, _1, _2,
+                                     _3):
+    ios_version = '14.4'
+    install_success, is_legacy_xcode = xcode_util.install_xcode(
+        self.mac_toolchain, self.xcode_build_version, self.xcode_app_path, '',
+        ios_version)
+    self.assertTrue(install_success)
+    self.assertFalse(is_legacy_xcode)
+    mock_get_latest_runtime_build_cipd.assert_called_once_with(
+        self.xcode_build_version, ios_version)
+    self.assertFalse(mock_install.called)
 
 
 class HelperFunctionTests(XcodeUtilTest):

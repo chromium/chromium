@@ -16,3 +16,14 @@ fuzzable_proto_library("proto") {
     "strike_data.proto",
   ]
 }
+
+proto_library("autofill_ai_proto") {
+  proto_in_dir = "//"
+  sources = [ "autofill_ai_model_cache.proto" ]
+
+  # TODO(crbug.com/691451): Remove. Currently it is required for importing
+  # system_profile.proto, which is used in the model_quality_metadata.proto
+  # that is contained in the optimization guide proto target.
+  import_dirs = [ "//third_party/metrics_proto/" ]
+  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+}

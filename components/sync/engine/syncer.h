@@ -26,8 +26,6 @@ class SyncCycle;
 // This enum should be in sync with SyncerErrorValues in enums.xml. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused. Exposed for tests.
-// TODO(crbug.com/40864723): this enum no longer corresponds to SyncerError,
-// modernize it.
 // LINT.IfChange(SyncerErrorValues)
 enum class SyncerErrorValueForUma {
   // Deprecated: kUnset = 0,  // Default value.
@@ -35,8 +33,8 @@ enum class SyncerErrorValueForUma {
 
   kNetworkConnectionUnavailable = 2,  // Connectivity failure.
   // Deprecated: NETWORK_IO_ERROR = 3,
-  kSyncServerError = 4,  // Non auth HTTP error.
-  kSyncAuthError = 5,    // HTTP auth error.
+  kHttpError = 4,  // Non auth HTTP error.
+  kHttpAuthError = 5,
 
   // Based on values returned by server.  Most are defined in sync.proto.
   // Deprecated: SERVER_RETURN_INVALID_CREDENTIAL = 6,
@@ -47,19 +45,21 @@ enum class SyncerErrorValueForUma {
   // Deprecated: kServerReturnClearPending = 11,
   kServerReturnNotMyBirthday = 12,
   kServerReturnConflict = 13,
-  kServerResponseValidationFailed = 14,
+  kProtocolViolationError = 14,
   kServerReturnDisabledByAdmin = 15,
   // Deprecated: SERVER_RETURN_USER_ROLLBACK = 16,
   // Deprecated: SERVER_RETURN_PARTIAL_FAILURE = 17,
   kServerReturnClientDataObsolete = 18,
+  // Was mistakenly reported as kServerReturnClientDataObsolete until M133.
   kServerReturnEncryptionObsolete = 19,
 
   // Deprecated: DATATYPE_TRIGGERED_RETRY = 20,
   // Deprecated: SERVER_MORE_TO_DOWNLOAD = 21,
 
   kSyncerOk = 22,
+  kServerReturnInvalidMessage = 23,
 
-  kMaxValue = kSyncerOk,
+  kMaxValue = kServerReturnInvalidMessage,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncerErrorValues)
 
@@ -85,8 +85,8 @@ class Syncer {
   bool IsSyncing() const;
 
   // Fetches and applies updates, resolves conflicts and commits local changes
-  // for |request_types| as necessary until client and server states are in
-  // sync.  The |nudge_tracker| contains state that describes why the client is
+  // for `request_types` as necessary until client and server states are in
+  // sync.  The `nudge_tracker` contains state that describes why the client is
   // out of sync and what must be done to bring it back into sync.
   // Returns: false if an error occurred and retries should backoff, true
   // otherwise.
@@ -94,9 +94,9 @@ class Syncer {
                                NudgeTracker* nudge_tracker,
                                SyncCycle* cycle);
 
-  // Performs an initial download for the |request_types|.  It is assumed that
+  // Performs an initial download for the `request_types`.  It is assumed that
   // the specified types have no local state, so none of the downloaded updates
-  // will be applied to the model.  The |source| is sent up to the server for
+  // will be applied to the model.  The `source` is sent up to the server for
   // debug purposes.  It describes the reason for performing this initial
   // download.
   // Returns: false if an error occurred and retries should backoff, true
@@ -105,7 +105,7 @@ class Syncer {
                                   sync_pb::SyncEnums_GetUpdatesOrigin origin,
                                   SyncCycle* cycle);
 
-  // Requests to download updates for the |request_types|.  For a well-behaved
+  // Requests to download updates for the `request_types`.  For a well-behaved
   // client with a working connection to the invalidations server, this should
   // be unnecessary.  It may be invoked periodically to try to keep the client
   // in sync despite bugs or transient failures.

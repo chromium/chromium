@@ -8,7 +8,7 @@
 #include "base/path_service.h"
 #include "net/dns/mock_host_resolver.h"
 
-base::FilePath::StringPieceType kTestAccountFilePath = FILE_PATH_LITERAL(
+base::FilePath::StringViewType kTestAccountFilePath = FILE_PATH_LITERAL(
     "chrome/browser/internal/resources/signin/test_accounts.json");
 
 const char* kRunLiveTestFlag = "run-live-tests";
@@ -43,7 +43,7 @@ void LiveTest::SetUp() {
   CHECK(!config_path.empty()) << kTestAccountFilePath
                               << " does not exist. This file is only available "
                                  "in Google-internal checkouts.";
-  test_accounts_.Init(config_path);
+  CHECK(test_accounts_.Init(config_path));
   InProcessBrowserTest::SetUp();
 }
 

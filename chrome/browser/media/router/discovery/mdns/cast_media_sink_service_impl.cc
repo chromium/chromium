@@ -4,11 +4,12 @@
 
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -203,7 +204,7 @@ CastMediaSinkServiceImpl::CastMediaSinkServiceImpl(
     const OnSinksDiscoveredCallback& callback,
     cast_channel::CastSocketService* cast_socket_service,
     DiscoveryNetworkMonitor* network_monitor,
-    MediaSinkServiceBase* dial_media_sink_service,
+    DialMediaSinkServiceImpl* dial_media_sink_service,
     bool allow_all_ips)
     : MediaSinkServiceBase(callback),
       cast_socket_service_(cast_socket_service),
@@ -280,8 +281,9 @@ void CastMediaSinkServiceImpl::Start() {
   }
 
   std::vector<MediaSinkInternal> test_sinks = GetFixedIPSinksFromCommandLine();
-  if (!test_sinks.empty())
+  if (!test_sinks.empty()) {
     OpenChannels(test_sinks, SinkSource::kMdns);
+  }
 }
 
 void CastMediaSinkServiceImpl::RecordDeviceCounts() {
@@ -292,15 +294,17 @@ void CastMediaSinkServiceImpl::RecordDeviceCounts() {
 
 void CastMediaSinkServiceImpl::DiscoverSinksNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!dial_media_sink_service_)
+  if (!dial_media_sink_service_) {
     return;
+  }
 
   // Re-sync sinks from DialMediaSinkService. It's possible that a
   // DIAL-discovered sink was added here earlier, but was removed due to flaky
   // network. This gives CastMediaSinkServiceImpl an opportunity to recover even
   // if mDNS is not working for some reason.
-  for (const auto& sink : dial_media_sink_service_->GetSinks())
+  for (const auto& sink : dial_media_sink_service_->GetSinks()) {
     TryConnectDialDiscoveredSink(sink.second);
+  }
 }
 
 void CastMediaSinkServiceImpl::OpenChannelsWithRandomizedDelay(
@@ -354,7 +358,7 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
   // Remove existing cast sink from |sinks|. It will be added back if
   // it can be successfully reconnected.
   const auto& sinks = GetSinks();
-  auto sink_it = base::ranges::find(sinks, socket_id, [](const auto& entry) {
+  auto sink_it = std::ranges::find(sinks, socket_id, [](const auto& entry) {
     return entry.second.cast_data().cast_channel_id;
   });
 
@@ -494,8 +498,9 @@ void CastMediaSinkServiceImpl::OpenChannel(
   // Erase the entry from |dial_sink_failure_count_| since the device is now
   // known to be a Cast device.
   const MediaSink::Id& sink_id = cast_sink.sink().id();
-  if (sink_source != SinkSource::kDial)
+  if (sink_source != SinkSource::kDial) {
     dial_sink_failure_count_.erase(sink_id);
+  }
 
   // If there already is a connected sink whose IP endpoint stayed the same,
   // then there's no need to reopen a socket. We just update the sink info.
@@ -564,8 +569,9 @@ void CastMediaSinkServiceImpl::OnChannelOpened(
 
   pending_for_open_ip_endpoints_.erase(cast_sink.cast_data().ip_endpoint);
   bool succeeded = socket->error_state() == cast_channel::ChannelError::NONE;
-  if (backoff_entry)
+  if (backoff_entry) {
     backoff_entry->InformOfRequest(succeeded);
+  }
   CastAnalytics::RecordDeviceChannelOpenDuration(succeeded,
                                                  clock_->Now() - start_time);
   if (succeeded) {
@@ -588,14 +594,16 @@ void CastMediaSinkServiceImpl::OnChannelErrorMayRetry(
 
   const MediaSink::Id& sink_id = cast_sink.sink().id();
   const net::IPEndPoint& ip_endpoint = cast_sink.cast_data().ip_endpoint;
-  if (sink_source == SinkSource::kDial)
+  if (sink_source == SinkSource::kDial) {
     ++dial_sink_failure_count_[sink_id];
+  }
 
   int failure_count = ++failure_count_map_[sink_id];
   failure_count_map_[sink_id] = std::min(failure_count, kMaxFailureCount);
 
-  if (!backoff_entry)
+  if (!backoff_entry) {
     backoff_entry = std::make_unique<net::BackoffEntry>(&backoff_policy_);
+  }
 
   if (backoff_entry->failure_count() >= retry_params_.max_retry_attempts) {
     OnChannelOpenFailed(ip_endpoint, cast_sink, std::move(callback));
@@ -622,7 +630,6 @@ void CastMediaSinkServiceImpl::OnChannelOpenSucceeded(
   DCHECK(socket);
   CastAnalytics::RecordCastChannelConnectResult(
       MediaRouterChannelConnectResults::SUCCESS);
-  CastAnalytics::RecordDeviceNameLength(cast_sink.sink().name().size());
   CastSinkExtraData& extra_data = cast_sink.cast_data();
   // Manually set device capabilities for sinks discovered via DIAL as DIAL
   // discovery does not provide capability info.
@@ -657,39 +664,44 @@ void CastMediaSinkServiceImpl::OnChannelOpenSucceeded(
   // IPEndPoint but different sink ID.
   const net::IPEndPoint& ip_endpoint = extra_data.ip_endpoint;
   const auto& sinks = GetSinks();
-  auto old_sink_it = base::ranges::find_if(
+  auto old_sink_it = std::ranges::find_if(
       sinks, [&cast_sink, &ip_endpoint](const auto& entry) {
         return entry.first != cast_sink.sink().id() &&
                entry.second.cast_data().ip_endpoint == ip_endpoint;
       });
 
-  if (old_sink_it != sinks.end())
+  if (old_sink_it != sinks.end()) {
     RemoveSink(old_sink_it->second);
+  }
 
   // Certain classes of Cast sinks support advertising via SSDP but do not
   // properly implement the rest of the DIAL protocol. If we successfully open
   // a Cast channel to a device that came from DIAL, remove it from
   // |dial_media_sink_service_|. This ensures the device shows up as a Cast sink
   // only.
-  if (dial_media_sink_service_)
+  if (dial_media_sink_service_) {
     dial_media_sink_service_->RemoveSinkById(GetDialSinkIdFromCast(sink_id));
-  if (callback)
+  }
+  if (callback) {
     std::move(callback).Run(true);
+  }
 }
 
 void CastMediaSinkServiceImpl::OnChannelOpenFailed(
     const net::IPEndPoint& ip_endpoint,
     const MediaSinkInternal& sink,
     ChannelOpenedCallback callback) {
-  if (callback)
+  if (callback) {
     std::move(callback).Run(false);
+  }
   // Check that the IPEndPoints match before removing, as it is possible that
   // the sink was reconnected under a different IP before this method is
   // called.
   const MediaSinkInternal* existing_sink = GetSinkById(sink.sink().id());
   if (!existing_sink ||
-      !(ip_endpoint == existing_sink->cast_data().ip_endpoint))
+      !(ip_endpoint == existing_sink->cast_data().ip_endpoint)) {
     return;
+  }
 
   LoggerList::GetInstance()->Log(
       LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,

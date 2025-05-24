@@ -14,12 +14,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/browser/spellcheck_platform.h"
 #include "components/spellcheck/common/spellcheck_panel.mojom.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/render_frame_host.h"
@@ -30,6 +33,11 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#endif
 
 @interface ChromeRenderWidgetHostViewMacDelegate () <HistorySwiperDelegate>
 
@@ -56,7 +64,7 @@
     (content::RenderWidgetHost*)renderWidgetHost {
   self = [super init];
   if (self) {
-    _widgetProcessId = renderWidgetHost->GetProcess()->GetID();
+    _widgetProcessId = renderWidgetHost->GetProcess()->GetDeprecatedID();
     _widgetRoutingId = renderWidgetHost->GetRoutingID();
     _historySwiper = [[HistorySwiper alloc] initWithDelegate:self];
   }
@@ -245,11 +253,6 @@
   return NO;
 }
 
-- (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
-                         consumed:(BOOL)consumed {
-  [_historySwiper rendererHandledWheelEvent:event consumed:consumed];
-}
-
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event
                                  consumed:(BOOL)consumed {
   [_historySwiper rendererHandledGestureScrollEvent:event consumed:consumed];
@@ -416,6 +419,21 @@
     return kAcceptMouseEventsInActiveWindow;
   }
 
+  // If this web contents is in a tab, and the tab wants to accept mouse events
+  // while the window is inactive.
+  if (tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(webContents)) {
+    if (tabs::TabFeatures* features = tab->GetTabFeatures()) {
+      if (tabs::InactiveWindowMouseEventController* inactive_event_controller =
+              features->inactive_window_mouse_event_controller()) {
+        if (inactive_event_controller
+                ->ShouldAcceptMouseEventsWhileWindowInactive()) {
+          return kAcceptMouseEventsInActiveApp;
+        }
+      }
+    }
+  }
+
   // For Top Chrome WebUIs, allows inactive windows to accept
   // mouse events as long as the application is active. This
   // mimics the behavior of views UI.
@@ -423,6 +441,18 @@
       IsTopChromeUntrustedWebUIURL(webContents->GetVisibleURL())) {
     return kAcceptMouseEventsInActiveApp;
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // WebContents managed by glic should be allowed to accept mouse events while
+  // inactive, aligning with the expected behavior of native chrome dialogs.
+  // TODO(crbug.com/399119513): Consider making this a single WebContents
+  // scoped setting, allowing this behavior to be configured by feature code.
+  glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(
+      Profile::FromBrowserContext(webContents->GetBrowserContext()));
+  if (glic_service && glic_service->IsActiveWebContents(webContents)) {
+    return kAcceptMouseEventsInActiveApp;
+  }
+#endif
 
   return kAcceptMouseEventsInActiveWindow;
 }

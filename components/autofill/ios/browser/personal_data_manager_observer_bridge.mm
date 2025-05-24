@@ -4,7 +4,7 @@
 
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 
-#include "base/check.h"
+#import "base/check.h"
 
 namespace autofill {
 

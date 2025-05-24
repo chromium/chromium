@@ -7,6 +7,6 @@
  * should be injected only into the main frame when it's loaded.
  */
 
-import { sendFaviconUrls } from "//ios/web/favicon/resources/favicon_utils.js";
+import {sendFaviconUrls} from '//ios/web/favicon/resources/favicon_utils.js';
 
 sendFaviconUrls();

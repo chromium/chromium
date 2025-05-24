@@ -143,9 +143,15 @@ namespace mojo {
 //
 template <typename DataViewType, typename T>
 struct StructTraits {
-  static_assert(internal::AlwaysFalse<T>::value,
-                "Cannot find the mojo::StructTraits specialization. Did you "
-                "forget to include the corresponding header file?");
+  static_assert(
+      internal::AlwaysFalse<T>::value,
+      "Cannot find the mojo::StructTraits specialization. Did you confirm "
+      "that:"
+      "  * the corresponding header file is included in your build file"
+      "    typemap?"
+      "  * the mojom::StructTraits specialization you've created is defined"
+      "    *exactly* the same as the mojom::StructTraits specialization"
+      "    specified in this stack trace?");
 };
 
 }  // namespace mojo

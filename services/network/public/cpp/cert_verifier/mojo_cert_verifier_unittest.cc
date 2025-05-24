@@ -351,15 +351,16 @@ TEST_F(MojoCertVerifierTest, IgnoresCVServiceDisconnection) {
 }
 
 TEST_F(MojoCertVerifierTest, SendsConfig) {
-  ASSERT_FALSE(dummy_cv_service()->config()->disable_symantec_enforcement);
+  ASSERT_FALSE(
+      dummy_cv_service()->config()->require_rev_checking_local_anchors);
 
   net::CertVerifier::Config config;
-  config.disable_symantec_enforcement = true;
+  config.require_rev_checking_local_anchors = true;
 
   mojo_cert_verifier()->SetConfig(config);
   task_environment()->RunUntilIdle();
 
-  ASSERT_TRUE(dummy_cv_service()->config()->disable_symantec_enforcement);
+  ASSERT_TRUE(dummy_cv_service()->config()->require_rev_checking_local_anchors);
 }
 
 TEST_F(MojoCertVerifierTest, ReconnectorCallsCb) {

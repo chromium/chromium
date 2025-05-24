@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -84,7 +85,7 @@ class WEB_ENGINE_EXPORT MediaPlayerImpl final
   // Reports the specified |status| to the client and calls |on_disconnect_|.
   void ReportErrorAndDisconnect(zx_status_t status);
 
-  content::MediaSession* const media_session_;
+  const raw_ptr<content::MediaSession> media_session_;
 
   // Invoked when |binding_| becomes disconnected.
   base::OnceClosure on_disconnect_;

@@ -11,15 +11,6 @@
 
 namespace ash {
 
-namespace {
-
-#if DCHECK_IS_ON()
-// Fake input for notification testing.
-constexpr base::TimeDelta kFakeNotificationInputForTesting = base::Hours(8);
-#endif  // DCHECK_IS_ON()
-
-}  // namespace
-
 AdaptiveChargingController::AdaptiveChargingController()
     : notification_controller_(
           std::make_unique<AdaptiveChargingNotificationController>()) {
@@ -54,17 +45,6 @@ void AdaptiveChargingController::PowerChanged(
     is_on_charger_now =
         proto.external_power() == power_manager::PowerSupplyProperties::AC;
   }
-
-#if DCHECK_IS_ON()
-  if (features::IsAdaptiveChargingForTestingEnabled()) {
-    if (!is_on_charger_ && is_on_charger_now) {
-      notification_controller_->ShowAdaptiveChargingNotification(
-          kFakeNotificationInputForTesting);
-    }
-    is_on_charger_ = is_on_charger_now;
-    return;
-  }
-#endif  // DCHECK_IS_ON()
 
   // Notification should be shown only if heuristic is enabled for this user.
   if (proto.has_adaptive_charging_heuristic_enabled() &&

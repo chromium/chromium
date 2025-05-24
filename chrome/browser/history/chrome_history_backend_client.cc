@@ -16,8 +16,7 @@ ChromeHistoryBackendClient::ChromeHistoryBackendClient(
     scoped_refptr<bookmarks::ModelLoader> model_loader)
     : model_loader_(std::move(model_loader)) {}
 
-ChromeHistoryBackendClient::~ChromeHistoryBackendClient() {
-}
+ChromeHistoryBackendClient::~ChromeHistoryBackendClient() = default;
 
 bool ChromeHistoryBackendClient::IsPinnedURL(const GURL& url) {
   if (!model_loader_)

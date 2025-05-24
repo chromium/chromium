@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("content_extraction") {
   sources = [
+    "ai_page_content_agent.cc",
+    "ai_page_content_agent.h",
     "document_chunker.cc",
     "document_chunker.h",
     "inner_html_agent.cc",
@@ -16,5 +18,14 @@ blink_modules_sources("content_extraction") {
     "inner_text_agent.h",
     "inner_text_builder.cc",
     "inner_text_builder.h",
+    "paid_content.cc",
+    "paid_content.h",
   ]
+
+  deps = [
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/renderer/modules/accessibility:accessibility",
+  ]
+
+  public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
 }

@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/win/scoped_handle.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -25,6 +26,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace device {
 
@@ -36,7 +38,8 @@ void OpenXrGraphicsBinding::GetRequiredExtensions(
 
 OpenXrGraphicsBindingD3D11::OpenXrGraphicsBindingD3D11(
     base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper)
-    : texture_helper_(std::make_unique<D3D11TextureHelper>()),
+    : OpenXrGraphicsBinding(weak_platform_helper->GetExtensionEnumeration()),
+      texture_helper_(std::make_unique<D3D11TextureHelper>()),
       weak_platform_helper_(weak_platform_helper) {}
 
 OpenXrGraphicsBindingD3D11::~OpenXrGraphicsBindingD3D11() = default;
@@ -85,7 +88,7 @@ int64_t OpenXrGraphicsBindingD3D11::GetSwapchainFormat(
   // OpenXR's swapchain format expects to describe the texture content.
   // The result of a swapchain image created from OpenXR API always contains a
   // typeless texture. On the other hand, WebGL API uses CSS color convention
-  // that's sRGB. The RGBA typelss texture from OpenXR swapchain image leads to
+  // that's sRGB. The RGBA typeless texture from OpenXR swapchain image leads to
   // a linear format render target view (reference to function
   // D3D11TextureHelper::EnsureRenderTargetView in d3d11_texture_helper.cc).
   // Therefore, the content in this openxr swapchain image is in sRGB format.
@@ -124,10 +127,16 @@ base::span<SwapChainInfo> OpenXrGraphicsBindingD3D11::GetSwapChainImages() {
   return color_swapchain_images_;
 }
 
+base::span<const SwapChainInfo> OpenXrGraphicsBindingD3D11::GetSwapChainImages()
+    const {
+  return color_swapchain_images_;
+}
+
 bool OpenXrGraphicsBindingD3D11::CanUseSharedImages() const {
   // Put shared image feature behind a flag until remaining issues with overlays
-  // are resolved.
-  return !base::FeatureList::IsEnabled(device::features::kOpenXRSharedImages);
+  // are resolved. WebGPU sessions always use SharedImages.
+  return base::FeatureList::IsEnabled(device::features::kOpenXRSharedImages) ||
+         IsWebGPUSession();
 }
 
 void OpenXrGraphicsBindingD3D11::CreateSharedImages(
@@ -162,16 +171,60 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
     hr = dxgi_resource->CreateSharedHandle(
         nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
         nullptr, &shared_handle);
+
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Unable to create shared handle for DXGIResource "
-                  << std::hex << hr;
-      return;
+      DLOG(WARNING) << "Unable to create shared handle for DXGIResource (0x"
+                    << std::hex << hr << "). Creating a separate shareable "
+                    << "texture instead.";
+
+      D3D11_TEXTURE2D_DESC desc;
+      desc.Width = texture2d_desc.Width;
+      desc.Height = texture2d_desc.Height;
+      desc.MipLevels = 1;
+      desc.ArraySize = 1;
+      desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+      desc.SampleDesc.Count = 1;
+      desc.SampleDesc.Quality = 0;
+      desc.Usage = D3D11_USAGE_DEFAULT;
+      desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+      desc.CPUAccessFlags = 0;
+      desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
+                       D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+          texture_helper_->GetDevice();
+      hr = d3d11_device->CreateTexture2D(&desc, nullptr,
+                                         &swap_chain_info.d3d11_shared_texture);
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "Failed to create shared texture (0x" << std::hex << hr
+                    << ")";
+        return;
+      }
+
+      hr = swap_chain_info.d3d11_shared_texture->QueryInterface(
+          IID_PPV_ARGS(&dxgi_resource));
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "QueryInterface for IDXGIResource of shared texture "
+                       "failed with error 0x"
+                    << std::hex << hr;
+        swap_chain_info.d3d11_shared_texture = nullptr;
+        return;
+      }
+
+      hr = dxgi_resource->CreateSharedHandle(
+          nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
+          nullptr, &shared_handle);
+      if (FAILED(hr)) {
+        DLOG(ERROR)
+            << "Unable to create shared handle for fallback DXGIResource (0x"
+            << std::hex << hr << ").";
+        swap_chain_info.d3d11_shared_texture = nullptr;
+        return;
+      }
     }
 
-    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-    gpu_memory_buffer_handle.dxgi_handle.Set(shared_handle);
-    gpu_memory_buffer_handle.dxgi_token = gfx::DXGIHandleToken();
-    gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
+    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle{
+        gfx::DXGIHandle(base::win::ScopedHandle(shared_handle))};
 
     // TODO(crbug.com/40918787): This size is the size of the texture
     // from the OpenXr runtime, which is fine but does not work properly if the
@@ -182,12 +235,17 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
         gfx::Size(texture2d_desc.Width, texture2d_desc.Height);
 
     // The SharedImages created here will eventually be transferred to other
-    // processes to have their contents written by WebGL and read via GL by
-    // OpenXR.
-    const gpu::SharedImageUsageSet shared_image_usage =
+    // processes to have their contents written by WebGL or WebGPU.
+    // Readback by OpenXR is always via OpenGL.
+    gpu::SharedImageUsageSet shared_image_usage =
         gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
         gpu::SHARED_IMAGE_USAGE_GLES2_READ |
         gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+
+    if (IsWebGPUSession()) {
+      shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                            gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+    }
 
     swap_chain_info.shared_image = sii->CreateSharedImage(
         {viz::SinglePlaneFormat::kRGBA_8888, buffer_size,
@@ -265,6 +323,17 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
 
 bool OpenXrGraphicsBindingD3D11::Render(
     const scoped_refptr<viz::ContextProvider>& context_provider) {
+  const SwapChainInfo& swap_chain_image = GetActiveSwapchainImage();
+  if (swap_chain_image.d3d11_shared_texture) {
+    if (!texture_helper_->CopyToBackBuffer(
+            context_provider, swap_chain_image.d3d11_shared_texture)) {
+      DLOG(ERROR) << "CopyToBackBuffer failed.";
+      return false;
+    }
+  }
+
+  // Even if a shared image was copied, always perform a composite to account
+  // for any necessary overlays.
   return texture_helper_->UpdateBackbufferSizes() &&
          texture_helper_->CompositeToBackBuffer(context_provider);
 }
@@ -273,8 +342,8 @@ void OpenXrGraphicsBindingD3D11::CleanupWithoutSubmit() {
   texture_helper_->CleanupNoSubmit();
 }
 
-bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage() {
-  return true;
+bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage() const {
+  return IsUsingSharedImages() && !IsWebGPUSession();
 }
 
 void OpenXrGraphicsBindingD3D11::OnSwapchainImageSizeChanged() {
@@ -287,7 +356,8 @@ void OpenXrGraphicsBindingD3D11::OnSwapchainImageActivated(
   CHECK(active_swapchain_index() < color_swapchain_images_.size());
 
   texture_helper_->SetBackbuffer(
-      color_swapchain_images_[active_swapchain_index()].d3d11_texture.get());
+      color_swapchain_images_[active_swapchain_index()].d3d11_texture.get(),
+      IsUsingSharedImages(), ShouldFlipSubmittedImage());
 }
 
 void OpenXrGraphicsBindingD3D11::SetOverlayAndWebXrVisibility(
@@ -304,6 +374,7 @@ void OpenXrGraphicsBindingD3D11::SetWebXrTexture(
   base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
                                               ? texture_handle.TakeHandle()
                                               : base::win::ScopedHandle();
+
   texture_helper_->SetSourceTexture(std::move(scoped_handle), sync_token, left,
                                     right);
 }
@@ -317,9 +388,9 @@ bool OpenXrGraphicsBindingD3D11::SetOverlayTexture(
     return false;
   }
 
-  CHECK(texture.type == gfx::DXGI_SHARED_HANDLE);
-  return texture_helper_->SetOverlayTexture(std::move(texture.dxgi_handle),
-                                            sync_token, left, right);
+  return texture_helper_->SetOverlayTexture(
+      std::move(texture).dxgi_handle().TakeBufferHandle(), sync_token, left,
+      right);
 }
 
 }  // namespace device

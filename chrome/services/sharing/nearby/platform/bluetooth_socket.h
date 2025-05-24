@@ -20,8 +20,7 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // Concrete BluetoothSocket implementation.
 //
@@ -83,7 +82,6 @@ class BluetoothSocket : public api::BluetoothSocket {
   BidirectionalStream bidirectional_stream_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_SOCKET_H_

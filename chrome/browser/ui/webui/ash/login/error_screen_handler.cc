@@ -85,7 +85,8 @@ void ErrorScreenHandler::DeclareLocalizedValues(
   builder->Add("proxySettingsMenuName",
                IDS_NETWORK_PROXY_SETTINGS_LIST_ITEM_NAME);
   builder->Add("addWiFiNetworkMenuName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME);
-  builder->Add("autoEnrollmentErrorMessageTitle", IDS_LOGIN_AUTO_ENROLLMENT_OFFLINE_TITLE);
+  builder->Add("autoEnrollmentErrorMessageTitle",
+               IDS_LOGIN_AUTO_ENROLLMENT_OFFLINE_TITLE);
   ui::network_element::AddLocalizedValuesToBuilder(builder);
 
   builder->Add("offlineLogin", IDS_OFFLINE_LOGIN_HTML);

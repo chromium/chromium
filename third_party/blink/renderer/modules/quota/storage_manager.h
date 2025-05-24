@@ -9,14 +9,9 @@
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
 
@@ -24,9 +19,7 @@ class ExecutionContext;
 class ScriptState;
 class StorageEstimate;
 
-class StorageManager final : public EventTarget,
-                             public ExecutionContextClient,
-                             public mojom::blink::QuotaChangeListener {
+class StorageManager final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -38,22 +31,8 @@ class StorageManager final : public EventTarget,
 
   ScriptPromise<StorageEstimate> estimate(ScriptState*, ExceptionState&);
 
+  // ScriptWrappable:
   void Trace(Visitor* visitor) const override;
-
-  // EventTarget
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(quotachange, kQuotachange)
-  const AtomicString& InterfaceName() const override;
-  ExecutionContext* GetExecutionContext() const override;
-
-  // network::mojom::blink::QuotaChangeListener
-  void OnQuotaChange() override;
-
- protected:
-  // EventTarget overrides.
-  void AddedEventListener(const AtomicString& event_type,
-                          RegisteredEventListener&) final;
-  void RemovedEventListener(const AtomicString& event_type,
-                            const RegisteredEventListener&) final;
 
  private:
   mojom::blink::PermissionService* GetPermissionService(ExecutionContext*);
@@ -62,21 +41,12 @@ class StorageManager final : public EventTarget,
   void PermissionRequestComplete(ScriptPromiseResolver<IDLBoolean>*,
                                  mojom::blink::PermissionStatus);
 
-  // Called when a quota change event listener is added.
-  void StartObserving();
-
-  // Called when all the change event listeners have been removed.
-  void StopObserving();
-
   // Binds the interface (if not already bound) with the given interface
   // provider, and returns it,
   mojom::blink::QuotaManagerHost* GetQuotaHost(ExecutionContext*);
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
   HeapMojoRemote<mojom::blink::QuotaManagerHost> quota_host_;
-
-  HeapMojoReceiver<mojom::blink::QuotaChangeListener, StorageManager>
-      change_listener_receiver_;
 };
 
 }  // namespace blink

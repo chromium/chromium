@@ -10,10 +10,13 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -26,7 +29,9 @@ class CryptohomePinEngine {
  public:
   enum class Purpose { kAny, kUnlock, kWebAuthn };
 
-  explicit CryptohomePinEngine(ash::AuthPerformer* auth_performer);
+  // `local_state` must be non-null and must outlive `this`.
+  CryptohomePinEngine(PrefService* local_state,
+                      ash::AuthPerformer* auth_performer);
   CryptohomePinEngine(const CryptohomePinEngine&) = delete;
   CryptohomePinEngine& operator=(const CryptohomePinEngine&) = delete;
   virtual ~CryptohomePinEngine();
@@ -63,6 +68,8 @@ class CryptohomePinEngine {
   void OnGetAuthFactorsConfiguration(IsPinAuthAvailableCallback callback,
                                      std::unique_ptr<UserContext> user_context,
                                      std::optional<AuthenticationError> error);
+
+  const raw_ref<PrefService> local_state_;
 
   // Non owning pointer
   const raw_ptr<ash::AuthPerformer> auth_performer_;

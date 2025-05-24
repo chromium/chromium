@@ -65,9 +65,22 @@ const DELEGATE: ClientApiDelegate = {
   getDeviceInfo(): Promise<DeviceInfo> {
     return parentMessagePipe.sendMessage(Message.GET_DEVICE_INFO);
   },
+  openSettings(path: number) {
+    parentMessagePipe.sendMessage(Message.OPEN_SETTINGS, path);
+  },
   openUrlInBrowserAndTriggerInstallDialog(url: string) {
     return parentMessagePipe.sendMessage(
         Message.OPEN_URL_IN_BROWSER_AND_TRIGGER_INSTALL_DIALOG, url);
+  },
+  setHasCompletedNewDeviceChecklist() {
+    parentMessagePipe.sendMessage(
+        Message.SET_HAS_COMPLETED_NEW_DEVICE_CHECKLIST);
+  },
+  setHasVisitedHowToPage() {
+    parentMessagePipe.sendMessage(Message.SET_HAS_VISITED_HOW_TO_PAGE);
+  },
+  openAppMallPath(path: string) {
+    parentMessagePipe.sendMessage(Message.OPEN_APP_MALL_PATH, {path});
   },
 };
 

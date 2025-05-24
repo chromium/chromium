@@ -27,8 +27,8 @@
 
 [Exposed=Window]
 interface SVGLinearGradientElement : SVGGradientElement {
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength x1;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength y1;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength x2;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength y2;
+    readonly attribute SVGAnimatedLength x1;
+    readonly attribute SVGAnimatedLength y1;
+    readonly attribute SVGAnimatedLength x2;
+    readonly attribute SVGAnimatedLength y2;
 };

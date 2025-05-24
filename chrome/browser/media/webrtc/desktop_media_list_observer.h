@@ -21,7 +21,7 @@ class DesktopMediaListObserver {
   virtual void OnDelegatedSourceListDismissed() = 0;
 
  protected:
-  virtual ~DesktopMediaListObserver() {}
+  virtual ~DesktopMediaListObserver() = default;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_OBSERVER_H_

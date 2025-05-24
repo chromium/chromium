@@ -24,7 +24,8 @@ TEST(RaceNetworkRequestWriteBufferManagerTest, WriteData) {
   EXPECT_TRUE(buffer_manager.is_data_pipe_created());
 
   const char expected_data[] = "abcde";
-  base::span<const char> read_buffer = base::make_span(expected_data);
+  base::span<const char> read_buffer =
+      base::span_with_nul_from_cstring(expected_data);
   EXPECT_EQ(buffer_manager.BeginWriteData(), MOJO_RESULT_OK);
   size_t wirtten_num_bytes =
       buffer_manager.CopyAndCompleteWriteData(read_buffer);
@@ -48,7 +49,8 @@ TEST(RaceNetworkRequestWriteBufferManagerTest, WatchDataPipe) {
   buffer_manager.ArmOrNotify();
   run_loop.Run();
   const char expected_data[] = "abcde";
-  base::span<const char> read_buffer = base::make_span(expected_data);
+  base::span<const char> read_buffer =
+      base::span_with_nul_from_cstring(expected_data);
   EXPECT_EQ(buffer_manager.BeginWriteData(), MOJO_RESULT_OK);
   size_t wirtten_num_bytes =
       buffer_manager.CopyAndCompleteWriteData(read_buffer);

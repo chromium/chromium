@@ -10,6 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -39,8 +42,7 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
   bool MustRemainEnabled(const Extension* extension,
                          std::u16string* error) const override;
   bool MustRemainDisabled(const Extension* extension,
-                          disable_reason::DisableReason* reason,
-                          std::u16string* error) const override;
+                          disable_reason::DisableReason* reason) const override;
   bool MustRemainInstalled(const Extension* extension,
                            std::u16string* error) const override;
   bool ShouldForceUninstall(const Extension* extension,

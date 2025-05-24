@@ -20,6 +20,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/database.h"
+#include "content/browser/indexed_db/instance/transaction.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -33,9 +34,9 @@ class IndexedDBKeyRange;
 }
 
 namespace content::indexed_db {
+
 class DatabaseCallbacks;
 class DatabaseError;
-class Transaction;
 class BucketContext;
 
 // This class maps to an IDB database *connection*:
@@ -92,7 +93,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   Transaction* CreateVersionChangeTransaction(
       int64_t id,
       const std::set<int64_t>& scope,
-      BackingStore::Transaction* backing_store_transaction);
+      std::unique_ptr<BackingStore::Transaction> backing_store_transaction);
 
   // Checks if the client is in inactive state and disallow it from activation
   // if so. This is called when the client is not supposed to be inactive,
@@ -108,7 +109,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
 
   void AbortTransactionAndTearDownOnError(Transaction* transaction,
                                           const DatabaseError& error);
-  void CloseAndReportForceClose();
+  void CloseAndReportForceClose(const std::string& message);
 
   int scheduling_priority() const { return scheduling_priority_; }
 
@@ -118,6 +119,10 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   // come from the same client (window/worker context).
   static bool HasHigherPriorityThan(const PartitionedLockHolder* this_one,
                                     const PartitionedLockHolder& other);
+
+  // Returns true if any of the connection's transactions is holding one of the
+  // lock IDs.
+  bool IsHoldingLocks(const std::vector<PartitionedLockId>& lock_ids) const;
 
  private:
   friend class TransactionTest;
@@ -140,21 +145,21 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   void Get(int64_t transaction_id,
            int64_t object_store_id,
            int64_t index_id,
-           const blink::IndexedDBKeyRange& key_range,
+           blink::IndexedDBKeyRange key_range,
            bool key_only,
            blink::mojom::IDBDatabase::GetCallback callback) override;
   void GetAll(int64_t transaction_id,
               int64_t object_store_id,
               int64_t index_id,
-              const blink::IndexedDBKeyRange& key_range,
-              bool key_only,
+              blink::IndexedDBKeyRange key_range,
+              blink::mojom::IDBGetAllResultType result_type,
               int64_t max_count,
+              blink::mojom::IDBCursorDirection direction,
               blink::mojom::IDBDatabase::GetAllCallback callback) override;
-  void SetIndexKeys(
-      int64_t transaction_id,
-      int64_t object_store_id,
-      const blink::IndexedDBKey& primary_key,
-      const std::vector<blink::IndexedDBIndexKeys>& index_keys) override;
+  void SetIndexKeys(int64_t transaction_id,
+                    int64_t object_store_id,
+                    blink::IndexedDBKey primary_key,
+                    std::vector<blink::IndexedDBIndexKeys> index_keys) override;
   void SetIndexesReady(int64_t transaction_id,
                        int64_t object_store_id,
                        const std::vector<int64_t>& index_ids) override;
@@ -162,7 +167,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
       int64_t transaction_id,
       int64_t object_store_id,
       int64_t index_id,
-      const blink::IndexedDBKeyRange& key_range,
+      blink::IndexedDBKeyRange key_range,
       blink::mojom::IDBCursorDirection direction,
       bool key_only,
       blink::mojom::IDBTaskType task_type,
@@ -170,11 +175,11 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   void Count(int64_t transaction_id,
              int64_t object_store_id,
              int64_t index_id,
-             const blink::IndexedDBKeyRange& key_range,
+             blink::IndexedDBKeyRange key_range,
              CountCallback callback) override;
   void DeleteRange(int64_t transaction_id,
                    int64_t object_store_id,
-                   const blink::IndexedDBKeyRange& key_range,
+                   blink::IndexedDBKeyRange key_range,
                    DeleteRangeCallback success_callback) override;
   void GetKeyGeneratorCurrentNumber(
       int64_t transaction_id,
@@ -185,11 +190,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
              ClearCallback callback) override;
   void CreateIndex(int64_t transaction_id,
                    int64_t object_store_id,
-                   int64_t index_id,
-                   const std::u16string& name,
-                   const blink::IndexedDBKeyPath& key_path,
-                   bool unique,
-                   bool multi_entry) override;
+                   const blink::IndexedDBIndexMetadata& index) override;
   void DeleteIndex(int64_t transaction_id,
                    int64_t object_store_id,
                    int64_t index_id) override;
@@ -217,13 +218,13 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
 
   // The return value is `callbacks_`, passing ownership.
   std::unique_ptr<DatabaseCallbacks> AbortTransactionsAndClose(
-      CloseErrorHandling error_handling);
+      CloseErrorHandling error_handling,
+      const std::string& message);
 
   // Returns the last error that occurred, if there is any.
-  leveldb::Status AbortAllTransactionsAndIgnoreErrors(
-      const DatabaseError& error);
+  Status AbortAllTransactionsAndIgnoreErrors(const DatabaseError& error);
 
-  leveldb::Status AbortAllTransactions(const DatabaseError& error);
+  Status AbortAllTransactions(const DatabaseError& error);
 
   BucketContext* bucket_context() {
     return bucket_context_handle_.bucket_context();
@@ -249,7 +250,13 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker_;
 
-  mojo::RemoteSet<storage::mojom::IndexedDBClientKeepActive>
+  // TODO(381086791): Remove the per-reason split when the regression is fixed.
+  static constexpr size_t kNumKeepActiveReasons =
+      static_cast<size_t>(
+          storage::mojom::DisallowInactiveClientReason::kMaxValue) +
+      1;
+  std::array<mojo::RemoteSet<storage::mojom::IndexedDBClientKeepActive>,
+             kNumKeepActiveReasons>
       client_keep_active_remotes_;
 
   // Uniquely identifies the document or worker that owns the other side of this

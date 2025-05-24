@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string>
+#include <variant>
 
 #include "base/time/time.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -14,7 +15,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -75,11 +75,11 @@ class CONTENT_EXPORT PrerenderCancellationReason {
  public:
   // Tagged by `final_status_`. See `BuildFor*` and `ToDevtoolReasonString`.
   using DetailedReasonVariant =
-      absl::variant<absl::monostate,
-                    int32_t,
-                    uint64_t,
-                    std::string,
-                    std::vector<PrerenderMismatchedHeaders>>;
+      std::variant<std::monostate,
+                   int32_t,
+                   uint64_t,
+                   std::string,
+                   std::vector<PrerenderMismatchedHeaders>>;
 
   explicit PrerenderCancellationReason(PrerenderFinalStatus final_status);
   ~PrerenderCancellationReason();

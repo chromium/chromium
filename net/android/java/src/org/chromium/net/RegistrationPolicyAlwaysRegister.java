@@ -4,7 +4,10 @@
 
 package org.chromium.net;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Registration policy which make sure that the listener is always registered. */
+@NullMarked
 public class RegistrationPolicyAlwaysRegister
         extends NetworkChangeNotifierAutoDetect.RegistrationPolicy {
     @Override

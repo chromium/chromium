@@ -13,15 +13,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <limits>
-#include <new>
-
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "mojo/public/c/system/macros.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
-#include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 #include "mojo/public/cpp/bindings/lib/validate_params.h"

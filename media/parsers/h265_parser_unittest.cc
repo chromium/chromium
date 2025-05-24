@@ -7,15 +7,18 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "media/parsers/h265_parser.h"
+
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "media/base/test_data_util.h"
-#include "media/parsers/h265_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -443,11 +446,12 @@ TEST_F(H265ParserTest, HDRMetadataSEIParsing) {
   H265SEI clli_sei;
   EXPECT_EQ(H265Parser::kOk, parser_.ParseSEI(&clli_sei));
   EXPECT_EQ(clli_sei.msgs.size(), 1u);
-  for (auto& sei_msg : clli_sei.msgs) {
-    EXPECT_EQ(sei_msg.type, H265SEIMessage::kSEIContentLightLevelInfo);
-    EXPECT_EQ(sei_msg.content_light_level_info.max_content_light_level, 1000u);
-    EXPECT_EQ(sei_msg.content_light_level_info.max_picture_average_light_level,
-              400u);
+  for (const auto& sei_msg : clli_sei.msgs) {
+    const auto* content_light_level_info =
+        std::get_if<H265SEIContentLightLevelInfo>(&sei_msg);
+    ASSERT_TRUE(content_light_level_info);
+    EXPECT_EQ(content_light_level_info->max_content_light_level, 1000u);
+    EXPECT_EQ(content_light_level_info->max_picture_average_light_level, 400u);
   }
 
   // Parse the next mastering display colour volume info SEI
@@ -455,18 +459,20 @@ TEST_F(H265ParserTest, HDRMetadataSEIParsing) {
   H265SEI mdcv_sei;
   EXPECT_EQ(H265Parser::kOk, parser_.ParseSEI(&mdcv_sei));
   EXPECT_EQ(mdcv_sei.msgs.size(), 1u);
-  for (auto& sei_msg : mdcv_sei.msgs) {
-    EXPECT_EQ(sei_msg.type, H265SEIMessage::kSEIMasteringDisplayInfo);
-    EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[0][0], 13250u);
-    EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[0][1], 34500u);
-    EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[1][0], 7500u);
-    EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[1][1], 3000u);
-    EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[2][0], 34000u);
-    EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[2][1], 16000u);
-    EXPECT_EQ(sei_msg.mastering_display_info.white_points[0], 15635u);
-    EXPECT_EQ(sei_msg.mastering_display_info.white_points[1], 16450u);
-    EXPECT_EQ(sei_msg.mastering_display_info.max_luminance, 10000000u);
-    EXPECT_EQ(sei_msg.mastering_display_info.min_luminance, 500u);
+  for (const auto& sei_msg : mdcv_sei.msgs) {
+    const auto* mastering_display_info =
+        std::get_if<H265SEIMasteringDisplayInfo>(&sei_msg);
+    ASSERT_TRUE(mastering_display_info);
+    EXPECT_EQ(mastering_display_info->display_primaries[0][0], 13250u);
+    EXPECT_EQ(mastering_display_info->display_primaries[0][1], 34500u);
+    EXPECT_EQ(mastering_display_info->display_primaries[1][0], 7500u);
+    EXPECT_EQ(mastering_display_info->display_primaries[1][1], 3000u);
+    EXPECT_EQ(mastering_display_info->display_primaries[2][0], 34000u);
+    EXPECT_EQ(mastering_display_info->display_primaries[2][1], 16000u);
+    EXPECT_EQ(mastering_display_info->white_points[0], 15635u);
+    EXPECT_EQ(mastering_display_info->white_points[1], 16450u);
+    EXPECT_EQ(mastering_display_info->max_luminance, 10000000u);
+    EXPECT_EQ(mastering_display_info->min_luminance, 500u);
   }
 }
 
@@ -503,16 +509,18 @@ TEST_F(H265ParserTest, AlphaChannelInfoSEIParsing) {
   EXPECT_EQ(alpha_sei.msgs.size(), 1u);
 
   // Alpha channel info present.
-  for (auto& sei_msg : alpha_sei.msgs) {
-    EXPECT_EQ(sei_msg.type, H265SEIMessage::kSEIAlphaChannelInfo);
-    EXPECT_EQ(sei_msg.alpha_channel_info.alpha_channel_cancel_flag, 0);
-    EXPECT_EQ(sei_msg.alpha_channel_info.alpha_channel_use_idc, 0);
-    EXPECT_EQ(sei_msg.alpha_channel_info.alpha_channel_bit_depth_minus8, 0);
-    EXPECT_EQ(sei_msg.alpha_channel_info.alpha_transparent_value, 0);
-    EXPECT_EQ(sei_msg.alpha_channel_info.alpha_opaque_value, 255);
-    EXPECT_EQ(sei_msg.alpha_channel_info.alpha_channel_incr_flag, 0);
-    EXPECT_EQ(sei_msg.alpha_channel_info.alpha_channel_clip_flag, 0);
-    EXPECT_EQ(sei_msg.alpha_channel_info.alpha_channel_clip_type_flag, 0);
+  for (const auto& sei_msg : alpha_sei.msgs) {
+    const auto* alpha_channel_info =
+        std::get_if<H265SEIAlphaChannelInfo>(&sei_msg);
+    ASSERT_TRUE(alpha_channel_info);
+    EXPECT_EQ(alpha_channel_info->alpha_channel_cancel_flag, false);
+    EXPECT_EQ(alpha_channel_info->alpha_channel_use_idc, false);
+    EXPECT_EQ(alpha_channel_info->alpha_channel_bit_depth_minus8, 0);
+    EXPECT_EQ(alpha_channel_info->alpha_transparent_value, 0);
+    EXPECT_EQ(alpha_channel_info->alpha_opaque_value, 255);
+    EXPECT_EQ(alpha_channel_info->alpha_channel_incr_flag, false);
+    EXPECT_EQ(alpha_channel_info->alpha_channel_clip_flag, false);
+    EXPECT_EQ(alpha_channel_info->alpha_channel_clip_type_flag, false);
   }
 }
 
@@ -579,39 +587,28 @@ TEST_F(H265ParserTest, RecursiveSEIParsing) {
   EXPECT_EQ(H265Parser::kOk, parser.ParseSEI(&clli_mdcv_sei));
   EXPECT_EQ(clli_mdcv_sei.msgs.size(), 2u);
 
-  for (auto& sei_msg : clli_mdcv_sei.msgs) {
-    EXPECT_TRUE(sei_msg.type == H265SEIMessage::kSEIContentLightLevelInfo ||
-                sei_msg.type == H265SEIMessage::kSEIMasteringDisplayInfo);
-    switch (sei_msg.type) {
-      case H265SEIMessage::kSEIContentLightLevelInfo:
-        // Content light level info present.
-        EXPECT_EQ(sei_msg.content_light_level_info.max_content_light_level,
-                  1000u);
-        EXPECT_EQ(
-            sei_msg.content_light_level_info.max_picture_average_light_level,
-            200u);
-        break;
-      case H265SEIMessage::kSEIMasteringDisplayInfo:
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[0][0],
-                  13249u);
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[0][1],
-                  34499u);
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[1][0],
-                  7500u);
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[1][1],
-                  2999u);
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[2][0],
-                  34000u);
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[2][1],
-                  15999u);
-        EXPECT_EQ(sei_msg.mastering_display_info.white_points[0], 15635u);
-        EXPECT_EQ(sei_msg.mastering_display_info.white_points[1], 16449u);
-        EXPECT_EQ(sei_msg.mastering_display_info.max_luminance, 10000000u);
-        EXPECT_EQ(sei_msg.mastering_display_info.min_luminance, 50u);
-        break;
-      default:
-        break;
-    }
+  for (const auto& sei_msg : clli_mdcv_sei.msgs) {
+    std::visit(base::Overloaded{
+                   [](const H265SEIContentLightLevelInfo& info) {
+                     EXPECT_EQ(info.max_content_light_level, 1000u);
+                     EXPECT_EQ(info.max_picture_average_light_level, 200u);
+                   },
+                   [](const H265SEIMasteringDisplayInfo& info) {
+                     EXPECT_EQ(info.display_primaries[0][0], 13249u);
+                     EXPECT_EQ(info.display_primaries[0][1], 34499u);
+                     EXPECT_EQ(info.display_primaries[1][0], 7500u);
+                     EXPECT_EQ(info.display_primaries[1][1], 2999u);
+                     EXPECT_EQ(info.display_primaries[2][0], 34000u);
+                     EXPECT_EQ(info.display_primaries[2][1], 15999u);
+                     EXPECT_EQ(info.white_points[0], 15635u);
+                     EXPECT_EQ(info.white_points[1], 16449u);
+                     EXPECT_EQ(info.max_luminance, 10000000u);
+                     EXPECT_EQ(info.min_luminance, 50u);
+                   },
+                   [](const auto&) {
+                     EXPECT_TRUE(false) << "Unexpected message type!";
+                   }},
+               sei_msg);
   }
 }
 

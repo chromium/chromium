@@ -5,9 +5,10 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_PREF_HASH_CALCULATOR_H_
 #define SERVICES_PREFERENCES_TRACKED_PREF_HASH_CALCULATOR_H_
 
-#include "base/values.h"
-
 #include <string>
+
+#include "base/values.h"
+#include "components/os_crypt/async/common/encryptor.h"
 
 // Calculates and validates preference value hashes.
 class PrefHashCalculator {
@@ -17,6 +18,8 @@ class PrefHashCalculator {
     VALID,
     // Valid under a deprecated but as secure algorithm.
     VALID_SECURE_LEGACY,
+    VALID_ENCRYPTED,
+    INVALID_ENCRYPTED,
   };
 
   // Constructs a PrefHashCalculator using |seed|, |device_id| and
@@ -47,6 +50,30 @@ class PrefHashCalculator {
   ValidationResult Validate(const std::string& path,
                             const base::Value::Dict* dict,
                             const std::string& hash) const;
+
+  // Calculates the OS-encrypted SHA256 hash of the preference's |path| and
+  // |value|. Requires a non-null |encryptor|. Returns an empty string on
+  // failure.
+  std::optional<std::string> CalculateEncryptedHash(
+      const std::string& path,
+      const base::Value* value,
+      const os_crypt_async::Encryptor* encryptor) const;
+
+  // Calculates the OS-encrypted SHA256 hash of the preference's |path| and
+  // dictionary |dict|. Requires a non-null |encryptor|. Returns an empty string
+  // on failure.
+  std::optional<std::string> CalculateEncryptedHash(
+      const std::string& path,
+      const base::Value::Dict* dict,
+      const os_crypt_async::Encryptor* encryptor) const;
+
+  // Validates the OS-encrypted SHA256 |stored_encrypted_hash| of the
+  // preference's |path| and |value|. Requires a non-null |encryptor|.
+  ValidationResult ValidateEncrypted(
+      const std::string& path,
+      const base::Value* value,
+      const std::string& stored_encrypted_hash,
+      const os_crypt_async::Encryptor* encryptor) const;
 
  private:
   ValidationResult Validate(const std::string& path,

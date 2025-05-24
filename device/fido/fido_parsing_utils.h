@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <optional>
@@ -17,9 +18,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "components/cbor/values.h"
-#include "crypto/sha2.h"
 
 namespace device {
 namespace fido_parsing_utils {
@@ -60,7 +59,7 @@ std::optional<std::vector<uint8_t>> MaterializeOrNull(
 template <size_t N>
 std::array<uint8_t, N> Materialize(base::span<const uint8_t, N> span) {
   std::array<uint8_t, N> array;
-  base::ranges::copy(span, array.begin());
+  std::ranges::copy(span, array.begin());
   return array;
 }
 
@@ -99,7 +98,7 @@ bool ExtractArray(base::span<const uint8_t> span,
   if (extracted_span.size() != N)
     return false;
 
-  base::ranges::copy(extracted_span, array->begin());
+  std::ranges::copy(extracted_span, array->begin());
   return true;
 }
 
@@ -110,13 +109,6 @@ bool ExtractArray(base::span<const uint8_t> span,
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::vector<base::span<const uint8_t>> SplitSpan(base::span<const uint8_t> span,
                                                  size_t max_chunk_size);
-
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::array<uint8_t, crypto::kSHA256Length> CreateSHA256Hash(
-    std::string_view data);
-
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::string_view ConvertToStringView(base::span<const uint8_t> data);
 
 // Convert byte array into GUID formatted string as defined by RFC 4122.
 // As we are converting 128 bit UUID, |bytes| must be have length of 16.
@@ -137,18 +129,6 @@ bool CopyCBORBytestring(std::array<uint8_t, N>* out,
   }
   const std::vector<uint8_t> bytestring = it->second.GetBytestring();
   return ExtractArray(bytestring, /*pos=*/0, out);
-}
-
-constexpr std::array<uint8_t, 4> Uint32LittleEndian(uint32_t value) {
-  return {static_cast<uint8_t>(value), static_cast<uint8_t>(value >> 8),
-          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24)};
-}
-
-constexpr std::array<uint8_t, 8> Uint64LittleEndian(uint64_t value) {
-  return {static_cast<uint8_t>(value),       static_cast<uint8_t>(value >> 8),
-          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24),
-          static_cast<uint8_t>(value >> 32), static_cast<uint8_t>(value >> 40),
-          static_cast<uint8_t>(value >> 48), static_cast<uint8_t>(value >> 56)};
 }
 
 }  // namespace fido_parsing_utils

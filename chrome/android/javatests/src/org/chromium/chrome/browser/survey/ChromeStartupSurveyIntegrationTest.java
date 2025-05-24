@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -35,13 +34,14 @@ import java.util.List;
 
 /** Integration test for {@link ChromeSurveyController} using {@link SurveyClient}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:autodismiss_duration_ms/500/"
-            + TestSurveyUtils.TEST_SURVEY_TRIGGER_ID_OVERRIDE_TEMPLATE
-            + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-})
-@Features.EnableFeatures({ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID + "<Study"})
+@Features.EnableFeatures(
+        ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID
+                + ":autodismiss_duration_ms/500"
+                + "/probability/1.0"
+                + "/"
+                + TestSurveyUtils.TRIGGER_ID_PARAM_NAME
+                + "/"
+                + TestSurveyUtils.TEST_TRIGGER_ID_FOO)
 @Batch(Batch.PER_CLASS)
 public class ChromeStartupSurveyIntegrationTest {
     @Rule

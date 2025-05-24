@@ -35,6 +35,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_security_policy.h"
+#include "base/message_loop/io_watcher.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
@@ -56,29 +57,6 @@
 
 namespace mojo {
 namespace core {
-
-namespace {
-
-// On Android base::SysInfo::OperatingSystemVersionNumbers actually returns the
-// build numbers and not the kernel version as the other posix OSes would.
-void KernelVersionNumbers(int32_t* major_version,
-                          int32_t* minor_version,
-                          int32_t* bugfix_version) {
-  struct utsname info;
-  if (uname(&info) < 0) {
-    NOTREACHED();
-  }
-  int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
-                        bugfix_version);
-  if (num_read < 1)
-    *major_version = 0;
-  if (num_read < 2)
-    *minor_version = 0;
-  if (num_read < 3)
-    *bugfix_version = 0;
-}
-
-}  // namespace
 
 // DataAvailableNotifier is a simple interface which allows us to
 // substitute how we notify the reader that we've made data available,
@@ -180,7 +158,7 @@ bool ValidateFDIsProperlySealedMemFD(const base::ScopedFD& fd) {
 // EventFDNotifier is an implementation of the DataAvailableNotifier interface
 // which uses EventFDNotifier to signal the reader.
 class EventFDNotifier : public DataAvailableNotifier,
-                        public base::MessagePumpForIO::FdWatcher {
+                        public base::IOWatcher::FdWatcher {
  public:
   EventFDNotifier(EventFDNotifier&& efd) = default;
 
@@ -257,15 +235,15 @@ class EventFDNotifier : public DataAvailableNotifier,
 
   bool is_valid() const override { return fd_.is_valid(); }
 
-  // base::MessagePumpForIO::FdWatcher impl:
-  void OnFileCanReadWithoutBlocking(int fd) override {
+  // base::IOWatcher::FdWatcher impl:
+  void OnFdReadable(int fd) override {
     DCHECK(fd == fd_.get());
 
     // Invoke the callback to inform them that data is available to read.
     DataAvailable();
   }
 
-  void OnFileCanWriteWithoutBlocking(int fd) override {}
+  void OnFdWritable(int fd) override {}
 
   base::ScopedFD take() { return std::move(fd_); }
   base::ScopedFD take_dup() {
@@ -273,7 +251,7 @@ class EventFDNotifier : public DataAvailableNotifier,
   }
 
   void reset() {
-    watcher_.reset();
+    watch_.reset();
     fd_.reset();
   }
 
@@ -293,8 +271,6 @@ class EventFDNotifier : public DataAvailableNotifier,
         zero_on_wake_(zero_on_wake),
         fd_(std::move(fd)),
         io_task_runner_(io_task_runner) {
-    watcher_ =
-        std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
     WaitForEventFDOnIOThread();
   }
 
@@ -315,14 +291,14 @@ class EventFDNotifier : public DataAvailableNotifier,
 
   void WaitForEventFDOnIOThread() {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-    base::CurrentIOThread::Get()->WatchFileDescriptor(
-        fd_.get(), true, base::MessagePumpForIO::WATCH_READ, watcher_.get(),
-        this);
+    watch_ = base::IOWatcher::Get()->WatchFileDescriptor(
+        fd_.get(), base::IOWatcher::FdWatchDuration::kPersistent,
+        base::IOWatcher::FdWatchMode::kRead, *this);
   }
 
   bool zero_on_wake_ = false;
   base::ScopedFD fd_;
-  std::unique_ptr<base::MessagePumpForIO::FdWatchController> watcher_;
+  std::unique_ptr<base::IOWatcher::FdWatch> watch_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 };
 
@@ -803,9 +779,8 @@ void ChannelLinux::SharedMemReadReady() {
       while (bytes_read - data_offset > 0) {
         size_t read_size_hint;
         DispatchResult result = TryDispatchMessage(
-            base::make_span(
-                reinterpret_cast<char*>(read_buf_.data() + data_offset),
-                static_cast<size_t>(bytes_read - data_offset)),
+            base::span(reinterpret_cast<char*>(read_buf_.data() + data_offset),
+                       static_cast<size_t>(bytes_read - data_offset)),
             &read_size_hint);
 
         // We cannot have a message parse failure, we KNOW that we wrote a
@@ -920,12 +895,8 @@ bool ChannelLinux::KernelSupportsUpgradeRequirements() {
     //
     // Additionally, the behavior of eventfd prior to the 4.0 kernel could be
     // racy.
-    int os_major_version = 0;
-    int os_minor_version = 0;
-    int os_bugfix_version = 0;
-    KernelVersionNumbers(&os_major_version, &os_minor_version,
-                         &os_bugfix_version);
-    if (os_major_version < 4) {
+    if (base::SysInfo::KernelVersionNumber::Current() <
+        base::SysInfo::KernelVersionNumber(4, 0)) {
       // Due to the potentially races in 3.17/3.18 kernels with eventfd,
       // explicitly require a 4.x+ kernel.
       return false;

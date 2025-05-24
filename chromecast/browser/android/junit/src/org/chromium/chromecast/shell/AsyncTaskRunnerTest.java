@@ -10,22 +10,22 @@ import static org.hamcrest.Matchers.emptyIterable;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.task.test.ShadowAsyncTask;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chromecast.base.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-/**
- * Tests for AsyncTaskRunner.
- */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowAsyncTask.class})
+/** Tests for AsyncTaskRunner. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AsyncTaskRunnerTest {
     private static class TestExecutor implements Executor {

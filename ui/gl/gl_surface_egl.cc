@@ -364,8 +364,9 @@ NativeViewGLSurfaceEGL::NativeViewGLSurfaceEGL(
       vsync_provider_external_(std::move(vsync_provider)) {
 #if BUILDFLAG(IS_WIN)
   RECT windowRect;
-  if (GetClientRect(window_, &windowRect))
+  if (GetClientRect(window_, &windowRect)) {
     size_ = gfx::Rect(windowRect).size();
+  }
 #endif
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1080,9 +1081,7 @@ bool PbufferGLSurfaceEGL::IsOffscreen() {
 
 gfx::SwapResult PbufferGLSurfaceEGL::SwapBuffers(PresentationCallback callback,
                                                  gfx::FrameData data) {
-  NOTREACHED_IN_MIGRATION()
-      << "Attempted to call SwapBuffers on a PbufferGLSurfaceEGL.";
-  return gfx::SwapResult::SWAP_FAILED;
+  NOTREACHED() << "Attempted to call SwapBuffers on a PbufferGLSurfaceEGL.";
 }
 
 gfx::Size PbufferGLSurfaceEGL::GetSize() {
@@ -1126,8 +1125,7 @@ EGLSurface PbufferGLSurfaceEGL::GetHandle() {
 
 void* PbufferGLSurfaceEGL::GetShareHandle() {
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #else
   if (!display_->ext->b_EGL_ANGLE_query_surface_pointer)
     return nullptr;

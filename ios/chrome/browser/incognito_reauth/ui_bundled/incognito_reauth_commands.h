@@ -18,6 +18,10 @@
 // IncognitoReauthObserver callback will be called.
 - (void)authenticateIncognitoContent;
 
+// Marks the scene as authenticated until the next scene foregrounding, by
+// bypassing authentication flows.
+- (void)manualAuthenticationOverride;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_COMMANDS_H_

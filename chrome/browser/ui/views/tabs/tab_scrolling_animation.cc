@@ -7,12 +7,12 @@
 TabScrollingAnimation::TabScrollingAnimation(
     views::View* contents_view,
     gfx::AnimationContainer* bounds_animator_container,
-    base::TimeDelta duration,
     const gfx::Rect start_visible_rect,
     const gfx::Rect end_visible_rect)
-    : gfx::LinearAnimation(duration,
-                           gfx::LinearAnimation::kDefaultFrameRate,
-                           this),
+    : gfx::LinearAnimation(
+          gfx::Animation::RichAnimationDuration(base::Milliseconds(200)),
+          gfx::LinearAnimation::kDefaultFrameRate,
+          this),
       contents_view_(contents_view),
       start_visible_rect_(start_visible_rect),
       end_visible_rect_(end_visible_rect) {

@@ -5,6 +5,8 @@
 #ifndef MEDIA_BASE_MEDIA_PLAYER_LOGGING_ID_H_
 #define MEDIA_BASE_MEDIA_PLAYER_LOGGING_ID_H_
 
+#include <stdint.h>
+
 #include "base/atomic_sequence_num.h"
 #include "media/base/media_export.h"
 

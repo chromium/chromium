@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.DoNotClassMerge;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.nio.ByteBuffer;
@@ -17,6 +22,7 @@ import java.nio.ByteBuffer;
  * in PersistedTabDataConfiguration.java.
  */
 @DoNotClassMerge
+@NullMarked
 public class MockPersistedTabData extends PersistedTabData {
     private int mField;
 
@@ -46,14 +52,15 @@ public class MockPersistedTabData extends PersistedTabData {
      * @param tab      {@link Tab} {@link MockPersistedTabData} will be associated with
      * @param callback callback {@link MockPersistedTabData} will be passed back in
      */
-    public static void from(Tab tab, Callback<MockPersistedTabData> callback) {
-        PersistedTabData.from(
+    @NullUnmarked
+    public static void from(Tab tab, Callback<@Nullable MockPersistedTabData> callback) {
+        PersistedTabData.<@Nullable MockPersistedTabData>from(
                 tab,
                 (data, storage, id, factoryCallback) -> {
                     factoryCallback.onResult(new MockPersistedTabData(tab, data, storage, id));
                 },
                 null,
-                MockPersistedTabData.class,
+                (Class<@Nullable MockPersistedTabData>) MockPersistedTabData.class,
                 callback);
     }
 
@@ -83,8 +90,8 @@ public class MockPersistedTabData extends PersistedTabData {
     }
 
     @Override
-    public boolean deserialize(ByteBuffer data) {
-        mField = data.getInt();
+    public boolean deserialize(@Nullable ByteBuffer data) {
+        mField = assumeNonNull(data).getInt();
         return true;
     }
 

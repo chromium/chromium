@@ -94,7 +94,7 @@ void BrowserList::RemoveBrowser(Browser* browser) {
 std::set<Browser*> BrowserList::BrowsersOfType(
     BrowserList::BrowserType type) const {
   std::set<Browser*> browsers;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       browsers_, std::inserter(browsers, browsers.end()),
       [type](Browser* browser) { return IsBrowserOfType(browser, type); });
   return browsers;

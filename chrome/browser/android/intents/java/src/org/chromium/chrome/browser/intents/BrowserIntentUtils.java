@@ -8,7 +8,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.SystemClock;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Modularized Intent utilities for use by other feature modules and chrome_java. */
+@NullMarked
 public class BrowserIntentUtils {
     /** Key to associate a startup timestamp in the uptimeMillis timebase with an intent. */
     public static final String EXTRA_STARTUP_UPTIME_MS =

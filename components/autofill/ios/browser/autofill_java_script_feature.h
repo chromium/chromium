@@ -20,6 +20,8 @@ class WebFrame;
 
 namespace autofill {
 
+class AutofillRendererIDJavaScriptFeature;
+
 // Communicates with the JavaScript file, autofill_controller.js, which contains
 // form parsing and autofill functions.
 class AutofillJavaScriptFeature : public web::JavaScriptFeature {
@@ -87,6 +89,9 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
 
  private:
   friend class base::NoDestructor<AutofillJavaScriptFeature>;
+  // TODO(crbug.com/359538514): Remove friend once isolated world for Autofill
+  // is launched.
+  friend class TestAutofillJavaScriptFeatureContainer;
 
   AutofillJavaScriptFeature();
   ~AutofillJavaScriptFeature() override;
@@ -94,6 +99,11 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
   AutofillJavaScriptFeature(const AutofillJavaScriptFeature&) = delete;
   AutofillJavaScriptFeature& operator=(const AutofillJavaScriptFeature&) =
       delete;
+
+  //  TODO(crbug.com/359538514): Remove test constructor once isolated world for
+  //  Autofill is launched.
+  AutofillJavaScriptFeature(
+      AutofillRendererIDJavaScriptFeature* renderer_id_feature);
 };
 
 }  // namespace autofill

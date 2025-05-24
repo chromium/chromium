@@ -4,15 +4,16 @@
 
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {AudioSample, OutputPage} from './output_page.js';
+import type {AudioSample} from './output_page.js';
+import {OutputPage} from './output_page.js';
 import {PageNavigator} from './page.js';
 
 export class AudioPlayer extends HTMLElement {
   private sampleIdx: number;
-  private audioDiv: HTMLDivElement;
+  private audioDiv: HTMLElement;
   private audioPlay: HTMLButtonElement;
   private audioContext: AudioContext|null;
-  private audioQuery: HTMLDivElement;
+  private audioQuery: HTMLElement;
   private audioNameTag: HTMLParagraphElement;
   private audioExpectation: HTMLParagraphElement;
   private prevLink: HTMLButtonElement;

@@ -8,13 +8,13 @@ build_webui("build") {
   grd_prefix = "sensor_info"
 
   static_files = [
-    "sensor_info.html",
     "sensor_info.css",
+    "sensor_info.html",
   ]
 
   web_component_files = [ "app.ts" ]
 
-  non_web_component_files = [
+  ts_files = [
     # For example the BrowserProxy file would go here.
   ]
 

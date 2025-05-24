@@ -9,10 +9,7 @@
  */
 
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
-// <if expr='chromeos_ash'>
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
-
-// </if>
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -115,6 +112,7 @@ export class NearbyPageTemplateElement extends PolymerElement {
   cancelButtonEventName: string;
   cancelButtonLabel: string|null;
   closeOnly: boolean;
+  override title: string;
   subTitle: string|null;
   utilityButtonLabel: string|null;
   utilityButtonEventName: string;

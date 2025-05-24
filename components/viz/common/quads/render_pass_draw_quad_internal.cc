@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/common/quads/render_pass_draw_quad_internal.h"
 
 #include "base/trace_event/traced_value.h"
@@ -26,8 +21,7 @@ RenderPassDrawQuadInternal::~RenderPassDrawQuadInternal() = default;
 
 void RenderPassDrawQuadInternal::ExtendValue(
     base::trace_event::TracedValue* value) const {
-  value->SetInteger("mask_resource_id",
-                    resources.ids[kMaskResourceIdIndex].GetUnsafeValue());
+  value->SetInteger("mask_resource_id", resource_id.GetUnsafeValue());
   cc::MathUtil::AddToTracedValue("mask_texture_size", mask_texture_size, value);
   cc::MathUtil::AddToTracedValue("mask_uv_rect", mask_uv_rect, value);
   cc::MathUtil::AddToTracedValue("tex_coord_rect", tex_coord_rect, value);

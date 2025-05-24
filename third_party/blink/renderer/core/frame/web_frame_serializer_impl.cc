@@ -77,7 +77,9 @@
 
 #include "third_party/blink/renderer/core/frame/web_frame_serializer_impl.h"
 
-#include "third_party/blink/public/platform/web_vector.h"
+#include <vector>
+
+#include "base/containers/to_vector.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -286,9 +288,7 @@ void WebFrameSerializerImpl::EncodeAndFlushBuffer(
       param->text_encoding.Encode(content, WTF::kEntitiesForUnencodables);
 
   // Send result to the client.
-  client_->DidSerializeDataForFrame(
-      WebVector<char>(encoded_content.c_str(), encoded_content.length()),
-      status);
+  client_->DidSerializeDataForFrame(base::ToVector(encoded_content), status);
 }
 
 // TODO(yosin): We should utilize |MarkupFormatter| here to share code,
@@ -475,8 +475,7 @@ void WebFrameSerializerImpl::BuildContentForNode(Node* node,
     case Node::kDocumentNode:
     case Node::kDocumentFragmentNode:
       // Should not exist.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     // Document type node can be in DOM?
     case Node::kDocumentTypeNode:
       param->have_seen_doc_type = true;
@@ -537,7 +536,7 @@ bool WebFrameSerializerImpl::Serialize() {
   } else {
     // Report empty contents for invalid URLs.
     client_->DidSerializeDataForFrame(
-        WebVector<char>(), WebFrameSerializerClient::kCurrentFrameIsFinished);
+        std::vector<char>(), WebFrameSerializerClient::kCurrentFrameIsFinished);
   }
 
   DCHECK(data_buffer_.empty());

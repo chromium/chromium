@@ -76,7 +76,7 @@ std::string AudioManagerIOS::GetAssociatedOutputDeviceID(
   return std::string();
 }
 
-const char* media::AudioManagerIOS::GetName() {
+const std::string_view media::AudioManagerIOS::GetName() {
   return "iOS";
 }
 
@@ -111,11 +111,8 @@ AudioInputStream* AudioManagerIOS::MakeLowLatencyInputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-
-  VoiceProcessingMode voice_processing_mode = VoiceProcessingMode::kDisabled;
-
-  auto* stream = new AUAudioInputStream(this, params, kAudioObjectUnknown,
-                                        log_callback, voice_processing_mode);
+  auto* stream =
+      new AUAudioInputStream(this, params, kAudioObjectUnknown, log_callback);
   return stream;
 }
 

@@ -5,7 +5,7 @@
 import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 assert(is_cfm)
 
 static_library("device_info") {
@@ -41,6 +41,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chromeos/ash/components/dbus/chromebox_for_meetings",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/install_attributes:test_support",

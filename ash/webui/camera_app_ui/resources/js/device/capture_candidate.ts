@@ -95,7 +95,7 @@ export class PhotoCaptureCandidate extends Camera3CaptureCandidate {
       deviceId: string,
       resolution: Resolution,
       previewResolutions: Resolution[],
-      private readonly builtinPTZSupport: boolean,
+      private readonly builtinPtzSupport: boolean,
   ) {
     super(deviceId, resolution, previewResolutions);
   }
@@ -104,7 +104,7 @@ export class PhotoCaptureCandidate extends Camera3CaptureCandidate {
     let previewResolutions = this.previewResolutions;
     // Use workaround for b/184089334 on PTZ camera to use preview frame
     // as photo result.
-    if (this.builtinPTZSupport &&
+    if (this.builtinPtzSupport &&
         previewResolutions.find((r) => this.resolution.equals(r)) !==
             undefined) {
       previewResolutions = [this.resolution];

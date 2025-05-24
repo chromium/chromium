@@ -61,7 +61,7 @@ void fct() {
   // base::span<int> g = (condition) ? ctn1 : ctn2;
   base::span<int> g = (condition) ? ctn1 : ctn2;
 
-  g += 1;  // buffer udage: leads g to be rewritten.
+  g = g.subspan(1);  // buffer usage: leads g to be rewritten.
 
   // Expected rewrite:
   // base::span<char> h = reinterpret_cast<char*>(g);
@@ -108,12 +108,12 @@ void raw_ptr_variables() {
   // Expected rewrite:
   // base::span<char> buf2 = new char[5];
   base::span<char> buf2 = new char[5];
-  buf2 += 1;
+  buf2 = buf2.subspan(1);
 
   // Expected rewrite:
   // base::raw_span<char> buf3 = buf2;
   base::raw_span<char> buf3 = buf2;
-  buf3 += 1;
+  buf3 = buf3.subspan(1);
 
   // Expected rewrite:
   // base::raw_span<char> buf4 = buf3;
@@ -123,7 +123,7 @@ void raw_ptr_variables() {
   // Expected rewrite:
   // base::raw_span<char> buf5 = buf4;
   base::raw_span<char> buf5 = buf4;
-  buf5 = buf5 + 1;
+  buf5 = buf5.subspan(1);
 
   // Expected rewrite:
   // base::raw_span<char> buf6 = buf5;
@@ -136,7 +136,7 @@ void raw_ptr_variables() {
 
   int index = 1;
   // Expected rewrite:
-  // raw_ptr<char> buf7 = (buf6 + index).data();
-  raw_ptr<char> buf7 = (buf6 + index).data();
+  // raw_ptr<char> buf7 = buf6.subspan(index).data();
+  raw_ptr<char> buf7 = buf6.subspan(index).data();
   (void)buf7;
 }

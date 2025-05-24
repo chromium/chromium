@@ -84,12 +84,9 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
   using Outcome = ProfileCustomizationBubbleSyncController::Outcome;
   ProfileCustomizationBubbleSyncControllerTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()),
-        fake_theme_service_(theme_helper_),
-        theme_syncable_service_(nullptr, &fake_theme_service_) {}
+        fake_theme_service_(theme_helper_) {}
 
   void SetUp() override {
-    fake_theme_service_.SetThemeSyncableService(&theme_syncable_service_);
-
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     testing_profile_ =
         testing_profile_manager_.CreateTestingProfile(kTestingProfileName);
@@ -97,7 +94,16 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
     Browser::CreateParams params(testing_profile_, /*user_gesture=*/true);
     params.window = &test_browser_window_;
     browser_ = std::unique_ptr<Browser>(Browser::Create(params));
-    testing_view_ = std::make_unique<views::View>();
+
+    theme_syncable_service_ = std::make_unique<ThemeSyncableService>(
+        testing_profile_, &fake_theme_service_);
+    fake_theme_service_.SetThemeSyncableService(theme_syncable_service_.get());
+  }
+
+  void TearDown() override {
+    // This is to avoid UAF in the FakeThemeService, since
+    // `theme_syncable_service_` is destroyed before `fake_theme_service_`.
+    fake_theme_service_.SetThemeSyncableService(nullptr);
   }
 
   void ApplyColorAndShowBubbleWhenNoValueSynced(
@@ -105,9 +111,8 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
           show_bubble_callback) {
     ProfileCustomizationBubbleSyncController::
         ApplyColorAndShowBubbleWhenNoValueSyncedForTesting(
-            browser_.get(), testing_view_.get(), &test_sync_service_,
-            &fake_theme_service_, std::move(show_bubble_callback),
-            kNewProfileColor);
+            browser_.get(), &test_sync_service_, &fake_theme_service_,
+            std::move(show_bubble_callback), kNewProfileColor);
   }
 
   void SetSyncedProfileColor() {
@@ -120,10 +125,8 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
 
   void CloseBrowser() { browser_.reset(); }
 
-  void DeleteTestingView() { testing_view_.reset(); }
-
   void NotifyOnSyncStarted(bool waiting_for_extension_installation = false) {
-    theme_syncable_service_.NotifyOnSyncStartedForTesting(
+    theme_syncable_service_->NotifyOnSyncStartedForTesting(
         waiting_for_extension_installation
             ? ThemeSyncableService::ThemeSyncState::
                   kWaitingForExtensionInstallation
@@ -142,9 +145,8 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
   TestBrowserWindow test_browser_window_;
   std::unique_ptr<Browser> browser_;
 
-  std::unique_ptr<views::View> testing_view_;
   FakeThemeService fake_theme_service_;
-  ThemeSyncableService theme_syncable_service_;
+  std::unique_ptr<ThemeSyncableService> theme_syncable_service_;
   ThemeHelper theme_helper_;
 };
 
@@ -234,15 +236,6 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
 
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   CloseBrowser();
-}
-
-TEST_F(ProfileCustomizationBubbleSyncControllerTest,
-       ShouldNotShowWhenViewGetsDeleted) {
-  base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
-  EXPECT_CALL(show_bubble, Run(Outcome::kAbort));
-
-  ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
-  DeleteTestingView();
 }
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest, ShouldAbortIfCalledAgain) {

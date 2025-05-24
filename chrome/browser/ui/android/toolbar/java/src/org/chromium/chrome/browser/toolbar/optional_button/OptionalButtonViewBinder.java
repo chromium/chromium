@@ -4,17 +4,17 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class OptionalButtonViewBinder {
     static void bind(PropertyModel model, OptionalButtonView view, PropertyKey propertyKey) {
         if (OptionalButtonProperties.BUTTON_DATA.equals(propertyKey)) {
             view.updateButtonWithAnimation(model.get(OptionalButtonProperties.BUTTON_DATA));
         } else if (OptionalButtonProperties.IS_ENABLED.equals(propertyKey)) {
-            if (view.getButtonView() != null) {
-                view.getButtonView().setEnabled(model.get(OptionalButtonProperties.IS_ENABLED));
-            }
+            view.setEnabled(model.get(OptionalButtonProperties.IS_ENABLED));
         } else if (OptionalButtonProperties.TRANSITION_STARTED_CALLBACK.equals(propertyKey)) {
             view.setTransitionStartedCallback(
                     model.get(OptionalButtonProperties.TRANSITION_STARTED_CALLBACK));
@@ -36,6 +36,8 @@ class OptionalButtonViewBinder {
             view.setBackgroundAlpha(model.get(OptionalButtonProperties.ICON_BACKGROUND_ALPHA));
         } else if (OptionalButtonProperties.PADDING_START.equals(propertyKey)) {
             view.setPaddingStart(model.get(OptionalButtonProperties.PADDING_START));
+        } else if (OptionalButtonProperties.COLLAPSED_STATE_WIDTH.equals(propertyKey)) {
+            view.setCollapsedStateWidth(model.get(OptionalButtonProperties.COLLAPSED_STATE_WIDTH));
         } else if (OptionalButtonProperties.TRANSITION_CANCELLATION_REQUESTED.equals(propertyKey)) {
             if (model.get(OptionalButtonProperties.TRANSITION_CANCELLATION_REQUESTED)) {
                 view.cancelTransition();
@@ -44,6 +46,8 @@ class OptionalButtonViewBinder {
         } else if (OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE.equals(propertyKey)) {
             view.setIsAnimationAllowedPredicate(
                     model.get(OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE));
+        } else if (OptionalButtonProperties.IS_INCOGNITO_BRANDED.equals(propertyKey)) {
+            view.setIsIncognitoBranded(model.get(OptionalButtonProperties.IS_INCOGNITO_BRANDED));
         }
     }
 }

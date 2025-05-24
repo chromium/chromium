@@ -14,7 +14,7 @@
   <input type="week">
   <input type="month">
 </div>
-<button id="invokerbutton" commandfor="invokee" command="showpicker"></button>
+<button id="invokerbutton" commandfor="invokee" command="show-picker"></button>
 </body>
 <script>
 document.querySelectorAll('#tests>*').forEach(el => {
@@ -26,6 +26,6 @@ document.querySelectorAll('#tests>*').forEach(el => {
       requestAnimationFrame(resolve);
     });
     assert_not_equals(internals.pagePopupWindow, null, "Picker is opened.");
-  }, `invoking ${el.type} input with showPicker action should show picker`)
+  }, `invoking ${el.type} input with showPicker command should show picker`)
 })
 </script>

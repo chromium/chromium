@@ -67,13 +67,13 @@ class VirtualCardEnrollBubbleControllerImpl
   bool IsEnrollmentComplete() const override;
 #endif
 
-  void OnAcceptButton(bool did_switch_to_loading_state = false) override;
+  void OnAcceptButton(bool did_switch_to_loading_state) override;
   void OnDeclineButton() override;
   void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
                      const GURL& url) override;
-  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
-  base::OnceCallback<void(PaymentsBubbleClosedReason)>
-  GetOnBubbleClosedCallback() override;
+  void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
+  base::OnceCallback<void(PaymentsUiClosedReason)> GetOnBubbleClosedCallback()
+      override;
   const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
   GetConfirmationUiParams() const override;
   bool IsIconVisible() const override;

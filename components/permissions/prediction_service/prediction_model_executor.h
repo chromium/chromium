@@ -14,6 +14,19 @@
 
 namespace permissions {
 
+// This enum backs up the 'PermissionPredictionThresholdSource` histogram
+// enum.
+// It indicates whether the prediction score threshold value obtained from the
+// model or if it used the default fallback value.
+// The enum is used for histograms, do not reorder or renumber the entries.
+enum class PermissionPredictionThresholdSource {
+  MODEL_METADATA = 0,
+  HARDCODED_FALLBACK = 1,
+
+  // Always keep at the end.
+  kMaxValue = HARDCODED_FALLBACK,
+};
+
 struct PredictionModelExecutorInput {
   PredictionModelExecutorInput();
   ~PredictionModelExecutorInput();
@@ -27,18 +40,6 @@ class PredictionModelExecutor : public optimization_guide::BaseModelExecutor<
                                     GeneratePredictionsResponse,
                                     const PredictionModelExecutorInput&> {
  public:
-  // This enum backs up the 'PermissionPredictionThresholdSource` histogram
-  // enum.
-  // It indicates whether the prediction score threshold value obtained from the
-  // model or if it used the default fallback value.
-  enum class PermissionPredictionThresholdSource {
-    MODEL_METADATA = 0,
-    HARDCODED_FALLBACK = 1,
-
-    // Always keep at the end.
-    kMaxValue = HARDCODED_FALLBACK,
-  };
-
   PredictionModelExecutor();
   ~PredictionModelExecutor() override;
 

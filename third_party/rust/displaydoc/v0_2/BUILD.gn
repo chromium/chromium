@@ -1,0 +1,74 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "displaydoc"
+  epoch = "0.2"
+  crate_type = "proc-macro"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2/src/attr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2/src/expand.rs",
+    "//third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2/src/fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2/src/lib.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_authors = "Jane Lusby <jlusby@yaah.dev>"
+  cargo_pkg_name = "displaydoc"
+  cargo_pkg_description = "A derive macro for implementing the display Trait via a doc comment and string interpolation"
+  cargo_pkg_version = "0.2.5"
+
+  allow_unsafe = false
+
+  deps = [
+    "//third_party/rust/proc_macro2/v1:lib",
+    "//third_party/rust/quote/v1:lib",
+    "//third_party/rust/syn/v2:lib",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

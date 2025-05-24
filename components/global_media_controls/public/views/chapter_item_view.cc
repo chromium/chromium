@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/global_media_controls/media_view_utils.h"
+#include "components/global_media_controls/public/format_duration.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -92,7 +93,7 @@ ChapterItemView::ChapterItemView(
                                   {"Google Sans"}, gfx::Font::NORMAL, 13,
                                   gfx::Font::Weight::NORMAL))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                              .SetEnabledColorId(
+                              .SetEnabledColor(
                                   theme_.primary_foreground_color_id),
                           views::Builder<views::Label>()
                               .SetText(
@@ -102,7 +103,7 @@ ChapterItemView::ChapterItemView(
                                   {"Google Sans"}, gfx::Font::NORMAL, 12,
                                   gfx::Font::Weight::NORMAL))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                              .SetEnabledColorId(
+                              .SetEnabledColor(
                                   theme_.secondary_foreground_color_id))))
       .BuildChildren();
 

@@ -275,12 +275,18 @@ FFMPEG_TEST_CASE(MP4_9,
                  "security/smclockmp4aac_1_0.mp4",
                  DEMUXER_ERROR_COULD_NOT_OPEN,
                  DEMUXER_ERROR_COULD_NOT_OPEN);
-FFMPEG_TEST_CASE(MP4_11, "security/null1.mp4", PIPELINE_OK, PIPELINE_OK);
+FFMPEG_TEST_CASE(MP4_11,
+                 "security/null1.mp4",
+                 PIPELINE_ERROR_DECODE,
+                 PIPELINE_ERROR_DECODE);
 FFMPEG_TEST_CASE(MP4_16,
                  "security/looping2.mov",
                  DEMUXER_ERROR_COULD_NOT_OPEN,
                  DEMUXER_ERROR_COULD_NOT_OPEN);
-FFMPEG_TEST_CASE(MP4_17, "security/assert2.mov", PIPELINE_OK, PIPELINE_OK);
+FFMPEG_TEST_CASE(MP4_17,
+                 "security/assert2.mov",
+                 PIPELINE_ERROR_DECODE,
+                 PIPELINE_ERROR_DECODE);
 
 // This test is a valid file, so should always pass correctly.
 FFMPEG_TEST_CASE(MP4_18,

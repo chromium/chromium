@@ -77,6 +77,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
                                    base::optional_ref<const std::string>,
                                    base::optional_ref<const std::string>)>
           is_reporting_id_set_excluded,
+      std::optional<size_t> selectable_reporting_ids_limit,
       const std::vector<blink::InterestGroup::Ad>& ads,
       v8::Local<v8::ObjectTemplate>& lazy_filler_template);
 
@@ -149,6 +150,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
   raw_ptr<const GURL> trusted_bidding_signals_url_ = nullptr;
   raw_ptr<const mojom::BidderWorkletNonSharedParams>
       bidder_worklet_non_shared_params_ = nullptr;
+  const bool creative_scanning_enabled_;
   const raw_ptr<AuctionV8Logger> v8_logger_;
 };
 

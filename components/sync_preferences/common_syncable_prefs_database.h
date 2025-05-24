@@ -20,6 +20,10 @@ inline constexpr char kSyncableMergeableListPrefForTesting[] =
     "syncable-mergeable-list-test-preference";
 inline constexpr char kSyncableHistorySensitiveListPrefForTesting[] =
     "syncable-history-sensitive-list-test-preference";
+inline constexpr char kSyncablePriorityPrefForTesting[] =
+    "syncable-test-priority-preference";
+inline constexpr char kSyncableAlwaysSyncingPriorityPrefForTesting[] =
+    "syncable-always-syncing-test-priority-preference";
 
 // This class provides an implementation for SyncablePrefsDatabase for common
 // syncable preferences, i.e. preferences which are shared between all

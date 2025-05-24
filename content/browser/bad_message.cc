@@ -32,7 +32,7 @@ void LogBadMessage(BadMessageReason reason) {
                                  base::NumberToString(reason));
 }
 
-void ReceivedBadMessageOnUIThread(int render_process_id,
+void ReceivedBadMessageOnUIThread(ChildProcessId render_process_id,
                                   BadMessageReason reason) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   RenderProcessHost* host = RenderProcessHost::FromID(render_process_id);
@@ -53,6 +53,11 @@ void ReceivedBadMessage(RenderProcessHost* host, BadMessageReason reason) {
 }
 
 void ReceivedBadMessage(int render_process_id, BadMessageReason reason) {
+  ReceivedBadMessage(ChildProcessId(render_process_id), reason);
+}
+
+void ReceivedBadMessage(ChildProcessId render_process_id,
+                        BadMessageReason reason) {
   // We generate a crash dump here since generating one after posting to the UI
   // thread is less useful.
   LogBadMessage(reason);

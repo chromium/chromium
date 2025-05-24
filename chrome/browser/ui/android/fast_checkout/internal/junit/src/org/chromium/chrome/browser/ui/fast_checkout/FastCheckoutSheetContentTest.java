@@ -19,10 +19,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,6 +40,7 @@ public class FastCheckoutSheetContentTest {
     private static final int CONTENT_VIEW_HEIGHT = 40;
     private static final int CONTAINER_HEIGHT = 100;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private FastCheckoutSheetContent mSheetContent;
     @Mock private View mContentView;
     @Mock private ViewGroup mContentViewParent;
@@ -47,7 +50,6 @@ public class FastCheckoutSheetContentTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mSheetContent = new FastCheckoutSheetContent(mState, mContentView);
 
         when(mResources.getDimensionPixelSize(R.dimen.fast_checkout_detail_sheet_header_height))

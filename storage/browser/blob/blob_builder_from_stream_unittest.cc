@@ -156,7 +156,7 @@ class BlobBuilderFromStreamTestWithDelayedLimits
         std::string file_contents;
         EXPECT_TRUE(base::ReadFileToString(item->path(), &file_contents));
         EXPECT_EQ(item->length(), file_contents.size());
-        auto file_bytes = base::as_bytes(base::make_span(file_contents));
+        auto file_bytes = base::as_byte_span(file_contents);
         EXPECT_TRUE(
             std::equal(on_disk_data.begin() + next_file_offset,
                        on_disk_data.begin() + next_file_offset + item->length(),
@@ -254,8 +254,8 @@ TEST_P(BlobBuilderFromStreamTest, SmallStream) {
   EXPECT_EQ(0u, context_->memory_controller().disk_usage());
 
   // Verify blob contents.
-  VerifyBlobContents(base::as_bytes(base::make_span(kData)),
-                     base::span<const uint8_t>(), *result->CreateSnapshot());
+  VerifyBlobContents(base::as_byte_span(kData), base::span<const uint8_t>(),
+                     *result->CreateSnapshot());
 }
 
 TEST_P(BlobBuilderFromStreamTest, MediumStream) {
@@ -280,7 +280,7 @@ TEST_P(BlobBuilderFromStreamTest, MediumStream) {
   }
 
   // Verify blob contents.
-  auto data_span = base::as_bytes(base::make_span(kData));
+  auto data_span = base::as_byte_span(kData);
   if (GetParam() == LengthHintTestType::kUnknownSize) {
     VerifyBlobContents(
         data_span.first(2 * kTestBlobStorageMaxBytesDataItemSize),
@@ -322,15 +322,14 @@ TEST_P(BlobBuilderFromStreamTest, LargeStream) {
   }
 
   // Verify blob contents.
-  auto data_span = base::as_bytes(base::make_span(kData));
+  auto data_span = base::as_byte_span(kData);
   if (GetParam() == LengthHintTestType::kUnknownSize) {
     VerifyBlobContents(
         data_span.first(2 * kTestBlobStorageMaxBytesDataItemSize),
         data_span.subspan(2 * kTestBlobStorageMaxBytesDataItemSize),
         *result->CreateSnapshot());
   } else {
-    VerifyBlobContents(base::span<const uint8_t>(),
-                       base::as_bytes(base::make_span(kData)),
+    VerifyBlobContents(base::span<const uint8_t>(), base::as_byte_span(kData),
                        *result->CreateSnapshot());
   }
 }

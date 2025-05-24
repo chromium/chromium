@@ -1,0 +1,60 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("webui") {
+  sources = [
+    "price_tracking_handler.cc",
+    "price_tracking_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:feature_utils",
+    "//components/commerce/core:metrics",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core:utils",
+    "//components/commerce/core/mojom:mojo_bindings",
+    "//components/feature_engagement/public",
+    "//components/history/core/browser:browser",
+    "//components/optimization_guide/core:core",
+    "//components/payments/core",
+    "//components/power_bookmarks/core",
+    "//components/prefs",
+    "//components/url_formatter",
+    "//mojo/public/cpp/bindings",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "price_tracking_handler_unittest.cc" ]
+
+  deps = [
+    ":webui",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/commerce/core:account_checker_test_support",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/commerce/core:utils",
+    "//components/commerce/core/mojom:mojo_bindings",
+    "//components/feature_engagement/test:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/ukm:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

@@ -62,16 +62,16 @@
     _passwordViewController =
         [[PasswordViewController alloc] initWithSearchController:nil];
 
-    ProfileIOS* profile = self.browser->GetProfile();
+    ProfileIOS* profile = self.profile;
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForProfile(profile);
     syncer::SyncService* syncService =
-        SyncServiceFactory::GetForBrowserState(profile);
+        SyncServiceFactory::GetForProfile(profile);
     auto profilePasswordStore =
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS);
     auto accountPasswordStore =
-        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+        IOSChromeAccountPasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS);
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]
@@ -159,6 +159,10 @@
   }];
 }
 
+- (void)passwordsFetched {
+  [self.consumer passwordsFetched];
+}
+
 #pragma mark - PlusAddressListNavigator
 
 - (void)openCreatePlusAddressSheet {
@@ -168,10 +172,10 @@
   }];
 }
 
-- (void)openAllPlusAddressList {
+- (void)openAllPlusAddressList:(BOOL)isAddressManualFallback {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate openAllPlusAddressesPicker];
+    [weakSelf.delegate openAllPlusAddressesPicker:isAddressManualFallback];
   }];
 }
 

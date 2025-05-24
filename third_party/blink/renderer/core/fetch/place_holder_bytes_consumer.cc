@@ -8,14 +8,13 @@
 
 namespace blink {
 
-BytesConsumer::Result PlaceHolderBytesConsumer::BeginRead(const char** buffer,
-                                                          size_t* available) {
+BytesConsumer::Result PlaceHolderBytesConsumer::BeginRead(
+    base::span<const char>& buffer) {
   if (!underlying_) {
-    *buffer = nullptr;
-    *available = 0;
+    buffer = {};
     return is_cancelled_ ? Result::kDone : Result::kShouldWait;
   }
-  return underlying_->BeginRead(buffer, available);
+  return underlying_->BeginRead(buffer);
 }
 
 BytesConsumer::Result PlaceHolderBytesConsumer::EndRead(size_t read_size) {

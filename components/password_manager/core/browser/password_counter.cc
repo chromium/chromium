@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_counter.h"
 
 #include <cstddef>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -32,12 +33,12 @@ PasswordCounter::~PasswordCounter() = default;
 void PasswordCounter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
     LoginsResultOrError results_or_error) {
-  if (absl::holds_alternative<password_manager::PasswordStoreBackendError>(
+  if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
           results_or_error)) {
     return;
   }
   size_t counter =
-      absl::get<password_manager::LoginsResult>(results_or_error).size();
+      std::get<password_manager::LoginsResult>(results_or_error).size();
   if (store == profile_store_) {
     profile_passwords_ = counter;
     profile_observer_.Observe(store);

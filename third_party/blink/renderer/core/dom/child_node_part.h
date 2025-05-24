@@ -74,9 +74,8 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   Node* nextSibling() const { return next_sibling_.Get(); }
   void setNextSibling(Node& next_sibling);
   HeapVector<Member<Node>> children() const;
-  void replaceChildren(
-      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
-      ExceptionState& exception_state);
+  void replaceChildren(const HeapVector<Member<V8UnionNodeOrString>>& nodes,
+                       ExceptionState& exception_state);
 
  protected:
   const PartRoot* GetParentPartRoot() const override { return root(); }

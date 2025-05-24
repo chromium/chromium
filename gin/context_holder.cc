@@ -11,14 +11,9 @@
 
 namespace gin {
 
-ContextHolder::ContextHolder(v8::Isolate* isolate)
-    : isolate_(isolate) {
-}
+ContextHolder::ContextHolder(v8::Isolate* isolate) : isolate_(isolate) {}
 
-ContextHolder::~ContextHolder() {
-  // PerContextData needs to be destroyed before the context.
-  data_.reset();
-}
+ContextHolder::~ContextHolder() = default;
 
 void ContextHolder::SetContext(v8::Local<v8::Context> context) {
   DCHECK(context_.IsEmpty());

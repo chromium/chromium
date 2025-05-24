@@ -47,6 +47,8 @@ class ComponentMetricsProvider : public MetricsProvider {
   static SystemProfileProto_ComponentId CrxIdToComponentId(
       const std::string& app_id);
 
+  static uint32_t HashCohortId(const std::string& cohort_id);
+
  private:
   std::unique_ptr<ComponentMetricsProviderDelegate> components_info_delegate_;
 };

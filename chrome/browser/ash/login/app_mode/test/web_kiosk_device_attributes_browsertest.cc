@@ -87,8 +87,8 @@ constexpr char kNotAllowedOriginExpectedError[] =
     "DeviceAttributesAllowedForOrigins policy.\"\n";
 
 constexpr char kNotTrustedOriginExpectedError[] =
-    "a JavaScript error: \"NotAllowedError: This API is available only for "
-    "managed apps.\"\n";
+    "a JavaScript error: \"NotAllowedError: Service connection error. This API "
+    "is available only for managed apps.\"\n";
 
 }  // namespace
 

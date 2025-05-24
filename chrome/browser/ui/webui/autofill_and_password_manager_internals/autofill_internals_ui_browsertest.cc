@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
-
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -47,8 +46,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ResetCache) {
   // Wait for reset-fake-button to become visible
   constexpr char kGetResetButtonDisplayStyle[] =
       "document.getElementById('reset-cache-fake-button').style.display";
-  while ("inline" != EvalJs(kGetResetButtonDisplayStyle))
+  while ("inline" != EvalJs(kGetResetButtonDisplayStyle)) {
     SpinRunLoop();
+  }
 
   // Trigger reset button.
   constexpr char kClickResetButton[] =
@@ -58,8 +58,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ResetCache) {
   // Wait for dialog to appear.
   constexpr char kDialogTextVisible[] =
       "document.getElementsByClassName('modal-dialog-text').length > 0";
-  while (!EvalJs(kDialogTextVisible).ExtractBool())
+  while (!EvalJs(kDialogTextVisible).ExtractBool()) {
     SpinRunLoop();
+  }
 
   // Check result text.
   constexpr char kDialogText[] =
@@ -73,8 +74,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ResetCache) {
   EXPECT_TRUE(ExecJs(kClickCloseButton));
 
   // Wait for dialog to disappear.
-  while (EvalJs(kDialogTextVisible).ExtractBool())
+  while (EvalJs(kDialogTextVisible).ExtractBool()) {
     SpinRunLoop();
+  }
 }
 
 }  // namespace

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/payments/payment_app_service_worker_registration.h"
 
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/modules/payments/payment_manager.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
@@ -26,7 +26,7 @@ bool AllowedToUsePaymentFeatures(ScriptState* script_state) {
 
   return execution_context->GetSecurityContext()
       .GetPermissionsPolicy()
-      ->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kPayment);
+      ->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kPayment);
 }
 
 }  // namespace

@@ -21,7 +21,7 @@ namespace metrics {
 class DemographicsClientTest : public PlatformTest {
  public:
   DemographicsClientTest() {
-    profile_manager_.AddProfileWithBuilder(TestChromeBrowserState::Builder());
+    profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
   }
 
  private:
@@ -47,13 +47,13 @@ TEST_F(DemographicsClientTest, GetNetworkTime) {
 TEST_F(DemographicsClientTest, GetSyncService) {
   DemographicsClient demographic_client;
   // Verify if it possible to retrieve the instance of the SyncService
-  // associated with the ChromeBrowserState.
+  // associated with the ProfileIOS.
   EXPECT_TRUE(demographic_client.GetSyncService());
 }
 
 TEST_F(DemographicsClientTest, GetNumberOfProfilesOnDisk) {
   DemographicsClient demographic_client;
-  // On ChromeBrowserState was created and registered with the ProfileManager,
+  // On ProfileIOS was created and registered with the ProfileManager,
   // check the client returns the correct value.
   EXPECT_EQ(1, demographic_client.GetNumberOfProfilesOnDisk());
 }

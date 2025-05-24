@@ -11,7 +11,8 @@ export function getHtml(this: HoverButtonElement) {
   return html`<!--_html_template_start_-->
 <div id="hoverButton" role="button" tabindex="0">
   <customize-chrome-button-label label="${this.label}"
-      label-description="${this.labelDescription || nothing}">
+      label-description="${this.labelDescription || nothing}"
+      aria-label="${this.ariaButtonLabel || ''}">
   </customize-chrome-button-label>
   <div id="icon" class="cr-icon"></div>
 </div>

@@ -4,19 +4,23 @@
 
 #include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
 
+#include "base/types/expected.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/liburlpattern/parse.h"
+#include "third_party/liburlpattern/pattern.h"
 #include "url/gurl.h"
 
 namespace {
 
 std::vector<liburlpattern::Part> ParsePatternInitField(std::string_view field) {
-  auto parse_result = liburlpattern::Parse(
-      field, [](std::string_view input) { return std::string(input); });
+  base::expected<liburlpattern::Pattern, absl::Status> parse_result =
+      liburlpattern::Parse(
+          field, [](std::string_view input) { return std::string(input); });
 
   // Should never fail because the input is coming from the test.
-  DCHECK(parse_result.ok());
+  DCHECK(parse_result.has_value());
 
   return parse_result.value().PartList();
 }

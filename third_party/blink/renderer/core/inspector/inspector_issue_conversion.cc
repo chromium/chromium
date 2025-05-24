@@ -24,11 +24,10 @@ std::unique_ptr<protocol::Audits::AffectedCookie> BuildAffectedCookie(
 
 std::unique_ptr<protocol::Audits::AffectedRequest> BuildAffectedRequest(
     const mojom::blink::AffectedRequestPtr& request) {
-  auto protocol_request = protocol::Audits::AffectedRequest::create()
-                              .setRequestId(request->request_id)
-                              .build();
-  if (!request->url.empty()) {
-    protocol_request->setUrl(request->url);
+  auto protocol_request =
+      protocol::Audits::AffectedRequest::create().setUrl(request->url).build();
+  if (!request->request_id.empty()) {
+    protocol_request->setRequestId(request->request_id);
   }
   return protocol_request;
 }
@@ -56,10 +55,14 @@ blink::protocol::String InspectorIssueCodeValue(
       return protocol::Audits::InspectorIssueCodeEnum::SharedArrayBufferIssue;
     case mojom::blink::InspectorIssueCode::kLowTextContrastIssue:
       return protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue;
+    case mojom::blink::InspectorIssueCode::kUserReidentificationIssue:
+      return protocol::Audits::InspectorIssueCodeEnum::
+          UserReidentificationIssue;
     case mojom::blink::InspectorIssueCode::kHeavyAdIssue:
     case mojom::blink::InspectorIssueCode::kFederatedAuthRequestIssue:
     case mojom::blink::InspectorIssueCode::kFederatedAuthUserInfoRequestIssue:
     case mojom::blink::InspectorIssueCode::kBounceTrackingIssue:
+    case mojom::blink::InspectorIssueCode::kPartitioningBlobURLIssue:
     case mojom::blink::InspectorIssueCode::kCookieDeprecationMetadataIssue:
     case mojom::blink::InspectorIssueCode::kGenericIssue:
     case mojom::blink::InspectorIssueCode::kDeprecationIssue:
@@ -88,6 +91,10 @@ protocol::String BuildCookieExclusionReason(
     case blink::mojom::blink::CookieExclusionReason::kExcludeThirdPartyPhaseout:
       return protocol::Audits::CookieExclusionReasonEnum::
           ExcludeThirdPartyPhaseout;
+    case blink::mojom::blink::CookieExclusionReason::kExcludePortMismatch:
+      return protocol::Audits::CookieExclusionReasonEnum::ExcludePortMismatch;
+    case blink::mojom::blink::CookieExclusionReason::kExcludeSchemeMismatch:
+      return protocol::Audits::CookieExclusionReasonEnum::ExcludeSchemeMismatch;
   }
 }
 
@@ -296,6 +303,10 @@ protocol::String BuildBlockedByResponseReason(
           CorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip;
     case network::mojom::blink::BlockedByResponseReason::kCorpNotSameSite:
       return protocol::Audits::BlockedByResponseReasonEnum::CorpNotSameSite;
+    case network::mojom::blink::BlockedByResponseReason::
+        kSRIMessageSignatureMismatch:
+      return protocol::Audits::BlockedByResponseReasonEnum::
+          SRIMessageSignatureMismatch;
   }
 }
 
@@ -317,6 +328,9 @@ protocol::String BuildViolationType(
     case blink::mojom::blink::ContentSecurityPolicyViolationType::kURLViolation:
       return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
           KURLViolation;
+    case blink::mojom::blink::ContentSecurityPolicyViolationType::kSRIViolation:
+      return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
+          KSRIViolation;
     case blink::mojom::blink::ContentSecurityPolicyViolationType::
         kTrustedTypesSinkViolation:
       return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::

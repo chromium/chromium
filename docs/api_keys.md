@@ -15,8 +15,8 @@ purchase.
 
 **Googlers only:**
 
-*   For a simpler approach to API keys, see https://go/chrome-api-key-setup
-*   If you need a new API enabled in Chrome, use https://b/new?component=165132
+*   For a simpler approach to API keys, see http://go/chrome-api-key-setup
+*   If you need a new API enabled in Chrome, use http://b/new?component=165132
 
 **How-to:**
 First, acquire API keys. Then, specify the API keys to use either when you build
@@ -52,7 +52,9 @@ Chromium, or at runtime using environment variables.
         of Chrome will not work)
     *   Google Drive API (enable this for Files.app on Chrome OS and
         SyncFileSystem API)
-    *   Safe Browsing API
+    *   Safe Browsing API (Googlers should additionally reach out to the Safe
+        Browsing team to ensure that visibility labels are applied
+        appropriately)
     *   Time Zone API
     *   Optional
         *   Admin SDK

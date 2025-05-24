@@ -20,22 +20,26 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
 
 namespace content {
 
-// Implements the Mojo interface representing a stateful virtual authenticator.
+// Implements a stateful virtual authenticator.
 //
 // This class has very little logic itself, it merely stores a unique ID and the
 // state of the authenticator, whereas performing all cryptographic operations
 // is delegated to the VirtualFidoDevice class.
 class CONTENT_EXPORT VirtualAuthenticator
-    : public blink::test::mojom::VirtualAuthenticator,
-      public device::VirtualFidoDevice::Observer {
+    : public device::VirtualFidoDevice::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnCredentialCreated(
+        VirtualAuthenticator* authenticator,
+        const device::VirtualFidoDevice::Credential& credential) = 0;
+    virtual void OnCredentialDeleted(
+        VirtualAuthenticator* authenticator,
+        base::span<const uint8_t> credential_id) = 0;
+    virtual void OnCredentialUpdated(
         VirtualAuthenticator* authenticator,
         const device::VirtualFidoDevice::Credential& credential) = 0;
     virtual void OnAssertion(
@@ -45,16 +49,42 @@ class CONTENT_EXPORT VirtualAuthenticator
         VirtualAuthenticator* authenticator) = 0;
   };
 
-  explicit VirtualAuthenticator(
-      const blink::test::mojom::VirtualAuthenticatorOptions& options);
+  // Attributes that the virtual authenticator should simulate.
+  struct CONTENT_EXPORT Options {
+    Options();
+    ~Options();
+
+    // protocol is the client-to-authenticator protocol that the virtual
+    // authenticator simulates.
+    device::ProtocolVersion protocol = device::ProtocolVersion::kCtap2;
+    // ctap2_version indicates which minor version of CTAP2 the authenticator
+    // should simulate if |protocol| is CTAP2. It is ignored otherwise.
+    device::Ctap2Version ctap2_version = device::Ctap2Version::kCtap2_0;
+    device::FidoTransportProtocol transport =
+        device::FidoTransportProtocol::kUsbHumanInterfaceDevice;
+    device::AuthenticatorAttachment attachment =
+        device::AuthenticatorAttachment::kCrossPlatform;
+    bool has_resident_key = false;
+    bool has_user_verification = false;
+    bool is_user_present = true;
+    bool has_large_blob = false;
+    bool has_cred_blob = false;
+    bool has_min_pin_length = false;
+    bool has_prf = false;
+    bool default_backup_eligibility = false;
+    bool default_backup_state = false;
+  };
+
+  using GetLargeBlobCallback =
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>;
+  using SetLargeBlobCallback = base::OnceCallback<void(bool)>;
+
+  explicit VirtualAuthenticator(const Options& options);
 
   VirtualAuthenticator(const VirtualAuthenticator&) = delete;
   VirtualAuthenticator& operator=(const VirtualAuthenticator&) = delete;
 
   ~VirtualAuthenticator() override;
-
-  void AddReceiver(
-      mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticator> receiver);
 
   device::VirtualFidoDevice::State::RegistrationsMap& registrations() const {
     return state_->registrations;
@@ -73,7 +103,9 @@ class CONTENT_EXPORT VirtualAuthenticator
                                std::string rp_id,
                                base::span<const uint8_t> private_key,
                                int32_t counter,
-                               std::vector<uint8_t> user_handle);
+                               std::vector<uint8_t> user_handle,
+                               std::optional<std::string> user_name,
+                               std::optional<std::string> user_display_name);
 
   // Removes all the credentials.
   void ClearRegistrations();
@@ -81,6 +113,13 @@ class CONTENT_EXPORT VirtualAuthenticator
   // Remove a credential identified by |key_handle|. Returns true if the
   // credential was found and removed, false otherwise.
   bool RemoveRegistration(const std::vector<uint8_t>& key_handle);
+
+  // Updates the name and display name of registrations matching
+  // |relying_party_id| and |user_id|.
+  void UpdateUserDetails(std::string_view relying_party_id,
+                         base::span<const uint8_t> user_id,
+                         std::string_view name,
+                         std::string_view display_name);
 
   // Sets whether tests of user presence succeed or not for new requests sent to
   // this authenticator. The default is true.
@@ -137,26 +176,11 @@ class CONTENT_EXPORT VirtualAuthenticator
   void SetBackupState(const std::vector<uint8_t>& key_handle,
                       bool backup_state);
 
-  // blink::test::mojom::VirtualAuthenticator:
   void GetLargeBlob(const std::vector<uint8_t>& key_handle,
-                    GetLargeBlobCallback callback) override;
+                    GetLargeBlobCallback callback);
   void SetLargeBlob(const std::vector<uint8_t>& key_handle,
                     const std::vector<uint8_t>& blob,
-                    SetLargeBlobCallback callback) override;
-
- protected:
-  // blink::test::mojom::VirtualAuthenticator:
-  void GetUniqueId(GetUniqueIdCallback callback) override;
-
-  void GetRegistrations(GetRegistrationsCallback callback) override;
-  void AddRegistration(blink::test::mojom::RegisteredKeyPtr registration,
-                       AddRegistrationCallback callback) override;
-  void ClearRegistrations(ClearRegistrationsCallback callback) override;
-  void RemoveRegistration(const std::vector<uint8_t>& key_handle,
-                          RemoveRegistrationCallback callback) override;
-
-  void SetUserVerified(bool verified,
-                       SetUserVerifiedCallback callback) override;
+                    SetLargeBlobCallback callback);
 
  private:
   void OnLargeBlobUncompressed(
@@ -170,6 +194,9 @@ class CONTENT_EXPORT VirtualAuthenticator
 
   // device::VirtualFidoDevice::Observer:
   void OnCredentialCreated(
+      const device::VirtualFidoDevice::Credential& credential) override;
+  void OnCredentialDeleted(base::span<const uint8_t> credential_id) override;
+  void OnCredentialUpdated(
       const device::VirtualFidoDevice::Credential& credential) override;
   void OnAssertion(
       const device::VirtualFidoDevice::Credential& credential) override;
@@ -189,7 +216,6 @@ class CONTENT_EXPORT VirtualAuthenticator
   base::ObserverList<Observer> observers_;
   data_decoder::DataDecoder data_decoder_;
   scoped_refptr<device::VirtualFidoDevice::State> state_;
-  mojo::ReceiverSet<blink::test::mojom::VirtualAuthenticator> receiver_set_;
   base::ScopedObservation<device::VirtualFidoDevice::State,
                           device::VirtualFidoDevice::Observer>
       observation_{this};

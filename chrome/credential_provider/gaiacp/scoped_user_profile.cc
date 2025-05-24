@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -429,7 +430,7 @@ ScopedUserProfile::ScopedUserProfile(const std::wstring& sid,
     token_.Close();
 }
 
-ScopedUserProfile::~ScopedUserProfile() {}
+ScopedUserProfile::~ScopedUserProfile() = default;
 
 bool ScopedUserProfile::IsValid() {
   return token_.IsValid();
@@ -537,8 +538,8 @@ HRESULT ScopedUserProfile::SaveAccountInfo(
   // but administrators and SYSTEM can.
   {
     wchar_t key_name[128];
-    swprintf_s(key_name, std::size(key_name), L"%s\\%s\\%s", sid.c_str(),
-               kRegHkcuAccountsPath, id.c_str());
+    UNSAFE_TODO(swprintf_s(key_name, std::size(key_name), L"%s\\%s\\%s",
+                           sid.c_str(), kRegHkcuAccountsPath, id.c_str()));
     LOGFN(VERBOSE) << "HKU\\" << key_name;
 
     base::win::RegKey key;
@@ -611,7 +612,7 @@ HRESULT ScopedUserProfile::SaveAccountInfo(
   return S_OK;
 }
 
-ScopedUserProfile::ScopedUserProfile() {}
+ScopedUserProfile::ScopedUserProfile() = default;
 
 bool ScopedUserProfile::WaitForProfileCreation(const std::wstring& sid) {
   LOGFN(VERBOSE);
@@ -641,8 +642,8 @@ bool ScopedUserProfile::WaitForProfileCreation(const std::wstring& sid) {
   // but administrators and SYSTEM can.
   base::win::RegKey key;
   wchar_t key_name[128];
-  swprintf_s(key_name, std::size(key_name), L"%s\\%s", sid.c_str(),
-             kRegHkcuAccountsPath);
+  UNSAFE_TODO(swprintf_s(key_name, std::size(key_name), L"%s\\%s", sid.c_str(),
+                         kRegHkcuAccountsPath));
   LOGFN(VERBOSE) << "HKU\\" << key_name;
 
   for (int i = 0; i < kWaitForProfileCreationRetryCount; ++i) {

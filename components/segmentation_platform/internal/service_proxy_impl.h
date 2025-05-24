@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
+#include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/service_proxy.h"
 
@@ -70,6 +71,9 @@ class ServiceProxyImpl : public ServiceProxy,
   //  Called after retrieving all the segmentation info from the DB.
   void OnGetAllSegmentationInfo(
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_info_list);
+
+  void OnModelExecutionFinished(
+      std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   // ModelExecutionScheduler::Observer overrides.
   void OnModelExecutionCompleted(SegmentId segment_id) override;

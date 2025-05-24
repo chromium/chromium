@@ -4,6 +4,8 @@
 
 #include "media/capture/video/win/d3d_capture_test_utils.h"
 
+#include "media/base/win/test_utils.h"
+
 namespace media {
 
 MockD3D11DeviceContext::MockD3D11DeviceContext() = default;
@@ -483,7 +485,9 @@ IFACEMETHODIMP MockD3D11DeviceContext::SetPrivateDataInterface(
 }
 
 MockD3D11Device::MockD3D11Device()
-    : mock_immediate_context_(new MockD3D11DeviceContext()) {}
+    : mock_immediate_context_(
+          MakeComPtrFromRefCounted<MockD3D11DeviceContext>()),
+      mock_dxgi_device2_(base::MakeRefCounted<MockDXGIDevice2>()) {}
 MockD3D11Device::~MockD3D11Device() {}
 
 IFACEMETHODIMP MockD3D11Device::CreateBuffer(
@@ -504,8 +508,8 @@ IFACEMETHODIMP MockD3D11Device::CreateTexture2D(
     const D3D11_TEXTURE2D_DESC* desc,
     const D3D11_SUBRESOURCE_DATA* initial_data,
     ID3D11Texture2D** texture2D) {
-  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_texture(
-      new MockD3D11Texture2D());
+  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_texture =
+      MakeComPtrFromRefCounted<MockD3D11Texture2D>();
   HRESULT hr = mock_texture.CopyTo(IID_PPV_ARGS(texture2D));
   OnCreateTexture2D(desc, initial_data, texture2D);
   return hr;
@@ -889,7 +893,7 @@ MockD3D11Texture2D::MockD3D11Texture2D() {}
 IFACEMETHODIMP MockD3D11Texture2D::QueryInterface(REFIID riid, void** object) {
   if (riid == __uuidof(IDXGIResource1) || riid == __uuidof(IDXGIKeyedMutex)) {
     if (!mock_resource_) {
-      mock_resource_ = new MockDXGIResource();
+      mock_resource_ = MakeComPtrFromRefCounted<MockDXGIResource>();
     }
     return mock_resource_.CopyTo(riid, object);
   }
@@ -931,5 +935,85 @@ void MockD3D11Texture2D::SetupDefaultMocks() {
 }
 
 MockD3D11Texture2D::~MockD3D11Texture2D() {}
+
+IFACEMETHODIMP MockDXGIDevice2::EnqueueSetEvent(HANDLE event) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::SetMaximumFrameLatency(UINT max_latency) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::GetMaximumFrameLatency(UINT* max_latency) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::GetAdapter(IDXGIAdapter** adapter) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::CreateSurface(
+    const DXGI_SURFACE_DESC* desc,
+    UINT num_surfaces,
+    DXGI_USAGE usage,
+    const DXGI_SHARED_RESOURCE* shared_resource,
+    IDXGISurface** surface) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::QueryResourceResidency(
+    IUnknown* const* resources,
+    DXGI_RESIDENCY* residency_status,
+    UINT num_resources) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::SetGPUThreadPriority(INT priority) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::GetGPUThreadPriority(INT* priority) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::SetPrivateData(REFGUID name,
+                                               UINT data_size,
+                                               const void* data) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::SetPrivateDataInterface(
+    REFGUID name,
+    const IUnknown* unknown) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::GetPrivateData(REFGUID name,
+                                               UINT* data_size,
+                                               void* data) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::GetParent(REFIID riid, void** parent) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::OfferResources(
+    UINT num_resources,
+    IDXGIResource* const* resources,
+    DXGI_OFFER_RESOURCE_PRIORITY priority) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP MockDXGIDevice2::ReclaimResources(
+    UINT num_resources,
+    IDXGIResource* const* resources,
+    BOOL* discarded) {
+  return E_NOTIMPL;
+}
+
+MockDXGIDevice2::MockDXGIDevice2() = default;
+
+MockDXGIDevice2::~MockDXGIDevice2() = default;
 
 }  // namespace media

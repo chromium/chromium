@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
@@ -25,10 +26,12 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/keep_alive_request_tracker.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_utils.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
@@ -288,6 +291,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
     scoped_refptr<PolicyContainerHost> policy_container_host,
     WeakDocumentPtr weak_document_ptr,
+    std::optional<ukm::SourceId> ukm_source_id,
     BrowserContext* browser_context,
     URLLoaderThrottlesGetter throttles_getter,
     base::PassKey<KeepAliveURLLoaderService>,
@@ -305,6 +309,14 @@ KeepAliveURLLoader::KeepAliveURLLoader(
       stored_url_load_(std::make_unique<StoredURLLoad>()),
       policy_container_host_(std::move(policy_container_host)),
       weak_document_ptr_(std::move(weak_document_ptr)),
+      request_tracker_(
+          GetContentClient()->browser()->MaybeCreateKeepAliveRequestTracker(
+              resource_request,
+              ukm_source_id,
+              base::BindRepeating(&KeepAliveURLLoader::IsContextDetached,
+                                  // `this` owns `request_tracker_`, so it is
+                                  // safe to use.
+                                  base::Unretained(this)))),
       browser_context_(browser_context),
       initial_url_(resource_request.url),
       last_url_(resource_request.url),
@@ -332,6 +344,10 @@ void KeepAliveURLLoader::Start() {
   is_started_ = true;
 
   LogFetchKeepAliveRequestMetric("Started");
+  if (request_tracker_) {
+    request_tracker_->AdvanceToNextStage(
+        KeepAliveRequestTracker::RequestStageType::kRequestStarted);
+  }
   if (IsFetchLater()) {
     base::UmaHistogramBoolean("FetchLater.Browser.Total.Started", true);
     // Logs to DevTools only if the initiator is still alive.
@@ -366,6 +382,8 @@ KeepAliveURLLoader::~KeepAliveURLLoader() {
               "request_id", request_id_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("loading", "KeepAliveURLLoader", request_id_);
 
+  // Allows logging to start as early as possible.
+  request_tracker_.reset();
   disconnected_loader_timer_.Stop();
   if (IsStarted()) {
     GetContentClient()->browser()->OnKeepaliveRequestFinished();
@@ -388,6 +406,10 @@ bool KeepAliveURLLoader::IsStarted() const {
 RenderFrameHostImpl* KeepAliveURLLoader::GetInitiator() const {
   return static_cast<RenderFrameHostImpl*>(
       weak_document_ptr_.AsRenderFrameHostIfValid());
+}
+
+bool KeepAliveURLLoader::IsContextDetached() const {
+  return !GetInitiator();
 }
 
 void KeepAliveURLLoader::FollowRedirect(
@@ -429,51 +451,17 @@ void KeepAliveURLLoader::SetPriority(net::RequestPriority priority,
   url_loader_->SetPriority(priority, intra_priority_value);
 }
 
-void KeepAliveURLLoader::PauseReadingBodyFromNet() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT("loading", "KeepAliveURLLoader::PauseReadingBodyFromNet",
-              "request_id", request_id_);
-  if (HasReceivedResponse()) {
-    // This may come from a renderer that tries to process a redirect which has
-    // been previously handled in this loader.
-    return;
-  }
-
-  // Let `url_loader_` handles how to forward the action to the network service.
-  url_loader_->PauseReadingBodyFromNet();
-
-  if (observer_for_testing_) {
-    CHECK_IS_TEST();
-    observer_for_testing_->PauseReadingBodyFromNetProcessed(this);
-  }
-}
-
-// TODO(crbug.com/40236167): Add test coverage.
-void KeepAliveURLLoader::ResumeReadingBodyFromNet() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT("loading", "KeepAliveURLLoader::ResumeReadingBodyFromNet",
-              "request_id", request_id_);
-  if (HasReceivedResponse()) {
-    // This may come from a renderer that tries to process a redirect which has
-    // been previously handled in this loader.
-    return;
-  }
-
-  // Let `url_loader_` handles how to forward the action to the network service.
-  url_loader_->ResumeReadingBodyFromNet();
-
-  if (observer_for_testing_) {
-    CHECK_IS_TEST();
-    observer_for_testing_->ResumeReadingBodyFromNetProcessed(this);
-  }
-}
-
 void KeepAliveURLLoader::EndReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::EndReceiveRedirect", "request_id",
               request_id_);
+  if (request_tracker_) {
+    // Note: redirect may have been cancelled by throttle before reaching here.
+    request_tracker_->AdvanceToNextStage(
+        request_tracker_->GetNextRedirectStageType());
+  }
 
   // Throttles from content-embedder has already been run for this redirect.
   // See also the call sequence from renderer:
@@ -491,10 +479,7 @@ void KeepAliveURLLoader::EndReceiveRedirect(
     }
   }
 
-  if (attribution_request_helper_) {
-    attribution_request_helper_->OnReceiveRedirect(head->headers.get(),
-                                                   redirect_info.new_url);
-  }
+  scoped_refptr<net::HttpResponseHeaders> headers = head->headers;
 
   // Stores the redirect data for later use by renderer.
   stored_url_load_->redirects.emplace(
@@ -505,6 +490,11 @@ void KeepAliveURLLoader::EndReceiveRedirect(
   if (net::Error err = WillFollowRedirect(redirect_info); err != net::OK) {
     OnComplete(network::URLLoaderCompletionStatus(err));
     return;
+  }
+
+  if (attribution_request_helper_) {
+    attribution_request_helper_->OnReceiveRedirect(headers,
+                                                   redirect_info.new_url);
   }
 
   // TODO(crbug.com/40236167): Figure out how to deal with lost
@@ -543,6 +533,10 @@ void KeepAliveURLLoader::OnReceiveResponse(
               request_id_, "url", last_url_);
 
   LogFetchKeepAliveRequestMetric("Succeeded");
+  if (request_tracker_) {
+    request_tracker_->AdvanceToNextStage(
+        KeepAliveRequestTracker::RequestStageType::kResponseReceived);
+  }
 
   if (observer_for_testing_) {
     CHECK_IS_TEST();
@@ -614,9 +608,20 @@ void KeepAliveURLLoader::OnComplete(
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnComplete", "request_id",
               request_id_);
 
+  if (request_tracker_) {
+    request_tracker_->AdvanceToNextStage(
+        KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
+        completion_status);
+  }
+
   if (completion_status.error_code != net::OK) {
     // If the request succeeds, it should've been logged in `OnReceiveResponse`.
     LogFetchKeepAliveRequestMetric("Failed");
+
+    if (attribution_request_helper_) {
+      attribution_request_helper_->OnError();
+      attribution_request_helper_.reset();
+    }
   }
 
   if (observer_for_testing_) {
@@ -786,6 +791,10 @@ void KeepAliveURLLoader::CancelWithStatus(
     // Only logs if there is no error logged by `OnComplete()` yet.
     LogFetchKeepAliveRequestMetric("Failed");
   }
+  if (request_tracker_) {
+    request_tracker_->AdvanceToNextStage(
+        KeepAliveRequestTracker::RequestStageType::kRequestFailed, status);
+  }
 
   // This method can be triggered when one of the followings happen:
   // 1. Network -> `url_loader_` gets disconnected.
@@ -839,6 +848,11 @@ void KeepAliveURLLoader::OnURLLoaderDisconnected() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnURLLoaderDisconnected",
               "request_id", request_id_);
+  if (request_tracker_) {
+    request_tracker_->AdvanceToNextStage(
+        KeepAliveRequestTracker::RequestStageType::
+            kLoaderDisconnectedFromRenderer);
+  }
   if (!IsStarted()) {
     // May be the last chance to start a deferred loader.
     LogFetchLaterMetric(
@@ -859,6 +873,11 @@ void KeepAliveURLLoader::OnURLLoaderDisconnected() {
 }
 
 void KeepAliveURLLoader::OnDisconnectedLoaderTimerFired() {
+  if (request_tracker_) {
+    request_tracker_->AdvanceToNextStage(
+        KeepAliveRequestTracker::RequestStageType::
+            kRequestCancelledAfterTimeLimit);
+  }
   if (IsFetchLater()) {
     LogFetchLaterMetric(FetchLaterBrowserMetricType::kCancelledAfterTimeLimit);
   }
@@ -868,6 +887,10 @@ void KeepAliveURLLoader::OnDisconnectedLoaderTimerFired() {
 void KeepAliveURLLoader::Shutdown() {
   base::UmaHistogramBoolean(
       "FetchKeepAlive.Requests2.Shutdown.IsStarted.Browser", IsStarted());
+  if (request_tracker_) {
+    request_tracker_->AdvanceToNextStage(
+        KeepAliveRequestTracker::RequestStageType::kBrowserShutdown);
+  }
   if (!IsStarted()) {
     CHECK(IsFetchLater());
     LogFetchLaterMetric(FetchLaterBrowserMetricType::kStartedWhenShutdown);
@@ -898,6 +921,10 @@ void KeepAliveURLLoader::Cancel() {
   if (!IsFetchLater()) {
     mojo::ReportBadMessage("Unexpected call to KeepAliveURLLoader::Cancel()");
     return;
+  }
+  if (request_tracker_) {
+    request_tracker_->AdvanceToNextStage(
+        KeepAliveRequestTracker::RequestStageType::kRequestCancelledByRenderer);
   }
   LogFetchLaterMetric(FetchLaterBrowserMetricType::kAbortedByInitiator);
   DeleteSelf();

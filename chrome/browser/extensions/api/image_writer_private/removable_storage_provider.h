@@ -27,8 +27,8 @@ class RemovableStorageProvider {
   static void GetAllDevices(DeviceListReadyCallback callback);
 
   // Sets the list of devices that will be returned by GetAllDevices during
-  // testing.  All calls to |GetAllDevices| will return this list until
-  // |ClearDeviceListForTesting| is called.
+  // testing.  All calls to `GetAllDevices` will return this list until
+  // `ClearDeviceListForTesting` is called.
   static void SetDeviceListForTesting(
       scoped_refptr<StorageDeviceList> device_list);
   // Clears the list of devices that is used during testing.

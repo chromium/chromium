@@ -57,9 +57,9 @@ void ReportingService::Initialize() {
   log_store()->LoadPersistedUnsentLogs();
   base::RepeatingClosure send_next_log_callback = base::BindRepeating(
       &ReportingService::SendNextLog, self_ptr_factory_.GetWeakPtr());
-  bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
+  bool fast_startup = client_->ShouldStartUpFast();
   upload_scheduler_ = std::make_unique<MetricsUploadScheduler>(
-      send_next_log_callback, fast_startup_for_testing);
+      send_next_log_callback, fast_startup);
 }
 
 void ReportingService::Start() {

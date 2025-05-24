@@ -7,10 +7,10 @@
 
 #include <windows.h>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -21,7 +21,7 @@ namespace gfx {
 // This keeps track of whether a given HWND has a child window which the GPU
 // process renders into. This should only be used from the UI thread unless
 // otherwise noted.
-class GFX_EXPORT RenderingWindowManager {
+class COMPONENT_EXPORT(GFX) RenderingWindowManager {
  public:
   // The first call to GetInstance() should happen on the UI thread.
   static RenderingWindowManager* GetInstance();

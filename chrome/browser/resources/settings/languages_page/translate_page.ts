@@ -10,10 +10,9 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './add_languages_dialog.js';
 import './languages.js';
 import '../controls/settings_toggle_button.js';
@@ -49,14 +48,6 @@ export class SettingsTranslatePageElement extends
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.
        */
@@ -73,11 +64,11 @@ export class SettingsTranslatePageElement extends
     };
   }
 
-  languages?: LanguagesModel;
-  languageHelper: LanguageHelper;
-  private showAddAlwaysTranslateDialog_: boolean;
-  private showAddNeverTranslateDialog_: boolean;
-  private addLanguagesDialogLanguages_:
+  declare languages?: LanguagesModel;
+  declare languageHelper: LanguageHelper;
+  declare private showAddAlwaysTranslateDialog_: boolean;
+  declare private showAddNeverTranslateDialog_: boolean;
+  declare private addLanguagesDialogLanguages_:
       chrome.languageSettingsPrivate.Language[]|null;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
@@ -126,7 +117,7 @@ export class SettingsTranslatePageElement extends
    */
   private hasDisplayName_(language: chrome.languageSettingsPrivate.Language|
                           undefined): boolean {
-    return !!language && !!language!.displayName;
+    return !!language && !!language.displayName;
   }
 
   /**

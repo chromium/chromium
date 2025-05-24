@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] batchNormalization float16 4D NHWC tensor all options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test batchNormalization float16 actual 199.5 should be close enough to expected 200.375 by ULP distance: expected a number less than or equal to 6 but got 7
+Harness: the test ran to completion.
+

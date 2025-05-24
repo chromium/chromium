@@ -28,9 +28,20 @@ The main alternative I found was to use `gclient flatten`. Example output:
 
 ## Determining Linker Inputs
 
-This is done by performing a custom link step with a linker that just records
-inputs. This seemed like the simplest approach.
+This is done by parsing `build.ninja` to find all inputs to an executable. This
+approach is pretty fast & simple, but does not catch the case where a public
+`.cc` file has an `#include` a private `.h` file.
 
-Two alternatives:
+Alternatives considered:
+
 1) Dump paths found in debug information.
+  * Hard to do cross-platform.
 2) Scan a linker map file for input paths.
+  * LTO causes paths in linker map to be inaccurate.
+3) Use a fake link step to capture all object file inputs
+  * Object files paths are relative to GN target, so this does not catch
+    internal sources referenced by public GN targets.
+4) Query GN / Ninja for transitive inputs
+  * This ends up listing non-linker inputs as well, which we do not want.
+5) Parse depfiles to find all headers, and add them to the list of inputs
+  * Additional work, but would give us full coverage.

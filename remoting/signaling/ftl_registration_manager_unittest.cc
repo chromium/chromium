@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "remoting/base/fake_oauth_token_getter.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/ftl_client_uuid_device_id_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,7 +23,7 @@ namespace {
 using testing::_;
 
 using SignInGaiaResponseCallback =
-    base::OnceCallback<void(const ProtobufHttpStatus&,
+    base::OnceCallback<void(const HttpStatus&,
                             std::unique_ptr<ftl::SignInGaiaResponse>)>;
 
 constexpr char kAuthToken[] = "auth_token";
@@ -56,7 +56,7 @@ decltype(auto) RespondOkToSignInGaia(const std::string& registration_id) {
     response->mutable_auth_token()->set_payload(kAuthToken);
     response->mutable_auth_token()->set_expires_in(
         kAuthTokenExpiresInMicroseconds);
-    std::move(on_done).Run(ProtobufHttpStatus::OK(), std::move(response));
+    std::move(on_done).Run(HttpStatus::OK(), std::move(response));
   };
 }
 
@@ -85,7 +85,7 @@ class FtlRegistrationManagerTest : public testing::Test {
   raw_ptr<MockRegistrationClient> registration_client_ =
       static_cast<MockRegistrationClient*>(
           registration_manager_.registration_client_.get());
-  base::MockCallback<base::RepeatingCallback<void(const ProtobufHttpStatus&)>>
+  base::MockCallback<base::RepeatingCallback<void(const HttpStatus&)>>
       done_callback_;
 };
 
@@ -122,22 +122,18 @@ TEST_F(FtlRegistrationManagerTest, FailedToSignIn_Backoff) {
                    SignInGaiaResponseCallback on_done) {
         VerifySignInGaiaRequest(request);
         std::move(on_done).Run(
-            ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
-                               "unavailable"),
-            {});
+            HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"), {});
       })
       .WillOnce([](const ftl::SignInGaiaRequest& request,
                    SignInGaiaResponseCallback on_done) {
         VerifySignInGaiaRequest(request);
         std::move(on_done).Run(
-            ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAUTHENTICATED,
-                               "unauthenticated"),
+            HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated"),
             {});
       })
       .WillOnce(RespondOkToSignInGaia("registration_id"));
 
-  EXPECT_CALL(done_callback_,
-              Run(HasErrorCode(ProtobufHttpStatus::Code::UNAVAILABLE)))
+  EXPECT_CALL(done_callback_, Run(HasErrorCode(HttpStatus::Code::UNAVAILABLE)))
       .Times(1);
   registration_manager_.SignInGaia(done_callback_.Get());
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
@@ -145,7 +141,7 @@ TEST_F(FtlRegistrationManagerTest, FailedToSignIn_Backoff) {
   ASSERT_EQ(1, GetBackoff().failure_count());
 
   EXPECT_CALL(done_callback_,
-              Run(HasErrorCode(ProtobufHttpStatus::Code::UNAUTHENTICATED)))
+              Run(HasErrorCode(HttpStatus::Code::UNAUTHENTICATED)))
       .Times(1);
   registration_manager_.SignInGaia(done_callback_.Get());
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());

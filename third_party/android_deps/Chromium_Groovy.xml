@@ -1,0 +1,11 @@
+<code_scheme name="Chromium Groovy" version="173">
+  <GroovyCodeStyleSettings>
+    <option name="ALIGN_MULTILINE_LIST_OR_MAP" value="false" />
+    <option name="ALIGN_NAMED_ARGS_IN_MAP" value="false" />
+  </GroovyCodeStyleSettings>
+  <codeStyleSettings language="Groovy">
+    <option name="RIGHT_MARGIN" value="120" />
+    <option name="WRAP_ON_TYPING" value="1" />
+    <option name="SOFT_MARGINS" value="120" />
+  </codeStyleSettings>
+</code_scheme>

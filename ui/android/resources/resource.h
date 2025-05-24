@@ -19,6 +19,8 @@ class UI_ANDROID_EXPORT Resource {
   Resource();
   virtual ~Resource();
 
+  constexpr static int kInvalidResourceId = 0;
+
   virtual std::unique_ptr<Resource> CreateForCopy();
   void SetUIResource(std::unique_ptr<cc::ScopedUIResource> ui_resource,
                      const gfx::Size& size_in_px);

@@ -235,7 +235,7 @@ void RankerModelLoaderImplTest::SaveModel(const RankerModel& model,
 RankerModelStatus RankerModelLoaderImplTest::ValidateModel(
     const RankerModel& model) {
   validated_models_.push_back(Clone(model));
-  RankerModelStatus response = RankerModelStatus::OK;
+  RankerModelStatus response = RankerModelStatus::kOk;
   if (!validate_model_response_.empty()) {
     response = validate_model_response_.front();
     validate_model_response_.pop_front();
@@ -317,7 +317,7 @@ TEST_F(RankerModelLoaderImplTest, LoadFromBadFileTriggersDownload) {
 }
 
 TEST_F(RankerModelLoaderImplTest, IncompatibleCachedFileTriggersDownload) {
-  validate_model_response_.push_back(RankerModelStatus::INCOMPATIBLE);
+  validate_model_response_.push_back(RankerModelStatus::kIncompatible);
 
   ASSERT_TRUE(DoLoaderTest(local_model_path_, remote_model_url_));
   ASSERT_EQ(2U, validated_models_.size());
@@ -328,8 +328,8 @@ TEST_F(RankerModelLoaderImplTest, IncompatibleCachedFileTriggersDownload) {
 }
 
 TEST_F(RankerModelLoaderImplTest, IncompatibleDownloadedFileKeepsExpired) {
-  validate_model_response_.push_back(RankerModelStatus::OK);
-  validate_model_response_.push_back(RankerModelStatus::INCOMPATIBLE);
+  validate_model_response_.push_back(RankerModelStatus::kOk);
+  validate_model_response_.push_back(RankerModelStatus::kIncompatible);
 
   ASSERT_TRUE(DoLoaderTest(expired_model_path_, remote_model_url_));
   ASSERT_EQ(2U, validated_models_.size());

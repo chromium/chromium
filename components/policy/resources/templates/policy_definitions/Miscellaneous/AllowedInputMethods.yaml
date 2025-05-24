@@ -15,6 +15,7 @@ features:
   per_profile: true
 owners:
 - hendrich@chromium.org
+- poromov@chromium.org
 schema:
   items:
     type: string

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from './testing/test_import_manager.js';
+
 /** A collection of helper functions when dealing with arrays. */
 export const ArrayUtil = {
   contentsAreEqual: <T>(array1?: T[], array2?: T[]): boolean => {
@@ -16,3 +18,5 @@ export const ArrayUtil = {
     return true;
   },
 };
+
+TestImportManager.exportForTesting(['ArrayUtil', ArrayUtil]);

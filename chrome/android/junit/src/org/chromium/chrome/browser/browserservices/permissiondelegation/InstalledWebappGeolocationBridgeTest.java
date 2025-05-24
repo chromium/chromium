@@ -25,13 +25,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -43,10 +43,9 @@ import org.chromium.url.JUnitTestGURLs;
 public class InstalledWebappGeolocationBridgeTest {
     private static final long NATIVE_POINTER = 12;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private GURL mScope;
     private GURL mOtherScope;
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock private TrustedWebActivityClient mTrustedWebActivityClient;
     @Mock private InstalledWebappGeolocationBridge.Natives mNativeMock;
@@ -57,15 +56,13 @@ public class InstalledWebappGeolocationBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mocker.mock(InstalledWebappGeolocationBridgeJni.TEST_HOOKS, mNativeMock);
+        InstalledWebappGeolocationBridgeJni.setInstanceForTesting(mNativeMock);
 
         mScope = JUnitTestGURLs.URL_1;
         mOtherScope = JUnitTestGURLs.URL_2;
 
-        mGeolocation =
-                new InstalledWebappGeolocationBridge(
-                        NATIVE_POINTER, mScope, mTrustedWebActivityClient);
+        TrustedWebActivityClient.setInstanceForTesting(mTrustedWebActivityClient);
+        mGeolocation = new InstalledWebappGeolocationBridge(NATIVE_POINTER, mScope);
     }
 
     @Test

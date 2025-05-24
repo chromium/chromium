@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.mandatory_reauth;
 
 import android.content.Context;
 
-import org.chromium.components.autofill.PaymentsBubbleClosedReason;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.autofill.PaymentsUiClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -16,6 +17,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
  * Creates the model, and the view, and connects them. It also executes the commands from the native
  * controller.
  */
+@NullMarked
 class MandatoryReauthOptInBottomSheetCoordinator
         implements MandatoryReauthOptInBottomSheetComponent {
     private final BottomSheetController mController;
@@ -29,7 +31,7 @@ class MandatoryReauthOptInBottomSheetCoordinator
                         case StateChangeReason.BACK_PRESS: // Intentional fallthrough.
                         case StateChangeReason.SWIPE: // Intentional fallthrough.
                         case StateChangeReason.TAP_SCRIM:
-                            mDelegate.onClosed(PaymentsBubbleClosedReason.CLOSED);
+                            mDelegate.onClosed(PaymentsUiClosedReason.CLOSED);
                             break;
                         case StateChangeReason.NAVIGATION: // Intentional fallthrough.
                         case StateChangeReason.COMPOSITED_UI: // Intentional fallthrough.
@@ -37,7 +39,7 @@ class MandatoryReauthOptInBottomSheetCoordinator
                         case StateChangeReason.PROMOTE_TAB: // Intentional fallthrough.
                         case StateChangeReason.OMNIBOX_FOCUS: // Intentional fallthrough.
                         case StateChangeReason.NONE:
-                            mDelegate.onClosed(PaymentsBubbleClosedReason.NOT_INTERACTED);
+                            mDelegate.onClosed(PaymentsUiClosedReason.NOT_INTERACTED);
                             break;
                         case StateChangeReason.INTERACTION_COMPLETE:
                             break;
@@ -66,14 +68,14 @@ class MandatoryReauthOptInBottomSheetCoordinator
     }
 
     @Override
-    public void close(@PaymentsBubbleClosedReason int closedReason) {
+    public void close(@PaymentsUiClosedReason int closedReason) {
         switch (closedReason) {
-            case PaymentsBubbleClosedReason.ACCEPTED: // Intentional fallthrough.
-            case PaymentsBubbleClosedReason.CANCELLED:
+            case PaymentsUiClosedReason.ACCEPTED: // Intentional fallthrough.
+            case PaymentsUiClosedReason.CANCELLED:
                 mController.hideContent(mView, true, StateChangeReason.INTERACTION_COMPLETE);
                 mDelegate.onClosed(closedReason);
                 break;
-            case PaymentsBubbleClosedReason.NOT_INTERACTED:
+            case PaymentsUiClosedReason.NOT_INTERACTED:
                 mController.hideContent(mView, true, StateChangeReason.NONE);
                 break;
             default:

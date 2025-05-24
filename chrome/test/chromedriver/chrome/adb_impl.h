@@ -52,6 +52,12 @@ class AdbImpl : public Adb {
   Status GetSocketByPattern(const std::string& device_serial,
                             const std::string& grep_pattern,
                             std::string* socket_name) override;
+  Status SetPreferences(const std::string& device_serial,
+                        const std::string& path,
+                        const base::Value::Dict* custom_prefs) override;
+  Status SetLocalState(const std::string& device_serial,
+                       const std::string& path,
+                       const base::Value::Dict* custom_local_state) override;
 
  private:
   Status ExecuteCommand(const std::string& command,
@@ -62,6 +68,11 @@ class AdbImpl : public Adb {
   Status ExecuteHostShellCommand(const std::string& device_serial,
                                  const std::string& shell_command,
                                  std::string* response);
+  Status SendFile(const std::string& device_serial,
+                  const std::string& file_path,
+                  const std::string& content);
+  Status AddWritePermissions(const std::string& device_serial,
+                             const std::string& path);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 

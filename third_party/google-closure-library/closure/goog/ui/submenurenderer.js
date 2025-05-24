@@ -10,7 +10,6 @@
 
 goog.provide('goog.ui.SubMenuRenderer');
 
-goog.forwardDeclare('goog.ui.SubMenu');
 goog.require('goog.a11y.aria');
 goog.require('goog.a11y.aria.State');
 goog.require('goog.asserts');
@@ -22,6 +21,7 @@ goog.require('goog.ui.Menu');
 goog.require('goog.ui.MenuItemRenderer');
 goog.requireType('goog.ui.Control');
 goog.requireType('goog.ui.ControlContent');
+goog.requireType('goog.ui.SubMenu');
 
 
 

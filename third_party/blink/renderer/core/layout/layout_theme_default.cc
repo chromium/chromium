@@ -153,10 +153,12 @@ void LayoutThemeDefault::AdjustSliderThumbSize(
       WebThemeEngine::kPartSliderThumb);
 
   float zoom_level = builder.EffectiveZoom();
-  if (builder.EffectiveAppearance() == kSliderThumbHorizontalPart) {
+  if (builder.EffectiveAppearance() ==
+      AppearanceValue::kSliderThumbHorizontal) {
     builder.SetWidth(Length::Fixed(size.width() * zoom_level));
     builder.SetHeight(Length::Fixed(size.height() * zoom_level));
-  } else if (builder.EffectiveAppearance() == kSliderThumbVerticalPart) {
+  } else if (builder.EffectiveAppearance() ==
+             AppearanceValue::kSliderThumbVertical) {
     builder.SetWidth(Length::Fixed(size.height() * zoom_level));
     builder.SetHeight(Length::Fixed(size.width() * zoom_level));
   }
@@ -201,8 +203,9 @@ Color LayoutThemeDefault::PlatformFocusRingColor() const {
 void LayoutThemeDefault::AdjustButtonStyle(
     ComputedStyleBuilder& builder) const {
   // Ignore line-height.
-  if (builder.EffectiveAppearance() == kPushButtonPart)
+  if (builder.EffectiveAppearance() == AppearanceValue::kPushButton) {
     builder.SetLineHeight(ComputedStyleInitialValues::InitialLineHeight());
+  }
 }
 
 void LayoutThemeDefault::AdjustSearchFieldCancelButtonStyle(

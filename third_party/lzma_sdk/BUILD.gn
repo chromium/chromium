@@ -5,7 +5,7 @@
 import("//build/config/arm.gni")
 import("//build/config/compiler/compiler.gni")
 
-# TODO(richard.townsend@arm.com): Optimizations temporarily disabled for
+# TODO(ritownsend@google.com): Optimizations temporarily disabled for
 # Windows on Arm MSVC builds, see http://crbug.com/v8/10012.
 use_arm_neon_optimizations = (target_cpu == "arm" || target_cpu == "arm64") &&
                              arm_use_neon && !(is_win && !is_clang)
@@ -36,13 +36,14 @@ config("lzma_sdk_config") {
 # (otherwise -Wall will appear after this, and turn it back on).
 config("lzma_build_config") {
   defines = [
-    "_7ZIP_ST",
-    "_7Z_NO_METHODS_FILTERS",
+    "Z7_LZMA_PROB32",
+    "Z7_NO_METHODS_FILTERS",
+    "Z7_ST",
     "_LZMA_PROB32",
   ]
 
   if (enable_lzma_opt) {
-    defines += [ "_LZMA_DEC_OPT" ]
+    defines += [ "Z7_LZMA_DEC_OPT" ]
   }
 
   cflags = []
@@ -52,10 +53,6 @@ config("lzma_build_config") {
   }
 
   if (use_arm_neon_optimizations) {
-    if (is_fuchsia) {
-      defines += [ "ARMV8_OS_FUCHSIA" ]
-    }
-
     if (target_cpu == "arm" && arm_version >= 8) {
       if (is_clang) {
         cflags += [
@@ -92,6 +89,7 @@ static_library("lzma_sdk") {
     "C/7zFile.h",
     "C/7zStream.c",
     "C/7zTypes.h",
+    "C/7zWindows.h",
     "C/Alloc.c",
     "C/Alloc.h",
     "C/Bcj2.c",
@@ -118,14 +116,13 @@ static_library("lzma_sdk") {
     "C/LzmaLib.c",
     "C/LzmaLib.h",
     "C/Precomp.h",
+    "C/RotateDefs.h",
   ]
 
   if (enable_lzma_opt) {
     sources += [
-      "Asm/x86/7zCrcOpt.asm",
       "Asm/x86/LzmaDecOpt.asm",
     ]
-    sources -= [ "C/7zCrcOpt.c" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -141,9 +138,9 @@ static_library("lzma_sdk") {
 static_library("lzma_sdk_xz") {
   sources = [
     "C/BraIA64.c",
-    "C/RotateDefs.h",
     "C/Sha256.c",
     "C/Sha256.h",
+    "C/Sha256Opt.c",
     "C/Xz.c",
     "C/Xz.h",
     "C/XzCrc64.c",
@@ -152,11 +149,6 @@ static_library("lzma_sdk_xz") {
     "C/XzDec.c",
     "C/XzIn.c",
   ]
-
-  # TODO(crbug.com/1338627): Enable ARM optimizations
-  if (target_cpu == "x86" || target_cpu == "x64") {
-    sources += [ "C/Sha256Opt.c" ]
-  }
 
   if (enable_lzma_opt) {
     sources += [

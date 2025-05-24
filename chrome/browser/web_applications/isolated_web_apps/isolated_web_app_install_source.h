@@ -25,6 +25,9 @@ class IsolatedWebAppInstallSource {
   static IsolatedWebAppInstallSource FromExternalPolicy(
       IwaSourceProdModeWithFileOp source);
 
+  static IsolatedWebAppInstallSource FromKiosk(
+      IwaSourceProdModeWithFileOp source);
+
   static IsolatedWebAppInstallSource FromShimlessRma(
       IwaSourceProdModeWithFileOp source);
 

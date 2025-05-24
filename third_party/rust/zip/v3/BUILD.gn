@@ -1,0 +1,92 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "zip"
+  epoch = "3"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/aes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/aes_ctr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/compression.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/cp437.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/crc32.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/extra_fields/extended_timestamp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/extra_fields/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/extra_fields/ntfs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/extra_fields/zipinfo_utf8.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/path.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/read/config.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/read/lzma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/read/magic_finder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/read/stream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/result.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/spec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/unstable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/write.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zip-v3/src/zipcrypto.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_authors = "Mathijs van de Nes <git@mathijs.vd-nes.nl>, Marli Frost <marli@frost.red>, Ryan Levick <ryan.levick@gmail.com>, Chris Hennick <hennickc@amazon.com>"
+  cargo_pkg_name = "zip"
+  cargo_pkg_description =
+      "Library to support the reading and writing of zip files."
+  cargo_pkg_version = "3.0.0"
+
+  allow_unsafe = true
+
+  deps = [
+    "//third_party/rust/crc32fast/v1:lib",
+    "//third_party/rust/flate2/v1:lib",
+    "//third_party/rust/indexmap/v2:lib",
+    "//third_party/rust/memchr/v2:lib",
+  ]
+  features = [
+    "_deflate-any",
+    "deflate-flate2",
+  ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

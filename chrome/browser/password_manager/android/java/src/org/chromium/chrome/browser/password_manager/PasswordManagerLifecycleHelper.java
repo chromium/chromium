@@ -10,11 +10,14 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** This helper forwards lifecycle events to password manager classes. */
+@NullMarked
 public class PasswordManagerLifecycleHelper {
-    private static PasswordManagerLifecycleHelper sInstance;
-    private ObserverList<Long> mNativeObservers = new ObserverList<>();
+    private static @Nullable PasswordManagerLifecycleHelper sInstance;
+    private final ObserverList<Long> mNativeObservers = new ObserverList<>();
 
     /**
      * Returns the singleton instance of this class and lazily creates it if that hasn't happened.

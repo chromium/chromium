@@ -6,4 +6,11 @@ specific_include_rules = {
     "+components/previous_session_info/previous_session_info.h",
     "+components/previous_session_info/previous_session_info_private.h",
   ],
+"signin_test_util\.*": [
+    "+components/policy/core/browser/signin/profile_separation_policies.h",
+  ],
+"sync_test_util\.mm": [
+    "+components/data_sharing/public",
+    "+components/saved_tab_groups",
+  ],
 }

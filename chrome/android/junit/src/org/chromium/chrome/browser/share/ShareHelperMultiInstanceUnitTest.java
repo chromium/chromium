@@ -198,7 +198,13 @@ public class ShareHelperMultiInstanceUnitTest {
                             .moveToState(State.STARTED);
             doReturn(taskId).when(mActivity).getTaskId();
             mIntentRequestTracker = IntentRequestTracker.createFromActivity(mActivity);
-            mWindow = new ActivityWindowAndroid(mActivity, false, mIntentRequestTracker);
+            mWindow =
+                    new ActivityWindowAndroid(
+                            mActivity,
+                            /* listenToActivityState= */ false,
+                            mIntentRequestTracker,
+                            /* insetObserver= */ null,
+                            /* trackOcclusion= */ true);
         }
 
         public SingleWindowTestInstance startShare() {

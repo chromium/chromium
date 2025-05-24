@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_win || is_mac || is_linux)
@@ -37,4 +38,105 @@ mojom("mojo_bindings") {
       ]
     },
   ]
+}
+
+source_set("app_home") {
+  sources = [
+    "app_home_page_handler.h",
+    "app_home_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/common",
+    "//chrome/common/extensions",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common:common_constants",
+    "//mojo/public/cpp/bindings",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "app_home_page_handler.cc",
+    "app_home_ui.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":app_home",
+    ":mojo_bindings",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/app_home:resources",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/browser/web_applications/proto",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common/extensions",
+    "//components/webapps/browser:constants",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//net",
+    "//ui/base",
+    "//ui/webui",
+    "//url",
+  ]
+}
+
+if (enable_extensions) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = [
+      "app_home_page_handler_browsertest.cc",
+      "mock_app_home_page.cc",
+      "mock_app_home_page.h",
+    ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    public_deps = [
+      ":mojo_bindings",
+      "//mojo/public/cpp/bindings",
+      "//testing/gmock",
+    ]
+
+    deps = [
+      ":app_home",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/webapps/browser",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//ui/views",
+      "//ui/views:test_support",
+    ]
+  }
 }

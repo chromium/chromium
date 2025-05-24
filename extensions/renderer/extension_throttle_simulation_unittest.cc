@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 // The tests in this file attempt to verify the following through simulation:
@@ -20,6 +20,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -658,7 +659,7 @@ TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
   // type of behavior of the client and the downtime, e.g. the difference
   // in behavior between a client making requests every few minutes vs.
   // one that makes a request every 15 seconds).
-  Trial trials[] = {
+  auto trials = std::to_array<Trial>({
       {base::Seconds(10), base::Seconds(3)},
       {base::Seconds(30), base::Seconds(7)},
       {base::Minutes(5), base::Seconds(30)},
@@ -679,7 +680,7 @@ TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
 
       // Most brutal?
       {base::Minutes(45), base::Milliseconds(500)},
-  };
+  });
 
   // If things don't converge by the time we've done 100K trials, then
   // clearly one or more of the expected intervals are wrong.

@@ -182,19 +182,21 @@ TEST_F(SelectionControllerTest, RightClickWhenUnfocused) {
   SetText("abc def");
 
   RightMouseDown(CenterRight(BoundsOfChar(0)));
-  if (PlatformStyle::kSelectAllOnRightClickWhenUnfocused)
+  if constexpr (PlatformStyle::kSelectAllOnRightClickWhenUnfocused) {
     EXPECT_EQ("abc def", GetSelectedText());
-  else
+  } else {
     EXPECT_EQ("", GetSelectedText());
+  }
 }
 
 TEST_F(SelectionControllerTest, RightClickSelectsWord) {
   SetText("abc def");
   RightMouseDown(CenterRight(BoundsOfChar(5)), true);
-  if (PlatformStyle::kSelectWordOnRightClick)
+  if constexpr (PlatformStyle::kSelectWordOnRightClick) {
     EXPECT_EQ("def", GetSelectedText());
-  else
+  } else {
     EXPECT_EQ("", GetSelectedText());
+  }
 }
 
 // Regression test for https://crbug.com/856609
@@ -222,10 +224,11 @@ TEST_F(SelectionControllerTest, DragPastEndUsesProperOrigin) {
   EXPECT_EQ("", GetSelectedText());
 
   DragMouse(TranslatePointX(point, -1));
-  if (gfx::RenderText::kDragToEndIfOutsideVerticalBounds)
+  if (gfx::RenderText::kDragToEndIfOutsideVerticalBounds) {
     EXPECT_EQ("abc def", GetSelectedText());
-  else
+  } else {
     EXPECT_EQ("", GetSelectedText());
+  }
 
   DragMouse(TranslatePointX(point, 1));
   EXPECT_EQ("", GetSelectedText());

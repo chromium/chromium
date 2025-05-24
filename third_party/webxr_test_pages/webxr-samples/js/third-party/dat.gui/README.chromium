@@ -1,10 +1,9 @@
 Name: dat.gui
 Short Name: dat.gui
 URL: https://github.com/dataarts/dat.gui
-Version: 0.7.1
-Revision: 1b18f7227e56c8b5071337732342101501b9fa95
-Date: 2018-05-05
-License: Apache 2.0
+Version: 0.7.9
+Revision: 19c4725d03456ce5049e7131907fc0470326d5ae
+License: Apache-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: no

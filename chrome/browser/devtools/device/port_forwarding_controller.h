@@ -37,7 +37,7 @@ class PortForwardingController {
 
  private:
   class Connection;
-  typedef std::map<std::string, Connection*> Registry;
+  typedef std::map<std::string, raw_ptr<Connection, CtnExperimental>> Registry;
 
   void OnPrefsChange();
 

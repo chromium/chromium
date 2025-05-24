@@ -1,0 +1,10 @@
+include_rules = [
+  # While UnownedUserData is defined in //chrome/browser/ui, that's only because
+  # that's the location in which its used (being tied to the concept of a
+  # browser window). However, it itself should not depend on //chrome concepts,
+  # and it could reasonably move to a lower level (such as //base) if there is
+  # desire in the future.
+  "-*",
+  "+base",
+  "+chrome/browser/ui/unowned_user_data",
+]

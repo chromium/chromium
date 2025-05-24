@@ -32,6 +32,7 @@ test("fuzzing_unittests") {
     "//third_party/fuzztest",
   ]
   data_deps = []
+  data = []
 
   if (use_fuzzing_engine) {
     sources += [ "stacktrace_test.cc" ]
@@ -41,7 +42,9 @@ test("fuzzing_unittests") {
       "//testing/gmock",
     ]
 
-    data_deps += [ ":stacktrace_test_uaf_fuzzer" ]
+    data_deps += [ ":stacktrace_test_fuzzer" ]
+
+    data += [ "data/uaf" ]
 
     # TODO(crbug.com/40603084): Get these tests working on Windows.
     if (!is_win) {
@@ -130,8 +133,8 @@ if (use_fuzzing_engine && !is_win) {
   }
 }
 
-fuzzer_test("stacktrace_test_uaf_fuzzer") {
-  sources = [ "stacktrace_test_uaf_fuzzer.cc" ]
+fuzzer_test("stacktrace_test_fuzzer") {
+  sources = [ "stacktrace_test_fuzzer.cc" ]
   deps = [ "//base" ]
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
 }

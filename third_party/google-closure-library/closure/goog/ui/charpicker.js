@@ -351,6 +351,7 @@ goog.ui.CharPicker.prototype.decorateInternal = function(element) {
 
   // The chars below cause layout disruption or too narrow to hover:
   // \u0020, \u00AD, \u2000 - \u200f, \u2028 - \u202f, \u3000, \ufeff
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var chrs = this.decompressor_.toCharList(':2%C^O80V1H2s2G40Q%s0');
   this.layoutAlteringChars_ = new goog.structs.Set(chrs);
 
@@ -507,7 +508,9 @@ goog.ui.CharPicker.prototype.decorateInternal = function(element) {
 
   this.hc_.className = goog.getCssName('goog-char-picker-hovercard');
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.grid_.buttoncount = this.gridsize_;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.recentgrid_.buttoncount = this.recentwidth_;
   this.populateGridWithButtons_(this.grid_);
   this.populateGridWithButtons_(this.recentgrid_);
@@ -578,6 +581,7 @@ goog.ui.CharPicker.prototype.enterDocument = function() {
 goog.ui.CharPicker.prototype.handleFocus_ = function(e) {
   'use strict';
   var button = e.target;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var element = /** @type {!Element} */ (button.getElement());
   var ch = this.getChar_(element);
 
@@ -611,7 +615,9 @@ goog.ui.CharPicker.prototype.handleFocus_ = function(e) {
  */
 goog.ui.CharPicker.prototype.handleScroll_ = function(e) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var height = e.target.scrollHeight;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var top = e.target.scrollTop;
   var itempos =
       Math.ceil(top * this.items.length / (this.columnCount_ * height)) *
@@ -630,6 +636,7 @@ goog.ui.CharPicker.prototype.handleScroll_ = function(e) {
  * already present.
  * @param {goog.events.Event} e Event for the click on menus or grid.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.CharPicker.prototype.handleSelectedItem_ = function(e) {
   'use strict';
@@ -641,10 +648,12 @@ goog.ui.CharPicker.prototype.handleSelectedItem_ = function(e) {
     this.submenu_.setVisible(false);
     this.setSelectedSubcategory_(e.target.getValue());
   } else if (parent == this.grid_) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var button = e.target.getElement();
     this.selectedChar_ = this.getChar_(button);
     this.updateRecents_(this.selectedChar_);
   } else if (parent == this.recentgrid_) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.selectedChar_ = this.getChar_(e.target.getElement());
   }
 };
@@ -787,6 +796,7 @@ goog.ui.CharPicker.prototype.setSelectedGrid_ = function(
   'use strict';
   var charLists = this.data_.charList;
   var charListStr = charLists[category][subcategory];
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var content = this.decompressor_.toCharList(charListStr);
   this.charNameFetcher_.prefetch(charListStr);
   this.updateGrid_(this.grid_, content);
@@ -840,6 +850,7 @@ goog.ui.CharPicker.prototype.updateGrid_ = function(grid, items) {
  * @param {number} start The index from which the characters should be
  *     displayed.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.CharPicker.prototype.modifyGridWithItems_ = function(
     grid, items, start) {
@@ -863,6 +874,7 @@ goog.ui.CharPicker.prototype.modifyGridWithItems_ = function(
  * @param {goog.ui.Component} grid The grid which is updated with a new set of
  *     characters.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.CharPicker.prototype.populateGridWithButtons_ = function(grid) {
   'use strict';
@@ -927,6 +939,7 @@ goog.ui.CharPicker.prototype.updateRecents_ = function(character) {
  */
 goog.ui.CharPicker.prototype.getInputChar = function() {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var text = this.input_.getValue();
   var code = parseInt(text, 16);
   return /** @type {string} */ (goog.i18n.uChar.fromCharCode(code));

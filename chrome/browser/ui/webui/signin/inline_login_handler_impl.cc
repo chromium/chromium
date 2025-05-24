@@ -78,6 +78,7 @@
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -109,9 +110,7 @@ HandlerSigninReason GetHandlerSigninReason(const GURL& url) {
     case signin_metrics::Reason::kFetchLstOnly:
       return HandlerSigninReason::kFetchLstOnly;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected signin reason: " << static_cast<int>(reason);
-      return HandlerSigninReason::kForcedSigninPrimaryAccount;
+      NOTREACHED() << "Unexpected signin reason: " << static_cast<int>(reason);
   }
 }
 
@@ -135,7 +134,7 @@ class ForcedSigninTurnSyncOnHelperDelegate
       const std::string& previous_email,
       const std::string& new_email,
       signin::SigninChoiceCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 };
 
@@ -161,14 +160,16 @@ credential_provider::UiExitCodes ValidateSigninEmail(
     const std::string& gaia_id_parameter,
     const std::string& email_domains_parameter,
     const std::string& signin_email,
-    const std::string& signin_gaia_id) {
+    const GaiaId& signin_gaia_id) {
   if (!gaia_id_parameter.empty() &&
-      !base::EqualsCaseInsensitiveASCII(gaia_id_parameter, signin_gaia_id)) {
+      !base::EqualsCaseInsensitiveASCII(gaia_id_parameter,
+                                        signin_gaia_id.ToString())) {
     return credential_provider::kUiecEMailMissmatch;
   }
 
-  if (email_domains_parameter.empty())
+  if (email_domains_parameter.empty()) {
     return credential_provider::kUiecSuccess;
+  }
 
   std::vector<std::string> all_email_domains =
       GetEmailDomainsFromParameter(email_domains_parameter);
@@ -182,21 +183,25 @@ credential_provider::UiExitCodes ValidateSigninEmail(
 #endif
 
 void SetProfileLocked(const base::FilePath profile_path, bool locked) {
-  if (profile_path.empty())
+  if (profile_path.empty()) {
     return;
+  }
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!profile_manager)
+  if (!profile_manager) {
     return;
+  }
 
   ProfileAttributesEntry* entry =
       profile_manager->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_path);
-  if (!entry)
+  if (!entry) {
     return;
+  }
 
-  if (signin_util::IsForceSigninEnabled())
+  if (signin_util::IsForceSigninEnabled()) {
     entry->LockForceSigninProfile(locked);
+  }
 }
 
 void UnlockProfileAndHideLoginUI(const base::FilePath profile_path,
@@ -294,7 +299,7 @@ InlineSigninHelper::InlineSigninHelper(
     Profile* profile,
     const GURL& current_url,
     const std::string& email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& password,
     const std::string& auth_code,
     const std::string& signin_scoped_device_id,
@@ -319,7 +324,7 @@ InlineSigninHelper::InlineSigninHelper(
       auth_code_, signin_scoped_device_id);
 }
 
-InlineSigninHelper::~InlineSigninHelper() {}
+InlineSigninHelper::~InlineSigninHelper() = default;
 
 void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
   if (is_force_sign_in_with_usermanager_) {
@@ -349,20 +354,19 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     base::Value::Dict args;
     args.Set(credential_provider::kKeyEmail, base::Value(email_));
     args.Set(credential_provider::kKeyPassword, base::Value(password_));
-    args.Set(credential_provider::kKeyId, base::Value(gaia_id_));
+    args.Set(credential_provider::kKeyId, base::Value(gaia_id_.ToString()));
     args.Set(credential_provider::kKeyRefreshToken,
              base::Value(result.refresh_token));
     args.Set(credential_provider::kKeyAccessToken,
              base::Value(result.access_token));
 
     handler_->SendLSTFetchResultsMessage(base::Value(std::move(args)));
-#else
-    NOTREACHED_IN_MIGRATION()
-        << "Google Credential Provider is only available on Windows";
-#endif  // BUILDFLAG(IS_WIN)
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                   this);
     return;
+#else
+    NOTREACHED() << "Google Credential Provider is only available on Windows";
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   AboutSigninInternals* about_signin_internals =
@@ -396,7 +400,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
         gaia_id_, email_, result.refresh_token,
         result.is_under_advanced_protection,
-        signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN,
+        signin_metrics::AccessPoint::kForcedSignin,
         signin_metrics::SourceForRefreshTokenOperation::
             kInlineLoginHandler_Signin);
   } else {
@@ -453,7 +457,7 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
       identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
           gaia_id_, email_, refresh_token,
           /*is_under_advanced_protection=*/false,
-          signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN,
+          signin_metrics::AccessPoint::kForcedSignin,
           signin_metrics::SourceForRefreshTokenOperation::
               kInlineLoginHandler_Signin);
 
@@ -489,7 +493,7 @@ void InlineSigninHelper::OnClientOAuthFailure(
 InlineLoginHandlerImpl::InlineLoginHandlerImpl()
     : confirm_untrusted_signin_(false) {}
 
-InlineLoginHandlerImpl::~InlineLoginHandlerImpl() {}
+InlineLoginHandlerImpl::~InlineLoginHandlerImpl() = default;
 
 // static
 void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
@@ -499,8 +503,9 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
   // make sure the webui is aware.
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetLastCommittedURL();
-  if (HasFromProfilePickerURLParameter(current_url))
+  if (HasFromProfilePickerURLParameter(current_url)) {
     params.Set("dontResizeNonEmbeddedPages", true);
+  }
 
   HandlerSigninReason reason = GetHandlerSigninReason(current_url);
 
@@ -516,15 +521,17 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
             &email_domains)) {
       std::vector<std::string> all_email_domains =
           GetEmailDomainsFromParameter(email_domains);
-      if (all_email_domains.size() == 1)
+      if (all_email_domains.size() == 1) {
         params.Set("emailDomain", all_email_domains[0]);
+      }
     }
 
     std::string show_tos;
     if (net::GetValueForKeyInQuery(
             current_url, credential_provider::kShowTosSwitch, &show_tos)) {
-      if (!show_tos.empty())
+      if (!show_tos.empty()) {
         params.Set("showTos", show_tos);
+      }
     }
 
     // Prevent opening a new window if the embedded page fails to load.
@@ -589,8 +596,9 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
   }
 
   // This value exists only for webview sign in.
-  if (params.trusted_found)
+  if (params.trusted_found) {
     confirm_untrusted_signin_ = !params.trusted_value;
+  }
 
   DCHECK(!params.email.empty());
   DCHECK(!params.gaia_id.empty());
@@ -629,7 +637,7 @@ InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
     const base::FilePath& profile_path,
     bool confirm_untrusted_signin,
     const std::string& email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& password,
     const std::string& auth_code,
     bool is_force_sign_in_with_usermanager)
@@ -648,7 +656,7 @@ InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
     const FinishCompleteLoginParams& other) = default;
 
 InlineLoginHandlerImpl::FinishCompleteLoginParams::
-    ~FinishCompleteLoginParams() {}
+    ~FinishCompleteLoginParams() = default;
 
 // static
 void InlineLoginHandlerImpl::FinishCompleteLogin(
@@ -717,8 +725,9 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
 
   AboutSigninInternals* about_signin_internals =
       AboutSigninInternalsFactory::GetForProfile(profile);
-  if (about_signin_internals)
+  if (about_signin_internals) {
     about_signin_internals->OnAuthenticationResultReceived("Successful");
+  }
 
   std::string signin_scoped_device_id =
       GetSigninScopedDeviceIdForProfile(profile);
@@ -771,14 +780,16 @@ void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
 
 void InlineLoginHandlerImpl::SendLSTFetchResultsMessage(
     const base::Value& arg) {
-  if (IsJavascriptAllowed())
+  if (IsJavascriptAllowed()) {
     FireWebUIListener("send-lst-fetch-results", arg);
+  }
 }
 
 Browser* InlineLoginHandlerImpl::GetDesktopBrowser() {
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
-  if (!browser)
+  if (!browser) {
     browser = chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui()));
+  }
   return browser;
 }
 

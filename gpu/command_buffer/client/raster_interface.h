@@ -57,15 +57,12 @@ class RasterInterface : public InterfaceBase {
   // This function will not perform any color conversion during the copy.
   virtual void CopySharedImage(const gpu::Mailbox& source_mailbox,
                                const gpu::Mailbox& dest_mailbox,
-                               GLenum dest_target,
                                GLint xoffset,
                                GLint yoffset,
                                GLint x,
                                GLint y,
                                GLsizei width,
-                               GLsizei height,
-                               GLboolean unpack_flip_y,
-                               GLboolean unpack_premultiply_alpha) = 0;
+                               GLsizei height) = 0;
 
   // Asynchronously writes pixels from caller-owned memory inside
   // |src_sk_pixmap| into |dest_mailbox|.

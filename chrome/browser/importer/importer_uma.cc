@@ -34,29 +34,29 @@ enum ImporterTypeMetrics {
 }  // namespace
 
 void LogImporterUseToMetrics(const std::string& metric_postfix,
-                             ImporterType type) {
+                             user_data_importer::ImporterType type) {
   ImporterTypeMetrics metrics_type = IMPORTER_METRICS_UNKNOWN;
   switch (type) {
-    case TYPE_UNKNOWN:
+    case user_data_importer::TYPE_UNKNOWN:
       metrics_type = IMPORTER_METRICS_UNKNOWN;
       break;
 #if BUILDFLAG(IS_WIN)
-    case TYPE_IE:
+    case user_data_importer::TYPE_IE:
       metrics_type = IMPORTER_METRICS_IE;
       break;
-    case TYPE_EDGE:
+    case user_data_importer::TYPE_EDGE:
       metrics_type = IMPORTER_METRICS_EDGE;
       break;
 #endif
-    case TYPE_FIREFOX:
+    case user_data_importer::TYPE_FIREFOX:
       metrics_type = IMPORTER_METRICS_FIREFOX3;
       break;
 #if BUILDFLAG(IS_MAC)
-    case TYPE_SAFARI:
+    case user_data_importer::TYPE_SAFARI:
       metrics_type = IMPORTER_METRICS_SAFARI;
       break;
 #endif
-    case TYPE_BOOKMARKS_FILE:
+    case user_data_importer::TYPE_BOOKMARKS_FILE:
       metrics_type = IMPORTER_METRICS_BOOKMARKS_FILE;
       break;
   }

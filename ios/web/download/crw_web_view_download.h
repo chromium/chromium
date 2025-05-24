@@ -14,7 +14,7 @@
 @interface CRWWebViewDownload : NSObject <CRWWebViewDownload>
 
 // Destination path where the file is saved.
-@property(nonatomic, strong) NSString* destinationPath;
+@property(nonatomic, copy) NSString* destinationPath;
 
 // Web view used to call the download.
 @property(nonatomic, strong) WKWebView* webView;

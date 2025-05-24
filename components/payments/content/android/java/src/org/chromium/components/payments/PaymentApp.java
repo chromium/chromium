@@ -4,12 +4,13 @@
 
 package org.chromium.components.payments;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
@@ -24,17 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 /** The base class for a single payment app, e.g., a payment handler. */
+@NullMarked
 public abstract class PaymentApp extends EditableOption {
     /** Arbitrarily chosen maximum length of a payment app name. */
     private static final int APP_NAME_ELIDE_LENGTH = 64;
-
-    /**
-     * Whether complete and valid autofill data for merchant's request is available, e.g., if
-     * merchant specifies `requestPayerEmail: true`, then this variable is true only if the autofill
-     * data contains a valid email address. May be used in canMakePayment() for some types of
-     * app, such as AutofillPaymentInstrument.
-     */
-    protected boolean mHaveRequestedAutofillData;
 
     /** The interface for the requester of payment details from the app. */
     public interface InstrumentDetailsCallback {
@@ -66,7 +60,7 @@ public abstract class PaymentApp extends EditableOption {
         void onInstrumentAbortResult(boolean abortSucceeded);
     }
 
-    protected PaymentApp(String id, String label, String sublabel, Drawable icon) {
+    protected PaymentApp(String id, String label, @Nullable String sublabel, Drawable icon) {
         super(id, maybeElide(removeLineTerminators(label)), sublabel, icon);
     }
 
@@ -151,14 +145,6 @@ public abstract class PaymentApp extends EditableOption {
     }
 
     /**
-     * @param haveRequestedAutofillData Whether complete and valid autofill data for merchant's
-     *                                  request is available.
-     */
-    public void setHaveRequestedAutofillData(boolean haveRequestedAutofillData) {
-        mHaveRequestedAutofillData = haveRequestedAutofillData;
-    }
-
-    /**
      * @return Whether this payment app should cause PaymentRequest.hasEnrolledInstrument() to
      *         return true.
      */
@@ -180,8 +166,10 @@ public abstract class PaymentApp extends EditableOption {
      * @param merchantName     The name of the merchant.
      * @param origin           The origin of this merchant.
      * @param iframeOrigin     The origin of the iframe that invoked PaymentRequest.
-     * @param certificateChain The site certificate chain of the merchant. Can be null for localhost
-     *                         or local file, which are secure contexts without SSL.
+     * @param certificateChain The site certificate chain of the merchant. Can be null when
+     *                         ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or for
+     *                         localhost or local file, which are secure contexts without SSL. Each
+     *                         byte array cannot be null.
      * @param methodDataMap    The payment-method specific data for all applicable payment methods,
      *                         e.g., whether the app should be invoked in test or production, a
      *                         merchant identifier, or a public key.
@@ -197,7 +185,7 @@ public abstract class PaymentApp extends EditableOption {
             String merchantName,
             String origin,
             String iframeOrigin,
-            @Nullable byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
             PaymentItem total,
             List<PaymentItem> displayItems,
@@ -252,8 +240,7 @@ public abstract class PaymentApp extends EditableOption {
      * @return The identifier for another payment app that should be hidden when this payment app is
      * present.
      */
-    @Nullable
-    public String getApplicationIdentifierToHide() {
+    public @Nullable String getApplicationIdentifierToHide() {
         return null;
     }
 
@@ -261,8 +248,7 @@ public abstract class PaymentApp extends EditableOption {
      * @return The set of identifier of other apps that would cause this app to be hidden, if any of
      * them are present, e.g., ["com.bobpay.production", "com.bobpay.beta"].
      */
-    @Nullable
-    public Set<String> getApplicationIdentifiersThatHideThisApp() {
+    public @Nullable Set<String> getApplicationIdentifiersThatHideThisApp() {
         return null;
     }
 
@@ -300,5 +286,19 @@ public abstract class PaymentApp extends EditableOption {
      */
     public PaymentResponse setAppSpecificResponseFields(PaymentResponse response) {
         return response;
+    }
+
+    /**
+     * @return The bitmap icon for the issuer (Secure Payment Confirmation specific).
+     */
+    public @Nullable Bitmap getIssuerIcon() {
+        return null;
+    }
+
+    /**
+     * @return The bitmap icon for the network (Secure Payment Confirmation specific).
+     */
+    public @Nullable Bitmap getNetworkIcon() {
+        return null;
     }
 }

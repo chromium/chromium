@@ -1,3 +1,10 @@
 include_rules = [
   "+components/crash/core/common/crash_key.h",
 ]
+
+specific_include_rules = {
+  "skia_vk_memory_allocator_impl.*": [
+    "+third_party/skia/include/gpu/vk/VulkanMemoryAllocator.h",
+    "+third_party/skia/include/gpu/vk/VulkanTypes.h",
+  ],
+}

@@ -74,8 +74,9 @@ bool EvictFileFromSystemCacheWithRetry(const FilePath& path) {
   const int kCycles = 10;
   const TimeDelta kDelay = TestTimeouts::action_timeout() / kCycles;
   for (int i = 0; i < kCycles; i++) {
-    if (EvictFileFromSystemCache(path))
+    if (EvictFileFromSystemCache(path)) {
       return true;
+    }
     PlatformThread::Sleep(kDelay);
   }
   return false;

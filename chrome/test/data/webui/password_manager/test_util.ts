@@ -151,6 +151,11 @@ export function makePasswordManagerPrefs() {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     },
+    credentials_enable_automatic_passkey_upgrades: {
+      key: 'credentials_enable_automatic_passkey_upgrades',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
     profile: {
       password_dismiss_compromised_alert: {
         key: 'profile.password_dismiss_compromised_alert',

@@ -4,6 +4,8 @@
 
 #include "components/services/app_service/public/cpp/icon_types.h"
 
+#include <variant>
+
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -103,7 +105,7 @@ TEST_F(IconTypesTest, VerifyMergeBothAreNotNull) {
 
     auto icon_key = MergeIconKey(&state, &delta);
     state.icon_effects = delta.icon_effects;
-    ++absl::get<int32_t>(state.update_version);
+    ++std::get<int32_t>(state.update_version);
     ASSERT_TRUE(icon_key.has_value());
     EXPECT_EQ(state, icon_key.value());
   }

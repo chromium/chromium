@@ -25,7 +25,7 @@ WaylandBufferBacking::WaylandBufferBacking(const WaylandConnection* connection,
 WaylandBufferBacking::~WaylandBufferBacking() = default;
 
 bool WaylandBufferBacking::UseExplicitSyncRelease() const {
-  return connection_->linux_explicit_synchronization_v1();
+  return connection_->SupportsExplicitSync();
 }
 
 WaylandBufferHandle* WaylandBufferBacking::EnsureBufferHandle(

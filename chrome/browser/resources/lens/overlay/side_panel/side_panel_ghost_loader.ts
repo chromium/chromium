@@ -21,7 +21,6 @@ export class SidePanelGhostLoaderElement extends PolymerElement {
 
   static get properties() {
     return {
-      squares: Array,
       darkMode: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('darkMode'),
@@ -31,7 +30,7 @@ export class SidePanelGhostLoaderElement extends PolymerElement {
   }
 
   // Whether the loading results should render in dark mode.
-  private darkMode: boolean;
+  declare private darkMode: boolean;
 }
 
 declare global {

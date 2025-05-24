@@ -91,8 +91,7 @@ pa_channel_position ChromiumToPAChannelPosition(Channels channel) {
     case SIDE_RIGHT:
       return PA_CHANNEL_POSITION_SIDE_RIGHT;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid channel: " << channel;
-      return PA_CHANNEL_POSITION_INVALID;
+      NOTREACHED() << "Invalid channel: " << channel;
   }
 }
 

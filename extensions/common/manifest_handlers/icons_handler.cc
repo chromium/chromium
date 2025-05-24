@@ -5,6 +5,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
@@ -17,6 +18,7 @@
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler_helpers.h"
+#include "extensions/common/manifest_handlers/icon_variants_handler.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -27,11 +29,22 @@ namespace keys = manifest_keys;
 static base::LazyInstance<ExtensionIconSet>::DestructorAtExit g_empty_icon_set =
     LAZY_INSTANCE_INITIALIZER;
 
+IconsHandler::IconsHandler() = default;
+IconsHandler::~IconsHandler() = default;
+
 // static
-const ExtensionIconSet& IconsInfo::GetIcons(const Extension* extension) {
-  DCHECK(extension);
-  IconsInfo* info = static_cast<IconsInfo*>(
-      extension->GetManifestData(keys::kIcons));
+const ExtensionIconSet& IconsInfo::GetIcons(
+    const Extension& extension,
+    std::optional<ExtensionIconVariant::ColorScheme> color_scheme) {
+  // Prefer `icon_variants` over `icons`.
+  const IconVariantsInfo* icon_variants_info =
+      IconVariantsInfo::GetIconVariants(extension);
+  if (icon_variants_info) {
+    return icon_variants_info->Get(color_scheme);
+  }
+
+  IconsInfo* info =
+      static_cast<IconsInfo*>(extension.GetManifestData(keys::kIcons));
   return info ? info->icons : g_empty_icon_set.Get();
 }
 
@@ -39,22 +52,22 @@ const ExtensionIconSet& IconsInfo::GetIcons(const Extension* extension) {
 ExtensionResource IconsInfo::GetIconResource(
     const Extension* extension,
     int size_in_px,
-    ExtensionIconSet::Match match_type) {
-  const std::string& path = GetIcons(extension).Get(size_in_px, match_type);
+    ExtensionIconSet::Match match_type,
+    ExtensionIconVariant::ColorScheme color_scheme) {
+  const std::string& path =
+      GetIcons(*extension, color_scheme).Get(size_in_px, match_type);
   return path.empty() ? ExtensionResource() : extension->GetResource(path);
 }
 
 // static
 GURL IconsInfo::GetIconURL(const Extension* extension,
                            int size_in_px,
-                           ExtensionIconSet::Match match_type) {
-  const std::string& path = GetIcons(extension).Get(size_in_px, match_type);
+                           ExtensionIconSet::Match match_type,
+                           ExtensionIconVariant::ColorScheme color_scheme) {
+  const std::string& path =
+      GetIcons(*extension, color_scheme).Get(size_in_px, match_type);
   return path.empty() ? GURL() : extension->GetResourceURL(path);
 }
-
-IconsHandler::IconsHandler() = default;
-
-IconsHandler::~IconsHandler() = default;
 
 bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<IconsInfo> icons_info(new IconsInfo);
@@ -65,9 +78,13 @@ bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
+  std::vector<std::string> warnings;
   if (!manifest_handler_helpers::LoadIconsFromDictionary(
-          *icons_dict, &icons_info->icons, error)) {
+          *icons_dict, &icons_info->icons, error, &warnings)) {
     return false;
+  }
+  for (const auto& warning : warnings) {
+    extension->AddInstallWarning(InstallWarning(warning, keys::kIcons));
   }
 
   extension->SetManifestData(keys::kIcons, std::move(icons_info));

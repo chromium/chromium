@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
@@ -23,6 +23,7 @@
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "components/webdata/common/web_database.h"
 
 namespace autofill {
 
@@ -119,17 +120,28 @@ AutofillWalletOfferSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string AutofillWalletOfferSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data.specifics.has_autofill_offer());
   return GetClientTagFromSpecifics(entity_data.specifics.autofill_offer());
 }
 
 std::string AutofillWalletOfferSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data.specifics.has_autofill_offer());
   return GetStorageKeyFromSpecifics(entity_data.specifics.autofill_offer());
+}
+
+bool AutofillWalletOfferSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_autofill_offer());
+  // TODO(crbug.com/40677711): Consider using `IsOfferSpecificsValid` in this
+  // check. Currently, `IsOfferSpecificsValid` is used in `MergeRemoteData`
+  // which also logs a metric for the offer data being valid. Recording the
+  // metric here sounds wrong as this is a const method which should has no side
+  // effects and it is not guaranteed to be called exactly once.
+  return true;
 }
 
 bool AutofillWalletOfferSyncBridge::SupportsIncrementalUpdates() const {
@@ -174,7 +186,7 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
     const syncer::EntityChangeList& entity_data) {
   std::vector<AutofillOfferData> offer_data;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
-    DCHECK(change->data().specifics.has_autofill_offer());
+    CHECK(IsEntityDataValid(change->data()));
     const sync_pb::AutofillOfferSpecifics specifics =
         change->data().specifics.autofill_offer();
     bool offer_valid = IsOfferSpecificsValid(specifics);
@@ -183,6 +195,8 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
     }
     autofill_metrics::LogSyncedOfferDataBeingValid(offer_valid);
   }
+
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
 
   PaymentsAutofillTable* table = GetAutofillTable();
 
@@ -201,7 +215,14 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
   // cannot rely on committing transactions on shutdown). We need to commit
   // even if the wallet data has not changed because the data type state incl.
   // the progress marker always changes.
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
 
   if (offer_data_changed) {
     web_data_backend_->NotifyOnAutofillChangedBySync(

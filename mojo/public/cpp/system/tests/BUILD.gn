@@ -12,6 +12,8 @@ source_set("tests") {
     "data_pipe_drainer_unittest.cc",
     "data_pipe_producer_unittest.cc",
     "data_pipe_unittest.cc",
+    "file_data_source_unittest.cc",
+    "file_stream_data_source_unittest.cc",
     "handle_signal_tracker_unittest.cc",
     "handle_signals_state_unittest.cc",
     "scope_to_message_pipe_unittest.cc",

@@ -28,7 +28,7 @@ TEST_F(URLVisitUtilTest, CreateInputContextFromURLVisitAggregate) {
   scoped_refptr<InputContext> input_context =
       AsInputContext(kURLVisitAggregateSchema, aggregate);
   ASSERT_EQ(input_context->metadata_args.size(),
-            kNumInputs + kNumAuxiliaryMetadataInputs);
+            kTabResumptionNumInputs + kNumAuxiliaryMetadataInputs);
 
   for (const auto& field_schema : kURLVisitAggregateSchema) {
     EXPECT_TRUE(input_context->metadata_args.find(field_schema.name) !=
@@ -58,7 +58,7 @@ TEST_P(URLVisitUtilTest, CreateInputContextFromURLVisitAggregateSingleFetcher) {
   scoped_refptr<InputContext> input_context =
       AsInputContext(kURLVisitAggregateSchema, aggregate);
   ASSERT_EQ(input_context->metadata_args.size(),
-            kNumInputs + kNumAuxiliaryMetadataInputs);
+            kTabResumptionNumInputs + kNumAuxiliaryMetadataInputs);
 
   for (const auto& field_schema : kURLVisitAggregateSchema) {
     EXPECT_TRUE(input_context->metadata_args.find(field_schema.name) !=

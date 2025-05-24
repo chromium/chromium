@@ -22,9 +22,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
 #include "chrome/browser/ash/policy/core/file_util.h"
@@ -95,15 +92,12 @@ std::unique_ptr<CloudPolicyClient> CreateClient(
 
 base::Value::Dict GetAshPrefsFromPolicy(const policy::PolicyMap& policy_map) {
   extensions::ExtensionInstallForceListPolicyHandler policy_handler;
-  return policy_handler.GetAshPolicyDict(policy_map)
-      .value_or(base::Value::Dict());
+  return policy_handler.GetPolicyDict(policy_map).value_or(base::Value::Dict());
 }
 
 base::Value::Dict GetLacrosPrefsFromPolicy(
     const policy::PolicyMap& policy_map) {
-  extensions::ExtensionInstallForceListPolicyHandler policy_handler;
-  return policy_handler.GetLacrosPolicyDict(policy_map)
-      .value_or(base::Value::Dict());
+  return base::Value::Dict();
 }
 
 void SendExtensionsToAsh(
@@ -111,19 +105,6 @@ void SendExtensionsToAsh(
     const std::string& user_id,
     base::Value::Dict cached_extensions) {
   loader->OnExtensionListsUpdated(cached_extensions);
-}
-
-void SendExtensionsToLacros(const std::string& user_id,
-                            base::Value::Dict cached_extensions) {
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->device_local_account_extension_service()
-        ->SetForceInstallExtensionsFromCache(user_id,
-                                             std::move(cached_extensions));
-  } else {
-    CHECK_IS_TEST();
-  }
 }
 
 bool IsExtensionTracked(DeviceLocalAccountType account_type) {
@@ -134,6 +115,7 @@ bool IsExtensionTracked(DeviceLocalAccountType account_type) {
       return true;
     case DeviceLocalAccountType::kWebKioskApp:
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
+    case DeviceLocalAccountType::kArcvmKioskApp:
       return false;
   }
   NOTREACHED();
@@ -176,7 +158,9 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
   external_cache_ = std::make_unique<chromeos::DeviceLocalAccountExternalCache>(
       /*ash_loader=*/base::BindRepeating(SendExtensionsToAsh,
                                          extension_loader_),
-      /*lacros_loader=*/base::BindRepeating(SendExtensionsToLacros), user_id_,
+      // TODO(b/392567217) remove the Lacros callback from
+      // DeviceLocalAccountExternalCache
+      /*lacros_loader=*/base::DoNothing(), user_id_,
       base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS)
           .Append(GetUniqueSubDirectoryForAccountID(account.account_id)));
   store_->AddObserver(this);
@@ -284,6 +268,7 @@ void DeviceLocalAccountPolicyBroker::OnStoreLoaded(CloudPolicyStore* store) {
 }
 
 void DeviceLocalAccountPolicyBroker::OnStoreError(CloudPolicyStore* store) {
+  LOG(ERROR) << "Failed to store the policy for " << account_id_;
   policy_update_callback_.Run();
 }
 

@@ -28,7 +28,7 @@ namespace {
 
 class MockAttester : public Attester {
  public:
-  MockAttester() {}
+  MockAttester() = default;
   ~MockAttester() override = default;
 
   // Attester:

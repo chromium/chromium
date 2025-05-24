@@ -321,11 +321,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
             try {
                 ParcelFileDescriptor fd = null;
                 if (isContentUri) {
-                    int fileDescriptor =
-                            ContentUriUtils.openContentUri(mDownloadInfo.getFilePath(), "r");
-                    if (fileDescriptor > 0) {
-                        fd = ParcelFileDescriptor.fromFd(fileDescriptor);
-                    }
+                    fd = ContentUriUtils.openContentUri(mDownloadInfo.getFilePath(), "r");
                 } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     fd = manager.openDownloadedFile(mDownloadId);
                 } else {
@@ -930,7 +926,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
     private void showDownloadOnInfoBar(DownloadItem downloadItem, int downloadStatus) {
         DownloadMessageUiController messageUiController =
                 DownloadManagerService.getDownloadManagerService()
-                        .getMessageUiController(downloadItem.getDownloadInfo().getOTRProfileId());
+                        .getMessageUiController(downloadItem.getDownloadInfo().getOtrProfileId());
         if (messageUiController == null) return;
         OfflineItem offlineItem = DownloadItem.createOfflineItem(downloadItem);
         offlineItem.id.namespace = LegacyHelpers.LEGACY_ANDROID_DOWNLOAD_NAMESPACE;

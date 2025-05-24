@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
@@ -14,8 +12,12 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")
+}
+
 is_serial_enabled_platform =
-    is_win || ((is_linux || is_chromeos) && use_udev) || is_mac
+    is_win || ((is_linux || is_chromeos) && use_udev) || is_mac || is_android
 
 source_set("lib") {
   # This should be visible only to embedders of the Device Service, and the
@@ -36,7 +38,6 @@ source_set("lib") {
 
   deps = [
     ":binder_overrides",
-    "//build:chromeos_buildflags",
     "//services/device/fingerprint",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
@@ -65,32 +66,23 @@ source_set("lib") {
   if (is_android) {
     deps += [ ":device_service_jni_headers" ]
   } else {
-    deps += [
-      "//services/device/battery",
-      "//services/device/hid",
-    ]
+    deps += [ "//services/device/hid" ]
+
+    if (!(is_ios && target_platform == "tvos")) {
+      deps += [ "//services/device/battery" ]
+    }
   }
 
   if (enable_compute_pressure) {
     deps += [ "//services/device/compute_pressure" ]
   }
 
-  if (is_chromeos_ash && use_dbus) {
+  if (is_chromeos && use_dbus) {
     deps += [ "//services/device/media_transfer_protocol" ]
   }
 
   if (is_serial_enabled_platform) {
     deps += [ "//services/device/serial" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
-
-  if (is_serial_enabled_platform) {
     defines = [ "IS_SERIAL_ENABLED_PLATFORM" ]
   }
 }
@@ -112,6 +104,7 @@ component("binder_overrides") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
+    "//services/device/public/mojom:usb",
   ]
   defines = [ "IS_DEVICE_SERVICE_BINDER_OVERRIDES_IMPL" ]
 }
@@ -175,7 +168,6 @@ source_set("tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/system_cpu:test_support",
     "//components/variations",
     "//device/base/synchronization",
@@ -201,6 +193,7 @@ source_set("tests") {
     sources += [
       "compute_pressure/cpu_probe_manager_unittest.cc",
       "compute_pressure/pressure_manager_impl_unittest.cc",
+      "public/cpp/compute_pressure/cpu_pressure_converter_unittest.cc",
     ]
     deps += [ "//services/device/compute_pressure" ]
   }
@@ -244,7 +237,7 @@ source_set("tests") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "fingerprint/fingerprint_chromeos_unittest.cc",
       "geolocation/wifi_data_provider_chromeos_unittest.cc",
@@ -258,11 +251,6 @@ source_set("tests") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    sources += [ "geolocation/wifi_data_provider_lacros_unittest.cc" ]
-    deps += [ "//chromeos/lacros:test_support" ]
-  }
-
   if (is_android) {
     sources -= [
       "battery/battery_status_service_unittest.cc",
@@ -272,16 +260,19 @@ source_set("tests") {
     deps += [ ":device_service_jni_headers" ]
   } else {
     sources += [
-      "battery/battery_monitor_impl_unittest.cc",
       "hid/hid_device_info_unittest.cc",
       "hid/hid_manager_unittest.cc",
       "public/cpp/hid/hid_blocklist_unittest.cc",
     ]
     deps += [
       "//components/variations:test_support",
-      "//services/device/battery",
       "//services/device/hid",
     ]
+
+    if (!(is_ios && target_platform == "tvos")) {
+      sources += [ "battery/battery_monitor_impl_unittest.cc" ]
+      deps += [ "//services/device/battery" ]
+    }
 
     if ((!is_linux && !is_chromeos) || use_udev) {
       sources += [
@@ -365,6 +356,14 @@ source_set("tests") {
 
     if (!is_android) {
       sources += [ "public/cpp/usb/usb_ids_unittest.cc" ]
+    }
+
+    if (is_android || is_chromeos || is_linux) {
+      sources += [ "usb/usb_device_handle_usbfs_unittest.cc" ]
+    }
+
+    if (is_android || is_linux) {
+      sources += [ "usb/usb_interface_detach_allowlist_unittest.cc" ]
     }
   }
 

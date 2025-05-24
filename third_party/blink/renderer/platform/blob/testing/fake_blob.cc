@@ -14,7 +14,7 @@ namespace {
 
 class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
  public:
-  SimpleDataPipeGetter(const String& str) : str_(str) {}
+  explicit SimpleDataPipeGetter(const Vector<uint8_t>& bytes) : bytes_(bytes) {}
   SimpleDataPipeGetter(const SimpleDataPipeGetter&) = delete;
   SimpleDataPipeGetter& operator=(const SimpleDataPipeGetter&) = delete;
   ~SimpleDataPipeGetter() override = default;
@@ -22,25 +22,33 @@ class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
   // network::mojom::DataPipeGetter implementation:
   void Read(mojo::ScopedDataPipeProducerHandle handle,
             ReadCallback callback) override {
-    std::move(callback).Run(0 /* OK */, str_.length());
-    bool result = mojo::BlockingCopyFromString(str_.Utf8(), handle);
+    std::move(callback).Run(0 /* OK */, bytes_.size());
+    std::string byte_string(bytes_.begin(), bytes_.end());
+    bool result = mojo::BlockingCopyFromString(byte_string, handle);
     DCHECK(result);
   }
 
   void Clone(mojo::PendingReceiver<network::mojom::blink::DataPipeGetter>
                  receiver) override {
-    mojo::MakeSelfOwnedReceiver(std::make_unique<SimpleDataPipeGetter>(str_),
+    mojo::MakeSelfOwnedReceiver(std::make_unique<SimpleDataPipeGetter>(bytes_),
                                 std::move(receiver));
   }
 
  private:
-  String str_;
+  Vector<uint8_t> bytes_;
 };
 
 }  // namespace
 
 FakeBlob::FakeBlob(const String& uuid, const String& body, State* state)
-    : uuid_(uuid), body_(body), state_(state) {}
+    : uuid_(uuid), state_(state) {
+  body_.assign(body.Utf8());
+}
+
+FakeBlob::FakeBlob(const String& uuid,
+                   const Vector<uint8_t>& body_bytes,
+                   State* state)
+    : uuid_(uuid), body_(body_bytes), state_(state) {}
 
 void FakeBlob::Clone(mojo::PendingReceiver<mojom::blink::Blob> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBlob>(uuid_, body_, state_),
@@ -59,7 +67,7 @@ void FakeBlob::ReadRange(uint64_t offset,
                          uint64_t length,
                          mojo::ScopedDataPipeProducerHandle,
                          mojo::PendingRemote<mojom::blink::BlobReaderClient>) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeBlob::ReadAll(
@@ -69,11 +77,12 @@ void FakeBlob::ReadAll(
   if (state_)
     state_->did_initiate_read_operation = true;
   if (client_remote)
-    client_remote->OnCalculatedSize(body_.length(), body_.length());
-  bool result = mojo::BlockingCopyFromString(body_.Utf8(), handle);
+    client_remote->OnCalculatedSize(body_.size(), body_.size());
+  std::string body_byte_string(body_.begin(), body_.end());
+  bool result = mojo::BlockingCopyFromString(body_byte_string, handle);
   DCHECK(result);
   if (client_remote)
-    client_remote->OnComplete(0 /* OK */, body_.length());
+    client_remote->OnComplete(0 /* OK */, body_.size());
 }
 
 void FakeBlob::Load(
@@ -81,15 +90,15 @@ void FakeBlob::Load(
     const String& method,
     const net::HttpRequestHeaders&,
     mojo::PendingRemote<network::mojom::blink::URLLoaderClient>) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeBlob::ReadSideData(ReadSideDataCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeBlob::CaptureSnapshot(CaptureSnapshotCallback callback) {
-  std::move(callback).Run(body_.length(), std::nullopt);
+  std::move(callback).Run(body_.size(), std::nullopt);
 }
 
 void FakeBlob::GetInternalUUID(GetInternalUUIDCallback callback) {

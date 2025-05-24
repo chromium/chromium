@@ -7,6 +7,7 @@
 #include <queue>
 #include <variant>
 
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
@@ -380,6 +381,10 @@ SmartCardProviderPrivateAPI::SmartCardProviderPrivateAPI(
   transaction_receivers_.set_disconnect_handler(base::BindRepeating(
       &SmartCardProviderPrivateAPI::OnMojoTransactionDisconnected,
       weak_ptr_factory_.GetWeakPtr()));
+
+  connection_watchers_.set_disconnect_handler(
+      base::BindRepeating(&SmartCardProviderPrivateAPI::OnMojoWatcherPipeClosed,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 SmartCardProviderPrivateAPI::~SmartCardProviderPrivateAPI() = default;
@@ -439,6 +444,14 @@ void SmartCardProviderPrivateAPI::OnMojoConnectionDisconnected() {
   if (disconnect_observer_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, disconnect_observer_);
+  }
+
+  // Break the watcher pipe.
+  auto it = connection_watchers_per_receiver_.find(
+      connection_receivers_.current_receiver());
+  if (it != connection_watchers_per_receiver_.end()) {
+    connection_watchers_.Remove(it->second);
+    connection_watchers_per_receiver_.erase(it);
   }
 
   auto callback =
@@ -859,7 +872,9 @@ device::mojom::SmartCardConnectResultPtr
 SmartCardProviderPrivateAPI::CreateSmartCardConnection(
     ContextId scard_context,
     Handle handle,
-    device::mojom::SmartCardProtocol active_protocol) {
+    device::mojom::SmartCardProtocol active_protocol,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+        connection_watcher) {
   if (handle.is_null()) {
     LOG(ERROR) << "Provider reported an invalid handle value: "
                << handle.GetUnsafeValue();
@@ -874,6 +889,17 @@ SmartCardProviderPrivateAPI::CreateSmartCardConnection(
 
   GetContextData(scard_context)
       .connection_receiver_ids.insert(connection_receiver_id);
+
+  if (mojo::Remote connection_watcher_remote(std::move(connection_watcher));
+      connection_watcher_remote.is_bound()) {
+    // Creating a connection is also considered the first use of said
+    // connection.
+    connection_watcher_remote->NotifyConnectionUsed();
+    mojo::RemoteSetElementId watcher_id =
+        connection_watchers_per_receiver_[connection_receiver_id] =
+            connection_watchers_.Add(std::move(connection_watcher_remote));
+    connection_receivers_per_watcher_[watcher_id] = connection_receiver_id;
+  }
 
   return SmartCardConnectResult::NewSuccess(
       device::mojom::SmartCardConnectSuccess::New(std::move(connection_remote),
@@ -898,6 +924,8 @@ void SmartCardProviderPrivateAPI::ReportConnectResult(
 
 void SmartCardProviderPrivateAPI::ProcessConnectResult(
     ContextId scard_context,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+        connection_watcher,
     ResultArgs result_args,
     device::mojom::SmartCardResultPtr result,
     SmartCardCallback callback) {
@@ -911,7 +939,8 @@ void SmartCardProviderPrivateAPI::ProcessConnectResult(
 
     connect_result = CreateSmartCardConnection(
         scard_context, handle,
-        std::get<device::mojom::SmartCardProtocol>(handle_and_protocol));
+        std::get<device::mojom::SmartCardProtocol>(handle_and_protocol),
+        std::move(connection_watcher));
 
     auto& context_data = GetContextData(scard_context);
     CHECK(!context_data.handles_map.contains(handle));
@@ -1208,6 +1237,8 @@ void SmartCardProviderPrivateAPI::Connect(
     const std::string& reader,
     device::mojom::SmartCardShareMode share_mode,
     device::mojom::SmartCardProtocolsPtr preferred_protocols,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+        connection_watcher,
     ConnectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1219,7 +1250,7 @@ void SmartCardProviderPrivateAPI::Connect(
       base::BindOnce(&SmartCardProviderPrivateAPI::SendConnect,
                      weak_ptr_factory_.GetWeakPtr(), scard_context, reader,
                      share_mode, std::move(preferred_protocols),
-                     std::move(callback)));
+                     std::move(connection_watcher), std::move(callback)));
 }
 
 void SmartCardProviderPrivateAPI::SendConnect(
@@ -1227,6 +1258,8 @@ void SmartCardProviderPrivateAPI::SendConnect(
     const std::string& reader,
     device::mojom::SmartCardShareMode share_mode,
     device::mojom::SmartCardProtocolsPtr preferred_protocols,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+        connection_watcher,
     ConnectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(scard_context);
@@ -1239,7 +1272,8 @@ void SmartCardProviderPrivateAPI::SendConnect(
 
   auto process_result =
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessConnectResult,
-                     weak_ptr_factory_.GetWeakPtr(), scard_context);
+                     weak_ptr_factory_.GetWeakPtr(), scard_context,
+                     std::move(connection_watcher));
 
   DispatchEventWithTimeout(
       scard_context, scard_api::OnConnectRequested::kEventName,
@@ -1256,6 +1290,8 @@ void SmartCardProviderPrivateAPI::Disconnect(
   const auto& [context_id, handle] = connection_receivers_.current_context();
   CHECK(context_id);
   CHECK(handle);
+
+  NotifyConnectionUsed();
 
   // Consider the handle no longer valid irrespective of whether the Disconnect
   // PC/SC call actually succeeds in the end as any PC/SC failure of this call
@@ -1286,6 +1322,8 @@ void SmartCardProviderPrivateAPI::Transmit(
   CHECK(context_id);
   CHECK(handle);
 
+  NotifyConnectionUsed();
+
   RunOrQueueRequest(
       context_id,
       base::BindOnce(&SmartCardProviderPrivateAPI::SendTransmit,
@@ -1302,6 +1340,8 @@ void SmartCardProviderPrivateAPI::Control(uint32_t control_code,
   CHECK(context_id);
   CHECK(handle);
 
+  NotifyConnectionUsed();
+
   RunOrQueueRequest(
       context_id,
       base::BindOnce(&SmartCardProviderPrivateAPI::SendControl,
@@ -1316,6 +1356,8 @@ void SmartCardProviderPrivateAPI::GetAttrib(uint32_t id,
   const auto& [context_id, handle] = connection_receivers_.current_context();
   CHECK(context_id);
   CHECK(handle);
+
+  NotifyConnectionUsed();
 
   RunOrQueueRequest(context_id,
                     base::BindOnce(&SmartCardProviderPrivateAPI::SendGetAttrib,
@@ -1339,6 +1381,8 @@ void SmartCardProviderPrivateAPI::SetAttrib(uint32_t id,
   CHECK(context_id);
   CHECK(handle);
 
+  NotifyConnectionUsed();
+
   RunOrQueueRequest(context_id,
                     base::BindOnce(&SmartCardProviderPrivateAPI::SendSetAttrib,
                                    weak_ptr_factory_.GetWeakPtr(), context_id,
@@ -1351,6 +1395,8 @@ void SmartCardProviderPrivateAPI::Status(StatusCallback callback) {
   const auto& [context_id, handle] = connection_receivers_.current_context();
   CHECK(context_id);
   CHECK(handle);
+
+  NotifyConnectionUsed();
 
   RunOrQueueRequest(context_id,
                     base::BindOnce(&SmartCardProviderPrivateAPI::SendStatus,
@@ -1365,6 +1411,8 @@ void SmartCardProviderPrivateAPI::BeginTransaction(
   const auto& [context_id, handle] = connection_receivers_.current_context();
   CHECK(context_id);
   CHECK(handle);
+
+  NotifyConnectionUsed();
 
   RunOrQueueRequest(
       context_id,
@@ -1583,4 +1631,22 @@ REPORT_RESULT_FUNCTION_IMPL(
 
 #undef REPORT_RESULT_FUNCTION_IMPL
 
+void SmartCardProviderPrivateAPI::OnMojoWatcherPipeClosed(
+    mojo::RemoteSetElementId watcher_id) {
+  auto it = connection_receivers_per_watcher_.find(watcher_id);
+  if (it == connection_receivers_per_watcher_.end()) {
+    return;
+  }
+  connection_receivers_.Remove(it->second);
+  connection_receivers_per_watcher_.erase(it);
+}
+
+void SmartCardProviderPrivateAPI::NotifyConnectionUsed() {
+  auto it = connection_watchers_per_receiver_.find(
+      connection_receivers_.current_receiver());
+  if (it == connection_watchers_per_receiver_.end()) {
+    return;
+  }
+  connection_watchers_.Get(it->second)->NotifyConnectionUsed();
+}
 }  // namespace extensions

@@ -10,11 +10,13 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/delay_policy.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -32,21 +34,6 @@ namespace {
 // This is a fudge factor we subtract from the deadline to account
 // for message latency and kernel scheduling variability.
 const base::TimeDelta kDeadlineFudgeFactor = base::Microseconds(1000);
-
-// This adjustment is applied by multiplying with the previous, begin-main-frame
-// to activate threshold. For example, if we want to consider a page fast if it
-// it takes half the threshold, we would return 0.5. Naturally, this function
-// will return values in the range [0, 1].
-double FastMainThreadThresholdAdjustment() {
-  if (base::FeatureList::IsEnabled(features::kAdjustFastMainThreadThreshold)) {
-    double result = base::GetFieldTrialParamByFeatureAsDouble(
-        features::kAdjustFastMainThreadThreshold, "Scalar", -1.0);
-    if (result >= 0.0 && result <= 1.0) {
-      return result;
-    }
-  }
-  return 1.0;
-}
 
 }  // namespace
 
@@ -112,7 +99,6 @@ void Scheduler::SetVisible(bool visible) {
 }
 
 void Scheduler::SetShouldWarmUp() {
-  CHECK(base::FeatureList::IsEnabled(features::kWarmUpCompositor));
   state_machine_.SetShouldWarmUp();
   ProcessScheduledActions();
 }
@@ -162,8 +148,8 @@ void Scheduler::NotifyPaintWorkletStateChange(PaintWorkletState state) {
   ProcessScheduledActions();
 }
 
-void Scheduler::SetNeedsBeginMainFrame() {
-  state_machine_.SetNeedsBeginMainFrame();
+void Scheduler::SetNeedsBeginMainFrame(bool now) {
+  state_machine_.SetNeedsBeginMainFrame(now);
   ProcessScheduledActions();
 }
 
@@ -174,11 +160,6 @@ void Scheduler::SetNeedsOneBeginImplFrame() {
 
 void Scheduler::SetNeedsRedraw() {
   state_machine_.SetNeedsRedraw();
-  ProcessScheduledActions();
-}
-
-void Scheduler::SetNeedsUpdateDisplayTree() {
-  state_machine_.SetNeedsUpdateDisplayTree();
   ProcessScheduledActions();
 }
 
@@ -396,6 +377,11 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
   if (args.interval != last_frame_interval_ && args.interval.is_positive()) {
     last_frame_interval_ = args.interval;
     client_->FrameIntervalUpdated(last_frame_interval_);
+    // Note that even if the call below ends up throttling BeginMainFrame()
+    // calls, args.interval stays at the lower interval. This is done on
+    // purpose, as "urgent" updates can happen sooner than the throttled
+    // interval.
+    state_machine_.FrameIntervalUpdated(last_frame_interval_);
   }
 
   // Drop the BeginFrame if we don't need one.
@@ -545,10 +531,8 @@ void Scheduler::BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args) {
   base::TimeDelta bmf_to_activate_estimate_critical =
       compositor_timing_history_
           ->BeginMainFrameQueueToActivateCriticalEstimate();
-  base::TimeDelta fast_main_thread_threshold =
-      bmf_to_activate_threshold * FastMainThreadThresholdAdjustment();
   state_machine_.SetCriticalBeginMainFrameToActivateIsFast(
-      bmf_to_activate_estimate_critical < fast_main_thread_threshold);
+      bmf_to_activate_estimate_critical < bmf_to_activate_threshold);
 
   // Update the BeginMainFrame args now that we know whether the main
   // thread will be on the critical path or not.
@@ -580,7 +564,7 @@ void Scheduler::BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args) {
   bool main_thread_response_expected_soon;
   // Allow the main thread to delay N impl frame before we decide to give up
   // and create a pending tree instead.
-  time_since_main_frame_sent -=
+  bmf_to_activate_threshold +=
       args.interval * settings_.delay_impl_invalidation_frames;
   if (time_since_main_frame_sent > bmf_to_activate_threshold) {
     // If the response to a main frame is pending past the desired duration
@@ -629,6 +613,7 @@ void Scheduler::BeginImplFrameSynchronous(const viz::BeginFrameArgs& args) {
 }
 
 void Scheduler::FinishImplFrame() {
+  TRACE_EVENT0("cc", __PRETTY_FUNCTION__);
   DCHECK(!needs_finish_frame_for_synchronous_compositor_);
   state_machine_.OnBeginImplFrameIdle();
 
@@ -641,6 +626,8 @@ void Scheduler::FinishImplFrame() {
                               SchedulerStateMachine::BeginMainFrameState::IDLE;
     bool is_draw_throttled =
         state_machine_.needs_redraw() && state_machine_.IsDrawThrottled();
+    TRACE_EVENT2("cc", "DidNotSubmitInLastFrame", "has_pending_tree",
+                 has_pending_tree, "is_waiting_on_main", is_waiting_on_main);
 
     FrameSkippedReason reason = FrameSkippedReason::kNoDamage;
 
@@ -678,6 +665,7 @@ void Scheduler::FinishImplFrame() {
 
 void Scheduler::SendDidNotProduceFrame(const viz::BeginFrameArgs& args,
                                        FrameSkippedReason reason) {
+  TRACE_EVENT1("cc", __PRETTY_FUNCTION__, "reason", reason);
   if (last_begin_frame_ack_.frame_id == args.frame_id)
     return;
   last_begin_frame_ack_ = viz::BeginFrameAck(args, false /* has_damage */);
@@ -701,7 +689,7 @@ void Scheduler::BeginImplFrame(const viz::BeginFrameArgs& args,
     base::AutoReset<bool> mark_inside(&inside_scheduled_action_, true);
 
     begin_impl_frame_tracker_.Start(args);
-    state_machine_.OnBeginImplFrame(args.frame_id, args.animate_only);
+    state_machine_.OnBeginImplFrame(args);
     compositor_frame_reporting_controller_->WillBeginImplFrame(args);
     bool has_damage =
         client_->WillBeginImplFrame(begin_impl_frame_tracker_.Current());
@@ -864,15 +852,6 @@ void Scheduler::DrawForced() {
   compositor_timing_history_->DidDraw();
 }
 
-void Scheduler::UpdateDisplayTree() {
-  DCHECK(!inside_scheduled_action_);
-  base::AutoReset<bool> mark_inside(&inside_scheduled_action_, true);
-
-  // TODO(rockot): Update CompositorTimingHistory.
-  state_machine_.WillUpdateDisplayTree();
-  client_->ScheduledActionUpdateDisplayTree();
-}
-
 void Scheduler::SetDeferBeginMainFrame(bool defer_begin_main_frame) {
   {
     TRACE_EVENT1("cc", "Scheduler::SetDeferBeginMainFrame",
@@ -982,9 +961,6 @@ void Scheduler::ProcessScheduledActions() {
         // drain the pipeline without actually drawing.
         state_machine_.AbortDraw();
         break;
-      case SchedulerStateMachine::Action::UPDATE_DISPLAY_TREE:
-        UpdateDisplayTree();
-        break;
       case SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
         state_machine_.WillBeginLayerTreeFrameSinkCreation();
         client_->ScheduledActionBeginLayerTreeFrameSinkCreation();
@@ -1066,6 +1042,10 @@ void Scheduler::ClearHistory() {
   // Ensure we reset decisions based on history from the previous navigation.
   compositor_timing_history_->ClearHistory();
   ProcessScheduledActions();
+}
+
+void Scheduler::SetShouldThrottleFrameRate(bool flag) {
+  state_machine_.SetShouldThrottleFrameRate(flag);
 }
 
 }  // namespace cc

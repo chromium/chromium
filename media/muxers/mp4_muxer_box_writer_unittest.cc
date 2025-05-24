@@ -60,6 +60,11 @@ constexpr uint32_t kSampleSizeAndCount = 8u;
 constexpr size_t kVideoIndex = 0;
 constexpr size_t kAudioIndex = 1;
 
+// ISO/IEC 14496-12.
+// 16 bits of fixed based decimal is enough to give 6 decimals of precision for
+// the rotation values of the display matrix.
+static constexpr int32_t kMaxMatrixRotation = 1 << 16;
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 constexpr uint8_t kProfileIndicationNoChroma = 77;
 constexpr uint8_t kProfileIndication = 122;
@@ -100,11 +105,10 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
   void CreateContext(std::vector<uint8_t>& written_data) {
     auto tracker = std::make_unique<OutputPositionTracker>(base::BindRepeating(
         [&](base::OnceClosure run_loop_quit, std::vector<uint8_t>* written_data,
-            std::string_view mp4_data_string) {
+            base::span<const uint8_t> mp4_data_string) {
           // Callback is called per box output.
 
-          std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                    std::back_inserter(*written_data));
+          std::ranges::copy(mp4_data_string, std::back_inserter(*written_data));
           std::move(run_loop_quit).Run();
         },
         run_loop_.QuitClosure(), &written_data));
@@ -337,6 +341,14 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
     video_track.header.duration = base::Milliseconds(kDuration1);
     video_track.header.natural_size = gfx::Size(kWidth, kHeight);
 
+    // Apply 90 degree rotation display matrix, no mirroring.
+    std::array<int32_t, 4> mat =
+        media::VideoTransformation(VIDEO_ROTATION_90, false).GetMatrix();
+    video_track.header.matrix[0] = mat[0];
+    video_track.header.matrix[1] = mat[1];
+    video_track.header.matrix[3] = mat[2];
+    video_track.header.matrix[4] = mat[3];
+
     video_track.media.header.creation_time = creation_time;
     video_track.media.header.modification_time = modification_time;
     video_track.media.header.duration = base::Milliseconds(kDuration1);
@@ -404,6 +416,14 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
   EXPECT_EQ(track_boxes[kVideoIndex].header.volume, 0);
   EXPECT_EQ(track_boxes[kVideoIndex].header.width, kWidth);
   EXPECT_EQ(track_boxes[kVideoIndex].header.height, kHeight);
+
+  // Track header display matrix validation.
+  EXPECT_EQ(track_boxes[kVideoIndex].header.display_matrix[0], 0);
+  EXPECT_EQ(track_boxes[kVideoIndex].header.display_matrix[1],
+            kMaxMatrixRotation);
+  EXPECT_EQ(track_boxes[kVideoIndex].header.display_matrix[3],
+            -1 * kMaxMatrixRotation);
+  EXPECT_EQ(track_boxes[kVideoIndex].header.display_matrix[4], 0);
 
   EXPECT_EQ(track_boxes[kAudioIndex].header.track_id, 2u);
   EXPECT_EQ(track_boxes[kAudioIndex].header.creation_time,
@@ -610,6 +630,12 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
 
   visual_sample_entry.avc_decoder_configuration = std::move(avc);
 
+  // colr box
+  mp4::writable_boxes::ColorInformation color_information(
+      VideoColorSpace::JPEG());
+
+  visual_sample_entry.color_information = std::move(color_information);
+
   sample_description.video_sample_entry = std::move(visual_sample_entry);
 
   Mp4MovieSampleDescriptionBoxWriter box_writer(*context(), sample_description);
@@ -636,6 +662,17 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
   EXPECT_EQ(static_cast<uint16_t>(kHeight), video_sample_entry.height);
   EXPECT_EQ(VideoCodecProfile::H264PROFILE_MAIN,
             video_sample_entry.video_info.profile);
+  EXPECT_EQ(
+      VideoColorSpace::JPEG().primaries,
+      reader_sample_description.video_entries[0].video_color_space.primaries);
+  EXPECT_EQ(
+      VideoColorSpace::JPEG().transfer,
+      reader_sample_description.video_entries[0].video_color_space.transfer);
+  EXPECT_EQ(
+      VideoColorSpace::JPEG().matrix,
+      reader_sample_description.video_entries[0].video_color_space.matrix);
+  EXPECT_EQ(VideoColorSpace::JPEG().range,
+            reader_sample_description.video_entries[0].video_color_space.range);
 }
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAVCDecoderConfigurationRecord) {
@@ -673,6 +710,8 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAVCDecoderConfigurationRecord) {
 
   mp4::AVCDecoderConfigurationRecord avc_config_reader;
   EXPECT_TRUE(box_reader->ReadChild(&avc_config_reader));
+
+  EXPECT_EQ(1u, avc_config_reader.version);
 
   EXPECT_EQ(kProfileIndication, avc_config_reader.profile_indication);
   EXPECT_EQ(kProfileCompatibility, avc_config_reader.profile_compatibility);
@@ -773,6 +812,45 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
   EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO, adts_channel_layout);
   EXPECT_EQ(1024, sample_count);
   EXPECT_FALSE(metadata_frame);
+}
+#endif
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieHEVCDecoderConfigurationRecord) {
+  // Tests `hvc1` and its children box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::HEVCDecoderConfiguration hevc = {};
+  std::vector<uint8_t> test_data{
+      0x01, 0x01, 0x60, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x3c, 0xf0, 0x00, 0xfc, 0xfd, 0xf8, 0xf8, 0x00, 0x00, 0x0f, 0x03, 0x20,
+      0x00, 0x01, 0x00, 0x18, 0x40, 0x01, 0x0c, 0x01, 0xff, 0xff, 0x01, 0x60,
+      0x00, 0x00, 0x03, 0x00, 0x80, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00,
+      0x3c, 0x95, 0xc0, 0x90, 0x21, 0x00, 0x01, 0x00, 0x27, 0x42, 0x01, 0x01,
+      0x01, 0x60, 0x00, 0x00, 0x03, 0x00, 0x80, 0x00, 0x00, 0x03, 0x00, 0x00,
+      0x03, 0x00, 0x3c, 0xa0, 0x0a, 0x08, 0x0b, 0x9f, 0x79, 0x65, 0x79, 0x24,
+      0xca, 0xe0, 0x10, 0x00, 0x00, 0x06, 0x40, 0x00, 0x00, 0xbb, 0x50, 0x80,
+      0x22, 0x00, 0x01, 0x00, 0x06, 0x44, 0x01, 0xc1, 0x73, 0xd1, 0x89};
+  EXPECT_TRUE(
+      hevc.hevc_config_record.Parse(test_data.data(), test_data.size()));
+
+  Mp4MovieHEVCDecoderConfigurationBoxWriter box_writer(*context(), hevc);
+  FlushAndWait(&box_writer);
+
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+
+  EXPECT_TRUE(box_reader->ScanChildren());
+
+  mp4::HEVCDecoderConfigurationRecord hevc_config_reader;
+
+  EXPECT_TRUE(box_reader->ReadChild(&hevc_config_reader));
+  std::vector<uint8_t> output;
+  hevc_config_reader.Serialize(output);
+
+  EXPECT_TRUE(test_data == output);
 }
 #endif
 

@@ -23,6 +23,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_dedicated_or_shared_worker_fetch_context.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -76,15 +77,9 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
           pending_resource_load_info_notifier);
 
   // WebDedicatedOrSharedWorkerFetchContext implementation:
-  // Clones this fetch context for a nested worker.
-  // For non-PlzDedicatedWorker. This will be removed once PlzDedicatedWorker is
-  // enabled by default.
-  scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
-  CloneForNestedWorkerDeprecated(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
-  // For PlzDedicatedWorker. The cloned fetch context does not inherit some
-  // fields (e.g., blink::WebServiceWorkerProviderContext) from this fetch
-  // context, and instead that takes values passed from the browser process.
+  // The cloned fetch context does not inherit some fields (e.g.,
+  // blink::WebServiceWorkerProviderContext) from this fetch context, and
+  // instead that takes values passed from the browser process.
   scoped_refptr<WebDedicatedOrSharedWorkerFetchContext> CloneForNestedWorker(
       WebServiceWorkerProviderContext* service_worker_provider_context,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -117,7 +112,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
           url_loader_factory) override;
   std::optional<WebURL> WillSendRequest(const WebURL& url) override;
   void FinalizeRequest(WebURLRequest&) override;
-  WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+  std::vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest& request) override;
   mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       const override;
@@ -131,7 +126,6 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
       override;
   std::unique_ptr<WebSocketHandshakeThrottle> CreateWebSocketHandshakeThrottle(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
-  void SetIsOfflineMode(bool is_offline_mode) override;
   bool IsDedicatedWorkerOrSharedWorkerFetchContext() const override {
     return true;
   }
@@ -140,17 +134,18 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   void OnControllerChanged(mojom::ControllerServiceWorkerMode) override;
 
   // Sets the controller service worker mode.
-  // - For dedicated workers (non-PlzDedicatedWorker), they depend on the
-  //   controller of the ancestor frame (directly for non-nested workers, or
-  //   indirectly via its parent worker for nested workers), and inherit its
-  //   controller mode.
-  // - For dedicated workers (PlzDedicatedWorker) and shared workers, the
-  //   controller mode is passed from the browser processw when starting the
-  //   worker.
+  // - For dedicated workers and shared workers, the controller mode is passed
+  // from the browser processw when starting the worker.
   void set_controller_service_worker_mode(
       mojom::ControllerServiceWorkerMode mode);
 
   void set_client_id(const WebString& client_id);
+
+  // TODO(crbug.com/324939068): remove the code when the feature launched.
+  void set_container_is_blob_url_shared_worker(bool is_blob_url) {
+    container_is_blob_url_shared_worker_ = is_blob_url;
+  }
+  void set_container_is_shared_worker(bool is_sharedworker) override;
 
   WebString GetAcceptLanguages() const override;
 
@@ -230,6 +225,10 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   // document's id in that case). Passed to ControllerServiceWorkerConnector.
   WebString client_id_;
 
+  // TODO(crbug.com/324939068): remove the flag when the feature launched.
+  bool container_is_blob_url_shared_worker_ = false;
+  bool container_is_shared_worker_ = false;
+
   // Initialized on the worker thread when InitializeOnWorkerThread() is called.
   // |loader_factory_| is used for regular loading by the worker. In
   // If the worker is controlled by a service worker, it creates a
@@ -243,11 +242,8 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
 
   // Initialized on the worker thread when InitializeOnWorkerThread() is called.
   // Used to reconnect to the Network Service after the Network Service crash.
-  // This is only used for dedicated workers when PlzDedicatedWorker is enabled.
-  // When PlzDedicatedWorker is disabled, the ancestor render frame updates the
-  // loaders via Host/TrackedChildURLLoaderFactoryBundle. For shared workers,
-  // the renderer process detects the crash, and terminates the worker instead
-  // of recovery.
+  // This is only used for dedicated workers. For shared workers, the renderer
+  // process detects the crash, and terminates the worker instead of recovery.
   mojo::PendingReceiver<mojom::blink::SubresourceLoaderUpdater>
       pending_subresource_loader_updater_;
   mojo::Receiver<mojom::blink::SubresourceLoaderUpdater>
@@ -301,7 +297,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   std::unique_ptr<WeakWrapperResourceLoadInfoNotifier>
       weak_wrapper_resource_load_info_notifier_;
 
-  raw_ptr<AcceptLanguagesWatcher> accept_languages_watcher_ = nullptr;
+  WeakPersistent<AcceptLanguagesWatcher> accept_languages_watcher_;
 };
 
 template <>

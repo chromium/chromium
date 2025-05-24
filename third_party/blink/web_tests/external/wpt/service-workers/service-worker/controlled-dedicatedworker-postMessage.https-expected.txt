@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Verify dedicated worker gets messages if setting event listener early
+  promise_test: Unhandled rejection with value: "test timed out"
+[FAIL] Verify dedicated worker does not get all messages if not setting event listener early
+  promise_test: Unhandled rejection with value: "test timed out"
+Harness: the test ran to completion.
+

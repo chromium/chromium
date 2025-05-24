@@ -44,7 +44,7 @@ void CreateSubresourceLoaderFactoryForProviderContext(
     blink::mojom::ServiceWorkerFetchHandlerBypassOption
         fetch_handler_bypass_option,
     std::optional<blink::ServiceWorkerRouterRules> router_rules,
-    blink::EmbeddedWorkerStatus initial_running_status,
+    std::optional<blink::EmbeddedWorkerStatus> initial_running_status,
     mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
         running_status_receiver,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -99,6 +99,10 @@ blink::mojom::ServiceWorkerObjectInfoPtr
 ServiceWorkerProviderContext::TakeController() {
   CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   return std::move(controller_);
+}
+
+bool ServiceWorkerProviderContext::container_is_blob_url_shared_worker() const {
+  return container_is_blob_url_shared_worker_;
 }
 
 int64_t ServiceWorkerProviderContext::GetControllerVersionId() const {
@@ -310,6 +314,10 @@ ServiceWorkerProviderContext::GetFetchHandlerBypassOption() const {
 
 const blink::WebString ServiceWorkerProviderContext::client_id() const {
   return blink::WebString::FromUTF8(client_id_);
+}
+
+void ServiceWorkerProviderContext::Destroy() const {
+  DestructOnMainThread();
 }
 
 void ServiceWorkerProviderContext::UnregisterWorkerFetchContext(

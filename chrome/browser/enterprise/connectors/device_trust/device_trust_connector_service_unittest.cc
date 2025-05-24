@@ -57,7 +57,7 @@ void SetPolicy(TestingPrefServiceSimple* prefs,
 
 class MockPolicyObserver : public DeviceTrustConnectorService::PolicyObserver {
  public:
-  MockPolicyObserver() {}
+  MockPolicyObserver() = default;
   ~MockPolicyObserver() override = default;
 
   // DeviceTrustConnectorService::PolicyObserver:

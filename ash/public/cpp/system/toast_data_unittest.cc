@@ -16,16 +16,16 @@ TEST(ToastDataTest, InitializedWithProvidedValues) {
   ToastData data = ToastData(
       /*id=*/"some_id", ToastCatalogName::kDebugCommand, /*text=*/u"some_text",
       base::Seconds(1),
-      /*visible_on_lock_screen=*/true,
-      /*has_dismiss_button=*/true,
-      /*custom_dismiss_text=*/u"Dismiss now");
+      /*visible_on_lock_screen=*/true);
+  data.button_type = ToastData::ButtonType::kTextButton;
+  data.button_text = u"Dismiss now";
 
   EXPECT_EQ(data.id, "some_id");
   EXPECT_EQ(data.catalog_name, ash::ToastCatalogName::kDebugCommand);
   EXPECT_EQ(data.text, u"some_text");
   EXPECT_EQ(data.duration, base::Seconds(1));
   EXPECT_EQ(data.visible_on_lock_screen, true);
-  EXPECT_EQ(data.dismiss_text, u"Dismiss now");
+  EXPECT_EQ(data.button_text, u"Dismiss now");
 }
 
 TEST(ToastDataTest, InitializedWithDefaultValues) {
@@ -34,7 +34,7 @@ TEST(ToastDataTest, InitializedWithDefaultValues) {
 
   EXPECT_EQ(data.duration, ToastData::kDefaultToastDuration);
   EXPECT_EQ(data.visible_on_lock_screen, false);
-  EXPECT_EQ(data.dismiss_text, std::u16string());
+  EXPECT_EQ(data.button_text, std::u16string());
 }
 
 TEST(ToastDataTest, InitializedWithInfiniteDuration) {

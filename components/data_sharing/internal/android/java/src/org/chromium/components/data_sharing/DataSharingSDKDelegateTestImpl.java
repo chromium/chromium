@@ -11,8 +11,10 @@ import org.chromium.components.data_sharing.protocol.AddMemberParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupResult;
 import org.chromium.components.data_sharing.protocol.DeleteGroupParams;
+import org.chromium.components.data_sharing.protocol.LeaveGroupParams;
 import org.chromium.components.data_sharing.protocol.LookupGaiaIdByEmailParams;
 import org.chromium.components.data_sharing.protocol.LookupGaiaIdByEmailResult;
+import org.chromium.components.data_sharing.protocol.ReadGroupWithTokenParams;
 import org.chromium.components.data_sharing.protocol.ReadGroupsParams;
 import org.chromium.components.data_sharing.protocol.ReadGroupsResult;
 import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
@@ -39,12 +41,12 @@ public class DataSharingSDKDelegateTestImpl implements DataSharingSDKDelegate {
     @Override
     public void readGroups(
             ReadGroupsParams params, DataSharingSDKDelegateProtoResponseCallback callback) {
-        int groupsCount = params.getGroupIdsCount();
+        int groupsCount = params.getGroupParamsCount();
         ReadGroupsResult.Builder readGroupsResult = ReadGroupsResult.newBuilder();
         for (int count = 1; count <= groupsCount; count++) {
             GroupData.Builder groupData =
                     GroupData.newBuilder()
-                            .setGroupId(params.getGroupIds(count - 1))
+                            .setGroupId(params.getGroupParams(count - 1).getGroupId())
                             .setDisplayName("test_group_name_" + count);
             readGroupsResult.addGroupData(groupData.build());
         }
@@ -52,18 +54,35 @@ public class DataSharingSDKDelegateTestImpl implements DataSharingSDKDelegate {
     }
 
     @Override
+    public void readGroupWithToken(
+            ReadGroupWithTokenParams params, DataSharingSDKDelegateProtoResponseCallback callback) {
+        ReadGroupsResult.Builder readGroupsResult = ReadGroupsResult.newBuilder();
+        GroupData.Builder groupData =
+                GroupData.newBuilder()
+                        .setGroupId(params.getGroupId())
+                        .setDisplayName("test_group_name_0");
+        readGroupsResult.addGroupData(groupData.build());
+        callback.run(readGroupsResult.build().toByteArray(), /* status= */ 0);
+    }
+
+    @Override
     public void addMember(AddMemberParams params, Callback<Integer> callback) {
-        callback.onResult(/* status= */ 0);
+        callback.onResult(/* result= */ 0);
     }
 
     @Override
     public void removeMember(RemoveMemberParams params, Callback<Integer> callback) {
-        callback.onResult(/* status= */ 1);
+        callback.onResult(/* result= */ 1);
+    }
+
+    @Override
+    public void leaveGroup(LeaveGroupParams params, Callback<Integer> callback) {
+        callback.onResult(/* result= */ 0);
     }
 
     @Override
     public void deleteGroup(DeleteGroupParams params, Callback<Integer> callback) {
-        callback.onResult(/* status= */ 0);
+        callback.onResult(/* result= */ 0);
     }
 
     @Override

@@ -11,11 +11,9 @@
 #include "base/functional/callback_forward.h"
 #include "remoting/base/protobuf_http_client.h"
 
-namespace google {
-namespace protobuf {
+namespace google::protobuf {
 class MessageLite;
-}  // namespace protobuf
-}  // namespace google
+}  // namespace google::protobuf
 
 namespace net {
 struct NetworkTrafficAnnotationTag;
@@ -23,38 +21,38 @@ struct NetworkTrafficAnnotationTag;
 
 namespace remoting {
 
-namespace apis {
-namespace v1 {
-
+namespace apis::v1 {
 class DeleteHostResponse;
+class GetManagedChromeOsHostResponse;
 class GetHostListResponse;
 class HeartbeatResponse;
 class RegisterHostResponse;
 class SendHeartbeatResponse;
+}  // namespace apis::v1
 
-}  // namespace v1
-}  // namespace apis
-
+class HttpStatus;
 class OAuthTokenGetter;
-class ProtobufHttpStatus;
 
 // A service client that communicates with the directory service.
 class DirectoryServiceClient {
  public:
   using DeleteHostCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
+      base::OnceCallback<void(const HttpStatus&,
                               std::unique_ptr<apis::v1::DeleteHostResponse>)>;
+  using GetManagedChromeOsHostCallback = base::OnceCallback<void(
+      const HttpStatus&,
+      std::unique_ptr<apis::v1::GetManagedChromeOsHostResponse>)>;
   using GetHostListCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
+      base::OnceCallback<void(const HttpStatus&,
                               std::unique_ptr<apis::v1::GetHostListResponse>)>;
   using LegacyHeartbeatCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
+      base::OnceCallback<void(const HttpStatus&,
                               std::unique_ptr<apis::v1::HeartbeatResponse>)>;
   using RegisterHostCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus&,
+      base::OnceCallback<void(const HttpStatus&,
                               std::unique_ptr<apis::v1::RegisterHostResponse>)>;
   using SendHeartbeatCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
+      const HttpStatus&,
       std::unique_ptr<apis::v1::SendHeartbeatResponse>)>;
 
   DirectoryServiceClient(
@@ -66,6 +64,9 @@ class DirectoryServiceClient {
   DirectoryServiceClient& operator=(const DirectoryServiceClient&) = delete;
 
   void DeleteHost(const std::string& host_id, DeleteHostCallback callback);
+  void GetManagedChromeOsHost(const std::string& support_id,
+                              GetManagedChromeOsHostCallback callback);
+  void GetHostList(GetHostListCallback callback);
   void LegacyHeartbeat(const std::string& directory_id,
                        std::optional<std::string> signaling_id,
                        std::optional<std::string> offline_reason,
@@ -74,7 +75,6 @@ class DirectoryServiceClient {
                        const std::string& os_name,
                        const std::string& os_version,
                        LegacyHeartbeatCallback callback);
-  void GetHostList(GetHostListCallback callback);
   void RegisterHost(const std::string& host_id,
                     const std::string& host_name,
                     const std::string& public_key,

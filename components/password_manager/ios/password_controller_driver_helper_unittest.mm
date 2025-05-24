@@ -58,7 +58,7 @@ class PasswordControllerDriverHelperTest : public PlatformTest {
 
 // Tests that the driver can be retrieved.
 TEST_F(PasswordControllerDriverHelperTest, PasswordManagerDriver) {
-  auto web_frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  auto web_frame = web::FakeWebFrame::CreateMainWebFrame();
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
@@ -69,7 +69,7 @@ TEST_F(PasswordControllerDriverHelperTest, PasswordManagerDriver) {
 
 // Tests that the password generation helper can be retrieved.
 TEST_F(PasswordControllerDriverHelperTest, PasswordGenerationHelper) {
-  auto web_frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  auto web_frame = web::FakeWebFrame::CreateMainWebFrame();
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 

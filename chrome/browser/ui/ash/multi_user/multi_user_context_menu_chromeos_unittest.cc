@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
+
 #include <memory>
 
 #include "ash/public/cpp/multi_user_window_manager.h"
@@ -14,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "components/account_id/account_id.h"

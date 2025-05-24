@@ -1,7 +1,7 @@
 Name: cronet_android_mainline_clang
 URL: https://clang.llvm.org/
-Version: clang-r522817
-License: Apache 2.0
+Version: clang-r536225
+License: NCSA, Apache-with-LLVM-Exception
 License File: LICENSE
 Security Critical: no
 Shipped: no

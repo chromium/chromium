@@ -22,6 +22,7 @@ include_rules = [
   "+components/download/public/common",
   "+components/guest_view/browser",
   "+components/heap_profiling",
+  "+components/input",
   "+components/keyed_service",
   "+components/media_control/browser",
   "+components/media_control/mojom",

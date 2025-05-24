@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -9,6 +10,7 @@
 
 #include "remoting/host/linux/x_server_clipboard.h"
 
+#include <array>
 #include <limits>
 
 #include "base/containers/contains.h"
@@ -51,18 +53,22 @@ void XServerClipboard::Init(x11::Connection* connection,
 
   // TODO(lambroslambrou): Use ui::X11AtomCache for this, either by adding a
   // dependency on ui/ or by moving X11AtomCache to base/.
-  static const char* const kAtomNames[] = {"CLIPBOARD",        "INCR",
-                                           "SELECTION_STRING", "TARGETS",
-                                           "TIMESTAMP",        "UTF8_STRING"};
+  static const auto kAtomNames = std::to_array<const char*>({
+      "CLIPBOARD",
+      "INCR",
+      "SELECTION_STRING",
+      "TARGETS",
+      "TIMESTAMP",
+      "UTF8_STRING",
+  });
   static const int kNumAtomNames = std::size(kAtomNames);
 
-  x11::Future<x11::InternAtomReply> futures[kNumAtomNames];
+  std::array<x11::Future<x11::InternAtomReply>, kNumAtomNames> futures;
   for (size_t i = 0; i < kNumAtomNames; i++) {
     futures[i] = connection_->InternAtom({false, kAtomNames[i]});
   }
   connection_->Flush();
-  x11::Atom atoms[kNumAtomNames];
-  memset(atoms, 0, sizeof(atoms));
+  std::array<x11::Atom, kNumAtomNames> atoms = {};
   for (size_t i = 0; i < kNumAtomNames; i++) {
     if (auto reply = futures[i].Sync()) {
       atoms[i] = reply->atom;

@@ -14,29 +14,20 @@ import("//testing/test.gni")
 _common_web_test_options = [
   "--no-show-results",
   "--zero-tests-executed-ok",
+  "--build-directory",
+  "@WrappedPath(.)",
 ]
 if (is_debug) {
   _common_web_test_options += [ "--debug" ]
 } else {
   _common_web_test_options += [ "--release" ]
 }
-base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), "../../.")
-out_dir = get_path_info(root_build_dir, "name")
-_common_web_test_options += [
-  "--build-directory",
-  base_out_dir,
-  "--target",
-  out_dir,
-]
 
 script_test("chrome_ios_wpt") {
   script = "//third_party/blink/tools/run_wpt_tests.py"
   args = _common_web_test_options + [
            "--product",
            "chrome_ios",
-           "--target",
-           "Release",
-           "--zero-tests-executed-ok",
            "--no-retry-failures",
            "--use-upstream-wpt",
          ]
@@ -139,6 +130,7 @@ source_set("app_support") {
     ":cwt_constants",
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app:tests_hook",
@@ -170,7 +162,7 @@ source_set("cwt_chromedriver_tests") {
   deps = [
     ":cwt_constants",
     ":shared_helper_headers",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//ios/third_party/edo",
     "//net:test_support",
   ]

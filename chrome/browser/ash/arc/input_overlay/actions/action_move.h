@@ -12,7 +12,7 @@
 
 namespace arc::input_overlay {
 // UI specs.
-constexpr int kActionMoveMinRadius = 99;
+inline constexpr int kActionMoveMinRadius = 99;
 
 class TouchInjector;
 

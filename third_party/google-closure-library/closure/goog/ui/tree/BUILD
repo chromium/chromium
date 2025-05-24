@@ -4,68 +4,53 @@ package(default_visibility = ["//visibility:public"])
 
 licenses(["notice"])
 
-closure_js_library(
+alias(
     name = "basenode",
-    srcs = ["basenode.js"],
-    deps = [
-        "//closure/goog/a11y/aria",
-        "//closure/goog/a11y/aria:attributes",
-        "//closure/goog/asserts",
-        "//closure/goog/dom",
-        "//closure/goog/dom:safe",
-        "//closure/goog/events:browserevent",
-        "//closure/goog/events:event",
-        "//closure/goog/events:keycodes",
-        "//closure/goog/html:safehtml",
-        "//closure/goog/html:safestyle",
-        "//closure/goog/string",
-        "//closure/goog/string:stringbuffer",
-        "//closure/goog/style",
-        "//closure/goog/timer",
-        "//closure/goog/ui:component",
-    ],
+    actual = ":treecontrol",
 )
 
 closure_js_library(
     name = "treecontrol",
-    srcs = ["treecontrol.js"],
+    srcs = [
+        "basenode.js",
+        "treecontrol.js",
+        "treenode.js",
+        "typeahead.js",
+    ],
+    lenient = True,
     deps = [
-        ":basenode",
-        ":treenode",
-        ":typeahead",
         "//closure/goog/a11y/aria",
+        "//closure/goog/a11y/aria:attributes",
+        "//closure/goog/array",
         "//closure/goog/asserts",
         "//closure/goog/dom",
         "//closure/goog/dom:classlist",
+        "//closure/goog/dom:safe",
         "//closure/goog/events:browserevent",
+        "//closure/goog/events:event",
         "//closure/goog/events:eventtype",
         "//closure/goog/events:focushandler",
+        "//closure/goog/events:keycodes",
         "//closure/goog/events:keyhandler",
         "//closure/goog/html:safehtml",
+        "//closure/goog/html:safestyle",
         "//closure/goog/log",
+        "//closure/goog/string",
+        "//closure/goog/string:stringbuffer",
+        "//closure/goog/structs:trie",
+        "//closure/goog/style",
+        "//closure/goog/timer",
+        "//closure/goog/ui:component",
         "//closure/goog/useragent",
     ],
 )
 
-closure_js_library(
+alias(
     name = "treenode",
-    srcs = ["treenode.js"],
-    deps = [
-        ":basenode",
-        "//closure/goog/dom",
-        "//closure/goog/html:safehtml",
-    ],
+    actual = ":treecontrol",
 )
 
-closure_js_library(
+alias(
     name = "typeahead",
-    srcs = ["typeahead.js"],
-    deps = [
-        ":basenode",
-        "//closure/goog/array",
-        "//closure/goog/events:browserevent",
-        "//closure/goog/events:keycodes",
-        "//closure/goog/string",
-        "//closure/goog/structs:trie",
-    ],
+    actual = ":treecontrol",
 )

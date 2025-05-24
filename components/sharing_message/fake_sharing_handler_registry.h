@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "components/sharing_message/sharing_handler_registry.h"
 
 class FakeSharingHandlerRegistry : public SharingHandlerRegistry {
@@ -35,7 +36,7 @@ class FakeSharingHandlerRegistry : public SharingHandlerRegistry {
 
  private:
   std::map<components_sharing_message::SharingMessage::PayloadCase,
-           SharingMessageHandler*>
+           raw_ptr<SharingMessageHandler, CtnExperimental>>
       handler_map_;
 };
 

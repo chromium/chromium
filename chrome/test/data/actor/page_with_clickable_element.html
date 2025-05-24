@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+</head>
+
+<body>
+  <button id="clickable" aria-label="clickable">Clickable</button>
+  <button disabled id="disabled">Disabled</button>
+  <button style="position: absolute;top:150vh" id="offscreen">Offscreen</button>
+  <p id="text">Some text</p>
+</body>
+<script>
+  let button_clicked = false;
+  let offscreen_button_clicked = false;
+
+  const button = document.getElementById('clickable');
+  button.addEventListener('click', () => {
+    button_clicked = true;
+  });
+
+  const offscreen_button = document.getElementById('offscreen');
+  offscreen_button.addEventListener('click', () => {
+    offscreen_button_clicked = true;
+  });
+
+  let mouse_event_log = [];
+
+  // Log all mouse events in the format: Event[Element#ID]
+  const log_handler =
+    e => mouse_event_log.push(`${e.type}[${e.target.tagName}#${e.target.id}]`);
+
+  document.addEventListener('click', log_handler);
+  document.addEventListener('mousedown', log_handler);
+  document.addEventListener('mouseup', log_handler);
+  </script>
+
+</html>

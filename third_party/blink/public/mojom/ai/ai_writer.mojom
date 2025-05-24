@@ -4,14 +4,43 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
 // The struct follows the explainer in
 // https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
 
+// The output tone of the writer.
+enum AIWriterTone {
+  kFormal,
+  kNeutral,
+  kCasual,
+};
+
+// The output format of the writer.
+enum AIWriterFormat {
+  kPlainText,
+  kMarkdown,
+};
+
+// The output length of the writer.
+enum AIWriterLength {
+  kShort,
+  kMedium,
+  kLong,
+};
+
 // This is used when creating a new AIWriter.
 struct AIWriterCreateOptions {
   string? shared_context;
+  AIWriterTone tone;
+  AIWriterFormat format;
+  AIWriterLength length;
+
+  // Creation fails if a model is not available for specified languages.
+  array<AILanguageCode> expected_input_languages;
+  array<AILanguageCode> expected_context_languages;
+  AILanguageCode output_language;
 };
 
 // Interface for AIWriter that can stream the output string.
@@ -25,4 +54,8 @@ interface AIWriter {
     string input,
     string? context,
     pending_remote<ModelStreamingResponder> pending_responder);
+
+  // Returns the usage size of `input` and `context`, or null if unable to
+  // retrieve the usage.
+  MeasureUsage(string input, string context) => (uint32? number_of_tokens);
 };

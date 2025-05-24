@@ -47,9 +47,7 @@ CrossUserSharingKeys CrossUserSharingKeys::CreateFromProto(
     const sync_pb::CrossUserSharingKeys& proto) {
   CrossUserSharingKeys output;
   for (const sync_pb::CrossUserSharingPrivateKey& key : proto.private_key()) {
-    bool success = output.AddKeyPairFromProto(key);
-    base::UmaHistogramBoolean("Sync.CrossUserSharingLoadedFromDisk", success);
-    if (!success) {
+    if (!output.AddKeyPairFromProto(key)) {
       // TODO(crbug.com/40267990): consider re-downloading Nigori node in this
       // case.
       LOG(ERROR) << "Could not add PrivateKey protocol buffer message.";

@@ -1,0 +1,133 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("safety_check") {
+  sources = [
+    "safety_check_audience.h",
+    "safety_check_consumer_source.h",
+    "safety_check_item_icon.h",
+    "safety_check_item_icon.mm",
+    "safety_check_magic_stack_consumer.h",
+    "safety_check_magic_stack_mediator.h",
+    "safety_check_magic_stack_mediator.mm",
+    "safety_check_state.h",
+    "safety_check_state.mm",
+    "safety_check_view.h",
+    "safety_check_view.mm",
+    "types.h",
+    "utils.h",
+    "utils.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/safety_check/model:constants",
+  ]
+  deps = [
+    ":constants",
+    ":prefs",
+    "//components/password_manager/core/browser",
+    "//components/pref_registry",
+    "//components/prefs/ios",
+    "//components/version_info",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:magic_stack_module_content_view_delegate",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/safety_check/model",
+    "//ios/chrome/browser/settings/ui_bundled/notifications:utils",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "safety_check_prefs.h",
+    "safety_check_prefs.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "safety_check_magic_stack_mediator_unittest.mm",
+    "safety_check_view_unittest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":prefs",
+    ":safety_check",
+    "//base",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/safety_check/model",
+    "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
+    "//ui/base:test_support",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "safety_check_view_egtest.mm" ]
+  deps = [
+    ":constants",
+    ":prefs",
+    "//base/test:test_support",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/safety_check/model:constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

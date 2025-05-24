@@ -5,13 +5,13 @@ For arch in Mac, Mac_arm64:
 1. Find a recent dsymutil tarball: http://commondatastorage.googleapis.com/chromium-browser-clang-staging/index.html?path=$arch/
 For example:
 
-    $ rev=llvmorg-15-init-6872-gc9bea517-1
+    $ rev=$(tools/clang/scripts/update.py --print-revision)
 
 2. Download, unzip into src/tools/clang/dsymutil
 
     $ cd tools/clang/dsymutil
-    $ curl -O http://commondatastorage.googleapis.com/chromium-browser-clang-staging/$arch/dsymutil-$rev.tgz
-    $ tar -zxvf dsymutil-$rev.tgz
+    $ curl -O http://commondatastorage.googleapis.com/chromium-browser-clang-staging/$arch/dsymutil-$rev.tar.xz
+    $ tar -xvf dsymutil-$rev.tar.xz
 
 3. Upload to GCS
 

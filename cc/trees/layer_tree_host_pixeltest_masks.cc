@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
+
+#include <array>
 
 #include "build/build_config.h"
 #include "cc/layers/content_layer_client.h"
@@ -38,15 +35,18 @@ std::vector<RasterTestConfig> const kTestCases = {
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
     {viz::RendererType::kSkiaGL, TestRasterType::kGpu},
     {viz::RendererType::kSkiaGL, TestRasterType::kOneCopy},
+
+// Zero-copy raster is used in production only on Mac and by definition
+// relies on SharedImages having scanout support, which is not always the
+// case on other platforms and without which these tests would fail when
+// run with zero-copy raster.
+#if BUILDFLAG(IS_MAC)
     {viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
+#endif
+
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
-#if !BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/40282729): Fix NativePixmap creation when running GPU
-    // service in process and re-enable these tests.
-    {viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
-#endif
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 };
 
@@ -818,11 +818,12 @@ class LayerTreeHostMaskAsBlendingPixelTest
     // Creates a layer consists of solid grids. The grids are in a mix of
     // different transparency and colors (1 transparent, 3 semi-transparent,
     // and 3 opaque).
-    static SkColor test_colors[7] = {
+    static std::array<SkColor, 7> test_colors = {
         SkColorSetARGB(128, 255, 0, 0), SkColorSetARGB(255, 0, 0, 255),
         SkColorSetARGB(128, 0, 255, 0), SkColorSetARGB(128, 0, 0, 255),
         SkColorSetARGB(255, 0, 255, 0), SkColorSetARGB(0, 0, 0, 0),
-        SkColorSetARGB(255, 255, 0, 0)};
+        SkColorSetARGB(255, 255, 0, 0),
+    };
 
     auto display_list = base::MakeRefCounted<DisplayItemList>();
     display_list->StartPaint();
@@ -868,7 +869,12 @@ class LayerTreeHostMaskAsBlendingPixelTest
 
 MaskTestConfig const kTestConfigs[] = {
     MaskTestConfig{{viz::RendererType::kSoftware, TestRasterType::kBitmap}, 0},
-#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
+
+// Zero-copy raster is used in production only on Mac and by definition
+// relies on SharedImages having scanout support, which is not always the
+// case on other platforms and without which these tests would fail when
+// run with zero-copy raster.
+#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS) && BUILDFLAG(IS_MAC)
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing},
@@ -876,16 +882,7 @@ MaskTestConfig const kTestConfigs[] = {
                    kForceShaders},
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing | kForceShaders},
-#endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-#if !BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/40282729): Fix NativePixmap creation when running GPU
-    // service in process and re-enable these tests.
-    MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy}, 0},
-    MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
-                   kUseAntialiasing},
-#endif
-#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS) && BUILDFLAG(IS_MAC)
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

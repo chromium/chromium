@@ -9,34 +9,38 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/strings/sys_string_conversions.h"
 #import "build/build_config.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/signin/core/browser/signin_error_controller.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 
 // This class listens to various signin events and updates the signin-related
 // fields of ProfileAttributesStorageIOS.
-// TODO(crbug.com/361040177): Rename this class to SigninProfileInfoUpdater.
-class SigninBrowserStateInfoUpdater : public KeyedService,
-                                      public SigninErrorController::Observer,
-                                      public signin::IdentityManager::Observer {
+class SigninProfileInfoUpdater : public KeyedService,
+                                 public SigninErrorController::Observer,
+                                 public signin::IdentityManager::Observer {
  public:
-  SigninBrowserStateInfoUpdater(signin::IdentityManager* identity_manager,
-                                SigninErrorController* signin_error_controller,
-                                const std::string& browser_state_name);
+  SigninProfileInfoUpdater(signin::IdentityManager* identity_manager,
+                           SigninErrorController* signin_error_controller,
+                           const std::string& profile_name);
 
-  SigninBrowserStateInfoUpdater(const SigninBrowserStateInfoUpdater&) = delete;
-  SigninBrowserStateInfoUpdater& operator=(
-      const SigninBrowserStateInfoUpdater&) = delete;
+  SigninProfileInfoUpdater(const SigninProfileInfoUpdater&) = delete;
+  SigninProfileInfoUpdater& operator=(const SigninProfileInfoUpdater&) = delete;
 
-  ~SigninBrowserStateInfoUpdater() override;
+  ~SigninProfileInfoUpdater() override;
 
  private:
   // KeyedService:
   void Shutdown() override;
 
-  // Updates the browser state info on signin and signout events.
-  void UpdateBrowserStateInfo();
+  // Updates the profile info on signin and signout events.
+  void UpdateProfileInfo();
+
+  // Updates the primary account details displayed in widgets on signin and
+  // signout events.
+  void UpdateWidgetsInfo(const signin::PrimaryAccountChangeEvent& event);
 
   // SigninErrorController::Observer:
   void OnErrorChanged() override;
@@ -47,7 +51,7 @@ class SigninBrowserStateInfoUpdater : public KeyedService,
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<SigninErrorController> signin_error_controller_ = nullptr;
-  const std::string browser_state_name_;
+  const std::string profile_name_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};

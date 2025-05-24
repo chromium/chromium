@@ -4,13 +4,14 @@
 
 #include "base/memory/platform_shared_memory_region.h"
 
+#include <algorithm>
 #include <tuple>
 
 #include "base/check.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/process/process_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_shared_memory_util.h"
 #include "build/build_config.h"
@@ -21,6 +22,7 @@
 #include <sys/mman.h>
 #elif BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
+
 #include "base/debug/proc_maps_linux.h"
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -29,11 +31,14 @@
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/object.h>
 #include <lib/zx/process.h>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #endif
 
-namespace base {
-namespace subtle {
+using base::test::ErrorIs;
+using base::test::HasValue;
+
+namespace base::subtle {
 
 const size_t kRegionSize = 1024;
 
@@ -151,7 +156,7 @@ TEST_F(PlatformSharedMemoryRegionTest, InvalidAfterMove) {
       PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
   ASSERT_TRUE(region.IsValid());
   PlatformSharedMemoryRegion moved_region = std::move(region);
-  EXPECT_FALSE(region.IsValid());
+  EXPECT_FALSE(region.IsValid());  // NOLINT(bugprone-use-after-move)
   EXPECT_TRUE(moved_region.IsValid());
 }
 
@@ -179,6 +184,151 @@ TEST_F(PlatformSharedMemoryRegionTest, TakeTooLargeRegionIsInvalid) {
   EXPECT_FALSE(region2.IsValid());
 }
 
+TEST_F(PlatformSharedMemoryRegionTest, TakeOrFailReadOnly) {
+  {
+    PlatformSharedMemoryRegion region =
+        PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
+    ASSERT_TRUE(region.IsValid());
+    ASSERT_TRUE(region.ConvertToReadOnly());
+
+    auto result = PlatformSharedMemoryRegion::TakeOrFail(
+        region.PassPlatformHandle(), region.GetMode(), region.GetSize(),
+        region.GetGUID());
+    ASSERT_TRUE(result.has_value());
+    EXPECT_TRUE(result->IsValid());
+  }
+
+  {
+    PlatformSharedMemoryRegion region =
+        PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
+    ASSERT_TRUE(region.IsValid());
+    ASSERT_TRUE(region.ConvertToReadOnly());
+
+    auto result = PlatformSharedMemoryRegion::TakeOrFail(
+        region.PassPlatformHandle(),
+        PlatformSharedMemoryRegion::Mode::kWritable, region.GetSize(),
+        region.GetGUID());
+    EXPECT_THAT(
+        result,
+        ErrorIs(
+            PlatformSharedMemoryRegion::TakeError::kExpectedWritableButNot));
+  }
+
+  {
+    PlatformSharedMemoryRegion region =
+        PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
+    ASSERT_TRUE(region.IsValid());
+    ASSERT_TRUE(region.ConvertToReadOnly());
+
+    auto result = PlatformSharedMemoryRegion::TakeOrFail(
+        region.PassPlatformHandle(), PlatformSharedMemoryRegion::Mode::kUnsafe,
+        region.GetSize(), region.GetGUID());
+    EXPECT_THAT(
+        result,
+        ErrorIs(
+            PlatformSharedMemoryRegion::TakeError::kExpectedWritableButNot));
+  }
+}
+
+TEST_F(PlatformSharedMemoryRegionTest, TakeOrFailWritable) {
+  {
+    PlatformSharedMemoryRegion region =
+        PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
+    ASSERT_TRUE(region.IsValid());
+
+    auto result = PlatformSharedMemoryRegion::TakeOrFail(
+        region.PassPlatformHandle(), region.GetMode(), region.GetSize(),
+        region.GetGUID());
+    ASSERT_TRUE(result.has_value());
+    EXPECT_TRUE(result->IsValid());
+  }
+
+  {
+    PlatformSharedMemoryRegion region =
+        PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
+    ASSERT_TRUE(region.IsValid());
+
+    auto result = PlatformSharedMemoryRegion::TakeOrFail(
+        region.PassPlatformHandle(),
+        PlatformSharedMemoryRegion::Mode::kReadOnly, region.GetSize(),
+        region.GetGUID());
+    EXPECT_THAT(
+        result,
+        ErrorIs(
+            PlatformSharedMemoryRegion::TakeError::kExpectedReadOnlyButNot));
+  }
+
+  {
+    PlatformSharedMemoryRegion region =
+        PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
+    ASSERT_TRUE(region.IsValid());
+
+    auto result = PlatformSharedMemoryRegion::TakeOrFail(
+        region.PassPlatformHandle(), PlatformSharedMemoryRegion::Mode::kUnsafe,
+        region.GetSize(), region.GetGUID());
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+    EXPECT_THAT(
+        result,
+        ErrorIs(PlatformSharedMemoryRegion::TakeError::kUnexpectedReadOnlyFd));
+#else
+    // On other platforms, the permission-mode consistency checks cannot easily
+    // detect potentially configuration mismatches between the two types of
+    // writable shmem, but at least the region is writable so it's not
+    // dangerously incorrect.
+    EXPECT_THAT(result, HasValue());
+#endif
+  }
+}
+
+TEST_F(PlatformSharedMemoryRegionTest, TakeOrFailUnsafe) {
+  {
+    PlatformSharedMemoryRegion region =
+        PlatformSharedMemoryRegion::CreateUnsafe(kRegionSize);
+    ASSERT_TRUE(region.IsValid());
+
+    auto result = PlatformSharedMemoryRegion::TakeOrFail(
+        region.PassPlatformHandle(), region.GetMode(), region.GetSize(),
+        region.GetGUID());
+    ASSERT_TRUE(result.has_value());
+    EXPECT_TRUE(result->IsValid());
+  }
+
+  {
+    PlatformSharedMemoryRegion region =
+        PlatformSharedMemoryRegion::CreateUnsafe(kRegionSize);
+    ASSERT_TRUE(region.IsValid());
+
+    auto result = PlatformSharedMemoryRegion::TakeOrFail(
+        region.PassPlatformHandle(),
+        PlatformSharedMemoryRegion::Mode::kReadOnly, region.GetSize(),
+        region.GetGUID());
+    EXPECT_THAT(
+        result,
+        ErrorIs(
+            PlatformSharedMemoryRegion::TakeError::kExpectedReadOnlyButNot));
+  }
+
+  {
+    PlatformSharedMemoryRegion region =
+        PlatformSharedMemoryRegion::CreateUnsafe(kRegionSize);
+    ASSERT_TRUE(region.IsValid());
+
+    auto result = PlatformSharedMemoryRegion::TakeOrFail(
+        region.PassPlatformHandle(),
+        PlatformSharedMemoryRegion::Mode::kWritable, region.GetSize(),
+        region.GetGUID());
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+    EXPECT_THAT(result,
+                ErrorIs(PlatformSharedMemoryRegion::TakeError::kFcntlFailed));
+#else
+    // On other platforms, the permission-mode consistency checks cannot easily
+    // detect potentially configuration mismatches between the two types of
+    // writable shmem, but at least the region is writable so it's not
+    // dangerously incorrect.
+    EXPECT_THAT(result, HasValue());
+#endif
+  }
+}
 // Tests that mapping zero bytes fails.
 TEST_F(PlatformSharedMemoryRegionTest, MapAtZeroBytesTest) {
   PlatformSharedMemoryRegion region =
@@ -258,7 +408,7 @@ void CheckReadOnlyMapProtection(void* addr) {
   ASSERT_TRUE(base::debug::ReadProcMaps(&proc_maps));
   std::vector<base::debug::MappedMemoryRegion> regions;
   ASSERT_TRUE(base::debug::ParseProcMaps(proc_maps, &regions));
-  auto it = ranges::find_if(
+  auto it = std::ranges::find_if(
       regions, [addr](const base::debug::MappedMemoryRegion& region) {
         return region.start == reinterpret_cast<uintptr_t>(addr);
       });
@@ -332,25 +482,30 @@ TEST_F(PlatformSharedMemoryRegionTest,
             region.GetPlatformHandle(), mode, region.GetSize());
   };
 
+  using TakeError = PlatformSharedMemoryRegion::TakeError;
   // Check kWritable region.
   PlatformSharedMemoryRegion region =
       PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
   ASSERT_TRUE(region.IsValid());
-  EXPECT_TRUE(check(region, Mode::kWritable));
-  EXPECT_FALSE(check(region, Mode::kReadOnly));
+  EXPECT_THAT(check(region, Mode::kWritable), HasValue());
+  EXPECT_THAT(check(region, Mode::kReadOnly),
+              ErrorIs(TakeError::kExpectedReadOnlyButNot));
 
   // Check kReadOnly region.
   ASSERT_TRUE(region.ConvertToReadOnly());
-  EXPECT_TRUE(check(region, Mode::kReadOnly));
-  EXPECT_FALSE(check(region, Mode::kWritable));
-  EXPECT_FALSE(check(region, Mode::kUnsafe));
+  EXPECT_THAT(check(region, Mode::kReadOnly), HasValue());
+  EXPECT_THAT(check(region, Mode::kWritable),
+              ErrorIs(TakeError::kExpectedWritableButNot));
+  EXPECT_THAT(check(region, Mode::kUnsafe),
+              ErrorIs(TakeError::kExpectedWritableButNot));
 
   // Check kUnsafe region.
   PlatformSharedMemoryRegion region2 =
       PlatformSharedMemoryRegion::CreateUnsafe(kRegionSize);
   ASSERT_TRUE(region2.IsValid());
-  EXPECT_TRUE(check(region2, Mode::kUnsafe));
-  EXPECT_FALSE(check(region2, Mode::kReadOnly));
+  EXPECT_THAT(check(region2, Mode::kUnsafe), HasValue());
+  EXPECT_THAT(check(region2, Mode::kReadOnly),
+              ErrorIs(TakeError::kExpectedReadOnlyButNot));
 }
 
 // Tests that it's impossible to create read-only platform shared memory region.
@@ -442,5 +597,4 @@ TEST_F(PlatformSharedMemoryRegionTest, UnsafeRegionConvertToUnsafeDeathTest) {
   EXPECT_DEATH_IF_SUPPORTED(region.ConvertToUnsafe(), kErrorRegex);
 }
 
-}  // namespace subtle
-}  // namespace base
+}  // namespace base::subtle

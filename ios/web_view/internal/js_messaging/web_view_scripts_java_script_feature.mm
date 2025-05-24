@@ -40,9 +40,13 @@ WebViewScriptsJavaScriptFeature::FromBrowserState(
 
 void WebViewScriptsJavaScriptFeature::SetScripts(
     std::optional<std::string> all_frames_script,
-    std::optional<std::string> main_frame_script) {
+    std::optional<std::string> main_frame_script,
+    std::optional<std::string> all_frames_script_doc_end,
+    std::optional<std::string> main_frame_script_doc_end) {
   all_frames_script_ = all_frames_script;
   main_frame_script_ = main_frame_script;
+  all_frames_script_doc_end_ = all_frames_script_doc_end;
+  main_frame_script_doc_end_ = main_frame_script_doc_end;
 
   // Feature scripts must be explicitly updated after they change.
   web::WKWebViewConfigurationProvider& config_provider =
@@ -65,6 +69,20 @@ WebViewScriptsJavaScriptFeature::GetScripts() const {
         JavaScriptFeature::FeatureScript::CreateWithString(
             main_frame_script_.value(),
             JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+            JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame));
+  }
+  if (all_frames_script_doc_end_) {
+    feature_scripts.push_back(
+        JavaScriptFeature::FeatureScript::CreateWithString(
+            all_frames_script_doc_end_.value(),
+            JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd,
+            JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames));
+  }
+  if (main_frame_script_doc_end_) {
+    feature_scripts.push_back(
+        JavaScriptFeature::FeatureScript::CreateWithString(
+            main_frame_script_doc_end_.value(),
+            JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd,
             JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame));
   }
   return feature_scripts;

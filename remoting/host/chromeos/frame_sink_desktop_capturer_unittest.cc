@@ -196,6 +196,10 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
   MOCK_METHOD(void, SetAutoThrottlingEnabled, (bool enabled));
 
   MOCK_METHOD(void,
+              SetAnimationFpsLockIn,
+              (bool enabled, float majority_damaged_pixel_min_ratio));
+
+  MOCK_METHOD(void,
               SetResolutionConstraints,
               (const Size& min_size,
                const Size& max_size,

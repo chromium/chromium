@@ -113,11 +113,6 @@ bool TracedValue::AppendToProto(ProtoAppender* appender) const {
   return traced_value_->AppendToProto(appender);
 }
 
-void TracedValue::EstimateTraceMemoryOverhead(
-    base::trace_event::TraceEventMemoryOverhead* overhead) {
-  traced_value_->EstimateTraceMemoryOverhead(overhead);
-}
-
 TracedValueJSON::TracedValueJSON()
     : TracedValue(std::make_unique<base::trace_event::TracedValueJSON>()) {}
 TracedValueJSON::~TracedValueJSON() = default;

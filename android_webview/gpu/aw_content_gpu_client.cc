@@ -12,12 +12,14 @@ AwContentGpuClient::AwContentGpuClient(
     GetSyncPointManagerCallback sync_point_manager_callback,
     GetSharedImageManagerCallback shared_image_manager_callback,
     GetSchedulerCallback scheduler_callback,
-    GetVizCompositorThreadRunnerCallback viz_compositor_thread_runner_callback)
+    GetVizCompositorThreadRunnerCallback viz_compositor_thread_runner_callback,
+    const AwGrContextOptionsProvider* gr_context_options_provider)
     : sync_point_manager_callback_(std::move(sync_point_manager_callback)),
       shared_image_manager_callback_(std::move(shared_image_manager_callback)),
       scheduler_callback_(std::move(scheduler_callback)),
       viz_compositor_thread_runner_callback_(
-          std::move(viz_compositor_thread_runner_callback)) {}
+          std::move(viz_compositor_thread_runner_callback)),
+      gr_context_options_provider_(gr_context_options_provider) {}
 
 AwContentGpuClient::~AwContentGpuClient() {}
 
@@ -36,6 +38,11 @@ gpu::Scheduler* AwContentGpuClient::GetScheduler() {
 viz::VizCompositorThreadRunner*
 AwContentGpuClient::GetVizCompositorThreadRunner() {
   return viz_compositor_thread_runner_callback_.Run();
+}
+
+const gpu::SharedContextState::GrContextOptionsProvider*
+AwContentGpuClient::GetGrContextOptionsProvider() {
+  return gr_context_options_provider_;
 }
 
 }  // namespace android_webview

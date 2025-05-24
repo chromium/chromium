@@ -22,12 +22,19 @@ class BrowserContext;
 // this can be implemented when needed.
 class FakeNssService : public NssService {
  public:
+#if BUILDFLAG(IS_CHROMEOS)
   // Creates a new instance of FakeNssService and configures `context` to use
   // it. If `enable_system_slot` is true, `context` will have access to a system
   // slot (currently not shared between different contexts).
   static FakeNssService* InitializeForBrowserContext(
       content::BrowserContext* context,
       bool enable_system_slot);
+#else
+  // Creates a new instance of FakeNssService and configures `context` to use
+  // it.
+  static FakeNssService* InitializeForBrowserContext(
+      content::BrowserContext* context);
+#endif
 
   FakeNssService(content::BrowserContext* context, bool enable_system_slot);
   ~FakeNssService() override;
@@ -35,13 +42,17 @@ class FakeNssService : public NssService {
   NssCertDatabaseGetter CreateNSSCertDatabaseGetterForIOThread() override;
 
   PK11SlotInfo* GetPublicSlot() const;
+#if BUILDFLAG(IS_CHROMEOS)
   PK11SlotInfo* GetPrivateSlot() const;
   PK11SlotInfo* GetSystemSlot() const;
+#endif
 
  private:
   std::unique_ptr<crypto::ScopedTestNSSDB> public_slot_;
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<crypto::ScopedTestNSSDB> private_slot_;
   std::unique_ptr<crypto::ScopedTestNSSDB> system_slot_;
+#endif
 
   std::unique_ptr<net::NSSCertDatabase> nss_cert_database_;
 };

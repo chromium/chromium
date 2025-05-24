@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/formats/mp4/hevc.h"
+
+#include <array>
 
 #include "media/formats/mp4/nalu_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,15 +14,24 @@ namespace media {
 namespace mp4 {
 
 TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
-  struct {
+  struct TestCases {
     const char* case_string;
     const bool is_keyframe;
-  } test_cases[] = {
-      {"I", true},          {"I I I I", true}, {"AUD I", true},
-      {"AUD SPS I", true},  {"I EOS", true},   {"I EOS EOB", true},
-      {"I EOB", true},      {"P", false},      {"P P P P", false},
-      {"AUD SPS P", false}, {"AUD,I", true},   {"AUD,SPS,I", true},
   };
+  auto test_cases = std::to_array<TestCases>({
+      {"I", true},
+      {"I I I I", true},
+      {"AUD I", true},
+      {"AUD SPS I", true},
+      {"I EOS", true},
+      {"I EOS EOB", true},
+      {"I EOB", true},
+      {"P", false},
+      {"P P P P", false},
+      {"AUD SPS P", false},
+      {"AUD,I", true},
+      {"AUD,SPS,I", true},
+  });
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
@@ -41,11 +48,20 @@ TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
   }
 }
 
+TEST(HEVCAnalyzeAnnexBTest, EmptyBuffer) {
+  std::vector<SubsampleEntry> subsamples;
+  auto result = HEVC::AnalyzeAnnexB(nullptr, 0, subsamples);
+  EXPECT_TRUE(result.is_conformant);
+  EXPECT_TRUE(subsamples.empty());
+  EXPECT_FALSE(result.is_keyframe.has_value());
+}
+
 TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
-  struct {
+  struct TestCases {
     const char* case_string;
     const std::optional<bool> is_keyframe;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       // For these cases, lack of conformance is determined before detecting any
       // IDR or non-IDR slices, so the non-conformant frames' keyframe analysis
       // reports std::nullopt (which means undetermined analysis result).
@@ -65,7 +81,7 @@ TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
       // failure, so the non-conformant frame is reported as a non-keyframe.
       {"P SPS P",
        false},  // SPS after first VCL would indicate a new access unit.
-  };
+  });
 
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = false;

@@ -103,7 +103,7 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
       *style, style, style, CSSToLengthConversionData::ViewportSize(nullptr),
       CSSToLengthConversionData::ContainerSizes(),
       CSSToLengthConversionData::AnchorData(), style->EffectiveZoom(),
-      ignored_flags);
+      ignored_flags, /*element=*/nullptr);
 
   TestAccumulatePixelsAndPercent(
       conversion_data,
@@ -373,7 +373,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctions) {
         CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
-    CSSToLengthConversionData resolver{};
+    CSSToLengthConversionData resolver{/*element=*/nullptr};
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
@@ -398,7 +398,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctionsToCalculationExpression) {
             10, CSSPrimitiveValue::UnitType::kNumber)};
     const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
         kCalcNumber, std::move(operands), test_case.op);
-    CSSToLengthConversionData resolver{};
+    CSSToLengthConversionData resolver{/*element=*/nullptr};
     scoped_refptr<const CalculationExpressionNode> node =
         operation->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
@@ -445,7 +445,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctions) {
         CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
-    CSSToLengthConversionData resolver;
+    CSSToLengthConversionData resolver{/*element=*/nullptr};
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
@@ -490,7 +490,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctionsToCalculationExpression) {
             4.0f, CSSPrimitiveValue::UnitType::kNumber)};
     const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
         kCalcNumber, std::move(operands), test_case.op);
-    CSSToLengthConversionData resolver{};
+    CSSToLengthConversionData resolver{/*element=*/nullptr};
     scoped_refptr<const CalculationExpressionNode> node =
         operation->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
@@ -507,7 +507,8 @@ TEST(CSSMathExpressionNode, IdentifierLiteralConversion) {
   EXPECT_EQ(css_node->Category(), kCalcIdent);
   EXPECT_EQ(css_node->GetValue(), AtomicString("test"));
   scoped_refptr<const CalculationExpressionNode> calc_node =
-      css_node->ToCalculationExpression(CSSToLengthConversionData());
+      css_node->ToCalculationExpression(
+          CSSToLengthConversionData(/*element=*/nullptr));
   EXPECT_TRUE(calc_node->IsIdentifier());
   EXPECT_EQ(To<CalculationExpressionIdentifierNode>(*calc_node).Value(),
             AtomicString("test"));
@@ -526,7 +527,8 @@ TEST(CSSMathExpressionNode, ColorChannelKeywordConversion) {
   EXPECT_EQ(css_node->Category(), kCalcNumber);
   EXPECT_EQ(css_node->GetValue(), CSSValueID::kAlpha);
   scoped_refptr<const CalculationExpressionNode> calc_node =
-      css_node->ToCalculationExpression(CSSToLengthConversionData());
+      css_node->ToCalculationExpression(
+          CSSToLengthConversionData(/*element=*/nullptr));
   EXPECT_TRUE(calc_node->IsColorChannelKeyword());
   EXPECT_EQ(
       To<CalculationExpressionColorChannelKeywordNode>(*calc_node).Value(),
@@ -542,9 +544,9 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
     const std::string input;
     const double output;
   } test_cases[] = {
-      {"progress(1px from 0px to 4px)", 0.25f},
-      {"progress(10deg from 0deg to 10deg)", 1.0f},
-      {"progress(progress(10% from 0% to 40%) * 1px from 0.5px to 1px)", -0.5f},
+      {"progress(1px, 0px, 4px)", 0.25f},
+      {"progress(10deg, 0deg, 10deg)", 1.0f},
+      {"progress(progress(10%, 0%, 40%) * 1px, 0.5px, 1px)", -0.5f},
   };
 
   for (const auto& test_case : test_cases) {
@@ -555,7 +557,7 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
         CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
-    CSSToLengthConversionData resolver;
+    CSSToLengthConversionData resolver(/*element=*/nullptr);
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
@@ -567,7 +569,7 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
     const std::string input;
     const double output;
   } test_cases[] = {
-      {"progress(abs(5%) from hypot(3%, 4%) to 10%)", 0.0f},
+      {"progress(abs(5%), hypot(3%, 4%), 10%)", 0.0f},
   };
 
   for (const auto& test_case : test_cases) {
@@ -579,7 +581,7 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
         kCSSAnchorQueryTypesNone);
     EXPECT_TRUE(res);
     EXPECT_TRUE(res->IsOperation());
-    CSSToLengthConversionData resolver;
+    CSSToLengthConversionData resolver(/*element=*/nullptr);
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     // Very close to 0.0f, but not exactly 0.0f for unknown reason.
@@ -589,8 +591,8 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
 
 TEST(CSSMathExpressionNode, TestInvalidProgressNotation) {
   const std::string test_cases[] = {
-      "progress(1% from 0px to 4px)",
-      "progress(1px, 0px, 4px)",
+      "progress(1px from 0px to 4px)",
+      "progress(1%, 0px, 4px)",
       "progress(10deg from 0 to 10deg)",
   };
 
@@ -608,13 +610,16 @@ TEST(CSSMathExpressionNode, TestInvalidProgressNotation) {
 TEST(CSSMathExpressionNode, TestFunctionsWithNumberReturn) {
   const struct TestCase {
     const String input;
+    const String serialized;
     const CalculationResultCategory category;
     const double output;
   } test_cases[] = {
-      {"10 * sign(10%)", CalculationResultCategory::kCalcNumber, 10.0},
-      {"10px * sign(10%)", CalculationResultCategory::kCalcLength, 10.0},
-      {"10 + 2 * (1 + sign(10%))", CalculationResultCategory::kCalcNumber,
-       14.0},
+      {"10 * sign(10%)", "(10 * sign(10%))",
+       CalculationResultCategory::kCalcNumber, 10.0},
+      {"10px * sign(10%)", "(10px * sign(10%))",
+       CalculationResultCategory::kCalcLength, 10.0},
+      {"10 + 2 * (1 + sign(10%))", "(10 + (2 * (1 + sign(10%))))",
+       CalculationResultCategory::kCalcNumber, 14.0},
   };
 
   for (const auto& test_case : test_cases) {
@@ -625,15 +630,16 @@ TEST(CSSMathExpressionNode, TestFunctionsWithNumberReturn) {
         CSSMathExpressionNode::ParseMathFunction(
             CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
             kCSSAnchorQueryTypesNone);
-    EXPECT_EQ(css_node->CustomCSSText(), test_case.input);
+    EXPECT_EQ(css_node->CustomCSSText(), test_case.serialized);
     EXPECT_EQ(css_node->Category(), test_case.category);
     EXPECT_TRUE(css_node->IsOperation());
     scoped_refptr<const CalculationExpressionNode> calc_node =
-        css_node->ToCalculationExpression(CSSToLengthConversionData());
+        css_node->ToCalculationExpression(
+            CSSToLengthConversionData(/*element=*/nullptr));
     EXPECT_TRUE(calc_node->IsOperation());
     EXPECT_EQ(calc_node->Evaluate(100.0, {}), test_case.output);
     css_node = CSSMathExpressionNode::Create(*calc_node);
-    EXPECT_EQ(css_node->CustomCSSText(), test_case.input);
+    EXPECT_EQ(css_node->CustomCSSText(), test_case.serialized);
   }
 }
 
@@ -664,7 +670,8 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithSubstitution) {
     EXPECT_EQ(css_node->Category(), test_case.category);
     EXPECT_TRUE(css_node->IsNumericLiteral());
     scoped_refptr<const CalculationExpressionNode> calc_node =
-        css_node->ToCalculationExpression(CSSToLengthConversionData());
+        css_node->ToCalculationExpression(
+            CSSToLengthConversionData(/*element=*/nullptr));
     EXPECT_TRUE(calc_node->IsNumber());
     EXPECT_EQ(calc_node->Evaluate(FLT_MAX, {}), test_case.output);
   }
@@ -727,7 +734,7 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithoutSubstitution) {
   EXPECT_EQ(keyword->GetContext(),
             CSSMathExpressionKeywordLiteral::Context::kColorChannel);
 
-  CSSToLengthConversionData resolver{};
+  CSSToLengthConversionData resolver{/*element=*/nullptr};
   scoped_refptr<const CalculationExpressionNode> node =
       css_node->ToCalculationExpression(resolver);
   EXPECT_TRUE(node->IsOperation());
@@ -760,6 +767,30 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithoutSubstitution) {
   EXPECT_EQ(To<CalculationExpressionPixelsAndPercentNode>(operands[1].get())
                 ->Pixels(),
             360.f);
+}
+
+TEST(CSSMathExpressionNode, CSSMathTypeSum) {
+  auto check_type_sum = [](const CSSMathType& type1, const CSSMathType& type2,
+                           bool is_valid, CalculationResultCategory type) {
+    CSSMathType sum_type = type1 + type2;
+    CSSMathType reversed_sum_type = type2 + type1;
+    EXPECT_EQ(sum_type.IsValid(), is_valid);
+    EXPECT_EQ(sum_type.Type(), type);
+    EXPECT_EQ(reversed_sum_type.IsValid(), is_valid);
+    EXPECT_EQ(reversed_sum_type.Type(), type);
+  };
+
+  CSSMathType number(kCalcNumber);
+  CSSMathType length(kCalcLength);
+  CSSMathType percent(kCalcPercent);
+
+  check_type_sum(number, length, false, kCalcOther);
+  check_type_sum(number, percent, false, kCalcOther);
+  check_type_sum(percent, length, true, kCalcLength);
+
+  check_type_sum(number, number, true, kCalcNumber);
+  check_type_sum(length, length, true, kCalcLength);
+  check_type_sum(percent, percent, true, kCalcPercent);
 }
 
 }  // anonymous namespace

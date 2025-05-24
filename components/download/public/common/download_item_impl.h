@@ -236,6 +236,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   DownloadItemImpl(DownloadItemImplDelegate* delegate,
                    uint32_t id,
                    const base::FilePath& path,
+                   const base::FilePath& display_name,
                    const GURL& url,
                    const std::string& mime_type,
                    DownloadJob::CancelRequestCallback cancel_request_callback);
@@ -263,6 +264,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   uint32_t GetId() const override;
   const std::string& GetGuid() const override;
   DownloadState GetState() const override;
+  void SetStateForTesting(DownloadState state) override;
+  void SetDownloadUrlForTesting(GURL url) override;
   DownloadInterruptReason GetLastReason() const override;
   bool IsPaused() const override;
   bool AllowMetered() const override;

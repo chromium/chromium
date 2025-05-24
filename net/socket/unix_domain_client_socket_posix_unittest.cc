@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/socket/unix_domain_client_socket_posix.h"
 
 #include <unistd.h>
@@ -353,7 +348,7 @@ TEST_F(UnixDomainClientSocketTest, ReadAfterWrite) {
   EXPECT_TRUE(client_socket.IsConnected());
 
   // Send data from client to server.
-  const int kWriteDataSize = 10;
+  const size_t kWriteDataSize = 10;
   auto write_buffer =
       base::MakeRefCounted<StringIOBuffer>(std::string(kWriteDataSize, 'd'));
   EXPECT_EQ(
@@ -361,7 +356,7 @@ TEST_F(UnixDomainClientSocketTest, ReadAfterWrite) {
       WriteSynchronously(&client_socket, write_buffer.get(), kWriteDataSize));
 
   // The buffer is bigger than write data size.
-  const int kReadBufferSize = kWriteDataSize * 2;
+  const size_t kReadBufferSize = kWriteDataSize * 2;
   auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   EXPECT_EQ(kWriteDataSize,
             ReadSynchronously(accepted_socket.get(),
@@ -377,24 +372,23 @@ TEST_F(UnixDomainClientSocketTest, ReadAfterWrite) {
                 accepted_socket.get(), write_buffer.get(), kWriteDataSize));
 
   // Read multiple times.
-  const int kSmallReadBufferSize = kWriteDataSize / 3;
+  const size_t kSmallReadBufferSize = kWriteDataSize / 3;
   EXPECT_EQ(kSmallReadBufferSize,
             ReadSynchronously(&client_socket,
                               read_buffer.get(),
                               kSmallReadBufferSize,
                               kSmallReadBufferSize));
-  EXPECT_EQ(std::string(write_buffer->data(), kSmallReadBufferSize),
-            std::string(read_buffer->data(), kSmallReadBufferSize));
+  EXPECT_EQ(write_buffer->first(kSmallReadBufferSize),
+            read_buffer->first(kSmallReadBufferSize));
 
   EXPECT_EQ(kWriteDataSize - kSmallReadBufferSize,
             ReadSynchronously(&client_socket,
                               read_buffer.get(),
                               kReadBufferSize,
                               kWriteDataSize - kSmallReadBufferSize));
-  EXPECT_EQ(std::string(write_buffer->data() + kSmallReadBufferSize,
-                        kWriteDataSize - kSmallReadBufferSize),
-            std::string(read_buffer->data(),
-                        kWriteDataSize - kSmallReadBufferSize));
+  EXPECT_EQ(write_buffer->span().subspan(kSmallReadBufferSize,
+                                         kWriteDataSize - kSmallReadBufferSize),
+            read_buffer->first(kWriteDataSize - kSmallReadBufferSize));
 
   // No more data.
   EXPECT_EQ(

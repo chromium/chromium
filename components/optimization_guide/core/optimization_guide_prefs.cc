@@ -56,12 +56,6 @@ const char kPreviouslyRegisteredOptimizationTypes[] =
 const char kStoreFilePathsToDelete[] =
     "optimization_guide.store_file_paths_to_delete";
 
-// An integer pref that contains the user's setting state of the opt-in
-// main toggle. Changing this toggle affects the state of the per-feature
-// toggles.
-const char kModelExecutionMainToggleSettingState[] =
-    "optimization_guide.model_execution_main_toggle_setting_state";
-
 // A dictionary pref that stores optimization types that had filter associated
 // with this type. The entry is the OptimizationType enum. The value of the
 // key-value pair will not be used.
@@ -80,14 +74,12 @@ std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature) {
       return "optimization_guide.wallpaper_search_setting_state";
     case UserVisibleFeatureKey::kHistorySearch:
       return "optimization_guide.history_search_setting_state";
+    case UserVisibleFeatureKey::kPasswordChangeSubmission:
+      return "optimization_guide.password_change_submission_setting_state";
   }
 }
 
 void RegisterSettingsEnabledPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      kModelExecutionMainToggleSettingState,
-      static_cast<int>(FeatureOptInState::kNotInitialized));
-
   for (auto key : kAllUserVisibleFeatureKeys) {
     registry->RegisterIntegerPref(
         GetSettingEnabledPrefName(key),

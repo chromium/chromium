@@ -42,8 +42,8 @@ export class IframeElement extends CrLitElement {
     };
   }
 
-  allow: string;
-  src: string;
+  accessor allow: string = '';
+  accessor src: string = '';
 
   // Sends message to iframe.
   postMessage(message: any) {

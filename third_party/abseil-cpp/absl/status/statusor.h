@@ -93,7 +93,7 @@ class BadStatusOrAccess : public std::exception {
   //
   // The pointer of this string is guaranteed to be valid until any non-const
   // function is invoked on the exception object.
-  absl::Nonnull<const char*> what() const noexcept override;
+  const char* absl_nonnull what() const noexcept override;
 
   // BadStatusOrAccess::status()
   //
@@ -464,7 +464,7 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   // Returns a reference to the current `absl::Status` contained within the
   // `absl::StatusOr<T>`. If `absl::StatusOr<T>` contains a `T`, then this
   // function returns `absl::OkStatus()`.
-  const Status& status() const&;
+  ABSL_MUST_USE_RESULT const Status& status() const&;
   Status status() &&;
 
   // StatusOr<T>::value()
@@ -520,8 +520,8 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   // REQUIRES: `this->ok() == true`, otherwise the behavior is undefined.
   //
   // Use `this->ok()` to verify that there is a current value.
-  const T* operator->() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  T* operator->() ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  const T* absl_nonnull operator->() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  T* absl_nonnull operator->() ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // StatusOr<T>::value_or()
   //
@@ -756,13 +756,13 @@ T&& StatusOr<T>::operator*() && {
 }
 
 template <typename T>
-absl::Nonnull<const T*> StatusOr<T>::operator->() const {
+const T* absl_nonnull StatusOr<T>::operator->() const {
   this->EnsureOk();
   return &this->data_;
 }
 
 template <typename T>
-absl::Nonnull<T*> StatusOr<T>::operator->() {
+T* absl_nonnull StatusOr<T>::operator->() {
   this->EnsureOk();
   return &this->data_;
 }

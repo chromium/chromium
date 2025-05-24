@@ -19,11 +19,9 @@
 
 namespace sync_file_system {
 
-FakeRemoteChangeProcessor::FakeRemoteChangeProcessor() {
-}
+FakeRemoteChangeProcessor::FakeRemoteChangeProcessor() = default;
 
-FakeRemoteChangeProcessor::~FakeRemoteChangeProcessor() {
-}
+FakeRemoteChangeProcessor::~FakeRemoteChangeProcessor() = default;
 
 void FakeRemoteChangeProcessor::PrepareForProcessRemoteChange(
     const storage::FileSystemURL& url,

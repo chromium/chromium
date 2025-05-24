@@ -16,7 +16,7 @@ class BookmarkBarViewObserver {
   virtual void OnDropMenuShown() {}
 
  protected:
-  ~BookmarkBarViewObserver() {}
+  ~BookmarkBarViewObserver() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_OBSERVER_H_

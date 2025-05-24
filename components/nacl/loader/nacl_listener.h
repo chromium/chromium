@@ -53,9 +53,7 @@ class NaClListener : public IPC::Listener {
   }
 #endif
 
-  void* crash_info_shmem_memory() const {
-    return crash_info_shmem_mapping_.memory();
-  }
+  void* crash_info_shmem_memory() { return crash_info_shmem_mapping_.memory(); }
 
   NaClTrustedListener* trusted_listener() const {
     return trusted_listener_.get();

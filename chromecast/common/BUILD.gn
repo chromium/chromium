@@ -106,7 +106,7 @@ cast_source_set("common") {
     "//chromecast/base:cast_version",
     "//chromecast/common/media",
     "//components/cast/common:constants",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//content/public/common",
     "//media:media_buildflags",
     "//third_party/widevine/cdm:buildflags",

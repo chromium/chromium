@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_UI_FRAME_DESKS_MOVE_TO_DESKS_MENU_MODEL_H_
 #define CHROMEOS_UI_FRAME_DESKS_MOVE_TO_DESKS_MENU_MODEL_H_
 
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace chromeos {
 

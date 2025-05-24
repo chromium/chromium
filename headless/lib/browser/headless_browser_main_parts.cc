@@ -15,6 +15,7 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_devtools.h"
 #include "headless/lib/browser/headless_screen.h"
+#include "headless/lib/browser/headless_screen_orientation_delegate.h"
 
 namespace headless {
 
@@ -25,6 +26,8 @@ HeadlessBrowserMainParts::~HeadlessBrowserMainParts() = default;
 
 int HeadlessBrowserMainParts::PreMainMessageLoopRun() {
   SetHeadlessClipboardForCurrentThread();
+  screen_orientation_delegate_ =
+      std::make_unique<HeadlessScreenOrientationDelegate>();
   browser_->PreMainMessageLoopRun();
   MaybeStartLocalDevToolsHttpHandler();
   HeadlessSelectFileDialogFactory::SetUp();

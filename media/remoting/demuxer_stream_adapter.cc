@@ -191,7 +191,7 @@ void DemuxerStreamAdapter::Initialize(int remote_callback_handle) {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   DEMUXER_VLOG(2) << "Sending RPC_DS_INITIALIZE_CALLBACK to " << rpc->handle()
@@ -348,9 +348,8 @@ void DemuxerStreamAdapter::WriteFrame() {
 
   if (!pending_frame_->end_of_stream()) {
     data_pipe_writer_.Write(
-        pending_frame_->data(), pending_frame_->size(),
-        base::BindOnce(&DemuxerStreamAdapter::OnFrameWritten,
-                       base::Unretained(this)));
+        *pending_frame_, base::BindOnce(&DemuxerStreamAdapter::OnFrameWritten,
+                                        base::Unretained(this)));
   } else {
     DemuxerStreamAdapter::OnFrameWritten(true);
   }
@@ -425,7 +424,7 @@ void DemuxerStreamAdapter::SendReadAck() {
       media::cast::ConvertVideoDecoderConfigToProto(video_config_,
                                                     video_message);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

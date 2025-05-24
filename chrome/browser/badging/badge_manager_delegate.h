@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "components/webapps/common/web_app_id.h"
-#include "url/gurl.h"
 
 class Profile;
 

@@ -56,6 +56,8 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
       fuchsia::component::runner::ComponentStartInfo start_info,
       fidl::InterfaceRequest<fuchsia::component::runner::ComponentController>
           controller) override;
+  void handle_unknown_method(uint64_t ordinal,
+                             bool method_has_response) override;
 
   // chromium::cast::DataReset implementation.
   void DeletePersistentData(DeletePersistentDataCallback callback) override;

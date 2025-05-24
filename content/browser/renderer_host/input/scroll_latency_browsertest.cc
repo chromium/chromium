@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -33,7 +34,7 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_preferred_scroller_style_mac.h"
@@ -111,7 +112,7 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
     // we ensure secondary GestureScrollUpdates update the animation
     // instead of starting a new one.
     command_line->AppendSwitchASCII(
-        cc::switches::kCCScrollAnimationDurationForTesting, "10000000");
+        switches::kCCScrollAnimationDurationForTesting, "10000000");
   }
 
   void LoadURL() {
@@ -246,10 +247,18 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
       0, "EventLatency.GestureScrollUpdate.TotalLatency2"));
 }
 
+// TODO(crbug.com/370658912) heap-use-after-free on Win ASAN.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ScrollingEventLatencyTrace DISABLED_ScrollingEventLatencyTrace
+#else
+#define MAYBE_ScrollingEventLatencyTrace ScrollingEventLatencyTrace
+#endif  // BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+
 // A basic smoke test verifying that key scroll-related events are recorded
 // during scrolling. This test performs a simple scroll and expects to see three
 // EventLatency events with the correct types.
-IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, ScrollingEventLatencyTrace) {
+IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
+                       MAYBE_ScrollingEventLatencyTrace) {
   LoadURL();
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("input.scrolling");

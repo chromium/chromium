@@ -46,7 +46,6 @@ PA_ALWAYS_INLINE constexpr size_t AlignUpInSlotMetadataSizeForApple(
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-namespace {
 // Utility functions to define a bit field.
 template <typename CountType>
 static constexpr CountType SafeShift(CountType lhs, int rhs) {
@@ -64,7 +63,6 @@ struct BitField {
            ~(SafeShift<CountType>(1, lo) - 1);
   }
 };
-}  // namespace
 
 // Special-purpose atomic bit field class mainly used by RawPtrBackupRefImpl.
 // Formerly known as `PartitionRefCount`, but renamed to support usage that is
@@ -253,7 +251,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
   // Returns true if the allocation should be reclaimed.
   // This function should be called by the allocator during Free().
-  PA_ALWAYS_INLINE bool ReleaseFromAllocator() {
+  PA_ALWAYS_INLINE bool ReleaseFromAllocator(
+      uintptr_t slot_start,
+      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span) {
     CheckCookieIfSupported();
 
     CountType old_count =
@@ -265,7 +265,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     // overwritten by the freelist pointer (or its shadow) for very small slots,
     // thus masking the error away.
     if (!(old_count & kMemoryHeldByAllocatorBit)) [[unlikely]] {
-      DoubleFreeOrCorruptionDetected(old_count);
+      DoubleFreeOrCorruptionDetected(old_count, slot_start, slot_span);
     }
 
     // Release memory when no raw_ptr<> exists anymore:
@@ -301,6 +301,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
       CheckCookieIfSupported();
     }
     return alive;
+  }
+
+  // Assertion to allocation which ought to be alive.
+  PA_ALWAYS_INLINE void EnsureAlive(
+      uintptr_t slot_start,
+      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span) {
+    CountType count = count_.load(std::memory_order_relaxed);
+    if (!(count & kMemoryHeldByAllocatorBit)) {
+      DoubleFreeOrCorruptionDetected(count, slot_start, slot_span);
+    }
+    CheckCookieIfSupported();
   }
 
   // Called when a raw_ptr is not banning dangling ptrs, but the user still
@@ -448,12 +459,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   }
 #endif  // PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
 
-  [[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void
-  DoubleFreeOrCorruptionDetected(CountType count) {
-    PA_DEBUG_DATA_ON_STACK("refcount", count);
-    PA_NO_CODE_FOLDING();
-    PA_IMMEDIATE_CRASH();
-  }
+  [[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED static void
+  DoubleFreeOrCorruptionDetected(CountType count,
+                                 uintptr_t slot_start,
+                                 SlotSpanMetadata<MetadataKind::kReadOnly>*);
 
   // Note that in free slots, this is overwritten by encoded freelist
   // pointer(s). The way the pointers are encoded on 64-bit little-endian

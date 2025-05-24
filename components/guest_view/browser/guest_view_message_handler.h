@@ -12,6 +12,7 @@
 
 #include "base/values.h"
 #include "components/guest_view/common/guest_view.mojom.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
@@ -32,7 +33,9 @@ class GuestViewMessageHandler : public mojom::GuestViewHost {
   explicit GuestViewMessageHandler(
       const content::GlobalRenderFrameHostId& frame_id);
 
-  int render_process_id() const { return frame_id_.child_id; }
+  content::ChildProcessId render_process_id() const {
+    return content::ChildProcessId(frame_id_.child_id);
+  }
 
   const content::GlobalRenderFrameHostId frame_id_;
 

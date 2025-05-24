@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/promise_all.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -18,14 +19,12 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
-#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
@@ -55,12 +54,6 @@
 namespace blink {
 
 namespace {
-
-template <typename T, typename... Args>
-ScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
-  return MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<T>(std::forward<Args>(args)...));
-}
 
 // These are the types of messages that are sent between peers.
 enum class MessageType { kPull, kChunk, kClose, kError };
@@ -131,8 +124,9 @@ void PackAndPostMessage(ScriptState* script_state,
     // Here we set a non-empty transfer list: This is a non-standardized and
     // non-default behavior, and the one who set `allow_per_chunk_transferring`
     // to true must guarantee the validity.
-    HeapVector<ScriptValue> transfer;
-    transfer.push_back(ScriptValue(isolate, value));
+    CHECK(value->IsObject());
+    HeapVector<ScriptObject> transfer;
+    transfer.push_back(ScriptObject(isolate, value.As<v8::Object>()));
     options->setTransfer(transfer);
   }
 
@@ -338,7 +332,8 @@ class CrossRealmTransformWritable final : public CrossRealmTransformStream {
       : script_state_(script_state),
         message_port_(port),
         backpressure_promise_(
-            MakeGarbageCollected<StreamPromiseResolver>(script_state)),
+            MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+                script_state)),
         allow_per_chunk_transferring_(allow_per_chunk_transferring) {}
 
   WritableStream* CreateWritableStream(ExceptionState&);
@@ -363,7 +358,7 @@ class CrossRealmTransformWritable final : public CrossRealmTransformStream {
 
   const Member<ScriptState> script_state_;
   const Member<MessagePort> message_port_;
-  Member<StreamPromiseResolver> backpressure_promise_;
+  Member<ScriptPromiseResolver<IDLUndefined>> backpressure_promise_;
   Member<WritableStreamDefaultController> controller_;
   const AllowPerChunkTransferring allow_per_chunk_transferring_;
 };
@@ -376,9 +371,9 @@ class CrossRealmTransformWritable::WriteAlgorithm final
 
   // Sends the chunk to the readable side, possibly after waiting for
   // backpressure.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformwritable
     // 8. Let writeAlgorithm be the following steps, taking a chunk argument:
     DCHECK_EQ(argc, 1);
@@ -395,17 +390,11 @@ class CrossRealmTransformWritable::WriteAlgorithm final
       return DoWrite(script_state, chunk);
     }
 
-    auto* isolate = script_state->GetIsolate();
-
     // 2. Return the result of reacting to backpressurePromise with the
     //    following fulfillment steps:
-
-    return StreamThenPromise(
-        script_state->GetContext(),
-        writable_->backpressure_promise_->V8Promise(isolate),
-        MakeGarbageCollected<ScriptFunction>(
-            script_state,
-            MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this)));
+    return writable_->backpressure_promise_->Promise().Then(
+        script_state,
+        MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -415,15 +404,16 @@ class CrossRealmTransformWritable::WriteAlgorithm final
 
  private:
   // A promise handler which calls DoWrite() when the promise resolves.
-  class DoWriteOnResolve final : public PromiseHandlerWithValue {
+  class DoWriteOnResolve final : public ThenCallable<IDLUndefined,
+                                                     DoWriteOnResolve,
+                                                     IDLPromise<IDLUndefined>> {
    public:
     DoWriteOnResolve(ScriptState* script_state,
                      v8::Local<v8::Value> chunk,
                      WriteAlgorithm* target)
         : chunk_(script_state->GetIsolate(), chunk), target_(target) {}
 
-    v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
-                                       v8::Local<v8::Value>) override {
+    ScriptPromise<IDLUndefined> React(ScriptState* script_state) {
       return target_->DoWrite(script_state,
                               chunk_.Get(script_state->GetIsolate()));
     }
@@ -431,7 +421,8 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     void Trace(Visitor* visitor) const override {
       visitor->Trace(chunk_);
       visitor->Trace(target_);
-      PromiseHandlerWithValue::Trace(visitor);
+      ThenCallable<IDLUndefined, DoWriteOnResolve,
+                   IDLPromise<IDLUndefined>>::Trace(visitor);
     }
 
    private:
@@ -440,15 +431,15 @@ class CrossRealmTransformWritable::WriteAlgorithm final
   };
 
   // Sends a chunk over the message port to the readable side.
-  v8::Local<v8::Promise> DoWrite(ScriptState* script_state,
-                                 v8::Local<v8::Value> chunk) {
+  ScriptPromise<IDLUndefined> DoWrite(ScriptState* script_state,
+                                      v8::Local<v8::Value> chunk) {
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformwritable
     // 8. Let writeAlgorithm be the following steps, taking a chunk argument:
     //   2. Return the result of reacting to backpressurePromise with the
     //      following fulfillment steps:
     //     1. Set backpressurePromise to a new promise.
     writable_->backpressure_promise_ =
-        MakeGarbageCollected<StreamPromiseResolver>(script_state);
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
     v8::Local<v8::Value> error;
 
@@ -463,11 +454,11 @@ class CrossRealmTransformWritable::WriteAlgorithm final
       writable_->message_port_->close();
 
       //     2. Return a promise rejected with result.[[Value]].
-      return PromiseReject(script_state, error);
+      return ScriptPromise<IDLUndefined>::Reject(script_state, error);
     }
 
     //     4. Otherwise, return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   const Member<CrossRealmTransformWritable> writable_;
@@ -480,9 +471,9 @@ class CrossRealmTransformWritable::CloseAlgorithm final
       : writable_(writable) {}
 
   // Sends a close message to the readable side and closes the message port.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 0);
 
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformwritable
@@ -500,11 +491,11 @@ class CrossRealmTransformWritable::CloseAlgorithm final
 
     // Error the stream if an error occurred.
     if (!success) {
-      return PromiseReject(script_state, error);
+      return ScriptPromise<IDLUndefined>::Reject(script_state, error);
     }
 
     //   3. Return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -523,9 +514,9 @@ class CrossRealmTransformWritable::AbortAlgorithm final
       : writable_(writable) {}
 
   // Sends an abort message to the readable side and closes the message port.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformwritable
     // 10. Let abortAlgorithm be the following steps, taking a reason argument:
     DCHECK_EQ(argc, 1);
@@ -545,11 +536,11 @@ class CrossRealmTransformWritable::AbortAlgorithm final
     //   3. If result is an abrupt completion, return a promise rejected with
     //      result.[[Value]].
     if (!success) {
-      return PromiseReject(script_state, error);
+      return ScriptPromise<IDLUndefined>::Reject(script_state, error);
     }
 
     //   4. Otherwise, return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -614,7 +605,7 @@ void CrossRealmTransformWritable::HandleMessage(MessageType type,
       // 1. If backpressurePromise is not undefined,
       if (backpressure_promise_) {
         // 1. Resolve backpressurePromise with undefined.
-        backpressure_promise_->ResolveWithUndefined(script_state_);
+        backpressure_promise_->Resolve();
         // 2. Set backpressurePromise to undefined.
         backpressure_promise_ = nullptr;
       }
@@ -630,7 +621,7 @@ void CrossRealmTransformWritable::HandleMessage(MessageType type,
       if (backpressure_promise_) {
         // 1. Resolve backpressurePromise with undefined.
         // 2. Set backpressurePromise to undefined.
-        backpressure_promise_->ResolveWithUndefined(script_state_);
+        backpressure_promise_->Resolve();
         backpressure_promise_ = nullptr;
       }
       return;
@@ -693,9 +684,9 @@ class CrossRealmTransformReadable::PullAlgorithm final
 
   // Sends a pull message to the writable side and then waits for backpressure
   // to clear.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 0);
     auto* isolate = script_state->GetIsolate();
 
@@ -713,13 +704,13 @@ class CrossRealmTransformReadable::PullAlgorithm final
 
     if (!success) {
       readable_->message_port_->close();
-      return PromiseReject(script_state, error);
+      return ScriptPromise<IDLUndefined>::Reject(script_state, error);
     }
 
     //   2. Return a promise resolved with undefined.
     // The Streams Standard guarantees that PullAlgorithm won't be called again
     // until Enqueue() is called.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -738,9 +729,9 @@ class CrossRealmTransformReadable::CancelAlgorithm final
       : readable_(readable) {}
 
   // Sends a cancel message to the writable side and closes the message port.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformreadable
     // 8. Let cancelAlgorithm be the following steps, taking a reason argument:
     DCHECK_EQ(argc, 1);
@@ -760,11 +751,11 @@ class CrossRealmTransformReadable::CancelAlgorithm final
     //   3. If result is an abrupt completion, return a promise rejected with
     //      result.[[Value]].
     if (!success) {
-      return PromiseReject(script_state, error);
+      return ScriptPromise<IDLUndefined>::Reject(script_state, error);
     }
 
     //   4. Otherwise, return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -778,41 +769,40 @@ class CrossRealmTransformReadable::CancelAlgorithm final
 
 class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
  public:
-  class PullSource2 final : public ScriptFunction::Callable {
+  class PullSource2 final : public ThenCallable<IDLUndefined,
+                                                PullSource2,
+                                                IDLPromise<IDLUndefined>> {
    public:
-    explicit PullSource2(ConcatenatingUnderlyingSource* source,
-                         const ExceptionContext& exception_context)
-        : source_(source), exception_context_(exception_context) {}
+    explicit PullSource2(ConcatenatingUnderlyingSource* source)
+        : source_(source) {}
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-      v8::Isolate* isolate = script_state->GetIsolate();
-      ExceptionState exception_state(isolate, exception_context_);
-      return ScriptValue(
-          isolate,
-          source_->source2_->Pull(script_state, exception_state).V8Promise());
+    ScriptPromise<IDLUndefined> React(ScriptState* script_state) {
+      return source_->source2_->Pull(
+          script_state, PassThroughException(script_state->GetIsolate()));
     }
+
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      ScriptFunction::Callable::Trace(visitor);
+      ThenCallable<IDLUndefined, PullSource2, IDLPromise<IDLUndefined>>::Trace(
+          visitor);
     }
 
    private:
     const Member<ConcatenatingUnderlyingSource> source_;
-    const ExceptionContext exception_context_;
   };
 
   class ConcatenatingUnderlyingSourceReadRequest final : public ReadRequest {
    public:
     explicit ConcatenatingUnderlyingSourceReadRequest(
         ConcatenatingUnderlyingSource* source,
-        StreamPromiseResolver* resolver)
+        ScriptPromiseResolver<IDLUndefined>* resolver)
         : source_(source), resolver_(resolver) {}
 
     void ChunkSteps(ScriptState* script_state,
                     v8::Local<v8::Value> chunk,
                     ExceptionState&) const override {
       source_->Controller()->Enqueue(chunk);
-      resolver_->ResolveWithUndefined(script_state);
+      resolver_->Resolve();
     }
 
     void CloseSteps(ScriptState* script_state) const override {
@@ -822,24 +812,18 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
           source_->Controller()->GetOriginalController();
       auto* isolate = script_state->GetIsolate();
       if (controller) {
-        ExceptionState exception_state(script_state->GetIsolate(),
-                                       v8::ExceptionContext::kUnknown, "", "");
         resolver_->Resolve(
-            script_state,
-            source_->source2_
-                ->StartWrapper(script_state, controller, exception_state)
-                .Then(CreateFunction<PullSource2>(script_state, source_,
-                                                  exception_state.GetContext()))
-                .V8Value());
+            source_->source2_->StartWrapper(script_state, controller)
+                .Then(script_state,
+                      MakeGarbageCollected<PullSource2>(source_)));
       } else {
         // TODO(crbug.com/1418910): Investigate how to handle cases when the
         // controller is cleared.
-        resolver_->Reject(script_state,
-                          v8::Exception::TypeError(V8String(
-                              isolate,
-                              "The readable stream controller has been cleared "
-                              "and cannot be used to start reading the second "
-                              "stream.")));
+        resolver_->Reject(v8::Exception::TypeError(
+            V8String(isolate,
+                     "The readable stream controller has been cleared "
+                     "and cannot be used to start reading the second "
+                     "stream.")));
       }
     }
 
@@ -856,7 +840,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
       dummy_stream->cancel(script_state,
                            ScriptValue(isolate, v8::Undefined(isolate)),
                            IGNORE_EXCEPTION);
-      resolver_->Reject(script_state, e);
+      resolver_->Reject(e);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -867,7 +851,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
 
    private:
     Member<ConcatenatingUnderlyingSource> source_;
-    Member<StreamPromiseResolver> resolver_;
+    Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   };
 
   ConcatenatingUnderlyingSource(ScriptState* script_state,
@@ -877,56 +861,60 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         stream1_(stream1),
         source2_(source2) {}
 
-  ScriptPromiseUntyped Start(ScriptState* script_state,
-                             ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Start(ScriptState* script_state) override {
+    v8::TryCatch try_catch(script_state->GetIsolate());
     reader_for_stream1_ = ReadableStream::AcquireDefaultReader(
-        script_state, stream1_, exception_state);
-    if (exception_state.HadException()) {
-      return ScriptPromiseUntyped::Reject(script_state, exception_state);
+        script_state, stream1_,
+        PassThroughException(script_state->GetIsolate()));
+    if (try_catch.HasCaught()) {
+      return ScriptPromise<IDLUndefined>::Reject(script_state,
+                                                 try_catch.Exception());
     }
     DCHECK(reader_for_stream1_);
     return ToResolvedUndefinedPromise(script_state);
   }
 
-  ScriptPromiseUntyped Pull(ScriptState* script_state,
-                            ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Pull(ScriptState* script_state,
+                                   ExceptionState& exception_state) override {
     if (has_finished_reading_stream1_) {
       return source2_->Pull(script_state, exception_state);
     }
-    auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+    auto* promise =
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
     auto* read_request =
         MakeGarbageCollected<ConcatenatingUnderlyingSourceReadRequest>(this,
                                                                        promise);
     ReadableStreamDefaultReader::Read(script_state, reader_for_stream1_,
                                       read_request, exception_state);
-    return promise->GetScriptPromiseUntyped(script_state);
+    return promise->Promise();
   }
 
-  ScriptPromiseUntyped Cancel(ScriptState* script_state,
-                              ScriptValue reason,
-                              ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Cancel(ScriptState* script_state,
+                                     ScriptValue reason,
+                                     ExceptionState& exception_state) override {
     if (has_finished_reading_stream1_) {
       return source2_->Cancel(script_state, reason, exception_state);
     }
-    ScriptPromiseUntyped cancel_promise1 =
-        reader_for_stream1_->cancel(script_state, reason, exception_state);
-    if (exception_state.HadException()) {
-      cancel_promise1 =
-          ScriptPromiseUntyped::Reject(script_state, exception_state);
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    ScriptPromise<IDLUndefined> cancel_promise1 = reader_for_stream1_->cancel(
+        script_state, reason, PassThroughException(script_state->GetIsolate()));
+    if (try_catch.HasCaught()) {
+      cancel_promise1 = ScriptPromise<IDLUndefined>::Reject(
+          script_state, try_catch.Exception());
     }
 
     ReadableStream* dummy_stream =
         ReadableStream::CreateWithCountQueueingStrategy(script_state, source2_,
                                                         /*high_water_mark=*/0);
-    ScriptPromiseUntyped cancel_promise2 =
-        dummy_stream->cancel(script_state, reason, exception_state);
-    if (exception_state.HadException()) {
-      cancel_promise2 =
-          ScriptPromiseUntyped::Reject(script_state, exception_state);
+    ScriptPromise<IDLUndefined> cancel_promise2 = dummy_stream->cancel(
+        script_state, reason, PassThroughException(script_state->GetIsolate()));
+    if (try_catch.HasCaught()) {
+      cancel_promise2 = ScriptPromise<IDLUndefined>::Reject(
+          script_state, try_catch.Exception());
     }
 
-    return ScriptPromiseUntyped::All(script_state,
-                                     {cancel_promise1, cancel_promise2});
+    return PromiseAll<IDLUndefined>::Create(script_state,
+                                            {cancel_promise1, cancel_promise2});
   }
 
   void Trace(Visitor* visitor) const override {

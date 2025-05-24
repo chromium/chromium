@@ -164,7 +164,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   using ReceivedSlices = std::vector<DownloadItem::ReceivedSlice>;
 
-  ~DownloadItem() override {}
+  ~DownloadItem() override = default;
 
   // Observation ---------------------------------------------------------------
 
@@ -237,6 +237,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // Get the current state of the download. See DownloadState for descriptions
   // of each download state.
   virtual DownloadState GetState() const = 0;
+
+  virtual void SetStateForTesting(DownloadState state);
+  virtual void SetDownloadUrlForTesting(GURL url);
 
   // Returns the most recent interrupt reason for this download. Returns
   // |DOWNLOAD_INTERRUPT_REASON_NONE| if there is no previous interrupt reason.

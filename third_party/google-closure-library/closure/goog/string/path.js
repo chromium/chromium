@@ -68,7 +68,7 @@ goog.string.path.extension = function(path) {
   // Combining all adjacent periods in the basename to a single period.
   const baseName = goog.string.path.baseName(path).replace(/\.+/g, separator);
   const separatorIndex = baseName.lastIndexOf(separator);
-  return separatorIndex <= 0 ? '' : baseName.substr(separatorIndex + 1);
+  return separatorIndex <= 0 ? '' : baseName.slice(separatorIndex + 1);
 };
 
 

@@ -181,7 +181,8 @@ class MODULES_EXPORT WebSocketChannelImpl final
    private:
     raw_ptr<v8::Isolate> isolate_;
     size_t size_;
-    NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
+    NO_UNIQUE_ADDRESS mutable V8ExternalMemoryAccounterBase
+        external_memory_accounter_;
   };
 
   using MessageData = std::unique_ptr<char[], MessageDataDeleter>;

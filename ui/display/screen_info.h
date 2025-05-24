@@ -88,8 +88,8 @@ struct DISPLAY_EXPORT ScreenInfo {
   ScreenInfo(const ScreenInfo& other);
   ~ScreenInfo();
   ScreenInfo& operator=(const ScreenInfo& other);
-  bool operator==(const ScreenInfo& other) const;
-  bool operator!=(const ScreenInfo& other) const;
+
+  friend bool operator==(const ScreenInfo&, const ScreenInfo&) = default;
 
   // Returns a string representation of the screen.
   std::string ToString() const;

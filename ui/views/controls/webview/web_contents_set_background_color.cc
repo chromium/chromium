@@ -15,8 +15,9 @@ namespace views {
 void WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
     content::WebContents* web_contents,
     SkColor color) {
-  if (FromWebContents(web_contents))
+  if (FromWebContents(web_contents)) {
     return;
+  }
 
   // SupportsUserData::Data takes ownership over the
   // WebContentsSetBackgroundColor instance and will destroy it when the
@@ -41,8 +42,9 @@ void WebContentsSetBackgroundColor::RenderFrameCreated(
   // We set the background color just on the outermost main frame's widget.
   // Other frames that are local roots would have a widget of their own, but
   // their background colors are part of, and controlled by, the webpage.
-  if (!render_frame_host->GetParentOrOuterDocument())
+  if (!render_frame_host->GetParentOrOuterDocument()) {
     render_frame_host->GetView()->SetBackgroundColor(color_);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsSetBackgroundColor);

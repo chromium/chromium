@@ -83,11 +83,10 @@ LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
       is_privacy_policy_ = true;
     } else if (EqualIgnoringASCIICase(link_type, "terms-of-service")) {
       is_terms_of_service_ = true;
-    } else if (RuntimeEnabledFeatures::DocumentRenderBlockingEnabled() &&
-               EqualIgnoringASCIICase(link_type, "expect")) {
+    } else if (EqualIgnoringASCIICase(link_type, "expect")) {
       is_expect_ = true;
-    } else if (EqualIgnoringASCIICase(link_type, "payment")) {
-      is_payment_ = true;
+    } else if (EqualIgnoringASCIICase(link_type, "facilitated-payment")) {
+      is_facilitated_payment_ = true;
     }
 
     // Adding or removing a value here whose processing model is web-visible

@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/uuid.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

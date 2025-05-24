@@ -16,16 +16,17 @@ import android.content.res.Resources;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -33,8 +34,9 @@ import java.util.List;
 /** Unit tests for {@link MessageCardProviderMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MessageCardProviderMediatorUnitTest {
-    private static final int SUGGESTED_TAB_COUNT = 2;
     private static final int TESTING_ACTION = -1;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private MessageCardProviderMediator mMediator;
 
@@ -59,7 +61,6 @@ public class MessageCardProviderMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         doReturn(true).when(mIncognitoProfileMock).isOffTheRecord();
         doReturn(mProfileMock).when(mProfileSupplier).get();
@@ -392,8 +393,5 @@ public class MessageCardProviderMediatorUnitTest {
         Assert.assertTrue(
                 mMediator.isMessageShown(
                         MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME));
-        Assert.assertFalse(
-                mMediator.isMessageShown(
-                        MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_ALERTS));
     }
 }

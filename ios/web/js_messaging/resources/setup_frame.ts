@@ -7,11 +7,11 @@
  * must be included at document end time.
  */
 
-import {registerFrame} from '//ios/web/public/js_messaging/resources/frame_id.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 // Requires message.js to already have been injected.
 
 // Frame registration must be delayed until Document End script injection time.
 // (This file is injected at that time, but the message API is defined at
 // Document Start time.)
-registerFrame();
+gCrWeb.registerFrame();

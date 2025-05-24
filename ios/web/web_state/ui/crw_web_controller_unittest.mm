@@ -27,6 +27,7 @@
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_action_policy_util.h"
+#import "ios/web/public/download/crw_web_view_download.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -63,9 +64,9 @@
 #import "third_party/ocmock/ocmock_extensions.h"
 #import "url/scheme_host_port.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Subclass of WKWebView to check that the observers are removed when the web
 // state is destroyed.
@@ -309,6 +310,84 @@ TEST_F(CRWWebControllerTest, RemoveWebViewFromViewHierarchy) {
   EXPECT_EQ(web_controller().view, web_view.superview.superview);
 }
 
+// Tests that `downloadCurrentPageToDestinationPath` method starts downloading
+// the current page.
+TEST_F(CRWWebControllerTest, DownloadCurrentPageToDestinationPath) {
+  NSString* destination = @"/path/to/destination";
+  id delegate = OCMStrictProtocolMock(@protocol(CRWWebViewDownloadDelegate));
+
+  __block bool download_started = false;
+  id wk_download = OCMStrictClassMock([WKDownload class]);
+  [[wk_download expect] setDelegate:[OCMArg any]];
+  [[mock_web_view_ stub]
+      startDownloadUsingRequest:OCMOCK_ANY
+              completionHandler:[OCMArg checkWithBlock:^(void (^completion)(
+                                    WKDownload* download)) {
+                completion(wk_download);
+                download_started = true;
+                return YES;
+              }]];
+
+  __block id<CRWWebViewDownload> output = nil;
+  [web_controller()
+      downloadCurrentPageToDestinationPath:destination
+                                  delegate:delegate
+                                   handler:^(id<CRWWebViewDownload> download) {
+                                     output = download;
+                                   }];
+
+  EXPECT_NE(nil, output);
+  EXPECT_TRUE(download_started);
+}
+
+// Tests that `downloadCurrentPageToDestinationPath` method starts downloading
+// the current page without a handler.
+TEST_F(CRWWebControllerTest,
+       DownloadCurrentPageToDestinationPathWithoutHandler) {
+  NSString* destination = @"/path/to/destination";
+  id delegate = OCMStrictProtocolMock(@protocol(CRWWebViewDownloadDelegate));
+
+  __block bool download_started = false;
+  id wk_download = OCMStrictClassMock([WKDownload class]);
+  [[wk_download expect] setDelegate:[OCMArg any]];
+  [[mock_web_view_ stub]
+      startDownloadUsingRequest:OCMOCK_ANY
+              completionHandler:[OCMArg checkWithBlock:^(void (^completion)(
+                                    WKDownload* download)) {
+                completion(wk_download);
+                download_started = true;
+                return YES;
+              }]];
+
+  [web_controller() downloadCurrentPageToDestinationPath:destination
+                                                delegate:delegate
+                                                 handler:nil];
+
+  EXPECT_TRUE(download_started);
+}
+
+// Tests `currentURL` method.
+TEST_F(CRWWebControllerTest, CurrentUrl) {
+  GURL url("http://chromium.test");
+  AddPendingItem(url, ui::PAGE_TRANSITION_TYPED);
+
+  [[[mock_web_view_ stub] andReturnBool:NO] hasOnlySecureContent];
+  [static_cast<WKWebView*>([[mock_web_view_ stub] andReturn:@""]) title];
+  SetWebViewURL(@"http://chromium.test");
+
+  // Stub out the injection process.
+  [[mock_web_view_ stub] evaluateJavaScript:OCMOCK_ANY
+                          completionHandler:OCMOCK_ANY];
+
+  // Simulate a page load to trigger a URL update.
+  [navigation_delegate_ webView:mock_web_view_
+      didStartProvisionalNavigation:nil];
+  [fake_wk_list_ setCurrentURL:@"http://chromium.test"];
+  [navigation_delegate_ webView:mock_web_view_ didCommitNavigation:nil];
+
+  EXPECT_EQ(url, [web_controller() currentURL]);
+}
+
 // Test fixture to test JavaScriptDialogPresenter.
 class JavaScriptDialogPresenterTest : public WebTestWithWebController {
  protected:
@@ -342,7 +421,7 @@ class JavaScriptDialogPresenterTest : public WebTestWithWebController {
            !requested_confirm_dialogs().empty() ||
            !requested_prompt_dialogs().empty();
   }
-  const GURL& page_url() { return page_url_; }
+  const url::Origin page_origin() { return url::Origin::Create(page_url_); }
 
  private:
   FakeWebStateDelegate web_state_delegate_;
@@ -360,7 +439,7 @@ TEST_F(JavaScriptDialogPresenterTest, Alert) {
   ASSERT_TRUE(requested_prompt_dialogs().empty());
   auto& dialog = requested_alert_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
-  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_EQ(page_origin(), dialog->origin);
   EXPECT_NSEQ(@"test", dialog->message_text);
 }
 
@@ -377,7 +456,7 @@ TEST_F(JavaScriptDialogPresenterTest, ConfirmWithTrue) {
   ASSERT_TRUE(requested_prompt_dialogs().empty());
   auto& dialog = requested_confirm_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
-  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_EQ(page_origin(), dialog->origin);
   EXPECT_NSEQ(@"test", dialog->message_text);
 }
 
@@ -392,7 +471,7 @@ TEST_F(JavaScriptDialogPresenterTest, ConfirmWithFalse) {
   ASSERT_TRUE(requested_prompt_dialogs().empty());
   auto& dialog = requested_confirm_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
-  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_EQ(page_origin(), dialog->origin);
   EXPECT_NSEQ(@"test", dialog->message_text);
 }
 
@@ -409,7 +488,7 @@ TEST_F(JavaScriptDialogPresenterTest, Prompt) {
   ASSERT_EQ(1U, requested_prompt_dialogs().size());
   auto& dialog = requested_prompt_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
-  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_EQ(page_origin(), dialog->origin);
   EXPECT_NSEQ(@"Yes?", dialog->message_text);
   EXPECT_NSEQ(@"No", dialog->default_prompt_text);
 }
@@ -428,7 +507,7 @@ TEST_F(JavaScriptDialogPresenterTest, PromptEmpty) {
   ASSERT_EQ(1U, requested_prompt_dialogs().size());
   auto& dialog = requested_prompt_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
-  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_EQ(page_origin(), dialog->origin);
   EXPECT_NSEQ(@"", dialog->message_text);
   EXPECT_NSEQ(@"", dialog->default_prompt_text);
 }
@@ -441,7 +520,7 @@ TEST_F(JavaScriptDialogPresenterTest, DifferentVisibleUrl) {
   // Change visible URL.
   AddPendingItem(GURL("https://pending.test/"), ui::PAGE_TRANSITION_TYPED);
   web_controller().webStateImpl->SetIsLoading(true);
-  ASSERT_NE(page_url().DeprecatedGetOriginAsURL(),
+  ASSERT_NE(page_origin().GetURL(),
             web_state()->GetVisibleURL().DeprecatedGetOriginAsURL());
 
   ExecuteJavaScript(@"alert('test')");
@@ -527,7 +606,7 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
     NavigationItemImpl* pending_item =
         web_controller()
             .webStateImpl->GetNavigationManagerImpl()
-            .GetPendingItemInCurrentOrRestoredSession();
+            .GetPendingItemImpl();
     const bool has_post_data =
         pending_item && pending_item->GetPostData() != nil;
 
@@ -564,7 +643,7 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
           .andDo(^(NSInvocation* invocation) {
             // Using __unsafe_unretained is required to extract the parameter
             // from the NSInvocation otherwise ARC will over-release.
-            __weak id argument = nil;
+            __unsafe_unretained id argument = nil;
             [invocation getArgument:&argument atIndex:2];
             download_delegate = argument;
             delegate_set = true;
@@ -586,11 +665,22 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
         request.HTTPMethod = @"POST";
       }
       OCMStub([mock_download originalRequest]).andReturn(request);
+
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
+      if (@available(iOS 18.2, *)) {
+        CRWFakeWKFrameInfo* frame_info = [[CRWFakeWKFrameInfo alloc] init];
+        frame_info.mainFrame = YES;
+        frame_info.request = request;
+        frame_info.webView = mock_web_view_;
+        OCMStub([mock_download originatingFrame]).andReturn(frame_info);
+      }
+#endif
+
       OCMStub([mock_download cancel:[OCMArg any]])
           .andDo(^(NSInvocation* invocation) {
             // Using __unsafe_unretained is required to extract the parameter
             // from the NSInvocation otherwise ARC will over-release.
-            __weak void (^block)(NSData* data);
+            __unsafe_unretained void (^block)(NSData* data);
             [invocation getArgument:&block atIndex:2];
             block(nil);
           });
@@ -719,7 +809,7 @@ TEST_F(CRWWebControllerResponseTest, DownloadForPostRequest) {
   AddPendingItem(url, ui::PAGE_TRANSITION_TYPED);
   web_controller()
       .webStateImpl->GetNavigationManagerImpl()
-      .GetPendingItemInCurrentOrRestoredSession()
+      .GetPendingItemImpl()
       ->SetPostData([NSData data]);
   [web_controller() loadCurrentURLWithRendererInitiatedNavigation:NO];
   NSURLResponse* response = [[NSHTTPURLResponse alloc]
@@ -848,35 +938,11 @@ TEST_F(CRWWebControllerResponseTest, IFrameDownloadWithNSHTTPURLResponse) {
   EXPECT_EQ("", task->GetMimeType());
 }
 
-// Tests `currentURL` method.
-TEST_F(CRWWebControllerTest, CurrentUrl) {
-  GURL url("http://chromium.test");
-  AddPendingItem(url, ui::PAGE_TRANSITION_TYPED);
-
-  [[[mock_web_view_ stub] andReturnBool:NO] hasOnlySecureContent];
-  [static_cast<WKWebView*>([[mock_web_view_ stub] andReturn:@""]) title];
-  SetWebViewURL(@"http://chromium.test");
-
-  // Stub out the injection process.
-  [[mock_web_view_ stub] evaluateJavaScript:OCMOCK_ANY
-                          completionHandler:OCMOCK_ANY];
-
-  // Simulate a page load to trigger a URL update.
-  [navigation_delegate_ webView:mock_web_view_
-      didStartProvisionalNavigation:nil];
-  [fake_wk_list_ setCurrentURL:@"http://chromium.test"];
-  [navigation_delegate_ webView:mock_web_view_ didCommitNavigation:nil];
-
-  EXPECT_EQ(url, [web_controller() currentURL]);
-}
-
 // Test fixture to test decidePolicyForNavigationAction:decisionHandler:
 // decisionHandler's callback result.
 class CRWWebControllerPolicyDeciderTest : public CRWWebControllerTest {
  protected:
-  void SetUp() override {
-    CRWWebControllerTest::SetUp();
-  }
+  void SetUp() override { CRWWebControllerTest::SetUp(); }
   // Calls webView:decidePolicyForNavigationAction:preferences:decisionHandler:
   // callback and waits for decision handler call. Returns false if decision
   // handler policy parameter didn't match `expected_policy` or if the call
@@ -1222,9 +1288,7 @@ TEST_F(CRWWebControllerTitleTest, TitleChange) {
     int title_change_count() { return title_change_count_; }
     // WebStateObserver overrides:
     void TitleWasSet(WebState* web_state) override { title_change_count_++; }
-    void WebStateDestroyed(WebState* web_state) override {
-      NOTREACHED_IN_MIGRATION();
-    }
+    void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
 
    private:
     int title_change_count_ = 0;

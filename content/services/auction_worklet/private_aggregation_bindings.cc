@@ -6,19 +6,21 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/extend.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
@@ -26,8 +28,8 @@
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "v8/include/v8-context.h"
@@ -53,7 +55,7 @@ namespace {
 struct PASignalValue {
   std::string base_value;
   std::optional<double> scale;
-  std::optional<absl::variant<int32_t, v8::Local<v8::BigInt>>> offset;
+  std::optional<std::variant<int32_t, v8::Local<v8::BigInt>>> offset;
 };
 
 bool ConvertToPASignalValue(AuctionV8Helper* v8_helper,
@@ -84,17 +86,17 @@ bool ConvertToPASignalValueOr(AuctionV8Helper* v8_helper,
                               std::string_view field_name,
                               v8::Local<v8::Value> value,
                               DictConverter& report_errors_to,
-                              absl::variant<PASignalValue, T>& out) {
+                              std::variant<PASignalValue, T>& out) {
   if (value->IsObject() || value->IsNullOrUndefined()) {
     out.template emplace<PASignalValue>();
     return ConvertToPASignalValue(
         v8_helper, time_limit_scope, std::move(error_prefix), value,
-        report_errors_to, absl::get<PASignalValue>(out));
+        report_errors_to, std::get<PASignalValue>(out));
   } else {
     out.template emplace<T>();
     IdlConvert::Status status = IdlConvert::Convert(
         v8_helper->isolate(), error_prefix, {"field '", field_name, "'"}, value,
-        absl::get<T>(out));
+        std::get<T>(out));
     report_errors_to.SetStatus(std::move(status));
     return report_errors_to.is_success();
   }
@@ -114,6 +116,16 @@ constexpr auto kBaseValueNames =
         {"percent-scripts-timeout", mojom::BaseValue::kPercentScriptsTimeout},
         {"percent-igs-cumulative-timeout",
          mojom::BaseValue::kPercentInterestGroupsCumulativeTimeout},
+        {"cumulative-buyer-time", mojom::BaseValue::kCumulativeBuyerTime},
+        {"regular-igs-count", mojom::BaseValue::kRegularInterestGroupsUsed},
+        {"percent-regular-ig-count-quota-used",
+         mojom::BaseValue::kPercentRegularInterestGroupQuotaUsed},
+        {"negative-igs-count", mojom::BaseValue::kNegativeInterestGroupsUsed},
+        {"percent-negative-ig-count-quota-used",
+         mojom::BaseValue::kPercentNegativeInterestGroupQuotaUsed},
+        {"ig-storage-used", mojom::BaseValue::kInterestGroupStorageUsed},
+        {"percent-ig-storage-quota-used",
+         mojom::BaseValue::kPercentInterestGroupStorageQuotaUsed},
     });
 
 // Converts base value string to corresponding mojom enum.
@@ -197,7 +209,7 @@ std::optional<auction_worklet::mojom::SignalBucketPtr> GetSignalBucket(
 
   // Offset must be BigInt for bucket.
   const v8::Local<v8::BigInt>* maybe_bigint =
-      absl::get_if<v8::Local<v8::BigInt>>(&input.offset.value());
+      std::get_if<v8::Local<v8::BigInt>>(&input.offset.value());
   if (!maybe_bigint) {
     *error = "Bucket's 'offset' must be BigInt";
     return std::nullopt;
@@ -232,7 +244,7 @@ std::optional<auction_worklet::mojom::SignalValuePtr> GetSignalValue(
   }
 
   // Offset must be int32 for value.
-  const int32_t* maybe_long = absl::get_if<int32_t>(&input.offset.value());
+  const int32_t* maybe_long = std::get_if<int32_t>(&input.offset.value());
   if (!maybe_long) {
     *error = "Value's 'offset' must be a 32-bit signed integer";
     return std::nullopt;
@@ -245,11 +257,11 @@ std::optional<auction_worklet::mojom::SignalValuePtr> GetSignalValue(
 // an error.
 auction_worklet::mojom::ForEventSignalBucketPtr GetBucket(
     v8::Isolate* isolate,
-    const absl::variant<PASignalValue, v8::Local<v8::BigInt>>& idl_bucket,
+    const std::variant<PASignalValue, v8::Local<v8::BigInt>>& idl_bucket,
     bool additional_extensions_allowed,
     std::string* error) {
   const v8::Local<v8::BigInt>* big_int =
-      absl::get_if<v8::Local<v8::BigInt>>(&idl_bucket);
+      std::get_if<v8::Local<v8::BigInt>>(&idl_bucket);
   if (big_int) {
     std::optional<absl::uint128> maybe_bucket =
         ConvertBigIntToUint128(*big_int, error);
@@ -262,7 +274,7 @@ auction_worklet::mojom::ForEventSignalBucketPtr GetBucket(
   } else {
     std::optional<auction_worklet::mojom::SignalBucketPtr>
         maybe_signal_bucket_ptr =
-            GetSignalBucket(isolate, absl::get<PASignalValue>(idl_bucket),
+            GetSignalBucket(isolate, std::get<PASignalValue>(idl_bucket),
                             additional_extensions_allowed, error);
     if (!maybe_signal_bucket_ptr.has_value()) {
       CHECK(base::IsStringUTF8(*error));
@@ -277,10 +289,10 @@ auction_worklet::mojom::ForEventSignalBucketPtr GetBucket(
 // error.
 auction_worklet::mojom::ForEventSignalValuePtr GetValue(
     v8::Isolate* isolate,
-    const absl::variant<PASignalValue, int32_t>& idl_value,
+    const std::variant<PASignalValue, int32_t>& idl_value,
     bool additional_extensions_allowed,
     std::string* error) {
-  const int32_t* int_value = absl::get_if<int32_t>(&idl_value);
+  const int32_t* int_value = std::get_if<int32_t>(&idl_value);
   if (int_value) {
     if (*int_value < 0) {
       *error = "Value must be non-negative";
@@ -290,7 +302,7 @@ auction_worklet::mojom::ForEventSignalValuePtr GetValue(
   } else {
     std::optional<auction_worklet::mojom::SignalValuePtr>
         maybe_signal_value_ptr =
-            GetSignalValue(isolate, absl::get<PASignalValue>(idl_value),
+            GetSignalValue(isolate, std::get<PASignalValue>(idl_value),
                            additional_extensions_allowed, error);
     if (!maybe_signal_value_ptr.has_value()) {
       CHECK(base::IsStringUTF8(*error));
@@ -329,8 +341,8 @@ auction_worklet::mojom::AggregatableReportForEventContributionPtr
 ParseForEventContribution(
     v8::Isolate* isolate,
     auction_worklet::mojom::EventTypePtr event_type,
-    absl::variant<PASignalValue, v8::Local<v8::BigInt>> idl_bucket,
-    absl::variant<PASignalValue, int32_t> idl_value,
+    std::variant<PASignalValue, v8::Local<v8::BigInt>> idl_bucket,
+    std::variant<PASignalValue, int32_t> idl_value,
     std::optional<v8::Local<v8::BigInt>> idl_filtering_id,
     bool additional_extensions_allowed,
     std::string* error) {
@@ -386,6 +398,8 @@ PrivateAggregationBindings::PrivateAggregationBindings(
       additional_extensions_allowed_(base::FeatureList::IsEnabled(
           blink::features::
               kPrivateAggregationApiProtectedAudienceAdditionalExtensions)),
+      error_reporting_allowed_(base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)),
       reserved_once_allowed_(reserved_once_allowed) {}
 
 PrivateAggregationBindings::~PrivateAggregationBindings() = default;
@@ -414,8 +428,6 @@ void PrivateAggregationBindings::AttachToContext(
             send_histogram_report_function)
       .Check();
 
-  if (blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled
-          .Get()) {
     v8::Local<v8::Function> report_contribution_for_event_function =
         v8::Function::New(
             context, &PrivateAggregationBindings::ContributeToHistogramOnEvent,
@@ -427,7 +439,6 @@ void PrivateAggregationBindings::AttachToContext(
             v8_helper_->CreateStringFromLiteral("contributeToHistogramOnEvent"),
             report_contribution_for_event_function)
         .Check();
-  }
 
   v8::Local<v8::Function> enable_debug_mode_function =
       v8::Function::New(context, &PrivateAggregationBindings::EnableDebugMode,
@@ -446,25 +457,29 @@ void PrivateAggregationBindings::AttachToContext(
 
 void PrivateAggregationBindings::Reset() {
   private_aggregation_contributions_.clear();
+  private_aggregation_uncaught_error_contributions_.clear();
   debug_mode_details_.is_enabled = false;
   debug_mode_details_.debug_key = nullptr;
 }
 
 std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
-PrivateAggregationBindings::TakePrivateAggregationRequests() {
+PrivateAggregationBindings::TakePrivateAggregationRequests(
+    bool did_uncaught_error_occur) {
   std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests;
 
-  requests.reserve(private_aggregation_contributions_.size());
-  base::ranges::transform(
-      private_aggregation_contributions_, std::back_inserter(requests),
-      [this](auction_worklet::mojom::AggregatableReportContributionPtr&
-                 contribution) {
-        return auction_worklet::mojom::PrivateAggregationRequest::New(
-            std::move(contribution),
-            // TODO(alexmt): consider allowing this to be set
-            blink::mojom::AggregationServiceMode::kDefault,
-            debug_mode_details_.Clone());
-      });
+  if (did_uncaught_error_occur) {
+    base::Extend(private_aggregation_contributions_,
+                 std::move(private_aggregation_uncaught_error_contributions_));
+  }
+  private_aggregation_uncaught_error_contributions_.clear();
+
+  base::Extend(requests, std::move(private_aggregation_contributions_),
+               [this](auction_worklet::mojom::AggregatableReportContributionPtr&
+                          contribution) {
+                 return auction_worklet::mojom::PrivateAggregationRequest::New(
+                     std::move(contribution),
+                     debug_mode_details_.Clone());
+               });
   private_aggregation_contributions_.clear();
 
   return requests;
@@ -514,10 +529,7 @@ void PrivateAggregationBindings::ContributeToHistogram(
 
     // Note: alphabetical to match WebIDL.
     contribution_converter.GetRequired("bucket", idl_bucket);
-    if (base::FeatureList::IsEnabled(
-            blink::features::kPrivateAggregationApiFilteringIds)) {
-      contribution_converter.GetOptional("filteringId", idl_filtering_id);
-    }
+    contribution_converter.GetOptional("filteringId", idl_filtering_id);
     contribution_converter.GetRequired("value", idl_value);
     args_converter.SetStatus(contribution_converter.TakeStatus());
   }
@@ -596,7 +608,7 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
   args_converter.ConvertArg(0, "event", event_type_str);
 
   // Arg 1 is:
-  // https://patcg-individual-drafts.github.io/private-aggregation-api/#dictdef-paextendedhistogramcontribution
+  // https://wicg.github.io/turtledove/#dictdef-paextendedhistogramcontribution
   //
   // dictionary PAExtendedHistogramContribution {
   //   required (PASignalValue or bigint) bucket;
@@ -604,8 +616,8 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
   //   bigint filteringId;
   // };
 
-  absl::variant<PASignalValue, v8::Local<v8::BigInt>> bucket;
-  absl::variant<PASignalValue, int32_t> value;
+  std::variant<PASignalValue, v8::Local<v8::BigInt>> bucket;
+  std::variant<PASignalValue, int32_t> value;
   std::optional<v8::Local<v8::BigInt>> filtering_id;
   if (args_converter.is_success()) {
     DictConverter contribution_converter(
@@ -622,10 +634,7 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
             "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
             "argument: ",
             "bucket", bucket_val, contribution_converter, bucket);
-    if (base::FeatureList::IsEnabled(
-            blink::features::kPrivateAggregationApiFilteringIds)) {
-      contribution_converter.GetOptional("filteringId", filtering_id);
-    }
+    contribution_converter.GetOptional("filteringId", filtering_id);
     contribution_converter.GetRequired("value", value_val) &&
         ConvertToPASignalValueOr<int32_t>(
             v8_helper, time_limit_scope,
@@ -641,18 +650,23 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
   }
 
   auction_worklet::mojom::EventTypePtr event_type =
-      ParsePrivateAggregationEventType(
-          event_type_str, bindings->additional_extensions_allowed_);
+      ParsePrivateAggregationEventType(event_type_str,
+                                       bindings->additional_extensions_allowed_,
+                                       bindings->error_reporting_allowed_);
   if (!event_type) {
     // Don't throw an error if an invalid reserved event type is provided, to
     // provide forward compatibility with new reserved event types added
     // later.
+    // TODO(crbug.com/408225510): Consider still performing the IDL validation
+    // for the `contribution` even though we're ignoring the call (to match the
+    // spec).
     return;
   }
 
-  if (!bindings->reserved_once_allowed_ && event_type->is_reserved() &&
-      event_type->get_reserved() ==
-          auction_worklet::mojom::ReservedEventType::kReservedOnce) {
+  if (!bindings->reserved_once_allowed_ &&
+      event_type->is_reserved_non_error() &&
+      event_type->get_reserved_non_error() ==
+          auction_worklet::mojom::ReservedNonErrorEventType::kReservedOnce) {
     // Do throw one if people use reserved.once when not permitted.
     isolate->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
@@ -660,6 +674,16 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
             "is not available in reporting methods")));
     return;
   }
+
+  bool is_conditional_on_uncaught_error =
+      event_type->is_reserved_error() &&
+      event_type->get_reserved_error() ==
+          auction_worklet::mojom::ReservedErrorEventType::kUncaughtError;
+  std::vector<auction_worklet::mojom::AggregatableReportContributionPtr>&
+      vector_to_append_to =
+          is_conditional_on_uncaught_error
+              ? bindings->private_aggregation_uncaught_error_contributions_
+              : bindings->private_aggregation_contributions_;
 
   std::string error;
   auction_worklet::mojom::AggregatableReportForEventContributionPtr
@@ -675,7 +699,7 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
     return;
   }
 
-  bindings->private_aggregation_contributions_.push_back(
+  vector_to_append_to.push_back(
       auction_worklet::mojom::AggregatableReportContribution::
           NewForEventContribution(std::move(contribution)));
 }

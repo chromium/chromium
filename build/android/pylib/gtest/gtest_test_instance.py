@@ -232,10 +232,9 @@ def ParseGTestOutput(output, symbolizer, device_abi):
         duration = None  # Don't know.  Not using 0 as this is unknown vs 0.
 
     if not launcher_main_start_match:
+      log.append(l)
       if not matcher and _STACK_LINE_RE.match(l):
         stack.append(l)
-      else:
-        log.append(l)
 
     if _RE_ANY_TESTS_FAILED.match(l):
       break
@@ -355,6 +354,7 @@ class GtestTestInstance(test_instance.TestInstance):
     self._total_external_shards = args.test_launcher_total_shards
     self._wait_for_java_debugger = args.wait_for_java_debugger
     self._use_existing_test_data = args.use_existing_test_data
+    self._deploy_mock_openxr_runtime = args.deploy_mock_openxr_runtime
 
     # GYP:
     if args.executable_dist_dir:
@@ -475,6 +475,10 @@ class GtestTestInstance(test_instance.TestInstance):
   @property
   def coverage_dir(self):
     return self._coverage_dir
+
+  @property
+  def deploy_mock_openxr_runtime(self):
+    return self._deploy_mock_openxr_runtime
 
   @property
   def enable_xml_result_parsing(self):

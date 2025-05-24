@@ -26,6 +26,7 @@
 
 goog.provide('goog.net.Jsonp');
 
+goog.require('goog.functions');
 goog.require('goog.html.TrustedResourceUrl');
 goog.require('goog.net.jsloader');
 goog.require('goog.object');
@@ -329,7 +330,7 @@ goog.net.Jsonp.cleanup_ = function(id, deleteReplyHandler) {
     } else {
       // Removing the script tag doesn't necessarily prevent the script
       // from firing, so we make the callback a noop.
-      goog.global[callbackId] = goog.nullFunction;
+      goog.global[callbackId] = goog.functions.UNDEFINED;
     }
   }
 };

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/shared/ui/elements/chrome_activity_overlay_coordinator.h"
 
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/elements/chrome_activity_overlay_view_controller.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @interface ChromeActivityOverlayCoordinator ()
@@ -45,7 +45,11 @@
 
   if (self.blockAllWindows) {
     SceneState* sceneState = self.browser->GetSceneState();
-    _windowUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+    // This could DCHECK if the user tap on buttons creating ui blocker in
+    // two scenes. This class will soon be deleted, so it’s not worth fixing
+    // here.
+    _windowUIBlocker = std::make_unique<ScopedUIBlocker>(
+        sceneState, UIBlockerExtent::kApplication);
   }
 
   self.started = YES;

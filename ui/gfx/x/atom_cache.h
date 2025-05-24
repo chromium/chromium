@@ -7,6 +7,7 @@
 
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -40,7 +41,7 @@ class AtomCache {
  private:
   struct Compare {
     bool operator()(const char* lhs, const char* rhs) const {
-      return strcmp(lhs, rhs) < 0;
+      return UNSAFE_TODO(strcmp(lhs, rhs)) < 0;
     }
   };
 

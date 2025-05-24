@@ -14,8 +14,9 @@ TestSessionController::~TestSessionController() = default;
 
 void TestSessionController::SetScreenLocked(bool locked) {
   is_screen_locked_ = locked;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnLockStateChanged(locked);
+  }
 }
 
 void TestSessionController::SetClient(ash::SessionControllerClient* client) {}
@@ -104,4 +105,7 @@ std::optional<int> TestSessionController::GetExistingUsersCount() const {
 
 void TestSessionController::NotifyFirstSessionReady() {
   ++first_session_ready_count_;
+}
+
+void TestSessionController::NotifyUserToBeRemoved(const AccountId& account_id) {
 }

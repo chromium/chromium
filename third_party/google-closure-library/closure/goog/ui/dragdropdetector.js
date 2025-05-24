@@ -342,12 +342,14 @@ goog.ui.DragDropDetector.prototype.initIframe_ = function() {
  * than making it navigate to a different URL.
  * @param {goog.events.BrowserEvent} e The event to enforce copying on.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.DragDropDetector.enforceCopyEffect_ = function(e) {
   'use strict';
   var event = e.getBrowserEvent();
   // This function is only called on IE.
   if (event.dataTransfer.dropEffect.toLowerCase() != 'copy') {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     event.dataTransfer.dropEffect = 'copy';
   }
 };
@@ -357,6 +359,7 @@ goog.ui.DragDropDetector.enforceCopyEffect_ = function(e) {
  * Cover the screen with the iframe.
  * @param {goog.events.BrowserEvent} e The event that caused this function call.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.DragDropDetector.prototype.coverScreen_ = function(e) {
   'use strict';
@@ -432,6 +435,7 @@ goog.ui.DragDropDetector.prototype.switchToIframe_ = function(e) {
  * @param {goog.events.BrowserEvent} e The event object.
  * @return {boolean|undefined} Returns false in IE to cancel the event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.DragDropDetector.prototype.handleNewDrag_ = function(e) {
   'use strict';
@@ -475,6 +479,7 @@ goog.ui.DragDropDetector.prototype.trackMouse_ = function(e) {
  * Handle a drop on the IE text INPUT.
  * @param {goog.events.BrowserEvent} e The event object.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.DragDropDetector.prototype.handleInputDrop_ = function(e) {
   'use strict';

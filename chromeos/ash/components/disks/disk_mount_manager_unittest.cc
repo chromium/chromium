@@ -32,9 +32,7 @@ using base::StringPrintf;
 using testing::_;
 using testing::Field;
 
-namespace ash {
-namespace disks {
-
+namespace ash::disks {
 namespace {
 
 const char kDevice1SourcePath[] = "/device/source_path";
@@ -430,13 +428,15 @@ class MockDiskMountManagerObserver : public DiskMountManager::Observer {
                           const std::string& mount_path) {
     size_t num_matched = 0;
     for (const auto& it : events_) {
-      if (it->type() != MOUNT_EVENT)
+      if (it->type() != MOUNT_EVENT) {
         continue;
+      }
       const MountEvent& mount_event = static_cast<const MountEvent&>(*it);
       if (mount_event.event == mount_event_type &&
           mount_event.error_code == error_code &&
-          mount_event.mount_point.mount_path == mount_path)
+          mount_event.mount_point.mount_path == mount_path) {
         num_matched++;
+      }
     }
     return num_matched;
   }
@@ -446,10 +446,12 @@ class MockDiskMountManagerObserver : public DiskMountManager::Observer {
   size_t CountFormatEvents(const FormatEvent& exptected_format_event) {
     size_t num_matched = 0;
     for (const auto& it : events_) {
-      if (it->type() != FORMAT_EVENT)
+      if (it->type() != FORMAT_EVENT) {
         continue;
-      if (static_cast<const FormatEvent&>(*it) == exptected_format_event)
+      }
+      if (static_cast<const FormatEvent&>(*it) == exptected_format_event) {
         num_matched++;
+      }
     }
     return num_matched;
   }
@@ -459,10 +461,12 @@ class MockDiskMountManagerObserver : public DiskMountManager::Observer {
   size_t CountRenameEvents(const RenameEvent& exptected_rename_event) {
     size_t num_matched = 0;
     for (const auto& event : events_) {
-      if (event->type() != RENAME_EVENT)
+      if (event->type() != RENAME_EVENT) {
         continue;
-      if (static_cast<const RenameEvent&>(*event) == exptected_rename_event)
+      }
+      if (static_cast<const RenameEvent&>(*event) == exptected_rename_event) {
         num_matched++;
+      }
     }
     return num_matched;
   }
@@ -567,8 +571,9 @@ class DiskMountManagerTest : public testing::Test {
   void InitDisksAndMountPoints() {
     // Disks should be  added first (when adding device mount points it is
     // expected that the corresponding disk is already added).
-    for (const TestDiskInfo& disk : kTestDisks)
+    for (const TestDiskInfo& disk : kTestDisks) {
       AddTestDisk(disk);
+    }
 
     AddTestMountPoint(
         {"/archive/source_path", "/archive/mount_path", MountType::kArchive});
@@ -1125,13 +1130,18 @@ TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
       kMountPath1);
 }
 
-TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
+TEST_F(DiskMountManagerTest, RemountRemovableDrive) {
   DiskMountManager* manager = DiskMountManager::GetInstance();
   // Initially we have 2 mounted devices.
   // kDevice1MountPath --- read-write device, mounted in read-write mode.
   // kReadOnlyDeviceMountPath --- read-only device, mounted in read-only mode.
 
-  manager->RemountAllRemovableDrives(MountAccessMode::kReadOnly);
+  manager->RemountRemovableDrive(
+      *manager->FindDiskBySourcePath(kDevice1SourcePath),
+      MountAccessMode::kReadOnly);
+  manager->RemountRemovableDrive(
+      *manager->FindDiskBySourcePath(kDevice2SourcePath),
+      MountAccessMode::kReadOnly);
 
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
@@ -1149,7 +1159,12 @@ TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
   EXPECT_TRUE(observer_->GetMountEvent(0).disk->is_read_only());
 
   // Remount in read-write mode again.
-  manager->RemountAllRemovableDrives(MountAccessMode::kReadWrite);
+  manager->RemountRemovableDrive(
+      *manager->FindDiskBySourcePath(kDevice1SourcePath),
+      MountAccessMode::kReadWrite);
+  manager->RemountRemovableDrive(
+      *manager->FindDiskBySourcePath(kDevice2SourcePath),
+      MountAccessMode::kReadWrite);
 
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
@@ -1734,6 +1749,4 @@ TEST_F(DiskMountManagerTest, Mount_DefersDuringGetDeviceProperties) {
 }
 
 }  // namespace
-
-}  // namespace disks
-}  // namespace ash
+}  // namespace ash::disks

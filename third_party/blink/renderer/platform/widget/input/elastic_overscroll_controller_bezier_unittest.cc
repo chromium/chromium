@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller_bezier.h"
+
+#include <array>
 
 #include "build/build_config.h"
 #include "cc/input/input_handler.h"
@@ -294,9 +291,10 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
   SendGestureScrollEnd(now);
 
   const int TOTAL_FRAMES = 28;
-  const int stretch_amount_y[TOTAL_FRAMES] = {
+  const std::array<int, TOTAL_FRAMES> stretch_amount_y = {
       -19, -41, -55, -65, -72, -78, -82, -85, -88, -89, -78, -64, -53, -44,
-      -37, -30, -25, -20, -16, -13, -10, -7,  -5,  -4,  -2,  -1,  -1,  0};
+      -37, -30, -25, -20, -16, -13, -10, -7,  -5,  -4,  -2,  -1,  -1,  0,
+  };
 
   for (int i = 0; i < TOTAL_FRAMES; i++) {
     controller_.Animate(now + base::Milliseconds(i * 16));
@@ -313,9 +311,10 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
   controller_.scroll_velocity_ = gfx::Vector2dF(-3000.f, 0.f);
   SendGestureScrollEnd(now);
 
-  const int stretch_amount_x[TOTAL_FRAMES] = {
+  const std::array<int, TOTAL_FRAMES> stretch_amount_x = {
       -9,  -24, -34, -42, -48, -54, -58, -62, -66, -69, -62, -52, -43, -36,
-      -30, -25, -20, -17, -13, -10, -8,  -6,  -4,  -3,  -2,  -1,  0,   0};
+      -30, -25, -20, -17, -13, -10, -8,  -6,  -4,  -3,  -2,  -1,  0,   0,
+  };
 
   for (int i = 0; i < TOTAL_FRAMES; i++) {
     controller_.Animate(now + base::Milliseconds(i * 16));
@@ -402,5 +401,128 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyAnimationNotCreated) {
   // Frame 2.
   controller_.Animate(now + base::Milliseconds(32));
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
+}
+
+// Tests that the forward bounce animation handles different animations in two
+// axis with different durations gracefully.
+TEST_F(ElasticOverscrollControllerBezierTest,
+       VerifyDifferentDurationForwardAnimations) {
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::PointF(0, 0),
+                                            gfx::PointF(100, 100));
+
+  // Test vertical forward bounce animations.
+  EXPECT_EQ(controller_.state_, ElasticOverscrollController::kStateInactive);
+  SendGestureScrollBegin(PhaseState::kNonMomentum);
+  EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
+  // The gesture will be much greater vertically than horizontally. This should
+  // cause the animation to be longer on the Y axis than on the X axis.
+  SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(-50, -100));
+  SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(-50, 0));
+  // Verify that both axis are stretched before the fling gesture.
+  EXPECT_GT(fabsf(helper_.StretchAmount().x()), 0);
+  EXPECT_GT(fabsf(helper_.StretchAmount().y()), 0);
+
+  controller_.scroll_velocity_ = gfx::Vector2dF(-1000.f, -4000.f);
+
+  // This signals that the finger has lifted off which triggers a fling.
+  const base::TimeTicks now = base::TimeTicks::Now();
+  SendGestureScrollEnd(now);
+
+  constexpr int kMaxFrames = 100;
+  controller_.Animate(now);
+  float x_stretch_amount = fabsf(helper_.StretchAmount().x());
+  float y_stretch_amount = fabsf(helper_.StretchAmount().y());
+  enum AnimationState {
+    kBouncingForwardBoth,
+    kBouncingForwardY,
+    kBouncingBackwards
+  };
+  AnimationState state(kBouncingForwardBoth);
+  for (int i = 1;
+       i < kMaxFrames && (x_stretch_amount > 0 || y_stretch_amount > 0); i++) {
+    controller_.Animate(now + base::Milliseconds(i * 16));
+    const float new_x_stretch_amount = fabs(helper_.StretchAmount().x());
+    const float new_y_stretch_amount = fabs(helper_.StretchAmount().y());
+    if (state == kBouncingForwardBoth &&
+        new_x_stretch_amount == x_stretch_amount) {
+      EXPECT_NE(new_x_stretch_amount, 0);
+      state = kBouncingForwardY;
+    }
+    if (state == kBouncingForwardY &&
+        new_y_stretch_amount <= y_stretch_amount) {
+      state = kBouncingBackwards;
+    }
+    switch (state) {
+      case kBouncingForwardBoth:
+        // While both axis are bouncing forward, the stretch amount should
+        // increase on each tick of the animation.
+        EXPECT_GT(new_x_stretch_amount, x_stretch_amount);
+        EXPECT_GT(new_y_stretch_amount, y_stretch_amount);
+        break;
+      case kBouncingForwardY:
+        // While one axis has completed it's animation and the other one hasn't,
+        // only the one still animating should increase in value.
+        EXPECT_EQ(new_x_stretch_amount, x_stretch_amount);
+        EXPECT_GT(new_y_stretch_amount, y_stretch_amount);
+        break;
+      case kBouncingBackwards:
+        // Once the bounce backwards animation has kicked in, both stretches
+        // should monotonically decrease until they become zero.
+        EXPECT_LE(new_x_stretch_amount, x_stretch_amount);
+        EXPECT_LE(new_y_stretch_amount, y_stretch_amount);
+        break;
+    }
+    y_stretch_amount = new_y_stretch_amount;
+    x_stretch_amount = new_x_stretch_amount;
+  }
+  // Verify that the loop ended because the animation did and not because we hit
+  // the max amount of frames.
+  EXPECT_FLOAT_EQ(x_stretch_amount, 0.f);
+  EXPECT_FLOAT_EQ(y_stretch_amount, 0.f);
+}
+
+// Tests that the forward bounce animation handles single axis animations
+// gracefully.
+TEST_F(ElasticOverscrollControllerBezierTest, VerifyOneAxisForwardAnimation) {
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::PointF(0, 0),
+                                            gfx::PointF(100, 100));
+
+  // Test vertical forward bounce animations.
+  EXPECT_EQ(controller_.state_, ElasticOverscrollController::kStateInactive);
+  SendGestureScrollBegin(PhaseState::kNonMomentum);
+  EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount());
+  // The gesture will be much greater vertically than horizontally. This should
+  // cause the animation to be longer on the Y axis than on the X axis.
+  SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(-50, -100));
+  SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(-50, 0));
+  // The X axis should be stretched out to verify that the animation doesn't
+  // reset its value.
+  EXPECT_GT(fabsf(helper_.StretchAmount().x()), 0);
+
+  controller_.scroll_velocity_ = gfx::Vector2dF(0, -4000.f);
+
+  // This signals that the finger has lifted off which triggers a fling.
+  const base::TimeTicks now = base::TimeTicks::Now();
+  SendGestureScrollEnd(now);
+
+  constexpr int kMaxFrames = 100;
+  controller_.Animate(now);
+  float x_stretch_amount = fabsf(helper_.StretchAmount().x());
+  float y_stretch_amount = fabsf(helper_.StretchAmount().y());
+  // Animate the entire forward animation verifying that the x-axis doesn't get
+  // moved.
+  for (int i = 1; i < kMaxFrames && x_stretch_amount > 0; i++) {
+    controller_.Animate(now + base::Milliseconds(i * 16));
+    const float new_x_stretch_amount = fabs(helper_.StretchAmount().x());
+    const float new_y_stretch_amount = fabs(helper_.StretchAmount().y());
+    // Exit the loop when the forward animation ends.
+    if (new_y_stretch_amount <= y_stretch_amount) {
+      break;
+    }
+
+    EXPECT_FLOAT_EQ(new_x_stretch_amount, x_stretch_amount);
+    y_stretch_amount = new_y_stretch_amount;
+    x_stretch_amount = new_x_stretch_amount;
+  }
 }
 }  // namespace blink

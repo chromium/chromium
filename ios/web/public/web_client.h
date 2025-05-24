@@ -28,6 +28,7 @@ class GURL;
 @protocol UITraitEnvironment;
 @class NSString;
 @class NSData;
+@protocol UIMenuBuilder;
 @class UIView;
 
 namespace net {
@@ -57,6 +58,10 @@ class WebClient {
   // Allows the embedder to set a custom WebMainParts implementation for the
   // browser startup code.
   virtual std::unique_ptr<WebMainParts> CreateWebMainParts();
+
+  // Allows the embedder to initialize the field trial and features list
+  // early.
+  virtual void InitializeFieldTrialAndFeatureList() {}
 
   // Gives the embedder a chance to perform tasks before a web view is created.
   virtual void PreWebViewCreation() const {}
@@ -88,6 +93,11 @@ class WebClient {
 
   // Returns the user agent string for the specified type.
   virtual std::string GetUserAgent(UserAgentType type) const;
+
+  // Returns the name of the main thread. If the returned string is empty,
+  // the main thread name will not be set. The default implementation returns
+  // an empty string and does not rename the main thread.
+  virtual std::string GetMainThreadName() const;
 
   // Returns a string resource given its id.
   virtual std::u16string GetLocalizedString(int message_id) const;
@@ -187,6 +197,8 @@ class WebClient {
 
   virtual bool IsInsecureFormWarningEnabled(
       web::BrowserState* browser_state) const;
+
+  virtual void BuildEditMenu(web::WebState* web_state, id<UIMenuBuilder>) const;
 };
 
 }  // namespace web

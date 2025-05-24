@@ -4,9 +4,13 @@
 
 #include "android_webview/browser/network_service/net_helpers.h"
 
+#include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/url_constants.h"
+#include "base/android/path_utils.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
@@ -23,6 +27,35 @@ int UpdateCacheControlFlags(int load_flags, int cache_control_flags) {
   load_flags &= ~all_cache_control_flags;
   load_flags |= cache_control_flags;
   return load_flags;
+}
+
+// Guaranteed to return a valid cache size
+int GetHttpCacheSizeInternal() {
+  constexpr int DEFAULT_CACHE_LIMIT = 20 * 1024 * 1024;  // 20MiB
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota)) {
+    int64_t cache_quota =
+        AwBrowserProcess::GetInstance()->GetHostAppCacheQuota();
+    if (cache_quota == -1) {
+      return DEFAULT_CACHE_LIMIT;
+    }
+
+    int max_cache_limit = features::kWebViewCacheSizeLimitMaximum.Get();
+    int min_cache_limit = features::kWebViewCacheSizeLimitMinimum.Get();
+
+    int64_t cache_limit =
+        features::kWebViewCacheSizeLimitMultiplier.Get() * cache_quota;
+    if (cache_limit > max_cache_limit) {
+      return max_cache_limit;
+    }
+    if (cache_limit < min_cache_limit) {
+      return min_cache_limit;
+    }
+    return cache_limit;
+  }
+
+  return DEFAULT_CACHE_LIMIT;
 }
 
 // Gets the net-layer load_flags which reflect |client|'s cache mode.
@@ -50,11 +83,13 @@ int GetCacheModeForClient(AwContentsIoThreadClient* client) {
 
 }  // namespace
 
-int UpdateLoadFlags(int load_flags, AwContentsIoThreadClient* client) {
+int UpdateLoadFlags(int load_flags,
+                    AwContentsIoThreadClient* client,
+                    base::TimeDelta& counter) {
   if (!client)
     return load_flags;
 
-  if (client->ShouldBlockNetworkLoads()) {
+  if (client->ShouldBlockNetworkLoads(counter)) {
     return UpdateCacheControlFlags(
         load_flags,
         net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION);
@@ -67,36 +102,49 @@ int UpdateLoadFlags(int load_flags, AwContentsIoThreadClient* client) {
   return UpdateCacheControlFlags(load_flags, cache_mode);
 }
 
-bool ShouldBlockURL(const GURL& url, AwContentsIoThreadClient* client) {
+bool ShouldBlockURL(const GURL& url,
+                    AwContentsIoThreadClient* client,
+                    base::TimeDelta& counter) {
   if (!client)
     return false;
 
   // Part of implementation of WebSettings.allowContentAccess.
-  if (url.SchemeIs(url::kContentScheme) && client->ShouldBlockContentUrls())
+  if (url.SchemeIs(url::kContentScheme) &&
+      client->ShouldBlockContentUrls(counter)) {
     return true;
+  }
 
   if (url.SchemeIsFile()) {
     bool is_special_file_url = IsAndroidSpecialFileUrl(url);
 
-    if (is_special_file_url && client->ShouldBlockSpecialFileUrls()) {
+    if (is_special_file_url && client->ShouldBlockSpecialFileUrls(counter)) {
       return true;
     }
 
     // Part of implementation of WebSettings.allowFileAccess.
-    if (client->ShouldBlockFileUrls()) {
+    if (client->ShouldBlockFileUrls(counter)) {
       // Application's assets and resources are always available.
       return !is_special_file_url;
     }
   }
 
-  return client->ShouldBlockNetworkLoads() && url.SchemeIs(url::kFtpScheme);
+  return client->ShouldBlockNetworkLoads(counter) &&
+         url.SchemeIs(url::kFtpScheme);
 }
 
 int GetHttpCacheSize() {
-  // This currently returns a constant value, but we may consider deciding cache
-  // size dynamically, since Android provides better support on newer versions
-  // (http://crbug.com/893318).
-  return 20 * 1024 * 1024;  // 20M
+  // static so that `GetHttpCacheSizeInternal()` is called only once.
+  static int cache_limit = -1;
+  if (cache_limit == -1) {
+    cache_limit = GetHttpCacheSizeInternal();
+    // Using WARNING instead of INFO since usage of INFO is unallowed.
+    // This is semantically not a warning and is temporary till the
+    // HTTP Cache size experiment has landed.
+    LOG(WARNING) << "HTTP Cache size is: " << cache_limit;
+    base::UmaHistogramCounts10000("Android.WebView.HttpCacheSizeLimit",
+                                  cache_limit / (1024 * 1024));
+  };
+  return cache_limit;
 }
 
 void ConvertRequestHeadersToVectors(const net::HttpRequestHeaders& headers,

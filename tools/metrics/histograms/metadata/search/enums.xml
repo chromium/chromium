@@ -1,0 +1,526 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AmbientSearchEntryPoint">
+  <summary>
+    The entry point that initiated an ambient search query. (e.g. Context Menu
+    Item)
+  </summary>
+  <int value="0"
+      label="Context menu item for 'Search Image with Google Lens' (Image)"/>
+  <int value="1" label="Context menu item for 'Search Image with Web' (Image)"/>
+  <int value="2"
+      label="Context menu item for 'Search Images with Google Lens' (Region)"/>
+  <int value="3"
+      label="Context menu item for 'Search Images with Web' (Region)"/>
+  <int value="4" label="Context menu item for 'Search Web For'"/>
+  <int value="5" label="Omnibox (Camera)"/>
+  <int value="6" label="New Tab Page (Camera)"/>
+  <int value="7" label="Quick Action Search Widget (Camera)"/>
+  <int value="8" label="Keyboard (Camera)"/>
+  <int value="9" label="App icon long press (Camera)"/>
+  <int value="10" label="iOS Spotlight (Camera)"/>
+  <int value="11" label="Plus Button (Camera)"/>
+  <int value="12" label="Web Search Bar (Camera)"/>
+  <int value="13" label="(Obsolete) Companion (Region) Deprecated 11/2024."/>
+  <int value="14" label="Translate Onebox (Camera)"/>
+  <int value="15" label="iOS Shortcuts App (Camera)"/>
+  <int value="16" label="Web Images Search Bar (Camera)"/>
+  <int value="17" label="What's New Promo (Camera)"/>
+  <int value="18"
+      label="Context menu item for 'Search Video Frame with Google Lens'
+             (Video Frame)"/>
+  <int value="19"
+      label="Context menu item for 'Search Video Frame with Web' (Video
+             Frame)"/>
+  <int value="20" label="Lens Overlay Location Bar (Image)"/>
+  <int value="21" label="Lens Overlay Overflow Menu (Image)"/>
+  <int value="22"
+      label="Context menu item for 'Search with Google Lens' that leads to
+             Lens Overlay (Image)"/>
+  <int value="23"
+      label="Context menu item for 'Search with Google Lens' that leads to
+             Lens Overlay (Region)"/>
+  <int value="24"
+      label="Context menu item for 'Search with Google Lens' that leads to
+             Lens Overlay (Video)"/>
+  <int value="25"
+      label="Context menu item for 'Search with Google Lens', that leads to
+             Lens Overlay, entered via keyboard (Image)"/>
+  <int value="26"
+      label="Context menu item for 'Search with Google Lens' that leads to
+             Lens Overlay, entered via keyboard (Region)"/>
+  <int value="27"
+      label="Context menu item for 'Search with Google Lens' that leads to
+             Lens Overlay, entered via keyboard (Video)"/>
+  <int value="28"
+      label="Lens Overlay Location Bar entry point that leads to Lens
+             Overlay, entered via keyboard (Image)"/>
+</enum>
+
+<enum name="AuxiliarySearchRequestStatus">
+  <int value="0" label="Sent (overall number of requests issued)"/>
+  <int value="1" label="Processed, Successful (data accepted by recipient)"/>
+  <int value="2" label="Processed, Unsuccessful (recipient failure)"/>
+  <int value="3" label="Not Processed (e.g. device not eligible)"/>
+</enum>
+
+<enum name="BooleanBottomSearchKind">
+  <int value="0" label="Contextual Search"/>
+  <int value="1" label="Related Searches"/>
+</enum>
+
+<enum name="BooleanIsTopLevel">
+  <int value="0" label="Not Top Level"/>
+  <int value="1" label="Top Level"/>
+</enum>
+
+<enum name="CameraOpenEntryPoint">
+  <int value="0" label="Omnibox"/>
+  <int value="1" label="New Tab Page (NTP)"/>
+  <int value="2" label="Widget"/>
+  <int value="3" label="Tasks Surface"/>
+  <int value="4" label="Keyboard"/>
+  <int value="5" label="Spotlight"/>
+  <int value="6" label="App Icon Long Press"/>
+  <int value="7" label="Plus Button"/>
+  <int value="8" label="Web Search Bar"/>
+  <int value="9" label="Translate Onebox"/>
+  <int value="10" label="iOS Shortcuts App"/>
+  <int value="11" label="Web Images Search Bar"/>
+  <int value="12" label="What's New Promo"/>
+</enum>
+
+<enum name="CameraResult">
+  <int value="0" label="Success (Camera)"/>
+  <int value="1" label="Success (Gallery Image)"/>
+  <int value="2" label="Success (QR/Bar Code)"/>
+  <int value="3" label="Dismissed"/>
+</enum>
+
+<enum name="ClickInfo">
+  <summary>
+    The type of the button that users clicked on the auxiliary search module
+    card.
+  </summary>
+  <int value="0" label="Got it"/>
+  <int value="1" label="No thanks"/>
+  <int value="2" label="Go to settings"/>
+  <int value="3" label="Turn on"/>
+</enum>
+
+<enum name="ContextualSearchCardTag">
+  <int value="0" label="None"/>
+  <int value="1" label="CT_OTHER"/>
+  <int value="2" label="CT_HAS_ENTITY"/>
+  <int value="3" label="CT_BUSINESS"/>
+  <int value="4" label="CT_PRODUCT"/>
+  <int value="5" label="CT_CONTACT"/>
+  <int value="6" label="CT_EMAIL"/>
+  <int value="7" label="CT_LOCATION"/>
+  <int value="8" label="CT_URL"/>
+  <int value="9" label="CT_DEFINITION"/>
+  <int value="10" label="CT_TRANSLATE"/>
+  <int value="11" label="CT_CONTEXTUAL_DEFINITION"/>
+</enum>
+
+<enum name="ContextualSearchCountedEvent">
+  <int value="0" label="Unintelligent, counted"/>
+  <int value="1" label="Intelligent, counted"/>
+  <int value="2" label="Intelligent, not counted"/>
+</enum>
+
+<enum name="ContextualSearchGestureIsTap">
+  <int value="0" label="Longpress"/>
+  <int value="1" label="Tap"/>
+</enum>
+
+<enum name="ContextualSearchPermissions">
+  <summary>The privacy permissions for the current user.</summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Send URL"/>
+  <int value="2" label="Send content"/>
+  <int value="3" label="Send URL and content"/>
+</enum>
+
+<enum name="ContextualSearchPreferenceState">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Disabled"/>
+</enum>
+
+<enum name="ContextualSearchQuickActionCategory">
+  <int value="0" label="None"/>
+  <int value="1" label="Address"/>
+  <int value="2" label="Email"/>
+  <int value="3" label="Event"/>
+  <int value="4" label="Phone"/>
+  <int value="5" label="Website"/>
+</enum>
+
+<enum name="ContextualSearchQuickActionIntentResolution">
+  <int value="0" label="No matching apps or resolve failed"/>
+  <int value="1" label="One matching app"/>
+  <int value="2" label="Multiple matching apps"/>
+</enum>
+
+<enum name="ContextualSearchResultsSeen">
+  <int value="0" label="Seen"/>
+  <int value="1" label="Unseen"/>
+</enum>
+
+<enum name="ContextualSearchSeenByGesture">
+  <int value="0" label="Seen, from Tap"/>
+  <int value="1" label="Not seen, from Tap"/>
+  <int value="2" label="Seen, from Long-press"/>
+  <int value="3" label="Not seen, from Long-press"/>
+</enum>
+
+<enum name="DonateResult">
+  <int value="0" label="No favicons available"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Succeed"/>
+</enum>
+
+<enum name="EntryClickedPosition">
+  <int value="0" label="1st position"/>
+  <int value="1" label="2nd position"/>
+  <int value="2" label="3rd position"/>
+  <int value="3" label="4th position"/>
+  <int value="4" label="5th position"/>
+  <int value="5" label="6th position"/>
+  <int value="6" label="7th position"/>
+  <int value="7" label="8th position"/>
+  <int value="8" label="9th position"/>
+  <int value="9" label="10th position"/>
+</enum>
+
+<enum name="KeywordTableHashValidationStatus">
+  <int value="0" label="Hash was validated successfully"/>
+  <int value="1" label="Decryption failed"/>
+  <int value="2" label="Hash format was invalid"/>
+  <int value="3" label="Hash did not match expected value"/>
+  <int value="4"
+      label="Hash was not verified as decryption services were not available"/>
+  <int value="5"
+      label="Hash was not verified as hash verification is disabled"/>
+</enum>
+
+<!-- LINT.IfChange(LaunchOsChoiceScreenTapHandlingStatus) -->
+
+<enum name="LaunchOsChoiceScreenTapHandlingStatus">
+  <int value="0" label="Initial tap"/>
+  <int value="1" label="Suppressed tap"/>
+  <int value="2" label="Repeated tap"/>
+</enum>
+
+<!-- LINT.ThenChange() -->
+
+<enum name="LensRegionSearchAspectRatio">
+  <summary>
+    Enum describing the aspect ratio of the captured region. The aspect ratios
+    are defined arbitrarly as follows: SQUARE: [0.8, 1.2] WIDE: (1.2, 1.7]
+    VERY_WIDE: (1.7, infinity] TALL: [0.3, 0.8) VERY_TALL: [0, 0.3)
+  </summary>
+  <int value="0" label="Undefined Aspect Ratio"/>
+  <int value="1" label="Square Aspect Ratio"/>
+  <int value="2" label="Wide Aspect Ratio"/>
+  <int value="3" label="Very Wide Aspect Ratio"/>
+  <int value="4" label="Tall Aspect Ratio"/>
+  <int value="5" label="Very Tall Aspect Ratio"/>
+</enum>
+
+<enum name="LensRegionSearchCaptureResult">
+  <summary>Result of Lens Region Search feature.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to open results in a new tab"/>
+  <int value="2" label="Error capturing image from selected region"/>
+  <int value="3" label="User exited the capture mode via the escape key."/>
+  <int value="4"
+      label="User exited the capture mode via the close button on the
+             instructional bubble."/>
+  <int value="5"
+      label="User navigated away from the page while capture mode was open,
+             closing the capture mode."/>
+</enum>
+
+<!-- LINT.IfChange(OsDefaultsChoiceDialogStatus) -->
+
+<enum name="OsDefaultsChoiceDialogStatus">
+  <int value="0" label="Unknown: Dialog dismissed or abandoned before showing"/>
+  <int value="1" label="Pending"/>
+  <int value="2" label="ChoiceLaunch"/>
+  <int value="3" label="ChoiceConfirmation"/>
+</enum>
+
+<!-- LINT.ThenChange() -->
+
+<!-- LINT.IfChange(OsDefaultsChoiceDialogSuppressionStatus) -->
+
+<enum name="OsDefaultsChoiceDialogSuppressionStatus">
+  <int value="0" label="Can show"/>
+  <int value="1" label="Suppressed: Dark Launch"/>
+  <int value="2" label="Suppressed: Escape Hatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinator.java:DialogSuppressionStatus) -->
+
+<enum name="QueryTilesGroupPruneReason">
+  <int value="0" label="Expired"/>
+  <int value="1" label="InvalidLocale"/>
+</enum>
+
+<enum name="QueryTilesGroupStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Uninitialized"/>
+  <int value="2" label="FailureDbOperation"/>
+  <int value="3" label="NoTiles"/>
+</enum>
+
+<enum name="QueryTilesImageLoadingEvent">
+  <int value="0" label="Start in full browser mode"/>
+  <int value="1" label="Success in full browser mode"/>
+  <int value="2" label="Failure in full browser mode"/>
+  <int value="3" label="Start in reduced mode"/>
+  <int value="4" label="Success in reduced mode"/>
+  <int value="5" label="Failure in reduced mode"/>
+</enum>
+
+<enum name="QueryTilesRequestStatus">
+  <int value="0" label="Init"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failure"/>
+  <int value="3" label="Suspend"/>
+</enum>
+
+<enum name="ScrollAndClickStatus">
+  <int value="0" label="NO_SCROLL_NO_CLICK"/>
+  <int value="1" label="NO_SCROLL_CLICKED"/>
+  <int value="2" label="SCROLLED_NO_CLICK"/>
+  <int value="3" label="SCROLLED_CLICKED"/>
+</enum>
+
+<enum name="SearchEngineChoiceDate">
+  <summary>Year-Month</summary>
+  <int value="202201" label="2022-01"/>
+  <int value="202202" label="2022-02"/>
+  <int value="202203" label="2022-03"/>
+  <int value="202204" label="2022-04"/>
+  <int value="202205" label="2022-05"/>
+  <int value="202206" label="2022-06"/>
+  <int value="202207" label="2022-07"/>
+  <int value="202208" label="2022-08"/>
+  <int value="202209" label="2022-09"/>
+  <int value="202210" label="2022-10"/>
+  <int value="202211" label="2022-11"/>
+  <int value="202212" label="2022-12"/>
+  <int value="202301" label="2023-01"/>
+  <int value="202302" label="2023-02"/>
+  <int value="202303" label="2023-03"/>
+  <int value="202304" label="2023-04"/>
+  <int value="202305" label="2023-05"/>
+  <int value="202306" label="2023-06"/>
+  <int value="202307" label="2023-07"/>
+  <int value="202308" label="2023-08"/>
+  <int value="202309" label="2023-09"/>
+  <int value="202310" label="2023-10"/>
+  <int value="202311" label="2023-11"/>
+  <int value="202312" label="2023-12"/>
+  <int value="202401" label="2024-01"/>
+  <int value="202402" label="2024-02"/>
+  <int value="202403" label="2024-03"/>
+  <int value="202404" label="2024-04"/>
+  <int value="202405" label="2024-05"/>
+  <int value="202406" label="2024-06"/>
+  <int value="202407" label="2024-07"/>
+  <int value="202408" label="2024-08"/>
+  <int value="202409" label="2024-09"/>
+  <int value="202410" label="2024-10"/>
+  <int value="202411" label="2024-11"/>
+  <int value="202412" label="2024-12"/>
+  <int value="202501" label="2025-01"/>
+  <int value="202502" label="2025-02"/>
+  <int value="202503" label="2025-03"/>
+  <int value="202504" label="2025-04"/>
+  <int value="202505" label="2025-05"/>
+  <int value="202506" label="2025-06"/>
+  <int value="202507" label="2025-07"/>
+  <int value="202508" label="2025-08"/>
+  <int value="202509" label="2025-09"/>
+  <int value="202510" label="2025-10"/>
+  <int value="202511" label="2025-11"/>
+  <int value="202512" label="2025-12"/>
+  <int value="202601" label="2026-01"/>
+  <int value="202602" label="2026-02"/>
+  <int value="202603" label="2026-03"/>
+  <int value="202604" label="2026-04"/>
+  <int value="202605" label="2026-05"/>
+  <int value="202606" label="2026-06"/>
+  <int value="202607" label="2026-07"/>
+  <int value="202608" label="2026-08"/>
+  <int value="202609" label="2026-09"/>
+  <int value="202610" label="2026-10"/>
+  <int value="202611" label="2026-11"/>
+  <int value="202612" label="2026-12"/>
+</enum>
+
+<enum name="SearchEngineChoiceReprompt">
+  <int value="0" label="Reprompt"/>
+  <int value="1" label="No reprompt: invalid dictionary"/>
+  <int value="2" label="No reprompt: no dictionary key"/>
+  <int value="3" label="No reprompt: invalid version"/>
+  <int value="4" label="No reprompt: Chrome too old"/>
+  <int value="5" label="No reprompt: recent choice"/>
+  <int value="6" label="No reprompt: no reprompt parameter set"/>
+</enum>
+
+<!-- LINT.IfChange(SearchEngineChoiceScreenConditions) -->
+
+<enum name="SearchEngineChoiceScreenConditions">
+  <int value="0" label="Has custom search engine set"/>
+  <int value="1" label="Has search provider override"/>
+  <int value="2" label="Not in regional scope"/>
+  <int value="3" label="Is controlled by policy"/>
+  <int value="4" label="The profile is out of scope"/>
+  <int value="5" label="An extension controls the default search engine"/>
+  <int value="6" label="Eligible"/>
+  <int value="7" label="Already completed"/>
+  <int value="8" label="Unsupported browser type"/>
+  <int value="9" label="Choice Screen feature suppressed or disabled"/>
+  <int value="10" label="Is suppressed by another already triggered dialog"/>
+  <int value="11" label="Browser window is too small to fit the dialog"/>
+  <int value="12" label="Has a distribution custom search engine as default"/>
+  <int value="13" label="Has a removed prepopulated search engine as default"/>
+  <int value="14" label="Does not have Google as the default search engine"/>
+  <int value="15"
+      label="Choice Screen dialog skipped as app stared by external intent"/>
+  <int value="16" label="Dialog is already shown in the same browser"/>
+  <int value="17"
+      label="Skipped by using a choice persisted across guest sessions"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/search_engines/search_engine_choice/search_engine_choice_utils.h:SearchEngineChoiceScreenConditions) -->
+
+<!-- LINT.IfChange(SearchEngineChoiceScreenEvents) -->
+
+<enum name="SearchEngineChoiceScreenEvents">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="[Dialog] Choice Screen Was Displayed"/>
+  <int value="2" label="[FRE] Choice Screen Was Displayed"/>
+  <int value="3" label="[Dialog] Default Was Set"/>
+  <int value="4" label="[FRE] Default Was Set"/>
+  <int value="5" label="[Dialog] Learn More Screen Was Displayed"/>
+  <int value="6" label="[FRE] Learn More Screen Was Displayed"/>
+  <int value="7"
+      label="[Profile Creation] Choice Screen Was Displayed (Desktop only)"/>
+  <int value="8" label="[Profile Creation] Default Was Set (Desktop only)"/>
+  <int value="9"
+      label="[Profile Creation] Learn More Screen Was Displayed (Desktop
+             only)"/>
+  <int value="10" label="[Dialog] More button was clicked"/>
+  <int value="11" label="[FRE] More button was clicked"/>
+  <int value="12" label="[Profile Creation] More button was clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/search_engines/search_engine_choice/search_engine_choice_utils.h:SearchEngineChoiceScreenEvents) -->
+
+<!-- LINT.IfChange(SearchEngineChoiceScrollState) -->
+
+<enum name="SearchEngineChoiceScrollState">
+  <int value="0" label="Scrolled to the bottom"/>
+  <int value="1" label="Scrolled to the bottom with error margin"/>
+  <int value="2" label="Failed scrolling to the bottom"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom:ScrollState) -->
+
+<enum name="SearchEngineChoiceWipeReason">
+  <int value="0" label="Profile wipe"/>
+  <int value="1" label="Invalid choice metadata: Missing version"/>
+  <int value="2" label="Invalid choice metadata: Invalid version"/>
+  <int value="3" label="Finch-based reprompt"/>
+  <int value="4" label="Command line flag"/>
+  <int value="5" label="Device restore (iOS only)"/>
+  <int value="6" label="Invalid choice metadata: Other"/>
+</enum>
+
+<!-- LINT.IfChange(SearchPolicyConflictType) -->
+
+<enum name="SearchPolicyConflictType">
+  <int value="0" label="No conflict"/>
+  <int value="1" label="Conflict with featured search engine"/>
+  <int value="2" label="Conflict with non-featured search engine"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/search_engines/template_url_service.h:SearchPolicyConflictType) -->
+
+<enum name="SearchProviderOverrideStatus">
+  <int value="0" label="kNoPref"/>
+  <int value="1" label="kEmptyPref"/>
+  <int value="2" label="kPrefHasValidUrls"/>
+</enum>
+
+<enum name="SearchWidgetUseInfo">
+  <int value="0" label="defunct Present in partnership device"/>
+  <int value="1" label="defunct Not present in partnership device"/>
+  <int value="2" label="defunct Present in non-partnership device"/>
+  <int value="3" label="defunct Not present in non-partnership device"/>
+  <int value="4" label="Present in partnership device (Always available)"/>
+  <int value="5"
+      label="Present in partnership device (Added after first start)"/>
+  <int value="6" label="Not Present in partnership device (Never present)"/>
+  <int value="7"
+      label="Not Present in partnership device (Removed after first start)"/>
+  <int value="8" label="Present in non-partnership device (Always available)"/>
+  <int value="9"
+      label="Present in non-partnership device (Added after first start)"/>
+  <int value="10"
+      label="Not Present in non-partnership device (Never present)"/>
+  <int value="11"
+      label="Not Present in non-partnership device (Removed after first
+             start)"/>
+</enum>
+
+<enum name="TrendingTileEvent">
+  <int value="0" label="Tile was shown"/>
+  <int value="1" label="Tile was removed"/>
+  <int value="2" label="Tile was clicked"/>
+</enum>
+
+<!-- LINT.IfChange(UnknownCountryIdStored) -->
+
+<enum name="UnknownCountryIdStored">
+  <int value="0" label="Valid country stored"/>
+  <int value="1" label="Clearing feature disabled"/>
+  <int value="2" label="Cleared pref due to invalid country ID"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_service.cc:UnknownCountryIdStored) -->
+
+</enums>
+
+</histogram-configuration>

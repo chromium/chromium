@@ -24,7 +24,7 @@ class RecentlyAudibleHelperTest : public testing::Test {
   RecentlyAudibleHelperTest& operator=(const RecentlyAudibleHelperTest&) =
       delete;
 
-  ~RecentlyAudibleHelperTest() override {}
+  ~RecentlyAudibleHelperTest() override = default;
 
   void SetUp() override {
     test_web_contents_factory_ =

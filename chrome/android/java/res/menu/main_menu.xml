@@ -45,7 +45,10 @@ found in the LICENSE file.
             android:icon="@drawable/ic_add_box_rounded_corner" />
         <item android:id="@+id/new_incognito_tab_menu_id"
             android:title="@string/menu_new_incognito_tab"
-            android:icon="@drawable/incognito_simple" />
+            android:icon="@drawable/ic_incognito" />
+        <item android:id="@+id/add_to_group_menu_id"
+          android:title="@string/menu_add_tab_to_group"
+          android:icon="@drawable/ic_widgets" />
         <item android:id="@+id/new_window_menu_id"
             android:title="@string/menu_new_window"
             android:icon="@drawable/ic_new_window" />
@@ -92,12 +95,24 @@ found in the LICENSE file.
                 android:title="@null" />
           </menu>
         </item>
+        <item android:id="@+id/download_page_id"
+            android:title="@string/menu_download_page"
+            android:icon="@drawable/ic_file_download_white_24dp" />
+        <item android:id="@+id/print_id"
+            android:title="@string/menu_print"
+            android:icon="@drawable/sharing_print" />
         <item android:id="@+id/enable_price_tracking_menu_id"
             android:title="@string/enable_price_tracking_menu_item"
             android:icon="@drawable/price_tracking_disabled" />
         <item android:id="@+id/disable_price_tracking_menu_id"
             android:title="@string/disable_price_tracking_menu_item"
             android:icon="@drawable/price_tracking_enabled_filled" />
+        <item android:id="@+id/ai_web_menu_id"
+            android:title="@string/menu_summarize_with_ai"
+            android:icon="@drawable/summarize_auto"/>
+        <item android:id="@+id/ai_pdf_menu_id"
+            android:title="@string/menu_review_pdf_with_ai"
+            android:icon="@drawable/summarize_auto"/>
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"
             android:icon="@drawable/ic_find_in_page" />
@@ -107,6 +122,12 @@ found in the LICENSE file.
         <item android:id="@+id/readaloud_menu_id"
             android:title="@string/menu_listen_to_this_page"
             android:icon="@drawable/ic_play_circle" />
+        <item android:id="@+id/reader_mode_menu_id"
+            android:title="@string/reader_view_text_alt"
+            android:icon="@drawable/ic_reader_mode_24dp" />
+        <item android:id="@+id/open_with_id"
+            android:title="@string/menu_open_with"
+            android:icon="@drawable/ic_open_in_new" />
         <item android:id="@+id/universal_install"
             android:title="@string/menu_add_to_homescreen"
             android:icon="@drawable/ic_add_to_home_screen" />
@@ -149,6 +170,9 @@ found in the LICENSE file.
         <item android:id="@+id/preferences_id"
             android:title="@string/menu_settings"
             android:icon="@drawable/settings_cog" />
+        <item android:id="@+id/ntp_customization_id"
+            android:title="@string/menu_ntp_customization"
+            android:icon="@drawable/bookmark_edit_active" />
         <item android:id="@+id/help_id"
             android:title="@string/menu_help"
             android:icon="@drawable/help_outline" />
@@ -168,6 +192,9 @@ found in the LICENSE file.
         <item android:id="@id/new_incognito_tab_menu_id"
             android:title="@string/menu_new_incognito_tab"
             android:icon="@drawable/ic_incognito" />
+        <item android:id="@id/new_tab_group_menu_id"
+          android:title="@string/menu_new_tab_group"
+          android:icon="@drawable/ic_widgets" />
         <item android:id="@+id/close_all_tabs_menu_id"
             android:title="@string/menu_close_all_tabs"
             android:icon="@drawable/btn_close_white" />

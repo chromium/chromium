@@ -72,14 +72,18 @@ class WebappsClient {
   virtual AppBannerManager* GetAppBannerManager(
       content::WebContents* web_contents) = 0;
 
+  using WebAppInstallationConflictCallback = base::OnceCallback<void(bool)>;
   // Returns if any current installations conflict with a new web app with the
-  // given start_url and manifest_id. See the implementing class for more
-  // details on their behavior. Returning true here signifies that an app is
-  // already installed here.
-  virtual bool DoesNewWebAppConflictWithExistingInstallation(
-      content::BrowserContext* browsing_context,
+  // given start_url and manifest_id using callback. See the implementing class
+  // for more details on their behavior. Returning true here signifies that an
+  // app is already installed here.
+  // Note: The callback is executed synchonously within the function call on
+  // desktop.
+  virtual void DoesNewWebAppConflictWithExistingInstallation(
+      content::BrowserContext* browser_context,
       const GURL& start_url,
-      const ManifestId& manifest_id) const = 0;
+      const ManifestId& manifest_id,
+      WebAppInstallationConflictCallback callback) const = 0;
 
   // Returns if the web contents this manager is on is inside of an app context.
   virtual bool IsInAppBrowsingContext(

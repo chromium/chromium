@@ -273,10 +273,10 @@ template <typename DescriptorType>
 std::vector<uint8_t> ExtractControls(IOUSBDescriptorHeader* usb_descriptor) {
   auto* descriptor = reinterpret_cast<DescriptorType>(usb_descriptor);
   if (descriptor->bControlSize > 0) {
-    NSData* data = [[NSData alloc] initWithBytes:&descriptor->bmControls[0]
-                                          length:descriptor->bControlSize];
-    const uint8_t* bytes = reinterpret_cast<const uint8_t*>(data.bytes);
-    return std::vector<uint8_t>(bytes, bytes + data.length);
+    const uint8_t* bytes =
+        reinterpret_cast<const uint8_t*>(&descriptor->bmControls[0]);
+    const size_t length = descriptor->bControlSize;
+    return std::vector<uint8_t>(bytes, bytes + length);
   }
   return std::vector<uint8_t>();
 }

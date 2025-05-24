@@ -11,7 +11,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -74,6 +76,11 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
   String ToUnparsedString() const;
 
  private:
+  // Return 'false' if there is a cycle in the serialization.
+  bool AppendUnparsedString(
+      StringBuilder&,
+      HeapHashSet<Member<const CSSUnparsedValue>>& values_on_stack) const;
+
   HeapVector<Member<V8CSSUnparsedSegment>> tokens_;
 
   FRIEND_TEST_ALL_PREFIXES(CSSUnparsedDeclarationValueTest, MixedList);

@@ -31,7 +31,7 @@ void DedicatedWorkerServiceImpl::EnumerateDedicatedWorkers(Observer* observer) {
     DedicatedWorkerHost* host = kv.second;
 
     observer->OnWorkerCreated(
-        dedicated_worker_token, host->GetProcessHost()->GetID(),
+        dedicated_worker_token, host->GetProcessHost()->GetDeprecatedID(),
         host->GetStorageKey().origin(), host->GetCreator());
     auto& maybe_url = host->GetFinalResponseURL();
     if (maybe_url) {
@@ -48,9 +48,9 @@ void DedicatedWorkerServiceImpl::NotifyWorkerCreated(
   DCHECK(inserted);
 
   for (Observer& observer : observers_) {
-    observer.OnWorkerCreated(host->GetToken(), host->GetProcessHost()->GetID(),
-                             host->GetStorageKey().origin(),
-                             host->GetCreator());
+    observer.OnWorkerCreated(
+        host->GetToken(), host->GetProcessHost()->GetDeprecatedID(),
+        host->GetStorageKey().origin(), host->GetCreator());
   }
 }
 

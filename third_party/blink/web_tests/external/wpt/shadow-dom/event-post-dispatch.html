@@ -138,7 +138,7 @@ document.body.removeChild(n4.test4);
 let n5 = createTestTree(test5);
 document.body.appendChild(n5.test5);
 test(() => {
-  let log = dispatchEventWithEventLog(n5, n5.target, new MouseEvent('my-event', {bubbles: true, compoesed: true, relatedTarget: n5.relatedTarget}));
+  let log = dispatchEventWithEventLog(n5, n5.target, new MouseEvent('my-event', {bubbles: true, composed: true, relatedTarget: n5.relatedTarget}));
   assert_equals(log.event.target, null);
   assert_equals(log.event.relatedTarget, null);
   assert_equals(log.event.eventPhase, 0);
@@ -147,7 +147,7 @@ test(() => {
 }, 'Event properties post dispatch with relatedTarget in the same shadow tree. (composed: true)');
 
 test(() => {
-  let log = dispatchEventWithEventLog(n5, n5.target, new MouseEvent('my-event', {bubbles: true, compoesed: false, relatedTarget: n5.relatedTarget}));
+  let log = dispatchEventWithEventLog(n5, n5.target, new MouseEvent('my-event', {bubbles: true, composed: false, relatedTarget: n5.relatedTarget}));
   assert_equals(log.event.target, null);
   assert_equals(log.event.relatedTarget, null);
   assert_equals(log.event.eventPhase, 0);
@@ -223,4 +223,60 @@ test(() => {
   assert_equals(log.event.composedPath().length, 0);
 }, 'Event properties post dispatch with relatedTarget in the different shadow trees. (composed: false)');
 document.body.removeChild(n7.test7);
+
+test(t => {
+  let host = document.createElement("div");
+  let shadow = host.attachShadow({ mode: "open" });
+  let target = shadow.appendChild(document.createElement("trala"));
+
+  let eventListenerCalled = false;
+  target.addEventListener("my-event", t.step_func(e => {
+    eventListenerCalled = true;
+    assert_equals(window.event, undefined);
+
+    // Move target node out of shadow tree.
+    host.appendChild(target);
+  }));
+
+  let event = new MouseEvent('my-event', {composed: false, relatedTarget: host});
+  target.dispatchEvent(event);
+  assert_true(eventListenerCalled);
+
+  assert_equals(event.target, null, "target should have been cleared");
+  assert_equals(event.relatedTarget, null, "relatedTarget should have been cleared");
+  assert_equals(event.eventPhase, 0);
+  assert_equals(event.currentTarget, null);
+  assert_equals(event.composedPath().length, 0);
+}, 'Event properties post dispatch when target get moved out of the shadow tree by event listener');
+
+test(t => {
+  let host = document.createElement("div");
+  let shadow = host.attachShadow({ mode: "open" });
+  let target = host.appendChild(document.createElement("trala"));
+
+  let eventListenerCalled = false;
+  target.addEventListener("my-event", t.step_func(e => {
+      assert_equals(window.event, e);
+  }));
+  target.addEventListener("my-event", t.step_func(e => {
+    eventListenerCalled = true;
+    assert_equals(window.event, e);
+    // Move target node into the shadow tree.
+    shadow.append(target);
+  }));
+  target.addEventListener("my-event", t.step_func(e => {
+      assert_equals(window.event, e);
+  }));
+
+  let event = new MouseEvent('my-event', {composed: false, relatedTarget: host});
+  target.dispatchEvent(event);
+  assert_true(eventListenerCalled);
+
+  // targets should not have been cleared since the node was not in the shadow tree when the event was initially dispatched.
+  assert_equals(event.target, target, "Target should not have been cleared");
+  assert_equals(event.relatedTarget, host, "relatedTarget should not have been cleared");
+  assert_equals(event.eventPhase, 0);
+  assert_equals(event.currentTarget, null);
+  assert_equals(event.composedPath().length, 0);
+}, 'Event properties post dispatch when target get moved into the shadow tree by event listener');
 </script>

@@ -30,6 +30,7 @@
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -138,12 +139,12 @@ class DisplayPrefsTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void LoggedInAsUser() { SimulateUserLogin("user1@test.com"); }
+  void LoggedInAsUser() { SimulateUserLogin({"user1@test.com"}); }
 
   void LoggedInAsGuest() { SimulateGuestLogin(); }
 
   void LoggedInAsPublicAccount() {
-    SimulateUserLogin("pa@test.com", user_manager::UserType::kPublicAccount);
+    SimulateUserLogin({"pa@test.com", user_manager::UserType::kPublicAccount});
   }
 
   void LoadDisplayPreferences() { display_prefs()->LoadDisplayPreferences(); }
@@ -401,8 +402,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   window_tree_host_manager->SetPrimaryDisplayId(dummy_id);
   EXPECT_NE(dummy_id, display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
-  window_tree_host_manager->SetOverscanInsets(
-      id1, gfx::Insets::TLBR(10, 11, 12, 13));
+  display_manager()->SetOverscanInsets(id1, gfx::Insets::TLBR(10, 11, 12, 13));
   display_manager()->SetDisplayRotation(id1, display::Display::ROTATE_90,
                                         display::Display::RotationSource::USER);
 
@@ -825,8 +825,8 @@ TEST_F(DisplayPrefsTestGuest, DisplayPrefsTestGuest) {
   display_manager()->UpdateZoomFactor(id1, 1.f / scale);
   window_tree_host_manager->SetPrimaryDisplayId(id2);
   int64_t new_primary = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  window_tree_host_manager->SetOverscanInsets(
-      new_primary, gfx::Insets::TLBR(10, 11, 12, 13));
+  display_manager()->SetOverscanInsets(new_primary,
+                                       gfx::Insets::TLBR(10, 11, 12, 13));
   display_manager()->SetDisplayRotation(new_primary,
                                         display::Display::ROTATE_90,
                                         display::Display::RotationSource::USER);
@@ -898,8 +898,8 @@ TEST_P(DisplayPrefsPublicAccountTest, StoreDisplayPrefsForPublicAccount) {
   window_tree_host_manager->SetPrimaryDisplayId(id2);
   const int64_t new_primary =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  window_tree_host_manager->SetOverscanInsets(
-      new_primary, gfx::Insets::TLBR(10, 11, 12, 13));
+  display_manager()->SetOverscanInsets(new_primary,
+                                       gfx::Insets::TLBR(10, 11, 12, 13));
   display_manager()->SetDisplayRotation(new_primary,
                                         display::Display::ROTATE_90,
                                         display::Display::RotationSource::USER);
@@ -1877,6 +1877,44 @@ TEST_F(DisplayPrefsTest, IsDisplayAvailableInPref) {
   // Display is available in prefs after adding the display.
   UpdateDisplay("300x200");
   EXPECT_TRUE(display_prefs()->IsDisplayAvailableInPref(id));
+}
+
+class DisplayPrefsStartupTest : public DisplayPrefsTest {
+ public:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kUseFirstDisplayAsInternal);
+    ScopedDictPrefUpdate update(local_state(), prefs::kDisplayRotationLock);
+    update->Set("lock", true);
+    update->Set("orientation",
+                static_cast<int>(display::Display::Rotation::ROTATE_90));
+    DisplayPrefsTest::SetUp();
+  }
+};
+
+// Make sure that the orientation lock information is correctly preserved
+// during the startup in Tablet Mode, so that it'll be locked to the correct,
+// same orientation in next startup time. crbug.com/391763863.
+TEST_F(DisplayPrefsStartupTest, RotationLockInfoDuringStartupInTabletMode) {
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      []() -> bool { return display::Screen::GetScreen()->InTabletMode(); }));
+
+  auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  ScreenOrientationController* screen_orientation_controller =
+      Shell::Get()->screen_orientation_controller();
+
+  EXPECT_EQ(display::Display::Rotation::ROTATE_90, display.rotation());
+  EXPECT_TRUE(screen_orientation_controller->rotation_locked());
+
+  const base::Value::Dict& properties =
+      local_state()->GetDict(prefs::kDisplayRotationLock);
+  const std::optional<bool> rotation_lock = properties.FindBool("lock");
+  EXPECT_TRUE(rotation_lock.value_or(false));
+
+  const std::optional<int> rotation = properties.FindInt("orientation");
+  EXPECT_EQ(display::Display::Rotation::ROTATE_90, rotation.value_or(-1));
 }
 
 }  // namespace ash

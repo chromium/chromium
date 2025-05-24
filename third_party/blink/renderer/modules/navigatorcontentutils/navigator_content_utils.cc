@@ -207,9 +207,17 @@ void NavigatorContentUtils::registerProtocolHandler(
                         ? WebFeature::kRegisterProtocolHandlerSecureOrigin
                         : WebFeature::kRegisterProtocolHandlerInsecureOrigin);
 
-  NavigatorContentUtils::From(navigator, *window->GetFrame())
-      .Client()
-      ->RegisterProtocolHandler(scheme, window->CompleteURL(url));
+  Document* document = window->document();
+  auto* client =
+      NavigatorContentUtils::From(navigator, *window->GetFrame()).Client();
+
+  if (!document->IsPrerendering()) {
+    client->RegisterProtocolHandler(scheme, window->CompleteURL(url));
+  } else {
+    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        &NavigatorContentUtilsClient::RegisterProtocolHandler,
+        WrapWeakPersistent(client), scheme, window->CompleteURL(url)));
+  }
 }
 
 void NavigatorContentUtils::unregisterProtocolHandler(
@@ -234,9 +242,17 @@ void NavigatorContentUtils::unregisterProtocolHandler(
   if (!VerifyCustomHandlerURL(*window, url, exception_state, security_level))
     return;
 
-  NavigatorContentUtils::From(navigator, *window->GetFrame())
-      .Client()
-      ->UnregisterProtocolHandler(scheme, window->CompleteURL(url));
+  Document* document = window->document();
+  auto* client =
+      NavigatorContentUtils::From(navigator, *window->GetFrame()).Client();
+
+  if (!document->IsPrerendering()) {
+    client->UnregisterProtocolHandler(scheme, window->CompleteURL(url));
+  } else {
+    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        &NavigatorContentUtilsClient::UnregisterProtocolHandler,
+        WrapWeakPersistent(client), scheme, window->CompleteURL(url)));
+  }
 }
 
 void NavigatorContentUtils::Trace(Visitor* visitor) const {

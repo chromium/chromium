@@ -5,27 +5,34 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_HATS_SERVICE_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_HATS_SERVICE_H_
 
+#include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
-class SafetyHubMenuNotificationService;
+namespace safety_hub {
+enum class SafetyHubModuleType;
+}  // namespace safety_hub
 
 class SafetyHubHatsService : public KeyedService {
  public:
-  SafetyHubHatsService(
-      TrustSafetySentimentService* tss_service,
-      SafetyHubMenuNotificationService& menu_notification_service,
-      Profile& profile);
+  SafetyHubHatsService(TrustSafetySentimentService* tss_service,
+                       HatsService* hats_service,
+                       Profile& profile);
 
   SafetyHubHatsService(const SafetyHubHatsService&) = delete;
   SafetyHubHatsService& operator=(const SafetyHubHatsService&) = delete;
 
+  // Called when the user clicks on the app menu.
+  void TriggerControlSurvey();
+
   // Called when the user interacts with a module of Safety Hub.
   void SafetyHubModuleInteracted();
 
-  // Called when the user clicks a menu notification from Safety Hub.
-  void SafetyHubNotificationClicked();
+  // Called when the user clicks a menu notification of type `module` from
+  // Safety Hub.
+  void SafetyHubNotificationClicked(
+      std::optional<safety_hub::SafetyHubModuleType> module);
 
   // Called when the user visits the Safety Hub page.
   void SafetyHubVisited();
@@ -50,13 +57,14 @@ class SafetyHubHatsService : public KeyedService {
 
   const raw_ref<Profile> profile_;
   const raw_ptr<TrustSafetySentimentService> tss_service_;
-  const raw_ref<SafetyHubMenuNotificationService> menu_notification_service_;
+  const raw_ptr<HatsService> hats_service_;
 
   // The different states that represents the Safety Hub state, and more
   // specifically the user's interactions with it.
   bool has_visited_ = false;
   bool has_interacted_with_module_ = false;
   bool has_clicked_notification_ = false;
+  std::optional<safety_hub::SafetyHubModuleType> last_module_clicked_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_HATS_SERVICE_H_

@@ -63,6 +63,7 @@ class ModulatorImplBase : public Modulator {
                  const ScriptFetchOptions&,
                  ModuleScriptCustomFetchType,
                  ModuleTreeClient*,
+                 v8::ModuleImportPhase,
                  String referrer) override;
   void FetchDescendantsForInlineScript(
       ModuleScript*,
@@ -104,7 +105,7 @@ class ModulatorImplBase : public Modulator {
   void ProduceCacheModuleTree(ModuleScript*,
                               HeapHashSet<Member<const ModuleScript>>*);
 
-  Member<ScriptState> script_state_;
+  Member<ScriptState> const script_state_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Member<ModuleMap> map_;
   Member<ModuleTreeLinkerRegistry> tree_linker_registry_;

@@ -29,7 +29,7 @@ struct ParseTestData {
 
 class DataURLTest
     : public testing::Test,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   DataURLTest() {
     using FeatureList = std::vector<base::test::FeatureRef>;
@@ -38,15 +38,17 @@ class DataURLTest
     const auto feature_set = [&](bool flag_on) -> FeatureList& {
       return flag_on ? enabled_features : disabled_features;
     };
-    feature_set(OptimizedParsing())
-        .push_back(features::kOptimizeParsingDataUrls);
     feature_set(KeepWhitespace())
         .push_back(features::kKeepWhitespaceForDataUrls);
+    feature_set(SimdutfSupport()).push_back(features::kSimdutfBase64Support);
+    feature_set(FurtherOptimizeParsing())
+        .push_back(features::kFurtherOptimizeParsingDataUrls);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool OptimizedParsing() const { return std::get<0>(GetParam()); }
-  bool KeepWhitespace() const { return std::get<1>(GetParam()); }
+  bool KeepWhitespace() const { return std::get<0>(GetParam()); }
+  bool SimdutfSupport() const { return std::get<1>(GetParam()); }
+  bool FurtherOptimizeParsing() const { return std::get<2>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -55,8 +57,9 @@ class DataURLTest
 INSTANTIATE_TEST_SUITE_P(DataURLTest,
                          DataURLTest,
                          testing::Combine(
-                             /*optimize_parsing=*/testing::Bool(),
-                             /*keep_whitespace=*/testing::Bool()));
+                             /*keep_whitespace=*/testing::Bool(),
+                             /*simdutf_support=*/testing::Bool(),
+                             /*further_optimize_parsing=*/testing::Bool()));
 
 TEST_P(DataURLTest, Parse) {
   const ParseTestData tests[] = {
@@ -220,10 +223,8 @@ TEST_P(DataURLTest, BuildResponseSimple) {
   EXPECT_EQ(1, version.major_value());
   EXPECT_EQ(1, version.minor_value());
   EXPECT_EQ("OK", headers->GetStatusText());
-  std::string value;
-  EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &value));
-  EXPECT_EQ(value, "text/plain;charset=US-ASCII");
-  value.clear();
+  EXPECT_EQ(headers->GetNormalizedHeader("Content-Type"),
+            "text/plain;charset=US-ASCII");
 }
 
 TEST_P(DataURLTest, BuildResponseHead) {
@@ -247,9 +248,8 @@ TEST_P(DataURLTest, BuildResponseHead) {
     EXPECT_EQ(1, version.major_value());
     EXPECT_EQ(1, version.minor_value());
     EXPECT_EQ("OK", headers->GetStatusText());
-    std::string content_type;
-    EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &content_type));
-    EXPECT_EQ(content_type, "text/plain;charset=US-ASCII");
+    EXPECT_EQ(headers->GetNormalizedHeader("Content-Type"),
+              "text/plain;charset=US-ASCII");
   }
 }
 
@@ -280,9 +280,8 @@ TEST_P(DataURLTest, BuildResponseInvalidMimeType) {
                                        &mime_type, &charset, &data, &headers));
 
   ASSERT_TRUE(headers);
-  std::string value;
-  EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &value));
-  EXPECT_EQ(value, "text/plain;charset=US-ASCII");
+  EXPECT_EQ(headers->GetNormalizedHeader("Content-Type"),
+            "text/plain;charset=US-ASCII");
 }
 
 TEST_P(DataURLTest, InvalidCharset) {
@@ -341,8 +340,7 @@ TEST_P(DataURLTest, Image) {
   ASSERT_TRUE(headers);
   std::string value;
   EXPECT_EQ(headers->GetStatusLine(), "HTTP/1.1 200 OK");
-  EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &value));
-  EXPECT_EQ(value, "image/png");
+  EXPECT_EQ(headers->GetNormalizedHeader("Content-Type"), "image/png");
 }
 
 // Tests the application of the kRemoveWhitespaceForDataURLs command line

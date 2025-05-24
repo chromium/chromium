@@ -207,10 +207,6 @@ std::vector<gl::GLImplementationParts>
 WaylandSurfaceFactory::GetAllowedGLImplementations() {
   std::vector<gl::GLImplementationParts> impls;
   if (egl_implementation_) {
-    // Allow for Angle-vulkan implementation.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    impls.emplace_back(gl::kGLImplementationEGLANGLE);
-#endif
     impls.emplace_back(gl::ANGLEImplementation::kOpenGL);
     impls.emplace_back(gl::ANGLEImplementation::kOpenGLES);
     impls.emplace_back(gl::ANGLEImplementation::kSwiftShader);
@@ -234,6 +230,9 @@ GLOzone* WaylandSurfaceFactory::GetGLOzone(
 std::unique_ptr<gpu::VulkanImplementation>
 WaylandSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
                                                   bool allow_protected_memory) {
+  LOG_IF(ERROR, !use_swiftshader)
+      << "'--ozone-platform=wayland' is not compatible with Vulkan. "
+         "Consider switching to '--ozone-platform=x11' or disabling Vulkan";
   return std::make_unique<VulkanImplementationWayland>(use_swiftshader);
 }
 #endif

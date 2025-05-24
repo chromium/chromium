@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 
 namespace performance_manager {
@@ -126,21 +125,18 @@ void SiteDataImpl::RegisterDataLoadedCallback(base::OnceClosure&& callback) {
 void SiteDataImpl::NotifyUpdatesFaviconInBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NotifyFeatureUsage(
-      site_characteristics_.mutable_updates_favicon_in_background(),
-      "FaviconUpdateInBackground");
+      site_characteristics_.mutable_updates_favicon_in_background());
 }
 
 void SiteDataImpl::NotifyUpdatesTitleInBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NotifyFeatureUsage(
-      site_characteristics_.mutable_updates_title_in_background(),
-      "TitleUpdateInBackground");
+      site_characteristics_.mutable_updates_title_in_background());
 }
 
 void SiteDataImpl::NotifyUsesAudioInBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyFeatureUsage(site_characteristics_.mutable_uses_audio_in_background(),
-                     "AudioUsageInBackground");
+  NotifyFeatureUsage(site_characteristics_.mutable_uses_audio_in_background());
 }
 
 void SiteDataImpl::NotifyLoadTimePerformanceMeasurement(
@@ -210,9 +206,6 @@ SiteDataImpl::~SiteDataImpl() {
       // SiteDataImpl is only created from SiteDataCacheImpl, not from the
       // NonRecordingSiteDataCache that's used for OTR profiles, so this should
       // always be logged.
-      base::UmaHistogramBoolean(
-          "PerformanceManager.SiteDB.WriteScheduled.WriteSiteDataIntoStore",
-          true);
       data_store_->WriteSiteDataIntoStore(origin_, FlushStateToProto());
     }
   }
@@ -286,10 +279,6 @@ SiteFeatureUsage SiteDataImpl::GetFeatureUsage(
     const SiteDataFeatureProto& feature_proto) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::UmaHistogramBoolean(
-      "PerformanceManager.SiteDB.ReadHasCompletedBeforeQuery",
-      fully_initialized_);
-
   // Checks if this feature has already been observed.
   // TODO(sebmarchand): Check the timestamp and reset features that haven't been
   // observed in a long time, https://crbug.com/826446.
@@ -302,23 +291,10 @@ SiteFeatureUsage SiteDataImpl::GetFeatureUsage(
   return SiteFeatureUsage::kSiteFeatureUsageUnknown;
 }
 
-void SiteDataImpl::NotifyFeatureUsage(SiteDataFeatureProto* feature_proto,
-                                      const char* feature_name) {
+void SiteDataImpl::NotifyFeatureUsage(SiteDataFeatureProto* feature_proto) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsLoaded());
   DCHECK_GT(loaded_tabs_in_background_count_, 0U);
-
-  // Report the observation time if this is the first time this feature is
-  // observed.
-  if (feature_proto->observation_duration() != 0) {
-    base::UmaHistogramCustomTimes(
-        base::StrCat(
-            {"PerformanceManager.SiteDB.ObservationTimeBeforeFirstUse.",
-             feature_name}),
-        InternalRepresentationToTimeDelta(
-            feature_proto->observation_duration()),
-        base::Seconds(1), base::Days(1), 100);
-  }
 
   feature_proto->Clear();
   feature_proto->set_use_timestamp(

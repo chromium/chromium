@@ -1,0 +1,17 @@
+This is a wdspec test.
+[FAIL] test_params_extension_data_path_invalid_value[archivePath-]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
+[FAIL] test_params_extension_data_path_invalid_value[archivePath-invalid path]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
+[FAIL] test_params_extension_data_archive_path_invalid_webextension
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
+[FAIL] test_params_extension_data_path_invalid_webextension
+  webdriver.bidi.error.UnknownErrorException: unknown error (Manifest file is missing or unreadable)
+[FAIL] test_params_extension_data_value_invalid_value
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
+[FAIL] test_params_extension_data_value_invalid_webextension[]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
+[FAIL] test_params_extension_data_value_invalid_webextension[dGVzdA==]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
+Harness: the test ran to completion.
+

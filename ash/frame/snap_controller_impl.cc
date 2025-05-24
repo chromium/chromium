@@ -79,10 +79,6 @@ void SnapControllerImpl::CommitSnap(aura::Window* window,
     case SnapRequestSource::kWindowLayoutMenu:
       snap_action_source = WindowSnapActionSource::kSnapByWindowLayoutMenu;
       break;
-    case SnapRequestSource::kFromLacrosSnapButtonOrWindowLayoutMenu:
-      snap_action_source =
-          WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu;
-      break;
   }
 
   const WindowSnapWMEvent snap_event(snap == chromeos::SnapDirection::kPrimary

@@ -172,8 +172,6 @@ ExtensionProvider::ExtensionProvider(Profile* profile,
           icon_set.value_or(DefaultIconSet(provider_id_.GetExtensionId()))) {
   request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
       provider_id_.GetExtensionId(), extensions::EventRouter::Get(profile),
-      base::BindRepeating(&ExtensionProvider::OnLacrosOperationForwarded,
-                          weak_ptr_factory_.GetWeakPtr()),
       GetServiceWorkerLifetimeManager(profile));
   if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
       provider_id_.GetExtensionId() == extension_misc::kODFSExtensionId) {
@@ -218,11 +216,6 @@ void ExtensionProvider::OnAppUpdate(const apps::AppUpdate& update) {
 void ExtensionProvider::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   app_registry_cache_observer_.Reset();
-}
-
-void ExtensionProvider::OnLacrosOperationForwarded(int request_id,
-                                                   base::File::Error error) {
-  request_manager_->RejectRequest(request_id, RequestValue(), error);
 }
 
 }  // namespace ash::file_system_provider

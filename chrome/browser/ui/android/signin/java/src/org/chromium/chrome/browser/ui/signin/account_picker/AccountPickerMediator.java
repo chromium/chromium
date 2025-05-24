@@ -9,8 +9,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.MainThread;
 
-import org.chromium.base.Callback;
-import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
@@ -19,6 +18,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,9 +28,10 @@ import java.util.List;
 /**
  * The mediator of account picker handles all the signals from the outside world.
  *
- * It defines the business logic when the user selects or adds an account and updates the model.
+ * <p>It defines the business logic when the user selects or adds an account and updates the model.
  * This class has no visibility of the account picker view.
  */
+@NullMarked
 class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.Observer {
     private final MVCListAdapter.ModelList mListModel;
     private final AccountPickerCoordinator.Listener mAccountPickerListener;
@@ -50,14 +51,13 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
         mAccountManagerFacade.addObserver(this);
         mProfileDataCache.addObserver(this);
         updateAccounts(
-                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                        mAccountManagerFacade.getCoreAccountInfos()));
+                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()));
     }
 
     /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
-        mAccountManagerFacade.getCoreAccountInfos().then(this::updateAccounts);
+        mAccountManagerFacade.getAccounts().then(this::updateAccounts);
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */
@@ -88,19 +88,16 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
         mAccountManagerFacade.removeObserver(this);
     }
 
-    private void updateAccounts(List<CoreAccountInfo> coreAccountInfos) {
+    private void updateAccounts(List<AccountInfo> accounts) {
         mListModel.clear();
 
         // Add an "existing account" row for each account
-        final Callback<DisplayableProfileData> callback =
-                profileData ->
-                        mAccountPickerListener.onAccountSelected(profileData.getAccountEmail());
-        for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
+        for (CoreAccountInfo account : accounts) {
             PropertyModel model =
                     ExistingAccountRowProperties.createModel(
-                            mProfileDataCache.getProfileDataOrDefault(coreAccountInfo.getEmail()),
+                            mProfileDataCache.getProfileDataOrDefault(account.getEmail()),
                             /* isCurrentlySelected= */ false,
-                            callback);
+                            () -> mAccountPickerListener.onAccountSelected(account));
             mListModel.add(new MVCListAdapter.ListItem(ItemType.EXISTING_ACCOUNT_ROW, model));
         }
 

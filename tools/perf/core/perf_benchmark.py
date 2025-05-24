@@ -74,6 +74,14 @@ class PerfBenchmark(benchmark.Benchmark):
   For more info, see: https://goo.gl/4uvaVM
   """
 
+  SCHEDULED = True
+
+  @classmethod
+  def IsScheduled(cls):
+    if cls.Name().startswith("UNSCHEDULED_"):
+      return False
+    return cls.SCHEDULED
+
   def SetExtraBrowserOptions(self, options):
     """To be overridden by perf benchmarks."""
 

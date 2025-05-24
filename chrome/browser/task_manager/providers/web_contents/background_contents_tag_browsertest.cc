@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/background/background_contents_test_waiter.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #include "chrome/common/chrome_switches.h"
@@ -11,6 +13,8 @@
 #include "components/embedder_support/switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -31,6 +35,11 @@ class BackgroundContentsTagTest : public extensions::ExtensionBrowserTest {
   const extensions::Extension* LoadBackgroundExtension() {
     auto* extension = LoadExtension(
         test_data_dir_.AppendASCII("app_process_background_instances"));
+    // Wait for the hosted app's background page to start up. Normally, this
+    // is handled by `LoadExtension()`, but only for extension-types (not hosted
+    // apps).
+    BackgroundContentsTestWaiter(profile()).WaitForBackgroundContents(
+        extension->id());
     return extension;
   }
 

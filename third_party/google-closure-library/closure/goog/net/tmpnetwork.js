@@ -16,7 +16,6 @@
 goog.provide('goog.net.tmpnetwork');
 
 goog.require('goog.Uri');
-goog.require('goog.dom.safe');
 goog.require('goog.net.ChannelDebug');
 
 
@@ -160,7 +159,7 @@ goog.net.tmpnetwork.testLoadImage = function(url, timeout, callback) {
       img.ontimeout();
     }
   }, timeout);
-  goog.dom.safe.setImageSrc(img, url);
+  img.src = url;
 };
 
 

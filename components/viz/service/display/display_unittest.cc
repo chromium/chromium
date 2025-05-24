@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/viz/service/display/display.h"
 
@@ -33,6 +29,7 @@
 #include "cc/base/math_util.h"
 #include "cc/test/scheduler_test_common.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -55,7 +52,6 @@
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -76,8 +72,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/delegated_ink_point.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -169,7 +167,7 @@ std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
 class DisplayTest : public testing::Test {
  public:
   DisplayTest()
-      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
+      : manager_(FrameSinkManagerImpl::InitParams()),
         support_(
             std::make_unique<CompositorFrameSinkSupport>(nullptr,
                                                          &manager_,
@@ -178,7 +176,7 @@ class DisplayTest : public testing::Test {
         task_runner_(new base::NullTaskRunner),
         client_(std::make_unique<StubDisplayClient>()) {}
 
-  ~DisplayTest() override {}
+  ~DisplayTest() override = default;
 
   void SetUpSoftwareDisplay(const RendererSettings& settings) {
     std::unique_ptr<FakeSoftwareOutputSurface> output_surface;
@@ -230,9 +228,8 @@ class DisplayTest : public testing::Test {
     // well, so there is no need to pass in a real
     // DisplayCompositorMemoryAndTaskController.
     auto display = std::make_unique<Display>(
-        &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
-        &gpu_scheduler_, settings, &debug_settings_, frame_sink_id,
-        nullptr /* DisplayCompositorMemoryAndTaskController */,
+        &shared_image_manager_, &gpu_scheduler_, settings, &debug_settings_,
+        frame_sink_id, nullptr /* DisplayCompositorMemoryAndTaskController */,
         std::move(output_surface), std::move(overlay_processor),
         std::move(scheduler), task_runner_);
     display->SetVisible(true);
@@ -241,7 +238,8 @@ class DisplayTest : public testing::Test {
 
   bool ShouldSendBeginFrame(CompositorFrameSinkSupport* support,
                             base::TimeTicks frame_time) {
-    return support->ShouldSendBeginFrame(frame_time, base::Seconds(0));
+    return support->ShouldSendBeginFrame(BeginFrameId(999, 999), frame_time,
+                                         base::Seconds(0));
   }
 
   void UpdateBeginFrameTime(CompositorFrameSinkSupport* support,
@@ -278,7 +276,6 @@ class DisplayTest : public testing::Test {
   }
 
   DebugRendererSettings debug_settings_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
   gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
@@ -759,7 +756,7 @@ TEST_F(DisplayTest, BackdropFilterTest) {
       bd_pass->SetAll(
           render_pass_id_generator.GenerateNextId(), sub_surface_rect,
           no_damage, gfx::Transform(), cc::FilterOperations(), backdrop_filters,
-          gfx::RRectF(gfx::RectF(sub_surface_rect), 0), SubtreeCaptureId(),
+          SkPath::Rect(gfx::RectToSkRect(sub_surface_rect)), SubtreeCaptureId(),
           sub_surface_rect.size(), ViewTransitionElementResourceId(), false,
           false, false, false, false);
       pass_list.push_back(std::move(bd_pass));
@@ -909,31 +906,7 @@ TEST_F(DisplayTest, CompositorFrameDamagesCorrectDisplay) {
   manager_.UnregisterBeginFrameSource(begin_frame_source2.get());
 }
 
-// Supports testing features::OnBeginFrameAcks, which changes the expectations
-// of what IPCs are sent to the CompositorFrameSinkClient. When enabled
-// OnBeginFrame also handles ReturnResources as well as
-// DidReceiveCompositorFrameAck.
-class OnBeginFrameAcksDisplayTest : public DisplayTest,
-                                    public testing::WithParamInterface<bool> {
- public:
-  OnBeginFrameAcksDisplayTest();
-  ~OnBeginFrameAcksDisplayTest() override = default;
-
-  bool BeginFrameAcksEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-OnBeginFrameAcksDisplayTest::OnBeginFrameAcksDisplayTest() {
-  if (BeginFrameAcksEnabled()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kOnBeginFrameAcks);
-  } else {
-    scoped_feature_list_.InitAndDisableFeature(features::kOnBeginFrameAcks);
-  }
-}
-
-TEST_P(OnBeginFrameAcksDisplayTest, CompositorFrameWithPresentationToken) {
+TEST_F(DisplayTest, CompositorFrameWithPresentationToken) {
   RendererSettings settings;
   id_allocator_.GenerateId();
   const LocalSurfaceId local_surface_id(
@@ -953,9 +926,6 @@ TEST_P(OnBeginFrameAcksDisplayTest, CompositorFrameWithPresentationToken) {
 
   auto sub_support = std::make_unique<CompositorFrameSinkSupport>(
       &sub_client, &manager_, kAnotherFrameSinkId, false /* is_root */);
-  if (BeginFrameAcksEnabled()) {
-    sub_support->SetWantsBeginFrameAcks();
-  }
 
   const gfx::Size display_size(100, 100);
   display_->Resize(display_size);
@@ -969,8 +939,7 @@ TEST_P(OnBeginFrameAcksDisplayTest, CompositorFrameWithPresentationToken) {
             .AddRenderPass(gfx::Rect(sub_surface_size), gfx::Rect())
             .SetBeginFrameSourceId(kBeginFrameSourceId)
             .Build();
-    EXPECT_CALL(sub_client, DidReceiveCompositorFrameAck(_))
-        .Times(BeginFrameAcksEnabled() ? 0 : 1);
+    EXPECT_CALL(sub_client, DidReceiveCompositorFrameAck(_));
     frame_token_1 = frame.metadata.frame_token;
     sub_support->SubmitCompositorFrame(sub_local_surface_id, std::move(frame));
   }
@@ -1026,8 +995,7 @@ TEST_P(OnBeginFrameAcksDisplayTest, CompositorFrameWithPresentationToken) {
                                 .Build();
     frame_token_2 = frame.metadata.frame_token;
 
-    EXPECT_CALL(sub_client, DidReceiveCompositorFrameAck(_))
-        .Times(BeginFrameAcksEnabled() ? 0 : 1);
+    EXPECT_CALL(sub_client, DidReceiveCompositorFrameAck(_));
     sub_support->SubmitCompositorFrame(sub_local_surface_id, std::move(frame));
 
     display_->DrawAndSwap({base::TimeTicks::Now(), base::TimeTicks::Now()});
@@ -1046,22 +1014,13 @@ TEST_P(OnBeginFrameAcksDisplayTest, CompositorFrameWithPresentationToken) {
             .SetBeginFrameSourceId(kBeginFrameSourceId)
             .Build();
 
-    EXPECT_CALL(sub_client, DidReceiveCompositorFrameAck(_))
-        .Times(BeginFrameAcksEnabled() ? 0 : 1);
+    EXPECT_CALL(sub_client, DidReceiveCompositorFrameAck(_));
     sub_support->SubmitCompositorFrame(sub_local_surface_id, std::move(frame));
 
     display_->DrawAndSwap({base::TimeTicks::Now(), base::TimeTicks::Now()});
     RunUntilIdle();
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         OnBeginFrameAcksDisplayTest,
-                         testing::Bool(),
-                         [](auto& info) {
-                           return info.param ? "BeginFrameAcks"
-                                             : "CompositoFrameAcks";
-                         });
 
 TEST_F(DisplayTest, BeginFrameThrottling) {
   id_allocator_.GenerateId();
@@ -1459,12 +1418,13 @@ TEST_P(UseMapRectDisplayTest, PixelMovingForegroundFilterTest) {
       cc::FilterOperations foreground_filters;
       foreground_filters.Append(cc::FilterOperation::CreateDropShadowFilter(
           gfx::Point(5, 10), 2.f, SkColors::kTransparent));
-      bd_pass->SetAll(
-          render_pass_id_generator.GenerateNextId(), sub_surface_rect,
-          no_damage, gfx::Transform(), foreground_filters,
-          cc::FilterOperations(), gfx::RRectF(gfx::RectF(sub_surface_rect), 0),
-          SubtreeCaptureId(), sub_surface_rect.size(),
-          ViewTransitionElementResourceId(), false, false, false, false, false);
+      bd_pass->SetAll(render_pass_id_generator.GenerateNextId(),
+                      sub_surface_rect, no_damage, gfx::Transform(),
+                      foreground_filters, cc::FilterOperations(),
+                      SkPath::Rect(gfx::RectToSkRect(sub_surface_rect)),
+                      SubtreeCaptureId(), sub_surface_rect.size(),
+                      ViewTransitionElementResourceId(), false, false, false,
+                      false, false);
       pass_list.push_back(std::move(bd_pass));
 
       CompositorFrame frame = CompositorFrameBuilder()
@@ -1720,7 +1680,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
         ink_points_[pointer_id][index].point(), diameter, color.toSkColor(),
         ink_points_[pointer_id][index].timestamp(), presentation_area,
         base::TimeTicks::Now(),
-        /*hovering*/ false);
+        /*hovering*/ false, /*render_pass_id=*/0);
     SendMetadata(metadata);
     return metadata;
   }
@@ -1754,7 +1714,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   void DrawDelegatedInkTrail() {
     SkCanvas canvas;
     static_cast<DelegatedInkPointRendererSkia*>(ink_renderer())
-        ->DrawDelegatedInkTrail(&canvas);
+        ->DrawDelegatedInkTrail(&canvas, gfx::Transform());
   }
 
   int GetPathPointCount() { return ink_renderer()->GetPathPointCountForTest(); }
@@ -1840,14 +1800,6 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   EXPECT_EQ(1, UniqueStoredPointerIds());
   EXPECT_EQ(kInitialDelegatedPoints, StoredPointsForPointerId(kPointerId));
 
-  // No metadata has been provided yet, so filtering shouldn't occur and all
-  // points should still exist after a FinalizePath() call.
-  FinalizePathAndCheckHistograms(base::TimeDelta::Min(),
-                                 base::TimeDelta::Min());
-
-  EXPECT_EQ(1, UniqueStoredPointerIds());
-  EXPECT_EQ(kInitialDelegatedPoints, StoredPointsForPointerId(kPointerId));
-
   // Now provide metadata with a timestamp matching one of the points to
   // confirm that earlier points are removed and later points remain.
   const int kInkPointForMetadata = 1;
@@ -1856,14 +1808,14 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
       kInkPointForMetadata, kDiameter, SkColors::kBlack, gfx::RectF());
 
   // The histogram should count one in the bucket that is the difference between
-  // the latest point stored and the metadata. No prediction should occur with
-  // 3 provided points, so the *WithoutPrediction histogram should count
-  // the difference between the last point and the metadata, while the
-  // *WithPrediction* histogram should count 1 in the 0 bucket.
+  // the latest point stored and the metadata. The *WithoutPrediction histogram
+  // should count the difference between the last point and the metadata, while
+  // the *WithPrediction* histogram should count 1 in the 7ms bucket because
+  // prediction can occer with linear resampling and 2 input points.
   base::TimeDelta bucket_without_prediction =
       last_ink_point(kPointerId).timestamp() - metadata.timestamp();
   FinalizePathAndCheckHistograms(bucket_without_prediction,
-                                 base::Milliseconds(0));
+                                 base::Milliseconds(7));
 
   EXPECT_EQ(kInitialDelegatedPoints - kInkPointForMetadata,
             StoredPointsForPointerId(kPointerId));
@@ -1983,7 +1935,8 @@ TEST_F(SkiaDelegatedInkRendererTest,
   // *WithPrediction* shouldn't record anything due to no valid pointer id.
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(100, 100), 5.6f, SK_ColorBLACK, base::TimeTicks::Min(),
-      gfx::RectF(), base::TimeTicks::Min(), /*hovering*/ false));
+      gfx::RectF(), base::TimeTicks::Min(), /*hovering*/ false,
+      /*render_pass_id=*/0));
   FinalizePathAndCheckHistograms(base::Milliseconds(0), base::TimeDelta::Min());
   EXPECT_EQ(kNumPointsForPointerId0 - kInkPointForMetadata,
             StoredPointsForPointerId(kPointerIds[0]));
@@ -1998,7 +1951,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(100, 100), 5.6f, SK_ColorBLACK,
       base::TimeTicks::Now() + base::Milliseconds(1000), gfx::RectF(),
-      base::TimeTicks::Now(), /*hovering*/ false));
+      base::TimeTicks::Now(), /*hovering*/ false, /*render_pass_id=*/0));
   FinalizePathAndCheckHistograms(base::Milliseconds(0), base::TimeDelta::Min());
   for (int i : kPointerIds)
     EXPECT_EQ(0, StoredPointsForPointerId(i));
@@ -2088,7 +2041,7 @@ TEST_F(SkiaDelegatedInkRendererTest, DrawTrailWhenMetadataIsCloseEnough) {
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(point.x() - 1.0f, point.y() - 1.0f), 45.f, SK_ColorBLACK,
       timestamp, gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering*/ false);
+      /*hovering*/ false, /*render_pass_id=*/0);
   SendMetadata(metadata);
 
   // If the metadata was close enough, then a trail should be drawn with all
@@ -2103,7 +2056,7 @@ TEST_F(SkiaDelegatedInkRendererTest, DrawTrailWhenMetadataIsCloseEnough) {
   metadata = gfx::DelegatedInkMetadata(
       gfx::PointF(point2.x() - 1.01f, point2.y() - 1.0f), 45.f, SK_ColorBLACK,
       timestamp2, gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering*/ false);
+      /*hovering*/ false, /*render_pass_id=*/0);
   SendMetadata(metadata);
 
   ink_renderer()->FinalizePathForDraw();
@@ -2129,7 +2082,7 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkOutstandingPointsToDraw) {
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(point.x(), point.y()), 45.f, SK_ColorBLACK, timestamp,
       gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering=*/false));
+      /*hovering=*/false, /*render_pass_id=*/0));
   ink_renderer()->ReportPointsDrawn();
   histogram_tester.ExpectUniqueSample(kHistogramName, 1, 1);
 
@@ -2167,7 +2120,7 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkTimeToDrawMillis) {
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(point.x(), point.y()), 45.f, SK_ColorBLACK, timestamp,
       gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering=*/false));
+      /*hovering=*/false, /*render_pass_id=*/0));
   ink_renderer()->ReportPointsDrawn();
   histogram_tester.ExpectTotalCount(kHistogramName, 1);
 
@@ -2193,7 +2146,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
   const auto create_metadata = [](gfx::PointF& p, base::TimeTicks& t) {
     return gfx::DelegatedInkMetadata(p, /*diameter=*/45.f, SK_ColorBLACK, t,
                                      gfx::RectF(0, 0, 100, 100), t,
-                                     /*hovering=*/false);
+                                     /*hovering=*/false, /*render_pass_id=*/0);
   };
   SetUpRenderers();
 
@@ -2336,7 +2289,8 @@ TEST_P(DelegatedInkDisplayTest, MetadataOnlySentToSkiaRendererOrOutputSurface) {
 
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(5, 5), 3.5f, SK_ColorBLACK, base::TimeTicks::Now(),
-      gfx::RectF(0, 0, 20, 20), base::TimeTicks::Now(), false);
+      gfx::RectF(0, 0, 20, 20), base::TimeTicks::Now(), false,
+      /*render_pass_id=*/0);
 
   SubmitCompositorFrameWithInkMetadata(
       &pass_list, id_allocator_.GetCurrentLocalSurfaceId(), metadata);

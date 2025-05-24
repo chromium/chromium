@@ -31,7 +31,7 @@ struct TextDiffRange;
 class CORE_EXPORT InlineNode : public LayoutInputNode {
  public:
   explicit InlineNode(LayoutBlockFlow*);
-  explicit InlineNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
+  InlineNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
   LayoutBlockFlow* GetLayoutBlockFlow() const {
     return To<LayoutBlockFlow>(box_.Get());
@@ -168,17 +168,16 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   void SegmentBidiRuns(InlineNodeData*) const;
   void ShapeText(InlineItemsData*,
                  const String* previous_text = nullptr,
-                 const HeapVector<InlineItem>* previous_items = nullptr,
+                 const InlineItems* previous_items = nullptr,
                  const Font* override_font = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(InlineNodeData*) const;
-  void ShapeTextIncludingFirstLine(
-      InlineNodeData* data,
-      const String* previous_text,
-      const HeapVector<InlineItem>* previous_items) const;
+  void ShapeTextIncludingFirstLine(InlineNodeData* data,
+                                   const String* previous_text,
+                                   const InlineItems* previous_items) const;
   void AssociateItemsWithInlines(InlineNodeData*) const;
   bool IsNGShapeCacheAllowed(const String&,
                              const Font*,
-                             const HeapVector<InlineItem>&,
+                             const InlineItems&,
                              ShapeResultSpacing<String>&) const;
 
   InlineNodeData* MutableData() const {
@@ -210,11 +209,6 @@ inline bool InlineNode::IsStickyImagesQuirkForContentSize() const {
     const ComputedStyle& style = Style();
     if (style.Display() == EDisplay::kTableCell) [[unlikely]] {
       if (style.LogicalWidth().IsAuto()) {
-        return true;
-      }
-      if (!RuntimeEnabledFeatures::StricterCellWidthContentSizeQuirkEnabled() &&
-          (style.LogicalWidth().HasAutoOrContentOrIntrinsic() ||
-           style.LogicalWidth().HasStretch())) {
         return true;
       }
     }

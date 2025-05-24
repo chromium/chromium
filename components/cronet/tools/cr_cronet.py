@@ -16,7 +16,7 @@ REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 
 sys.path.insert(0, REPOSITORY_ROOT)
-from components.cronet.tools.utils import run, run_shell, android_gn_gen, build  # pylint: disable=wrong-import-position
+from components.cronet.tools.utils import run, android_gn_gen, build  # pylint: disable=wrong-import-position
 
 
 def install(out_dir):
@@ -51,12 +51,6 @@ def debug(extra_options):
       'build/android/adb_gdb', '--start', '--activity=.CronetTestActivity',
       '--program-name=CronetTest', '--package-name=org.chromium.net'
   ] + extra_options)
-
-
-def stack(out_dir):
-  return run_shell('adb logcat -d | CHROMIUM_OUTPUT_DIR=' +
-                   shlex.quote(out_dir) +
-                   ' third_party/android_platform/development/scripts/stack')
 
 
 def main():

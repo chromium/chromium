@@ -11,12 +11,12 @@
 namespace sessions {
 const char kTaskIdKey[] = "task_id_data";
 
-NavigationTaskId::NavigationTaskId() {}
+NavigationTaskId::NavigationTaskId() = default;
 
 NavigationTaskId::NavigationTaskId(const NavigationTaskId& navigation_task_id) =
     default;
 
-NavigationTaskId::~NavigationTaskId() {}
+NavigationTaskId::~NavigationTaskId() = default;
 
 NavigationTaskId* NavigationTaskId::Get(content::NavigationEntry* entry) {
   NavigationTaskId* navigation_task_id =

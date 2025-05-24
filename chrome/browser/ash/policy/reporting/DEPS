@@ -29,6 +29,8 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/status_collector",
   "+chrome/browser/ash/policy/test_support",
+  "+chrome/browser/ash/policy/remote_commands",
+  "+chrome/browser/ash/power/ml/idle_event_notifier.h",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",

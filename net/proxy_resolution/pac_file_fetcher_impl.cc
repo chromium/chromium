@@ -4,6 +4,7 @@
 
 #include "net/proxy_resolution/pac_file_fetcher_impl.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/compiler_specific.h"
@@ -12,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/data_url.h"
@@ -56,7 +56,7 @@ constexpr bool IsPacMimeType(std::string_view mime_type) {
       "application/x-ns-proxy-autoconfig",
       "application/x-javascript-config",
   };
-  return base::ranges::any_of(kSupportedPacMimeTypes, [&](auto pac_mime_type) {
+  return std::ranges::any_of(kSupportedPacMimeTypes, [&](auto pac_mime_type) {
     return base::EqualsCaseInsensitiveASCII(pac_mime_type, mime_type);
   });
 }
@@ -376,8 +376,9 @@ void PacFileFetcherImpl::FetchCompleted() {
     // Calculate duration of time for PAC file fetch to complete.
     DCHECK(!fetch_start_time_.is_null());
     DCHECK(!fetch_time_to_first_byte_.is_null());
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.ProxyScriptFetcher.FirstByteDuration",
-                               fetch_time_to_first_byte_ - fetch_start_time_);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Net.ProxyScriptFetcher.FirstByteDuration",
+        fetch_time_to_first_byte_ - fetch_start_time_);
 
     // The caller expects the response to be encoded as UTF16.
     std::string charset;

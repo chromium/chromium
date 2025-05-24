@@ -14,7 +14,7 @@ host_cpu_family = host_machine.cpu_family()
 top_srcdir = meson.current_source_dir()
 top_builddir = meson.current_build_dir()
 
-opus_includes = include_directories('.', 'include', 'celt', 'silk')
+opus_includes = include_directories('.', 'include', 'celt', 'silk', 'dnn')
 opus_public_includes = include_directories('include')
 
 add_project_arguments('-DOPUS_BUILD', language: 'c')
@@ -161,6 +161,21 @@ foreach opt : opts
   set_variable('opt_' + opt[0].underscorify(), opt_foo)
 endforeach
 
+feat = [
+  [ 'deep-plc', 'ENABLE_DEEP_PLC' ],
+  [ 'dred', 'ENABLE_DRED' ],
+  [ 'osce', 'ENABLE_OSCE' ],
+]
+
+foreach opt : feat
+  # we assume these are all boolean options
+  opt_foo = get_option(opt[0])
+  if opt_foo.enabled()
+    opus_conf.set(opt[1], 1)
+  endif
+  set_variable('opt_' + opt[0].underscorify(), opt_foo)
+endforeach
+
 opt_asm = get_option('asm')
 opt_rtcd = get_option('rtcd')
 opt_intrinsics = get_option('intrinsics')
@@ -170,6 +185,10 @@ opt_tests = get_option('tests')
 disable_float_api = not get_option('float-api')
 if disable_float_api
   opus_conf.set('DISABLE_FLOAT_API', 1)
+endif
+
+if not get_option('dnn-debug-float').enabled()
+  opus_conf.set('DISABLE_DEBUG_FLOAT', 1)
 endif
 
 # This is for the description in the pkg-config .pc file
@@ -220,7 +239,7 @@ if not opt_asm.disabled()
                       #error GCC before 3.4 has critical bugs compiling inline assembly
                       #endif
                       #endif
-                      __asm__ (""::)''',
+                      int main(int argc, char ** argv) { __asm__ (""::); }''',
                    name : 'compiler supports gcc-style inline assembly')
 
       opus_conf.set('OPUS_ARM_INLINE_ASM', 1)
@@ -245,6 +264,13 @@ if not opt_asm.disabled()
         opus_conf.set('OPUS_ARM_INLINE_NEON', 1)
         inline_optimization += ['NEON']
       endif
+
+      # AS_ASM_ARM_DOTPROD
+      if cc.compiles(asm_tmpl.format('udot v0.4s,v1.16b,v2.16b'),
+                     name : 'assembler supports DOTPROD instructions on ARM')
+        opus_conf.set('OPUS_ARM_INLINE_DOTPROD', 1)
+        inline_optimization += ['DOTPROD']
+      endif
     endif
 
     # We need Perl to translate RVCT-syntax asm to gas syntax
@@ -266,21 +292,24 @@ if not opt_asm.disabled()
       opus_arm_may_have_neon = opus_conf.has('OPUS_ARM_INLINE_NEON')
       opus_arm_presume_neon = opus_arm_may_have_neon and opus_can_presume_simd
 
+      opus_arm_may_have_dotprod = opus_conf.has('OPUS_ARM_INLINE_DOTPROD')
+      opus_arm_presume_dotprod = opus_arm_may_have_dotprod and opus_can_presume_simd
+
       if not opt_rtcd.disabled()
         if not opus_arm_may_have_edsp
           message('Trying to force-enable armv5e EDSP instructions...')
           # AS_ASM_ARM_EDSP_FORCE
-          opus_arm_may_have_edsp = cc.compiles(asm_tmpl.format('.arch armv5te\n.object_arch armv4t\nqadd r3,r3,r3'),
+          opus_arm_may_have_edsp = cc.compiles(asm_tmpl.format('.arch armv5te;.object_arch armv4t;qadd r3,r3,r3'),
                                                name : 'Assembler supports EDSP instructions on ARM (forced)')
         endif
         if not opus_arm_may_have_media
           message('Trying to force-enable ARMv6 media instructions...')
-          opus_arm_may_have_media = cc.compiles(asm_tmpl.format('.arch armv6\n.object_arch armv4t\nshadd8 r3,r3,r3'),
+          opus_arm_may_have_media = cc.compiles(asm_tmpl.format('.arch armv6;.object_arch armv4t;shadd8 r3,r3,r3'),
                                                 name : 'Assembler supports ARMv6 media instructions on ARM (forced)')
         endif
         if not opus_arm_may_have_neon
           message('Trying to force-enable NEON instructions...')
-          opus_arm_may_have_neon = cc.compiles(asm_tmpl.format('.arch armv7-a\n.fpu neon\n.object_arch armv4t\nvorr d0,d0,d0'),
+          opus_arm_may_have_neon = cc.compiles(asm_tmpl.format('.arch armv7-a;.fpu neon;.object_arch armv4t;vorr d0,d0,d0'),
                                                name : 'Assembler supports NEON instructions on ARM (forced)')
         endif
       endif
@@ -312,8 +341,17 @@ if not opt_asm.disabled()
           rtcd_support += ['NEON']
         endif
       endif
+      if opus_arm_may_have_dotprod
+        opus_conf.set('OPUS_ARM_MAY_HAVE_DOTPROD', 1)
+        if opus_arm_presume_dotprod
+          opus_conf.set('OPUS_ARM_PRESUME_DOTPROD', 1)
+          asm_optimization += ['DOTPROD']
+        else
+          rtcd_support += ['DOTPROD']
+        endif
+      endif
 
-      if cc.get_define('__APPLE__')
+      if cc.get_define('__APPLE__') != ''
         arm2gnu_args = ['--apple']
       else
         arm2gnu_args = []
@@ -338,12 +376,14 @@ endif
 # -mfloat-abi=softfp to enable NEON. F.ex., on Android. It should
 # be set in the cross file.
 arm_neon_intr_link_args = ['-mfpu=neon']
+arm_dotprod_intr_link_args = ['-march=armv8.2-a+dotprod']
 
 have_sse = false
 have_sse2 = false
 have_sse4_1 = false
-have_avx = false # no avx opus code yet
+have_avx2 = false
 have_neon_intr = false
+have_dotprod_intr = false
 
 intrinsics_support = []
 if not opt_intrinsics.disabled()
@@ -419,13 +459,53 @@ if not opt_intrinsics.disabled()
     else
       message('Compiler does not support @0@ intrinsics'.format(intrin_name))
     endif
+
+    # Check for ARMv8.2 dotprod intrinsics
+    intrin_check = '''
+    #include <arm_neon.h>
+      int main (void) {
+        static int8x16_t a, b;
+        static int32x4_t SUMM;
+        SUMM = vdotq_s32(SUMM, a, b);
+        return (int)vgetq_lane_s32(SUMM, 0);
+      }'''
+    intrin_name = 'AArch64 DOTPROD'
+    if cc.links(intrin_check,
+                name: 'compiler supports @0@ intrinsics'.format(intrin_name))
+      opus_arm_presume_dotprod_intr = opus_can_presume_simd
+      opus_arm_may_have_dotprod_intr = true
+    else
+      opus_arm_presume_dotprod_intr = false
+      if cc.links(intrin_check,
+                  args: arm_dotprod_intr_link_args,
+                  name: 'compiler supports @0@ intrinsics with @1@'.format(intrin_name, ' '.join(arm_dotprod_intr_link_args)))
+        opus_arm_may_have_dotprod_intr = true
+      else
+        opus_arm_may_have_dotprod_intr = false
+      endif
+    endif
+
+    if opus_arm_may_have_dotprod_intr
+      have_dotprod_intr = true
+      intrinsics_support += [intrin_name]
+      opus_conf.set('OPUS_ARM_MAY_HAVE_DOTPROD', 1)
+      if opus_arm_presume_dotprod_intr
+        opus_conf.set('OPUS_ARM_PRESUME_DOTPROD', 1)
+      else
+        rtcd_support += [intrin_name]
+        opus_dotprod_intr_args = arm_dotprod_intr_link_args
+      endif
+    else
+      message('Compiler does not support @0@ intrinsics'.format(intrin_name))
+    endif
+
   elif host_cpu_family in ['x86', 'x86_64']
     # XXX: allow external override/specification of the flags
     x86_intrinsics = [
-      [ 'SSE', 'xmmintrin.h', '__m128', '_mm_setzero_ps()', ['-msse'] ],
-      [ 'SSE2', 'emmintrin.h', '__m128i', '_mm_setzero_si128()', ['-msse2'] ],
-      [ 'SSE4.1', 'smmintrin.h', '__m128i', '_mm_setzero_si128(); mtest = _mm_cmpeq_epi64(mtest, mtest)', ['-msse4.1'] ],
-      [ 'AVX', 'immintrin.h', '__m256', '_mm256_setzero_ps()', ['-mavx'] ],
+      [ 'SSE', 'xmmintrin.h', '__m128', '_mm_setzero_ps()', ['-msse'], [] ],
+      [ 'SSE2', 'emmintrin.h', '__m128i', '_mm_setzero_si128()', ['-msse2'], [] ],
+      [ 'SSE4.1', 'smmintrin.h', '__m128i', '_mm_setzero_si128(); mtest = _mm_cmpeq_epi64(mtest, mtest)', ['-msse4.1'], [] ],
+      [ 'AVX2', 'immintrin.h', '__m256i', '_mm256_abs_epi32(_mm256_setzero_si256())', ['-mavx', '-mfma', '-mavx2'], ['/arch:AVX2'] ],
     ]
 
     foreach intrin : x86_intrinsics
@@ -436,9 +516,11 @@ if not opt_intrinsics.disabled()
                           return *((unsigned char *) &mtest) != 0;
                         }'''.format(intrin[1],intrin[2],intrin[3])
       intrin_name = intrin[0]
-      # Intrinsics arguments are not available with MSVC-like compilers
-      intrin_args = cc.get_argument_syntax() == 'msvc' ? [] : intrin[4]
-      if cc.links(intrin_check, name : 'compiler supports @0@ intrinsics'.format(intrin_name))
+      intrin_args = cc.get_argument_syntax() == 'msvc' ? intrin[5] : intrin[4]
+      if cc.get_argument_syntax() == 'msvc' and intrin_args.length() == 0 and cc.links(intrin_check, name : 'compiler supports @0@ intrinsics'.format(intrin_name))
+        may_have_intrin = true
+        presume_intrin = opus_can_presume_simd
+      elif cc.get_argument_syntax() != 'msvc' and cc.links(intrin_check, name : 'compiler supports @0@ intrinsics'.format(intrin_name))
         may_have_intrin = true
         presume_intrin = opus_can_presume_simd
       elif intrin_args.length() > 0
@@ -563,7 +645,12 @@ else
 endif
 
 # extract source file lists from .mk files
-mk_files = ['silk_sources.mk', 'opus_headers.mk', 'opus_sources.mk', 'silk_headers.mk', 'celt_sources.mk', 'celt_headers.mk']
+mk_files = [
+  'opus_headers.mk', 'opus_sources.mk',
+  'silk_headers.mk', 'silk_sources.mk',
+  'celt_sources.mk', 'celt_headers.mk',
+  'lpcnet_headers.mk', 'lpcnet_sources.mk',
+]
 lines = run_command('meson/read-sources-list.py', mk_files, check: true).stdout().strip().split('\n')
 sources = {}
 foreach l : lines
@@ -574,8 +661,9 @@ foreach l : lines
 endforeach
 
 subdir('include')
-subdir('silk')
 subdir('celt')
+subdir('silk')
+subdir('dnn')
 subdir('src')
 
 configure_file(output: 'config.h', configuration: opus_conf)
@@ -586,29 +674,11 @@ if not opt_tests.disabled()
   subdir('tests')
 endif
 
-# pkg-config files (not using pkg module so we can use the existing .pc.in file)
-pkgconf = configuration_data()
-
-pkgconf.set('prefix', join_paths(get_option('prefix')))
-pkgconf.set('exec_prefix', '${prefix}')
-pkgconf.set('libdir', '${prefix}/@0@'.format(get_option('libdir')))
-pkgconf.set('includedir', '${prefix}/@0@'.format(get_option('includedir')))
-pkgconf.set('VERSION', opus_version)
-pkgconf.set('PC_BUILD', pc_build)
-pkgconf.set('LIBM', libm.found() ? '-lm' : '')
-
-pkg_install_dir = '@0@/pkgconfig'.format(get_option('libdir'))
-
-configure_file(input : 'opus.pc.in',
-  output : 'opus.pc',
-  configuration : pkgconf,
-  install_dir : pkg_install_dir)
-
-# The uninstalled one has hardcoded libtool + static lib stuff, skip it for now
-#configure_file(input : 'opus-uninstalled.pc.in',
-#  output : 'opus-uninstalled.pc',
-#  configuration : pkgconf,
-#  install : false)
+pkg = import('pkgconfig')
+pkg.generate(opus_lib,
+  description: 'Opus IETF audio codec (floating-point build)',
+  subdirs: 'opus',
+)
 
 doxygen = find_program('doxygen', required: get_option('docs'))
 if doxygen.found()

@@ -636,14 +636,11 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
                        OnlyCertainAppsAreTracked) {
   for (const auto type :
-       {apps::AppType::kUnknown, apps::AppType::kBuiltIn,
-        apps::AppType::kCrostini, apps::AppType::kChromeApp,
-        apps::AppType::kWeb, apps::AppType::kPluginVm,
-        apps::AppType::kStandaloneBrowser, apps::AppType::kRemote,
+       {apps::AppType::kUnknown, apps::AppType::kCrostini,
+        apps::AppType::kChromeApp, apps::AppType::kWeb,
+        apps::AppType::kPluginVm, apps::AppType::kRemote,
         apps::AppType::kBorealis, apps::AppType::kSystemWeb,
-        apps::AppType::kStandaloneBrowserChromeApp, apps::AppType::kExtension,
-        apps::AppType::kStandaloneBrowserExtension,
-        apps::AppType::kBruschetta}) {
+        apps::AppType::kExtension, apps::AppType::kBruschetta}) {
     // Create a fake id.
     const std::string app_id = base::NumberToString(static_cast<int>(type));
     // Install the app with given type.

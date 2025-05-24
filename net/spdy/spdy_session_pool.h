@@ -30,10 +30,11 @@
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/ssl/ssl_config_service.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace net {
 
@@ -45,6 +46,16 @@ class NetworkQualityEstimator;
 class SpdySession;
 class StreamSocket;
 class TransportSecurityState;
+
+// Represents the initiator of a session.
+// TODO(crbug.com/406932139, crbug.com/406936736): Remove once we identify
+// the cause of bugs.
+enum class SpdySessionInitiator : uint32_t {
+  kUnknown = 0,
+  kHttpStreamFactoryJob = 1,
+  kHttpStreamPoolAttemptManager = 2,
+  kHttpProxyConnectJob = 3,
+};
 
 // This is a very simple pool for open SpdySessions.
 class NET_EXPORT SpdySessionPool
@@ -174,7 +185,10 @@ class NET_EXPORT SpdySessionPool
       const SpdySessionKey& key,
       std::unique_ptr<StreamSocketHandle> stream_socket_handle,
       const NetLogWithSource& net_log,
-      base::WeakPtr<SpdySession>* session);
+      const MultiplexedSessionCreationInitiator session_creation_initiator,
+      base::WeakPtr<SpdySession>* session,
+      SpdySessionInitiator spdy_session_initiator =
+          SpdySessionInitiator::kUnknown);
 
   // Just like the above method, except it takes a SocketStream instead of a
   // StreamSocketHandle, and separate connect timing information. When this
@@ -189,7 +203,9 @@ class NET_EXPORT SpdySessionPool
       const SpdySessionKey& key,
       std::unique_ptr<StreamSocket> socket_stream,
       const LoadTimingInfo::ConnectTiming& connect_timing,
-      const NetLogWithSource& net_log);
+      const NetLogWithSource& net_log,
+      SpdySessionInitiator spdy_session_initiator =
+          SpdySessionInitiator::kUnknown);
 
   // If there is an available session for |key|, return it.
   // Otherwise if there is a session to pool to based on IP address:
@@ -212,8 +228,12 @@ class NET_EXPORT SpdySessionPool
       const ServiceEndpoint& service_endpoint,
       const std::set<std::string>& dns_aliases);
 
-  // Returns true if there is an available session for |key|.
-  bool HasAvailableSession(const SpdySessionKey& key, bool is_websocket) const;
+  // Returns true if there is an available session for `key`. Otherwise, if
+  // there is a session to pool to based on IP address, returns true if
+  // `enable_ip_based_pooling` is true. Otherwise returns false.
+  bool HasAvailableSession(const SpdySessionKey& key,
+                           bool enable_ip_based_pooling,
+                           bool is_websocket) const;
 
   // Just like FindAvailableSession.
   //
@@ -395,8 +415,11 @@ class NET_EXPORT SpdySessionPool
 
   // Creates a new session. The session must be initialized before
   // InsertSession() is invoked.
-  std::unique_ptr<SpdySession> CreateSession(const SpdySessionKey& key,
-                                             NetLog* net_log);
+  std::unique_ptr<SpdySession> CreateSession(
+      const SpdySessionKey& key,
+      NetLog* net_log,
+      const MultiplexedSessionCreationInitiator session_creation_initiator,
+      SpdySessionInitiator spdy_session_initiator);
   // Adds a new session previously created with CreateSession to the pool.
   // |source_net_log| is the NetLog for the object that created the session.
   base::expected<base::WeakPtr<SpdySession>, int> InsertSession(
@@ -427,7 +450,7 @@ class NET_EXPORT SpdySessionPool
   // * Assumes there is only one host resolution for `key` at the same time.
   base::WeakPtr<SpdySession> FindMatchingIpSession(
       const SpdySessionKey& key,
-      const std::vector<IPEndPoint> ip_endpoints,
+      const std::vector<IPEndPoint>& ip_endpoints,
       const std::set<std::string>& dns_aliases);
 
   raw_ptr<HttpServerProperties> http_server_properties_;

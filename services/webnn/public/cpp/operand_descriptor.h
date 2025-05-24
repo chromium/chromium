@@ -23,18 +23,30 @@ enum class OperandDataType {
   kUint64,
   kInt8,
   kUint8,
+  kInt4,
+  kUint4,
 
   kMinValue = kFloat32,
-  kMaxValue = kUint8,
+  kMaxValue = kUint4,
 };
+
+struct ContextProperties;
 
 class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
  public:
   // Creates a valid `OperandDescriptor` or returns an error message which may
   // be returned to script if the inputs are not valid.
   static base::expected<OperandDescriptor, std::string> Create(
+      const ContextProperties& context_properties,
       OperandDataType data_type,
-      base::span<const uint32_t> shape);
+      base::span<const uint32_t> shape,
+      std::string_view label);
+
+  // This function is called by `OperandDescriptor` mojom traits that need to be
+  // validated tensor size limit later.
+  static base::expected<OperandDescriptor, std::string>
+  CreateForDeserialization(OperandDataType data_type,
+                           base::span<const uint32_t> shape);
 
   // Same as above, but skip validation checks. This may be used to create an
   // invalid descriptor to test that its deserialization fails.
@@ -42,7 +54,7 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
       OperandDataType data_type,
       base::span<const uint32_t> shape);
 
-  static size_t GetBytesPerElement(OperandDataType data_type);
+  static size_t GetBitsPerElement(OperandDataType data_type);
 
   // Creates an invalid instance for use with Mojo deserialization, which
   // requires types to be default-constructible.

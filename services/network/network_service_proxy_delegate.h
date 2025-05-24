@@ -5,8 +5,6 @@
 #ifndef SERVICES_NETWORK_NETWORK_SERVICE_PROXY_DELEGATE_H_
 #define SERVICES_NETWORK_NETWORK_SERVICE_PROXY_DELEGATE_H_
 
-#include <deque>
-
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -62,6 +60,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
       const net::HttpResponseHeaders& response_headers) override;
   void SetProxyResolutionService(
       net::ProxyResolutionService* proxy_resolution_service) override;
+  bool AliasRequiresProxyOverride(
+      const std::string scheme,
+      const std::vector<std::string>& dns_aliases,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
  private:
   friend class NetworkServiceProxyDelegateTest;

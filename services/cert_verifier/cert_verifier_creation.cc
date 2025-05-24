@@ -7,10 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
 #include "components/network_time/time_tracker/time_tracker.h"
-#include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/crl_set.h"
@@ -32,11 +29,6 @@
 #include "net/cert/internal/system_trust_store.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "crypto/nss_util_internal.h"
-#include "net/cert/internal/system_trust_store_nss.h"
-#endif
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/internal/system_trust_store.h"
@@ -47,44 +39,8 @@ namespace cert_verifier {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
-crypto::ScopedPK11Slot GetUserSlotRestrictionForChromeOSParams(
-    mojom::CertVerifierCreationParams* creation_params) {
-  crypto::ScopedPK11Slot public_slot;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (creation_params && creation_params->nss_full_path.has_value()) {
-    public_slot =
-        crypto::OpenSoftwareNSSDB(creation_params->nss_full_path.value(),
-                                  /*description=*/"cert_db");
-    // `public_slot` can contain important security related settings. Crash if
-    // failed to load it.
-    CHECK(public_slot);
-  }
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  if (creation_params && !creation_params->username_hash.empty()) {
-    // Make sure NSS is initialized for the user.
-    crypto::InitializeNSSForChromeOSUser(creation_params->username_hash,
-                                         creation_params->nss_path.value());
-    public_slot =
-        crypto::GetPublicSlotForChromeOSUser(creation_params->username_hash);
-  }
-#else
-#error IS_CHROMEOS set without IS_CHROMEOS_LACROS or IS_CHROMEOS_ASH
-#endif
-  return public_slot;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
  public:
-  explicit CertVerifyProcFactoryImpl(
-      mojom::CertVerifierCreationParams* creation_params) {
-#if BUILDFLAG(IS_CHROMEOS)
-    user_slot_restriction_ =
-        GetUserSlotRestrictionForChromeOSParams(creation_params);
-#endif
-  }
-
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
       const net::CertVerifyProc::ImplParams& impl_params,
@@ -172,15 +128,7 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
 
     std::unique_ptr<net::SystemTrustStore> trust_store;
 #if BUILDFLAG(IS_CHROMEOS)
-    if (user_slot_restriction_) {
-      trust_store =
-          net::CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
-              std::move(chrome_root), crypto::ScopedPK11Slot(PK11_ReferenceSlot(
-                                          user_slot_restriction_.get())));
-    } else {
-      trust_store =
-          net::CreateChromeOnlySystemTrustStore(std::move(chrome_root));
-    }
+    trust_store = net::CreateChromeOnlySystemTrustStore(std::move(chrome_root));
 #else
     if (instance_params.include_system_trust_store) {
       trust_store =
@@ -211,11 +159,38 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
         std::move(time_tracker));
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  crypto::ScopedPK11Slot user_slot_restriction_;
-#endif
 };
+
+std::vector<net::CertVerifyProc::CertificateWithConstraints>
+ConvertMojoListToInternalList(
+    const std::vector<mojom::CertWithConstraintsPtr>& mojo_cert_list) {
+  std::vector<net::CertVerifyProc::CertificateWithConstraints> cert_list;
+
+  for (const auto& cert_with_constraints_mojo : mojo_cert_list) {
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
+        net::x509_util::CreateCryptoBuffer(
+            cert_with_constraints_mojo->certificate);
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        bssl::ParsedCertificate::Create(
+            std::move(cert_buffer),
+            net::x509_util::DefaultParseCertificateOptions(), nullptr);
+    if (!cert) {
+      continue;
+    }
+
+    net::CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+    cert_with_constraints.certificate = std::move(cert);
+    cert_with_constraints.permitted_dns_names =
+        cert_with_constraints_mojo->permitted_dns_names;
+
+    for (const auto& cidr : cert_with_constraints_mojo->permitted_cidrs) {
+      cert_with_constraints.permitted_cidrs.push_back({cidr->ip, cidr->mask});
+    }
+
+    cert_list.push_back(std::move(cert_with_constraints));
+  }
+  return cert_list;
+}
 
 }  // namespace
 
@@ -229,14 +204,13 @@ bool IsUsingCertNetFetcher() {
 }
 
 std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
-    mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
     const net::CertVerifyProc::ImplParams& impl_params,
     const net::CertVerifyProc::InstanceParams& instance_params) {
   DCHECK(cert_net_fetcher || !IsUsingCertNetFetcher());
 
   scoped_refptr<net::CertVerifyProcFactory> proc_factory =
-      base::MakeRefCounted<CertVerifyProcFactoryImpl>(creation_params);
+      base::MakeRefCounted<CertVerifyProcFactoryImpl>();
   return std::make_unique<net::MultiThreadedCertVerifier>(
       proc_factory->CreateCertVerifyProc(cert_net_fetcher, impl_params,
                                          instance_params),
@@ -270,31 +244,14 @@ void UpdateCertVerifierInstanceParams(
       additional_certificates->include_system_trust_store;
 #endif
 
-  for (const auto& cert_with_constraints_mojo :
-       additional_certificates->trust_anchors_with_additional_constraints) {
-    bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
-        net::x509_util::CreateCryptoBuffer(
-            base::as_byte_span(cert_with_constraints_mojo->certificate));
-    std::shared_ptr<const bssl::ParsedCertificate> cert =
-        bssl::ParsedCertificate::Create(
-            std::move(cert_buffer),
-            net::x509_util::DefaultParseCertificateOptions(), nullptr);
-    if (!cert) {
-      continue;
-    }
-
-    net::CertVerifyProc::CertificateWithConstraints cert_with_constraints;
-    cert_with_constraints.certificate = std::move(cert);
-    cert_with_constraints.permitted_dns_names =
-        cert_with_constraints_mojo->permitted_dns_names;
-
-    for (const auto& cidr : cert_with_constraints_mojo->permitted_cidrs) {
-      cert_with_constraints.permitted_cidrs.push_back({cidr->ip, cidr->mask});
-    }
-
-    instance_params->additional_trust_anchors_with_constraints.push_back(
-        std::move(cert_with_constraints));
-  }
+  instance_params->additional_trust_anchors_with_constraints =
+      ConvertMojoListToInternalList(
+          additional_certificates->trust_anchors_with_additional_constraints);
+  instance_params->additional_trust_anchors_and_leafs =
+      ConvertMojoListToInternalList(
+          additional_certificates->trust_anchors_and_leafs);
+  instance_params->additional_trust_leafs =
+      ConvertMojoListToInternalList(additional_certificates->trust_leafs);
 }
 
 }  // namespace cert_verifier

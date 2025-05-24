@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -57,7 +58,7 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   // Returns true if |spki_hash|, the SHA256 of the SubjectPublicKeyInfo,
   // is known to be used for interception by a party other than the device
   // or machine owner.
-  bool IsKnownInterceptionKey(std::string_view spki_hash) const;
+  bool IsKnownInterceptionKey(base::span<const uint8_t> spki_hash) const;
 
   // IsExpired returns true iff the current time is past the NotAfter time
   // specified in the CRLSet.

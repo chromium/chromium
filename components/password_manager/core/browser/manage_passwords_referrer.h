@@ -87,7 +87,7 @@ enum class ManagePasswordsReferrer {
   kOmniboxPedalSuggestion = 20,
 
   // On Desktop, link clicked in the DefaultStoreChanged bubble.
-  kDefaultStoreChangedBubble = 21,
+  // Deprecated: kDefaultStoreChangedBubble = 21,
 
   // Corresponds to the manage password details bubble when clicking on the key
   // icon and navigating to the details view of a particular password.
@@ -110,10 +110,18 @@ enum class ManagePasswordsReferrer {
   // their passwords because the transition to UPM has not happened.
   kAccessLossWarning = 27,
 
+  // The bubble that notifies the user that a passkey was created automatically
+  // in GPM to upgrade an existing, matching password credential.
+  kPasskeyUpgradeBubble = 28,
+
+  // The bubble informing user about the password change flow state (shown when
+  // clicking on the omnibox icon while the password change is running).
+  kPasswordChangeInfoBubble = 29,
+
   // NOTE: When adding a new value to this enum that applies or could apply to
   // Android, make sure it is correctly handled by the internal credential
   // manager launcher java implementation.
-  kMaxValue = kAccessLossWarning,
+  kMaxValue = kPasswordChangeInfoBubble,
 };
 
 }  // namespace password_manager

@@ -7,6 +7,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/strings/to_string.h"
 #include "components/gwp_asan/crash_handler/crash.pb.h"
 #include "components/gwp_asan/crash_handler/crash_handler.h"
 #include "third_party/crashpad/crashpad/minidump/minidump_extensions.h"
@@ -106,8 +107,8 @@ std::string CrashToString(const Crash& crash) {
        << std::endl;
   }
   if (crash.has_missing_metadata()) {
-    ss << "  missing_metadata: "
-       << (crash.missing_metadata() ? "true" : "false") << std::endl;
+    ss << "  missing_metadata: " << base::ToString(crash.missing_metadata())
+       << std::endl;
   }
   if (crash.has_internal_error()) {
     ss << "  internal_error: " << crash.internal_error() << std::endl;

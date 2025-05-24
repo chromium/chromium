@@ -4,7 +4,6 @@
 package org.chromium.net.impl;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetEngine;
@@ -129,10 +128,6 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
 
     @Override
     public ExperimentalBidirectionalStream.Builder bindToNetwork(long networkHandle) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            throw new UnsupportedOperationException(
-                    "The multi-network API is available starting from Android Marshmallow");
-        }
         mNetworkHandle = networkHandle;
         return this;
     }

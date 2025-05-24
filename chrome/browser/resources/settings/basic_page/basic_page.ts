@@ -7,14 +7,17 @@
  * 'settings-basic-page' is the settings page containing the actual settings.
  */
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../ai_page/ai_page.js';
+// <if expr="enable_glic">
+import '../glic_page/glic_page.js';
+// </if>
 import '../appearance_page/appearance_page.js';
 import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
-import '../safety_check_page/safety_check_page.js';
 import '../safety_hub/safety_hub_entry_point.js';
 import '../autofill_page/autofill_page.js';
 import '../controls/settings_idle_load.js';
@@ -84,12 +87,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       // <if expr="not chromeos_ash">
       /**
        * Read-only reference to the languages model provided by the
@@ -162,10 +159,17 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         value: false,
       },
 
-      showAdvancedFeaturesMainControl_: {
+      showAiPageAiFeatureSection_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('showAdvancedFeaturesMainControl'),
+        value: () => loadTimeData.getBoolean('showAiPageAiFeatureSection'),
       },
+
+      // <if expr="enable_glic">
+      showGlicSection_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showGlicSettings'),
+      },
+      // </if>
     };
   }
 
@@ -176,19 +180,21 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   // <if expr="not chromeos_ash">
-  languages?: LanguagesModel;
-  languageHelper: LanguageHelper;
+  declare languages?: LanguagesModel;
+  declare languageHelper: LanguageHelper;
   // </if>
-  pageVisibility: PageVisibility;
-  inSearchMode: boolean;
-  private showResetProfileBanner_: boolean;
+  declare pageVisibility: PageVisibility;
+  declare inSearchMode: boolean;
+  declare private showResetProfileBanner_: boolean;
 
-  private currentRoute_: Route;
-  private advancedTogglingInProgress_: boolean;
-  private showBatterySettings_: boolean;
-  private showAdvancedFeaturesMainControl_: boolean;
-
-  private showPrivacyGuidePromo_: boolean;
+  declare private currentRoute_: Route;
+  declare private advancedTogglingInProgress_: boolean;
+  declare private showBatterySettings_: boolean;
+  declare private showAiPageAiFeatureSection_: boolean;
+  // <if expr="enable_glic">
+  declare private showGlicSection_: boolean;
+  // </if>
+  declare private showPrivacyGuidePromo_: boolean;
   private privacyGuidePromoWasShown_: boolean;
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
       PrivacyGuideBrowserProxyImpl.getInstance();
@@ -338,24 +344,8 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     return this.showPage_(visibility);
   }
 
-  private showSafetyCheckPage_(visibility?: boolean): boolean {
-    return !loadTimeData.getBoolean('enableSafetyHub') &&
-        this.showPage_(visibility);
-  }
-
-  private showSafetyHubEntryPointPage_(visibility?: boolean): boolean {
-    return loadTimeData.getBoolean('enableSafetyHub') &&
-        this.showPage_(visibility);
-  }
-
-  private showAiInfoCard_(visibility?: boolean): boolean {
-    return loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
-        this.showExperimentalAdvancedPage_(visibility);
-  }
-
-  private showExperimentalAdvancedPage_(visibility?: boolean): boolean {
-    return loadTimeData.getBoolean('showAdvancedFeaturesMainControl') &&
-        this.showPage_(visibility);
+  private showAiPage_(visibility?: boolean): boolean {
+    return loadTimeData.getBoolean('showAiPage') && this.showPage_(visibility);
   }
 
   // <if expr="_google_chrome">

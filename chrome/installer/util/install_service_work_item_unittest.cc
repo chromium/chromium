@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/installer/util/install_service_work_item.h"
 
 #include <shlobj.h>
@@ -235,7 +240,9 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       com_service_cmd_line_args, kProductRegPath, kClsids, kIids);
 
+  ASSERT_FALSE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
   ASSERT_TRUE(item->Do());
+  EXPECT_TRUE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
   EXPECT_TRUE(GetImpl(item.get())->OpenService());
   EXPECT_TRUE(IsServiceCorrectlyConfigured(item.get()));
 
@@ -246,6 +253,7 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
 
   EXPECT_TRUE(IsServiceGone(item.get()));
   ExpectServiceCOMRegistrationAbsent();
+  EXPECT_FALSE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {

@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -27,8 +26,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/touch_selection_menu/touch_selection_menu_runner_chromeos.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/experiences/arc/touch_selection_menu/touch_selection_menu_runner_chromeos.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -41,8 +40,9 @@
 namespace {
 
 Profile* GetProfileForWindow(const views::Widget* window) {
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
   return reinterpret_cast<Profile*>(
       window->GetNativeWindowProperty(Profile::kProfileKey));
 }
@@ -67,7 +67,7 @@ PrefService* GetPrefsForWindow(const views::Widget* window) {
 // ChromeViewsDelegate --------------------------------------------------------
 
 ChromeViewsDelegate::ChromeViewsDelegate() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ViewsDelegate's constructor may have created a menu runner already, and
   // since TouchSelectionMenuRunner is a singleton with checks to not
   // initialize it if there is already an existing runner we need to first
@@ -88,8 +88,9 @@ void ChromeViewsDelegate::SaveWindowPlacement(
     const gfx::Rect& bounds,
     ui::mojom::WindowShowState show_state) {
   PrefService* prefs = GetPrefsForWindow(window);
-  if (!prefs)
+  if (!prefs) {
     return;
+  }
 
   std::unique_ptr<ScopedDictPrefUpdate> pref_update;
   base::Value::Dict& window_preferences =
@@ -117,8 +118,9 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
   PrefService* prefs = g_browser_process->local_state();
-  if (!prefs)
+  if (!prefs) {
     return false;
+  }
 
   DCHECK(prefs->FindPreference(window_name));
   const base::Value::Dict& dictionary = prefs->GetDict(window_name);
@@ -126,8 +128,9 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
   std::optional<int> top = dictionary.FindInt("top");
   std::optional<int> right = dictionary.FindInt("right");
   std::optional<int> bottom = dictionary.FindInt("bottom");
-  if (!left || !top || !right || !bottom)
+  if (!left || !top || !right || !bottom) {
     return false;
+  }
 
   bounds->SetRect(*left, *top, *right - *left, *bottom - *top);
 
@@ -135,7 +138,7 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
   *show_state = maximized ? ui::mojom::WindowShowState::kMaximized
                           : ui::mojom::WindowShowState::kNormal;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AdjustSavedWindowPlacementChromeOS(widget, bounds);
 #endif
   return true;
@@ -181,7 +184,7 @@ void ChromeViewsDelegate::ReleaseRef() {
 void ChromeViewsDelegate::OnBeforeWidgetInit(
     views::Widget::InitParams* params,
     views::internal::NativeWidgetDelegate* delegate) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Only for dialog widgets, if this is not going to be a transient child,
   // then we mark it as an OS system app, otherwise its transient root's app
   // type should be used.
@@ -192,11 +195,11 @@ void ChromeViewsDelegate::OnBeforeWidgetInit(
     params->init_properties_container.SetProperty(
         chromeos::kAppTypeKey, chromeos::AppType::SYSTEM_APP);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // We need to determine opacity if it's not already specified.
   if (params->opacity == views::Widget::InitParams::WindowOpacity::kInferred) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     chromeos::ResolveInferredOpacity(params);
 #else
     params->opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
@@ -205,13 +208,15 @@ void ChromeViewsDelegate::OnBeforeWidgetInit(
 
   // If we already have a native_widget, we don't have to try to come
   // up with one.
-  if (params->native_widget)
+  if (params->native_widget) {
     return;
+  }
 
   if (!native_widget_factory().is_null()) {
     params->native_widget = native_widget_factory().Run(*params, delegate);
-    if (params->native_widget)
+    if (params->native_widget) {
       return;
+    }
   }
 
   params->native_widget = CreateNativeWidget(params, delegate);

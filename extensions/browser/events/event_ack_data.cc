@@ -21,34 +21,6 @@
 
 namespace extensions {
 
-namespace {
-
-// static
-// Emit metrics helpful in determining causes of `unacked_events_` that are not
-// acked within the timeout.
-void EmitLateAckedEventTaskMetrics(const EventAckData::EventInfo& event_info) {
-  base::UmaHistogramEnumeration(
-      "Extensions.Events.ServiceWorkerDispatchFailed.Event",
-      event_info.histogram_value, events::ENUM_BOUNDARY);
-
-  base::UmaHistogramBoolean(
-      "Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk",
-      event_info.start_ok);
-  if (!event_info.start_ok) {
-    base::UmaHistogramEnumeration(
-        "Extensions.Events.ServiceWorkerDispatchFailed."
-        "StartExternalRequestResult",
-        event_info.external_request_result);
-  }
-
-  // TODO(crbug.com/40909770): Implement service worker running status as a late
-  // acked event metric when it can be more accurately determined. For example,
-  // it could be useful to determine if the late acked events are for already
-  // shut down workers and therefore wouldn't be "late".
-}
-
-}  // namespace
-
 EventAckData::EventInfo::EventInfo(
     const base::Uuid& request_uuid,
     int render_process_id,
@@ -127,6 +99,29 @@ void EventAckData::EmitLateAckedEventTask(int event_id) {
         false);
     EmitLateAckedEventTaskMetrics(*value);
   }
+}
+
+// Emit metrics helpful in determining causes of `unacked_events_` that are not
+// acked within the timeout.
+void EventAckData::EmitLateAckedEventTaskMetrics(const EventInfo& event_info) {
+  base::UmaHistogramEnumeration(
+      "Extensions.Events.ServiceWorkerDispatchFailed.Event",
+      event_info.histogram_value, events::ENUM_BOUNDARY);
+
+  base::UmaHistogramBoolean(
+      "Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk",
+      event_info.start_ok);
+  if (!event_info.start_ok) {
+    base::UmaHistogramEnumeration(
+        "Extensions.Events.ServiceWorkerDispatchFailed."
+        "StartExternalRequestResult",
+        event_info.external_request_result);
+  }
+
+  // TODO(crbug.com/40909770): Implement service worker running status as a late
+  // acked event metric when it can be more accurately determined. For example,
+  // it could be useful to determine if the late acked events are for already
+  // shut down workers and therefore wouldn't be "late".
 }
 
 // static
@@ -246,7 +241,7 @@ void EventAckData::ClearUnackedEventsForRenderProcess(int render_process_id) {
   });
 }
 
-EventAckData::EventInfo* EventAckData::GetUnackedEventForTesting(int event_id) {
+bool EventAckData::HasUnackedEventForTesting(int event_id) {
   return base::FindOrNull(unacked_events_, event_id);
 }
 

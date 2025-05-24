@@ -8,18 +8,20 @@ import android.animation.ValueAnimator;
 import android.view.animation.LinearInterpolator;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * MagnifierAnimator adds animation to MagnifierWrapper when there is a change in y direction.
  * MagnifierWrapper class isolated P APIs out so we could write test for MagnifierAnimator.
  */
+@NullMarked
 public class MagnifierAnimator {
     private static final boolean DEBUG = false;
     private static final String TAG = "Magnifier";
 
     private static final long DURATION_MS = 100;
 
-    private MagnifierWrapper mMagnifier;
+    private final MagnifierWrapper mMagnifier;
     private ValueAnimator mAnimator;
 
     private boolean mMagnifierIsShowing;

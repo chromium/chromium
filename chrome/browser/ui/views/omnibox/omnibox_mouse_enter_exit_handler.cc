@@ -12,8 +12,9 @@ OmniboxMouseEnterExitHandler::OmniboxMouseEnterExitHandler(
     : enter_exit_callback_(enter_exit_callback) {}
 
 OmniboxMouseEnterExitHandler::~OmniboxMouseEnterExitHandler() {
-  for (views::View* view : observed_views_)
+  for (views::View* view : observed_views_) {
     view->RemovePreTargetHandler(this);
+  }
 }
 
 void OmniboxMouseEnterExitHandler::ObserveMouseEnterExitOn(views::View* view) {

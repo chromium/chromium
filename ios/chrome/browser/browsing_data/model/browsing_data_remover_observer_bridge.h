@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_OBSERVER_BRIDGE_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_OBSERVER_BRIDGE_H_
 
-#include "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
-
 #import <Foundation/Foundation.h>
+
+#include "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
 
 // Objective-C interface for BrowsingDataRemoverObserver.
 @protocol BrowsingDataRemoverObserving <NSObject>

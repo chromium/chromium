@@ -274,6 +274,12 @@ action("strip_chromedriver_binary") {
     rebase_path(_stripped_chromedriver_file, root_build_dir),
     rebase_path(prog_name, root_build_dir),
   ]
+
+  visibility = []
+  visibility = [
+    ":*",
+    "//fuchsia_web/av_testing:*",
+  ]
 }
 
 cipd_archive("chromedriver") {

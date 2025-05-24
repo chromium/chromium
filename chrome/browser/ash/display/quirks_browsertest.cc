@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -120,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(QuirksBrowserTest, DownloadIccFile) {
     EXPECT_TRUE(base::PathExists(path));
     char data[32];
     ReadFile(path, data, sizeof(data));
-    EXPECT_EQ(0, memcmp(data, kFakeIccData, sizeof(kFakeIccData)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(data, kFakeIccData, sizeof(kFakeIccData))));
   }
 
   // Retest same file, this time expect it to already exist.

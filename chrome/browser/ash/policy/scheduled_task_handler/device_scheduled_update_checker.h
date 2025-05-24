@@ -103,18 +103,19 @@ class DeviceScheduledUpdateChecker
 namespace update_checker_internal {
 
 // The tag associated to register |update_check_executor_|.
-constexpr char kUpdateCheckTimerTag[] = "DeviceScheduledUpdateChecker";
+inline constexpr char kUpdateCheckTimerTag[] = "DeviceScheduledUpdateChecker";
 
 // The timeout after which an OS and policies update is aborted.
-constexpr base::TimeDelta kOsAndPoliciesUpdateCheckHardTimeout =
+inline constexpr base::TimeDelta kOsAndPoliciesUpdateCheckHardTimeout =
     base::Minutes(40);
 
 // The maximum iterations allowed to start an update check timer if the
 // operation fails.
-constexpr int kMaxStartUpdateCheckTimerRetryIterations = 5;
+inline constexpr int kMaxStartUpdateCheckTimerRetryIterations = 5;
 
 // Time to call |StartUpdateCheckTimer| again in case it failed.
-constexpr base::TimeDelta kStartUpdateCheckTimerRetryTime = base::Minutes(1);
+inline constexpr base::TimeDelta kStartUpdateCheckTimerRetryTime =
+    base::Minutes(1);
 
 }  // namespace update_checker_internal
 

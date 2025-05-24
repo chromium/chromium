@@ -1,9 +1,10 @@
 Name: bytemuck_derive
 URL: https://crates.io/crates/bytemuck_derive
-Description: derive proc-macros for `bytemuck`
-Version: 1.7.1
-Security Critical: yes
+Version: 1.9.3
+Revision: ede91413f72e77b8e061a6da1da2bc6df739b3a2
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/bytemuck_derive-v1/LICENSE-APACHE
 Shipped: yes
-License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/bytemuck_derive-1.7.1/LICENSE-APACHE
-Revision: faff80450ac6f9a218edd5e16d18ac5d1ea26f3d
+Security Critical: yes
+
+Description: derive proc-macros for `bytemuck`

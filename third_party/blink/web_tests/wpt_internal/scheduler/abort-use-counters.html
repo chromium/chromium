@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script type=module>
+    import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+    function clearUseCounters() {
+      internals.clearUseCounter(document, WebFeature.kSchedulerPostTaskAbortBeforeRunning);
+      internals.clearUseCounter(document, WebFeature.kSchedulerPostTaskSelfAbort);
+      internals.clearUseCounter(document, WebFeature.kSchedulerPostTaskAsyncAbort);
+    }
+
+    promise_test(async () => {
+      clearUseCounters();
+      try {
+        await scheduler.postTask(() => {}, {signal: AbortSignal.abort()});
+        assert_unreached('The task promise should be rejected.');
+      } catch (e) {
+      }
+      assert_true(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskAbortBeforeRunning));
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskSelfAbort));
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskAsyncAbort));
+    }, 'Test kSchedulerPostTaskAbort UseCounter when posting task');
+
+    promise_test(async () => {
+      clearUseCounters();
+      try {
+        const controller = new AbortController();
+        const result = scheduler.postTask(() => {}, {signal: controller.signal});
+        controller.abort();
+        await result;
+        assert_unreached('The task promise should be rejected.');
+      } catch (e) {
+      }
+      assert_true(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskAbortBeforeRunning));
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskSelfAbort));
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskAsyncAbort));
+    }, 'Test kSchedulerPostTaskAbort UseCounter after posting task');
+
+    promise_test(async () => {
+      clearUseCounters();
+      try {
+        const controller = new AbortController();
+        const result = scheduler.postTask(() => {
+          controller.abort();
+        }, {signal: controller.signal});
+        await result;
+        assert_unreached('The task promise should be rejected.');
+      } catch (e) {
+      }
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskAbortBeforeRunning));
+      assert_true(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskSelfAbort));
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskAsyncAbort));
+    }, 'Test kSchedulerPostTaskSelfAbort UseCounter');
+
+    promise_test(async () => {
+      clearUseCounters();
+      try {
+        const controller = new AbortController();
+        const result = scheduler.postTask(async () => {
+          await scheduler.yield();
+          controller.abort();
+        }, {signal: controller.signal});
+        await result;
+      } catch (e) {
+        assert_unreached('The task promise should not be rejected.');
+      }
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskAbortBeforeRunning));
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskSelfAbort));
+      assert_true(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskAsyncAbort));
+    }, 'Test kSchedulerPostTaskAsyncAbort UseCounter');
+
+    promise_test(async () => {
+      clearUseCounters();
+      try {
+        const controller = new AbortController();
+        const result = scheduler.postTask(() => {
+          return Promise.resolve(100);
+        });
+        await result;
+        controller.abort();
+      } catch (e) {
+        assert_unreached('The task promise should not be rejected.');
+      }
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskAbortBeforeRunning));
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskSelfAbort));
+      assert_false(internals.isUseCounted(document, WebFeature.kSchedulerPostTaskAsyncAbort));
+    }, 'Test returning a resolved promise does not trigger UseCounters');
+  </script>
+</body>

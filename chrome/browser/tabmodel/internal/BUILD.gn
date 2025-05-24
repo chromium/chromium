@@ -5,24 +5,23 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  visibility = [ "//chrome/android:*" ]
+  visibility = [
+    "//chrome/android:*",
+    "//chrome/android/javatests:*",
+    "//chrome/android/junit:*",
+  ]
 
   # This target is currently used to ensure that we avoid regressing the Kotlin
   # support added in http://go/crrv/c/4179272.
   sources = [
-    # These two factory files need to stay as Java files for the
+    # This factory needs to stay as a Java file for the
     # //chrome/browser/tabmodel:factory_javafactory target.
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerFactory.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerFactory.java",
 
     # Please keep this file in Kotlin to prevent regressions in kotlin support.
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerImpl.kt",
-
-    # Please keep the following file in Java for build_speed/benchmark.py.
-    "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java",
   ]
   deps = [
-    "//base:base_cached_flags_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
@@ -30,7 +29,9 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/util:java",
+    "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    "//ui/android:ui_java",
   ]
 }

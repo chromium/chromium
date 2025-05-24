@@ -114,7 +114,7 @@
 
 - (void)start {
   [super start];
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
   bookmarks::BookmarkModel* model =
       ios::BookmarkModelFactory::GetForProfile(profile);
   AuthenticationService* authenticationService =

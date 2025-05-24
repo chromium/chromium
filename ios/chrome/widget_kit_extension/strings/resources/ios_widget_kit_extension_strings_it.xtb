@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1149198577555059081">Cerca o digita un URL</translation>
 <translation id="1324575488877808473">Apri Chrome per vedere qui i siti che visiti più spesso.</translation>
 <translation id="2513892053093488070">Ricerca vocale</translation>
 <translation id="2535710892645968259">Apri il gioco Dino di Chrome dalla schermata di blocco.</translation>
@@ -15,11 +16,11 @@
 <translation id="405442954313519726">Esegui ricerche o naviga in una nuova scheda, in modalità di navigazione in incognito, utilizzando i comandi vocali o con un codice QR.</translation>
 <translation id="4557098988773644458">Apri il gioco Dino di Chrome</translation>
 <translation id="4678859075583681103">Avvia una nuova ricerca o apri i siti che visiti più spesso dalla home page del tuo iPhone.</translation>
-<translation id="4954445889641385956">Cerca o digita un URL</translation>
 <translation id="4962772945748414465">Apri WEBSITE_PLACEHOLDER</translation>
 <translation id="5234725349196694896">Esegui ricerche in Chrome con il tuo motore di ricerca preferito.</translation>
 <translation id="5277852985315196237">Cerca o digita un URL</translation>
 <translation id="529497070985873480">Dino di Chrome</translation>
+<translation id="5325847452011598583">Nessun account</translation>
 <translation id="5683557219437283801">Ricerca vocale</translation>
 <translation id="6179961764474023795">Azioni rapide</translation>
 <translation id="6330929932864892436">Cerca o digita un URL</translation>
@@ -39,6 +40,8 @@ digita un URL</translation>
 <translation id="8104498668011127805">Apri il gioco Dino di Chrome</translation>
 <translation id="8150601371542319992">Lens</translation>
 <translation id="8171952085734471362">Ricerca in incognito</translation>
+<translation id="8310150944719146950">Account</translation>
 <translation id="8564942608461410346">Cerca in Chrome con il tuo motore di ricerca preferito.</translation>
+<translation id="8858765528951093286">L'account utilizzato con il widget è stato rimosso. Per selezionare un altro account, tocca Modifica widget.</translation>
 <translation id="9175676375569833962">Cerca password</translation>
 </translationbundle>

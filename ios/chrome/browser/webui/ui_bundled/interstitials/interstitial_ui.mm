@@ -65,7 +65,7 @@ std::string InterstitialHTMLSource::GetMimeType(
 }
 
 std::string InterstitialHTMLSource::GetSource() const {
-  return kChromeUIIntersitialsHost;
+  return kChromeUIInterstitialsHost;
 }
 
 void InterstitialHTMLSource::StartDataRequest(
@@ -78,7 +78,7 @@ void InterstitialHTMLSource::StartDataRequest(
   std::string html;
   // Using this form of the path so we can do exact matching, while ignoring the
   // query (everything after the ? character).
-  GURL url = GURL(kChromeUIIntersitialsURL).GetWithEmptyPath().Resolve(path);
+  GURL url = GURL(kChromeUIInterstitialsURL).GetWithEmptyPath().Resolve(path);
   std::string path_without_query = url.path();
   if (path_without_query == kChromeInterstitialSslPath) {
     interstitial_page = CreateSslBlockingPage(web_state.get(), url);
@@ -86,6 +86,10 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_page = CreateCaptivePortalBlockingPage(web_state.get());
   } else if (path_without_query == kChromeInterstitialSafeBrowsingPath) {
     interstitial_page = CreateSafeBrowsingBlockingPage(web_state.get(), url);
+  } else if (path_without_query == kChromeInterstitialEnterpriseBlock) {
+    interstitial_page = CreateEnterpriseBlockPage(web_state.get(), url);
+  } else if (path_without_query == kChromeInterstitialEnterpriseWarn) {
+    interstitial_page = CreateEnterpriseWarnPage(web_state.get(), url);
   }
   // TODO(crbug.com/40681491): Update the page HTML when a link for an
   // unsupported interstitial type is tapped.

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/js/store.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Action} from 'chrome://resources/js/store.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {DefaultUserImage, UserImage, UserInfo} from '../../personalization_app.mojom-webui.js';
+import type {DefaultUserImage, UserImage, UserInfo} from '../../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change user state.

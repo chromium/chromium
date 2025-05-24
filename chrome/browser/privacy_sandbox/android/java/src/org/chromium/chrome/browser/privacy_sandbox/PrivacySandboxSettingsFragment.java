@@ -4,24 +4,29 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.os.Bundle;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.Nullable;
+import android.os.Bundle;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /** Settings fragment for privacy sandbox settings. */
+@NullMarked
 public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFragment {
     public static final String TOPICS_PREF = "topics";
     public static final String FLEDGE_PREF = "fledge";
     public static final String AD_MEASUREMENT_PREF = "ad_measurement";
     public static final String HELP_CENTER_URL = "https://support.google.com/chrome/?p=ad_privacy";
 
-    private ChromeBasePreference mTopicsPref;
-    private ChromeBasePreference mFledgePref;
+    private @Nullable ChromeBasePreference mTopicsPref;
+    private @Nullable ChromeBasePreference mFledgePref;
+
     private ChromeBasePreference mAdMeasurementPref;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -55,8 +60,8 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
 
         updatePrefDescription();
     }
@@ -67,11 +72,13 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
 
     private void updatePrefDescription() {
         if (!showRestrictedView()) {
+            assumeNonNull(mTopicsPref);
             mTopicsPref.setSummary(
                     TopicsFragment.isTopicsPrefEnabled(getProfile())
                             ? R.string.ad_privacy_page_topics_link_row_sub_label_enabled
                             : R.string.ad_privacy_page_topics_link_row_sub_label_disabled);
 
+            assumeNonNull(mFledgePref);
             mFledgePref.setSummary(
                     FledgeFragment.isFledgePrefEnabled(getProfile())
                             ? R.string.ad_privacy_page_fledge_link_row_sub_label_enabled
@@ -82,5 +89,10 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
                 AdMeasurementFragment.isAdMeasurementPrefEnabled(getProfile())
                         ? R.string.ad_privacy_page_ad_measurement_link_row_sub_label_enabled
                         : R.string.ad_privacy_page_ad_measurement_link_row_sub_label_disabled);
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser;
 
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -19,6 +22,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
  * Manages pref that can track the delay since the last stop of the tracked activity.
  * TODO(crbug.com/40691343): Split ChromeInactivityTracker out from ChromeTabbedActivity.
  */
+@NullMarked
 public class ChromeInactivityTracker
         implements StartStopWithNativeObserver, PauseResumeWithNativeObserver, DestroyObserver {
     private static final String TAG = "InactivityTracker";
@@ -34,7 +38,7 @@ public class ChromeInactivityTracker
     private static final long UNKNOWN_LAST_BACKGROUNDED_TIME = -1;
 
     private final String mPrefName;
-    private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     /**
      * Creates an inactivity tracker without a timeout callback. This is useful if clients only
@@ -147,6 +151,9 @@ public class ChromeInactivityTracker
 
     @Override
     public void onDestroy() {
-        mLifecycleDispatcher.unregister(this);
+        if (mLifecycleDispatcher != null) {
+            mLifecycleDispatcher.unregister(this);
+            mLifecycleDispatcher = null;
+        }
     }
 }

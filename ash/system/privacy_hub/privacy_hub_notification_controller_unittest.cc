@@ -51,11 +51,6 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
   PrivacyHubNotificationControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatures({features::kCrosPrivacyHub}, {});
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    window_delegate_provider_ =
-        std::make_unique<ash::TestNewWindowDelegateProvider>(
-            std::move(delegate));
   }
 
   ~PrivacyHubNotificationControllerTest() override = default;
@@ -124,7 +119,7 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
     return histogram_tester_;
   }
 
-  MockNewWindowDelegate* new_window_delegate() { return new_window_delegate_; }
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
  private:
   const message_center::Notification* GetNotification(
@@ -142,9 +137,7 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
   raw_ptr<PrivacyHubNotificationController, DanglingUntriaged> controller_;
   const base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_ =
-      nullptr;
-  std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(PrivacyHubNotificationControllerTest, CameraNotificationShowAndHide) {
@@ -458,7 +451,7 @@ TEST_F(PrivacyHubNotificationControllerTest, OpenPrivacyHubSupportPage) {
                   lean_more_sensor));
   };
 
-  EXPECT_CALL(*new_window_delegate(), OpenUrl).Times(2);
+  EXPECT_CALL(new_window_delegate(), OpenUrl).Times(2);
 
   test_sensor(Sensor::kMicrophone, PrivacyHubLearnMoreSensor::kMicrophone);
   test_sensor(Sensor::kCamera, PrivacyHubLearnMoreSensor::kCamera);

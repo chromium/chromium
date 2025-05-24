@@ -79,8 +79,7 @@ void TestNavigationURLLoaderDelegate::OnRequestFailed(
 std::optional<NavigationEarlyHintsManagerParams>
 TestNavigationURLLoaderDelegate::CreateNavigationEarlyHintsManagerParams(
     const network::mojom::EarlyHints& early_hints) {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 }  // namespace content

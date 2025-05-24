@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display/overlay_processor_ozone.h"
 
 #include <algorithm>
@@ -20,16 +15,13 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
-#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -37,6 +29,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "gpu/config/gpu_finch_features.h"
+#include "ui/display/display_features.h"
 #include "ui/gl/gl_switches.h"
 #endif
 
@@ -155,12 +148,7 @@ void ConvertToTiledOzoneOverlaySurface(
   ozone_candidate->overlay_type = overlay_candidate.overlay_type;
 }
 
-uint32_t MailboxToUInt32(const gpu::Mailbox& mailbox) {
-  return (mailbox.name[0] << 24) + (mailbox.name[1] << 16) +
-         (mailbox.name[2] << 8) + mailbox.name[3];
-}
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsYUVColorSpace(const gfx::ColorSpace& color_space) {
   SkYUVColorSpace yuv_color_space;
   return color_space.ToSkYUVColorSpace(&yuv_color_space);
@@ -197,19 +185,24 @@ bool AllowColorSpaceCombination(
   // range to DRM/KMS. At that point, we need to ensure that
   // EGL_YUV_COLOR_SPACE_HINT_EXT/EGL_SAMPLE_RANGE_HINT_EXT would also get the
   // same values as DRM/KMS.
-  //
-  // TODO(b/243150091): Remove the call to IsYUVColorSpace() or turn it into a
-  // DCHECK() once LaCrOS plumbs the correct color space.
-  bool is_yuv_color_space = features::IsLacrosColorManagementEnabled() ||
-                            IsYUVColorSpace(source_color_space);
   if ((source_format == MultiPlaneFormat::kNV12 ||
        source_format == MultiPlaneFormat::kYV12 ||
        source_format == MultiPlaneFormat::kP010) &&
-      is_yuv_color_space &&
       (source_color_space.GetMatrixID() ==
            gfx::ColorSpace::MatrixID::BT2020_NCL ||
        source_color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL)) {
+    DCHECK(IsYUVColorSpace(source_color_space));
     return false;
+  }
+
+  // Do not promote SDR content to overlay if the screen is in HDR10 mode.
+  // TODO(b/367739334): Fix color conversion layer in skia_renderer.cc
+  if (base::FeatureList::IsEnabled(
+          display::features::kEnableExternalDisplayHDR10Mode) &&
+      destination_color_space.GetContentColorUsage() ==
+          gfx::ContentColorUsage::kHDR) {
+    return source_color_space.GetContentColorUsage() ==
+           destination_color_space.GetContentColorUsage();
   }
 
   // Allow color space mismatches as long as either a) the source color space is
@@ -222,7 +215,7 @@ bool AllowColorSpaceCombination(
          source_color_space.GetContentColorUsage() ==
              destination_color_space.GetContentColorUsage();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -233,11 +226,10 @@ bool AllowColorSpaceCombination(
 OverlayProcessorOzone::OverlayProcessorOzone(
     std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates,
     std::vector<OverlayStrategy> available_strategies,
-    gpu::SharedImageInterface* shared_image_interface)
-    : OverlayProcessorUsingStrategy(),
-      overlay_candidates_(std::move(overlay_candidates)),
+    std::unique_ptr<PixmapProvider> pixmap_provider)
+    : overlay_candidates_(std::move(overlay_candidates)),
       available_strategies_(std::move(available_strategies)),
-      shared_image_interface_(shared_image_interface) {
+      pixmap_provider_(std::move(pixmap_provider)) {
   for (OverlayStrategy strategy : available_strategies_) {
     switch (strategy) {
       case OverlayStrategy::kFullscreen:
@@ -258,7 +250,7 @@ OverlayProcessorOzone::OverlayProcessorOzone(
         break;
 #endif
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -275,9 +267,7 @@ bool OverlayProcessorOzone::NeedsSurfaceDamageRectList() const {
 
 bool OverlayProcessorOzone::SupportsFlipRotateTransform() const {
   // TODO(petermcneeley): Test and enable for ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return false;
-#elif BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_CASTOS)
   return false;
 #else
   return false;
@@ -324,11 +314,11 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
       // TODO(crbug.com/40153057): Fuchsia claims support for presenting primary
       // plane as overlay, but does not provide a mailbox. Handle this case.
 #if !BUILDFLAG(IS_FUCHSIA)
-      if (shared_image_interface_) {
+      if (pixmap_provider_) {
         bool result = SetNativePixmapForCandidate(&(*ozone_surface_iterator),
                                                   primary_plane->mailbox,
                                                   /*is_primary=*/true);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         if (!result) {
           // For ChromeOS HW protected content, there's a race condition that
           // can occur here where the mailbox for the native pixmap isn't
@@ -348,7 +338,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
             }
           }
         }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         // We cannot validate an overlay configuration without the buffer for
         // primary plane present.
         if (!result) {
@@ -374,7 +364,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
 
       ConvertToOzoneOverlaySurface(*surface_iterator,
                                    &(*ozone_surface_iterator));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // On Chrome OS, skip the candidate if we think a color space combination
       // might cause visible color differences between compositing and overlays.
       // The reason is that on Chrome OS, we don't yet have an API to set up
@@ -393,19 +383,19 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
         ozone_surface_iterator->plane_z_order = surface_iterator->plane_z_order;
         continue;
       }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      if (shared_image_interface_) {
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      if (pixmap_provider_) {
         bool result = SetNativePixmapForCandidate(&(*ozone_surface_iterator),
                                                   surface_iterator->mailbox,
                                                   /*is_primary=*/false);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         if (!result && surface_iterator->requires_overlay) {
           // For ChromeOS HW protected content, same condition as above
           // regarding missing pixmaps.
           result = true;
           DLOG(WARNING) << "Allowing required overlay with missing pixmap";
         }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
         // Skip the candidate if the corresponding NativePixmap is not found.
         if (!result) {
@@ -416,7 +406,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
       }
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Some platforms (e.g. AMD) do not provide a dedicated cursor plane, and
     // the display hardware will need to blit the cursor to the topmost plane.
     // If the topmost plane is scaled/translated, the cursor will then be
@@ -439,7 +429,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
         }
       }
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   overlay_candidates_->CheckOverlaySupport(&ozone_surface_list);
 
@@ -488,6 +478,10 @@ void OverlayProcessorOzone::ReceiveHardwareCapabilities(
     has_independent_cursor_plane_ =
         hardware_capabilities.has_independent_cursor_plane;
 
+    UMA_HISTOGRAM_COUNTS_100(
+        "Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported",
+        hardware_capabilities.num_overlay_capable_planes);
+
     DCHECK(overlay_candidates_);
     overlay_candidates_->SetSupportedBufferFormats(
         std::move(hardware_capabilities.supported_buffer_formats));
@@ -522,9 +516,9 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     ui::OverlaySurfaceCandidate* candidate,
     const gpu::Mailbox& mailbox,
     bool is_primary) {
-  DCHECK(shared_image_interface_);
+  DCHECK(pixmap_provider_);
   scoped_refptr<gfx::NativePixmap> native_pixmap =
-      shared_image_interface_->GetNativePixmap(mailbox);
+      pixmap_provider_->GetNativePixmap(mailbox);
 
   if (!native_pixmap) {
     // SharedImage creation and destruction happens on a different
@@ -546,8 +540,10 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
   }
 
   candidate->native_pixmap = std::move(native_pixmap);
-  candidate->native_pixmap_unique_id = MailboxToUInt32(mailbox);
+  candidate->native_pixmap_unique_id = mailbox.ToU32();
   return true;
 }
+
+OverlayProcessorOzone::PixmapProvider::~PixmapProvider() = default;
 
 }  // namespace viz

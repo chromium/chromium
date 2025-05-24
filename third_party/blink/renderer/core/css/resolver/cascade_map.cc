@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/resolver/cascade_map.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
 namespace blink {
@@ -41,7 +37,8 @@ const CascadePriority* CascadeMap::Find(const CSSPropertyName& name) const {
   size_t index = static_cast<size_t>(name.Id());
   DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
   return native_properties_.Bits().Has(name.Id())
-             ? &native_properties_.Buffer()[index].Top(backing_vector_)
+             ? UNSAFE_TODO(&native_properties_.Buffer()[index])
+                   .Top(backing_vector_)
              : nullptr;
 }
 
@@ -72,7 +69,7 @@ const CascadePriority* CascadeMap::Find(const CSSPropertyName& name,
   DCHECK(native_properties_.Bits().Has(name.Id()));
   size_t index = static_cast<size_t>(name.Id());
   DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
-  return find_origin(native_properties_.Buffer()[index], origin);
+  return find_origin(UNSAFE_TODO(native_properties_.Buffer()[index]), origin);
 }
 
 CascadePriority& CascadeMap::Top(CascadePriorityList& list) {
@@ -102,7 +99,8 @@ const CascadePriority* CascadeMap::FindRevertLayer(const CSSPropertyName& name,
   DCHECK(native_properties_.Bits().Has(name.Id()));
   size_t index = static_cast<size_t>(name.Id());
   DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
-  return find_revert_layer(native_properties_.Buffer()[index], revert_from);
+  return find_revert_layer(UNSAFE_TODO(native_properties_.Buffer()[index]),
+                           revert_from);
 }
 
 void CascadeMap::Add(const AtomicString& custom_property_name,
@@ -127,7 +125,7 @@ void CascadeMap::Add(CSSPropertyID id, CascadePriority priority) {
 
   has_important_ |= priority.IsImportant();
 
-  CascadePriorityList* list = &native_properties_.Buffer()[index];
+  CascadePriorityList* list = UNSAFE_TODO(&native_properties_.Buffer()[index]);
   if (!native_properties_.Bits().Has(id)) {
     native_properties_.Bits().Set(id);
     new (list) CascadeMap::CascadePriorityList(backing_vector_, priority);

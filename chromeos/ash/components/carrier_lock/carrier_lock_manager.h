@@ -149,6 +149,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK) CarrierLockManager
   std::string serial_;
   std::string imei_;
   std::string fcm_token_;
+  std::string attested_id_;
   std::string manufacturer_;
   std::string model_;
   int error_counter_ = 0;

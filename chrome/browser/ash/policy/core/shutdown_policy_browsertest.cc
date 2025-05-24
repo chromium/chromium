@@ -57,8 +57,8 @@ void WaitForShutdownButtonVisibility(bool visible) {
 class ShutdownPolicyBaseTest : public policy::DevicePolicyCrosBrowserTest,
                                public DeviceSettingsService::Observer {
  protected:
-  ShutdownPolicyBaseTest() {}
-  ~ShutdownPolicyBaseTest() override {}
+  ShutdownPolicyBaseTest() = default;
+  ~ShutdownPolicyBaseTest() override = default;
 
   // DeviceSettingsService::Observer:
   void DeviceSettingsUpdated() override {
@@ -115,8 +115,8 @@ class ShutdownPolicyInSessionTest : public ShutdownPolicyBaseTest {
       delete;
 
  protected:
-  ShutdownPolicyInSessionTest() {}
-  ~ShutdownPolicyInSessionTest() override {}
+  ShutdownPolicyInSessionTest() = default;
+  ~ShutdownPolicyInSessionTest() override = default;
 
   // Opens the system tray menu. This creates the tray views.
   void OpenSystemTrayMenu() { tray_test_api_->ShowBubble(); }

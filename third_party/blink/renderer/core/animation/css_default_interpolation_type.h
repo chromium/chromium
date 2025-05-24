@@ -14,11 +14,12 @@ namespace blink {
 class CORE_EXPORT CSSDefaultNonInterpolableValue final
     : public NonInterpolableValue {
  public:
+  explicit CSSDefaultNonInterpolableValue(const CSSValue*);
   ~CSSDefaultNonInterpolableValue() final = default;
 
-  static scoped_refptr<CSSDefaultNonInterpolableValue> Create(
-      const CSSValue* css_value) {
-    return base::AdoptRef(new CSSDefaultNonInterpolableValue(css_value));
+  void Trace(Visitor* visitor) const override {
+    NonInterpolableValue::Trace(visitor);
+    visitor->Trace(css_value_);
   }
 
   const CSSValue* CssValue() const { return css_value_.Get(); }
@@ -26,9 +27,7 @@ class CORE_EXPORT CSSDefaultNonInterpolableValue final
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSDefaultNonInterpolableValue(const CSSValue*);
-
-  Persistent<const CSSValue> css_value_;
+  Member<const CSSValue> css_value_;
 };
 
 template <>
@@ -45,27 +44,27 @@ struct DowncastTraits<CSSDefaultNonInterpolableValue> {
 // A catch all default for CSSValue interpolation.
 class CSSDefaultInterpolationType : public InterpolationType {
  public:
-  CSSDefaultInterpolationType(PropertyHandle property)
+  explicit CSSDefaultInterpolationType(PropertyHandle property)
       : InterpolationType(property) {
     DCHECK(property.IsCSSProperty());
   }
 
   InterpolationValue MaybeConvertSingle(const PropertySpecificKeyframe&,
-                                        const InterpolationEnvironment&,
+                                        const CSSInterpolationEnvironment&,
                                         const InterpolationValue& underlying,
                                         ConversionCheckers&) const override;
 
   PairwiseInterpolationValue MaybeConvertPairwise(
       const PropertySpecificKeyframe& start_keyframe,
       const PropertySpecificKeyframe& end_keyframe,
-      const InterpolationEnvironment&,
+      const CSSInterpolationEnvironment&,
       const InterpolationValue& underlying,
       ConversionCheckers&) const final {
     return nullptr;
   }
 
   InterpolationValue MaybeConvertUnderlyingValue(
-      const InterpolationEnvironment&) const final {
+      const CSSInterpolationEnvironment&) const final {
     return nullptr;
   }
 
@@ -75,16 +74,14 @@ class CSSDefaultInterpolationType : public InterpolationType {
     return nullptr;
   }
 
-  void Composite(UnderlyingValueOwner& underlying_value_owner,
+  void Composite(UnderlyingValueOwner&,
                  double underlying_fraction,
-                 const InterpolationValue& value,
-                 double interpolation_fraction) const final {
-    underlying_value_owner.Set(*this, value);
-  }
+                 const InterpolationValue&,
+                 double interpolation_fraction) const final;
 
   void Apply(const InterpolableValue&,
              const NonInterpolableValue*,
-             InterpolationEnvironment&) const final;
+             CSSInterpolationEnvironment&) const final;
 };
 
 }  // namespace blink

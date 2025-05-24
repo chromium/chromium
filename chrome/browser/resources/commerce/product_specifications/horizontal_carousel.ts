@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './horizontal_carousel.css.js';
@@ -36,9 +37,11 @@ import {$$} from './utils.js';
 export interface HorizontalCarouselElement {
   $: {
     backButton: HTMLElement,
+    backButtonContainer: HTMLElement,
     carouselContainer: HTMLElement,
     endProbe: HTMLElement,
     forwardButton: HTMLElement,
+    forwardButtonContainer: HTMLElement,
     slottedTable: HTMLSlotElement,
     startProbe: HTMLElement,
   };
@@ -83,17 +86,19 @@ export class HorizontalCarouselElement extends CrLitElement {
     };
   }
 
-  showForwardButton: boolean = false;
-  protected canScroll_: boolean = false;
-  protected showBackButton_: boolean = false;
+  accessor showForwardButton: boolean = false;
+  protected accessor canScroll_: boolean = false;
+  protected accessor showBackButton_: boolean = false;
 
   private intersectionObserver_: IntersectionObserver|null = null;
+  private resizeObserver_: ResizeObserver|null = null;
   private scrolledToEnd_: boolean = false;
   private scrolledToStart_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.intersectionObserver_ = this.getIntersectionObserver_();
+    this.intersectionObserver_ = this.createIntersectionObserver_();
+    this.resizeObserver_ = this.createResizeObserver_();
   }
 
   override disconnectedCallback() {
@@ -101,6 +106,10 @@ export class HorizontalCarouselElement extends CrLitElement {
     if (this.intersectionObserver_) {
       this.intersectionObserver_.disconnect();
       this.intersectionObserver_ = null;
+    }
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
     }
   }
 
@@ -112,7 +121,7 @@ export class HorizontalCarouselElement extends CrLitElement {
     this.$.carouselContainer.scrollBy({left: this.columnOffsetWidth_});
   }
 
-  private getIntersectionObserver_(): IntersectionObserver {
+  private createIntersectionObserver_(): IntersectionObserver {
     const observer = new IntersectionObserver(entries => {
       let tmpCanScroll = false;
       entries.forEach(entry => {
@@ -136,12 +145,36 @@ export class HorizontalCarouselElement extends CrLitElement {
     return observer;
   }
 
+  private createResizeObserver_(): ResizeObserver {
+    const observer = new ResizeObserver(() => {
+      const carouselHeight =
+          this.$.carouselContainer.getBoundingClientRect().height;
+      const carouselOffset =
+          this.$.carouselContainer.getBoundingClientRect().top;
+      if (carouselHeight > window.innerHeight - carouselOffset) {
+        // Reset to CSS defined style.
+        this.$.backButtonContainer.attributeStyleMap.delete('top');
+        this.$.forwardButtonContainer.attributeStyleMap.delete('top');
+        return;
+      }
+
+      // Force the carousel arrows to appear in the middle of the table, since
+      // the percentage value uses the nearest scrolling ancestor's height.
+      const buttonTopPx = carouselOffset + carouselHeight * 0.44;
+      this.$.backButtonContainer.style.top = `${buttonTopPx}px`;
+      this.$.forwardButtonContainer.style.top = `${buttonTopPx}px`;
+    });
+    observer.observe(this.$.carouselContainer);
+    return observer;
+  }
+
   private get columnOffsetWidth_(): number {
     if (this.$.slottedTable.assignedElements().length === 0) {
       return 0;
     }
     const tableElement = this.$.slottedTable.assignedElements()[0];
-    const column = $$<HTMLElement>(tableElement, '.col');
+    assert(tableElement);
+    const column = $$<HTMLElement>(tableElement, '.col') as HTMLElement;
     return column ? column.offsetWidth : 0;
   }
 }

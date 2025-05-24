@@ -56,7 +56,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
   // Note: In order to avoid running |callback| multiple times on errors,
   // clients are expected to synchronously destroy the GattDiscoverer after
   // |callback| has been invoked for the first time.
-  void StartGattDiscovery(GattDiscoveryCallback callback);
+  // When |allow_cache| set to true, it allows a discovery result from the
+  // system cache without connecting to the BLE device.
+  void StartGattDiscovery(bool allow_cache, GattDiscoveryCallback callback);
   const GattServiceList& GetGattServices() const;
   const GattCharacteristicList* GetCharacteristics(
       uint16_t service_attribute_handle) const;

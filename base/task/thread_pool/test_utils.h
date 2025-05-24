@@ -6,6 +6,7 @@
 #define BASE_TASK_THREAD_POOL_TEST_UTILS_H_
 
 #include <atomic>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -22,7 +23,6 @@
 #include "base/task/thread_pool/worker_thread_observer.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 namespace internal {
@@ -111,7 +111,7 @@ class MockJobTask : public base::RefCountedThreadSafe<MockJobTask> {
 
   ~MockJobTask();
 
-  absl::variant<OnceClosure, RepeatingCallback<void(JobDelegate*)>> task_;
+  std::variant<OnceClosure, RepeatingCallback<void(JobDelegate*)>> task_;
   std::atomic_size_t remaining_num_tasks_to_run_;
 };
 

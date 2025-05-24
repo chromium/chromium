@@ -24,7 +24,10 @@
 #include "content/test/test_render_view_host.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace browsing_topics {
 
@@ -33,7 +36,7 @@ class BrowsingTopicsPageLoadDataTrackerTest
  public:
   BrowsingTopicsPageLoadDataTrackerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kBrowsingTopics},
+        /*enabled_features=*/{network::features::kBrowsingTopics},
         /*disabled_features=*/{});
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -89,25 +92,26 @@ class BrowsingTopicsPageLoadDataTrackerTest
       simulator->SetSocketAddress(net::IPEndPoint(address, /*port=*/0));
     }
 
-    blink::ParsedPermissionsPolicy policy;
+    network::ParsedPermissionsPolicy policy;
 
     if (!browsing_topics_permissions_policy_allowed) {
       policy.emplace_back(
-          blink::mojom::PermissionsPolicyFeature::kBrowsingTopics,
-          /*allowed_origins=*/std::vector<blink::OriginWithPossibleWildcards>(),
+          network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+          /*allowed_origins=*/
+          std::vector<network::OriginWithPossibleWildcards>(),
           /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false);
     }
 
     if (!interest_cohort_permissions_policy_allowed) {
-      policy.emplace_back(
-          blink::mojom::PermissionsPolicyFeature::
-              kBrowsingTopicsBackwardCompatible,
-          /*allowed_origins=*/std::vector<blink::OriginWithPossibleWildcards>(),
-          /*self_if_matches=*/std::nullopt,
-          /*matches_all_origins=*/false,
-          /*matches_opaque_src=*/false);
+      policy.emplace_back(network::mojom::PermissionsPolicyFeature::
+                              kBrowsingTopicsBackwardCompatible,
+                          /*allowed_origins=*/
+                          std::vector<network::OriginWithPossibleWildcards>(),
+                          /*self_if_matches=*/std::nullopt,
+                          /*matches_all_origins=*/false,
+                          /*matches_opaque_src=*/false);
     }
 
     simulator->SetPermissionsPolicyHeader(std::move(policy));
@@ -148,7 +152,8 @@ class BrowsingTopicsPageLoadDataTrackerTest
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(BrowsingTopicsPageLoadDataTrackerTest, IniializeWithRedirectStatus) {
+TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
+       IniializeWithRedirectStatus_DifferentSites) {
   GURL url("https://foo.com");
   NavigateToPage(url, /*publicly_routable=*/true,
                  /*browsing_topics_permissions_policy_allowed=*/true,
@@ -157,19 +162,47 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, IniializeWithRedirectStatus) {
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   BrowsingTopicsPageLoadDataTracker::CreateForPage(
       web_contents()->GetPrimaryMainFrame()->GetPage(),
-      /*redirect_count=*/10,
-      /*redirect_with_topics_invoked_count=*/5, source_id);
+      /*redirect_hosts_with_topics_invoked=*/
+      std::set<HashedHost>{HashedHost(0)}, source_id);
 
   auto* tracker = GetBrowsingTopicsPageLoadDataTracker();
 
-  EXPECT_EQ(tracker->redirect_count(), 10);
-  EXPECT_EQ(tracker->redirect_with_topics_invoked_count(), 5);
+  EXPECT_EQ(tracker->redirect_hosts_with_topics_invoked().size(), 1u);
   EXPECT_EQ(tracker->source_id_before_redirects(), source_id);
   EXPECT_FALSE(tracker->topics_invoked());
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
       HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/false);
 
+  EXPECT_EQ(tracker->redirect_hosts_with_topics_invoked().size(), 2u);
+  EXPECT_TRUE(tracker->topics_invoked());
+}
+
+TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
+       IniializeWithRedirectStatus_SameSites) {
+  GURL url("https://foo.com");
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true);
+
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  BrowsingTopicsPageLoadDataTracker::CreateForPage(
+      web_contents()->GetPrimaryMainFrame()->GetPage(),
+      /*redirect_hosts_with_topics_invoked=*/
+      std::set<HashedHost>{HashMainFrameHostForStorage(url.host())}, source_id);
+
+  auto* tracker = GetBrowsingTopicsPageLoadDataTracker();
+
+  EXPECT_EQ(tracker->redirect_hosts_with_topics_invoked().size(), 1u);
+  EXPECT_EQ(tracker->source_id_before_redirects(), source_id);
+  EXPECT_FALSE(tracker->topics_invoked());
+
+  GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/false);
+
+  // Topics call did not increase redirect_hosts_with_topics_invoked() size
+  // because the current site's host was already present.
+  EXPECT_EQ(tracker->redirect_hosts_with_topics_invoked().size(), 1u);
   EXPECT_TRUE(tracker->topics_invoked());
 }
 

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -105,7 +106,7 @@ PasswordAddUsernameView::PasswordAddUsernameView(
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_CONTROL_LIST_VERTICAL),
+                              views::DISTANCE_CONTROL_LIST_VERTICAL),
                           0));
 
   std::unique_ptr<views::Label> body_text = CreateBodyText(margins().width());
@@ -178,8 +179,8 @@ void PasswordAddUsernameView::AddedToWidget() {
 void PasswordAddUsernameView::UpdateUsernameInModel() {
   CHECK_EQ(controller_.state(),
            password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
-  std::u16string new_username = username_dropdown_->GetText();
-  base::TrimString(new_username, u" ", &new_username);
+  std::u16string new_username;
+  base::TrimString(username_dropdown_->GetText(), u" ", &new_username);
 
   controller_.OnCredentialEdited(std::move(new_username),
                                  controller_.pending_password().password_value);
@@ -207,3 +208,6 @@ void PasswordAddUsernameView::OnUsernameChanged() {
   SetButtonEnabled(ui::mojom::DialogButton::kOk,
                    !username_dropdown_->GetText().empty());
 }
+
+BEGIN_METADATA(PasswordAddUsernameView)
+END_METADATA

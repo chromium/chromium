@@ -30,14 +30,21 @@ OnDeviceModelMetadata::OnDeviceModelMetadata(
   if (!config) {
     return;
   }
-
-  for (auto& feature_config : *config->mutable_feature_configs()) {
-    auto feature = feature_config.feature();
-    adapters_[feature] = base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
-        std::move(feature_config));
-  }
-
   validation_config_ = std::move(*config->mutable_validation_config());
+  for (int c : config->capabilities()) {
+    switch (c) {
+      case proto::OnDeviceModelCapability::
+          ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT:
+        capabilities_.Put(on_device_model::CapabilityFlags::kImageInput);
+        break;
+      case proto::OnDeviceModelCapability::
+          ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT:
+        capabilities_.Put(on_device_model::CapabilityFlags::kAudioInput);
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 OnDeviceModelMetadata::~OnDeviceModelMetadata() = default;
@@ -50,12 +57,6 @@ std::unique_ptr<OnDeviceModelMetadata> OnDeviceModelMetadata::New(
     std::unique_ptr<proto::OnDeviceModelExecutionConfig> config) {
   return base::WrapUnique(new OnDeviceModelMetadata(
       model_path, version, model_spec, std::move(config)));
-}
-
-scoped_refptr<const OnDeviceModelFeatureAdapter>
-OnDeviceModelMetadata::GetAdapter(proto::ModelExecutionFeature feature) const {
-  const auto iter = adapters_.find(feature);
-  return iter != adapters_.end() ? iter->second : nullptr;
 }
 
 OnDeviceModelMetadataLoader::OnDeviceModelMetadataLoader(

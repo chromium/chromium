@@ -39,5 +39,5 @@ content::BrowserContext* ExtensionPrefValueMapFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   // Redirected in incognito.
   return extensions::ExtensionsBrowserClient::Get()
-      ->GetContextRedirectedToOriginal(context, /*force_guest_profile=*/true);
+      ->GetContextRedirectedToOriginal(context);
 }

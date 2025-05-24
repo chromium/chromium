@@ -19,13 +19,16 @@ namespace credential_provider_promo {
 // Enum for histograms like
 // IOS.CredentialProviderExtension.Promo.OnPasswordSaved. Entries should not be
 // renumbered and numeric values should never be reused.
+// LINT.IfChange
 enum class IOSCredentialProviderPromoAction : int {
   kLearnMore = 0,
   kGoToSettings = 1,
   kRemindMeLater = 2,
   kNo = 3,
-  kMaxValue = kNo,
+  kTurnOnAutofill = 4,
+  kMaxValue = kTurnOnAutofill,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSCredentialProviderPromoAction)
 
 // Record impression metric when a credentail provider promo is displayed.
 void RecordImpression(IOSCredentialProviderPromoSource source,

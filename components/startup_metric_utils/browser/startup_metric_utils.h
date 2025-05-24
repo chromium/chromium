@@ -164,7 +164,7 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   base::TimeTicks GetWebContentsStartTicks() const;
 
   void EmitHistogramWithTemperatureAndTraceEvent(
-      void (*histogram_function)(const std::string& name, base::TimeDelta),
+      void (*histogram_function)(std::string_view name, base::TimeDelta),
       const char* histogram_basename,
       base::TimeTicks begin_ticks,
       base::TimeTicks end_ticks);

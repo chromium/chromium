@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=blue>[bar</font></a>baz]" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>" but got "fooa"
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font color=blue><a href=http://www.google.com>[bar</a></font>baz]" compare innerHTML
@@ -52,22 +52,26 @@ Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b>abc[]<br></b></div>" queryCommandValue("bold") after
   assert_equals: Wrong result returned expected "" but got "false"
+[FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><i><b>abc[]<br></b></i></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><i><b>abc</b>d</i></div>" but got "<div><i><b>abc</b>d<br></i></div>"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><i><b>abc[]<br></b></i></div>" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><i><b>abc[]<br></b></i></div>" queryCommandValue("bold") after
   assert_equals: Wrong result returned expected "" but got "false"
+[FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><i><b>abc[]</b><br></i></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><i><b>abc</b>d</i></div>" but got "<div><i><b>abc</b>d<br></i></div>"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><i><b>abc[]</b><br></i></div>" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><i><b>abc[]</b><br></i></div>" queryCommandValue("bold") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b><i>abc[]<br></i></b></div>" compare innerHTML
-  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div><i style=\\"\\"><b>abc</b>d<br></i></div>" not in array ["<div><b><i>abc</i></b><i>d</i></div>", "<div><b><i>abc</i></b><i>d<br></i></div>", "<div><b><i>abc</i></b><i>d</i><br></div>"]
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b><i>abc</i></b><i>d</i></div>" but got "<div><i style=\\"\\"><b>abc</b>d<br></i></div>"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b><i>abc[]<br></i></b></div>" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b><i>abc[]<br></i></b></div>" queryCommandValue("bold") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b><i>abc[]</i><br></b></div>" compare innerHTML
-  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div><i style=\\"\\"><b>abc</b>d</i><br></div>" not in array ["<div><b><i>abc</i></b><i>d</i></div>", "<div><b><i>abc</i></b><i>d<br></i></div>", "<div><b><i>abc</i></b><i>d</i><br></div>"]
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b><i>abc</i></b><i>d</i></div>" but got "<div><i style=\\"\\"><b>abc</b>d</i><br></div>"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b><i>abc[]</i><br></b></div>" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b><i>abc[]</i><br></b></div>" queryCommandValue("bold") after
@@ -92,5 +96,12 @@ Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "Y<b><span contenteditable=\\"false\\">abc</span></b><i>def</i>" not in array ["<b>Y<span contenteditable=\\"false\\">abc</span></b><i>def</i>", "<b>Y</b><b><span contenteditable=\\"false\\">abc</span></b><i>def</i>"]
 [FAIL] [["forwarddelete",""],["inserttext","Y"]] "<b>[]X<span contenteditable=false>abc</span></b><i>def</i>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "Y<b><span contenteditable=\\"false\\">abc</span></b><i>def</i>" not in array ["<b>Y<span contenteditable=\\"false\\">abc</span></b><i>def</i>", "<b>Y</b><b><span contenteditable=\\"false\\">abc</span></b><i>def</i>"]
+[FAIL] [["delete",""],["inserttext","B"]] "<table><tr><td>a<td><b>[b</b><td><b>c</b><td><b>d]</b><td>e</table>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>a</td><td><b>B</b></td><td><br></td><td><br></td><td>e</td></tr></tbody></table>" but got "<table><tbody><tr><td>a</td><td><b>B</b></td><td></td><td></td><td>e</td></tr></tbody></table>"
+[FAIL] [["delete",""],["inserttext","B"]] "<table><tr><th>a<th><b>[b</b><th><b>c</b><th><b>d]</b><th>e</table>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><th>a</th><th><b>B</b></th><th><br></th><th><br></th><th>e</th></tr></tbody></table>" but got "<table><tbody><tr><th>a</th><th>B</th><th></th><th></th><th>e</th></tr></tbody></table>"
+[FAIL] [["forwarddelete",""],["inserttext","B"]] "<table><tr><td>a<td><b>[b</b><td><b>c</b><td><b>d]</b><td>e</table>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<table><tbody><tr><td>a</td><td><b>B</b></td><td></td><td></td><td>e</td></tr></tbody></table>" not in array ["<table><tbody><tr><td>a</td><td><b>B</b></td><td><br></td><td><br></td><td>e</td></tr></tbody></table>", "<table><tbody><tr><td>a</td><td><br></td><td><br></td><td><b>B</b></td><td>e</td></tr></tbody></table>"]
+[FAIL] [["forwarddelete",""],["inserttext","B"]] "<table><tr><th>a<th><b>[b</b><th><b>c</b><th><b>d]</b><th>e</table>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<table><tbody><tr><th>a</th><th>B</th><th></th><th></th><th>e</th></tr></tbody></table>" not in array ["<table><tbody><tr><th>a</th><th><b>B</b></th><th><br></th><th><br></th><th>e</th></tr></tbody></table>", "<table><tbody><tr><th>a</th><th><br></th><th><br></th><th><b>B</b></th><th>e</th></tr></tbody></table>"]
 Harness: the test ran to completion.
-

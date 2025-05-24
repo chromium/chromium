@@ -17,7 +17,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -26,6 +25,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,9 +55,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -78,6 +78,7 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -92,15 +93,14 @@ import java.util.Set;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-    ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS
+    ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY,
+    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO
 })
+@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class PrivacyGuideFragmentTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";
     private static final String ENTRY_EXIT_HISTOGRAM = "Settings.PrivacyGuide.EntryExit";
-
-    @Rule public JniMocker mMocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
@@ -130,10 +130,11 @@ public class PrivacyGuideFragmentTest {
     @Before
     public void setUp() {
         mAllFragments = PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER;
-        mChromeBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+        mChromeBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
-        mMocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mPrivacySandboxBridgeJni);
-        when(mPrivacySandboxBridgeJni.isConsentCountry()).thenReturn(true);
+        PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridgeJni);
+        when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
+                .thenReturn(true);
 
         mActionTester = new UserActionTester();
     }
@@ -149,20 +150,14 @@ public class PrivacyGuideFragmentTest {
         onViewWaiting(withText(R.string.privacy_guide_fragment_title));
     }
 
-    private void launchPrivacySettingsAndOpenPrivacyGuide() {
-        mPrivacySettingsTestRule.startSettingsActivity();
-        onViewWaiting(withText(R.string.privacy_guide_pref_summary)).perform(click());
-        onViewWaiting(withText(R.string.privacy_guide_fragment_title));
-    }
-
-    private Map<Integer, Integer> mTitleNames =
+    private final Map<Integer, Integer> mTitleNames =
             Map.of(
                     FragmentType.MSBB,
                     R.string.url_keyed_anonymized_data_title,
                     FragmentType.HISTORY_SYNC,
                     R.string.privacy_guide_history_and_tabs_sync_toggle,
                     FragmentType.COOKIES,
-                    R.string.privacy_guide_cookies_intro,
+                    R.string.privacy_guide_cookies_header,
                     FragmentType.SAFE_BROWSING,
                     R.string.privacy_guide_safe_browsing_intro,
                     FragmentType.AD_TOPICS,
@@ -187,11 +182,11 @@ public class PrivacyGuideFragmentTest {
         int cardPosition = mAllFragments.indexOf(cardType);
         assertTrue(cardPosition < numberOfMaxSteps - 1);
         if (cardPosition == 0) {
-            onView(withText(R.string.privacy_guide_start_button)).perform(click());
+            onViewWaiting(withText(R.string.privacy_guide_start_button)).perform(click());
         } else if (cardPosition == numberOfMaxSteps - 2) {
-            onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+            onViewWaiting(withText(R.string.privacy_guide_finish_button)).perform(click());
         } else {
-            onView(withText(R.string.next)).perform(click());
+            onViewWaiting(withText(R.string.next)).perform(click());
         }
         @FragmentType int nextCardType = getNextCardType(cardType);
         onViewWaiting(withText(mTitleNames.get(nextCardType)));
@@ -200,7 +195,7 @@ public class PrivacyGuideFragmentTest {
     private void navigateFromCardToPrevious(@FragmentType int cardType) {
         int cardPosition = mAllFragments.indexOf(cardType);
         assertTrue(cardPosition > 0);
-        onView(withText(R.string.back)).perform(click());
+        onViewWaiting(withText(R.string.back)).perform(click());
         @FragmentType int previousCardType = getPreviousCardType(cardType);
         onViewWaiting(withText(mTitleNames.get(previousCardType)));
     }
@@ -364,6 +359,15 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    public void testRenderAdTopicsCard() throws IOException {
+        launchPrivacyGuide();
+        goToCard(FragmentType.AD_TOPICS);
+        mRenderTestRule.render(getRootView(), "privacy_guide_ad_topics");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
     public void testRenderCompletionCard() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.DONE);
@@ -431,7 +435,7 @@ public class PrivacyGuideFragmentTest {
         onView(withId(R.id.ad_topics_switch)).check(matches(isChecked()));
 
         pressBack();
-        onViewWaiting(withText(R.string.privacy_guide_cookies_intro));
+        onViewWaiting(withText(R.string.privacy_guide_cookies_header));
         onViewWaiting(allOf(withId(R.id.block_third_party), isCompletelyDisplayed()));
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
@@ -449,31 +453,11 @@ public class PrivacyGuideFragmentTest {
 
         pressBack();
         onViewWaiting(allOf(withId(R.id.msbb_switch), isCompletelyDisplayed()));
-        onView(withId(R.id.msbb_switch)).perform(click());
+        // msbb_switch is checked because history_sync_switch was checked above.
         onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
 
         pressBack();
         onViewWaiting(withText(R.string.privacy_guide_fragment_title));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"PrivacyGuide"})
-    public void testAdTopicsCard_adTopicsSwitchUpdatedOnResume() {
-        // Verify that the Ad Topics Switch is updated when the pref is changed when page is
-        // navigated off and returned to
-        launchPrivacyGuide();
-        setAdTopicsState(true);
-        goToCard(FragmentType.AD_TOPICS);
-        onViewWaiting(allOf(withId(R.id.ad_topics_switch), isCompletelyDisplayed()))
-                .check(matches(isChecked()));
-
-        navigateFromCardToNext(FragmentType.AD_TOPICS);
-        setAdTopicsState(false);
-
-        pressBack();
-        onViewWaiting(allOf(withId(R.id.ad_topics_switch), isCompletelyDisplayed()))
-                .check(matches(isNotChecked()));
     }
 
     @Test

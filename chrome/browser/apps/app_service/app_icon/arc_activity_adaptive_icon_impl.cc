@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "components/arc/common/intent_helper/adaptive_icon_delegate.h"
+#include "chromeos/ash/experiences/arc/intent_helper/adaptive_icon_delegate.h"
 
 namespace apps {
 

@@ -13,10 +13,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "skia/ext/image_operations.h"
@@ -149,7 +151,7 @@ SaveAddressBubbleController::GetHeaderImages() const {
 
 std::u16string SaveAddressBubbleController::GetBodyText() const {
   if (is_migration_to_account_ && web_contents()) {
-    PersonalDataManager* pdm =
+    PersonalDataManager& pdm =
         ContentAutofillClient::FromWebContents(web_contents())
             ->GetPersonalDataManager();
 
@@ -157,10 +159,9 @@ std::u16string SaveAddressBubbleController::GetBodyText() const {
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
 
-    int string_id =
-        pdm->address_data_manager().IsSyncFeatureEnabledForAutofill()
-            ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
-            : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
+    int string_id = pdm.address_data_manager().IsSyncFeatureEnabledForAutofill()
+                        ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
+                        : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
 
     return l10n_util::GetStringFUTF16(string_id,
                                       base::UTF8ToUTF16(account->email));
@@ -177,8 +178,10 @@ std::u16string SaveAddressBubbleController::GetAddressSummary() const {
         NAME_FULL, ADDRESS_HOME_LINE1, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER};
     std::vector<std::u16string> values;
     for (FieldType field : fields) {
-      std::u16string value = address_profile_.GetInfo(
-          field, g_browser_process->GetApplicationLocale());
+      std::u16string value =
+          address_profile_.GetInfo(field, g_browser_process->GetFeatures()
+                                              ->application_locale_storage()
+                                              ->Get());
       if (!value.empty()) {
         values.push_back(value);
       }
@@ -190,7 +193,8 @@ std::u16string SaveAddressBubbleController::GetAddressSummary() const {
   }
 
   return GetEnvelopeStyleAddress(
-      address_profile_, g_browser_process->GetApplicationLocale(),
+      address_profile_,
+      g_browser_process->GetFeatures()->application_locale_storage()->Get(),
       /*include_recipient=*/true, /*include_country=*/true);
 }
 
@@ -201,8 +205,9 @@ std::u16string SaveAddressBubbleController::GetProfileEmail() const {
     return {};
   }
 
-  return address_profile_.GetInfo(EMAIL_ADDRESS,
-                                  g_browser_process->GetApplicationLocale());
+  return address_profile_.GetInfo(
+      EMAIL_ADDRESS,
+      g_browser_process->GetFeatures()->application_locale_storage()->Get());
 }
 
 std::u16string SaveAddressBubbleController::GetProfilePhone() const {
@@ -212,8 +217,9 @@ std::u16string SaveAddressBubbleController::GetProfilePhone() const {
     return {};
   }
 
-  return address_profile_.GetInfo(PHONE_HOME_WHOLE_NUMBER,
-                                  g_browser_process->GetApplicationLocale());
+  return address_profile_.GetInfo(
+      PHONE_HOME_WHOLE_NUMBER,
+      g_browser_process->GetFeatures()->application_locale_storage()->Get());
 }
 
 std::u16string SaveAddressBubbleController::GetOkButtonLabel() const {

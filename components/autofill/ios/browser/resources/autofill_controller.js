@@ -4,9 +4,9 @@
 
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
-import {getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
+import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+
 
 /**
  * @fileoverview Installs Autofill management functions on the __gCrWeb object.
@@ -131,7 +131,7 @@ function countEditableElements_(elements) {
  *     empty if no match.
  */
 function getUnownedIframes() {
-  return Array.from(gCrWeb.form.getIframeElements(document))
+  return Array.from(gCrWebLegacy.form.getIframeElements(document))
       .filter(e => !e.closest('form'));
 }
 
@@ -151,7 +151,7 @@ function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
   const numEditableUnownedElements =
       countEditableElements_(unownedControlElements);
   const iframeElements =
-      gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+      gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled() ?
       getUnownedIframes() :
       [];
   if (numEditableUnownedElements > 0 || iframeElements.length > 0) {
@@ -284,7 +284,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
         !((element.hasAttribute('value') &&
            element.getAttribute('value') === element.value) ||
           (element.hasAttribute('placeholder') &&
-           element.getAttribute('placeholder').toLowerCase() ==
+           element.getAttribute('placeholder').toLowerCase() ===
                element.value.toLowerCase()))) {
       continue;
     }
@@ -324,7 +324,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
         sendWebKitMessage(NATIVE_MESSAGE_HANDLER, {
           'command': FORM_FILLED_COMMAND,
           'form_data': formData,
-          'frame': getFrameId(),
+          'frame': gCrWeb.getFrameId(),
         });
       }
     }, _delay);
@@ -349,7 +349,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
     // this case explicitly.
     reportFormFill(form, delay);
 
-    if (form && form.tagName == 'FORM') {
+    if (form && form.tagName === 'FORM') {
       form.addEventListener('reset', formResetListener);
     }
   }
@@ -384,7 +384,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
 
   let formField = null;
   for (let i = 0; i < controlElements.length; ++i) {
-    if (__gCrWeb.fill.getUniqueID(controlElements[i]) ==
+    if (__gCrWeb.fill.getUniqueID(controlElements[i]) ===
         fieldUniqueID.toString()) {
       formField = controlElements[i];
       break;
@@ -402,7 +402,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
     }
 
     let value = null;
-    if (__gCrWeb.fill.isTextInput(element) || isTextAreaElement(element)) {
+    if (isTextField(element) || isTextAreaElement(element)) {
       value = '';
     } else if (__gCrWeb.fill.isSelectElement(element)) {
       // Reset to the first index.
@@ -461,6 +461,13 @@ __gCrWeb.autofill.extractNewForms = function(
   const webForms = document.forms;
 
   let numFieldsSeen = 0;
+  let numFramesSeen = 0;
+
+  // Returns true if the child frames can be extracted.
+  const canExtractChildFrames = () =>
+      numFramesSeen <= fill_constants.MAX_EXTRACTABLE_FRAMES ||
+      !gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesThrottlingEnabled();
+
   for (let formIndex = 0; formIndex < webForms.length; ++formIndex) {
     /** @type {HTMLFormElement} */
     const formElement = webForms[formIndex];
@@ -468,7 +475,7 @@ __gCrWeb.autofill.extractNewForms = function(
         __gCrWeb.autofill.extractAutofillableElementsInForm(formElement);
     const numEditableElements = countEditableElements_(controlElements);
     const hasChildFrames =
-        gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+        gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled() ?
         formElement.getElementsByTagName('iframe').length > 0 :
         false;
 
@@ -478,7 +485,8 @@ __gCrWeb.autofill.extractNewForms = function(
 
     const form = new __gCrWeb['common'].JSONSafeObject();
     if (!__gCrWeb.fill.webFormElementToFormData(
-            window, formElement, null, form, /*field=*/ null)) {
+            window, formElement, null, form, /*field=*/ null,
+            canExtractChildFrames())) {
       continue;
     }
 
@@ -487,16 +495,33 @@ __gCrWeb.autofill.extractNewForms = function(
       break;
     }
 
+    numFramesSeen += (form.child_frames ?? []).length;
+    // Clear the frames for the form if the limit was busted after parsing this
+    // form. Child frames will still be registered for this form but won't be
+    // part for the frame tree for the form. Child frames for the forms
+    // following this one won't be extracted nor registered.
+    if (!canExtractChildFrames()) {
+      form.child_frames = [];
+    }
+
     if (isFormInteresting_(form)) {
       forms.push(form);
     }
   }
 
   // Look for more extractable fields outside of forms.
-  const unownedForm =
-      extractUnownedFields(restrictUnownedFieldsToFormlessCheckout);
+  const unownedForm = extractUnownedFields(
+      restrictUnownedFieldsToFormlessCheckout, canExtractChildFrames());
 
   if (unownedForm) {
+    numFramesSeen += (unownedForm.child_frames ?? []).length;
+    if (!canExtractChildFrames()) {
+      // Do not associate child frames with the form if the limit of frames
+      // across forms was reached. Forms that were parsed before this one will
+      // still keep their child frames.
+      unownedForm.child_frames = [];
+    }
+
     numFieldsSeen += unownedForm['fields'].length;
     if (numFieldsSeen <= fill_constants.MAX_EXTRACTABLE_FIELDS) {
       if (isFormInteresting_(unownedForm)) {
@@ -532,10 +557,10 @@ __gCrWeb.autofill.fillFormField = function(data, field) {
   }
 
   let filled = false;
-  if (__gCrWeb.fill.isTextInput(field) || isTextAreaElement(field)) {
+  if (isTextField(field) || isTextAreaElement(field)) {
     let sanitizedValue = data['value'];
 
-    if (__gCrWeb.fill.isTextInput(field)) {
+    if (isTextField(field)) {
       // If the 'max_length' attribute contains a negative value, the default
       // maxlength value is used.
       let maxLength = data['max_length'];
@@ -636,5 +661,5 @@ __gCrWeb.autofill['sanitizedFieldIsEmpty'] = function(value) {
   // Some sites enter values such as ____-____-____-____ or (___)-___-____ in
   // their fields. Check if the field value is empty after the removal of the
   // formatting characters.
-  return __gCrWeb.common.trim(value.replace(/[-_()/|]/g, '')) === '';
+  return trim(value.replace(/[-_()/|]/g, '')) === '';
 };

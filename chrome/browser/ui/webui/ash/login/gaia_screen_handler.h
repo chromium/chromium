@@ -187,16 +187,6 @@ class GaiaScreenHandler final
   void SetNextSamlChallengeKeyHandlerForTesting(
       std::unique_ptr<SamlChallengeKeyHandler> handler_for_test);
 
-  // To avoid spurious error messages on flaky networks, the offline message is
-  // only shown if the network is offline for a threshold number of seconds.
-  // This method provides an ability to reduce the threshold to zero, allowing
-  // the offline message to show instantaneously in tests. The threshold can
-  // also be set to a high value to disable the offline message on slow
-  // configurations like MSAN, where it otherwise triggers on every run.
-  void set_offline_timeout_for_testing(base::TimeDelta offline_timeout) {
-    offline_timeout_ = offline_timeout;
-  }
-
   // TODO(https://issuetracker.google.com/292489063): Remove these methods to
   // query the frame state, and instead, allow registering callbacks or futures
   // to learn of the relevant state transitions e.g. with an Observer class.
@@ -477,8 +467,7 @@ class GaiaScreenHandler final
   base::CancelableOnceCallback<void()> update_state_callback_;
   base::CancelableOnceCallback<void()> connecting_callback_;
 
-  // Once Lacros is shipped, this will no longer be necessary.
-  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_ash_httpauth_;
+  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_system_httpauth_;
 
   // Whether we're currently ignoring network state updates because a proxy auth
   // UI pending (or we're waiting for a grace period after the proxy auth UI is
@@ -498,12 +487,6 @@ class GaiaScreenHandler final
   // True if we need to reload gaia page to bring back "Proxy authentication"
   // dialog.
   bool proxy_auth_dialog_need_reload_ = false;
-
-  bool is_offline_timeout_for_test_set_ = false;
-
-  // Timeout to delay first notification about offline state for a
-  // current network.
-  base::TimeDelta offline_timeout_ = base::Seconds(1);
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 

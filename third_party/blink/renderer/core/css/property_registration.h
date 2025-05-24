@@ -59,7 +59,7 @@ class CORE_EXPORT PropertyRegistration final
   bool Inherits() const { return inherits_; }
   const CSSValue* Initial() const { return initial_.Get(); }
   StyleRuleProperty* PropertyRule() const { return property_rule_.Get(); }
-  const InterpolationTypes& GetInterpolationTypes() const {
+  const InterpolationTypes* GetInterpolationTypes() const {
     return interpolation_types_;
   }
   // See `ViewportUnitFlag`.
@@ -74,7 +74,7 @@ class CORE_EXPORT PropertyRegistration final
   const bool inherits_;
   const Member<const CSSValue> initial_;
   Member<StyleRuleProperty> property_rule_;
-  const InterpolationTypes interpolation_types_;
+  Member<const InterpolationTypes> interpolation_types_;
   mutable bool referenced_;
 };
 

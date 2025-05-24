@@ -6,12 +6,14 @@ package org.chromium.components.browser_ui.media;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * The callback when an image is downloaded. This class is different with
  * {@link ImageDownloadCallback} and is only used by {@link MediaImageManager}.
  */
+@NullMarked
 public interface MediaImageCallback {
     /**
      * Called when image downloading is complete.

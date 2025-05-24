@@ -15,24 +15,20 @@ namespace autofill {
 std::unique_ptr<FormFieldParser> MerchantPromoCodeFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
-  raw_ptr<AutofillField> field;
-  base::span<const MatchPatternRef> merchant_promo_code_patterns =
-      GetMatchPatterns("MERCHANT_PROMO_CODE", context.page_language,
-                       context.pattern_file);
-  if (ParseField(context, scanner, merchant_promo_code_patterns, &field,
-                 "MERCHANT_PROMO_CODE")) {
-    return std::make_unique<MerchantPromoCodeFieldParser>(field);
+  std::optional<FieldAndMatchInfo> match;
+  if (ParseField(context, scanner, "MERCHANT_PROMO_CODE", &match)) {
+    return std::make_unique<MerchantPromoCodeFieldParser>(std::move(*match));
   }
   return nullptr;
 }
 
 MerchantPromoCodeFieldParser::MerchantPromoCodeFieldParser(
-    const AutofillField* field)
-    : field_(field) {}
+    FieldAndMatchInfo match)
+    : match_(std::move(match)) {}
 
 void MerchantPromoCodeFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  AddClassification(field_, MERCHANT_PROMO_CODE,
+  AddClassification(match_, MERCHANT_PROMO_CODE,
                     kBaseMerchantPromoCodeParserScore, field_candidates);
 }
 

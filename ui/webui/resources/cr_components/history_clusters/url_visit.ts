@@ -100,14 +100,15 @@ export class UrlVisitElement extends ClusterMenuElementBase {
   // Properties
   //============================================================================
 
-  query: string = '';
-  visit?: URLVisit;
-  fromPersistence: boolean = false;
+  accessor query: string = '';
+  accessor visit: URLVisit|undefined;
+  accessor fromPersistence: boolean = false;
   protected annotations_: string[] = [];
-  protected allowDeletingHistory_: boolean =
+  protected accessor allowDeletingHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
-  private inSidePanel_: boolean = loadTimeData.getBoolean('inSidePanel');
-  protected renderActionMenu_: boolean = false;
+  private accessor inSidePanel_: boolean =
+      loadTimeData.getBoolean('inSidePanel');
+  protected accessor renderActionMenu_: boolean = false;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
@@ -175,7 +176,7 @@ export class UrlVisitElement extends ClusterMenuElementBase {
       this.renderActionMenu_ = true;
       await this.updateComplete;
     }
-    const menu = this.shadowRoot!.querySelector('cr-action-menu');
+    const menu = this.shadowRoot.querySelector('cr-action-menu');
     assert(menu);
     menu.showAt(this.$.actionMenuButton);
   }
@@ -196,7 +197,7 @@ export class UrlVisitElement extends ClusterMenuElementBase {
     // This can also be triggered from the hide visit icon, in which case the
     // menu may not be rendered.
     if (this.renderActionMenu_) {
-      const menu = this.shadowRoot!.querySelector('cr-action-menu');
+      const menu = this.shadowRoot.querySelector('cr-action-menu');
       assert(menu);
       menu.close();
     }
@@ -232,7 +233,7 @@ export class UrlVisitElement extends ClusterMenuElementBase {
 
   private openUrl_(event: MouseEvent|KeyboardEvent) {
     assert(this.visit);
-    BrowserProxyImpl.getInstance().handler.openHistoryCluster(
+    BrowserProxyImpl.getInstance().handler.openHistoryUrl(
         this.visit.normalizedUrl, {
           middleButton: (event as MouseEvent).button === 1,
           altKey: event.altKey,

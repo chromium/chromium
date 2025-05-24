@@ -4,6 +4,8 @@
 
 #include "content/browser/agent_cluster_key.h"
 
+#include <variant>
+
 #include "base/notreached.h"
 
 namespace content {
@@ -20,8 +22,6 @@ AgentClusterKey::CrossOriginIsolationKey::CrossOriginIsolationKey(
 AgentClusterKey::CrossOriginIsolationKey::~CrossOriginIsolationKey() = default;
 
 bool AgentClusterKey::CrossOriginIsolationKey::operator==(
-    const CrossOriginIsolationKey& b) const = default;
-bool AgentClusterKey::CrossOriginIsolationKey::operator!=(
     const CrossOriginIsolationKey& b) const = default;
 
 // static
@@ -46,21 +46,21 @@ AgentClusterKey::AgentClusterKey(const AgentClusterKey& other) = default;
 AgentClusterKey::~AgentClusterKey() = default;
 
 bool AgentClusterKey::IsSiteKeyed() const {
-  return absl::holds_alternative<GURL>(key_);
+  return std::holds_alternative<GURL>(key_);
 }
 
 bool AgentClusterKey::IsOriginKeyed() const {
-  return absl::holds_alternative<url::Origin>(key_);
+  return std::holds_alternative<url::Origin>(key_);
 }
 
 const GURL& AgentClusterKey::GetSite() const {
   CHECK(IsSiteKeyed());
-  return absl::get<GURL>(key_);
+  return std::get<GURL>(key_);
 }
 
 const url::Origin& AgentClusterKey::GetOrigin() const {
   CHECK(IsOriginKeyed());
-  return absl::get<url::Origin>(key_);
+  return std::get<url::Origin>(key_);
 }
 
 const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
@@ -69,7 +69,6 @@ AgentClusterKey::GetCrossOriginIsolationKey() const {
 }
 
 bool AgentClusterKey::operator==(const AgentClusterKey& b) const = default;
-bool AgentClusterKey::operator!=(const AgentClusterKey& b) const = default;
 
 bool AgentClusterKey::operator<(const AgentClusterKey& b) const {
   if (GetCrossOriginIsolationKey().has_value() !=
@@ -100,7 +99,7 @@ bool AgentClusterKey::operator<(const AgentClusterKey& b) const {
 }
 
 AgentClusterKey::AgentClusterKey(
-    const absl::variant<GURL, url::Origin>& key,
+    const std::variant<GURL, url::Origin>& key,
     const std::optional<CrossOriginIsolationKey>& isolation_key)
     : key_(key), isolation_key_(isolation_key) {}
 

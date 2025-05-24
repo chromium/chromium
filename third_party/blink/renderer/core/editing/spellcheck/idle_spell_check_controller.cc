@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
+
+#include <array>
 
 #include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
@@ -274,6 +271,22 @@ void IdleSpellCheckController::Invoke(IdleDeadline* deadline) {
     return;
   }
 
+  // If focus node has canonical position null then spellcheck should not
+  // be executed.
+  if (RuntimeEnabledFeatures::
+          CheckForCanonicalPositionInIdleSpellCheckEnabled()) {
+    Position selection_focus =
+        GetWindow().GetFrame()->Selection().GetSelectionInDOMTree().Focus();
+    if (selection_focus) {
+      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+      if (CanonicalPositionOf(EphemeralRange(selection_focus).StartPosition())
+              .IsNull()) {
+        Deactivate();
+        return;
+      }
+    }
+  }
+
   if (state_ == State::kHotModeRequested) {
     state_ = State::kInHotModeInvocation;
     HotModeInvocation(deadline);
@@ -306,9 +319,8 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
     return;
 
   bool cross_origin_isolated_capability =
-      GetExecutionContext()
-          ? GetExecutionContext()->CrossOriginIsolatedCapability()
-          : false;
+      GetExecutionContext() &&
+      GetExecutionContext()->CrossOriginIsolatedCapability();
 
   auto* deadline = MakeGarbageCollected<IdleDeadline>(
       base::TimeTicks::Now() + kIdleSpellcheckTestTimeout,
@@ -333,7 +345,7 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
     case State::kInactive:
     case State::kInHotModeInvocation:
     case State::kInColdModeInvocation:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -353,11 +365,11 @@ void IdleSpellCheckController::SetSpellCheckingDisabled(
 }
 
 const char* IdleSpellCheckController::GetStateAsString() const {
-  static const char* const kTexts[] = {
+  static const auto kTexts = std::to_array<const char*>({
 #define V(state) #state,
       FOR_EACH_IDLE_SPELL_CHECK_CONTROLLER_STATE(V)
 #undef V
-  };
+  });
 
   unsigned index = static_cast<unsigned>(state_);
   if (index < std::size(kTexts)) {

@@ -98,14 +98,14 @@ testSuite({
      * @suppress {strictMissingProperties} suppression added to enable type
      * checking
      */
-    mockState.addEventListener = goog.nullFunction;
+    mockState.addEventListener = () => {};
 
     commands = [
       UndoRedo.COMMAND.REDO,
       UndoRedo.COMMAND.UNDO,
     ];
     /** @suppress {visibility} suppression added to enable type checking */
-    state = new UndoRedo.UndoState_('1', '', null, goog.nullFunction);
+    state = new UndoRedo.UndoState_('1', '', null, () => {});
 
     clock = new MockClock(true);
 

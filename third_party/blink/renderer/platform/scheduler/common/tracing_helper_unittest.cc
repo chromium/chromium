@@ -4,7 +4,11 @@
 
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
+#include "base/test/task_environment.h"
+#include "base/test/test_trace_processor.h"
+#include "base/test/trace_test_utils.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -12,71 +16,57 @@ namespace scheduler {
 
 namespace {
 
-const char* g_last_state = nullptr;
-
-void ExpectTraced(const char* state) {
-  EXPECT_TRUE(state);
-  EXPECT_TRUE(g_last_state);
-  EXPECT_STREQ(state, g_last_state);
-  g_last_state = nullptr;
-}
-
-void ExpectNotTraced() {
-  EXPECT_FALSE(g_last_state);
-}
-
-const char* SignOfInt(int value) {
+perfetto::StaticString SignOfInt(int value) {
   if (value > 0)
     return "positive";
   if (value < 0)
     return "negative";
-  return "zero";
+  return nullptr;
 }
-
-class TraceableStateForTest
-    : public TraceableState<int, TracingCategory::kDefault> {
- public:
-  TraceableStateForTest(TraceableVariableController* controller)
-      : TraceableState(0, "State", controller, SignOfInt) {
-    // We shouldn't expect trace in constructor here because mock isn't set yet.
-    mock_trace_for_test_ = &MockTrace;
-  }
-
-  TraceableStateForTest& operator=(const int& value) {
-    Assign(value);
-    return *this;
-  }
-
-  static void MockTrace(const char* state) {
-    EXPECT_TRUE(state);
-    EXPECT_FALSE(g_last_state);  // No unexpected traces.
-    g_last_state = state;
-  }
-};
 
 }  // namespace
 
 // TODO(kraynov): TraceableCounter tests.
 
-TEST(TracingHelperTest, TraceableState) {
+// TODO(crbug.com/408328552): Re-enable this test
+TEST(TracingHelperTest, DISABLED_TraceableState) {
   TraceableVariableController controller;
-  TraceableStateForTest state(&controller);
+  TraceableState<int, "renderer.scheduler"> state(
+      0, perfetto::NamedTrack("State"), &controller, SignOfInt);
+
+  base::test::TracingEnvironment tracing_environment;
+  base::test::TaskEnvironment task_environment;
+
+  base::test::TestTraceProcessor test_trace_processor;
+  test_trace_processor.StartTrace("renderer.scheduler");
+
   controller.OnTraceLogEnabled();
-  ExpectTraced("zero");
-  state = 0;
-  ExpectNotTraced();
   state = 1;
-  ExpectTraced("positive");
+  state = 0;
   state = -1;
-  ExpectTraced("negative");
+
+  auto status = test_trace_processor.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  auto result = test_trace_processor.RunQuery(R"(
+    SELECT slice.name
+    FROM track left join slice on track.id = slice.track_id
+    WHERE track.name = 'State'
+    ORDER BY ts
+  )");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"name"},
+                                     std::vector<std::string>{"positive"},
+                                     std::vector<std::string>{"negative"}));
 }
 
 TEST(TracingHelperTest, TraceableStateOperators) {
   TraceableVariableController controller;
-  TraceableState<int, TracingCategory::kDebug> x(-1, "X", &controller,
-                                                 SignOfInt);
-  TraceableState<int, TracingCategory::kDebug> y(1, "Y", &controller,
-                                                 SignOfInt);
+  TraceableState<int, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug")> x(
+      -1, perfetto::NamedTrack("X"), &controller, SignOfInt);
+  TraceableState<int, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug")> y(
+      1, perfetto::NamedTrack("Y"), &controller, SignOfInt);
   EXPECT_EQ(0, x + y);
   EXPECT_FALSE(x == y);
   EXPECT_TRUE(x != y);

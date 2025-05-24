@@ -5,11 +5,11 @@
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './edu_coexistence_button.html.js';
@@ -35,11 +35,6 @@ export class EduCoexistenceButton extends EduCoexistenceButtonBase {
       buttonType: {
         type: String,
         value: ButtonTypes.ACTION,
-      },
-
-      buttonClasses: {
-        type: String,
-        computed: 'getClass(buttonType)',
       },
 
       disabled: {

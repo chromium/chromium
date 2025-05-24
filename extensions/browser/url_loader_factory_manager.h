@@ -60,23 +60,23 @@ class URLLoaderFactoryManager {
       const Extension& extension);
 
   // Creates a URLLoaderFactory that should be used for requests initiated from
-  // |process| by |origin|.
+  // `process` by `origin`.
   //
   // The behavior of this method depends on the intended consumer of the
   // URLLoaderFactory:
-  // - "web": No changes are made to |factory_params| - an extensions-agnostic,
+  // - "web": No changes are made to `factory_params` - an extensions-agnostic,
   //   default URLLoaderFactory should be used
-  // - "extension": Extension-specific permissions are set in |factory_params|
+  // - "extension": Extension-specific permissions are set in `factory_params`
   //   if the factory will be used by an extension frame (e.g. from an extension
   //   background page).
   // - "content script": For most extensions no changes are made to
-  //   |factory_params|, but platform apps might need to set app-specific
+  //   `factory_params`, but platform apps might need to set app-specific
   //   security properties in the URLLoaderFactory used by content scripts.
-  // The method recognizes the intended consumer based on |origin| ("web" vs
-  // other cases) and |is_for_isolated_world| ("extension" vs "content script").
+  // The method recognizes the intended consumer based on `origin` ("web" vs
+  // other cases) and `is_for_isolated_world` ("extension" vs "content script").
   //
   // The following examples might help understand the difference between
-  // |origin| and other properties of a factory and/or network request:
+  // `origin` and other properties of a factory and/or network request:
   //
   //                                 |   web     |  extension  | content script
   // --------------------------------|-----------|-------------|---------------
@@ -96,6 +96,7 @@ class URLLoaderFactoryManager {
       content::BrowserContext* browser_context,
       const url::Origin& origin,
       bool is_for_isolated_world,
+      bool is_for_service_worker,
       network::mojom::URLLoaderFactoryParams* factory_params);
 };
 

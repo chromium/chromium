@@ -12,8 +12,12 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/prefs/pref_service.h"
@@ -22,6 +26,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
@@ -32,6 +37,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -44,6 +50,9 @@
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
+
+// Profile name used in unit tests, see `TestProfileIOS` for more info.
+constexpr char kTestProfileName[] = "Test";
 
 // Returns app upgrade details for an outdated application.
 UpgradeRecommendedDetails OutdatedAppDetails() {
@@ -61,6 +70,9 @@ UpgradeRecommendedDetails OutdatedAppDetails() {
 class SafetyCheckNotificationClientTest : public PlatformTest {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        kSeparateProfilesForManagedAccounts);
+
     SetupMockNotificationCenter();
 
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
@@ -68,7 +80,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
 
     update->Set(kSafetyCheckNotificationKey, true);
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
@@ -76,35 +88,32 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
 
-    ChromeBrowserState* browser_state =
-        profile_manager_.AddProfileWithBuilder(std::move(builder));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
+    BrowserList* list = BrowserListFactory::GetForProfile(profile_.get());
 
     mock_scene_state_ = OCMClassMock([SceneState class]);
 
     OCMStub([mock_scene_state_ activationLevel])
         .andReturn(SceneActivationLevelForegroundActive);
 
-    browser_ = std::make_unique<TestBrowser>(browser_state, mock_scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), mock_scene_state_);
 
     list->AddBrowser(browser_.get());
 
-    pref_service_ = browser_state->GetPrefs();
+    pref_service_ = profile_->GetPrefs();
 
     local_pref_service_ =
         TestingApplicationContext::GetGlobal()->GetLocalState();
 
     safety_check_manager_ =
-        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browser_state);
+        IOSChromeSafetyCheckManagerFactory::GetForProfile(profile_.get());
 
     notification_client_ = std::make_unique<SafetyCheckNotificationClient>(
-        base::SequencedTaskRunner::GetCurrentDefault());
+        profile_.get(), base::SequencedTaskRunner::GetCurrentDefault());
   }
 
-  void TearDown() override {
-    safety_check_manager_->StopSafetyCheck();
-  }
+  void TearDown() override { safety_check_manager_->StopSafetyCheck(); }
 
   // Sets up a mock notification center, so notification requests can be
   // tested.
@@ -161,9 +170,34 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
          withCompletionHandler:[OCMArg checkWithBlock:completionCaller]]);
   }
 
+  // Sets up an OCMock expectation that a notification matching
+  // `notification_id` is NOT requested.
+  void RejectNotificationRequest(NSString* notification_id) {
+    OCMReject([mock_notification_center_
+        addNotificationRequest:NotificationRequestArg(notification_id)
+         withCompletionHandler:[OCMArg any]]);
+  }
+
+  void ExpectProfileNotificationRequest(NSString* notification_id,
+                                        NSString* expected_profile_name) {
+    id arg = [OCMArg checkWithBlock:^BOOL(UNNotificationRequest* request) {
+      EXPECT_NSEQ(request.identifier, notification_id);
+      EXPECT_NE(request.content, nil);
+      EXPECT_NE(request.content.userInfo, nil);
+      EXPECT_TRUE([request.content.userInfo
+                      objectForKey:kOriginatingProfileNameKey] != nil);
+      EXPECT_NSEQ(request.content.userInfo[kOriginatingProfileNameKey],
+                  expected_profile_name);
+      return YES;
+    }];
+
+    ExpectNotificationRequest(arg);
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<SafetyCheckNotificationClient> notification_client_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
@@ -172,6 +206,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
   std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
   id mock_scene_state_;
   std::unique_ptr<TestBrowser> browser_;
+  raw_ptr<ProfileIOS> profile_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
 };
@@ -259,4 +294,187 @@ TEST_F(SafetyCheckNotificationClientTest, SchedulesPasswordNotification) {
   run_loop.Run();
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that no notification is scheduled if the app's notification auth status
+// is provisional and provisional notifications are not allowed by policy.
+TEST_F(SafetyCheckNotificationClientTest, ProvisionalDisallowedByPolicy) {
+  browser_->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kProvisionalNotificationsAllowedByPolicy, false);
+  [PushNotificationUtil
+      updateAuthorizationStatusPref:UNAuthorizationStatusProvisional];
+  GetApplicationContext()->GetLocalState()->ClearPref(
+      prefs::kAppLevelPushNotificationPermissions);
+  StubGetPendingRequests(nil);
+  OCMReject([mock_notification_center_ addNotificationRequest:[OCMArg any]
+                                        withCompletionHandler:[OCMArg any]]);
+  password_manager::InsecurePasswordCounts counts = {
+      /* compromised */ 1, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  base::RunLoop run_loop;
+  notification_client_->OnSceneActiveForegroundBrowserReady(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that the IOS.Notifications.SafetyCheck.Triggered histogram is properly
+// fired when a Safety Check notification is triggered.
+TEST_F(SafetyCheckNotificationClientTest, FiresTriggeredHistogram) {
+  StubGetPendingRequests(nil);
+  base::HistogramTester histogram_tester;
+
+  password_manager::InsecurePasswordCounts counts = {
+      /* compromised */ 1, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
+
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  // First invocation of OnSceneActiveForegroundBrowserReady
+  // This schedules the notification for the first time.
+  {
+    base::RunLoop run_loop;
+    notification_client_->OnSceneActiveForegroundBrowserReady(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Second invocation of OnSceneActiveForegroundBrowserReady
+  // This simulates a follow-up where the notification is marked as triggered.
+  {
+    base::RunLoop run_loop;
+    notification_client_->OnSceneActiveForegroundBrowserReady(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Verify histogram was fired after the second invocation.
+  histogram_tester.ExpectBucketCount(
+      "IOS.Notifications.SafetyCheck.Triggered",
+      static_cast<int>(SafetyCheckNotificationType::kPasswords), 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.Notification.Received",
+      static_cast<int>(NotificationType::kSafetyCheckPasswords), 1);
+}
+
+// Tests that a notification is not scheduled if one has already been
+// delivered to the notification center.
+TEST_F(SafetyCheckNotificationClientTest,
+       NotificationNotScheduledIfAlreadyPresent) {
+  StubGetPendingRequests(nil);
+  // Expect that a notification request with ID
+  // `kSafetyCheckPasswordNotificationID` is NOT made.
+  RejectNotificationRequest(kSafetyCheckPasswordNotificationID);
+
+  // Set up a delivered notification by setting the timestamp to 1 minute ago.
+  local_pref_service_->SetTime(
+      prefs::kIosSafetyCheckNotificationFirstPresentTimestamp,
+      base::Time::Now() - base::Minutes(1));
+
+  // Set up the conditions to trigger a password notification, so we would
+  // expect a notification if there was no notification in the notification
+  // center.
+  password_manager::InsecurePasswordCounts counts = {
+      /* compromised */ 1, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  // Run the notification scheduling logic.
+  base::RunLoop run_loop;
+  notification_client_->OnSceneActiveForegroundBrowserReady(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that no notification request was made.
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that a notification is scheduled after the 30-day suppression
+// period expires.
+TEST_F(SafetyCheckNotificationClientTest,
+       NotificationScheduledAfterSuppressionPeriodExpires) {
+  StubGetPendingRequests(nil);
+  // Expect that a notification request IS made.
+  ExpectNotificationRequest(kSafetyCheckPasswordNotificationID);
+
+  // Simulate a notification being delivered more than 30 days ago.
+  local_pref_service_->SetTime(
+      prefs::kIosSafetyCheckNotificationFirstPresentTimestamp,
+      base::Time::Now() - base::Days(31));
+
+  // Set up the conditions to trigger a password notification.
+  password_manager::InsecurePasswordCounts counts = {
+      /* compromised */ 1, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  // Run the notification scheduling logic.
+  base::RunLoop run_loop;
+  notification_client_->OnSceneActiveForegroundBrowserReady(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that the notification request was made.
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests scheduling Safe Browsing notification with profile name embedded.
+TEST_F(SafetyCheckNotificationClientTest,
+       SchedulesSafeBrowsingNotificationWithProfile) {
+  base::HistogramTester histogram_tester;
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+
+  StubGetPendingRequests(nil);
+  ExpectProfileNotificationRequest(kSafetyCheckSafeBrowsingNotificationID,
+                                   base::SysUTF8ToNSString(kTestProfileName));
+
+  base::RunLoop run_loop;
+  notification_client_->OnSceneActiveForegroundBrowserReady(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  // Verify histogram is logged after successful scheduling
+  histogram_tester.ExpectUniqueSample(
+      "IOS.Notifications.SafetyCheck.Requested",
+      SafetyCheckNotificationType::kSafeBrowsing, 1);
+}
+
+// Tests scheduling Password notification with profile name embedded.
+TEST_F(SafetyCheckNotificationClientTest,
+       SchedulesPasswordNotificationWithProfile) {
+  base::HistogramTester histogram_tester;
+  StubGetPendingRequests(nil);
+  ExpectProfileNotificationRequest(kSafetyCheckPasswordNotificationID,
+                                   base::SysUTF8ToNSString(kTestProfileName));
+
+  password_manager::InsecurePasswordCounts counts = {
+      /* compromised */ 1, /* dismissed */ 0, /* reused */ 0, /* weak */ 0};
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  base::RunLoop run_loop;
+  notification_client_->OnSceneActiveForegroundBrowserReady(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester.ExpectUniqueSample("IOS.Notifications.SafetyCheck.Requested",
+                                      SafetyCheckNotificationType::kPasswords,
+                                      1);
 }

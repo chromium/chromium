@@ -1,7 +1,7 @@
 """Build definitions supporting platform-independent native build."""
 
-load("@org_tensorflow//tensorflow:tensorflow.bzl", "tf_copts", "tf_opts_nortti_if_android")
 load("@bazel_skylib//lib:selects.bzl", "selects")
+load("@org_tensorflow//tensorflow:tensorflow.bzl", "tf_copts", "tf_opts_nortti_if_android")
 
 def micore_if(android, ios = [], default = []):
     """Helper to create a select.

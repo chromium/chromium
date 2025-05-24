@@ -33,19 +33,19 @@
 - (void)start {
   [super start];
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   self.viewController = [[SpotlightDebuggerViewController alloc]
       initWithPrefService:profile->GetPrefs()];
   self.viewController.delegate = self;
-  self.viewController.bookmarksManager = [BookmarksSpotlightManager
-      bookmarksSpotlightManagerWithBrowserState:profile];
+  self.viewController.bookmarksManager =
+      [BookmarksSpotlightManager bookmarksSpotlightManagerWithProfile:profile];
 
   self.viewController.readingListSpotlightManager = [ReadingListSpotlightManager
-      readingListSpotlightManagerWithBrowserState:profile];
-  self.viewController.openTabsSpotlightManager = [OpenTabsSpotlightManager
-      openTabsSpotlightManagerWithBrowserState:profile];
-  self.viewController.topSitesSpotlightManager = [TopSitesSpotlightManager
-      topSitesSpotlightManagerWithBrowserState:profile];
+      readingListSpotlightManagerWithProfile:profile];
+  self.viewController.openTabsSpotlightManager =
+      [OpenTabsSpotlightManager openTabsSpotlightManagerWithProfile:profile];
+  self.viewController.topSitesSpotlightManager =
+      [TopSitesSpotlightManager topSitesSpotlightManagerWithProfile:profile];
 
   UINavigationController* navController = [[UINavigationController alloc]
       initWithRootViewController:self.viewController];

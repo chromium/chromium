@@ -86,6 +86,8 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   class SharedAtomicFlag final
       : public base::RefCountedThreadSafe<SharedAtomicFlag> {
    public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     SharedAtomicFlag();
 
     std::atomic_bool flag_ = {false};

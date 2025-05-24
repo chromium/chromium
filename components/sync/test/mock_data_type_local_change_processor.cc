@@ -71,9 +71,9 @@ void MockDataTypeLocalChangeProcessor::DelegateCallsByDefaultTo(
   ON_CALL(*this, IsTrackingMetadata())
       .WillByDefault(
           Invoke(delegate, &DataTypeLocalChangeProcessor::IsTrackingMetadata));
-  ON_CALL(*this, TrackedAccountId())
+  ON_CALL(*this, TrackedGaiaId())
       .WillByDefault(
-          Invoke(delegate, &DataTypeLocalChangeProcessor::TrackedAccountId));
+          Invoke(delegate, &DataTypeLocalChangeProcessor::TrackedGaiaId));
   ON_CALL(*this, TrackedCacheGuid())
       .WillByDefault(
           Invoke(delegate, &DataTypeLocalChangeProcessor::TrackedCacheGuid));

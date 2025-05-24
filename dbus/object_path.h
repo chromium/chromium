@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <string_view>
 
 #include "dbus/dbus_export.h"
 
@@ -23,10 +24,10 @@ class CHROME_DBUS_EXPORT ObjectPath {
   // objects.
   //
   // The compiler synthesised copy constructor and assignment operator are
-  // sufficient for our needs, as is implicit initialization of a std::string
-  // from a string constant.
-  ObjectPath() {}
-  explicit ObjectPath(const std::string& value) : value_(value) {}
+  // sufficient for our needs, as is implicit initialization of a
+  // std::string_view from a string constant.
+  ObjectPath() = default;
+  explicit ObjectPath(std::string_view value) : value_(value) {}
 
   // Retrieves value as a std::string.
   const std::string& value() const { return value_; }

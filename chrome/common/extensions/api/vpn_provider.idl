@@ -4,7 +4,7 @@
 
 // Use the <code>chrome.vpnProvider</code> API to implement a VPN
 // client.
-[platforms=("chromeos", "lacros"),
+[platforms=("chromeos"),
  implemented_in="chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h"]
 namespace vpnProvider {
   // A parameters class for the VPN interface.
@@ -108,14 +108,14 @@ namespace vpnProvider {
   // to signal completion. The callback is called with
   // <code>chrome.runtime.lastError</code> set to error code if
   // there is an error.
-  [inline_doc] callback CallCompleteCallback = void ();
+  callback CallCompleteCallback = void ();
 
   // The callback is used by <code>createConfig</code> to signal completion.
   // The callback is called with <code>chrome.runtime.lastError</code> set to
   // an error code if there is an error.
   // |id|: A unique ID for the created configuration, or <code>undefined</code>
   // on failure.
-  [inline_doc] callback CreateConfigCompleteCallback = void (DOMString id);
+  callback CreateConfigCompleteCallback = void (DOMString id);
 
   interface Functions {
     // Creates a new VPN configuration that persists across multiple login

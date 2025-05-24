@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -103,10 +104,10 @@ void OneDrivePageHandler::ConnectToOneDrive(
   // Show connect OneDrive dialog. This method's callback is called before the
   // user tries to sign in. The connection status is detected separately by
   // listening to provided file system mount events.
-  Browser* browser =
-      FindSystemWebAppBrowser(profile_, ash::SystemWebAppType::FILE_MANAGER);
+  BrowserDelegate* browser = FindSystemWebAppBrowser(
+      profile_, ash::SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
   gfx::NativeWindow modal_parent =
-      browser ? browser->window()->GetNativeWindow() : nullptr;
+      browser ? browser->GetNativeWindow() : nullptr;
   std::move(callback).Run(
       ash::cloud_upload::ShowConnectOneDriveDialog(modal_parent));
 }

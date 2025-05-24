@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/in_memory_url_index.h"
 
+#include <inttypes.h>
+
 #include <cinttypes>
 #include <memory>
 
@@ -47,7 +49,7 @@ void InitializeSchemeAllowlist(SchemeSet* allowlist,
 // RebuildPrivateDataFromHistoryDBTask -----------------------------------------
 
 InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
-    RebuildPrivateDataFromHistoryDBTask(InMemoryURLIndex* index,
+    RebuildPrivateDataFromHistoryDBTask(base::WeakPtr<InMemoryURLIndex> index,
                                         const SchemeSet& scheme_allowlist)
     : index_(index), scheme_allowlist_(scheme_allowlist) {}
 
@@ -63,7 +65,9 @@ bool InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::RunOnDBThread(
 
 void InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
     DoneRunOnMainThread() {
-  index_->DoneRebuildingPrivateDataFromHistoryDB(succeeded_, data_);
+  if (index_) {
+    index_->DoneRebuildingPrivateDataFromHistoryDB(succeeded_, data_);
+  }
 }
 
 InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
@@ -112,7 +116,7 @@ void InMemoryURLIndex::Init() {
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask>(
-          this, scheme_allowlist_),
+          weak_ptr_factory_.GetWeakPtr(), scheme_allowlist_),
       &private_data_tracker_);
 }
 

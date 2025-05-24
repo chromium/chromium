@@ -14,6 +14,9 @@
 
 void WebGPUInterfaceStub::DissociateMailbox(GLuint /* texture_id */,
                                             GLuint /* texture_generation */) {}
+void WebGPUInterfaceStub::DissociateMailboxForBuffer(
+    GLuint /* buffer_id */,
+    GLuint /* buffer_generation */) {}
 void WebGPUInterfaceStub::DissociateMailboxForPresent(
     GLuint /* device_id */,
     GLuint /* device_generation */,

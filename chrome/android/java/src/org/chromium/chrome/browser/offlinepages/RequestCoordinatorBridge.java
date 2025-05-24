@@ -44,11 +44,7 @@ public class RequestCoordinatorBridge {
         mProfile = profile;
     }
 
-    /**
-     * Gets all the URLs in the request queue.
-     *
-     * @return A list of {@link SavePageRequest} representing all the queued requests.
-     */
+    /** Gets all the URLs in the request queue. */
     void getRequestsInQueue(Callback<SavePageRequest[]> callback) {
         RequestCoordinatorBridgeJni.get().getRequestsInQueue(mProfile, callback);
     }

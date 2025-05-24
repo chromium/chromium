@@ -33,6 +33,10 @@ message LocalFileData {
   // still want permissions to be based on the originally picked path, but also
   // need to know the path to the actual file or directory that was stored.
   required bytes relative_path = 2;
+
+  // The display name of the file. If `display_name` is empty, the basename
+  // of the file path is used.
+  optional bytes display_name = 3;
 }
 
 // Used to serialize a File System Access handle representing a file or

@@ -4,7 +4,6 @@
 
 #include "chrome/renderer/process_state.h"
 
-namespace chrome {
 namespace {
 
 bool g_is_incognito_process = false;
@@ -18,5 +17,3 @@ bool IsIncognitoProcess() {
 void SetIsIncognitoProcess(bool is_incognito_process) {
   g_is_incognito_process = is_incognito_process;
 }
-
-}  // namespace chrome

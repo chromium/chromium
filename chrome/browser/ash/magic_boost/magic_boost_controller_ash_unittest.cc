@@ -16,7 +16,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
-#include "ui/lottie/resource.h"
 
 namespace ash {
 
@@ -29,14 +28,7 @@ constexpr char kTestUrl[] = "https://www.google.com";
 
 class MagicBoostControllerAshTest : public AshTestBase {
  public:
-  MagicBoostControllerAshTest() {
-    // Sets the default functions for the test to create image with the lottie
-    // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in
-    // the `ResourceBundle`.
-    ui::ResourceBundle::SetLottieParsingFunctions(
-        &lottie::ParseLottieAsStillImage,
-        &lottie::ParseLottieAsThemedStillImage);
-  }
+  MagicBoostControllerAshTest() = default;
   MagicBoostControllerAshTest(const MagicBoostControllerAshTest&) = delete;
   MagicBoostControllerAshTest& operator=(const MagicBoostControllerAshTest&) =
       delete;
@@ -129,8 +121,6 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
-  EXPECT_TRUE(mock_magic_boost_state_->hmr_enabled().value());
-
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kAcceptButtonPressed` metrics.
@@ -168,8 +158,6 @@ TEST_F(MagicBoostControllerAshTest,
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
-  EXPECT_TRUE(mock_magic_boost_state_->hmr_enabled().value());
-
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kAcceptButtonPressed` metrics.

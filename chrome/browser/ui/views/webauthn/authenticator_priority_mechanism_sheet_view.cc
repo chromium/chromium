@@ -3,8 +3,18 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/webauthn/authenticator_priority_mechanism_sheet_view.h"
+
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "base/numerics/safe_conversions.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/hover_list_view.h"
+#include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/view.h"
 
 AuthenticatorPriorityMechanismSheetView::
     AuthenticatorPriorityMechanismSheetView(
@@ -26,3 +36,6 @@ AuthenticatorPriorityMechanismSheetView::BuildStepSpecificContent() {
               *sheet_model->dialog_model()->priority_mechanism_index)})),
       AutoFocus::kNo);
 }
+
+BEGIN_METADATA(AuthenticatorPriorityMechanismSheetView)
+END_METADATA

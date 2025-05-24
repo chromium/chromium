@@ -19,9 +19,9 @@
 #include "chrome/browser/ui/download/download_bubble_security_view_info.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_password_prompt_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -578,7 +578,7 @@ void DownloadBubbleSecurityView::UpdateButton(
     bubble_delegate_->SetButtonEnabled(button_type, true);
     views::LabelButton* button = bubble_delegate_->GetCancelButton();
     if (button_info.text_color) {
-      button->SetEnabledTextColorIds(*button_info.text_color);
+      button->SetEnabledTextColors(*button_info.text_color);
     }
   } else {
     bubble_delegate_->SetAcceptCallbackWithClose(callback);
@@ -813,7 +813,7 @@ void DownloadBubbleSecurityView::OnInfoChanged() {
   // is otherwise no longer dangerous, we return to the primary dialog. Note
   // that we want this behavior even if this is a different download, e.g.
   // user clicks on a different download via entry point external to the
-  // download bubble (e.g. notification on Lacros).
+  // download bubble.
   if (ShouldReturnToPrimaryDialog(info_.get())) {
     navigation_handler_->OpenPrimaryDialog();
     // No need to update views here because we're resetting and returning to

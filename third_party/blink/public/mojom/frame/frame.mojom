@@ -5,7 +5,7 @@
 module blink.mojom;
 
 import "cc/mojom/browser_controls_state.mojom";
-import "cc/mojom/browser_controls_offset_tags_info.mojom";
+import "cc/mojom/browser_controls_offset_tag_modifications.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -19,6 +19,7 @@ import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/source_location.mojom";
+import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
 import "services/network/public/mojom/attribution.mojom";
 import "services/viz/public/mojom/compositing/offset_tag.mojom";
@@ -29,6 +30,7 @@ import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/choosers/popup_menu.mojom";
 import "third_party/blink/public/mojom/close_watcher/close_listener.mojom";
+import "third_party/blink/public/mojom/confidence_level.mojom";
 import "third_party/blink/public/mojom/context_menu/context_menu.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
@@ -187,7 +189,6 @@ enum NavigationApiEntryRestoreReason {
 };
 
 enum StorageTypeAccessed {
-    kDatabase,
     kCacheStorage,
     kIndexedDB,
     kFileSystem,
@@ -378,10 +379,9 @@ interface LocalFrameHost {
   // allow the commit to proceed.
   StartLoadingForAsyncNavigationApiCommit();
 
-  // Indicates an attempt by the associated frame to navigate from the
-  // |initiator_url| to the |blocked_url|, but the navigation was
-  // blocked because of |reason|.
-  DidBlockNavigation(url.mojom.Url blocked_url, url.mojom.Url initiator_url,
+  // Indicates an attempt by the associated frame to navigate to |blocked_url|,
+  // but the navigation was blocked because of |reason|.
+  DidBlockNavigation(url.mojom.Url blocked_url,
                        blink.mojom.NavigationBlockedReason reason);
 
   // Sent when the renderer changed the progress of a load.
@@ -433,10 +433,11 @@ interface LocalFrameHost {
   UpdateTitle(mojo_base.mojom.String16? title,
               mojo_base.mojom.TextDirection title_direction);
 
-  // Updates the app title for a document. If non-empty, a web app displayed in an app
-  // window may use this string instead of the regular title.
-  // See https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
-  UpdateAppTitle(mojo_base.mojom.String16 app_title);
+  // Updates the application title for a document. If non-empty, a web app
+  // displayed in an app window may use this string instead of the regular
+  // title. See
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
+  UpdateApplicationTitle(mojo_base.mojom.String16 application_title);
 
   // Indicates that the user activation state in the current frame has been
   // updated, so the replicated states need to be synced (in the browser process
@@ -533,7 +534,6 @@ interface LocalFrameHost {
   // The popup menu is hidden when the mojo channel is closed.
   ShowPopupMenu(pending_remote<PopupMenuClient> popup_client,
                 gfx.mojom.Rect bounds,
-                int32 item_height,
                 double font_size,
                 int32 selected_item,
                 array<MenuItem> menu_items,
@@ -802,6 +802,13 @@ interface LocalFrameHost {
   // Used to tell the browser to record metrics. This method should not be trusted except for metrics purposes.
   RecordWindowProxyUsageMetrics(blink.mojom.FrameToken target_frame_token,
                                 WindowProxyAccessType access_type);
+
+  // Notify the browser the document readystate has changed to 'interactive'.
+  // Sent for top-level frames.
+  NotifyDocumentInteractive();
+
+  // Sets the StorageAccessApiStatus for the given frame.
+  SetStorageAccessApiStatus(network.mojom.StorageAccessApiStatus status);
 };
 
 // Implemented in Browser, this interface defines frame-specific methods
@@ -863,9 +870,17 @@ interface LocalFrame {
   // is used for histograms only.
   NotifyUserActivation(UserActivationNotificationType notification_type);
 
-  // Notifies the |LocalFrame| about the Virtual keyboard rectangle that is occluding the web
-  // content.
+  // Notifies the |LocalFrame| about the Virtual keyboard rectangle that is
+  // occluding the web content.
   NotifyVirtualKeyboardOverlayRect(gfx.mojom.Rect keyboard_rect);
+
+  // Notifies the |LocalFrame| about the available space left uncovered by a
+  // context menu for `interesttarget` invokers.
+  NotifyContextMenuInsetsObservers(gfx.mojom.Rect safe_area);
+
+  // This call will "show interest" in the Element with the provided DOMNodeID,
+  // which is presumed to have an `interesttarget` attribute.
+  ShowInterestInElement(int32 nodeID);
 
   // Add message to the frame console.
   AddMessageToConsole(ConsoleMessageLevel level, string message,
@@ -1207,6 +1222,9 @@ interface LocalFrame {
     string normalized_server_timing,
     network.mojom.URLLoaderCompletionStatus completion_status
   );
+
+  // Retrieves the scroll position of the frame.
+  GetScrollPosition() => (gfx.mojom.Point scroll_position);
 };
 
 // Implemented in Blink, this interface defines main-frame-specific methods that
@@ -1249,15 +1267,14 @@ interface LocalMainFrame {
   //
   InstallCoopAccessMonitor(
       blink.mojom.FrameToken accessed_window,
-      network.mojom.CrossOriginOpenerPolicyReporterParams coop_reporter_info,
-      bool is_in_same_virtual_coop_related_group);
+      network.mojom.CrossOriginOpenerPolicyReporterParams coop_reporter_info);
 
   // Notifies the renderer whether hiding/showing the browser controls is
   // enabled, what the current state should be, and whether or not to
   // animate to the proper state.
   //
-  // offset_tags_info consists of OffsetTags, and metadata for creating
-  // OffsetTagConstraints. It is passed to the renderer and used to tag the
+  // offset_tag_modifications consists of OffsetTags and additional metadata
+  // for moving browser controls. It is passed to the renderer and used to tag the
   // browser controls scroll offsets in the compositor frame's metadata, with
   // the goal of allowing viz to scroll the top controls by applying the
   // offset. The slim::Layers for the top controls in the browser must be
@@ -1275,7 +1292,7 @@ interface LocalMainFrame {
       cc.mojom.BrowserControlsState constraints,
       cc.mojom.BrowserControlsState current,
       bool animate,
-      cc.mojom.BrowserControlsOffsetTagsInfo? offset_tags_info);
+      cc.mojom.BrowserControlsOffsetTagModifications? offset_tag_modifications);
 
   // Transmits data to V8CrowdsourcedCompileHintsConsumer in the renderer. The
   // data is a Bloom filter describing which JavaScript functions on the page
@@ -1285,6 +1302,12 @@ interface LocalMainFrame {
   // Replaces the active document with an empty document to free resources,
   // e.g. for supporting tab discard.
   Discard();
+
+  // Updates the frame's finalized locally differentially private
+  // navigation confidence.
+  FinalizeNavigationConfidence(
+    double randomized_trigger_rate,
+    ConfidenceLevel confidence);
 };
 
 // Implemented in Browser, this interface defines local-main-frame-specific
@@ -1364,4 +1387,7 @@ interface LocalMainFrameHost {
   // Notify the browser that the draggable regions defined by the app-region
   // CSS property have been updated.
   DraggableRegionsChanged(array<DraggableRegion> regions);
+
+  // Called when the main frame did a first contentful paint.
+  OnFirstContentfulPaint();
 };

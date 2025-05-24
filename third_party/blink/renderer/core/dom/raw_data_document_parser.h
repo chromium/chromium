@@ -47,7 +47,7 @@ class RawDataDocumentParser : public DocumentParser {
  private:
   void insert(const String&) final {}
 
-  void Append(const String&) final { NOTREACHED_IN_MIGRATION(); }
+  void Append(const String&) final { NOTREACHED(); }
 };
 
 }  // namespace blink

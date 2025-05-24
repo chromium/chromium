@@ -107,9 +107,11 @@ class GIN_EXPORT PerIsolateData {
       WrapperInfo*, v8::Eternal<v8::ObjectTemplate> > ObjectTemplateMap;
   typedef std::map<
       WrapperInfo*, v8::Eternal<v8::FunctionTemplate> > FunctionTemplateMap;
-  typedef std::map<WrappableBase*, IndexedPropertyInterceptor*>
+  typedef std::map<WrappableBase*,
+                   raw_ptr<IndexedPropertyInterceptor, CtnExperimental>>
       IndexedPropertyInterceptorMap;
-  typedef std::map<WrappableBase*, NamedPropertyInterceptor*>
+  typedef std::map<WrappableBase*,
+                   raw_ptr<NamedPropertyInterceptor, CtnExperimental>>
       NamedPropertyInterceptorMap;
 
   // PerIsolateData doesn't actually own |isolate_|. Instead, the isolate is

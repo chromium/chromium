@@ -5,37 +5,37 @@
 #ifndef CONTENT_RENDERER_ACCESSIBILITY_AX_TREE_SNAPSHOTTER_IMPL_H_
 #define CONTENT_RENDERER_ACCESSIBILITY_AX_TREE_SNAPSHOTTER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_frame_observer.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
-
-namespace blink {
-class WebAXContext;
-}
 
 namespace content {
 
 class RenderFrameImpl;
 
-class AXTreeSnapshotterImpl : public AXTreeSnapshotter {
+class AXTreeSnapshotterImpl : public AXTreeSnapshotter,
+                              public content::RenderFrameObserver {
  public:
   AXTreeSnapshotterImpl(RenderFrameImpl* render_frame, ui::AXMode ax_mode);
   ~AXTreeSnapshotterImpl() override;
 
-  // AXTreeSnapshotter implementation.
-  void Snapshot(size_t max_node_count,
+  // AXTreeSnapshotter:
+  void Snapshot(size_t max_nodes,
                 base::TimeDelta timeout,
                 ui::AXTreeUpdate* accessibility_tree) override;
 
+  // RenderFrameObserver:
+  void OnDestruct() override;
+
  private:
-  bool SerializeTreeWithLimits(size_t max_node_count,
+  void SerializeTreeWithLimits(size_t max_nodes,
                                base::TimeDelta timeout,
                                ui::AXTreeUpdate* response);
-  bool SerializeTree(ui::AXTreeUpdate* response);
 
-  raw_ptr<RenderFrameImpl> render_frame_;
-  std::unique_ptr<blink::WebAXContext> context_;
+  blink::WebDocument document_;
+  ui::AXMode ax_mode_;
 
   AXTreeSnapshotterImpl(const AXTreeSnapshotterImpl&) = delete;
   AXTreeSnapshotterImpl& operator=(const AXTreeSnapshotterImpl&) = delete;

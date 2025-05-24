@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_SELECT_CHALLENGE_OPTION_REQUEST_H_
 
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace autofill {
@@ -15,8 +15,7 @@ namespace payments {
 class SelectChallengeOptionRequest : public PaymentsRequest {
  public:
   SelectChallengeOptionRequest(
-      PaymentsNetworkInterface::SelectChallengeOptionRequestDetails
-          request_details,
+      SelectChallengeOptionRequestDetails request_details,
       base::OnceCallback<
           void(payments::PaymentsAutofillClient::PaymentsRpcResult,
                const std::string&)> callback);
@@ -35,8 +34,7 @@ class SelectChallengeOptionRequest : public PaymentsRequest {
       payments::PaymentsAutofillClient::PaymentsRpcResult result) override;
 
  private:
-  PaymentsNetworkInterface::SelectChallengeOptionRequestDetails
-      request_details_;
+  SelectChallengeOptionRequestDetails request_details_;
   base::OnceCallback<void(payments::PaymentsAutofillClient::PaymentsRpcResult,
                           const std::string&)>
       callback_;

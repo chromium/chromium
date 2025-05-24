@@ -21,8 +21,8 @@ class ComponentExtensionResourceManager {
   virtual ~ComponentExtensionResourceManager() {}
 
   // Checks whether image is a component extension resource. Returns false
-  // if a given |resource| does not have a corresponding image in bundled
-  // resources. Otherwise fills |resource_id|. This doesn't check if the
+  // if a given `resource` does not have a corresponding image in bundled
+  // resources. Otherwise fills `resource_id`. This doesn't check if the
   // extension the resource is in is actually a component extension.
   virtual bool IsComponentExtensionResource(
       const base::FilePath& extension_path,

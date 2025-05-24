@@ -59,6 +59,6 @@ DeviceEmulatorUI::DeviceEmulatorUI(content::WebUI* web_ui)
   CreateAndAddDeviceEmulatorUIDataSource(web_ui);
 }
 
-DeviceEmulatorUI::~DeviceEmulatorUI() {}
+DeviceEmulatorUI::~DeviceEmulatorUI() = default;
 
 }  // namespace ash

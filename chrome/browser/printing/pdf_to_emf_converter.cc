@@ -207,7 +207,7 @@ void PdfConverterImpl::Initialize(scoped_refptr<base::RefCountedMemory> data) {
   }
 
   PRINTER_LOG(EVENT) << "PdfConverter created. Mode: " << settings_.mode;
-  memcpy(memory.mapping.memory(), data->front(), data->size());
+  memory.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(*data);
 
   GetPrintingService()->BindPdfToEmfConverterFactory(
       pdf_to_emf_converter_factory_.BindNewPipeAndPassReceiver());

@@ -82,6 +82,7 @@ struct EnumTraits<InstallerApiResult> {
 struct InstallerOutcome {
   InstallerOutcome();
   InstallerOutcome(const InstallerOutcome&);
+  InstallerOutcome& operator=(const InstallerOutcome&);
   ~InstallerOutcome();
 
   std::optional<InstallerApiResult> installer_result;

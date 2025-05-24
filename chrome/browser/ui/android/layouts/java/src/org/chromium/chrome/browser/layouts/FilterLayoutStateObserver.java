@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.layouts;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 
 /**
@@ -11,6 +12,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
  * helpful if a feature wishes to exclusively listen to events on a specific layout without the need
  * for many conditionals.
  */
+@NullMarked
 public final class FilterLayoutStateObserver implements LayoutStateObserver {
     /** The observer that will receive the filtered events. */
     private final LayoutStateObserver mObserver;

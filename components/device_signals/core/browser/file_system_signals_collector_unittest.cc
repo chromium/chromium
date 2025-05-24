@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "components/device_signals/core/browser/mock_system_signals_service_host.h"
 #include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -87,7 +88,8 @@ TEST_F(FileSystemSignalsCollectorTest, GetSignal_Unsupported) {
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  signal_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  signal_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                              CreateRequest(signal_name), response,
                               run_loop.QuitClosure());
 
   run_loop.Run();
@@ -97,6 +99,21 @@ TEST_F(FileSystemSignalsCollectorTest, GetSignal_Unsupported) {
             SignalCollectionError::kUnsupported);
 }
 
+// Tests that signal collection is halted if permission is not sufficient.
+TEST_F(FileSystemSignalsCollectorTest, GetSignal_MissingConsent) {
+  SignalName signal_name = SignalName::kFileSystemInfo;
+  SignalsAggregationResponse response;
+  base::RunLoop run_loop;
+  signal_collector_.GetSignal(signal_name, UserPermission::kMissingConsent,
+                              CreateRequest(signal_name), response,
+                              run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ASSERT_FALSE(response.top_level_error.has_value());
+  ASSERT_FALSE(response.file_system_info_response);
+}
+
 // Tests that the request does not contain the required parameters for the
 // File System signal.
 TEST_F(FileSystemSignalsCollectorTest, GetSignal_File_MissingParameters) {
@@ -104,8 +121,9 @@ TEST_F(FileSystemSignalsCollectorTest, GetSignal_File_MissingParameters) {
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
   signal_collector_.GetSignal(
-      signal_name, CreateRequest(signal_name, /*with_file_parameter=*/false),
-      response, run_loop.QuitClosure());
+      signal_name, UserPermission::kGranted,
+      CreateRequest(signal_name, /*with_file_parameter=*/false), response,
+      run_loop.QuitClosure());
 
   run_loop.Run();
 
@@ -125,7 +143,8 @@ TEST_F(FileSystemSignalsCollectorTest,
   SignalName signal_name = SignalName::kFileSystemInfo;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  signal_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  signal_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                              CreateRequest(signal_name), response,
                               run_loop.QuitClosure());
 
   run_loop.Run();
@@ -164,8 +183,8 @@ TEST_F(FileSystemSignalsCollectorTest, GetSignal_FileSystemInfo) {
 
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  signal_collector_.GetSignal(signal_name, request, response,
-                              run_loop.QuitClosure());
+  signal_collector_.GetSignal(signal_name, UserPermission::kGranted, request,
+                              response, run_loop.QuitClosure());
 
   run_loop.Run();
 

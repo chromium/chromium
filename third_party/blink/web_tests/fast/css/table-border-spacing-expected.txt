@@ -9,7 +9,7 @@ TEST COMPLETE
 Valid values:
 PASS document.getElementById("infer-vertical-border-spacing").style.borderSpacing is "4px"
 PASS document.getElementById("explicit-border-spacing").style.borderSpacing is "4px 5px"
-PASS computedStyle(document.getElementById("computed-infer-vertical-border-spacing")).borderSpacing is "11px 11px"
+PASS computedStyle(document.getElementById("computed-infer-vertical-border-spacing")).borderSpacing is "11px"
 PASS cssRule("#computed-infer-vertical-border-spacing").style.borderSpacing is "11px"
 PASS computedStyle(document.getElementById("computed-explicit-border-spacing")).borderSpacing is "13px 23px"
 PASS cssRule("#computed-explicit-border-spacing").style.borderSpacing is "13px 23px"

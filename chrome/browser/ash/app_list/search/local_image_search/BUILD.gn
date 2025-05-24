@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("local_image_search") {
   sources = [
@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chromeos/dbus/machine_learning",
     "//sql",
+    "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

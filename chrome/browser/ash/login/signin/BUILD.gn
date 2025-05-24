@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("signin") {
   sources = [
@@ -14,6 +12,8 @@ static_library("signin") {
     "auth_error_observer_factory.h",
     "authentication_flow_auto_reload_manager.cc",
     "authentication_flow_auto_reload_manager.h",
+    "legacy_token_handle_fetcher.cc",
+    "legacy_token_handle_fetcher.h",
     "merge_session_navigation_throttle.cc",
     "merge_session_navigation_throttle.h",
     "merge_session_throttling_utils.cc",
@@ -34,8 +34,14 @@ static_library("signin") {
     "signin_error_notifier.h",
     "signin_error_notifier_factory.cc",
     "signin_error_notifier_factory.h",
+    "token_handle_checker.cc",
+    "token_handle_checker.h",
     "token_handle_fetcher.cc",
     "token_handle_fetcher.h",
+    "token_handle_store_factory.cc",
+    "token_handle_store_factory.h",
+    "token_handle_store_impl.cc",
+    "token_handle_store_impl.h",
     "token_handle_util.cc",
     "token_handle_util.h",
   ]
@@ -88,6 +94,7 @@ static_library("signin") {
     "//components/vector_icons",
     "//services/network/public/cpp",
     "//ui/base",
+    "//ui/base/idle",
     "//ui/message_center/public/cpp",
     "//url",
   ]
@@ -120,6 +127,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions:test_support",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
@@ -152,6 +160,9 @@ source_set("unit_tests") {
   sources = [
     "offline_signin_limiter_unittest.cc",
     "signin_error_notifier_unittest.cc",
+    "token_handle_checker_unittest.cc",
+    "token_handle_fetcher_unittest.cc",
+    "token_handle_store_unittest.cc",
   ]
 
   deps = [

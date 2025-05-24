@@ -36,7 +36,7 @@ class TestINIParser : public INIParser {
       : expected_triplets_(expected_triplets),
         pair_i_(0) {
   }
-  ~TestINIParser() override {}
+  ~TestINIParser() override = default;
 
   size_t pair_i() {
     return pair_i_;

@@ -12,6 +12,7 @@ include_rules = [
     "+base/memory/scoped_refptr.h",
     "+base/profiler/sample_metadata.h",
     "+base/strings/pattern.h",
+    "+base/strings/string_split.h",
     "+base/strings/stringprintf.h",
     "+base/substring_set_matcher/substring_set_matcher.h",
     "+base/task/sequence_manager/task_time_observer.h",
@@ -73,6 +74,7 @@ include_rules = [
     "+mojo/public/cpp/system",
     "+mojo/public/mojom/base",
     "+net/base/net_errors.h",
+    "+net/base/schemeful_site.h",
     "+net/http/http_status_code.h",
     "+printing/mojom/print.mojom-blink.h",
     "+services/device/public/mojom/device_posture_provider.mojom-blink-forward.h",
@@ -83,7 +85,9 @@ include_rules = [
     "+services/network/public/cpp/cross_origin_embedder_policy.h",
     "+services/network/public/cpp/features.h",
     "+services/network/public/cpp/header_util.h",
+    "+services/network/public/cpp/integrity_policy.h",
     "+services/network/public/cpp/is_potentially_trustworthy.h",
+    "+services/network/public/cpp/ip_address_space_util.h",
     "+services/network/public/cpp/request_destination.h",
     "+services/network/public/cpp/request_mode.h",
     "+services/network/public/cpp/resource_request.h",
@@ -107,6 +111,7 @@ include_rules = [
     "+ui/accessibility/ax_event.h",
     "+ui/accessibility/ax_event_intent.h",
     "+ui/accessibility/ax_mode.h",
+    "+ui/base/clipboard/clipboard_constants.h",
     "+ui/base/cursor/cursor.h",
     "+ui/base/ime/ime_text_span.h",
     "+ui/base/ime/mojom/ime_types.mojom-blink-forward.h",
@@ -134,13 +139,6 @@ include_rules = [
     "+ui/gfx/selection_bound.h",
     "+ui/strings/grit/ax_strings.h",
     "-web",
-    # We do not want any new dependencies into core/exported until we resolve
-    # controller layer.
-    "!third_party/blink/renderer/core/exported",
-    # We do not want any new dependencies on Web(Local|Remote)FrameBase.h until
-    # we resolve the control layer.
-    "!third_party/blink/renderer/core/frame/web_local_frame_impl.h",
-    "!third_party/blink/renderer/core/frame/web_remote_frame_impl.h",
 ]
 
 specific_include_rules = {
@@ -154,6 +152,9 @@ specific_include_rules = {
         "+base/threading/thread_task_runner_handle.h",
         # Test harness may use cc directly instead of going through WebViewImpl etc.
         "+cc",
+        "+components/subresource_filter/content/renderer",
+        "+components/subresource_filter/core/common",
+        "+components/subresource_filter/core/mojom",
         "+components/ukm/test_ukm_recorder.h",
         "+components/viz/test",
 	# TODO(crbug.com/838693): Test harnesses use LayerTreeView

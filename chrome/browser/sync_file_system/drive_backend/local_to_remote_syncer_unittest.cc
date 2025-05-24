@@ -57,7 +57,7 @@ class LocalToRemoteSyncerTest : public testing::Test {
   LocalToRemoteSyncerTest(const LocalToRemoteSyncerTest&) = delete;
   LocalToRemoteSyncerTest& operator=(const LocalToRemoteSyncerTest&) = delete;
 
-  ~LocalToRemoteSyncerTest() override {}
+  ~LocalToRemoteSyncerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(database_dir_.CreateUniqueTempDir());

@@ -131,8 +131,6 @@ ServiceWorkerLifetimeManagerFactory::ServiceWorkerLifetimeManagerFactory()
           "ServiceWorkerLifetimeManagerFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.

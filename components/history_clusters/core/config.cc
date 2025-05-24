@@ -190,22 +190,6 @@ Config::Config() {
             number_interesting_visits_filter_threshold);
   }
 
-  // The `kUseEngagementScoreCache` feature and child params.
-  {
-    use_engagement_score_cache =
-        base::FeatureList::IsEnabled(features::kUseEngagementScoreCache);
-
-    engagement_score_cache_size = GetFieldTrialParamByFeatureAsInt(
-        features::kUseEngagementScoreCache, "engagement_score_cache_size",
-        engagement_score_cache_size);
-
-    engagement_score_cache_refresh_duration =
-        base::Minutes(GetFieldTrialParamByFeatureAsInt(
-            features::kUseEngagementScoreCache,
-            "engagement_score_cache_refresh_duration_minutes",
-            engagement_score_cache_refresh_duration.InMinutes()));
-  }
-
   // The `kHistoryClustersVisitDeduping` feature and child params.
   {
     use_host_for_visit_deduping = GetFieldTrialParamByFeatureAsBool(
@@ -262,18 +246,6 @@ Config::Config() {
             cluster_triggerability_cutoff_duration.InMinutes()));
   }
 
-  // WebUI features and params.
-  {
-    named_new_tab_groups =
-        base::FeatureList::IsEnabled(internal::kJourneysNamedNewTabGroups);
-  }
-
-  // The `kJourneysZeroStateFiltering` feature and child params.
-  {
-    apply_zero_state_filtering =
-        base::FeatureList::IsEnabled(internal::kJourneysZeroStateFiltering);
-  }
-
   // Lonely features without child params.
   {
     non_user_visible_debug =
@@ -282,24 +254,15 @@ Config::Config() {
     user_visible_debug =
         base::FeatureList::IsEnabled(internal::kUserVisibleDebug);
 
-    persist_context_annotations_in_history_db = base::FeatureList::IsEnabled(
-        internal::kPersistContextAnnotationsInHistoryDb);
-
     history_clusters_internals_page =
         base::FeatureList::IsEnabled(internal::kHistoryClustersInternalsPage);
 
     should_check_hosts_to_skip_clustering_for =
         base::FeatureList::IsEnabled(features::kOnDeviceClusteringBlocklists);
 
-    use_continue_on_shutdown = base::FeatureList::IsEnabled(
-        internal::kHistoryClustersUseContinueOnShutdown);
-
     should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kShouldShowAllClustersOnProminentUiSurfaces);
-
-    persist_caches_to_prefs =
-        base::FeatureList::IsEnabled(internal::kJourneysPersistCachesToPrefs);
   }
 }
 

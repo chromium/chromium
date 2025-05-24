@@ -57,6 +57,11 @@ var MockTts = function() {
    * @see https://developer.chrome.com/extensions/tts#type-EventType
    */
   this.EventType = chrome.tts.EventType;
+
+  this.onVoicesChanged = {
+    addListener: listener => {},
+    removeListener: listener => {},
+  };
 };
 
 MockTts.prototype = {

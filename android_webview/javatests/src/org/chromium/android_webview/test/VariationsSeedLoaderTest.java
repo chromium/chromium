@@ -7,6 +7,7 @@ package org.chromium.android_webview.test;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,6 +32,7 @@ import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 
 import java.io.File;
@@ -92,7 +94,7 @@ public class VariationsSeedLoaderTest extends AwParameterizedTest {
      * service Intent to match the test environment.
      */
     public static class TestLoader extends VariationsSeedLoader {
-        private TestLoaderResult mResult;
+        private final TestLoaderResult mResult;
 
         public TestLoader(TestLoaderResult result) {
             mResult = result;
@@ -388,6 +390,9 @@ public class VariationsSeedLoaderTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add(AwSwitches.FINCH_SEED_EXPIRATION_AGE + "=0")
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/351017155")
     public void testFinchSeedExpirationAgeFlag() throws Exception {
         try {
             // Create a new seed file with a recent timestamp.

@@ -14,7 +14,7 @@ goog.require('goog.asserts');
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');
 goog.require('goog.events.EventType');
-goog.require('goog.net.cookies');
+goog.require('goog.net.Cookies');
 goog.require('goog.string');
 goog.require('goog.style');
 goog.require('goog.ui.Component');
@@ -42,10 +42,11 @@ goog.ui.CookieEditor = class extends goog.ui.Component {
    */
   selectCookie(cookieKey) {
     'use strict';
-    goog.asserts.assert(goog.net.cookies.isValidName(cookieKey));
+    goog.asserts.assert(goog.net.Cookies.getInstance().isValidName(cookieKey));
     this.cookieKey_ = cookieKey;
     if (this.textAreaElem_) {
-      this.textAreaElem_.value = goog.net.cookies.get(cookieKey) || '';
+      this.textAreaElem_.value =
+          goog.net.Cookies.getInstance().get(cookieKey) || '';
     }
   }
 
@@ -63,7 +64,8 @@ goog.ui.CookieEditor = class extends goog.ui.Component {
         goog.dom.TagName.BUTTON, /* attributes */ null, 'Clear');
     this.updateButtonElem_ = goog.dom.createDom(
         goog.dom.TagName.BUTTON, /* attributes */ null, 'Update');
-    var value = this.cookieKey_ && goog.net.cookies.get(this.cookieKey_);
+    var value =
+        this.cookieKey_ && goog.net.Cookies.getInstance().get(this.cookieKey_);
     this.textAreaElem_ = goog.dom.createDom(
         goog.dom.TagName.TEXTAREA, /* attibutes */ null, value || '');
     this.valueWarningElem_ = goog.dom.createDom(
@@ -97,7 +99,7 @@ goog.ui.CookieEditor = class extends goog.ui.Component {
   handleClear_(e) {
     'use strict';
     if (this.cookieKey_) {
-      goog.net.cookies.remove(this.cookieKey_);
+      goog.net.Cookies.getInstance().remove(this.cookieKey_);
     }
     this.textAreaElem_.value = '';
   }
@@ -115,8 +117,8 @@ goog.ui.CookieEditor = class extends goog.ui.Component {
         // Strip line breaks.
         value = goog.string.stripNewlines(value);
       }
-      if (goog.net.cookies.isValidValue(value)) {
-        goog.net.cookies.set(this.cookieKey_, value);
+      if (goog.net.Cookies.getInstance().isValidValue(value)) {
+        goog.net.Cookies.getInstance().set(this.cookieKey_, value);
         goog.style.setElementShown(this.valueWarningElem_, false);
       } else {
         goog.style.setElementShown(this.valueWarningElem_, true);

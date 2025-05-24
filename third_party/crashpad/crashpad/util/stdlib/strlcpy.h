@@ -16,6 +16,7 @@
 #define CRASHPAD_UTIL_STDLIB_STRLCPY_H_
 
 #include <sys/types.h>
+#include <uchar.h>
 
 namespace crashpad {
 

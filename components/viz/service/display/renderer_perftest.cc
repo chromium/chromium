@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+
+#include <array>
 
 // This perf test measures the time from when the display compositor starts
 // drawing on the compositor thread to when a swap buffers occurs on the
@@ -37,7 +35,6 @@
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/skia_renderer.h"
 #include "components/viz/service/display/viz_perftest.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -157,14 +154,10 @@ void DeleteSharedImage(
 TransferableResource CreateTestTexture(
     const gfx::Size& size,
     SkColor4f texel_color,
-    bool premultiplied_alpha,
     ClientResourceProvider* child_resource_provider,
     scoped_refptr<RasterContextProvider> child_context_provider) {
   using SkPMColor4f = SkRGBA4f<kPremul_SkAlphaType>;
-  const SkPMColor4f pixel_color =
-      premultiplied_alpha ? texel_color.premul()
-                          : SkPMColor4f{texel_color.fR, texel_color.fG,
-                                        texel_color.fB, texel_color.fA};
+  const SkPMColor4f pixel_color = texel_color.premul();
 
   size_t num_pixels = static_cast<size_t>(size.width()) * size.height();
   std::vector<SkPMColor4f> pixels(num_pixels, pixel_color);
@@ -175,7 +168,7 @@ TransferableResource CreateTestTexture(
   auto client_shared_image = sii->CreateSharedImage(
       {SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel"},
-      base::as_byte_span(pixels));
+      base::as_byte_span(base::allow_nonunique_obj, pixels));
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   TransferableResource gl_resource = TransferableResource::MakeGpu(
@@ -193,26 +186,22 @@ TransferableResource CreateTestTexture(
 void CreateTestTextureDrawQuad(ResourceId resource_id,
                                const gfx::Rect& rect,
                                SkColor4f background_color,
-                               bool premultiplied_alpha,
                                const SharedQuadState* shared_state,
                                CompositorRenderPass* render_pass) {
   const bool needs_blending = true;
   const gfx::PointF uv_top_left(0.0f, 0.0f);
   const gfx::PointF uv_bottom_right(1.0f, 1.0f);
-  const bool flipped = false;
   const bool nearest_neighbor = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
 
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
-               premultiplied_alpha, uv_top_left, uv_bottom_right,
-               background_color, flipped, nearest_neighbor,
+               uv_top_left, uv_bottom_right, background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 
 void CreateTestTileDrawQuad(ResourceId resource_id,
                             const gfx::Rect& rect,
                             const gfx::Size& texture_size,
-                            bool premultiplied_alpha,
                             const SharedQuadState* shared_state,
                             CompositorRenderPass* render_pass) {
   // TileDrawQuads are non-normalized texture coords, so assume it's 1-1 with
@@ -223,8 +212,8 @@ void CreateTestTileDrawQuad(ResourceId resource_id,
   const bool force_anti_aliasing_off = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
-               tex_coord_rect, texture_size, premultiplied_alpha,
-               nearest_neighbor, force_anti_aliasing_off);
+               tex_coord_rect, texture_size, nearest_neighbor,
+               force_anti_aliasing_off);
 }
 
 }  // namespace
@@ -232,7 +221,7 @@ void CreateTestTileDrawQuad(ResourceId resource_id,
 class RendererPerfTest : public VizPerfTest {
  public:
   RendererPerfTest()
-      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
+      : manager_(FrameSinkManagerImpl::InitParams()),
         support_(
             std::make_unique<CompositorFrameSinkSupport>(nullptr,
                                                          &manager_,
@@ -277,11 +266,10 @@ class RendererPerfTest : public VizPerfTest {
     output_surface->SetNeedsSwapSizeNotifications(true);
     auto overlay_processor = std::make_unique<OverlayProcessorStub>();
     display_ = std::make_unique<Display>(
-        &shared_bitmap_manager_, /*shared_image_manager=*/nullptr,
-        /*sync_point_manager=*/nullptr, /*gpu_scheduler=*/nullptr,
-        renderer_settings_, &debug_settings_, kArbitraryFrameSinkId,
-        std::move(display_controller), std::move(output_surface),
-        std::move(overlay_processor),
+        /*shared_image_manager=*/nullptr,
+        /*gpu_scheduler=*/nullptr, renderer_settings_, &debug_settings_,
+        kArbitraryFrameSinkId, std::move(display_controller),
+        std::move(output_surface), std::move(overlay_processor),
         /*display_scheduler=*/nullptr,
         base::SingleThreadTaskRunner::GetCurrentDefault());
     display_->SetVisible(true);
@@ -349,14 +337,13 @@ class RendererPerfTest : public VizPerfTest {
   ResourceId MapResourceId(base::flat_map<ResourceId, ResourceId>* resource_map,
                            ResourceId recorded_id,
                            const gfx::Size& texture_size,
-                           SkColor4f texel_color,
-                           bool premultiplied_alpha) {
+                           SkColor4f texel_color) {
     DCHECK(resource_map);
     ResourceId actual_id;
     if (resource_map->find(recorded_id) == resource_map->end()) {
-      resource_list_.push_back(CreateTestTexture(
-          texture_size, texel_color, premultiplied_alpha,
-          child_resource_provider_.get(), child_context_provider_));
+      resource_list_.push_back(CreateTestTexture(texture_size, texel_color,
+                                                 child_resource_provider_.get(),
+                                                 child_context_provider_));
       actual_id = resource_list_.back().id;
       (*resource_map)[recorded_id] = actual_id;
     } else {
@@ -370,28 +357,26 @@ class RendererPerfTest : public VizPerfTest {
     base::flat_map<ResourceId, ResourceId> resource_map;
     for (auto& render_pass : *render_pass_list) {
       for (auto* quad : render_pass->quad_list) {
-        if (quad->resources.count == 0)
+        if (quad->resource_id == kInvalidResourceId) {
           continue;
+        }
         switch (quad->material) {
           case DrawQuad::Material::kTiledContent: {
             TileDrawQuad* tile_quad = reinterpret_cast<TileDrawQuad*>(quad);
-            ResourceId recorded_id = tile_quad->resource_id();
+            ResourceId recorded_id = tile_quad->resource_id;
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, tile_quad->texture_size,
-                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, tile_quad->is_premultiplied);
-            tile_quad->resources.ids[TileDrawQuad::kResourceIdIndex] =
-                actual_id;
+                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f});
+            tile_quad->resource_id = actual_id;
           } break;
           case DrawQuad::Material::kTextureContent: {
             TextureDrawQuad* texture_quad =
                 reinterpret_cast<TextureDrawQuad*>(quad);
-            ResourceId recorded_id = texture_quad->resource_id();
+            ResourceId recorded_id = texture_quad->resource_id;
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, texture_quad->rect.size(),
-                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-                texture_quad->premultiplied_alpha);
-            texture_quad->resources.ids[TextureDrawQuad::kResourceIdIndex] =
-                actual_id;
+                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f});
+            texture_quad->resource_id = actual_id;
           } break;
           default:
             ASSERT_TRUE(false);
@@ -404,8 +389,7 @@ class RendererPerfTest : public VizPerfTest {
     resource_list_.push_back(CreateTestTexture(
         kSurfaceSize,
         /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-        /*premultiplied_alpha=*/false, child_resource_provider_.get(),
-        child_context_provider_));
+        child_resource_provider_.get(), child_context_provider_));
 
     timer_.Reset();
     do {
@@ -416,8 +400,7 @@ class RendererPerfTest : public VizPerfTest {
 
       CreateTestTextureDrawQuad(resource_list_.back().id, kSurfaceRect,
                                 /*background_color=*/SkColors::kTransparent,
-                                /*premultiplied_alpha=*/false, shared_state,
-                                pass.get());
+                                shared_state, pass.get());
 
       CompositorRenderPassList pass_list;
       pass_list.push_back(std::move(pass));
@@ -431,14 +414,13 @@ class RendererPerfTest : public VizPerfTest {
   void RunTextureQuads5x5() {
     const gfx::Size kTextureSize =
         ScaleToCeiledSize(kSurfaceSize, /*x_scale=*/0.2, /*y_scale=*/0.2);
-    ResourceId resource_ids[5][5];
+    std::array<std::array<ResourceId, 5>, 5> resource_ids;
     for (int i = 0; i < 5; i++) {
       for (int j = 0; j < 5; j++) {
         resource_list_.push_back(CreateTestTexture(
             kTextureSize,
             /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-            /*premultiplied_alpha=*/false, child_resource_provider_.get(),
-            child_context_provider_));
+            child_resource_provider_.get(), child_context_provider_));
         resource_ids[i][j] = resource_list_.back().id;
       }
     }
@@ -455,8 +437,8 @@ class RendererPerfTest : public VizPerfTest {
               resource_ids[i][j],
               gfx::Rect(i * kTextureSize.width(), j * kTextureSize.height(),
                         kTextureSize.width(), kTextureSize.height()),
-              /*background_color=*/SkColors::kTransparent,
-              /*premultiplied_alpha=*/false, shared_state, pass.get());
+              /*background_color=*/SkColors::kTransparent, shared_state,
+              pass.get());
         }
       }
 
@@ -476,8 +458,7 @@ class RendererPerfTest : public VizPerfTest {
     resource_list_.push_back(CreateTestTexture(
         kTextureSize,
         /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-        /*premultiplied_alpha=*/false, child_resource_provider_.get(),
-        child_context_provider_));
+        child_resource_provider_.get(), child_context_provider_));
     resource_id = resource_list_.back().id;
 
     timer_.Reset();
@@ -492,8 +473,8 @@ class RendererPerfTest : public VizPerfTest {
               resource_id,
               gfx::Rect(i * kTextureSize.width(), j * kTextureSize.height(),
                         kTextureSize.width(), kTextureSize.height()),
-              /*background_color=*/SkColors::kTransparent,
-              /*premultiplied_alpha=*/false, shared_state, pass.get());
+              /*background_color=*/SkColors::kTransparent, shared_state,
+              pass.get());
         }
       }
 
@@ -521,16 +502,14 @@ class RendererPerfTest : public VizPerfTest {
       resource_list_.push_back(CreateTestTexture(
           kTextureSize,
           /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-          /*premultiplied_alpha=*/false, child_resource_provider_.get(),
-          child_context_provider_));
+          child_resource_provider_.get(), child_context_provider_));
     } else {
       // Each TileDrawQuad gets its own resource
       for (int i = 0; i < tile_count; ++i) {
         resource_list_.push_back(CreateTestTexture(
             kTextureSize,
             /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-            /*premultiplied_alpha=*/false, child_resource_provider_.get(),
-            child_context_provider_));
+            child_resource_provider_.get(), child_context_provider_));
       }
     }
 
@@ -547,8 +526,7 @@ class RendererPerfTest : public VizPerfTest {
         ResourceId resource_id =
             share_resources ? resource_list_[0].id : resource_list_[i].id;
         CreateTestTileDrawQuad(resource_id, gfx::Rect(kTileSize), kTextureSize,
-                               /*premultiplied_alpha=*/false, shared_state,
-                               pass.get());
+                               shared_state, pass.get());
 
         current_transform.PostConcat(transform_step);
       }
@@ -606,7 +584,6 @@ class RendererPerfTest : public VizPerfTest {
   WaitForSwapDisplayClient client_;
   ParentLocalSurfaceIdAllocator id_allocator_;
   std::unique_ptr<BeginFrameSource> begin_frame_source_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   RendererSettings renderer_settings_;

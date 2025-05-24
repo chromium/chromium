@@ -9,7 +9,8 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/app_menu_bg"
+    android:clipToOutline="true"
+    android:background="@drawable/default_popup_menu_bg"
     android:elevation="@dimen/app_menu_elevation">
 
     <ListView

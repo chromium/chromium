@@ -8,7 +8,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "crypto/symmetric_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
@@ -66,10 +65,10 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
 
     const GURL& GetUri() const { return uri_; }
     XKeyTagMethod GetMethod() const { return method_; }
-    crypto::SymmetricKey* GetKey() const { return key_.get(); }
+    std::vector<uint8_t> GetKey() const { return key_; }
     XKeyTagKeyFormat GetKeyFormat() const { return format_; }
 
-    bool NeedsKeyFetch() const { return !key_; }
+    bool NeedsKeyFetch() const { return key_.empty(); }
 
     // Gets the InitializationVector, if it exists. If there is no IV, but the
     // `identity_` flag is set, then use the media sequence number as the IV.
@@ -92,7 +91,7 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     const XKeyTagKeyFormat format_;
 
     // Used for clear key AES128 and AES256 full segment encryption.
-    std::unique_ptr<crypto::SymmetricKey> key_;
+    std::vector<uint8_t> key_;
   };
 
   MediaSegment(base::TimeDelta duration,

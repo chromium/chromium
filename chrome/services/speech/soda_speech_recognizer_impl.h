@@ -66,6 +66,9 @@ class SodaSpeechRecognizerImpl
   // media::mojom::SpeechRecognitionSession implementation.
   void Abort() override;
   void StopCapture() override;
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override;
 
   // media::mojom::SpeechRecognitionRecognizerClient:
   void OnSpeechRecognitionRecognitionEvent(
@@ -101,6 +104,7 @@ class SodaSpeechRecognizerImpl
   FSMState AbortWithError(const FSMEventArgs& event_args) override;
   FSMState Abort(const media::mojom::SpeechRecognitionError& error) override;
   FSMState DetectEndOfSpeech(const FSMEventArgs& event_args) override;
+  FSMState UpdateRecognitionContext(const FSMEventArgs& event_args) override;
   FSMState DoNothing(const FSMEventArgs& event_args) const override;
   FSMState NotFeasible(const FSMEventArgs& event_args) override;
 

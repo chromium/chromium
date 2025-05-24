@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
@@ -58,6 +58,19 @@
 namespace blink {
 
 using animation_test_helpers::EnsureInterpolatedValueCached;
+
+namespace {
+
+template <class T>
+size_t count(const T& container) {
+  size_t amount = 0;
+  for (const auto& _ : container) {
+    amount++;
+  }
+  return amount;
+}
+
+}  // namespace
 
 class AnimationKeyframeEffectModel : public PageTestBase {
  protected:
@@ -85,10 +98,11 @@ class AnimationKeyframeEffectModel : public PageTestBase {
         To<InterpolableLength>(typed_value->GetInterpolableValue());
     // Lengths are computed in logical units, which are quantized to 64ths of
     // a pixel.
-    EXPECT_NEAR(
-        expected_value,
-        length.CreateCSSValue(Length::ValueRange::kAll)->GetDoubleValue(),
-        /*abs_error=*/0.02);
+    EXPECT_NEAR(expected_value,
+                To<CSSNumericLiteralValue>(
+                    length.CreateCSSValue(Length::ValueRange::kAll))
+                    ->ClampedDoubleValue(),
+                /*abs_error=*/0.02);
   }
 
   void ExpectNonInterpolableValue(const String& expected_value,
@@ -998,13 +1012,13 @@ TEST_F(KeyframeEffectModelTest, StaticProperty) {
   StringKeyframeVector keyframes =
       KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "3px");
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
-  EXPECT_EQ(1U, effect->Properties().size());
-  EXPECT_EQ(0U, effect->EnsureDynamicProperties().size());
+  EXPECT_EQ(1U, effect->Properties().UniqueProperties().size());
+  EXPECT_EQ(0U, count(effect->DynamicProperties()));
 
   keyframes = KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
   effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
-  EXPECT_EQ(1U, effect->Properties().size());
-  EXPECT_EQ(1U, effect->EnsureDynamicProperties().size());
+  EXPECT_EQ(1U, effect->Properties().UniqueProperties().size());
+  EXPECT_EQ(1U, count(effect->DynamicProperties()));
 }
 
 TEST_F(AnimationKeyframeEffectModel, BackgroundShorthandStaticProperties) {
@@ -1033,9 +1047,10 @@ TEST_F(AnimationKeyframeEffectModel, BackgroundShorthandStaticProperties) {
   EXPECT_EQ(1U, animations.size());
   auto* effect = animations[0]->effect();
   auto* model = To<KeyframeEffect>(effect)->Model();
-  EXPECT_EQ(kBackgroundProperties, model->Properties().size());
+  EXPECT_EQ(kBackgroundProperties,
+            model->Properties().UniqueProperties().size());
   // Background-color is the only property that is changing between keyframes.
-  EXPECT_EQ(1U, model->EnsureDynamicProperties().size());
+  EXPECT_EQ(1U, count(model->DynamicProperties()));
 }
 
 }  // namespace blink

@@ -21,12 +21,12 @@ class FileChange;
 // This interface is to be implemented/backed by RemoteSyncFileService.
 class LocalChangeProcessor {
  public:
-  LocalChangeProcessor() {}
+  LocalChangeProcessor() = default;
 
   LocalChangeProcessor(const LocalChangeProcessor&) = delete;
   LocalChangeProcessor& operator=(const LocalChangeProcessor&) = delete;
 
-  virtual ~LocalChangeProcessor() {}
+  virtual ~LocalChangeProcessor() = default;
 
   // This is called to apply the local |change|. If the change type is
   // ADD_OR_UPDATE for a file, |local_file_path| points to a local file

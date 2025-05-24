@@ -56,8 +56,11 @@ WebAppOriginAssociationManager& WithAppResources::origin_association_manager() {
   CHECK(lock_manager_);
   return lock_manager_->provider().origin_association_manager();
 }
-WithAppResources::WithAppResources(
-    base::WeakPtr<WebAppLockManager> lock_manager)
-    : lock_manager_(std::move(lock_manager)) {}
+
+WithAppResources::WithAppResources() = default;
+
+void WithAppResources::GrantWithAppResources(WebAppLockManager& lock_manager) {
+  lock_manager_ = lock_manager.GetWeakPtr();
+}
 
 }  // namespace web_app

@@ -76,7 +76,7 @@ void PepperPlatformAudioInput::ShutDown() {
 }
 
 void PepperPlatformAudioInput::OnStreamCreated(
-    base::ReadOnlySharedMemoryRegion shared_memory_region,
+    base::UnsafeSharedMemoryRegion shared_memory_region,
     base::SyncSocket::ScopedHandle socket_handle,
     bool initially_muted) {
   DCHECK(shared_memory_region.IsValid());

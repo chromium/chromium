@@ -6,12 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/metrics/stability_metrics_manager.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -41,10 +35,17 @@
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace policy {
 
@@ -133,7 +134,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   // TODO(b/40286020): Consider migrating into BrowserWithTestWindowTest
   // in better way. Current test implementation is different from
   // what we're seeing in production.
-  void LogIn(const std::string& email) override {}
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {}
   void OnUserProfileCreated(const std::string& email,
                             Profile* profile) override {}
   void SwitchActiveUser(const std::string& email) override {}
@@ -141,7 +142,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   void LogInUser(bool is_affiliated) {
     base::RunLoop run_loop;
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), "1234567890"));
+        profile()->GetProfileUserName(), GaiaId("1234567890")));
     fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
     fake_user_manager_->LoginUser(account_id);
     // This step should be part of LoginUser(). There's a TODO to add it there,

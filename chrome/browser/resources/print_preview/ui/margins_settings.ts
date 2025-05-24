@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/md_select.css.js';
-import './print_preview_shared.css.js';
 import './settings_section.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getCss as getMdSelectLitCss} from 'chrome://resources/cr_elements/md_select_lit.css.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {MarginsType} from '../data/margins.js';
 import {State} from '../data/state.js';
 
-import {getTemplate} from './margins_settings.html.js';
+import {getHtml} from './margins_settings.html.js';
+import {getCss as getPrintPreviewSharedCss} from './print_preview_shared.css.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
+
 const PrintPreviewMarginsSettingsElementBase =
-    SettingsMixin(SelectMixin(PolymerElement));
+    SettingsMixin(SelectMixin(CrLitElement));
 
 export class PrintPreviewMarginsSettingsElement extends
     PrintPreviewMarginsSettingsElementBase {
@@ -24,50 +26,79 @@ export class PrintPreviewMarginsSettingsElement extends
     return 'print-preview-margins-settings';
   }
 
-  static get template() {
-    return getTemplate();
-  }
-
-  static get properties() {
-    return {
-      disabled: {
-        type: Boolean,
-        observer: 'updateMarginsDisabled_',
-      },
-
-      state: {
-        type: Number,
-        observer: 'onStateChange_',
-      },
-
-      marginsDisabled_: Boolean,
-
-      /** Mirroring the enum so that it can be used from HTML bindings. */
-      marginsTypeEnum_: {
-        type: Object,
-        value: MarginsType,
-      },
-    };
-  }
-
-  static get observers() {
+  static override get styles() {
     return [
-      'onMarginsSettingChange_(settings.margins.value)',
-      'onMediaSizeOrLayoutChange_(' +
-          'settings.mediaSize.value, settings.layout.value)',
-      'onPagesPerSheetSettingChange_(settings.pagesPerSheet.value)',
-
+      getPrintPreviewSharedCss(),
+      getMdSelectLitCss(),
     ];
   }
 
-  disabled: boolean;
-  state: State;
-  private marginsDisabled_: boolean;
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      disabled: {type: Boolean},
+      state: {type: Number},
+      marginsDisabled_: {type: Boolean},
+      pagesPerSheet_: {type: Number},
+    };
+  }
+
+  accessor disabled: boolean = false;
+  accessor state: State = State.NOT_READY;
+  protected accessor marginsDisabled_: boolean = false;
+  private accessor pagesPerSheet_: number = 1;
   private loaded_: boolean = false;
 
-  private onStateChange_() {
-    if (this.state === State.READY) {
-      this.loaded_ = true;
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addSettingObserver('pagesPerSheet.value', (newValue: number) => {
+      this.pagesPerSheet_ = newValue;
+    });
+    this.pagesPerSheet_ = this.getSetting('pagesPerSheet').value;
+
+    this.addSettingObserver('margins.value', (newValue: MarginsType) => {
+      this.selectedValue = newValue.toString();
+    });
+    this.selectedValue = this.getSetting('margins').value.toString();
+
+    this.addSettingObserver(
+        'mediaSize.value', this.onMediaSizeOrLayoutChange_.bind(this));
+    this.addSettingObserver(
+        'layout.value', this.onMediaSizeOrLayoutChange_.bind(this));
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('state')) {
+      if (this.state === State.READY) {
+        this.loaded_ = true;
+      }
+    }
+
+    if (changedProperties.has('disabled') ||
+        changedPrivateProperties.has('pagesPerSheet_')) {
+      this.marginsDisabled_ = this.pagesPerSheet_ > 1 || this.disabled;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('pagesPerSheet_')) {
+      if (this.pagesPerSheet_ > 1) {
+        this.setSetting('margins', MarginsType.DEFAULT);
+      }
     }
   }
 
@@ -78,30 +109,12 @@ export class PrintPreviewMarginsSettingsElement extends
     }
   }
 
-  /**
-   * @param newValue The new value of the pages per sheet setting.
-   */
-  private onPagesPerSheetSettingChange_(newValue: number) {
-    if (newValue > 1) {
-      this.setSetting('margins', MarginsType.DEFAULT);
-    }
-    this.updateMarginsDisabled_();
-  }
-
-  /** @param newValue The new value of the margins setting. */
-  private onMarginsSettingChange_(newValue: MarginsType) {
-    this.selectedValue = newValue.toString();
-  }
-
   override onProcessSelectChange(value: string) {
     this.setSetting('margins', parseInt(value, 10));
   }
-
-  private updateMarginsDisabled_() {
-    this.marginsDisabled_ =
-        (this.getSettingValue('pagesPerSheet') as number) > 1 || this.disabled;
-  }
 }
+
+export type MarginsSettingsElement = PrintPreviewMarginsSettingsElement;
 
 declare global {
   interface HTMLElementTagNameMap {

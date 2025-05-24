@@ -11,10 +11,14 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UnguessableToken;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.content.browser.input.InputTokenForwarderManager;
 import org.chromium.content.common.IGpuProcessCallback;
+import org.chromium.content.common.InputTransferTokenWrapper;
 import org.chromium.content.common.SurfaceWrapper;
 
 @JNINamespace("content")
+@NullMarked
 class GpuProcessCallback extends IGpuProcessCallback.Stub {
     GpuProcessCallback() {}
 
@@ -28,6 +32,11 @@ class GpuProcessCallback extends IGpuProcessCallback.Stub {
         return GpuProcessCallbackJni.get().getViewSurface(surfaceId);
     }
 
+    @Override
+    public void forwardInputTransferToken(int surfaceId, InputTransferTokenWrapper wrapper) {
+        InputTokenForwarderManager.onTokenReceived(surfaceId, wrapper.getInputTransferToken());
+    }
+
     @NativeMethods
     interface Natives {
         void completeScopedSurfaceRequest(
@@ -36,4 +45,3 @@ class GpuProcessCallback extends IGpuProcessCallback.Stub {
         SurfaceWrapper getViewSurface(int surfaceId);
     }
 }
-;

@@ -291,8 +291,8 @@ static void JNI_CronetUrlRequestContext_AddPkp(
           jinclude_subdomains,
           base::Time::UnixEpoch() + base::Milliseconds(jexpiration_time)));
   for (auto bytes_array : jhashes.ReadElements<jbyteArray>()) {
-    static_assert(std::is_pod<net::SHA256HashValue>::value,
-                  "net::SHA256HashValue is not POD");
+    static_assert(std::is_trivially_copyable<net::SHA256HashValue>::value,
+                  "net::SHA256HashValue is not trivially copyable");
     static_assert(sizeof(net::SHA256HashValue) * CHAR_BIT == 256,
                   "net::SHA256HashValue contains overhead");
     if (env->GetArrayLength(bytes_array.obj()) !=
@@ -319,14 +319,6 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextAdapter(
   CronetContextAdapter* context_adapter =
       new CronetContextAdapter(std::move(context_config));
   return reinterpret_cast<jlong>(context_adapter);
-}
-
-static ScopedJavaLocalRef<jbyteArray>
-JNI_CronetUrlRequestContext_GetHistogramDeltas(JNIEnv* env) {
-  std::vector<uint8_t> data;
-  if (!metrics::HistogramManager::GetInstance()->GetDeltas(&data))
-    return ScopedJavaLocalRef<jbyteArray>();
-  return base::android::ToJavaByteArray(env, data);
 }
 
 }  // namespace cronet

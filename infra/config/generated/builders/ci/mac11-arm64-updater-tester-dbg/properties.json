@@ -62,7 +62,8 @@
           "builder": "mac11-arm64-updater-tester-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac11-arm64-updater-tester-dbg/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

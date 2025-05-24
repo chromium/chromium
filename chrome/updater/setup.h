@@ -10,6 +10,10 @@
 
 namespace updater {
 
+// Performs the platform-specific work of installing a candidate.
+void InstallPlatformCandidate(UpdaterScope scope,
+                              base::OnceCallback<void(int)> callback);
+
 // Installs the candidate, then posts |callback| to the main sequence. Must
 // be called on the main sequence.
 void InstallCandidate(UpdaterScope scope,

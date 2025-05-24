@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/metrics/generate_expired_histograms_array.gni")
 
 source_set("test_support") {
   testonly = true
   sources = [
+    "testing/metrics_consent_override.cc",
+    "testing/metrics_consent_override.h",
     "testing/metrics_reporting_pref_helper.cc",
     "testing/metrics_reporting_pref_helper.h",
     "testing/sync_metrics_test_utils.cc",
@@ -16,10 +17,10 @@ source_set("test_support") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser/sync",
     "//chrome/test:sync_integration_test_support",
+    "//components/metrics_services_manager",
     "//components/signin/public/identity_manager",
     "//components/sync:test_support",
     "//third_party/metrics_proto",
@@ -29,7 +30,7 @@ source_set("test_support") {
     deps += [ "//content/public/browser" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chrome/browser/ash/settings" ]
   }
 }

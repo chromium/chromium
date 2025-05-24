@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 
+#include "net/storage_access_api/status.h"
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
@@ -93,7 +94,6 @@ void FakeLocalFrameHost::BubbleLogicalScrollInParentFrame(
 
 void FakeLocalFrameHost::DidBlockNavigation(
     const KURL& blocked_url,
-    const KURL& initiator_url,
     mojom::NavigationBlockedReason reason) {}
 
 void FakeLocalFrameHost::DidChangeLoadProgress(double load_progress) {}
@@ -111,7 +111,8 @@ void FakeLocalFrameHost::UpdateTitle(
     const WTF::String& title,
     base::i18n::TextDirection title_direction) {}
 
-void FakeLocalFrameHost::UpdateAppTitle(const WTF::String& app_title) {}
+void FakeLocalFrameHost::UpdateApplicationTitle(
+    const WTF::String& application_title) {}
 
 void FakeLocalFrameHost::UpdateUserActivationState(
     mojom::blink::UserActivationUpdateType update_type,
@@ -175,7 +176,6 @@ void FakeLocalFrameHost::TextSelectionChanged(const WTF::String& text,
 void FakeLocalFrameHost::ShowPopupMenu(
     mojo::PendingRemote<mojom::blink::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,
-    int32_t item_height,
     double font_size,
     int32_t selected_item,
     Vector<mojom::blink::MenuItemPtr> menu_items,
@@ -292,15 +292,14 @@ void FakeLocalFrameHost::CreateFencedFrame(
     mojom::blink::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {
-  NOTREACHED_IN_MIGRATION() << "At the moment, FencedFrame is not used in any "
-                               "unit tests, so this path should not be hit";
+  NOTREACHED() << "At the moment, FencedFrame is not used in any unit tests, "
+                  "so this path should not be hit";
 }
 
 void FakeLocalFrameHost::ForwardFencedFrameEventAndUserActivationToEmbedder(
     const WTF::String& event_type) {
-  NOTREACHED_IN_MIGRATION()
-      << "ForwardFencedFrameEventToEmbedder is tested above the unit "
-         "test layer";
+  NOTREACHED() << "ForwardFencedFrameEventToEmbedder is tested above the unit "
+                  "test layer";
 }
 
 void FakeLocalFrameHost::StartDragging(
@@ -322,5 +321,10 @@ void FakeLocalFrameHost::NotifyStorageAccessed(
 void FakeLocalFrameHost::RecordWindowProxyUsageMetrics(
     const blink::FrameToken& target_frame_token,
     blink::mojom::WindowProxyAccessType access_type) {}
+
+void FakeLocalFrameHost::NotifyDocumentInteractive() {}
+
+void FakeLocalFrameHost::SetStorageAccessApiStatus(
+    net::StorageAccessApiStatus status) {}
 
 }  // namespace blink

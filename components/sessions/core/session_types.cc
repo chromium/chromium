@@ -28,7 +28,7 @@ SessionTab::~SessionTab() {
 
 SessionTabGroup::SessionTabGroup(const tab_groups::TabGroupId& id) : id(id) {}
 
-SessionTabGroup::~SessionTabGroup() {}
+SessionTabGroup::~SessionTabGroup() = default;
 
 // SessionWindow ---------------------------------------------------------------
 
@@ -40,6 +40,6 @@ SessionWindow::SessionWindow()
       is_constrained(true),
       show_state(ui::mojom::WindowShowState::kDefault) {}
 
-SessionWindow::~SessionWindow() {}
+SessionWindow::~SessionWindow() = default;
 
 }  // namespace sessions

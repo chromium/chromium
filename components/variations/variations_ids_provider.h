@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
     virtual void VariationIdsHeaderUpdated() = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   enum class Mode {

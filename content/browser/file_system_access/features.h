@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
@@ -15,10 +16,23 @@ namespace content::features {
 // be documented alongside the definition of their values in the .cc file.
 
 // Alphabetical:
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessBFCache);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFileSystemAccessDirectoryIterationBlocklistCheck);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessObserverQuotaLimit);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kFileSystemObserverQuotaLimitLinuxBucketSize);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kFileSystemObserverQuotaLimitLinuxMin);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kFileSystemObserverQuotaLimitLinuxPercent);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kFileSystemObserverQuotaLimitMacPercent);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                          kFileSystemObserverQuotaLimitWindows);
 
 }  // namespace content::features
 

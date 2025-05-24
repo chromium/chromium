@@ -708,10 +708,12 @@ void NavigationSimulatorImpl::Commit() {
       render_frame_host_->frame_tree_node()->current_frame_host()->GetWeakPtr();
 
   // RenderDocument: Do not dispatch UnloadACK if the navigation was committed
-  // in the same SiteInstance. This has already been dispatched during the
+  // in the same SiteInstanceGroup. This has already been dispatched during the
   // navigation in the renderer process.
-  if (previous_rfh->GetSiteInstance() == render_frame_host_->GetSiteInstance())
+  if (previous_rfh->GetSiteInstance()->group() ==
+      render_frame_host_->GetSiteInstance()->group()) {
     drop_unload_ack_ = true;
+  }
 
   // If the frame is not alive we do not displatch Unload ACK. CommitPending()
   // may be called immediately and delete the old RenderFrameHost, so we need to
@@ -876,10 +878,12 @@ void NavigationSimulatorImpl::CommitErrorPage() {
       render_frame_host_->frame_tree_node()->current_frame_host();
 
   // RenderDocument: Do not dispatch UnloadACK if the navigation was committed
-  // in the same SiteInstance. This has already been dispatched during the
+  // in the same SiteInstanceGroup. This has already been dispatched during the
   // navigation in the renderer process.
-  if (previous_rfh->GetSiteInstance() == render_frame_host_->GetSiteInstance())
+  if (previous_rfh->GetSiteInstance()->group() ==
+      render_frame_host_->GetSiteInstance()->group()) {
     drop_unload_ack_ = true;
+  }
 
   // If the frame is not alive we do not displatch Unload ACK. CommitPending()
   // may be called immediately and delete the old RenderFrameHost, so we need to
@@ -1052,7 +1056,7 @@ void NavigationSimulatorImpl::SetIsSignedExchangeInnerResponse(
 }
 
 void NavigationSimulatorImpl::SetPermissionsPolicyHeader(
-    blink::ParsedPermissionsPolicy permissions_policy_header) {
+    network::ParsedPermissionsPolicy permissions_policy_header) {
   CHECK_LE(state_, STARTED) << "The Permissions-Policy headers cannot be set "
                                "after the navigation has committed or failed";
   permissions_policy_header_ = std::move(permissions_policy_header);
@@ -1128,6 +1132,11 @@ NavigationSimulatorImpl::GetLastThrottleCheckResult() {
 NavigationRequest* NavigationSimulatorImpl::GetNavigationHandle() {
   CHECK_GE(state_, STARTED);
   return request_;
+}
+
+NavigationThrottleRegistry&
+NavigationSimulatorImpl::GetNavigationThrottleRegistry() {
+  return *GetNavigationHandle()->GetNavigationThrottleRunnerForTesting();
 }
 
 content::GlobalRequestID NavigationSimulatorImpl::GetGlobalRequestID() {
@@ -1342,7 +1351,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
     static_cast<NavigationControllerImpl&>(web_contents_->GetController())
         .GoToOffsetFromRenderer(
             session_history_offset_, render_frame_host_,
-            /*soft_navigation_heuristics_task_id=*/std::nullopt);
+            /*soft_navigation_heuristics_task_id=*/std::nullopt,
+            /*actual_navigation_start=*/base::TimeTicks::Now());
     request_ = render_frame_host_->frame_tree_node()->navigation_request();
     return true;
   }
@@ -1593,9 +1603,7 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   if (same_document) {
     params->origin = current_rfh->GetLastCommittedOrigin();
   } else {
-    params->origin = origin_.value_or(
-        request_->browser_side_origin_to_commit_with_debug_info()
-            .first.value());
+    params->origin = origin_.value_or(request_->GetOriginToCommit().value());
   }
 
   if (same_document) {
@@ -1645,6 +1653,9 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   params->insecure_navigations_set = insecure_navigations_set_;
   params->has_potentially_trustworthy_unique_origin =
       has_potentially_trustworthy_unique_origin_;
+
+  params->commit_navigation_start = base::TimeTicks::Now();
+  params->commit_navigation_end = base::TimeTicks::Now();
 
   return params;
 }

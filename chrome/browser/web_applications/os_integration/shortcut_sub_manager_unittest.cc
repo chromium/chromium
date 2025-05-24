@@ -137,7 +137,7 @@ TEST_F(ShortcutSubManagerConfigureTest, ConfigureAppInstall) {
     ASSERT_THAT(state.value().shortcut().icon_data_any_size(),
                 testing::Eq(kTotalIconSizes));
 
-    for (const proto::ShortcutIconData& icon_time_map_data :
+    for (const proto::os_state::ShortcutIconData& icon_time_map_data :
          state.value().shortcut().icon_data_any()) {
       ASSERT_THAT(
           syncer::ProtoTimeToTime(icon_time_map_data.timestamp()).is_null(),
@@ -201,8 +201,7 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
     EXPECT_TRUE(icon_color.has_value());
     return icon_color.value();
 #else
-    NOTREACHED_IN_MIGRATION() << "Shortcuts not supported for other OS";
-    return SK_ColorTRANSPARENT;
+    NOTREACHED() << "Shortcuts not supported for other OS";
 #endif
   }
 
@@ -501,7 +500,7 @@ TEST_F(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
     EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id, app_name));
   }
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 
   // Force unregister shouldn't change anything.
   SynchronizeOsOptions options;

@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/test/test_file_util.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -79,8 +79,9 @@ class ProfileStatisticsAggregatorTest : public testing::Test {
   std::unique_ptr<ProfileStatisticsAggregator> CreateAggregator(
       base::OnceClosure done_callback) {
     return std::make_unique<ProfileStatisticsAggregator>(
-        autofill_web_data_service_, &personal_data_manager_, &bookmark_model_,
-        &history_service_, profile_password_store_, &pref_service_,
+        autofill_web_data_service_, &personal_data_manager_,
+        /*entity_data_manager=*/nullptr, &bookmark_model_, &history_service_,
+        profile_password_store_, &pref_service_,
         /*platform_credential_store=*/nullptr, std::move(done_callback));
   }
 

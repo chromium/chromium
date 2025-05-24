@@ -25,20 +25,41 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include <limits>
+
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 
 namespace blink {
 
-WebGLObject::WebGLObject(WebGLRenderingContextBase* context)
-    : cached_number_of_context_losses_(context->NumberOfContextLosses()),
-      attachment_count_(0),
-      marked_for_deletion_(false),
-      destruction_in_progress_(false) {}
+WebGLObject::WebGLObject(WebGLContextObjectSupport* context)
+    : context_(context),
+      cached_number_of_context_losses_(std::numeric_limits<uint32_t>::max()) {
+  if (context_) {
+    cached_number_of_context_losses_ = context->NumberOfContextLosses();
+  }
+}
 
 WebGLObject::~WebGLObject() = default;
 
-uint32_t WebGLObject::CachedNumberOfContextLosses() const {
-  return cached_number_of_context_losses_;
+bool WebGLObject::Validate(const WebGLContextObjectSupport* context) const {
+  // The contexts and context groups no longer maintain references to all
+  // the objects they ever created, so there's no way to invalidate them
+  // eagerly during context loss. The invalidation is discovered lazily.
+  return (context == context_ && context_ != nullptr &&
+          cached_number_of_context_losses_ == context->NumberOfContextLosses());
+}
+
+void WebGLObject::SetObject(GLuint object) {
+  // SetObject may only be called when this container is in the
+  // uninitialized state: object==0 && marked_for_deletion==false.
+  DCHECK(!object_);
+  DCHECK(!MarkedForDeletion());
+  object_ = object;
+}
+
+void WebGLObject::ResetUnownedObject() {
+  DCHECK(object_);
+  object_ = 0;
 }
 
 void WebGLObject::DeleteObject(gpu::gles2::GLES2Interface* gl) {
@@ -46,21 +67,21 @@ void WebGLObject::DeleteObject(gpu::gles2::GLES2Interface* gl) {
   if (!HasObject())
     return;
 
-  if (!HasGroupOrContext())
+  if (!context_) {
     return;
+  }
 
-  if (CurrentNumberOfContextLosses() != cached_number_of_context_losses_) {
+  if (context_->NumberOfContextLosses() != cached_number_of_context_losses_) {
     // This object has been invalidated.
     return;
   }
 
   if (!attachment_count_) {
     if (!gl)
-      gl = GetAGLInterface();
+      gl = context_->ContextGL();
     if (gl) {
       DeleteObjectImpl(gl);
-      // Ensure the inherited class no longer claims to have a valid object
-      DCHECK(!HasObject());
+      object_ = 0;
     }
   }
 }
@@ -94,6 +115,11 @@ void WebGLObject::OnDetached(gpu::gles2::GLES2Interface* gl) {
     --attachment_count_;
   if (marked_for_deletion_)
     DeleteObject(gl);
+}
+
+void WebGLObject::Trace(Visitor* visitor) const {
+  visitor->Trace(context_);
+  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

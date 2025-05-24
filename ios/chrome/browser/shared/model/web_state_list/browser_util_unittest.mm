@@ -41,22 +41,21 @@ const char kIdentifier1[] = "Identifier1";
 class BrowserUtilTest : public PlatformTest {
  protected:
   BrowserUtilTest() {
-    TestChromeBrowserState::Builder test_browser_state_builder;
-    test_browser_state_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         FakeTabRestoreService::GetTestingFactory());
 
-    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    other_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-    other_incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    other_browser_ = std::make_unique<TestBrowser>(profile_.get());
+    incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
+    other_incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(browser_.get());
     browser_list_->AddBrowser(other_browser_.get());
     browser_list_->AddBrowser(incognito_browser_.get());
@@ -73,8 +72,7 @@ class BrowserUtilTest : public PlatformTest {
     AppendNewWebState(incognito_browser_.get());
 
     tab_restore_service_ =
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        IOSChromeTabRestoreServiceFactory::GetForProfile(profile_.get());
   }
 
   // Appends a new web state in the web state list of `browser`.
@@ -113,7 +111,7 @@ class BrowserUtilTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> other_browser_;
   std::unique_ptr<Browser> incognito_browser_;

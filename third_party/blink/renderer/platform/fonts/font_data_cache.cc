@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
 
-#include "base/auto_reset.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 

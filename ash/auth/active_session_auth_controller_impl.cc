@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/auth/views/active_session_auth_view.h"
 #include "ash/auth/views/auth_common.h"
@@ -69,32 +70,6 @@ std::string GetUserSalt(const AccountId& account_id) {
   return {};
 }
 
-std::unique_ptr<views::Widget> CreateAuthDialogWidget(
-    std::unique_ptr<views::View> contents_view) {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.delegate = new views::WidgetDelegate();
-  params.show_state = ui::mojom::WindowShowState::kNormal;
-  CHECK_EQ(Shell::Get()->session_controller()->GetSessionState(),
-           session_manager::SessionState::ACTIVE);
-  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
-      kShellWindowId_SystemModalContainer);
-  params.autosize = true;
-  params.name = "AuthDialogWidget";
-
-  params.delegate->SetInitiallyFocusedView(contents_view.get());
-  params.delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  params.delegate->SetOwnedByWidget(true);
-
-  std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
-  widget->Init(std::move(params));
-  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
-  widget->SetContentsView(std::move(contents_view));
-  return widget;
-}
-
 const char* ReasonToString(AuthRequest::Reason reason) {
   switch (reason) {
     case AuthRequest::Reason::kPasswordManager:
@@ -110,6 +85,8 @@ const char* ReasonToString(AuthRequest::Reason reason) {
 const char* ActiveSessionAuthStateToString(
     ActiveSessionAuthControllerImpl::ActiveSessionAuthState state) {
   switch (state) {
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::kOnIdle:
+      return "OnIdle";
     case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::kWaitForInit:
       return "WaitForInit";
     case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::kInitialized:
@@ -141,6 +118,52 @@ const char* ActiveSessionAuthStateToString(
 
 }  // namespace
 
+// This class manages the closing process after successful fingerprint
+// authentication. It listens for two signals:
+//  1. The completion of the successful authentication animation.
+//  2. The authentication callback from cryptohome.
+// Once both signals are received, the class triggers the closing process.
+class ActiveSessionAuthControllerImpl::FingerprintAuthTracker {
+ public:
+  explicit FingerprintAuthTracker(ActiveSessionAuthControllerImpl* owner)
+      : owner_(owner) {
+    CHECK(owner_);
+  }
+
+  void OnAuthenticationFinished(
+      std::unique_ptr<UserContext> user_context,
+      std::optional<AuthenticationError> authentication_error) {
+    CHECK_EQ(authentication_finished_, false);
+    authentication_finished_ = true;
+    if (authentication_error.has_value()) {
+      LOG(ERROR) << "Authentication error during OnFingerprintSuccess code: "
+                 << authentication_error->get_cryptohome_code();
+    }
+    owner_->user_context_ = std::move(user_context);
+    MaybeNotifyOwner();
+  }
+
+  void OnAnimationFinished() {
+    VLOG(1) << "OnAnimationFinished";
+    CHECK_EQ(animation_finished_, false);
+    animation_finished_ = true;
+    MaybeNotifyOwner();
+  }
+
+  void MaybeNotifyOwner() {
+    if (authentication_finished_ && animation_finished_) {
+      owner_->StartClose();
+    }
+    CHECK(owner_);
+    CHECK(owner_->fp_auth_tracker_);
+  }
+
+ private:
+  const raw_ptr<ActiveSessionAuthControllerImpl> owner_;
+  bool animation_finished_ = false;
+  bool authentication_finished_ = false;
+};
+
 ActiveSessionAuthControllerImpl::TestApi::TestApi(
     ActiveSessionAuthControllerImpl* controller)
     : controller_(controller) {}
@@ -171,13 +194,18 @@ void ActiveSessionAuthControllerImpl::TestApi::SetPinStatus(
   controller_->contents_view_->SetPinStatus(std::move(pin_status));
 }
 
-const std::u16string&
+std::u16string_view
 ActiveSessionAuthControllerImpl::TestApi::GetPinStatusMessage() const {
   return controller_->contents_view_->GetPinStatusMessage();
 }
 
 ActiveSessionAuthControllerImpl::ActiveSessionAuthControllerImpl() = default;
 ActiveSessionAuthControllerImpl::~ActiveSessionAuthControllerImpl() = default;
+
+bool ActiveSessionAuthControllerImpl::IsPreInitializedState() const {
+  return state_ == ActiveSessionAuthState::kOnIdle ||
+         state_ == ActiveSessionAuthState::kWaitForInit;
+}
 
 bool ActiveSessionAuthControllerImpl::IsSucceedState() const {
   return state_ == ActiveSessionAuthState::kPasswordAuthSucceeded ||
@@ -197,6 +225,25 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
     return false;
   }
 
+  if (state_ == ActiveSessionAuthState::kWaitForInit) {
+    VLOG(1) << "A show request is already pending; waiting for initialization.";
+    return false;
+  }
+
+  // This state transition checking the current state is kOnIdle.
+  SetState(ActiveSessionAuthState::kWaitForInit);
+
+  CHECK(Shell::Get());
+  CHECK(Shell::Get()->session_controller());
+
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    LOG(ERROR) << "SessionState is not active.";
+    return false;
+  }
+
+  Shell::Get()->session_controller()->AddObserver(this);
+
   CHECK(!auth_request_);
   auth_request_ = std::move(auth_request);
 
@@ -206,6 +253,9 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
       std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
   auth_performer_ = std::make_unique<AuthPerformer>(UserDataAuthClient::Get());
   account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
+
+  fingerprint_animation_finished_ = false;
+  fingerprint_authentication_finished_ = false;
 
   user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
@@ -248,7 +298,6 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
 
   auth_session_broadcast_id_ = user_context_->GetBroadcastId();
 
-  uma_recorder_.RecordShow(auth_request_->GetAuthReason());
   UserDataAuthClient::Get()->AddAuthFactorStatusUpdateObserver(this);
 
   available_factors_.Clear();
@@ -264,6 +313,14 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
       available_factors_.Put(AuthInputType::kPin);
     }
   }
+
+  if (available_factors_.empty() && pin_factor == nullptr) {
+    LOG(ERROR) << "No password/PIN found for user.";
+    StartClose();
+    return;
+  }
+
+  uma_recorder_.RecordShow(auth_request_->GetAuthReason(), available_factors_);
 
   MaybePrepareFingerprint(
       BindOnce(&ActiveSessionAuthControllerImpl::AuthFactorsAreReady,
@@ -299,6 +356,7 @@ void ActiveSessionAuthControllerImpl::OnFingerprintReady(
     LOG(ERROR) << "Failed to start fingerprint auth session - only "
                   "non-fingerprint factors will be available.";
   } else {
+    fp_auth_tracker_ = std::make_unique<FingerprintAuthTracker>(this);
     available_factors_.Put(AuthInputType::kFingerprint);
   }
   std::move(on_auth_factors_ready).Run(std::move(user_context));
@@ -312,13 +370,16 @@ void ActiveSessionAuthControllerImpl::AuthFactorsAreReady(
 
 void ActiveSessionAuthControllerImpl::OnFingerprintScan(
     const FingerprintAuthScanResult scan_result) {
-  CHECK_NE(state_, ActiveSessionAuthState::kWaitForInit);
+  CHECK(!ActiveSessionAuthControllerImpl::IsPreInitializedState());
   // Avoid unnecessary processing if we've already initiated close.
   if (IsSucceedState() || state_ == ActiveSessionAuthState::kCloseRequested) {
     return;
   }
   switch (scan_result) {
     case FingerprintAuthScanResult::kSuccess:
+      contents_view_->NotifyFingerprintAuthSuccess(
+          base::BindOnce(&FingerprintAuthTracker::OnAnimationFinished,
+                         base::Unretained(fp_auth_tracker_.get())));
       if (state_ == ActiveSessionAuthState::kPasswordAuthStarted ||
           state_ == ActiveSessionAuthState::kPinAuthStarted) {
         SetState(ActiveSessionAuthState::kFingerprintAuthSucceededWaiting);
@@ -346,25 +407,14 @@ void ActiveSessionAuthControllerImpl::OnFingerprintScan(
   NOTREACHED();
 }
 
-void ActiveSessionAuthControllerImpl::OnFingerprintSuccess(
-    std::unique_ptr<UserContext> user_context,
-    std::optional<AuthenticationError> authentication_error) {
-  if (authentication_error.has_value()) {
-    LOG(ERROR) << "Authentication error during OnFingerprintSuccess code: "
-               << authentication_error->get_cryptohome_code();
-  }
-  user_context_ = std::move(user_context);
-  StartClose();
-}
-
 void ActiveSessionAuthControllerImpl::HandleFingerprintAuthSuccess() {
   CHECK(user_context_);
   uma_recorder_.RecordAuthSucceeded(AuthInputType::kFingerprint);
   SetState(ActiveSessionAuthState::kFingerprintAuthSucceeded);
   auth_performer_->AuthenticateWithLegacyFingerprint(
       std::move(user_context_),
-      base::BindOnce(&ActiveSessionAuthControllerImpl::OnFingerprintSuccess,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&FingerprintAuthTracker::OnAuthenticationFinished,
+                     base::Unretained(fp_auth_tracker_.get())));
 }
 
 void ActiveSessionAuthControllerImpl::InitUi() {
@@ -372,7 +422,29 @@ void ActiveSessionAuthControllerImpl::InitUi() {
       account_id_, title_, description_, available_factors_);
   contents_view_ = contents_view.get();
 
-  widget_ = CreateAuthDialogWidget(std::move(contents_view));
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.delegate = new views::WidgetDelegate();
+  params.show_state = ui::mojom::WindowShowState::kNormal;
+  CHECK_EQ(Shell::Get()->session_controller()->GetSessionState(),
+           session_manager::SessionState::ACTIVE);
+  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
+      kShellWindowId_SystemModalContainer);
+  params.autosize = true;
+  params.name = "AuthDialogWidget";
+
+  params.delegate->SetInitiallyFocusedView(contents_view.get());
+  params.delegate->SetModalType(ui::mojom::ModalType::kSystem);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
+
+  widget_ = std::make_unique<views::Widget>();
+  widget_->Init(std::move(params));
+  widget_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
+  widget_->SetContentsView(std::move(contents_view));
+
   contents_view_observer_.Observe(contents_view_);
   contents_view_->AddObserver(this);
   SetState(ActiveSessionAuthState::kInitialized);
@@ -395,27 +467,38 @@ void ActiveSessionAuthControllerImpl::InitUi() {
 void ActiveSessionAuthControllerImpl::StartClose() {
   VLOG(1) << "Close with : " << ActiveSessionAuthStateToString(state_)
           << " state.";
-
   CHECK(user_context_);
   CHECK(auth_request_);
   CHECK(auth_performer_);
-  uma_recorder_.RecordClose();
+  if (!IsPreInitializedState()) {
+    uma_recorder_.RecordClose();
+  }
+
+  if (Shell::Get() && Shell::Get()->session_controller()) {
+    Shell::Get()->session_controller()->RemoveObserver(this);
+  }
+
   contents_view_observer_.Reset();
-  CHECK(contents_view_);
-  contents_view_->RemoveObserver(this);
-  contents_view_ = nullptr;
+  if (contents_view_) {
+    contents_view_->RemoveObserver(this);
+    contents_view_ = nullptr;
+  } else {
+    CHECK(IsPreInitializedState());
+  }
   auth_session_broadcast_id_.clear();
 
   UserDataAuthClient::Get()->RemoveAuthFactorStatusUpdateObserver(this);
 
   auth_performer_->InvalidateCurrentAttempts();
   if (fp_client_ && available_factors_.Has(AuthInputType::kFingerprint)) {
+    CHECK(fp_auth_tracker_);
     fp_client_->TerminateFingerprintAuth(
         std::move(user_context_),
         base::BindOnce(&ActiveSessionAuthControllerImpl::CompleteClose,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
+  CHECK(!fp_auth_tracker_);
   CompleteClose(std::move(user_context_), std::nullopt);
 }
 
@@ -437,12 +520,38 @@ void ActiveSessionAuthControllerImpl::CompleteClose(
   auth_request_.reset();
   available_factors_.Clear();
 
-  SetState(ActiveSessionAuthState::kWaitForInit);
+  SetState(ActiveSessionAuthState::kOnIdle);
 
   title_.clear();
   description_.clear();
-
+  fp_auth_tracker_.reset();
   widget_.reset();
+}
+
+void ActiveSessionAuthControllerImpl::OnSessionStateChanged(
+    session_manager::SessionState session_state) {
+  if (session_state == session_manager::SessionState::ACTIVE) {
+    return;
+  }
+  VLOG(1) << "SessionState changed, closing process started";
+  switch (state_) {
+    case ActiveSessionAuthState::kOnIdle:
+    case ActiveSessionAuthState::kWaitForInit:
+    case ActiveSessionAuthState::kInitialized:
+      StartClose();
+      return;
+    case ActiveSessionAuthState::kPasswordAuthStarted:
+    case ActiveSessionAuthState::kPinAuthStarted:
+      SetState(ActiveSessionAuthState::kCloseRequested);
+      return;
+    case ActiveSessionAuthState::kPasswordAuthSucceeded:
+    case ActiveSessionAuthState::kPinAuthSucceeded:
+    case ActiveSessionAuthState::kFingerprintAuthSucceeded:
+    case ActiveSessionAuthState::kFingerprintAuthSucceededWaiting:
+    case ActiveSessionAuthState::kCloseRequested:
+      return;
+  }
+  NOTREACHED();
 }
 
 void ActiveSessionAuthControllerImpl::OnViewPreferredSizeChanged(
@@ -455,7 +564,7 @@ void ActiveSessionAuthControllerImpl::MoveToTheCenter() {
 }
 
 void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
-    const std::u16string& password) {
+    std::u16string_view password) {
   if (IsSucceedState()) {
     return;
   }
@@ -474,7 +583,7 @@ void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
                      weak_ptr_factory_.GetWeakPtr(), AuthInputType::kPassword));
 }
 
-void ActiveSessionAuthControllerImpl::OnPinSubmit(const std::u16string& pin) {
+void ActiveSessionAuthControllerImpl::OnPinSubmit(std::u16string_view pin) {
   if (IsSucceedState()) {
     return;
   }
@@ -524,6 +633,7 @@ void ActiveSessionAuthControllerImpl::OnAuthComplete(
 
 void ActiveSessionAuthControllerImpl::OnClose() {
   switch (state_) {
+    case ActiveSessionAuthState::kOnIdle:
     case ActiveSessionAuthState::kWaitForInit:
       NOTREACHED();
     case ActiveSessionAuthState::kInitialized:
@@ -549,7 +659,10 @@ void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
           << " state to : " << ActiveSessionAuthStateToString(state)
           << " state.";
   switch (state) {
+    case ActiveSessionAuthState::kOnIdle:
+      break;
     case ActiveSessionAuthState::kWaitForInit:
+      CHECK(state_ == ActiveSessionAuthState::kOnIdle);
       break;
     case ActiveSessionAuthState::kInitialized:
       CHECK(state_ == ActiveSessionAuthState::kWaitForInit ||
@@ -611,6 +724,7 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorStatusUpdate(
       }
       return;
 
+    case ActiveSessionAuthState::kOnIdle:
     case ActiveSessionAuthState::kWaitForInit:
       return;
 

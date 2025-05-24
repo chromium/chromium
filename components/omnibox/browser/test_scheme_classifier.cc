@@ -12,9 +12,9 @@
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "url/url_constants.h"
 
-TestSchemeClassifier::TestSchemeClassifier() {}
+TestSchemeClassifier::TestSchemeClassifier() = default;
 
-TestSchemeClassifier::~TestSchemeClassifier() {}
+TestSchemeClassifier::~TestSchemeClassifier() = default;
 
 metrics::OmniboxInputType TestSchemeClassifier::GetInputTypeForScheme(
     const std::string& scheme) const {

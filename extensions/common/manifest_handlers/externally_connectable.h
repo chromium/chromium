@@ -50,12 +50,12 @@ class ExternallyConnectableHandler : public ManifestHandler {
 // The parsed form of the externally_connectable manifest entry.
 struct ExternallyConnectableInfo : public Extension::ManifestData {
  public:
-  // Gets the ExternallyConnectableInfo for |extension|, or NULL if none was
+  // Gets the ExternallyConnectableInfo for `extension`, or NULL if none was
   // specified.
   static ExternallyConnectableInfo* Get(const Extension* extension);
 
-  // Tries to construct the info based on |value|, as it would have appeared in
-  // the manifest. Sets |error| and returns an empty scoped_ptr on failure.
+  // Tries to construct the info based on `value`, as it would have appeared in
+  // the manifest. Sets `error` and returns an empty scoped_ptr on failure.
   static std::unique_ptr<ExternallyConnectableInfo> FromValue(
       const base::Value& value,
       std::vector<InstallWarning>* install_warnings,
@@ -74,17 +74,17 @@ struct ExternallyConnectableInfo : public Extension::ManifestData {
   const std::vector<ExtensionId> ids;
 
   // True if any extension is allowed to connect. This would have corresponded
-  // to an ID of "*" in |ids|.
+  // to an ID of "*" in `ids`.
   const bool all_ids;
 
   // True if extension accepts the TLS channel ID, when requested by the
   // connecting origin.
   const bool accepts_tls_channel_id;
 
-  // Returns true if |ids| contains |id| or if |all_ids| is true.
+  // Returns true if `ids` contains `id` or if `all_ids` is true.
   //
   // More convenient for callers than checking each individually, and it makes
-  // use of the sortedness of |ids|.
+  // use of the sortedness of `ids`.
   bool IdCanConnect(const ExtensionId& id);
 
   // Public only for testing. Use FromValue in production.

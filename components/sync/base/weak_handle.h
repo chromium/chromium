@@ -97,14 +97,14 @@ template <typename T>
 class WeakHandleCore : public WeakHandleCoreBase,
                        public base::RefCountedThreadSafe<WeakHandleCore<T>> {
  public:
-  // Must be called on |ptr|'s owner thread, which is assumed to be
+  // Must be called on `ptr`'s owner thread, which is assumed to be
   // the current thread.
   explicit WeakHandleCore(const base::WeakPtr<T>& ptr) : ptr_(ptr) {}
 
   WeakHandleCore(const WeakHandleCore&) = delete;
   WeakHandleCore& operator=(const WeakHandleCore&) = delete;
 
-  // Must be called on |ptr_|'s owner thread.
+  // Must be called on `ptr_`'s owner thread.
   base::WeakPtr<T> Get() const {
     DCHECK(IsOnOwnerThread());
     return ptr_;
@@ -141,12 +141,12 @@ class WeakHandle {
   // Creates an uninitialized WeakHandle.
   WeakHandle() = default;
 
-  // Creates an initialized WeakHandle from |ptr|.
+  // Creates an initialized WeakHandle from `ptr`.
   explicit WeakHandle(const base::WeakPtr<T>& ptr)
       : core_(new internal::WeakHandleCore<T>(ptr)) {}
 
   // Allow conversion from WeakHandle<U> to WeakHandle<T> if U is
-  // convertible to T, but we *must* be on |other|'s owner thread.
+  // convertible to T, but we *must* be on `other`'s owner thread.
   // Note that this doesn't override the regular copy constructor, so
   // that one can be called on any thread.
   template <typename U>

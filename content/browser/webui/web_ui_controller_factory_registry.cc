@@ -97,13 +97,12 @@ void WebUIControllerFactory::UnregisterFactoryForTesting(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Tried to unregister a factory but it wasn't found. Tip: if "
-         "trying to unregister a global like "
-         "ChromeWebUIControllerFactory::GetInstance(), create the "
-         "ScopedWebUIControllerFactoryRegistration in the "
-         "setup method instead of the constructor, to ensure the "
-         "global exists.";
+  NOTREACHED() << "Tried to unregister a factory but it wasn't found. Tip: if "
+                  "trying to unregister a global like "
+                  "ChromeWebUIControllerFactory::GetInstance(), create the "
+                  "ScopedWebUIControllerFactoryRegistration in the "
+                  "setup method instead of the constructor, to ensure the "
+                  "global exists.";
 }
 
 }  // namespace content

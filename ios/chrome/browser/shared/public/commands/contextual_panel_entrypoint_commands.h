@@ -10,7 +10,7 @@
 
 // Notifies the Contextual Panel Entrypoint that the IPH (in-product help) was
 // dismissed.
-- (void)contextualPanelEntrypointIPHWasDismissed;
+- (void)notifyContextualPanelEntrypointIPHDismissed;
 
 @end
 

@@ -102,7 +102,6 @@ struct MODULES_EXPORT IDBDatabaseMetadata {
 
   IDBDatabaseMetadata();
   IDBDatabaseMetadata(const String& name,
-                      int64_t id,
                       int64_t version,
                       int64_t max_object_store_id,
                       bool was_cold_open);
@@ -112,7 +111,6 @@ struct MODULES_EXPORT IDBDatabaseMetadata {
   void CopyFrom(const IDBDatabaseMetadata&);
 
   String name;
-  int64_t id;
   int64_t version;
   int64_t max_object_store_id;
   HashMap<int64_t, scoped_refptr<IDBObjectStoreMetadata>> object_stores;

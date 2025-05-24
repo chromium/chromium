@@ -19,6 +19,7 @@ import {isSelectionEvent} from '../utils.js';
 import {setAmbientTheme} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {getTemplate} from './ambient_theme_item_element.html.js';
+import {AmbientThemePreviewMap} from './utils.js';
 
 export class AmbientThemeItemElement extends WithPersonalizationStore {
   static get is() {
@@ -44,6 +45,7 @@ export class AmbientThemeItemElement extends WithPersonalizationStore {
   }
 
   ambientTheme: AmbientTheme;
+  private ambientThemePreviews_: AmbientThemePreviewMap|null;
   private itemDescription_: string;
   private imgSrc_: string;
 
@@ -52,6 +54,13 @@ export class AmbientThemeItemElement extends WithPersonalizationStore {
 
     this.addEventListener('click', this.onItemSelected_.bind(this));
     this.addEventListener('keydown', this.onItemSelected_.bind(this));
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.watch<AmbientThemeItemElement['ambientThemePreviews_']>(
+        'ambientThemePreviews_', state => state.ambient.ambientThemePreviews);
+    this.updateFromStore();
   }
 
   /** Compute the ambient theme description. */
@@ -73,18 +82,10 @@ export class AmbientThemeItemElement extends WithPersonalizationStore {
   /** Return the display image for ambient theme option. */
   private computeImgSrc_(ambientTheme: AmbientThemeItemElement['ambientTheme']):
       string {
-    switch (ambientTheme) {
-      case AmbientTheme.kSlideshow:
-        return 'chrome://personalization/images/slideshow.png';
-      case AmbientTheme.kFeelTheBreeze:
-        return 'chrome://personalization/images/feel_the_breeze.png';
-      case AmbientTheme.kFloatOnBy:
-        return 'chrome://personalization/images/float_on_by.png';
-      case AmbientTheme.kVideo:
-        return 'chrome://personalization/time_of_day/thumbnails/new_mexico.jpg';
-      default:
-        assertNotReached('invalid ambient theme value.');
+    if (this.ambientThemePreviews_ === null) {
+      return '';
     }
+    return this.ambientThemePreviews_[ambientTheme]?.url || '';
   }
 
   /** Invoked when item is selected. */

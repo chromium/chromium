@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_block_modulator.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_mediator.h"
@@ -13,12 +14,12 @@
 #import "ios/chrome/browser/contextual_panel/sample/coordinator/sample_block_modulator.h"
 #import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_display_controller.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_view_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_modulator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
@@ -39,7 +40,7 @@
   NSMutableArray<PanelBlockModulator*>* _modulators;
 
   // The contextual panel tab helper to use for this panel.
-  ContextualPanelTabHelper* _contextualPanelTabHelper;
+  raw_ptr<ContextualPanelTabHelper> _contextualPanelTabHelper;
 
   // Read-write version of `self.baseViewController` as the base view
   // controller for this coordinator changes during its lifetime.
@@ -56,7 +57,11 @@
   ChromeBroadcaster* broadcaster =
       FullscreenController::FromBrowser(self.browser)->broadcaster();
 
-  _mediator = [[PanelContentMediator alloc] initWithBroadcaster:broadcaster];
+  ToolbarsSize* toolbarsSize =
+      FullscreenController::FromBrowser(self.browser)->GetToolbarsSize();
+
+  _mediator = [[PanelContentMediator alloc] initWithBroadcaster:broadcaster
+                                                   toolbarsSize:toolbarsSize];
   _mediator.consumer = _viewController;
 
   _modulators = [[NSMutableArray alloc] init];
@@ -119,6 +124,10 @@
           initWithBaseViewController:_viewController
                              browser:self.browser
                    itemConfiguration:configuration];
+    case ContextualPanelItemType::ReaderModeItem:
+      // Reader mode is not using the contextual panel. Instead it only uses the
+      // contextual panel entry point which does not require a modulator.
+      return nil;
   }
 }
 

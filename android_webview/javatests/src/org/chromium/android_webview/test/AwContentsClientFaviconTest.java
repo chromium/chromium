@@ -100,7 +100,7 @@ public class AwContentsClientFaviconTest extends AwParameterizedTest {
 
         mContentsClient.getFaviconHelper().waitForCallback(callCount);
         Assert.assertEquals(1, mWebServer.getRequestCount(FAVICON1_URL));
-        Object originalFaviconSource = (new URL(faviconUrl)).getContent();
+        Object originalFaviconSource = new URL(faviconUrl).getContent();
         Bitmap originalFavicon = BitmapFactory.decodeStream((InputStream) originalFaviconSource);
         Assert.assertNotNull(originalFavicon);
         Assert.assertNotNull(mContentsClient.getFaviconHelper().getIcon());

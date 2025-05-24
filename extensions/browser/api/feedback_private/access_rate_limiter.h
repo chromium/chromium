@@ -14,9 +14,9 @@ namespace extensions {
 
 // Keeps track of how frequently a resource may be accessed. Uses a rechargeable
 // time counter to keep track. Each time an access is attempted, if the counter
-// has more than |recharge_period_|, it will be a successful access, and then
-// |recharge_period_| is deducted from it. If the counter has less than
-// |recharge_period_|, it will not be a successful access.
+// has more than `recharge_period_`, it will be a successful access, and then
+// `recharge_period_` is deducted from it. If the counter has less than
+// `recharge_period_`, it will not be a successful access.
 //
 // The counter is automatically charged as time goes on. It is updated based on
 // the current time right before each access attempt. The counter maxes out at
@@ -24,7 +24,7 @@ namespace extensions {
 //
 // The counter starts off at the max level, so that at the beginning, the number
 // of successful accesses that can be immediately attempted is
-// |max_num_accesses|.
+// `max_num_accesses`.
 //
 // For example, suppose max_num_accesses=3 and recharge_period=100 ms. The
 // following sequence of events could happen:
@@ -53,11 +53,11 @@ class AccessRateLimiter {
 
   ~AccessRateLimiter();
 
-  // Attempt to access a resource. Will update |counter_| based on how much time
+  // Attempt to access a resource. Will update `counter_` based on how much time
   // has elapsed since the last access attempt.
-  // - Deducts |recharge_period_| from |counter_| if possible and returns true
+  // - Deducts `recharge_period_` from `counter_` if possible and returns true
   //   to indicate a successful access attempt.
-  // - If |counter_| < |recharge_period_|, returns false to indicate a failed
+  // - If `counter_` < `recharge_period_`, returns false to indicate a failed
   //   access attempt.
   bool AttemptAccess();
 
@@ -73,7 +73,7 @@ class AccessRateLimiter {
   const base::TimeDelta recharge_period_;
 
   // Keeps track of how many available accesses there are. There is one for each
-  // unit of |recharge_period_|.
+  // unit of `recharge_period_`.
   base::TimeDelta counter_;
 
   // Points to a timer clock implementation for keeping track of access times.

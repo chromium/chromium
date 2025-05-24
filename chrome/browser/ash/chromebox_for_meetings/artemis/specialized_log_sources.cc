@@ -69,17 +69,6 @@ RE2& EventlogLogSource::GetLogLineRegex() {
   return *kEventlogLogLineRegex;
 }
 
-/*** lacros.log ***/
-
-LacrosLogSource::LacrosLogSource(base::TimeDelta poll_rate, size_t batch_size)
-    : LogSource(GetLacrosLogPath(kCfmLacrosLogFile), poll_rate, batch_size) {}
-
-LacrosLogSource::~LacrosLogSource() = default;
-
-std::string LacrosLogSource::GetLacrosLogPath(const std::string& basename) {
-  return crosapi::browser_util::GetUserDataDir().Append(basename).value();
-}
-
 /*** .varations-list.txt ***/
 
 VariationsListLogSource::VariationsListLogSource(base::TimeDelta poll_rate,

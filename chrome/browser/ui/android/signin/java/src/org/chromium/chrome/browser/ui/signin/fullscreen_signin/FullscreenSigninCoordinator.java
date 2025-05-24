@@ -8,12 +8,13 @@ import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -23,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The coordinator handles the update and interaction of the fullscreen sign-in screen. */
+@NullMarked
 @MainThread
 public class FullscreenSigninCoordinator {
     /** Delegate for the fullscreen signin MVC. */
@@ -45,25 +47,30 @@ public class FullscreenSigninCoordinator {
         void displayDeviceLockPage(Account selectedAccount);
 
         /**
-         * Records the FRE progress histogram MobileFre.Progress.*. Only implemented for the FRE.
+         * Records histograms corresponding to the user accepting sign-in.
          *
-         * @param state FRE state to record.
+         * @param promoAction the promo action corresponding to the account used to sign in.
          */
-        default void recordFreProgressHistogram(@MobileFreProgress int state) {}
+        void recordUserSignInHistograms(
+                @org.chromium.components.signin.metrics.AccountConsistencyPromoAction
+                        int promoAction);
+
+        /** Records histograms corresponding to the user dismissing the sign-in screen. */
+        void recordSigninDismissedHistograms();
 
         /**
-         * Records MobileFre.FromLaunch.NativeAndPoliciesLoaded histogram. Only implemented for the
-         * FRE.
+         * Records the relevant histograms once the initial load is completed.
+         *
+         * @param slowestLoadPoint The slowest load point to be recorded.
          */
-        default void recordNativePolicyAndChildStatusLoadedHistogram() {}
+        void recordLoadCompletedHistograms(
+                @FullscreenSigninMediator.LoadPoint int slowestLoadPoint);
+
+        /** Records *.FromLaunch.NativeInitialized histogram. */
+        void recordNativeInitializedHistogram();
 
         /**
-         * Records MobileFre.FromLaunch.NativeInitialized histogram. Only implemented for the FRE.
-         */
-        default void recordNativeInitializedHistogram() {}
-
-        /**
-         * Show an informational web page. The page doesn't show navigation control. Only
+         * Shows an informational web page. The page doesn't show navigation control. Only
          * implemented for the FRE.
          *
          * @param url Resource id for the URL of the web page.
@@ -116,6 +123,7 @@ public class FullscreenSigninCoordinator {
             ModalDialogManager modalDialogManager,
             Delegate delegate,
             PrivacyPreferencesManager privacyPreferencesManager,
+            FullscreenSigninConfig config,
             @SigninAccessPoint int accessPoint) {
         mMediator =
                 new FullscreenSigninMediator(
@@ -123,6 +131,7 @@ public class FullscreenSigninCoordinator {
                         modalDialogManager,
                         delegate,
                         privacyPreferencesManager,
+                        config,
                         accessPoint);
     }
 
@@ -160,8 +169,8 @@ public class FullscreenSigninCoordinator {
         }
     }
 
-    public void onAccountSelected(String accountName) {
-        mMediator.onAccountSelected(accountName);
+    public void onAccountAdded(@NonNull String accountName) {
+        mMediator.onAccountAdded(accountName);
     }
 
     /** Continue the sign-in process with the currently selected account. */

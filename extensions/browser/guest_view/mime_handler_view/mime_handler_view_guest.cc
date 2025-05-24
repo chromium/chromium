@@ -17,6 +17,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
@@ -62,8 +63,7 @@ StreamContainer::StreamContainer(
       stream_url_(transferrable_loader_->url),
       response_headers_(transferrable_loader_->head->headers) {}
 
-StreamContainer::~StreamContainer() {
-}
+StreamContainer::~StreamContainer() = default;
 
 base::WeakPtr<StreamContainer> StreamContainer::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -122,6 +122,12 @@ bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() const {
   return true;
 }
 
+void MimeHandlerViewGuest::GuestOverrideRendererPreferences(
+    blink::RendererPreferences& preferences) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  preferences.can_accept_load_drops = true;
+}
+
 void MimeHandlerViewGuest::SetBeforeUnloadController(
     mojo::PendingRemote<mime_handler::BeforeUnloadControl>
         pending_before_unload_control) {
@@ -136,20 +142,21 @@ int MimeHandlerViewGuest::GetTaskPrefix() const {
   return IDS_EXTENSION_TASK_MANAGER_MIMEHANDLERVIEW_TAG_PREFIX;
 }
 
-void MimeHandlerViewGuest::CreateWebContents(
+void MimeHandlerViewGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
+    scoped_refptr<content::SiteInstance> site_instance,
     const base::Value::Dict& create_params,
-    WebContentsCreatedCallback callback) {
+    GuestPageCreatedCallback callback) {
   const std::string* stream_id =
       create_params.FindString(mime_handler_view::kStreamId);
   if (!stream_id || stream_id->empty()) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
   stream_ = MimeHandlerStreamManager::Get(browser_context())
                 ->ReleaseStream(*stream_id);
   if (!stream_) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
   mime_type_ = stream_->mime_type();
@@ -162,7 +169,7 @@ void MimeHandlerViewGuest::CreateWebContents(
   if (!mime_handler_extension) {
     LOG(ERROR) << "Extension for mime_type not found, mime_type = "
                << stream_->mime_type();
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
@@ -174,7 +181,7 @@ void MimeHandlerViewGuest::CreateWebContents(
   // `SiteInstance` for the navigation in `DidAttachToEmbedder()`, otherwise the
   // wrong `HostZoomMap` will be used, and the `RenderFrameHost` for the guest
   // `WebContents` will need to be swapped.
-  scoped_refptr<content::SiteInstance> guest_site_instance;
+  bool use_current_site_instance_if_present = true;
 #if BUILDFLAG(ENABLE_PDF)
   // TODO(crbug.com/40216386): Using `SiteInstance::CreateForURL()` creates a
   // new `BrowsingInstance`, which causes problems for features like background
@@ -182,16 +189,25 @@ void MimeHandlerViewGuest::CreateWebContents(
   // handles the multiple `StoragePartitionConfig` case, or when no
   // `MimeHandlerView` extension depends on background pages.
   if (mime_handler_extension->id() == extension_misc::kPdfExtensionId) {
-    guest_site_instance = content::SiteInstance::CreateForURL(
-        browser_context(), stream_->handler_url());
-  } else {
+    use_current_site_instance_if_present = false;
+  }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+  scoped_refptr<content::SiteInstance> guest_site_instance;
+  if (use_current_site_instance_if_present) {
     ProcessManager* process_manager = ProcessManager::Get(browser_context());
     guest_site_instance =
         process_manager->GetSiteInstanceForURL(stream_->handler_url());
-#if BUILDFLAG(ENABLE_PDF)
   }
-#endif  // BUILDFLAG_ENABLE_PDF)
+
+  // `guest_site_instance` may be null if either we are meant to create a new
+  // SiteInstance (`use_current_site_instance_if_present` is false) or if the
+  // SiteInstance returned from the ProcessManager is null. Create a new
+  // SiteInstance in that case.
+  if (!guest_site_instance) {
+    guest_site_instance = content::SiteInstance::CreateForURL(
+        browser_context(), stream_->handler_url());
+  }
 
   // Clear the zoom level for the mime handler extension. The extension is
   // responsible for managing its own zoom. This is necessary for OOP PDF, as
@@ -201,33 +217,44 @@ void MimeHandlerViewGuest::CreateWebContents(
       ->SetZoomLevelForHostAndScheme(kExtensionScheme, stream_->extension_id(),
                                      0);
 
-  WebContents::CreateParams params(browser_context(),
-                                   guest_site_instance.get());
-  params.guest_delegate = this;
-  std::move(callback).Run(std::move(owned_this),
-                          WebContents::CreateWithSessionStorage(
-                              params, owner_web_contents()
-                                          ->GetController()
-                                          .GetSessionStorageNamespaceMap()));
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    std::move(callback).Run(std::move(owned_this),
+                            content::GuestPageHolder::Create(
+                                owner_web_contents(), guest_site_instance,
+                                GetGuestPageHolderDelegateWeakPtr()));
+  } else {
+    WebContents::CreateParams params(browser_context(),
+                                     guest_site_instance.get());
+    params.guest_delegate = this;
+    std::move(callback).Run(std::move(owned_this),
+                            WebContents::CreateWithSessionStorage(
+                                params, owner_web_contents()
+                                            ->GetController()
+                                            .GetSessionStorageNamespaceMap()));
+  }
 }
 
 void MimeHandlerViewGuest::DidAttachToEmbedder() {
   DCHECK(stream_->handler_url().SchemeIs(extensions::kExtensionScheme));
   GetController().LoadURL(stream_->handler_url(), content::Referrer(),
                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
-  web_contents()->GetMutableRendererPrefs()->can_accept_load_drops = true;
-  web_contents()->SyncRendererPrefs();
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    web_contents()->GetMutableRendererPrefs()->can_accept_load_drops = true;
+    web_contents()->SyncRendererPrefs();
+  }
 }
 
 void MimeHandlerViewGuest::DidInitialize(
     const base::Value::Dict& create_params) {
-  ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
+  }
 }
 
 void MimeHandlerViewGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
   // This situation is not possible for MimeHandlerView.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MimeHandlerViewGuest::EmbedderFullscreenToggled(bool entered_fullscreen) {
@@ -252,6 +279,8 @@ WebContents* MimeHandlerViewGuest::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   auto* delegate = embedder_web_contents()->GetDelegate();
   return delegate
              ? delegate->OpenURLFromTab(embedder_web_contents(), params,
@@ -262,6 +291,8 @@ WebContents* MimeHandlerViewGuest::OpenURLFromTab(
 void MimeHandlerViewGuest::NavigationStateChanged(
     WebContents* source,
     content::InvalidateTypes changed_flags) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   if (!(changed_flags & content::INVALIDATE_TYPE_TITLE))
     return;
 
@@ -284,9 +315,18 @@ void MimeHandlerViewGuest::NavigationStateChanged(
   }
 }
 
+bool MimeHandlerViewGuest::GuestHandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  return delegate_ && delegate_->HandleContextMenu(render_frame_host, params);
+}
+
 bool MimeHandlerViewGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   DCHECK_EQ(web_contents(),
             content::WebContents::FromRenderFrameHost(&render_frame_host));
 
@@ -296,6 +336,8 @@ bool MimeHandlerViewGuest::HandleContextMenu(
 bool MimeHandlerViewGuest::PreHandleGestureEvent(
     WebContents* source,
     const blink::WebGestureEvent& event) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType())) {
     // If we're an embedded plugin we drop pinch-gestures to avoid zooming the
     // guest.
@@ -305,8 +347,20 @@ bool MimeHandlerViewGuest::PreHandleGestureEvent(
 }
 
 content::JavaScriptDialogManager*
+MimeHandlerViewGuest::GuestGetJavascriptDialogManager() {
+  if (content::GuestPageHolder::Delegate* guest =
+          guest_view::GuestViewBase::FromRenderFrameHost(GetEmbedderFrame())) {
+    return guest->GuestGetJavascriptDialogManager();
+  }
+  auto* delegate = owner_web_contents()->GetDelegate();
+  return delegate ? delegate->GetJavaScriptDialogManager(owner_web_contents())
+                  : nullptr;
+}
+
+content::JavaScriptDialogManager*
 MimeHandlerViewGuest::GetJavaScriptDialogManager(
     WebContents* source) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   // WebContentsDelegates often service multiple WebContentses, and use the
   // WebContents* parameter to tell which WebContents made the request. If we
   // pass in our own pointer to the delegate call, the delegate will be asked,
@@ -340,6 +394,8 @@ bool MimeHandlerViewGuest::PluginDoSave() {
 
 bool MimeHandlerViewGuest::GuestSaveFrame(
     content::WebContents* guest_web_contents) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   MimeHandlerViewGuest* guest_view = FromWebContents(guest_web_contents);
   return guest_view == this && PluginDoSave();
 }
@@ -348,6 +404,8 @@ bool MimeHandlerViewGuest::SaveFrame(
     const GURL& url,
     const content::Referrer& referrer,
     content::RenderFrameHost* render_frame_host) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   if (!attached())
     return false;
 
@@ -359,6 +417,8 @@ bool MimeHandlerViewGuest::SaveFrame(
 void MimeHandlerViewGuest::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   if (SetFullscreenState(true)) {
     if (auto* delegate = embedder_web_contents()->GetDelegate()) {
       delegate->EnterFullscreenModeForTab(
@@ -368,6 +428,8 @@ void MimeHandlerViewGuest::EnterFullscreenModeForTab(
 }
 
 void MimeHandlerViewGuest::ExitFullscreenModeForTab(content::WebContents*) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   if (SetFullscreenState(false)) {
     if (auto* delegate = embedder_web_contents()->GetDelegate())
       delegate->ExitFullscreenModeForTab(embedder_web_contents());
@@ -376,21 +438,25 @@ void MimeHandlerViewGuest::ExitFullscreenModeForTab(content::WebContents*) {
 
 bool MimeHandlerViewGuest::IsFullscreenForTabOrPending(
     const content::WebContents* web_contents) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   return is_guest_fullscreen_;
 }
 
 bool MimeHandlerViewGuest::ShouldResumeRequestsForCreatedWindow() {
   // Not reached due to the use of `CreateCustomWebContents`.
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool MimeHandlerViewGuest::IsWebContentsCreationOverridden(
+    content::RenderFrameHost* opener,
     content::SiteInstance* source_site_instance,
     content::mojom::WindowContainerType window_container_type,
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   return true;
 }
 
@@ -403,6 +469,8 @@ content::WebContents* MimeHandlerViewGuest::CreateCustomWebContents(
     const GURL& target_url,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   content::OpenURLParams open_params(target_url, content::Referrer(),
                                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                      ui::PAGE_TRANSITION_LINK, true);
@@ -433,7 +501,7 @@ bool MimeHandlerViewGuest::SetFullscreenState(bool is_fullscreen) {
   return true;
 }
 
-void MimeHandlerViewGuest::DocumentOnLoadCompletedInPrimaryMainFrame() {
+void MimeHandlerViewGuest::GuestViewDocumentOnLoadCompleted() {
   DCHECK(GetEmbedderFrame());
   DCHECK_NE(element_instance_id(), guest_view::kInstanceIDNone);
 
@@ -452,6 +520,10 @@ void MimeHandlerViewGuest::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
 void MimeHandlerViewGuest::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!IsObservedNavigationWithinGuest(navigation_handle)) {
+    return;
+  }
+
 #if BUILDFLAG(ENABLE_PDF)
   const GURL& url = navigation_handle->GetURL();
   if (url.SchemeIs(kExtensionScheme) &&
@@ -471,6 +543,11 @@ void MimeHandlerViewGuest::DidFinishNavigation(
   guest_view::GuestView<MimeHandlerViewGuest>::DidFinishNavigation(
       navigation_handle);
 
+  if (!IsObservedNavigationWithinGuest(navigation_handle) ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
   if (navigation_handle->IsInMainFrame()) {
     // We should not navigate the guest away from the handling extension.
     const GURL& new_url = navigation_handle->GetURL();
@@ -479,8 +556,13 @@ void MimeHandlerViewGuest::DidFinishNavigation(
 
 #if BUILDFLAG(ENABLE_PDF)
     if (stream_->extension_id() == extension_misc::kPdfExtensionId) {
-      // Host zoom level should match the override set in `CreateWebContents()`.
-      DCHECK_EQ(0, content::HostZoomMap::GetZoomLevel(web_contents()));
+      // Host zoom level should match the override set in `CreateInnerPage()`.
+      if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+        CHECK_EQ(0, content::HostZoomMap::GetZoomLevel(
+                        web_contents(), GetGuestMainFrame()->GetGlobalId()));
+      } else {
+        DCHECK_EQ(0, content::HostZoomMap::GetZoomLevel(web_contents()));
+      }
     }
 #endif  // BUILDFLAG(ENABLE_PDF)
   }

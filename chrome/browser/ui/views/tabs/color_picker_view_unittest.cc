@@ -46,7 +46,8 @@ class ColorPickerViewTest : public ChromeViewsTestBase {
 
     widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-    bubble_view_ = std::make_unique<views::BubbleDialogDelegateView>();
+    bubble_view_ = std::make_unique<views::BubbleDialogDelegateView>(
+        views::BubbleDialogDelegateView::CreatePassKey());
 
     auto color_picker = std::make_unique<ColorPickerView>(
         bubble_view(), kTestColors, tab_groups::TabGroupColorId::kBlue,

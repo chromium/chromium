@@ -36,6 +36,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "rtc_dtls_transport.cc": [
+        "+third_party/boringssl/src/include",
+    ],
     ".*test.*": [
         # TODO(crbug.com/1294176): Remove when no longer needed.
         "+base/cfi_buildflags.h",

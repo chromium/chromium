@@ -17,14 +17,11 @@ namespace blink {
 
 namespace {
 
-class PromiseRejectedFunction : public ScriptFunction::Callable {
+class PromiseRejectedFunction
+    : public ThenCallable<IDLAny, PromiseRejectedFunction> {
  public:
   explicit PromiseRejectedFunction(bool& result) : result_(result) {}
-
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    *result_ = true;
-    return ScriptValue();
-  }
+  void React(ScriptState*, ScriptValue value) { *result_ = true; }
 
  private:
   const raw_ref<bool> result_;
@@ -50,10 +47,8 @@ TEST(SmartCardError, RejectWithoutScriptStateScope) {
         script_state, exception_state.GetContext());
 
     auto promise = resolver->Promise();
-    promise.Then(nullptr,
-                 MakeGarbageCollected<ScriptFunction>(
-                     script_state,
-                     MakeGarbageCollected<PromiseRejectedFunction>(rejected)));
+    promise.Catch(script_state,
+                  MakeGarbageCollected<PromiseRejectedFunction>(rejected));
   }
 
   // Call it without a current v8 context.

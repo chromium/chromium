@@ -132,6 +132,9 @@ ALWAYS_INLINE bool LiveNodeListBase::ShouldInvalidateTypeOnAttributeChange(
       return attr_name == html_names::kPopoverAttr ||
              attr_name == html_names::kPopovertargetAttr ||
              attr_name == html_names::kPopovertargetactionAttr;
+    case kInvalidateOnCommandInvokerAttrChange:
+      return attr_name == html_names::kCommandAttr ||
+             attr_name == html_names::kCommandforAttr;
     case kDoNotInvalidateOnAttributeChanges:
       return false;
     case kInvalidateOnAnyAttrChange:

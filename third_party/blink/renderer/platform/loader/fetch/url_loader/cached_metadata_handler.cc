@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
 #include "base/time/time.h"
@@ -115,19 +110,17 @@ void CachedMetadataSender::SendToCodeCacheHost(
     WTF::String url,
     base::Time response_time,
     const String& cache_storage_name,
-    const uint8_t* data,
-    size_t size) {
+    base::span<const uint8_t> data) {
   if (!code_cache_host) {
     return;
   }
   if (cache_storage_name.IsNull()) {
     code_cache_host->get()->DidGenerateCacheableMetadata(
-        code_cache_type, KURL(url), response_time,
-        mojo_base::BigBuffer(base::make_span(data, size)));
+        code_cache_type, KURL(url), response_time, mojo_base::BigBuffer(data));
   } else {
     code_cache_host->get()->DidGenerateCacheableMetadataInCacheStorage(
-        KURL(url), response_time,
-        mojo_base::BigBuffer(base::make_span(data, size)), cache_storage_name);
+        KURL(url), response_time, mojo_base::BigBuffer(data),
+        cache_storage_name);
   }
 }
 

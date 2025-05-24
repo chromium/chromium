@@ -30,6 +30,9 @@ import("//third_party/protobuf/proto_library.gni")
 #   proto_deps
 #       List of additional dependencies for compiling proto_source.
 #
+#   proto_gen_deps
+#       List of dependencies for generating proto_source.
+#
 #   proto_in_dir
 #       See documentation at //third_party/protobuf/proto_library.gni.
 #
@@ -97,18 +100,24 @@ template("mojolpm_fuzzer_test") {
       sources = [ invoker.proto_source ]
       generate_python = false
 
-      proto_deps = []
-
       import_dirs = [
         root_gen_dir,
         "//",
       ]
 
-      link_deps = []
-
       if (defined(invoker.proto_deps)) {
-        proto_deps += invoker.proto_deps
-        link_deps += invoker.proto_deps
+        deps = []
+        foreach(proto_dep, invoker.proto_deps) {
+          deps += [ "${proto_dep}_proto" ]
+        }
+      }
+
+      if (defined(invoker.proto_gen_deps)) {
+        proto_deps = invoker.proto_gen_deps
+      }
+
+      if (defined(invoker.proto_gen_deps)) {
+        proto_deps += invoker.proto_gen_deps
       }
 
       testonly = true
@@ -128,16 +137,18 @@ template("mojolpm_fuzzer_test") {
         args = [
           "--encode=${invoker.testcase_proto_kind}",
           "-I",
-          rebase_path(root_gen_dir),
+          rebase_path(root_gen_dir, root_build_dir),
           "-I",
-          rebase_path("//"),
-          rebase_path(inputs[0]),
+          rebase_path("//", root_build_dir),
+          rebase_path(inputs[0], root_build_dir),
         ]
 
         deps = []
 
         if (defined(invoker.proto_deps)) {
-          deps += invoker.proto_deps
+          foreach(proto_dep, invoker.proto_deps) {
+            deps += [ "${proto_dep}_proto" ]
+          }
         }
 
         testonly = true
@@ -276,6 +287,9 @@ template("mojolpm_generated_fuzzer") {
       inputs = jinja2_sources
 
       deps = []
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
       if (defined(invoker.proto_deps)) {
         deps += invoker.proto_deps
       }
@@ -289,6 +303,7 @@ template("mojolpm_generated_fuzzer") {
           "-f",
           rebase_path(invoker.interface_file, root_build_dir),
         ]
+        inputs += [ invoker.interface_file ]
       }
       args += [
         "--output_file_format",
@@ -306,14 +321,15 @@ template("mojolpm_generated_fuzzer") {
     }
 
     mojolpm_fuzzer_test(target_name) {
-      proto_deps = [ ":${_generate_target_name}" ]
-      deps = [ ":${_generate_target_name}" ]
+      proto_gen_deps = [ ":${_generate_target_name}" ]
       proto_source = "${target_gen_dir}/${_target_name}.proto"
       proto_in_dir = "${root_gen_dir}"
       proto_out_dir = "."
+      deps = []
 
       if (defined(invoker.proto_deps)) {
-        proto_deps += invoker.proto_deps
+        proto_deps = invoker.proto_deps
+        deps += invoker.proto_deps
       }
 
       if (defined(invoker.deps)) {

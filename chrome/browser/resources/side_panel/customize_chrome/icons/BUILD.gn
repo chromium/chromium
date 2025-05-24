@@ -15,6 +15,7 @@ generate_grd("build_grdp") {
     "corner_new_tab_page.svg",
     "coupons.svg",
     "delete.svg",
+    "domain.svg",
     "expand_carets.svg",
     "generated_image.svg",
     "image.svg",

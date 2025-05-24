@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -55,8 +56,8 @@ String BlobURL::GetOrigin(const KURL& url) {
 
 KURL BlobURL::CreateBlobURL(const String& origin_string) {
   DCHECK(!origin_string.empty());
-  String url_string =
-      "blob:" + origin_string + '/' + WTF::CreateCanonicalUUIDString();
+  String url_string = WTF::StrCat(
+      {"blob:", origin_string, "/", WTF::CreateCanonicalUUIDString()});
   return KURL(url_string);
 }
 

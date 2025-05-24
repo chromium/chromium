@@ -1,0 +1,55 @@
+Nested @starting-style with tigther selector and nested divs
+Dumping matched rules: 
+*div* {    regular
+    padding: 10px; @[3:6-3:20]
+    transition: background-color 1s ease; @[4:6-4:43]
+    display: inline-block; @[5:6-5:28]
+    padding-top: 10px; @[undefined-undefined]
+    padding-right: 10px; @[undefined-undefined]
+    padding-bottom: 10px; @[undefined-undefined]
+    padding-left: 10px; @[undefined-undefined]
+    transition-behavior: normal; @[undefined-undefined]
+    transition-duration: 1s; @[undefined-undefined]
+    transition-timing-function: ease; @[undefined-undefined]
+    transition-delay: 0s; @[undefined-undefined]
+    transition-property: background-color; @[undefined-undefined]
+    display: inline-block; @[undefined-undefined]
+}
+Dumping inherited rules: 
+*body* {    regular
+}
+Dumping matched rules: 
+*div* {    regular
+    padding: 10px; @[3:6-3:20]
+    transition: background-color 1s ease; @[4:6-4:43]
+    display: inline-block; @[5:6-5:28]
+    padding-top: 10px; @[undefined-undefined]
+    padding-right: 10px; @[undefined-undefined]
+    padding-bottom: 10px; @[undefined-undefined]
+    padding-left: 10px; @[undefined-undefined]
+    transition-behavior: normal; @[undefined-undefined]
+    transition-duration: 1s; @[undefined-undefined]
+    transition-timing-function: ease; @[undefined-undefined]
+    transition-delay: 0s; @[undefined-undefined]
+    transition-property: background-color; @[undefined-undefined]
+    display: inline-block; @[undefined-undefined]
+}
+Dumping inherited rules: 
+*div* {    regular
+    padding: 10px; @[3:6-3:20]
+    transition: background-color 1s ease; @[4:6-4:43]
+    display: inline-block; @[5:6-5:28]
+    padding-top: 10px; @[undefined-undefined]
+    padding-right: 10px; @[undefined-undefined]
+    padding-bottom: 10px; @[undefined-undefined]
+    padding-left: 10px; @[undefined-undefined]
+    transition-behavior: normal; @[undefined-undefined]
+    transition-duration: 1s; @[undefined-undefined]
+    transition-timing-function: ease; @[undefined-undefined]
+    transition-delay: 0s; @[undefined-undefined]
+    transition-property: background-color; @[undefined-undefined]
+    display: inline-block; @[undefined-undefined]
+}
+*body* {    regular
+}
+

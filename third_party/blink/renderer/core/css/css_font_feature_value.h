@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FEATURE_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FEATURE_VALUE_H_
 
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -34,21 +35,24 @@ namespace blink {
 namespace cssvalue {
 class CSSFontFeatureValue : public CSSValue {
  public:
-  CSSFontFeatureValue(const AtomicString& tag, int value);
+  CSSFontFeatureValue(const AtomicString& tag, const CSSPrimitiveValue* value);
 
   const AtomicString& Tag() const { return tag_; }
-  int Value() const { return value_; }
+  int Value(const CSSLengthResolver& length_resolver) const {
+    return value_->ComputeInteger(length_resolver);
+  }
   String CustomCSSText() const;
 
   bool Equals(const CSSFontFeatureValue&) const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
+    visitor->Trace(value_);
     CSSValue::TraceAfterDispatch(visitor);
   }
 
  private:
   AtomicString tag_;
-  const int value_;
+  Member<const CSSPrimitiveValue> value_;
 };
 
 }  // namespace cssvalue

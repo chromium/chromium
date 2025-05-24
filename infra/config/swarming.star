@@ -54,10 +54,11 @@ swarming.task_triggerers(
 # "project:<project that defines the bucket>"), so we enumerate projects
 # (besides "project:chromium" itself) that are allowed to use Chromium CI pools
 # in their Buildbucket configs (which are currently only per-milestone Chromium
-# projects).
+# projects and GPU-related projects which share builder and testing capacity
+# with Chromium).
 swarming.pool_realm(
     name = "pools/ci",
-    user_projects = [details.project for details in ACTIVE_MILESTONES.values()],
+    user_projects = ["angle", "dawn"] + [details.project for details in ACTIVE_MILESTONES.values()],
     owner_groups = [
         "mdb/chrome-infra-eng",
     ],
@@ -82,7 +83,7 @@ swarming.task_triggerers(
 # The tasks here are also triggered via Buildbucket. See comment above.
 swarming.pool_realm(
     name = "pools/try",
-    user_projects = [details.project for details in ACTIVE_MILESTONES.values()],
+    user_projects = ["angle", "chromium-infra", "dawn"] + [details.project for details in ACTIVE_MILESTONES.values()],
     owner_groups = [
         "mdb/chrome-infra-eng",
     ],
@@ -132,9 +133,11 @@ swarming.pool_realm(
         "project-webrtc-ci-task-accounts",
         "project-webrtc-try-task-accounts",
 
-        # ... and Angle.
+        # ... and Angle and Dawn.
         "project-angle-ci-task-accounts",
         "project-angle-try-task-accounts",
+        "project-dawn-ci-task-accounts",
+        "project-dawn-try-task-accounts",
 
         # Used by Pinpoint to trigger bisect jobs on machines in the Chrome-GPU pool.
         "service-account-chromeperf",

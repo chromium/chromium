@@ -214,6 +214,20 @@ class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
   std::map<std::string, scoped_refptr<ImageAssetImpl>> current_assets_;
 };
 
+class ScopedPrefersReducedMotion {
+ public:
+  ScopedPrefersReducedMotion() {
+    gfx::Animation::SetPrefersReducedMotionForTesting(true);
+  }
+
+  ~ScopedPrefersReducedMotion() {
+    gfx::Animation::SetPrefersReducedMotionForTesting(previous_);
+  }
+
+ private:
+  bool previous_ = gfx::Animation::PrefersReducedMotion();
+};
+
 }  // namespace
 
 class AnimationTest : public testing::Test {
@@ -227,7 +241,7 @@ class AnimationTest : public testing::Test {
     canvas_ = std::make_unique<gfx::Canvas>(
         gfx::Size(kAnimationWidth, kAnimationHeight), 1.f, false);
     skottie_ = cc::SkottieWrapper::UnsafeCreateNonSerializable(
-        base::as_bytes(base::make_span(kData, std::strlen(kData))));
+        base::byte_span_from_cstring(kData));
     animation_ = std::make_unique<Animation>(skottie_);
   }
 
@@ -346,7 +360,7 @@ class AnimationWithImageAssetsTest : public AnimationTest {
 
 TEST_F(AnimationTest, InitializationAndLoadingData) {
   skottie_ = cc::SkottieWrapper::UnsafeCreateNonSerializable(
-      base::as_bytes(base::make_span(kData, std::strlen(kData))));
+      base::byte_span_from_cstring(kData));
   animation_ = std::make_unique<Animation>(skottie_);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().width(), kAnimationWidth);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().height(), kAnimationHeight);
@@ -354,7 +368,7 @@ TEST_F(AnimationTest, InitializationAndLoadingData) {
   EXPECT_TRUE(IsStopped());
 
   skottie_ = cc::SkottieWrapper::UnsafeCreateNonSerializable(
-      base::as_bytes(base::make_span(kData, std::strlen(kData))));
+      base::byte_span_from_cstring(kData));
   animation_ = std::make_unique<Animation>(skottie_);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().width(), kAnimationWidth);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().height(), kAnimationHeight);
@@ -414,7 +428,7 @@ TEST_F(AnimationTest, ReducedAnimations) {
   // This test ensures that reduced animations only affects the rendering of the
   // animation, and has no side effects on the events or reporting of progress.
   TestAnimationObserver observer(animation_.get());
-  gfx::Animation::SetPrefersReducedMotionForTesting(true);
+  ScopedPrefersReducedMotion prefers_reduced_motion;
 
   AdvanceClock(base::Milliseconds(300));
 

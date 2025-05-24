@@ -4,6 +4,7 @@
 
 #include "device/fido/fido_device_authenticator.h"
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -19,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -276,13 +276,13 @@ TEST_F(FidoDeviceAuthenticatorTest, TestUpdateLargeBlob) {
       GetAssertionForRead(/*credential_ids=*/{});
 
   ASSERT_EQ(read.size(), 2u);
-  auto first = base::ranges::find_if(read, [&](const auto& response) {
+  auto first = std::ranges::find_if(read, [&](const auto& response) {
     return response.credential->id == kCredentialId1;
   });
   ASSERT_NE(first, read.end());
   EXPECT_EQ(first->large_blob, kSmallBlob3);
 
-  auto second = base::ranges::find_if(read, [&](const auto& response) {
+  auto second = std::ranges::find_if(read, [&](const auto& response) {
     return response.credential->id == kCredentialId2;
   });
   ASSERT_NE(second, read.end());

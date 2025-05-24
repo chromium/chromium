@@ -22,6 +22,14 @@ void AccountSelectionScreenHandler::Show() {
   ShowInWebUI();
 }
 
+void AccountSelectionScreenHandler::ShowStepProgress() {
+  CallExternalAPI("showStepProgress");
+}
+
+void AccountSelectionScreenHandler::SetUserEmail(const std::string& email) {
+  CallExternalAPI("setUserEmail", email);
+}
+
 base::WeakPtr<AccountSelectionScreenView>
 AccountSelectionScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

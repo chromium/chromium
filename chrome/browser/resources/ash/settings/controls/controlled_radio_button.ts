@@ -13,7 +13,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
 import {prefToString} from '/shared/settings/prefs/pref_util.js';
 import {PaperRippleMixin} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+import type {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {getTemplate} from './controlled_radio_button.html.js';
 

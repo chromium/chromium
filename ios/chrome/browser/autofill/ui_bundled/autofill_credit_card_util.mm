@@ -4,10 +4,18 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
 
+#import <UIKit/UIKit.h>
+
+#import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_type.h"
+#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 
 @implementation AutofillCreditCardUtil
 
@@ -117,6 +125,23 @@
   }
 }
 
++ (UITextView*)createTextViewForLegalMessage:
+    (SaveCardMessageWithLinks*)legalMessage {
+  UITextView* textView = CreateUITextViewWithTextKit1();
+  textView.scrollEnabled = NO;
+  textView.editable = NO;
+  textView.translatesAutoresizingMaskIntoConstraints = NO;
+  textView.textContainerInset = UIEdgeInsetsZero;
+  textView.linkTextAttributes =
+      @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
+  textView.backgroundColor = UIColor.clearColor;
+  textView.attributedText =
+      [AutofillCreditCardUtil setAttributedText:legalMessage.messageText
+                                       linkUrls:legalMessage.linkURLs
+                                     linkRanges:legalMessage.linkRanges];
+  return textView;
+}
+
 #pragma mark - Private
 
 // Updates the `AutofillUIType` of the `creditCard` with the value of
@@ -129,6 +154,44 @@
       autofill::AutofillType(
           AutofillTypeFromAutofillUITypeForCard(autofillCreditCardUIType)),
       base::SysNSStringToUTF16(cardValue), appLocal);
+}
+
+// Creates a string with hyperlinks.
++ (NSAttributedString*)setAttributedText:(NSString*)text
+                                linkUrls:(std::vector<GURL>)linkURLs
+                              linkRanges:(NSArray*)linkRanges {
+  CHECK(linkRanges.count == linkURLs.size());
+  NSMutableParagraphStyle* centeredTextStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  centeredTextStyle.alignment = NSTextAlignmentCenter;
+  NSDictionary* textAttributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSParagraphStyleAttributeName : centeredTextStyle,
+  };
+
+  // TODO(crbug.com/413051428): Add a utility function in string_util that
+  // applies a link to a given range in an NSMutableAttributedString.
+  NSMutableAttributedString* attributedText =
+      [[NSMutableAttributedString alloc] initWithString:text
+                                             attributes:textAttributes];
+  if (linkRanges) {
+    [linkRanges enumerateObjectsUsingBlock:^(NSValue* rangeValue, NSUInteger i,
+                                             BOOL* stop) {
+      CrURL* crurl = [[CrURL alloc] initWithGURL:linkURLs[i]];
+      if (!crurl || !crurl.gurl.is_valid()) {
+        return;
+      }
+      NSDictionary* linkAttributes = @{
+        NSLinkAttributeName : crurl.nsurl,
+        NSFontAttributeName : PreferredFontForTextStyle(UIFontTextStyleCaption2,
+                                                        UIFontWeightSemibold)
+      };
+      [attributedText addAttributes:linkAttributes range:rangeValue.rangeValue];
+    }];
+  }
+  return attributedText;
 }
 
 @end

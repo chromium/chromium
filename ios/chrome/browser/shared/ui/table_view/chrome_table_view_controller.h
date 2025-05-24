@@ -14,6 +14,12 @@
 // styling.  This will remove any existing table view background views.
 - (void)addEmptyTableViewWithMessage:(NSString*)message image:(UIImage*)image;
 
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CHROME_TABLE_VIEW_CONTROLLER_H_

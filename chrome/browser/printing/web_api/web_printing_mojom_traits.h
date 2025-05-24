@@ -29,6 +29,13 @@ struct EnumTraits<blink::mojom::WebPrintingSides, printing::mojom::DuplexMode> {
 };
 
 template <>
+struct EnumTraits<blink::mojom::WebPrintQuality, printing::mojom::Quality> {
+  static blink::mojom::WebPrintQuality ToMojom(printing::mojom::Quality input);
+  static bool FromMojom(blink::mojom::WebPrintQuality input,
+                        printing::mojom::Quality* output);
+};
+
+template <>
 struct EnumTraits<blink::mojom::WebPrinterState, ipp_pstate_t> {
   static blink::mojom::WebPrinterState ToMojom(ipp_pstate_t input);
   static bool FromMojom(blink::mojom::WebPrinterState input,
@@ -90,6 +97,10 @@ struct StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
     NOTREACHED();
   }
   static const std::optional<blink::mojom::WebPrintColorMode>& print_color_mode(
+      const std::unique_ptr<printing::PrintSettings>& ptr) {
+    NOTREACHED();
+  }
+  static const std::optional<blink::mojom::WebPrintQuality>& print_quality(
       const std::unique_ptr<printing::PrintSettings>& ptr) {
     NOTREACHED();
   }

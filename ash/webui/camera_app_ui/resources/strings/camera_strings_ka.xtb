@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR კოდი</translation>
 <translation id="2244252133441425811">ვიდეოს კ/წმ ამომრჩევის ჩართვა</translation>
 <translation id="2271433936731426666">სრულზომიანი ვიდეოსნეპშოტის გადაღების დაშვება</translation>
-<translation id="2281736597583450397">მიიღეთ უფრო მკვეთი დეტალები გაძლიერებული მასშტაბირებით</translation>
 <translation id="2320741269052147773">მარცხნივ პანირება</translation>
 <translation id="2360840973209616515">კამერის აპს მართავს თქვენი ადმინისტრატორი.
         დეტალური ინფორმაციისთვის მიმართეთ ადმინისტრატორს.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">დაშორება</translation>
 <translation id="5976160379964388480">სხვა</translation>
 <translation id="6073451960410192870">ჩაწერის შეწყვეტა</translation>
-<translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6197807149213783179">მეტამონაცემების შენახვა</translation>
 <translation id="6233780560267770709">სამი სამზე</translation>
 <translation id="6243827288366940320">ოქროს კვეთა</translation>
@@ -122,7 +120,6 @@
 თუ თქვენი გამოხმაურება გამოსახულების ან ვიდეოს ხარისხს ეხება, მაგალითის სახით დაურთეთ ფოტო ან ვიდეო და აღწერეთ პრობლემა (მაგალითად, ფოტო ზედმეტად მუქია ან ობიექტი არ არის მოქცეული ფოკუსში).</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" />-თან შეერთება</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
-<translation id="6586509689874700895">პირველ რიგში, გასადიდებლად დააჭირეთ <ph name="BUTTON_NAME" />-ს. შემდეგ კი გადაიღეთ ფოტო და გაძლიერებულ დეტალებს ნახავთ.</translation>
 <translation id="659539649712855529">დაკოპირდა <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">ყველა გარჩევადობის ჩვენება</translation>
 <translation id="6631515515009660915">არეკვლის გამორთვა</translation>
@@ -168,7 +165,6 @@
 <translation id="8609951387004618906"><ph name="URL" />-ის გახსნა</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">მიკროფონის დადუმების გადართვა. დადუმების რეჟიმი ჩართულია</translation>
-<translation id="8712637175834984815">კარგი</translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8732462232047530626">მეტამონაცემების გადახედვა</translation>
 <translation id="874854738381978209">აღმოჩენილია Wi-Fi ქსელი.</translation>

@@ -14,22 +14,26 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.embedder_support.view.ContentViewRenderView;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Container and generator of ShellViews. */
 @JNINamespace("content")
+@NullMarked
 public class ShellManager extends FrameLayout {
 
     public static final String DEFAULT_SHELL_URL = "http://www.google.com";
     private WindowAndroid mWindow;
-    private Shell mActiveShell;
-
-    private String mStartupUrl = DEFAULT_SHELL_URL;
+    private @Nullable Shell mActiveShell;
 
     // The target for all content rendering.
-    private ContentViewRenderView mContentViewRenderView;
+    private @Nullable ContentViewRenderView mContentViewRenderView;
 
     /** Constructor for inflating via XML. */
     public ShellManager(final Context context, AttributeSet attrs) {
@@ -40,8 +44,8 @@ public class ShellManager extends FrameLayout {
     /**
      * @param window The window used to generate all shells.
      */
+    @Initializer
     public void setWindow(WindowAndroid window) {
-        assert window != null;
         mWindow = window;
         mContentViewRenderView = new ContentViewRenderView(getContext());
         mContentViewRenderView.onNativeLibraryLoaded(window);
@@ -55,19 +59,14 @@ public class ShellManager extends FrameLayout {
     }
 
     /** Get the ContentViewRenderView. */
-    public ContentViewRenderView getContentViewRenderView() {
+    public @Nullable ContentViewRenderView getContentViewRenderView() {
         return mContentViewRenderView;
-    }
-
-    /** Sets the startup URL for new shell windows. */
-    public void setStartupUrl(String url) {
-        mStartupUrl = url;
     }
 
     /**
      * @return The currently visible shell view or null if one is not showing.
      */
-    public Shell getActiveShell() {
+    public @Nullable Shell getActiveShell() {
         return mActiveShell;
     }
 
@@ -101,6 +100,7 @@ public class ShellManager extends FrameLayout {
         return shellView;
     }
 
+    @RequiresNonNull("mContentViewRenderView")
     private void showShell(Shell shellView) {
         shellView.setContentViewRenderView(mContentViewRenderView);
         addView(
@@ -112,7 +112,7 @@ public class ShellManager extends FrameLayout {
         WebContents webContents = mActiveShell.getWebContents();
         if (webContents != null) {
             mContentViewRenderView.setCurrentWebContents(webContents);
-            webContents.onShow();
+            webContents.updateWebContentsVisibility(Visibility.VISIBLE);
         }
     }
 

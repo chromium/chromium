@@ -24,15 +24,14 @@ CanvasFilter::CanvasFilter(FilterOperations filter_operations)
 CanvasFilter* CanvasFilter::Create(ScriptState* script_state,
                                    const V8CanvasFilterInput* init,
                                    ExceptionState& exception_state) {
-  Font font_for_filter = Font();
   return MakeGarbageCollected<CanvasFilter>(CreateFilterOperations(
-      CHECK_DEREF(init), font_for_filter, nullptr,
+      CHECK_DEREF(init), MakeGarbageCollected<Font>(), nullptr,
       CHECK_DEREF(ExecutionContext::From(script_state)), exception_state));
 }
 
 FilterOperations CanvasFilter::CreateFilterOperations(
     const V8CanvasFilterInput& filter_input,
-    const Font& font,
+    const Font* font,
     Element* style_resolution_host,
     ExecutionContext& execution_context,
     ExceptionState& exception_state) {

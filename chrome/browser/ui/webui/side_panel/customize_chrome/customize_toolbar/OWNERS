@@ -1,6 +1,6 @@
 file://chrome/browser/resources/new_tab_page/OWNERS
 corising@chromium.org
-tbergquist@chromium.org
+dpenning@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

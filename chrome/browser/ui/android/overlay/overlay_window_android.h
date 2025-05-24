@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "base/unguessable_token.h"
 #include "content/public/browser/overlay_window.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 #include "ui/android/window_android.h"
@@ -32,11 +33,12 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
       content::VideoPictureInPictureWindowController* controller);
   ~OverlayWindowAndroid() override;
 
-  void OnActivityStart(
+  static OverlayWindowAndroid* OnActivityStart(
       JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& token,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jwindow_android);
-  void Destroy(JNIEnv* env);
+  void DestroyStartedByJava(JNIEnv* env);
   void TogglePlayPause(JNIEnv* env, bool toggleOn);
   void NextTrack(JNIEnv* env);
   void PreviousTrack(JNIEnv* env);
@@ -79,7 +81,15 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetHangUpButtonVisibility(bool is_visible) override;
   void SetNextSlideButtonVisibility(bool is_visible) override;
   void SetPreviousSlideButtonVisibility(bool is_visible) override;
+  void SetMediaPosition(const media_session::MediaPosition&) override {}
+  void SetSourceTitle(const std::u16string& source_title) override {}
+  void SetFaviconImages(
+      const std::vector<media_session::MediaImage>& images) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
+
+  void Initialize(JNIEnv* env,
+                  const base::android::JavaParamRef<jobject>& obj,
+                  const base::android::JavaParamRef<jobject>& jwindow_android);
 
  private:
   // Notify PictureInPictureActivity that visible actions have changed.
@@ -91,7 +101,8 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
       bool is_visible);
   void CloseInternal();
 
-  // A weak reference to Java PictureInPictureActivity object.
+  base::UnguessableToken token_{base::UnguessableToken::Create()};
+
   JavaObjectWeakGlobalRef java_ref_;
   raw_ptr<ui::WindowAndroid> window_android_;
   raw_ptr<thin_webview::android::CompositorView> compositor_view_;

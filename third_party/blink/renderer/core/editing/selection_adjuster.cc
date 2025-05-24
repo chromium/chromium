@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/selection_adjuster.h"
 
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position.h"
@@ -164,8 +165,7 @@ class GranularityAdjuster final {
         return StartOfSentencePosition(passed_start.GetPosition());
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return passed_start.GetPosition();
+    NOTREACHED();
   }
 
   template <typename Strategy>
@@ -300,8 +300,7 @@ class GranularityAdjuster final {
         return EndOfSentence(CreateVisiblePosition(passed_end))
             .DeepEquivalent();
     }
-    NOTREACHED_IN_MIGRATION();
-    return passed_end.GetPosition();
+    NOTREACHED();
   }
 
   template <typename Strategy>

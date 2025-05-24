@@ -19,6 +19,11 @@ void SetAlwaysShowToolbarInFullscreenForTesting(Browser* browser,
 // Toggles the "Allow JavaScript from AppleEvents" setting.
 void ToggleJavaScriptFromAppleEventsAllowed(Browser* browser);
 
+// This reveals the toolbar in immersive fullscreen mode using
+// 'setButtonRevealAmount', similar to moving the mouse to the top of the
+// screen. It does not use GetRevealedLock to lock the toolbar as visible.
+void RevealToolbarForTesting(Browser* browser);
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_BROWSER_COMMANDS_MAC_H_

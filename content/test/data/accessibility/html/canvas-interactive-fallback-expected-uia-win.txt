@@ -1,0 +1,8 @@
+Document
+++Group IsControlElement=false
+++++Image
+++++++Hyperlink Name='Interactive fallback'
+++++++++Text Name='Interactive fallback' IsControlElement=false
+++++Image
+++++++Hyperlink Name='Interactive fallback'
+++++++++Text Name='Interactive fallback' IsControlElement=false

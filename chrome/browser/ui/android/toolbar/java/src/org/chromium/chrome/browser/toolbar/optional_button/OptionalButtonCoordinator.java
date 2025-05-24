@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -16,10 +18,10 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable.Bounds;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -38,13 +40,14 @@ import java.util.function.BooleanSupplier;
  * The coordinator for a button that may appear on the toolbar whose icon and click handler can be
  * updated with animations.
  */
+@NullMarked
 public class OptionalButtonCoordinator {
     private final OptionalButtonMediator mMediator;
     private final OptionalButtonView mView;
-    private final UserEducationHelper mUserEducationHelper;
+    private final Supplier<UserEducationHelper> mUserEducationHelper;
     private final Supplier<Tracker> mFeatureEngagementTrackerSupplier;
-    private Callback<Integer> mTransitionFinishedCallback;
-    private IPHCommandBuilder mIphCommandBuilder;
+    private @Nullable Callback<Integer> mTransitionFinishedCallback;
+    private @Nullable IphCommandBuilder mIphCommandBuilder;
 
     @IntDef({
         TransitionType.SWAPPING,
@@ -75,7 +78,7 @@ public class OptionalButtonCoordinator {
      */
     public OptionalButtonCoordinator(
             View view,
-            UserEducationHelper userEducationHelper,
+            Supplier<UserEducationHelper> userEducationHelper,
             ViewGroup transitionRoot,
             BooleanSupplier isAnimationAllowedPredicate,
             Supplier<Tracker> featureEngagementTrackerSupplier) {
@@ -105,6 +108,15 @@ public class OptionalButtonCoordinator {
         mMediator.setPaddingStart(paddingStart);
     }
 
+    /**
+     * Sets the collapsed state width of the button, overriding the default value.
+     *
+     * @param width The new collapsed state width.
+     */
+    public void setCollapsedStateWidth(int width) {
+        mMediator.setCollapsedStateWidth(width);
+    }
+
     public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
         mMediator.setOnBeforeHideTransitionCallback(onBeforeHideTransitionCallback);
     }
@@ -131,13 +143,12 @@ public class OptionalButtonCoordinator {
      * Updates the button to replace the current action with a new one. If animations are allowed
      * (according to the BooleanSupplier set with setIsAnimationAllowedPredicate) then this update
      * will be animated. Otherwise it'll instantly switch to the new icon.
-     * @param buttonData
      */
-    public void updateButton(ButtonData buttonData) {
+    public void updateButton(@Nullable ButtonData buttonData, boolean isIncognito) {
         if (buttonData != null
                 && buttonData.getButtonSpec() != null
-                && buttonData.getButtonSpec().getIPHCommandBuilder() != null) {
-            mIphCommandBuilder = buttonData.getButtonSpec().getIPHCommandBuilder();
+                && buttonData.getButtonSpec().getIphCommandBuilder() != null) {
+            mIphCommandBuilder = buttonData.getButtonSpec().getIphCommandBuilder();
             setViewSpecificIphProperties(mIphCommandBuilder);
         } else {
             mIphCommandBuilder = null;
@@ -150,6 +161,7 @@ public class OptionalButtonCoordinator {
 
         // Dynamic buttons include an action chip resource ID by default regardless of variant.
         if (hasActionChipResourceId) {
+            assumeNonNull(buttonData);
             // We should only show the action chip if the action chip variant is enabled.
             boolean isActionChipVariant =
                     FeatureList.isInitialized()
@@ -161,7 +173,7 @@ public class OptionalButtonCoordinator {
                     isActionChipVariant
                             && featureEngagementTracker != null
                             && featureEngagementTracker.isInitialized()
-                            && featureEngagementTracker.shouldTriggerHelpUI(
+                            && featureEngagementTracker.shouldTriggerHelpUi(
                                     FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
 
             if (!shouldShowActionChip) {
@@ -171,6 +183,7 @@ public class OptionalButtonCoordinator {
 
         // Reset background alpha, in case the IPH onDismiss callback doesn't fire.
         mMediator.setBackgroundAlpha(255);
+        mMediator.setIsIncognitoBranded(isIncognito);
         mMediator.updateButton(buttonData);
     }
 
@@ -195,20 +208,17 @@ public class OptionalButtonCoordinator {
 
     /**
      * Updates the foreground color on the icons and label to match the current theme/website color.
-     * @param colorStateList
      */
-    public void setIconForegroundColor(ColorStateList colorStateList) {
+    public void setIconForegroundColor(@Nullable ColorStateList colorStateList) {
         mMediator.setIconForegroundColor(colorStateList);
     }
 
     /**
      * Updates the color filter of the background to match the current address bar background color.
      * This color is only used when showing a contextual action button (when {@link
-     * #updateButton(ButtonData)} is called with a {@link
-     * org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec} where {@code isDynamicAction()} is
-     * true).
-     *
-     * @param backgroundColor
+     * #updateButton(ButtonData, boolean)} is called with a {@link
+     * org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec} where {@code
+     * isDynamicAction()} is true).
      */
     public void setBackgroundColorFilter(@ColorInt int backgroundColor) {
         mMediator.setBackgroundColorFilter(backgroundColor);
@@ -235,7 +245,7 @@ public class OptionalButtonCoordinator {
     }
 
     /** Gets the underlying ButtonView. */
-    public View getButtonViewForTesting() {
+    public View getButtonView() {
         return mView.getButtonView();
     }
 
@@ -258,12 +268,12 @@ public class OptionalButtonCoordinator {
         }
 
         if (mIphCommandBuilder != null) {
-            mUserEducationHelper.requestShowIPH(mIphCommandBuilder.build());
+            mUserEducationHelper.get().requestShowIph(mIphCommandBuilder.build());
             mIphCommandBuilder = null;
         }
     }
 
-    private void setViewSpecificIphProperties(IPHCommandBuilder iphCommandBuilder) {
+    private void setViewSpecificIphProperties(IphCommandBuilder iphCommandBuilder) {
         HighlightParams highlightParams = new HighlightParams(HighlightShape.CIRCLE);
         highlightParams.setCircleRadius(
                 new Bounds() {

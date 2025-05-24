@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -18,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +26,7 @@
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/section_type.h"
+#include "components/ntp_tiles/tile_source.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/android/gurl_android.h"
 
@@ -170,13 +171,15 @@ void MostVisitedSitesBridge::JavaObserver::OnIconMadeAvailable(
   Java_MostVisitedSitesBridge_onIconMadeAvailable(env, observer_, site_url);
 }
 
-MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile)
+MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile,
+                                               bool enable_custom_links)
     : most_visited_(ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       profile_(profile) {
   DCHECK(!profile->IsOffTheRecord());
+  most_visited_->EnableCustomLinks(enable_custom_links);
 }
 
-MostVisitedSitesBridge::~MostVisitedSitesBridge() {}
+MostVisitedSitesBridge::~MostVisitedSitesBridge() = default;
 
 void MostVisitedSitesBridge::Destroy(JNIEnv* env,
                                      const JavaParamRef<jobject>& obj) {
@@ -204,6 +207,51 @@ void MostVisitedSitesBridge::SetObserver(
     jint num_sites) {
   java_observer_ = std::make_unique<JavaObserver>(env, j_observer);
   most_visited_->AddMostVisitedURLsObserver(java_observer_.get(), num_sites);
+}
+
+jboolean MostVisitedSitesBridge::AddCustomLinkTo(JNIEnv* env,
+                                                 const std::u16string& name,
+                                                 const GURL& url,
+                                                 jint pos) {
+  return most_visited_->AddCustomLinkTo(url, name, pos);
+}
+
+jboolean MostVisitedSitesBridge::AddCustomLink(JNIEnv* env,
+                                               const std::u16string& name,
+                                               const GURL& url) {
+  return most_visited_->AddCustomLink(url, name);
+}
+
+jboolean MostVisitedSitesBridge::AssignCustomLink(JNIEnv* env,
+                                                  const GURL& key_url,
+                                                  const std::u16string& name,
+                                                  const GURL& url) {
+  if (most_visited_->HasCustomLink(key_url)) {
+    // Update existing Custom link. In rare cases (e.g., split-window editing
+    // and/or race conditions) HasCustomLink() can output stale results. But
+    // this is fine, since update / add functions in the backend would still
+    // serialize and make reasonable changes or return error.
+    // If the URL does not change, need to pass empty URL instead.
+    const GURL& url_to_use = (key_url == url) ? GURL() : url;
+    return most_visited_->UpdateCustomLink(key_url, url_to_use, name);
+  }
+  return most_visited_->AddCustomLink(url, name);
+}
+
+jboolean MostVisitedSitesBridge::DeleteCustomLink(JNIEnv* env,
+                                                  const GURL& key_url) {
+  return most_visited_->DeleteCustomLink(key_url);
+}
+
+jboolean MostVisitedSitesBridge::HasCustomLink(JNIEnv* env,
+                                               const GURL& key_url) {
+  return most_visited_->HasCustomLink(key_url);
+}
+
+jboolean MostVisitedSitesBridge::ReorderCustomLink(JNIEnv* env,
+                                                   const GURL& key_url,
+                                                   jint new_pos) {
+  return most_visited_->ReorderCustomLink(key_url, new_pos);
 }
 
 void MostVisitedSitesBridge::AddOrRemoveBlockedUrl(
@@ -258,8 +306,9 @@ void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(
 
 static jlong JNI_MostVisitedSitesBridge_Init(JNIEnv* env,
                                              const JavaParamRef<jobject>& obj,
-                                             Profile* profile) {
+                                             Profile* profile,
+                                             jboolean enable_custom_links) {
   MostVisitedSitesBridge* most_visited_sites =
-      new MostVisitedSitesBridge(profile);
+      new MostVisitedSitesBridge(profile, enable_custom_links);
   return reinterpret_cast<intptr_t>(most_visited_sites);
 }

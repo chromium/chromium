@@ -4,23 +4,38 @@
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATION_TYPES_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATION_TYPES_MAP_H_
-
-#include <memory>
+#include "third_party/blink/renderer/core/animation/interpolation_type.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class InterpolationType;
+class CSSSyntaxDefinition;
 class PropertyHandle;
+class PropertyRegistry;
+class PropertyRegistration;
 
-using InterpolationTypes = Vector<std::unique_ptr<const InterpolationType>>;
+using InterpolationTypes = HeapVector<Member<const InterpolationType>>;
 
-class InterpolationTypesMap {
+class CORE_EXPORT InterpolationTypesMap {
   STACK_ALLOCATED();
 
  public:
-  virtual const InterpolationTypes& Get(const PropertyHandle&) const = 0;
-  virtual size_t Version() const { return 0; }
+  InterpolationTypesMap(const PropertyRegistry* registry,
+                        const Document& document);
+
+  const InterpolationTypes* Get(const PropertyHandle&) const;
+  size_t Version() const;
+
+  static InterpolationTypes* CreateInterpolationTypesForCSSSyntax(
+      const AtomicString& property_name,
+      const CSSSyntaxDefinition&,
+      const PropertyRegistration&);
+
+ private:
+  const Document& document_;
+  const PropertyRegistry* registry_;
 };
 
 }  // namespace blink

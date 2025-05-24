@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 
 #include "ash/constants/ash_features.h"
@@ -19,18 +14,21 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/ash/lobster/lobster_service.h"
+#include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/orca_resources.h"
 #include "chrome/grit/orca_resources_map.h"
+#include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 namespace {
@@ -44,7 +42,7 @@ constexpr int kLobsterResourceIds[] = {
     IDR_MAKO_LOBSTER_JS,
 };
 
-} // namespace
+}  // namespace
 
 MakoUntrustedUIConfig::MakoUntrustedUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIUntrustedScheme,
@@ -54,7 +52,8 @@ MakoUntrustedUIConfig::~MakoUntrustedUIConfig() = default;
 
 bool MakoUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return chromeos::features::IsOrcaEnabled();
+  return chromeos::features::IsOrcaEnabled() ||
+         ash::features::IsLobsterEnabled();
 }
 
 bool MakoUntrustedUIConfig::ShouldAutoResizeHost() {
@@ -66,22 +65,25 @@ bool MakoUntrustedUIConfig::ShouldAutoResizeHost() {
 
 MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
     : UntrustedTopChromeWebUIController(web_ui) {
-  CHECK(chromeos::features::IsOrcaEnabled());
+  CHECK(chromeos::features::IsOrcaEnabled() ||
+        ash::features::IsLobsterEnabled());
 
   // Setup the data source
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIMakoURL);
 
-  base::span<const webui::ResourcePath> orca_resources =
-      base::make_span(kOrcaResources, kOrcaResourcesSize);
+  base::span<const webui::ResourcePath> orca_resources = kOrcaResources;
 
-  const bool is_lobster_enabled = LobsterController::IsEnabled();
+  LobsterService* lobster_service =
+      ash::features::IsLobsterEnabled()
+          ? LobsterServiceProvider::GetForProfile(Profile::FromWebUI(web_ui))
+          : nullptr;
   const bool should_use_l10n_strings = input_method::ShouldUseL10nStrings();
 
   auto should_use_resource =
       [&](const webui::ResourcePath& resource_path) -> bool {
-    // when lobster is disabled, lobster resources are not allowed.
-    if (!is_lobster_enabled &&
+    // when lobster access is not granted, lobster resources are not allowed.
+    if (lobster_service == nullptr &&
         base::Contains(kLobsterResourceIds, resource_path.id)) {
       return false;
     }
@@ -96,9 +98,10 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
   // TODO: b:333625296 - Add tests for this conditional behavior
   {
     std::vector<webui::ResourcePath> orca_en_us_resources;
-    std::copy_if(orca_resources.begin(), orca_resources.end(),
-                 std::back_inserter(orca_en_us_resources), should_use_resource);
-    webui::SetupWebUIDataSource(source, base::make_span(orca_en_us_resources),
+    std::ranges::copy_if(orca_resources,
+                         std::back_inserter(orca_en_us_resources),
+                         should_use_resource);
+    webui::SetupWebUIDataSource(source, orca_en_us_resources,
                                 IDR_MAKO_ORCA_HTML);
   }
 
@@ -120,6 +123,11 @@ MakoUntrustedUI::~MakoUntrustedUI() = default;
 
 void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) {
+  if (!chromeos::features::IsOrcaEnabled()) {
+    mojo::ReportBadMessage("Editor is disabled by flags.");
+    return;
+  }
+
   // If mako ui is shown to the user, then we know that EditorMediator is
   // allowed for the current profile and will return a valid instance.
   input_method::EditorMediatorFactory::GetInstance()
@@ -131,6 +139,31 @@ void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void MakoUntrustedUI::BindInterface(
+    mojo::PendingReceiver<lobster::mojom::UntrustedLobsterPageHandler>
+        pending_receiver) {
+  if (!ash::features::IsLobsterEnabled()) {
+    mojo::ReportBadMessage("Lobster is disabled by flags.");
+    return;
+  }
+
+  Profile* profile = Profile::FromWebUI(web_ui());
+  LobsterService* lobster_service =
+      LobsterServiceProvider::GetForProfile(profile);
+  LobsterSession* active_session =
+      lobster_service == nullptr ? nullptr : lobster_service->active_session();
+
+  if (active_session == nullptr) {
+    mojo::ReportBadMessage("No active session found.");
+    return;
+  }
+
+  lobster_page_handler_ =
+      std::make_unique<LobsterPageHandler>(active_session, profile);
+
+  lobster_page_handler_->BindInterface(std::move(pending_receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MakoUntrustedUI)

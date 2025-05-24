@@ -141,11 +141,14 @@ class BLINK_EXPORT WebDocumentLoader {
       CrossVariantMojoRemote<mojom::CodeCacheHostInterfaceBase>
           code_cache_host_for_background) = 0;
 
-  virtual WebString OriginCalculationDebugInfo() const = 0;
-
   // Whether the frame holding this document has loaded a document that is not
   // an initial empty document.
   virtual bool HasLoadedNonInitialEmptyDocument() const = 0;
+
+  // Returns whether the navigation associated with this datasource is for a
+  // frame discard operation, performed with the intention to clear away
+  // associated resources.
+  virtual bool IsForDiscard() const = 0;
 
  protected:
   ~WebDocumentLoader() = default;

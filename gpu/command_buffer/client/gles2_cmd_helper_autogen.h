@@ -2651,13 +2651,6 @@ void MemoryBarrierByRegion(GLbitfield barriers) {
   }
 }
 
-void SwapBuffers(GLuint64 swap_id, GLbitfield flags) {
-  gles2::cmds::SwapBuffers* c = GetCmdSpace<gles2::cmds::SwapBuffers>();
-  if (c) {
-    c->Init(swap_id, flags);
-  }
-}
-
 void GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                  GLsizei count,
                                  GLenum type,
@@ -2708,20 +2701,6 @@ void FlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr size) {
       GetCmdSpace<gles2::cmds::FlushMappedBufferRange>();
   if (c) {
     c->Init(target, offset, size);
-  }
-}
-
-void ResizeCHROMIUM(GLint width,
-                    GLint height,
-                    GLfloat scale_factor,
-                    GLboolean alpha,
-                    GLuint shm_id,
-                    GLuint shm_offset,
-                    GLsizei color_space_size) {
-  gles2::cmds::ResizeCHROMIUM* c = GetCmdSpace<gles2::cmds::ResizeCHROMIUM>();
-  if (c) {
-    c->Init(width, height, scale_factor, alpha, shm_id, shm_offset,
-            color_space_size);
   }
 }
 
@@ -3139,7 +3118,6 @@ void CopySharedImageINTERNALImmediate(GLint xoffset,
                                       GLint y,
                                       GLsizei width,
                                       GLsizei height,
-                                      GLboolean unpack_flip_y,
                                       const GLbyte* mailboxes) {
   const uint32_t size =
       gles2::cmds::CopySharedImageINTERNALImmediate::ComputeSize();
@@ -3147,7 +3125,7 @@ void CopySharedImageINTERNALImmediate(GLint xoffset,
       GetImmediateCmdSpaceTotalSize<
           gles2::cmds::CopySharedImageINTERNALImmediate>(size);
   if (c) {
-    c->Init(xoffset, yoffset, x, y, width, height, unpack_flip_y, mailboxes);
+    c->Init(xoffset, yoffset, x, y, width, height, mailboxes);
   }
 }
 
@@ -3159,7 +3137,7 @@ void CopySharedImageToTextureINTERNALImmediate(GLuint texture,
                                                GLint src_y,
                                                GLsizei width,
                                                GLsizei height,
-                                               GLboolean flip_y,
+                                               GLboolean is_dst_origin_top_left,
                                                const GLbyte* src_mailbox) {
   const uint32_t size =
       gles2::cmds::CopySharedImageToTextureINTERNALImmediate::ComputeSize();
@@ -3168,7 +3146,7 @@ void CopySharedImageToTextureINTERNALImmediate(GLuint texture,
           gles2::cmds::CopySharedImageToTextureINTERNALImmediate>(size);
   if (c) {
     c->Init(texture, target, internal_format, type, src_x, src_y, width, height,
-            flip_y, src_mailbox);
+            is_dst_origin_top_left, src_mailbox);
   }
 }
 

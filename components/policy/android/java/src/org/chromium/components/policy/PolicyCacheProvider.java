@@ -4,17 +4,22 @@
 
 package org.chromium.components.policy;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 
 /** {@link PolicyProvider} based on values from {@link PolicyCache}. */
+@NullMarked
 public class PolicyCacheProvider extends PolicyProvider {
     private static final String TAG = "PolicyCacheProvider";
 
-    private Bundle mSettings;
+    private @Nullable Bundle mSettings;
 
     @Override
     public void refresh() {
@@ -25,7 +30,8 @@ public class PolicyCacheProvider extends PolicyProvider {
             return;
         }
         Bundle settings = new Bundle();
-        for (Map.Entry<String, ?> entry : PolicyCache.get().getAllPolicies().entrySet()) {
+        for (Map.Entry<String, ?> entry :
+                assumeNonNull(PolicyCache.get().getAllPolicies()).entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             if (value instanceof Integer) {

@@ -69,7 +69,7 @@ struct TLSSystemMockBase {
       bool,
       Setup,
       (internal::OnThreadTerminationFunction thread_termination_function,
-       const std::string_view instance_id),
+       std::string_view instance_id),
       ());
   MOCK_METHOD(bool, TearDownForTesting, (), ());
   MOCK_METHOD(void*, GetThreadSpecificData, (), ());

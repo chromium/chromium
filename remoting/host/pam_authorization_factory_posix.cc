@@ -35,6 +35,7 @@ class PamAuthorizer : public protocol::Authenticator {
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
+  RejectionDetails rejection_details() const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
@@ -95,6 +96,14 @@ protocol::Authenticator::RejectionReason PamAuthorizer::rejection_reason()
   } else {
     return underlying_->rejection_reason();
   }
+}
+
+protocol::Authenticator::RejectionDetails PamAuthorizer::rejection_details()
+    const {
+  if (local_login_status_ == DISALLOWED) {
+    return RejectionDetails("Local login check failed.");
+  }
+  return underlying_->rejection_details();
 }
 
 void PamAuthorizer::ProcessMessage(const jingle_xmpp::XmlElement* message,

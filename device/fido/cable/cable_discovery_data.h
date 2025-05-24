@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
@@ -18,7 +19,6 @@
 #include "base/time/time.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 
 namespace cbor {

@@ -52,7 +52,6 @@ is_nacl = false
 is_win = current_os == "win" || current_os == "winuwp"
 is_cast_android = false
 is_castos = false
-is_chromeos_ash = false
 is_cronet_build = false
 enable_expensive_dchecks = false
 dcheck_is_configurable = false

@@ -362,6 +362,11 @@
                                                      completion:nil];
 }
 
+- (void)autofillControllerDidLoginWithExistingPassword:
+    (CWVAutofillController*)autofillController {
+  NSLog(@"User logged in with an existing password");
+}
+
 #pragma mark - Private Methods
 
 - (UIAlertAction*)actionForSuggestion:(CWVAutofillSuggestion*)suggestion
@@ -370,19 +375,19 @@
       [NSString stringWithFormat:@"%@ %@", suggestion.value,
                                  suggestion.displayDescription ?: @""];
   __weak ShellAutofillDelegate* weakSelf = self;
-  return [UIAlertAction
-      actionWithTitle:title
-                style:UIAlertActionStyleDefault
-              handler:^(UIAlertAction* action) {
-                ShellAutofillDelegate* strongSelf = weakSelf;
-                if (!strongSelf) {
-                  return;
-                }
-                [strongSelf.autofillController acceptSuggestion:suggestion
-                                                        atIndex:index
-                                              completionHandler:nil];
-                [[self anyKeyWindow] endEditing:YES];
-              }];
+  return [UIAlertAction actionWithTitle:title
+                                  style:UIAlertActionStyleDefault
+                                handler:^(UIAlertAction* action) {
+                                  ShellAutofillDelegate* strongSelf = weakSelf;
+                                  if (!strongSelf) {
+                                    return;
+                                  }
+                                  [strongSelf.autofillController
+                                       acceptSuggestion:suggestion
+                                                atIndex:index
+                                      completionHandler:nil];
+                                  [[self anyKeyWindow] endEditing:YES];
+                                }];
 }
 
 #pragma mark - Private

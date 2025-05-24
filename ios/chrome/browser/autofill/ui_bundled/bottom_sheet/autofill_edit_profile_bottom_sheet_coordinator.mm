@@ -4,31 +4,30 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
 
-#import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
-#import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import <Foundation/Foundation.h>
+
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_country_selection_table_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_table_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
-#import "ios/chrome/browser/infobars/model/infobar_ios.h"
-#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 @interface AutofillEditProfileBottomSheetCoordinator () <
     AutofillCountrySelectionTableViewControllerDelegate,
     AutofillEditProfileBottomSheetTableViewControllerDelegate,
-    AutofillProfileEditMediatorDelegate>
+    AutofillProfileEditMediatorDelegate,
+    UIAdaptivePresentationControllerDelegate>
+
 @end
 
 @implementation AutofillEditProfileBottomSheetCoordinator {
@@ -47,12 +46,21 @@
   AutofillProfileEditMediator* _autofillProfileEditMediator;
 
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
-  raw_ptr<web::WebState> _webState;
+
+  // The action sheet coordinator, if one is currently being shown.
+  ActionSheetCoordinator* _actionSheetCoordinator;
+
+  // Handler that manages the process of saving addresses, either by creating a
+  // new address record or by editing an existing one before saving, depending
+  // on the context in which this coordinator is used.
+  __weak id<AutofillEditProfileBottomSheetHandler> _handler;
 }
 
-- (instancetype)initWithBaseViewController:
-                    (UINavigationController*)viewController
-                                   browser:(Browser*)browser {
+- (instancetype)
+    initWithBaseViewController:(UINavigationController*)viewController
+                       browser:(Browser*)browser
+                       handler:
+                           (id<AutofillEditProfileBottomSheetHandler>)handler {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     ProfileIOS* profile = browser->GetProfile();
@@ -62,7 +70,8 @@
     _personalDataManager =
         autofill::PersonalDataManagerFactory::GetForProfile(profile);
 
-    _webState = browser->GetWebStateList()->GetActiveWebState();
+    CHECK(handler);
+    _handler = handler;
   }
   return self;
 }
@@ -70,40 +79,30 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      [self fetchDelegate];
-  _autofillProfile =
-      std::make_unique<autofill::AutofillProfile>(*delegate->GetProfile());
-
-  AutofillSaveProfilePromptMode saveProfilePromptMode =
-      AutofillSaveProfilePromptMode::kNewProfile;
-  if (delegate->IsMigrationToAccount()) {
-    saveProfilePromptMode = AutofillSaveProfilePromptMode::kMigrateProfile;
-  } else if (delegate->GetOriginalProfile() != nullptr) {
-    saveProfilePromptMode = AutofillSaveProfilePromptMode::kUpdateProfile;
-  }
+  _autofillProfile = [_handler autofillProfile];
 
   _autofillProfileEditMediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:_personalDataManager
           autofillProfile:_autofillProfile.get()
-        isMigrationPrompt:delegate->IsMigrationToAccount()];
+        isMigrationPrompt:[_handler isMigrationToAccount]
+         addManualAddress:[_handler addingManualAddress]];
 
   // Bottom sheet table VC
   AutofillEditProfileBottomSheetTableViewController* editModalViewController =
       [[AutofillEditProfileBottomSheetTableViewController alloc]
           initWithDelegate:self
-             editSheetMode:saveProfilePromptMode];
+             editSheetMode:[_handler saveProfilePromptMode]];
 
+  // TODO(crbug.com/405976686): Rename settingsView
   // View controller that lays down the table views for the edit profile view.
   _autofillProfileEditTableViewController =
       [[AutofillProfileEditTableViewController alloc]
           initWithDelegate:_autofillProfileEditMediator
-                 userEmail:(delegate->UserAccountEmail()
-                                ? base::SysUTF16ToNSString(
-                                      delegate->UserAccountEmail().value())
-                                : nil)controller:editModalViewController
-              settingsView:NO];
+                 userEmail:[_handler userEmail]
+                controller:editModalViewController
+              settingsView:NO
+          addManualAddress:[_handler addingManualAddress]];
   _autofillProfileEditMediator.consumer =
       _autofillProfileEditTableViewController;
   // `editModalViewController` lays down the bottom sheet view and communicates
@@ -119,16 +118,11 @@
       [[TableViewNavigationController alloc] initWithTable:_viewController];
   BOOL isIPad =
       UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
-  if (isIPad) {
-    _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    _navigationController.modalInPresentation = YES;
-  } else {
-    _navigationController.modalPresentationStyle =
-        UIModalPresentationFullScreen;
-  }
-
+  _navigationController.modalPresentationStyle =
+      isIPad ? UIModalPresentationFormSheet : UIModalPresentationPageSheet;
   _navigationController.modalTransitionStyle =
       UIModalTransitionStyleCoverVertical;
+  _navigationController.presentationController.delegate = self;
 
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
@@ -136,12 +130,77 @@
 }
 
 - (void)stop {
+  // TODO(crbug.com/406514222): Coordinator's parent should be calling this
+  // method.
   [super stop];
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
+  _navigationController.presentationController.delegate = nil;
   _viewController = nil;
   _autofillProfileEditMediator = nil;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return [_autofillProfileEditMediator canDismissImmediately];
+}
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self didCancelBottomSheetView];
+}
+
+- (void)presentationControllerDidAttemptToDismiss:
+    (UIPresentationController*)presentationController {
+  if (![_autofillProfileEditMediator
+          shouldShowConfirmationDialogOnDismissBySwiping]) {
+    return;
+  }
+
+  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:_navigationController.topViewController
+                         browser:self.browser
+                           title:nil
+                         message:nil
+                   barButtonItem:_navigationController.topViewController
+                                     .navigationItem.leftBarButtonItem];
+
+  __weak __typeof(self) weakSelf = self;
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES)
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                  AutofillEditProfileBottomSheetCoordinator* strongSelf =
+                      weakSelf;
+                  if (strongSelf) {
+                    [strongSelf->_autofillProfileEditMediator
+                            saveChangesForDismiss];
+                  }
+                }
+                 style:UIAlertActionStyleDefault];
+
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                  [weakSelf didCancelBottomSheetView];
+                }
+                 style:UIAlertActionStyleDestructive];
+
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                }
+                 style:UIAlertActionStyleCancel];
+
+  [_actionSheetCoordinator start];
 }
 
 #pragma mark - AutofillProfileEditMediatorDelegate
@@ -157,10 +216,12 @@
   AutofillCountrySelectionTableViewController*
       autofillCountrySelectionTableViewController =
           [[AutofillCountrySelectionTableViewController alloc]
-              initWithDelegate:self
-               selectedCountry:country
-                  allCountries:allCountries
-                  settingsView:NO];
+                         initWithDelegate:self
+                          selectedCountry:country
+                             allCountries:allCountries
+                             settingsView:NO
+              previousViewControllerTitle:_navigationController
+                                              .topViewController.title];
 
   [_navigationController
       pushViewController:autofillCountrySelectionTableViewController
@@ -168,12 +229,7 @@
 }
 
 - (void)didSaveProfile {
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      [self fetchDelegateAndAcceptInfobar];
-
-  delegate->SetProfile(_autofillProfile.get());
-  delegate->EditAccepted();
-
+  [_handler didSaveProfile:_autofillProfile.get()];
   [self stop];
 }
 
@@ -184,57 +240,23 @@
   [_autofillProfileEditMediator didSelectCountry:selectedCountry];
 }
 
+- (void)dismissCountryViewController {
+  [_navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark - AutofillEditProfileBottomSheetTableViewControllerDelegate
 
 - (void)didCancelBottomSheetView {
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      [self fetchDelegate];
-  if (delegate->IsMigrationToAccount()) {
-    delegate->Never();
-    InfoBarManagerImpl::FromWebState(_webState)->RemoveInfoBar(
-        [self addressInfobar]);
-  } else {
-    delegate->EditDeclined();
-  }
+  [_handler didCancelBottomSheetView];
 
   [self stop];
 }
 
 #pragma mark - Private
 
-- (autofill::AutofillSaveUpdateAddressProfileDelegateIOS*)
-    fetchDelegateAndAcceptInfobar {
-  InfoBarIOS* infobar = static_cast<InfoBarIOS*>([self addressInfobar]);
-  infobar->set_accepted(YES);
-
-  return [self fetchDelegateFromInfobar:infobar];
-}
-
-- (autofill::AutofillSaveUpdateAddressProfileDelegateIOS*)fetchDelegate {
-  InfoBarIOS* infobar = static_cast<InfoBarIOS*>([self addressInfobar]);
-  return [self fetchDelegateFromInfobar:infobar];
-}
-
-- (infobars::InfoBar*)addressInfobar {
-  InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(_webState);
-  CHECK(manager);
-  const auto it = base::ranges::find(
-      manager->infobars(), InfobarType::kInfobarTypeSaveAutofillAddressProfile,
-      [](const infobars::InfoBar* infobar) {
-        return static_cast<const InfoBarIOS*>(infobar)->infobar_type();
-      });
-
-  CHECK(it != manager->infobars().cend());
-  return *it;
-}
-
-- (autofill::AutofillSaveUpdateAddressProfileDelegateIOS*)
-    fetchDelegateFromInfobar:(InfoBarIOS*)infobar {
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      autofill::AutofillSaveUpdateAddressProfileDelegateIOS::
-          FromInfobarDelegate(infobar->delegate());
-  CHECK(delegate);
-  return delegate;
+- (void)dismissActionSheetCoordinator {
+  [_actionSheetCoordinator stop];
+  _actionSheetCoordinator = nil;
 }
 
 @end

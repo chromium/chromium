@@ -70,8 +70,8 @@ static void JNI_WebApkPostShareTargetNavigator_NativeLoadViewForShareTargetPost(
   } else {
     std::string body = web_share_target::ComputeUrlEncodedBody(names, values);
     header_list = "Content-Type: application/x-www-form-urlencoded\r\n";
-    post_data = network::ResourceRequestBody::CreateFromBytes(body.c_str(),
-                                                              body.length());
+    post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
+        base::as_byte_span(body));
   }
 
   content::WebContents* web_contents =

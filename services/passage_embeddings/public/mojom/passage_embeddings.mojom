@@ -4,9 +4,38 @@
 
 module passage_embeddings.mojom;
 
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+
+// The embeddings generated from a single input passage.
+struct PassageEmbeddingsResult {
+  array<float> embeddings;
+};
+
+// Classfies the priority of embeddings generation requests. Execution of user
+// initiated requests will cost more system resources and run faster, while
+// execution of passive requests will be more efficient but slower.
+enum PassagePriority {
+  kUnknown,
+  kUrgent,
+  kUserInitiated,
+  kPassive,
+};
+
+// A loaded model which can be queried to generate embeddings for passages.
+// Functions in this interface will be called from the browser process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
+    RequireContext=sandbox.mojom.Context.kBrowser]
+interface PassageEmbedder {
+  // Execute the model to generate embeddings(array<float>) for each string
+  // in `inputs`. If successful, the returned `results` will match the number of
+  // elements in `inputs` and be in the same order. If not successful, an empty
+  // `results` array will be returned.
+  GenerateEmbeddings(array<string> passages, PassagePriority priority)
+      => (array<PassageEmbeddingsResult> results);
+};
 
 // Model parameters needed to run the passage embedder.
 struct PassageEmbeddingsLoadModelsParams {
@@ -19,43 +48,28 @@ struct PassageEmbeddingsLoadModelsParams {
   uint32 input_window_size;
 };
 
-// The embeddings generated with a single input passage, contains both the raw
-// embeddings and the original passage.
-struct PassageEmbeddingsResult {
-  array<float> embeddings;
-  string passage;
-};
-
-// Classfies the priority of embeddings generation requests. Execution of user
-// initiated requests will cost more system resources and run faster, while
-// execution of passive requests will be more efficient but slower.
-enum PassagePriority {
-  kUnknown,
-  kUserInitiated,
-  kPassive,
-};
-
-// A loaded model which can be queried to generate embeddings for passages.
-// Functions in this interface will be called from the browser process.
-[ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
- RequireContext=sandbox.mojom.Context.kBrowser]
-interface PassageEmbedder {
-  // Execute the model to generate embeddings(array<float>) for each string
-  // in `inputs`. If successful, the returned `results` will match the number of
-  // elements in `inputs` and be in the same order. If not successful, an empty
-  // `results` array will be returned.
-  GenerateEmbeddings(array<string> passages, PassagePriority priority) =>
-      (array<PassageEmbeddingsResult> results);
+// Parameters used to run the passage embedder.
+struct PassageEmbedderParams {
+  // The number of threads to use for PassagePriority::kUserInitiated tasks.
+  uint32 user_initiated_priority_num_threads;
+  // The number of threads to use for PassagePriority::kUrgent tasks.
+  uint32 urgent_priority_num_threads;
+  // The number of threads to use for PassagePriority::kPassive tasks.
+  uint32 passive_priority_num_threads;
+  // The size of the cache to use to limit execution on the same passage.
+  uint32 embedder_cache_size;
+  // Whether GPU execution is allowed, if GPU access is available.
+  bool allow_gpu_execution;
 };
 
 // Service for executing on-device embeddings model.
 // Functions in this interface will be called from the browser process.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
- RequireContext=sandbox.mojom.Context.kBrowser]
+    RequireContext=sandbox.mojom.Context.kBrowser]
 interface PassageEmbeddingsService {
   // Load the given models for generating embeddings.
   [AllowedContext=sandbox.mojom.Context.kBrowser]
-  LoadModels(
-      PassageEmbeddingsLoadModelsParams params,
-      pending_receiver<PassageEmbedder> model) => (bool success);
+  LoadModels(PassageEmbeddingsLoadModelsParams model_params,
+             PassageEmbedderParams params,
+             pending_receiver<PassageEmbedder> model) => (bool success);
 };

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 
 namespace autofill {
 
@@ -92,7 +93,7 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForIban(
 }
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForBankAccount(
-    const std::string_view client_tag,
+    std::string_view client_tag,
     std::string nickname,
     const GURL& display_icon_url,
     std::string bank_name,
@@ -130,7 +131,7 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForBankAccount(
 }
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForEwalletAccount(
-    const std::string_view client_tag,
+    std::string_view client_tag,
     std::string nickname,
     const GURL& display_icon_url,
     std::string ewallet_name,
@@ -166,6 +167,39 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForEwalletAccount(
   sync_pb::DeviceDetails* device_details =
       payment_instrument_specifics->mutable_device_details();
   device_details->set_is_fido_enrolled(is_fido_enrolled);
+  return wallet_specifics;
+}
+
+sync_pb::AutofillWalletSpecifics
+CreateAutofillWalletSpecificsForLinkedBnplIssuer(int64_t instrument_id,
+                                                 std::string issuer_id,
+                                                 std::string currency,
+                                                 int price_lower_bound,
+                                                 int price_upper_bound) {
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  wallet_specifics.set_type(
+      sync_pb::AutofillWalletSpecifics_WalletInfoType::
+          AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT);
+
+  sync_pb::PaymentInstrument* payment_instrument_specifics =
+      wallet_specifics.mutable_payment_instrument();
+  *payment_instrument_specifics =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          instrument_id, std::move(issuer_id), std::move(currency),
+          price_lower_bound, price_upper_bound);
+  return wallet_specifics;
+}
+
+sync_pb::AutofillWalletSpecifics
+CreateAutofillWalletSpecificsForPaymentInstrumentCreationOption(
+    const sync_pb::PaymentInstrumentCreationOption&
+        payment_instrument_creation_option) {
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  wallet_specifics.set_type(
+      sync_pb::AutofillWalletSpecifics_WalletInfoType::
+          AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT_CREATION_OPTION);
+  *wallet_specifics.mutable_payment_instrument_creation_option() =
+      payment_instrument_creation_option;
   return wallet_specifics;
 }
 

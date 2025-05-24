@@ -57,8 +57,10 @@ promise_test(async () => {
   const observerB = new ObserverImpl;
   const receiverB = new CounterObserverReceiver(observerB);
 
-  counter.addObserver(receiverA.$.associateAndPassRemote());
-  counter.addObserver(receiverB.$.associateAndPassRemote());
+  counter.addObserver1(receiverA.$.associateAndPassRemote());
+  // This ensures we are able to encode associated interfaces
+  // alongside other arguments.
+  counter.addObserver2(receiverB.$.associateAndPassRemote(), 1234);
 
   counter.increment();
   const {count} = await counter.increment();
@@ -94,9 +96,11 @@ promise_test(async () => {
   const counterB = new CounterRemote;
   const counterC = new CounterRemote;
   const counterD = new CounterRemote;
-  counterA.clone(counterB.$.associateAndPassReceiver());
-  counterA.clone(counterC.$.associateAndPassReceiver());
-  counterB.clone(counterD.$.associateAndPassReceiver());
+  counterA.clone1(counterB.$.associateAndPassReceiver());
+  counterA.clone1(counterC.$.associateAndPassReceiver());
+  // This ensures we are able to encode associated interfaces
+  // alongside other arguments.
+  counterB.clone2(counterD.$.associateAndPassReceiver(), 1234);
 
   // Increment operations among the three interfaces should be strictly ordered.
   const increments = [
@@ -139,7 +143,7 @@ promise_test(async () => {
   const counter = getCounterRemote();
   const observer = new ObserverImpl;
   const receiver = new CounterObserverReceiver(observer);
-  counter.addObserver(receiver.$.associateAndPassRemote());
+  counter.addObserver1(receiver.$.associateAndPassRemote());
   counter.increment();
   counter.increment();
   counter.increment();
@@ -152,7 +156,7 @@ promise_test(async () => {
   const {remote: clone} = await counter.cloneToNewRemote();
   const observer = new ObserverImpl;
   const receiver = new CounterObserverReceiver(observer);
-  counter.addObserver(receiver.$.associateAndPassRemote());
+  counter.addObserver1(receiver.$.associateAndPassRemote());
   clone.$.close();
   observer.nextCloneDisconnect();
 }, 'closing an associated endpoint from JavaScript will signal its peer');
@@ -161,7 +165,7 @@ promise_test(async () => {
   const counter = getCounterRemote();
   const observer = new ObserverImpl;
   const receiver = new CounterObserverReceiver(observer);
-  counter.addObserver(receiver.$.associateAndPassRemote());
+  counter.addObserver1(receiver.$.associateAndPassRemote());
   counter.removeAllObservers();
   await waitForDisconnect(receiver);
 }, 'JavaScript associated endpoints are notified when their peers close');

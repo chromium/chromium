@@ -28,16 +28,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AddToHomescreenDialogViewTest {
     private AddToHomescreenDialogView mAddToHomescreenDialogView;
-    private CallbackHelper mAddCallback = new CallbackHelper();
-    private CallbackHelper mTitleClickCallback = new CallbackHelper();
-    private CallbackHelper mDismissCallback = new CallbackHelper();
-    private MockModalDialogManager mModalDialogManager = new MockModalDialogManager();
+    private final CallbackHelper mAddCallback = new CallbackHelper();
+    private final CallbackHelper mTitleClickCallback = new CallbackHelper();
+    private final CallbackHelper mDismissCallback = new CallbackHelper();
+    private final MockModalDialogManager mModalDialogManager = new MockModalDialogManager();
 
     private static final String TEST_TITLE = "YouTube";
     private static final String TEST_URL = "youtube.com";
     private static final String TEST_NATIVE_ADD_TEXT = "Install";
 
-    private class MockModalDialogManager extends ModalDialogManager {
+    private static class MockModalDialogManager extends ModalDialogManager {
         private PropertyModel mShownDialogModel;
         private PropertyModel mDismissedDialogModel;
         private int mDismissalCause;
@@ -334,7 +334,7 @@ public class AddToHomescreenDialogViewTest {
         Assert.assertEquals(2, mDismissCallback.getCallCount());
         Assert.assertNotNull(mModalDialogManager.getDismissedDialogModel());
         Assert.assertEquals(
-                mModalDialogManager.getDismissalCause(), DialogDismissalCause.ACTION_ON_CONTENT);
+                DialogDismissalCause.ACTION_ON_CONTENT, mModalDialogManager.getDismissalCause());
     }
 
     /** Tests whether the callback for dismissal functions correctly. */

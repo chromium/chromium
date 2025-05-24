@@ -28,7 +28,7 @@ export interface FilesFormatDialog {
   $: {
     dialog: CrDialogElement,
     label: CrInputElement,
-    'warning-container': HTMLDivElement,
+    'warning-container': HTMLElement,
   };
   label_: string;
   formatType_: chrome.fileManagerPrivate.FormatFileSystemType;

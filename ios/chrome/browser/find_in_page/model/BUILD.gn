@@ -25,12 +25,12 @@ source_set("model") {
     "//base",
     "//components/strings:components_strings_grit",
     "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
     "//ios/chrome/browser/web/model",
     "//ios/web/public",
     "//ios/web/public/find_in_page",
@@ -51,7 +51,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/test:test_support",
-    "//ios/web/public/test:test",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }
@@ -61,7 +61,7 @@ source_set("util") {
     "util.h",
     "util.mm",
   ]
-  public_deps = [ "//base:base" ]
+  public_deps = [ "//base" ]
 }
 
 source_set("eg2_tests") {
@@ -76,12 +76,13 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//ios/chrome/browser/find_bar/ui_bundled:constants",
     "//ios/chrome/browser/find_in_page/model:util",
+    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test:element_selector",
-    "//ios/web/public/test/http_server:http_server",
+    "//ios/web/public/test/http_server",
     "//net:test_support",
   ]
   frameworks = [ "UIKit.framework" ]

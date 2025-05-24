@@ -207,7 +207,7 @@ TEST(FormDataTest, FilenameWithLoneSurrogates) {
   auto encoded_multipart = fd->EncodeMultiPartFormData();
   const char* boundary = encoded_multipart->Boundary().data();
   FormDataElement fde = encoded_multipart->Elements()[0];
-  EXPECT_EQ(String(fde.data_.data(), fde.data_.size()),
+  EXPECT_EQ(String(fde.data_),
             String(String("--") + boundary +
                    "\r\n"
                    "Content-Disposition: form-data; name=\"test\"; "

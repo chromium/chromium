@@ -85,8 +85,7 @@ SkiaVkAndroidImageRepresentation::BeginWriteAccess(
 
   if (!surface_ || final_msaa_count != surface_msaa_count_ ||
       surface_props != surface_->props()) {
-    SkColorType sk_color_type = viz::ToClosestSkColorType(
-        /*gpu_compositing=*/true, format());
+    SkColorType sk_color_type = viz::ToClosestSkColorType(format());
     surface_ = SkSurfaces::WrapBackendTexture(
         gr_context, promise_texture_->backendTexture(), surface_origin(),
         final_msaa_count, sk_color_type, color_space().ToSkColorSpace(),

@@ -35,7 +35,7 @@ class MODULES_EXPORT CSSPaintImageGeneratorImpl final
   // The |container_size| is without subpixel snapping.
   scoped_refptr<Image> Paint(const ImageResourceObserver&,
                              const gfx::SizeF& container_size,
-                             const CSSStyleValueVector*) final;
+                             const GCedCSSStyleValueVector*) final;
   const Vector<CSSPropertyID>& NativeInvalidationProperties() const final;
   const Vector<AtomicString>& CustomInvalidationProperties() const final;
   bool HasAlpha() const final;

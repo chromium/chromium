@@ -101,7 +101,7 @@ class CORE_EXPORT FullscreenController {
   };
   State state_ = State::kInitial;
 
-  using PendingFullscreenSet = HeapLinkedHashSet<WeakMember<LocalFrame>>;
+  using PendingFullscreenSet = GCedHeapLinkedHashSet<WeakMember<LocalFrame>>;
   Persistent<PendingFullscreenSet> pending_frames_;
 };
 

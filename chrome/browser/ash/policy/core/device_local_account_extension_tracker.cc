@@ -39,7 +39,8 @@ DeviceLocalAccountExtensionTracker::DeviceLocalAccountExtensionTracker(
       break;
     case DeviceLocalAccountType::kWebKioskApp:
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
-      NOTREACHED_IN_MIGRATION();
+    case DeviceLocalAccountType::kArcvmKioskApp:
+      NOTREACHED();
   }
 }
 

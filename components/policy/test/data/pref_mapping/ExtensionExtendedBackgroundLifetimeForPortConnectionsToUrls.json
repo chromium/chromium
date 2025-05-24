@@ -4,35 +4,18 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "extensions.extended_background_lifetime_urls": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "policies": {
-          "ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls": [
-            "chrome-extension://abcdefghijklmnopabcdefghijklmnop/",
-            "chrome-extension://bcdefghijklmnopabcdefghijklmnopa/"
-          ]
-        },
-        "prefs": {
-          "extensions.extended_background_lifetime_urls": {
-            "value": [
-              "chrome-extension://abcdefghijklmnopabcdefghijklmnop/",
-              "chrome-extension://bcdefghijklmnopabcdefghijklmnopa/"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "extensions.extended_background_lifetime_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "chrome-extension://abcdefghijklmnopabcdefghijklmnop/",
+          "chrome-extension://bcdefghijklmnopabcdefghijklmnopa/"
+        ]
+      ]
+    }
   }
 ]

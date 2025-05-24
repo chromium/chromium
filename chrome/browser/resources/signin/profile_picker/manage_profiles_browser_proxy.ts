@@ -16,11 +16,11 @@ export interface ProfileState {
   gaiaName: string;
   userName: string;
   avatarIcon: string;
+  // Contains the aria label of the profile card button.
+  profileCardButtonLabel: string;
   // Empty if no badge should be set.
   avatarBadge: string;
-  // <if expr="chromeos_lacros">
-  isPrimaryLacrosProfile: boolean;
-  // </if>
+  hasEnterpriseLabel: boolean;
 }
 
 /**
@@ -49,19 +49,6 @@ export interface UserThemeChoice {
   colorId: number;
   color?: number;
 }
-
-// <if expr="chromeos_lacros">
-/**
- * This is a data structure sent from C++ to JS, representing accounts present
- * in the ChromeOS system, but not in any Lacros profile.
- */
-export interface AvailableAccount {
-  gaiaId: string;
-  name: string;
-  email: string;
-  accountImageUrl: string;
-}
-// </if>
 
 export interface ManageProfilesBrowserProxy {
   /**
@@ -173,30 +160,11 @@ export interface ManageProfilesBrowserProxy {
    */
   updateProfileOrder(fromIndex: number, toIndex: number): void;
 
-  // <if expr="chromeos_lacros">
   /**
-   * Gets the available accounts, through WebUIListener.
+   * Loads the last used profile; opens/uses a browser and open the "Sign in to
+   * Chrome" Help center page. Does not close the Picker.
    */
-  getAvailableAccounts(): void;
-
-  /**
-   * Opens Ash Account settings page in a new window.
-   */
-  openAshAccountSettingsPage(): void;
-
-  /**
-   * Select an existing account to be added in Chrome on Lacros.
-   */
-  selectExistingAccountLacros(profileColor: number|null, gaiaId: string): void;
-
-  /**
-   * Called when the user clicks the 'use device guest' link in the Lacros
-   * account selection dialog. Opens a Ash dialog that allows the user to log
-   * out of their device session and explains how to select `Browse as Guest` on
-   * the login screen.
-   */
-  openDeviceGuestLinkLacros(): void;
-  // </if>
+  onLearnMoreClicked(): void;
 }
 
 /** @implements {ManageProfilesBrowserProxy} */
@@ -277,23 +245,9 @@ export class ManageProfilesBrowserProxyImpl {
     chrome.send('updateProfileOrder', [fromIndex, toIndex]);
   }
 
-  // <if expr="chromeos_lacros">
-  getAvailableAccounts() {
-    chrome.send('getAvailableAccounts');
+  onLearnMoreClicked(): void {
+    chrome.send('onLearnMoreClicked');
   }
-
-  openAshAccountSettingsPage() {
-    chrome.send('openAshAccountSettingsPage');
-  }
-
-  selectExistingAccountLacros(profileColor: number|null, gaiaId: string) {
-    chrome.send('selectExistingAccountLacros', [profileColor, gaiaId]);
-  }
-
-  openDeviceGuestLinkLacros() {
-    chrome.send('openDeviceGuestLinkLacros');
-  }
-  // </if>
 
   static getInstance(): ManageProfilesBrowserProxy {
     return instance || (instance = new ManageProfilesBrowserProxyImpl());

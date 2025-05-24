@@ -4,7 +4,7 @@
 
 import os
 import sys
-from typing import Any, List, Optional, Set
+from typing import Any
 import unittest
 
 from gpu_tests import gpu_integration_test
@@ -22,7 +22,10 @@ ERROR_SCOPE_TESTS = 'webgpu:api,validation,error_scope'
 OOM_ERROR_TEST_PREFIXES = [
     ERROR_SCOPE_TESTS + ':current_scope:errorFilter="out-of-memory";',
     ERROR_SCOPE_TESTS + ':parent_scope:errorFilter="out-of-memory";',
-    ERROR_SCOPE_TESTS + ':simple:errorType="out-of-memory";'
+    ERROR_SCOPE_TESTS + ':simple:errorType="out-of-memory";',
+]
+WEBCAM_TEST_PREFIXES = [
+    'webgpu:web_platform,external_texture,video:importExternalTexture,camera',
 ]
 
 
@@ -36,7 +39,7 @@ class WebGpuCtsIntegrationTest(
   def Name(cls) -> str:
     return 'webgpu_cts'
 
-  def _GetSerialGlobs(self) -> Set[str]:
+  def _GetSerialGlobs(self) -> set[str]:
     globs = super()._GetSerialGlobs()
     globs |= {
         # crbug.com/1406799. Large test.
@@ -118,20 +121,25 @@ class WebGpuCtsIntegrationTest(
 
     return globs
 
-  def _GetSerialTests(self) -> Set[str]:
+  def _GetSerialTests(self) -> set[str]:
     serial_tests = super()._GetSerialTests()
     return serial_tests
 
   @classmethod
-  def _GetAdditionalBrowserArgsForQuery(cls, query: str) -> Optional[List[str]]:
+  def _GetAdditionalBrowserArgsForQuery(cls, query: str) -> list[str] | None:
     # Tests that are generating OOM errors currently require us to bypass
     # tiered limits to more consistently cause failures.
     if any(query.startswith(prefix) for prefix in OOM_ERROR_TEST_PREFIXES):
       return ['--disable-dawn-features=tiered_adapter_limits']
+    if any(query.startswith(prefix) for prefix in WEBCAM_TEST_PREFIXES):
+      return [
+          '--use-fake-device-for-media-stream',
+          '--auto-accept-camera-and-microphone-capture'
+      ]
     return None
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [EXPECTATIONS_FILE]
 
 

@@ -4,7 +4,7 @@
 
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 
-#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
+#include "components/media_router/browser/presentation/controller_presentation_service_delegate_impl.h"
 
 namespace media_router {
 
@@ -15,10 +15,11 @@ WebContentsPresentationManager* g_test_instance = nullptr;
 // static
 base::WeakPtr<WebContentsPresentationManager>
 WebContentsPresentationManager::Get(content::WebContents* web_contents) {
-  if (g_test_instance)
+  if (g_test_instance) {
     return g_test_instance->GetWeakPtr();
+  }
 
-  return PresentationServiceDelegateImpl::GetOrCreateForWebContents(
+  return ControllerPresentationServiceDelegateImpl::GetOrCreateForWebContents(
              web_contents)
       ->GetWeakPtr();
 }

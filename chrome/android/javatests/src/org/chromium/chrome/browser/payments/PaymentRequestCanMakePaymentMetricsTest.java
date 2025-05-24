@@ -56,7 +56,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         // Initiate a payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "queryShowWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
 
         // Press the back button.
@@ -64,7 +64,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPaymentRequestTestRule
-                                .getPaymentRequestUI()
+                                .getPaymentRequestUi()
                                 .getDialogForTest()
                                 .onBackPressed());
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
@@ -100,7 +100,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "queryShowWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
 
         // Add a new credit card.
@@ -154,7 +154,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         // Initiate a payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "queryShowWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
 
         // Simulate an abort by the merchant.
@@ -188,7 +188,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         // Initiate and complete a payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "queryShowWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
@@ -234,7 +234,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         // Initiate an complete a payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "queryShowWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
@@ -268,7 +268,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         // Initiate a payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "noQueryShowWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
 
         // Press the back button.
@@ -276,7 +276,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPaymentRequestTestRule
-                                .getPaymentRequestUI()
+                                .getPaymentRequestUi()
                                 .getDialogForTest()
                                 .onBackPressed());
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
@@ -310,7 +310,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         // Initiate a payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "noQueryShowWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());

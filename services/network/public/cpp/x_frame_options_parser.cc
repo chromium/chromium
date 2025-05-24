@@ -21,11 +21,12 @@ mojom::XFrameOptionsValue ParseXFrameOptions(
   // Note that we do not support the 'ALLOW-FROM' value defined in RFC7034.
   mojom::XFrameOptionsValue result = mojom::XFrameOptionsValue::kNone;
   size_t iter = 0;
-  std::string value;
-  while (headers.EnumerateHeader(&iter, "x-frame-options", &value)) {
+  while (std::optional<std::string_view> value =
+             headers.EnumerateHeader(&iter, "x-frame-options")) {
     mojom::XFrameOptionsValue current = mojom::XFrameOptionsValue::kInvalid;
 
-    std::string_view trimmed = base::TrimWhitespaceASCII(value, base::TRIM_ALL);
+    std::string_view trimmed =
+        base::TrimWhitespaceASCII(*value, base::TRIM_ALL);
 
     if (base::EqualsCaseInsensitiveASCII(trimmed, "deny"))
       current = mojom::XFrameOptionsValue::kDeny;

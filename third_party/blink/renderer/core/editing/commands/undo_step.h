@@ -76,6 +76,8 @@ class UndoStep final : public GarbageCollected<UndoStep> {
 
   void Trace(Visitor*) const;
 
+  String ToString() const;
+
  private:
   Member<Document> document_;
   SelectionForUndoStep starting_selection_;

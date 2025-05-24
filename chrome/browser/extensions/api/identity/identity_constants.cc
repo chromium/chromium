@@ -26,6 +26,9 @@ const char kOffTheRecord[] = "Identity API is disabled in incognito windows.";
 const char kPageLoadFailure[] = "Authorization page could not be loaded.";
 const char kPageLoadTimedOut[] = "Authorization page load timed out.";
 const char kInvalidConsentResult[] = "Returned an invalid consent result.";
+const char kCannotSetRemoteConsentResolutionCookies[] =
+    "Couldn't set up remote consent resolution cookies to display an "
+    "authorization page";
 const char kCannotCreateWindow[] =
     "Couldn't create a browser window to display an authorization page.";
 const char kInvalidURLScheme[] =

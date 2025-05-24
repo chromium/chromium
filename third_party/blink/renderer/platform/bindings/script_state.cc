@@ -60,6 +60,7 @@ void ScriptState::DetachGlobalObject() {
 }
 
 void ScriptState::DisposePerContextData() {
+  v8::HandleScope scope(GetIsolate());
   per_context_data_->Dispose();
   per_context_data_ = nullptr;
   InstanceCounters::IncrementCounter(

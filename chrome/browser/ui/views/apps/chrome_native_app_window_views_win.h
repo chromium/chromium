@@ -29,8 +29,7 @@ class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
   AppWindowFrameViewWin* frame_view() { return frame_view_; }
 
  private:
-  void OnShortcutInfoLoaded(
-      const web_app::ShortcutInfo& shortcut_info);
+  void OnShortcutInfoLoaded(const web_app::ShortcutInfo& shortcut_info);
 
   HWND GetNativeAppWindowHWND() const;
   void EnsureCaptionStyleSet();

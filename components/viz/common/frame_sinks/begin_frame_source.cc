@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
@@ -192,8 +191,7 @@ bool BeginFrameSource::RequestCallbackOnGpuAvailable() {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void BeginFrameSource::AsProtozeroInto(
@@ -563,6 +561,16 @@ void ExternalBeginFrameSource::OnBeginFrame(const BeginFrameArgs& args) {
                "frame_time", args.frame_time.since_origin().InMicroseconds(),
                "interval", args.interval.InMicroseconds());
 
+  if (metrics_sub_sampler_.ShouldSample(0.01)) {
+    // We do not expect anything more than 1/24th of a second, but let's support
+    // up to 1/10th.
+    //
+    // Recorded on a per-frame basis, so that the results are weighted by usage,
+    // and take into account all framerate changes.
+    UMA_HISTOGRAM_EXACT_LINEAR("Viz.ExternalBeginFrameSource.Interval",
+                               args.interval.InMilliseconds(), 100);
+  }
+
   last_begin_frame_args_ = args;
   base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers(
       observers_);
@@ -599,7 +607,7 @@ BeginFrameArgs ExternalBeginFrameSource::GetMissedBeginFrameArgs(
   return missed_args;
 }
 
-base::TimeDelta ExternalBeginFrameSource::GetMaximumRefreshFrameInterval() {
+base::TimeDelta ExternalBeginFrameSource::GetMinimumFrameInterval() {
   return BeginFrameArgs::DefaultInterval();
 }
 

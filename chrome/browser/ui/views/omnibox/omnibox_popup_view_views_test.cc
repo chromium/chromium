@@ -4,9 +4,17 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
 
+#include <memory>
+
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/path_service.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_paths.h"
 #include "content/public/test/test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 
 #if BUILDFLAG(IS_LINUX)

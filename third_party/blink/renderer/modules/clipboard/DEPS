@@ -1,4 +1,5 @@
 include_rules = [
+    "+base/containers/fixed_flat_set.h",
     "+mojo/public/cpp/base/big_buffer.h",
     "+net/base/mime_util.h",
     "+third_party/blink/renderer/core/clipboard",
@@ -8,4 +9,5 @@ include_rules = [
     "+third_party/blink/renderer/modules/clipboard",
     "+third_party/blink/renderer/modules/permissions",
     "+ui/base/clipboard",
+    "+ui/base/ui_base_features.h",
 ]

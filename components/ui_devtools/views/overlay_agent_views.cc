@@ -383,7 +383,7 @@ OverlayAgentViews::OverlayAgentViews(DOMAgent* dom_agent)
       show_size_on_canvas_(false),
       highlight_rect_config_(HighlightRectsConfiguration::NO_DRAW) {}
 
-OverlayAgentViews::~OverlayAgentViews() {}
+OverlayAgentViews::~OverlayAgentViews() = default;
 
 void OverlayAgentViews::SetPinnedNodeId(int node_id) {
   pinned_id_ = node_id;
@@ -393,7 +393,7 @@ void OverlayAgentViews::SetPinnedNodeId(int node_id) {
 
 protocol::Response OverlayAgentViews::setInspectMode(
     const protocol::String& in_mode,
-    protocol::Maybe<protocol::Overlay::HighlightConfig> in_highlightConfig) {
+    std::unique_ptr<protocol::Overlay::HighlightConfig> in_highlightConfig) {
   pinned_id_ = 0;
   if (in_mode.compare("searchForNode") == 0) {
     InstallPreTargetHandler();
@@ -405,7 +405,7 @@ protocol::Response OverlayAgentViews::setInspectMode(
 
 protocol::Response OverlayAgentViews::highlightNode(
     std::unique_ptr<protocol::Overlay::HighlightConfig> highlight_config,
-    protocol::Maybe<int> node_id) {
+    std::optional<int> node_id) {
   return HighlightNode(node_id.value());
 }
 
@@ -467,7 +467,7 @@ void OverlayAgentViews::ShowDistancesInHighlightOverlay(int pinned_id,
     } else if (r1.Intersects(r2)) {
       highlight_rect_config_ = HighlightRectsConfiguration::R1_INTERSECTS_R2;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else {
     highlight_rect_config_ = HighlightRectsConfiguration::NO_DRAW;
@@ -709,8 +709,7 @@ void OverlayAgentViews::OnPaintLayer(const ui::PaintContext& context) {
       DrawRectGuideLinesOnCanvas(screen_bounds, hovered_rect_f, flags, canvas);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

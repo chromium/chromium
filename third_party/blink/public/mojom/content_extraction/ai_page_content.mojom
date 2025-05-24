@@ -1,0 +1,450 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "ui/accessibility/ax_enums.mojom";
+import "third_party/blink/public/mojom/forms/form_control_type.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// This is a mojom representation of the corresponding AnnotatedPageContent
+// proto.
+// See components/optimization_guide/proto/features/common_quality_data.proto
+// for details.
+//
+// Note: The proto representation needs to remain backwards compatible with
+// older client versions but there's no such limitation on the mojom
+// representation.
+enum AIPageContentAttributeType {
+  kRoot,
+  kIframe,
+  kContainer,
+
+  // Text chunks.
+  kText,
+  kAnchor,
+  kParagraph,
+  kHeading,
+
+  // Image chunks.
+  kImage,
+  kSVG,
+  kCanvas,
+
+  // Structured chunks.
+  kForm,
+  kFormControl,
+  kTable,
+  kTableRow,
+  kTableCell,
+  kOrderedList,
+  kUnorderedList,
+  kListItem,
+};
+
+enum AIPageContentAnnotatedRole {
+  kHeader,
+  kNav,
+  kSearch,
+  kMain,
+  kArticle,
+  kSection,
+  kAside,
+  kFooter,
+  kContentHidden,
+  kPaidContent,
+};
+
+struct AIPageContentGeometry {
+  // The bounding box of the content node, in the page coordinate system.
+  gfx.mojom.Rect outer_bounding_box;
+
+  // Subset of this node visible on the page. Empty if offscreen.
+  gfx.mojom.Rect visible_bounding_box;
+
+  // Whether the content node is fixed or sticky position. This may suggest
+  // that the node is a header, footer, or sidebar.
+  bool is_fixed_or_sticky_position;
+};
+
+// Represents a selection in the page. This is a frame-level concept.
+struct AIPageContentSelection {
+  // The DOMNodeId of the start node. Note that this could be the same as
+  // the end node ID. Consumers are responsible for checking that the start node
+  // comes before (or is the same as) the end node.
+  int32 start_dom_node_id;
+
+  // The character offset of the start of the selection from the start of the
+  // text contained in start node.
+  int32 start_offset;
+
+  // The DOMNodeId of the end node. Note that this could be the same as
+  // the start node ID. Consumers are responsible for checking that the end node
+  // comes after (or is the same as) the start node.
+  int32 end_dom_node_id;
+
+  // The character offset of the start of the selection from the start of the
+  // text contained in end node.
+  int32 end_offset;
+
+  // The selected text.
+  string selected_text;
+};
+
+// Represents the interaction information for the page. This is for top-level
+// interactions, such as the mouse position and focused element, for which
+// there can only be one unique value. Includes interaction information for
+// the main frame and embedded iframes.
+struct AIPageContentPageInteractionInfo {
+  // The DOMNodeId of the content node that is currently focused.
+  int32? focused_dom_node_id;
+
+  // The DOMNodeId of the content node that is currently focused by a
+  // screen reader or other accessibility tool.
+  int32? accessibility_focused_dom_node_id;
+
+  // The last known mouse position, in the page coordinate system.
+  gfx.mojom.Point? mouse_position;
+};
+
+struct AIPageContentFrameInteractionInfo {
+  // The current selection.
+  AIPageContentSelection? selection;
+};
+
+struct AIPageContentNodeInteractionInfo {
+  // If this node supports scrolling, provides information about its current
+  // state.
+  AIPageContentScrollerInfo? scroller_info;
+
+  // Whether the content node is selectable.
+  bool is_selectable;
+
+  // Whether the content node is editable; i.e. whether the user can type into
+  // it. This refers to the text actually being editable, not whether the
+  // content node is a text field.
+  bool is_editable;
+
+  // Whether the content node can be resized. This is relevant for scroll
+  // containers and iframes which have the CSS resize behavior.
+  bool can_resize_horizontal;
+  bool can_resize_vertical;
+
+  // Whether the content node is focusable.
+  bool is_focusable;
+
+  // Whether the content node is draggable.
+  bool is_draggable;
+
+  // Whether the content node is clickable. This checks for whether the node is
+  // a clickable control (e.g. form control elements) or has activation
+  // behavior. It also checks for whether the node has a click handler.
+  bool is_clickable;
+
+  // The z-order of the content node relative to other nodes in the same
+  // Document. A higher value means the node is in front of other nodes with
+  // lower values.
+  //
+  // Since all content within a Document is rendered as a single layer, nodes
+  // behind the iframe in the embedder draw behind all nodes inside the
+  // iframe's Document (similar for nodes on top of the iframe node).
+  //
+  // Note: This value is only set for nodes in the viewport.
+  int32? document_scoped_z_order;
+};
+
+// The coordinate space for the dimensions here is physical coordinates (not
+// logical coordinates). This means it's the same irrespective of the writing
+// mode.
+// The dimensions also exclude non-overlay scrollbars.
+struct AIPageContentScrollerInfo {
+  // The complete layout dimensions of the scroller. This is the total area
+  // that can be revealed through a scroll operation.
+  gfx.mojom.Size scrolling_bounds;
+
+  // The subset of this scroller's content which is currently scrolled to. This
+  // is relative to the origin of `scrolling_bounds`.
+  gfx.mojom.Rect visible_area;
+
+  // Indicates whether this can be scrolled by the user in horizontal or
+  // vertical directions.
+  bool user_scrollable_horizontal;
+  bool user_scrollable_vertical;
+};
+
+enum AIPageContentTextSize {
+  kXS,
+  kS,
+  kM,
+  kL,
+  kXL,
+};
+
+struct AIPageContentTextStyle {
+  AIPageContentTextSize text_size;
+  bool has_emphasis;
+
+  // Color as a 32 bit RGBA value.
+  uint32 color;
+};
+
+struct AIPageContentTextInfo {
+  string text_content;
+  AIPageContentTextStyle text_style;
+};
+
+enum AIPageContentAnchorRel {
+  kRelationUnknown,
+  kRelationNoReferrer,
+  kRelationNoOpener,
+  kRelationOpener,
+  kRelationPrivacyPolicy,
+  kRelationTermsOfService,
+};
+
+struct AIPageContentAnchorData {
+  url.mojom.Url url;
+
+  // The relationship between the linked URL and the current document.
+  array<AIPageContentAnchorRel> rel;
+
+  // TODO(crbug.com/382119737): Consider adding fields for target, MIME type,
+  // and whether the link is a download.
+};
+
+struct AIPageContentImageInfo {
+  string? image_caption;
+
+  // Provides the origin for this image if there is a resource currently being
+  // rendered. For example, an image element whose resource is not available
+  // will be empty.
+  url.mojom.Origin? source_origin;
+};
+
+struct AIPageContentSVGData {
+  // Provides the concatenated string for the text inside an SVG node.
+  string? inner_text;
+};
+
+struct AIPageContentCanvasData {
+  // The layout size of the canvas element. This is the total size of the
+  // element irrespective of clipping or transforms.
+  gfx.mojom.Size layout_size;
+};
+
+// Represents meta tags on the page.
+struct AIPageContentMeta {
+  string name;
+  string content;
+};
+
+// Data common to frames (main and embedded).
+struct AIPageContentFrameData {
+  // Interaction information for the frame.
+  AIPageContentFrameInteractionInfo frame_interaction_info;
+
+  // Meta elements which are direct children of the head element. Limited to
+  // max_meta_elements in AIPageContentOptions, default is 0.
+  array<AIPageContentMeta> meta_data;
+
+  // The title of the document.
+  string? title;
+
+  // Whether the frame contains paid content. The value exists
+  // if the document was checked.
+  bool? contains_paid_content;
+};
+
+// Provides metadata for frames (local and remote) accessible from the
+// LocalFrameRoot of the corresponding AIPageContentAgent.
+struct AIPageContentIframeData {
+  blink.mojom.FrameToken frame_token;
+
+  // Indicates whether the iframe is likely to be an ad frame. This is set for
+  // both the root ad frame and its descendants.
+  bool likely_ad_frame;
+
+  // Data common to all local frames (main and embedded). If this is a remote
+  // frame, this metadata will be part of the AIPageContent pulled from the
+  // local frame's renderer process.
+  AIPageContentFrameData? local_frame_data;
+};
+
+struct AIPageContentTableData {
+  // The name of the table, coming from the caption.
+  string? table_name;
+};
+
+enum AIPageContentTableRowType {
+  kHeader,
+  kBody,
+  kFooter,
+};
+
+struct AIPageContentTableRowData {
+  AIPageContentTableRowType row_type;
+};
+
+struct AIPageContentFormData {
+  string? form_name;
+};
+
+// Represents an option in a select field. See below for example.
+//
+// HTML                                      | value  | text
+// ------------------------------------------+--------+------
+// <option value=Foo label=Bar>Baz</option>  | "Foo"  | "Bar"
+// <option value=Foo>Bar</option>            | "Foo"  | "Bar"
+// <option label=Bar>Foo</option>            | "Foo"  | "Bar"
+// <option>Foo</option>                      | "Foo"  | "Foo"
+// <option value=Foo></option>               | "Foo"  | ""
+// <option label=Bar></option>               | ""     | "Bar"
+struct AIPageContentSelectOption {
+  string? value;
+  string? text;
+  bool is_selected;
+  bool disabled;
+};
+
+struct AIPageContentFormControlData {
+  // The type of control for this form field.
+  FormControlType form_control_type;
+
+  // The name for the field.
+  string? field_name;
+
+  // The value of the field.
+  string? field_value;
+
+  // The options for a select field, if applicable.
+  array<AIPageContentSelectOption> select_options;
+
+  // The placeholder text for the field.
+  string? placeholder;
+
+  // Whether the field is checked.
+  bool is_checked;
+
+  // Whether the field is required.
+  bool is_required;
+};
+
+struct AIPageContentAttributes {
+  // If this content node maps to a DOM node, this is the ID for that node. This
+  // can be used to route events to the corresponding DOM node.
+  int32? dom_node_id;
+
+  AIPageContentAttributeType attribute_type;
+
+  // Geometry of the common_ancestor_dom_node_id.
+  AIPageContentGeometry? geometry;
+
+  // Interaction information for the common_ancestor_dom_node_id.
+  AIPageContentNodeInteractionInfo? node_interaction_info;
+
+  // Only set if attribute_type is kText.
+  AIPageContentTextInfo? text_info;
+
+  // Only set if attribute_type is kImage.
+  AIPageContentImageInfo? image_info;
+
+  // Only set if attribute_type is kSVG.
+  AIPageContentSVGData? svg_data;
+
+  // Only set if attribute_type is kCanvas.
+  AIPageContentCanvasData? canvas_data;
+
+  // Only set if attribute_type is kAnchor.
+  AIPageContentAnchorData? anchor_data;
+
+  // Only set if attribute_type is kForm.
+  AIPageContentFormData? form_data;
+
+  // Only set if attribute_type is kFormControl.
+  AIPageContentFormControlData? form_control_data;
+
+  // Only set if attribute_type is kTable.
+  AIPageContentTableData? table_data;
+
+  // Only set if attribute_type is kIframe.
+  AIPageContentIframeData? iframe_data;
+
+  // Only set if attribute_type is kTableRow.
+  AIPageContentTableRowData? table_row_data;
+
+  array<AIPageContentAnnotatedRole> annotated_roles;
+
+  // A text description of the node. Only populated when actionable elements are
+  // enabled.
+  string? label;
+
+  // The role derived from `aria_role`. Only populated when actionable elements
+  // are enabled.
+  ax.mojom.Role? aria_role;
+
+  // If this node is a label associated with an input node, provides the
+  // dom_node_id for the corresponding input node.
+  int32? label_for_dom_node_id;
+};
+
+// A semantic chunk of information on a page. It can represent text, structured
+// content, or containers for other ContentNodes.
+struct AIPageContentNode {
+  array<AIPageContentNode> children_nodes;
+  AIPageContentAttributes content_attributes;
+};
+
+// Represents the parsed content of a page. This captures data for a local root.
+struct AIPageContent {
+  AIPageContentNode root_node;
+
+  // The interaction information for the page--the subtree represented by the
+  // AIPageContent. This is for top-level interactions, such as the mouse
+  // position and focused element, for which there can only be one unique value
+  // for the entire page. Includes interaction information for the main frame
+  // and embedded iframes.
+  AIPageContentPageInteractionInfo? page_interaction_info;
+
+  // The frame-level information which is common to both main and embedded
+  // frames.
+  AIPageContentFrameData frame_data;
+};
+
+struct AIPageContentOptions {
+  // Indicates whether the geometry for each ContentNode should be included in
+  // the content.
+  bool include_geometry = false;
+
+  // Indicates whether this request is on the critical path, i.e., user visible.
+  // Requests which are not on the critical path can be de-prioritized to avoid
+  // blocking higher priority work.
+  bool on_critical_path = false;
+
+  // The page can have content which is currently hidden but can be accessed by
+  // the user via find-in-page. This content's style and layout is not kept
+  // up-to-date as an optimization. Including it will force the renderer to
+  // update it's style and layout.
+  bool include_hidden_searchable_content = false;
+
+  // The maximum number of meta elements to include in the content.
+  int32 max_meta_elements = 0;
+
+  // Include node-level data for actionable elements captured in
+  // AIPageContentNodeInteractionInfo.
+  bool enable_experimental_actionable_data = false;
+};
+
+// Used to obtain the AIPageContent representation for Documents. Lives in the
+// renderer process and called by the browser process to pull data for a
+// Document.
+// The interface is only available for the outermost main frame.
+interface AIPageContentAgent {
+  // Provides the AIPageContent representation for this LocalFrame and all
+  // LocalFrames accessible from the LocalFrameRoot.
+  GetAIPageContent(AIPageContentOptions request)
+      => (AIPageContent? page_content);
+};

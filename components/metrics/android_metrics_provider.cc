@@ -9,9 +9,9 @@
 
 namespace metrics {
 
-AndroidMetricsProvider::AndroidMetricsProvider() {}
+AndroidMetricsProvider::AndroidMetricsProvider() = default;
 
-AndroidMetricsProvider::~AndroidMetricsProvider() {}
+AndroidMetricsProvider::~AndroidMetricsProvider() = default;
 
 bool AndroidMetricsProvider::ProvideHistograms() {
   // Equivalent to UMA_HISTOGRAM_BOOLEAN with the stability flag set.

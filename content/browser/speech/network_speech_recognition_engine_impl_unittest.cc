@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/speech/network_speech_recognition_engine_impl.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/containers/queue.h"
@@ -494,8 +491,7 @@ TEST_F(NetworkSpeechRecognitionEngineImplTest, SendPreamble) {
 void NetworkSpeechRecognitionEngineImplTest::SetUp() {
   engine_under_test_ = std::make_unique<NetworkSpeechRecognitionEngineImpl>(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &url_loader_factory_),
-      "" /* accept_language */);
+          &url_loader_factory_));
   engine_under_test_->set_delegate(this);
 }
 
@@ -550,7 +546,7 @@ void NetworkSpeechRecognitionEngineImplTest::EndMockRecognition() {
 void NetworkSpeechRecognitionEngineImplTest::InjectDummyAudioChunk() {
   // Enough data so that the encoder will output something, as can't read 0
   // bytes from a Mojo stream.
-  unsigned char dummy_audio_buffer_data[2000 * 2] = {'\0'};
+  std::array<unsigned char, 2000 * 2> dummy_audio_buffer_data = {};
   scoped_refptr<AudioChunk> dummy_audio_chunk(
       new AudioChunk(&dummy_audio_buffer_data[0],
                      sizeof(dummy_audio_buffer_data),

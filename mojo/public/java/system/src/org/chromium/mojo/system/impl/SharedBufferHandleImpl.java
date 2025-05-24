@@ -4,11 +4,13 @@
 
 package org.chromium.mojo.system.impl;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.SharedBufferHandle;
 
 import java.nio.ByteBuffer;
 
 /** Implementation of {@link SharedBufferHandle}. */
+@NullMarked
 class SharedBufferHandleImpl extends HandleBase implements SharedBufferHandle {
     /**
      * @see HandleBase#HandleBase(CoreImpl, long)

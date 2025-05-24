@@ -14,6 +14,8 @@ import android.text.TextUtils;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -22,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Common util methods for multi-instance UI. */
+@NullMarked
 class UiUtils {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
@@ -31,7 +34,7 @@ class UiUtils {
     private final int mDisplayedIconSize;
     private final Drawable mIncognitoFavicon;
     private final Drawable mGlobeFavicon;
-    private LargeIconBridge mLargeIconBridge;
+    private final LargeIconBridge mLargeIconBridge;
     private final RoundedIconGenerator mIconGenerator;
 
     UiUtils(Context context, LargeIconBridge iconBridge) {
@@ -199,7 +202,7 @@ class UiUtils {
         return item.tabCount + recoverableIncognitoTabCount(item);
     }
 
-    private Drawable createIconDrawable(String url, Bitmap icon, int fallbackColor) {
+    private Drawable createIconDrawable(String url, @Nullable Bitmap icon, int fallbackColor) {
         if (icon == null) {
             mIconGenerator.setBackgroundColor(fallbackColor);
             icon = mIconGenerator.generateIconForUrl(url);

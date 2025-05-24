@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AddPrintServerDialogElement, CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterDialogErrorElement, PrinterListEntry, PrinterType, PrintServerResult, SettingsCupsAddPrinterDialogElement, SettingsCupsPrintersElement} from 'chrome://os-settings/lazy_load.js';
-import {CrInputElement, CrToastElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {AddPrintServerDialogElement, CupsPrinterInfo, PrinterDialogErrorElement, PrinterListEntry, SettingsCupsAddPrinterDialogElement, SettingsCupsPrintersElement} from 'chrome://os-settings/lazy_load.js';
+import {CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterType, PrintServerResult} from 'chrome://os-settings/lazy_load.js';
+import type {CrInputElement, CrToastElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

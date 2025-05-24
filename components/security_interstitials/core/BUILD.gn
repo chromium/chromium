@@ -36,6 +36,8 @@ static_library("core") {
     "ssl_error_ui.h",
     "urls.cc",
     "urls.h",
+    "utils.cc",
+    "utils.h",
   ]
 
   if (!is_ios) {
@@ -79,6 +81,8 @@ static_library("unsafe_resource") {
   sources = [
     "unsafe_resource.cc",
     "unsafe_resource.h",
+    "unsafe_resource_locator.cc",
+    "unsafe_resource_locator.h",
   ]
 
   deps = [
@@ -97,6 +101,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "insecure_form_util_unittest.cc",
+    "metrics_helper_unittest.cc",
     "ssl_error_options_mask_unittest.cc",
   ]
 
@@ -104,6 +109,7 @@ source_set("unit_tests") {
     ":core",
     ":insecure_form_util",
     "//base",
+    "//base/test:test_support",
     "//net",
     "//testing/gtest",
   ]

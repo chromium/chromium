@@ -17,6 +17,19 @@ class TestGpuChannelHostProvider : public GpuChannelHostProvider {
  public:
   explicit TestGpuChannelHostProvider(gpu::mojom::GpuChannel& gpu_channel);
 
+  // GpuChannelHostProvider:
+  scoped_refptr<viz::ContextProviderCommandBuffer> GetWebGpuContextProvider()
+      override;
+  scoped_refptr<viz::RasterContextProvider> GetRasterInterfaceContextProvider()
+      override;
+  scoped_refptr<gpu::ClientSharedImageInterface> GetSharedImageInterface()
+      override;
+
+  void AddObserver(Observer& observer) override;
+  void RemoveObserver(Observer& observer) override;
+
+ protected:
+  ~TestGpuChannelHostProvider() override;
   scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() override;
 
  private:

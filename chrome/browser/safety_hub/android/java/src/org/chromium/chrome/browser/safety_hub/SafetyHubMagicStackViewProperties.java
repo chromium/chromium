@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.safety_hub;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties for the Safety Hub Magic Stack Module. */
+@NullMarked
 interface SafetyHubMagicStackViewProperties {
     PropertyModel.WritableObjectPropertyKey<String> HEADER =
             new PropertyModel.WritableObjectPropertyKey<>();

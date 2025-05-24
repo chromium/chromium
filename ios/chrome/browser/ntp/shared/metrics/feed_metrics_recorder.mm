@@ -10,7 +10,11 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/common/pref_names.h"
 #import "components/feed/core/v2/public/ios/notice_card_tracker.h"
 #import "components/feed/core/v2/public/ios/prefs.h"
@@ -18,8 +22,8 @@
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_follow_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -55,7 +59,7 @@ using feed::FeedUserActionType;
 
 // Tracking property to avoid duplicate recordings of the Activity Buckets
 // metric.
-@property(nonatomic, assign) NSDate* activityBucketLastReportedDate;
+@property(nonatomic, strong) NSDate* activityBucketLastReportedDate;
 
 // Tracks whether user has engaged with the latest refreshed content. The term
 // "engaged" is defined by its usage in this file. For example, it may be
@@ -93,18 +97,24 @@ using feed::FeedUserActionType;
 // YES if the NTP is visible.
 @property(nonatomic, assign) BOOL isNTPVisible;
 
-// The ChromeBrowserState PrefService.
+// The ProfileIOS PrefService.
 @property(nonatomic, assign) PrefService* prefService;
 
 @end
 
-@implementation FeedMetricsRecorder
+@implementation FeedMetricsRecorder {
+  // Used to track Feed events for IPH display.
+  raw_ptr<feature_engagement::Tracker> _featureEngagementTracker;
+}
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)initWithPrefService:(PrefService*)prefService
+           featureEngagementTracker:
+               (feature_engagement::Tracker*)featureEngagementTracker {
   DCHECK(prefService);
   self = [super init];
   if (self) {
     _prefService = prefService;
+    _featureEngagementTracker = featureEngagementTracker;
   }
   return self;
 }
@@ -280,35 +290,11 @@ using feed::FeedUserActionType;
       base::UserMetricsAction(kDiscoverFeedUserActionPreviewTapped));
 }
 
-- (void)recordHeaderMenuLearnMoreTapped {
-  [self
-      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedLearnMore
-                              asInteraction:NO];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionLearnMoreTapped));
-}
-
 - (void)recordHeaderMenuManageTapped {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedManage
                                 asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageTapped));
-}
-
-- (void)recordHeaderMenuManageActivityTapped {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedManageActivity
-                                asInteraction:NO];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionManageActivityTapped));
-}
-
-- (void)recordHeaderMenuManageHiddenTapped {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedManageHidden
-                                asInteraction:NO];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionManageHiddenTapped));
 }
 
 - (void)recordHeaderMenuManageFollowingTapped {
@@ -317,20 +303,6 @@ using feed::FeedUserActionType;
                                 asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageFollowingTapped));
-}
-
-- (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible {
-  if (visible) {
-    [self
-        recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedTurnOn
-                                asInteraction:NO];
-    base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionTurnOn));
-  } else {
-    [self
-        recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedTurnOff
-                                asInteraction:NO];
-    base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionTurnOff));
-  }
 }
 
 - (void)recordOpenURLInSameTab {
@@ -669,6 +641,15 @@ using feed::FeedUserActionType;
   }
 }
 
+- (void)recordCarouselScrolled:(int)scrollDistance {
+  [self recordEngagement:scrollDistance interacted:NO];
+}
+
+- (void)recordFeedHandlingError:(NSString*)action {
+  base::UmaHistogramBoolean(
+      kFeedHandlingErrorPrefix + base::SysNSStringToUTF8(action), YES);
+}
+
 - (void)recordUniformityFlagValue:(BOOL)flag {
   base::UmaHistogramBoolean(kDiscoverUniformityFlag, flag);
 }
@@ -980,8 +961,7 @@ using feed::FeedUserActionType;
       break;
     default:
       // This should never be reached, as dates should never be > 28 days.
-      CHECK(NO);
-      break;
+      NOTREACHED();
   }
   self.prefService->SetInteger(kActivityBucketKey,
                                static_cast<int>(activityBucket));
@@ -1117,6 +1097,12 @@ using feed::FeedUserActionType;
   if (self.NTPState.selectedFeed == FeedTypeFollowing) {
     base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
                                   FeedEngagementType::kFeedInteracted);
+  }
+
+  // Log interaction with the Feature Engagement Tracker.
+  if (base::FeatureList::IsEnabled(kFeedSwipeInProductHelp)) {
+    _featureEngagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSActionOnFeed);
   }
 }
 

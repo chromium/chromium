@@ -19,9 +19,12 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_management_policy.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/switches.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -56,7 +59,7 @@ TEST_P(UnpackedInstallerUnitTest, WithheldHostPermissionsWithFlag) {
   TestExtensionRegistryObserver observer(registry());
   base::FilePath extension_path =
       data_dir().AppendASCII("api_test/simple_all_urls");
-  extensions::UnpackedInstaller::Create(service())->Load(extension_path);
+  extensions::UnpackedInstaller::Create(profile())->Load(extension_path);
   scoped_refptr<const Extension> loaded_extension =
       observer.WaitForExtensionLoaded();
 

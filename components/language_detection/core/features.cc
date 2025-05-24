@@ -12,5 +12,5 @@ namespace language_detection::features {
 // `ChromeRenderFrameObserver` (crbug/361215212).
 BASE_FEATURE(kLazyUpdateTranslateModel,
              "LazyUpdateTranslateModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace language_detection::features

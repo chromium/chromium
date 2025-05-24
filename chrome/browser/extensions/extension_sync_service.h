@@ -7,9 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -29,17 +31,16 @@ class Profile;
 
 namespace extensions {
 class Extension;
-class ExtensionService;
 class ExtensionSet;
 class ExtensionSyncData;
 }  // namespace extensions
 
 // SyncableService implementation responsible for the APPS and EXTENSIONS data
 // types, i.e. "proper" apps/extensions (not themes).
-class ExtensionSyncService final : public syncer::SyncableService,
-                                   public KeyedService,
-                                   public extensions::ExtensionRegistryObserver,
-                                   public extensions::ExtensionPrefsObserver {
+class ExtensionSyncService : public syncer::SyncableService,
+                             public KeyedService,
+                             public extensions::ExtensionRegistryObserver,
+                             public extensions::ExtensionPrefsObserver {
  public:
   explicit ExtensionSyncService(Profile* profile);
 
@@ -50,12 +51,6 @@ class ExtensionSyncService final : public syncer::SyncableService,
 
   // Convenience function to get the ExtensionSyncService for a BrowserContext.
   static ExtensionSyncService* Get(content::BrowserContext* context);
-
-  // Returns whether the given extension should be synced by this class.
-  // Filters out unsyncable extensions as well as themes (which are handled by
-  // ThemeSyncableService instead).
-  static bool ShouldSync(content::BrowserContext* context,
-                         const extensions::Extension& extension);
 
   // Notifies Sync (if needed) of a newly-installed extension or a change to
   // an existing extension. Call this when you change an extension setting that
@@ -91,8 +86,6 @@ class ExtensionSyncService final : public syncer::SyncableService,
   FRIEND_TEST_ALL_PREFIXES(ExtensionDisabledGlobalErrorTest,
                            HigherPermissionsFromSync);
 
-  extensions::ExtensionService* extension_service() const;
-
   // extensions::ExtensionRegistryObserver:
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const extensions::Extension* extension,
@@ -102,12 +95,13 @@ class ExtensionSyncService final : public syncer::SyncableService,
                               extensions::UninstallReason reason) override;
 
   // extensions::ExtensionPrefsObserver:
-  void OnExtensionStateChanged(const std::string& extension_id,
-                               bool state) override;
-  void OnExtensionDisableReasonsChanged(const std::string& extension_id,
-                                        int disabled_reasons) override;
+  void OnExtensionDisableReasonsChanged(
+      const std::string& extension_id,
+      extensions::DisableReasonSet disabled_reasons) override;
+  void OnExtensionPrefsWillBeDestroyed(
+      extensions::ExtensionPrefs* prefs) override;
 
-  // Gets the SyncBundle for the given |type|.
+  // Gets the SyncBundle for the given `type`.
   extensions::SyncBundle* GetSyncBundle(syncer::DataType type);
   const extensions::SyncBundle* GetSyncBundle(syncer::DataType type) const;
 
@@ -127,6 +121,27 @@ class ExtensionSyncService final : public syncer::SyncableService,
       const extensions::ExtensionSet& extensions,
       syncer::DataType type,
       std::vector<extensions::ExtensionSyncData>* sync_data_list) const;
+
+  // Returns if the extension corresponding to the given `extension_sync_data`
+  // should be promoted to an account extension, or false if there is no
+  // corresponding extension.
+  // Note that this is used if only the account extension state needs to be set.
+  bool ShouldPromoteToAccountExtension(
+      const extensions::ExtensionSyncData& extension_sync_data) const;
+
+  // Returns if the given `extension` should receive and apply updates from
+  // incoming sync data. This does not necessarily mean the extension can be
+  // uploaded to sync (ShouldSync returns false).
+  bool ShouldReceiveSyncData(const extensions::Extension& extension) const;
+
+  // Returns if the given `extension` should be synced by this class (i.e. it
+  // can be uploaded to the sync server).
+  bool ShouldSync(const extensions::Extension& extension) const;
+
+  // Returns true if the given `extension_id` corresponds to an item that has
+  // migrated to a pre-installed web app.
+  bool IsMigratingPreinstalledWebApp(
+      const extensions::ExtensionId& extension_id);
 
   // The normal profile associated with this ExtensionSyncService.
   raw_ptr<Profile> profile_;
@@ -160,6 +175,11 @@ class ExtensionSyncService final : public syncer::SyncableService,
   // have started happening. It will cause sync to call us back
   // asynchronously via MergeDataAndStartSyncing as soon as possible.
   SyncableService::StartSyncFlare flare_;
+
+  // Caches the set of Chrome app IDs undergoing migration to web apps because
+  // it is expensive to generate every time (multiple SkBitmap copies).
+  std::optional<base::flat_set<std::string>>
+      migrating_default_chrome_app_ids_cache_;
 
   base::WeakPtrFactory<ExtensionSyncService> weak_ptr_factory_{this};
 };

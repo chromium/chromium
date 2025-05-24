@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
+
+#include <string>
 
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/types/expected.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/net/x509_certificate_model.h"
@@ -24,18 +23,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/profiles/profile.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using crosapi::mojom::CertProvisioningProcessState;
 
@@ -45,46 +38,12 @@ namespace {
 
 crosapi::mojom::CertProvisioning* GetCertProvisioningInterface(
     Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (!profile->IsMainProfile() || !service ||
-      !service->IsAvailable<crosapi::mojom::CertProvisioning>()) {
-    return nullptr;
-  }
-  return service->GetRemote<crosapi::mojom::CertProvisioning>().get();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     return nullptr;
   }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->cert_provisioning_ash();
-#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-// Performs common crosapi validation. Returns void in case of success.
-// Returns a string error message in case of a mismatch.
-// |min_version| is the minimum version of the ash implementation
-// of CertificateProvisioning necessary to support this
-// operation.
-base::expected<void, std::string> ValidateCrosapi(int min_version) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
-    CHECK_IS_TEST();
-    // Use the crosapi even though it's disabled - the test installs a fake.
-    return {};
-  }
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  int current_version =
-      service->GetInterfaceVersion<crosapi::mojom::CertProvisioning>();
-  if (current_version < min_version) {
-    return base::unexpected(base::StringPrintf(
-        "validate crosapi error: min_version:%i current_version:%i",
-        min_version, current_version));
-  }
-#endif  // #if BUILDFLAG(IS_CHROME_LACROS)
-
-  return {};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Returns localized representation for the state of a certificate provisioning
@@ -137,7 +96,7 @@ std::u16string StateToText(CertProvisioningProcessState state) {
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_IMPORT_CERTIFICATE_INSTRUCTION_RECEIVED);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Returns the status message of the process.
@@ -162,8 +121,9 @@ std::u16string MakeStatusMessage(
 // "5 minutes ago".
 std::u16string GetTimeSinceLastUpdate(base::Time last_update_time) {
   const base::Time now = base::Time::NowFromSystemTime();
-  if (last_update_time.is_null() || last_update_time > now)
+  if (last_update_time.is_null() || last_update_time > now) {
     return std::u16string();
+  }
   const base::TimeDelta elapsed_time = now - last_update_time;
   return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
                                 ui::TimeFormat::LENGTH_SHORT, elapsed_time);
@@ -171,8 +131,9 @@ std::u16string GetTimeSinceLastUpdate(base::Time last_update_time) {
 
 std::u16string GetMessageFromBackendError(
     const crosapi::mojom::CertProvisioningBackendServerErrorPtr& call_info) {
-  if (!call_info)
+  if (!call_info) {
     return std::u16string();
+  }
 
   std::u16string time_u16 =
       base::UTF8ToUTF16(base::TimeFormatHTTP(call_info->time));
@@ -230,8 +191,9 @@ void CertificateProvisioningUiHandler::RegisterMessages() {
 void CertificateProvisioningUiHandler::OnStateChanged() {
   // If Javascript is not allowed yet, the UI will request a refresh during its
   // first message to the handler.
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   RefreshCertificateProvisioningProcesses();
 }
@@ -275,14 +237,7 @@ void CertificateProvisioningUiHandler::
   }
 
   if (cert_provisioning_interface_) {
-    base::expected<void, std::string> success = ValidateCrosapi(
-        crosapi::mojom::CertProvisioning::kResetOneProcessMinVersion);
-    if (success.has_value()) {
-      cert_provisioning_interface_->ResetOneProcess(
-          cert_profile_id.GetString());
-    } else {
-      LOG(ERROR) << "cert-prov cros_api validation error: " << success.error();
-    }
+    cert_provisioning_interface_->ResetOneProcess(cert_profile_id.GetString());
   }
 }
 
@@ -301,6 +256,7 @@ void CertificateProvisioningUiHandler::GotStatus(
 
   for (auto& process : status) {
     base::Value::Dict entry;
+    entry.Set("processId", std::move(process->process_id.value()));
     entry.Set("certProfileId", std::move(process->cert_profile_id));
     entry.Set("certProfileName", std::move(process->cert_profile_name));
     entry.Set("isDeviceWide", process->is_device_wide);

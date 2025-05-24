@@ -12,9 +12,11 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <array>
 #include <string>
 #include <string_view>
 
+#include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 static const size_t kSHA1DigestSize = 20;
@@ -28,19 +30,20 @@ static const char* kSimpleKey =
     "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA";
 static const size_t kSimpleKeyLength = 80;
 
-static const struct {
+struct SimpleHmacCases {
   const char *data;
   const int data_len;
   const char *digest;
-} kSimpleHmacCases[] = {
-  { "Test Using Larger Than Block-Size Key - Hash Key First", 54,
-    "\xAA\x4A\xE5\xE1\x52\x72\xD0\x0E\x95\x70\x56\x37\xCE\x8A\x3B\x55"
-        "\xED\x40\x21\x12" },
-  { "Test Using Larger Than Block-Size Key and Larger "
-        "Than One Block-Size Data", 73,
-    "\xE8\xE9\x9D\x0F\x45\x23\x7D\x78\x6D\x6B\xBA\xA7\x96\x5C\x78\x08"
-        "\xBB\xFF\x1A\x91" }
 };
+static const auto kSimpleHmacCases = std::to_array<SimpleHmacCases>(
+    {{"Test Using Larger Than Block-Size Key - Hash Key First", 54,
+      "\xAA\x4A\xE5\xE1\x52\x72\xD0\x0E\x95\x70\x56\x37\xCE\x8A\x3B\x55"
+      "\xED\x40\x21\x12"},
+     {"Test Using Larger Than Block-Size Key and Larger "
+      "Than One Block-Size Data",
+      73,
+      "\xE8\xE9\x9D\x0F\x45\x23\x7D\x78\x6D\x6B\xBA\xA7\x96\x5C\x78\x08"
+      "\xBB\xFF\x1A\x91"}});
 
 TEST(HMACTest, HmacSafeBrowsingResponseTest) {
   const int kKeySize = 16;
@@ -94,63 +97,67 @@ TEST(HMACTest, HmacSafeBrowsingResponseTest) {
 
 // Test cases from RFC 2202 section 3
 TEST(HMACTest, RFC2202TestCases) {
-  const struct {
+  struct Cases {
     const char *key;
     const int key_len;
     const char *data;
     const int data_len;
     const char *digest;
-  } cases[] = {
-    { "\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B"
-          "\x0B\x0B\x0B\x0B", 20,
-      "Hi There", 8,
-      "\xB6\x17\x31\x86\x55\x05\x72\x64\xE2\x8B\xC0\xB6\xFB\x37\x8C\x8E"
-          "\xF1\x46\xBE\x00" },
-    { "Jefe", 4,
-      "what do ya want for nothing?", 28,
-      "\xEF\xFC\xDF\x6A\xE5\xEB\x2F\xA2\xD2\x74\x16\xD5\xF1\x84\xDF\x9C"
-          "\x25\x9A\x7C\x79" },
-    { "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
-          "\xAA\xAA\xAA\xAA", 20,
-      "\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD"
-          "\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD"
-          "\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD"
-          "\xDD\xDD", 50,
-      "\x12\x5D\x73\x42\xB9\xAC\x11\xCD\x91\xA3\x9A\xF4\x8A\xA1\x7B\x4F"
-          "\x63\xF1\x75\xD3" },
-    { "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10"
-          "\x11\x12\x13\x14\x15\x16\x17\x18\x19", 25,
-      "\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-          "\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-          "\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-          "\xCD\xCD", 50,
-      "\x4C\x90\x07\xF4\x02\x62\x50\xC6\xBC\x84\x14\xF9\xBF\x50\xC8\x6C"
-          "\x2D\x72\x35\xDA" },
-    { "\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C"
-          "\x0C\x0C\x0C\x0C", 20,
-      "Test With Truncation", 20,
-      "\x4C\x1A\x03\x42\x4B\x55\xE0\x7F\xE7\xF2\x7B\xE1\xD5\x8B\xB9\x32"
-          "\x4A\x9A\x5A\x04" },
-    { "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
-          "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
-          "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
-          "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
-          "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA",
-      80,
-      "Test Using Larger Than Block-Size Key - Hash Key First", 54,
-      "\xAA\x4A\xE5\xE1\x52\x72\xD0\x0E\x95\x70\x56\x37\xCE\x8A\x3B\x55"
-          "\xED\x40\x21\x12" },
-    { "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
-          "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
-          "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
-          "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
-          "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA",
-      80,
-      "Test Using Larger Than Block-Size Key and Larger "
-          "Than One Block-Size Data", 73,
-      "\xE8\xE9\x9D\x0F\x45\x23\x7D\x78\x6D\x6B\xBA\xA7\x96\x5C\x78\x08"
-          "\xBB\xFF\x1A\x91" }
   };
+  const auto cases = std::to_array<Cases>({
+      {"\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B\x0B"
+       "\x0B\x0B\x0B\x0B",
+       20, "Hi There", 8,
+       "\xB6\x17\x31\x86\x55\x05\x72\x64\xE2\x8B\xC0\xB6\xFB\x37\x8C\x8E"
+       "\xF1\x46\xBE\x00"},
+      {"Jefe", 4, "what do ya want for nothing?", 28,
+       "\xEF\xFC\xDF\x6A\xE5\xEB\x2F\xA2\xD2\x74\x16\xD5\xF1\x84\xDF\x9C"
+       "\x25\x9A\x7C\x79"},
+      {"\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
+       "\xAA\xAA\xAA\xAA",
+       20,
+       "\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD"
+       "\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD"
+       "\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD\xDD"
+       "\xDD\xDD",
+       50,
+       "\x12\x5D\x73\x42\xB9\xAC\x11\xCD\x91\xA3\x9A\xF4\x8A\xA1\x7B\x4F"
+       "\x63\xF1\x75\xD3"},
+      {"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10"
+       "\x11\x12\x13\x14\x15\x16\x17\x18\x19",
+       25,
+       "\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
+       "\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
+       "\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
+       "\xCD\xCD",
+       50,
+       "\x4C\x90\x07\xF4\x02\x62\x50\xC6\xBC\x84\x14\xF9\xBF\x50\xC8\x6C"
+       "\x2D\x72\x35\xDA"},
+      {"\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C\x0C"
+       "\x0C\x0C\x0C\x0C",
+       20, "Test With Truncation", 20,
+       "\x4C\x1A\x03\x42\x4B\x55\xE0\x7F\xE7\xF2\x7B\xE1\xD5\x8B\xB9\x32"
+       "\x4A\x9A\x5A\x04"},
+      {"\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
+       "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
+       "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
+       "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
+       "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA",
+       80, "Test Using Larger Than Block-Size Key - Hash Key First", 54,
+       "\xAA\x4A\xE5\xE1\x52\x72\xD0\x0E\x95\x70\x56\x37\xCE\x8A\x3B\x55"
+       "\xED\x40\x21\x12"},
+      {"\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
+       "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
+       "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
+       "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA"
+       "\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA\xAA",
+       80,
+       "Test Using Larger Than Block-Size Key and Larger "
+       "Than One Block-Size Data",
+       73,
+       "\xE8\xE9\x9D\x0F\x45\x23\x7D\x78\x6D\x6B\xBA\xA7\x96\x5C\x78\x08"
+       "\xBB\xFF\x1A\x91"},
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     crypto::HMAC hmac(crypto::HMAC::SHA1);
@@ -348,10 +355,99 @@ TEST(HMACTest, Bytes) {
 
   EXPECT_TRUE(hmac.Verify(data, calculated_hmac));
   EXPECT_TRUE(hmac.VerifyTruncated(
-      data, base::make_span(calculated_hmac, kSHA256DigestSize / 2)));
+      data, base::span(calculated_hmac, kSHA256DigestSize / 2)));
 
   data[0]++;
   EXPECT_FALSE(hmac.Verify(data, calculated_hmac));
   EXPECT_FALSE(hmac.VerifyTruncated(
-      data, base::make_span(calculated_hmac, kSHA256DigestSize / 2)));
+      data, base::span(calculated_hmac, kSHA256DigestSize / 2)));
+}
+
+TEST(HMACTest, OneShotSha1) {
+  // RFC 2202 test case 3:
+  std::vector<uint8_t> key(20, 0xaa);
+  std::vector<uint8_t> data(50, 0xdd);
+  std::vector<uint8_t> expected;
+  CHECK(base::HexStringToBytes("125d7342b9ac11cd91a39af48aa17b4f63f175d3",
+                               &expected));
+
+  auto result = crypto::hmac::SignSha1(key, data);
+  EXPECT_EQ(base::as_byte_span(result), base::as_byte_span(expected));
+  EXPECT_TRUE(crypto::hmac::VerifySha1(key, data, result));
+  result[0] ^= 0x01;
+  EXPECT_FALSE(crypto::hmac::VerifySha1(key, data, result));
+}
+
+TEST(HMACTest, OneShotSha256) {
+  // RFC 4231 test case 3:
+  std::vector<uint8_t> key(20, 0xaa);
+  std::vector<uint8_t> data(50, 0xdd);
+  std::vector<uint8_t> expected;
+  CHECK(base::HexStringToBytes(
+      "773ea91e36800e46854db8ebd09181a72959098b3ef8c122d9635514ced565fe",
+      &expected));
+
+  auto result = crypto::hmac::SignSha256(key, data);
+  EXPECT_EQ(base::as_byte_span(result), base::as_byte_span(expected));
+  EXPECT_TRUE(crypto::hmac::VerifySha256(key, data, result));
+  result[0] ^= 0x01;
+  EXPECT_FALSE(crypto::hmac::VerifySha256(key, data, result));
+}
+
+TEST(HMACTest, OneShotSha384) {
+  // RFC 4231 test case 3:
+  std::vector<uint8_t> key(20, 0xaa);
+  std::vector<uint8_t> data(50, 0xdd);
+  std::vector<uint8_t> expected;
+  CHECK(
+      base::HexStringToBytes("88062608d3e6ad8a0aa2ace014c8a86f0aa635d947ac9febe"
+                             "83ef4e55966144b2a5ab39dc13814b94e3ab6e101a34f27",
+                             &expected));
+
+  std::array<uint8_t, crypto::hash::kSha384Size> result;
+  crypto::hmac::Sign(crypto::hash::kSha384, key, data, result);
+  EXPECT_EQ(base::as_byte_span(result), base::as_byte_span(expected));
+  EXPECT_TRUE(crypto::hmac::Verify(crypto::hash::kSha384, key, data, result));
+  result[0] ^= 0x01;
+  EXPECT_FALSE(crypto::hmac::Verify(crypto::hash::kSha384, key, data, result));
+}
+
+TEST(HMACTest, OneShotSha512) {
+  // RFC 4231 test case 3:
+  std::vector<uint8_t> key(20, 0xaa);
+  std::vector<uint8_t> data(50, 0xdd);
+  std::vector<uint8_t> expected;
+  CHECK(base::HexStringToBytes(
+      "fa73b0089d56a284efb0f0756c890be9b1b5dbdd8ee81a3655f83e33b2279d39"
+      "bf3e848279a722c806b485a47e67c807b946a337bee8942674278859e13292fb",
+      &expected));
+
+  auto result = crypto::hmac::SignSha512(key, data);
+  EXPECT_EQ(base::as_byte_span(result), base::as_byte_span(expected));
+  EXPECT_TRUE(crypto::hmac::VerifySha512(key, data, result));
+  result[0] ^= 0x01;
+  EXPECT_FALSE(crypto::hmac::VerifySha512(key, data, result));
+}
+
+TEST(HMACTest, OneShotWrongLengthDies) {
+  std::array<uint8_t, 32> key;
+  std::array<uint8_t, 32> data;
+  std::array<uint8_t, 16> small_hmac;
+  std::array<uint8_t, 128> big_hmac;
+
+  EXPECT_DEATH_IF_SUPPORTED(crypto::hmac::Sign(crypto::hash::HashKind::kSha256,
+                                               key, data, small_hmac),
+                            "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      crypto::hmac::Sign(crypto::hash::HashKind::kSha256, key, data, big_hmac),
+      "");
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      (void)crypto::hmac::Verify(crypto::hash::HashKind::kSha256, key, data,
+                                 small_hmac),
+      "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      (void)crypto::hmac::Verify(crypto::hash::HashKind::kSha256, key, data,
+                                 big_hmac),
+      "");
 }

@@ -16,6 +16,7 @@ goog.require('goog.events.EventHandler');
 goog.require('goog.events.EventTarget');
 goog.require('goog.ui.Component');
 goog.requireType('goog.events.Event');
+goog.requireType('goog.ui.Toolbar');
 
 
 
@@ -36,6 +37,7 @@ goog.requireType('goog.events.Event');
  * @param {!goog.ui.Toolbar} toolbar Toolbar to control the editable field.
  * @constructor
  * @extends {goog.events.EventTarget}
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.editor.ToolbarController = function(field, toolbar) {
   'use strict';
@@ -241,6 +243,7 @@ goog.ui.editor.ToolbarController.prototype.disposeInternal = function() {
  * effective formatting of the selection.
  * @param {goog.events.Event} e Editor event to handle.
  * @protected
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.editor.ToolbarController.prototype.updateToolbar = function(e) {
   'use strict';
@@ -273,6 +276,7 @@ goog.ui.editor.ToolbarController.prototype.updateToolbar = function(e) {
 /**
  * Updates the toolbar to reflect a given state.
  * @param {Object} state Object mapping editor commands to values.
+ * @suppress {strictMissingProperties} Added to unblock check_level=STRICT
  */
 goog.ui.editor.ToolbarController.prototype.updateToolbarFromState = function(
     state) {
@@ -296,9 +300,11 @@ goog.ui.editor.ToolbarController.prototype.updateToolbarFromState = function(
  * user actions by executing the corresponding field command.
  * @param {goog.events.Event} e Action event to handle.
  * @protected
+ * @suppress {missingProperties} Added to unblock check_level=STRICT
  */
 goog.ui.editor.ToolbarController.prototype.handleAction = function(e) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const command = this.getCommand(e.target.getId());
   this.field_.execCommand(command, e.target.getValue());
 };

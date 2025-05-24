@@ -536,7 +536,6 @@ void FileSystemUnderlyingSink::CloseComplete(
 }
 
 void FileSystemUnderlyingSink::Trace(Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
   UnderlyingSinkBase::Trace(visitor);
   visitor->Trace(writer_remote_);
   visitor->Trace(pending_operation_);

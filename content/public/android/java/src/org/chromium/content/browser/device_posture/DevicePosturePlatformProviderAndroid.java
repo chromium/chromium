@@ -7,7 +7,6 @@ package org.chromium.content.browser.device_posture;
 import android.graphics.Rect;
 import android.os.Build;
 
-import androidx.annotation.Nullable;
 import androidx.window.extensions.layout.DisplayFeature;
 import androidx.window.extensions.layout.FoldingFeature;
 import androidx.window.extensions.layout.WindowLayoutInfo;
@@ -17,6 +16,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -30,10 +31,11 @@ import org.chromium.window.WindowApiCheck;
  * into the native class to relay them to blink.
  */
 @JNINamespace("content")
+@NullMarked
 public class DevicePosturePlatformProviderAndroid implements WindowEventObserver {
     private long mNativeDevicePosturePlatformProvider;
     private final WebContentsImpl mWebContents;
-    private WindowLayoutInfoListener mWindowLayoutInfoListener;
+    private @Nullable WindowLayoutInfoListener mWindowLayoutInfoListener;
     private boolean mListening;
 
     @CalledByNative
@@ -49,7 +51,7 @@ public class DevicePosturePlatformProviderAndroid implements WindowEventObserver
         assert webContents != null;
         mNativeDevicePosturePlatformProvider = nativeDevicePosturePlatformProvider;
         mWebContents = webContents;
-        WindowEventObserverManager manager = WindowEventObserverManager.from(mWebContents);
+        WindowEventObserverManager manager = WindowEventObserverManager.maybeFrom(mWebContents);
         if (manager != null) {
             manager.addObserver(this);
         }
@@ -100,7 +102,7 @@ public class DevicePosturePlatformProviderAndroid implements WindowEventObserver
     }
 
     @Override
-    public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
+    public void onWindowAndroidChanged(@Nullable WindowAndroid newWindowAndroid) {
         unObserveWindowLayoutListener();
         // We were listening before the change, we should listen on the new window.
         if (mListening) {

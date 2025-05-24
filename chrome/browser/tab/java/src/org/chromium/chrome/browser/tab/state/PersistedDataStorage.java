@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.tab.state;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 /** Provides key -> byte[] array mapping storage with namespace support for PersistedData */
+@NullMarked
 public interface PersistedDataStorage {
     /**
      * Save a byte array corresponding to a key

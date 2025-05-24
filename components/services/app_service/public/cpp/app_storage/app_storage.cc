@@ -4,14 +4,17 @@
 
 #include "components/services/app_service/public/cpp/app_storage/app_storage.h"
 
+#include <functional>
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/task_runner.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
@@ -138,7 +141,8 @@ bool AppStorage::IsAppChanged(const AppUpdate& update) {
   auto app = update.Delta()->Clone();
   CHECK(app);
 
-  std::map<std::string, AppPtr>& saved_app_info = app_registry_cache_->states_;
+  std::map<std::string, AppPtr, std::less<>>& saved_app_info =
+      app_registry_cache_->states_;
   auto it = saved_app_info.find(app->app_id);
 
   // If the app is removed, check whether the app status in `saved_app_info`.
@@ -155,9 +159,8 @@ bool AppStorage::IsAppChanged(const AppUpdate& update) {
   }
 
   // Ideally this should not happen quite often. However, if due to new
-  // feature/requirements, etc, the app type could be modified, e.g.
-  // kChromeApp->kStandaloneBrowserChromeApp, so we allow the app type changed
-  // to align with the latest requirements.
+  // feature/requirements, etc, the app type could be modified, we allow the app
+  // type changed to align with the latest requirements.
   if (app->app_type != it->second->app_type) {
     return true;
   }

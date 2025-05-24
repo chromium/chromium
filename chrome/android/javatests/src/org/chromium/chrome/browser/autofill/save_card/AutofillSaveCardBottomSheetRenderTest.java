@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill.save_card;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.ViewGroup;
 
 import androidx.test.filters.LargeTest;
@@ -34,7 +33,7 @@ import org.chromium.components.autofill.payments.LegalMessageLine.Link;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -58,7 +57,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -78,23 +77,10 @@ public class AutofillSaveCardBottomSheetRenderTest {
                     mActivity = sActivityTestRule.getActivity();
                     ViewGroup activityContentView = mActivity.findViewById(android.R.id.content);
                     activityContentView.removeAllViews();
-                    ScrimCoordinator scrimCoordinator =
-                            new ScrimCoordinator(
-                                    mActivity,
-                                    new ScrimCoordinator.SystemUiScrimDelegate() {
-                                        @Override
-                                        public void setStatusBarScrimFraction(
-                                                float scrimFraction) {}
-
-                                        @Override
-                                        public void setNavigationBarScrimFraction(
-                                                float scrimFraction) {}
-                                    },
-                                    activityContentView,
-                                    Color.WHITE);
+                    ScrimManager scrimManager = new ScrimManager(mActivity, activityContentView);
                     mBottomSheetController =
                             BottomSheetControllerFactory.createFullWidthBottomSheetController(
-                                    () -> scrimCoordinator,
+                                    () -> scrimManager,
                                     (unused) -> {},
                                     mActivity.getWindow(),
                                     KeyboardVisibilityDelegate.getInstance(),

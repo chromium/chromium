@@ -163,7 +163,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   void PerformStorageCleanupOnFileTaskRunner(FileSystemContext* context,
                                              QuotaManagerProxy* proxy,
                                              FileSystemType type) override;
-  std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
+  std::vector<blink::StorageKey> GetDefaultStorageKeysOnFileTaskRunner(
       FileSystemType type) override;
   int64_t GetBucketUsageOnFileTaskRunner(FileSystemContext* context,
                                          const BucketLocator& bucket_locator,

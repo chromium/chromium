@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
 
+class PrefService;
+
 namespace ash {
 
 // Kerberos defaults for canonicalization SPN. (see
@@ -29,7 +31,8 @@ extern const char kKrb5ConfFile[];
 // Chrome for Kerberos authentication.
 class KerberosFilesHandler {
  public:
-  explicit KerberosFilesHandler(base::RepeatingClosure get_kerberos_files);
+  KerberosFilesHandler(PrefService& local_state,
+                       base::RepeatingClosure get_kerberos_files);
 
   KerberosFilesHandler(const KerberosFilesHandler&) = delete;
   KerberosFilesHandler& operator=(const KerberosFilesHandler&) = delete;

@@ -52,8 +52,6 @@ class WebviewPort(linux.LinuxPort):
                 self.path_to_generic_test_expectations_file(),
                 self._filesystem.join(self.web_tests_dir(), 'NeverFixTests'),
                 self._filesystem.join(self.web_tests_dir(),
-                                      'MobileTestExpectations'),
-                self._filesystem.join(self.web_tests_dir(),
                                       'StaleTestExpectations'),
                 self._filesystem.join(self.web_tests_dir(), 'SlowTests')
             ]))
@@ -68,4 +66,4 @@ class WebviewPort(linux.LinuxPort):
 
     def path_to_smoke_tests_file(self):
         return self._filesystem.join(self.web_tests_dir(), 'TestLists',
-                                     'android.filter')
+                                     'webview.filter')

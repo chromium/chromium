@@ -22,12 +22,15 @@ namespace {
 
 class MockBufferMapCallback {
  public:
-  MOCK_METHOD(void, Call, (wgpu::MapAsyncStatus status, const char* message));
+  MOCK_METHOD(void,
+              Call,
+              (wgpu::MapAsyncStatus status, wgpu::StringView message));
 };
 std::unique_ptr<testing::StrictMock<MockBufferMapCallback>>
     mock_buffer_map_callback;
 
-void ToMockBufferMapCallback(wgpu::MapAsyncStatus status, const char* message) {
+void ToMockBufferMapCallback(wgpu::MapAsyncStatus status,
+                             wgpu::StringView message) {
   mock_buffer_map_callback->Call(status, message);
 }
 
@@ -104,12 +107,9 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
        "TestLabel"},
       kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
-  gl()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
-  GLuint texture = gl()->CreateAndTexStorage2DSharedImageCHROMIUM(
-      shared_image->mailbox().name);
-
-  gl()->BeginSharedImageAccessDirectCHROMIUM(
-      texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  auto texture = shared_image->CreateGLTexture(gl());
+  auto scoped_access =
+      texture->BeginAccess(mailbox_produced_token, /*readonly=*/false);
   GLuint fbo = 0;
   gl()->GenFramebuffers(1, &fbo);
   gl()->BindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -117,15 +117,14 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
   // Attach the texture to FBO.
   gl()->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                              GL_TEXTURE_2D, /* Hard code */
-                             texture, 0);
+                             scoped_access->texture_id(), 0);
 
   // Set the clear color to green.
   gl()->ClearColor(0.0f, 1.0f, 0.0f, 1.0f);
   gl()->Clear(GL_COLOR_BUFFER_BIT);
-  gl()->EndSharedImageAccessDirectCHROMIUM(texture);
 
-  SyncToken gl_op_token;
-  gl()->GenUnverifiedSyncTokenCHROMIUM(gl_op_token.GetData());
+  SyncToken gl_op_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      std::move(scoped_access));
   webgpu()->WaitSyncTokenCHROMIUM(gl_op_token.GetConstData());
 
   wgpu::Device device = GetNewDevice();
@@ -147,12 +146,12 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
     wgpu::Buffer readback_buffer = device.CreateBuffer(&buffer_desc);
 
-    wgpu::ImageCopyTexture copy_src = {};
+    wgpu::TexelCopyTextureInfo copy_src = {};
     copy_src.texture = wgpu_texture;
     copy_src.mipLevel = 0;
     copy_src.origin = {0, 0, 0};
 
-    wgpu::ImageCopyBuffer copy_dst = {};
+    wgpu::TexelCopyBufferInfo copy_dst = {};
     copy_dst.buffer = readback_buffer;
     copy_dst.layout.offset = 0;
     copy_dst.layout.bytesPerRow = 256;
@@ -173,7 +172,7 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
                              wgpu::CallbackMode::AllowSpontaneous,
                              ToMockBufferMapCallback);
     EXPECT_CALL(*mock_buffer_map_callback,
-                Call(wgpu::MapAsyncStatus::Success, nullptr))
+                Call(wgpu::MapAsyncStatus::Success, testing::_))
         .Times(1);
     WaitForCompletion(device);
 

@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 /**
@@ -89,16 +90,16 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
 
     /** BottomSheetObserver implementation. */
     @Override
-    public void onSheetOpened(int reason) {}
+    public void onSheetOpened(@StateChangeReason int reason) {}
 
     @Override
-    public void onSheetClosed(int reason) {}
+    public void onSheetClosed(@StateChangeReason int reason) {}
 
     @Override
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
 
     @Override
-    public void onSheetStateChanged(int newState, int reason) {
+    public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {
         if (newState == SheetState.HIDDEN) {
             // Clean up the observer since the coordinator is discarded when the sheet is hidden.
             mBottomSheetController.removeObserver(this);

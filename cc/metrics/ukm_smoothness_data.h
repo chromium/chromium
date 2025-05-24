@@ -30,7 +30,7 @@ struct CC_EXPORT UkmSmoothnessData {
   double above_threshold = 0.0;
   double percentile_95 = 0.0;
   double variance = 0.0;
-  double buckets[7] = {0};
+  double buckets[7] = {};
 
   double scroll_focused_median = 0.0;
   double scroll_focused_percentile_95 = 0.0;

@@ -8,14 +8,13 @@ import {
   SAMPLES_PER_SLICE,
 } from './audio_constants.js';
 import {PlatformHandler} from './platform_handler.js';
-import {computed, effect, signal} from './reactive/signal.js';
+import {computed, signal} from './reactive/signal.js';
+import {LanguageCode} from './soda/language_info.js';
 import {SodaEventTransformer, Transcription} from './soda/soda.js';
 import {SodaSession} from './soda/types.js';
 import {
   assert,
-  assertExhaustive,
   assertExists,
-  assertNotReached,
 } from './utils/assert.js';
 import {AsyncJobInfo, AsyncJobQueue} from './utils/async_job_queue.js';
 import {InteriorMutableArray} from './utils/interior_mutable_array.js';
@@ -45,10 +44,13 @@ interface RecordingProgress {
   transcription: Transcription|null;
 }
 
-function getMicrophoneStream(micId: string, echoCancellation: boolean):
-  Promise<MediaStream> {
+function getMicrophoneStream(
+  micId: string,
+  echoCancellation: boolean,
+): Promise<MediaStream> {
   return navigator.mediaDevices.getUserMedia({
     audio: {
+      autoGainControl: {exact: false},
       deviceId: {exact: micId},
       echoCancellation: {exact: echoCancellation},
     },
@@ -68,14 +70,17 @@ let audioCtxGlobal: AudioContext|null = null;
 async function getAudioContext(): Promise<AudioContext> {
   if (audioCtxGlobal === null) {
     // Set null output device when recording.
-    audioCtxGlobal =
-      new AudioContext({sampleRate: SAMPLE_RATE, sinkId: {type: 'none'}});
+    audioCtxGlobal = new AudioContext({
+      sampleRate: SAMPLE_RATE,
+      sinkId: {type: 'none'},
+    });
     await audioCtxGlobal.audioWorklet.addModule('./static/audio_worklet.js');
   }
   return audioCtxGlobal;
 }
 
 interface SodaSessionInfo {
+  language: LanguageCode;
   session: SodaSession;
   startOffsetMs: number;
   unsubscribe: Unsubscribe;
@@ -153,8 +158,10 @@ export class RecordingSession {
         const power = Math.sqrt(
           samples.map((v) => v * v).reduce((x, y) => x + y, 0) / samples.length,
         );
+        // Takes another `sqrt` to apply non-linear distortion, making small
+        // gain easier to be seen.
         const scaledPower = clamp(
-          Math.floor(power * POWER_SCALE_FACTOR),
+          Math.floor(Math.sqrt(power) * POWER_SCALE_FACTOR),
           0,
           POWER_SCALE_FACTOR - 1,
         );
@@ -183,6 +190,10 @@ export class RecordingSession {
     }
   }
 
+  setSpeakerLabelEnabled(enabled: boolean): void {
+    this.sodaEventTransformer.speakerLabelEnabled = enabled;
+  }
+
   get everPaused(): boolean {
     return this.everPausedInternal;
   }
@@ -203,7 +214,8 @@ export class RecordingSession {
 
     // Turn on AEC when capturing system audio via getDisplayMedia.
     const micStream = await getMicrophoneStream(
-      this.config.micId, this.config.canCaptureSystemAudioWithLoopback
+      this.config.micId,
+      this.config.canCaptureSystemAudioWithLoopback,
     );
     this.micAudioSourceNode = this.audioCtx.createMediaStreamSource(micStream);
     this.connectSourceNode(this.micAudioSourceNode);
@@ -218,7 +230,7 @@ export class RecordingSession {
     }
 
     if (!this.config.includeSystemAudio ||
-      !this.config.canCaptureSystemAudioWithLoopback) {
+        !this.config.canCaptureSystemAudioWithLoopback) {
       return;
     }
 
@@ -276,65 +288,52 @@ export class RecordingSession {
     console.error(event);
   }
 
-  private async ensureSodaInstalled(): Promise<void> {
+  private async isSodaInstalled(
+    language: LanguageCode,
+  ): Promise<boolean> {
     const {platformHandler} = this.config;
-    const sodaState = platformHandler.sodaState;
+    const sodaState = platformHandler.getSodaState(language);
     assert(
       sodaState.value.kind !== 'unavailable',
       `Trying to install SODA when it's unavailable`,
     );
-    if (sodaState.value.kind === 'installed') {
-      return;
-    }
-    platformHandler.installSoda();
-    await new Promise<void>((resolve, reject) => {
-      effect(({dispose}) => {
-        switch (sodaState.value.kind) {
-          case 'error':
-            dispose();
-            reject(new Error('Install SODA failed'));
-            break;
-          case 'installed':
-            dispose();
-            resolve();
-            break;
-          case 'notInstalled':
-          case 'installing':
-            break;
-          case 'unavailable':
-            return assertNotReached(
-              `Trying to install SODA when it's unavailable`,
-            );
-          default:
-            assertExhaustive(sodaState.value);
-        }
-      });
-    });
+    // Because there's no `OnSodaUninstalled` event, `installed` state may be
+    // outdated when other process removes the library. Wait for status update
+    // to avoid state inconsistency.
+    // TODO: b/375306309 - Remove "await" when soda states are always consistent
+    // after the `OnSodaUninstalled` event is implemented.
+    await platformHandler.installSoda(language);
+    return sodaState.value.kind === 'installed';
   }
 
-  startNewSodaSession(): AsyncJobInfo {
+  tryStartSodaSession(language: LanguageCode): AsyncJobInfo {
     return this.sodaEnableQueue.push(async () => {
+      if (!await this.isSodaInstalled(language)) {
+        return;
+      }
       if (this.currentSodaSession !== null) {
         return;
       }
       if (this.transcription.value === null) {
-        this.transcription.value = new Transcription([]);
+        this.transcription.value = new Transcription([], language);
       }
-      await this.ensureSodaInstalled();
       // Abort current running job if there's a new enable/disable request.
       if (this.sodaEnableQueue.hasPendingJob()) {
         return;
       }
 
-      const session = await this.config.platformHandler.newSodaSession();
+      const session =
+        await this.config.platformHandler.newSodaSession(language);
       const unsubscribe = session.subscribeEvent((ev) => {
         this.sodaEventTransformer.addEvent(
           ev,
           assertExists(this.currentSodaSession).startOffsetMs,
         );
-        this.transcription.value = this.sodaEventTransformer.getTranscription();
+        this.transcription.value =
+          this.sodaEventTransformer.getTranscription(language);
       });
       this.currentSodaSession = {
+        language,
         session,
         unsubscribe,
         startOffsetMs: (this.processedSamples / SAMPLE_RATE) * 1000,
@@ -350,6 +349,12 @@ export class RecordingSession {
       }
       await this.currentSodaSession.session.stop();
       this.currentSodaSession.unsubscribe();
+      // TODO: b/369277555 - Investigate why SODA does not convert all results
+      // to final.
+      this.sodaEventTransformer.finalizeTokens();
+      this.transcription.value = this.sodaEventTransformer.getTranscription(
+        this.currentSodaSession.language,
+      );
       this.currentSodaSession = null;
     });
   }
@@ -359,16 +364,17 @@ export class RecordingSession {
    *
    * Note that each recording session is intended to only be started once.
    */
-  async start(transcriptionEnabled: boolean): Promise<void> {
+  async start(
+    transcriptionEnabled: boolean,
+    language: LanguageCode|null = null,
+  ): Promise<void> {
     // Suspend the context while initializing the source nodes.
     await this.audioCtx.suspend();
 
-    if (transcriptionEnabled) {
-      // If the transcription is enabled from the beginning, await for the soda
-      // session to start to avoid having start of audio not transcribed.
-      // TODO(pihsun): Should this be happened asynchronously and have the
-      // audio buffered?
-      await this.startNewSodaSession().result;
+    if (transcriptionEnabled && language !== null) {
+      // Do not wait for session start to avoid SODA failure hangs recording.
+      // TODO(hsuanling): Have the audio buffered and send to recognizer later?
+      this.tryStartSodaSession(language);
     }
 
     await Promise.all([

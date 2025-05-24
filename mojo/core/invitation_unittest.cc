@@ -54,7 +54,7 @@
 #endif
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-#include "base/mac/mach_port_rendezvous.h"
+#include "base/apple/mach_port_rendezvous.h"
 #endif
 
 namespace mojo {
@@ -922,7 +922,14 @@ DEFINE_TEST_CLIENT(BrokenTransportClient) {
   // No-op. Exit immediately without accepting any invitation.
 }
 
-TEST_F(MAYBE_InvitationTest, NonBrokerToNonBroker) {
+// TODO(crbug.com/407060377): Flaky in Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NonBrokerToNonBroker DISABLED_NonBrokerToNonBroker
+#else
+#define MAYBE_NonBrokerToNonBroker NonBrokerToNonBroker
+#endif
+
+TEST_F(MAYBE_InvitationTest, MAYBE_NonBrokerToNonBroker) {
   // Tests a non-broker inviting another non-broker to join the network.
   MojoHandle host;
   base::Process host_process = LaunchChildTestClient(

@@ -4,10 +4,11 @@
 
 #include "components/translate/content/android/translate_message.h"
 
+#include <algorithm>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,6 +16,7 @@
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/language_detection/core/constants.h"
 #include "components/messages/android/message_enums.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -287,9 +289,9 @@ class TranslateMessageTest : public ::testing::Test {
               std::vector<bool> actual_vector;
               base::android::JavaBooleanArrayToBoolVector(env, actual,
                                                           &actual_vector);
-              return base::ranges::equal(expected_items, actual_vector,
-                                         std::equal_to<>(),
-                                         &SecondaryMenuItem::has_checkmark);
+              return std::ranges::equal(expected_items, actual_vector,
+                                        std::equal_to<>(),
+                                        &SecondaryMenuItem::has_checkmark);
             }),
             /*overflow_menu_item_ids=*/
             Truly([env, expected_items](
@@ -298,11 +300,11 @@ class TranslateMessageTest : public ::testing::Test {
               std::vector<int> actual_vector;
               base::android::JavaIntArrayToIntVector(env, actual,
                                                      &actual_vector);
-              return base::ranges::equal(expected_items, actual_vector,
-                                         std::equal_to<>(),
-                                         [](const SecondaryMenuItem& item) {
-                                           return static_cast<int>(item.id);
-                                         });
+              return std::ranges::equal(expected_items, actual_vector,
+                                        std::equal_to<>(),
+                                        [](const SecondaryMenuItem& item) {
+                                          return static_cast<int>(item.id);
+                                        });
             }),
             /*language_codes=*/
             Truly([env, expected_items](
@@ -311,9 +313,9 @@ class TranslateMessageTest : public ::testing::Test {
               std::vector<std::string> actual_vector;
               base::android::AppendJavaStringArrayToStringVector(
                   env, actual, &actual_vector);
-              return base::ranges::equal(expected_items, actual_vector,
-                                         std::equal_to<>(),
-                                         &SecondaryMenuItem::language_code);
+              return std::ranges::equal(expected_items, actual_vector,
+                                        std::equal_to<>(),
+                                        &SecondaryMenuItem::language_code);
             })))
         .WillOnce(Return(return_value));
   }
@@ -897,8 +899,10 @@ TEST_F(TranslateMessageTest,
        ++i) {
     std::string language_code =
         ui_delegate.translate_ui_languages_manager()->GetLanguageCodeAt(i);
-    if (language_code == "en" || language_code == kUnknownLanguageCode)
+    if (language_code == "en" ||
+        language_code == language_detection::kUnknownLanguageCode) {
       continue;
+    }
     menu_items.emplace_back(SecondaryMenuItem{
         TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage, false,
         std::move(language_code)});
@@ -990,8 +994,10 @@ TEST_F(TranslateMessageTest,
        ++i) {
     std::string language_code =
         ui_delegate.translate_ui_languages_manager()->GetLanguageCodeAt(i);
-    if (language_code == "en" || language_code == kUnknownLanguageCode)
+    if (language_code == "en" ||
+        language_code == language_detection::kUnknownLanguageCode) {
       continue;
+    }
     menu_items.emplace_back(SecondaryMenuItem{
         TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage, false,
         std::move(language_code)});
@@ -1080,7 +1086,8 @@ TEST_F(TranslateMessageTest, OverflowMenuUnknownSourceLanguage) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
-  ShowBeforeTranslationMessage(env, kUnknownLanguageCode, "en");
+  ShowBeforeTranslationMessage(env, language_detection::kUnknownLanguageCode,
+                               "en");
 
   // Doesn't include the kToggleAlwaysTranslateLanguage option or the
   // kToggleNeverTranslateLanguage option.

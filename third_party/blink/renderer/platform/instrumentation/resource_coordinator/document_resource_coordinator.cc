@@ -97,4 +97,8 @@ void DocumentResourceCoordinator::OnWebMemoryMeasurementRequested(
   service_->OnWebMemoryMeasurementRequested(mode, std::move(callback));
 }
 
+void DocumentResourceCoordinator::OnFreezingOriginTrialOptOut() {
+  service_->OnFreezingOriginTrialOptOut();
+}
+
 }  // namespace blink

@@ -49,8 +49,8 @@ class WebRequestPermissions {
   static bool HideRequest(extensions::PermissionHelper* permission_helper,
                           const extensions::WebRequestInfo& request);
 
-  // |host_permission_check| controls how permissions are checked with regard to
-  // |url| and |initiator| if an initiator exists.
+  // `host_permission_check` controls how permissions are checked with regard to
+  // `url` and `initiator` if an initiator exists.
   static extensions::PermissionsData::PageAccess CanExtensionAccessURL(
       extensions::PermissionHelper* permission_helper,
       const extensions::ExtensionId& extension_id,

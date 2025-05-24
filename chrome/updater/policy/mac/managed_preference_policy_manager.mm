@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
-
 #include <optional>
 #include <string>
 #include <vector>
@@ -18,10 +16,12 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/platform_policy_manager.h"
+#include "chrome/updater/updater_branding.h"
 
 namespace {
 NSString* const kManagedPreferencesUpdatePolicies = @"updatePolicies";
-NSString* const kKeystoneSharedPreferenceSuite = @"com.google.Keystone";
+NSString* const kKeystoneSharedPreferenceSuite = @LEGACY_GOOGLE_UPDATE_APPID;
 }  // namespace
 
 namespace updater {
@@ -30,7 +30,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
  public:
   ManagedPreferencePolicyManager(
       CRUUpdatePolicyDictionary* policy,
-      const std::optional<bool>& override_is_managed_device);
+      std::optional<bool> override_is_managed_device);
   ManagedPreferencePolicyManager(const ManagedPreferencePolicyManager&) =
       delete;
   ManagedPreferencePolicyManager& operator=(
@@ -73,7 +73,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
 
 ManagedPreferencePolicyManager::ManagedPreferencePolicyManager(
     CRUUpdatePolicyDictionary* policyDict,
-    const std::optional<bool>& override_is_managed_device)
+    std::optional<bool> override_is_managed_device)
     : impl_([[CRUManagedPreferencePolicyManager alloc]
           initWithDictionary:policyDict]),
       is_managed_device_(override_is_managed_device.value_or(
@@ -236,8 +236,8 @@ NSDictionary* ReadManagedPreferencePolicyDictionary() {
   return base::apple::CFToNSOwnershipCast((CFDictionaryRef)policies.release());
 }
 
-scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager(
-    const std::optional<bool>& override_is_managed_device) {
+scoped_refptr<PolicyManagerInterface> CreatePlatformPolicyManager(
+    std::optional<bool> override_is_managed_device) {
   NSDictionary* policyDict = ReadManagedPreferencePolicyDictionary();
   return base::MakeRefCounted<ManagedPreferencePolicyManager>(
       policyDict, override_is_managed_device);

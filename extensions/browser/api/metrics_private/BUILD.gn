@@ -4,8 +4,8 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("metrics_private") {
   sources = [
@@ -16,11 +16,14 @@ source_set("metrics_private") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//components/variations",
-    "//content/public/browser",
-    "//extensions/common/api",
+  public_deps = [
+    "//base",
+    "//extensions/browser:browser_sources",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//content/public/browser",
+    "//extensions/browser/api:extensions_api_client",
+    "//extensions/common/api",
+  ]
 }

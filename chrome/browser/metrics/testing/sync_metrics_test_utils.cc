@@ -4,7 +4,7 @@
 
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -26,7 +26,7 @@ std::unique_ptr<SyncServiceImplHarness> InitializeProfileForSync(
               fake_server->AsWeakPtr()));
 
   std::string username;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In browser tests, the profile may already by authenticated with stub
   // account |user_manager::kStubUserEmail|.
   CoreAccountInfo info =

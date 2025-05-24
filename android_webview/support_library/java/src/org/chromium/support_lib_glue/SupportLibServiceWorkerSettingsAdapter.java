@@ -15,7 +15,7 @@ import java.util.Set;
 
 /** Adapter between AwServiceWorkerSettings and ServiceWorkerWebSettingsBoundaryInterface. */
 class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettingsBoundaryInterface {
-    private AwServiceWorkerSettings mAwServiceWorkerSettings;
+    private final AwServiceWorkerSettings mAwServiceWorkerSettings;
 
     SupportLibServiceWorkerSettingsAdapter(AwServiceWorkerSettings settings) {
         mAwServiceWorkerSettings = settings;
@@ -124,6 +124,26 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
             recordApiCall(
                     ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
             return mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList();
+        }
+    }
+
+    @Override
+    public void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SET_INCLUDE_COOKIES_ON_INTERCEPT")) {
+            recordApiCall(ApiCall.SERVICE_WORKER_SET_INCLUDE_COOKIES_ON_INTERCEPT);
+            mAwServiceWorkerSettings.setIncludeCookiesOnIntercept(includeCookiesOnIntercept);
+        }
+    }
+
+    @Override
+    public boolean getIncludeCookiesOnIntercept() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_GET_INCLUDE_COOKIES_ON_INTERCEPT")) {
+            recordApiCall(ApiCall.SERVICE_WORKER_GET_INCLUDE_COOKIES_ON_INTERCEPT);
+            return mAwServiceWorkerSettings.getIncludeCookiesOnIntercept();
         }
     }
 }

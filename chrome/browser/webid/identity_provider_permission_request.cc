@@ -4,18 +4,22 @@
 
 #include "chrome/browser/webid/identity_provider_permission_request.h"
 
+#include "base/functional/callback_helpers.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
+
 IdentityProviderPermissionRequest::IdentityProviderPermissionRequest(
     const url::Origin& origin,
     base::OnceCallback<void(bool accepted)> callback)
     : PermissionRequest(
-          origin.GetURL(),
-          permissions::RequestType::kIdentityProvider,
-          /*has_gesture=*/true,
+          std::make_unique<permissions::PermissionRequestData>(
+              std::make_unique<permissions::ContentSettingPermissionResolver>(
+                  ContentSettingsType::FEDERATED_IDENTITY_API),
+              /*user_gesture=*/true,
+              origin.GetURL()),
           base::BindRepeating(
               &IdentityProviderPermissionRequest::PermissionDecided,
-              base::Unretained(this)),
-          base::BindOnce(&IdentityProviderPermissionRequest::DeleteRequest,
-                         base::Unretained(this))),
+              base::Unretained(this))),
       callback_(std::move(callback)) {}
 
 IdentityProviderPermissionRequest::~IdentityProviderPermissionRequest() =
@@ -24,7 +28,8 @@ IdentityProviderPermissionRequest::~IdentityProviderPermissionRequest() =
 void IdentityProviderPermissionRequest::PermissionDecided(
     ContentSetting result,
     bool is_one_time,
-    bool is_final_decision) {
+    bool is_final_decision,
+    const permissions::PermissionRequestData& request_data) {
   DCHECK(!is_one_time);
   DCHECK(is_final_decision);
 
@@ -36,8 +41,4 @@ void IdentityProviderPermissionRequest::PermissionDecided(
     DCHECK_EQ(CONTENT_SETTING_DEFAULT, result);
     std::move(callback_).Run(false);
   }
-}
-
-void IdentityProviderPermissionRequest::DeleteRequest() {
-  delete this;
 }

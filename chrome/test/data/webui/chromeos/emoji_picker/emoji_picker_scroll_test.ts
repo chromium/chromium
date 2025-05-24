@@ -16,13 +16,13 @@ suite('<emoji-picker> scroll tests', () => {
     // picker exists, and we haven't begun the scroll so this timing should be
     // safe.
     let scrollDonePromise = new Promise(() => {});
-    EmojiPickerApiProxy.getInstance().getInitialCategory = async () => {
+    EmojiPickerApiProxy.getInstance().getInitialCategory = () => {
       scrollDonePromise = new Promise((resolve) => {
         document.querySelector('emoji-picker-app')!.$.groups.onscrollend =
             resolve;
       });
 
-      return {category: Category.kSymbols};
+      return Promise.resolve({category: Category.kSymbols});
     };
     const {emojiPicker, readyPromise} = initialiseEmojiPickerForTest();
     await readyPromise;
@@ -30,8 +30,8 @@ suite('<emoji-picker> scroll tests', () => {
     assertTrue(emojiPicker.$.groups.scrollTop > 0);
   });
   test('Does not scroll for emojis', async () => {
-    EmojiPickerApiProxy.getInstance().getInitialCategory = async () => {
-      return {category: Category.kEmojis};
+    EmojiPickerApiProxy.getInstance().getInitialCategory = () => {
+      return Promise.resolve({category: Category.kEmojis});
     };
     const {emojiPicker, readyPromise} = initialiseEmojiPickerForTest();
     await readyPromise;

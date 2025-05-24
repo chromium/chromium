@@ -22,8 +22,7 @@ AppResult::AppResult(Profile* profile,
   SetCategory(Category::kApps);
 }
 
-AppResult::~AppResult() {
-}
+AppResult::~AppResult() = default;
 
 void AppResult::UpdateFromLastLaunchedOrInstalledTime(
     const base::Time& current_time,

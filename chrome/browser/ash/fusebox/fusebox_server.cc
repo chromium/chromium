@@ -9,11 +9,11 @@
 
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fusebox/fusebox_copy_to_fd.h"
 #include "chrome/browser/ash/fusebox/fusebox_errno.h"
-#include "chrome/browser/ash/fusebox/fusebox_histograms.h"
 #include "chrome/browser/ash/fusebox/fusebox_read_writer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -50,35 +49,7 @@ namespace {
 
 Server* g_server_instance = nullptr;
 
-template <typename CallbackType, typename ResponseProtoType>
-CallbackType HistogramWrap(
-    const HistogramEnumFileSystemType histogram_enum_file_system_type,
-    const char* rpc_method_name,
-    CallbackType callback) {
-  static constexpr auto func =
-      [](const char* file_system_type_name, const char* rpc_method_name,
-         CallbackType wrappee, const ResponseProtoType& response) {
-        const std::string histogram_name =
-            base::StrCat({"FileBrowser.Fusebox.RPC.", file_system_type_name,
-                          ".", rpc_method_name});
-
-        int32_t posix_error_code =
-            response.has_posix_error_code() ? response.posix_error_code() : 0;
-
-        base::UmaHistogramEnumeration(
-            histogram_name, GetHistogramEnumPosixErrorCode(posix_error_code));
-
-        if (wrappee) {
-          std::move(wrappee).Run(response);
-        }
-      };
-
-  return base::BindOnce(
-      func, NameForHistogramEnumFileSystemType(histogram_enum_file_system_type),
-      rpc_method_name, std::move(callback));
-}
-
-bool UseTempFile(const std::string_view fs_url_as_string) {
+bool UseTempFile(std::string_view fs_url_as_string) {
   // MTP (the protocol) does not support incremental writes. When creating an
   // MTP file (via FuseBox), we need to supply its contents as a whole. Up
   // until that transfer, spool incremental writes to a temporary file.
@@ -86,7 +57,7 @@ bool UseTempFile(const std::string_view fs_url_as_string) {
                           file_manager::util::kFuseBoxSubdirPrefixMTP);
 }
 
-bool UseEmptyTruncateWorkaround(const std::string_view fs_url_as_string,
+bool UseEmptyTruncateWorkaround(std::string_view fs_url_as_string,
                                 int64_t length) {
   // Not all storage::AsyncFileUtil back-ends implement the CreateFile or
   // Truncate methods. When they don't, and truncating to a zero length, work
@@ -654,8 +625,6 @@ Server::FuseFileMapEntry::FuseFileMapEntry(
     bool use_temp_file_arg,
     bool temp_file_starts_with_copy_arg)
     : fs_context_(fs_context_arg),
-      histogram_enum_file_system_type_(
-          GetHistogramEnumFileSystemType(fs_url_arg)),
       readable_(readable_arg),
       writable_(writable_arg),
       seqbnd_read_writer_(content::GetIOThreadTaskRunner({}),
@@ -700,23 +669,23 @@ void Server::FuseFileMapEntry::DoWrite2(const Write2RequestProto& request,
 void Server::FuseFileMapEntry::Do(PendingOp& op,
                                   base::WeakPtr<Server> weak_ptr_server,
                                   uint64_t fuse_handle) {
-  if (absl::holds_alternative<PendingFlush>(op)) {
-    PendingFlush& pending = absl::get<PendingFlush>(op);
+  if (std::holds_alternative<PendingFlush>(op)) {
+    PendingFlush& pending = std::get<PendingFlush>(op);
     DoFlush(pending.first,
             base::BindOnce(&Server::OnFlush, weak_ptr_server, fuse_handle,
                            std::move(pending.second)));
-  } else if (absl::holds_alternative<PendingRead2>(op)) {
-    PendingRead2& pending = absl::get<PendingRead2>(op);
+  } else if (std::holds_alternative<PendingRead2>(op)) {
+    PendingRead2& pending = std::get<PendingRead2>(op);
     DoRead2(pending.first,
             base::BindOnce(&Server::OnRead2, weak_ptr_server, fuse_handle,
                            std::move(pending.second)));
-  } else if (absl::holds_alternative<PendingWrite2>(op)) {
-    PendingWrite2& pending = absl::get<PendingWrite2>(op);
+  } else if (std::holds_alternative<PendingWrite2>(op)) {
+    PendingWrite2& pending = std::get<PendingWrite2>(op);
     DoWrite2(pending.first,
              base::BindOnce(&Server::OnWrite2, weak_ptr_server, fuse_handle,
                             std::move(pending.second)));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -912,9 +881,6 @@ void Server::Close2(const Close2RequestProto& request_proto,
     std::move(callback).Run(response_proto);
     return;
   }
-  callback = HistogramWrap<Close2Callback, Close2ResponseProto>(
-      iter->second.histogram_enum_file_system_type_, "Close2",
-      std::move(callback));
   FuseFileMapEntry& entry = iter->second;
   base::circular_deque<PendingOp> pending_ops = std::move(entry.pending_ops_);
   entry.seqbnd_read_writer_.AsyncCall(&ReadWriter::Close)
@@ -923,18 +889,18 @@ void Server::Close2(const Close2RequestProto& request_proto,
   fuse_file_map_.erase(iter);
 
   for (auto& pending_op : pending_ops) {
-    if (absl::holds_alternative<PendingRead2>(pending_op)) {
+    if (std::holds_alternative<PendingRead2>(pending_op)) {
       Read2ResponseProto read2_response_proto;
       read2_response_proto.set_posix_error_code(EBUSY);
-      std::move(absl::get<PendingRead2>(pending_op).second)
+      std::move(std::get<PendingRead2>(pending_op).second)
           .Run(read2_response_proto);
-    } else if (absl::holds_alternative<PendingWrite2>(pending_op)) {
+    } else if (std::holds_alternative<PendingWrite2>(pending_op)) {
       Write2ResponseProto write2_response_proto;
       write2_response_proto.set_posix_error_code(EBUSY);
-      std::move(absl::get<PendingWrite2>(pending_op).second)
+      std::move(std::get<PendingWrite2>(pending_op).second)
           .Run(write2_response_proto);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }
@@ -953,11 +919,7 @@ void Server::Create(const CreateRequestProto& request_proto,
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
     std::move(callback).Run(response_proto);
     return;
-  }
-  callback = HistogramWrap<CreateCallback, CreateResponseProto>(
-      GetHistogramEnumFileSystemType(parsed->fs_url), "Create",
-      std::move(callback));
-  if (parsed->read_only) {
+  } else if (parsed->read_only) {
     CreateResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
@@ -1017,11 +979,7 @@ void Server::Flush(const FlushRequestProto& request_proto,
     response_proto.set_posix_error_code(ENOENT);
     std::move(callback).Run(response_proto);
     return;
-  }
-  callback = HistogramWrap<FlushCallback, FlushResponseProto>(
-      iter->second.histogram_enum_file_system_type_, "Flush",
-      std::move(callback));
-  if (!iter->second.writable_) {
+  } else if (!iter->second.writable_) {
     FlushResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
@@ -1052,11 +1010,7 @@ void Server::MkDir(const MkDirRequestProto& request_proto,
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
     std::move(callback).Run(response_proto);
     return;
-  }
-  callback = HistogramWrap<MkDirCallback, MkDirResponseProto>(
-      GetHistogramEnumFileSystemType(parsed->fs_url), "MkDir",
-      std::move(callback));
-  if (parsed->read_only) {
+  } else if (parsed->read_only) {
     MkDirResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
@@ -1097,9 +1051,6 @@ void Server::Open2(const Open2RequestProto& request_proto,
     std::move(callback).Run(response_proto);
     return;
   }
-  callback = HistogramWrap<Open2Callback, Open2ResponseProto>(
-      GetHistogramEnumFileSystemType(parsed->fs_url), "Open2",
-      std::move(callback));
 
   bool readable = (access_mode == AccessMode::READ_ONLY) ||
                   (access_mode == AccessMode::READ_WRITE);
@@ -1133,9 +1084,6 @@ void Server::Read2(const Read2RequestProto& request_proto,
     std::move(callback).Run(response_proto);
     return;
   }
-  callback = HistogramWrap<Read2Callback, Read2ResponseProto>(
-      iter->second.histogram_enum_file_system_type_, "Read2",
-      std::move(callback));
   if (!iter->second.readable_) {
     Read2ResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
@@ -1175,11 +1123,7 @@ void Server::ReadDir2(const ReadDir2RequestProto& request_proto,
     }
     std::move(callback).Run(response_proto);
     return;
-  }
-  callback = HistogramWrap<ReadDir2Callback, ReadDir2ResponseProto>(
-      GetHistogramEnumFileSystemType(parsed->fs_url), "ReadDir2",
-      std::move(callback));
-  if (cancel_error_code) {
+  } else if (cancel_error_code) {
     ReadDir2ResponseProto response_proto;
     response_proto.set_posix_error_code(cancel_error_code);
     std::move(callback).Run(response_proto);
@@ -1233,11 +1177,7 @@ void Server::Rename(const RenameRequestProto& request_proto,
     response_proto.set_posix_error_code(src_parsed.error().posix_error_code);
     std::move(callback).Run(response_proto);
     return;
-  }
-  callback = HistogramWrap<RenameCallback, RenameResponseProto>(
-      GetHistogramEnumFileSystemType(src_parsed->fs_url), "Rename",
-      std::move(callback));
-  if (src_parsed->read_only) {
+  } else if (src_parsed->read_only) {
     RenameResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
@@ -1335,11 +1275,7 @@ void Server::RmDir(const RmDirRequestProto& request_proto,
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
     std::move(callback).Run(response_proto);
     return;
-  }
-  callback = HistogramWrap<RmDirCallback, RmDirResponseProto>(
-      GetHistogramEnumFileSystemType(parsed->fs_url), "RmDir",
-      std::move(callback));
-  if (parsed->read_only) {
+  } else if (parsed->read_only) {
     RmDirResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
@@ -1381,9 +1317,6 @@ void Server::Stat2(const Stat2RequestProto& request_proto,
     std::move(callback).Run(response_proto);
     return;
   }
-  callback = HistogramWrap<Stat2Callback, Stat2ResponseProto>(
-      GetHistogramEnumFileSystemType(parsed->fs_url), "Stat2",
-      std::move(callback));
 
   constexpr storage::FileSystemOperation::GetMetadataFieldSet metadata_fields =
       {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
@@ -1417,11 +1350,7 @@ void Server::Truncate(const TruncateRequestProto& request_proto,
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
     std::move(callback).Run(response_proto);
     return;
-  }
-  callback = HistogramWrap<TruncateCallback, TruncateResponseProto>(
-      GetHistogramEnumFileSystemType(parsed->fs_url), "Truncate",
-      std::move(callback));
-  if (parsed->read_only) {
+  } else if (parsed->read_only) {
     TruncateResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
@@ -1462,11 +1391,7 @@ void Server::Unlink(const UnlinkRequestProto& request_proto,
     response_proto.set_posix_error_code(parsed.error().posix_error_code);
     std::move(callback).Run(response_proto);
     return;
-  }
-  callback = HistogramWrap<UnlinkCallback, UnlinkResponseProto>(
-      GetHistogramEnumFileSystemType(parsed->fs_url), "Unlink",
-      std::move(callback));
-  if (parsed->read_only) {
+  } else if (parsed->read_only) {
     UnlinkResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);
@@ -1497,11 +1422,7 @@ void Server::Write2(const Write2RequestProto& request_proto,
     response_proto.set_posix_error_code(ENOENT);
     std::move(callback).Run(response_proto);
     return;
-  }
-  callback = HistogramWrap<Write2Callback, Write2ResponseProto>(
-      iter->second.histogram_enum_file_system_type_, "Write2",
-      std::move(callback));
-  if (!iter->second.writable_) {
+  } else if (!iter->second.writable_) {
     Write2ResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);
     std::move(callback).Run(response_proto);

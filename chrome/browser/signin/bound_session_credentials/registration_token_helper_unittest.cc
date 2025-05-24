@@ -6,23 +6,35 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
+#include "components/unexportable_keys/mock_unexportable_key.h"
+#include "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::NiceMock;
+using testing::Return;
 
 namespace {
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
     unexportable_keys::BackgroundTaskPriority::kUserBlocking;
+
+constexpr std::string_view kTokenBindingResultHistogram =
+    "Signin.TokenBinding.GenerateRegistrationTokenResult";
+constexpr std::string_view kSessionBindingResultHistogram =
+    "Signin.BoundSessionCredentials."
+    "SessionRegistrationGenerateRegistrationTokenResult";
 }  // namespace
 
 class RegistrationTokenHelperTest : public testing::Test {
@@ -69,6 +81,8 @@ class RegistrationTokenHelperTest : public testing::Test {
     return *wrapped_key;
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadPoolExecutionMode::
@@ -77,10 +91,11 @@ class RegistrationTokenHelperTest : public testing::Test {
   unexportable_keys::UnexportableKeyTaskManager task_manager_{
       crypto::UnexportableKeyProvider::Config()};
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(RegistrationTokenHelperTest, SuccessForTokenBinding) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   RegistrationTokenHelper helper(unexportable_key_service(),
                                  base::ToVector(kAcceptableAlgorithms));
@@ -90,10 +105,13 @@ TEST_F(RegistrationTokenHelperTest, SuccessForTokenBinding) {
   RunBackgroundTasks();
   ASSERT_TRUE(future.Get().has_value());
   VerifyResult(future.Get().value());
+  histogram_tester().ExpectUniqueSample(kTokenBindingResultHistogram,
+                                        RegistrationTokenHelper::Error::kNone,
+                                        /*expected_bucket_count=*/1);
 }
 
 TEST_F(RegistrationTokenHelperTest, SuccessForTokenBindingReuseKey) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
   ASSERT_FALSE(wrapped_key.empty());
@@ -105,10 +123,13 @@ TEST_F(RegistrationTokenHelperTest, SuccessForTokenBindingReuseKey) {
   ASSERT_TRUE(future.Get().has_value());
   VerifyResult(future.Get().value());
   EXPECT_EQ(future.Get()->wrapped_binding_key, wrapped_key);
+  histogram_tester().ExpectUniqueSample(kTokenBindingResultHistogram,
+                                        RegistrationTokenHelper::Error::kNone,
+                                        /*expected_bucket_count=*/1);
 }
 
 TEST_F(RegistrationTokenHelperTest, SuccessForSessionBinding) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   RegistrationTokenHelper helper(unexportable_key_service(),
                                  base::ToVector(kAcceptableAlgorithms));
@@ -118,10 +139,13 @@ TEST_F(RegistrationTokenHelperTest, SuccessForSessionBinding) {
   RunBackgroundTasks();
   ASSERT_TRUE(future.Get().has_value());
   VerifyResult(future.Get().value());
+  histogram_tester().ExpectUniqueSample(kSessionBindingResultHistogram,
+                                        RegistrationTokenHelper::Error::kNone,
+                                        /*expected_bucket_count=*/1);
 }
 
 TEST_F(RegistrationTokenHelperTest, DoubleRegistration) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>>
       future_1;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>>
@@ -141,6 +165,9 @@ TEST_F(RegistrationTokenHelperTest, DoubleRegistration) {
   VerifyResult(future_2.Get().value());
   // Both registrations should use the same key.
   EXPECT_EQ(future_1.Get()->binding_key_id, future_2.Get()->binding_key_id);
+  histogram_tester().ExpectUniqueSample(kTokenBindingResultHistogram,
+                                        RegistrationTokenHelper::Error::kNone,
+                                        /*expected_bucket_count=*/2);
 }
 
 TEST_F(RegistrationTokenHelperTest, Failure) {
@@ -154,11 +181,15 @@ TEST_F(RegistrationTokenHelperTest, Failure) {
                                  future.GetCallback());
   RunBackgroundTasks();
   EXPECT_FALSE(future.Get().has_value());
+  histogram_tester().ExpectUniqueSample(
+      kTokenBindingResultHistogram,
+      RegistrationTokenHelper::Error::kGenerateNewKeyFailure,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(RegistrationTokenHelperTest, FailureReuseKey) {
   const std::vector<uint8_t> kInvalidWrappedKey = {1, 2, 3};
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   RegistrationTokenHelper helper(unexportable_key_service(),
                                  kInvalidWrappedKey);
@@ -167,10 +198,14 @@ TEST_F(RegistrationTokenHelperTest, FailureReuseKey) {
                                  future.GetCallback());
   RunBackgroundTasks();
   EXPECT_FALSE(future.Get().has_value());
+  histogram_tester().ExpectUniqueSample(
+      kTokenBindingResultHistogram,
+      RegistrationTokenHelper::Error::kLoadReusedKeyFailure,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(RegistrationTokenHelperTest, FailureEmptyAlgorithms) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   RegistrationTokenHelper helper(
       unexportable_key_service(),
@@ -180,4 +215,33 @@ TEST_F(RegistrationTokenHelperTest, FailureEmptyAlgorithms) {
                                  future.GetCallback());
   RunBackgroundTasks();
   ASSERT_FALSE(future.Get().has_value());
+  histogram_tester().ExpectUniqueSample(
+      kTokenBindingResultHistogram,
+      RegistrationTokenHelper::Error::kGenerateNewKeyFailure,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(RegistrationTokenHelperTest, SignatureFailure) {
+  auto key_to_generate = std::make_unique<
+      testing::NiceMock<unexportable_keys::MockUnexportableKey>>();
+  ON_CALL(*key_to_generate, Algorithm)
+      .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
+  ON_CALL(*key_to_generate, GetWrappedKey)
+      .WillByDefault(Return(std::vector<uint8_t>{0, 0, 1}));
+  EXPECT_CALL(*key_to_generate, SignSlowly).WillOnce(Return(std::nullopt));
+  unexportable_keys::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  scoped_mock_key_provider.AddNextGeneratedKey(std::move(key_to_generate));
+
+  base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
+  RegistrationTokenHelper helper(unexportable_key_service(),
+                                 base::ToVector(kAcceptableAlgorithms));
+  helper.GenerateForTokenBinding("test_client_id", "test_auth_code",
+                                 GURL("https://accounts.google.com/Register"),
+                                 future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_FALSE(future.Get().has_value());
+  histogram_tester().ExpectUniqueSample(
+      kTokenBindingResultHistogram,
+      RegistrationTokenHelper::Error::kSignAssertionFailure,
+      /*expected_bucket_count=*/1);
 }

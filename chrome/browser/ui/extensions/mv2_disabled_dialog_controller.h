@@ -17,6 +17,8 @@ class Browser;
 
 namespace extensions {
 
+enum class MV2ExperimentStage;
+
 // Per-browser-window class responsible for showing the disabled extensions
 // dialog for the Manifest V2 deprecation.
 class Mv2DisabledDialogController {
@@ -71,6 +73,9 @@ class Mv2DisabledDialogController {
 
   raw_ptr<Browser> browser_;
   base::CallbackListSubscription show_dialog_subscription_;
+
+  // The current stage of the MV2 deprecation experiment.
+  MV2ExperimentStage experiment_stage_;
 
   // Extensions information to display in the disabled dialog.
   std::vector<ExtensionInfo> affected_extensions_info_;

@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 mojom("mojo_bindings") {
   webui_module_path = "/"
@@ -55,7 +54,6 @@ static_library("add_supervision") {
     "//chrome/browser/resources/chromeos/add_supervision:resources_grit",
     "//chrome/browser/resources/chromeos/supervision:resources",
     "//chrome/browser/resources/chromeos/supervision:resources_grit",
-    "//chrome/browser/ui/webui:webui_util",
     "//components/constrained_window",
     "//components/google/core/common",
     "//components/services/app_service/public/cpp:app_types",
@@ -66,6 +64,7 @@ static_library("add_supervision") {
     "//ui/resources:ui_resources_grd",
     "//ui/resources:ui_resources_grd_grit",
     "//ui/web_dialogs",
+    "//ui/webui",
   ]
 }
 

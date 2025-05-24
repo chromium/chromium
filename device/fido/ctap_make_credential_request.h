@@ -198,6 +198,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOptions {
   // Indicates whether the request was created in an off-the-record
   // BrowserContext (e.g. Chrome Incognito mode).
   bool is_off_the_record_context = false;
+
+  // Indicates if this is a passkey upgrade request, i.e. whether
+  // mediation=conditional.
+  bool is_passkey_upgrade_request = false;
 };
 
 // Serializes MakeCredential request parameter into CBOR encoded map with

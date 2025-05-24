@@ -98,7 +98,9 @@ class CORE_EXPORT FocusController final
   // next focusable element.
   Element* NextFocusableElementForImeAndAutofill(Element*,
                                                  mojom::blink::FocusType);
-  Element* FindFocusableElementAfter(Element& element, mojom::blink::FocusType);
+  Element* FindFocusableElementForImeAutofillAndTesting(mojom::blink::FocusType,
+                                                        Element&,
+                                                        OwnerMap&);
 
   bool SetFocusedElement(Element*, Frame*, const FocusParams&);
   // |setFocusedElement| variant with SelectionBehaviorOnFocus::None,
@@ -120,8 +122,6 @@ class CORE_EXPORT FocusController final
   void Trace(Visitor*) const;
 
  private:
-  Element* FindFocusableElement(mojom::blink::FocusType, Element&, OwnerMap&);
-
   bool AdvanceFocus(mojom::blink::FocusType,
                     bool initial_focus,
                     InputDeviceCapabilities* source_capabilities = nullptr);

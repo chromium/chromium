@@ -11,22 +11,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 /** Contains methods for launching host browser. */
+@NullMarked
 public class HostBrowserLauncher {
     private static final String TAG = "cr_HostBrowserLauncher";
-
-    // Action for launching {@link WebappLauncherActivity}.
-    // TODO(hanxi): crbug.com/737556. Replaces this string with the new WebAPK launch action after
-    // it is propagated to all the Chrome's channels.
-    public static final String ACTION_START_WEBAPK =
-            "com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP";
-
-    // Must stay in sync with {@link
-    // org.chromium.chrome.browser.ShortcutHelper#REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB}.
-    private static final String REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB =
-            "REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB";
 
     /**
      * Launches host browser in WebAPK mode if the browser is WebAPK-compatible. Otherwise, launches
@@ -45,20 +37,20 @@ public class HostBrowserLauncher {
     public static void launchBrowserInWebApkModeIfSupported(
             Activity activity,
             HostBrowserLauncherParams params,
-            Bundle extraExtras,
+            @Nullable Bundle extraExtras,
             int flags,
             boolean expectResult) {
         ManageDataLauncherActivity.updateSiteSettingsShortcut(
                 activity.getApplicationContext(), params);
-        Intent intent;
-        if (HostBrowserUtils.isHostBrowserFromManifest(
-                activity.getApplicationContext(), params.getHostBrowserPackageName())) {
-            intent = new Intent();
-            intent.setAction(ACTION_START_WEBAPK);
-        } else {
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(params.getStartUrl()));
-        }
-        intent.setPackage(params.getHostBrowserPackageName());
+
+        Intent intent =
+                HostBrowserUtils.getBrowserLaunchIntentWithoutFlagsAndExtras(
+                        HostBrowserUtils.isHostBrowserFromManifest(
+                                activity.getApplicationContext(),
+                                params.getHostBrowserPackageName()),
+                        params.getHostBrowserPackageName(),
+                        params.getHostBrowserComponentName(),
+                        Uri.parse(params.getStartUrl()));
         intent.setFlags(flags);
 
         Bundle copiedExtras = params.getOriginalIntent().getExtras();

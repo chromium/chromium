@@ -6,15 +6,18 @@ package org.chromium.android_webview;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Feature flags computed from system capabilities. */
+@NullMarked
 public final class AwComputedFlags {
     // Do not instantiate this class.
     private AwComputedFlags() {}
 
     private static final String GMS_PACKAGE = "com.google.android.gms";
 
-    private static Boolean sPageStartedOnCommitForBrowserNavigations;
+    private static @Nullable Boolean sPageStartedOnCommitForBrowserNavigations;
 
     private static boolean computePageStartedOnCommitForBrowserNavigations() {
         if (GMS_PACKAGE.equals(ContextUtils.getApplicationContext().getPackageName())) {

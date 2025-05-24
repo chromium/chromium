@@ -8,6 +8,7 @@
 #import "base/functional/callback.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
+#import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 
 namespace autofill {
 
@@ -67,6 +68,11 @@ class AutofillSaveCardInfoBarDelegateIOS
 
   // Informs the delegate when the Infobar view is presenting or is gone.
   virtual void SetInfobarIsPresenting(bool is_presenting);
+
+  // Logs metric for Infobar (banner/modal) shown, accepted or dismissed (how).
+  void LogSaveCreditCardInfoBarResultMetric(
+      autofill_metrics::SaveCreditCardPromptResultIOS metric,
+      autofill_metrics::SaveCreditCardPromptOverlayType overlay_type);
 
  private:
   base::OnceCallback<void(bool card_saved)>

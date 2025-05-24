@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/observer_list.h"
+#include "build/buildflag.h"
 #include "ui/display/display_export.h"
 
 namespace display {
@@ -33,6 +34,10 @@ class DISPLAY_EXPORT DisplayChangeNotifier {
                              const std::vector<Display>& new_displays);
 
   void NotifyCurrentWorkspaceChanged(const std::string& workspace);
+
+#if BUILDFLAG(IS_MAC)
+  void NotifyPrimaryDisplayChanged();
+#endif
 
  private:
   // The observers that need to be notified when a display is modified, added

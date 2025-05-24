@@ -48,8 +48,8 @@ public class DexLoaderTest {
 
     /** Monitors read files and modified files in the directory passed to the constructor. */
     private static class FileMonitor extends FileObserver {
-        public ArrayList<String> mReadPaths = new ArrayList<String>();
-        public ArrayList<String> mModifiedPaths = new ArrayList<String>();
+        public final ArrayList<String> mReadPaths = new ArrayList<String>();
+        public final ArrayList<String> mModifiedPaths = new ArrayList<String>();
 
         public FileMonitor(File directory) {
             super(directory.getPath());

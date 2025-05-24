@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "chrome/updater/certificate_tag.h"
@@ -15,12 +15,13 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
-#include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/notreached.h"
+#include "base/functional/overloaded.h"
 #include "chrome/updater/certificate_tag_internal.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
@@ -29,6 +30,118 @@ namespace updater::tagging {
 
 namespace internal {
 
+namespace {
+
+// Variants returned by `ParseTagImpl()`.
+struct FailedParse {};
+struct SuccessfulEmptyParse {};
+using SuccessfulParse = base::span<const uint8_t>;
+
+// Parses the `signed_data` PKCS7 object to find the final certificate in the
+// list and see whether it has an extension with `kTagOID`, and if so, returns a
+// `base::span` of the tag within this `signed_data`. `success` is set to `true`
+// if there were no parse errors, even if a tag could not be found.
+std::variant<FailedParse, SuccessfulEmptyParse, SuccessfulParse> ParseTagImpl(
+    base::span<const uint8_t> signed_data) {
+  CBS content_info = CBSFromSpan(signed_data);
+  CBS pkcs7, certs;
+  // See https://tools.ietf.org/html/rfc2315#section-7
+  if (!CBS_get_asn1(&content_info, &content_info, CBS_ASN1_SEQUENCE) ||
+      // type
+      !CBS_get_asn1(&content_info, nullptr, CBS_ASN1_OBJECT) ||
+      !CBS_get_asn1(&content_info, &pkcs7,
+                    0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC) ||
+      // See https://tools.ietf.org/html/rfc2315#section-9.1
+      !CBS_get_asn1(&pkcs7, &pkcs7, CBS_ASN1_SEQUENCE) ||
+      // version
+      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_INTEGER) ||
+      // digests
+      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_SET) ||
+      // contentInfo
+      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_SEQUENCE) ||
+      !CBS_get_asn1(&pkcs7, &certs,
+                    0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC)) {
+    return FailedParse{};
+  }
+
+  bool have_last_cert = false;
+  CBS last_cert;
+
+  while (CBS_len(&certs) > 0) {
+    if (!CBS_get_asn1(&certs, &last_cert, CBS_ASN1_SEQUENCE)) {
+      return FailedParse{};
+    }
+    have_last_cert = true;
+  }
+
+  if (!have_last_cert) {
+    return FailedParse{};
+  }
+
+  // See https://tools.ietf.org/html/rfc5280#section-4.1 for the X.509 structure
+  // being parsed here.
+  CBS tbs_cert, outer_extensions;
+  int has_extensions = 0;
+  if (!CBS_get_asn1(&last_cert, &tbs_cert, CBS_ASN1_SEQUENCE) ||
+      // version
+      !CBS_get_optional_asn1(
+          &tbs_cert, nullptr, nullptr,
+          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 0) ||
+      // serialNumber
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_INTEGER) ||
+      // signature algorithm
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
+      // issuer
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
+      // validity
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
+      // subject
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
+      // subjectPublicKeyInfo
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
+      // issuerUniqueID
+      !CBS_get_optional_asn1(&tbs_cert, nullptr, nullptr,
+                             CBS_ASN1_CONTEXT_SPECIFIC | 1) ||
+      // subjectUniqueID
+      !CBS_get_optional_asn1(&tbs_cert, nullptr, nullptr,
+                             CBS_ASN1_CONTEXT_SPECIFIC | 2) ||
+      !CBS_get_optional_asn1(
+          &tbs_cert, &outer_extensions, &has_extensions,
+          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 3)) {
+    return FailedParse{};
+  }
+
+  if (!has_extensions) {
+    return FailedParse{};
+  }
+
+  CBS extensions;
+  if (!CBS_get_asn1(&outer_extensions, &extensions, CBS_ASN1_SEQUENCE)) {
+    return FailedParse{};
+  }
+
+  while (CBS_len(&extensions) > 0) {
+    CBS extension, oid, contents;
+    if (!CBS_get_asn1(&extensions, &extension, CBS_ASN1_SEQUENCE) ||
+        !CBS_get_asn1(&extension, &oid, CBS_ASN1_OBJECT) ||
+        (CBS_peek_asn1_tag(&extension, CBS_ASN1_BOOLEAN) &&
+         !CBS_get_asn1(&extension, nullptr, CBS_ASN1_BOOLEAN)) ||
+        !CBS_get_asn1(&extension, &contents, CBS_ASN1_OCTETSTRING) ||
+        CBS_len(&extension) != 0) {
+      return FailedParse{};
+    }
+
+    if (CBS_len(&oid) == sizeof(kTagOID) &&
+        memcmp(CBS_data(&oid), kTagOID, sizeof(kTagOID)) == 0) {
+      return SpanFromCBS(&contents);
+    }
+  }
+
+  return SuccessfulEmptyParse{};
+}
+
+}  // namespace
+
 CBS CBSFromSpan(base::span<const uint8_t> span) {
   CBS cbs;
   CBS_init(&cbs, span.data(), span.size());
@@ -36,7 +149,8 @@ CBS CBSFromSpan(base::span<const uint8_t> span) {
 }
 
 base::span<const uint8_t> SpanFromCBS(const CBS* cbs) {
-  return base::span<const uint8_t>(CBS_data(cbs), CBS_len(cbs));
+  // SAFETY: this is how a span is made from `cbs`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(CBS_data(cbs), CBS_len(cbs)));
 }
 
 PEBinary::PEBinary(const PEBinary&) = default;
@@ -158,7 +272,6 @@ std::unique_ptr<PEBinary> PEBinary::Parse(base::span<const uint8_t> binary) {
   if (!CBS_skip(&bin_for_check, ret->certs_size_offset_) ||
       !CBS_get_u32le(&bin_for_check, &cert_entry_size_duplicate) ||
       cert_entry_size_duplicate != cert_entry_size) {
-    NOTREACHED_IN_MIGRATION();
     return {};
   }
 
@@ -201,104 +314,6 @@ bool CopyASN1(CBB* out, CBS* in) {
   CBS element;
   return CBS_get_any_asn1_element(in, &element, nullptr, nullptr) == 1 &&
          CBB_add_bytes(out, CBS_data(&element), CBS_len(&element)) == 1;
-}
-
-ParseResult ParseTagImpl(base::span<const uint8_t> signed_data) {
-  CBS content_info = CBSFromSpan(signed_data);
-  CBS pkcs7, certs;
-  // See https://tools.ietf.org/html/rfc2315#section-7
-  if (!CBS_get_asn1(&content_info, &content_info, CBS_ASN1_SEQUENCE) ||
-      // type
-      !CBS_get_asn1(&content_info, nullptr, CBS_ASN1_OBJECT) ||
-      !CBS_get_asn1(&content_info, &pkcs7,
-                    0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC) ||
-      // See https://tools.ietf.org/html/rfc2315#section-9.1
-      !CBS_get_asn1(&pkcs7, &pkcs7, CBS_ASN1_SEQUENCE) ||
-      // version
-      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_INTEGER) ||
-      // digests
-      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_SET) ||
-      // contentInfo
-      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_SEQUENCE) ||
-      !CBS_get_asn1(&pkcs7, &certs,
-                    0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC)) {
-    return {};
-  }
-
-  bool have_last_cert = false;
-  CBS last_cert;
-
-  while (CBS_len(&certs) > 0) {
-    if (!CBS_get_asn1(&certs, &last_cert, CBS_ASN1_SEQUENCE)) {
-      return {};
-    }
-    have_last_cert = true;
-  }
-
-  if (!have_last_cert) {
-    return {};
-  }
-
-  // See https://tools.ietf.org/html/rfc5280#section-4.1 for the X.509 structure
-  // being parsed here.
-  CBS tbs_cert, outer_extensions;
-  int has_extensions = 0;
-  if (!CBS_get_asn1(&last_cert, &tbs_cert, CBS_ASN1_SEQUENCE) ||
-      // version
-      !CBS_get_optional_asn1(
-          &tbs_cert, nullptr, nullptr,
-          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 0) ||
-      // serialNumber
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_INTEGER) ||
-      // signature algorithm
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
-      // issuer
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
-      // validity
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
-      // subject
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
-      // subjectPublicKeyInfo
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
-      // issuerUniqueID
-      !CBS_get_optional_asn1(&tbs_cert, nullptr, nullptr,
-                             CBS_ASN1_CONTEXT_SPECIFIC | 1) ||
-      // subjectUniqueID
-      !CBS_get_optional_asn1(&tbs_cert, nullptr, nullptr,
-                             CBS_ASN1_CONTEXT_SPECIFIC | 2) ||
-      !CBS_get_optional_asn1(
-          &tbs_cert, &outer_extensions, &has_extensions,
-          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 3)) {
-    return {};
-  }
-
-  if (!has_extensions) {
-    return {};
-  }
-
-  CBS extensions;
-  if (!CBS_get_asn1(&outer_extensions, &extensions, CBS_ASN1_SEQUENCE)) {
-    return {};
-  }
-
-  while (CBS_len(&extensions) > 0) {
-    CBS extension, oid, contents;
-    if (!CBS_get_asn1(&extensions, &extension, CBS_ASN1_SEQUENCE) ||
-        !CBS_get_asn1(&extension, &oid, CBS_ASN1_OBJECT) ||
-        (CBS_peek_asn1_tag(&extension, CBS_ASN1_BOOLEAN) &&
-         !CBS_get_asn1(&extension, nullptr, CBS_ASN1_BOOLEAN)) ||
-        !CBS_get_asn1(&extension, &contents, CBS_ASN1_OCTETSTRING) ||
-        CBS_len(&extension) != 0) {
-      return {};
-    }
-
-    if (CBS_len(&oid) == sizeof(kTagOID) &&
-        memcmp(CBS_data(&oid), kTagOID, sizeof(kTagOID)) == 0) {
-      return {true, SpanFromCBS(&contents)};
-    }
-  }
-
-  return {true, std::nullopt};
 }
 
 std::optional<std::vector<uint8_t>> SetTagImpl(
@@ -360,10 +375,12 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
   // If there's not already a tag then we need to keep the last certificate.
   // Otherwise it's the certificate with the tag in and we're going to replace
   // it.
-  const ParseResult result = ParseTagImpl(signed_data);
-  if (!result.tag &&
-      !CBB_add_bytes(&certs_cbb, CBS_data(&last_cert), CBS_len(&last_cert))) {
-    return std::nullopt;
+  {
+    const auto result = ParseTagImpl(signed_data);
+    if (!std::holds_alternative<SuccessfulParse>(result) &&
+        !CBB_add_bytes(&certs_cbb, CBS_data(&last_cert), CBS_len(&last_cert))) {
+      return std::nullopt;
+    }
   }
 
   // These values are DER-encoded OIDs needed in the X.509 certificate that's
@@ -458,10 +475,11 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
   }
 
   // Copy the CBB result into a std::vector, padding to 8-byte alignment.
+  // SAFETY: the CBB data comes in from boringssl as a memory buffer.
   std::vector<uint8_t> ret;
   const size_t padding = (8 - cbb_len % 8) % 8;
   ret.reserve(cbb_len + padding);
-  ret.insert(ret.begin(), cbb_data, cbb_data + cbb_len);
+  UNSAFE_BUFFERS(ret.insert(ret.begin(), cbb_data, cbb_data + cbb_len));
   ret.insert(ret.end(), padding, 0);
   OPENSSL_free(cbb_data);
 
@@ -476,7 +494,7 @@ std::optional<std::vector<uint8_t>> PEBinary::SetTag(
   }
 
   // Recreate the header for the `WIN_CERTIFICATE` structure.
-  constexpr size_t kSizeofWinCertificateHeader = 8;
+  static constexpr size_t kSizeofWinCertificateHeader = 8;
   std::vector<uint8_t> win_certificate_header(kSizeofWinCertificateHeader);
   const uint32_t certs_size = kSizeofWinCertificateHeader + ret->size();
   memcpy(&win_certificate_header[0], &certs_size, sizeof(certs_size));
@@ -487,23 +505,33 @@ std::optional<std::vector<uint8_t>> PEBinary::SetTag(
 
   ret->insert(ret->begin(), win_certificate_header.begin(),
               win_certificate_header.end());
-  ret->insert(ret->begin(), binary_.data(), binary_.data() + attr_cert_offset_);
+
+  // SAFETY: test that `attr_cert_offset_` does not exceed the size of the
+  // `binary_` span.
+  CHECK_LE(attr_cert_offset_, binary_.size_bytes());
+  ret->insert(ret->begin(), binary_.data(),
+              UNSAFE_BUFFERS(binary_.data() + attr_cert_offset_));
 
   // Inject the updated length in the `IMAGE_DATA_DIRECTORY` structure that
   // delineates the `WIN_CERTIFICATE` structure.
-  memcpy(ret->data() + certs_size_offset_, &certs_size, sizeof(certs_size));
-
+  // SAFETY: byte manipulation of a C data structure.
+  memcpy(UNSAFE_BUFFERS(ret->data() + certs_size_offset_), &certs_size,
+         sizeof(certs_size));
   return ret;
 }
 
 PEBinary::PEBinary() = default;
 
 bool PEBinary::ParseTag() {
-  const auto [success, tag] = ParseTagImpl(content_info_);
-  if (tag) {
-    tag_ = std::vector<uint8_t>(tag->begin(), tag->end());
-  }
-  return success;
+  return std::visit(base::Overloaded{
+                        [](FailedParse unused) { return false; },
+                        [](SuccessfulEmptyParse unused) { return true; },
+                        [this](SuccessfulParse tag) {
+                          tag_ = std::vector<uint8_t>(tag.begin(), tag.end());
+                          return true;
+                        },
+                    },
+                    ParseTagImpl(content_info_));
 }
 
 std::optional<SectorFormat> NewSectorFormat(uint16_t sector_shift) {
@@ -650,15 +678,17 @@ void MSIBinary::PopulateDifatEntries() {
   difat_sectors_ = difat_sectors;
 }
 
+// SAFETY: byte manipulation of a C data structure.
 SignedDataDir MSIBinary::SignedDataDirFromSector(uint64_t dir_sector) {
   MSIDirEntry sig_dir_entry;
   for (uint64_t i = 0; i < sector_format_.size / kNumDirEntryBytes; ++i) {
     const uint64_t offset =
         dir_sector * sector_format_.size + i * kNumDirEntryBytes;
     std::memcpy(&sig_dir_entry, &contents_[offset], sizeof(MSIDirEntry));
-    if (std::equal(sig_dir_entry.name,
-                   sig_dir_entry.name + sig_dir_entry.num_name_bytes,
-                   std::begin(kSignatureName))) {
+    if (std::equal(
+            sig_dir_entry.name,
+            UNSAFE_BUFFERS(sig_dir_entry.name + sig_dir_entry.num_name_bytes),
+            std::begin(kSignatureName))) {
       return {sig_dir_entry, offset, true};
     }
   }
@@ -947,11 +977,15 @@ std::optional<std::vector<uint8_t>> MSIBinary::SetTag(
 }
 
 bool MSIBinary::ParseTag() {
-  const auto [success, tag] = ParseTagImpl(signed_data_bytes_);
-  if (tag) {
-    tag_ = std::vector<uint8_t>(tag->begin(), tag->end());
-  }
-  return success;
+  return std::visit(base::Overloaded{
+                        [](FailedParse unused) { return false; },
+                        [](SuccessfulEmptyParse unused) { return true; },
+                        [this](SuccessfulParse tag) {
+                          tag_ = std::vector<uint8_t>(tag.begin(), tag.end());
+                          return true;
+                        },
+                    },
+                    ParseTagImpl(signed_data_bytes_));
 }
 
 std::optional<std::vector<uint8_t>> MSIBinary::tag() const {

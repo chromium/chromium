@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_SERIALIZER_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_SERIALIZER_CLIENT_H_
 
-#include "third_party/blink/public/platform/web_vector.h"
+#include <vector>
 
 namespace blink {
 
@@ -56,7 +56,7 @@ class WebFrameSerializerClient {
   // Receive the individual chunks of serialized and encoded data to be saved.
   // The parameter data contains the available data for saving.
   // The parameter status indicates the status of data serialization.
-  virtual void DidSerializeDataForFrame(const WebVector<char>&,
+  virtual void DidSerializeDataForFrame(const std::vector<char>&,
                                         FrameSerializationStatus) = 0;
 
   WebFrameSerializerClient() = default;

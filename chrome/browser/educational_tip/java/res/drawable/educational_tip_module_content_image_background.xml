@@ -5,7 +5,9 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-  <solid android:color="@color/thumbnail_placeholder_on_primary_bg"/>
-  <corners android:radius="@dimen/single_tab_thumbnail_radius" />
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" >
+  <solid android:color="@color/educational_tip_module_content_image_background_color" />
+  <corners android:radius="@dimen/educational_tip_module_content_image_radius"/>
 </shape>

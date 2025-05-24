@@ -14,6 +14,7 @@
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
 #include "chrome/credential_provider/test/com_fakes.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -21,7 +22,7 @@ namespace credential_provider {
 namespace testing {
 
 extern const char kDefaultEmail[];
-extern const char kDefaultGaiaId[];
+extern const GaiaId::Literal kDefaultGaiaId;
 extern const wchar_t kDefaultUsername[];
 extern const char kDefaultInvalidTokenHandleResponse[];
 extern const char kDefaultValidTokenHandleResponse[];
@@ -39,7 +40,7 @@ class GlsRunnerTestBase : public ::testing::Test {
   // other command line arguments require a specific error code to be returned.
   static HRESULT GetFakeGlsCommandline(UiExitCodes default_exit_code,
                                        const std::string& gls_email,
-                                       const std::string& gaia_id_override,
+                                       const GaiaId& gaia_id_override,
                                        const std::string& gaia_password,
                                        const std::string& full_name_override,
                                        const std::wstring& start_gls_event_name,

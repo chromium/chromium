@@ -15,7 +15,7 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './middle_slot_promo.css.js';
 import {getHtml} from './middle_slot_promo.html.js';
-import type {Promo} from './new_tab_page.mojom-webui.js';
+import type {PageHandlerRemote, Promo} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -169,12 +169,18 @@ export class MiddleSlotPromoElement extends CrLitElement {
     };
   }
 
-  private eventTracker_: EventTracker = new EventTracker();
-  protected shownMiddleSlotPromoId_: string;
-  private blocklistedMiddleSlotPromoId_: string;
-  private promo_: Promo;
+  protected accessor shownMiddleSlotPromoId_: string;
+  private accessor promo_: Promo;
 
+  private blocklistedMiddleSlotPromoId_: string;
+  private eventTracker_: EventTracker = new EventTracker();
+  private pageHandler_: PageHandlerRemote;
   private setPromoListenerId_: number|null = null;
+
+  constructor() {
+    super();
+    this.pageHandler_ = NewTabPageProxy.getInstance().handler;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -184,7 +190,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
               this.promo_ = promo;
             });
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
-    NewTabPageProxy.getInstance().handler.updatePromoData();
+    this.pageHandler_.updatePromoData();
   }
 
   override disconnectedCallback() {
@@ -210,8 +216,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
       if (!promo) {
         this.$.promoAndDismissContainer.hidden = true;
       } else {
-        const promoContainer =
-            this.shadowRoot!.getElementById('promoContainer');
+        const promoContainer = this.shadowRoot.getElementById('promoContainer');
         if (promoContainer) {
           promoContainer.remove();
         }
@@ -227,7 +232,12 @@ export class MiddleSlotPromoElement extends CrLitElement {
     });
   }
 
+  // Allow users to undo the dismissal of the default promo using Ctrl+Z (or
+  // Cmd+Z on macOS). Mobile promo dismissal is handled by `mobile_promo.ts`.
   private onWindowKeydown_(e: KeyboardEvent) {
+    if (!this.blocklistedMiddleSlotPromoId_) {
+      return;
+    }
     let ctrlKeyPressed = e.ctrlKey;
     // <if expr="is_macosx">
     ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
@@ -240,8 +250,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
   protected onDismissPromoButtonClick_() {
     assert(this.$.promoAndDismissContainer);
     this.$.promoAndDismissContainer.hidden = true;
-    NewTabPageProxy.getInstance().handler.blocklistPromo(
-        this.shownMiddleSlotPromoId_);
+    this.pageHandler_.blocklistPromo(this.shownMiddleSlotPromoId_);
     this.blocklistedMiddleSlotPromoId_ = this.shownMiddleSlotPromoId_;
     this.$.dismissPromoButtonToast.show();
     recordPromoDismissAction(PromoDismissAction.DISMISS);
@@ -249,8 +258,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
 
   protected onUndoDismissPromoButtonClick_() {
     assert(this.$.promoAndDismissContainer);
-    NewTabPageProxy.getInstance().handler.undoBlocklistPromo(
-        this.blocklistedMiddleSlotPromoId_);
+    this.pageHandler_.undoBlocklistPromo(this.blocklistedMiddleSlotPromoId_);
     this.$.promoAndDismissContainer.hidden = false;
     this.$.dismissPromoButtonToast.hide();
     recordPromoDismissAction(PromoDismissAction.RESTORE);

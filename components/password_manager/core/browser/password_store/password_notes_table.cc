@@ -15,7 +15,7 @@
 #include "components/affiliations/core/browser/sql_table_builder.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store/encrypt_decrypt_intrface.h"
+#include "components/password_manager/core/browser/password_store/encrypt_decrypt_interface.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -62,9 +62,9 @@ const char PasswordNotesTable::kTableName[] = "password_notes";
 
 void PasswordNotesTable::Init(
     sql::Database* db,
-    EncryptDecryptInterface* encrypt_decrypt_intrface) {
+    EncryptDecryptInterface* encrypt_decrypt_interface) {
   db_ = db;
-  encrypt_decrypt_intrface_ = encrypt_decrypt_intrface;
+  encrypt_decrypt_interface_ = encrypt_decrypt_interface;
 }
 
 bool PasswordNotesTable::MigrateTable(int current_version,
@@ -108,7 +108,7 @@ bool PasswordNotesTable::MigrateTable(int current_version,
       } else {
         // Encrypt note using OSCrypt.
         std::string encrypted_note;
-        if (encrypt_decrypt_intrface_->EncryptedString(plaintext_note,
+        if (encrypt_decrypt_interface_->EncryptedString(plaintext_note,
                                                        &encrypted_note) !=
             EncryptionResult::kSuccess) {
           return false;
@@ -133,7 +133,7 @@ bool PasswordNotesTable::InsertOrReplace(FormPrimaryKey parent_id,
                                          const PasswordNote& note) {
   DCHECK(db_);
   std::string encrypted_value;
-  if (encrypt_decrypt_intrface_->EncryptedString(
+  if (encrypt_decrypt_interface_->EncryptedString(
           note.value, &encrypted_value) != EncryptionResult::kSuccess) {
     return false;
   }
@@ -174,7 +174,7 @@ std::vector<PasswordNote> PasswordNotesTable::GetPasswordNotes(
           kTableName)));
   s.BindInt(0, parent_id.value());
   return StatementToPasswordNotes(&s,
-                                  encrypt_decrypt_intrface_.get())[parent_id];
+                                  encrypt_decrypt_interface_.get())[parent_id];
 }
 
 std::map<FormPrimaryKey, std::vector<PasswordNote>>
@@ -186,6 +186,6 @@ PasswordNotesTable::GetAllPasswordNotesForTest() const {
           "SELECT parent_id, key, value, date_created, confidential "
           "FROM %s",
           kTableName)));
-  return StatementToPasswordNotes(&s, encrypt_decrypt_intrface_.get());
+  return StatementToPasswordNotes(&s, encrypt_decrypt_interface_.get());
 }
 }  // namespace password_manager

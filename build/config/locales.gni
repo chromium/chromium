@@ -12,6 +12,13 @@ import("//build/config/chromeos/ui_mode.gni")
 # pseudolocales, then use |locales_with_pseudolocales| or
 # |locales_without_pseudolocales|.
 
+declare_args() {
+  # pass the "--translate-genders" flag into GRIT to generate 4 translation
+  # files per locale ("", "_FEMININE", "_MASCULINE", "_NEUTER") instead of
+  # one.
+  translate_genders = false
+}
+
 # The following additional platform specific lists are created:
 # - |extended_locales| list of locales not shipped on desktop builds
 # - |android_bundle_locales_as_resources| locales formatted for XML output names
@@ -109,6 +116,19 @@ all_chrome_locales =
       "zu",
     ] + pseudolocales
 
+all_chrome_gender_suffixes = [
+  "",  # The "OTHER" gender is the default - we omit it from the filename.
+  "_MASCULINE",
+  "_FEMININE",
+  "_NEUTER",
+]
+
+if (translate_genders) {
+  gender_suffixes = all_chrome_gender_suffixes
+} else {
+  gender_suffixes = [ "" ]
+}
+
 if (is_ios) {
   # Chrome on iOS uses "es-MX" and "pt" for "es-419" and "pt-BR".
   all_chrome_locales -= [
@@ -181,6 +201,7 @@ if (is_chromeos) {
     "eu",
     "gl",
     "is",
+    "mn",
     "zu",
   ]
   platform_pak_locales -= [ "ur" ]

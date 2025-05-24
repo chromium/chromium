@@ -15,6 +15,8 @@ namespace quick_pair {
 // numeric values should never be reused. This enum should be kept in sync with
 // the FastPairAccountKeyFailure enum in
 // //tools/metrics/histograms/metadata/bluetooth/enums.xml.
+//
+// LINT.IfChange(FastPairAccountKeyFailure)
 enum class AccountKeyFailure {
   // Failed to find the Account Key GATT characteristic.
   kAccountKeyCharacteristicDiscovery = 0,
@@ -34,6 +36,7 @@ enum class AccountKeyFailure {
   kGattErrorNotSupported = 10,
   kMaxValue = kGattErrorNotSupported,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/bluetooth/enums.xml:FastPairAccountKeyFailure)
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 std::ostream& operator<<(std::ostream& stream, AccountKeyFailure protocol);

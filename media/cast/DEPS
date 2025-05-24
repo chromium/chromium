@@ -14,9 +14,8 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*unittest.cc": [
-    # TODO(https://crbug.com/1442745): there should be a test support class
-    # for this component.
+  # Open Screen platform usage should be restrict to the test helper.
+  "openscreen_test_helpers\.[cc|h]": [
     "+components/openscreen_platform",
   ],
 }

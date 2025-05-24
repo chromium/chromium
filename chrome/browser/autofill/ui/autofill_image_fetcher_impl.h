@@ -25,18 +25,21 @@ class AutofillImageFetcherImpl : public AutofillImageFetcher,
   // AutofillImageFetcher:
   image_fetcher::ImageFetcher* GetImageFetcher() override;
   base::WeakPtr<AutofillImageFetcher> GetWeakPtr() override;
-  GURL ResolveCardArtURL(const GURL& card_art_url) override;
+  GURL ResolveImageURL(const GURL& image_url,
+                       ImageType image_type) const override;
+
+ protected:
+  // AutofillImageFetcher:
   gfx::Image ResolveCardArtImage(const GURL& card_art_url,
                                  const gfx::Image& card_art_image) override;
 
-  // Returns the image with a grey overlay mask.
-  static gfx::Image ApplyGreyOverlay(const gfx::Image& image);
-
- protected:
   // The image fetcher attached.
   raw_ptr<image_fetcher::ImageFetcher> image_fetcher_ = nullptr;
 
  private:
+  // Returns the image with a grey overlay mask.
+  static gfx::Image ApplyGreyOverlay(const gfx::Image& image);
+
   void InitializeImageFetcher();
 
   raw_ptr<ProfileKey> key_;

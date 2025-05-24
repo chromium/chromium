@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] Property background-color value 'contrast-color(white)'
+  assert_true: 'contrast-color(white)' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'contrast-color(black)'
+  assert_true: 'contrast-color(black)' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'contrast-color(pink)'
+  assert_true: 'contrast-color(pink)' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'contrast-color(color(srgb 1 0 1 / 0.5))'
+  assert_true: 'contrast-color(color(srgb 1 0 1 / 0.5))' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'contrast-color(lab(0.2 0.5 0.2))'
+  assert_true: 'contrast-color(lab(0.2 0.5 0.2))' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'contrast-color(color(srgb 10 10 10))'
+  assert_true: 'contrast-color(color(srgb 10 10 10))' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'contrast-color(color(srgb -10 -10 -10))'
+  assert_true: 'contrast-color(color(srgb -10 -10 -10))' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'contrast-color(contrast-color(pink))'
+  assert_true: 'contrast-color(contrast-color(pink))' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'contrast-color(currentcolor)'
+  assert_true: 'contrast-color(currentcolor)' is a supported value for background-color. expected true got false
+[FAIL] Property background-color value 'contrast-color(color(srgb calc(1 + (sign(20cqw - 10px) * 1)) calc(1 + (sign(20cqw - 10px) * 1)) calc(1 + (sign(20cqw - 10px) * 1))))'
+  assert_true: 'contrast-color(color(srgb calc(1 + (sign(20cqw - 10px) * 1)) calc(1 + (sign(20cqw - 10px) * 1)) calc(1 + (sign(20cqw - 10px) * 1))))' is a supported value for background-color. expected true got false
+Harness: the test ran to completion.
+

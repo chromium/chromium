@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import android.widget.Button;
@@ -11,23 +14,23 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 
 import java.util.concurrent.ExecutionException;
 
@@ -35,10 +38,11 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillSnackbarControllerTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public JniMocker mMocker = new JniMocker();
+    @Rule
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String SNACKBAR_MESSAGE_TEXT = "message_text";
     private static final String SNACKBAR_ACTION_TEXT = "action_text";
@@ -52,12 +56,11 @@ public class AutofillSnackbarControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mSnackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         mAutofillSnackbarController =
                 new AutofillSnackbarController(NATIVE_AUTOFILL_SNACKBAR_VIEW, mSnackbarManager);
-        mMocker.mock(AutofillSnackbarControllerJni.TEST_HOOKS, mNativeMock);
+        AutofillSnackbarControllerJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test
@@ -66,14 +69,14 @@ public class AutofillSnackbarControllerTest {
         showSnackbar();
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect snackbar message text", SNACKBAR_MESSAGE_TEXT, getSnackbarMessageText());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect snackbar action text", SNACKBAR_ACTION_TEXT, getSnackbarActionText());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect snackbar duration", SNACKBAR_DURATION, currentSnackbar.getDuration());
 
-        Assert.assertTrue(
+        assertTrue(
                 "Incorrect SnackbarController type",
                 currentSnackbar.getController() instanceof AutofillSnackbarController);
     }
@@ -85,7 +88,7 @@ public class AutofillSnackbarControllerTest {
 
         dismissSnackbar();
 
-        Assert.assertNull(getCurrentSnackbar());
+        assertNull(getCurrentSnackbar());
         verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_SNACKBAR_VIEW);
     }
 

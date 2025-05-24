@@ -73,17 +73,6 @@ importPbkdf2Key().then(function() {
     };
 
     return expectFailure(
-        "Deriving using length 0...",
-        crypto.subtle.deriveBits(algorithm, pbkdf2Key, 0));
-}).then(function() {
-    var algorithm = {
-        name: "PBKDF2",
-        salt: asciiToUint8Array("salt"),
-        iterations: 1024,
-        hash: "SHA-1" 
-    };
-
-    return expectFailure(
         "Deriving using length -10...",
         crypto.subtle.deriveBits(algorithm, pbkdf2Key, -10));
 }).then(finishJSTest, failAndFinishJSTest);

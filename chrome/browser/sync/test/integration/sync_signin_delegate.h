@@ -23,7 +23,10 @@ class SyncSigninDelegate {
                           signin::ConsentLevel consent_level) = 0;
 
   // Signs in a real account via the actual UI, for use in end-to-end tests
-  // using real servers.
+  // using real servers. Note that, if `signin::ConsentLevel::kSync` is used,
+  // by the time this function returns it is not guaranteed that IdentityManager
+  // reports a primary account with `signin::ConsentLevel::kSync`. This is
+  // because it is necessary to invoke `ConfirmSyncUI()`.
   [[nodiscard]] virtual bool SigninUI(Profile* profile,
                                       const std::string& username,
                                       const std::string& password,

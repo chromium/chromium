@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -43,7 +48,7 @@ class NameValuePairsParserFuzzer {
     // Test with the input as a value on the same line (i.e., without any
     // newline in it).
     std::string value = input;
-    value.erase(std::remove(value.begin(), value.end(), '\n'), value.end());
+    std::erase(value, '\n');
     testInputAsVpdDumpValueForKey(value);
     // TODO(crbug.com/40197992): Check that the value for "key" is |value|.
   }

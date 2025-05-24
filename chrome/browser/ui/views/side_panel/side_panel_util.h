@@ -9,9 +9,9 @@
 #include <type_traits>
 
 #include "base/time/time.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "ui/base/class_property.h"
 
 class Browser;
@@ -34,12 +34,6 @@ class SidePanelUtil {
   // exist, this creates one indicating the view is available.
   static SidePanelContentProxy* GetSidePanelContentProxy(
       views::View* content_view);
-
-  // Deregister the entry with the key from the registry and return the view if
-  // exists.
-  static std::unique_ptr<views::View> DeregisterAndReturnView(
-      SidePanelRegistry* registry,
-      SidePanelEntry::Key key);
 
   static void RecordNewTabButtonClicked(SidePanelEntry::Id id);
   static void RecordSidePanelOpen(std::optional<SidePanelOpenTrigger> trigger);

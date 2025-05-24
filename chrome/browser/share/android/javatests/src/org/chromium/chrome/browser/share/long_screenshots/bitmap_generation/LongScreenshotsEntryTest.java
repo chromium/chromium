@@ -15,10 +15,12 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.tab.Tab;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LongScreenshotsEntryTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
 
     @Mock private Tab mTab;
@@ -40,9 +43,9 @@ public class LongScreenshotsEntryTest {
 
     @Mock private ScreenshotBoundsManager mBoundsManager;
 
-    private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
+    private final Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
 
-    class TestEntryListener implements LongScreenshotsEntry.EntryListener {
+    static class TestEntryListener implements LongScreenshotsEntry.EntryListener {
         @EntryStatus int mReturnedStatus;
 
         @Override
@@ -81,8 +84,6 @@ public class LongScreenshotsEntryTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         when(mBoundsManager.getCaptureBounds()).thenReturn(new Rect(0, -1, 0, 1000));
     }
 
@@ -97,7 +98,7 @@ public class LongScreenshotsEntryTest {
                         new Callback<Integer>() {
                             @Override
                             public void onResult(Integer result) {
-                                assertEquals((int) result, 2097152);
+                                assertEquals(2097152, (int) result);
                             }
                         });
         TestEntryListener entryListener = new TestEntryListener();

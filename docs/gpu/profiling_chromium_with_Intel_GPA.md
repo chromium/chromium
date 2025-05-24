@@ -28,13 +28,13 @@ Here are the steps to profile the WebGL application [Aquarium](https://webglsamp
 ```
 cd C:\Program Files\IntelSWTools\GPA\Streams
 
-gpa-injector.exe --injection-mode 1 -t "%LOCALAPPDATA%\Google\Chrome SxS\Application\chrome.exe" -L capture -L hud-layer -- --no-sandbox --disable_direct_composition=1 https://webglsamples.org/aquarium/aquarium.html
+gpa-injector.exe --injection-mode 1 -t "%LOCALAPPDATA%\Google\Chrome SxS\Application\chrome.exe" -L capture -L hud-layer -- --no-sandbox --disable-direct-composition https://webglsamples.org/aquarium/aquarium.html
 ```
 
 Note that
 - `-t` specifies the binary file of the graphics application.
 - `-L hud-layer` (optional) enables the HUD of Intel&reg; GPA, where we can see some statistics (for example, the number of frames we have collected) of Intel&reg; GPA.
-- `--` specifies the command line parameters that will be used when the graphics application is launched. Currently both `--no-sandbox` and `--disable_direct_composition=1` are required for the latest version of Intel&reg; GPA to work with Chromium.
+- `--` specifies the command line parameters that will be used when the graphics application is launched. Currently both `--no-sandbox` and `--disable-direct-composition` are required for the latest version of Intel&reg; GPA to work with Chromium.
 
 2. Close Chrome to stop recording the stream after we have collected enough frames.
 
@@ -58,7 +58,7 @@ gpa-injector.exe --injection-mode 1 --hook-d3d11on12 -t "C:\Program Files\Google
 
 Note that
 - `--hook-d3d11on12` is required to profile WebGPU applications.
-- `--no-sandbox` and `--disable_direct_composition=1` are both required for the latest version of Intel&reg; GPA to work with Chromium.
+- `--no-sandbox` and `--disable-direct-composition` are both required for the latest version of Intel&reg; GPA to work with Chromium.
 
 2. Close Chrome to stop recording the stream after we have collected enough frames.
 

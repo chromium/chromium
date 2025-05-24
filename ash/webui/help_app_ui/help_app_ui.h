@@ -12,9 +12,12 @@
 #include "ash/webui/help_app_ui/search/search.mojom.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
+#include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -36,7 +39,8 @@ class HelpAppUI : public ui::MojoWebUIController,
                   public help_app::mojom::PageHandlerFactory {
  public:
   HelpAppUI(content::WebUI* web_ui,
-            std::unique_ptr<HelpAppUIDelegate> delegate);
+            std::unique_ptr<HelpAppUIDelegate> delegate,
+            PrefService* pref_service);
   ~HelpAppUI() override;
 
   HelpAppUI(const HelpAppUI&) = delete;
@@ -65,6 +69,10 @@ class HelpAppUI : public ui::MojoWebUIController,
   mojo::Receiver<help_app::mojom::PageHandlerFactory> page_factory_receiver_{
       this};
   std::unique_ptr<HelpAppUIDelegate> delegate_;
+
+  // Safe because PrefService is owned by the profile, which indirectly owns
+  // this class.
+  raw_ref<PrefService> pref_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

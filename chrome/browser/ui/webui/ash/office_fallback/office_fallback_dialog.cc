@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -212,8 +213,9 @@ void OfficeFallbackDialog::OnDialogClosed(const std::string& choice) {
   // Delete class.
   SystemWebDialogDelegate::OnDialogClosed(choice);
   // Run callback after dialog closed.
-  if (callback)
+  if (callback) {
     std::move(callback).Run(choice);
+  }
 }
 
 OfficeFallbackDialog::OfficeFallbackDialog(

@@ -28,13 +28,13 @@
 namespace ash {
 enum class AnimationChangeType;
 class DragHandle;
-class FocusCycler;
 class HotseatWidget;
 class LoginShelfView;
 class Shelf;
 class ShelfLayoutManager;
 class ShelfNavigationWidget;
 class ShelfView;
+class ShelfWidgetDelegateView;
 class StatusAreaWidget;
 
 // The ShelfWidget manages the shelf view (which contains the shelf icons) and
@@ -82,10 +82,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   void PostCreateShelf();
 
   bool IsShowingMenu() const;
-
-  // Sets the focus cycler. Also adds the shelf to the cycle.
-  void SetFocusCycler(FocusCycler* focus_cycler);
-  FocusCycler* GetFocusCycler();
 
   // See Shelf::GetScreenBoundsOfItemIconForWindow().
   gfx::Rect GetScreenBoundsOfItemIconForWindow(aura::Window* window);
@@ -183,8 +179,7 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   }
 
  private:
-  class DelegateView;
-  friend class DelegateView;
+  friend class ShelfWidgetDelegateView;
 
   // Hides shelf widget if IsVisible() returns true.
   void HideIfShown();
@@ -213,7 +208,7 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
 
   // |delegate_view_| is the contents view of this widget and is cleaned up
   // during CloseChildWindows of the associated RootWindowController.
-  raw_ptr<DelegateView, DanglingUntriaged> delegate_view_;
+  raw_ptr<ShelfWidgetDelegateView, DanglingUntriaged> delegate_view_;
 
   // Animates the shelf background to/from the hotseat background during hotseat
   // transitions.

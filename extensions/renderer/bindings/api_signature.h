@@ -116,20 +116,20 @@ class APISignature {
     std::optional<std::string> error;
   };
 
-  // Parses |arguments| against this signature, returning the result and
+  // Parses `arguments` against this signature, returning the result and
   // performing no argument conversion.
   V8ParseResult ParseArgumentsToV8(v8::Local<v8::Context> context,
                                    const v8::LocalVector<v8::Value>& arguments,
                                    const APITypeReferenceMap& type_refs) const;
 
-  // Parses |arguments| against this signature, returning the result after
+  // Parses `arguments` against this signature, returning the result after
   // converting to base::Values.
   JSONParseResult ParseArgumentsToJSON(
       v8::Local<v8::Context> context,
       const v8::LocalVector<v8::Value>& arguments,
       const APITypeReferenceMap& type_refs) const;
 
-  // Converts |arguments| to base::Values, ignoring the defined signature.
+  // Converts `arguments` to base::Values, ignoring the defined signature.
   // This is used when custom bindings modify the passed arguments to a form
   // that doesn't match the documented signature. Since we ignore the schema,
   // this parsing will never fail.
@@ -137,7 +137,7 @@ class APISignature {
       v8::Local<v8::Context> context,
       const v8::LocalVector<v8::Value>& arguments) const;
 
-  // Validates the provided |arguments| as if they were returned as a response
+  // Validates the provided `arguments` as if they were returned as a response
   // to an API call. This validation is much stricter than the versions above,
   // since response arguments are not allowed to have optional inner parameters.
   bool ValidateResponse(v8::Local<v8::Context> context,
@@ -166,7 +166,7 @@ class APISignature {
 
  private:
   // Checks if promises are allowed to be used for a call to an API from a given
-  // |context|.
+  // `context`.
   PromisesAllowed CheckPromisesAllowed(v8::Local<v8::Context> context) const;
 
   // The list of expected arguments for the API signature.

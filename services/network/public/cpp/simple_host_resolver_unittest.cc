@@ -139,11 +139,16 @@ TEST_F(SimpleHostResolverTest, ResolveFourAddresses) {
     if (request.reset_client) {
       network_context->SetResetClientFor(request.host_port_pair);
     }
+    // The ios simulator may return the NAT64 address rather than
+    // the IPv4 address. The parameters specify the dns query type
+    // to resolve the issue.
+    auto resolver_parameters = network::mojom::ResolveHostParameters::New();
+    resolver_parameters->dns_query_type = net::DnsQueryType::A;
     simple_resolver->ResolveHost(
         network::mojom::HostResolverHost::NewHostPortPair(
             request.host_port_pair),
-        net::NetworkAnonymizationKey(),
-        /*optional_parameters=*/nullptr, future->GetCallback());
+        net::NetworkAnonymizationKey(), std::move(resolver_parameters),
+        future->GetCallback());
     futures.emplace_back(std::move(future), std::move(result));
   }
 

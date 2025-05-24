@@ -8,13 +8,12 @@
 
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
 #include "base/test/scoped_chromeos_version_info.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace syncer {
 namespace {
@@ -26,7 +25,7 @@ TEST(GetClientNameTest, GetPersonalizableDeviceNameBlocking) {
   EXPECT_FALSE(client_name.empty());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Call GetPersonalizableDeviceNameBlocking on ChromeOS where the
 // board type is CHROMEBOOK and make sure the return value is "Chromebook".
@@ -46,7 +45,7 @@ TEST(GetClientNameTest, GetPersonalizableDeviceNameBlockingChromebox) {
   EXPECT_EQ("Chromebox", client_name);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace syncer

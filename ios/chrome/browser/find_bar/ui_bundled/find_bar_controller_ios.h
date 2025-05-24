@@ -24,7 +24,7 @@
     FindBarViewController* findBarViewController;
 
 // Init with incognito style.
-- (instancetype)initWithIncognito:(BOOL)isIncognito;
+- (instancetype)initWithIncognito:(BOOL)incognito;
 // Current input search term.
 - (NSString*)searchTerm;
 // Update view based on model. If `focusTextfield` is YES, focus the

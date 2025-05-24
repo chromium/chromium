@@ -68,4 +68,4 @@ network::mojom::PrivateNetworkRequestPolicy OverrideBlockWithWarn(
 
 }  // namespace content
 
-#endif  //  CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_

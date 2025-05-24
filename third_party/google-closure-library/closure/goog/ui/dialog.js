@@ -136,6 +136,41 @@ goog.ui.Dialog.prototype.draggable_ = true;
 
 
 /**
+ * Whether the dialog keeps track of its surrounding space. Defaults to false.
+ * @private {boolean}
+ */
+goog.ui.Dialog.prototype.trackSurroundingSpace_ = false;
+
+
+/**
+ * The amount of space in pixels to the left of the dialog.
+ * @private {number}
+ */
+goog.ui.Dialog.prototype.spaceOnLeft_ = 1;
+
+
+/**
+ * The amount of space in pixels to the right of the dialog.
+ * @private {number}
+ */
+goog.ui.Dialog.prototype.spaceOnRight_ = 1;
+
+
+/**
+ * The amount of space in pixels above the dialog.
+ * @private {number}
+ */
+goog.ui.Dialog.prototype.spaceOnTop_ = 1;
+
+
+/**
+ * The amount of space in pixels below the dialog.
+ * @private {number}
+ */
+goog.ui.Dialog.prototype.spaceOnBottom_ = 1;
+
+
+/**
  * Opacity for background mask.  Defaults to 50%.
  * @type {number}
  * @private
@@ -580,6 +615,76 @@ goog.ui.Dialog.prototype.setDraggable = function(draggable) {
 
 
 /**
+ * Sets whether the dialog keeps track of its surrounding space.
+ * @param {boolean} trackSurroundingSpace
+ */
+goog.ui.Dialog.prototype.setTrackSurroundingSpace = function(
+    trackSurroundingSpace) {
+  'use strict';
+  this.trackSurroundingSpace_ = trackSurroundingSpace;
+  this.maybeUpdateSurroundingSpace_();
+};
+
+
+/** Handles the dialog being dragged. */
+goog.ui.Dialog.prototype.handleDrag = function() {
+  'use strict';
+  this.maybeUpdateSurroundingSpace_();
+};
+
+
+/** Updates the surrounding space fields if that behavior is enabled. */
+goog.ui.Dialog.prototype.maybeUpdateSurroundingSpace_ = function() {
+  'use strict';
+  if (!this.trackSurroundingSpace_) {
+    return;
+  }
+
+  const doc = this.getDomHelper().getDocument();
+  const win = goog.dom.getWindow(doc) || window;
+  const viewSize = goog.dom.getViewportSize(win);
+  if (!this.getElement()) {
+    return;
+  }
+  const element = /** @type {!HTMLElement} */ (this.getElementStrict());
+  const popupSize = goog.style.getSize(element);
+
+  let x = 0;
+  let y = 0;
+  if (goog.style.getComputedPosition(element) != 'fixed') {
+    const scroll = this.getDomHelper().getDocumentScroll();
+    x = scroll.x;
+    y = scroll.y;
+  }
+
+  this.spaceOnLeft_ = element.offsetLeft - x;
+  this.spaceOnRight_ = viewSize.width - element.offsetLeft - popupSize.width;
+  this.spaceOnTop_ = element.offsetTop - y;
+  this.spaceOnBottom_ = viewSize.height - element.offsetTop - popupSize.height;
+};
+
+
+/**
+ * Gets an object containing fields for how many pixels of space there are on
+ * each side of the dialog, or null if this dialog isn't keeping track of that
+ * information.
+ * @return {?{left: number, right: number, top: number, bottom: number}}
+ */
+goog.ui.Dialog.prototype.getSurroundingSpace = function() {
+  'use strict';
+  if (!this.trackSurroundingSpace_) {
+    return null;
+  }
+  return {
+    left: this.spaceOnLeft_,
+    right: this.spaceOnRight_,
+    top: this.spaceOnTop_,
+    bottom: this.spaceOnBottom_
+  };
+};
+
+
+/**
  * Returns a dragger for moving the dialog and adds a class for the move cursor.
  * Defaults to allow dragging of the title only, but can be overridden if
  * different drag targets or dragging behavior is desired.
@@ -631,6 +736,9 @@ goog.ui.Dialog.prototype.setDraggingEnabled_ = function(enabled) {
     goog.events.listen(
         this.dragger_, goog.fx.Dragger.EventType.START, this.setDraggerLimits_,
         false, this);
+    goog.events.listen(
+        this.dragger_, goog.fx.Dragger.EventType.DRAG, this.handleDrag, false,
+        this);
   } else if (!enabled && this.dragger_) {
     this.dragger_.dispose();
     this.dragger_ = null;
@@ -847,10 +955,9 @@ goog.ui.Dialog.prototype.exitDocument = function() {
 
 
 /**
- * Sets the visibility of the dialog box and moves focus to the
- * default button. Lazily renders the component if needed. After this
- * method returns, isVisible() will always return the new state, even
- * if there is a transition.
+ * Sets the visibility of the dialog box. Lazily renders the component if
+ * needed. After this method returns, isVisible() will always return the new
+ * state, even if there is a transition.
  * @param {boolean} visible Whether the dialog should be visible.
  * @override
  */
@@ -876,6 +983,7 @@ goog.ui.Dialog.prototype.setVisible = function(visible) {
 goog.ui.Dialog.prototype.onShow = function() {
   'use strict';
   goog.ui.Dialog.base(this, 'onShow');
+  this.maybeUpdateSurroundingSpace_();
   this.dispatchEvent(goog.ui.Dialog.EventType.AFTER_SHOW);
 };
 

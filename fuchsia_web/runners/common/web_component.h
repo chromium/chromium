@@ -17,6 +17,7 @@
 
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/startup_context.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -97,7 +98,7 @@ class WebComponent : public fuchsia::ui::app::ViewProvider,
 
  private:
   // Refers to the owner of the web.Context hosting this component instance.
-  WebContentRunner* const runner_ = nullptr;
+  const raw_ptr<WebContentRunner> runner_ = nullptr;
 
   // Component context for this instance, including incoming services.
   const std::unique_ptr<base::StartupContext> startup_context_;

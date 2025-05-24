@@ -7,13 +7,15 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "media/mojo/services/deferred_destroy_unique_receiver_set.h"
+
+#include <array>
 #include <memory>
 #include <utility>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "media/mojo/services/deferred_destroy_unique_receiver_set.h"
-#include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -81,7 +83,7 @@ TEST_F(DeferredDestroyUniqueReceiverSetTest, Destructor) {
 
 TEST_F(DeferredDestroyUniqueReceiverSetTest, ConnectionError) {
   mojo::PendingRemote<PingService> ping[4];
-  DeferredDestroyPingImpl* impl[4];
+  std::array<DeferredDestroyPingImpl*, 4> impl;
   auto receivers =
       std::make_unique<DeferredDestroyUniqueReceiverSet<PingService>>();
 
@@ -117,7 +119,7 @@ TEST_F(DeferredDestroyUniqueReceiverSetTest, ConnectionError) {
 
 TEST_F(DeferredDestroyUniqueReceiverSetTest, CloseAllReceivers) {
   mojo::PendingRemote<PingService> ping[3];
-  DeferredDestroyPingImpl* impl[3];
+  std::array<DeferredDestroyPingImpl*, 3> impl;
   DeferredDestroyUniqueReceiverSet<PingService> receivers;
 
   for (int i = 0; i < 2; ++i)

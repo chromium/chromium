@@ -5,18 +5,17 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_BASE_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_BASE_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/time.h"
-#include "content/public/browser/visibility.h"
 
 namespace resource_coordinator {
 
 class LifecycleUnitSourceBase;
-class UsageClock;
 
 using ::mojom::LifecycleUnitState;
 using ::mojom::LifecycleUnitStateChangeReason;
@@ -24,9 +23,7 @@ using ::mojom::LifecycleUnitStateChangeReason;
 // Base class for a LifecycleUnit.
 class LifecycleUnitBase : public LifecycleUnit {
  public:
-  explicit LifecycleUnitBase(LifecycleUnitSourceBase* source,
-                             content::Visibility visibility,
-                             UsageClock* usage_clock);
+  explicit LifecycleUnitBase(LifecycleUnitSourceBase* source);
 
   LifecycleUnitBase(const LifecycleUnitBase&) = delete;
   LifecycleUnitBase& operator=(const LifecycleUnitBase&) = delete;
@@ -36,14 +33,11 @@ class LifecycleUnitBase : public LifecycleUnit {
   // LifecycleUnit:
   LifecycleUnitSource* GetSource() const override;
   int32_t GetID() const override;
-  base::TimeTicks GetWallTimeWhenHidden() const override;
-  base::TimeDelta GetChromeUsageTimeWhenHidden() const override;
   LifecycleUnitState GetState() const override;
   base::TimeTicks GetStateChangeTime() const override;
   size_t GetDiscardCount() const override;
   void AddObserver(LifecycleUnitObserver* observer) override;
   void RemoveObserver(LifecycleUnitObserver* observer) override;
-  ukm::SourceId GetUkmSourceId() const override;
 
   void SetDiscardCountForTesting(size_t discard_count);
 
@@ -55,17 +49,6 @@ class LifecycleUnitBase : public LifecycleUnit {
   // |reason| indicates what caused the state change.
   void SetState(LifecycleUnitState state,
                 LifecycleUnitStateChangeReason reason);
-
-  // Invoked when the state of the LifecycleUnit changes, before external
-  // observers are notified. Derived classes can override to add their own
-  // logic. The default implementation is empty. |last_state| is the state
-  // before the change and |reason| indicates what caused the change.
-  virtual void OnLifecycleUnitStateChanged(
-      LifecycleUnitState last_state,
-      LifecycleUnitStateChangeReason reason);
-
-  // Notifies observers that the visibility of the LifecycleUnit has changed.
-  void OnLifecycleUnitVisibilityChanged(content::Visibility visibility);
 
   // Notifies observers that the LifecycleUnit is being destroyed. This is
   // invoked by derived classes rather than by the base class to avoid notifying
@@ -88,18 +71,6 @@ class LifecycleUnitBase : public LifecycleUnit {
 
   // Time at which the state changed.
   base::TimeTicks state_change_time_ = NowTicks();
-
-  // The wall time when this LifecycleUnit was last hidden, or TimeDelta::Max()
-  // if this LifecycleUnit is currently visible.
-  base::TimeTicks wall_time_when_hidden_;
-
-  // A clock that measures Chrome usage time.
-  const raw_ptr<UsageClock> usage_clock_;
-
-  // The Chrome usage time measured by |usage_clock_| when this LifecycleUnit
-  // was last hidden, or TimeDelta::Max() if this LifecycleUnit is currently
-  // visible.
-  base::TimeDelta chrome_usage_time_when_hidden_;
 
   // The number of times that this lifecycle unit has been discarded.
   int discard_count_ = 0;

@@ -8,7 +8,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/system/notification_center/message_center_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -120,22 +119,20 @@ void AshNotificationInputContainer::OnThemeChanged() {
   SetSendButtonHighlightPath();
   StyleTextfield();
 
-  if (chromeos::features::IsJellyEnabled()) {
-    textfield()->SetTextColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
-    textfield()->SetFontList(
-        ash::TypographyProvider::Get()->ResolveTypographyToken(
-            ash::TypographyToken::kCrosBody2));
-    textfield()->set_placeholder_text_color(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
-    textfield()->set_placeholder_font_list(
-        ash::TypographyProvider::Get()->ResolveTypographyToken(
-            ash::TypographyToken::kCrosBody2));
+  textfield()->SetTextColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+  textfield()->SetFontList(
+      ash::TypographyProvider::Get()->ResolveTypographyToken(
+          ash::TypographyToken::kCrosBody2));
+  textfield()->set_placeholder_text_color(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
+  textfield()->set_placeholder_font_list(
+      ash::TypographyProvider::Get()->ResolveTypographyToken(
+          ash::TypographyToken::kCrosBody2));
 
-    textfield()->SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysSurface),
-        kTextfieldBackgroundCornerRadius));
-  }
+  textfield()->SetBackground(views::CreateRoundedRectBackground(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSurface),
+      kTextfieldBackgroundCornerRadius));
 }
 
 }  // namespace ash

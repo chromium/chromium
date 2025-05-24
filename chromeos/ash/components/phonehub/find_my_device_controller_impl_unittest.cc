@@ -11,8 +11,7 @@
 #include "chromeos/ash/components/phonehub/find_my_device_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -128,5 +127,4 @@ TEST_F(FindMyDeviceControllerImplTest, RequestNewRingStatus) {
   EXPECT_FALSE(fake_message_sender_.GetRecentRingDeviceRequest());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -20,6 +20,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final TabModelDelegate mModelDelegate;
+    private final TabRemover mTabRemover;
 
     private final @ActivityType int mActivityType;
 
@@ -39,6 +40,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
      * @param asyncTabParamsManager An {@link AsyncTabParamsManager} instance.
      * @param activityType Type of the activity for the tab model.
      * @param modelDelegate Delegate to handle external dependencies and interactions.
+     * @param tabRemover Delegate to handle removing tabs tabs.
      */
     IncognitoTabModelImplCreator(
             ProfileProvider profileProvider,
@@ -49,7 +51,8 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
             NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager,
             @ActivityType int activityType,
-            TabModelDelegate modelDelegate) {
+            TabModelDelegate modelDelegate,
+            TabRemover tabRemover) {
         mProfileProvider = profileProvider;
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
@@ -59,10 +62,11 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
         mAsyncTabParamsManager = asyncTabParamsManager;
         mActivityType = activityType;
         mModelDelegate = modelDelegate;
+        mTabRemover = tabRemover;
     }
 
     @Override
-    public TabModel createTabModel() {
+    public TabModelInternal createTabModel() {
         return new TabModelImpl(
                 mProfileProvider.getOffTheRecordProfile(true),
                 mActivityType,
@@ -73,7 +77,13 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                 mNextTabPolicySupplier,
                 mAsyncTabParamsManager,
                 mModelDelegate,
+                mTabRemover,
                 /* supportUndo= */ false,
                 /* isArchivedTabModel= */ false);
+    }
+
+    @Override
+    public TabCreator getIncognitoTabCreator() {
+        return mIncognitoTabCreator;
     }
 }

@@ -1,0 +1,419 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/args.gni")
+
+assert(!is_ios)
+
+source_set("headers") {
+  sources = [ "privacy_sandbox_service.h" ]
+
+  public_deps = [
+    ":countries",
+    "//base",
+    "//chrome/browser/first_party_sets",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/privacy_sandbox",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
+    "//components/profile_metrics",
+    "//components/user_education/common",
+    "//content/public/browser",
+    "//net",
+  ]
+}
+
+group("privacy_sandbox") {
+  public_deps = [
+    ":countries",
+    "notice",
+  ]
+
+  # (Desktop Only)
+  if (!is_android) {
+    public_deps += [ "notice:desktop_view_manager" ]
+  }
+}
+
+source_set("countries") {
+  sources = [ "privacy_sandbox_countries_impl.cc" ]
+  public = [ "privacy_sandbox_countries.h" ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//components/privacy_sandbox:features",
+    "//components/variations/service",
+  ]
+}
+
+source_set("countries_browser_test") {
+  testonly = true
+  sources = [ "privacy_sandbox_countries_browsertest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":countries",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support",
+    "//components/privacy_sandbox:features",
+    "//components/variations/service:service",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+if (!is_android) {
+  source_set("attestations_browser_test") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "privacy_sandbox_attestations/privacy_sandbox_attestations_component_installer_browsertest.cc" ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/component_updater:component_updater_paths",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:test_support",
+      "//components/privacy_sandbox/privacy_sandbox_attestations",
+      "//components/privacy_sandbox/privacy_sandbox_attestations:metrics",
+      "//components/privacy_sandbox/privacy_sandbox_attestations/proto",
+      "//content/test:test_support",
+    ]
+  }
+
+  source_set("notice_confirmation_browser_test") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "privacy_sandbox_notice_confirmation_browsertest.cc" ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/privacy_sandbox:features",
+      "//components/variations",
+      "//components/variations/service",
+      "//content/test:test_support",
+    ]
+  }
+
+  source_set("settings_browser_test") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "privacy_sandbox_settings_browsertest.cc",
+      "tracking_protection_settings_browsertest.cc",
+    ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/profiles:profile",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:privacy_sandbox_settings_headers",
+      "//components/privacy_sandbox:test_support",
+      "//components/privacy_sandbox:tracking_protection_prefs",
+      "//components/privacy_sandbox:tracking_protection_settings",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/network/public/cpp:flags_and_switches",
+      "//third_party/blink/public/common:headers",
+    ]
+  }
+
+  source_set("survey_desktop_controller_browser_test") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "privacy_sandbox_survey_desktop_controller_browsertest.cc" ]
+    deps = [
+      "//base/test:test_support",
+      "//base/version_info:channel",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/common:channel_info",
+      "//chrome/common:chrome_features",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/prefs",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//content/test:test_support",
+      "//net:test_support",
+    ]
+  }
+} else {
+  source_set("attestations_component_installer_android_browsertest") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "privacy_sandbox_attestations/privacy_sandbox_attestations_component_installer_android_browsertest.cc" ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui_android",
+      "//components/component_updater:component_updater_paths",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:test_support",
+      "//components/privacy_sandbox/privacy_sandbox_attestations",
+      "//components/privacy_sandbox/privacy_sandbox_attestations:metrics",
+      "//components/privacy_sandbox/privacy_sandbox_attestations/preload",
+      "//components/privacy_sandbox/privacy_sandbox_attestations/proto",
+      "//content/test:test_support",
+    ]
+  }
+}
+
+group("browser_tests") {
+  testonly = true
+  deps = [
+    ":countries_browser_test",
+    "notice:browser_tests",
+  ]
+
+  if (!is_android) {
+    deps += [
+      ":attestations_browser_test",
+      ":notice_confirmation_browser_test",
+      ":settings_browser_test",
+      ":survey_desktop_controller_browser_test",
+    ]
+  } else {
+    deps += [ ":attestations_component_installer_android_browsertest" ]
+  }
+}
+
+source_set("policy_handler_unittest") {
+  testonly = true
+  sources = [ "privacy_sandbox_policy_handler_unittest.cc" ]
+  deps = [
+    "//base",
+    "//chrome/test:test_support",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/strings:components_strings",
+    "//ui/base",
+  ]
+}
+
+source_set("service_impl_unittest") {
+  testonly = true
+  sources = [ "privacy_sandbox_service_impl_unittest.cc" ]
+  deps = [
+    ":countries",
+    ":headers",
+    ":test_support",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/first_party_sets",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/privacy_sandbox/notice:core",
+    "//chrome/browser/privacy_sandbox/notice:factory",
+    "//chrome/browser/privacy_sandbox/notice:notice_mojom",
+    "//chrome/browser/privacy_sandbox/notice:test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//components/browsing_topics:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/content_settings/core/test:test_support",
+    "//components/metrics:metrics_pref_names",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common:test_support",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
+    "//components/privacy_sandbox:test_support",
+    "//components/privacy_sandbox:tracking_protection_settings",
+    "//components/privacy_sandbox/privacy_sandbox_attestations",
+    "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
+    "//components/profile_metrics",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/strings:components_strings",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync_preferences:test_support",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//net",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/hats:test_support" ]
+  }
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/ash/components/login/login_state:test_support",
+      "//chromeos/components/kiosk:test_support",
+    ]
+  }
+}
+
+source_set("settings_delegate_unittest") {
+  testonly = true
+  sources = [ "privacy_sandbox_settings_delegate_unittest.cc" ]
+  deps = [
+    "//base/test:test_support",
+    "//build:buildflag_header_h",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/supervised_user:test_support",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/metrics:metrics_pref_names",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
+    "//components/privacy_sandbox:tracking_protection_onboarding",
+    "//components/privacy_sandbox:tracking_protection_prefs",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/public/common",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("utils_unittest") {
+  testonly = true
+  sources = [ "privacy_sandbox_utils_unittest.cc" ]
+  deps = [ "//chrome/test:test_support" ]
+}
+
+source_set("profile_bucket_metrics_unittest") {
+  testonly = true
+  sources = [ "profile_bucket_metrics_unittest.cc" ]
+  deps = [
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/profile_metrics",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("survey_desktop_controller_unittest") {
+  testonly = true
+  if (!is_android) {
+    sources = [ "privacy_sandbox_survey_desktop_controller_unittest.cc" ]
+    deps = [
+      "//base/test:test_support",
+      "//base/version_info:channel",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/common:channel_info",
+      "//chrome/test:test_support",
+      "//components/prefs",
+      "//components/prefs:test_support",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//components/privacy_sandbox:privacy_sandbox_survey_service",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/version_info",
+      "//content/test:test_support",
+    ]
+  }
+}
+
+source_set("activity_types_service_unittest") {
+  testonly = true
+  if (is_android) {
+    sources = [ "privacy_sandbox_activity_types_service_unittest.cc" ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser/preferences:java_pref_names_srcjar",
+      "//chrome/browser/privacy_sandbox/android:privacy_sandbox_enums",
+      "//chrome/test:test_support",
+      "//components/metrics:metrics_pref_names",
+      "//components/prefs:test_support",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//content/test:test_support",
+    ]
+  }
+}
+
+group("unit_tests") {
+  testonly = true
+  deps = [
+    ":activity_types_service_unittest",
+    ":policy_handler_unittest",
+    ":profile_bucket_metrics_unittest",
+    ":service_impl_unittest",
+    ":settings_delegate_unittest",
+    ":survey_desktop_controller_unittest",
+    ":utils_unittest",
+    "notice:unit_tests",
+  ]
+  public_deps = [ "notice:test_support" ]
+}
+
+if (!is_android && !is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "browsing_topics_settings_interactive_uitest.cc" ]
+    deps = [
+      ":headers",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/prefs",
+      "//components/privacy_sandbox",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//content/test:test_support",
+    ]
+  }
+}
+
+# TODO(crbug.com/408801109) move other privacy_sandbox sources
+# from chrome/test/BUILD.gn here.
+
+source_set("test_support") {
+  testonly = true
+
+  if (!is_android) {
+    sources = [
+      "mock_privacy_sandbox_service.cc",
+      "mock_privacy_sandbox_service.h",
+      "mock_queue_manager.cc",
+      "mock_queue_manager.h",
+    ]
+
+    public_deps = [
+      ":countries",
+      ":headers",
+      "//chrome/test:test_support",
+      "//testing/gmock",
+    ]
+
+    deps = [
+      "//components/keyed_service/core",
+      "//content/public/browser",
+    ]
+  }
+}

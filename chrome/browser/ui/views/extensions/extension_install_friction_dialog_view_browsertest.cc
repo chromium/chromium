@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include "chrome/browser/ui/views/extensions/extension_install_friction_dialog_view.h"
+
+#include <string>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -71,7 +71,7 @@ class ExtensionInstallFrictionDialogViewTest
     ExtensionInstallFrictionDialogView* delegate_view = dialog.get();
 
     views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-        dialog.release(), nullptr,
+        dialog.release(), gfx::NativeWindow(),
         platform_util::GetViewForWindow(
             browser()->window()->GetNativeWindow()));
     modal_dialog->Show();
@@ -138,8 +138,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallFrictionDialogViewTest,
         TabStripModel* tab_strip_model,
         const TabStripModelChange& change,
         const TabStripSelectionChange& selection) override {
-      if (change.type() != TabStripModelChange::kInserted)
+      if (change.type() != TabStripModelChange::kInserted) {
         return;
+      }
 
       GURL learn_more_url(chrome::kCwsEnhancedSafeBrowsingLearnMoreURL);
       for (const auto& contents : change.GetInsert()->contents) {

@@ -9,10 +9,13 @@ import android.view.View;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 
-import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A class that helps with tracking impressions. */
+@NullMarked
 public class ImpressionTracker
         implements ViewTreeObserver.OnPreDrawListener, View.OnAttachStateChangeListener {
     /**
@@ -109,6 +112,7 @@ public class ImpressionTracker
 
     @Override
     public boolean onPreDraw() {
+        assert mListener != null; // We unregister when there is no listener.
         ViewParent parent = mView.getParent();
         if (parent != null) {
             Rect rect = new Rect(0, 0, mView.getWidth(), mView.getHeight());

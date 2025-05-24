@@ -9,9 +9,7 @@
 
 class ChromeBrowserMainParts;
 
-namespace chrome {
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts);
-}
 
 class ChromeBrowserMainExtraPartsProfiles : public ChromeBrowserMainExtraParts {
  public:

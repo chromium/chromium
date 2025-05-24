@@ -4,12 +4,12 @@
 
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/page_handler.h"
@@ -42,7 +42,7 @@ ServiceWorkerDevToolsAgentHost*
 ServiceWorkerDevToolsManager::GetDevToolsAgentHostForNewInstallingWorker(
     const ServiceWorkerContextWrapper* context_wrapper,
     int64_t version_id) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       new_installing_hosts_,
       [&context_wrapper, &version_id](
           const scoped_refptr<ServiceWorkerDevToolsAgentHost>& agent_host) {
@@ -96,6 +96,7 @@ void ServiceWorkerDevToolsManager::WorkerMainScriptFetchingStarting(
           /*is_installed_version=*/false,
           /*client_security_state=*/nullptr,
           /*coep_reporter=*/mojo::NullRemote(),
+          /*dip_reporter=*/mojo::NullRemote(),
           base::UnguessableToken::Create());
 
   ServiceWorkerDevToolsAgentHost* host_ptr = host.get();
@@ -149,6 +150,8 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
     network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter,
     base::UnguessableToken* devtools_worker_token,
     bool* pause_on_start) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -175,7 +178,8 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
 
     if (client_security_state) {
       agent_host->UpdateClientSecurityState(std::move(client_security_state),
-                                            std::move(coep_reporter));
+                                            std::move(coep_reporter),
+                                            std::move(dip_reporter));
     }
 
     return;
@@ -186,7 +190,7 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
       worker_process_id, worker_route_id, std::move(context_wrapper),
       version_id, url, scope, is_installed_version,
       std::move(client_security_state), std::move(coep_reporter),
-      *devtools_worker_token);
+      std::move(dip_reporter), *devtools_worker_token);
   live_hosts_[worker_id] = host;
   *pause_on_start = debug_service_worker_on_start_;
   for (auto& observer : observer_list_) {
@@ -313,7 +317,8 @@ void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
                          *request_info,
                          protocol::Network::Initiator::TypeEnum::Preload,
                          /*initiator_url=*/std::nullopt,
-                         /*initiator_devtools_request_id=*/"", timestamp);
+                         /*initiator_devtools_request_id=*/"",
+                         /*frame_token=*/std::nullopt, timestamp);
   }
 }
 
@@ -333,7 +338,7 @@ void ServiceWorkerDevToolsManager::NavigationPreloadResponseReceived(
   for (auto* network : protocol::NetworkHandler::ForAgentHost(it->second.get()))
     network->ResponseReceived(request_id, std::string(), url,
                               protocol::Network::ResourceTypeEnum::Other,
-                              *head_info, protocol::Maybe<std::string>());
+                              *head_info, std::nullopt);
 }
 
 void ServiceWorkerDevToolsManager::NavigationPreloadCompleted(
@@ -354,7 +359,7 @@ scoped_refptr<ServiceWorkerDevToolsAgentHost>
 ServiceWorkerDevToolsManager::TakeStoppedHost(
     const ServiceWorkerContextWrapper* context_wrapper,
     int64_t version_id) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       stopped_hosts_, [&context_wrapper, &version_id](
                           ServiceWorkerDevToolsAgentHost* agent_host) {
         return agent_host->context_wrapper() == context_wrapper &&
@@ -371,7 +376,7 @@ scoped_refptr<ServiceWorkerDevToolsAgentHost>
 ServiceWorkerDevToolsManager::TakeNewInstallingHost(
     const ServiceWorkerContextWrapper* context_wrapper,
     int64_t version_id) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       new_installing_hosts_,
       [&context_wrapper, &version_id](
           const scoped_refptr<ServiceWorkerDevToolsAgentHost>& agent_host) {

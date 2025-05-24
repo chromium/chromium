@@ -8,7 +8,10 @@ import android.graphics.Rect;
 import android.view.TouchDelegate;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Class for TouchDelegate helpers. */
+@NullMarked
 public class TouchDelegateUtil {
     /**
      * Set a TouchDelegate on view's parent so that view's touch target is doubled in width and

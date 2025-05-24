@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/gpu/gpu_data_manager_impl_private.h"
 
@@ -18,9 +14,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
-#include "content/browser/gpu/gpu_data_manager_testing_autogen.h"
-#include "content/browser/gpu/gpu_data_manager_testing_entry_enums_autogen.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -489,11 +482,20 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
 
 // Android and Chrome OS do not support software compositing, while Fuchsia does
 // not support falling back to software from Vulkan.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
+// Explicitly disable SkiaGraphite for tests that run with Ganesh as some
+// platforms have started shipping Graphite.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 #if !BUILDFLAG(IS_FUCHSIA)
-TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShader) {
+TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShaderForGanesh) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableSkiaGraphite);
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
+  feature_list.InitWithFeatures({}, {
+                                        features::kAllowSwiftShaderFallback,
+#if BUILDFLAG(IS_WIN)
+                                        features::kAllowD3D11WarpFallback,
+#endif  // BUILDFLAG(IS_WIN)
+                                    });
 
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
@@ -502,7 +504,9 @@ TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShader) {
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
 
-TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShader) {
+TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShaderForGanesh) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableSkiaGraphite);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableUnsafeSwiftShader);
 
@@ -510,12 +514,15 @@ TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShader) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
-  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
+  EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
 }
 
-TEST_F(GpuDataManagerImplPrivateTest, FallbackWithSwiftShaderDisabledByFlags) {
+TEST_F(GpuDataManagerImplPrivateTest,
+       FallbackWithSwiftShaderDisabledByFlagsForGanesh) {
   // Make sure that we don't fall back to SwiftShader when it's disabled with
   // --disable-software-rasterizer even if --allow-unsafe-swiftshader is used
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableSkiaGraphite);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableSoftwareRasterizer);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -529,10 +536,12 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackWithSwiftShaderDisabledByFlags) {
 }
 
 TEST_F(GpuDataManagerImplPrivateTest,
-       FallbackWithSwiftShaderDisabledByFeatures) {
+       FallbackWithSwiftShaderDisabledByFeaturesForGanesh) {
   // Make sure that we don't fall back to SwiftShader when it's disabled with
   // --disable-software-rasterizer even the AllowSwiftShaderFallback feature is
   // present.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableSkiaGraphite);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableSoftwareRasterizer);
 
@@ -565,17 +574,83 @@ TEST_F(GpuDataManagerImplPrivateTest,
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(GpuDataManagerImplPrivateTest,
+       ExplicitFallbackToSwiftShaderForGraphite) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableUnsafeSwiftShader);
+
+  ScopedGpuDataManagerImplPrivate manager;
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  manager->FallBackToNextGpuMode();
+  manager->FallBackToNextGpuMode();
+
+  EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
+}
+
+TEST_F(GpuDataManagerImplPrivateTest,
+       FallbackWithSwiftShaderDisabledByFlagsForGraphite) {
+  // Make sure that we don't fall back to SwiftShader when it's disabled with
+  // --disable-software-rasterizer even if --allow-unsafe-swiftshader is used
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableSoftwareRasterizer);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableUnsafeSwiftShader);
+  ScopedGpuDataManagerImplPrivate manager;
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  manager->FallBackToNextGpuMode();
+  manager->FallBackToNextGpuMode();
+
+  gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
+  EXPECT_EQ(expected_mode, manager->GetGpuMode());
+}
+
+TEST_F(GpuDataManagerImplPrivateTest,
+       FallbackWithSwiftShaderDisabledByFeaturesForGraphite) {
+  // Make sure that we don't fall back to SwiftShader when it's disabled with
+  // --disable-software-rasterizer even the AllowSwiftShaderFallback feature is
+  // present.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableSoftwareRasterizer);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
+
+  ScopedGpuDataManagerImplPrivate manager;
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  manager->FallBackToNextGpuMode();
+  manager->FallBackToNextGpuMode();
+
+  gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
+  EXPECT_EQ(expected_mode, manager->GetGpuMode());
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 #if !defined(CAST_AUDIO_ONLY)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
+  feature_list.InitWithFeatures({}, {
+                                        features::kAllowSwiftShaderFallback,
+#if BUILDFLAG(IS_WIN)
+                                        features::kAllowD3D11WarpFallback,
+#endif  // BUILDFLAG(IS_WIN)
+                                    });
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableGpu);
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
 #endif  // !defined(CAST_AUDIO_ONLY)
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
         // !BUILDFLAG(IS_IOS)
 
 // Chromecast audio-only builds should not launch the GPU process.
@@ -588,8 +663,6 @@ TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
 #endif  // defined(CAST_AUDIO_ONLY)
 
 #if BUILDFLAG(ENABLE_VULKAN)
-// TODO(crbug.com/40735511): enable tests when Vulkan is supported on LaCrOS.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithVulkanFeatureFlag) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVulkan);
@@ -613,11 +686,14 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanToGL) {
 TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kVulkan},
+                                {
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
-                                {features::kAllowSwiftShaderFallback});
-#else
-                                {});
+                                    features::kAllowSwiftShaderFallback,
 #endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
+#if BUILDFLAG(IS_WIN)
+                                    features::kAllowD3D11WarpFallback,
+#endif  // BUILDFLAG(IS_WIN)
+                                });
 
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
@@ -632,18 +708,23 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
 
   // The first fallback should go to the display compositor on platforms where
   // fallback to software is allowed.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
         // !BUILDFLAG(IS_IOS)
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kVulkan},
-                                {features::kAllowSwiftShaderFallback});
+                                {
+                                    features::kAllowSwiftShaderFallback,
+#if BUILDFLAG(IS_WIN)
+                                    features::kAllowD3D11WarpFallback,
+#endif  // BUILDFLAG(IS_WIN)
+                                });
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
 
@@ -655,10 +736,9 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
         // !BUILDFLAG(IS_IOS)
 #endif  // !BUILDFLAG(IS_FUCHSIA)
-#endif  // !IS_CHROMEOS_LACROS
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
 }  // namespace content

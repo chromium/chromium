@@ -31,7 +31,7 @@ class TraceWrapperV8ReferenceHolder final
   TraceWrapperV8ReferenceHolder(const TraceWrapperV8ReferenceHolder& other)
       : value_(other.value_) {}
 
-  virtual void Trace(Visitor* visitor) const { visitor->Trace(value_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(value_); }
 
   TraceWrapperV8Reference<v8::Value>* ref() { return &value_; }
 
@@ -203,7 +203,7 @@ TEST_F(TraceWrapperV8ReferenceTest, HeapVector) {
   V8TestingScope testing_scope;
   SetIsolate(testing_scope.GetIsolate());
 
-  using VectorContainer = HeapVector<TraceWrapperV8Reference<v8::Value>>;
+  using VectorContainer = GCedHeapVector<TraceWrapperV8Reference<v8::Value>>;
   Persistent<VectorContainer> holder(MakeGarbageCollected<VectorContainer>());
   v8::Persistent<v8::Value> observer;
   {
@@ -224,8 +224,9 @@ TEST_F(TraceWrapperV8ReferenceTest, Ephemeron) {
   V8TestingScope testing_scope;
   SetIsolate(testing_scope.GetIsolate());
 
-  using EphemeronMap = HeapHashMap<WeakMember<TraceWrapperV8ReferenceHolder>,
-                                   TraceWrapperV8Reference<v8::Value>>;
+  using EphemeronMap =
+      GCedHeapHashMap<WeakMember<TraceWrapperV8ReferenceHolder>,
+                      TraceWrapperV8Reference<v8::Value>>;
   Persistent<EphemeronMap> holder(MakeGarbageCollected<EphemeronMap>());
   v8::Persistent<v8::Value> observer;
   Persistent<TraceWrapperV8ReferenceHolder> object(

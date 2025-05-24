@@ -35,6 +35,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.net.NetworkChangeNotifier;
 
 import java.io.IOException;
@@ -68,7 +69,7 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
     @MediumTest
     public void launchNtp_disableAndEnableViaGearMenu() throws IOException, InterruptedException {
         // The web feed requires login to enable, so we must log in first.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         // Load the NTP.
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
 

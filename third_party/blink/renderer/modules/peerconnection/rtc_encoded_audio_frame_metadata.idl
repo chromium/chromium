@@ -11,6 +11,8 @@ dictionary RTCEncodedAudioFrameMetadata {
     octet payloadType;
     DOMString mimeType;
     unsigned short? sequenceNumber;
-    [RuntimeEnabled=RTCEncodedAudioFrameAbsCaptureTime] unsigned long long absCaptureTime;
-    [RuntimeEnabled=RTCEncodedFrameSetMetadata] unsigned long rtpTimestamp;
+    unsigned long rtpTimestamp;
+    [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp receiveTime;
+    [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp captureTime;
+    [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp senderCaptureTimeOffset;
 };

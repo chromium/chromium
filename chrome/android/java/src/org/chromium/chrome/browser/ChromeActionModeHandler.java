@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -33,7 +34,7 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -41,6 +42,7 @@ import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.HashSet;
 import java.util.List;
@@ -51,24 +53,23 @@ public class ChromeActionModeHandler {
     /** Observes the active WebContents being initialized into a Tab. */
     private final Callback<WebContents> mInitWebContentsObserver;
 
-    private final ActivityTabProvider.ActivityTabTabObserver mActivityTabTabObserver;
-
     private Tab mActiveTab;
 
     /**
      * @param activityTabProvider {@link ActivityTabProvider} instance.
-     * @param actionBarObserver observer called when the contextual action bar's visibility has
-     *     changed.
      * @param showWebSearch Whether 'Web Search' option will be shown.
      * @param searchCallback Callback to run when search action is selected in the action mode.
      * @param shareDelegateSupplier The {@link Supplier} of the {@link ShareDelegate} that will be
      *     notified when a share action is performed.
+     * @param controlsState Provides browser controls visibility state.
+     * @param readAloudControllerSupplier Supplies {@link ReadAloudController}.
      */
     public ChromeActionModeHandler(
             ActivityTabProvider activityTabProvider,
             Callback<String> searchCallback,
             boolean showWebSearch,
             Supplier<ShareDelegate> shareDelegateSupplier,
+            BrowserControlsStateProvider controlsState,
             Supplier<ReadAloudController> readAloudControllerSupplier) {
         mInitWebContentsObserver =
                 (webContents) -> {
@@ -81,29 +82,37 @@ public class ChromeActionModeHandler {
                                     searchCallback,
                                     showWebSearch,
                                     shareDelegateSupplier,
+                                    controlsState,
                                     readAloudControllerSupplier));
                     spc.setDropdownMenuDelegate(new ChromeSelectionDropdownMenuDelegate());
                 };
 
-        mActivityTabTabObserver =
-                new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
-                    @Override
-                    public void onObservingDifferentTab(Tab tab, boolean hint) {
-                        // ActivityTabProvider will null out the tab passed to
-                        // onObservingDifferentTab when the tab is non-interactive (e.g. when
-                        // entering the TabSwitcher), but in those cases we actually still want to
-                        // use the most recently selected tab.
-                        if (tab == null || tab == mActiveTab) return;
+        new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
+            @Override
+            public void onObservingDifferentTab(Tab tab, boolean hint) {
+                // ActivityTabProvider will null out the tab passed to onObservingDifferentTab when
+                // the tab is non-interactive (e.g. when entering the TabSwitcher), but in those
+                // cases we actually still want to use the most recently selected tab.
+                if (tab == null || tab == mActiveTab) return;
+                if (mActiveTab != null && mActiveTab.isInitialized()) {
+                    TabWebContentsObserver.from(mActiveTab)
+                            .removeInitWebContentsObserver(mInitWebContentsObserver);
+                }
+                mActiveTab = tab;
+                TabWebContentsObserver.from(tab)
+                        .addInitWebContentsObserver(mInitWebContentsObserver);
+            }
 
-                        if (mActiveTab != null && mActiveTab.isInitialized()) {
-                            TabWebContentsObserver.from(mActiveTab)
-                                    .removeInitWebContentsObserver(mInitWebContentsObserver);
-                        }
-                        mActiveTab = tab;
-                        TabWebContentsObserver.from(tab)
-                                .addInitWebContentsObserver(mInitWebContentsObserver);
-                    }
-                };
+            @Override
+            public void onPageLoadStarted(Tab tab, GURL url) {
+                SelectionPopupController.fromWebContents(tab.getWebContents()).clearSelection();
+            }
+
+            @Override
+            public void onContentChanged(Tab tab) {
+                SelectionPopupController.fromWebContents(tab.getWebContents()).clearSelection();
+            }
+        };
     }
 
     @VisibleForTesting
@@ -120,6 +129,7 @@ public class ChromeActionModeHandler {
         private final boolean mShowWebSearch;
         private final Supplier<ShareDelegate> mShareDelegateSupplier;
         private final Supplier<ReadAloudController> mReadAloudControllerSupplier;
+        private final BrowserControlsStateProvider mControlsState;
 
         // Used for recording UMA histograms.
         private long mContextMenuStartTime;
@@ -130,12 +140,14 @@ public class ChromeActionModeHandler {
                 Callback<String> searchCallback,
                 boolean showWebSearch,
                 Supplier<ShareDelegate> shareDelegateSupplier,
+                BrowserControlsStateProvider controlsState,
                 Supplier<ReadAloudController> readAloudControllerSupplier) {
             mTab = tab;
             mHelper = getActionModeCallbackHelper(webContents);
             mShowWebSearch = showWebSearch;
             mSearchCallback = searchCallback;
             mShareDelegateSupplier = shareDelegateSupplier;
+            mControlsState = controlsState;
             mReadAloudControllerSupplier = readAloudControllerSupplier;
         }
 
@@ -198,8 +210,8 @@ public class ChromeActionModeHandler {
             UserEducationHelper mUserEducationHelper =
                     new UserEducationHelper(
                             TabUtils.getActivity(mTab), mTab.getProfile(), new Handler());
-            mUserEducationHelper.requestShowIPH(
-                    new IPHCommandBuilder(
+            mUserEducationHelper.requestShowIph(
+                    new IphCommandBuilder(
                                     view.getResources(),
                                     FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,
                                     R.string.iph_shared_highlighting_builder,
@@ -250,16 +262,17 @@ public class ChromeActionModeHandler {
             } else if (mShareDelegateSupplier.get() != null
                     && id == R.id.select_action_menu_share) {
                 RecordUserAction.record(SelectionPopupController.UMA_MOBILE_ACTION_MODE_SHARE);
-                RecordHistogram.recordMediumTimesHistogram(
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         "ContextMenu.TimeToSelectShare",
                         System.currentTimeMillis() - mContextMenuStartTime);
+                mHelper.dismissMenu();
                 mShareDelegateSupplier
                         .get()
                         .share(
                                 new ShareParams.Builder(
                                                 mTab.getWindowAndroid(),
-                                                /* url= */ "",
-                                                /* title= */ "")
+                                                /* title= */ "",
+                                                /* url= */ "")
                                         .setText(sanitizeTextForShare(mHelper.getSelectedText()))
                                         .build(),
                                 new ChromeShareExtras.Builder()
@@ -283,6 +296,17 @@ public class ChromeActionModeHandler {
         @Override
         public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
             mHelper.onGetContentRect(mode, view, outRect);
+            boolean controlsVisible = mControlsState.getBrowserControlHiddenRatio() < 1.f;
+            int controlsHeight = mControlsState.getTopControlsHeight();
+            if (controlsVisible && outRect.top < 2 * controlsHeight) {
+                // Make |outRect| taller to so the framework thinks there is not enough space
+                // above the selected text to place the floating action mode. This helps the action
+                // mode and the top controls avoid overlapping - the action mode will be positioned
+                // below the text.
+                // The right condition should be |outRect.top < controlsHeight + actionModeHeight|
+                // but we do not know |actionModeHeight|. Assume actionModeHeight ~= controlsHeight.
+                outRect.top -= controlsHeight;
+            }
         }
 
         private Set<String> getPackageNames(List<ResolveInfo> list) {

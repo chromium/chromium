@@ -22,6 +22,7 @@ class WebStateContentDownloadTask final : public DownloadTaskImpl {
   WebStateContentDownloadTask(
       WebState* web_state,
       const GURL& original_url,
+      NSString* originating_host,
       NSString* http_method,
       const std::string& content_disposition,
       int64_t total_bytes,

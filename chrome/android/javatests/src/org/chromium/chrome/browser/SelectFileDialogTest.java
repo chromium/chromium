@@ -21,6 +21,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -32,10 +35,12 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.TestContentProvider;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.SelectFileDialog;
@@ -47,7 +52,12 @@ import java.io.File;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SelectFileDialogTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
+    @Mock InsetObserver mInsetObserver;
 
     private static final String DATA_URL =
             UrlUtils.encodeHtmlDataUri(
@@ -65,11 +75,13 @@ public class SelectFileDialogTest {
         public Intent lastIntent;
         public IntentCallback lastCallback;
 
-        public ActivityWindowAndroidForTest(Activity activity) {
+        public ActivityWindowAndroidForTest(Activity activity, InsetObserver insetObserver) {
             super(
                     activity,
                     /* listenToActivityState= */ true,
-                    IntentRequestTracker.createFromActivity(activity));
+                    IntentRequestTracker.createFromActivity(activity),
+                    insetObserver,
+                    /* trackOcclusion= */ true);
         }
 
         @Override
@@ -100,12 +112,13 @@ public class SelectFileDialogTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(DATA_URL);
+        mActivityTestRule.startOnUrl(DATA_URL);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityWindowAndroidForTest =
-                            new ActivityWindowAndroidForTest(mActivityTestRule.getActivity());
+                            new ActivityWindowAndroidForTest(
+                                    mActivityTestRule.getActivity(), mInsetObserver);
                     SelectFileDialog.setWindowAndroidForTests(mActivityWindowAndroidForTest);
 
                     mWebContents = mActivityTestRule.getActivity().getCurrentWebContents();

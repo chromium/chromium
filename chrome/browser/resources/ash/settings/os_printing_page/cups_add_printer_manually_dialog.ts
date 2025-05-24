@@ -10,21 +10,21 @@
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
-import './cups_add_print_server_dialog.js';
 import './cups_add_printer_dialog.js';
 import './cups_printer_dialog_error.js';
 import './cups_printer_shared.css.js';
 import './cups_printers_browser_proxy.js';
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast, castExists} from '../assert_extras.js';
 
-import {AddPrinterDialogElement} from './cups_add_printer_dialog.js';
+import type {AddPrinterDialogElement} from './cups_add_printer_dialog.js';
 import {getTemplate} from './cups_add_printer_manually_dialog.html.js';
 import {getErrorText, isNameAndAddressValid} from './cups_printer_dialog_util.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterMakeModel, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import type {CupsPrinterInfo, CupsPrintersBrowserProxy, PrinterMakeModel} from './cups_printers_browser_proxy.js';
+import {CupsPrintersBrowserProxyImpl, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 
 function getEmptyPrinter(): object {
   return {
@@ -156,7 +156,7 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
               this.onAddPrinterSucceeded_.bind(this),
               this.onAddPrinterFailed_.bind(this));
     } else {
-      this.getAddPrinterDialog_()!.close();
+      this.getAddPrinterDialog_().close();
       this.openManufacturerModelDialog_();
     }
   }
@@ -179,13 +179,13 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
       this.browserProxy_.getPrinterInfo(this.newPrinter)
           .then(this.onPrinterFound_.bind(this), this.infoFailed_.bind(this));
     } else {
-      this.getAddPrinterDialog_()!.close();
+      this.getAddPrinterDialog_().close();
       this.openManufacturerModelDialog_();
     }
   }
 
   private onPrintServerClick_(): void {
-    this.getAddPrinterDialog_()!.close();
+    this.getAddPrinterDialog_().close();
 
     const openAddPrintServerDialogEvent =
         new CustomEvent('open-add-print-server-dialog', {
@@ -199,7 +199,7 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
     // Queue input should be hidden when protocol is set to "App Socket".
     const selectEl = cast(event.target, HTMLSelectElement);
     this.showPrinterQueue_ = selectEl.value !== 'socket';
-    this.set('newPrinter.printerProtocol', selectEl!.value);
+    this.set('newPrinter.printerProtocol', selectEl.value);
   }
 
   private canAddPrinter_(): boolean {

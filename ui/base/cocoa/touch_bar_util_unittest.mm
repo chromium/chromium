@@ -11,7 +11,7 @@
 
 namespace {
 
-const char kTestChromeBundleId[] = "test.bundleid";
+constexpr char kTestChromeBundleId[] = "test.bundleid";
 
 NSString* const kTestTouchBarId = @"test-touch-bar";
 
@@ -21,11 +21,11 @@ NSString* const kTestTouchBarItemId = @"TEST-ITEM";
 
 class TouchBarUtilTest : public ui::CocoaTest {
  public:
-  TouchBarUtilTest() {}
+  TouchBarUtilTest() = default;
 };
 
 TEST_F(TouchBarUtilTest, TouchBarIdentifiers) {
-  base::apple::SetBaseBundleID(kTestChromeBundleId);
+  base::apple::SetBaseBundleIDOverride(kTestChromeBundleId);
   EXPECT_TRUE([ui::GetTouchBarId(kTestTouchBarId)
       isEqualToString:@"test.bundleid.test-touch-bar"]);
   EXPECT_TRUE([ui::GetTouchBarItemId(kTestTouchBarId, kTestTouchBarItemId)

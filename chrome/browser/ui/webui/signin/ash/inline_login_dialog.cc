@@ -112,8 +112,9 @@ class InlineLoginDialog::ModalDialogManagerCleanup
   void WebContentsDestroyed() override { ResetDelegate(); }
 
   void ResetDelegate() {
-    if (!web_contents())
+    if (!web_contents()) {
       return;
+    }
     web_modal::WebContentsModalDialogManager::FromWebContents(web_contents())
         ->SetDelegate(nullptr);
   }
@@ -176,8 +177,9 @@ InlineLoginDialog::InlineLoginDialog(
 }
 
 InlineLoginDialog::~InlineLoginDialog() {
-  for (auto& observer : modal_dialog_host_observer_list_)
+  for (auto& observer : modal_dialog_host_observer_list_) {
     observer.OnHostDestroying();
+  }
 
   if (!close_dialog_closure_.is_null()) {
     std::move(close_dialog_closure_).Run();
@@ -229,8 +231,9 @@ void InlineLoginDialog::OnDialogClosed(const std::string& json_retval) {
 // The args value will be available from JS via
 // chrome.getVariableValue('dialogArguments').
 std::string InlineLoginDialog::GetDialogArgs() const {
-  if (!add_account_options_)
+  if (!add_account_options_) {
     return std::string();
+  }
 
   std::string json;
   base::JSONWriter::Write(
@@ -262,8 +265,9 @@ void InlineLoginDialog::ShowInternal(
   // get displayed on the lock screen. In this case it is safe to ignore it,
   // since in this case user will get it again after a request to Google
   // properties.
-  if (session_manager::SessionManager::Get()->IsUserSessionBlocked())
+  if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
     return;
+  }
 
   if (dialog) {
     dialog->dialog_window()->Focus();

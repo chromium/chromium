@@ -4,16 +4,16 @@
 
 #include "media/cast/test/fake_openscreen_clock.h"
 
-#include "base/test/simple_test_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 
 namespace media::cast {
 
-base::SimpleTestTickClock* g_tick_clock = nullptr;
+const base::TickClock* g_tick_clock = nullptr;
 base::TimeTicks* g_origin_ticks = nullptr;
 
 // static
-void FakeOpenscreenClock::SetTickClock(base::SimpleTestTickClock* tick_clock) {
+void FakeOpenscreenClock::SetTickClock(const base::TickClock* tick_clock) {
   CHECK(tick_clock);
   CHECK(!g_tick_clock);
   g_tick_clock = tick_clock;

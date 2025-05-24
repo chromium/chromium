@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/mock_entropy_provider.h"
@@ -17,6 +18,7 @@
 #include "components/variations/entropy_provider.h"
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
 
@@ -30,22 +32,31 @@ struct ClientFilterableState;
 // WriteSeedData(). This allows for encapsulated seed information to be created
 // below for generic test seeds as well as seeds which cause crashes.
 struct SignedSeedData {
-  base::span<const char*> study_names;  // Names of all studies in the seed.
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const char*>
+      study_names;  // Names of all studies in the seed.
   const char* base64_uncompressed_data;
   const char* base64_compressed_data;
   const char* base64_signature;
+  const uint8_t* compressed_data;
+  size_t compressed_data_size;
 
   // Out-of-line constructor/destructor/copy/move required for 'complex'
   // classes.
   SignedSeedData(base::span<const char*> in_study_names,
                  const char* in_base64_uncompressed_data,
                  const char* in_base64_compressed_data,
-                 const char* in_base64_signature);
+                 const char* in_base64_signature,
+                 const uint8_t* in_compressed_data,
+                 size_t in_compressed_data_size);
   ~SignedSeedData();
   SignedSeedData(const SignedSeedData&);
   SignedSeedData(SignedSeedData&&);
   SignedSeedData& operator=(const SignedSeedData&);
   SignedSeedData& operator=(SignedSeedData&&);
+
+  // Converts SignedSeedData's compressed data to a string.
+  std::string_view GetCompressedData() const;
 };
 
 // Packages variations seed pref keys into a tuple for use with StoreSeedInfo().
@@ -160,6 +171,9 @@ bool ContainsTrialAndGroupName(
     const std::vector<ActiveGroupId>& active_group_ids,
     std::string_view trial_name,
     std::string_view group_name);
+
+// Sets up the seed file experiment where `group_name` is the active group.
+void SetUpSeedFileTrial(std::string group_name);
 
 }  // namespace variations
 

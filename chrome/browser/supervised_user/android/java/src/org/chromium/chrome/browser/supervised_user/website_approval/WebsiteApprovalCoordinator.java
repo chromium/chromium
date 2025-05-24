@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.supervised_user.website_approval;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.graphics.Bitmap;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -18,6 +22,7 @@ import org.chromium.url.GURL;
  * Coordinator for the bottom sheet content in the screen which allows a parent to approve or deny
  * a website.
  */
+@NullMarked
 public class WebsiteApprovalCoordinator {
     private final WebsiteApprovalMediator mMediator;
 
@@ -40,7 +45,7 @@ public class WebsiteApprovalCoordinator {
             WindowAndroid windowAndroid,
             GURL url,
             CompletionCallback completionCallback,
-            Bitmap favicon,
+            @Nullable Bitmap favicon,
             Profile profile) {
         PropertyModel model =
                 new PropertyModel.Builder(WebsiteApprovalProperties.ALL_KEYS)
@@ -50,8 +55,9 @@ public class WebsiteApprovalCoordinator {
 
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
+        assert bottomSheetController != null;
         WebsiteApprovalSheetContent sheetContent =
-                new WebsiteApprovalSheetContent(windowAndroid.getContext().get());
+                new WebsiteApprovalSheetContent(assertNonNull(windowAndroid.getContext().get()));
 
         PropertyModelChangeProcessor.create(model, sheetContent, WebsiteApprovalViewBinder::bind);
 

@@ -11,6 +11,7 @@ include_rules = [
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/browser/password_protection",
   "+components/safe_browsing/core/common/safe_browsing_prefs.h",
+  "+components/password_manager/content/common/web_ui_constants.h",
   "+components/safe_browsing/core/common/features.h",
   "+components/signin/public",
   "+components/sync/base",
@@ -39,6 +40,7 @@ include_rules = [
   "+services/network/public/mojom",
   "+services/network/test",
   "+third_party/zxcvbn-cpp",
+  "+components/credential_management"
 ]
 
 specific_include_rules = {

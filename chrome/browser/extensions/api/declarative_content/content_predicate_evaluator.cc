@@ -6,12 +6,12 @@
 
 namespace extensions {
 
-ContentPredicateEvaluator::~ContentPredicateEvaluator() {}
+ContentPredicateEvaluator::~ContentPredicateEvaluator() = default;
 
-ContentPredicateEvaluator::ContentPredicateEvaluator() {}
+ContentPredicateEvaluator::ContentPredicateEvaluator() = default;
 
-ContentPredicateEvaluator::Delegate::Delegate() {}
+ContentPredicateEvaluator::Delegate::Delegate() = default;
 
-ContentPredicateEvaluator::Delegate::~Delegate() {}
+ContentPredicateEvaluator::Delegate::~Delegate() = default;
 
 }  // namespace extensions

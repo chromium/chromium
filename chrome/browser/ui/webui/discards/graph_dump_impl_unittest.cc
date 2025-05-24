@@ -43,7 +43,7 @@ class TestChangeStream : public discards::mojom::GraphChangeStream {
   using WorkerMap = std::map<int64_t, discards::mojom::WorkerInfoPtr>;
   using IdSet = std::set<int64_t>;
 
-  TestChangeStream() {}
+  TestChangeStream() = default;
 
   mojo::PendingRemote<discards::mojom::GraphChangeStream> GetRemote() {
     mojo::PendingRemote<discards::mojom::GraphChangeStream> remote;
@@ -271,8 +271,9 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
       EXPECT_NE(0u, frame->page_id);
 
       // The page's main frame should have an URL.
-      if (frame->id == impl_raw->GetNodeIdForTesting(main_frame))
+      if (frame->id == impl_raw->GetNodeIdForTesting(main_frame)) {
         EXPECT_EQ(kExampleUrl, frame->url);
+      }
     }
     EXPECT_NE(0u, frame->id);
     EXPECT_NE(0u, frame->process_id);

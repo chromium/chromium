@@ -17,44 +17,60 @@ PASS new ProgressEvent('eventType', { loaded: 0 }).loaded is 0
 PASS new ProgressEvent('eventType', { loaded: 1 }).loaded is 1
 PASS new ProgressEvent('eventType', { loaded: 9007199254740990 }).loaded is 9007199254740990
 PASS new ProgressEvent('eventType', { loaded: 9007199254740991 }).loaded is 9007199254740991
-PASS new ProgressEvent('eventType', { loaded: 18446744073709551615 }).loaded is 0
+PASS new ProgressEvent('eventType', { loaded: 18446744073709551615 }).loaded is 18446744073709552000
 PASS new ProgressEvent('eventType', { loaded: 12345678901234567890 }).loaded is 12345678901234567890
-PASS new ProgressEvent('eventType', { loaded: -1 }).loaded is 18446744073709551615
-PASS new ProgressEvent('eventType', { loaded: NaN }).loaded is 0
-PASS new ProgressEvent('eventType', { loaded: 123.45 }).loaded is 123
+PASS new ProgressEvent('eventType', { loaded: 18446744073709551616 }).loaded is 18446744073709552000
+PASS new ProgressEvent('eventType', { loaded: 1234567890123456789012345678901234567890 }).loaded is 1.2345678901234568e+39
+PASS new ProgressEvent('eventType', { loaded: NaN }).loaded threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'loaded' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { loaded: Infinity }).loaded threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'loaded' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { loaded: -Infinity }).loaded threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'loaded' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { loaded: 123.45 }).loaded is 123.45
+PASS new ProgressEvent('eventType', { loaded: -1 }).loaded is -1
+PASS new ProgressEvent('eventType', { loaded: -1.5 }).loaded is -1.5
 PASS new ProgressEvent('eventType', { loaded: undefined }).loaded is 0
 PASS new ProgressEvent('eventType', { loaded: null }).loaded is 0
 PASS new ProgressEvent('eventType', { loaded: '' }).loaded is 0
 PASS new ProgressEvent('eventType', { loaded: '12345' }).loaded is 12345
-PASS new ProgressEvent('eventType', { loaded: '12345a' }).loaded is 0
-PASS new ProgressEvent('eventType', { loaded: 'abc' }).loaded is 0
+PASS new ProgressEvent('eventType', { loaded: '12345.678' }).loaded is 12345.678
+PASS new ProgressEvent('eventType', { loaded: '12345a' }).loaded threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'loaded' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { loaded: 'abc' }).loaded threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'loaded' property from 'ProgressEventInit': The provided double value is non-finite..
 PASS new ProgressEvent('eventType', { loaded: [] }).loaded is 0
 PASS new ProgressEvent('eventType', { loaded: [12345] }).loaded is 12345
-PASS new ProgressEvent('eventType', { loaded: [12345, 67890] }).loaded is 0
-PASS new ProgressEvent('eventType', { loaded: {} }).loaded is 0
-PASS new ProgressEvent('eventType', { loaded: {moe: 12345} }).loaded is 0
+PASS new ProgressEvent('eventType', { loaded: [12345.678] }).loaded is 12345.678
+PASS new ProgressEvent('eventType', { loaded: [12345, 67890] }).loaded threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'loaded' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { loaded: {} }).loaded threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'loaded' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { loaded: {moe: 12345} }).loaded threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'loaded' property from 'ProgressEventInit': The provided double value is non-finite..
 PASS new ProgressEvent('eventType', { loaded: {valueOf: function () { return 12345; }} }).loaded is 12345
+PASS new ProgressEvent('eventType', { loaded: {valueOf: function () { return 12345.678; }} }).loaded is 12345.678
 PASS new ProgressEvent('eventType', { total: 0 }).total is 0
 PASS new ProgressEvent('eventType', { total: 1 }).total is 1
 PASS new ProgressEvent('eventType', { total: 9007199254740990 }).total is 9007199254740990
 PASS new ProgressEvent('eventType', { total: 9007199254740991 }).total is 9007199254740991
-PASS new ProgressEvent('eventType', { total: 18446744073709551615 }).total is 0
+PASS new ProgressEvent('eventType', { total: 18446744073709551615 }).total is 18446744073709552000
 PASS new ProgressEvent('eventType', { total: 12345678901234567890 }).total is 12345678901234567890
-PASS new ProgressEvent('eventType', { total: -1 }).total is 18446744073709551615
-PASS new ProgressEvent('eventType', { total: NaN }).total is 0
-PASS new ProgressEvent('eventType', { total: 123.45 }).total is 123
+PASS new ProgressEvent('eventType', { total: 18446744073709551616 }).total is 18446744073709552000
+PASS new ProgressEvent('eventType', { total: 1234567890123456789012345678901234567890 }).total is 1.2345678901234568e+39
+PASS new ProgressEvent('eventType', { total: NaN }).total threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'total' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { total: Infinity }).total threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'total' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { total: -Infinity }).total threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'total' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { total: 123.45 }).total is 123.45
+PASS new ProgressEvent('eventType', { total: -1 }).total is -1
+PASS new ProgressEvent('eventType', { total: -1.5 }).total is -1.5
 PASS new ProgressEvent('eventType', { total: undefined }).total is 0
 PASS new ProgressEvent('eventType', { total: null }).total is 0
 PASS new ProgressEvent('eventType', { total: '' }).total is 0
 PASS new ProgressEvent('eventType', { total: '12345' }).total is 12345
-PASS new ProgressEvent('eventType', { total: '12345a' }).total is 0
-PASS new ProgressEvent('eventType', { total: 'abc' }).total is 0
+PASS new ProgressEvent('eventType', { total: '12345.678' }).total is 12345.678
+PASS new ProgressEvent('eventType', { total: '12345a' }).total threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'total' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { total: 'abc' }).total threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'total' property from 'ProgressEventInit': The provided double value is non-finite..
 PASS new ProgressEvent('eventType', { total: [] }).total is 0
 PASS new ProgressEvent('eventType', { total: [12345] }).total is 12345
-PASS new ProgressEvent('eventType', { total: [12345, 67890] }).total is 0
-PASS new ProgressEvent('eventType', { total: {} }).total is 0
-PASS new ProgressEvent('eventType', { total: {moe: 12345} }).total is 0
+PASS new ProgressEvent('eventType', { total: [12345.678] }).total is 12345.678
+PASS new ProgressEvent('eventType', { total: [12345, 67890] }).total threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'total' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { total: {} }).total threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'total' property from 'ProgressEventInit': The provided double value is non-finite..
+PASS new ProgressEvent('eventType', { total: {moe: 12345} }).total threw exception TypeError: Failed to construct 'ProgressEvent': Failed to read the 'total' property from 'ProgressEventInit': The provided double value is non-finite..
 PASS new ProgressEvent('eventType', { total: {valueOf: function () { return 12345; }} }).total is 12345
+PASS new ProgressEvent('eventType', { total: {valueOf: function () { return 12345.678; }} }).total is 12345.678
 PASS new ProgressEvent('eventType', { bubbles: true, cancelable: true, lengthComputable: true, loaded: 12345, total: 12345 }).bubbles is true
 PASS new ProgressEvent('eventType', { bubbles: true, cancelable: true, lengthComputable: true, loaded: 12345, total: 12345 }).cancelable is true
 PASS new ProgressEvent('eventType', { bubbles: true, cancelable: true, lengthComputable: true, loaded: 12345, total: 12345 }).lengthComputable is true

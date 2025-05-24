@@ -4,6 +4,7 @@
 
 #include "ui/color/color_provider_manager.h"
 
+#include <array>
 #include <optional>
 #include <vector>
 
@@ -107,7 +108,7 @@ TEST_F(ColorProviderManagerTest, LookupWithDeletedMember) {
 }
 
 TEST_F(ColorProviderManagerTest, KeyOrderIsStable) {
-  ColorProviderKey keys[2];
+  std::array<ColorProviderKey, 2> keys;
 
   // Allocate two suppliers.
   std::vector<TestInitializerSupplier> supplier(2);

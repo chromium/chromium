@@ -10,10 +10,13 @@ include_rules = [
   "+skia/ext",
   "+third_party/skia/include",
   "+ui/accelerated_widget_mac",
+  "+ui/accessibility",
   "+ui/base",
+  "+ui/color",
   "+ui/compositor",
   "+ui/display",
   "+ui/events",
   "+ui/gfx",
-  "+ui/strings/grit"
+  "+ui/strings/grit",
+  "+ui/menus",
 ]

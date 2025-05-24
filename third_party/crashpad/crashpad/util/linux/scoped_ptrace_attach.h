@@ -17,7 +17,6 @@
 
 #include <sys/types.h>
 
-
 namespace crashpad {
 
 //! \brief Attaches to the process with process ID \a pid and blocks until the
@@ -35,7 +34,7 @@ bool PtraceAttach(pid_t pid, bool can_log = true);
 //! \param pid The process ID of the process to detach.
 //! \param can_log Whether this function may log messages on failure.
 //! \return `true` on success. `false` on failure with a message logged if \a
-//!     ca_log is `true `true`
+//!     can_log is `true`.
 bool PtraceDetach(pid_t pid, bool can_log = true);
 
 //! \brief Maintains a `ptrace()` attachment to a process.

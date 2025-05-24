@@ -4,15 +4,17 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -25,7 +27,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -57,6 +58,7 @@ import java.lang.annotation.RetentionPolicy;
  * </ul>
  *</p>
  */
+@NullMarked
 public class MessageSurveyUiDelegate implements SurveyUiDelegate {
     /**
      * Internal state about the survey message state. Mostly used for debugging / troubleshooting.
@@ -137,9 +139,9 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      *         current tab is fully loaded and not in incognito.
      */
     public MessageSurveyUiDelegate(
-            @NonNull PropertyModel customModel,
-            @NonNull MessageDispatcher messageDispatcher,
-            @NonNull TabModelSelector modelSelector,
+            PropertyModel customModel,
+            MessageDispatcher messageDispatcher,
+            TabModelSelector modelSelector,
             Supplier<Boolean> crashUploadPermissionSupplier) {
         mMessageModel = customModel;
         mTabModelSelector = modelSelector;
@@ -158,7 +160,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      * @return The model with title / icon / primary button text to be used.
      */
     public static PropertyModel populateDefaultValuesForSurveyMessage(
-            Resources resources, @NonNull PropertyModel model) {
+            Resources resources, PropertyModel model) {
         if (model.get(MessageBannerProperties.ICON_RESOURCE_ID) == 0) {
             model.set(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.fre_product_logo);
             model.set(MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE);
@@ -220,8 +222,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      * @return Whether survey can be shown in the current session.
      */
     private boolean canShowSurveyPrompt() {
-        return !mTabModelSelector.isIncognitoSelected()
-                && Boolean.TRUE.equals(mCrashUploadPermissionSupplier.get());
+        return Boolean.TRUE.equals(mCrashUploadPermissionSupplier.get());
     }
 
     private void showSurveyIfReady() {
@@ -308,7 +309,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
         mState = State.ENQUEUED;
     }
 
-    private boolean waitUntilTabReadyForSurvey(@NonNull Tab loadingTab) {
+    private boolean waitUntilTabReadyForSurvey(Tab loadingTab) {
         assert mLoadingTab == null;
         mLoadingTab = loadingTab;
 
@@ -320,13 +321,15 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
                 new EmptyTabObserver() {
                     @Override
                     public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                        assumeNonNull(mLoadingTab);
                         if (!isTabReadyForSurvey(mLoadingTab) || !isInteractable) return;
                         removeLoadingTabReferences();
                         showSurveyIfReady();
                     }
 
                     @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
+                    public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
+                        assumeNonNull(mLoadingTab);
                         if (!isTabReadyForSurvey(mLoadingTab)) return;
                         removeLoadingTabReferences();
                         showSurveyIfReady();
@@ -351,6 +354,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
     private void removeLoadingTabReferences() {
         if (mLoadingTab == null) return;
 
+        assert mLoadingTabObserver != null;
         mLoadingTab.removeObserver(mLoadingTabObserver);
         mLoadingTab = null;
         mLoadingTabObserver = null;
@@ -376,7 +380,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
         mOnSurveyPresentationFailed = null;
     }
 
-    private void runIfNotNull(Runnable runnable) {
+    private void runIfNotNull(@Nullable Runnable runnable) {
         if (runnable != null) runnable.run();
     }
 

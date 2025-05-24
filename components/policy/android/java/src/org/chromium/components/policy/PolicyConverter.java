@@ -16,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -31,6 +33,7 @@ import java.util.Set;
  * to Java.
  */
 @JNINamespace("policy::android")
+@NullMarked
 public class PolicyConverter {
     private static final String TAG = "PolicyConverter";
     private long mNativePolicyConverter;
@@ -40,7 +43,7 @@ public class PolicyConverter {
     }
 
     /** Convert and send the key/value pair for a policy to the native {@code PolicyConverter}. */
-    public void setPolicy(String key, Object value) {
+    public void setPolicy(String key, @Nullable Object value) {
         assert mNativePolicyConverter != 0;
 
         if (value instanceof Boolean) {

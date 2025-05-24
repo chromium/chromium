@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -35,10 +34,10 @@ class TestLayoutManagerBase : public LayoutManagerBase {
  public:
   std::vector<const View*> GetIncludedChildViews() const {
     std::vector<const View*> included;
-    base::ranges::copy_if(host_view()->children(), std::back_inserter(included),
-                          [=, this](const View* child) {
-                            return IsChildIncludedInLayout(child);
-                          });
+    std::ranges::copy_if(host_view()->children(), std::back_inserter(included),
+                         [=, this](const View* child) {
+                           return IsChildIncludedInLayout(child);
+                         });
     return included;
   }
 
@@ -50,8 +49,9 @@ class TestLayoutManagerBase : public LayoutManagerBase {
   // LayoutManagerBase:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override {
-    if (forced_layout_)
+    if (forced_layout_) {
       return *forced_layout_;
+    }
 
     ProposedLayout layout;
     layout.host_size.set_width(std::clamp<SizeBound>(size_bounds.width(),
@@ -97,8 +97,9 @@ class MockLayoutManagerBase : public LayoutManagerBase {
     ProposedLayout layout;
     layout.host_size = {kChildViewPadding, kChildViewPadding};
     for (views::View* it : host_view()->children()) {
-      if (!IsChildIncludedInLayout(it))
+      if (!IsChildIncludedInLayout(it)) {
         continue;
+      }
       const gfx::Size preferred_size = it->GetPreferredSize({});
       bool visible = false;
       gfx::Rect bounds;
@@ -590,7 +591,7 @@ TEST_F(LayoutManagerBaseManagerTest, ViewAdded_NotVisible) {
   // doesn't touch it during layout.
   View* new_view = new StaticSizedView(kSquarishSize);
   new_view->SetVisible(false);
-  host_view()->AddChildView(new_view);
+  host_view()->AddChildViewRaw(new_view);
   test::RunScheduledLayout(host_view());
 
   EXPECT_FALSE(new_view->GetVisible());

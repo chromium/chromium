@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/xml/xpath_value.h"
 
 #include <limits>
+
 #include "third_party/blink/renderer/core/xml/xpath_expression_node.h"
 #include "third_party/blink/renderer/core/xml/xpath_util.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -81,8 +82,7 @@ bool Value::ToBoolean() const {
     case kStringValue:
       return !data_->string_.empty();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 double Value::ToNumber() const {
@@ -112,8 +112,7 @@ double Value::ToNumber() const {
     case kBooleanValue:
       return bool_;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0.0;
+  NOTREACHED();
 }
 
 String Value::ToString() const {
@@ -133,10 +132,9 @@ String Value::ToString() const {
         return std::signbit(number_) ? "-Infinity" : "Infinity";
       return String::Number(number_);
     case kBooleanValue:
-      return bool_ ? "true" : "false";
+      return String::Boolean(bool_);
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 }  // namespace xpath

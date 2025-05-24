@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   observer.WaitUntilRunning();
 
   // The page and service worker should be in the same process.
-  int page_process_id = current_frame_host()->GetProcess()->GetID();
+  int page_process_id = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_NE(page_process_id, ChildProcessHost::kInvalidUniqueID);
   ASSERT_EQ(GetRunningServiceWorkerCount(), 1u);
   int worker_process_id = GetServiceWorkerProcessId();
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   scoped_refptr<SiteInstanceImpl> site_instance =
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_EQ(GURL(), site_instance->GetSiteURL());
-  int page_process_id = current_frame_host()->GetProcess()->GetID();
+  int page_process_id = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_NE(page_process_id, ChildProcessHost::kInvalidUniqueID);
 
   // Start the service worker.
@@ -232,11 +232,10 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
             worker_process_id = process_id;
             loop.Quit();
           }),
-      base::BindLambdaForTesting(
-          [&loop](blink::ServiceWorkerStatusCode status_code) {
-            ASSERT_FALSE(true) << "start worker failed";
-            loop.Quit();
-          }));
+      base::BindLambdaForTesting([&loop](StatusCodeResponse status) {
+        ASSERT_FALSE(true) << "start worker failed";
+        loop.Quit();
+      }));
   loop.Run();
 
   // The page and service worker are in different processes. (This is not
@@ -248,7 +247,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   // same process as the original page.
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/service_worker/empty.html")));
-  EXPECT_EQ(page_process_id, current_frame_host()->GetProcess()->GetID());
+  EXPECT_EQ(page_process_id,
+            current_frame_host()->GetProcess()->GetDeprecatedID());
 }
 
 // Toggle Site Isolation.

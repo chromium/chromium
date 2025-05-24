@@ -16,7 +16,6 @@
 
 """stack symbolizes native crash dumps."""
 
-import itertools
 import logging
 import multiprocessing
 import os
@@ -45,25 +44,25 @@ _LLVM_READELF = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
 
 # pylint: disable=line-too-long
 
-_ABI_LINE = re.compile('ABI: \'(?P<abi>[a-z0-9A-Z]+)\'')
-_PROCESS_INFO_LINE = re.compile('(pid: [0-9]+, tid: [0-9]+.*)')
+_ABI_LINE = re.compile(r'ABI: \'(?P<abi>[a-z0-9A-Z]+)\'')
+_PROCESS_INFO_LINE = re.compile(r'(pid: [0-9]+, tid: [0-9]+.*)')
 # Same as above, but used to extract the pid.
-_PROCESS_INFO_PID = re.compile('pid: ([0-9]+)')
-_SIGNAL_LINE = re.compile('(signal [0-9]+ \(.*\).*)')
-_REGISTER_LINE = re.compile('(([ ]*[0-9a-z]{2} [0-9a-f]{8}){4})')
-_THREAD_LINE = re.compile('(.*)(\-\-\- ){15}\-\-\-')
-_DALVIK_JNI_THREAD_LINE = re.compile("(\".*\" prio=[0-9]+ tid=[0-9]+ NATIVE.*)")
-_DALVIK_NATIVE_THREAD_LINE = re.compile("(\".*\" sysTid=[0-9]+ nice=[0-9]+.*)")
-_JAVA_STDERR_LINE = re.compile("([0-9]+)\s+[0-9]+\s+.\s+System.err:\s*(.+)")
+_PROCESS_INFO_PID = re.compile(r'pid: ([0-9]+)')
+_SIGNAL_LINE = re.compile(r'(signal [0-9]+ \(.*\).*)')
+_REGISTER_LINE = re.compile(r'(([ ]*[0-9a-z]{2} [0-9a-f]{8}){4})')
+_THREAD_LINE = re.compile(r'(.*)(\-\-\- ){15}\-\-\-')
+_DALVIK_JNI_THREAD_LINE = re.compile(r"(\".*\" prio=[0-9]+ tid=[0-9]+ NATIVE.*)")
+_DALVIK_NATIVE_THREAD_LINE = re.compile(r"(\".*\" sysTid=[0-9]+ nice=[0-9]+.*)")
+_JAVA_STDERR_LINE = re.compile(r"([0-9]+)\s+[0-9]+\s+.\s+System.err:\s*(.+)")
 _MISC_HEADER = re.compile(
-    '(?:Tombstone written to:|Abort message:|Revision:|Build fingerprint:).*')
+    r'(?:Tombstone written to:|Abort message:|Revision:|Build fingerprint:).*')
 # A header used by tooling to mark a line that should be considered useful.
 # e.g. build/android/pylib/symbols/expensive_line_transformer.py
-_GENERIC_USEFUL_LOG_HEADER = re.compile('Generic useful log header: .*')
+_GENERIC_USEFUL_LOG_HEADER = re.compile(r'Generic useful log header: .*')
 
 # Matches LOG(FATAL) lines, like the following example:
 #   [FATAL:source_file.cc(33)] Check failed: !instances_.empty()
-_LOG_FATAL_LINE = re.compile('(\[FATAL\:.*\].*)$')
+_LOG_FATAL_LINE = re.compile(r'(\[FATAL\:.*\].*)$')
 
 # Note that both trace and value line matching allow for variable amounts of
 # whitespace (e.g. \t). This is because the we want to allow for the stack
@@ -77,7 +76,7 @@ _LOG_FATAL_LINE = re.compile('(\[FATAL\:.*\].*)$')
 #   03-25 00:51:05.520 I/DEBUG ( 65): #00 pc 001cf42e /data/data/com.my.project/lib/libmyproject.so
 # Please note the spacing differences.
 _TRACE_LINE = re.compile(
-    '(.*)\#(?P<frame>[0-9]+)[ \t]+(..)[ \t]+(0x)?(?P<address>[0-9a-f]{0,16})[ \t]+(?P<lib>[^\r\n \t]*)(?P<symbol_present> \((?P<symbol_name>.*)\))?'
+    r'(.*)\#(?P<frame>[0-9]+)[ \t]+(..)[ \t]+(0x)?(?P<address>[0-9a-f]{0,16})[ \t]+(?P<lib>[^\r\n \t]*)(?P<symbol_present> \((?P<symbol_name>.*)\))?'
 )
 
 # Matches lines emitted by src/base/debug/stack_trace_android.cc, like:
@@ -94,7 +93,7 @@ _DEBUG_TRACE_LINE = re.compile(r'(.*)#(?P<frame>[0-9]+) 0x[0-9a-f]{8,16} '
 #   03-25 00:51:05.530 I/DEBUG ( 65): bea4170c 8018e4e9 /data/data/com.my.project/lib/libmyproject.so
 # Again, note the spacing differences.
 _VALUE_LINE = re.compile(
-    '(.*)([0-9a-f]{8,16})[ \t]+([0-9a-f]{8,16})[ \t]+([^\r\n \t]*)( \((.*)\))?')
+    r'(.*)([0-9a-f]{8,16})[ \t]+([0-9a-f]{8,16})[ \t]+([^\r\n \t]*)( \((.*)\))?')
 # Lines from 'code around' sections of the output will be matched before
 # value lines because otheriwse the 'code around' sections will be confused as
 # value lines.
@@ -102,14 +101,14 @@ _VALUE_LINE = re.compile(
 # Examples include:
 #   801cf40c ffffc4cc 00b2f2c5 00b2f1c7 00c1e1a8
 #   03-25 00:51:05.530 I/DEBUG ( 65): 801cf40c ffffc4cc 00b2f2c5 00b2f1c7 00c1e1a8
-_CODE_LINE = re.compile('(.*)[ \t]*[a-f0-9]{8,16}[ \t]*[a-f0-9]{8,16}' +
-                        '[ \t]*[a-f0-9]{8,16}[ \t]*[a-f0-9]{8,16}' +
-                        '[ \t]*[a-f0-9]{8,16}[ \t]*[ \r\n]')
+_CODE_LINE = re.compile(r'(.*)[ \t]*[a-f0-9]{8,16}[ \t]*[a-f0-9]{8,16}' +
+                        r'[ \t]*[a-f0-9]{8,16}[ \t]*[a-f0-9]{8,16}' +
+                        r'[ \t]*[a-f0-9]{8,16}[ \t]*[ \r\n]')
 
 # This pattern is used to find shared library offset in APK.
 # Example:
 #    (offset 0x568000)
-_SHARED_LIB_OFFSET_IN_APK = re.compile(' \(offset 0x(?P<offset>[0-9a-f]{0,16})\)')
+_SHARED_LIB_OFFSET_IN_APK = re.compile(r' \(offset 0x(?P<offset>[0-9a-f]{0,16})\)')
 
 # pylint: enable=line-too-long
 

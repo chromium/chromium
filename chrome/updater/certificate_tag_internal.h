@@ -16,6 +16,7 @@
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_span.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
@@ -274,17 +275,6 @@ bool AddName(CBB* cbb, const char* common_name);
 
 // CopyASN1 copies a single ASN.1 element from |in| to |out|.
 bool CopyASN1(CBB* out, CBS* in);
-
-struct ParseResult {
-  bool success = false;
-  std::optional<base::span<const uint8_t>> tag;
-};
-
-// Parses the `signed_data` PKCS7 object to find the final certificate in the
-// list and see whether it has an extension with `kTagOID`, and if so, returns a
-// `base::span` of the tag within this `signed_data`. `success` is set to `true`
-// if there were no parse errors, even if a tag could not be found.
-ParseResult ParseTagImpl(base::span<const uint8_t> signed_data);
 
 // Returns an updated version of the ContentInfo signedData PKCS7 object with
 // the given `tag` added, or `nullopt` on error. If the input `signed_data`

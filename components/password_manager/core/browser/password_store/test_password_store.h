@@ -60,6 +60,9 @@ class TestPasswordStore : public PasswordStore {
   void TriggerOnLoginsRetainedForAndroid(
       const std::vector<PasswordForm>& password_forms);
 
+  void ReturnErrorOnRequest(
+      PasswordStoreBackendError password_store_backend_error);
+
  protected:
   ~TestPasswordStore() override;
 

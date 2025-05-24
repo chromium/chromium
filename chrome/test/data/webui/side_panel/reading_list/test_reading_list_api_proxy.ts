@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ReadLaterEntriesByStatus} from 'chrome://read-later.top-chrome/reading_list.mojom-webui.js';
+import type {ReadLaterEntriesByStatus, Window} from 'chrome://read-later.top-chrome/reading_list.mojom-webui.js';
 import {PageCallbackRouter} from 'chrome://read-later.top-chrome/reading_list.mojom-webui.js';
 import type {ReadingListApiProxy} from 'chrome://read-later.top-chrome/reading_list_api_proxy.js';
 import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
@@ -13,6 +13,7 @@ export class TestReadingListApiProxy extends TestBrowserProxy implements
     ReadingListApiProxy {
   callbackRouter: PageCallbackRouter = new PageCallbackRouter();
   private entries_: ReadLaterEntriesByStatus;
+  private windows_: Window[];
 
   constructor() {
     super([
@@ -26,12 +27,17 @@ export class TestReadingListApiProxy extends TestBrowserProxy implements
       'updateCurrentPageActionButtonState',
       'showUi',
       'closeUi',
+      'getWindowData',
     ]);
 
     this.entries_ = {
       unreadEntries: [],
       readEntries: [],
     };
+
+    this.windows_ = [
+      {active: true, height: 1000},
+    ];
   }
 
   getReadLaterEntries() {
@@ -73,6 +79,11 @@ export class TestReadingListApiProxy extends TestBrowserProxy implements
 
   closeUi() {
     this.methodCalled('closeUi');
+  }
+
+  getWindowData() {
+    this.methodCalled('getWindowData');
+    return Promise.resolve({windows: this.windows_});
   }
 
   getCallbackRouter() {

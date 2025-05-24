@@ -59,10 +59,33 @@ class InteractiveFeaturePromoTestCommon {
         TrackerInitializationMode::kWaitForMainBrowser;
   };
 
+  // Specified when the normal `FeatureEngagementTracker` should be used and a
+  // specific set of feature promos should be enabled.
+  struct UseDefaultTrackerAllowingPromosWithParams {
+    explicit UseDefaultTrackerAllowingPromosWithParams(
+        std::vector<base::test::FeatureRefAndParams> features_with_params,
+        TrackerInitializationMode initialization_mode =
+            TrackerInitializationMode::kWaitForMainBrowser);
+    UseDefaultTrackerAllowingPromosWithParams(
+        UseDefaultTrackerAllowingPromosWithParams&&) noexcept;
+    UseDefaultTrackerAllowingPromosWithParams& operator=(
+        UseDefaultTrackerAllowingPromosWithParams&&) noexcept;
+    ~UseDefaultTrackerAllowingPromosWithParams();
+
+    // The list of IPH features to enable for this test.
+    std::vector<base::test::FeatureRefAndParams> features_with_params;
+
+    // Whether to wait for the primary browser's Feature Engagement Tracker to
+    // be initialized before proceeding with the test.
+    TrackerInitializationMode initialization_mode =
+        TrackerInitializationMode::kWaitForMainBrowser;
+  };
+
   // Allows either a mock tracker or a default tracker with specific promos
   // to be used.
-  using TrackerMode =
-      std::variant<UseMockTracker, UseDefaultTrackerAllowingPromos>;
+  using TrackerMode = std::variant<UseMockTracker,
+                                   UseDefaultTrackerAllowingPromos,
+                                   UseDefaultTrackerAllowingPromosWithParams>;
 
   // Describes which clock the User Education system should use to determine
   // things like session duration, snooze time, cooldowns, etc.
@@ -73,6 +96,14 @@ class InteractiveFeaturePromoTestCommon {
     // Use a specific test clock owned by this test object. Time can be advanced
     // manually.
     kUseTestClock
+  };
+
+  // Changes controller behavior.
+  enum class ControllerMode {
+    // Uses the default User Education 2.5 Experience.
+    kUserEd25,
+    // Use the old User Education 2.0 Experience.
+    kUserEd20
   };
 
   // Describes how the test should start. You can use `session_test_util()` to

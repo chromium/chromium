@@ -149,6 +149,9 @@ TEST_P(ExtensionWebRequestPermissionsWithHashRealTimeDependenceTest,
       {"https://chrome.google.com/webstore/inlineinstall/detail/"
        "kcnhkahnjcbndmmehfkdnkjomaanaooo",
        HIDE_ALL},
+      {"https://chromewebstore.googleapis.com/v2/items/"
+       "kcnhkahnjcbndmmehfkdnkjomaanaooo:fetchItemSnippet",
+       HIDE_ALL},
   };
   std::vector<TestCase> additional_cases;
   if (GetParam()) {

@@ -35,7 +35,7 @@ ContentViewRenderView::ContentViewRenderView(JNIEnv* env,
   java_obj_.Reset(env, obj);
 }
 
-ContentViewRenderView::~ContentViewRenderView() {}
+ContentViewRenderView::~ContentViewRenderView() = default;
 
 // static
 static jlong JNI_ContentViewRenderView_Init(
@@ -92,23 +92,27 @@ void ContentViewRenderView::SurfaceDestroyed(JNIEnv* env,
   // detached and freed by OS.
   compositor_->PreserveChildSurfaceControls();
 
-  compositor_->SetSurface(nullptr, false);
+  compositor_->SetSurface(nullptr, false, nullptr);
   current_surface_format_ = 0;
 }
 
-void ContentViewRenderView::SurfaceChanged(
+std::optional<int> ContentViewRenderView::SurfaceChanged(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint format,
     jint width,
     jint height,
-    const JavaParamRef<jobject>& surface) {
+    const JavaParamRef<jobject>& surface,
+    const JavaParamRef<jobject>& browser_input_token) {
+  std::optional<int> surface_handle = std::nullopt;
   if (current_surface_format_ != format) {
     current_surface_format_ = format;
-    compositor_->SetSurface(surface,
-                            true /* can_be_used_with_surface_control */);
+    surface_handle = compositor_->SetSurface(
+        surface, true /* can_be_used_with_surface_control */,
+        browser_input_token);
   }
   compositor_->SetWindowBounds(gfx::Size(width, height));
+  return surface_handle;
 }
 
 void ContentViewRenderView::SetOverlayVideoMode(

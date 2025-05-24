@@ -60,7 +60,7 @@ public class OverlayPanelManager {
      * If a panel was being shown and another panel with higher priority was requested to show,
      * the lower priority one is stored here.
      */
-    private Queue<OverlayPanel> mSuppressedPanels;
+    private final Queue<OverlayPanel> mSuppressedPanels;
 
     /** When a panel is suppressed, this is the panel waiting for the close animation to finish. */
     private OverlayPanel mPendingPanel;
@@ -200,10 +200,7 @@ public class OverlayPanelManager {
         mContainerViewGroup = null;
     }
 
-    /**
-     * Set the resource loader for all OverlayPanels.
-     * @param host The OverlayPanel host.
-     */
+    /** Set the resource loader for all OverlayPanels. */
     public void setDynamicResourceLoader(DynamicResourceLoader loader) {
         mDynamicResourceLoader = loader;
         for (OverlayPanel p : mPanelSet) {

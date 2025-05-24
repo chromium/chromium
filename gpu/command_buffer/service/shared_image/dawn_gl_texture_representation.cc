@@ -30,10 +30,12 @@ DawnGLTextureRepresentation::DawnGLTextureRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    wgpu::Device device)
+    wgpu::Device device,
+    std::vector<wgpu::TextureFormat> view_formats)
     : DawnImageRepresentation(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
-      device_(device) {
+      device_(device),
+      view_formats_(std::move(view_formats)) {
   DCHECK(device_);
 }
 
@@ -45,26 +47,18 @@ wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
     wgpu::TextureUsage internal_usage) {
   auto usage_to_check = usage;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    usage_to_check |= internal_usage;
-  }
+  usage_to_check |= internal_usage;
   gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage_to_check));
   wgpu::TextureDescriptor texture_descriptor = {};
   texture_descriptor.nextInChain = nullptr;
 
   // TODO(crbug.com/40278761): implement support for multiplanar formats.
   texture_descriptor.format = ToDawnFormat(format());
+  texture_descriptor.viewFormatCount = view_formats_.size();
+  texture_descriptor.viewFormats = view_formats_.data();
 
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    internalDesc.internalUsage = internal_usage;
-  } else {
-    // Add internal TextureBinding usage for copyTextureForBrowser().
-    internalDesc.internalUsage = wgpu::TextureUsage::TextureBinding |
-                                 wgpu::TextureUsage::RenderAttachment;
-  }
+  internalDesc.internalUsage = internal_usage;
 
   texture_descriptor.nextInChain = &internalDesc;
 
@@ -84,7 +78,7 @@ wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
       reinterpret_cast<WGPUTextureDescriptor*>(&texture_descriptor);
   externalImageDesc.texture =
       gl_representation_->GetTextureBase()->service_id();
-  externalImageDesc.isInitialized = true;
+  externalImageDesc.isInitialized = IsCleared();
   texture_ = wgpu::Texture::Acquire(dawn::native::opengl::WrapExternalGLTexture(
       device_.Get(), &externalImageDesc));
   return texture_;

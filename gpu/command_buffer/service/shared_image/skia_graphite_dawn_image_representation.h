@@ -16,7 +16,7 @@ namespace gpu {
 class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
     : public SkiaGraphiteImageRepresentation {
  public:
-  static std::unique_ptr<SkiaGraphiteDawnImageRepresentation> Create(
+  SkiaGraphiteDawnImageRepresentation(
       std::unique_ptr<DawnImageRepresentation> dawn_representation,
       scoped_refptr<SharedContextState> context_state,
       skgpu::graphite::Recorder* recorder,
@@ -24,33 +24,33 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       int array_slice = 0);
-
   ~SkiaGraphiteDawnImageRepresentation() override;
 
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
       const gfx::Rect& update_rect) override;
-  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() override;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess() override;
   void EndWriteAccess() override;
 
-  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override;
   void EndReadAccess() override;
-  bool SupportsMultipleConcurrentReadAccess() override;
 
- private:
-  SkiaGraphiteDawnImageRepresentation(
-      std::unique_ptr<DawnImageRepresentation> dawn_representation,
-      skgpu::graphite::Recorder* recorder,
-      scoped_refptr<SharedContextState> context_state,
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      int array_slice,
-      wgpu::TextureUsage supported_tex_usages);
+  wgpu::Device GetDevice() const;
 
-  std::vector<skgpu::graphite::BackendTexture> CreateBackendTextures(
+ protected:
+  // This will create a list of non-owning or owning BackendTexture wrappers
+  // depending on the implementation defined function below which will be
+  // invoked by this function.
+  std::vector<scoped_refptr<GraphiteTextureHolder>> CreateBackendTextureHolders(
       wgpu::Texture texture,
       bool readonly);
+
+  // Implementation defined function to create a list of GraphiteTextureHolder.
+  // The default implementation will return a list of non owning BackendTexture
+  // wrappers which will only be safe to be used inside the access scope.
+  virtual std::vector<scoped_refptr<GraphiteTextureHolder>> WrapBackendTextures(
+      wgpu::Texture texture,
+      std::vector<skgpu::graphite::BackendTexture> backend_textures);
 
   std::unique_ptr<DawnImageRepresentation> dawn_representation_;
   std::unique_ptr<DawnImageRepresentation::ScopedAccess> dawn_scoped_access_;

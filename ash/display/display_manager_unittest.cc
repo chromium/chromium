@@ -4,6 +4,8 @@
 
 #include "ui/display/manager/display_manager.h"
 
+#include <algorithm>
+
 #include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accelerometer_types.h"
@@ -35,7 +37,6 @@
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -71,6 +72,7 @@
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/font_render_params.h"
+#include "ui/gfx/font_render_params_linux.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/wm/core/compound_event_filter.h"
@@ -127,6 +129,14 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
     if (!changed_metrics_.try_emplace(display.id(), changed_metrics).second) {
       changed_metrics_[display.id()] |= changed_metrics;
     }
+    // A new display may be re-configured during the configuration by shell.
+    auto iter = std::find_if(added_displays_.begin(), added_displays_.end(),
+                             [display](const display::Display& d) {
+                               return d.id() == display.id();
+                             });
+    if (iter != added_displays_.end()) {
+      *iter = display;
+    }
   }
 
   // display::DisplayManager::Observer:
@@ -140,9 +150,9 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
       const DisplayConfigurationChange& configuration_change) override {
     EXPECT_TRUE(processing_display_changes_);
 
-    EXPECT_TRUE(base::ranges::is_permutation(
+    EXPECT_TRUE(std::ranges::is_permutation(
         added_displays_, configuration_change.added_displays));
-    EXPECT_TRUE(base::ranges::is_permutation(
+    EXPECT_TRUE(std::ranges::is_permutation(
         removed_displays_, configuration_change.removed_displays));
 
     EXPECT_EQ(changed_metrics_.size(),
@@ -318,10 +328,6 @@ class DisplayManagerTest : public AshTestBase,
     check_root_window_on_destruction_ = false;
   }
 
-  base::test::ScopedFeatureList& scoped_feature_list() {
-    return scoped_features_;
-  }
-
  private:
   vector<display::Display> changed_;
   vector<display::Display> added_;
@@ -339,18 +345,10 @@ class DisplayManagerTest : public AshTestBase,
   base::ScopedObservation<display::DisplayManager,
                           display::DisplayManagerObserver>
       display_manager_observation_{this};
-
-  // Currently `display::features::kRoundedDisplay` feature is used during the
-  // `ash::Shell` shutdown as we call `AshTestBase::TearDown()`, therefore
-  // `scoped_features_` needs to outlive the call.
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 TEST_F(DisplayManagerTest,
        RoundedDisplayProviderIsOnlyCreatedForEachRoundedDisplay) {
-  scoped_feature_list().InitAndEnableFeature(
-      display::features::kRoundedDisplay);
-
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
 
@@ -370,9 +368,6 @@ TEST_F(DisplayManagerTest,
 }
 
 TEST_F(DisplayManagerTest, RoundedDisplayProviderIsRemovedForRemovedDisplay) {
-  scoped_feature_list().InitAndEnableFeature(
-      display::features::kRoundedDisplay);
-
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
 
@@ -3751,15 +3746,23 @@ TEST_F(DisplayManagerTest, ForcedMirrorModeExited) {
   EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
 }
 
-TEST_F(DisplayManagerTest, DisplayPrefsAndKioskMode) {
+namespace {
+
+class NoSessionDisplayManagerTest : public DisplayManagerTest {
+ public:
+  NoSessionDisplayManagerTest() { set_start_session(false); }
+  NoSessionDisplayManagerTest(const NoSessionDisplayManagerTest&) = delete;
+  NoSessionDisplayManagerTest& operator=(const NoSessionDisplayManagerTest&) =
+      delete;
+  ~NoSessionDisplayManagerTest() override = default;
+};
+
+}  // namespace
+
+TEST_F(NoSessionDisplayManagerTest, DisplayPrefsAndKioskMode) {
   // Login in as kiosk app.
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.type = user_manager::UserType::kKioskApp;
-  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
-  session.user_info.display_name = "User 1";
-  session.user_info.display_email = "user1@test.com";
-  Shell::Get()->session_controller()->UpdateUserSession(std::move(session));
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
   EXPECT_EQ(LoginStatus::KIOSK_APP,
             Shell::Get()->session_controller()->login_status());
   UpdateDisplay("400x300,800x700");
@@ -5442,18 +5445,18 @@ TEST_F(DisplayManagerTest, DisplayManagerObserverNestedChangesOrdering) {
 
       // Update the set of tracked display ids communicated through did
       // process changes.
-      base::ranges::transform(
+      std::ranges::transform(
           configuration_change.added_displays,
           std::inserter(tracked_display_ids_, tracked_display_ids_.begin()),
           [](const display::Display& display) { return display.id(); });
 
       // If correctly ordered observers should be notified of added displays
       // before any changes to the metrics for these displays.
-      base::ranges::for_each(configuration_change.display_metrics_changes,
-                             [this](const auto& change) {
-                               EXPECT_TRUE(base::Contains(
-                                   tracked_display_ids_, change.display->id()));
-                             });
+      std::ranges::for_each(configuration_change.display_metrics_changes,
+                            [this](const auto& change) {
+                              EXPECT_TRUE(base::Contains(tracked_display_ids_,
+                                                         change.display->id()));
+                            });
 
       if (on_processed_cb_) {
         std::move(on_processed_cb_).Run();
@@ -5528,6 +5531,114 @@ TEST_F(DisplayManagerTest, VirtualDisplayUtilAddRemove) {
   EXPECT_FALSE(screen->GetDisplayWithDisplayId(display_id[1], &d));
   EXPECT_FALSE(screen->GetDisplayWithDisplayId(display_id[2], &d));
   EXPECT_EQ(screen->GetNumDisplays(), initial_display_count);
+}
+
+TEST_F(DisplayManagerTest, FontConfig) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII("form-factor", "CHROMEBOX");
+  display_manager()->RefreshFontParams();
+  EXPECT_TRUE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+
+  command_line->AppendSwitchASCII("form-factor", "CLAMSHELL");
+  display_manager()->RefreshFontParams();
+  EXPECT_FALSE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+
+  {
+    base::test::ScopedFeatureList feature_list_;
+    feature_list_.InitAndEnableFeature(
+        display::features::kOledScaleFactorEnabled);
+    display_manager()->RefreshFontParams();
+    EXPECT_TRUE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+  }
+  display_manager()->RefreshFontParams();
+  EXPECT_FALSE(gfx::GetFontRenderParamsSubpixelRenderingEnabledForTesting());
+}
+
+// This test tests the behavior of going to one or zero display in the Unified
+// Desktop Mode. Most importantly, when the device has less than two displays,
+// it should never be in multi display mode.
+TEST_F(DisplayManagerTest, UnifiedDesktopWithZeroAndOneDisplay) {
+  // Don't check root window destruction in unified mode.
+  Shell::GetPrimaryRootWindow()->RemoveObserver(this);
+
+  // Start with one display with unified desktop enabled. We should not be in
+  // unified desktop mode since there is only 1 display.
+  display_manager()->SetUnifiedDesktopEnabled(true);
+  UpdateDisplay("800x600");
+
+  EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+  EXPECT_EQ(display_manager()->multi_display_mode(),
+            display::DisplayManager::EXTENDED);
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
+  EXPECT_EQ(1u, list.size());
+  EXPECT_TRUE(display_manager()->current_unified_desktop_matrix().empty());
+
+  // Disconnecting all displays should not change display layout.
+  UpdateDisplay({});
+
+  EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+  EXPECT_EQ(display_manager()->multi_display_mode(),
+            display::DisplayManager::EXTENDED);
+  list = display_manager()->GetConnectedDisplayIdList();
+  EXPECT_EQ(1u, list.size());
+  EXPECT_TRUE(display_manager()->current_unified_desktop_matrix().empty());
+
+  // Connecting 2 displays should bring it into regular unified desktop mode.
+  UpdateDisplay("800x600,800x600");
+
+  EXPECT_TRUE(display_manager()->IsInUnifiedMode());
+  EXPECT_EQ(display_manager()->multi_display_mode(),
+            display::DisplayManager::UNIFIED);
+  list = display_manager()->GetConnectedDisplayIdList();
+  EXPECT_EQ(2u, list.size());
+  EXPECT_FALSE(display_manager()->current_unified_desktop_matrix().empty());
+  EXPECT_EQ(2u, display_manager()->current_unified_desktop_matrix()[0].size());
+
+  // Disconnecting 1 display should exit unified desktop mode, and keeping
+  // unified desktop matrix unchanged.
+  UpdateDisplay("800x600");
+
+  EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+  EXPECT_EQ(display_manager()->multi_display_mode(),
+            display::DisplayManager::EXTENDED);
+  list = display_manager()->GetConnectedDisplayIdList();
+  EXPECT_EQ(1u, list.size());
+  EXPECT_FALSE(display_manager()->current_unified_desktop_matrix().empty());
+  EXPECT_EQ(2u, display_manager()->current_unified_desktop_matrix()[0].size());
+
+  // Connecting 2 displays should bring it back into regular unified desktop
+  // mode.
+  UpdateDisplay("800x600,800x600");
+
+  EXPECT_TRUE(display_manager()->IsInUnifiedMode());
+  EXPECT_EQ(display_manager()->multi_display_mode(),
+            display::DisplayManager::UNIFIED);
+  list = display_manager()->GetConnectedDisplayIdList();
+  EXPECT_EQ(2u, list.size());
+  EXPECT_FALSE(display_manager()->current_unified_desktop_matrix().empty());
+  EXPECT_EQ(2u, display_manager()->current_unified_desktop_matrix()[0].size());
+
+  // Disconnecting all displays should not change any display layout.
+  UpdateDisplay({});
+
+  EXPECT_TRUE(display_manager()->IsInUnifiedMode());
+  EXPECT_EQ(display_manager()->multi_display_mode(),
+            display::DisplayManager::UNIFIED);
+  list = display_manager()->GetConnectedDisplayIdList();
+  EXPECT_EQ(2u, list.size());
+  EXPECT_FALSE(display_manager()->current_unified_desktop_matrix().empty());
+  EXPECT_EQ(2u, display_manager()->current_unified_desktop_matrix()[0].size());
+
+  // Return to singular display
+  UpdateDisplay("800x600");
+
+  EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+  EXPECT_EQ(display_manager()->multi_display_mode(),
+            display::DisplayManager::EXTENDED);
+  list = display_manager()->GetConnectedDisplayIdList();
+  EXPECT_EQ(1u, list.size());
+  EXPECT_FALSE(display_manager()->current_unified_desktop_matrix().empty());
+  EXPECT_EQ(2u, display_manager()->current_unified_desktop_matrix()[0].size());
 }
 
 }  // namespace ash

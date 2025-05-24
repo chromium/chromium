@@ -20,7 +20,7 @@ WebStateWrapper::WebStateWrapper(web::WebState* web_state)
 
 WebStateWrapper::~WebStateWrapper() = default;
 
-const GURL& WebStateWrapper::GetLastCommittedURL() {
+const GURL& WebStateWrapper::GetLastCommittedURL() const {
   if (!web_state_)
     return GURL::EmptyGURL();
 

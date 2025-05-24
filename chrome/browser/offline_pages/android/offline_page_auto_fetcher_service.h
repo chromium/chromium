@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_OFFLINE_PAGES_ANDROID_OFFLINE_PAGE_AUTO_FETCHER_SERVICE_H_
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>

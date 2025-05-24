@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "chrome_app_deprecation_browsertest\.cc": [
+    "+ui/message_center/message_center.h",
+  ],
+}

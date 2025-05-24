@@ -5,10 +5,10 @@
 #ifndef CHROME_UPDATER_DEVICE_MANAGEMENT_DM_RESPONSE_VALIDATOR_H_
 #define CHROME_UPDATER_DEVICE_MANAGEMENT_DM_RESPONSE_VALIDATOR_H_
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 
 namespace enterprise_management {
@@ -78,7 +78,7 @@ struct PolicyValidationResult {
   ~PolicyValidationResult();
 
   bool HasErrorIssue() const {
-    return base::ranges::any_of(issues, [](const auto& issue) {
+    return std::ranges::any_of(issues, [](const auto& issue) {
       return issue.severity == PolicyValueValidationIssue::Severity::kError;
     });
   }

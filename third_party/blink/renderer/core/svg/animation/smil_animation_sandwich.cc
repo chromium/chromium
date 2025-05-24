@@ -23,15 +23,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_sandwich.h"
 
+#include <algorithm>
+
+#include "base/compiler_specific.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_value.h"
 #include "third_party/blink/renderer/core/svg/svg_animation_element.h"
 
@@ -58,7 +55,7 @@ void SMILAnimationSandwich::Add(SVGAnimationElement* animation) {
 }
 
 void SMILAnimationSandwich::Remove(SVGAnimationElement* animation) {
-  auto position = base::ranges::find(sandwich_, animation);
+  auto position = std::ranges::find(sandwich_, animation);
   CHECK(sandwich_.end() != position, base::NotFatalUntil::M130);
   sandwich_.erase(position);
   // Clear the animated value when there are active animation elements but the
@@ -104,7 +101,7 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   // in the sandwich.
   auto sandwich_start = active_.end();
   while (sandwich_start != active_.begin()) {
-    --sandwich_start;
+    UNSAFE_TODO(--sandwich_start);
     if ((*sandwich_start)->OverwritesUnderlyingAnimationValue())
       break;
   }
@@ -119,7 +116,7 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   SMILAnimationValue animation_value = animation->CreateAnimationValue();
 
   for (auto sandwich_it = sandwich_start; sandwich_it != active_.end();
-       sandwich_it++) {
+       UNSAFE_TODO(sandwich_it++)) {
     (*sandwich_it)->ApplyAnimation(animation_value);
   }
 

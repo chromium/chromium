@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.xsurface.feed;
 
 import androidx.annotation.IntDef;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -16,6 +18,7 @@ import java.lang.annotation.RetentionPolicy;
  * in terms of nanoseconds since system boot. One instance exists per feed surface and lasts for the
  * surface's lifetime.
  */
+@NullMarked
 public interface FeedLaunchReliabilityLogger {
     @IntDef({SurfaceType.UNSPECIFIED, SurfaceType.NEW_TAB_PAGE, SurfaceType.START_SURFACE})
     @Retention(RetentionPolicy.SOURCE)
@@ -38,13 +41,13 @@ public interface FeedLaunchReliabilityLogger {
         int FOR_YOU = 1;
         int WEB_FEED = 2;
         int SINGLE_WEB_FEED = 3;
-        int SUPERVISED_USER_FEED = 4;
+        @Deprecated int SUPERVISED_USER_FEED = 4;
     }
 
     /**
      * Set details about the stream being launched and send any pending events.
      *
-     * @param streamType Feed type (e.g. "for you", "following" or "supervised user").
+     * @param streamType Feed type (e.g. "for you", or "following").
      * @param streamId Identifier for the stream used to disambiguate events from concurrent
      *     streams.
      */

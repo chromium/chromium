@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -286,6 +287,11 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
   ReportingService* GetReportingServiceForTesting() override {
     return reporting_service_;
+  }
+
+  void LoadPoliciesForTesting(std::vector<NelPolicy> policies) override {
+    started_loading_policies_ = true;
+    OnPoliciesLoaded(policies);
   }
 
  private:
@@ -568,7 +574,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     DCHECK(initialized_);
     if (PoliciesArePersisted()) {
       // TODO(chlily): Add a DeleteAllNelPolicies command to PersistentNelStore.
-      for (auto origin_and_policy : policies_) {
+      for (const auto& origin_and_policy : policies_) {
         store_->DeleteNelPolicy(origin_and_policy.second);
       }
       store_->Flush();
@@ -951,6 +957,17 @@ NetworkErrorLoggingService::RequestDetails::RequestDetails() = default;
 NetworkErrorLoggingService::RequestDetails::RequestDetails(
     const RequestDetails& other) = default;
 
+NetworkErrorLoggingService::RequestDetails::RequestDetails(
+    RequestDetails&& other) = default;
+
+NetworkErrorLoggingService::RequestDetails&
+NetworkErrorLoggingService::RequestDetails::operator=(
+    const RequestDetails& other) = default;
+
+NetworkErrorLoggingService::RequestDetails&
+NetworkErrorLoggingService::RequestDetails::operator=(RequestDetails&& other) =
+    default;
+
 NetworkErrorLoggingService::RequestDetails::~RequestDetails() = default;
 
 NetworkErrorLoggingService::SignedExchangeReportDetails::
@@ -959,6 +976,17 @@ NetworkErrorLoggingService::SignedExchangeReportDetails::
 NetworkErrorLoggingService::SignedExchangeReportDetails::
     SignedExchangeReportDetails(const SignedExchangeReportDetails& other) =
         default;
+
+NetworkErrorLoggingService::SignedExchangeReportDetails::
+    SignedExchangeReportDetails(SignedExchangeReportDetails&& other) = default;
+
+NetworkErrorLoggingService::SignedExchangeReportDetails&
+NetworkErrorLoggingService::SignedExchangeReportDetails::operator=(
+    const SignedExchangeReportDetails& other) = default;
+
+NetworkErrorLoggingService::SignedExchangeReportDetails&
+NetworkErrorLoggingService::SignedExchangeReportDetails::operator=(
+    SignedExchangeReportDetails&& other) = default;
 
 NetworkErrorLoggingService::SignedExchangeReportDetails::
     ~SignedExchangeReportDetails() = default;
@@ -1042,6 +1070,12 @@ NetworkErrorLoggingService::GetPersistentNelStoreForTesting() {
 ReportingService* NetworkErrorLoggingService::GetReportingServiceForTesting() {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+void NetworkErrorLoggingService::LoadPoliciesForTesting(
+    std::vector<NetworkErrorLoggingService::NelPolicy> policies) {
+  NOTIMPLEMENTED();
+  return;
 }
 
 NetworkErrorLoggingService::NetworkErrorLoggingService()

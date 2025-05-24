@@ -1,324 +1,293 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 // Author: kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
-#include <google/protobuf/compiler/cpp/service.h>
+#include "google/protobuf/compiler/cpp/service.h"
 
-#include <google/protobuf/io/printer.h>
-#include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/compiler/cpp/helpers.h>
+#include <string>
+
+#include "absl/strings/str_cat.h"
+#include "google/protobuf/compiler/cpp/helpers.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/io/printer.h"
 
 namespace google {
 namespace protobuf {
 namespace compiler {
 namespace cpp {
-
-namespace {
-
-void InitMethodVariables(const MethodDescriptor* method, const Options& options,
-                         Formatter* format) {
-  format->Set("name", method->name());
-  format->Set("input_type", QualifiedClassName(method->input_type(), options));
-  format->Set("output_type",
-              QualifiedClassName(method->output_type(), options));
-}
-
-}  // namespace
-
-ServiceGenerator::ServiceGenerator(
-    const ServiceDescriptor* descriptor,
-    const std::map<std::string, std::string>& vars, const Options& options)
-    : descriptor_(descriptor), vars_(vars), options_(options) {
-  vars_["classname"] = descriptor_->name();
-  vars_["full_name"] = descriptor_->full_name();
-}
-
-ServiceGenerator::~ServiceGenerator() {}
-
 void ServiceGenerator::GenerateDeclarations(io::Printer* printer) {
-  Formatter format(printer, vars_);
-  // Forward-declare the stub type.
-  format(
-      "class $classname$_Stub;\n"
-      "\n");
+  auto vars = printer->WithVars(&vars_);
+  printer->Emit(
+      {
+          {"virts", [&] { GenerateMethodSignatures(kVirtual, printer); }},
+          {"impls", [&] { GenerateMethodSignatures(kNonVirtual, printer); }},
+      },
+      R"cc(
+        class $classname$_Stub;
+        class $dllexport_decl $$classname$ : public $pb$::Service {
+         protected:
+          $classname$() = default;
 
-  GenerateInterface(printer);
-  GenerateStubDefinition(printer);
+         public:
+          using Stub = $classname$_Stub;
+
+          $classname$(const $classname$&) = delete;
+          $classname$& operator=(const $classname$&) = delete;
+          virtual ~$classname$() = default;
+
+          static const $pb$::ServiceDescriptor* $nonnull$ descriptor();
+
+          $virts$;
+
+          // implements Service ----------------------------------------------
+          const $pb$::ServiceDescriptor* $nonnull$ GetDescriptor() override;
+
+          void CallMethod(
+              //~
+              const $pb$::MethodDescriptor* $nonnull$ method,
+              $pb$::RpcController* $nullable$ controller,
+              const $pb$::Message* $nonnull$ request,
+              $pb$::Message* $nonnull$ response,
+              ::google::protobuf::Closure* $nullable$ done) override;
+
+          const $pb$::Message& GetRequestPrototype(
+              const $pb$::MethodDescriptor* $nonnull$ method) const override;
+
+          const $pb$::Message& GetResponsePrototype(
+              const $pb$::MethodDescriptor* $nonnull$ method) const override;
+        };
+
+        class $dllexport_decl $$classname$_Stub final : public $classname$ {
+         public:
+          //~ It seems like channel should be nonnull, but some tests use
+          //~ nullptr. TODO: clean up and switch to nonnull.
+          $classname$_Stub($pb$::RpcChannel* $nullable$ channel);
+          $classname$_Stub($pb$::RpcChannel* $nullable$ channel,
+                           $pb$::Service::ChannelOwnership ownership);
+
+          $classname$_Stub(const $classname$_Stub&) = delete;
+          $classname$_Stub& operator=(const $classname$_Stub&) = delete;
+
+          ~$classname$_Stub() override;
+
+          inline $pb$::RpcChannel* $nullable$ channel() { return channel_; }
+
+          // implements $classname$ ------------------------------------------
+          $impls$;
+
+         private:
+          $pb$::RpcChannel* $nullable$ channel_;
+          bool owns_channel_;
+        };
+      )cc");
 }
 
-void ServiceGenerator::GenerateInterface(io::Printer* printer) {
-  Formatter format(printer, vars_);
-  format(
-      "class $dllexport_decl $$classname$ : public ::$proto_ns$::Service {\n"
-      " protected:\n"
-      "  // This class should be treated as an abstract interface.\n"
-      "  inline $classname$() {};\n"
-      " public:\n"
-      "  virtual ~$classname$();\n");
-  printer->Indent();
-
-  format(
-      "\n"
-      "typedef $classname$_Stub Stub;\n"
-      "\n"
-      "static const ::$proto_ns$::ServiceDescriptor* descriptor();\n"
-      "\n");
-
-  GenerateMethodSignatures(VIRTUAL, printer);
-
-  format(
-      "\n"
-      "// implements Service ----------------------------------------------\n"
-      "\n"
-      "const ::$proto_ns$::ServiceDescriptor* GetDescriptor();\n"
-      "void CallMethod(const ::$proto_ns$::MethodDescriptor* method,\n"
-      "                ::$proto_ns$::RpcController* controller,\n"
-      "                const ::$proto_ns$::Message* request,\n"
-      "                ::$proto_ns$::Message* response,\n"
-      "                ::google::protobuf::Closure* done);\n"
-      "const ::$proto_ns$::Message& GetRequestPrototype(\n"
-      "  const ::$proto_ns$::MethodDescriptor* method) const;\n"
-      "const ::$proto_ns$::Message& GetResponsePrototype(\n"
-      "  const ::$proto_ns$::MethodDescriptor* method) const;\n");
-
-  printer->Outdent();
-  format(
-      "\n"
-      " private:\n"
-      "  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS($classname$);\n"
-      "};\n"
-      "\n");
-}
-
-void ServiceGenerator::GenerateStubDefinition(io::Printer* printer) {
-  Formatter format(printer, vars_);
-  format(
-      "class $dllexport_decl $$classname$_Stub : public $classname$ {\n"
-      " public:\n");
-
-  printer->Indent();
-
-  format(
-      "$classname$_Stub(::$proto_ns$::RpcChannel* channel);\n"
-      "$classname$_Stub(::$proto_ns$::RpcChannel* channel,\n"
-      "                 ::$proto_ns$::Service::ChannelOwnership ownership);\n"
-      "~$classname$_Stub();\n"
-      "\n"
-      "inline ::$proto_ns$::RpcChannel* channel() { return channel_; }\n"
-      "\n"
-      "// implements $classname$ ------------------------------------------\n"
-      "\n");
-
-  GenerateMethodSignatures(NON_VIRTUAL, printer);
-
-  printer->Outdent();
-  format(
-      " private:\n"
-      "  ::$proto_ns$::RpcChannel* channel_;\n"
-      "  bool owns_channel_;\n"
-      "  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS($classname$_Stub);\n"
-      "};\n"
-      "\n");
-}
-
-void ServiceGenerator::GenerateMethodSignatures(VirtualOrNon virtual_or_non,
+void ServiceGenerator::GenerateMethodSignatures(VirtualOrNot virtual_or_not,
                                                 io::Printer* printer) {
-  for (int i = 0; i < descriptor_->method_count(); i++) {
+  for (int i = 0; i < descriptor_->method_count(); ++i) {
     const MethodDescriptor* method = descriptor_->method(i);
-    Formatter format(printer, vars_);
-    InitMethodVariables(method, options_, &format);
-    format.Set("virtual", virtual_or_non == VIRTUAL ? "virtual " : "");
-    format(
-        "$virtual$void $name$(::$proto_ns$::RpcController* controller,\n"
-        "                     const $input_type$* request,\n"
-        "                     $output_type$* response,\n"
-        "                     ::google::protobuf::Closure* done);\n");
+
+    printer->Emit(
+        {
+            {"name", method->name()},
+            {"input", QualifiedClassName(method->input_type(), *options_)},
+            {"output", QualifiedClassName(method->output_type(), *options_)},
+            {"virtual", virtual_or_not == kVirtual ? "virtual" : ""},
+            {"override", virtual_or_not != kVirtual ? "override" : ""},
+        },
+        // No cc, clang-format does not format this string well due to the
+        // $ override$ substitution.
+        R"(
+          $virtual $void $name$($pb$::RpcController* $nullable$ controller,
+                                const $input$* $nonnull$ request,
+                                $output$* $nonnull$ response,
+                                ::google::protobuf::Closure* $nullable$ done)$ override$;
+        )");
   }
 }
 
 // ===================================================================
 
 void ServiceGenerator::GenerateImplementation(io::Printer* printer) {
-  Formatter format(printer, vars_);
-  format(
-      "$classname$::~$classname$() {}\n"
-      "\n"
-      "const ::$proto_ns$::ServiceDescriptor* $classname$::descriptor() {\n"
-      "  "
-      "::$proto_ns$::internal::AssignDescriptors(&$desc_table$);\n"
-      "  return $file_level_service_descriptors$[$1$];\n"
-      "}\n"
-      "\n"
-      "const ::$proto_ns$::ServiceDescriptor* $classname$::GetDescriptor() {\n"
-      "  return descriptor();\n"
-      "}\n"
-      "\n",
-      index_in_metadata_);
+  auto vars = printer->WithVars(&vars_);
+  printer->Emit(
+      {
+          {"index", index_in_metadata_},
+          {"no_impl_methods", [&] { GenerateNotImplementedMethods(printer); }},
+          {"call_method", [&] { GenerateCallMethod(printer); }},
+          {"get_request", [&] { GenerateGetPrototype(kRequest, printer); }},
+          {"get_response", [&] { GenerateGetPrototype(kResponse, printer); }},
+          {"stub_methods", [&] { GenerateStubMethods(printer); }},
+      },
+      R"cc(
+        const $pb$::ServiceDescriptor* $nonnull$ $classname$::descriptor() {
+          $pbi$::AssignDescriptors(&$desc_table$);
+          return $file_level_service_descriptors$[$index$];
+        }
 
-  // Generate methods of the interface.
-  GenerateNotImplementedMethods(printer);
-  GenerateCallMethod(printer);
-  GenerateGetPrototype(REQUEST, printer);
-  GenerateGetPrototype(RESPONSE, printer);
+        const $pb$::ServiceDescriptor* $nonnull$ $classname$::GetDescriptor() {
+          return descriptor();
+        }
 
-  // Generate stub implementation.
-  format(
-      "$classname$_Stub::$classname$_Stub(::$proto_ns$::RpcChannel* channel)\n"
-      "  : channel_(channel), owns_channel_(false) {}\n"
-      "$classname$_Stub::$classname$_Stub(\n"
-      "    ::$proto_ns$::RpcChannel* channel,\n"
-      "    ::$proto_ns$::Service::ChannelOwnership ownership)\n"
-      "  : channel_(channel),\n"
-      "    owns_channel_(ownership == "
-      "::$proto_ns$::Service::STUB_OWNS_CHANNEL) "
-      "{}\n"
-      "$classname$_Stub::~$classname$_Stub() {\n"
-      "  if (owns_channel_) delete channel_;\n"
-      "}\n"
-      "\n");
+        $no_impl_methods$;
 
-  GenerateStubMethods(printer);
+        $call_method$;
+
+        $get_request$;
+
+        $get_response$;
+
+        $classname$_Stub::$classname$_Stub($pb$::RpcChannel* $nullable$ channel)
+            : channel_(channel), owns_channel_(false) {}
+
+        $classname$_Stub::$classname$_Stub(
+            $pb$::RpcChannel* $nullable$ channel,
+            $pb$::Service::ChannelOwnership ownership)
+            : channel_(channel),
+              owns_channel_(ownership == $pb$::Service::STUB_OWNS_CHANNEL) {}
+
+        $classname$_Stub::~$classname$_Stub() {
+          if (owns_channel_) delete channel_;
+        }
+
+        $stub_methods$;
+      )cc");
 }
 
 void ServiceGenerator::GenerateNotImplementedMethods(io::Printer* printer) {
-  for (int i = 0; i < descriptor_->method_count(); i++) {
+  for (int i = 0; i < descriptor_->method_count(); ++i) {
     const MethodDescriptor* method = descriptor_->method(i);
-    Formatter format(printer, vars_);
-    InitMethodVariables(method, options_, &format);
-    format(
-        "void $classname$::$name$(::$proto_ns$::RpcController* controller,\n"
-        "                         const $input_type$*,\n"
-        "                         $output_type$*,\n"
-        "                         ::google::protobuf::Closure* done) {\n"
-        "  controller->SetFailed(\"Method $name$() not implemented.\");\n"
-        "  done->Run();\n"
-        "}\n"
-        "\n");
+
+    printer->Emit(
+        {
+            {"name", method->name()},
+            {"input", QualifiedClassName(method->input_type(), *options_)},
+            {"output", QualifiedClassName(method->output_type(), *options_)},
+        },
+        R"cc(
+          void $classname$::$name$($pb$::RpcController* $nullable$ controller,
+                                   const $input$* $nonnull$,
+                                   $output$* $nonnull$,
+                                   ::google::protobuf::Closure* $nullable$ done) {
+            controller->SetFailed("Method $name$() not implemented.");
+            done->Run();
+          }
+        )cc");
   }
 }
 
 void ServiceGenerator::GenerateCallMethod(io::Printer* printer) {
-  Formatter format(printer, vars_);
-  format(
-      "void $classname$::CallMethod(const ::$proto_ns$::MethodDescriptor* "
-      "method,\n"
-      "                             ::$proto_ns$::RpcController* controller,\n"
-      "                             const ::$proto_ns$::Message* request,\n"
-      "                             ::$proto_ns$::Message* response,\n"
-      "                             ::google::protobuf::Closure* done) {\n"
-      "  GOOGLE_DCHECK_EQ(method->service(), $file_level_service_descriptors$[$1$]);\n"
-      "  switch(method->index()) {\n",
-      index_in_metadata_);
+  printer->Emit(
+      {
+          {"index", absl::StrCat(index_in_metadata_)},
+          {"cases", [&] { GenerateCallMethodCases(printer); }},
+      },
+      R"cc(
+        void $classname$::CallMethod(
+            const $pb$::MethodDescriptor* $nonnull$ method,
+            $pb$::RpcController* $nullable$ controller,
+            const $pb$::Message* $nonnull$ request,
+            $pb$::Message* $nonnull$ response, ::google::protobuf::Closure* $nullable$ done) {
+          ABSL_DCHECK_EQ(method->service(), $file_level_service_descriptors$[$index$]);
+          switch (method->index()) {
+            $cases$;
 
-  for (int i = 0; i < descriptor_->method_count(); i++) {
-    const MethodDescriptor* method = descriptor_->method(i);
-    Formatter format_method(printer, vars_);
-    InitMethodVariables(method, options_, &format_method);
-
-    // Note:  down_cast does not work here because it only works on pointers,
-    //   not references.
-    format_method(
-        "    case $1$:\n"
-        "      $name$(controller,\n"
-        "             ::$proto_ns$::internal::DownCast<const $input_type$*>(\n"
-        "                 request),\n"
-        "             ::$proto_ns$::internal::DownCast<$output_type$*>(\n"
-        "                 response),\n"
-        "             done);\n"
-        "      break;\n",
-        i);
-  }
-
-  format(
-      "    default:\n"
-      "      GOOGLE_LOG(FATAL) << \"Bad method index; this should never happen.\";\n"
-      "      break;\n"
-      "  }\n"
-      "}\n"
-      "\n");
+            default:
+              ABSL_LOG(FATAL) << "Bad method index; this should never happen.";
+              break;
+          }
+        }
+      )cc");
 }
 
 void ServiceGenerator::GenerateGetPrototype(RequestOrResponse which,
                                             io::Printer* printer) {
-  Formatter format(printer, vars_);
-  if (which == REQUEST) {
-    format("const ::$proto_ns$::Message& $classname$::GetRequestPrototype(\n");
-  } else {
-    format("const ::$proto_ns$::Message& $classname$::GetResponsePrototype(\n");
-  }
+  printer->Emit(
+      {
+          {"which", which == kRequest ? "Request" : "Response"},
+          {"which_type", which == kRequest ? "input" : "output"},
+          {"cases",
+           [&] {
+             for (int i = 0; i < descriptor_->method_count(); ++i) {
+               const MethodDescriptor* method = descriptor_->method(i);
+               const Descriptor* type = which == kRequest
+                                            ? method->input_type()
+                                            : method->output_type();
 
-  format(
-      "    const ::$proto_ns$::MethodDescriptor* method) const {\n"
-      "  GOOGLE_DCHECK_EQ(method->service(), descriptor());\n"
-      "  switch(method->index()) {\n");
+               printer->Emit(
+                   {
+                       {"index", absl::StrCat(i)},
+                       {"type", QualifiedClassName(type, *options_)},
+                   },
+                   R"cc(
+                     case $index$:
+                       return $type$::default_instance();
+                   )cc");
+             }
+           }},
+      },
+      R"cc(
+        const $pb$::Message& $classname$::Get$which$Prototype(
+            const $pb$::MethodDescriptor* $nonnull$ method) const {
+          ABSL_DCHECK_EQ(method->service(), descriptor());
+          switch (method->index()) {
+            $cases$;
 
-  for (int i = 0; i < descriptor_->method_count(); i++) {
+            default:
+              ABSL_LOG(FATAL) << "Bad method index; this should never happen.";
+              return *$pb$::MessageFactory::generated_factory()->GetPrototype(
+                  method->$which_type$_type());
+          }
+        }
+      )cc");
+}
+
+void ServiceGenerator::GenerateCallMethodCases(io::Printer* printer) {
+  for (int i = 0; i < descriptor_->method_count(); ++i) {
     const MethodDescriptor* method = descriptor_->method(i);
-    const Descriptor* type =
-        (which == REQUEST) ? method->input_type() : method->output_type();
-
-    format(
-        "    case $1$:\n"
-        "      return $2$::default_instance();\n",
-        i, QualifiedClassName(type, options_));
+    printer->Emit(
+        {
+            {"name", method->name()},
+            {"input", QualifiedClassName(method->input_type(), *options_)},
+            {"output", QualifiedClassName(method->output_type(), *options_)},
+            {"index", absl::StrCat(i)},
+        },
+        R"cc(
+          case $index$:
+            this->$name$(controller, $pb$::DownCastMessage<$input$>(request),
+                         $pb$::DownCastMessage<$output$>(response), done);
+            break;
+        )cc");
   }
-
-  format(
-      "    default:\n"
-      "      GOOGLE_LOG(FATAL) << \"Bad method index; this should never happen.\";\n"
-      "      return *::$proto_ns$::MessageFactory::generated_factory()\n"
-      "          ->GetPrototype(method->$1$_type());\n"
-      "  }\n"
-      "}\n"
-      "\n",
-      which == REQUEST ? "input" : "output");
 }
 
 void ServiceGenerator::GenerateStubMethods(io::Printer* printer) {
-  for (int i = 0; i < descriptor_->method_count(); i++) {
+  for (int i = 0; i < descriptor_->method_count(); ++i) {
     const MethodDescriptor* method = descriptor_->method(i);
-    Formatter format(printer, vars_);
-    InitMethodVariables(method, options_, &format);
-    format(
-        "void $classname$_Stub::$name$(::$proto_ns$::RpcController* "
-        "controller,\n"
-        "                              const $input_type$* request,\n"
-        "                              $output_type$* response,\n"
-        "                              ::google::protobuf::Closure* done) {\n"
-        "  channel_->CallMethod(descriptor()->method($1$),\n"
-        "                       controller, request, response, done);\n"
-        "}\n",
-        i);
+
+    printer->Emit(
+        {
+            {"name", method->name()},
+            {"input", QualifiedClassName(method->input_type(), *options_)},
+            {"output", QualifiedClassName(method->output_type(), *options_)},
+            {"index", absl::StrCat(i)},
+        },
+        R"cc(
+          void $classname$_Stub::$name$(
+              $pb$::RpcController* $nullable$ controller,
+              const $input$* $nonnull$ request, $output$* $nonnull$ response,
+              ::google::protobuf::Closure* $nullable$ done) {
+            channel_->CallMethod(descriptor()->method($index$), controller,
+                                 request, response, done);
+          }
+        )cc");
   }
 }
 

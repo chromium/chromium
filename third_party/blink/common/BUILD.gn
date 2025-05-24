@@ -14,26 +14,6 @@ if (is_ios) {
   import("//build/config/ios/bundle_data_from_filelist.gni")
 }
 
-blink_python_runner("make_generated_permissions_policy_features") {
-  script = "../renderer/build/scripts/make_permissions_policy_features.py"
-
-  inputs = scripts_for_json5_files + [
-             "../renderer/build/scripts/make_runtime_features_utilities.py",
-             "../renderer/core/permissions_policy/permissions_policy_features.json5",
-             "../renderer/build/scripts/templates/permissions_policy_features_generated.cc.tmpl",
-           ]
-  outputs = [ "$root_gen_dir/third_party/blink/common/permissions_policy/permissions_policy_features_generated.cc" ]
-
-  args = [
-    rebase_path(
-        "../renderer/core/permissions_policy/permissions_policy_features.json5",
-        root_build_dir),
-    "--output_dir",
-    rebase_path("$root_gen_dir/third_party/blink/common/permissions_policy",
-                root_build_dir),
-  ]
-}
-
 blink_python_runner("make_generated_document_policy_features") {
   script = "../renderer/build/scripts/make_document_policy_features.py"
 
@@ -165,6 +145,7 @@ source_set("common") {
     "fenced_frame/redacted_fenced_frame_config.cc",
     "fenced_frame/redacted_fenced_frame_config_mojom_traits.cc",
     "fetch/fetch_api_request_body_mojom_traits.cc",
+    "fingerprinting_protection/canvas_noise_token.cc",
     "frame/delegated_capability_request_token.cc",
     "frame/frame_ad_evidence.cc",
     "frame/frame_ad_evidence_mojom_traits.cc",
@@ -219,8 +200,6 @@ source_set("common") {
     "manifest/manifest.cc",
     "manifest/manifest_icon_selector.cc",
     "manifest/manifest_util.cc",
-    "media/watch_time_component.cc",
-    "media/watch_time_reporter.cc",
     "mediastream/media_device_id.cc",
     "mediastream/media_devices.cc",
     "mediastream/media_devices_mojom_traits.cc",
@@ -254,8 +233,6 @@ source_set("common") {
     "origin_trials/trial_token.cc",
     "origin_trials/trial_token_result.cc",
     "origin_trials/trial_token_validator.cc",
-    "page/browsing_context_group_info.cc",
-    "page/browsing_context_group_info_mojom_traits.cc",
     "page/color_provider_color_maps_mojom_traits.cc",
     "page/content_to_visible_time_reporter.cc",
     "page/drag_mojom_traits.cc",
@@ -264,17 +241,8 @@ source_set("common") {
     "page_state/page_state.cc",
     "page_state/page_state_serialization.cc",
     "peerconnection/webrtc_ip_handling_policy.cc",
-    "performance/performance_scenarios.cc",
     "permissions/permission_utils.cc",
     "permissions_policy/document_policy.cc",
-    "permissions_policy/origin_with_possible_wildcards.cc",
-    "permissions_policy/permissions_policy.cc",
-    "permissions_policy/permissions_policy_declaration.cc",
-    "permissions_policy/permissions_policy_features.cc",
-    "permissions_policy/permissions_policy_features_generated.h",
-    "permissions_policy/permissions_policy_features_internal.cc",
-    "permissions_policy/permissions_policy_features_internal.h",
-    "permissions_policy/permissions_policy_mojom_traits.cc",
     "permissions_policy/policy_value.cc",
     "renderer_preferences/renderer_preferences.cc",
     "renderer_preferences/renderer_preferences_mojom_traits.cc",
@@ -290,7 +258,6 @@ source_set("common") {
     "service_worker/service_worker_status_code.cc",
     "service_worker/service_worker_type_converters.cc",
     "shared_storage/module_script_downloader.cc",
-    "shared_storage/shared_storage_mojom_traits.cc",
     "shared_storage/shared_storage_utils.cc",
     "storage_key/storage_key.cc",
     "storage_key/storage_key_mojom_traits.cc",
@@ -300,10 +267,13 @@ source_set("common") {
     "use_counter/use_counter_feature.cc",
     "use_counter/use_counter_feature_tracker.cc",
     "user_agent/user_agent_metadata.cc",
+    "view_source/rendering_preferences.cc",
     "web_package/signed_exchange_consts.cc",
     "web_package/web_package_request_matcher.cc",
     "web_preferences/web_preferences.cc",
     "web_preferences/web_preferences_mojom_traits.cc",
+    "webid/login_status_account.cc",
+    "webid/login_status_options.cc",
     "widget/constants.cc",
     "widget/device_emulation_params_mojom_traits.cc",
     "widget/visual_properties.cc",
@@ -313,26 +283,24 @@ source_set("common") {
   sources += get_target_outputs(":make_generated_document_policy_features")
   sources += get_target_outputs(":make_generated_features")
   sources += get_target_outputs(":make_generated_origin_trials")
-  sources += get_target_outputs(":make_generated_permissions_policy_features")
   sources += get_target_outputs(":make_runtime_feature_state_contexts_impl")
 
   public_deps = [
     ":make_generated_document_policy_features",
     ":make_generated_features",
     ":make_generated_origin_trials",
-    ":make_generated_permissions_policy_features",
     ":make_runtime_feature_state_contexts_impl",
     "//components/viz/common:common",
     "//third_party/blink/common/privacy_budget:privacy_budget",
     "//third_party/blink/public/common:common_export",
     "//third_party/blink/public/common:headers",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   deps = [
     "//base",
     "//build:android_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//media/capture:capture_base",
     "//media/capture/mojom:video_capture_mojom_support",
     "//mojo/public/cpp/system",
@@ -341,6 +309,8 @@ source_set("common") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom:mojom",
     "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom:mojom_permissions_policy",
+    "//third_party/blink/common/rust_crash",
     "//third_party/blink/public/common:buildflags",
     "//third_party/re2",
     "//ui/base:base",
@@ -352,10 +322,6 @@ source_set("common") {
     "//ui/events/mojom:event_latency_metadata_mojom",
     "//ui/latency/mojom:shared_mojom_traits",
   ]
-
-  if (enable_rust_crash) {
-    deps += [ "//third_party/blink/common/rust_crash" ]
-  }
 
   # If use_blink is used then it needs to depend on //media
   if (use_blink) {
@@ -413,9 +379,11 @@ source_set("common_unittests_sources") {
     "bluetooth/web_bluetooth_device_id_unittest.cc",
     "client_hints/client_hints_unittest.cc",
     "client_hints/enabled_client_hints_unittest.cc",
+    "custom_handlers/protocol_handler_utils_unittest.cc",
     "device_memory/approximated_device_memory_unittest.cc",
     "frame/delegated_capability_request_token_unittest.cc",
     "frame/user_activation_state_unittest.cc",
+    "indexeddb/indexed_db_default_mojom_traits_unittest.cc",
     "indexeddb/indexeddb_key_unittest.cc",
     "input/synthetic_web_input_event_builders_unittest.cc",
     "input/web_input_event_unittest.cc",
@@ -436,7 +404,6 @@ source_set("common_unittests_sources") {
     "loader/throttling_url_loader_unittest.cc",
     "manifest/manifest_icon_selector_unittest.cc",
     "manifest/manifest_util_unittest.cc",
-    "media/watch_time_component_unittest.cc",
     "mediastream/media_devices_mojom_traits_unittest.cc",
     "mediastream/media_devices_unittest.cc",
     "mediastream/media_stream_mojom_traits_unittest.cc",
@@ -448,23 +415,16 @@ source_set("common_unittests_sources") {
     "origin_trials/origin_trials_test.cc",
     "origin_trials/trial_token_unittest.cc",
     "origin_trials/trial_token_validator_unittest.cc",
-    "page/browsing_context_group_info_mojom_traits_test.cc",
-    "page/browsing_context_group_info_unittest.cc",
     "page/content_to_visible_time_reporter_unittest.cc",
     "page_state/page_state_serialization_unittest.cc",
-    "performance/performance_scenarios_unittest.cc",
+    "peerconnection/webrtc_ip_handling_policy_unittest.cc",
     "permissions_policy/document_policy_unittest.cc",
-    "permissions_policy/origin_with_possible_wildcards_unittest.cc",
-    "permissions_policy/permissions_policy_declaration_unittest.cc",
-    "permissions_policy/permissions_policy_features_internal.h",
-    "permissions_policy/permissions_policy_unittest.cc",
     "permissions_policy/policy_value_unittest.cc",
     "scheduler/web_scheduler_tracked_feature_unittest.cc",
     "security/address_space_feature_unittest.cc",
     "service_worker/service_worker_router_rule_mojom_traits_unittest.cc",
     "service_worker/service_worker_scope_match_unittest.cc",
     "shared_storage/module_script_downloader_unittest.cc",
-    "shared_storage/shared_storage_mojom_traits_unittest.cc",
     "storage_key/storage_key_mojom_traits_unittest.cc",
     "storage_key/storage_key_unittest.cc",
     "test/run_all_unittests.cc",
@@ -473,6 +433,7 @@ source_set("common_unittests_sources") {
     "unique_name/unique_name_helper_unittest.cc",
     "user_agent/user_agent_metadata_unittest.cc",
     "web_package/web_package_request_matcher_unittest.cc",
+    "webid/federated_auth_request_mojom_traits_unittest.cc",
   ]
 
   deps = [
@@ -489,6 +450,7 @@ source_set("common_unittests_sources") {
     "//net:test_support",
     "//services/device:test_support",
     "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
     "//skia/public/mojom",
     "//testing/gmock",
     "//testing/gtest",

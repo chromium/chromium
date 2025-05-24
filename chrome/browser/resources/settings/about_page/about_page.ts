@@ -7,7 +7,6 @@
  * information.
  */
 
-import '../icons.html.js';
 import '/shared/settings/prefs/prefs.js';
 // <if expr="not chromeos_ash">
 import '../relaunch_confirmation_dialog.js';
@@ -19,9 +18,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -136,18 +134,19 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   }
   // </if>
 
-  private currentUpdateStatusEvent_: UpdateStatusChangedEvent|null;
-  private isManaged_: boolean;
+  declare private currentUpdateStatusEvent_: UpdateStatusChangedEvent|null;
+  declare private isManaged_: boolean;
+  declare private managedByIcon_: string;
 
   // <if expr="_google_chrome and is_macosx">
-  private promoteUpdaterStatus_: PromoteUpdaterStatus;
+  declare private promoteUpdaterStatus_: PromoteUpdaterStatus;
   // </if>
 
   // <if expr="not chromeos_ash">
-  private obsoleteSystemInfo_: {obsolete: boolean, endOfLine: boolean};
-  private showUpdateStatus_: boolean;
-  private showButtonContainer_: boolean;
-  private showRelaunch_: boolean;
+  declare private obsoleteSystemInfo_: {obsolete: boolean, endOfLine: boolean};
+  declare private showUpdateStatus_: boolean;
+  declare private showButtonContainer_: boolean;
+  declare private showRelaunch_: boolean;
   // </if>
 
   private aboutBrowserProxy_: AboutPageBrowserProxy =
@@ -186,7 +185,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   }
 
   private onUpdateStatusChanged_(event: UpdateStatusChangedEvent) {
-    this.currentUpdateStatusEvent_! = event;
+    this.currentUpdateStatusEvent_ = event;
   }
   // </if>
 
@@ -261,7 +260,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         assert(typeof this.currentUpdateStatusEvent_!.progress === 'number');
         const progressPercent = this.currentUpdateStatusEvent_!.progress + '%';
 
-        if (this.currentUpdateStatusEvent_!.progress! > 0) {
+        if (this.currentUpdateStatusEvent_!.progress > 0) {
           // NOTE(dbeam): some platforms (i.e. Mac) always send 0% while
           // updating (they don't support incremental upgrade progress). Though
           // it's certainly quite possible to validly end up here with 0% on
@@ -301,7 +300,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         return 'cr:error';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
-        return 'settings:check-circle';
+        return 'cr:check-circle';
       default:
         return '';
     }

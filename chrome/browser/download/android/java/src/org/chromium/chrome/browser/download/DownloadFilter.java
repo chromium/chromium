@@ -8,6 +8,9 @@ import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
@@ -16,6 +19,7 @@ import java.util.Locale;
  * A class holding constants and convenience methods about filters and their corresponding
  * resources.
  */
+@NullMarked
 public class DownloadFilter {
     // These statics are used for UMA logging. Please update the AndroidDownloadFilterType enum in
     // histograms.xml if these change.
@@ -60,7 +64,7 @@ public class DownloadFilter {
         }
     }
 
-    private static Integer filterForSpecialMimeTypes(String mimeType) {
+    private static @Nullable Integer filterForSpecialMimeTypes(String mimeType) {
         if (mimeType.equals("application/ogg")) return Type.AUDIO;
         return null;
     }

@@ -36,25 +36,25 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     private static final String TAG = "UpdateReportAbuseDlg";
 
     // The Activity context to use.
-    private Context mActivityContext;
+    private final Context mActivityContext;
 
     // The modal dialog manager to use.
-    private ModalDialogManager mModalDialogManager;
+    private final ModalDialogManager mModalDialogManager;
 
     // The short name of the app the user is uninstalling.
-    private String mAppShortName;
+    private final String mAppShortName;
 
     // The package name for the app the user is uninstalling.
-    private String mAppPackageName;
+    private final String mAppPackageName;
 
     // Whether to show the checkbox for reporting abuse.
-    private boolean mShowAbuseCheckbox;
+    private final boolean mShowAbuseCheckbox;
 
     // When checked, the app will not just be uninstalled, but also reported for abuse.
     private CheckBox mReportAbuseCheckBox;
 
     // Notifies the parent (dialog beneath us) that uninstalling was the action taken by the user.
-    private Callback mOnUninstallCallback;
+    private final Callback mOnUninstallCallback;
 
     public WebApkUpdateReportAbuseDialog(
             Context activityContext,

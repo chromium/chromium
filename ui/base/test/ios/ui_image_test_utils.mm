@@ -4,6 +4,7 @@
 
 #include "ui/base/test/ios/ui_image_test_utils.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 
 namespace ui::test::uiimage_utils {
@@ -32,26 +33,23 @@ UIImage* UIImageWithSizeAndSolidColorAndScale(CGSize const& size,
 }
 
 bool UIImagesAreEqual(UIImage* image_1, UIImage* image_2) {
-  if (image_1 == image_2)
+  if (image_1 == image_2) {
     return true;
+  }
 
-  if (!CGSizeEqualToSize(image_1.size, image_2.size))
+  if (!CGSizeEqualToSize(image_1.size, image_2.size)) {
     return false;
+  }
 
   base::apple::ScopedCFTypeRef<CFDataRef> data_ref_1(
       CGDataProviderCopyData(CGImageGetDataProvider(image_1.CGImage)));
   base::apple::ScopedCFTypeRef<CFDataRef> data_ref_2(
       CGDataProviderCopyData(CGImageGetDataProvider(image_2.CGImage)));
-  CFIndex length_1 = CFDataGetLength(data_ref_1.get());
-  CFIndex length_2 = CFDataGetLength(data_ref_2.get());
-  if (length_1 != length_2) {
-    return false;
-  }
-  const UInt8* ptr_1 = CFDataGetBytePtr(data_ref_1.get());
-  const UInt8* ptr_2 = CFDataGetBytePtr(data_ref_2.get());
 
-  // memcmp returns 0 if length is 0.
-  return memcmp(ptr_1, ptr_2, length_1) == 0;
+  auto span_1 = base::apple::CFDataToSpan(data_ref_1.get());
+  auto span_2 = base::apple::CFDataToSpan(data_ref_2.get());
+
+  return span_1 == span_2;
 }
 
 }  // namespace ui::test::uiimage_utils

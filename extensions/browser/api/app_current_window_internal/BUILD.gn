@@ -15,11 +15,15 @@ source_set("app_current_window_internal") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//content/public/browser",
-    "//extensions/common",
-    "//extensions/common/api",
+  public_deps = [
+    "//base",
+    "//extensions/browser:browser_sources",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//extensions/common",
+    "//extensions/common/api",
+    "//skia",
+    "//ui/gfx/geometry",
+  ]
 }

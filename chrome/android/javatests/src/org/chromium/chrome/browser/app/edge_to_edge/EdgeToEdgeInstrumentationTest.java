@@ -14,15 +14,14 @@ import static org.junit.Assert.assertTrue;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
-import android.view.View;
 
+import androidx.core.graphics.Insets;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +32,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -46,74 +46,59 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeOSWrapperImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.RenderTestRule.Component;
+import org.chromium.ui.test.util.RenderTestRule.Corpus;
+
+import java.io.IOException;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Testing startup behavior")
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+@Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @MinAndroidSdkLevel(Build.VERSION_CODES.R)
 @EnableFeatures({
     ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
-    ChromeFeatureList.DRAW_EDGE_TO_EDGE,
+    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
     ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
 })
 public class EdgeToEdgeInstrumentationTest {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    @Rule
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final RenderTestRule renderTestRule =
+            new RenderTestRule.Builder()
+                    .setBugComponent(Component.UI_BROWSER_MOBILE_EDGE_TO_EDGE)
+                    .setCorpus(Corpus.ANDROID_RENDER_TESTS_PUBLIC)
+                    .setRevision(0)
+                    .build();
 
     private static final String TEST_AUTO_PAGE =
             "/chrome/test/data/android/edge_to_edge/viewport-fit-auto.html";
     private static final String TEST_COVER_PAGE =
             "/chrome/test/data/android/edge_to_edge/viewport-fit-cover.html";
-
-    private static final int TO_EDGE_PADDING = 0;
+    private static final String TEST_CONTAIN_PAGE =
+            "/chrome/test/data/android/edge_to_edge/viewport-fit-contain.html";
 
     private EdgeToEdgeControllerImpl mEdgeToEdgeController;
 
     private EmbeddedTestServer mTestServer;
     private ChromeTabbedActivity mActivity;
-
-    private TestOsWrapper mTestOsWrapper;
-
-    private class TestOsWrapper extends EdgeToEdgeOSWrapperImpl {
-        boolean mDidSetBottomPadding;
-        int mBottomPadding;
-
-        @Override
-        public void setPadding(View view, int left, int top, int right, int bottom) {
-            mDidSetBottomPadding = true;
-            mBottomPadding = bottom;
-            super.setPadding(view, left, top, right, bottom);
-        }
-
-        void resetPaddingMonitor() {
-            mDidSetBottomPadding = false;
-        }
-
-        int getNextPadding() {
-            CriteriaHelper.pollUiThread(() -> mDidSetBottomPadding);
-            return mBottomPadding;
-        }
-    }
 
     // Declare the watcher before the app launches.
     HistogramWatcher mEligibleHistograms =
@@ -124,8 +109,8 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Before
     public void setUp() {
-        mTestServer = sActivityTestRule.getTestServer();
-        mActivity = sActivityTestRule.getActivity();
+        mTestServer = mActivityTestRule.getTestServer();
+        mActivity = mActivityTestRule.getActivity();
         assertNotNull(mActivity);
 
         CriteriaHelper.pollUiThread(
@@ -139,9 +124,6 @@ public class EdgeToEdgeInstrumentationTest {
         assertFalse(
                 "Setup error, all tests start not opted into edge-to-edge!",
                 mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
-        mTestOsWrapper = new TestOsWrapper();
-        mEdgeToEdgeController.setOsWrapperForTesting(mTestOsWrapper);
-        mTestOsWrapper.resetPaddingMonitor();
         EdgeToEdgeControllerFactory.setHas3ButtonNavBar(false);
     }
 
@@ -155,7 +137,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     /** Puts the screen ToEdge by loading a page that has the appropriate HTML. */
     void goToEdge() {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_COVER_PAGE));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_COVER_PAGE));
         waitUntilOptedIntoEdgeToEdge();
         assertTrue("Helper goToEdge failed to go ToEdge", mEdgeToEdgeController.isDrawingToEdge());
         assertTrue(
@@ -165,11 +147,22 @@ public class EdgeToEdgeInstrumentationTest {
 
     /** Puts the screen ToNormal by loading a page that has the appropriate HTML. */
     void optOutOfToEdge() {
-        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_AUTO_PAGE));
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_AUTO_PAGE));
         waitUntilNotOptedIntoEdgeToEdge();
         assertFalse(
                 "Helper optOutOfToEdge failed to stop opting into E2E",
                 mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
+    }
+
+    void loadSafeAreaConstrainPage() {
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_CONTAIN_PAGE));
+        waitUntilNotOptedIntoEdgeToEdge();
+        assertFalse(
+                "Helper loadSafeAreaConstrainPage failed to stop opting into E2E",
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
+        assertTrue(
+                "Safe area constraint should be set for contain pages.",
+                mEdgeToEdgeController.getHasSafeAreaConstraintForTesting());
     }
 
     void waitUntilOptedIntoEdgeToEdge() {
@@ -200,34 +193,6 @@ public class EdgeToEdgeInstrumentationTest {
     /** Tests a failure case when rotating while ToNormal after going ToEdge. */
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
-    public void testRotationToLandscape_WhileNotOptedIntoE2E_BottomChinDisabled() {
-        // We must activate ToEdge to test the closure capturing the local toEdge value instead of
-        // the updated private member and passing that to adjustEdges.
-        activateFeatureToEdge();
-        optOutOfToEdge();
-        assertEquals(
-                "This test should start in portrait orientation!",
-                Orientation.PORTRAIT,
-                mActivity.getResources().getConfiguration().orientation);
-
-        int targetOrientation = Configuration.ORIENTATION_LANDSCAPE;
-        rotate(targetOrientation);
-
-        assertNotOptedIntoEdgeToEdge();
-        assertFalse(
-                "Rotation did not preserve ToNormal setting",
-                mEdgeToEdgeController.isDrawingToEdge());
-        assertNotEquals(
-                "Padding indicates ToEdge, which is inconsistent with the Controller"
-                        + " thinking we're ToNormal!",
-                TO_EDGE_PADDING,
-                mTestOsWrapper.getNextPadding());
-    }
-
-    /** Tests a failure case when rotating while ToNormal after going ToEdge. */
-    @Test
-    @MediumTest
     public void testRotationToLandscape_WhileNotOptedIntoE2E() {
         // We must activate ToEdge to test the closure capturing the local toEdge value instead of
         // the updated private member and passing that to adjustEdges.
@@ -242,23 +207,6 @@ public class EdgeToEdgeInstrumentationTest {
         rotate(targetOrientation);
 
         assertNotOptedIntoEdgeToEdge();
-        assertDrawingToEdge();
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
-    public void testRotationToLandscape_WhileOptedIntoE2E_BottomChinDisabled() {
-        activateFeatureToEdge();
-        assertEquals(
-                "This test should start in portrait orientation!",
-                Orientation.PORTRAIT,
-                mActivity.getResources().getConfiguration().orientation);
-
-        int targetOrientation = Configuration.ORIENTATION_LANDSCAPE;
-        rotate(targetOrientation);
-
-        assertOptedIntoEdgeToEdge();
         assertDrawingToEdge();
     }
 
@@ -280,28 +228,6 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
-    public void testRotationToPortrait_WhileNotOptedIntoE2E_BottomChinDisabled() {
-        activateFeatureToEdge();
-        rotate(Configuration.ORIENTATION_LANDSCAPE);
-        optOutOfToEdge();
-
-        int targetOrientation = Configuration.ORIENTATION_PORTRAIT;
-        rotate(targetOrientation);
-
-        assertNotOptedIntoEdgeToEdge();
-        assertFalse(
-                "Rotation did not preserve ToNormal setting",
-                mEdgeToEdgeController.isDrawingToEdge());
-        assertNotEquals(
-                "Padding indicates ToEdge, which is inconsistent with the Controller"
-                        + " thinking we're ToNormal!",
-                TO_EDGE_PADDING,
-                mTestOsWrapper.getNextPadding());
-    }
-
-    @Test
-    @MediumTest
     public void testRotationToPortrait_WhileNotOptedIntoE2E() {
         activateFeatureToEdge();
         rotate(Configuration.ORIENTATION_LANDSCAPE);
@@ -311,20 +237,6 @@ public class EdgeToEdgeInstrumentationTest {
         rotate(targetOrientation);
 
         assertNotOptedIntoEdgeToEdge();
-        assertDrawingToEdge();
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
-    public void testRotationToPortrait_WhileOptedIntoE2E_BottomChinDisabled() {
-        activateFeatureToEdge();
-        rotate(Configuration.ORIENTATION_LANDSCAPE);
-
-        int targetOrientation = Configuration.ORIENTATION_PORTRAIT;
-        rotate(targetOrientation);
-
-        assertOptedIntoEdgeToEdge();
         assertDrawingToEdge();
     }
 
@@ -343,6 +255,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
     public void testSnackbar() throws InterruptedException {
         activateFeatureToEdge();
         optOutOfToEdge();
@@ -388,6 +301,34 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
+    public void testFloatingSnackbar() throws InterruptedException {
+        activateFeatureToEdge();
+        optOutOfToEdge();
+        var snackbarManager = mActivity.getSnackbarManager();
+        snackbarManager.setEdgeToEdgeSupplier(mEdgeToEdgeController);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    snackbarManager.showSnackbar(
+                            Snackbar.make(
+                                    "Test",
+                                    new SnackbarManager.SnackbarController() {},
+                                    Snackbar.TYPE_PERSISTENT,
+                                    Snackbar.UMA_TEST_SNACKBAR));
+                });
+
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        var adjuster =
+                snackbarManager
+                        .getCurrentSnackbarViewForTesting()
+                        .getEdgeToEdgePadAdjusterForTesting();
+        Assert.assertNull(
+                "Pad Adjuster is not used in the floating snackbar and should be null.", adjuster);
+    }
+
+    @Test
+    @MediumTest
     @DisabledTest(message = "crbug.com/41492043")
     public void testUnfold() {
         activateFeatureToEdge();
@@ -423,26 +364,6 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
-    public void testNavigationBarColor_BottomChinDisabled() {
-        optOutOfToEdge();
-
-        goToEdge();
-        assertEquals(
-                "Navigation bar should be transparent in edge to edge.",
-                Color.TRANSPARENT,
-                mActivity.getWindow().getNavigationBarColor());
-
-        optOutOfToEdge();
-        assertEquals(
-                "Navigation bar should have the right color when transitioning away from edge to"
-                        + " edge,",
-                mActivity.getActivityTab().getBackgroundColor(),
-                mActivity.getWindow().getNavigationBarColor());
-    }
-
-    @Test
-    @MediumTest
     public void testNavigationBarColor() {
         optOutOfToEdge();
 
@@ -458,18 +379,59 @@ public class EdgeToEdgeInstrumentationTest {
                         + "opted in.",
                 Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());
+        assertNavigationBarColor(mActivity.getActivityTab().getBackgroundColor());
 
         TabUiTestHelper.enterTabSwitcher(mActivity);
-        assertNotEquals(
-                "Should not be drawing toEdge in the Tab Switcher.",
+        assertEquals(
+                "Should still be drawing toEdge in the Tab Switcher.",
                 Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());
 
         TabUiTestHelper.leaveTabSwitcher(mActivity);
         assertEquals(
-                "Should return toEdge upon leaving the Tab Switcher.",
+                "Should stay toEdge upon leaving the Tab Switcher.",
                 Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());
+        assertNavigationBarColor(mActivity.getActivityTab().getBackgroundColor());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT)
+    public void testSafeAreaConstraint() {
+        loadSafeAreaConstrainPage();
+
+        int bottomInsets = mEdgeToEdgeController.getBottomInsetPx();
+        int bottomControlsMinHeight =
+                mActivity
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomControlsStackerForTesting()
+                        .getTotalMinHeight();
+        assertEquals(
+                "Bottom controls min height should be set as the height of the bottom insets.",
+                bottomInsets,
+                bottomControlsMinHeight);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE + ":e2e_everywhere_debug/true")
+    public void testPadWithEdgeToEdgeLayout() throws IOException {
+        goToEdge();
+        assertDrawingToEdge();
+
+        Insets appliedPadding = mEdgeToEdgeController.getAppliedContentViewPaddingForTesting();
+        assertEquals("Bottom padding is 0 when drawing to edge.", 0, appliedPadding.bottom);
+        assertNotEquals(
+                "Top padding is not 0, but should be handled with e2e layout.",
+                0,
+                appliedPadding.top);
+
+        // Padding is verified by the debug layer for e2e layout in render golden's result.
+        // Expect to see a magenta color block on top of the toolbar.
+        renderTestRule.render(
+                mActivity.findViewById(android.R.id.content), "e2e-everywhere-no-bottom-padding");
     }
 
     private void assertOptedIntoEdgeToEdge() {
@@ -489,10 +451,15 @@ public class EdgeToEdgeInstrumentationTest {
                 "Rotation did not preserve ToEdge setting. The device should still be drawing"
                         + " ToEdge for the bottom chin.",
                 mEdgeToEdgeController.isDrawingToEdge());
+    }
+
+    private void assertNavigationBarColor(int color) {
         assertEquals(
-                "Padding indicates ToNormal, which is inconsistent with the Controller"
-                        + " thinking we're ToEdge!",
-                TO_EDGE_PADDING,
-                mTestOsWrapper.mBottomPadding);
+                "Nav bar color is different.",
+                color,
+                mActivity
+                        .getEdgeToEdgeManager()
+                        .getEdgeToEdgeSystemBarColorHelper()
+                        .getNavigationBarColor());
     }
 }

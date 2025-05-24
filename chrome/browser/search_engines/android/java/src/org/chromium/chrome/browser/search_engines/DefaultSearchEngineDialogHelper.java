@@ -10,8 +10,8 @@ import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
 import org.chromium.components.search_engines.TemplateUrl;
 
@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** Handles user interactions with a user dialog that lets them pick a default search engine. */
+@NullMarked
 public class DefaultSearchEngineDialogHelper implements OnCheckedChangeListener, OnClickListener {
     /** Handles interactions with the TemplateUrlService and LocaleManager. */
     public interface Delegate {
@@ -57,7 +58,7 @@ public class DefaultSearchEngineDialogHelper implements OnCheckedChangeListener,
     private String mCurrentlySelectedKeyword;
 
     /** Keyword that is both selected and confirmed (with a click to {@link #mConfirmButton}). */
-    private String mConfirmedKeyword;
+    private @Nullable String mConfirmedKeyword;
 
     /**
      * Constructs a DefaultSearchEngineDialogHelper.

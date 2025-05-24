@@ -245,12 +245,10 @@ void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
 
   CD_LOG(VERBOSE, Feature::FP) << __func__ << ": device = " << classic_address;
 
-  // For BLE devices, check it supports Fast Pair. Then, since the message
-  // stream is optional for BLE HIDs, and the BLE address is already known, the
-  // only remaining parameter needed is the model ID, which we retrieve via GATT
-  // characteristic.
-  if (ash::features::IsFastPairHIDEnabled() &&
-      // Fast Pair HID only works on Floss.
+  // For BLE devices, since the message stream is optional for BLE HIDs, and the
+  // BLE address is already known, the only remaining parameter needed is the
+  // model ID, which we retrieve via GATT characteristic.
+  if (  // Fast Pair HID only works on Floss.
       floss::features::IsFlossEnabled() &&
       device->GetType() == device::BLUETOOTH_TRANSPORT_LE &&
       base::Contains(device->GetUUIDs(), kFastPairBluetoothUuid)) {

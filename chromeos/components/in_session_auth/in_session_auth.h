@@ -54,6 +54,7 @@ class InSessionAuth : public chromeos::auth::mojom::InSessionAuth {
 
   std::unique_ptr<ash::AuthRequest> AuthRequestFromReason(
       ash::AuthRequest::Reason reason,
+      std::u16string prompt,
       RequestTokenCallback callback);
 
   mojo::ReceiverSet<chromeos::auth::mojom::InSessionAuth> receivers_;

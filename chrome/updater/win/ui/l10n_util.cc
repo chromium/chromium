@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -47,7 +49,13 @@ std::wstring GetPreferredLanguage() {
 }
 
 std::wstring GetLocalizedString(unsigned int base_message_id,
-                                const std::wstring& lang) {
+                                std::wstring lang) {
+  ::SetLastError(ERROR_SUCCESS);
+
+  if (lang.empty()) {
+    lang = GetPreferredLanguage();
+  }
+
   // Map `base_message_id` to the base id for the current install mode.
   const unsigned int message_id =
       static_cast<UINT>(base_message_id + GetLanguageOffset(lang));
@@ -63,9 +71,11 @@ std::wstring GetLocalizedString(unsigned int base_message_id,
   DEBUG_ALIAS_FOR_CSTR(dbg_lang, base::WideToUTF8(lang).c_str(), 16);
   VLOG(2) << base_message_id << ", " << message_id << ", " << error_code << ", "
           << lang;
-  NOTREACHED_IN_MIGRATION()
-      << "Unable to find resource, " << base_message_id << ", " << message_id
-      << ", " << error_code << ", " << lang;
+  SCOPED_CRASH_KEY_NUMBER("l10_util", "base_message_id", base_message_id);
+  SCOPED_CRASH_KEY_NUMBER("l10_util", "message_id", message_id);
+  SCOPED_CRASH_KEY_NUMBER("l10_util", "error_code", error_code);
+  SCOPED_CRASH_KEY_STRING32("l10_util", "lang", dbg_lang);
+  base::debug::DumpWithoutCrashing();
   return std::wstring();
 }
 
@@ -88,13 +98,15 @@ std::wstring GetLocalizedStringF(unsigned int base_message_id,
 }
 
 std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
-                                                  DWORD windows_error) {
+                                                  DWORD windows_error,
+                                                  const std::wstring& lang) {
 #define METAINSTALLER_ERROR_SWITCH_ENTRY(exit_code)                        \
   case static_cast<int>(exit_code):                                        \
     return GetLocalizedStringF(                                            \
         IDS_GENERIC_METAINSTALLER_ERROR_BASE,                              \
         {L#exit_code, windows_error ? GetTextForSystemError(windows_error) \
-                                    : std::wstring()})
+                                    : std::wstring()},                     \
+        lang)
 
   switch (exit_code) {
     METAINSTALLER_ERROR_SWITCH_ENTRY(TEMP_DIR_FAILED);
@@ -117,13 +129,13 @@ std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
     METAINSTALLER_ERROR_SWITCH_ENTRY(UNABLE_TO_GET_EXE_PATH);
 
     case UNSUPPORTED_WINDOWS_VERSION:
-      return GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE);
+      return GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE, lang);
     case FAILED_TO_ELEVATE_METAINSTALLER:
       return GetLocalizedStringF(IDS_FAILED_TO_ELEVATE_METAINSTALLER_BASE,
-                                 GetTextForSystemError(windows_error));
+                                 GetTextForSystemError(windows_error), lang);
     case UPDATER_EXIT_CODE:
     default:
-      NOTREACHED_IN_MIGRATION();
+      VLOG(2) << __func__ << ": exit_code=" << exit_code;
       return {};
   }
 #undef METAINSTALLER_ERROR_SWITCH_ENTRY

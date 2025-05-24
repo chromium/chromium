@@ -4,18 +4,17 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -37,6 +37,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -329,13 +332,15 @@ class IsolatedWebAppsUninstallDialogViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
                        SubAppsShownCorrectly) {
-  std::unique_ptr<net::EmbeddedTestServer> iwa_dev_server =
-      web_app::CreateAndStartDevServer(
-          FILE_PATH_LITERAL("web_apps/subapps_isolated_app"));
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              network::mojom::PermissionsPolicyFeature::kSubApps))
+          .BuildBundle();
 
-  web_app::IsolatedWebAppUrlInfo parent_app =
-      web_app::InstallDevModeProxyIsolatedWebApp(browser()->profile(),
-                                                 iwa_dev_server->GetOrigin());
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo parent_app,
+                       app->Install(browser()->profile()));
+
   const webapps::AppId parent_app_id = parent_app.app_id();
   const GURL parent_app_url = parent_app.origin().GetURL();
 
@@ -387,13 +392,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
                        SubAppsAreNotShownWhenNoneAreInstalled) {
-  std::unique_ptr<net::EmbeddedTestServer> iwa_dev_server =
-      web_app::CreateAndStartDevServer(
-          FILE_PATH_LITERAL("web_apps/subapps_isolated_app"));
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              network::mojom::PermissionsPolicyFeature::kSubApps))
+          .BuildBundle();
 
-  web_app::IsolatedWebAppUrlInfo parent_app =
-      web_app::InstallDevModeProxyIsolatedWebApp(browser()->profile(),
-                                                 iwa_dev_server->GetOrigin());
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo parent_app,
+                       app->Install(browser()->profile()));
+
   const webapps::AppId parent_app_id = parent_app.app_id();
   const GURL parent_app_url = parent_app.origin().GetURL();
 

@@ -1,4 +1,3 @@
-import("//chromecast/build/args/config/all.gni")
 import("//chromecast/build/args/config/android.gni")
 import("//chromecast/build/args/config/archs/arm.gni")
 import("//chromecast/build/args/config/flavor/eng.gni")

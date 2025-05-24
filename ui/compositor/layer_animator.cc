@@ -115,7 +115,7 @@ ANIMATED_PROPERTY(float, OPACITY, Opacity, float, opacity)
 ANIMATED_PROPERTY(bool, VISIBILITY, Visibility, bool, visibility)
 ANIMATED_PROPERTY(float, BRIGHTNESS, Brightness, float, brightness)
 ANIMATED_PROPERTY(float, GRAYSCALE, Grayscale, float, grayscale)
-ANIMATED_PROPERTY(SkColor, COLOR, Color, SkColor, color)
+ANIMATED_PROPERTY(SkColor4f, COLOR, Color, SkColor4f, color)
 ANIMATED_PROPERTY(const gfx::Rect&, CLIP, ClipRect, gfx::Rect, clip_rect)
 ANIMATED_PROPERTY(const gfx::RoundedCornersF&,
                   ROUNDED_CORNERS,

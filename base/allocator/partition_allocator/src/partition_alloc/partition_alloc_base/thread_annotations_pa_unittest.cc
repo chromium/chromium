@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -16,7 +15,7 @@ class PA_LOCKABLE Lock {
 
 class PA_SCOPED_LOCKABLE AutoLock {
  public:
-  AutoLock(Lock& lock) PA_EXCLUSIVE_LOCK_FUNCTION(lock) : lock_(lock) {
+  explicit AutoLock(Lock& lock) PA_EXCLUSIVE_LOCK_FUNCTION(lock) : lock_(lock) {
     lock.Acquire();
   }
   ~AutoLock() PA_UNLOCK_FUNCTION() { lock_.Release(); }

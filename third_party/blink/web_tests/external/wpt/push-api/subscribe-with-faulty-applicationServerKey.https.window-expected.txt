@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Error: Should have the permission granted to continue but found denied
+[NOTRUN] Reject empty string applicationServerKey
+[NOTRUN] Reject empty ArrayBuffer applicationServerKey
+[NOTRUN] Reject empty Uint8Array applicationServerKey
+[NOTRUN] Reject a key that is not a valid point on P-256 curve
+[NOTRUN] Reject a string key that can't be decoded by base64url
+Harness: the test ran to completion.

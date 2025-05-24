@@ -27,7 +27,6 @@
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
@@ -46,6 +45,11 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamObserver {
   // ActiveStateChanged is called when the observed MediaStream becomes either
   // active or inactive.
   virtual void ActiveStateChanged(bool is_active) {}
+
+  // EnabledStateChangedForWebRtcAudio is called only when the observed
+  // MediaStream that has a WebRTC remote audio track and that track is enabled
+  // or disabled.
+  virtual void EnabledStateChangedForWebRtcAudio(bool is_enabled) {}
 
  protected:
   virtual ~WebMediaStreamObserver() = default;

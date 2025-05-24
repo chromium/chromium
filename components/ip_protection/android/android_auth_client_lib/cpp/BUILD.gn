@@ -29,7 +29,7 @@ source_set("native") {
     ":jni_headers",
     "//base",
     "//components/ip_protection:get_proxy_config_proto",
-    "//net/third_party/quiche:blind_sign_auth_proto",
+    "//net/third_party/quiche:blind_sign_auth",
   ]
 }
 
@@ -41,7 +41,7 @@ source_set("ip_protection_auth_test_natives") {
     "//base/test:test_support",
     "//components/ip_protection:get_proxy_config_proto",
     "//components/ip_protection/android/android_auth_client_lib/javatests:jni_headers",
-    "//net/third_party/quiche:blind_sign_auth_proto",
+    "//net/third_party/quiche:blind_sign_auth",
     "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
   ]
 

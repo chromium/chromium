@@ -71,7 +71,9 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
 
   // Creates and returns an instance of the LegacyRenderWidgetHostHWND class on
   // successful creation of a child window parented to the parent window passed
-  // in.
+  // in. May return nullptr on failure.
+  // Owner must call Destroy() to destroy the returned object, rather than
+  // directly deleting it.
   static LegacyRenderWidgetHostHWND* Create(HWND parent,
                                             RenderWidgetHostViewAura* host);
 
@@ -79,7 +81,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   LegacyRenderWidgetHostHWND& operator=(const LegacyRenderWidgetHostHWND&) =
       delete;
 
-  // Destroys the HWND managed by this class.
+  // Destroys the HWND managed by this class. The class will then delete itself.
   void Destroy();
 
   BEGIN_MSG_MAP_EX(LegacyRenderWidgetHostHWND)
@@ -136,7 +138,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   friend class AccessibilityObjectLifetimeWinBrowserTest;
   friend class DirectManipulationBrowserTestBase;
 
-  LegacyRenderWidgetHostHWND(RenderWidgetHostViewAura* host);
+  explicit LegacyRenderWidgetHostHWND(RenderWidgetHostViewAura* host);
   ~LegacyRenderWidgetHostHWND() override;
 
   // If initialization fails, deletes `this` and returns false.

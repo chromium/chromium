@@ -21,8 +21,9 @@ namespace base {
 std::optional<std::u16string> ReadUTF8FromVMOAsUTF16(
     const fuchsia::mem::Buffer& buffer) {
   std::optional<std::string> output_utf8 = StringFromMemBuffer(buffer);
-  if (!output_utf8)
+  if (!output_utf8) {
     return std::nullopt;
+  }
   std::u16string output;
   return UTF8ToUTF16(output_utf8->data(), output_utf8->size(), &output)
              ? std::optional<std::u16string>(std::move(output))
@@ -71,13 +72,15 @@ std::optional<std::string> StringFromVmo(const zx::vmo& vmo) {
     return std::nullopt;
   }
 
-  if (size == 0)
+  if (size == 0) {
     return result;
+  }
 
   result.resize(size);
   status = vmo.read(&result[0], 0, size);
-  if (status == ZX_OK)
+  if (status == ZX_OK) {
     return result;
+  }
 
   ZX_LOG(ERROR, status) << "zx_vmo_read";
   return std::nullopt;
@@ -87,13 +90,15 @@ std::optional<std::string> StringFromMemBuffer(
     const fuchsia::mem::Buffer& buffer) {
   std::string result;
 
-  if (buffer.size == 0)
+  if (buffer.size == 0) {
     return result;
+  }
 
   result.resize(buffer.size);
   zx_status_t status = buffer.vmo.read(&result[0], 0, buffer.size);
-  if (status == ZX_OK)
+  if (status == ZX_OK) {
     return result;
+  }
 
   ZX_LOG(ERROR, status) << "zx_vmo_read";
   return std::nullopt;
@@ -117,8 +122,9 @@ std::optional<std::string> StringFromMemData(const fuchsia::mem::Data& data) {
 }
 
 fuchsia::mem::Buffer MemBufferFromFile(File file) {
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return {};
+  }
 
   zx::vmo vmo;
   zx_status_t status =

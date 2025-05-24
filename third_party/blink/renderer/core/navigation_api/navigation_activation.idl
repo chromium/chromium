@@ -4,8 +4,7 @@
 
 // https://wicg.github.io/navigation-api/
 [
-  Exposed=Window,
-  RuntimeEnabled=NavigationActivation
+  Exposed=Window
 ] interface NavigationActivation {
   readonly attribute NavigationHistoryEntry? entry;
   readonly attribute NavigationHistoryEntry? from;

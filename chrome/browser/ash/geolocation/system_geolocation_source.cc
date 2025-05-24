@@ -32,11 +32,6 @@ SystemGeolocationSource::SystemGeolocationSource()
   DCHECK(Shell::Get());
   DCHECK(Shell::Get()->session_controller());
   observer_.Observe(Shell::Get()->session_controller());
-  PrefService* last_active_user_pref_service =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (last_active_user_pref_service) {
-    OnActiveUserPrefServiceChanged(last_active_user_pref_service);
-  }
 }
 
 SystemGeolocationSource::~SystemGeolocationSource() = default;
@@ -51,7 +46,7 @@ SystemGeolocationSource::CreateGeolocationSystemPermissionManagerOnAsh() {
 void SystemGeolocationSource::RegisterPermissionUpdateCallback(
     PermissionUpdateCallback callback) {
   permission_update_callback_ = std::move(callback);
-  if (pref_change_registrar_) {
+  if (primary_user_pref_change_registrar_) {
     OnPrefChanged(prefs::kUserGeolocationAccessLevel);
   }
 }
@@ -64,12 +59,19 @@ void SystemGeolocationSource::OpenSystemPermissionSetting() {
 
 void SystemGeolocationSource::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  // Subscribing to pref changes.
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(pref_service);
+  // The primary user has an exclusive control over the system geolocation
+  // setting. Stop observation immediately as this class should only observe the
+  // primary user pref service.
+  CHECK(!primary_user_pref_change_registrar_);
+  observer_.Reset();
+
+  // At this point the `pref_service` belongs to the primary user of the
+  // seession. Subscribing to pref changes.
+  primary_user_pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  primary_user_pref_change_registrar_->Init(pref_service);
   // value might have changed, hence we trigger the update function
   OnPrefChanged(prefs::kUserGeolocationAccessLevel);
-  pref_change_registrar_->Add(
+  primary_user_pref_change_registrar_->Add(
       prefs::kUserGeolocationAccessLevel,
       base::BindRepeating(&SystemGeolocationSource::OnPrefChanged,
                           base::Unretained(this)));
@@ -77,14 +79,14 @@ void SystemGeolocationSource::OnActiveUserPrefServiceChanged(
 
 void SystemGeolocationSource::OnPrefChanged(const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kUserGeolocationAccessLevel);
-  DCHECK(pref_change_registrar_);
+  DCHECK(primary_user_pref_change_registrar_);
   // Get the actual permission status from CrOS by directly accessing pref
   // service.
   device::LocationSystemPermissionStatus status =
       device::LocationSystemPermissionStatus::kNotDetermined;
 
   if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
-    PrefService* pref_service = pref_change_registrar_->prefs();
+    PrefService* pref_service = primary_user_pref_change_registrar_->prefs();
     if (pref_service) {
       status = (static_cast<GeolocationAccessLevel>(pref_service->GetInteger(
                     prefs::kUserGeolocationAccessLevel)) ==

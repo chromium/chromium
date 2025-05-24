@@ -7,6 +7,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/on_load_script_injector/on_load_script_injector.mojom.h"
@@ -53,8 +54,8 @@ void OnLoadScriptInjectorHost<ScriptId>::AddScript(
           .ValueOrDie();
   base::WritableSharedMemoryRegion script_shared_memory =
       base::WritableSharedMemoryRegion::Create(script_utf16_size);
-  memcpy(script_shared_memory.Map().memory(), script_utf16.data(),
-         script_utf16_size);
+  UNSAFE_TODO(memcpy(script_shared_memory.Map().memory(), script_utf16.data(),
+                     script_utf16_size));
 
   base::ReadOnlySharedMemoryRegion script_shared_memory_readonly =
       base::WritableSharedMemoryRegion::ConvertToReadOnly(

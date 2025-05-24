@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_event_generator.h"
-#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree.h"
@@ -43,12 +42,10 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
 
   // Wait for a specific Blink event.
   AccessibilityNotificationWaiter(WebContents* web_contents,
-                                  ui::AXMode accessibility_mode,
                                   ax::mojom::Event event);
 
   // Wait for a specific AXEventGenerator event.
   AccessibilityNotificationWaiter(WebContents* web_contents,
-                                  ui::AXMode accessibility_mode,
                                   ui::AXEventGenerator::Event event);
 
   AccessibilityNotificationWaiter(const AccessibilityNotificationWaiter&) =

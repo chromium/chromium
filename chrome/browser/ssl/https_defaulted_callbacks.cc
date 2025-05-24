@@ -21,7 +21,7 @@ bool ShouldIgnoreSslInterstitialBecauseNavigationDefaultedToHttps(
   // Check typed navigation upgrade status.
   if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps) &&
       TypedNavigationUpgradeThrottle::IsNavigationUsingHttpsAsDefaultScheme(
-          handle)) {
+          *handle)) {
     return true;
   }
 

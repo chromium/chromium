@@ -4,6 +4,9 @@
 
 #include "chromecast/device/bluetooth/le/scan_filter.h"
 
+#include <string_view>
+#include <vector>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromecast {
@@ -11,10 +14,19 @@ namespace bluetooth {
 
 namespace {
 
-const char kName[] = "foo";
-const bluetooth_v2_shlib::Uuid kUuid = {{0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b,
-                                         0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66,
-                                         0x55, 0x44, 0x00, 0x00}};
+constexpr std::string_view kName = "foo";
+constexpr bluetooth_v2_shlib::Uuid kUuid = {{0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b,
+                                             0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66,
+                                             0x55, 0x44, 0x00, 0x00}};
+
+std::vector<uint8_t> StringToBytes(std::string_view str) {
+  std::vector<uint8_t> bytes;
+  bytes.reserve(str.size());
+  for (char c : str) {
+    bytes.push_back(static_cast<uint8_t>(c));
+  }
+  return bytes;
+}
 
 }  // namespace
 
@@ -27,8 +39,7 @@ TEST(ScanFilterTest, Name) {
   EXPECT_FALSE(filter.Matches(result));
 
   result.type_to_data[LeScanResult::kGapShortName].emplace_back(
-      reinterpret_cast<const uint8_t*>(kName),
-      reinterpret_cast<const uint8_t*>(kName) + strlen(kName));
+      StringToBytes(kName));
   EXPECT_TRUE(filter.Matches(result));
 
   ++result.type_to_data[LeScanResult::kGapShortName][0][0];
@@ -59,8 +70,7 @@ TEST(ScanFilterTest, NameAndUuid) {
   EXPECT_FALSE(filter.Matches(result));
 
   result.type_to_data[LeScanResult::kGapShortName].emplace_back(
-      reinterpret_cast<const uint8_t*>(kName),
-      reinterpret_cast<const uint8_t*>(kName) + strlen(kName));
+      StringToBytes(kName));
   EXPECT_FALSE(filter.Matches(result));
 
   result.type_to_data[LeScanResult::kGapIncomplete128BitServiceUuids]
@@ -81,7 +91,7 @@ TEST(ScanFilterTest, NameAndUuid) {
 }
 
 TEST(ScanFilterTest, RegexName) {
-  const char kHello[] = "hello";
+  constexpr std::string_view kHello = "hello";
 
   // Just test some basic regular experssions, we don't want this to be testing
   // RE2.
@@ -92,8 +102,7 @@ TEST(ScanFilterTest, RegexName) {
   EXPECT_FALSE(filter.Matches(result));
 
   result.type_to_data[LeScanResult::kGapShortName].emplace_back(
-      reinterpret_cast<const uint8_t*>(kHello),
-      reinterpret_cast<const uint8_t*>(kHello) + strlen(kHello));
+      StringToBytes(kHello));
   EXPECT_TRUE(filter.Matches(result));
 
   filter.regex_name = "g";
@@ -110,8 +119,7 @@ TEST(ScanFilterTest, RegexNameIgnoredIfNameSet) {
 
   LeScanResult result;
   result.type_to_data[LeScanResult::kGapShortName].emplace_back(
-      reinterpret_cast<const uint8_t*>(kName),
-      reinterpret_cast<const uint8_t*>(kName) + strlen(kName));
+      StringToBytes(kName));
   EXPECT_FALSE(filter.Matches(result));
 
   filter.name = kName;

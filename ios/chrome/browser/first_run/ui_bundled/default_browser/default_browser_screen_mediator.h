@@ -7,29 +7,27 @@
 
 #import <Foundation/Foundation.h>
 
-namespace segmentation_platform {
-class SegmentationPlatformService;
-class DeviceSwitcherResultDispatcher;
-}  // namespace segmentation_platform
-
 @protocol DefaultBrowserScreenConsumer;
 
-// Mediator for presenting segmented default browser promo.
+// Mediator for presenting the Default Browser promo with the updated First Run
+// Experience.
 @interface DefaultBrowserScreenMediator : NSObject
 
 // Main consumer for this mediator.
 @property(nonatomic, weak) id<DefaultBrowserScreenConsumer> consumer;
-
-// Initializer with 'segmentationService'.
-- (instancetype)initWithSegmentationService:
-                    (segmentation_platform::SegmentationPlatformService*)
-                        segmentationService
-             deviceSwitcherResultDispatcher:
-                 (segmentation_platform::DeviceSwitcherResultDispatcher*)
-                     dispatcher;
+// Contains the user choice for UMA reporting. This value is set to the default
+// value when the coordinator is initialized.
+@property(nonatomic, assign) BOOL UMAReportingUserChoice;
+// Whether the user tapped on the TOS link.
+@property(nonatomic, assign) BOOL TOSLinkWasTapped;
+// Whether the user tapped on the UMA link.
+@property(nonatomic, assign) BOOL UMALinkWasTapped;
 
 // Disconnects this mediator.
 - (void)disconnect;
+
+// Called when the coordinator is finished.
+- (void)finishPresenting;
 
 @end
 

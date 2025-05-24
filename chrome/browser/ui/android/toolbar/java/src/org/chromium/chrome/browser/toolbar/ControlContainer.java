@@ -5,19 +5,26 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.view.View;
+import android.widget.FrameLayout;
 
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
+import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
  * Interface that defines the responsibilities of the layout container for the browser controls.
- * <p>
- * Concrete implementations of this class must extend ViewGroup.
+ *
+ * <p>Concrete implementations of this class must extend ViewGroup.
  */
+@NullMarked
 public interface ControlContainer {
     /**
      * Initialize the control container with the specified toolbar.
+     *
      * @param toolbarLayoutId The ID of the toolbar layout to use.
      */
     void initWithToolbar(int toolbarLayoutId);
@@ -34,6 +41,12 @@ public interface ControlContainer {
     void getProgressBarDrawingInfo(ClipDrawableProgressBar.DrawingInfo drawingInfoOut);
 
     int getToolbarBackgroundColor();
+
+    /** Gets the height of the toolbar contained by the control container. */
+    int getToolbarHeight();
+
+    /** Gets the height of the toolbar hairline. */
+    int getToolbarHairlineHeight();
 
     /**
      * @param handler The swipe handler to be notified of swipe events on this container.
@@ -54,6 +67,45 @@ public interface ControlContainer {
 
     /** Set the compositor background is initialized. */
     void setCompositorBackgroundInitialized();
+
+    /**
+     * Returns an instance of the underlying view's layout params that can be mutated; changes will
+     * take effect with the next layout pass. A layout pass is requested with each call to this
+     * method.
+     */
+    CoordinatorLayout.LayoutParams mutateLayoutParams();
+
+    /**
+     * Returns an instance of the hairline view's layout params that can be mutated; changes will
+     * take effect with the next layout pass. A layout pass is requested with each call to this
+     * method.
+     */
+    FrameLayout.LayoutParams mutateHairlineLayoutParams();
+
+    /**
+     * Returns an instance of the toolbar view's layout params that can be mutated; changes will
+     * take effect with the next layout pass. A layout pass is requested with each call to this
+     * method.
+     */
+    FrameLayout.LayoutParams mutateToolbarLayoutParams();
+
+    /**
+     * Toggle display of only the location bar, hiding all other toolbar affordances. This is only
+     * valid in cases where there is a location bar view.
+     */
+    void toggleLocationBarOnlyMode(boolean showOnlyLocationBar);
+
+    /**
+     * Add a touch event observer that can observe/intercept touch events that occur within the
+     * control container. Observers are processed in order of addition and after any special case
+     * handling for, e.g. swipe events or the tab strip.
+     */
+    void addTouchEventObserver(TouchEventObserver observer);
+
+    /**
+     * Remove a touch event observer added via {@link #addTouchEventObserver(TouchEventObserver)}
+     */
+    void removeTouchEventObserver(TouchEventObserver observer);
 
     /**
      * Destroys the control container, causing it to release any owned native resources and cancel

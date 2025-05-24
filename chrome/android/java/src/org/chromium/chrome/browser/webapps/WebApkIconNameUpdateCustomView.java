@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.webapps;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -40,12 +39,12 @@ public class WebApkIconNameUpdateCustomView extends LinearLayout {
             Bitmap oldIcon, Bitmap newIcon, boolean oldIconAdaptive, boolean newIconAdaptive) {
         ImageView oldIconView = findViewById(R.id.app_icon_old);
         ImageView newIconView = findViewById(R.id.app_icon_new);
-        if (oldIconAdaptive && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (oldIconAdaptive) {
             oldIconView.setImageIcon(Icon.createWithAdaptiveBitmap(oldIcon));
         } else {
             oldIconView.setImageBitmap(oldIcon);
         }
-        if (newIconAdaptive && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (newIconAdaptive) {
             newIconView.setImageIcon(Icon.createWithAdaptiveBitmap(newIcon));
         } else {
             newIconView.setImageBitmap(newIcon);

@@ -32,12 +32,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
@@ -50,7 +51,6 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class SearchEngineAdapterTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    public final @Rule JniMocker mJniMocker = new JniMocker();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -58,12 +58,13 @@ public class SearchEngineAdapterTest {
 
     private @Mock Profile mProfile;
     private @Mock TemplateUrlService mTemplateUrlService;
+    private @Mock RegionalCapabilitiesService mRegionalCapabilities;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeNativeMock;
     private Context mContext;
 
     @Before
     public void setUp() {
-        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNativeMock);
+        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNativeMock);
         mActivityScenarioRule.getScenario().onActivity(activity -> mContext = activity);
     }
 
@@ -145,7 +146,7 @@ public class SearchEngineAdapterTest {
         // Instead of using the test helper, call the method directly and explicitly compare
         // identity for the output instead of equality here, as all instances are equal.
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                templateUrls, p3, /* isInEeaChoiceCountry= */ true);
+                templateUrls, p3, /* isEeaChoiceCountry= */ true);
 
         Assert.assertSame(templateUrls.get(0), p2);
         Assert.assertSame(templateUrls.get(1), p1);
@@ -228,37 +229,39 @@ public class SearchEngineAdapterTest {
         doReturn(true).when(mTemplateUrlService).isLoaded();
         doReturn(new ArrayList<>(List.of(p1, p2, c1))).when(mTemplateUrlService).getTemplateUrls();
         doReturn(p2).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
-        doReturn(false).when(mTemplateUrlService).isEeaChoiceCountry();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+
+        doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
         var adapter = new SearchEngineAdapter(mContext, mProfile);
         adapter.start();
 
-        assertEquals(adapter.getCount(), 4);
+        assertEquals(4, adapter.getCount());
 
         // Checking the data that was used to render the view.
-        assertEquals(adapter.getItemViewType(0), SearchEngineAdapter.VIEW_TYPE_ITEM);
+        assertEquals(SearchEngineAdapter.VIEW_TYPE_ITEM, adapter.getItemViewType(0));
         verify(p1, never()).getShortName();
         View v = adapter.getView(0, null, null);
         verify(p1, atLeastOnce()).getShortName();
-        assertEquals(v.findViewById(R.id.url).getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, v.findViewById(R.id.url).getVisibility());
         assertThat(v.findViewById(R.id.logo), notNullValue());
 
-        assertEquals(adapter.getItemViewType(1), SearchEngineAdapter.VIEW_TYPE_ITEM);
+        assertEquals(SearchEngineAdapter.VIEW_TYPE_ITEM, adapter.getItemViewType(1));
         verify(p2, never()).getShortName();
         v = adapter.getView(1, null, null);
         verify(p2, atLeastOnce()).getShortName();
-        assertEquals(v.findViewById(R.id.url).getVisibility(), View.GONE); // Because no keyword.
+        assertEquals(View.GONE, v.findViewById(R.id.url).getVisibility()); // Because no keyword.
         assertThat(v.findViewById(R.id.logo), notNullValue());
 
-        assertEquals(adapter.getItemViewType(2), SearchEngineAdapter.VIEW_TYPE_DIVIDER);
+        assertEquals(SearchEngineAdapter.VIEW_TYPE_DIVIDER, adapter.getItemViewType(2));
         assertNotNull(adapter.getView(2, null, null));
 
-        assertEquals(adapter.getItemViewType(3), SearchEngineAdapter.VIEW_TYPE_ITEM);
+        assertEquals(SearchEngineAdapter.VIEW_TYPE_ITEM, adapter.getItemViewType(3));
         verify(c1, never()).getShortName();
         v = adapter.getView(3, null, null);
         verify(c1, atLeastOnce()).getShortName();
-        assertEquals(v.findViewById(R.id.url).getVisibility(), View.VISIBLE);
+        assertEquals(View.VISIBLE, v.findViewById(R.id.url).getVisibility());
         assertThat(v.findViewById(R.id.logo), notNullValue());
     }
 }

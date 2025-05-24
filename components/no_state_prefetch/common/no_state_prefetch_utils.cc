@@ -49,16 +49,18 @@ bool IsValidHttpMethod(const std::string& method) {
   // compare them.
   DCHECK_EQ(method, base::ToUpperASCII(method));
   for (auto* valid_method : kValidHttpMethods) {
-    if (method == valid_method)
+    if (method == valid_method) {
       return true;
+    }
   }
   return false;
 }
 
 std::string ComposeHistogramName(const std::string& prefix_type,
                                  const std::string& name) {
-  if (prefix_type.empty())
+  if (prefix_type.empty()) {
     return std::string("Prerender.") + name;
+  }
   return std::string("Prerender.") + prefix_type + std::string("_") + name;
 }
 

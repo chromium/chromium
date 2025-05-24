@@ -213,19 +213,24 @@ class FaviconDatabase {
                                  std::vector<IconMapping>* mapping_data);
 
   // Given `url`, returns the `page_url` page mapped to an icon with
-  // `required_icon_types`, where `page_url` has host = url.host(). This allows
-  // for icons to be retrieved when a full URL is not available. For example,
+  // `required_icon_types`, where `page_url` has host = url.host(). The search
+  // prioritizes `PageUrlType::kRegular` over `PageUrlType::kRedirect` on the
+  // assumption that `url` is not a cross-host redirect. This enables icons
+  // to be retrieved when a full URL is not available. For example,
   // `url` = http://www.google.com would match
-  // `page_url` = https://www.google.com/search. The returned optional will be
-  // empty if no such `page_url` exists.
-  std::optional<GURL> FindFirstPageURLForHost(
+  // `page_url` = https://www.google.com/search.
+  // The returned optional will be empty if no such `page_url` exists.
+  std::optional<GURL> FindBestPageURLForHost(
       const GURL& url,
       const favicon_base::IconTypeSet& required_icon_types);
 
-  // Adds a mapping between the given page_url and icon_id.
+  // Adds a mapping between the given `page_url` and `icon_id`. A
+  // `page_url_type` must also be provided. It is not possible to store multiple
+  // entries for a (`page_url`, `icon_id`) pair with different `page_url_type`s.
   // Returns the new mapping id if the adding succeeds, otherwise 0 is returned.
   IconMappingID AddIconMapping(const GURL& page_url,
-                               favicon_base::FaviconID icon_id);
+                               favicon_base::FaviconID icon_id,
+                               PageUrlType page_url_type);
 
   // Deletes the icon mapping entries for the given page url.
   // Returns true if the deletion succeeded.
@@ -279,13 +284,9 @@ class FaviconDatabase {
   // so failure causes any outer transaction to be rolled back.
   bool RetainDataForPageUrls(const std::vector<GURL>& urls_to_keep);
 
-  // For historical reasons, and for backward compatibility, the icon type
-  // values stored in the DB are powers of two. Conversion functions
-  // exposed publicly for testing.
-  static int ToPersistedIconType(favicon_base::IconType icon_type);
-  static favicon_base::IconType FromPersistedIconType(int icon_type);
-
  private:
+  FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseIconTypeTest,
+                           ShouldBeBackwardCompatible);
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, RetainDataForPageUrls);
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest,
                            RetainDataForPageUrlsExpiresRetainedFavicons);
@@ -295,7 +296,24 @@ class FaviconDatabase {
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, Version6);
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, Version7);
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, Version8);
+  FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, Version9);
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, WildSchema);
+
+  // For historical reasons, and for backward compatibility, the icon type
+  // values stored in the DB are powers of two. Conversion functions
+  // exposed publicly for testing.
+  static int ToPersistedIconType(favicon_base::IconType icon_type);
+  static favicon_base::IconType FromPersistedIconType(int icon_type);
+
+  // `page_url_type` is stored as an int representation of the enum.
+  static int ToPersistedPageUrlType(PageUrlType page_url_type);
+  static PageUrlType FromPersistedPageUrlType(int page_url_type);
+
+  // Fills `icon_mapping` with data from `statement` for `page_url`. The
+  // format of the data in `statement` is an internal implementation detail.
+  static void FillIconMapping(const GURL& page_url,
+                              sql::Statement& statement,
+                              IconMapping* icon_mapping);
 
   // Open database on a given filename. If the file does not exist,
   // it is created.
@@ -312,14 +330,8 @@ class FaviconDatabase {
   // Helper function to handle cleanup on upgrade failures.
   sql::InitStatus CantUpgradeToVersion(int cur_version);
 
-  // Adds support for size in favicons table.
-  bool UpgradeToVersion6();
-
-  // Removes sizes column.
-  bool UpgradeToVersion7();
-
-  // Adds support for bitmap usage tracking.
-  bool UpgradeToVersion8();
+  // Adds column for `page_url_type` to `icon_mapping` table.
+  bool UpgradeToVersion9();
 
   // Returns true if the `favicons` database is missing a column.
   bool IsFaviconDBStructureIncorrect();

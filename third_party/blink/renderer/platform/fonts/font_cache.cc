@@ -34,6 +34,7 @@
 
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/system/sys_info.h"
 #include "base/timer/elapsed_timer.h"
@@ -217,6 +218,11 @@ bool FontCache::IsPlatformFamilyMatchAvailable(
 bool FontCache::IsPlatformFontUniqueNameMatchAvailable(
     const FontDescription& font_description,
     const AtomicString& unique_font_name) {
+  // Return early to avoid attempting fallback.
+  if (unique_font_name.empty()) {
+    return false;
+  }
+
   return GetFontPlatformData(font_description,
                              FontFaceCreationParams(unique_font_name),
                              AlternateFontName::kLocalUniqueFace);
@@ -325,7 +331,7 @@ void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
   base::debug::Alias(&is_test_font_mgr);
   base::debug::Alias(&num_families);
 
-  CHECK(false);
+  NOTREACHED();
 }
 
 void FontCache::DumpShapeResultCache(

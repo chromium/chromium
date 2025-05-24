@@ -91,6 +91,7 @@ public abstract class LaunchCauseMetrics
     // These values are also recorded in chrome_track_event.proto in Startup.LaunchCauseType.
     // Keep values in sync between the two files.
     @IntDef({
+        LaunchCause.UNINITIALIZED,
         LaunchCause.OTHER,
         LaunchCause.CUSTOM_TAB,
         LaunchCause.TWA,
@@ -114,6 +115,7 @@ public abstract class LaunchCauseMetrics
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
+        int UNINITIALIZED = -1;
         int OTHER = 0;
         int CUSTOM_TAB = 1;
         int TWA = 2;
@@ -135,7 +137,7 @@ public abstract class LaunchCauseMetrics
         int NFC = 18;
         int AUTH_TAB = 19;
 
-        int NUM_ENTRIES = 20;
+        int NUM_ENTRIES = 21;
     }
 
     /**

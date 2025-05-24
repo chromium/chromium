@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/notreached.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
+
+#include "base/notreached.h"
 
 // Stub implementation of the ScreenCaptureNotificationUI interface.
 class ScreenCaptureNotificationUIStub : public ScreenCaptureNotificationUI {

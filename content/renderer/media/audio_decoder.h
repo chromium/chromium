@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "content/common/content_export.h"
 
 namespace blink { class WebAudioBus; }
@@ -15,8 +16,8 @@ namespace content {
 
 // Decode in-memory audio file data.
 CONTENT_EXPORT
-bool DecodeAudioFileData(blink::WebAudioBus* destination_bus, const char* data,
-                         size_t data_size);
+bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
+                         base::span<const char> data);
 
 }  // namespace content
 

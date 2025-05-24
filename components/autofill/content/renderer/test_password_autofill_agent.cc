@@ -9,9 +9,7 @@ namespace autofill {
 TestPasswordAutofillAgent::TestPasswordAutofillAgent(
     content::RenderFrame* render_frame,
     blink::AssociatedInterfaceRegistry* registry)
-    : PasswordAutofillAgent(render_frame,
-                            registry,
-                            EnableHeavyFormDataScraping(false)) {}
+    : PasswordAutofillAgent(render_frame, registry) {}
 
 TestPasswordAutofillAgent::~TestPasswordAutofillAgent() = default;
 

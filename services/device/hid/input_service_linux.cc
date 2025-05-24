@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "services/device/hid/input_service_linux.h"
 
 #include <memory>
@@ -110,6 +115,9 @@ class InputServiceLinuxImpl::BlockingTaskRunnerHelper
                   UdevWatcher::Filter(kSubsystemHid, ""),
                   UdevWatcher::Filter(kSubsystemInput, ""),
               }});
+    if (!watcher_) {
+      return;
+    }
     watcher_->EnumerateExistingDevices();
   }
 
@@ -150,7 +158,7 @@ InputServiceLinuxImpl::InputServiceLinuxImpl() {
 
 InputServiceLinuxImpl::~InputServiceLinuxImpl() {
   // Never destroyed.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InputServiceLinuxImpl::BlockingTaskRunnerHelper::OnDeviceAdded(

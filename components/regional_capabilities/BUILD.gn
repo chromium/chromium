@@ -1,0 +1,104 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
+static_library("regional_capabilities") {
+  sources = [
+    "eea_countries_ids.h",
+    "regional_capabilities_metrics.cc",
+    "regional_capabilities_metrics.h",
+    "regional_capabilities_prefs.cc",
+    "regional_capabilities_prefs.h",
+    "regional_capabilities_service.cc",
+    "regional_capabilities_service.h",
+    "regional_capabilities_switches.cc",
+    "regional_capabilities_switches.h",
+    "regional_capabilities_utils.cc",
+    "regional_capabilities_utils.h",
+  ]
+
+  public_deps = [
+    ":country_id",
+    "//base",
+    "//components/keyed_service/core",
+  ]
+
+  deps = [
+    ":country_access_reason",
+    "//base/version_info",
+    "//components/country_codes",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/search_engines:search_engine_pref_names",
+    "//third_party/search_engines_data:prepopulated_engines",
+    "//third_party/search_engines_data:regional_settings",
+  ]
+
+  if (is_android) {
+    deps += [ "//components/regional_capabilities/android:jni_headers" ]
+  }
+}
+
+source_set("country_access_reason") {
+  visibility = [
+    ":*",
+    "//chrome/browser/search_engine_choice:impl",
+    "//chrome/browser/ui:ui",
+    "//components/search_engines:search_engines",
+  ]
+
+  sources = [ "access/country_access_reason.h" ]
+
+  deps = [ "//base" ]
+}
+
+static_library("country_id") {
+  public = [ "regional_capabilities_country_id.h" ]
+
+  sources = [ "regional_capabilities_country_id.cc" ]
+
+  deps = [
+    ":country_access_reason",
+    "//base",
+    "//components/country_codes",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "regional_capabilities_test_utils.cc",
+    "regional_capabilities_test_utils.h",
+  ]
+
+  deps = [
+    ":country_access_reason",
+    ":regional_capabilities",
+    "//components/country_codes",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "regional_capabilities_country_id_unittest.cc",
+    "regional_capabilities_service_unittest.cc",
+    "regional_capabilities_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":country_access_reason",
+    ":regional_capabilities",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/country_codes",
+    "//components/metrics",
+    "//components/sync_preferences:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -46,8 +46,7 @@ class OpenscreenFrameSender : public FrameSender,
   OpenscreenFrameSender(scoped_refptr<CastEnvironment> cast_environment,
                         const FrameSenderConfig& config,
                         std::unique_ptr<openscreen::cast::Sender> sender,
-                        Client& client,
-                        FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb);
+                        Client& client);
   OpenscreenFrameSender(OpenscreenFrameSender&& other) = delete;
   OpenscreenFrameSender& operator=(OpenscreenFrameSender&& other) = delete;
   OpenscreenFrameSender(const OpenscreenFrameSender&) = delete;
@@ -64,8 +63,6 @@ class OpenscreenFrameSender : public FrameSender,
       base::TimeDelta frame_duration) override;
   RtpTimeTicks GetRecordedRtpTimestamp(FrameId frame_id) const override;
   int GetUnacknowledgedFrameCount() const override;
-  int GetSuggestedBitrate(base::TimeTicks playout_time,
-                          base::TimeDelta playout_delay) override;
   double MaxFrameRate() const override;
   void SetMaxFrameRate(double max_frame_rate) override;
   base::TimeDelta TargetPlayoutDelay() const override;
@@ -98,8 +95,6 @@ class OpenscreenFrameSender : public FrameSender,
   // fluctuates in response to the currently-measured network latency.
   base::TimeDelta GetAllowedInFlightMediaDuration() const;
 
-  void RecordShouldDropNextFrame(bool should_drop);
-
   // The cast environment.
   const scoped_refptr<CastEnvironment> cast_environment_;
 
@@ -108,9 +103,6 @@ class OpenscreenFrameSender : public FrameSender,
 
   // The frame sender client.
   const raw_ref<Client> client_;
-
-  // The method for getting the recommended bitrate.
-  GetSuggestedVideoBitrateCB get_bitrate_cb_;
 
   // Max encoded frames generated per second.
   double max_frame_rate_;
@@ -158,11 +150,7 @@ class OpenscreenFrameSender : public FrameSender,
   // Ring buffer to keep track of recent frame timestamps. These should only be
   // accessed through the Record/GetXXX() methods.  The index into this ring
   // buffer is the lower 8 bits of the FrameId.
-  RtpTimeTicks frame_rtp_timestamps_[256];
-
-  // TODO(https://crbug.com/1316434): move this property to VideoSender once
-  // the legacy implementation has been removed.
-  std::unique_ptr<VideoBitrateSuggester> bitrate_suggester_;
+  std::array<RtpTimeTicks, 256> frame_rtp_timestamps_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<OpenscreenFrameSender> weak_factory_{this};

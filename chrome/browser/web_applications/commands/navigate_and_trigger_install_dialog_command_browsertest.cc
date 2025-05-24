@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,25 +22,13 @@
 namespace web_app {
 
 class NavigateAndTriggerInstallDialogCommandTest
-    : public WebAppBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+    : public WebAppBrowserTestBase {
  public:
   const GURL kOriginUrl = GURL("https://test.com");
-  NavigateAndTriggerInstallDialogCommandTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kWebAppUniversalInstall);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kWebAppUniversalInstall);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  NavigateAndTriggerInstallDialogCommandTest() = default;
 };
 
-IN_PROC_BROWSER_TEST_P(NavigateAndTriggerInstallDialogCommandTest,
+IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
                        OpensTheUrlInANewBrowserTab) {
   GURL test_url = GetInstallableAppURL();
   ASSERT_TRUE(test_url.SchemeIs(url::kHttpsScheme));
@@ -67,7 +57,7 @@ IN_PROC_BROWSER_TEST_P(NavigateAndTriggerInstallDialogCommandTest,
   loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(NavigateAndTriggerInstallDialogCommandTest,
+IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
                        TerminatesIfTabIsClosed) {
   GURL test_url = GetInstallableAppURL();
   ASSERT_TRUE(test_url.SchemeIs(url::kHttpsScheme));
@@ -93,7 +83,7 @@ IN_PROC_BROWSER_TEST_P(NavigateAndTriggerInstallDialogCommandTest,
   loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(NavigateAndTriggerInstallDialogCommandTest,
+IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
                        DoesNotTriggerDialogIfNotWebApp) {
   GURL test_url = https_server()->GetURL("/banners/no_manifest_test_page.html");
   ASSERT_TRUE(test_url.SchemeIs(url::kHttpsScheme));
@@ -112,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(NavigateAndTriggerInstallDialogCommandTest,
   loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(NavigateAndTriggerInstallDialogCommandTest,
+IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
                        DoesNotTriggerDialogIfAlreadyInstalled) {
   GURL test_url = GetInstallableAppURL();
   ASSERT_TRUE(test_url.SchemeIs(url::kHttpsScheme));
@@ -133,7 +123,7 @@ IN_PROC_BROWSER_TEST_P(NavigateAndTriggerInstallDialogCommandTest,
   loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(NavigateAndTriggerInstallDialogCommandTest,
+IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
                        CanTriggerWebAppDialog) {
   GURL test_url = GetInstallableAppURL();
   ASSERT_TRUE(test_url.SchemeIs(url::kHttpsScheme));
@@ -152,13 +142,4 @@ IN_PROC_BROWSER_TEST_P(NavigateAndTriggerInstallDialogCommandTest,
 
   loop.Run();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NavigateAndTriggerInstallDialogCommandTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "WebAppSimpleInstallDialog"
-                                             : "PWAConfirmationBubbleView";
-                         });
-
 }  // namespace web_app

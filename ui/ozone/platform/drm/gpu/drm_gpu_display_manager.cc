@@ -13,12 +13,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -379,7 +379,7 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
   for (const DrmDisplayParams& params : displays_to_create) {
     // If the DrmDisplay was present previously, copy its origin to the
     // corresponding DisplaySnapshot before creating a new DrmDisplay.
-    auto old_drm_display_it = base::ranges::find_if(
+    auto old_drm_display_it = std::ranges::find_if(
         old_displays, DisplayComparator(params.drm, *params.display_info));
     if (old_drm_display_it != old_displays.end()) {
       params.snapshot->set_origin(old_drm_display_it->get()->origin());
@@ -423,12 +423,28 @@ bool DrmGpuDisplayManager::TakeDisplayControl() {
 }
 
 void DrmGpuDisplayManager::RelinquishDisplayControl() {
+  const bool detach_planes_before_dropping =
+      display::features::IsFastDrmMasterDropEnabled();
+  if (detach_planes_before_dropping &&
+      !screen_manager_->DetachPlanesFromAllControllers()) {
+    LOG(ERROR) << __func__
+               << ": unable to detach planes from all enabled controllers.";
+    return;
+  }
+
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
   for (const auto& drm : devices) {
     if (!drm->DropMaster()) {
       LOG(ERROR) << __func__ << "Drm drop master failed for: "  // nocheck
                  << drm->device_path().value();
     }
+  }
+
+  // Dissociate controllers from windows so that subsequent pageflips fail
+  // early. The only way to re-establish the mapping is to re-take DRM master
+  // and do a new configuration.
+  if (detach_planes_before_dropping) {
+    screen_manager_->UpdateControllerToWindowMapping();
   }
 }
 
@@ -492,7 +508,7 @@ bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
         "] trigger property: " + std::string(drm_property->name) + "=" +
         enum_value + ", ";
     for (const char* blocked_prop : kBlockedEventsByTriggerProperty) {
-      if (strcmp(drm_property->name, blocked_prop) == 0) {
+      if (UNSAFE_TODO(strcmp(drm_property->name, blocked_prop)) == 0) {
         VLOG(1) << log_prefix << trigger_prop_log
                 << "resolution: blocked; display configuration task "
                    "rejected.";
@@ -762,8 +778,8 @@ void DrmGpuDisplayManager::NotifyScreenManager(
     const std::vector<std::unique_ptr<DrmDisplay>>& old_displays) const {
   ScreenManager::CrtcsWithDrmList controllers_to_remove;
   for (const auto& old_display : old_displays) {
-    if (base::ranges::none_of(new_displays,
-                              DisplayComparator(old_display.get()))) {
+    if (std::ranges::none_of(new_displays,
+                             DisplayComparator(old_display.get()))) {
       for (const auto& crtc_connector_pair :
            old_display->crtc_connector_pairs()) {
         controllers_to_remove.emplace_back(crtc_connector_pair.crtc_id,
@@ -775,8 +791,8 @@ void DrmGpuDisplayManager::NotifyScreenManager(
     screen_manager_->RemoveDisplayControllers(controllers_to_remove);
 
   for (const auto& new_display : new_displays) {
-    if (base::ranges::none_of(old_displays,
-                              DisplayComparator(new_display.get()))) {
+    if (std::ranges::none_of(old_displays,
+                             DisplayComparator(new_display.get()))) {
       screen_manager_->AddDisplayControllersForDisplay(*new_display);
     }
   }

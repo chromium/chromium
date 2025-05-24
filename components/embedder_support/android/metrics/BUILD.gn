@@ -29,6 +29,7 @@ static_library("metrics") {
     "//components/metrics:content",
     "//components/metrics:net",
     "//components/metrics:ui",
+    "//components/metrics/dwa",
     "//components/prefs",
     "//components/ukm",
     "//components/variations:variations",

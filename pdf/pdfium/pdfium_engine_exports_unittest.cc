@@ -10,7 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/test/mock_callback.h"
+#include "build/chromeos_buildflags.h"
 #include "pdf/pdf.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +24,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include <memory>
 #include <string>
 
@@ -32,12 +34,13 @@
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace chrome_pdf {
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 class ScopedLibraryInitializer {
  public:
   ScopedLibraryInitializer() {
@@ -46,6 +49,50 @@ class ScopedLibraryInitializer {
   }
   ~ScopedLibraryInitializer() { ShutdownSDK(); }
 };
+
+// Returns all characters in the page.
+std::string GetText(base::span<const uint8_t> pdf, int page_index) {
+  ScopedFPDFDocument document = LoadPdfData(pdf);
+  CHECK(document);
+  ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
+  CHECK(page);
+  ScopedFPDFTextPage text_page(FPDFText_LoadPage(page.get()));
+  CHECK(text_page);
+  int char_count = FPDFText_CountChars(text_page.get());
+  CHECK_GE(char_count, 0);
+  std::u16string text;
+  text.reserve(char_count);
+  for (int i = 0; i < char_count; ++i) {
+    unsigned int char_code = FPDFText_GetUnicode(text_page.get(), i);
+    text += static_cast<char16_t>(char_code);
+  }
+  return base::UTF16ToUTF8(text);
+}
+
+std::vector<gfx::RectF> GetTextPositions(base::span<const uint8_t> pdf,
+                                         int page_index) {
+  ScopedFPDFDocument document = LoadPdfData(pdf);
+  CHECK(document);
+  ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
+  CHECK(page);
+  ScopedFPDFTextPage text_page(FPDFText_LoadPage(page.get()));
+  CHECK(text_page);
+  int char_count = FPDFText_CountChars(text_page.get());
+  CHECK_GE(char_count, 0);
+  std::vector<gfx::RectF> positions;
+  positions.reserve(char_count);
+  for (int i = 0; i < char_count; ++i) {
+    double left;
+    double right;
+    double bottom;
+    double top;
+    CHECK(
+        FPDFText_GetCharBox(text_page.get(), i, &left, &right, &bottom, &top));
+    positions.push_back(gfx::RectF(left, bottom, right - left, top - bottom));
+  }
+  return positions;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 class PDFiumEngineExportsTest : public testing::Test {
  public:
@@ -67,51 +114,6 @@ class PDFiumEngineExportsTest : public testing::Test {
  private:
   base::FilePath pdf_data_dir_;
 };
-
-// Returns all characters in the page.
-std::string GetText(base::span<const uint8_t> pdf, int page_index) {
-  ScopedFPDFDocument document(
-      FPDF_LoadMemDocument64(pdf.data(), pdf.size(), nullptr));
-  CHECK(document);
-  ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
-  CHECK(page);
-  ScopedFPDFTextPage text_page(FPDFText_LoadPage(page.get()));
-  CHECK(text_page);
-  int char_count = FPDFText_CountChars(text_page.get());
-  CHECK_GE(char_count, 0);
-  std::u16string text;
-  text.reserve(char_count);
-  for (int i = 0; i < char_count; ++i) {
-    unsigned int char_code = FPDFText_GetUnicode(text_page.get(), i);
-    text += static_cast<char16_t>(char_code);
-  }
-  return base::UTF16ToUTF8(text);
-}
-
-std::vector<gfx::RectF> GetTextPositions(base::span<const uint8_t> pdf,
-                                         int page_index) {
-  ScopedFPDFDocument document(
-      FPDF_LoadMemDocument64(pdf.data(), pdf.size(), nullptr));
-  CHECK(document);
-  ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
-  CHECK(page);
-  ScopedFPDFTextPage text_page(FPDFText_LoadPage(page.get()));
-  CHECK(text_page);
-  int char_count = FPDFText_CountChars(text_page.get());
-  CHECK_GE(char_count, 0);
-  std::vector<gfx::RectF> positions;
-  positions.reserve(char_count);
-  for (int i = 0; i < char_count; ++i) {
-    double left;
-    double right;
-    double bottom;
-    double top;
-    CHECK(
-        FPDFText_GetCharBox(text_page.get(), i, &left, &right, &bottom, &top));
-    positions.push_back(gfx::RectF(left, bottom, right - left, top - bottom));
-  }
-  return positions;
-}
 
 }  // namespace
 
@@ -181,8 +183,7 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfPagesToNupPdf) {
       pdf_buffers, 2, gfx::Size(612, 792), gfx::Rect(22, 20, 570, 750));
   ASSERT_GT(output_pdf_buffer.size(), 0U);
 
-  base::span<const uint8_t> output_pdf_span =
-      base::make_span(output_pdf_buffer);
+  base::span<const uint8_t> output_pdf_span = base::span(output_pdf_buffer);
   int page_count;
   ASSERT_TRUE(GetPDFDocInfo(output_pdf_span, &page_count, nullptr));
   ASSERT_EQ(1, page_count);
@@ -208,8 +209,7 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfDocumentToNupPdf) {
       pdf_data.value(), 4, gfx::Size(612, 792), gfx::Rect(22, 20, 570, 750));
   ASSERT_GT(output_pdf_buffer.size(), 0U);
 
-  base::span<const uint8_t> output_pdf_span =
-      base::make_span(output_pdf_buffer);
+  base::span<const uint8_t> output_pdf_span = base::span(output_pdf_buffer);
   int page_count;
   ASSERT_TRUE(GetPDFDocInfo(output_pdf_span, &page_count, nullptr));
   ASSERT_EQ(2, page_count);
@@ -221,7 +221,7 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfDocumentToNupPdf) {
   }
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 constexpr char kExpectedText[] = "Hello World! 你好！🙂";
 
 TEST_F(PDFiumEngineExportsTest, Searchify) {
@@ -242,8 +242,6 @@ TEST_F(PDFiumEngineExportsTest, Searchify) {
         CHECK(!bitmap.empty());
         auto annotation = screen_ai::mojom::VisualAnnotation::New();
         auto line_box = screen_ai::mojom::LineBox::New();
-        line_box->baseline_box = gfx::Rect(0, 0, 100, 100);
-        line_box->baseline_box_angle = 0;
         line_box->bounding_box = gfx::Rect(0, 0, 100, 100);
         line_box->bounding_box_angle = 0;
         auto word_box = screen_ai::mojom::WordBox::New();
@@ -299,15 +297,13 @@ TEST_F(PDFiumEngineExportsTest, SearchifyBigImage) {
       screen_ai::mojom::VisualAnnotationPtr(const SkBitmap&)>>
       perform_ocr_callback;
   EXPECT_CALL(perform_ocr_callback, Run).WillOnce([](const SkBitmap& bitmap) {
-    // The returned image is 267x267 as OCR needs at most 300 DPI.
-    EXPECT_EQ(267, bitmap.width());
-    EXPECT_EQ(267, bitmap.height());
+    // The returned image is 2048x2048 as OCR needs at most 2048x2048 pixels.
+    EXPECT_EQ(2048, bitmap.width());
+    EXPECT_EQ(2048, bitmap.height());
     auto annotation = screen_ai::mojom::VisualAnnotation::New();
 
-    constexpr gfx::Rect kRect1(0, 30, 10, 5);
+    constexpr gfx::Rect kRect1(0, 230, 77, 38);
     auto line_box1 = screen_ai::mojom::LineBox::New();
-    line_box1->baseline_box = kRect1;
-    line_box1->baseline_box_angle = 0;
     line_box1->bounding_box = kRect1;
     line_box1->bounding_box_angle = 0;
     auto word_box1 = screen_ai::mojom::WordBox::New();
@@ -317,10 +313,8 @@ TEST_F(PDFiumEngineExportsTest, SearchifyBigImage) {
     line_box1->words.push_back(std::move(word_box1));
     annotation->lines.push_back(std::move(line_box1));
 
-    constexpr gfx::Rect kRect2(200, 210, 67, 57);
+    constexpr gfx::Rect kRect2(1534, 1611, 514, 437);
     auto line_box2 = screen_ai::mojom::LineBox::New();
-    line_box2->baseline_box = kRect2;
-    line_box2->baseline_box_angle = 0;
     line_box2->bounding_box = kRect2;
     line_box2->bounding_box_angle = 0;
     auto word_box2 = screen_ai::mojom::WordBox::New();
@@ -341,15 +335,14 @@ TEST_F(PDFiumEngineExportsTest, SearchifyBigImage) {
   {
     constexpr float kFloatTolerance = 0.0001f;
     ScopedLibraryInitializer initializer;
-    // The middle 2 positions are for auto-generated "\r\n".
+    // The middle 1 position is for auto-generated "\r\n".
     const std::vector<gfx::RectF> positions =
         GetTextPositions(output_pdf_buffer, 0);
-    ASSERT_EQ(4u, positions.size());
-    EXPECT_RECTF_NEAR(gfx::RectF(0, 55.6105f, 2.397f, 1.1985f), positions[0],
+    ASSERT_EQ(3u, positions.size());
+    EXPECT_RECTF_NEAR(gfx::RectF(0, 55.625f, 2.40625f, 1.1875f), positions[0],
                       kFloatTolerance);
     EXPECT_TRUE(positions[1].IsEmpty());
-    EXPECT_TRUE(positions[2].IsEmpty());
-    EXPECT_RECTF_NEAR(gfx::RectF(47.9401f, 0, 16.0599f, 13.6629f), positions[3],
+    EXPECT_RECTF_NEAR(gfx::RectF(47.9375f, 0, 16.0625f, 13.6562f), positions[2],
                       kFloatTolerance);
   }
 }
@@ -425,8 +418,6 @@ TEST_F(PDFiumEngineExportsTest, PdfProgressiveSearchifierText) {
   bitmap.allocN32Pixels(100, 100);
   auto annotation = screen_ai::mojom::VisualAnnotation::New();
   auto line_box = screen_ai::mojom::LineBox::New();
-  line_box->baseline_box = gfx::Rect(0, 0, 100, 100);
-  line_box->baseline_box_angle = 0;
   line_box->bounding_box = gfx::Rect(0, 0, 100, 100);
   line_box->bounding_box_angle = 0;
   auto word_box = screen_ai::mojom::WordBox::New();
@@ -446,6 +437,6 @@ TEST_F(PDFiumEngineExportsTest, PdfProgressiveSearchifierText) {
   }
 }
 
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf

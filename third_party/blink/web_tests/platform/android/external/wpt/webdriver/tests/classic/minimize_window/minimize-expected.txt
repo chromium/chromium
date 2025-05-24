@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  AssertionError: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+[FAIL] test_response_payload
+  AssertionError: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+[FAIL] test_restore_from_fullscreen
+  webdriver.error.UnsupportedOperationException: unsupported operation (500): unsupported operation: Fullscreen mode is not supported on Android platform
+[FAIL] test_restore_from_maximized
+  webdriver.error.UnsupportedOperationException: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_minimize_from_normal_window
+  AssertionError: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+[FAIL] test_minimize_twice_is_idempotent
+  AssertionError: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+Harness: the test ran to completion.
+

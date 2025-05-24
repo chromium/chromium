@@ -14,7 +14,7 @@
 namespace translate {
 class TranslateUIDelegate;
 class TranslateUILanguagesManager;
-}
+}  // namespace translate
 
 // The standard implementation of TranslateBubbleModel.
 class TranslateBubbleModelImpl : public TranslateBubbleModel {

@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 
+#include <cmath>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
@@ -27,20 +31,54 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
+namespace {
+
+// This represents the duration that the performance intervention button
+// should remain in the toolbar after the user dismisses the intervention
+// dialog without taking the suggested action.
+const base::TimeDelta kInterventionButtonTimeout = base::Seconds(10);
+
+// Erase the oldest entries if the history size exceeds
+// the max acceptance window.
+void TrimAcceptHistory(PrefService* pref_service) {
+  const base::Value::List& historical_acceptance = pref_service->GetList(
+      performance_manager::user_tuning::prefs::
+          kPerformanceInterventionNotificationAcceptHistory);
+  const size_t current_size = historical_acceptance.size();
+  const size_t max_acceptance = static_cast<size_t>(
+      performance_manager::features::kAcceptanceRateWindowSize.Get());
+  if (current_size > max_acceptance) {
+    const size_t difference = current_size - max_acceptance;
+    base::Value::List updated_acceptance = historical_acceptance.Clone();
+    updated_acceptance.erase(updated_acceptance.begin(),
+                             updated_acceptance.begin() + difference);
+    pref_service->SetList(performance_manager::user_tuning::prefs::
+                              kPerformanceInterventionNotificationAcceptHistory,
+                          std::move(updated_acceptance));
+  }
+}
+}  // namespace
+
 PerformanceInterventionButtonController::
     PerformanceInterventionButtonController(
         PerformanceInterventionButtonControllerDelegate* delegate,
         Browser* browser)
-    : browser_(browser) {
-  CHECK(delegate);
-  delegate_ = delegate;
-  CHECK(PerformanceDetectionManager::HasInstance());
-  PerformanceDetectionManager* const detection_manager =
-      PerformanceDetectionManager::GetInstance();
-  const PerformanceDetectionManager::ResourceTypeSet resource_types = {
-      PerformanceDetectionManager::ResourceType::kCpu};
-  detection_manager->AddActionableTabsObserver(resource_types, this);
-  browser->tab_strip_model()->AddObserver(this);
+    : delegate_(delegate), browser_(browser) {
+  // The `PerformanceDetectionManager` is undefined in unit tests because it
+  // is constructed in `ChromeContentBrowserClient::CreateBrowserMainParts`.
+  if (PerformanceDetectionManager::HasInstance()) {
+    const PerformanceDetectionManager::ResourceTypeSet resource_types = {
+        PerformanceDetectionManager::ResourceType::kCpu};
+    PerformanceDetectionManager::GetInstance()->AddActionableTabsObserver(
+        resource_types, this);
+    browser->tab_strip_model()->AddObserver(this);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kPerformanceInterventionNotificationImprovements)) {
+    TrimAcceptHistory(g_browser_process->local_state());
+  }
 }
 
 PerformanceInterventionButtonController::
@@ -49,9 +87,37 @@ PerformanceInterventionButtonController::
     PerformanceDetectionManager* const detection_manager =
         PerformanceDetectionManager::GetInstance();
     detection_manager->RemoveActionableTabsObserver(this);
+    browser_->tab_strip_model()->RemoveObserver(this);
+  }
+}
+
+// static
+int PerformanceInterventionButtonController::GetAcceptancePercentage() {
+  PrefService* const pref_service = g_browser_process->local_state();
+  const base::Value::List& historical_acceptance = pref_service->GetList(
+      performance_manager::user_tuning::prefs::
+          kPerformanceInterventionNotificationAcceptHistory);
+
+  if (historical_acceptance.empty()) {
+    return 100;
   }
 
-  browser_->tab_strip_model()->RemoveObserver(this);
+  const size_t current_size = historical_acceptance.size();
+  const size_t max_acceptance = static_cast<size_t>(
+      performance_manager::features::kAcceptanceRateWindowSize.Get());
+  size_t starting_index = 0;
+  if (current_size > max_acceptance) {
+    starting_index = current_size - max_acceptance;
+  }
+
+  int total_acceptance = 0;
+  for (size_t i = starting_index; i < current_size; i++) {
+    if (historical_acceptance[i].GetBool()) {
+      total_acceptance++;
+    }
+  }
+
+  return total_acceptance * 100.0 / std::min(current_size, max_acceptance);
 }
 
 void PerformanceInterventionButtonController::OnActionableTabListChanged(
@@ -63,7 +129,7 @@ void PerformanceInterventionButtonController::OnActionableTabListChanged(
     MaybeShowUi(type, result);
   } else if (!delegate_->IsBubbleShowing()) {
     // Intervention button shouldn't hide while the dialog is being shown.
-    HideToolbarButton();
+    HideToolbarButton(false);
   }
 }
 
@@ -85,7 +151,7 @@ void PerformanceInterventionButtonController::OnTabStripModelChanged(
     // resource health.
     if (base::Contains(actionable_cpu_tabs_, current_page_context.value())) {
       actionable_cpu_tabs_.clear();
-      HideToolbarButton();
+      HideToolbarButton(false);
       return;
     }
   }
@@ -96,16 +162,11 @@ void PerformanceInterventionButtonController::OnTabStripModelChanged(
       std::optional<resource_attribution::PageContext> removed_page_context =
           resource_attribution::PageContext::FromWebContents(tab.contents);
       CHECK(removed_page_context.has_value());
-      const auto iter_position =
-          std::remove(actionable_cpu_tabs_.begin(), actionable_cpu_tabs_.end(),
-                      removed_page_context);
-      if (iter_position != actionable_cpu_tabs_.end()) {
-        actionable_cpu_tabs_.erase(iter_position);
-      }
+      std::erase(actionable_cpu_tabs_, removed_page_context);
     }
 
     if (actionable_cpu_tabs_.empty()) {
-      HideToolbarButton();
+      HideToolbarButton(false);
     }
   }
 }
@@ -118,7 +179,7 @@ void PerformanceInterventionButtonController::OnBubbleHidden() {
   // Immediately hide the toolbar button since there is no longer
   // any actionable tabs.
   if (actionable_cpu_tabs_.empty()) {
-    HideToolbarButton();
+    HideToolbarButton(false);
     return;
   }
 
@@ -127,22 +188,93 @@ void PerformanceInterventionButtonController::OnBubbleHidden() {
   // as the controller owns the timer and will exist for the lifetime of
   // the timer.
   hide_button_timer_.Start(
-      FROM_HERE,
-      performance_manager::features::kInterventionButtonTimeout.Get(),
+      FROM_HERE, kInterventionButtonTimeout,
       base::BindRepeating(
           &PerformanceInterventionButtonController::HideToolbarButton,
-          base::Unretained(this)));
+          base::Unretained(this), false));
 }
 
 void PerformanceInterventionButtonController::OnDeactivateButtonClicked() {
   // Immediately hide the toolbar button since the user has taken the suggested
   // action.
-  HideToolbarButton();
+  HideToolbarButton(true);
 }
 
-void PerformanceInterventionButtonController::HideToolbarButton() {
+bool PerformanceInterventionButtonController::ShouldShowNotification(
+    feature_engagement::Tracker* tracker) {
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kPerformanceInterventionNotificationImprovements)) {
+    return true;
+  }
+
+  PrefService* const pref_service = g_browser_process->local_state();
+  const base::TimeDelta time_since_intervention =
+      base::Time::Now() -
+      pref_service->GetTime(performance_manager::user_tuning::prefs::
+                                kPerformanceInterventionNotificationLastShown);
+  const int acceptance_percentage = GetAcceptancePercentage();
+  // Wait until the minimum reshow time before showing another intervention.
+  if (time_since_intervention <
+      performance_manager::features::kMinimumTimeBetweenReshow.Get()) {
+    return false;
+  }
+
+  if (acceptance_percentage == 0) {
+    return time_since_intervention >=
+           performance_manager::features::kNoAcceptanceBackOff.Get();
+  }
+
+  const double acceptance_rate = acceptance_percentage / 100.0;
+  const int daily_max_count =
+      std::ceil(performance_manager::features::kScaleMaxTimesPerDay.Get() *
+                acceptance_rate);
+  const int weekly_max_count =
+      std::ceil(performance_manager::features::kScaleMaxTimesPerWeek.Get() *
+                acceptance_rate);
+
+  // Verify that performance detection did not hit the limit to show the
+  // intervention per day and week.
+  for (const auto& [config, count] : tracker->ListEvents(
+           feature_engagement::kIPHPerformanceInterventionDialogFeature)) {
+    if (config.window == 1 && (count >= daily_max_count)) {
+      return false;
+    } else if (config.window == 7 && (count >= weekly_max_count)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void PerformanceInterventionButtonController::HideToolbarButton(
+    bool accept_intervention) {
+  const bool was_showing = delegate_->IsButtonShowing();
   hide_button_timer_.Stop();
   delegate_->Hide();
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kPerformanceInterventionNotificationImprovements) &&
+      was_showing) {
+    PrefService* const pref_service = g_browser_process->local_state();
+    const base::Value::List& historical_acceptance = pref_service->GetList(
+        performance_manager::user_tuning::prefs::
+            kPerformanceInterventionNotificationAcceptHistory);
+
+    base::Value::List updated_acceptance = historical_acceptance.Clone();
+    updated_acceptance.Append(accept_intervention);
+
+    if (updated_acceptance.size() >
+        static_cast<size_t>(
+            performance_manager::features::kAcceptanceRateWindowSize.Get())) {
+      updated_acceptance.erase(updated_acceptance.begin());
+    }
+
+    pref_service->SetList(performance_manager::user_tuning::prefs::
+                              kPerformanceInterventionNotificationAcceptHistory,
+                          std::move(updated_acceptance));
+  }
 }
 
 void PerformanceInterventionButtonController::MaybeShowUi(
@@ -166,15 +298,14 @@ void PerformanceInterventionButtonController::MaybeShowUi(
   InterventionMessageTriggerResult trigger_result =
       InterventionMessageTriggerResult::kShown;
 
-  if (!performance_manager::features::kInterventionShowMixedProfileSuggestions
-           .Get() &&
-      ContainsNonLastActiveProfile(result)) {
+  if (ContainsNonLastActiveProfile(result)) {
     trigger_result = InterventionMessageTriggerResult::kMixedProfile;
   } else if (base::FeatureList::IsEnabled(
                  performance_manager::features::
                      kPerformanceInterventionDemoMode)) {
     trigger_result = InterventionMessageTriggerResult::kShown;
-  } else if (tracker->ShouldTriggerHelpUI(
+  } else if (ShouldShowNotification(tracker) &&
+             tracker->ShouldTriggerHelpUI(
                  feature_engagement::
                      kIPHPerformanceInterventionDialogFeature)) {
     // Immediately dismiss the feature engagement tracker because the
@@ -191,10 +322,15 @@ void PerformanceInterventionButtonController::MaybeShowUi(
 
   RecordInterventionTriggerResult(type, trigger_result);
 
-  if (trigger_result == InterventionMessageTriggerResult::kShown &&
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceInterventionUI)) {
+  if (trigger_result == InterventionMessageTriggerResult::kShown) {
     delegate_->Show();
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::
+                kPerformanceInterventionNotificationImprovements)) {
+      pref_service->SetTime(performance_manager::user_tuning::prefs::
+                                kPerformanceInterventionNotificationLastShown,
+                            base::Time::Now());
+    }
   }
 }
 
@@ -203,7 +339,10 @@ bool PerformanceInterventionButtonController::ContainsNonLastActiveProfile(
   Profile* const profile = chrome::FindLastActive()->profile();
   for (const resource_attribution::PageContext& context : result) {
     content::WebContents* const web_content = context.GetWebContents();
-    CHECK(web_content);
+    if (!web_content) {
+      // Without a WebContents, we can't check if it's from a different profile.
+      return true;
+    }
     Profile* const content_profile =
         Profile::FromBrowserContext(web_content->GetBrowserContext());
     if (profile != content_profile) {

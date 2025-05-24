@@ -24,7 +24,7 @@ CardUnmaskPromptViewTesterViews::CardUnmaskPromptViewTesterViews(
     CardUnmaskPromptViews* view)
     : view_(view) {}
 
-CardUnmaskPromptViewTesterViews::~CardUnmaskPromptViewTesterViews() {}
+CardUnmaskPromptViewTesterViews::~CardUnmaskPromptViewTesterViews() = default;
 
 void CardUnmaskPromptViewTesterViews::Close() {
   view_->ClosePrompt();

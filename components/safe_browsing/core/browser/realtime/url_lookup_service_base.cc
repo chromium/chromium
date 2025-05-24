@@ -7,15 +7,18 @@
 #include <memory>
 
 #include "base/base64url.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -46,7 +49,7 @@ const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 const size_t kURLLookupTimeoutDurationInSeconds = 3;
 
 // Represents the value stored in the |version| field of |RTLookupRequest|.
-const int kRTLookupRequestVersion = 3;
+const int kRTLookupRequestVersion = 4;
 
 // UMA helper functions.
 void RecordBooleanWithAndWithoutSuffix(const std::string& metric,
@@ -136,8 +139,7 @@ void InvokeLookupResponseCallbacks(
 }  // namespace
 
 RealTimeUrlLookupServiceBase::PendingRTLookupRequestData::
-    PendingRTLookupRequestData(std::unique_ptr<network::SimpleURLLoader> loader)
-    : loader_(std::move(loader)) {}
+    PendingRTLookupRequestData() = default;
 RealTimeUrlLookupServiceBase::PendingRTLookupRequestData::
     PendingRTLookupRequestData(PendingRTLookupRequestData&&) = default;
 RealTimeUrlLookupServiceBase::PendingRTLookupRequestData&
@@ -151,6 +153,12 @@ void RealTimeUrlLookupServiceBase::PendingRTLookupRequestData::AddCallback(
   if (!callback.is_null()) {
     callbacks_.emplace_back(std::move(callback));
   }
+}
+
+void RealTimeUrlLookupServiceBase::PendingRTLookupRequestData::SetLoader(
+    std::unique_ptr<network::SimpleURLLoader> loader) {
+  CHECK(!loader_);
+  loader_ = std::move(loader);
 }
 
 RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
@@ -177,14 +185,6 @@ RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
 RealTimeUrlLookupServiceBase::~RealTimeUrlLookupServiceBase() = default;
 
 // static
-bool RealTimeUrlLookupServiceBase::CanCheckUrl(const GURL& url) {
-  if (VerdictCacheManager::has_artificial_cached_url()) {
-    return true;
-  }
-  return CanGetReputationOfUrl(url);
-}
-
-// static
 SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
     RTLookupResponse::ThreatInfo::ThreatType rt_threat_type,
     RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type) {
@@ -199,8 +199,7 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
       case RTLookupResponse::ThreatInfo::SAFE:
         return SB_THREAT_TYPE_SAFE;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return SB_THREAT_TYPE_SAFE;
+        NOTREACHED();
     }
   }
 
@@ -219,9 +218,7 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
       return SB_THREAT_TYPE_BILLING;
     case RTLookupResponse::ThreatInfo::MANAGED_POLICY:
     case RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected RTLookupResponse::ThreatType encountered";
-      return SB_THREAT_TYPE_SAFE;
+      NOTREACHED() << "Unexpected RTLookupResponse::ThreatType encountered";
   }
 }
 
@@ -310,6 +307,7 @@ RealTimeUrlLookupServiceBase::GetCachedRealTimeUrlVerdict(const GURL& url) {
       base::TimeTicks::Now() - get_cache_start_time);
 
   if (verdict_type == RTLookupResponse::ThreatInfo::SAFE ||
+      verdict_type == RTLookupResponse::ThreatInfo::WARN ||
       verdict_type == RTLookupResponse::ThreatInfo::DANGEROUS) {
     auto cache_response = std::make_unique<RTLookupResponse>();
     RTLookupResponse::ThreatInfo* new_threat_info =
@@ -333,7 +331,8 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
 void RealTimeUrlLookupServiceBase::SendSampledRequest(
     const GURL& url,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID tab_id) {
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
@@ -341,14 +340,16 @@ void RealTimeUrlLookupServiceBase::SendSampledRequest(
                    /* access_token_string */ std::string(),
                    /* response_callback */ base::NullCallback(),
                    std::move(callback_task_runner),
-                   /* is_sampled_report */ true, tab_id);
+                   /* is_sampled_report */ true, tab_id,
+                   std::move(referring_app_info));
 }
 
 void RealTimeUrlLookupServiceBase::StartLookup(
     const GURL& url,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID tab_id) {
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
@@ -375,13 +376,14 @@ void RealTimeUrlLookupServiceBase::StartLookup(
 
   if (CanPerformFullURLLookupWithToken()) {
     GetAccessToken(url, std::move(response_callback),
-                   std::move(callback_task_runner), tab_id);
+                   std::move(callback_task_runner), tab_id,
+                   std::move(referring_app_info));
   } else {
-    MaybeSendRequest(url,
-                     /* access_token_string */ std::string(),
-                     std::move(response_callback),
-                     std::move(callback_task_runner),
-                     /* is_sampled_report */ false, tab_id);
+    MaybeSendRequest(
+        url,
+        /* access_token_string */ std::string(), std::move(response_callback),
+        std::move(callback_task_runner),
+        /* is_sampled_report */ false, tab_id, std::move(referring_app_info));
   }
 }
 
@@ -391,7 +393,8 @@ void RealTimeUrlLookupServiceBase::MaybeSendRequest(
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     bool is_sampled_report,
-    SessionID tab_id) {
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GURL sanitized_url = SanitizeURL(url);
@@ -410,43 +413,18 @@ void RealTimeUrlLookupServiceBase::MaybeSendRequest(
     return;
   }
 
-  std::unique_ptr<RTLookupRequest> request =
-      FillRequestProto(sanitized_url, is_sampled_report, tab_id);
-  RecordRequestPopulationWithAndWithoutSuffix(
-      "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
-      request->population().user_population());
-  RecordCount100WithAndWithoutSuffix(
-      "SafeBrowsing.RT.Request.ReferrerChainLength", GetMetricSuffix(),
-      request->referrer_chain().size());
-  // Track sampled and full report
-  base::UmaHistogramBoolean("SafeBrowsing.RT.SampledRequestSent",
-                            is_sampled_report);
+  // Add request data with the associated callback early to avoid
+  // race conditions from multiple requests being sent at the same time.
+  CHECK_EQ(pending_requests_.count(sanitized_url), 0u);
+  PendingRTLookupRequestData request_data;
+  request_data.AddCallback(std::move(response_callback));
+  pending_requests_.emplace(sanitized_url, std::move(request_data));
 
-  std::string req_data;
-  request->SerializeToString(&req_data);
-
-  auto resource_request = GetResourceRequest();
-  if (!access_token_string.empty()) {
-    LogAuthenticatedCookieResets(
-        *resource_request,
-        SafeBrowsingAuthenticatedEndpoint::kRealtimeUrlLookup);
-    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
-                                                  access_token_string);
-  }
-  RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.HasTokenInRequest",
-                                    GetMetricSuffix(),
-                                    !access_token_string.empty());
-
-  MaybeLogLastProtegoPingTimeToPrefs(!access_token_string.empty());
-  std::optional<int> webui_token =
-      LogLookupRequest(*request, access_token_string);
-
-  // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
-  // just below.
-  SendRequestInternal(
-      sanitized_url, std::move(resource_request), req_data, access_token_string,
-      std::move(response_callback), callback_task_runner,
-      request->population().user_population(), is_sampled_report, webui_token);
+  StartFillingRequestProto(
+      sanitized_url, is_sampled_report, tab_id, std::move(referring_app_info),
+      base::BindOnce(&RealTimeUrlLookupServiceBase::OnRequestProtoFilled,
+                     GetWeakPtr(), sanitized_url, access_token_string,
+                     std::move(callback_task_runner), is_sampled_report));
 }
 
 void RealTimeUrlLookupServiceBase::SendRequestInternal(
@@ -454,7 +432,6 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
     std::unique_ptr<network::ResourceRequest> resource_request,
     const std::string& req_data,
     std::optional<std::string> access_token_string,
-    RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     ChromeUserPopulation::UserPopulation user_population,
     bool is_sampled_report,
@@ -477,10 +454,8 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
                      start_time, is_sampled_report,
                      std::move(callback_task_runner), webui_token));
 
-  DCHECK_EQ(pending_requests_.count(url), 0u);
-  PendingRTLookupRequestData data(std::move(loader));
-  data.AddCallback(std::move(response_callback));
-  pending_requests_.emplace(url, std::move(data));
+  CHECK_EQ(pending_requests_.count(url), 1u);
+  pending_requests_.at(url).SetLoader(std::move(loader));
 }
 
 void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
@@ -592,15 +567,26 @@ RealTimeUrlLookupServiceBase::GetResourceRequest() {
   resource_request->url = GetRealTimeLookupUrl();
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->method = "POST";
-  if (!ShouldIncludeCredentials())
+  // If we want to include cookies in the request when third-party cookie
+  // blocking is active, we must set the request's SiteForCookies to be
+  // first-party. This is a browser initiated request so there is no privacy
+  // concern in doing so.
+  if (ShouldIncludeCredentials()) {
+    resource_request->site_for_cookies =
+        net::SiteForCookies::FromUrl(resource_request->url);
+  } else {
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  }
   return resource_request;
 }
 
-std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
+void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
     const GURL& url,
     bool is_sampled_report,
-    SessionID tab_id) {
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info,
+    base::OnceCallback<void(std::unique_ptr<RTLookupRequest>)>
+        request_callback) {
   auto request = std::make_unique<RTLookupRequest>();
   request->set_url(url.spec());
   request->set_lookup_type(RTLookupRequest::NAVIGATION);
@@ -609,21 +595,16 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
   request->set_report_type(is_sampled_report ? RTLookupRequest::SAMPLED_REPORT
                                              : RTLookupRequest::FULL_REPORT);
   request->set_frame_type(RTLookupRequest::MAIN_FRAME);
-  std::optional<std::string> dm_token_string = GetDMTokenString();
-  if (dm_token_string.has_value()) {
-    request->set_dm_token(dm_token_string.value());
-
-    std::string email = GetUserEmail();
-    if (!email.empty()) {
-      request->set_email(std::move(email));
-    }
-
-    // Check for the profile token here because we want to avoid cases where the
-    // value is populated in the non-enterprise case.
-    std::string profile_dm_token = GetProfileDMTokenString();
-    if (!profile_dm_token.empty()) {
-      request->set_profile_dm_token(std::move(profile_dm_token));
-    }
+  if (referring_app_info && pref_service_ &&
+      IsEnhancedProtectionEnabled(*pref_service_)) {
+    safe_browsing::ReferringAppInfo referring_app_info_proto;
+    referring_app_info_proto.set_referring_app_name(
+        referring_app_info.value().referring_app_name);
+    referring_app_info_proto.set_referring_app_source(
+        referring_app_info.value().referring_app_source);
+    *request->mutable_referring_app_info() =
+        std::move(referring_app_info_proto);
+    MaybeFillReferringWebApk(*referring_app_info, *request);
   }
 
   std::string browser_dm_token = GetBrowserDMTokenString();
@@ -649,18 +630,12 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     // pending if the page has already loaded. If the navigation event is not
     // found, try to fetch the referrer chain as a regular event URL rather than
     // a pending one.
-    if (attribution_result == ReferrerChainProvider::AttributionResult::
-                                  NAVIGATION_EVENT_NOT_FOUND &&
-        base::FeatureList::IsEnabled(
-            safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    if (attribution_result ==
+        ReferrerChainProvider::AttributionResult::NAVIGATION_EVENT_NOT_FOUND) {
       CHECK(request->referrer_chain().empty());
       referrer_chain_provider_->IdentifyReferrerChainByEventURL(
           SanitizeURL(url), tab_id, GetReferrerUserGestureLimit(),
           request->mutable_referrer_chain());
-
-      RecordBooleanWithAndWithoutSuffix(
-          "SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded",
-          GetMetricSuffix(), !request->referrer_chain().empty());
     }
     SanitizeReferrerChainEntries(request->mutable_referrer_chain(),
                                  GetMinAllowedTimestampForReferrerChains(),
@@ -675,7 +650,87 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
         &token);
   }
 
-  return request;
+  std::optional<std::string> dm_token_string = GetDMTokenString();
+  if (dm_token_string.has_value()) {
+    request->set_dm_token(dm_token_string.value());
+
+    std::string email = GetUserEmail();
+    if (!email.empty()) {
+      request->set_email(std::move(email));
+    }
+
+    // Check for the profile token here because we want to avoid cases where the
+    // value is populated in the non-enterprise case.
+    std::string profile_dm_token = GetProfileDMTokenString();
+    if (!profile_dm_token.empty()) {
+      request->set_profile_dm_token(std::move(profile_dm_token));
+    }
+
+    // The IP addresses are only needed for enterprise requests.
+    if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+          base::BindOnce(&enterprise_connectors::GetLocalIpAddresses),
+          base::BindOnce(&RealTimeUrlLookupServiceBase::OnIpAddressesFetched,
+                         GetWeakPtr(), std::move(request),
+                         std::move(request_callback)));
+      return;
+    }
+  }
+  std::move(request_callback).Run(std::move(request));
+}
+
+void RealTimeUrlLookupServiceBase::OnIpAddressesFetched(
+    std::unique_ptr<RTLookupRequest> request,
+    base::OnceCallback<void(std::unique_ptr<RTLookupRequest>)> callback,
+    std::vector<std::string> ip_addresses) {
+  for (const std::string& ip_address : ip_addresses) {
+    request->add_local_ips(ip_address);
+  }
+  std::move(callback).Run(std::move(request));
+}
+
+void RealTimeUrlLookupServiceBase::OnRequestProtoFilled(
+    const GURL& sanitized_url,
+    const std::string& access_token_string,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    bool is_sampled_report,
+    std::unique_ptr<RTLookupRequest> request) {
+  RecordRequestPopulationWithAndWithoutSuffix(
+      "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
+      request->population().user_population());
+  RecordCount100WithAndWithoutSuffix(
+      "SafeBrowsing.RT.Request.ReferrerChainLength", GetMetricSuffix(),
+      request->referrer_chain().size());
+  // Track sampled and full report
+  base::UmaHistogramBoolean("SafeBrowsing.RT.SampledRequestSent",
+                            is_sampled_report);
+
+  std::string req_data;
+  request->SerializeToString(&req_data);
+
+  auto resource_request = GetResourceRequest();
+  if (!access_token_string.empty()) {
+    LogAuthenticatedCookieResets(
+        *resource_request,
+        SafeBrowsingAuthenticatedEndpoint::kRealtimeUrlLookup);
+    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
+                                                  access_token_string);
+  }
+  RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.HasTokenInRequest",
+                                    GetMetricSuffix(),
+                                    !access_token_string.empty());
+
+  MaybeLogLastProtegoPingTimeToPrefs(!access_token_string.empty());
+  std::optional<int> webui_token =
+      LogLookupRequest(*request, access_token_string);
+
+  // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
+  // just below.
+  SendRequestInternal(sanitized_url, std::move(resource_request), req_data,
+                      access_token_string, callback_task_runner,
+                      request->population().user_population(),
+                      is_sampled_report, webui_token);
 }
 
 std::optional<int> RealTimeUrlLookupServiceBase::LogLookupRequest(
@@ -706,6 +761,8 @@ void RealTimeUrlLookupServiceBase::OnResponseUnauthorized(
     const std::string& invalid_access_token) {}
 
 void RealTimeUrlLookupServiceBase::Shutdown() {
+  shutting_down_ = true;
+
   pending_requests_.clear();
 
   // Clear references to other KeyedServices.

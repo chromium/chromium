@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/mirroring/service/fake_video_capture_host.h"
 
 #include "base/memory/read_only_shared_memory_region.h"
@@ -39,8 +44,9 @@ void FakeVideoCaptureHost::Start(
 }
 
 void FakeVideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
-  if (!observer_)
+  if (!observer_) {
     return;
+  }
 
   observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
       media::mojom::VideoCaptureState::ENDED));
@@ -60,8 +66,9 @@ void FakeVideoCaptureHost::Resume(const base::UnguessableToken& device_id,
 
 void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
                                         base::TimeTicks capture_time) {
-  if (!observer_)
+  if (!observer_) {
     return;
+  }
 
   auto shmem = base::ReadOnlySharedMemoryRegion::Create(5000);
   if (!shmem.IsValid()) {

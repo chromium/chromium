@@ -68,15 +68,12 @@ class MockExternalUseClient : public ExternalUseClient {
   MOCK_METHOD1(ReleaseImageContexts,
                gpu::SyncToken(
                    std::vector<std::unique_ptr<ImageContext>> image_contexts));
-  MOCK_METHOD7(
+  MOCK_METHOD4(
       CreateImageContext,
-      std::unique_ptr<ImageContext>(const gpu::MailboxHolder&,
-                                    const gfx::Size&,
-                                    SharedImageFormat,
+      std::unique_ptr<ImageContext>(const TransferableResource& resource,
                                     bool,
-                                    const std::optional<gpu::VulkanYCbCrInfo>&,
-                                    sk_sp<SkColorSpace>,
-                                    bool));
+                                    bool,
+                                    uint32_t));
 };
 
 class DisplayResourceProviderSkiaTest : public testing::Test {
@@ -168,21 +165,21 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
 
   auto format = SinglePlaneFormat::kRGBA_8888;
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
-      gpu::MailboxHolder(mailbox, sync_token1, GL_TEXTURE_2D), size, format,
-      /*ycbcr_info=*/std::nullopt, /*color_space=*/nullptr);
+      mailbox, sync_token1, GL_TEXTURE_2D, size, format,
+      /*color_space=*/nullptr, kTopLeft_GrSurfaceOrigin);
   auto* image_context = owned_image_context.get();
 
-  gpu::MailboxHolder holder;
-  EXPECT_CALL(client_, CreateImageContext(_, _, _, _, _, _, _))
-      .WillOnce(DoAll(SaveArg<0>(&holder),
+  TransferableResource resource_out;
+  EXPECT_CALL(client_, CreateImageContext(_, _, _, _))
+      .WillOnce(DoAll(SaveArg<0>(&resource_out),
                       Return(ByMove(std::move(owned_image_context)))));
 
   ExternalUseClient::ImageContext* locked_image_context =
       lock_set_->LockResource(parent_id, /*maybe_concurrent_reads=*/true,
                               /*is_video_plane=*/false);
   EXPECT_EQ(image_context, locked_image_context);
-  ASSERT_EQ(holder.mailbox, mailbox);
-  ASSERT_TRUE(holder.sync_token.HasData());
+  ASSERT_EQ(resource_out.mailbox(), mailbox);
+  ASSERT_TRUE(resource_out.sync_token().HasData());
 
   // Don't release while locked.
   EXPECT_CALL(client_, ReleaseImageContexts(_)).Times(0);
@@ -249,21 +246,21 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
 
   auto format = SinglePlaneFormat::kRGBA_8888;
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
-      gpu::MailboxHolder(mailbox, sync_token1, GL_TEXTURE_2D), size, format,
-      /*ycbcr_info=*/std::nullopt, /*color_space=*/nullptr);
+      mailbox, sync_token1, GL_TEXTURE_2D, size, format,
+      /*color_space=*/nullptr, kTopLeft_GrSurfaceOrigin);
   auto* image_context = owned_image_context.get();
 
-  gpu::MailboxHolder holder;
-  EXPECT_CALL(client_, CreateImageContext(_, _, _, _, _, _, _))
-      .WillOnce(DoAll(SaveArg<0>(&holder),
+  TransferableResource resource_out;
+  EXPECT_CALL(client_, CreateImageContext(_, _, _, _))
+      .WillOnce(DoAll(SaveArg<0>(&resource_out),
                       Return(ByMove(std::move(owned_image_context)))));
 
   ExternalUseClient::ImageContext* locked_image_context =
       lock_set_->LockResource(parent_id, /*maybe_concurrent_reads=*/true,
                               /*is_video_plane=*/false);
   EXPECT_EQ(image_context, locked_image_context);
-  ASSERT_EQ(holder.mailbox, mailbox);
-  ASSERT_TRUE(holder.sync_token.HasData());
+  ASSERT_EQ(resource_out.mailbox(), mailbox);
+  ASSERT_TRUE(resource_out.sync_token().HasData());
 
   // Don't release while locked.
   EXPECT_CALL(client_, ReleaseImageContexts(_)).Times(0);
@@ -318,10 +315,7 @@ class TestGpuCommandsCompletedFence : public ResourceFence {
 
   // ResourceFence implementation.
   bool HasPassed() override { return passed_; }
-  gfx::GpuFenceHandle GetGpuFenceHandle() override {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::GpuFenceHandle();
-  }
+  gfx::GpuFenceHandle GetGpuFenceHandle() override { NOTREACHED(); }
 
   void Signal() {
     passed_ = true;

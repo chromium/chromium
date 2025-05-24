@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -78,25 +77,6 @@ bool TransformHelper::DependsOnReferenceBox(const ComputedStyle& style) {
   return false;
 }
 
-bool TransformHelper::UpdateReferenceBoxDependency(
-    LayoutObject& layout_object) {
-  const bool transform_uses_reference_box =
-      DependsOnReferenceBox(layout_object.StyleRef());
-  UpdateReferenceBoxDependency(layout_object, transform_uses_reference_box);
-  return transform_uses_reference_box;
-}
-
-void TransformHelper::UpdateReferenceBoxDependency(
-    LayoutObject& layout_object,
-    bool transform_uses_reference_box) {
-  if (transform_uses_reference_box &&
-      layout_object.StyleRef().TransformBox() == ETransformBox::kViewBox) {
-    layout_object.SetSVGSelfOrDescendantHasViewportDependency();
-  } else {
-    layout_object.ClearSVGSelfOrDescendantHasViewportDependency();
-  }
-}
-
 bool TransformHelper::CheckReferenceBoxDependencies(
     const ComputedStyle& old_style,
     const ComputedStyle& style) {
@@ -128,8 +108,7 @@ gfx::RectF TransformHelper::ComputeReferenceBox(
     }
     case ETransformBox::kContentBox:
     case ETransformBox::kBorderBox:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   const float zoom = style.EffectiveZoom();
   if (zoom != 1)

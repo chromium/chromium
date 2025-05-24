@@ -142,7 +142,7 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   // credentials provided by the policy SystemProxySettings. Callers must verify
   // that `CanUsePolicyCredentials` is true before calling this method.
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
-      LoginAuthRequiredCallback auth_required_callback);
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
  private:
   // NetworkStateHandlerObserver implementation

@@ -5,6 +5,7 @@
 #include "chrome/enterprise_companion/url_loader_factory_provider.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -40,7 +41,7 @@ TEST_F(URLLoaderFactoryProviderTest, StubDisconnectHandler) {
   base::RunLoop run_loop;
   base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider =
       CreateInProcessUrlLoaderFactoryProvider(
-          base::ThreadPool::CreateSingleThreadTaskRunner({}),
+          base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()}),
           /*event_logger_cookie_handler=*/{},
           remote.InitWithNewPipeAndPassReceiver(), run_loop.QuitClosure());
   remote.reset();

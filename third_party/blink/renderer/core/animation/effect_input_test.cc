@@ -31,16 +31,16 @@ TEST(AnimationEffectInputTest, SortedOffsets) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
-  HeapVector<ScriptValue> blink_keyframes = {V8ObjectBuilder(script_state)
-                                                 .AddString("width", "100px")
-                                                 .AddString("offset", "0")
-                                                 .GetScriptValue(),
-                                             V8ObjectBuilder(script_state)
-                                                 .AddString("width", "0px")
-                                                 .AddString("offset", "1")
-                                                 .GetScriptValue()};
+  HeapVector<ScriptObject> blink_keyframes = {V8ObjectBuilder(script_state)
+                                                  .AddString("width", "100px")
+                                                  .AddString("offset", "0")
+                                                  .ToScriptObject(),
+                                              V8ObjectBuilder(script_state)
+                                                  .AddString("width", "0px")
+                                                  .AddString("offset", "1")
+                                                  .ToScriptObject()};
 
-  ScriptValue js_keyframes(
+  ScriptObject js_keyframes(
       scope.GetIsolate(),
       ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
@@ -57,16 +57,16 @@ TEST(AnimationEffectInputTest, UnsortedOffsets) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
-  HeapVector<ScriptValue> blink_keyframes = {V8ObjectBuilder(script_state)
-                                                 .AddString("width", "0px")
-                                                 .AddString("offset", "1")
-                                                 .GetScriptValue(),
-                                             V8ObjectBuilder(script_state)
-                                                 .AddString("width", "100px")
-                                                 .AddString("offset", "0")
-                                                 .GetScriptValue()};
+  HeapVector<ScriptObject> blink_keyframes = {V8ObjectBuilder(script_state)
+                                                  .AddString("width", "0px")
+                                                  .AddString("offset", "1")
+                                                  .ToScriptObject(),
+                                              V8ObjectBuilder(script_state)
+                                                  .AddString("width", "100px")
+                                                  .AddString("offset", "0")
+                                                  .ToScriptObject()};
 
-  ScriptValue js_keyframes(
+  ScriptObject js_keyframes(
       scope.GetIsolate(),
       ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
@@ -83,19 +83,19 @@ TEST(AnimationEffectInputTest, LooslySorted) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
-  HeapVector<ScriptValue> blink_keyframes = {V8ObjectBuilder(script_state)
-                                                 .AddString("width", "100px")
-                                                 .AddString("offset", "0")
-                                                 .GetScriptValue(),
-                                             V8ObjectBuilder(script_state)
-                                                 .AddString("width", "200px")
-                                                 .GetScriptValue(),
-                                             V8ObjectBuilder(script_state)
-                                                 .AddString("width", "0px")
-                                                 .AddString("offset", "1")
-                                                 .GetScriptValue()};
+  HeapVector<ScriptObject> blink_keyframes = {V8ObjectBuilder(script_state)
+                                                  .AddString("width", "100px")
+                                                  .AddString("offset", "0")
+                                                  .ToScriptObject(),
+                                              V8ObjectBuilder(script_state)
+                                                  .AddString("width", "200px")
+                                                  .ToScriptObject(),
+                                              V8ObjectBuilder(script_state)
+                                                  .AddString("width", "0px")
+                                                  .AddString("offset", "1")
+                                                  .ToScriptObject()};
 
-  ScriptValue js_keyframes(
+  ScriptObject js_keyframes(
       scope.GetIsolate(),
       ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
@@ -112,23 +112,23 @@ TEST(AnimationEffectInputTest, OutOfOrderWithNullOffsets) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
-  HeapVector<ScriptValue> blink_keyframes = {V8ObjectBuilder(script_state)
-                                                 .AddString("height", "100px")
-                                                 .AddString("offset", "0.5")
-                                                 .GetScriptValue(),
-                                             V8ObjectBuilder(script_state)
-                                                 .AddString("height", "150px")
-                                                 .GetScriptValue(),
-                                             V8ObjectBuilder(script_state)
-                                                 .AddString("height", "200px")
-                                                 .AddString("offset", "0")
-                                                 .GetScriptValue(),
-                                             V8ObjectBuilder(script_state)
-                                                 .AddString("height", "300px")
-                                                 .AddString("offset", "1")
-                                                 .GetScriptValue()};
+  HeapVector<ScriptObject> blink_keyframes = {V8ObjectBuilder(script_state)
+                                                  .AddString("height", "100px")
+                                                  .AddString("offset", "0.5")
+                                                  .ToScriptObject(),
+                                              V8ObjectBuilder(script_state)
+                                                  .AddString("height", "150px")
+                                                  .ToScriptObject(),
+                                              V8ObjectBuilder(script_state)
+                                                  .AddString("height", "200px")
+                                                  .AddString("offset", "0")
+                                                  .ToScriptObject(),
+                                              V8ObjectBuilder(script_state)
+                                                  .AddString("height", "300px")
+                                                  .AddString("offset", "1")
+                                                  .ToScriptObject()};
 
-  ScriptValue js_keyframes(
+  ScriptObject js_keyframes(
       scope.GetIsolate(),
       ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
@@ -144,19 +144,19 @@ TEST(AnimationEffectInputTest, Invalid) {
   ScriptState* script_state = scope.GetScriptState();
 
   // Not loosely sorted by offset, and there exists a keyframe with null offset.
-  HeapVector<ScriptValue> blink_keyframes = {V8ObjectBuilder(script_state)
-                                                 .AddString("width", "0px")
-                                                 .AddString("offset", "1")
-                                                 .GetScriptValue(),
-                                             V8ObjectBuilder(script_state)
-                                                 .AddString("width", "200px")
-                                                 .GetScriptValue(),
-                                             V8ObjectBuilder(script_state)
-                                                 .AddString("width", "200px")
-                                                 .AddString("offset", "0")
-                                                 .GetScriptValue()};
+  HeapVector<ScriptObject> blink_keyframes = {V8ObjectBuilder(script_state)
+                                                  .AddString("width", "0px")
+                                                  .AddString("offset", "1")
+                                                  .ToScriptObject(),
+                                              V8ObjectBuilder(script_state)
+                                                  .AddString("width", "200px")
+                                                  .ToScriptObject(),
+                                              V8ObjectBuilder(script_state)
+                                                  .AddString("width", "200px")
+                                                  .AddString("offset", "0")
+                                                  .ToScriptObject()};
 
-  ScriptValue js_keyframes(
+  ScriptObject js_keyframes(
       scope.GetIsolate(),
       ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 

@@ -7,9 +7,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/apple/bridging.h"
@@ -17,12 +16,13 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -234,7 +234,7 @@ FilePath GetInnermostAppBundlePath(const FilePath& exec_name) {
     return FilePath();
   }
 
-  auto app = ranges::find_if(
+  auto app = std::ranges::find_if(
       Reversed(components), [](const std::string& component) -> bool {
         return component.size() > kExtLength && EndsWith(component, kExt);
       });
@@ -293,11 +293,17 @@ TYPE_NAME_FOR_CF_TYPE_DEFN(SecPolicy)
 
 #undef TYPE_NAME_FOR_CF_TYPE_DEFN
 
-static const char* base_bundle_id;
+namespace {
+std::optional<std::string>& GetBaseBundleIDOverrideValue() {
+  static NoDestructor<std::optional<std::string>> base_bundle_id;
+  return *base_bundle_id;
+}
+}  // namespace
 
-const char* BaseBundleID() {
-  if (base_bundle_id) {
-    return base_bundle_id;
+std::string_view BaseBundleID() {
+  std::optional<std::string>& override = GetBaseBundleIDOverrideValue();
+  if (override.has_value()) {
+    return override.value();
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -307,11 +313,8 @@ const char* BaseBundleID() {
 #endif
 }
 
-void SetBaseBundleID(const char* new_base_bundle_id) {
-  if (new_base_bundle_id != base_bundle_id) {
-    free((void*)base_bundle_id);
-    base_bundle_id = new_base_bundle_id ? strdup(new_base_bundle_id) : nullptr;
-  }
+void SetBaseBundleIDOverride(std::string_view new_base_bundle_id) {
+  GetBaseBundleIDOverrideValue() = std::string(new_base_bundle_id);
 }
 
 #define CF_CAST_DEFN(TypeCF)                                       \

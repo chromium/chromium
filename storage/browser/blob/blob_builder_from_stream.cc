@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "storage/browser/blob/blob_builder_from_stream.h"
 
 #include "base/containers/span.h"
@@ -315,10 +320,12 @@ class BlobBuilderFromStream::WritePipeToFutureDataHelper
                 uint64_t bytes_previously_written) override {
     if (item_->type() == BlobDataItem::Type::kBytesDescription)
       item_->AllocateBytes();
-    std::memcpy(item_->mutable_bytes()
-                    .subspan(bytes_previously_written, data.size())
-                    .data(),
-                data.data(), data.size());
+    std::memcpy(
+        item_->mutable_bytes()
+            .subspan(base::checked_cast<size_t>(bytes_previously_written),
+                     data.size())
+            .data(),
+        data.data(), data.size());
     return true;
   }
 

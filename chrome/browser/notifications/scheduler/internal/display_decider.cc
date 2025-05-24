@@ -4,9 +4,10 @@
 
 #include "chrome/browser/notifications/scheduler/internal/display_decider.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/clock.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
@@ -101,7 +102,7 @@ class DecisionHelper {
 
     // No previous shown notification, move the iterator to last element.
     // We will iterate through all client types later.
-    auto it = base::ranges::find(clients_, last_shown_type_);
+    auto it = std::ranges::find(clients_, last_shown_type_);
     if (it == clients_.end()) {
       DCHECK_EQ(last_shown_type_, SchedulerClientType::kUnknown);
       last_shown_type_ = clients_.back();

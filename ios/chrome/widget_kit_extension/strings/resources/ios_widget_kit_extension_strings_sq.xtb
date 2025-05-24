@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="1149198577555059081">Kërko ose shkruaj URL-në</translation>
 <translation id="1324575488877808473">Hap Chrome për të parë sajtet më të vizituara këtu.</translation>
 <translation id="2513892053093488070">Kërkimi me zë</translation>
 <translation id="2535710892645968259">Kalo në lojën Chrome Dino nga ekrani yt i kyçjes.</translation>
@@ -15,11 +16,11 @@
 <translation id="405442954313519726">Kërko ose navigo në një skedë të re, në "Modalitetin e fshehtë", duke përdorur zërin ose me një kod QR.</translation>
 <translation id="4557098988773644458">Kalo te loja Chrome Dino</translation>
 <translation id="4678859075583681103">Nis një kërkim të ri ose hap sajtet më të vizituara nga faqja kryesore e iPhone.</translation>
-<translation id="4954445889641385956">Kërko ose shkruaj URL-në</translation>
 <translation id="4962772945748414465">Hap WEBSITE_PLACEHOLDER</translation>
 <translation id="5234725349196694896">Kërko në Chrome me motorin tënd të preferuar të kërkimit.</translation>
 <translation id="5277852985315196237">Kërko ose shkruaj URL-në</translation>
 <translation id="529497070985873480">Chrome Dino</translation>
+<translation id="5325847452011598583">Asnjë llogari</translation>
 <translation id="5683557219437283801">Kërkimi me zë</translation>
 <translation id="6179961764474023795">Veprimet e shpejta</translation>
 <translation id="6330929932864892436">Kërko ose shkruaj URL-në</translation>
@@ -39,6 +40,8 @@ shkruaj URL-në</translation>
 <translation id="8104498668011127805">Kalo te loja Chrome Dino</translation>
 <translation id="8150601371542319992">Lentja</translation>
 <translation id="8171952085734471362">Kërkimi "i fshehtë"</translation>
+<translation id="8310150944719146950">Llogaria</translation>
 <translation id="8564942608461410346">Kërko në Chrome me motorin tënd të preferuar të kërkimit.</translation>
+<translation id="8858765528951093286">Llogaria e përdorur me miniaplikacionin është hequr. Për të zgjedhur një llogari tjetër, trokit te "Modifiko miniaplikacionin".</translation>
 <translation id="9175676375569833962">Kërko për fjalëkalime</translation>
 </translationbundle>

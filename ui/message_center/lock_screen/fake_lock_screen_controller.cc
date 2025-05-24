@@ -55,4 +55,9 @@ bool FakeLockScreenController::IsScreenLocked() const {
   return is_screen_locked_;
 }
 
+bool FakeLockScreenController::IsNotificationAllowedOnLockScreen(
+    const std::string& id) const {
+  return is_notification_allowed_on_lock_screen_;
+}
+
 }  // namespace message_center

@@ -1,5 +1,5 @@
 <div id="titleContainer">
-  <h2 id="title">${this.headerText}</h2>
+  <h2 id="title" ?hidden="${!this.headerText}">${this.headerText}</h2>
   <div id="headerSpacer"></div>
   <slot name="title-actions"></slot>
   <cr-icon-button id="menuButton" title="${this.moreActionsText}"

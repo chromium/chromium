@@ -156,7 +156,7 @@ void UrlForwarderConfiguratorWin::SetUpUrlForwarder(
 void UrlForwarderConfiguratorWin::OnSetUpResponse(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  report_user_intervention_required_timer_.AbandonAndStop();
+  report_user_intervention_required_timer_.Stop();
   set_up_url_forwarder_callback_.Run(success
                                          ? SetUpUrlForwarderResponse::COMPLETE
                                          : SetUpUrlForwarderResponse::FAILED);

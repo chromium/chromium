@@ -1,0 +1,34 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script>
+assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
+            'This test requires chrome.gpuBenchmarking.');
+assert_true(!!window.internals,
+            'This test requires window.internals.');
+
+canvasPromiseTest(async (canvas, {canvasType} = {}) => {
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = 'red';
+  ctx.fillRect(0, 0, 100, 100);
+
+  chrome.gpuBenchmarking.terminateGpuProcessNormally();
+
+  if (internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    // For accelerated canvases, the texture become immediately unreadable.
+    assert_array_equals(
+      ctx.getImageData(2, 2, 1, 1).data, [0, 0, 0, 0],
+        'Accelerated canvas should be blank if the GPU process dies.');
+  } else {
+    // For unaccelerated canvases, the texture is still readable right after
+    // the context is context lost.
+    assert_array_equals(
+      ctx.getImageData(2, 2, 1, 1).data, [255, 0, 0, 255],
+        'CPU canvas should be readable right after the GPU process died.');
+  }
+}, 'Test reading back the canvas after the GPU process dies.',
+   {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+</script>

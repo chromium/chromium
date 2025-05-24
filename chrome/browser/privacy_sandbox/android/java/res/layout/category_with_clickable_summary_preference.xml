@@ -6,6 +6,7 @@ found in the LICENSE file.
 
 <!-- Layout for a PreferenceCategory that adds a summary below the title. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/category_with_clickable_summary_preference"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingVertical="@dimen/custom_preference_category_paddingVertical"

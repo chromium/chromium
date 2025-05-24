@@ -75,15 +75,13 @@ bool PepperInProcessRouter::OnPluginMsgReceived(const IPC::Message& msg) {
     // Resource reply from the renderer (no routing id).
     if (!UnpackMessage<PpapiPluginMsg_ResourceReply>(
             msg, &reply_params, &nested_msg)) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
   } else if (msg.type() == PpapiHostMsg_InProcessResourceReply::ID) {
     // Resource reply from the browser (has a routing id).
     if (!UnpackMessage<PpapiHostMsg_InProcessResourceReply>(
             msg, &reply_params, &nested_msg)) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
   } else {
     return false;

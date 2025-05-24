@@ -26,9 +26,9 @@ struct MtpFileEntryData {
 };
 
 const MtpFileEntryData kTestCases[] = {
-  { "Foo", 123, false, 321 },
-  { "Bar", 234, true, 432 },
-  { "Baaz", 345, false, 543 },
+    {"Foo", 123, false, 321},
+    {"Bar", 234, true, 432},
+    {"Baaz", 345, false, 543},
 };
 
 void TestEnumeratorIsEmpty(MTPDeviceObjectEnumerator* enumerator) {

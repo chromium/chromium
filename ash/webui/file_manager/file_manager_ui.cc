@@ -9,7 +9,6 @@
 
 #include "ash/webui/file_manager/file_manager_ui.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
@@ -19,7 +18,6 @@
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -41,8 +39,11 @@ namespace {
 bool IsKioskSession() {
   auto* session_controller = Shell::Get()->session_controller();
   auto account_id = session_controller->GetActiveAccountId();
-  const auto user_type =
-      session_controller->GetUserSessionByAccountId(account_id)->user_info.type;
+  auto* session = session_controller->GetUserSessionByAccountId(account_id);
+  if (!session) {
+    return false;
+  }
+  const auto user_type = session->user_info.type;
 
   switch (user_type) {
     case user_manager::UserType::kRegular:
@@ -52,6 +53,7 @@ bool IsKioskSession() {
       return false;
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       return true;
   }
 }
@@ -67,11 +69,9 @@ FileManagerUIConfig::FileManagerUIConfig(
 bool FileManagerUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   // Enable file manager WebUI if enable for SWA config or
-  // for the Kiosk session if SWAs are disabled there.
+  // for the Kiosk session.
   return SystemWebAppUIConfig::IsWebUIEnabled(browser_context) ||
-         (!base::FeatureList::IsEnabled(
-              ash::features::kKioskEnableSystemWebApps) &&
-          IsKioskSession());
+         IsKioskSession();
 }
 
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,

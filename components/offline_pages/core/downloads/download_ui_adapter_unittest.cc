@@ -78,8 +78,8 @@ void GetItemAndVerify(const std::optional<OfflineItem>& expected,
 // Mock DownloadUIAdapter::Delegate
 class DownloadUIAdapterDelegate : public DownloadUIAdapter::Delegate {
  public:
-  DownloadUIAdapterDelegate() {}
-  ~DownloadUIAdapterDelegate() override {}
+  DownloadUIAdapterDelegate() = default;
+  ~DownloadUIAdapterDelegate() override = default;
 
   // DownloadUIAdapter::Delegate
   bool IsVisibleInUI(const ClientId& client_id) override { return is_visible; }
@@ -113,7 +113,7 @@ class MockOfflinePageModel : public StubOfflinePageModel {
   MockOfflinePageModel(const MockOfflinePageModel&) = delete;
   MockOfflinePageModel& operator=(const MockOfflinePageModel&) = delete;
 
-  ~MockOfflinePageModel() override {}
+  ~MockOfflinePageModel() override = default;
 
   void AddInitialPage(ClientId client_id) {
     OfflinePageItem page(GURL(kTestUrl), kTestOfflineId1, client_id,
@@ -266,7 +266,7 @@ DownloadUIAdapterTest::DownloadUIAdapterTest()
     : task_runner_(new base::TestMockTimeTaskRunner),
       task_runner_current_default_handle_(task_runner_) {}
 
-DownloadUIAdapterTest::~DownloadUIAdapterTest() {}
+DownloadUIAdapterTest::~DownloadUIAdapterTest() = default;
 
 void DownloadUIAdapterTest::SetUp() {
   model = std::make_unique<MockOfflinePageModel>(task_runner_.get());

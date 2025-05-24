@@ -4,6 +4,8 @@
 
 #include "content/public/test/test_frame_navigation_observer.h"
 
+#include "base/functional/bind.h"
+#include "content/browser/guest_page_holder_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -28,13 +30,25 @@ TestFrameNavigationObserver::TestFrameNavigationObserver(
       frame_tree_node_id_(
           ToRenderFrameHostImpl(adapter)->GetFrameTreeNodeId()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
+          *ToRenderFrameHostImpl(adapter))) {
+    // The loading state of guests is separate from the loading state of the
+    // WebContents, so the load stop would not be reported via the
+    // WebContentsObserver method. We use a separate callback so that this test
+    // observer can still be notified of the guest load state.
+    // Unretained is safe due to the subscription.
+    guest_on_load_subscription_ = guest->RegisterLoadStopCallbackForTesting(
+        base::BindRepeating(&TestFrameNavigationObserver::GuestDidStopLoading,
+                            base::Unretained(this)));
+  }
 }
 
-TestFrameNavigationObserver::~TestFrameNavigationObserver() {}
+TestFrameNavigationObserver::~TestFrameNavigationObserver() = default;
 
 void TestFrameNavigationObserver::Wait() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   wait_for_commit_ = false;
+  TRACE_EVENT("test", "TestFrameNavigationObserver::Wait");
   run_loop_.Run();
 }
 
@@ -45,6 +59,7 @@ void TestFrameNavigationObserver::WaitForCommit() {
     return;
 
   wait_for_commit_ = true;
+  TRACE_EVENT("test", "TestFrameNavigationObserver::WaitForCommit");
   run_loop_.Run();
 }
 
@@ -79,8 +94,18 @@ void TestFrameNavigationObserver::DidFinishNavigation(
 }
 
 void TestFrameNavigationObserver::DidStopLoading() {
-  if (!navigation_started_)
+  if (!navigation_started_ || guest_on_load_subscription_) {
     return;
+  }
+
+  navigation_started_ = false;
+  run_loop_.Quit();
+}
+
+void TestFrameNavigationObserver::GuestDidStopLoading() {
+  if (!navigation_started_) {
+    return;
+  }
 
   navigation_started_ = false;
   run_loop_.Quit();

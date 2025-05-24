@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -17,10 +18,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
-/**
- * This class regroups the buildView and bindView util methods of the
- * existing account row.
- */
+/** This class regroups the buildView and bindView util methods of the existing account row. */
+@NullMarked
 public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
     /**
      * View binder that associates an existing account view with the model of
@@ -32,9 +31,7 @@ public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, V
         boolean isCurrentlySelected = model.get(ExistingAccountRowProperties.IS_CURRENTLY_SELECTED);
         if (propertyKey == ExistingAccountRowProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(
-                    v ->
-                            model.get(ExistingAccountRowProperties.ON_CLICK_LISTENER)
-                                    .onResult(profileData));
+                    v -> model.get(ExistingAccountRowProperties.ON_CLICK_LISTENER).run());
         } else if ((propertyKey == ExistingAccountRowProperties.PROFILE_DATA)
                 || (propertyKey == ExistingAccountRowProperties.IS_CURRENTLY_SELECTED)) {
             bindAccountView(profileData, view, isCurrentlySelected);

@@ -30,16 +30,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
-import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
+import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -52,6 +52,7 @@ import org.chromium.ui.widget.LoadingView;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LogoViewBinderUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private PropertyModel mLogoModel;
@@ -60,8 +61,6 @@ public class LogoViewBinderUnitTest {
     private static final double DELTA = 1e-5;
     private static final String ANIMATED_LOGO_URL =
             "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json";
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private LogoView mMockLogoView;
 
@@ -76,20 +75,19 @@ public class LogoViewBinderUnitTest {
         public final CallbackHelper hideLoadingCallback = new CallbackHelper();
 
         @Override
-        public void onShowLoadingUIComplete() {
+        public void onShowLoadingUiComplete() {
             showLoadingCallback.notifyCalled();
         }
 
         @Override
-        public void onHideLoadingUIComplete() {
+        public void onHideLoadingUiComplete() {
             hideLoadingCallback.notifyCalled();
         }
     }
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridgeJniMock);
+        LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mLogoView = new LogoView(mActivity, null);
         LayoutParams params =
@@ -103,7 +101,6 @@ public class LogoViewBinderUnitTest {
                         /* context= */ null,
                         /* logoClickedCallback= */ null,
                         mLogoModel,
-                        /* shouldFetchDoodle= */ true,
                         /* onLogoAvailableCallback= */ null,
                         /* visibilityObserver= */ null,
                         /* defaultGoogleLogo= */ null);
@@ -236,23 +233,11 @@ public class LogoViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testLogoPolishFlagEnabled() {
-        assertEquals(false, mLogoView.getIsLogoPolishFlagEnabledForTesting());
-        mLogoModel.set(LogoProperties.LOGO_POLISH_FLAG_ENABLED, true);
-        assertEquals(true, mLogoView.getIsLogoPolishFlagEnabledForTesting());
-        mLogoModel.set(LogoProperties.LOGO_POLISH_FLAG_ENABLED, false);
-        assertEquals(false, mLogoView.getIsLogoPolishFlagEnabledForTesting());
-    }
-
-    @Test
-    @SmallTest
-    public void testSetLogoSizeForLogoPolish() {
-        assertEquals(LogoSizeForLogoPolish.SMALL, mLogoView.getLogoSizeForLogoPolishForTesting());
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, LogoSizeForLogoPolish.MEDIUM);
-        assertEquals(LogoSizeForLogoPolish.MEDIUM, mLogoView.getLogoSizeForLogoPolishForTesting());
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, LogoSizeForLogoPolish.LARGE);
-        assertEquals(LogoSizeForLogoPolish.LARGE, mLogoView.getLogoSizeForLogoPolishForTesting());
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, LogoSizeForLogoPolish.SMALL);
-        assertEquals(LogoSizeForLogoPolish.SMALL, mLogoView.getLogoSizeForLogoPolishForTesting());
+    public void testSetDoodleSize() {
+        assertEquals(DoodleSize.TABLET_SPLIT_SCREEN, mLogoView.getDoodleSizeForTesting());
+        mLogoModel.set(LogoProperties.DOODLE_SIZE, DoodleSize.REGULAR);
+        assertEquals(DoodleSize.REGULAR, mLogoView.getDoodleSizeForTesting());
+        mLogoModel.set(LogoProperties.DOODLE_SIZE, DoodleSize.TABLET_SPLIT_SCREEN);
+        assertEquals(DoodleSize.TABLET_SPLIT_SCREEN, mLogoView.getDoodleSizeForTesting());
     }
 }

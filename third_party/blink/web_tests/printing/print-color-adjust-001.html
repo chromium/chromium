@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>print-color-adjust:economy is initial value</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-color-adjust-1/#print-color-adjust">
+<script>
+  if (window.testRunner) {
+    testRunner.setPrinting();
+    if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(false);
+  }
+</script>
+<p>Test passes if there is nothing below.</p>
+<div style="height:100px; background:red;"></div>

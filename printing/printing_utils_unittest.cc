@@ -11,7 +11,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -30,7 +29,7 @@ namespace {
 
 constexpr size_t kTestLength = 8;
 
-#if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS)
 constexpr gfx::Size kIsoA4Microns(210000, 297000);
 constexpr gfx::Size kNaLetterMicrons(216000, 279000);
 #endif
@@ -75,7 +74,7 @@ TEST(PrintingUtilsTest, FormatDocumentTitleWithOwner) {
   EXPECT_EQ("ab...j: ", Format("abcdefghij", "0123456789"));
 }
 
-#if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS)
 TEST(PrintingUtilsTest, GetDefaultPaperSizeFromLocaleMicrons) {
   // Valid locales
   EXPECT_EQ(kNaLetterMicrons, GetDefaultPaperSizeFromLocaleMicrons("en-US"));
@@ -118,7 +117,7 @@ TEST(PrintingUtilsTest, SizesEqualWithinEpsilon) {
   EXPECT_TRUE(
       SizesEqualWithinEpsilon(kIsoA4Microns, gfx::Size(210500, 296500), 500));
 }
-#endif  // BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 TEST(PrintingUtilsTest, GetCenteredPageContentRect) {

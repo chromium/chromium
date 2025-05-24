@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
@@ -28,3 +27,10 @@ include_rules = [
   "+chrome/common/webui_url_constants.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Allow including browser_process.h only for KeyedService factory class.
+  "kerberos_credentials_manager_factory\.cc": [
+    "+chrome/browser/browser_process.h",
+  ]
+}

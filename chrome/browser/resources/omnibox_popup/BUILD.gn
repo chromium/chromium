@@ -9,11 +9,15 @@ assert(!is_android && !is_ios)
 build_webui("build") {
   grd_prefix = "omnibox_popup"
   static_files = [ "omnibox_popup.html" ]
-  web_component_files = [ "app.ts" ]
-  non_web_component_files = [ "omnibox_popup.ts" ]
+  ts_files = [
+    "app.html.ts",
+    "app.ts",
+    "omnibox_popup.ts",
+  ]
+  css_files = [ "app.css" ]
   ts_composite = true
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/js:build_ts",

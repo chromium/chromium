@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-# On Lacros, these browser tests require Ash to be running.
 source_set("app_service_browser_tests") {
   testonly = true
 
@@ -22,12 +19,4 @@ source_set("app_service_browser_tests") {
     "//components/services/app_service",
     "//components/webapps/common",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chrome/test:lacros_test_support_ui",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-    ]
-  }
 }

@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.xsurface;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Interface to supply chrome-specific colors to xsurface.
  *
  * Used to support dynamic themes on devices that support it.
  * The methods loosely mimics the Material Next dynamic color tokens.
  */
+@NullMarked
 public interface ColorProvider {
     /** @return the primary color. */
     default int getPrimary() {

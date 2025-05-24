@@ -13,10 +13,13 @@ import android.transition.Visibility;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A transition that changes a view's scale when it's appearing or disappearing, it animates both
  * scaleX and scaleY towards 0 when disappearing and towards 1 when appearing.
  */
+@NullMarked
 public class ShrinkTransition extends Visibility {
     @Override
     public Animator onAppear(

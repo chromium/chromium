@@ -38,14 +38,12 @@ struct AX_BASE_EXPORT AXEventIntent final {
                 ax::mojom::TextBoundary text_boundary,
                 ax::mojom::MoveDirection move_direction);
 
-  virtual ~AXEventIntent();
+  ~AXEventIntent();
   AXEventIntent(const AXEventIntent& intent);
   AXEventIntent& operator=(const AXEventIntent& intent);
 
-  friend AX_BASE_EXPORT bool operator==(const AXEventIntent& a,
-                                        const AXEventIntent& b);
-  friend AX_BASE_EXPORT bool operator!=(const AXEventIntent& a,
-                                        const AXEventIntent& b);
+  friend AX_BASE_EXPORT bool operator==(const AXEventIntent&,
+                                        const AXEventIntent&);
 
   ax::mojom::Command command = ax::mojom::Command::kNone;
   ax::mojom::InputEventType input_event_type = ax::mojom::InputEventType::kNone;

@@ -6,12 +6,12 @@
 
 #import "base/notreached.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view+subclassing.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -57,7 +57,7 @@ const int kBidirectionalAnimationRepeatCount = 4;
     }
     if (@available(iOS 17, *)) {
       [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                        @[ UITraitVerticalSizeClass.self ])
+                                        @[ UITraitVerticalSizeClass.class ])
                          withAction:@selector(updateUIOnTraitChange)];
     }
   }
@@ -93,8 +93,7 @@ const int kBidirectionalAnimationRepeatCount = 4;
   switch (self.animatingDirection) {
     case UISwipeGestureRecognizerDirectionUp:
     case UISwipeGestureRecognizerDirectionDown:
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
     case UISwipeGestureRecognizerDirectionLeft:
     case UISwipeGestureRecognizerDirectionRight:
     default:

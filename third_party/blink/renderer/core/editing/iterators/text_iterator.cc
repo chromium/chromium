@@ -309,8 +309,11 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
 
   if (HandleRememberedProgress())
     return;
-
-  while (node_ && (node_ != past_end_node_ || shadow_depth_)) {
+  bool should_continue_iteration = (node_ != past_end_node_ || shadow_depth_);
+  if (RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()) {
+    should_continue_iteration = (node_ != past_end_node_);
+  }
+  while (node_ && should_continue_iteration) {
     // TODO(crbug.com/1296290): Disable this DCHECK as it's troubling CrOS engs.
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS)
     // |node_| shouldn't be after |past_end_node_|.
@@ -449,15 +452,25 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
               Strategy::IsDescendantOf(*end_container_, *parent_node)) {
             return;
           }
-          // We should call the ExitNode() always if |node_| has a layout
-          // object or not and it's the last child under |parent_node|.
+          // ExitNode() is invoked if |node_| is the last child under
+          // |parent_node|, irrespective of whether |node_| possesses a layout
+          // object. However, if any block node resides within a node that has
+          // an inline layout it should not be called.
           bool have_layout_object = node_->GetLayoutObject();
           node_ = parent_node;
           fully_clipped_stack_.Pop();
           parent_node = Strategy::Parent(*node_);
-          if (RuntimeEnabledFeatures::
-                  CallExitNodeWithoutLayoutObjectEnabled() ||
-              have_layout_object) {
+          LayoutObject* node_layout =
+              node_ ? node_->GetLayoutObject() : nullptr;
+          LayoutObject* parent_node_layout =
+              parent_node ? parent_node->GetLayoutObject() : nullptr;
+          bool should_exit_node = have_layout_object ||
+              (RuntimeEnabledFeatures::
+                   CallExitNodeWithoutLayoutObjectEnabled() &&
+               node_layout && parent_node_layout &&
+               node_layout->IsLayoutBlock() &&
+               !parent_node_layout->IsInline());
+          if (should_exit_node) {
             ExitNode();
           }
           if (text_state_.PositionNode()) {
@@ -473,9 +486,7 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
           // sibling shadow root, if any.
           const auto* shadow_root = DynamicTo<ShadowRoot>(node_);
           if (!shadow_root) {
-            NOTREACHED_IN_MIGRATION();
-            should_stop_ = true;
-            return;
+            NOTREACHED();
           }
           if (shadow_root->IsOpen()) {
             // We are the shadow root; exit from here and go back to
@@ -511,6 +522,12 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
     // how would this ever be?
     if (text_state_.PositionNode())
       return;
+
+    if (RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()) {
+      should_continue_iteration = (node_ != past_end_node_);
+    } else {
+      should_continue_iteration = (node_ != past_end_node_ || shadow_depth_);
+    }
   }
 }
 
@@ -573,7 +590,7 @@ void TextIteratorAlgorithm<Strategy>::HandleReplacedElement() {
     return;
 
   LayoutObject* layout_object = node_->GetLayoutObject();
-  if (layout_object->Style()->UsedVisibility() != EVisibility::kVisible &&
+  if (layout_object->Style()->Visibility() != EVisibility::kVisible &&
       !IgnoresStyleVisibility()) {
     return;
   }
@@ -684,8 +701,7 @@ static bool ShouldEmitNewlinesBeforeAndAfterNode(const Node& node) {
   }
 
   return !r->IsInline() && r->IsLayoutBlock() &&
-         !r->IsFloatingOrOutOfFlowPositioned() && !r->IsBody() &&
-         !r->IsRubyText();
+         !r->IsFloatingOrOutOfFlowPositioned() && !r->IsBody();
 }
 
 template <typename Strategy>
@@ -772,7 +788,7 @@ bool TextIteratorAlgorithm<Strategy>::ShouldRepresentNodeOffsetZero() {
   // unrendered content, we would create VisiblePositions on every call to this
   // function without this check.
   if (!node_->GetLayoutObject() ||
-      node_->GetLayoutObject()->Style()->UsedVisibility() !=
+      node_->GetLayoutObject()->Style()->Visibility() !=
           EVisibility::kVisible ||
       (node_->GetLayoutObject()->IsLayoutBlockFlow() &&
        !To<LayoutBlock>(node_->GetLayoutObject())->Size().height &&

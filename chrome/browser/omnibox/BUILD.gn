@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("omnibox") {
+  sources = [
+    "autocomplete_controller_emitter_factory.cc",
+    "autocomplete_controller_emitter_factory.h",
+  ]
+
+  # Matches the build check used for the objects constructed by these factories.
+  if (enable_extensions) {
+    sources += [
+      "omnibox_input_watcher_factory.cc",
+      "omnibox_input_watcher_factory.h",
+      "omnibox_suggestions_watcher_factory.cc",
+      "omnibox_suggestions_watcher_factory.h",
+    ]
+  }
+  deps = [
+    "//base",
+    "//components/keyed_service/content",
+    "//components/omnibox/browser",
+  ]
+}

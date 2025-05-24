@@ -4,9 +4,8 @@
 
 #import "ios/chrome/browser/web/model/progress_indicator_app_interface.h"
 
-#import <UIKit/UIKit.h>
-
 #import <MaterialComponents/MaterialProgressView.h>
+#import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"

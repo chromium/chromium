@@ -344,11 +344,8 @@ void PaintPreviewClient::CapturePaintPreview(
   if (token.has_value()) {
     document_data.root_frame_token = token.value();
   } else {
-    // This should be impossible, but if it happens in a release build just
-    // abort.
-    DVLOG(1) << "Error: Root frame does not have an embedding token.";
-    NOTREACHED_IN_MIGRATION();
-    return;
+    // This should be impossible.
+    NOTREACHED() << "Error: Root frame does not have an embedding token.";
   }
   document_data.capture_links = params.inner.capture_links;
   document_data.max_per_capture_size = params.inner.max_capture_size;
@@ -471,7 +468,7 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
       base::BindOnce(&PaintPreviewClient::RequestCaptureOnUIThread,
                      weak_ptr_factory_.GetWeakPtr(), frame_guid, params,
                      content::GlobalRenderFrameHostId(
-                         render_frame_host->GetProcess()->GetID(),
+                         render_frame_host->GetProcess()->GetDeprecatedID(),
                          render_frame_host->GetRoutingID())));
 }
 

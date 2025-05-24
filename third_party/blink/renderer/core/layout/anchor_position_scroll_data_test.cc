@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -166,7 +165,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollerSizeChange) {
 
   Element* anchored = GetElementById("anchored");
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(gfx::Vector2dF(0, 300),
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(), LayoutUnit(300)),
             anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   GetElementById("scroller")->classList().Add(AtomicString("changed"));
@@ -175,7 +174,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollerSizeChange) {
   // yet.
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(gfx::Vector2dF(0, 300),
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(), LayoutUnit(300)),
             anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   UnsetAnimationScheduled();
@@ -189,7 +188,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollerSizeChange) {
   // Snapshot is updated in the next frame.
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(gfx::Vector2dF(0, 200),
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(), LayoutUnit(200)),
             anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   // Should not schedule another frame after all updates are done.
@@ -229,7 +228,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollContentSizeChange) {
 
   Element* anchored = GetElementById("anchored");
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(gfx::Vector2dF(0, 300),
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(), LayoutUnit(300)),
             anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   GetElementById("spacer")->classList().Add(AtomicString("changed"));
@@ -238,7 +237,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollContentSizeChange) {
   // yet.
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(gfx::Vector2dF(0, 300),
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(), LayoutUnit(300)),
             anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   UnsetAnimationScheduled();
@@ -252,7 +251,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollContentSizeChange) {
   // Snapshot is updated in the next frame.
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(gfx::Vector2dF(0, 200),
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(), LayoutUnit(200)),
             anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   // Should not schedule another frame after all updates are done.

@@ -12,12 +12,16 @@ source_set("ui_bundled") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/presenters/ui_bundled",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -27,6 +31,6 @@ source_set("unit_tests") {
   sources = [ "alert_view_controller_unittest.mm" ]
   deps = [
     ":ui_bundled",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }

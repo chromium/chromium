@@ -43,6 +43,13 @@ class PLATFORM_EXPORT SourceLocation {
   static std::unique_ptr<SourceLocation> CreateFromNonEmptyV8StackTraceInternal(
       std::unique_ptr<v8_inspector::V8StackTrace>);
 
+  SourceLocation(const String& url, int char_position);
+
+  SourceLocation(const String& url,
+                 int char_position,
+                 unsigned line_number,
+                 unsigned column_number);
+
   SourceLocation(const String& url,
                  const String& function,
                  unsigned line_number,
@@ -58,6 +65,7 @@ class PLATFORM_EXPORT SourceLocation {
   const String& Function() const { return function_; }
   unsigned LineNumber() const { return line_number_; }
   unsigned ColumnNumber() const { return column_number_; }
+  int CharPosition() const { return char_position_; }
   int ScriptId() const { return script_id_; }
   std::unique_ptr<v8_inspector::V8StackTrace> TakeStackTrace() {
     return std::move(stack_trace_);
@@ -96,6 +104,7 @@ class PLATFORM_EXPORT SourceLocation {
   String function_;
   unsigned line_number_;
   unsigned column_number_;
+  int char_position_;
   std::unique_ptr<v8_inspector::V8StackTrace> stack_trace_;
   int script_id_;
 };

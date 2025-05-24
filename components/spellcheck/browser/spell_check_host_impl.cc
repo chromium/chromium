@@ -48,28 +48,11 @@ void SpellCheckHostImpl::RequestTextCheck(const std::u16string& text,
   session_bridge_.RequestTextCheck(text, std::move(callback));
 }
 
-void SpellCheckHostImpl::CheckSpelling(const std::u16string& word,
-                                       CheckSpellingCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(false);
-}
-
-void SpellCheckHostImpl::FillSuggestionList(
-    const std::u16string& word,
-    FillSuggestionListCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run({});
-}
-
 #if BUILDFLAG(IS_WIN)
 void SpellCheckHostImpl::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
-                          /*enable=*/false);
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_WIN)
 #endif  //  BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&

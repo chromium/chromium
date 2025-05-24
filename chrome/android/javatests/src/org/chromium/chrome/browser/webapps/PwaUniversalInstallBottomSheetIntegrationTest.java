@@ -29,7 +29,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -51,6 +52,8 @@ import org.chromium.net.test.EmbeddedTestServer;
 @DoNotBatch(reason = "Fails because of SurveyClientFactory assert")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PwaUniversalInstallBottomSheetIntegrationTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -73,13 +76,12 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
 
     private BottomSheetController mBottomSheetController;
 
-    private CallbackHelper mOnInstallCallback = new CallbackHelper();
-    private CallbackHelper mOnAddShortcutCallback = new CallbackHelper();
-    private CallbackHelper mOnOpenAppCallback = new CallbackHelper();
+    private final CallbackHelper mOnInstallCallback = new CallbackHelper();
+    private final CallbackHelper mOnAddShortcutCallback = new CallbackHelper();
+    private final CallbackHelper mOnOpenAppCallback = new CallbackHelper();
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetchingForTesting = true;
 
         mActivityTestRule.startMainActivityOnBlankPage();

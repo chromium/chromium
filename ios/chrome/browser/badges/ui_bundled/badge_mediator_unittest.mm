@@ -9,7 +9,6 @@
 #import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_type.h"
@@ -20,6 +19,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
+#import "ios/chrome/browser/infobars/ui_bundled/test_infobar_delegate.h"
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -29,9 +29,9 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
@@ -149,7 +149,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
     return InfobarBadgeTabHelper::GetOrCreateForWebState(web_state());
   }
 
-  base::test::TaskEnvironment environment_;
+  web::WebTaskEnvironment environment_;
   FakeBadgeConsumer* badge_consumer_;
   std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;

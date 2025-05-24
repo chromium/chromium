@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Updating XRReferenceSpace origin offset updates view and input matrices. - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Updating XRReferenceSpace origin offset updates view and input matrices. - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

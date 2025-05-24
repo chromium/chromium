@@ -9,11 +9,13 @@
 
 #include "components/password_manager/ios/account_select_fill_data.h"
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/ios/features.h"
 #include "components/password_manager/ios/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +26,11 @@ using autofill::FormRendererId;
 using autofill::PasswordFormFillData;
 using password_manager::AccountSelectFillData;
 using password_manager::FillData;
+using password_manager::FillDataRetrievalResult;
+using password_manager::FillDataRetrievalStatus;
+using password_manager::FormInfo;
+using password_manager::FormInfoRetrievalError;
+using password_manager::FormInfoRetrievalResult;
 using password_manager::UsernameAndRealm;
 using test_helpers::SetPasswordFormFillData;
 
@@ -366,9 +373,10 @@ TEST_F(AccountSelectFillDataTest, GetFillData) {
       // provided in RetrieveSuggestions().
       account_select_fill_data.RetrieveSuggestions(
           form_data.form_renderer_id, clicked_field, is_password_field);
-      std::unique_ptr<FillData> fill_data =
-          account_select_fill_data.GetFillData(
-              base::ASCIIToUTF16(kUsernames[1]));
+      FillDataRetrievalResult result = account_select_fill_data.GetFillData(
+          base::ASCIIToUTF16(kUsernames[1]));
+      ASSERT_TRUE(result.has_value());
+      const FillData* fill_data = result.value().get();
 
       ASSERT_TRUE(fill_data);
       EXPECT_EQ(form_data.url, fill_data->origin);
@@ -397,9 +405,94 @@ TEST_F(AccountSelectFillDataTest, GetFillDataOldCredentials) {
 
   // AccountSelectFillData should keep only last credentials. Check that in
   // request of old credentials nothing is returned.
-  std::unique_ptr<FillData> fill_data =
+  FillDataRetrievalResult result =
       account_select_fill_data.GetFillData(base::ASCIIToUTF16(kUsernames[0]));
-  EXPECT_FALSE(fill_data);
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(FillDataRetrievalStatus::kNoCredentials, result.error());
+}
+
+// Tests that the GetFillData() interface to be used when in stateless mode
+// works correctly.
+TEST_F(AccountSelectFillDataTest, GetFillData_WhenStateless) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kIOSStatelessFillDataFlow};
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data_[0],
+                               /*always_populate_realm=*/false);
+  account_select_fill_data.Add(form_data_[1],
+                               /*always_populate_realm=*/false);
+
+  for (bool is_password_field : {false, true}) {
+    for (size_t form_i = 0; form_i < std::size(form_data_); ++form_i) {
+      const auto& form_data = form_data_[form_i];
+      // Suggestions should be shown on any password field on the form. So in
+      // case of clicking on a password field it is taken an id different from
+      // existing field ids.
+      const FieldRendererId password_field_id =
+          is_password_field ? FieldRendererId(1000)
+                            : form_data.password_element_renderer_id;
+      const FieldRendererId clicked_field =
+          is_password_field ? password_field_id
+                            : form_data.username_element_renderer_id;
+
+      // GetFillData() when in stateless mode doesn't need to call
+      // RetrieveSuggestions() first.
+      FillDataRetrievalResult result = account_select_fill_data.GetFillData(
+          base::ASCIIToUTF16(kUsernames[1]), form_data.form_renderer_id,
+          clicked_field, is_password_field);
+      ASSERT_TRUE(result.has_value());
+      const FillData* fill_data = result.value().get();
+      ASSERT_TRUE(fill_data);
+      EXPECT_EQ(form_data.url, fill_data->origin);
+      EXPECT_EQ(form_data.form_renderer_id.value(), fill_data->form_id.value());
+      EXPECT_EQ(kUsernameUniqueIDs[form_i],
+                fill_data->username_element_id.value());
+      EXPECT_EQ(base::ASCIIToUTF16(kUsernames[1]), fill_data->username_value);
+      EXPECT_EQ(password_field_id, fill_data->password_element_id);
+      EXPECT_EQ(base::ASCIIToUTF16(kPasswords[1]), fill_data->password_value);
+    }
+  }
+}
+
+// Tests that the right status will be returned when there is no form with fill
+// data matching the queried form.
+TEST_F(AccountSelectFillDataTest,
+       GetFillData_WhenStateless_NoResult_BecauseNoForm) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kIOSStatelessFillDataFlow};
+
+  AccountSelectFillData account_select_fill_data;
+
+  // GetFillData() when in stateless mode doesn't need to call
+  // RetrieveSuggestions() first.
+  FillDataRetrievalResult result = account_select_fill_data.GetFillData(
+      u"test-user", form_data_[0].form_renderer_id,
+      form_data_[0].username_element_renderer_id,
+      /*is_password_field=*/false);
+
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(FillDataRetrievalStatus::kNoFormMatch, result.error());
+}
+
+// Tests that the right status will be returned when there is no field matching
+// the queried field.
+TEST_F(AccountSelectFillDataTest,
+       GetFillData_WhenStateless_NoResult_BecauseNoField) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kIOSStatelessFillDataFlow};
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data_[0], /*always_populate_realm=*/false);
+
+  // GetFillData() when in stateless mode doesn't need to call
+  // RetrieveSuggestions() first.
+  FillDataRetrievalResult result = account_select_fill_data.GetFillData(
+      u"test-user", form_data_[0].form_renderer_id, UnexistingFieldRendererId(),
+      /*is_password_field=*/false);
+
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(FillDataRetrievalStatus::kNoFieldMatch, result.error());
 }
 
 TEST_F(AccountSelectFillDataTest, CrossOriginSuggestionHasRealm) {
@@ -427,12 +520,12 @@ TEST_F(AccountSelectFillDataTest, GetFormInfo_FocusedOnExistingUsernameField) {
   AccountSelectFillData account_select_fill_data;
   account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
-  const password_manager::FormInfo* form_info =
-      account_select_fill_data.GetFormInfo(
-          form_data.form_renderer_id, form_data.username_element_renderer_id,
-          /*is_password_field=*/false);
+  FormInfoRetrievalResult result = account_select_fill_data.GetFormInfo(
+      form_data.form_renderer_id, form_data.username_element_renderer_id,
+      /*is_password_field=*/false);
 
-  ASSERT_TRUE(form_info);
+  ASSERT_TRUE(result.has_value());
+  const FormInfo* form_info = result.value();
 
   EXPECT_EQ(form_data.url, form_info->origin);
   EXPECT_EQ(form_data.form_renderer_id, form_info->form_id);
@@ -451,12 +544,12 @@ TEST_F(AccountSelectFillDataTest,
   AccountSelectFillData account_select_fill_data;
   account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
-  const password_manager::FormInfo* form_info =
-      account_select_fill_data.GetFormInfo(form_data.form_renderer_id,
-                                           UnexistingFieldRendererId(),
-                                           /*is_password_field=*/false);
+  FormInfoRetrievalResult result = account_select_fill_data.GetFormInfo(
+      form_data.form_renderer_id, UnexistingFieldRendererId(),
+      /*is_password_field=*/false);
 
-  EXPECT_FALSE(form_info);
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(FormInfoRetrievalError::kNoFieldMatch, result.error());
 }
 
 // Tests getting existing form info when focus on a random password field.
@@ -469,12 +562,12 @@ TEST_F(AccountSelectFillDataTest, GetFormInfo_FocusedOnPasswordField) {
   // Get form info for a password field with a unexisting field renderer ID,
   // which should still give a non-null result because any password field should
   // get form info.
-  const password_manager::FormInfo* form_info =
-      account_select_fill_data.GetFormInfo(form_data.form_renderer_id,
-                                           UnexistingFieldRendererId(),
-                                           /*is_password_field=*/true);
+  FormInfoRetrievalResult result = account_select_fill_data.GetFormInfo(
+      form_data.form_renderer_id, UnexistingFieldRendererId(),
+      /*is_password_field=*/true);
 
-  ASSERT_TRUE(form_info);
+  EXPECT_TRUE(result.has_value());
+  const FormInfo* form_info = result.value();
 
   EXPECT_EQ(form_data.url, form_info->origin);
   EXPECT_EQ(form_data.form_renderer_id, form_info->form_id);
@@ -490,12 +583,12 @@ TEST_F(AccountSelectFillDataTest, GetFormInfo_NoMatch) {
 
   AccountSelectFillData account_select_fill_data;
 
-  const password_manager::FormInfo* form_info =
-      account_select_fill_data.GetFormInfo(
-          form_data.form_renderer_id, form_data.username_element_renderer_id,
-          /*is_password_field=*/false);
+  FormInfoRetrievalResult result = account_select_fill_data.GetFormInfo(
+      form_data.form_renderer_id, form_data.username_element_renderer_id,
+      /*is_password_field=*/false);
 
-  EXPECT_FALSE(form_info);
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(FormInfoRetrievalError::kNoFormMatch, result.error());
 }
 
 }  // namespace

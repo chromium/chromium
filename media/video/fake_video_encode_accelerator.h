@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/encoder_status.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace base {
@@ -41,9 +42,10 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   ~FakeVideoEncodeAccelerator() override;
 
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
-  bool Initialize(const Config& config,
-                  Client* client,
-                  std::unique_ptr<MediaLog> media_log = nullptr) override;
+  EncoderStatus Initialize(
+      const Config& config,
+      Client* client,
+      std::unique_ptr<MediaLog> media_log = nullptr) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(
@@ -70,6 +72,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   void SetWillInitializationSucceed(bool will_initialization_succeed);
   void SetWillEncodingSucceed(bool will_encoding_succeed);
   void SetSupportFrameSizeChange(bool support_frame_size_change);
+  void SetFrameDelay(int frame_delay);
 
   size_t minimum_output_buffer_size() const { return kMinimumOutputBufferSize; }
 

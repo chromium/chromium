@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/signin/features.gni")
 
 if (is_android) {
@@ -64,7 +63,6 @@ static_library("browser") {
   ]
   deps = [
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/google/core/common",
     "//components/metrics",
     "//components/os_crypt/sync",
@@ -80,23 +78,9 @@ static_library("browser") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//components/account_manager_core" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/crosapi/mojom" ]
-  }
-
-  if (is_chromeos_lacros) {
     deps += [
       "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-    sources += [
-      "consistency_cookie_manager.cc",
-      "consistency_cookie_manager.h",
-      "mirror_landing_account_reconcilor_delegate.cc",
-      "mirror_landing_account_reconcilor_delegate.h",
+      "//components/account_manager_core",
     ]
   }
 
@@ -114,6 +98,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "account_investigator_unittest.cc",
+    "account_management_type_metrics_recorder_unittest.cc",
     "account_reconcilor_delegate_unittest.cc",
     "account_reconcilor_unittest.cc",
     "active_primary_accounts_metrics_recorder_unittest.cc",
@@ -127,7 +112,6 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -149,29 +133,14 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//components/account_manager_core:test_support" ]
-  }
-
-  if (is_chromeos_ash) {
     deps += [
       "//chromeos/ash/components/install_attributes:test_support",
       "//chromeos/crosapi/mojom",
+      "//components/account_manager_core:test_support",
     ]
     sources -= [
       "account_investigator_unittest.cc",
       "signin_status_metrics_provider_helpers_unittest.cc",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-    ]
-    sources += [
-      "consistency_cookie_manager_unittest.cc",
-      "mirror_landing_account_reconcilor_delegate_unittest.cc",
     ]
   }
 

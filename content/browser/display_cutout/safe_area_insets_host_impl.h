@@ -59,29 +59,43 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   // SafeAreaInsetsHost override.
   void ViewportFitChangedForFrame(RenderFrameHost* rfh,
                                   blink::mojom::ViewportFit value) override;
+  void ComplexSafeAreaConstraintChangedForFrame(RenderFrameHost* rfh,
+                                                bool has_constraint) override;
 
   // Get the stored viewport fit value for a frame or kAuto if there is no
   // stored value.
   // Protected for testing only.
   blink::mojom::ViewportFit GetValueOrDefault(RenderFrameHost* rfh) const;
 
-  // Sets the stored viewport fit value for a frame, deleting the UserData
-  // if it's no longer needed.
+  // Sets the stored viewport fit value / safe area constraint value for a
+  // frame, deleting the UserData if it's no longer needed.
   // Protected for testing only.
   void SetViewportFitValue(RenderFrameHost* rfh,
                            blink::mojom::ViewportFit value);
 
+  void SetSafeAreaConstraintValue(RenderFrameHost* rfh, bool has_constraint);
+  bool GetSafeAreaConstraintOrDefault(RenderFrameHost* rfh) const;
+
  private:
+  static constexpr gfx::Insets kZeroInsets = gfx::Insets();
+
   friend class TestSafeAreaInsetsHostImpl;
 
   // Checks if the active `RenderFrameHost` has changed, and notifies
   // Blink about the current safe area, and WebContents observers if needed.
   void MaybeActiveRenderFrameHostChanged();
 
+  // Clears the insets on the active frame. This should particularly be used
+  // when switching frames during a transition into or out of fullscreen mode.
+  void ClearSafeAreaInsetsForActiveFrame();
+
+  // Send the safe area insets to the current frame if all conditions are met.
+  void MaybeSendSafeAreaToFrame(RenderFrameHost* rfh, gfx::Insets insets);
+
   // Returns the current active `RenderFrameHost`: the current RFH or the
   // fullscreen RFH when in Fullscreen mode. May return `nullptr` during
   // startup.
-  RenderFrameHostImpl* ActiveRenderFrameHost();
+  RenderFrameHostImpl* active_render_frame_host() { return active_rfh_.get(); }
 
   // Stores the current primary main `RenderFrameHost`. Never `nullptr` except
   // during startup.
@@ -96,14 +110,22 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   // if in fullscreen mode. Caching this to keep track when the active
   // `RenderFrameHost` changes. Should only be accessed in
   // `MaybeActiveRenderFrameHostChanged()`; other code should use
-  // `ActiveRenderFrameHost()` instead.
+  // `active_render_frame_host()` instead.
   base::WeakPtr<RenderFrameHostImpl> active_rfh_;
 
   // Stores the viewport-fit value that's active for this WebContents.
-  blink::mojom::ViewportFit active_value_ = blink::mojom::ViewportFit::kAuto;
+  blink::mojom::ViewportFit active_viewport_fit_ =
+      blink::mojom::ViewportFit::kAuto;
+  // Stores the active value from |ComplexSafeAreaConstraintChangedForFrame| for
+  // the web contents.
+  bool active_has_constraint_ = false;
 
   // The current insets.
   gfx::Insets insets_;
+
+  // Whether or not non-zero insets have been sent to a frame over the course of
+  // this SafeAreaInsetsHost.
+  bool has_sent_non_zero_insets_;
 };
 
 }  // namespace content

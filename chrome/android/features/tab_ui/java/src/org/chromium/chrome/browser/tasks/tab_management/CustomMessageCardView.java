@@ -10,11 +10,14 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Represents an empty custom message card view in the Grid Tab Switcher. This view supports
  * attaching a custom message card design to an empty message card view and displaying it. This view
  * is not responsible for handling the attached child view's model and subsequent functionality.
  */
+@NullMarked
 public class CustomMessageCardView extends LinearLayout {
     public CustomMessageCardView(Context context, AttributeSet attrs) {
         super(context, attrs);

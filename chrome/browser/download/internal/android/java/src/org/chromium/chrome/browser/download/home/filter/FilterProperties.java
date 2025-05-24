@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.download.home.filter;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties needed to render the download home filter view. */
+@NullMarked
 public interface FilterProperties {
     /** The {@link View} to show in the content area. */
     public static final WritableObjectPropertyKey<View> CONTENT_VIEW =

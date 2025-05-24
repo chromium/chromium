@@ -3,7 +3,7 @@ Short Name: logdog
 URL: https://chromium.googlesource.com/infra/luci/luci-py/client/libs/logdog
 Version: 17ec234f823f7bff6ada6584fdbbee9d54b8fc58
 Revision: 17ec234f823f7bff6ada6584fdbbee9d54b8fc58
-License: Apache 2.0
+License: Apache-2.0
 Security Critical: no
 Shipped: no
 

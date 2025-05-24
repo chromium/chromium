@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -27,9 +29,11 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxFocusReason.QUERY_TILES_NTP_TAP,
     OmniboxFocusReason.FOLD_TRANSITION_RESTORATION,
     OmniboxFocusReason.DRAG_DROP_TO_OMNIBOX,
-    OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD
+    OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD,
+    OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface OmniboxFocusReason {
     int OMNIBOX_TAP = 0;
     int OMNIBOX_LONG_PRESS = 1;
@@ -46,9 +50,12 @@ public @interface OmniboxFocusReason {
     int MENU_OR_KEYBOARD_ACTION = 11;
     int UNFOCUS = 12;
     int QUERY_TILES_NTP_TAP = 13;
+    // FOLD_TRANSITION_RESTORATION has not been used anymore, keep it for record for now.
     int FOLD_TRANSITION_RESTORATION = 14;
+    // DRAG_DROP_TO_OMNIBOX has not been used anymore, keep it for record for now.
     int DRAG_DROP_TO_OMNIBOX = 15;
     // Emitted on tap after focus from #8.
     int TAP_AFTER_FOCUS_FROM_KEYBOARD = 16;
-    int NUM_ENTRIES = 17;
+    int ACTIVITY_RECREATION_RESTORATION = 17;
+    int NUM_ENTRIES = 18;
 }

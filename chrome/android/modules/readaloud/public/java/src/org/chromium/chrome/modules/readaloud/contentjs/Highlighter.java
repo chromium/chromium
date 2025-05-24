@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackListener.PhraseTiming;
@@ -19,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Interface for javascript-based page highlighter, aka "karaoke mode". */
+@NullMarked
 public interface Highlighter {
     @IntDef({
         Mode.TEXT_HIGHLIGHTING_MODE_WORD,
@@ -42,7 +44,7 @@ public interface Highlighter {
     public static class Config {
         private @Mode int mMode = Mode.TEXT_HIGHLIGHTING_MODE_WORD;
         // Hex values in format: RRGGBBAA
-        private final String mHighlightForegroundColorHex = "#000000FF";
+        private static final String HIGHLIGHT_FOREGROUND_COLOR_HEX = "#000000FF";
         private final String mHighlightBackgroundColorHex;
 
         public Config(Context context) {
@@ -70,7 +72,7 @@ public interface Highlighter {
         }
 
         public String getHighlightForegroundColorHex() {
-            return mHighlightForegroundColorHex;
+            return HIGHLIGHT_FOREGROUND_COLOR_HEX;
         }
     }
 

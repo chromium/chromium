@@ -58,7 +58,7 @@ class [[clang::lto_visibility_public]] OSProcessManager {
   static void SetInstanceForTesting(OSProcessManager* instance);
 
  protected:
-  OSProcessManager() {}
+  OSProcessManager() = default;
 
   // Returns the storage used for the instance pointer.
   static OSProcessManager** GetInstanceStorage();

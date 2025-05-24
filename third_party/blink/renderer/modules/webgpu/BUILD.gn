@@ -83,6 +83,8 @@ blink_modules_sources("webgpu") {
     "gpu_shader_module.cc",
     "gpu_shader_module.h",
     "gpu_shader_stage.h",
+    "gpu_subgroup_matrix_config.cc",
+    "gpu_subgroup_matrix_config.h",
     "gpu_supported_features.cc",
     "gpu_supported_features.h",
     "gpu_supported_limits.cc",

@@ -8,6 +8,7 @@
 #include <functional>
 #include <unordered_map>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "url/gurl.h"
@@ -42,10 +43,12 @@ class TabMatcher {
   struct TabWrapper {
     std::u16string title;
     GURL url;
+    base::Time last_shown_time;
 
-    TabWrapper(std::u16string title, GURL url) {
+    TabWrapper(std::u16string title, GURL url, base::Time last_shown_time) {
       this->title = title;
       this->url = url;
+      this->last_shown_time = last_shown_time;
     }
   };
 
@@ -66,7 +69,20 @@ class TabMatcher {
   // opened.
   // Returns true, if the URL can be matched to existing tab, otherwise false.
   virtual bool IsTabOpenWithURL(const GURL& gurl,
-                                const AutocompleteInput* input) const = 0;
+                                const AutocompleteInput* input,
+                                bool exclude_active_tab = true) const = 0;
+
+  // For a given tab, check if another tab already exists with the same title or
+  // if another tab exists with the same stripped URL. Allows affordance for
+  // replacing any other components of the URL before stripping it.
+  // ** NOTE: Only implemented in Desktop **
+  // TOOD(crbug.com/419058674): Clean up up unused functions / params in
+  // TabMatcher.
+  virtual bool IsTabOpenWithSameTitleOrSimilarURL(
+      const std::u16string& title,
+      const GURL& url,
+      const GURL::Replacements& replacements,
+      bool exclude_active_tab) const;
 
   // For a given input GURLToTabInfoMap, in-place update the map with the
   // TabInfo details.
@@ -76,7 +92,9 @@ class TabMatcher {
                                 const AutocompleteInput* input) const;
 
   // Returns tab wrappers for all open tabs for the current profile.
-  virtual std::vector<TabWrapper> GetOpenTabs() const;
+  virtual std::vector<TabWrapper> GetOpenTabs(
+      const AutocompleteInput* input,
+      bool exclude_active_tab = true) const;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TAB_MATCHER_H_

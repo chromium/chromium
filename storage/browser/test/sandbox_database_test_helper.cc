@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <limits>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/ranges/algorithm.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -69,7 +69,7 @@ void CorruptDatabase(const base::FilePath& db_path,
   EXPECT_GE(buf.size(), read_size.value());
   buf.resize(read_size.value());
 
-  base::ranges::transform(buf, buf.begin(), std::logical_not<char>());
+  std::ranges::transform(buf, buf.begin(), std::logical_not<char>());
 
   std::optional<size_t> written_size =
       file.Write(offset, base::as_byte_span(buf));

@@ -25,7 +25,6 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/service/isolation_key_provider.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -53,7 +52,6 @@ class GpuMemoryBufferFactory;
 class ImageDecodeAcceleratorWorker;
 class Scheduler;
 class SharedImageStub;
-class StreamTexture;
 class SyncPointManager;
 
 // Encapsulates an IPC channel between the GPU process and one renderer
@@ -174,14 +172,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
 #if BUILDFLAG(IS_ANDROID)
   const CommandBufferStub* GetOneStub() const;
-
-  bool CreateStreamTexture(
-      int32_t stream_id,
-      mojo::PendingAssociatedReceiver<mojom::StreamTexture> receiver);
-
-  // Called by StreamTexture to remove the GpuChannel's reference to the
-  // StreamTexture.
-  void DestroyStreamTexture(int32_t stream_id);
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -284,11 +274,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   std::unique_ptr<SharedImageStub> shared_image_stub_;
 
   const bool is_gpu_host_;
-
-#if BUILDFLAG(IS_ANDROID)
-  // Set of active StreamTextures.
-  base::flat_map<int32_t, scoped_refptr<StreamTexture>> stream_textures_;
-#endif
 
 #if BUILDFLAG(IS_WIN)
   // Set of active DCOMPTextures.

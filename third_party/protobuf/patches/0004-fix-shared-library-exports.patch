@@ -1,6 +1,8 @@
+diff --git a/src/google/protobuf/stubs/port.h b/src/google/protobuf/stubs/port.h
+index eb3d8eb3ed9f1..ba155018f39bf 100644
 --- a/src/google/protobuf/stubs/port.h
 +++ b/src/google/protobuf/stubs/port.h
-@@ -90,18 +90,31 @@
+@@ -40,18 +40,31 @@
  
  // Legacy: some users reference these (internal-only) macros even though we
  // don't need them any more.

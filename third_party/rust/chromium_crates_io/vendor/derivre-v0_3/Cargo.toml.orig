@@ -1,0 +1,39 @@
+[package]
+name = "derivre"
+version = "0.3.8"
+edition = "2021"
+authors = ["Michal Moskal <michal@moskal.me>"]
+license = "MIT"
+description = "A derivative-based regular expression engine"
+repository = "https://github.com/microsoft/derivre"
+exclude = ["scripts/*"]
+rust-version = "1.80.0"
+
+[lib]
+name = "derivre"
+
+[dependencies]
+ahash = { version = "0.8.11", optional = true }
+anyhow = "1.0.95"
+bytemuck = "1.21.0"
+bytemuck_derive = "1.8.1"
+hashbrown = { version = "0.15.2", default-features = false }
+regex-syntax = "0.8.5"
+strum = { version = "0.27.0", features = ["derive"] }
+
+[dev-dependencies]
+serde = { version = "1.0.217", features = ["derive"] }
+toml = "0.8.20"
+bstr = { version = "1.11.3", default-features = false, features = ["std", "serde"] }
+
+[[bin]]
+name = "derivre"
+path = "src/derivre.rs"
+
+[features]
+default = ["compress", "ahash"]
+# default = ["ahash"]
+compress = []
+ahash = ["dep:ahash"]
+
+# [workspace]

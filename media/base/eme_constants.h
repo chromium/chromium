@@ -16,8 +16,14 @@ namespace media {
 
 // Defines values that specify registered Initialization Data Types used
 // in Encrypted Media Extensions (EME).
-// http://w3c.github.io/encrypted-media/initdata-format-registry.html#registry
-enum class EmeInitDataType { UNKNOWN, WEBM, CENC, KEYIDS, MAX = KEYIDS };
+// https://www.w3.org/TR/eme-initdata-registry/#registry
+enum class EmeInitDataType {
+  UNKNOWN,
+  WEBM,
+  CENC,
+  KEYIDS,
+  kMaxValue = KEYIDS,
+};
 
 // Defines bitmask values that specify codecs used in Encrypted Media Extensions
 // (EME). Generally codec profiles are not specified and it is assumed that the

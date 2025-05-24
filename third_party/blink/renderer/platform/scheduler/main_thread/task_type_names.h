@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 
 namespace blink {
 namespace scheduler {
@@ -18,7 +19,7 @@ class PLATFORM_EXPORT TaskTypeNames {
   STATIC_ONLY(TaskTypeNames);
 
  public:
-  static const char* TaskTypeToString(TaskType task_type);
+  static perfetto::StaticString TaskTypeToString(TaskType task_type);
 };
 
 }  // namespace scheduler

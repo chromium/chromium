@@ -116,6 +116,7 @@ def add_files_to_zip(inputs,
                      output,
                      *,
                      base_dir=None,
+                     path_transform=None,
                      compress=None,
                      zip_prefix_path=None,
                      timestamp=None):
@@ -125,6 +126,8 @@ def add_files_to_zip(inputs,
     inputs: A list of paths to zip, or a list of (zip_path, fs_path) tuples.
     output: Path, fileobj, or ZipFile instance to add files to.
     base_dir: Prefix to strip from inputs.
+    path_transform: Called for each entry path. Returns a new zip path, or None
+        to skip the file.
     compress: Whether to compress
     zip_prefix_path: Path prepended to file path in zip file.
     timestamp: Unix timestamp to use for files in the archive.
@@ -153,6 +156,10 @@ def add_files_to_zip(inputs,
     for zip_path, fs_path in input_tuples:
       if zip_prefix_path:
         zip_path = posixpath.join(zip_prefix_path, zip_path)
+      if path_transform:
+        zip_path = path_transform(zip_path)
+        if zip_path is None:
+          continue
       add_to_zip_hermetic(out_zip,
                           zip_path,
                           src_path=fs_path,
@@ -179,8 +186,8 @@ def merge_zips(output, input_zips, path_transform=None, compress=None):
   Args:
     output: Path, fileobj, or ZipFile instance to add files to.
     input_zips: Iterable of paths to zip files to merge.
-    path_transform: Called for each entry path. Returns a new path, or None to
-        skip the file.
+    path_transform: Called for each entry path. Returns a new zip path, or None
+        to skip the file.
     compress: Overrides compression setting from origin zip entries.
   """
   assert not isinstance(input_zips, str)  # Easy mistake to make.

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/services/cups_proxy/socket_manager.h"
 
 #include <errno.h>
@@ -18,7 +23,6 @@
 
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -146,7 +150,7 @@ ThreadSafeHelper::ThreadSafeHelper(
     CupsProxyServiceDelegate* const delegate,
     scoped_refptr<base::SequencedTaskRunner> runner)
     : main_runner_(runner), socket_(std::move(socket)) {}
-ThreadSafeHelper::~ThreadSafeHelper() {}
+ThreadSafeHelper::~ThreadSafeHelper() = default;
 
 void ThreadSafeHelper::ProxyToCups(std::vector<uint8_t> request,
                                    SocketManagerCallback cb) {
@@ -160,7 +164,7 @@ void ThreadSafeHelper::ProxyToCups(std::vector<uint8_t> request,
   in_flight_->io_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
       base::MakeRefCounted<net::IOBufferWithSize>(request.size()),
       request.size());
-  base::ranges::copy(request, in_flight_->io_buffer->data());
+  std::ranges::copy(request, in_flight_->io_buffer->data());
 
   ConnectIfNeeded();
 }

@@ -5,10 +5,14 @@
 #ifndef UI_VIEWS_EXAMPLES_DIALOG_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_DIALOG_EXAMPLE_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
 
@@ -38,12 +42,35 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   // ExampleBase:
   void CreateExampleView(View* container) override;
 
- private:
-  template <class>
-  class Delegate;
-  class Bubble;
-  class Dialog;
+  // Interrogates the configuration Views for DialogDelegate.
+  ui::mojom::ModalType GetModalType() const;
+  int GetDialogButtons() const;
 
+  void set_last_body_label(Label* last_body_label) {
+    last_body_label_ = last_body_label;
+  }
+  std::u16string_view title_text() const { return title_->GetText(); }
+  std::u16string_view body_text() const { return body_->GetText(); }
+  std::u16string_view ok_button_text() const {
+    return ok_button_label_->GetText();
+  }
+  std::u16string_view cancel_button_text() const {
+    return cancel_button_label_->GetText();
+  }
+  std::u16string_view extra_button_text() const {
+    return extra_button_label_->GetText();
+  }
+  bool has_extra_button_checked() const {
+    return has_extra_button_->GetChecked();
+  }
+  bool persistent_bubble_checked() const {
+    return persistent_bubble_->GetChecked();
+  }
+
+  bool OnCancel();
+  bool OnAccept();
+
+ private:
   // Helper methods to setup the configuration Views.
   void StartTextfieldRow(View* parent,
                          raw_ptr<Textfield>* member,
@@ -56,11 +83,6 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   // Checkbox callback
   void OnPerformAction();
 
-  // Interrogates the configuration Views for DialogDelegate.
-  ui::mojom::ModalType GetModalType() const;
-  int GetDialogButtons() const;
-
-  void OnCloseCallback();
   // Invoked when the dialog is closing.
   bool AllowDialogClose(bool accept);
 

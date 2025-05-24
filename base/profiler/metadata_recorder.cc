@@ -58,8 +58,9 @@ void MetadataRecorder::Set(uint64_t name_hash,
 
       const bool was_active =
           item.is_active.exchange(true, std::memory_order_release);
-      if (!was_active)
+      if (!was_active) {
         inactive_item_count_--;
+      }
 
       return;
     }
@@ -99,8 +100,9 @@ void MetadataRecorder::Remove(uint64_t name_hash,
       // A removed item will occupy its slot until that slot is reclaimed.
       const bool was_active =
           item.is_active.exchange(false, std::memory_order_relaxed);
-      if (was_active)
+      if (was_active) {
         inactive_item_count_++;
+      }
 
       return;
     }

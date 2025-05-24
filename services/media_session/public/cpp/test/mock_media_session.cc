@@ -4,11 +4,11 @@
 
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 
 namespace media_session {
 namespace test {
@@ -82,8 +82,8 @@ void MockMediaSessionMojoObserver::MediaSessionInfoChanged(
         session_info_->microphone_state == wanted_microphone_state_ ||
         session_info_->camera_state == wanted_camera_state_ ||
         (wanted_audio_video_states_ &&
-         base::ranges::is_permutation(*session_info_->audio_video_states,
-                                      *wanted_audio_video_states_))) {
+         std::ranges::is_permutation(*session_info_->audio_video_states,
+                                     *wanted_audio_video_states_))) {
       QuitWaitingIfNeeded();
     }
   }
@@ -189,7 +189,7 @@ void MockMediaSessionMojoObserver::WaitForCameraState(
 
 void MockMediaSessionMojoObserver::WaitForAudioVideoStates(
     const std::vector<mojom::MediaAudioVideoState>& wanted_states) {
-  if (session_info_ && base::ranges::is_permutation(
+  if (session_info_ && std::ranges::is_permutation(
                            *session_info_->audio_video_states, wanted_states)) {
     return;
   }

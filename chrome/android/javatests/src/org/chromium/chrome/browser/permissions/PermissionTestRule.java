@@ -76,8 +76,8 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * of times. The page title is expected to be of the form <prefix>: <count>.
      */
     public static class PermissionUpdateWaiter extends EmptyTabObserver {
-        private CallbackHelper mCallbackHelper;
-        private String mPrefix;
+        private final CallbackHelper mCallbackHelper;
+        private final String mPrefix;
         private String mExpectedTitle;
         private final ChromeActivity mActivity;
 
@@ -102,7 +102,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
          *
          * @param numUpdates The number that should be after the prefix for the wait to be over. `0`
          *     to only wait for the prefix.
-         * @throws Exception
          */
         public void waitForNumUpdates(int numUpdates) throws Exception {
             int callbackCountBefore = mCallbackHelper.getCallCount();
@@ -187,7 +186,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param nUpdates How many updates of the page title to wait for.
      * @param withGesture True if we require a user gesture to trigger the prompt.
      * @param isDialog True if we are expecting a permission dialog, false for an infobar.
-     * @throws Exception
      */
     public void runAllowTest(
             PermissionUpdateWaiter updateWaiter,
@@ -217,7 +215,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param nUpdates How many updates of the page title to wait for.
      * @param withGesture True if we require a user gesture to trigger the prompt.
      * @param isDialog True if we are expecting a permission dialog, false for an infobar.
-     * @throws Exception
      */
     public void runDenyTest(
             PermissionUpdateWaiter updateWaiter,
@@ -247,7 +244,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param nUpdates How many updates of the page title to wait for.
      * @param withGesture True if we require a user gesture.
      * @param isDialog True if we are testing a permission dialog, false for an infobar.
-     * @throws Exception
      */
     public void runNoPromptTest(
             PermissionUpdateWaiter updateWaiter,
@@ -290,7 +286,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                     PermissionDialogController.getInstance().isDialogShownForTest());
         } else {
             Assert.assertEquals(
-                    "Permission infobar shown when none expected", getInfoBars().size(), 0);
+                    "Permission infobar shown when none expected", 0, getInfoBars().size());
         }
     }
 

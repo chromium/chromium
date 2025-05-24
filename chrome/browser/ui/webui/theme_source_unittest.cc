@@ -26,7 +26,7 @@
 
 class WebUISourcesTest : public testing::Test {
  public:
-  WebUISourcesTest() : result_data_size_(0) {}
+  WebUISourcesTest() = default;
 
   TestingProfile* profile() const { return profile_.get(); }
   ThemeSource* theme_source() const { return theme_source_.get(); }
@@ -41,7 +41,7 @@ class WebUISourcesTest : public testing::Test {
                        base::Unretained(this)));
   }
 
-  size_t result_data_size_;
+  size_t result_data_size_ = 0;
 
  private:
   void SetUp() override {

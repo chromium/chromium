@@ -77,9 +77,10 @@ class TouchDevicesControllerSigninTest : public NoSessionAshTestBase {
   }
 
   void CreateTestUserSessions() {
-    GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(kUser1Email);
-    GetSessionControllerClient()->AddUserSession(kUser2Email);
+    ClearLogin();
+    SimulateUserLogin({kUser1Email});
+    SimulateUserLogin({kUser2Email});
+    SwitchActiveUser(kUser1Email);
   }
 
   void SwitchActiveUser(const std::string& email) {
@@ -188,25 +189,13 @@ TEST_F(TouchDevicesControllerPrefsTest, RecordUma) {
   auto* controller = Shell::Get()->touch_devices_controller();
   ASSERT_FALSE(controller->tap_dragging_enabled_for_test());
 
-  TestSessionControllerClient* session = GetSessionControllerClient();
-  // Disable auto-provision of PrefService.
-  constexpr bool kProvidePrefService = false;
-  // Add and switch to |kUser1Email|, but user pref service is not ready.
-  session->AddUserSession(kUser1Email, user_manager::UserType::kRegular,
-                          kProvidePrefService);
-  const AccountId kUserAccount1 = AccountId::FromUserEmail(kUser1Email);
-  session->SwitchActiveUser(kUserAccount1);
-
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("Touchpad.TapDragging.Started", 0);
   histogram_tester.ExpectTotalCount("Touchpad.TapDragging.Changed", 0);
 
   // Simulate active user pref service is changed.
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
-                           true /* for_test */);
-  GetSessionControllerClient()->SetUserPrefService(kUserAccount1,
-                                                   std::move(pref_service));
+  SimulateUserLogin({kUser1Email});
+
   histogram_tester.ExpectTotalCount("Touchpad.TapDragging.Started", 1);
   histogram_tester.ExpectTotalCount("Touchpad.TapDragging.Changed", 0);
 

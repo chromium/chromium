@@ -4,6 +4,7 @@
 
 #include "base/location.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -24,9 +25,26 @@
 
 namespace {
 
+using syncer::IsEmptyLocalDataDescription;
 using syncer::MatchesDeletionOrigin;
+using syncer::MatchesLocalDataDescription;
+using syncer::MatchesLocalDataItemModel;
 using testing::ElementsAre;
 using testing::Eq;
+using testing::IsEmpty;
+
+std::set<GURL> GetReadingListURLsFromFakeServer(
+    fake_server::FakeServer* fake_server) {
+  std::vector<sync_pb::SyncEntity> entities =
+      fake_server->GetSyncEntitiesByDataType(syncer::READING_LIST);
+  std::set<GURL> urls;
+  std::transform(entities.begin(), entities.end(),
+                 std::inserter(urls, urls.begin()),
+                 [](const sync_pb::SyncEntity& entity) {
+                   return GURL(entity.specifics().reading_list().url());
+                 });
+  return urls;
+}
 
 // Checker used to block until the reading list URLs on the server match a
 // given set of expected reading list URLs.
@@ -40,13 +58,8 @@ class ServerReadingListURLsEqualityChecker
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for server-side reading list URLs to match expected.";
 
-    std::vector<sync_pb::SyncEntity> entities =
-        fake_server()->GetSyncEntitiesByDataType(syncer::READING_LIST);
-
-    std::set<GURL> actual_urls;
-    for (const sync_pb::SyncEntity& entity : entities) {
-      actual_urls.insert(GURL(entity.specifics().reading_list().url()));
-    }
+    const std::set<GURL> actual_urls =
+        GetReadingListURLsFromFakeServer(fake_server());
 
     testing::StringMatchResultListener result_listener;
     const bool matches = ExplainMatchResult(
@@ -173,10 +186,12 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateTestReadingListEntity(
 class SingleClientReadingListSyncTest : public SyncTest {
  public:
   SingleClientReadingListSyncTest() : SyncTest(SINGLE_CLIENT) {
+#if !BUILDFLAG(IS_ANDROID)
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {syncer::kReadingListEnableSyncTransportModeUponSignIn},
         /*disabled_features=*/{});
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   SingleClientReadingListSyncTest(const SingleClientReadingListSyncTest&) =
@@ -310,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
 // ChromeOS doesn't have the concept of sign-out, so this only exists on other
 // platforms.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
                        ShouldDeleteAccountDataUponSignout) {
@@ -395,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
                        ShouldUploadAllEntriesToTheSyncServer) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_THAT(model()->size(), Eq(0ul));
 
   const GURL kUrlA("http://url_a.com/");
@@ -408,12 +423,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
                              reading_list::ADDED_VIA_CURRENT_APP,
                              /*estimated_read_time=*/base::TimeDelta());
 
-  ASSERT_THAT(model()->size(), Eq(2ul));
+  ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
 
   SignInAndWaitForReadingListActive();
 
-  ASSERT_THAT(model()->size(), Eq(2ul));
-  ASSERT_TRUE(ServerReadingListURLsEqualityChecker({}).Wait());
+  ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
+  ASSERT_THAT(GetReadingListURLsFromFakeServer(SyncTest::GetFakeServer()),
+              IsEmpty());
 
   model()->MarkAllForUploadToSyncServerIfNeeded();
 
@@ -722,6 +738,109 @@ IN_PROC_BROWSER_TEST_F(
               Eq("entry_title"));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldReturnLocalDataDescriptions) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  const GURL kUrlA("http://url_a.com/");
+  model()->AddOrReplaceEntry(kUrlA, "title_a",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  const GURL kUrlB("http://url_b.com/");
+  model()->AddOrReplaceEntry(kUrlB, "title_b",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
+
+  SignInAndWaitForReadingListActive();
+
+  ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
+  ASSERT_THAT(GetReadingListURLsFromFakeServer(SyncTest::GetFakeServer()),
+              IsEmpty());
+
+  EXPECT_THAT(
+      GetClient(0)->GetLocalDataDescriptionAndWait(syncer::READING_LIST),
+      // Items should be sorted by syncer::LocalDataItemModel::DataId.
+      MatchesLocalDataDescription(
+          syncer::DataType::READING_LIST,
+          ElementsAre(MatchesLocalDataItemModel(
+                          kUrlA, syncer::LocalDataItemModel::PageUrlIcon(kUrlA),
+                          /*title=*/"title_a", /*subtitle=*/IsEmpty()),
+                      MatchesLocalDataItemModel(
+                          kUrlB, syncer::LocalDataItemModel::PageUrlIcon(kUrlB),
+                          /*title=*/"title_b", /*subtitle=*/IsEmpty())),
+          /*item_count=*/2u, /*domains=*/ElementsAre("url_a.com", "url_b.com"),
+          /*domain_count=*/2u));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldBatchUploadAllEntries) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  const GURL kUrlA("http://url_a.com/");
+  model()->AddOrReplaceEntry(kUrlA, "title_a",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  const GURL kUrlB("http://url_b.com/");
+  model()->AddOrReplaceEntry(kUrlB, "title_b",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
+
+  SignInAndWaitForReadingListActive();
+
+  ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
+  ASSERT_THAT(GetReadingListURLsFromFakeServer(SyncTest::GetFakeServer()),
+              IsEmpty());
+
+  GetSyncService(0)->TriggerLocalDataMigration({syncer::READING_LIST});
+
+  EXPECT_TRUE(ServerReadingListURLsEqualityChecker({kUrlA, kUrlB}).Wait());
+  EXPECT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
+
+  GetClient(0)->SignOutPrimaryAccount();
+  EXPECT_THAT(model()->GetKeys(), ElementsAre());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldBatchUploadSomeEntries) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  const GURL kUrlA("http://url_a.com/");
+  model()->AddOrReplaceEntry(kUrlA, "title_a",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  const GURL kUrlB("http://url_b.com/");
+  model()->AddOrReplaceEntry(kUrlB, "title_b",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
+
+  SignInAndWaitForReadingListActive();
+
+  ASSERT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
+  ASSERT_THAT(GetReadingListURLsFromFakeServer(SyncTest::GetFakeServer()),
+              IsEmpty());
+
+  GetSyncService(0)->TriggerLocalDataMigrationForItems(
+      {{syncer::DataType::READING_LIST, {kUrlA}}});
+
+  EXPECT_TRUE(ServerReadingListURLsEqualityChecker({kUrlA}).Wait());
+  EXPECT_THAT(model()->GetKeys(), ElementsAre(kUrlA, kUrlB));
+
+  GetClient(0)->SignOutPrimaryAccount();
+  EXPECT_THAT(model()->GetKeys(), ElementsAre(kUrlB));
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

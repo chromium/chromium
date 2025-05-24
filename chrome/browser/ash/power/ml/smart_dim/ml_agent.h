@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_ML_AGENT_H_
 #define CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_ML_AGENT_H_
 
+#include <optional>
+
 #include "base/cancelable_callback.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/power/ml/smart_dim/builtin_worker.h"
@@ -17,7 +19,7 @@ namespace power {
 namespace ml {
 
 using DimDecisionCallback =
-    base::OnceCallback<void(UserActivityEvent::ModelPrediction)>;
+    base::OnceCallback<void(std::optional<UserActivityEvent::ModelPrediction>)>;
 
 // SmartDimMlAgent is responsible for preprocessing the features and requesting
 // the inference from machine learning service.
@@ -33,9 +35,13 @@ class SmartDimMlAgent {
   SmartDimMlAgent& operator=(const SmartDimMlAgent&) = delete;
 
   // Post a request to determine whether an upcoming dim should go ahead based
-  // on input |features|. When a decision is arrived at, runs the callback. If
-  // this method is called again before it calls the previous callback, the
-  // previous callback will be canceled.
+  // on input |features|. When a decision is arrived at, it is returned via
+  // |callback|.
+  //
+  // If this method is called again before the |callback| from a previous call
+  // has completed, or if the dim decision is explicitly canceled via
+  // |CancelPreviousRequest()| below, the previous |callback| will be invoked
+  // with an empty optional<ModelPrediction>.
   void RequestDimDecision(const UserActivityEvent::Features& features,
                           DimDecisionCallback callback);
   void CancelPreviousRequest();
@@ -65,8 +71,9 @@ class SmartDimMlAgent {
   BuiltinWorker builtin_worker_;
   DownloadWorker download_worker_;
 
-  base::CancelableOnceCallback<void(UserActivityEvent::ModelPrediction)>
-      dim_decision_callback_;
+  base::CancelableOnceCallback<void(
+      std::optional<UserActivityEvent::ModelPrediction>)>
+      cancelable_dim_decision_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

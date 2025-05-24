@@ -28,17 +28,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 
 namespace blink {
 
 // static
-std::atomic_int InstanceCounters::counters_[kCounterTypeLength];
+std::array<std::atomic_int, InstanceCounters::kCounterTypeLength>
+    InstanceCounters::counters_;
 
 // static
 int InstanceCounters::node_counter_ = 0;

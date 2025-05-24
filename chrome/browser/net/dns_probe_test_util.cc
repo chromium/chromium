@@ -86,7 +86,7 @@ void FakeHostResolver::MdnsListen(
     net::DnsQueryType query_type,
     mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
     MdnsListenCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 HangingHostResolver::HangingHostResolver(
@@ -113,7 +113,7 @@ void HangingHostResolver::MdnsListen(
     net::DnsQueryType query_type,
     mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
     MdnsListenCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 FakeHostResolverNetworkContext::FakeHostResolverNetworkContext(

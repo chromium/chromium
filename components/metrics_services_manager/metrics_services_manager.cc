@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "build/chromeos_buildflags.h"
+#include "components/metrics/dwa/dwa_recorder.h"
+#include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_service_client.h"
@@ -27,14 +29,11 @@ namespace metrics_services_manager {
 
 MetricsServicesManager::MetricsServicesManager(
     std::unique_ptr<MetricsServicesManagerClient> client)
-    : client_(std::move(client)),
-      may_upload_(false),
-      may_record_(false),
-      consent_given_(false) {
-  DCHECK(client_);
+    : client_(std::move(client)) {
+  CHECK(client_);
 }
 
-MetricsServicesManager::~MetricsServicesManager() {}
+MetricsServicesManager::~MetricsServicesManager() = default;
 
 void MetricsServicesManager::InstantiateFieldTrialList() const {
   client_->GetMetricsStateManager()->InstantiateFieldTrialList();
@@ -70,6 +69,11 @@ metrics::structured::StructuredMetricsService*
 MetricsServicesManager::GetStructuredMetricsService() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return GetMetricsServiceClient()->GetStructuredMetricsService();
+}
+
+metrics::dwa::DwaService* MetricsServicesManager::GetDwaService() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return GetMetricsServiceClient()->GetDwaService();
 }
 
 variations::VariationsService* MetricsServicesManager::GetVariationsService() {
@@ -108,6 +112,18 @@ MetricsServicesManager::CreateEntropyProvidersForTesting() {
       /*enable_limited_entropy_mode=*/true);
 }
 
+metrics::ClonedInstallDetector*
+MetricsServicesManager::GetClonedInstallDetectorForTesting() {
+  CHECK_IS_TEST();
+  return client_->GetMetricsStateManager()
+      ->cloned_install_detector_for_testing();  // IN-TEST
+}
+
+const metrics::ClonedInstallDetector&
+MetricsServicesManager::GetClonedInstallDetector() const {
+  return client_->GetMetricsStateManager()->GetClonedInstallDetector();
+}
+
 metrics::MetricsServiceClient*
 MetricsServicesManager::GetMetricsServiceClient() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -126,13 +142,17 @@ void MetricsServicesManager::UpdatePermissions(bool current_may_record,
                                                bool current_consent_given,
                                                bool current_may_upload) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  // If the user has opted out of metrics, delete local UKM state.
+  // If the user has opted out of metrics, delete local UKM and DWA states.
   // TODO(crbug.com/40267999): Investigate if UMA needs purging logic.
   if (consent_given_ && !current_consent_given) {
     ukm::UkmService* ukm = GetUkmService();
     if (ukm) {
       ukm->Purge();
       ukm->ResetClientState(ukm::ResetReason::kUpdatePermissions);
+    }
+    metrics::dwa::DwaService* dwa_service = GetDwaService();
+    if (dwa_service) {
+      dwa_service->Purge();
     }
   }
 
@@ -220,21 +240,23 @@ void MetricsServicesManager::UpdateRunningServices() {
 
   UpdateUkmService();
   UpdateStructuredMetricsService();
+  UpdateDwaService();
 }
 
 void MetricsServicesManager::UpdateUkmService() {
   ukm::UkmService* ukm = GetUkmService();
-  if (!ukm)
+  if (!ukm) {
     return;
+  }
 
   bool listeners_active =
       metrics_service_client_->AreNotificationListenersEnabledOnAllProfiles();
-  bool sync_enabled =
+  bool ukm_allowed =
       metrics_service_client_->IsMetricsReportingForceEnabled() ||
       metrics_service_client_->IsUkmAllowedForAllProfiles();
   bool is_incognito = client_->IsOffTheRecordSessionActive();
 
-  if (consent_given_ && listeners_active && sync_enabled && !is_incognito) {
+  if (consent_given_ && listeners_active && ukm_allowed && !is_incognito) {
     ukm->EnableRecording();
     if (may_upload_)
       ukm->EnableReporting();
@@ -267,6 +289,36 @@ void MetricsServicesManager::UpdateStructuredMetricsService() {
   }
 }
 
+void MetricsServicesManager::UpdateDwaService() {
+  metrics::dwa::DwaService* dwa = GetDwaService();
+  if (!dwa) {
+    return;
+  }
+  // DWA is tied to the settings for allowing UKM.
+  bool listeners_active =
+      metrics_service_client_->AreNotificationListenersEnabledOnAllProfiles();
+  bool dwa_allowed =
+      metrics_service_client_->IsMetricsReportingForceEnabled() ||
+      metrics_service_client_->IsDwaAllowedForAllProfiles();
+  bool is_incognito = client_->IsOffTheRecordSessionActive();
+
+  if (consent_given_ && listeners_active && dwa_allowed && !is_incognito) {
+    metrics::dwa::DwaRecorder::Get()->EnableRecording();
+    if (may_upload_) {
+      dwa->EnableReporting();
+    } else {
+      dwa->DisableReporting();
+    }
+  } else {
+    metrics::dwa::DwaRecorder::Get()->DisableRecording();
+    dwa->DisableReporting();
+    // Purge the DWA recorder if the user is in incognito mode.
+    if (is_incognito) {
+      metrics::dwa::DwaRecorder::Get()->Purge();
+    }
+  }
+}
+
 void MetricsServicesManager::UpdateUploadPermissions(bool may_upload) {
   if (metrics_service_client_->IsMetricsReportingForceEnabled()) {
     UpdatePermissions(/*current_may_record=*/true,
@@ -292,6 +344,10 @@ bool MetricsServicesManager::IsMetricsConsentGiven() const {
 
 bool MetricsServicesManager::IsUkmAllowedForAllProfiles() {
   return metrics_service_client_->IsUkmAllowedForAllProfiles();
+}
+
+bool MetricsServicesManager::IsDwaAllowedForAllProfiles() {
+  return metrics_service_client_->IsDwaAllowedForAllProfiles();
 }
 
 }  // namespace metrics_services_manager

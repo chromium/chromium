@@ -12,12 +12,15 @@
 
 namespace ash {
 // WebUI config for Boca SWA.
-class BocaUIConfig : public content::DefaultWebUIConfig<ash::boca::BocaUI> {
+class BocaUIConfig : public content::WebUIConfig {
  public:
   BocaUIConfig();
 
-  // content::DefaultWebUIConfig:
+  // content::WebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 }  // namespace ash
 

@@ -29,6 +29,10 @@ AndroidInputReceiverCompat::AndroidInputReceiverCompat() {
       dlsym(main_dl_handle, "AInputTransferToken_toJava");
   DCHECK(AInputTransferToken_toJavaFn);
 
+  *reinterpret_cast<void**>(&AInputTransferToken_releaseFn) =
+      dlsym(main_dl_handle, "AInputTransferToken_release");
+  DCHECK(AInputTransferToken_releaseFn);
+
   *reinterpret_cast<void**>(&AInputEvent_toJavaFn) =
       dlsym(main_dl_handle, "AInputEvent_toJava");
   DCHECK(AInputEvent_toJavaFn);
@@ -37,9 +41,17 @@ AndroidInputReceiverCompat::AndroidInputReceiverCompat() {
       dlsym(main_dl_handle, "AInputReceiverCallbacks_create");
   DCHECK(AInputReceiverCallbacks_createFn);
 
+  *reinterpret_cast<void**>(&AInputReceiverCallbacks_releaseFn) =
+      dlsym(main_dl_handle, "AInputReceiverCallbacks_release");
+  DCHECK(AInputReceiverCallbacks_releaseFn);
+
   *reinterpret_cast<void**>(&AInputReceiverCallbacks_setMotionEventCallbackFn) =
       dlsym(main_dl_handle, "AInputReceiverCallbacks_setMotionEventCallback");
   DCHECK(AInputReceiverCallbacks_setMotionEventCallbackFn);
+
+  *reinterpret_cast<void**>(&AInputReceiver_createBatchedInputReceiverFn) =
+      dlsym(main_dl_handle, "AInputReceiver_createBatchedInputReceiver");
+  DCHECK(AInputReceiver_createBatchedInputReceiverFn);
 
   *reinterpret_cast<void**>(&AInputReceiver_createUnbatchedInputReceiverFn) =
       dlsym(main_dl_handle, "AInputReceiver_createUnbatchedInputReceiver");
@@ -48,6 +60,10 @@ AndroidInputReceiverCompat::AndroidInputReceiverCompat() {
   *reinterpret_cast<void**>(&AInputReceiver_getInputTransferTokenFn) =
       dlsym(main_dl_handle, "AInputReceiver_getInputTransferToken");
   DCHECK(AInputReceiver_getInputTransferTokenFn);
+
+  *reinterpret_cast<void**>(&AInputReceiver_releaseFn) =
+      dlsym(main_dl_handle, "AInputReceiver_release");
+  DCHECK(AInputReceiver_releaseFn);
 }
 
 // static

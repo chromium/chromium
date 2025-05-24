@@ -94,6 +94,12 @@ class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
     NOTIMPLEMENTED();
   }
 
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      wm::NativeCursorManagerDelegate* delegate) override {
+    NOTIMPLEMENTED();
+  }
+
   void SetMouseEventsEnabled(
       bool enabled,
       wm::NativeCursorManagerDelegate* delegate) override {
@@ -102,6 +108,11 @@ class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
     for (aura::WindowTreeHost* host : hosts_) {
       host->dispatcher()->OnMouseEventsEnableStateChanged(enabled);
     }
+  }
+
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override {
+    NOTIMPLEMENTED();
   }
 
   // The set of hosts to notify of changes in cursor state.

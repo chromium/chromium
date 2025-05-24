@@ -6,11 +6,11 @@
 
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/functional/overloaded.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -28,7 +28,7 @@ StoreSourceResult::StoreSourceResult(StorableSource source,
       source_time_(source_time),
       destination_limit_(destination_limit),
       result_(std::move(result)) {
-  if (const auto* success = absl::get_if<Success>(&result_)) {
+  if (const auto* success = std::get_if<Success>(&result_)) {
     CHECK(!success->min_fake_report_time.has_value() || is_noised_);
   }
 }
@@ -45,7 +45,7 @@ StoreSourceResult::StoreSourceResult(StoreSourceResult&&) = default;
 StoreSourceResult& StoreSourceResult::operator=(StoreSourceResult&&) = default;
 
 Status StoreSourceResult::status() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [&](Success) {
             return is_noised_ ? Status::kSuccessNoised : Status::kSuccess;

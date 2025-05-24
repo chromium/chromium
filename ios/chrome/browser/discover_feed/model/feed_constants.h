@@ -55,6 +55,18 @@ typedef NS_ENUM(NSInteger, FollowingFeedSortType) {
   FollowingFeedSortTypeByLatest
 };
 
+/// Enums representing whether the user is eligible to view the feed, and if
+/// not, why.
+enum class DiscoverFeedEligibility {
+  /// User is eligible for the Discover feed.
+  kEligible,
+  /// Feed is ineligible for an unknown reason.
+  kIneligibleReasonUnknown,
+  /// Feed is ineligible because a managed account is being used, and feed is
+  /// not allowed by enterprise settings.
+  kDisabledByEnterprisePolicy,
+};
+
 // The user defaults key indicating if the user has ever engaged with a feed.
 extern NSString* const kEngagedWithFeedKey;
 

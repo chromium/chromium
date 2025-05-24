@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Promise;
@@ -142,7 +143,7 @@ public class TrustedVaultClient {
 
     private static TrustedVaultClient sInstance;
 
-    private final Backend mBackend;
+    private Backend mBackend;
 
     // Registered native TrustedVaultClientAndroid instances. Usually exactly one.
     private final Set<Long> mNativeTrustedVaultClientAndroidSet = new TreeSet<Long>();
@@ -153,10 +154,10 @@ public class TrustedVaultClient {
         mBackend = backend;
     }
 
-    public static void setInstanceForTesting(TrustedVaultClient instance) {
-        var oldValue = sInstance;
-        sInstance = instance;
-        ResettersForTesting.register(() -> sInstance = oldValue);
+    public void setBackendForTesting(Backend backend) {
+        var oldValue = mBackend;
+        mBackend = backend;
+        ResettersForTesting.register(() -> mBackend = oldValue);
     }
 
     /**
@@ -272,7 +273,9 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void fetchKeys(
-            long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
+            long nativeTrustedVaultClientAndroid,
+            int requestId,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
         Consumer<List<byte[]>> responseCb =
@@ -285,7 +288,7 @@ public class TrustedVaultClient {
                             .fetchKeysCompleted(
                                     nativeTrustedVaultClientAndroid,
                                     requestId,
-                                    accountInfo.getGaiaId(),
+                                    accountInfo.getGaiaId().toString(),
                                     keys.toArray(new byte[0][]));
                 };
         get().mBackend
@@ -299,7 +302,9 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void markLocalKeysAsStale(
-            long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
+            long nativeTrustedVaultClientAndroid,
+            int requestId,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
         Consumer<Boolean> responseCallback =
@@ -325,7 +330,9 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void getIsRecoverabilityDegraded(
-            long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
+            long nativeTrustedVaultClientAndroid,
+            int requestId,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
         Consumer<Boolean> responseCallback =
@@ -354,7 +361,7 @@ public class TrustedVaultClient {
     private static void addTrustedRecoveryMethod(
             long nativeTrustedVaultClientAndroid,
             int requestId,
-            CoreAccountInfo accountInfo,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo,
             byte[] publicKey,
             int methodTypeHint) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
@@ -382,7 +389,10 @@ public class TrustedVaultClient {
     @NativeMethods
     interface Natives {
         void fetchKeysCompleted(
-                long nativeTrustedVaultClientAndroid, int requestId, String gaiaId, byte[][] keys);
+                long nativeTrustedVaultClientAndroid,
+                int requestId,
+                @JniType("std::string") String gaiaId,
+                byte[][] keys);
 
         void markLocalKeysAsStaleCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean succeeded);

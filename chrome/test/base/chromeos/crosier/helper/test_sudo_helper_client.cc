@@ -94,7 +94,7 @@ bool TestSudoHelperClient::WaitForServer(base::TimeDelta max_wait) {
 }
 
 TestSudoHelperClient::Result TestSudoHelperClient::RunCommand(
-    const std::string_view command) {
+    std::string_view command) {
   // This is a test-only function that does a blocking call to the test helper
   // process that should already be running. Synchronuos blocking operation is
   // expected in this testing context.
@@ -121,6 +121,11 @@ TestSudoHelperClient::Result TestSudoHelperClient::StartSessionManager(
 
   base::ScopedFD sock;
   Result result = SendDictAndGetResult(dict, &sock);
+
+  // If session_manager failed to start, we should not start the watcher thread.
+  if (result.return_code != 0) {
+    return result;
+  }
 
   session_manager_watcher_thread_ =
       std::make_unique<base::Thread>("SessionManagerWatcherThread");
@@ -157,7 +162,7 @@ void TestSudoHelperClient::EnsureSessionManagerStopped() {
 
 // static
 TestSudoHelperClient::Result TestSudoHelperClient::ConnectAndRunCommand(
-    const std::string_view command) {
+    std::string_view command) {
   return TestSudoHelperClient().RunCommand(command);
 }
 

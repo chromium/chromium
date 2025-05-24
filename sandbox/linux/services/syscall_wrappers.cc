@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "sandbox/linux/services/syscall_wrappers.h"
 
 #include <fcntl.h>
@@ -208,6 +213,18 @@ int landlock_create_ruleset(const struct landlock_ruleset_attr* const attr,
                             const size_t size,
                             const uint32_t flags) {
   return syscall(__NR_landlock_create_ruleset, attr, size, flags);
+}
+
+int landlock_add_rule(const int ruleset_fd,
+                      const int rule_type,
+                      const void* const rule_attr,
+                      const uint32_t flags) {
+  return syscall(__NR_landlock_add_rule, ruleset_fd, rule_type, rule_attr,
+                 flags);
+}
+
+int landlock_restrict_self(const int ruleset_fd, const uint32_t flags) {
+  return syscall(__NR_landlock_restrict_self, ruleset_fd, flags);
 }
 
 }  // namespace sandbox

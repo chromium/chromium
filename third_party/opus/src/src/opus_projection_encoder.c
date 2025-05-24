@@ -47,7 +47,7 @@ struct OpusProjectionEncoder
 
 #if !defined(DISABLE_FLOAT_API)
 static void opus_projection_copy_channel_in_float(
-  opus_val16 *dst,
+  opus_res *dst,
   int dst_stride,
   const void *src,
   int src_stride,
@@ -62,7 +62,7 @@ static void opus_projection_copy_channel_in_float(
 #endif
 
 static void opus_projection_copy_channel_in_short(
-  opus_val16 *dst,
+  opus_res *dst,
   int dst_stride,
   const void *src,
   int src_stride,
@@ -73,6 +73,20 @@ static void opus_projection_copy_channel_in_short(
 {
   mapping_matrix_multiply_channel_in_short((const MappingMatrix*)user_data,
     (const opus_int16*)src, src_stride, dst, src_channel, dst_stride, frame_size);
+}
+
+static void opus_projection_copy_channel_in_int24(
+  opus_res *dst,
+  int dst_stride,
+  const void *src,
+  int src_stride,
+  int src_channel,
+  int frame_size,
+  void *user_data
+)
+{
+  mapping_matrix_multiply_channel_in_int24((const MappingMatrix*)user_data,
+    (const opus_int32*)src, src_stride, dst, src_channel, dst_stride, frame_size);
 }
 
 static int get_order_plus_one_from_channels(int channels, int *order_plus_one)
@@ -177,6 +191,20 @@ opus_int32 opus_projection_ambisonics_encoder_get_size(int channels,
     demixing_matrix_rows = mapping_matrix_toa_demixing.rows;
     demixing_matrix_cols = mapping_matrix_toa_demixing.cols;
   }
+  else if (order_plus_one == 5)
+  {
+    mixing_matrix_rows = mapping_matrix_fourthoa_mixing.rows;
+    mixing_matrix_cols = mapping_matrix_fourthoa_mixing.cols;
+    demixing_matrix_rows = mapping_matrix_fourthoa_demixing.rows;
+    demixing_matrix_cols = mapping_matrix_fourthoa_demixing.cols;
+  }
+  else if (order_plus_one == 6)
+  {
+    mixing_matrix_rows = mapping_matrix_fifthoa_mixing.rows;
+    mixing_matrix_cols = mapping_matrix_fifthoa_mixing.cols;
+    demixing_matrix_rows = mapping_matrix_fifthoa_demixing.rows;
+    demixing_matrix_cols = mapping_matrix_fifthoa_demixing.cols;
+  }
   else
     return 0;
 
@@ -245,6 +273,20 @@ int opus_projection_ambisonics_encoder_init(OpusProjectionEncoder *st, opus_int3
         mapping_matrix_toa_mixing_data,
         sizeof(mapping_matrix_toa_mixing_data));
     }
+    else if (order_plus_one == 5)
+    {
+      mapping_matrix_init(mixing_matrix, mapping_matrix_fourthoa_mixing.rows,
+        mapping_matrix_fourthoa_mixing.cols, mapping_matrix_fourthoa_mixing.gain,
+        mapping_matrix_fourthoa_mixing_data,
+        sizeof(mapping_matrix_fourthoa_mixing_data));
+    }
+    else if (order_plus_one == 6)
+    {
+      mapping_matrix_init(mixing_matrix, mapping_matrix_fifthoa_mixing.rows,
+        mapping_matrix_fifthoa_mixing.cols, mapping_matrix_fifthoa_mixing.gain,
+        mapping_matrix_fifthoa_mixing_data,
+        sizeof(mapping_matrix_fifthoa_mixing_data));
+    }
     else
       return OPUS_BAD_ARG;
 
@@ -275,6 +317,20 @@ int opus_projection_ambisonics_encoder_init(OpusProjectionEncoder *st, opus_int3
         mapping_matrix_toa_demixing.cols, mapping_matrix_toa_demixing.gain,
         mapping_matrix_toa_demixing_data,
         sizeof(mapping_matrix_toa_demixing_data));
+    }
+      else if (order_plus_one == 5)
+    {
+      mapping_matrix_init(demixing_matrix, mapping_matrix_fourthoa_demixing.rows,
+        mapping_matrix_fourthoa_demixing.cols, mapping_matrix_fourthoa_demixing.gain,
+        mapping_matrix_fourthoa_demixing_data,
+        sizeof(mapping_matrix_fourthoa_demixing_data));
+    }
+    else if (order_plus_one == 6)
+    {
+      mapping_matrix_init(demixing_matrix, mapping_matrix_fifthoa_demixing.rows,
+        mapping_matrix_fifthoa_demixing.cols, mapping_matrix_fifthoa_demixing.gain,
+        mapping_matrix_fifthoa_demixing_data,
+        sizeof(mapping_matrix_fifthoa_demixing_data));
     }
     else
       return OPUS_BAD_ARG;
@@ -350,26 +406,24 @@ int opus_projection_encode(OpusProjectionEncoder *st, const opus_int16 *pcm,
     max_data_bytes, 16, downmix_int, 0, get_mixing_matrix(st));
 }
 
+int opus_projection_encode24(OpusProjectionEncoder *st, const opus_int32 *pcm,
+                           int frame_size, unsigned char *data,
+                           opus_int32 max_data_bytes)
+{
+  return opus_multistream_encode_native(get_multistream_encoder(st),
+    opus_projection_copy_channel_in_int24, pcm, frame_size, data,
+    max_data_bytes, MAX_ENCODING_DEPTH, downmix_int, 0, get_mixing_matrix(st));
+}
+
 #ifndef DISABLE_FLOAT_API
-#ifdef FIXED_POINT
 int opus_projection_encode_float(OpusProjectionEncoder *st, const float *pcm,
                                  int frame_size, unsigned char *data,
                                  opus_int32 max_data_bytes)
 {
   return opus_multistream_encode_native(get_multistream_encoder(st),
     opus_projection_copy_channel_in_float, pcm, frame_size, data,
-    max_data_bytes, 16, downmix_float, 1, get_mixing_matrix(st));
+    max_data_bytes, MAX_ENCODING_DEPTH, downmix_float, 1, get_mixing_matrix(st));
 }
-#else
-int opus_projection_encode_float(OpusProjectionEncoder *st, const float *pcm,
-                                 int frame_size, unsigned char *data,
-                                 opus_int32 max_data_bytes)
-{
-  return opus_multistream_encode_native(get_multistream_encoder(st),
-    opus_projection_copy_channel_in_float, pcm, frame_size, data,
-    max_data_bytes, 24, downmix_float, 1, get_mixing_matrix(st));
-}
-#endif
 #endif
 
 void opus_projection_encoder_destroy(OpusProjectionEncoder *st)

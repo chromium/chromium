@@ -9,6 +9,7 @@
 
 #include "ui/gfx/geometry/transform.h"
 
+#include <array>
 #include <ostream>
 
 #include "base/check_op.h"
@@ -733,8 +734,8 @@ void Transform::TransformVector4(float vector[4]) const {
     for (int i = 0; i < 4; i++)
       vector[i] = ClampFloatGeometry(vector[i]);
   } else {
-    double v[4] = {vector[0], vector[1], vector[2], vector[3]};
-    matrix_.MapVector4(v);
+    std::array<double, 4> v = {vector[0], vector[1], vector[2], vector[3]};
+    matrix_.MapVector4(v.data());
     for (int i = 0; i < 4; i++)
       vector[i] = ClampFloatGeometry(v[i]);
   }
@@ -992,6 +993,17 @@ void Transform::Round2dTranslationComponents() {
   } else {
     matrix_.set_rc(0, 3, std::round(matrix_.rc(0, 3)));
     matrix_.set_rc(1, 3, std::round(matrix_.rc(1, 3)));
+  }
+}
+
+void Transform::Floor2dTranslationComponents() {
+  if (!full_matrix_) [[likely]] {
+    axis_2d_ = AxisTransform2d::FromScaleAndTranslation(
+        axis_2d_.scale(), Vector2dF(std::floor(axis_2d_.translation().x()),
+                                    std::floor(axis_2d_.translation().y())));
+  } else {
+    matrix_.set_rc(0, 3, std::floor(matrix_.rc(0, 3)));
+    matrix_.set_rc(1, 3, std::floor(matrix_.rc(1, 3)));
   }
 }
 

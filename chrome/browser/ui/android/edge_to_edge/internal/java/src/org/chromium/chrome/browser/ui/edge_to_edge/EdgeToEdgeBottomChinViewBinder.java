@@ -6,15 +6,19 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.CAN_SHOW;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HAS_CONSTRAINT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.OFFSET_TAG;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
 
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class EdgeToEdgeBottomChinViewBinder {
     static class ViewHolder {
         /**
@@ -57,15 +61,23 @@ class EdgeToEdgeBottomChinViewBinder {
             viewHolder.mSceneLayer.setColor(model.get(COLOR));
         } else if (DIVIDER_COLOR == propertyKey) {
             viewHolder.mSceneLayer.setDividerColor(model.get(DIVIDER_COLOR));
+        } else if (OFFSET_TAG == propertyKey) {
+            viewHolder.mSceneLayer.setOffsetTag(model.get(OFFSET_TAG));
+        } else if (HAS_CONSTRAINT == propertyKey) {
+            viewHolder.mSceneLayer.setHasConstraint(model.get(HAS_CONSTRAINT));
         } else {
             assert false : "Unhandled property detected in EdgeToEdgeBottomChinViewBinder!";
         }
     }
 
     private static void updateVisibility(PropertyModel model, ViewHolder viewHolder) {
-        boolean visible = model.get(CAN_SHOW) && model.get(Y_OFFSET) < model.get(HEIGHT);
+        // Even if the chin has scrolled off, the android view should remain in case other browser
+        // controls are showing. The presence of the android view is needed to avoid strange
+        // transparency / cut-off bugs that happen when scrolling browser controls under bottom
+        // inset when drawing edge-to-edge.
+        viewHolder.mAndroidView.setVisibility(model.get(CAN_SHOW) ? View.VISIBLE : View.GONE);
 
-        viewHolder.mAndroidView.setVisibility(visible ? View.VISIBLE : View.GONE);
+        boolean visible = model.get(CAN_SHOW) && model.get(Y_OFFSET) < model.get(HEIGHT);
         viewHolder.mSceneLayer.setIsVisible(visible);
     }
 

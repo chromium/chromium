@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -44,8 +43,9 @@ void WindowSizerChromeOS::DetermineWindowBoundsAndShowState(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) {
   // If we got *both* the bounds and show state, we're done.
-  if (GetBrowserBounds(bounds, show_state))
+  if (GetBrowserBounds(bounds, show_state)) {
     return;
+  }
 
   // Fall back to cross-platform behavior. Note that |show_state| may have been
   // changed by the function above.
@@ -58,8 +58,9 @@ gfx::Rect WindowSizerChromeOS::GetDefaultWindowBounds(
   // Let apps set their own default.
   if (browser() && browser()->app_controller()) {
     gfx::Rect bounds = browser()->app_controller()->GetDefaultBounds();
-    if (!bounds.IsEmpty())
+    if (!bounds.IsEmpty()) {
       return bounds;
+    }
   }
 
   const gfx::Rect work_area = display.work_area();
@@ -82,8 +83,9 @@ gfx::Rect WindowSizerChromeOS::GetDefaultWindowBounds(
 bool WindowSizerChromeOS::GetBrowserBounds(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
-  if (!browser())
+  if (!browser()) {
     return false;
+  }
 
   // This should not be called on a Browser that already has a window.
   DCHECK(!browser()->window());
@@ -151,8 +153,9 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
 
   bool is_saved_bounds = GetSavedWindowBounds(bounds_in_screen, show_state);
   display::Display display = GetDisplayForNewWindow(*bounds_in_screen);
-  if (!is_saved_bounds)
+  if (!is_saved_bounds) {
     *bounds_in_screen = GetDefaultWindowBounds(display);
+  }
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (browser()->is_session_restore()) {

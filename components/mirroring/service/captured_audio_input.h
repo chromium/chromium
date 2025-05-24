@@ -54,10 +54,11 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) CapturedAudioInput final
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
   // mojom::AudioStreamCreatorClient implementation
-  void StreamCreated(mojo::PendingRemote<media::mojom::AudioInputStream> stream,
-                     mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
-                         client_receiver,
-                     media::mojom::ReadOnlyAudioDataPipePtr data_pipe) override;
+  void StreamCreated(
+      mojo::PendingRemote<media::mojom::AudioInputStream> stream,
+      mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
+          client_receiver,
+      media::mojom::ReadWriteAudioDataPipePtr data_pipe) override;
 
   // media::mojom::AudioInputStreamClient implementation.
   void OnError(media::mojom::InputStreamErrorCode code) override;

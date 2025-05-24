@@ -68,7 +68,7 @@ goog.date.month = {
  * @private
  */
 goog.date.splitDateStringRegex_ = new RegExp(
-    '^(\\d{4})(?:(?:-?(\\d{2})(?:-?(\\d{2}))?)|' +
+    '^((?:[-+]\\d*)?\\d{4})(?:(?:-?(\\d{2})(?:-?(\\d{2}))?)|' +
     '(?:-?(\\d{3}))|(?:-?W(\\d{2})(?:-?([1-7]))?))?$');
 
 
@@ -525,6 +525,16 @@ goog.date.setIso8601TimeOnly_ = function(d, formatted) {
   return true;
 };
 
+
+/**
+ * Pads the year to 4 unsigned digits, or 6 digits with a sign.
+ * @param {number} year
+ * @return {string}
+ */
+goog.date.padYear_ = function(year) {
+  const sign = year < 0 ? '-' : year >= 10000 ? '+' : '';
+  return sign + goog.string.padNumber(Math.abs(year), sign ? 6 : 4);
+};
 
 
 /**
@@ -1352,18 +1362,23 @@ goog.date.Date.prototype.add = function(interval) {
 
 
 /**
- * Returns ISO 8601 string representation of date.
+ * Returns ISO 8601 string representation of date. Consistent with the
+ * standard built-in Date#toISOString method, the year is either four digits
+ * (YYYY) or six with a sign prefix (±YYYYYY), since ISO 8601 requires the
+ * number of digits in the year to be agreed upon in advance.
  *
  * @param {boolean=} opt_verbose Whether the verbose format should be used
  *     instead of the default compact one.
  * @param {boolean=} opt_tz Whether the timezone offset should be included
  *     in the string.
  * @return {string} ISO 8601 string representation of date.
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
  */
 goog.date.Date.prototype.toIsoString = function(opt_verbose, opt_tz) {
   'use strict';
   var str = [
-    this.getFullYear(), goog.string.padNumber(this.getMonth() + 1, 2),
+    goog.date.padYear_(this.getFullYear()),
+    goog.string.padNumber(this.getMonth() + 1, 2),
     goog.string.padNumber(this.getDate(), 2)
   ];
 
@@ -1385,7 +1400,8 @@ goog.date.Date.prototype.toIsoString = function(opt_verbose, opt_tz) {
 goog.date.Date.prototype.toUTCIsoString = function(opt_verbose, opt_tz) {
   'use strict';
   var str = [
-    this.getUTCFullYear(), goog.string.padNumber(this.getUTCMonth() + 1, 2),
+    goog.date.padYear_(this.getUTCFullYear()),
+    goog.string.padNumber(this.getUTCMonth() + 1, 2),
     goog.string.padNumber(this.getUTCDate(), 2)
   ];
 
@@ -1757,7 +1773,10 @@ goog.date.DateTime.prototype.add = function(interval) {
 
 
 /**
- * Returns ISO 8601 string representation of date/time.
+ * Returns ISO 8601 string representation of date/time. Consistent with the
+ * standard built-in Date#toISOString method, the year is either four digits
+ * (YYYY) or six with a sign prefix (±YYYYYY), since ISO 8601 requires the
+ * number of digits in the year to be agreed upon in advance.
  *
  * @param {boolean=} opt_verbose Whether the verbose format should be used
  *     instead of the default compact one.
@@ -1765,6 +1784,7 @@ goog.date.DateTime.prototype.add = function(interval) {
  *     in the string.
  * @return {string} ISO 8601 string representation of date/time.
  * @override
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
  */
 goog.date.DateTime.prototype.toIsoString = function(opt_verbose, opt_tz) {
   'use strict';

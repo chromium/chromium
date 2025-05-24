@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/snap_fling_controller.h"
@@ -154,7 +154,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       std::unique_ptr<DidOverscrollParams>,
       const blink::WebInputEventAttribution&,
       std::unique_ptr<cc::EventMetrics> metrics)>;
-  void HandleInputEventWithLatencyInfo(
+  // Virtual for mocking in tests.
+  virtual void HandleInputEventWithLatencyInfo(
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
       std::unique_ptr<cc::EventMetrics> metrics,
       EventDispositionCallback callback);
@@ -230,7 +231,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   void DidFinishImplFrame() override;
   bool HasQueuedInput() const override;
   void SetScrollEventDispatchMode(
-      cc::InputHandlerClient::ScrollEventDispatchMode mode) override;
+      cc::InputHandlerClient::ScrollEventDispatchMode mode,
+      double scroll_deadline_ratio) override;
 
   // SnapFlingClient implementation.
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
@@ -246,8 +248,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       cc::BrowserControlsState constraints,
       cc::BrowserControlsState current,
       bool animate,
-      base::optional_ref<const cc::BrowserControlsOffsetTagsInfo>
-          offset_tags_info);
+      base::optional_ref<const cc::BrowserControlsOffsetTagModifications>
+          offset_tag_modifications);
 
   bool gesture_scroll_on_impl_thread_for_testing() const {
     return handling_gesture_on_impl_thread_;
@@ -278,7 +280,6 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       const blink::WebGestureEvent& event);
   EventDisposition HandleGestureScrollUpdate(
       const blink::WebGestureEvent& event,
-      const blink::WebInputEventAttribution& original_attribution,
       cc::EventMetrics* metrics,
       int64_t trace_id);
   EventDisposition HandleGestureScrollEnd(const blink::WebGestureEvent& event);
@@ -326,8 +327,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
                                      cc::TouchAction* allowed_touch_action);
 
   EventDisposition RouteToTypeSpecificHandler(
-      EventWithCallback* event_with_callback,
-      const blink::WebInputEventAttribution& original_attribution);
+      EventWithCallback* event_with_callback);
 
   void set_event_attribution_enabled(bool enabled) {
     event_attribution_enabled_ = enabled;
@@ -335,7 +335,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   void RecordScrollBegin(blink::WebGestureDevice device,
                          uint32_t main_thread_hit_tested_reasons,
-                         uint32_t main_thread_repaint_reasons);
+                         uint32_t main_thread_repaint_reasons,
+                         bool raster_inducing = false);
 
   bool HasQueuedEventsReadyForDispatch(bool frame_aligned) const;
 
@@ -391,7 +392,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // Set only when the compositor input handler is handling a gesture. Denotes
   // which modifiers were present on the `WebInputEvent` so they can be applied
   // in GenerateAndDispatchSytheticScrollPrediction.
-  std::optional<int> current_active_gesture_scroll_modifiers_;
+  std::optional<int> currently_active_gesture_scroll_modifiers_;
 
   base::OnceClosure queue_flushed_callback_;
 
@@ -470,6 +471,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // `GestureScrollUpdate` using the prediction.
   cc::InputHandlerClient::ScrollEventDispatchMode scroll_event_dispatch_mode_ =
       cc::InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents;
+
+  double scroll_deadline_ratio_ = 0.333;
 };
 
 }  // namespace blink

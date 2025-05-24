@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/features.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 
 namespace web_app {

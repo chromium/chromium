@@ -37,6 +37,12 @@ class TextureReleaserImpl : public viz::mojom::TextureReleaser {
 void Release(mojo::PendingRemote<viz::mojom::TextureReleaser> pending_remote,
              const gpu::SyncToken& sync_token,
              bool is_lost) {
+  // By default Mojo binds to the current task runner. If there is not one, such
+  // as during test teardown, then there is no point in making the Remote. That
+  // could lead to crashes.
+  if (!base::SequencedTaskRunner::HasCurrentDefault()) {
+    return;
+  }
   mojo::Remote<viz::mojom::TextureReleaser> remote(std::move(pending_remote));
   remote->Release(sync_token, is_lost);
 }
@@ -56,8 +62,7 @@ EnumTraits<viz::mojom::CopyOutputResultFormat, viz::CopyOutputResult::Format>::
     case viz::CopyOutputResult::Format::NV12:
       break;  // Not intended for transport across service boundaries.
   }
-  NOTREACHED_IN_MIGRATION();
-  return viz::mojom::CopyOutputResultFormat::RGBA;
+  NOTREACHED();
 }
 
 // static
@@ -286,8 +291,7 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
       break;  // Not intended for transport across service boundaries.
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

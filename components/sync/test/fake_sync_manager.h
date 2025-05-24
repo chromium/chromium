@@ -29,17 +29,17 @@ class SyncCycleSnapshot;
 
 class FakeSyncManager : public SyncManager {
  public:
-  // |initial_sync_ended_types|: The set of types that have initial_sync_ended
+  // `initial_sync_ended_types`: The set of types that have initial_sync_ended
   // set to true. This value will be used by InitialSyncEndedTypes() until the
   // next configuration is performed.
   //
-  // |progress_marker_types|: The set of types that have valid progress
+  // `progress_marker_types`: The set of types that have valid progress
   // markers. This will be used by GetTypesWithEmptyProgressMarkerToken() until
   // the next configuration is performed.
   //
-  // |configure_fail_types|: The set of types that will fail
+  // `configure_fail_types`: The set of types that will fail
   // configuration. Once ConfigureSyncer is called, the
-  // |initial_sync_ended_types_| and |progress_marker_types_| will be updated
+  // `initial_sync_ended_types_` and `progress_marker_types_` will be updated
   // to include those types that didn't fail.
   FakeSyncManager(DataTypeSet initial_sync_ended_types,
                   DataTypeSet progress_marker_types,
@@ -69,10 +69,10 @@ class FakeSyncManager : public SyncManager {
 
   bool IsInvalidatorEnabled() const { return invalidator_enabled_; }
 
-  // Notifies all observers about the changed |status|.
+  // Notifies all observers about the changed `status`.
   void NotifySyncStatusChanged(const SyncStatus& status);
 
-  // Notifies |observers_| about sync cycle completion.
+  // Notifies `observers_` about sync cycle completion.
   void NotifySyncCycleCompleted(const SyncCycleSnapshot& snapshot);
 
   // SyncManager implementation.

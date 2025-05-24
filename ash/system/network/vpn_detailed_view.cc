@@ -185,12 +185,12 @@ class VPNListProviderEntry : public views::Button {
         TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/true);
     tri_view->SetInsets(kProviderTriViewInsets);
     tri_view->SetContainerVisible(TriView::Container::START, false);
-    AddChildView(tri_view);
+    AddChildViewRaw(tri_view);
 
     // Add the VPN label with the provider name.
     views::Label* label = TrayPopupUtils::CreateDefaultLabel();
     label->SetText(base::UTF8ToUTF16(name));
-    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label);
 
@@ -463,7 +463,7 @@ void VpnDetailedView::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void VpnDetailedView::AddNetwork(const NetworkStateProperties* network,
                                  views::View* container) {
   views::View* entry(new VPNListNetworkEntry(this, model(), network));
-  container->AddChildView(entry);
+  container->AddChildViewRaw(entry);
   network_view_guid_map_[entry] = network->guid;
   list_empty_ = false;
 }

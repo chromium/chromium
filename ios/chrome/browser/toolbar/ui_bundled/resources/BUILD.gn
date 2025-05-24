@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/banner_promo_background_color.colorset/Contents.json",
+    "Assets.xcassets/banner_promo_close_button_background_color.colorset/Contents.json",
+    "Assets.xcassets/banner_promo_close_button_x_color.colorset/Contents.json",
+    "Assets.xcassets/banner_promo_text_color.colorset/Contents.json",
+  ]
+}

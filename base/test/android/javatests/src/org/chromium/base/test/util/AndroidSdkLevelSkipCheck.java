@@ -18,7 +18,6 @@ public class AndroidSdkLevelSkipCheck extends SkipCheck {
      * If either {@link MinAndroidSdkLevel} or {@link MaxAndroidSdkLevel} is present, checks its
      * boundary against the device's SDK level.
      *
-     * @param testCase The test to check.
      * @return true if the device's SDK level is below the specified minimum.
      */
     @Override

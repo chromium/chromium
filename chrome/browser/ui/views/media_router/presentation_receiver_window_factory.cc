@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/media_router/presentation_receiver_window.h"
-
 #include <memory>
 
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/media_router/presentation_receiver_window.h"
 #include "chrome/browser/ui/media_router/presentation_receiver_window_delegate.h"
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_frame.h"
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_view.h"

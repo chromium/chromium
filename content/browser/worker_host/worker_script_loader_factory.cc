@@ -70,7 +70,7 @@ void WorkerScriptLoaderFactory::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
   // This method is required to support synchronous requests, which shared
   // worker script requests are not.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace content

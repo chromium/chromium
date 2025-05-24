@@ -13,7 +13,6 @@
 #import "components/dom_distiller/core/url_constants.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
@@ -140,42 +139,32 @@ bool SessionSyncServiceFactory::ShouldSyncURLForTesting(const GURL& url) {
 }
 
 // static
-SessionSyncService* SessionSyncServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SessionSyncService* SessionSyncServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<SessionSyncService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<SessionSyncService>(
+      profile, /*create=*/true);
 }
 
 SessionSyncServiceFactory::SessionSyncServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SessionSyncService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SessionSyncService") {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
-SessionSyncServiceFactory::~SessionSyncServiceFactory() {}
+SessionSyncServiceFactory::~SessionSyncServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 SessionSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<sync_sessions::SessionSyncServiceImpl>(
       ::GetChannel(),
       std::make_unique<SyncSessionsClientImpl>(
-          browser_state->GetPrefs(),
-          BrowserListFactory::GetForBrowserState(browser_state),
-          ios::HistoryServiceFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-          DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state),
-          DataTypeStoreServiceFactory::GetForBrowserState(browser_state),
-          ios::sync_start_util::GetFlareForSyncableService(browser_state)));
+          profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
+          ios::HistoryServiceFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          DeviceInfoSyncServiceFactory::GetForProfile(profile),
+          DataTypeStoreServiceFactory::GetForProfile(profile),
+          ios::sync_start_util::GetFlareForSyncableService(profile)));
 }

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace remoting {
@@ -95,6 +96,15 @@ void DesktopEnvironmentOptions::set_enable_remote_webauthn(bool enabled) {
   enable_remote_webauthn_ = enabled;
 }
 
+base::TimeDelta DesktopEnvironmentOptions::maximum_session_duration() const {
+  return maximum_session_duration_;
+}
+
+void DesktopEnvironmentOptions::set_maximum_session_duration(
+    base::TimeDelta duration) {
+  maximum_session_duration_ = duration;
+}
+
 bool DesktopEnvironmentOptions::capture_video_on_dedicated_thread() const {
   // TODO(joedow): Determine whether we can migrate additional platforms to
   // using the DesktopCaptureWrapper instead of the DesktopCaptureProxy. Then
@@ -132,6 +142,14 @@ void DesktopEnvironmentOptions::ApplySessionOptions(
     desktop_capture_options_.set_allow_sck_capturer(*enable_sck_capturer);
   }
 #endif  // IS_MAC
+
+#if BUILDFLAG(IS_WIN)
+  std::optional<bool> allow_dxgi_capturer =
+      options.GetBool("Allow-Dxgi-Capturer");
+  if (allow_dxgi_capturer.has_value()) {
+    desktop_capture_options_.set_allow_directx_capturer(*allow_dxgi_capturer);
+  }
+#endif  // IS_WIN
 
 #if defined(WEBRTC_USE_PIPEWIRE)
   desktop_capture_options_.set_allow_pipewire(true);

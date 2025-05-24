@@ -8,6 +8,7 @@ list.
 
 from grit.gather import interface
 from grit import clique
+from grit import constants
 from grit import exception
 from grit import tclib
 
@@ -84,9 +85,9 @@ class SkeletonGatherer(interface.GathererBase):
       else:
         if skeleton_gatherer:  # Make sure the skeleton is like the original
           assert (not isinstance(skeleton_gatherer.skeleton_[ix], str))
-        msg = self.skeleton_[ix].MessageForLanguage(lang,
-                                                    pseudo_if_not_available,
-                                                    fallback_to_english)
+        msg = self.skeleton_[ix].MessageForLanguageAndGender(
+            lang, constants.DEFAULT_GENDER, pseudo_if_not_available,
+            fallback_to_english)
 
         def MyEscape(text):
           return self.Escape(text)

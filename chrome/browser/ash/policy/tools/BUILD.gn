@@ -3,15 +3,15 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 device_policy_remover_path = "$target_gen_dir/device_policy_remover.cc"
 
 action("device_policy_remover_generate") {
   script = "generate_device_policy_remover.py"
   descriptor_pool_path = "//third_party/protobuf/python"
-  symbol_database_path = "$root_out_dir/pyproto"
 
   # This is provided by //components/policy/proto listed in public_deps.
   # The containing directory is in a separate variable because that's what
@@ -36,18 +36,20 @@ action("device_policy_remover_generate") {
 
     # directories for PATH variable to compile generated file
     rebase_path(descriptor_pool_path, root_build_dir),
-    rebase_path(symbol_database_path, root_build_dir),
+    rebase_path(proto_python_root, root_build_dir),
     rebase_path(chrome_device_policy_pb2_dir, root_build_dir),
   ]
 
-  public_deps = [
-    "//components/policy/proto",
+  deps = [
+    "//components/policy/proto:proto_internal_gen",
     "//third_party/protobuf:py_proto",
   ]
 }
 
 static_library("device_policy_remover_generated") {
   sources = [ device_policy_remover_path ]
-
-  public_deps = [ ":device_policy_remover_generate" ]
+  deps = [
+    ":device_policy_remover_generate",
+    "//third_party/protobuf:protobuf_lite",
+  ]
 }

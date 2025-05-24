@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUTTON_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUTTON_CONTROLLER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
@@ -14,6 +15,10 @@
 
 class Browser;
 class TabStripModel;
+
+namespace feature_engagement {
+class Tracker;
+}
 
 namespace {
 
@@ -40,6 +45,8 @@ class PerformanceInterventionButtonController
   PerformanceInterventionButtonController& operator=(
       const PerformanceInterventionButtonController&) = delete;
 
+  static int GetAcceptancePercentage();
+
   // PerformanceDetectionManager::ActionableTabsObserver:
   void OnActionableTabListChanged(
       PerformanceDetectionManager::ResourceType type,
@@ -60,8 +67,10 @@ class PerformanceInterventionButtonController
     return actionable_cpu_tabs_;
   }
 
+  bool ShouldShowNotification(feature_engagement::Tracker* tracker);
+
  private:
-  void HideToolbarButton();
+  void HideToolbarButton(bool accept_intervention);
 
   // Records metrics if the intervention UI is able to shown or the reason it
   // was unable to do so and triggers the UI to show if is able to.

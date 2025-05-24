@@ -93,7 +93,7 @@ TEST_F(FileSessionStorageTest,
 
   std::optional<base::Value::Dict> result = RetrieveSession();
   ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(result.value(), base::test::IsJson(session_information));
+  EXPECT_THAT(*result, base::test::IsJson(session_information));
 }
 
 }  // namespace remoting

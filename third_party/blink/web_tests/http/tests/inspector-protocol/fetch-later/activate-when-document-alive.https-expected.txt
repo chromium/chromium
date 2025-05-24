@@ -62,7 +62,7 @@ Network.responseReceived{
         remoteIPAddress : 127.0.0.1
         remotePort : 8443
         responseTime : <number>
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : {

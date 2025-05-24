@@ -18,17 +18,14 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "hb-ot.h"
 #include "hb.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -52,26 +49,6 @@
 #endif
 
 namespace blink {
-namespace {
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// Getting the system font render style takes a significant amount of time on
-// Linux because looking up fonts using fontconfig can be very slow. We fetch
-// the render style for each font family and text size, while it's very
-// unlikely that different text sizes for the same font family will have
-// different render styles. In addition, sometimes the font family name is not
-// normalized, so we may look up both "Arial" and "arial" which causes an
-// additional fontconfig lookup. This feature enables normalizing the font
-// family name and not using the text size for looking up the system render
-// style, which will hopefully result in a large decrease in the number of slow
-// fontconfig lookups.
-BASE_FEATURE(kOptimizeLinuxFonts,
-             "OptimizeLinuxFonts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  //  BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-}  // namespace
-
 FontPlatformData::FontPlatformData(WTF::HashTableDeletedValueType)
     : is_hash_table_deleted_value_(true) {}
 
@@ -133,19 +110,8 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
   style_ = WebFontRenderStyle::GetDefault();
 #if !BUILDFLAG(IS_WIN)
   WebFontRenderStyle system_style;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  bool override_font_name_and_size =
-      base::FeatureList::IsEnabled(kOptimizeLinuxFonts);
-#else
-  bool override_font_name_and_size = false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (override_font_name_and_size) {
-    system_style = QuerySystemRenderStyle(
-        FontFamilyName().Utf8(), 0, typeface_->fontStyle(), text_rendering);
-  } else {
-    system_style = QuerySystemRenderStyle(
-        family, text_size, typeface_->fontStyle(), text_rendering);
-  }
+  system_style = QuerySystemRenderStyle(family, text_size,
+                                        typeface_->fontStyle(), text_rendering);
 
   // In web tests, ignore system preference for subpixel positioning,
   // or explicitly disable if requested.
@@ -209,12 +175,7 @@ String FontPlatformData::FontFamilyName() const {
          !localized_string.fString.size()) {
   }
   font_family_iterator->unref();
-  return String::FromUTF8(localized_string.fString.c_str(),
-                          localized_string.fString.size());
-}
-
-bool FontPlatformData::IsAhem() const {
-  return EqualIgnoringASCIICase(FontFamilyName(), "ahem");
+  return String::FromUTF8(base::as_byte_span(localized_string.fString));
 }
 
 SkTypeface* FontPlatformData::Typeface() const {
@@ -249,7 +210,7 @@ unsigned FontPlatformData::GetHash() const {
   // rules. Memcpy is generally optimized enough so that performance doesn't
   // matter here.
   uint32_t text_size_bytes;
-  memcpy(&text_size_bytes, &text_size_, sizeof(uint32_t));
+  UNSAFE_TODO(memcpy(&text_size_bytes, &text_size_, sizeof(uint32_t)));
   h ^= text_size_bytes;
 
   return h;
@@ -313,7 +274,8 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
 
   font.setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
 
-  if (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem()) {
+  if (RuntimeEnabledFeatures::NoFontAntialiasingEnabled() &&
+      !WebTestSupport::IsFontAntialiasingEnabledForTest()) {
     font.setEdging(SkFont::Edging::kAlias);
   }
 
@@ -354,8 +316,7 @@ IdentifiableToken FontPlatformData::ComputeTypefaceDigest() const {
     base::span<const uint8_t> table_data_span;
     sk_sp<SkData> table_data = typeface_->copyTableData(table_tag);
     if (table_data) {
-      table_data_span =
-          base::span<const uint8_t>(table_data->bytes(), table_data->size());
+      table_data_span = skia::as_byte_span(*table_data);
     }
     builder.AddAtomic(table_data_span);
   }

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] No violation reported for Worker constructor with TrustedScriptURL.
+  assert_equals: no exception thrown expected null but got object "ReferenceError: Worker is not defined"
+[FAIL] Violation report for Worker constructor with plain string.
+  assert_equals: a single violation reported expected 1 but got 0
+Harness: the test ran to completion.
+

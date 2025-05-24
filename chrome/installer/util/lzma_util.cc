@@ -94,8 +94,7 @@ void SevenZipDelegateImpl::OnOpenError(seven_zip::Result result) {
     case seven_zip::Result::kMemoryMappingFailed:
     case seven_zip::Result::kNoFilename:
     case seven_zip::Result::kEncryptedHeaders:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 
@@ -201,8 +200,7 @@ bool SevenZipDelegateImpl::EntryDone(seven_zip::Result result,
 
     switch (result) {
       case seven_zip::Result::kSuccess:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case seven_zip::Result::kFailedToAllocate:
         unpack_error_ = UNPACK_ALLOCATE_ERROR;
         break;

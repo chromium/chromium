@@ -53,10 +53,9 @@ class AppServerTest : public AppServer {
   MOCK_METHOD(bool, ShutdownIfIdleAfterTask, (), (override));
   MOCK_METHOD(void, OnDelayedTaskComplete, (), (override));
 
- protected:
+ private:
   ~AppServerTest() override = default;
 
- private:
   UpdaterScope updater_scope() const override {
     return GetUpdaterScopeForTesting();
   }
@@ -94,7 +93,7 @@ class AppServerTestCase : public testing::Test {
 
 TEST_F(AppServerTestCase, SelfUninstall) {
   base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+  command_line.GetProcessCommandLine()->AppendSwitchUTF8(
       kServerServiceSwitch, kServerUpdateServiceInternalSwitchValue);
   {
     scoped_refptr<GlobalPrefs> global_prefs =

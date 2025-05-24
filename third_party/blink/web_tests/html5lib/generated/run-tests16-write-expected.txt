@@ -1,1 +1,115 @@
-../resources/tests16.dat: PASS
+../resources/tests16.dat:
+85
+87
+89
+182
+184
+186
+
+Test 85 of 197 in ../resources/tests16.dat failed. Input:
+<!doctype html><noscript><!--<noscript></noscript>--></noscript>
+Got:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|     <noscript>
+|       "<!--<noscript>"
+|   <body>
+|     "-->"
+Expected:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|     <noscript>
+|       <!-- <noscript></noscript> -->
+|   <body>
+
+Test 87 of 197 in ../resources/tests16.dat failed. Input:
+<!doctype html><noscript><!--</noscript>X<noscript>--></noscript>
+Got:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|     <noscript>
+|       "<!--"
+|   <body>
+|     "X"
+|     <noscript>
+|       "-->"
+Expected:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|     <noscript>
+|       <!-- </noscript>X<noscript> -->
+|   <body>
+
+Test 89 of 197 in ../resources/tests16.dat failed. Input:
+<!doctype html><noscript><iframe></noscript>X
+Got:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|     <noscript>
+|       "<iframe>"
+|   <body>
+|     "X"
+Expected:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|     <noscript>
+|   <body>
+|     <iframe>
+|       "</noscript>X"
+
+Test 182 of 197 in ../resources/tests16.dat failed. Input:
+<noscript><!--<noscript></noscript>--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<!--<noscript>"
+|   <body>
+|     "-->"
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <!-- <noscript></noscript> -->
+|   <body>
+
+Test 184 of 197 in ../resources/tests16.dat failed. Input:
+<noscript><!--</noscript>X<noscript>--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<!--"
+|   <body>
+|     "X"
+|     <noscript>
+|       "-->"
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <!-- </noscript>X<noscript> -->
+|   <body>
+
+Test 186 of 197 in ../resources/tests16.dat failed. Input:
+<noscript><iframe></noscript>X
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<iframe>"
+|   <body>
+|     "X"
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|   <body>
+|     <iframe>
+|       "</noscript>X"

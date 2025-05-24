@@ -27,7 +27,6 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -63,8 +62,7 @@ struct VariableLengthTransformResult {
 // about the different viewports.
 //
 // Because there is one LayoutView per rooted layout tree (or Frame), this class
-// is used to add members shared by this tree (e.g. m_layoutState or
-// m_layoutQuoteHead).
+// is used to add members shared by this tree.
 class CORE_EXPORT LayoutView : public LayoutBlockFlow {
  public:
   explicit LayoutView(ContainerNode* document);
@@ -112,7 +110,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
-  void InvalidateSvgRootsWithRelativeLengthDescendents();
   LayoutUnit ComputeMinimumWidth();
 
   // Based on LocalFrameView::LayoutSize, but:
@@ -145,8 +142,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     return frame_view_.Get();
   }
   const LayoutBox& RootBox() const;
-
-  void UpdateAfterLayout() override;
 
   // See comments for the equivalent method on LayoutObject.
   // |ancestor| can be nullptr, which will map the rect to the main frame's
@@ -263,8 +258,11 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   bool AffectedByResizedInitialContainingBlock(const LayoutResult&);
 
   // Update generated counters after style and layout tree update.
-  // container - The container for container queries, otherwise nullptr.
-  void UpdateCountersAfterStyleChange(LayoutObject* container = nullptr);
+  // interleaving_root - For interleaved style recalcs, this is the container
+  // for size container queries and the anchored element for fallback queries,
+  // otherwise nullptr.
+  void UpdateCountersAfterStyleChange(
+      LayoutObject* interleaving_root = nullptr);
 
   bool BackgroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect) const override;
@@ -282,8 +280,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // settings (i.e. unaffected by CSS). This is used for matching width / height
   // media queries when printing.
   gfx::SizeF DefaultPageAreaSize() const;
-
-  PhysicalRect LocalVisualRectIgnoringVisibility() const override;
 
   // Invalidates paint for the entire view, including composited descendants,
   // but not including child frames.
@@ -362,7 +358,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   // Set if laying out with a new initial containing block size, and populated
   // as we handle nodes that may have been affected by that.
-  Member<HeapHashSet<Member<const LayoutObject>>>
+  Member<GCedHeapHashSet<Member<const LayoutObject>>>
       initial_containing_block_resize_handled_list_;
 
   bool CanHaveChildren() const override;

@@ -78,7 +78,7 @@ def CreateAltGameImagesCc(images_1x, images_2x, script_dir):
                                _TEMPLATE_FILE_NAME,
                                readme_file=_README_FILE)
 
-    with open(os.path.join(script_dir, '../alt_game_images.cc'),
+    with open(os.path.join(script_dir, '../alt_game_image_data.cc'),
               'w') as out_file:
         out_file.write(rendered)
 

@@ -17,12 +17,14 @@ ExtensionDataTypeController::ExtensionDataTypeController(
     base::WeakPtr<syncer::SyncableService> syncable_service,
     const base::RepeatingClosure& dump_stack,
     DelegateMode delegate_mode,
-    Profile* profile)
+    Profile* profile,
+    std::unique_ptr<syncer::DataTypeLocalDataBatchUploader> batch_uploader)
     : SyncableServiceBasedDataTypeController(type,
                                              std::move(store_factory),
                                              syncable_service,
                                              dump_stack,
-                                             delegate_mode),
+                                             delegate_mode,
+                                             std::move(batch_uploader)),
       profile_(profile) {
   DCHECK(type == syncer::EXTENSIONS || type == syncer::APPS ||
          type == syncer::THEMES);

@@ -17,9 +17,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* fuzz_data,
   blink::IdentifiableTokenBuilder token_builder;
   for (size_t i = 0; i < partition_count; ++i) {
     auto partition = fdp.ConsumeRandomLengthString(fuzz_data_size);
-    token_builder.AddBytes(base::as_bytes(base::make_span(partition)));
+    token_builder.AddBytes(base::as_byte_span(partition));
   }
   auto remainder = fdp.ConsumeRemainingBytes<uint8_t>();
-  token_builder.AddBytes(base::as_bytes(base::make_span(remainder)));
+  token_builder.AddBytes(base::as_byte_span(remainder));
   return 0;
 }

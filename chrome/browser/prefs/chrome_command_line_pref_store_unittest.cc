@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -66,7 +68,7 @@ class TestCommandLinePrefStore : public ChromeCommandLinePrefStore {
   }
 
  private:
-  ~TestCommandLinePrefStore() override {}
+  ~TestCommandLinePrefStore() override = default;
 };
 
 // Tests a simple string pref on the command line.
@@ -231,11 +233,11 @@ TEST(ChromeCommandLinePrefStoreTest, ExplicitlyAllowedPorts) {
   cl.AppendSwitchASCII(switches::kExplicitlyAllowedPorts,
                        "79,554,  6000, foo,1000000");
   auto store = base::MakeRefCounted<TestCommandLinePrefStore>(&cl);
-  static constexpr int kExpectedPorts[] = {
+  constexpr static const auto kExpectedPorts = std::to_array<int>({
       79,
       554,
       6000,
-  };
+  });
 
   const base::Value* value = nullptr;
   ASSERT_TRUE(store->GetValue(prefs::kExplicitlyAllowedNetworkPorts, &value));

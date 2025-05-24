@@ -87,8 +87,6 @@ static_library("android") {
     "message_enums.h",
     "message_wrapper.cc",
     "message_wrapper.h",
-    "throttler/domain_session_throttler.cc",
-    "throttler/domain_session_throttler.h",
   ]
   deps = [
     ":jni_headers",
@@ -169,6 +167,7 @@ robolectric_library("junit") {
       [ "java/src/org/chromium/components/messages/MessageWrapperTest.java" ]
   deps = [
     ":java",
+    ":jni_headers_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

@@ -10,6 +10,11 @@ message Status {
   optional string reason = 2;
 }
 
+message ClearPersonalizationDataRequest {
+  optional bool clear_conversion_history = 1;
+  optional bool clear_suggestion_history = 2;
+}
+
 message UserDataRequest {
   oneof request {
     // Directly reads the Japanese settings from the extension.
@@ -30,6 +35,10 @@ message UserDataRequest {
     DeleteJapaneseDictionaryRequest delete_japanese_dictionary = 8;
     // Returns the TSV string that represents a japanese dictionary.
     ExportJapaneseDictionaryRequest export_japanese_dictionary = 9;
+    // Imports TSV into the current dictionary.
+    ImportJapaneseDictionaryRequest import_japanese_dictionary = 10;
+    // Clears personalization data stored locally.
+    ClearPersonalizationDataRequest clear_personalization_data = 11;
   }
 }
 

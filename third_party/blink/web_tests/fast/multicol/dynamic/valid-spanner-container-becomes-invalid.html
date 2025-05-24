@@ -16,6 +16,7 @@ test(() => {
 
     changeMe.style.cssFloat = 'left';
     assert_equals(multicol.offsetHeight, 50);
-    assert_equals(spanner.offsetWidth, 50);
+    assert_equals(spanner.offsetWidth, 150);
+    assert_equals(spanner.offsetHeight, 50);
 }, "Turn a spanner's parent from regular block into float");
 </script>

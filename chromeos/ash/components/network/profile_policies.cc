@@ -67,6 +67,7 @@ ProfilePolicies::NetworkPolicy::NetworkPolicy(const ProfilePolicies* parent,
                                               base::Value::Dict onc_policy)
     : parent_(parent), original_policy_(std::move(onc_policy)) {
   // There could already be profile-wide variable expansions (through parent_).
+  ReapplyVariableExpansions();
   ReapplyRuntimeValues();
 }
 
@@ -81,6 +82,7 @@ ProfilePolicies::ChangeEffect ProfilePolicies::NetworkPolicy::UpdateFrom(
   if (new_onc_policy == original_policy_)
     return ChangeEffect::kNoChange;
   original_policy_ = new_onc_policy.Clone();
+  ReapplyVariableExpansions();
   ReapplyRuntimeValues();
   return ChangeEffect::kEffectivePolicyChanged;
 }
@@ -103,12 +105,29 @@ ProfilePolicies::NetworkPolicy::SetResolvedClientCertificate(
 
 ProfilePolicies::ChangeEffect
 ProfilePolicies::NetworkPolicy::OnProfileWideExpansionsChanged() {
-  return ReapplyRuntimeValues();
+  ProfilePolicies::ChangeEffect change_effect = ChangeEffect::kNoChange;
+  if (ReapplyVariableExpansions() == ChangeEffect::kEffectivePolicyChanged) {
+    change_effect = ChangeEffect::kEffectivePolicyChanged;
+  }
+  if (ReapplyRuntimeValues() == ChangeEffect::kEffectivePolicyChanged) {
+    change_effect = ChangeEffect::kEffectivePolicyChanged;
+  }
+  return change_effect;
 }
 
 const base::Value::Dict& ProfilePolicies::NetworkPolicy::GetOriginalPolicy()
     const {
   return original_policy_;
+}
+
+const base::Value::Dict&
+ProfilePolicies::NetworkPolicy::GetPolicyWithVariablesExpanded() const {
+  if (!policy_with_placeholders_replaced_.has_value()) {
+    // Memory optimization to avoid storing the same value twice if setting
+    // runtime values resulted in no change.
+    return original_policy_;
+  }
+  return policy_with_placeholders_replaced_.value();
 }
 
 const base::Value::Dict&
@@ -122,6 +141,26 @@ ProfilePolicies::NetworkPolicy::GetPolicyWithRuntimeValues() const {
 }
 
 ProfilePolicies::ChangeEffect
+ProfilePolicies::NetworkPolicy::ReapplyVariableExpansions() {
+  std::optional<base::Value::Dict> old_policy_with_placeholders_replaced =
+      std::move(policy_with_placeholders_replaced_);
+
+  policy_with_placeholders_replaced_ = parent_->runtime_values_setter_.Run(
+      original_policy_, parent_->profile_wide_expansions_,
+      client_cert::ResolvedCert::NotKnownYet());
+  if (policy_with_placeholders_replaced_ == original_policy_) {
+    // Memory optimization to avoid storing the same value twice if variable
+    // expansion had no effect.
+    policy_with_placeholders_replaced_.reset();
+  }
+
+  return old_policy_with_placeholders_replaced ==
+                 policy_with_placeholders_replaced_
+             ? ChangeEffect::kNoChange
+             : ChangeEffect::kEffectivePolicyChanged;
+}
+
+ProfilePolicies::ChangeEffect
 ProfilePolicies::NetworkPolicy::ReapplyRuntimeValues() {
   std::optional<base::Value::Dict> old_policy_with_runtime_values =
       std::move(policy_with_runtime_values_);
@@ -131,7 +170,7 @@ ProfilePolicies::NetworkPolicy::ReapplyRuntimeValues() {
   if (policy_with_runtime_values_ == original_policy_) {
     // Memory optimization to avoid storing the same value twice if variable
     // expansion had no effect.
-    policy_with_runtime_values_ = {};
+    policy_with_runtime_values_.reset();
   }
 
   return old_policy_with_runtime_values == policy_with_runtime_values_
@@ -215,6 +254,12 @@ const base::Value::Dict* ProfilePolicies::GetPolicyByGuid(
     const std::string& guid) const {
   const NetworkPolicy* policy = FindPolicy(guid);
   return policy ? &policy->GetPolicyWithRuntimeValues() : nullptr;
+}
+
+const base::Value::Dict* ProfilePolicies::GetPolicyWithVariablesExpandedByGuid(
+    const std::string& guid) const {
+  const NetworkPolicy* policy = FindPolicy(guid);
+  return policy ? &policy->GetPolicyWithVariablesExpanded() : nullptr;
 }
 
 const base::Value::Dict* ProfilePolicies::GetOriginalPolicyByGuid(

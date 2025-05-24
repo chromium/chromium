@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for ui/accessibility/accessibility_features.cc state */
 @JNINamespace("ui")
+@NullMarked
 public class AccessibilityFeaturesMap extends FeatureMap {
     private static final AccessibilityFeaturesMap sInstance = new AccessibilityFeaturesMap();
 

@@ -42,6 +42,7 @@
 #include "content/public/test/browser_test.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -67,6 +68,7 @@ constexpr char kCancelButton[] = "cancelButton";
 constexpr char kPinCodeWrapper[] = "pinWrapper";
 constexpr char kConfirmAccountDialog[] = "confirmAccountDialog";
 constexpr char kSetupCompleteDialog[] = "setupCompleteDialog";
+constexpr char kSetupCompleteHistogram[] = "QuickStart.SetupComplete";
 constexpr char kScreenOpenedHistogram[] = "QuickStart.ScreenOpened";
 constexpr char kViewDurationHistogram[] = ".ViewDuration";
 constexpr char kReasonHistogram[] = ".Reason";
@@ -152,8 +154,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
     // TODO: b/320870274 - Clean up GaiaInfoScreen flag upon
     // completion of the Gaia Info screen experiment.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOobeQuickStart,
-                              features::kOobeGaiaInfoScreen},
+        /*enabled_features=*/{features::kOobeGaiaInfoScreen},
         /*disabled_features=*/{});
   }
   ~QuickStartBrowserTest() override = default;
@@ -198,7 +199,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
     quick_start::TargetDeviceBootstrapController::GaiaCredentials gaia_creds;
     gaia_creds.auth_code = FakeGaiaMixin::kFakeAuthCode;
     gaia_creds.email = FakeGaiaMixin::kFakeUserEmail;
-    gaia_creds.gaia_id = FakeGaiaMixin::kFakeAuthCode;
+    gaia_creds.gaia_id = FakeGaiaMixin::kFakeUserGaiaId;
     quick_start::TargetDeviceBootstrapController::
         SetGaiaCredentialsResponseForTesting(gaia_creds);
   }
@@ -211,6 +212,9 @@ class QuickStartBrowserTest : public OobeBaseTest {
     WaitForSigninScreen();
     WaitForGaiaPageLoad();
     OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
+    histogram_tester_.ExpectBucketCount(
+        kEntryPointVisibleHistogram,
+        quick_start::QuickStartMetrics::EntryPoint::GAIA_SCREEN, 1);
   }
 
   void EnterQuickStartFlowFromWelcomeScreen() {
@@ -424,7 +428,7 @@ class QuickStartNotDeterminedBrowserTest : public QuickStartBrowserTest {
 class QuickStartBrowserTestWithBluetoothDisabled
     : public QuickStartBrowserTest {
  public:
-  QuickStartBrowserTestWithBluetoothDisabled() {}
+  QuickStartBrowserTestWithBluetoothDisabled() = default;
   ~QuickStartBrowserTestWithBluetoothDisabled() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -1038,6 +1042,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, FullFlow) {
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kSetupCompleteDialogPath)
       ->Wait();
+  histogram_tester_.ExpectBucketCount(kSetupCompleteHistogram, true, 1);
 
   // Ensure that there is a SessionRefresher on the QuickStart screen keeping
   // the AuthSession alive.

@@ -27,6 +27,10 @@ base::TimeTicks MotionEvent::GetLatestEventTime() const {
   return GetEventTime();
 }
 
+base::TimeTicks MotionEvent::GetDownTime() const {
+  NOTREACHED();
+}
+
 float MotionEvent::GetHistoricalTouchMajor(size_t pointer_index,
                                            size_t historical_index) const {
   NOTIMPLEMENTED();
@@ -62,6 +66,10 @@ int MotionEvent::FindPointerIndexOfId(int id) const {
 int MotionEvent::GetSourceDeviceId(size_t pointer_index) const {
   NOTIMPLEMENTED();
   return 0;
+}
+
+bool MotionEvent::IsLatestEventTimeResampled() const {
+  return false;
 }
 
 std::unique_ptr<MotionEvent> MotionEvent::Clone() const {

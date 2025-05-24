@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/events/keyboard_driven_event_rewriter.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -87,39 +83,41 @@ class KeyboardDrivenEventRewriterTest : public testing::Test {
 };
 
 TEST_F(KeyboardDrivenEventRewriterTest, PassThrough) {
-  struct {
+  struct TestData {
     ui::KeyboardCode ui_keycode;
     int ui_flags;
-  } kTests[] = {
-    { ui::VKEY_A, ui::EF_NONE },
-    { ui::VKEY_A, ui::EF_CONTROL_DOWN },
-    { ui::VKEY_A, ui::EF_ALT_DOWN },
-    { ui::VKEY_A, ui::EF_SHIFT_DOWN },
-    { ui::VKEY_A, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN },
-    { ui::VKEY_A, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN },
-
-    { ui::VKEY_LEFT, ui::EF_NONE },
-    { ui::VKEY_LEFT, ui::EF_CONTROL_DOWN },
-    { ui::VKEY_LEFT, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN },
-
-    { ui::VKEY_RIGHT, ui::EF_NONE },
-    { ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN },
-    { ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN },
-
-    { ui::VKEY_UP, ui::EF_NONE },
-    { ui::VKEY_UP, ui::EF_CONTROL_DOWN },
-    { ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN },
-
-    { ui::VKEY_DOWN, ui::EF_NONE },
-    { ui::VKEY_DOWN, ui::EF_CONTROL_DOWN },
-    { ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN },
-
-    { ui::VKEY_RETURN, ui::EF_NONE },
-    { ui::VKEY_RETURN, ui::EF_CONTROL_DOWN },
-    { ui::VKEY_RETURN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN },
   };
 
-  for (size_t i = 0; i < std::size(kTests); ++i) {
+  constexpr std::array<TestData, 21> kTests = {{
+      {ui::VKEY_A, ui::EF_NONE},
+      {ui::VKEY_A, ui::EF_CONTROL_DOWN},
+      {ui::VKEY_A, ui::EF_ALT_DOWN},
+      {ui::VKEY_A, ui::EF_SHIFT_DOWN},
+      {ui::VKEY_A, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN},
+      {ui::VKEY_A, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN},
+
+      {ui::VKEY_LEFT, ui::EF_NONE},
+      {ui::VKEY_LEFT, ui::EF_CONTROL_DOWN},
+      {ui::VKEY_LEFT, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN},
+
+      {ui::VKEY_RIGHT, ui::EF_NONE},
+      {ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN},
+      {ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN},
+
+      {ui::VKEY_UP, ui::EF_NONE},
+      {ui::VKEY_UP, ui::EF_CONTROL_DOWN},
+      {ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN},
+
+      {ui::VKEY_DOWN, ui::EF_NONE},
+      {ui::VKEY_DOWN, ui::EF_CONTROL_DOWN},
+      {ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN},
+
+      {ui::VKEY_RETURN, ui::EF_NONE},
+      {ui::VKEY_RETURN, ui::EF_CONTROL_DOWN},
+      {ui::VKEY_RETURN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN},
+  }};
+
+  for (size_t i = 0; i < kTests.size(); ++i) {
     EXPECT_EQ(
         base::StringPrintf("PassThrough ui_flags=%d", kTests[i].ui_flags),
         GetRewrittenEventAsString(kTests[i].ui_keycode, kTests[i].ui_flags,
@@ -131,19 +129,21 @@ TEST_F(KeyboardDrivenEventRewriterTest, PassThrough) {
 TEST_F(KeyboardDrivenEventRewriterTest, Rewrite) {
   const int kModifierMask = ui::EF_SHIFT_DOWN;
 
-  struct {
+  struct TestCase {
     ui::KeyboardCode ui_keycode;
     int ui_flags;
-  } kTests[] = {
-    { ui::VKEY_LEFT, kModifierMask },
-    { ui::VKEY_RIGHT, kModifierMask },
-    { ui::VKEY_UP, kModifierMask },
-    { ui::VKEY_DOWN, kModifierMask },
-    { ui::VKEY_RETURN, kModifierMask },
-    { ui::VKEY_F6, kModifierMask },
   };
 
-  for (size_t i = 0; i < std::size(kTests); ++i) {
+  constexpr std::array<TestCase, 6> kTests{{
+      {ui::VKEY_LEFT, kModifierMask},
+      {ui::VKEY_RIGHT, kModifierMask},
+      {ui::VKEY_UP, kModifierMask},
+      {ui::VKEY_DOWN, kModifierMask},
+      {ui::VKEY_RETURN, kModifierMask},
+      {ui::VKEY_F6, kModifierMask},
+  }};
+
+  for (size_t i = 0; i < kTests.size(); ++i) {
     EXPECT_EQ(
         "Rewritten ui_flags=0",
         GetRewrittenEventAsString(kTests[i].ui_keycode, kTests[i].ui_flags,

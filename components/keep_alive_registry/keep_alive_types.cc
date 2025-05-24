@@ -16,8 +16,6 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "BROWSER_PROCESS_CHROMEOS";
     case KeepAliveOrigin::BROWSER_PROCESS_FUCHSIA:
       return out << "BROWSER_PROCESS_FUCHSIA";
-    case KeepAliveOrigin::BROWSER_PROCESS_LACROS:
-      return out << "BROWSER_PROCESS_LACROS";
     case KeepAliveOrigin::SESSION_RESTORE:
       return out << "SESSION_RESTORE";
     case KeepAliveOrigin::HEADLESS_COMMAND:
@@ -38,14 +36,14 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "LOGIN_DISPLAY_HOST_WEBUI";
     case KeepAliveOrigin::PIN_MIGRATION:
       return out << "PIN_MIGRATION";
-    case KeepAliveOrigin::DRIVEFS_NATIVE_MESSAGE_HOST_LACROS:
-      return out << "DRIVEFS_NATIVE_MESSAGE_HOST_LACROS";
     case KeepAliveOrigin::REMOTE_DEBUGGING:
       return out << "REMOTE_DEBUGGING";
     case KeepAliveOrigin::DEVTOOLS_WINDOW:
       return out << "DEVTOOLS_WINDOW";
     case KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT:
       return out << "NATIVE_MESSAGING_HOST_ERROR_REPORT";
+    case KeepAliveOrigin::GLIC_LAUNCHER:
+      return out << "GLIC_LAUNCHER";
     case KeepAliveOrigin::NOTIFICATION:
       return out << "NOTIFICATION";
     case KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT:
@@ -82,6 +80,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "APP_START_URL_MIGRATION";
     case KeepAliveOrigin::APP_GET_INFO:
       return out << "APP_GET_INFO";
+    case KeepAliveOrigin::WEB_APP_INSTALL:
+      return out << "WEB_APP_INSTALL";
     case KeepAliveOrigin::WEB_APP_LAUNCH:
       return out << "WEB_APP_LAUNCH";
     case KeepAliveOrigin::ISOLATED_WEB_APP_INSTALL:
@@ -94,8 +94,7 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "UMA_LOG";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return out << static_cast<int>(origin);
+  NOTREACHED() << static_cast<int>(origin);
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -107,6 +106,5 @@ std::ostream& operator<<(std::ostream& out,
       return out << "ENABLED";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return out << static_cast<int>(restart);
+  NOTREACHED() << static_cast<int>(restart);
 }

@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -86,10 +83,11 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
   // See: chrome/common/chrome_paths_linux.cc
   auto env = base::Environment::Create();
   base::FilePath base_path;
-  std::string chrome_config_home_str;
-  if (env->GetVar("CHROME_CONFIG_HOME", &chrome_config_home_str) &&
-      base::IsStringUTF8(chrome_config_home_str)) {
-    base_path = base::FilePath::FromUTF8Unsafe(chrome_config_home_str);
+  std::optional<std::string> chrome_config_home_str =
+      env->GetVar("CHROME_CONFIG_HOME");
+  if (chrome_config_home_str.has_value() &&
+      base::IsStringUTF8(chrome_config_home_str.value())) {
+    base_path = base::FilePath::FromUTF8Unsafe(chrome_config_home_str.value());
   } else {
     base_path = base::nix::GetXDGDirectory(
         env.get(), base::nix::kXdgConfigHomeEnvVar, base::nix::kDotConfigDir);
@@ -97,6 +95,8 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
   dirs.push_back(base_path.Append("google-chrome").Append(kStateChangeDirName));
   dirs.push_back(
       base_path.Append("google-chrome-beta").Append(kStateChangeDirName));
+  dirs.push_back(
+      base_path.Append("google-chrome-canary").Append(kStateChangeDirName));
   dirs.push_back(
       base_path.Append("google-chrome-unstable").Append(kStateChangeDirName));
   dirs.push_back(base_path.Append("chromium").Append(kStateChangeDirName));

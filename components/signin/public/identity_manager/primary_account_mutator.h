@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 namespace signin_metrics {
@@ -89,10 +88,10 @@ class PrimaryAccountMutator {
       const CoreAccountId& account_id,
       ConsentLevel consent_level,
       signin_metrics::AccessPoint access_point =
-          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+          signin_metrics::AccessPoint::kUnknown,
       base::OnceClosure prefs_committed_callback = base::NullCallback()) = 0;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Revokes sync consent from the primary account: the primary account is left
   // at ConsentLevel::kSignin.
   //
@@ -111,7 +110,7 @@ class PrimaryAccountMutator {
   // was successful and false if there was no primary account set.
   virtual bool RemovePrimaryAccountButKeepTokens(
       signin_metrics::ProfileSignout source_metric) = 0;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace signin

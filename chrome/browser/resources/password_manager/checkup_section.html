@@ -1,4 +1,4 @@
-<style include="shared-style cr-shared-style">
+<style include="shared-style cr-shared-style cr-spinner-style">
   #checkupContent {
     margin-top: 16px;
   }
@@ -30,11 +30,8 @@
   }
 
   #spinner {
-    --paper-spinner-stroke-width: 2px;
-    height: 16px;
-    line-height: 100%;
+    --cr-spinner-size: 16px;
     margin-inline-start: 20px;
-    width: 16px;
   }
 
   #labelWrapper {
@@ -93,8 +90,7 @@
     </picture>
   </div>
   <div class="hr" id="checkupStatus">
-    <paper-spinner-lite id="spinner" active hidden="[[!isCheckRunning_]]">
-    </paper-spinner-lite>
+    <div id="spinner" class="spinner" hidden$="[[!isCheckRunning_]]"></div>
     <div id="labelWrapper">
       <div id="checkupStatusLabel" class="title">[[checkedPasswordsText_]]</div>
       <div id="checkupStatusSubLabel" class="cr-secondary-text label">

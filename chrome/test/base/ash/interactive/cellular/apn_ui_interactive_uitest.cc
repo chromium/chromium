@@ -5,12 +5,17 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
 #include "chrome/test/base/ash/interactive/cellular/wait_for_service_connected_observer.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "dbus/object_path.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -19,15 +24,16 @@
 namespace ash {
 namespace {
 
-const char kDefaultCustomApnName[] = "default_only_apn";
-const char kAttachCustomApnName[] = "attach_only_apn";
+const char kDefaultCustomApnName[] = "custom_default_only_apn";
+const char kAttachCustomApnName[] = "custom_attach_only_apn";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
 
 class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
  protected:
   ApnUiInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kAllowApnModificationPolicy);
   }
 
   // InteractiveAshTest:
@@ -55,8 +61,9 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
     ASSERT_TRUE(cellular_properties);
     const base::Value::List* shill_custom_apns =
         cellular_properties->FindList(shill::kCellularCustomApnListProperty);
-    ASSERT_TRUE(shill_custom_apns);
-    EXPECT_EQ(0u, shill_custom_apns->size());
+    if (shill_custom_apns) {
+      EXPECT_EQ(0u, shill_custom_apns->size());
+    }
   }
 
   void VerifyCustomApnInShill(bool expect_exists,
@@ -88,7 +95,7 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
     EXPECT_EQ(expect_exists, found_matching_apn_name);
   }
 
-  void VerifyLastGoodApn(const std::string expected_apn_name) {
+  void VerifyLastGoodApn(const std::string& expected_apn_name) {
     const base::Value::Dict* cellular_properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
             esim_info().service_path());
@@ -139,8 +146,8 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
                                 settings::cellular::ApnDialogAttachCheckbox()),
 
         Log(base::StringPrintf("Select APN type: Default: %s, Attach: %s",
-                               is_default ? "true" : "false",
-                               is_attach ? "true" : "false")),
+                               base::ToString(is_default),
+                               base::ToString(is_attach))),
 
         SelectApnTypeInDialog(is_default, is_attach),
 
@@ -181,7 +188,7 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
         WaitForElementTextContains(
             kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
             /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
-        Do([&]() { VerifyLastGoodApn(apn_name); }));
+        Do([this, apn_name]() { VerifyLastGoodApn(apn_name); }));
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep
@@ -192,6 +199,150 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
             kOSSettingsId, settings::cellular::ApnListItemAutoDetectedDiv(),
             /*text=*/
             l10n_util::GetStringUTF8(IDS_SETTINGS_APN_AUTO_DETECTED).c_str()));
+  }
+
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  DisableAndEnableMobileData() {
+    return Steps(
+        Log("Re-enabling mobile data"),
+
+        NavigateSettingsToInternetPage(kOSSettingsId),
+        WaitForToggleState(kOSSettingsId,
+                           settings::cellular::MobileDataToggle(), true),
+
+        Log("Disabling mobile data"),
+
+        ClickElement(kOSSettingsId, settings::cellular::MobileDataToggle()),
+        WaitForToggleState(kOSSettingsId,
+                           settings::cellular::MobileDataToggle(), false),
+
+        Log("Enabling mobile data"),
+
+        ClickElement(kOSSettingsId, settings::cellular::MobileDataToggle()),
+        WaitForToggleState(kOSSettingsId,
+                           settings::cellular::MobileDataToggle(), true));
+  }
+
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  VerifyApnPolicyEnforced() {
+    return Steps(Log("Wait for policy icon in cellular detail subpage"),
+
+                 WaitForElementExists(
+                     kOSSettingsId,
+                     settings::cellular::CellularDetailsSubpageApnPolicyIcon()),
+
+                 Log("Navigate to the APN revamp details page"),
+
+                 NavigateToApnRevampDetailsPage(kOSSettingsId),
+
+                 Log("Wait for APN action button is disabled"),
+
+                 WaitForElementExists(
+                     kOSSettingsId, settings::cellular::ApnSubpagePolicyIcon()),
+
+                 Log("Wait for automatically detected APN to be connected"),
+
+                 WaitForAutoDetectedApnConnected());
+  }
+
+  // This function returns a series of steps that are used in two tests: one of
+  // the tests involves a managed eSIM network and the other test involves an
+  // unmanaged eSIM network.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  ApplyApnPolicyAndCheckEnforcement(bool with_managed_network) {
+    ui::test::internal::InteractiveTestPrivate::MultiStep steps = Steps(
+        Log("Verify no custom APNs before start testing"),
+
+        Do([&]() { VerifyNoCustomApnsInShill(); }),
+
+        Log("Navigating to the cellular detail subpage"),
+
+        NavigateToInternetDetailsPage(
+            kOSSettingsId, NetworkTypePattern::Cellular(), esim_info().name()));
+
+    if (with_managed_network) {
+      AddStep(
+          steps,
+          Steps(Log("Checking that the policy icon is shown for the network"),
+
+                WaitForElementExists(kOSSettingsId,
+                                     settings::SettingsSubpagePolicyIcon())));
+    }
+
+    AddStep(
+        steps,
+        Steps(Log("Checking that the APN policy icon is not shown"),
+
+              WaitForElementDoesNotExist(
+                  kOSSettingsId,
+                  settings::cellular::CellularDetailsSubpageApnPolicyIcon()),
+
+              Log("Navigating to the APN details page"),
+
+              NavigateToApnRevampDetailsPage(kOSSettingsId),
+
+              Log("Verify it connects to the auto detected APN"),
+
+              WaitForAutoDetectedApnConnected(),
+
+              Log("Creating a custom default APN and waiting for it to be "
+                  "connected"),
+
+              CreateCustomApn(kDefaultCustomApnName, /*is_default=*/true,
+                              /*is_attach=*/false),
+              WaitForApnConnected(kDefaultCustomApnName),
+
+              Log("Verify Shill is aware of the APN"),
+
+              Do([&]() {
+                VerifyCustomApnInShill(/*expect_exists=*/true,
+                                       kDefaultCustomApnName,
+                                       shill::kApnTypeDefault);
+              }),
+
+              Log("Navigating back to the cellular detail subpage"),
+
+              NavigateToInternetDetailsPage(kOSSettingsId,
+                                            NetworkTypePattern::Cellular(),
+                                            esim_info().name()),
+
+              Log("Prohibiting APN modification with policy"),
+
+              Do([this, with_managed_network]() {
+                auto network_configs = base::Value::List();
+                if (with_managed_network) {
+                  network_configs.Append(GenerateCellularPolicy(
+                      esim_info(), /*allow_apn_modification=*/false));
+                }
+                base::Value::Dict global_config;
+                global_config.Set(
+                    ::onc::global_network_config::kAllowAPNModification, false);
+                NetworkHandler::Get()
+                    ->managed_network_configuration_handler()
+                    ->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
+                                /*userhash=*/std::string(),
+                                std::move(network_configs), global_config);
+              }),
+
+              Log("Checking that the policy is enforced"),
+
+              VerifyApnPolicyEnforced(),
+
+              Log("Turning cellular off and back on"),
+
+              DisableAndEnableMobileData(),
+
+              Log("Navigating to the cellular detail subpage"),
+
+              NavigateToInternetDetailsPage(kOSSettingsId,
+                                            NetworkTypePattern::Cellular(),
+                                            esim_info().name()),
+
+              Log("Checking that the policy is enforced"),
+
+              VerifyApnPolicyEnforced()));
+
+    return steps;
   }
 
  private:
@@ -262,9 +413,8 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,
 
       Log("Navigating to the internet page"),
 
-      NavigateToInternetDetailsPage(kOSSettingsId,
-                                    NetworkTypePattern::Cellular(),
-                                    esim_info().nickname()),
+      NavigateToInternetDetailsPage(
+          kOSSettingsId, NetworkTypePattern::Cellular(), esim_info().name()),
 
       Log("Navigate to the APN revamp details page"),
 
@@ -304,9 +454,8 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, MultipleNetworksDefaultApn) {
 
       Log("Navigating to the internet page"),
 
-      NavigateToInternetDetailsPage(kOSSettingsId,
-                                    NetworkTypePattern::Cellular(),
-                                    esim_info().nickname()),
+      NavigateToInternetDetailsPage(
+          kOSSettingsId, NetworkTypePattern::Cellular(), esim_info().name()),
 
       Log("Navigate to the APN revamp details page"),
 
@@ -319,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, MultipleNetworksDefaultApn) {
       Log("Navigate to the second cellular network"),
 
       NavigateToInternetDetailsPage(
-          kOSSettingsId, NetworkTypePattern::Cellular(), esim_info1.nickname()),
+          kOSSettingsId, NetworkTypePattern::Cellular(), esim_info1.name()),
 
       Log("Connect to the second network"),
 
@@ -360,9 +509,8 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, CreateDefaultCustomApn) {
 
       Log("Navigating to the internet page"),
 
-      NavigateToInternetDetailsPage(kOSSettingsId,
-                                    NetworkTypePattern::Cellular(),
-                                    esim_info().nickname()),
+      NavigateToInternetDetailsPage(
+          kOSSettingsId, NetworkTypePattern::Cellular(), esim_info().name()),
 
       Log("Navigate to the APN revamp details page"),
 
@@ -407,9 +555,8 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,
 
       Log("Navigating to the internet page"),
 
-      NavigateToInternetDetailsPage(kOSSettingsId,
-                                    NetworkTypePattern::Cellular(),
-                                    esim_info().nickname()),
+      NavigateToInternetDetailsPage(
+          kOSSettingsId, NetworkTypePattern::Cellular(), esim_info().name()),
 
       Log("Navigate to the APN revamp details page"),
 
@@ -529,9 +676,8 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, DiscoverApns) {
 
       Log("Navigating to the internet page"),
 
-      NavigateToInternetDetailsPage(kOSSettingsId,
-                                    NetworkTypePattern::Cellular(),
-                                    esim_info().nickname()),
+      NavigateToInternetDetailsPage(
+          kOSSettingsId, NetworkTypePattern::Cellular(), esim_info().name()),
 
       Log("Navigate to the APN revamp details page"),
 
@@ -610,9 +756,8 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, EnableDisableRemoveApns) {
 
       Log("Navigating to the internet page"),
 
-      NavigateToInternetDetailsPage(kOSSettingsId,
-                                    NetworkTypePattern::Cellular(),
-                                    esim_info().nickname()),
+      NavigateToInternetDetailsPage(
+          kOSSettingsId, NetworkTypePattern::Cellular(), esim_info().name()),
 
       Log("Navigate to the APN revamp details page"),
 
@@ -753,6 +898,33 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, EnableDisableRemoveApns) {
       Do([&]() { VerifyNoCustomApnsInShill(); }),
 
       Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, ApnPolicyWithUnmanagedNetwork) {
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(context,
+                           ApplyApnPolicyAndCheckEnforcement(
+                               /*with_managed_network=*/false),
+
+                           Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, ApnPolicyWithManagedNetwork) {
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  base::Value::Dict global_config;
+  global_config.Set(::onc::global_network_config::kAllowAPNModification, true);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(context,
+                           ApplyApnPolicyAndCheckEnforcement(
+                               /*with_managed_network=*/true),
+
+                           Log("Test complete"));
 }
 
 }  // namespace

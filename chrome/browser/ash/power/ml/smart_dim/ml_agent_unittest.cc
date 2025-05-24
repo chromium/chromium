@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
@@ -113,10 +114,11 @@ void CheckResult(bool* callback_done,
                  const int expected_threshold,
                  const int expected_score,
                  UserActivityEvent::ModelPrediction::Response expected_response,
-                 UserActivityEvent::ModelPrediction prediction) {
-  EXPECT_EQ(expected_response, prediction.response());
-  EXPECT_EQ(expected_threshold, prediction.decision_threshold());
-  EXPECT_EQ(expected_score, prediction.inactivity_score());
+                 std::optional<UserActivityEvent::ModelPrediction> prediction) {
+  ASSERT_TRUE(prediction.has_value());
+  EXPECT_EQ(expected_response, prediction->response());
+  EXPECT_EQ(expected_threshold, prediction->decision_threshold());
+  EXPECT_EQ(expected_score, prediction->inactivity_score());
 
   *callback_done = true;
 }
@@ -211,7 +213,7 @@ TEST_F(SmartDimMlAgentTest, CheckCancelableCallback) {
         DefaultFeatures(),
         base::BindOnce(
             [](bool* callback_done, int* num_callbacks_run,
-               UserActivityEvent::ModelPrediction prediction) {
+               std::optional<UserActivityEvent::ModelPrediction> prediction) {
               *callback_done = true;
               (*num_callbacks_run)++;
             },
@@ -222,22 +224,26 @@ TEST_F(SmartDimMlAgentTest, CheckCancelableCallback) {
   EXPECT_EQ(1, num_callbacks_run);
 }
 
-// Check that CancelPreviousRequest() can successfully prevent a previous
-// requested dim decision request from running.
+// Check that after CancelPreviousRequest(), the dim decision callback is called
+// with an empty model prediction.
 TEST_F(SmartDimMlAgentTest, CheckCanceledRequest) {
   SmartDimMlAgent::GetInstance()->ResetForTesting();
 
   bool callback_done = false;
+  bool empty_model_prediction = false;
   SmartDimMlAgent::GetInstance()->RequestDimDecision(
-      DefaultFeatures(), base::BindOnce(
-                             [](bool* callback_done,
-                                UserActivityEvent::ModelPrediction prediction) {
-                               *callback_done = true;
-                             },
-                             &callback_done));
+      DefaultFeatures(),
+      base::BindOnce(
+          [](bool* callback_done, bool* empty_model_prediction,
+             std::optional<UserActivityEvent::ModelPrediction> prediction) {
+            *callback_done = true;
+            *empty_model_prediction = !prediction.has_value();
+          },
+          &callback_done, &empty_model_prediction));
   SmartDimMlAgent::GetInstance()->CancelPreviousRequest();
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(callback_done);
+  EXPECT_TRUE(callback_done);
+  EXPECT_TRUE(empty_model_prediction);
 }
 
 // Check that when ML service fails to load model or create graph executor,
@@ -259,12 +265,13 @@ TEST_F(SmartDimMlAgentTest, LoadModelFailure) {
   // Requests during the fake-ready status doesn't crash.
   bool callback_done = false;
   SmartDimMlAgent::GetInstance()->RequestDimDecision(
-      DefaultFeatures(), base::BindOnce(
-                             [](bool* callback_done,
-                                UserActivityEvent::ModelPrediction prediction) {
-                               *callback_done = true;
-                             },
-                             &callback_done));
+      DefaultFeatures(),
+      base::BindOnce(
+          [](bool* callback_done,
+             std::optional<UserActivityEvent::ModelPrediction> prediction) {
+            *callback_done = true;
+          },
+          &callback_done));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(callback_done);
 
@@ -279,12 +286,13 @@ TEST_F(SmartDimMlAgentTest, LoadModelFailure) {
   fake_service_connection_.SetExecuteSuccess();
   // Requests after the fake-ready status can be processed successfully.
   SmartDimMlAgent::GetInstance()->RequestDimDecision(
-      DefaultFeatures(), base::BindOnce(
-                             [](bool* callback_done,
-                                UserActivityEvent::ModelPrediction prediction) {
-                               *callback_done = true;
-                             },
-                             &callback_done));
+      DefaultFeatures(),
+      base::BindOnce(
+          [](bool* callback_done,
+             std::optional<UserActivityEvent::ModelPrediction> prediction) {
+            *callback_done = true;
+          },
+          &callback_done));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_done);
 }

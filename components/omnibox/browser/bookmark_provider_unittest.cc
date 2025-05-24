@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/bookmark_provider.h"
+
+#include <array>
+
+#include "components/query_parser/query_parser.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 
 #include <stddef.h>
 
@@ -48,7 +48,8 @@ namespace {
 struct BookmarksTestInfo {
   std::string title;
   std::string url;
-} bookmark_provider_test_data[] = {
+};
+auto bookmark_provider_test_data = std::to_array<BookmarksTestInfo>({
     {"abc def", "http://www.catsanddogs.com/a"},
     {"abcde", "http://www.catsanddogs.com/b"},
     {"abcdef", "http://www.catsanddogs.com/c"},
@@ -98,7 +99,7 @@ struct BookmarksTestInfo {
     {"zyx7", "http://randomsite.com/zyx7"},
     {"zyx8", "http://randomsite.com/zyx8"},
     {"zyx9", "http://randomsite.com/zyx9"},
-};
+});
 
 // Structures and functions supporting the BookmarkProviderTest.Positions
 // unit test.
@@ -330,8 +331,8 @@ TEST_F(BookmarkProviderTest, Rankings) {
     const size_t match_count;
     // |matches| specifies the titles for all bookmarks expected to be matched
     // by the |query|
-    const std::string matches[3];
-  } query_data[] = {
+    const std::array<std::string, 3> matches;
+  } query_datas[] = {
       // Basic ranking test.
       {"abc",
        3,
@@ -377,30 +378,30 @@ TEST_F(BookmarkProviderTest, Rankings) {
         "burning worms #2"}},  // not boosted
   };
 
-  for (size_t i = 0; i < std::size(query_data); ++i) {
-    AutocompleteInput input(base::ASCIIToUTF16(query_data[i].query),
+  for (auto& query_data : query_datas) {
+    AutocompleteInput input(base::ASCIIToUTF16(query_data.query),
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     provider_->Start(input, /*minimal_changes=*/false);
     const ACMatches& matches(provider_->matches());
     // Validate number and content of results is as expected.
-    for (size_t j = 0; j < std::max(query_data[i].match_count, matches.size());
+    for (size_t j = 0; j < std::max(query_data.match_count, matches.size());
          ++j) {
-      EXPECT_LT(j, query_data[i].match_count)
+      EXPECT_LT(j, query_data.match_count)
           << "    Unexpected match '"
           << base::UTF16ToUTF8(matches[j].description) << "' for query: '"
-          << query_data[i].query << "'.";
-      if (j >= query_data[i].match_count)
+          << query_data.query << "'.";
+      if (j >= query_data.match_count)
         continue;
       EXPECT_LT(j, matches.size())
-          << "    Missing match '" << query_data[i].matches[j]
-          << "' for query: '" << query_data[i].query << "'.";
+          << "    Missing match '" << query_data.matches[j] << "' for query: '"
+          << query_data.query << "'.";
       if (j >= matches.size())
         continue;
-      EXPECT_EQ(query_data[i].matches[j],
+      EXPECT_EQ(query_data.matches[j],
                 base::UTF16ToUTF8(matches[j].description))
           << "    Mismatch at [" << base::NumberToString(j) << "] for query '"
-          << query_data[i].query << "'.";
+          << query_data.query << "'.";
     }
   }
 }
@@ -412,7 +413,8 @@ TEST_F(BookmarkProviderTest, InlineAutocompletion) {
     const std::string url;
     const bool allowed_to_be_default_match;
     const std::string inline_autocompletion;
-  } query_data[] = {
+  };
+  auto query_data = std::to_array<QueryData>({
       {"bla", "http://blah.com/", true, "h.com"},
       {"blah ", "http://blah.com/", false, ".com"},
       {"http://bl", "http://blah.com/", true, "ah.com"},
@@ -429,7 +431,7 @@ TEST_F(BookmarkProviderTest, InlineAutocompletion) {
       // need to be in the bookmarks list because BookmarkProvider's
       // TitleMatchToACMatch() has an assertion that verifies the URL is
       // actually bookmarked.
-  };
+  });
 
   for (size_t i = 0; i < std::size(query_data); ++i) {
     const std::string description =
@@ -466,7 +468,8 @@ TEST_F(BookmarkProviderTest, StripHttpAndAdjustOffsets) {
     const std::string expected_contents;
     // |expected_contents_class| is in format offset:style,offset:style,...
     const std::string expected_contents_class;
-  } query_data[] = {
+  };
+  auto query_data = std::to_array<QueryData>({
       // clang-format off
     { "foo",       "foobar.com",              "0:3,3:1"                    },
     { "www foo",   "www.foobar.com",          "0:3,3:1,4:3,7:1"            },
@@ -479,7 +482,7 @@ TEST_F(BookmarkProviderTest, StripHttpAndAdjustOffsets) {
     { "rep",       "repeat.com/1/repeat/2/",  "0:3,3:1"                    },
     { "versi",     "chrome://version",        "0:1,9:3,14:1"               },
       // clang-format on
-  };
+  });
 
   for (size_t i = 0; i < std::size(query_data); ++i) {
     std::string description = "for query=" + query_data[i].query;
@@ -659,4 +662,29 @@ TEST_F(BookmarkProviderTest, MaxMatches) {
   provider_->Start(input, false);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 9u);
+}
+
+TEST_F(BookmarkProviderTest, SetsGroupForHubSearch) {
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::ANDROID_HUB,
+                          TestSchemeClassifier());
+  provider_->Start(input, /*minimal_changes=*/false);
+  EXPECT_FALSE(provider_->matches().empty());
+  EXPECT_EQ(omnibox::GROUP_MOBILE_BOOKMARKS,
+            provider_->matches()[0].suggestion_group_id);
+}
+
+TEST_F(BookmarkProviderTest, NoMaxMatchesForHubSearch) {
+  AutocompleteInput input(u"zyx", metrics::OmniboxEventProto::ANDROID_HUB,
+                          TestSchemeClassifier());
+  provider_->Start(input, /*minimal_changes=*/false);
+  EXPECT_EQ(3u, provider_->provider_max_matches());
+  EXPECT_FALSE(provider_->matches().empty());
+  EXPECT_GT(provider_->matches().size(), 3u);
+}
+
+TEST_F(BookmarkProviderTest, MatchingAlgorithmForHubSearch) {
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::ANDROID_HUB,
+                          TestSchemeClassifier());
+  EXPECT_EQ(query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH,
+            provider_->GetMatchingAlgorithm(input));
 }

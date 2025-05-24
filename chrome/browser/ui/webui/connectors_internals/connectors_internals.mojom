@@ -17,6 +17,7 @@ enum KeyTrustLevel {
   UNSPECIFIED = 0,
   HW = 1,
   OS = 2,
+  OS_SOFTWARE = 3,
 };
 
 // Type of the signing key, equivalent to the algorithm used for its generation.
@@ -64,6 +65,9 @@ struct LoadedKeyInfo {
   // Result of an attempt to upload the key. May be empty if the
   // key has not yet been uploaded.
   KeyUploadStatus? key_upload_status;
+
+  // Whether the key was correctly converted into an SSL key.
+  bool has_ssl_key;
 };
 
 struct KeyInfo {
@@ -148,6 +152,31 @@ struct ClientCertificateState {
   ClientIdentity? managed_browser_identity;
 };
 
+struct SignalsReportingState {
+  // String that represents the error occurred.
+  string? error_info;
+
+  // Whether the status reporting process is enabled.
+  bool status_report_enabled;
+
+  // Whether the security signals reporting process is enabled.
+  bool signals_report_enabled;
+
+  // Time of the latest security signals upload attempt.
+  string last_upload_attempt_timestamp;
+
+  // Time of when the security signals was last uploaded.
+  string last_upload_success_timestamp;
+
+  // Type of report that the latest set of security signals were sent
+  // alongside with.
+  string last_signals_upload_config;
+
+  // Whether the reporting process can collect PII signals under current
+  // context.
+  bool can_collect_all_fields;
+};
+
 // Browser interface for the page. Consists of calls for data and hooks for
 // interactivity.
 interface PageHandler {
@@ -160,4 +189,7 @@ interface PageHandler {
 
   // Get state information about managed client certificates.
   GetClientCertificateState() => (ClientCertificateState state);
+
+  // Get state information about security signals reporting.
+  GetSignalsReportingState() => (SignalsReportingState state);
 };

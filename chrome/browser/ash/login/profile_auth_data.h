@@ -8,6 +8,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 
+class Profile;
+
 namespace base {
 class UnguessableToken;
 }
@@ -31,8 +33,9 @@ void TransferHttpAuthCacheToSystemNetworkContext(
     base::RepeatingClosure completion_callback,
     const base::UnguessableToken& cache_key);
 
-// Helper class that transfers authentication-related data from a BrowserContext
-// used for authentication to the user's actual BrowserContext.
+// Helper class that transfers authentication-related data from a profile
+// (represented by it's storage partition) used for authentication to the user's
+// actual profile.
 class ProfileAuthData {
  public:
   ProfileAuthData() = delete;
@@ -40,21 +43,21 @@ class ProfileAuthData {
   ProfileAuthData& operator=(const ProfileAuthData&) = delete;
 
   // Transfers authentication-related data from `from_partition` to
-  // `to_partition` and invokes `completion_callback` on the UI thread when the
+  // `to_profile` and invokes `completion_callback` on the UI thread when the
   // operation has completed. The following data is transferred:
   // * The proxy authentication state.
   // * All authentication cookies, if
   //   `transfer_auth_cookies_on_first_login` is true and
-  //   `to_partition`'s cookie jar is empty. If the cookie jar is not empty, the
-  //   authentication states in `from_partition` and `to_partition` should be
+  //   `to_profile`'s cookie jar is empty. If the cookie jar is not empty, the
+  //   authentication states in `from_partition` and `to_profile` should be
   //   merged using /MergeSession instead.
   // * The authentication cookies set by a SAML IdP, if
   //   `transfer_saml_auth_cookies_on_subsequent_login` is true and
-  //   `to_partition`'s cookie jar is not empty.
-  // `from_partition` and `to_partition` must live until `completion_callback`
+  //   `to_profile`'s cookie jar is not empty.
+  // `from_partition` and `to_profile` must live until `completion_callback`
   // is called.
   static void Transfer(content::StoragePartition* from_partition,
-                       content::StoragePartition* to_partition,
+                       Profile* to_profile,
                        bool transfer_auth_cookies_on_first_login,
                        bool transfer_saml_auth_cookies_on_subsequent_login,
                        base::OnceClosure completion_callback);

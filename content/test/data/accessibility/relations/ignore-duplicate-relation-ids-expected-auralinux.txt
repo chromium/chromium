@@ -1,7 +1,7 @@
 [document web]
 ++[paragraph]
 ++++[static] name='This '
-++++[section] details=[panel]
+++++[section] details=[panel] details-from:aria-details
 ++++++[static] name='text'
 ++++[static] name=' has details'
 ++[panel] details-for=[section]

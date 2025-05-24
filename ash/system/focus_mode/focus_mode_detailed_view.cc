@@ -300,7 +300,7 @@ class FocusModeDetailedView::TimerTextfieldController
         // `RestoreText()`, uses `SetText()`, which does not invoke
         // `ContentsChanged()`. Call `ContentsChanged()` directly, so the text
         // change gets handled by controller overrides.
-        ContentsChanged(sender, sender->GetText());
+        ContentsChanged(sender, std::u16string(sender->GetText()));
         textfield_->SetActive(false);
       }
 
@@ -517,7 +517,7 @@ void FocusModeDetailedView::CreateToggleView() {
       l10n_util::GetStringUTF16(
           in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL
                            : IDS_ASH_STATUS_TRAY_FOCUS_MODE));
-  toggle_view_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  toggle_view_->text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                         *toggle_view_->text_label());
 
@@ -531,7 +531,7 @@ void FocusModeDetailedView::CreateToggleView() {
   if (in_focus_session) {
     toggle_view_->SetSubText(focus_mode_util::GetFormattedEndTimeString(
         focus_mode_controller->GetActualEndTime()));
-    toggle_view_->sub_text_label()->SetEnabledColorId(
+    toggle_view_->sub_text_label()->SetEnabledColor(
         cros_tokens::kCrosSysSecondary);
     TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosAnnotation1,
@@ -539,10 +539,8 @@ void FocusModeDetailedView::CreateToggleView() {
   }
 
   auto toggle_button = std::make_unique<PillButton>(
-      base::BindRepeating(
-          &FocusModeController::ToggleFocusMode,
-          base::Unretained(focus_mode_controller),
-          focus_mode_histogram_names::ToggleSource::kFocusPanel),
+      base::BindRepeating(&FocusModeDetailedView::HandleToggleButton,
+                          weak_factory_.GetWeakPtr()),
       l10n_util::GetStringUTF16(
           in_focus_session
               ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_LABEL
@@ -568,6 +566,21 @@ void FocusModeDetailedView::CreateToggleView() {
   // Set a valid role for this view to avoid announcing the role for
   // `toggle_view_`.
   view_accessibility.SetRole(ax::mojom::Role::kRow);
+}
+
+void FocusModeDetailedView::HandleToggleButton() {
+  auto* focus_mode_controller = FocusModeController::Get();
+  if (!focus_mode_controller) {
+    return;
+  }
+  const bool in_focus_session = focus_mode_controller->in_focus_session();
+  if (!in_focus_session) {
+    // About to start a focus session. Clear all focus before starting the
+    // session.
+    GetFocusManager()->ClearFocus();
+  }
+  focus_mode_controller->ToggleFocusMode(
+      focus_mode_histogram_names::ToggleSource::kFocusPanel);
 }
 
 void FocusModeDetailedView::UpdateToggleButtonAccessibility(
@@ -630,7 +643,7 @@ void FocusModeDetailedView::CreateTimerView() {
       gfx::HorizontalAlignment::ALIGN_LEFT);
   timer_view_header->SetBorder(
       views::CreateEmptyBorder(kTimerViewHeaderInsets));
-  timer_view_header->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  timer_view_header->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                         *timer_view_header);
   timer_view_container_->AddChildView(std::move(timer_view_header));
@@ -717,7 +730,7 @@ void FocusModeDetailedView::CreateTimerView() {
   end_time_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *end_time_label_);
-  end_time_label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+  end_time_label_->SetEnabledColor(cros_tokens::kCrosSysSecondary);
   end_time_label_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(0, kTimerSettingViewBetweenChildSpacing)));
 
@@ -808,7 +821,7 @@ void FocusModeDetailedView::CreateTaskView(bool is_network_connected) {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER));
   task_view_header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   task_view_header->SetBorder(views::CreateEmptyBorder(kTaskViewHeaderInsets));
-  task_view_header->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  task_view_header->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                         *task_view_header);
 
@@ -860,7 +873,7 @@ void FocusModeDetailedView::CreateDoNotDisturbContainer() {
   toggle_row->AddViewAndLabel(
       std::move(icon),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB));
-  toggle_row->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  toggle_row->text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
                                         *toggle_row->text_label());
 

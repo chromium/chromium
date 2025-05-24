@@ -125,6 +125,9 @@ class CORE_EXPORT ContentCaptureTask
   // otherwise, the process was interrupted because the task has to pause.
   bool ProcessDocumentSession(TaskSession::DocumentSession& doc_session);
 
+  // End a batch of content capture events.
+  void EndBatchContent(TaskSession::DocumentSession& doc_session);
+
   // Sends the captured content in batch.
   void SendContent(TaskSession::DocumentSession& doc_session);
 

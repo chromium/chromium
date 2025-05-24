@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
@@ -150,7 +151,7 @@ class CdmServiceTest : public testing::Test {
 
   // MojoCdmService will always create/use `mock_cdm_factory_` and `mock_cdm_`,
   // so it's easier to set expectations on them.
-  scoped_refptr<MockCdm> mock_cdm_{new MockCdm()};
+  scoped_refptr<MockCdm> mock_cdm_ = base::MakeRefCounted<MockCdm>();
   MockCdmFactory mock_cdm_factory_{mock_cdm_};
   NiceMock<MockCdmContext> cdm_context_;
 

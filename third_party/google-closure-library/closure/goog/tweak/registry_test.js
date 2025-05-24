@@ -7,7 +7,6 @@
 goog.module('goog.tweak.RegistryTest');
 goog.setTestOnly();
 
-const AssertionError = goog.require('goog.asserts.AssertionError');
 const testSuite = goog.require('goog.testing.testSuite');
 /** @suppress {extraRequire} needed for createRegistryEntries. */
 const testhelpers = goog.require('goog.tweak.testhelpers');

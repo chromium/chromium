@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Collaboration -->
+  <message name ="IDS_COLLABORATION_SIGNIN_TITLE" desc="The title of the collaboration signin screen." formatter_data="android_java">
+    Collaborate in tab groups
+  </message>
+  <message name ="IDS_COLLABORATION_SIGNIN_DESCRIPTION" desc="The description of the collaboration signin screen." formatter_data="android_java">
+    Sign in to Chrome to share and join tab groups, and work together on ideas
+  </message>
+  <message name ="IDS_COLLABORATION_SIGNIN_BOTTOM_SHEET_TITLE" desc="The title of the collaboration signin bottom sheet screen." formatter_data="android_java">
+    Sign in to Chrome
+  </message>
+  <message name ="IDS_COLLABORATION_SIGNIN_BOTTOM_SHEET_DESCRIPTION" desc="The description of the collaboration signin bottom sheet screen." formatter_data="android_java">
+    You’ll get to share, join, and collaborate in tab groups
+  </message>
+  <message name ="IDS_COLLABORATION_SIGNIN_SYNC_DISMISS" desc="The dismiss text of the collaboration signin and sync screen." formatter_data="android_java">
+    Cancel
+  </message>
+  <message name ="IDS_COLLABORATION_SYNC_TITLE" desc="The title of the collaboration sync screen." formatter_data="android_java">
+    Sync tabs and history to continue
+  </message>
+  <message name ="IDS_COLLABORATION_SYNC_DESCRIPTION" desc="The description of the collaboration sync screen." formatter_data="android_java">
+    To share, join, and collaborate in tab groups, sync your history and tabs
+  </message>
+  <message name="IDS_COLLABORATION_ONE_GROUP_REMOVED_NOTIFICATION" desc="Format for the notification text appearing when one tab group is no longer shared with the user.">
+    "<ph name="GROUP_TITLE">$1<ex>Travel</ex></ph>" tab group no longer available
+  </message>
+  <message name="IDS_COLLABORATION_ONE_UNNAMED_GROUP_REMOVED_NOTIFICATION" desc="Notification text appearing when one unnamed tab group is no longer shared with the user.">
+    1 tab group no longer available
+  </message>
+  <message name="IDS_COLLABORATION_TWO_GROUPS_REMOVED_NOTIFICATION" desc="Format for the notification text appearing when two tab groups are no longer shared with the user.">
+    "<ph name="GROUP_TITLE_1">$1<ex>Travel</ex></ph>" and "<ph name="GROUP_TITLE_2">$2<ex>Vacation</ex></ph>" tab groups no longer available
+  </message>
+  <message name="IDS_COLLABORATION_SEVERAL_GROUPS_REMOVED_NOTIFICATION" desc="Format for the notification text appearing when more than 2 tab groups are no longer shared with the user.">
+    <ph name="GROUP_COUNT">$1<ex>5</ex></ph> tab groups no longer available
+  </message>
+  <message name="IDS_COLLABORATION_RECENT_ACTIVITY_MENU_OPTION" desc="Accessibility string for the recent activity menu options." formatter_data="android_java">
+    Sharing options
+  </message>
+  <!-- Error Messages -->
+  <message name ="IDS_COLLABORATION_SOMETHING_WENT_WRONG_HEADER" desc="The header of the error dialog something went wrong.">
+    Something went wrong.
+  </message>
+  <message name ="IDS_COLLABORATION_SOMETHING_WENT_WRONG_BODY" desc="The body of of the error dialog something went wrong.">
+    There was an error. Try again.
+  </message>
+  <message name="IDS_COLLABORATION_LINK_FAILED_HEADER" desc="The title for the link failed dialog.">
+    This link doesn’t work
+  </message>
+  <message name="IDS_COLLABORATION_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
+    Contact the sender to ask for a new link
+  </message>
+  <message name="IDS_COLLABORATION_SIGNED_OUT_HEADER" desc="The title for the signed out dialog." formatter_data="android_java">
+    You're signed out
+  </message>
+  <message name="IDS_COLLABORATION_SIGNED_OUT_BODY" desc="The body for the signed out dialog." formatter_data="android_java">
+    To share, join, and collaborate in tab groups, open settings and turn on Allow Chrome sign-in
+  </message>
+  <message name="IDS_COLLABORATION_SIGNED_OUT_POSITIVE_BUTTON" desc="The positive button text for the signed out dialog." formatter_data="android_java">
+    Settings
+  </message>
+  <message name ="IDS_COLLABORATION_GROUP_IS_FULL_DESCRIPTION" desc="The description when group is full, and toggle button for link sharing is disabled." formatter_data="android_java">
+    Your tab group is full, new members can't join with the link
+  </message>
+  <message name ="IDS_COLLABORATION_GROUP_IS_FULL_ERROR_DIALOG_HEADER" desc="The header of the error dialog when group is full." formatter_data="android_java">
+    This tab group is full
+  </message>
+  <message name ="IDS_COLLABORATION_GROUP_IS_FULL_ERROR_DIALOG_BODY" desc="The body of the error dialog when group is full." formatter_data="android_java">
+    Contact the person who sent this link
+  </message>
+  <message name ="IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_HEADER" desc="The header of the error dialog when entreprise signin disabled.">
+    Your organization doesn't allow you to sign in
+  </message>
+  <message name ="IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_BODY" desc="The body of the error dialog when entreprise signin disabled.">
+    To share or join tab groups, you must be able to sign in to Chrome
+  </message>
+  <message name ="IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_HEADER" desc="The header of the error dialog when entreprise sync disabled.">
+    Your organization limits what you can save
+  </message>
+  <message name ="IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_BODY" desc="The body of the error dialog when entreprise sync disabled.">
+    When your organization limits saving to your Google Account, you can’t share or join tab groups
+  </message>
+  <message name ="IDS_COLLABORATION_ENTREPRISE_GROUP_CLOSED_HEADER" desc="The header of the error dialog when entreprise group is closed.">
+    This group is closed
+  </message>
+  <message name ="IDS_COLLABORATION_ENTREPRISE_GROUP_CLOSED_BODY" desc="The body of the error dialog when entreprise group is closed.">
+    When a group is closed, it limits who can join
+  </message>
+  <!-- /Error Messages -->
+  <!-- /Collaboration -->
+
+  <!-- Data Sharing -->
+  <!-- Error Messages -->
+  <if expr="is_android">
+    <message name ="IDS_COLLABORATION_SHARE_SHEET_TITLE" desc="The title of the share sheet when sharing a tab group." formatter_data="android_java">
+      Collaborate on tab group
+    </message>
+    <message name ="IDS_COLLABORATION_SHARE_SHEET_MESSAGE" desc="The contents of the message when sharing a tab group." formatter_data="android_java">
+      <ph name="TAB_GROUP_DISPLAY_NAME">%1$s<ex>Vacation plan</ex></ph> link expires in 48 hours
+    </message>
+    <message name ="IDS_COLLABORATION_SHARE_SHEET_TAB_GROUP_FALLBACK_NAME" desc="Fallback name if the tab group was not named by the user." formatter_data="android_java">
+      Shared tab group
+    </message>
+  </if>
+  <!-- Error Messages -->
+  <!-- /Data Sharing -->
+
+  <!-- Recent Activity -->
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_USER_SELF" desc="Text on a recent activity bottom sheet row that indicates that the user themselves took an action, e.g. user themselves changed the tab as opposed to another user changing the tab. Used as the first part of another string.">
+    You
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_ADDED" desc="Text on a recent activity bottom sheet row that says user added a tab.">
+    <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> added a tab
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB" desc="A description of the user adding the current tab for the recent activity dialog. Only for Desktop.">
+    <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> added this tab
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB" desc="A description of the user changing the current tab for the recent activity dialog. Only for Desktop.">
+    <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed this tab
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_REMOVED" desc="Text on a recent activity bottom sheet row that says user removed a tab.">
+    <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> removed a tab
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_UPDATED" desc="Text on a recent activity bottom sheet row that says user updated a tab.">
+    <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> changed a tab
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_GROUP_NAME_UPDATED" desc="Text on a recent activity bottom sheet row that says user updated the tab group name.">
+    <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> changed the group name
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_GROUP_COLOR_UPDATED" desc="Text on a recent activity bottom sheet row that says user updated the tab group color.">
+    <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> changed the group color
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_USER_JOINED_GROUP" desc="Text on a recent activity bottom sheet row that says user joined the group.">
+    <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> joined the group
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_USER_LEFT_GROUP" desc="Text on a recent activity bottom sheet row that says user left the group.">
+    <ph name="USER_DISPLAY_NAME">$1<ex>User 1</ex></ph> left the group
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TIME_DELTA" desc="Text on a recent activity bottom sheet row that that indicates the time duration that has passed since the activity timestamp.">
+    {TIME_DIMENSION, plural,
+      =0 {<ph name="TIME_COUNT">$1<ex>2</ex></ph>m ago}
+      =1 {<ph name="TIME_COUNT">$1<ex>2</ex></ph>h ago}
+      other {<ph name="TIME_COUNT">$1<ex>2</ex></ph>d ago}
+    }
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_SEPARATOR" desc="The separator string on a recent activity bottom sheet row that connects two halfs: an URL or email or group name on first half, and a relative time duration on the second half." formatter_data="android_java">
+    \u0020\u2022\u0020
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_DESCRIPTION_FULL" desc="The description text on a recent activity bottom sheet row that has three parts: an URL or email or group name on first half, a separator, and a relative time duration on the second half." formatter_data="android_java">
+    <ph name="DESCRIPTION">%1$s<ex>google.com</ex></ph><ph name="SEPARATOR">%2$s<ex> . </ex></ph><ph name="TIMESTMAP">%3$s<ex>8h ago</ex></ph>
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_EMPTY" desc="The text on the recent activity bottom sheet screen shown to indicate that there is no recent ativity to show and the list is empty." formatter_data="android_java">
+    No recent activity
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_JUST_NOW" desc="The timestamp text on a recent activity bottom sheet row when the activity is less than 1 minute ago.">
+    Just now
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_UNKNOWN_USER" desc="The user name to show on the recent activity bottom sheet row if the user info cannot be found, e.g. deleted their account.">
+    Deleted account
+  </message>
+  <message name ="IDS_DATA_SHARING_SHARED_TAB_GROUPS_ACTIVITY" desc="The text on the button to show the full recent activity logs and manage screen menu options." formatter_data="android_java">
+    Shared tab groups activity
+  </message>
+  <!-- Recent Activity -->
+
+  <!-- Instant Messages -->
+  <message name="IDS_DATA_SHARING_TOAST_TAB_REMOVED" desc="Toast text describing that someone has removed a tab.">
+    <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> removed tab “<ph name="WEBSITE_TITLE">$2<ex>chromium.org</ex></ph>”
+  </message>
+  <message name="IDS_DATA_SHARING_TOAST_TAB_UPDATED" desc="Toast text describing that someone has updated a tab.">
+    <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> updated tab “<ph name="WEBSITE_TITLE">$2<ex>chromium.org</ex></ph>”
+  </message>
+  <message name="IDS_DATA_SHARING_TOAST_TAB_REMOVED_ACTION" desc="The action button text on the tab removed toast clicking on which will reopen the tab that was removed.">
+    Reopen
+  </message>
+  <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER" desc="Toast text describing that a new member has joined the group.">
+    <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> joined "<ph name="GROUP_NAME">$2<ex>Vacation</ex></ph>" tab group
+  </message>
+  <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER_MULTIPLE_MEMBERS" desc="Toast text describing that multiple new members have joined the group.">
+    <ph name="MEMBER_COUNT">$1<ex>7</ex></ph> members joined "<ph name="GROUP_NAME">$2<ex>Vacation</ex></ph>" tab group
+  </message>
+  <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER_ACTION" desc="The action button text on the new member joined toast clicking on which will open the group members management screen.">
+    Manage
+  </message>
+  <message name="IDS_DATA_SHARING_TOAST_BLOCK_LEAVE" desc="Toast text describing that the user has lost access to a shared group.">
+    The "<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group is no longer available
+  </message>
+  <message name="IDS_DATA_SHARING_TOAST_BLOCK_LEAVE_MULTIPLE_GROUPS" desc="Toast text describing that the user has lost access to multiple shared groups.">
+    <ph name="GROUP_COUNT">$1<ex>7</ex></ph> tab groups no longer available
+  </message>
+  <message name="IDS_DATA_SHARING_TAB_GROUP_DEFAULT_TITLE_TABS_COUNT" desc="Title of unnamed saved tab group in toast text. [ICU_Syntax]">
+    {NUM_TABS, plural, =1 {1 tab} other {# tabs}}
+  </message>
+  <!-- Instant Messages -->
+
+</grit-part>

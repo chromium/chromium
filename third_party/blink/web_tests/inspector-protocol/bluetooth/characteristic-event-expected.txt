@@ -1,0 +1,9 @@
+Tests Bluetooth characteristic operation events handling
+Characteristic operation received: characteristicId: 09:09:09:09:09:09_1_1, type: read, data: undefined, writeType: undefined
+Characteristic operation received: characteristicId: 09:09:09:09:09:09_1_1, type: write, data: AQ==, writeType: write-default-deprecated
+Characteristic operation received: characteristicId: 09:09:09:09:09:09_1_1, type: write, data: AQ==, writeType: write-with-response
+Characteristic operation received: characteristicId: 09:09:09:09:09:09_1_1, type: write, data: AQ==, writeType: write-without-response
+Characteristic operation received: characteristicId: 09:09:09:09:09:09_1_1, type: subscribe-to-notifications, data: undefined, writeType: undefined
+Characteristic operation received: characteristicId: 09:09:09:09:09:09_1_1, type: unsubscribe-from-notifications, data: undefined, writeType: undefined
+W29iamVjdCBBcnJheUJ1ZmZlcl0=
+

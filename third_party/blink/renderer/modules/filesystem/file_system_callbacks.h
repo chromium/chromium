@@ -113,7 +113,7 @@ class EntryCallbacks final : public FileSystemCallbacksBase {
 
 class EntriesCallbacks final : public FileSystemCallbacksBase {
  public:
-  using SuccessCallback = base::RepeatingCallback<void(EntryHeapVector*)>;
+  using SuccessCallback = base::RepeatingCallback<void(GCedEntryHeapVector*)>;
   using ErrorCallback = base::OnceCallback<void(base::File::Error)>;
 
   EntriesCallbacks(const SuccessCallback&,
@@ -138,7 +138,7 @@ class EntriesCallbacks final : public FileSystemCallbacksBase {
   ErrorCallback error_callback_;
   Persistent<DirectoryReaderBase> directory_reader_;
   String base_path_;
-  Persistent<HeapVector<Member<Entry>>> entries_;
+  Persistent<GCedEntryHeapVector> entries_;
 };
 
 class FileSystemCallbacks final : public FileSystemCallbacksBase {

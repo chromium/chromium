@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -15,9 +16,10 @@
 // META: variant=?46-50
 // META: variant=?51-55
 // META: variant=?56-60
-// META: variant=?61-last
+// META: variant=?61-65
+// META: variant=?66-last
 
-"use strict;"
+"use strict";
 
 // The tests in this file focus on calls to runAdAuction with various
 // auctionConfigs.
@@ -348,27 +350,6 @@ makeTest({
 });
 
 makeTest({
-  name: 'directFromSellerSignals is invalid',
-  expect: EXPECT_PROMISE_ERROR,
-  expectPromiseError: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { directFromSellerSignals: "https://foo:99999999999" },
-});
-
-makeTest({
-  name: 'directFromSellerSignals is cross-origin with seller',
-  expect: EXPECT_PROMISE_ERROR,
-  expectPromiseError: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { directFromSellerSignals: "https://example.com" },
-});
-
-makeTest({
-  name: 'directFromSellerSignals has nonempty query',
-  expect: EXPECT_PROMISE_ERROR,
-  expectPromiseError: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { directFromSellerSignals: window.location.origin + "?foo=bar" },
-});
-
-makeTest({
   name: 'perBuyerSignals has invalid URL in a key',
   expect: EXPECT_PROMISE_ERROR,
   expectPromiseError: EXPECT_EXCEPTION(TypeError),
@@ -620,12 +601,16 @@ subsetTest(promise_test, async test => {
     })
   };
 
-  // In the first auction, browserSignals.forDebuggingOnlyInCooldownOrLockout in
-  // generateBid() and scoreAd() should both be false. After the auction,
-  // lockout and cooldowns should be updated.
   await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfigOverrides);
-  await waitForObservedRequestsIgnoreDebugOnlyReports(
-      uuid, [bidderReportURL2, sellerReportURL2]);
+  // TODO(crbug.com/337186761) this causes the test being flaky.
+  // Note: In the first auction,
+  // browserSignals.forDebuggingOnlyInCooldownOrLockout in generateBid() and
+  // scoreAd() should both be false. But due to currently there's no way to
+  // clean up the lockout/cooldown DB tables after a test, so a rerun of this
+  // test will break this, and other tests that writes to these tables may also
+  // affect this test. So we cannot reliably check the signals being false.
+  // await waitForObservedRequestsIgnoreDebugOnlyReports(
+  //     uuid, [bidderReportURL2, sellerReportURL2]);
 
   // In the second auction, browserSignals.forDebuggingOnlyInCooldownOrLockout
   // in generateBid() and scoreAd() should both be true, since both the buyer
@@ -637,3 +622,65 @@ subsetTest(promise_test, async test => {
     uuid,
     [bidderReportURL2, sellerReportURL2, bidderReportURL1, sellerReportURL1]);
 }, `forDebuggingOnly lockout and cooldowns updating in one auction, read in another's.`);
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements nullability',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {deprecatedRenderURLReplacements: null}
+});
+
+makeTest({
+  name: 'deprecatedRenderURLReplacements nullability 2',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides:
+      {deprecatedRenderURLReplacements: Promise.resolve(undefined)}
+});
+
+makeTest({
+  name: 'perBuyerSignals nullability',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerSignals: null},
+});
+
+makeTest({
+  name: 'perBuyerSignals nullability 2',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerSignals: Promise.resolve(undefined)},
+});
+
+makeTest({
+  name: 'perBuyerTimeouts nullability',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerTimeouts: null},
+});
+
+makeTest({
+  name: 'perBuyerTimeouts nullability 2',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerTimeouts: Promise.resolve(undefined)},
+});
+
+makeTest({
+  name: 'perBuyerCumulativeTimeouts nullability',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerCumulativeTimeouts: null},
+});
+
+makeTest({
+  name: 'perBuyerCumulativeTimeouts nullability 2',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides:
+      {perBuyerCumulativeTimeouts: Promise.resolve(undefined)},
+});
+
+makeTest({
+  name: 'perBuyerCurrencies nullability',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerCurrencies: null},
+});
+
+makeTest({
+  name: 'perBuyerCurrencies nullability 2',
+  expect: EXPECT_WINNER,
+  auctionConfigOverrides: {perBuyerCurrencies: Promise.resolve(undefined)},
+});

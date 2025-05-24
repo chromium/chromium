@@ -7,14 +7,14 @@ module crosapi.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "ui/base/mojom/ui_base_types.mojom";
+import "ui/base/mojom/menu_source_type.mojom";
 
 // The different ways the multipaste menu can be shown. These values are
 // written to logs. New enum values can be added, but existing enums must
 // never be renumbered, deleted, or reused. If adding an enum, add it at the
 // bottom.
 // Next MinVersion: 4
-[Stable, Extensible]
+[Extensible]
 enum ClipboardHistoryControllerShowSource {
   // Shown by the accelerator(search + v).
   kAccelerator,
@@ -39,7 +39,7 @@ enum ClipboardHistoryControllerShowSource {
 // The formats dictating how clipboard history items are displayed.
 // Maps to the `ClipboardHistoryDisplayFormat` enum used in histograms. Do not
 // reorder entries; append any new ones to the end.
-[Stable, Extensible]
+[Extensible]
 enum ClipboardHistoryDisplayFormat {
   [Default] kUnknown = -1,
   kText = 0,
@@ -63,7 +63,6 @@ enum ClipboardHistoryDisplayFormat {
 // The `file_count` indicates the number of files in the corresponding clipboard
 // history item.
 //
-[Stable]
 struct ClipboardHistoryItemDescriptor {
   mojo_base.mojom.UnguessableToken item_id@0;
   ClipboardHistoryDisplayFormat display_format@1;
@@ -77,7 +76,7 @@ struct ClipboardHistoryItemDescriptor {
 // allows Lacros-Chrome to show the ClipboardHistory menu by contextual menu.
 // Next MinVersion: 3
 // Next method ID: 3
-[Stable, Uuid="2dc3f126-d79f-4d9e-a7a7-0989c1be8acd"]
+[Uuid="2dc3f126-d79f-4d9e-a7a7-0989c1be8acd"]
 interface ClipboardHistory {
   // Shows a menu in Ash-Chrome with the last few things copied.
   ShowClipboard@0(gfx.mojom.Rect anchor_point,
@@ -102,7 +101,7 @@ interface ClipboardHistory {
 };
 
 // This interface is implemented by Lacros-Chrome.
-[Stable, Uuid="67a12272-d7c0-40f8-8b09-90a150787358"]
+[Uuid="67a12272-d7c0-40f8-8b09-90a150787358"]
 interface ClipboardHistoryClient {
   // Sets the clipboard history item descriptors cached in Lacros-Chrome.
   SetClipboardHistoryItemDescriptors@0(

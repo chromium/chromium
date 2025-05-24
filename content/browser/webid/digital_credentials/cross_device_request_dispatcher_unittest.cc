@@ -4,28 +4,37 @@
 
 #include "content/browser/webid/digital_credentials/cross_device_request_dispatcher.h"
 
+#include "base/json/json_reader.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/browser/webid/digital_credentials/cross_device_request_dispatcher.h"
+#include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/fido/cable/fido_cable_discovery.h"
 #include "device/fido/cable/v2_authenticator.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/v2_test_util.h"
 #include "device/fido/fido_constants.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using base::JSONReader;
+using testing::NiceMock;
+
 namespace content::digital_credentials::cross_device {
 namespace {
 
 class DigitalCredentialsCrossDeviceRequestDispatcherTest
-    : public ::testing::Test {
+    : public ::testing::TestWithParam<RequestInfo::RequestType> {
  public:
   void SetUp() override {
     network_context_ = device::cablev2::NewMockTunnelServer(std::nullopt);
@@ -41,6 +50,10 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
                  p256.get(), EC_KEY_get0_public_key(peer_identity.get()),
                  POINT_CONVERSION_UNCOMPRESSED, peer_identity_x962_,
                  sizeof(peer_identity_x962_), /*ctx=*/nullptr));
+
+    mock_adapter_ =
+        base::MakeRefCounted<NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
   }
 
  protected:
@@ -61,14 +74,19 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
           GetEventCallback(),
           /*must_support_ctap=*/false);
       const GURL url("https://example.com");
-      url::Origin origin(url::Origin::Create(url));
       base::Value::Dict request_value;
       request_value.Set("foo", "bar");
+      RequestInfo request_info{/*request_type=*/GetParam(),
+                               url::Origin::Create(url),
+                               base::Value(std::move(request_value))};
       base::test::TestFuture<base::expected<Response, RequestDispatcher::Error>>
           callback;
+
       auto request_handler = std::make_unique<RequestDispatcher>(
-          std::move(discovery), std::move(origin),
-          base::Value(std::move(request_value)), callback.GetCallback());
+          std::make_unique<device::FidoCableDiscovery>(
+              std::vector<device::CableDiscoveryData>()),
+          std::move(discovery), std::move(request_info),
+          callback.GetCallback());
       std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
           device::cablev2::authenticator::
               TransactDigitalIdentityFromQRCodeForTesting(
@@ -104,26 +122,29 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
   std::unique_ptr<device::cablev2::Discovery::AdvertEventStream>
       ble_advert_events_;
   device::cablev2::Discovery::AdvertEventStream::Callback ble_advert_callback_;
-  uint8_t peer_identity_x962_[device::kP256X962Length] = {0};
+  uint8_t peer_identity_x962_[device::kP256X962Length] = {};
   const std::array<uint8_t, device::cablev2::kQRSecretSize> zero_qr_secret_ = {
       0};
   const std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret_ = {
       0};
   const std::array<uint8_t, device::cablev2::kQRSeedSize> zero_seed_ = {0};
 
+  scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
+
   base::test::TaskEnvironment task_environment;
 };
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, Valid) {
-  base::expected<Response, RequestDispatcher::Error> result =
-      Transact(device::cablev2::PayloadType::kJSON,
-               R"({"response": {"digital": {"data": "ok"}}})");
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, ValidLegacyFormat) {
+  base::expected<Response, RequestDispatcher::Error> result = Transact(
+      device::cablev2::PayloadType::kJSON,
+      R"({"response": {"digital": {"data": {"vp_token" : "token"}}}})");
   ASSERT_TRUE(result.has_value());
-  ASSERT_TRUE(result.value()->is_string());
-  ASSERT_EQ(result.value()->GetString(), "ok");
+  ASSERT_EQ(result.value()->data,
+            JSONReader::Read(R"({"vp_token":"token"})").value());
+  EXPECT_FALSE(result.value()->protocol.has_value());
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidJson) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidJson) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON, "!");
   ASSERT_FALSE(result.has_value());
@@ -131,7 +152,7 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidJson) {
             RequestDispatcher::Error(ProtocolError::kInvalidResponse));
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorResponse) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorResponse) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON,
                R"({"response": {"digital": {"error": "NO_CREDENTIAL"}}})");
@@ -140,7 +161,7 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorResponse) {
             RequestDispatcher::Error(RemoteError::kNoCredential));
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, OtherError) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, OtherError) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON,
                R"({"response": {"digital": {"error": "RANDOM_STUFF"}}})");
@@ -148,7 +169,7 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, OtherError) {
   EXPECT_EQ(result.error(), RequestDispatcher::Error(RemoteError::kOther));
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorIsNotAString) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorIsNotAString) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON,
                R"({"response": {"digital": {"error": 1}}})");
@@ -157,7 +178,7 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorIsNotAString) {
             RequestDispatcher::Error(ProtocolError::kInvalidResponse));
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidStructure) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidStructure) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON, R"({"result": 1})");
   ASSERT_FALSE(result.has_value());
@@ -165,13 +186,56 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidStructure) {
             RequestDispatcher::Error(ProtocolError::kInvalidResponse));
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, CTAPResponse) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, CTAPResponse) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kCTAP, "");
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             RequestDispatcher::Error(ProtocolError::kTransportError));
 }
+
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, NewResponseFormat) {
+  base::expected<Response, RequestDispatcher::Error> result =
+      Transact(device::cablev2::PayloadType::kJSON,
+               R"({
+           "response": {
+             "digital": {
+               "data": {
+                 "data": {"key": "value"},
+                 "protocol" : "ProtocolInResponse"
+               }
+             }
+           }
+         })");
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->data,
+            JSONReader::Read(R"({"key":"value"})").value());
+  EXPECT_EQ(result.value()->protocol, "ProtocolInResponse");
+}
+
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest,
+       NewResponseFormatWithoutProtocol) {
+  base::expected<Response, RequestDispatcher::Error> result =
+      Transact(device::cablev2::PayloadType::kJSON,
+               R"({
+           "response": {
+             "digital": {
+               "data": {
+                 "data": {"key": "value"}
+               }
+             }
+           }
+         })");
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->data,
+            JSONReader::Read(R"({"key":"value"})").value());
+  EXPECT_FALSE(result.value()->protocol.has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DigitalCredentialsCrossDeviceRequestDispatcherTest,
+                         ::testing::Values(RequestInfo::RequestType::kGet,
+                                           RequestInfo::RequestType::kCreate));
 
 }  // namespace
 }  // namespace content::digital_credentials::cross_device

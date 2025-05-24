@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -141,7 +141,7 @@ class HatsOfficeTriggerTest : public HatsOfficeTriggerTestBase {
         apps::AppServiceProxyFactory::GetForProfile(profile_)
             ->InstanceRegistry();
     auto instance = std::make_unique<apps::Instance>(
-        web_app::kGoogleDocsAppId, tracked_instance_id_, nullptr);
+        ash::kGoogleDocsAppId, tracked_instance_id_, nullptr);
     instance->UpdateState(state, Now());
     registry.OnInstance(std::move(instance));
   }
@@ -151,7 +151,7 @@ class HatsOfficeTriggerTest : public HatsOfficeTriggerTestBase {
         apps::AppServiceProxyFactory::GetForProfile(profile_)
             ->InstanceRegistry();
     auto instance = std::make_unique<apps::Instance>(
-        web_app::kGoogleDocsAppId, ignored_instance_id_, nullptr);
+        ash::kGoogleDocsAppId, ignored_instance_id_, nullptr);
     instance->UpdateState(state, Now());
     registry.OnInstance(std::move(instance));
   }
@@ -205,7 +205,7 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterAppInactiveSuccess) {
   base::test::TestFuture<void> future;
   display_service_->SetNotificationAddedClosure(future.GetRepeatingCallback());
   hats_office_trigger_.ShowSurveyAfterAppInactive(
-      web_app::kGoogleDocsAppId, HatsOfficeLaunchingApp::kDrive);
+      ash::kGoogleDocsAppId, HatsOfficeLaunchingApp::kDrive);
 
   // Simulate receiving updates from an instance that shouldn't be tracked.
   OnIgnoredDocsInstance(
@@ -261,7 +261,7 @@ TEST_F(HatsOfficeTriggerTest, NoAppUpdateTimeout) {
   display_service_->SetNotificationAddedClosure(future.GetRepeatingCallback());
 
   hats_office_trigger_.ShowSurveyAfterAppInactive(
-      web_app::kGoogleDocsAppId, HatsOfficeLaunchingApp::kDrive);
+      ash::kGoogleDocsAppId, HatsOfficeLaunchingApp::kDrive);
 
   ASSERT_TRUE(IsAppStateTriggerActive());
 

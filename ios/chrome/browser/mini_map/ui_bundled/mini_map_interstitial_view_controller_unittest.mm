@@ -5,10 +5,14 @@
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_interstitial_view_controller.h"
 
 #import "base/test/ios/wait_util.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/platform_test.h"
 
-using MiniMapInterstitialViewControllerTest = PlatformTest;
+class MiniMapInterstitialViewControllerTest : public PlatformTest {
+ protected:
+  base::test::TaskEnvironment task_environment_;
+};
 
 // Tests that consent screen is displayed correctly.
 TEST_F(MiniMapInterstitialViewControllerTest, TestScreen) {
@@ -25,9 +29,10 @@ TEST_F(MiniMapInterstitialViewControllerTest, TestScreen) {
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
         return mini_map_interstial_view_controller.beingPresented;
       }));
-  [base_view_controller dismissViewControllerAnimated:NO completion:nil];
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^bool() {
-        return !mini_map_interstial_view_controller.beingPresented;
-      }));
+  base::RepeatingClosure quit_closure = task_environment_.QuitClosure();
+  [base_view_controller dismissViewControllerAnimated:NO
+                                           completion:^{
+                                             quit_closure.Run();
+                                           }];
+  task_environment_.RunUntilQuit();
 }

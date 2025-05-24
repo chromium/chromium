@@ -15,11 +15,7 @@
 #endif  // defined(EVENTS_X_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(EVENTS_X_IMPLEMENTATION)
 #define EVENTS_X_EXPORT __attribute__((visibility("default")))
-#else
-#define EVENTS_X_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

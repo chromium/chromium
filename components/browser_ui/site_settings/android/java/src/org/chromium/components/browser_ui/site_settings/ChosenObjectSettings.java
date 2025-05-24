@@ -4,6 +4,9 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -22,10 +25,12 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
-import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 import java.util.ArrayList;
@@ -36,8 +41,9 @@ import java.util.Locale;
  * Shows a particular chosen object (e.g. a USB device) and the list of sites that have been granted
  * access to it by the user.
  */
+@NullMarked
 public class ChosenObjectSettings extends BaseSiteSettingsFragment
-        implements SettingsPage, CustomDividerFragment {
+        implements EmbeddableSettingsPage, CustomDividerFragment {
     public static final String EXTRA_OBJECT_INFOS = "org.chromium.chrome.preferences.object_infos";
     public static final String EXTRA_SITES = "org.chromium.chrome.preferences.site_set";
     public static final String EXTRA_CATEGORY =
@@ -45,19 +51,22 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
 
     // The site settings category we are showing.
     private SiteSettingsCategory mCategory;
+
     // The set of object permissions being examined.
+    @SuppressWarnings("NullAway.Init")
     private ArrayList<ChosenObjectInfo> mObjectInfos;
+
     // The set of sites to display.
-    private ArrayList<Website> mSites;
+    private @Nullable ArrayList<Website> mSites;
     // The view for searching the list of items.
-    private SearchView mSearchView;
+    private @Nullable SearchView mSearchView;
     // If not blank, represents a substring to use to search for site names.
     private String mSearch = "";
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         // Set empty preferences screen.
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
         setPreferenceScreen(screen);
@@ -65,13 +74,15 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
 
     @Override
     @SuppressWarnings("unchecked")
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         int contentSettingsType = getArguments().getInt(EXTRA_CATEGORY);
-        mCategory =
+        SiteSettingsCategory category =
                 SiteSettingsCategory.createFromContentSettingsType(
                         getSiteSettingsDelegate().getBrowserContextHandle(), contentSettingsType);
+        mCategory = assertNonNull(category);
         mObjectInfos =
-                (ArrayList<ChosenObjectInfo>) getArguments().getSerializable(EXTRA_OBJECT_INFOS);
+                (ArrayList<ChosenObjectInfo>)
+                        assertNonNull(getArguments().getSerializable(EXTRA_OBJECT_INFOS));
         checkObjectConsistency();
         mSites = (ArrayList<Website>) getArguments().getSerializable(EXTRA_SITES);
         String title = getArguments().getString(SingleCategorySettings.EXTRA_TITLE);
@@ -162,8 +173,8 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
 
         if (mSites == null) {
             getInfo();
@@ -192,7 +203,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
         if (hasManagedObject) {
             ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getContext());
         } else {
-            getActivity().finish();
+            assumeNonNull(getSettingsNavigation()).finishCurrentSettings(this);
         }
     }
 
@@ -229,7 +240,8 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
             // them back to SingleCategorySettings which will now no longer offer the option to
             // examine the permissions for this object.
             if (mObjectInfos.isEmpty()) {
-                getActivity().finish();
+                assumeNonNull(getSettingsNavigation())
+                        .finishCurrentSettings(ChosenObjectSettings.this);
             } else {
                 resetList();
             }
@@ -257,7 +269,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
         ChromeImageViewPreference header = new ChromeImageViewPreference(getStyledContext());
         String titleText = mObjectInfos.get(0).getName();
         String dialogMsg =
-                getView()
+                assumeNonNull(getView())
                         .getContext()
                         .getString(
                                 R.string.chosen_object_website_reset_confirmation_for, titleText);
@@ -299,6 +311,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
         preferenceScreen.removeAll();
         createHeader();
 
+        assumeNonNull(mSites);
         // Each item |i| in |mSites| and |mObjectInfos| correspond to each other.
         // See SingleCategorySettings.addChosenObjects().
         for (int i = 0; i < mSites.size() && i < mObjectInfos.size(); ++i) {
@@ -341,5 +354,10 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
 
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

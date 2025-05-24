@@ -14,7 +14,9 @@
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
 
 namespace viz {
@@ -32,10 +34,14 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
       public ExternalBeginFrameSourceClient,
       public FrameSinkObserver {
  public:
+  // `controller_receiver` must be a valid mojo receiver.
+  // `controller_client_remote` is optional and can be an invalid remote.
   ExternalBeginFrameSourceMojo(
       FrameSinkManagerImpl* frame_sink_manager,
       mojo::PendingAssociatedReceiver<mojom::ExternalBeginFrameController>
           controller_receiver,
+      mojo::PendingAssociatedRemote<mojom::ExternalBeginFrameControllerClient>
+          controller_client_remote,
       uint32_t restart_id);
   ~ExternalBeginFrameSourceMojo() override;
 
@@ -49,7 +55,8 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
 
  private:
   // ExternalBeginFrameSourceClient implementation.
-  void OnNeedsBeginFrames(bool needs_begin_frames) override {}
+  void OnNeedsBeginFrames(bool needs_begin_frames) override;
+  void SetPreferredInterval(base::TimeDelta interval) override;
 
   // DisplayObserver overrides.
   void OnDisplayDidFinishFrame(const BeginFrameAck& ack) override;
@@ -75,6 +82,8 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
   base::OnceCallback<void(const BeginFrameAck& ack)> pending_frame_callback_;
 
   mojo::AssociatedReceiver<mojom::ExternalBeginFrameController> receiver_;
+  mojo::AssociatedRemote<mojom::ExternalBeginFrameControllerClient>
+      remote_client_;
   // The frame source id as specified in BeginFrameArgs passed to
   // IssueExternalBeginFrame. Note this is likely to be different from our
   // source id, but this is what will be reported to FrameSinkObserver methods.

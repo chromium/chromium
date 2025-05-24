@@ -10,13 +10,16 @@ import android.content.Intent;
 
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.content_public.browser.WebContents;
 
 /** An abstraction that allows embedders to implement behavior needed by shared Media Router code. */
+@NullMarked
 public abstract class MediaRouterClient {
     @SuppressLint("StaticFieldLeak")
-    private static MediaRouterClient sInstance;
+    private static @Nullable MediaRouterClient sInstance;
 
     /**
      * Sets the singleton client instance.
@@ -26,7 +29,7 @@ public abstract class MediaRouterClient {
         sInstance = mediaRouterClient;
     }
 
-    public static MediaRouterClient getInstance() {
+    public static @Nullable MediaRouterClient getInstance() {
         return sInstance;
     }
 

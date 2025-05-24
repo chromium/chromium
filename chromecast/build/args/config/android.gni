@@ -1,3 +1,5 @@
+import("//chromecast/build/args/config/common.gni")
+
 # Args common to ALL Android builds.
 is_cast_android = true
 target_os = "android"
@@ -10,3 +12,4 @@ enable_extensions = false
 enable_pdf = false
 enable_plugins = false
 enable_printing = false
+v8_use_external_startup_data = false

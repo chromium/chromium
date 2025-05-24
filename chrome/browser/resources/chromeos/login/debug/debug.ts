@@ -1137,22 +1137,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
     ],
   },
   {
-    id: 'lacros-data-migration',
-    kind: ScreenKind.OTHER,
-    defaultState: 'default',
-    handledSteps: 'skip-revealed',
-    states: [{
-      id: 'skip-revealed',
-      trigger: (screen: any) => {
-        screen.showSkipButton();
-      },
-    }],
-  },
-  {
-    id: 'lacros-data-backward-migration',
-    kind: ScreenKind.OTHER,
-  },
-  {
     id: 'terms-of-service',
     kind: ScreenKind.NORMAL,
     handledSteps: 'loading,loaded,error',
@@ -1182,61 +1166,26 @@ const KNOWN_SCREENS: ScreenDefType[] = [
   {
     id: 'sync-consent',
     kind: ScreenKind.NORMAL,
-    handledSteps: 'ash-sync,lacros-overview',
+    handledSteps: 'ash-sync',
     states: [
       {
         id: 'ash-sync',
         data: {
           isChildAccount: false,
-          isArcRestricted: false,
         },
         trigger: (screen: any) => {
           screen.setIsMinorMode(false);
-          screen.showLoadedStep(/*os_sync_lacros=*/ false);
+          screen.showLoadedStep();
         },
       },
       {
         id: 'ash-sync-minor-mode',
         data: {
           isChildAccount: true,
-          isArcRestricted: false,
         },
         trigger: (screen: any) => {
           screen.setIsMinorMode(true);
-          screen.showLoadedStep(/*os_sync_lacros=*/ false);
-        },
-      },
-      {
-        id: 'ash-sync-arc-restricted',
-        data: {
-          isChildAccount: false,
-          isArcRestricted: true,
-        },
-        trigger: (screen: any) => {
-          screen.setIsMinorMode(false);
-          screen.showLoadedStep(/*os_sync_lacros=*/ false);
-        },
-      },
-      {
-        id: 'lacros-overview',
-        data: {
-          isChildAccount: false,
-          isArcRestricted: false,
-        },
-        trigger: (screen: any) => {
-          screen.setIsMinorMode(false);
-          screen.showLoadedStep(/*os_sync_lacros=*/ true);
-        },
-      },
-      {
-        id: 'lacros-overview-minor',
-        data: {
-          isChildAccount: true,
-          isArcRestricted: false,
-        },
-        trigger: (screen: any) => {
-          screen.setIsMinorMode(true);
-          screen.showLoadedStep(/*os_sync_lacros=*/ true);
+          screen.showLoadedStep();
         },
       },
     ],
@@ -1551,24 +1500,67 @@ const KNOWN_SCREENS: ScreenDefType[] = [
       },
       {
         id: 'pin-as-main-factor',
-        trigger: (screen: any) => {
-          screen.setUsingPinAsMainFactor(true);
+        data: {
+          authToken: '',
+          isChildAccount: false,
+          hasLoginSupport: true,
+          usingPinAsMainSignInFactor: true,
         },
       },
       {
         id: 'pin-for-unlock-only',
-        trigger: (screen: any) => {
-          screen.setUsingPinAsMainFactor(false);
-          screen.setHasLoginSupport(false);
+        data: {
+          authToken: '',
+          isChildAccount: false,
+          hasLoginSupport: false,
+          usingPinAsMainSignInFactor: false,
         },
       },
       {
         id: 'pin-default',
-        trigger: (screen: any) => {
-          screen.setUsingPinAsMainFactor(false);
-          screen.setHasLoginSupport(true);
+        data: {
+          authToken: '',
+          isChildAccount: false,
+          hasLoginSupport: true,
+          usingPinAsMainSignInFactor: false,
         },
       },
+      {
+        id: 'pin-recovery',
+        data: {
+          authToken: '',
+          isChildAccount: false,
+          hasLoginSupport: true,
+          usingPinAsMainSignInFactor: false,
+          isRecoveryMode: true,
+        },
+      },
+      {
+        id: 'pin-recovery-child',
+        data: {
+          authToken: '',
+          isChildAccount: true,
+          hasLoginSupport: true,
+          usingPinAsMainSignInFactor: false,
+          isRecoveryMode: true,
+        },
+      },
+      {
+        id: 'pin-recovery-done',
+        trigger: (screen: any) => {
+          screen.setUIStep('done');
+        },
+        data: {
+          authToken: '',
+          isChildAccount: false,
+          hasLoginSupport: true,
+          usingPinAsMainSignInFactor: false,
+          isRecoveryMode: true,
+        },
+      },
+
+
+
     ],
   },
   {
@@ -1901,12 +1893,12 @@ const KNOWN_SCREENS: ScreenDefType[] = [
   {
     id: 'quick-start',
     kind: ScreenKind.NORMAL,
-    handledSteps: 'verification,connecting_to_wifi,signing_in,setup_complete',
+    handledSteps:
+        'verification,connecting_to_wifi,signing_in,setup_complete,connected_to_wifi',
     states: [
       {
         id: 'PinVerification',
         trigger: (screen: any) => {
-          screen.setDiscoverableName('Chromebook (123)');
           screen.setPin('1234');
         },
       },
@@ -1960,7 +1952,7 @@ const KNOWN_SCREENS: ScreenDefType[] = [
 
 class DebugButton {
   constructor(parent: HTMLElement, title: string, callback: () => void) {
-    this.element = (document.createElement('div')) as HTMLDivElement;
+    this.element = document.createElement('div');
     this.element.textContent = title;
 
     this.element.className = 'debug-tool-button';
@@ -1975,7 +1967,7 @@ class DebugButton {
     this.postCallback_ = () => DebuggerUi.getInstance().hideDebugUi();
   }
 
-  element: HTMLDivElement;
+  element: HTMLElement;
   private callback_: (() => void);
   private postCallback_: (() => void);
 
@@ -1991,10 +1983,10 @@ class DebugButton {
 
 class ToolPanel {
   constructor(parent: HTMLElement|undefined, title: string, id: string) {
-    this.titleDiv = (document.createElement('h2')) as HTMLHeadingElement;
+    this.titleDiv = document.createElement('h2');
     this.titleDiv.textContent = title;
 
-    const panel = (document.createElement('div')) as HTMLDivElement;
+    const panel = document.createElement('div');
     panel.className = 'debug-tool-panel';
     panel.id = id;
     panel.setAttribute('aria-hidden', 'true');
@@ -2006,7 +1998,7 @@ class ToolPanel {
   }
 
   private titleDiv: HTMLHeadingElement;
-  content: HTMLDivElement;
+  content: HTMLElement;
 
   show(): void {
     this.titleDiv.removeAttribute('hidden');
@@ -2050,8 +2042,8 @@ export class DebuggerUi {
   }
 
   private debuggerVisible_: boolean;
-  private debuggerOverlay_: HTMLDivElement|undefined;
-  private debuggerButton_: HTMLDivElement|undefined;
+  private debuggerOverlay_: HTMLElement|undefined;
+  private debuggerButton_: HTMLElement|undefined;
   private screensPanel: ToolPanel|undefined;
   private screenButtons: Record<string, DebugButton>;
   private statesPanel: ToolPanel|undefined;
@@ -2237,10 +2229,10 @@ export class DebuggerUi {
   private preProcessScreens(): void {
     KNOWN_SCREENS.forEach((screen, index) => {
       // Screen ordering
-      screen!.index = index;
+      screen.index = index;
       // Create a default state
       if (!('states' in screen)) {
-        screen!.states = [{
+        screen.states = [{
           id: 'default',
         }];
       }
@@ -2248,11 +2240,11 @@ export class DebuggerUi {
       if (!screen.defaultState && screen.states) {
         screen.defaultState = screen.states[0].id;
       }
-      screen!.stateMap = {};
+      screen.stateMap = {};
       // For each state fall back to screen data if state data is not defined.
       for (const state of screen.states || []) {
         if (!('data' in state)) {
-          state!.data = screen.data;
+          state.data = screen.data;
         }
         screen.stateMap[state.id] = state;
       }
@@ -2377,7 +2369,7 @@ export class DebuggerUi {
 
   private createScreensList(): void {
     for (const screen of KNOWN_SCREENS) {
-      this.screenMap[screen.id] = screen as ScreenDefType;
+      this.screenMap[screen.id] = screen;
     }
     this.knownScreens = [];
     this.screenButtons = {};
@@ -2408,8 +2400,8 @@ export class DebuggerUi {
                 screen.setUIStep(step);
               },
             };
-            screenDef!.states!.push(state);
-            screenDef!.stateMap![state.id] = state;
+            screenDef.states!.push(state);
+            screenDef.stateMap![state.id] = state;
           }
           if (screenDef.defaultState === 'default' &&
               'defaultUIStep' in screenElement &&
@@ -2499,7 +2491,7 @@ export class DebuggerUi {
   }
 
   private createCssStyle(name: string, styleSpec: string): void {
-    const style = document.createElement('style') as HTMLStyleElement;
+    const style = document.createElement('style');
     style.innerHTML = sanitizeInnerHtml('.' + name + ' {' + styleSpec + '}');
     document.getElementsByTagName('head')[0].appendChild(style);
   }
@@ -2521,20 +2513,20 @@ export class DebuggerUi {
     }
     {
       // Create UI Debugger button
-      const button = document.createElement('div') as HTMLDivElement;
+      const button = document.createElement('div');
       button.id = 'invokeDebuggerButton';
       button.className = 'debugger-button';
       button.textContent = 'Debug';
+      button.setAttribute('role', 'button');
       button.addEventListener('click', this.toggleDebugUi.bind(this));
 
       this.debuggerButton_ = button;
     }
     {
       // Create base debugger panel.
-      const overlay = (document.createElement('div')) as HTMLDivElement;
+      const overlay = document.createElement('div');
       overlay.id = 'debuggerOverlay';
       overlay.className = 'debugger-overlay';
-      overlay.setAttribute('aria-label', 'OOBE debug overlay');
       overlay.setAttribute('hidden', 'true');
       this.debuggerOverlay_ = overlay;
     }

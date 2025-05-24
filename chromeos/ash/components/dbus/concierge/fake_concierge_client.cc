@@ -154,7 +154,7 @@ void FakeConciergeClient::ExportDiskImage(
 
 void FakeConciergeClient::CancelDiskImageOperation(
     const vm_tools::concierge::CancelDiskImageRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::concierge::CancelDiskImageResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
         callback) {
   // Removes signals sent during disk image import.
   disk_image_status_signals_.clear();
@@ -258,7 +258,7 @@ void FakeConciergeClient::NotifyTremplinStarted(
 
 void FakeConciergeClient::StopVm(
     const vm_tools::concierge::StopVmRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
         callback) {
   stop_vm_call_count_++;
   vm_tools::concierge::VmStoppedSignal signal;
@@ -274,7 +274,7 @@ void FakeConciergeClient::StopVm(
 
 void FakeConciergeClient::SuspendVm(
     const vm_tools::concierge::SuspendVmRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::concierge::SuspendVmResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
         callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), suspend_vm_response_));
@@ -282,7 +282,7 @@ void FakeConciergeClient::SuspendVm(
 
 void FakeConciergeClient::ResumeVm(
     const vm_tools::concierge::ResumeVmRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::concierge::ResumeVmResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
         callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), resume_vm_response_));
@@ -349,7 +349,7 @@ void FakeConciergeClient::AttachUsbDevice(
 
 void FakeConciergeClient::DetachUsbDevice(
     const vm_tools::concierge::DetachUsbDeviceRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::concierge::DetachUsbDeviceResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
         callback) {
   detach_usb_device_call_count_++;
 
@@ -400,6 +400,16 @@ void FakeConciergeClient::ListVms(
       FROM_HERE, base::BindOnce(std::move(callback), list_vms_response_));
 }
 
+void FakeConciergeClient::ModifyFakePowerConfig(
+    const vm_tools::concierge::ModifyFakePowerConfigRequest& request,
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+        callback) {
+  modify_fake_power_config_call_count_++;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), modify_fake_power_config_response_));
+}
+
 void FakeConciergeClient::GetVmLaunchAllowed(
     const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
     chromeos::DBusMethodCallback<
@@ -411,7 +421,7 @@ void FakeConciergeClient::GetVmLaunchAllowed(
 
 void FakeConciergeClient::SwapVm(
     const vm_tools::concierge::SwapVmRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
         callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), swap_vm_response_));
@@ -420,7 +430,7 @@ void FakeConciergeClient::SwapVm(
 void FakeConciergeClient::InstallPflash(
     base::ScopedFD fd,
     const vm_tools::concierge::InstallPflashRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::concierge::InstallPflashResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
         callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), install_pflash_response_));
@@ -428,11 +438,36 @@ void FakeConciergeClient::InstallPflash(
 
 void FakeConciergeClient::AggressiveBalloon(
     const vm_tools::concierge::AggressiveBalloonRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::concierge::AggressiveBalloonResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
         callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), aggressive_balloon_response_));
+}
+
+void FakeConciergeClient::MuteVmAudio(
+    const vm_tools::concierge::MuteVmAudioRequest& request,
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+        callback) {
+  mute_vm_audio_call_count_++;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), mute_vm_audio_response_));
+}
+
+void FakeConciergeClient::SetUpVmUser(
+    const vm_tools::concierge::SetUpVmUserRequest& request,
+    chromeos::DBusMethodCallback<vm_tools::concierge::SetUpVmUserResponse>
+        callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), set_up_vm_user_response_));
+}
+
+void FakeConciergeClient::GetBaguetteImageUrl(
+    chromeos::DBusMethodCallback<
+        vm_tools::concierge::GetBaguetteImageUrlResponse> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), get_baguette_image_url_response_));
 }
 
 void FakeConciergeClient::NotifyVmStarted(

@@ -10,6 +10,7 @@
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_info_collector.h"
@@ -37,6 +38,10 @@ base::unexpected<mojom::ErrorPtr> HandleAdapterFailure(
   }
   return base::unexpected(
       CreateError(error_code, "Unable to find a capable adapter."));
+}
+
+void RecordDMLCreateDeviceError(HRESULT hr) {
+  base::UmaHistogramSparse("WebNN.DMLCreateDevice.Error", hr);
 }
 
 }  // namespace
@@ -239,6 +244,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   }
 
   if (FAILED(hr)) {
+    RecordDMLCreateDeviceError(hr);
     return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
                                 "Failed to create DirectML device.", hr);
   }
@@ -246,6 +252,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   const DML_FEATURE_LEVEL max_supported_dml_feature_level =
       GetMaxSupportedDMLFeatureLevel(dml_device.Get());
   if (max_supported_dml_feature_level < min_required_dml_feature_level) {
+    RecordDMLCreateDeviceError(DXGI_ERROR_UNSUPPORTED);
     return HandleAdapterFailure(
         mojom::Error::Code::kNotSupportedError,
         base::StrCat({"The current supported ",

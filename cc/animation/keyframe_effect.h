@@ -21,7 +21,6 @@
 #include "cc/trees/mutator_host_client.h"
 #include "cc/trees/target_property.h"
 #include "ui/gfx/animation/keyframe/keyframe_effect.h"
-#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
@@ -85,6 +84,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
 
   bool needs_push_properties() const { return needs_push_properties_; }
   void SetNeedsPushProperties();
+  void ResetNeedsPushProperties();
 
   void BindElementAnimations(ElementAnimations* element_animations);
   void UnbindElementAnimations();

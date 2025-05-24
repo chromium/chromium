@@ -30,6 +30,7 @@ const int kLocalUpmMinGmsVersionForAuto = 241512000;
 
 }  // namespace
 
+// DEPRECATED: only use if `features::kLoginDbDeprecationAndroid` is disabled.
 bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service) {
   switch (
       static_cast<UseUpmLocalAndSeparateStoresState>(pref_service->GetInteger(

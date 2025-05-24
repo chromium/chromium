@@ -33,6 +33,8 @@ static_library("core") {
     "dom_distiller_switches.h",
     "experiments.cc",
     "experiments.h",
+    "extraction_utils.cc",
+    "extraction_utils.h",
     "page_features.cc",
     "page_features.h",
     "pref_names.h",

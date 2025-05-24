@@ -2,15 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("thread_linux") {
+source_set("thread_linux") {
+  visibility = [ "//components/dbus/*" ]
   sources = [
     "dbus_thread_linux.cc",
     "dbus_thread_linux.h",
   ]
-  defines = [ "IS_DBUS_IMPL" ]
+  defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//dbus",
   ]
 }

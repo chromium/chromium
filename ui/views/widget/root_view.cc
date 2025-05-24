@@ -21,7 +21,8 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_switches_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -36,6 +37,10 @@
 #include "ui/views/widget/root_view_targeter.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/accessibility/accessibility_features.h"
+#endif
 
 using DispatchDetails = ui::EventDispatchDetails;
 
@@ -62,36 +67,6 @@ class MouseEnterExitEvent : public ui::MouseEvent {
   }
 };
 
-// TODO(crbug.com/40821061): This class is for debug purpose only.
-// Remove it after resolving the issue.
-class DanglingMouseMoveHandlerOnViewDestroyingChecker
-    : public views::ViewObserver {
- public:
-  explicit DanglingMouseMoveHandlerOnViewDestroyingChecker(
-      const raw_ptr<views::View, AcrossTasksDanglingUntriaged>&
-          mouse_move_handler)
-      : mouse_move_handler_(mouse_move_handler) {
-    scoped_observation.Observe(mouse_move_handler_);
-  }
-
-  // views::ViewObserver:
-  void OnViewIsDeleting(views::View* view) override {
-    // `mouse_move_handler_` should be nulled before `view` dies. Otherwise
-    // `mouse_move_handler_` will become a dangling pointer.
-    CHECK(!mouse_move_handler_);
-    scoped_observation.Reset();
-  }
-
- private:
-  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation{
-      this};
-  // RAW_PTR_EXCLUSION: Avoid turning this into a `raw_ref<raw_ptr<>>`. The
-  // current `raw_ptr&` setup is intentional and used to observe the pointer
-  // without counting as a live reference to the underlying memory.
-  RAW_PTR_EXCLUSION const raw_ptr<views::View, AcrossTasksDanglingUntriaged>&
-      mouse_move_handler_;
-};
-
 }  // namespace
 
 // Used by RootView to create a hidden child that can be used to make screen
@@ -106,36 +81,91 @@ class AnnounceTextView : public View {
   METADATA_HEADER(AnnounceTextView, View)
 
  public:
-  AnnounceTextView() { UpdateAccessibleRole(); }
+  AnnounceTextView() {
+    // When constructed the view will have no name, but will change as soon as
+    // text needs to be announced.
+    UpdateAccessibleAttributes(std::u16string());
+  }
 
   ~AnnounceTextView() override = default;
 
   void AnnounceTextAs(const std::u16string& text,
                       ui::AXPlatformNode::AnnouncementType announcement_type) {
-    announce_text_ = text;
+    UpdateAccessibleAttributes(text, announcement_type);
+    CHECK(HasValidRole());
+
+    NotifyAccessibilityEventDeprecated(AnnounceEventType(announcement_type),
+                                       /*send_native_event=*/true);
+  }
+
+  ax::mojom::Event AnnounceEventType(
+      ui::AXPlatformNode::AnnouncementType announcement_type) const {
+    CHECK(HasValidRole());
+
+    ax::mojom::Event event_type = ax::mojom::Event::kNone;
     switch (announcement_type) {
       case ui::AXPlatformNode::AnnouncementType::kAlert:
-        announce_event_type_ = ax::mojom::Event::kAlert;
-        announce_role_ = ax::mojom::Role::kAlert;
+        event_type = ax::mojom::Event::kAlert;
         break;
       case ui::AXPlatformNode::AnnouncementType::kPolite:
-        announce_event_type_ = ax::mojom::Event::kLiveRegionChanged;
-        announce_role_ = ax::mojom::Role::kStatus;
+        event_type = ax::mojom::Event::kLiveRegionChanged;
         break;
     }
+
+    CHECK(IsValidEvent(event_type));
+    return event_type;
+  }
+
+  void UpdateAccessibleAttributes(
+      const std::u16string& announce_text,
+      std::optional<ui::AXPlatformNode::AnnouncementType> announcement_type =
+          std::nullopt) {
+    // Since this view is a unique view that is hidden and only to provide a
+    // mechanism for Views to make their own announcements, we should not fire
+    // events that are not `announce_event_type_` which may otherwise be
+    // generated when we, for example, update the name of the view.
+    ScopedAccessibilityEventBlocker scoped_event_blocker(
+        GetViewAccessibility());
+
+    // View should have a initial accessible role, and it will later change
+    // depending on the `announce_role` accordingly.
+    ax::mojom::Role announce_role = ax::mojom::Role::kStatus;
+    if (announcement_type.has_value()) {
+      switch (announcement_type.value()) {
+        case ui::AXPlatformNode::AnnouncementType::kAlert:
+          announce_role = ax::mojom::Role::kAlert;
+          break;
+        case ui::AXPlatformNode::AnnouncementType::kPolite:
+          announce_role = ax::mojom::Role::kStatus;
+          break;
+      }
+    }
+
+    UpdateAccessibleRole(announce_role);
+    GetViewAccessibility().SetIsInvisible(true);
+    GetViewAccessibility().SetLiveAtomic(true);
+    GetViewAccessibility().SetLiveStatus("polite");
+
+    if (announce_text.empty()) {
+      GetViewAccessibility().SetName(
+          announce_text, ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    } else {
+      GetViewAccessibility().SetName(announce_text);
+    }
+
     if (base::FeatureList::IsEnabled(
             features::kAnnounceTextAdditionalAttributes)) {
       GetViewAccessibility().SetContainerLiveStatus("polite");
+      GetViewAccessibility().SetLiveRelevant("additions text");
+      GetViewAccessibility().SetContainerLiveRelevant("additions text");
     } else {
       GetViewAccessibility().RemoveContainerLiveStatus();
+      GetViewAccessibility().RemoveLiveRelevant();
+      GetViewAccessibility().RemoveContainerLiveRelevant();
     }
-
-    UpdateAccessibleRole();
-
-    NotifyAccessibilityEvent(announce_event_type_, /*send_native_event=*/true);
   }
 
-  void UpdateAccessibleRole() {
+  void UpdateAccessibleRole(ax::mojom::Role announce_role) {
 #if BUILDFLAG(IS_CHROMEOS)
     // On ChromeOS, kAlert role can invoke an unnecessary event on reparenting.
     GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
@@ -144,34 +174,21 @@ class AnnounceTextView : public View {
     // May require setting kLiveStatus, kContainerLiveStatus to "polite".
     GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 #else
-    GetViewAccessibility().SetRole(announce_role_);
+    GetViewAccessibility().SetRole(announce_role);
 #endif
   }
 
-  // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic, true);
-    node_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
-                                  "polite");
-    if (base::FeatureList::IsEnabled(
-            features::kAnnounceTextAdditionalAttributes)) {
-      node_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveRelevant,
-                                    "additions text");
-      node_data->AddStringAttribute(
-          ax::mojom::StringAttribute::kContainerLiveRelevant, "additions text");
-    }
-
-    !announce_text_.empty() ? node_data->SetNameChecked(announce_text_)
-                            : node_data->SetNameExplicitlyEmpty();
-    node_data->AddState(ax::mojom::State::kInvisible);
+  bool HasValidRole() const {
+    return GetViewAccessibility().GetCachedRole() ==
+               ax::mojom::Role::kStaticText ||
+           GetViewAccessibility().GetCachedRole() == ax::mojom::Role::kAlert ||
+           GetViewAccessibility().GetCachedRole() == ax::mojom::Role::kStatus;
   }
 
- private:
-  std::u16string announce_text_;
-  ax::mojom::Event announce_event_type_ = ax::mojom::Event::kNone;
-  // View should have a initial accessible role, and it will later change
-  // depending on the announce_role_ accordingly.
-  ax::mojom::Role announce_role_ = ax::mojom::Role::kStatus;
+  bool IsValidEvent(ax::mojom::Event announce_event_type) const {
+    return announce_event_type == ax::mojom::Event::kAlert ||
+           announce_event_type == ax::mojom::Event::kLiveRegionChanged;
+  }
 };
 
 BEGIN_METADATA(AnnounceTextView)
@@ -195,12 +212,14 @@ class PreEventDispatchHandler : public ui::EventHandler {
     CHECK_EQ(ui::EP_PRETARGET, event->phase());
 // macOS doesn't have keyboard-triggered context menus.
 #if !BUILDFLAG(IS_MAC)
-    if (event->handled())
+    if (event->handled()) {
       return;
+    }
 
     View* v = nullptr;
-    if (owner_->GetFocusManager())  // Can be NULL in unittests.
+    if (owner_->GetFocusManager()) {  // Can be NULL in unittests.
       v = owner_->GetFocusManager()->GetFocusedView();
+    }
     // Special case to handle keyboard-triggered context menus.
     if (v && v->GetEnabled() &&
         ((event->key_code() == ui::VKEY_APPS) ||
@@ -213,7 +232,7 @@ class PreEventDispatchHandler : public ui::EventHandler {
         location.SetToMax(parent_bounds.origin());
         location.SetToMin(parent_bounds.bottom_right());
       }
-      v->ShowContextMenu(location, ui::MENU_SOURCE_KEYBOARD);
+      v->ShowContextMenu(location, ui::mojom::MenuSourceType::kKeyboard);
       event->StopPropagation();
     }
 #endif
@@ -232,7 +251,7 @@ class PreEventDispatchHandler : public ui::EventHandler {
 class PostEventDispatchHandler : public ui::EventHandler {
  public:
   PostEventDispatchHandler()
-      : touch_dnd_enabled_(::switches::IsTouchDragDropEnabled()) {}
+      : touch_dnd_enabled_(::features::IsTouchDragAndDropEnabled()) {}
   PostEventDispatchHandler(const PostEventDispatchHandler&) = delete;
   PostEventDispatchHandler& operator=(const PostEventDispatchHandler&) = delete;
   ~PostEventDispatchHandler() override = default;
@@ -241,8 +260,9 @@ class PostEventDispatchHandler : public ui::EventHandler {
   // Overridden from ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override {
     DCHECK_EQ(ui::EP_POSTTARGET, event->phase());
-    if (event->handled())
+    if (event->handled()) {
       return;
+    }
 
     View* target = static_cast<View*>(event->target());
 
@@ -265,7 +285,8 @@ class PostEventDispatchHandler : public ui::EventHandler {
          event->type() == ui::EventType::kGestureTwoFingerTap)) {
       gfx::Point screen_location(location);
       View::ConvertPointToScreen(target, &screen_location);
-      target->ShowContextMenu(screen_location, ui::MENU_SOURCE_TOUCH);
+      target->ShowContextMenu(screen_location,
+                              ui::mojom::MenuSourceType::kTouch);
       event->StopPropagation();
     }
   }
@@ -297,7 +318,15 @@ RootView::RootView(Widget* widget)
     if (ax::mojom::Role::kUnknown == GetViewAccessibility().GetCachedRole()) {
       GetViewAccessibility().SetRole(
           widget_delegate->GetAccessibleWindowRole());
+
+      UpdateAccessibleName();
     }
+
+    widget_delegate->SetTitleChangedCallback(base::BindRepeating(
+        &RootView::UpdateAccessibleName, weak_factory_.GetWeakPtr()));
+
+    widget_delegate->SetAccessibleTitleChangedCallback(base::BindRepeating(
+        &RootView::UpdateAccessibleName, weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -316,9 +345,10 @@ void RootView::SetContentsView(View* contents_view) {
   // The ContentsView must be set up _after_ the window is created so that its
   // Widget pointer is valid.
   SetUseDefaultFillLayout(true);
-  if (!children().empty())
+  if (!children().empty()) {
     RemoveAllChildViews();
-  AddChildView(contents_view);
+  }
+  AddChildViewRaw(contents_view);
 }
 
 View* RootView::GetContentsView() {
@@ -421,8 +451,9 @@ ui::EventTargeter* RootView::GetDefaultEventTargeter() {
 
 void RootView::OnEventProcessingStarted(ui::Event* event) {
   VLOG(5) << "RootView::OnEventProcessingStarted(" << event->ToString() << ")";
-  if (!event->IsGestureEvent())
+  if (!event->IsGestureEvent()) {
     return;
+  }
 
   ui::GestureEvent* gesture_event = event->AsGestureEvent();
 
@@ -493,8 +524,9 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
     drag_info_.Reset();
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler_, &mouse_pressed_event);
-    if (dispatch_details.dispatcher_destroyed)
+    if (dispatch_details.dispatcher_destroyed) {
       return true;
+    }
     return true;
   }
   DCHECK(!explicit_mouse_handler_);
@@ -514,14 +546,16 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
 
     // Remove the double-click flag if the handler is different than the
     // one which got the first click part of the double-click.
-    if (mouse_pressed_handler_ != last_click_handler_)
+    if (mouse_pressed_handler_ != last_click_handler_) {
       mouse_pressed_event.SetFlags(event.flags() & ~ui::EF_IS_DOUBLE_CLICK);
+    }
 
     drag_info_.Reset();
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler_, &mouse_pressed_event);
-    if (dispatch_details.dispatcher_destroyed)
+    if (dispatch_details.dispatcher_destroyed) {
       return mouse_pressed_event.handled();
+    }
 
     // The view could have removed itself from the tree when handling
     // OnMousePressed().  In this case, the removal notification will have
@@ -530,8 +564,9 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
     //
     // NOTE: Don't return true here, because we don't want the frame to
     // forward future events to us when there's no handler.
-    if (!mouse_pressed_handler_)
+    if (!mouse_pressed_handler_) {
       break;
+    }
 
     // If the view handled the event, leave mouse_pressed_handler_ set and
     // return true, which will cause subsequent drag/release events to get
@@ -565,8 +600,9 @@ bool RootView::OnMouseDragged(const ui::MouseEvent& event) {
                                mouse_pressed_handler_.get());
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler_, &mouse_event);
-    if (dispatch_details.dispatcher_destroyed)
+    if (dispatch_details.dispatcher_destroyed) {
       return false;
+    }
     return true;
   }
   return false;
@@ -588,8 +624,9 @@ void RootView::OnMouseReleased(const ui::MouseEvent& event) {
     SetMouseAndGestureHandler(nullptr);
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler, &mouse_released);
-    if (dispatch_details.dispatcher_destroyed)
+    if (dispatch_details.dispatcher_destroyed) {
       return;
+    }
   }
 }
 
@@ -608,10 +645,11 @@ void RootView::OnMouseCaptureLost() {
     View* mouse_pressed_handler = mouse_pressed_handler_;
     View* gesture_handler = gesture_handler_;
     SetMouseAndGestureHandler(nullptr);
-    if (mouse_pressed_handler)
+    if (mouse_pressed_handler) {
       mouse_pressed_handler->OnMouseCaptureLost();
-    else
+    } else {
       gesture_handler->OnMouseCaptureLost();
+    }
     // WARNING: we may have been deleted.
   }
 }
@@ -629,15 +667,17 @@ void RootView::OnMouseExited(const ui::MouseEvent& event) {
     MouseEnterExitEvent exited(event, ui::EventType::kMouseExited);
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_move_handler_, &exited);
-    if (dispatch_details.dispatcher_destroyed)
+    if (dispatch_details.dispatcher_destroyed) {
       return;
+    }
     // The mouse_move_handler_ could have been destroyed in the context of the
     // mouse exit event. b/312400341
     if (!dispatch_details.target_destroyed && mouse_move_handler_) {
       dispatch_details = NotifyEnterExitOfDescendant(
           event, ui::EventType::kMouseExited, mouse_move_handler_, nullptr);
-      if (dispatch_details.dispatcher_destroyed)
+      if (dispatch_details.dispatcher_destroyed) {
         return;
+      }
     }
     mouse_move_handler_ = nullptr;
   }
@@ -660,12 +700,14 @@ void RootView::MaybeNotifyGestureHandlerBeforeReplacement() {
 #if defined(USE_AURA)
   ui::GestureRecognizer* gesture_recognizer =
       (gesture_handler_ && widget_ ? widget_->GetGestureRecognizer() : nullptr);
-  if (!gesture_recognizer)
+  if (!gesture_recognizer) {
     return;
+  }
 
   ui::GestureConsumer* gesture_consumer = widget_->GetGestureConsumer();
-  if (!gesture_recognizer->DoesConsumerHaveActiveTouch(gesture_consumer))
+  if (!gesture_recognizer->DoesConsumerHaveActiveTouch(gesture_consumer)) {
     return;
+  }
 
   gesture_recognizer->SendSynthesizedEndEvents(gesture_consumer);
 #endif
@@ -674,8 +716,9 @@ void RootView::MaybeNotifyGestureHandlerBeforeReplacement() {
 void RootView::SetMouseAndGestureHandler(View* new_handler) {
   SetMouseHandler(new_handler);
 
-  if (new_handler == gesture_handler_)
+  if (new_handler == gesture_handler_) {
     return;
+  }
 
   MaybeNotifyGestureHandlerBeforeReplacement();
   gesture_handler_ = new_handler;
@@ -688,43 +731,42 @@ void RootView::SetMouseHandler(View* new_mouse_handler) {
   drag_info_.Reset();
 }
 
-void RootView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-
-  DCHECK(GetWidget());
-  auto* widget_delegate = GetWidget()->widget_delegate();
-  // On linux, we could now get to a situation where when we are first
-  // constructing the RootView we try to call GetViewAccessibility.SetRole() and
-  // since the VirtualAccessibility object is not yet created, we will try to
-  // create one first. This can lead to a crash because on Linux we end up
-  // querying GetAccessibleNodeData on the view when we are creating the
-  // VirtualAccessibility object, and so we will end up here and if we don't
-  // exit early we will try to set the name on an object with no role (we are in
-  // the middle of setting it) and so it will crash. This check will prevent us
-  // from crashing in that scenario, and will have no other effects since at
-  // every other point in time we will have a valid role since its set on the
-  // constructor.
-  if (!widget_delegate || node_data->role == ax::mojom::Role::kUnknown) {
-    return;
+void RootView::UpdateParentLayer() {
+  if (layer()) {
+    ReparentLayer(widget_->GetLayer());
   }
+}
 
-  if (node_data->GetStringAttribute(ax::mojom::StringAttribute::kName)
-          .empty() &&
-      static_cast<ax::mojom::NameFrom>(
-          node_data->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)) !=
-          ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
+void RootView::UpdateAccessibleName() {
+  auto* widget_delegate = GetWidget()->widget_delegate();
+  if (widget_delegate) {
     std::u16string name = widget_delegate->GetAccessibleWindowTitle();
     if (name.empty()) {
-      node_data->SetNameExplicitlyEmpty();
+      GetViewAccessibility().SetName(
+          std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
     } else {
-      node_data->SetNameChecked(name);
+      // TODO (crbug.com/380927771). Once VoiceOver has incorporated the name
+      // change event, remove below Mac specific code.
+#if BUILDFLAG(IS_MAC)
+      if (::features::IsBlockRootWindowAccessibleNameChangeEventEnabled()) {
+        ScopedAccessibilityEventBlocker scoped_event_blocker(
+            GetViewAccessibility());
+
+        GetViewAccessibility().SetName(name);
+      } else {
+        GetViewAccessibility().SetName(name);
+      }
+#endif
+
+#if !BUILDFLAG(IS_MAC)
+      GetViewAccessibility().SetName(name);
+#endif
     }
   }
 }
 
-void RootView::UpdateParentLayer() {
-  if (layer())
-    ReparentLayer(widget_->GetLayer());
+void RootView::UpdateAccessibleURL(const GURL& url) {
+  GetViewAccessibility().SetRootViewURL(url.spec());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -735,16 +777,21 @@ void RootView::ViewHierarchyChanged(
   widget_->ViewHierarchyChanged(details);
 
   if (!details.is_add && !details.move_view) {
-    if (!explicit_mouse_handler_ && mouse_pressed_handler_ == details.child)
-      mouse_pressed_handler_ = nullptr;
-    if (mouse_move_handler_ == details.child)
+    if (mouse_pressed_handler_ == details.child) {
+      SetMouseHandler(nullptr);
+    }
+    if (mouse_move_handler_ == details.child) {
       mouse_move_handler_ = nullptr;
-    if (gesture_handler_ == details.child)
+    }
+    if (gesture_handler_ == details.child) {
       gesture_handler_ = nullptr;
-    if (event_dispatch_target_ == details.child)
+    }
+    if (event_dispatch_target_ == details.child) {
       event_dispatch_target_ = nullptr;
-    if (old_dispatch_target_ == details.child)
+    }
+    if (old_dispatch_target_ == details.child) {
       old_dispatch_target_ = nullptr;
+    }
   }
 }
 
@@ -761,24 +808,28 @@ void RootView::OnDidSchedulePaint(const gfx::Rect& rect) {
   if (!layer()) {
     gfx::Rect xrect = ConvertRectToParent(rect);
     gfx::Rect invalid_rect = gfx::IntersectRects(GetLocalBounds(), xrect);
-    if (!invalid_rect.IsEmpty())
+    if (!invalid_rect.IsEmpty()) {
       widget_->SchedulePaintInRect(invalid_rect);
+    }
   }
 }
 
 void RootView::OnPaint(gfx::Canvas* canvas) {
-  if (!layer() || !layer()->fills_bounds_opaquely())
+  if (!layer() || !layer()->fills_bounds_opaquely()) {
     canvas->DrawColor(SK_ColorTRANSPARENT, SkBlendMode::kClear);
+  }
 
   View::OnPaint(canvas);
 }
 
 View::LayerOffsetData RootView::CalculateOffsetToAncestorWithLayer(
     ui::Layer** layer_parent) {
-  if (layer() || !widget_->GetLayer())
+  if (layer() || !widget_->GetLayer()) {
     return View::CalculateOffsetToAncestorWithLayer(layer_parent);
-  if (layer_parent)
+  }
+  if (layer_parent) {
     *layer_parent = widget_->GetLayer();
+  }
   return LayerOffsetData(widget_->GetLayer()->device_scale_factor());
 }
 
@@ -847,8 +898,6 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
       mouse_move_handler_ = v;
       // TODO(crbug.com/40821061): This is for debug purpose only.
       // Remove it after resolving the issue.
-      DanglingMouseMoveHandlerOnViewDestroyingChecker
-          mouse_move_handler_dangling_checker(mouse_move_handler_);
       if (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
           !mouse_move_handler_->Contains(old_handler)) {
         MouseEnterExitEvent entered(event, ui::EventType::kMouseEntered);
@@ -925,10 +974,12 @@ ui::EventDispatchDetails RootView::NotifyEnterExitOfDescendant(
     View* view,
     View* sibling) {
   for (View* p = view->parent(); p; p = p->parent()) {
-    if (!p->GetNotifyEnterExitOnChild())
+    if (!p->GetNotifyEnterExitOnChild()) {
       continue;
-    if (sibling && p->Contains(sibling))
+    }
+    if (sibling && p->Contains(sibling)) {
       break;
+    }
     // It is necessary to recreate the notify-event for each dispatch, since one
     // of the callbacks can mark the event as handled, and that would cause
     // incorrect event dispatch.
@@ -972,15 +1023,17 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
   if (event.type() == ui::EventType::kGestureEnd) {
     // In case a drag was in progress, reset all the handlers. Otherwise, just
     // reset the gesture handler.
-    if (gesture_handler_ && gesture_handler_ == mouse_pressed_handler_)
+    if (gesture_handler_ && gesture_handler_ == mouse_pressed_handler_) {
       SetMouseAndGestureHandler(nullptr);
-    else
+    } else {
       gesture_handler_ = nullptr;
+    }
   }
 
   DispatchDetails details;
-  if (target != event_dispatch_target_)
+  if (target != event_dispatch_target_) {
     details.target_destroyed = true;
+  }
 
   event_dispatch_target_ = old_dispatch_target_;
   old_dispatch_target_ = nullptr;

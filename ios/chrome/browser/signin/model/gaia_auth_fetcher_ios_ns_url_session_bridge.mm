@@ -73,8 +73,9 @@ GaiaAuthFetcherIOSNSURLSessionBridge::Request::Request(
 - (void)requestCompletedWithData:(NSData*)data
                         response:(NSURLResponse*)response
                            error:(NSError*)error {
-  if (!self.bridge)
+  if (!self.bridge) {
     return;
+  }
   NSHTTPURLResponse* responseWithHeaders =
       base::apple::ObjCCastStrict<NSHTTPURLResponse>(response);
   if (error) {
@@ -185,8 +186,9 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::SetCanonicalCookiesFromResponse(
   for (NSHTTPCookie* cookie : cookies) {
     std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time::Now());
-    if (!canonical_cookie)
+    if (!canonical_cookie) {
       continue;
+    }
     net::CookieOptions options;
     options.set_include_httponly();
     // Permit it to set a SameSite cookie if it wants to.

@@ -8,12 +8,16 @@ import android.os.Bundle;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 
 /** Base class for Policy providers. */
+@NullMarked
 public abstract class PolicyProvider {
     private static final String TAG = "PolicyProvider";
 
     private CombinedPolicyProvider mCombinedPolicyProvider;
+
     private int mSource = -1;
 
     protected PolicyProvider() {}
@@ -44,6 +48,7 @@ public abstract class PolicyProvider {
      *            delegate.
      * @param source tags the PolicyProvider with a source.
      */
+    @Initializer
     final void setManagerAndSource(CombinedPolicyProvider combinedPolicyProvider, int source) {
         assert mSource < 0;
         assert source >= 0;

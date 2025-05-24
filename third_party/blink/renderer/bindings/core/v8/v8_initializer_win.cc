@@ -13,34 +13,45 @@
 
 namespace blink {
 
-bool FilterETWSessionByURLCallback(v8::Local<v8::Context> context,
-                                   const std::string& json_payload) {
+v8::FilterETWSessionByURLResult FilterETWSessionByURLCallback(
+    v8::Local<v8::Context> context,
+    const std::string& json_payload) {
   std::optional<base::Value> optional_value =
       base::JSONReader::Read(json_payload);
   if (!optional_value || !optional_value.value().is_dict()) {
-    return false;  // Invalid payload
+    return {false, false};  // Invalid payload
   }
+
   const base::Value::Dict& dict = optional_value.value().GetDict();
+
+  std::optional<bool> opt_trace_interpreter_frames =
+      dict.FindBool("trace_interpreter_frames");
+  bool trace_interpreter_frames = opt_trace_interpreter_frames.has_value() &&
+                                  opt_trace_interpreter_frames.value();
+
   const base::Value::List* filtered_urls = dict.FindList("filtered_urls");
   if (!filtered_urls) {
-    return false;  // Invalid payload
+    return {false, false};  // Invalid payload
   }
+
+  ExecutionContext* execution_context = ToExecutionContext(context);
+  if (!execution_context) {
+    return {false, false};  // No URL
+  }
+  std::string url(execution_context->Url().GetString().Utf8());
+
   for (size_t i = 0; i < filtered_urls->size(); i++) {
     const base::Value& filtered_url = (*filtered_urls)[i];
     if (!filtered_url.is_string()) {
-      return false;  // Invalid payload
+      return {false, false};  // Invalid payload
     }
 
-    ExecutionContext* execution_context = ToExecutionContext(context);
-    if (execution_context != nullptr) {
-      std::string url(execution_context->Url().GetString().Utf8());
-      const RE2 regex(filtered_url.GetString());
-      if (RE2::FullMatch(url, regex)) {
-        return true;
-      }
+    const RE2 regex(filtered_url.GetString());
+    if (RE2::FullMatch(url, regex)) {
+      return {true, trace_interpreter_frames};
     }
   }
-  return false;  // No regex matching found.
+  return {false, false};  // No regex matching found.
 }
 
 }  // namespace blink

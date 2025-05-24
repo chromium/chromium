@@ -23,7 +23,7 @@ double GetInterpolableNumber(Interpolation* value) {
   TypedInterpolationValue* interpolated_value =
       interpolation->GetInterpolatedValue();
   return To<InterpolableNumber>(interpolated_value->GetInterpolableValue())
-      .Value(CSSToLengthConversionData());
+      .Value(CSSToLengthConversionData(/*element=*/nullptr));
 }
 
 Interpolation* CreateInterpolation(int from, int to) {
@@ -31,7 +31,8 @@ Interpolation* CreateInterpolation(int from, int to) {
   // suffices for this, and also means we can ignore the AnimatableValues for
   // the compositor (as z-index isn't compositor-compatible).
   PropertyHandle property_handle(GetCSSPropertyZIndex());
-  CSSNumberInterpolationType interpolation_type(property_handle);
+  CSSNumberInterpolationType* interpolation_type(
+      MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
   InterpolationValue start(MakeGarbageCollected<InterpolableNumber>(from));
   InterpolationValue end(MakeGarbageCollected<InterpolableNumber>(to));
   return MakeGarbageCollected<TransitionInterpolation>(

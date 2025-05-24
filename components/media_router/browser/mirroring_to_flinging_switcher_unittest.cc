@@ -28,8 +28,8 @@ class TestMediaRouterFactory : public MediaRouterFactory {
     BrowserContextDestroyed(context);
   }
 
-  MOCK_METHOD(KeyedService*,
-              BuildServiceInstanceFor,
+  MOCK_METHOD(std::unique_ptr<KeyedService>,
+              BuildServiceInstanceForBrowserContext,
               (content::BrowserContext * context),
               (const));
 };

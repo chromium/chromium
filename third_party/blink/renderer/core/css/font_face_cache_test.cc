@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
+
+#include <array>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
@@ -26,8 +23,6 @@
 namespace blink {
 
 class FontFaceCacheTest : public PageTestBase {
-  USING_FAST_MALLOC(FontFaceCacheTest);
-
  protected:
   FontFaceCacheTest() = default;
   ~FontFaceCacheTest() override = default;
@@ -74,8 +69,8 @@ void FontFaceCacheTest::AppendTestFaceForCapabilities(const CSSValue& stretch,
       CSSPropertyValue(CSSPropertyName(CSSPropertyID::kFontFamily),
                        *family_name),
       CSSPropertyValue(CSSPropertyName(CSSPropertyID::kSrc), *src_value_list)};
-  auto* font_face_descriptor = MakeGarbageCollected<MutableCSSPropertyValueSet>(
-      properties, static_cast<wtf_size_t>(std::size(properties)));
+  auto* font_face_descriptor =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(properties);
 
   font_face_descriptor->SetProperty(CSSPropertyID::kFontStretch, stretch);
   font_face_descriptor->SetProperty(CSSPropertyID::kFontStyle, style);
@@ -196,7 +191,7 @@ TEST_F(FontFaceCacheTest, SimpleWeightMatch) {
 // have only one of them.
 static HeapVector<Member<CSSValue>> AvailableCapabilitiesChoices(
     size_t choice,
-    CSSValue* available_values[2]) {
+    base::span<CSSValue*> available_values) {
   HeapVector<Member<CSSValue>> available_ones;
   switch (choice) {
     case 0:
@@ -343,17 +338,17 @@ TEST_F(FontFaceCacheTest, WidthRangeMatchingBetween400500) {
   CSSIdentifierValue* style_value =
       CSSIdentifierValue::Create(CSSValueID::kNormal);
 
-  CSSPrimitiveValue* weight_values_lower[] = {
+  auto weight_values_lower = std::to_array<CSSPrimitiveValue*>({
       CSSNumericLiteralValue::Create(600, CSSPrimitiveValue::UnitType::kNumber),
       CSSNumericLiteralValue::Create(415, CSSPrimitiveValue::UnitType::kNumber),
       CSSNumericLiteralValue::Create(475, CSSPrimitiveValue::UnitType::kNumber),
-  };
+  });
 
-  CSSPrimitiveValue* weight_values_upper[] = {
+  auto weight_values_upper = std::to_array<CSSPrimitiveValue*>({
       CSSNumericLiteralValue::Create(610, CSSPrimitiveValue::UnitType::kNumber),
       CSSNumericLiteralValue::Create(425, CSSPrimitiveValue::UnitType::kNumber),
       CSSNumericLiteralValue::Create(485, CSSPrimitiveValue::UnitType::kNumber),
-  };
+  });
 
   // From https://drafts.csswg.org/css-fonts-4/#font-style-matching: "If the
   // desired weight is inclusively between 400 and 500, weights greater than or

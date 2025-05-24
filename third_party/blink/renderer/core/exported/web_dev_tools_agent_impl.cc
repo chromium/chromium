@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 
 #include <v8-inspector.h>
+
 #include <memory>
 #include <utility>
 
@@ -40,6 +41,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_scoped_page_pauser.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -96,15 +98,6 @@
 
 namespace blink {
 
-namespace {
-
-bool IsMainFrame(WebLocalFrameImpl* frame) {
-  // TODO(dgozman): sometimes view->mainFrameImpl() does return null, even
-  // though |frame| is meant to be main frame.  See http://crbug.com/526162.
-  return frame->ViewImpl() && !frame->Parent();
-}
-
-}  // namespace
 
 class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
  public:
@@ -315,8 +308,11 @@ ClientMessageLoopAdapter* ClientMessageLoopAdapter::instance_ = nullptr;
 
 void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
                                          bool restore) {
-  if (!network_agents_.size())
+  if (!network_agents_.size()) {
     Thread::Current()->AddTaskObserver(this);
+    web_local_frame_impl_->OnDevToolsSessionConnectionChanged(
+        /*attached=*/true);
+  }
 
   InspectedFrames* inspected_frames = inspected_frames_.Get();
   v8::Isolate* isolate =
@@ -362,7 +358,7 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 
   auto* page_agent = session->CreateAndAppend<InspectorPageAgent>(
       inspected_frames, this, resource_content_loader_.Get(),
-      session->V8Session());
+      session->V8Session(), session->script_to_evaluate_on_load());
 
   session->CreateAndAppend<InspectorLogAgent>(
       &inspected_frames->Root()->GetPage()->GetConsoleMessageStorage(),
@@ -398,7 +394,7 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 
   // Call session init callbacks registered from higher layers.
   CoreInitializer::GetInstance().InitInspectorAgentSession(
-      session, include_view_agents_, dom_agent, inspected_frames,
+      session, dom_agent, inspected_frames,
       web_local_frame_impl_->ViewImpl()->GetPage());
 
   if (node_to_inspect_) {
@@ -414,12 +410,11 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 // static
 WebDevToolsAgentImpl* WebDevToolsAgentImpl::CreateForFrame(
     WebLocalFrameImpl* frame) {
-  return MakeGarbageCollected<WebDevToolsAgentImpl>(frame, IsMainFrame(frame));
+  return MakeGarbageCollected<WebDevToolsAgentImpl>(frame);
 }
 
 WebDevToolsAgentImpl::WebDevToolsAgentImpl(
-    WebLocalFrameImpl* web_local_frame_impl,
-    bool include_view_agents)
+    WebLocalFrameImpl* web_local_frame_impl)
     : web_local_frame_impl_(web_local_frame_impl),
       probe_sink_(web_local_frame_impl_->GetFrame()->GetProbeSink()),
       resource_content_loader_(
@@ -428,8 +423,7 @@ WebDevToolsAgentImpl::WebDevToolsAgentImpl(
       inspected_frames_(MakeGarbageCollected<InspectedFrames>(
           web_local_frame_impl_->GetFrame())),
       resource_container_(
-          MakeGarbageCollected<InspectorResourceContainer>(inspected_frames_)),
-      include_view_agents_(include_view_agents) {
+          MakeGarbageCollected<InspectorResourceContainer>(inspected_frames_)) {
   DCHECK(IsMainThread());
   agent_ = MakeGarbageCollected<DevToolsAgent>(
       this, inspected_frames_.Get(), probe_sink_.Get(),
@@ -471,8 +465,11 @@ void WebDevToolsAgentImpl::DetachSession(DevToolsSession* session) {
   network_agents_.erase(session);
   page_agents_.erase(session);
   overlay_agents_.erase(session);
-  if (!network_agents_.size())
+  if (!network_agents_.size()) {
     Thread::Current()->RemoveTaskObserver(this);
+    web_local_frame_impl_->OnDevToolsSessionConnectionChanged(
+        /*attached=*/false);
+  }
 }
 
 void WebDevToolsAgentImpl::InspectElement(
@@ -511,11 +508,14 @@ void WebDevToolsAgentImpl::InspectElement(
 }
 
 void WebDevToolsAgentImpl::DebuggerTaskStarted() {
+  client_navigation_throttler_ =
+      web_local_frame_impl_->Client()->CreateScopedClientNavigationThrottler();
   probe::WillStartDebuggerTask(probe_sink_);
 }
 
 void WebDevToolsAgentImpl::DebuggerTaskFinished() {
   probe::DidFinishDebuggerTask(probe_sink_);
+  client_navigation_throttler_.reset();
 }
 
 void WebDevToolsAgentImpl::DidCommitLoadForLocalFrame(LocalFrame* frame) {

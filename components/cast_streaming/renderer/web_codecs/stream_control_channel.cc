@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/cast_streaming/renderer/web_codecs/stream_control_channel.h"
-#include "base/task/sequenced_task_runner.h"
 
 #include <utility>
+
+#include "base/task/sequenced_task_runner.h"
 
 namespace cast_streaming::webcodecs {
 

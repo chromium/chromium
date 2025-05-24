@@ -555,30 +555,4 @@ TEST_F(TwentyEightDayImplDirectCheckMembership, BrandNewDeviceFlow) {
   EXPECT_EQ(GetLastPingTimestamp(), GetFakeTimeNow());
 }
 
-TEST_F(TwentyEightDayImplDirectCheckMembership, MaxCheckMembershipSent) {
-  // TODO(hirthanan): Validate max check membership requests that can occur.
-}
-
-TEST_F(TwentyEightDayImplDirectCheckMembership, FirstPhaseNegative) {
-  // TODO(hirthanan): If first phase of check membership returns negative,
-  // we can assume the device has not pinged for any of the 28 day period.
-}
-
-TEST_F(TwentyEightDayImplDirectCheckMembership,
-       FirstPhasePositiveNegativeNegative) {
-  // TODO(hirthanan): Scenario requires the device to enter the second phase of
-  // check membership.
-}
-
-TEST_F(TwentyEightDayImplDirectCheckMembership,
-       FirstPhasePositivePositiveNegative) {
-  // TODO(hirthanan): Scenario will not require second phase of check membership
-  // because we know the last ping date.
-}
-
-TEST_F(TwentyEightDayImplDirectCheckMembership, FirstPhasePositive) {
-  // TODO(hirthanan): Scenario will not require second phase of check membership
-  // because we know the last ping date.
-}
-
 }  // namespace ash::report::device_metrics

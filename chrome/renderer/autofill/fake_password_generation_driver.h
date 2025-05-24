@@ -38,14 +38,6 @@ class FakePasswordGenerationDriver
               (const autofill::password_generation::PasswordGenerationUIData&),
               (override));
   MOCK_METHOD(void,
-              ShowPasswordEditingPopup,
-              (const gfx::RectF&,
-               const autofill::FormData&,
-               autofill::FieldRendererId,
-               const std::u16string&),
-              (override));
-  MOCK_METHOD(void, PasswordGenerationRejectedByTyping, (), (override));
-  MOCK_METHOD(void,
               PresaveGeneratedPassword,
               (const autofill::FormData& form_data,
                const std::u16string& generated_password),
@@ -54,8 +46,18 @@ class FakePasswordGenerationDriver
               PasswordNoLongerGenerated,
               (const autofill::FormData& form_data),
               (override));
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              ShowPasswordEditingPopup,
+              (const gfx::RectF&,
+               const autofill::FormData&,
+               autofill::FieldRendererId,
+               const std::u16string&),
+              (override));
+  MOCK_METHOD(void, PasswordGenerationRejectedByTyping, (), (override));
   MOCK_METHOD(void, FrameWasScrolled, (), (override));
   MOCK_METHOD(void, GenerationElementLostFocus, (), (override));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   mojo::AssociatedReceiver<autofill::mojom::PasswordGenerationDriver> receiver_{

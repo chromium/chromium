@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/widget/native_widget_mac.h"
-
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/mac_util.h"
@@ -18,6 +16,7 @@
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 namespace views::test {
@@ -63,10 +62,11 @@ class NativeWidgetMacInteractiveUITest::Observer : public TestWidgetObserver {
   Observer& operator=(const Observer&) = delete;
 
   void OnWidgetActivationChanged(Widget* widget, bool active) override {
-    if (active)
+    if (active) {
       parent_->activation_count_++;
-    else
+    } else {
       parent_->deactivation_count_++;
+    }
   }
 
  private:
@@ -175,6 +175,8 @@ NSData* ViewAsTIFF(NSView* view) {
   return [bitmap TIFFRepresentation];
 }
 
+}  // namespace
+
 class TestBubbleView : public BubbleDialogDelegateView {
  public:
   explicit TestBubbleView(Widget* parent) {
@@ -184,8 +186,6 @@ class TestBubbleView : public BubbleDialogDelegateView {
   TestBubbleView(const TestBubbleView&) = delete;
   TestBubbleView& operator=(const TestBubbleView&) = delete;
 };
-
-}  // namespace
 
 // Test that parent windows keep their traffic lights enabled when showing
 // dialogs.
@@ -366,7 +366,7 @@ TEST_F(NativeWidgetMacInteractiveUITest, GlobalNSTextInputContextUpdates) {
   Widget* widget = CreateTopLevelNativeWidget();
   Textfield* textfield = new Textfield;
   textfield->SetBounds(0, 0, 100, 100);
-  widget->GetContentsView()->AddChildView(textfield);
+  widget->GetContentsView()->AddChildViewRaw(textfield);
   textfield->RequestFocus();
   {
     widget->Show();

@@ -25,6 +25,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -34,6 +35,8 @@ import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -94,7 +97,7 @@ public class HomepagePolicyIntegrationTest {
                 () ->
                         Assert.assertTrue(
                                 "HomepageLocation Policy should be enforced",
-                                HomepagePolicyManager.isHomepageManagedByPolicy()));
+                                HomepagePolicyManager.isHomepageLocationManaged()));
 
         // The first time when the page starts, the homepage is fetched from shared preference
         // So the homepage policy is not enforced yet at this point.
@@ -125,6 +128,7 @@ public class HomepagePolicyIntegrationTest {
                         mActivityTestRule.getActivity().getActivityTab()));
     }
 
+    @DisabledTest(message = "crbug.com/415374799")
     @Test
     @MediumTest
     @Feature({"Homepage"})
@@ -187,7 +191,15 @@ public class HomepagePolicyIntegrationTest {
         // Close all tabs so the new activity will create another initial tab with current homepage.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    activity.getTabModelSelector().closeAllTabs();
+                    TabClosureParams params =
+                            TabClosureParams.closeAllTabs().uponExit(false).build();
+                    TabModelSelector selector = activity.getTabModelSelector();
+                    selector.getModel(false)
+                            .getTabRemover()
+                            .closeTabs(params, /* allowDialog= */ false);
+                    selector.getModel(true)
+                            .getTabRemover()
+                            .closeTabs(params, /* allowDialog= */ false);
                 });
 
         activity.finish();

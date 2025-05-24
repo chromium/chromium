@@ -17,7 +17,7 @@ MarkAttemptDeferredTask::MarkAttemptDeferredTask(
     RequestQueueStore::UpdateCallback callback)
     : UpdateRequestTask(store, request_id, std::move(callback)) {}
 
-MarkAttemptDeferredTask::~MarkAttemptDeferredTask() {}
+MarkAttemptDeferredTask::~MarkAttemptDeferredTask() = default;
 
 void MarkAttemptDeferredTask::UpdateRequestImpl(
     UpdateRequestsResult read_result) {

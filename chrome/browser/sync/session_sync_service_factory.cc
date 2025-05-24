@@ -165,9 +165,10 @@ SessionSyncServiceFactory::SessionSyncServiceFactory()
 
 SessionSyncServiceFactory::~SessionSyncServiceFactory() = default;
 
-KeyedService* SessionSyncServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SessionSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new sync_sessions::SessionSyncServiceImpl(
+  return std::make_unique<sync_sessions::SessionSyncServiceImpl>(
       chrome::GetChannel(), std::make_unique<SyncSessionsClientImpl>(profile));
 }

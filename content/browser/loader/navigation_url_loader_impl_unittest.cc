@@ -27,7 +27,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -46,12 +45,15 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/cookie_settings.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
+#include "services/network/shared_resource_checker.h"
 #include "services/network/test/url_loader_context_for_tests.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_request_context_owner.h"
@@ -74,7 +76,8 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
  public:
   explicit TestNavigationLoaderInterceptor(
       std::optional<network::ResourceRequest>* most_recent_resource_request)
-      : most_recent_resource_request_(most_recent_resource_request) {
+      : most_recent_resource_request_(most_recent_resource_request),
+        shared_resource_checker_(empty_cookie_settings_) {
     net::URLRequestContextBuilder url_request_context_builder;
     url_request_context_builder.set_proxy_resolution_service(
         net::ConfiguredProxyResolutionService::CreateDirect());
@@ -128,13 +131,20 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         /*trust_token_helper=*/nullptr,
         /*shared_dictionary_manager=*/nullptr,
         /*shared_dictionary_checker=*/nullptr,
-        /*cookie_observer=*/mojo::NullRemote(),
-        /*trust_token_observer=*/mojo::NullRemote(),
-        /*url_loader_network_observer=*/mojo::NullRemote(),
-        /*devtools_observer=*/mojo::NullRemote(),
+        /*cookie_observer=*/
+        network::ObserverWrapper<network::mojom::CookieAccessObserver>(),
+        /*trust_token_observer=*/
+        network::ObserverWrapper<network::mojom::TrustTokenAccessObserver>(),
+        /*url_loader_network_observer=*/
+        network::ObserverWrapper<
+            network::mojom::URLLoaderNetworkServiceObserver>(),
+        /*devtools_observer=*/
+        network::ObserverWrapper<network::mojom::DevToolsObserver>(),
+        /*device_bound_session_observer=*/
+        network::ObserverWrapper<
+            network::mojom::DeviceBoundSessionAccessObserver>(),
         /*accept_ch_frame_observer=*/mojo::NullRemote(),
-        /*attribution_request_helper=*/nullptr,
-        /*shared_storage_writable=*/false);
+        /*shared_storage_writable=*/false, shared_resource_checker_);
   }
 
   bool MaybeCreateLoaderForResponse(
@@ -162,6 +172,8 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   scoped_refptr<network::ResourceSchedulerClient> resource_scheduler_client_;
   std::unique_ptr<network::URLLoader> url_loader_;
+  network::CookieSettings empty_cookie_settings_;
+  network::SharedResourceChecker shared_resource_checker_;
 
   const network::cors::OriginAccessList kEmptyOriginAccessList;
 };
@@ -195,8 +207,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kClientHintsFormFactors);
     // Do not create TestNavigationURLLoaderFactory as this tests creates
     // NavigationURLLoaders explicitly and TestNavigationURLLoaderFactory
     // interferes with that.
@@ -305,7 +315,9 @@ class NavigationURLLoaderImplTest : public testing::Test {
         mojo::NullRemote() /* trust_token_observer */,
         mojo::NullRemote() /* shared_dictionary_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
-        /*devtools_observer=*/mojo::NullRemote(), std::move(interceptors));
+        /*devtools_observer=*/mojo::NullRemote(),
+        /*device_bound_session_observer=*/mojo::NullRemote(),
+        std::move(interceptors));
   }
 
   // Requests |redirect_url|, which must return a HTTP 3xx redirect. It's also
@@ -390,7 +402,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
   // NavigationURLLoaderImpl relies on the existence of the
   // |frame_tree_node->navigation_request()|.
   std::unique_ptr<NavigationSimulator> pending_navigation_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(NavigationURLLoaderImplTest, IsolationInfoOfMainFrameNavigation) {
@@ -699,6 +710,59 @@ TEST_F(NavigationURLLoaderImplTest, AdTaggedNavigation) {
 
   ASSERT_TRUE(most_recent_resource_request_);
   EXPECT_TRUE(most_recent_resource_request_->is_ad_tagged);
+}
+
+TEST_F(NavigationURLLoaderImplTest, PopulatePermissionsPolicyOnRequest) {
+  // TODO(crbug.com/382291442): Remove `scoped_feature_list` once launched.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kPopulatePermissionsPolicyOnRequest);
+
+  ASSERT_TRUE(http_test_server_.Start());
+
+  const GURL url = http_test_server_.GetURL("/foo");
+  const url::Origin origin = url::Origin::Create(url);
+
+  TestNavigationURLLoaderDelegate delegate;
+  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+      url,
+      base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
+                         url.DeprecatedGetOriginAsURL().spec().c_str()),
+      "GET", &delegate, blink::NavigationDownloadPolicy(),
+      /*is_main_frame=*/true, /*upgrade_if_insecure=*/false);
+  loader->Start();
+  delegate.WaitForResponseStarted();
+
+  ASSERT_TRUE(most_recent_resource_request_);
+  EXPECT_EQ(most_recent_resource_request_->permissions_policy,
+            std::make_optional(
+                *web_contents_->GetPrimaryMainFrame()->GetPermissionsPolicy()));
+}
+
+// TODO(crbug.com/382291442): Remove test once feature is launched.
+TEST_F(NavigationURLLoaderImplTest,
+       PopulatePermissionsPolicyOnRequest_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      network::features::kPopulatePermissionsPolicyOnRequest);
+
+  ASSERT_TRUE(http_test_server_.Start());
+
+  const GURL url = http_test_server_.GetURL("/foo");
+  const url::Origin origin = url::Origin::Create(url);
+
+  TestNavigationURLLoaderDelegate delegate;
+  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+      url,
+      base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
+                         url.DeprecatedGetOriginAsURL().spec().c_str()),
+      "GET", &delegate, blink::NavigationDownloadPolicy(),
+      /*is_main_frame=*/true, /*upgrade_if_insecure=*/false);
+  loader->Start();
+  delegate.WaitForResponseStarted();
+
+  ASSERT_TRUE(most_recent_resource_request_);
+  EXPECT_FALSE(most_recent_resource_request_->permissions_policy);
 }
 
 }  // namespace content

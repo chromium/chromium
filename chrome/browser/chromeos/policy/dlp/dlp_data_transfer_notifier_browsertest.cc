@@ -66,12 +66,7 @@ IN_PROC_BROWSER_TEST_F(DlpDataTransferNotifierBrowserTest, ShowBlockBubble) {
 
   views::test::WidgetDestroyedWaiter waiter(notifier_.widget_.get());
   EXPECT_TRUE(notifier_.widget_->IsVisible());
-
-  // The DLP notification bubble widget is initialized but never activated on
-  // Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(notifier_.widget_->IsActive());
-#endif
 
   // By the time OnWidgetDestroying() is called, notifier_.widget_ is already
   // NULL so the assertion would fail if we pass it as expected arg here.
@@ -94,12 +89,7 @@ IN_PROC_BROWSER_TEST_F(DlpDataTransferNotifierBrowserTest, ShowWarningBubble) {
 
   views::test::WidgetDestroyedWaiter waiter(notifier_.widget_.get());
   EXPECT_TRUE(notifier_.widget_->IsVisible());
-
-  // The DLP notification bubble widget is initialized but never activated on
-  // Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(notifier_.widget_->IsActive());
-#endif
 
   // By the time OnWidgetDestroying() is called, notifier_.widget_ is already
   // NULL so the assertion would fail if we pass it as expected arg here.
@@ -119,12 +109,7 @@ IN_PROC_BROWSER_TEST_F(DlpDataTransferNotifierBrowserTest, OnWidgetDestroying) {
   ASSERT_TRUE(notifier_.widget_.get());
 
   EXPECT_TRUE(notifier_.widget_->IsVisible());
-
-  // The DLP notification bubble widget is initialized but never activated on
-  // Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(notifier_.widget_->IsActive());
-#endif
 
   // Fake that widget is being destroyed, so we can check that the notifier_ is
   // no longer observing it.

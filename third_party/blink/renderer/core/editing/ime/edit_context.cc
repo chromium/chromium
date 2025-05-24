@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_init.h"
@@ -66,6 +67,21 @@ const AtomicString& EditContext::InterfaceName() const {
 
 ExecutionContext* EditContext::GetExecutionContext() const {
   return execution_context_;
+}
+
+void EditContext::AddedEventListener(
+    const AtomicString& event_type,
+    RegisteredEventListener& registered_listener) {
+  EventTarget::AddedEventListener(event_type, registered_listener);
+
+  if (event_type == event_type_names::kTextformatupdate) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kEditContextTextFormatUpdateAddListener);
+  }
+}
+
+void EditContext::SetExecutionContext(ExecutionContext* context) {
+  execution_context_ = context;
 }
 
 LocalDOMWindow* EditContext::DomWindow() const {
@@ -127,12 +143,13 @@ void EditContext::DispatchTextUpdateEvent(const String& text,
 }
 
 void EditContext::DispatchTextFormatEvent(
-    const WebVector<ui::ImeTextSpan>& ime_text_spans) {
+    const std::vector<ui::ImeTextSpan>& ime_text_spans) {
   // Loop through IME text spans to prepare an array of TextFormat and
   // fire textformateupdate event.
   DCHECK(has_composition_);
   HeapVector<Member<TextFormat>> text_formats;
   text_formats.reserve(base::checked_cast<wtf_size_t>(ime_text_spans.size()));
+  bool is_text_format_underline_style_or_thickness_not_none = false;
 
   for (const auto& ime_text_span : ime_text_spans) {
     const auto range_start = base::checked_cast<wtf_size_t>(
@@ -174,11 +191,26 @@ void EditContext::DispatchTextFormatEvent(
     text_formats.push_back(TextFormat::Create(
         range_start, range_end,
         underline_style, underline_thickness));
+
+    if (underline_style != "None" || underline_thickness != "None") {
+      is_text_format_underline_style_or_thickness_not_none = true;
+    }
   }
 
   TextFormatUpdateEvent* event = MakeGarbageCollected<TextFormatUpdateEvent>(
       event_type_names::kTextformatupdate, text_formats);
   DispatchEvent(*event);
+
+  if (HasEventListeners(event_type_names::kTextformatupdate)) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kEditContextTextFormatUpdateFireEvent);
+    if (is_text_format_underline_style_or_thickness_not_none) {
+      UseCounter::Count(
+          GetExecutionContext(),
+          WebFeature::
+              kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone);
+    }
+  }
 }
 
 void EditContext::Focus() {
@@ -211,7 +243,16 @@ void EditContext::updateSelection(uint32_t start,
   TRACE_EVENT2("ime", "EditContext::updateSelection", "start",
                std::to_string(start), "end", std::to_string(end));
 
-  SetSelection(std::min(start, text_.length()), std::min(end, text_.length()));
+  uint32_t bound_start = std::min(start, text_.length());
+  uint32_t bound_end = std::min(end, text_.length());
+  if (has_composition_ &&
+      (bound_start != selection_start_ || bound_end != selection_end_)) {
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kEditContextUpdateSelectionDuringActiveComposition);
+  }
+
+  SetSelection(bound_start, bound_end);
   if (!has_composition_)
     return;
 
@@ -224,16 +265,16 @@ void EditContext::updateSelection(uint32_t start,
 }
 
 void EditContext::updateCharacterBounds(
-    unsigned long range_start,
-    HeapVector<Member<DOMRect>>& character_bounds) {
-  character_bounds_range_start_ = static_cast<uint32_t>(range_start);
+    uint32_t range_start,
+    const HeapVector<Member<DOMRect>>& character_bounds) {
+  character_bounds_range_start_ = range_start;
 
   TRACE_EVENT1("ime", "EditContext::updateCharacterBounds", "range_start, size",
                std::to_string(range_start) + ", " +
                    std::to_string(character_bounds.size()));
 
   character_bounds_.clear();
-  base::ranges::for_each(character_bounds, [this](const auto& bounds) {
+  std::ranges::for_each(character_bounds, [this](const auto& bounds) {
     auto result_bounds = gfx::ToEnclosingRect(
         gfx::RectF(ClampToWithNaNTo0<float>(bounds->x()),
                    ClampToWithNaNTo0<float>(bounds->y()),
@@ -277,6 +318,29 @@ void EditContext::updateText(uint32_t start,
   }
   end = std::min(end, text_.length());
   start = std::min(start, end);
+
+  if (OrderedSelectionEnd() > start) {
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kEditContextUpdateTextRangePrecedesOrOverlapsSelection);
+  }
+
+  if (has_composition_ && composition_range_end_ > start) {
+    if (composition_range_start_ >= end) {
+      // Example:
+      // Composition range: [3, 6], Update range: [1, 2]
+      UseCounter::Count(
+          GetExecutionContext(),
+          WebFeature::kEditContextUpdateTextRangePrecedesCompositionRange);
+    } else {
+      // Example:
+      // Composition range: [3, 6], Update range: [4, 7]
+      UseCounter::Count(
+          GetExecutionContext(),
+          WebFeature::kEditContextUpdateTextRangeOverlapsCompositionRange);
+    }
+  }
+
   text_ = text_.Substring(0, start) + new_text + text_.Substring(end);
 }
 
@@ -302,7 +366,7 @@ const HeapVector<Member<HTMLElement>>& EditContext::attachedElements() {
 
 const HeapVector<Member<DOMRect>> EditContext::characterBounds() {
   HeapVector<Member<DOMRect>> dom_rects;
-  base::ranges::transform(
+  std::ranges::transform(
       character_bounds_, std::back_inserter(dom_rects), [](const auto& bound) {
         return DOMRect::Create(bound.x(), bound.y(), bound.width(),
                                bound.height());
@@ -326,7 +390,7 @@ void EditContext::GetLayoutBounds(gfx::Rect* control_bounds,
 
 bool EditContext::SetComposition(
     const WebString& text,
-    const WebVector<ui::ImeTextSpan>& ime_text_spans,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const WebRange& replacement_range,
     int selection_start,
     int selection_end) {
@@ -404,7 +468,7 @@ uint32_t EditContext::OrderedSelectionEnd() const {
 bool EditContext::SetCompositionFromExistingText(
     int composition_start,
     int composition_end,
-    const WebVector<ui::ImeTextSpan>& ime_text_spans) {
+    const std::vector<ui::ImeTextSpan>& ime_text_spans) {
   TRACE_EVENT1("ime", "EditContext::SetCompositionFromExistingText",
                "start, end",
                std::to_string(composition_start) + ", " +
@@ -413,7 +477,7 @@ bool EditContext::SetCompositionFromExistingText(
   if (composition_start < 0 || composition_end < 0)
     return false;
 
-  CHECK_GT(composition_end, composition_start);
+  CHECK_GE(composition_end, composition_start);
 
   if (!has_composition_) {
     if (!DispatchCompositionStartEvent(""))
@@ -454,7 +518,7 @@ void EditContext::CancelComposition() {
                           composition_range_end_, selection_start_,
                           selection_end_);
 
-  DispatchTextFormatEvent(WebVector<ui::ImeTextSpan>());
+  DispatchTextFormatEvent(std::vector<ui::ImeTextSpan>());
   DispatchCompositionEndEvent(g_empty_string);
   ClearCompositionState();
 }
@@ -540,7 +604,7 @@ void EditContext::DeleteWordForward() {
 }
 
 bool EditContext::CommitText(const WebString& text,
-                             const WebVector<ui::ImeTextSpan>& ime_text_spans,
+                             const std::vector<ui::ImeTextSpan>& ime_text_spans,
                              const WebRange& replacement_range,
                              int relative_caret_position) {
   TRACE_EVENT2("ime", "EditContext::CommitText", "range, ralative_caret",
@@ -577,7 +641,7 @@ bool EditContext::CommitText(const WebString& text,
                           selection_start_, selection_end_);
   // Fire composition end event.
   if (!text.IsEmpty() && has_composition_) {
-    DispatchTextFormatEvent(WebVector<ui::ImeTextSpan>());
+    DispatchTextFormatEvent(std::vector<ui::ImeTextSpan>());
     DispatchCompositionEndEvent(text);
   }
 
@@ -594,7 +658,7 @@ bool EditContext::FinishComposingText(
         text_.Substring(composition_range_start_,
                         composition_range_end_ - composition_range_start_);
     text_length = text.length();
-    DispatchTextFormatEvent(WebVector<ui::ImeTextSpan>());
+    DispatchTextFormatEvent(std::vector<ui::ImeTextSpan>());
     DispatchCompositionEndEvent(text);
   } else {
     text_length = OrderedSelectionEnd() - OrderedSelectionStart();
@@ -698,8 +762,8 @@ void EditContext::AttachElement(HTMLElement* element_to_attach) {
 }
 
 void EditContext::DetachElement(HTMLElement* element_to_detach) {
-  auto it = base::ranges::find(attached_elements_, element_to_detach,
-                               &Member<HTMLElement>::Get);
+  auto it = std::ranges::find(attached_elements_, element_to_detach,
+                              &Member<HTMLElement>::Get);
 
   if (it != attached_elements_.end())
     attached_elements_.erase(it);
@@ -730,7 +794,8 @@ WebRange EditContext::CompositionRange() const {
                   composition_range_end_ - composition_range_start_);
 }
 
-bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
+bool EditContext::GetCompositionCharacterBounds(
+    std::vector<gfx::Rect>& bounds) {
   if (!HasValidCompositionBounds()) {
     return false;
   }
@@ -739,7 +804,7 @@ bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
                std::to_string(character_bounds_.size()));
 
   bounds.clear();
-  base::ranges::for_each(
+  std::ranges::for_each(
       character_bounds_, [&bounds, this](auto& bound_in_css_pixels) {
         // EditContext's coordinates are in CSS pixels, which need to be
         // converted to physical pixels before return.

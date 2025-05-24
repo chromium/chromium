@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "net/filter/filter_source_stream.h"
+
 #include <algorithm>
 #include <string>
 
@@ -17,8 +19,11 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
-#include "net/filter/filter_source_stream.h"
 #include "net/filter/mock_source_stream.h"
+#include "net/filter/source_stream_type.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -31,7 +36,7 @@ const size_t kSmallBufferSize = 1;
 class TestFilterSourceStreamBase : public FilterSourceStream {
  public:
   explicit TestFilterSourceStreamBase(std::unique_ptr<SourceStream> upstream)
-      : FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {}
+      : FilterSourceStream(SourceStreamType::kNone, std::move(upstream)) {}
 
   TestFilterSourceStreamBase(const TestFilterSourceStreamBase&) = delete;
   TestFilterSourceStreamBase& operator=(const TestFilterSourceStreamBase&) =
@@ -217,7 +222,7 @@ class NoOutputSourceStream : public TestFilterSourceStreamBase {
 class ErrorFilterSourceStream : public FilterSourceStream {
  public:
   explicit ErrorFilterSourceStream(std::unique_ptr<SourceStream> upstream)
-      : FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {}
+      : FilterSourceStream(SourceStreamType::kNone, std::move(upstream)) {}
 
   ErrorFilterSourceStream(const ErrorFilterSourceStream&) = delete;
   ErrorFilterSourceStream& operator=(const ErrorFilterSourceStream&) = delete;
@@ -568,4 +573,98 @@ TEST_P(FilterSourceStreamTest, ThrottleSourceStream) {
   EXPECT_EQ(input, actual_output);
 }
 
+TEST(FilterSourceStreamTest, GetContentEncodingTypes) {
+  struct {
+    const std::string_view headers;
+    const std::optional<base::flat_set<SourceStreamType>> accepted_stream_types;
+    const std::vector<SourceStreamType> expected_result;
+    const std::string_view test_comment;
+  } kTestCases[] = {
+      {"HTTP/1.1 200 OK\n", std::nullopt, {}, "No Content-Encoding header"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: deflate\n",
+       std::nullopt,
+       {SourceStreamType::kDeflate},
+       "Single deflate encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: gzip\n",
+       std::nullopt,
+       {SourceStreamType::kGzip},
+       "Single gzip encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: x-gzip\n",
+       std::nullopt,
+       {SourceStreamType::kGzip},
+       "Single x-gzip encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: br\n",
+       std::nullopt,
+       {SourceStreamType::kBrotli},
+       "Single br encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: zstd\n",
+       std::nullopt,
+       {SourceStreamType::kZstd},
+       "Single zstd encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: br, gzip\n",
+       std::nullopt,
+       {SourceStreamType::kBrotli, SourceStreamType::kGzip},
+       "Multiple encodings (brotli and gzip)"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: gzip, br\n",
+       std::nullopt,
+       {SourceStreamType::kGzip, SourceStreamType::kBrotli},
+       "Multiple encodings (gzip and brotli) - different order"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: unknown\n",
+       std::nullopt,
+       {},
+       "Unknown encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: identity\n",
+       std::nullopt,
+       {},
+       "Identity encoding"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: gzip, unknown\n",
+       std::nullopt,
+       {},
+       "Unknown encoding after gzip"},
+      {"HTTP/1.1 200 OK\nContent-Encoding:  gzip, br\n",
+       std::nullopt,
+       {SourceStreamType::kGzip, SourceStreamType::kBrotli},
+       "Extra spaces between encodings"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: br\n",
+       base::flat_set<SourceStreamType>({SourceStreamType::kBrotli}),
+       {SourceStreamType::kBrotli},
+       "Accepted types match"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: gzip\n",
+       base::flat_set<SourceStreamType>({SourceStreamType::kBrotli}),
+       {},
+       "No accepted types match"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: br, gzip\n",
+       base::flat_set<SourceStreamType>({SourceStreamType::kBrotli}),
+       {},
+       "Unaccepted type found"},
+      {"HTTP/1.1 200 OK\ncontent-encoding: GZip\n",
+       std::nullopt,
+       {SourceStreamType::kGzip},
+       "Case-insensitive gzip"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: BR\n",
+       std::nullopt,
+       {SourceStreamType::kBrotli},
+       "Case-insensitive brotli"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: deflate, gzip, br\n",
+       std::nullopt,
+       {SourceStreamType::kDeflate, SourceStreamType::kGzip,
+        SourceStreamType::kBrotli},
+       "Three encodings"},
+      {"HTTP/1.1 200 OK\nContent-Encoding: deflate, gzip, br\n",
+       base::flat_set<SourceStreamType>(
+           {SourceStreamType::kDeflate, SourceStreamType::kBrotli}),
+       {},
+       "Three encodings, two accepted"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.test_comment);
+    auto headers = base::MakeRefCounted<HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(test_case.headers));
+    std::vector<SourceStreamType> types =
+        FilterSourceStream::GetContentEncodingTypes(
+            test_case.accepted_stream_types, *headers);
+    EXPECT_THAT(types, test_case.expected_result);
+  }
+}
 }  // namespace net

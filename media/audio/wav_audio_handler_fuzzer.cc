@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/audio/wav_audio_handler.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
-#include "media/audio/wav_audio_handler.h"
 #include "media/base/audio_bus.h"
 
 struct Environment {
@@ -20,7 +22,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
   std::string_view wav_data(reinterpret_cast<const char*>(data), size);
   std::unique_ptr<media::WavAudioHandler> handler =
-      media::WavAudioHandler::Create(wav_data);
+      media::WavAudioHandler::Create(base::as_byte_span(wav_data));
 
   // Abort early to avoid crashing inside AudioBus's ValidateConfig() function.
   if (!handler || !handler->Initialize() ||

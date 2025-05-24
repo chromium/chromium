@@ -66,7 +66,7 @@ mojom("compositing") {
   if (enable_cast_overlay_strategy) {
     enabled_features += [ "enable_cast_overlay_strategy" ]
   }
-  if (is_android || is_chromeos_ash) {
+  if (is_android || is_chromeos) {
     enabled_features += [ "can_set_refresh_rate" ]
   }
 

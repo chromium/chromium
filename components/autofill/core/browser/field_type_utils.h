@@ -10,22 +10,6 @@
 
 namespace autofill {
 
-// All FieldTypes stored for an AutofillProfile in the local_addresses or
-// contact_info table (depending on the profile source) in AutofillTable.
-// When introducing a new field type, it suffices to add it here. When removing
-// a field type, removing it from the list suffices (no additional clean-up in
-// AutofillTable necessary). This is not reusing
-// `AutofillProfile::SupportedTypes()` for three reasons:
-// - The supported types are a function of the country. The types stored in the
-//   table are country-independent and contain all the types relevant to any
-//   country.
-// - Due to the table design, the stored types are already ambiguous, so we
-//   prefer the explicitness here.
-// - Some supported types (like PHONE_HOME_CITY_CODE) are not stored.
-// - Some non-supported types are stored (usually types that don't have
-//   filling support yet).
-const FieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile();
-
 // Return true if the `field` has at least one possible field type. A possible
 // field type is every type that is neither UNKNOWN_TYPE or EMPTY_TYPE. The
 // latter should never occur together with a possible field type.
@@ -51,6 +35,13 @@ size_t AddressLineIndex(FieldType type);
 // Returns whether the expiration year should be filled with two or four
 // digits.
 size_t DetermineExpirationYearLength(FieldType assumed_field_type);
+
+// Returns true if `type` is alternative name related.
+bool IsAlternativeNameType(FieldType type);
+
+// A tag type is a type that doesn't provide complete information about a field
+// on its own, and that instead needs a second type to complement its meaning.
+bool IsTagType(FieldType type);
 
 }  // namespace autofill
 

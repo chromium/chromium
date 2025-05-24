@@ -32,16 +32,18 @@ namespace file_manager::file_tasks {
 
 struct TaskDescriptor;
 
-constexpr char kActionIdQuickOffice[] = "/views/app.html";
-constexpr char kActionIdWebDriveOfficeWord[] = "open-web-drive-office-word";
-constexpr char kActionIdWebDriveOfficeExcel[] = "open-web-drive-office-excel";
-constexpr char kActionIdWebDriveOfficePowerPoint[] =
+inline constexpr char kActionIdQuickOffice[] = "/views/app.html";
+inline constexpr char kActionIdWebDriveOfficeWord[] =
+    "open-web-drive-office-word";
+inline constexpr char kActionIdWebDriveOfficeExcel[] =
+    "open-web-drive-office-excel";
+inline constexpr char kActionIdWebDriveOfficePowerPoint[] =
     "open-web-drive-office-powerpoint";
-constexpr char kActionIdOpenInOffice[] = "open-in-office";
+inline constexpr char kActionIdOpenInOffice[] = "open-in-office";
 
 // UMA metric name that tracks the result of using a MS Office file outside
 // of Drive.
-constexpr char kUseOutsideDriveMetricName[] =
+inline constexpr char kUseOutsideDriveMetricName[] =
     "FileBrowser.OfficeFiles.UseOutsideDrive";
 
 // List of UMA enum values for file system operations that let a user use a
@@ -58,12 +60,12 @@ enum class OfficeFilesUseOutsideDriveHook {
 
 // UMA metric name that tracks the extension of Office files that are being
 // opened with Drive web.
-constexpr char kOfficeOpenExtensionDriveMetricName[] =
+inline constexpr char kOfficeOpenExtensionDriveMetricName[] =
     "FileBrowser.OfficeFiles.Open.FileType.GoogleDrive";
 
 // UMA metric name that tracks the extension of Office files that are being
 // opened with MS365.
-constexpr char kOfficeOpenExtensionOneDriveMetricName[] =
+inline constexpr char kOfficeOpenExtensionOneDriveMetricName[] =
     "FileBrowser.OfficeFiles.Open.FileType.OneDrive";
 
 // List of file extensions that are used when opening a file with the

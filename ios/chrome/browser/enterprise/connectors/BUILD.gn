@@ -1,0 +1,132 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("connectors") {
+  sources = [
+    "connectors_manager.h",
+    "connectors_manager.mm",
+    "connectors_service.h",
+    "connectors_service.mm",
+    "connectors_service_factory.h",
+    "connectors_service_factory.mm",
+  ]
+
+  deps = [
+    ":features",
+    ":util",
+    "//base",
+    "//components/enterprise",
+    "//components/enterprise/connectors/core",
+    "//components/keyed_service/core",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web/public",
+  ]
+}
+
+source_set("interstitials") {
+  sources = [
+    "ios_enterprise_interstitial.h",
+    "ios_enterprise_interstitial.mm",
+  ]
+
+  deps = [
+    "//components/enterprise/connectors/core",
+    "//components/resources:components_resources_grit",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/safe_browsing/ios/browser:allow_list",
+    "//components/security_interstitials/core",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
+    "//ios/chrome/browser/enterprise/connectors/reporting:util",
+    "//ios/chrome/browser/safe_browsing/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/components/security_interstitials",
+    "//ui/base",
+  ]
+}
+
+source_set("util") {
+  sources = [
+    "connectors_util.h",
+    "connectors_util.mm",
+  ]
+
+  deps = [
+    ":features",
+    "//base",
+    "//components/enterprise",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/enterprise/connectors/core",
+    "//components/policy/core/common",
+    "//components/profile_metrics",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/components/security_interstitials/safe_browsing",
+    "//ios/web/common:user_agent",
+    "//ios/web/public",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "connectors_manager_unittest.mm",
+    "connectors_service_unittest.mm",
+    "ios_enterprise_interstitial_unittest.mm",
+  ]
+
+  deps = [
+    ":connectors",
+    ":features",
+    ":interstitials",
+    "//base",
+    "//components/enterprise:test_support",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:test_support",
+    "//components/policy/core/common:test_support",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/safe_browsing/ios/browser:allow_list",
+    "//components/security_interstitials/core",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/components/security_interstitials/safe_browsing",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -318,19 +318,19 @@ std::unique_ptr<DataBatch> FakeDataTypeSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string FakeDataTypeSyncBridge::GetClientTag(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   DCHECK(supports_get_client_tag_);
   return ClientTagFromKey(GetStorageKeyInternal(entity_data));
 }
 
 std::string FakeDataTypeSyncBridge::GetStorageKey(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   DCHECK(supports_get_storage_key_);
   return GetStorageKeyInternal(entity_data);
 }
 
 std::string FakeDataTypeSyncBridge::GetStorageKeyInternal(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   switch (type_) {
     case PREFERENCES:
       return entity_data.specifics.preference().name();
@@ -341,9 +341,8 @@ std::string FakeDataTypeSyncBridge::GetStorageKeyInternal(
       return entity_data.specifics.shared_tab_group_data().guid();
     default:
       // If you need support for more types, add them here.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return std::string();
 }
 
 std::string FakeDataTypeSyncBridge::GenerateStorageKey(

@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -23,14 +24,12 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/performance/performance_timeline_constants.h"
-#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "ui/accessibility/ax_mode.h"
@@ -156,8 +155,8 @@ class CONTENT_EXPORT RenderFrameObserver
   virtual void DidChangeScrollOffset() {}
   virtual void WillSubmitForm(const blink::WebFormElement& form) {}
   virtual void DidMatchCSS(
-      const blink::WebVector<blink::WebString>& newly_matching_selectors,
-      const blink::WebVector<blink::WebString>& stopped_matching_selectors) {}
+      const std::vector<blink::WebString>& newly_matching_selectors,
+      const std::vector<blink::WebString>& stopped_matching_selectors) {}
 
   // Called when the RenderFrame creates a FencedFrame and provides the
   // RemoteFrameToken to identify the `blink::RemoteFrame` to the inner
@@ -227,7 +226,6 @@ class CONTENT_EXPORT RenderFrameObserver
       base::TimeTicks max_event_queued_main_thread,
       base::TimeTicks max_event_commit_finish,
       base::TimeTicks max_event_end,
-      blink::UserInteractionType interaction_type,
       uint64_t interaction_offset) {}
 
   // Notification when the First Scroll Delay becomes available.
@@ -274,9 +272,6 @@ class CONTENT_EXPORT RenderFrameObserver
   // after an input or scroll occurred in the associated document.
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
   }
-
-  // Reports that a resource will be requested.
-  virtual void WillSendRequest(const blink::WebURLRequest& request) {}
 
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.
@@ -372,11 +367,12 @@ class CONTENT_EXPORT RenderFrameObserver
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle* handle);
 
-  // The smoothness metrics is shared over shared-memory. The interested
-  // observer should invalidate |shared_memory| (by std::move()'ing it), and
-  // return true. All other observers should return false (default).
-  virtual bool SetUpSmoothnessReporting(
-      base::ReadOnlySharedMemoryRegion& shared_memory);
+  // The smoothness and dropped frames metrics is shared over shared-memory. The
+  // interested observer should invalidate |shared_memory| (by std::move()'ing
+  // it), and return true. All other observers should return false (default).
+  virtual bool SetUpUkmReporting(
+      base::ReadOnlySharedMemoryRegion& shared_memory_smoothness,
+      base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames);
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // IPC::Listener implementation.

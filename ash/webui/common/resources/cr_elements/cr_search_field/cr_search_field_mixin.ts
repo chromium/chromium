@@ -10,9 +10,10 @@
  * ui/webui/resources/cr_elements/cr_search_field/cr_search_field_mixin.ts
  */
 import {assertNotReached} from '//resources/js/assert.js';
-import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrInputElement} from '../cr_input/cr_input.js';
+import type {CrInputElement} from '../cr_input/cr_input.js';
 
 
 type Constructor<T> = new (...args: any[]) => T;

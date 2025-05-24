@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
-
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -90,6 +90,8 @@ class EditAddressProfileDialogControllerImplTest
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_{
+    features::kAutofillSupportLastNamePrefix};
   // The latest user decisive interaction with the editor, e.g. Save or Cancel
   // the editor, it is set in the AddressProfileSavePromptCallback passed to the
   // prompt.
@@ -103,13 +105,13 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
   RunTestSequence(
       ShowEditor(local_profile(), nullptr, u"", false),
       // The editor popup resides in a different context on MacOS.
-      InAnyContext(Steps(
+      InAnyContext(
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(EditAddressProfileView::kTopViewId,
                      /*screenshot_name=*/"editor", /*baseline_cl=*/"4846629"),
           PressButton(views::DialogClientView::kOkButtonElementId),
-          WaitForHide(EditAddressProfileView::kTopViewId))),
+          WaitForHide(EditAddressProfileView::kTopViewId)),
       EnsureClosedWithDecisionAndProfile(
           AutofillClient::AddressPromptUserDecision::kEditAccepted,
           local_profile()));

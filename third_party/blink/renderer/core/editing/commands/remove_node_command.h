@@ -39,6 +39,7 @@ class RemoveNodeCommand final : public SimpleEditCommand {
  private:
   void DoApply(EditingState*) override;
   void DoUnapply() override;
+  String ToString() const override;
 
   Member<Node> node_;
   Member<ContainerNode> parent_;

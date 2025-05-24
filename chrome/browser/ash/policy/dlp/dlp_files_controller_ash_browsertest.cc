@@ -24,7 +24,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
@@ -225,6 +225,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
       /*accept_types=*/{u".txt"},
       /*need_local_path=*/true,
       /*use_media_capture=*/false,
+      /*open_writable=*/false,
       /*requestor=*/GURL());
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   base::RunLoop run_loop_listener;

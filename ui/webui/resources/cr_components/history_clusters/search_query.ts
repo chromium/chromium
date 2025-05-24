@@ -56,8 +56,8 @@ export class SearchQueryElement extends SearchQueryElementBase {
   // Properties
   //============================================================================
 
-  index: number = -1;  // Initialized to an invalid value.
-  searchQuery?: SearchQuery;
+  accessor index: number = -1;  // Initialized to an invalid value.
+  accessor searchQuery: SearchQuery|undefined;
 
   //============================================================================
   // Event handlers
@@ -116,7 +116,7 @@ export class SearchQueryElement extends SearchQueryElementBase {
 
   private openUrl_(event: MouseEvent|KeyboardEvent) {
     assert(this.searchQuery);
-    BrowserProxyImpl.getInstance().handler.openHistoryCluster(
+    BrowserProxyImpl.getInstance().handler.openHistoryUrl(
         this.searchQuery.url, {
           middleButton: false,
           altKey: event.altKey,

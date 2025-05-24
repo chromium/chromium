@@ -20,14 +20,8 @@ each histogram.
   <variant name="Performance"/>
 </variants>
 
-<variants name="SiteDBWriteTrigger">
-  <variant name="ClearAllSiteData"/>
-  <variant name="ClearSiteDataForOrigins"/>
-  <variant name="WriteSiteDataIntoStore"/>
-</variants>
-
 <histogram name="CPU.Experimental.CpuEstimationTaskMigrated" enum="Boolean"
-    expires_after="2024-07-10">
+    expires_after="2025-03-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -40,7 +34,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationTaskQueuedTime.{CoreType}"
-    units="microseconds" expires_after="2024-07-10">
+    units="microseconds" expires_after="2025-07-13">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -54,7 +48,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationTaskThreadTime.{CoreType}"
-    units="microseconds" expires_after="2024-07-10">
+    units="microseconds" expires_after="2025-05-11">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -68,7 +62,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationTaskTotalTime.{CoreType}"
-    units="microseconds" expires_after="2024-07-10">
+    units="microseconds" expires_after="2025-05-11">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -82,7 +76,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationTaskWallTime.{CoreType}"
-    units="microseconds" expires_after="2024-07-10">
+    units="microseconds" expires_after="2025-05-11">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -96,7 +90,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationThreadTimePercent.{CoreType}"
-    units="%" expires_after="2024-07-10">
+    units="%" expires_after="2025-11-16">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -112,7 +106,7 @@ each histogram.
 
 <histogram
     name="CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.{CoreType}"
-    units="%" expires_after="2024-07-10">
+    units="%" expires_after="2025-09-28">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -127,7 +121,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.EstimatedFrequencyAsPercentOfMax.{CoreType}"
-    units="%" expires_after="2024-07-10">
+    units="%" expires_after="2025-09-21">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -143,7 +137,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.CPUMonitorMemoryUse.{ResourceContextType}.{ResourceContextState}"
-    units="KB" expires_after="2025-02-23">
+    units="KB" expires_after="2025-09-07">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -168,18 +162,19 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpaceMb"
-    units="MB" expires_after="2025-02-16">
+    units="MB" expires_after="2025-08-24">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
     The amount of available space in megabytes on the disk that hosts the
     current user data directory as reported by
-    SysInfo::AmountOfFreeDiskSpace(user_data_dir).
+    SysInfo::AmountOfFreeDiskSpace(user_data_dir). Warning: this histogram was
+    expired from 2025-02-16 to 2025-03-20; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpacePercent"
-    units="%" expires_after="2025-02-16">
+    units="%" expires_after="2025-10-26">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -190,7 +185,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
-    enum="AccessibilityModeFlagEnum" expires_after="2025-03-09">
+    enum="AccessibilityModeFlagEnum" expires_after="2025-11-16">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -200,7 +195,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Experimental.HasAccessibilityModeFlag"
-    enum="Boolean" expires_after="2025-03-09">
+    enum="Boolean" expires_after="2025-11-16">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -209,135 +204,52 @@ each histogram.
   </summary>
 </histogram>
 
-<histogram name="PerformanceManager.LoadingNotQuiescentPageCount.{Visibility}"
-    units="pages" expires_after="2025-02-10">
-  <owner>joenotcharles@google.com</owner>
+<histogram name="PerformanceManager.InputScenarioChanges{InputScenario}"
+    enum="InputScenarioUpdateReason" expires_after="2026-04-07">
+  <owner>kraskevich@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded every 30 seconds with the number of PageNodes that have started
-    loading and not reached quiescence at the end of the interval (ie. in
-    LoadingState kLoading or kLoadedBusy). This variant records pages that are
-    {Visibility} for the entire load. PerformanceManager.QuiescentPageCount is
-    recorded at the same time for comparison.
+    Logged whenever the Performance Manager input scenario changes away from
+    {InputScenario}, with the reason for the change.
   </summary>
-  <token key="Visibility">
-    <variant name="All" summary="in any visibility state"/>
-    <variant name="Hidden" summary="hidden"/>
-    <variant name="MixedVisibility" summary="in a mix of visibility states"/>
-    <variant name="Visible" summary="visible"/>
+<!-- LINT.IfChange(InputScenarioSuffix) -->
+
+  <token key="InputScenario">
+    <variant name="" summary="all scenarios"/>
+    <variant name=".NoInput" summary="InputScenario::kNoInput"/>
+    <variant name=".Scroll" summary="InputScenario::kScroll"/>
+    <variant name=".Tap" summary="InputScenario::kTap"/>
+    <variant name=".Typing" summary="InputScenario::kTyping"/>
   </token>
+<!-- LINT.ThenChange(/components/performance_manager/decorators/frame_input_state_decorator.cc:InputScenarioSuffix) -->
+
 </histogram>
 
-<histogram name="PerformanceManager.QuiescentPageCount" units="pages"
-    expires_after="2025-02-10">
-  <owner>joenotcharles@google.com</owner>
+<histogram
+    name="PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsOutcome"
+    enum="FrontEndHeapDebugOptionsOutcome" expires_after="2025-09-30">
+  <owner>fdoray@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded every 30 seconds with the number of PageNodes that have not started
-    loading (ie. in LoadingState kLoadingNotStarted or kLoadingTimedOut) or have
-    reached quiescence (ie. in LoadingState kLoadedIdle) at the end of the
-    interval. PerformanceManager.LoadingNotQuiescentPageCount is recorded at the
-    same time for comparison.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.SiteDB.DatabaseInit"
-    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-12-28">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The result of opening the Local Site Characteristics database. Recorded at
-    startup when the database gets opened. If the result is not Success,
-    PerformanceManager.SiteDB.DatabaseInitAfterRepair may be logged as well.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.SiteDB.DatabaseInitAfterDelete"
-    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-12-28">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The result of opening the Local Site Characteristics database after deleting
-    it after a failed repair attempt. Recorded at startup when the database gets
-    opened, if the initial open and repair attempts failed.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.SiteDB.DatabaseInitAfterRepair"
-    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-12-28">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The result of opening the Local Site Characteristics database after a repair
-    attempt. Recorded at startup when the database gets opened, if the initial
-    open attempt failed. If the result is not Success,
-    PerformanceManager.SiteDB.DatabaseInitAfterDelete may be logged as well.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.SiteDB.DatabaseRepair"
-    enum="BooleanSuccess" expires_after="2023-12-28">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The result of trying to repair the Local Site Characteristics database after
-    a failed open. Recorded at startup when the database gets opened, if the
-    initial open attempt failed.
+    The outcome of attempting to read the value of the HKEY_LOCAL_MACHINE :
+    Software\Microsoft\Windows NT\CurrentVersion\Image File :
+    FrontEndHeapDebugOptions registry key. Emitted when UMA requests information
+    about the current session (see
+    metrics::MetricsProvider::ProvideCurrentSessionData).
   </summary>
 </histogram>
 
 <histogram
-    name="PerformanceManager.SiteDB.ObservationTimeBeforeFirstUse.{Feature}"
-    units="ms" expires_after="2023-12-28">
-  <owner>joenotcharles@google.com</owner>
+    name="PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsValue"
+    units="bitfield" expires_after="2025-09-30">
+  <owner>fdoray@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    The cumulative observation time before the {Feature} feature tracked in the
-    Local Site Characteristics database gets used. Reported the first time a
-    site is observed to use the feature.
+    The value of the HKEY_LOCAL_MACHINE : Software\Microsoft\Windows
+    NT\CurrentVersion\Image File : FrontEndHeapDebugOptions registry key.
+    Emitted every time kSuccess is reported to
+    PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsOutcome.
   </summary>
-  <token key="Feature">
-    <variant name="AudioUsageInBackground"/>
-    <variant name="FaviconUpdateInBackground"/>
-    <variant name="TitleUpdateInBackground"/>
-  </token>
-</histogram>
-
-<histogram name="PerformanceManager.SiteDB.ReadHasCompletedBeforeQuery"
-    enum="Boolean" expires_after="2023-12-28">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Boolean indicating if the read operation from the Local Site Characteristics
-    database has completed when we query for the characteristics of a site.
-    Reported every time the database is queried.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.SiteDB.WriteCompleted.{SiteDBWriteTrigger}"
-    enum="BooleanCompleted" expires_after="2025-02-23">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Logged when a write to the Local Site Characteristics database finishes, if
-    the write was scheduled by a call to {SiteDBWriteTrigger}. The count of this
-    should match PerformanceManager.SiteDB.WriteScheduled.{SiteDBWriteTrigger},
-    otherwise writes are being lost.
-  </summary>
-  <token key="SiteDBWriteTrigger" variants="SiteDBWriteTrigger"/>
-</histogram>
-
-<histogram name="PerformanceManager.SiteDB.WriteScheduled.{SiteDBWriteTrigger}"
-    enum="BooleanAttempted" expires_after="2025-02-23">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Logged whenever a write to the Local Site Characteristics database is
-    scheduled by a call to {SiteDBWriteTrigger}. The count of this should match
-    PerformanceManager.SiteDB.WriteCompleted.{SiteDBWriteTrigger}, otherwise
-    writes are being lost.
-  </summary>
-  <token key="SiteDBWriteTrigger" variants="SiteDBWriteTrigger"/>
 </histogram>
 
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToClose2"
@@ -351,7 +263,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToRevisit2"
-    units="seconds" expires_after="2025-02-16">
+    units="seconds" expires_after="2025-04-20">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -361,7 +273,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.BatterySaverModeEnabledPercent"
-    units="%" expires_after="2025-01-26">
+    units="%" expires_after="2025-10-12">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -371,7 +283,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.EfficiencyMode"
-    enum="EfficiencyMode" expires_after="2025-02-10">
+    enum="EfficiencyMode" expires_after="2025-09-28">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -385,7 +297,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.MemorySaverModeEnabledPercent"
-    units="%" expires_after="2025-01-26">
+    units="%" expires_after="2025-10-12">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

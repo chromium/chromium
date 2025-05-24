@@ -33,5 +33,13 @@ dictionary VideoDecoderConfig {
   // Hint that decoders should be configured for latency versus throughput.
   boolean optimizeForLatency;
 
+  // Rotation to apply when rendering, in degrees clockwise.
+  [RuntimeEnabled=WebCodecsOrientation]
+  unsigned long rotation = 0;
+
+  // Whether the rendering is flipped horizontally after rotation.
+  [RuntimeEnabled=WebCodecsOrientation]
+  boolean flip = false;
+
   [RuntimeEnabled=MediaSourceExtensionsForWebCodecs] DOMString encryptionScheme;
 };

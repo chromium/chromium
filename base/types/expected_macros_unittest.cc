@@ -10,6 +10,7 @@
 #include "base/types/expected_macros.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -27,12 +28,20 @@ expected<void, std::string> ReturnOk() {
   return ok();
 }
 
-expected<int, std::string> ReturnValue(int v) {
+expected<int, std::string> ReturnExpectedValue(int v) {
+  return v;
+}
+
+std::optional<int> ReturnOptionalValue(int v) {
   return v;
 }
 
 expected<int, std::string> ReturnError(std::string_view msg) {
   return unexpected(std::string(msg));
+}
+
+std::optional<int> ReturnNullopt() {
+  return std::nullopt;
 }
 
 template <class... Args>
@@ -54,15 +63,39 @@ expected<std::string, std::unique_ptr<int>> ReturnPtrError(int v) {
   return unexpected(std::make_unique<int>(v));
 }
 
-TEST(ReturnIfError, Works) {
+TEST(ReturnIfError, ExpectedWorks) {
   const auto func = []() -> std::string {
     RETURN_IF_ERROR(ReturnOk());
-    RETURN_IF_ERROR(ReturnOk());
+    expected<int, std::string> e_int1 = 1;
+    RETURN_IF_ERROR(e_int1);
+    const expected<int, std::string> e_int2 = 2;
+    RETURN_IF_ERROR(e_int2);
     RETURN_IF_ERROR(ReturnError("EXPECTED"));
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED", func());
+  EXPECT_EQ(func(), "EXPECTED");
+}
+
+TEST(ReturnIfError, OptionalWorks) {
+  int phase = 0;
+  const auto func = [&]() -> std::optional<int> {
+    phase = 1;
+    RETURN_IF_ERROR(ReturnOptionalValue(0));
+    phase = 2;
+    std::optional<int> o_int1 = 1;
+    RETURN_IF_ERROR(o_int1);
+    phase = 3;
+    const std::optional<int> o_int2 = 2;
+    RETURN_IF_ERROR(o_int2);
+    phase = 4;
+    RETURN_IF_ERROR(ReturnNullopt());
+    phase = 5;
+    return 3;
+  };
+
+  EXPECT_EQ(func(), std::nullopt);
+  EXPECT_EQ(phase, 4);
 }
 
 TEST(ReturnIfError, WorksWithExpectedReturn) {
@@ -76,14 +109,29 @@ TEST(ReturnIfError, WorksWithExpectedReturn) {
   EXPECT_THAT(func(), test::ErrorIs(::testing::Eq("EXPECTED")));
 }
 
-TEST(ReturnIfError, WorksWithLambda) {
+TEST(ReturnIfError, ExpectedWorksWithLambda) {
   const auto func = []() -> std::string {
     RETURN_IF_ERROR([] { return ReturnOk(); }());
     RETURN_IF_ERROR([] { return ReturnError("EXPECTED"); }());
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED", func());
+  EXPECT_EQ(func(), "EXPECTED");
+}
+
+TEST(ReturnIfError, OptionalWorksWithLambda) {
+  int phase = 0;
+  const auto func = [&]() -> std::optional<int> {
+    phase = 1;
+    RETURN_IF_ERROR([] { return ReturnOptionalValue(1); }());
+    phase = 2;
+    RETURN_IF_ERROR([] { return ReturnNullopt(); }());
+    phase = 3;
+    return 2;
+  };
+
+  EXPECT_EQ(func(), std::nullopt);
+  EXPECT_EQ(phase, 2);
 }
 
 TEST(ReturnIfError, WorksWithMoveOnlyType) {
@@ -104,7 +152,7 @@ TEST(ReturnIfError, WorksWithMoveOnlyTypeAndExpectedReturn) {
   EXPECT_THAT(func(), test::ErrorIs(::testing::Pointee(::testing::Eq(1))));
 }
 
-TEST(ReturnIfError, WorksWithAdaptorFunc) {
+TEST(ReturnIfError, ExpectedWorksWithAdaptorFunc) {
   const auto fail_test_if_called = [](std::string error) {
     ADD_FAILURE();
     return error;
@@ -116,7 +164,17 @@ TEST(ReturnIfError, WorksWithAdaptorFunc) {
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED A EXPECTED B", func());
+  EXPECT_EQ(func(), "EXPECTED A EXPECTED B");
+}
+
+TEST(ReturnIfError, OptionalWorksWithAdaptorFunc) {
+  const auto func = [&]() -> const char* {
+    RETURN_IF_ERROR(ReturnOptionalValue(1), []() { return "ERROR 1"; });
+    RETURN_IF_ERROR(ReturnNullopt(), []() { return "EXPECTED"; });
+    return "ERROR 2";
+  };
+
+  EXPECT_STREQ(func(), "EXPECTED");
 }
 
 TEST(ReturnIfError, WorksWithAdaptorFuncAndExpectedReturn) {
@@ -153,7 +211,7 @@ TEST(ReturnIfError, WorksWithAdaptorFuncAndMoveOnlyTypeAndExpectedReturn) {
   EXPECT_THAT(func(), test::ErrorIs(::testing::Pointee(::testing::Eq(2))));
 }
 
-TEST(ReturnIfError, WorksWithVoidReturnAdaptor) {
+TEST(ReturnIfError, ExpectedWorksWithVoidReturnAdaptor) {
   int code = 0;
   int phase = 0;
   const auto adaptor = [&](std::string error) { ++code; };
@@ -170,30 +228,83 @@ TEST(ReturnIfError, WorksWithVoidReturnAdaptor) {
   EXPECT_EQ(code, 1);
 }
 
-TEST(AssignOrReturn, Works) {
+TEST(ReturnIfError, OptionalWorksWithVoidReturnAdaptor) {
+  int code = 0;
+  int phase = 0;
+  const auto adaptor = [&]() { ++code; };
+  const auto func = [&]() -> void {
+    phase = 1;
+    RETURN_IF_ERROR(ReturnOptionalValue(1), adaptor);
+    phase = 2;
+    RETURN_IF_ERROR(ReturnNullopt(), adaptor);
+    phase = 3;
+  };
+
+  func();
+  EXPECT_EQ(phase, 2);
+  EXPECT_EQ(code, 1);
+}
+
+TEST(AssignOrReturn, ExpectedWorks) {
   const auto func = []() -> std::string {
-    ASSIGN_OR_RETURN(int value1, ReturnValue(1));
-    EXPECT_EQ(1, value1);
-    ASSIGN_OR_RETURN(const int value2, ReturnValue(2));
-    EXPECT_EQ(2, value2);
-    ASSIGN_OR_RETURN(const int& value3, ReturnValue(3));
-    EXPECT_EQ(3, value3);
-    ASSIGN_OR_RETURN([[maybe_unused]] const int value4,
+    ASSIGN_OR_RETURN(int value1, ReturnExpectedValue(1));
+    EXPECT_EQ(value1, 1);
+    ASSIGN_OR_RETURN(const int value2, ReturnExpectedValue(2));
+    EXPECT_EQ(value2, 2);
+    ASSIGN_OR_RETURN(const int& value3, ReturnExpectedValue(3));
+    EXPECT_EQ(value3, 3);
+    expected<int, std::string> e_int4 = 4;
+    ASSIGN_OR_RETURN(int value4, e_int4);
+    EXPECT_EQ(value4, 4);
+    const expected<int, std::string> e_int5 = 5;
+    ASSIGN_OR_RETURN(int value5, e_int5);
+    EXPECT_EQ(value5, 5);
+    ASSIGN_OR_RETURN([[maybe_unused]] const int value6,
                      ReturnError("EXPECTED"));
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED", func());
+  EXPECT_EQ(func(), "EXPECTED");
+}
+
+TEST(AssignOrReturn, OptionalWorks) {
+  int phase = 0;
+  const auto func = [&]() -> std::optional<int> {
+    phase = 1;
+    ASSIGN_OR_RETURN(int value1, ReturnOptionalValue(1));
+    EXPECT_EQ(value1, 1);
+    phase = 2;
+    ASSIGN_OR_RETURN(const int value2, ReturnOptionalValue(2));
+    EXPECT_EQ(value2, 2);
+    phase = 3;
+    ASSIGN_OR_RETURN(const int& value3, ReturnOptionalValue(3));
+    EXPECT_EQ(value3, 3);
+    phase = 4;
+    std::optional<int> o_int4 = 4;
+    ASSIGN_OR_RETURN(int value4, o_int4);
+    EXPECT_EQ(value4, 4);
+    phase = 5;
+    const std::optional<int> o_int5 = 5;
+    ASSIGN_OR_RETURN(int value5, o_int5);
+    EXPECT_EQ(value5, 5);
+    phase = 6;
+    ASSIGN_OR_RETURN([[maybe_unused]] const int value6, ReturnNullopt());
+    phase = 7;
+    return 6;
+  };
+
+  EXPECT_EQ(func(), std::nullopt);
+  EXPECT_EQ(phase, 6);
 }
 
 TEST(AssignOrReturn, WorksWithExpectedReturn) {
   const auto func = []() -> expected<void, std::string> {
-    ASSIGN_OR_RETURN(int value1, ReturnValue(1));
-    EXPECT_EQ(1, value1);
-    ASSIGN_OR_RETURN(const int value2, ReturnValue(2));
-    EXPECT_EQ(2, value2);
-    ASSIGN_OR_RETURN(const int& value3, ReturnValue(3));
-    EXPECT_EQ(3, value3);
+    ASSIGN_OR_RETURN(int value1, ReturnExpectedValue(1));
+    EXPECT_EQ(value1, 1);
+    ASSIGN_OR_RETURN(const int value2, ReturnExpectedValue(2));
+    EXPECT_EQ(value2, 2);
+    ASSIGN_OR_RETURN(const int& value3, ReturnExpectedValue(3));
+    EXPECT_EQ(value3, 3);
     ASSIGN_OR_RETURN([[maybe_unused]] const int value4,
                      ReturnError("EXPECTED"));
     return ok();
@@ -202,16 +313,33 @@ TEST(AssignOrReturn, WorksWithExpectedReturn) {
   EXPECT_THAT(func(), test::ErrorIs(::testing::Eq("EXPECTED")));
 }
 
-TEST(AssignOrReturn, WorksWithLambda) {
+TEST(AssignOrReturn, ExpectedWorksWithLambda) {
   const auto func = []() -> std::string {
-    ASSIGN_OR_RETURN(const int value1, [] { return ReturnValue(1); }());
-    EXPECT_EQ(1, value1);
+    ASSIGN_OR_RETURN(const int value1, [] { return ReturnExpectedValue(1); }());
+    EXPECT_EQ(value1, 1);
     ASSIGN_OR_RETURN([[maybe_unused]] const int value2,
                      [] { return ReturnError("EXPECTED"); }());
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED", func());
+  EXPECT_EQ(func(), "EXPECTED");
+}
+
+TEST(AssignOrReturn, OptionalWorksWithLambda) {
+  int phase = 0;
+  const auto func = [&]() -> std::optional<int> {
+    phase = 1;
+    ASSIGN_OR_RETURN(const int value1, [] { return ReturnOptionalValue(1); }());
+    EXPECT_EQ(value1, 1);
+    phase = 2;
+    ASSIGN_OR_RETURN([[maybe_unused]] const int value2,
+                     [] { return ReturnNullopt(); }());
+    phase = 3;
+    return 2;
+  };
+
+  EXPECT_EQ(func(), std::nullopt);
+  EXPECT_EQ(phase, 2);
 }
 
 TEST(AssignOrReturn, WorksWithMoveOnlyType) {
@@ -237,69 +365,82 @@ TEST(AssignOrReturn, WorksWithMoveOnlyTypeAndExpectedReturn) {
 TEST(AssignOrReturn, WorksWithCommasInType) {
   const auto func = []() -> std::string {
     ASSIGN_OR_RETURN((const std::tuple<int, int> t1), ReturnTupleValue(1, 1));
-    EXPECT_EQ((std::tuple(1, 1)), t1);
+    EXPECT_EQ(t1, (std::tuple(1, 1)));
     ASSIGN_OR_RETURN((const std::tuple<int, std::tuple<int, int>, int> t2),
                      ReturnTupleValue(1, std::tuple(1, 1), 1));
-    EXPECT_EQ((std::tuple(1, std::tuple(1, 1), 1)), t2);
+    EXPECT_EQ(t2, (std::tuple(1, std::tuple(1, 1), 1)));
     ASSIGN_OR_RETURN(
         ([[maybe_unused]] const std::tuple<int, std::tuple<int, int>, int> t3),
         (ReturnTupleError<int, std::tuple<int, int>, int>("EXPECTED")));
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED", func());
+  EXPECT_EQ(func(), "EXPECTED");
 }
 
 TEST(AssignOrReturn, WorksWithStructuredBindings) {
   const auto func = []() -> std::string {
     ASSIGN_OR_RETURN((const auto& [t1, t2, t3, t4, t5]),
                      ReturnTupleValue(std::tuple(1, 1), 1, 2, 3, 4));
-    EXPECT_EQ((std::tuple(1, 1)), t1);
-    EXPECT_EQ(1, t2);
-    EXPECT_EQ(2, t3);
-    EXPECT_EQ(3, t4);
-    EXPECT_EQ(4, t5);
+    EXPECT_EQ(t1, (std::tuple(1, 1)));
+    EXPECT_EQ(t2, 1);
+    EXPECT_EQ(t3, 2);
+    EXPECT_EQ(t4, 3);
+    EXPECT_EQ(t5, 4);
     ASSIGN_OR_RETURN([[maybe_unused]] int t6, ReturnError("EXPECTED"));
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED", func());
+  EXPECT_EQ(func(), "EXPECTED");
 }
 
 TEST(AssignOrReturn, WorksWithParenthesesAndDereference) {
   const auto func = []() -> std::string {
     int integer;
     int* pointer_to_integer = &integer;
-    ASSIGN_OR_RETURN((*pointer_to_integer), ReturnValue(1));
-    EXPECT_EQ(1, integer);
-    ASSIGN_OR_RETURN(*pointer_to_integer, ReturnValue(2));
-    EXPECT_EQ(2, integer);
+    ASSIGN_OR_RETURN((*pointer_to_integer), ReturnExpectedValue(1));
+    EXPECT_EQ(integer, 1);
+    ASSIGN_OR_RETURN(*pointer_to_integer, ReturnExpectedValue(2));
+    EXPECT_EQ(integer, 2);
     // Test where the order of dereference matters.
-    pointer_to_integer--;
+    --pointer_to_integer;
     int* const* const pointer_to_pointer_to_integer = &pointer_to_integer;
-    ASSIGN_OR_RETURN((*pointer_to_pointer_to_integer)[1], ReturnValue(3));
-    EXPECT_EQ(3, integer);
+    ASSIGN_OR_RETURN((*pointer_to_pointer_to_integer)[1],
+                     ReturnExpectedValue(3));
+    EXPECT_EQ(integer, 3);
     ASSIGN_OR_RETURN([[maybe_unused]] const int t1, ReturnError("EXPECTED"));
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED", func());
+  EXPECT_EQ(func(), "EXPECTED");
 }
 
-TEST(AssignOrReturn, WorksWithAdaptorFunc) {
+TEST(AssignOrReturn, ExpectedWorksWithAdaptorFunc) {
   const auto fail_test_if_called = [](std::string error) {
     ADD_FAILURE();
     return error;
   };
   const auto adaptor = [](std::string error) { return error + " EXPECTED B"; };
   const auto func = [&]() -> std::string {
-    ASSIGN_OR_RETURN([[maybe_unused]] int value, ReturnValue(1),
-                     fail_test_if_called);
+    ASSIGN_OR_RETURN(int value, ReturnExpectedValue(1), fail_test_if_called);
+    EXPECT_EQ(value, 1);
     ASSIGN_OR_RETURN(value, ReturnError("EXPECTED A"), adaptor);
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED A EXPECTED B", func());
+  EXPECT_EQ(func(), "EXPECTED A EXPECTED B");
+}
+
+TEST(AssignOrReturn, OptionalWorksWithAdaptorFunc) {
+  const auto func = [&]() -> const char* {
+    ASSIGN_OR_RETURN(int value, ReturnOptionalValue(1),
+                     []() { return "ERROR 1"; });
+    EXPECT_EQ(value, 1);
+    ASSIGN_OR_RETURN(value, ReturnNullopt(), []() { return "EXPECTED"; });
+    return "ERROR 2";
+  };
+
+  EXPECT_STREQ(func(), "EXPECTED");
 }
 
 TEST(AssignOrReturn, WorksWithAdaptorFuncAndExpectedReturn) {
@@ -339,14 +480,30 @@ TEST(AssignOrReturn, WorksWithAdaptorFuncAndMoveOnlyTypeAndExpectedReturn) {
   EXPECT_THAT(func(), test::ErrorIs(::testing::Pointee(::testing::Eq(2))));
 }
 
-TEST(AssignOrReturn, WorksWithVoidReturnAdaptor) {
+TEST(AssignOrReturn, ExpectedWorksWithVoidReturnAdaptor) {
   int code = 0;
   int phase = 0;
   const auto adaptor = [&](std::string error) { ++code; };
   const auto func = [&]() -> void {
-    ASSIGN_OR_RETURN(phase, ReturnValue(1), adaptor);
+    ASSIGN_OR_RETURN(phase, ReturnExpectedValue(1), adaptor);
     phase = 2;
     ASSIGN_OR_RETURN(phase, ReturnError("EXPECTED A"), adaptor);
+    phase = 3;
+  };
+
+  func();
+  EXPECT_EQ(phase, 2);
+  EXPECT_EQ(code, 1);
+}
+
+TEST(AssignOrReturn, OptionalWorksWithVoidReturnAdaptor) {
+  int code = 0;
+  int phase = 0;
+  const auto adaptor = [&]() { ++code; };
+  const auto func = [&]() -> void {
+    ASSIGN_OR_RETURN(phase, ReturnOptionalValue(1), adaptor);
+    phase = 2;
+    ASSIGN_OR_RETURN(phase, ReturnNullopt(), adaptor);
     phase = 3;
   };
 
@@ -372,7 +529,7 @@ TEST(AssignOrReturn, WorksWithThirdArgumentAndCommas) {
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED A EXPECTED B", func());
+  EXPECT_EQ(func(), "EXPECTED A EXPECTED B");
 }
 
 TEST(AssignOrReturn, WorksWithAppendIncludingLocals) {
@@ -383,21 +540,21 @@ TEST(AssignOrReturn, WorksWithAppendIncludingLocals) {
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED A EXPECTED B", func(" EXPECTED B"));
+  EXPECT_EQ(func(" EXPECTED B"), "EXPECTED A EXPECTED B");
 }
 
 TEST(AssignOrReturn, WorksForExistingVariable) {
   const auto func = []() -> std::string {
     int value = 1;
-    ASSIGN_OR_RETURN(value, ReturnValue(2));
-    EXPECT_EQ(2, value);
-    ASSIGN_OR_RETURN(value, ReturnValue(3));
-    EXPECT_EQ(3, value);
+    ASSIGN_OR_RETURN(value, ReturnExpectedValue(2));
+    EXPECT_EQ(value, 2);
+    ASSIGN_OR_RETURN(value, ReturnExpectedValue(3));
+    EXPECT_EQ(value, 3);
     ASSIGN_OR_RETURN(value, ReturnError("EXPECTED"));
     return "ERROR";
   };
 
-  EXPECT_EQ("EXPECTED", func());
+  EXPECT_EQ(func(), "EXPECTED");
 }
 
 TEST(AssignOrReturn, UniquePtrWorks) {
@@ -407,7 +564,7 @@ TEST(AssignOrReturn, UniquePtrWorks) {
     return "EXPECTED";
   };
 
-  EXPECT_EQ("EXPECTED", func());
+  EXPECT_EQ(func(), "EXPECTED");
 }
 
 TEST(AssignOrReturn, UniquePtrWorksForExistingVariable) {
@@ -421,7 +578,7 @@ TEST(AssignOrReturn, UniquePtrWorksForExistingVariable) {
     return "EXPECTED";
   };
 
-  EXPECT_EQ("EXPECTED", func());
+  EXPECT_EQ(func(), "EXPECTED");
 }
 
 }  // namespace

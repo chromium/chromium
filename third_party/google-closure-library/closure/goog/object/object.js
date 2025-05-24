@@ -454,6 +454,8 @@ function unsafeClone(obj) {
     return new Map(obj);
   } else if (typeof Set !== 'undefined' && obj instanceof Set) {
     return new Set(obj);
+  } else if (obj instanceof Date) {
+    return new Date(obj.getTime());
   }
   const clone = Array.isArray(obj) ? [] :
       typeof ArrayBuffer === 'function' &&

@@ -36,9 +36,7 @@ bool PrepareDirectory(const base::FilePath& path) {
 bool InitializeSync(
     sql::Database* db,
     const base::FilePath& path,
-    const std::string& histogram_tag,
     base::OnceCallback<bool(sql::Database*)> initialize_schema) {
-  db->set_histogram_tag(histogram_tag);
   const bool in_memory = path.empty();
   if (!in_memory && !PrepareDirectory(path))
     return false;
@@ -53,7 +51,6 @@ bool InitializeSync(
     DLOG(ERROR) << "Failed to open database, in memory: " << in_memory;
     return false;
   }
-  db->Preload();
 
   return std::move(initialize_schema).Run(db);
 }
@@ -73,7 +70,7 @@ void CloseDatabaseSync(
 constexpr base::TimeDelta SqlStoreBase::kClosingDelay;
 
 SqlStoreBase::SqlStoreBase(
-    const std::string& histogram_tag,
+    sql::Database::Tag histogram_tag,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const base::FilePath& file_path)
     : background_task_runner_(background_task_runner),
@@ -99,14 +96,14 @@ void SqlStoreBase::Initialize(base::OnceClosure pending_command) {
 
   // This is how we reset a pointer and provide deleter. This is necessary to
   // ensure that we can close the store more than once.
-  db_ = DatabaseUniquePtr(new sql::Database({// These values are default.
-                                             .page_size = 4096,
-                                             .cache_size = 500}),
-                          base::OnTaskRunnerDeleter(background_task_runner_));
+  db_ = DatabaseUniquePtr(
+      new sql::Database(sql::DatabaseOptions().set_preload(true),
+                        histogram_tag_),
+      base::OnTaskRunnerDeleter(background_task_runner_));
 
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&InitializeSync, db_.get(), db_file_path_, histogram_tag_,
+      base::BindOnce(&InitializeSync, db_.get(), db_file_path_,
                      GetSchemaInitializationFunction()),
       base::BindOnce(&SqlStoreBase::InitializeDone,
                      weak_ptr_factory_.GetWeakPtr(),

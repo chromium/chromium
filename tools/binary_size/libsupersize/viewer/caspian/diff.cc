@@ -69,8 +69,7 @@ namespace {
 // Copied from /base/stl_util.h
 template <class T, class Allocator, class Value>
 void Erase(std::vector<T, Allocator>& container, const Value& value) {
-  container.erase(std::remove(container.begin(), container.end(), value),
-                  container.end());
+  std::erase(container, value);
 }
 
 std::string_view GetIdPath(const caspian::Symbol& sym) {

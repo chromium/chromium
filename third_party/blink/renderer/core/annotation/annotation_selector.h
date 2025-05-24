@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -71,7 +72,7 @@ class CORE_EXPORT AnnotationSelector
   // synchronously, the `finished_cb` is guaranteed to be invoked before
   // FindRange returns.
   using FinishedCallback = base::OnceCallback<void(const RangeInFlatTree*)>;
-  virtual void FindRange(Document& document,
+  virtual void FindRange(Range& search_range,
                          SearchType type,
                          FinishedCallback finished_cb) = 0;
 

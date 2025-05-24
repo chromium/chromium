@@ -71,7 +71,7 @@ bool PerformSymmetricEncryption(const uint8_t symmetric_key[kKeySize],
   CHECK_EQ(aead.KeyLength(), kKeySize);
 
   // Use the symmetric key for data encryption.
-  aead.Init(base::make_span(symmetric_key, kKeySize));
+  aead.Init(base::span(symmetric_key, kKeySize));
 
   // Set nonce to 0s, since a symmetric key is only used once.
   // Note: if we ever start reusing the same symmetric key, we will need

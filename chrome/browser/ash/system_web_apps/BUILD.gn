@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("system_web_apps") {
   sources = [
@@ -25,10 +25,11 @@ static_library("system_web_apps") {
   public_deps = [
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -43,8 +44,7 @@ static_library("system_web_apps") {
     "//ash/constants",
     "//ash/webui/camera_app_ui",
     "//ash/webui/system_apps/public:system_web_app_config",
-    "//build:chromeos_buildflags",
-    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/boca",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps",
@@ -54,6 +54,7 @@ static_library("system_web_apps") {
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
     "//chrome/browser/ash/system_web_apps/apps/recorder_app",
     "//chrome/browser/ash/system_web_apps/apps/vc_background_ui",
+    "//chrome/browser/profiles",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:chrome_features",
@@ -106,6 +107,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/file_system_access",
+    "//chrome/browser/policy:system_features_disable_list",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/system_web_apps",
@@ -121,6 +123,7 @@ source_set("browser_tests") {
     "//extensions/common",
     "//ui/base/idle",
     "//ui/base/idle:test_support",
+    "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",
 
     # Tests from subdirectories:
@@ -139,12 +142,13 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/system_web_apps/test_support",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/components/kiosk:test_support",
     "//components/prefs",
     "//components/webapps/browser",

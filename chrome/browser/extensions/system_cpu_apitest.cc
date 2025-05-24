@@ -42,25 +42,9 @@ class MockCpuInfoProviderImpl : public CpuInfoProvider {
   ~MockCpuInfoProviderImpl() override = default;
 };
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using SystemCpuApiTest = ExtensionApiTest;
 
-class SystemCpuApiTest : public ExtensionApiTest,
-                         public testing::WithParamInterface<ContextType> {
- public:
-  SystemCpuApiTest() : ExtensionApiTest(GetParam()) {}
-  ~SystemCpuApiTest() override = default;
-  SystemCpuApiTest(const SystemCpuApiTest&) = delete;
-  SystemCpuApiTest& operator=(const SystemCpuApiTest&) = delete;
-};
-
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         SystemCpuApiTest,
-                         ::testing::Values(ContextType::kEventPage));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         SystemCpuApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(SystemCpuApiTest, Cpu) {
+IN_PROC_BROWSER_TEST_F(SystemCpuApiTest, Cpu) {
   scoped_refptr<CpuInfoProvider> provider = new MockCpuInfoProviderImpl;
   // The provider is owned by the single CpuInfoProvider instance.
   CpuInfoProvider::InitializeForTesting(provider);

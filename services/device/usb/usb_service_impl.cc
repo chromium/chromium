@@ -264,8 +264,10 @@ void UsbServiceImpl::OnDeviceList(
   // Look for new and existing devices.
   for (auto& device : *devices) {
     // Ignore devices that have failed enumeration previously.
-    if (base::Contains(ignored_devices_, device.get()))
+    if (base::Contains(ignored_devices_, device.get(),
+                       &ScopedLibusbDeviceRef::get)) {
       continue;
+    }
 
     auto it = platform_devices_.find(device.get());
     if (it == platform_devices_.end()) {
@@ -438,7 +440,7 @@ int LIBUSB_CALL UsbServiceImpl::HotplugCallback(libusb_context* context,
                                     self->weak_self_, std::move(device)));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return 0;

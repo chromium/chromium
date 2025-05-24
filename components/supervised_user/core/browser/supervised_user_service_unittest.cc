@@ -26,8 +26,10 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -41,19 +43,31 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
-
 namespace {
+
+constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
+constexpr char kManagedSiteListHistogramName[] = "FamilyUser.ManagedSiteList";
+constexpr char kApprovedSitesCountHistogramName[] =
+    "FamilyUser.ManagedSiteListCount.Approved";
+constexpr char kBlockedSitesCountHistogramName[] =
+    "FamilyUser.ManagedSiteListCount.Blocked";
 
 const char kExampleUrl0[] = "http://www.example0.com";
 const char kExampleUrl1[] = "http://www.example1.com/123";
 
-}  // namespace
+class SupervisedUserMetricsServiceExtensionDelegateFake
+    : public SupervisedUserMetricsService::
+          SupervisedUserMetricsServiceExtensionDelegate {
+  bool RecordExtensionsMetrics() override { return false; }
+};
 
 class SupervisedUserServiceTestBase : public ::testing::Test {
  public:
   explicit SupervisedUserServiceTestBase(bool is_supervised) {
     settings_service_.Init(syncable_pref_service_.user_prefs_store());
     supervised_user::RegisterProfilePrefs(syncable_pref_service_.registry());
+    supervised_user_sync_data_fake_.Init();
+
     if (is_supervised) {
       syncable_pref_service_.SetString(prefs::kSupervisedUserId,
                                        kChildAccountSUID);
@@ -65,11 +79,14 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
         identity_test_env_.identity_manager(),
         test_url_loader_factory_.GetSafeWeakWrapper(), syncable_pref_service_,
         settings_service_, &sync_service_,
-        std::make_unique<FakeURLFilterDelegate>(),
-        std::make_unique<FakePlatformDelegate>(),
-        /*can_show_first_time_interstitial_banner=*/true);
-
-    service_->Init();
+        std::make_unique<SupervisedUserURLFilter>(
+            syncable_pref_service_, std::make_unique<FakeURLFilterDelegate>()),
+        std::make_unique<FakePlatformDelegate>());
+    SupervisedUserMetricsService::RegisterProfilePrefs(
+        syncable_pref_service_.registry());
+    metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
+        &syncable_pref_service_, *service_,
+        std::make_unique<SupervisedUserMetricsServiceExtensionDelegateFake>());
   }
 
   void TearDown() override {
@@ -85,9 +102,11 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
 
   syncer::MockSyncService sync_service_;
   sync_preferences::TestingPrefServiceSyncable syncable_pref_service_;
+  test::SupervisedUserSyncDataFake<sync_preferences::TestingPrefServiceSyncable>
+      supervised_user_sync_data_fake_{syncable_pref_service_};
   SupervisedUserSettingsService settings_service_;
-
   std::unique_ptr<SupervisedUserService> service_;
+  std::unique_ptr<SupervisedUserMetricsService> metrics_service_;
 };
 
 class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
@@ -98,73 +117,71 @@ class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
 
 // Tests that web approvals are enabled for supervised users.
 TEST_F(SupervisedUserServiceTest, ApprovalRequestsEnabled) {
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       service_->remote_web_approvals_manager().AreApprovalRequestsEnabled());
 }
 
 // Tests that restricting all site navigation is applied to supervised users.
 TEST_F(SupervisedUserServiceTest, UrlIsBlockedForUser) {
   // Set "only allow certain sites" filter.
-  syncable_pref_service_.SetInteger(
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kBlock));
-  service_->GetURLFilter()->SetDefaultFilteringBehavior(
-      FilteringBehavior::kBlock);
-
-  ASSERT_TRUE(service_->IsBlockedURL(GURL("http://google.com")));
+      base::Value(static_cast<int>(FilteringBehavior::kBlock)));
+  EXPECT_TRUE(service_->GetURLFilter()
+                  ->GetFilteringBehavior(GURL("http://google.com"))
+                  .IsBlocked());
 }
 
 // Tests that allowing all site navigation is applied to supervised users.
 TEST_F(SupervisedUserServiceTest, UrlIsAllowedForUser) {
-  // Set "allow all sites" filter.
-  syncable_pref_service_.SetInteger(
+  // This configuration sets URL Filter in WebFilterType::kAllowAllSites mode.
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kAllow));
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
-
-  ASSERT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
+      base::Value(static_cast<int>(FilteringBehavior::kAllow)));
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(false));
+  EXPECT_TRUE(service_->GetURLFilter()
+                  ->GetFilteringBehavior(GURL("http://google.com"))
+                  .IsAllowed());
 }
 
 // Tests that changes in parent configuration for web filter types are recorded.
 TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
   base::HistogramTester histogram_tester;
 
-  // Tests filter "try to block mature sites".
-  syncable_pref_service_.SetInteger(
+  // This configuration sets URL Filter in WebFilterType::kTryToBlockMatureSites
+  // mode.
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kAllow));
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+      base::Value(static_cast<int>(FilteringBehavior::kAllow)));
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(true));
 
-  // This should not increase since only changes from the default are recorded.
-  histogram_tester.ExpectUniqueSample(
-      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
-      /*sample=*/
-      WebFilterType::kTryToBlockMatureSites,
-      /*expected_bucket_count=*/0);
+  // This should not increase since setting user pref `kSupervisedUserSafeSites`
+  // true won't take precedence over SupervisedUserPrefStore.
+  histogram_tester.ExpectUniqueSample(kWebFilterTypeHistogramName,
+                                      /*sample=*/
+                                      WebFilterType::kTryToBlockMatureSites,
+                                      /*expected_bucket_count=*/0);
 
-  // Tests filter "allow all sites".
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
-  histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
-      /*sample=*/
-      WebFilterType::kAllowAllSites,
-      /*expected_count=*/1);
+  // This configuration sets URL Filter in WebFilterType::kAllowAllSites mode.
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(false));
+  histogram_tester.ExpectBucketCount(kWebFilterTypeHistogramName,
+                                     /*sample=*/
+                                     WebFilterType::kAllowAllSites,
+                                     /*expected_count=*/1);
 
   // Tests filter "only allow certain sites".
-  syncable_pref_service_.SetInteger(
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kBlock));
-  service_->GetURLFilter()->SetDefaultFilteringBehavior(
-      FilteringBehavior::kBlock);
-  histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
-      /*sample=*/
-      WebFilterType::kCertainSites,
-      /*expected_count=*/1);
-
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
-      /*expected_count=*/2);
+      base::Value(static_cast<int>(FilteringBehavior::kBlock)));
+  histogram_tester.ExpectBucketCount(kWebFilterTypeHistogramName,
+                                     /*sample=*/
+                                     WebFilterType::kCertainSites,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(kWebFilterTypeHistogramName,
+                                    /*expected_count=*/2);
 }
 
 // Tests that changes to the allow or blocklist of the parent configuration are
@@ -172,15 +189,12 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
 TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   base::HistogramTester histogram_tester;
 
-  // Overriding the value of prefs::kSupervisedUserSafeSites and
-  // prefs::kDefaultSupervisedUserFilteringBehavior in default storage is
-  // needed, otherwise no report could be triggered by policies change. Since
-  // the default values are the same of override values, the WebFilterType
-  // doesn't change and no report here.
-  syncable_pref_service_.SetInteger(
+  // This configuration sets URL Filter in WebFilterType::kAllowAllSites mode.
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kAllow));
-  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+      base::Value(static_cast<int>(FilteringBehavior::kAllow)));
+  syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                               base::Value(false));
 
   // Blocks `kExampleUrl0`.
   {
@@ -191,16 +205,14 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   }
 
   histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
+      kManagedSiteListHistogramName,
       /*sample=*/
       SupervisedUserURLFilter::ManagedSiteList::kBlockedListOnly,
       /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
-      /*sample=*/0, /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
-      /*sample=*/1, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kApprovedSitesCountHistogramName,
+                                     /*sample=*/0, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kBlockedSitesCountHistogramName,
+                                     /*sample=*/1, /*expected_count=*/1);
 
   // Approves `kExampleUrl0`.
   {
@@ -211,16 +223,14 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   }
 
   histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
+      kManagedSiteListHistogramName,
       /*sample=*/
       SupervisedUserURLFilter::ManagedSiteList::kApprovedListOnly,
       /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
-      /*sample=*/1, /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
-      /*sample=*/0, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kApprovedSitesCountHistogramName,
+                                     /*sample=*/1, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kBlockedSitesCountHistogramName,
+                                     /*sample=*/0, /*expected_count=*/1);
 
   // Blocks `kExampleURL1`.
   {
@@ -231,54 +241,21 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   }
 
   histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
+      kManagedSiteListHistogramName,
       /*sample=*/
       SupervisedUserURLFilter::ManagedSiteList::kBoth,
       /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
-      /*sample=*/1, /*expected_count=*/2);
-  histogram_tester.ExpectBucketCount(
-      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
-      /*sample=*/1, /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(kApprovedSitesCountHistogramName,
+                                     /*sample=*/1, /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(kBlockedSitesCountHistogramName,
+                                     /*sample=*/1, /*expected_count=*/2);
 
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
-      /*expected_count=*/3);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
-      /*expected_count=*/3);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
-      /*expected_count=*/3);
-}
-
-TEST_F(SupervisedUserServiceTest, InterstitialBannerState) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(service_->GetUpdatedBannerState(
-                  FirstTimeInterstitialBannerState::kUnknown) ==
-              FirstTimeInterstitialBannerState::kNeedToShow);
-  EXPECT_TRUE(service_->GetUpdatedBannerState(
-                  FirstTimeInterstitialBannerState::kNeedToShow) ==
-              FirstTimeInterstitialBannerState::kNeedToShow);
-  EXPECT_TRUE(service_->GetUpdatedBannerState(
-                  FirstTimeInterstitialBannerState::kSetupComplete) ==
-              FirstTimeInterstitialBannerState::kSetupComplete);
-#else
-  {
-    // On other platforms, the state is marked complete.
-    EXPECT_TRUE(service_->GetUpdatedBannerState(
-                    FirstTimeInterstitialBannerState::kUnknown) ==
-                FirstTimeInterstitialBannerState::kSetupComplete);
-    EXPECT_TRUE(service_->GetUpdatedBannerState(
-                    FirstTimeInterstitialBannerState::kNeedToShow) ==
-                FirstTimeInterstitialBannerState::kSetupComplete);
-    EXPECT_TRUE(service_->GetUpdatedBannerState(
-                    FirstTimeInterstitialBannerState::kSetupComplete) ==
-                FirstTimeInterstitialBannerState::kSetupComplete);
-  }
-#endif
+  histogram_tester.ExpectTotalCount(kManagedSiteListHistogramName,
+                                    /*expected_count=*/3);
+  histogram_tester.ExpectTotalCount(kApprovedSitesCountHistogramName,
+                                    /*expected_count=*/3);
+  histogram_tester.ExpectTotalCount(kBlockedSitesCountHistogramName,
+                                    /*expected_count=*/3);
 }
 
 class SupervisedUserServiceTestUnsupervised
@@ -290,20 +267,17 @@ class SupervisedUserServiceTestUnsupervised
 
 // Tests that web approvals are not enabled for unsupervised users.
 TEST_F(SupervisedUserServiceTestUnsupervised, ApprovalRequestsDisabled) {
-  ASSERT_FALSE(
+  EXPECT_FALSE(
       service_->remote_web_approvals_manager().AreApprovalRequestsEnabled());
 }
 
 // Tests that supervision restrictions do not apply to unsupervised users.
 TEST_F(SupervisedUserServiceTestUnsupervised, UrlIsAllowedForUser) {
   // Set "only allow certain sites" filter.
-  syncable_pref_service_.SetInteger(
+  syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      static_cast<int>(FilteringBehavior::kBlock));
-  service_->GetURLFilter()->SetDefaultFilteringBehavior(
-      FilteringBehavior::kBlock);
-
-  ASSERT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
+      base::Value(static_cast<int>(FilteringBehavior::kBlock)));
+  EXPECT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
 }
 
 // TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
@@ -317,9 +291,10 @@ TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
   ASSERT_EQ(syncable_pref_service_.GetInteger(
                 prefs::kDefaultSupervisedUserFilteringBehavior),
             static_cast<int>(FilteringBehavior::kAllow));
-  EXPECT_DCHECK_DEATH(syncable_pref_service_.SetInteger(
+  EXPECT_DCHECK_DEATH(syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      /* SupervisedUserURLFilter::WARN */ 1));
+      /* SupervisedUserURLFilter::WARN */ base::Value(1)));
 }
 
+}  // namespace
 }  // namespace supervised_user

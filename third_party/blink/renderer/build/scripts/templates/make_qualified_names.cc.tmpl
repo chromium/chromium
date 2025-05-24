@@ -5,10 +5,7 @@
 
 #include "{{this_include_path}}"
 
-#include <memory>
-
-#include <iterator>
-
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
@@ -16,7 +13,7 @@
 namespace blink {
 namespace {{cpp_namespace}} {
 
-DEFINE_GLOBAL(AtomicString, {{namespace_prefix}}NamespaceURI);
+DEFINE_GLOBAL(, AtomicString, {{namespace_prefix}}NamespaceURI);
 
 {% if tags %}
 // Tags
@@ -27,10 +24,11 @@ const {{namespace}}QualifiedName& {{tag|symbol}}Tag = reinterpret_cast<{{namespa
 {% endfor %}
 
 
-std::unique_ptr<const {{namespace}}QualifiedName*[]> GetTags() {
-  auto tags = std::make_unique<const {{namespace}}QualifiedName*[]>(kTagsCount);
-  for (size_t i = 0; i < kTagsCount; ++i)
-    tags[i] = reinterpret_cast<{{namespace}}QualifiedName*>(&tag_storage) + i;
+base::HeapArray<const QualifiedName*> GetTags() {
+  auto tags = base::HeapArray<const QualifiedName*>::Uninit(kTagsCount);
+  for (size_t i = 0; i < kTagsCount; ++i) {
+    tags[i] = reinterpret_cast<QualifiedName*>(&tag_storage) + i;
+  }
   return tags;
 }
 
@@ -44,10 +42,11 @@ const QualifiedName& {{attr|symbol}}Attr = reinterpret_cast<QualifiedName*>(&att
 {% endfor %}
 
 {% if namespace != 'HTML' %}
-std::unique_ptr<const QualifiedName*[]> GetAttrs() {
-  auto attrs = std::make_unique<const QualifiedName*[]>(kAttrsCount);
-  for (size_t i = 0; i < kAttrsCount; ++i)
+base::HeapArray<const QualifiedName*> GetAttrs() {
+  auto attrs = base::HeapArray<const QualifiedName*>::Uninit(kAttrsCount);
+  for (size_t i = 0; i < kAttrsCount; ++i) {
     attrs[i] = reinterpret_cast<QualifiedName*>(&attr_storage) + i;
+  }
   return attrs;
 }
 {% endif %}
@@ -63,12 +62,11 @@ void Init() {
 
   // Namespace
   // Use placement new to initialize the globals.
-  AtomicString ns_uri("{{namespace_uri}}");
-  new ((void*)&{{namespace_prefix}}NamespaceURI) AtomicString(ns_uri);
+  new ((void*)&{{namespace_prefix}}NamespaceURI) AtomicString("{{namespace_uri}}");
 
   {% set tagnames = tags|map(attribute='name')|list() %}
   {% set attrnames = attrs|map(attribute='name')|list() %}
-  static const NameEntry kNames[] = {
+  static constexpr NameEntry kNames[] = {
   {% for name, tag_list in (tags + attrs)|groupby('name')|sort(attribute=0, case_sensitive=True) %}
     { "{{name}}", {{name.original|length}}, {{ (name in tagnames)|int }}, {{ (name in attrnames)|int }} },
   {% endfor %}
@@ -79,11 +77,11 @@ void Init() {
   {% endif %}
   size_t attr_i = 0;
   for (size_t i = 0; i < std::size(kNames); ++i) {
-    StringImpl* impl = StringImpl::CreateStatic(kNames[i].name, kNames[i].length);
+    StringImpl* impl = StringImpl::CreateStatic(base::span(kNames[i].name, kNames[i].length));
     {% if tags %}
     if (kNames[i].is_tag) {
       void* address = reinterpret_cast<{{namespace}}QualifiedName*>(&tag_storage) + tag_i;
-      QualifiedName::CreateStatic(address, impl, ns_uri);
+      QualifiedName::CreateStatic(address, impl, {{namespace_prefix}}NamespaceURI);
       ++tag_i;
     }
 
@@ -92,7 +90,7 @@ void Init() {
     {% endif %}
     void* address = reinterpret_cast<QualifiedName*>(&attr_storage) + attr_i;
     {% if use_namespace_for_attrs %}
-    QualifiedName::CreateStatic(address, impl, ns_uri);
+    QualifiedName::CreateStatic(address, impl, {{namespace_prefix}}NamespaceURI);
     {% else %}
     QualifiedName::CreateStatic(address, impl);
     {% endif %}

@@ -61,8 +61,8 @@ mojom::blink::PushMessaging* PushProvider::GetPushMessagingRemote() {
 void PushProvider::Subscribe(
     PushSubscriptionOptions* options,
     bool user_gesture,
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks) {
-  DCHECK(callbacks);
+    ScriptPromiseResolver<PushSubscription>* resolver) {
+  DCHECK(resolver);
 
   mojom::blink::PushSubscriptionOptionsPtr content_options_ptr =
       mojo::ConvertTo<mojom::blink::PushSubscriptionOptionsPtr>(options);
@@ -71,14 +71,14 @@ void PushProvider::Subscribe(
       GetSupplementable()->RegistrationId(), std::move(content_options_ptr),
       user_gesture,
       WTF::BindOnce(&PushProvider::DidSubscribe, WrapPersistent(this),
-                    std::move(callbacks)));
+                    WrapPersistent(resolver)));
 }
 
 void PushProvider::DidSubscribe(
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+    ScriptPromiseResolver<PushSubscription>* resolver,
     mojom::blink::PushRegistrationStatus status,
     mojom::blink::PushSubscriptionPtr subscription) {
-  DCHECK(callbacks);
+  DCHECK(resolver);
 
   if (status ==
           mojom::blink::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE ||
@@ -87,48 +87,46 @@ void PushProvider::DidSubscribe(
       status == mojom::blink::PushRegistrationStatus::SUCCESS_FROM_CACHE) {
     DCHECK(subscription);
 
-    callbacks->OnSuccess(
+    resolver->Resolve(
         PushSubscription::Create(std::move(subscription), GetSupplementable()));
   } else {
-    callbacks->OnError(PushError::CreateException(
+    resolver->Reject(PushError::CreateException(
         PushRegistrationStatusToPushErrorType(status),
         PushRegistrationStatusToString(status)));
   }
 }
 
-void PushProvider::Unsubscribe(
-    std::unique_ptr<PushUnsubscribeCallbacks> callbacks) {
-  DCHECK(callbacks);
+void PushProvider::Unsubscribe(ScriptPromiseResolver<IDLBoolean>* resolver) {
+  DCHECK(resolver);
 
   GetPushMessagingRemote()->Unsubscribe(
       GetSupplementable()->RegistrationId(),
       WTF::BindOnce(&PushProvider::DidUnsubscribe, WrapPersistent(this),
-                    std::move(callbacks)));
+                    WrapPersistent(resolver)));
 }
 
-void PushProvider::DidUnsubscribe(
-    std::unique_ptr<PushUnsubscribeCallbacks> callbacks,
-    mojom::blink::PushErrorType error_type,
-    bool did_unsubscribe,
-    const WTF::String& error_message) {
-  DCHECK(callbacks);
+void PushProvider::DidUnsubscribe(ScriptPromiseResolver<IDLBoolean>* resolver,
+                                  mojom::blink::PushErrorType error_type,
+                                  bool did_unsubscribe,
+                                  const WTF::String& error_message) {
+  DCHECK(resolver);
 
   // ErrorTypeNone indicates success.
   if (error_type == mojom::blink::PushErrorType::NONE) {
-    callbacks->OnSuccess(did_unsubscribe);
+    resolver->Resolve(did_unsubscribe);
   } else {
-    callbacks->OnError(PushError::CreateException(error_type, error_message));
+    resolver->Reject(PushError::CreateException(error_type, error_message));
   }
 }
 
 void PushProvider::GetSubscription(
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks) {
-  DCHECK(callbacks);
+    ScriptPromiseResolver<IDLNullable<PushSubscription>>* resolver) {
+  DCHECK(resolver);
 
   GetPushMessagingRemote()->GetSubscription(
       GetSupplementable()->RegistrationId(),
       WTF::BindOnce(&PushProvider::DidGetSubscription, WrapPersistent(this),
-                    std::move(callbacks)));
+                    WrapPersistent(resolver)));
 }
 
 void PushProvider::Trace(Visitor* visitor) const {
@@ -137,19 +135,19 @@ void PushProvider::Trace(Visitor* visitor) const {
 }
 
 void PushProvider::DidGetSubscription(
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+    ScriptPromiseResolver<IDLNullable<PushSubscription>>* resolver,
     mojom::blink::PushGetRegistrationStatus status,
     mojom::blink::PushSubscriptionPtr subscription) {
-  DCHECK(callbacks);
+  DCHECK(resolver);
 
   if (status == mojom::blink::PushGetRegistrationStatus::SUCCESS) {
     DCHECK(subscription);
 
-    callbacks->OnSuccess(
+    resolver->Resolve(
         PushSubscription::Create(std::move(subscription), GetSupplementable()));
   } else {
     // We are only expecting an error if we can't find a registration.
-    callbacks->OnSuccess(nullptr);
+    resolver->Resolve(nullptr);
   }
 }
 

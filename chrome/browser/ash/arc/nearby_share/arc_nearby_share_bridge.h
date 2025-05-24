@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_ARC_NEARBY_SHARE_BRIDGE_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 
-#include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
+#include "chromeos/ash/experiences/arc/mojom/nearby_share.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;

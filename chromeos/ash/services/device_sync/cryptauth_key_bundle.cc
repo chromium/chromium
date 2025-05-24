@@ -4,9 +4,10 @@
 
 #include "chromeos/ash/services/device_sync/cryptauth_key_bundle.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_constants.h"
@@ -136,10 +137,10 @@ CryptAuthKeyBundle::~CryptAuthKeyBundle() = default;
 
 const CryptAuthKey* CryptAuthKeyBundle::GetActiveKey() const {
   const auto& it =
-      base::ranges::find(handle_to_key_map_, CryptAuthKey::Status::kActive,
-                         [](const HandleToKeyMap::value_type& handle_key_pair) {
-                           return handle_key_pair.second.status();
-                         });
+      std::ranges::find(handle_to_key_map_, CryptAuthKey::Status::kActive,
+                        [](const HandleToKeyMap::value_type& handle_key_pair) {
+                          return handle_key_pair.second.status();
+                        });
 
   if (it == handle_to_key_map_.end())
     return nullptr;

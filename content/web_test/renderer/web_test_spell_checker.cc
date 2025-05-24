@@ -12,18 +12,17 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 
 namespace content {
 
 namespace {
 
-void Append(blink::WebVector<blink::WebString>* data,
-            const blink::WebString& item) {
-  blink::WebVector<blink::WebString> result(data->size() + 1);
+void Append(std::vector<blink::WebString>* data, const blink::WebString& item) {
+  std::vector<blink::WebString> result(data->size() + 1);
   for (size_t i = 0; i < data->size(); ++i)
     result[i] = (*data)[i];
   result[data->size()] = item;
@@ -66,7 +65,7 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
     // If the given string doesn't include any ASCII characters, we can treat
     // the string as valid one.
     std::u16string::iterator first_char =
-        base::ranges::find_if(string_text, IsASCIIAlpha);
+        std::ranges::find_if(string_text, IsASCIIAlpha);
     if (first_char == string_text.end())
       return true;
     int word_offset = std::distance(string_text.begin(), first_char);
@@ -135,7 +134,7 @@ bool WebTestSpellChecker::IsMultiWordMisspelling(
 
 void WebTestSpellChecker::FillSuggestionList(
     const blink::WebString& word,
-    blink::WebVector<blink::WebString>* suggestions) {
+    std::vector<blink::WebString>* suggestions) {
   if (word == "wellcome")
     Append(suggestions, blink::WebString::FromUTF8("welcome"));
   else if (word == "upper case")
@@ -155,18 +154,43 @@ bool WebTestSpellChecker::InitializeIfNeeded() {
   // Since Blink web tests don't have so many misspelled words as
   // well-spelled words, it is easier to compare the given word with misspelled
   // ones than to compare with well-spelled ones.
-  static const char* misspelled_words[] = {
+  static auto misspelled_words = std::to_array<const char*>({
       // These words are known misspelled words in web tests.
       // If there are other misspelled words in web tests, please add them in
       // this array.
-      "foo", "Foo", "baz", "fo", "LibertyF", "chello", "xxxtestxxx", "XXxxx",
-      "Textx", "blockquoted", "asd", "Lorem", "Nunc", "Curabitur", "eu", "adlj",
-      "adaasj", "sdklj", "jlkds", "jsaada", "jlda", "contentEditable",
+      "foo",
+      "Foo",
+      "baz",
+      "fo",
+      "LibertyF",
+      "chello",
+      "xxxtestxxx",
+      "XXxxx",
+      "Textx",
+      "blockquoted",
+      "asd",
+      "Lorem",
+      "Nunc",
+      "Curabitur",
+      "eu",
+      "adlj",
+      "adaasj",
+      "sdklj",
+      "jlkds",
+      "jsaada",
+      "jlda",
+      "contentEditable",
       // Prefer to match the full word than a partial word when there's an
       // ambiguous boundary.
-      "zz't", "zz",
+      "zz't",
+      "zz",
       // The following words are used by unit tests.
-      "ifmmp", "qwertyuiopasd", "qwertyuiopasdf", "upper case", "wellcome"};
+      "ifmmp",
+      "qwertyuiopasd",
+      "qwertyuiopasdf",
+      "upper case",
+      "wellcome",
+  });
 
   misspelled_words_.clear();
   for (size_t i = 0; i < std::size(misspelled_words); ++i)

@@ -5,37 +5,27 @@
 #include "storage/common/quota/padding_key.h"
 
 #include <inttypes.h>
+
 #include <cstdint>
-#include <vector>
-#include "base/no_destructor.h"
+
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "crypto/hash.h"
 #include "crypto/hmac.h"
 #include "crypto/random.h"
-#include "crypto/symmetric_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-using crypto::SymmetricKey;
-
 namespace storage {
 
 namespace {
 
-const SymmetricKey::Algorithm kPaddingKeyAlgorithm = SymmetricKey::AES;
-
 // The range of the padding added to response sizes for opaque resources.
 // Increment the CacheStorage padding version if changed.
 constexpr uint64_t kPaddingRange = 14431 * 1024;
-
-std::unique_ptr<SymmetricKey>* GetPaddingKeyInternal() {
-  static base::NoDestructor<std::unique_ptr<SymmetricKey>> s_padding_key([] {
-    return SymmetricKey::GenerateRandomKey(kPaddingKeyAlgorithm, 128);
-  }());
-  return s_padding_key.get();
-}
 
 }  // namespace
 
@@ -55,6 +45,16 @@ int64_t ComputeStableResponsePadding(const blink::StorageKey& storage_key,
                                      const base::Time& response_time,
                                      const std::string& request_method,
                                      int64_t side_data_size) {
+  static std::array<uint8_t, 16> s_padding_key;
+  static bool s_padding_key_generated = false;
+
+  if (!s_padding_key_generated) {
+    // This just needs to be consistent within a single browser session, so we
+    // generate it the first time we need it.
+    crypto::RandBytes(s_padding_key);
+    s_padding_key_generated = true;
+  }
+
   DCHECK(!response_url.empty());
 
   net::SchemefulSite site(storage_key.origin());
@@ -73,13 +73,9 @@ int64_t ComputeStableResponsePadding(const blink::StorageKey& storage_key,
       "%s-%" PRId64 "-%s-%s-%" PRId64, response_url.c_str(), microseconds,
       site.Serialize().c_str(), request_method.c_str(), side_data_size);
 
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  CHECK(hmac.Init(GetPaddingKeyInternal()->get()));
-
-  uint64_t digest_start = 0;
-  CHECK(hmac.Sign(key, reinterpret_cast<uint8_t*>(&digest_start),
-                  sizeof(digest_start)));
-  return digest_start % kPaddingRange;
+  auto hmac = crypto::hmac::SignSha256(s_padding_key, base::as_byte_span(key));
+  return base::U64FromNativeEndian(base::as_byte_span(hmac).first<8>()) %
+         kPaddingRange;
 }
 
 }  // namespace storage

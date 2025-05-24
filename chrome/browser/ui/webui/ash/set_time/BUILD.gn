@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("set_time") {
   sources = [
@@ -22,7 +21,6 @@ static_library("set_time") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/set_time_dialog:resources",
     "//chrome/browser/resources/chromeos/set_time_dialog:resources_grit",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//chromeos/ash/components/dbus/system_clock",

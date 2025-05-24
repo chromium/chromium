@@ -33,7 +33,7 @@ public class ForeignSessionItemPropertiesUnitTest {
         mSession = new ForeignSession("tag", "John's iPhone 6", 32L, new ArrayList<>(), 2);
         mModel =
                 ForeignSessionItemProperties.create(
-                        /* device= */ mSession,
+                        /* session= */ mSession,
                         /* isSelected= */ false,
                         /* onClickListener= */ () -> {});
     }
@@ -46,13 +46,13 @@ public class ForeignSessionItemPropertiesUnitTest {
     @Test
     public void testForeignSessionItemProperties_initCreatesValidDefaultModel() {
         Assert.assertEquals(mModel.get(SESSION_PROFILE), mSession);
-        Assert.assertEquals(mModel.get(IS_SELECTED), false);
+        Assert.assertEquals(false, mModel.get(IS_SELECTED));
         Assert.assertNotNull(mModel.get(ON_CLICK_LISTENER));
     }
 
     @Test
     public void testForeignSessionItemProperties_setSelectedDeviceItem() {
         mModel.set(IS_SELECTED, true);
-        Assert.assertEquals(mModel.get(IS_SELECTED), true);
+        Assert.assertEquals(true, mModel.get(IS_SELECTED));
     }
 }

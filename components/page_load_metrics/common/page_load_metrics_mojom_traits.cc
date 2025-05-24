@@ -65,8 +65,14 @@ bool StructTraits<
       data.matched_network_router_source_count();
   out->matched_race_network_and_fetch_router_source_count =
       data.matched_race_network_and_fetch_router_source_count();
+  out->matched_race_network_and_cache_router_source_count =
+      data.matched_race_network_and_cache_router_source_count();
   if (!data.ReadTotalRouterEvaluationTimeForSubresources(
           &out->total_router_evaluation_time_for_subresources)) {
+    return false;
+  }
+  if (!data.ReadTotalCacheLookupTimeForSubresources(
+          &out->total_cache_lookup_time_for_subresources)) {
     return false;
   }
   return true;

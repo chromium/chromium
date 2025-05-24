@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_info.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -43,6 +42,8 @@ enum class FrameSequenceTrackerType {
   kJSAnimation = 11,
   kSETMainThreadAnimation = 12,
   kSETCompositorAnimation = 13,
+  kCompositorRasterAnimation = 14,
+  kCompositorNativeAnimation = 15,
   kMaxType
 };
 
@@ -69,8 +70,12 @@ inline bool HasMainThreadAnimation(const ActiveTrackers& trackers) {
 }
 
 inline bool HasCompositorThreadAnimation(const ActiveTrackers& trackers) {
-  return trackers.test(
-      static_cast<size_t>(FrameSequenceTrackerType::kCompositorAnimation));
+  return trackers.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kCompositorAnimation)) ||
+         trackers.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kCompositorRasterAnimation)) ||
+         trackers.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kCompositorNativeAnimation));
 }
 
 class CC_EXPORT FrameSequenceMetrics {
@@ -92,10 +97,6 @@ class CC_EXPORT FrameSequenceMetrics {
 
   struct CC_EXPORT CustomReportData {
     CustomReportData();
-    CustomReportData(uint32_t frames_expected,
-                     uint32_t frames_dropped,
-                     uint32_t jank_count,
-                     std::vector<Jank> janks);
 
     CustomReportData(const CustomReportData&);
     CustomReportData& operator=(const CustomReportData&);
@@ -119,7 +120,8 @@ class CC_EXPORT FrameSequenceMetrics {
   bool HasEnoughDataForReporting() const;
   bool HasDataLeftForReporting() const;
   // Report related metrics: throughput, checkboarding...
-  void ReportMetrics();
+  // Returns PercentDroppedFrames4.AllSequences metric.
+  int ReportMetrics();
 
   void AddSortedFrame(const viz::BeginFrameArgs& args,
                       const FrameInfo& frame_info);
@@ -171,6 +173,7 @@ class CC_EXPORT FrameSequenceMetrics {
   } v3_;
 
   struct V4 {
+    uint32_t frames_dropped = 0;
     uint32_t frames_checkerboarded = 0;
     uint32_t frames_checkerboarded_need_raster = 0;
     uint32_t frames_checkerboarded_need_record = 0;

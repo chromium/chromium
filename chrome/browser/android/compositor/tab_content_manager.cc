@@ -362,14 +362,13 @@ void TabContentManager::WaitForJpegTabThumbnail(
 void TabContentManager::GetEtc1TabThumbnail(
     JNIEnv* env,
     jint tab_id,
-    jboolean save_jpeg,
     const base::android::JavaParamRef<jobject>& j_callback) {
   thumbnail_cache_->DecompressEtc1ThumbnailFromFile(
-      tab_id, save_jpeg,
+      tab_id,
       base::BindOnce(&TabContentManager::SendThumbnailToJava,
                      weak_factory_.GetWeakPtr(),
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback),
-                     /*need_downsampling=*/save_jpeg));
+                     /*need_downsampling=*/false));
 }
 
 void TabContentManager::OnUIResourcesWereEvicted() {

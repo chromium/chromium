@@ -43,7 +43,7 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   scoped_refptr<Image> Paint(const String& name,
                              const ImageResourceObserver&,
                              const gfx::SizeF& container_size,
-                             const CSSStyleValueVector*);
+                             const GCedCSSStyleValueVector*);
 
   int WorkletId() const { return worklet_id_; }
   bool IsOffMainThread() const { return is_paint_off_thread_; }

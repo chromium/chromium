@@ -75,8 +75,7 @@ bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,
   } else if (buffer_source->IsArrayBufferView()) {
     array_piece = DOMArrayPiece(buffer_source->GetAsArrayBufferView().Get());
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return true;  // true to be consistent with `exception_state`.
+    NOTREACHED();
   }
   if (!base::CheckedNumeric<wtf_size_t>(array_piece.ByteLength()).IsValid()) {
     exception_state.ThrowRangeError(
@@ -224,7 +223,7 @@ static NDEFRecord* CreateTextRecord(const ScriptState* script_state,
       return nullptr;
     bytes = GetUTF8DataFromString(data);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return MakeGarbageCollected<NDEFRecord>(id, encoding_label, language,
@@ -585,14 +584,14 @@ const String& NDEFRecord::mediaType() const {
   return media_type_;
 }
 
-DOMDataView* NDEFRecord::data() const {
+NotShared<DOMDataView> NDEFRecord::data() const {
   // Step 4 in https://w3c.github.io/web-nfc/#dfn-parse-an-ndef-record
   if (record_type_ == "empty") {
     DCHECK(payload_data_.empty());
-    return nullptr;
+    return NotShared<DOMDataView>();
   }
   DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(payload_data_);
-  return DOMDataView::Create(dom_buffer, 0, payload_data_.size());
+  return NotShared(DOMDataView::Create(dom_buffer, 0, payload_data_.size()));
 }
 
 // https://w3c.github.io/web-nfc/#dfn-convert-ndefrecord-data-bytes

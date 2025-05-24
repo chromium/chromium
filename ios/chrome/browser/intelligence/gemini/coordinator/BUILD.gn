@@ -1,0 +1,62 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "glic_consent_coordinator.h",
+    "glic_consent_coordinator.mm",
+    "glic_consent_mediator.h",
+    "glic_consent_mediator.mm",
+    "glic_consent_mediator_delegate.h",
+    "glic_coordinator.h",
+    "glic_coordinator.mm",
+    "glic_mediator.h",
+    "glic_mediator.mm",
+    "glic_mediator_delegate.h",
+    "glic_promo_scene_agent.h",
+    "glic_promo_scene_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/gemini/metrics",
+    "//ios/chrome/browser/intelligence/gemini/model",
+    "//ios/chrome/browser/intelligence/gemini/model:glic_service_factory",
+    "//ios/chrome/browser/intelligence/gemini/ui",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "glic_promo_scene_agent_unittest.mm" ]
+
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:features",
+    "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
+  ]
+}

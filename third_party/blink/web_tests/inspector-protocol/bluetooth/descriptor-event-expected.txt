@@ -1,0 +1,5 @@
+Tests Bluetooth descriptor operation events handling
+Descriptor operation received: descriptorId: 09:09:09:09:09:09_1_1_1, type: read, data: undefined
+Descriptor operation received: descriptorId: 09:09:09:09:09:09_1_1_1, type: write, data: AQ==
+W29iamVjdCBBcnJheUJ1ZmZlcl0=
+

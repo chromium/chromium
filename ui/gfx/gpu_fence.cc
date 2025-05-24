@@ -49,7 +49,7 @@ void GpuFence::Wait() {
     LOG(FATAL) << "Failed while waiting for gpu fence fd";
   }
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -82,20 +82,20 @@ GpuFence::FenceStatus GpuFence::GetStatusChangeTime(int fd,
   }
   *time = base::TimeTicks() + base::Nanoseconds(timestamp_ns);
   return FenceStatus::kSignaled;
+#else
+  NOTREACHED();
 #endif
-  NOTREACHED_IN_MIGRATION();
-  return FenceStatus::kInvalid;
 }
 
 base::TimeTicks GpuFence::GetMaxTimestamp() const {
-  base::TimeTicks timestamp;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  base::TimeTicks timestamp;
   FenceStatus status = GetStatusChangeTime(fence_handle_.Peek(), &timestamp);
   DCHECK_EQ(status, FenceStatus::kSignaled);
   return timestamp;
+#else
+  NOTREACHED();
 #endif
-  NOTREACHED_IN_MIGRATION();
-  return timestamp;
 }
 
 }  // namespace gfx

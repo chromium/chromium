@@ -29,14 +29,14 @@ static const char kMainWebrtcTestHtmlPage[] =
 // TODO(grunell): Test the different channel cases for any build.
 class WebRtcDisableEncryptionFlagBrowserTest : public WebRtcTestBase {
  public:
-  WebRtcDisableEncryptionFlagBrowserTest() {}
+  WebRtcDisableEncryptionFlagBrowserTest() = default;
 
   WebRtcDisableEncryptionFlagBrowserTest(
       const WebRtcDisableEncryptionFlagBrowserTest&) = delete;
   WebRtcDisableEncryptionFlagBrowserTest& operator=(
       const WebRtcDisableEncryptionFlagBrowserTest&) = delete;
 
-  ~WebRtcDisableEncryptionFlagBrowserTest() override {}
+  ~WebRtcDisableEncryptionFlagBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     DetectErrorsInJavaScript();  // Look for errors in our rather complex js.

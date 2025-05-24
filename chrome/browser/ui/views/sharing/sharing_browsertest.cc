@@ -35,6 +35,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 
 void FakeWebPushSender::SendMessage(const std::string& fcm_token,
                                     crypto::ECPrivateKey* vapid_key,
@@ -114,13 +115,15 @@ void SharingBrowserTest::SetUpDevices(
       original_device_info_tracker->GetAllDeviceInfo();
   ASSERT_EQ(2u, original_devices.size());
 
-  for (size_t i = 0; i < original_devices.size(); i++)
+  for (size_t i = 0; i < original_devices.size(); i++) {
     AddDeviceInfo(*original_devices[i], i);
+  }
   const std::map<syncer::DeviceInfo::FormFactor, int> device_count_by_type =
       fake_device_info_tracker_.CountActiveDevicesByType();
   int total = 0;
-  for (const auto& type_and_count : device_count_by_type)
+  for (const auto& type_and_count : device_count_by_type) {
     total += type_and_count.second;
+  }
   ASSERT_EQ(2, total);
 }
 
@@ -181,7 +184,7 @@ std::unique_ptr<TestRenderViewContextMenu> SharingBrowserTest::InitContextMenu(
   params.src_url = url;
   params.link_text = base::ASCIIToUTF16(link_text);
   params.page_url = web_contents_->GetVisibleURL();
-  params.source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
+  params.source_type = ui::mojom::MenuSourceType::kMouse;
 #if BUILDFLAG(IS_MAC)
   params.writing_direction_default = 0;
   params.writing_direction_left_to_right = 0;

@@ -22,7 +22,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -129,7 +129,7 @@ class LazyBackgroundPageApiTest : public ExtensionApiTest {
   LazyBackgroundPageApiTest& operator=(const LazyBackgroundPageApiTest&) =
       delete;
 
-  ~LazyBackgroundPageApiTest() override {}
+  ~LazyBackgroundPageApiTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, BroadcastEvent) {
 
   // Lazy Background Page doesn't exist yet.
   EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
-  EXPECT_EQ(0u, extension_action_test_util::GetVisiblePageActionCount(
+  EXPECT_EQ(0u, extension_action_test_util::GetActivePageActionCount(
                     browser()->tab_strip_model()->GetActiveWebContents()));
 
   // Open a tab to a URL that will trigger the page action to show.
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, BroadcastEvent) {
 
   // Page action is shown.
   WaitForPageActionVisibilityChangeTo(1);
-  EXPECT_EQ(1u, extension_action_test_util::GetVisiblePageActionCount(
+  EXPECT_EQ(1u, extension_action_test_util::GetActivePageActionCount(
                     browser()->tab_strip_model()->GetActiveWebContents()));
 }
 
@@ -365,11 +365,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
     }
     // There isn't really a tab corresponding to the extension background page,
     // but this is how DevTools refers to a top-level web contents.
-    std::string expected_type =
-        base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)
-            ? content::DevToolsAgentHost::kTypeTab
-            : ChromeDevToolsManagerDelegate::kTypeBackgroundPage;
-    if (host->GetType() == expected_type) {
+    if (host->GetType() == content::DevToolsAgentHost::kTypeTab) {
       EXPECT_FALSE(background_host);
       background_host = host;
     }
@@ -380,7 +376,13 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
 
 // Tests that the lazy background page stays alive until all visible views are
 // closed.
-IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, WaitForView) {
+// TODO: crbug.com/379109454 - Fix flakiness of the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_WaitForView DISABLED_WaitForView
+#else
+#define MAYBE_WaitForView WaitForView
+#endif
+IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_WaitForView) {
   ExtensionHostTestHelper host_helper(profile());
   host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
   ResultCatcher catcher;
@@ -522,7 +524,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, NaClInView) {
 // Tests that the lazy background page stays alive until all visible views are
 // closed.
 // http://crbug.com/175778; test fails frequently on OS X
-#if BUILDFLAG(IS_MAC)
+// TODO: crbug.com/379109454 - Fix flakiness of the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_WaitForNTP DISABLED_WaitForNTP
 #else
 #define MAYBE_WaitForNTP WaitForNTP
@@ -631,54 +634,6 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
   }
 }
 
-enum class BackForwardCacheParam {
-  kEnabledWithDisconnectingExtensionPortWhenPageEnterBFCache,
-  kEnabledWithoutDisconnectingExtensionPortWhenPageEnterBFCache,
-  kDisabled,
-};
-
-class LazyBackgroundPageApiWithBFCacheParamTest
-    : public LazyBackgroundPageApiTest,
-      public testing::WithParamInterface<BackForwardCacheParam> {
- public:
-  LazyBackgroundPageApiWithBFCacheParamTest() {
-    if (GetParam() == BackForwardCacheParam::kDisabled) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {}, {features::kBackForwardCache});
-      return;
-    }
-    auto enabled_features =
-        content::GetBasicBackForwardCacheFeatureForTesting();
-    auto disabled_features =
-        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting();
-
-    if (GetParam() ==
-        BackForwardCacheParam::
-            kEnabledWithDisconnectingExtensionPortWhenPageEnterBFCache) {
-      enabled_features.push_back(
-          {features::kDisconnectExtensionMessagePortWhenPageEntersBFCache, {}});
-    } else {
-      disabled_features.push_back(
-          features::kDisconnectExtensionMessagePortWhenPageEntersBFCache);
-    }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    LazyBackgroundPageApiWithBFCacheParamTest,
-    testing::Values(
-        BackForwardCacheParam::
-            kEnabledWithDisconnectingExtensionPortWhenPageEnterBFCache,
-        BackForwardCacheParam::
-            kEnabledWithoutDisconnectingExtensionPortWhenPageEnterBFCache,
-        BackForwardCacheParam::kDisabled));
-
 // Tests that messages from the content script activate the lazy background
 // page, and keep it alive until all channels are closed.
 // http://crbug.com/1179524; test fails occasionally on OS X 10.15
@@ -687,8 +642,7 @@ INSTANTIATE_TEST_SUITE_P(
 #else
 #define MAYBE_Messaging Messaging
 #endif
-IN_PROC_BROWSER_TEST_P(LazyBackgroundPageApiWithBFCacheParamTest,
-                       MAYBE_Messaging) {
+IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_Messaging) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(LoadExtensionAndWait("messaging"));
 
@@ -711,21 +665,10 @@ IN_PROC_BROWSER_TEST_P(LazyBackgroundPageApiWithBFCacheParamTest,
 
   // Navigate away
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-  if (GetParam() ==
-      BackForwardCacheParam::
-          kEnabledWithoutDisconnectingExtensionPortWhenPageEnterBFCache) {
-    // When the page is stored back/forward cache without enabling
-    // kDisconnectExtensionMessagePortWhenPageEntersBFCache, the message channel
-    // should be kept.
-    WaitForLoadStop(browser()->tab_strip_model()->GetActiveWebContents());
-    EXPECT_TRUE(IsBackgroundPageAlive(last_loaded_extension_id()));
-  } else {
-    // Otherwise, navigating away triggers closing the message channel and
-    // therefore the background page.
-    host_helper.WaitForHostDestroyed();
-    EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
-  }
+  // Navigating away triggers closing the message channel and
+  // therefore the background page.
+  host_helper.WaitForHostDestroyed();
+  EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
 }
 
 // Tests that the lazy background page receives the unload event when we
@@ -863,7 +806,7 @@ class PictureInPictureLazyBackgroundPageApiTest
   PictureInPictureLazyBackgroundPageApiTest& operator=(
       const PictureInPictureLazyBackgroundPageApiTest&) = delete;
 
-  ~PictureInPictureLazyBackgroundPageApiTest() override {}
+  ~PictureInPictureLazyBackgroundPageApiTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     LazyBackgroundPageApiTest::SetUpInProcessBrowserTestFixture();

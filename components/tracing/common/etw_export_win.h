@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_TRACING_COMMON_ETW_EXPORT_WIN_H_
 #define COMPONENTS_TRACING_COMMON_ETW_EXPORT_WIN_H_
 
+#include "build/build_config.h"
 #include "components/tracing/tracing_export.h"
+
+static_assert(BUILDFLAG(IS_WIN));
 
 namespace tracing {
 

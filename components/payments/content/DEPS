@@ -1,13 +1,12 @@
 include_rules = [
   "-components/payments/content/android",
-  "+ash/components/arc",
-  "+ash/public/cpp/external_arc/overlay",
+  "+chromeos/ash/experiences/arc/overlay",
+  "+chromeos/ash/experiences/arc/pay",
   "+chromeos/components/payments",
   "+components/autofill",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/network_session_configurator/common",
-  "+components/page_info",
   "+components/prefs",
   "+components/security_state",
   "+components/strings",
@@ -17,6 +16,7 @@ include_rules = [
   "+components/webdata/common",
   "+components/webdata_services",
   "+content/public",
+  "+content/test",
   "+crypto",
   "+device/fido/fido_transport_protocol.h",
   "+device/fido/fido_types.h",
@@ -27,6 +27,7 @@ include_rules = [
   "+services/metrics/public/cpp",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
+  "+services/network/public/mojom/permissions_policy",
   "+services/network/test",
   "+sql",
   "+third_party/blink/public/common",
@@ -42,12 +43,8 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "android_app_communication_lacros.cc": [
-    "+chromeos/lacros/lacros_service.h"
-  ],
-  "android_app_communication_test_support_lacros.cc": [
-    "+chromeos/lacros/lacros_service.h",
-    "+chromeos/lacros/lacros_test_helper.h"
+  "android_app_communication_test_support_ash\.cc": [
+    "+chromeos/ash/experiences/arc/test",
   ],
   "mock_payment_manifest_web_data_service.cc": [
     "+components/os_crypt/async/browser/test_utils.h"
@@ -57,5 +54,5 @@ specific_include_rules = {
   ],
   ".*test.(cc|h)": [
     "+components/os_crypt/async/browser/test_utils.h"
-  ],
+  ]
 }

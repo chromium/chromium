@@ -6,6 +6,7 @@
 #include <Cocoa/Cocoa.h>
 
 #include "base/apple/owned_objc.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,7 +34,7 @@ NSEvent* CmdDeadKeyEvent(NSEventType type, unsigned short code) {
       uniChar = NSDownArrowFunctionKey;
       break;
     default:
-      CHECK(false);
+      NOTREACHED();
   }
   NSString* s = [NSString stringWithFormat:@"%C", uniChar];
 

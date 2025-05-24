@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 

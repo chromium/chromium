@@ -13,6 +13,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/object_path.h"
@@ -62,12 +63,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
                  ValueCallback callback,
                  ErrorCallback error_callback) override;
   void WriteValue(const dbus::ObjectPath& object_path,
-                  const std::vector<uint8_t>& value,
+                  base::span<const uint8_t> value,
                   std::string_view type_option,
                   base::OnceClosure callback,
                   ErrorCallback error_callback) override;
   void PrepareWriteValue(const dbus::ObjectPath& object_path,
-                         const std::vector<uint8_t>& value,
+                         base::span<const uint8_t> value,
                          base::OnceClosure callback,
                          ErrorCallback error_callback) override;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -199,7 +200,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
   };
 
   // Map of delayed callbacks.
-  std::map<std::string, DelayedCallback*> action_extra_requests_;
+  std::map<std::string, raw_ptr<DelayedCallback, CtnExperimental>>
+      action_extra_requests_;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<Observer>::Unchecked observers_;

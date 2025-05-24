@@ -13,7 +13,6 @@ import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../settings_shared.css.js';
 import './add_site_dialog.js';
@@ -154,20 +153,6 @@ export class SiteListElement extends SiteListElementBase {
        */
       showSessionOnlyAction_: Boolean,
 
-      /**
-       * All possible actions in the action menu.
-       */
-      actions_: {
-        readOnly: true,
-        type: Object,
-        values: {
-          ALLOW: 'Allow',
-          BLOCK: 'Block',
-          RESET: 'Reset',
-          SESSION_ONLY: 'SessionOnly',
-        },
-      },
-
       lastFocused_: Object,
       listBlurred_: Boolean,
       tooltipText_: String,
@@ -179,24 +164,24 @@ export class SiteListElement extends SiteListElementBase {
     return ['configureWidget_(category, categorySubtype)'];
   }
 
-  readOnlyList: boolean;
-  categoryHeader: string;
-  private systemPermissionWarningKey_: string|null;
-  private actionMenuSite_: SiteException|null;
-  private showEditExceptionDialog_: boolean;
-  sites: SiteException[];
-  categorySubtype: ContentSetting;
-  private hasIncognito_: boolean;
-  private showAddSiteButton_: boolean;
-  private showAddSiteDialog_: boolean;
-  private showAllowAction_: boolean;
-  private showBlockAction_: boolean;
-  private showSessionOnlyAction_: boolean;
-  private lastFocused_: HTMLElement;
-  private listBlurred_: boolean;
-  private tooltipText_: string;
-  searchFilter: string;
-  cookiesExceptionType: CookiesExceptionType;
+  declare readOnlyList: boolean;
+  declare categoryHeader: string;
+  declare private systemPermissionWarningKey_: string|null;
+  declare private actionMenuSite_: SiteException|null;
+  declare private showEditExceptionDialog_: boolean;
+  declare sites: SiteException[];
+  declare categorySubtype: ContentSetting;
+  declare private hasIncognito_: boolean;
+  declare private showAddSiteButton_: boolean;
+  declare private showAddSiteDialog_: boolean;
+  declare private showAllowAction_: boolean;
+  declare private showBlockAction_: boolean;
+  declare private showSessionOnlyAction_: boolean;
+  declare private lastFocused_: HTMLElement;
+  declare private listBlurred_: boolean;
+  declare private tooltipText_: string;
+  declare searchFilter: string;
+  declare cookiesExceptionType: CookiesExceptionType;
 
   private activeDialogAnchor_: HTMLElement|null;
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
@@ -355,7 +340,7 @@ export class SiteListElement extends SiteListElementBase {
     const element: HTMLElement|null|undefined =
         this.shadowRoot?.querySelector(`#${elementId}`);
     if (element !== null && element !== undefined) {
-      element!.addEventListener('click', (me: MouseEvent) => {
+      element.addEventListener('click', (me: MouseEvent) => {
         this.onSystemPermissionSettingsLinkClick_(me);
       });
       // Set the correct aria label describing the link target.
@@ -490,13 +475,13 @@ export class SiteListElement extends SiteListElementBase {
   private setContentSettingForActionMenuSite_(contentSetting: ContentSetting) {
     assert(this.actionMenuSite_);
     this.browserProxy.setCategoryPermissionForPattern(
-        this.actionMenuSite_!.origin, this.actionMenuSite_!.embeddingOrigin,
-        this.category, contentSetting, this.actionMenuSite_!.incognito);
+        this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,
+        this.category, contentSetting, this.actionMenuSite_.incognito);
   }
 
   private onAllowClick_() {
     // Removing the last visible item should focus the list's header.
-    const shouldMoveFocus = this.getFilteredSites_().length === 1;
+    const shouldMoveFocus = this.hasOneFilteredSite_();
     this.setContentSettingForActionMenuSite_(ContentSetting.ALLOW);
     this.closeActionMenu_();
     if (shouldMoveFocus) {
@@ -506,7 +491,7 @@ export class SiteListElement extends SiteListElementBase {
 
   private onBlockClick_() {
     // Removing the last visible item should focus the list's header.
-    const shouldMoveFocus = this.getFilteredSites_().length === 1;
+    const shouldMoveFocus = this.hasOneFilteredSite_();
     this.setContentSettingForActionMenuSite_(ContentSetting.BLOCK);
     this.closeActionMenu_();
     if (shouldMoveFocus) {
@@ -537,7 +522,7 @@ export class SiteListElement extends SiteListElementBase {
 
   private onResetClick_() {
     // Removing the last visible item should focus the list's header.
-    const shouldMoveFocus = this.getFilteredSites_().length === 1;
+    const shouldMoveFocus = this.hasOneFilteredSite_();
     assert(this.actionMenuSite_);
     this.browserProxy.resetCategoryPermissionForPattern(
         this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,
@@ -558,7 +543,7 @@ export class SiteListElement extends SiteListElementBase {
 
   private onResetEntry_() {
     // Removing the last visible item should focus the list's header.
-    if (this.getFilteredSites_().length === 1) {
+    if (this.hasOneFilteredSite_()) {
       this.$.listHeader.focus();
     }
   }
@@ -584,6 +569,10 @@ export class SiteListElement extends SiteListElementBase {
     return this.sites.filter(
         site => propNames.some(
             propName => site[propName].toLowerCase().includes(searchFilter)));
+  }
+
+  private hasOneFilteredSite_(): boolean {
+    return this.getFilteredSites_().length === 1;
   }
 
   private getAddButtonLabel_(): string {

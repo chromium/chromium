@@ -12,13 +12,13 @@
  * a remote origin.
  *
  * WebChannels are created via <code>WebChannel</code>. Multiple WebChannels
- * may be multiplexed over the same WebChannelTransport, which represents
+ * may be multiplexed over the same WebChannelTransport, which encapsulates
  * the underlying physical connectivity over standard wire protocols
  * such as HTTP.
  *
  * A WebChannel in turn represents a logical communication channel between
- * the client and server end point. A WebChannel remains open for as long
- * as the client or server end-point allows.
+ * the client and server endpoint. A WebChannel remains open for as long
+ * as the client or server endpoint allows.
  *
  * Messages are delivered in-order and reliably over the same WebChannel,
  * and the choice of the underlying wire protocols is completely transparent
@@ -85,19 +85,24 @@ goog.net.WebChannel.FailureRecovery = function() {};
 goog.net.WebChannel.Options = function() {};
 
 /**
- * Custom headers to be added to every message sent to the
- * server. This object is mutable, and custom headers may be changed, removed,
- * or added during the runtime after a channel has been
- * opened
+ * Transport-metadata support.
+ *
+ * Custom HTTP headers to be added to every message sent to the server. This
+ * object is mutable, and custom headers may be changed, removed, or added
+ * during the runtime after a channel has been opened.
+ *
+ * Custom headers may trigger CORS preflight. See other related options.
  * @type {!Object<string, string>|undefined}
  */
 goog.net.WebChannel.Options.prototype.messageHeaders;
 
 /**
- * Similar to messageHeaders, but any custom headers will
- * be sent only once when the channel is opened. Typical usage is to send
- * an auth header to the server, which only checks the auth header at the time
- * when the channel is opened.
+ * Transport-metadata support.
+ *
+ * Similar to messageHeaders, but any custom HTTP headers will be sent only once
+ * when the channel is opened as part of the handshake request. Typical usage is
+ * to send an auth header to the server, which only checks the auth header at
+ * the time during the handshake when the channel is opened.
  * @type {!Object<string, string>|undefined}
  */
 goog.net.WebChannel.Options.prototype.initMessageHeaders;
@@ -110,9 +115,17 @@ goog.net.WebChannel.Options.prototype.initMessageHeaders;
 goog.net.WebChannel.Options.prototype.messageContentType;
 
 /**
- * Custom url query parameters to be added to every message
- * sent to the server. This object is mutable, and custom parameters may be
- * changed, removed or added during the runtime after a channel has been opened.
+ * Transport-metadata support.
+ *
+ * Custom url query parameters to be added to every message sent to the server.
+ * This object is mutable, and custom parameters may be changed, removed or
+ * added during the runtime after a channel has been opened.
+ *
+ * TODO: initMessageUrlParams
+ * TODO: closeMessageUrlParams  (custom url query params to be added to the
+ * channel-close message. Custom headers are not supported due to the use of
+ * SendBeacon)
+ *
  * @type {!Object<string, string>|undefined}
  */
 goog.net.WebChannel.Options.prototype.messageUrlParams;
@@ -171,11 +184,14 @@ goog.net.WebChannel.Options.prototype.httpSessionIdParam;
 goog.net.WebChannel.Options.prototype.httpHeadersOverwriteParam;
 
 /**
- * Whether to encode #initMessageHeaders in the HTTP request body.
- * This option defaults to false. If true, #httpHeadersOverwriteParam will be
- * ignored.
+ * Whether to encode Options.initMessageHeaders in the HTTP request body.
+ * This option defaults to false. If true, Options.httpHeadersOverwriteParam
+ * will be ignored.
  *
- * This option should not be set if #fastHandshake is enabled.
+ * This option should not be set if Options.fastHandshake is set (which
+ * uses GET for handshake).
+ *
+ * Web-only feature.
  *
  * @type {boolean|undefined}
  */
@@ -200,6 +216,15 @@ goog.net.WebChannel.Options.prototype.forceLongPolling;
  * @type {boolean|undefined}
  */
 goog.net.WebChannel.Options.prototype.detectBufferingProxy;
+
+/**
+ * This option informs the server the desired maximum timeout interval (in
+ * Milliseconds) to complete a long-polling GET response, e.g. to accommodate
+ * the timeout enforced by a proxy. The WebChannel server may adjust the
+ * specified timeout or may ignore this client-configured timeout.
+ * @type {number|undefined}
+ */
+goog.net.WebChannel.Options.prototype.longPollingTimeout;
 
 /**
  * Enable true 0-RTT message delivery, including
@@ -358,7 +383,7 @@ goog.net.WebChannel.prototype.halfClose = goog.abstractMethod;
 
 
 /**
- * Sends a message to the server that maintains the other end point of
+ * Sends a message to the server that maintains the other endpoint of
  * the WebChannel.
  *
  * O-RTT behavior:
@@ -429,6 +454,24 @@ goog.net.WebChannel.MessageEvent.prototype.data;
  * @type {string|undefined}
  */
 goog.net.WebChannel.MessageEvent.prototype.metadataKey;
+
+
+/**
+ * Metadata as HTTP status code. Typically sent before the channel is
+ * half-closed by the server.
+ *
+ * @type {number|undefined}
+ */
+goog.net.WebChannel.MessageEvent.prototype.statusCode;
+
+
+/**
+ * Metadata as HTTP headers. Typically sent before the channel is
+ * half-closed by the server.
+ *
+ * @type {!Object<string, string>|undefined}
+ */
+goog.net.WebChannel.MessageEvent.prototype.headers;
 
 
 /**
@@ -590,7 +633,7 @@ goog.net.WebChannel.RuntimeProperties.prototype.getHttpSessionId =
  *
  * This is currently implemented only in the client layer and the commit
  * callback will be invoked after all the pending client-sent messages have been
- * delivered by the server-side webchannel end-point. This semantics is
+ * delivered by the server-side webchannel endpoint. This semantics is
  * different and weaker than what's required for end-to-end ack which requires
  * the server application to ack the in-order delivery of messages that are sent
  * before the commit request is issued.
@@ -611,13 +654,14 @@ goog.net.WebChannel.RuntimeProperties.prototype.commit = goog.abstractMethod;
  *
  * Detail spec: https://github.com/bidiweb/webchannel/blob/master/commit.md
  *
- * This is not yet implemented.
+ * Note that the caller should NOT modify the list of returned messages.
  *
- * @return {number} The total number of messages that have not received
- * commit-ack from the server; or if no commit has been issued, the number
- * of messages that have not been delivered to the server application.
+ * @return {!Array<!goog.net.WebChannel.MessageData>} The list of messages that
+ * have not received commit-ack from the server; or if no commit has been
+ * issued, the list of messages that have not been delivered to the server
+ * application.
  */
-goog.net.WebChannel.RuntimeProperties.prototype.getNonAckedMessageCount =
+goog.net.WebChannel.RuntimeProperties.prototype.getNonAckedMessages =
     goog.abstractMethod;
 
 
@@ -676,7 +720,32 @@ goog.net.WebChannel.RuntimeProperties.prototype.ackCommit = goog.abstractMethod;
 
 
 /**
- * @return {number} The last HTTP status code received by the channel.
+ * Transport-metadata support.
+ *
+ * Responses from the channel-close (abort) message are not available.
+ *
+ * In future when client-side half-close is supported, its response headers
+ * will be available via this API too.
+ * @return {!Object<string, string>|undefined} The response headers received
+ * with the non-200 HTTP status code that causes the channel to be aborted.
+ */
+goog.net.WebChannel.RuntimeProperties.prototype.getLastResponseHeaders =
+    goog.abstractMethod;
+
+/**
+ * Transport-metadata support.
+ *
+ * TODO: getInitStatusCode   (handshake)
+ * TODO: getInitResponseHeaders  (handshake)
+ *
+ * Note that response headers from client-initiated close (abort) are not
+ * available.
+ *
+ * In future when client-initiated half-close is supported, its response status
+ * will be available via this API.
+ *
+ * @return {number} The non-200 HTTP status code received that causes the
+ * channel to be aborted.
  */
 goog.net.WebChannel.RuntimeProperties.prototype.getLastStatusCode =
     goog.abstractMethod;

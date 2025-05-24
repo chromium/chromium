@@ -1,0 +1,46 @@
+; Copyright 2024 The Chromium Authors
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
+
+EXPORTS
+  xrAcquireSwapchainImage
+  xrAttachSessionActionSets
+  xrBeginFrame
+  xrBeginSession
+  xrCreateAction
+  xrCreateActionSet
+  xrCreateActionSpace
+  xrCreateInstance
+  xrCreateReferenceSpace
+  xrCreateSession
+  xrCreateSwapchain
+  xrDestroyActionSet
+  xrDestroyInstance
+  xrDestroySession
+  xrDestroySpace
+  xrDestroySwapchain
+  xrEndFrame
+  xrEndSession
+  xrEnumerateEnvironmentBlendModes
+  xrEnumerateInstanceExtensionProperties
+  xrEnumerateSwapchainImages
+  xrEnumerateViewConfigurations
+  xrEnumerateViewConfigurationViews
+  xrGetActionStateBoolean
+  xrGetActionStateFloat
+  xrGetActionStateVector2f
+  xrGetCurrentInteractionProfile
+  xrGetInstanceProcAddr
+  xrGetReferenceSpaceBoundsRect
+  xrGetSystem
+  xrGetSystemProperties
+  xrGetViewConfigurationProperties
+  xrLocateSpace
+  xrLocateViews
+  xrPollEvent
+  xrReleaseSwapchainImage
+  xrStringToPath
+  xrSuggestInteractionProfileBindings
+  xrSyncActions
+  xrWaitFrame
+  xrWaitSwapchainImage

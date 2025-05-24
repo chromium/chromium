@@ -58,7 +58,7 @@ public final class LinkToTextMetricsHelper {
     /**
      * Records the metrics about the status of link to text flow.
      *
-     * @param LinkToTextDiagnoseStatus The status of link to text flow.
+     * @param linkToTextDiagnoseStatus The status of link to text flow.
      */
     public static void recordLinkToTextDiagnoseStatus(
             @LinkToTextDiagnoseStatus int linkToTextDiagnoseStatus) {

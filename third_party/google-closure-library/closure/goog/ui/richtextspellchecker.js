@@ -376,7 +376,7 @@ goog.ui.RichTextSpellChecker.prototype.setExcludeMarker = function(marker) {
 
     this.excludeTags = [];
     this.excludeMarker = [];
-    for (var i = 0; i < marker.length; i++) {
+    for (var i = 0; i < /** @type {!IArrayLike} */ (marker).length; i++) {
       var parts = marker[i].split('.');
       if (parts.length == 2) {
         this.excludeTags.push(parts[0]);

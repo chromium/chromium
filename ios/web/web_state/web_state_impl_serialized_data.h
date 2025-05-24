@@ -11,6 +11,7 @@
 
 namespace web {
 namespace proto {
+class WebStateStorage;
 class WebStateMetadataStorage;
 }  // namespace proto
 
@@ -57,8 +58,8 @@ class WebStateImpl::SerializedData {
   // Serializes the metadata to `storage`.
   void SerializeMetadataToProto(proto::WebStateMetadataStorage& storage) const;
 
-  // Returns the callback used to load the complete data from disk.
-  WebStateStorageLoader TakeStorageLoader();
+  // Loads the data from disk, or create a default one using the metadata.
+  proto::WebStateStorage LoadStorage();
 
   // Returns the callback used to fetch the native session data blob.
   NativeSessionFetcher TakeNativeSessionFetcher();

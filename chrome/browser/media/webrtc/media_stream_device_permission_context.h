@@ -25,14 +25,13 @@ class MediaStreamDevicePermissionContext
 
 #if BUILDFLAG(IS_ANDROID)
   // PermissionContextBase:
-  void NotifyPermissionSet(const permissions::PermissionRequestID& id,
-                           const GURL& requesting_origin,
-                           const GURL& embedding_origin,
-                           permissions::BrowserPermissionCallback callback,
-                           bool persist,
-                           ContentSetting content_setting,
-                           bool is_one_time,
-                           bool is_final_decision) override;
+  void NotifyPermissionSet(
+      const permissions::PermissionRequestData& request_data,
+      permissions::BrowserPermissionCallback callback,
+      bool persist,
+      ContentSetting content_setting,
+      bool is_one_time,
+      bool is_final_decision) override;
 #endif
 
   // TODO(xhwang): GURL.DeprecatedGetOriginAsURL() shouldn't be used as the

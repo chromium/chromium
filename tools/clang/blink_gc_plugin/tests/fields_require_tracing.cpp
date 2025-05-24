@@ -26,12 +26,14 @@ void HeapObject::Trace(Visitor* visitor) const {
   for (int i = 0; i < array_size; ++i) {
     visitor->Trace(m_traced_array2[i]);
   }
-  for (auto& member : m_traced_array3) {
+  visitor->TraceMultiple(m_traced_array3, array_size);
+  for (auto& member : m_traced_array4) {
     visitor->Trace(member);
   }
   for (int i = 0; i < array_size; ++i) {
-    visitor->Trace(m_traced_array4[i]);
+    visitor->Trace(m_traced_array5[i]);
   }
   visitor->Trace(m_obj);
+  visitor->TraceEphemeron(m_key, &m_value);
 }
 }

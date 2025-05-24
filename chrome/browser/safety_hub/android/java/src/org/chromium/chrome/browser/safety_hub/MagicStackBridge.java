@@ -4,22 +4,23 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
 /** Java equivalent of magic_stack_bridge.cc */
+@NullMarked
 class MagicStackBridge {
     interface Observer {
         void activeModuleDismissed();
     }
 
-    private static ProfileKeyedMap<MagicStackBridge> sProfileMap;
+    private static @Nullable ProfileKeyedMap<MagicStackBridge> sProfileMap;
 
     private final Profile mProfile;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -35,8 +36,7 @@ class MagicStackBridge {
         mProfile = profile;
     }
 
-    @Nullable
-    MagicStackEntry getModuleToShow() {
+    @Nullable MagicStackEntry getModuleToShow() {
         return MagicStackBridgeJni.get().getModuleToShow(mProfile);
     }
 
@@ -70,8 +70,7 @@ class MagicStackBridge {
     @NativeMethods
     interface Natives {
         @JniType("std::optional<MenuNotificationEntry>")
-        @Nullable
-        MagicStackEntry getModuleToShow(@JniType("Profile*") Profile profile);
+        @Nullable MagicStackEntry getModuleToShow(@JniType("Profile*") Profile profile);
 
         void dismissActiveModule(@JniType("Profile*") Profile profile);
 

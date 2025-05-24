@@ -25,6 +25,11 @@ class UnderlyingSizeListChecker final
   explicit UnderlyingSizeListChecker(const NonInterpolableList& underlying_list)
       : underlying_list_(&underlying_list) {}
 
+  void Trace(Visitor* visitor) const override {
+    CSSInterpolationType::CSSConversionChecker::Trace(visitor);
+    visitor->Trace(underlying_list_);
+  }
+
   ~UnderlyingSizeListChecker() final = default;
 
  private:
@@ -45,7 +50,7 @@ class UnderlyingSizeListChecker final
     return true;
   }
 
-  scoped_refptr<const NonInterpolableList> underlying_list_;
+  Member<const NonInterpolableList> underlying_list_;
 };
 
 class InheritedSizeListChecker final
@@ -140,7 +145,7 @@ InterpolationValue CSSSizeListInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSSizeListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   return MaybeConvertCSSSizeList(value);
 }
@@ -168,7 +173,7 @@ void CSSSizeListInterpolationType::Composite(
     const InterpolationValue& value,
     double interpolation_fraction) const {
   ListInterpolationFunctions::Composite(
-      underlying_value_owner, underlying_fraction, *this, value,
+      underlying_value_owner, underlying_fraction, this, value,
       ListInterpolationFunctions::LengthMatchingStrategy::kLowestCommonMultiple,
       ListInterpolationFunctions::InterpolableValuesKnownCompatible,
       SizeInterpolationFunctions::NonInterpolableValuesAreCompatible,

@@ -137,12 +137,12 @@ TEST_F(AppServiceGuestOSIconTest, GetStandardCrostiniIconFromVM) {
   // The VM can return an image of any size, it will be resized by App Service.
   constexpr int kVmIconSizePx = 150;
   SkBitmap red_bitmap = gfx::test::CreateBitmap(kVmIconSizePx, SK_ColorRED);
-  std::vector<uint8_t> png_bytes;
-  gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false, &png_bytes);
+  std::optional<std::vector<uint8_t>> png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false);
 
   vm_tools::cicerone::ContainerAppIconResponse response;
   auto* icon_response = response.add_icons();
-  icon_response->set_icon(&png_bytes[0], png_bytes.size());
+  icon_response->set_icon(png_bytes->data(), png_bytes->size());
   icon_response->set_desktop_file_id(kDesktopFileId);
   icon_response->set_format(vm_tools::cicerone::DesktopIcon::PNG);
   fake_cicerone_client()->set_container_app_icon_response(response);
@@ -164,12 +164,12 @@ TEST_F(AppServiceGuestOSIconTest, GetStandardCrostiniMultiContainerIconFromVM) {
 
   constexpr int kVmIconSizePx = 150;
   SkBitmap red_bitmap = gfx::test::CreateBitmap(kVmIconSizePx, SK_ColorRED);
-  std::vector<uint8_t> png_bytes;
-  gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false, &png_bytes);
+  std::optional<std::vector<uint8_t>> png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false);
 
   vm_tools::cicerone::ContainerAppIconResponse response;
   auto* icon_response = response.add_icons();
-  icon_response->set_icon(&png_bytes[0], png_bytes.size());
+  icon_response->set_icon(png_bytes->data(), png_bytes->size());
   icon_response->set_desktop_file_id(kDesktopFileId);
   icon_response->set_format(vm_tools::cicerone::DesktopIcon::PNG);
   fake_cicerone_client()->set_container_app_icon_response(response);
@@ -192,12 +192,12 @@ TEST_F(AppServiceGuestOSIconTest, GetStandardCrostiniIconFromDisk) {
 
   constexpr int kVmIconSizePx = 256;
   SkBitmap red_bitmap = gfx::test::CreateBitmap(kVmIconSizePx, SK_ColorGREEN);
-  std::vector<uint8_t> png_bytes;
-  gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false, &png_bytes);
+  std::optional<std::vector<uint8_t>> png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false);
 
   vm_tools::cicerone::ContainerAppIconResponse response;
   auto* icon_response = response.add_icons();
-  icon_response->set_icon(&png_bytes[0], png_bytes.size());
+  icon_response->set_icon(png_bytes->data(), png_bytes->size());
   icon_response->set_desktop_file_id(kDesktopFileId);
   icon_response->set_format(vm_tools::cicerone::DesktopIcon::PNG);
   fake_cicerone_client()->set_container_app_icon_response(response);

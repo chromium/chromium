@@ -115,7 +115,7 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
   ScopedJavaLocalRef<jobject> jinitiator_origin =
-      params->initiator_origin ? params->initiator_origin->ToJavaObject()
+      params->initiator_origin ? params->initiator_origin->ToJavaObject(env)
                                : nullptr;
   ScopedJavaLocalRef<jobject> jpost_data =
       content::ConvertResourceRequestBodyToJavaObject(env, params->post_data);
@@ -127,7 +127,7 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
 
 WebContents* TabModelJniBridge::GetWebContentsAt(int index) const {
   TabAndroid* tab = GetTabAt(index);
-  return tab == NULL ? NULL : tab->web_contents();
+  return tab == nullptr ? nullptr : tab->web_contents();
 }
 
 TabAndroid* TabModelJniBridge::GetTabAt(int index) const {
@@ -135,7 +135,7 @@ TabAndroid* TabModelJniBridge::GetTabAt(int index) const {
   ScopedJavaLocalRef<jobject> jtab =
       Java_TabModelJniBridge_getTabAt(env, java_object_.get(env), index);
 
-  return jtab.is_null() ? NULL : TabAndroid::GetNativeTab(env, jtab);
+  return jtab.is_null() ? nullptr : TabAndroid::GetNativeTab(env, jtab);
 }
 
 ScopedJavaLocalRef<jobject> TabModelJniBridge::GetJavaObject() const {
@@ -148,27 +148,33 @@ void TabModelJniBridge::SetActiveIndex(int index) {
   Java_TabModelJniBridge_setIndex(env, java_object_.get(env), index);
 }
 
+void TabModelJniBridge::ForceCloseAllTabs() {
+  JNIEnv* env = AttachCurrentThread();
+  Java_TabModelJniBridge_forceCloseAllTabs(env, java_object_.get(env));
+}
+
 void TabModelJniBridge::CloseTabAt(int index) {
   JNIEnv* env = AttachCurrentThread();
   Java_TabModelJniBridge_closeTabAt(env, java_object_.get(env), index);
 }
 
-WebContents* TabModelJniBridge::CreateNewTabForDevTools(const GURL& url) {
+WebContents* TabModelJniBridge::CreateNewTabForDevTools(const GURL& url,
+                                                        bool new_window) {
   // TODO(dfalcantara): Change the Java side so that it creates and returns the
   //                    WebContents, which we can load the URL on and return.
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj =
       Java_TabModelJniBridge_createNewTabForDevTools(
           env, java_object_.get(env),
-          url::GURLAndroid::FromNativeGURL(env, url));
+          url::GURLAndroid::FromNativeGURL(env, url), new_window);
   if (obj.is_null()) {
     VLOG(0) << "Failed to create java tab";
-    return NULL;
+    return nullptr;
   }
   TabAndroid* tab = TabAndroid::GetNativeTab(env, obj);
   if (!tab) {
     VLOG(0) << "Failed to create java tab";
-    return NULL;
+    return nullptr;
   }
   return tab->web_contents();
 }
@@ -182,16 +188,6 @@ bool TabModelJniBridge::IsSessionRestoreInProgress() const {
 bool TabModelJniBridge::IsActiveModel() const {
   JNIEnv* env = AttachCurrentThread();
   return Java_TabModelJniBridge_isActiveModel(env, java_object_.get(env));
-}
-
-// static
-bool TabModelJniBridge::IsTabInTabGroup(TabAndroid* tab) {
-  // Terminate early if tab is in the process of being destroyed.
-  if (!tab || !tab->web_contents() || !tab->web_contents()->GetDelegate()) {
-    return false;
-  }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabModelJniBridge_isTabInTabGroup(env, tab->GetJavaObject());
 }
 
 void TabModelJniBridge::AddObserver(TabModelObserver* observer) {
@@ -241,13 +237,79 @@ void TabModelJniBridge::CloseTabsNavigatedInTimeWindow(
       env, java_object_.get(env), begin_time_ms, end_time_ms);
 }
 
+void TabModelJniBridge::OpenTab(const GURL& url, int index) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
+  Java_TabModelJniBridge_openTabProgrammatically(env, jobj, jurl, index);
+}
+
+void TabModelJniBridge::DiscardTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::DuplicateTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
+  return GetTabAt(index);
+}
+
+void TabModelJniBridge::HighlightTabs(std::set<int> indicies) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::MoveTab(int from_index, int to_index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::CloseTab(int index) {
+  CloseTabAt(index);
+}
+
+std::vector<tabs::TabInterface*> TabModelJniBridge::GetAllTabs() {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+  return {};
+}
+
+void TabModelJniBridge::PinTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::UnpinTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateGroup(
+    std::set<int> indicies) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
+void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
+                                    int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
 // static
 jclass TabModelJniBridge::GetClazz(JNIEnv* env) {
   return org_chromium_chrome_browser_tabmodel_TabModelJniBridge_clazz(env);
 }
 
 TabModelJniBridge::~TabModelJniBridge() {
-  if (!is_archived_tab_model_) {
+  if (is_archived_tab_model_) {
+    TabModelList::SetArchivedTabModel(nullptr);
+  } else {
     TabModelList::RemoveTabModel(this);
   }
 }

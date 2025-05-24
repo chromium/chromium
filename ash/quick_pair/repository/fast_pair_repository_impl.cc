@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -299,7 +300,7 @@ void FastPairRepositoryImpl::CheckAccountKeysImpl(
             device.id(),
             base::BindOnce(&FastPairRepositoryImpl::CompleteAccountKeyLookup,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           key_bytes));
+                           std::move(key_bytes)));
         return;
       }
     }
@@ -351,7 +352,7 @@ void FastPairRepositoryImpl::UpdateCacheAndRetryCheckAccountKeys(
 
 void FastPairRepositoryImpl::CompleteAccountKeyLookup(
     CheckAccountKeysCallback callback,
-    const std::vector<uint8_t> account_key,
+    std::vector<uint8_t> account_key,
     DeviceMetadata* device_metadata,
     bool has_retryable_error) {
   if (!device_metadata) {

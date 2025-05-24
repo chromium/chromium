@@ -84,9 +84,9 @@ TaskManager* TaskManager::Get() {
   return *GetInstanceStorage();
 }
 
-TaskManager::TaskManager() {}
+TaskManager::TaskManager() = default;
 
-TaskManager::~TaskManager() {}
+TaskManager::~TaskManager() = default;
 
 void TaskManager::ExecuteTask(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,

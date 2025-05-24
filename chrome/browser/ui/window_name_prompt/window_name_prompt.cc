@@ -21,10 +21,11 @@ void SetBrowserTitleFromTextfield(Browser* browser,
                                   ui::DialogModel* dialog_model) {
   std::string text = base::UTF16ToUTF8(
       dialog_model->GetTextfieldByUniqueId(kWindowNameFieldId)->text());
-  if (text.empty())
+  if (text.empty()) {
     base::RecordAction(base::UserMetricsAction("WindowNaming_Cleared"));
-  else
+  } else {
     base::RecordAction(base::UserMetricsAction("WindowNaming_Set"));
+  }
   browser->SetWindowUserTitle(text);
 }
 

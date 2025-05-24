@@ -62,12 +62,15 @@ class MediaElementAudioSourceNode final
 
   HTMLMediaElement* mediaElement() const;
 
+  void ConnectToDestinationReady() override;
+
   // AudioSourceProviderClient functions:
   void SetFormat(uint32_t number_of_channels, float sample_rate) override;
   void lock() override EXCLUSIVE_LOCK_FUNCTION(
       GetMediaElementAudioSourceHandler().GetProcessLock());
   void unlock() override
       UNLOCK_FUNCTION(GetMediaElementAudioSourceHandler().GetProcessLock());
+  void OnCurrentSrcChanged(const KURL& current_src) override {}
 
   // InspectorHelperMixin
   void ReportDidCreate() final;

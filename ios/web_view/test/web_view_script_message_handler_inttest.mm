@@ -38,6 +38,28 @@ class WebViewScriptMessageHandlerTest : public WebViewInttestBase {
   }
 };
 
+// Tests that a handler added by -[CWVUserContentController
+// isMessageHandlerRegisteredForCommand:] returns TRUE only if a handler is
+// installed.
+TEST_F(WebViewScriptMessageHandlerTest, IsMessageInstalled) {
+  CWVUserContentController* userContentController =
+      web_view_.configuration.userContentController;
+  [userContentController
+      addMessageHandler:^(NSDictionary* payload) {
+        // No op.
+      }
+             forCommand:kMessageHandlerCommandName];
+
+  EXPECT_TRUE([userContentController
+      isMessageHandlerRegisteredForCommand:kMessageHandlerCommandName]);
+
+  [userContentController
+      removeMessageHandlerForCommand:kMessageHandlerCommandName];
+
+  EXPECT_FALSE([userContentController
+      isMessageHandlerRegisteredForCommand:kMessageHandlerCommandName]);
+}
+
 // Tests that a handler added by -[CWVWebView
 // addMessageHandler:forCommand:] is invoked by JavaScript.
 TEST_F(WebViewScriptMessageHandlerTest, MessageReceived) {

@@ -4,13 +4,13 @@
 
 #include "net/base/proxy_chain.h"
 
+#include <algorithm>
 #include <ostream>
 #include <vector>
 
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "build/buildflag.h"
 #include "net/base/proxy_server.h"
@@ -70,6 +70,10 @@ bool ProxyChain::InitFromPickle(base::PickleIterator* pickle_iter) {
     proxy_server_list.push_back(ProxyServer::CreateFromPickle(pickle_iter));
   }
   proxy_server_list_ = std::move(proxy_server_list);
+  if (!IsValidInternal()) {
+    proxy_server_list_ = std::nullopt;
+    return false;
+  }
   return true;
 }
 

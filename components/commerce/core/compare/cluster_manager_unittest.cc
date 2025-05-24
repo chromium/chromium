@@ -61,8 +61,11 @@ class MockClusterServerProxy : public ClusterServerProxy {
  public:
   MockClusterServerProxy(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : ClusterServerProxy(identity_manager, url_loader_factory) {}
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      AccountChecker* account_checker)
+      : ClusterServerProxy(identity_manager,
+                           url_loader_factory,
+                           account_checker) {}
   MockClusterServerProxy(const MockClusterServerProxy&) = delete;
   MockClusterServerProxy operator=(const MockClusterServerProxy&) = delete;
   ~MockClusterServerProxy() override = default;
@@ -89,11 +92,14 @@ class ClusterManagerTest : public testing::Test {
         GetAllProductSpecifications(
             testing::An<ProductSpecificationsService::GetAllCallback>()))
         .Times(1);
-    auto proxy = std::make_unique<MockClusterServerProxy>(nullptr, nullptr);
+    auto proxy =
+        std::make_unique<MockClusterServerProxy>(nullptr, nullptr, nullptr);
     server_proxy_ = proxy.get();
     cluster_manager_ = std::make_unique<ClusterManager>(
         product_specification_service_.get(), std::move(proxy),
         base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                            base::Unretained(this)),
+        base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
                             base::Unretained(this)),
         base::BindRepeating(&ClusterManagerTest::url_infos,
                             base::Unretained(this)));
@@ -105,6 +111,17 @@ class ClusterManagerTest : public testing::Test {
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(product_info_cb), url, product_infos_[url]));
+  }
+
+  void GetProductInfoBatch(const std::vector<GURL>& urls,
+                           ProductInfoBatchCallback product_info_batch_cb) {
+    std::map<GURL, std::optional<ProductInfo>> info_map;
+    for (const GURL& url : urls) {
+      info_map[url] = product_infos_[url];
+    }
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(product_info_batch_cb), std::move(info_map)));
   }
 
   const std::vector<UrlInfo> url_infos() { return url_infos_; }
@@ -294,8 +311,10 @@ TEST_F(ClusterManagerTest,
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
-      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                          base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));
@@ -351,8 +370,10 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_SkipInvalidSet) {
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
-      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                          base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));
@@ -381,8 +402,10 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_KickOffRemoving) {
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
-      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
+                          base::Unretained(this)),
+      base::BindRepeating(&ClusterManagerTest::GetProductInfoBatch,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 
 #include <limits.h>
+
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
@@ -118,16 +120,6 @@ CSSValueID CSSParserToken::Id() const {
   return static_cast<CSSValueID>(id_);
 }
 
-CSSValueID CSSParserToken::FunctionId() const {
-  if (type_ != kFunctionToken) {
-    return CSSValueID::kInvalid;
-  }
-  if (id_ < 0) {
-    id_ = static_cast<int>(CssValueKeywordID(Value()));
-  }
-  return static_cast<CSSValueID>(id_);
-}
-
 bool CSSParserToken::HasStringBacking() const {
   CSSParserTokenType token_type = GetType();
   if (value_is_inline_) {
@@ -147,31 +139,19 @@ CSSParserToken CSSParserToken::CopyWithUpdatedString(
 }
 
 bool CSSParserToken::ValueDataCharRawEqual(const CSSParserToken& other) const {
-  if (value_length_ != other.value_length_) {
-    return false;
-  }
-
   if (ValueDataCharRaw() == other.ValueDataCharRaw() &&
       value_is_8bit_ == other.value_is_8bit_) {
-    return true;
+    return value_length_ == other.value_length_;
   }
 
   if (value_is_8bit_) {
-    return other.value_is_8bit_
-               ? Equal(static_cast<const LChar*>(ValueDataCharRaw()),
-                       static_cast<const LChar*>(other.ValueDataCharRaw()),
-                       value_length_)
-               : Equal(static_cast<const LChar*>(ValueDataCharRaw()),
-                       static_cast<const UChar*>(other.ValueDataCharRaw()),
-                       value_length_);
+    const auto span = Span8();
+    return other.value_is_8bit_ ? span == other.Span8()
+                                : span == other.Span16();
   } else {
-    return other.value_is_8bit_
-               ? Equal(static_cast<const UChar*>(ValueDataCharRaw()),
-                       static_cast<const LChar*>(other.ValueDataCharRaw()),
-                       value_length_)
-               : Equal(static_cast<const UChar*>(ValueDataCharRaw()),
-                       static_cast<const UChar*>(other.ValueDataCharRaw()),
-                       value_length_);
+    const auto span = Span16();
+    return other.value_is_8bit_ ? span == other.Span8()
+                                : span == other.Span16();
   }
 }
 
@@ -248,7 +228,8 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
         // This wasn't parsed as an integer, so when we serialize it back,
         // it cannot be an integer. Otherwise, we would round-trip e.g.
         // “2.0” to “2”, which could make an invalid value suddenly valid.
-        if (strchr(str, '.') == nullptr && strchr(str, 'e') == nullptr) {
+        if (UNSAFE_TODO(strchr(str, '.')) == nullptr &&
+            UNSAFE_TODO(strchr(str, 'e')) == nullptr) {
           builder.Append(".0");
         }
         return;
@@ -316,8 +297,7 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
 
     case kEOFToken:
     case kCommentToken:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

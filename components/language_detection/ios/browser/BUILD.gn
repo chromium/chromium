@@ -14,7 +14,7 @@ source_set("browser") {
   deps = [
     "//base",
     "//components/keyed_service/core",
-    "//components/language_detection/core:language_detection",
+    "//components/language_detection/core",
     "//components/language_detection/core/browser:language_detection_model_service",
     "//components/translate/core/language_detection",
   ]

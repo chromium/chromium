@@ -56,7 +56,13 @@ class CORE_EXPORT OffsetMappingUnit {
   // Returns associated node for this unit or null if this unit is associated
   // to generated content.
   const Node* AssociatedNode() const;
+
   OffsetMappingUnitType GetType() const { return type_; }
+  // Returns true if GetType() is OffsetMappingUnitType::kCollapsed.
+  bool IsCollapsed() const {
+    return type_ == OffsetMappingUnitType::kCollapsed;
+  }
+
   const LayoutObject& GetLayoutObject() const { return *layout_object_; }
   // Returns |Node| for this unit. If this unit comes from CSS generated
   // content, we can't use this function.

@@ -19,26 +19,33 @@ import android.widget.FrameLayout;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.runner.lifecycle.Stage;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
@@ -47,7 +54,7 @@ import java.util.List;
 
 /** Instrumentation tests for the Paint Preview player. */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
+public class PaintPreviewPlayerTest {
     private static final long TIMEOUT_MS = 5000;
 
     private static final String TEST_DIRECTORY_KEY = "test_dir";
@@ -60,16 +67,6 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     private static final int TEST_PAGE_WIDTH = 1082;
     private static final int TEST_PAGE_HEIGHT = 5019;
 
-    @Rule public PaintPreviewTestRule mPaintPreviewTestRule = new PaintPreviewTestRule();
-
-    @Rule public TemporaryFolder mTempFolder = new TemporaryFolder();
-
-    private FrameLayout mLayout;
-    private PlayerManager mPlayerManager;
-    private TestLinkClickHandler mLinkClickHandler;
-    private CallbackHelper mRefreshedCallback;
-    private boolean mInitializationFailed;
-
     @Rule
     public RenderTestRule mRenderTestRule =
             new RenderTestRule.Builder()
@@ -78,8 +75,20 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                     .setRevision(0)
                     .build();
 
+    @Rule public TemporaryFolder mTempFolder = new TemporaryFolder();
+
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private FrameLayout mLayout;
+    private PlayerManager mPlayerManager;
+    private TestLinkClickHandler mLinkClickHandler;
+    private CallbackHelper mRefreshedCallback;
+    private boolean mInitializationFailed;
+
     /** LinkClickHandler implementation for caching the last URL that was clicked. */
-    public class TestLinkClickHandler implements LinkClickHandler {
+    public static class TestLinkClickHandler implements LinkClickHandler {
         GURL mUrl;
 
         @Override
@@ -88,28 +97,22 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         }
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
+    @Before
+    public void setUp() throws Exception {
+        mActivityTestRule.launchActivity(null);
+        ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mLayout = new FrameLayout(getActivity());
-                    getActivity().setContentView(mLayout);
+                    mLayout = new FrameLayout(mActivityTestRule.getActivity());
+                    mActivityTestRule.getActivity().setContentView(mLayout);
                 });
+        AccountManagerFacadeProvider.setInstanceForTests(new FakeAccountManagerFacade());
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
-        super.tearDownTest();
-        CallbackHelper destroyed = new CallbackHelper();
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    mPlayerManager.destroy();
-                    destroyed.notifyCalled();
-                });
-        destroyed.waitForOnly();
+    @After
+    public void tearDown() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(mPlayerManager::destroy);
     }
 
     private void displayTest(boolean multipleFrames) {
@@ -132,7 +135,9 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
-    /** Tests the the player correctly initializes and displays a sample paint preview with 1 frame. */
+    /**
+     * Tests the the player correctly initializes and displays a sample paint preview with 1 frame.
+     */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -232,8 +237,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     public void initializationCallbackErrorReported() throws Exception {
         CallbackHelper compositorErrorCallback = new CallbackHelper();
         mLinkClickHandler = new TestLinkClickHandler();
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PaintPreviewTestService service =
                             new PaintPreviewTestService(mTempFolder.getRoot().getPath());
@@ -241,7 +245,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                     mPlayerManager =
                             new PlayerManager(
                                     new GURL("about:blank"),
-                                    getActivity(),
+                                    mActivityTestRule.getActivity(),
                                     service,
                                     TEST_DIRECTORY_KEY,
                                     new PlayerManager.Listener() {
@@ -356,18 +360,27 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
 
     private int statusBarHeight() {
         Rect visibleContentRect = new Rect();
-        getActivity().getWindow().getDecorView().getWindowVisibleDisplayFrame(visibleContentRect);
+        mActivityTestRule
+                .getActivity()
+                .getWindow()
+                .getDecorView()
+                .getWindowVisibleDisplayFrame(visibleContentRect);
         return visibleContentRect.top;
     }
 
     private int navigationBarHeight() {
         int navigationBarHeight = 100;
         int resourceId =
-                getActivity()
+                mActivityTestRule
+                        .getActivity()
                         .getResources()
                         .getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            navigationBarHeight = getActivity().getResources().getDimensionPixelSize(resourceId);
+            navigationBarHeight =
+                    mActivityTestRule
+                            .getActivity()
+                            .getResources()
+                            .getDimensionPixelSize(resourceId);
         }
         return navigationBarHeight;
     }
@@ -467,8 +480,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         CallbackHelper firstPaint = new CallbackHelper();
         mInitializationFailed = false;
 
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PaintPreviewTestService service =
                             new PaintPreviewTestService(mTempFolder.getRoot().getPath());
@@ -481,7 +493,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                     mPlayerManager =
                             new PlayerManager(
                                     new GURL(TEST_URL),
-                                    getActivity(),
+                                    mActivityTestRule.getActivity(),
                                     service,
                                     TEST_DIRECTORY_KEY,
                                     new PlayerManager.Listener() {
@@ -583,7 +595,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         try {
             firstPaint.waitForOnly();
         } catch (Exception e) {
-            Assert.fail("First paint not issued.");
+            throw new AssertionError("First paint not issued.", e);
         }
     }
 
@@ -630,9 +642,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     }
 
     private void makeLayoutWide() throws Exception {
-        CallbackHelper widened = new CallbackHelper();
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout.LayoutParams params =
                             (FrameLayout.LayoutParams) mLayout.getLayoutParams();
@@ -640,8 +650,6 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                     params.height = mLayout.getHeight() * 2;
                     mLayout.setLayoutParams(params);
                     mLayout.invalidate();
-                    widened.notifyCalled();
                 });
-        widened.waitForOnly();
     }
 }

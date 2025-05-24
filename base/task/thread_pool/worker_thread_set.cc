@@ -4,9 +4,10 @@
 
 #include "base/task/thread_pool/worker_thread_set.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool/worker_thread.h"
 
 namespace base::internal {
@@ -24,25 +25,29 @@ void WorkerThreadSet::Insert(WorkerThread* worker) {
   DCHECK(!Contains(worker)) << "WorkerThread already on stack";
   auto old_first = set_.begin();
   set_.insert(worker);
-  if (worker != *set_.begin())
+  if (worker != *set_.begin()) {
     worker->BeginUnusedPeriod();
-  else if (old_first != set_.end())
+  } else if (old_first != set_.end()) {
     (*old_first)->BeginUnusedPeriod();
+  }
 }
 
 WorkerThread* WorkerThreadSet::Take() {
-  if (IsEmpty())
+  if (IsEmpty()) {
     return nullptr;
+  }
   WorkerThread* const worker = *set_.begin();
   set_.erase(set_.begin());
-  if (!IsEmpty())
+  if (!IsEmpty()) {
     (*set_.begin())->EndUnusedPeriod();
+  }
   return worker;
 }
 
 WorkerThread* WorkerThreadSet::Peek() const {
-  if (IsEmpty())
+  if (IsEmpty()) {
     return nullptr;
+  }
   return *set_.begin();
 }
 

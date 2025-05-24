@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_COMMON_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_
 #define CONTENT_PUBLIC_COMMON_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_
 
+#include <optional>
+
 #include "base/environment.h"
 #include "base/files/scoped_file.h"
 #include "base/process/process.h"
@@ -16,6 +18,10 @@
 #if BUILDFLAG(USE_ZYGOTE)
 #include "content/public/common/zygote/zygote_handle.h"  // nogncheck
 #endif  // BUILDFLAG(USE_ZYGOTE)
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -38,7 +44,6 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   void PostSpawnTarget(base::ProcessHandle process) override;
   bool ShouldUnsandboxedRunInJob() override;
   bool CetCompatible() override;
-  bool AllowWindowsFontsDir() override;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)
@@ -70,6 +75,10 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   // Whether or not to enable CPU security mitigations against side-channel
   // attacks. See base::LaunchOptions::enable_cpu_security_mitigations.
   virtual bool EnableCpuSecurityMitigations();
+
+  // A `ProcessRequirement` that the launched process will be validated against
+  // before it can retrieve any Mach ports and bootstrap Mojo IPC.
+  virtual std::optional<base::mac::ProcessRequirement> GetProcessRequirement();
 #endif  // BUILDFLAG(IS_MAC)
 };
 

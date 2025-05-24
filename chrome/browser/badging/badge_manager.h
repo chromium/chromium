@@ -53,15 +53,15 @@ enum UpdateBadgeType {
 };
 
 // The maximum value of badge contents before saturation occurs.
-constexpr uint64_t kMaxBadgeContent = 99u;
+inline constexpr uint64_t kMaxBadgeContent = 99u;
 
 // We don't show a badge in response to notifications if the
 // Badging API has been used recently.
-constexpr base::TimeDelta kBadgingOverrideLifetime = base::Days(14);
+inline constexpr base::TimeDelta kBadgingOverrideLifetime = base::Days(14);
 
 // We record when the Badging API was last used, but rate limit
 // our updates to minimize load on the Web App database,
-constexpr base::TimeDelta kBadgingMinimumUpdateInterval = base::Hours(2);
+inline constexpr base::TimeDelta kBadgingMinimumUpdateInterval = base::Hours(2);
 
 // Maintains a record of badge contents and dispatches badge changes to a
 // delegate.

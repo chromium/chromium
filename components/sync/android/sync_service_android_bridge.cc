@@ -26,6 +26,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -85,7 +86,11 @@ ScopedJavaLocalRef<jintArray> UserSelectableTypeSetToJavaIntArray(
 void NativeGetTypesWithUnsyncedDataCallback(
     JNIEnv* env,
     const base::android::ScopedJavaGlobalRef<jobject>& callback,
-    DataTypeSet types) {
+    absl::flat_hash_map<DataType, size_t> type_counts) {
+  DataTypeSet types;
+  for (const auto& [type, count] : type_counts) {
+    types.Put(type);
+  }
   Java_SyncServiceImpl_onGetTypesWithUnsyncedDataResult(
       env, callback, DataTypeSetToJavaIntArray(env, types));
 }
@@ -185,10 +190,6 @@ void SyncServiceAndroidBridge::OnSyncShutdown(SyncService* sync) {
   // destroy it shortly.
 }
 
-void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env) {
-  native_sync_service_->SetSyncFeatureRequested();
-}
-
 jboolean SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {
   return native_sync_service_->IsSyncFeatureEnabled();
 }
@@ -205,11 +206,6 @@ jboolean SyncServiceAndroidBridge::IsSyncDisabledByEnterprisePolicy(
 
 jboolean SyncServiceAndroidBridge::IsEngineInitialized(JNIEnv* env) {
   return native_sync_service_->IsEngineInitialized();
-}
-
-jboolean SyncServiceAndroidBridge::IsTransportStateActive(JNIEnv* env) {
-  return native_sync_service_->GetTransportState() ==
-         SyncService::TransportState::ACTIVE;
 }
 
 void SyncServiceAndroidBridge::SetSetupInProgress(JNIEnv* env,
@@ -297,6 +293,16 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
     JNIEnv* env,
     jboolean sync_everything,
     const JavaParamRef<jintArray>& user_selectable_type_array) {
+  if (native_sync_service_->GetAccountInfo().account_id.empty()) {
+    // This function shouldn't be called while signed out, but evidence suggests
+    // it sometimes does get called.
+    // TODO(crbug.com/369301153): Remove workaround and adopt CHECK/NOTREACHED
+    // once crashes are no longer reported. This could also be cleaned up once
+    // crbug.com/40066949 is tackled.
+    DUMP_WILL_BE_NOTREACHED();
+    return;
+  }
+
   std::vector<int> types_vector;
   base::android::JavaIntArrayToIntVector(env, user_selectable_type_array,
                                          &types_vector);
@@ -313,6 +319,16 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
 void SyncServiceAndroidBridge::SetSelectedType(JNIEnv* env,
                                                jint type,
                                                jboolean is_type_on) {
+  if (native_sync_service_->GetAccountInfo().account_id.empty()) {
+    // This function shouldn't be called while signed out, but evidence suggests
+    // it sometimes does get called.
+    // TODO(crbug.com/369301153): Remove workaround and adopt CHECK/NOTREACHED
+    // once crashes are no longer reported. This could also be cleaned up once
+    // crbug.com/40066949 is tackled.
+    DUMP_WILL_BE_NOTREACHED();
+    return;
+  }
+
   native_sync_service_->GetUserSettings()->SetSelectedType(
       IntToUserSelectableTypeChecked(type), is_type_on);
 }
@@ -356,9 +372,13 @@ jint SyncServiceAndroidBridge::GetPassphraseType(JNIEnv* env) {
   // TODO(crbug.com/40923935): Mapping nullopt -> kImplicitPassphrase preserves
   // the historic behavior, but ideally we should propagate the nullopt state to
   // Java.
-  return static_cast<unsigned>(
+  return static_cast<jint>(
       native_sync_service_->GetUserSettings()->GetPassphraseType().value_or(
           PassphraseType::kImplicitPassphrase));
+}
+
+jint SyncServiceAndroidBridge::GetTransportState(JNIEnv* env) {
+  return static_cast<jint>(native_sync_service_->GetTransportState());
 }
 
 void SyncServiceAndroidBridge::SetEncryptionPassphrase(
@@ -390,8 +410,8 @@ void SyncServiceAndroidBridge::GetAllNodes(
       base::BindOnce(&NativeGetAllNodesCallback, env, java_callback));
 }
 
-jint SyncServiceAndroidBridge::GetAuthError(JNIEnv* env) {
-  return native_sync_service_->GetAuthError().state();
+GoogleServiceAuthError SyncServiceAndroidBridge::GetAuthError(JNIEnv* env) {
+  return native_sync_service_->GetAuthError();
 }
 
 jboolean SyncServiceAndroidBridge::HasUnrecoverableError(JNIEnv* env) {
@@ -448,15 +468,15 @@ jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
 
 void SyncServiceAndroidBridge::KeepAccountSettingsPrefsOnlyForUsers(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& gaia_ids) {
+    const base::android::JavaParamRef<jobjectArray>& gaia_ids_array) {
   std::vector<std::string> gaia_id_strings;
-  AppendJavaStringArrayToStringVector(env, gaia_ids, &gaia_id_strings);
-  std::vector<signin::GaiaIdHash> gaia_id_hashes;
+  AppendJavaStringArrayToStringVector(env, gaia_ids_array, &gaia_id_strings);
+  std::vector<GaiaId> gaia_ids;
   for (const std::string& gaia_id_string : gaia_id_strings) {
-    gaia_id_hashes.push_back(signin::GaiaIdHash::FromGaiaId(gaia_id_string));
+    gaia_ids.emplace_back(gaia_id_string);
   }
   native_sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
-      gaia_id_hashes);
+      gaia_ids);
 }
 
 }  // namespace syncer

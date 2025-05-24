@@ -9,9 +9,9 @@
 </head>
 <body>
 <script>
-const generate_promise = (scriptId, channel) => {
+const generatePromise = (scriptId, receiver) => {
   return new Promise((resolve, reject) => {
-    channel.port1.onmessage = () => {
+    const handler = () => {
       try {
         assert_equals(scheduler.taskId, scriptId);
         resolve();
@@ -19,6 +19,7 @@ const generate_promise = (scriptId, channel) => {
         reject(e);
       }
     }
+    receiver.onmessage = handler;
   });
 }
 
@@ -27,12 +28,19 @@ promise_test(t => {
   const channel1 = new MessageChannel();
   const channel2 = new MessageChannel();
 
-  const promise1 = generate_promise(scriptId, channel1);
-  const promise2 = generate_promise(scriptId, channel2);
+  const promise1 = generatePromise(scriptId, channel1.port1);
+  const promise2 = generatePromise(scriptId, channel2.port1);
   channel1.port2.postMessage("hello");
   channel2.port2.postMessage("hello");
   return Promise.all([promise1, promise2]);
 }, "Same document MessagePort postMessage task properly detects its parent.");
+
+promise_test(t => {
+  const scriptId = initializeTaskId();
+  const p = generatePromise(scriptId, window);
+  window.postMessage("hello", "*");
+  return p;
+}, "Same document window.postMessage task properly detects its parent.");
 
 </script>
 </body>

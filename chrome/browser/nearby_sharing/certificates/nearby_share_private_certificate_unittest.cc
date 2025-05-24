@@ -47,13 +47,12 @@ TEST(NearbySharePrivateCertificateTest, ToFromDictionary) {
   EXPECT_EQ(before.not_after(), after.not_after());
   EXPECT_EQ(before.unencrypted_metadata().SerializeAsString(),
             after.unencrypted_metadata().SerializeAsString());
-  EXPECT_EQ(before.secret_key_->key(), after.secret_key_->key());
+  EXPECT_EQ(before.secret_key_, after.secret_key_);
   EXPECT_EQ(before.metadata_encryption_key_, after.metadata_encryption_key_);
   EXPECT_EQ(before.consumed_salts_, after.consumed_salts_);
 
-  std::vector<uint8_t> before_private_key, after_private_key;
-  before.key_pair_->ExportPrivateKey(&before_private_key);
-  after.key_pair_->ExportPrivateKey(&after_private_key);
+  std::vector before_private_key = before.private_key_.ToPrivateKeyInfo();
+  std::vector after_private_key = after.private_key_.ToPrivateKeyInfo();
   EXPECT_EQ(before_private_key, after_private_key);
 }
 

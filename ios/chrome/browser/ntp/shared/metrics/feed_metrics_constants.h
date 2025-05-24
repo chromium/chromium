@@ -333,6 +333,9 @@ extern const char kFeedSignInUI[];
 // Histogram name for Feed sync related UI triggered by Feed entry points.
 extern const char kFeedSyncPromo[];
 
+// Histogram name prefix for feed handling errors.
+extern const char kFeedHandlingErrorPrefix[];
+
 #pragma mark - User Actions
 
 // User action names for the device orientation having changed.

@@ -4,7 +4,10 @@
 
 package org.chromium.content_public.common;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Class for information about the process it is running in. */
+@NullMarked
 public final class ContentProcessInfo {
     private static boolean sIsChildProcess;
 

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <algorithm>
 #include <ostream>
 
 #include "base/check.h"
@@ -15,9 +16,10 @@
 #include "base/containers/span_writer.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
+#include "net/websockets/websocket_errors.h"
 
 namespace net {
 
@@ -30,13 +32,27 @@ namespace {
     (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY))
 
 using PackedMaskType = uint32_t __attribute__((vector_size(16)));
+}
+}  // namespace net
 
+// TODO(https://github.com/llvm/llvm-project/issues/119290): Until
+// `std::has_unique_object_representations_v<>` works correctly for vector
+// types, explicitly mark this as safe to convert to/from bytes.
+namespace base {
+template <>
+inline constexpr bool kCanSafelyConvertToByteSpan<net::PackedMaskType> = true;
+}
+
+namespace net {
+namespace {
 #else
 
 using PackedMaskType = size_t;
 
 #endif  // defined(COMPILER_GCC) &&
         // (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY))
+
+constexpr size_t kWebSocketCloseCodeLength = 2;
 
 constexpr uint8_t kFinalBit = 0x80;
 constexpr uint8_t kReserved1Bit = 0x40;
@@ -239,6 +255,55 @@ void MaskWebSocketFramePayload(const WebSocketMaskingKey& masking_key,
       masking_key,
       (frame_offset + (data.size() - after_aligned.size())) % kMaskingKeyLength,
       after_aligned);
+}
+
+ParseCloseFrameResult ParseCloseFrame(base::span<const char> payload) {
+  const uint64_t size = static_cast<uint64_t>(payload.size());
+
+  // Payload size is 0 -> No status received
+  if (size == 0U) {
+    return ParseCloseFrameResult(kWebSocketErrorNoStatusReceived,
+                                 std::string_view());
+  }
+
+  // Payload size is 1 -> Protocol error (invalid size)
+  if (size == 1U) {
+    return ParseCloseFrameResult(
+        kWebSocketErrorProtocolError, std::string_view(),
+        "Received a broken close frame with an invalid size of 1 byte.");
+  }
+
+  // Get the status code from the first 2 bytes
+  const uint16_t unchecked_code =
+      base::U16FromBigEndian(base::as_byte_span(payload).first<2>());
+
+  // Invalid or reserved status codes
+  if (unchecked_code == kWebSocketErrorNoStatusReceived ||
+      unchecked_code == kWebSocketErrorAbnormalClosure ||
+      unchecked_code == kWebSocketErrorTlsHandshake) {
+    return ParseCloseFrameResult(kWebSocketErrorProtocolError,
+                                 std::string_view(),
+                                 "Received a broken close frame containing a "
+                                 "reserved status code.");
+  }
+
+  // If size is exactly 2, return the code without a reason
+  if (size == 2U) {
+    return ParseCloseFrameResult(unchecked_code, std::string_view());
+  }
+
+  const base::span<const char> reason_span =
+      payload.subspan(kWebSocketCloseCodeLength);
+  const auto reason = base::as_string_view(reason_span);
+
+  if (base::IsStringUTF8AllowingNoncharacters(reason)) {
+    return ParseCloseFrameResult(unchecked_code, reason);
+  }
+
+  return ParseCloseFrameResult(
+      kWebSocketErrorProtocolError,
+      std::string_view("Invalid UTF-8 in Close frame"),
+      "Received a broken close frame containing invalid UTF-8.");
 }
 
 }  // namespace net

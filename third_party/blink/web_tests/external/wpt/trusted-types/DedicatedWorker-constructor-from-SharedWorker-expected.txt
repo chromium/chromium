@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Creating a Worker from a string should throw (shared worker scope)
+  assert_throws_js: Creating a Worker threw function "() => { new Worker("w"); }" threw object "ReferenceError: Worker is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] Creating a Worker from a TrustedScriptURL should not throw (shared worker scope)
+  Worker is not defined
+[FAIL] Creating a Worker from a string with a default policy should not throw (shared worker scope)
+  Worker is not defined
+Harness: the test ran to completion.
+

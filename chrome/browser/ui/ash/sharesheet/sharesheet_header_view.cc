@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -326,15 +326,16 @@ void SharesheetHeaderView::ShowTextPreview() {
     }
     auto file_label = CreatePreviewLabel(file_text);
     if (!filenames_tooltip_text.empty()) {
-      file_label->SetTooltipText(filenames_tooltip_text);
+      file_label->SetCustomTooltipText(filenames_tooltip_text);
       file_label->GetViewAccessibility().SetName(
           base::StrCat({file_text, u" ", filenames_tooltip_text}));
     }
     preview_labels.push_back(std::move(file_label));
   }
 
-  if (preview_labels.size() == 0)
+  if (preview_labels.size() == 0) {
     return;
+  }
 
   int index = 0;
   int max_lines = std::min(preview_labels.size(), kTextPreviewMaximumLines);
@@ -399,7 +400,7 @@ SharesheetHeaderView::ExtractShareText() {
           extracted_text.url, format_types, base::UnescapeRule::NORMAL,
           /*new_parsed=*/nullptr,
           /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
-      url_label->SetTooltipText(formatted_text);
+      url_label->SetCustomTooltipText(formatted_text);
       url_label->GetViewAccessibility().SetName(formatted_text);
       preview_labels.push_back(std::move(url_label));
       text_icon_ = TextPlaceholderIcon::kLink;

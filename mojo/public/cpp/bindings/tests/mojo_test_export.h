@@ -15,11 +15,7 @@
 #endif  // defined(MOJO_TEST_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(MOJO_TEST_IMPLEMENTATION)
 #define MOJO_TEST_EXPORT __attribute__((visibility("default")))
-#else
-#define MOJO_TEST_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

@@ -24,17 +24,11 @@ std::string AppTypeToString(apps::AppType app_type) {
       return "Web";
     case apps::AppType::kChromeApp:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserChromeApp:
-    case apps::AppType::kStandaloneBrowserExtension:
       return "Extension";
-    case apps::AppType::kBuiltIn:
-      return "Built in";
     case apps::AppType::kCrostini:
       return "Crostini";
     case apps::AppType::kPluginVm:
       return "Plugin VM";
-    case apps::AppType::kStandaloneBrowser:
-      return "LaCrOS";
     case apps::AppType::kRemote:
       return "Remote";
     case apps::AppType::kBorealis:
@@ -44,7 +38,7 @@ std::string AppTypeToString(apps::AppType app_type) {
     case apps::AppType::kSystemWeb:
       return "SystemWeb";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // static
@@ -82,14 +76,6 @@ AppId::AppId(AppId&&) = default;
 AppId& AppId::operator=(AppId&&) = default;
 
 AppId::~AppId() = default;
-
-bool AppId::operator==(const AppId& rhs) const {
-  return app_type_ == rhs.app_type() && app_id_ == rhs.app_id();
-}
-
-bool AppId::operator!=(const AppId& rhs) const {
-  return !(*this == rhs);
-}
 
 bool AppId::operator<(const AppId& rhs) const {
   return app_id_ < rhs.app_id();

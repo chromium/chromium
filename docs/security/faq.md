@@ -258,8 +258,14 @@ from the file picker.
 
 <a name="TOC-I-can-download-a-file-with-an-unsafe-extension-but-a-different-extension-or-file-type-is-shown-to-the-user-"></a>
 ### I can download a file with an unsafe extension but a different extension or file type is shown to the user - is this a security bug?
+
+See [file types](#TOC-The-wrong-description-for-a-file-type-is-added-by-Chrome-).
+
 <a name="TOC-Extensions-for-downloaded-files-are-not-shown-in-a-file-dialog-"></a>
 ### Extensions for downloaded files are not shown in a file dialog - is this a security bug?
+
+See [file types](#TOC-The-wrong-description-for-a-file-type-is-added-by-Chrome-).
+
 <a name="TOC-The-wrong-description-for-a-file-type-is-added-by-Chrome-"></a>
 ### The wrong description for a file type is added by Chrome - is this a security bug?
 
@@ -329,7 +335,7 @@ These browser's actions/shortcuts are specific to Chrome. They are different
 from the behavior specified by the web-platform, such as using executing
 `window.open()` or opening a link with the `target=_blank` attribute.
 
-<a name="TOC-What-is-the-threat-model-for-Chrome-for-Testing"</a>
+<a name="TOC-What-is-the-threat-model-for-Chrome-for-Testing"></a>
 ### What is the threat model for Chrome for Testing?
 
 [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing) is a
@@ -341,6 +347,43 @@ access any untrusted website.  You should use Chrome for Testing only for
 browser automation and testing purposes, consuming only trustworthy content.
 `chrome-headless-shell` also lacks auto-updates and so, for the same reason,
 should only be used to consume trusted content.
+
+<a name="TOC-What-makes-a-ui-spoof-interesting-to-report"></a>
+### What makes a UI spoof interesting to report?
+As a general rule, a UI spoof is only a security bug if _either_:
+
+* There is evidence that it is actually being exploited to trick users in the
+  field, or
+* You can make a convincing case that it would mislead a user into making a
+  _security decision_ incorrectly, or otherwise taking an action with actual
+  security consequences for that user
+
+That means that for example these are interesting security bugs:
+
+* A spoof that convinces the user they are currently on origin A when in fact
+  they are on origin B
+* A spoof that convinces the user that a permission request is from origin A
+  when in fact it is from origin B
+* A spoof that convinces the user they are installing extension A when in fact
+  they are installing extension B
+
+and so on, but for example these are **not** interesting security bugs:
+
+* A spoof that convinces the user to copy text they didn't expect to their
+  clipboard
+* A spoof that convinces the user to download a file they didn't expect (simply
+  downloading a file is not a security decision - running it is though!)
+* A spoof that convinces the user to navigate to a link they didn't expect
+* A spoof that convinces the user to click a browser UI element they weren't
+  intending to _unless you can show security consequences for them doing so_.
+
+We often tend to look at what a "reasonable and prudent" user would do in a
+situation, meaning a user who is taking basic security precautions like paying
+attention to security cues given in the product UI and who is, while not a
+security expert or even particularly security-minded, trying to take basic
+precautions to stay safe online. That doesn't mean bugs that require user error
+are always out of scope, but it does mean that spoofs which would not deceive
+a user being reasonable and prudent are out of scope.
 
 ## Areas outside Chrome's Threat Model
 
@@ -461,6 +504,14 @@ Security](https://web.archive.org/web/20160311224620/https://technet.microsoft.c
 Other cases covered by this section include leaving a debugger port open to
 the world, remote shells, and so forth.
 
+<a name="TOC-If-a-website-can-open-an-android-app-via-an-intent"></a>
+### If a website can open an Android app via an intent is this a security bug?
+
+No - websites can link to external handlers or applications - but there are
+restrictions around requiring a user gesture and the type of intent that can
+be launched. Full details are available in the
+[external_intents](../../components/external_intents/README.md) documentation.
+
 <a name="TOC-Does-entering-JavaScript:-URLs-in-the-URL-bar-or-running-script-in-the-developer-tools-mean-there-s-an-XSS-vulnerability-"></a>
 ### Does entering JavaScript: URLs in the URL bar or running script in the developer tools mean there's an XSS vulnerability?
 
@@ -495,9 +546,32 @@ served (e.g. no document.cookie).
 ### Are PDF files static content in Chromium?
 
 No. PDF files have some powerful capabilities including invoking printing or
-posting form data. To mitigate abuse of these capabiliies, such as beaconing
+posting form data. To mitigate abuse of these capabilities, such as beaconing
 upon document open, we require interaction with the document (a "user gesture")
 before allowing their use.
+
+<a name="TOC-Are-non_committed-URLs-entered-by-the-user-considered-URL-spoofs-"></a>
+### Are non-committed URLs entered by the user considered URL spoofs?
+
+No. When a user enters a URL into the address bar (whether by typing,
+copy/pasting, drag and drop, or otherwise), Chrome intentionally displays
+it instead of the last committed URL of the currently active page, until
+both the navigation begins and the new page commits. During this time, the
+currently active page can change its appearance to mimic the new URL while
+its own URL is not shown. However, the active page does not have control
+over which URL the user entered into the address bar, limiting the
+effectiveness of a spoof attempt. The new
+[lock-replacement icon](https://blog.chromium.org/2023/05/an-update-on-lock-icon.html)
+is also not present in this state, and in many cases (i.e., once the new
+navigation has started), the loading indicators are present.
+
+The confusion between the non-committed URL and the active page's
+appearance is a consequence of the address bar needing to serve two roles:
+showing both where you are and where you are going. In general, we don't think
+this technique can deceive a [reasonable and prudent
+user](#TOC-What-makes-a-ui-spoof-interesting-to-report).
+
+See also https://crbug.com/378932942 for context.
 
 <a name="TOC-What-about-URL-spoofs-using-Internationalized-Domain-Names-IDN-"></a>
 ### What about URL spoofs using Internationalized Domain Names (IDN)?
@@ -651,6 +725,45 @@ ordinary bugs and be fixed by them. However, they can be considered only if
 there is a demonstrable way to show a memory corruption. e.g. with a POC causing
 crash with ASAN **without the flags above**.
 
+<a name="TOC-hard-coded-lists"></a>
+### My domain is on the [Public Suffix List / HSTS preload list / etc.] upstream but this is not yet reflected in Chrome! Is this a security bug?
+
+Chrome does not make any guarantees about how soon additions to or removals from
+external lists like the [HSTS preload list](https://hstspreload.org) or the
+[Public Suffix List (PSL)](https://publicsuffix.org/) will be incorporated into Chrome.
+If you believe Chrome's copies of these lists are notably out-of-date, we are
+happy to field bug reports but we do not consider this to be a vulnerability.
+
+## AI Generated Vulnerability reports
+
+<a name="TOC-should-i-ask-an-ai-to-generate-a-vulnerability-report-for-chrome"></a>
+### Should I ask an AI to Generate a Vulnerability Report for Chrome?
+
+Simply asking an AI to identify a bug report in Chrome is unlikely to yield a
+valid report. Before submitting a report generated by AI please ensure you have
+done enough human work to validate that any issue is (a) in our threat model,
+and (b) reachable in Chrome by constructing a POC, generating an ASAN trace,
+recording the bug reproducing, or performing your own debugging.
+
+AI is prone to hallucinations when asked to find security bugs and can generate
+reports that repeat previously fixed issues, or describe general classes of bugs
+without discovering a specific actionable issue. As the reports can be lengthy,
+they take a lot of time for our security experts to process and understand
+before closing. Submitting reports without doing some work yourself to validate
+that an issue is actually present in Chrome harms our users by wasting the time
+and resources of the Chrome security team.
+
+Submitting multiple low-quality AI generated reports will be treated as spamming
+and has lead to accounts being banned from our reporting systems.
+
+AI can be used to accelerate developer workflows and may be useful when
+understanding code or translating from one language to another. AI tools can be
+helpful when searching for security vulnerabilities in Chrome, but remember that
+additional work must be done to ensure that vulnerability reports are brief,
+actionable, and reproducible. These must meet the prerequisites of a [baseline
+security bug report](https://g.co/chrome/vrp#report-quality) before we can pass
+them to teams to be fixed.
+
 ## Certificates & Connection Indicators
 
 <a name="TOC-Where-are-the-security-indicators-located-in-the-browser-window-"></a>
@@ -762,7 +875,7 @@ connection will fail as it should.
 <a name="TOC-When-is-key-pinning-enabled-"></a>
 ### When is key pinning enabled?
 
-Key pinning is enabled for Chrome-branded, non-mobile builds when the local
+Key pinning is enabled for Chrome-branded non-iOS builds when the local
 clock is within ten weeks of the embedded build timestamp. Key pinning is a
 useful security measure but it tightly couples client and server configurations
 and completely breaks when those configurations are out of sync. In order to
@@ -772,11 +885,10 @@ reasonable timeframe.
 
 Each of the conditions listed above helps ensure those properties:
 Chrome-branded builds are those that Google provides and they all have an
-auto-update mechanism that can be used in an emergency. However, auto-update on
-mobile devices is significantly less effective thus they are excluded. Even in
-cases where auto-update is generally effective, there are still non-trivial
-populations of stragglers for various reasons. The ten-week timeout prevents
-those stragglers from causing problems for regular, non-emergency changes and
+auto-update mechanism that can be used in an emergency. Even in cases where
+auto-update is generally effective, there are still non-trivial populations
+of stragglers for various reasons. The ten-week timeout prevents those
+stragglers from causing problems for regular, non-emergency changes and
 allows stuck users to still, for example, conduct searches and access Chrome's
 homepage to hopefully get unstuck.
 
@@ -1037,6 +1149,11 @@ See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/ch
 
 See our [Chrome Custom Tabs security FAQ](custom-tabs-faq.md).
 
+<a name="TOC-What-is-the-security-story-for-Fullscreen-"></a>
+### What is the security story for Fullscreen?
+
+See our dedicated [Fullscreen Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/docs/security/fullscreen.md).
+
 <a name="TOC-How-is-security-different-in-Chrome-for-iOS--"></a>
 ### How is security different in Chrome for iOS?
 
@@ -1131,3 +1248,18 @@ backported. This can happen for several reasons, for example: because they
 depend upon architectural changes (e.g. breaking API changes); because the
 security improvement is a significant new feature; or because the security
 improvement is the removal of a broken feature.
+
+<a name="TOC-How-can-I-appeal-a-Safe-Browsing-warning-"></a>
+### How can I appeal a Safe Browsing warning?
+To request a review of warnings relating to your own website, use the
+[Security Issues report](https://support.google.com/webmasters/answer/9044101)
+page in your Google Search Console. If the warning applies to another site, you
+may be able to use
+[https://safebrowsing.google.com/safebrowsing/report_error/](https://safebrowsing.google.com/safebrowsing/report_error/),
+though you are likely better off contacting the site owner.
+
+If your concern relates to malware warnings, you may find the warning in your
+Security Issues report and request a review from there. There is no separate
+appeal form or process at this time. Please follow these
+[guidelines](https://developers.google.com/search/docs/monitor-debug/security/malware#guidelines)
+to avoid having your binary show warnings from Safe Browsing.

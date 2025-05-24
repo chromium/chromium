@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
@@ -46,7 +47,7 @@ namespace web_app {
 
 namespace {
 
-const char kFakeChromeBundleId[] = "fake.cfbundleidentifier";
+constexpr char kFakeChromeBundleId[] = "fake.cfbundleidentifier";
 
 class WebAppShortcutCreatorMock : public WebAppShortcutCreator {
  public:
@@ -140,7 +141,7 @@ class WebAppShortcutCreatorTest : public testing::Test {
   WebAppShortcutCreatorTest() = default;
 
   void SetUp() override {
-    base::apple::SetBaseBundleID(kFakeChromeBundleId);
+    base::apple::SetBaseBundleIDOverride(kFakeChromeBundleId);
 
     override_registration_ =
         OsIntegrationTestOverrideImpl::OverrideForTesting();
@@ -446,8 +447,8 @@ TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
 
     // Verify CFBundleURLName is set.
     EXPECT_NSEQ(protocol_types_dict[app_mode::kCFBundleURLNameKey],
-                base::SysUTF8ToNSString(base::apple::BaseBundleID() +
-                                        std::string(".app.") + info_->app_id));
+                base::SysUTF8ToNSString(base::StrCat(
+                    {base::apple::BaseBundleID(), ".app.", info_->app_id})));
 
     // Verify CFBundleURLSchemes is set, and contains the expected values.
     NSArray* handlers = protocol_types_dict[app_mode::kCFBundleURLSchemesKey];
@@ -480,8 +481,8 @@ TEST_F(WebAppShortcutCreatorTest, ProtocolHandlers) {
 
     // Verify CFBundleURLName is set.
     EXPECT_NSEQ(protocol_types_dict[app_mode::kCFBundleURLNameKey],
-                base::SysUTF8ToNSString(base::apple::BaseBundleID() +
-                                        std::string(".app.") + info_->app_id));
+                base::SysUTF8ToNSString(base::StrCat(
+                    {base::apple::BaseBundleID(), ".app.", info_->app_id})));
 
     // Verify CFBundleURLSchemes is set, and contains the expected values.
     NSArray* handlers = protocol_types_dict[app_mode::kCFBundleURLSchemesKey];

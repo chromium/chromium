@@ -1,7 +1,14 @@
 include_rules = [
+  "+components/enterprise/connectors/core",
   "+components/keyed_service/core",
   "+components/signin/public",
   "+components/policy/core",
+  "+components/policy/content",
+  "+components/policy/proto",
   "+components/prefs",
+  "+components/safe_browsing/core",
+  "+components/version_info",
+  "+content/public/browser",
   "+services/data_decoder/public/cpp",
+  "+net",
 ]

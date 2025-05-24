@@ -173,6 +173,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void DoNotCollapseForTesting() { do_no_collapse_for_testing_ = true; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PermissionChipUnitTest, AccessibleName);
+
   bool ShouldWaitForConfirmationToComplete() const;
   bool ShouldWaitForLHSIndicatorToCollapse() const;
   void AnimateExpand();

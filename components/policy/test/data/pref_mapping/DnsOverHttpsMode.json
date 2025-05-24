@@ -4,83 +4,20 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DnsOverHttpsMode": "off"
-        },
-        "prefs": {
-          "dns_over_https.mode": {
-            "location": "local_state",
-            "value": "off"
-          }
-        }
-      },
-      {
-        "policies": {
-          "DnsOverHttpsMode": "automatic"
-        },
-        "prefs": {
-          "dns_over_https.mode": {
-            "location": "local_state",
-            "value": "automatic"
-          }
-        }
-      },{
-        "policies": {
-          "DnsOverHttpsMode": "secure"
-        },
-        "prefs": {
-          "dns_over_https.mode": {
-            "location": "local_state",
-            "value": "secure"
-          }
-        }
-      }
-    ]
-  },
-  {
-    "os": [
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "On CrOS, an empty policy is overriden by default_for_enterprise_users",
-        "policies": {},
-        "prefs": {
-          "dns_over_https.mode": {
-            "location": "local_state",
-            "value": "off"
-          }
-        }
-      }
-    ]
-  },
-  {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "android",
-      "fuchsia"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "On non-CrOS, an default_for_enterprise_users doesn't apply",
-        "policies": {},
-        "prefs": {
-          "dns_over_https.mode": {
-            "location": "local_state",
-            "default_value": "automatic"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "dns_over_https.mode",
+      "pref_location": "local_state",
+      "default_value": "automatic",
+      "default_for_enterprise_users": "off",
+      "values_to_test": [
+        "off",
+        "automatic",
+        "secure"
+      ]
+    }
   }
 ]

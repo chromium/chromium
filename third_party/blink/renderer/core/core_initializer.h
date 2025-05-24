@@ -60,6 +60,7 @@ class LocalFrame;
 class MediaControls;
 class Page;
 class PictureInPictureController;
+class RemotePlaybackClient;
 class ServiceWorkerGlobalScope;
 class Settings;
 class ShadowRoot;
@@ -67,7 +68,6 @@ class WebLocalFrameClient;
 class WebMediaPlayer;
 class WebMediaPlayerClient;
 class WebMediaPlayerSource;
-class WebRemotePlaybackClient;
 
 class CORE_EXPORT CoreInitializer {
   USING_FAST_MALLOC(CoreInitializer);
@@ -107,7 +107,6 @@ class CORE_EXPORT CoreInitializer {
   // TODO(nverne): remove this and restore to WebDevToolsAgentImpl once that
   // class is a controller/ crbug:731490
   virtual void InitInspectorAgentSession(DevToolsSession*,
-                                         bool,
                                          InspectorDOMAgent*,
                                          InspectedFrames*,
                                          Page*) const = 0;
@@ -121,7 +120,7 @@ class CORE_EXPORT CoreInitializer {
       const WebMediaPlayerSource&,
       WebMediaPlayerClient*) const = 0;
 
-  virtual WebRemotePlaybackClient* CreateWebRemotePlaybackClient(
+  virtual RemotePlaybackClient* CreateRemotePlaybackClient(
       HTMLMediaElement&) const = 0;
 
   virtual void ProvideModulesToPage(Page&,

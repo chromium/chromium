@@ -5,21 +5,18 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_FORWARD_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_FORWARD_H_
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 namespace apps {
 
 // Include this header to forward-declare AppServiceProxy in a way that is
 // compatible across all platforms.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class AppServiceProxyAsh;
 using AppServiceProxy = AppServiceProxyAsh;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-class AppServiceProxyLacros;
-using AppServiceProxy = AppServiceProxyLacros;
 #else
 class AppServiceProxy;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps
 

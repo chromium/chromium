@@ -19,6 +19,7 @@
 #include "base/version_info/version_info.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -72,7 +73,7 @@ void AppControlsNotifier::HandleClick(std::optional<int> button_index) {
   }
   base::RecordAction(base::UserMetricsAction(kNotificationClickedActionName));
   OpenAppsSettings();
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kShowNotificationId);
 }
 
@@ -115,10 +116,10 @@ void AppControlsNotifier::ShowNotification() {
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&AppControlsNotifier::HandleClick,
                               weak_ptr_factory_.GetWeakPtr())),
-      /*small_image=*/gfx::VectorIcon(),
+      /*small_image=*/gfx::VectorIcon::EmptyIcon(),
       message_center::SystemNotificationWarningLevel::NORMAL);
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 

@@ -5,6 +5,7 @@
 #include "init_webrtc.h"
 
 #include "third_party/webrtc/rtc_base/event_tracer.h"
+#include "third_party/webrtc/rtc_base/trace_event.h"
 #include "third_party/webrtc/system_wrappers/include/cpu_info.h"
 
 bool InitializeWebRtcModuleBeforeSandbox() {
@@ -17,4 +18,9 @@ bool InitializeWebRtcModuleBeforeSandbox() {
 
 void InitializeWebRtcModule() {
   webrtc::RegisterPerfettoTrackEvents();
+}
+
+const perfetto::internal::TrackEventCategoryRegistry&
+GetWebRtcTrackEventCategoryRegistry() {
+  return webrtc::perfetto_track_event::internal::kCategoryRegistry;
 }

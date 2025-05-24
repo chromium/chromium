@@ -27,7 +27,7 @@ WebMainRunnerImpl::~WebMainRunnerImpl() {
   }
 }
 
-int WebMainRunnerImpl::Initialize(WebMainParams params) {
+void WebMainRunnerImpl::Initialize(WebMainParams params) {
   ////////////////////////////////////////////////////////////////////////
   // ContentMainRunnerImpl::Initialize()
   //
@@ -66,6 +66,9 @@ int WebMainRunnerImpl::Initialize(WebMainParams params) {
   main_loop_->Init();
   main_loop_->EarlyInitialization();
   main_loop_->CreateMainMessageLoop();
+}
+
+int WebMainRunnerImpl::Startup() {
   main_loop_->CreateStartupTasks();
   int result_code = main_loop_->GetResultCode();
   if (result_code > 0) {

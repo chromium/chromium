@@ -13,7 +13,7 @@ source_set("model") {
   ]
   deps = [
     ":public",
-    "//ios/chrome/browser/ui/infobars/coordinators",
+    "//ios/chrome/browser/infobars/ui_bundled/coordinators",
     "//ui/gfx",
   ]
   public_deps = [
@@ -76,11 +76,11 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays:test_support",
     "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/infobars/ui_bundled:test_support",
+    "//ios/chrome/browser/infobars/ui_bundled/test",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/ui/infobars:test_support",
-    "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

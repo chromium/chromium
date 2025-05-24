@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -9,7 +11,6 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
-#include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -228,8 +229,12 @@ IN_PROC_BROWSER_TEST_P(AddSupervisionMetricsRecorderTimeTest, UserTimingTest) {
   // after GetParam() seconds.
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_ =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  AddSupervisionMetricsRecorder::GetInstance()->SetClockForTesting(
-      task_runner_->GetMockTickClock());
+
+  // RAII object to set the mock clock and reset it afterwards
+  AddSupervisionMetricsRecorder::ScopedClockForTesting set_clock(
+      *AddSupervisionMetricsRecorder::GetInstance(),
+      *task_runner_->GetMockTickClock());
+
   base::TimeDelta duration(base::Seconds(GetParam()));
 
   // We need to start at some non-zero point in time or else

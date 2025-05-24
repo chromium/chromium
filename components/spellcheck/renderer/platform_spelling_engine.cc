@@ -4,6 +4,7 @@
 
 #include "components/spellcheck/renderer/platform_spelling_engine.h"
 
+#include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
 
@@ -31,9 +32,14 @@ bool PlatformSpellingEngine::IsEnabled() {
 bool PlatformSpellingEngine::CheckSpelling(
     const std::u16string& word_to_check,
     spellcheck::mojom::SpellCheckHost& host) {
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && !BUILDFLAG(ENABLE_SPELLING_SERVICE)
+  return false;
+#else
   bool word_correct = false;
   host.CheckSpelling(word_to_check, &word_correct);
   return word_correct;
+#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&
+        // !BUILDFLAG(ENABLE_SPELLING_SERVICE)
 }
 
 // Synchronously query against the platform's spellchecker.
@@ -43,5 +49,10 @@ void PlatformSpellingEngine::FillSuggestionList(
     const std::u16string& wrong_word,
     spellcheck::mojom::SpellCheckHost& host,
     std::vector<std::u16string>* optional_suggestions) {
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && !BUILDFLAG(ENABLE_SPELLING_SERVICE)
+  optional_suggestions->clear();
+#else
   host.FillSuggestionList(wrong_word, optional_suggestions);
+#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&
+        // !BUILDFLAG(ENABLE_SPELLING_SERVICE)
 }

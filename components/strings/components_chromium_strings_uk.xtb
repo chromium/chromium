@@ -21,6 +21,7 @@
 <translation id="4622039161600275920">Веб-переглядач Chromium заблокував цю сторінку</translation>
 <translation id="48558539577516920">Надайте Chromium доступ до мережі в налаштуваннях брандмауера чи
         антивірусної програми.</translation>
+<translation id="4949828774841497663">Перейдіть у меню Applications (Програми) &gt; System Settings (Системні параметри) &gt; Network (Мережа) і виберіть активну мережу, а потім натисніть кнопку Details (Докладніше) і зніміть прапорці біля всіх вибраних проксі-серверів.</translation>
 <translation id="580822234363523061">Перейдіть у
           меню Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +30,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           і переконайтеся, що встановлено значення конфігурації "без проксі" чи "безпосередньо".</translation>
+<translation id="648062525172759633">Ці сторінки призначені для розробників Chromium. Вони можуть не підтримуватися й не тестуватися. Щоб увімкнути їх, перейдіть за посиланням <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, натисніть кнопку, щоб увімкнути сторінки налагодження, а потім поверніться сюди.</translation>
 <translation id="6549378540556750549">Chromium також працює завдяки іншому <ph name="BEGIN_LINK_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Ваші зміни почнуть діяти після наступного перезапуску Chromium.</translation>
 <translation id="691026815377248078">Щоб продовжити підключення, надайте веб-переглядачу Chromium
@@ -42,9 +44,6 @@
           і зніміть прапорець біля опції "<ph name="NO_PREFETCH_DESCRIPTION" />".
           Якщо проблема не зникне, радимо знову вибрати цю опцію,
           щоб покращити стабільність.</translation>
-<translation id="8187289872471304532">Перейдіть у меню
-          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies (Програми &gt; Системні налаштування &gt; Мережа &gt; Розширені &gt; Проксі-сервери)
-          і зніміть прапорці біля всіх вибраних проксі-серверів.</translation>
 <translation id="8597726643333341451">Ви переглядаєте безпечну сторінку Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium було неправильно закрито.</translation>
 </translationbundle>

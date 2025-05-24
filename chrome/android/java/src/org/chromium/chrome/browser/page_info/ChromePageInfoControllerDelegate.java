@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.page_info;
 
-import static org.chromium.components.browser_ui.site_settings.AllSiteSettings.EXTRA_SEARCH;
+import static org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings.EXTRA_SITE;
 
 import android.app.Activity;
 import android.content.Context;
@@ -39,17 +39,18 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
+import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
@@ -105,10 +106,10 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             TabCreator tabCreator) {
         super(
                 new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
-                /** isSiteSettingsAvailable= */
-                SiteSettingsHelper.isSiteSettingsAvailable(webContents),
-                /** cookieControlsShown= */
-                CookieControlsBridge.isCookieControlsEnabled(Profile.fromWebContents(webContents)));
+                /* isSiteSettingsAvailable= */ SiteSettingsHelper.isSiteSettingsAvailable(
+                        webContents),
+                /* cookieControlsShown= */ CookieControlsBridge.isCookieControlsEnabled(
+                        Profile.fromWebContents(webContents)));
         mContext = context;
         mWebContents = webContents;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -245,18 +246,20 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     /** {@inheritDoc} */
     @Override
     public void showTrackingProtectionSettings() {
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(mContext, TrackingProtectionSettings.class);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(mContext, TrackingProtectionSettings.class);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void showAllSettingsForRws(String rwsOwner) {
+    public void showSiteSettings(Website currentSite) {
         Bundle extras = new Bundle();
-        extras.putString(EXTRA_SEARCH, rwsOwner);
+        extras.putSerializable(EXTRA_SITE, currentSite);
 
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(mContext, AllSiteSettings.class, extras);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(mContext, SingleWebsiteSettings.class, extras);
     }
 
     @Override
@@ -337,7 +340,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return new CookieControlsBridge(
                 observer,
                 mWebContents,
-                mProfile.isOffTheRecord() ? mProfile.getOriginalProfile() : null);
+                mProfile.isOffTheRecord() ? mProfile.getOriginalProfile() : null,
+                mProfile.isIncognitoBranded());
     }
 
     /** {@inheritDoc} */
@@ -356,22 +360,23 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public void getFavicon(GURL url, Callback<Drawable> callback) {
         Resources resources = mContext.getResources();
         int size = resources.getDimensionPixelSize(R.dimen.page_info_favicon_size);
-        new FaviconHelper()
-                .getLocalFaviconImageForURL(
-                        mProfile,
-                        url,
-                        size,
-                        (image, iconUrl) -> {
-                            if (image != null) {
-                                callback.onResult(new BitmapDrawable(resources, image));
-                            } else if (UrlUtilities.isInternalScheme(url)) {
-                                callback.onResult(
-                                        TintedDrawable.constructTintedDrawable(
-                                                mContext, R.drawable.chromelogo16));
-                            } else {
-                                callback.onResult(null);
-                            }
-                        });
+        FaviconHelper faviconHelper = new FaviconHelper();
+        faviconHelper.getLocalFaviconImageForURL(
+                mProfile,
+                url,
+                size,
+                (image, iconUrl) -> {
+                    if (image != null) {
+                        callback.onResult(new BitmapDrawable(resources, image));
+                    } else if (UrlUtilities.isInternalScheme(url)) {
+                        callback.onResult(
+                                TintedDrawable.constructTintedDrawable(
+                                        mContext, R.drawable.chromelogo16));
+                    } else {
+                        callback.onResult(null);
+                    }
+                    faviconHelper.destroy();
+                });
     }
 
     @Override
@@ -393,17 +398,13 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     }
 
     @Override
-    public boolean showTrackingProtectionUI() {
-        return getSiteSettingsDelegate().shouldShowTrackingProtectionUI();
-    }
-
-    @Override
-    public boolean showTrackingProtectionACTFeaturesUI() {
-        return getSiteSettingsDelegate().shouldShowTrackingProtectionACTFeaturesUI();
+    public boolean showTrackingProtectionUi() {
+        return getSiteSettingsDelegate().shouldShowTrackingProtectionUi();
     }
 
     @Override
     public boolean allThirdPartyCookiesBlockedTrackingProtection() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED);
+        return UserPrefs.get(mProfile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED)
+                || isIncognito();
     }
 }

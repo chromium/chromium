@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(X11) RandRMonitorConfig {
 struct COMPONENT_EXPORT(X11) RandRMonitorLayout {
   RandRMonitorLayout();
   RandRMonitorLayout(const RandRMonitorLayout&);
-  explicit RandRMonitorLayout(const std::vector<RandRMonitorConfig> configs);
+  explicit RandRMonitorLayout(std::vector<RandRMonitorConfig> configs);
   RandRMonitorLayout& operator=(const RandRMonitorLayout&);
   ~RandRMonitorLayout();
   bool operator==(const RandRMonitorLayout& rhs) const;

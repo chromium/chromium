@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include <string.h>
 
 #include <algorithm>
@@ -90,7 +95,7 @@ void H264DPB::Delete(scoped_refptr<H264Picture> pic) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION() << "Missing pic with POC: " << pic->pic_order_cnt;
+  NOTREACHED() << "Missing pic with POC: " << pic->pic_order_cnt;
 }
 
 void H264DPB::DeleteUnused() {

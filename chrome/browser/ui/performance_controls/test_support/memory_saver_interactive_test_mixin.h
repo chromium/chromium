@@ -7,6 +7,7 @@
 
 #include <concepts>
 
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
@@ -33,10 +34,12 @@ class MemorySaverInteractiveTestMixin : public MemorySaverBrowserTestMixin<T> {
       const MemorySaverInteractiveTestMixin&) = delete;
 
   auto CheckTabIsDiscarded(int tab_index, bool is_discarded) {
-    return T::Check([=, this]() {
-      return MemorySaverBrowserTestMixin<T>::IsTabDiscarded(tab_index) ==
-             is_discarded;
-    });
+    return T::Check(
+        [=, this]() {
+          return MemorySaverBrowserTestMixin<T>::IsTabDiscarded(tab_index) ==
+                 is_discarded;
+        },
+        base::StrCat({"Tab ", is_discarded ? "is" : "isn't", " discarded."}));
   }
 
   auto TryDiscardTab(int tab_index) {

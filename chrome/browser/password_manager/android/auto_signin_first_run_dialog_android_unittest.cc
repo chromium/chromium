@@ -27,7 +27,7 @@ class AutoSigninFirstRunDialogAndroidTest
   AutoSigninFirstRunDialogAndroidTest& operator=(
       const AutoSigninFirstRunDialogAndroidTest&) = delete;
 
-  ~AutoSigninFirstRunDialogAndroidTest() override {}
+  ~AutoSigninFirstRunDialogAndroidTest() override = default;
 
   PrefService* prefs();
 

@@ -1,0 +1,51 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../shared_style.css.js
+ * #import=../shared_vars.css.js
+ * #include=cr-shared-style-lit shared-style
+ * #css_wrapper_metadata_end */
+
+#clear-activities-button {
+  margin-inline-start: 8px;
+}
+
+#closeButton {
+  margin-inline-end: 16px;
+}
+
+#icon {
+  height: 24px;
+  margin-inline-end: 12px;
+  width: 24px;
+}
+
+cr-tabs {
+  --cr-tabs-font-size: inherit;
+  --cr-tabs-height: 40px;
+  border-bottom: 1px solid var(--google-grey-300);
+}
+
+.page-content {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+cr-page-selector {
+  flex: 1;
+  position: relative;
+}
+
+activity-log-history,
+activity-log-stream {
+  bottom: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}

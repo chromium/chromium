@@ -6,15 +6,29 @@ import("//build/config/features.gni")
 
 static_library("renderer") {
   sources = [
-    "language_detection_agent.cc",
-    "language_detection_agent.h",
+    "language_detection_model_manager.cc",
+    "language_detection_model_manager.h",
   ]
 
   deps = [
     "//base",
     "//components/language_detection/content/common",
     "//components/language_detection/core",
-    "//components/language_detection/core:language_detection",
+    "//third_party/blink/public:blink_headers",
+  ]
+}
+
+static_library("agent") {
+  sources = [
+    "language_detection_agent.cc",
+    "language_detection_agent.h",
+  ]
+
+  deps = [
+    ":renderer",
+    "//base",
+    "//components/language_detection/content/common",
+    "//components/language_detection/core",
     "//content/public/renderer",
   ]
 

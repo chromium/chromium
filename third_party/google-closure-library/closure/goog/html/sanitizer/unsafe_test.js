@@ -18,10 +18,7 @@ const dom = goog.require('goog.testing.dom');
 const functions = goog.require('goog.functions');
 const testSuite = goog.require('goog.testing.testSuite');
 const unsafe = goog.require('goog.html.sanitizer.unsafe');
-const userAgent = goog.require('goog.userAgent');
 const {AllowedAttributes} = goog.require('goog.html.sanitizer.attributeallowlists');
-
-const isSupported = !userAgent.IE || userAgent.isVersionOrHigher(10);
 
 const just = Const.from('test');
 
@@ -43,10 +40,6 @@ function assertSanitizedHtml(
   if (attrs) builder = unsafe.alsoAllowAttributes(just, builder, attrs);
   const sanitizer = builder.build();
   const sanitized = sanitizer.sanitize(originalHtml);
-  if (!isSupported) {
-    assertEquals('', SafeHtml.unwrap(sanitized));
-    return;
-  }
   dom.assertHtmlMatches(
       expectedHtml, SafeHtml.unwrap(sanitized),
       true /* opt_strictAttributes */);

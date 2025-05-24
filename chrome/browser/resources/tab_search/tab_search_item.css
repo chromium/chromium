@@ -14,8 +14,13 @@
 
 :host {
    --audio-icon-color: var(--color-tab-search-media-icon);
+   --glic-active-icon-color: var(--color-tab-search-media-glic-active-icon);
    --media-recording-icon-color:  var(--color-tab-search-media-recording-icon);
  }
+
+:host([size=large]) {
+  --mwb-item-height: 66px;
+}
 
 :host(:focus) {
   outline: none;
@@ -82,7 +87,7 @@
   font-weight: var(--mwb-secondary-text-font-weight);
 }
 
-:host([compact]) #secondaryContainer {
+:host([size=compact]) #secondaryContainer {
   display: none;
 }
 
@@ -150,8 +155,13 @@ cr-icon-button {
 }
 
 #mediaAlert[class = 'audio-muting'] {
--webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
+  -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
   background-color:  var(--audio-icon-color);
+}
+
+#mediaAlert[class = 'glic-accessing'] {
+  -webkit-mask-image: url(alert_indicators/tab_media_glic_active.svg);
+  background-color:  var(--glic-active-icon-color);
 }
 
 #iconContainer {
@@ -168,7 +178,12 @@ cr-icon-button {
   width: 40px;
 }
 
-:host([compact]) #iconContainer {
+:host([size=compact]) #iconContainer {
   height: 24px;
   width: 24px;
+}
+
+:host([size=large]) #iconContainer {
+  height: 56px;
+  width: 56px;
 }

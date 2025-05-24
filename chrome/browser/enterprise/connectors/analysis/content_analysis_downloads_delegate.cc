@@ -4,8 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -21,8 +19,8 @@ ContentAnalysisDownloadsDelegate::ContentAnalysisDownloadsDelegate(
     const std::u16string& custom_message,
     GURL custom_learn_more_url,
     bool bypass_justification_required,
-    base::OnceCallback<void()> open_file_callback,
-    base::OnceCallback<void()> discard_file_callback,
+    base::OnceClosure open_file_callback,
+    base::OnceClosure discard_file_callback,
     download::DownloadItem* download_item,
     const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
         custom_rule_message)
@@ -63,36 +61,6 @@ void ContentAnalysisDownloadsDelegate::BypassWarnings(
     }
   }
 
-  // For obfuscated download files, deobfuscate the file before opening.
-  enterprise_obfuscation::DownloadObfuscationData* obfuscation_data =
-      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
-          download_item_->GetUserData(
-              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
-
-  if (obfuscation_data && obfuscation_data->is_obfuscated) {
-    LOG(ERROR) << "is obfuscated!";
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,
-                       download_item_->GetFullPath()),
-        base::BindOnce(
-            &ContentAnalysisDownloadsDelegate::OnDeobfuscationComplete,
-            weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  Open();
-}
-
-void ContentAnalysisDownloadsDelegate::OnDeobfuscationComplete(
-    base::expected<void, enterprise_obfuscation::Error> deobfuscation_result) {
-  if (!deobfuscation_result.has_value()) {
-    // TODO(b/367259664): Add better error handling for deobfuscation.
-    DVLOG(1) << "Failed to deobfuscate file.";
-    LOG(ERROR) << "failed deobfuscation";
-  }
-  LOG(ERROR) << "deobfuscation was successful";
-
   Open();
 }
 
@@ -117,14 +85,12 @@ void ContentAnalysisDownloadsDelegate::ResetCallbacks() {
 std::optional<std::u16string>
 ContentAnalysisDownloadsDelegate::GetCustomMessage() const {
   // Rule-based custom messages take precedence over policy-based.
-  if (IsDialogCustomRuleMessageEnabled()) {
-    std::u16string custom_rule_message =
-        GetCustomRuleString(custom_rule_message_);
-    if (!custom_rule_message.empty()) {
-      return l10n_util::GetStringFUTF16(
-          IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE, filename_,
-          custom_rule_message);
-    }
+  std::u16string custom_rule_message =
+      GetCustomRuleString(custom_rule_message_);
+  if (!custom_rule_message.empty()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE, filename_,
+        custom_rule_message);
   }
 
   if (custom_message_.empty())

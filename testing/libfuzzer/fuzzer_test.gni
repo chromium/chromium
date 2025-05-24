@@ -7,6 +7,12 @@
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
+declare_args() {
+  # Build individual_fuzztest_wrapper if use_fuzztest_wrapper is set.
+  # Some projects doesn't have //base and cannot build
+  # individual_fuzztest_wrapper.
+  use_fuzztest_wrapper = true
+}
 
 # fuzzer_test is used to define individual libfuzzer tests.
 #
@@ -46,8 +52,15 @@ import("//testing/test.gni")
 # dir (next to test).
 template("fuzzer_test") {
   _high_end_job_required = false
-  if (defined(invoker.high_end_job_required)) {
-    _high_end_job_required = invoker.high_end_job_required
+  if (defined(invoker.high_end_job_required) && invoker.high_end_job_required) {
+    # Target should run in pure release mode, i.e. no debug and no dchecks.
+    _high_end_job_required = !is_debug && !dcheck_always_on
+  }
+  if (defined(invoker.high_end_debug_job_required) &&
+      invoker.high_end_debug_job_required) {
+    # Target should run in debug'ish mode, i.e. with debug or dchecks.
+    _high_end_job_required =
+        _high_end_job_required || is_debug || dcheck_always_on
   }
 
   # If the job is a high_end job and that we are currently building a high_end
@@ -69,12 +82,16 @@ template("fuzzer_test") {
       test_deps += [ "//testing/libfuzzer:fuzzing_engine_main" ]
     }
     test_data_deps = []
+    test_data = []
 
     if (defined(invoker.deps)) {
       test_deps += invoker.deps
     }
     if (defined(invoker.data_deps)) {
       test_data_deps += invoker.data_deps
+    }
+    if (defined(invoker.data)) {
+      test_data += invoker.data
     }
 
     supporting_file_test_deps = []
@@ -118,6 +135,7 @@ template("fuzzer_test") {
       }
 
       if (archive_seed_corpus) {
+        test_data_deps += [ ":" + target_name + "_seed_corpus" ]
         supporting_file_test_deps += [ ":" + target_name + "_seed_corpus" ]
       }
     }
@@ -133,6 +151,7 @@ template("fuzzer_test") {
           sources = [ invoker.dict ]
           outputs = [ "$root_build_dir/" + target_name + ".dict" ]
         }
+        test_data_deps += [ ":" + target_name + "_dict_copy" ]
         supporting_file_test_deps += [ ":" + target_name + "_dict_copy" ]
       }
 
@@ -304,6 +323,7 @@ template("fuzzer_test") {
                              ])
       deps = test_deps
       data_deps = test_data_deps
+      data = test_data
 
       if (defined(invoker.additional_configs)) {
         configs += invoker.additional_configs

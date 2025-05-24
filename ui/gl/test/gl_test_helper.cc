@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
-#include "testing/gtest/include/gtest/gtest.h"
-
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -104,7 +104,7 @@ SkBitmap GLTestHelper::ReadBackWindow(HWND window, const gfx::Size& size) {
   gfx::CreateBitmapV4HeaderForARGB888(size.width(), size.height(), &hdr);
 
   void* bits = nullptr;
-  base::win::ScopedBitmap bitmap(
+  base::win::ScopedGDIObject<HBITMAP> bitmap(
       ::CreateDIBSection(mem_hdc.Get(), reinterpret_cast<BITMAPINFO*>(&hdr),
                          DIB_RGB_COLORS, &bits, nullptr, 0));
   DCHECK(bitmap.is_valid());
@@ -128,7 +128,8 @@ SkBitmap GLTestHelper::ReadBackWindow(HWND window, const gfx::Size& size) {
       SkISize::Make(size.width(), size.height()),
       SkColorInfo(SkColorType::kBGRA_8888_SkColorType,
                   SkAlphaType::kPremul_SkAlphaType, nullptr))));
-  memcpy(sk_bitmap.getAddr(0, 0), bits, sk_bitmap.computeByteSize());
+  UNSAFE_TODO(
+      memcpy(sk_bitmap.getAddr(0, 0), bits, sk_bitmap.computeByteSize()));
 
   return sk_bitmap;
 }

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("personalization_app") {
   sources = [
@@ -59,11 +59,12 @@ static_library("personalization_app") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/hats",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/camera_presence_notifier",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//components/account_id",
     "//components/keyed_service/core",
     "//components/language/core/common",

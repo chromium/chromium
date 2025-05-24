@@ -1,6 +1,11 @@
-DroidSans Font:
-License: Apache 2.0
+Name: DroidSans Font
+Short Name: DroidSans
+URL: https://github.com/android/platform_frameworks_base/tree/jb-release/data/fonts
+Version: 1.000
+License: Apache-2.0
 License File: LICENSE.txt
+Security Critical: no
+Package Excluded: yes
 Shipped: no
 
 1. Source Origin

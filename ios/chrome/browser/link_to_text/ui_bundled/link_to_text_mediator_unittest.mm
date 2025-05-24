@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
-#import "base/time/time.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
@@ -11,11 +10,13 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/link_to_text/model/link_generation_outcome.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_constants.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
@@ -27,7 +28,6 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -40,11 +40,11 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
+using shared_highlighting::LinkGenerationError;
 using shared_highlighting::TextFragment;
 using web::FakeWebState;
-using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForJSCompletionTimeout;
-using shared_highlighting::LinkGenerationError;
 
 namespace {
 const CGFloat kCaretWidth = 4.0;
@@ -224,8 +224,8 @@ TEST_F(LinkToTextMediatorTest, ShouldNotOfferLinkToTextNotHTML) {
   EXPECT_FALSE([mediator_ shouldOfferLinkToText]);
 }
 
-// Tests that the shareHighlight command is triggered with the right parameters
-// when the view is not zoomed in.
+// Tests that the `-showShareSheetForHighlight:` command is triggered with the
+// right parameters when the view is not zoomed in.
 TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
   base::HistogramTester histogram_tester;
 
@@ -240,8 +240,8 @@ TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
   __block BOOL callback_invoked = NO;
 
   [[mocked_activity_service_commands_ expect]
-      shareHighlight:[OCMArg checkWithBlock:^BOOL(
-                                 ShareHighlightCommand* command) {
+      showShareSheetForHighlight:[OCMArg checkWithBlock:^BOOL(
+                                             ShareHighlightCommand* command) {
         EXPECT_TRUE(kTestHighlightURL == command.URL);
         EXPECT_EQ(kTestQuote, base::SysNSStringToUTF8(command.selectedText));
         EXPECT_EQ(fake_view_, command.sourceView);
@@ -269,8 +269,8 @@ TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
       "SharedHighlights.LinkGenerated.TimeToGenerate", 1);
 }
 
-// Tests that the shareHighlight command is triggered with the right parameters
-// when the current view is zoomed in.
+// Tests that the `-showShareSheetForHighlight:` command is triggered with the
+// right parameters when the current view is zoomed in.
 TEST_F(LinkToTextMediatorTest,
        HandleLinkToTextSelectionTriggersCommandWithZoom) {
   base::HistogramTester histogram_tester;
@@ -286,8 +286,8 @@ TEST_F(LinkToTextMediatorTest,
   __block BOOL callback_invoked = NO;
 
   [[mocked_activity_service_commands_ expect]
-      shareHighlight:[OCMArg checkWithBlock:^BOOL(
-                                 ShareHighlightCommand* command) {
+      showShareSheetForHighlight:[OCMArg checkWithBlock:^BOOL(
+                                             ShareHighlightCommand* command) {
         EXPECT_TRUE(kTestHighlightURL == command.URL);
         EXPECT_EQ(kTestQuote, base::SysNSStringToUTF8(command.selectedText));
         EXPECT_EQ(fake_view_, command.sourceView);
@@ -540,8 +540,8 @@ TEST_F(LinkToTextMediatorTest, WithHttpsAndCanonicalUrl) {
   __block BOOL callback_invoked = NO;
 
   [[mocked_activity_service_commands_ expect]
-      shareHighlight:[OCMArg checkWithBlock:^BOOL(
-                                 ShareHighlightCommand* command) {
+      showShareSheetForHighlight:[OCMArg checkWithBlock:^BOOL(
+                                             ShareHighlightCommand* command) {
         EXPECT_TRUE(command.URL.is_valid());
         EXPECT_TRUE(GURL(canonical_url).EqualsIgnoringRef(command.URL));
         callback_invoked = YES;
@@ -578,8 +578,8 @@ TEST_F(LinkToTextMediatorTest, NotHttpsAndCanonicalUrl) {
   __block BOOL callback_invoked = NO;
 
   [[mocked_activity_service_commands_ expect]
-      shareHighlight:[OCMArg checkWithBlock:^BOOL(
-                                 ShareHighlightCommand* command) {
+      showShareSheetForHighlight:[OCMArg checkWithBlock:^BOOL(
+                                             ShareHighlightCommand* command) {
         EXPECT_TRUE(command.URL.is_valid());
         EXPECT_TRUE(new_base_url.EqualsIgnoringRef(command.URL));
         callback_invoked = YES;

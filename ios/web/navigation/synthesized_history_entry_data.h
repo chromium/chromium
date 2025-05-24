@@ -6,6 +6,7 @@
 #define IOS_WEB_NAVIGATION_SYNTHESIZED_HISTORY_ENTRY_DATA_H_
 
 #import <Foundation/Foundation.h>
+
 #include <vector>
 
 #include "url/gurl.h"

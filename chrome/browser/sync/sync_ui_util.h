@@ -10,8 +10,11 @@
 #include "build/build_config.h"
 #include "components/sync/service/sync_service_utils.h"
 
-class Browser;
 class Profile;
+
+#if !BUILDFLAG(IS_ANDROID)
+class Browser;
+#endif
 
 namespace signin {
 class IdentityManager;
@@ -78,10 +81,11 @@ enum AvatarSyncErrorType {
 };
 
 struct SyncStatusLabels {
-  SyncStatusMessageType message_type;
-  int status_label_string_id;
-  int button_string_id;
-  SyncStatusActionType action_type;
+  SyncStatusMessageType message_type = SyncStatusMessageType::kPreSynced;
+  int status_label_string_id = 0;
+  int button_string_id = 0;
+  int secondary_button_string_id = 0;
+  SyncStatusActionType action_type = SyncStatusActionType::kNoAction;
 };
 
 // Returns the high-level sync status by querying |sync_service| and
@@ -100,6 +104,12 @@ SyncStatusLabels GetSyncStatusLabels(Profile* profile);
 // the message type.
 SyncStatusMessageType GetSyncStatusMessageType(Profile* profile);
 
+#if !BUILDFLAG(IS_ANDROID)
+SyncStatusLabels GetSyncStatusLabelsForSettings(
+    const syncer::SyncService* service);
+
+SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(AvatarSyncErrorType error);
+
 // Gets the error in the sync machinery (if any) that should be exposed to the
 // user through the titlebar avatar button. If std::nullopt is returned, this
 // does NOT mean sync-the-feature/sync-the-transport is enabled, simply that
@@ -112,7 +122,9 @@ std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile);
 // tooltip of the avatar button, and in the profile menu body (the menu opened
 // by clicking the avatar button).
 std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
-                                             bool is_sync_feature_enabled);
+                                             bool is_sync_feature_enabled,
+                                             const std::string& user_email);
+#endif
 
 // Whether sync is currently blocked from starting because the sync
 // confirmation dialog hasn't been shown. Note that once the dialog is
@@ -123,6 +135,7 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service);
 // whether a missing passphrase is preventing Sync from fully starting up.
 bool ShouldShowSyncPassphraseError(const syncer::SyncService* service);
 
+#if !BUILDFLAG(IS_ANDROID)
 // Opens a tab for the purpose of retrieving the trusted vault keys, which
 // usually requires a reauth.
 void OpenTabForSyncKeyRetrieval(
@@ -134,21 +147,6 @@ void OpenTabForSyncKeyRetrieval(
 void OpenTabForSyncKeyRecoverabilityDegraded(
     Browser* browser,
     syncer::TrustedVaultUserActionTriggerForUMA trigger);
-
-#if BUILDFLAG(IS_CHROMEOS)
-// On ChromeOS only, WebUI dialog can be used instead of tab (depending on the
-// feature setup and eventually always).
-// Opens a WebUI dialog for the purpose of retrieving the trusted vault keys,
-// which usually requires a reauth.
-void OpenDialogForSyncKeyRetrieval(
-    Profile* profile,
-    syncer::TrustedVaultUserActionTriggerForUMA trigger);
-
-// Opens a WebUI dialog for the purpose of improving the recoverability of the
-// trusted vault keys, which usually requires a reauth.
-void OpenDialogForSyncKeyRecoverabilityDegraded(
-    Profile* profile,
-    syncer::TrustedVaultUserActionTriggerForUMA trigger);
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_UI_UTIL_H_

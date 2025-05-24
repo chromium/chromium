@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
 
 #include <memory>
@@ -20,7 +15,6 @@
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -34,6 +28,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -125,21 +120,9 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   source->AddString(
       "samlChangeProviderButton",
       l10n_util::GetStringUTF16(IDS_LOGIN_SAML_CHANGE_PROVIDER_BUTTON));
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  bool policy_ca_certs_present = primary_profile
-                                     ? primary_profile->GetPrefs()->GetBoolean(
-                                           prefs::kUsedPolicyCertificates)
-                                     : false;
-  source->AddBoolean("policyProvidedCaCertsPresent", policy_ca_certs_present);
-  source->AddString(
-      "policyProvidedCaCertsTooltipMessage",
-      l10n_util::GetStringUTF16(
-          IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_TOOLTIP));
 
-  source->AddResourcePaths(base::make_span(kLockScreenReauthResources,
-                                           kLockScreenReauthResourcesSize));
-  source->AddResourcePaths(base::make_span(kGaiaActionButtonsResources,
-                                           kGaiaActionButtonsResourcesSize));
+  source->AddResourcePaths(kLockScreenReauthResources);
+  source->AddResourcePaths(kGaiaActionButtonsResources);
   source->SetDefaultResource(
       IDR_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_APP_HTML);
 

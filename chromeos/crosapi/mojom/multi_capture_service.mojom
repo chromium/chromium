@@ -11,7 +11,7 @@ import "url/mojom/url.mojom";
 // notifications.
 // Next version: 4
 // Next method id: 5
-[Stable, Uuid="6ea59fc6-65e0-11ed-a200-7be727846002"]
+[Uuid="6ea59fc6-65e0-11ed-a200-7be727846002"]
 interface MultiCaptureService {
   // Called when a new multi capture (identified by a unique label
   // representing the capture session) is started. The parameters

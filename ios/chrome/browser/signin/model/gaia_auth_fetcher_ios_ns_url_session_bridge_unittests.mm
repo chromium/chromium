@@ -159,7 +159,7 @@ class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public PlatformTest {
   web::WebState* web_state() { return web_state_.get(); }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   // Instance used for the tests.
   std::unique_ptr<TestGaiaAuthFetcherIOSNSURLSessionBridge>
@@ -198,16 +198,16 @@ NSURLSession* TestGaiaAuthFetcherIOSNSURLSessionBridge::CreateNSURLSession(
 void GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetUp() {
   PlatformTest::SetUp();
 
-  browser_state_ = TestChromeBrowserState::Builder().Build();
+  profile_ = TestProfileIOS::Builder().Build();
 
-  web::WebState::CreateParams params(browser_state_.get());
+  web::WebState::CreateParams params(profile_.get());
   web_state_ = web::WebState::Create(params);
   web_state_->GetView();
   web_state_->SetKeepRenderProcessAlive(true);
 
   delegate_.reset(new FakeGaiaAuthFetcherIOSBridgeDelegate());
   ns_url_session_bridge_.reset(new TestGaiaAuthFetcherIOSNSURLSessionBridge(
-      delegate_.get(), browser_state_.get(), this));
+      delegate_.get(), profile_.get(), this));
   url_session_configuration_ =
       NSURLSessionConfiguration.ephemeralSessionConfiguration;
   url_session_configuration_.HTTPShouldSetCookies = YES;
@@ -250,8 +250,7 @@ std::vector<net::CanonicalCookie>
 GaiaAuthFetcherIOSNSURLSessionBridgeTest::GetCookiesInCookieJar() {
   std::vector<net::CanonicalCookie> cookies_out;
   base::RunLoop run_loop;
-  network::mojom::CookieManager* cookie_manager =
-      browser_state_->GetCookieManager();
+  network::mojom::CookieManager* cookie_manager = profile_->GetCookieManager();
   cookie_manager->GetAllCookies(base::BindLambdaForTesting(
       [&run_loop,
        &cookies_out](const std::vector<net::CanonicalCookie>& cookies) {
@@ -301,24 +300,26 @@ bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::AddAllCookiesInCookieManager(
 
   run_loop.Run();
 
-  if (!result_out.status.IsInclude())
+  if (!result_out.status.IsInclude()) {
     LOG(ERROR) << "Failed to set cookie in cookie jar: " << result_out.status;
+  }
 
   return result_out.status.IsInclude();
 }
 
 bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetCookiesInCookieManager(
     NSArray<NSHTTPCookie*>* cookies) {
-  network::mojom::CookieManager* cookie_manager =
-      browser_state_->GetCookieManager();
+  network::mojom::CookieManager* cookie_manager = profile_->GetCookieManager();
   for (NSHTTPCookie* cookie in cookies) {
     std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time::Now());
-    if (!canonical_cookie)
+    if (!canonical_cookie) {
       continue;
+    }
     if (!AddAllCookiesInCookieManager(cookie_manager,
-                                      *std::move(canonical_cookie)))
+                                      *std::move(canonical_cookie))) {
       return false;
+    }
   }
   return true;
 }
@@ -364,8 +365,9 @@ GaiaAuthFetcherIOSNSURLSessionBridgeTest::GetHeaderFieldsWithCookies(
     NSArray<NSHTTPCookie*>* cookies) {
   NSMutableString* cookie_string = [NSMutableString string];
   for (NSHTTPCookie* cookie in cookies) {
-    if (cookie_string.length != 0)
+    if (cookie_string.length != 0) {
       [cookie_string appendString:@", "];
+    }
     [cookie_string appendString:GetStringWithNSHTTPCookie(cookie)];
   }
   return @{@"Set-Cookie" : cookie_string};

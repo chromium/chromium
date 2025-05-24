@@ -272,9 +272,8 @@ TEST_F(TransportClientSocketTest, FullDuplex_ReadFirst) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   const int kWriteBufLen = 64 * 1024;
-  auto request_buffer = base::MakeRefCounted<IOBufferWithSize>(kWriteBufLen);
-  char* request_data = request_buffer->data();
-  memset(request_data, 'A', kWriteBufLen);
+  auto request_buffer = base::MakeRefCounted<VectorIOBuffer>(
+      std::vector<uint8_t>(kWriteBufLen, 'A'));
   TestCompletionCallback write_callback;
 
   int bytes_written = 0;
@@ -304,9 +303,8 @@ TEST_F(TransportClientSocketTest, FullDuplex_WriteFirst) {
   EstablishConnection(&callback);
 
   const int kWriteBufLen = 64 * 1024;
-  auto request_buffer = base::MakeRefCounted<IOBufferWithSize>(kWriteBufLen);
-  char* request_data = request_buffer->data();
-  memset(request_data, 'A', kWriteBufLen);
+  auto request_buffer = base::MakeRefCounted<VectorIOBuffer>(
+      std::vector<uint8_t>(kWriteBufLen, 'A'));
   TestCompletionCallback write_callback;
 
   int bytes_written = 0;

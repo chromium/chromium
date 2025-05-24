@@ -31,6 +31,7 @@ struct AppInfo {
   AppInfo(const UpdaterScope scope,
           const std::string& app_id,
           const std::string& ap,
+          const std::string& lang,
           const std::string& brand,
           const base::Version& app_version,
           const base::FilePath& ecp);
@@ -41,6 +42,7 @@ struct AppInfo {
   UpdaterScope scope;
   std::string app_id;
   std::string ap;
+  std::string lang;
   std::string brand;
   base::Version version;
   base::FilePath ecp;
@@ -58,9 +60,9 @@ InstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& installer_path,
     const std::string& install_args,
-    const std::optional<base::FilePath>& server_install_data,
+    std::optional<base::FilePath> server_install_data,
     bool usage_stats_enabled,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     InstallProgressCallback progress_callback);
 
 // Retrieves the value of `keyname` from `path` (a plist, on macOS). If the
@@ -70,8 +72,13 @@ InstallerResult RunApplicationInstaller(
 std::string LookupString(const base::FilePath& path,
                          const std::string& keyname,
                          const std::string& default_value);
-base::Version LookupVersion(const base::FilePath& path,
-                            const std::string& keyname,
+
+// Retrieves the version of the installed application. If the version cannot
+// be determined the `default_value` is returned.
+base::Version LookupVersion(UpdaterScope scope,
+                            const std::string& app_id,
+                            const base::FilePath& version_path,
+                            const std::string& version_key,
                             const base::Version& default_value);
 
 // Manages the install of one application. Some of the functions of this

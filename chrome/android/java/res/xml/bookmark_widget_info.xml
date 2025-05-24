@@ -13,7 +13,9 @@ found in the LICENSE file.
     android:minResizeWidth="@dimen/bookmark_widget_min_width"
     android:minResizeHeight="@dimen/bookmark_widget_min_height"
     android:previewImage="@drawable/bookmark_widget_preview"
+    android:previewLayout="@layout/bookmark_widget_preview_layout"
     android:initialLayout="@layout/bookmark_widget"
+    android:description="@string/bookmark_widget_description"
     android:resizeMode="vertical|horizontal"
     android:updatePeriodMillis="86400000"> <!-- Once per day -->
 </appwidget-provider>

@@ -194,7 +194,7 @@ void ManagedSimLockNotifier::ShowNotification() {
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
               weak_ptr_factory_.GetWeakPtr()),
-          /*small_image=*/gfx::VectorIcon(),
+          /*small_image=*/gfx::VectorIcon::EmptyIcon(),
           message_center::SystemNotificationWarningLevel::WARNING);
   notification->set_host_view_element_id(
       kCellularManagedSimLockNotificationElementId);

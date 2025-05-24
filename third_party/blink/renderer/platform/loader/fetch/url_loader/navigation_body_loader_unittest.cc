@@ -40,9 +40,9 @@ namespace {
 using ::testing::ElementsAre;
 
 class UppercaseDecoder : public BodyTextDecoder {
-  String Decode(base::span<const char> data) override {
-    return String(data.data(), base::checked_cast<wtf_size_t>(data.size()))
-        .UpperASCII();
+  String Decode(base::span<const char> data,
+                String* auto_detected_charset) override {
+    return String(data).UpperASCII();
   }
 
   String Flush() override { return String(); }
@@ -525,9 +525,7 @@ TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
 // single PostTask.
 class ChunkingLoaderClient : public WebNavigationBodyLoader::Client {
  public:
-  void BodyDataReceived(base::span<const char> data) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void BodyDataReceived(base::span<const char> data) override { NOTREACHED(); }
   void DecodedBodyDataReceived(
       const WebString& data,
       const WebEncodingData& encoding_data,

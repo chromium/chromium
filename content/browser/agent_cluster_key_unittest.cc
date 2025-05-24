@@ -22,7 +22,7 @@ TEST_F(AgentClusterKeyTest, SiteKeyed) {
   EXPECT_FALSE(key.IsOriginKeyed());
   EXPECT_EQ(url, key.GetSite());
   EXPECT_EQ(std::nullopt, key.GetCrossOriginIsolationKey());
-  ASSERT_DCHECK_DEATH(key.GetOrigin());
+  ASSERT_CHECK_DEATH(key.GetOrigin());
 }
 
 TEST_F(AgentClusterKeyTest, OriginKeyed) {
@@ -33,7 +33,7 @@ TEST_F(AgentClusterKeyTest, OriginKeyed) {
   EXPECT_TRUE(key.IsOriginKeyed());
   EXPECT_EQ(origin, key.GetOrigin());
   EXPECT_EQ(std::nullopt, key.GetCrossOriginIsolationKey());
-  ASSERT_DCHECK_DEATH(key.GetSite());
+  ASSERT_CHECK_DEATH(key.GetSite());
 }
 
 TEST_F(AgentClusterKeyTest, WithCrossOriginIsolationKey) {
@@ -50,7 +50,7 @@ TEST_F(AgentClusterKeyTest, WithCrossOriginIsolationKey) {
   EXPECT_TRUE(key.IsOriginKeyed());
   EXPECT_EQ(origin, key.GetOrigin());
   EXPECT_EQ(isolation_key, key.GetCrossOriginIsolationKey());
-  ASSERT_DCHECK_DEATH(key.GetSite());
+  ASSERT_CHECK_DEATH(key.GetSite());
 }
 
 TEST_F(AgentClusterKeyTest, Comparisons) {

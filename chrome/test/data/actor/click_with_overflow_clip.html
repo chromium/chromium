@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Test case for elements that overflow ancestor clipping boxes</title>
+    <style>
+      body {
+        width: 300vw;
+        height: 300vh;
+
+      }
+      #offscreenButton {
+        width: 300px;
+        height: 300px;
+        position: fixed;
+        left: calc(100vw - 40px);
+        top: calc(100vh - 40px);
+      }
+
+      .clipRect {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        border: 1px solid black;
+      }
+
+      #overflowHiddenButton {
+        position: relative;
+        left: 70px;
+        top: 70px;
+        width: 400px;
+        height: 400px;
+      }
+
+      #overflowScrollButton {
+        position: relative;
+        left: 100px;
+        top: 100px;
+        width: 400px;
+        height: 400px;
+      }
+    </style>
+    <script>
+      let clicked_button = '';
+
+      window.onload = () => {
+        // Scroll the test cases into view. Use a non-0 scroll offset to ensure
+        // coordinates are correctly transformed (i.e. by adding a scroll,
+        // document-relative and frame-relative coordinate spaces don't
+        // coincide).
+        window.scrollTo(0, window.innerHeight);
+
+        // Partially reveal the button in the bottom right corner.
+        const scroller =
+            document.getElementById('overflowScrollButton').parentElement;
+        scroller.scrollLeft = 30;
+        scroller.scrollTop = 30;
+
+        for (let button of document.querySelectorAll('button')) {
+          button.addEventListener('click', e => clicked_button = e.target.id);
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <button id="offscreenButton">Offscreen</button>
+
+    <div class="clipRect" style="overflow: hidden; top: 100vh">
+      <button id="overflowHiddenButton">OverflowHidden</button>
+    </div>
+
+    <div class="clipRect" style="overflow: scroll; top: 100vh; left: 50vh">
+      <button id="overflowScrollButton">OverflowScroll</button>
+    </div>
+  </body>
+</html>

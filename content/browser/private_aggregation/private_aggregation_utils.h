@@ -11,10 +11,10 @@
 
 namespace content::private_aggregation {
 
-std::string GetReportingPath(PrivateAggregationCallerApi api,
+std::string GetReportingPath(PrivateAggregationCallerApi caller_api,
                              bool is_immediate_debug_report);
 
-std::string GetApiIdentifier(PrivateAggregationCallerApi api);
+std::string GetApiIdentifier(PrivateAggregationCallerApi caller_api);
 
 }  // namespace content::private_aggregation
 

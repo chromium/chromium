@@ -4,12 +4,15 @@
 
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 
+#include <stdint.h>
+
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
@@ -31,6 +34,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
@@ -66,13 +70,13 @@ struct FeaturesTestParam {
 
 std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string fcm_sender_id,
-                                     std::string /*project_id*/,
-                                     std::string /*log_prefix*/) {
-  if (base::FeatureList::IsEnabled(
-          invalidation::kInvalidationsWithDirectMessages)) {
-    return std::make_unique<invalidation::FakeInvalidationListener>();
+CreateInvalidationServiceForProjectNumber(int64_t project_number,
+                                          std::string /*log_prefix*/) {
+  if (invalidation::IsInvalidationListenerSupported(project_number)) {
+    return std::make_unique<invalidation::FakeInvalidationListener>(
+        project_number);
   }
+
   return std::make_unique<invalidation::FakeInvalidationService>();
 }
 
@@ -82,7 +86,7 @@ std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
       std::make_unique<invalidation::ProfileIdentityProvider>(
           IdentityManagerFactory::GetForProfile(profile)),
-      base::BindRepeating(&CreateInvalidationServiceForSenderId));
+      base::BindRepeating(&CreateInvalidationServiceForProjectNumber));
 }
 
 }  // namespace
@@ -132,15 +136,7 @@ class UserRemoteCommandsServiceTest
   }
 
   policy::UserCloudPolicyManager* InitCloudPolicyManager() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::FilePath dest_path =
-        g_browser_process->profile_manager()->user_data_dir();
-    profile_ = Profile::CreateProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")),
-        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
-#else
     profile_ = chrome_test_utils::GetProfile(this);
-#endif
     policy::UserCloudPolicyManager* policy_manager =
         profile()->GetUserCloudPolicyManager();
     policy_manager->Connect(
@@ -183,6 +179,8 @@ class UserRemoteCommandsServiceTest
     auto fake_policy_data = std::make_unique<em::PolicyData>();
     fake_policy_data->set_device_id(
         policy_manager->core()->client()->client_id());
+    fake_policy_data->set_cec_enabled(true);
+    fake_policy_data->set_command_invalidation_topic("fake-topic");
     store->set_policy_data_for_testing(std::move(fake_policy_data));
     store->set_policy_signature_public_key_for_testing(
         test_server_->policy_storage()
@@ -210,23 +208,18 @@ class UserRemoteCommandsServiceTest
 
   void TearDownOnMainThread() override {
     identity_test_env_.reset();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_.reset();
-#else
     profile_ = nullptr;
-#endif
   }
 
-  invalidation::FakeInvalidationService* GetInvalidationServiceForSenderId(
-      std::string sender_id) {
+  invalidation::FakeInvalidationService* GetInvalidationServiceForProjectNumber(
+      int64_t project_number) {
     auto* profile_invalidation_provider_factory =
         static_cast<invalidation::ProfileInvalidationProvider*>(
             invalidation::ProfileInvalidationProviderFactory::GetInstance()
                 ->GetForProfile(profile()));
     auto invalidation_service_or_listener =
         profile_invalidation_provider_factory->GetInvalidationServiceOrListener(
-            std::move(sender_id),
-            /*project_id=*/"");
+            project_number);
     CHECK(std::holds_alternative<invalidation::InvalidationService*>(
         invalidation_service_or_listener));
     return static_cast<invalidation::FakeInvalidationService*>(
@@ -245,20 +238,11 @@ class UserRemoteCommandsServiceTest
   }
 
   Profile* profile() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return profile_.get();
-#else
     return profile_;
-#endif
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For Lacros use non-main profile in these tests.
-  std::unique_ptr<Profile> profile_;
-#else
   raw_ptr<Profile> profile_;
-#endif
 
   std::unique_ptr<policy::EmbeddedPolicyTestServer> test_server_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
@@ -279,6 +263,13 @@ IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, Success) {
   auto* remote_command_service =
       enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
           profile());
+
+  if (!base::FeatureList::IsEnabled(kUserRemoteCommands)) {
+    ASSERT_FALSE(remote_command_service);
+    return;
+  }
+
+  ASSERT_TRUE(remote_command_service);
   remote_command_service->Init();
 
   em::RemoteCommandResult result = WaitForResult(kCommandId);
@@ -289,9 +280,12 @@ IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, Success) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     UserRemoteCommandsServiceTest,
-    testing::Values(FeaturesTestParam{},
-                    FeaturesTestParam{
-                        .enabled_features = {
-                            invalidation::kInvalidationsWithDirectMessages}}));
+    testing::Values(
+        FeaturesTestParam{},
+        FeaturesTestParam{
+            .enabled_features = {
+                policy::
+                    kUserRemoteCommandsInvalidationWithDirectMessagesEnabled,
+                kUserRemoteCommands}}));
 
 }  // namespace enterprise_commands

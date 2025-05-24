@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.feed.sections;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** Represents the data for a header of a group of snippets. */
+@NullMarked
 public class SectionHeaderProperties {
     /** The header text to be shown. */
     public static final PropertyModel.WritableObjectPropertyKey<String> HEADER_TEXT_KEY =

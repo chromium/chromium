@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_test_util.h"
+
+#include <algorithm>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
@@ -41,80 +42,26 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-// A view wrapper class that owns the ExtensionsToolbarContainer.
-// This is used when we don't have a "real" browser window, because the
-// TestBrowserWindow does not have a view instantiated for the container.
-class ExtensionsMenuTestUtil::Wrapper {
- public:
-  explicit Wrapper(Browser* browser)
-      : extensions_container_(new ExtensionsToolbarContainer(browser)) {
-    extensions_toolbar_coordinator_ =
-        std::make_unique<ExtensionsToolbarCoordinator>(browser,
-                                                       extensions_container_);
-    container_parent_.SetSize(gfx::Size(1000, 1000));
-    container_parent_.DeprecatedLayoutImmediately();
-    container_parent_.AddChildView(extensions_container_.get());
-  }
-  ~Wrapper() = default;
-
-  Wrapper(const Wrapper& other) = delete;
-  Wrapper& operator=(const Wrapper& other) = delete;
-
-  ExtensionsToolbarContainer* extensions_container() {
-    return extensions_container_;
-  }
-
- private:
-  views::View container_parent_;
-  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
-  std::unique_ptr<ExtensionsToolbarCoordinator>
-      extensions_toolbar_coordinator_ = nullptr;
-};
-
-ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser,
-                                               bool is_real_window)
+ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser)
     : scoped_allow_extensions_menu_instances_(
           ExtensionsMenuView::AllowInstancesForTesting()),
       browser_(browser) {
-  if (is_real_window) {
-    extensions_container_ = BrowserView::GetBrowserViewForBrowser(browser_)
-                                ->toolbar()
-                                ->extensions_container();
-  } else {
-    wrapper_ = std::make_unique<Wrapper>(browser);
-    extensions_container_ = wrapper_->extensions_container();
-  }
-
-  std::unique_ptr<views::BubbleDialogDelegate> bubble_dialog;
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    bubble_dialog =
-        extensions_container_->GetExtensionsMenuCoordinatorForTesting()
-            ->CreateExtensionsMenuBubbleDialogDelegateForTesting(
-                extensions_container_->GetExtensionsButton(),
-                extensions_container_);
-  } else {
-    bubble_dialog = std::make_unique<ExtensionsMenuView>(
-        extensions_container_->GetExtensionsButton(), browser_,
-        extensions_container_);
-    menu_view_ = views::AsViewClass<ExtensionsMenuView>(
-        bubble_dialog->GetContentsView());
-
-    menu_view_->View::AddObserver(this);
-  }
-
-  if (is_real_window) {
-    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_dialog));
-  }
+  extensions_container_ = BrowserView::GetBrowserViewForBrowser(browser_)
+                              ->toolbar()
+                              ->extensions_container();
 }
 
 ExtensionsMenuTestUtil::~ExtensionsMenuTestUtil() {
-  if (!menu_view_) {
+  if (!IsExtensionsMenuShowing()) {
     return;
   }
 
-  // Close the menu if when we own the menu view.
-  menu_view_->GetWidget()->CloseNow();
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    extensions_container_->GetExtensionsMenuCoordinatorForTesting()->Hide();
+  } else {
+    menu_view_->GetWidget()->CloseNow();
+  }
 }
 
 void ExtensionsMenuTestUtil::OnViewIsDeleting(views::View* observed_view) {
@@ -127,7 +74,7 @@ int ExtensionsMenuTestUtil::NumberOfBrowserActions() {
 }
 
 bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
-  return GetMenuItemViewForId(id) != nullptr;
+  return extensions_container_->GetActionForId(id) != nullptr;
 }
 
 void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
@@ -137,22 +84,15 @@ void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
   view_controller->InspectPopup();
 }
 
-void ExtensionsMenuTestUtil::TriggerPopupForAPI(
-    const extensions::ExtensionId& id) {
-  auto* view_controller = static_cast<ExtensionActionViewController*>(
-      extensions_container_->GetActionForId(id));
-  DCHECK(view_controller);
-  view_controller->TriggerPopupForAPI();
-}
-
 gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
-  ExtensionMenuItemView* view = GetMenuItemViewForId(id);
-  DCHECK(view);
-  return gfx::Image(view->primary_action_button_for_testing()->GetImage(
-      views::Button::STATE_NORMAL));
+  ToolbarActionView* action_view = extensions_container_->GetViewForId(id);
+  DCHECK(action_view);
+  return gfx::Image(action_view->GetIconForTest());
 }
 
 void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
+  OpenExtensionsMenu();
+
   ExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   ExtensionsMenuButton* primary_button =
@@ -166,7 +106,7 @@ void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
 gfx::NativeView ExtensionsMenuTestUtil::GetPopupNativeView() {
   ToolbarActionViewController* popup_owner =
       extensions_container_->popup_owner_for_testing();
-  return popup_owner ? popup_owner->GetPopupNativeView() : nullptr;
+  return popup_owner ? popup_owner->GetPopupNativeView() : gfx::NativeView();
 }
 
 bool ExtensionsMenuTestUtil::HasPopup() {
@@ -180,10 +120,6 @@ bool ExtensionsMenuTestUtil::HidePopup() {
   return !HasPopup();
 }
 
-ExtensionsContainer* ExtensionsMenuTestUtil::GetExtensionsContainer() {
-  return extensions_container_;
-}
-
 void ExtensionsMenuTestUtil::WaitForExtensionsContainerLayout() {
   views::test::WaitForAnimatingLayoutManager(
       static_cast<views::View*>(extensions_container_));
@@ -195,10 +131,6 @@ gfx::Size ExtensionsMenuTestUtil::GetMinPopupSize() {
 
 gfx::Size ExtensionsMenuTestUtil::GetMaxPopupSize() {
   return ExtensionPopup::kMaxSize;
-}
-
-gfx::Size ExtensionsMenuTestUtil::GetToolbarActionSize() {
-  return extensions_container_->GetToolbarActionSize();
 }
 
 gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
@@ -221,6 +153,40 @@ gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
       views::BubbleFrameView::PreferredArrowAdjustment::kMirror);
 }
 
+void ExtensionsMenuTestUtil::OpenExtensionsMenu() {
+  if (IsExtensionsMenuShowing()) {
+    return;
+  }
+
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_dialog;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    bubble_dialog =
+        extensions_container_->GetExtensionsMenuCoordinatorForTesting()
+            ->CreateExtensionsMenuBubbleDialogDelegateForTesting(
+                extensions_container_->GetExtensionsButton(),
+                extensions_container_);
+  } else {
+    bubble_dialog = std::make_unique<ExtensionsMenuView>(
+        extensions_container_->GetExtensionsButton(), browser_,
+        extensions_container_);
+    menu_view_ = views::AsViewClass<ExtensionsMenuView>(
+        bubble_dialog->GetContentsView());
+
+    menu_view_->View::AddObserver(this);
+  }
+
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_dialog));
+}
+
+bool ExtensionsMenuTestUtil::IsExtensionsMenuShowing() {
+  return base::FeatureList::IsEnabled(
+             extensions_features::kExtensionsMenuAccessControl)
+             ? extensions_container_->GetExtensionsMenuCoordinatorForTesting()
+                   ->IsShowing()
+             : menu_view_;
+}
+
 ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
     const extensions::ExtensionId& id) {
   base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items;
@@ -239,7 +205,7 @@ ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
   }
 
   auto iter =
-      base::ranges::find(menu_items, id, [](ExtensionMenuItemView* view) {
+      std::ranges::find(menu_items, id, [](ExtensionMenuItemView* view) {
         return view->view_controller()->GetId();
       });
   return (iter == menu_items.end()) ? nullptr : *iter;
@@ -247,7 +213,6 @@ ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
 
 // static
 std::unique_ptr<ExtensionActionTestHelper> ExtensionActionTestHelper::Create(
-    Browser* browser,
-    bool is_real_window) {
-  return std::make_unique<ExtensionsMenuTestUtil>(browser, is_real_window);
+    Browser* browser) {
+  return std::make_unique<ExtensionsMenuTestUtil>(browser);
 }

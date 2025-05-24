@@ -7,18 +7,20 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -61,16 +63,16 @@ bool OSExchangeDataProviderNonBacked::IsFromPrivileged() const {
   return is_from_privileged_;
 }
 
-void OSExchangeDataProviderNonBacked::SetString(const std::u16string& data) {
+void OSExchangeDataProviderNonBacked::SetString(std::u16string_view data) {
   if (HasString())
     return;
 
-  string_ = data;
+  string_ = std::u16string(data);
   formats_ |= OSExchangeData::STRING;
 }
 
 void OSExchangeDataProviderNonBacked::SetURL(const GURL& url,
-                                             const std::u16string& title) {
+                                             std::u16string_view title) {
   url_ = url;
   title_ = title;
   formats_ |= OSExchangeData::URL;
@@ -117,12 +119,14 @@ std::optional<OSExchangeDataProvider::UrlInfo>
 OSExchangeDataProviderNonBacked::GetURLAndTitle(
     FilenameToURLPolicy policy) const {
   if ((formats_ & OSExchangeData::URL) == 0) {
-    GURL url;
-    if (GetPlainTextURL(&url) ||
-        (policy == FilenameToURLPolicy::CONVERT_FILENAMES &&
-         GetFileURL(&url))) {
+    if (std::optional<GURL> plaintext_url = GetPlainTextURL();
+        plaintext_url.has_value()) {
+      DCHECK(plaintext_url->is_valid());
+      return UrlInfo{std::move(plaintext_url).value(), std::u16string()};
+    } else if (GURL url; policy == FilenameToURLPolicy::CONVERT_FILENAMES &&
+                         GetFileURL(&url)) {
       DCHECK(url.is_valid());
-      return UrlInfo{url, std::u16string()};
+      return UrlInfo{std::move(url), std::u16string()};
     }
     return std::nullopt;
   }
@@ -186,7 +190,7 @@ bool OSExchangeDataProviderNonBacked::HasURL(FilenameToURLPolicy policy) const {
     return true;
   }
   // No URL, see if we have plain text that can be parsed as a URL.
-  return GetPlainTextURL(nullptr) ||
+  return GetPlainTextURL().has_value() ||
          (policy == FilenameToURLPolicy::CONVERT_FILENAMES &&
           GetFileURL(nullptr));
 }
@@ -265,25 +269,31 @@ bool OSExchangeDataProviderNonBacked::GetFileURL(GURL* url) const {
 
   base::FilePath file_path = filenames_[0].path;
   GURL test_url = net::FilePathToFileURL(file_path);
-  if (!test_url.is_valid())
+  if (!test_url.is_valid()) {
     return false;
-
-  if (url)
-    *url = test_url;
+  }
+  if (url) {
+    *url = std::move(test_url);
+  }
   return true;
 }
 
-bool OSExchangeDataProviderNonBacked::GetPlainTextURL(GURL* url) const {
+std::optional<GURL> OSExchangeDataProviderNonBacked::GetPlainTextURL() const {
   if ((formats_ & OSExchangeData::STRING) == 0)
-    return false;
+    return std::nullopt;
 
   GURL test_url(string_);
-  if (!test_url.is_valid())
-    return false;
+  if (!test_url.is_valid()) {
+    return std::nullopt;
+  }
 
-  if (url)
-    *url = test_url;
-  return true;
+  if (base::FeatureList::IsEnabled(
+          features::kDragDropOnlySynthesizeHttpOrHttpsUrlsFromText) &&
+      IsRendererTainted() && !test_url.SchemeIsHTTPOrHTTPS()) {
+    return std::nullopt;
+  }
+
+  return test_url;
 }
 
 void OSExchangeDataProviderNonBacked::SetSource(

@@ -47,7 +47,8 @@ class ChannelIndicatorViewTest
     std::unique_ptr<TestShellDelegate> shell_delegate =
         std::make_unique<TestShellDelegate>();
     shell_delegate->set_channel(static_cast<version_info::Channel>(GetParam()));
-    AshTestBase::SetUp(std::move(shell_delegate));
+    set_shell_delegate(std::move(shell_delegate));
+    AshTestBase::SetUp();
   }
 
   void SetSessionState(session_manager::SessionState state) {

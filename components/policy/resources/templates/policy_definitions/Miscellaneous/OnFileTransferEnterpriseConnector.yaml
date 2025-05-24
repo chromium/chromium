@@ -67,7 +67,7 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
-- dpr-eng@google.com
+- cbe-cep-eng@google.com
 - sseckler@google.com
 - domfc@chromium.org
 schema:

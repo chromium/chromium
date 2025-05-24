@@ -8,6 +8,8 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.DoNotInline;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
@@ -15,11 +17,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /** Helper class to simplify querying for a {@link Calendar} instance. */
+@NullMarked
 public final class CalendarFactory {
     // USER_BLOCKING since we eventually .get() this.
     private static final AsyncTask<Calendar> sCalendarBuilder =
             new CalendarBuilder().executeWithTaskTraits(TaskTraits.USER_BLOCKING_MAY_BLOCK);
-    private static Calendar sCalendarToClone;
+    private static @Nullable Calendar sCalendarToClone;
 
     private CalendarFactory() {}
 

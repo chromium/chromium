@@ -100,6 +100,8 @@ class AssertPageLoadMetricsObserver final
 
   void OnConnectStart(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnConnectEnd(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnDomainLookupStart(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnDomainLookupEnd(
@@ -172,8 +174,9 @@ class AssertPageLoadMetricsObserver final
   void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& features) override {}
-  void SetUpSharedMemoryForSmoothness(
-      const base::ReadOnlySharedMemoryRegion& shared_memory) override {}
+  void SetUpSharedMemoryForUkms(
+      const base::ReadOnlySharedMemoryRegion& smoothness_memory,
+      const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) override {}
   void OnResourceDataUseObserved(
       content::RenderFrameHost* rfh,
       const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
@@ -226,6 +229,7 @@ class AssertPageLoadMetricsObserver final
   void OnAdAuctionComplete(bool is_server_auction,
                            bool is_on_device_auction,
                            content::AuctionResult result) override {}
+  void OnPrimaryPageRenderProcessGone() override {}
 
   // Reference implementations duplicated from PageLoadMetricsObserver
   ObservePolicy ShouldObserveMimeTypeByDefault(

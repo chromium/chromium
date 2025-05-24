@@ -30,7 +30,7 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/net/net_metrics_log_uploader.h"
 #include "components/metrics/persistent_synthetic_trial_observer.h"
-#include "components/metrics/url_constants.h"
+#include "components/metrics/server_urls.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -239,7 +239,7 @@ GURL CastMetricsServiceClient::GetMetricsServerUrl() {
   }
   // Note: This uses the old metrics service URL because some server-side
   // provisioning is needed to support the extra Cast traffic on the new URL.
-  return GURL(::metrics::kOldMetricsServerUrl);
+  return ::metrics::GetCastMetricsServerUrl();
 }
 
 std::unique_ptr<::metrics::MetricsLogUploader>

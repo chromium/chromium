@@ -1,0 +1,6 @@
+specific_include_rules = {
+    "ai_page_content_agent.cc": [
+      "+services/metrics/public/cpp/ukm_builders.h",
+      "+ui/accessibility",
+    ]
+}

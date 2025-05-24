@@ -18,9 +18,9 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/common/content_switches.h"
 #include "media/capture/video/fake_video_capture_device.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -28,7 +28,7 @@ namespace content {
 
 bool IsFeatureEnabled(RenderFrameHost* rfh,
                       bool tests_use_fake_render_frame_hosts,
-                      blink::mojom::PermissionsPolicyFeature feature) {
+                      network::mojom::PermissionsPolicyFeature feature) {
   // Some tests don't (or can't) set up the RenderFrameHost. In these cases we
   // just ignore permissions policy checks (there is no permissions policy to
   // test).
@@ -52,6 +52,11 @@ class MediaStreamUIProxy::Core {
   ~Core();
 
   void RequestAccess(std::unique_ptr<MediaStreamRequest> request);
+
+  void RequestSelectAudioOutput(
+      std::unique_ptr<SelectAudioOutputRequest> request,
+      SelectAudioOutputCallback callback);
+
   void OnStarted(gfx::NativeViewId* window_id,
                  bool has_source_callback,
                  const std::string& label,
@@ -154,10 +159,32 @@ void MediaStreamUIProxy::Core::RequestAccess(
     return;
   }
 
+  RenderFrameHostImpl* host = RenderFrameHostImpl::FromID(
+      request->render_process_id, request->render_frame_id);
+
   render_delegate->RequestMediaAccessPermission(
-      *request,
+      host, *request,
       base::BindOnce(&Core::ProcessAccessRequestResponse, weak_this_,
                      request->render_process_id, request->render_frame_id));
+}
+
+void MediaStreamUIProxy::Core::RequestSelectAudioOutput(
+    std::unique_ptr<SelectAudioOutputRequest> request,
+    SelectAudioOutputCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  RenderFrameHostDelegate* render_delegate = GetRenderFrameHostDelegate(
+      request->render_frame_host_id().child_id,
+      request->render_frame_host_id().frame_routing_id);
+  if (!render_delegate) {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  base::unexpected(
+                                      SelectAudioOutputError::kNotSupported)));
+    return;
+  }
+
+  render_delegate->ProcessSelectAudioOutput(*request, std::move(callback));
 }
 
 void MediaStreamUIProxy::Core::OnStarted(
@@ -265,8 +292,9 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
     const blink::MediaStreamDevice& audio_device = devices.audio_device.value();
     if (audio_device.type !=
             blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-        IsFeatureEnabled(host, tests_use_fake_render_frame_hosts_,
-                         blink::mojom::PermissionsPolicyFeature::kMicrophone)) {
+        IsFeatureEnabled(
+            host, tests_use_fake_render_frame_hosts_,
+            network::mojom::PermissionsPolicyFeature::kMicrophone)) {
       filtered_devices_set->stream_devices[0]->audio_device = audio_device;
     }
   }
@@ -276,7 +304,7 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
     if (video_device.type !=
             blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
         IsFeatureEnabled(host, tests_use_fake_render_frame_hosts_,
-                         blink::mojom::PermissionsPolicyFeature::kCamera)) {
+                         network::mojom::PermissionsPolicyFeature::kCamera)) {
       filtered_devices_set->stream_devices[0]->video_device = video_device;
     }
   }
@@ -375,6 +403,17 @@ void MediaStreamUIProxy::RequestAccess(
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&Core::RequestAccess, core_->GetWeakPtr(),
                                 std::move(request)));
+}
+
+void MediaStreamUIProxy::RequestSelectAudioOutput(
+    std::unique_ptr<SelectAudioOutputRequest> request,
+    SelectAudioOutputCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::RequestSelectAudioOutput, core_->GetWeakPtr(),
+                     std::move(request), std::move(callback)));
 }
 
 void MediaStreamUIProxy::OnStarted(
@@ -497,9 +536,9 @@ FakeMediaStreamUIProxy::FakeMediaStreamUIProxy(
 
 FakeMediaStreamUIProxy::~FakeMediaStreamUIProxy() = default;
 
-void FakeMediaStreamUIProxy::SetAvailableDevices(
+void FakeMediaStreamUIProxy::AddAvailableDevices(
     const blink::MediaStreamDevices& devices) {
-  devices_ = devices;
+  devices_.insert(devices_.end(), devices.begin(), devices.end());
 }
 
 void FakeMediaStreamUIProxy::SetMicAccess(bool access) {
@@ -586,6 +625,13 @@ void FakeMediaStreamUIProxy::RequestAccess(
           is_devices_empty ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
                            : blink::mojom::MediaStreamRequestResult::OK,
           std::unique_ptr<MediaStreamUI>()));
+}
+
+void FakeMediaStreamUIProxy::RequestSelectAudioOutput(
+    std::unique_ptr<SelectAudioOutputRequest> request,
+    SelectAudioOutputCallback callback) {
+  std::move(callback).Run(
+      base::unexpected(content::SelectAudioOutputError::kNoPermission));
 }
 
 void FakeMediaStreamUIProxy::OnStarted(

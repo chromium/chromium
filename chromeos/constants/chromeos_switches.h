@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 
 // This file is only for command-line switches that are shared between
 // ash-chrome and lacros-chrome. For ash command-line switches, please add them
@@ -20,22 +19,13 @@
 namespace chromeos::switches {
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kContainerAppPreinstallActivationTimeThreshold[];
-
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kContainerAppPreinstallDebugKey[];
+extern const char kGeminiAppPreinstallActivationTimeThreshold[];
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kMahiRestrictionsOverride[];
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-std::optional<base::Time> GetContainerAppPreinstallActivationTimeThreshold();
-
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsContainerAppPreinstallDebugKeyMatched();
-
-[[nodiscard]] COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-    base::AutoReset<bool> SetIgnoreContainerAppPreinstallDebugKeyForTesting();
+std::optional<base::Time> GetGeminiAppPreinstallActivationTimeThreshold();
 
 }  // namespace chromeos::switches
 

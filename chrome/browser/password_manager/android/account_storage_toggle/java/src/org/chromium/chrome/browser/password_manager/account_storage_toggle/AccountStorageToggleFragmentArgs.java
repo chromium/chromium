@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.password_manager.account_storage_toggle;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * The account storage toggle controls whether signed-in non-syncing users have access to account
- * passwords. It is housed by different fragments depending on certain feature flags. This class
- * contains the common arguments used by such fragments to customize the look of the toggle.
+ * passwords. This class contains the common arguments used to customize the look of the toggle.
  */
+@NullMarked
 public class AccountStorageToggleFragmentArgs {
     // Name for a boolean argument controlling whether to highlight the toggle.
     public static final String HIGHLIGHT = "highlight_account_storage_toggle";

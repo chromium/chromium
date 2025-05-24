@@ -116,9 +116,6 @@ class BlockingLoginTest
   }
 
   void OnProfileAdded(Profile* profile) override {
-    if (ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
-      return;
-    }
     ASSERT_EQ(profile_added_, nullptr);
     profile_added_ = profile;
   }

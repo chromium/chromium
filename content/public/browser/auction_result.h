@@ -16,8 +16,11 @@ enum class AuctionResult {
   // The auction succeeded, with a winning bidder.
   kSuccess = 0,
 
-  // The auction was aborted, due to either navigating away from the frame
-  // that started the auction or browser shutdown.
+  // TODO(abigailkatcoff): This will be made obsolete and replaced by
+  // kDocumentDestruction and kAbortSignal. It's only around so that
+  // InterestGroup.Auction.Result can coexist with
+  // InterestGroup.Auction.Result2 for a short while before we replace
+  // InterestGroup.Auction.Result.
   kAborted = 1,
 
   // Bad message received over Mojo. This is potentially a security error.
@@ -60,7 +63,14 @@ enum class AuctionResult {
   // prior call to createAuctionNonce.
   kInvalidAuctionNonce = 13,
 
-  kMaxValue = kInvalidAuctionNonce
+  // The auction's abort signal was called.
+  kAbortSignal = 14,
+
+  // The auction was aborted due to either navigating away from the document
+  // that started the auction or browser shutdown.
+  kDocumentDestruction = 15,
+
+  kMaxValue = kDocumentDestruction
 };
 
 }  // namespace content

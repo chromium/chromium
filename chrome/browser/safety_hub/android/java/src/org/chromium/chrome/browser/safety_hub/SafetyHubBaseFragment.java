@@ -8,31 +8,34 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 
+@NullMarked
 public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
     private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Disable animations of preference changes.
         getListView().setItemAnimator(null);
     }
 
+    @Initializer
     public void setSnackbarManagerSupplier(
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
         mSnackbarManagerSupplier = snackbarManagerSupplier;
@@ -76,9 +79,8 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
         snackbarManager.showSnackbar(snackbar);
     }
 
-    protected void launchSettingsActivity(Class<? extends Fragment> fragment) {
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(getContext(), fragment);
+    protected void startSettings(Class<? extends Fragment> fragment) {
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(getContext(), fragment);
     }
 
     protected void launchSiteSettingsActivity(@SiteSettingsCategory.Type int category) {
@@ -90,7 +92,7 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
                 SingleCategorySettings.EXTRA_TITLE,
                 getContext().getString(ContentSettingsResources.getTitleForCategory(category)));
 
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(getContext(), SingleCategorySettings.class, extras);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(getContext(), SingleCategorySettings.class, extras);
     }
 }

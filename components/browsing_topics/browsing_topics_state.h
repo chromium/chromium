@@ -117,14 +117,33 @@ class BrowsingTopicsState
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
-                           EpochsForSite_OneEpoch_SwitchTimeNotArrived);
+                           EpochsForSite_OneEpoch_IntroductionTime);
   FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
-                           EpochsForSite_OneEpoch_SwitchTimeArrived);
+                           EpochsForSite_OneEpoch_IntroductionTime2);
+  FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
+                           EpochsForSite_ThreeEpochs_IntroductionTime);
   FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
                            EpochsForSite_OneEpoch_ManuallyTriggered);
+  FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest, EpochsForSite_PhaseOutTime);
 
-  base::TimeDelta CalculateSiteStickyTimeDelta(
+  // Calculate the delay between the calculation of the latest epoch and when a
+  // site starts seeing that epoch's topics. The site transitions to the latest
+  // epoch at a per-site, per-epoch random time within
+  // [calculation time, calculation time + max delay).
+  base::TimeDelta CalculateSiteStickyIntroductionDelay(
       const std::string& top_domain) const;
+
+  // Calculate the time offset between when a site stops seeing an epoch's
+  // topics and when the epoch is actually deleted. The site transitions away
+  // from the epoch at a per-site, per-epoch random time within
+  // [deletion time - max offset, deletion time].
+  //
+  // Note: The actual phase-out time can be influenced by the
+  // 'kBrowsingTopicsNumberOfEpochsToExpose' setting. If this setting enforces a
+  // more restrictive phase-out, that will take precedence.
+  base::TimeDelta CalculateSiteStickyPhaseOutTimeOffset(
+      const std::string& top_domain,
+      const EpochTopics& epoch) const;
 
   // ImportantFileWriter::BackgroundDataSerializer implementation.
   base::ImportantFileWriter::BackgroundDataProducerCallback

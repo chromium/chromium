@@ -10,6 +10,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model_impl.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_ui_action_logger.h"
@@ -26,6 +29,7 @@
 #include "components/translate/core/common/translate_util.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/actions/actions.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 
@@ -34,19 +38,25 @@ namespace {
 const char kTranslatePartialTranslationSelectionCharacterCount[] =
     "Translate.PartialTranslation.Selection.CharacterCount";
 
+base::WeakPtr<actions::ActionItem> GetTranslateActionItem(
+    actions::ActionItem* root_action_item) {
+  actions::ActionItem* translate_action_item =
+      actions::ActionManager::Get().FindAction(kActionShowTranslate,
+                                               root_action_item);
+  CHECK(translate_action_item);
+  return translate_action_item->GetAsWeakPtr();
 }
+
+}  // namespace
+
+TranslateBubbleController::TranslateBubbleController(
+    actions::ActionItem* root_action_item)
+    : action_item_(GetTranslateActionItem(root_action_item)) {}
 
 TranslateBubbleController::~TranslateBubbleController() = default;
 
-// static
-TranslateBubbleController* TranslateBubbleController::GetOrCreate(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  TranslateBubbleController::CreateForWebContents(web_contents);
-  return TranslateBubbleController::FromWebContents(web_contents);
-}
-
 views::Widget* TranslateBubbleController::ShowTranslateBubble(
+    content::WebContents* web_contents,
     views::View* anchor_view,
     views::Button* highlighted_button,
     translate::TranslateStep step,
@@ -56,8 +66,9 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
     LocationBarBubbleDelegateView::DisplayReason reason) {
   // If the Partial Translate bubble is already being shown, close it before
   // showing the full translate bubble.
-  if (partial_translate_bubble_view_)
+  if (partial_translate_bubble_view_) {
     partial_translate_bubble_view_->CloseBubble();
+  }
 
   if (translate_bubble_view_) {
     // When the user reads the advanced setting panel, the bubble should not be
@@ -77,8 +88,6 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
     return nullptr;
   }
 
-  content::WebContents* web_contents = &GetWebContents();
-
   std::unique_ptr<TranslateBubbleModel> model;
   if (model_factory_callback_) {
     model = model_factory_callback_.Run();
@@ -92,12 +101,13 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
   }
 
   auto translate_bubble_view = std::make_unique<TranslateBubbleView>(
-      anchor_view, std::move(model), error_type, web_contents,
+      action_item_, anchor_view, std::move(model), error_type, web_contents,
       GetOnTranslateBubbleClosedCallback());
   translate_bubble_view_ = translate_bubble_view.get();
 
-  if (highlighted_button)
+  if (highlighted_button) {
     translate_bubble_view_->SetHighlightedButton(highlighted_button);
+  }
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
       std::move(translate_bubble_view));
 
@@ -113,12 +123,13 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
 }
 
 void TranslateBubbleController::StartPartialTranslate(
+    content::WebContents* web_contents,
     views::View* anchor_view,
     views::Button* highlighted_button,
     const std::string& source_language,
     const std::string& target_language,
     const std::u16string& text_selection) {
-  CreatePartialTranslateBubble(anchor_view, highlighted_button,
+  CreatePartialTranslateBubble(web_contents, anchor_view, highlighted_button,
                                PartialTranslateBubbleModel::VIEW_STATE_WAITING,
                                source_language, target_language, text_selection,
                                /*target_text=*/u"",
@@ -132,7 +143,7 @@ void TranslateBubbleController::StartPartialTranslate(
       base::BindOnce(&TranslateBubbleController::OnPartialTranslateWaitExpired,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  partial_translate_bubble_view_->model()->Translate(&GetWebContents());
+  partial_translate_bubble_view_->model()->Translate(web_contents);
 }
 
 void TranslateBubbleController::OnPartialTranslateWaitExpired() {
@@ -176,6 +187,7 @@ void TranslateBubbleController::OnPartialTranslateComplete() {
 }
 
 void TranslateBubbleController::CreatePartialTranslateBubble(
+    content::WebContents* web_contents,
     views::View* anchor_view,
     views::Button* highlighted_button,
     PartialTranslateBubbleModel::ViewState view_state,
@@ -186,8 +198,9 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
     translate::TranslateErrors error_type) {
   // If the other Translate bubble is already being shown, close it before
   // showing this one.
-  if (translate_bubble_view_)
+  if (translate_bubble_view_) {
     translate_bubble_view_->CloseBubble();
+  }
 
   // Truncate text selection, if needed. Log the length of the text selection
   // before truncating.
@@ -219,7 +232,6 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
     partial_translate_bubble_view_->SetViewState(view_state, error_type);
     return;
   }
-  content::WebContents* web_contents = &GetWebContents();
 
   std::unique_ptr<PartialTranslateBubbleModel> model;
   if (partial_model_factory_callback_) {
@@ -230,8 +242,6 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
         &language_codes);
     auto translate_ui_languages_manager =
         std::make_unique<translate::TranslateUILanguagesManager>(
-            ChromeTranslateClient::GetManagerFromWebContents(web_contents)
-                ->GetWeakPtr(),
             language_codes, source_language, target_language);
 
     Profile* profile =
@@ -252,11 +262,12 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
 
   auto partial_translate_bubble_view =
       std::make_unique<PartialTranslateBubbleView>(
-          anchor_view, std::move(model), web_contents,
+          action_item_, anchor_view, std::move(model), web_contents,
           GetOnPartialTranslateBubbleClosedCallback());
   partial_translate_bubble_view_ = partial_translate_bubble_view.get();
-  if (highlighted_button)
+  if (highlighted_button) {
     partial_translate_bubble_view_->SetHighlightedButton(highlighted_button);
+  }
   views::BubbleDialogDelegateView::CreateBubble(
       std::move(partial_translate_bubble_view));
   partial_translate_bubble_view_->SetViewState(view_state, error_type);
@@ -310,9 +321,5 @@ void TranslateBubbleController::OnTranslateBubbleClosed() {
 void TranslateBubbleController::OnPartialTranslateBubbleClosed() {
   partial_translate_bubble_view_ = nullptr;
 }
-
-TranslateBubbleController::TranslateBubbleController(
-    content::WebContents* web_contents)
-    : content::WebContentsUserData<TranslateBubbleController>(*web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TranslateBubbleController);

@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 
+#include "base/containers/flat_set.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -60,10 +62,43 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
       break;
     }
     case BookmarkEditor::EditDetails::EXISTING_NODE:
-      NOTREACHED_IN_MIGRATION();
+    case BookmarkEditor::EditDetails::MOVE:
+      NOTREACHED();
   }
 
   return node;
+}
+
+const BookmarkNode* GetParentNodeForMove(
+    bookmarks::BookmarkModel* model,
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes) {
+  CHECK(!nodes.empty());
+  const BookmarkNode* first_parent = nodes[0].get()->parent();
+
+  bool same_parent = std::ranges::all_of(nodes, [&first_parent](auto node) {
+    return node->parent() == first_parent;
+  });
+
+  // Default to the parent node if all of the nodes have the same parent.
+  if (same_parent) {
+    return first_parent;
+  }
+
+  // If the nodes do not have the same parent, but at least one of them is
+  // saved to account storage, default to the account other node.
+  if (model->account_other_node()) {
+    bool only_local_nodes = std::ranges::all_of(
+        nodes, [&model](auto node) { return model->IsLocalOnlyNode(*node); });
+
+    if (!only_local_nodes) {
+      return model->account_other_node();
+    }
+  }
+
+  // If the nodes are all saved to local storage or sync is enabled, default
+  // to the local other node.
+  return model->other_node();
 }
 
 }  // namespace
@@ -77,22 +112,16 @@ BookmarkEditor::EditDetails::BookmarkData::~BookmarkData() = default;
 
 BookmarkEditor::EditDetails::EditDetails(Type node_type) : type(node_type) {}
 
-BookmarkNode::Type BookmarkEditor::EditDetails::GetNodeType() const {
-  BookmarkNode::Type node_type = BookmarkNode::URL;
+bool BookmarkEditor::EditDetails::CanChangeUrl() const {
   switch (type) {
     case EXISTING_NODE:
-      node_type = existing_node->type();
-      break;
+      return existing_node->type() == BookmarkNode::URL;
     case NEW_URL:
-      node_type = BookmarkNode::URL;
-      break;
+      return true;
     case NEW_FOLDER:
-      node_type = BookmarkNode::FOLDER;
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
+    case MOVE:
+      return false;
   }
-  return node_type;
 }
 
 int BookmarkEditor::EditDetails::GetWindowTitleId() const {
@@ -101,17 +130,20 @@ int BookmarkEditor::EditDetails::GetWindowTitleId() const {
     case EditDetails::EXISTING_NODE:
     case EditDetails::NEW_URL:
       dialog_title = (type == EditDetails::EXISTING_NODE &&
-                      existing_node->type() == BookmarkNode::FOLDER) ?
-          IDS_BOOKMARK_FOLDER_EDITOR_WINDOW_TITLE :
-          IDS_BOOKMARK_EDITOR_TITLE;
+                      existing_node->type() == BookmarkNode::FOLDER)
+                         ? IDS_BOOKMARK_FOLDER_EDITOR_WINDOW_TITLE
+                         : IDS_BOOKMARK_EDITOR_TITLE;
       break;
     case EditDetails::NEW_FOLDER:
       dialog_title = bookmark_data.children.empty()
                          ? IDS_BOOKMARK_FOLDER_EDITOR_WINDOW_TITLE_NEW
                          : IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE;
       break;
+    case EditDetails::MOVE:
+      dialog_title = IDS_BOOKMARK_MOVE_DIALOG_TITLE;
+      break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return dialog_title;
 }
@@ -120,8 +152,9 @@ BookmarkEditor::EditDetails BookmarkEditor::EditDetails::EditNode(
     const BookmarkNode* node) {
   EditDetails details(EXISTING_NODE);
   details.existing_node = node;
-  if (node)
+  if (node) {
     details.parent_node = node->parent();
+  }
   return details;
 }
 
@@ -147,54 +180,71 @@ BookmarkEditor::EditDetails BookmarkEditor::EditDetails::AddFolder(
   return details;
 }
 
+BookmarkEditor::EditDetails BookmarkEditor::EditDetails::MoveNodes(
+    bookmarks::BookmarkModel* model,
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes) {
+  EditDetails details(MOVE);
+
+  details.existing_nodes_to_move = base::MakeFlatSet<
+      raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>(nodes);
+
+  details.parent_node = GetParentNodeForMove(model, nodes);
+
+  return details;
+}
+
 BookmarkEditor::EditDetails::EditDetails(const EditDetails& other) = default;
 
 BookmarkEditor::EditDetails::~EditDetails() = default;
 
 // static
-const BookmarkNode* BookmarkEditor::ApplyEditsWithNoFolderChange(
-    BookmarkModel* model,
-    const BookmarkNode* parent,
-    const EditDetails& details,
-    const std::u16string& new_title,
-    const GURL& new_url) {
+void BookmarkEditor::ApplyEdits(BookmarkModel* model,
+                                const BookmarkNode* new_parent,
+                                const EditDetails& details,
+                                const std::u16string& new_title,
+                                const GURL& new_url) {
   if (details.type == EditDetails::NEW_URL ||
       details.type == EditDetails::NEW_FOLDER) {
-    return CreateNewNode(model, parent, details, new_title, new_url);
+    CreateNewNode(model, new_parent, details, new_title, new_url);
+    return;
+  }
+
+  if (details.type == EditDetails::MOVE) {
+    std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+        nodes(details.existing_nodes_to_move.begin(),
+              details.existing_nodes_to_move.end());
+
+    // Persist the nodes' order within the same parent folder in the new
+    // location. Between different parent folders, choose the order depending on
+    // when they were last modified. More recently modified folders are rowed
+    // last, as new bookmarks are usually added to the back of a folder.
+    std::sort(
+        nodes.begin(), nodes.end(),
+        [](const bookmarks::BookmarkNode* l, const bookmarks::BookmarkNode* r) {
+          if (l->parent() != r->parent()) {
+            return l->parent()->date_folder_modified() <
+                   r->parent()->date_folder_modified();
+          }
+          return l->parent()->GetIndexOf(l) < r->parent()->GetIndexOf(r);
+        });
+
+    for (const bookmarks::BookmarkNode* node_to_move : nodes) {
+      model->Move(node_to_move, new_parent, new_parent->children().size());
+    }
+    return;
   }
 
   const BookmarkNode* node = details.existing_node;
   DCHECK(node);
 
-  if (node->is_url())
-    model->SetURL(node, new_url, bookmarks::metrics::BookmarkEditSource::kUser);
-  model->SetTitle(node, new_title,
-                  bookmarks::metrics::BookmarkEditSource::kUser);
-
-  return node;
-}
-
-// static
-const BookmarkNode* BookmarkEditor::ApplyEditsWithPossibleFolderChange(
-    BookmarkModel* model,
-    const BookmarkNode* new_parent,
-    const EditDetails& details,
-    const std::u16string& new_title,
-    const GURL& new_url) {
-  if (details.type == EditDetails::NEW_URL ||
-      details.type == EditDetails::NEW_FOLDER) {
-    return CreateNewNode(model, new_parent, details, new_title, new_url);
-  }
-
-  const BookmarkNode* node = details.existing_node;
-  DCHECK(node);
-
-  if (new_parent != node->parent())
+  if (new_parent != node->parent()) {
     model->Move(node, new_parent, new_parent->children().size());
-  if (node->is_url())
+  }
+  if (node->is_url()) {
     model->SetURL(node, new_url, bookmarks::metrics::BookmarkEditSource::kUser);
+  }
+
   model->SetTitle(node, new_title,
                   bookmarks::metrics::BookmarkEditSource::kUser);
-
-  return node;
 }

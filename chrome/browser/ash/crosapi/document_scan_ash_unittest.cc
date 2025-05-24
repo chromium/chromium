@@ -20,6 +20,7 @@
 #include "chromeos/crosapi/mojom/document_scan.mojom-forward.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom-shared.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,10 +30,6 @@ namespace crosapi {
 namespace {
 
 using testing::ElementsAre;
-
-// Scanner name used for tests.
-constexpr char kTestScannerName[] = "Test Scanner";
-constexpr char kVirtualUSBPrinterName[] = "DavieV Virtual USB Printer (USB)";
 
 // Creates a new FakeLorgnetteScannerManager for the given `context`.
 std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
@@ -51,14 +48,11 @@ class DocumentScanAshTest : public testing::Test {
 
     const AccountId account_id =
         AccountId::FromUserEmail(profile_.GetProfileUserName());
-    const user_manager::User* user =
-        fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-            account_id,
-            /*is_affiliated=*/false, user_manager::UserType::kRegular,
-            &profile_);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
+    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        account_id,
+        /*is_affiliated=*/false, user_manager::UserType::kRegular, &profile_);
+    fake_user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     fake_user_manager_->SimulateUserProfileLoad(account_id);
   }
 
@@ -76,16 +70,6 @@ class DocumentScanAshTest : public testing::Test {
   std::vector<std::string> GetScannerNames() {
     base::test::TestFuture<const std::vector<std::string>&> future;
     document_scan_ash().GetScannerNames(future.GetCallback());
-    return future.Take();
-  }
-
-  std::tuple<mojom::ScanFailureMode, const std::optional<std::string>>
-  ScanFirstPage(const std::string& scanner_name) {
-    base::test::TestFuture<mojom::ScanFailureMode,
-                           const std::optional<std::string>&>
-        future;
-    document_scan_ash().ScanFirstPage(scanner_name, future.GetCallback());
-
     return future.Take();
   }
 
@@ -162,56 +146,6 @@ class DocumentScanAshTest : public testing::Test {
 
   DocumentScanAsh document_scan_ash_;
 };
-
-TEST_F(DocumentScanAshTest, ScanFirstPage_NoScanners) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse({});
-  const std::vector<std::string> scanner_names = GetScannerNames();
-
-  EXPECT_TRUE(scanner_names.empty());
-}
-
-TEST_F(DocumentScanAshTest, ScanFirstPage_SingleScanner) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
-  const std::vector<std::string> scanner_names = GetScannerNames();
-
-  EXPECT_THAT(scanner_names, ElementsAre(kTestScannerName));
-}
-
-TEST_F(DocumentScanAshTest, ScanFirstPage_MultipleScanner) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse(
-      {kTestScannerName, kVirtualUSBPrinterName});
-  const std::vector<std::string> scanner_names = GetScannerNames();
-
-  EXPECT_THAT(scanner_names,
-              ElementsAre(kTestScannerName, kVirtualUSBPrinterName));
-}
-
-TEST_F(DocumentScanAshTest, ScanFirstPage_InvalidScannerName) {
-  const auto [failure_mode, scan_data] = ScanFirstPage("bad_scanner");
-
-  EXPECT_EQ(failure_mode, mojom::ScanFailureMode::kDeviceBusy);
-  EXPECT_FALSE(scan_data.has_value());
-}
-
-TEST_F(DocumentScanAshTest, ScanFirstPage_ScannerNoData) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
-  const auto [failure_mode, scan_data] = ScanFirstPage(kTestScannerName);
-
-  EXPECT_EQ(failure_mode, mojom::ScanFailureMode::kDeviceBusy);
-  EXPECT_FALSE(scan_data.has_value());
-}
-
-TEST_F(DocumentScanAshTest, ScanFirstPage_ScannerData) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
-  const std::vector<std::string> scan_data = {"PrettyPicture"};
-  GetLorgnetteScannerManager()->SetScanResponse(scan_data);
-  const auto [failure_mode, scan_data_response] =
-      ScanFirstPage(kTestScannerName);
-
-  EXPECT_EQ(failure_mode, mojom::ScanFailureMode::kNoFailure);
-  ASSERT_TRUE(scan_data_response.has_value());
-  EXPECT_EQ(scan_data_response.value(), "PrettyPicture");
-}
 
 TEST_F(DocumentScanAshTest, GetScannerList_BadResponse) {
   GetLorgnetteScannerManager()->SetGetScannerInfoListResponse(std::nullopt);

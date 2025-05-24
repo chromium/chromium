@@ -231,7 +231,7 @@ void KeyboardLayoutMonitorWin::QueryLayoutOnInputThread(
           /* numlock_state */ true, shift_level & 1, virtual_key, key);
 
       // First check if the key generates a character.
-      BYTE key_state[256] = {0};
+      BYTE key_state[256] = {};
       // Modifiers set the high-order bit when pressed.
       key_state[VK_SHIFT] = (shift_level & 1) << 7;
       key_state[VK_CONTROL] = key_state[VK_MENU] = (shift_level & 2) << 6;
@@ -379,7 +379,7 @@ void ClearDeadKeys(HKL layout) {
   // which includes the list of currently stored dead keys. Pressing space
   // translates previously pressed dead keys to characters, clearing the dead-
   // key buffer.
-  BYTE key_state[256] = {0};
+  BYTE key_state[256] = {};
   WCHAR char_buffer[16];
   ToUnicodeEx(VK_SPACE,
               ui::KeycodeConverter::DomCodeToNativeKeycode(ui::DomCode::SPACE),

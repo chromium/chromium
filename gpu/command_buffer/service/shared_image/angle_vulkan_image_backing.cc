@@ -18,6 +18,7 @@
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
@@ -166,8 +167,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
       // cannot reuse the cached SkSurface.
       if (!surface || surface_props != surface->props() ||
           final_msaa_count != backing_impl()->surface_msaa_count_) {
-        SkColorType sk_color_type = viz::ToClosestSkColorType(
-            /*gpu_compositing=*/true, format(), plane);
+        SkColorType sk_color_type = viz::ToClosestSkColorType(format(), plane);
         surface = SkSurfaces::WrapBackendTexture(
             backing_impl()->gr_context(), promise_texture->backendTexture(),
             surface_origin(), final_msaa_count, sk_color_type,
@@ -697,6 +697,31 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
     gl_texture.passthrough_texture = std::move(passthrough_texture);
 
     gl_texture_ids_[plane] = texture_id;
+  }
+
+  return true;
+}
+
+bool AngleVulkanImageBacking::ReadbackToMemory(
+    const std::vector<SkPixmap>& pixmaps) {
+  if (!BeginAccessSkia(/*read_only=*/true)) {
+    return false;
+  }
+
+  absl::Cleanup cleanup = [&]() { EndAccessSkia(); };
+
+  CHECK_EQ(pixmaps.size(), vk_textures_.size());
+  for (int i = 0; i < format().NumberOfPlanes(); i++) {
+    const auto color_type = viz::ToClosestSkColorType(format(), i);
+    const gfx::Size plane_size = format().GetPlaneSize(i, size());
+
+    CHECK_EQ(color_type, pixmaps[i].colorType());
+    CHECK_EQ(plane_size.width(), pixmaps[i].width());
+    CHECK_EQ(plane_size.height(), pixmaps[i].height());
+
+    if (!vk_textures_[i].Readback(gr_context(), pixmaps[i])) {
+      return false;
+    }
   }
 
   return true;

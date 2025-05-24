@@ -116,7 +116,6 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
-  void SetTooltipText(const std::u16string& tooltip_text) override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,

@@ -8,8 +8,7 @@
 
 namespace ash {
 
-MockEditorPanelManager::MockEditorPanelManager()
-    : input_method::EditorPanelManager(/*delegate=*/nullptr) {}
+MockEditorPanelManager::MockEditorPanelManager() = default;
 
 MockEditorPanelManager::~MockEditorPanelManager() = default;
 

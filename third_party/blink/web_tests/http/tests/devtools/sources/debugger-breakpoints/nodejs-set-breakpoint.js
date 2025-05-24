@@ -14,10 +14,11 @@ import * as Breakpoints from 'devtools/models/breakpoints/breakpoints.js';
   TestRunner.addResult(`Verify that front-end is able to set breakpoint for node.js scripts.\n`);
   await TestRunner.showPanel('sources');
 
-  SDK.TargetManager.TargetManager.instance().rootTarget().markAsNodeJSForTest();
+  const target = SDK.TargetManager.TargetManager.instance().primaryPageTarget()
+  target.markAsNodeJSForTest();
   SourcesTestRunner.startDebuggerTest();
 
-  var debuggerModel = SDK.TargetManager.TargetManager.instance().rootTarget().model(SDK.DebuggerModel.DebuggerModel);
+  var debuggerModel = target.model(SDK.DebuggerModel.DebuggerModel);
   var functionText = 'function foobar() { \nconsole.log(\'foobar execute!\');\n}';
   var sourceURL = Host.Platform.isWin() ? '\n//# sourceURL=c:\\prog\\foobar.js' : '\n//# sourceURL=/usr/local/home/prog/foobar.js';
   await TestRunner.evaluateInPageAnonymously(functionText + sourceURL);

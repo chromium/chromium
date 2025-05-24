@@ -55,8 +55,7 @@ bool ExtractSubsamples(base::span<const uint8_t> buf,
     if (i < num_partitions) {
       // For each partition, the offset is read from the partition offset data.
       partition_offset = base::U32FromBigEndian(
-          buf.subspan(kWebMEncryptedFramePartitionOffsetSize * i)
-              .first<kWebMEncryptedFramePartitionOffsetSize>());
+          buf.take_first<kWebMEncryptedFramePartitionOffsetSize>());
     } else {
       // On the last iteration, we're past the last partition offset in `buf`,
       // and the offset is the remaining bytes in the frame.
@@ -99,7 +98,7 @@ bool WebMCreateDecryptConfig(const uint8_t* data_ptr,
                              const uint8_t* key_id_ptr,
                              int key_id_size,
                              std::unique_ptr<DecryptConfig>* decrypt_config,
-                             int* data_offset) {
+                             size_t* data_offset) {
   // TODO(crbug.com/40284755):: The function should receive a span, not a
   // pointer/length pair.
   auto data =
@@ -162,7 +161,7 @@ bool WebMCreateDecryptConfig(const uint8_t* data_ptr,
         std::string(key_id.begin(), key_id.end()), counter_block,
         subsample_entries);
   }
-  *data_offset = base::checked_cast<int>(data.size() - reader.remaining());
+  *data_offset = data.size() - reader.remaining();
 
   return true;
 }

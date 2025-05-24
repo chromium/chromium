@@ -5,6 +5,15 @@
 // https://w3c.github.io/payment-request/#paymentrequest-interface
 // http://crbug.com/587995
 
+// https://w3c.github.io/secure-payment-confirmation/#enumdef-securepaymentconfirmationavailability
+enum SecurePaymentConfirmationAvailability {
+  "available",
+  "unavailable-unknown-reason",
+  "unavailable-feature-not-enabled",
+  "unavailable-no-permission-policy",
+  "unavailable-no-user-verifying-platform-authenticator",
+};
+
 [
     RuntimeEnabled=PaymentRequest,
     SecureContext,
@@ -25,4 +34,7 @@
     attribute EventHandler onshippingaddresschange;
     attribute EventHandler onshippingoptionchange;
     [RuntimeEnabled=PaymentMethodChangeEvent] attribute EventHandler onpaymentmethodchange;
+
+    // https://w3c.github.io/secure-payment-confirmation/#sctn-secure-payment-confirmation-available-api
+    [RuntimeEnabled=SecurePaymentConfirmationAvailabilityAPI, CallWith=ScriptState] static Promise<SecurePaymentConfirmationAvailability> securePaymentConfirmationAvailability();
 };

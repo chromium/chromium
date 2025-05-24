@@ -65,7 +65,7 @@ class MODULES_EXPORT DecoderTemplate
   ScriptPromise<IDLUndefined> flush(ExceptionState&);
   void reset(ExceptionState&);
   void close(ExceptionState&);
-  String state() const { return state_; }
+  V8CodecState state() const { return state_; }
 
   // EventTarget override.
   ExecutionContext* GetExecutionContext() const override;
@@ -101,6 +101,9 @@ class MODULES_EXPORT DecoderTemplate
   // The default implementation does nothing and must be overridden by derived
   // classes if needed.
   virtual void SetHardwarePreference(HardwarePreference preference);
+
+  // Called when the active configuration changes after a configure().
+  virtual void OnActiveConfigChanged(const MediaConfigType& config);
 
   // Virtual for UTs.
   virtual MediaDecoderType* decoder() { return decoder_.get(); }

@@ -16,7 +16,7 @@
 
 namespace download {
 
-DownloadFileFactory::~DownloadFileFactory() {}
+DownloadFileFactory::~DownloadFileFactory() = default;
 
 DownloadFile* DownloadFileFactory::CreateFile(
     std::unique_ptr<DownloadSaveInfo> save_info,

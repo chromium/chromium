@@ -3,7 +3,7 @@ Short Name: snappy
 URL: http://google.github.io/snappy/
 Version: 1.1.10.git.c9f9edf6d75bb065fa47468bf035e051a57bec7c
 CPEPrefix: cpe:/a:google:snappy:1.1.10
-License: New BSD
+License: BSD-3-Clause, CC-BY-4.0, MIT, CC-BY-3.0
 License File: src/COPYING
 Security Critical: yes
 Shipped: yes

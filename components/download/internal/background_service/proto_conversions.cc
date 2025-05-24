@@ -29,8 +29,7 @@ protodb::Entry_State ProtoConversions::RequestStateToProto(Entry::State state) {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return protodb::Entry_State_NEW;
+  NOTREACHED();
 }
 
 Entry::State ProtoConversions::RequestStateFromProto(
@@ -48,8 +47,7 @@ Entry::State ProtoConversions::RequestStateFromProto(
       return Entry::State::COMPLETE;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return Entry::State::NEW;
+  NOTREACHED();
 }
 
 protodb::DownloadClient ProtoConversions::DownloadClientToProto(
@@ -81,8 +79,7 @@ protodb::DownloadClient ProtoConversions::DownloadClientToProto(
       return protodb::DownloadClient::BOUNDARY;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return protodb::DownloadClient::INVALID;
+  NOTREACHED();
 }
 
 DownloadClient ProtoConversions::DownloadClientFromProto(
@@ -114,8 +111,7 @@ DownloadClient ProtoConversions::DownloadClientFromProto(
       return DownloadClient::BOUNDARY;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return DownloadClient::INVALID;
+  NOTREACHED();
 }
 
 SchedulingParams::NetworkRequirements
@@ -130,8 +126,7 @@ ProtoConversions::NetworkRequirementsFromProto(
       return SchedulingParams::NetworkRequirements::UNMETERED;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SchedulingParams::NetworkRequirements::NONE;
+  NOTREACHED();
 }
 
 protodb::SchedulingParams_NetworkRequirements
@@ -148,8 +143,7 @@ ProtoConversions::NetworkRequirementsToProto(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return protodb::SchedulingParams_NetworkRequirements_NONE;
+  NOTREACHED();
 }
 
 SchedulingParams::BatteryRequirements
@@ -164,8 +158,7 @@ ProtoConversions::BatteryRequirementsFromProto(
       return SchedulingParams::BatteryRequirements::BATTERY_CHARGING;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
+  NOTREACHED();
 }
 
 protodb::SchedulingParams_BatteryRequirements
@@ -182,8 +175,7 @@ ProtoConversions::BatteryRequirementsToProto(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return protodb::SchedulingParams_BatteryRequirements_BATTERY_INSENSITIVE;
+  NOTREACHED();
 }
 
 SchedulingParams::Priority ProtoConversions::SchedulingPriorityFromProto(
@@ -199,8 +191,7 @@ SchedulingParams::Priority ProtoConversions::SchedulingPriorityFromProto(
       return SchedulingParams::Priority::UI;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SchedulingParams::Priority::LOW;
+  NOTREACHED();
 }
 
 protodb::SchedulingParams_Priority ProtoConversions::SchedulingPriorityToProto(
@@ -218,8 +209,7 @@ protodb::SchedulingParams_Priority ProtoConversions::SchedulingPriorityToProto(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return protodb::SchedulingParams_Priority_LOW;
+  NOTREACHED();
 }
 
 SchedulingParams ProtoConversions::SchedulingParamsFromProto(

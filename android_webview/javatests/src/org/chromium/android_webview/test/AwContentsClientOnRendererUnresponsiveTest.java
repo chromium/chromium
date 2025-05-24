@@ -26,6 +26,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.ThreadUtils;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.concurrent.CountDownLatch;
@@ -41,10 +43,10 @@ public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedT
 
     private static class JSBlocker {
         // The Blink thread waits on this in block(), until the test thread calls releaseBlock().
-        private CountDownLatch mBlockingLatch;
+        private final CountDownLatch mBlockingLatch;
         // The test thread waits on this in waitUntilBlocked(),
         // until the Blink thread calls block().
-        private CountDownLatch mThreadWasBlockedLatch;
+        private final CountDownLatch mThreadWasBlockedLatch;
 
         JSBlocker() {
             mBlockingLatch = new CountDownLatch(1);
@@ -69,9 +71,9 @@ public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedT
 
     private static class RendererTransientlyUnresponsiveTestAwContentsClient
             extends TestAwContentsClient {
-        private CallbackHelper mUnresponsiveCallbackHelper;
-        private CallbackHelper mResponsiveCallbackHelper;
-        private JSBlocker mBlocker;
+        private final CallbackHelper mUnresponsiveCallbackHelper;
+        private final CallbackHelper mResponsiveCallbackHelper;
+        private final JSBlocker mBlocker;
 
         public RendererTransientlyUnresponsiveTestAwContentsClient() {
             mUnresponsiveCallbackHelper = new CallbackHelper();
@@ -120,9 +122,9 @@ public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedT
         // callbacks.
         static final int UNRESPONSIVE_CALLBACK_COUNT = 2;
 
-        private CallbackHelper mUnresponsiveCallbackHelper;
-        private CallbackHelper mTerminatedCallbackHelper;
-        private JSBlocker mBlocker;
+        private final CallbackHelper mUnresponsiveCallbackHelper;
+        private final CallbackHelper mTerminatedCallbackHelper;
+        private final JSBlocker mBlocker;
 
         public RendererUnresponsiveTestAwContentsClient() {
             mUnresponsiveCallbackHelper = new CallbackHelper();
@@ -181,13 +183,14 @@ public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedT
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     long eventTime = SystemClock.uptimeMillis();
-                    awContents.dispatchKeyEvent(
+                    KeyEvent event =
                             new KeyEvent(
                                     eventTime,
                                     eventTime,
                                     KeyEvent.ACTION_DOWN,
                                     KeyEvent.KEYCODE_ENTER,
-                                    0));
+                                    0);
+                    awContents.getViewMethods().dispatchKeyEvent(event);
                 });
     }
 
@@ -215,6 +218,8 @@ public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedT
                 awContents,
                 contentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(awContents.getWebContents()));
 
         contentsClient.permanentlyBlockBlinkThread(awContents);
         // Sending a key event while the renderer is unresponsive will cause onRendererUnresponsive
@@ -239,6 +244,9 @@ public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedT
                 awContents,
                 contentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(awContents.getWebContents()));
+
         contentsClient.transientlyBlockBlinkThread(awContents);
         sendInputEvent(awContents);
         contentsClient.awaitRecovery();

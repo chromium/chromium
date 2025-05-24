@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
@@ -11,12 +13,15 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/commerce/browser_utils.h"
+#include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/ui/tabs/existing_comparison_table_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -30,12 +35,14 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using base::UserMetricsAction;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kAddANoteTabMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kSplitTabsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kArrangeSplitTabsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kSwapSplitTabsMenuItem);
 
 TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                            TabMenuModelDelegate* tab_menu_model_delegate,
@@ -128,12 +135,67 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                 IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_tabs));
     SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
   }
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    if (!tab_strip->GetSplitForTab(index).has_value()) {
+      if (tab_strip->GetActiveTab()->IsSplit()) {
+        AddItemWithStringId(TabStripModel::CommandSwapWithActiveSplit,
+                            IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT);
+        const int swap_with_split_index = GetItemCount() - 1;
+        SetEnabledAt(swap_with_split_index, num_tabs == 1);
+        SetElementIdentifierAt(swap_with_split_index, kSwapSplitTabsMenuItem);
+      } else {
+        AddItemWithStringId(TabStripModel::CommandAddToSplit,
+                            IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT);
+        const int add_to_split_index = GetItemCount() - 1;
+        SetEnabledAt(add_to_split_index, num_tabs == 1);
+        SetElementIdentifierAt(add_to_split_index, kSplitTabsMenuItem);
+      }
+    } else {
+      arrange_split_view_submenu_ =
+          std::make_unique<SplitTabMenuModel>(tab_strip, index);
+      // The arrange split menu doesn't need the close entry.
+      arrange_split_view_submenu_->RemoveItemAt(
+          arrange_split_view_submenu_
+              ->GetIndexOfCommandId(
+                  static_cast<int>(SplitTabMenuModel::CommandId::kClose))
+              .value());
+      AddSubMenuWithStringId(TabStripModel::CommandArrangeSplit,
+                             IDS_TAB_CXMENU_ARRANGE_SPLIT,
+                             arrange_split_view_submenu_.get());
+      SetElementIdentifierAt(GetItemCount() - 1, kArrangeSplitTabsMenuItem);
+    }
+    SetIsNewFeatureAt(GetItemCount() - 1,
+                      UserEducationService::MaybeShowNewBadge(
+                          tab_strip->profile(), features::kSideBySide));
+  }
 
   for (const auto& selection : indices) {
     if (tab_strip->GetTabGroupForTab(selection).has_value()) {
       AddItemWithStringId(TabStripModel::CommandRemoveFromGroup,
                           IDS_TAB_CXMENU_REMOVE_TAB_FROM_GROUP);
       break;
+    }
+  }
+
+  if (num_tabs == 1 &&
+      base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+    auto* product_specs_service =
+        commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
+            tab_strip->profile());
+    if (commerce::ExistingComparisonTableSubMenuModel::ShouldShowSubmenu(
+            tab_strip->GetWebContentsAt(index)->GetLastCommittedURL(),
+            product_specs_service)) {
+      // Create submenu with existing comparison tables.
+      add_to_existing_comparison_table_submenu_ =
+          std::make_unique<commerce::ExistingComparisonTableSubMenuModel>(
+              delegate(), tab_menu_model_delegate_, tab_strip, index,
+              product_specs_service);
+      AddSubMenuWithStringId(TabStripModel::CommandAddToExistingComparisonTable,
+                             IDS_COMPARE_ADD_TAB_TO_COMPARISON_TABLE,
+                             add_to_existing_comparison_table_submenu_.get());
+    } else if (product_specs_service) {
+      AddItemWithStringId(TabStripModel::CommandAddToNewComparisonTable,
+                          IDS_TAB_CXMENU_ADD_TAB_TO_NEW_COMPARISON_TABLE);
     }
   }
 
@@ -157,9 +219,6 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     if (tab_organization_service) {
       AddItemWithStringId(TabStripModel::CommandOrganizeTabs,
                           IDS_TAB_CXMENU_ORGANIZE_TABS);
-      SetIsNewFeatureAt(GetItemCount() - 1,
-                        UserEducationService::MaybeShowNewBadge(
-                            tab_strip->profile(), features::kTabOrganization));
     }
   }
 
@@ -204,9 +263,14 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   AddItemWithStringId(TabStripModel::CommandCloseTab, IDS_TAB_CXMENU_CLOSETAB);
   AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
                       IDS_TAB_CXMENU_CLOSEOTHERTABS);
-  AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                      base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
-                                          : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+  {
+    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
+                        base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
+                                            : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+    SetEnabledAt(GetItemCount() - 1,
+                 tab_strip->IsContextMenuCommandEnabled(
+                     index, TabStripModel::CommandCloseTabsToRight));
+  }
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,

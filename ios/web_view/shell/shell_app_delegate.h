@@ -9,7 +9,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // UIApplicationDelegate implementation for web_view_shell.
-@interface ShellAppDelegate : UIResponder<UIApplicationDelegate>
+@interface ShellAppDelegate : UIResponder <UIApplicationDelegate>
 
 // The main window for the application.
 @property(nonatomic, strong) UIWindow* window;

@@ -25,7 +25,7 @@ namespace extensions {
 // available, but not if only some combination of Features is available.
 class ComplexFeature : public Feature {
  public:
-  // Takes ownership of Feature*s contained in |features|.
+  // Takes ownership of Feature*s contained in `features`.
   explicit ComplexFeature(std::vector<Feature*>* features);
 
   ComplexFeature(const ComplexFeature&) = delete;

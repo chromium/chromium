@@ -28,11 +28,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(CHROME_FOR_TESTING)
 
 namespace {
 
@@ -70,8 +73,8 @@ namespace code_sign_clone_manager {
 TEST(CodeSignCloneManagerTest, Clone) {
   content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      code_sign_clone_manager::kMacAppCodeSignClone);
+  feature_list.InitWithFeatures(
+      {kMacAppCodeSignClone, kMacAppCodeSignCloneRenameAsBundle}, {});
 
   // Create the test app,
   base::FilePath test_app = CreateTestApp();
@@ -95,6 +98,13 @@ TEST(CodeSignCloneManagerTest, Clone) {
   run_loop.Run();
 
   ASSERT_NE(tmp_app_path, base::FilePath());
+
+  // Make sure the tmp app path has a ".bundle" extension.
+  //
+  // (`base::FilePath::Extension()` only returns a double extension for common
+  // extensions that occur in double-extensions (e.g. `.bz`, `.gz`, `.z`) and
+  // `.bundle` is not on that list, so it doesn't return `.app.bundle`.)
+  EXPECT_EQ(tmp_app_path.Extension(), ".bundle");
 
   // Make sure the tmp app path has the expected files.
   for (base::FilePath file : test_files) {
@@ -123,8 +133,7 @@ TEST(CodeSignCloneManagerTest, Clone) {
 TEST(CodeSignCloneManagerTest, InvalidDirhelperPath) {
   content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      code_sign_clone_manager::kMacAppCodeSignClone);
+  feature_list.InitAndEnableFeature(kMacAppCodeSignClone);
 
   base::FilePath test_app = CreateTestApp();
   base::ScopedPathOverride scoped_path_override(content::CHILD_PROCESS_EXE);
@@ -155,8 +164,7 @@ TEST(CodeSignCloneManagerTest, InvalidDirhelperPath) {
 TEST(CodeSignCloneManagerTest, FailedHardLink) {
   content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      code_sign_clone_manager::kMacAppCodeSignClone);
+  feature_list.InitAndEnableFeature(kMacAppCodeSignClone);
 
   base::FilePath test_app = CreateTestApp();
   base::ScopedPathOverride scoped_path_override(content::CHILD_PROCESS_EXE);
@@ -182,8 +190,7 @@ TEST(CodeSignCloneManagerTest, FailedHardLink) {
 TEST(CodeSignCloneManagerTest, FailedClone) {
   base::test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      code_sign_clone_manager::kMacAppCodeSignClone);
+  feature_list.InitAndEnableFeature(kMacAppCodeSignClone);
 
   // Starting in macOS 10.15 the system volume is a separate read-only volume.
   // Cloning files from the system volume to a non-system volume will fail with
@@ -211,8 +218,7 @@ TEST(CodeSignCloneManagerTest, FailedClone) {
 
 TEST(CodeSignCloneManagerTest, ChromeCodeSignCloneCleanupMain) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      code_sign_clone_manager::kMacAppCodeSignClone);
+  feature_list.InitAndEnableFeature(kMacAppCodeSignClone);
 
   struct TestCase {
     std::string name;
@@ -332,7 +338,7 @@ TEST(CodeSignCloneManagerTest, IsFileOpenMoreThanOnceSeparateProcess) {
     // `stdin_writer` is closed, causing `tee` to exit.
     class TeeChildProcess {
      public:
-      TeeChildProcess(const base::FilePath& temp_file_path) {
+      explicit TeeChildProcess(const base::FilePath& temp_file_path) {
         Init(temp_file_path);
         if (testing::Test::HasFatalFailure()) {
           return;
@@ -481,3 +487,5 @@ TEST(CodeSignCloneManagerTest, IsFileOpenMoreThanOnceHardLink) {
 }
 
 }  // namespace code_sign_clone_manager
+
+#endif  // #if !BUILDFLAG(CHROME_FOR_TESTING)

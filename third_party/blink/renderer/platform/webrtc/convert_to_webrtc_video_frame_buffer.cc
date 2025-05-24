@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/public/common/features.h"
@@ -155,8 +156,8 @@ class NV12FrameAdapter : public webrtc::NV12BufferInterface {
     return frame_->stride(media::VideoFrame::Plane::kUV);
   }
 
-  rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
-    rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer;
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
+    webrtc::scoped_refptr<webrtc::I420Buffer> i420_buffer;
     i420_buffer = webrtc::I420Buffer::Create(width(), height());
     libyuv::NV12ToI420(DataY(), StrideY(), DataUV(), StrideUV(),
                        i420_buffer->MutableDataY(), i420_buffer->StrideY(),
@@ -170,21 +171,23 @@ class NV12FrameAdapter : public webrtc::NV12BufferInterface {
   scoped_refptr<media::VideoFrame> frame_;
 };
 
-rtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
+webrtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
     scoped_refptr<media::VideoFrame> video_frame) {
   switch (video_frame->format()) {
     case media::PIXEL_FORMAT_I420:
-      return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
-          new rtc::RefCountedObject<I420FrameAdapter>(std::move(video_frame)));
+      return webrtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+          new webrtc::RefCountedObject<I420FrameAdapter>(
+              std::move(video_frame)));
     case media::PIXEL_FORMAT_I420A:
-      return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
-          new rtc::RefCountedObject<I420AFrameAdapter>(std::move(video_frame)));
+      return webrtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+          new webrtc::RefCountedObject<I420AFrameAdapter>(
+              std::move(video_frame)));
     case media::PIXEL_FORMAT_NV12:
-      return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
-          new rtc::RefCountedObject<NV12FrameAdapter>(std::move(video_frame)));
+      return webrtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+          new webrtc::RefCountedObject<NV12FrameAdapter>(
+              std::move(video_frame)));
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -273,22 +276,22 @@ bool CanConvertToWebRtcVideoFrameBuffer(const media::VideoFrame* frame) {
                          frame->format())) ||
          frame->storage_type() ==
              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER ||
-         frame->HasTextures();
+         frame->HasSharedImage();
 }
 
 // static
 base::span<const media::VideoPixelFormat>
 GetPixelFormatsMappableToWebRtcVideoFrameBuffer() {
-  static constexpr const media::VideoPixelFormat
+  static constexpr media::VideoPixelFormat
       kGetPixelFormatsMappableToWebRtcVideoFrameBuffer[] = {
           media::PIXEL_FORMAT_I420, media::PIXEL_FORMAT_I420A,
           media::PIXEL_FORMAT_NV12, media::PIXEL_FORMAT_ARGB,
           media::PIXEL_FORMAT_XRGB, media::PIXEL_FORMAT_ABGR,
           media::PIXEL_FORMAT_XBGR};
-  return base::make_span(kGetPixelFormatsMappableToWebRtcVideoFrameBuffer);
+  return base::span(kGetPixelFormatsMappableToWebRtcVideoFrameBuffer);
 }
 
-rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
+webrtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
     scoped_refptr<media::VideoFrame> video_frame,
     scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources) {
   DCHECK(CanConvertToWebRtcVideoFrameBuffer(video_frame.get()))
@@ -296,6 +299,9 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
       << video_frame->AsHumanReadableString();
 
   auto create_placeholder_frame = [](const media::VideoFrame& frame) {
+    LOG(ERROR)
+        << "Mapping frame failed. Generating black frame instead. Frame: "
+        << frame.AsHumanReadableString();
     return MakeFrameAdapter(media::VideoFrame::CreateColorFrame(
         frame.natural_size(), 0u, 0x80, 0x80, frame.timestamp()));
   };
@@ -312,7 +318,7 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
       return create_placeholder_frame(*video_frame);
     }
     return MakeFrameAdapter(std::move(converted_frame));
-  } else if (video_frame->HasTextures()) {
+  } else if (video_frame->HasSharedImage()) {
     auto converted_frame =
         shared_resources
             ? shared_resources->ConstructVideoFrameFromTexture(video_frame)
@@ -336,7 +342,7 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
 }
 
 scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer,
+    webrtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer,
     base::TimeDelta timestamp) {
   RTC_DCHECK(buffer->type() != webrtc::VideoFrameBuffer::Type::kNative);
   const gfx::Size size(buffer->width(), buffer->height());
@@ -344,24 +350,59 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
   switch (buffer->type()) {
     case webrtc::VideoFrameBuffer::Type::kI420A: {
       const webrtc::I420ABufferInterface* yuva_buffer = buffer->GetI420A();
+      const media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420A;
+      const size_t luma_rows = size.height();
+      const size_t chroma_rows =
+          media::VideoFrame::PlaneSizeInSamples(
+              pixel_format, media::VideoFrame::Plane::kU, size)
+              .height();
+      // TODO(issues.webrtc.org/issues/42225170):
+      // webrtc::I420ABufferInterface should expose ArrayView instead of raw
+      // pointers.
+      auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuva_buffer->DataY(),
+          base::saturated_cast<size_t>(yuva_buffer->StrideY()) * luma_rows));
+      auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuva_buffer->DataU(),
+          base::saturated_cast<size_t>(yuva_buffer->StrideU()) * chroma_rows));
+      auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuva_buffer->DataV(),
+          base::saturated_cast<size_t>(yuva_buffer->StrideV()) * chroma_rows));
+      auto a_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuva_buffer->DataA(),
+          base::saturated_cast<size_t>(yuva_buffer->StrideA()) * luma_rows));
       video_frame = media::VideoFrame::WrapExternalYuvaData(
-          media::PIXEL_FORMAT_I420A, size, gfx::Rect(size), size,
-          yuva_buffer->StrideY(), yuva_buffer->StrideU(),
-          yuva_buffer->StrideV(), yuva_buffer->StrideA(),
-          const_cast<uint8_t*>(yuva_buffer->DataY()),
-          const_cast<uint8_t*>(yuva_buffer->DataU()),
-          const_cast<uint8_t*>(yuva_buffer->DataV()),
-          const_cast<uint8_t*>(yuva_buffer->DataA()), timestamp);
+          pixel_format, size, gfx::Rect(size), size, yuva_buffer->StrideY(),
+          yuva_buffer->StrideU(), yuva_buffer->StrideV(),
+          yuva_buffer->StrideA(), y_plane, u_plane, v_plane, a_plane,
+          timestamp);
       break;
     }
     case webrtc::VideoFrameBuffer::Type::kI420: {
       const webrtc::I420BufferInterface* yuv_buffer = buffer->GetI420();
+      const media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420;
+      const size_t luma_rows = size.height();
+      const size_t chroma_rows =
+          media::VideoFrame::PlaneSizeInSamples(
+              pixel_format, media::VideoFrame::Plane::kU, size)
+              .height();
+      // TODO(issues.webrtc.org/issues/42225170):
+      // webrtc::I420BufferInterface should expose ArrayView instead of raw
+      // pointers.
+      auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuv_buffer->DataY(),
+          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * luma_rows));
+      auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuv_buffer->DataU(),
+          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * chroma_rows));
+      auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          yuv_buffer->DataV(),
+          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * chroma_rows));
+
       video_frame = media::VideoFrame::WrapExternalYuvData(
-          media::PIXEL_FORMAT_I420, size, gfx::Rect(size), size,
-          yuv_buffer->StrideY(), yuv_buffer->StrideU(), yuv_buffer->StrideV(),
-          const_cast<uint8_t*>(yuv_buffer->DataY()),
-          const_cast<uint8_t*>(yuv_buffer->DataU()),
-          const_cast<uint8_t*>(yuv_buffer->DataV()), timestamp);
+          pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY(),
+          yuv_buffer->StrideU(), yuv_buffer->StrideV(), y_plane, u_plane,
+          v_plane, timestamp);
       break;
     }
     case webrtc::VideoFrameBuffer::Type::kI444: {
@@ -445,8 +486,7 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
   if (!video_frame) {
     return nullptr;

@@ -33,11 +33,19 @@ rendered by WebGL. The demo uses texImage2D API to copy the video textures into 
 
 ### webgpu_videos_mxn.html
   PLEASE RUN http-server TO SERVE THIS DEMO, OTHERWISE THIS DEMO WILL NOT START.
-Chromium command line switch to enable WEBGPU: `--enable-unsafe-webgpu`
 The image of each video frame is uploaded and rendered by WebGPU. The UI is also
 rendered by WebGPU. The demo uses importExternalTexture API to copy the video
 textures into GPU. The copy method can be changed to createImageBitmap() then
 device.queue.copyExternalImageToTexture() with a flag.
+
+### Running http-server
+- In a separate command window, go to content/test/data/gpu. This directory
+must include content/test/data/gpu/vc and and
+content/test/data/gpu/third_party/stats-js/
+Run `python3 -m http.server 8000`. Use a different port number if necessary.
+
+- In Chrome, type `localhost:8000`. Run webgpu_videos_mxn.html,
+webgl_videos_mxn.html or webgl2_videos_mxn.html from there.
 
 ## Usage
 
@@ -57,12 +65,15 @@ videos_mxn.html?codec=vp8
 webgpu_videos_mxn.html?codec=vp8
 ```
 
-For webgl_videos_mxn.html, webgl2_videos_mxn.html and webgpu_videos_mxn.html:
 To remove the UI icons. Use `ui=none`.
+```
+videos_mxn.html?ui=none
+```
 ```
 webgpu_videos_mxn.html?ui=none
 ```
 
+For webgl_videos_mxn.html, webgl2_videos_mxn.html and webgpu_videos_mxn.html:
 To remove the FPS panels. Use `fps=none`.
 ```
 webgpu_videos_mxn.html?fps=none

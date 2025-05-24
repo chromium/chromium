@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "components/permissions/permission_util.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using AccessType = FileSystemAccessPermissionRequestManager::Access;
@@ -33,7 +34,7 @@ class FileSystemAccessRestorePermissionBubbleViewTest
   const RequestData kRequestData =
       RequestData(RequestType::kRestorePermissions,
                   url::Origin::Create(GURL("https://example.com")),
-                  {{base::FilePath(FILE_PATH_LITERAL("/foo/bar.txt")),
+                  {{content::PathInfo(FILE_PATH_LITERAL("/foo/bar.txt")),
                     HandleType::kFile, AccessType::kRead}});
   raw_ptr<content::WebContents> web_content_;
 };

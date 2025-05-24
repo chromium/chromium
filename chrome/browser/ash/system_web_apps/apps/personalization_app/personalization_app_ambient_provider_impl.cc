@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_ambient_provider_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -12,6 +13,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -34,7 +36,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/ambient_video_albums.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/backoff_entry.h"
@@ -193,6 +195,9 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
   // Call it once to get the current ambient mode enabled status.
   BroadcastAmbientModeEnabledStatus(IsAmbientModeEnabled());
 
+  // Call it once to get the ambient theme preview images.
+  NotifyAmbientThemePreviewImagesChanged();
+
   // Call it once to get the current ambient ui settings.
   OnAmbientUiSettingsChanged();
 
@@ -222,7 +227,7 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientTheme(
 
   // Attempt to retrieve the previously selected video. If not, fallback to the
   // default video. Only applicable when target theme is `AmbientTheme::kVideo`.
-  AmbientVideo video = orig_settings.video().value_or(kDefaultAmbientVideo);
+  AmbientVideo video = orig_settings.video().value_or(GetDefaultAmbientVideo());
   if (to_theme == mojom::AmbientTheme::kVideo) {
     LogAmbientModeVideo(video);
   }
@@ -513,7 +518,7 @@ void PersonalizationAppAmbientProviderImpl::OnAlbumsChanged() {
   // Video:
   AppendAmbientVideoAlbums(
       /*currently_selected_video*/ GetCurrentUiSettings().video().value_or(
-          kDefaultAmbientVideo),
+          GetDefaultAmbientVideo()),
       albums);
 
   ambient_observer_remote_->OnAlbumsChanged(std::move(albums));
@@ -687,8 +692,8 @@ void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
         AmbientBackendController::Get()->GetTimeOfDayVideoPreviewImageUrls(
             video.value());
     std::vector<GURL> previews;
-    base::ranges::transform(url_arr, std::back_inserter(previews),
-                            [](const char* url) { return GURL(url); });
+    std::ranges::transform(url_arr, std::back_inserter(previews),
+                           [](const char* url) { return GURL(url); });
     OnPreviewsFetched(std::move(previews));
     return;
   }
@@ -706,11 +711,46 @@ void PersonalizationAppAmbientProviderImpl::OnPreviewsFetched(
   ambient_observer_remote_->OnPreviewsFetched(preview_urls);
 }
 
+void PersonalizationAppAmbientProviderImpl::
+    NotifyAmbientThemePreviewImagesChanged() {
+  if (!ambient_observer_remote_.is_bound()) {
+    return;
+  }
+  system::StatisticsProvider::GetInstance()->ScheduleOnMachineStatisticsLoaded(
+      base::BindOnce(
+          &PersonalizationAppAmbientProviderImpl::OnMachineStatisticsReady,
+          ambient_theme_previews_weak_factory_.GetWeakPtr()));
+}
+
+void PersonalizationAppAmbientProviderImpl::OnMachineStatisticsReady() {
+  base::flat_map<mojom::AmbientTheme, GURL> previews;
+  previews.emplace(mojom::AmbientTheme::kSlideshow,
+                   GURL("chrome://personalization/images/slideshow.png"));
+  previews.emplace(mojom::AmbientTheme::kFeelTheBreeze,
+                   GURL("chrome://personalization/images/feel_the_breeze.png"));
+  previews.emplace(mojom::AmbientTheme::kFloatOnBy,
+                   GURL("chrome://personalization/images/float_on_by.png"));
+  if (features::IsTimeOfDayScreenSaverEnabled()) {
+    const std::optional<std::string_view> customization_id =
+        system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+            system::kCustomizationIdKey);
+    DVLOG(1) << __func__
+             << " customization_id= " << customization_id.value_or("null");
+    previews.emplace(
+        mojom::AmbientTheme::kVideo,
+        GURL(customization_id == kJupiterScreensaverCustomizationId
+                 ? "chrome://personalization/time_of_day/thumbnails/jupiter.jpg"
+                 : "chrome://personalization/time_of_day/thumbnails/"
+                   "new_mexico.jpg"));
+  }
+  ambient_observer_remote_->OnAmbientThemePreviewImagesChanged(previews);
+}
+
 ash::PersonalAlbum*
 PersonalizationAppAmbientProviderImpl::FindPersonalAlbumById(
     const std::string& album_id) {
-  auto it = base::ranges::find(personal_albums_.albums, album_id,
-                               &ash::PersonalAlbum::album_id);
+  auto it = std::ranges::find(personal_albums_.albums, album_id,
+                              &ash::PersonalAlbum::album_id);
 
   if (it == personal_albums_.albums.end()) {
     return nullptr;
@@ -721,8 +761,8 @@ PersonalizationAppAmbientProviderImpl::FindPersonalAlbumById(
 
 ash::ArtSetting* PersonalizationAppAmbientProviderImpl::FindArtAlbumById(
     const std::string& album_id) {
-  auto it = base::ranges::find(settings_->art_settings, album_id,
-                               &ash::ArtSetting::album_id);
+  auto it = std::ranges::find(settings_->art_settings, album_id,
+                              &ash::ArtSetting::album_id);
   // Album does not exist any more.
   if (it == settings_->art_settings.end()) {
     return nullptr;

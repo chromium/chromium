@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/374320451): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/midi/midi_manager_mac.h"
 
+#include <mach/mach_time.h>
 #include <stddef.h>
 
 #include <algorithm>
 #include <iterator>
-#include <mach/mach_time.h>
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -247,7 +251,7 @@ void MidiManagerMac::ReceiveMidiNotify(const MIDINotification* message) {
         static_cast<MIDIEndpointRef>(notification->child);
     if (notification->childType == kMIDIObjectType_Source) {
       // Attaching device is an input device.
-      auto it = base::ranges::find(sources_, endpoint);
+      auto it = std::ranges::find(sources_, endpoint);
       if (it == sources_.end()) {
         mojom::PortInfo info = GetPortInfoFromEndpoint(endpoint);
         // If the device disappears before finishing queries, mojom::PortInfo
@@ -265,7 +269,7 @@ void MidiManagerMac::ReceiveMidiNotify(const MIDINotification* message) {
       }
     } else if (notification->childType == kMIDIObjectType_Destination) {
       // Attaching device is an output device.
-      auto it = base::ranges::find(destinations_, endpoint);
+      auto it = std::ranges::find(destinations_, endpoint);
       if (it == destinations_.end()) {
         mojom::PortInfo info = GetPortInfoFromEndpoint(endpoint);
         // Skip cases that queries are not finished correctly.
@@ -285,12 +289,12 @@ void MidiManagerMac::ReceiveMidiNotify(const MIDINotification* message) {
         static_cast<MIDIEndpointRef>(notification->child);
     if (notification->childType == kMIDIObjectType_Source) {
       // Detaching device is an input device.
-      auto it = base::ranges::find(sources_, endpoint);
+      auto it = std::ranges::find(sources_, endpoint);
       if (it != sources_.end())
         SetInputPortState(it - sources_.begin(), PortState::DISCONNECTED);
     } else if (notification->childType == kMIDIObjectType_Destination) {
       // Detaching device is an output device.
-      auto it = base::ranges::find(destinations_, endpoint);
+      auto it = std::ranges::find(destinations_, endpoint);
       if (it != destinations_.end())
         SetOutputPortState(it - destinations_.begin(), PortState::DISCONNECTED);
     }

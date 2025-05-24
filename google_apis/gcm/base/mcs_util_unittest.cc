@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "google_apis/gcm/base/mcs_util.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -52,10 +49,8 @@ TEST(MCSUtilTest, ProtobufToTag) {
 // Test getting and setting persistent ids.
 TEST(MCSUtilTest, PersistentIds) {
   static_assert(kNumProtoTypes == 16U, "Update Persistent Ids");
-  const int kTagsWithPersistentIds[] = {
-    kIqStanzaTag,
-    kDataMessageStanzaTag
-  };
+  const auto kTagsWithPersistentIds =
+      std::to_array<int>({kIqStanzaTag, kDataMessageStanzaTag});
   for (size_t i = 0; i < std::size(kTagsWithPersistentIds); ++i) {
     int tag = kTagsWithPersistentIds[i];
     std::unique_ptr<google::protobuf::MessageLite> protobuf =
@@ -71,13 +66,13 @@ TEST(MCSUtilTest, PersistentIds) {
 // Test getting and setting stream ids.
 TEST(MCSUtilTest, StreamIds) {
   static_assert(kNumProtoTypes == 16U, "Update Stream Ids");
-  const int kTagsWithStreamIds[] = {
-    kIqStanzaTag,
-    kDataMessageStanzaTag,
-    kHeartbeatPingTag,
-    kHeartbeatAckTag,
-    kLoginResponseTag,
-  };
+  const auto kTagsWithStreamIds = std::to_array<int>({
+      kIqStanzaTag,
+      kDataMessageStanzaTag,
+      kHeartbeatPingTag,
+      kHeartbeatAckTag,
+      kLoginResponseTag,
+  });
   for (size_t i = 0; i < std::size(kTagsWithStreamIds); ++i) {
     int tag = kTagsWithStreamIds[i];
     std::unique_ptr<google::protobuf::MessageLite> protobuf =

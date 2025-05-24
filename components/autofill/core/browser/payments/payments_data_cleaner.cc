@@ -4,8 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_constants.h"
 
 namespace autofill {
@@ -24,10 +24,12 @@ void PaymentsDataCleaner::CleanupPaymentsData() {
 void PaymentsDataCleaner::ClearCreditCardNonSettingsOrigins() {
   bool has_updated = false;
 
-  for (CreditCard* card : payments_data_manager_->GetLocalCreditCards()) {
+  for (const CreditCard* card : payments_data_manager_->GetLocalCreditCards()) {
     if (card->origin() != kSettingsOrigin && !card->origin().empty()) {
-      card->set_origin(std::string());
-      payments_data_manager_->GetLocalDatabase()->UpdateCreditCard(*card);
+      CreditCard mutable_card = *card;
+      mutable_card.set_origin(std::string());
+      payments_data_manager_->GetLocalDatabase()->UpdateCreditCard(
+          mutable_card);
       has_updated = true;
     }
   }

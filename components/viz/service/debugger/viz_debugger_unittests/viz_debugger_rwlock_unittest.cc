@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
@@ -109,8 +106,8 @@ TEST_F(RWLockTest, ReadWrite) {
   static const unsigned kNumReaders = 4;
   std::vector<int> arr(kNumReaders);  // Must outlive `writer` and `readers`.
   WriterThread writer;
-  ReaderThread readers[kNumReaders];
-  base::PlatformThreadHandle handles[kNumReaders];
+  std::array<ReaderThread, kNumReaders> readers;
+  std::array<base::PlatformThreadHandle, kNumReaders> handles;
 
   // Initialize and start each reader thread.
   for (uint32_t i = 0; i < kNumReaders; ++i) {

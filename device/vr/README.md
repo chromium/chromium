@@ -61,4 +61,4 @@ icacls <chromium out directory> /grant *S-1-15-3-1024-2302894289-466761758-11661
 ```
 
 ## Testing
-See [XR Browser Tests documentation](../../chrome/vr/test/xr_browser_tests.md).
+See [XR Browser Tests documentation](../../chrome/browser/vr/test/xr_browser_tests.md).

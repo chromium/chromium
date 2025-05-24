@@ -4,30 +4,28 @@
 
 package org.chromium.chromecast.shell;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.net.Uri;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Tests for CastWebContentsComponent.
- */
+/** Tests for CastWebContentsComponent. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CastWebContentsIntentUtilsTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String EXPECTED_URI = "cast://webcontents/123-abc";
     private static final String APP_ID = "app";
     private static final String SESSION_ID = "123-abc";
@@ -35,13 +33,6 @@ public class CastWebContentsIntentUtilsTest {
 
     private @Mock WebContents mWebContents;
     private @Mock BroadcastReceiver mReceiver;
-    private Activity mActivity;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mActivity = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
-    }
 
     @Test
     public void testOnActivityStopped() {
@@ -65,8 +56,9 @@ public class CastWebContentsIntentUtilsTest {
 
     @Test
     public void testRequestStartCastActivity() {
-        Intent in = CastWebContentsIntentUtils.requestStartCastActivity(
-                mActivity, mWebContents, true, true, true, false, SESSION_ID);
+        Intent in =
+                CastWebContentsIntentUtils.requestStartCastActivity(
+                        mWebContents, true, true, true, false, SESSION_ID);
         Assert.assertTrue(CastWebContentsIntentUtils.shouldRequestAudioFocus(in));
         Assert.assertNull(in.getData());
         String uri = CastWebContentsIntentUtils.getUriString(in);
@@ -75,18 +67,6 @@ public class CastWebContentsIntentUtilsTest {
         WebContents webContents = CastWebContentsIntentUtils.getWebContents(in);
         Assert.assertEquals(mWebContents, webContents);
         Assert.assertTrue(CastWebContentsIntentUtils.isTouchable(in));
-        Assert.assertEquals(Intent.ACTION_VIEW, in.getAction());
-    }
-
-    @Test
-    public void testRequestStartCastService() {
-        Intent in = CastWebContentsIntentUtils.requestStartCastService(
-                mActivity, mWebContents, SESSION_ID);
-        String uri = in.getDataString();
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        WebContents webContents = CastWebContentsIntentUtils.getWebContents(in);
-        Assert.assertEquals(mWebContents, webContents);
         Assert.assertEquals(Intent.ACTION_VIEW, in.getAction());
     }
 
@@ -120,15 +100,17 @@ public class CastWebContentsIntentUtilsTest {
 
     @Test
     public void testShouldTurnOnScreenActivityTrue() {
-        Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(
-                mActivity, mWebContents, true, false, true, false, SESSION_ID);
+        Intent intent =
+                CastWebContentsIntentUtils.requestStartCastActivity(
+                        mWebContents, true, false, true, false, SESSION_ID);
         Assert.assertTrue(CastWebContentsIntentUtils.shouldTurnOnScreen(intent));
     }
 
     @Test
     public void testShouldTurnOnScreenActivityFalse() {
-        Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(
-                mActivity, mWebContents, true, false, false, false, SESSION_ID);
+        Intent intent =
+                CastWebContentsIntentUtils.requestStartCastActivity(
+                        mWebContents, true, false, false, false, SESSION_ID);
         Assert.assertFalse(CastWebContentsIntentUtils.shouldTurnOnScreen(intent));
     }
 

@@ -61,6 +61,14 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
                       ExceptionState&);
   void deleteRule(unsigned index, ExceptionState&);
 
+  // Like insertRule/deleteRule, but does not cause any invalidation.
+  // Used by Inspector to temporarily insert non-existent rules for
+  // the purposes of rule matching (see InspectorGhostRules).
+  void QuietlyInsertRule(const ExecutionContext* execution_context,
+                         const String& rule,
+                         unsigned index);
+  void QuietlyDeleteRule(unsigned index);
+
   // For CSSRuleList.
   unsigned length() const;
   CSSRule* Item(unsigned index, bool trigger_use_counters = true) const;
@@ -73,6 +81,11 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
 
   // FIXME: Not CSSOM. Remove.
   StyleRule* GetStyleRule() const { return style_rule_.Get(); }
+
+  // For investigating https://crbug.com/389011795.
+  wtf_size_t WrapperCountForDebugging() const {
+    return child_rule_cssom_wrappers_.size();
+  }
 
   void Trace(Visitor*) const override;
 

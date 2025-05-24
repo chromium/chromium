@@ -17,13 +17,13 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_display_initializer.h"
+#include "ui/gl/startup_trace.h"
 #include "ui/gl/vsync_provider_win.h"
 
 namespace gl {
@@ -35,6 +35,7 @@ const wchar_t kD3DCompiler[] = L"D3DCompiler_47.dll";
 
 bool LoadD3DXLibrary(const base::FilePath& module_path,
                      const base::FilePath::StringType& name) {
+  GPU_STARTUP_TRACE_EVENT(__func__);
   base::NativeLibrary library =
       base::LoadNativeLibrary(module_path.Append(name), nullptr);
   if (!library) {
@@ -49,8 +50,8 @@ bool LoadD3DXLibrary(const base::FilePath& module_path,
 
 bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  NOTREACHED_IN_MIGRATION();
-#endif
+  NOTREACHED();
+#else
 
   base::FilePath module_path;
   if (!base::PathService::Get(base::DIR_MODULE, &module_path))
@@ -66,8 +67,12 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   // Load libglesv2.dll before libegl.dll because the latter is dependent on
   // the former and if there is another version of libglesv2.dll in the dll
   // search path, it will get loaded instead.
-  base::NativeLibrary gles_library =
-      base::LoadNativeLibrary(gles_path.Append(L"libglesv2.dll"), nullptr);
+  base::NativeLibrary gles_library;
+  {
+    GPU_STARTUP_TRACE_EVENT("Load gles_library");
+    gles_library =
+        base::LoadNativeLibrary(gles_path.Append(L"libglesv2.dll"), nullptr);
+  }
   if (!gles_library) {
     DVLOG(1) << "libglesv2.dll not found";
     return false;
@@ -75,8 +80,12 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
 
   // When using EGL, first try eglGetProcAddress and then Windows
   // GetProcAddress on both the EGL and GLES2 DLLs.
-  base::NativeLibrary egl_library =
-      base::LoadNativeLibrary(gles_path.Append(L"libegl.dll"), nullptr);
+  base::NativeLibrary egl_library;
+  {
+    GPU_STARTUP_TRACE_EVENT("Load egl_library");
+    egl_library =
+        base::LoadNativeLibrary(gles_path.Append(L"libegl.dll"), nullptr);
+  }
   if (!egl_library) {
     DVLOG(1) << "libegl.dll not found.";
     base::UnloadNativeLibrary(gles_library);
@@ -99,6 +108,7 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   AddGLNativeLibrary(gles_library);
 
   return true;
+#endif
 }
 
 bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
@@ -135,16 +145,13 @@ GLDisplay* InitializeGLOneOffPlatform(gl::GpuPreference gpu_preference) {
         LOG(ERROR) << "GLDisplayEGL::Initialize failed.";
         return nullptr;
       }
-      if (auto d3d11_device = QueryD3D11DeviceObjectFromANGLE()) {
-        InitializeDirectComposition(std::move(d3d11_device));
-      }
       break;
     }
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return display;
 }
@@ -170,10 +177,8 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
       InitializeStaticGLBindingsGL();
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return false;
 }
 
 void ShutdownGLPlatform(GLDisplay* display) {

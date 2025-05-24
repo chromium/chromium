@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -28,14 +27,17 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chromeos/services/tts/tts_service.h"
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -54,17 +56,38 @@ int g_saved_utterance_id;
 
 namespace extensions {
 
+class MockUpdateLanguageStatusDelegate
+    : public content::UpdateLanguageStatusDelegate {
+ public:
+  MockUpdateLanguageStatusDelegate() = default;
+  ~MockUpdateLanguageStatusDelegate() override = default;
+
+  void OnUpdateLanguageStatus(const std::string& lang,
+                              content::LanguageInstallStatus install_status,
+                              const std::string& error) override {
+    this->on_update_language_status_params.lang = lang;
+    this->on_update_language_status_params.install_status = install_status;
+    this->on_update_language_status_params.error = error;
+  }
+
+  struct OnUpdateLanguageStatusParams {
+    std::string lang;
+    content::LanguageInstallStatus install_status;
+    std::string error;
+  };
+
+  OnUpdateLanguageStatusParams GetLastUpdateLanguageStatusParams() {
+    return on_update_language_status_params;
+  }
+
+ private:
+  OnUpdateLanguageStatusParams on_update_language_status_params;
+};
 class MockTtsPlatformImpl : public content::TtsPlatform {
  public:
   MockTtsPlatformImpl() : should_fake_get_voices_(false) {}
 
-  bool PlatformImplSupported() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return false;
-#else
-    return true;
-#endif
-  }
+  bool PlatformImplSupported() override { return true; }
   bool PlatformImplInitialized() override { return true; }
 
   void WillSpeakUtteranceWithVoice(
@@ -140,10 +163,6 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
   }
 
   void RefreshVoices() override {}
-
-  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override {
-    return nullptr;
-  }
 
   void set_should_fake_get_voices(bool val) { should_fake_get_voices_ = val; }
 
@@ -244,7 +263,7 @@ class FakeNetworkOnlineStateForTest : public net::NetworkChangeNotifier {
   FakeNetworkOnlineStateForTest& operator=(
       const FakeNetworkOnlineStateForTest&) = delete;
 
-  ~FakeNetworkOnlineStateForTest() override {}
+  ~FakeNetworkOnlineStateForTest() override = default;
 
   ConnectionType GetCurrentConnectionType() const override {
     return online_ ? net::NetworkChangeNotifier::CONNECTION_ETHERNET
@@ -283,12 +302,24 @@ class EventRouterAddListenerWaiter : public EventRouter::Observer {
   base::RunLoop loop_runner_;
 };
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
+
+struct FeaturesTestParam {
+  ContextType context_type;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+};
 
 class TtsApiTest : public ExtensionApiTest,
-                   public testing::WithParamInterface<ContextType> {
+                   public testing::WithParamInterface<FeaturesTestParam> {
  public:
-  TtsApiTest() : ExtensionApiTest(GetParam()) {}
+  TtsApiTest() : ExtensionApiTest(GetParam().context_type) {
+    const FeaturesTestParam& features_test_param = GetParam();
+    scoped_feature_list_.InitWithFeatures(
+        features_test_param.enabled_features,
+        features_test_param.disabled_features);
+  }
+
   ~TtsApiTest() override = default;
   TtsApiTest(const TtsApiTest&) = delete;
   TtsApiTest& operator=(const TtsApiTest&) = delete;
@@ -304,15 +335,13 @@ class TtsApiTest : public ExtensionApiTest,
   }
 
   void AddNetworkSpeechSynthesisExtension() {
-    ExtensionHostTestHelper host_helper(profile());
-    host_helper.RestrictToType(mojom::ViewType::kOffscreenDocument);
-    ExtensionService* service =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
-    service->component_loader()->AddNetworkSpeechSynthesisExtension();
-    const ExtensionHost* extension_host =
-        host_helper.WaitForDocumentElementAvailable();
-    ASSERT_EQ(mojom::ManifestLocation::kComponent,
-              extension_host->extension()->location());
+    auto* component_loader = extensions::ComponentLoader::Get(profile());
+    component_loader->AddNetworkSpeechSynthesisExtension();
+
+    // Wait for any tts engine event listener to be added by the network tts
+    // engine so that tests can be ready to validate state.
+    EventRouterAddListenerWaiter waiter(profile(), tts_engine_events::kOnStop);
+    waiter.Wait();
   }
 
  protected:
@@ -329,16 +358,27 @@ class TtsApiTest : public ExtensionApiTest,
   }
 
   StrictMock<MockTtsPlatformImpl> mock_platform_impl_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         TtsApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         TtsApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackground,
+    TtsApiTest,
+    ::testing::Values(FeaturesTestParam{
+        .context_type = ContextType::kPersistentBackground}));
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    TtsApiTest,
+    ::testing::Values(
+        FeaturesTestParam{
+            .context_type = ContextType::kServiceWorker,
+            .enabled_features =
+                {features::kExtensionManifestV3NetworkSpeechSynthesis}},
+        FeaturesTestParam{
+            .context_type = ContextType::kServiceWorker,
+            .disabled_features = {
+                features::kExtensionManifestV3NetworkSpeechSynthesis}}));
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(TtsApiTest, PlatformSpeakOptionalArgs) {
   EXPECT_CALL(mock_platform_impl_, IsSpeaking());
 
@@ -361,7 +401,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, PlatformSpeakOptionalArgs) {
   // Called when the extension's background host shuts down on unload. Service
   // worker-based extensions don't have hosts, so this won't happen.
   // See crbug.com/339682312.
-  if (GetParam() == ContextType::kPersistentBackground) {
+  if (GetParam().context_type == ContextType::kPersistentBackground) {
     EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillOnce(Return(false));
   }
 
@@ -496,7 +536,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, PlatformPauseSpeakNoEnqueue) {
   // worker-based extensions don't have hosts, so this only happens with a
   // persistent background page.
   // See crbug.com/339682312.
-  if (GetParam() == ContextType::kPersistentBackground) {
+  if (GetParam().context_type == ContextType::kPersistentBackground) {
     EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillOnce(Return(false));
   }
   ASSERT_TRUE(RunExtensionTest("tts/pause_speak_no_enqueue")) << message_;
@@ -562,7 +602,6 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, RegisterEngine) {
                                {.ignore_manifest_warnings = true}))
       << message_;
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // https://crbug.com/709115 tracks test flakiness.
 #if BUILDFLAG(IS_POSIX)
@@ -577,7 +616,6 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, MAYBE_EngineError) {
   ASSERT_TRUE(RunExtensionTest("tts_engine/engine_error")) << message_;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(TtsApiTest, EngineWordCallbacks) {
   EXPECT_CALL(mock_platform_impl_, IsSpeaking());
   EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillRepeatedly(Return(true));
@@ -591,7 +629,6 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, LangMatching) {
 
   ASSERT_TRUE(RunExtensionTest("tts_engine/lang_matching")) << message_;
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_P(TtsApiTest, NetworkSpeechEngine) {
   // Simulate online network state.
@@ -629,6 +666,87 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, PRE_VoicesAreCached) {
   EXPECT_TRUE(HasVoiceWithName("Dynamic Voice 2"));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(TtsApiTest, UpdateLanguageCallsDelegate) {
+  MockUpdateLanguageStatusDelegate delegate_;
+  content::TtsController::GetInstance()->AddUpdateLanguageStatusDelegate(
+      &delegate_);
+
+  ASSERT_TRUE(RunExtensionTest("tts_engine/call_update_language")) << message_;
+  ASSERT_EQ(delegate_.GetLastUpdateLanguageStatusParams().install_status,
+            content::LanguageInstallStatus::INSTALLING);
+  ASSERT_EQ(delegate_.GetLastUpdateLanguageStatusParams().lang, "fr");
+  ASSERT_EQ(delegate_.GetLastUpdateLanguageStatusParams().error, "");
+  content::TtsController::GetInstance()->RemoveUpdateLanguageStatusDelegate(
+      &delegate_);
+}
+#endif
+
+IN_PROC_BROWSER_TEST_P(TtsApiTest, UninstallLanguageRequestEmitsEvent) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ExtensionTestMessageListener validate_lang_param_listener("lang:fr");
+  ExtensionTestMessageListener validate_requestor_param_listener(
+      "requestor.id:client ID 3, requestor.source:chromefeature");
+  ExtensionTestMessageListener validate_uninstall_immediately_param_listener(
+      "uninstallImmediately:true");
+
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("tts_engine/language_uninstall_request"));
+  ASSERT_TRUE(extension);
+
+  content::TtsController::GetInstance()->UninstallLanguageRequest(
+      profile(), /* lang= */ "fr", /* client_id= */ "client ID 3",
+      /* source= */
+      static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE),
+      /* uninstall_immediately= */ true);
+
+  ASSERT_TRUE(validate_lang_param_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(validate_requestor_param_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(
+      validate_uninstall_immediately_param_listener.WaitUntilSatisfied());
+}
+
+IN_PROC_BROWSER_TEST_P(TtsApiTest, LanguageInstallRequestEmitsEvent) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ExtensionTestMessageListener validate_lang_param_listener("lang:en");
+  ExtensionTestMessageListener validate_requestor_param_listener(
+      "requestor.id:client ID, requestor.source:chromefeature");
+
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("tts_engine/language_install_request"));
+  ASSERT_TRUE(extension);
+
+  content::TtsController::GetInstance()->InstallLanguageRequest(
+      profile(), /* lang= */ "en", /* client_id= */ "client ID",
+      /* source= */
+      static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE));
+
+  ASSERT_TRUE(validate_lang_param_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(validate_requestor_param_listener.WaitUntilSatisfied());
+}
+
+IN_PROC_BROWSER_TEST_P(TtsApiTest, LanguageStatusRequestEmitsEvent) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ExtensionTestMessageListener validate_lang_param_listener("lang:br");
+  ExtensionTestMessageListener validate_requestor_param_listener(
+      "requestor.id:client ID 2, requestor.source:extension");
+
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("tts_engine/language_status_request"));
+  ASSERT_TRUE(extension);
+
+  content::TtsController::GetInstance()->LanguageStatusRequest(
+      profile(), /* lang= */ "br", /* client_id= */ "client ID 2",
+      /* source= */
+      static_cast<int>(tts_engine_events::TtsClientSource::EXTENSION));
+
+  ASSERT_TRUE(validate_lang_param_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(validate_requestor_param_listener.WaitUntilSatisfied());
+}
+
 IN_PROC_BROWSER_TEST_P(TtsApiTest, VoicesAreCached) {
   // Make sure the dynamically loaded voices are available even though
   // the extension didn't "run". Note that the voices might not be available
@@ -643,11 +761,11 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, VoicesAreCached) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStream) {
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   TtsEngineExtensionObserverChromeOS* engine_observer =
-      TtsEngineExtensionObserverChromeOS::GetInstance(profile());
+      TtsEngineExtensionObserverChromeOSFactory::GetForProfile(profile());
   mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service_remote =
       engine_observer->tts_service_for_testing();
   chromeos::tts::TtsService tts_service(
@@ -663,7 +781,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStream) {
 IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStreamAudioOptions) {
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   TtsEngineExtensionObserverChromeOS* engine_observer =
-      TtsEngineExtensionObserverChromeOS::GetInstance(profile());
+      TtsEngineExtensionObserverChromeOSFactory::GetForProfile(profile());
   mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service_remote =
       engine_observer->tts_service_for_testing();
   chromeos::tts::TtsService tts_service(
@@ -676,6 +794,6 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStreamAudioOptions) {
       "tts_engine/on_speak_with_audio_stream_using_audio_options"))
       << message_;
 }
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
 
 }  // namespace extensions

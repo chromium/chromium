@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs.features.branding;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import static org.chromium.chrome.browser.customtabs.features.branding.SharedPreferencesBrandingTimeStorage.MAX_NON_PACKAGE_ENTRIES;
 
@@ -17,6 +18,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.InMemorySharedPreferences;
+import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 
 import java.util.function.Function;
 
@@ -47,7 +49,7 @@ public class SharedPreferencesBrandingTimeStorageUnitTest {
         for (int i = 0; i < MAX_NON_PACKAGE_ENTRIES; ++i) {
             storage.put("id-" + i, brandingTime.apply(i));
         }
-        assertEquals(0, storage.get("id-0"), brandingTime.apply(0));
+        assertEquals(0, (float) storage.get("id-0"), brandingTime.apply(0));
         assertEquals(
                 "The number of entries can't be bigger than |MAX_NON_PACKAGE_ENTRIES|",
                 MAX_NON_PACKAGE_ENTRIES,
@@ -61,5 +63,54 @@ public class SharedPreferencesBrandingTimeStorageUnitTest {
 
         // The oldest entry should be evicted.
         assertEquals(BrandingChecker.BRANDING_TIME_NOT_FOUND, storage.get("id-0"));
+    }
+
+    @Test
+    public void getMimDataReturnsNullDataWhenNotFound() {
+        var storage = SharedPreferencesBrandingTimeStorage.getInstance();
+        storage.setSharedPrefForTesting(new InMemorySharedPreferences());
+        assertNull("MIM should be null", storage.getMimData());
+    }
+
+    @Test
+    public void getMimDataReadWrite() {
+        var storage = SharedPreferencesBrandingTimeStorage.getInstance();
+        storage.setSharedPrefForTesting(new InMemorySharedPreferences());
+        final String appId = "org.cities.gotham";
+        final String accountId = "batman@gmail.com";
+        var mimData = new MismatchNotificationData();
+        var appData = new MismatchNotificationData.AppUiData();
+        appData.showCount = 32;
+        appData.closeType = CloseType.ACCEPTED.getNumber();
+        mimData.setAppData(accountId, appId, appData);
+        storage.putMimData(mimData);
+
+        var fetchedAppData = storage.getMimData().getAppData(accountId, appId);
+        assertEquals("Retrived MIM data is not correct.", appData, fetchedAppData);
+    }
+
+    @Test
+    public void getSizeLeavesOutMimProperties() {
+        var storage = SharedPreferencesBrandingTimeStorage.getInstance();
+        storage.setSharedPrefForTesting(new InMemorySharedPreferences());
+
+        final String appId = "org.cities.gotham";
+        final String accountId = "batman@gmail.com";
+        var mimData = new MismatchNotificationData();
+        var appData = new MismatchNotificationData.AppUiData();
+        appData.showCount = 32;
+        appData.closeType = CloseType.ACCEPTED.getNumber();
+        mimData.setAppData(accountId, appId, appData);
+
+        // These 2 MIM entries should not be counted toward |getSize()|.
+        storage.putMimData(mimData);
+        storage.putLastShowTimeGlobal(47201);
+
+        int entryCount = MAX_NON_PACKAGE_ENTRIES / 2;
+        Function<Integer, Integer> brandingTime = (i) -> i * 10;
+        for (int i = 0; i < entryCount; ++i) {
+            storage.put("id-" + i, brandingTime.apply(i));
+        }
+        assertEquals("The number of entries is not correct", entryCount, storage.getSize());
     }
 }

@@ -32,7 +32,7 @@ class GURL;
 namespace url {
 struct Component;
 struct Parsed;
-}
+}  // namespace url
 
 namespace url_formatter {
 
@@ -220,10 +220,6 @@ TopDomainEntry LookupSkeletonInTopDomains(
 // only contains Latin-Greek-Cyrillic characters. Otherwise, returns the
 // input string.
 std::u16string MaybeRemoveDiacritics(const std::u16string& host);
-
-// Returns the first IDNA 2008 deviation character in the `hostname`, if any.
-// See idn_spoof_checker.h for details about deviation characters.
-IDNA2008DeviationCharacter GetDeviationCharacter(std::u16string_view hostname);
 
 }  // namespace url_formatter
 

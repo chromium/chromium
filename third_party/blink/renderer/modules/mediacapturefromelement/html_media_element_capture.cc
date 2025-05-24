@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/modules/mediacapturefromelement/html_media_element_capture.h"
 
+#include <variant>
+
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "media/base/media_switches.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -197,9 +200,9 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
     }
     auto variant = media_element_->GetSrcObjectVariant();
     // The load type check above, should prevent this from failing:
-    DCHECK(absl::holds_alternative<MediaStreamDescriptor*>(variant));
+    DCHECK(std::holds_alternative<MediaStreamDescriptor*>(variant));
     MediaStreamDescriptor* const descriptor =
-        absl::get<MediaStreamDescriptor*>(variant);
+        std::get<MediaStreamDescriptor*>(variant);
     DCHECK(descriptor);
     for (unsigned i = 0; i < descriptor->NumberOfAudioComponents(); i++) {
       media_stream_->AddTrackByComponentAndFireEvents(
@@ -232,6 +235,9 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
         media_element_->GetWebMediaPlayer(),
         media_element_->GetExecutionContext()->GetTaskRunner(
             TaskType::kInternalMediaRealTime));
+    if (base::FeatureList::IsEnabled(media::kRenderMutedAudio)) {
+      media_element_->GetWebMediaPlayer()->SetRenderMutedAudio(true);
+    }
   }
 
   MediaStreamComponentVector video_components = descriptor->VideoComponents();
@@ -332,9 +338,9 @@ MediaStream* HTMLMediaElementCapture::captureStream(
   if (element.GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream) {
     auto variant = element.GetSrcObjectVariant();
     // The load type check above, should prevent this from failing:
-    DCHECK(absl::holds_alternative<MediaStreamDescriptor*>(variant));
+    DCHECK(std::holds_alternative<MediaStreamDescriptor*>(variant));
     MediaStreamDescriptor* const element_descriptor =
-        absl::get<MediaStreamDescriptor*>(variant);
+        std::get<MediaStreamDescriptor*>(variant);
     DCHECK(element_descriptor);
     return MediaStream::Create(context, element_descriptor);
   }
@@ -352,6 +358,10 @@ MediaStream* HTMLMediaElementCapture::captureStream(
                                    element.GetWebMediaPlayer(),
                                    element.GetExecutionContext()->GetTaskRunner(
                                        TaskType::kInternalMediaRealTime));
+
+    if (base::FeatureList::IsEnabled(media::kRenderMutedAudio)) {
+      element.GetWebMediaPlayer()->SetRenderMutedAudio(true);
+    }
   }
   listener->UpdateSources(context);
 

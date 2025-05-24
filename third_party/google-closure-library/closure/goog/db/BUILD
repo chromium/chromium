@@ -7,6 +7,7 @@ licenses(["notice"])
 closure_js_library(
     name = "cursor",
     srcs = ["cursor.js"],
+    lenient = True,
     deps = [
         ":error",
         ":keyrange",
@@ -19,6 +20,7 @@ closure_js_library(
 closure_js_library(
     name = "db",
     srcs = ["db.js"],
+    lenient = True,
     deps = [
         ":error",
         ":indexeddb",
@@ -31,6 +33,7 @@ closure_js_library(
 closure_js_library(
     name = "error",
     srcs = ["error.js"],
+    lenient = True,
     deps = [
         "//closure/goog/asserts",
         "//closure/goog/debug:error",
@@ -40,6 +43,7 @@ closure_js_library(
 closure_js_library(
     name = "index",
     srcs = ["index.js"],
+    lenient = True,
     deps = [
         ":cursor",
         ":error",
@@ -51,25 +55,31 @@ closure_js_library(
 
 closure_js_library(
     name = "indexeddb",
-    srcs = ["indexeddb.js"],
+    srcs = [
+        "indexeddb.js",
+        "transaction.js",
+    ],
+    lenient = True,
     deps = [
         ":error",
         ":objectstore",
-        ":transaction",
         "//closure/goog/events:event",
         "//closure/goog/events:eventhandler",
         "//closure/goog/events:eventtarget",
+        "//third_party/closure/goog/mochikit/async:deferred",
     ],
 )
 
 closure_js_library(
     name = "keyrange",
     srcs = ["keyrange.js"],
+    lenient = True,
 )
 
 closure_js_library(
     name = "objectstore",
     srcs = ["objectstore.js"],
+    lenient = True,
     deps = [
         ":cursor",
         ":error",
@@ -80,15 +90,7 @@ closure_js_library(
     ],
 )
 
-closure_js_library(
+alias(
     name = "transaction",
-    srcs = ["transaction.js"],
-    deps = [
-        ":error",
-        ":objectstore",
-        "//closure/goog/events",
-        "//closure/goog/events:eventhandler",
-        "//closure/goog/events:eventtarget",
-        "//third_party/closure/goog/mochikit/async:deferred",
-    ],
+    actual = ":indexeddb",
 )

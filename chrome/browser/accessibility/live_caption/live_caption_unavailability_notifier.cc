@@ -70,7 +70,7 @@ LiveCaptionUnavailabilityNotifier::LiveCaptionUnavailabilityNotifier(
 LiveCaptionUnavailabilityNotifier::~LiveCaptionUnavailabilityNotifier() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
-    live_caption_controller->OnAudioStreamEnd(context_.get());
+    live_caption_controller->OnAudioStreamEnd(GetWebContents(), context_.get());
 }
 
 void LiveCaptionUnavailabilityNotifier::MediaFoundationRendererCreated(
@@ -108,12 +108,10 @@ bool LiveCaptionUnavailabilityNotifier::
 }
 
 bool LiveCaptionUnavailabilityNotifier::ErrorSilencedForOrigin() {
-  using SelectConstVersion = const std::string& (base::Value::*)() const;
   return base::Contains(
       profile_prefs_->GetList(
           prefs::kLiveCaptionMediaFoundationRendererErrorSilenced),
-      render_frame_host().GetLastCommittedOrigin().Serialize(),
-      static_cast<SelectConstVersion>(&base::Value::GetString));
+      render_frame_host().GetLastCommittedOrigin().Serialize());
 }
 
 void LiveCaptionUnavailabilityNotifier::DisplayMediaFoundationRendererError() {

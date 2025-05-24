@@ -21,6 +21,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
 
@@ -116,18 +117,14 @@ StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
   // changes. Since this view bypasses that logic we need to work around this by
   // setting the opacity ourselves.
   layer()->SetOpacity(1.0);
+
+  UpdateAccessibleName();
 }
 
 StatusAreaOverflowButtonTray::~StatusAreaOverflowButtonTray() {}
 
 void StatusAreaOverflowButtonTray::ClickedOutsideBubble(
     const ui::LocatedEvent& event) {}
-
-std::u16string StatusAreaOverflowButtonTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(
-      state_ == CLICK_TO_COLLAPSE ? IDS_ASH_STATUS_AREA_OVERFLOW_BUTTON_COLLAPSE
-                                  : IDS_ASH_STATUS_AREA_OVERFLOW_BUTTON_EXPAND);
-}
 
 void StatusAreaOverflowButtonTray::HandleLocaleChange() {}
 
@@ -160,11 +157,20 @@ void StatusAreaOverflowButtonTray::OnButtonPressed(const ui::Event& event) {
   state_ = state_ == CLICK_TO_COLLAPSE ? CLICK_TO_EXPAND : CLICK_TO_COLLAPSE;
   icon_->ToggleState(state_);
   shelf()->GetStatusAreaWidget()->UpdateCollapseState();
+  UpdateAccessibleName();
 }
 
 void StatusAreaOverflowButtonTray::ResetStateToCollapsed() {
   state_ = CLICK_TO_EXPAND;
   icon_->ToggleState(state_);
+  UpdateAccessibleName();
+}
+
+void StatusAreaOverflowButtonTray::UpdateAccessibleName() {
+  std::u16string name = l10n_util::GetStringUTF16(
+      state_ == CLICK_TO_COLLAPSE ? IDS_ASH_STATUS_AREA_OVERFLOW_BUTTON_COLLAPSE
+                                  : IDS_ASH_STATUS_AREA_OVERFLOW_BUTTON_EXPAND);
+  GetViewAccessibility().SetName(name);
 }
 
 BEGIN_METADATA(StatusAreaOverflowButtonTray);

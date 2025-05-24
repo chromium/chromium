@@ -126,7 +126,7 @@ class TaskEnvironment {
   // This type will determine what types of messages will get pumped by the main
   // thread.
   // Note: If your test needs to use a custom MessagePump you should
-  // consider using a SingleThreadTaskExecutor instead.
+  // consider using a SingleThreadTaskEnvironment instead.
   enum class MainThreadType {
     // The main thread doesn't pump system messages.
     DEFAULT,

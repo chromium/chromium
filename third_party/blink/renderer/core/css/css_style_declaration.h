@@ -74,6 +74,10 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
                            ExceptionState&) = 0;
   virtual String removeProperty(const String& property_name,
                                 ExceptionState&) = 0;
+  // Like removeProperty, but does not cause any invalidation.
+  // Used by Inspector to modify a temporarily inserted "ghost rule"
+  // (see InspectorGhostRules).
+  virtual void QuietlyRemoveProperty(const String& property_name) = 0;
 
   // CSSPropertyID versions of the CSSOM functions to support bindings and
   // editing.

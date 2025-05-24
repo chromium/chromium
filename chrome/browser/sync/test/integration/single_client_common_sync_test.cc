@@ -3,14 +3,19 @@
 // found in the LICENSE file.
 
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -19,6 +24,7 @@
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/themes_helper.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -27,12 +33,15 @@
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "components/sync/test/fake_server.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -120,8 +129,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   // TODO(crbug.com/40264154): remove once GetUpdates is not issued anymore.
   GetUpdatesObserver::GetUpdatesOriginSet get_updates_origins_to_exclude{
       SyncEnums::PROGRAMMATIC};
-  DataTypeSet types_to_exclude{DataType::ARC_PACKAGE, DataType::HISTORY,
-                               DataType::CONTACT_INFO, DataType::NIGORI};
+  DataTypeSet types_to_exclude{
+      DataType::ARC_PACKAGE, DataType::HISTORY, DataType::CONTACT_INFO,
+      DataType::NIGORI,
+      // TODO(crbug.com/410116020): Remove once these types pass this test.
+      DataType::SHARED_TAB_GROUP_DATA, DataType::SHARED_TAB_GROUP_ACCOUNT_DATA,
+      DataType::COLLABORATION_GROUP};
 
   // Verify that there were no unexpected GetUpdates requests during Sync
   // initialization.
@@ -138,64 +151,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
-                       ShouldGetTypesWithUnsyncedDataFromSyncService) {
-  // Sign in and enable Sync.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  ASSERT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().HasAll({syncer::BOOKMARKS}));
-
-  // BOOKMARKS has no unsynced data.
-  {
-    base::RunLoop loop;
-    base::MockOnceCallback<void(syncer::DataTypeSet)> callback;
-    EXPECT_CALL(callback, Run(DataTypeSet())).WillOnce([&]() { loop.Quit(); });
-    GetSyncService(0)->GetTypesWithUnsyncedData({syncer::BOOKMARKS},
-                                                callback.Get());
-    loop.Run();
-  }
-
-  ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
-                  .Wait());
-
-  // Force bookmark saved to the account to be unsynced.
-  GetFakeServer()->SetHttpError(net::HTTP_BAD_REQUEST);
-
-  bookmarks_helper::AddURL(/*profile=*/0, "title1",
-                           GURL("https://example.com"));
-
-  // BOOKMARKS now has local changes not yet synced with the server.
-  {
-    base::RunLoop loop;
-    base::MockOnceCallback<void(syncer::DataTypeSet)> callback;
-    EXPECT_CALL(callback, Run(DataTypeSet({syncer::BOOKMARKS})))
-        .WillOnce([&]() { loop.Quit(); });
-    GetSyncService(0)->GetTypesWithUnsyncedData({syncer::BOOKMARKS},
-                                                callback.Get());
-    loop.Run();
-  }
-
-  // Clear the error and wait for the local changes to be committed.
-  GetFakeServer()->ClearHttpError();
-  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
-  ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  /*profile=*/0, GetSyncService(0), GetFakeServer())
-                  .Wait());
-
-  // BOOKMARKS has no unsynced data.
-  {
-    base::RunLoop loop;
-    base::MockOnceCallback<void(syncer::DataTypeSet)> callback;
-    EXPECT_CALL(callback, Run(DataTypeSet())).WillOnce([&]() { loop.Quit(); });
-    GetSyncService(0)->GetTypesWithUnsyncedData({syncer::BOOKMARKS},
-                                                callback.Get());
-    loop.Run();
-  }
-}
-
-// ChromeOS-Ash doesn't support primary account signout.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// ChromeOS doesn't support primary account signout.
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Note: See also SyncErrorTest.ClientDataObsoleteTest, which ensures the cache
 // GUID does *not* get reused if the client's data needs to be reset.
@@ -277,7 +234,157 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   }
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+// The following test uses THEMES for testing, however, THEMES data type is not
+// on Android.
+class SingleClientGetUnsyncedTypesTest : public SingleClientCommonSyncTest {
+ public:
+  SingleClientGetUnsyncedTypesTest() {
+#if !BUILDFLAG(IS_ANDROID)
+    // These features are required to enable THEMES in transport mode.
+    feature_list_.InitWithFeatures({switches::kEnablePreferencesAccountStorage,
+                                    syncer::kSeparateLocalAndAccountThemes},
+                                   {});
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// The following test uses BOOKMARKS for testing, however, BOOKMARKS is not yet
+// support in transport mode on desktop platforms. Similar test for desktop
+// platforms is in the tests below.
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest,
+                       ShouldGetTypesWithUnsyncedDataFromSyncService) {
+  // Sign in and enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().HasAll({syncer::BOOKMARKS}));
+
+  // BOOKMARKS has no unsynced data.
+  EXPECT_FALSE(GetClient(0)
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::BOOKMARKS})
+                   .contains(syncer::BOOKMARKS));
+
+  ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
+                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  .Wait());
+
+  // Force bookmark saved to the account to be unsynced.
+  GetFakeServer()->SetHttpError(net::HTTP_BAD_REQUEST);
+
+  bookmarks_helper::AddURL(/*profile=*/0, u"title1",
+                           GURL("https://example.com"));
+
+  // BOOKMARKS now has local changes not yet synced with the server.
+  EXPECT_TRUE(GetClient(0)
+                  ->GetTypesWithUnsyncedDataAndWait({syncer::BOOKMARKS})
+                  .contains(syncer::BOOKMARKS));
+
+  // Clear the error and wait for the local changes to be committed.
+  GetFakeServer()->ClearHttpError();
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
+                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  .Wait());
+
+  // BOOKMARKS has no unsynced data.
+  EXPECT_FALSE(GetClient(0)
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::BOOKMARKS})
+                   .contains(syncer::BOOKMARKS));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, HttpError) {
+  // Sign in.
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
+
+  // THEMES has no unsynced data.
+  ASSERT_FALSE(GetClient(0)
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
+                   .contains(syncer::THEMES));
+
+  // Force theme saved to the account to be unsynced.
+  GetFakeServer()->SetHttpError(net::HTTP_BAD_REQUEST);
+
+  // Set up a custom theme.
+  themes_helper::UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // THEMES now has local changes not yet synced with the server.
+  EXPECT_TRUE(GetClient(0)
+                  ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
+                  .contains(syncer::THEMES));
+
+  // Http error is not an auth error.
+  EXPECT_FALSE(
+      GetClient(0)->service()->HasCachedPersistentAuthErrorForMetrics());
+
+  // Clear the error and wait for the local changes to be committed.
+  GetFakeServer()->ClearHttpError();
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
+
+  // THEMES has no unsynced data.
+  EXPECT_FALSE(GetClient(0)
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
+                   .contains(syncer::THEMES));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
+  base::HistogramTester histograms;
+
+  // Sign in.
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
+
+  // THEMES has no unsynced data.
+  ASSERT_FALSE(GetClient(0)
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
+                   .contains(syncer::THEMES));
+
+  // Enter sign-in pending state.
+  ASSERT_TRUE(GetClient(0)->EnterSignInPendingStateForPrimaryAccount());
+
+  // Set up a custom theme.
+  themes_helper::UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // THEMES now has local changes not yet synced with the server.
+  EXPECT_TRUE(GetClient(0)
+                  ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
+                  .contains(syncer::THEMES));
+
+  EXPECT_TRUE(
+      GetClient(0)->service()->HasCachedPersistentAuthErrorForMetrics());
+
+  // Clear the error and wait for the local changes to be committed.
+  ASSERT_TRUE(GetClient(0)->ExitSignInPendingStateForPrimaryAccount());
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
+
+  // THEMES has no unsynced data.
+  EXPECT_FALSE(GetClient(0)
+                   ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
+                   .contains(syncer::THEMES));
+
+  EXPECT_FALSE(
+      GetClient(0)->service()->HasCachedPersistentAuthErrorForMetrics());
+  histograms.ExpectUniqueSample(
+      "Sync.DataTypeNumUnsyncedEntitiesOnReauthFromPendingState.THEME",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
 #if !BUILDFLAG(IS_ANDROID)
@@ -396,12 +503,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // Sync re-downloaded the ReadingList entry into the account store, so it now
-  // exists in both.
   ASSERT_EQ(reading_list_model()->size(), 1ul);
-  ASSERT_EQ(reading_list_model()->GetStorageStateForURLForTesting(kUrl),
-            reading_list::DualReadingListModel::StorageStateForTesting::
-                kExistsInBothModels);
+
   // Verify that the URL is marked as needing upload. Most importantly, this
   // call would CHECK-crash if both models were tracking metadata, so this
   // serves as verification that the Sync-the-feature mode metadata was cleaned
@@ -431,9 +534,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::AUTOFILL_WALLET_DATA), 1);
-  histograms.ExpectBucketCount(
-      "Sync.ClearMetadataWhileStopped",
-      syncer::DataTypeHistogramValue(syncer::SEARCH_ENGINES), 1);
 
   // But for data types that use a single model in both transport mode and
   // Sync-the-feature mode (and that support transport mode in the first place),
@@ -447,6 +547,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::SECURITY_EVENTS), 0);
+
+  // With `kSeparateLocalAndAccountSearchEngines`, the same model is used for
+  // both transport mode and Sync-the-feature mode, so the metadata should *not*
+  // have been cleared.
+  histograms.ExpectBucketCount(
+      "Sync.ClearMetadataWhileStopped",
+      syncer::DataTypeHistogramValue(syncer::SEARCH_ENGINES),
+      base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines)? 0 : 1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -508,5 +617,35 @@ IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::DataType::BOOKMARKS));
 }
+
+// Regression test for crbug.com/415728693.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
+                       ApplySyncDisabledPolicyWhileSyncPaused) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_EQ(syncer::GetUploadToGoogleState(GetSyncService(0),
+                                           syncer::PRIORITY_PREFERENCES),
+            syncer::UploadState::NOT_ACTIVE);
+
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kSyncDisabled, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(true), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
+
+  // Once the policy is applied, sync should be disabled.
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::DISABLED);
+
+  // Should not crash.
+  ASSERT_EQ(syncer::GetUploadToGoogleState(GetSyncService(0),
+                                           syncer::PRIORITY_PREFERENCES),
+            syncer::UploadState::NOT_ACTIVE);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

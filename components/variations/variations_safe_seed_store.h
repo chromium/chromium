@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/variations/seed_reader_writer.h"
 
 namespace variations {
 
@@ -28,24 +29,17 @@ class VariationsSafeSeedStore {
   virtual base::Time GetFetchTime() const = 0;
   virtual void SetFetchTime(const base::Time& fetch_time) = 0;
 
-  // Getter and setter for the milestone that was used for the safe seed.
+  // Getter for the milestone that was used for the safe seed.
   virtual int GetMilestone() const = 0;
-  virtual void SetMilestone(int milestone) = 0;
 
   // Getter and setter for the last server-provided safe seed date of when the
   // seed to be used was fetched. (See GetTimeForStudyDateChecks.)
   virtual base::Time GetTimeForStudyDateChecks() const = 0;
   virtual void SetTimeForStudyDateChecks(const base::Time& safe_seed_time) = 0;
 
-  // Getter and setter for the compressed, b64-encoded safe seed in the
-  // underlying storage.
-  virtual std::string GetCompressedSeed() const = 0;
-  virtual void SetCompressedSeed(const std::string& safe_compressed) = 0;
-
-  // Getter and setter for the b64-encoded safe seed signature in the
-  // underlying storage.
-  virtual std::string GetSignature() const = 0;
-  virtual void SetSignature(const std::string& safe_seed_signature) = 0;
+  // Getter and setter for the compressed and base64-encoded safe seed.
+  virtual StoredSeed GetCompressedSeed() const = 0;
+  virtual void SetCompressedSeed(ValidatedSeedInfo seed_info) = 0;
 
   // Getter and setter for the locale associated with the safe seed in the
   // underlying storage.
@@ -63,6 +57,11 @@ class VariationsSafeSeedStore {
   virtual std::string GetSessionConsistencyCountry() const = 0;
   virtual void SetSessionConsistencyCountry(
       const std::string& session_consistency_country) = 0;
+
+  // Getter and setter for SeedReaderWriter for testing.
+  virtual SeedReaderWriter* GetSeedReaderWriterForTesting() = 0;
+  virtual void SetSeedReaderWriterForTesting(
+      std::unique_ptr<SeedReaderWriter> seed_reader_writer) = 0;
 
   // Clear all state in the underlying storage.
   virtual void ClearState() = 0;

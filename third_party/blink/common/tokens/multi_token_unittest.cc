@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/tokens/multi_token.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/types/token_type.h"
 #include "base/unguessable_token.h"
@@ -86,9 +87,9 @@ TEST(MultiTokenTest, Comparison) {
     EXPECT_TRUE(token2 == token3);
     EXPECT_FALSE(token2 != token3);
 
-    // absl::variant and std::variant order by index. If the indexes are equal
-    // (e.g. the same type is held in both), then the comparison operator of the
-    // held type is used.
+    // std::variant orders by index. If the indices are equal (e.g. the same
+    // type is held in both), then the comparison operator of the held type is
+    // used.
     EXPECT_TRUE(token1 < token2);
     EXPECT_TRUE(token1 < token3);
     EXPECT_FALSE(token2 < token3);

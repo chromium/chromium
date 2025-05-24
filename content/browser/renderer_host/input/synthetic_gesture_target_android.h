@@ -60,8 +60,10 @@ class SyntheticGestureTargetAndroid
 
  private:
   // ui::HostBeginFrameObserver::SimpleBeginFrameObserver:
-  void OnBeginFrame(base::TimeTicks frame_begin_time,
-                    base::TimeDelta frame_interval) override;
+  void OnBeginFrame(
+      base::TimeTicks frame_begin_time,
+      base::TimeDelta frame_interval,
+      std::optional<base::TimeTicks> first_coalesced_frame_begin_time) override;
   void OnBeginFrameSourceShuttingDown() override;
 
   void TouchSetPointer(int index, float x, float y, int id);

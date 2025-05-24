@@ -76,8 +76,7 @@ bool AudioTrackOutputStream::Open() {
       case AudioParameters::AUDIO_FAKE:
       case AudioParameters::AUDIO_PCM_LINEAR:
       case AudioParameters::AUDIO_PCM_LOW_LATENCY:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -171,12 +170,13 @@ ScopedJavaLocalRef<jobject> AudioTrackOutputStream::OnMoreData(
 
     callback_->OnMoreData(delay, tick_clock_->NowTicks(), {}, audio_bus.get());
 
-    if (audio_bus->GetBitstreamDataSize() <= 0)
+    if (audio_bus->bitstream_data().empty()) {
       return nullptr;
+    }
 
     return Java_AudioTrackOutputStream_createAudioBufferInfo(
         env, j_audio_output_stream_, audio_bus->GetBitstreamFrames(),
-        audio_bus->GetBitstreamDataSize());
+        audio_bus->bitstream_data().size());
   }
 
   // For PCM format, we need extra memory to convert planar float32 into

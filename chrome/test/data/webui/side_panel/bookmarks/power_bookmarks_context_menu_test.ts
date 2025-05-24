@@ -4,6 +4,7 @@
 
 import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
 
+import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {PowerBookmarksContextMenuElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
@@ -20,38 +21,59 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
   let delegate: TestPowerBookmarksDelegate;
   let service: PowerBookmarksService;
 
-  const folders: chrome.bookmarks.BookmarkTreeNode[] = [
+  const allBookmarks: BookmarksTreeNode[] = [
     {
-      id: '2',
-      parentId: '0',
+      id: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+      parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
+      index: 0,
       title: 'Other Bookmarks',
+      url: null,
+      dateAdded: null,
+      dateLastUsed: null,
+      unmodifiable: false,
       children: [
         {
           id: '3',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+          index: 0,
           title: 'First child bookmark',
           url: 'http://child/bookmark/1/',
           dateAdded: 1,
+          dateLastUsed: null,
+          unmodifiable: false,
+          children: null,
         },
         {
           id: '4',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+          index: 1,
           title: 'Second child bookmark',
           url: 'http://child/bookmark/2/',
           dateAdded: 3,
+          dateLastUsed: null,
+          unmodifiable: false,
+          children: null,
         },
         {
           id: '5',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           title: 'Child folder',
+          index: 3,
           dateAdded: 2,
+          url: null,
+          dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '6',
               parentId: '5',
+              index: 0,
               title: 'Nested bookmark',
               url: 'http://nested/bookmark/',
               dateAdded: 4,
+              dateLastUsed: null,
+              unmodifiable: false,
+              children: null,
             },
           ],
         },
@@ -63,7 +85,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setFolders(structuredClone(folders));
+    bookmarksApi.setAllBookmarks(allBookmarks);
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     delegate = new TestPowerBookmarksDelegate();
@@ -79,6 +101,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
       menuOpenIncognitoWithCount: 'Open all in Incognito window',
       menuOpenNewTabGroup: 'Open in new tab group',
       menuOpenNewTabGroupWithCount: 'Open all in new tab group',
+      menuOpenSplitView: 'Open all in split view',
       menuEdit: 'Edit…',
       menuMoveToBookmarksBar: 'Move to Bookmarks Bar folder',
       menuTrackPrice: 'Track price',
@@ -86,6 +109,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
       menuRename: 'Rename',
       tooltipDelete: 'Delete',
       tooltipMove: 'Move',
+      splitViewEnabled: true,
     });
 
     powerBookmarksContextMenu =
@@ -98,13 +122,13 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
   test('ShowsMenuItemsForSingleSelectUrl', async () => {
     const selection = [service.findBookmarkWithId('3')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, false, false);
+        new MouseEvent('click'), selection, false, false, false);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
-    assertEquals(menuItems.length, 6);
+    assertEquals(menuItems.length, 7);
     assertEquals(
         menuItems[0]!.textContent!.includes(
             loadTimeData.getString('menuOpenNewTab')),
@@ -118,14 +142,18 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
             loadTimeData.getString('menuOpenIncognito')),
         true);
     assertEquals(
-        menuItems[3]!.textContent!.includes(loadTimeData.getString('menuEdit')),
+        menuItems[3]!.textContent!.includes(
+            loadTimeData.getString('menuOpenSplitView')),
         true);
     assertEquals(
-        menuItems[4]!.textContent!.includes(
-            loadTimeData.getString('menuMoveToBookmarksBar')),
+        menuItems[4]!.textContent!.includes(loadTimeData.getString('menuEdit')),
         true);
     assertEquals(
         menuItems[5]!.textContent!.includes(
+            loadTimeData.getString('menuMoveToBookmarksBar')),
+        true);
+    assertEquals(
+        menuItems[6]!.textContent!.includes(
             loadTimeData.getString('tooltipDelete')),
         true);
   });
@@ -133,7 +161,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
   test('ShowsMenuItemsForSingleSelectFolder', async () => {
     const selection = [service.findBookmarkWithId('5')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, false, false);
+        new MouseEvent('click'), selection, false, false, false);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
@@ -174,7 +202,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     const selection =
         [service.findBookmarkWithId('3')!, service.findBookmarkWithId('4')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, false, false);
+        new MouseEvent('click'), selection, false, false, false);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
@@ -210,13 +238,13 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
   test('ShowsMenuItemsForPriceTracking', async () => {
     const selection = [service.findBookmarkWithId('4')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, true, true);
+        new MouseEvent('click'), selection, true, true, false);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
-    assertEquals(menuItems.length, 7);
+    assertEquals(menuItems.length, 8);
     assertEquals(
         menuItems[0]!.textContent!.includes(
             loadTimeData.getString('menuOpenNewTab')),
@@ -230,18 +258,22 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
             loadTimeData.getString('menuOpenIncognito')),
         true);
     assertEquals(
-        menuItems[3]!.textContent!.includes(loadTimeData.getString('menuEdit')),
+        menuItems[3]!.textContent!.includes(
+            loadTimeData.getString('menuOpenSplitView')),
         true);
     assertEquals(
-        menuItems[4]!.textContent!.includes(
-            loadTimeData.getString('menuMoveToBookmarksBar')),
+        menuItems[4]!.textContent!.includes(loadTimeData.getString('menuEdit')),
         true);
     assertEquals(
         menuItems[5]!.textContent!.includes(
-            loadTimeData.getString('menuUntrackPrice')),
+            loadTimeData.getString('menuMoveToBookmarksBar')),
         true);
     assertEquals(
         menuItems[6]!.textContent!.includes(
+            loadTimeData.getString('menuUntrackPrice')),
+        true);
+    assertEquals(
+        menuItems[7]!.textContent!.includes(
             loadTimeData.getString('tooltipDelete')),
         true);
   });
@@ -253,7 +285,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     const selection = [service.findBookmarkWithId('5')!];
     powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, false, false);
+        new MouseEvent('click'), selection, false, false, false);
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
@@ -279,6 +311,46 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     assertEquals(
         menuItems[4]!.textContent!.includes(
             loadTimeData.getString('menuRename')),
+        true);
+    assertEquals(
+        menuItems[5]!.textContent!.includes(
+            loadTimeData.getString('tooltipDelete')),
+        true);
+  });
+
+  test('ShowsMenuItemsForUserWithSplitViewDisabled', async () => {
+    loadTimeData.overrideValues({
+      splitViewEnabled: false,
+      isIncognitoModeAvailable: true,
+    });
+
+    const selection = [service.findBookmarkWithId('3')!];
+    powerBookmarksContextMenu.showAtPosition(
+        new MouseEvent('click'), selection, false, false, false);
+
+    await waitAfterNextRender(powerBookmarksContextMenu);
+
+    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
+        '.dropdown-item');
+    assertEquals(menuItems.length, 6);
+    assertEquals(
+        menuItems[0]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewTab')),
+        true);
+    assertEquals(
+        menuItems[1]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewWindow')),
+        true);
+    assertEquals(
+        menuItems[2]!.textContent!.includes(
+            loadTimeData.getString('menuOpenIncognito')),
+        true);
+    assertEquals(
+        menuItems[3]!.textContent!.includes(loadTimeData.getString('menuEdit')),
+        true);
+    assertEquals(
+        menuItems[4]!.textContent!.includes(
+            loadTimeData.getString('menuMoveToBookmarksBar')),
         true);
     assertEquals(
         menuItems[5]!.textContent!.includes(

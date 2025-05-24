@@ -7,7 +7,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {fakeFirmwareUpdates} from './fake_data.js';
 import {FakeUpdateController} from './fake_update_controller.js';
 import {FakeUpdateProvider} from './fake_update_provider.js';
-import {InstallController, InstallControllerInterface, UpdateProvider, UpdateProviderInterface} from './firmware_update.mojom-webui.js';
+import type {InstallControllerInterface, SystemUtilsInterface, UpdateProviderInterface} from './firmware_update.mojom-webui.js';
+import {InstallController, SystemUtils, UpdateProvider} from './firmware_update.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -23,6 +24,8 @@ let useFakeProviders = false;
 let updateProvider: UpdateProviderInterface|null = null;
 
 let updateController: InstallControllerInterface|null = null;
+
+let systemUtils: SystemUtilsInterface|null = null;
 
 export function setUseFakeProviders(value: boolean): void {
   useFakeProviders = value;
@@ -79,4 +82,10 @@ export function getUpdateController(): InstallControllerInterface {
 
   assert(!!updateController);
   return updateController;
+}
+
+export function getSystemUtils(): SystemUtilsInterface {
+  systemUtils = SystemUtils.getRemote();
+  assert(!!systemUtils);
+  return systemUtils;
 }

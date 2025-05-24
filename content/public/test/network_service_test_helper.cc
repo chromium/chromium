@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/public/test/network_service_test_helper.h"
 
 #include <optional>
@@ -17,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/process/process.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -630,9 +636,8 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   void GetEnvironmentVariableValue(
       const std::string& name,
       GetEnvironmentVariableValueCallback callback) override {
-    std::string value;
-    base::Environment::Create()->GetVar(name, &value);
-    std::move(callback).Run(value);
+    std::move(callback).Run(
+        base::Environment::Create()->GetVar(name).value_or(std::string()));
   }
 
   void Log(const std::string& message, LogCallback callback) override {
@@ -785,6 +790,24 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
 #endif
 
     std::move(callback).Run(allow_gssapi_library_load);
+  }
+
+#if BUILDFLAG(IS_WIN)
+  void DisableExclusiveCookieDatabaseLockingForTesting(
+      DisableExclusiveCookieDatabaseLockingForTestingCallback callback)
+      override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->disable_exclusive_cookie_database_locking_for_testing();
+    std::move(callback).Run();
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  void IsHappyEyeballsV3Enabled(
+      IsHappyEyeballsV3EnabledCallback callback) override {
+    const bool enabled = network::NetworkService::GetNetworkServiceForTesting()
+                             ->host_resolver_manager()
+                             ->IsHappyEyeballsV3Enabled();
+    std::move(callback).Run(enabled);
   }
 
  private:

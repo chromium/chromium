@@ -7,15 +7,15 @@
 
 #include "base/power_monitor/power_monitor_device_source.h"
 
-#include "base/apple/foundation_util.h"
-#include "base/apple/scoped_cftyperef.h"
-#include "base/power_monitor/power_monitor.h"
-#include "base/power_monitor/power_monitor_source.h"
-
 #include <IOKit/IOMessage.h>
 #include <IOKit/ps/IOPSKeys.h>
 #include <IOKit/ps/IOPowerSources.h>
 #include <IOKit/pwr_mgt/IOPMLib.h>
+
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
+#include "base/power_monitor/power_monitor.h"
+#include "base/power_monitor/power_monitor_source.h"
 
 namespace base {
 

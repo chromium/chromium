@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("in_session_password_change") {
   sources = [
@@ -41,7 +39,6 @@ static_library("in_session_password_change") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/password_change:resources",
     "//chrome/browser/resources/gaia_auth_host:resources",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common:constants",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/strings",
@@ -52,6 +49,7 @@ static_library("in_session_password_change") {
     "//ui/base",
     "//ui/display",
     "//ui/strings:ui_strings",
+    "//ui/webui",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/login/saml" ]

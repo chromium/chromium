@@ -10,6 +10,11 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.List;
+
 /**
  * Test rule for batched Public Transit tests.
  *
@@ -18,7 +23,8 @@ import org.junit.runners.model.Statement;
  *
  * @param <T> The Class of the home {@link Station}
  */
-public class BatchedPublicTransitRule<T extends Station> implements TestRule {
+@NullMarked
+public class BatchedPublicTransitRule<T extends Station<?>> implements TestRule {
     private final Class<T> mHomeStationType;
     private final boolean mExpectResetByTest;
 
@@ -42,8 +48,10 @@ public class BatchedPublicTransitRule<T extends Station> implements TestRule {
                 try {
                     testName = desc.getMethodName();
                     TrafficControl.onTestStarted(testName);
-                    TransitAsserts.assertCurrentStationType(
-                            mHomeStationType, "beginning of test", true);
+                    if (mExpectResetByTest) {
+                        TransitAsserts.assertCurrentStationType(
+                                mHomeStationType, "beginning of test", true);
+                    }
                     base.evaluate();
                     if (mExpectResetByTest) {
                         TransitAsserts.assertCurrentStationType(
@@ -64,9 +72,14 @@ public class BatchedPublicTransitRule<T extends Station> implements TestRule {
      * @return the home station
      * @throws AssertionError if the current station is not of the expected home station type
      */
-    public T getHomeStation() {
+    public @Nullable T getHomeStation() {
         TransitAsserts.assertCurrentStationType(
                 mHomeStationType, "getting base station", /* allowNull= */ true);
-        return (T) TrafficControl.getActiveStation();
+        List<Station<?>> activeStations = TrafficControl.getActiveStations();
+        if (activeStations.isEmpty()) {
+            return null;
+        } else {
+            return (T) activeStations.get(0);
+        }
     }
 }

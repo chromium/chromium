@@ -17,7 +17,7 @@ function populateStore()
 {
     debug("");
     debug("populating store...");
-    evalAndLog("trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
+    evalAndLog("trans = db.transaction('store', 'readwrite')");
     evalAndLog("store = trans.objectStore('store');");
     trans.onerror = unexpectedErrorCallback;
     trans.onabort = unexpectedAbortCallback;
@@ -47,7 +47,7 @@ function testCursor()
 
     test = tests.shift();
 
-    evalAndLog("trans = db.transaction('store', 'readonly', {durability: 'relaxed'})");
+    evalAndLog("trans = db.transaction('store', 'readonly')");
     trans.onerror = unexpectedErrorCallback;
     trans.onabort = unexpectedAbortCallback;
     trans.oncomplete = testCursor;

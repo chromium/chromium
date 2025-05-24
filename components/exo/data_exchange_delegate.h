@@ -30,7 +30,7 @@ namespace exo {
 // file drag and drop path translations and file sharing for VMs.
 class DataExchangeDelegate {
  public:
-  virtual ~DataExchangeDelegate() {}
+  virtual ~DataExchangeDelegate() = default;
 
   // Returns the endpoint type of `window`.
   virtual ui::EndpointType GetDataTransferEndpointType(

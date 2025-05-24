@@ -54,8 +54,6 @@ class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet,
 
   ScriptPromise<FontFaceSet> ready(ScriptState*) override;
 
-  AtomicString status() const override;
-
   void DidLayout();
   void BeginFontLoading(FontFace*);
 
@@ -82,7 +80,7 @@ class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet,
   bool InActiveContext() const override;
   FontSelector* GetFontSelector() const override;
 
-  bool ResolveFontStyle(const String&, Font&) override;
+  const Font* ResolveFontStyle(const String&) override;
 
  private:
   Document* GetDocument() const;

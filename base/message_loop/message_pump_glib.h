@@ -6,6 +6,7 @@
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_GLIB_H_
 
 #include <glib.h>
+
 #include <memory>
 
 #include "base/base_export.h"

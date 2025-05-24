@@ -42,6 +42,7 @@ enum class GamepadId : uint32_t {
   // Fake IDs for devices which report as 0x0000 0x0000
   kPowerALicPro = 0x0000ff00,
   // ID values for supported devices.
+  k8BitDoProduct301b = 0x2dc8301b,
   k8BitDoProduct3106 = 0x2dc83106,
   kAcerProduct1304 = 0x05021304,
   kAcerProduct1305 = 0x05021305,
@@ -115,6 +116,7 @@ enum class GamepadId : uint32_t {
   kSonyProduct0ba0 = 0x054c0ba0,
   kSonyProduct0ce6 = 0x054c0ce6,
   kSonyProduct0df2 = 0x054c0df2,
+  kSonyProduct0e5f = 0x054c0e5f,
   kSteelSeriesBtProduct1419 = 0x01111419,
   kSteelSeriesBtProduct1431 = 0x01111431,
   kSteelSeriesBtProduct1434 = 0x01111434,

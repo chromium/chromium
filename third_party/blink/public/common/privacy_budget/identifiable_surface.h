@@ -103,17 +103,11 @@ class IdentifiableSurface {
 
     // Reserved 2.
 
-    // Represents loading a font locally based on a name lookup that is allowed
-    // to match either a unique name or a family name. This occurs when a
-    // font-family CSS rule doesn't match any @font-face rule. Input is the
-    // combination of the lookup name and the FontSelectionRequest (i.e. weight,
-    // width and slope).
-    kLocalFontLookupByUniqueOrFamilyName = 3,
+    // Reserved 3.
+    // Was kLocalFontLookupByUniqueOrFamilyName.
 
-    // Represents looking up the family name of a generic font. Input is the
-    // combination of the generic font family name, script code and
-    // GenericFamilyType.
-    kGenericFontLookup = 4,
+    // Reserved 4.
+    // Was kGenericFontLookup.
 
     // Reserved 5.
     // Was kExtensionFileAccess.
@@ -140,20 +134,14 @@ class IdentifiableSurface {
     // the mime type supplied to the method.
     kHTMLMediaElement_CanPlayType = 11,
 
-    // Represents loading a font locally based on a name lookup that is only
-    // allowed to match a unique name. This occurs in @font-face CSS rules with
-    // a src:local attribute. Input is the combination of the lookup name and
-    // the FontSelectionRequest (i.e. weight, width and slope).
-    kLocalFontLookupByUniqueNameOnly = 12,
+    // Reserved 12.
+    // Was kLocalFontLookupByUniqueNameOnly.
 
-    // Represents loading a font locally based on a fallback character. Input is
-    // the combination of the fallback character, FallbackPriority and the
-    // FontSelectionRequest (i.e. weight, width and slope).
-    kLocalFontLookupByFallbackCharacter = 13,
+    // Reserved 13.
+    // Was kLocalFontLookupByFallbackCharacter.
 
-    // Represents looking up a font locally as a last resort. Input is the
-    // FontSelectionRequest (i.e. weight, width and slope).
-    kLocalFontLookupAsLastResort = 14,
+    // Reserved 14.
+    // Was kLocalFontLookupAsLastResort.
 
     // Reserved 15.
     // Was kExtensionCancelRequest.
@@ -164,10 +152,8 @@ class IdentifiableSurface {
     // will key this type on a digest of both the enums' values.
     kWebGLShaderPrecisionFormat = 16,
 
-    // A type for recording reads of the offsetWidth and offsetHeight properties
-    // when we believe it may be trying to detect the size of the scrollbar.
-    // The input for this surface should be a member of `ScrollbarSurface`.
-    kScrollbarSize = 17,
+    // Reserved 17.
+    // Was kScrollbarSize.
 
     // WebGL2RenderingContext.getInternal
     kWebGLInternalFormatParameter = 18,
@@ -197,13 +183,8 @@ class IdentifiableSurface {
     // configuration provided.
     kMediaCapabilities_DecodingInfo = 25,
 
-    // Represents determining that a local font exists or does not, based on a
-    // name lookup that is only allowed to match a unique name. This occurs in
-    // @font-face CSS rules with a src:local attribute, as well as calls to
-    // FontFace.load() for a FontFace object with a src:local attribute. The
-    // latter can reveal whether a font exists before the full font data are
-    // obtained. Input is the lookup name. Output is a bool.
-    kLocalFontExistenceByUniqueNameOnly = 26,
+    // Reserved 26.
+    // Was kLocalFontExistenceByUniqueNameOnly.
 
     // Represents a call to Navigator.getUserMedia. Input is the set of
     // constraints.
@@ -213,8 +194,8 @@ class IdentifiableSurface {
     // name and the target value. Output is the result --- true or false.
     kMediaQuery_DEPRECATED = 28,
 
-    // Represents loading a font locally. Input is the PostScript name.
-    kLocalFontLoadPostScriptName = 29,
+    // Reserved 29.
+    // Was kLocalFontLoadPostScriptName.
 
     // Getting supported codecs, etc. for WebRTC sender -- key is hash of kind
     // (audio or video).
@@ -246,11 +227,8 @@ class IdentifiableSurface {
     // correspond to any Web APIs specifically.
     kReidScoreEstimator = 37,
 
-    // Type for binary surfaces telling whether a font family is available or
-    // not in the system. The key of the surface is the name of the font family,
-    // the value is a boolean. These surfaces are currently only actively
-    // sampled in the browser.
-    kFontFamilyAvailable = 38,
+    // Reserved 38.
+    // Was kFontFamilyAvailable.
 
     // Represents determining that a local font exists or does not, based on a
     // name lookup that is allowed to match either a unique name or a family
@@ -315,14 +293,6 @@ class IdentifiableSurface {
     // At least one drawing operation was only partially digested, for
     // performance reasons.
     kPartiallyDigested = UINT64_C(0x40)
-  };
-
-  // Possible inputs for Type::kScrollbarSize.
-  enum class ScrollbarSurface : uint64_t {
-    kScrollingElementWidth = 0,
-    kScrollingElementHeight = 1,
-    kElemScrollbarWidth = 2,
-    kElemScrollbarHeight = 3,
   };
 
   // Possible inputs for Type::kMediaFeature.

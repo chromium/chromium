@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/threading/platform_thread.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/compiler_specific.h"
 #include "base/process/process.h"
@@ -33,6 +30,7 @@
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <mach/thread_policy.h>
+
 #include "base/mac/mac_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -54,8 +52,9 @@ namespace {
 
 class TrivialThread : public PlatformThread::Delegate {
  public:
-  TrivialThread() : run_event_(WaitableEvent::ResetPolicy::MANUAL,
-                               WaitableEvent::InitialState::NOT_SIGNALED) {}
+  TrivialThread()
+      : run_event_(WaitableEvent::ResetPolicy::MANUAL,
+                   WaitableEvent::InitialState::NOT_SIGNALED) {}
 
   TrivialThread(const TrivialThread&) = delete;
   TrivialThread& operator=(const TrivialThread&) = delete;
@@ -81,17 +80,21 @@ TEST(PlatformThreadTest, TrivialJoin) {
 }
 
 TEST(PlatformThreadTest, TrivialJoinTimesTen) {
-  TrivialThread thread[10];
-  PlatformThreadHandle handle[std::size(thread)];
+  std::array<TrivialThread, 10> thread;
+  std::array<PlatformThreadHandle, std::size(thread)> handle;
 
-  for (auto& n : thread)
+  for (auto& n : thread) {
     ASSERT_FALSE(n.run_event().IsSignaled());
-  for (size_t n = 0; n < std::size(thread); n++)
+  }
+  for (size_t n = 0; n < std::size(thread); n++) {
     ASSERT_TRUE(PlatformThread::Create(0, &thread[n], &handle[n]));
-  for (auto n : handle)
+  }
+  for (auto n : handle) {
     PlatformThread::Join(n);
-  for (auto& n : thread)
+  }
+  for (auto& n : thread) {
     ASSERT_TRUE(n.run_event().IsSignaled());
+  }
 }
 
 // The following detach tests are by nature racy. The run_event approximates the
@@ -108,17 +111,19 @@ TEST(PlatformThreadTest, TrivialDetach) {
 }
 
 TEST(PlatformThreadTest, TrivialDetachTimesTen) {
-  TrivialThread thread[10];
-  PlatformThreadHandle handle[std::size(thread)];
+  std::array<TrivialThread, 10> thread;
+  std::array<PlatformThreadHandle, std::size(thread)> handle;
 
-  for (auto& n : thread)
+  for (auto& n : thread) {
     ASSERT_FALSE(n.run_event().IsSignaled());
+  }
   for (size_t n = 0; n < std::size(thread); n++) {
     ASSERT_TRUE(PlatformThread::Create(0, &thread[n], &handle[n]));
     PlatformThread::Detach(handle[n]);
   }
-  for (auto& n : thread)
+  for (auto& n : thread) {
     n.run_event().Wait();
+  }
 }
 
 // Tests of basic thread functions ---------------------------------------------
@@ -132,8 +137,7 @@ class FunctionTestThread : public PlatformThread::Delegate {
         termination_ready_(WaitableEvent::ResetPolicy::MANUAL,
                            WaitableEvent::InitialState::NOT_SIGNALED),
         terminate_thread_(WaitableEvent::ResetPolicy::MANUAL,
-                          WaitableEvent::InitialState::NOT_SIGNALED),
-        done_(false) {}
+                          WaitableEvent::InitialState::NOT_SIGNALED) {}
 
   FunctionTestThread(const FunctionTestThread&) = delete;
   FunctionTestThread& operator=(const FunctionTestThread&) = delete;
@@ -169,9 +173,7 @@ class FunctionTestThread : public PlatformThread::Delegate {
     return thread_id_;
   }
 
-  bool IsRunning() const {
-    return termination_ready_.IsSignaled() && !done_;
-  }
+  bool IsRunning() const { return termination_ready_.IsSignaled() && !done_; }
 
   // Blocks until this thread is started and ready to be terminated.
   void WaitForTerminationReady() { termination_ready_.Wait(); }
@@ -188,7 +190,7 @@ class FunctionTestThread : public PlatformThread::Delegate {
 
   mutable WaitableEvent termination_ready_;
   WaitableEvent terminate_thread_;
-  bool done_;
+  bool done_ = false;
 };
 
 }  // namespace
@@ -216,16 +218,19 @@ TEST(PlatformThreadTest, Function) {
 TEST(PlatformThreadTest, FunctionTimesTen) {
   PlatformThreadId main_thread_id = PlatformThread::CurrentId();
 
-  FunctionTestThread thread[10];
-  PlatformThreadHandle handle[std::size(thread)];
+  std::array<FunctionTestThread, 10> thread;
+  std::array<PlatformThreadHandle, std::size(thread)> handle;
 
-  for (const auto& n : thread)
+  for (const auto& n : thread) {
     ASSERT_FALSE(n.IsRunning());
+  }
 
-  for (size_t n = 0; n < std::size(thread); n++)
+  for (size_t n = 0; n < std::size(thread); n++) {
     ASSERT_TRUE(PlatformThread::Create(0, &thread[n], &handle[n]));
-  for (auto& n : thread)
+  }
+  for (auto& n : thread) {
     n.WaitForTerminationReady();
+  }
 
   for (size_t n = 0; n < std::size(thread); n++) {
     ASSERT_TRUE(thread[n].IsRunning());
@@ -237,12 +242,15 @@ TEST(PlatformThreadTest, FunctionTimesTen) {
     }
   }
 
-  for (auto& n : thread)
+  for (auto& n : thread) {
     n.MarkForTermination();
-  for (auto n : handle)
+  }
+  for (auto n : handle) {
     PlatformThread::Join(n);
-  for (const auto& n : thread)
+  }
+  for (const auto& n : thread) {
     ASSERT_FALSE(n.IsRunning());
+  }
 
   // Make sure that the thread ID is the same across calls.
   EXPECT_EQ(main_thread_id, PlatformThread::CurrentId());
@@ -252,8 +260,7 @@ namespace {
 
 constexpr ThreadType kAllThreadTypes[] = {
     ThreadType::kRealtimeAudio, ThreadType::kDisplayCritical,
-    ThreadType::kDefault,       ThreadType::kResourceEfficient,
-    ThreadType::kUtility,       ThreadType::kBackground};
+    ThreadType::kDefault, ThreadType::kUtility, ThreadType::kBackground};
 
 class ThreadTypeTestThread : public FunctionTestThread {
  public:
@@ -380,8 +387,6 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
 #if BUILDFLAG(IS_FUCHSIA)
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                    ThreadType::kUtility));
-  EXPECT_FALSE(PlatformThread::CanChangeThreadType(
-      ThreadType::kBackground, ThreadType::kResourceEfficient));
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                    ThreadType::kDefault));
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kDefault,
@@ -389,9 +394,6 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
 #else
   EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                 ThreadType::kUtility),
-            kCanIncreasePriority);
-  EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
-                                                ThreadType::kResourceEfficient),
             kCanIncreasePriority);
   EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                 ThreadType::kDefault),
@@ -424,18 +426,6 @@ TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
   TestPriorityResultingFromThreadType(ThreadType::kUtility,
                                       ThreadPriorityForTest::kUtility);
 
-#if BUILDFLAG(IS_APPLE)
-  TestPriorityResultingFromThreadType(ThreadType::kResourceEfficient,
-                                      ThreadPriorityForTest::kUtility);
-#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  TestPriorityResultingFromThreadType(
-      ThreadType::kResourceEfficient,
-      ThreadPriorityForTest::kResourceEfficient);
-#else
-  TestPriorityResultingFromThreadType(ThreadType::kResourceEfficient,
-                                      ThreadPriorityForTest::kNormal);
-#endif  // BUILDFLAG(IS_APPLE)
-
   TestPriorityResultingFromThreadType(ThreadType::kDefault,
                                       ThreadPriorityForTest::kNormal);
   TestPriorityResultingFromThreadType(ThreadType::kDisplayCritical,
@@ -455,9 +445,9 @@ TEST(PlatformThreadTest, SetHugeThreadName) {
 
 TEST(PlatformThreadTest, GetDefaultThreadStackSize) {
   size_t stack_size = PlatformThread::GetDefaultThreadStackSize();
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(IS_IOS)
   EXPECT_EQ(1024u * 1024u, stack_size);
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA) ||      \
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) ||                           \
     ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__) && \
      !defined(THREAD_SANITIZER)) ||                                           \
     (BUILDFLAG(IS_ANDROID) && !defined(ADDRESS_SANITIZER))
@@ -621,7 +611,7 @@ INSTANTIATE_TEST_SUITE_P(
 namespace {
 
 bool IsTidCacheCorrect() {
-  return PlatformThread::CurrentId() == syscall(__NR_gettid);
+  return PlatformThread::CurrentId().raw() == syscall(__NR_gettid);
 }
 
 void* CheckTidCacheCorrectWrapper(void*) {
@@ -651,8 +641,9 @@ void TestTidCacheCorrect(bool main_thread_accesses_cache_first) {
   if (child_pid == 0) {
     // In the child.
     if (main_thread_accesses_cache_first) {
-      if (!IsTidCacheCorrect())
+      if (!IsTidCacheCorrect()) {
         _exit(1);
+      }
     }
 
     // Access the TID cache on another thread and make sure the cached value is
@@ -662,8 +653,9 @@ void TestTidCacheCorrect(bool main_thread_accesses_cache_first) {
     if (!main_thread_accesses_cache_first) {
       // Make sure the main thread's cache is correct even though another thread
       // accessed the cache first.
-      if (!IsTidCacheCorrect())
+      if (!IsTidCacheCorrect()) {
         _exit(1);
+      }
     }
 
     _exit(0);

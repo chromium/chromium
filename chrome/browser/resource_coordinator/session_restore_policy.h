@@ -29,6 +29,10 @@ namespace resource_coordinator {
 // merged into TabManager directly.
 class SessionRestorePolicy {
  public:
+  // Minimum site engagement score for a tab to be restored, if it doesn't
+  // communicate in the background.
+  static constexpr uint32_t kMinSiteEngagementToRestore = 15;
+
   // Callback that is used by the policy engine to notify its embedder (the
   // TabLoaderDelegate) of changes to tab priorities as they occur. Zero or one
   // score updates may be delivered for each contents that is added; callbacks
@@ -135,10 +139,6 @@ class SessionRestorePolicy {
                                            size_t score);
 
  protected:
-#if !BUILDFLAG(IS_ANDROID)
-  friend class TabDataAccess;
-#endif
-
   // Holds a handful of data about a tab which is used to prioritize it during
   // session restore.
   struct TabData {
@@ -198,6 +198,21 @@ class SessionRestorePolicy {
     base::CancelableOnceCallback<void(SiteDataReaderData)>
         used_in_bg_setter_cancel_callback;
   };
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Retrieves the SiteDataReaderData for `contents`, and invokes the provided
+  // callback with it.
+  void GetSiteDataReaderData(
+      content::WebContents* contents,
+      base::OnceCallback<void(TabData::SiteDataReaderData)>
+          on_site_data_reader_data_received_cb);
+
+  // Initializes the `used_in_bg` bit for the tab data associated with
+  // `contents`. Care must be taken to not call this after the tab data has been
+  // destroyed.
+  void OnSiteDataReaderDataReceived(content::WebContents* contents,
+                                    TabData::SiteDataReaderData reader_data);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // This is safe to call from the constructor if |delegate_| is already
   // initialized.
@@ -262,9 +277,9 @@ class SessionRestorePolicy {
   base::TimeDelta max_time_since_last_use_to_restore_ = base::Days(30);
 
   // The minimum site engagement score in order for a tab to be restored.
-  // Setting this to zero means all tabs will be restored regardless of the
-  // site engagement score.
-  uint32_t min_site_engagement_to_restore_ = 15;
+  // Can be overridden for tests. Setting this to zero means all tabs will be
+  // restored regardless of the site engagement score.
+  uint32_t min_site_engagement_to_restore_ = kMinSiteEngagementToRestore;
 
   // The number of simultaneous tab loads that are permitted by policy. This
   // is computed based on the number of cores on the machine, except for in

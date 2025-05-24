@@ -21,31 +21,25 @@ GeolocationPermissionContextDelegate::~GeolocationPermissionContextDelegate() =
     default;
 
 bool GeolocationPermissionContextDelegate::DecidePermission(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    bool user_gesture,
+    const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback* callback,
     permissions::GeolocationPermissionContext* context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   bool permission_set;
   bool new_permission;
-  if (extensions_context_.DecidePermission(id, requesting_origin, user_gesture,
-                                           callback, &permission_set,
-                                           &new_permission)) {
+  if (extensions_context_.DecidePermission(request_data.id,
+                                           request_data.requesting_origin,
+                                           request_data.user_gesture, callback,
+                                           &permission_set, &new_permission)) {
     DCHECK_EQ(!!*callback, permission_set);
     if (permission_set) {
-      content::RenderFrameHost* const render_frame_host =
-          content::RenderFrameHost::FromID(id.global_render_frame_host_id());
       ContentSetting content_setting =
           new_permission ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
-      context->NotifyPermissionSet(
-          id, requesting_origin,
-          permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-              render_frame_host->GetMainFrame()),
-          std::move(*callback),
-          /*persist=*/false, content_setting, /*is_one_time=*/false,
-          /*is_final_decision=*/true);
+      context->NotifyPermissionSet(request_data, std::move(*callback),
+                                   /*persist=*/false, content_setting,
+                                   /*is_one_time=*/false,
+                                   /*is_final_decision=*/true);
     }
     return true;
   }

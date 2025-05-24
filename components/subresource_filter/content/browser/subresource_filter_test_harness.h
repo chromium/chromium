@@ -13,6 +13,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_renderer_host.h"
 
@@ -23,7 +24,6 @@
 class GURL;
 
 namespace content {
-class NavigationThrottle;
 class RenderFrameHost;
 }  // namespace content
 
@@ -93,8 +93,7 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
  protected:
   // Tests can override this to have custom throttles added to navigations.
   virtual void AppendCustomNavigationThrottles(
-      content::NavigationHandle* navigation_handle,
-      std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles) {}
+      content::NavigationThrottleRegistry& registry) {}
 
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
     return &pref_service_;

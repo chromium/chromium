@@ -19,6 +19,7 @@ class MockFileSystemAccessPermissionGrant
 
   MOCK_METHOD(PermissionStatus, GetStatus, (), (override));
   MOCK_METHOD(base::FilePath, GetPath, (), (override));
+  MOCK_METHOD(std::string, GetDisplayName, (), (override));
   void RequestPermission(
       GlobalRenderFrameHostId frame_id,
       UserActivationState user_activation_state,

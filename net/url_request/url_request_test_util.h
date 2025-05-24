@@ -158,6 +158,7 @@ class TestDelegate : public URLRequest::Delegate {
   bool auth_required_called() const { return auth_required_; }
   bool response_completed() const { return response_completed_; }
   int request_status() const { return request_status_; }
+  std::optional<int> response_code() const { return response_code_; }
 
   // URLRequest::Delegate:
   int OnConnected(URLRequest* request,
@@ -213,6 +214,9 @@ class TestDelegate : public URLRequest::Delegate {
 
   // tracks status of request
   int request_status_ = ERR_IO_PENDING;
+
+  // tracks status of response
+  std::optional<int> response_code_;
 
   // our read buffer
   scoped_refptr<IOBuffer> buf_;
@@ -294,10 +298,6 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
     storage_access_status_ = status;
   }
 
-  void set_is_storage_access_header_enabled(bool enabled) {
-    is_storage_access_header_enabled_ = enabled;
-  }
-
  protected:
   // NetworkDelegate:
   int OnBeforeURLRequest(URLRequest* request,
@@ -337,9 +337,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       const GURL& target_url,
       const GURL& referrer_url) const override;
   std::optional<cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
-      const URLRequest& request) const override;
-  bool OnIsStorageAccessHeaderEnabled(const url::Origin* top_frame_origin,
-                                      const GURL& url) const override;
+      const URLRequest& request,
+      base::optional_ref<const RedirectInfo> redirect_info) const override;
 
   void InitRequestStatesIfNew(int request_id);
 
@@ -392,8 +391,6 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
 
   std::optional<cookie_util::StorageAccessStatus> storage_access_status_ =
       std::nullopt;
-
-  bool is_storage_access_header_enabled_ = false;
 };
 
 // ----------------------------------------------------------------------------

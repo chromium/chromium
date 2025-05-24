@@ -1,0 +1,61 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_context_menu") {
+  sources = [
+    "tab_context_menu_helper.h",
+    "tab_context_menu_helper.mm",
+    "tab_context_menu_provider.h",
+  ]
+
+  deps = [
+    ":tab_item",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/collaboration/public",
+    "//components/data_sharing/public",
+    "//components/prefs",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/ui_bundled:utils",
+    "//ios/chrome/browser/collaboration/model",
+    "//ios/chrome/browser/collaboration/model:features",
+    "//ios/chrome/browser/menu/ui_bundled",
+    "//ios/chrome/browser/menu/ui_bundled:tab_context_menu_delegate",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/share_kit/model:constants",
+    "//ios/chrome/browser/share_kit/model:factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/tab_switcher/ui_bundled",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/web/public",
+  ]
+}
+
+source_set("tab_item") {
+  sources = [
+    "tab_cell.h",
+    "tab_cell.mm",
+    "tab_item.h",
+    "tab_item.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui_constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:activity_label_view",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
+    "//ios/web/public",
+    "//url",
+  ]
+}

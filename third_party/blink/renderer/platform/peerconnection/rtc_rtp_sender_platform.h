@@ -37,7 +37,7 @@ class PLATFORM_EXPORT RTCRtpSenderPlatform {
   // the same |id|. IDs are guaranteed to be unique amongst senders but they are
   // allowed to be reused after a sender is destroyed.
   virtual uintptr_t Id() const = 0;
-  virtual rtc::scoped_refptr<webrtc::DtlsTransportInterface>
+  virtual webrtc::scoped_refptr<webrtc::DtlsTransportInterface>
   DtlsTransport() = 0;
   // Note: For convenience, DtlsTransportInformation always returns a value.
   // The information is only interesting if DtlsTransport() is non-null.

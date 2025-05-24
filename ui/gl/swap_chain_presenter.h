@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
@@ -20,6 +21,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/dc_layer_tree.h"
+#include "ui/gl/gl_export.h"
 
 namespace gl {
 
@@ -30,7 +32,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
  public:
   SwapChainPresenter(DCLayerTree* layer_tree,
                      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-                     Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device);
+                     Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device);
 
   SwapChainPresenter(const SwapChainPresenter&) = delete;
   SwapChainPresenter& operator=(const SwapChainPresenter&) = delete;
@@ -54,7 +56,9 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   const gfx::Size& content_size() const { return content_size_; }
 
-  void SetFrameRate(float frame_rate);
+  // Valid HANDLE is needed for testing to create an IDCompositionSurface with
+  // `CreateSurfaceFromHandle`.
+  GL_EXPORT static bool CreateSurfaceHandleHelperForTesting(HANDLE* handle);
 
  private:
   // Mapped to DirectCompositonVideoPresentationMode UMA enum.  Do not remove or
@@ -94,7 +98,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // video processor input view.  Returns nullptr on failure.
   UNSAFE_BUFFER_USAGE Microsoft::WRL::ComPtr<ID3D11Texture2D> UploadVideoImage(
       const gfx::Size& size,
-      const uint8_t* nv12_pixmap,
+      base::span<const uint8_t> shm_video_pixmap,
       size_t stride);
 
   // Releases resources that might hold indirect references to the swap chain.
@@ -110,7 +114,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // Returns DXGI format that swap chain uses.
   // This changes over time based on stats recorded in |presentation_history|.
   DXGI_FORMAT GetSwapChainFormat(gfx::ProtectedVideoType protected_video_type,
-                                 bool content_is_hdr);
+                                 bool use_hdr_swap_chain,
+                                 bool use_p010_for_sdr_swap_chain);
 
   // Perform a blit using video processor from given input texture to swap chain
   // backbuffer. |input_texture| is the input texture (array), and |input_level|
@@ -204,7 +209,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
       const std::optional<gfx::Rect> target_rect);
 
   // Present to a decode swap chain created from compatible video decoder
-  // buffers using given |nv12_image|.
+  // buffers using given |texture|.
   // Use |dest_size| for destination size and |target_rect| for target rectangle
   // if valid. Otherwise, |swap_chain_size| would be used instead.
   // Returns true on success.
@@ -312,7 +317,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   gfx::Size staging_texture_size_;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device_;
+  Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> dcomp_device_;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
 
   // Handle returned by DCompositionCreateSurfaceHandle() used to create YUV
@@ -333,9 +338,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   bool enable_vp_super_resolution_ = false;
 
   UINT gpu_vendor_id_ = 0;
-
-  // Number of frames per second.
-  float frame_rate_ = 0.f;
 };
 
 }  // namespace gl

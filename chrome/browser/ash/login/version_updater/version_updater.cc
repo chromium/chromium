@@ -75,7 +75,7 @@ void RecordCheckingForUpdateTime(const base::TimeDelta duration) {
 
 }  // anonymous namespace
 
-VersionUpdater::UpdateInfo::UpdateInfo() {}
+VersionUpdater::UpdateInfo::UpdateInfo() = default;
 
 VersionUpdater::VersionUpdater(VersionUpdater::Delegate* delegate)
     : delegate_(delegate),
@@ -113,7 +113,7 @@ void VersionUpdater::StartNetworkCheck() {
       handler->AddObserver(this);
     const NetworkState* default_network = handler->DefaultNetwork();
     PortalStateChanged(default_network,
-                       default_network ? default_network->GetPortalState()
+                       default_network ? default_network->portal_state()
                                        : NetworkState::PortalState::kUnknown);
   }
 }
@@ -160,6 +160,7 @@ void VersionUpdater::RebootAfterUpdate() {
 
 void VersionUpdater::StartExitUpdate(Result result) {
   UpdateEngineClient::Get()->RemoveObserver(this);
+  retry_check_timer_.Stop();
   if (NetworkHandler::IsInitialized())
     NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   delegate_->FinishExitUpdate(result);
@@ -310,7 +311,7 @@ void VersionUpdater::UpdateStatusChanged(
     case update_engine::Operation::UPDATED_BUT_DEFERRED:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (time_estimator_.HasTotalTime(status.current_operation())) {
@@ -417,8 +418,7 @@ void VersionUpdater::UpdateErrorMessage(const NetworkState* network,
       network_name = network->name();
       break;
     case NetworkState::PortalState::kOnline:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   delegate_->UpdateErrorMessage(state, error_state, network_name);
 }

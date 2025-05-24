@@ -6,13 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_SCROLL_MANAGER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -98,6 +99,7 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
 
   // In the coords of resize_scrollable_area_.
   gfx::Vector2d offset_from_resize_corner_;
+  gfx::Transform resize_position_to_size_transform_;
 };
 
 }  // namespace blink

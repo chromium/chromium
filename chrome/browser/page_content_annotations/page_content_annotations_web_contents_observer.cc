@@ -5,25 +5,27 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/content_extraction/inner_text.h"
+#include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/pdf/common/constants.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/page_user_data.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
-#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
-#include "chrome/browser/profiles/profile.h"
 
 namespace page_content_annotations {
 
@@ -54,6 +56,8 @@ PageContentAnnotationsWebContentsObserver::
   no_state_prefetch_manager_ =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile);
   template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile);
+  annotated_page_content_request_ =
+      AnnotatedPageContentRequest::MaybeCreate(web_contents);
 }
 
 PageContentAnnotationsWebContentsObserver::
@@ -79,6 +83,33 @@ void PageContentAnnotationsWebContentsObserver::
       "OptimizationGuide.PageContentAnnotationsWebContentsObserver."
       "RelatedSearchesExtractRequest",
       true);
+}
+
+void PageContentAnnotationsWebContentsObserver::DidStopLoading() {
+  if (annotated_page_content_request_) {
+    annotated_page_content_request_->DidStopLoading();
+  }
+}
+
+void PageContentAnnotationsWebContentsObserver::PrimaryPageChanged(
+    content::Page& page) {
+  if (annotated_page_content_request_) {
+    annotated_page_content_request_->PrimaryPageChanged();
+  }
+}
+
+void PageContentAnnotationsWebContentsObserver::
+    OnFirstContentfulPaintInPrimaryMainFrame() {
+  if (annotated_page_content_request_) {
+    annotated_page_content_request_->OnFirstContentfulPaintInPrimaryMainFrame();
+  }
+}
+
+void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (annotated_page_content_request_) {
+    annotated_page_content_request_->DidFinishNavigation(navigation_handle);
+  }
 }
 
 void PageContentAnnotationsWebContentsObserver::OnRelatedSearchesExtracted(

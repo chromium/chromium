@@ -9,12 +9,12 @@
 
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -120,14 +120,14 @@ ScopedDrmObjectPropertyPtr CreatePropertyObject(
 
 template <class Type>
 Type* FindObjectById(uint32_t id, std::vector<Type>& properties) {
-  auto it = base::ranges::find(properties, id, &Type::id);
+  auto it = std::ranges::find(properties, id, &Type::id);
   return it != properties.end() ? &(*it) : nullptr;
 }
 
 // The const version of FindObjectById().
 template <class Type>
 const Type* FindObjectById(uint32_t id, const std::vector<Type>& properties) {
-  auto it = base::ranges::find(properties, id, &Type::id);
+  auto it = std::ranges::find(properties, id, &Type::id);
   return it != properties.end() ? &(*it) : nullptr;
 }
 
@@ -909,6 +909,10 @@ bool FakeDrmDevice::CommitProperties(
     return false;
   }
 
+  if (!page_flip_request && !modeset_expectation_) {
+    return false;
+  }
+
   if (page_flip_request)
     callbacks_.push(page_flip_request->AddPageFlip());
 
@@ -959,6 +963,20 @@ bool FakeDrmDevice::SetCapability(uint64_t capability, uint64_t value) {
 uint32_t FakeDrmDevice::GetFramebufferForCrtc(uint32_t crtc_id) const {
   auto it = crtc_fb_.find(crtc_id);
   return it != crtc_fb_.end() ? it->second : 0u;
+}
+
+bool FakeDrmDevice::SetMaster() {
+  has_master_ = true;
+  return true;
+}
+
+bool FakeDrmDevice::DropMaster() {
+  has_master_ = false;
+  return true;
+}
+
+bool FakeDrmDevice::has_master() const {
+  return has_master_;
 }
 
 void FakeDrmDevice::RunCallbacks() {

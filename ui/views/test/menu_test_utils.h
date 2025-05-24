@@ -8,9 +8,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/test/test_views_delegate.h"
@@ -26,6 +28,10 @@ namespace test {
 // with the provided parameters.
 class TestMenuDelegate : public MenuDelegate {
  public:
+  // Special value for `execute_command_id()` used if a command was never
+  // executed.
+  static constexpr int kInvalidExecuteCommandId = 0;
+
   TestMenuDelegate();
 
   TestMenuDelegate(const TestMenuDelegate&) = delete;
@@ -44,12 +50,18 @@ class TestMenuDelegate : public MenuDelegate {
   void set_should_execute_command_without_closing_menu(bool val) {
     should_execute_command_without_closing_menu_ = val;
   }
+  void set_should_close_on_drag_complete(bool val) {
+    should_close_on_drag_complete_ = val;
+  }
+
+  // `ShowContextMenu()` will return false for the provided `command_id`.
+  void DisableContextMenuForCommandId(int command_id);
 
   // MenuDelegate:
   bool ShowContextMenu(MenuItemView* source,
                        int id,
                        const gfx::Point& p,
-                       ui::MenuSourceType source_type) override;
+                       ui::mojom::MenuSourceType source_type) override;
   void ExecuteCommand(int id) override;
   void OnMenuClosed(MenuItemView* menu) override;
   views::View::DropCallback GetDropCallback(
@@ -61,6 +73,7 @@ class TestMenuDelegate : public MenuDelegate {
   void WillHideMenu(MenuItemView* menu) override;
   bool ShouldExecuteCommandWithoutClosingMenu(int id,
                                               const ui::Event& e) override;
+  bool ShouldCloseOnDragComplete() override;
 
  private:
   // Performs the drop operation and updates |output_drag_op| accordingly.
@@ -75,7 +88,7 @@ class TestMenuDelegate : public MenuDelegate {
   raw_ptr<MenuItemView, DanglingUntriaged> show_context_menu_source_ = nullptr;
 
   // ID of last executed command.
-  int execute_command_id_ = 0;
+  int execute_command_id_ = kInvalidExecuteCommandId;
 
   // The number of times OnMenuClosed was called.
   int on_menu_closed_called_count_ = 0;
@@ -92,6 +105,10 @@ class TestMenuDelegate : public MenuDelegate {
   bool is_drop_performed_ = false;
 
   bool should_execute_command_without_closing_menu_ = false;
+
+  bool should_close_on_drag_complete_ = false;
+
+  base::flat_set<int> commands_without_context_menus_;
 };
 
 // Test api which caches the currently active MenuController. Can be used to

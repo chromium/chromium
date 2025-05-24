@@ -31,27 +31,27 @@ class SyncMetadataStore {
   SyncMetadataStore() = default;
   virtual ~SyncMetadataStore() = default;
 
-  // Updates the metadata row of type |data_type| for the entity identified by
-  // |storage_key| to contain the contents of |metadata|.
+  // Updates the metadata row of type `data_type` for the entity identified by
+  // `storage_key` to contain the contents of `metadata`.
   // Returns true on success.
   virtual bool UpdateEntityMetadata(
       syncer::DataType data_type,
       const std::string& storage_key,
       const sync_pb::EntityMetadata& metadata) = 0;
 
-  // Removes the metadata row of type |data_type| for the entity identified by
-  // |storage_key|.
+  // Removes the metadata row of type `data_type` for the entity identified by
+  // `storage_key`.
   // Returns true on success.
   virtual bool ClearEntityMetadata(syncer::DataType data_type,
                                    const std::string& storage_key) = 0;
 
-  // Updates the per-type DataTypeState state for the |data_type|.
+  // Updates the per-type DataTypeState state for the `data_type`.
   // Returns true on success.
   virtual bool UpdateDataTypeState(
       syncer::DataType data_type,
       const sync_pb::DataTypeState& data_type_state) = 0;
 
-  // Clears the per-type DataTypeState for |data_type|.
+  // Clears the per-type DataTypeState for `data_type`.
   // Returns true on success.
   virtual bool ClearDataTypeState(syncer::DataType data_type) = 0;
 };

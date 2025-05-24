@@ -27,12 +27,14 @@ namespace content_settings {
 class RuleMetaData {
  public:
   RuleMetaData();
-  RuleMetaData(const RuleMetaData& other);
   RuleMetaData(RuleMetaData&& other);
-  RuleMetaData& operator=(const RuleMetaData& other);
+  RuleMetaData(const RuleMetaData& other) = delete;
+  RuleMetaData& operator=(const RuleMetaData& other) = delete;
   RuleMetaData& operator=(RuleMetaData&& other);
 
   bool operator==(const RuleMetaData& other) const;
+
+  RuleMetaData Clone() const;
 
   base::Time last_modified() const { return last_modified_; }
   void set_last_modified(base::Time last_modified) {
@@ -103,6 +105,12 @@ class RuleMetaData {
     decided_by_related_website_sets_ = decided_by_related_website_sets;
   }
 
+  const base::Value& rule_options() const { return rule_options_; }
+
+  void set_rule_options(const base::Value& rule_options) {
+    rule_options_ = rule_options.Clone();
+  }
+
  private:
   // mojo (de)serialization needs access to private details.
   friend struct mojo::
@@ -137,6 +145,9 @@ class RuleMetaData {
 
   // Set to true if the storage access was decided by a Related Website Set.
   bool decided_by_related_website_sets_ = false;
+
+  // Represents options which apply to the rule. May be empty.
+  base::Value rule_options_;
 };
 
 }  // namespace content_settings

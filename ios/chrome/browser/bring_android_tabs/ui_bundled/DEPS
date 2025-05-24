@@ -1,6 +1,6 @@
 specific_include_rules = {
   "bring_android_tabs_test_utils\.mm": [
-    "+ios/chrome/browser/ui/authentication",
+    "+ios/chrome/browser/authentication/ui_bundled",
     "+ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h",
   ],
 }

@@ -107,7 +107,9 @@ class AuctionV8LoggerTest : public testing::Test {
           {
             v8::Context::Scope ctx(helper_->scratch_context());
             std::optional<std::string> error_msg;
-            ASSERT_TRUE(helper_->Compile(body, url_, debug_id.get(), error_msg)
+            ASSERT_TRUE(helper_
+                            ->Compile(body, url_, debug_id.get(),
+                                      /*cached_data=*/nullptr, error_msg)
                             .ToLocal(&script));
             EXPECT_FALSE(error_msg.has_value());
           }

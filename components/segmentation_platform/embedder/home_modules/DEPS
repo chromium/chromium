@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/send_tab_to_self",
+  "+components/signin/public/base/signin_switches.h",
+]

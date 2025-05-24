@@ -8,5 +8,25 @@
  * #import=./cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
-/* Intentionally left empty as it is generated at build time from the equivalent
- * Polymer version. */
+[is='action-link'] {
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: underline;
+}
+
+[is='action-link'],
+[is='action-link']:active,
+[is='action-link']:hover,
+[is='action-link']:visited {
+  color: var(--cr-link-color);
+}
+
+[is='action-link'][disabled] {
+  color: var(--cr-fallback-color-disabled-foreground);
+  cursor: default;
+  pointer-events: none;
+}
+
+[is='action-link'].no-outline {
+  outline: none;
+}

@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "chrome/browser/vr/ui_test_input.h"

@@ -393,7 +393,7 @@ void LocalSessionEventHandlerImpl::OnLocalTabModified(
   }
 
   // Don't track empty tabs.
-  if (modified_tab->GetEntryCount() != 0) {
+  if (modified_tab && modified_tab->GetEntryCount() != 0) {
     sessions::SerializedNavigationEntry current;
     modified_tab->GetSerializedNavigationAtIndex(
         modified_tab->GetCurrentEntryIndex(), &current);
@@ -401,11 +401,26 @@ void LocalSessionEventHandlerImpl::OnLocalTabModified(
   }
 
   std::unique_ptr<WriteBatch> batch = delegate_->CreateLocalSessionWriteBatch();
-  AssociateTab(modified_tab, batch.get());
+  if (modified_tab) {
+    AssociateTab(modified_tab, batch.get());
+  }
   // Note, we always associate windows because it's possible a tab became
   // "interesting" by going to a valid URL, in which case it needs to be added
   // to the window's tab information. Similarly, if a tab became
   // "uninteresting", we remove it from the window's tab information.
+  AssociateWindows(DONT_RELOAD_TABS, batch.get(), /*is_session_restore=*/false);
+  batch->Commit();
+}
+
+void LocalSessionEventHandlerImpl::OnLocalTabClosed() {
+  DCHECK(!current_session_tag_.empty());
+
+  // Defers updates if session restore is in progress.
+  if (IsSessionRestoreInProgress(sessions_client_)) {
+    return;
+  }
+
+  std::unique_ptr<WriteBatch> batch = delegate_->CreateLocalSessionWriteBatch();
   AssociateWindows(DONT_RELOAD_TABS, batch.get(), /*is_session_restore=*/false);
   batch->Commit();
 }

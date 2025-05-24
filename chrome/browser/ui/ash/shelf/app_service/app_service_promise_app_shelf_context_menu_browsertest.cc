@@ -21,8 +21,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
+#include "ui/menus/simple_menu_model.h"
 
 class AppServicePromiseAppShelfContextMenuBrowserTest
     : public InProcessBrowserTest {

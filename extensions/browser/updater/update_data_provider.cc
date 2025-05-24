@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -17,8 +18,9 @@
 #include "components/update_client/utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -86,11 +88,11 @@ void UpdateDataProvider::GetData(
     DCHECK_NE(0u, update_crx_component.count(id));
     const ExtensionUpdateData& extension_data = update_crx_component.at(id);
     auto& crx_component = data.back();
-    std::string pubkey_bytes;
-    base::Base64Decode(extension->public_key(), &pubkey_bytes);
-    crx_component->pk_hash.resize(crypto::kSHA256Length, 0);
-    crypto::SHA256HashString(pubkey_bytes, crx_component->pk_hash.data(),
-                             crx_component->pk_hash.size());
+    auto pubkey = base::Base64Decode(extension->public_key());
+    if (!pubkey) {
+      continue;
+    }
+    crx_component->pk_hash = base::ToVector(crypto::hash::Sha256(*pubkey));
     crx_component->app_id =
         update_client::GetCrxIdFromPublicKeyHash(crx_component->pk_hash);
     if (extension_data.is_corrupt_reinstall) {
@@ -114,17 +116,18 @@ void UpdateDataProvider::GetData(
         base::BindRepeating(&UpdateDataProvider::RunInstallCallback, this));
     if (!ExtensionsBrowserClient::Get()->IsExtensionEnabled(id,
                                                             browser_context_)) {
-      int disabled_reasons = extension_prefs->GetDisableReasons(id);
-      if (disabled_reasons == extensions::disable_reason::DISABLE_NONE ||
-          disabled_reasons >= extensions::disable_reason::DISABLE_REASON_LAST) {
+      DisableReasonSet disable_reasons = extension_prefs->GetDisableReasons(id);
+
+      if (disable_reasons.empty() ||
+          disable_reasons.contains(disable_reason::DISABLE_UNKNOWN)) {
         crx_component->disabled_reasons.push_back(0);
       }
-      for (int enum_value = 1;
-           enum_value < extensions::disable_reason::DISABLE_REASON_LAST;
-           enum_value <<= 1) {
-        if (disabled_reasons & enum_value) {
-          crx_component->disabled_reasons.push_back(enum_value);
-        }
+
+      // We are only interested in valid disable reasons from here.
+      disable_reasons.erase(disable_reason::DISABLE_UNKNOWN);
+
+      for (int reason : disable_reasons) {
+        crx_component->disabled_reasons.push_back(reason);
       }
     }
     crx_component->install_source = extension_data.is_corrupt_reinstall

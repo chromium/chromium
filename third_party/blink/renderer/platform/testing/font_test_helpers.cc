@@ -30,8 +30,8 @@ class TestFontSelector : public FontSelector {
         FontCustomPlatformData::Create(font_buffer.get(), ots_parse_message));
   }
 
-  static TestFontSelector* Create(const uint8_t* data, size_t size) {
-    scoped_refptr<SharedBuffer> font_buffer = SharedBuffer::Create(data, size);
+  static TestFontSelector* Create(base::span<const uint8_t> data) {
+    scoped_refptr<SharedBuffer> font_buffer = SharedBuffer::Create(data);
     String ots_parse_message;
     FontCustomPlatformData* font_custom_platform_data =
         FontCustomPlatformData::Create(font_buffer.get(), ots_parse_message);
@@ -89,23 +89,6 @@ class TestFontSelector : public FontSelector {
       const AtomicString& font_family_name) override {}
   void ReportSuccessfulLocalFontMatch(const AtomicString& font_name) override {}
   void ReportFailedLocalFontMatch(const AtomicString& font_name) override {}
-  void ReportFontLookupByUniqueOrFamilyName(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) override {}
-  void ReportFontLookupByUniqueNameOnly(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data,
-      bool is_loading_fallback = false) override {}
-  void ReportFontLookupByFallbackCharacter(
-      UChar32 hint,
-      FontFallbackPriority fallback_priority,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) override {}
-  void ReportLastResortFallbackFontLookup(
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) override {}
   void ReportNotDefGlyph() const override {}
   void ReportEmojiSegmentGlyphCoverage(unsigned, unsigned) override {}
   ExecutionContext* GetExecutionContext() const override { return nullptr; }
@@ -126,11 +109,10 @@ class TestFontSelector : public FontSelector {
 
 }  // namespace
 
-Font CreateTestFont(const AtomicString& family_name,
-                    const uint8_t* data,
-                    size_t data_size,
-                    float size,
-                    const FontDescription::VariantLigatures* ligatures) {
+Font* CreateTestFont(const AtomicString& family_name,
+                     base::span<const uint8_t> data,
+                     float size,
+                     const FontDescription::VariantLigatures* ligatures) {
   FontDescription font_description;
   font_description.SetFamily(
       FontFamily(family_name, FontFamily::Type::kFamilyName));
@@ -139,15 +121,16 @@ Font CreateTestFont(const AtomicString& family_name,
   if (ligatures)
     font_description.SetVariantLigatures(*ligatures);
 
-  return Font(font_description, TestFontSelector::Create(data, data_size));
+  return MakeGarbageCollected<Font>(font_description,
+                                    TestFontSelector::Create(data));
 }
 
-Font CreateTestFont(const AtomicString& family_name,
-                    const String& font_path,
-                    float size,
-                    const FontDescription::VariantLigatures* ligatures,
-                    const FontVariantEmoji variant_emoji,
-                    void (*init_font_description)(FontDescription*)) {
+Font* CreateTestFont(const AtomicString& family_name,
+                     const String& font_path,
+                     float size,
+                     const FontDescription::VariantLigatures* ligatures,
+                     const FontVariantEmoji variant_emoji,
+                     void (*init_font_description)(FontDescription*)) {
   FontDescription font_description;
   font_description.SetFamily(
       FontFamily(family_name, FontFamily::Type::kFamilyName));
@@ -159,10 +142,11 @@ Font CreateTestFont(const AtomicString& family_name,
   if (init_font_description)
     (*init_font_description)(&font_description);
 
-  return Font(font_description, TestFontSelector::Create(font_path));
+  return MakeGarbageCollected<Font>(font_description,
+                                    TestFontSelector::Create(font_path));
 }
 
-Font CreateAhemFont(float size) {
+Font* CreateAhemFont(float size) {
   return CreateTestFont(AtomicString("Ahem"), PlatformTestDataPath("Ahem.woff"),
                         size);
 }

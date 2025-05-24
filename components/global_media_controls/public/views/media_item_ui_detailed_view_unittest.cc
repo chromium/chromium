@@ -144,10 +144,10 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
     actions_.insert(MediaSessionAction::kEnterPictureInPicture);
     actions_.insert(MediaSessionAction::kExitPictureInPicture);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     actions_.insert(MediaSessionAction::kSeekForward);
     actions_.insert(MediaSessionAction::kSeekBackward);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     NotifyUpdatedActions();
   }
@@ -463,7 +463,7 @@ TEST_F(MediaItemUIDetailedViewTest, ProgressViewCheck) {
   view->OnKeyPressed(key_event);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
@@ -692,6 +692,6 @@ TEST_F(MediaItemUIDetailedViewTest, TimestampView) {
   EXPECT_EQ(view->GetCurrentTimestampViewForTesting()->GetText(), u"1:06");
   EXPECT_EQ(view->GetTotalDurationViewForTesting()->GetText(), u" / 1:48");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace global_media_controls

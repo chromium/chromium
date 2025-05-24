@@ -9,9 +9,13 @@ import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.io.ByteArrayOutputStream;
 
 /** This class contains functions for bitmap manipulation. */
+@NullMarked
 public class BitmapHelper {
     /**
      * Compresses a bitmap into a PNG and converts into a Base64 encoded string.
@@ -19,7 +23,7 @@ public class BitmapHelper {
      * @param bitmap The Bitmap to compress and encode.
      * @return the String encoding the Bitmap.
      */
-    public static String encodeBitmapAsString(Bitmap bitmap) {
+    public static String encodeBitmapAsString(@Nullable Bitmap bitmap) {
         if (bitmap == null) return "";
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
@@ -32,7 +36,7 @@ public class BitmapHelper {
      * @param encodedString the Base64 String to decode.
      * @return the Bitmap which was encoded by the String.
      */
-    public static Bitmap decodeBitmapFromString(String encodedString) {
+    public static @Nullable Bitmap decodeBitmapFromString(String encodedString) {
         if (TextUtils.isEmpty(encodedString)) return null;
         byte[] decoded = Base64.decode(encodedString, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decoded, 0, decoded.length);

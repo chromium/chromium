@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 
 #import <LocalAuthentication/LocalAuthentication.h>
+
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

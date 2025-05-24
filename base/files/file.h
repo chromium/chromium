@@ -20,6 +20,10 @@
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 struct stat;
 
 namespace base {
@@ -109,11 +113,7 @@ class BASE_EXPORT File {
   };
 
   // This explicit mapping matches both FILE_ on Windows and SEEK_ on Linux.
-  enum Whence {
-    FROM_BEGIN   = 0,
-    FROM_CURRENT = 1,
-    FROM_END     = 2
-  };
+  enum Whence { FROM_BEGIN = 0, FROM_CURRENT = 1, FROM_END = 2 };
 
   // Used to hold information about a given file.
   // If you add more fields to this structure (platform-specific fields are OK),
@@ -219,16 +219,22 @@ class BASE_EXPORT File {
   // is not intended for stream oriented files but instead for cases when the
   // normal expectation is that actually |size| bytes are read unless there is
   // an error.
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
   UNSAFE_BUFFER_USAGE int Read(int64_t offset, char* data, int size);
   std::optional<size_t> Read(int64_t offset, base::span<uint8_t> data);
 
   // Same as above but without seek.
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
   UNSAFE_BUFFER_USAGE int ReadAtCurrentPos(char* data, int size);
   std::optional<size_t> ReadAtCurrentPos(base::span<uint8_t> data);
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
   // given offset, but does not make any effort to read all data on all
   // platforms. Returns the number of bytes read, or -1/std::nullopt on error.
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
   UNSAFE_BUFFER_USAGE int ReadNoBestEffort(int64_t offset,
                                            char* data,
                                            int size);
@@ -236,6 +242,8 @@ class BASE_EXPORT File {
                                          base::span<uint8_t> data);
 
   // Same as above but without seek.
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
   UNSAFE_BUFFER_USAGE int ReadAtCurrentPosNoBestEffort(char* data, int size);
   std::optional<size_t> ReadAtCurrentPosNoBestEffort(base::span<uint8_t> data);
 
@@ -251,16 +259,22 @@ class BASE_EXPORT File {
   // all platforms. |data| can be nullptr when |size| is 0.
   // Ignores the offset and writes to the end of the file if the file was opened
   // with FLAG_APPEND.
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
   UNSAFE_BUFFER_USAGE int Write(int64_t offset, const char* data, int size);
   std::optional<size_t> Write(int64_t offset, base::span<const uint8_t> data);
 
-  // Save as above but without seek.
+  // Same as above but without seek.
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
   UNSAFE_BUFFER_USAGE int WriteAtCurrentPos(const char* data, int size);
   std::optional<size_t> WriteAtCurrentPos(base::span<const uint8_t> data);
 
-  // Save as above but does not make any effort to write all data on all
+  // Same as above but does not make any effort to write all data on all
   // platforms. Returns the number of bytes written, or -1/std::nullopt
   // on error.
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
   UNSAFE_BUFFER_USAGE int WriteAtCurrentPosNoBestEffort(const char* data,
                                                         int size);
   std::optional<size_t> WriteAtCurrentPosNoBestEffort(
@@ -291,10 +305,8 @@ class BASE_EXPORT File {
   // Updates the file times.
   bool SetTimes(Time last_access_time, Time last_modified_time);
 
-  // Returns some basic information for the given file. Code that needs to
-  // support android Content-URIs should use base::GetFileInfo(FilePath)
-  // which is able to use the path (URI) to populate Info via Java APIs.
-  bool GetInfo(Info* info);
+  // Returns some basic information for the given file.
+  bool GetInfo(Info* info) const;
 
 #if !BUILDFLAG( \
     IS_FUCHSIA)  // Fuchsia's POSIX API does not support file locking.
@@ -432,9 +444,17 @@ class BASE_EXPORT File {
 
   ScopedPlatformFile file_;
 
-  // A path to use for tracing purposes. Set if file tracing is enabled during
-  // |Initialize()|.
-  FilePath tracing_path_;
+#if BUILDFLAG(IS_ANDROID)
+  // Keeps the Java ParcelFileDescriptor alive when `this` wraps a file from an
+  // Android content provider (i.e. a content URI). Close() is called on the
+  // object when the file is closed.
+  base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor_;
+#endif
+
+  // Platform path to `file_`. Set if `this` wraps a file from an Android
+  // content provider (i.e. a content URI) or if tracing is enabled in
+  // `Initialize()`.
+  FilePath path_;
 
   // Object tied to the lifetime of |this| that enables/disables tracing.
   FileTracing::ScopedEnabler trace_enabler_;

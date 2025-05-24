@@ -5,7 +5,7 @@
 // https://streams.spec.whatwg.org/#blqs-class
 
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=*
 ] interface ByteLengthQueuingStrategy {
     [CallWith=ScriptState, MeasureAs=ByteLengthQueuingStrategyConstructor] constructor(QueuingStrategyInit init);
     readonly attribute unrestricted double highWaterMark;

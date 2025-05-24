@@ -6,13 +6,13 @@ import 'chrome://accessory-update/peripheral_updates_list.js';
 
 import {fakeFirmwareUpdates} from 'chrome://accessory-update/fake_data.js';
 import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider.js';
-import {FirmwareUpdate} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
+import type {FirmwareUpdate} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
 import {setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
-import {PeripheralUpdateListElement} from 'chrome://accessory-update/peripheral_updates_list.js';
-import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
+import type {PeripheralUpdateListElement} from 'chrome://accessory-update/peripheral_updates_list.js';
+import type {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -41,8 +41,7 @@ suite('PeripheralUpdatesListTest', () => {
 
     // Add the update list to the DOM.
     peripheralUpdateListElement =
-        document.createElement('peripheral-updates-list') as
-        PeripheralUpdateListElement;
+        document.createElement('peripheral-updates-list');
     assertTrue(!!peripheralUpdateListElement);
     document.body.appendChild(peripheralUpdateListElement);
 
@@ -72,7 +71,7 @@ suite('PeripheralUpdatesListTest', () => {
         const card = updateCards[i];
         assertTrue(!!card);
         const updateCardName =
-            card!.shadowRoot!.querySelector('#name') as HTMLElement;
+            card.shadowRoot!.querySelector<HTMLElement>('#name');
         assertTrue(!!updateCardName);
         assertEquals(
             mojoString16ToString(u.deviceName), updateCardName.innerText);

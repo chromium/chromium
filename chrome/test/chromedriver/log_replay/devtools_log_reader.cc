@@ -114,12 +114,12 @@ LogEntry::LogEntry(std::istringstream& header_stream) {
   }
 }
 
-LogEntry::~LogEntry() {}
+LogEntry::~LogEntry() = default;
 
 DevToolsLogReader::DevToolsLogReader(const base::FilePath& log_path)
     : log_file(log_path.value().c_str(), std::ios::in) {}
 
-DevToolsLogReader::~DevToolsLogReader() {}
+DevToolsLogReader::~DevToolsLogReader() = default;
 
 bool DevToolsLogReader::IsHeader(std::istringstream& header_stream) const {
   std::string word;

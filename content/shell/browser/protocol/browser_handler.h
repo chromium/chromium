@@ -6,6 +6,7 @@
 #define CONTENT_SHELL_BROWSER_PROTOCOL_BROWSER_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "content/shell/browser/protocol/browser.h"
 #include "content/shell/browser/protocol/domain_handler.h"
 
@@ -30,7 +31,7 @@ class BrowserHandler : public DomainHandler, public Browser::Backend {
 
   // Browser::Backend implementation
   Response GetWindowForTarget(
-      Maybe<std::string> target_id,
+      std::optional<std::string> target_id,
       int* out_window_id,
       std::unique_ptr<Browser::Bounds>* out_bounds) override;
 

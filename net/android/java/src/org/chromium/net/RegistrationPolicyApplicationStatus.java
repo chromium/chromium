@@ -6,8 +6,10 @@ package org.chromium.net;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.build.annotations.NullMarked;
 
 /** Registration policy which depends on the ApplicationState. */
+@NullMarked
 public class RegistrationPolicyApplicationStatus
         extends NetworkChangeNotifierAutoDetect.RegistrationPolicy
         implements ApplicationStatus.ApplicationStateListener {

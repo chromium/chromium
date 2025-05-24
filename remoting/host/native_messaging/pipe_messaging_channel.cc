@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -15,11 +17,43 @@
 #include "base/values.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_POSIX)
+#include <unistd.h>
+
+#include "base/posix/eintr_wrapper.h"
+#endif
+
 namespace remoting {
 
+namespace {
+
+#if BUILDFLAG(IS_POSIX)
+// Takes ownership of `fd`, returns a duplicate of `fd`, then points `fd` to
+// /dev/null.
+base::File DuplicateAndBlock(int fd, base::File::Flags read_write_flag) {
+  base::File original{fd};
+  base::File target_dup = original.Duplicate();
+  // base::File closes the file descriptor in its destructor, which is an
+  // unwanted side effect, so we call TakePlatformFile() to release the FD.
+  int original_fd = original.TakePlatformFile();
+  CHECK_EQ(original_fd, fd);
+  base::File dev_null = base::File(base::FilePath("/dev/null"),
+                                   base::File::FLAG_OPEN | read_write_flag);
+  // dup2() closes `newfd` and duplicates `oldfd` into `newfd` at the same time,
+  // preventing race conditions, whereby newfd might be reused between close()
+  // and dup() on another thread.
+  int new_fd = HANDLE_EINTR(dup2(dev_null.GetPlatformFile(), fd));
+  PCHECK(new_fd != -1) << "Unexpected error when executing dup2 with fd " << fd;
+  DCHECK_EQ(new_fd, fd);
+  return target_dup;
+}
+#endif
+
+}  // namespace
+
 PipeMessagingChannel::PipeMessagingChannel(base::File input, base::File output)
-    : native_messaging_reader_(input.Duplicate()),
-      native_messaging_writer_(new NativeMessagingWriter(output.Duplicate())),
+    : native_messaging_reader_(std::move(input)),
+      native_messaging_writer_(new NativeMessagingWriter(std::move(output))),
       event_handler_(nullptr) {
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
@@ -28,20 +62,14 @@ PipeMessagingChannel::~PipeMessagingChannel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-// static
-void PipeMessagingChannel::ReopenStdinStdout() {
 #if BUILDFLAG(IS_POSIX)
-  base::FilePath dev_null("/dev/null");
-  int new_stdin =
-      base::File(dev_null, base::File::FLAG_OPEN | base::File::FLAG_READ)
-          .TakePlatformFile();
-  DCHECK_EQ(new_stdin, STDIN_FILENO);
-  int new_stdout =
-      base::File(dev_null, base::File::FLAG_OPEN | base::File::FLAG_WRITE)
-          .TakePlatformFile();
-  DCHECK_EQ(new_stdout, STDOUT_FILENO);
-#endif  // BUILDFLAG(IS_POSIX)
+// static
+void PipeMessagingChannel::OpenAndBlockStdio(base::File& stdin_file,
+                                             base::File& stdout_file) {
+  stdin_file = DuplicateAndBlock(STDIN_FILENO, base::File::FLAG_READ);
+  stdout_file = DuplicateAndBlock(STDOUT_FILENO, base::File::FLAG_WRITE);
 }
+#endif  // BUILDFLAG(IS_POSIX)
 
 void PipeMessagingChannel::Start(EventHandler* event_handler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -6,7 +6,6 @@
 
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 
 namespace privacy_sandbox {
@@ -47,10 +46,16 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxDisabledInsufficientConfirmation, false);
   registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized, false);
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized,
+      false);
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterTimePref(
+      prefs::kPrivacySandboxFakeNoticePromptShownTimeSync, base::Time(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterTimePref(prefs::kPrivacySandboxFakeNoticePromptShownTime,
+                             base::Time());
 
   registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
                                 false);
@@ -61,16 +66,18 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(TopicsConsentUpdateSource::kDefaultValue));
   registry->RegisterStringPref(
       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "");
-  registry->RegisterTimePref(prefs::kPrivacySandboxSentimentSurveyLastSeen,
+  registry->RegisterTimePref(prefs::kPrivacySandboxFakeNoticeFirstSignInTime,
                              base::Time());
+  registry->RegisterTimePref(prefs::kPrivacySandboxFakeNoticeFirstSignOutTime,
+                             base::Time());
+
+  registry->RegisterBooleanPref(
+      prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord2);
 #endif
   // Register prefs for tracking protection.
   tracking_protection::RegisterProfilePrefs(registry);
-
-  // Register prefs for the privacy sandbox notice storage system.
-  PrivacySandboxNoticeStorage::RegisterProfilePrefs(registry);
 }
 
 }  // namespace privacy_sandbox

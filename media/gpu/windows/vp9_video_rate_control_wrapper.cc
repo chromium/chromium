@@ -58,6 +58,8 @@ template <>
 libvpx::VP9RateControlRtcConfig VP9RateControl::ConvertControlConfig(
     const RateControlConfig& config) {
   libvpx::VP9RateControlRtcConfig rc_config;
+  rc_config.is_screen = config.content_type ==
+                        VideoEncodeAccelerator::Config::ContentType::kDisplay;
   rc_config.width = config.width;
   rc_config.height = config.height;
   rc_config.target_bandwidth = config.target_bandwidth;

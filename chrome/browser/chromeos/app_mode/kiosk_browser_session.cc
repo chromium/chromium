@@ -8,13 +8,13 @@
 #include <signal.h>
 
 #include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
@@ -106,7 +106,7 @@ class KioskBrowserSession::AppWindowHandler
       : kiosk_browser_session_(session) {}
   AppWindowHandler(const AppWindowHandler&) = delete;
   AppWindowHandler& operator=(const AppWindowHandler&) = delete;
-  ~AppWindowHandler() override {}
+  ~AppWindowHandler() override = default;
 
   void Init(Profile* profile, const std::string& app_id) {
     DCHECK(!window_registry_);
@@ -231,6 +231,7 @@ void KioskBrowserSession::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kKioskBrowserPermissionsAllowedForOrigins,
                              PrefRegistrySimple::NO_REGISTRATION_FLAGS);
   registry->RegisterBooleanPref(prefs::kKioskWebAppOfflineEnabled, true);
+  registry->RegisterBooleanPref(prefs::kKioskChromeAppsForceAllowed, false);
 }
 
 void KioskBrowserSession::InitForChromeAppKiosk(const std::string& app_id) {
@@ -248,6 +249,12 @@ void KioskBrowserSession::InitForWebKiosk(
     const std::optional<std::string>& web_app_name) {
   CreateBrowserWindowHandler(web_app_name);
   metrics_service_->RecordKioskSessionWebStarted();
+}
+
+void KioskBrowserSession::InitForIwaKiosk(
+    const std::optional<std::string>& app_name) {
+  CreateBrowserWindowHandler(app_name);
+  metrics_service_->RecordKioskSessionIwaStarted();
 }
 
 void KioskBrowserSession::SetOnHandleBrowserCallbackForTesting(
@@ -301,10 +308,13 @@ void KioskBrowserSession::OnAppWindowAdded(AppWindow* app_window) {
 
 void KioskBrowserSession::OnGuestAdded(
     content::WebContents* guest_web_contents) {
-  CHECK(extensions::WebViewGuest::FromWebContents(guest_web_contents));
-
   // Bail if the session is shutting down.
   if (is_shutting_down()) {
+    return;
+  }
+
+  // Bail if the guest is not a WebViewGuest.
+  if (!extensions::WebViewGuest::FromWebContents(guest_web_contents)) {
     return;
   }
 

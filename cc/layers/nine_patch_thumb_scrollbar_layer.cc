@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -63,48 +62,52 @@ bool NinePatchThumbScrollbarLayer::OpacityCanAnimateOnImplThread() const {
   return true;
 }
 
-void NinePatchThumbScrollbarLayer::PushPropertiesTo(
+void NinePatchThumbScrollbarLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  ScrollbarLayerBase::PushPropertiesTo(layer, commit_state, unsafe_state);
+  ScrollbarLayerBase::PushDirtyPropertiesTo(layer, dirty_flag, commit_state,
+                                            unsafe_state);
 
-  NinePatchThumbScrollbarLayerImpl* scrollbar_layer =
-      static_cast<NinePatchThumbScrollbarLayerImpl*>(layer);
+  if (dirty_flag & kChangedGeneralProperty) {
+    NinePatchThumbScrollbarLayerImpl* scrollbar_layer =
+        static_cast<NinePatchThumbScrollbarLayerImpl*>(layer);
 
-  if (orientation() == ScrollbarOrientation::kHorizontal) {
-    scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).height());
-    scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).width());
-    scrollbar_layer->SetTrackStart(track_rect_.Read(*this).x());
-    scrollbar_layer->SetTrackLength(track_rect_.Read(*this).width());
-  } else {
-    scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).width());
-    scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).height());
-    scrollbar_layer->SetTrackStart(track_rect_.Read(*this).y());
-    scrollbar_layer->SetTrackLength(track_rect_.Read(*this).height());
-  }
+    if (orientation() == ScrollbarOrientation::kHorizontal) {
+      scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).height());
+      scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).width());
+      scrollbar_layer->SetTrackStart(track_rect_.Read(*this).x());
+      scrollbar_layer->SetTrackLength(track_rect_.Read(*this).width());
+    } else {
+      scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).width());
+      scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).height());
+      scrollbar_layer->SetTrackStart(track_rect_.Read(*this).y());
+      scrollbar_layer->SetTrackLength(track_rect_.Read(*this).height());
+    }
 
-  if (thumb_resource_.Read(*this)) {
-    auto iter =
-        commit_state.ui_resource_sizes.find(thumb_resource_.Read(*this)->id());
-    gfx::Size image_bounds = (iter == commit_state.ui_resource_sizes.end())
-                                 ? gfx::Size()
-                                 : iter->second;
-    scrollbar_layer->SetImageBounds(image_bounds);
-    scrollbar_layer->SetAperture(aperture_.Read(*this));
-    scrollbar_layer->set_thumb_ui_resource_id(
-        thumb_resource_.Read(*this)->id());
-  } else {
-    scrollbar_layer->SetImageBounds(gfx::Size());
-    scrollbar_layer->SetAperture(gfx::Rect());
-    scrollbar_layer->set_thumb_ui_resource_id(0);
-  }
+    if (thumb_resource_.Read(*this)) {
+      auto iter = commit_state.ui_resource_sizes.find(
+          thumb_resource_.Read(*this)->id());
+      gfx::Size image_bounds = (iter == commit_state.ui_resource_sizes.end())
+                                   ? gfx::Size()
+                                   : iter->second;
+      scrollbar_layer->SetImageBounds(image_bounds);
+      scrollbar_layer->SetAperture(aperture_.Read(*this));
+      scrollbar_layer->set_thumb_ui_resource_id(
+          thumb_resource_.Read(*this)->id());
+    } else {
+      scrollbar_layer->SetImageBounds(gfx::Size());
+      scrollbar_layer->SetAperture(gfx::Rect());
+      scrollbar_layer->set_thumb_ui_resource_id(0);
+    }
 
-  if (track_and_buttons_resource_.Read(*this)) {
-    scrollbar_layer->set_track_and_buttons_ui_resource_id(
-        track_and_buttons_resource_.Read(*this)->id());
-  } else {
-    scrollbar_layer->set_track_and_buttons_ui_resource_id(0);
+    if (track_and_buttons_resource_.Read(*this)) {
+      scrollbar_layer->set_track_and_buttons_ui_resource_id(
+          track_and_buttons_resource_.Read(*this)->id());
+    } else {
+      scrollbar_layer->set_track_and_buttons_ui_resource_id(0);
+    }
   }
 }
 

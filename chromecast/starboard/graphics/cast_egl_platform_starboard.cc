@@ -29,26 +29,18 @@ namespace {
 // Starboard CastEglPlatform implementation.
 class CastEglPlatformStarboard : public CastEglPlatform {
  public:
-  CastEglPlatformStarboard()
-#if !BUILDFLAG(REMOVE_STARBOARD_HEADERS)
-      : sb_adapter_(CastStarboardApiAdapter::GetInstance())
-#endif
-  {
-  }
+  CastEglPlatformStarboard() = default;
 
   const int* GetEGLSurfaceProperties(const int* desired) override {
     return desired;
   }
 
-  ~CastEglPlatformStarboard() override {}
+  ~CastEglPlatformStarboard() override = default;
 
   bool InitializeHardware() override {
 #if BUILDFLAG(REMOVE_STARBOARD_HEADERS)
     return false;
 #else
-    if (!sb_adapter_->EnsureInitialized()) {
-      return false;
-    }
     graphics_lib_ =
         dlopen(kGraphicsLibraryName, RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
     if (!graphics_lib_) {
@@ -85,16 +77,19 @@ class CastEglPlatformStarboard : public CastEglPlatform {
     // visible and GlOzoneEglCast always couples the call to CreateDisplayType
     // and CreateWindow, so there is no downside to creating |window_| early.
     if (!SbWindowIsValid(window_)) {
+      auto* sb_adapter = CastStarboardApiAdapter::GetInstance();
+      sb_adapter->Subscribe(this, nullptr);
       SbWindowOptions options{};
       options.name = "cast";
       options.size.width = size.width;
       options.size.height = size.height;
-      window_ = sb_adapter_->GetWindow(&options);
+      window_ = sb_adapter->GetWindow(&options);
+      ndt_ = reinterpret_cast<NativeDisplayType>(
+          sb_adapter->GetEglNativeDisplayType());
+      sb_adapter->Unsubscribe(this);
     }
 
-    NativeDisplayType ndt = reinterpret_cast<NativeDisplayType>(
-        sb_adapter_->GetEglNativeDisplayType());
-    return ndt;
+    return ndt_;
 #endif
   }
 
@@ -116,7 +111,7 @@ class CastEglPlatformStarboard : public CastEglPlatform {
 #if !BUILDFLAG(REMOVE_STARBOARD_HEADERS)
   void* graphics_lib_ = nullptr;
   SbWindow window_ = nullptr;
-  CastStarboardApiAdapter* sb_adapter_;
+  NativeDisplayType ndt_ = nullptr;
 #endif
 };
 }  // namespace

@@ -5,6 +5,8 @@
 #ifndef ASH_ASSISTANT_UI_MAIN_STAGE_ASSISTANT_ONBOARDING_SUGGESTION_VIEW_H_
 #define ASH_ASSISTANT_UI_MAIN_STAGE_ASSISTANT_ONBOARDING_SUGGESTION_VIEW_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
@@ -53,7 +55,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
   gfx::ImageSkia GetIcon() const;
 
   // Returns the text for the suggestion.
-  const std::u16string& GetText() const;
+  std::u16string_view GetText() const;
 
  private:
   void InitLayout(const assistant::AssistantSuggestion& suggestion);

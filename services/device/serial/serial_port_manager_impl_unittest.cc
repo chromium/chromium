@@ -4,6 +4,7 @@
 
 #include "services/device/serial/serial_port_manager_impl.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -422,7 +422,7 @@ TEST_F(SerialPortManagerImplTest, BluetoothDeviceChanged) {
   TestFuture<std::vector<mojom::SerialPortInfoPtr>> get_devices_future;
   port_manager->GetDevices(get_devices_future.GetCallback());
   auto port_it =
-      base::ranges::find_if(get_devices_future.Get(), [&](const auto& port) {
+      std::ranges::find_if(get_devices_future.Get(), [&](const auto& port) {
         return port->path == base::FilePath::FromASCII(kDeviceAddress);
       });
   ASSERT_NE(port_it, get_devices_future.Get().end());
@@ -462,7 +462,7 @@ TEST_F(SerialPortManagerImplTest, BluetoothDeviceConnectedStateChanged) {
   TestFuture<std::vector<mojom::SerialPortInfoPtr>> get_devices_future;
   port_manager->GetDevices(get_devices_future.GetCallback());
   auto port_it =
-      base::ranges::find_if(get_devices_future.Get(), [&](const auto& port) {
+      std::ranges::find_if(get_devices_future.Get(), [&](const auto& port) {
         return port->path == base::FilePath::FromASCII(kDeviceAddress);
       });
   ASSERT_NE(port_it, get_devices_future.Get().end());

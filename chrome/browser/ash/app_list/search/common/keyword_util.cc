@@ -98,7 +98,7 @@ KeywordExtractedInfoList ExtractKeywords(const std::u16string& query) {
 }
 
 // Strips the keyword from the query
-const std::u16string StripQuery(const std::u16string query) {
+const std::u16string StripQuery(const std::u16string& query) {
   KeywordExtractedInfoList extracted_keywords = ExtractKeywords(query);
   std::u16string stripped_query = query;
 

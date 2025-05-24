@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>crbug.com/396666438</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</script>
+<style>
+#el5 {
+  text-transform: uppercase;
+  -webkit-text-security:circle;
+  display: inline-block;
+  font-size: 40px;
+}
+</style>
+<!--
+  text-transform:uppercase converts U+FB15 to two letters, U+0544 U+053B.
+  Then U+053B and U+1A7F builds a grapheme cluster.
+-->
+<body><span id=el5>&#xe9b7;&#xfb15;&#x1a7f;&#x9df6;</span>
+<script>
+test(() => {}, 'Pass if no crash');
+</script>
+</body>

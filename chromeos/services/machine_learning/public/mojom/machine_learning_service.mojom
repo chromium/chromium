@@ -30,7 +30,6 @@ import "chromeos/services/machine_learning/public/mojom/soda.mojom";
 import "chromeos/services/machine_learning/public/mojom/text_classifier.mojom";
 import "chromeos/services/machine_learning/public/mojom/text_suggester.mojom";
 import "chromeos/services/machine_learning/public/mojom/web_platform_handwriting.mojom";
-import "components/ml/mojom/web_platform_model.mojom";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -101,12 +100,6 @@ interface MachineLearningService {
             pending_receiver<DocumentScanner> receiver,
             [MinVersion=6] DocumentScannerConfig? config)
       => (LoadModelResult result);
-  // Creates a web platform model.
-  // This function creates a model loader for Web platform flatbuffer models.
-  [MinVersion=5] CreateWebPlatformModelLoader@11(
-      pending_receiver<ml.model_loader.mojom.ModelLoader> receiver,
-      ml.model_loader.mojom.CreateModelLoaderOptions options)
-      => (ml.model_loader.mojom.CreateModelLoaderResult result);
   // Create and initialize an Image Content Annotator with given `config`.
   [MinVersion=7] LoadImageAnnotator@12(ImageAnnotatorConfig config,
       pending_receiver<ImageContentAnnotator> receiver)

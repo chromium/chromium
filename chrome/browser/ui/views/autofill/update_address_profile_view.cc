@@ -6,18 +6,18 @@
 
 #include <algorithm>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -36,18 +36,18 @@ namespace {
 constexpr int kIconSize = 16;
 constexpr int kValuesLabelWidth = 190;
 
-const gfx::VectorIcon& GetVectorIconForType(FieldType type) {
-  switch (type) {
-    case NAME_FULL:
+base::optional_ref<const gfx::VectorIcon> GetVectorIconForType(FieldType type) {
+  switch (GetAddressUIComponentIconTypeForFieldType(type)) {
+    case AddressUIComponentIconType::kNoIcon:
+      return std::nullopt;
+    case AddressUIComponentIconType::kName:
       return kAccountCircleIcon;
-    case ADDRESS_HOME_ADDRESS:
+    case AddressUIComponentIconType::kAddress:
       return vector_icons::kLocationOnIcon;
-    case EMAIL_ADDRESS:
+    case AddressUIComponentIconType::kEmail:
       return vector_icons::kEmailIcon;
-    case PHONE_HOME_WHOLE_NUMBER:
+    case AddressUIComponentIconType::kPhone:
       return vector_icons::kCallIcon;
-    default:
-      NOTREACHED();
   }
 }
 
@@ -66,15 +66,16 @@ std::unique_ptr<views::View> CreateValuesView(
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_CONTROL_LIST_VERTICAL),
+                              views::DISTANCE_CONTROL_LIST_VERTICAL),
                           0));
 
   for (const ProfileValueDifference& diff_entry : diff) {
     const std::u16string& value =
         are_new_values ? diff_entry.first_value : diff_entry.second_value;
     // Don't add rows for empty original values.
-    if (value.empty())
+    if (value.empty()) {
       continue;
+    }
     views::View* value_row =
         view->AddChildView(std::make_unique<views::View>());
     value_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -94,8 +95,13 @@ std::unique_ptr<views::View> CreateValuesView(
     label_view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
     auto icon_view = std::make_unique<views::ImageView>();
-    icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-        GetVectorIconForType(diff_entry.type), icon_color, kIconSize));
+    base::optional_ref<const gfx::VectorIcon> icon_ref =
+        GetVectorIconForType(diff_entry.type);
+
+    if (icon_ref.has_value()) {
+      icon_view->SetImage(
+          ui::ImageModel::FromVectorIcon(*icon_ref, icon_color, kIconSize));
+    }
 
     // The container aligns the icon vertically in the middle of the first label
     // line, the icon size is expected to be smaller than the label height.
@@ -162,17 +168,18 @@ bool HasAddressEntry(const std::vector<ProfileValueDifference>& diff) {
 }  // namespace
 
 UpdateAddressProfileView::UpdateAddressProfileView(
-    std::unique_ptr<UpdateAddressBubbleController> controller,
     views::View* anchor_view,
+    std::unique_ptr<UpdateAddressBubbleController> controller,
     content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),
       controller_(std::move(controller)) {
   auto* layout_provider = views::LayoutProvider::Get();
 
-  SetAcceptCallback(base::BindOnce(
-      &UpdateAddressBubbleController::OnUserDecision,
-      base::Unretained(controller_.get()),
-      AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt));
+  SetAcceptCallback(
+      base::BindOnce(&UpdateAddressBubbleController::OnUserDecision,
+                     base::Unretained(controller_.get()),
+                     AutofillClient::AddressPromptUserDecision::kAccepted,
+                     controller_->GetProfileToSave()));
   SetCancelCallback(base::BindOnce(
       &UpdateAddressBubbleController::OnUserDecision,
       base::Unretained(controller_.get()),
@@ -194,7 +201,7 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       .SetCollapseMargins(true)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::VH(layout_provider->GetDistanceMetric(
-                                      DISTANCE_CONTROL_LIST_VERTICAL),
+                                      views::DISTANCE_CONTROL_LIST_VERTICAL),
                                   0));
 
   std::vector<ProfileValueDifference> profile_diff = GetProfileDifferenceForUi(
@@ -307,11 +314,15 @@ void UpdateAddressProfileView::Hide() {
   // do that here. This will clear out |controller_|'s reference to |this|. Note
   // that WindowClosing() happens only after the _asynchronous_ Close() task
   // posted in CloseBubble() completes, but we need to fix references sooner.
-  if (controller_)
+  if (controller_) {
     controller_->OnBubbleClosed();
+  }
 
   controller_ = nullptr;
 }
+
+BEGIN_METADATA(UpdateAddressProfileView)
+END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UpdateAddressProfileView, kTopViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UpdateAddressProfileView,

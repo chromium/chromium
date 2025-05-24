@@ -29,7 +29,7 @@
 
 namespace blink {
 
-ScriptValue GeolocationCoordinates::toJSON(ScriptState* script_state) const {
+ScriptObject GeolocationCoordinates::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.AddNumber("accuracy", accuracy_);
   builder.AddNumber("latitude", latitude_);
@@ -38,7 +38,7 @@ ScriptValue GeolocationCoordinates::toJSON(ScriptState* script_state) const {
   builder.AddNumberOrNull("altitudeAccuracy", altitude_accuracy_);
   builder.AddNumberOrNull("heading", heading_);
   builder.AddNumberOrNull("speed", speed_);
-  return builder.GetScriptValue();
+  return builder.ToScriptObject();
 }
 
 }  // namespace blink

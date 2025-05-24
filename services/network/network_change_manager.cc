@@ -4,12 +4,11 @@
 
 #include "services/network/network_change_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_passive.h"
@@ -111,7 +110,7 @@ size_t NetworkChangeManager::GetNumClientsForTesting() const {
 
 void NetworkChangeManager::NotificationPipeBroken(
     mojom::NetworkChangeManagerClient* client) {
-  clients_.erase(base::ranges::find(
+  clients_.erase(std::ranges::find(
       clients_, client, &mojo::Remote<mojom::NetworkChangeManagerClient>::get));
 }
 

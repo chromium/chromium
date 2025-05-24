@@ -12,9 +12,11 @@ import org.jni_zero.NativeMethods;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.base.CommandLine;
+import org.chromium.build.annotations.NullMarked;
 
 /** A helper class for testing related to Java and Native crashes. */
 @JNINamespace("android_webview")
+@NullMarked
 public final class AwCrashyClassUtils {
 
     public static void maybeCrashIfEnabled() {

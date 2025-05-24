@@ -17,7 +17,7 @@ namespace ash {
 namespace eche_app {
 class EcheConnectionStatusHandler;
 class SystemInfoProvider;
-}
+}  // namespace eche_app
 
 namespace phonehub {
 

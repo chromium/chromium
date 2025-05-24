@@ -56,6 +56,7 @@ class BoundSessionCookieControllerImpl
       chrome::mojom::BoundSessionRequestThrottledHandler::
           HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
   bool ShouldPauseThrottlingRequests() const override;
+  bound_session_credentials::RotationDebugInfo TakeDebugInfo() override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;

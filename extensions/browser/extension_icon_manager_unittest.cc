@@ -167,7 +167,7 @@ TEST_F(ExtensionIconManagerTest, LoadRemoveLoad) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(first_icon, second_icon));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests loading an icon for a component extension.
 TEST_F(ExtensionIconManagerTest, LoadComponentExtensionResource) {
   gfx::Image default_icon = GetDefaultIcon();

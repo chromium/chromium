@@ -9,9 +9,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "build/branding_buildflags.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/grit/components_scaled_resources.h"
@@ -61,7 +62,7 @@ using base::SysNSStringToUTF8;
 // The part of the cell's accessibility label that is used to indicate the
 // 1-based index at which the payment method represented by this item is
 // positioned in the list of payment methods to show.
-@property(nonatomic, strong) NSString* cellIndexAccessibilityLabel;
+@property(nonatomic, copy) NSString* cellIndexAccessibilityLabel;
 
 @end
 
@@ -85,7 +86,7 @@ using base::SysNSStringToUTF8;
     _card = card;
     _menuActions = menuActions;
     _cellIndex = cellIndex;
-    _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _cellIndexAccessibilityLabel = [cellIndexAccessibilityLabel copy];
     _showAutofillFormButton = showAutofillFormButton;
     self.cellClass = [ManualFillCardCell class];
   }
@@ -180,29 +181,18 @@ CGFloat GPayIconTopAnchorOffset() {
 // The menu button displayed in the cell's header.
 @property(nonatomic, strong) UIButton* overflowMenuButton;
 
-// The text view with instructions for how to use virtual cards.
-@property(nonatomic, strong) UITextView* virtualCardInstructionTextView;
+// The text view with instructions for how to use virtual or cardInfo retrieval
+// enrolled cards.
+@property(nonatomic, strong) UITextView* cardInstructionTextView;
 
 // A labeled chip showing the card number.
 @property(nonatomic, strong) ManualFillLabeledChip* cardNumberLabeledChip;
 
-// A button showing the card number.
-@property(nonatomic, strong) UIButton* cardNumberButton;
-
 // A labeled chip showing the cardholder name.
 @property(nonatomic, strong) ManualFillLabeledChip* cardholderLabeledChip;
 
-// A button showing the cardholder name.
-@property(nonatomic, strong) UIButton* cardholderButton;
-
 // A labeled chip showing the card's expiration date.
 @property(nonatomic, strong) ManualFillLabeledChip* expirationDateLabeledChip;
-
-// A button showing the expiration month.
-@property(nonatomic, strong) UIButton* expirationMonthButton;
-
-// A button showing the expiration year.
-@property(nonatomic, strong) UIButton* expirationYearButton;
 
 // A labeled chip showing the card's CVC.
 @property(nonatomic, strong) ManualFillLabeledChip* CVCLabeledChip;
@@ -224,7 +214,7 @@ CGFloat GPayIconTopAnchorOffset() {
 
 // Separator line. Used to delimit the virtual card instruction text view from
 // the rest of the cell.
-@property(nonatomic, strong) UIView* virtualCardInstructionsSeparator;
+@property(nonatomic, strong) UIView* cardInstructionsSeparator;
 
 // Button to autofill the current form with the card's data.
 @property(nonatomic, strong) UIButton* autofillFormButton;
@@ -253,26 +243,13 @@ CGFloat GPayIconTopAnchorOffset() {
 
   self.cardLabel.text = @"";
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    self.virtualCardInstructionTextView.text = @"";
-    self.virtualCardInstructionTextView.hidden = NO;
+  self.cardInstructionTextView.text = @"";
+  self.cardInstructionTextView.hidden = NO;
 
-    [self.cardNumberLabeledChip prepareForReuse];
-    [self.expirationDateLabeledChip prepareForReuse];
-    [self.cardholderLabeledChip prepareForReuse];
-    [self.CVCLabeledChip prepareForReuse];
-  } else {
-    // TODO(crbug.com/330329960): Deprecate button use once
-    // kAutofillEnableVirtualCards is enabled.
-    [self.cardNumberButton setTitle:@"" forState:UIControlStateNormal];
-    [self.cardholderButton setTitle:@"" forState:UIControlStateNormal];
-    [self.expirationMonthButton setTitle:@"" forState:UIControlStateNormal];
-    [self.expirationYearButton setTitle:@"" forState:UIControlStateNormal];
-
-    self.cardNumberButton.hidden = NO;
-    self.cardholderButton.hidden = NO;
-  }
+  [self.cardNumberLabeledChip prepareForReuse];
+  [self.expirationDateLabeledChip prepareForReuse];
+  [self.cardholderLabeledChip prepareForReuse];
+  [self.CVCLabeledChip prepareForReuse];
 
   self.contentInjector = nil;
   self.navigationDelegate = nil;
@@ -344,7 +321,7 @@ CGFloat GPayIconTopAnchorOffset() {
   // Create the UIViews, add them to the contentView.
   self.cardLabel = CreateLabel();
   self.cardIcon = [self createCardIcon];
-  self.overflowMenuButton = CreateOverflowMenuButton();
+  self.overflowMenuButton = CreateOverflowMenuButton(_cellIndex);
   self.headerView =
       CreateHeaderView(self.cardIcon, self.cardLabel, self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];
@@ -359,73 +336,42 @@ CGFloat GPayIconTopAnchorOffset() {
 
   UILabel* expirationDateSeparatorLabel;
 
-  // If Virtual Cards are enabled, create UIViews with the labeled chips,
-  // otherwise use the buttons.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    // Virtual card instruction textview is always created, but hidden for
-    // non-virtual cards.
-    self.virtualCardInstructionTextView =
-        [self createVirtualCardInstructionTextView];
-    [self.contentView addSubview:self.virtualCardInstructionTextView];
-    [accessibilityElements addObject:self.virtualCardInstructionTextView];
+  // Card instruction textview is always created, but is only visible for
+  // virtual and CardInfoRetrieval enrolled cards and hidden for rest.
+  self.cardInstructionTextView = [self createCardInstructionTextView];
+  [self.contentView addSubview:self.cardInstructionTextView];
+  [accessibilityElements addObject:self.cardInstructionTextView];
 
-    self.virtualCardInstructionsSeparator =
-        CreateGraySeparatorForContainer(self.contentView);
+  self.cardInstructionsSeparator =
+      CreateGraySeparatorForContainer(self.contentView);
 
-    self.cardNumberLabeledChip = [[ManualFillLabeledChip alloc]
-        initSingleChipWithTarget:self
-                        selector:@selector(userDidTapCardNumber:)];
-    [self.contentView addSubview:self.cardNumberLabeledChip];
-    [accessibilityElements addObject:self.cardNumberLabeledChip.singleButton];
+  self.cardNumberLabeledChip = [[ManualFillLabeledChip alloc]
+      initSingleChipWithTarget:self
+                      selector:@selector(userDidTapCardNumber:)];
+  [self.contentView addSubview:self.cardNumberLabeledChip];
+  [accessibilityElements addObject:self.cardNumberLabeledChip.singleButton];
 
-    self.expirationDateLabeledChip = [[ManualFillLabeledChip alloc]
-        initExpirationDateChipWithTarget:self
-                           monthSelector:@selector(userDidTapExpirationMonth:)
-                            yearSelector:@selector(userDidTapExpirationYear:)];
-    [self.contentView addSubview:self.expirationDateLabeledChip];
-    [accessibilityElements
-        addObject:self.expirationDateLabeledChip.expirationMonthButton];
-    [accessibilityElements
-        addObject:self.expirationDateLabeledChip.expirationYearButton];
+  self.expirationDateLabeledChip = [[ManualFillLabeledChip alloc]
+      initExpirationDateChipWithTarget:self
+                         monthSelector:@selector(userDidTapExpirationMonth:)
+                          yearSelector:@selector(userDidTapExpirationYear:)];
+  [self.contentView addSubview:self.expirationDateLabeledChip];
+  [accessibilityElements
+      addObject:self.expirationDateLabeledChip.expirationMonthButton];
+  [accessibilityElements
+      addObject:self.expirationDateLabeledChip.expirationYearButton];
 
-    self.cardholderLabeledChip = [[ManualFillLabeledChip alloc]
-        initSingleChipWithTarget:self
-                        selector:@selector(userDidTapCardholderName:)];
-    [self.contentView addSubview:self.cardholderLabeledChip];
-    [accessibilityElements addObject:self.cardholderLabeledChip.singleButton];
+  self.cardholderLabeledChip = [[ManualFillLabeledChip alloc]
+      initSingleChipWithTarget:self
+                      selector:@selector(userDidTapCardholderName:)];
+  [self.contentView addSubview:self.cardholderLabeledChip];
+  [accessibilityElements addObject:self.cardholderLabeledChip.singleButton];
 
-    self.CVCLabeledChip = [[ManualFillLabeledChip alloc]
-        initSingleChipWithTarget:self
-                        selector:@selector(userDidTapCVC:)];
-    [self.contentView addSubview:self.CVCLabeledChip];
-    [accessibilityElements addObject:self.CVCLabeledChip.singleButton];
-  } else {
-    // TODO(crbug.com/330329960): Deprecate button use once
-    // kAutofillEnableVirtualCards is enabled.
-    self.cardNumberButton =
-        CreateChipWithSelectorAndTarget(@selector(userDidTapCardNumber:), self);
-    [self.contentView addSubview:self.cardNumberButton];
-    [accessibilityElements addObject:self.cardNumberButton];
-
-    self.expirationMonthButton =
-        CreateChipWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
-    [self.contentView addSubview:self.expirationMonthButton];
-    [accessibilityElements addObject:self.expirationMonthButton];
-
-    expirationDateSeparatorLabel = [self createExpirationSeparatorLabel];
-    [self.contentView addSubview:expirationDateSeparatorLabel];
-
-    self.expirationYearButton =
-        CreateChipWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
-    [self.contentView addSubview:self.expirationYearButton];
-    [accessibilityElements addObject:self.expirationYearButton];
-
-    self.cardholderButton =
-        CreateChipWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
-    [self.contentView addSubview:self.cardholderButton];
-    [accessibilityElements addObject:self.cardholderButton];
-  }
+  self.CVCLabeledChip = [[ManualFillLabeledChip alloc]
+      initSingleChipWithTarget:self
+                      selector:@selector(userDidTapCVC:)];
+  [self.contentView addSubview:self.CVCLabeledChip];
+  [accessibilityElements addObject:self.CVCLabeledChip.singleButton];
 
   self.autofillFormButton = CreateAutofillFormButton();
   [self.contentView addSubview:self.autofillFormButton];
@@ -446,61 +392,31 @@ CGFloat GPayIconTopAnchorOffset() {
   AppendHorizontalConstraintsForViews(staticConstraints, @[ self.headerView ],
                                       self.layoutGuide);
 
-  // If Virtual Cards are enabled, position the labeled chips, else position the
-  // regular buttons.
   self.gPayIcon = [self createGPayIcon];
   [self.contentView addSubview:self.gPayIcon];
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.virtualCardInstructionTextView ],
-        self.layoutGuide);
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.cardNumberLabeledChip ], self.layoutGuide,
-        kChipsHorizontalMargin,
-        AppendConstraintsHorizontalEqualOrSmallerThanGuide, self.gPayIcon);
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.expirationDateLabeledChip ],
-        self.layoutGuide, kChipsHorizontalMargin,
-        AppendConstraintsHorizontalEqualOrSmallerThanGuide);
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.cardholderLabeledChip ], self.layoutGuide,
-        kChipsHorizontalMargin,
-        AppendConstraintsHorizontalEqualOrSmallerThanGuide);
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.CVCLabeledChip ], self.layoutGuide,
-        kChipsHorizontalMargin,
-        AppendConstraintsHorizontalEqualOrSmallerThanGuide);
-    [staticConstraints
-        addObject:[self.gPayIcon.topAnchor
-                      constraintEqualToAnchor:self.cardNumberLabeledChip
-                                                  .topAnchor
-                                     constant:GPayIconTopAnchorOffset()]];
-  } else {
-    // TODO(crbug.com/330329960): Deprecate button use once
-    // kAutofillEnableVirtualCards is enabled.
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.cardNumberButton ], self.layoutGuide,
-        kChipsHorizontalMargin,
-        AppendConstraintsHorizontalEqualOrSmallerThanGuide, self.gPayIcon);
-    AppendHorizontalConstraintsForViews(
-        staticConstraints,
-        @[
-          self.expirationMonthButton, expirationDateSeparatorLabel,
-          self.expirationYearButton
-        ],
-        self.layoutGuide, kChipsHorizontalMargin,
-        AppendConstraintsHorizontalSyncBaselines |
-            AppendConstraintsHorizontalEqualOrSmallerThanGuide);
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.cardholderButton ], self.layoutGuide,
-        kChipsHorizontalMargin,
-        AppendConstraintsHorizontalEqualOrSmallerThanGuide);
-    [staticConstraints
-        addObject:[self.gPayIcon.topAnchor
-                      constraintEqualToAnchor:self.cardNumberButton.topAnchor
-                                     constant:GPayIconTopAnchorOffset()]];
-  }
+
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.cardInstructionTextView ], self.layoutGuide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.cardNumberLabeledChip ], self.layoutGuide,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide, self.gPayIcon);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.expirationDateLabeledChip ], self.layoutGuide,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.cardholderLabeledChip ], self.layoutGuide,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.CVCLabeledChip ], self.layoutGuide,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+  [staticConstraints
+      addObject:[self.gPayIcon.topAnchor
+                    constraintEqualToAnchor:self.cardNumberLabeledChip.topAnchor
+                                   constant:GPayIconTopAnchorOffset()]];
 
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
@@ -531,105 +447,67 @@ CGFloat GPayIconTopAnchorOffset() {
       stringWithFormat:@"%@ %@", manual_fill::kPaymentManualFillGPayLogoID,
                        card.networkAndLastFourDigits];
 
-  // If Virtual Cards are enabled set text for labeled chips, else set text for
-  // buttons.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    NSMutableAttributedString* attributedString =
-        [self createCardLabelAttributedText:card];
-    self.cardLabel.numberOfLines = 0;
-    self.cardLabel.attributedText = attributedString;
-    self.cardLabel.accessibilityIdentifier = attributedString.string;
-    if (card.recordType == kVirtualCard) {
-      self.virtualCardInstructionTextView.attributedText =
-          [self createvirtualCardInstructionTextViewAttributedText];
-      self.virtualCardInstructionTextView.backgroundColor = UIColor.clearColor;
-    }
-    [self.cardNumberLabeledChip
-        setLabelText:
-            (card.recordType == kVirtualCard
-                 ? l10n_util::GetNSString(
-                       IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL_IOS)
-                 : l10n_util::GetNSString(
-                       IDS_AUTOFILL_REGULAR_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL_IOS))
-        buttonTitles:@[ card.obfuscatedNumber ]];
-    [self.expirationDateLabeledChip
-        setLabelText:
-            l10n_util::GetNSString(
-                IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EXP_DATE_LABEL_IOS)
-        buttonTitles:@[ card.expirationMonth, card.expirationYear ]];
-    [self.cardholderLabeledChip
-        setLabelText:
-            l10n_util::GetNSString(
-                IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NAME_ON_CARD_LABEL_IOS)
-        buttonTitles:@[ card.cardHolder ]];
-    if (card.recordType == kVirtualCard) {
-      [self.CVCLabeledChip
-          setLabelText:
-              l10n_util::GetNSString(
-                  IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CVC_LABEL_IOS)
-          buttonTitles:@[ card.CVC ]];
-    }
-
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      self.cardNumberLabeledChip.singleButton.accessibilityLabel =
-          l10n_util::GetNSStringF(
-              IDS_IOS_MANUAL_FALLBACK_CARD_NUMBER_CHIP_ACCESSIBILITY_LABEL,
-              base::SysNSStringToUTF16(
-                  CardNumberLastFourDigits(card.obfuscatedNumber)));
-      self.expirationDateLabeledChip.expirationMonthButton.accessibilityLabel =
-          l10n_util::GetNSStringF(
-              IDS_IOS_MANUAL_FALLBACK_EXPIRATION_MONTH_CHIP_ACCESSIBILITY_LABEL,
-              base::SysNSStringToUTF16(card.expirationMonth));
-      self.expirationDateLabeledChip.expirationYearButton.accessibilityLabel =
-          l10n_util::GetNSStringF(
-              IDS_IOS_MANUAL_FALLBACK_EXPIRATION_YEAR_CHIP_ACCESSIBILITY_LABEL,
-              base::SysNSStringToUTF16(card.expirationYear));
-      self.cardholderLabeledChip.singleButton.accessibilityLabel =
-          l10n_util::GetNSStringF(
-              IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL,
-              base::SysNSStringToUTF16(card.cardHolder));
-      self.CVCLabeledChip.singleButton.accessibilityLabel =
+  NSMutableAttributedString* attributedString =
+      [self createCardLabelAttributedText:card];
+  self.cardLabel.numberOfLines = 0;
+  self.cardLabel.attributedText = attributedString;
+  self.cardLabel.accessibilityIdentifier = attributedString.string;
+  if (card.recordType == kVirtualCard) {
+    self.cardInstructionTextView.attributedText =
+        [self createvirtualCardInstructionTextViewAttributedText];
+  } else if (card.cardInfoRetrievalEnrollmentState ==
+             autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+                 kRetrievalEnrolled) {
+    self.cardInstructionTextView.text = l10n_util::GetNSString(
+        IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_CARD_INFO_RETRIEVAL_INSTRUCTION_TEXT);
+  }
+  [self.cardNumberLabeledChip
+      setLabelText:
+          (card.recordType == kVirtualCard
+               ? l10n_util::GetNSString(
+                     IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CARD_NUMBER_LABEL_VIRTUAL_CARD_IOS)
+               : l10n_util::GetNSString(
+                     IDS_AUTOFILL_REGULAR_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL_IOS))
+      buttonTitles:@[ card.obfuscatedNumber ]];
+  [self.expirationDateLabeledChip
+      setLabelText:
           l10n_util::GetNSString(
-              IDS_IOS_MANUAL_FALLBACK_CVC_CHIP_ACCESSIBILITY_LABEL);
-    }
-  } else {
-    // TODO(crbug.com/330329960): Deprecate button use once
-    // kAutofillEnableVirtualCards is enabled.
-    NSString* cardName = [self createCardName:card];
-    self.cardLabel.attributedText = [[NSMutableAttributedString alloc]
-        initWithString:cardName
-            attributes:@{
-              NSForegroundColorAttributeName :
-                  [UIColor colorNamed:kTextPrimaryColor],
-              NSFontAttributeName :
-                  [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-            }];
+              IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EXP_DATE_LABEL_VIRTUAL_CARD_IOS)
+      buttonTitles:@[ card.expirationMonth, card.expirationYear ]];
+  [self.cardholderLabeledChip
+      setLabelText:
+          l10n_util::GetNSString(
+              IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_NAME_ON_CARD_LABEL_VIRTUAL_CARD_IOS)
+      buttonTitles:@[ card.cardHolder ]];
+  if (card.CVC != nil && [card.CVC length] > 0) {
+    [self.CVCLabeledChip
+        setLabelText:
+            l10n_util::GetNSString(
+                IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CVC_LABEL_VIRTUAL_CARD_IOS)
+        buttonTitles:@[ card.CVC ]];
+  }
 
-    [self.cardNumberButton setTitle:card.obfuscatedNumber
-                           forState:UIControlStateNormal];
-    [self.expirationMonthButton setTitle:card.expirationMonth
-                                forState:UIControlStateNormal];
-    [self.expirationYearButton setTitle:card.expirationYear
-                               forState:UIControlStateNormal];
-    [self.cardholderButton setTitle:card.cardHolder
-                           forState:UIControlStateNormal];
-
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      self.cardNumberButton.accessibilityLabel = l10n_util::GetNSStringF(
-          IDS_IOS_MANUAL_FALLBACK_CARD_NUMBER_CHIP_ACCESSIBILITY_LABEL,
-          base::SysNSStringToUTF16(
-              CardNumberLastFourDigits(card.obfuscatedNumber)));
-      self.expirationMonthButton.accessibilityLabel = l10n_util::GetNSStringF(
-          IDS_IOS_MANUAL_FALLBACK_EXPIRATION_MONTH_CHIP_ACCESSIBILITY_LABEL,
-          base::SysNSStringToUTF16(card.expirationMonth));
-      self.expirationYearButton.accessibilityLabel = l10n_util::GetNSStringF(
-          IDS_IOS_MANUAL_FALLBACK_EXPIRATION_YEAR_CHIP_ACCESSIBILITY_LABEL,
-          base::SysNSStringToUTF16(card.expirationYear));
-      self.cardholderButton.accessibilityLabel = l10n_util::GetNSStringF(
-          IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL,
-          base::SysNSStringToUTF16(card.cardHolder));
-    }
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    self.cardNumberLabeledChip.singleButton.accessibilityLabel =
+        l10n_util::GetNSStringF(
+            IDS_IOS_MANUAL_FALLBACK_CARD_NUMBER_CHIP_ACCESSIBILITY_LABEL,
+            base::SysNSStringToUTF16(
+                CardNumberLastFourDigits(card.obfuscatedNumber)));
+    self.expirationDateLabeledChip.expirationMonthButton.accessibilityLabel =
+        l10n_util::GetNSStringF(
+            IDS_IOS_MANUAL_FALLBACK_EXPIRATION_MONTH_CHIP_ACCESSIBILITY_LABEL,
+            base::SysNSStringToUTF16(card.expirationMonth));
+    self.expirationDateLabeledChip.expirationYearButton.accessibilityLabel =
+        l10n_util::GetNSStringF(
+            IDS_IOS_MANUAL_FALLBACK_EXPIRATION_YEAR_CHIP_ACCESSIBILITY_LABEL,
+            base::SysNSStringToUTF16(card.expirationYear));
+    self.cardholderLabeledChip.singleButton.accessibilityLabel =
+        l10n_util::GetNSStringF(
+            IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL,
+            base::SysNSStringToUTF16(card.cardHolder));
+    self.CVCLabeledChip.singleButton.accessibilityLabel =
+        l10n_util::GetNSString(
+            IDS_IOS_MANUAL_FALLBACK_CVC_CHIP_ACCESSIBILITY_LABEL);
   }
 }
 
@@ -652,63 +530,45 @@ CGFloat GPayIconTopAnchorOffset() {
   NSMutableArray<UIView*>* cardInfoGroupVerticalLeadChips =
       [[NSMutableArray alloc] init];
 
-  // If Virtual Cards are enabled add labeled chips to be positioned
-  // else just add the buttons.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    // Virtual card instruction.
-    if (card.recordType == kVirtualCard) {
+  // Card instruction.
+  if (card.recordType == kVirtualCard ||
+      card.cardInfoRetrievalEnrollmentState ==
+          autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+              kRetrievalEnrolled) {
+    AddViewToVerticalLeadViews(
+        self.cardInstructionTextView,
+        ManualFillCellView::ElementType::kVirtualCardInstructions,
+        verticalLeadViews);
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
       AddViewToVerticalLeadViews(
-          self.virtualCardInstructionTextView,
-          ManualFillCellView::ElementType::kVirtualCardInstructions,
+          self.cardInstructionsSeparator,
+          ManualFillCellView::ElementType::kCardInstructionsSeparator,
           verticalLeadViews);
-      if (IsKeyboardAccessoryUpgradeEnabled()) {
-        AddViewToVerticalLeadViews(
-            self.virtualCardInstructionsSeparator,
-            ManualFillCellView::ElementType::kVirtualCardInstructionsSeparator,
-            verticalLeadViews);
-        self.virtualCardInstructionsSeparator.hidden = NO;
-      }
-      self.virtualCardInstructionTextView.hidden = NO;
-    } else {
-      self.virtualCardInstructionTextView.hidden = YES;
-      self.virtualCardInstructionsSeparator.hidden = YES;
+      self.cardInstructionsSeparator.hidden = NO;
     }
-
-    // Card number labeled chip button.
-    [self addChipButton:self.cardNumberLabeledChip
-            toChipGroup:cardInfoGroupVerticalLeadChips
-                 ifTrue:(card.obfuscatedNumber.length > 0)];
-
-    // Expiration date labeled chip button.
-    [cardInfoGroupVerticalLeadChips addObject:self.expirationDateLabeledChip];
-
-    // Card holder labeled chip button.
-    [self addChipButton:self.cardholderLabeledChip
-            toChipGroup:cardInfoGroupVerticalLeadChips
-                 ifTrue:(card.cardHolder.length > 0)];
-
-    // CVC labeled chip button.
-    [self addChipButton:self.CVCLabeledChip
-            toChipGroup:cardInfoGroupVerticalLeadChips
-                 ifTrue:(card.CVC.length > 0)];
+    self.cardInstructionTextView.hidden = NO;
   } else {
-    // TODO(crbug.com/330329960): Deprecate button use once
-    // kAutofillEnableVirtualCards is enabled.
-
-    // Card number chip button.
-    [self addChipButton:self.cardNumberButton
-            toChipGroup:cardInfoGroupVerticalLeadChips
-                 ifTrue:(card.obfuscatedNumber.length > 0)];
-
-    // Expiration date chip button.
-    [cardInfoGroupVerticalLeadChips addObject:self.expirationMonthButton];
-
-    // Card holder chip button.
-    [self addChipButton:self.cardholderButton
-            toChipGroup:cardInfoGroupVerticalLeadChips
-                 ifTrue:(card.cardHolder.length > 0)];
+    self.cardInstructionTextView.hidden = YES;
+    self.cardInstructionsSeparator.hidden = YES;
   }
+
+  // Card number labeled chip button.
+  [self addChipButton:self.cardNumberLabeledChip
+          toChipGroup:cardInfoGroupVerticalLeadChips
+               ifTrue:(card.obfuscatedNumber.length > 0)];
+
+  // Expiration date labeled chip button.
+  [cardInfoGroupVerticalLeadChips addObject:self.expirationDateLabeledChip];
+
+  // Card holder labeled chip button.
+  [self addChipButton:self.cardholderLabeledChip
+          toChipGroup:cardInfoGroupVerticalLeadChips
+               ifTrue:(card.cardHolder.length > 0)];
+
+  // CVC labeled chip button.
+  [self addChipButton:self.CVCLabeledChip
+          toChipGroup:cardInfoGroupVerticalLeadChips
+               ifTrue:(card.CVC.length > 0)];
 
   AddChipGroupsToVerticalLeadViews(@[ cardInfoGroupVerticalLeadChips ],
                                    verticalLeadViews);
@@ -736,14 +596,8 @@ CGFloat GPayIconTopAnchorOffset() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    base::RecordAction(base::UserMetricsAction(
-        [self createMetricsAction:@"SelectCardNumber"]));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("ManualFallback_CreditCard_SelectCardNumber"));
-  }
+  base::RecordAction(
+      base::UserMetricsAction([self createMetricsAction:@"SelectCardNumber"]));
 
   if (self.card.canFillDirectly) {
     [self.contentInjector userDidPickContent:number
@@ -754,25 +608,6 @@ CGFloat GPayIconTopAnchorOffset() {
         requestFullCreditCard:self.card
                     fieldType:manual_fill::PaymentFieldType::kCardNumber];
   }
-}
-
-// TODO(crbug.com/330329960): Deprecate this method once
-// kAutofillEnableVirtualCards is enabled.
-- (void)userDidTapCardInfo:(UIButton*)sender {
-  const char* metricsAction = nullptr;
-  if (sender == self.cardholderButton) {
-    metricsAction = "ManualFallback_CreditCard_SelectCardholderName";
-  } else if (sender == self.expirationMonthButton) {
-    metricsAction = "ManualFallback_CreditCard_SelectExpirationMonth";
-  } else if (sender == self.expirationYearButton) {
-    metricsAction = "ManualFallback_CreditCard_SelectExpirationYear";
-  }
-  DCHECK(metricsAction);
-  base::RecordAction(base::UserMetricsAction(metricsAction));
-
-  [self.contentInjector userDidPickContent:sender.titleLabel.text
-                             passwordField:NO
-                             requiresHTTPS:NO];
 }
 
 - (void)userDidTapCardholderName:(UIButton*)sender {
@@ -812,7 +647,6 @@ CGFloat GPayIconTopAnchorOffset() {
 }
 
 - (void)userDidTapCVC:(UIButton*)sender {
-  CHECK_EQ(self.card.recordType, kVirtualCard);
   base::RecordAction(
       base::UserMetricsAction([self createMetricsAction:@"SelectCvc"]));
   [self.navigationDelegate
@@ -830,22 +664,22 @@ CGFloat GPayIconTopAnchorOffset() {
       base::UserMetricsAction("ManualFallback_CreditCard_SuggestionAccepted"));
 
   autofill::SuggestionType type =
-      autofill::VirtualCardFeatureEnabled() &&
-              [self.card recordType] == kVirtualCard
+      [self.card recordType] == kVirtualCard
           ? autofill::SuggestionType::kVirtualCreditCardEntry
           : autofill::SuggestionType::kCreditCardEntry;
-  FormSuggestion* suggestion =
-      [FormSuggestion suggestionWithValue:nil
-                               minorValue:nil
-                       displayDescription:nil
-                                     icon:nil
-                                     type:type
-                        backendIdentifier:[self.card GUID]
-              fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
-                           requiresReauth:NO
-               acceptanceA11yAnnouncement:
-                   base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
-                       IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
+  FormSuggestion* suggestion = [FormSuggestion
+              suggestionWithValue:nil
+                       minorValue:nil
+               displayDescription:nil
+                             icon:nil
+                             type:type
+                          payload:autofill::Suggestion::Guid(
+                                      base::SysNSStringToUTF8([self.card GUID]))
+      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                   requiresReauth:NO
+       acceptanceA11yAnnouncement:
+           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
   [self.contentInjector autofillFormWithSuggestion:suggestion
                                            atIndex:_cellIndex];
@@ -926,31 +760,20 @@ CGFloat GPayIconTopAnchorOffset() {
   return virtualCardInstructionAttributedString;
 }
 
-- (UITextView*)createVirtualCardInstructionTextView {
-  UITextView* virtualCardInstructionTextView =
+- (UITextView*)createCardInstructionTextView {
+  UITextView* cardInstructionTextView =
       [[UITextView alloc] initWithFrame:self.contentView.frame];
-  virtualCardInstructionTextView.scrollEnabled = NO;
-  virtualCardInstructionTextView.editable = NO;
-  virtualCardInstructionTextView.delegate = self;
-  virtualCardInstructionTextView.translatesAutoresizingMaskIntoConstraints = NO;
-  virtualCardInstructionTextView.textColor =
-      [UIColor colorNamed:kTextSecondaryColor];
-  virtualCardInstructionTextView.backgroundColor = UIColor.clearColor;
-  virtualCardInstructionTextView.textContainerInset =
-      UIEdgeInsetsMake(0, 0, 0, 0);
-  virtualCardInstructionTextView.textContainer.lineFragmentPadding = 0;
-  return virtualCardInstructionTextView;
-}
-
-// TODO(crbug.com/330329960): Deprecate this method use once
-// kAutofillEnableVirtualCards is enabled.
-- (UILabel*)createExpirationSeparatorLabel {
-  UILabel* expirationSeparatorLabel = CreateLabel();
-  expirationSeparatorLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  [expirationSeparatorLabel setTextColor:[UIColor colorNamed:kSeparatorColor]];
-  expirationSeparatorLabel.text = @"/";
-  return expirationSeparatorLabel;
+  cardInstructionTextView.scrollEnabled = NO;
+  cardInstructionTextView.editable = NO;
+  cardInstructionTextView.delegate = self;
+  cardInstructionTextView.translatesAutoresizingMaskIntoConstraints = NO;
+  cardInstructionTextView.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  cardInstructionTextView.backgroundColor = UIColor.clearColor;
+  cardInstructionTextView.font =
+            [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  cardInstructionTextView.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);
+  cardInstructionTextView.textContainer.lineFragmentPadding = 0;
+  return cardInstructionTextView;
 }
 
 // Creates and configures the card icon image view.
@@ -981,11 +804,12 @@ CGFloat GPayIconTopAnchorOffset() {
   }
 }
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
-  if (textView == self.virtualCardInstructionTextView) {
+  if (textView == self.cardInstructionTextView) {
     // The learn more link was clicked.
     [self.navigationDelegate
           openURL:[[CrURL alloc]
@@ -994,6 +818,25 @@ CGFloat GPayIconTopAnchorOffset() {
         withTitle:[textView.text substringWithRange:characterRange]];
   }
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  if (textView != self.cardInstructionTextView) {
+    return defaultAction;
+  }
+
+  GURL URL = autofill::payments::GetVirtualCardEnrollmentSupportUrl();
+  NSString* text = textView.text;
+  NSRange range = textItem.range;
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    // The learn more link was clicked.
+    [weakSelf.navigationDelegate openURL:[[CrURL alloc] initWithGURL:URL]
+                               withTitle:[text substringWithRange:range]];
+  }];
 }
 
 // Creates and configures the GPay icon image view.

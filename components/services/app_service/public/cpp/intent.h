@@ -24,8 +24,7 @@ struct IntentFile {
   IntentFile& operator=(const IntentFile&) = delete;
   ~IntentFile();
 
-  bool operator==(const IntentFile& other) const;
-  bool operator!=(const IntentFile& other) const;
+  friend bool operator==(const IntentFile&, const IntentFile&) = default;
 
   std::unique_ptr<IntentFile> Clone() const;
 
@@ -76,7 +75,6 @@ struct Intent {
   ~Intent();
 
   bool operator==(const Intent& other) const;
-  bool operator!=(const Intent& other) const;
 
   std::unique_ptr<Intent> Clone() const;
 

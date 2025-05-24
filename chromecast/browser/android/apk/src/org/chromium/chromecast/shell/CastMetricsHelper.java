@@ -7,9 +7,7 @@ package org.chromium.chromecast.shell;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-/**
- * Wrapper of native CastMetricsHelper.
- */
+/** Wrapper of native CastMetricsHelper. */
 @JNINamespace("chromecast::shell")
 public final class CastMetricsHelper {
     public static void logMediaPlay() {
@@ -23,6 +21,7 @@ public final class CastMetricsHelper {
     @NativeMethods
     interface Natives {
         void logMediaPlay();
+
         void logMediaPause();
     }
 }

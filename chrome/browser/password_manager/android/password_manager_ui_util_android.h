@@ -16,4 +16,8 @@ bool ShouldAcceptFocusEvent(
     password_manager::ContentPasswordManagerDriver* driver,
     autofill::mojom::FocusedFieldType focused_field_type);
 
+// Formats origin for displaying it on the screen and returns a string to be
+// displayed.
+std::string GetDisplayOrigin(const url::Origin& origin);
+
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_UI_UTIL_ANDROID_H_

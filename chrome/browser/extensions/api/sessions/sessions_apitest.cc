@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -25,11 +22,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/sessions/sessions_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -50,8 +49,9 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #endif
 
@@ -64,10 +64,10 @@ namespace {
 const char kTestCacheGuid[] = "TestCacheGuid";
 // Fake session tabs (used to construct arbitrary device info) and tab IDs
 // (used to construct arbitrary tab info) to use in all tests.
-const char* const kSessionTags[] = {"tag0", "tag1", "tag2", "tag3", "tag4"};
-const SessionID::id_type kTabIDs[] = {5, 10, 13, 17};
-const int kActiveTabIndex = 2;
-const int kActiveTabId = kTabIDs[kActiveTabIndex];
+constexpr std::array kSessionTags = {"tag0", "tag1", "tag2", "tag3", "tag4"};
+constexpr auto kTabIDs = std::to_array<SessionID::id_type>({5, 10, 13, 17});
+constexpr int kActiveTabIndex = 2;
+constexpr int kActiveTabId = kTabIDs[kActiveTabIndex];
 void BuildSessionSpecifics(const std::string& tag,
                            sync_pb::SessionSpecifics* meta) {
   meta->set_session_tag(tag);
@@ -123,8 +123,9 @@ testing::AssertionResult CheckSessionModels(const base::Value::List& devices,
     EXPECT_EQ(num_sessions, sessions.size());
     // Because this test is hurried, really there are only ever 0 or 1
     // sessions, and if 1, that will be a Window. Grab it.
-    if (num_sessions == 0)
+    if (num_sessions == 0) {
       continue;
+    }
     const base::Value::Dict session = utils::ToDict(sessions[0]);
     const base::Value::Dict window = api_test_utils::GetDict(session, "window");
     // Only the tabs are interesting.
@@ -180,7 +181,7 @@ class ExtensionSessionsTest : public InProcessBrowserTest {
 };
 
 void ExtensionSessionsTest::SetUpCommandLine(base::CommandLine* command_line) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   command_line->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
 }
@@ -200,7 +201,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
   syncer::DataTypeActivationRequest request;
   request.error_handler = base::DoNothing();
   request.cache_guid = kTestCacheGuid;
-  request.authenticated_account_id = CoreAccountId::FromGaiaId("SomeAccountId");
+  request.authenticated_gaia_id = GaiaId("SomeGaiaId");
 
   sync_sessions::SessionSyncService* service =
       SessionSyncServiceFactory::GetForProfile(browser()->profile());
@@ -219,8 +220,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
     // Fill an instance of session specifics with a foreign session's data.
     sync_pb::EntitySpecifics header_entity;
     BuildSessionSpecifics(kSessionTags[index], header_entity.mutable_session());
-    std::vector<SessionID::id_type> tab_list(kTabIDs,
-                                             kTabIDs + std::size(kTabIDs));
+    std::vector<SessionID::id_type> tab_list = base::ToVector(kTabIDs);
     BuildWindowSpecifics(index, tab_list, header_entity.mutable_session());
     std::vector<sync_pb::SessionSpecifics> tabs(tab_list.size());
     for (size_t i = 0; i < tab_list.size(); ++i) {
@@ -309,8 +309,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
   int restored_id = api_test_utils::GetInteger(restored_window, "id");
   for (base::Value& window_value : windows) {
     window = utils::ToDict(std::move(window_value));
-    if (api_test_utils::GetInteger(window, "id") == restored_id)
+    if (api_test_utils::GetInteger(window, "id") == restored_id) {
       break;
+    }
   }
   EXPECT_EQ(restored_id, api_test_utils::GetInteger(window, "id"));
 }
@@ -340,20 +341,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
 
   // Set up a browser with a non-editable tabstrip, simulating one in the midst
   // of a tab dragging session.
-  std::unique_ptr<TestBrowserWindow> browser_window =
-      std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(browser()->profile(), true);
-  params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window.get();
-  std::unique_ptr<Browser> browser =
-      std::unique_ptr<Browser>(Browser::Create(params));
-  browser_window->SetIsTabStripEditable(false);
+  Browser* non_editable_browser =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  non_editable_browser->GetBrowserView()
+      .tabstrip()
+      ->SetTabStripNotEditableForTesting();
 
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
           CreateFunction<SessionsRestoreFunction>(true).get(), "[\"1\"]",
-          browser->profile()),
-      tabs_constants::kTabStripNotEditableError));
+          non_editable_browser->profile()),
+      ExtensionTabUtil::kTabStripNotEditableError));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedIncognito) {

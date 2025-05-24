@@ -17,8 +17,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class ConnectionScheduler;
 class MessageSender;
@@ -92,7 +91,6 @@ class MultideviceFeatureAccessManagerImpl
   bool feature_setup_connection_update_pending_ = false;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_FEATURE_ACCESS_MANAGER_IMPL_H_

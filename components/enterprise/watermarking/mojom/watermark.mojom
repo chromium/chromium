@@ -1,0 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module watermark.mojom;
+
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+[Stable]
+struct WatermarkBlock {
+  mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_skpicture;
+  uint32 width;
+  uint32 height;
+};

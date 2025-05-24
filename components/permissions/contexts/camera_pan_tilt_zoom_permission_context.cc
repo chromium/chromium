@@ -4,6 +4,8 @@
 
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 
+#include <memory>
+
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
@@ -12,10 +14,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace permissions {
 
@@ -38,9 +41,10 @@ CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
     content::BrowserContext* browser_context,
     std::unique_ptr<Delegate> delegate,
     const webrtc::MediaStreamDeviceEnumerator* device_enumerator)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound),
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+          network::mojom::PermissionsPolicyFeature::kNotFound),
       delegate_(std::move(delegate)),
       device_enumerator_(device_enumerator) {
   DCHECK(device_enumerator_);
@@ -55,7 +59,7 @@ CameraPanTiltZoomPermissionContext::~CameraPanTiltZoomPermissionContext() {
 }
 
 void CameraPanTiltZoomPermissionContext::RequestPermission(
-    PermissionRequestData request_data,
+    std::unique_ptr<PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -69,9 +73,9 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
   // camera permission instead.
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(
-          request_data.id.global_render_frame_host_id());
+          request_data->id.global_render_frame_host_id());
 
-  if (request_data.requesting_origin !=
+  if (request_data->requesting_origin !=
       render_frame_host->GetLastCommittedOrigin().GetURL()) {
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
@@ -81,7 +85,10 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
       ->RequestPermissionFromCurrentDocument(
           render_frame_host,
           content::PermissionRequestDescription(
-              blink::PermissionType::VIDEO_CAPTURE, request_data.user_gesture),
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::VIDEO_CAPTURE),
+              request_data->user_gesture),
           base::BindOnce(&CallbackWrapper, std::move(callback)));
 }
 

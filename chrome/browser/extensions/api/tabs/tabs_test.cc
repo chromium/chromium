@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -23,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -36,13 +32,14 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
+#include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -52,10 +49,13 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -71,6 +71,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -82,7 +83,10 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/test_event_router_observer.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
@@ -155,7 +159,7 @@ class TestFunctionDispatcherDelegate
 
 class ExtensionTabsTest : public PlatformAppBrowserTest {
  public:
-  ExtensionTabsTest() {}
+  ExtensionTabsTest() = default;
 
   ExtensionTabsTest(const ExtensionTabsTest&) = delete;
   ExtensionTabsTest& operator=(const ExtensionTabsTest&) = delete;
@@ -203,7 +207,7 @@ const ExtensionTabUtil::ScrubTabBehavior kDontScrubBehavior = {
     ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab};
 
 int GetTabId(const base::Value::Dict& tab) {
-  return tab.FindInt(keys::kIdKey).value_or(kUndefinedId);
+  return tab.FindInt(extension_misc::kId).value_or(kUndefinedId);
 }
 
 int GetTabWindowId(const base::Value::Dict& tab) {
@@ -211,7 +215,7 @@ int GetTabWindowId(const base::Value::Dict& tab) {
 }
 
 int GetWindowId(const base::Value::Dict& window) {
-  return window.FindInt(keys::kIdKey).value_or(kUndefinedId);
+  return window.FindInt(extension_misc::kId).value_or(kUndefinedId);
   ;
 }
 
@@ -228,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
       utils::RunFunctionAndReturnError(
           function.get(), base::StringPrintf("[%u]", window_id + 1),
           browser()->profile()),
-      keys::kWindowNotFoundError));
+      ExtensionTabUtil::kWindowNotFoundError));
 
   // Basic window details.
   gfx::Rect bounds;
@@ -261,9 +265,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
 
   EXPECT_EQ(window_id, GetWindowId(result));
   // "populate" was enabled so tabs should be populated.
-  base::Value::List tabs = api_test_utils::GetList(result, keys::kTabsKey);
+  base::Value::List tabs =
+      api_test_utils::GetList(result, ExtensionTabUtil::kTabsKey);
   ASSERT_FALSE(tabs.empty());
-  std::optional<int> tab0_id = tabs[0].GetDict().FindInt(keys::kIdKey);
+  std::optional<int> tab0_id = tabs[0].GetDict().FindInt(extension_misc::kId);
   ASSERT_TRUE(tab0_id.has_value());
   EXPECT_GE(*tab0_id, 0);
 
@@ -305,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
       utils::RunFunctionAndReturnError(
           function.get(), base::StringPrintf("[%u]", incognito_window_id),
           browser()->profile()),
-      keys::kWindowNotFoundError));
+      ExtensionTabUtil::kWindowNotFoundError));
 
   // With "include_incognito".
   function = base::MakeRefCounted<WindowsGetFunction>();
@@ -332,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetCurrentWindow) {
   // The id should match the window id of the browser instance that was passed
   // to RunFunctionWithDispatcherDelegateAndReturnValue.
   EXPECT_EQ(new_id, GetWindowId(result));
-  EXPECT_FALSE(result.contains(keys::kTabsKey));
+  EXPECT_FALSE(result.contains(ExtensionTabUtil::kTabsKey));
 
   // Get the current window using the old window and make the tabs populated.
   function = base::MakeRefCounted<WindowsGetCurrentFunction>();
@@ -344,15 +349,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetCurrentWindow) {
   // to RunFunctionWithDispatcherDelegateAndReturnValue.
   EXPECT_EQ(window_id, GetWindowId(result));
   // "populate" was enabled so tabs should be populated.
-  base::Value::List tabs = api_test_utils::GetList(result, keys::kTabsKey);
+  base::Value::List tabs =
+      api_test_utils::GetList(result, ExtensionTabUtil::kTabsKey);
   ASSERT_FALSE(tabs.empty());
-  std::optional<int> tab0_id = tabs[0].GetDict().FindInt(keys::kIdKey);
+  std::optional<int> tab0_id = tabs[0].GetDict().FindInt(extension_misc::kId);
   ASSERT_TRUE(tab0_id.has_value());
   // The tab id should not be -1 as this is a browser window.
   EXPECT_GE(*tab0_id, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
+// TODO(crbug.com/40745605): Test is flaky on Linux debug builds.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_GetAllWindows DISABLED_GetAllWindows
+#else
+#define MAYBE_GetAllWindows GetAllWindows
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_GetAllWindows) {
   const size_t NUM_WINDOWS = 5;
   std::set<int> window_ids;
   std::set<int> result_ids;
@@ -385,7 +397,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
     result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was not passed in so tabs are not populated.
-    const base::Value::List* tabs = result_window_dict.FindList(keys::kTabsKey);
+    const base::Value::List* tabs =
+        result_window_dict.FindList(ExtensionTabUtil::kTabsKey);
     EXPECT_FALSE(tabs);
   }
   // The returned ids should contain all the current browser instance ids.
@@ -403,7 +416,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
     result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was enabled so tabs should be populated.
-    const base::Value::List* tabs = result_window_dict.FindList(keys::kTabsKey);
+    const base::Value::List* tabs =
+        result_window_dict.FindList(ExtensionTabUtil::kTabsKey);
     EXPECT_TRUE(tabs);
   }
   // The returned ids should contain all the current app, browser and
@@ -453,7 +467,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
     result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was not passed in so tabs are not populated.
-    const base::Value::List* tabs = result_window_dict.FindList(keys::kTabsKey);
+    const base::Value::List* tabs =
+        result_window_dict.FindList(ExtensionTabUtil::kTabsKey);
     EXPECT_FALSE(tabs);
   }
   // The returned ids should contain all the browser and devtools instance ids.
@@ -474,7 +489,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
     result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was enabled so tabs should be populated.
-    const base::Value::List* tabs = result_window_dict.FindList(keys::kTabsKey);
+    const base::Value::List* tabs =
+        result_window_dict.FindList(ExtensionTabUtil::kTabsKey);
     EXPECT_TRUE(tabs);
   }
   // The returned ids should contain all the browser and devtools instance ids.
@@ -988,10 +1004,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
 
 // TODO(crbug.com/40254339): Remove this workaround if this wait is no longer
 // needed.
-// These builds flags are limiting the check for IsMinimized() for Linux
-// and Lacros. For Linux and Lacros we only check X11 window manager and not
-// wayland since our current fix only applies to X11.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// These builds flags are limiting the check for IsMinimized() for Linux.
+// For Linux, we only check X11 window manager and not Wayland since our
+// current fix only applies to X11.
+#if BUILDFLAG(IS_LINUX)
 // Must be checked inside IS_LINUX to compile on windows/mac.
 #if BUILDFLAG(IS_OZONE_X11)
   // DesktopWindowTreeHostX11::IsMinimized() relies on an asynchronous update
@@ -1007,7 +1023,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
 #endif
 #else
   EXPECT_TRUE(new_controller->window()->IsMinimized());
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
   function = base::MakeRefCounted<WindowsCreateFunction>();
   function->set_extension(extension.get());
@@ -1168,6 +1184,7 @@ class ExtensionWindowCreateIwaTest
   }
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
     // Suppress "Welcome to Google Chrome" window
     command_line->AppendSwitch(switches::kNoFirstRun);
     command_line->AppendSwitch(switches::kNoStartupWindow);
@@ -1186,41 +1203,15 @@ class ExtensionWindowCreateIwaTest
   Profile* profile() {
     // We cannot use `browser()->profile()` here, because `browser()` is
     // `nullptr` due to the command line switches above.
-    return ProfileManager::GetLastUsedProfile();
+    return profile_util::GetLastUsedProfile();
   }
 
  protected:
-  void InstallAndTrustBundle() {
-    auto bundle = web_app::TestSignedWebBundleBuilder::BuildDefault(
-        web_app::TestSignedWebBundleBuilder::BuildOptions()
-            .AddKeyPair(web_app::test::GetDefaultEd25519KeyPair())
-            .SetIndexHTMLContent("Hello Extensions!"));
-
-    base::FilePath bundle_path =
-        scoped_temp_dir_.GetPath().AppendASCII("bundle.swbn");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::WriteFile(bundle_path, bundle.data));
-    }
-
-    web_app::SetTrustedWebBundleIdsForTesting({bundle.id});
-
-    base::test::TestFuture<
-        base::expected<web_app::InstallIsolatedWebAppCommandSuccess,
-                       web_app::InstallIsolatedWebAppCommandError>>
-        future;
-    web_app::WebAppProvider::GetForTest(profile())
-        ->scheduler()
-        .InstallIsolatedWebApp(
-            web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-                bundle.id),
-            web_app::IsolatedWebAppInstallSource::FromGraphicalInstaller(
-                web_app::IwaSourceBundleProdModeWithFileOp(
-                    bundle_path, web_app::IwaSourceBundleProdFileOp::kCopy)),
-            /*expected_version=*/std::nullopt,
-            /*optional_keep_alive=*/nullptr,
-            /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
-    EXPECT_THAT(future.Take(), base::test::HasValue());
+  web_app::IsolatedWebAppUrlInfo InstallAndTrustBundle() {
+    auto bundle = web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+                      .AddHtml("/", "Hello extensions!")
+                      .BuildBundle(web_app::test::GetDefaultEd25519KeyPair());
+    return bundle->InstallChecked(profile());
   }
 
  private:
@@ -1230,7 +1221,7 @@ class ExtensionWindowCreateIwaTest
 };
 
 IN_PROC_BROWSER_TEST_P(ExtensionWindowCreateIwaTest, CreateWindowForIwa) {
-  EXPECT_NO_FATAL_FAILURE(InstallAndTrustBundle());
+  auto url_info = InstallAndTrustBundle();
 
   EXPECT_EQ(BrowserList::GetInstance()->size(), 0ul);
 
@@ -1249,9 +1240,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWindowCreateIwaTest, CreateWindowForIwa) {
     Browser* iwa_browser = *BrowserList::GetInstance()->begin();
     ASSERT_EQ(iwa_browser->tab_strip_model()->count(), 1);
     EXPECT_EQ(iwa_browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
-              GURL("isolated-app://"
-                   "4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic/"
-                   "index.html"));
+              url_info.origin().GetURL().Resolve("/index.html"));
   } else {
     EXPECT_FALSE(result);
     // No browser should have opened.
@@ -1596,7 +1585,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
     int tab_id_a = ExtensionTabUtil::GetTabId(web_contents_a);
 
     ASSERT_TRUE(result[0].is_dict());
-    std::optional<int> id = result[0].GetDict().FindInt(keys::kIdKey);
+    std::optional<int> id = result[0].GetDict().FindInt(extension_misc::kId);
     ASSERT_TRUE(id);
 
     EXPECT_EQ(tab_id_a, *id);
@@ -1615,7 +1604,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
         ExtensionTabUtil::GetTabId(tab_strip_model->GetWebContentsAt(0));
 
     ASSERT_TRUE(result[0].is_dict());
-    std::optional<int> id = result[0].GetDict().FindInt(keys::kIdKey);
+    std::optional<int> id = result[0].GetDict().FindInt(extension_misc::kId);
     ASSERT_TRUE(id);
 
     EXPECT_EQ(tab_id_c, *id);
@@ -1667,9 +1656,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithId) {
 
   // Confirms that TabManager sees the tab as discarded.
   web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_TRUE(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                  web_contents)
-                  ->IsDiscarded());
+  EXPECT_EQ(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                web_contents)
+                ->GetTabState(),
+            ::mojom::LifecycleUnitState::DISCARDED);
 
   // Make sure the returned tab is the one discarded and its discarded state is
   // correct.
@@ -1714,13 +1704,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithInvalidId) {
       discard.get(), base::StringPrintf("[%u]", tab_invalid_id),
       browser()->profile());
 
-  // Discarded state should still be false as no tab was discarded.
-  EXPECT_FALSE(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                   browser()->tab_strip_model()->GetWebContentsAt(1))
-                   ->IsDiscarded());
+  // State should still be `ACTIVE` as no tab was discarded.
+  EXPECT_EQ(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                browser()->tab_strip_model()->GetWebContentsAt(1))
+                ->GetTabState(),
+            ::mojom::LifecycleUnitState::ACTIVE);
 
   // Check error message.
-  EXPECT_TRUE(base::MatchPattern(error, keys::kTabNotFoundError));
+  EXPECT_TRUE(base::MatchPattern(error, ExtensionTabUtil::kTabNotFoundError));
 }
 
 // Tests chrome.tabs.discard().
@@ -1745,9 +1736,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithoutId) {
 
   // Confirms that TabManager sees the tab as discarded.
   web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_TRUE(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                  web_contents)
-                  ->IsDiscarded());
+  EXPECT_EQ(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                web_contents)
+                ->GetTabState(),
+            ::mojom::LifecycleUnitState::DISCARDED);
 
   // Make sure the returned tab is the one discarded and its discarded state is
   // correct.
@@ -1756,6 +1748,136 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithoutId) {
   EXPECT_TRUE(api_test_utils::GetBoolean(result, "discarded"));
   // The result should be scrubbed.
   EXPECT_FALSE(result.contains("url"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
+  // This implicitly creates the `TabsEventRouter`, which is required to get a
+  // tab update event.
+  TabsWindowsAPI::Get(profile())->tabs_event_router();
+
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  TestEventRouterObserver event_observer(
+      EventRouter::Get(browser()->profile()));
+
+  std::unique_ptr<DetachedTabCollection> detached_group =
+      browser()->tab_strip_model()->DetachTabGroupForInsertion(group);
+
+  event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::tabs::OnUpdated::kEventName));
+
+  event_observer.ClearEvents();
+
+  browser()->tab_strip_model()->InsertDetachedTabGroupAt(
+      std::move(detached_group), 1);
+
+  // Group added as well as the tab's group changed event should be sent.
+  event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::tabs::OnUpdated::kEventName));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, Freezing) {
+  // Create a background tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+
+  // Create an extension.
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
+
+  // Query all tabs. Their "frozen" property should be false.
+  {
+    auto query_function = base::MakeRefCounted<TabsQueryFunction>();
+    query_function->set_extension(extension.get());
+    base::Value::List result(
+        utils::ToList(utils::RunFunctionAndReturnSingleResult(
+            query_function.get(), "[{}]", browser()->profile())));
+    ASSERT_EQ(2u, result.size());
+
+    for (auto& element : result) {
+      base::Value::Dict dict = utils::ToDict(element);
+      std::optional<bool> frozen = dict.FindBool("frozen");
+      ASSERT_TRUE(frozen.has_value());
+      EXPECT_FALSE(frozen.value());
+    }
+  }
+
+  // This implicitly creates the `TabsEventRouter`, which is required to get a
+  // tab update event.
+  TabsWindowsAPI::Get(profile())->tabs_event_router();
+
+  // Freeze the background tab and wait for a tab update event.
+  TestEventRouterObserver event_router_observer(EventRouter::Get(profile()));
+  web_contents->SetPageFrozen(true);
+  event_router_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
+
+  // Check arguments for the tab update event.
+  //
+  // Note: Must simulate dispatching to an actual extension to get arguments,
+  // because the tab details exposed vary by extension. The arguments for the
+  // event received by `WillDispatchEvent()` are empty.
+  {
+    auto event_it =
+        event_router_observer.events().find(api::tabs::OnUpdated::kEventName);
+    ASSERT_NE(event_it, event_router_observer.events().end());
+    std::optional<base::Value::List> args_out;
+    mojom::EventFilteringInfoPtr event_filtering_info_out;
+    EXPECT_TRUE(event_it->second->will_dispatch_callback.Run(
+        profile(), mojom::ContextType::kUnprivilegedExtension, extension.get(),
+        /* listener_filter=*/nullptr, args_out, event_filtering_info_out));
+    ASSERT_TRUE(args_out.has_value());
+    ASSERT_EQ(args_out->size(), 3U);
+    EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contents),
+              args_out.value()[0].GetInt());
+    auto changed_properties = utils::ToDict(args_out.value()[1]);
+    auto frozen_changed_property = changed_properties.FindBool("frozen");
+    ASSERT_TRUE(frozen_changed_property.has_value());
+    EXPECT_TRUE(frozen_changed_property.value());
+  }
+
+  // Query frozen tabs. There should be 1 and its "frozen" property should be
+  // true.
+  {
+    auto query_function = base::MakeRefCounted<TabsQueryFunction>();
+    query_function->set_extension(extension.get());
+    base::Value::List result(
+        utils::ToList(utils::RunFunctionAndReturnSingleResult(
+            query_function.get(), "[{\"frozen\": true}]",
+            browser()->profile())));
+    ASSERT_EQ(1u, result.size());
+    base::Value::Dict tab = utils::ToDict(result.front());
+    std::optional<bool> frozen = tab.FindBool("frozen");
+    ASSERT_TRUE(frozen.has_value());
+    EXPECT_TRUE(frozen.value());
+    EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contents),
+              api_test_utils::GetInteger(tab, "id"));
+  }
+
+  // Query non-frozen tabs. There should be 1 and its "frozen" property should
+  // be false.
+  {
+    auto query_function = base::MakeRefCounted<TabsQueryFunction>();
+    query_function->set_extension(extension.get());
+    base::Value::List result(
+        utils::ToList(utils::RunFunctionAndReturnSingleResult(
+            query_function.get(), "[{\"frozen\": false}]",
+            browser()->profile())));
+    ASSERT_EQ(1u, result.size());
+    std::optional<bool> frozen =
+        utils::ToDict(result.front()).FindBool("frozen");
+    ASSERT_TRUE(frozen.has_value());
+    EXPECT_FALSE(frozen.value());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
@@ -1824,7 +1946,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
 
   // Make sure the returned tab is the correct one.
   ASSERT_TRUE(query_result[0].is_dict());
-  std::optional<int> tab_id = query_result[0].GetDict().FindInt(keys::kIdKey);
+  std::optional<int> tab_id =
+      query_result[0].GetDict().FindInt(extension_misc::kId);
   ASSERT_TRUE(tab_id);
   EXPECT_EQ(tab_id_a, *tab_id);
 
@@ -1841,7 +1964,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
 
   // Make sure the returned tab is the correct one.
   ASSERT_TRUE(query_result[0].is_dict());
-  std::optional<int> id_value = query_result[0].GetDict().FindInt(keys::kIdKey);
+  std::optional<int> id_value =
+      query_result[0].GetDict().FindInt(extension_misc::kId);
   ASSERT_TRUE(id_value);
   EXPECT_EQ(ExtensionTabUtil::GetTabId(tab_strip_model->GetWebContentsAt(0)),
             *id_value);
@@ -2275,10 +2399,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, CannotZoomInvalidTab) {
 
   int bogus_id = tab_id + 100;
   std::string error = RunSetZoomExpectError(bogus_id, 3.14159);
-  EXPECT_TRUE(base::MatchPattern(error, keys::kTabNotFoundError));
+  EXPECT_TRUE(base::MatchPattern(error, ExtensionTabUtil::kTabNotFoundError));
 
   error = RunSetZoomSettingsExpectError(bogus_id, "manual", "per-tab");
-  EXPECT_TRUE(base::MatchPattern(error, keys::kTabNotFoundError));
+  EXPECT_TRUE(base::MatchPattern(error, ExtensionTabUtil::kTabNotFoundError));
 
   const char kNewTestTabArgs[] = "chrome://version";
   params = GetOpenParams(kNewTestTabArgs);
@@ -2511,7 +2635,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
     std::optional<bool> set_self_as_opener;
     // The origin we expect the new tab to be in, opaque origins will be "null".
     std::string expected_origin_str;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCase>({
       // about:blank URLs.
       // With opener relationship, about:blank urls will get the extension's
       // origin, without opener relationship, they will get opaque/"null"
@@ -2532,14 +2657,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
       {extension_url_str, true, extension_origin_str},
       {extension_url_str, false, extension_origin_str},
       {extension_url_str, std::nullopt, extension_origin_str},
-  };
+  });
 
   auto run_test_case = [&web_contents](const TestCase& test_case) {
     std::string maybe_specify_set_self_as_opener;
     if (test_case.set_self_as_opener) {
       maybe_specify_set_self_as_opener =
           base::StringPrintf(", setSelfAsOpener: %s",
-                             *test_case.set_self_as_opener ? "true" : "false");
+                             base::ToString(*test_case.set_self_as_opener));
     }
     std::string script = base::StringPrintf(
         R"( chrome.windows.create({url: '%s'%s}); )", test_case.url.c_str(),

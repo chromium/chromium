@@ -9,12 +9,12 @@
 // to words within the dictionary.
 class SpellcheckDictionary {
  public:
-  SpellcheckDictionary() {}
+  SpellcheckDictionary() = default;
 
   SpellcheckDictionary(const SpellcheckDictionary&) = delete;
   SpellcheckDictionary& operator=(const SpellcheckDictionary&) = delete;
 
-  virtual ~SpellcheckDictionary() {}
+  virtual ~SpellcheckDictionary() = default;
 
   virtual void Load() = 0;
 

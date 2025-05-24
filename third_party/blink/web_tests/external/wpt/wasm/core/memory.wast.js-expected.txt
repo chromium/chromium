@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #2 Test that WebAssembly compilation fails
+  assert_equals: expected true but got false
+[FAIL] #3 Test that WebAssembly compilation fails
+  assert_equals: expected true but got false
+[FAIL] #33 Test that WebAssembly compilation fails
+  assert_true: \n    at module (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:146:15)\n    at assert_invalid (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:174:3)\n    at memory_wast_js (http://web-platform.test:8001/wasm/core/js/memory.wast.js:22:1)\n    at http://web-platform.test:8001/wasm/core/js/memory.wast.js:267:3 expected true got false
+[FAIL] #34 Test that WebAssembly compilation fails
+  assert_true: \n    at module (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:146:15)\n    at assert_invalid (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:174:3)\n    at memory_wast_js (http://web-platform.test:8001/wasm/core/js/memory.wast.js:25:1)\n    at http://web-platform.test:8001/wasm/core/js/memory.wast.js:267:3 expected true got false
+Harness: the test ran to completion.

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
 class GURL;
@@ -24,10 +24,6 @@ class BrowserContext;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
-
-namespace extensions {
-class MimeHandlerViewGuest;
-}
 
 namespace gfx {
 class Point;
@@ -67,15 +63,6 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   // subframes. There are special cases where this can occur, such as
   // crbug.com/40671023.
   testing::AssertionResult LoadPdfAllowMultipleFrames(const GURL& url);
-
-  // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
-  // for the loaded PDF. Returns nullptr if the load fails.
-  extensions::MimeHandlerViewGuest* LoadPdfGetMimeHandlerView(const GURL& url);
-
-  // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
-  // for the loaded PDF in a new tab. Returns nullptr if the load fails.
-  extensions::MimeHandlerViewGuest* LoadPdfInNewTabGetMimeHandlerView(
-      const GURL& url);
 
   // Same as `LoadPdf()`, but also returns a pointer to the extension host for
   // the loaded PDF. Returns nullptr if the load fails or getting the extension
@@ -153,9 +140,9 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   void ValidateFrameTree(content::WebContents* contents);
 
   base::test::ScopedFeatureList feature_list_;
-  absl::variant<absl::monostate,
-                std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
-                std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
+  std::variant<std::monostate,
+               std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
+               std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
       factory_;
 };
 

@@ -28,11 +28,11 @@ web::WebUIIOSDataSource* CreateOptimizationGuideInternalsHTMLSource() {
   source->SetDefaultResource(
       IDR_OPTIMIZATION_GUIDE_INTERNALS_OPTIMIZATION_GUIDE_INTERNALS_HTML);
   source->UseStringsJs();
-  const base::span<const webui::ResourcePath> resources =
-      base::make_span(kOptimizationGuideInternalsResources,
-                      kOptimizationGuideInternalsResourcesSize);
-  for (const auto& resource : resources)
+  const base::span<const webui::ResourcePath> resources(
+      kOptimizationGuideInternalsResources);
+  for (const auto& resource : resources) {
     source->AddResourcePath(resource.path, resource.id);
+  }
 
   return source;
 }
@@ -44,8 +44,9 @@ OptimizationGuideInternalsUI::OptimizationGuideInternalsUI(
     : web::WebUIIOSController(web_ui, host) {
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
   auto* service = OptimizationGuideServiceFactory::GetForProfile(profile);
-  if (!service)
+  if (!service) {
     return;
+  }
   optimization_guide_logger_ = service->GetOptimizationGuideLogger();
   web::WebUIIOSDataSource::Add(profile,
                                CreateOptimizationGuideInternalsHTMLSource());

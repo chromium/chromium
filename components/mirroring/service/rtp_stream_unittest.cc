@@ -15,7 +15,6 @@
 #include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
-#include "media/cast/cast_environment.h"
 #include "media/cast/sender/audio_sender.h"
 #include "media/cast/sender/video_sender.h"
 #include "media/cast/test/utility/audio_utility.h"
@@ -111,13 +110,7 @@ class MockAudioSender : public media::cast::AudioSender {
 
 class RtpStreamTest : public ::testing::Test {
  public:
-  RtpStreamTest()
-      : cast_environment_(new media::cast::CastEnvironment(
-            &testing_clock_,
-            task_environment_.GetMainThreadTaskRunner(),
-            task_environment_.GetMainThreadTaskRunner(),
-            task_environment_.GetMainThreadTaskRunner())),
-        client_(&testing_clock_) {
+  RtpStreamTest() : client_(&testing_clock_) {
     testing_clock_.Advance(base::TimeTicks::Now() - base::TimeTicks());
   }
 
@@ -138,7 +131,6 @@ class RtpStreamTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::SimpleTestTickClock testing_clock_;
-  const scoped_refptr<media::cast::CastEnvironment> cast_environment_;
   StreamClient client_;
 };
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/windows_caption_button.h"
+
 #include <memory>
 
 #include "base/numerics/safe_conversions.h"
@@ -134,11 +135,12 @@ void WindowsCaptionButton::OnPaintBackground(gfx::Canvas* canvas) {
   }
 
   SkAlpha alpha;
-  if (GetState() == STATE_PRESSED)
+  if (GetState() == STATE_PRESSED) {
     alpha = pressed_alpha;
-  else
+  } else {
     alpha = gfx::Tween::IntValueBetween(hover_animation().GetCurrentValue(),
                                         SK_AlphaTRANSPARENT, hovered_alpha);
+  }
   canvas->FillRect(bounds, SkColorSetA(base_color, alpha));
 }
 

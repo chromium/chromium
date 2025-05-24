@@ -21,7 +21,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.File;
 
@@ -73,29 +73,21 @@ public class ThumbnailMediaParserTest {
         return result;
     }
 
+    /** Verify that the metadata from audio file can be retrieved correctly. */
     @Test
     @LargeTest
     @Feature({"MediaParser"})
-    /**
-     * Verify that the metadata from audio file can be retrieved correctly.
-     *
-     * @throws InterruptedException
-     */
     public void testParseAudioMetatadata() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/sfx.mp3";
         MediaParserResult result = parseMediaFile(filePath, "audio/mp3");
         Assert.assertTrue("Failed to parse audio metadata.", result.mediaData != null);
     }
 
+    /** Verify metadata and thumbnail can be retrieved correctly from h264 video file. */
     @Test
     @LargeTest
     @Feature({"MediaParser"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    /**
-     * Verify metadata and thumbnail can be retrieved correctly from h264 video file.
-     *
-     * @throws InterruptedException
-     */
+    @Restriction(DeviceFormFactor.PHONE)
     public void testParseVideoH264() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear.mp4";
         MediaParserResult result = parseMediaFile(filePath, "video/mp4");
@@ -106,14 +98,10 @@ public class ThumbnailMediaParserTest {
                 "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getHeight() > 0);
     }
 
+    /** Verify metadata and thumbnail can be retrieved correctly from vp8 video file. */
     @Test
     @LargeTest
     @Feature({"MediaParser"})
-    /**
-     * Verify metadata and thumbnail can be retrieved correctly from vp8 video file.
-     *
-     * @throws InterruptedException
-     */
     public void testParseVideoThumbnailVp8() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-vp8-webvtt.webm";
         MediaParserResult result = parseMediaFile(filePath, "video/webm");
@@ -124,15 +112,13 @@ public class ThumbnailMediaParserTest {
                 "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getHeight() > 0);
     }
 
-    @Test
-    @LargeTest
-    @Feature({"MediaParser"})
     /**
      * Verify metadata and thumbnail can be retrieved correctly from vp8 video file with alpha
      * plane.
-     *
-     * @throws InterruptedException
      */
+    @Test
+    @LargeTest
+    @Feature({"MediaParser"})
     public void testParseVideoThumbnailVp8WithAlphaPlane() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-vp8a.webm";
         MediaParserResult result = parseMediaFile(filePath, "video/webm");
@@ -143,14 +129,10 @@ public class ThumbnailMediaParserTest {
                 "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getHeight() > 0);
     }
 
+    /** Verify metadata and thumbnail can be retrieved correctly from vp9 video file. */
     @Test
     @LargeTest
     @Feature({"MediaParser"})
-    /**
-     * Verify metadata and thumbnail can be retrieved correctly from vp9 video file.
-     *
-     * @throws InterruptedException
-     */
     public void testParseVideoThumbnailVp9() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-vp9.webm";
         MediaParserResult result = parseMediaFile(filePath, "video/webm");
@@ -161,14 +143,10 @@ public class ThumbnailMediaParserTest {
                 "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getHeight() > 0);
     }
 
+    /** Verify metadata and thumbnail can be retrieved correctly from av1 video file. */
     @Test
     @LargeTest
     @Feature({"MediaParser"})
-    /**
-     * Verify metadata and thumbnail can be retrieved correctly from av1 video file.
-     *
-     * @throws InterruptedException
-     */
     public void testParseVideoThumbnailAv1() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-av1.mp4";
         MediaParserResult result = parseMediaFile(filePath, "video/mp4");
@@ -179,14 +157,10 @@ public class ThumbnailMediaParserTest {
                 "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getHeight() > 0);
     }
 
+    /** Verify metadata and thumbnail can be retrieved correctly from h265 video file. */
     @Test
     @LargeTest
     @Feature({"MediaParser"})
-    /**
-     * Verify metadata and thumbnail can be retrieved correctly from h265 video file.
-     *
-     * @throws InterruptedException
-     */
     public void testParseVideoThumbnailH265() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-hevc-frag.mp4";
         MediaParserResult result = parseMediaFile(filePath, "video/mp4");
@@ -197,14 +171,10 @@ public class ThumbnailMediaParserTest {
                 "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getHeight() > 0);
     }
 
+    /** Verify graceful failure on parsing invalid video file. */
     @Test
     @LargeTest
     @Feature({"MediaParser"})
-    /**
-     * Verify graceful failure on parsing invalid video file.
-     *
-     * @throws InterruptedException
-     */
     public void testParseInvalidVideoFile() throws Exception {
         File invalidFile = File.createTempFile("test", "webm");
         MediaParserResult result = parseMediaFile(invalidFile.getAbsolutePath(), "video/webm");

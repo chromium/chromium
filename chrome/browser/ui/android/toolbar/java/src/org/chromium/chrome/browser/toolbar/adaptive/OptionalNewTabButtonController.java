@@ -10,19 +10,20 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -35,6 +36,7 @@ import org.chromium.ui.base.DeviceFormFactor;
  * Optional toolbar button which opens a new tab. May be used by {@link
  * AdaptiveToolbarButtonController}.
  */
+@NullMarked
 public class OptionalNewTabButtonController extends BaseButtonDataProvider
         implements ConfigurationChangedObserver {
     /**
@@ -43,19 +45,18 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
      */
     @VisibleForTesting
     /* package */ static class Delegate {
-        private final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
-        private final Supplier<Tab> mActiveTabSupplier;
+        private final Supplier<@Nullable TabCreatorManager> mTabCreatorManagerSupplier;
+        private final Supplier<@Nullable Tab> mActiveTabSupplier;
 
         public Delegate(
-                Supplier<TabCreatorManager> tabCreatorManagerSupplier,
-                Supplier<Tab> activeTabSupplier) {
+                Supplier<@Nullable TabCreatorManager> tabCreatorManagerSupplier,
+                Supplier<@Nullable Tab> activeTabSupplier) {
             mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
             mActiveTabSupplier = activeTabSupplier;
         }
 
         /** Returns a {@link TabCreatorManager} used for creating the new tab. */
-        @Nullable
-        TabCreatorManager getTabCreatorManager() {
+        @Nullable TabCreatorManager getTabCreatorManager() {
             return mTabCreatorManagerSupplier.get();
         }
 
@@ -68,8 +69,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
          *
          * <p>TODO(crbug.com/40753461): Make IncognitoStateProvider available in RootUiCooridnator.
          */
-        @Nullable
-        Supplier<Tab> getActiveTabSupplier() {
+        Supplier<@Nullable Tab> getActiveTabSupplier() {
             return mActiveTabSupplier;
         }
     }
@@ -98,8 +98,8 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
             Context context,
             Drawable buttonDrawable,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            Supplier<TabCreatorManager> tabCreatorManagerSupplier,
-            Supplier<Tab> activeTabSupplier,
+            Supplier<@Nullable TabCreatorManager> tabCreatorManagerSupplier,
+            Supplier<@Nullable Tab> activeTabSupplier,
             Supplier<Tracker> trackerSupplier) {
         super(
                 activeTabSupplier,
@@ -110,8 +110,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.NEW_TAB,
-                /* tooltipTextResId= */ R.string.new_tab_title,
-                /* showHoverHighlight= */ true);
+                /* tooltipTextResId= */ R.string.new_tab_title);
         setShouldShowOnIncognitoTabs(true);
 
         mContext = context;
@@ -125,7 +124,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
 
     @Override
     public void onClick(View view) {
-        Supplier<Tab> activeTabSupplier = mDelegate.getActiveTabSupplier();
+        Supplier<@Nullable Tab> activeTabSupplier = mDelegate.getActiveTabSupplier();
         if (activeTabSupplier == null || activeTabSupplier.get() == null) return;
 
         TabCreatorManager tabCreatorManager = mDelegate.getTabCreatorManager();
@@ -154,7 +153,8 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
     }
 
     @Override
-    protected boolean shouldShowButton(Tab tab) {
+    protected boolean shouldShowButton(@Nullable Tab tab) {
+        if (tab == null) return false;
         if (!super.shouldShowButton(tab) || mIsTablet) return false;
 
         if (UrlUtilities.isNtpUrl(tab.getUrl())) return false;
@@ -165,14 +165,15 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
     /**
      * Returns an IPH for this button. Only called once native is initialized and when {@code
      * AdaptiveToolbarFeatures.isCustomizationEnabled()} is true.
+     *
      * @param tab Current tab.
      */
     @Override
-    protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
+    protected IphCommandBuilder getIphCommandBuilder(Tab tab) {
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        IPHCommandBuilder iphCommandBuilder =
-                new IPHCommandBuilder(
+        IphCommandBuilder iphCommandBuilder =
+                new IphCommandBuilder(
                                 tab.getContext().getResources(),
                                 FeatureConstants
                                         .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE,

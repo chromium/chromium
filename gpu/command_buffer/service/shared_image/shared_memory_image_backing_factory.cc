@@ -17,25 +17,9 @@
 namespace gpu {
 
 SharedMemoryImageBackingFactory::SharedMemoryImageBackingFactory()
-    : SharedImageBackingFactory(SHARED_IMAGE_USAGE_CPU_WRITE) {}
+    : SharedImageBackingFactory(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY) {}
 
 SharedMemoryImageBackingFactory::~SharedMemoryImageBackingFactory() = default;
-
-std::unique_ptr<SharedImageBacking>
-SharedMemoryImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    bool is_thread_safe) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
-}
 
 std::unique_ptr<SharedImageBacking>
 SharedMemoryImageBackingFactory::CreateSharedImage(
@@ -48,21 +32,6 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe,
-    base::span<const uint8_t> pixel_data) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
-}
-
-std::unique_ptr<SharedImageBacking>
-SharedMemoryImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
   CHECK(handle.type == gfx::SHARED_MEMORY_BUFFER);
   SharedMemoryRegionWrapper shm_wrapper;
@@ -113,7 +82,7 @@ bool SharedMemoryImageBackingFactory::IsSupported(
     return false;
   }
 
-  if (usage != SharedImageUsageSet(SHARED_IMAGE_USAGE_CPU_WRITE)) {
+  if (usage != SharedImageUsageSet(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY)) {
     return false;
   }
 

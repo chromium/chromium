@@ -5,21 +5,17 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.Objects;
+
 /* Class containing string resource ids for the sign-in account picker bottom sheet. */
+@NullMarked
 public final class AccountPickerBottomSheetStrings {
     public final @StringRes int titleStringId;
     public final @StringRes int subtitleStringId;
     public final @StringRes int dismissButtonStringId;
-
-    // Private constructor to enforce the use of the Builder.
-    private AccountPickerBottomSheetStrings(
-            @StringRes int titleStringId,
-            @StringRes int subtitleStringId,
-            @StringRes int dismissButtonStringId) {
-        this.titleStringId = titleStringId;
-        this.subtitleStringId = subtitleStringId;
-        this.dismissButtonStringId = dismissButtonStringId;
-    }
 
     /**
      * Builder for {@link AccountPickerBottomSheetStrings} which contains string IDs for the sign-in
@@ -65,5 +61,31 @@ public final class AccountPickerBottomSheetStrings {
             return new AccountPickerBottomSheetStrings(
                     mTitleStringId, mSubtitleStringId, mDismissButtonStringId);
         }
+    }
+
+    // Private constructor to enforce the use of the Builder.
+    private AccountPickerBottomSheetStrings(
+            @StringRes int titleStringId,
+            @StringRes int subtitleStringId,
+            @StringRes int dismissButtonStringId) {
+        this.titleStringId = titleStringId;
+        this.subtitleStringId = subtitleStringId;
+        this.dismissButtonStringId = dismissButtonStringId;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object object) {
+        if (!(object instanceof AccountPickerBottomSheetStrings)) {
+            return false;
+        }
+        AccountPickerBottomSheetStrings other = (AccountPickerBottomSheetStrings) object;
+        return titleStringId == other.titleStringId
+                && subtitleStringId == other.subtitleStringId
+                && dismissButtonStringId == other.dismissButtonStringId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(titleStringId, subtitleStringId, dismissButtonStringId);
     }
 }

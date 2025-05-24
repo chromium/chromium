@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.multiwindow;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Contains all the properties for each instance item listed in the switcher UI. */
+@NullMarked
 public class InstanceSwitcherItemProperties {
     public static final PropertyModel.WritableBooleanPropertyKey CURRENT =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -34,7 +36,7 @@ public class InstanceSwitcherItemProperties {
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyModel.WritableObjectPropertyKey<ListMenuButtonDelegate> MORE_MENU =
+    public static final PropertyModel.WritableObjectPropertyKey<ListMenuDelegate> MORE_MENU =
             new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =

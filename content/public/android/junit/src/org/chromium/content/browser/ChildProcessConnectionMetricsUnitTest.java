@@ -288,7 +288,7 @@ public class ChildProcessConnectionMetricsUnitTest {
         ChildProcessConnection connection =
                 new TestChildProcessConnection(
                         new ComponentName("pkg", "cls"),
-                        /* bindToCallerCheck= */ false,
+                        /* bindToCaller= */ false,
                         /* bindAsExternalService= */ false,
                         /* serviceBundle= */ null);
         connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);

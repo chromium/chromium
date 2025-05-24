@@ -12,7 +12,7 @@ goog.provide('goog.editor.Command');
 
 
 /**
- * Commands that the editor can excute via execCommand or queryCommandValue.
+ * Commands that the editor can execute via execCommand or queryCommandValue.
  * @enum {string}
  */
 goog.editor.Command = {

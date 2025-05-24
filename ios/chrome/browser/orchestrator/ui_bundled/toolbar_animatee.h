@@ -7,7 +7,7 @@
 
 // Protocol defining an interface to trigger changes on the toolbar. Calling
 // those methods should not start any animation.
-@protocol ToolbarAnimatee<NSObject>
+@protocol ToolbarAnimatee <NSObject>
 
 // Changes related to the Location Bar container.
 - (void)expandLocationBar;

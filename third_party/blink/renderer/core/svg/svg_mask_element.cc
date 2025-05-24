@@ -92,11 +92,8 @@ void SVGMaskElement::SvgAttributeChanged(
   if (is_length_attr || attr_name == svg_names::kMaskUnitsAttr ||
       attr_name == svg_names::kMaskContentUnitsAttr ||
       SVGTests::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
     if (is_length_attr) {
-      UpdatePresentationAttributeStyle(attr_name);
-      UpdateRelativeLengthsInformation();
+      UpdatePresentationAttributeStyle(params.property);
     }
 
     auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());
@@ -164,7 +161,7 @@ void SVGMaskElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGMaskElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
       {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);

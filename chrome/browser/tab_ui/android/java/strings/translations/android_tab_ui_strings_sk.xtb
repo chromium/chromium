@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sk">
+<translation id="1293272072740285747">Ponechajte si túto skupinu, aby ste mohli neskôr pridať karty, alebo ju odstráňte (ak ju už nepotrebujete).
+
+Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name="TITLE_OF_GROUP" /> a zo všetkých zariadení sa vymaže.</translation>
+<translation id="1340839264183302272">Opustiť skupinu</translation>
+<translation id="1419023007528516122">Týmto natrvalo odstránite skupinu zo svojho zariadenia</translation>
+<translation id="1501480321619201731">Odstrániť skupinu</translation>
+<translation id="2677748264148917807">Odísť</translation>
+<translation id="3547352561153509682">Týmto odstránite skupinu zo všetkých zariadení prihlásených do účtu <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Chcete zrušiť zoskupenie kariet v skupine?</translation>
+<translation id="4139634748112164403">Karty zostanú v tomto zariadení otvorené, ale skupina bude natrvalo odstránená</translation>
+<translation id="4431937619879060901">Okamžite stratíte prístup ku skupine kariet <ph name="GROUP_NAME" />, ktorá bude odstránená zo všetkých vašich zariadení</translation>
+<translation id="4460014764210899310">Zrušiť zoskupenie</translation>
+<translation id="4777866634702576038">Chcete odstrániť skupinu kariet?</translation>
+<translation id="5094423602314093681">Chcete odstrániť karty aj skupinu?</translation>
+<translation id="5647702255748985085">Chcete skupinu opustiť?</translation>
+<translation id="742664698522525515">Chcete skupinu ponechať?</translation>
+<translation id="750886945254958667">Ponechajte si túto skupinu, aby ste mohli neskôr pridať karty, alebo ju opustite, keď už k nej nechcete mať prístup</translation>
+<translation id="8261506727792406068">Odstrániť</translation>
+<translation id="870736955561925754">Chcete zavrieť kartu a odstrániť skupinu?</translation>
+<translation id="8804742093141782941">Ponechať skupinu</translation>
+<translation id="9169141410816678175">Všetci okamžite stratia prístup ku skupine kariet <ph name="GROUP_NAME" />, ktorá bude odstránená zo všetkých zariadení</translation>
+<translation id="9216898458513705996">Karty zostanú v tomto zariadení otvorené, ale skupina bude odstránená zo všetkých zariadení prihlásených do účtu <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Chcete skupinu odstrániť?</translation>
+</translationbundle>

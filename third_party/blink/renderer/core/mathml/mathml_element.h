@@ -29,6 +29,7 @@ class CORE_EXPORT MathMLElement : public Element {
   ~MathMLElement() override;
 
   bool HasTagName(const MathMLQualifiedName& name) const {
+    DCHECK_EQ(name.NamespaceURI(), namespaceURI());
     return HasLocalName(name.LocalName());
   }
 
@@ -44,7 +45,7 @@ class CORE_EXPORT MathMLElement : public Element {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
 
   enum class AllowPercentages { kYes, kNo };
   const CSSPrimitiveValue* ParseMathLength(

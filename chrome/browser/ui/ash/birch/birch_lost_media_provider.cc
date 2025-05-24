@@ -35,9 +35,6 @@ namespace {
 
 // Returns true if focus mode is playing media (e.g. an audio playlist).
 bool IsFocusModePlayingMedia() {
-  if (!features::IsFocusModeEnabled()) {
-    return false;
-  }
   const focus_mode_util::SelectedPlaylist& playlist =
       FocusModeController::Get()
           ->focus_mode_sounds_controller()

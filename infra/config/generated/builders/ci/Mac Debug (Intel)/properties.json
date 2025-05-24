@@ -70,7 +70,8 @@
           "builder": "gpu-try-mac-intel-dbg",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac Debug (Intel)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

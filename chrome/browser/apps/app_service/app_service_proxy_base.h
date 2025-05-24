@@ -36,7 +36,6 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
-#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 class GURL;
@@ -432,7 +431,7 @@ class AppServiceProxyBase : public KeyedService,
       const apps::IntentFilterPtr& filter,
       const apps::AppUpdate& update);
 
-  base::flat_map<AppType, AppPublisher*> publishers_;
+  base::flat_map<AppType, raw_ptr<AppPublisher, CtnExperimental>> publishers_;
 
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;

@@ -10,10 +10,12 @@ import android.util.LruCache;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -29,8 +31,11 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.url.Origin;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Java side of the Browser Context: contains all the java side objects needed to host one browsing
@@ -44,6 +49,10 @@ import java.util.Set;
 @Lifetime.Profile
 public class AwBrowserContext implements BrowserContextHandle {
     private static final String BASE_PREFERENCES = "WebViewProfilePrefs";
+
+    /* package */ static final Pattern BAD_HEADER_CHAR = Pattern.compile("[\u0000\r\n]");
+    /* package */ static final String BAD_HEADER_MSG =
+            "HTTP headers must not contain null, CR, or NL characters. ";
 
     /**
      * Cache storing already-initialized Play providers for the Media Integrity Blink renderer
@@ -92,6 +101,8 @@ public class AwBrowserContext implements BrowserContextHandle {
     @NonNull private final AwCookieManager mCookieManager;
     private final boolean mIsDefault;
     @NonNull private final SharedPreferences mSharedPreferences;
+
+    private final AwPrefetchManager mPrefetchManager;
 
     /**
      * Cache key for MediaIntegrityProviders. Ensures that values are keyed by
@@ -144,6 +155,7 @@ public class AwBrowserContext implements BrowserContextHandle {
                 AwBrowserContextJni.get().getDefaultContextName(),
                 AwBrowserContextJni.get().getDefaultContextRelativePath(),
                 AwCookieManager.getDefaultCookieManager(),
+                new AwPrefetchManager(0),
                 true);
     }
 
@@ -152,11 +164,13 @@ public class AwBrowserContext implements BrowserContextHandle {
             @NonNull String name,
             @NonNull String relativePath,
             @NonNull AwCookieManager cookieManager,
+            @NonNull AwPrefetchManager prefetchManager,
             boolean isDefault) {
         mNativeAwBrowserContext = nativeAwBrowserContext;
         mName = name;
         mRelativePath = relativePath;
         mCookieManager = cookieManager;
+        mPrefetchManager = prefetchManager;
         mIsDefault = isDefault;
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
@@ -275,6 +289,44 @@ public class AwBrowserContext implements BrowserContextHandle {
         }
     }
 
+    /**
+     * Check if additional HTTP headers sent along with loadUrl, prefetchUrl, or prerenderUrl
+     * contains invalid characters.
+     *
+     * @param headers The additional HTTP headers to be sent along with loadUrl, prefetchUrl, or
+     *     prerenderUrl.
+     * @return An exception if validation fails. Otherwise, an empty Optional.
+     */
+    public static Optional<IllegalArgumentException> validateAdditionalHeaders(
+            Map<String, String> headers) {
+        if (headers == null) return Optional.empty();
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            String headerName = header.getKey();
+            String headerValue = header.getValue();
+            if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
+                return Optional.of(
+                        new IllegalArgumentException(
+                                BAD_HEADER_MSG + "Invalid header name '" + headerName + "'."));
+            }
+            if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
+                return Optional.of(
+                        new IllegalArgumentException(
+                                BAD_HEADER_MSG
+                                        + "Header '"
+                                        + headerName
+                                        + "' has invalid value '"
+                                        + headerValue
+                                        + "'"));
+            }
+        }
+        return Optional.empty();
+    }
+
+    @NonNull
+    public AwPrefetchManager getPrefetchManager() {
+        return mPrefetchManager;
+    }
+
     private void migrateGeolocationPreferences() {
         // Prefs dir will be created if it doesn't exist, so must allow writes
         // for this and so that the actual prefs can be written to the new
@@ -329,17 +381,20 @@ public class AwBrowserContext implements BrowserContextHandle {
                 .clearPersistentOriginTrialStorageForTesting(mNativeAwBrowserContext);
     }
 
-    public boolean hasFormData() {
-        return AwBrowserContextJni.get().hasFormData(mNativeAwBrowserContext);
-    }
-
-    public void clearFormData() {
-        AwBrowserContextJni.get().clearFormData(mNativeAwBrowserContext);
-    }
-
     public void setServiceWorkerIoThreadClient(AwContentsIoThreadClient ioThreadClient) {
         AwBrowserContextJni.get()
                 .setServiceWorkerIoThreadClient(mNativeAwBrowserContext, ioThreadClient);
+    }
+
+    @UiThread
+    public void setMaxPrerenders(int maxPrerenders) {
+        AwBrowserContextJni.get()
+                .setAllowedPrerenderingCount(mNativeAwBrowserContext, maxPrerenders);
+    }
+
+    @UiThread
+    public void warmUpSpareRenderer() {
+        AwBrowserContextJni.get().warmUpSpareRenderer(mNativeAwBrowserContext);
     }
 
     private static SharedPreferences createSharedPrefs(String relativePath) {
@@ -350,16 +405,22 @@ public class AwBrowserContext implements BrowserContextHandle {
     @CalledByNative
     public static AwBrowserContext create(
             long nativeAwBrowserContext,
-            String name,
-            String relativePath,
+            @JniType("std::string") String name,
+            @JniType("std::string") String relativePath,
             AwCookieManager cookieManager,
+            AwPrefetchManager prefetchManager,
             boolean isDefault) {
         return new AwBrowserContext(
-                nativeAwBrowserContext, name, relativePath, cookieManager, isDefault);
+                nativeAwBrowserContext,
+                name,
+                relativePath,
+                cookieManager,
+                prefetchManager,
+                isDefault);
     }
 
     @CalledByNative
-    public static void deleteSharedPreferences(String relativePath) {
+    public static void deleteSharedPreferences(@JniType("std::string") String relativePath) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             final String sharedPrefsFilename = getSharedPrefsFilename(relativePath);
             SharedPreferences.Editor prefsEditor = createSharedPrefs(sharedPrefsFilename).edit();
@@ -368,7 +429,7 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @CalledByNative
-    private int getGeolocationPermission(String origin) {
+    private int getGeolocationPermission(@JniType("std::string") String origin) {
         AwGeolocationPermissions permissions = getGeolocationPermissions();
         if (!permissions.hasOrigin(origin)) {
             return PermissionStatus.ASK;
@@ -382,8 +443,10 @@ public class AwBrowserContext implements BrowserContextHandle {
     interface Natives {
         AwBrowserContext getDefaultJava();
 
+        @JniType("std::string")
         String getDefaultContextName();
 
+        @JniType("std::string")
         String getDefaultContextRelativePath();
 
         long getQuotaManagerBridge(long nativeAwBrowserContext);
@@ -393,11 +456,11 @@ public class AwBrowserContext implements BrowserContextHandle {
 
         void clearPersistentOriginTrialStorageForTesting(long nativeAwBrowserContext);
 
-        boolean hasFormData(long nativeAwBrowserContext);
-
-        void clearFormData(long nativeAwBrowserContext);
-
         void setServiceWorkerIoThreadClient(
                 long nativeAwBrowserContext, AwContentsIoThreadClient ioThreadClient);
+
+        void setAllowedPrerenderingCount(long nativeAwBrowserContext, int maxPrerenders);
+
+        void warmUpSpareRenderer(long nativeAwBrowserContext);
     }
 }

@@ -15,6 +15,7 @@
 #include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
 #include "base/strings/to_string.h"
+#include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
@@ -43,9 +44,9 @@ namespace web_app {
 
 namespace {
 
-// TODO(crbug.com/40273612): Find a better way to do Lacros testing so that we
-// don't have to pass localhost into the allowlist. Allowlisted host must be
-// from a Google server.
+// TODO(crbug.com/40273612): Figure out why tests fail when removing
+// 127.0.0.1 even though that was added only for Lacros testing and hence
+// shouldn't be needed anymore.
 constexpr auto kHostAllowlist = base::MakeFixedFlatSet<std::string_view>(
     {"googleusercontent.com", "gstatic.com", "youtube.com",
      "127.0.0.1" /*FOR TESTING*/});
@@ -127,6 +128,12 @@ void InstallAppFromVerifiedManifestCommand::StartWithLock(
 
 void InstallAppFromVerifiedManifestCommand::OnAboutBlankLoaded(
     webapps::WebAppUrlLoaderResult result) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
+    Abort(CommandResult::kFailure,
+          webapps::InstallResultCode::kInstallURLLoadFailed);
+    return;
+  }
+
   // The shared web contents must have been reset to about:blank before command
   // execution.
   DCHECK_EQ(web_contents_lock_->shared_web_contents().GetURL(),
@@ -235,15 +242,16 @@ void InstallAppFromVerifiedManifestCommand::OnIconsRetrieved(
     return;
   }
 
+  app_lock_ = std::make_unique<SharedWebContentsWithAppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(web_contents_lock_), {app_id},
+      std::move(web_contents_lock_), *app_lock_, {app_id},
       base::BindOnce(&InstallAppFromVerifiedManifestCommand::OnAppLockAcquired,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired(
-    std::unique_ptr<SharedWebContentsWithAppLock> app_lock) {
-  app_lock_ = std::move(app_lock);
+void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired() {
+  CHECK(app_lock_);
+  CHECK(app_lock_->IsGranted());
   WebAppInstallFinalizer::FinalizeOptions finalize_options(install_source_);
   finalize_options.add_to_quick_launch_bar = false;
   finalize_options.overwrite_existing_manifest_fields = false;
@@ -265,6 +273,9 @@ void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired(
 void InstallAppFromVerifiedManifestCommand::OnInstallFinalized(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
+  GetMutableDebugValue().Set("error_code", base::ToString(code));
+  RecordInstallMetrics(InstallCommand::kInstallAppFromVerifiedManifest,
+                       WebAppType::kCraftedApp, code, install_source_);
   CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
                                                    : CommandResult::kFailure,
                           app_id, code);
@@ -274,6 +285,8 @@ void InstallAppFromVerifiedManifestCommand::Abort(
     CommandResult result,
     webapps::InstallResultCode code) {
   GetMutableDebugValue().Set("error_code", base::ToString(code));
+  RecordInstallMetrics(InstallCommand::kInstallAppFromVerifiedManifest,
+                       WebAppType::kCraftedApp, code, install_source_);
   CompleteAndSelfDestruct(result, webapps::AppId(), code);
 }
 

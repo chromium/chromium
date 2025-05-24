@@ -42,10 +42,6 @@
       "allowlist": [
         "0F42756099D914A026DADFA182871C015735DD95",  // http://crbug.com/323773
         "2D22CDB6583FD0A13758AEBE8B15E45208B4E9A7",
-        "E7E2461CE072DF036CF9592740196159E2D7C089",  // http://crbug.com/356200
-        "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",
-        "312745D9BF916161191143F6490085EEA0434997",
-        "53041A2FA309EECED01FFC751E7399186E860B2C",
         "A07A5B743CD82A1C2579DB77D353C98A23201EEF",  // http://crbug.com/413748
         "F16F23C83C5F6DAD9B65A120448B34056DD80691",
         "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"
@@ -83,7 +79,7 @@
     {
       "channel": "stable",
       "extension_types": ["extension", "platform_app"],
-      "platforms": ["chromeos", "lacros"],
+      "platforms": ["chromeos"],
       "session_types": ["kiosk"]
     },
     {
@@ -138,7 +134,7 @@
     {
       "channel": "stable",
       "extension_types": ["platform_app"],
-      "platforms": ["chromeos", "lacros", "win", "mac", "linux"],
+      "platforms": ["chromeos", "win", "mac", "linux"],
       "allowlist": [
         "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/387169
         "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/387169
@@ -177,7 +173,7 @@
   "cecPrivate": {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "session_types": ["kiosk"],
     "allowlist": [
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/824667#c15
@@ -194,7 +190,7 @@
   "clipboard": {
     "channel": "dev",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "declarativeNetRequest": {
     "channel": "stable",
@@ -329,15 +325,6 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
-  "lockScreen": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist":  [
-      "6F9C741B8E0E546652134F1138DF0284A7C9B21E",  // http://crbug.com/728309
-      "47448626CB266C60AA2404E4EB426E025DF497DF"   // http://crbug.com/728309
-    ]
-  },
   "mediaPerceptionPrivate": [{
     "channel": "stable",
     "extension_types": ["platform_app"],
@@ -427,7 +414,7 @@
   "networking.onc": [{
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "session_types": ["kiosk.autolaunched"]
   }, {
     "channel": "stable",
@@ -470,13 +457,13 @@
   {
     "channel": "dev",
     "extension_types": ["extension"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "session_types": ["kiosk"]
   }],
   "networkingPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos", "lacros", "mac", "win", "linux", "fuchsia"],
+    "platforms": ["chromeos", "mac", "win", "linux", "fuchsia"],
     "allowlist": [
       // DO NOT ADD ANY MORE ENTRIES HERE.
       // networkingPrivate is being migrated to networking.onc.
@@ -506,7 +493,7 @@
   "odfsConfigPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "1B1388598AC9A5608F43DE38316D6FB5FAD3574A"  // ODFS extension
     ]
@@ -521,7 +508,28 @@
     "dependencies": ["behavior:imprivata_login_screen_extension"],
     "extension_types": ["login_screen_extension"],
     "min_manifest_version": 3
+  },
+  {
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "min_manifest_version": 3,
+    "allowlist": [
+      "5C825E850034490380BCB756D43ABB2CF537AA91",  // crbug.com/359290130
+      // crbug.com/378640229
+      "EC3DE21E048B67319893889529354DFBFA96FD23",  // Smart Card Connector
+      "A19608AC34215B127FF9D7C006D67F5C8ED8146D",  // Smart Card Connector Beta
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",  // DriveLock Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"   // Beta DriveLock Smart Card Middleware
+    ]
   }],
+  "omnibox.directInput" : {
+    "channel": "dev",
+    "feature_flag": "ExperimentalOmniboxLabs",
+    "extension_types": [ "extension"]
+  },
   "power": [{
     "channel": "stable",
     "extension_types": [ "extension", "legacy_packaged_app", "platform_app" ]
@@ -564,9 +572,11 @@
         "93B7178E8C275515C38D4F43D9DF4648F0EA9B03",   // Identity Card Connector
         "EC3DE21E048B67319893889529354DFBFA96FD23",   // https://crbug.com/1233881
         "A19608AC34215B127FF9D7C006D67F5C8ED8146D",   // https://crbug.com/1233881
+        "1FC31C9D42DF1B51EA7648F73DF26400322999A8",   // https://crbug.com/383855830
         // https://crbug.com/1194693
-        "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
-        "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
+        "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // DriveLock Smart Card Middleware
+        "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA",   // Beta DriveLock Smart Card Middleware
+        "5C825E850034490380BCB756D43ABB2CF537AA91"    // b/359290130
       ]
     },
     {
@@ -677,7 +687,7 @@
     {
       "channel": "dev",
       "extension_types": ["extension"],
-      "platforms": ["chromeos", "lacros"],
+      "platforms": ["chromeos"],
       "session_types": ["kiosk"]
     }
   ],
@@ -699,7 +709,7 @@
     {
       "channel": "dev",
       "extension_types": ["extension"],
-      "platforms": ["chromeos", "lacros"],
+      "platforms": ["chromeos"],
       "session_types": ["kiosk"]
     }
   ],
@@ -725,7 +735,7 @@
   }, {
     "channel": "dev",
     "extension_types": ["extension"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "session_types": ["kiosk"]
   }],
   "virtualKeyboardPrivate": {
@@ -752,7 +762,7 @@
   "vpnProvider": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "webview": {
     "channel": "stable",

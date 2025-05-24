@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_
 
+#include <memory>
+
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
-#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_service.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/webui_config.h"
 
 namespace content {
@@ -24,19 +28,25 @@ class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
   ChromeMediaAppGuestUIDelegate(const ChromeMediaAppGuestUIDelegate&) = delete;
   ChromeMediaAppGuestUIDelegate& operator=(
       const ChromeMediaAppGuestUIDelegate&) = delete;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   void PopulateLoadTimeData(content::WebUI* web_ui,
                             content::WebUIDataSource* source) override;
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-  void CreateAndBindOcrHandler(
+  std::unique_ptr<specialized_features::FeatureAccessChecker>
+  GetFeatureAccessChecker(specialized_features::FeatureAccessConfig config,
+                          content::WebUI* web_ui) const override;
+  PrefService* GetPrefService(content::WebUI* web_ui) override;
+  void CreateAndBindOcrUntrustedService(
       content::BrowserContext& context,
       gfx::NativeWindow native_window,
-      mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+      mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedService>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page)
       override;
 
-  void CreateAndBindMahiHandler(
-      mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
+  void CreateAndBindMahiUntrustedService(
+      mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedService>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
       const std::string& file_name,

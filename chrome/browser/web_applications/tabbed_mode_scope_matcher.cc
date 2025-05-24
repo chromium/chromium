@@ -33,7 +33,7 @@ std::optional<RE2::Set> MakeScopeSet(
   return std::nullopt;
 }
 
-bool MatchScopePart(std::optional<RE2::Set>& scope_set,
+bool MatchScopePart(const std::optional<RE2::Set>& scope_set,
                     const std::string& part) {
   if (scope_set.has_value()) {
     return scope_set->Match(part, nullptr);
@@ -63,7 +63,7 @@ TabbedModeScopeMatcher::TabbedModeScopeMatcher(TabbedModeScopeMatcher&& other) =
 TabbedModeScopeMatcher& TabbedModeScopeMatcher::operator=(
     TabbedModeScopeMatcher&& other) = default;
 
-bool TabbedModeScopeMatcher::Match(const GURL& url) {
+bool TabbedModeScopeMatcher::Match(const GURL& url) const {
   return MatchScopePart(protocol_scope_set_, url.scheme()) &&
          MatchScopePart(username_scope_set_, url.username()) &&
          MatchScopePart(password_scope_set_, url.password()) &&

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "components/autofill/core/common/form_field_data.h"
+
 namespace autofill {
 class FormData;
 }  // namespace autofill
@@ -20,9 +22,11 @@ bool IsRendererRecognizedCredentialForm(const autofill::FormData& form);
 
 // Returns whether field attributes allow to consider it as a single
 // username field (e.g. don't indicate it's a search field).
-bool CanFieldBeConsideredAsSingleUsername(const std::u16string& name,
-                                          const std::u16string& id,
-                                          const std::u16string& label);
+bool CanFieldBeConsideredAsSingleUsername(
+    const std::u16string& name,
+    const std::u16string& id,
+    const std::u16string& label,
+    std::optional<autofill::FormControlType> type);
 
 // Returns whether the field value allows to consider it as a single
 // username field.

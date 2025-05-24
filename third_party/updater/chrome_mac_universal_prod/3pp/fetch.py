@@ -16,21 +16,13 @@ MIN_VERSION = '129.0.6651.0'
 def fetch():
     """
     Queries the VersionHistory API to determine the version of the updater that
-    was serving on Monday.
+    is serving with a fraction of 1.
   """
-    # TODO(crbug.com/1293206): Once this script is python3 only, use
-    # datetime.timezone.utc to make it consistent regardless of local timezone.
-    datum = datetime.datetime.now()
-    datum = (datum - datetime.timedelta(days=datum.weekday())).replace(
-        hour=0, minute=0, second=0, microsecond=0)
-    datum = datum.isoformat() + 'Z'
-
     return json.load(
         urllib.request.urlopen(
             'https://versionhistory.googleapis.com/v1/chromium_updater/'
             'platforms/mac/channels/all/versions/all/releases?'
-            'filter=starttime%%3C%s,endtime%%3E%s' %
-            (datum, datum)))['releases'][0]['version']
+            'filter=fraction=1'))['releases'][0]['version']
 
 
 def print_latest():

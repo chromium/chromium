@@ -56,7 +56,7 @@ public final class WebViewPackageHelper {
     }
 
     /**
-     * Loads a label for the app specified by {@code mContext}. This is designed to be consistent
+     * Loads a label for the app specified by {@code context}. This is designed to be consistent
      * with how the system's WebView chooser labels WebView packages (see {@code
      * com.android.settings.webview.WebViewAppPicker.WebViewAppInfo#loadLabel()} in the AOSP source
      * code).

@@ -140,7 +140,7 @@ void HotspotDetailedView::CreateContainer() {
   const std::u16string text_label = l10n_util::GetStringFUTF16(
       IDS_ASH_HOTSPOT_DETAILED_VIEW_TITLE, ui::GetChromeOSDeviceName());
   entry_row_->text_label()->SetText(text_label);
-  entry_row_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  entry_row_->text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
                                         *entry_row_->text_label());
   entry_row_->GetViewAccessibility().SetName(text_label);
@@ -247,7 +247,7 @@ void HotspotDetailedView::UpdateSubText(const HotspotInfoPtr& hotspot_info) {
       return;
     }
     // Set color for the subtext that shows hotspot is connected.
-    entry_row_->sub_text_label()->SetEnabledColorId(
+    entry_row_->sub_text_label()->SetEnabledColor(
         cros_tokens::kCrosSysPositive);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                           *entry_row_->sub_text_label());

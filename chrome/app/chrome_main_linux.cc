@@ -4,6 +4,7 @@
 
 #include "chrome/app/chrome_main_linux.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,10 +20,11 @@ namespace {
 
 void AppendExtraArgsFromEnvVar(const std::string& env_var_name,
                                std::vector<std::string>& out_args) {
-  std::string extra_args_str;
-  auto environment = base::Environment::Create();
-  if (environment->GetVar(env_var_name, &extra_args_str)) {
-    base::StringTokenizer tokenizer(extra_args_str, base::kWhitespaceASCII);
+  std::unique_ptr<base::Environment> environment = base::Environment::Create();
+  std::optional<std::string> extra_args_str = environment->GetVar(env_var_name);
+  if (extra_args_str.has_value()) {
+    base::StringTokenizer tokenizer(extra_args_str.value(),
+                                    base::kWhitespaceASCII);
     tokenizer.set_quote_chars("\"'");
     while (tokenizer.GetNext()) {
       std::string arg;

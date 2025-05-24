@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -16,7 +17,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,7 +70,9 @@ public class IncognitoTabModelTest {
     private class CloseAllDuringAddTabTabModelObserver implements TabModelObserver {
         @Override
         public void willAddTab(Tab tab, @TabLaunchType int type) {
-            mIncognitoTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
+            mIncognitoTabModel
+                    .getTabRemover()
+                    .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
         }
     }
 
@@ -92,7 +94,7 @@ public class IncognitoTabModelTest {
         assertTrue(tab.isIncognito());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mIncognitoTabModel.removeTab(tab);
+                    mIncognitoTabModel.getTabRemover().removeTab(tab, /* allowDialog= */ false);
                     tab.destroy();
                 });
     }
@@ -108,12 +110,12 @@ public class IncognitoTabModelTest {
     @Feature({"OffTheRecord"})
     public void testCloseAllDuringAddTabDoesNotCrash() {
         createTabOnUiThread();
-        Assert.assertEquals(1, mIncognitoTabModel.getCount());
+        assertEquals(1, mIncognitoTabModel.getCount());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mIncognitoTabModel.addObserver(new CloseAllDuringAddTabTabModelObserver()));
 
         createTabOnUiThread();
-        Assert.assertEquals(1, mIncognitoTabModel.getCount());
+        assertEquals(1, mIncognitoTabModel.getCount());
     }
 
     @Test

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "skia/ext/skia_utils_win.h"
 
 namespace gfx {
@@ -20,8 +21,8 @@ void CreateBitmapV4HeaderForARGB888(int width,
   // copy the bits over to the v4 header.
   BITMAPINFOHEADER header_v3;
   skia::CreateBitmapHeaderForXRGB888(width, height, &header_v3);
-  memset(hdr, 0, sizeof(BITMAPV4HEADER));
-  memcpy(hdr, &header_v3, sizeof(BITMAPINFOHEADER));
+  UNSAFE_TODO(memset(hdr, 0, sizeof(BITMAPV4HEADER)));
+  UNSAFE_TODO(memcpy(hdr, &header_v3, sizeof(BITMAPINFOHEADER)));
 
   // Correct the size of the header and fill in the mask values.
   hdr->bV4Size = sizeof(BITMAPV4HEADER);

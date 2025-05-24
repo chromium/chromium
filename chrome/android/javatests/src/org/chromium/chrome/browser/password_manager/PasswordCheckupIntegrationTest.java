@@ -29,7 +29,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.url.GURL;
@@ -63,6 +65,8 @@ public class PasswordCheckupIntegrationTest {
     private static final String USERNAME_TEXT = "test4";
     private static final String PASSWORD_TEXT = "test4";
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule;
@@ -81,8 +85,6 @@ public class PasswordCheckupIntegrationTest {
 
     @Before
     public void setup() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         mSettingsActivityTestRule = new SettingsActivityTestRule<>(MainSettings.class);
 
         mFakeCredentialManagerLauncherFactory = new FakeCredentialManagerLauncherFactoryImpl();
@@ -134,8 +136,7 @@ public class PasswordCheckupIntegrationTest {
                                 SAFETY_CHECK_INTERACTIONS_HISTOGRAM,
                                 SAFETY_CHECK_INTERACTION_PASSWORDS_MANAGE)
                         .build();
-        // TODO - b/342101044: Write a test for the non-syncing user.
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.ACCOUNT1);
         // Store the test credential.
         PasswordStoreCredential testCredential =
                 new PasswordStoreCredential(EXAMPLE_URL, USERNAME_TEXT, PASSWORD_TEXT);

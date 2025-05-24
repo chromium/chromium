@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/win/conflicts/installed_applications.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
@@ -104,8 +104,7 @@ class IncompatibleApplicationsUpdater : public ModuleDatabaseObserver {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Returns true if the tracking of incompatible applications is enabled. Can
-  // be called on any thread. Notably does not check the
-  // ThirdPartyBlockingEnabled group policy.
+  // be called on any thread.
   static bool IsWarningEnabled();
 
   // Returns true if the cache contains at least one incompatible application.

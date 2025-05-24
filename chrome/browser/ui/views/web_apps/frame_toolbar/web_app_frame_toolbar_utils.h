@@ -11,7 +11,7 @@ class ToolbarButton;
 class ToolbarButtonProvider;
 
 #if BUILDFLAG(IS_MAC)
-constexpr int kWebAppMenuMargin = 7;
+inline constexpr int kWebAppMenuMargin = 7;
 #endif
 
 // Makes adjustments to |toolbar_button| for display in a web app frame.

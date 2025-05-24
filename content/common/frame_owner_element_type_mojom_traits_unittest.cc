@@ -59,7 +59,7 @@ TEST_F(FrameOwnerElementTypeDeathTest, SerializeInvalid) {
   for (const auto type : kUnconvertibleValues) {
     SCOPED_TRACE(static_cast<int>(type));
     blink::FrameOwnerElementType output;
-    EXPECT_DCHECK_DEATH(
+    EXPECT_NOTREACHED_DEATH(
         mojo::test::SerializeAndDeserialize<
             content::mojom::ChildFrameOwnerElementType>(type, output));
   }

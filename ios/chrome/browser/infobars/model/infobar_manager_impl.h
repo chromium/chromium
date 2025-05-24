@@ -47,8 +47,6 @@ class InfoBarManagerImpl : public infobars::InfoBarManager,
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   raw_ptr<web::WebState> web_state_ = nullptr;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_MODEL_INFOBAR_MANAGER_IMPL_H_

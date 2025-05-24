@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
@@ -46,14 +48,7 @@ SearchPrefetchService* GetSearchPrefetchService(
   if (!profile) {
     return nullptr;
   }
-  // If the feature is enabled, ensure SearchPrefetchService so that the
-  // navigation can consult the search prefetch cache regardless of if
-  // SearchPrefetchService has been accessed before this line, for example,
-  // during browser startup.
-  if (base::FeatureList::IsEnabled(kEnsureSearchPrefetchServiceOnInterceptor)) {
-    return SearchPrefetchServiceFactory::GetForProfile(profile);
-  }
-  return SearchPrefetchServiceFactory::GetForProfileIfExists(profile);
+  return SearchPrefetchServiceFactory::GetForProfile(profile);
 }
 
 void SearchPrefetchRequestHandler(
@@ -125,9 +120,6 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   }
 
   if (is_prerender_main_frame_navigation) {
-    if (!prerender_utils::IsSearchSuggestionPrerenderEnabled()) {
-      return {};
-    }
     return service->MaybeCreateResponseReader(tentative_resource_request);
   }
 
@@ -135,7 +127,16 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   auto handler =
       service->TakePrefetchResponseFromMemoryCache(tentative_resource_request);
   if (handler) {
+    // Track whether the prefetch response is served to a warm-up request.
+    base::UmaHistogramBoolean(
+        "Omnibox.SearchPrefetch.ServedToOnlyFromCacheRequest",
+        tentative_resource_request.load_flags & net::LOAD_ONLY_FROM_CACHE
+            ? true
+            : false);
     return handler;
+  }
+  if (IsNoVarySearchDiskCacheEnabled()) {
+    return {};
   }
   if (tentative_resource_request.load_flags & net::LOAD_SKIP_CACHE_VALIDATION) {
     return service->TakePrefetchResponseFromDiskCache(
@@ -149,7 +150,8 @@ SearchPrefetchURLLoaderInterceptor::MaybeProxyRequestHandler(
     content::BrowserContext* browser_context,
     SearchPrefetchURLLoader::RequestHandler prefetched_loader_handler) {
   network::URLLoaderFactoryBuilder factory_builder;
-
+  TRACE_EVENT("loading",
+              "SearchPrefetchURLLoaderInterceptor::MaybeProxyRequestHandler");
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
@@ -163,7 +165,7 @@ SearchPrefetchURLLoaderInterceptor::MaybeProxyRequestHandler(
   if (web_request_api) {
     web_request_api->MaybeProxyURLLoaderFactory(
         browser_context, render_frame_host,
-        render_frame_host->GetProcess()->GetID(),
+        render_frame_host->GetProcess()->GetDeprecatedID(),
         content::ContentBrowserClient::URLLoaderFactoryType::kNavigation,
         navigation_id_, ukm::kInvalidSourceIdObj, factory_builder,
         /*header_client=*/nullptr, navigation_response_task_runner_,
@@ -183,6 +185,8 @@ void SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader(
     content::BrowserContext* browser_context,
     content::URLLoaderRequestInterceptor::LoaderCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("loading",
+              "SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader");
 
   SearchPrefetchURLLoader::RequestHandler prefetched_loader_handler =
       MaybeCreateLoaderForRequest(tentative_resource_request,

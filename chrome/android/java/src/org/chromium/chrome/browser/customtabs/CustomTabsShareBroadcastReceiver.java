@@ -9,11 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Receives shared content broadcast from Chrome Custom Tabs and shows a share sheet to share the
  * url.
  */
+@NullMarked
 public final class CustomTabsShareBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {

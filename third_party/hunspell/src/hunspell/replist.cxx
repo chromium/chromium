@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -77,28 +77,18 @@
 #include "csutil.hxx"
 
 RepList::RepList(int n) {
-  dat = (replentry**)malloc(sizeof(replentry*) * n);
-  if (dat == 0)
-    size = 0;
-  else
-    size = n;
-  pos = 0;
+  dat.reserve(std::min(n, 16384));
 }
 
 RepList::~RepList() {
-  for (int i = 0; i < pos; i++) {
-    delete dat[i];
+  for (auto& i : dat) {
+    delete i;
   }
-  free(dat);
-}
-
-replentry* RepList::item(int n) {
-  return dat[n];
 }
 
 int RepList::find(const char* word) {
   int p1 = 0;
-  int p2 = pos - 1;
+  int p2 = dat.size() - 1;
   int ret = -1;
   while (p1 <= p2) {
     int m = ((unsigned)p1 + (unsigned)p2) >> 1;
@@ -115,11 +105,9 @@ int RepList::find(const char* word) {
   return ret;
 }
 
-std::string RepList::replace(const char* word, int ind, bool atstart) {
+std::string RepList::replace(const size_t wordlen, int ind, bool atstart) {
   int type = atstart ? 1 : 0;
-  if (ind < 0)
-    return std::string();
-  if (strlen(word) == dat[ind]->pattern.size())
+  if (wordlen == dat[ind]->pattern.size())
     type = atstart ? 3 : 2;
   while (type && dat[ind]->outstrings[type].empty())
     type = (type == 2 && !atstart) ? 0 : type - 1;
@@ -127,7 +115,7 @@ std::string RepList::replace(const char* word, int ind, bool atstart) {
 }
 
 int RepList::add(const std::string& in_pat1, const std::string& pat2) {
-  if (pos >= size || in_pat1.empty() || pat2.empty()) {
+  if (in_pat1.empty() || pat2.empty()) {
     return 1;
   }
   // analyse word context
@@ -159,11 +147,11 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
   r->pattern = pat1;
   r->outstrings[type] = pat2;
   mystrrep(r->outstrings[type], "_", " ");
-  dat[pos++] = r;
+  dat.push_back(r);
   // sort to the right place in the list
 #if 0
-  int i;
-  for (i = pos - 1; i > 0; i--) {
+  size_t i;
+  for (i = dat.size() - 1; i > 0; --i) {
     if (strcmp(r->pattern.c_str(), dat[i - 1]->pattern.c_str()) < 0) {
       dat[i] = dat[i - 1];
     } else
@@ -171,7 +159,7 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
   }
   dat[i] = r;
 #else
-  for (int i = pos - 1; i > 0; i--) {
+  for (int i = dat.size() - 1; i > 0; --i) {
     r = dat[i];
     if (r->pattern < dat[i - 1]->pattern) {
       dat[i] = dat[i - 1];
@@ -185,22 +173,45 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
 bool RepList::conv(const std::string& in_word, std::string& dest) {
   dest.clear();
 
-  size_t wordlen = in_word.size();
+  const size_t wordlen = in_word.size();
   const char* word = in_word.c_str();
 
   bool change = false;
   for (size_t i = 0; i < wordlen; ++i) {
     int n = find(word + i);
-    std::string l = replace(word + i, n, i == 0);
-    if (!l.empty()) {
-      dest.append(l);
-      i += dat[n]->pattern.size() - 1;
-      change = true;
-    } else {
+
+    bool empty = n < 0;
+    if (empty) {
       dest.push_back(word[i]);
+      continue;
     }
+
+    std::string l = replace(wordlen - i, n, i == 0);
+    if (l.empty()) {
+      dest.push_back(word[i]);
+      continue;
+    }
+
+    dest.append(l);
+    if (!dat[n]->pattern.empty()) {
+      i += dat[n]->pattern.size() - 1;
+    }
+    change = true;
   }
 
   return change;
 }
 
+bool RepList::check_against_breaktable(const std::vector<std::string>& breaktable) const {
+  for (const auto i : dat) {
+    for (auto& outstring : i->outstrings) {
+      for (const auto& str : breaktable) {
+        if (outstring.find(str) != std::string::npos) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}

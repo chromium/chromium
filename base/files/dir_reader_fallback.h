@@ -21,7 +21,7 @@ class DirReaderFallback {
   bool Next() { return false; }
 
   // Return the name of the current directory entry.
-  const char* name() { return nullptr;}
+  const char* name() { return nullptr; }
 
   // Return the file descriptor which is being used.
   int fd() const { return -1; }

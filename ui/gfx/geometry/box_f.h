@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "base/component_export.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -15,7 +16,7 @@ namespace gfx {
 
 // A 3d version of gfx::RectF, with the positive z-axis pointed towards
 // the camera.
-class GEOMETRY_EXPORT BoxF {
+class COMPONENT_EXPORT(GEOMETRY) BoxF {
  public:
   constexpr BoxF() : BoxF(0, 0, 0) {}
   constexpr BoxF(float width, float height, float depth)
@@ -99,6 +100,8 @@ class GEOMETRY_EXPORT BoxF {
   // |origin_|.
   void ExpandTo(const BoxF& box);
 
+  friend bool operator==(const BoxF&, const BoxF&) = default;
+
  private:
   // Expands the box to contain the two given points. It is required that each
   // component of |min| is less than or equal to the corresponding component in
@@ -114,7 +117,7 @@ class GEOMETRY_EXPORT BoxF {
   float depth_;
 };
 
-GEOMETRY_EXPORT BoxF UnionBoxes(const BoxF& a, const BoxF& b);
+COMPONENT_EXPORT(GEOMETRY) BoxF UnionBoxes(const BoxF& a, const BoxF& b);
 
 inline BoxF ScaleBox(const BoxF& b,
                      float x_scale,
@@ -130,15 +133,6 @@ inline BoxF ScaleBox(const BoxF& b,
 
 inline BoxF ScaleBox(const BoxF& b, float scale) {
   return ScaleBox(b, scale, scale, scale);
-}
-
-inline bool operator==(const BoxF& a, const BoxF& b) {
-  return a.origin() == b.origin() && a.width() == b.width() &&
-         a.height() == b.height() && a.depth() == b.depth();
-}
-
-inline bool operator!=(const BoxF& a, const BoxF& b) {
-  return !(a == b);
 }
 
 inline BoxF operator+(const BoxF& b, const Vector3dF& v) {

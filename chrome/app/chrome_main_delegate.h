@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/startup_timestamps.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/common/chrome_content_client.h"
@@ -20,10 +20,6 @@
 
 namespace base {
 class CommandLine;
-}
-
-namespace chromeos {
-class LacrosService;
 }
 
 namespace tracing {
@@ -60,7 +56,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   std::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
   void SandboxInitialized(const std::string& process_type) override;
-  absl::variant<int, content::MainFunctionParams> RunProcess(
+  std::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
@@ -85,7 +81,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   content::ContentUtilityClient* CreateContentUtilityClient() override;
 
   // Initialization that happens in all process types.
-  void CommonEarlyInitialization(InvokedIn invoked_in);
+  void CommonEarlyInitialization();
 
   // Initializes |tracing_sampler_profiler_|. Deletes any existing
   // |tracing_sampler_profiler_| as well.
@@ -106,10 +102,6 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   ChromeContentClient chrome_content_client_;
 
   memory_system::MemorySystem memory_system_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::LacrosService> lacros_service_;
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   // The sampling profiler exists until the `ChromeContentBrowserClient` is

@@ -33,7 +33,7 @@ MediaRouterUIService::MediaRouterUIService(
   ConfigureService();
 }
 
-MediaRouterUIService::~MediaRouterUIService() {}
+MediaRouterUIService::~MediaRouterUIService() = default;
 
 void MediaRouterUIService::Shutdown() {
   DisableService();
@@ -63,11 +63,9 @@ void MediaRouterUIService::ConfigureService() {
           std::make_unique<CastToolbarButtonController>(profile_);
     }
 #if BUILDFLAG(IS_CHROMEOS)
-    if (GlobalMediaControlsCastStartStopEnabled(profile_)) {
-      // Ensure that MediaNotificationService is instantiated so that it can
-      // show the Cast device picker in Global Media Controls.
-      MediaNotificationServiceFactory::GetForProfile(profile_);
-    }
+    // Ensure that MediaNotificationService is instantiated so that it can
+    // show the Cast device picker in Global Media Controls.
+    MediaNotificationServiceFactory::GetForProfile(profile_);
 #endif
   } else {
     DisableService();
@@ -75,8 +73,9 @@ void MediaRouterUIService::ConfigureService() {
 }
 
 void MediaRouterUIService::DisableService() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnServiceDisabled();
+  }
   action_controller_.reset();
 }
 

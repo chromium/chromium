@@ -11,6 +11,7 @@
 #include "base/mac/mac_util.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/cocoa/views_hostable.h"
+#include "ui/gfx/native_widget_types.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/native/native_view_host_test_base.h"
@@ -20,14 +21,15 @@
 class TestViewsHostable : public ui::ViewsHostableView {
  public:
   id parent_accessibility_element() const {
-    return parent_accessibility_element_;
+    return parent_accessibility_element_.Get();
   }
 
  private:
   // ui::ViewsHostableView:
-  void ViewsHostableAttach(ui::ViewsHostableView::Host* host) override {
+  void ViewsHostableAttach(ui::ViewsHostableView::Host* host) override {}
+  void ViewsHostableDetach() override {
+    parent_accessibility_element_ = gfx::NativeViewAccessible();
   }
-  void ViewsHostableDetach() override { parent_accessibility_element_ = nil; }
   void ViewsHostableSetBounds(const gfx::Rect& bounds_in_window) override {}
   void ViewsHostableSetVisible(bool visible) override {}
   void ViewsHostableMakeFirstResponder() override {}
@@ -39,13 +41,13 @@ class TestViewsHostable : public ui::ViewsHostableView {
     return parent_accessibility_element_;
   }
   gfx::NativeViewAccessible ViewsHostableGetAccessibilityElement() override {
-    return nil;
+    return gfx::NativeViewAccessible();
   }
 
-  id parent_accessibility_element_ = nil;
+  gfx::NativeViewAccessible parent_accessibility_element_;
 };
 
-@interface TestViewsHostableView : NSView<ViewsHostable>
+@interface TestViewsHostableView : NSView <ViewsHostable>
 @property(nonatomic, assign) ui::ViewsHostableView* viewsHostableView;
 @end
 @implementation TestViewsHostableView
@@ -82,10 +84,10 @@ class NativeViewHostMacTest : public test::NativeViewHostTestBase {
     // Verify the expectation that the NativeViewHostWrapper is only created
     // after the NativeViewHost is added to a widget.
     EXPECT_FALSE(native_host());
-    toplevel()->GetRootView()->AddChildView(host());
+    toplevel()->GetRootView()->AddChildViewRaw(host());
     EXPECT_TRUE(native_host());
 
-    host()->Attach(native_view_);
+    host()->Attach(gfx::NativeView(native_view_));
   }
 
   NSView* GetMovedContentViewForWidget(const std::unique_ptr<Widget>& widget) {
@@ -129,7 +131,7 @@ TEST_F(NativeViewHostMacTest, Attach) {
   EXPECT_FALSE([native_view_ window]);
   EXPECT_NSEQ(NSZeroRect, [native_view_ frame]);
 
-  host()->Attach(native_view_);
+  host()->Attach(gfx::NativeView(native_view_));
   EXPECT_TRUE([native_view_ superview]);
   EXPECT_TRUE([native_view_ window]);
 
@@ -148,7 +150,7 @@ TEST_F(NativeViewHostMacTest, Attach) {
 TEST_F(NativeViewHostMacTest, CheckNativeViewReferenceOnAttach) {
   CreateTopLevel();
   CreateTestingHost();
-  toplevel()->GetRootView()->AddChildView(host());
+  toplevel()->GetRootView()->AddChildViewRaw(host());
 
   // Create a second widget.
   auto second_widget = std::make_unique<Widget>();
@@ -191,7 +193,7 @@ TEST_F(NativeViewHostMacTest, CheckNoNativeViewReferenceOnDestruct) {
 
   CreateTopLevel();
   CreateTestingHost();
-  toplevel()->GetRootView()->AddChildView(host());
+  toplevel()->GetRootView()->AddChildViewRaw(host());
 
   // Create a second widget.
   auto second_widget = std::make_unique<Widget>();
@@ -226,9 +228,9 @@ TEST_F(NativeViewHostMacTest, AccessibilityParent) {
   TestViewsHostable views_hostable;
   [view setViewsHostableView:&views_hostable];
 
-  host()->Attach(view);
+  host()->Attach(gfx::NativeView(view));
   EXPECT_NSEQ(views_hostable.parent_accessibility_element(),
-              toplevel()->GetRootView()->GetNativeViewAccessible());
+              toplevel()->GetRootView()->GetNativeViewAccessible().Get());
 
   host()->Detach();
   DestroyHost();
@@ -269,14 +271,14 @@ TEST_F(NativeViewHostMacTest, NativeViewHidden) {
 
   host()->SetVisible(false);
   EXPECT_FALSE([native_view_ isHidden]);  // Stays visible.
-  host()->Attach(native_view_);
+  host()->Attach(gfx::NativeView(native_view_));
   EXPECT_TRUE([native_view_ isHidden]);  // Hidden when attached.
 
   host()->Detach();
   [native_view_ setHidden:YES];
   host()->SetVisible(true);
   EXPECT_TRUE([native_view_ isHidden]);  // Stays hidden.
-  host()->Attach(native_view_);
+  host()->Attach(gfx::NativeView(native_view_));
   // Layout updates visibility, and is normally async, trigger it now to ensure
   // visibility updated.
   host()->DeprecatedLayoutImmediately();
@@ -287,7 +289,7 @@ TEST_F(NativeViewHostMacTest, NativeViewHidden) {
   EXPECT_TRUE([native_view_ isHidden]);  // Hidden when removed from Widget.
   EXPECT_FALSE([native_view_ superview]);
 
-  toplevel()->GetRootView()->AddChildView(host());
+  toplevel()->GetRootView()->AddChildViewRaw(host());
   EXPECT_FALSE([native_view_ isHidden]);  // And visible when added.
   EXPECT_TRUE([native_view_ superview]);
 

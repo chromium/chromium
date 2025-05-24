@@ -20,7 +20,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_validator_factory.h"
 #include "chrome/browser/media_galleries/fileapi/media_path_filter.h"
@@ -46,7 +45,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/media_galleries/fileapi/device_media_async_file_util.h"
 #endif
 
@@ -140,7 +139,7 @@ MediaFileSystemBackend::MediaFileSystemBackend(
               std::move(quarantine_connection_callback))),
       native_media_file_util_(
           std::make_unique<NativeMediaFileUtil>(g_media_task_runner.Get()))
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
       ,
       device_media_async_file_util_(
           DeviceMediaAsyncFileUtil::Create(profile_path_,
@@ -149,8 +148,7 @@ MediaFileSystemBackend::MediaFileSystemBackend(
 {
 }
 
-MediaFileSystemBackend::~MediaFileSystemBackend() {
-}
+MediaFileSystemBackend::~MediaFileSystemBackend() = default;
 
 // static
 void MediaFileSystemBackend::AssertCurrentlyOnMediaSequence() {
@@ -245,14 +243,13 @@ storage::AsyncFileUtil* MediaFileSystemBackend::GetAsyncFileUtil(
   switch (type) {
     case storage::kFileSystemTypeLocalMedia:
       return native_media_file_util_.get();
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
     case storage::kFileSystemTypeDeviceMedia:
       return device_media_async_file_util_.get();
 #endif
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 storage::WatcherManager* MediaFileSystemBackend::GetWatcherManager(
@@ -275,9 +272,8 @@ MediaFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
       }
       return media_copy_or_move_file_validator_factory_.get();
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 std::unique_ptr<storage::FileSystemOperation>
@@ -295,7 +291,7 @@ MediaFileSystemBackend::CreateFileSystemOperation(
 
 bool MediaFileSystemBackend::SupportsStreaming(
     const storage::FileSystemURL& url) const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   if (url.type() == storage::kFileSystemTypeDeviceMedia)
     return device_media_async_file_util_->SupportsStreaming(url);
 #endif
@@ -319,7 +315,7 @@ MediaFileSystemBackend::CreateFileStreamReader(
     FileSystemContext* context,
     file_access::ScopedFileAccessDelegate::
         RequestFilesAccessIOCallback /*file_access*/) const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   if (url.type() == storage::kFileSystemTypeDeviceMedia) {
     std::unique_ptr<storage::FileStreamReader> reader =
         device_media_async_file_util_->GetFileStreamReader(

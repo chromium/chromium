@@ -5,7 +5,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
 import {getTemplate} from './setup_cancel_dialog.html.js';
 
@@ -28,10 +28,10 @@ export class SetupCancelDialogElement extends HTMLElement {
 
     this.attachShadow({mode: 'open'}).innerHTML = getTemplate();
     this.dialog = this.$('cr-dialog');
-    this.$('.action-button')!.addEventListener(
-        'click', () => this.onResumeButtonClick());
-    this.$('.cancel-button')!.addEventListener(
-        'click', () => this.onCancelButtonClick());
+    this.$('.action-button')
+        .addEventListener('click', () => this.onResumeButtonClick());
+    this.$('.cancel-button')
+        .addEventListener('click', () => this.onCancelButtonClick());
     this.boundKeyDownListener_ = this.onKeyDown.bind(this);
   }
 

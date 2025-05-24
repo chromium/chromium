@@ -93,3 +93,18 @@ DirectSocketsSettings:
   - DefaultDirectSocketsSetting
   - DirectSocketsAllowedForUrls
   - DirectSocketsBlockedForUrls
+  - DefaultDirectSocketsPrivateNetworkAccessSetting
+  - DirectSocketsPrivateNetworkAccessAllowedForUrls
+  - DirectSocketsPrivateNetworkAccessBlockedForUrls
+ControlledFrameSettings:
+  caption: Controlled Frame settings
+  policies:
+  - DefaultControlledFrameSetting
+  - ControlledFrameAllowedForUrls
+  - ControlledFrameBlockedForUrls
+SmartCardConnectSettings:
+  caption: Smart Card Connect settings
+  policies:
+  - SmartCardConnectAllowedForUrls
+  - SmartCardConnectBlockedForUrls
+  - DefaultSmartCardConnectSetting

@@ -20,6 +20,7 @@ goog.require('goog.Disposable');
 goog.require('goog.Promise');
 goog.require('goog.Thenable');
 goog.require('goog.asserts');
+goog.require('goog.async.nextTick');
 goog.require('goog.async.run');
 goog.require('goog.testing.PropertyReplacer');
 goog.require('goog.testing.events');
@@ -227,13 +228,22 @@ goog.testing.MockClock.prototype.install = function() {
     if (!this.unmockDateNow_) {
       r.set(Date, 'now', goog.bind(this.getCurrentTime, this));
     }
+    // goog.async.nextTick depends on various internal browser APIs
+    // (setImmediate, MessageChannel, and setTimeout), but it's internal
+    // implementation uses local caching which makes stubbing the browser
+    // natives not feasible. Stub it directly instead.
+    r.set(
+        goog.async.nextTick, 'nextTickImpl',
+        goog.bind(this.setImmediate_, this));
+    // setImmediate is a deprecated API that does not exist in most browsers.
+    // Set it in the browser supports it.
+    // Preserve existing behavior of synchronous mock clocks to unconditionally
+    // stub setImmediate.
+    if (goog.global['setImmediate'] || this.isSynchronous_) {
+      r.set(goog.global, 'setImmediate', goog.bind(this.setImmediate_, this));
+    }
 
     if (this.isSynchronous_) {
-      // Only override setImmediate for clocks that can tick synchronously.
-      // Async clocks will instead execute these blocks when awaiting
-      // tickAsync.
-      r.set(goog.global, 'setImmediate', goog.bind(this.setImmediate_, this));
-
       // goog.Promise uses goog.async.run. In order to be able to test
       // Promise-based code synchronously, we need to make sure that
       // goog.async.run uses nextTick instead of native browser Promises. Since

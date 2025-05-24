@@ -4,8 +4,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia"
     ],
     "policy_pref_mapping_tests": [
@@ -14,7 +13,7 @@
           "NTPCustomBackgroundEnabled": false
         },
         "prefs": {
-          "ntp.custom_background_dict": {
+          "ntp.custom_background_dict2": {
             "value": {}
           }
         }

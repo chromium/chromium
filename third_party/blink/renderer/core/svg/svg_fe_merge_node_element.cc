@@ -38,7 +38,6 @@ void SVGFEMergeNodeElement::Trace(Visitor* visitor) const {
 void SVGFEMergeNodeElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   if (params.name == svg_names::kInAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     InvalidateFilterPrimitiveParent(*this);
     return;
   }

@@ -8,9 +8,11 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/time/time.h"
 #include "media/base/audio_encoder.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder.h"
@@ -27,9 +29,9 @@ class AudioParameters;
 // is how the output is delivered.
 class MEDIA_EXPORT Muxer {
  public:
-  // Defines the type of a callback to be called when a derived muxer
-  // (e.g. WebmMuxer or Mp4Muxer) is ready to write a chunk of data.
-  using WriteDataCB = base::RepeatingCallback<void(std::string_view)>;
+  // Defines the type of a callback to be called when a derived muxer (e.g.
+  // WebmMuxer or Mp4Muxer) is ready to write a chunk of data.
+  using WriteDataCB = base::RepeatingCallback<void(base::span<const uint8_t>)>;
 
   // Container for the parameters that muxer uses that is extracted from
   // VideoFrame.
@@ -38,7 +40,8 @@ class MEDIA_EXPORT Muxer {
     VideoParameters(gfx::Size visible_rect_size,
                     double frame_rate,
                     VideoCodec codec,
-                    std::optional<gfx::ColorSpace> color_space);
+                    std::optional<gfx::ColorSpace> color_space,
+                    std::optional<VideoTransformation> transformation);
     VideoParameters(const VideoParameters&);
     ~VideoParameters();
     // Returns a human-readable string describing `*this`.
@@ -49,32 +52,27 @@ class MEDIA_EXPORT Muxer {
     double frame_rate;
     VideoCodec codec;
     std::optional<gfx::ColorSpace> color_space;
+    std::optional<VideoTransformation> transformation;
   };
 
   // Structure for passing encoded Audio and Video frames.
   struct MEDIA_EXPORT EncodedFrame {
     EncodedFrame();
     EncodedFrame(
-        absl::variant<AudioParameters, VideoParameters> params,
+        std::variant<AudioParameters, VideoParameters> params,
         std::optional<media::AudioEncoder::CodecDescription> codec_description,
-        std::string data,
-        std::string alpha_data,
-        bool is_keyframe);
+        scoped_refptr<DecoderBuffer> data);
     EncodedFrame(EncodedFrame&&);
     EncodedFrame(const EncodedFrame&) = delete;
     EncodedFrame& operator=(const EncodedFrame&) = delete;
     ~EncodedFrame();
     // Parameters for frame. Presence of either indicates the type of data
     // below.
-    absl::variant<AudioParameters, VideoParameters> params;
+    std::variant<AudioParameters, VideoParameters> params;
     // Codec description for data.
     std::optional<media::AudioEncoder::CodecDescription> codec_description;
     // Audio or Video frame data.
-    std::string data;
-    // Alpha frame data if Video and present, empty otherwise
-    std::string alpha_data;
-    // Always true for Audio.
-    bool is_keyframe;
+    scoped_refptr<DecoderBuffer> data;
   };
 
   // The holder of muxer need to ensure Flush() is invoked before the muxer is

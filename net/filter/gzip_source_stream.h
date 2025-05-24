@@ -11,6 +11,7 @@
 #include "net/base/net_export.h"
 #include "net/filter/filter_source_stream.h"
 #include "net/filter/gzip_header.h"
+#include "net/filter/source_stream_type.h"
 
 typedef struct z_stream_s z_stream;
 
@@ -35,7 +36,7 @@ class NET_EXPORT_PRIVATE GzipSourceStream : public FilterSourceStream {
   // Creates a GzipSourceStream. Return nullptr if initialization fails.
   static std::unique_ptr<GzipSourceStream> Create(
       std::unique_ptr<SourceStream> previous,
-      SourceStream::SourceType type);
+      SourceStreamType type);
 
  private:
   enum InputState {
@@ -66,7 +67,7 @@ class NET_EXPORT_PRIVATE GzipSourceStream : public FilterSourceStream {
   };
 
   GzipSourceStream(std::unique_ptr<SourceStream> previous,
-                   SourceStream::SourceType type);
+                   SourceStreamType type);
 
   // Returns true if initialization is successful, false otherwise.
   // For instance, this method returns false if there is not enough memory or
@@ -113,4 +114,4 @@ class NET_EXPORT_PRIVATE GzipSourceStream : public FilterSourceStream {
 
 }  // namespace net
 
-#endif  // NET_FILTER_GZIP_SOURCE_STREAM_H__
+#endif  // NET_FILTER_GZIP_SOURCE_STREAM_H_

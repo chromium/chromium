@@ -300,11 +300,7 @@ TEST_P(StylusWritingGestureTest, TestGestureDeleteNotFirstLine) {
 TEST_P(StylusWritingGestureTest, TestGestureAtEndOfLineWithWordGranularity) {
   const bool is_RTL = GetParam();
   auto* input = SetUpMultilineInput(is_RTL);
-  auto* inner_editor = input->InnerEditorElement();
-  Document& doc = GetDocument();
-  inner_editor->appendChild(Text::Create(doc, "ABCD"));
-  inner_editor->appendChild(Text::Create(doc, "\n"));
-  inner_editor->appendChild(Text::Create(doc, "EFGH"));
+  input->SetValue("ABCD\nEFGH");
   const int width = input->BoundsInWidget().width();
 
   mojom::blink::StylusWritingGestureDataPtr gesture_data(

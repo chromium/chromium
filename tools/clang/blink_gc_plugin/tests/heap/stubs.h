@@ -11,6 +11,9 @@
 #define GC_PLUGIN_IGNORE(reason) \
   __attribute__((annotate("blink_gc_plugin_ignore")))
 
+#define STACK_ALLOCATED_IGNORE(reason) \
+  __attribute__((annotate("stack_allocated_ignore")))
+
 namespace base {
 
 template <typename T>
@@ -215,6 +218,12 @@ class Visitor {
 
   template <typename T>
   void Trace(const T&);
+
+  template <typename T>
+  void TraceMultiple(const T* start, size_t len);
+
+  template <typename K, typename V>
+  void TraceEphemeron(const K& key, const V* value);
 };
 
 namespace internal {

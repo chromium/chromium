@@ -17,8 +17,7 @@ ChromeTemplateURLServiceClient::ChromeTemplateURLServiceClient(
     history_service_observation_.Observe(history_service_.get());
 }
 
-ChromeTemplateURLServiceClient::~ChromeTemplateURLServiceClient() {
-}
+ChromeTemplateURLServiceClient::~ChromeTemplateURLServiceClient() = default;
 
 void ChromeTemplateURLServiceClient::Shutdown() {
   // ChromeTemplateURLServiceClient is owned by TemplateURLService which is a

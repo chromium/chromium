@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Mall is ash-chrome only")
+assert(is_chromeos, "Mall is ChromeOS only")
 
 source_set("mall") {
   sources = [
@@ -37,7 +36,17 @@ mojom("mojo_bindings") {
 }
 
 source_set("url_constants") {
-  sources = [ "url_constants.h" ]
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/constants",
+    "//url",
+  ]
 }
 
 source_set("app_id") {

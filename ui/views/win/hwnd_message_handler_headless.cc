@@ -7,11 +7,15 @@
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/screen_win.h"
+#include "ui/display/win/screen_win_headless.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
 #include "ui/views/win/hwnd_util.h"
 
@@ -22,16 +26,11 @@ namespace {
 // creation params.
 constexpr gfx::Rect kDefaultHeadlessWindowSize(800, 600);
 
-// In headless mode there is no screen size that would define maximized window
-// dimensions. So just double the current window size assuming the user will
-// expect it to increase.
-constexpr int kZoomedWindowSizeScaleFactor = 2;
-
 // In headless mode where we have to manually scale window bounds because we
 // cannot rely on the platform window size since it gets clamped to the monitor
 // work area.
 gfx::Rect ScaleWindowBoundsMaybe(HWND hwnd, const gfx::Rect& bounds) {
-  const float scale = display::win::ScreenWin::GetScaleFactorForHWND(hwnd);
+  const float scale = display::win::GetScreenWin()->GetScaleFactorForHWND(hwnd);
   if (scale > 1.0) {
     gfx::RectF scaled_bounds(bounds);
     scaled_bounds.Scale(scale);
@@ -42,11 +41,9 @@ gfx::Rect ScaleWindowBoundsMaybe(HWND hwnd, const gfx::Rect& bounds) {
 }
 
 gfx::Rect GetZoomedWindowBounds(const gfx::Rect& bounds) {
-  gfx::Rect zoomed_bounds = bounds;
-  zoomed_bounds.set_width(bounds.width() * kZoomedWindowSizeScaleFactor);
-  zoomed_bounds.set_height(bounds.height() * kZoomedWindowSizeScaleFactor);
-
-  return zoomed_bounds;
+  return display::win::GetScreenWinHeadless()
+      ->GetDisplayMatching(bounds)
+      .work_area();
 }
 
 }  // namespace
@@ -98,7 +95,8 @@ gfx::Rect HWNDMessageHandlerHeadless::GetWindowBoundsInScreen() const {
 
 gfx::Rect HWNDMessageHandlerHeadless::GetClientAreaBoundsInScreen() const {
   gfx::Insets client_insets;
-  if (!GetClientAreaInsets(&client_insets, last_monitor_)) {
+  const int frame_thickness = ui::GetFrameThicknessFromScreenRect(bounds_);
+  if (!GetClientAreaInsets(&client_insets, frame_thickness)) {
     // If client area insets were not provided, calculate headless client
     // rectangle using the difference between platform window and client
     // rectangles.
@@ -412,6 +410,34 @@ void HWNDMessageHandlerHeadless::SizeConstraintsChanged() {
   // Ignored in headless mode since we don't touch underlying platform window.
 }
 
+bool HWNDMessageHandlerHeadless::GetClientAreaInsets(
+    gfx::Insets* insets,
+    int frame_thickness) const {
+  if (delegate_->GetClientAreaInsets(insets, frame_thickness)) {
+    return true;
+  }
+  DCHECK(insets->IsEmpty());
+
+  // Returning false causes the default handling in OnNCCalcSize() to
+  // be invoked.
+  if (!delegate_->HasNonClientView() || HasSystemFrame()) {
+    return false;
+  }
+
+  if (IsMaximized()) {
+    // Windows automatically adds a standard width border to all sides when a
+    // window is maximized.
+    if (!delegate_->HasFrame()) {
+      frame_thickness -= 1;
+    }
+    *insets = gfx::Insets(frame_thickness);
+    return true;
+  }
+
+  *insets = gfx::Insets();
+  return true;
+}
+
 void HWNDMessageHandlerHeadless::SetHeadlessWindowBounds(
     const gfx::Rect& bounds) {
   if (bounds_ != bounds) {
@@ -423,12 +449,19 @@ void HWNDMessageHandlerHeadless::SetHeadlessWindowBounds(
 void HWNDMessageHandlerHeadless::SetBoundsInternal(
     const gfx::Rect& bounds_in_pixels,
     bool force_size_changed) {
-  gfx::Size old_size = GetClientAreaBounds().size();
+  gfx::Rect old_bounds = GetClientAreaBounds();
 
-  // Update the headless window bounds and notify the delegate pretending the
-  // platform window size has been changed.
   SetHeadlessWindowBounds(bounds_in_pixels);
-  if (old_size != bounds_in_pixels.size() || force_size_changed) {
+
+  // In normal mode the delegate is called when the platform window receives
+  // WM_MOVE/WM_MOVING messages, however, in headless mode platform window is
+  // never moved, so call the delegate here. See http://crbug.com/401294443.
+  if (old_bounds.origin() != bounds_in_pixels.origin()) {
+    delegate_->HandleMove();
+  }
+
+  // Notify the delegate pretending the platform window size has been changed.
+  if (old_bounds.size() != bounds_in_pixels.size() || force_size_changed) {
     delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
   }
 }

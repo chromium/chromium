@@ -25,9 +25,6 @@ namespace updater {
 // AppWakeAll finds and launches --wake applications for all versions of the
 // updater within the same scope.
 class AppWakeAll : public App {
- public:
-  AppWakeAll() = default;
-
  private:
   ~AppWakeAll() override = default;
 
@@ -47,7 +44,7 @@ void AppWakeAll::FirstTaskRun() {
             base::FileEnumerator(*base, false,
                                  base::FileEnumerator::DIRECTORIES)
                 .ForEach([&scope](const base::FilePath& name) {
-                  if (!base::Version(name.BaseName().MaybeAsASCII())
+                  if (!base::Version(name.BaseName().AsUTF8Unsafe())
                            .IsValid()) {
                     return;
                   }

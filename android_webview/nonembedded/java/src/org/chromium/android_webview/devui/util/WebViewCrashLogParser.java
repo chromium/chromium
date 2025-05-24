@@ -26,7 +26,7 @@ public class WebViewCrashLogParser extends CrashInfoLoader {
     // max age.
     private static final long MAX_CRASH_REPORT_AGE_MILLIS = TimeUnit.DAYS.toMillis(30);
 
-    private File mLogDir;
+    private final File mLogDir;
 
     /** @param logDir the directory where WebView store crash logs. */
     public WebViewCrashLogParser(File logDir) {

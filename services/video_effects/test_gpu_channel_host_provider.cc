@@ -41,6 +41,26 @@ TestGpuChannelHostProvider::TestGpuChannelHostProvider(
     gpu::mojom::GpuChannel& gpu_channel)
     : gpu_channel_(gpu_channel) {}
 
+scoped_refptr<viz::ContextProviderCommandBuffer>
+TestGpuChannelHostProvider::GetWebGpuContextProvider() {
+  return nullptr;
+}
+
+scoped_refptr<viz::RasterContextProvider>
+TestGpuChannelHostProvider::GetRasterInterfaceContextProvider() {
+  return nullptr;
+}
+
+scoped_refptr<gpu::ClientSharedImageInterface>
+TestGpuChannelHostProvider::GetSharedImageInterface() {
+  return nullptr;
+}
+
+void TestGpuChannelHostProvider::AddObserver(Observer&) {}
+void TestGpuChannelHostProvider::RemoveObserver(Observer&) {}
+
+TestGpuChannelHostProvider::~TestGpuChannelHostProvider() = default;
+
 scoped_refptr<gpu::GpuChannelHost>
 TestGpuChannelHostProvider::GetGpuChannelHost() {
   return base::MakeRefCounted<TestGpuChannelHost>(gpu_channel_.get());

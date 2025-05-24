@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/bits.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "build/build_config.h"
@@ -29,7 +28,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
@@ -88,19 +86,6 @@
 namespace gpu {
 
 namespace {
-
-// Determine whether to apply the correction of the computation on using the
-// color attachment, which conceptually is "can this backing be written".
-bool CorrectComputationOfUsagesNeedingColorAttachment() {
-  // This feature guards the addition of the invariant that the WebGPU
-  // RenderAttachment usage only gets passed when beginning access on Dawn
-  // representations if WEBGPU_WRITE has been specified when creating the
-  // backing. Without this invariant, there is no guarantee that a SharedImage
-  // with WEBGPU_READ won't require the color attachment (e.g., for lazy
-  // clearing).
-  return base::FeatureList::IsEnabled(
-      features::kDawnSIRepsUseClientProvidedInternalUsages);
-}
 
 class ScopedDedicatedMemoryObject {
  public:
@@ -187,17 +172,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
 
   SharedImageUsageSet usages_needing_color_attachment;
 
-  if (CorrectComputationOfUsagesNeedingColorAttachment()) {
-    usages_needing_color_attachment =
-        SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
-        SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-  } else {
-    usages_needing_color_attachment =
-        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-        SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU_READ |
-        SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-  }
+  usages_needing_color_attachment =
+      SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
@@ -373,9 +350,7 @@ ExternalVkImageBacking::CreateWithPixmap(
   }
 
   // Create a handle from pixmap.
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-  handle.native_pixmap_handle = pixmap->ExportHandle();
+  gfx::GpuMemoryBufferHandle handle(pixmap->ExportHandle());
 
   // Create backing from the handle.
   return CreateFromGMB(std::move(context_state), command_pool, mailbox,
@@ -426,7 +401,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
                   ->GetSurfaceFactoryOzone()
                   ->CreateNativePixmapFromHandle(
                       kNullSurfaceHandle, size, ToBufferFormat(format),
-                      std::move(handle.native_pixmap_handle));
+                      std::move(handle).native_pixmap_handle());
   }
 #endif  // BUILDFLAG(IS_OZONE)
 }
@@ -699,15 +674,10 @@ scoped_refptr<gfx::NativePixmap> ExternalVkImageBacking::GetNativePixmap() {
 
 gfx::GpuMemoryBufferHandle ExternalVkImageBacking::GetGpuMemoryBufferHandle() {
 #if BUILDFLAG(IS_OZONE)
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-  handle.native_pixmap_handle = pixmap_->ExportHandle();
-  return handle;
+  return gfx::GpuMemoryBufferHandle(pixmap_->ExportHandle());
 #else
-  LOG(ERROR) << "Illegal access to GetGpuMemoryBufferHandle for non OZONE "
-                "platforms from this backing.";
-  NOTREACHED_IN_MIGRATION();
-  return gfx::GpuMemoryBufferHandle();
+  NOTREACHED() << "Illegal access to GetGpuMemoryBufferHandle for non OZONE "
+                  "platforms from this backing.";
 #endif
 }
 
@@ -739,7 +709,8 @@ std::unique_ptr<DawnImageRepresentation> ExternalVkImageBacking::ProduceDawn(
   if (backend_type == wgpu::BackendType::OpenGLES) {
     auto image = ProduceGLTexturePassthrough(manager, tracker);
     return std::make_unique<DawnGLTextureRepresentation>(
-        std::move(image), manager, this, tracker, wgpuDevice);
+        std::move(image), manager, this, tracker, wgpuDevice,
+        std::move(view_formats));
   }
 #endif
 
@@ -1292,6 +1263,60 @@ bool ExternalVkImageBacking::UploadToVkImage(
   gr_context->submit();
 
   EndAccessInternal(/*readonly=*/false, std::move(end_access_semaphore));
+  // |external_semaphores| have been waited on and can be reused when submitted
+  // GPU work is done.
+  ReturnPendingSemaphoresWithFenceHelper(std::move(external_semaphores));
+  return success;
+}
+
+bool ExternalVkImageBacking::ReadbackToMemory(
+    const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), vk_textures_.size());
+
+  std::vector<ExternalSemaphore> external_semaphores;
+  if (!BeginAccess(/*readonly=*/true, &external_semaphores, /*is_gl=*/false)) {
+    DLOG(ERROR) << "BeginAccess() failed.";
+    return false;
+  }
+  auto* gr_context = context_state_->gr_context();
+  WaitSemaphoresOnGrContext(gr_context, &external_semaphores);
+
+  bool success = true;
+  for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+    if (!vk_textures_[plane].Readback(gr_context, pixmaps[plane])) {
+      success = false;
+    }
+  }
+
+  if (!need_synchronization()) {
+    DCHECK(external_semaphores.empty());
+    EndAccess(/*readonly=*/true, ExternalSemaphore(), /*is_gl=*/false);
+    return success;
+  }
+
+  for (auto& vk_texture : vk_textures_) {
+    gr_context->setBackendTextureState(
+        vk_texture.backend_texture,
+        skgpu::MutableTextureStates::MakeVulkan(VK_IMAGE_LAYOUT_UNDEFINED,
+                                                VK_QUEUE_FAMILY_EXTERNAL));
+  }
+
+  auto end_access_semaphore = external_semaphore_pool()->GetOrCreateSemaphore();
+  VkSemaphore vk_end_access_semaphore = end_access_semaphore.GetVkSemaphore();
+  GrBackendSemaphore end_access_backend_semaphore =
+      GrBackendSemaphores::MakeVk(vk_end_access_semaphore);
+  GrFlushInfo flush_info = {
+      .fNumSemaphores = 1,
+      .fSignalSemaphores = &end_access_backend_semaphore,
+  };
+  gr_context->flush(flush_info);
+
+  // Submit so the |end_access_semaphore| is ready for waiting.
+  gr_context->submit();
+
+  EndAccess(/*readonly=*/true, std::move(end_access_semaphore),
+            /*is_gl=*/false);
+
   // |external_semaphores| have been waited on and can be reused when submitted
   // GPU work is done.
   ReturnPendingSemaphoresWithFenceHelper(std::move(external_semaphores));

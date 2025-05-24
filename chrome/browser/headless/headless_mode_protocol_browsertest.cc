@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "chrome/browser/headless/test/headless_browser_test_utils.h"
 #include "components/headless/select_file_dialog/headless_select_file_dialog.h"
@@ -205,6 +206,25 @@ void HeadlessModeProtocolBrowserTest::OnConsoleAPICalled(
   }
 }
 
+// This is a very simple command line switches parser intended to process '--'
+// separated switches with or without values. It will not process nested command
+// line switches specifications like --js-flags=--expose-gc. Use with caution!
+void HeadlessModeProtocolBrowserTest::AppendCommandLineExtras(
+    base::CommandLine* command_line,
+    std::string_view extras) {
+  std::vector<std::string> switches = base::SplitStringUsingSubstr(
+      extras, "--", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (const auto& a_switch : switches) {
+    if (size_t pos = a_switch.find('=', 1); pos != std::string::npos) {
+      command_line->AppendSwitchASCII(a_switch.substr(0, pos),
+                                      a_switch.substr(pos + 1));
+    } else {
+      command_line->AppendSwitch(a_switch);
+    }
+  }
+}
+
 HEADLESS_MODE_PROTOCOL_TEST(DomFocus, "input/dom-focus.js")
 HEADLESS_MODE_PROTOCOL_TEST(FocusEvent, "input/focus-event.js")
 
@@ -219,6 +239,9 @@ HEADLESS_MODE_PROTOCOL_TEST(DISABLED_FocusBlurNotifications,
 #endif
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_InputClipboardOps,
                             "input/input-clipboard-ops.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(DocumentFocusOnLoad,
+                            "input/document-focus-on-load.js")
 
 class HeadlessModeInputSelectFileDialogTest
     : public HeadlessModeProtocolBrowserTest {
@@ -283,7 +306,7 @@ HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeScreencastTest,
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "sanity/large-browser-window-size.js")
 
-// These currently fail on Mac,see https://crbug.com/1488010
+// These currently fail on Mac, see https://crbug.com/1488010
 #if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(MinimizeRestoreWindow,
                             "sanity/minimize-restore-window.js")
@@ -293,17 +316,85 @@ HEADLESS_MODE_PROTOCOL_TEST(FullscreenRestoreWindow,
                             "sanity/fullscreen-restore-window.js")
 #endif  // !BUILDFLAG(IS_MAC)
 
-HEADLESS_MODE_PROTOCOL_TEST(MaximizedWindowSize,
-                            "sanity/maximized-window-size.js")
-
-// This currently fails on Mac,see https://crbug.com/1500046
+// This currently fails on Mac, see https://crbug.com/416088625
 #if !BUILDFLAG(IS_MAC)
-HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSize,
-                            "sanity/fullscreen-window-size.js")
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MaximizedWindowSize,
+    "sanity/maximized-window-size.js",
+    "--screen-info={1600x1200}")
+#endif  // !BUILDFLAG(IS_MAC)
+
+// This currently fails on Mac, see https://crbug.com/1500046
+#if !BUILDFLAG(IS_MAC)
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    FullscreenWindowSize,
+    "sanity/fullscreen-window-size.js",
+    "--screen-info={1600x1200}")
 #endif  // !BUILDFLAG(IS_MAC)
 
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
                             "sanity/print-to-pdf-tiny-page.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "sanity/request-fullscreen.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
+                            "sanity/create-target-position.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(CreateTargetWindowState,
+                            "sanity/create-target-window-state.js")
+
+// Headless Mode uses Ozone only when running on Linux.
+#if BUILDFLAG(IS_LINUX)
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    OzoneScreenSizeOverride,
+    "sanity/ozone-screen-size-override.js",
+    "--ozone-override-screen-size=1234,5678")
+#endif
+
+// This currently results in an unexpected screen orientation type,
+// see http://crbug.com/398150465.
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MultipleScreenDetails,
+    "sanity/multiple-screen-details.js",
+    "--screen-info={label=#1}{600x800 label='#2'}")
+
+// TODO(crbug.com/40283476): MoveWindowBetweenScreens is failing on Mac
+#if !BUILDFLAG(IS_MAC)
+#define MAYBE_MoveWindowBetweenScreens MoveWindowBetweenScreens
+#else
+#define MAYBE_MoveWindowBetweenScreens DISABLED_MoveWindowBetweenScreens
+#endif
+
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MAYBE_MoveWindowBetweenScreens,
+    "sanity/move-window-between-screens.js",
+    "--screen-info={label='#1'}{label='#2'}{0,600 label='#3'}{label='#4'}")
+
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    WindowOpenOnSecondaryScreen,
+    "sanity/window-open-on-secondary-screen.js",
+    "--screen-info={label='#1'}{label='#2'} --disable-popup-blocking")
+
+// TODO(crbug.com/40283476): CreateTargetSecondaryScreen is failing on Mac
+#if !BUILDFLAG(IS_MAC)
+#define MAYBE_CreateTargetSecondaryScreen CreateTargetSecondaryScreen
+#else
+#define MAYBE_CreateTargetSecondaryScreen DISABLED_CreateTargetSecondaryScreen
+#endif
+
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MAYBE_CreateTargetSecondaryScreen,
+    "sanity/create-target-secondary-screen.js",
+    "--screen-info={label='#1'}{label='#2'}")
+
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    WindowOpenPopupPlacement,
+    "sanity/window-open-popup-placement.js",
+    "--screen-info={1600x1200} --disable-popup-blocking")
+
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    WindowSizeSwitchHandling,
+    "sanity/window-size-switch-handling.js",
+    "--screen-info={1600x1200} --window-size=700,500")
+
 }  // namespace headless

@@ -6,9 +6,9 @@ package org.chromium.content_public.browser.selection;
 
 import android.content.pm.ResolveInfo;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.SelectionMenuItem;
+import org.chromium.content_public.browser.SelectionPopupController;
 
 import java.util.List;
 
@@ -16,6 +16,7 @@ import java.util.List;
  * Interface for modifying text selection menu functionality. Content embedders can provide
  * implementation to provide text selection menu item custom behavior.
  */
+@NullMarked
 public interface SelectionActionMenuDelegate {
     /**
      * Allows the delegate make changes to default menu items created by {@link
@@ -26,12 +27,15 @@ public interface SelectionActionMenuDelegate {
      *
      * @param menuItemBuilders default menu item builder list which need to be modified.
      * @param isSelectionPassword True if current selection is of password type, False otherwise.
+     * @param isSelectionReadOnly True if current node having selection is editable, False
+     *     otherwise.
      * @param selectedText The selected text (empty if no text selected).
      */
     void modifyDefaultMenuItems(
             List<SelectionMenuItem.Builder> menuItemBuilders,
             boolean isSelectionPassword,
-            @NonNull String selectedText);
+            boolean isSelectionReadOnly,
+            String selectedText);
 
     /**
      * Allows filtering of text processing activities.
@@ -48,7 +52,6 @@ public interface SelectionActionMenuDelegate {
      *
      * @return list of additional non selection secondary menu items if any.
      */
-    @NonNull
     List<SelectionMenuItem> getAdditionalNonSelectionItems();
 
     /**
@@ -58,6 +61,16 @@ public interface SelectionActionMenuDelegate {
      *
      * @return list of additional text selection menu items handling text processing if any.
      */
-    @NonNull
     List<SelectionMenuItem> getAdditionalTextProcessingItems();
+
+    /**
+     * Queries if selection menu item cache can be reused. Selection menu's items can be cached for
+     * repeated selections. Delegate can add menu items using {@link #modifyDefaultMenuItems(List)}
+     * API due to which repeated selections can result in different selection menu items being
+     * shown.
+     *
+     * @return True, if cached selection menu items can be reused for repeated selection, False
+     *     otherwise.
+     */
+    boolean canReuseCachedSelectionMenu();
 }

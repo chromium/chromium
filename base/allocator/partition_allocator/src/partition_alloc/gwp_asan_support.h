@@ -111,6 +111,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) GwpAsanSupport {
  public:
   static void* MapRegion(size_t slot_count, std::vector<uint16_t>& free_list);
   static bool CanReuse(uintptr_t slot_start);
+  static void DestructForTesting();
 };
 
 }  // namespace partition_alloc

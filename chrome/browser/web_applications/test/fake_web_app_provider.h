@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -199,6 +200,8 @@ class FakeWebAppProvider : public WebAppProvider {
 
   FakeWebAppProvider* AsFakeWebAppProviderForTesting() override;
 
+  FakeWebContentsManager* GetFakeWebContentsManager() const;
+
   syncer::MockDataTypeLocalChangeProcessor& processor() {
     return mock_processor_;
   }
@@ -227,7 +230,7 @@ class FakeWebAppProvider : public WebAppProvider {
   AutomaticIwaUpdateStrategy automatic_iwa_update_strategy_ =
       AutomaticIwaUpdateStrategy::kForceDisabled;
 
-  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
+  ::testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 };
 
 // Used in BrowserTests to ensure that the WebAppProvider that is create on

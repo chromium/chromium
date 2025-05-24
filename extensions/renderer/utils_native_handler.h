@@ -24,7 +24,7 @@ class UtilsNativeHandler : public ObjectBackedNativeHandler {
   void AddRoutes() override;
 
  private:
-  // |args| consists of one argument: an arbitrary value. Returns a deep copy of
+  // `args` consists of one argument: an arbitrary value. Returns a deep copy of
   // that value. The copy will have no references to nested values of the
   // argument.
   void DeepCopy(const v8::FunctionCallbackInfo<v8::Value>& args);

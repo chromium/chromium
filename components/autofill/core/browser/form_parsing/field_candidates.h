@@ -9,20 +9,24 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+#include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/is_required.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
 // Represents a possible type for a given field.
 struct FieldCandidate {
-  FieldCandidate(FieldType field_type, float field_score);
-
   // The associated type for this candidate.
-  FieldType type = UNKNOWN_TYPE;
+  FieldType type = internal::IsRequired();
+
+  // Based on which attribute the `type` was derived.
+  MatchAttribute match_attribute = internal::IsRequired();
 
   // A non-negative number indicating how sure the type is for this specific
   // candidate. The higher the more confidence.
-  float score = 0.0f;
+  float score = internal::IsRequired();
 };
 
 // Each field can be of different types. This class collects all these possible
@@ -41,10 +45,15 @@ class FieldCandidates {
   // based solely on their numeric values. BestHeuristicType() uses |score| to
   // determine the most likely type for this given field. Please see
   // field_candidates.cc for details on how this type is actually chosen.
-  void AddFieldCandidate(FieldType type, float score);
+  void AddFieldCandidate(FieldType type,
+                         MatchAttribute match_attribute,
+                         float score);
 
   // Determines the best type based on the current possible types.
   FieldType BestHeuristicType() const;
+
+  // The MatchAttributes responsible for determining `BestHeuristicType()`.
+  DenseSet<MatchAttribute> BestHeuristicTypeReason() const;
 
  private:
   // Internal storage for all the possible types for a given field.

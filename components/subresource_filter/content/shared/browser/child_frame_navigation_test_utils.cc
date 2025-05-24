@@ -160,7 +160,7 @@ void ChildFrameNavigationFilteringThrottleTestHarness::
       AsyncDocumentSubresourceFilter::InitializationParams(
           document_url, url::Origin::Create(document_url),
           parent_activation_state),
-      activation_state.GetCallback());
+      activation_state.GetCallback(), kSafeBrowsingRulesetConfig.uma_tag);
   RunUntilIdle();
   activation_state.ExpectReceivedOnce(parent_activation_state);
 }

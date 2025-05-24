@@ -29,7 +29,8 @@ TEST(DelegatedInkTest, PointAndMetadataMatch) {
 
   DelegatedInkMetadata metadata_with_frame_time(
       point, /*diameter=*/7.777f, SK_ColorCYAN, timestamp,
-      gfx::RectF(6, 14, 240, 307), base::TimeTicks::Now(), /*hovering=*/true);
+      gfx::RectF(6, 14, 240, 307), base::TimeTicks::Now(), /*hovering=*/true,
+      /*render_pass_id=*/0);
 
   EXPECT_TRUE(ink_point.MatchesDelegatedInkMetadata(&metadata_with_frame_time));
   EXPECT_TRUE(point_no_pointer_id.MatchesDelegatedInkMetadata(

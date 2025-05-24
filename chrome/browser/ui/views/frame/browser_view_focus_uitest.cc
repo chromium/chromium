@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -123,15 +122,15 @@ class FocusedViewClassRecorder : public views::FocusChangeListener {
 
  private:
   // Inherited from views::FocusChangeListener
-  void OnWillChangeFocus(views::View* focused_before,
-                         views::View* focused_now) override {}
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override {
-    if (focused_now)
-      if (!views::IsViewClass<views::WebView>(focused_now))
+    if (focused_now) {
+      if (!views::IsViewClass<views::WebView>(focused_now)) {
         // Focused views could be destroyed. Track what we want to test for when
         // OnDidChangeFocus is called.
         has_focused_on_non_webview_ = true;
+      }
+    }
     focus_change_count++;
   }
 

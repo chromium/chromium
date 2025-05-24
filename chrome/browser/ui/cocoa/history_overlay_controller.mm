@@ -123,9 +123,9 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
   // When tracking the gesture, the height is constant and the alpha value
   // changes from [0.25, 0.65].
   CGFloat height = kShieldHeight;
-  CGFloat shieldAlpha = std::min(static_cast<CGFloat>(0.65),
-                                 std::max(gestureAmount,
-                                          static_cast<CGFloat>(0.25)));
+  CGFloat shieldAlpha =
+      std::min(static_cast<CGFloat>(0.65),
+               std::max(gestureAmount, static_cast<CGFloat>(0.25)));
 
   // When the gesture is very likely to be completed (90% in this case), grow
   // the semicircle's height and lock the alpha to 0.75.
@@ -140,10 +140,11 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
   frame.origin.y = (NSHeight(parentFrame) / 2) - (height / 2);
 
   CGFloat width = std::min(kShieldRadius * gestureAmount, kShieldRadius);
-  if (_mode == kHistoryOverlayModeForward)
+  if (_mode == kHistoryOverlayModeForward) {
     frame.origin.x = NSMaxX(parentFrame) - width;
-  else if (_mode == kHistoryOverlayModeBack)
+  } else if (_mode == kHistoryOverlayModeBack) {
     frame.origin.x = NSMinX(parentFrame) - kShieldWidth + width;
+  }
 
   self.view.frame = frame;
   _contentView.shieldAlpha = shieldAlpha;

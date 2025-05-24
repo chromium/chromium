@@ -5,13 +5,32 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/bookmarks_list"
-    style="@style/DarkModeCompatibleVerticalScrolling"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bookmark_widget_background"
-    android:divider="@null"
-    android:drawSelectorOnTop="true"
-    android:listSelector="@drawable/bookmark_widget_list_selector"
-    android:alpha="0.9" />
+    android:theme="@style/Theme.Chromium.Widget"
+    tools:ignore="MergeRootFrame">
+
+    <ListView
+        android:id="@+id/bookmarks_list"
+        style="@style/DarkModeCompatibleVerticalScrolling"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bookmark_widget_background"
+        android:divider="@null"
+        android:drawSelectorOnTop="true"
+        android:listSelector="@drawable/bookmark_widget_list_selector" />
+
+    <TextView
+        android:id="@+id/empty_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/bookmark_widget_min_height"
+        android:paddingBottom="@dimen/bookmark_widget_min_height"
+        android:gravity="center"
+        android:text="@string/bookmark_widget_empty_msg"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:visibility="gone" />
+
+</FrameLayout>

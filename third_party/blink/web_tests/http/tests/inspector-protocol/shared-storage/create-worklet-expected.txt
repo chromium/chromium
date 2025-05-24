@@ -1,0 +1,74 @@
+Tests sharedStorage.createWorklet event notification.
+Metadata: {
+    bytesUsed : 50
+    creationTime : <number>
+    length : 1
+    remainingBudget : 12
+}
+Entries:[
+    [0] : {
+        key : key-set-from-worklet
+        value : value
+    }
+]
+Events: [
+    [0] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        method : clear
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+        }
+        scope : window
+    }
+    [1] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        method : createWorklet
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+            dataOrigin : context-origin
+            scriptSourceUrl : http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/shared-storage-module.js
+            workletOrdinal : <number>
+            workletTargetId : <string>
+        }
+        scope : window
+    }
+    [2] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        method : run
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+            keepAlive : false
+            operationId : 0
+            operationName : set-operation
+            privateAggregationConfig : {
+                filteringIdMaxBytes : 1
+            }
+            serializedData : <string>
+            workletOrdinal : <number>
+            workletTargetId : <string>
+        }
+        scope : window
+    }
+    [3] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        method : set
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+            ignoreIfPresent : false
+            key : key-set-from-worklet
+            value : value
+            workletOrdinal : <number>
+            workletTargetId : <string>
+        }
+        scope : sharedStorageWorklet
+    }
+]
+

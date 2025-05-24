@@ -12,10 +12,12 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -24,6 +26,8 @@ import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 /** Tests for {@link ScrollDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ScrollDelegateUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final float STRIP_WIDTH = 150.f;
     private static final float LEFT_MARGIN = 5.f;
     private static final float RIGHT_MARGIN = 5.f;
@@ -32,11 +36,16 @@ public class ScrollDelegateUnitTest {
     private static final float REORDER_START_MARGIN = 10.f;
     private static final float TRAILING_MARGIN_WIDTH = 10.f;
 
-    private static final float TEST_MIN_SCROLL_OFFSET = -200.f;
+    /**
+     * The scroll offset limit of the tab strip, which is a 1-D vector along the X axis under the
+     * dynamic coordinate system used by {@link ScrollDelegate}.
+     */
+    private static final float TEST_SCROLL_OFFSET_LIMIT = -200.f;
+
     private static final long TIMESTAMP = 0;
 
     private final Context mContext = RuntimeEnvironment.systemContext;
-    private final ScrollDelegate mScrollDelegate = new ScrollDelegate();
+    private ScrollDelegate mScrollDelegate;
 
     @Mock private StripLayoutGroupTitle mGroupTitle;
     @Mock private StripLayoutTab mTab1;
@@ -47,9 +56,8 @@ public class ScrollDelegateUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        mScrollDelegate.onContextChanged(mContext);
-        mScrollDelegate.setMinScrollOffsetForTesting(TEST_MIN_SCROLL_OFFSET);
+        mScrollDelegate = new ScrollDelegate(mContext);
+        mScrollDelegate.setScrollOffsetLimitForTesting(TEST_SCROLL_OFFSET_LIMIT);
     }
 
     @Test
@@ -59,7 +67,7 @@ public class ScrollDelegateUnitTest {
         mScrollDelegate.setScrollOffset(newScrollOffset);
         assertEquals(
                 /* message= */ "Offset should be clamped.",
-                TEST_MIN_SCROLL_OFFSET,
+                TEST_SCROLL_OFFSET_LIMIT,
                 mScrollDelegate.getScrollOffset(),
                 /* delta= */ 0);
     }
@@ -137,7 +145,8 @@ public class ScrollDelegateUnitTest {
         // stripWidth = width(150) - leftMargin(5) - rightMargin(5) = 140
         // viewsWidth = 3*(viewWidth(110) - overlapWidth(10)) + overlapWidth(10) = 310
         // marginsWidth = trailingMarginWidth(10) + reorderStartMargin(10) = 20
-        // expectedMinScrollOffset = viewsWidth(310) + marginsWidth(20) - stripWidth(140) = -190
+        // expectedScrollOffsetLimit = viewsWidth(310) + marginsWidth(20) - stripWidth(140) = -190
+        mScrollDelegate.setReorderStartMargin(REORDER_START_MARGIN);
         mScrollDelegate.updateScrollOffsetLimits(
                 mViews,
                 STRIP_WIDTH,
@@ -145,14 +154,12 @@ public class ScrollDelegateUnitTest {
                 RIGHT_MARGIN,
                 VIEW_WIDTH,
                 VIEW_OVERLAP_WIDTH,
-                VIEW_OVERLAP_WIDTH,
-                REORDER_START_MARGIN,
-                /* shouldShowTrailingMargins= */ true);
-        float expectedMinScrollOffset = -190.f;
+                VIEW_OVERLAP_WIDTH);
+        float expectedScrollOffsetLimit = -190.f;
         assertEquals(
-                /* message= */ "minScrollOffset was not as calculated.",
-                expectedMinScrollOffset,
-                mScrollDelegate.getMinScrollOffsetForTesting(),
+                /* message= */ "scrollOffsetLimit was not as calculated.",
+                expectedScrollOffsetLimit,
+                mScrollDelegate.getScrollOffsetLimitForTesting(),
                 /* delta= */ 0);
     }
 

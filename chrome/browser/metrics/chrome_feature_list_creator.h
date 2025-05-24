@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_browser_field_trials.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/installer/util/initial_preferences.h"
@@ -65,7 +64,7 @@ class ChromeFeatureListCreator {
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>
   TakeChromeBrowserPolicyConnector();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<installer::InitialPreferences> TakeInitialPrefs();
 #endif
 
@@ -79,14 +78,14 @@ class ChromeFeatureListCreator {
     return browser_field_trials_.get();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Get the FeatureList::Accessor, clearing immediately -- this must only be
   // used by ChromeBrowserMainPartsAsh.
   std::unique_ptr<base::FeatureList::Accessor> GetAndClearFeatureListAccessor(
       base::PassKey<ash::ChromeBrowserMainPartsAsh> key) {
     return std::move(cros_feature_list_accessor_);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   void CreatePrefService();
@@ -128,15 +127,15 @@ class ChromeFeatureListCreator {
 
   std::unique_ptr<ChromeBrowserFieldTrials> browser_field_trials_;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<installer::InitialPreferences> installer_initial_prefs_;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, the platform needs to be able to access the
   // FeatureList::Accessor. On other platforms, this API should not be used.
   std::unique_ptr<base::FeatureList::Accessor> cros_feature_list_accessor_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_FEATURE_LIST_CREATOR_H_

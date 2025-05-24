@@ -14,14 +14,15 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
 import java.util.ArrayList;
 
 /**
- * This class holds all data that is necessary to restore the state of the Keyboard accessory
- * and its sheet for the {@link WebContents} it is attached to.
+ * This class holds all data that is necessary to restore the state of the Keyboard accessory and
+ * its sheet for the {@link WebContents} it is attached to.
  */
 class ManualFillingState {
     private static final int[] TAB_ORDER = {
@@ -41,16 +42,11 @@ class ManualFillingState {
         }
 
         @Override
-        public void wasShown() {
-            super.wasShown();
-            mWebContentsShowing = true;
-            if (mActionsProvider != null) mActionsProvider.notifyAboutCachedItems();
-        }
-
-        @Override
-        public void wasHidden() {
-            super.wasHidden();
-            mWebContentsShowing = false;
+        public void onVisibilityChanged(@Visibility int visibility) {
+            mWebContentsShowing = visibility == Visibility.VISIBLE;
+            if (mWebContentsShowing && mActionsProvider != null) {
+                mActionsProvider.notifyAboutCachedItems();
+            }
         }
     }
 
@@ -69,7 +65,6 @@ class ManualFillingState {
         mWebContents = webContents;
         mWebContentsShowing = true;
         mWebContentsObserver = new Observer(mWebContents);
-        mWebContents.addObserver(mWebContentsObserver);
     }
 
     /**
@@ -102,7 +97,9 @@ class ManualFillingState {
     }
 
     void destroy() {
-        if (mWebContents != null) mWebContents.removeObserver(mWebContentsObserver);
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(null);
+        }
         mActionsProvider = null;
         mSheetDataProviders.clear();
         mWebContentsShowing = false;

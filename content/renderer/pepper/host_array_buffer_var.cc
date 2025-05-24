@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process_handle.h"
@@ -37,7 +38,7 @@ HostArrayBufferVar::HostArrayBufferVar(
   base::WritableSharedMemoryMapping shm_mapping =
       region.MapAt(0, size_in_bytes);
   if (shm_mapping.IsValid()) {
-    memcpy(buffer_.Data(), shm_mapping.memory(), size_in_bytes);
+    UNSAFE_TODO(memcpy(buffer_.Data(), shm_mapping.memory(), size_in_bytes));
   }
 }
 
@@ -69,7 +70,7 @@ bool HostArrayBufferVar::CopyToNewShmem(
   base::WritableSharedMemoryMapping shm_mapping = shm.MapAt(0, ByteLength());
   if (!shm_mapping.IsValid())
     return false;
-  memcpy(shm_mapping.memory(), Map(), ByteLength());
+  UNSAFE_TODO(memcpy(shm_mapping.memory(), Map(), ByteLength()));
 
   // Duplicate the handle here; the UnsafeSharedMemoryRegion destructor closes
   // its handle on us.

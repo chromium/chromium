@@ -274,9 +274,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
                                       background_task_runner_));
   }
 
-  void ClearRulesetService() {
-    service_.reset();
-  }
+  void ClearRulesetService() { service_.reset(); }
 
   // Creates a new file with the given license |contents| at a unique temporary
   // path, which is returned in |path|.
@@ -367,7 +365,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
     return RulesetService::WriteRuleset(
                GetExpectedVersionDirPath(indexed_version), license_path,
                test_ruleset_pair.indexed.contents) ==
-           RulesetService::IndexAndWriteRulesetResult::SUCCESS;
+           RulesetService::IndexAndWriteRulesetResult::kSuccess;
   }
 
   void DeleteObsoleteRulesets(const base::FilePath& indexed_ruleset_base_dir,
@@ -421,8 +419,9 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
   }
 
   void RunBackgroundPendingTasksNTimes(size_t n) {
-    while (n--)
+    while (n--) {
       background_task_runner_->RunPendingTasks();
+    }
   }
 
   void AssertValidRulesetFileWithContents(
@@ -499,10 +498,10 @@ class SubresourceFilteringRulesetServiceDeathTest
 
  protected:
   void SetUpTempDir() override {
-    if (environment_->HasVar(kInheritedTempDirKey)) {
-      std::string value;
-      ASSERT_TRUE(environment_->GetVar(kInheritedTempDirKey, &value));
-      inherited_temp_dir_ = base::FilePath::FromUTF8Unsafe(value);
+    std::optional<std::string> value =
+        environment_->GetVar(kInheritedTempDirKey);
+    if (value.has_value()) {
+      inherited_temp_dir_ = base::FilePath::FromUTF8Unsafe(value.value());
     } else {
       SubresourceFilteringRulesetServiceTest::SetUpTempDir();
       environment_->SetVar(kInheritedTempDirKey,
@@ -512,27 +511,25 @@ class SubresourceFilteringRulesetServiceDeathTest
 
   void TearDown() override {
     SubresourceFilteringRulesetServiceTest::TearDown();
-    if (inherited_temp_dir_.empty())
+    if (inherited_temp_dir_.empty()) {
       environment_->UnSetVar(kInheritedTempDirKey);
+    }
   }
 
   base::FilePath effective_temp_dir() const override {
-    if (!inherited_temp_dir_.empty())
+    if (!inherited_temp_dir_.empty()) {
       return inherited_temp_dir_;
+    }
     return SubresourceFilteringRulesetServiceTest::effective_temp_dir();
   }
 
  private:
-  static const char kInheritedTempDirKey[];
+  static constexpr char kInheritedTempDirKey[] =
+      "SUBRESOURCE_FILTERING_RULESET_SERVICE_DEATH_TEST_TEMP_DIR";
 
   std::unique_ptr<base::Environment> environment_;
   base::FilePath inherited_temp_dir_;
 };
-
-// static
-const char SubresourceFilteringRulesetServiceDeathTest::kInheritedTempDirKey[] =
-    "SUBRESOURCE_FILTERING_RULESET_SERVICE_DEATH_TEST_TEMP_DIR";
-
 
 TEST_F(SubresourceFilteringRulesetServiceTest, PathsAreSane) {
   IndexedRulesetVersion indexed_version(
@@ -821,7 +818,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_Persisted) {
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
-      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::SUCCESS), 1);
+      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::kSuccess),
+      1);
 }
 
 // Test the scenario where a faulty copy of the ruleset resides on disk, that
@@ -886,7 +884,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
-      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::SUCCESS), 1);
+      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::kSuccess),
+      1);
 }
 
 TEST_F(SubresourceFilteringRulesetServiceTest,
@@ -918,7 +917,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(RulesetService::IndexAndWriteRulesetResult::
-                           FAILED_OPENING_UNINDEXED_RULESET),
+                           kFailedOpeningUnindexedRuleset),
       1);
 }
 
@@ -951,7 +950,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_ParseFailure) {
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(RulesetService::IndexAndWriteRulesetResult::
-                           FAILED_PARSING_UNINDEXED_RULESET),
+                           kFailedParsingUnindexedRuleset),
       1);
 }
 
@@ -1003,7 +1002,7 @@ TEST_F(SubresourceFilteringRulesetServiceDeathTest, NewRuleset_IndexingCrash) {
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(RulesetService::IndexAndWriteRulesetResult::
-                           ABORTED_BECAUSE_SENTINEL_FILE_PRESENT),
+                           kAbortedBecauseSentinelFilePresent),
       1);
 }
 
@@ -1036,7 +1035,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_WriteFailure) {
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
-      static_cast<int>(IndexAndWriteRulesetResult::FAILED_REPLACE_FILE), 1);
+      static_cast<int>(IndexAndWriteRulesetResult::kFailedReplaceFile), 1);
 }
 
 TEST_F(SubresourceFilteringRulesetServiceTest,

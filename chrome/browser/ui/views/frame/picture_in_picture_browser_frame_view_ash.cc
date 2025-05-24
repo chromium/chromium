@@ -7,10 +7,12 @@
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/views/background.h"
 
 PictureInPictureBrowserFrameViewAsh::PictureInPictureBrowserFrameViewAsh(
     BrowserFrame* frame,
@@ -28,29 +30,25 @@ PictureInPictureBrowserFrameViewAsh::~PictureInPictureBrowserFrameViewAsh() =
     default;
 
 void PictureInPictureBrowserFrameViewAsh::UpdateWindowRoundedCorners() {
-  if (!chromeos::features::IsRoundedWindowsEnabled()) {
-    return;
-  }
+  aura::Window* window = GetWidget()->GetNativeWindow();
+  const gfx::RoundedCornersF window_radii{chromeos::kPipRoundedCornerRadius};
 
-  aura::Window* frame_window = GetWidget()->GetNativeWindow();
-  const int corner_radius = chromeos::GetFrameCornerRadius(frame_window);
+  window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                      window_radii.upper_left());
 
-  frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
-                            corner_radius);
+  const gfx::RoundedCornersF radii(window_radii.upper_left(),
+                                   window_radii.upper_right(), 0, 0);
+  top_bar_container_view()->SetBackground(views::CreateRoundedRectBackground(
+      kColorPipWindowTopBarBackground, radii));
 
-  const gfx::RoundedCornersF radii(corner_radius, corner_radius, 0, 0);
-  top_bar_container_view()->SetPaintToLayer();
-  top_bar_container_view()->layer()->SetRoundedCornerRadius(radii);
-  top_bar_container_view()->layer()->SetIsFastRoundedCorner(/*enable=*/true);
-
-  GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
+  GetWidget()->client_view()->UpdateWindowRoundedCorners(window_radii);
 }
 
 void PictureInPictureBrowserFrameViewAsh::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  if (chromeos::CanPropertyEffectFrameRadius(key)) {
+  if (chromeos::CanPropertyEffectWindowRadius(key)) {
     UpdateWindowRoundedCorners();
   }
 }

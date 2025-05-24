@@ -49,7 +49,7 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
     virtual content::WebContents* GetWebContentsForExtension() = 0;
   };
 
-  // If |extension_filter| is not ALL_EXTENSIONS, only keybindings by
+  // If `extension_filter` is not ALL_EXTENSIONS, only keybindings by
   // by extensions that match the filter will be registered.
   ExtensionKeybindingRegistry(content::BrowserContext* context,
                               ExtensionFilter extension_filter,
@@ -67,26 +67,33 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
     return shortcut_handling_suspended_;
   }
 
-  // Check whether the specified |accelerator| has been registered.
+  // Check whether the specified `accelerator` has been registered.
   bool IsAcceleratorRegistered(const ui::Accelerator& accelerator) const;
 
  protected:
-  // Add extension keybindings for the events defined by the |extension|.
-  // |command_name| is optional, but if not blank then only the command
+  // Add extension keybindings for the events defined by the `extension`.
+  // `command_name` is optional, but if not blank then only the command
   // specified will be added.
-  virtual void AddExtensionKeybindings(
-      const Extension* extension,
-      const std::string& command_name) = 0;
-  // Remove extension bindings for |extension|. |command_name| is optional,
+  void AddExtensionKeybindings(const Extension* extension,
+                               const std::string& command_name);
+  // Remove extension bindings for `extension`. `command_name` is optional,
   // but if not blank then only the command specified will be removed.
   void RemoveExtensionKeybinding(
       const Extension* extension,
       const std::string& command_name);
+
+  // Populates the commands for the extension. Returns whether the commands were
+  // populated.
+  virtual bool PopulateCommands(const Extension* extension,
+                                ui::CommandMap* commands) = 0;
+
+  // Overridden by platform specific implementations to provide additional
+  // registration (which varies between platforms). Returns whether the
+  // accelerator was registered.
+  virtual bool RegisterAccelerator(const ui::Accelerator& accelerator) = 0;
   // Overridden by platform specific implementations to provide additional
   // unregistration (which varies between platforms).
-  virtual void RemoveExtensionKeybindingImpl(
-      const ui::Accelerator& accelerator,
-      const std::string& command_name) = 0;
+  virtual void UnregisterAccelerator(const ui::Accelerator& accelerator) {}
 
   // Called when shortcut handling is suspended or resumed.
   virtual void OnShortcutHandlingSuspended(bool suspended) {}
@@ -98,7 +105,7 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // commands are currently ignored, since they are handled elsewhere.
   bool ShouldIgnoreCommand(const std::string& command) const;
 
-  // Fire event targets which the specified |accelerator| is binding with.
+  // Fire event targets which the specified `accelerator` is binding with.
   // Returns true if we can find the appropriate event targets.
   bool NotifyEventTargets(const ui::Accelerator& accelerator);
 
@@ -107,22 +114,22 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
                        const std::string& command);
 
   // Add event target (extension_id, command name) to the target list of
-  // |accelerator|. Note that only media keys can have more than one event
+  // `accelerator`. Note that only media keys can have more than one event
   // target.
   void AddEventTarget(const ui::Accelerator& accelerator,
                       const ExtensionId& extension_id,
                       const std::string& command_name);
 
-  // Get the first event target by the given |accelerator|. For a valid
+  // Get the first event target by the given `accelerator`. For a valid
   // accelerator it should have only one event target, except for media keys.
-  // Returns true if we can find it, |extension_id| and |command_name| will be
-  // set to the right target; otherwise, false is returned and |extension_id|,
-  // |command_name| are unchanged.
+  // Returns true if we can find it, `extension_id` and `command_name` will be
+  // set to the right target; otherwise, false is returned and `extension_id`,
+  // `command_name` are unchanged.
   bool GetFirstTarget(const ui::Accelerator& accelerator,
                       ExtensionId* extension_id,
                       std::string* command_name) const;
 
-  // Returns true if the |event_targets_| is empty; otherwise returns false.
+  // Returns true if the `event_targets_` is empty; otherwise returns false.
   bool IsEventTargetsEmpty() const;
 
   // Returns the BrowserContext for this registry.
@@ -146,11 +153,11 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // ui::MediaKeysListener::Delegate:
   void OnMediaKeysAccelerator(const ui::Accelerator& accelerator) override;
 
-  // Returns true if the |extension| matches our extension filter.
+  // Returns true if the `extension` matches our extension filter.
   bool ExtensionMatchesFilter(const extensions::Extension* extension);
 
-  // Execute commands for |accelerator|. If |extension_id| is empty, execute all
-  // commands bound to |accelerator|, otherwise execute only commands bound by
+  // Execute commands for `accelerator`. If `extension_id` is empty, execute all
+  // commands bound to `accelerator`, otherwise execute only commands bound by
   // the corresponding extension. Returns true if at least one command was
   // executed.
   bool ExecuteCommands(const ui::Accelerator& accelerator,

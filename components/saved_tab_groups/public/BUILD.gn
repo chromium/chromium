@@ -1,0 +1,217 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+source_set("public") {
+  sources = [
+    "collaboration_finder.h",
+    "saved_tab_group.cc",
+    "saved_tab_group.h",
+    "saved_tab_group_tab.cc",
+    "saved_tab_group_tab.h",
+    "synthetic_field_trial_helper.cc",
+    "synthetic_field_trial_helper.h",
+    "tab_group_sync_metrics_logger.h",
+    "tab_group_sync_service.cc",
+    "tab_group_sync_service.h",
+    "tab_group_sync_service_factory_helper.h",
+    "types.cc",
+    "types.h",
+    "utils.cc",
+    "utils.h",
+  ]
+  deps = [
+    "//base",
+    "//components/data_sharing/public:group_data",
+    "//components/saved_tab_groups/proto",
+    "//components/sync",
+    "//components/sync_device_info",
+    "//components/tab_groups",
+    "//google_apis",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//ui/gfx",
+    "//url",
+  ]
+  public_deps = [
+    ":features",
+    ":prefs",
+  ]
+}
+
+if (is_android) {
+  source_set("conversion_utils") {
+    sources = [
+      "android/tab_group_sync_conversions_bridge.cc",
+      "android/tab_group_sync_conversions_bridge.h",
+      "android/tab_group_sync_conversions_utils.cc",
+      "android/tab_group_sync_conversions_utils.h",
+    ]
+    deps = [
+      ":conversion_utils_jni_headers",
+      "//base",
+      "//components/saved_tab_groups/public",
+      "//components/tab_groups",
+      "//url",
+    ]
+  }
+
+  android_library("conversion_utils_java") {
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/tab_groups:tab_groups_java",
+      "//net/android:net_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:gurl_java",
+    ]
+
+    srcjar_deps = [ ":conversion_utils_jni_headers" ]
+  }
+
+  generate_jni("conversion_utils_jni_headers") {
+    visibility = [ ":*" ]
+
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java" ]
+  }
+}
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [
+    "//base",
+    "//components/data_sharing/public:features",
+  ]
+  public_deps = []
+}
+
+source_set("prefs") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+  deps = [
+    ":features",
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/sync/base",
+  ]
+  public_deps = []
+}
+
+source_set("string_utils") {
+  sources = [
+    "string_utils.cc",
+    "string_utils.h",
+  ]
+  deps = [
+    "//components/strings",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "saved_tab_group_unittest.cc",
+    "string_utils_unittest.cc",
+    "synthetic_field_trial_helper_unittest.cc",
+    "utils_unittest.cc",
+  ]
+  deps = [
+    ":public",
+    ":string_utils",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs:test_support",
+    "//components/saved_tab_groups/proto",
+    "//components/saved_tab_groups/test_support",
+    "//components/sync",
+    "//components/sync:test_support",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
+    "//components/tab_groups",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+if (is_android) {
+  android_library("java") {
+    sources = [
+      "android/java/src/org/chromium/components/tab_group_sync/EitherId.java",
+      "android/java/src/org/chromium/components/tab_group_sync/EventDetails.java",
+      "android/java/src/org/chromium/components/tab_group_sync/LocalTabGroupId.java",
+      "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
+      "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroupTab.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncController.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncUtils.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupUiActionHandler.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//components/tab_groups:tab_groups_java",
+      "//net/android:net_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:gurl_java",
+    ]
+
+    srcjar_deps = [ ":tab_group_sync_enums_java" ]
+  }
+
+  java_cpp_enum("tab_group_sync_enums_java") {
+    visibility = [
+      ":*",
+      "//components/saved_tab_groups:*",
+    ]
+    sources = [ "types.h" ]
+  }
+
+  android_library("test_support_java") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/SyncedGroupTestHelper.java" ]
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//components/tab_groups:tab_groups_java",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+      "//url:gurl_java",
+    ]
+  }
+
+  robolectric_library("junit") {
+    include_android_sdk = false
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/EitherIdTest.java" ]
+
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//components/saved_tab_groups/public:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/junit",
+    ]
+  }
+}

@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsSmartPrivacySubpage} from 'chrome://os-settings/lazy_load.js';
-import {IronCollapseElement, Router} from 'chrome://os-settings/os_settings.js';
+import type {SettingsSmartPrivacySubpage} from 'chrome://os-settings/lazy_load.js';
+import type {IronCollapseElement} from 'chrome://os-settings/os_settings.js';
+import {Router} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -38,7 +39,7 @@ suite('<settings-smart-privacy-subpage>', () => {
     };
   }
 
-  setup(async () => {
+  setup(() => {
     // Options aren't shown unless the feature is enabled.
     loadTimeData.overrideValues({
       isQuickDimEnabled: true,
@@ -49,14 +50,15 @@ suite('<settings-smart-privacy-subpage>', () => {
         document.createElement('settings-smart-privacy-subpage');
     smartPrivacySubpage.prefs = makePrefs(false, false);
     document.body.appendChild(smartPrivacySubpage);
+    return Promise.resolve();
   });
 
-  teardown(async () => {
+  teardown(() => {
     smartPrivacySubpage.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('Snooping radio list visibility tied to pref', async () => {
+  test('Snooping radio list visibility tied to pref', () => {
     // The $ method won't find elements inside templates.
     const collapse =
         smartPrivacySubpage.shadowRoot!.querySelector<IronCollapseElement>(
@@ -73,7 +75,7 @@ suite('<settings-smart-privacy-subpage>', () => {
     assertTrue(collapse.opened);
   });
 
-  test('Quick dim slider visibility tied to pref', async () => {
+  test('Quick dim slider visibility tied to pref', () => {
     // The $ method won't find elements inside templates.
     const collapse =
         smartPrivacySubpage.shadowRoot!.querySelector<IronCollapseElement>(

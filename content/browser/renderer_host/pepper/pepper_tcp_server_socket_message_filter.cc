@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/content_browser_pepper_host_factory.h"
 #include "content/browser/renderer_host/pepper/pepper_socket_utils.h"
@@ -76,7 +75,7 @@ PepperTCPServerSocketMessageFilter::PepperTCPServerSocketMessageFilter(
   DCHECK(ppapi_host_);
   if (!host->GetRenderFrameIDsForInstance(instance, &render_process_id_,
                                           &render_frame_id_)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

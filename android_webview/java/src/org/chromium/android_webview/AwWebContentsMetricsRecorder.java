@@ -28,8 +28,8 @@ import java.util.Set;
  */
 @Lifetime.WebView
 public class AwWebContentsMetricsRecorder extends WebContentsObserver {
-    private WeakReference<Context> mContext;
-    private WeakReference<AwSettings> mAwSettings;
+    private final WeakReference<Context> mContext;
+    private final WeakReference<AwSettings> mAwSettings;
 
     public AwWebContentsMetricsRecorder(
             WebContents webContents, Context context, AwSettings awSettings) {

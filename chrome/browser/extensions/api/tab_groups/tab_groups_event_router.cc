@@ -12,12 +12,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 
 namespace extensions {
 
@@ -32,6 +32,15 @@ void TabGroupsEventRouter::OnTabGroupChanged(const TabGroupChange& change) {
   switch (change.type) {
     case TabGroupChange::kCreated: {
       DispatchGroupCreated(change.group);
+      // Synthesize the initial kVisualsChanged notification while detaching and
+      // reattaching groups.
+      // TODO(crbug.com/398256328): Remove after fixing initial kVisualsChanged
+      // case.
+      if (change.GetCreateChange()->reason() ==
+          TabGroupChange::TabGroupCreationReason::
+              kInsertedFromAnotherTabstrip) {
+        DispatchGroupUpdated(change.group);
+      }
       break;
     }
     case TabGroupChange::kClosed: {
@@ -46,7 +55,6 @@ void TabGroupsEventRouter::OnTabGroupChanged(const TabGroupChange& change) {
       DispatchGroupUpdated(change.group);
       break;
     }
-    case TabGroupChange::kContentsChanged:
     case TabGroupChange::kEditorOpened:
       break;
   }

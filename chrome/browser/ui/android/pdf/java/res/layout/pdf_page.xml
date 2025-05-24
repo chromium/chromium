@@ -13,6 +13,13 @@ found in the LICENSE file.
     android:focusable="true"
     android:focusableInTouchMode="true">
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/pdf_fragment_container"
         android:layout_width="match_parent"

@@ -7,6 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/types/optional_util.h"
+#include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/fido_tunnel_device.h"
 #include "device/fido/fido_authenticator.h"
@@ -28,14 +31,22 @@ RemoteError ErrorStringToRemoteError(const std::string& error_str) {
   return RemoteError::kOther;
 }
 
-std::vector<uint8_t> RequestToJSONBytes(const url::Origin& origin,
-                                        base::Value request) {
+std::string RequestTypeToString(RequestInfo::RequestType type) {
+  switch (type) {
+    case RequestInfo::RequestType::kGet:
+      return "credential.get";
+    case RequestInfo::RequestType::kCreate:
+      return "credential.create";
+  }
+}
+
+std::vector<uint8_t> RequestToJSONBytes(RequestInfo request_info) {
   base::Value::Dict digital;
-  digital.Set("digital", std::move(request));
+  digital.Set("digital", std::move(request_info.request));
 
   base::Value::Dict toplevel;
-  toplevel.Set("origin", origin.Serialize());
-  toplevel.Set("requestType", "credential.get");
+  toplevel.Set("origin", request_info.rp_origin.Serialize());
+  toplevel.Set("requestType", RequestTypeToString(request_info.request_type));
   toplevel.Set("request", std::move(digital));
 
   std::optional<std::string> json = base::WriteJson(toplevel);
@@ -46,17 +57,19 @@ std::vector<uint8_t> RequestToJSONBytes(const url::Origin& origin,
 }  // namespace
 
 RequestDispatcher::RequestDispatcher(
-    std::unique_ptr<device::FidoDiscoveryBase> discovery,
-    url::Origin origin,
-    base::Value request,
+    std::unique_ptr<device::FidoDiscoveryBase> v1_discovery,
+    std::unique_ptr<device::FidoDiscoveryBase> v2_discovery,
+    RequestInfo request_info,
     CompletionCallback callback)
-    : discovery_(std::move(discovery)),
-      origin_(std::move(origin)),
-      request_(std::move(request)),
+    : v1_discovery_(std::move(v1_discovery)),
+      v2_discovery_(std::move(v2_discovery)),
+      request_info_(std::move(request_info)),
       callback_(std::move(callback)) {
   FIDO_LOG(EVENT) << "Starting digital identity flow";
-  discovery_->set_observer(this);
-  discovery_->Start();
+  v1_discovery_->set_observer(this);
+  v2_discovery_->set_observer(this);
+  v1_discovery_->Start();
+  v2_discovery_->Start();
 }
 
 RequestDispatcher::~RequestDispatcher() = default;
@@ -100,7 +113,7 @@ void RequestDispatcher::OnAuthenticatorReady(
     return;
   }
   tunnel_device->DeviceTransactJSON(
-      RequestToJSONBytes(origin_, std::move(request_)),
+      RequestToJSONBytes(std::move(request_info_)),
       base::BindOnce(&RequestDispatcher::OnComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -117,11 +130,11 @@ void RequestDispatcher::OnComplete(
     return;
   }
 
-  std::optional<base::Value> json = base::JSONReader::Read(
+  std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(
       std::string_view(reinterpret_cast<const char*>(response->data()),
                        response->size()),
       base::JSON_PARSE_RFC);
-  if (!json || !json->is_dict()) {
+  if (!json) {
     FIDO_LOG(ERROR) << "Invalid JSON response: " << base::HexEncode(*response);
     std::move(callback_).Run(base::unexpected(ProtocolError::kInvalidResponse));
     return;
@@ -132,8 +145,7 @@ void RequestDispatcher::OnComplete(
       *json, base::JsonOptions::OPTIONS_PRETTY_PRINT, &reserialized);
   FIDO_LOG(EVENT) << "-> " << reserialized;
 
-  const base::Value::Dict& dict = json->GetDict();
-  const base::Value::Dict* response_dict = dict.FindDict("response");
+  const base::Value::Dict* response_dict = json->FindDict("response");
   if (!response_dict) {
     FIDO_LOG(ERROR) << "no 'response' element in response";
     std::move(callback_).Run(base::unexpected(ProtocolError::kInvalidResponse));
@@ -168,7 +180,26 @@ void RequestDispatcher::OnComplete(
     return;
   }
 
-  std::move(callback_).Run(Response(data->Clone()));
+  // The CTAP protocol standards defines the format of the mobile devices
+  // response contains a JSON object that has both a protocol and data. Mobile
+  // devices are being migrated to support the CTAP standards. First, try to
+  // read the proper format, otherwise, fallback to the legacy format.
+  if (data->is_dict()) {
+    const base::Value::Dict& data_dict = data->GetDict();
+    const base::Value* wallet_data = data_dict.Find("data");
+    if (wallet_data) {
+      FIDO_LOG(EVENT) << "Standard format is received from the mobile device.";
+      std::move(callback_).Run(
+          Response(DigitalIdentityProvider::DigitalCredential(
+              base::OptionalFromPtr(data_dict.FindString("protocol")),
+              wallet_data->Clone())));
+      return;
+    }
+  }
+  FIDO_LOG(EVENT) << "No proper standard format is received from the mobile "
+                     "device. Fallback to legacy format.";
+  std::move(callback_).Run(Response(DigitalIdentityProvider::DigitalCredential(
+      /*protocol=*/std::nullopt, data->Clone())));
 }
 
 }  // namespace content::digital_credentials::cross_device

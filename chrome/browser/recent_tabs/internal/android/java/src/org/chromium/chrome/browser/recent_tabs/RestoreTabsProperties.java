@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsDetailScreenCoordinator;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsPromoScreenCoordinator;
@@ -21,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** State for the Restore Tabs promo UI. */
+@NullMarked
 public class RestoreTabsProperties {
     /** The different screens that can be shown on the sheet. */
     @IntDef({

@@ -7,15 +7,9 @@
 
 #import "base/no_destructor.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-namespace supervised_user {
-// Factory helper method that returns true if we need to show the first
-// time banner on the interstitial. The banner informs existing Desktop/iOS
-// users about the application of parental controls.
-bool ShouldShowFirstTimeBanner(ProfileIOS* profile);
-}  // namespace supervised_user
+class ProfileIOS;
 
 // Singleton that owns SupervisedUserService objects and associates
 // them with Profiles.

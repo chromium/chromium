@@ -4,6 +4,9 @@
 
 #include "content/public/browser/navigation_throttle.h"
 
+#include <utility>
+
+#include "base/check_deref.h"
 #include "content/browser/renderer_host/navigation_request.h"
 
 namespace content {
@@ -24,8 +27,7 @@ net::Error DefaultNetErrorCode(NavigationThrottle::ThrottleAction action) {
     case NavigationThrottle::BLOCK_RESPONSE:
       return net::ERR_BLOCKED_BY_RESPONSE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return net::ERR_UNEXPECTED;
+      NOTREACHED();
   }
 }
 
@@ -50,7 +52,7 @@ NavigationThrottle::ThrottleCheckResult::ThrottleCheckResult(
     std::optional<std::string> error_page_content)
     : action_(action),
       net_error_code_(net_error_code),
-      error_page_content_(error_page_content) {}
+      error_page_content_(std::move(error_page_content)) {}
 
 NavigationThrottle::ThrottleCheckResult::ThrottleCheckResult(
     const ThrottleCheckResult& other) = default;
@@ -58,7 +60,12 @@ NavigationThrottle::ThrottleCheckResult::ThrottleCheckResult(
 NavigationThrottle::ThrottleCheckResult::~ThrottleCheckResult() {}
 
 NavigationThrottle::NavigationThrottle(NavigationHandle* navigation_handle)
-    : navigation_handle_(navigation_handle) {}
+    : navigation_handle_(navigation_handle) {
+  CHECK(navigation_handle_);
+}
+
+NavigationThrottle::NavigationThrottle(NavigationThrottleRegistry& registry)
+    : navigation_handle_(&registry.GetNavigationHandle()) {}
 
 NavigationThrottle::~NavigationThrottle() {}
 

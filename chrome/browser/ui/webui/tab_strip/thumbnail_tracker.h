@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace content {
 class WebContents;

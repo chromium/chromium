@@ -11,9 +11,10 @@
 ScopedTestingLocalState::ScopedTestingLocalState(
     TestingBrowserProcess* browser_process)
     : browser_process_(browser_process) {
+  CHECK(browser_process_);
   RegisterLocalState(local_state_.registry());
-  EXPECT_FALSE(browser_process->local_state());
-  browser_process->SetLocalState(&local_state_);
+  EXPECT_FALSE(browser_process_->local_state());
+  browser_process_->SetLocalState(&local_state_);
 }
 
 ScopedTestingLocalState::~ScopedTestingLocalState() {

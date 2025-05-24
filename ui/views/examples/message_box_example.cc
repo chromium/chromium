@@ -59,9 +59,8 @@ void MessageBoxExample::StatusButtonPressed() {
   const bool selected = message_box_view_->IsCheckBoxSelected();
   message_box_view_->SetCheckBoxLabel(
       GetStringUTF16(selected ? IDS_MESSAGE_ON_LABEL : IDS_MESSAGE_OFF_LABEL));
-  LogStatus(GetStringUTF8(selected ? IDS_MESSAGE_CHECK_SELECTED_LABEL
-                                   : IDS_MESSAGE_CHECK_NOT_SELECTED_LABEL)
-                .c_str());
+  PrintStatus(GetStringUTF8(selected ? IDS_MESSAGE_CHECK_SELECTED_LABEL
+                                     : IDS_MESSAGE_CHECK_NOT_SELECTED_LABEL));
 }
 
 }  // namespace views::examples

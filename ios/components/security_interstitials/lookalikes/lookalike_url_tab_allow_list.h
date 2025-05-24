@@ -29,7 +29,6 @@ class LookalikeUrlTabAllowList
  private:
   explicit LookalikeUrlTabAllowList(web::WebState* web_state);
   friend class web::WebStateUserData<LookalikeUrlTabAllowList>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // Set of allowlisted domains.
   std::set<std::string> allowed_domains_;

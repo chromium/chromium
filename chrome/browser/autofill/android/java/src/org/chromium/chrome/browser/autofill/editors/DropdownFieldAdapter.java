@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +21,7 @@ import java.util.List;
  *
  * @param <T> The type of element to be inserted into the adapter.
  */
+@NullMarked
 class DropdownFieldAdapter<T> extends ArrayAdapter<T> {
     /**
      * Creates an array adapter.
@@ -46,7 +50,7 @@ class DropdownFieldAdapter<T> extends ArrayAdapter<T> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
 
         // Add the left and right padding of the parent's background to the selected item view to

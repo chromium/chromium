@@ -20,7 +20,7 @@ std::string CurrentlyInstalledVersion();
 // During promotion, the browser will be changed to be owned by root and wheel.
 // A browser must go through promotion before it can utilize the system-level
 // updater.
-updater::UpdaterScope GetUpdaterScope();
+updater::UpdaterScope GetBrowserUpdaterScope();
 
 // If this build should integrate with an updater, makes sure that an updater
 // is installed and that the browser is registered with it for updates. Must be

@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/keyed_service/core",
+  "+components/signin/public/identity_manager",
+  "+google_apis/gaia",
+]

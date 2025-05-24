@@ -7,6 +7,8 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/style_variable_generator/style_variable_generator.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+assert(is_chromeos)
+
 style_variable_generator("cros_styles") {
   # If you change the sources, also change the paths in presubmit_support.py
   sources = [

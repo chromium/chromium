@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/icu_test_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -44,6 +44,9 @@ class TestBarView : public AccessiblePaneView {
 
   View* GetDefaultFocusableChild() override;
 
+  // Removes `child_button` from the view and returns ownership of it.
+  std::unique_ptr<LabelButton> RemoveChildButton();
+
  private:
   void Init();
 
@@ -61,6 +64,10 @@ TestBarView::TestBarView()
 }
 
 TestBarView::~TestBarView() = default;
+
+std::unique_ptr<LabelButton> TestBarView::RemoveChildButton() {
+  return RemoveChildViewT<LabelButton>(child_button_.ExtractAsDangling());
+}
 
 void TestBarView::Init() {
   SetLayoutManager(std::make_unique<FillLayout>());
@@ -145,7 +152,7 @@ TEST_F(AccessiblePaneViewTest, SetPaneFocusAndRestore) {
   // predictable. On Mac, Deactivate() is not implemented. Note that
   // TestBarView calls set_allow_deactivate_on_esc(true), which is only
   // otherwise used in Ash.
-#if !BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   // Esc should deactivate the widget.
   test_view_bar->AcceleratorPressed(test_view_bar->escape_key());
   EXPECT_TRUE(widget_main->IsActive());
@@ -235,15 +242,46 @@ TEST_F(AccessiblePaneViewTest, PaneFocusTraversal) {
   widget.reset();
 }
 
-// TODO(crbug.com/40832756): Re-enable this test
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_DoesntCrashOnEscapeWithRemovedView \
-  DISABLED_DoesntCrashOnEscapeWithRemovedView
-#else
-#define MAYBE_DoesntCrashOnEscapeWithRemovedView \
-  DoesntCrashOnEscapeWithRemovedView
-#endif
-TEST_F(AccessiblePaneViewTest, MAYBE_DoesntCrashOnEscapeWithRemovedView) {
+TEST_F(AccessiblePaneViewTest, PaneFocusTraversalRespectsRTL) {
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale("he");
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  View* root = widget->GetRootView();
+  auto* test_view = root->AddChildView(std::make_unique<TestBarView>());
+  widget->Show();
+  widget->Activate();
+
+  // Set pane focus on middle button of view.
+  EXPECT_TRUE(test_view->SetPaneFocus(test_view->second_child_button()));
+
+  // Home should go to the logical first item regardless of direction.
+  test_view->AcceleratorPressed(test_view->home_key());
+  EXPECT_EQ(test_view->child_button(),
+            test_view->GetWidget()->GetFocusManager()->GetFocusedView());
+  // End should go to the logical last item regardless of direction.
+  test_view->AcceleratorPressed(test_view->end_key());
+  EXPECT_EQ(test_view->third_child_button(),
+            test_view->GetWidget()->GetFocusManager()->GetFocusedView());
+
+  // Set pane focus back on middle button of view.
+  EXPECT_TRUE(test_view->SetPaneFocus(test_view->second_child_button()));
+
+  // Left should go to the logical next item in RTL locales.
+  test_view->AcceleratorPressed(test_view->left_key());
+  EXPECT_EQ(test_view->third_child_button(),
+            test_view->GetWidget()->GetFocusManager()->GetFocusedView());
+  // Right should go to the logical previous item in RTL locales.
+  test_view->AcceleratorPressed(test_view->right_key());
+  test_view->AcceleratorPressed(test_view->right_key());
+  EXPECT_EQ(test_view->child_button(),
+            test_view->GetWidget()->GetFocusManager()->GetFocusedView());
+}
+
+TEST_F(AccessiblePaneViewTest, DoesntCrashOnEscapeWithRemovedView) {
   auto widget = std::make_unique<Widget>();
   Widget::InitParams params =
       CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -256,18 +294,17 @@ TEST_F(AccessiblePaneViewTest, MAYBE_DoesntCrashOnEscapeWithRemovedView) {
   widget->Show();
   widget->Activate();
 
-  View* v1 = test_view1->child_button();
-  View* v2 = test_view2->child_button();
   // Do the following:
-  // 1. focus |v1|.
-  // 2. focus |v2|. This makes |test_view2| remember |v1| as having focus.
-  // 3. Removes |v1| from it's parent.
-  // 4. Presses escape on |test_view2|. Escape attempts to revert focus to |v1|
-  //    (because of step 2). Because |v1| is not in a widget this should not
-  //    attempt to focus anything.
-  EXPECT_TRUE(test_view1->SetPaneFocus(v1));
-  EXPECT_TRUE(test_view2->SetPaneFocus(v2));
-  v1->parent()->RemoveChildView(v1);
+  // 1. focus |child_button| in |test_view1|.
+  // 2. focus |child_button| in |test_view2|. This makes |test_view2| remember
+  //    |test_view1|'s button as having focus.
+  // 3. Removes |child_button| from |test_view1|.
+  // 4. Presses escape on |test_view2|. Escape attempts to revert focus to the
+  //    button in |test_view1| (because of step 2). Because it is not in a
+  //    widget this should not attempt to focus anything.
+  EXPECT_TRUE(test_view1->SetPaneFocus(test_view1->child_button()));
+  EXPECT_TRUE(test_view2->SetPaneFocus(test_view2->child_button()));
+  auto orphan = test_view1->RemoveChildButton();
   // This shouldn't hit a CHECK in the FocusManager.
   EXPECT_TRUE(test_view2->AcceleratorPressed(test_view2->escape_key()));
 }

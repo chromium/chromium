@@ -15,10 +15,11 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -62,9 +63,36 @@ enum class AXTreeUnserializeError {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityTreeUnserializeError)
 
-#define ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(enum_value) \
-  base::UmaHistogramEnumeration(                                   \
-      "Accessibility.Reliability.Tree.UnserializeError", enum_value)
+#if BUILDFLAG(IS_LINUX)
+// To support AriaNotify on older versions of ATK, we need to use the ATK
+// signal "Text::text-insert". This signal requires a node that is a
+// text type, and it needs to have aria-live properties set in order for
+// Orca to make announcements. We create 2 extra "dummy" nodes that can be
+// used for firing these signals when there is an AriaNotify event. One node
+// will have `aria-live: assertive` and the other will have `aria-live:
+// polite`.
+class ExtraAnnouncementNodes {
+ public:
+  explicit ExtraAnnouncementNodes(AXNode* root);
+  ~ExtraAnnouncementNodes();
+
+  AXNode& AssertiveNode() const { return *assertive_node_; }
+  AXNode& PoliteNode() const { return *polite_node_; }
+  int Count() const {
+    return (assertive_node_ ? 1 : 0) + (polite_node_ ? 1 : 0);
+  }
+
+  static constexpr int kHighPriorityIndex = 0;
+  static constexpr int kNormalPriorityIndex = 1;
+
+ private:
+  std::unique_ptr<AXNode> CreateNode(const std::string& live_status,
+                                     AXNode* root);
+
+  std::unique_ptr<AXNode> assertive_node_;
+  std::unique_ptr<AXNode> polite_node_;
+};
+#endif  // BUILDFLAG(IS_LINUX)
 
 // AXTree is a live, managed tree of AXNode objects that can receive
 // updates from another AXTreeSource via AXTreeUpdates, and it can be
@@ -260,6 +288,14 @@ class AX_EXPORT AXTree {
 
   void NotifyChildTreeConnectionChanged(AXNode* node, AXTree* child_tree);
 
+#if BUILDFLAG(IS_LINUX)
+  void ClearExtraAnnouncementNodes();
+  void CreateExtraAnnouncementNodes();
+  ExtraAnnouncementNodes* extra_announcement_nodes() const {
+    return extra_announcement_nodes_.get();
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
  private:
   friend class ScopedTreeUpdateInProgressStateSetter;
   friend class AXTableInfoTest;
@@ -268,7 +304,7 @@ class AX_EXPORT AXTree {
   // `SetFocusedNodeShouldNeverBeIgnored` above).
   static bool is_focused_node_always_unignored_;
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   void CheckTreeConsistency(const AXTreeUpdate& update);
 #endif
 
@@ -318,7 +354,7 @@ class AX_EXPORT AXTree {
   // destroyed. This function is called during AXTree teardown.
   void RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(
       AXNode& node,
-      std::vector<AXNodeID>& deleted_nodes);
+      std::set<AXNodeID>& deleted_nodes);
 
   // Notify the delegate that the node marked by |node_id| has been deleted.
   // We are passing the node id instead of ax node is because by the time this
@@ -507,7 +543,16 @@ class AX_EXPORT AXTree {
   // Indicates if the tree represents a paginated document
   bool has_pagination_support_ = false;
 
+#if DCHECK_IS_ON()
+  bool is_destroyed_ = false;
+  int unserialize_count_ = 0;
+#endif
+
   std::unique_ptr<AXEvent> event_data_;
+
+#if BUILDFLAG(IS_LINUX)
+  std::unique_ptr<ExtraAnnouncementNodes> extra_announcement_nodes_ = nullptr;
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 // Sets the flag that indicates whether the accessibility tree is currently

@@ -158,8 +158,9 @@ TYPED_TEST(SharedMemoryRegionTest, MapAt) {
   ASSERT_TRUE(rw_mapping.IsValid());
   auto map = rw_mapping.template GetMemoryAsSpan<uint32_t>();
 
-  for (size_t i = 0; i < kCount; ++i)
+  for (size_t i = 0; i < kCount; ++i) {
     map[i] = i;
+  }
 
   rw_mapping = WritableSharedMemoryMapping();
 

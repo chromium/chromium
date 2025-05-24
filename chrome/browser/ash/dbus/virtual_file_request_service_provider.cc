@@ -33,7 +33,8 @@ arc::ArcFileSystemBridge* GetArcFileSystemBridge() {
 
 }  // namespace
 
-VirtualFileRequestServiceProvider::VirtualFileRequestServiceProvider() {}
+VirtualFileRequestServiceProvider::VirtualFileRequestServiceProvider() =
+    default;
 
 VirtualFileRequestServiceProvider::~VirtualFileRequestServiceProvider() =
     default;

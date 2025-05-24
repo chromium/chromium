@@ -19,20 +19,17 @@ namespace {
 static const V8PrivateProperty::SymbolKey
     kByteLengthQueuingStrategySizeFunction;
 
-class ByteLengthQueuingStrategySizeFunction final
-    : public ScriptFunction::Callable {
+class ByteLengthQueuingStrategySizeFunction final : public ScriptFunction {
  public:
   static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
-    auto* self = MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<ByteLengthQueuingStrategySizeFunction>());
+    auto* self = MakeGarbageCollected<ByteLengthQueuingStrategySizeFunction>();
 
     // https://streams.spec.whatwg.org/#byte-length-queuing-strategy-size-function
 
     // 2. Let F be ! CreateBuiltinFunction(steps, « », globalObject’s relevant
     //    Realm).
     // 4. Perform ! SetFunctionLength(F, 1).
-    v8::Local<v8::Function> function = self->V8Function();
+    v8::Local<v8::Function> function = self->ToV8Function(script_state);
 
     // 3. Perform ! SetFunctionName(F, "size").
     function->SetName(V8String(script_state->GetIsolate(), "size"));

@@ -20,7 +20,7 @@ namespace {
 class InitializeStoreTaskTest : public RequestQueueTaskTestBase {
  public:
   InitializeStoreTaskTest() : callback_called_(false), success_(false) {}
-  ~InitializeStoreTaskTest() override {}
+  ~InitializeStoreTaskTest() override = default;
 
   void InitializeCallback(bool success) {
     callback_called_ = true;

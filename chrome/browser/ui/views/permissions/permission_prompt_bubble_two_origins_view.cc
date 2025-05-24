@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_callback.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -74,7 +75,8 @@ PermissionPromptBubbleTwoOriginsView::PermissionPromptBubbleTwoOriginsView(
     CreateExtraTextLabel(extra_text.value());
   }
 
-  CreatePermissionButtons(GetAllowAlwaysText(delegate->Requests()));
+  const auto& requests = delegate->Requests();
+  CreatePermissionButtons(GetAllowAlwaysText(requests), GetBlockText(requests));
 
   // Only requests for Storage Access should use this prompt.
   CHECK(delegate);

@@ -9,7 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -25,17 +24,18 @@ namespace blink {
 
 namespace {
 
-mojom::ServiceWorkerClientType GetClientType(const String& type) {
-  if (type == "window")
-    return mojom::ServiceWorkerClientType::kWindow;
-  if (type == "worker")
-    return mojom::ServiceWorkerClientType::kDedicatedWorker;
-  if (type == "sharedworker")
-    return mojom::ServiceWorkerClientType::kSharedWorker;
-  if (type == "all")
-    return mojom::ServiceWorkerClientType::kAll;
-  NOTREACHED_IN_MIGRATION();
-  return mojom::ServiceWorkerClientType::kWindow;
+mojom::blink::ServiceWorkerClientType GetClientType(V8ClientType::Enum type) {
+  switch (type) {
+    case V8ClientType::Enum::kWindow:
+      return mojom::blink::ServiceWorkerClientType::kWindow;
+    case V8ClientType::Enum::kWorker:
+      return mojom::blink::ServiceWorkerClientType::kDedicatedWorker;
+    case V8ClientType::Enum::kSharedworker:
+      return mojom::blink::ServiceWorkerClientType::kSharedWorker;
+    case V8ClientType::Enum::kAll:
+      return mojom::blink::ServiceWorkerClientType::kAll;
+  }
+  NOTREACHED();
 }
 
 void DidGetClient(ScriptPromiseResolver<ServiceWorkerClient>* resolver,
@@ -52,16 +52,15 @@ void DidGetClient(ScriptPromiseResolver<ServiceWorkerClient>* resolver,
   }
   ServiceWorkerClient* client = nullptr;
   switch (info->client_type) {
-    case mojom::ServiceWorkerClientType::kWindow:
+    case mojom::blink::ServiceWorkerClientType::kWindow:
       client = MakeGarbageCollected<ServiceWorkerWindowClient>(*info);
       break;
-    case mojom::ServiceWorkerClientType::kDedicatedWorker:
-    case mojom::ServiceWorkerClientType::kSharedWorker:
+    case mojom::blink::ServiceWorkerClientType::kDedicatedWorker:
+    case mojom::blink::ServiceWorkerClientType::kSharedWorker:
       client = MakeGarbageCollected<ServiceWorkerClient>(*info);
       break;
-    case mojom::ServiceWorkerClientType::kAll:
-      NOTREACHED_IN_MIGRATION();
-      return;
+    case mojom::blink::ServiceWorkerClientType::kAll:
+      NOTREACHED();
   }
   resolver->Resolve(client);
 }
@@ -76,8 +75,7 @@ void DidClaim(ScriptPromiseResolver<IDLUndefined>* resolver,
 
   if (error != mojom::blink::ServiceWorkerErrorType::kNone) {
     DCHECK(!error_msg.IsNull());
-    resolver->Reject(
-        ServiceWorkerError::GetException(resolver, error, error_msg));
+    resolver->Reject(ServiceWorkerError::AsException(error, error_msg));
     return;
   }
   DCHECK(error_msg.IsNull());
@@ -141,7 +139,8 @@ ScriptPromise<IDLSequence<ServiceWorkerClient>> ServiceWorkerClients::matchAll(
       ScriptPromiseResolver<IDLSequence<ServiceWorkerClient>>>(script_state);
   global_scope->GetServiceWorkerHost()->GetClients(
       mojom::blink::ServiceWorkerClientQueryOptions::New(
-          options->includeUncontrolled(), GetClientType(options->type())),
+          options->includeUncontrolled(),
+          GetClientType(options->type().AsEnum())),
       WTF::BindOnce(&DidGetClients, WrapPersistent(resolver)));
   return resolver->Promise();
 }

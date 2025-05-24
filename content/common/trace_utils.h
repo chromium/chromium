@@ -14,7 +14,7 @@ namespace content {
 // This can't be a struct since in C++14 static constexpr structure members
 // have external linkage. This has been fixed in C++17.
 namespace tracing_category {
-static constexpr const char kNavigation[] = "navigation";
+inline constexpr const char kNavigation[] = "navigation";
 }
 
 // Class which facilitates annotating with traces all possible return paths

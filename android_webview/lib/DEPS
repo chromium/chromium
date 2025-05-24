@@ -10,6 +10,7 @@ include_rules = [
   "+components/viz/common",
   "+content/public",
   "+device/base/features.h",
+  "+services/tracing/public/cpp/perfetto",
   "+gin/public",
   "+gin/v8_initializer.h",
   "+mojo/core/embedder/embedder.h",
@@ -17,6 +18,7 @@ include_rules = [
   "+third_party/blink/public/common/switches.h",
   "+tools/v8_context_snapshot/buildflags.h",
   "+ui/events/gesture_detection",
+  "+ui/base",
   "+ui/gl",
 ]
 

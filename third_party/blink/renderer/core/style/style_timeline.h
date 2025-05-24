@@ -6,10 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_TIMELINE_H_
 
 #include <optional>
+#include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/memory/values_equivalent.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/animation/timeline_inset.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -77,7 +78,7 @@ class CORE_EXPORT StyleTimeline {
 
   explicit StyleTimeline(CSSValueID keyword) : data_(keyword) {}
   explicit StyleTimeline(const ScopedCSSName* name)
-      : data_(absl::in_place_type<Persistent<const ScopedCSSName>>, name) {}
+      : data_(std::in_place_type<Persistent<const ScopedCSSName>>, name) {}
   explicit StyleTimeline(const ScrollData& scroll_data) : data_(scroll_data) {}
   explicit StyleTimeline(const ViewData& view_data) : data_(view_data) {}
 
@@ -91,22 +92,22 @@ class CORE_EXPORT StyleTimeline {
     return !(*this == other);
   }
 
-  bool IsKeyword() const { return absl::holds_alternative<CSSValueID>(data_); }
+  bool IsKeyword() const { return std::holds_alternative<CSSValueID>(data_); }
   bool IsName() const {
-    return absl::holds_alternative<Persistent<const ScopedCSSName>>(data_);
+    return std::holds_alternative<Persistent<const ScopedCSSName>>(data_);
   }
-  bool IsScroll() const { return absl::holds_alternative<ScrollData>(data_); }
-  bool IsView() const { return absl::holds_alternative<ViewData>(data_); }
+  bool IsScroll() const { return std::holds_alternative<ScrollData>(data_); }
+  bool IsView() const { return std::holds_alternative<ViewData>(data_); }
 
-  const CSSValueID& GetKeyword() const { return absl::get<CSSValueID>(data_); }
+  const CSSValueID& GetKeyword() const { return std::get<CSSValueID>(data_); }
   const ScopedCSSName& GetName() const {
-    return *absl::get<Persistent<const ScopedCSSName>>(data_);
+    return *std::get<Persistent<const ScopedCSSName>>(data_);
   }
-  const ScrollData& GetScroll() const { return absl::get<ScrollData>(data_); }
-  const ViewData& GetView() const { return absl::get<ViewData>(data_); }
+  const ScrollData& GetScroll() const { return std::get<ScrollData>(data_); }
+  const ViewData& GetView() const { return std::get<ViewData>(data_); }
 
  private:
-  absl::
+  std::
       variant<CSSValueID, Persistent<const ScopedCSSName>, ScrollData, ViewData>
           data_;
 };

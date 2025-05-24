@@ -58,6 +58,10 @@ void StubPasswordManagerClient::NotifyUserCouldBeAutoSignedIn(
 void StubPasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
     std::unique_ptr<PasswordFormManagerForUI> submitted_manager) {}
 
+bool StubPasswordManagerClient::IsPasswordChangeOngoing() {
+  return false;
+}
+
 void StubPasswordManagerClient::NotifyStorePasswordCalled() {}
 
 void StubPasswordManagerClient::NotifyKeychainError() {}
@@ -98,6 +102,11 @@ PasswordReuseManager* StubPasswordManagerClient::GetPasswordReuseManager()
   return nullptr;
 }
 
+PasswordChangeServiceInterface*
+StubPasswordManagerClient::GetPasswordChangeService() const {
+  return nullptr;
+}
+
 const PasswordManagerInterface* StubPasswordManagerClient::GetPasswordManager()
     const {
   return nullptr;
@@ -116,7 +125,7 @@ const CredentialsFilter* StubPasswordManagerClient::GetStoreResultFilter()
   return &credentials_filter_;
 }
 
-autofill::LogManager* StubPasswordManagerClient::GetLogManager() {
+autofill::LogManager* StubPasswordManagerClient::GetCurrentLogManager() {
   return &log_manager_;
 }
 
@@ -130,12 +139,14 @@ StubPasswordManagerClient::GetPasswordFeatureManager() {
   return &password_feature_manager_;
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE) || BUILDFLAG(IS_IOS)
 safe_browsing::PasswordProtectionService*
 StubPasswordManagerClient::GetPasswordProtectionService() const {
   return nullptr;
 }
+#endif
 
-#if defined(ON_FOCUS_PING_ENABLED)
+#if defined(ON_FOCUS_PING_ENABLED) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void StubPasswordManagerClient::CheckSafeBrowsingReputation(
     const GURL& form_action,
     const GURL& frame_url) {}
@@ -158,9 +169,17 @@ FirstCctPageLoadPasswordsUkmRecorder*
 StubPasswordManagerClient::GetFirstCctPageLoadUkmRecorder() {
   return nullptr;
 }
+
+void StubPasswordManagerClient::PotentialSaveFormSubmitted() {}
+
 #endif
 
 signin::IdentityManager* StubPasswordManagerClient::GetIdentityManager() {
+  return nullptr;
+}
+
+const signin::IdentityManager* StubPasswordManagerClient::GetIdentityManager()
+    const {
   return nullptr;
 }
 
@@ -190,18 +209,23 @@ version_info::Channel StubPasswordManagerClient::GetChannel() const {
     BUILDFLAG(IS_CHROMEOS)
 void StubPasswordManagerClient::OpenPasswordDetailsBubble(
     const password_manager::PasswordForm& form) {}
+void StubPasswordManagerClient::MaybeShowSavePasswordPrimingPromo(
+    const GURL& current_url) {}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_IOS)
 std::unique_ptr<
     password_manager::PasswordCrossDomainConfirmationPopupController>
 StubPasswordManagerClient::ShowCrossDomainConfirmationPopup(
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction,
     const GURL& domain,
-    const std::u16string& password_origin,
+    const std::u16string& password_hostname,
+    bool show_warning_text,
     base::OnceClosure confirmation_callback) {
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager

@@ -27,26 +27,22 @@
 namespace {
 
 const char kEmail[] = "example@email.com";
-const char kProfileName[] = "default";
 
 }  // namespace
 
-class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
+class SigninProfileInfoUpdaterTest : public PlatformTest {
  public:
-  SigninBrowserStateInfoUpdaterTest()
+  SigninProfileInfoUpdaterTest()
       : signin_error_controller_(
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
             identity_test_env()->identity_manager()) {
-    // The Profile needs to be registered before SigninBrowserStateInfoUpdater
+    // The Profile needs to be registered before SigninProfileInfoUpdater
     // construction (thus the std::unique_ptr<...>).
-    GetApplicationContext()
-        ->GetProfileManager()
-        ->GetProfileAttributesStorage()
-        ->AddProfile(kProfileName);
-    signin_browser_state_info_updater_ =
-        std::make_unique<SigninBrowserStateInfoUpdater>(
-            identity_test_env()->identity_manager(), &signin_error_controller_,
-            kProfileName);
+    profile_name_ =
+        GetApplicationContext()->GetProfileManager()->ReserveNewProfileName();
+    signin_profile_info_updater_ = std::make_unique<SigninProfileInfoUpdater>(
+        identity_test_env()->identity_manager(), &signin_error_controller_,
+        profile_name_);
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -57,27 +53,27 @@ class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
     return GetApplicationContext()
         ->GetProfileManager()
         ->GetProfileAttributesStorage()
-        ->GetAttributesForProfileWithName(kProfileName);
+        ->GetAttributesForProfileWithName(profile_name_);
   }
 
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
+  std::string profile_name_;
 
   signin::IdentityTestEnvironment identity_test_env_;
   SigninErrorController signin_error_controller_;
-  std::unique_ptr<SigninBrowserStateInfoUpdater>
-      signin_browser_state_info_updater_;
+  std::unique_ptr<SigninProfileInfoUpdater> signin_profile_info_updater_;
 };
 
 // Tests that the profile info is updated on signin and signout.
-TEST_F(SigninBrowserStateInfoUpdaterTest, SigninSignout) {
+TEST_F(SigninProfileInfoUpdaterTest, SigninSignout) {
   ASSERT_FALSE(GetAttributesForProfile().IsAuthenticated());
 
   // Signin.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kEmail, signin::ConsentLevel::kSync);
+      kEmail, signin::ConsentLevel::kSignin);
 
   {
     ProfileAttributesIOS attr = GetAttributesForProfile();
@@ -92,12 +88,12 @@ TEST_F(SigninBrowserStateInfoUpdaterTest, SigninSignout) {
 }
 
 // Tests that the profile info is updated on auth error change.
-TEST_F(SigninBrowserStateInfoUpdaterTest, AuthError) {
+TEST_F(SigninProfileInfoUpdaterTest, AuthError) {
   ASSERT_FALSE(GetAttributesForProfile().IsAuthenticated());
 
   // Signin.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kEmail, signin::ConsentLevel::kSync);
+      kEmail, signin::ConsentLevel::kSignin);
 
   {
     ProfileAttributesIOS attr = GetAttributesForProfile();

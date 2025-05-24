@@ -19,13 +19,7 @@ SecurePaymentConfirmationCredential::SecurePaymentConfirmationCredential(
     std::vector<uint8_t> user_id)
     : credential_id(std::move(credential_id)),
       relying_party_id(relying_party_id),
-      user_id(std::move(user_id)) {
-  // Record the size of credential_id to see whether or not hashing is needed
-  // before storing in DB. crbug.com/1122764
-  base::UmaHistogramCounts10000(
-      "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes",
-      this->credential_id.size());
-}
+      user_id(std::move(user_id)) {}
 
 SecurePaymentConfirmationCredential::~SecurePaymentConfirmationCredential() =
     default;

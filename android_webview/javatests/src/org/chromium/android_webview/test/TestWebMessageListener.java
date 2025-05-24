@@ -16,10 +16,10 @@ import org.chromium.content_public.browser.MessagePort;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TestWebMessageListener implements WebMessageListener {
-    private LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
 
     public static class Data {
-        private MessagePayload mPayload;
+        private final MessagePayload mPayload;
         public Uri mTopLevelOrigin;
         public Uri mSourceOrigin;
         public boolean mIsMainFrame;

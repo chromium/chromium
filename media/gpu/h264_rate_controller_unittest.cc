@@ -4,6 +4,9 @@
 
 #include "media/gpu/h264_rate_controller.h"
 
+#include <array>
+#include <memory>
+
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,7 +50,6 @@ class H264RateControllerTest : public testing::Test {
         VideoEncodeAccelerator::Config::ContentType::kCamera;
     rate_controller_settings_.frame_size.SetSize(kCommonFrameWidth,
                                                  kCommonFrameHeight);
-    rate_controller_settings_.fixed_delta_qp = false;
     rate_controller_settings_.num_temporal_layers = 1;
     rate_controller_settings_.gop_max_duration = kCommonGopMaxDuration;
     rate_controller_settings_.frame_rate_max = kCommonFpsMax;
@@ -258,15 +260,15 @@ TEST_F(H264RateControllerTest, RunH264RateController2TemporalLayersTest) {
   constexpr RateControllerTestValues kExpectedValuesLayer02 = {
       false, 26666, 1387, 25279, 4166, 15.0f, 15.1f, 6344, 5};
   constexpr RateControllerTestValues kExpectedValuesLayer12 = {
-      false, 40000, 16633, 23367, 20801, 15.0f, 15.1f, 21928, 41};
+      false, 40000, 16633, 23367, 20801, 15.0f, 15.1f, 3214, 41};
   constexpr int kExpectedIntraFrameQP2 = 34;
   constexpr int kExpectedInterFrameQP2 = 29;
   constexpr RateControllerTestValues kExpectedValuesLayer03 = {
-      false, 26666, 0, 26666, 2000, 15.0f, 15.1f, 7569, 0};
+      false, 26666, 0, 26666, 2000, 15.0f, 15.1f, 8011, 0};
   constexpr RateControllerTestValues kExpectedValuesLayer13 = {
-      false, 40000, 522, 39478, 4690, 15.0f, 15.1f, 34775, 1};
+      false, 40000, 522, 39478, 4690, 15.0f, 15.1f, 4821, 1};
   constexpr int kExpectedIntraFrameQP3 = 34;
-  constexpr int kExpectedInterFrameQP3 = 43;
+  constexpr int kExpectedInterFrameQP3 = 44;
 
   rate_controller_settings_.num_temporal_layers = 2;
   rate_controller_settings_.layer_settings[0].avg_bitrate =
@@ -401,7 +403,7 @@ TEST_F(H264RateControllerTest, RunH264RateController2TemporalLayersTest) {
   // The following use cases are tested:
   //   1. Start Limit Base QP procedure in ClipInterFrameQP(). The buffer size
   //      gradually decreases and the Limit Base QP is turned off when the
-  //      buffer fullness of the enhanched layer reaches 35%.
+  //      buffer fullness of the enhanced layer reaches 35%.
   //   2. Adjusting the min_qp value in ClipInterFrameQP() method when the
   //      buffer reaches full capacity.
   //   3. Setting the overshooting timestamp and increasing min_qp and max_qp in
@@ -490,7 +492,7 @@ TEST_F(H264RateControllerTest,
 
   rate_controller_settings_.content_type =
       VideoEncodeAccelerator::Config::ContentType::kDisplay;
-  rate_controller_settings_.fixed_delta_qp = true;
+  rate_controller_settings_.fixed_delta_qp = 0;
   rate_controller_settings_.num_temporal_layers = 2;
   rate_controller_settings_.layer_settings[0].avg_bitrate =
       kCommonAvgBitrate * 2 / 3;
@@ -623,7 +625,7 @@ TEST_F(H264RateControllerTest,
 
   // Run test sequences 2 and 3
   // The following use cases are tested:
-  //   1. The QP difference between enchanched and base layers is more than 4.
+  //   1. The QP difference between enhanced and base layers is more than 4.
   //      This indicates the HRD overflow and the min_qp is increased. The
   //      ClipInterFrameQP() method handles this scenario.
   //   2. The test sequence triggers the setting of undershoot_delta_qp. Under
@@ -697,7 +699,8 @@ TEST_F(H264RateControllerTest,
 }
 
 TEST_F(H264RateControllerTest, RunH264RateControllerFramerateMeanTest) {
-  constexpr float kFrameRateExpectedValues[] = {29.9f, 30.1f};
+  constexpr auto kFrameRateExpectedValues =
+      std::to_array<float>({29.9f, 30.1f});
 
   rate_controller_ =
       std::make_unique<H264RateController>(rate_controller_settings_);

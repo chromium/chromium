@@ -17,26 +17,22 @@
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
-supervised_user::WebContentHandler::LocalApprovalResult
-ChromeOSResultToLocalApprovalResult(
+supervised_user::LocalApprovalResult ChromeOSResultToLocalApprovalResult(
     crosapi::mojom::ParentAccessResult::Tag result) {
   switch (result) {
     case crosapi::mojom::ParentAccessResult::Tag::kApproved:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kApproved;
+      return supervised_user::LocalApprovalResult::kApproved;
     case crosapi::mojom::ParentAccessResult::Tag::kDeclined:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kDeclined;
+      return supervised_user::LocalApprovalResult::kDeclined;
     case crosapi::mojom::ParentAccessResult::Tag::kCanceled:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kCanceled;
+      return supervised_user::LocalApprovalResult::kCanceled;
     case crosapi::mojom::ParentAccessResult::Tag::kError:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kError;
+      return supervised_user::LocalApprovalResult::kError;
     case crosapi::mojom::ParentAccessResult::Tag::kDisabled:
       // Disabled is not a possible result for Local Web Approvals.
       NOTREACHED();
@@ -60,27 +56,9 @@ void HandleChromeOSErrorResult(
       LOG(ERROR) << "Unknown error in ParentAccess UI";
       return;
     case crosapi::mojom::ParentAccessErrorResult::Type::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
-
-// Returns whether website approvals are supported on the current ChromeOS
-// platform.
-bool IsWebsiteApprovalSupported() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  CHECK(service);
-  const int version =
-      service->GetInterfaceVersion<crosapi::mojom::ParentAccess>();
-  if (version < int{crosapi::mojom::ParentAccess::MethodMinVersions::
-                        kGetWebsiteParentApprovalMinVersion}) {
-    return false;
-  }
-#endif
-  return true;
-}
-
 }  // namespace
 
 SupervisedUserWebContentHandlerImpl::SupervisedUserWebContentHandlerImpl(
@@ -114,16 +92,13 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
     const supervised_user::UrlFormatter& url_formatter,
+    const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(web_contents_);
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext())
               ->GetProfileKey());
-
-  // Website approval is supported in Lacros from the version 0 and ash does not
-  // have version skew.
-  CHECK(IsWebsiteApprovalSupported());
 
   crosapi::mojom::ParentAccess* parent_access =
       supervised_user::GetParentAccessApi();
@@ -152,7 +127,8 @@ void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
     crosapi::mojom::ParentAccessResultPtr result) {
   WebContentHandler::OnLocalApprovalRequestCompleted(
       settings_service, url, start_time,
-      ChromeOSResultToLocalApprovalResult(result->which()));
+      ChromeOSResultToLocalApprovalResult(result->which()),
+      /*local_approval_error_type=*/std::nullopt);
 
   if (result->is_error()) {
     HandleChromeOSErrorResult(result->get_error()->type);

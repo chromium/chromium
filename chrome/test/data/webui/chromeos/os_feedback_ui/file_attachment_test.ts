@@ -7,7 +7,7 @@ import 'chrome://os-feedback/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
-import {FileAttachmentElement} from 'chrome://os-feedback/file_attachment.js';
+import type {FileAttachmentElement} from 'chrome://os-feedback/file_attachment.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {FeedbackAppPreSubmitAction} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
@@ -231,9 +231,9 @@ suite('fileAttachmentTestSuite', () => {
     assertEquals('fake.zip', getElementContent('#selectedFileName'));
     const attachedFile = await page!.getAttachedFile();
     // Verify the fileData field.
-    assertEquals(100, attachedFile!.fileData!.bytes!.length);
+    assertEquals(100, attachedFile!.fileData.bytes!.length);
     // Verify the fileName field.
-    assertEquals('fake.zip', attachedFile!.fileName!.path!.path);
+    assertEquals('fake.zip', attachedFile!.fileName.path.path);
   });
 
   // Test that chosen file can' exceed 10MB.

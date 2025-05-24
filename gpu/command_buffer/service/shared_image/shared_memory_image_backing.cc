@@ -74,7 +74,7 @@ class OverlayImageRepresentationImpl : public OverlayImageRepresentation {
     const auto& shm_wrapper = static_cast<SharedMemoryImageBacking*>(backing())
                                   ->shared_memory_wrapper();
     return std::make_optional<gl::DCLayerOverlayImage>(
-        size(), shm_wrapper.GetMemory(0), shm_wrapper.GetStride(0));
+        size(), shm_wrapper.GetMemoryPlanes(), shm_wrapper.GetStride(0));
   }
 #endif
 };
@@ -92,12 +92,11 @@ SharedImageBackingType SharedMemoryImageBacking::GetType() const {
 }
 
 gfx::Rect SharedMemoryImageBacking::ClearedRect() const {
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Rect();
+  NOTREACHED();
 }
 
 void SharedMemoryImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 gfx::GpuMemoryBufferHandle
@@ -217,8 +216,7 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
   for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
     gfx::Size plane_size = format.GetPlaneSize(plane, size);
     auto info = SkImageInfo::Make(gfx::SizeToSkISize(plane_size),
-                                  viz::ToClosestSkColorType(
-                                      /*gpu_compositing=*/true, format, plane),
+                                  viz::ToClosestSkColorType(format, plane),
                                   alpha_type, color_space.ToSkColorSpace());
     pixmaps_.push_back(shared_memory_wrapper_.MakePixmapForPlane(info, plane));
   }

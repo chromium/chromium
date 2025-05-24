@@ -19,39 +19,45 @@ SegmentationInternalsPageHandlerImpl::SegmentationInternalsPageHandlerImpl(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       service_proxy_(segmentation_service->GetServiceProxy()) {
-  if (service_proxy_)
+  if (service_proxy_) {
     service_proxy_->AddObserver(this);
+  }
 }
 
 SegmentationInternalsPageHandlerImpl::~SegmentationInternalsPageHandlerImpl() {
-  if (service_proxy_)
+  if (service_proxy_) {
     service_proxy_->RemoveObserver(this);
+  }
 }
 
 void SegmentationInternalsPageHandlerImpl::GetServiceStatus() {
-  if (!service_proxy_)
+  if (!service_proxy_) {
     return;
+  }
   service_proxy_->GetServiceStatus();
 }
 
 void SegmentationInternalsPageHandlerImpl::ExecuteModel(int segment_id) {
-  if (!service_proxy_)
+  if (!service_proxy_) {
     return;
+  }
   service_proxy_->ExecuteModel(static_cast<SegmentId>(segment_id));
 }
 
 void SegmentationInternalsPageHandlerImpl::OverwriteResult(int segment_id,
                                                            float result) {
-  if (!service_proxy_)
+  if (!service_proxy_) {
     return;
+  }
   service_proxy_->OverwriteResult(static_cast<SegmentId>(segment_id), result);
 }
 
 void SegmentationInternalsPageHandlerImpl::SetSelected(
     const std::string& segmentation_key,
     int segment_id) {
-  if (!service_proxy_)
+  if (!service_proxy_) {
     return;
+  }
 
   service_proxy_->SetSelectedSegment(segmentation_key,
                                      static_cast<SegmentId>(segment_id));

@@ -6,6 +6,7 @@ import 'chrome://password-manager/password_manager.js';
 
 import type {PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PromoCardsProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {BatchUploadPasswordsEntryPoint} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -55,10 +56,10 @@ suite('PasswordsSectionTest', function() {
     // Verify promo card is shown.
     assertTrue(!!promoCardElement);
     assertEquals(
-        promoCardsProxy.promo!.title,
+        promoCardsProxy.promo.title,
         promoCardElement.$.title.textContent!.trim());
     assertEquals(
-        promoCardsProxy.promo!.description,
+        promoCardsProxy.promo.description,
         promoCardElement.$.description.textContent!.trim());
     assertFalse(isVisible(promoCardElement.$.actionButton));
     const shownImage = promoCardElement.shadowRoot!.querySelector('img');
@@ -207,7 +208,7 @@ suite('PasswordsSectionTest', function() {
     assertFalse(!!promoCardElement);
   });
 
-  test('move passwords promo visible is requirements met', async function() {
+  test('move passwords promo visible opens batch upload', async function() {
     promoCardsProxy.promo = {
       id: 'move_passwords_promo',
       title: 'Move passwords promo',
@@ -243,35 +244,7 @@ suite('PasswordsSectionTest', function() {
     promoCardElement.$.actionButton.click();
     await flushTasks();
 
-    const moveDialog =
-        section.shadowRoot!.querySelector('move-passwords-dialog');
-    assertTrue(!!moveDialog);
-    assertTrue(isVisible(moveDialog.$.move));
-  });
-
-  test('screenlock promo', async function() {
-    promoCardsProxy.promo = {
-      id: 'screenlock_reauth_promo',
-      title: 'Screenlock reauth promo',
-      description: 'Screenlock reauth promo description.',
-      actionButtonText: 'Enable screenlock reauth',
-    };
-    passwordManager.setSwitchBiometricAuthBeforeFillingStateResponse(true);
-
-    const section = await createPasswordsSection();
-    let promoCardElement = section.shadowRoot!.querySelector('promo-card');
-
-    // Verify promo card is shown.
-    assertTrue(!!promoCardElement);
-    assertTrue(isVisible(promoCardElement.$.actionButton));
-
-    // Click action button button and verify that authentication started.
-    promoCardElement.$.actionButton.click();
-    await passwordManager.whenCalled('switchBiometricAuthBeforeFillingState');
-    await flushTasks();
-
-    // Verify that the promo card is hidden.
-    promoCardElement = section.shadowRoot!.querySelector('promo-card');
-    assertFalse(isVisible(promoCardElement));
+    const entryPoint = await syncProxy.whenCalled('openBatchUpload');
+    assertEquals(BatchUploadPasswordsEntryPoint.PROMO_CARD, entryPoint);
   });
 });

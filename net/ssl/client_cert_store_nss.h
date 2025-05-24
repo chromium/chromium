@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
+#include "net/ssl/client_cert_matcher.h"
 #include "net/ssl/client_cert_store.h"
 
 typedef struct CERTCertListStr CERTCertList;
@@ -28,6 +29,11 @@ class NET_EXPORT ClientCertStoreNSS : public ClientCertStore {
       base::RepeatingCallback<crypto::CryptoModuleBlockingPasswordDelegate*(
           const HostPortPair& /* server */)>;
   using CertFilter = base::RepeatingCallback<bool(CERTCertificate*)>;
+
+  class IssuerSourceNSS : public ClientCertIssuerSource {
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> GetCertsByName(
+        base::span<const uint8_t> name) override;
+  };
 
   explicit ClientCertStoreNSS(
       const PasswordDelegateFactory& password_delegate_factory);

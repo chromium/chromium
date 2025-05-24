@@ -21,18 +21,18 @@ namespace extensions {
 // revoked). It can also optionally contain a list of sub-messages which should
 // appear as nested bullet points below the main one.
 //
-// |permissions| contains the permissions that are 'represented' by this
+// `permissions` contains the permissions that are 'represented' by this
 // message and should be revoked if this permission message is revoked. Note
 // that other permissions could have contributed to the message, but these are
 // the ones 'contained' in this message - if this set is taken for all
 // PermissionMessages, each permission will only be in at most one
 // PermissionMessage.
 //
-// Some permissions may contain nested messages, stored in |submessages|. These
+// Some permissions may contain nested messages, stored in `submessages`. These
 // are appropriate to show as nested bullet points below the permission,
 // collapsed if needed. For example, host permission messages may list all the
-// sites the app has access to in |submessages|, with a summary message in
-// |message|.
+// sites the app has access to in `submessages`, with a summary message in
+// `message`.
 //
 // TODO(sashab): Add a custom revoke action for each permission and nested
 // permission message, registerable as a callback.

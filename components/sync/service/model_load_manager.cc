@@ -18,8 +18,8 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
-#include "components/sync/model/sync_error.h"
 #include "components/sync/service/data_type_controller.h"
+#include "components/sync/service/sync_error.h"
 
 namespace syncer {
 
@@ -52,7 +52,7 @@ ModelLoadManager::~ModelLoadManager() = default;
 void ModelLoadManager::Configure(DataTypeSet preferred_types_without_errors,
                                  DataTypeSet preferred_types,
                                  const ConfigureContext& context) {
-  // |preferred_types_without_errors| must be a subset of |preferred_types|.
+  // `preferred_types_without_errors` must be a subset of `preferred_types`.
   DCHECK(preferred_types.HasAll(preferred_types_without_errors))
       << " desired: "
       << DataTypeSetToDebugString(preferred_types_without_errors)
@@ -91,8 +91,9 @@ void ModelLoadManager::Configure(DataTypeSet preferred_types_without_errors,
     for (const auto& [type, dtc] : *controllers_) {
       // Use CLEAR_METADATA in this case to avoid that two independent model
       // instances maintain their own copy of sync metadata.
-      StopDatatypeImpl(SyncError(), SyncStopMetadataFate::CLEAR_METADATA,
-                       dtc.get(), base::DoNothing());
+      StopDatatypeImpl(/*error=*/std::nullopt,
+                       SyncStopMetadataFate::CLEAR_METADATA, dtc.get(),
+                       base::DoNothing());
     }
   } else {
     // If the sync mode hasn't changed, stop only the types that are not
@@ -113,7 +114,7 @@ void ModelLoadManager::Configure(DataTypeSet preferred_types_without_errors,
         }
         DVLOG(1) << "ModelLoadManager: stop " << dtc->name()
                  << " with metadata fate " << static_cast<int>(metadata_fate);
-        StopDatatypeImpl(SyncError(), metadata_fate, dtc.get(),
+        StopDatatypeImpl(/*error=*/std::nullopt, metadata_fate, dtc.get(),
                          base::DoNothing());
       }
     }
@@ -129,7 +130,6 @@ void ModelLoadManager::Configure(DataTypeSet preferred_types_without_errors,
 void ModelLoadManager::StopDatatype(DataType type,
                                     SyncStopMetadataFate metadata_fate,
                                     SyncError error) {
-  DCHECK(error.IsSet());
   preferred_types_without_errors_.Remove(type);
 
   DataTypeController* dtc = controllers_->find(type)->second.get();
@@ -142,7 +142,7 @@ void ModelLoadManager::StopDatatype(DataType type,
 }
 
 void ModelLoadManager::StopDatatypeImpl(
-    const SyncError& error,
+    const std::optional<SyncError>& error,
     SyncStopMetadataFate metadata_fate,
     DataTypeController* dtc,
     DataTypeController::StopCallback callback) {
@@ -154,13 +154,13 @@ void ModelLoadManager::StopDatatypeImpl(
 
   delegate_->OnSingleDataTypeWillStop(data_type, error);
 
-  // Note: Depending on |metadata_fate|, data types will clear their metadata
+  // Note: Depending on `metadata_fate`, data types will clear their metadata
   // in response to Stop().
   dtc->Stop(metadata_fate, std::move(callback));
 }
 
 void ModelLoadManager::LoadDesiredTypes() {
-  // Note: |preferred_types_without_errors_| might be modified during iteration
+  // Note: `preferred_types_without_errors_` might be modified during iteration
   // (e.g. in ModelLoadCallback()), so make a copy.
   const DataTypeSet types = preferred_types_without_errors_;
 
@@ -201,7 +201,8 @@ void ModelLoadManager::Stop(SyncStopMetadataFate metadata_fate) {
   for (const auto& [type, dtc] : *controllers_) {
     // We don't really wait until all datatypes have been fully stopped, which
     // is only required (and in fact waited for) when Configure() is called.
-    StopDatatypeImpl(SyncError(), metadata_fate, dtc.get(), base::DoNothing());
+    StopDatatypeImpl(/*error=*/std::nullopt, metadata_fate, dtc.get(),
+                     base::DoNothing());
     DVLOG(1) << "ModelLoadManager: Stopped " << dtc->name();
   }
 
@@ -211,17 +212,19 @@ void ModelLoadManager::Stop(SyncStopMetadataFate metadata_fate) {
   preferred_types_without_errors_.Clear();
 }
 
-void ModelLoadManager::ModelLoadCallback(DataType type,
-                                         const SyncError& error) {
+void ModelLoadManager::ModelLoadCallback(
+    DataType type,
+    const std::optional<ModelError>& error) {
   DVLOG(1) << "ModelLoadManager: ModelLoadCallback for "
            << DataTypeToDebugString(type);
 
-  if (error.IsSet()) {
+  if (error.has_value()) {
     DVLOG(1) << "ModelLoadManager: Type encountered an error.";
     preferred_types_without_errors_.Remove(type);
     DataTypeController* dtc = controllers_->find(type)->second.get();
-    StopDatatypeImpl(error, SyncStopMetadataFate::KEEP_METADATA, dtc,
-                     base::DoNothing());
+    StopDatatypeImpl(
+        SyncError(error->location(), SyncError::MODEL_ERROR, error->message()),
+        SyncStopMetadataFate::KEEP_METADATA, dtc, base::DoNothing());
     NotifyDelegateIfReadyForConfigure();
     return;
   }
@@ -290,17 +293,17 @@ void ModelLoadManager::LoadModelsForType(DataTypeController* dtc) {
   // before the type actually stopped.
   if (dtc->state() == DataTypeController::FAILED) {
     ModelLoadCallback(dtc->type(),
-                      SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
-                                "Data type in FAILED state.", dtc->type()));
+                      ModelError(FROM_HERE, "Data type in FAILED state."));
     return;
   }
 
   // TODO(crbug.com/41492467): Avoid calling LoadModelsForType() multiple times
   // upon stop, and re-introduce a CHECK for state to be NOT_RUNNING only.
   if (dtc->state() == DataTypeController::NOT_RUNNING) {
-    dtc->LoadModels(*configure_context_,
-                    base::BindRepeating(&ModelLoadManager::ModelLoadCallback,
-                                        weak_ptr_factory_.GetWeakPtr()));
+    dtc->LoadModels(
+        *configure_context_,
+        base::BindRepeating(&ModelLoadManager::ModelLoadCallback,
+                            weak_ptr_factory_.GetWeakPtr(), dtc->type()));
   }
 }
 

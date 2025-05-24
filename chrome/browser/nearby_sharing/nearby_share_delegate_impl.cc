@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -29,14 +30,13 @@ namespace {
 const char kStartOnboardingQueryParam[] = "onboarding";
 const char kStartReceivingQueryParam[] = "receive";
 
-constexpr base::TimeDelta kShutoffTimeout = base::Minutes(5);
+constexpr base::TimeDelta kShutoffTimeoutLegacy = base::Minutes(5);
+constexpr base::TimeDelta kShutoffTimeout = base::Minutes(10);
 
 std::string GetTimestampString() {
   return base::NumberToString(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
-
-const gfx::VectorIcon kEmptyIcon;
 
 }  // namespace
 
@@ -46,7 +46,8 @@ NearbyShareDelegateImpl::NearbyShareDelegateImpl(
       settings_opener_(std::make_unique<SettingsOpener>()),
       shutoff_timer_(
           FROM_HERE,
-          kShutoffTimeout,
+          chromeos::features::IsQuickShareV2Enabled() ? kShutoffTimeout
+                                                      : kShutoffTimeoutLegacy,
           base::BindRepeating(&NearbyShareDelegateImpl::DisableHighVisibility,
                               base::Unretained(this))) {
   ash::SessionController::Get()->AddObserver(this);
@@ -63,6 +64,11 @@ NearbyShareDelegateImpl::~NearbyShareDelegateImpl() {
 bool NearbyShareDelegateImpl::IsEnabled() {
   return nearby_share_service_ != nullptr &&
          nearby_share_service_->GetSettings()->GetEnabled();
+}
+
+void NearbyShareDelegateImpl::SetEnabled(bool enabled) {
+  CHECK(nearby_share_service_);
+  nearby_share_service_->GetSettings()->SetEnabled(enabled);
 }
 
 bool NearbyShareDelegateImpl::IsPodButtonVisible() {
@@ -106,7 +112,7 @@ void NearbyShareDelegateImpl::OnLockStateChanged(bool locked) {
   }
 }
 
-void NearbyShareDelegateImpl::OnFirstSessionStarted() {
+void NearbyShareDelegateImpl::OnFirstSessionReady() {
   nearby_share_service_ = NearbySharingServiceFactory::GetForBrowserContext(
       ProfileManager::GetPrimaryUserProfile());
 
@@ -128,9 +134,9 @@ void NearbyShareDelegateImpl::SetNearbyShareSettingsForTest(
 }
 
 // In Quick Share v1, not used.
-// In Quick Share v2, Quick Share should always be 'enabled', though visibility
-// may be set to Hidden.
-void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {}
+void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {
+  nearby_share_controller_->NearbyShareEnabledChanged(enabled);
+}
 
 void NearbyShareDelegateImpl::OnFastInitiationNotificationStateChanged(
     ::nearby_share::mojom::FastInitiationNotificationState state) {}
@@ -178,7 +184,10 @@ void NearbyShareDelegateImpl::OnHighVisibilityChanged(bool high_visibility_on) {
   is_enable_high_visibility_request_active_ = false;
 
   if (high_visibility_on) {
-    shutoff_time_ = base::TimeTicks::Now() + kShutoffTimeout;
+    base::TimeDelta shutoff_timeout =
+        chromeos::features::IsQuickShareV2Enabled() ? kShutoffTimeout
+                                                    : kShutoffTimeoutLegacy;
+    shutoff_time_ = base::TimeTicks::Now() + shutoff_timeout;
     shutoff_timer_.Reset();
   } else {
     shutoff_timer_.Stop();
@@ -213,9 +222,12 @@ void NearbyShareDelegateImpl::SettingsOpener::ShowSettingsPage(
     query_string += "?" + sub_page + "&time=" + GetTimestampString();
 
     if (sub_page == kStartReceivingQueryParam) {
+      base::TimeDelta shutoff_timeout =
+          chromeos::features::IsQuickShareV2Enabled() ? kShutoffTimeout
+                                                      : kShutoffTimeoutLegacy;
       // Attach high visibility shutoff timeout for display in webui.
       query_string +=
-          "&timeout=" + base::NumberToString(kShutoffTimeout.InSeconds());
+          "&timeout=" + base::NumberToString(shutoff_timeout.InSeconds());
     }
   }
 
@@ -231,7 +243,7 @@ const gfx::VectorIcon& NearbyShareDelegateImpl::GetIcon(bool on_icon) const {
     return on_icon ? kNearbyShareInternalIcon : kNearbyShareInternalOffIcon;
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return kEmptyIcon;
+  return gfx::VectorIcon::EmptyIcon();
 }
 
 std::u16string NearbyShareDelegateImpl::GetPlaceholderFeatureName() const {

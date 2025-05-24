@@ -31,20 +31,20 @@ void PasswordDataTypeControllerDelegateAndroid::OnSyncStarting(
 void PasswordDataTypeControllerDelegateAndroid::OnSyncStopping(
     syncer::SyncStopMetadataFate metadata_fate) {}
 
-void PasswordDataTypeControllerDelegateAndroid::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
+void PasswordDataTypeControllerDelegateAndroid::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
   // No data is managed by PasswordDataTypeControllerDelegate - this datatype
   // doesn't use the built-in SyncEngine to communicate changes to/from the Sync
   // server; instead, Android-specific functionality is used for that. So there
   // can't be unsynced changes here.
-  std::move(callback).Run(false);
+  std::move(callback).Run(0u);
 }
 
 void PasswordDataTypeControllerDelegateAndroid::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   // This is not implemented because it's not worth the hassle just to display
   // debug information in chrome://sync-internals.
-  std::move(callback).Run(syncer::PASSWORDS, base::Value::List());
+  std::move(callback).Run(base::Value::List());
 }
 
 void PasswordDataTypeControllerDelegateAndroid::
@@ -69,7 +69,7 @@ void PasswordDataTypeControllerDelegateAndroid::ClearMetadataIfStopped() {
 
 void PasswordDataTypeControllerDelegateAndroid::ReportBridgeErrorForTest() {
   // Not supported for Android.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>

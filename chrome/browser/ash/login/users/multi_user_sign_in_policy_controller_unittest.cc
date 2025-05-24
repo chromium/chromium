@@ -122,10 +122,9 @@ class MockUserManagerObserver : public UserManager::Observer {
 
 class MultiUserSignInPolicyControllerTest : public testing::Test {
  public:
-  MultiUserSignInPolicyControllerTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
-    for (size_t i = 0; i < std::size(kUsers); ++i) {
-      test_users_.push_back(AccountId::FromUserEmail(kUsers[i]));
+  MultiUserSignInPolicyControllerTest() {
+    for (const char* user : kUsers) {
+      test_users_.push_back(AccountId::FromUserEmail(user));
     }
   }
 
@@ -196,16 +195,18 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
                                  policy);
   }
 
-  MultiUserSignInPolicyController* controller() {
-    return fake_user_manager_->GetMultiUserSignInPolicyController();
-  }
+  MultiUserSignInPolicyController* controller() { return controller_.get(); }
 
   TestingProfile* profile(int index) { return user_profiles_[index]; }
 
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
-  TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  TypedScopedUserManager<ash::FakeChromeUserManager> fake_user_manager_{
+      std::make_unique<ash::FakeChromeUserManager>()};
+  std::unique_ptr<user_manager::MultiUserSignInPolicyController> controller_{
+      std::make_unique<user_manager::MultiUserSignInPolicyController>(
+          local_state_.Get(),
+          fake_user_manager_.Get())};
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::vector<raw_ptr<TestingProfile, VectorExperimental>> user_profiles_;
@@ -262,9 +263,8 @@ TEST_F(MultiUserSignInPolicyControllerTest, CachedBehaviorUpdate) {
 // upon login.
 TEST_F(MultiUserSignInPolicyControllerTest, CompromisedCacheFixedOnLogin) {
   MockUserManagerObserver mock_observer;
-  base::ScopedObservation<UserManager,
-                          UserManager::Observer>
-      observation(&mock_observer);
+  base::ScopedObservation<UserManager, UserManager::Observer> observation(
+      &mock_observer);
   observation.Observe(fake_user_manager_.Get());
 
   SetPrefBehavior(0, MultiUserSignInPolicy::kPrimaryOnly);
@@ -307,9 +307,8 @@ TEST_F(MultiUserSignInPolicyControllerTest, IsSecondaryAllowed) {
 // Tests user behavior changes within a two-user session.
 TEST_F(MultiUserSignInPolicyControllerTest, PrimaryBehaviorChange) {
   MockUserManagerObserver mock_observer;
-  base::ScopedObservation<UserManager,
-                          UserManager::Observer>
-      observation(&mock_observer);
+  base::ScopedObservation<UserManager, UserManager::Observer> observation(
+      &mock_observer);
   observation.Observe(fake_user_manager_.Get());
   EXPECT_CALL(mock_observer, OnUserNotAllowed(testing::_))
       .Times(testing::AnyNumber());
@@ -342,8 +341,6 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertServiceFactory::GetForProfile(profile(0))
-      ->SetUsedPolicyCertificates();
 
   EXPECT_TRUE(
       controller()->IsUserAllowedInSession(test_users_[0].GetUserEmail()));
@@ -367,8 +364,6 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertServiceFactory::GetForProfile(profile(0))
-      ->SetUsedPolicyCertificates();
 
   EXPECT_TRUE(
       controller()->IsUserAllowedInSession(test_users_[0].GetUserEmail()));
@@ -381,8 +376,6 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertServiceFactory::GetForProfile(profile(0))
-      ->SetUsedPolicyCertificates();
   LoginUser(0);
 
   EXPECT_TRUE(
@@ -391,8 +384,6 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(1), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertServiceFactory::GetForProfile(profile(1))
-      ->SetUsedPolicyCertificates();
 
   EXPECT_TRUE(
       controller()->IsUserAllowedInSession(test_users_[1].GetUserEmail()));

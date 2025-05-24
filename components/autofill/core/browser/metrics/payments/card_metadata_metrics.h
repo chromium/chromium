@@ -11,14 +11,18 @@
 
 namespace autofill::autofill_metrics {
 
-// The below issuer and network names are used for logging purposes. The issuer
-// names must be consistent with the Autofill.CreditCardIssuerId in the
-// autofill/histograms.xml file.
+// The below issuer, network, and benefit source names are used for logging
+// purposes. The issuers, networks, and benefit sources must be consistent with
+// the Autofill.CreditCardIssuerId, Autofill.CreditCardNetwork, and
+// Autofill.CreditCardBenefitSource respectively, in the
+// tools/metrics/histograms/metadata/autofill/histograms.xml file.
 constexpr std::string_view kAmericanExpress = "Amex";
 constexpr std::string_view kAnz = "Anz";
+constexpr std::string_view kBmo = "Bmo";
 constexpr std::string_view kCapitalOne = "CapitalOne";
 constexpr std::string_view kChase = "Chase";
 constexpr std::string_view kCiti = "Citi";
+constexpr std::string_view kCurinos = "Curinos";
 constexpr std::string_view kDiscover = "Discover";
 constexpr std::string_view kLloyds = "Lloyds";
 constexpr std::string_view kMarqeta = "Marqeta";
@@ -52,8 +56,10 @@ enum class CardMetadataLoggingEvent {
 
 using HasBeenLogged = base::StrongAlias<class HasBeenLoggedTag, bool>;
 
-// Struct that groups metadata-related information together for some set of
-// credit cards. Used for metrics logging.
+// Struct that groups metadata-related information together for some
+// set of credit cards. Used for metrics logging whether metadata is
+// available and/or shown with credit card suggestions, including
+// product descriptions, card art images, and card benefits.
 struct CardMetadataLoggingContext {
   CardMetadataLoggingContext();
   CardMetadataLoggingContext(const CardMetadataLoggingContext&);
@@ -102,25 +108,29 @@ struct CardMetadataLoggingContext {
   std::optional<base::flat_map<std::string, bool>>
       selected_issuer_or_network_to_metadata_availability;
 
-  // Keeps record of the instrument ids to issuer ids for credit card
+  // Keeps record of the instrument ids to benefit sources for credit card
   // suggestions shown to the user with a card benefit.
   base::flat_map<int64_t, std::string>
-      instrument_ids_to_issuer_ids_with_benefits_available;
+      instrument_ids_to_available_benefit_sources;
 
-  // Keeps record of the issuer of a selected card suggestion.
-  std::string selected_issuer_id;
+  // Keeps record of the selected card benefit source for later events logging.
+  std::string selected_benefit_source;
 
   // Keeps record of the selected card instrument id for later events logging.
   int64_t selected_card_instrument_id;
 };
 
-// Get histogram suffix based on given card issuer id or network.
+// Get histogram suffix based on a given card issuer id or network.
 std::string_view GetCardIssuerIdOrNetworkSuffix(
     const std::string& card_issuer_id_or_network);
 
+// Get histogram suffix based on a given card benefit source.
+std::string_view GetCardBenefitSourceSuffix(
+    const std::string& card_benefit_source);
+
 // Get the CardMetadataLoggingContext for the given credit cards.
 CardMetadataLoggingContext GetMetadataLoggingContext(
-    const std::vector<CreditCard>& cards);
+    base::span<const CreditCard> cards);
 
 // Log the suggestion event regarding card metadata. `has_been_logged` indicates
 // whether the event has already been logged since last page load.
@@ -145,14 +155,16 @@ void LogAcceptanceLatency(base::TimeDelta latency,
 // Logs if credit card benefits are enabled when a new profile is launched.
 void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled);
 
-void LogBenefitFormEventToIssuerHistogram(const std::string& issuer_id,
-                                          FormEvent event);
+// Log the given `event` for card benefits on a benefit source level.
+void LogBenefitFormEventToBenefitSourceHistogram(
+    const std::string& benefit_source,
+    FormEvent event);
 
-// Log the given `event` for every issuer with card with benefits available
+// Log the given `event` for every card benefit source with benefits available
 // shown.
-void LogBenefitFormEventForAllIssuersWithBenefitAvailable(
+void LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
     const base::flat_map<int64_t, std::string>&
-        instrument_ids_to_issuer_ids_with_benefits_available,
+        instrument_ids_to_available_benefit_sources,
     FormEvent event);
 
 }  // namespace autofill::autofill_metrics

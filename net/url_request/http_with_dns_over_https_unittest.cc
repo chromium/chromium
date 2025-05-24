@@ -267,10 +267,10 @@ class TestHttpDelegate : public HttpStreamRequest::Delegate {
   void OnQuicBroken() override {}
 
   void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolSwitchingInfo switching_info) override {
+      HttpStreamPoolRequestInfo request_info) override {
     CHECK(base::FeatureList::IsEnabled(features::kHappyEyeballsV3));
     request_ = session_->http_stream_pool()->RequestStream(
-        this, std::move(switching_info), DEFAULT_PRIORITY,
+        this, std::move(request_info), DEFAULT_PRIORITY,
         /*allowed_bad_certs=*/{},
         /*enable_ip_based_pooling=*/false,
         /*enable_alternative_services=*/false, NetLogWithSource());

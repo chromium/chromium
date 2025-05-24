@@ -536,6 +536,11 @@ const gKeyframesTests = [
     output: [keyframe(offset(0.5), { left: '10px' })],
   },
   {
+    desc:   'a single keyframe sequence with a single calc() offset',
+    input:  [{ offset: 'calc(0.5)', left: '10px' }],
+    output: [keyframe(offset(0.5), { left: '10px' })],
+  },
+  {
     desc:   'a one property keyframe sequence with some omitted offsets',
     input:  [{ offset: 0.00, left: '10px' },
              { offset: 0.25, left: '20px' },

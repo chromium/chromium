@@ -196,11 +196,9 @@ goog.editor.node.getChildHelper_ = function(parent, isReversed) {
  */
 goog.editor.node.getFirstValue_ = function(iterator) {
   'use strict';
-  try {
-    return iterator.nextValueOrThrow();
-  } catch (e) {
-    return null;
-  }
+  const it = iterator.next();
+  if (it.done) return null;
+  return it.value;
 };
 
 

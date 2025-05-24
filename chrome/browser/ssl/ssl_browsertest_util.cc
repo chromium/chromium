@@ -121,7 +121,7 @@ SecurityStateWebContentsObserver::SecurityStateWebContentsObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
-SecurityStateWebContentsObserver::~SecurityStateWebContentsObserver() {}
+SecurityStateWebContentsObserver::~SecurityStateWebContentsObserver() = default;
 
 void SecurityStateWebContentsObserver::WaitForDidChangeVisibleSecurityState() {
   run_loop_.Run();
@@ -132,8 +132,7 @@ void SecurityStateWebContentsObserver::DidChangeVisibleSecurityState() {
 }
 
 bool UsingBuiltinCertVerifier() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   return true;
 #else
   return false;

@@ -21,8 +21,7 @@ class PrefsTabHelperBrowserTest : public InProcessBrowserTest {
   virtual base::FilePath GetPreferencesFilePath() {
     base::FilePath test_data_directory;
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_directory);
-    return test_data_directory
-        .AppendASCII("profiles")
+    return test_data_directory.AppendASCII("profiles")
         .AppendASCII("web_prefs")
         .AppendASCII("Default")
         .Append(chrome::kPreferencesFilename);
@@ -45,8 +44,8 @@ class PrefsTabHelperBrowserTest : public InProcessBrowserTest {
     base::FilePath default_pref_file =
         default_profile.Append(chrome::kPreferencesFilename);
     if (!base::CopyFile(pref_file, default_pref_file)) {
-      LOG(ERROR) << "Copy error from " << pref_file.MaybeAsASCII()
-                 << " to " << default_pref_file.MaybeAsASCII();
+      LOG(ERROR) << "Copy error from " << pref_file.MaybeAsASCII() << " to "
+                 << default_pref_file.MaybeAsASCII();
       return false;
     }
 
@@ -54,7 +53,9 @@ class PrefsTabHelperBrowserTest : public InProcessBrowserTest {
     // Make the copy writable.  On POSIX we assume the umask allows files
     // we create to be writable.
     if (!::SetFileAttributesW(default_pref_file.value().c_str(),
-                              FILE_ATTRIBUTE_NORMAL)) return false;
+                              FILE_ATTRIBUTE_NORMAL)) {
+      return false;
+    }
 #endif
     return true;
   }
@@ -65,12 +66,12 @@ class PrefsTabHelperBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, WebPrefs) {
   PrefService* prefs = browser()->profile()->GetPrefs();
 
-  EXPECT_TRUE(prefs->FindPreference(
-      prefs::kWebKitCursiveFontFamily)->IsDefaultValue());
-  EXPECT_TRUE(prefs->FindPreference(
-      prefs::kWebKitSerifFontFamily)->IsDefaultValue());
-  EXPECT_TRUE(prefs->FindPreference(
-      prefs::kWebKitSerifFontFamilyJapanese)->IsDefaultValue());
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kWebKitCursiveFontFamily)->IsDefaultValue());
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kWebKitSerifFontFamily)->IsDefaultValue());
+  EXPECT_TRUE(prefs->FindPreference(prefs::kWebKitSerifFontFamilyJapanese)
+                  ->IsDefaultValue());
 
   EXPECT_EQ("windows-1251", prefs->GetString(prefs::kDefaultCharset));
   EXPECT_EQ(16, prefs->GetInteger(prefs::kWebKitDefaultFontSize));

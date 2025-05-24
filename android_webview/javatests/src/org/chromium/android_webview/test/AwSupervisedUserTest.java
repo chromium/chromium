@@ -9,6 +9,7 @@ import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasHost;
+import static androidx.test.espresso.intent.matcher.UriMatchers.hasParamWithValue;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasPath;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -36,19 +37,17 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.android_webview.WebMessageListener;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.BackgroundThreadExecutor;
 import org.chromium.android_webview.common.PlatformServiceBridge;
+import org.chromium.android_webview.supervised_user.AwSupervisedUserSafeModeAction;
 import org.chromium.android_webview.supervised_user.AwSupervisedUserUrlClassifier;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -83,6 +82,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     private static final String LEARN_MORE_LINK = "learn-more-link";
     private static final String SUPPORT_CENTER_HOST = "support.google.com";
     private static final String SUPPORT_CENTER_PATH = "/families";
+    private static final String SUPPORT_CENTER_PLINK = "content_blocked_webview";
 
     private static String makeTestPage(String title, @Nullable String iFrameUrl) {
         StringBuilder sb = new StringBuilder();
@@ -108,12 +108,12 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
 
     @Rule public AwActivityTestRule mActivityTestRule;
 
-    private OnProgressChangedClient mContentsClient = new OnProgressChangedClient();
-    private TestAwSupervisedUserUrlClassifierDelegate mDelegate =
+    private final OnProgressChangedClient mContentsClient = new OnProgressChangedClient();
+    private final TestAwSupervisedUserUrlClassifierDelegate mDelegate =
             new TestAwSupervisedUserUrlClassifierDelegate();
     private AwContents mAwContents;
     private TestWebServer mWebServer;
-    private IFrameLoadedListener mIFrameLoadedListener = new IFrameLoadedListener();
+    private final IframeLoadedListener mIframeLoadedListener = new IframeLoadedListener();
 
     public AwSupervisedUserTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -135,7 +135,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.addWebMessageListener(
-                            "myObject", new String[] {"*"}, mIFrameLoadedListener);
+                            "myObject", new String[] {"*"}, mIframeLoadedListener);
                 });
         resetNeedsRestriction(true);
     }
@@ -144,12 +144,12 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     public void tearDown() throws Exception {
         mActivityTestRule.destroyAwContentsOnMainSync(mAwContents);
         mWebServer.shutdown();
+        AwSupervisedUserSafeModeAction.resetForTesting();
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
     public void testAllowedSiteIsLoaded() throws Throwable {
         String embeddedUrl = setUpWebPage(SAFE_SITE_IFRAME_PATH, SAFE_SITE_IFRAME_TITLE, null);
         String requestUrl = setUpWebPage(SAFE_SITE_PATH, SAFE_SITE_TITLE, embeddedUrl);
@@ -163,7 +163,6 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
     public void testDisallowedSiteIsBlocked() throws Throwable {
         String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, null);
 
@@ -175,7 +174,6 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
     public void testDisallowedEmbeddedSiteIsBlocked() throws Throwable {
         String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
         String requestUrl = setUpWebPage(SAFE_SITE_PATH, SAFE_SITE_TITLE, embeddedUrl);
@@ -189,7 +187,6 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
     public void testDisallowedSiteRedirectIsBlocked() throws Throwable {
         String requestUrl = mWebServer.setRedirect(MATURE_SITE_PATH, SAFE_SITE_PATH);
 
@@ -201,7 +198,6 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
     public void testDisallowedRedirectIsBlocked() throws Throwable {
         String requestUrl = mWebServer.setRedirect(SAFE_SITE_PATH, MATURE_SITE_PATH);
 
@@ -213,25 +209,6 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add(
-            "disable-features="
-                    + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK
-                    + ","
-                    + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
-    public void testDisallowedSiteIsLoadedFeatureOff() throws Throwable {
-        String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
-        String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
-
-        loadUrl(requestUrl);
-
-        assertPageTitle(MATURE_SITE_TITLE);
-        assertIframeTitle(MATURE_SITE_IFRAME_TITLE);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
     public void testBlocksContentOnlyIfRestrctionRequired() throws Throwable {
         String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
         String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
@@ -263,7 +240,6 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
     public void testClickLearnMoreLink() throws Throwable {
         String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, null);
         try {
@@ -283,10 +259,25 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
                     allOf(
                             hasAction(Intent.ACTION_VIEW),
                             hasData(hasHost(SUPPORT_CENTER_HOST)),
-                            hasData(hasPath(SUPPORT_CENTER_PATH))));
+                            hasData(hasPath(SUPPORT_CENTER_PATH)),
+                            hasData(hasParamWithValue("p", SUPPORT_CENTER_PLINK))));
         } finally {
             Intents.release();
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSafeMode() throws Throwable {
+        String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
+        String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
+
+        new AwSupervisedUserSafeModeAction().execute();
+        loadUrl(requestUrl);
+
+        assertPageTitle(MATURE_SITE_TITLE);
+        assertIframeTitle(MATURE_SITE_IFRAME_TITLE);
     }
 
     private String setUpWebPage(String path, String title, @Nullable String iFrameUrl) {
@@ -305,7 +296,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     }
 
     private void assertIframeTitle(String expectedTitle) throws Exception {
-        String iFrameTitle = mIFrameLoadedListener.waitForResult();
+        String iFrameTitle = mIframeLoadedListener.waitForResult();
         Assert.assertEquals(expectedTitle, iFrameTitle);
     }
 
@@ -325,7 +316,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         }
     }
 
-    private static class IFrameLoadedListener implements WebMessageListener {
+    private static class IframeLoadedListener implements WebMessageListener {
         private final CallbackHelper mCallbackHelper = new CallbackHelper();
         private volatile String mResult;
 
@@ -386,7 +377,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     }
 
     private static class TestPlatformServiceBridge extends PlatformServiceBridge {
-        AwSupervisedUserUrlClassifierDelegate mDelegate;
+        final AwSupervisedUserUrlClassifierDelegate mDelegate;
 
         public TestPlatformServiceBridge(AwSupervisedUserUrlClassifierDelegate delegate) {
             mDelegate = delegate;
@@ -399,11 +390,6 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     }
 
     private void resetNeedsRestriction(boolean value) throws Exception {
-        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
-                && !AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)) {
-            // Nothing we need to do if the feature is disabled.
-            return;
-        }
         mDelegate.setNeedsRestrictedContentBlockingResponse(value);
         int count = mDelegate.getNeedsRestrictionHelper().getCallCount();
         AwSupervisedUserUrlClassifier classifier = AwSupervisedUserUrlClassifier.getInstance();

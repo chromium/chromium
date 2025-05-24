@@ -13,6 +13,7 @@
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/gfx/animation/keyframe/test/animation_utils.h"
 
 namespace vr {
 
@@ -30,7 +31,7 @@ class TestVectorIcon : public VectorIcon {
   TestVectorIcon(const TestVectorIcon&) = delete;
   TestVectorIcon& operator=(const TestVectorIcon&) = delete;
 
-  ~TestVectorIcon() override {}
+  ~TestVectorIcon() override = default;
 
   UiTexture* GetTexture() const override { return VectorIcon::GetTexture(); }
 };

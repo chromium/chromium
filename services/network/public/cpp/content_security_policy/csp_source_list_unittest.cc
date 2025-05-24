@@ -4,8 +4,9 @@
 
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -56,13 +57,13 @@ std::vector<mojom::CSPSourceListPtr> ParseToVectorOfSourceLists(
     mojom::CSPDirectiveName directive,
     const std::vector<std::string>& values) {
   std::vector<std::string> csp_values(values.size());
-  base::ranges::transform(values, csp_values.begin(),
-                          [directive](const std::string& s) {
-                            return ToString(directive) + " " + s;
-                          });
+  std::ranges::transform(values, csp_values.begin(),
+                         [directive](const std::string& s) {
+                           return ToString(directive) + " " + s;
+                         });
   std::vector<mojom::ContentSecurityPolicyPtr> policies = Parse(csp_values);
   std::vector<mojom::CSPSourceListPtr> sources(policies.size());
-  base::ranges::transform(
+  std::ranges::transform(
       policies, sources.begin(),
       [directive](mojom::ContentSecurityPolicyPtr& p) {
         return mojom::CSPSourceListPtr(std::move(p->directives[directive]));
@@ -73,7 +74,7 @@ std::vector<mojom::CSPSourceListPtr> ParseToVectorOfSourceLists(
 std::vector<const mojom::CSPSourceList*> ToRawPointers(
     const std::vector<mojom::CSPSourceListPtr>& list) {
   std::vector<const mojom::CSPSourceList*> out(list.size());
-  base::ranges::transform(list, out.begin(), &mojom::CSPSourceListPtr::get);
+  std::ranges::transform(list, out.begin(), &mojom::CSPSourceListPtr::get);
   return out;
 }
 
@@ -108,10 +109,7 @@ TEST(CSPSourceList, AllowStar) {
   EXPECT_EQ(Allow(source_list, GURL("wss://not-example.com"), *self),
             network::CSPCheckResult::AllowedOnlyIfWildcardMatchesWs());
   EXPECT_EQ(Allow(source_list, GURL("ftp://not-example.com"), *self),
-            base::FeatureList::IsEnabled(
-                network::features::kCspStopMatchingWildcardDirectivesToFtp)
-                ? network::CSPCheckResult::Blocked()
-                : network::CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp());
+            network::CSPCheckResult::Blocked());
   EXPECT_EQ(Allow(source_list, GURL("file://not-example.com"), *self),
             network::CSPCheckResult::Blocked());
   EXPECT_EQ(Allow(source_list, GURL("applewebdata://a.test"), *self),

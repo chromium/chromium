@@ -378,8 +378,6 @@ testSuite({
     (function() {
       // Test Object.seal() in strict mode, where the assignment itself throws
       // the error rather than our explicit consistency check.
-      'use strict';
-
       const sealed = Object.seal({a: 1});
       assertThrows(
           'Trying to set a new sealed property fails silently in strict mode.',
@@ -441,8 +439,6 @@ testSuite({
     (function() {
       // Test Object.freeze() in strict mode, where the assignment itself throws
       // the error rather than our explicit consistency check.
-      'use strict';
-
       const frozen = Object.freeze({a: 1});
       assertThrows(
           'Trying to set a new frozen property fails silently in strict mode.',

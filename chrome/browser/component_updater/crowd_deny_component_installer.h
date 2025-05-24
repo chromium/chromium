@@ -29,8 +29,6 @@ class CrowdDenyComponentInstallerPolicy : public ComponentInstallerPolicy {
   CrowdDenyComponentInstallerPolicy& operator=(
       const CrowdDenyComponentInstallerPolicy&) = delete;
 
-  ~CrowdDenyComponentInstallerPolicy() override = default;
-
  private:
   static base::FilePath GetInstalledPath(const base::FilePath& base);
 

@@ -60,7 +60,8 @@ public class ThumbnailProviderImplTest {
                     sThumbnailProvider =
                             new ThumbnailProviderImpl(
                                     sReferencePool,
-                                    ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS);
+                                    ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS,
+                                    false /* useMultipleRequests */);
                 });
     }
 
@@ -204,8 +205,8 @@ public class ThumbnailProviderImplTest {
         private final String mTestFilePath;
         private final int mRequiredSize;
         private Bitmap mRetrievedThumbnail;
-        private CallbackHelper mThumbnailRetrievedCallbackHelper;
-        private String mContentId;
+        private final CallbackHelper mThumbnailRetrievedCallbackHelper;
+        private final String mContentId;
 
         TestThumbnailRequest(
                 String filepath,

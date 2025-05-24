@@ -34,6 +34,8 @@ class CORE_EXPORT AudioTrack final : public ScriptWrappable, public TrackBase {
 
   bool IsExclusive() const { return exclusive_; }
 
+  const AtomicString& kind() const { return kind_; }
+
   // Valid kind keywords.
   static const AtomicString& AlternativeKeyword();
   static const AtomicString& DescriptionsKeyword();
@@ -47,6 +49,7 @@ class CORE_EXPORT AudioTrack final : public ScriptWrappable, public TrackBase {
  private:
   bool enabled_;
   bool exclusive_;
+  const AtomicString kind_;
 };
 
 template <>

@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
+
 #include <string>
 
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_op.h"
@@ -560,6 +563,30 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSubcategory::kGeneralControls,
             /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kStartSunfishSession,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kStartSunfishSession,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION,
+            mojom::AcceleratorCategory::kGeneral,
+            mojom::AcceleratorSubcategory::kGeneralControls,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kToggleDoNotDisturb,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kToggleDoNotDisturb,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DO_NOT_DISTURB,
+            mojom::AcceleratorCategory::kGeneral,
+            mojom::AcceleratorSubcategory::kGeneralControls, /*locked=*/false,
+            mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kToggleCameraAllowed,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kToggleCameraAllowed,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CAMERA_ENABLED,
+            mojom::AcceleratorCategory::kGeneral,
+            mojom::AcceleratorSubcategory::kGeneralControls,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kOpenFileManager,
         AcceleratorLayoutDetails(
             AcceleratorAction::kOpenFileManager,
@@ -664,6 +691,14 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
                                  /*locked=*/false,
                                  mojom::AcceleratorLayoutStyle::kDefault,
                                  mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kToggleGeminiApp,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kToggleGeminiApp,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_GEMINI_APP,
+            mojom::AcceleratorCategory::kGeneral,
+            mojom::AcceleratorSubcategory::kApps,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
 
        // Device
        {AcceleratorAction::kVolumeUp,
@@ -754,6 +789,14 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
                                  /*locked=*/false,
                                  mojom::AcceleratorLayoutStyle::kDefault,
                                  mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kResizePipWindow,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kResizePipWindow,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_RESIZE_PIP_WINDOW,
+            mojom::AcceleratorCategory::kDevice,
+            mojom::AcceleratorSubcategory::kMedia,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kKeyboardBacklightToggle,
         AcceleratorLayoutDetails(
             AcceleratorAction::kKeyboardBacklightToggle,
@@ -1384,7 +1427,7 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kTogglePicker,
         AcceleratorLayoutDetails(AcceleratorAction::kTogglePicker,
-                                 IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_PICKER,
+                                 IDS_ASH_ACCELERATOR_DESCRIPTION_QUICK_INSERT,
                                  mojom::AcceleratorCategory::kText,
                                  mojom::AcceleratorSubcategory::kTextEditing,
                                  /*locked=*/false,

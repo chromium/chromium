@@ -19,8 +19,16 @@ VideoEffectsManagerImpl::VideoEffectsManagerImpl(
 VideoEffectsManagerImpl::~VideoEffectsManagerImpl() = default;
 
 void VideoEffectsManagerImpl::Bind(
-    mojo::PendingReceiver<media::mojom::VideoEffectsManager> receiver) {
+    mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager> receiver) {
   receivers_.Add(this, std::move(receiver));
+}
+
+void VideoEffectsManagerImpl::SetConfiguration(
+    media::mojom::VideoEffectsConfigurationPtr configuration) {
+  configuration_ = configuration->Clone();
+  for (const auto& observer : observers_) {
+    observer->OnConfigurationChanged(configuration_->Clone());
+  }
 }
 
 void VideoEffectsManagerImpl::GetConfiguration(
@@ -28,20 +36,12 @@ void VideoEffectsManagerImpl::GetConfiguration(
   std::move(callback).Run(configuration_->Clone());
 }
 
-void VideoEffectsManagerImpl::SetConfiguration(
-    media::mojom::VideoEffectsConfigurationPtr configuration,
-    SetConfigurationCallback callback) {
-  configuration_ = configuration->Clone();
-  for (const auto& observer : observers_) {
-    observer->OnConfigurationChanged(configuration_->Clone());
-  }
-  std::move(callback).Run(media::mojom::SetConfigurationResult::kOk);
-}
-
 void VideoEffectsManagerImpl::AddObserver(
     mojo::PendingRemote<media::mojom::VideoEffectsConfigurationObserver>
         observer) {
-  observers_.Add(std::move(observer));
+  auto id = observers_.Add(std::move(observer));
+  // Notify new observer of current config state.
+  observers_.Get(id)->OnConfigurationChanged(configuration_->Clone());
 }
 
 void VideoEffectsManagerImpl::OnReceiverDisconnected() {

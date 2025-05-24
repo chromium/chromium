@@ -44,7 +44,7 @@ BackgroundSnapshotController::BackgroundSnapshotController(
   }
 }
 
-BackgroundSnapshotController::~BackgroundSnapshotController() {}
+BackgroundSnapshotController::~BackgroundSnapshotController() = default;
 
 void BackgroundSnapshotController::Reset() {
   // Cancel potentially delayed tasks that relate to the previous 'session'.

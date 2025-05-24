@@ -9,17 +9,19 @@
 
 #include "mojo/core/broker_host.h"
 
+#include <algorithm>
+#include <array>
 #include <string_view>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/buildflags.h"
 #include "mojo/core/broker_messages.h"
+#include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/core/platform_handle_utils.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -112,7 +114,7 @@ void BrokerHost::SendNamedChannel(std::wstring_view pipe_name) {
       BrokerMessageType::INIT, 0, sizeof(*name_data) * pipe_name.length(),
       &data, reinterpret_cast<void**>(&name_data));
   data->pipe_name_length = static_cast<uint32_t>(pipe_name.length());
-  base::ranges::copy(pipe_name, name_data);
+  std::ranges::copy(pipe_name, name_data);
   channel_->Write(std::move(message));
 }
 
@@ -125,7 +127,7 @@ void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
   std::vector<PlatformHandleInTransit> handles;
   handles.reserve(2);
   if (region.IsValid()) {
-    PlatformHandle h[2];
+    std::array<PlatformHandle, 2> h;
     ExtractPlatformHandlesFromSharedMemoryRegionHandle(
         region.PassPlatformHandle(), &h[0], &h[1]);
     handles.emplace_back(std::move(h[0]));
@@ -157,9 +159,11 @@ void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
   channel_->Write(std::move(message));
 }
 
-void BrokerHost::OnChannelMessage(const void* payload,
-                                  size_t payload_size,
-                                  std::vector<PlatformHandle> handles) {
+void BrokerHost::OnChannelMessage(
+    const void* payload,
+    size_t payload_size,
+    std::vector<PlatformHandle> handles,
+    scoped_refptr<ipcz_driver::Envelope> envelope) {
   if (payload_size < sizeof(BrokerMessageHeader))
     return;
 

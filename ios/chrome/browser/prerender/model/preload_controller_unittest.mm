@@ -9,12 +9,9 @@
 #import "base/ios/device_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
-#import "components/supervised_user/core/browser/supervised_user_preferences.h"
-#import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #import "ios/chrome/browser/prerender/model/preload_controller.h"
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
@@ -62,23 +59,22 @@ class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
 class PreloadControllerTest : public PlatformTest {
  protected:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
     // Set up a NetworkChangeNotifier so that the test can simulate Wi-Fi vs.
     // cellular connection.
     network_change_notifier_.reset(new TestNetworkChangeNotifier);
 
-    controller_ = [[PreloadController alloc]
-        initWithBrowserState:chrome_browser_state_.get()];
+    controller_ = [[PreloadController alloc] initWithProfile:profile_.get()];
   }
 
   // Set the "Preload webpages" setting to "Always".
   void PreloadWebpagesAlways() {
-    chrome_browser_state_->GetPrefs()->SetInteger(
+    profile_->GetPrefs()->SetInteger(
         prefs::kNetworkPredictionSetting,
         static_cast<int>(prerender_prefs::NetworkPredictionSetting::
                              kEnabledWifiAndCellular));
@@ -86,7 +82,7 @@ class PreloadControllerTest : public PlatformTest {
 
   // Set the "Preload webpages" setting to "Only on Wi-Fi".
   void PreloadWebpagesWiFiOnly() {
-    chrome_browser_state_->GetPrefs()->SetInteger(
+    profile_->GetPrefs()->SetInteger(
         prefs::kNetworkPredictionSetting,
         static_cast<int>(
             prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly));
@@ -94,7 +90,7 @@ class PreloadControllerTest : public PlatformTest {
 
   // Set the "Preload webpages" setting to "Never".
   void PreloadWebpagesNever() {
-    chrome_browser_state_->GetPrefs()->SetInteger(
+    profile_->GetPrefs()->SetInteger(
         prefs::kNetworkPredictionSetting,
         static_cast<int>(prerender_prefs::NetworkPredictionSetting::kDisabled));
   }
@@ -115,7 +111,7 @@ class PreloadControllerTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 
   std::unique_ptr<TestNetworkChangeNotifier> network_change_notifier_;
   PreloadController* controller_;
@@ -203,13 +199,9 @@ TEST_F(PreloadControllerTest, TestIsPrerenderingEnabled_preloadNever) {
 }
 
 TEST_F(PreloadControllerTest, PrenderingDisabledForSupervisedUsers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
-
   // Sign in supervised user.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
+      IdentityManagerFactory::GetForProfile(profile_.get());
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
   supervised_user::UpdateSupervisionStatusForAccount(
@@ -218,24 +210,6 @@ TEST_F(PreloadControllerTest, PrenderingDisabledForSupervisedUsers) {
 
   // Never prerender pages for supervised users regardless of the setting for
   // "Preload Webpages".
-  SimulateWiFiConnection();
-
-  PreloadWebpagesAlways();
-  EXPECT_FALSE(controller_.enabled);
-
-  PreloadWebpagesWiFiOnly();
-  EXPECT_FALSE(controller_.enabled);
-
-  PreloadWebpagesNever();
-  EXPECT_FALSE(controller_.enabled);
-}
-
-TEST_F(PreloadControllerTest, PrenderingDisabledForSupervisedUsersWithPrefs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
-  supervised_user::EnableParentalControls(*chrome_browser_state_->GetPrefs());
-
   SimulateWiFiConnection();
 
   PreloadWebpagesAlways();

@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -24,7 +25,6 @@
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
@@ -223,9 +223,10 @@ void FeatureInfo::InitializeBasicState(const base::CommandLine* command_line) {
   const auto useGL = command_line->GetSwitchValueASCII(switches::kUseGL);
   const auto useANGLE = command_line->GetSwitchValueASCII(switches::kUseANGLE);
 
-  feature_flags_.is_swiftshader_for_webgl =
+  feature_flags_.is_software_webgl =
       (useGL == gl::kGLImplementationANGLEName) &&
-      (useANGLE == gl::kANGLEImplementationSwiftShaderForWebGLName);
+      (useANGLE == gl::kANGLEImplementationSwiftShaderForWebGLName ||
+       useANGLE == gl::kANGLEImplementationD3D11WarpForWebGLName);
 
   // The shader translator is needed to translate from WebGL-conformant GLES SL
   // to normal GLES SL, enforce WebGL conformance, translate from GLES SL 1.0 to
@@ -1724,6 +1725,18 @@ void FeatureInfo::InitializeFeatures() {
       gfx::HasExtension(extensions, "GL_QCOM_render_shared_exponent")) {
     AddExtensionString("GL_QCOM_render_shared_exponent");
   }
+
+  if (is_passthrough_cmd_decoder_ &&
+      gfx::HasExtension(extensions, "GL_ANGLE_blob_cache")) {
+    if (base::FeatureList::IsEnabled(features::kANGLEPerContextBlobCache)) {
+      feature_flags_.angle_blob_cache = true;
+    }
+  }
+
+  if (is_passthrough_cmd_decoder_ &&
+      gfx::HasExtension(extensions, "GL_OES_required_internalformat")) {
+    AddExtensionString("GL_OES_required_internalformat");
+  }
 }
 
 void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
@@ -1881,12 +1894,22 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
       // range of formats supported by EXT_color_buffer_float
       if (status_rgba == GL_FRAMEBUFFER_COMPLETE && enable_es3) {
         bool full_float_support = true;
-        const GLenum kInternalFormats[] = {
-            GL_R16F, GL_RG16F, GL_RGBA16F, GL_R32F, GL_RG32F, GL_R11F_G11F_B10F,
-        };
-        const GLenum kFormats[] = {
-            GL_RED, GL_RG, GL_RGBA, GL_RED, GL_RG, GL_RGB,
-        };
+        const auto kInternalFormats = std::to_array<GLenum>({
+            GL_R16F,
+            GL_RG16F,
+            GL_RGBA16F,
+            GL_R32F,
+            GL_RG32F,
+            GL_R11F_G11F_B10F,
+        });
+        const auto kFormats = std::to_array<GLenum>({
+            GL_RED,
+            GL_RG,
+            GL_RGBA,
+            GL_RED,
+            GL_RG,
+            GL_RGB,
+        });
         DCHECK_EQ(std::size(kInternalFormats), std::size(kFormats));
         for (size_t i = 0; i < std::size(kFormats); ++i) {
           glTexImage2D(GL_TEXTURE_2D, 0, kInternalFormats[i], width, width, 0,

@@ -14,11 +14,14 @@ void FakeTabMatcher::AddOpenTab(TabMatcher::TabWrapper open_tab) {
 }
 
 bool FakeTabMatcher::IsTabOpenWithURL(const GURL& url,
-                                      const AutocompleteInput* input) const {
+                                      const AutocompleteInput* input,
+                                      bool exclude_active_tab) const {
   return !substring_to_match_.empty() &&
          url.spec().find(substring_to_match_) != std::string::npos;
 }
 
-std::vector<TabMatcher::TabWrapper> FakeTabMatcher::GetOpenTabs() const {
+std::vector<TabMatcher::TabWrapper> FakeTabMatcher::GetOpenTabs(
+    const AutocompleteInput* input,
+    bool exclude_active_tab) const {
   return open_tabs_;
 }

@@ -75,7 +75,15 @@
   "options": {
     // It's important to set the CWD to the output directory so that file paths
     // are linked correctly in the terminal output.
-    "cwd": "${config:chrome.outputDir}"
+    "cwd": "${config:chrome.outputDir}",
+    "env": {
+      // If depot_tools aren't already available in the PATH provided to vscode,
+      // you can configure it in the next line.
+      // "PATH": "<DEPOT_TOOLS_LOCATION>:${env:PATH}"
+      // Alternatively, if you have configured depot_tools for ChromiumIDE, you
+      // can just uncomment the following line:
+      // "PATH": "${config:chromiumide.paths.depotTools}:${env:PATH}"
+    }
   },
 
   "inputs": [

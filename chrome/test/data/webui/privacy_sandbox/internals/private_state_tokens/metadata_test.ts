@@ -23,7 +23,7 @@ suite('MetadataTest', () => {
     await microtasksFinished();
   });
 
-  test('check layout', async () => {
+  test('check layout', () => {
     assertTrue(isVisible(metadata));
   });
 
@@ -33,7 +33,7 @@ suite('MetadataTest', () => {
     assertArrayEquals(dummyMetadata.purposes, metadata.purposes);
   });
 
-  test('check back button functionality', async () => {
+  test('check back button functionality', () => {
     const backRow = $$<HTMLElement>(metadata, '#backRow');
     const rowChild = backRow!.querySelector('#backRowText');
     const backButton =

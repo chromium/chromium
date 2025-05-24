@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos, "Spotlight is only supported in Ash")
+
+static_library("spotlight") {
+  sources = [
+    "spotlight_crd_manager_impl.cc",
+    "spotlight_crd_manager_impl.h",
+    "spotlight_oauth_token_fetcher_impl.cc",
+    "spotlight_oauth_token_fetcher_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/policy/remote_commands/crd/public",
+    "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
+    "//chromeos/ash/components/boca:spotlight",
+    "//chromeos/ash/components/boca:spotlight_lib",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "spotlight_crd_manager_impl_browsertest.cc" ]
+
+  deps = [
+    ":spotlight",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -13,31 +13,37 @@
 namespace optimization_guide {
 
 // Controls the on-device model adaptations per feature.
-class OnDeviceModelAdaptationController {
+class OnDeviceModelAdaptationController final : public ModelController {
  public:
   OnDeviceModelAdaptationController(
       ModelBasedCapabilityKey feature,
-      base::WeakPtr<OnDeviceModelServiceController> controller);
-  ~OnDeviceModelAdaptationController();
+      base::WeakPtr<ModelController> controller,
+      const on_device_model::AdaptationAssetPaths& asset_paths);
+  ~OnDeviceModelAdaptationController() override;
 
   OnDeviceModelAdaptationController(const OnDeviceModelAdaptationController&) =
       delete;
   OnDeviceModelAdaptationController& operator=(
       const OnDeviceModelAdaptationController&) = delete;
 
-  mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
-      const on_device_model::AdaptationAssetPaths& adaptation_assets);
-
- private:
-  void OnAdaptationAssetsLoaded(
+  // Loads the adaptation model from the loaded assets.
+  void LoadAdaptationModelFromAssets(
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       on_device_model::AdaptationAssets assets);
 
-  void OnLoadModelResult(on_device_model::mojom::LoadModelResult result);
+  mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateRemote()
+      override;
 
+  base::WeakPtr<OnDeviceModelAdaptationController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
   ModelBasedCapabilityKey feature_;
 
-  base::WeakPtr<OnDeviceModelServiceController> controller_;
+  base::WeakPtr<ModelController> controller_;
+
+  on_device_model::AdaptationAssetPaths asset_paths_;
 
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;
 

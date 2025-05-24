@@ -5,14 +5,12 @@
 #ifndef CHROMECAST_STARBOARD_CHROMECAST_STARBOARD_ADAPTER_SRC_CAST_STARBOARD_API_ADAPTER_IMPL_H_
 #define CHROMECAST_STARBOARD_CHROMECAST_STARBOARD_ADAPTER_SRC_CAST_STARBOARD_API_ADAPTER_IMPL_H_
 
-#include <mutex>
+#include <thread>
 #include <unordered_map>
 
-#if SB_API_VERSION >= 15
-#include <future>
-#include <thread>
-#endif  // SB_API_VERSION >= 15
-
+#include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "chromecast/starboard/chromecast/starboard_adapter/public/cast_starboard_api_adapter.h"
 
 namespace chromecast {
@@ -29,14 +27,27 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
   // events to the singleton instance via SbEventHandleInternal.
   static void SbEventHandle(const SbEvent* event);
 
+ private:
+  // CastStarboardApiAdapter needs to construct and delete instances of this
+  // class.
+  friend CastStarboardApiAdapter;
+
   CastStarboardApiAdapterImpl();
   ~CastStarboardApiAdapterImpl() override;
 
- private:
   void SbEventHandleInternal(const SbEvent* event);
 
+  // Initializes starboard if necessary, and blocks until starboard has started.
+  void EnsureInitialized() LOCKS_EXCLUDED(lock_);
+
+  // Signals that the runtime is shutting down, and that this object should be
+  // destructed if there are no remaining subscribers.
+  //
+  // If there are remaining subscribers, the object will be destructed once the
+  // last subscriber unsubscribes.
+  void Release() LOCKS_EXCLUDED(lock_);
+
   // CastStarboardApiAdapter implementation:
-  bool EnsureInitialized() override;
   void Subscribe(void* context,
                  CastStarboardApiAdapterImplCB callback) override;
   void Unsubscribe(void* context) override;
@@ -45,13 +56,19 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
 
 #if SB_API_VERSION >= 15
   std::unique_ptr<std::thread> sb_main_;
-  std::promise<bool> init_p_;
-  std::future<bool> init_f_;
 #endif  // SB_API_VERSION >= 15
-  SbWindow window_ = kSbWindowInvalid;
-  std::mutex lock_;
-  bool initialized_;
-  std::unordered_map<void*, CastStarboardApiAdapterImplCB> subscribers_;
+  base::WaitableEvent starboard_started_;
+  base::WaitableEvent starboard_stopped_;
+
+  base::Lock lock_;
+  SbWindow window_ GUARDED_BY(lock_) = kSbWindowInvalid;
+  bool initialized_ GUARDED_BY(lock_) = false;
+  std::unordered_map<void*, CastStarboardApiAdapterImplCB> subscribers_
+      GUARDED_BY(lock_);
+
+  // Tracks whether Release() has been called (meaning the runtime is shutting
+  // down).
+  bool released_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace chromecast

@@ -29,6 +29,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/metrics_service.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -96,7 +97,7 @@ class TestMemoryDetails : public MetricsMemoryDetails {
   }
 
  private:
-  ~TestMemoryDetails() override {}
+  ~TestMemoryDetails() override = default;
 
   void OnDetailsAvailable() override {
     MetricsMemoryDetails::OnDetailsAvailable();
@@ -170,12 +171,12 @@ void PrintTo(const SampleMatcherP2<P1, P2>& matcher, std::ostream* os) {
 
 class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  SiteDetailsBrowserTest() {}
+  SiteDetailsBrowserTest() = default;
 
   SiteDetailsBrowserTest(const SiteDetailsBrowserTest&) = delete;
   SiteDetailsBrowserTest& operator=(const SiteDetailsBrowserTest&) = delete;
 
-  ~SiteDetailsBrowserTest() override {}
+  ~SiteDetailsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
@@ -271,15 +272,14 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   int GetRenderProcessCountFromUma(base::HistogramTester* uma) {
-    auto buckets = uma->GetAllSamples("Memory.RenderProcessHost.Count.All");
+    auto buckets = uma->GetAllSamples("Memory.RenderProcessHost.Count2.All");
     EXPECT_EQ(buckets.size(), 1u);
     int rph_count = buckets[0].min;
 
-    // Memory.RenderProcessHost.Count.All includes the spare process. If a
-    // spare is present, subtract it from total count since the tests below
-    // assume no spare.
-    if (content::RenderProcessHost::GetSpareRenderProcessHostForTesting())
-      rph_count--;
+    // Memory.RenderProcessHost.Count2.All includes all spare processes.
+    // Subtract them from total count since the tests below assume no spare.
+    rph_count -=
+        content::SpareRenderProcessHostManager::Get().GetSpares().size();
 
     return rph_count;
   }

@@ -26,6 +26,11 @@ bool CanInjectInput();
 // dialog informing the user that this app is requesting permission.
 bool CanRecordScreen();
 
+// Requests permission to capture the screen. This causes the OS to
+// prompt the user to grant permission if needed, and adds the calling
+// bundle to the applications list in Security & Privacy -> Screen Recording.
+void RequestScreenCapturePermission();
+
 // Prompts the user to add the current application to the set of trusted
 // Accessibility and Screen Recording applications.  The Accessibility
 // permission is required for input injection and Screen Recording is required

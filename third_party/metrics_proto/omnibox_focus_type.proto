@@ -39,5 +39,11 @@ enum OmniboxFocusType {
   //  - User deletes their own typed text.
   //  - User deletes the permanent text one character at a time.
   //  - User uses Cut (Ctrl+X) to delete the permanent text.
-  INTERACTION_CLOBBER = 2;
+  //
+  // This value is deprecated since we no longer trigger zero prefix
+  // requests with INTERACTION_CLOBBER in zero_suggest_provider.cc. Instead, we
+  // use OmniboxInputType, PageClassification and platform checks to determine
+  // the type of zero prefix request. INTERACTION_FOCUS has replaced all
+  // instances of INTERACTION_CLOBBER.
+  DEPRECATED_INTERACTION_CLOBBER = 2;  // DEPRECATED November 3, 2024.
 }

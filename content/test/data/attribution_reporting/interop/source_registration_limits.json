@@ -9,8 +9,7 @@
     "rate_limit_max_reporting_origins_per_source_reporting_site": "1",
     "max_destinations_per_rate_limit_window_reporting_site": "3",
     "max_destinations_per_rate_limit_window": "3",
-    "rate_limit_max_source_registration_reporting_origins": "1",
-    "needs_attribution_scopes": true
+    "rate_limit_max_source_registration_reporting_origins": "1"
   },
   "input": {
     "registrations": [

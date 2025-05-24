@@ -8,9 +8,11 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -93,27 +95,17 @@ class MemberMetaDataBase;
 class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
  public:
   ClassMetaData();
-  ClassMetaData(std::string file, int line);
+  ClassMetaData(std::string_view file LIFETIME_BOUND, int line);
   ClassMetaData(const ClassMetaData&) = delete;
   ClassMetaData& operator=(const ClassMetaData&) = delete;
   virtual ~ClassMetaData();
 
-  const char* type_name() const {
-    static_assert(
-        std::is_same<decltype(type_name_), std::string_view>::value,
-        "This string is logged in plaintext via UMA trace events uploads, so "
-        "must be static as a privacy requirement.");
-    // This is safe because the underlying string is a C string and null
-    // terminated.
-    // TODO(325589481): See if directly returning the string_view would be
-    // desirable.
-    return type_name_.data();
-  }
+  std::string_view type_name() const { return type_name_; }
   const std::vector<raw_ptr<MemberMetaDataBase, VectorExperimental>>& members()
       const {
     return members_;
   }
-  const std::string& file() const { return file_; }
+  const std::string_view file() const { return file_; }
   const int& line() const { return line_; }
   const std::string& GetUniqueName() const;
   void AddMemberData(std::unique_ptr<MemberMetaDataBase> member_data);
@@ -151,9 +143,6 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
     ClassMemberIterator operator++(int);
 
     bool operator==(const ClassMemberIterator& rhs) const;
-    bool operator!=(const ClassMemberIterator& rhs) const {
-      return !(*this == rhs);
-    }
 
     MemberMetaDataBase* operator*() {
       if (current_collection_ == nullptr ||
@@ -182,7 +171,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   ClassMemberIterator end();
 
  protected:
-  void SetTypeName(const std::string_view type_name);
+  void SetTypeName(std::string_view type_name);
 
  private:
   // `type_name_` is a static string stored in the binary.
@@ -190,7 +179,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   mutable std::string unique_name_;
   std::vector<raw_ptr<MemberMetaDataBase, VectorExperimental>> members_;
   raw_ptr<ClassMetaData> parent_class_meta_data_ = nullptr;
-  std::string file_;
+  const std::string_view file_;
   const int line_ = 0;
 };
 
@@ -200,9 +189,10 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
 class COMPONENT_EXPORT(UI_BASE_METADATA) MemberMetaDataBase {
  public:
   using ValueStrings = std::vector<std::u16string>;
-  MemberMetaDataBase(const std::string& member_name,
-                     const std::string& member_type)
-      : member_name_(member_name), member_type_(member_type) {}
+
+  MemberMetaDataBase(std::string member_name, std::string member_type)
+      : member_name_(std::move(member_name)),
+        member_type_(std::move(member_type)) {}
   MemberMetaDataBase(const MemberMetaDataBase&) = delete;
   MemberMetaDataBase& operator=(const MemberMetaDataBase&) = delete;
   virtual ~MemberMetaDataBase() = default;
@@ -229,7 +219,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) MemberMetaDataBase {
   // available. For instance, an SkColor member type would add the "--" string
   // which tells the frontend to display a color swatch and a color editing
   // dialog.
-  virtual const char* GetMemberNamePrefix() const;
+  virtual std::string_view GetMemberNamePrefix() const;
 
   const std::string& member_name() const { return member_name_; }
   const std::string& member_type() const { return member_type_; }

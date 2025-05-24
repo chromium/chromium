@@ -37,8 +37,10 @@ enum AssistantAllowedState {
   DISALLOWED_BY_KIOSK_MODE = 9,
   // Disallowed because no libassistant binary available.
   DISALLOWED_BY_NO_BINARY = 10,
+  // Disallowed because new entry point.
+  DISALLOWED_BY_NEW_ENTRY_POINT = 11,
 
-  MAX_VALUE = DISALLOWED_BY_NO_BINARY,
+  MAX_VALUE = DISALLOWED_BY_NEW_ENTRY_POINT,
 };
 
 // Enumeration of possible completions for an Assistant interaction.

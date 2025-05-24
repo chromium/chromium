@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,6 +24,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -187,8 +187,8 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
       const std::optional<media::CdmConfig> cdm_config = kDefaultCdmConfig) {
     reporter_ = std::make_unique<VideoDecodeStatsReporter>(
         SetupRecordInterceptor(&interceptor_),
-        base::BindRepeating(&VideoDecodeStatsReporterTest::GetPipelineStatsCB,
-                            base::Unretained(this)),
+        WTF::BindRepeating(&VideoDecodeStatsReporterTest::GetPipelineStatsCB,
+                           WTF::Unretained(this)),
         profile, natural_size, cdm_config,
         task_environment_.GetMainThreadTaskRunner(),
         task_environment_.GetMockTickClock());

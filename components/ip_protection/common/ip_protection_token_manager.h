@@ -8,10 +8,9 @@
 #include <optional>
 #include <string>
 
-#include "components/ip_protection/common/ip_protection_config_getter.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
-
 namespace ip_protection {
+
+struct BlindSignedAuthToken;
 
 // Manages the cache of blind-signed auth tokens.
 //
@@ -61,6 +60,11 @@ class IpProtectionTokenManager {
   // be called by the `IpProtectionCore` for when a geo change has been
   // observed.
   virtual void SetCurrentGeo(const std::string& geo_id) = 0;
+
+  // Returns a bool indicating whether the token cache was ever filled.
+  //
+  // Returns true if the token cache was filled at some point, false otherwise.
+  virtual bool WasTokenCacheEverFilled() = 0;
 };
 
 }  // namespace ip_protection

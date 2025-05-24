@@ -13,6 +13,8 @@
 #include "ash/shell_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_constants.h"
@@ -60,7 +62,6 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   void Initialize() override;
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void OnThemeChanged() override;
@@ -87,9 +88,9 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   // Callback called when this is pressed.
   void OnDictationButtonPressed(const ui::Event& event);
 
-  // Sets the icon when Dictation is activated / deactivated.
-  // Also updates visibility when Dictation is enabled / disabled.
-  void UpdateIcon(bool dictation_active);
+  // Updates the state of tray based on if dictation is enabled and currently
+  // active. Also updates the icon of tray to reflect the new state.
+  void UpdateStateAndIcon(bool is_dictation_active, bool is_dictation_enabled);
 
   // Updates bounds for `progress_indicator_`.
   void UpdateProgressIndicatorBounds();
@@ -116,6 +117,9 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
 
   // Whether the cursor and focus is currently in a text input field.
   bool in_text_input_ = false;
+
+  base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
+      input_method_observation_{this};
 };
 
 }  // namespace ash

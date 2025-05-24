@@ -16,11 +16,15 @@ enum class InputOperandLayout { kNchw, kNhwc };
 
 enum class Resample2DAxes { kAny, kChannelsFirst, kChannelsLast };
 
+enum class BatchNormalizationAxis { kAny, kChannelsFirst };
+
 struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ContextProperties {
   explicit ContextProperties(mojo::DefaultConstruct::Tag);
 
   ContextProperties(InputOperandLayout input_operand_layout,
                     Resample2DAxes resample_2d_axes,
+                    BatchNormalizationAxis batch_normalization_axis,
+                    uint64_t tensor_byte_length_limit,
                     DataTypeLimits data_type_limits);
 
   // Copyable and movable.
@@ -32,6 +36,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ContextProperties {
 
   InputOperandLayout input_operand_layout;
   Resample2DAxes resample_2d_axes;
+  BatchNormalizationAxis batch_normalization_axis;
+  uint64_t tensor_byte_length_limit;
   DataTypeLimits data_type_limits;
 };
 
@@ -39,6 +45,7 @@ inline bool operator==(const ContextProperties& lhs,
                        const ContextProperties& rhs) {
   return lhs.input_operand_layout == rhs.input_operand_layout &&
          lhs.resample_2d_axes == rhs.resample_2d_axes &&
+         lhs.tensor_byte_length_limit == rhs.tensor_byte_length_limit &&
          lhs.data_type_limits == rhs.data_type_limits;
 }
 

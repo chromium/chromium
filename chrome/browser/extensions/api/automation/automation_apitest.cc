@@ -49,7 +49,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/display/display_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
@@ -225,7 +225,7 @@ chrome.test.loadScript(scriptUrl).then(function() {
 
 }  // namespace
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class AutomationApiTest : public ExtensionApiTest {
  public:
@@ -406,7 +406,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ImageLabels) {
   EXPECT_EQ(expected_mode, accessibility_mode);
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Events) {
+// Flaky on Win and ChromeOS: crbug.com/375385426
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Events DISABLED_Events
+#else
+#define MAYBE_Events Events
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_Events) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/events.js")) << message_;
 }
@@ -416,7 +422,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Actions) {
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/actions.js")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Location) {
+// Flaky on Win and ChromeOS: crbug.com/375385426
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Location DISABLED_Location
+#else
+#define MAYBE_Location Location
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_Location) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/location.js")) << message_;
 }
@@ -478,7 +490,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Find) {
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/find.js")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Attributes) {
+// Flaky on Win and ChromeOS: crbug.com/375385426
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Attributes DISABLED_Attributes
+#else
+#define MAYBE_Attributes Attributes
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_Attributes) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/attributes.js")) << message_;
 }
@@ -489,7 +507,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ReverseRelations) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, TreeChange) {
+// TODO(crbug.com/389060012): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TreeChange DISABLED_TreeChange
+#else
+#define MAYBE_TreeChange TreeChange
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_TreeChange) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/tree_change.js")) << message_;
 }
@@ -553,7 +577,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ForceLayout) {
+// Flaky on Win: crbug.com/335553730
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ForceLayout DISABLED_ForceLayout
+#else
+#define MAYBE_ForceLayout ForceLayout
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_ForceLayout) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/force_layout.js")) << message_;
 }
@@ -578,7 +608,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopNotSupported) {
 }
 #endif  // !defined(USE_AURA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class AutomationApiFencedFrameTest : public AutomationApiTest {
  protected:
   AutomationApiFencedFrameTest() {
@@ -914,18 +944,11 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithMockedSourceRenderer,
                                         kPermissionsWindows))
       << message_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/40766689) Flaky on lacros
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_HitTestMultipleWindows DISABLED_HitTestMultipleWindows
-#else
-#define MAYBE_HitTestMultipleWindows HitTestMultipleWindows
-#endif
-
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
-                       MAYBE_HitTestMultipleWindows) {
+                       HitTestMultipleWindows) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("desktop/hit_test_multiple_windows.js",
                                         kPermissionsWindows))

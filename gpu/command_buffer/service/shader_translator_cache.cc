@@ -39,7 +39,7 @@ scoped_refptr<ShaderTranslator> ShaderTranslatorCache::GetTranslator(
 
   Cache::iterator it = cache_.find(params);
   if (it != cache_.end())
-    return it->second;
+    return it->second.get();
 
   ShaderTranslator* translator = new ShaderTranslator();
   if (translator->Init(shader_type, shader_spec, resources,

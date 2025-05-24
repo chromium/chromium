@@ -6,8 +6,9 @@
 #define CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_H_
 
 #include <stdint.h>
+
 #include <memory>
-#include <queue>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
@@ -24,6 +26,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -43,7 +46,8 @@ namespace content {
 
 class BrowserContext;
 class KeepAliveAttributionRequestHelper;
-class KeepAliveURLBrowserTestBase;
+class KeepAliveRequestTracker;
+class KeepAliveRequestBrowserTestBase;
 class KeepAliveURLLoaderService;
 class PolicyContainerHost;
 class RenderFrameHostImpl;
@@ -121,6 +125,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       scoped_refptr<PolicyContainerHost> policy_container_host,
       WeakDocumentPtr weak_document_ptr,
+      std::optional<ukm::SourceId> ukm_source_id,
       BrowserContext* browser_context,
       URLLoaderThrottlesGetter throttles_getter,
       base::PassKey<KeepAliveURLLoaderService>,
@@ -171,10 +176,6 @@ class CONTENT_EXPORT KeepAliveURLLoader
     virtual void OnCompleteProcessed(
         KeepAliveURLLoader* loader,
         const network::URLLoaderCompletionStatus& completion_status) = 0;
-    virtual void PauseReadingBodyFromNetProcessed(
-        KeepAliveURLLoader* loader) = 0;
-    virtual void ResumeReadingBodyFromNetProcessed(
-        KeepAliveURLLoader* loader) = 0;
 
    protected:
     virtual ~TestObserver() = default;
@@ -191,6 +192,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // document if it is still alive. Otherwise, returns nullptr;
   RenderFrameHostImpl* GetInitiator() const;
 
+  // Returns true if the request initiator document is detached.
+  bool IsContextDetached() const;
+
   // Receives actions from renderer.
   // `network::mojom::URLLoader` overrides:
   void FollowRedirect(
@@ -200,8 +204,6 @@ class CONTENT_EXPORT KeepAliveURLLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   // Receives actions from network service, loaded by `url_loader_`.
   // `blink::ThrottlingURLLoader::ClientReceiverDelegate` overrides:
@@ -259,7 +261,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   void DeleteSelf();
 
-  friend class KeepAliveURLBrowserTestBase;
+  friend class KeepAliveRequestBrowserTestBase;
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
@@ -335,6 +337,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // is deleted or navigates to a different document. See its classdoc for more
   // details.
   WeakDocumentPtr weak_document_ptr_;
+
+  // The tracker to record the browser-side UKM metrics for this request.
+  std::unique_ptr<KeepAliveRequestTracker> request_tracker_;
 
   // The BrowserContext that initiates this loader.
   // It is ensured to outlive this because it owns KeepAliveURLLoaderService

@@ -12,8 +12,10 @@
 #include <memory>
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -31,7 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "net/base/network_interfaces_getifaddrs_android.h"
 // Declare getifaddrs() and freeifaddrs() weakly as they're only available
 // on Android N+.
@@ -102,8 +104,10 @@ int AddressFlagsToNetAddressAttributes(int flags) {
 bool IPAttributesGetterMac::GetAddressAttributes(const ifaddrs* if_addr,
                                                  int* attributes) {
   struct in6_ifreq ifr = {};
-  strncpy(ifr.ifr_name, if_addr->ifa_name, sizeof(ifr.ifr_name) - 1);
-  memcpy(&ifr.ifr_ifru.ifru_addr, if_addr->ifa_addr, if_addr->ifa_addr->sa_len);
+  UNSAFE_TODO(
+      strncpy(ifr.ifr_name, if_addr->ifa_name, sizeof(ifr.ifr_name) - 1));
+  UNSAFE_TODO(memcpy(&ifr.ifr_ifru.ifru_addr, if_addr->ifa_addr,
+                     if_addr->ifa_addr->sa_len));
   int rv = ioctl(ioctl_socket_, SIOCGIFAFLAG_IN6, &ifr);
   if (rv >= 0) {
     *attributes = AddressFlagsToNetAddressAttributes(ifr.ifr_ifru.ifru_flags);
@@ -117,7 +121,8 @@ IPAttributesGetterMac::GetNetworkInterfaceType(const ifaddrs* if_addr) {
     return NetworkChangeNotifier::CONNECTION_UNKNOWN;
 
   struct ifmediareq ifmr = {};
-  strncpy(ifmr.ifm_name, if_addr->ifa_name, sizeof(ifmr.ifm_name) - 1);
+  UNSAFE_TODO(
+      strncpy(ifmr.ifm_name, if_addr->ifa_name, sizeof(ifmr.ifm_name) - 1));
 
   if (ioctl(ioctl_socket_, SIOCGIFMEDIA, &ifmr) != -1) {
     if (ifmr.ifm_current & IFM_IEEE80211) {
@@ -230,8 +235,7 @@ namespace internal {
 bool GetNetworkListUsingGetifaddrs(NetworkInterfaceList* networks,
                                    int policy,
                                    bool use_alternative_getifaddrs) {
-  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_NOUGAT);
+  DCHECK_GE(base::android::android_info::sdk_int(), GETIFADDRS_MIN_API);
   DCHECK(getifaddrs);
   DCHECK(freeifaddrs);
 #else
@@ -253,7 +257,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
     // under the name Getifaddrs.
     getifaddrs_result = Getifaddrs(&interfaces);
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   } else {
     getifaddrs_result = getifaddrs(&interfaces);
@@ -276,7 +280,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
 #if BUILDFLAG(IS_ANDROID)
     Freeifaddrs(interfaces);
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   } else {
     freeifaddrs(interfaces);

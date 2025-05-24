@@ -84,8 +84,8 @@ bool ForwardingDataTypeLocalChangeProcessor::IsTrackingMetadata() const {
   return other_->IsTrackingMetadata();
 }
 
-std::string ForwardingDataTypeLocalChangeProcessor::TrackedAccountId() const {
-  return other_->TrackedAccountId();
+GaiaId ForwardingDataTypeLocalChangeProcessor::TrackedGaiaId() const {
+  return other_->TrackedGaiaId();
 }
 
 std::string ForwardingDataTypeLocalChangeProcessor::TrackedCacheGuid() const {

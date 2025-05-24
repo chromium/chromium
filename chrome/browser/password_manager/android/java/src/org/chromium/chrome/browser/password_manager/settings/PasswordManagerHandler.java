@@ -4,17 +4,17 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
-import android.app.Activity;
 import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Interface for retrieving passwords and password exceptions (websites for which Chrome should not
  * save password) from native code.
  */
+@NullMarked
 public interface PasswordManagerHandler {
     /** Called to insert a password entry into the password store. */
     public void insertPasswordEntryForTesting(String origin, String username, String password);
@@ -72,16 +72,6 @@ public interface PasswordManagerHandler {
      * @param isBlockedCredential whether this credential is blocked for saving
      */
     void showPasswordEntryEditingView(Context context, int index, boolean isBlockedCredential);
-
-    /**
-     * Calls C++ to trigger the migration warning. The C++ util centralizes the showing logic such
-     * that it can ensure that all appropriate checks are done an that the timestamp for showing the
-     * warning is uniformly recorded.
-     *
-     * @param activity the activity used to show the warning and potentially the export flow.
-     * @param bottomSheetController the controller displaying the warning bottom sheet.
-     */
-    void showMigrationWarning(Activity activity, BottomSheetController bottomSheetController);
 
     /**
      * Calls C++ to check whether the PasswordManagerHandler is still waiting for the passwords to

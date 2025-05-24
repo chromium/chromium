@@ -24,6 +24,7 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
+#include "components/policy/core/common/policy_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -120,7 +121,8 @@ TEST(KSAdminTest, Register) {
                 (override));
     MOCK_METHOD(void,
                 FetchPolicies,
-                (base::OnceCallback<void(int)> callback),
+                (policy::PolicyFetchReason reason,
+                 base::OnceCallback<void(int)> callback),
                 (override));
     MOCK_METHOD(void,
                 RegisterApp,
@@ -141,6 +143,7 @@ TEST(KSAdminTest, Register) {
                 (const std::string& app_id,
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
+                 const std::string& language,
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));
@@ -150,6 +153,7 @@ TEST(KSAdminTest, Register) {
                  const std::string& install_data_index,
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
+                 const std::string& language,
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));
@@ -164,6 +168,7 @@ TEST(KSAdminTest, Register) {
                  const std::string& client_install_data,
                  const std::string& install_data_index,
                  Priority priority,
+                 const std::string& language,
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));
@@ -175,6 +180,7 @@ TEST(KSAdminTest, Register) {
                  const std::string& install_args,
                  const std::string& install_data,
                  const std::string& install_settings,
+                 const std::string& language,
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));

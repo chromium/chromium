@@ -15,6 +15,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioPrefObserver {
   // Called when audio policy prefs changed.
   virtual void OnAudioPolicyPrefChanged() = 0;
 
+  // Called when voice isolation prefs changed.
+  virtual void OnVoiceIsolationPrefChanged() = 0;
+
  protected:
   virtual ~AudioPrefObserver() {}
 };

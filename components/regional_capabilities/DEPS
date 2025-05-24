@@ -1,0 +1,18 @@
+include_rules = [
+  "+components/country_codes",
+  "+components/keyed_service/core",
+  "+components/prefs",
+  "+components/pref_registry",
+  "+third_party/jni_zero",
+  "+components/regional_capabilities/access",
+  "+third_party/search_engines_data",
+]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+components/sync_preferences",
+  ],
+  ".*regional_capabilities_prefs\.cc": [
+    "+components/search_engines/search_engines_pref_names.h",
+  ]
+}

@@ -30,7 +30,7 @@ class SmbServiceFactory : public ProfileKeyedServiceFactory,
   static SmbServiceFactory* GetInstance();
 
   // Returns whether Smb service is created for the given context.
-  bool IsSmbServiceCrated(void* context);
+  bool IsSmbServiceCreated(void* context);
 
   // Disallow copy and assignment.
   SmbServiceFactory(const SmbServiceFactory&) = delete;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/download/public/common/quarantine_connection.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -25,6 +26,7 @@ class AssociatedInterfaceRegistry;
 }
 
 namespace content {
+class BrowserChildProcessHost;
 class BrowserContext;
 class BrowserURLHandler;
 class RenderFrameHost;
@@ -43,7 +45,7 @@ class FileSystemBackend;
 // content::ContentBrowserClient.
 class ChromeContentBrowserClientParts {
  public:
-  virtual ~ChromeContentBrowserClientParts() {}
+  virtual ~ChromeContentBrowserClientParts() = default;
 
   virtual void RenderProcessWillLaunch(content::RenderProcessHost* host) {}
   virtual void SiteInstanceGotProcessAndSite(
@@ -53,13 +55,15 @@ class ChromeContentBrowserClientParts {
   // that their modifications are mututally exclusive.
   // This is called at startup, and when the user changes their webkit
   // preferences.
-  virtual void OverrideWebkitPrefs(content::WebContents* web_contents,
-                                   blink::web_pref::WebPreferences* web_prefs) {
-  }
+  virtual void OverrideWebPreferences(
+      content::WebContents* web_contents,
+      content::SiteInstance& main_frame_site,
+      blink::web_pref::WebPreferences* web_prefs) {}
   // This is called after each navigation. Return |true| if any changes were
   // made. A response value of |true| will result in IPC to the renderer.
   virtual bool OverrideWebPreferencesAfterNavigation(
       content::WebContents* web_contents,
+      content::SiteInstance& main_frame_site,
       blink::web_pref::WebPreferences* web_prefs);
 
   virtual void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) {}
@@ -87,6 +91,13 @@ class ChromeContentBrowserClientParts {
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) {}
+
+  // Allows to register browser interfaces exposed through the
+  // BrowserChildProcessHost. Note that interface factory callbacks added to
+  // `map` will by default be run immediately on the IO thread, unless a task
+  // runner is provided.
+  virtual void ExposeInterfacesToChild(
+      mojo::BinderMapWithContext<content::BrowserChildProcessHost*>* map) {}
 
   // Allows to register browser interfaces exposed to a ServiceWorker.
   virtual void ExposeInterfacesToRendererForServiceWorker(

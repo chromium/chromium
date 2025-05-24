@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -752,15 +752,12 @@ void WindowState::SetBoundsChangedByUser(bool bounds_changed_by_user) {
   }
 }
 
-std::unique_ptr<PresentationTimeRecorder> WindowState::OnDragStarted(
-    int window_component) {
+void WindowState::OnDragStarted(int window_component) {
   DCHECK(drag_details_);
 
   if (delegate_) {
-    return delegate_->OnDragStarted(window_component);
+    delegate_->OnDragStarted(window_component);
   }
-
-  return nullptr;
 }
 
 void WindowState::OnCompleteDrag(const gfx::PointF& location) {
@@ -1000,9 +997,10 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds_in_parent) {
     gfx::Size min_size = window_->delegate()
                              ? window_->delegate()->GetMinimumSize()
                              : gfx::Size();
-    gfx::Size max_size = window_->delegate()
-                             ? window_->delegate()->GetMaximumSize()
-                             : gfx::Size();
+    gfx::Size max_size =
+        window_->delegate()
+            ? window_->delegate()->GetMaximumSize().value_or(gfx::Size())
+            : gfx::Size();
     const display::Display display =
         display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
     min_size.SetToMin(display.work_area().size());

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "storage/browser/file_system/file_system_url.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -53,7 +50,7 @@ BucketLocator CreateNonDefaultBucket() {
   return BucketLocator(
       BucketId::FromUnsafeValue(kBucketId),
       blink::StorageKey::CreateFromStringForTesting("http://www.example.com/"),
-      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+      /*is_default=*/false);
 }
 
 }  // namespace
@@ -275,7 +272,7 @@ TEST(FileSystemURLTest, RejectMalformedURL) {
 }
 
 TEST(FileSystemURLTest, CompareURLs) {
-  const GURL urls[] = {
+  const auto urls = std::to_array<GURL>({
       GURL("filesystem:http://chromium.org/temporary/dir a/file a"),
       GURL("filesystem:http://chromium.org/temporary/dir a/file a"),
       GURL("filesystem:http://chromium.org/temporary/dir a/file b"),
@@ -283,7 +280,8 @@ TEST(FileSystemURLTest, CompareURLs) {
       GURL("filesystem:http://chromium.org/temporary/dir b/file a"),
       GURL("filesystem:http://chromium.org/temporary/dir aa/file b"),
       GURL("filesystem:http://chromium.com/temporary/dir a/file a"),
-      GURL("filesystem:https://chromium.org/temporary/dir a/file a")};
+      GURL("filesystem:https://chromium.org/temporary/dir a/file a"),
+  });
 
   FileSystemURL::Comparator compare;
   for (size_t i = 0; i < std::size(urls); ++i) {

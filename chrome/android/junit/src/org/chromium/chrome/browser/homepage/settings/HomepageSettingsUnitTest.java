@@ -30,8 +30,10 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
@@ -51,6 +53,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Test for {@link HomepageSettings} to check the UI components and the interactions. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowLooper.class})
+@Features.EnableFeatures(ChromeFeatureList.SHOW_HOME_BUTTON_POLICY_ANDROID)
 public class HomepageSettingsUnitTest {
     private static final String ASSERT_MESSAGE_SWITCH_ENABLE = "Switch should be enabled.";
     private static final String ASSERT_MESSAGE_SWITCH_DISABLE = "Switch should be disabled.";
@@ -85,7 +88,7 @@ public class HomepageSettingsUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock public HomepagePolicyManager mMockHomepagePolicyManger;
+    @Mock public HomepagePolicyManager mMockHomepagePolicyManager;
     @Mock public PartnerBrowserCustomizations mMockPartnerBrowserCustomizations;
     @Mock public Profile mProfile;
 
@@ -103,7 +106,7 @@ public class HomepageSettingsUnitTest {
 
     @Before
     public void setUp() {
-        HomepagePolicyManager.setInstanceForTests(mMockHomepagePolicyManger);
+        HomepagePolicyManager.setInstanceForTests(mMockHomepagePolicyManager);
         PartnerBrowserCustomizations.setInstanceForTesting(mMockPartnerBrowserCustomizations);
         mActivityScenario = ActivityScenario.launch(TestActivity.class);
         mActivityScenario.onActivity(
@@ -315,6 +318,106 @@ public class HomepageSettingsUnitTest {
         Assert.assertEquals(
                 ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.POLICY_NTP,
+                HomepageManager.getInstance().getHomepageLocationType());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Homepage"})
+    public void testShowHomeButton_Policy_On() {
+        setShowHomeButtonPolicy(true);
+
+        launchHomepageSettings();
+
+        Assert.assertFalse(ASSERT_MESSAGE_SWITCH_DISABLE, mSwitch.isEnabled());
+        Assert.assertTrue(ASSERT_MESSAGE_SWITCH_CHECK, mSwitch.isChecked());
+
+        Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
+        Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Homepage"})
+    public void testShowHomeButton_Policy_Off() {
+        setShowHomeButtonPolicy(false);
+
+        launchHomepageSettings();
+
+        Assert.assertFalse(ASSERT_MESSAGE_SWITCH_DISABLE, mSwitch.isEnabled());
+        Assert.assertFalse(ASSERT_MESSAGE_SWITCH_CHECK, mSwitch.isChecked());
+
+        Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
+        Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Homepage"})
+    public void testPolicies_ShowHomeButtonOFF_HomepageLocationON() {
+        setShowHomeButtonPolicy(false);
+        setHomepagePolicy(new GURL(TEST_URL_BAR));
+
+        launchHomepageSettings();
+
+        Assert.assertFalse(ASSERT_MESSAGE_SWITCH_DISABLE, mSwitch.isEnabled());
+        Assert.assertFalse(ASSERT_MESSAGE_SWITCH_CHECK, mSwitch.isChecked());
+
+        Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
+        Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
+
+        Assert.assertEquals(
+                ASSERT_MESSAGE_EDIT_TEXT,
+                TEST_URL_BAR,
+                mCustomUriRadioButton.getPrimaryText().toString());
+
+        // Additional verification - text message should be displayed, NTP button should be hidden.
+        Assert.assertEquals(
+                "NTP Button should not be visible.",
+                View.GONE,
+                mChromeNtpRadioButton.getVisibility());
+        Assert.assertEquals(
+                "Customized Button should be visible.",
+                View.VISIBLE,
+                mCustomUriRadioButton.getVisibility());
+        Assert.assertEquals(
+                ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
+                HomepageLocationType.POLICY_OTHER,
+                HomepageManager.getInstance().getHomepageLocationType());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Homepage"})
+    public void testPolicies_ShowHomeButtonON_HomepageLocationON() {
+        setShowHomeButtonPolicy(true);
+        setHomepagePolicy(new GURL(TEST_URL_BAR));
+
+        launchHomepageSettings();
+
+        Assert.assertFalse(ASSERT_MESSAGE_SWITCH_DISABLE, mSwitch.isEnabled());
+        Assert.assertTrue(ASSERT_MESSAGE_SWITCH_CHECK, mSwitch.isChecked());
+
+        Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
+        Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
+
+        Assert.assertEquals(
+                ASSERT_MESSAGE_EDIT_TEXT,
+                TEST_URL_BAR,
+                mCustomUriRadioButton.getPrimaryText().toString());
+
+        // Additional verification - text message should be displayed, NTP button should be hidden.
+        Assert.assertEquals(
+                "NTP Button should not be visible.",
+                View.GONE,
+                mChromeNtpRadioButton.getVisibility());
+        Assert.assertEquals(
+                "Customized Button should be visible.",
+                View.VISIBLE,
+                mCustomUriRadioButton.getVisibility());
+        Assert.assertEquals(
+                ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
+                HomepageLocationType.POLICY_OTHER,
                 HomepageManager.getInstance().getHomepageLocationType());
     }
 
@@ -595,8 +698,19 @@ public class HomepageSettingsUnitTest {
     }
 
     private void setHomepagePolicy(GURL homepagePolicy) {
-        Mockito.doReturn(true).when(mMockHomepagePolicyManger).isHomepageLocationPolicyEnabled();
-        Mockito.doReturn(homepagePolicy).when(mMockHomepagePolicyManger).getHomepagePreference();
+        Mockito.doReturn(true).when(mMockHomepagePolicyManager).isHomepageLocationPolicyManaged();
+        Mockito.doReturn(homepagePolicy)
+                .when(mMockHomepagePolicyManager)
+                .getHomepageLocationPolicyUrl();
+    }
+
+    private void setShowHomeButtonPolicy(Boolean val) {
+        Mockito.doReturn(val != null)
+                .when(mMockHomepagePolicyManager)
+                .isShowHomeButtonPolicyManaged();
+        Mockito.doReturn(Boolean.TRUE.equals(val))
+                .when(mMockHomepagePolicyManager)
+                .getShowHomeButtonPolicyValue();
     }
 
     private void assertUserActionRecorded(boolean recorded) {

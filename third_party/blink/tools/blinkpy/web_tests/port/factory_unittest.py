@@ -106,7 +106,11 @@ class FactoryTest(unittest.TestCase):
         factory.PortFactory(host).get(options=options)
         self.assertEqual(options, optparse.Values())
 
-    def get_port(self, target=None, configuration=None, files=None):
+    def get_port(self,
+                 target=None,
+                 configuration=None,
+                 build_directory=None,
+                 files=None):
         host = MockHost()
         finder = PathFinder(host.filesystem)
         files = files or {}
@@ -114,8 +118,13 @@ class FactoryTest(unittest.TestCase):
             host.filesystem.write_text_file(
                 finder.path_from_chromium_base(path), contents)
         options = optparse.Values({
-            'target': target,
-            'configuration': configuration
+            'target':
+            target,
+            'configuration':
+            configuration,
+            'build_directory':
+            finder.path_from_chromium_base(build_directory)
+            if build_directory else None,
         })
         return factory.PortFactory(host).get(options=options)
 
@@ -150,38 +159,45 @@ class FactoryTest(unittest.TestCase):
         self.assertEqual(port._options.target, 'Release_x64')
 
     def test_release_args_gn(self):
-        port = self.get_port(
-            target='foo', files={'out/foo/args.gn': 'is_debug = false'})
+        port = self.get_port(target='foo',
+                             files={'out/foo/args.gn': 'is_debug = false'},
+                             build_directory='out/foo')
         self.assertEqual(port._options.configuration, 'Release')
         self.assertEqual(port._options.target, 'foo')
 
         # Also test that we handle multi-line args files properly.
         port = self.get_port(
             target='foo',
-            files={'out/foo/args.gn': 'is_debug = false\nfoo = bar\n'})
+            files={'out/foo/args.gn': 'is_debug = false\nfoo = bar\n'},
+            build_directory='out/foo')
         self.assertEqual(port._options.configuration, 'Release')
         self.assertEqual(port._options.target, 'foo')
 
         port = self.get_port(
             target='foo',
-            files={'out/foo/args.gn': 'foo=bar\nis_debug=false\n'})
+            files={'out/foo/args.gn': 'foo=bar\nis_debug=false\n'},
+            build_directory='out/foo')
         self.assertEqual(port._options.configuration, 'Release')
         self.assertEqual(port._options.target, 'foo')
 
     def test_debug_args_gn(self):
-        port = self.get_port(
-            target='foo', files={'out/foo/args.gn': 'is_debug = true'})
+        port = self.get_port(target='foo',
+                             files={'out/foo/args.gn': 'is_debug = true'},
+                             build_directory='out/foo')
         self.assertEqual(port._options.configuration, 'Debug')
         self.assertEqual(port._options.target, 'foo')
 
     def test_default_gn_build(self):
-        port = self.get_port(
-            target='Default', files={'out/Default/toolchain.ninja': ''})
+        port = self.get_port(target='Default',
+                             files={'out/Default/toolchain.ninja': ''},
+                             build_directory='out/Default')
         self.assertEqual(port._options.configuration, 'Debug')
         self.assertEqual(port._options.target, 'Default')
 
     def test_empty_args_gn(self):
-        port = self.get_port(target='foo', files={'out/foo/args.gn': ''})
+        port = self.get_port(target='foo',
+                             files={'out/foo/args.gn': ''},
+                             build_directory='out/foo')
         self.assertEqual(port._options.configuration, 'Debug')
         self.assertEqual(port._options.target, 'foo')
 
@@ -197,11 +213,12 @@ class FactoryTest(unittest.TestCase):
 
     def test_both_configuration_and_target_is_an_error(self):
         with self.assertRaises(ValueError):
-            self.get_port(
-                target='Debug',
-                configuration='Release',
-                files={'out/Debug/toolchain.ninja': ''})
+            self.get_port(target='Debug',
+                          configuration='Release',
+                          files={'out/Debug/toolchain.ninja': ''},
+                          build_directory='out/Debug')
 
     def test_no_target_has_correct_config(self):
-        port = self.get_port(files={'out/Release/args.gn': 'is_debug = true'})
+        port = self.get_port(files={'out/Release/args.gn': 'is_debug = true'},
+                             build_directory='out/Release')
         self.assertEqual(port._options.configuration, 'Debug')

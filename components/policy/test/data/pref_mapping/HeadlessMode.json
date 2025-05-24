@@ -4,42 +4,17 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "headless.mode": {
-            "default_value": 1,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "HeadlessMode": 1
-        },
-        "prefs": {
-          "headless.mode": {
-            "location": "local_state",
-            "value": 1
-          }
-        }
-      },
-      {
-        "policies": {
-          "HeadlessMode": 2
-        },
-        "prefs": {
-          "headless.mode": {
-            "location": "local_state",
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "headless.mode",
+      "pref_location": "local_state",
+      "default_value": 1,
+      "values_to_test": [
+        1,
+        2
+      ]
+    }
   }
 ]

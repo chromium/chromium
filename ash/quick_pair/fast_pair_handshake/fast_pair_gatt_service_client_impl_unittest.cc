@@ -271,7 +271,7 @@ class FakeBluetoothGattCharacteristic
     std::move(callback).Run(std::move(fake_notify_session));
   }
 
-  void WriteRemoteCharacteristic(const std::vector<uint8_t>& value,
+  void WriteRemoteCharacteristic(base::span<const uint8_t> value,
                                  WriteType write_type,
                                  base::OnceClosure callback,
                                  ErrorCallback error_callback) override {

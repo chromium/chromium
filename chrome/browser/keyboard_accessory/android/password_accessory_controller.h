@@ -54,8 +54,12 @@ class PasswordAccessoryController : public AccessoryController {
 
   // Makes sure, that all shown suggestions are appropriate for the currently
   // focused field and for fields that lost the focus.
+  // `is_field_eligible_for_manual_generation` is required to differentiate
+  // fields where filling is not possible (password filling on text fields is
+  // disabled), but manual generation is available for the user.
   virtual void RefreshSuggestionsForField(
-      autofill::mojom::FocusedFieldType focused_field_type) = 0;
+      autofill::mojom::FocusedFieldType focused_field_type,
+      bool is_field_eligible_for_manual_generation) = 0;
 
   // Signals that generation was requested from the accessory. |type|
   // indicates whether generation was requested via the manual fallback or from

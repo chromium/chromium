@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
-
 #import "ios/chrome/browser/voice/model/voice_search_language.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 
 namespace ios {
 namespace provider {

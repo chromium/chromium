@@ -6,7 +6,10 @@ package org.chromium.components.autofill.payments;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Detailed card information to show in the various Autofill views. */
+@NullMarked
 public class CardDetail {
     /** The identifier of the drawable of the card issuer icon. */
     public @DrawableRes int issuerIconDrawableId;

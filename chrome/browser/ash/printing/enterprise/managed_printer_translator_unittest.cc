@@ -9,6 +9,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/enterprise/managed_printer_configuration.pb.h"
+#include "chrome/browser/ash/printing/enterprise/print_job_options.pb.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,7 +26,6 @@ ManagedPrinterConfiguration ValidManagedPrinter() {
   ManagedPrinterConfiguration managed_printer;
   managed_printer.set_guid("id");
   managed_printer.set_display_name("name");
-  managed_printer.set_description("description");
   managed_printer.set_uri("ipp://localhost:8000/ipp/print");
   managed_printer.mutable_ppd_resource()->set_autoconf(true);
   return managed_printer;
@@ -112,6 +112,21 @@ TEST(ManagedPrinterConfigFromDict, DictWithUserSuppliedPpdUriPpdResource) {
   EXPECT_THAT(*managed_printer, EqualsProto(expected));
 }
 
+TEST(ManagedPrinterConfigFromDict, DictWithPrintJobOptions) {
+  auto printer_dict = base::Value::Dict().Set(
+      "print_job_options",
+      base::Value::Dict().Set("color",
+                              base::Value::Dict().Set("default_value", true)));
+
+  auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
+
+  ManagedPrinterConfiguration expected;
+  expected.mutable_print_job_options()->mutable_color()->set_default_value(
+      true);
+  ASSERT_TRUE(managed_printer.has_value());
+  EXPECT_THAT(*managed_printer, EqualsProto(expected));
+}
+
 TEST(PrinterFromManagedPrinterConfig, MissingGuid) {
   auto managed_printer = ValidManagedPrinter();
   managed_printer.clear_guid();
@@ -154,49 +169,48 @@ TEST(PrinterFromManagedPrinterConfig, WithInvalidPpdResource) {
       std::nullopt);
 }
 
+TEST(PrinterFromManagedPrinterConfig, BasicProperties) {
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
+
+  std::optional<Printer> printer =
+      PrinterFromManagedPrinterConfig(managed_printer);
+
+  ASSERT_TRUE(printer.has_value());
+  EXPECT_EQ(printer->id(), "id");
+  EXPECT_EQ(printer->display_name(), "name");
+  EXPECT_EQ(printer->uri().GetNormalized(), "ipp://localhost:8000/ipp/print");
+}
+
 TEST(PrinterFromManagedPrinterConfig, WithAutoconf) {
-  ManagedPrinterConfiguration managed_printer;
-  managed_printer.set_guid("id");
-  managed_printer.set_display_name("name");
-  managed_printer.set_uri("ipp://host:1234/ipp/print");
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
   managed_printer.mutable_ppd_resource()->set_autoconf(true);
 
   std::optional<Printer> printer =
       PrinterFromManagedPrinterConfig(managed_printer);
 
   ASSERT_TRUE(printer.has_value());
-  EXPECT_EQ(printer->id(), "id");
-  EXPECT_EQ(printer->display_name(), "name");
-  EXPECT_EQ(printer->uri().GetNormalized(), "ipp://host:1234/ipp/print");
   EXPECT_THAT(printer->ppd_reference().effective_make_and_model, IsEmpty());
   EXPECT_THAT(printer->ppd_reference().user_supplied_ppd_url, IsEmpty());
   EXPECT_TRUE(printer->ppd_reference().autoconf);
 }
 
 TEST(PrinterFromManagedPrinterConfig, WithModel) {
-  ManagedPrinterConfiguration managed_printer;
-  managed_printer.set_guid("id");
-  managed_printer.set_display_name("name");
-  managed_printer.set_uri("ipp://host:1234/ipp/print");
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
+  managed_printer.mutable_ppd_resource()->set_autoconf(false);
   managed_printer.mutable_ppd_resource()->set_effective_model("model");
 
   std::optional<Printer> printer =
       PrinterFromManagedPrinterConfig(managed_printer);
 
   ASSERT_TRUE(printer.has_value());
-  EXPECT_EQ(printer->id(), "id");
-  EXPECT_EQ(printer->display_name(), "name");
-  EXPECT_EQ(printer->uri().GetNormalized(), "ipp://host:1234/ipp/print");
   EXPECT_FALSE(printer->ppd_reference().autoconf);
   EXPECT_THAT(printer->ppd_reference().user_supplied_ppd_url, IsEmpty());
   EXPECT_EQ(printer->ppd_reference().effective_make_and_model, "model");
 }
 
 TEST(PrinterFromManagedPrinterConfig, WithUserSuppliedPpdUri) {
-  ManagedPrinterConfiguration managed_printer;
-  managed_printer.set_guid("id");
-  managed_printer.set_display_name("name");
-  managed_printer.set_uri("ipp://host:1234/ipp/print");
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
+  managed_printer.mutable_ppd_resource()->set_autoconf(false);
   managed_printer.mutable_ppd_resource()->set_user_supplied_ppd_uri(
       "https://ppd-uri");
 
@@ -204,33 +218,52 @@ TEST(PrinterFromManagedPrinterConfig, WithUserSuppliedPpdUri) {
       PrinterFromManagedPrinterConfig(managed_printer);
 
   ASSERT_TRUE(printer.has_value());
-  EXPECT_EQ(printer->id(), "id");
-  EXPECT_EQ(printer->display_name(), "name");
-  EXPECT_EQ(printer->uri().GetNormalized(), "ipp://host:1234/ipp/print");
   EXPECT_FALSE(printer->ppd_reference().autoconf);
   EXPECT_THAT(printer->ppd_reference().effective_make_and_model, IsEmpty());
   EXPECT_EQ(printer->ppd_reference().user_supplied_ppd_url, "https://ppd-uri");
 }
 
 TEST(PrinterFromManagedPrinterConfig, WithOptionalFieldsSet) {
-  ManagedPrinterConfiguration managed_printer;
-  managed_printer.set_guid("id");
-  managed_printer.set_display_name("name");
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
   managed_printer.set_description("description");
-  managed_printer.set_uri("ipp://host:1234/ipp/print");
-  managed_printer.mutable_ppd_resource()->set_autoconf(true);
 
   std::optional<Printer> printer =
       PrinterFromManagedPrinterConfig(managed_printer);
 
   ASSERT_TRUE(printer.has_value());
-  EXPECT_EQ(printer->id(), "id");
-  EXPECT_EQ(printer->display_name(), "name");
   EXPECT_EQ(printer->description(), "description");
-  EXPECT_EQ(printer->uri().GetNormalized(), "ipp://host:1234/ipp/print");
-  EXPECT_TRUE(printer->ppd_reference().autoconf);
-  EXPECT_THAT(printer->ppd_reference().user_supplied_ppd_url, IsEmpty());
-  EXPECT_THAT(printer->ppd_reference().effective_make_and_model, IsEmpty());
+}
+
+TEST(PrinterFromManagedPrinterConfig, WithValidPrintJobOptions) {
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
+  PrintJobOptions print_job_options;
+  print_job_options.mutable_media_size()->mutable_default_value()->set_height(
+      32);
+  print_job_options.mutable_media_size()->mutable_default_value()->set_width(
+      64);
+  print_job_options.mutable_color()->set_default_value(true);
+  *managed_printer.mutable_print_job_options() = print_job_options;
+
+  std::optional<Printer> printer =
+      PrinterFromManagedPrinterConfig(managed_printer);
+
+  ASSERT_TRUE(printer.has_value());
+  ASSERT_TRUE(
+      printer->print_job_options().media_size.default_value.has_value());
+  EXPECT_EQ(printer->print_job_options().media_size.default_value->height, 32);
+  EXPECT_EQ(printer->print_job_options().media_size.default_value->width, 64);
+}
+
+TEST(PrinterFromManagedPrinterConfig, WithInvalidPrintJobOptions) {
+  ManagedPrinterConfiguration managed_printer = ValidManagedPrinter();
+  PrintJobOptions print_job_options;
+  print_job_options.mutable_media_size()->mutable_default_value()->set_height(
+      32);
+  *managed_printer.mutable_print_job_options() = print_job_options;
+
+  // Media size default value doesn't have width component, thus the conversion
+  // from managed printer should fail.
+  EXPECT_EQ(PrinterFromManagedPrinterConfig(managed_printer), std::nullopt);
 }
 
 }  // namespace

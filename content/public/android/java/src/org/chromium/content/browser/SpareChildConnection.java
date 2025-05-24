@@ -7,17 +7,19 @@ package org.chromium.content.browser;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class is used to create a single spare ChildProcessConnection (usually early on during
  * start-up) that can then later be retrieved when a connection to a service is needed.
  */
+@NullMarked
 public class SpareChildConnection {
     private static final String TAG = "SpareChildConn";
 
@@ -25,14 +27,14 @@ public class SpareChildConnection {
     private final ChildConnectionAllocator mConnectionAllocator;
 
     // The actual spare connection.
-    private ChildProcessConnection mConnection;
+    private @Nullable ChildProcessConnection mConnection;
 
     // True when there is a spare connection and it is bound.
     private boolean mConnectionReady;
 
     // The callback that should be called when the connection becomes bound. Set when the connection
     // is retrieved.
-    private ChildProcessConnection.ServiceCallback mConnectionServiceCallback;
+    private ChildProcessConnection.@Nullable ServiceCallback mConnectionServiceCallback;
 
     /** Creates and binds a ChildProcessConnection using the specified parameters. */
     public SpareChildConnection(
@@ -84,9 +86,9 @@ public class SpareChildConnection {
      * @return a connection that has been bound or is being bound if one was created with the same
      * allocator as the one provided, null otherwise.
      */
-    public ChildProcessConnection getConnection(
+    public @Nullable ChildProcessConnection getConnection(
             ChildConnectionAllocator allocator,
-            @NonNull final ChildProcessConnection.ServiceCallback serviceCallback) {
+            final ChildProcessConnection.ServiceCallback serviceCallback) {
         assert LauncherThread.runningOnLauncherThread();
         if (isEmpty() || mConnectionAllocator != allocator || mConnectionServiceCallback != null) {
             return null;
@@ -128,7 +130,7 @@ public class SpareChildConnection {
     }
 
     @VisibleForTesting
-    public ChildProcessConnection getConnection() {
+    public @Nullable ChildProcessConnection getConnection() {
         return mConnection;
     }
 }

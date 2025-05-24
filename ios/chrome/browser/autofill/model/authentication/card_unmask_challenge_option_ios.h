@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTHENTICATION_CARD_UNMASK_CHALLENGE_OPTION_IOS_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTHENTICATION_CARD_UNMASK_CHALLENGE_OPTION_IOS_H_
 
-#import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
-
 #import <Foundation/Foundation.h>
+
+#import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 
 // Represents a challenge option on the authentication selection prompt.
 @interface CardUnmaskChallengeOptionIOS : NSObject

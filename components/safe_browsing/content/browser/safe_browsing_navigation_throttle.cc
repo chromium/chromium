@@ -12,31 +12,34 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 
 namespace safe_browsing {
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-SafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle,
+void SafeBrowsingNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry,
     SafeBrowsingUIManager* ui_manager) {
-  if (!ui_manager)
-    return nullptr;
+  if (!ui_manager) {
+    return;
+  }
 
   // Only outer-most main frames show the interstitial through the navigation
   // throttle. In other cases, the interstitial is shown via
   // BaseUIManager::DisplayBlockingPage.
-  if (!handle->IsInPrimaryMainFrame() && !handle->IsInPrerenderedMainFrame())
-    return nullptr;
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.IsInPrimaryMainFrame() && !handle.IsInPrerenderedMainFrame()) {
+    return;
+  }
 
-  return base::WrapUnique(
-      new SafeBrowsingNavigationThrottle(handle, ui_manager));
+  registry.AddThrottle(base::WrapUnique(
+      new SafeBrowsingNavigationThrottle(registry, ui_manager)));
 }
 
 SafeBrowsingNavigationThrottle::SafeBrowsingNavigationThrottle(
-    content::NavigationHandle* handle,
+    content::NavigationThrottleRegistry& registry,
     SafeBrowsingUIManager* manager)
-    : content::NavigationThrottle(handle), manager_(manager) {}
+    : content::NavigationThrottle(registry), manager_(manager) {}
 
 const char* SafeBrowsingNavigationThrottle::GetNameForLogging() {
   return "SafeBrowsingNavigationThrottle";

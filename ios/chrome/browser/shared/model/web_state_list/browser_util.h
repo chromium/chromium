@@ -55,5 +55,4 @@ void MoveTabToBrowser(web::WebStateID tab_id,
 BrowserAndIndex FindBrowserAndIndex(web::WebStateID tab_id,
                                     const std::set<Browser*>& browsers);
 
-
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_BROWSER_UTIL_H_

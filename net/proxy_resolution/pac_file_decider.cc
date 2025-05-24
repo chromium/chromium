@@ -216,9 +216,7 @@ int PacFileDecider::DoLoop(int result) {
         rv = DoVerifyPacScriptComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
   return rv;
@@ -401,7 +399,7 @@ int PacFileDecider::DoVerifyPacScriptComplete(int result) {
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
 
       config = ProxyConfig::CreateFromCustomPacURL(auto_detected_url);

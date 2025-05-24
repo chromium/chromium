@@ -22,6 +22,7 @@ class Version;
 
 namespace installer {
 
+class InstallationState;
 class InstallerState;
 struct InstallParams;
 
@@ -44,7 +45,11 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
 // Checks to see if the given brand code is one that should be updated if
 // the current install is considered an enterprise install.  If so the updated
 // brand code is returned, otherwise an empty string is returned.
-std::wstring GetUpdatedBrandCode(const std::wstring& brand_code);
+// Depending on the `to_enterprise` flag the mapping is done in the forward
+// direction to the enterprise code or in the reverse direction to a
+// non-enterprise brand code.
+std::wstring GetUpdatedBrandCode(const std::wstring& brand_code,
+                                 bool to_enterprise);
 
 // Does forward and backword transformation of brand codes between the CBE w/o
 // and CBE with CBCM codes. The `to_cbcm` parameter defines which direction is
@@ -136,7 +141,8 @@ void AddChannelSelectionWorkItems(const InstallerState& installer_state,
 // Adds work items to be done when finalizing an update. This happens both
 // after the executables get renamed for an in-use update or as the last steps
 // for a regular update.
-void AddFinalizeUpdateWorkItems(const base::Version& new_version,
+void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
+                                const base::Version& new_version,
                                 const InstallerState& installer_state,
                                 const base::FilePath& setup_path,
                                 WorkItemList* list);

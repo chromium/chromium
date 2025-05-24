@@ -24,8 +24,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -70,7 +72,7 @@ class LocaleSwitchScreenBrowserTest : public OobeBaseTest {
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
 };
 
-LocaleSwitchScreenBrowserTest::LocaleSwitchScreenBrowserTest() {}
+LocaleSwitchScreenBrowserTest::LocaleSwitchScreenBrowserTest() = default;
 
 void LocaleSwitchScreenBrowserTest::SetUpOnMainThread() {
   SetPeopleAPIResponseLocale("en");
@@ -174,6 +176,10 @@ IN_PROC_BROWSER_TEST_F(LocaleSwitchScreenBrowserTest,
   EXPECT_EQ(screen_result, LocaleSwitchScreen::Result::kSwitchSucceded);
 
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), new_locale);
+
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  EXPECT_EQ(*user->GetAccountLocale(), new_locale);
 }
 
 }  // namespace ash

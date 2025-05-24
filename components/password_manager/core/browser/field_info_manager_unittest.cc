@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::FieldRendererId;
@@ -45,7 +46,6 @@ FormPredictions CreateTestPredictions(int driver_id,
   predictions.form_signature = form_signature;
 
   predictions.fields.emplace_back(renderer_id, field_signature, type,
-                                  /*may_use_prefilled_placeholder=*/false,
                                   /*is_override=*/false);
 
   return predictions;
@@ -75,11 +75,11 @@ TEST_F(FieldInfoManagerTest, InfoAddedRetrievedAndExpired) {
   EXPECT_TRUE(manager_->GetFieldInfo(kAnotherDomain).empty());
 
   // Check that the info is still accessible.
-  task_environment_.FastForwardBy(kFieldInfoLifetime / 2);
+  task_environment_.FastForwardBy(kSingleUsernameTimeToLive / 2);
   EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
 
   // The info should not be accessible anymore
-  task_environment_.FastForwardBy(kFieldInfoLifetime / 2);
+  task_environment_.FastForwardBy(kSingleUsernameTimeToLive / 2);
   EXPECT_TRUE(manager_->GetFieldInfo(kTestDomain).empty());
 }
 
@@ -152,9 +152,7 @@ TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
 
   // Add another field.
   form_prediction.fields.emplace_back(kAnotherFieldId, kAnotherFieldSignature,
-                                      kAnotherFieldType,
-                                      /*may_use_prefilled_placeholder=*/false,
-                                      /*is_override=*/false);
+                                      kAnotherFieldType, /*is_override=*/false);
 
   predictions[kTestFormSignature] = form_prediction;
 

@@ -9,8 +9,9 @@
 #include <string_view>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -43,12 +44,17 @@ class MockCWSInfoService : public extensions::CWSInfoService {
 void UpdatePasswordCheckServiceAsync(
     PasswordStatusCheckService* password_service);
 
+// Creates a new instance of the PasswordStatusService and associates it with
+// `context`. Immediately returns the created service.
+PasswordStatusCheckService* CreateAndUsePasswordStatusService(
+    content::BrowserContext* context);
+
 // This will run until ongoing checks in PasswordStatusCheckService to be
 // completed.
 void RunUntilPasswordCheckCompleted(Profile* profile);
 
-// Creates a mock service that returns mock results for the CWS info service. If
-// |with_calls| is true, total six extensions with different properties are
+// Creates a mock service that returns mock results for the CWS info service.
+// If |with_calls| is true, total six extensions with different properties are
 // mocked: malware, policy violation, unpublished, combination of malware and
 // unpublished, no violation, and an extension that is not present.
 std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(
@@ -100,18 +106,26 @@ password_manager::PasswordForm MakeForm(std::u16string_view username,
                                         bool is_leaked = false);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Creates a new instance of the RevokedPermissionsService and associates it
+// with |context|.
+void CreateRevokedPermissionsService(content::BrowserContext* context);
+
+// Creates a new instance of the NotificationPermissionsReviewService and
+// associates it with |context|.
+void CreateNotificationPermissionsReviewService(
+    content::BrowserContext* context);
+
 // This will run the UpdateAsync function on the provided SafetyHubService and
 // return when both the background task and UI task are completed. It will
 // temporary add an observer to the service, which will be removed again before
 // the function returns.
 void UpdateSafetyHubServiceAsync(SafetyHubService* service);
 
-// This will run the UpdateAsync function on the UnusedSitePermissionsService
+// This will run the UpdateAsync function on the RevokedPermissionsService
 // and return when both the background task and UI task are completed. This
 // separate helper is needed because abusive notification revocation is
 // asynchronous, so this method should run until idle.
-void UpdateUnusedSitePermissionsServiceAsync(
-    UnusedSitePermissionsService* service);
+void UpdateRevokedPermissionsServiceAsync(RevokedPermissionsService* service);
 
 // Returns true if the provided list of content settings has a setting with the
 // provided url.

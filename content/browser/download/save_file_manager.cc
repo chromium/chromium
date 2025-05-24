@@ -38,6 +38,7 @@
 #include "net/base/load_flags.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
@@ -115,8 +116,9 @@ class SaveFileManager::SimpleURLLoaderHelper
                          const network::mojom::URLResponseHead& response_head) {
     std::string content_disposition;
     if (response_head.headers) {
-      response_head.headers->GetNormalizedHeader("Content-Disposition",
-                                                 &content_disposition);
+      content_disposition =
+          response_head.headers->GetNormalizedHeader("Content-Disposition")
+              .value_or(std::string());
     }
 
     auto info = std::make_unique<SaveFileCreateInfo>(
@@ -146,7 +148,7 @@ class SaveFileManager::SimpleURLLoaderHelper
 
   void OnRetry(base::OnceClosure start_retry) override {
     // Retries are not enabled.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   raw_ptr<SaveFileManager> save_file_manager_;
@@ -277,6 +279,13 @@ void SaveFileManager::SaveURL(
     auto* rfh = RenderFrameHostImpl::FromID(render_process_host_id,
                                             render_frame_routing_id);
 
+    // TODO(crbug.com/382291442): Remove feature guarding once launched.
+    if (base::FeatureList::IsEnabled(
+            network::features::kPopulatePermissionsPolicyOnRequest) &&
+        rfh && rfh->GetPermissionsPolicy()) {
+      request->permissions_policy = *rfh->GetPermissionsPolicy();
+    }
+
     // TODO(qinmin): should this match the if statements in
     // DownloadManagerImpl::BeginResourceDownloadOnChecksComplete so that it
     // can handle blob, file, webui, embedder provided schemes etc?
@@ -295,7 +304,7 @@ void SaveFileManager::SaveURL(
       auto partition_domain =
           rfh->GetSiteInstance()->GetPartitionDomain(storage_partition_impl);
       factory_remote.Bind(CreateFileSystemURLLoaderFactory(
-          rfh->GetProcess()->GetID(), rfh->GetFrameTreeNodeId(),
+          rfh->GetProcess()->GetDeprecatedID(), rfh->GetFrameTreeNodeId(),
           storage_partition->GetFileSystemContext(), partition_domain,
           static_cast<RenderFrameHostImpl*>(rfh)->GetStorageKey()));
       factory = factory_remote.get();

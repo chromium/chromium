@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/policy/remote_commands/user_command_arc_job.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
-#include "chrome/services/keymanagement/public/mojom/cert_store_types.mojom.h"
+#include "chromeos/ash/services/keymanagement/public/mojom/cert_store_types.mojom.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_util_nss.h"
 

@@ -42,8 +42,8 @@ class SignedWebBundleIntegrityBlock {
 
   ~SignedWebBundleIntegrityBlock();
 
-  bool operator==(const SignedWebBundleIntegrityBlock& other) const;
-  bool operator!=(const SignedWebBundleIntegrityBlock& other) const;
+  friend bool operator==(const SignedWebBundleIntegrityBlock&,
+                         const SignedWebBundleIntegrityBlock&) = default;
 
   // Returns the size of this integrity block in bytes. This is useful for
   // finding out where the actual Web Bundle starts.

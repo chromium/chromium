@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/test/launcher/test_result.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,8 +21,7 @@ TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithLinkInResult) {
   result.AddLink("link", "http://google.com");
   TestResultsTracker::AggregateTestResult aggregate_result;
   aggregate_result.test_results.push_back(result);
-  tracker.per_iteration_data_.emplace_back(
-      TestResultsTracker::PerIterationData());
+  tracker.per_iteration_data_.emplace_back();
   tracker.per_iteration_data_.back().results["dummy"] = aggregate_result;
   FilePath temp_file;
   CreateTemporaryFile(&temp_file);
@@ -40,7 +40,7 @@ TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithTagInResult) {
   result.AddTag("tag_name", "tag_value");
   TestResultsTracker::AggregateTestResult aggregate_result;
   aggregate_result.test_results.push_back(result);
-  tracker.per_iteration_data_.push_back({});
+  tracker.per_iteration_data_.emplace_back();
   tracker.per_iteration_data_.back().results["dummy"] = aggregate_result;
   FilePath temp_file;
   CreateTemporaryFile(&temp_file);
@@ -102,8 +102,7 @@ TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithPropertyInResult) {
   result.AddProperty("test_property_name", "test_property_value");
   TestResultsTracker::AggregateTestResult aggregate_result;
   aggregate_result.test_results.push_back(result);
-  tracker.per_iteration_data_.emplace_back(
-      TestResultsTracker::PerIterationData());
+  tracker.per_iteration_data_.emplace_back();
   tracker.per_iteration_data_.back().results["dummy"] = aggregate_result;
   FilePath temp_file;
   CreateTemporaryFile(&temp_file);
@@ -123,8 +122,7 @@ TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithOutTimestampInResult) {
 
   TestResultsTracker::AggregateTestResult aggregate_result;
   aggregate_result.test_results.push_back(result);
-  tracker.per_iteration_data_.emplace_back(
-      TestResultsTracker::PerIterationData());
+  tracker.per_iteration_data_.emplace_back();
   tracker.per_iteration_data_.back().results["dummy"] = aggregate_result;
   FilePath temp_file;
   CreateTemporaryFile(&temp_file);
@@ -141,14 +139,13 @@ TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithTimestampInResult) {
   TestResultsTracker tracker;
   TestResult result;
   result.full_name = "A.B";
-  result.thread_id = 123;
+  result.thread_id = base::PlatformThreadId::ForTest(123);
   result.process_num = 456;
   result.timestamp = Time::Now();
 
   TestResultsTracker::AggregateTestResult aggregate_result;
   aggregate_result.test_results.push_back(result);
-  tracker.per_iteration_data_.emplace_back(
-      TestResultsTracker::PerIterationData());
+  tracker.per_iteration_data_.emplace_back();
   tracker.per_iteration_data_.back().results["dummy"] = aggregate_result;
   FilePath temp_file;
   CreateTemporaryFile(&temp_file);
@@ -159,6 +156,38 @@ TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithTimestampInResult) {
   EXPECT_THAT(content, HasSubstr(R"raw("thread_id":123)raw"));
   EXPECT_THAT(content, HasSubstr(R"raw("process_num":456)raw"));
   EXPECT_THAT(content, HasSubstr(R"raw("timestamp":)raw"));
+}
+
+TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithSubTestResult) {
+  SubTestResult sub_test_result;
+  sub_test_result.classname = "classname";
+  sub_test_result.name = "name";
+  sub_test_result.subname = "subname";
+  sub_test_result.failure_message = "failure message";
+
+  TestResult result;
+  result.AddSubTestResult(std::move(sub_test_result));
+
+  TestResultsTracker::AggregateTestResult aggregate_result;
+  aggregate_result.test_results.push_back(std::move(result));
+
+  TestResultsTracker tracker;
+  tracker.per_iteration_data_.emplace_back();
+  tracker.per_iteration_data_.back().results["dummy"] = aggregate_result;
+
+  FilePath temp_file;
+  ASSERT_TRUE(CreateTemporaryFile(&temp_file));
+  ASSERT_TRUE(tracker.SaveSummaryAsJSON(temp_file, std::vector<std::string>()));
+
+  std::string content;
+  ASSERT_TRUE(ReadFileToString(temp_file, &content));
+
+  // There should a test result with name matching the SubTestResult.
+  EXPECT_THAT(content, HasSubstr(R"raw("classname.name__subname":[{)raw"));
+  // There should be a failed test result.
+  EXPECT_THAT(content, HasSubstr(R"raw("status":"FAILURE")raw"));
+  // result_parts should be a non-empty list with an object at the front.
+  EXPECT_THAT(content, HasSubstr(R"raw("result_parts":[{)raw"));
 }
 
 TEST(TestResultsTrackerTest, RepeatDisabledTests) {

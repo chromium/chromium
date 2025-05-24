@@ -2,9 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1613742542373525524">APPLICATION_NAME kan deze link niet verwerken.</translation>
+<translation id="3086502722585482455">Openen in</translation>
 <translation id="4655616150233109325">Openen in Chrome</translation>
+<translation id="5244924493358516288">(Max. limiet)</translation>
+<translation id="5596627076506792578">Meer opties</translation>
 <translation id="601731541915429022">Toevoegen aan leeslijst</translation>
+<translation id="6527303717912515753">Delen</translation>
 <translation id="6930009216791986919">Toevoegen aan bookmarks</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="712865579676939176">Zoeken in</translation>
+<translation id="7440631557836890806">Zoeken in incognito</translation>
+<translation id="7658239707568436148">Annuleren</translation>
 <translation id="8258999165172757081">Toegevoegd</translation>
+<translation id="850600235656508448">Openen in incognitomodus</translation>
 </translationbundle>

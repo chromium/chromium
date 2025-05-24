@@ -5,7 +5,9 @@
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <string>
@@ -16,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
@@ -44,18 +45,20 @@ TestInterestGroupPrivateAggregationManager::
 bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
-    PrivateAggregationCallerApi api_for_budgeting,
+    PrivateAggregationCallerApi caller_api,
     std::optional<std::string> context_id,
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
     size_t filtering_id_max_bytes,
+    std::optional<size_t> max_contributions,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);
-  EXPECT_EQ(PrivateAggregationCallerApi::kProtectedAudience, api_for_budgeting);
+  EXPECT_EQ(PrivateAggregationCallerApi::kProtectedAudience, caller_api);
   EXPECT_FALSE(context_id.has_value());
   EXPECT_FALSE(timeout.has_value());
   EXPECT_EQ(filtering_id_max_bytes, 1u);
+  EXPECT_FALSE(max_contributions.has_value());
 
   // TODO(alexmt): Change once selecting the origin is possible.
   EXPECT_FALSE(aggregation_coordinator_origin.has_value());
@@ -72,7 +75,7 @@ void TestInterestGroupPrivateAggregationManager::ClearBudgetData(
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter,
     base::OnceClosure done) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool TestInterestGroupPrivateAggregationManager::IsDebugModeAllowed(
@@ -86,15 +89,32 @@ void TestInterestGroupPrivateAggregationManager::ContributeToHistogram(
         contribution_ptrs) {
   const mojo::ReceiverId receiver_id = receiver_set_.current_receiver();
 
-  // Multiple calls to the same receiver are not supported.
-  EXPECT_FALSE(base::Contains(private_aggregation_contributions_, receiver_id));
-
   // Here, we 'unbatch' the contributions into separate requests. This allows
   // for simpler equality checks in testing.
   for (blink::mojom::AggregatableReportHistogramContributionPtr& contribution :
        contribution_ptrs) {
-    private_aggregation_contributions_[receiver_id].push_back(
-        std::move(contribution));
+    private_aggregation_requests_[receiver_id].push_back(
+        auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+            std::move(contribution),
+            /*debug_mode_details=*/nullptr,  // Will be filled in later.
+            /*error_event=*/std::nullopt));
+  }
+}
+
+void TestInterestGroupPrivateAggregationManager::ContributeToHistogramOnEvent(
+    blink::mojom::PrivateAggregationErrorEvent error_event,
+    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+        contribution_ptrs) {
+  const mojo::ReceiverId receiver_id = receiver_set_.current_receiver();
+
+  // As above, we 'unbatch' the contributions into separate requests.
+  for (blink::mojom::AggregatableReportHistogramContributionPtr& contribution :
+       contribution_ptrs) {
+    private_aggregation_requests_[receiver_id].push_back(
+        auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+            std::move(contribution),
+            /*debug_mode_details=*/nullptr,  // Will be filled in later.
+            error_event));
   }
 }
 
@@ -117,16 +137,16 @@ TestInterestGroupPrivateAggregationManager::
                              base::Unretained(this));
 }
 
-std::map<url::Origin, InterestGroupAuctionReporter::PrivateAggregationRequests>
+std::map<url::Origin,
+         InterestGroupAuctionReporter::FinalizedPrivateAggregationRequests>
 TestInterestGroupPrivateAggregationManager::TakePrivateAggregationRequests() {
   base::RunLoop().RunUntilIdle();
 
   std::map<url::Origin,
-           InterestGroupAuctionReporter::PrivateAggregationRequests>
+           InterestGroupAuctionReporter::FinalizedPrivateAggregationRequests>
       private_aggregation_requests_map;
 
-  for (auto& [receiver_id, contributions] :
-       private_aggregation_contributions_) {
+  for (auto& [receiver_id, requests] : private_aggregation_requests_) {
     EXPECT_TRUE(
         base::Contains(private_aggregation_worklet_origins_, receiver_id));
     if (!base::Contains(private_aggregation_debug_details_, receiver_id)) {
@@ -134,20 +154,19 @@ TestInterestGroupPrivateAggregationManager::TakePrivateAggregationRequests() {
           blink::mojom::DebugModeDetails::New();
     }
 
-    InterestGroupAuctionReporter::PrivateAggregationRequests& requests =
-        private_aggregation_requests_map
+    InterestGroupAuctionReporter::FinalizedPrivateAggregationRequests&
+        final_requests = private_aggregation_requests_map
             [private_aggregation_worklet_origins_[receiver_id]];
 
-    for (auto& contribution : contributions) {
-      requests.push_back(auction_worklet::mojom::PrivateAggregationRequest::New(
-          auction_worklet::mojom::AggregatableReportContribution::
-              NewHistogramContribution(std::move(contribution)),
-          blink::mojom::AggregationServiceMode::kDefault,
-          private_aggregation_debug_details_[receiver_id]->Clone()));
+    for (auto& request : requests) {
+      request->debug_mode_details =
+          private_aggregation_debug_details_[receiver_id]->Clone();
+
+      final_requests.push_back(std::move(request));
     }
   }
 
-  private_aggregation_contributions_.clear();
+  private_aggregation_requests_.clear();
   private_aggregation_debug_details_.clear();
   private_aggregation_worklet_origins_.clear();
 
@@ -166,7 +185,7 @@ void TestInterestGroupPrivateAggregationManager::LogPrivateAggregationRequests(
   logged_private_aggregation_requests_.reserve(
       logged_private_aggregation_requests_.size() +
       private_aggregation_requests.size());
-  base::ranges::for_each(
+  std::ranges::for_each(
       private_aggregation_requests,
       [this](
           const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
@@ -175,7 +194,7 @@ void TestInterestGroupPrivateAggregationManager::LogPrivateAggregationRequests(
 }
 
 void TestInterestGroupPrivateAggregationManager::Reset() {
-  private_aggregation_contributions_.clear();
+  private_aggregation_requests_.clear();
   private_aggregation_debug_details_.clear();
   logged_private_aggregation_requests_.clear();
   receiver_set_.Clear();

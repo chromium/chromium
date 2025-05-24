@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/constants.h"
 
-NSString* kAuthenticationErrorDomain = @"ChromeSigninError";
-
-NSString* kGoogleServiceAuthErrorState = @"GoogleServiceAuthErrorState";
+NSString* const kGoogleServiceAuthErrorState = @"GoogleServiceAuthErrorState";
+NSString* const kSystemIdentityManagerErrorDomain =
+    @"SystemIdentityManagerErrorDomain";
+NSString* const kAuthenticationErrorDomain = @"ChromeSigninError";

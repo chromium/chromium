@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/device_notifications/device_pinned_notification_unittest.h"
 #include "chrome/browser/hid/hid_connection_tracker.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
@@ -81,7 +83,7 @@ class HidPinnedNotificationTest : public DevicePinnedNotificationTestBase {
     // Sort the |origin_items| by origin. This is necessary because the origin
     // items for each profile in the pinned notification are created by
     // iterating through a structure of flat_map<url::Origin, ...>.
-    base::ranges::sort(sorted_origin_items);
+    std::ranges::sort(sorted_origin_items);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     std::vector<std::string> extension_names;
     for (const auto& [origin, connection_count, name] : sorted_origin_items) {

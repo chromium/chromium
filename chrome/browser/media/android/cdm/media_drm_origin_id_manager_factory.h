@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_ANDROID_CDM_MEDIA_DRM_ORIGIN_ID_MANAGER_FACTORY_H_
 
 #include "base/no_destructor.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class MediaDrmOriginIdManager;
@@ -30,7 +31,7 @@ class MediaDrmOriginIdManagerFactory : public ProfileKeyedServiceFactory {
   ~MediaDrmOriginIdManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
   bool ServiceIsCreatedWithBrowserContext() const override;

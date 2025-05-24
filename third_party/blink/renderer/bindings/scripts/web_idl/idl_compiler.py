@@ -184,18 +184,15 @@ class IdlCompiler(object):
                     arguments=[],
                     # The return type is a promise type resolving to an
                     # iterator result.
+                    # Note that we use 'any' instead of 'object' as the
+                    # promise type because the promise may resolve with
+                    # undefined, as that is our 'end of iteration' value.
                     # https://webidl.spec.whatwg.org/#iterator-result
                     return_type=self._idl_type_factory.promise_type(
-                        result_type=self._idl_type_factory.simple_type(
-                            'object'),
-                        extended_attributes=ExtendedAttributesMutable([
-                            ExtendedAttribute(
-                                key='IDLTypeImplementedAsV8Promise'),
-                        ])),
+                        result_type=self._idl_type_factory.simple_type('any')),
                     extended_attributes=ExtendedAttributesMutable([
                         ExtendedAttribute(key="CallWith",
                                           values="ScriptState"),
-                        ExtendedAttribute(key="RaisesException"),
                     ]),
                     component=component))
             # Define the 'return' property if and only if an asynchronous
@@ -219,18 +216,16 @@ class IdlCompiler(object):
                         ],
                         # The return type is a promise type resolving to an
                         # iterator result.
+                        # Note that we use 'any' instead of 'object' as the
+                        # promise type because the promise may resolve with
+                        # undefined, as that is our 'end of iteration' value.
                         # https://webidl.spec.whatwg.org/#iterator-result
                         return_type=self._idl_type_factory.promise_type(
                             result_type=self._idl_type_factory.simple_type(
-                                'object'),
-                            extended_attributes=ExtendedAttributesMutable([
-                                ExtendedAttribute(
-                                    key='IDLTypeImplementedAsV8Promise'),
-                            ])),
+                                'any')),
                         extended_attributes=ExtendedAttributesMutable([
                             ExtendedAttribute(key="CallWith",
                                               values="ScriptState"),
-                            ExtendedAttribute(key="RaisesException"),
                             ExtendedAttribute(key="ImplementedAs",
                                               values="returnForBinding"),
                         ]),
@@ -991,8 +986,6 @@ class IdlCompiler(object):
                         return idl_type
                 elif isinstance(idl_type, _ArrayLikeType):
                     idl_type = idl_type.element_type
-                elif isinstance(idl_type, PromiseType):
-                    idl_type = idl_type.result_type
                 elif isinstance(idl_type, NullableType):
                     idl_type = idl_type.inner_type
                 else:
@@ -1025,6 +1018,11 @@ class IdlCompiler(object):
                     visit_type(member_type, target_set)
             elif isinstance(idl_type, RecordType):
                 visit_type(idl_type.value_type, target_set)
+            elif isinstance(idl_type, PromiseType):
+                visit_type(idl_type.result_type, target_set)
+                # Because of how we convert Promise<> input parameters, we need
+                # to be able to covert the result type back to V8.
+                visit_type(idl_type.result_type, outputs)
             else:
                 assert isinstance(idl_type, SimpleType), type(idl_type)
 
@@ -1242,7 +1240,9 @@ class IdlCompiler(object):
             assert next_tag == new_ir.max_subclass_tag + 1
             return next_tag
 
+        # LINT.IfChange(ScriptWrappableStartTag)
         next_tag = 256
+        # LINT.ThenChange(//third_party/blink/renderer/platform/bindings/wrapper_type_info.h:ScriptWrappableStartTag)
 
         old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.ASYNC_ITERATOR,
                                             IRMap.IR.Kind.INTERFACE,

@@ -17,10 +17,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -75,31 +75,8 @@ class TabCaptureApiTest : public ExtensionApiTest {
   }
 };
 
-class TabCaptureApiPixelTest : public TabCaptureApiTest {
- public:
-  void SetUp() override {
-    // TODO(crbug.com/40534864): Update this to match WCVCD
-    // content_browsertests.
-    if (!IsTooIntensiveForThisPlatform())
-      EnablePixelOutput();
-    TabCaptureApiTest::SetUp();
-  }
-
- protected:
-  bool IsTooIntensiveForThisPlatform() const {
-    // Timeouts on most bots. crbug.com/864250, crbug.com/1040894
-    return true;
-  }
-};
-
 // Tests API behaviors, including info queries, and constraints violations.
-#if BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER)
-// TODO(crbug.com/341487291): Flaky on Mac and MSAN builds.
-#define MAYBE_ApiTests DISABLED_ApiTests
-#else
-#define MAYBE_ApiTests ApiTests
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_ApiTests) {
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
   AddExtensionToCommandLineAllowlist();
   ASSERT_TRUE(RunExtensionTest("tab_capture/api_tests",
                                {.extension_url = "api_tests.html"}))
@@ -107,16 +84,11 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_ApiTests) {
 }
 
 // Tests that tab capture video frames can be received in a VIDEO element.
-// Disabled due to flakes on multiple platforms; see https://crbug.com/1040894.
-// Disabled due to flakes on Windows GPU bots during teardown, and because
-// IsTooIntensiveForThisPlatform prevents this test from actually executing
-// anyways; see crbug.com/1241790.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest,
-                       DISABLED_EndToEndWithoutRemoting) {
-  if (IsTooIntensiveForThisPlatform()) {
-    LOG(WARNING) << "Skipping this CPU-intensive test on this platform/build.";
-    return;
-  }
+// TODO(crbug.com/216820236): This test is flaky.
+// Possible culprit:
+// The script uses a complicated animation loop to create frames, when simpler
+// CSS animations would be fine.
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_EndToEndWithoutRemoting) {
   AddExtensionToCommandLineAllowlist();
   // Note: The range of acceptable colors is quite large because there's no way
   // to know whether software compositing is being used for screen capture; and,
@@ -126,25 +98,6 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest,
   ASSERT_TRUE(RunExtensionTest(
       "tab_capture/end_to_end",
       {.extension_url = "end_to_end.html?method=local&colorDeviation=50"}))
-      << message_;
-}
-
-// Tests that video frames are captured, transported via WebRTC, and finally
-// received in a VIDEO element.  More allowance is provided for color deviation
-// because of the additional layers of video processing performed within
-// WebRTC.
-// Disabled due to flakes on multiple platforms; see https://crbug.com/1040894.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, DISABLED_EndToEndThroughWebRTC) {
-  if (IsTooIntensiveForThisPlatform()) {
-    LOG(WARNING) << "Skipping this CPU-intensive test on this platform/build.";
-    return;
-  }
-  AddExtensionToCommandLineAllowlist();
-  // See note in EndToEndWithoutRemoting test about why |colorDeviation| is
-  // being set so high.
-  ASSERT_TRUE(RunExtensionTest(
-      "tab_capture/end_to_end",
-      {.extension_url = "end_to_end.html?method=webrtc&colorDeviation=50"}))
       << message_;
 }
 
@@ -168,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
       web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(main_frame);
   listener.Reply(base::StringPrintf("web-contents-media-stream://%i:%i",
-                                    main_frame->GetProcess()->GetID(),
+                                    main_frame->GetProcess()->GetDeprecatedID(),
                                     main_frame->GetRoutingID()));
 
   ResultCatcher catcher;
@@ -178,8 +131,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
 
 // Make sure tabCapture.capture only works if the tab has been granted
 // permission via an extension icon click or the extension is allowlisted.
-// TODO(crbug.com/40827755): Flaky on all platforms
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ActiveTabPermission) {
   ExtensionTestMessageListener before_open_tab("ready1",
                                                ReplyBehavior::kWillReply);
   ExtensionTestMessageListener before_grant_permission(
@@ -209,8 +161,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
   const Extension* extension = ExtensionRegistry::Get(
       web_contents->GetBrowserContext())->enabled_extensions().GetByID(
           kExtensionId);
-  TabHelper::FromWebContents(web_contents)
-      ->active_tab_permission_granter()->GrantIfRequested(extension);
+  ActiveTabPermissionGranter::FromWebContents(web_contents)
+      ->GrantIfRequested(extension);
   before_grant_permission.Reply("");
 
   // Open a new tab and make sure capture is denied.
@@ -232,16 +184,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
 // events to the onStatusChange listener.  The test loads a page that toggles
 // fullscreen mode, using the Fullscreen Javascript API, in response to mouse
 // clicks.
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1392776): Flaky on Mac.
-#define MAYBE_FullscreenEvents DISABLED_FullscreenEvents
-#elif defined(MEMORY_SANITIZER)
-// TODO(crbug.com/341641151): Deflake test for MSAN.
-#define MAYBE_FullscreenEvents DISABLED_FullscreenEvents
-#else
-#define MAYBE_FullscreenEvents FullscreenEvents
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_FullscreenEvents) {
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
   AddExtensionToCommandLineAllowlist();
 
   ExtensionTestMessageListener capture_started("tab_capture_started");
@@ -285,8 +228,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GrantForChromePages) {
   const Extension* extension = ExtensionRegistry::Get(
       web_contents->GetBrowserContext())->enabled_extensions().GetByID(
           kExtensionId);
-  TabHelper::FromWebContents(web_contents)
-      ->active_tab_permission_granter()->GrantIfRequested(extension);
+  ActiveTabPermissionGranter::FromWebContents(web_contents)
+      ->GrantIfRequested(extension);
   before_open_tab.Reply("");
 
   ResultCatcher catcher;
@@ -304,29 +247,15 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, CaptureInSplitIncognitoMode) {
       << message_;
 }
 
-// Tests that valid constraints allow tab capture to start, while invalid ones
-// do not.
-#if BUILDFLAG(IS_LINUX) || defined(MEMORY_SANITIZER)
-// TODO(crbug.com/343116848): Re-enable this test
-#define MAYBE_Constraints DISABLED_Constraints
-#else
-#define MAYBE_Constraints Constraints
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_Constraints) {
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, Constraints) {
   AddExtensionToCommandLineAllowlist();
   ASSERT_TRUE(RunExtensionTest("tab_capture/constraints",
                                {.extension_url = "constraints.html"}))
       << message_;
 }
 
-#if defined(MEMORY_SANITIZER)
-// TODO(crbug.com/341641151): Deflake test for MSAN.
-#define MAYBE_TabIndicator DISABLED_TabIndicator
-#else
-#define MAYBE_TabIndicator TabIndicator
-#endif  // BUILDFLAG(IS_MAC)
 // Tests that the tab indicator (in the tab strip) is shown during tab capture.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_TabIndicator) {
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_THAT(GetTabAlertStatesForContents(contents), ::testing::IsEmpty());
@@ -369,11 +298,11 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_TabIndicator) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   IndicatorChangeObserver observer(browser());
   while (!base::Contains(GetTabAlertStatesForContents(contents),
-                         TabAlertState::TAB_CAPTURING)) {
+                         tabs::TabAlert::TAB_CAPTURING)) {
     if (base::TimeTicks::Now() - start_time >
             TestTimeouts::action_max_timeout()) {
       EXPECT_THAT(GetTabAlertStatesForContents(contents),
-                  ::testing::Contains(TabAlertState::TAB_CAPTURING));
+                  ::testing::Contains(tabs::TabAlert::TAB_CAPTURING));
       return;
     }
     observer.WaitForTabChange();
@@ -410,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MultipleExtensions) {
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   ASSERT_TRUE(web_contents) << "Failed to open new tab";
   auto* perm_granter =
-      TabHelper::FromWebContents(web_contents)->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(web_contents);
   // It doesn't seem to work to grant permissions for both extensions at the
   // same time. We start with extension_a.
   perm_granter->GrantIfRequested(extension_a);

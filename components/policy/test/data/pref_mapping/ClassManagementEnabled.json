@@ -1,0 +1,16 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.class_management_tools.availability_setting",
+      "default_value": "disabled",
+      "values_to_test": [
+        "disabled",
+        "students",
+        "teachers"
+      ]
+    }
+  }
+]

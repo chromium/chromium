@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/test/embedded_test_server/default_handlers.h"
 
 #include <ctime>
@@ -13,6 +18,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -191,8 +197,9 @@ std::unique_ptr<HttpResponse> HandleEchoTitle(const HttpRequest& request) {
 // /echoall?QUERY
 // Responds with the list of QUERY and the request headers.
 //
-// Alternative form:
-// /echoall/nocache?QUERY prevents caching of the response.
+// Alternative forms:
+// - /echoall/nocache?QUERY prevents caching of the response.
+// - /echoall/cache?QUERY caches the response using a max-age.
 std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
   auto http_response = std::make_unique<BasicHttpResponse>();
 
@@ -224,6 +231,8 @@ std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
   if (request.GetURL().path_piece().ends_with("/nocache")) {
     http_response->AddCustomHeader("Cache-Control",
                                    "no-cache, no-store, must-revalidate");
+  } else if (request.GetURL().path_piece().ends_with("/cache")) {
+    http_response->AddCustomHeader("Cache-Control", "max-age=3600");
   }
 
   return http_response;
@@ -320,8 +329,9 @@ std::unique_ptr<HttpResponse> HandleExpectAndSetCookie(
 
 // An internal utility to extract HTTP Headers from a URL in the format of
 // "/url&KEY1: VALUE&KEY2: VALUE2". Returns a header key to header value map.
-std::map<std::string, std::string> ExtractHeadersFromQuery(const GURL& url) {
-  std::map<std::string, std::string> key_to_value;
+std::multimap<std::string, std::string> ExtractHeadersFromQuery(
+    const GURL& url) {
+  std::multimap<std::string, std::string> key_to_value;
   if (url.has_query()) {
     RequestQuery headers = ParseQuery(url);
     for (const auto& header : headers) {
@@ -842,21 +852,10 @@ std::unique_ptr<HttpResponse> HandleExabyteResponse(
 // enough memory to contain the body, but DCHECKs if that fails.
 std::unique_ptr<HttpResponse> HandleGzipBody(const HttpRequest& request) {
   std::string uncompressed_body = request.GetURL().query();
-  // Attempt to pick size that's large enough even in the worst case (deflate
-  // block headers should be shorter than 512 bytes, and deflating should never
-  // double size of data, modulo headers).
-  // TODO(mmenke): This is rather awkward. Worth improving CompressGzip?
-  std::vector<char> compressed_body(uncompressed_body.size() * 2 + 512);
-  size_t compressed_size = compressed_body.size();
-  CompressGzip(uncompressed_body.c_str(), uncompressed_body.size(),
-               compressed_body.data(), &compressed_size,
-               true /* gzip_framing */);
-  // CompressGzip should DCHECK itself if this fails, anyways.
-  DCHECK_GE(compressed_body.size(), compressed_size);
+  auto compressed_body = CompressGzip(uncompressed_body);
 
   auto http_response = std::make_unique<BasicHttpResponse>();
-  http_response->set_content(
-      std::string(compressed_body.data(), compressed_size));
+  http_response->set_content(base::as_string_view(compressed_body));
   http_response->AddCustomHeader("Content-Encoding", "gzip");
   http_response->AddCustomHeader("Cache-Control", "max-age=60");
   return http_response;
@@ -988,8 +987,7 @@ std::unique_ptr<HttpResponse> HandleChunked(const HttpRequest& request) {
     } else if (query.GetKey() == "chunksNumber") {
       num_chunks = value;
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << query.GetKey() << "Is not a valid argument of /chunked";
+      NOTREACHED() << query.GetKey() << "Is not a valid argument of /chunked";
     }
   }
 

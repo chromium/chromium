@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Parsing text-shrink with invalid values</title>
+<link rel="help" href="https://github.com/explainers-by-googlers/css-fit-text/blob/main/README.md">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<body>
+<script>
+test_invalid_value('text-shrink', 'lines');
+
+test_invalid_value('text-shrink', 'per-line stretch');
+test_invalid_value('text-shrink', 'consistent 32px scale');
+test_invalid_value('text-shrink', 'consistent 100%');
+</script>
+</body>

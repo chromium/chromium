@@ -38,8 +38,6 @@ class LazyContextTaskQueue {
     const int64_t service_worker_version_id;
     const int worker_thread_id;
     const GURL url;
-    // TODO(dbertoni): This needs to be initialized for the Service Worker
-    // version of the constructor.
     // `browser_context` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data).
     RAW_PTR_EXCLUSION content::BrowserContext* const browser_context = nullptr;

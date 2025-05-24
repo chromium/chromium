@@ -1,0 +1,10 @@
+Name: writeable
+URL: https://crates.io/crates/writeable
+Version: 0.6.1
+Revision: e9ab7308efb2fdc0fca96f71106c68f9f5840056
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/writeable-v0_6/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: A more efficient alternative to fmt::Display

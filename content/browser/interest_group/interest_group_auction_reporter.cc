@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -43,10 +44,13 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
+#include "content/services/auction_worklet/public/cpp/private_model_training_reporting.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -66,16 +70,6 @@ namespace {
 // URLs. It's up to callers to call ReportBadMessage() on invalid URLs.
 bool IsEventLevelReportingUrlValid(const GURL& url) {
   return url.is_valid() && url.SchemeIs(url::kHttpsScheme);
-}
-
-const blink::InterestGroup::Ad& ChosenAd(
-    const SingleStorageInterestGroup& storage_interest_group,
-    const GURL& winning_ad_url) {
-  auto chosen_ad = base::ranges::find(
-      *storage_interest_group->interest_group.ads, winning_ad_url,
-      [](const blink::InterestGroup::Ad& ad) { return ad.render_url(); });
-  CHECK(chosen_ad != storage_interest_group->interest_group.ads->end());
-  return *chosen_ad;
 }
 
 bool IsKAnonForReporting(
@@ -178,18 +172,32 @@ bool ValidateReportingPrivateAggregationRequests(
   return true;
 }
 
-}  // namespace
+// If any part of the private model training request data is not valid, calls
+// ReportBadMessage and returns false.
+bool ValidatePrivateModelTrainingRequestData(
+    const auction_worklet::mojom::PrivateModelTrainingRequestDataPtr&
+        pmt_request_data) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgePrivateModelTraining)) {
+    return false;
+  }
+  if (pmt_request_data->payload_length > auction_worklet::kMaxPayloadLength) {
+    mojo::ReportBadMessage(
+        "queueReportAggregateWin(): modelingSignalsConfig.payloadLength "
+        "exceeds maximum length.");
+    return false;
+  }
+  if (pmt_request_data->payload.size() > pmt_request_data->payload_length) {
+    mojo::ReportBadMessage(
+        "sendEncryptedTo(): payload exceeds "
+        "modelingSignalsConfig.payloadLength.");
+    return false;
+  }
 
-BASE_FEATURE(kFledgeRounding,
-             "FledgeRounding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// For now default bid and score to full resolution.
-const base::FeatureParam<int> kFledgeBidReportingBits{
-    &kFledgeRounding, "fledge_bid_reporting_bits", 8};
-const base::FeatureParam<int> kFledgeScoreReportingBits{
-    &kFledgeRounding, "fledge_score_reporting_bits", 8};
-const base::FeatureParam<int> kFledgeAdCostReportingBits{
-    &kFledgeRounding, "fledge_ad_cost_reporting_bits", 8};
+  return true;
+}
+
+}  // namespace
 
 InterestGroupAuctionReporter::SellerWinningBidInfo::SellerWinningBidInfo() =
     default;
@@ -203,7 +211,7 @@ InterestGroupAuctionReporter::SellerWinningBidInfo::operator=(
 
 InterestGroupAuctionReporter::WinningBidInfo::WinningBidInfo(
     const SingleStorageInterestGroup& storage_interest_group)
-    : storage_interest_group(std::move(storage_interest_group)) {}
+    : storage_interest_group(storage_interest_group) {}
 InterestGroupAuctionReporter::WinningBidInfo::WinningBidInfo(WinningBidInfo&&) =
     default;
 InterestGroupAuctionReporter::WinningBidInfo::~WinningBidInfo() = default;
@@ -222,8 +230,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     const url::Origin& frame_origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    auction_worklet::mojom::KAnonymityBidMode kanon_mode,
-    bool bid_is_kanon,
+    auction_worklet::mojom::KAnonymityStatus kanon_status,
     WinningBidInfo winning_bid_info,
     SellerWinningBidInfo top_level_seller_winning_bid_info,
     std::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
@@ -231,9 +238,9 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     std::vector<GURL> debug_win_report_urls,
     std::vector<GURL> debug_loss_report_urls,
     base::flat_set<std::string> k_anon_keys_to_join,
-    std::map<PrivateAggregationKey, PrivateAggregationRequests>
+    std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
         private_aggregation_requests_reserved,
-    std::map<std::string, PrivateAggregationRequests>
+    std::map<std::string, FinalizedPrivateAggregationRequests>
         private_aggregation_requests_non_reserved,
     PrivateAggregationAllParticipantsData all_participants_data,
     std::map<url::Origin, RealTimeReportingContributions>
@@ -250,8 +257,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
       frame_origin_(frame_origin),
       client_security_state_(std::move(client_security_state)),
       url_loader_factory_(std::move(url_loader_factory)),
-      kanon_mode_(kanon_mode),
-      bid_is_kanon_(bid_is_kanon),
+      kanon_status_(kanon_status),
       winning_bid_info_(std::move(winning_bid_info)),
       top_level_seller_winning_bid_info_(
           std::move(top_level_seller_winning_bid_info)),
@@ -388,11 +394,12 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
     PrivateAggregationManager* private_aggregation_manager,
     const url::Origin& main_frame_origin,
     std::map<PrivateAggregationKey,
-             std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
+             std::vector<
+                 auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>>
         private_aggregation_requests) {
   // Empty vectors should've been filtered out.
-  DCHECK(base::ranges::none_of(private_aggregation_requests,
-                               [](auto& it) { return it.second.empty(); }));
+  DCHECK(std::ranges::none_of(private_aggregation_requests,
+                              [](auto& it) { return it.second.empty(); }));
 
   if (private_aggregation_requests.empty() || !private_aggregation_manager) {
     return;
@@ -408,7 +415,7 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
 
 /* static */
 double InterestGroupAuctionReporter::RoundBidStochastically(double bid) {
-  return RoundStochasticallyToKBits(bid, kFledgeBidReportingBits.Get());
+  return RoundStochasticallyToKBits(bid, kFledgeBidReportingBits);
 }
 
 /* static */
@@ -498,6 +505,10 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
       devtools_auction_id_, *seller_info->auction_config->decision_logic_url,
       seller_info->auction_config->trusted_scoring_signals_url,
       seller_info->auction_config->seller_experiment_group_id,
+      seller_info->auction_config->non_shared_params
+          .trusted_scoring_signals_coordinator,
+      seller_info->auction_config->send_creative_scanning_metadata,
+      /*process_assigned_callback=*/base::OnceClosure(),
       base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletReceived,
                      base::Unretained(this), base::Unretained(seller_info),
                      top_seller_signals),
@@ -590,13 +601,14 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
   std::optional<std::string>
       browser_signal_selected_buyer_and_seller_reporting_id;
 
-  auto chosen_ad = ChosenAd(winning_bid_info_.storage_interest_group,
-                            winning_bid_info_.render_url);
-  if (IsKAnonForReporting(
-          winning_bid_info_.storage_interest_group, chosen_ad,
+  // For B&A server components, we already checked k-anonymity on the server.
+  if ((top_level_with_components &&
+       component_seller_winning_bid_info_->saved_response.has_value()) ||
+      IsKAnonForReporting(
+          winning_bid_info_.storage_interest_group, *winning_bid_info_.bid_ad,
           winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     browser_signal_buyer_and_seller_reporting_id =
-        chosen_ad.buyer_and_seller_reporting_id;
+        winning_bid_info_.bid_ad->buyer_and_seller_reporting_id;
     browser_signal_selected_buyer_and_seller_reporting_id =
         winning_bid_info_.selected_buyer_and_seller_reporting_id;
   }
@@ -620,10 +632,9 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
       /*browser_signal_selected_buyer_and_seller_reporting_id=*/
       browser_signal_selected_buyer_and_seller_reporting_id,
       winning_bid_info_.render_url, seller_info->rounded_bid, bid_currency,
-      RoundStochasticallyToKBits(seller_info->score,
-                                 kFledgeScoreReportingBits.Get()),
+      RoundStochasticallyToKBits(seller_info->score, kFledgeScoreReportingBits),
       RoundStochasticallyToKBits(highest_scoring_other_bid,
-                                 kFledgeBidReportingBits.Get()),
+                                 kFledgeBidReportingBits),
       highest_scoring_other_bid_currency,
       std::move(browser_signals_component_auction_report_result_params),
       seller_info->scoring_signals_data_version, seller_info->trace_id,
@@ -803,6 +814,7 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
       winning_bid_info_.provided_as_additional_bid, experiment_group_id,
       trusted_bidder_signals_slot_size_param,
       interest_group.trusted_bidding_signals_coordinator,
+      /*contextual_data=*/std::nullopt,
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletReceived,
                      base::Unretained(this), signals_for_winner),
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletFatalError,
@@ -830,9 +842,6 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   std::optional<std::string> buyer_and_seller_reporting_id;
   std::optional<std::string> selected_buyer_and_seller_reporting_id;
 
-  const blink::InterestGroup::Ad& chosen_ad = ChosenAd(
-      winning_bid_info_.storage_interest_group, winning_bid_info_.render_url);
-
   // If k-anonymity enforcement is on we can only reveal the winning reporting
   // id in reportWin if the winning ad's reporting_ads_kanon entry is
   // k-anonymous.
@@ -841,14 +850,14 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   // information anyway.
   if (winning_bid_info_.provided_as_additional_bid ||
       IsKAnonForReporting(
-          winning_bid_info_.storage_interest_group, chosen_ad,
+          winning_bid_info_.storage_interest_group, *winning_bid_info_.bid_ad,
           winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     SetReportWinReportingIds(
         winning_bid_info_.storage_interest_group->interest_group.name,
-        winning_bid_info_.selected_buyer_and_seller_reporting_id, chosen_ad,
-        reporting_id_field, interest_group_name_reporting_id,
-        buyer_reporting_id, buyer_and_seller_reporting_id,
-        selected_buyer_and_seller_reporting_id);
+        winning_bid_info_.selected_buyer_and_seller_reporting_id,
+        *winning_bid_info_.bid_ad, reporting_id_field,
+        interest_group_name_reporting_id, buyer_reporting_id,
+        buyer_and_seller_reporting_id, selected_buyer_and_seller_reporting_id);
   }
   base::UmaHistogramEnumeration(
       top_level_seller_winning_bid_info_.saved_response.has_value()
@@ -862,7 +871,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   std::optional<double> rounded_ad_cost;
   if (winning_bid_info_.ad_cost.has_value()) {
     rounded_ad_cost = RoundStochasticallyToKBits(
-        winning_bid_info_.ad_cost.value(), kFledgeAdCostReportingBits.Get());
+        winning_bid_info_.ad_cost.value(), kFledgeAdCostReportingBits);
   }
   std::optional<uint16_t> noised_and_masked_modeling_signals;
   if (winning_bid_info_.modeling_signals) {
@@ -907,12 +916,11 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           seller_info.subresource_url_builder.get()),
       InterestGroupAuction::GetDirectFromSellerAuctionSignalsHeaderAdSlot(
           *seller_info.direct_from_seller_signals_header_ad_slot),
-      signals_for_winner, kanon_mode_, bid_is_kanon_,
-      winning_bid_info_.render_url, seller_info.rounded_bid,
-      winning_bid_info_.bid_currency,
+      signals_for_winner, kanon_status_, winning_bid_info_.render_url,
+      seller_info.rounded_bid, winning_bid_info_.bid_currency,
       /*browser_signal_highest_scoring_other_bid=*/
       RoundStochasticallyToKBits(highest_scoring_other_bid,
-                                 kFledgeBidReportingBits.Get()),
+                                 kFledgeBidReportingBits),
       highest_scoring_other_bid_currency, made_highest_scoring_other_bid,
       rounded_ad_cost, noised_and_masked_modeling_signals,
       NoiseAndBucketJoinCount(
@@ -931,6 +939,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           : std::optional<url::Origin>(),
       auction_config->non_shared_params.reporting_timeout,
       winning_bid_info_.bidding_signals_data_version,
+      /*aggregate_win_signals=*/winning_bid_info_.aggregate_win_signals,
       top_level_seller_winning_bid_info_.trace_id,
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderReportWinComplete,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -949,6 +958,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletFatalError(
       /*bidder_ad_beacon_map=*/{},
       /*bidder_ad_macro_map=*/{},
       /*pa_requests=*/{},
+      /*pmt_request_data=*/nullptr,
       /*timing_metrics=*/auction_worklet::mojom::BidderTimingMetrics::New(),
       errors);
 }
@@ -960,6 +970,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
     const base::flat_map<std::string, std::string>& bidder_ad_macro_map,
     PrivateAggregationRequests pa_requests,
+    auction_worklet::mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
     auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
     const std::vector<std::string>& errors) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_report_win",
@@ -994,6 +1005,12 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
                                            : base::TimeDelta();
   participant_data.percent_scripts_timeout =
       timing_metrics->script_timed_out ? 100 : 0;
+
+  if (!pmt_request_data.is_null() &&
+      ValidatePrivateModelTrainingRequestData(pmt_request_data)) {
+    // TODO(ybourouphael): Add browser side implementation of Private Model
+    // Training API.
+  }
 
   if (!ValidateReportingPrivateAggregationRequests(pa_requests)) {
     pa_requests.clear();
@@ -1223,9 +1240,7 @@ void InterestGroupAuctionReporter::MaybeSendPrivateAggregationReports() {
   private_aggregation_requests_reserved_.clear();
 
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
-      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get() &&
-      blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled
-          .Get()) {
+      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get()) {
     fenced_frame_reporter_->OnForEventPrivateAggregationRequestsReceived(
         std::move(private_aggregation_requests_non_reserved_));
   }
@@ -1241,8 +1256,7 @@ bool InterestGroupAuctionReporter::CheckReportUrl(const GURL& url) {
            ->browser()
            ->IsPrivacySandboxReportingDestinationAttested(
                browser_context_, url::Origin::Create(url),
-               PrivacySandboxInvokingAPI::kProtectedAudience,
-               /*post_impression_reporting=*/false)) {
+               PrivacySandboxInvokingAPI::kProtectedAudience)) {
     errors_.push_back(base::StringPrintf(
         "The reporting destination %s is not attested for Protected Audience.",
         url.spec().c_str()));

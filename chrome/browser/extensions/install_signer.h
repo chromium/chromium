@@ -13,7 +13,10 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace network {
 class SimpleURLLoader;
@@ -62,7 +65,7 @@ class InstallSigner {
       base::OnceCallback<void(std::unique_ptr<InstallSignature>)>;
 
   // IMPORTANT NOTE: It is possible that only some, but not all, of the entries
-  // in |ids| will be successfully signed by the backend. Callers should always
+  // in `ids` will be successfully signed by the backend. Callers should always
   // check the set of ids in the InstallSignature passed to their callback, as
   // it may contain only a subset of the ids they passed in.
   InstallSigner(
@@ -88,12 +91,11 @@ class InstallSigner {
   static bool VerifySignature(const InstallSignature& signature);
 
  private:
-
-  // A helper function that calls |callback_| with an indication that an error
+  // A helper function that calls `callback_` with an indication that an error
   // happened (currently done by passing an empty pointer).
   void ReportErrorViaCallback();
 
-  // Called when |simple_loader_| has returned a result to parse the response,
+  // Called when `simple_loader_` has returned a result to parse the response,
   // and then call HandleSignatureResult with structured data.
   void ParseFetchResponse(std::unique_ptr<std::string> response_body);
 

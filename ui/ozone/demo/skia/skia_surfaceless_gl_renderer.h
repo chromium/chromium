@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_DEMO_SKIA_SKIA_SURFACELESS_GL_RENDERER_H_
 #define UI_OZONE_DEMO_SKIA_SKIA_SURFACELESS_GL_RENDERER_H_
 
+#include <array>
 #include <memory>
 
 #include "ui/gfx/geometry/rect.h"
@@ -40,9 +41,9 @@ class SurfacelessSkiaGlRenderer : public SkiaGlRenderer {
 
   class BufferWrapper;
 
-  std::unique_ptr<BufferWrapper> buffers_[2];
+  std::array<std::unique_ptr<BufferWrapper>, 2> buffers_;
 
-  std::unique_ptr<BufferWrapper> overlay_buffer_[2];
+  std::array<std::unique_ptr<BufferWrapper>, 2> overlay_buffer_;
   bool disable_primary_plane_ = false;
   gfx::Rect primary_plane_rect_;
 

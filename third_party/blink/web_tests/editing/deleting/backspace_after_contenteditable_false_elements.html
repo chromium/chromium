@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<style>
+    .ph {
+        user-select: none;
+    }
+</style>
+<script>
+test(() => assert_selection(
+    [
+        '<div>',
+            '<div contenteditable="true">Hello',
+            '<span class="ph" contenteditable="false">ph1</span>',
+            '<span class="ph" contenteditable="false">ph2</span>|',
+            '</div>',
+        '</div>',
+    ].join(''),
+    'delete',
+    [
+        '<div>',
+            '<div contenteditable="true">Hello',
+            '<span class="ph" contenteditable="false">ph1</span>|',
+            '</div>',
+        '</div>',
+    ].join('')),
+    'Backspace does not clear a contenteditable element when pressed after multiple contenteditable=false elements');
+
+test(() => assert_selection(
+    [
+        '<div>',
+            '<div contenteditable="true">Hello|',
+            '<span class="ph" contenteditable="false">ph1</span>',
+            '<span class="ph" contenteditable="false">ph2</span>',
+            '</div>',
+        '</div>',
+    ].join(''),
+    'forwardDelete',
+    [
+        '<div>',
+            '<div contenteditable="true">Hello|',
+            '<span class="ph" contenteditable="false">ph2</span>',
+            '</div>',
+        '</div>',
+    ].join('')),
+    'Delete does not clear a contenteditable element when pressed before multiple contenteditable=false elements');
+</script>

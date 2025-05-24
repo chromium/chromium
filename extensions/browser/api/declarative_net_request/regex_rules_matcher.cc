@@ -4,13 +4,13 @@
 
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/url_pattern_index/url_pattern_index.h"
@@ -74,7 +74,7 @@ bool ActionTypeAllowsMultipleActions(flat::ActionType action_type) {
     case flat::ActionType_modify_headers:
       return true;
     case flat::ActionType_count:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return true;
 }
@@ -158,7 +158,7 @@ std::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
     RulesetMatchingStage stage) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetMatcherForStage(stage).GetPotentialMatches(params);
-  auto info = base::ranges::find_if(
+  auto info = std::ranges::find_if(
       potential_matches, [&params](const RegexRuleInfo& info) {
         return info.regex_rule->action_type() ==
                    flat::ActionType_allow_all_requests &&
@@ -176,7 +176,7 @@ std::optional<RequestAction> RegexRulesMatcher::GetActionIgnoringAncestors(
     RulesetMatchingStage stage) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetMatcherForStage(stage).GetPotentialMatches(params);
-  auto info = base::ranges::find_if(
+  auto info = std::ranges::find_if(
       potential_matches, [&params](const RegexRuleInfo& info) {
         return !ActionTypeAllowsMultipleActions(
                    info.regex_rule->action_type()) &&
@@ -311,8 +311,8 @@ void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
 
   // FilteredRE2 guarantees that the returned set of candidate strings is
   // lower-cased.
-  DCHECK(base::ranges::all_of(strings_to_match, [](const std::string& s) {
-    return base::ranges::all_of(
+  DCHECK(std::ranges::all_of(strings_to_match, [](const std::string& s) {
+    return std::ranges::all_of(
         s, [](const char c) { return !base::IsAsciiUpper(c); });
   }));
 
@@ -356,8 +356,7 @@ std::optional<RequestAction> RegexRulesMatcher::CreateActionFromInfo(
       return CreateAllowAllRequestsAction(params, rule);
     case flat::ActionType_modify_headers:
     case flat::ActionType_count:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return std::nullopt;
@@ -410,8 +409,7 @@ const RegexRulesMatcher::MatchHelper& RegexRulesMatcher::GetMatcherForStage(
       return headers_received_matcher_;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return before_request_matcher_;
+  NOTREACHED();
 }
 
 }  // namespace extensions::declarative_net_request

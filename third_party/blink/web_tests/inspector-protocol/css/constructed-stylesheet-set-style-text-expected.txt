@@ -1,0 +1,6 @@
+Tests that constructed stylesheets can be edited
+==== Initial style sheet text ====
+#test { left: 100px; &{} }
+==== Style sheet text ====
+#test { right: 100px; &{} }
+

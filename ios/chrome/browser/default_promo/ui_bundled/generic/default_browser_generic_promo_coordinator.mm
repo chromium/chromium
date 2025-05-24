@@ -4,23 +4,24 @@
 
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/segmentation_platform/public/segmentation_platform_service.h"
+#import "ios/chrome/browser/default_browser/model/promo_statistics.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_commands.h"
-#import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;
@@ -32,17 +33,13 @@ using base::UserMetricsAction;
 
 @implementation DefaultBrowserGenericPromoCoordinator {
   // Main view controller for this coordinator.
-  DefaultBrowserGenericPromoViewController* _viewController;
+  DefaultBrowserInstructionsViewController* _viewController;
   // Default browser promo command handler.
   id<DefaultBrowserGenericPromoCommands> _defaultBrowserPromoHandler;
   // Feature engagement tracker reference.
-  feature_engagement::Tracker* _tracker;
+  raw_ptr<feature_engagement::Tracker> _tracker;
   // Contains all the stats that needs to be recorded for all promo actions.
   PromoStatistics* _promoStats;
-  // TODO(crbug.com/357836827): Transparent view to block user interaction
-  // while waiting for classification results. This ivar is a temporary
-  // solution.
-  UIView* _transparentView;
 }
 
 #pragma mark - ChromeCoordinator
@@ -51,38 +48,10 @@ using base::UserMetricsAction;
   [super start];
   [self recordVideoDefaultBrowserPromoShown];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  _tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  _mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
 
-  if (IsSegmentedDefaultBrowserPromoEnabled()) {
-    segmentation_platform::SegmentationPlatformService* segmentationService =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(browserState);
-    segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(browserState);
-
-    _mediator = [[DefaultBrowserGenericPromoMediator alloc]
-           initWithSegmentationService:segmentationService
-        deviceSwitcherResultDispatcher:dispatcher];
-
-    // Present a transparent view to block UI interaction until promo presents.
-    _transparentView =
-        [[UIView alloc] initWithFrame:self.baseViewController.view.bounds];
-    _transparentView.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-    [self.baseViewController.view addSubview:_transparentView];
-
-    __weak __typeof(self) weakSelf = self;
-    [_mediator retrieveUserSegmentWithCompletion:^{
-      [weakSelf didRetrieveUserSegment];
-    }];
-  } else {
-    _mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
-    _viewController = [[DefaultBrowserGenericPromoViewController alloc] init];
-    _mediator.consumer = _viewController;
-    [self showPromo];
-  }
+  [self showPromo];
 }
 
 - (void)stop {
@@ -98,11 +67,8 @@ using base::UserMetricsAction;
 
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
-  _mediator.consumer = nil;
-  [_mediator disconnect];
   _mediator = nil;
   _promoStats = nil;
-  _transparentView = nil;
 
   [super stop];
 }
@@ -118,11 +84,11 @@ using base::UserMetricsAction;
       IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
   RecordAction(UserMetricsAction(
       "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
-  [_handler hidePromo];
   if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
     RecordPromoStatsToUMAForAction(_promoStats,
                                    IOSDefaultBrowserPromoAction::kActionButton);
   }
+  [_handler hidePromo];
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -132,11 +98,11 @@ using base::UserMetricsAction;
       IOSDefaultBrowserVideoPromoAction::kSecondaryActionTapped);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-  [_handler hidePromo];
   if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
     RecordPromoStatsToUMAForAction(_promoStats,
                                    IOSDefaultBrowserPromoAction::kCancel);
   }
+  [_handler hidePromo];
 }
 
 - (void)confirmationAlertTertiaryAction {
@@ -152,7 +118,7 @@ using base::UserMetricsAction;
         feature_engagement::events::kDefaultBrowserPromoRemindMeLater);
   }
   PromosManager* promosManager =
-      PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
+      PromosManagerFactory::GetForProfile(self.profile);
   promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::DefaultBrowserRemindMeLater);
 
@@ -168,11 +134,11 @@ using base::UserMetricsAction;
                                 IOSDefaultBrowserVideoPromoAction::kSwipeDown);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-  [_handler hidePromo];
   if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
     RecordPromoStatsToUMAForAction(_promoStats,
                                    IOSDefaultBrowserPromoAction::kDismiss);
   }
+  [_handler hidePromo];
 }
 
 #pragma mark - Public
@@ -186,25 +152,21 @@ using base::UserMetricsAction;
 
 #pragma mark - Private
 
-- (void)didRetrieveUserSegment {
-  [_transparentView removeFromSuperview];
-  _transparentView = nil;
-  _viewController = [[DefaultBrowserGenericPromoViewController alloc] init];
-  _mediator.consumer = _viewController;
-  [self showPromo];
-}
-
 - (void)showPromo {
-  CHECK(_viewController);
-  CHECK(!_transparentView);
-  RecordAction(
-      UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Impression"));
-  _viewController.actionHandler = self;
   BOOL hasRemindMeLater =
       base::FeatureList::IsEnabled(
           feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
       !_promoWasFromRemindMeLater;
-  _viewController.hasRemindMeLater = hasRemindMeLater;
+  _viewController = [[DefaultBrowserInstructionsViewController alloc]
+      initWithDismissButton:YES
+           hasRemindMeLater:hasRemindMeLater
+                   hasSteps:NO
+              actionHandler:self
+                  titleText:nil];
+
+  CHECK(_viewController);
+  RecordAction(
+      UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Impression"));
   _viewController.presentationController.delegate = self;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -220,7 +182,11 @@ using base::UserMetricsAction;
     // `CalculatePromoStatistics` should be called before
     // `LogFullscreenDefaultBrowserPromoDisplayed` which will modify storage
     // data.
-    _promoStats = CalculatePromoStatistics();
+    // Might already be set for testing.
+    if (!_promoStats) {
+      _promoStats = CalculatePromoStatistics();
+    }
+
     RecordPromoStatsToUMAForAppear(_promoStats);
   }
 
@@ -228,6 +194,10 @@ using base::UserMetricsAction;
   RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
   base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
                                 DefaultPromoTypeForUMA::kGeneral);
+}
+
+- (void)setPromoStatisticsForTesting:(PromoStatistics*)testPromoStats {
+  _promoStats = testPromoStats;
 }
 
 @end

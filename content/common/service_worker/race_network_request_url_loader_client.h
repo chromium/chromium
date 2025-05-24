@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/common/service_worker/race_network_request_read_buffer_manager.h"
+#include "content/common/service_worker/race_network_request_simple_buffer_manager.h"
 #include "content/common/service_worker/race_network_request_write_buffer_manager.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -214,12 +215,14 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // Record the time between the response received time and the fetch handler
   // end time iff both events are already reached.
   void MaybeRecordResponseReceivedToFetchHandlerEndTiming();
-  void RecordMojoResultForDataTransfer(MojoResult result,
-                                       const std::string& suffix);
-  void RecordMojoResultForWrite(MojoResult result);
 
   void SetFetchHandlerEndTiming(base::TimeTicks fetch_handler_end_time,
                                 bool is_fallback);
+
+  void CloneResponse();
+  void CloneResponseForFetchHandler();
+  void OnCloneCompleted();
+  void OnCloneCompletedForFetchHandler();
 
   State state_ = State::kWaitForBody;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
@@ -231,6 +234,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   std::optional<mojo_base::BigBuffer> cached_metadata_;
 
   std::optional<RaceNetworkRequestReadBufferManager> read_buffer_manager_;
+  std::optional<RaceNetworkRequestSimpleBufferManager> simple_buffer_manager_;
   RaceNetworkRequestWriteBufferManager
       write_buffer_manager_for_race_network_request_;
   RaceNetworkRequestWriteBufferManager write_buffer_manager_for_fetch_handler_;
@@ -242,6 +246,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   std::optional<base::TimeTicks> fetch_handler_end_time_;
   std::optional<bool> is_fetch_handler_fallback_;
   bool is_main_resource_;
+  bool clone_response_for_fetch_handler_completed_ = false;
 
   base::TimeTicks request_start_;
   base::Time request_start_time_;

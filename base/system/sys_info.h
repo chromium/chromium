@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <compare>
+#include <iosfwd>
 #include <map>
 #include <optional>
 #include <string>
@@ -33,7 +35,7 @@ namespace base {
 BASE_EXPORT BASE_DECLARE_FEATURE(kNumberOfCoresWithCpuSecurityMitigation);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Strings for environment variables.
 BASE_EXPORT extern const char kLsbReleaseKey[];
 BASE_EXPORT extern const char kLsbReleaseTimeKey[];
@@ -128,6 +130,12 @@ class BASE_EXPORT SysInfo {
   // https://deviceatlas.com/resources/clientside/ios-hardware-identification
   static std::string HardwareModelName();
 
+  // Returns the SOC manufacturer's name or an empty string if the manufacturer
+  // is unknown or an error occurred.
+  // e.g. "Google" on Pixel 8 Pro. Only implemented on Android, returns an
+  // empty string on other platforms.
+  static std::string SocManufacturer();
+
 #if BUILDFLAG(IS_MAC)
   struct HardwareModelNameSplit {
     std::string category;
@@ -187,6 +195,27 @@ class BASE_EXPORT SysInfo {
   static void OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version);
+
+#if BUILDFLAG(IS_POSIX)
+  // Struct containing the the kernel version number of the host operating
+  // system.
+  struct BASE_EXPORT KernelVersionNumber {
+    // Queries the current kernel version number using uname and parses the
+    // release string to construct the KernelVersionNumber struct. This does not
+    // cache the result.
+    static KernelVersionNumber Current();
+
+    friend bool operator==(const KernelVersionNumber& v1,
+                           const KernelVersionNumber& v2) = default;
+
+    friend auto operator<=>(const KernelVersionNumber& v1,
+                            const KernelVersionNumber& v2) = default;
+
+    int32_t major = 0;
+    int32_t minor = 0;
+    int32_t bugfix = 0;
+  };
+#endif  // BUILDFLAG(IS_POSIX)
 
   // Returns the architecture of the running operating system.
   // Exact return value may differ across platforms.
@@ -262,6 +291,10 @@ class BASE_EXPORT SysInfo {
   // Returns the Android build ID.
   static std::string GetAndroidBuildID();
 
+  // Returns the Android hardware system property, equivalent to Java's
+  // Build.HARDWARE.
+  static std::string GetAndroidHardware();
+
   // Returns the Android hardware EGL system property.
   static std::string GetAndroidHardwareEGL();
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -283,11 +316,8 @@ class BASE_EXPORT SysInfo {
   // including user-visible changes, for acceptable performance.
   // For general memory optimizations, consider |AmountOfPhysicalMemoryMB|.
   //
-  // On Android this returns:
-  //   true when memory <= 1GB on Android O and later.
-  //   true when memory <= 512MB on Android N and earlier.
-  // This is not the same as "low-memory" and will be false on a large number of
-  // <=1GB pre-O Android devices. See: |detectLowEndDevice| in SysUtils.java.
+  // On Android this returns true when memory <= 1GB on Android O and later.
+  // This is not the same as "low-memory".
   // On Desktop this returns true when memory <= 2GB.
   static bool IsLowEndDevice();
 
@@ -348,6 +378,13 @@ class BASE_EXPORT SysInfo {
       uint64_t amount_of_memory_mb);
   static void ClearAmountOfPhysicalMemoryMbForTesting();
 };
+
+#if BUILDFLAG(IS_POSIX)
+// Stream operator so that SysInfo::KernelVersionNumber can be logged with a
+// consistent format.
+BASE_EXPORT std::ostream& operator<<(std::ostream& out,
+                                     const SysInfo::KernelVersionNumber& v);
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace base
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Trie} from './structs/trie.js';
-import {EmojiVariants} from './types.js';
+import type {EmojiVariants} from './types.js';
 
 /**
  * Preprocess a phrase by the following operations:

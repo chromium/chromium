@@ -15,8 +15,8 @@ import {
   nothing,
   PropertyDeclarations,
   PropertyValues,
-  ref,
   Ref,
+  ref,
   repeat,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -150,7 +150,8 @@ export class TranscriptionView extends ReactiveLitElement {
         .seekable & {
           cursor: pointer;
 
-          &:hover, &:focus {
+          &:hover,
+          &:focus-visible {
             background: var(--cros-sys-highlight_shape);
             outline: none;
           }
@@ -195,6 +196,11 @@ export class TranscriptionView extends ReactiveLitElement {
   lastAutoScrollTime: number|null = null;
 
   containerRef: Ref<HTMLElement> = createRef();
+
+  // True if there's no highlight word or autoscroll anchor before current
+  // rendered word. This is a "local" state reset for each render, and shouldn't
+  // be used outside of render.
+  private needAutoscrollAnchor = true;
 
   // TODO(pihsun): Move all the autoscroll logic to a separate file /
   // ReactiveController.
@@ -282,25 +288,25 @@ export class TranscriptionView extends ReactiveLitElement {
     const container = assertExists(this.containerRef.value);
     let targetScrollTop: number;
     if (this.seekable) {
-      // TODO(pihsun): We might need "fake" highlight blocks between speech so
-      // it'll scroll to the part between speech?
-      const highlightedElement =
-        this.shadowRoot?.querySelector('.highlight-word') ?? null;
-      if (highlightedElement === null) {
-        return;
+      const autoscrollAnchor =
+        this.shadowRoot?.querySelector('.autoscroll-anchor') ?? null;
+      if (autoscrollAnchor === null) {
+        // Scroll to bottom if there's no speech afterwards.
+        targetScrollTop = container.scrollHeight - container.offsetHeight;
+      } else {
+        // TODO(pihsun): Have a typed helper function for querySelector /
+        // querySelectorAll with assertion for types.
+        assert(autoscrollAnchor instanceof HTMLElement);
+        // We calculate the target scrollTop by ourselves instead of relying on
+        // Element.scrollIntoView, so we can know the targetScrollTop for
+        // autoscroll calculation.
+        targetScrollTop = clamp(
+          autoscrollAnchor.offsetTop + autoscrollAnchor.offsetHeight / 2 -
+            container.clientHeight / 2,
+          0,
+          container.scrollHeight - container.offsetHeight,
+        );
       }
-      // TODO(pihsun): Have a typed helper function for querySelector /
-      // querySelectorAll with assertion for types.
-      assert(highlightedElement instanceof HTMLElement);
-      // We calculate the target scrollTop by ourselves instead of relying on
-      // Element.scrollIntoView, so we can know the targetScrollTop for
-      // autoscroll calculation.
-      targetScrollTop = clamp(
-        highlightedElement.offsetTop + highlightedElement.offsetHeight / 2 -
-          container.clientHeight / 2,
-        0,
-        container.scrollHeight - container.offsetHeight,
-      );
     } else {
       // Auto scroll to bottom.
       targetScrollTop = container.scrollHeight - container.offsetHeight;
@@ -320,6 +326,10 @@ export class TranscriptionView extends ReactiveLitElement {
       sentence,
       (_v, i) => i,
       (part, i) => {
+        // For the first word, the leadingSpace is already added at the
+        // sentence level. Otherwise we follows the leadingSpace for the part
+        // and treat missing field as having a space.
+        const leadingSpace = i === 0 ? false : part.leadingSpace ?? true;
         const highlightWord = (() => {
           if (this.currentTime === null || part.timeRange === null) {
             return false;
@@ -329,16 +339,26 @@ export class TranscriptionView extends ReactiveLitElement {
             this.currentTime < part.timeRange.endMs / 1000
           );
         })();
-        // For the first word, the leadingSpace is already added at the
-        // sentence level. Otherwise we follows the leadingSpace for the part
-        // and treat missing field as having a space.
-        const leadingSpace = i === 0 ? false : part.leadingSpace ?? true;
-        if (!highlightWord) {
-          return `${leadingSpace ? ' ' : ''}${part.text}`;
+        if (highlightWord) {
+          this.needAutoscrollAnchor = false;
+          return html`${leadingSpace ? ' ' : ''}
+            <span class="highlight-word autoscroll-anchor">${part.text}</span>`;
         }
-        return html`${leadingSpace ? ' ' : ''}<span class="highlight-word"
-            >${part.text}</span
-          >`;
+        const autoscrollAnchor = (() => {
+          if (!this.needAutoscrollAnchor || this.currentTime === null ||
+              part.timeRange === null) {
+            return false;
+          }
+          // If there's no highlight, set autoscroll anchor to the first word
+          // after the current time.
+          return this.currentTime < part.timeRange.startMs / 1000;
+        })();
+        if (autoscrollAnchor) {
+          this.needAutoscrollAnchor = false;
+          return html`${leadingSpace ? ' ' : ''}
+            <span class="autoscroll-anchor">${part.text}</span>`;
+        }
+        return `${leadingSpace ? ' ' : ''}${part.text}`;
       },
     );
   }
@@ -443,6 +463,8 @@ export class TranscriptionView extends ReactiveLitElement {
     const speakerLabels = this.transcription.getSpeakerLabels();
     const paragraphs = this.transcription.getParagraphs();
 
+    this.needAutoscrollAnchor = true;
+
     const content = repeat(
       paragraphs,
       (_parts, i) => i,
@@ -452,6 +474,15 @@ export class TranscriptionView extends ReactiveLitElement {
           startTimeRange === null ? '?' : formatDuration({
             milliseconds: startTimeRange.startMs,
           });
+        const startTimeDisplayLabel = startTimeRange === null ?
+          '?' :
+          formatDuration(
+            {
+              milliseconds: startTimeRange.startMs,
+            },
+            /* digits= */ 0,
+            /* fullDigitalFormat= */ true,
+          );
         // TODO(pihsun): Check if there's any case that timestamp will be
         // missing.
         // TODO(pihsun): Handle keyboard event / a11y on the timestamp.
@@ -465,6 +496,7 @@ export class TranscriptionView extends ReactiveLitElement {
               tabindex=${this.seekable ? 0 : -1}
               data-start-ms=${ifDefined(startTimeRange?.startMs)}
               role="button"
+              aria-label=${startTimeDisplayLabel}
             >
               ${startTimeDisplay}
               ${this.seekable ? html`<md-focus-ring></md-focus-ring>` : nothing}

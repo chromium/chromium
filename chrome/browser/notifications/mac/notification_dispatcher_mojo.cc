@@ -227,7 +227,7 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
             &NotificationDispatcherMojo::CheckIfServiceCanBeTerminated,
             base::Unretained(this)));
   } else {
-    service_restart_timer_.AbandonAndStop();
+    service_restart_timer_.Stop();
   }
 
   no_notifications_checker_.Cancel();
@@ -243,7 +243,7 @@ bool NotificationDispatcherMojo::HasNoDisplayedNotifications() const {
 mac_notifications::mojom::MacNotificationService*
 NotificationDispatcherMojo::GetOrCreateService() {
   if (!service_) {
-    service_restart_timer_.AbandonAndStop();
+    service_restart_timer_.Stop();
     service_start_time_ = base::TimeTicks::Now();
     provider_ = provider_factory_->LaunchProvider();
     provider_.set_disconnect_handler(base::BindOnce(

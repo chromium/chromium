@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.recent_tabs.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.View;
@@ -13,13 +15,15 @@ import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.recent_tabs.R;
 
 /**
- * The item decoration used on the device and review tabs selection screens that
- * adds horizontal spacing between elements and chooses the correct item background
- * depending on the position of the item in the list.
+ * The item decoration used on the device and review tabs selection screens that adds horizontal
+ * spacing between elements and chooses the correct item background depending on the position of the
+ * item in the list.
  */
+@NullMarked
 public class RestoreTabsDetailItemDecoration extends RecyclerView.ItemDecoration {
     private final int mVerticalSpacing;
 
@@ -47,7 +51,8 @@ public class RestoreTabsDetailItemDecoration extends RecyclerView.ItemDecoration
                     AppCompatResources.getDrawable(
                             parent.getContext(),
                             getBackgroundDrawable(
-                                    positionInAdapter, parent.getAdapter().getItemCount())));
+                                    positionInAdapter,
+                                    assumeNonNull(parent.getAdapter()).getItemCount())));
         }
     }
 

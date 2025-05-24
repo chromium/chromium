@@ -79,7 +79,7 @@ class SimpleTestLogListener {
   void PushLoggedMessage(const fuchsia_logger::LogMessage& message);
 
   // Used to ignore messages with timestamps prior to this listener's creation.
-  zx::time ignore_before_;
+  zx::time_boot ignore_before_;
 
   TestLogListenerSafe listener_;
   std::optional<fidl::ServerBinding<fuchsia_logger::LogListenerSafe>> binding_;

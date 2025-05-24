@@ -6,9 +6,8 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsSitePermissionsListElement} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 
@@ -28,27 +27,27 @@ suite('SitePermissionsList', function() {
     document.body.appendChild(element);
   });
 
-  test('clicking add opens dialog', function() {
-    flush();
+  test('clicking add opens dialog', async () => {
+    await microtasksFinished();
     const addSiteButton = element.$.addSite;
     assertTrue(!!addSiteButton);
     assertTrue(isVisible(addSiteButton));
 
     addSiteButton.click();
-    flush();
+    await microtasksFinished();
 
     const dialog =
-        element.shadowRoot!.querySelector('site-permissions-edit-url-dialog');
+        element.shadowRoot.querySelector('site-permissions-edit-url-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
   });
 
   test('removing sites through action menu', async function() {
     element.sites = ['https://google.com', 'http://www.example.com'];
-    flush();
+    await microtasksFinished();
 
     const openEditSites =
-        element!.shadowRoot!.querySelectorAll<HTMLElement>('.icon-more-vert');
+        element!.shadowRoot.querySelectorAll<HTMLElement>('.icon-more-vert');
     assertEquals(2, openEditSites.length);
     openEditSites[1]!.click();
 
@@ -71,11 +70,10 @@ suite('SitePermissionsList', function() {
       'clicking "edit site url" through action menu opens a dialog',
       async function() {
         element.sites = ['https://google.com', 'http://www.example.com'];
-        flush();
+        await microtasksFinished();
 
-        const openEditSites =
-            element!.shadowRoot!.querySelectorAll<HTMLElement>(
-                '.icon-more-vert');
+        const openEditSites = element!.shadowRoot.querySelectorAll<HTMLElement>(
+            '.icon-more-vert');
         assertEquals(2, openEditSites.length);
         openEditSites[1]!.click();
 
@@ -88,10 +86,10 @@ suite('SitePermissionsList', function() {
         assertTrue(!!actionMenuEditUrl);
 
         actionMenuEditUrl.click();
-        flush();
+        await microtasksFinished();
         assertFalse(actionMenu.open);
 
-        const dialog = element.shadowRoot!.querySelector(
+        const dialog = element.shadowRoot.querySelector(
             'site-permissions-edit-url-dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);
@@ -102,11 +100,10 @@ suite('SitePermissionsList', function() {
       'clicking "edit site permissions" through action menu opens a dialog',
       async function() {
         element.sites = ['https://google.com', 'http://www.example.com'];
-        flush();
+        await microtasksFinished();
 
-        const openEditSites =
-            element!.shadowRoot!.querySelectorAll<HTMLElement>(
-                '.icon-more-vert');
+        const openEditSites = element!.shadowRoot.querySelectorAll<HTMLElement>(
+            '.icon-more-vert');
         assertEquals(2, openEditSites.length);
         openEditSites[1]!.click();
 
@@ -119,10 +116,10 @@ suite('SitePermissionsList', function() {
         assertTrue(!!actionMenuEditPermissions);
 
         actionMenuEditPermissions.click();
-        flush();
+        await microtasksFinished();
         assertFalse(actionMenu.open);
 
-        const dialog = element.shadowRoot!.querySelector(
+        const dialog = element.shadowRoot.querySelector(
             'site-permissions-edit-permissions-dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);

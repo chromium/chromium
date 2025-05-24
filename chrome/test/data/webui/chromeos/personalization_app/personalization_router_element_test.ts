@@ -4,15 +4,16 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, Paths, PersonalizationRouterElement, setTransitionsEnabled} from 'chrome://personalization/js/personalization_app.js';
+import type {GooglePhotosAlbum, GooglePhotosPhoto} from 'chrome://personalization/js/personalization_app.js';
+import {GooglePhotosEnablementState, Paths, PersonalizationRouterElement, setTransitionsEnabled} from 'chrome://personalization/js/personalization_app.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('PersonalizationRouterElementTest', function() {
   let personalizationStore: TestPersonalizationStore;
@@ -225,6 +226,10 @@ suite('PersonalizationRouterElementTest', function() {
     assertNotEquals(
         getComputedStyle(wallpaperSelected).display, 'none',
         'sea-pen-router shows wallpaper-selected');
+    assertFalse(
+        !!routerElement.shadowRoot!.getElementById('wallpaperSelected')!
+              .classList.contains('wallpaperSelectedHidden'),
+        'wallpaper-selected should be displayed on template home page');
   });
 
   test('hides wallpaper selected on non root path sea pen', async () => {
@@ -247,16 +252,18 @@ suite('PersonalizationRouterElementTest', function() {
         'sea-pen-router is shown');
 
     // No wallpaper-selected in Template results page.
-    assertFalse(
-        !!routerElement.shadowRoot!.getElementById('wallpaperSelected'),
+    assertTrue(
+        !!routerElement.shadowRoot!.getElementById('wallpaperSelected')!
+              .classList.contains('wallpaperSelectedHidden'),
         'wallpaper-selected should not be displayed in template results page');
 
     // No wallpaper-selected in Freeform subpage.
     routerElement.goToRoute(Paths.SEA_PEN_FREEFORM);
     await waitAfterNextRender(routerElement);
-    assertFalse(
-        !!routerElement.shadowRoot!.getElementById('wallpaperSelected'),
-        'wallpaper-selected should not be displayed in freeform page');
+    assertTrue(
+        !!routerElement.shadowRoot!.getElementById('wallpaperSelected')!
+              .classList.contains('wallpaperSelectedHidden'),
+        'wallpaper-selected should not be displayed in freeform subpage');
   });
 
   test('supports transition animation', async () => {

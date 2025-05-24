@@ -1,0 +1,28 @@
+<!doctype html>
+<!--
+  This page makes a fetchLater call, and posts message back to source.
+-->
+<title>FetchLater</title>
+<script>
+const PARAMS = new URL(location.href).searchParams;
+
+const REQUEST_INIT = Object.assign({},
+      PARAMS.has('activateAfter') ? {activateAfter: parseInt(PARAMS.get('activateAfter'), 10)} : null,
+      PARAMS.has('method') ? {method: PARAMS.get('method')} : null,
+    );
+
+function postMessageBack(message) {
+  if (window.opener) {
+    window.opener.postMessage(message, '*');
+  } else {
+    parent.postMessage(message, '*');
+  }
+}
+
+try {
+  fetchLater('/beacon', REQUEST_INIT);
+  postMessageBack({type: 'fetchLater.done'});
+} catch (e) {
+  postMessageBack({type: 'fetchLater.error', error: e});
+}
+</script>

@@ -11,14 +11,10 @@ void TabResourceUsage::SetMemoryUsageInBytes(uint64_t memory_usage_bytes) {
   is_high_memory_usage_ = memory_usage_bytes_ > kHighMemoryUsageThresholdBytes;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabResourceUsageTabHelper);
-
 TabResourceUsageTabHelper::~TabResourceUsageTabHelper() = default;
 
-TabResourceUsageTabHelper::TabResourceUsageTabHelper(
-    content::WebContents* contents)
-    : content::WebContentsObserver(contents),
-      content::WebContentsUserData<TabResourceUsageTabHelper>(*contents),
+TabResourceUsageTabHelper::TabResourceUsageTabHelper(tabs::TabInterface& tab)
+    : ContentsObservingTabFeature(tab),
       resource_usage_(base::MakeRefCounted<TabResourceUsage>()) {}
 
 void TabResourceUsageTabHelper::PrimaryPageChanged(content::Page&) {

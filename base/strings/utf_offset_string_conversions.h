@@ -65,8 +65,7 @@ class BASE_EXPORT OffsetAdjuster {
 
   // Adjusts the single |offset| to reflect the reverse of the adjustments
   // recorded in |adjustments|.
-  static void UnadjustOffset(const Adjustments& adjustments,
-                             size_t* offset);
+  static void UnadjustOffset(const Adjustments& adjustments, size_t* offset);
 
   // Combines two sequential sets of adjustments, storing the combined revised
   // adjustments in |adjustments_on_adjusted_string|.  That is, suppose a

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.merchant_viewer;
 
 import static org.junit.Assert.assertEquals;
 
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,41 +19,57 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link BottomSheetToolbarViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class BottomSheetToolbarViewBinderTest extends BlankUiTestActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class BottomSheetToolbarViewBinderTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private final AtomicBoolean mIconClicked = new AtomicBoolean();
 
     private BottomSheetToolbarView mItemView;
     private PropertyModel mItemViewModel;
     private PropertyModelChangeProcessor mItemMCP;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
-        ViewGroup view = new FrameLayout(getActivity());
+    @Before
+    public void setUp() {
+        ViewGroup view = new FrameLayout(sActivity);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getActivity().setContentView(view);
+                    sActivity.setContentView(view);
 
-                    mItemView = new BottomSheetToolbarView(getActivity());
+                    mItemView = new BottomSheetToolbarView(sActivity);
                     view.addView(mItemView.getView());
 
                     mItemViewModel =
@@ -162,8 +179,7 @@ public class BottomSheetToolbarViewBinderTest extends BlankUiTestActivityTestCas
         ImageView faviconIcon = mItemView.getView().findViewById(R.id.favicon);
         assertEquals(null, faviconIcon.getDrawable());
 
-        Drawable iconDrawable =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.ic_globe_24dp);
+        Drawable iconDrawable = AppCompatResources.getDrawable(sActivity, R.drawable.ic_globe_24dp);
         mItemViewModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE, iconDrawable);
         assertEquals(iconDrawable, faviconIcon.getDrawable());
     }
@@ -190,9 +206,8 @@ public class BottomSheetToolbarViewBinderTest extends BlankUiTestActivityTestCas
         assertEquals(View.VISIBLE, openInNewTabButton.getVisibility());
     }
 
-    @Override
+    @After
     public void tearDownTest() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
-        super.tearDownTest();
     }
 }

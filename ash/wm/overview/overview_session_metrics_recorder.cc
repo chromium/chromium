@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
 
@@ -52,12 +51,13 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionInitializing() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                     this);
 
-  enter_presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-      Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-      kEnterOverviewPresentationHistogram, "",
-      GetOverviewPresentationTimeBucketParams(),
-      /*emit_trace_event=*/true);
-  enter_presentation_time_recorder_->RequestNext();
+  auto enter_presentation_time_recorder =
+      CreatePresentationTimeHistogramRecorder(
+          Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
+          GetOverviewEnterPresentationTimeMetricName(start_action_), "",
+          GetOverviewPresentationTimeBucketParams(),
+          /*emit_trace_event=*/true);
+  enter_presentation_time_recorder->RequestNext();
 
   base::UmaHistogramCounts100("Ash.Overview.DeskCount",
                               DesksController::Get()->desks().size());
@@ -92,23 +92,6 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionEnding() {
           /*emit_trace_event=*/true);
   exit_presentation_time_recorder->RequestNext();
 
-  CHECK(enter_presentation_time_recorder_);
-  const std::optional<base::TimeDelta> enter_presentation_time =
-      enter_presentation_time_recorder_->GetAverageLatency();
-  // `enter_presentation_time` can be null if the overview session ends before
-  // the first overview frame is presented. This should be rare and is ok to
-  // ignore.
-  if (enter_presentation_time) {
-    RecordOverviewEnterPresentationTimeWithReason(start_action_,
-                                                  *enter_presentation_time);
-  }
-
-  if (IsRenderingDeskBarWithMiniViews()) {
-    SchedulePresentationTimeMetricsWithDeskBar(
-        std::move(enter_presentation_time_recorder_),
-        std::move(exit_presentation_time_recorder), desk_bar_visibility);
-  }
-
   CHECK(!overview_start_time_.is_null());
   base::UmaHistogramMediumTimes("Ash.Overview.TimeInOverview",
                                 base::Time::Now() - overview_start_time_);
@@ -131,16 +114,15 @@ void OverviewSessionMetricsRecorder::OnOverviewModeEndingAnimationComplete(
 
 bool OverviewSessionMetricsRecorder::IsDeskBarOpen() const {
   CHECK(session_);
-  return session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
-      ->desks_bar_view();
-}
-
-bool OverviewSessionMetricsRecorder::IsRenderingDeskBarWithMiniViews() const {
-  return IsDeskBarOpen() &&
-         !session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
-              ->desks_bar_view()
-              ->mini_views()
-              .empty();
+  // Note an overview grid for the primary root window may not exist in some
+  // corner cases (see http://crbug.com/378501600).
+  for (const auto& root_window : Shell::GetAllRootWindows()) {
+    auto* const overview_grid = session_->GetGridWithRootWindow(root_window);
+    if (overview_grid && overview_grid->desks_bar_view()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace ash

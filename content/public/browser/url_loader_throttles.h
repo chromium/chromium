@@ -44,9 +44,7 @@ CreateContentBrowserURLLoaderThrottles(
 CONTENT_EXPORT
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 CreateContentBrowserURLLoaderThrottlesForKeepAlive(
-    const network::ResourceRequest& request,
     BrowserContext* browser_context,
-    const base::RepeatingCallback<WebContents*()>& wc_getter,
     FrameTreeNodeId frame_tree_node_id);
 
 }  // namespace content

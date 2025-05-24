@@ -5,10 +5,13 @@
 
 import argparse
 import contextlib
-
+import json
+import logging
 from typing import Iterator, Optional
 
-from common import REPO_ALIAS, run_ffx_command
+import monitors
+
+from common import run_ffx_command, REPO_ALIAS
 
 _REPO_NAME = 'chromium-test-package-server'
 
@@ -17,12 +20,15 @@ def _stop_serving(repo_name: str, target: Optional[str]) -> None:
     """Stop serving a repository."""
 
     # Attempt to clean up.
-    run_ffx_command(
-        cmd=['target', 'repository', 'deregister', '-r', repo_name],
-        target_id=target,
-        check=False)
-    run_ffx_command(cmd=['repository', 'remove', repo_name], check=False)
-    run_ffx_command(cmd=['repository', 'server', 'stop'], check=False)
+    with monitors.time_consumption('repository', 'deregister'):
+        run_ffx_command(
+            cmd=['target', 'repository', 'deregister', '-r', repo_name],
+            target_id=target,
+            check=False)
+
+    with monitors.time_consumption('repository', 'stop'):
+        run_ffx_command(cmd=['repository', 'server', 'stop', repo_name],
+                        check=False)
 
 
 def _start_serving(repo_dir: str, repo_name: str,
@@ -35,17 +41,55 @@ def _start_serving(repo_dir: str, repo_name: str,
         target: Fuchsia device the repository is served to.
     """
 
-    run_ffx_command(cmd=('config', 'set', 'repository.server.mode', '\"ffx\"'))
+    cmd = [
+        'repository', 'server', 'start', '--background',
+        '--address', '[::]:0',
+        '--repository', repo_name, '--repo-path', repo_dir, '--no-device'
+    ]
 
-    run_ffx_command(cmd=['repository', 'server', 'start'])
-    run_ffx_command(
-        cmd=['repository', 'add-from-pm', repo_dir, '-r', repo_name])
-    run_ffx_command(cmd=[
+    with monitors.time_consumption('repository', 'start'):
+        start_cmd = run_ffx_command(cmd=cmd, check=False)
+
+    logging.warning('ffx repository server start returns %d: %s %s',
+                          start_cmd.returncode,
+                          start_cmd.stderr, start_cmd.stdout)
+
+    _assert_server_running(repo_name)
+
+    cmd = [
         'target', 'repository', 'register', '-r', repo_name, '--alias',
         REPO_ALIAS
-    ],
-                    target_id=target)
+    ]
+    with monitors.time_consumption('repository', 'register'):
+        run_ffx_command(cmd=cmd, target_id=target)
 
+
+def _assert_server_running(repo_name: str) -> None:
+    """Raises RuntimeError if the repository server is not running."""
+
+    with monitors.time_consumption('repository', 'list'):
+        list_cmd = run_ffx_command(cmd=[
+            '--machine', 'json', 'repository', 'server', 'list', '--name',
+            repo_name
+        ],
+                                   check=False,
+                                   capture_output=True)
+    try:
+        response = json.loads(list_cmd.stdout.strip())
+        if 'ok' in response and response['ok']['data']:
+            if response['ok']['data'][0]['name'] != repo_name:
+                raise RuntimeError(
+                    'Repository server %s is not running. Output: %s stderr: %s'
+                    % (repo_name, list_cmd.stdout, list_cmd.stderr))
+            return
+    except json.decoder.JSONDecodeError as error:
+        # Log the json parsing error, but don't raise an exception since it
+        # does not have the full context of the error.
+        logging.error('Unexpected json string: %s, exception: %s, stderr: %s',
+                list_cmd.stdout, error, list_cmd.stderr)
+    raise RuntimeError(
+        'Repository server %s is not running. Output: %s stderr: %s'
+        % (repo_name, list_cmd.stdout, list_cmd.stderr))
 
 def register_serve_args(arg_parser: argparse.ArgumentParser) -> None:
     """Register common arguments for repository serving."""
@@ -58,7 +102,6 @@ def register_serve_args(arg_parser: argparse.ArgumentParser) -> None:
     serve_args.add_argument('--repo-name',
                             default=_REPO_NAME,
                             help='Name of the repository.')
-
 
 @contextlib.contextmanager
 def serve_repository(args: argparse.Namespace) -> Iterator[None]:

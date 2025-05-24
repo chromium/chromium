@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,9 +38,9 @@ TEST(InlineStylePropertyMapTest, PendingSubstitutionValueCrash) {
     }
     div->SetInlineStyleProperty(property_id, "var(--dummy)");
     const StylePropertyShorthand& longhands = shorthandForProperty(property_id);
-    for (unsigned i = 0; i < longhands.length(); i++) {
+    for (const CSSProperty* longhand : longhands.properties()) {
       map->get(document->GetExecutionContext(),
-               longhands.properties()[i]->GetCSSPropertyName().ToAtomicString(),
+               longhand->GetCSSPropertyName().ToAtomicString(),
                ASSERT_NO_EXCEPTION);
     }
   }

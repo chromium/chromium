@@ -16,7 +16,6 @@ import android.provider.Browser;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import org.jni_zero.CalledByNative;
 
@@ -108,8 +107,7 @@ public class NotificationManager {
         if (!NotificationSharedPrefManager.removeActiveNotification(guid)) {
             return false;
         }
-        Context context = ContextUtils.getApplicationContext();
-        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
         manager.cancel(
                 NotificationConstants.GROUP_SEND_TAB_TO_SELF, activeNotification.notificationId);
         return true;
@@ -139,7 +137,7 @@ public class NotificationManager {
 
         // Post notification.
         Context context = ContextUtils.getApplicationContext();
-        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
 
         int nextId = NotificationSharedPrefManager.getNextNotificationId();
         Uri uri = Uri.parse(url);
@@ -182,7 +180,6 @@ public class NotificationManager {
                         .setContentTitle(title)
                         .setContentText(contextText)
                         .setGroup(NotificationConstants.GROUP_SEND_TAB_TO_SELF)
-                        .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setVibrate(new long[0])
                         .setSmallIcon(R.drawable.ic_chrome)
                         .setDefaults(Notification.DEFAULT_ALL);

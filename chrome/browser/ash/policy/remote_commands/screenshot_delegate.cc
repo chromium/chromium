@@ -23,9 +23,9 @@
 
 namespace policy {
 
-ScreenshotDelegate::ScreenshotDelegate() {}
+ScreenshotDelegate::ScreenshotDelegate() = default;
 
-ScreenshotDelegate::~ScreenshotDelegate() {}
+ScreenshotDelegate::~ScreenshotDelegate() = default;
 
 bool ScreenshotDelegate::IsScreenshotAllowed() {
   BrowserPolicyConnectorAsh* connector =

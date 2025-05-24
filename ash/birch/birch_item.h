@@ -39,6 +39,14 @@ enum class BirchItemType {
   kMaxValue = kCoral,
 };
 
+// These values are used to determine the style of the primary icon.
+enum class PrimaryIconType {
+  kIcon,
+  kIllustration,
+  kWeatherImage,
+  kCoralGroupIcon,
+};
+
 // These values are used to determine which secondary icon to load for the items
 // that contain secondary icons.
 enum class SecondaryIconType {
@@ -49,6 +57,7 @@ enum class SecondaryIconType {
   kLostMediaAudio,            // Type that links to audio icon.
   kLostMediaVideo,            // Type that links to media icon.
   kLostMediaVideoConference,  // Type that links to video conference icon.
+  kSelfShareIcon,             // Type that links to self share icon.
   kNoIcon,                    // Type where we will not load a secondary icon.
   kMaxValue = kNoIcon,
 };
@@ -83,16 +92,14 @@ class ASH_EXPORT BirchItem {
   virtual std::string ToString() const = 0;
 
   // Perform the action associated with this item (e.g. open a document).
-  // `is_post_login` is true if the chip was in a post-login overview session as
-  // opposed to an in-session overview session.
-  virtual void PerformAction(bool is_post_login) = 0;
+  virtual void PerformAction() = 0;
 
   // Loads the icon for this image. This may invoke the callback immediately
   // (e.g. with a local icon) or there may be a delay for a network fetch.
   // The `SecondaryIconType` passed to `BirchChipButton` allows the view to set
   // a corresponding secondary icon image.
-  using LoadIconCallback =
-      base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>;
+  using LoadIconCallback = base::OnceCallback<
+      void(PrimaryIconType, SecondaryIconType, const ui::ImageModel&)>;
   virtual void LoadIcon(LoadIconCallback callback) const = 0;
 
   // Records metrics when the user takes an action on the item (e.g. clicks or
@@ -108,7 +115,9 @@ class ASH_EXPORT BirchItem {
   virtual BirchAddonType GetAddonType() const;
   virtual std::u16string GetAddonAccessibleName() const;
 
+  void set_title(const std::u16string& title) { title_ = title; }
   const std::u16string& title() const { return title_; }
+
   const std::u16string& subtitle() const { return subtitle_; }
 
   void set_ranking(float ranking) { ranking_ = ranking; }
@@ -167,7 +176,7 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void PerformAddonAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
   BirchAddonType GetAddonType() const override;
@@ -226,7 +235,7 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& file_url() const { return file_url_; }
@@ -263,7 +272,7 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const base::Time& timestamp() const { return timestamp_; }
@@ -305,7 +314,7 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& url() const { return url_; }
@@ -343,7 +352,7 @@ class ASH_EXPORT BirchLastActiveItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& page_url() const { return page_url_; }
@@ -367,7 +376,7 @@ class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& page_url() const { return page_url_; }
@@ -397,7 +406,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const std::u16string& guid() const { return guid_; }
@@ -439,7 +448,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& source_url() const { return source_url_; }
@@ -472,7 +481,7 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
   std::u16string GetAccessibleName() const override;
   void PerformAddonAction() override;
@@ -503,7 +512,7 @@ class ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
   // BirchItem:
   BirchItemType GetType() const override;
   std::string ToString() const override;
-  void PerformAction(bool is_post_login) override;
+  void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const base::Time& first_seen() const { return first_seen_; }

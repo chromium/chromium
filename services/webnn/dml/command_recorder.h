@@ -122,12 +122,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   // descriptors that the compiled operator needs and supply it via
   // `descriptor_heap`.
   //
-  // The input and output resources are supplied by the caller via
-  // `input_bindings` and `output_bindings`. The input and output resources will
-  // be bound to the operator's binding table. The number of bindings should
-  // exactly match the number of input and output tensors of this operator. All
-  // bound resources need to be in the D3D12_RESOURCE_STATE_UNORDERED_ACCESS
-  // state before calling this method.
+  // The operator must be compiled with
+  // `DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE` flag which allows late bindings.
+  // Caller is expected to bind the input and output resources after calling
+  // this method and before submitting the command list for execution.
   //
   // If the compiled operator also requires any persistent resources, they
   // should be initialized by `InitializeOperator()` and be supplied via
@@ -141,10 +139,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   HRESULT ExecuteOperator(
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
       Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap,
-      base::span<const DML_BINDING_DESC> input_bindings,
-      base::span<const DML_BINDING_DESC> output_bindings,
       const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
       const std::optional<DML_BINDING_DESC>& temporary_resource_binding);
+
+  // Helper functions to bind input and output resources. These functions do not
+  // hold references to the input or output resources; it is the caller's
+  // responsibility to keep them alive until the operator execution has
+  // completed on the GPU.
+  HRESULT BindInputs(base::span<const DML_BINDING_DESC> input_bindings);
+  HRESULT BindOutputs(base::span<const DML_BINDING_DESC> output_bindings);
 
   CommandQueue* command_queue() const { return command_queue_.get(); }
 
@@ -161,12 +164,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
       scoped_refptr<CommandQueue> command_queue,
       Microsoft::WRL::ComPtr<IDMLDevice1> dml_device,
       Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator,
-      Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder);
+      Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder,
+      Microsoft::WRL::ComPtr<IDMLBindingTable> binding_table);
 
   // Records execution of a dispatchable object (an operator initializer, or a
   // compiled operator) onto a command list.
-  void RecordDispatch(IDMLDispatchable* dispatchable,
-                      IDMLBindingTable* binding_table);
+  void RecordDispatch(IDMLDispatchable* dispatchable);
 
   bool is_open_ = false;
   // The first call to `CloseAndExecute()` sets the first submitted fence value.
@@ -178,6 +181,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator_;
   Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> command_list_;
   Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder_;
+  Microsoft::WRL::ComPtr<IDMLBindingTable> binding_table_;
 
   // Keep the resources used by recorded commands. After commands submission,
   // these resources would be kept alive until the command queue has completed

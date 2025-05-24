@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,7 +48,7 @@ TEST_F(CrashKeysTest, ShouldIgnoreBoringFlags) {
   command_line.AppendSwitch("--device-management-url=https://foo/bar");
   command_line.AppendSwitch(
       base::StrCat({"--", switches::kGpuPreferences, "=ABC123"}));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   command_line.AppendSwitch("--user-data-dir=/tmp");
   command_line.AppendSwitch("--default-wallpaper-small=test.png");
   expected_num_switches = "9";

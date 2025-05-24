@@ -23,14 +23,14 @@ class Image;
 
 class TabModalConfirmDialogCloseDelegate {
  public:
-  TabModalConfirmDialogCloseDelegate() {}
+  TabModalConfirmDialogCloseDelegate() = default;
 
   TabModalConfirmDialogCloseDelegate(
       const TabModalConfirmDialogCloseDelegate&) = delete;
   TabModalConfirmDialogCloseDelegate& operator=(
       const TabModalConfirmDialogCloseDelegate&) = delete;
 
-  virtual ~TabModalConfirmDialogCloseDelegate() {}
+  virtual ~TabModalConfirmDialogCloseDelegate() = default;
 
   virtual void CloseDialog() = 0;
 };

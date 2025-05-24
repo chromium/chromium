@@ -11,10 +11,12 @@
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/notification_event_dispatcher.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
@@ -70,6 +72,17 @@ void NonPersistentNotificationHandler::OnClick(
   if (service) {
     service->RecordNotificationInteraction(origin);
   }
+
+  // If there is a proposed disruptive notification revocation, report a false
+  // positive due to user interacting with a notification. Disruptive are
+  // notifications with high notification volume and low site engagement score.
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForNotificationEvent(
+      base::PassKey<NonPersistentNotificationHandler>(), origin);
+  DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
+      profile, origin,
+      DisruptiveNotificationPermissionsManager::FalsePositiveReason::
+          kNonPersistentNotificationClick,
+      source_id);
 }
 
 void NonPersistentNotificationHandler::DidDispatchClickEvent(

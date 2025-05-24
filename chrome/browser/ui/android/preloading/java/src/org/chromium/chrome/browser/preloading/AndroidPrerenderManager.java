@@ -8,6 +8,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -20,10 +22,11 @@ import org.chromium.url.GURL;
  *
  * <p>AndroidPrerenderManager provides interface to start or stop prerendering to the (native).
  */
+@NullMarked
 public class AndroidPrerenderManager {
-    private long mNativeAndroidPrerenderManager;
-    private WebContents mWebContents;
-    private static AndroidPrerenderManager sAndroidPrerenderManager;
+    private final long mNativeAndroidPrerenderManager;
+    private @Nullable WebContents mWebContents;
+    private static @Nullable AndroidPrerenderManager sAndroidPrerenderManager;
 
     private final TabObserver mTabObserver =
             new EmptyTabObserver() {

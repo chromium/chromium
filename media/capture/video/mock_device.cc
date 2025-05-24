@@ -22,7 +22,9 @@ void MockDevice::SendStubFrame(const media::VideoCaptureFormat& format,
       static_cast<int>(media::VideoFrame::AllocationSize(
           stub_frame->format(), stub_frame->coded_size())),
       format, gfx::ColorSpace(), rotation, false /* flip_y */,
-      base::TimeTicks(), base::TimeDelta(), std::nullopt, frame_feedback_id);
+      base::TimeTicks(), base::TimeDelta(),
+      /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt, frame_feedback_id);
 }
 
 void MockDevice::SendOnStarted() {

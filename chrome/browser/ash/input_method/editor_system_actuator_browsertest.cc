@@ -22,7 +22,7 @@ namespace {
 
 class EditorSystemActuatorAccessibilityTest : public InProcessBrowserTest {
  public:
-  EditorSystemActuatorAccessibilityTest() {}
+  EditorSystemActuatorAccessibilityTest() = default;
   ~EditorSystemActuatorAccessibilityTest() override = default;
   EditorSystemActuatorAccessibilityTest(
       const EditorSystemActuatorAccessibilityTest&) = delete;
@@ -37,7 +37,7 @@ class EditorSystemActuatorAccessibilityTest : public InProcessBrowserTest {
     // Disable earcons which can be annoying in tests.
     sm_.Call([this]() {
       ImportJSModuleForChromeVox("ChromeVox",
-                                 "/chromevox/background/chromevox.js");
+                                 "/chromevox/mv2/background/chromevox.js");
       DisableEarcons();
     });
   }

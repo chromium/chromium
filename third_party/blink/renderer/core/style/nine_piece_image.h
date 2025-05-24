@@ -31,9 +31,8 @@
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length_box.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
 
@@ -45,29 +44,25 @@ enum ENinePieceImageRule {
 };
 
 class CORE_EXPORT NinePieceImageData
-    : public RefCountedCopyable<NinePieceImageData> {
+    : public GarbageCollected<NinePieceImageData> {
  public:
-  static scoped_refptr<NinePieceImageData> Create() {
-    return base::AdoptRef(new NinePieceImageData);
-  }
-  scoped_refptr<NinePieceImageData> Copy() const {
-    return base::AdoptRef(new NinePieceImageData(*this));
-  }
+  NinePieceImageData() = default;
+  NinePieceImageData(const NinePieceImageData&) = default;
 
   bool operator==(const NinePieceImageData&) const;
   bool operator!=(const NinePieceImageData& o) const { return !(*this == o); }
 
-  unsigned fill : 1;
-  unsigned horizontal_rule : 2;  // ENinePieceImageRule
-  unsigned vertical_rule : 2;    // ENinePieceImageRule
-  Persistent<StyleImage> image;
-  LengthBox image_slices;
-  BorderImageLengthBox border_slices;
-  BorderImageLengthBox outset;
+  void Trace(Visitor* visitor) const { visitor->Trace(image); }
 
- private:
-  NinePieceImageData();
-  NinePieceImageData(const NinePieceImageData&) = default;
+  unsigned single_owner : 1 = true;  // Managed by the owning NinePieceImage.
+  unsigned fill : 1 = false;
+  unsigned horizontal_rule : 2 = kStretchImageRule;  // ENinePieceImageRule
+  unsigned vertical_rule : 2 = kStretchImageRule;    // ENinePieceImageRule
+  Member<StyleImage> image;
+  LengthBox image_slices{Length::Percent(100), Length::Percent(100),
+                         Length::Percent(100), Length::Percent(100)};
+  BorderImageLengthBox border_slices{1.0, 1.0, 1.0, 1.0};
+  BorderImageLengthBox outset{0, 0, 0, 0};
 };
 
 class CORE_EXPORT NinePieceImage {
@@ -83,13 +78,19 @@ class CORE_EXPORT NinePieceImage {
                  ENinePieceImageRule horizontal_rule,
                  ENinePieceImageRule vertical_rule);
 
-  static NinePieceImage MaskDefaults() {
-    NinePieceImage image;
-    image.Access()->image_slices = LengthBox(0);
-    image.Access()->fill = true;
-    image.Access()->border_slices = BorderImageLengthBox(Length::Auto());
-    return image;
+  NinePieceImage(const NinePieceImage& other) : data_(other.data_) {
+    data_->single_owner = false;
   }
+  NinePieceImage(NinePieceImage&&) = default;
+
+  NinePieceImage& operator=(const NinePieceImage& other) {
+    data_ = other.data_;
+    data_->single_owner = false;
+    return *this;
+  }
+  NinePieceImage& operator=(NinePieceImage&&) = default;
+
+  static NinePieceImage MaskDefaults();
 
   bool operator==(const NinePieceImage& other) const {
     return base::ValuesEquivalent(data_, other.data_);
@@ -159,18 +160,27 @@ class CORE_EXPORT NinePieceImage {
     if (outset_side.IsNumber()) {
       return LayoutUnit(outset_side.Number() * border_side);
     }
-    return LayoutUnit(outset_side.length().Value());
+    DCHECK(outset_side.length().IsFixed());
+    return LayoutUnit(outset_side.length().Pixels());
   }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(data_); }
 
  private:
-  NinePieceImageData* Access() {
-    if (!data_->HasOneRef()) {
-      data_ = data_->Copy();
-    }
-    return data_.get();
+  // Used by MaskDefaults().
+  explicit NinePieceImage(NinePieceImageData* data) : data_(data) {
+    DCHECK(!data_->single_owner);
   }
 
-  scoped_refptr<NinePieceImageData> data_;
+  NinePieceImageData* Access() {
+    if (!data_->single_owner) {
+      data_ = MakeGarbageCollected<NinePieceImageData>(*data_);
+      data_->single_owner = true;
+    }
+    return data_.Get();
+  }
+
+  Member<NinePieceImageData> data_;
 };
 
 }  // namespace blink

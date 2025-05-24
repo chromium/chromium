@@ -19,8 +19,9 @@ WebDragBookmarkHandlerMac::~WebDragBookmarkHandlerMac() {}
 
 void WebDragBookmarkHandlerMac::DragInitialize(WebContents* contents) {
   web_contents_ = contents;
-  if (!bookmark_tab_helper_)
+  if (!bookmark_tab_helper_) {
     bookmark_tab_helper_ = BookmarkTabHelper::FromWebContents(contents);
+  }
 
   bookmark_drag_data_.ReadFromClipboard(ui::ClipboardBuffer::kDrag);
 }
@@ -50,8 +51,9 @@ void WebDragBookmarkHandlerMac::OnDrop() {
 
     // Focus the target browser.
     Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-    if (browser)
+    if (browser) {
       browser->window()->Show();
+    }
   }
 }
 

@@ -7,6 +7,7 @@
 var $Element = require('safeMethods').SafeMethods.$Element;
 var $MutationObserver = require('safeMethods').SafeMethods.$MutationObserver;
 var GuestViewAttributes = require('guestViewAttributes').GuestViewAttributes;
+var tagLogMessage = require('guestViewConstants').tagLogMessage;
 var WebViewConstants = require('webViewConstants').WebViewConstants;
 var WebViewInternal = getInternalApi('webViewInternal');
 
@@ -152,14 +153,16 @@ PartitionAttribute.prototype.handleMutation = function(oldValue, newValue) {
   // The partition cannot change if the webview has already navigated.
   if (!this.view.attributes[
           WebViewConstants.ATTRIBUTE_SRC].beforeFirstNavigation) {
-    window.console.error(WebViewConstants.ERROR_MSG_ALREADY_NAVIGATED);
+    window.console.error(tagLogMessage(
+        this.view.getLogTag(), WebViewConstants.ERROR_MSG_ALREADY_NAVIGATED));
     this.setValueIgnoreMutation(oldValue);
     return;
   }
   if (newValue == 'persist:') {
     this.validPartitionId = false;
-    window.console.error(
-        WebViewConstants.ERROR_MSG_INVALID_PARTITION_ATTRIBUTE);
+    window.console.error(tagLogMessage(
+        this.view.getLogTag(),
+        WebViewConstants.ERROR_MSG_INVALID_PARTITION_ATTRIBUTE));
   }
 };
 

@@ -4,6 +4,8 @@
 
 package org.chromium.customtabs.test;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -16,12 +18,16 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Very basic WebView based activity for benchmarking. */
+@NullMarked
 public class WebViewActivity extends Activity {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
 
@@ -35,7 +41,7 @@ public class WebViewActivity extends Activity {
     }
 
     private void go() {
-        String url = getIntent().getData().toString();
+        String url = assumeNonNull(getIntent().getData()).toString();
         final long intentSentMs = getIntent().getLongExtra(MainActivity.INTENT_SENT_EXTRA, -1);
 
         WebView webView = (WebView) findViewById(R.id.webview);

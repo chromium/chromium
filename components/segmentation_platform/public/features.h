@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
+// Feature flags for the segmentation platform. Don't remove these feature flags.
 namespace segmentation_platform::features {
 
 // Core feature flag for segmentation platform.
@@ -112,15 +113,67 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerSplitBySurface);
 // Feature flag for enabling the URL visit resumption ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker);
 
+// Feature flag for enabling the URL visit resumption ranker.
+BASE_DECLARE_FEATURE(kSegmentationPlatformEphemeralBottomRank);
+
 extern const char kEphemeralCardRankerForceShowCardParam[];
 extern const char kEphemeralCardRankerForceHideCardParam[];
-extern const char kPriceTrackingPromoForceOverride[];
 
-// Feature flag for enabling the Emphemeral Card ranker.
+// Feature flag for enabling the Ephemeral Card ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformEphemeralCardRanker);
+
+// Feature flag for enabling the Tips Ephemeral Card.
+BASE_DECLARE_FEATURE(kSegmentationPlatformTipsEphemeralCard);
+
+// Defines the sequence of tips variations for the experimental train. The
+// sequence uses the underlying variation labels defined in
+// `home_modules/constants`.
+extern const char kTipsEphemeralCardExperimentTrainParam[];
+
+// Returns the enabled experimental train for the Tips Ephemeral Card
+// experiment, as a comma-separated string of variation labels. The order of the
+// labels in the string determines the order in which the corresponding Tips
+// Ephemeral Card variations will be considered for display.
+std::string TipsExperimentTrainEnabled();
+
+// Defines the maximum number of times an ephemeral tips card can be visible
+// to the user.
+extern const char kTipsEphemeralCardModuleMaxImpressionCount[];
+
+// Returns the maximum number of times an ephemeral tips card can be visible
+// to the user.
+int GetTipsEphemeralCardModuleMaxImpressionCount();
 
 BASE_DECLARE_FEATURE(kSegmentationSurveyPage);
 extern const base::FeatureParam<bool> kSegmentationSurveyInternalsPage;
+
+// Feature flag for enabling the Educational tip module in the home modules on
+// chrome android.
+BASE_DECLARE_FEATURE(kEducationalTipModule);
+// The maximum number of times the default browser promo card can be visible to
+// the user.
+extern const base::FeatureParam<int> kMaxDefaultBrowserCardImpressions;
+// The maximum number of times the tab group promo card can be visible to the
+// user.
+extern const base::FeatureParam<int> kMaxTabGroupCardImpressions;
+// The maximum number of times the tab group sync promo card can be visible to
+// the user.
+extern const base::FeatureParam<int> kMaxTabGroupSyncCardImpressions;
+// The maximum number of times the quick delete promo card can be visible to the
+// user.
+extern const base::FeatureParam<int> kMaxQuickDeleteCardImpressions;
+// The maximum number of times the auxiliary search promo card can be visible to
+// the user.
+
+BASE_DECLARE_FEATURE(kAndroidAppIntegrationModule);
+extern const base::FeatureParam<bool> kMaxAuxiliarySearchForceShow;
+extern const base::FeatureParam<int> kMaxAuxiliarySearchCardImpressions;
+
+// The maximum number of times the history sync promo card can be visible to the
+// user.
+extern const base::FeatureParam<int> kMaxHistorySyncCardImpressions;
+// Feature flag for enabling FedCM user segment.
+BASE_DECLARE_FEATURE(kSegmentationPlatformFedCmUser);
 
 }  // namespace segmentation_platform::features
 

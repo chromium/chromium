@@ -15,6 +15,8 @@ found in the LICENSE file.
     <activity android:name="androidx.fragment.app.FragmentActivity" />
     <activity android:name="org.chromium.ui.base.TestActivity"
               android:theme="@style/Theme.Chromium.Activity"/>
+    <activity android:name="org.chromium.chrome.browser.firstrun.FirstRunActivity"
+              android:theme="@style/Theme.Chromium.Activity"/>
     <activity android:name="org.chromium.chrome.browser.ChromeTabbedActivity"
             android:theme="@style/Theme.Chromium.TabbedMode"
             android:exported="true"

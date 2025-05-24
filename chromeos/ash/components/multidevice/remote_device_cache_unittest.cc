@@ -116,6 +116,20 @@ TEST_F(RemoteDeviceCacheTest,
   EXPECT_EQ(remote_device.name, remote_device_ref.name());
 }
 
+TEST_F(RemoteDeviceCacheTest,
+       TestSetRemoteDevices_DevicesSharingSameInstanceId) {
+  RemoteDevice remote_device = CreateRemoteDeviceForTest();
+  cache_->SetRemoteDevices({remote_device});
+  EXPECT_EQ(cache_->GetRemoteDevices().size(), 1u);
+
+  // Updatea the instance id but keep device id unchanged.
+  remote_device.instance_id = "rAnDOMiNStanceID";
+
+  cache_->SetRemoteDevices({remote_device});
+  // New entry should be added successfully.
+  EXPECT_EQ(cache_->GetRemoteDevices().size(), 2u);
+}
+
 // Currently disabled; will be re-enabled when https://crbug.com/856746 is
 // fixed.
 TEST_F(

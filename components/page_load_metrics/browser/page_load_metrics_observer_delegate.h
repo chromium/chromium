@@ -253,6 +253,11 @@ class PageLoadMetricsObserverDelegate {
   // be marked as a terminal visit unless it made another link navigation and
   // went back to the page with a back navigation from BFCache.
   virtual bool IsTerminalVisit() const = 0;
+
+  // Whether metrics should be observed for resources with the given scheme.
+  // Http(s) will be observed by default, but embedders can use this to enable
+  // metrics on non-web schemes.
+  virtual bool ShouldObserveScheme(std::string_view scheme) const = 0;
 };
 
 }  // namespace page_load_metrics

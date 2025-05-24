@@ -4,9 +4,6 @@
 
 // Use the <code>appview</code> tag to embed other Chrome Apps within your
 // Chrome App. (see <a href=#usage>Usage</a>).
-[documentation_title="<appview> Tag",
-  documentation_namespace="<appview>",
-  documented_in="tags/appview"]
 namespace appviewTag {
   // This object specifies details and operations to perform on the embedding
   // request. The app to be embedded can make a decision on whether or not to

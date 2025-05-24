@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {UserImage} from '../../personalization_app.mojom-webui.js';
-import {PersonalizationState} from '../personalization_state.js';
+import type {UserImage} from '../../personalization_app.mojom-webui.js';
+import type {PersonalizationState} from '../personalization_state.js';
 
 import {AVATAR_PLACEHOLDER_URL} from './utils.js';
 
@@ -40,7 +40,7 @@ function bufferToPngObjectUrl(value: BigBuffer): Url|null {
       bytes = new Uint8Array(value.bytes);
     } else {
       assert(!!value.sharedMemory, 'sharedMemory must be defined here');
-      const sharedMemory = value.sharedMemory!;
+      const sharedMemory = value.sharedMemory;
       const {buffer, result} =
           sharedMemory.bufferHandle.mapBuffer(0, sharedMemory.size);
       assert(result === Mojo.RESULT_OK, 'Could not map buffer');

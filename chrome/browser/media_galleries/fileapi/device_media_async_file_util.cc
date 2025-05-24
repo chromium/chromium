@@ -261,8 +261,8 @@ DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::MediaPathFilterWrapper()
     : media_path_filter_(new MediaPathFilter) {
 }
 
-DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::~MediaPathFilterWrapper() {
-}
+DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::~MediaPathFilterWrapper() =
+    default;
 
 AsyncFileUtil::EntryList
 DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::FilterMediaEntries(
@@ -271,7 +271,7 @@ DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::FilterMediaEntries(
   for (size_t i = 0; i < file_list.size(); ++i) {
     const filesystem::mojom::DirectoryEntry& entry = file_list[i];
     if (entry.type == filesystem::mojom::FsFileType::DIRECTORY ||
-        CheckFilePath(entry.name)) {
+        CheckFilePath(entry.name.path())) {
       results.push_back(entry);
     }
   }
@@ -283,8 +283,7 @@ bool DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::CheckFilePath(
   return media_path_filter_->Match(path);
 }
 
-DeviceMediaAsyncFileUtil::~DeviceMediaAsyncFileUtil() {
-}
+DeviceMediaAsyncFileUtil::~DeviceMediaAsyncFileUtil() = default;
 
 // static
 std::unique_ptr<DeviceMediaAsyncFileUtil> DeviceMediaAsyncFileUtil::Create(

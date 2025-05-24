@@ -5,84 +5,132 @@
 #include "chromeos/ash/components/disks/suspend_unmount_manager.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 
-namespace ash {
-namespace disks {
+namespace ash::disks {
 namespace {
 
-// Threshold for logging the blocking of suspend.
-constexpr base::TimeDelta kBlockSuspendThreshold = base::Seconds(5);
-
-void OnRefreshCompleted(bool success) {}
+using base::TimeDelta;
+using chromeos::PowerManagerClient;
 
 }  // namespace
 
 SuspendUnmountManager::SuspendUnmountManager(
     DiskMountManager* disk_mount_manager)
     : disk_mount_manager_(disk_mount_manager) {
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
+  PowerManagerClient::Get()->AddObserver(this);
 }
 
 SuspendUnmountManager::~SuspendUnmountManager() {
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  if (block_suspend_token_)
-    chromeos::PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+  PowerManagerClient::Get()->RemoveObserver(this);
+  if (block_suspend_token_) {
+    PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+    VLOG(1) << "Unblocked the suspension";
+  }
 }
 
 void SuspendUnmountManager::SuspendImminent(
-    power_manager::SuspendImminent::Reason reason) {
-  DCHECK(unmounting_paths_.empty());
-  if (!unmounting_paths_.empty())
-    return;
-  std::set<std::string> mount_paths;
-  for (const auto& disk : disk_mount_manager_->disks()) {
-    if ((disk->device_type() == DeviceType::kUSB ||
-         disk->device_type() == DeviceType::kSD) &&
-        !disk->mount_path().empty()) {
-      mount_paths.insert(disk->mount_path());
+    const power_manager::SuspendImminent::Reason reason) {
+  VLOG(1) << "SuspendImminent("
+          << power_manager::SuspendImminent::Reason_Name(reason) << ")";
+
+  // Start unmounting the removable devices.
+  for (const std::unique_ptr<Disk>& disk : disk_mount_manager_->disks()) {
+    const DeviceType t = disk->device_type();
+    if (t != DeviceType::kUSB && t != DeviceType::kSD) {
+      continue;
+    }
+
+    const std::string& path = disk->mount_path();
+    if (path.empty()) {
+      continue;
+    }
+
+    if (unmounting_paths_.insert(path).second) {
+      VLOG(1) << "Unmounting '" << path << "'";
+      disk_mount_manager_->UnmountPath(
+          path, base::BindOnce(&SuspendUnmountManager::OnUnmountComplete,
+                               weak_ptr_factory_.GetWeakPtr(), path));
+    } else {
+      VLOG(1) << "Already unmounting '" << path << "'";
     }
   }
-  for (const auto& mount_path : mount_paths) {
-    if (block_suspend_token_.is_empty()) {
-      block_suspend_token_ = base::UnguessableToken::Create();
-      block_suspend_time_ = base::TimeTicks::Now();
-      chromeos::PowerManagerClient::Get()->BlockSuspend(
-          block_suspend_token_, "SuspendUnmountManager");
-    }
-    disk_mount_manager_->UnmountPath(
-        mount_path, base::BindOnce(&SuspendUnmountManager::OnUnmountComplete,
-                                   weak_ptr_factory_.GetWeakPtr(), mount_path));
-    unmounting_paths_.insert(mount_path);
+
+  if (unmounting_paths_.empty()) {
+    VLOG(1) << "No removable device to unmount before going to sleep";
+    return;
+  }
+
+  VLOG(1) << "Unmounting " << unmounting_paths_.size()
+          << " removable drives before going to sleep";
+
+  if (block_suspend_token_.is_empty()) {
+    block_suspend_token_ = base::UnguessableToken::Create();
+    block_suspend_time_ = base::TimeTicks::Now();
+    PowerManagerClient::Get()->BlockSuspend(block_suspend_token_,
+                                            "SuspendUnmountManager");
+    VLOG(1) << "Delaying the suspension";
   }
 }
 
-void SuspendUnmountManager::SuspendDone(base::TimeDelta sleep_duration) {
+void SuspendUnmountManager::SuspendDone(const TimeDelta sleep_duration) {
+  VLOG(1) << "SuspendDone(" << sleep_duration << ")";
+
   // SuspendDone can be called before OnUnmountComplete when suspend is
-  // cancelled, or it takes long time to unmount volumes.
-  unmounting_paths_.clear();
-  disk_mount_manager_->EnsureMountInfoRefreshed(
-      base::BindOnce(&OnRefreshCompleted), true /* force */);
-  block_suspend_token_ = {};
+  // cancelled, or it takes a long time to unmount volumes.
+
+  if (block_suspend_token_) {
+    PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+    block_suspend_token_ = {};
+    VLOG(1) << "Unblocked the suspension";
+  }
+
+  if (unmounting_paths_.empty()) {
+    VLOG(1) << "Remounting all the removable drives";
+    disk_mount_manager_->EnsureMountInfoRefreshed(base::DoNothing(),
+                                                  true /* force */);
+  } else {
+    LOG(WARNING) << "There are still " << unmounting_paths_.size()
+                 << " removable drives waiting to be unmounted when the system"
+                    " is waking up after sleeping for "
+                 << sleep_duration;
+    base::UmaHistogramSparse("CrosDisks.StillUnmountingWhenWakingUp",
+                             unmounting_paths_.size());
+  }
 }
 
 void SuspendUnmountManager::OnUnmountComplete(const std::string& mount_path,
-                                              MountError error_code) {
-  // This can happen when unmount completes after suspend done is called.
-  if (unmounting_paths_.erase(mount_path) != 1)
-    return;
-  if (unmounting_paths_.empty() && block_suspend_token_) {
-    chromeos::PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
-    block_suspend_token_ = {};
+                                              const MountError error_code) {
+  VLOG(1) << "Unmounted '" << mount_path << "': " << error_code;
 
-    auto block_time = base::TimeTicks::Now() - block_suspend_time_;
-    LOG_IF(WARNING, block_time > kBlockSuspendThreshold)
-        << "Blocked suspend for " << block_time.InSecondsF() << " seconds";
+  const bool tracked = unmounting_paths_.erase(mount_path);
+  DCHECK(tracked) << " Mount point '" << mount_path << "' is not tracked";
+
+  if (!unmounting_paths_.empty()) {
+    VLOG(1) << "Still waiting for " << unmounting_paths_.size()
+            << " removable drives to be unmounted";
+    return;
+  }
+
+  const TimeDelta block_time = base::TimeTicks::Now() - block_suspend_time_;
+  VLOG(1) << "Unmounted all the removable drives in " << block_time;
+
+  if (block_suspend_token_) {
+    PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+    block_suspend_token_ = {};
+    VLOG(1) << "Unblocked the suspension after " << block_time;
+    base::UmaHistogramMediumTimes("CrosDisks.Time.BlockSuspend", block_time);
+  } else {
+    VLOG(1) << "Remounting all the removable drives";
+    disk_mount_manager_->EnsureMountInfoRefreshed(base::DoNothing(),
+                                                  true /* force */);
   }
 }
 
-}  // namespace disks
-}  // namespace ash
+}  // namespace ash::disks

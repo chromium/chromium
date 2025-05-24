@@ -15,11 +15,13 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/files/platform_file.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/alignment.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
@@ -32,6 +34,38 @@
 namespace partition_alloc {
 
 namespace internal {
+
+// Utility class to calculate offset within a known pool.
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PoolOffsetLookup {
+ public:
+  // Under default-constructed values all lookup will hit DCHECK.
+  PoolOffsetLookup()
+      : base_address_(0), base_mask_(static_cast<uintptr_t>(-1)) {}
+
+  PA_ALWAYS_INLINE uintptr_t GetTaggedOffset(void* ptr) const {
+    const uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
+    PA_DCHECK((address & base_mask_) == base_address_);
+    return address & (kPtrTagMask | ~base_mask_);
+  }
+
+  PA_ALWAYS_INLINE void* GetPointer(uintptr_t tagged_offset) const {
+    PA_DCHECK(IsValidTaggedOffset(tagged_offset));
+    return reinterpret_cast<void*>(base_address_ | tagged_offset);
+  }
+
+  PA_ALWAYS_INLINE bool IsValidTaggedOffset(uintptr_t tagged_offset) const {
+    return !(tagged_offset & base_mask_ & ~kPtrTagMask);
+  }
+
+ private:
+  PoolOffsetLookup(uintptr_t base_address, uintptr_t base_mask)
+      : base_address_(base_address), base_mask_(base_mask) {}
+
+  uintptr_t base_address_;
+  uintptr_t base_mask_;
+
+  friend class PartitionAddressSpace;
+};
 
 // Manages PartitionAlloc address space, which is split into pools.
 // See `glossary.md`.
@@ -46,18 +80,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   };
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  PA_ALWAYS_INLINE static uintptr_t BRPPoolBaseMask() {
-    return setup_.brp_pool_base_mask_;
-  }
-  PA_ALWAYS_INLINE static uintptr_t RegularPoolBaseMask() {
-    return setup_.regular_pool_base_mask_;
+  PA_ALWAYS_INLINE static uintptr_t CorePoolBaseMask() {
+    return setup_.core_pool_base_mask_;
   }
 #else
-  PA_ALWAYS_INLINE static constexpr uintptr_t BRPPoolBaseMask() {
-    return kBRPPoolBaseMask;
-  }
-  PA_ALWAYS_INLINE static constexpr uintptr_t RegularPoolBaseMask() {
-    return kRegularPoolBaseMask;
+  PA_ALWAYS_INLINE static constexpr uintptr_t CorePoolBaseMask() {
+    return kCorePoolBaseMask;
   }
 #endif
 
@@ -73,13 +101,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     if (IsInBRPPool(address)) {
       pool = kBRPPoolHandle;
       base = setup_.brp_pool_base_address_;
-      base_mask = BRPPoolBaseMask();
+      base_mask = CorePoolBaseMask();
     } else
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       if (IsInRegularPool(address)) {
         pool = kRegularPoolHandle;
         base = setup_.regular_pool_base_address_;
-        base_mask = RegularPoolBaseMask();
+        base_mask = CorePoolBaseMask();
       } else if (IsInConfigurablePool(address)) {
         PA_DCHECK(IsConfigurablePoolInitialized());
         pool = kConfigurablePoolHandle;
@@ -106,13 +134,34 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return kConfigurablePoolMinSize;
   }
 
+  PA_ALWAYS_INLINE static PoolOffsetLookup GetOffsetLookup(pool_handle pool) {
+    switch (pool) {
+      case kRegularPoolHandle:
+        return PoolOffsetLookup(setup_.regular_pool_base_address_,
+                                CorePoolBaseMask());
+      case kBRPPoolHandle:
+        return PoolOffsetLookup(setup_.brp_pool_base_address_,
+                                CorePoolBaseMask());
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+      case kThreadIsolatedPoolHandle:
+        return PoolOffsetLookup(setup_.thread_isolated_pool_base_address_,
+                                kThreadIsolatedPoolBaseMask);
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+      case kConfigurablePoolHandle:
+        return PoolOffsetLookup(setup_.configurable_pool_base_address_,
+                                setup_.configurable_pool_base_mask_);
+      default:
+        PA_NOTREACHED();
+    }
+  }
+
   // Initialize pools (except for the configurable one).
   //
   // This function must only be called from the main thread.
   static void Init();
   // Initialize the ConfigurablePool at the given address |pool_base|. It must
   // be aligned to the size of the pool. The size must be a power of two and
-  // must be within [ConfigurablePoolMinSize(), ConfigurablePoolMaxSize()].
+  // must be within [kConfigurablePoolMinSize, kConfigurablePoolMaxSize].
   //
   // This function must only be called from the main thread.
   static void InitConfigurablePool(uintptr_t pool_base, size_t size);
@@ -150,9 +199,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInRegularPool(uintptr_t address) {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    const uintptr_t regular_pool_base_mask = setup_.regular_pool_base_mask_;
+    const uintptr_t regular_pool_base_mask = setup_.core_pool_base_mask_;
 #else
-    constexpr uintptr_t regular_pool_base_mask = kRegularPoolBaseMask;
+    constexpr uintptr_t regular_pool_base_mask = kCorePoolBaseMask;
 #endif
     return (address & regular_pool_base_mask) ==
            setup_.regular_pool_base_address_;
@@ -165,34 +214,29 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInBRPPool(uintptr_t address) {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    const uintptr_t brp_pool_base_mask = setup_.brp_pool_base_mask_;
+    const uintptr_t brp_pool_base_mask = setup_.core_pool_base_mask_;
 #else
-    constexpr uintptr_t brp_pool_base_mask = kBRPPoolBaseMask;
+    constexpr uintptr_t brp_pool_base_mask = kCorePoolBaseMask;
 #endif
     return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
   }
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   PA_ALWAYS_INLINE static uintptr_t BRPPoolBase() {
-#if PA_BUILDFLAG(GLUE_CORE_POOLS)
-    return RegularPoolBase() + RegularPoolSize();
-#else
-    return setup_.brp_pool_base_address_;
-#endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
+    return RegularPoolBase() + CorePoolSize();
   }
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
-#if PA_BUILDFLAG(GLUE_CORE_POOLS)
   // Checks whether the address belongs to either regular or BRP pool.
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInCorePools(uintptr_t address) {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    const uintptr_t core_pools_base_mask = setup_.core_pools_base_mask_;
+    const uintptr_t core_pools_base_mask = setup_.glued_pools_base_mask_;
 #else
-    // When PA_GLUE_CORE_POOLS is on, the BRP pool is placed at the end of the
-    // regular pool, effectively forming one virtual pool of a twice bigger
-    // size. Adjust the mask appropriately.
-    constexpr uintptr_t core_pools_base_mask = kRegularPoolBaseMask << 1;
+    // The BRP pool is placed at the end of the regular pool, effectively
+    // forming one virtual pool of a twice bigger size. Adjust the mask
+    // appropriately.
+    constexpr uintptr_t core_pools_base_mask = kCorePoolBaseMask << 1;
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     bool ret =
         (address & core_pools_base_mask) == setup_.regular_pool_base_address_;
@@ -200,15 +244,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return ret;
   }
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  PA_ALWAYS_INLINE static size_t CorePoolsSize() {
-    return RegularPoolSize() * 2;
-  }
+  PA_ALWAYS_INLINE static size_t CorePoolsSize() { return CorePoolSize() * 2; }
 #else
   PA_ALWAYS_INLINE static constexpr size_t CorePoolsSize() {
-    return RegularPoolSize() * 2;
+    return CorePoolSize() * 2;
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-#endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
 
   PA_ALWAYS_INLINE static uintptr_t OffsetInBRPPool(uintptr_t address) {
     PA_DCHECK(IsInBRPPool(address));
@@ -235,15 +276,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   PA_ALWAYS_INLINE static bool IsShadowMetadataEnabledOnRegularPool() {
-    return regular_pool_fd_ != -1;
+    return regular_pool_fd_ != base::kInvalidPlatformFile;
   }
 
   PA_ALWAYS_INLINE static bool IsShadowMetadataEnabledOnBRPPool() {
-    return brp_pool_fd_ != -1;
+    return brp_pool_fd_ != base::kInvalidPlatformFile;
   }
 
   PA_ALWAYS_INLINE static bool IsShadowMetadataEnabledOnConfigurablePool() {
-    return configurable_pool_fd_ != -1;
+    return configurable_pool_fd_ != base::kInvalidPlatformFile;
   }
 
   PA_ALWAYS_INLINE static bool IsShadowMetadataEnabled(pool_handle pool) {
@@ -290,8 +331,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr size_t kSystemPageOffsetOfBRPPoolShadow = 2u;
   static constexpr size_t kSystemPageOffsetOfConfigurablePoolShadow = 4u;
 
-  static size_t RegularPoolShadowSize();
-  static size_t BRPPoolShadowSize();
+  static size_t CorePoolShadowSize();
   static size_t ConfigurablePoolShadowSize();
 
   PA_ALWAYS_INLINE static std::ptrdiff_t RegularPoolShadowOffset() {
@@ -327,8 +367,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   PA_ALWAYS_INLINE static bool IsInPoolShadow(const void* ptr) {
     uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
     return (pool_shadow_address_ <= ptr_as_uintptr &&
-            (ptr_as_uintptr < pool_shadow_address_ + RegularPoolSize() ||
-             ptr_as_uintptr < pool_shadow_address_ + BRPPoolSize() ||
+            (ptr_as_uintptr < pool_shadow_address_ + CorePoolSize() ||
              ptr_as_uintptr < pool_shadow_address_ + kConfigurablePoolMaxSize));
   }
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
@@ -346,15 +385,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
  private:
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  PA_ALWAYS_INLINE static size_t RegularPoolSize();
-  PA_ALWAYS_INLINE static size_t BRPPoolSize();
+  static bool IsIOSTestProcess();
+
+  PA_ALWAYS_INLINE static size_t CorePoolSize() {
+    return IsIOSTestProcess() ? kCorePoolSizeForIOSTestProcess : kCorePoolSize;
+  }
 #else
   // The pool sizes should be as large as maximum whenever possible.
-  PA_ALWAYS_INLINE static constexpr size_t RegularPoolSize() {
-    return kRegularPoolSize;
-  }
-  PA_ALWAYS_INLINE static constexpr size_t BRPPoolSize() {
-    return kBRPPoolSize;
+  PA_ALWAYS_INLINE static constexpr size_t CorePoolSize() {
+    return kCorePoolSize;
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
@@ -383,10 +422,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // certain PA allocations must be located inside a given virtual address
   // region. One use case for this Pool is V8 Sandbox, which requires that
   // ArrayBuffers be located inside of it.
-  static constexpr size_t kRegularPoolSize = kPoolMaxSize;
-  static constexpr size_t kBRPPoolSize = kPoolMaxSize;
-  static_assert(base::bits::HasSingleBit(kRegularPoolSize));
-  static_assert(base::bits::HasSingleBit(kBRPPoolSize));
+  static constexpr size_t kCorePoolSize = kPoolMaxSize;
+  static_assert(base::bits::HasSingleBit(kCorePoolSize));
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   static constexpr size_t kThreadIsolatedPoolSize = kGiB / 4;
   static_assert(base::bits::HasSingleBit(kThreadIsolatedPoolSize));
@@ -406,22 +443,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // We can't afford pool sizes as large as kPoolMaxSize in iOS EarlGrey tests,
   // since the test process cannot use an extended virtual address space (see
   // crbug.com/1250788).
-  static constexpr size_t kRegularPoolSizeForIOSTestProcess = kGiB / 4;
-  static constexpr size_t kBRPPoolSizeForIOSTestProcess = kGiB / 4;
-  static_assert(kRegularPoolSizeForIOSTestProcess < kRegularPoolSize);
-  static_assert(kBRPPoolSizeForIOSTestProcess < kBRPPoolSize);
-  static_assert(base::bits::HasSingleBit(kRegularPoolSizeForIOSTestProcess));
-  static_assert(base::bits::HasSingleBit(kBRPPoolSizeForIOSTestProcess));
+  static constexpr size_t kCorePoolSizeForIOSTestProcess = kGiB / 4;
+  static_assert(kCorePoolSizeForIOSTestProcess < kCorePoolSize);
+  static_assert(base::bits::HasSingleBit(kCorePoolSizeForIOSTestProcess));
 #endif  // PA_BUILDFLAG(IOS_IOS)
 
 #if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   // Masks used to easy determine belonging to a pool.
-  static constexpr uintptr_t kRegularPoolOffsetMask =
-      static_cast<uintptr_t>(kRegularPoolSize) - 1;
-  static constexpr uintptr_t kRegularPoolBaseMask = ~kRegularPoolOffsetMask;
-  static constexpr uintptr_t kBRPPoolOffsetMask =
-      static_cast<uintptr_t>(kBRPPoolSize) - 1;
-  static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
+  static constexpr uintptr_t kCorePoolOffsetMask =
+      static_cast<uintptr_t>(kCorePoolSize) - 1;
+  static constexpr uintptr_t kCorePoolBaseMask = ~kCorePoolOffsetMask;
 #endif  // !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
@@ -451,11 +482,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
         kUninitializedPoolBaseAddress;
 #endif
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-    uintptr_t regular_pool_base_mask_ = 0;
-    uintptr_t brp_pool_base_mask_ = 0;
-#if PA_BUILDFLAG(GLUE_CORE_POOLS)
-    uintptr_t core_pools_base_mask_ = 0;
-#endif
+    uintptr_t core_pool_base_mask_ = 0;
+    uintptr_t glued_pools_base_mask_ = 0;
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     uintptr_t configurable_pool_base_mask_ = 0;
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
@@ -481,10 +509,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static std::ptrdiff_t regular_pool_shadow_offset_;
   static std::ptrdiff_t brp_pool_shadow_offset_;
   static std::ptrdiff_t configurable_pool_shadow_offset_;
-  // TODO(crbug.com/40238514): Use platform file handles instead of |int|.
-  static int regular_pool_fd_;
-  static int brp_pool_fd_;
-  static int configurable_pool_fd_;
+  static base::PlatformFile regular_pool_fd_;
+  static base::PlatformFile brp_pool_fd_;
+  static base::PlatformFile configurable_pool_fd_;
   static uintptr_t pool_shadow_address_;
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
@@ -517,19 +544,11 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
   PA_DCHECK(!internal::PartitionAddressSpace::IsInBRPPool(address));
 #endif
 
-  return
-#if PA_BUILDFLAG(GLUE_CORE_POOLS)
-      internal::PartitionAddressSpace::IsInCorePools(address)
-#else
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      internal::PartitionAddressSpace::IsInBRPPool(address) ||
-#endif
-      internal::PartitionAddressSpace::IsInRegularPool(address)
-#endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
+  return internal::PartitionAddressSpace::IsInCorePools(address)
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
-      || internal::PartitionAddressSpace::IsInThreadIsolatedPool(address)
+         || internal::PartitionAddressSpace::IsInThreadIsolatedPool(address)
 #endif
-      || internal::PartitionAddressSpace::IsInConfigurablePool(address);
+         || internal::PartitionAddressSpace::IsInConfigurablePool(address);
 }
 
 // Returns false for nullptr.
@@ -542,13 +561,11 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInBRPPool(address);
 }
 
-#if PA_BUILDFLAG(GLUE_CORE_POOLS)
 // Checks whether the address belongs to either regular or BRP pool.
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocCorePools(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInCorePools(address);
 }
-#endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
 
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(

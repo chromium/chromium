@@ -77,6 +77,8 @@ class OpenXrApiWrapper {
 
   static VRTestHook* GetTestHook();
 
+  static bool NeedsSeparateActivity();
+
   bool UpdateAndGetSessionEnded();
 
   // The supplied graphics_binding is guaranteed by the caller to exist until
@@ -104,6 +106,7 @@ class OpenXrApiWrapper {
   XrTime GetPredictedDisplayTime() const;
   bool GetStageParameters(std::vector<gfx::Point3F>& stage_bounds,
                           gfx::Transform& local_from_stage);
+  std::optional<gfx::Transform> GetLocalFromFloor();
 
   device::mojom::XREnvironmentBlendMode PickEnvironmentBlendModeForSession(
       device::mojom::XRSessionMode session_mode);
@@ -161,6 +164,12 @@ class OpenXrApiWrapper {
 
   uint32_t GetRecommendedSwapchainSampleCount() const;
   void UpdateStageBounds();
+  std::optional<gfx::Transform> GetLocalFromStage();
+  std::optional<gfx::Transform> GetBaseSpaceFromSpace(
+      mojom::XRReferenceSpaceType base_space,
+      mojom::XRReferenceSpaceType space);
+  XrResult CreateEmulatedLocalFloorSpace(XrSpace* space);
+  XrResult UpdateLocalFloorSpace();
 
   device::mojom::XREnvironmentBlendMode GetMojoBlendMode(
       XrEnvironmentBlendMode xr_blend_mode);
@@ -205,11 +214,14 @@ class OpenXrApiWrapper {
 
   // These objects are initialized when a session begins and stay constant
   // throughout the lifetime of the session.
-  XrSession session_;
-  XrSpace local_space_;
-  XrSpace stage_space_;
-  XrSpace view_space_;
-  XrSpace unbounded_space_;
+  XrSession session_ = XR_NULL_HANDLE;
+  XrSpace local_space_ = XR_NULL_HANDLE;
+  XrSpace local_floor_space_ = XR_NULL_HANDLE;
+  XrSpace stage_space_ = XR_NULL_HANDLE;
+  XrSpace view_space_ = XR_NULL_HANDLE;
+  XrSpace unbounded_space_ = XR_NULL_HANDLE;
+  bool emulated_local_floor_ = false;
+  bool try_recreate_local_floor_ = false;
   std::unordered_set<mojom::XRSessionFeature> enabled_features_;
   raw_ptr<OpenXrGraphicsBinding> graphics_binding_ = nullptr;
 

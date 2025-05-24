@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 
 class GURL;
 namespace supervised_user {
@@ -24,23 +25,6 @@ class WebContentHandler {
  public:
   using ApprovalRequestInitiatedCallback = base::OnceCallback<void(bool)>;
 
-  // The result of local web approval flow.
-  // Used for metrics. Those values are logged to UMA. Entries should not be
-  // renumbered and numeric values should never be reused.
-  // Matches the enum "FamilyLinkUserLocalWebApprovalResult" in
-  // src/tools/metrics/histograms/enums.xml.
-  // LINT.IfChange
-  enum class LocalApprovalResult {
-    kApproved = 0,
-    kDeclined = 1,
-    kCanceled = 2,
-    kError = 3,
-    kMaxValue = kError
-  };
-  // LINT.ThenChange(
-  //     //tools/metrics/histograms/enums.xml
-  // )
-
   virtual ~WebContentHandler();
 
   // Initiates the OS specific local approval flow for a given `url`.
@@ -50,6 +34,7 @@ class WebContentHandler {
       const GURL& url,
       const std::u16string& child_display_name,
       const UrlFormatter& url_formatter,
+      const FilteringBehaviorReason& filtering_behavior_reason,
       ApprovalRequestInitiatedCallback callback) = 0;
 
   // TODO(b/273692421): Add unit (or browser test) coverage for the moved
@@ -71,11 +56,17 @@ class WebContentHandler {
   // Returns the interstitial navigation id.
   virtual int64_t GetInterstitialNavigationId() const = 0;
 
+  // Closes the local approval widget if it is on-screen.
+  virtual void MaybeCloseLocalApproval() = 0;
+
   static const char* GetLocalApprovalDurationMillisecondsHistogram();
   static const char* GetLocalApprovalResultHistogram();
 
  protected:
   WebContentHandler();
+
+  // Records the outcome of the local web approval flow.
+  void RecordLocalWebApprovalResultMetric(LocalApprovalResult approval_result);
 
   // Processes the outcome of the local approval request.
   // Should be called by platform specific completion callback.
@@ -84,7 +75,9 @@ class WebContentHandler {
       supervised_user::SupervisedUserSettingsService& settings_service,
       const GURL& url,
       base::TimeTicks start_time,
-      LocalApprovalResult approval_result);
+      LocalApprovalResult approval_result,
+      std::optional<supervised_user::LocalWebApprovalErrorType>
+          local_approval_error_type);
 };
 
 }  // namespace supervised_user

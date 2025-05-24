@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/test/chromedriver/server/http_server.h"
 
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"

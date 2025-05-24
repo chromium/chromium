@@ -15,9 +15,9 @@ NotifierId::NotifierId()
       catalog_name(ash::NotificationCatalogName::kNone) {}
 #else
 NotifierId::NotifierId() : type(NotifierType::SYSTEM_COMPONENT) {}
-#endif  // IS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 NotifierId::NotifierId(NotifierType type,
                        const std::string& id,
                        ash::NotificationCatalogName catalog_name)
@@ -35,7 +35,7 @@ NotifierId::NotifierId(NotifierType type, const std::string& id)
   DCHECK_NE(type, NotifierType::WEB_PAGE);
   DCHECK(!id.empty());
 }
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 NotifierId::NotifierId(const GURL& origin)
     : NotifierId(origin,
@@ -46,9 +46,9 @@ NotifierId::NotifierId(const GURL& url,
                        std::optional<std::u16string> title,
                        std::optional<std::string> web_app_id)
     : type(NotifierType::WEB_PAGE),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       catalog_name(ash::NotificationCatalogName::kNone),
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
       url(url),
       title(std::move(title)),
       web_app_id(std::move(web_app_id)) {
@@ -78,7 +78,7 @@ bool NotifierId::operator==(const NotifierId& other) const {
       catalog_name != other.catalog_name) {
     return false;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return id == other.id;
 }

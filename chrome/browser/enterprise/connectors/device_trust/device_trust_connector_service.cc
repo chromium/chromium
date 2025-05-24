@@ -108,8 +108,8 @@ void DeviceTrustConnectorService::OnPolicyUpdated(const DTCPolicyLevel& level,
 
   if (policy_details.enabled) {
     // Add the new endpoints to the conditions.
-    url_matcher::util::AddAllowFilters(policy_details.matcher.get(),
-                                       *url_patterns);
+    url_matcher::util::AddAllowFiltersWithLimit(policy_details.matcher.get(),
+                                                *url_patterns);
     OnInlinePolicyEnabled(level);
   } else {
     OnInlinePolicyDisabled(level);

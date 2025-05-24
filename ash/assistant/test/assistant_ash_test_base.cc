@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/assistant/test/assistant_ash_test_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include <string>
 #include <utility>
@@ -24,8 +23,10 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "ui/views/view_utils.h"
 
@@ -113,6 +114,10 @@ AssistantAshTestBase::~AssistantAshTestBase() = default;
 void AssistantAshTestBase::SetUp() {
   AshTestBase::SetUp();
 
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << "Assistant is not enabled if new entry point is enabled.";
+  }
+
   // Make the display big enough to hold the app list.
   UpdateDisplay("1024x768");
 
@@ -134,23 +139,8 @@ void AssistantAshTestBase::TearDown() {
 void AssistantAshTestBase::CreateAndSwitchActiveUser(
     const std::string& display_email,
     const std::string& given_name) {
-  TestSessionControllerClient* session_controller_client =
-      ash_test_helper()->test_session_controller_client();
-
-  session_controller_client->Reset();
-
-  session_controller_client->AddUserSession(
-      display_email, user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true,
-      /*is_new_profile=*/false, given_name);
-
-  session_controller_client->SwitchActiveUser(Shell::Get()
-                                                  ->session_controller()
-                                                  ->GetUserSession(0)
-                                                  ->user_info.account_id);
-
-  session_controller_client->SetSessionState(
-      session_manager::SessionState::ACTIVE);
+  ClearLogin();
+  SimulateUserLogin({.display_email = display_email, .given_name = given_name});
 
   SetUpActiveUser();
 }

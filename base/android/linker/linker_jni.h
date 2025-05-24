@@ -186,8 +186,9 @@ struct LibInfo_class {
                    size_t* load_size) {
     if (load_address) {
       jlong java_address = env->GetLongField(library_info_obj, load_address_id);
-      if (!IsValidAddress(java_address))
+      if (!IsValidAddress(java_address)) {
         return false;
+      }
       *load_address = static_cast<uintptr_t>(java_address);
     }
     if (load_size) {

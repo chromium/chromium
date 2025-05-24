@@ -24,12 +24,12 @@ using testing::DoDefault;
 
 class DesktopMediaListAshTest : public ChromeAshTestBase {
  public:
-  DesktopMediaListAshTest() {}
+  DesktopMediaListAshTest() = default;
 
   DesktopMediaListAshTest(const DesktopMediaListAshTest&) = delete;
   DesktopMediaListAshTest& operator=(const DesktopMediaListAshTest&) = delete;
 
-  ~DesktopMediaListAshTest() override {}
+  ~DesktopMediaListAshTest() override = default;
 
   void TearDown() override {
     // Reset the unique_ptr so the list stops refreshing.

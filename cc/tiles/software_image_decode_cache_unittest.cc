@@ -4,6 +4,8 @@
 
 #include "cc/tiles/software_image_decode_cache.h"
 
+#include "base/feature_list.h"
+#include "cc/base/features.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/test/fake_paint_image_generator.h"
@@ -765,6 +767,193 @@ TEST_F(SoftwareImageDecodeCacheTest, GetTaskForImageSameImage) {
 
   TestTileTaskRunner::ProcessTask(result.task.get());
 
+  cache_.UnrefImage(draw_image);
+  cache_.UnrefImage(draw_image);
+}
+
+TEST_F(SoftwareImageDecodeCacheTest,
+       GetRasterTaskBeforeStandAloneTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
+  PaintImage paint_image = CreatePaintImage(100, 100);
+  DrawImage draw_image(
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      PaintFlags::FilterQuality::kHigh,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), true),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+  ImageDecodeCache::TaskResult raster_result = cache_.GetTaskForImageAndRef(
+      cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(raster_result.need_unref);
+  EXPECT_TRUE(raster_result.task);
+  TileTask* raster_decode_task = raster_result.task.get();
+
+  ImageDecodeCache::TaskResult stand_alone_result =
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
+  EXPECT_TRUE(stand_alone_result.need_unref);
+  EXPECT_EQ(stand_alone_result.task->dependencies().size(), 1u);
+  EXPECT_EQ(stand_alone_result.task->dependencies()[0].get(),
+            raster_decode_task);
+  EXPECT_EQ(raster_decode_task->external_dependent().get(),
+            stand_alone_result.task.get());
+
+  TestTileTaskRunner::ProcessTask(raster_decode_task);
+  TestTileTaskRunner::ProcessTask(stand_alone_result.task.get());
+
+  cache_.UnrefImage(draw_image);
+  cache_.UnrefImage(draw_image);
+}
+
+TEST_F(SoftwareImageDecodeCacheTest,
+       GetStandAloneTaskBeforeRasterTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
+  PaintImage paint_image = CreatePaintImage(100, 100);
+  DrawImage draw_image(
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      PaintFlags::FilterQuality::kHigh,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), true),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+  ImageDecodeCache::TaskResult stand_alone_result =
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
+  EXPECT_TRUE(stand_alone_result.need_unref);
+  EXPECT_TRUE(stand_alone_result.task);
+
+  ImageDecodeCache::TaskResult raster_result = cache_.GetTaskForImageAndRef(
+      cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(raster_result.need_unref);
+  EXPECT_TRUE(raster_result.task);
+  TileTask* raster_decode_task = raster_result.task.get();
+
+  // Stand-alone task hasn't started yet, so it depends on raster task.
+  EXPECT_EQ(stand_alone_result.task->dependencies().size(), 1u);
+  EXPECT_EQ(stand_alone_result.task->dependencies()[0].get(),
+            raster_decode_task);
+  EXPECT_EQ(raster_decode_task->external_dependent().get(),
+            stand_alone_result.task.get());
+
+  TestTileTaskRunner::ProcessTask(raster_decode_task);
+  TestTileTaskRunner::ProcessTask(stand_alone_result.task.get());
+
+  cache_.UnrefImage(draw_image);
+  cache_.UnrefImage(draw_image);
+}
+
+TEST_F(SoftwareImageDecodeCacheTest,
+       StandAloneTaskStartedBeforeRasterTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
+  PaintImage paint_image = CreatePaintImage(100, 100);
+  DrawImage draw_image(
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      PaintFlags::FilterQuality::kHigh,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), true),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+  ImageDecodeCache::TaskResult stand_alone_result =
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
+  EXPECT_TRUE(stand_alone_result.need_unref);
+  EXPECT_TRUE(stand_alone_result.task);
+  TileTask* stand_alone_decode_task = stand_alone_result.task.get();
+
+  // Start stand-alone decode task before requesting image for raster
+  stand_alone_decode_task->state().DidSchedule();
+  stand_alone_decode_task->state().DidStart();
+
+  ImageDecodeCache::TaskResult raster_result = cache_.GetTaskForImageAndRef(
+      cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(raster_result.need_unref);
+  EXPECT_TRUE(raster_result.task);
+  TileTask* raster_decode_task = raster_result.task.get();
+
+  // Raster task depends on in-flight stand-alone task
+  EXPECT_EQ(raster_decode_task->dependencies().size(), 1u);
+  EXPECT_EQ(raster_decode_task->dependencies()[0].get(),
+            stand_alone_decode_task);
+  EXPECT_EQ(stand_alone_decode_task->external_dependent().get(),
+            raster_decode_task);
+
+  stand_alone_decode_task->RunOnWorkerThread();
+  stand_alone_decode_task->state().DidFinish();
+  TestTileTaskRunner::CompleteTask(stand_alone_decode_task);
+  TestTileTaskRunner::ProcessTask(raster_decode_task);
+
+  cache_.UnrefImage(draw_image);
+  cache_.UnrefImage(draw_image);
+}
+
+TEST_F(SoftwareImageDecodeCacheTest, ExternalDependentRasterTaskCanceled) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
+
+  PaintImage paint_image = CreatePaintImage(100, 100);
+  DrawImage draw_image(
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      PaintFlags::FilterQuality::kHigh,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), true),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+  ImageDecodeCache::TaskResult stand_alone_result =
+      cache_.GetOutOfRasterDecodeTaskForImageAndRef(
+          cache_client_id_, draw_image, /*speculative*/ false);
+  EXPECT_TRUE(stand_alone_result.need_unref);
+  EXPECT_TRUE(stand_alone_result.task);
+  TileTask* stand_alone_decode_task = stand_alone_result.task.get();
+
+  // Start stand-alone decode task before requesting image for raster
+  stand_alone_decode_task->state().DidSchedule();
+  stand_alone_decode_task->state().DidStart();
+
+  ImageDecodeCache::TaskResult raster_result = cache_.GetTaskForImageAndRef(
+      cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(raster_result.need_unref);
+  EXPECT_TRUE(raster_result.task);
+  TileTask* raster_decode_task = raster_result.task.get();
+
+  // Raster task depends on in-flight stand-alone task
+  EXPECT_EQ(raster_decode_task->dependencies().size(), 1u);
+  EXPECT_EQ(raster_decode_task->dependencies()[0].get(),
+            stand_alone_decode_task);
+  EXPECT_EQ(stand_alone_decode_task->external_dependent().get(),
+            raster_decode_task);
+
+  // Cancel the upload and decode raster tasks
+  TestTileTaskRunner::CancelTask(raster_decode_task);
+  TestTileTaskRunner::CompleteTask(raster_decode_task);
+
+  // Create a new raster task depending on the stand-alone task. This
+  // should be OK since the first raster task was canceled.
+  raster_result = cache_.GetTaskForImageAndRef(cache_client_id_, draw_image,
+                                               ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(raster_result.need_unref);
+  EXPECT_TRUE(raster_result.task);
+  EXPECT_NE(raster_result.task.get(), raster_decode_task);
+  raster_decode_task = raster_result.task.get();
+  EXPECT_EQ(raster_decode_task->dependencies().size(), 1u);
+  EXPECT_EQ(raster_decode_task->dependencies()[0].get(),
+            stand_alone_decode_task);
+  EXPECT_EQ(stand_alone_decode_task->external_dependent().get(),
+            raster_decode_task);
+
+  stand_alone_decode_task->RunOnWorkerThread();
+  stand_alone_decode_task->state().DidFinish();
+  TestTileTaskRunner::CompleteTask(stand_alone_decode_task);
+  EXPECT_TRUE(raster_decode_task->dependencies().empty());
+  TestTileTaskRunner::ProcessTask(raster_decode_task);
+
+  cache_.UnrefImage(draw_image);
   cache_.UnrefImage(draw_image);
   cache_.UnrefImage(draw_image);
 }

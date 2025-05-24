@@ -4,8 +4,6 @@
 
 package org.chromium.components.search_engines;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -13,6 +11,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ import java.util.List;
  *
  * See components/search_engines/template_url_service.h for more details.
  */
+@NullMarked
 public class TemplateUrlService {
     /** This listener will be notified when template url service is done loading. */
     public interface LoadListener {
@@ -278,7 +279,7 @@ public class TemplateUrlService {
      * @return      A {@link String} that contains the url of the default search engine with
      *              {@code query} inserted as the search parameter.
      */
-    public String getUrlForSearchQuery(String query, List<String> searchParams) {
+    public String getUrlForSearchQuery(String query, @Nullable List<String> searchParams) {
         return TemplateUrlServiceJni.get()
                 .getUrlForSearchQuery(
                         mNativeTemplateUrlServiceAndroid,
@@ -319,18 +320,22 @@ public class TemplateUrlService {
     }
 
     /**
-     * Finds the default search engine for the default provider and returns the url query
-     * {@link String} for {@code query} with the contextual search version param set.
+     * Finds the default search engine for the default provider and returns the url query {@link
+     * String} for {@code query} with the contextual search version param set.
+     *
      * @param query The search term to use as the main query in the returned search url.
      * @param alternateTerm The alternate search term to use as an alternate suggestion.
      * @param shouldPrefetch Whether the returned url should include a prefetch parameter.
      * @param protocolVersion The version of the Contextual Search API protocol to use.
-     * @return      A {@link String} that contains the url of the default search engine with
-     *              {@code query} and {@code alternateTerm} inserted as parameters and contextual
-     *              search and prefetch parameters conditionally set.
+     * @return A {@link String} that contains the url of the default search engine with {@code
+     *     query} and {@code alternateTerm} inserted as parameters and contextual search and
+     *     prefetch parameters conditionally set.
      */
     public GURL getUrlForContextualSearchQuery(
-            String query, String alternateTerm, boolean shouldPrefetch, String protocolVersion) {
+            @Nullable String query,
+            @Nullable String alternateTerm,
+            boolean shouldPrefetch,
+            String protocolVersion) {
         return TemplateUrlServiceJni.get()
                 .getUrlForContextualSearchQuery(
                         mNativeTemplateUrlServiceAndroid,
@@ -386,14 +391,14 @@ public class TemplateUrlService {
             String name,
             String keyword,
             String searchUrl,
-            String suggestUrl,
-            String faviconUrl,
-            String newTabUrl,
-            String imageUrl,
-            String imageUrlPostParams,
-            String imageTranslateUrl,
-            String imageTranslateSourceLanguageParamKey,
-            String imageTranslateTargetLanguageParamKey) {
+            @Nullable String suggestUrl,
+            @Nullable String faviconUrl,
+            @Nullable String newTabUrl,
+            @Nullable String imageUrl,
+            @Nullable String imageUrlPostParams,
+            @Nullable String imageTranslateUrl,
+            @Nullable String imageTranslateSourceLanguageParamKey,
+            @Nullable String imageTranslateTargetLanguageParamKey) {
         return TemplateUrlServiceJni.get()
                 .setPlayAPISearchEngine(
                         mNativeTemplateUrlServiceAndroid,
@@ -432,16 +437,6 @@ public class TemplateUrlService {
                         mNativeTemplateUrlServiceAndroid, TemplateUrlService.this);
     }
 
-    /**
-     * Whether the device is from an EEA country. This is consistent with countries which are
-     * eligible for the EEA default search engine choice prompt. "Default country: or "country at
-     * install" are used for SearchEngineChoiceCountry. It might be different than what LocaleUtils
-     * returns.
-     */
-    public boolean isEeaChoiceCountry() {
-        return TemplateUrlServiceJni.get().isEeaChoiceCountry(mNativeTemplateUrlServiceAndroid);
-    }
-
     @NativeMethods
     public interface Natives {
         void load(long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
@@ -473,7 +468,7 @@ public class TemplateUrlService {
                 long nativeTemplateUrlServiceAndroid,
                 TemplateUrlService caller,
                 String query,
-                String[] searchParams);
+                String @Nullable [] searchParams);
 
         String getSearchQueryForUrl(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller, GURL url);
@@ -484,8 +479,8 @@ public class TemplateUrlService {
         GURL getUrlForContextualSearchQuery(
                 long nativeTemplateUrlServiceAndroid,
                 TemplateUrlService caller,
-                String query,
-                String alternateTerm,
+                @Nullable String query,
+                @Nullable String alternateTerm,
                 boolean shouldPrefetch,
                 String protocolVersion);
 
@@ -507,14 +502,14 @@ public class TemplateUrlService {
                 String name,
                 String keyword,
                 String searchUrl,
-                String suggestUrl,
-                String faviconUrl,
-                String newTabUrl,
-                String imageUrl,
-                String imageUrlPostParams,
-                String imageTranslateUrl,
-                String imageTranslateSourceLanguageParamKey,
-                String imageTranslateTargetLanguageParamKey);
+                @Nullable String suggestUrl,
+                @Nullable String faviconUrl,
+                @Nullable String newTabUrl,
+                @Nullable String imageUrl,
+                @Nullable String imageUrlPostParams,
+                @Nullable String imageTranslateUrl,
+                @Nullable String imageTranslateSourceLanguageParamKey,
+                @Nullable String imageTranslateTargetLanguageParamKey);
 
         void getTemplateUrls(
                 long nativeTemplateUrlServiceAndroid,
@@ -526,7 +521,5 @@ public class TemplateUrlService {
 
         String[] getImageUrlAndPostContent(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
-
-        boolean isEeaChoiceCountry(long nativeTemplateUrlServiceAndroid);
     }
 }

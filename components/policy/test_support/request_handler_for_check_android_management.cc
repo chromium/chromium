@@ -44,10 +44,12 @@ RequestHandlerForCheckAndroidManagement::HandleRequest(
 
   em::DeviceManagementResponse response;
   response.mutable_check_android_management_response();
-  if (oauth_token == kManagedAuthToken)
-    return CreateHttpResponse(net::HTTP_CONFLICT, response.SerializeAsString());
-  if (oauth_token == kUnmanagedAuthToken)
-    return CreateHttpResponse(net::HTTP_OK, response.SerializeAsString());
+  if (oauth_token == kManagedAuthToken) {
+    return CreateHttpResponse(net::HTTP_CONFLICT, response);
+  }
+  if (oauth_token == kUnmanagedAuthToken) {
+    return CreateHttpResponse(net::HTTP_OK, response);
+  }
   return CreateHttpResponse(net::HTTP_FORBIDDEN, "Invalid OAuth token");
 }
 

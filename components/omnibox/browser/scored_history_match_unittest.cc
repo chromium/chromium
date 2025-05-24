@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/scored_history_match.h"
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -12,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -163,7 +163,7 @@ float ScoredHistoryMatchTest::GetTopicalityScoreOfTermAgainstURLAndTitle(
     const GURL& url,
     const std::u16string& title) {
   String16Vector term_vector;
-  base::ranges::transform(
+  std::ranges::transform(
       terms, std::back_inserter(term_vector),
       [](const auto& term) { return base::UTF8ToUTF16(term); });
   std::string terms_joint =

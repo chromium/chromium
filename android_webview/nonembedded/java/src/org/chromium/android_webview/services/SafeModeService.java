@@ -58,9 +58,9 @@ public final class SafeModeService extends Service {
      */
     @VisibleForTesting
     public static class TrustedPackage {
-        private String mPackageName;
-        private byte[] mReleaseCertHash;
-        private byte[] mDebugCertHash;
+        private final String mPackageName;
+        private final byte[] mReleaseCertHash;
+        private final byte[] mDebugCertHash;
 
         /**
          * Represents the identity of a package trusted by this service.

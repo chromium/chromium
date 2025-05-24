@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -22,17 +22,17 @@ class CreditCard;
 }  // namespace autofill
 
 // WebView extension of AutofillClientIOSBridge.
-@protocol CWVAutofillClientIOSBridge<AutofillClientIOSBridge>
+@protocol CWVAutofillClientIOSBridge <AutofillClientIOSBridge>
 
-// Bridge for AutofillClient's method |ConfirmSaveCreditCardToCloud|.
+// Bridge for AutofillClient's method |ShowSaveCreditCardToCloud|.
 - (void)
-    confirmSaveCreditCardToCloud:(const autofill::CreditCard&)creditCard
-               legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
-           saveCreditCardOptions:
-               (autofill::payments::PaymentsAutofillClient::
-                    SaveCreditCardOptions)saveCreditCardOptions
-                        callback:(autofill::payments::PaymentsAutofillClient::
-                                      UploadSaveCardPromptCallback)callback;
+    showSaveCreditCardToCloud:(const autofill::CreditCard&)creditCard
+            legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
+        saveCreditCardOptions:
+            (autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions)
+                saveCreditCardOptions
+                     callback:(autofill::payments::PaymentsAutofillClient::
+                                   UploadSaveCardPromptCallback)callback;
 
 // Bridge for AutofillClient's method |CreditCardUploadCompleted|.
 - (void)handleCreditCardUploadCompleted:(BOOL)cardSaved;

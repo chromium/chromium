@@ -15,6 +15,8 @@ include_rules = [
     "+base/task/bind_post_task.h",
     "+base/task/task_traits.h",
     "+components/viz/common/resources/shared_image_format_utils.h",
+    "+gpu/command_buffer/client/client_shared_image.h",
+    "+gpu/command_buffer/client/shared_image_interface.h",
     "+media/base",
     "+media/capture/capture_switches.h",
     "+media/capture/video/video_capture_feedback.h",
@@ -44,7 +46,7 @@ specific_include_rules = {
         "+base/threading/thread.h",
         "+components/webrtc/thread_wrapper.h",
         "+gpu/command_buffer/common/mailbox.h",
-        "+media/video/fake_gpu_memory_buffer.h",
+	"+gpu/command_buffer/client/test_shared_image_interface.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
         "+media/video/mock_video_encode_accelerator.h",
         "+media/mojo/clients/mock_mojo_video_encoder_metrics_provider_factory.h",
@@ -58,5 +60,8 @@ specific_include_rules = {
         "+third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h",
         "+third_party/blink/renderer/platform/testing/task_environment.h",
         "+third_party/blink/renderer/platform/testing/fuzzed_data_provider.h",
+    ],
+    "webrtc_video_track_source_test.cc" : [
+        "+gpu/command_buffer/client/fake_gpu_memory_buffer.h"
     ]
 }

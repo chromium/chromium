@@ -32,7 +32,7 @@
 
 namespace blink {
 
-struct IntrinsicSizingInfo;
+struct PhysicalNaturalSizingInfo;
 
 // LayoutReplaced is the base class for a replaced element as defined by CSS:
 //
@@ -40,23 +40,12 @@ struct IntrinsicSizingInfo;
 // such as an image, embedded document, or applet."
 // http://www.w3.org/TR/CSS2/conform.html#defs
 //
-// Blink consider that replaced elements have an intrinsic sizes (e.g. the
-// natural size of an image or a video). The intrinsic size is stored by
-// m_intrinsicSize.
-//
-// The computation sometimes ask for the intrinsic ratio, defined as follow:
-//
-//                      intrinsicWidth
-//   intrinsicRatio = -------------------
-//                      intrinsicHeight
-//
-// The intrinsic ratio is used to keep the same proportion as the intrinsic
-// size (thus avoiding visual distortions if width / height doesn't match
-// the intrinsic value).
+// Blink consider that replaced elements have natural dimensions (e.g. the
+// natural size of an image or a video). The natural dimensions are provided by
+// an implementation of `GetNaturalDimensions()`.
 class CORE_EXPORT LayoutReplaced : public LayoutBox {
  public:
-  LayoutReplaced(Element*);
-  LayoutReplaced(Element*, const PhysicalSize& intrinsic_size);
+  explicit LayoutReplaced(Element*);
   ~LayoutReplaced() override;
 
   // This function returns the local rect of the replaced content. The rectangle
@@ -102,17 +91,26 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   void Paint(const PaintInfo&) const override;
 
+  // Compute the natural dimensions of the replaced content. Should not apply
+  // any additional transformations (like 'object-view-box'). The natural size
+  // returned should be in "zoomed CSS pixels" (i.e
+  // `ComputedStyle::EffectiveZoom()` should be applied). The natural aspect
+  // ratio needn't be zoomed (but can be).
+  virtual PhysicalNaturalSizingInfo GetNaturalDimensions() const = 0;
+
+  // Returns the natural dimensions of the replaced content with any additional
+  // transformations - such as 'object-view-box' - applied.
   // This function is public only so we can call it when computing
   // intrinsic size in LayoutNG.
-  virtual void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const;
+  PhysicalNaturalSizingInfo ComputeNaturalSizingInfo() const;
 
-  // This callback must be invoked whenever the underlying intrinsic size has
-  // changed.
+  // This callback must be invoked whenever the underlying natural dimensions
+  // has changed.
   //
-  // The intrinsic size can change due to the network (from the default
-  // intrinsic size [see above] to the actual intrinsic size) or to some
-  // CSS properties like 'zoom' or 'image-orientation'.
-  virtual void IntrinsicSizeChanged();
+  // The natural dimensions can change due to the network (from the default
+  // natural size [see above] to the actual natural dimensions) or to some CSS
+  // properties like 'zoom' or 'image-orientation'.
+  virtual void NaturalSizeChanged();
 
   bool RespectsCSSOverflow() const override;
 
@@ -121,7 +119,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   bool ClipsToContentBox() const;
 
  protected:
-  virtual bool CanApplyObjectViewBox() const {
+  virtual bool ShouldApplyObjectViewBox() const {
     NOT_DESTROYED();
     return true;
   }
@@ -138,21 +136,12 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   void WillBeDestroyed() override;
 
-  PhysicalSize IntrinsicSize() const {
-    NOT_DESTROYED();
-    return intrinsic_size_;
-  }
-  void SetIntrinsicSize(const PhysicalSize& intrinsic_size) {
-    NOT_DESTROYED();
-    intrinsic_size_ = intrinsic_size;
-  }
-
   // This function calculates the placement of the replaced contents. It takes
-  // intrinsic size of the replaced contents, stretch to fit CSS content box
-  // according to object-fit, object-position and object-view-box.
+  // natural dimensions of the replaced contents, stretch to fit CSS content
+  // box according to object-fit, object-position and object-view-box.
   PhysicalRect ComputeReplacedContentRect(
       const PhysicalRect& base_content_rect,
-      const PhysicalSize* overridden_intrinsic_size = nullptr) const;
+      const PhysicalNaturalSizingInfo& sizing_info) const;
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
@@ -169,20 +158,19 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return false;
   }
 
+  // ImageResourceObserver
+  gfx::Size ComputeSpeculativeDecodeSize() const override;
+
+ private:
   // Computes a rect, relative to the element's content's natural size, that
   // should be used as the content source when rendering this element. This
   // value is used as the input for object-fit/object-position during painting.
   std::optional<PhysicalRect> ComputeObjectViewBoxRect(
-      const PhysicalSize* overridden_intrinsic_size = nullptr) const;
+      const PhysicalNaturalSizingInfo& sizing_info) const;
 
- private:
   PhysicalRect ComputeObjectFitAndPositionRect(
       const PhysicalRect& base_content_rect,
-      const PhysicalSize* overridden_intrinsic_size) const;
-
-  // The natural/intrinsic size for this replaced element based on the natural
-  // size for the element's contents.
-  PhysicalSize intrinsic_size_;
+      const PhysicalNaturalSizingInfo& sizing_info) const;
 };
 
 template <>

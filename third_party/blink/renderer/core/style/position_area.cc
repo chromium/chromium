@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/style/position_area.h"
 
 #include "base/check_op.h"
@@ -92,9 +87,7 @@ PositionAreaRegion ToPhysicalRegion(
   switch (region) {
     case PositionAreaRegion::kNone:
     case PositionAreaRegion::kAll:
-      NOTREACHED_IN_MIGRATION()
-          << "Should be handled directly in PositionArea::ToPhysical";
-      [[fallthrough]];
+      NOTREACHED() << "Should be handled directly in PositionArea::ToPhysical";
     case PositionAreaRegion::kCenter:
     case PositionAreaRegion::kTop:
     case PositionAreaRegion::kBottom:
@@ -190,9 +183,9 @@ PositionArea PositionArea::ToPhysical(
   DCHECK_EQ(first_axis ^ second_axis, kPhysicalAxesBoth)
       << "Both axes should be defined and orthogonal";
 
-  PositionAreaRegion regions[4] = {PositionAreaRegion::kTop, PositionAreaRegion::kBottom,
-                                PositionAreaRegion::kLeft,
-                                PositionAreaRegion::kRight};
+  auto regions = std::to_array<PositionAreaRegion>(
+      {PositionAreaRegion::kTop, PositionAreaRegion::kBottom,
+       PositionAreaRegion::kLeft, PositionAreaRegion::kRight});
 
   // Adjust the index to always make the first span the vertical one in the
   // resulting PositionArea, regardless of the original ordering.
@@ -223,70 +216,6 @@ PositionArea PositionArea::ToPhysical(
     std::swap(regions[2], regions[3]);
   }
   return PositionArea(regions[0], regions[1], regions[2], regions[3]);
-}
-
-std::optional<AnchorQuery> PositionArea::UsedTop() const {
-  switch (FirstStart()) {
-    case PositionAreaRegion::kTop:
-      return std::nullopt;
-    case PositionAreaRegion::kCenter:
-      return AnchorTop();
-    case PositionAreaRegion::kBottom:
-      return AnchorBottom();
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-  }
-}
-
-std::optional<AnchorQuery> PositionArea::UsedBottom() const {
-  switch (FirstEnd()) {
-    case PositionAreaRegion::kTop:
-      return AnchorTop();
-    case PositionAreaRegion::kCenter:
-      return AnchorBottom();
-    case PositionAreaRegion::kBottom:
-      return std::nullopt;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-  }
-}
-
-std::optional<AnchorQuery> PositionArea::UsedLeft() const {
-  switch (SecondStart()) {
-    case PositionAreaRegion::kLeft:
-      return std::nullopt;
-    case PositionAreaRegion::kCenter:
-      return AnchorLeft();
-    case PositionAreaRegion::kRight:
-      return AnchorRight();
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-  }
-}
-
-std::optional<AnchorQuery> PositionArea::UsedRight() const {
-  switch (SecondEnd()) {
-    case PositionAreaRegion::kLeft:
-      return AnchorLeft();
-    case PositionAreaRegion::kCenter:
-      return AnchorRight();
-    case PositionAreaRegion::kRight:
-      return std::nullopt;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
-    case PositionAreaRegion::kNone:
-      return std::nullopt;
-  }
 }
 
 std::pair<StyleSelfAlignmentData, StyleSelfAlignmentData>

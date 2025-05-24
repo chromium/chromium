@@ -23,6 +23,7 @@ mojom::AudioSystemPropertiesPtr CrosAudioConfig::GetAudioSystemProperties() {
   properties->input_gain_percent = GetInputGainPercent();
   properties->output_mute_state = GetOutputMuteState();
   properties->input_mute_state = GetInputMuteState();
+  properties->voice_isolation_ui_appearance = GetVoiceIsolationUIAppearance();
   GetAudioDevices(&properties->output_devices, &properties->input_devices);
   return properties;
 }

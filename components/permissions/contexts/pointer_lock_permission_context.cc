@@ -5,21 +5,20 @@
 #include "components/permissions/contexts/pointer_lock_permission_context.h"
 
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "components/permissions/permissions_client.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace permissions {
 
 PointerLockPermissionContext::PointerLockPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::POINTER_LOCK,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::POINTER_LOCK,
+          network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 void PointerLockPermissionContext::NotifyPermissionSet(
-    const PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -33,8 +32,17 @@ void PointerLockPermissionContext::NotifyPermissionSet(
     persist = false;
   }
   permissions::PermissionContextBase::NotifyPermissionSet(
-      id, requesting_origin, embedding_origin, std::move(callback), persist,
-      content_setting, is_one_time, is_final_decision);
+      request_data, std::move(callback), persist, content_setting, is_one_time,
+      is_final_decision);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+ContentSetting PointerLockPermissionContext::GetPermissionStatusInternal(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin) const {
+  return CONTENT_SETTING_ALLOW;
+}
+#endif
 
 }  // namespace permissions

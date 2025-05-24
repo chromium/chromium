@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -18,8 +19,10 @@ content::ContextMenuParams AddContextMenuParamsPropertiesFromPreferences(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   PrefService* prefs = profile->GetPrefs();
 
-  if (!prefs->GetBoolean(prefs::kDefaultSearchProviderContextMenuAccessAllowed))
+  if (!prefs->GetBoolean(
+          prefs::kDefaultSearchProviderContextMenuAccessAllowed)) {
     return params;
+  }
 
   content::ContextMenuParams enriched_params = params;
   // Setting the key implies the menu access is allowed.

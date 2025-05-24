@@ -11,6 +11,7 @@
 
 namespace device::features {
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrHandInput);
+COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrWebGpuBinding);
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrIncubations);
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrInternals);
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrLayers);
@@ -19,8 +20,6 @@ BASE_DECLARE_FEATURE(kWebXrOrientationSensorDevice);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrSharedBuffers);
-COMPONENT_EXPORT(VR_FEATURES)
-BASE_DECLARE_FEATURE(kUseTargetTexture2DForSharedBuffers);
 #endif
 
 #if BUILDFLAG(ENABLE_OPENXR)
@@ -33,23 +32,26 @@ COMPONENT_EXPORT(VR_FEATURES)
 BASE_DECLARE_FEATURE(kOpenXrExtendedFeatureSupport);
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXRSharedImages);
 COMPONENT_EXPORT(VR_FEATURES)
-BASE_DECLARE_FEATURE(kAllowOpenXrWithImmersiveFeature);
+BASE_DECLARE_FEATURE(kAllowOpenXrOnXrDevices);
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXrAndroidSmoothDepth);
+#endif
 
 // Helper method to check if OpenXR should be enabled. It takes into account
 // both the kOpenXR feature, as well as the state of the system features on
-// Android and the `kAllowOpenXrWithImmersiveFeature` flag, and should be
+// Android and the `kAllowOpenXrOnXrDevices` flag, and should be
 // checked instead of a direct query on the kOpenXR feature being enabled.
 COMPONENT_EXPORT(VR_FEATURES) bool IsOpenXrEnabled();
 
 // Helper method to check if OpenXR AR should be enabled. It takes into account
 // both the `kOpenXrExtendedFeatureSupport` feature, as well as the state of the
-// system features on Android and the `kAllowOpenXrWithImmersiveFeature` flag,
+// system features on Android and the `kAllowOpenXrOnXrDevices` flag,
 // and should be checked instead of a direct query on the kOpenXR feature being
 // enabled.
 COMPONENT_EXPORT(VR_FEATURES) bool IsOpenXrArEnabled();
 
 #endif  // ENABLE_OPENXR
-COMPONENT_EXPORT(VR_FEATURES) bool HasImmersiveFeature();
+COMPONENT_EXPORT(VR_FEATURES) bool IsXrDevice();
 
 COMPONENT_EXPORT(VR_FEATURES) bool IsHandTrackingEnabled();
 

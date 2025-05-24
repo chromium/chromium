@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/heuristic_source.h"
 
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -17,9 +18,9 @@ namespace autofill {
 //
 // Currently, the available heuristic sources are the ML model and regexes.
 // If the model predictions are disabled, then only regexes are used. If model
-// predictions are enabled, `kMachineLearning` is also considered. Depending on
-// `kAutofillModelPredictionsAreActive`, use  `kMachineLearning`
-// as the active heuristic source.
+// predictions are enabled, `kAutofillMachineLearning` is also considered.
+// Depending on `kAutofillModelPredictionsAreActive`, use
+// `kAutofillMachineLearning` as the active heuristic source.
 
 struct HeuristicSourceParams {
   std::optional<bool> model_predictions_feature;
@@ -33,9 +34,9 @@ class HeuristicSourceTest
     const HeuristicSourceParams& test_case = GetParam();
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (test_case.model_predictions_feature) {
+    if (test_case.model_predictions_feature.has_value()) {
       std::string model_prediction_active =
-          *test_case.model_predictions_feature ? "true" : "false";
+          base::ToString(test_case.model_predictions_feature.value());
       enabled_features.push_back(
           {features::kAutofillModelPredictions,
            {{features::kAutofillModelPredictionsAreActive.name,
@@ -51,7 +52,13 @@ class HeuristicSourceTest
   base::test::ScopedFeatureList features_;
 };
 
-TEST_P(HeuristicSourceTest, HeuristicSourceParams) {
+// TODO(crbug.com/373902907): Flaky on ios and android bots.
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_HeuristicSourceParams DISABLED_HeuristicSourceParams
+#else
+#define MAYBE_HeuristicSourceParams HeuristicSourceParams
+#endif
+TEST_P(HeuristicSourceTest, MAYBE_HeuristicSourceParams) {
   const HeuristicSourceParams& test_case = GetParam();
   EXPECT_EQ(GetActiveHeuristicSource(), test_case.expected_active_source);
 }
@@ -60,30 +67,15 @@ INSTANTIATE_TEST_SUITE_P(
     HeuristicSourceTest,
     HeuristicSourceTest,
     testing::Values(
-// The pattern provider behavior differs between Chrome and non-Chrome branded
-// instances.
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         HeuristicSourceParams{
-            .expected_active_source = HeuristicSource::kLegacyRegexes},
+            .expected_active_source = HeuristicSource::kRegexes},
 
-        HeuristicSourceParams{
-            .model_predictions_feature = true,
-            .expected_active_source = HeuristicSource::kMachineLearning},
+        HeuristicSourceParams{.model_predictions_feature = true,
+                              .expected_active_source =
+                                  HeuristicSource::kAutofillMachineLearning},
 
         HeuristicSourceParams{
             .model_predictions_feature = false,
-            .expected_active_source = HeuristicSource::kLegacyRegexes}
-#else
-        HeuristicSourceParams{
-            .model_predictions_feature = true,
-            .expected_active_source = HeuristicSource::kMachineLearning},
-
-        HeuristicSourceParams{
-            .model_predictions_feature = false,
-            .expected_active_source = HeuristicSource::kDefaultRegexes},
-        HeuristicSourceParams{
-            .expected_active_source = HeuristicSource::kDefaultRegexes}
-#endif
-        ));
+            .expected_active_source = HeuristicSource::kRegexes}));
 
 }  // namespace autofill

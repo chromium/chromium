@@ -195,7 +195,7 @@ void ContentSettingsPref::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     base::Value value,
-    const RuleMetaData& metadata,
+    RuleMetaData metadata,
     const PartitionKey& partition_key) {
   DCHECK(value.is_none() || IsValueAllowedForType(value, content_type_));
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -212,8 +212,8 @@ void ContentSettingsPref::SetWebsiteSetting(
     base::AutoLock auto_lock(map_to_modify->GetLock());
     if (!value.is_none()) {
       if (!map_to_modify->SetValue(primary_pattern, secondary_pattern,
-                                   content_type_, value.Clone(), metadata,
-                                   partition_key)) {
+                                   content_type_, value.Clone(),
+                                   metadata.Clone(), partition_key)) {
         return;
       }
     } else {
@@ -225,8 +225,8 @@ void ContentSettingsPref::SetWebsiteSetting(
   }
   // Update the content settings preference.
   if (!off_the_record_ && !partition_key.in_memory()) {
-    UpdatePref(primary_pattern, secondary_pattern, std::move(value), metadata,
-               partition_key);
+    UpdatePref(primary_pattern, secondary_pattern, std::move(value),
+               std::move(metadata), partition_key);
   }
 
   notify_callback_.Run(primary_pattern, secondary_pattern, content_type_,
@@ -401,7 +401,11 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
 
     // Get settings dictionary for the current pattern string, and read
     // settings from the dictionary.
-    DCHECK(i.second.is_dict());
+    if(!i.second.is_dict()) {
+      LOG(ERROR) << "Invalid settings dictionary for pattern string: "
+                 << pattern_str << " with value: " << i.second.DebugString();
+      continue;
+    }
     const base::Value::Dict& settings_dictionary = i.second.GetDict();
 
     // Check to see if the setting is expired or not. This may be due to a past
@@ -446,19 +450,9 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
       metadata.set_decided_by_related_website_sets(
           GetDecidedByRelatedWebsiteSets(settings_dictionary));
 
-      // Migrating grants by Related Website Sets to DURABLE.
-      // TODO(b/344678400): Delete after NON_RESTORABLE_USER_SESSION is
-      // removed.
-      if ((content_type_ == ContentSettingsType::STORAGE_ACCESS ||
-           content_type_ == ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) &&
-          session_model == mojom::SessionModel::NON_RESTORABLE_USER_SESSION) {
-        metadata.set_session_model(mojom::SessionModel::DURABLE);
-        metadata.set_decided_by_related_website_sets(true);
-      }
-
       value_map_.SetValue(std::move(pattern_pair.first),
                           std::move(pattern_pair.second), content_type_,
-                          value->Clone(), metadata, partition_key);
+                          value->Clone(), std::move(metadata), partition_key);
     }
   }
 
@@ -498,8 +492,7 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
 bool ContentSettingsPref::ShouldRemoveSetting(
     base::Time expiration,
     content_settings::mojom::SessionModel session_model) {
-  if (!base::FeatureList::IsEnabled(
-          content_settings::features::kActiveContentSettingExpiry) &&
+  if (!content_settings::ShouldTypeExpireActively(content_type_) &&
       !expiration.is_null() && expiration < clock_->Now()) {
     // Delete if an expiration date is set and in the past.
     return true;
@@ -516,15 +509,6 @@ bool ContentSettingsPref::ShouldRemoveSetting(
   switch (session_model) {
     case content_settings::mojom::SessionModel::DURABLE:
       return false;
-    case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
-      // Restore NON_RESTORABLE_USER_SESSION Storage Access permissions to
-      // migrate them to DURABLE session model.
-      // TODO(b/344678400): Delete after NON_RESTORABLE_USER_SESSION is removed.
-      if (content_type_ == ContentSettingsType::STORAGE_ACCESS ||
-          content_type_ == ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) {
-        return false;
-      }
-      return true;
     case content_settings::mojom::SessionModel::USER_SESSION:
     case content_settings::mojom::SessionModel::ONE_TIME:
       return !restore_session_;

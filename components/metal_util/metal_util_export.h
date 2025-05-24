@@ -15,11 +15,7 @@
 #endif  // defined(METAL_UTIL_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(METAL_UTIL_IMPLEMENTATION)
 #define METAL_UTIL_EXPORT __attribute__((visibility("default")))
-#else
-#define METAL_UTIL_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

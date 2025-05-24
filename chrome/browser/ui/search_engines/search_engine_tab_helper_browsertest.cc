@@ -39,8 +39,9 @@ namespace {
 std::unique_ptr<HttpResponse> HandleRequest(const std::string& match_path,
                                             const std::string& osdd_xml_url,
                                             const HttpRequest& request) {
-  if (!match_path.empty() && request.GetURL().path() != match_path)
+  if (!match_path.empty() && request.GetURL().path() != match_path) {
     return nullptr;
+  }
 
   std::string html = base::StringPrintf(
       "<html>"
@@ -74,7 +75,7 @@ class TemplateURLServiceObserver {
   TemplateURLServiceObserver& operator=(const TemplateURLServiceObserver&) =
       delete;
 
-  ~TemplateURLServiceObserver() {}
+  ~TemplateURLServiceObserver() = default;
 
  private:
   void StopLoop() { runner_->Quit(); }
@@ -84,13 +85,15 @@ class TemplateURLServiceObserver {
 
 testing::AssertionResult VerifyTemplateURLServiceLoad(
     TemplateURLService* service) {
-  if (service->loaded())
+  if (service->loaded()) {
     return testing::AssertionSuccess();
+  }
   base::RunLoop runner;
   TemplateURLServiceObserver observer(service, &runner);
   runner.Run();
-  if (service->loaded())
+  if (service->loaded()) {
     return testing::AssertionSuccess();
+  }
   return testing::AssertionFailure() << "TemplateURLService isn't loaded";
 }
 
@@ -127,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperBrowserTest,
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(url_service);
-  VerifyTemplateURLServiceLoad(url_service);
+  EXPECT_TRUE(VerifyTemplateURLServiceLoad(url_service));
   TemplateURLService::TemplateURLVector template_urls =
       url_service->GetTemplateURLs();
   // Navigate to a page with a search descriptor. Path doesn't matter as the
@@ -141,8 +144,9 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperBrowserTest,
 class TestSearchEngineTabHelper : public SearchEngineTabHelper {
  public:
   static void CreateForWebContents(content::WebContents* contents) {
-    if (FromWebContents(contents))
+    if (FromWebContents(contents)) {
       return;
+    }
     contents->SetUserData(
         UserDataKey(), std::make_unique<TestSearchEngineTabHelper>(contents));
   }
@@ -154,8 +158,9 @@ class TestSearchEngineTabHelper : public SearchEngineTabHelper {
       content::NavigationEntry* entry) override {
     std::u16string keyword =
         SearchEngineTabHelper::GenerateKeywordFromNavigationEntry(entry);
-    if (!keyword.empty())
+    if (!keyword.empty()) {
       return keyword;
+    }
 
     const std::u16string kTestKeyword(u"TestKeyword");
     return kTestKeyword;
@@ -242,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(url_service);
-  VerifyTemplateURLServiceLoad(url_service);
+  EXPECT_TRUE(VerifyTemplateURLServiceLoad(url_service));
   TemplateURLService::TemplateURLVector template_urls =
       url_service->GetTemplateURLs();
 

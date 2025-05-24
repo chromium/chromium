@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string_view>
 
 #include "ash/constants/ash_switches.h"
@@ -13,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -59,9 +59,7 @@ const base::Value* CrosSettings::GetPref(std::string_view path) const {
   CrosSettingsProvider* provider = GetProvider(path);
   if (provider)
     return provider->Get(path);
-  NOTREACHED_IN_MIGRATION()
-      << path << " preference was not found in the signed settings.";
-  return nullptr;
+  NOTREACHED() << path << " preference was not found in the signed settings.";
 }
 
 CrosSettingsProvider::TrustedStatus CrosSettings::PrepareTrustedValues(
@@ -196,8 +194,7 @@ bool CrosSettings::FindEmailInList(const base::Value::List& list,
   bool found_wildcard_match = false;
   for (const auto& entry : list) {
     if (!entry.is_string()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     std::string canonicalized_entry(
         gaia::CanonicalizeEmail(gaia::SanitizeEmail(entry.GetString())));
@@ -245,8 +242,8 @@ bool CrosSettings::AddSettingsProvider(
 std::unique_ptr<CrosSettingsProvider> CrosSettings::RemoveSettingsProvider(
     CrosSettingsProvider* provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = base::ranges::find(providers_, provider,
-                               &std::unique_ptr<CrosSettingsProvider>::get);
+  auto it = std::ranges::find(providers_, provider,
+                              &std::unique_ptr<CrosSettingsProvider>::get);
   if (it != providers_.end()) {
     std::unique_ptr<CrosSettingsProvider> ptr = std::move(*it);
     providers_.erase(it);

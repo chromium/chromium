@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_CAPABILITIES_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_CAPABILITIES_H_
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+class ProfileIOS;
 
 namespace supervised_user {
 
-// Returns true if the browser state is subjected to parental controls, based on
+// Returns true if the profile is subjected to parental controls, based on
 // AccountInfo capabilities or prefs.
-bool IsSubjectToParentalControls(ChromeBrowserState* browser_state);
+bool IsSubjectToParentalControls(ProfileIOS* profile);
 
 }  // namespace supervised_user
 

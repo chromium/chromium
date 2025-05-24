@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/group_constants.h"
@@ -71,7 +70,7 @@ BlockedBy CreateBlockedByExplicit(std::vector<std::string> affected_features) {
   return blocked_by;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class TestConfigurationProvider : public ConfigurationProvider {
  public:
   TestConfigurationProvider() = default;
@@ -2194,7 +2193,7 @@ TEST_F(ChromeVariationsConfigurationTest,
       static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 1);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeVariationsConfigurationTest, UpdateConfigs) {
   FeatureConfig expected_foo;
   expected_foo.valid = true;

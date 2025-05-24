@@ -54,9 +54,7 @@ UIController::UIController(
       web_ui->GetWebContents()->GetBrowserContext(),
       std::string(kChromeUIKioskVisionInternalsHost));
 
-  setup_callback.Run(source,
-                     base::make_span(kKioskVisionInternalsResources,
-                                     kKioskVisionInternalsResourcesSize),
+  setup_callback.Run(source, base::span(kKioskVisionInternalsResources),
                      IDR_KIOSK_VISION_INTERNALS_KIOSK_VISION_INTERNALS_HTML);
 }
 

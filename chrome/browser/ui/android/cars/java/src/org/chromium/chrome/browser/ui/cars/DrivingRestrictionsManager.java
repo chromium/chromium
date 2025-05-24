@@ -8,12 +8,16 @@ import android.app.Activity;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Monitors changes to driving restrictions and applies required optimizations. */
+@NullMarked
 public class DrivingRestrictionsManager {
-    private static DrivingRestrictionsManager sInstance;
+    private static @Nullable DrivingRestrictionsManager sInstance;
 
-    private DrivingRestrictionsDelegateImpl mDelegate;
+    private DrivingRestrictionsDelegate mDelegate;
     private boolean mMonitoring;
 
     /** Initializes DrivingRestrictionsManager if it has not yet been initialized. */
@@ -22,8 +26,12 @@ public class DrivingRestrictionsManager {
     }
 
     DrivingRestrictionsManager() {
-        mDelegate =
-                new DrivingRestrictionsDelegateImpl(this::onRequiresDistractionOptimizationChanged);
+        DrivingRestrictionsDelegateFactory factory =
+                ServiceLoaderUtil.maybeCreate(DrivingRestrictionsDelegateFactory.class);
+        if (factory == null) {
+            factory = FallbackDrivingRestrictionsDelegate::new;
+        }
+        mDelegate = factory.create(this::onRequiresDistractionOptimizationChanged);
 
         updateMonitoring(ApplicationStatus.getStateForApplication());
         ApplicationStatus.registerApplicationStateListener(newState -> updateMonitoring(newState));
@@ -47,15 +55,15 @@ public class DrivingRestrictionsManager {
         }
     }
 
-    void setDelegateForTesting(DrivingRestrictionsDelegateImpl delegate) {
+    void setDelegateForTesting(DrivingRestrictionsDelegate delegate) {
         mDelegate = delegate;
     }
 
-    DrivingRestrictionsDelegateImpl getDelegateForTesting() {
+    DrivingRestrictionsDelegate getDelegateForTesting() {
         return mDelegate;
     }
 
-    static DrivingRestrictionsManager getInstanceForTesting() {
+    static @Nullable DrivingRestrictionsManager getInstanceForTesting() {
         return sInstance;
     }
 }

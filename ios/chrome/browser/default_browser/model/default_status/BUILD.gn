@@ -1,0 +1,45 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/mobile_config.gni")
+
+# MacCatalyst does not allow querying the default browser status.
+assert(target_environment != "catalyst")
+
+source_set("default_status") {
+  sources = [
+    "default_status_helper.h",
+    "default_status_helper.mm",
+    "default_status_helper_constants.h",
+    "default_status_helper_constants.mm",
+    "default_status_helper_metrics.h",
+    "default_status_helper_metrics.mm",
+    "default_status_helper_prefs.h",
+    "default_status_helper_prefs.mm",
+    "default_status_helper_types.h",
+  ]
+  deps = []
+  public_deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "default_status_helper_metrics_unittest.mm",
+    "default_status_helper_unittest.mm",
+  ]
+  deps = [
+    ":default_status",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/shared/model/utils:test_support",
+  ]
+}

@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -10,9 +11,10 @@
 // META: variant=?17-20
 // META: variant=?21-24
 // META: variant=?25-28
-// META: variant=?29-last
+// META: variant=?29-32
+// META: variant=?33-36
 
-"use strict;"
+"use strict";
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
@@ -501,6 +503,17 @@ subsetTest(promise_test, async test => {
   assert_true(dfss);
 }, 'Test directFromSellerSignals feature detection.');
 
+// The version of directFromSellerSignals based on web bundles preceded the
+// header-based version -- the web bundle version has been deprecated and
+// removed.
+subsetTest(promise_test, async test => {
+  let dfss = false;
+  navigator.runAdAuction({
+      get directFromSellerSignals() { dfss = true; }
+  }).catch((e) => {});
+  assert_false(dfss);
+}, 'Negative test for deprecated and removed web-bundle directFromSellerSignals.');
+
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await fetchDirectFromSellerSignals({ 'Buyer-Origin': window.location.origin });
@@ -614,3 +627,35 @@ subsetTest(promise_test, async test => {
       { directFromSellerSignalsHeaderAdSlot: 'adSlot/1' }
   );
 }, 'Test invalid directFromSellerSignals with duplicate values in response.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await fetchDirectFromSellerSignals({'Buyer-Origin': window.location.origin});
+  await runReportTest(
+      test, uuid,
+      directFromSellerSignalsValidatorCode(
+          uuid, 'sellerSignals/null',
+          /*expectedAuctionSignals=*/ null, /*expectedPerBuyerSignals=*/ null),
+      // expectedReportURLs
+      [createSellerReportURL(uuid), createBidderReportURL(uuid)],
+      // renderURLOverride
+      null,
+      // auctionConfigOverrides
+      {directFromSellerSignalsHeaderAdSlot: 'null'});
+}, 'directFromSellerSignals slot named "null"');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await fetchDirectFromSellerSignals({'Buyer-Origin': window.location.origin});
+  await runReportTest(
+      test, uuid,
+      directFromSellerSignalsValidatorCode(
+          uuid, /*expectedSellerSignals=*/ null,
+          /*expectedAuctionSignals=*/ null, /*expectedPerBuyerSignals=*/ null),
+      // expectedReportURLs
+      [createSellerReportURL(uuid), createBidderReportURL(uuid)],
+      // renderURLOverride
+      null,
+      // auctionConfigOverrides
+      {directFromSellerSignalsHeaderAdSlot: null});
+}, 'null directFromSellerSignals slot');

@@ -4,6 +4,8 @@
 
 #include "content/browser/android/dialog_overlay_impl.h"
 
+#include <variant>
+
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -15,7 +17,6 @@
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "media/mojo/mojom/android_overlay.mojom.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 
@@ -344,12 +345,12 @@ JNI_DialogOverlayImpl_LookupSurfaceForTesting(
     jint surfaceId) {
   auto surface_record =
       gpu::GpuSurfaceTracker::Get()->AcquireJavaSurface(surfaceId);
-  if (!absl::holds_alternative<gl::ScopedJavaSurface>(
+  if (!std::holds_alternative<gl::ScopedJavaSurface>(
           surface_record.surface_variant)) {
     return nullptr;
   }
   return ScopedJavaLocalRef<jobject>(
-      absl::get<gl::ScopedJavaSurface>(surface_record.surface_variant)
+      std::get<gl::ScopedJavaSurface>(surface_record.surface_variant)
           .j_surface());
 }
 

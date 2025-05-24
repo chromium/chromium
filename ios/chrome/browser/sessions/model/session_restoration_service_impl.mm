@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/sessions/model/session_restoration_service_impl.h"
 
+#import <algorithm>
+#import <concepts>
+
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/files/file_enumerator.h"
@@ -12,7 +15,6 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/ranges/algorithm.h"
 #import "ios/chrome/browser/sessions/model/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_internal_util.h"
@@ -31,6 +33,18 @@ namespace {
 // Maximum size of session state NSData objects.
 const int kMaxSessionState = 5 * 1024 * 1024;
 
+// Status of loading the WebStateStorage.
+enum class WebStateStorageStatus {
+  kSuccess,
+  kFailure,
+};
+
+// Records whether loading a WebStateStorage was a success or not.
+void RecordLoadingWebStateStorageStatus(WebStateStorageStatus status) {
+  base::UmaHistogramBoolean("Tabs.MissingWebStateStorageFileOnSessionRestore",
+                            status != WebStateStorageStatus::kSuccess);
+}
+
 // Deletes all files and directory in `path` not present in `items_to_keep`.
 void DeleteUnknownContent(const base::FilePath& path,
                           const std::set<base::FilePath>& items_to_keep) {
@@ -47,14 +61,23 @@ void DeleteUnknownContent(const base::FilePath& path,
   }
 }
 
-// Loads WebState storage from `web_state_dir` into `storage`.
-web::proto::WebStateStorage LoadWebStateStorage(const base::FilePath& path) {
+// Loads storage for WebState at `path`.
+std::optional<web::proto::WebStateStorage> LoadWebStateStorage(
+    const base::FilePath& path) {
   web::proto::WebStateStorage storage;
-  std::ignore = ios::sessions::ParseProto(path, storage);
-  return storage;
+  if (ios::sessions::ParseProto(path, storage)) {
+    RecordLoadingWebStateStorageStatus(WebStateStorageStatus::kSuccess);
+    return storage;
+  }
+
+  // Loading the file failed, inform the caller by returning nullopt.
+  // They can decide what to do (e.g. ignore the WebState, try to
+  // recover from metadata, ...).
+  RecordLoadingWebStateStorageStatus(WebStateStorageStatus::kFailure);
+  return std::nullopt;
 }
 
-// Loads Webstate native session from `web_state_dir`. It is okay if the file
+// Loads Webstate native session from `path`. It is okay if the file
 // is missing, in that case the function return `nil`.
 NSData* LoadWebStateSession(const base::FilePath& path) {
   return ios::sessions::ReadFile(path);
@@ -64,7 +87,7 @@ NSData* LoadWebStateSession(const base::FilePath& path) {
 // with DeserializeWebStateList() function.
 std::unique_ptr<web::WebState> CreateWebState(
     const base::FilePath& session_dir,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     web::WebStateID web_state_id,
     web::proto::WebStateMetadataStorage metadata) {
   const base::FilePath web_state_dir =
@@ -77,11 +100,21 @@ std::unique_ptr<web::WebState> CreateWebState(
       web_state_dir.Append(kWebStateSessionFilename);
 
   auto web_state = web::WebState::CreateWithStorage(
-      browser_state, web_state_id, std::move(metadata),
+      profile, web_state_id, std::move(metadata),
       base::BindOnce(&LoadWebStateStorage, web_state_storage_path),
       base::BindOnce(&LoadWebStateSession, web_state_session_path));
 
   return web_state;
+}
+
+// Helper that invoke `callback` with `optional` value if not null or
+// does nothing otherwise.
+void AdaptWebStateStorageCallback(
+    base::OnceCallback<void(web::proto::WebStateStorage)> callback,
+    std::optional<web::proto::WebStateStorage> optional) {
+  if (optional.has_value()) {
+    std::move(callback).Run(std::move(optional).value());
+  }
 }
 
 // Delete data for discarded sessions with `identifiers` in `storage_path`
@@ -98,6 +131,8 @@ void DeleteDataForSessions(const base::FilePath& storage_path,
 // Allows to check if sets has non-empty intersection without allocating.
 template <typename T1, typename T2>
 struct CountingOutputIterator {
+  using difference_type = ptrdiff_t;
+
   CountingOutputIterator& operator++() {
     ++count;
     return *this;
@@ -109,25 +144,11 @@ struct CountingOutputIterator {
 
   CountingOutputIterator& operator*() { return *this; }
   CountingOutputIterator& operator=(const T1&) { return *this; }
-  CountingOutputIterator& operator=(const T2&) { return *this; }
-
-  uint32_t count = 0;
-};
-
-// Override of CountingOutputIterator<T1, T2> when types are identical.
-template <typename T>
-struct CountingOutputIterator<T, T> {
-  CountingOutputIterator& operator++() {
-    ++count;
+  CountingOutputIterator& operator=(const T2&)
+    requires(!std::same_as<T1, T2>)
+  {
     return *this;
   }
-  CountingOutputIterator& operator++(int) {
-    ++count;
-    return *this;
-  }
-
-  CountingOutputIterator& operator*() { return *this; }
-  CountingOutputIterator& operator=(const T&) { return *this; }
 
   uint32_t count = 0;
 };
@@ -135,11 +156,11 @@ struct CountingOutputIterator<T, T> {
 // Returns whether the two sets have non-empty intersection.
 template <typename Range1, typename Range2>
 constexpr bool HasIntersection(Range1&& range1, Range2&& range2) {
-  auto result = base::ranges::set_intersection(
+  auto result = std::ranges::set_intersection(
       std::forward<Range1>(range1), std::forward<Range2>(range2),
       CountingOutputIterator<decltype(*range1.begin()),
                              decltype(*range2.begin())>{});
-  return result.count != 0;
+  return result.out.count != 0;
 }
 
 // Returns a WebStateMetadataMap from `storage`.
@@ -203,7 +224,12 @@ void IterateDataForSessionAtPath(const base::FilePath& session_dir,
         ios::sessions::WebStateDirectory(session_dir, web_state_id)
             .Append(kWebStateStorageFilename);
 
-    iterator.Run(web_state_id, LoadWebStateStorage(web_state_storage_path));
+    // Client code can't know before hand how many tabs exists, so
+    // it is okay to drop tabs that cannot be loaded.
+    if (std::optional<web::proto::WebStateStorage> storage =
+            LoadWebStateStorage(web_state_storage_path)) {
+      iterator.Run(web_state_id, std::move(storage).value());
+    }
   }
 }
 
@@ -432,7 +458,7 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
       DeserializeWebStateList(browser->GetWebStateList(), std::move(session),
                               enable_pinned_web_states_, enable_tab_groups_,
                               base::BindRepeating(&CreateWebState, session_dir,
-                                                  browser->GetBrowserState()));
+                                                  browser->GetProfile()));
 
   // Loading the session may have dropped some items, so clean the metadata map.
   UpdateMetadataMap(metadata_map, browser->GetWebStateList());
@@ -516,10 +542,11 @@ void SessionRestorationServiceImpl::LoadWebStateStorage(
 
   // Post the task to read the data from disk. It will execute after all the
   // pending requests, so if the WebState has recently been created by calling
-  // CreateUnrealizedWebState(...), the data should be available.
+  // CreateUnrealizedWebState(...), the data should be available. If it is not
+  // then the callback is not called.
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&::LoadWebStateStorage, storage_path),
-      std::move(callback));
+      base::BindOnce(&AdaptWebStateStorageCallback, std::move(callback)));
 }
 
 void SessionRestorationServiceImpl::AttachBackup(Browser* browser,
@@ -611,8 +638,8 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
   // ensure there is no race condition while trying to read the data from the
   // main thread while it is being written to disk on a background thread.
   return web::WebState::CreateWithStorage(
-      browser->GetBrowserState(), web_state_id, std::move(metadata),
-      base::ReturnValueOnce(std::move(storage)),
+      browser->GetProfile(), web_state_id, std::move(metadata),
+      base::ReturnValueOnce(std::make_optional(std::move(storage))),
       base::ReturnValueOnce<NSData*>(nil));
 }
 

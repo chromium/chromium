@@ -13,6 +13,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.signin.AccountEmailDisplayHook;
@@ -32,6 +33,7 @@ import java.util.function.Predicate;
  * A coordinator to show a modal dialog that is displayed when the user switches account they are
  * syncing to. It gives the option to merge the data of the two accounts or to keep them separate.
  */
+@NullMarked
 public class ConfirmImportSyncDataDialogCoordinator {
     /**
      * Callback for completion of the dialog. Only one of {@link Listener#onConfirm} or

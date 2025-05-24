@@ -12,6 +12,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt.CardUnmaskPromptDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
@@ -20,13 +22,14 @@ import org.chromium.url.GURL;
 
 /** JNI call glue for CardUnmaskPrompt C++ and Java objects. */
 @JNINamespace("autofill")
+@NullMarked
 public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     private final long mNativeCardUnmaskPromptViewAndroid;
-    private final CardUnmaskPrompt mCardUnmaskPrompt;
+    private final @Nullable CardUnmaskPrompt mCardUnmaskPrompt;
 
     private CardUnmaskBridge(
             long nativeCardUnmaskPromptViewAndroid,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             String title,
             String instructions,
             int cardIconId,
@@ -37,7 +40,6 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
             String confirmButtonLabel,
             int cvcIconId,
             String cvcImageAnnouncement,
-            int googlePayIconId,
             boolean isVirtualCard,
             boolean shouldRequestExpirationDate,
             boolean shouldOfferWebauthn,
@@ -56,7 +58,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
                     new CardUnmaskPrompt(
                             activity,
                             this,
-                            personalDataManager,
+                            imageFetcher,
                             title,
                             instructions,
                             cardIconId,
@@ -67,7 +69,6 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
                             confirmButtonLabel,
                             cvcIconId,
                             cvcImageAnnouncement,
-                            googlePayIconId,
                             isVirtualCard,
                             shouldRequestExpirationDate,
                             shouldOfferWebauthn,
@@ -92,7 +93,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
             String confirmButtonLabel,
             int cvcIconId,
             String cvcImageAnnouncement,
-            int googlePayIconId,
+            int unused_googlePayIconId,
             boolean isVirtualCard,
             boolean shouldRequestExpirationDate,
             boolean shouldOfferWebauthn,
@@ -101,7 +102,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
             WindowAndroid windowAndroid) {
         return new CardUnmaskBridge(
                 nativeUnmaskPrompt,
-                PersonalDataManagerFactory.getForProfile(profile),
+                AutofillImageFetcherFactory.getForProfile(profile),
                 title,
                 instructions,
                 cardIconId,
@@ -112,7 +113,6 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
                 confirmButtonLabel,
                 cvcIconId,
                 cvcImageAnnouncement,
-                googlePayIconId,
                 isVirtualCard,
                 shouldRequestExpirationDate,
                 shouldOfferWebauthn,

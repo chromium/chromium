@@ -86,7 +86,7 @@ bool NtlmBufferReader::ReadPayloadAsBufferReader(const SecurityBuffer& sec_buf,
     return false;
 
   *reader = NtlmBufferReader(
-      base::make_span(GetBufferPtr() + sec_buf.offset, sec_buf.length));
+      base::span(GetBufferPtr() + sec_buf.offset, sec_buf.length));
   return true;
 }
 

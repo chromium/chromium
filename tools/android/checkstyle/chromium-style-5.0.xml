@@ -67,8 +67,9 @@
       <property name="severity" value="error"/>
     </module>
     <module name="ConstantName">
+      <property name="id" value="ConstantNameCheck"/>
       <property name="severity" value="error"/>
-      <property name="format" value="^([A-Z][A-Z0-9]*(_[A-Z0-9]+)*)|(s[A-Z][a-zA-Z0-9]*)$"/>
+      <property name="format" value="^([A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$|^(s[A-Z][a-zA-Z0-9]*)$"/>
       <message key="name.invalidPattern" value="Static final field names must either be all caps (e.g. int HEIGHT_PX) for 'true' constants, or start with s (e.g. AtomicInteger sNextId or Runnable sSuspendTask) for fields with mutable state or that don't 'feel' like constants."/>
     </module>
     <!-- Non-public, non-static field names start with m. -->
@@ -92,6 +93,7 @@
         <message key="name.invalidPattern" value="Method names should start with a lower case letter (e.g. getWidth())"/>
     </module>
     <module name="ParameterName">
+      <property name="format" value="^(unused_)?[a-z][a-zA-Z0-9]*$"/>
       <property name="severity" value="error"/>
     </module>
     <module name="LocalFinalVariableName">
@@ -103,12 +105,6 @@
       <property name="severity" value="error"/>
       <property name="format" value="^m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*)$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
-    </module>
-    <module name="AbbreviationAsWordInName">
-      <!-- https://source.android.com/docs/setup/contribute/code-style#treat-acronyms-as-words -->
-      <property name="severity" value="warning"/>
-      <property name="allowedAbbreviationLength" value="0"/>
-      <property name="allowedAbbreviations" value="GURL"/>
     </module>
     <module name="FallThrough">
       <property name="severity" value="error"/>
@@ -219,7 +215,7 @@
       <property name="id" value="FullscreenDialogs"/>
       <property name="severity" value="warning"/>
       <property name="format" value="ThemeOverlay\_BrowserUI\_Fullscreen"/>
-      <property name="message" value="Fullscreen AlertDialogs must use FullscreenAlertDialog and fullscreen Dialogs must use ChromeDialog. Not doing this will break automotive devices. (This check is triggered by the presence of ThemeOverlay_BrowserUI_Fullscreen and does not know if you are already using the correct class)"/>
+      <property name="message" value="Fullscreen AlertDialogs must use FullscreenAlertDialog and fullscreen Dialogs must use ChromeDialog. Not doing this will break automotive devices and edge to edge mode. (This check is triggered by the presence of ThemeOverlay_BrowserUI_Fullscreen and does not know if you are already using the correct class)"/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="id" value="InclusiveLanguageCheck"/>
@@ -236,14 +232,20 @@
     <module name="RegexpSinglelineJava">
       <property name="id" value="ParamComments"/>
       <property name="severity" value="warning"/>
-      <property name="format" value="/\*\*? ?\w+ ?\*/,|, /\*\*? ?\w+ ?\*/"/>
+      <property name="format" value="/\*\*? ?\w+ ?\*/,|, /\*\*? ?\w+ ?\*/(?!\s+InvocationHandler\b)"/>
       <property name="message" value="Parameter comments should use the ErrorProne-aware syntax: /* paramName= */."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="ClosingJavadocs"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="\* ?\*\/"/>
+      <property name="message" value="Closing a javadoc only takes a single '*'."/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="id" value="RemoveObserverMethodReference"/>
       <property name="severity" value="warning"/>
-      <property name="format" value="removeObserver\([a-zA-Z]+::"/>
-      <property name="message"  value="Each method reference creates a new instance. The instance given to addObserver needs to be remembered and supplied to removeObserver."/>
+      <property name="format" value="remove[A-Z][a-zA-Z]*\([a-zA-Z]+::"/>
+      <property name="message" value="Each method reference creates a new instance. The specific object given to the addObserver-like-method needs to be remembered and given to the removeObserver-like-method."/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="id" value="MockitoInitMocks"/>
@@ -251,11 +253,37 @@
       <property name="format" value="MockitoAnnotations.initMocks"/>
       <property name="message" value="Prefer to use MockitoJUnit.Rule for consistency unless timing of when exactly mocks are initialized is required."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="SetDecorFitsSystemWindowsCheck"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="[Ww]indow(Compat)?.setDecorFitsSystemWindows"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="setDecorFitsSystemWindows will change the window flag at activity level, and requires coordination. Use org.chromium.browser_ui.edge_to_edge.EdgeToEdgeStateProvider if possible. (crbug.com/41492646)"/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="ElevationOverlayProvider"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="ElevationOverlayProvider"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Elevation based surface color is being deprecated. Use tonal color roles instead. See crbug.com/348667900."/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>
     <property name="severity" value="warning"/>
     <property name="format" value="@VisibleForTesting.*\n.*ForTests?(ing)\("/>
     <property name="message" value="There is no need to add @VisibleForTesting to test-only methods (those with &quot;ForTesting&quot; suffix)."/>
+  </module>
+  <module name="RegexpMultiline">
+    <property name="id" value="ContextGetString"/>
+    <property name="severity" value="warning"/>
+    <property name="format" value="ontext\(?\)?\s*\.getResources\(\)\s*\.getString\("/>
+    <property name="message" value="Use Context.getString() rather than Context.getResources().getString()."/>
+  </module>
+  <module name="RegexpMultiline">
+    <property name="id" value="RobolecticMinSdk"/>
+    <property name="severity" value="warning"/>
+    <property name="format" value="@Config\([^)]*minSdk\s*="/>
+    <property name="message" value="@Config(minSdk=...) parameterizes tests across every SDK level >= the given one. Use @Config(sdk=Build.VERSION_CODES.FOO) or @Config(sdk='{'Build.VERSION_CODES.A, Build.VERSION_CODES.B, ...})"/>
   </module>
 </module>

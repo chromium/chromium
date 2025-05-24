@@ -198,26 +198,25 @@ void MIDIAccess::DidSetOutputPortState(unsigned port_index, PortState state) {
 }
 
 void MIDIAccess::DidReceiveMIDIData(unsigned port_index,
-                                    const unsigned char* data,
-                                    wtf_size_t length,
+                                    base::span<const uint8_t> data,
                                     base::TimeTicks time_stamp) {
   DCHECK(IsMainThread());
   if (port_index >= inputs_.size())
     return;
 
-  inputs_[port_index]->DidReceiveMIDIData(port_index, data, length, time_stamp);
+  inputs_[port_index]->DidReceiveMIDIData(port_index, data, time_stamp);
 }
 
 void MIDIAccess::SendMIDIData(unsigned port_index,
-                              const unsigned char* data,
-                              wtf_size_t length,
+                              base::span<const uint8_t> data,
                               base::TimeTicks time_stamp) {
   DCHECK(!time_stamp.is_null());
-  if (!GetExecutionContext() || !data || !length ||
-      port_index >= outputs_.size())
+  if (!GetExecutionContext() || !data.data() || data.empty() ||
+      port_index >= outputs_.size()) {
     return;
+  }
 
-  dispatcher_->SendMIDIData(port_index, data, length, time_stamp);
+  dispatcher_->SendMIDIData(port_index, data, time_stamp);
 }
 
 void MIDIAccess::Trace(Visitor* visitor) const {

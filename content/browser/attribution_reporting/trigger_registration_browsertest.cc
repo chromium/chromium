@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/attribution_reporting/trigger_registration.h"
+
 #include <memory>
 
 #include "base/barrier_closure.h"
@@ -10,7 +12,6 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
-#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -87,6 +88,8 @@ class AttributionTriggerRegistrationBrowserTest
     auto data_host_manager =
         std::make_unique<AttributionDataHostManagerImpl>(mock_manager.get());
     mock_manager->SetDataHostManager(std::move(data_host_manager));
+    EXPECT_CALL(*mock_manager, UpdateLastNavigationTime)
+        .Times(testing::AnyNumber());
     static_cast<StoragePartitionImpl*>(
         web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
         ->OverrideAttributionManagerForTesting(std::move(mock_manager));

@@ -92,5 +92,3 @@ void InfoBarManagerImpl::OpenURL(const GURL& url,
                                       /*is_renderer_initiated=*/false);
   web_state_->OpenURL(params);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(InfoBarManagerImpl)

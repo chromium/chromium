@@ -26,11 +26,11 @@
 namespace base {
 
 struct linux_dirent {
-  uint64_t        d_ino;
-  int64_t         d_off;
-  unsigned short  d_reclen;
-  unsigned char   d_type;
-  char            d_name[0];
+  uint64_t d_ino;
+  int64_t d_off;
+  unsigned short d_reclen;
+  unsigned char d_type;
+  char d_name[0];
 };
 
 class DirReaderLinux {
@@ -47,14 +47,13 @@ class DirReaderLinux {
 
   ~DirReaderLinux() {
     if (fd_ >= 0) {
-      if (IGNORE_EINTR(close(fd_)))
+      if (IGNORE_EINTR(close(fd_))) {
         RAW_LOG(ERROR, "Failed to close directory handle");
+      }
     }
   }
 
-  bool IsValid() const {
-    return fd_ >= 0;
-  }
+  bool IsValid() const { return fd_ >= 0; }
 
   // Move to the next entry returning false if the iteration is complete.
   bool Next() {
@@ -63,12 +62,14 @@ class DirReaderLinux {
       offset_ += dirent->d_reclen;
     }
 
-    if (offset_ != size_)
+    if (offset_ != size_) {
       return true;
+    }
 
     const long r = syscall(__NR_getdents64, fd_, buf_, sizeof(buf_));
-    if (r == 0)
+    if (r == 0) {
       return false;
+    }
     if (r < 0) {
       if (errno != ENOENT) {
         DPLOG(FATAL) << "getdents64 failed";
@@ -81,21 +82,18 @@ class DirReaderLinux {
   }
 
   const char* name() const {
-    if (!size_)
+    if (!size_) {
       return nullptr;
+    }
 
     const linux_dirent* dirent =
         reinterpret_cast<const linux_dirent*>(&buf_[offset_]);
     return dirent->d_name;
   }
 
-  int fd() const {
-    return fd_;
-  }
+  int fd() const { return fd_; }
 
-  static bool IsFallback() {
-    return false;
-  }
+  static bool IsFallback() { return false; }
 
  private:
   const int fd_;

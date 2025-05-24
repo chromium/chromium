@@ -25,6 +25,7 @@
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 
 namespace safe_browsing {
 
@@ -37,10 +38,7 @@ const char kRealTimeThreatInfoProto[] = "rt_threat_info_proto";
 const char kPasswordOnFocusCacheKey[] = "password_on_focus_cache_key";
 const char kRealTimeUrlCacheKey[] = "real_time_url_cache_key";
 const char kCsdTypeCacheKey[] = "client_side_detection_type_cache_key";
-
-// Command-line flag for caching an artificial unsafe verdict for URL real-time
-// lookups.
-const char kUnsafeUrlFlag[] = "mark_as_real_time_phishing";
+const char kLlamaForcedTriggerInfoKey[] = "llama_forced_trigger_info_key";
 
 // The maximum number of entries to be removed in a single cleanup. Removing too
 // many entries all at once could cause jank.
@@ -123,10 +121,18 @@ base::Value::Dict CreateDictionaryFromVerdict(
     const T& verdict,
     const base::Time& receive_time,
     const char* proto_name,
-    const safe_browsing::ClientSideDetectionType csd_type) {
+    const safe_browsing::ClientSideDetectionType csd_type,
+    const safe_browsing::LlamaForcedTriggerInfo llama_forced_trigger_info) {
   base::Value::Dict result =
       CreateDictionaryFromVerdict(verdict, receive_time, proto_name);
   result.Set(kCsdTypeCacheKey, static_cast<int>(csd_type));
+  std::string serialized_proto(llama_forced_trigger_info.SerializeAsString());
+  // Performs a base64 encoding on the serialized proto.
+  serialized_proto = base::Base64Encode(serialized_proto);
+  if (!serialized_proto.empty()) {
+    result.Set(kLlamaForcedTriggerInfoKey, serialized_proto);
+  }
+
   return result;
 }
 
@@ -254,8 +260,7 @@ std::string GetKeyOfTypeFromTriggerType(
 // interpret it as exact match only.
 template <typename T>
 bool IsOnlyExactMatchAllowed(T verdict) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 template <>
 bool IsOnlyExactMatchAllowed<RTLookupResponse::ThreatInfo>(
@@ -272,8 +277,7 @@ bool IsOnlyExactMatchAllowed<LoginReputationClientResponse>(
 
 template <typename T>
 std::string GetCacheExpression(T verdict) {
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 template <>
@@ -625,6 +629,8 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
   std::vector<std::string> visited_cache_expressions;
   safe_browsing::ClientSideDetectionType csd_type =
       verdict.client_side_detection_type();
+  safe_browsing::LlamaForcedTriggerInfo llama_forced_trigger_info =
+      verdict.llama_forced_trigger_info();
 
   for (const auto& threat_info : verdict.threat_info()) {
     // If |cache_expression_match_type| is unspecified, ignore this entry.
@@ -660,7 +666,8 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
 
     base::Value::Dict threat_info_entry =
         CreateDictionaryFromVerdict<RTLookupResponse::ThreatInfo>(
-            threat_info, receive_time, kRealTimeThreatInfoProto, csd_type);
+            threat_info, receive_time, kRealTimeThreatInfoProto, csd_type,
+            llama_forced_trigger_info);
     // Increases stored verdict count if we haven't seen this cache expression
     // before.
     if (!verdict_dictionary->contains(cache_expression)) {
@@ -729,6 +736,41 @@ VerdictCacheManager::GetCachedRealTimeUrlClientSideDetectionType(
     return safe_browsing::ClientSideDetectionType::
         CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
   }
+}
+
+bool VerdictCacheManager::GetCachedRealTimeLlamaForcedTriggerInfo(
+    const GURL& url,
+    safe_browsing::LlamaForcedTriggerInfo* out_llama_forced_trigger_info) {
+  if (is_shut_down_) {
+    return false;
+  }
+
+  std::optional<base::Value> most_matching_verdict =
+      GetMostMatchingCachedVerdictEntryWithHostAndPathMatching<
+          RTLookupResponse::ThreatInfo>(
+          url, kRealTimeUrlCacheKey, content_settings_,
+          ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
+          kRealTimeThreatInfoProto);
+
+  if (!most_matching_verdict || !most_matching_verdict->is_dict()) {
+    return false;
+  }
+
+  const std::string* cache_llama_forced_trigger_info =
+      most_matching_verdict->GetDict().FindString(kLlamaForcedTriggerInfoKey);
+
+  if (cache_llama_forced_trigger_info) {
+    std::string serialized_llama_forced_trigger_info =
+        *cache_llama_forced_trigger_info;
+
+    if (base::Base64Decode(serialized_llama_forced_trigger_info,
+                           &serialized_llama_forced_trigger_info)) {
+      return out_llama_forced_trigger_info->ParseFromString(
+          serialized_llama_forced_trigger_info);
+    }
+  }
+
+  return false;
 }
 
 ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(
@@ -1069,13 +1111,16 @@ size_t VerdictCacheManager::GetRealTimeUrlCheckVerdictCountForURL(
 void VerdictCacheManager::CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch() {
   std::string phishing_url_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kUnsafeUrlFlag);
-  CacheArtificialRealTimeUrlVerdict(phishing_url_string, /*is_unsafe=*/true);
+          switches::kArtificialCachedUrlRealTimeVerdictFlag);
+  CacheArtificialRealTimeUrlVerdict(
+      phishing_url_string, RTLookupResponse::ThreatInfo::DANGEROUS,
+      RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
 }
 
 void VerdictCacheManager::CacheArtificialRealTimeUrlVerdict(
     const std::string& url_string,
-    bool is_unsafe) {
+    RTLookupResponse::ThreatInfo::VerdictType verdict_type,
+    std::optional<RTLookupResponse::ThreatInfo::ThreatType> threat_type) {
   if (url_string.empty()) {
     return;
   }
@@ -1089,12 +1134,9 @@ void VerdictCacheManager::CacheArtificialRealTimeUrlVerdict(
 
   RTLookupResponse response;
   RTLookupResponse::ThreatInfo* threat_info = response.add_threat_info();
-  if (is_unsafe) {
-    threat_info->set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
-    threat_info->set_threat_type(
-        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
-  } else {
-    threat_info->set_verdict_type(RTLookupResponse::ThreatInfo::SAFE);
+  threat_info->set_verdict_type(verdict_type);
+  if (threat_type.has_value()) {
+    threat_info->set_threat_type(threat_type.value());
   }
   threat_info->set_cache_duration_sec(3000);
   threat_info->set_cache_expression_using_match_type(
@@ -1109,7 +1151,7 @@ void VerdictCacheManager::CacheArtificialRealTimeUrlVerdict(
 void VerdictCacheManager::CacheArtificialUnsafePhishGuardVerdictFromSwitch() {
   std::string phishing_url_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kArtificialCachedPhishGuardVerdictFlag);
+          switches::kArtificialCachedPhishGuardVerdictFlag);
   if (phishing_url_string.empty()) {
     return;
   }
@@ -1172,14 +1214,14 @@ void VerdictCacheManager::
     CacheArtificialUnsafeHashRealTimeLookupVerdictFromSwitch() {
   std::string phishing_url_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kArtificialCachedHashPrefixRealTimeVerdictFlag);
+          switches::kArtificialCachedHashPrefixRealTimeVerdictFlag);
   CacheArtificialHashRealTimeLookupVerdict(phishing_url_string,
                                            /*is_unsafe=*/true);
 }
 
 void VerdictCacheManager::StopCleanUpTimerForTesting() {
   if (cleanup_timer_.IsRunning()) {
-    cleanup_timer_.AbandonAndStop();
+    cleanup_timer_.Stop();
   }
 }
 

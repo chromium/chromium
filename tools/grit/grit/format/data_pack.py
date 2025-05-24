@@ -15,6 +15,7 @@ import sys
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
+from grit import constants
 from grit import util
 from grit.node import include
 from grit.node import message
@@ -75,8 +76,14 @@ class DataPackContents:
     self.sizes = sizes
 
 
-def Format(root, lang='en', output_dir='.'):
+def Format(root, lang='en', gender=constants.DEFAULT_GENDER, output_dir='.'):
   """Writes out the data pack file format (platform agnostic resource file)."""
+  assert gender is not None
+
+  return WriteDataPackToString(_FormatInternal(root, lang, gender), UTF8)
+
+
+def _FormatInternal(root, lang, gender):
   id_map = root.GetIdMap()
   data = {}
   root.info = []
@@ -84,13 +91,36 @@ def Format(root, lang='en', output_dir='.'):
     with node:
       if isinstance(node, (include.IncludeNode, message.MessageNode,
                            structure.StructureNode)):
-        value = node.GetDataPackValue(lang, util.BINARY)
+        value = _GetGenderDedupedValue(node, lang, gender)
         if value is not None:
           resource_id = id_map[node.GetTextualIds()[0]]
           data[resource_id] = value
           root.info.append('{},{},{}'.format(
               node.attrs.get('name'), resource_id, node.source))
-  return WriteDataPackToString(data, UTF8)
+  return data
+
+
+# Many strings don't get separate translations per gender. We don't want to
+# store 4 copies of every string if we don't need to. This function checks if a
+# string in a gender translation already exists in the default translation for
+# the given language, and if so, removes it. Chrome will attempt to find a
+# translation in the appropriate gender first, and if not found, it will fall
+# back to the default gender.
+#
+# TODO(crbug.com/413058329): consider also deduping strings that are identical
+# in the default language and a translated language.
+def _GetGenderDedupedValue(node, lang, gender):
+  value = node.GetDataPackValue(lang, gender, util.BINARY)
+  if gender == constants.DEFAULT_GENDER or value is None:
+    return value
+
+  default_value = node.GetDataPackValue(lang, constants.DEFAULT_GENDER,
+                                        util.BINARY)
+  assert default_value is not None
+  if value != default_value:
+    return value
+
+  return None
 
 
 def ReadDataPack(input_file):

@@ -10,7 +10,9 @@ The git repository is hosted on GNOME's GitLab server:
 <https://gitlab.gnome.org/GNOME/libxml2>
 
 Bugs should be reported at
-<https://gitlab.gnome.org/GNOME/libxml2/-/issues>
+<https://gitlab.gnome.org/GNOME/libxml2/-/issues>.
+Please report *security issues* to our bug tracker as well. Make sure to
+mark the issue as *confidential*.
 
 Documentation is available at
 <https://gitlab.gnome.org/GNOME/libxml2/-/wikis>
@@ -21,8 +23,7 @@ This code is released under the MIT License, see the Copyright file.
 
 ## Build instructions
 
-libxml2 can be built with GNU Autotools, CMake, meson or several other
-build systems in platform-specific subdirectories.
+libxml2 can be built with GNU Autotools, CMake or meson.
 
 ### Autotools (for POSIX systems like Linux, BSD, macOS)
 
@@ -45,9 +46,9 @@ The following options disable or enable code modules and relevant symbols:
 
     --with-c14n             Canonical XML 1.0 support (on)
     --with-catalog          XML Catalogs support (on)
-    --with-debug            debugging module and shell (on)
-    --with-history          history support for shell (off)
-    --with-readline[=DIR]   use readline in DIR (for shell history)
+    --with-debug            debugging module (on)
+    --with-history          history support for xmllint shell (off)
+    --with-readline[=DIR]   use readline in DIR for shell (off)
     --with-html             HTML parser (on)
     --with-http             HTTP support (off)
     --with-iconv[=DIR]      iconv support (on)
@@ -61,12 +62,12 @@ The following options disable or enable code modules and relevant symbols:
     --with-python           Python bindings (on)
     --with-reader           xmlReader parsing interface (on)
     --with-regexps          regular expressions support (on)
+    --with-relaxng          RELAX NG support (on)
     --with-sax1             older SAX1 interface (on)
-    --with-schemas          XML Schemas 1.0 and RELAX NG support (on)
+    --with-schemas          XML Schemas 1.0 support (on)
     --with-schematron       Schematron support (on)
     --with-threads          multithreading support (on)
     --with-thread-alloc     per-thread malloc hooks (off)
-    --with-tree             DOM like tree manipulation APIs (on)
     --with-valid            DTD validation support (on)
     --with-writer           xmlWriter serialization interface (on)
     --with-xinclude         XInclude 1.0 support (on)
@@ -99,12 +100,13 @@ update your list of installed shared libs.
 
 ### CMake (mainly for Windows)
 
-Another option for compiling libxml is using CMake:
+Example commands:
 
-    cmake -E tar xf libxml2-xxx.tar.gz
-    cmake -S libxml2-xxx -B libxml2-xxx-build [possible options]
-    cmake --build libxml2-xxx-build
-    cmake --install libxml2-xxx-build
+    cmake -E tar xf libxml2-xxx.tar.xz
+    cmake -S libxml2-xxx -B builddir [options]
+    cmake --build builddir
+    ctest --test-dir builddir
+    cmake --install builddir
 
 Common CMake options include:
 
@@ -112,52 +114,49 @@ Common CMake options include:
     -D CMAKE_BUILD_TYPE=Release         # specify build type
     -D CMAKE_INSTALL_PREFIX=/usr/local  # specify the install path
     -D LIBXML2_WITH_ICONV=OFF           # disable iconv
-    -D LIBXML2_WITH_LZMA=OFF            # disable liblzma
     -D LIBXML2_WITH_PYTHON=OFF          # disable Python
-    -D LIBXML2_WITH_ZLIB=OFF            # disable libz
+    -D LIBXML2_WITH_ZLIB=ON             # enable zlib
 
 You can also open the libxml source directory with its CMakeLists.txt
 directly in various IDEs such as CLion, QtCreator, or Visual Studio.
 
 ### Meson
 
-Libxml can also be built with meson. Without option, simply call
+Example commands:
 
-meson setup builddir
-ninja -C builddir
+    meson setup [options] builddir
+    ninja -C builddir
+    meson test -C builddir
+    ninja -C builddir install
 
-To add options, see the meson_options.txt file. For example:
+See the `meson_options.txt` file for options. For example:
 
-meson setup -Dprefix=$prefix -Dftp=true -Dhistory=true -Dicu=true -Dhttp=true builddir
-
-To install libxml:
-
-ninja -C builddir install
-
-To launch tests:
-
-meson test -C builddir
+    -Dprefix=$prefix
+    -Dhistory=enabled
+    -Dhttp=enabled
+    -Dschematron=disabled
+    -Dzlib=enabled
 
 ## Dependencies
 
-Libxml does not require any other libraries. A platform with somewhat
-recent POSIX support should be sufficient (please report any violation
-to this rule you may find).
+libxml2 supports POSIX and Windows operating systems.
 
 The iconv function is required for conversion of character encodings.
 This function is part of POSIX.1-2001. If your platform doesn't provide
 iconv, you need an external libiconv library, for example
-[GNU libiconv](https://www.gnu.org/software/libiconv/). Alternatively,
-you can use [ICU](https://icu.unicode.org/).
+[GNU libiconv](https://www.gnu.org/software/libiconv/). Using
+[ICU](https://icu.unicode.org/) is also supported but discouraged.
 
 If enabled, libxml uses [libz](https://zlib.net/) or
 [liblzma](https://tukaani.org/xz/) to support reading compressed files.
 Use of this feature is discouraged.
 
+The xmllint executable uses libreadline and libhistory if enabled.
+
 ## Contributing
 
-The current version of the code can be found in GNOME's GitLab at 
-at <https://gitlab.gnome.org/GNOME/libxml2>. The best way to get involved
+The current version of the code can be found in GNOME's GitLab at
+<https://gitlab.gnome.org/GNOME/libxml2>. The best way to get involved
 is by creating issues and merge requests on GitLab.
 
 All code must conform to C89 and pass the GitLab CI tests. Add regression

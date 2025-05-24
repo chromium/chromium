@@ -276,7 +276,7 @@ public class QuickDeleteViewBinderTest {
         setSignedInStatus(false);
         TextViewWithClickableSpans searchHistoryDisambiguation =
                 mQuickDeleteView.findViewById(R.id.search_history_disambiguation);
-        assertEquals(searchHistoryDisambiguation.getVisibility(), View.GONE);
+        assertEquals(View.GONE, searchHistoryDisambiguation.getVisibility());
     }
 
     @Test

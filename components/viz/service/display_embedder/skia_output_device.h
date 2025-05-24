@@ -36,10 +36,11 @@ struct PresentationFeedback;
 namespace gpu {
 class MemoryTracker;
 class MemoryTypeTracker;
+class SharedContextState;
+class GraphiteSharedContext;
 }  // namespace gpu
 
 namespace skgpu::graphite {
-class Context;
 class Recording;
 }  // namespace skgpu::graphite
 
@@ -75,7 +76,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
     bool Draw(sk_sp<const GrDeferredDisplayList> ddl);
 
     // Graphite
-    bool Draw(std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
+    bool Draw(gpu::GraphiteSharedContext* graphite_shared_context,
+              std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
               base::OnceClosure on_finished);
 
     std::vector<GrBackendSemaphore> TakeEndPaintSemaphores() {
@@ -102,7 +104,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
 
   SkiaOutputDevice(
       GrDirectContext* gr_context,
-      skgpu::graphite::Context* graphite_context,
+      gpu::GraphiteSharedContext* graphite_shared_context,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
       ReleaseOverlaysCallback release_overlays_callback = base::DoNothing());
@@ -140,7 +142,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // implementations will run |callback| in this call stack.
   // If the |sync_cpu| flag is true this function will return once the gpu
   // has finished with all submitted work.
-  virtual void Submit(bool sync_cpu, base::OnceClosure callback);
+  virtual void Submit(scoped_refptr<gpu::SharedContextState> context_state,
+                      bool sync_cpu,
+                      base::OnceClosure callback);
 
   // Presents the back buffer. Optional `update_rect` represents hint of the
   // rect that was updated in the back buffer. If not specified the whole buffer
@@ -169,8 +173,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // This should be called when the GPU thread decides to skip a swap that was
   // invoked by the viz thread to ensure that we still run the relevant metrics
   // bookkeeping.
-  virtual void SwapBuffersSkipped(BufferPresentedCallback feedback,
-                                  OutputSurfaceFrame frame);
+  void SwapBuffersSkipped(BufferPresentedCallback feedback,
+                          OutputSurfaceFrame frame);
 
   bool is_emulated_rgbx() const { return is_emulated_rgbx_; }
 
@@ -228,6 +232,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   virtual bool Draw(SkSurface* sk_surface,
                     sk_sp<const GrDeferredDisplayList> ddl);
   virtual bool Draw(
+      gpu::GraphiteSharedContext* graphite_shared_context,
       SkSurface* sk_surface,
       std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
       base::OnceClosure on_finished);
@@ -244,10 +249,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
       OutputSurfaceFrame frame,
       const std::optional<gfx::Rect>& damage_area = std::nullopt,
       std::vector<gpu::Mailbox> released_overlays = {});
-
-  // TODO(crbug.com/40266876): Reset device on context loss to fix dangling ptr.
-  const raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_;
-  const raw_ptr<skgpu::graphite::Context> graphite_context_;
 
   OutputSurface::Capabilities capabilities_;
 

@@ -19,8 +19,8 @@ class DocumentLoadTiming;
 class DocumentLoader;
 class DocumentTiming;
 class ResourceLoadTiming;
+class ScriptObject;
 class ScriptState;
-class ScriptValue;
 
 // Legacy support for NT1(https://www.w3.org/TR/navigation-timing/).
 class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
@@ -60,7 +60,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // passed as parameter must be an attribute of |performance.timing|.
   uint64_t GetNamedAttribute(const AtomicString&) const;
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
+  ScriptObject toJSONForBinding(ScriptState*) const;
 
   void Trace(Visitor*) const override;
 

@@ -20,14 +20,11 @@ namespace remoting {
 class DesktopDisplayInfoTest : public testing::Test {
  public:
   void AddDisplay(int x, int y, uint32_t width, uint32_t height) {
-    info_.AddDisplay({.id = 0,
-                      .x = x,
-                      .y = y,
-                      .width = width,
-                      .height = height,
-                      .dpi = 96,
-                      .bpp = 24,
-                      .is_default = false});
+    info_.AddDisplay({/* id */ 0, x, y, width, height,
+                      /* dpi */ 96,
+                      /* bpp */ 24,
+                      /* is_default */ false,
+                      /* display_name */ "test display"});
   }
 
   void VerifyDisplayOffset(const base::Location& from_here,

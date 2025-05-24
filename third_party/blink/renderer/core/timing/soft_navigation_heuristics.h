@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -29,10 +28,7 @@ class SoftNavigationContext;
 // heuristics. See https://github.com/WICG/soft-navigations
 class CORE_EXPORT SoftNavigationHeuristics
     : public GarbageCollected<SoftNavigationHeuristics>,
-      public Supplement<LocalDOMWindow>,
       public scheduler::TaskAttributionTracker::Observer {
-  USING_PRE_FINALIZER(SoftNavigationHeuristics, Dispose);
-
  public:
   FRIEND_TEST_ALL_PREFIXES(SoftNavigationHeuristicsTest,
                            EarlyReturnOnInvalidPendingInteractionTimestamp);
@@ -77,16 +73,15 @@ class CORE_EXPORT SoftNavigationHeuristics
     bool is_nested_;
   };
 
-  // Supplement boilerplate.
-  static const char kSupplementName[];
-  explicit SoftNavigationHeuristics(LocalDOMWindow& window);
+  explicit SoftNavigationHeuristics(LocalDOMWindow* window);
   virtual ~SoftNavigationHeuristics() = default;
-  static SoftNavigationHeuristics* From(LocalDOMWindow&);
+
+  static SoftNavigationHeuristics* CreateIfNeeded(LocalDOMWindow*);
 
   // GarbageCollected boilerplate.
   void Trace(Visitor*) const override;
 
-  void Dispose();
+  void Shutdown();
 
   // The class's API.
 
@@ -98,15 +93,15 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   void SameDocumentNavigationCommitted(const String& url,
                                        SoftNavigationContext*);
-  bool ModifiedDOM();
+  bool ModifiedDOM(Node* node);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.
   void OnCreateTaskScope(scheduler::TaskAttributionInfo&) override;
 
-  void RecordPaint(LocalFrame*,
-                   uint64_t painted_area,
-                   bool is_modified_by_soft_navigation);
+  void RecordPaint(LocalFrame*, const gfx::RectF& rect, Node* node);
+
+  void OnPaintFinished();
 
   // Returns an `EventScope` suitable for navigation. Used for navigations not
   // yet associated with an event.
@@ -119,35 +114,29 @@ class CORE_EXPORT SoftNavigationHeuristics
   std::optional<EventScope> MaybeCreateEventScopeForEvent(const Event&);
 
   // This method is called during the weakness processing stage of garbage
-  // collection to remove items from `potential_soft_navigations_` and to detect
-  // it becoming empty, in which case the heuristic is reset.
+  // collection to remove items from `potential_soft_navigations_`.
   void ProcessCustomWeakness(const LivenessBroker& info);
 
-  bool GetInitialInteractionEncounteredForTest() {
-    return initial_interaction_encountered_;
-  }
-
  private:
-  void RecordUmaForNonSoftNavigationInteraction(
-      const SoftNavigationContext&) const;
   void ReportSoftNavigationToMetrics(LocalFrame*, SoftNavigationContext*) const;
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
 
   SoftNavigationContext* GetSoftNavigationContextForCurrentTask();
-  void ResetHeuristic();
-  void ResetPaintsIfNeeded();
-  void CommitPreviousPaints(LocalFrame*);
-  void EmitSoftNavigationEntryIfAllConditionsMet(SoftNavigationContext*);
-  LocalFrame* GetLocalFrameIfNotDetached() const;
+  void ResetPaintTimingsIfNeeded();
+  void CommitPreviousPaintTimings(LocalFrame*);
+  bool EmitSoftNavigationEntryIfAllConditionsMet(SoftNavigationContext*);
+  LocalFrame* GetLocalFrameIfOutermostAndNotDetached() const;
   void OnSoftNavigationEventScopeDestroyed(const EventScope&);
   EventScope CreateEventScope(EventScope::Type type, ScriptState*);
+  uint64_t CalculateRequiredPaintArea() const;
+
+  Member<LocalDOMWindow> window_;
 
   // The set of ongoing potential soft navigations. `SoftNavigationContext`
   // objects are added when they are the active context during an event handler
   // running in an `EventScope`. Entries are stored as untraced members to do
   // custom weak processing (see `ProcessCustomWeakness()`).
-  HashSet<UntracedMember<const SoftNavigationContext>>
-      potential_soft_navigations_;
+  Vector<UntracedMember<SoftNavigationContext>> potential_soft_navigations_;
 
   // The `SoftNavigationContext` of the "active interaction", if any.
   //
@@ -170,21 +159,18 @@ class CORE_EXPORT SoftNavigationHeuristics
   // events, this remains alive until the next interaction.
   Member<SoftNavigationContext> active_interaction_context_;
 
-  // The last soft navigation detected, which could be pending (not emitted)
-  // until `paint_conditions_met_` is true.
-  //
-  // TODO(crbug.com/1510706): Remove this is if `paint_conditions_met_` isn't
-  // reinstated since it is cleared immediately after emitting the entry.
-  WeakMember<SoftNavigationContext> last_detected_soft_navigation_;
+  // Save a strong reference to the most recent soft navigation detected.  This
+  // context could still be pending (not emitted) as we wait to observe more
+  // paints, or it might have already been emitted, but we still want to
+  // continue measuring paints for a while.
+  Member<SoftNavigationContext> most_recent_context_to_meet_non_paint_criteria_;
 
   uint32_t soft_navigation_count_ = 0;
-  uint64_t softnav_painted_area_ = 0;
-  uint64_t initial_painted_area_ = 0;
-  uint64_t viewport_area_ = 0;
-  bool did_commit_previous_paints_ = false;
-  bool paint_conditions_met_ = false;
-  bool initial_interaction_encountered_ = false;
   bool has_active_event_scope_ = false;
+  // `task_attribution_tracker_` is cleared during `Shutdown()` (frame detach),
+  // which should happen before the tracker is destroyed, since its lifetime is
+  // tied to the lifetime of the isolate/main thread.
+  scheduler::TaskAttributionTracker* task_attribution_tracker_;
 };
 
 }  // namespace blink

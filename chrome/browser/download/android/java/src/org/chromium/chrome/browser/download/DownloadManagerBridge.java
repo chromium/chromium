@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -26,6 +27,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.url.GURL;
 
@@ -33,6 +36,7 @@ import java.io.File;
 import java.util.concurrent.RejectedExecutionException;
 
 /** A wrapper for Android DownloadManager to provide utility functions. */
+@NullMarked
 public class DownloadManagerBridge {
     private static final String TAG = "DownloadDelegate";
     private static final String DOWNLOAD_DIRECTORY = "Download";
@@ -43,14 +47,14 @@ public class DownloadManagerBridge {
     public static class DownloadQueryResult {
         public final long downloadId;
         public int downloadStatus;
-        public String fileName;
-        public String mimeType;
-        public Uri contentUri;
+        public @Nullable String fileName;
+        public @Nullable String mimeType;
+        public @Nullable Uri contentUri;
         public long lastModifiedTime;
         public long bytesDownloaded;
         public long bytesTotal;
         public int failureReason;
-        public String filePath;
+        public @Nullable String filePath;
 
         public DownloadQueryResult(long downloadId) {
             this.downloadId = downloadId;
@@ -62,13 +66,13 @@ public class DownloadManagerBridge {
      * DownloadManagerBridge.enqueueNewDownload}.
      */
     public static class DownloadEnqueueRequest {
-        public String url;
-        public String fileName;
-        public String description;
-        public String mimeType;
-        public String cookie;
-        public String referrer;
-        public String userAgent;
+        public @Nullable String url;
+        public @Nullable String fileName;
+        public @Nullable String description;
+        public @Nullable String mimeType;
+        public @Nullable String cookie;
+        public @Nullable String referrer;
+        public @Nullable String userAgent;
         public boolean notifyCompleted;
     }
 
@@ -117,11 +121,13 @@ public class DownloadManagerBridge {
 
     /**
      * Removes a download from Android DownloadManager.
+     *
      * @param downloadGuid The GUID of the download.
      * @param externallyRemoved If download is externally removed in other application.
      */
     @CalledByNative
-    public static void removeCompletedDownload(String downloadGuid, boolean externallyRemoved) {
+    public static void removeCompletedDownload(
+            @JniType("std::string") String downloadGuid, boolean externallyRemoved) {
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT_MAY_BLOCK,
                 () -> {
@@ -291,14 +297,14 @@ public class DownloadManagerBridge {
      */
     @CalledByNative
     private static void addCompletedDownload(
-            String fileName,
-            String description,
-            String originalMimeType,
-            String filePath,
+            @JniType("std::string") String fileName,
+            @JniType("std::string") String description,
+            @JniType("std::string") String originalMimeType,
+            @JniType("std::string") String filePath,
             long fileSizeBytes,
             GURL originalUrl,
             GURL referrer,
-            String downloadGuid,
+            @JniType("std::string") String downloadGuid,
             long callbackId) {
         final String mimeType =
                 MimeUtils.remapGenericMimeType(originalMimeType, originalUrl.getSpec(), fileName);

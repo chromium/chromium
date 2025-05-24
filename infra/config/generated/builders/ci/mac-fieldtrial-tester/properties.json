@@ -72,7 +72,8 @@
           "builder": "mac-fieldtrial-tester",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-fieldtrial-tester/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

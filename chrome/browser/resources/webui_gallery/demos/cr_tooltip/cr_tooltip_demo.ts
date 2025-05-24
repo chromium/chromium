@@ -43,21 +43,21 @@ export class CrTooltipDemoElement extends CrLitElement {
   }
 
   // Default values.
-  protected tooltipPosition_: TooltipPosition = TooltipPosition.BOTTOM;
-  protected tooltipOffset_: number = 14;
+  protected accessor tooltipPosition_: TooltipPosition = TooltipPosition.BOTTOM;
+  protected accessor tooltipOffset_: number = 14;
 
   protected onTooltipPositionChange_(e: Event) {
     const position = (e.target as HTMLSelectElement).value;
     this.tooltipPosition_ = position as TooltipPosition;
-    this.shadowRoot!.querySelectorAll('cr-tooltip').forEach(
-        tooltip => tooltip.updatePosition());
+    this.shadowRoot.querySelectorAll('cr-tooltip')
+        .forEach(tooltip => tooltip.updatePosition());
   }
 
   protected onTooltipOffsetInput_(e: Event) {
     const offset = Number((e.target as CrInputElement).value);
     this.tooltipOffset_ = offset;
-    this.shadowRoot!.querySelectorAll('cr-tooltip').forEach(
-        tooltip => tooltip.updatePosition());
+    this.shadowRoot.querySelectorAll('cr-tooltip')
+        .forEach(tooltip => tooltip.updatePosition());
   }
 
   protected hide_() {

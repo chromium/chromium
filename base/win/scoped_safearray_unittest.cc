@@ -38,8 +38,9 @@ static void PopulateScopedSafearrayOfInts(ScopedSafearray& scoped_safe_array) {
   int* int_array;
   ASSERT_HRESULT_SUCCEEDED(SafeArrayAccessData(
       scoped_safe_array.Get(), reinterpret_cast<void**>(&int_array)));
-  for (size_t i = 0; i < kInputValues.size(); ++i)
+  for (size_t i = 0; i < kInputValues.size(); ++i) {
     int_array[i] = kInputValues[i];
+  }
   ASSERT_HRESULT_SUCCEEDED(SafeArrayUnaccessData(scoped_safe_array.Get()));
 }
 
@@ -153,6 +154,13 @@ TEST(ScopedSafearrayTest, InitiallyEmpty) {
   EXPECT_DCHECK_DEATH(empty_safe_array.GetCount());
 }
 
+TEST(ScopedSafearrayTest, NonNullOneDimensionalEmptySafearray) {
+  SAFEARRAY* empty_array = SafeArrayCreateVector(VT_I4, 0, 0);
+  ScopedSafearray empty_safe_array(empty_array);
+  EXPECT_NE(empty_safe_array.Get(), nullptr);
+  EXPECT_EQ(empty_safe_array.GetCount(), 0);
+}
+
 TEST(ScopedSafearrayTest, ScopedSafearrayGetCount) {
   // TODO(crbug.com/40691652): Create a safer alternative to SAFEARRAY methods.
   ScopedSafearray scoped_safe_array(SafeArrayCreateVector(
@@ -260,8 +268,9 @@ TEST(ScopedSafearrayTest, ScopedSafearrayLockScopeIterator) {
 
   std::vector<int> unpacked_vector(lock_scope->begin(), lock_scope->end());
   ASSERT_EQ(unpacked_vector.size(), kInputValues.size());
-  for (size_t i = 0; i < kInputValues.size(); ++i)
+  for (size_t i = 0; i < kInputValues.size(); ++i) {
     EXPECT_EQ(unpacked_vector[i], kInputValues[i]);
+  }
 }
 
 }  // namespace win

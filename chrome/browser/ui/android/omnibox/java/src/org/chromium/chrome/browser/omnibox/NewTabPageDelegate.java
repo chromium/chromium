@@ -6,18 +6,18 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Delegate that provides the toolbar with the info of the NTP for the current tab.
  * TODO(crbug.com/40148706): Consider moving this out of toolbar/ into its own target for omnibox as
  * well.
  */
+@NullMarked
 public interface NewTabPageDelegate {
     /**
      * @return {@code true} if the current tab was showing NewTabPage.
@@ -30,6 +30,14 @@ public interface NewTabPageDelegate {
      * @return {@code true} if the NewTabPage is currently visible.
      */
     default boolean isCurrentlyVisible() {
+        return false;
+    }
+
+    /**
+     * Whether the incognito version of the NewTabPage {@link
+     * org.chromium.chrome.browser.ntp.IncognitoNewTabPage} is currently visible.
+     */
+    default boolean isIncognitoNewTabPageCurrentlyVisible() {
         return false;
     }
 
@@ -87,18 +95,11 @@ public interface NewTabPageDelegate {
     default void setSearchProviderLogoAlpha(float alpha) {}
 
     /**
-     * Set the search box background drawable.
-     *
-     * @param drawable The search box background.
-     */
-    default void setSearchBoxBackground(Drawable drawable) {}
-
-    /**
      * Specifies the percentage the URL is focused during an animation. 1.0 specifies that the URL
      * bar has focus and has completed the focus animation. 0 is when the URL bar is does not have
      * any focus.
      *
-     * @param percent The percentage of the URL bar focus animation.
+     * @param fraction The percentage of the URL bar focus animation.
      */
     default void setUrlFocusChangeAnimationPercent(float fraction) {}
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
@@ -30,7 +31,6 @@
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -184,7 +184,7 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
   authenticated_connection_ = authenticated_connection;
 
   if (session_context_.is_resume_after_update()) {
-    UpdateStatus(/*step=*/Step::CONNECTED, /*payload=*/absl::monostate());
+    UpdateStatus(/*step=*/Step::CONNECTED, /*payload=*/std::monostate());
     return;
   }
 
@@ -207,7 +207,7 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
 
   if (reason == ConnectionClosedReason::kUserAborted) {
     UpdateStatus(/*step=*/Step::FLOW_ABORTED,
-                 /*payload=*/absl::monostate());
+                 /*payload=*/std::monostate());
   } else if (status_.step != Step::SETUP_COMPLETE) {
     // UI observer will automatically exit the QuickStartScreen if there's an
     // error. We want the user to manually exit the Quick Start screen when the
@@ -276,7 +276,7 @@ void TargetDeviceBootstrapController::OnStopAdvertising() {
   // status.
   if (status_.step == Step::ADVERTISING_WITH_QR_CODE ||
       status_.step == Step::ADVERTISING_WITHOUT_QR_CODE) {
-    UpdateStatus(/*step=*/Step::NONE, /*payload=*/absl::monostate());
+    UpdateStatus(/*step=*/Step::NONE, /*payload=*/std::monostate());
   }
 
   CleanupIfNeeded();
@@ -316,12 +316,12 @@ void TargetDeviceBootstrapController::OnUserVerificationResult(
     return;
   }
 
-  UpdateStatus(/*step=*/Step::CONNECTED, /*payload=*/absl::monostate());
+  UpdateStatus(/*step=*/Step::CONNECTED, /*payload=*/std::monostate());
 }
 
 void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
   UpdateStatus(/*step=*/Step::REQUESTING_WIFI_CREDENTIALS,
-               /*payload=*/absl::monostate());
+               /*payload=*/std::monostate());
 
   authenticated_connection_->RequestWifiCredentials(base::BindOnce(
       &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
@@ -337,7 +337,7 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
                  /*payload=*/credentials.value());
   } else {
     UpdateStatus(/*step=*/Step::EMPTY_WIFI_CREDENTIALS_RECEIVED,
-                 /*payload=*/absl::monostate());
+                 /*payload=*/std::monostate());
   }
 
   // Record successful wifi credentials transfer. Failures will be
@@ -350,7 +350,7 @@ void TargetDeviceBootstrapController::RequestGoogleAccountInfo() {
   CHECK(authenticated_connection_) << "Missing authenticated_connection_";
 
   UpdateStatus(/*step=*/Step::REQUESTING_GOOGLE_ACCOUNT_INFO,
-               /*payload=*/absl::monostate());
+               /*payload=*/std::monostate());
 
   authenticated_connection_->RequestAccountInfo(base::BindOnce(
       &TargetDeviceBootstrapController::OnGoogleAccountInfoReceived,
@@ -367,7 +367,7 @@ void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
   CHECK(authenticated_connection_) << "Missing authenticated_connection_";
 
   UpdateStatus(/*step=*/Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS,
-               /*payload=*/absl::monostate());
+               /*payload=*/std::monostate());
 
   // In tests we skip contacting Gaia and return test credentials instead.
   if (GetTestCredentials().has_value()) {
@@ -394,7 +394,7 @@ void TargetDeviceBootstrapController::Cleanup() {
 
 void TargetDeviceBootstrapController::OnSetupComplete() {
   CHECK(authenticated_connection_) << "Missing authenticated_connection_";
-  UpdateStatus(/*step=*/Step::SETUP_COMPLETE, /*payload=*/absl::monostate());
+  UpdateStatus(/*step=*/Step::SETUP_COMPLETE, /*payload=*/std::monostate());
   authenticated_connection_->NotifyPhoneSetupComplete();
 }
 
@@ -488,7 +488,7 @@ void TargetDeviceBootstrapController::OnAuthCodeReceived(
     const quick_start::SecondDeviceAuthBroker::AuthCodeResponse& response) {
   bool is_error = true;
 
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](SecondDeviceAuthBroker::AuthCodeSuccessResponse res) {
             GaiaCredentials gaia_creds;

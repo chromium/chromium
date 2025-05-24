@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -230,7 +229,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabledUnknownEntry) {
   EXPECT_TRUE(enabled);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
   // Start with prefs enabled so we can sense that they have changed.
@@ -293,7 +292,7 @@ TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
   ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncOsPreferences, &enabled));
   EXPECT_FALSE(enabled);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace syncer

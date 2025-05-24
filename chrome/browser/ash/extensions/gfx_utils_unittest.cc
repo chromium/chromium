@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 
@@ -31,7 +32,7 @@ constexpr char kKeepExtensionId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
 
 class DualBadgeMapTest : public ExtensionServiceTestBase {
  public:
-  DualBadgeMapTest() {}
+  DualBadgeMapTest() = default;
 
   DualBadgeMapTest(const DualBadgeMapTest&) = delete;
   DualBadgeMapTest& operator=(const DualBadgeMapTest&) = delete;
@@ -83,11 +84,11 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
   }
 
   void AddExtension(const Extension* extension) {
-    service()->AddExtension(extension);
+    registrar()->AddExtension(extension);
   }
 
   void RemoveExtension(const Extension* extension) {
-    service()->UninstallExtension(
+    registrar()->UninstallExtension(
         extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   }
 

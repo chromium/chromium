@@ -51,7 +51,7 @@ AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
   // Post a task now with its initialization result status to allow the client
   // to start sending frames.
   cast_environment_->PostTask(
-      CastEnvironment::MAIN, FROM_HERE,
+      CastEnvironment::ThreadId::kMain, FROM_HERE,
       base::BindOnce(std::move(status_change_cb),
                      audio_encoder_ ? audio_encoder_->InitializationResult()
                                     : STATUS_INVALID_CONFIGURATION));
@@ -72,7 +72,7 @@ AudioSender::~AudioSender() {
 
 void AudioSender::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
                               base::TimeTicks recorded_time) {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   CHECK(audio_encoder_);
 
   number_of_frames_inserted_++;
@@ -127,7 +127,7 @@ base::TimeDelta AudioSender::GetEncoderBacklogDuration() const {
 void AudioSender::OnEncodedAudioFrame(
     std::unique_ptr<SenderEncodedFrame> encoded_frame,
     int samples_skipped) {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
 
   samples_in_encoder_ -= audio_encoder_->GetSamplesPerFrame() + samples_skipped;
   DCHECK_GE(samples_in_encoder_, 0);

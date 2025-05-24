@@ -9,6 +9,7 @@ import android.content.Context;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.prefs.PrefService;
@@ -17,10 +18,11 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /** JNI wrapper for C++ TouchToFillPasswordGenerationBridge. Delegates calls from native to Java. */
+@NullMarked
 class TouchToFillPasswordGenerationBridge
         implements TouchToFillPasswordGenerationCoordinator.Delegate {
-    private WindowAndroid mWindowAndroid;
-    private TouchToFillPasswordGenerationCoordinator mCoordinator;
+    private final WindowAndroid mWindowAndroid;
+    private final TouchToFillPasswordGenerationCoordinator mCoordinator;
     private long mNativeTouchToFillPasswordGenerationBridge;
 
     @CalledByNative
@@ -31,6 +33,7 @@ class TouchToFillPasswordGenerationBridge
             long nativeTouchToFillPasswordGenerationBridge) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
+        assert bottomSheetController != null : "BottomSheetController should not be null.";
         return new TouchToFillPasswordGenerationBridge(
                 nativeTouchToFillPasswordGenerationBridge,
                 bottomSheetController,

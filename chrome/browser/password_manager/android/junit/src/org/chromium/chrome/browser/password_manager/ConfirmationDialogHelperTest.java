@@ -17,10 +17,12 @@ import android.content.DialogInterface;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -40,14 +42,14 @@ public class ConfirmationDialogHelperTest {
     private FakeModalDialogManager mModalDialogManager;
     private ConfirmationDialogHelper mHelper;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private DialogInterface mDialogInterface;
     @Mock private Runnable mConfirmedCallback;
     @Mock private Runnable mDeclinedCallback;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mActivity = Robolectric.setupActivity(Activity.class);
         mHelper = new ConfirmationDialogHelper(mActivity);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
@@ -87,8 +89,8 @@ public class ConfirmationDialogHelperTest {
                 "Title", "Message", R.string.ok, mConfirmedCallback, mDeclinedCallback);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         assertNotNull(model);
-        assertEquals(model.get(ModalDialogProperties.TITLE), "Title");
-        assertEquals(model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1), "Message");
+        assertEquals("Title", model.get(ModalDialogProperties.TITLE));
+        assertEquals("Message", model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
         assertEquals(
                 model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT),
                 mActivity.getString(R.string.ok));

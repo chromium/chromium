@@ -555,7 +555,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
   SequenceManagerThreadDelegate& operator=(
       const SequenceManagerThreadDelegate&) = delete;
 
-  ~SequenceManagerThreadDelegate() override {}
+  ~SequenceManagerThreadDelegate() override = default;
 
   // Thread::Delegate:
 

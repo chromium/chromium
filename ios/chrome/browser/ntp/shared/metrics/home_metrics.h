@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_NTP_SHARED_METRICS_HOME_METRICS_H_
 #define IOS_CHROME_BROWSER_NTP_SHARED_METRICS_HOME_METRICS_H_
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
+
+class PrefService;
 
 // These values are persisted to IOS.Start/NTP.Click histograms.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -19,11 +21,14 @@ enum class IOSHomeActionType {
   kSetUpList = 5,
   kOmnibox = 6,
   kSafetyCheck = 7,
-  kParcelTracking = 8,
+  // Removed: kParcelTracking = 8,
   kOpenDistantTabResumption = 9,
-  kMaxValue = kOpenDistantTabResumption,
+  kPriceTrackingPromo = 10,
+  kTips = 11,
+  kShopCard = 12,
+  kMaxValue = kShopCard,
 };
-// LINT.ThenChange(/tools/metrics/histograms/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 extern const char kMagicStackTopModuleImpressionHistogram[];
 
@@ -41,11 +46,13 @@ void RecordMagicStackTabResumptionClick(bool isLocal,
                                         NSUInteger index);
 
 // Logs a Magic Stack freshness event.
-void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type);
+void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type,
+                                 PrefService* profile_pref_service);
 
 // Logs a metric for when a module of `type` is shown as the first module in the
 // Magic Stack.
-void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type);
+void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type,
+                                   PrefService* profile_pref_service);
 
 // Logs some TabResumption specific metrics on impression split by NTP and Start
 // surface.

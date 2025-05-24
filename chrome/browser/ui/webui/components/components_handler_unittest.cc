@@ -10,7 +10,7 @@
 
 class TestComponentsHandler : public ComponentsHandler {
  public:
-  TestComponentsHandler(
+  explicit TestComponentsHandler(
       component_updater::ComponentUpdateService* component_update_service)
       : ComponentsHandler(component_update_service) {
     set_web_ui(&test_web_ui_);

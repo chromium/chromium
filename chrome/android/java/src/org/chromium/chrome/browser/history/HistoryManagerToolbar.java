@@ -110,8 +110,19 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
                 mManager.shouldShowInfoButton(), mManager.shouldShowInfoHeaderIfAvailable());
         // shouldShowInfoButton is checked to ensure all the menu items are ready.
         if (searchEnabled && mManager.shouldShowInfoButton()) {
-            mManager.showIPH();
+            mManager.showIph();
         }
+    }
+
+    @Override
+    protected boolean handleEnterKeyPress() {
+        return getMenu().performIdentifierAction(R.id.search_menu_id, 0);
+    }
+
+    // Move focus to list content view.
+    @Override
+    protected View getNextFocusForward() {
+        return mManager.getListContentView();
     }
 
     /** Should be called when the user's sign in state changes. */

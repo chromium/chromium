@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script src="./webgpu-helpers.js"></script>
+
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-zero-copy</h1>
+<p>transferToGPUTexture() moves textures without copying them.</p>
+
+<script>
+
+runCanvasTestsInWorker({dependencies: './webgpu-helpers.js'});
+
+/**
+ * transferToGPUTexture() should move the canvas texture without copying it.
+ */
+canvasPromiseTest(async (canvas) => {
+  const device = await getWebGPUDevice();
+  const ctx = canvas.getContext('2d');
+
+  // Draw to the canvas via the canvas2D API to ensure that the SharedImage
+  // backing the canvas is created before doing any transfers to WebGPU. This
+  // ensures that this SharedImage will be created without WebGPU usage, which
+  // the first test below assumes as a precondition.
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.fillStyle = "#00FF00";
+  ctx.fillRect(0, 0, w, h / 2);
+
+  // An initial transfer incurs a copy as the canvas resource's SharedImage
+  // doesn't have WebGPU usage by default. Validate that `requireZeroCopy` is
+  // getting forwarded properly by verifying that passing `true` causes an
+  // exception to be raised.
+  try {
+    ctx.transferToGPUTexture({device: device, requireZeroCopy: true});
+    assert_unreached('transferToGPUTexture should have thrown.');
+  } catch (ex) {
+    assert_true(ex instanceof DOMException);
+    assert_equals(ex.name, 'InvalidStateError');
+    assert_true(ex.message.includes(
+        'Transferring canvas to GPU was not zero-copy'));
+  }
+
+  // Begin and end a WebGPU access session several times. No further transfers
+  // on this canvas should incur a copy.
+  for (let count = 0; count < 10; ++count) {
+    ctx.transferToGPUTexture({device: device, requireZeroCopy: true});
+    ctx.transferBackFromGPUTexture();
+  }
+}, 'transferToGPUTexture() should move the canvas texture without copying it.');
+
+</script>

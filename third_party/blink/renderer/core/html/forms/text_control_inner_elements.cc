@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
@@ -151,7 +150,12 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
           ? EUserModify::kReadOnly
           : EUserModify::kReadWritePlaintextOnly);
   style_builder.SetDisplay(EDisplay::kBlock);
-  style_builder.SetHasLineIfEmpty(true);
+  // HasLineIfEmpty is unnecessary for <textarea> with anonymous IFCs because:
+  //  - <textarea> has the placeholder break element.
+  //  - HasLineIfEmpty is harmful for internal anonymous blocks.
+  if (!RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
+    style_builder.SetHasLineIfEmpty(true);
+  }
   if (!start_style.ApplyControlFixedSize(host)) {
     Length caret_width(GetDocument().View()->CaretWidth(), Length::kFixed);
     if (IsHorizontalWritingMode(style_builder.GetWritingMode())) {
@@ -163,6 +167,7 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
   style_builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 
   if (!IsA<HTMLTextAreaElement>(host)) {
+    style_builder.SetHasLineIfEmpty(true);
     style_builder.SetScrollbarColor(nullptr);
     style_builder.SetWhiteSpace(EWhiteSpace::kPre);
     style_builder.SetOverflowWrap(EOverflowWrap::kNormal);
@@ -185,7 +190,7 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
     // TODO(tkent): This should be done during layout.
     if (logical_height.HasPercent() ||
         (logical_height.IsFixed() &&
-         logical_height.GetFloatValue() > computed_line_height)) {
+         logical_height.Pixels() > computed_line_height)) {
       style_builder.SetLineHeight(
           ComputedStyleInitialValues::InitialLineHeight());
     }

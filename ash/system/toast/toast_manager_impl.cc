@@ -4,13 +4,14 @@
 
 #include "ash/system/toast/toast_manager_impl.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/system/scoped_toast_pause.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
@@ -129,9 +130,11 @@ void ToastManagerImpl::Show(ToastData data) {
     return;
   }
 
-  auto existing_toast = base::ranges::find(queue_, id, &ToastData::id);
+  auto existing_toast = std::ranges::find(queue_, id, &ToastData::id);
 
   if (existing_toast != queue_.end()) {
+    LOG(ERROR)
+        << "Toast requested show with a matching ID toast already queued.";
     // Assigns given `data` to existing queued toast, but keeps the existing
     // toast's `time_created` value.
     const base::TimeTicks old_time_created = existing_toast->time_created;
@@ -139,21 +142,26 @@ void ToastManagerImpl::Show(ToastData data) {
     existing_toast->time_created = old_time_created;
   } else {
     if (IsToastShown(id)) {
+      LOG(ERROR) << "Toast with matching ID requested show while it was "
+                    "already shown.";
       // Replace the visible toast by adding the new toast data to the front of
       // the queue and hiding the visible toast. Once the visible toast finishes
       // hiding, the new toast will be displayed.
       queue_.emplace_front(std::move(data));
 
       CloseAllToastsWithAnimation();
-
       return;
     }
 
+    LOG(ERROR) << "Placing Toast in the back of the queue.";
     queue_.emplace_back(std::move(data));
   }
 
-  if (queue_.size() == 1 && !HasActiveToasts())
+  if (queue_.size() == 1 && !HasActiveToasts()) {
+    LOG(ERROR) << "Toast is the only one in the queue after being requested, "
+                  "so showing it.";
     ShowLatest();
+  }
 }
 
 void ToastManagerImpl::Cancel(std::string_view id) {
@@ -162,16 +170,15 @@ void ToastManagerImpl::Cancel(std::string_view id) {
     return;
   }
 
-  auto cancelled_toast = base::ranges::find(queue_, id, &ToastData::id);
+  auto cancelled_toast = std::ranges::find(queue_, id, &ToastData::id);
   if (cancelled_toast != queue_.end())
     queue_.erase(cancelled_toast);
 }
 
-bool ToastManagerImpl::RequestFocusOnActiveToastDismissButton(
-    std::string_view id) {
+bool ToastManagerImpl::RequestFocusOnActiveToastButton(std::string_view id) {
   CHECK(IsToastShown(id));
   for (auto& [_, overlay] : root_window_to_overlay_) {
-    if (overlay && overlay->RequestFocusOnActiveToastDismissButton()) {
+    if (overlay && overlay->RequestFocusOnActiveToastButton()) {
       return true;
     }
   }
@@ -183,13 +190,13 @@ bool ToastManagerImpl::IsToastShown(std::string_view id) const {
          current_toast_data_->id == id;
 }
 
-bool ToastManagerImpl::IsToastDismissButtonFocused(std::string_view id) const {
+bool ToastManagerImpl::IsToastButtonFocused(std::string_view id) const {
   if (!IsToastShown(id)) {
     return false;
   }
 
   for (const auto& [_, overlay] : root_window_to_overlay_) {
-    if (overlay && overlay->IsDismissButtonFocused()) {
+    if (overlay && overlay->IsButtonFocused()) {
       return true;
     }
   }
@@ -243,11 +250,13 @@ void ToastManagerImpl::ShowLatest() {
   DCHECK(!HasActiveToasts());
   DCHECK(!current_toast_data_);
 
-  auto it = locked_ ? base::ranges::find(queue_, true,
-                                         &ToastData::visible_on_lock_screen)
+  auto it = locked_ ? std::ranges::find(queue_, true,
+                                        &ToastData::visible_on_lock_screen)
                     : queue_.begin();
-  if (it == queue_.end())
+  if (it == queue_.end()) {
+    LOG(ERROR) << "Toast Queue empty.";
     return;
+  }
 
   current_toast_data_ = std::move(*it);
   queue_.erase(it);

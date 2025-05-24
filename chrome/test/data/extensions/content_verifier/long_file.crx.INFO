@@ -1,0 +1,5 @@
+Information about long_file.crx:
+
+A test extension downloaded from webstore.
+extension_id: eaniogmgflobkhgfkmgmkfdeghogpopp
+The extension contains a page.html that's larger than 4kb.

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/pattern.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/third_party/icu/icu_utf.h"
 
 namespace base {
@@ -39,12 +35,14 @@ constexpr bool SearchForChars(const CHAR** pattern,
     if (*pattern == pattern_end) {
       // If this is the end of the pattern, only accept the end of the string;
       // anything else falls through to the mismatch case.
-      if (*string == string_end)
+      if (*string == string_end) {
         return true;
+      }
     } else {
       // If we have found a wildcard, we're done.
-      if (!escape && IsWildcard(**pattern))
+      if (!escape && IsWildcard(**pattern)) {
         return true;
+      }
 
       // Check if the escape character is found. If so, skip it and move to the
       // next character.
@@ -56,8 +54,9 @@ constexpr bool SearchForChars(const CHAR** pattern,
 
       escape = false;
 
-      if (*string == string_end)
+      if (*string == string_end) {
         return false;
+      }
 
       // Check if the chars match, if so, increment the ptrs.
       const CHAR* pattern_next = *pattern;
@@ -77,8 +76,9 @@ constexpr bool SearchForChars(const CHAR** pattern,
     // TODO(bauerb): This is a naive implementation of substring search, which
     // could be implemented with a more efficient algorithm, e.g.
     // Knuth-Morris-Pratt (at the expense of requiring preprocessing).
-    if (maximum_distance == 0)
+    if (maximum_distance == 0) {
       return false;
+    }
 
     // Because unlimited distance is represented as -1, this will never reach 0
     // and therefore fail the match above.
@@ -131,8 +131,10 @@ struct NextCharUTF8 {
   base_icu::UChar32 operator()(const char** p, const char* end) {
     base_icu::UChar32 c;
     int offset = 0;
-    CBU8_NEXT(reinterpret_cast<const uint8_t*>(*p), offset, end - *p, c);
-    *p += offset;
+    UNSAFE_TODO({
+      CBU8_NEXT(reinterpret_cast<const uint8_t*>(*p), offset, end - *p, c);
+      *p += offset;
+    });
     return c;
   }
 };
@@ -141,8 +143,10 @@ struct NextCharUTF16 {
   base_icu::UChar32 operator()(const char16_t** p, const char16_t* end) {
     base_icu::UChar32 c;
     int offset = 0;
-    CBU16_NEXT(*p, offset, end - *p, c);
-    *p += offset;
+    UNSAFE_TODO({
+      CBU16_NEXT(*p, offset, end - *p, c);
+      *p += offset;
+    });
     return c;
   }
 };
@@ -150,13 +154,15 @@ struct NextCharUTF16 {
 }  // namespace
 
 bool MatchPattern(std::string_view eval, std::string_view pattern) {
-  return MatchPatternT(eval.data(), eval.data() + eval.size(), pattern.data(),
-                       pattern.data() + pattern.size(), NextCharUTF8());
+  return MatchPatternT(
+      eval.data(), UNSAFE_TODO(eval.data() + eval.size()), pattern.data(),
+      UNSAFE_TODO(pattern.data() + pattern.size()), NextCharUTF8());
 }
 
 bool MatchPattern(std::u16string_view eval, std::u16string_view pattern) {
-  return MatchPatternT(eval.data(), eval.data() + eval.size(), pattern.data(),
-                       pattern.data() + pattern.size(), NextCharUTF16());
+  return MatchPatternT(
+      eval.data(), UNSAFE_TODO(eval.data() + eval.size()), pattern.data(),
+      UNSAFE_TODO(pattern.data() + pattern.size()), NextCharUTF16());
 }
 
 }  // namespace base

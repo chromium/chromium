@@ -4,98 +4,71 @@
 
 #include "ash/capture_mode/search_results_panel.h"
 
+#include "ash/capture_mode/base_capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
+#include "ash/system/mahi/mahi_animation_utils.h"
+#include "ash/system/mahi/resources/grit/mahi_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/animated_image_view.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
 
 namespace {
 
-// TODO(sophiewen): Remove hardcoded values when we get UX specs.
 inline constexpr int kPanelCornerRadius = 16;
-inline constexpr int kSearchResultsPanelWidth = 600;
-constexpr char kValidSearchUrl[] =
-    "https://www.google.com/search?q=cat&gsc=1&masfc=c";
 const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
-inline constexpr gfx::Insets kPanelPadding = gfx::Insets::TLBR(12, 15, 15, 15);
+inline constexpr gfx::Insets kPanelPadding =
+    gfx::Insets(capture_mode::kPanelPaddingSize);
+inline constexpr gfx::Insets kSearchResultsViewSpacing =
+    gfx::Insets::TLBR(12, 0, 0, 0);
+
+// Returns the target container window for the panel widget.
+aura::Window* GetParentContainer(aura::Window* root, bool is_active) {
+  return Shell::GetContainer(
+      root, is_active ? kShellWindowId_CaptureModeSearchResultsPanel
+                      : kShellWindowId_SystemModalContainer);
+}
+
+std::u16string GetSearchResultsPanelTitle() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_SCREEN_CAPTURE_SEARCH_RESULTS_PANEL_TITLE);
+}
 
 }  // namespace
 
-// `SunfishSearchBoxView` contains an image thumbnail and a textfield.
-class SunfishSearchBoxView : public views::View {
-  METADATA_HEADER(SunfishSearchBoxView, views::View)
-
- public:
-  SunfishSearchBoxView() {
-    SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetOrientation(views::LayoutOrientation::kHorizontal)
-        .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-        .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-        .SetCollapseMargins(true);
-    // TODO(b/356878705): Replace with the captured region screenshot when the
-    // backend is hooked up. Currently using the search icon as a placeholder.
-    AddChildView(views::Builder<views::ImageView>()
-                     .CopyAddressTo(&image_view_)
-                     .SetImage(ui::ImageModel::FromVectorIcon(
-                         vector_icons::kGoogleColorIcon))
-                     .Build());
-    AddChildView(views::Builder<views::Textfield>()
-                     .CopyAddressTo(&textfield_)
-                     .SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT)
-                     .SetPlaceholderText(kSearchBoxPlaceholderText)
-                     .SetProperty(views::kFlexBehaviorKey,
-                                  views::FlexSpecification(
-                                      views::LayoutOrientation::kHorizontal,
-                                      views::MinimumFlexSizeRule::kPreferred,
-                                      views::MaximumFlexSizeRule::kUnbounded))
-                     .SetBackgroundEnabled(false)
-                     .SetBorder(nullptr)
-                     .Build());
-    SetBackground(views::CreateThemedSolidBackground(
-        cros_tokens::kCrosSysSystemBaseElevated));
-  }
-  SunfishSearchBoxView(const SunfishSearchBoxView&) = delete;
-  SunfishSearchBoxView& operator=(const SunfishSearchBoxView&) = delete;
-  ~SunfishSearchBoxView() override = default;
-
-  void SetImage(const gfx::ImageSkia& image) {
-    if (image.isNull()) {
-      return;
-    }
-    // Resize the image to fit in the searchbox, keeping the same aspect ratio.
-    const int target_height = height();
-    const int target_width = (image.width() * target_height) / image.height();
-    image_view_->SetImage(image);
-    image_view_->SetImageSize(gfx::Size(target_width, target_height));
-  }
-
- private:
-  // Owned by the views hierarchy.
-  raw_ptr<views::ImageView> image_view_;
-  raw_ptr<views::Textfield> textfield_;
-};
-
-BEGIN_METADATA(SunfishSearchBoxView)
-END_METADATA
-
 SearchResultsPanel::SearchResultsPanel() {
+  // We should not use `CanShowSunfishUi` here, as that could change between
+  // sending the region and receiving a URL which will then create this view
+  // (for example, if the Sunfish policy changes).
   DCHECK(features::IsSunfishFeatureEnabled());
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -103,19 +76,45 @@ SearchResultsPanel::SearchResultsPanel() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetInteriorMargin(kPanelPadding)
       .SetCollapseMargins(true);
-  search_box_view_ = AddChildView(std::make_unique<SunfishSearchBoxView>());
-  search_results_view_ =
-      AddChildView(CaptureModeController::Get()->CreateSearchResultsView());
-  search_results_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kUnbounded));
 
-  // TODO(b/356878705): Replace this when the backend is hooked up. Currently
-  // used for UI debugging.
-  search_results_view_->Navigate(GURL(kValidSearchUrl));
+  AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .SetIgnoreDefaultMainAxisMargins(true)
+          .SetCollapseMargins(true)
+          .AddChildren(
+              // Title.
+              views::Builder<views::Label>()
+                  .SetText(GetSearchResultsPanelTitle())
+                  .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+                  .SetTextStyle(views::style::STYLE_HEADLINE_5)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetEnabledColor(cros_tokens::kCrosSysOnSurface),
+              // Close Button, aligned to the right by setting a
+              // `FlexSpecification` with unbounded maximum flex size and
+              // `LayoutAlignment::kEnd`.
+              views::Builder<views::Button>(
+                  IconButton::Builder()
+                      .SetType(IconButton::Type::kSmallFloating)
+                      .SetVectorIcon(&kMediumOrLargeCloseButtonIcon)
+                      .SetAccessibleName(l10n_util::GetStringUTF16(
+                          IDS_ASH_SUNFISH_SEARCH_DIALOG_CLOSE))
+                      .Build())
+                  .CopyAddressTo(&close_button_)
+                  .SetCallback(base::BindRepeating(
+                      &SearchResultsPanel::OnCloseButtonPressed,
+                      weak_ptr_factory_.GetWeakPtr()))
+                  .SetProperty(
+                      views::kFlexBehaviorKey,
+                      views::FlexSpecification(
+                          views::LayoutOrientation::kHorizontal,
+                          views::MinimumFlexSizeRule::kPreferred,
+                          views::MaximumFlexSizeRule::kUnbounded)
+                          .WithAlignment(views::LayoutAlignment::kEnd)))
+          .Build());
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kPanelCornerRadius});
@@ -123,33 +122,216 @@ SearchResultsPanel::SearchResultsPanel() {
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+
+  ShowLoadingAnimation();
+
+  // Install highlightable views for when a Sunfish session is active and the
+  // `CaptureModeSessionFocusCycler` is handling focus. Set up the focus
+  // predicate for the focusable views now, so they will have the correct
+  // behavior before `CaptureModeSessionFocusCycler::PseudoFocus()`
+  // is called on them.
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(close_button_);
+  CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button_)
+      ->SetUpFocusPredicate();
+
+  auto* animation_view = GetViewByID(capture_mode::kLoadingAnimationViewId);
+  CHECK(animation_view);
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(animation_view);
+  CaptureModeSessionFocusCycler::HighlightHelper::Get(animation_view)
+      ->SetUpFocusPredicate();
 }
 
 SearchResultsPanel::~SearchResultsPanel() = default;
 
 // static
-std::unique_ptr<views::Widget> SearchResultsPanel::CreateWidget(
-    aura::Window* const root) {
+views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(aura::Window* root,
+                                                        bool is_active) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  // TODO(b/362284723): Ensure tooltips are visible over overlay container.
-  params.parent = Shell::GetContainer(root, kShellWindowId_OverlayContainer);
-  const gfx::Rect work_area(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root).work_area());
-  gfx::Rect bounds(work_area.right() - kSearchResultsPanelWidth, work_area.y(),
-                   kSearchResultsPanelWidth, work_area.height());
-  params.bounds = bounds;
+  params.parent = GetParentContainer(root, is_active);
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = wm::kShadowElevationInactiveWindow;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.corner_radius = kPanelCornerRadius;
+  params.name = "SearchResultsPanelWidget";
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<SearchResultsPanel>());
+  widget->widget_delegate()->SetTitle(GetSearchResultsPanelTitle());
   return widget;
 }
 
-void SearchResultsPanel::SetSearchBoxImage(const gfx::ImageSkia& image) {
-  search_box_view_->SetImage(image);
+std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+SearchResultsPanel::GetHighlightableItems() const {
+  std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+      highlightable_items;
+  CHECK(close_button_);
+  highlightable_items.push_back(
+      CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button_.get()));
+  return highlightable_items;
+}
+
+CaptureModeSessionFocusCycler::HighlightableView*
+SearchResultsPanel::GetHighlightableLoadingAnimation() {
+  auto* animation_view = GetViewByID(capture_mode::kLoadingAnimationViewId);
+  return animation_view ? CaptureModeSessionFocusCycler::HighlightHelper::Get(
+                              animation_view)
+                        : nullptr;
+}
+
+views::View* SearchResultsPanel::GetWebViewForFocus() {
+  CHECK(search_results_view_);
+  return search_results_view_->GetInitiallyFocusedView();
+}
+
+void SearchResultsPanel::Navigate(const GURL& url) {
+  if (!search_results_view_) {
+    // Remove the loading animation.
+    auto* animation_view = GetViewByID(capture_mode::kLoadingAnimationViewId);
+    CHECK(animation_view);
+    RemoveChildViewT(animation_view);
+
+    search_results_view_ =
+        AddChildView(CaptureModeController::Get()->CreateSearchResultsView());
+    search_results_view_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+    search_results_view_->SetProperty(views::kMarginsKey,
+                                      kSearchResultsViewSpacing);
+  }
+  search_results_view_->Navigate(url);
+}
+
+void SearchResultsPanel::RefreshStackingOrder(aura::Window* new_root) {
+  aura::Window* native_window = GetWidget()->GetNativeWindow();
+  // While the capture mode session is active, we parent the panel to its own
+  // container, else we parent it to the system modal container.
+  aura::Window* new_parent = GetParentContainer(
+      new_root ? new_root : native_window->GetRootWindow(), !!new_root);
+  views::Widget::ReparentNativeView(native_window, new_parent);
+}
+
+void SearchResultsPanel::ShowLoadingAnimation() {
+  if (GetViewByID(capture_mode::kLoadingAnimationViewId)) {
+    return;
+  }
+
+  // Remove the search results view if present.
+  if (search_results_view_) {
+    auto* search_results_view = search_results_view_.get();
+    search_results_view_ = nullptr;
+    RemoveChildViewT(search_results_view);
+  }
+
+  CHECK(!search_results_view_);
+
+  // Add the animation view and play it.
+  auto* animation_view = AddChildView(
+      views::Builder<views::AnimatedImageView>()
+          // Use an ID instead of saving a `raw_ptr` to avoid a dangling pointer
+          // when we remove this child later.
+          .SetID(capture_mode::kLoadingAnimationViewId)
+          .SetAccessibleName(l10n_util::GetStringUTF16(
+              IDS_ASH_SUNFISH_RESULTS_LOADING_ACCESSIBLE_NAME))
+          .SetAnimatedImage(mahi_animation_utils::GetLottieAnimationData(
+              IDR_MAHI_LOADING_SUMMARY_ANIMATION))
+          .Build());
+  animation_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  animation_view->Play(mahi_animation_utils::GetLottiePlaybackConfig(
+      *animation_view->animated_image()->skottie(),
+      IDR_MAHI_LOADING_SUMMARY_ANIMATION));
+}
+
+void SearchResultsPanel::AddedToWidget() {
+  GetFocusManager()->AddFocusChangeListener(this);
+}
+
+void SearchResultsPanel::RemovedFromWidget() {
+  GetFocusManager()->RemoveFocusChangeListener(this);
+}
+
+bool SearchResultsPanel::HasFocus() const {
+  // Returns true if `this` or any of its child views has focus.
+  const views::FocusManager* focus_manager = GetFocusManager();
+  if (!focus_manager) {
+    return false;
+  }
+
+  const views::View* focused_view = focus_manager->GetFocusedView();
+  if (!focused_view) {
+    return false;
+  }
+
+  return Contains(focused_view);
+}
+
+void SearchResultsPanel::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    return;
+  }
+  RefreshPanelBounds();
+}
+
+void SearchResultsPanel::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t metrics) {
+  if (!(metrics &
+        (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+         DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_WORK_AREA))) {
+    return;
+  }
+  RefreshPanelBounds();
+}
+
+void SearchResultsPanel::OnDidChangeFocus(View* focused_before,
+                                          View* focused_now) {
+  // Update the focus ring of the previously focused view, if available.
+  if (focused_before) {
+    if (views::FocusRing* before_ring = views::FocusRing::Get(focused_before)) {
+      before_ring->SchedulePaint();
+    }
+  }
+
+  // Update the focus ring of the newly focused view, if available.
+  if (focused_now) {
+    if (views::FocusRing* now_ring = views::FocusRing::Get(focused_now)) {
+      now_ring->SchedulePaint();
+    }
+  }
+}
+
+void SearchResultsPanel::OnCloseButtonPressed() {
+  CHECK(GetWidget());
+  GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
+void SearchResultsPanel::RefreshPanelBounds() {
+  views::Widget* widget = GetWidget();
+
+  // First attempt to restore the preferred size. This is needed because when
+  // the display is zoomed in, the widget may be cropped to fit within the
+  // screen. On zoom out, the widget should return to its preferred size.
+  gfx::Rect widget_bounds_in_screen(
+      widget->GetWindowBoundsInScreen().origin(),
+      gfx::Size(capture_mode::kSearchResultsPanelTotalWidth,
+                capture_mode::kSearchResultsPanelTotalHeight));
+
+  // Adjust the preferred size and bounds based on the current display.
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          widget->GetNativeWindow());
+  const gfx::Rect work_area_in_screen(display.work_area());
+  if (!work_area_in_screen.Contains(widget_bounds_in_screen)) {
+    widget_bounds_in_screen.AdjustToFit(work_area_in_screen);
+  }
+  widget->SetBounds(widget_bounds_in_screen);
 }
 
 BEGIN_METADATA(SearchResultsPanel)

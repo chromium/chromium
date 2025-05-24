@@ -14,7 +14,8 @@ namespace webnn::tflite {
 // operations for the Chromium build of TFLite and registers them for use.
 class OpResolver : public ::tflite::MutableOpResolver {
  public:
-  explicit OpResolver(const mojom::CreateContextOptions& options);
+  explicit OpResolver(const mojom::CreateContextOptions& options,
+                      bool graph_requires_fp32_precision);
 };
 
 }  // namespace webnn::tflite

@@ -11,10 +11,10 @@
 namespace extensions {
 
 DownloadsInternalDetermineFilenameFunction::
-    DownloadsInternalDetermineFilenameFunction() {}
+    DownloadsInternalDetermineFilenameFunction() = default;
 
 DownloadsInternalDetermineFilenameFunction::
-    ~DownloadsInternalDetermineFilenameFunction() {}
+    ~DownloadsInternalDetermineFilenameFunction() = default;
 
 typedef extensions::api::downloads_internal::DetermineFilename::Params
     DetermineFilenameParams;

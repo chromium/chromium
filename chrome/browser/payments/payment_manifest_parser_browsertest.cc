@@ -20,8 +20,8 @@ namespace payments {
 namespace {
 
 std::string CreatePaymentMethodManifestJson(
-    const std::vector<GURL> web_app_manifest_urls,
-    const std::vector<url::Origin> supported_origins) {
+    const std::vector<GURL>& web_app_manifest_urls,
+    const std::vector<url::Origin>& supported_origins) {
   std::string manifest =
       "{"
       "    \"default_applications\":[";
@@ -122,7 +122,34 @@ class PaymentManifestParserTest : public InProcessBrowserTest {
   std::vector<url::Origin> supported_origins_;
 };
 
-// Handles a a manifest with 100 web app URLs.
+// A simple payment method manifest can be parsed.
+IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, SimpleMethod) {
+  ParsePaymentMethodManifest(R"(
+    {
+      "default_applications": ["https://test.example/app.json"]
+    }
+  )");
+
+  ASSERT_EQ(1U, web_app_manifest_urls().size());
+  EXPECT_EQ(GURL("https://test.example/app.json"),
+            web_app_manifest_urls().front());
+}
+
+// A JavaScript style comment that starts with two forward slashes is not
+// allowed.
+IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, SlasSlashCommentNotAllowed) {
+  ParsePaymentMethodManifest(R"(
+    {
+      // This is a JavaScript style comment that should result in parsing
+      // failure.
+      "default_applications": ["https://test.example/app.json"]
+    }
+  )");
+
+  EXPECT_TRUE(web_app_manifest_urls().empty());
+}
+
+// Handles a manifest with 100 web app URLs.
 IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, TooManyWebAppUrls) {
   std::vector<GURL> web_app_manifest_urls_in;
   web_app_manifest_urls_in.insert(web_app_manifest_urls_in.begin(),

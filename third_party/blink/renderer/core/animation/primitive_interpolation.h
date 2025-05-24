@@ -46,21 +46,21 @@ class PrimitiveInterpolation : public GarbageCollected<PrimitiveInterpolation> {
 class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
  public:
   PairwisePrimitiveInterpolation(
-      const InterpolationType& type,
+      const InterpolationType* type,
       InterpolableValue* start,
       InterpolableValue* end,
-      scoped_refptr<const NonInterpolableValue> non_interpolable_value)
+      const NonInterpolableValue* non_interpolable_value)
       : type_(type),
         start_(start),
         end_(end),
-        non_interpolable_value_(std::move(non_interpolable_value)) {
+        non_interpolable_value_(non_interpolable_value) {
     DCHECK(start_);
     DCHECK(end_);
   }
 
   ~PairwisePrimitiveInterpolation() override = default;
 
-  const InterpolationType& GetType() const { return type_; }
+  const InterpolationType* GetType() const { return type_; }
 
   TypedInterpolationValue* InitialValue() const {
     return MakeGarbageCollected<TypedInterpolationValue>(
@@ -69,16 +69,18 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
 
   void Trace(Visitor* v) const override {
     PrimitiveInterpolation::Trace(v);
+    v->Trace(type_);
     v->Trace(start_);
     v->Trace(end_);
+    v->Trace(non_interpolable_value_);
   }
 
  private:
   void InterpolateValue(double fraction,
                         Member<TypedInterpolationValue>& result) const final {
     DCHECK(result);
-    DCHECK_EQ(&result->GetType(), &type_);
-    DCHECK_EQ(result->GetNonInterpolableValue(), non_interpolable_value_.get());
+    DCHECK_EQ(result->GetType(), type_);
+    DCHECK_EQ(result->GetNonInterpolableValue(), non_interpolable_value_.Get());
     start_->AssertCanInterpolateWith(*end_);
     start_->Interpolate(*end_, fraction,
                         *result->MutableValue().interpolable_value);
@@ -90,10 +92,10 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
     return Blend(start, end, fraction);
   }
 
-  const InterpolationType& type_;
+  Member<const InterpolationType> type_;
   Member<InterpolableValue> start_;
   Member<InterpolableValue> end_;
-  scoped_refptr<const NonInterpolableValue> non_interpolable_value_;
+  Member<const NonInterpolableValue> non_interpolable_value_;
 };
 
 // Represents a pair of incompatible keyframes that fall back to 50% flip

@@ -22,6 +22,7 @@
 #include "base/at_exit.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
@@ -55,7 +56,7 @@
 #include "base/win/resource_exhaustion.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/win_key_network_delegate.h"
@@ -78,6 +79,7 @@
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/setup/launch_chrome.h"
 #include "chrome/installer/setup/modify_params.h"
+#include "chrome/installer/setup/scoped_thread_pool.h"
 #include "chrome/installer/setup/setup_constants.h"
 #include "chrome/installer/setup/setup_install_details.h"
 #include "chrome/installer/setup/setup_singleton.h"
@@ -95,6 +97,7 @@
 #include "chrome/installer/util/html_dialog.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
+#include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/installation_state.h"
 #include "chrome/installer/util/installer_util_strings.h"
@@ -460,7 +463,8 @@ installer::InstallStatus RenameChromeExecutables(
                                     temp_path.path(), WorkItem::ALWAYS_MOVE);
   install_list->AddDeleteTreeWorkItem(chrome_proxy_new_exe, temp_path.path());
 
-  AddFinalizeUpdateWorkItems(base::Version(chrome::kChromeVersion),
+  AddFinalizeUpdateWorkItems(original_state,
+                             base::Version(chrome::kChromeVersion),
                              *installer_state, setup_exe, install_list.get());
 
   // Add work items to delete Chrome's "opv", "cpv", and "cmd" values.
@@ -647,14 +651,10 @@ installer::InstallStatus UninstallProducts(InstallationState& original_state,
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Tell Google Update that an uninstall has taken place if this install did
-  // not originate from the MSI. Google Update has its own logic relating to
-  // MSI-driven uninstalls that conflicts with this. Ignore the return value:
-  // success or failure of Google Update has no bearing on the success or
-  // failure of Chrome's uninstallation.
-  if (!installer_state.is_msi()) {
-    google_update::UninstallGoogleUpdate(installer_state.system_install());
-  }
+  // Tell Google Update that an uninstall has taken place. Ignore the return
+  // value: success or failure of Google Update has no bearing on the success
+  // or failure of Chrome's uninstallation.
+  google_update::UninstallGoogleUpdate(installer_state.system_install());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   return install_status;
@@ -824,6 +824,87 @@ installer::InstallStatus CreateShortcutsInChildProc(
   // TODO(): Plumb shortcut creation failure through and return a
   // failure exit code.
   return installer::CREATE_SHORTCUTS_SUCCESS;
+}
+
+// Verifies that the system tracing service may be enabled or disabled.
+// Returns INSTALL_REPAIRED on success, or another InstallStatus value on
+// failure.
+int VerifySystemTracingAllowed(const installer::InstallerState& installer_state,
+                               const base::Version& current_version) {
+  const bool is_developer = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      installer::switches::kDeveloper);
+  if (!is_developer &&
+      (!installer_state.system_install() || !current_version.IsValid())) {
+    LOG(ERROR) << "system tracing is only supported for existing per-machine "
+                  "installs.";
+    return installer::INSTALL_FAILED;
+  }
+
+  if (!::IsUserAnAdmin()) {
+    LOG(ERROR) << "system tracing setup requires administrative rights.";
+    return installer::INSUFFICIENT_RIGHTS;
+  }
+
+  return installer::INSTALL_REPAIRED;
+}
+
+int EnableSystemTracing(const installer::InstallerState& installer_state,
+                        const base::Version& current_version) {
+  if (int error = VerifySystemTracingAllowed(installer_state, current_version);
+      error != installer::INSTALL_REPAIRED) {
+    return error;
+  }
+
+  base::FilePath tracing_service_exe(installer::GetTracingServicePath(
+      installer_state.target_path(), current_version));
+
+  // If the command line includes "--developer", register
+  // elevated_tracing_service.exe in the current executable's directory. This is
+  // intended for use by developers who wish to run the browser in their
+  // development directory and have it use a tracing service from the same
+  // directory. Use with caution: this will likely break tracing for a normal
+  // installation of the same browser (e.g., stable Google Chrome if running a
+  // branded build), and may be overwritten by an update of the same browser.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          installer::switches::kDeveloper)) {
+    base::FilePath dir_exe;
+    if (base::PathService::Get(base::DIR_EXE, &dir_exe)) {
+      tracing_service_exe =
+          dir_exe.Append(installer::kElevatedTracingServiceExe);
+    }
+  }
+
+  installer::InstallServiceWorkItem work_item(
+      install_static::GetTracingServiceName(),
+      install_static::GetTracingServiceDisplayName(),
+      installer::GetLocalizedStringF(IDS_TRACING_SERVICE_DESCRIPTION_BASE,
+                                     {install_static::GetBaseAppName()}),
+      SERVICE_DEMAND_START, base::CommandLine(tracing_service_exe),
+      base::CommandLine(base::CommandLine::NO_PROGRAM),
+      install_static::GetClientStateKeyPath(),
+      {install_static::GetTracingServiceClsid()},
+      {install_static::GetTracingServiceIid()});
+  if (work_item.Do()) {
+    return installer::INSTALL_REPAIRED;
+  }
+  work_item.Rollback();
+  return installer::INSTALL_FAILED;
+}
+
+int DisableSystemTracing(const installer::InstallerState& installer_state,
+                         const base::Version& current_version) {
+  if (int error = VerifySystemTracingAllowed(installer_state, current_version);
+      error != installer::INSTALL_REPAIRED) {
+    return error;
+  }
+
+  return installer::InstallServiceWorkItem::DeleteService(
+             install_static::GetTracingServiceName(),
+             install_static::GetClientStateKeyPath(),
+             {install_static::GetTracingServiceClsid()},
+             {install_static::GetTracingServiceIid()})
+             ? installer::INSTALL_REPAIRED
+             : installer::INSTALL_FAILED;
 }
 
 // This method processes any command line options that make setup.exe do
@@ -1060,9 +1141,12 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     *exit_code = installer::DeleteDMToken() ? installer::DELETE_DMTOKEN_SUCCESS
                                             : installer::DELETE_DMTOKEN_FAILED;
   } else if (cmd_line.HasSwitch(installer::switches::kRotateDeviceTrustKey)) {
-    // RotateDeviceTrustKey() expects a single
-    // threaded task runner so creating one here.
+    // RotateDeviceTrustKey() expects a single threaded task runner.
     base::SingleThreadTaskExecutor executor;
+
+    // Part of the logic handling this command depends on a winhttp component
+    // which needs a thread pool.
+    ScopedThreadPool scoped_thread_pool;
 
     const auto result = enterprise_connectors::RotateDeviceTrustKey(
         enterprise_connectors::KeyRotationManager::Create(
@@ -1121,11 +1205,17 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
                  << " must contain an absolute path";
       *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_FAILED;
     } else if (installer::ConfigureAppContainerSandbox(
-                   std::array<const base::FilePath*, 1>{&path})) {
+                   base::span_from_ref(&path))) {
       *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_SUCCESS;
     } else {
       *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_FAILED;
     }
+  } else if (cmd_line.HasSwitch(installer::switches::kEnableSystemTracing)) {
+    *exit_code =
+        EnableSystemTracing(*installer_state, *modify_params.current_version);
+  } else if (cmd_line.HasSwitch(installer::switches::kDisableSystemTracing)) {
+    *exit_code =
+        DisableSystemTracing(*installer_state, *modify_params.current_version);
   } else {
     handled = false;
   }
@@ -1537,10 +1627,10 @@ int SetupMain() {
   PROCESS_MEMORY_COUNTERS pmc;
   if (::GetProcessMemoryInfo(::GetCurrentProcess(), &pmc, sizeof(pmc))) {
     UMA_HISTOGRAM_MEMORY_KB("Setup.Install.PeakPagefileUsage",
-                            base::saturated_cast<base::HistogramBase::Sample>(
+                            base::saturated_cast<base::HistogramBase::Sample32>(
                                 pmc.PeakPagefileUsage / 1024));
     UMA_HISTOGRAM_MEMORY_KB("Setup.Install.PeakWorkingSetSize",
-                            base::saturated_cast<base::HistogramBase::Sample>(
+                            base::saturated_cast<base::HistogramBase::Sample32>(
                                 pmc.PeakWorkingSetSize / 1024));
   }
 

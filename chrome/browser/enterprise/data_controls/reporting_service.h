@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/data_controls/content/browser/reporting_service_base.h"
 #include "components/enterprise/data_controls/content/browser/reporting_service_base_factory.h"
 
@@ -27,17 +28,25 @@ class Verdict;
 // Keyed service that provides an interface to report Data Control events.
 class ReportingService : public ReportingServiceBase {
  public:
-  // Converts `source` into a string to be sent in paste reporting events.
-  // Depending on what policies are applied and the relationship between
-  // `source` and `destination`, the output may be a URL or a special constant
-  // (INCOGNITO, CLIPBOARD, OTHER_PROFILE).
+  // Converts `source` into a `CopiedTextSource`. `CopiedTextSource::context` is
+  // always populated, but `CopiedTextSource::url` may be left empty depending
+  // on the policies that are set and broader clipboard copy context.
   //
-  // This function should only be used to obtain a string source for paste
-  // reports.
+  // This function should only be used to obtain a clipboard source for paste
+  // reports and scans.
+  static enterprise_connectors::ContentMetaData::CopiedTextSource
+  GetClipboardSource(const content::ClipboardEndpoint& source,
+                     const content::ClipboardEndpoint& destination,
+                     const char* scope_pref);
+
+  // Applies the same logic as `GetClipboardSource`, but then converts the
+  // resulting object into a single string for reporting.
   static std::string GetClipboardSourceString(
       const content::ClipboardEndpoint& source,
       const content::ClipboardEndpoint& destination,
       const char* scope_pref);
+  static std::string GetClipboardSourceString(
+      const enterprise_connectors::ContentMetaData::CopiedTextSource& source);
 
   ~ReportingService() override;
 
@@ -69,7 +78,7 @@ class ReportingService : public ReportingServiceBase {
       const content::ClipboardMetadata& metadata,
       const Verdict& verdict,
       const std::string& trigger,
-      safe_browsing::EventResult event_result);
+      enterprise_connectors::EventResult event_result);
 
   // `profile_` is initialized with the browser_context passed in the
   // constructor.

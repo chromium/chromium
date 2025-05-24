@@ -16,11 +16,20 @@ def __filegroups(ctx):
     return {
         "third_party/node/node_modules:node_modules": {
             "type": "glob",
-            "includes": ["*.js", "*.cjs", "*.mjs", "*.json", "*.js.flow", "*.ts", "rollup", "terser", "tsc"],
+            "includes": [
+                "*.js",
+                "*.json",
+                "*.ts",
+                "tsc",
+            ],
         },
         "third_party/material_web_components/components-chromium/node_modules:node_modules": {
             "type": "glob",
-            "includes": ["package.json"],
+            "includes": [
+                # This is necessary for
+                # gen/third_party/cros-components/tsconfig_cros_components__ts_library.json
+                "package.json",
+            ],
         },
     }
 
@@ -28,6 +37,7 @@ def _ts_library(ctx, cmd):
     in_files = []
     deps = []
     definitions = []
+    path_mappings = []
     flag = ""
     tsconfig_base = None
     for i, arg in enumerate(cmd.args):
@@ -43,6 +53,7 @@ def _ts_library(ctx, cmd):
             deps.append(arg)
             continue
         if flag == "--path_mappings":
+            path_mappings.append(arg)
             continue
         if arg == "--root_dir":
             root_dir = cmd.args[i + 1]
@@ -65,6 +76,11 @@ def _ts_library(ctx, cmd):
     tsconfig["references"] = [{"path": dep} for dep in deps]
     tsconfig_path = path.join(gen_dir, "tsconfig.json")
     deps = tsc.scandeps(ctx, tsconfig_path, tsconfig)
+    for m in path_mappings:
+        _, _, pathname = m.partition("|")
+        if pathname.endswith("/*"):
+            continue
+        deps.append(path.join(gen_dir, pathname))
     ctx.actions.fix(inputs = cmd.inputs + deps)
 
 def _ts_definitions(ctx, cmd):

@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate/translate_infobar_placeholder_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_coordinator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/parcel_tracking/parcel_tracking_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/passwords/password_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/permissions/permissions_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card/save_card_infobar_modal_overlay_coordinator.h"
@@ -122,8 +121,6 @@
           return [SaveCardInfobarModalOverlayCoordinator class];
         case InfobarType::kInfobarTypeTranslate:
           return [TranslateInfobarModalOverlayCoordinator class];
-        case InfobarType::kInfobarTypeParcelTracking:
-          return [ParcelTrackingInfobarModalOverlayCoordinator class];
         default:
           break;
       }

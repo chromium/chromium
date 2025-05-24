@@ -134,7 +134,12 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
 
   // Method used as callback to update device lists when a valid input event is
   // received on a device that is flagged as an imposter.
-  void UpdateDevicesOnImposterOverride(const EventConverterEvdev* converter);
+  void UpdateDevicesOnImposterOverride(const EventConverterEvdev* converter,
+                                       const double input_timestamp_in_seconds);
+  // Method used as callback when a valid key press on the internal keyboard is
+  // detected.
+  void NotifyInternalKeyboardUsed(const EventConverterEvdev* converter,
+                                  const double input_timestamp_in_seconds);
 
   void SetMousePropertiesPerDevice();
   void SetTouchpadPropertiesPerDevice();
@@ -203,6 +208,9 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
 
   // Whether touch palm suppression is enabled.
   bool palm_suppression_enabled_ = false;
+
+  // Cache the keyboard-used-palm-suppression feature flag.
+  bool keyboard_used_palm_suppression_enabled_ = false;
 
   // Device settings. These primarily affect libgestures behavior.
   InputDeviceSettingsEvdev input_device_settings_;

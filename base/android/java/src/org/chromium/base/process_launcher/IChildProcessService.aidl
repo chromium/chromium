@@ -4,9 +4,9 @@
 
 package org.chromium.base.process_launcher;
 
-import android.content.pm.ApplicationInfo;
-import android.os.Bundle;
+import android.os.PersistableBundle;
 
+import org.chromium.base.process_launcher.IChildProcessArgs;
 import org.chromium.base.process_launcher.IParentProcess;
 
 interface IChildProcessService {
@@ -22,14 +22,18 @@ interface IChildProcessService {
   ApplicationInfo getAppInfo();
 
   // Sets up the initial IPC channel.
-  oneway void setupConnection(in Bundle args, IParentProcess parentProcess,
-          in List<IBinder> clientInterfaces, in IBinder binderBox);
+  oneway void setupConnection(in IChildProcessArgs args, in IParentProcess parentProcess,
+           in @nullable List<IBinder> clientInterfaces, in @nullable IBinder binderBox);
 
   // Forcefully kills the child process.
   oneway void forceKill();
 
   // Notifies about memory pressure. The argument is MemoryPressureLevel enum.
   oneway void onMemoryPressure(int pressure);
+
+  // Notifies that we should freeze ourselves (as opposed to relying on  App
+  // Freezer).
+  oneway void onSelfFreeze();
 
   // Dumps the stack for the child process without crashing it.
   oneway void dumpProcessStack();

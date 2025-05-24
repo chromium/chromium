@@ -10,6 +10,7 @@ import "sandbox/policy/mojom/context.mojom";
 enum DebugRecordingStreamType {
   kInput = 0,
   kOutput = 1,
+  kLoopback = 2,
 };
 
 // Implemented by the browser process to create audio debug recording files on

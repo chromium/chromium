@@ -29,7 +29,9 @@ class MockHatsService : public HatsServiceDesktop {
                base::OnceClosure success_callback,
                base::OnceClosure failure_callback,
                (const SurveyBitsData&)survey_specific_bits_data,
-               (const SurveyStringData&)survey_specific_string_data),
+               (const SurveyStringData&)survey_specific_string_data,
+               (const std::optional<std::string>&)supplied_trigger_id,
+               (const SurveyOptions&)survey_options),
               (override));
   MOCK_METHOD(void,
               LaunchSurveyForWebContents,

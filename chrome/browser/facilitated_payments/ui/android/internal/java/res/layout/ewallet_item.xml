@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/touch_to_fill_credential_background_modern_rounded_all"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center_vertical"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="2dp"
+    android:layout_marginHorizontal="@dimen/facilitated_payments_horizontal_margin"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/ewallet_icon"
+        android:importantForAccessibility="no"
+        android:layout_height="@dimen/facilitated_payments_fop_icon_height"
+        android:layout_width="@dimen/facilitated_payments_fop_icon_width"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/facilitated_payments_fop_icon_background"
+        android:scaleType="centerInside" />
+
+    <TextView
+        android:id="@+id/ewallet_name"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_toEndOf="@id/ewallet_icon"
+        android:layout_alignParentTop="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <TextView
+        android:id="@+id/account_display_name"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_toEndOf="@id/ewallet_icon"
+        android:layout_below="@id/ewallet_name"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+</RelativeLayout>

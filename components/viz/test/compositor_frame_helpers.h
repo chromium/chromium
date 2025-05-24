@@ -47,9 +47,7 @@ struct RenderPassQuadParams {
 
 struct TextureQuadParams {
   bool needs_blending = false;
-  bool premultiplied_alpha = false;
   SkColor4f background_color = SkColors::kGreen;
-  bool flipped = false;
   bool nearest_neighbor = false;
   bool secure_output_only = false;
   gfx::ProtectedVideoType protected_video_type =
@@ -174,6 +172,10 @@ class RenderPassBuilder {
 
   // Sets SharedQuadState::offset_tag for the last quad.
   RenderPassBuilder& SetQuadOffsetTag(const OffsetTag& tag);
+
+  // Sets SharedQuadState::mask_filter_info for the last quad.
+  RenderPassBuilder& SetQuadMaskFilterInfo(
+      const gfx::MaskFilterInfo& mask_filter_info);
 
  private:
   // Appends and returns a new SharedQuadState for quad.

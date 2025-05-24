@@ -47,7 +47,8 @@ BookmarkUndoServiceFactory::BookmarkUndoServiceFactory()
 
 BookmarkUndoServiceFactory::~BookmarkUndoServiceFactory() = default;
 
-KeyedService* BookmarkUndoServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BookmarkUndoServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new BookmarkUndoService;
+  return std::make_unique<BookmarkUndoService>();
 }

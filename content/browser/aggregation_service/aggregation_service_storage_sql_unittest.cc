@@ -69,7 +69,6 @@ std::string RemoveQuotes(std::string_view input) {
 
 AggregatableReportRequest CreateExampleRequestWithDelayType() {
   return aggregation_service::CreateExampleRequest(
-      blink::mojom::AggregationServiceMode::kDefault,
       /*failed_send_attempts=*/0,
       /*aggregation_coordinator_origin=*/std::nullopt,
       AggregatableReportRequest::DelayType::ScheduledWithFullDelay);
@@ -211,7 +210,7 @@ TEST_F(AggregationServiceStorageSqlTest,
       base::ThreadTicks::IsSupported() ? 1 : 0);
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [urls], [keys], [report_requests], [meta], [sqlite_sequence] (for
@@ -478,7 +477,7 @@ TEST_F(AggregationServiceStorageSqlTest, VersionTooNew_RazesDB) {
   CloseDatabase();
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     sql::MetaTable meta;
@@ -939,10 +938,10 @@ TEST_F(AggregationServiceStorageSqlTest,
 }
 
 TEST_F(AggregationServiceStorageSqlTest, GetReportRequestReportingOrigins) {
-  const url::Origin origins[] = {
-      url::Origin::Create(GURL("https://a.example")),
-      url::Origin::Create(GURL("https://b.example")),
-      url::Origin::Create(GURL("https://c.example"))};
+  const auto origins = std::to_array<url::Origin>(
+      {url::Origin::Create(GURL("https://a.example")),
+       url::Origin::Create(GURL("https://b.example")),
+       url::Origin::Create(GURL("https://c.example"))});
 
   OpenDatabase();
 
@@ -1136,7 +1135,7 @@ TEST_F(AggregationServiceStorageSqlTest,
   // second time when it detects that it was poisoned during the first attempt.
   histograms_.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.Error",
-      base::checked_cast<base::HistogramBase::Sample>(
+      base::checked_cast<base::HistogramBase::Sample32>(
           sql::SqliteLoggedResultCode::kCorrupt),
       /*expected_bucket_count=*/2);
 
@@ -1451,10 +1450,10 @@ class AggregationServiceStorageSqlMigrationsTest
     std::string contents = GetDatabaseData(version_id);
     ASSERT_FALSE(contents.empty());
 
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     // Use `db_path()` if none is specified.
     ASSERT_TRUE(db.Open(db_path ? *db_path : this->db_path()));
-    ASSERT_TRUE(db.Execute(contents));
+    ASSERT_TRUE(db.ExecuteScriptForTesting(contents));
   }
 
   std::string GetCurrentSchema() {
@@ -1462,7 +1461,7 @@ class AggregationServiceStorageSqlMigrationsTest
         FILE_PATH_LITERAL("TestCurrentVersion.db"));
     LoadDatabase(AggregationServiceStorageSql::kCurrentVersionNumber,
                  &current_version_path);
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
   }
@@ -1470,8 +1469,9 @@ class AggregationServiceStorageSqlMigrationsTest
   static int VersionFromDatabase(sql::Database* db) {
     sql::Statement statement(
         db->GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
-    if (!statement.Step())
+    if (!statement.Step()) {
       return 0;
+    }
     return statement.ColumnInt(0);
   }
 
@@ -1484,8 +1484,9 @@ class AggregationServiceStorageSqlMigrationsTest
         base::StrCat({"aggregation_service/databases/version_",
                       base::NumberToString(version_id), ".sql"})));
 
-    if (!base::PathExists(source_path))
+    if (!base::PathExists(source_path)) {
       return std::string();
+    }
 
     std::string contents;
     base::ReadFileToString(source_path, &contents);
@@ -1507,7 +1508,7 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     EXPECT_EQ(VersionFromDatabase(&db),
@@ -1537,7 +1538,7 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion1ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
     ASSERT_FALSE(db.DoesTableExist("report_requests"));
 
@@ -1552,7 +1553,7 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion1ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     EXPECT_EQ(VersionFromDatabase(&db),
@@ -1582,7 +1583,7 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion2ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
     ASSERT_TRUE(db.DoesTableExist("report_requests"));
     ASSERT_FALSE(db.DoesIndexExist("reporting_origin_idx"));
@@ -1599,7 +1600,7 @@ TEST_F(AggregationServiceStorageSqlMigrationsTest, MigrateVersion2ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     EXPECT_EQ(VersionFromDatabase(&db),

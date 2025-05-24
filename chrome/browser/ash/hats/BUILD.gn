@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("hats") {
   sources = [
@@ -62,9 +62,10 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/prefs",
     "//chrome/common",
     "//chrome/test:test_support",
-    "//chrome/browser/ash/login/users:test_support",
     "//components/image_fetcher/core",
     "//components/prefs",
     "//testing/gtest",

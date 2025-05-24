@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/openxr/android/openxr_scene_understanding_manager_android.h"
 
 #include <algorithm>
@@ -109,15 +104,20 @@ OpenXRSceneUnderstandingManagerAndroid::RequestHitTest(
           session_, &raycast_info, &xr_hit_results),
       {});
 
+  // SAFETY: The length of xr_results_array is guaranteed by the successful call
+  // to xrRaycastAndroid to have `resultsCountOutput` elements.
+  UNSAFE_BUFFERS(auto xr_results = base::span(
+                     xr_results_array, xr_hit_results.resultsCountOutput));
+
   // We receive the hit test results back in increasing distance from the item
   // that they hit, with the Y-direction matching the normal of the plane, and
   // in the space that we specified (which is mojo space), this all matches what
   // WebXR expects, so we simply have to convert the XrPosef to a device pose.
   std::vector<mojom::XRHitResultPtr> hit_results;
-  hit_results.reserve(xr_hit_results.resultsCountOutput);
-  for (uint32_t i = 0; i < xr_hit_results.resultsCountOutput; i++) {
+  hit_results.reserve(xr_results.size());
+  for (const auto& xr_result : xr_results) {
     mojom::XRHitResultPtr result = mojom::XRHitResult::New();
-    result->mojo_from_result = XrPoseToDevicePose(xr_results_array[i].pose);
+    result->mojo_from_result = XrPoseToDevicePose(xr_result.pose);
     hit_results.push_back(std::move(result));
   }
 

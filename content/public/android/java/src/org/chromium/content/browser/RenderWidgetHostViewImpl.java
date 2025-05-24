@@ -4,24 +4,35 @@
 
 package org.chromium.content.browser;
 
+import android.app.Activity;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.content.R;
 import org.chromium.content_public.browser.RenderWidgetHostView;
+import org.chromium.ui.base.DeviceInput;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.widget.Toast;
 
 /**
- * The Android implementation of RenderWidgetHostView.  This is a Java wrapper to allow
- * communicating with the native RenderWidgetHostViewAndroid object (note the different class
- * names). This object allows the browser to access and control the renderer's top level View.
+ * The Android implementation of RenderWidgetHostView. This is a Java wrapper to allow communicating
+ * with the native RenderWidgetHostViewAndroid object (note the different class names). This object
+ * allows the browser to access and control the renderer's top level View.
  */
 @JNINamespace("content")
+@NullMarked
 public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
     private long mNativeRenderWidgetHostView;
 
     // Remember the stack for clearing native the native stack for debugging use after destroy.
-    private Throwable mNativeDestroyThrowable;
+    private @Nullable Throwable mNativeDestroyThrowable;
+
+    private @Nullable Toast mPointerLockToast;
 
     @CalledByNative
     private static RenderWidgetHostViewImpl create(long renderWidgetHostViewLong) {
@@ -85,6 +96,35 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
                         callback);
     }
 
+    @Override
+    public void onResume() {
+        RenderWidgetHostViewImplJni.get().onResume(getNativePtr());
+    }
+
+    // TODO(https://crbug.com/419544853): Move the pointer lock logic to a separate class once
+    // WindowAndroid implements SupportsUserData
+    @CalledByNative
+    private void showPointerLockToast(WindowAndroid windowAndroid) {
+        int messageId = R.string.pointer_lock_api_notification;
+        if (!DeviceInput.supportsAlphabeticKeyboard()) {
+            messageId = R.string.pointer_lock_api_notification_no_keyboard;
+        }
+
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity != null) {
+            mPointerLockToast = Toast.makeText(activity, messageId, Toast.LENGTH_SHORT);
+            mPointerLockToast.show();
+        }
+    }
+
+    @CalledByNative
+    private void hidePointerLockToast() {
+        if (mPointerLockToast != null) {
+            mPointerLockToast.cancel();
+            mPointerLockToast = null;
+        }
+    }
+
     // ====================
     // Support for native.
     // ====================
@@ -135,5 +175,7 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
                 int height,
                 String path,
                 Callback<String> callback);
+
+        void onResume(long nativeRenderWidgetHostViewAndroid);
     }
 }

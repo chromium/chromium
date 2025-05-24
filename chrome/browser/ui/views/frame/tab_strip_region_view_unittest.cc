@@ -81,7 +81,6 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
   }
 
  protected:
-  int GetInactiveTabWidth() { return tab_strip_->GetInactiveTabWidth(); }
   void CompleteAnimationAndLayout() {
     views::test::RunScheduledLayout(tab_strip_region_view_);
   }
@@ -134,7 +133,7 @@ TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonStaysVisible) {
     controller_->AddTab(i,
                         (i == 0) ? TabActive::kActive : TabActive::kInactive);
     CompleteAnimationAndLayout();
-    EXPECT_LE(tab_strip_region_view_->new_tab_button()->bounds().right(),
+    EXPECT_LE(tab_strip_region_view_->GetNewTabButton()->bounds().right(),
               kTabStripRegionViewWidth);
   }
 }
@@ -148,7 +147,7 @@ TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonRightOfTabs) {
 
   CompleteAnimationAndLayout();
 
-  EXPECT_EQ(tab_strip_region_view_->new_tab_button()->bounds().x(),
+  EXPECT_EQ(tab_strip_region_view_->GetNewTabButton()->bounds().x(),
             tab_strip_->tab_at(0)->bounds().right());
 }
 
@@ -163,7 +162,7 @@ TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
   // ink drop container size should remain equal to the new tab button visible
   // bounds size. https://crbug.com/814105.
   auto* button = static_cast<TabStripControlButton*>(
-      tab_strip_region_view_->new_tab_button());
+      tab_strip_region_view_->GetNewTabButton());
   for (int i = 0; i < 10; ++i) {
     button->AnimateToStateForTesting(views::InkDropState::ACTION_TRIGGERED);
     controller_->AddTab(i, TabActive::kActive);
@@ -195,7 +194,7 @@ TEST_P(TabStripRegionViewTest, ChildrenAreFlushWithTopOfTabStripRegionView) {
   // The new tab button should sit flush with the top of the
   // |tab_strip_region_view_|.
   gfx::Point new_tab_button_origin(
-      tab_strip_region_view_->new_tab_button()->bounds().origin());
+      tab_strip_region_view_->GetNewTabButton()->bounds().origin());
   views::View::ConvertPointToTarget(tab_strip_, tab_strip_region_view_,
                                     &new_tab_button_origin);
   EXPECT_EQ(0, new_tab_button_origin.y());
@@ -251,7 +250,7 @@ TEST_F(TabStripRegionViewTestWithScrollingDisabled,
   CompleteAnimationAndLayout();
 
   // Add tabs to the tabstrip until it is full.
-  while (GetInactiveTabWidth() > minimum_active_width) {
+  while (tab_strip_->tab_at(0)->width() > minimum_active_width) {
     controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
     EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
@@ -291,7 +290,7 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
   CompleteAnimationAndLayout();
 
   // Add tabs to the tabstrip until it is full and should start overflowing.
-  while (GetInactiveTabWidth() > minimum_active_width) {
+  while (tab_strip_->tab_at(0)->width() > minimum_active_width) {
     controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
     EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
@@ -318,7 +317,7 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
   CompleteAnimationAndLayout();
 
   // Add tabs to the tabstrip until it is full and should start overflowing.
-  while (GetInactiveTabWidth() > minimum_active_width) {
+  while (tab_strip_->tab_at(0)->width() > minimum_active_width) {
     controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
   }

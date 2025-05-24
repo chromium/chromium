@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace content {
@@ -19,9 +20,9 @@ TestNavigationThrottleInserter::~TestNavigationThrottleInserter() = default;
 
 void TestNavigationThrottleInserter::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  if (std::unique_ptr<NavigationThrottle> throttle =
-          callback_.Run(navigation_handle)) {
-    navigation_handle->RegisterThrottleForTesting(std::move(throttle));
+  if (callback_) {
+    callback_.Run(*NavigationRequest::From(navigation_handle)
+                           ->GetNavigationThrottleRunnerForTesting());
   }
 }
 

@@ -19,6 +19,8 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/buildflags.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -57,6 +59,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void DisableDenyXFrameOptions() override;
   void EnableReplaceI18nInJS() override;
   std::string GetSource() override;
+  url::Origin GetOrigin() override;
   void SetSupportedScheme(std::string_view scheme) override;
 
   // Add the locale to the load time data defaults. May be called repeatedly.
@@ -64,6 +67,11 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
 
   bool IsWebUIDataSourceImpl() const override;
   void AddFrameAncestor(const GURL& frame_ancestor) override;
+
+  // URL path to resource ID (Grit IDR) map.
+  const std::map<std::string, int>& path_to_idr_map() const {
+    return path_to_idr_map_;
+  }
 
  protected:
   explicit WebUIDataSourceImpl(const std::string& source_name);
@@ -83,8 +91,10 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   class InternalDataSource;
   friend class InternalDataSource;
   friend class URLDataManagerBackend;
+  friend class URLDataManagerBackendTest;
   friend class WebUIDataSource;
   friend class WebUIDataSourceTest;
+  friend class WebUIImplTest;
 
   // Methods that match URLDataSource which are called by
   // InternalDataSource.
@@ -107,6 +117,11 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   int default_resource_;
   bool use_strings_js_ = false;
   std::map<std::string, int> path_to_idr_map_;
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+  std::map<int, std::string> idr_to_file_map_;
+  bool load_from_disk_ = false;
+#endif
+
   // The replacements are initialized in the main thread and then used in the
   // IO thread. The map is safe to read from multiple threads as long as no
   // futher changes are made to it after initialization.

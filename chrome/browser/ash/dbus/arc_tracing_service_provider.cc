@@ -13,7 +13,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/browser/ash/arc/tracing/overview_tracing_handler.h"
-#include "chrome/browser/browser_process.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

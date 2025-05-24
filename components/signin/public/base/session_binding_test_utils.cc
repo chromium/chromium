@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/signin/public/base/session_binding_test_utils.h"
 
 #include <optional>
@@ -14,10 +9,13 @@
 
 #include "base/base64url.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -57,7 +55,10 @@ std::optional<std::vector<uint8_t>> ConvertRawSignatureToDER(
   }
   // Frees memory allocated by `ECDSA_SIG_to_bytes()`.
   bssl::UniquePtr<uint8_t> delete_signature(signature_bytes);
-  return std::vector<uint8_t>(signature_bytes, signature_bytes + signature_len);
+  // SAFETY: `ECDSA_SIG_to_bytes()` uses a C-style API to allocate a new buffer.
+  auto signature_span =
+      UNSAFE_BUFFERS(base::span<uint8_t>(signature_bytes, signature_len));
+  return base::ToVector(signature_span);
 }
 
 std::optional<std::string> ExtractJwtPart(std::string_view jwt, JwtPart part) {
@@ -102,7 +103,7 @@ testing::AssertionResult VerifyJwtSignature(
   std::vector<uint8_t> signature(signature_str.begin(), signature_str.end());
   if (algorithm == crypto::SignatureVerifier::ECDSA_SHA256) {
     std::optional<std::vector<uint8_t>> der_signature =
-        ConvertRawSignatureToDER(base::as_bytes(base::make_span(signature)));
+        ConvertRawSignatureToDER(base::as_byte_span(signature));
     if (!der_signature) {
       return testing::AssertionFailure()
              << "Failed to convert raw signature to DER: " << signature_str;
@@ -115,11 +116,11 @@ testing::AssertionResult VerifyJwtSignature(
     return testing::AssertionFailure()
            << "Failed to initialize the signature verifier";
   }
-  verifier.VerifyUpdate(base::as_bytes(
-      base::make_span(parts[static_cast<size_t>(JwtPart::kHeader)])));
+  verifier.VerifyUpdate(
+      base::as_byte_span(parts[static_cast<size_t>(JwtPart::kHeader)]));
   verifier.VerifyUpdate(kJwtSeparatorArray);
-  verifier.VerifyUpdate(base::as_bytes(
-      base::make_span(parts[static_cast<size_t>(JwtPart::kPayload)])));
+  verifier.VerifyUpdate(
+      base::as_byte_span(parts[static_cast<size_t>(JwtPart::kPayload)]));
   return verifier.VerifyFinal()
              ? testing::AssertionSuccess()
              : (testing::AssertionFailure() << "Invalid signature");
@@ -141,6 +142,21 @@ std::optional<base::Value::Dict> ExtractPayloadFromJwt(std::string_view jwt) {
   }
 
   return base::JSONReader::ReadDict(*payload);
+}
+
+std::string EncryptValueWithEphemeralKey(
+    const HybridEncryptionKey& ephemeral_key,
+    std::string_view value) {
+  std::optional<std::vector<uint8_t>> encrypted_value =
+      ephemeral_key.EncryptForTesting(base::as_byte_span(value));
+  if (!encrypted_value) {
+    return std::string();
+  }
+  std::string base64_encrypted_value;
+  base::Base64UrlEncode(*encrypted_value,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &base64_encrypted_value);
+  return base64_encrypted_value;
 }
 
 }  // namespace signin

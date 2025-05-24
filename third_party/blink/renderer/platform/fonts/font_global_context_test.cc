@@ -22,7 +22,7 @@ TEST_F(FontGlobalContextTest, TypeFaceDigestCacheSameEntry) {
       FontGlobalContext::Get().GetOrComputeTypefaceDigest(
           CreateTestFont(AtomicString("Ahem"),
                          test::PlatformTestDataPath("Ahem.woff"), 16)
-              .PrimaryFont()
+              ->PrimaryFont()
               ->PlatformData());
 
   // Get IdentifiableToken of Ahem in cache
@@ -30,7 +30,7 @@ TEST_F(FontGlobalContextTest, TypeFaceDigestCacheSameEntry) {
       FontGlobalContext::Get().GetOrComputeTypefaceDigest(
           CreateTestFont(AtomicString("Ahem"),
                          test::PlatformTestDataPath("Ahem.woff"), 16)
-              .PrimaryFont()
+              ->PrimaryFont()
               ->PlatformData());
   EXPECT_EQ(digest_1, digest_2);
 }
@@ -41,7 +41,7 @@ TEST_F(FontGlobalContextTest, TypeFaceDigestCacheDifferentEntry) {
       FontGlobalContext::Get().GetOrComputeTypefaceDigest(
           CreateTestFont(AtomicString("Ahem"),
                          test::PlatformTestDataPath("Ahem.woff"), 16)
-              .PrimaryFont()
+              ->PrimaryFont()
               ->PlatformData());
 
   // Put IdentifiableToken of AhemSpaceLigature in cache
@@ -50,7 +50,7 @@ TEST_F(FontGlobalContextTest, TypeFaceDigestCacheDifferentEntry) {
           CreateTestFont(AtomicString("AhemSpaceLigature"),
                          test::PlatformTestDataPath("AhemSpaceLigature.woff"),
                          16)
-              .PrimaryFont()
+              ->PrimaryFont()
               ->PlatformData());
   EXPECT_NE(digest_ahem, digest_ahem_space_ligature);
 }
@@ -61,7 +61,7 @@ TEST_F(FontGlobalContextTest, PostScriptNameDigestCacheSameEntry) {
       FontGlobalContext::Get().GetOrComputePostScriptNameDigest(
           CreateTestFont(AtomicString("Ahem"),
                          test::PlatformTestDataPath("Ahem.woff"), 16)
-              .PrimaryFont()
+              ->PrimaryFont()
               ->PlatformData());
 
   // Get IdentifiableToken of Ahem in cache
@@ -69,7 +69,7 @@ TEST_F(FontGlobalContextTest, PostScriptNameDigestCacheSameEntry) {
       FontGlobalContext::Get().GetOrComputePostScriptNameDigest(
           CreateTestFont(AtomicString("Ahem"),
                          test::PlatformTestDataPath("Ahem.woff"), 16)
-              .PrimaryFont()
+              ->PrimaryFont()
               ->PlatformData());
   EXPECT_EQ(digest_1, digest_2);
 }
@@ -80,7 +80,7 @@ TEST_F(FontGlobalContextTest, PostScriptNameDigestCacheDifferentEntry) {
       FontGlobalContext::Get().GetOrComputePostScriptNameDigest(
           CreateTestFont(AtomicString("Ahem"),
                          test::PlatformTestDataPath("Ahem.woff"), 16)
-              .PrimaryFont()
+              ->PrimaryFont()
               ->PlatformData());
 
   // Put IdentifiableToken of AhemSpaceLigature in cache
@@ -89,7 +89,7 @@ TEST_F(FontGlobalContextTest, PostScriptNameDigestCacheDifferentEntry) {
           CreateTestFont(AtomicString("AhemSpaceLigature"),
                          test::PlatformTestDataPath("AhemSpaceLigature.woff"),
                          16)
-              .PrimaryFont()
+              ->PrimaryFont()
               ->PlatformData());
   EXPECT_NE(digest_ahem, digest_ahem_space_ligature);
 }

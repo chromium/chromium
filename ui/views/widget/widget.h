@@ -18,7 +18,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -28,6 +28,7 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_source.h"
 #include "ui/gfx/native_widget_types.h"
@@ -37,6 +38,10 @@
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/non_client_view.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/platform_session_manager.h"
+#endif
 
 namespace base {
 class TimeDelta;
@@ -57,6 +62,7 @@ class InputMethod;
 class Layer;
 class OSExchangeData;
 class ThemeProvider;
+class AXPlatform;
 }  // namespace ui
 
 namespace ui_devtools {
@@ -92,6 +98,34 @@ enum class CloseRequestResult { kCanClose, kCannotClose };
 //  Widget is a platform-independent type that communicates with a platform or
 //  context specific NativeWidget implementation.
 //
+//  All widgets should use ownership = CLIENT_OWNS_WIDGET. The client code that
+//  creates the widget should hold onto a std::unique_ptr<Widget>. The proper
+//  way to close the Widget is to reset the unique_ptr.
+//
+//  The Close() and CloseWithReason() methods are problematic because they
+//  asynchronously close the widget. This means that client code has to handle
+//  the edge case of: widget is closed, but not destroyed. Use
+//  MakeCloseSynchronous() to allow the client to intercept these calls
+//  and reset the unique_ptr. Note that the point of
+//  MakeCloseSynchronous() is to intercept calls to Close() from code in
+//  //ui that client code cannot control (such as DialogDelegate). This also
+//  allows client code to have a single destruction path for widgets, which
+//  simplifies logic for code that should be written exactly once, such as
+//  logging. If Client code does not rely on DialogDelegate or similar helpers
+//  that call Widget::Close(), then MakeCloseSynchronous is unnecessary.
+//
+//  Aside 1: Clients are responsible for handling the case where the parent
+//  widget is destroyed. There are common helpers like TabDialogManager that
+//  will do this.
+//
+//  Aside 2: There will always be the edge case of NATIVE_WIDGET destroyed while
+//  Widget is alive. This is rare and most clients do not need to handle this.
+//  For clients that do care about this, the best way to detect this right now
+//  is WidgetObserver::OnWidgetDestroying.
+//
+//  See documentation of MakeCloseSynchronous for an example.
+//
+//  Deprecated but kept for historical context --------------------------------
 //  A special note on ownership:
 //
 //    Depending on the value of the InitParams' ownership field, the Widget
@@ -113,6 +147,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                             public ui::NativeThemeObserver,
                             public ui::ColorProviderSource,
                             public ui::PropertyHandler,
+                            public ui::AXModeObserver,
                             public ui::metadata::MetaDataProvider {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
@@ -183,6 +218,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     kMaxValue = kAcceptButtonClicked
   };
 
+  // This struct had unused fields that were removed, but may be of interest to
+  // future users:
+  // - force_show_in_taskbar: https://crrev.com/c/6356649
+  // - native_theme: https://crrev.com/c/6356535
+  // - wants_mouse_events_when_inactive: https://crrev.com/c/6354158
   struct VIEWS_EXPORT InitParams {
     enum Type {
       TYPE_WINDOW,  // A decorated Window, like a frame window.
@@ -221,25 +261,39 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     };
 
     enum Ownership {
-      // Default. Creator is not responsible for managing the lifetime of the
-      // Widget, it is destroyed when the corresponding NativeWidget is
-      // destroyed.
+      // The client (caller) manages the lifetime of the Widget, typically via
+      // std::unique_ptr<Widget>. This is the preferred ownership mode.
+      //
+      // If you encounter problems with this ownership mode, please file a bug.
+      //
+      // - The Widget remains valid even after the platform window
+      //   (HWND, NSWindow, etc.) is closed.
+      // - Widget API calls are safe after the platform window closes, but
+      //   most will become no-ops (e.g., Show() will do nothing).
+      // - The NativeWidget is destroyed when the platform window closes.
+      // - When the client destroys the Widget, a close request is sent to the
+      //   platform window (if it's still open).
+      CLIENT_OWNS_WIDGET,
+
+      // The NativeWidget manages the lifetime of the Widget. The Widget is
+      // destroyed when the corresponding NativeWidget is destroyed.
+      //
+      // DEPRECATED: Prone to memory issues. A Widget* can be invalidated
+      // at any time, leading to dangling pointers.  This does not fit typical
+      // C++ memory management idioms.
       NATIVE_WIDGET_OWNS_WIDGET,
-      // Used when the Widget is owned by someone other than the NativeWidget,
-      // e.g. a scoped_ptr in tests. Production use is discouraged because the
-      // Widget API might become unsafe after the platform window is closed.
+
+      // The Widget owns the NativeWidget. The NativeWidget is destroyed when
+      // the corresponding Widget is destroyed.
+      //
+      // DEPRECATED: Causes problems with platform window shutdown. The OS
+      // usually does not expect the NativeWidget to be destroyed immediately
+      // when the platform window is closed. For example, if the platform window
+      // has a close animation, it must remain valid until the animation
+      // finishes to avoid prematurely destroying the compositor and its layer.
+      // This would also cause other platform-specific issues
+      // (e.g., crbug.com/40619853).
       WIDGET_OWNS_NATIVE_WIDGET,
-      // Preferred Ownership mode. This is intended to be a safe replacement for
-      // WIDGET_OWNS_NATIVE_WIDGET. The NativeWidget will be closed along with
-      // the platform window.
-      // The above "default" reflects the behavior of various platforms in which
-      // the NativeWidget is effectively "owned" by the platform itself. It is
-      // possible that the NativeWidget is destroyed at the behest of the plat-
-      // form, leaving the associated Widget reference dangling.
-      // Using this ownership mode allows for the Widget being resilient to the
-      // NativeWidget being destroyed out from under the Widget while being
-      // able to manage the Widget independently.
-      CLIENT_OWNS_WIDGET
     };
 
     enum class ShadowType {
@@ -250,11 +304,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
       kDrop,     // Draw a drop shadow that emphasizes Z-order
                  // relationship to other windows.
     };
-
-    // TODO(crbug.com/339619005): Remove this constructor once call sites
-    //                            have been migrated to always specifying
-    //                            the ownership mode as well as the type.
-    explicit InitParams(Type type);
 
     // The preferred constructor. Must specify the ownership mode. The ownership
     // mode will eventually go away and will implicitly be CLIENT_OWNS_WIDGET.
@@ -279,6 +328,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // are set.
     bool ShouldInitAsHeadless() const;
 
+    // Sets the parent view using a parent Widget. This will set the `parent`
+    // field correctly.
+    void SetParent(Widget* parent_widget);
+
+    // Sets the parent view with the given gfx::NativeView directly. This is the
+    // same as directly assigning the `parent` field.
+    // TODO(crbug.com/392029296): Make the `parent` field private and favor this
+    // setter and/or the previous setter.
+    void SetParent(gfx::NativeView parent_view);
+
     Type type;
 
     // If null, a default implementation will be constructed. The default
@@ -299,7 +358,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If kOpaque, we can perform optimizations based on the widget being fully
     // opaque. Default is based on ViewsDelegate::GetOpacityForInitParams().
     // Defaults to kOpaque for non-window widgets. Translucent windows may not
-    // always be supported.
+    // always be supported, e.g., resizable windows cannot be translucent
+    // on Windows.
     WindowOpacity opacity = WindowOpacity::kInferred;
 
     bool accept_events = true;
@@ -321,15 +381,21 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // See Widget class comment above.
     Ownership ownership;
 
-    bool mirror_origin_in_rtl = false;
-
     ShadowType shadow_type = ShadowType::kDefault;
 
     // A hint about the size of the shadow if the type is ShadowType::kDrop. May
     // be ignored on some platforms. No value indicates no preference.
     std::optional<int> shadow_elevation;
 
-    // The window corner radius. May be ignored on some platforms.
+    // Specifies the desired corner radius for the window, in pixels. This is
+    // handled by the OS windowing system, and the support varies:
+    // - ChromeOS Ash & macOS: Fully effective; the specified radius is used.
+    // - Windows 11: Partially effective; if a value is set positive, it enables
+    //   system-managed rounded corners via the DWMWCP_ROUND window style. The
+    //   actual radius is determined by the OS, not this specific value.
+    // - Windows 10 & other platforms: Has no effect.
+    // Alternatively, you can set WindowOpacity to kTranslucent and use
+    // views::RoundedRectBackground. This has limitations (see `opacity`).
     std::optional<int> corner_radius;
 
     // Specifies that the system default caption and icon should not be
@@ -366,12 +432,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // that way throughout. This should simply be a NativeWindow - windows are
     // parented to other windows, not to views, and it being a view confuses
     // the concept with bubble anchoring a la BubbleDialogDelegateView.
+    //
+    // TODO(crbug.com/392029296): Make this field private and only set via the
+    // setters above.
     gfx::NativeView parent = gfx::NativeView();
 
     // Specifies the initial bounds of the Widget. Default is empty, which means
-    // the NativeWidget may specify a default size. If the parent is specified,
-    // |bounds| is in the parent's coordinate system. If the parent is not
-    // specified, it's in screen's global coordinate system.
+    // the NativeWidget may specify a default size. If the parent is specified
+    // and the widget type is not WINDOW_TYPE_POPUP, `bounds` is in the parent's
+    // coordinate system. Otherwise, it's in screen coordinates.
+    // TODO(crbug.com/40287810): can we use screen coordinates universally?
     gfx::Rect bounds;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -409,10 +479,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // the default desktop for new windows.
     gfx::NativeWindow context = gfx::NativeWindow();
 
-    // If true, forces the window to be shown in the taskbar, even for window
-    // types that do not appear in the taskbar by default (popup and bubble).
-    bool force_show_in_taskbar = false;
+#if BUILDFLAG(IS_WIN)
+    // If true, force the window not to be shown in the taskbar, even for
+    // window types that do appear in the taskbar by default.
+    bool dont_show_in_taskbar = false;
 
+    // If true, adds the WS_SYSMENU style to TYPE_WINDOW_FRAMELESS windows.
+    bool force_system_menu_for_frameless = false;
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_LINUX)
     // Only used by X11, for root level windows. Specifies the res_name and
     // res_class fields, respectively, of the WM_CLASS window property. Controls
     // window grouping and desktop file matching in Linux window managers.
@@ -422,12 +498,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // Only used by Wayland, for root level windows.
     std::string wayland_app_id;
+#endif  // BUILDFLAG(IS_LINUX)
 
     // If true then the widget uses software compositing.
     bool force_software_compositing = false;
-
-    // If set, mouse events will be sent to the widget even if inactive.
-    bool wants_mouse_events_when_inactive = false;
 
     // If set, the widget was created in headless mode.
     bool headless_mode = false;
@@ -446,19 +520,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     std::optional<bool> use_accelerated_widget_override;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(crbug.com/1327490): Rename restore info variables.
-    // Only used by Wayland. Specifies the session id window key, the restore
-    // window id, and the app id, respectively, respectively, used by the
-    // compositor to restore window state upon creation. Only one of
-    // `restore_window_id` and `restore_window_id_source` should be set, as
-    // `restore_window_id_source` is used for widgets without inherent restore
-    // window ids, e.g. Chrome apps.
-    int32_t restore_session_id = 0;
-    std::optional<int32_t> restore_window_id;
-    std::optional<std::string> restore_window_id_source;
-#endif
-
     // Contains any properties with which the native widget should be
     // initialized prior to adding it to the window hierarchy. All the
     // properties in |init_properties_container| will be moved to the native
@@ -470,19 +531,20 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // window should request the wayland compositor to send key events,
     // even if it matches with the compositor's keyboard shortcuts.
     bool inhibit_keyboard_shortcuts = false;
-#endif
 
-    // Directly sets the NativeTheme used by the Widget. Providing the
-    // NativeTheme here vs setting afterwards potentially avoids lots of
-    // notifications of theme changes.
-    // A value of null results in the default theme being used.
-    raw_ptr<ui::NativeTheme> native_theme = nullptr;
+    // Used by Ozone platforms that implement support for display server backed
+    // session management. E.g: Wayland with xdg-session-management protocol.
+    std::optional<ui::PlatformSessionWindowData> session_data;
+#endif
 
 #if BUILDFLAG(IS_MAC)
     // If set to true, tags the widget as an invisible overlay widget that
     // allows the Views tree to be broken up into distinct NSViews for use by
     // immersive fullscreen. Not for general use.
     bool is_overlay = false;
+
+    // If set to true, enable system default show and hide animations.
+    bool animation_enabled = false;
 #endif
   };
 
@@ -552,17 +614,15 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Returns all Widgets in |native_view|'s hierarchy, including itself if
   // it is one.
-  // TODO(tluk): This API should be updated to return Widgets rather than take
-  // an out param.
-  static void GetAllChildWidgets(gfx::NativeView native_view,
-                                 Widgets* children);
+  static Widgets GetAllChildWidgets(gfx::NativeView native_view);
 
   // Returns all Widgets owned by |native_view| (including child widgets, but
   // not including itself).
-  // TODO(tluk): This API should be updated to return Widgets rather than take
-  // an out param.
-  static void GetAllOwnedWidgets(gfx::NativeView native_view, Widgets* owned);
+  static Widgets GetAllOwnedWidgets(gfx::NativeView native_view);
 
+  // https://crbug.com/391414831: This is only used by some views
+  // implementation details for content::WebContents glue, and for ChromeOS.
+  // New use cases should not be added. Use Reparent() instead.
   // Re-parent a NativeView and notify all Widgets in |native_view|'s hierarchy
   // of the change.
   static void ReparentNativeView(gfx::NativeView native_view,
@@ -595,6 +655,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // TYPE_WINDOW or TYPE_PANEL.
   gfx::NativeWindow GetNativeWindow() const;
 
+  // Returns the nearest display intersecting this Widget. Widget must be
+  // initialized.
+  std::optional<display::Display> GetNearestDisplay();
+
   // Add/remove observer.
   void AddObserver(WidgetObserver* observer);
   void RemoveObserver(WidgetObserver* observer);
@@ -608,6 +672,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the accelerator given a command id. Returns false if there is
   // no accelerator associated with a given id, which is a common condition.
   virtual bool GetAccelerator(int cmd_id, ui::Accelerator* accelerator) const;
+
+  // Sets a new parent and notifies all Widgets in this widget's hierarchy of
+  // the change.
+  void Reparent(Widget* parent);
 
   // Forwarded from the RootView so that the widget can do any cleanup.
   void ViewHierarchyChanged(const ViewHierarchyChangedDetails& details);
@@ -665,6 +733,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // See RootView::GetContentsView().
   View* GetContentsView();
 
+  // This returns the client content view that corresponds to the view returned
+  // from WidgetDelegate::GetContentsView(). Alternatively, if
+  // Widget::SetContentView() was explicitly called, this will return that view.
+  View* GetClientContentsView();
+
   // Returns the bounds of the Widget in screen coordinates.
   gfx::Rect GetWindowBoundsInScreen() const;
 
@@ -681,7 +754,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   std::string GetWorkspace() const;
 
   // Sizes and/or places the widget to the specified bounds, size or position.
-  // `bounds` is in screen coordinates.
+  // `bounds` is in screen coordinates for top-level (is_top_level() == true)
+  // widgets and WINDOW_TYPE_POPUP widgets. Other widgets use its parent
+  // widget's client area coordinates.
+  // TODO(crbug.com/40287810): can we use screen coordinates universally?
   void SetBounds(const gfx::Rect& bounds);
   void SetSize(const gfx::Size& size);
 
@@ -738,14 +814,46 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetShape(std::unique_ptr<ShapeRects> shape);
 
   // Equivalent to CloseWithReason(ClosedReason::kUnspecified).
-  // DEPRECATED: Please use CloseWithReason() instead.
+  // DEPRECATED: Please use CLIENT_OWNS_WIDGET and reset the unique_ptr<Widget>
+  // instead. Use MakeCloseSynchronous() to intercept unexpected calls
+  // to Close().
   void Close();
 
   // Hides the widget, then closes it after a return to the message loop,
   // specifying the reason for it having been closed.
   // Note that while you can pass ClosedReason::kUnspecified, it is highly
   // discouraged and only supported for backwards-compatibility with Close().
+  // DEPRECATED: Please use CLIENT_OWNS_WIDGET and reset the unique_ptr<Widget>
+  // instead. Use MakeCloseSynchronous() to intercept unexpected calls
+  // to Close().
+  // Aside, note that depending on platform, platform settings, and widget
+  // InitParams::Ownership, closing is sometimes synchronous and sometimes
+  // asynchronous. Yet another reason to prefer CLIENT_OWNS_WIDGET and
+  // MakeCloseSynchronous(), as that guarantees that Close() is always
+  // synchronous.
   void CloseWithReason(ClosedReason closed_reason);
+
+  // This method is used by clients to intercept calls to Close() from other
+  // code in //ui such as DialogDelegate. The only valid use case is to allow
+  // clients to implement a synchronous version of Close() by resetting the
+  // unique_ptr.
+  //
+  //  widget_->MakeCloseSynchronous(
+  //      base::BindOnce(&Client::CloseWidget, this));
+  //
+  //  // Called by the implementation of DialogDelegate when the user clicks the
+  //  // close/cancel buttons, or presses `esc`.
+  //  void Client::CloseWidget(Widget::CloseReason reason) {
+  //    LogExactlyOnceOnWidgetDestruction(reason);
+  //    widget_.reset();
+  //  }
+  //
+  //  // If the client wants to close the widget, it can also do so.
+  //  Client::ClientCloseWidget() {
+  //    CloseWidget(CloseReason::kUnspecified);
+  //  }
+  void MakeCloseSynchronous(
+      base::OnceCallback<void(ClosedReason)> override_close);
 
   // A UI test which tries to asynchronously examine a widget (e.g. the pixel
   // tests) will fail if the widget is closed before that.  This can happen
@@ -753,6 +861,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // in parallel, since one test's widget can be closed by the appearance of
   // another test's.  This method can be used to temporarily disable
   // Widget::Close() for such asynchronous cases.
+  //
+  // DEPRECATED. Don't use this. Avoid asynchronously closing to begin with. See
+  // MakeCloseSynchronous() for more details.
   void SetBlockCloseForTesting(bool block_close) { block_close_ = block_close; }
 
   // TODO(beng): Move off public API.
@@ -779,6 +890,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Mac browsertests do not have an activation policy so the widget may be
   // activated.
   void ShowInactive();
+
+  // Unlike Show/Hide above, this function is idempotent. Calling
+  // SetVisible(true) when IsVisible() == true is a no-op.
+  void SetVisible(bool visible);
 
   // Activates the widget, assuming it already exists and is visible.
   void Activate();
@@ -808,6 +923,24 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // and non top-level widgets.
   int GetZOrderSublevel() const;
 
+#if BUILDFLAG(IS_MAC)
+  // Sets the widget as being "activation independent". This sets two
+  // properties:
+  //
+  // - If Chromium is hidden (from the Dock menu or programmatically), the
+  //   widget is not forced to be hidden as well.
+  // - The widget can be interacted with without causing Chromium to be
+  //   activated.
+  //
+  // To accomplish this, the activation independence state of all ancestor
+  // widgets is set as well.
+  //
+  // The notion of "activation independence" only makes sense if the widget
+  // floats above all other apps, so this property must only be set on a widget
+  // that has a z-order of ui::ZOrderLevel::kFloatingWindow. This is enforced.
+  void SetActivationIndependence(bool independence);
+#endif
+
   // Sets the widget to be visible on all work spaces.
   void SetVisibleOnAllWorkspaces(bool always_visible);
 
@@ -821,6 +954,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void Maximize();
   void Minimize();
   void Restore();
+
+  // Shows a menu with controls beyond minimize/maximize/restore. Only
+  // implemented on Linux.
+  void ShowWindowControlsMenu(const gfx::Point& point);
 
   // Whether or not the window is maximized or minimized.
   virtual bool IsMaximized() const;
@@ -872,8 +1009,23 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   }
   bool is_secondary_widget() const { return is_secondary_widget_; }
 
-  // Returns whether the Widget is visible to the user.
-  virtual bool IsVisible() const;
+  // Returns whether the Widget is mapped by the window server. It doesn't
+  // necessarily mean the window's pixels are currently visible on a physical
+  // display to the user.
+  // Example: a mapped Widget on a hidden virtual desktop returns true for
+  // IsVisible(), but is not physically visible to the user.
+  //
+  // On some platforms (e.g., macOS), this is asynchronously updated, i.e.
+  // calling Show() or Hide() will not synchronously update this.
+  bool IsVisible() const;
+
+  // Returns true if the Widget is physically visible to the user on any screen.
+  // This is implemented only on macOS and Windows. On other platforms this is
+  // equivalent to IsVisible().
+  //
+  // On some platforms (e.g., macOS), this is asynchronously updated, i.e.
+  // calling Show() or Hide() will not synchronously update this.
+  bool IsVisibleOnScreen() const;
 
   // Returns the ThemeProvider that provides theme resources for this Widget.
   virtual const ui::ThemeProvider* GetThemeProvider() const;
@@ -1159,6 +1311,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void OnNativeFocus() override;
   void OnNativeBlur() override;
   void OnNativeWidgetVisibilityChanged(bool visible) override;
+  void OnNativeWidgetVisibilityOnScreenChanged(bool visible) override;
   void OnNativeWidgetCreated() override;
   void OnNativeWidgetDestroying() override;
   void OnNativeWidgetDestroyed() override;
@@ -1167,6 +1320,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   gfx::Size GetMaximumSize() const override;
   void OnNativeWidgetMove() override;
   void OnNativeWidgetSizeChanged(const gfx::Size& new_size) override;
+  void OnNativeWidgetUserResizeStarted() override;
+  void OnNativeWidgetUserResizeEnded() override;
   void OnNativeWidgetWorkspaceChanged() override;
   void OnNativeWidgetWindowShowStateChanged() override;
   void OnNativeWidgetBeginUserBoundsChange() override;
@@ -1205,6 +1360,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Overridden from ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
+  // Overridden from ui::AXModeObsever
+  // TODO(crbug.com/325137417): We might need to add an override for when the
+  // mode is removed, but currently we don't have the support for this in
+  // ViewAccessibility. Add the override once logic to remove a mode is added to
+  // ViewAccessibility.
+  void OnAXModeAdded(ui::AXMode mode) override;
+
   // Sets an override for `color_mode` when `GetColorProvider()` is requested.
   // e.g. if set to kDark, colors will always be for the dark theme.
   void SetColorModeOverride(
@@ -1236,6 +1398,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Called to enable or disable screenshots of this widget.
   void SetAllowScreenshots(bool allow);
   bool AreScreenshotsAllowed();
+
+  // Called when we become / stop being `child_widget`'s parent.
+  void OnChildAdded(Widget* child_widget);
+  void OnChildRemoved(Widget* child_widget);
+
+  void UpdateAccessibleNameForRootView();
+  void UpdateAccessibleURLForRootView(const GURL& url);
 
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override
@@ -1270,7 +1439,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetY(int y);
   void SetWidth(int width);
   void SetHeight(int height);
-  void SetVisible(bool visible);
 
   // ui::ColorProviderSource:
   ui::ColorProviderKey GetColorProviderKey() const override;
@@ -1303,6 +1471,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     return g_disable_activation_change_handling_;
   }
 
+  // Helper for Init() to handle accessibility-specific work.
+  void InitAccessibility();
+
   // Persists the window's restored position and "show" state using the
   // window delegate.
   void SaveWindowPlacement();
@@ -1310,7 +1481,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Invokes SaveWindowPlacement() if the native widget has been initialized.
   // This is called at times when the native widget may not have been
   // initialized.
-  void SaveWindowPlacementIfInitialized();
+  void SaveWindowPlacementIfNeeded();
 
   // Sizes and positions the window just after it is created.
   void SetInitialBounds(const gfx::Rect& bounds);
@@ -1318,8 +1489,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Sizes and positions the frameless window just after it is created.
   void SetInitialBoundsForFramelessWindow(const gfx::Rect& bounds);
 
-  // Set the parent of this widget.
-  void SetParent(Widget* parent);
+  // The actual heavy-lifting for setting a widget's parent is handled at the
+  // NativeWidget layer. This just updates some book-keeping.
+  void HandleNativeWidgetReparented(Widget* parent);
 
   // Returns the bounds and "show" state from the delegate. Returns true if
   // the delegate wants to use a specified bounds.
@@ -1327,11 +1499,17 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                                ui::mojom::WindowShowState* show_state);
 
   // Returns the Views whose layers are parented directly to the Widget's
-  // layer.
-  const View::Views& GetViewsWithLayers();
+  // layer in reverse z-order (i.e views later in the returned vector have a
+  // higher z-order).
+  const View::Views& GetViewsWithLayersInZOrder();
 
   // If a descendent of |root_view_| is focused, then clear the focus.
   void ClearFocusFromWidget();
+
+  // Notifies the parent that a window-modal child's visibility changed.
+  // This function is a no-op if the parent does not exist or if this widget is
+  // not a window modal.
+  void MaybeNotifyWindowModalVisibilityChanged(bool visible);
 
   // This holds logic that needs to called synchronously after showing, before
   // the native widget asynchronously invokes OnNativeWidgetVisibilityChanged().
@@ -1341,6 +1519,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // notifications.
   void HandleWidgetDestroying();
   void HandleWidgetDestroyed();
+
+  // This is called by a task posted by OnRootViewLayoutInvalidated().
+  // Resize the widget to delegate's desired bounds.
+  void ResizeToDelegateDesiredBounds();
 
   static DisableActivationChangeHandlingType
       g_disable_activation_change_handling_;
@@ -1473,6 +1655,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // True if capture losses should be ignored.
   bool ignore_capture_loss_ = false;
 
+  // True if allow saving window placement.
+  bool save_window_placement_allowed_ = true;
+
   // TODO(beng): Remove NativeWidgetGtk's dependence on these:
   // The following are used to detect duplicate mouse move events and not
   // deliver them. Displaying a window may result in the system generating
@@ -1512,9 +1697,18 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // the same window. Their fullscreen state should inherit from their parents.
   bool check_parent_for_fullscreen_ = false;
 
+  // Replaces the implementation of Close() and CloseWithReason().
+  base::OnceCallback<void(ClosedReason)> override_close_;
+
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
 
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
+
+  // Indicates whether there is an autosize task in the task queue. Also used to
+  // cancel the autosize task in testing.
+  base::WeakPtrFactory<Widget> autosize_task_factory_{this};
   base::WeakPtrFactory<Widget> weak_ptr_factory_{this};
 };
 

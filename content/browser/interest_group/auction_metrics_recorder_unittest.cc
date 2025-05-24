@@ -282,9 +282,11 @@ TEST_F(AuctionMetricsRecorderTest, NumBidderWorklets) {
           /*wasm_url=*/std::nullopt,
           /*signals_url=*/std::nullopt,
           /*needs_cors_for_additional_bid=*/false,
+          /*send_creative_scanning_metadata=*/std::nullopt,
           /*experiment_group_id=*/std::nullopt,
           /*trusted_bidding_signals_slot_size_param=*/"",
-          /*trusted_signals_coordinator=*/std::nullopt);
+          /*trusted_signals_coordinator=*/std::nullopt,
+          /*contextual_data=*/std::nullopt);
       recorder().ReportBidderWorkletKey(worklet_key);
     }
   }

@@ -11,12 +11,10 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
+#import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
-#import "components/flags_ui/flags_ui_constants.h"
-#import "components/flags_ui/flags_ui_pref_names.h"
-#import "components/flags_ui/pref_service_flags_storage.h"
 #import "components/grit/flags_ui_resources.h"
 #import "components/grit/flags_ui_resources_map.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -24,6 +22,9 @@
 #import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
+#import "components/webui/flags/flags_ui_constants.h"
+#import "components/webui/flags/flags_ui_pref_names.h"
+#import "components/webui/flags/pref_service_flags_storage.h"
 #import "ios/chrome/browser/flags/about_flags.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -44,8 +45,7 @@ web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
 
   source->UseStringsJs();
   FlagsUI::AddFlagsIOSStrings(source);
-  source->AddResourcePaths(
-      base::make_span(kFlagsUiResources, kFlagsUiResourcesSize));
+  source->AddResourcePaths(kFlagsUiResources);
   source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
@@ -150,13 +150,15 @@ void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
     const base::Value::List& args) {
   DCHECK(flags_storage_);
   DCHECK_EQ(2u, args.size());
-  if (args.size() != 2)
+  if (args.size() != 2) {
     return;
+  }
 
   const std::string* entry_internal_name = args[0].GetIfString();
   const std::string* enable_str = args[1].GetIfString();
-  if (!entry_internal_name || !enable_str)
+  if (!entry_internal_name || !enable_str) {
     return;
+  }
 
   SetFeatureEntryEnabled(flags_storage_.get(), *entry_internal_name,
                          *enable_str == "true");
@@ -165,7 +167,7 @@ void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
 
 void FlagsDOMHandler::HandleRestartBrowser(const base::Value::List& args) {
 #if BUILDFLAG(CHROMIUM_BRANDING)
-  CHECK(false);
+  NOTREACHED();
 #endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }
 

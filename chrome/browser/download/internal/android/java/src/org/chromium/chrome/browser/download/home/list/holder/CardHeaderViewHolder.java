@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A {@link RecyclerView.ViewHolder} specifically meant to display a card header. */
+@NullMarked
 public class CardHeaderViewHolder extends ListItemViewHolder {
     /** Creates a new {@link CardHeaderViewHolder} instance. */
     public static CardHeaderViewHolder create(ViewGroup parent) {

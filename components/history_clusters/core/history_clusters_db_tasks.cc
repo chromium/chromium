@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_backend.h"
@@ -322,10 +321,10 @@ void GetAnnotatedVisitsToCluster::AddClusteredVisits(
         static_cast<size_t>(GetConfig().max_visits_to_cluster))
       break;
     cluster_ids_.push_back(cluster_id);
-    base::ranges::move(backend->ToAnnotatedVisitsFromIds(
-                           visit_ids_of_cluster,
-                           /*compute_redirect_chain_start_properties=*/true),
-                       std::back_inserter(annotated_visits_));
+    std::ranges::move(backend->ToAnnotatedVisitsFromIds(
+                          visit_ids_of_cluster,
+                          /*compute_redirect_chain_start_properties=*/true),
+                      std::back_inserter(annotated_visits_));
   }
 }
 

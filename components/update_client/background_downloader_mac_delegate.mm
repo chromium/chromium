@@ -138,7 +138,7 @@ GURL GURLWithNSURL(NSURL* url) {
 
 base::FilePath URLToFilename(const GURL& url) {
   uint32_t hash = base::PersistentHash(url.spec());
-  return base::FilePath::FromASCII(
+  return base::FilePath(
       base::HexEncode(reinterpret_cast<uint8_t*>(&hash), sizeof(hash)));
 }
 

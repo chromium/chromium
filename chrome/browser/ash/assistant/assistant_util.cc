@@ -9,10 +9,11 @@
 #include "ash/constants/devicetype.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/language/core/browser/pref_names.h"
@@ -58,6 +59,7 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
 
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       return AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE;
 
     case user_manager::UserType::kGuest:
@@ -66,8 +68,7 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
       // This method should only be called for disallowed user types.
-      NOTREACHED_IN_MIGRATION();
-      return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;
+      NOTREACHED();
   }
 }
 
@@ -125,6 +126,10 @@ bool HasDedicatedAssistantKey() {
 namespace assistant {
 
 AssistantAllowedState IsAssistantAllowedForProfile(const Profile* profile) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    return AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT;
+  }
+
   // Disabled because the libassistant.so is not available.
   if (!ash::assistant::features::IsLibAssistantDLCEnabled()) {
     return AssistantAllowedState::DISALLOWED_BY_NO_BINARY;
@@ -140,8 +145,9 @@ AssistantAllowedState IsAssistantAllowedForProfile(const Profile* profile) {
   if (profile->IsOffTheRecord())
     return AssistantAllowedState::DISALLOWED_BY_INCOGNITO;
 
-  if (ash::DemoSession::IsDeviceInDemoMode())
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
     return AssistantAllowedState::DISALLOWED_BY_DEMO_MODE;
+  }
 
   if (!IsAssistantAllowedForUserType(profile))
     return GetErrorForUserType(profile);

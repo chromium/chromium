@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
-#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_interceptor.h"
 
 namespace content::test {
@@ -25,8 +24,8 @@ class TestPrefetchWatcherImpl {
   PrefetchContainerIdForTesting WaitUntilPrefetchResponseCompleted(
       const std::optional<blink::DocumentToken>& document_token,
       const GURL& url);
-  std::optional<bool> PrefetchUsedInLastNavigation();
-  std::optional<PrefetchContainerIdForTesting>
+  bool PrefetchUsedInLastNavigation();
+  PrefetchContainerIdForTesting
   GetPrefetchContainerIdForTestingInLastNavigation();
 
  private:
@@ -50,7 +49,7 @@ class TestPrefetchWatcherImpl {
 };
 
 TestPrefetchWatcherImpl::TestPrefetchWatcherImpl() {
-  PrefetchService::SetPrefetchResponseCompletedCallbackForTesting(
+  PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
       base::BindRepeating(&TestPrefetchWatcherImpl::OnPrefetchResponseCompleted,
                           base::Unretained(this)));
   PrefetchURLLoaderInterceptor::SetPrefetchCompleteCallbackForTesting(
@@ -62,7 +61,7 @@ TestPrefetchWatcherImpl::TestPrefetchWatcherImpl() {
 TestPrefetchWatcherImpl::~TestPrefetchWatcherImpl() {
   PrefetchURLLoaderInterceptor::SetPrefetchCompleteCallbackForTesting(
       base::DoNothing());
-  PrefetchService::SetPrefetchResponseCompletedCallbackForTesting(
+  PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
       base::DoNothing());
 }
 
@@ -103,20 +102,14 @@ TestPrefetchWatcherImpl::WaitUntilPrefetchResponseCompleted(
   return GetContainerIdForTesting(response_completed_prefetches_[key].get());
 }
 
-std::optional<bool> TestPrefetchWatcherImpl::PrefetchUsedInLastNavigation() {
-  if (prefetch_container_used_in_last_navigation_.has_value()) {
-    return !!prefetch_container_used_in_last_navigation_.value();
-  } else {
-    return std::nullopt;
-  }
+bool TestPrefetchWatcherImpl::PrefetchUsedInLastNavigation() {
+  CHECK(prefetch_container_used_in_last_navigation_.has_value());
+  return !!prefetch_container_used_in_last_navigation_.value();
 }
 
-std::optional<PrefetchContainerIdForTesting>
+PrefetchContainerIdForTesting
 TestPrefetchWatcherImpl::GetPrefetchContainerIdForTestingInLastNavigation() {
-  if (!PrefetchUsedInLastNavigation().has_value()) {
-    return std::nullopt;
-  }
-  if (!PrefetchUsedInLastNavigation().value()) {
+  if (!PrefetchUsedInLastNavigation()) {
     return InvalidPrefetchContainerIdForTesting;
   }
   return GetContainerIdForTesting(
@@ -142,11 +135,11 @@ TestPrefetchWatcher::WaitUntilPrefetchResponseCompleted(
   return impl_->WaitUntilPrefetchResponseCompleted(document_token, url);
 }
 
-std::optional<bool> TestPrefetchWatcher::PrefetchUsedInLastNavigation() {
+bool TestPrefetchWatcher::PrefetchUsedInLastNavigation() {
   return impl_->PrefetchUsedInLastNavigation();
 }
 
-std::optional<PrefetchContainerIdForTesting>
+PrefetchContainerIdForTesting
 TestPrefetchWatcher::GetPrefetchContainerIdForTestingInLastNavigation() {
   return impl_->GetPrefetchContainerIdForTestingInLastNavigation();
 }

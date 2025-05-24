@@ -23,6 +23,7 @@
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/cocoa/drag_drop_client_mac.h"
 #include "ui/views/cocoa/native_widget_mac_event_monitor.h"
@@ -244,6 +245,17 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool IsMouseCaptureActive() const { return is_mouse_capture_active_; }
   bool IsZoomed() const { return is_zoomed_; }
 
+  // This tracks -[NSWindow isOnActiveSpace].
+  // A screen has one active space and may have several hidden spaces.
+  // For a visible window, this value indicates if the window is on an active
+  // space. For a non-visible window, this value indicates whether it will be on
+  // an active space if made visible.
+  bool IsOnActiveSpace() const { return is_on_active_space_; }
+
+  // A window is physically visible on screen if it is visible and on an active
+  // space.
+  bool IsVisibleOnScreen() const { return is_visible_ && is_on_active_space_; }
+
   void SetVisibilityState(remote_cocoa::mojom::WindowVisibilityState new_state);
 
   // Add a NSEvent local event monitor, which will send events to `client`
@@ -266,6 +278,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // window associated to this host.
   void SetAllowScreenshots(bool allow);
   bool AllowScreenshots() const;
+
+  // Set the color mode of the window.
+  void SetColorMode(ui::ColorProviderKey::ColorMode color_mode);
 
  private:
   friend class TextInputHost;
@@ -310,6 +325,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // remote_cocoa::mojom::NativeWidgetNSWindowHost:
   void OnVisibilityChanged(bool visible) override;
+  void OnSpaceActivationChanged(bool is_on_active_space) override;
   void OnWindowNativeThemeChanged() override;
   void OnViewSizeChanged(const gfx::Size& new_size) override;
   bool GetSheetOffsetY(int32_t* offset_y) override;
@@ -334,6 +350,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void OnWindowGeometryChanged(
       const gfx::Rect& window_bounds_in_screen_dips,
       const gfx::Rect& content_bounds_in_screen_dips) override;
+  void OnWindowWillStartLiveResize() override;
+  void OnWindowDidEndLiveResize() override;
   void OnWindowFullscreenTransitionStart(bool target_fullscreen_state) override;
   void OnWindowFullscreenTransitionComplete(
       bool target_fullscreen_state) override;
@@ -521,6 +539,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   gfx::Rect content_bounds_in_screen_;
   std::vector<uint8_t> state_restoration_data_;
   bool is_visible_ = false;
+  // This tracks -[NSWindow isOnActiveSpace].
+  bool is_on_active_space_ = false;
   bool target_fullscreen_state_ = false;
   bool in_fullscreen_transition_ = false;
   bool is_miniaturized_ = false;

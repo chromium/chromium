@@ -1,0 +1,68 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+
+import "oaidl.idl";
+import "objidl.idl";
+import "wtypes.idl";
+import "webauthn.h";
+
+typedef struct _EXPERIMENTAL_WEBAUTHN_PLUGIN_OPERATION_REQUEST {
+    // Window Handle
+    HWND hWnd;
+
+    // Transaction ID
+    GUID transactionId;
+
+    // Request Hash Signature Bytes Buffer Size
+    DWORD cbRequestSignature;
+
+    // Request Hash Signature Bytes Buffer - Signature verified using the "pbOpSignPubKey" in EXPERIMENTAL_PWEBAUTHN_PLUGIN_ADD_AUTHENTICATOR_RESPONSE
+    [size_is(cbRequestSignature)] byte* pbRequestSignature;
+
+    // Encoded Request Buffer Size
+    DWORD cbEncodedRequest;
+
+    // Encoded Request Buffer - Encoding type is determined by the requestType
+    [size_is(cbEncodedRequest)] byte* pbEncodedRequest;
+} EXPERIMENTAL_WEBAUTHN_PLUGIN_OPERATION_REQUEST, *EXPERIMENTAL_PWEBAUTHN_PLUGIN_OPERATION_REQUEST;
+typedef const EXPERIMENTAL_WEBAUTHN_PLUGIN_OPERATION_REQUEST *EXPERIMENTAL_PCWEBAUTHN_PLUGIN_OPERATION_REQUEST;
+
+typedef struct _EXPERIMENTAL_WEBAUTHN_PLUGIN_OPERATION_RESPONSE {
+    // Encoded Response Buffer Size
+    DWORD cbEncodedResponse;
+
+    // Encoded Response Buffer - Encoding type must match the request
+    [size_is(cbEncodedResponse)] byte* pbEncodedResponse;
+} EXPERIMENTAL_WEBAUTHN_PLUGIN_OPERATION_RESPONSE, *EXPERIMENTAL_PWEBAUTHN_PLUGIN_OPERATION_RESPONSE;
+typedef const EXPERIMENTAL_WEBAUTHN_PLUGIN_OPERATION_RESPONSE *EXPERIMENTAL_PCWEBAUTHN_PLUGIN_OPERATION_RESPONSE;
+
+typedef struct _EXPERIMENTAL_WEBAUTHN_PLUGIN_CANCEL_OPERATION_REQUEST {
+    // Transaction ID
+    GUID transactionId;
+
+    // Request Hash Signature Bytes Buffer Size
+    DWORD cbRequestSignature;
+
+    // Request Hash Signature Bytes Buffer - Signature verified using the "pbOpSignPubKey" in EXPERIMENTAL_PWEBAUTHN_PLUGIN_ADD_AUTHENTICATOR_RESPONSE
+    [size_is(cbRequestSignature)] byte* pbRequestSignature;
+} EXPERIMENTAL_WEBAUTHN_PLUGIN_CANCEL_OPERATION_REQUEST, *EXPERIMENTAL_PWEBAUTHN_PLUGIN_CANCEL_OPERATION_REQUEST;
+typedef const EXPERIMENTAL_WEBAUTHN_PLUGIN_CANCEL_OPERATION_REQUEST *EXPERIMENTAL_PCWEBAUTHN_PLUGIN_CANCEL_OPERATION_REQUEST;
+
+[
+    object,
+    uuid(e6466e9a-b2f3-47c5-b88d-89bc14a8d998),
+    version(2.0), // Will be reset to 1.0 when the interface is finalized and Experimental tag removed from the name
+    pointer_default(unique)
+]
+interface EXPERIMENTAL_IPluginAuthenticator : IUnknown
+{
+    HRESULT EXPERIMENTAL_PluginMakeCredential(
+        [in] EXPERIMENTAL_PCWEBAUTHN_PLUGIN_OPERATION_REQUEST request,
+        [out] EXPERIMENTAL_PWEBAUTHN_PLUGIN_OPERATION_RESPONSE* response);
+
+    HRESULT EXPERIMENTAL_PluginGetAssertion(
+        [in] EXPERIMENTAL_PCWEBAUTHN_PLUGIN_OPERATION_REQUEST request,
+        [out] EXPERIMENTAL_PWEBAUTHN_PLUGIN_OPERATION_RESPONSE* response);
+
+    HRESULT EXPERIMENTAL_PluginCancelOperation(
+        [in] EXPERIMENTAL_PCWEBAUTHN_PLUGIN_CANCEL_OPERATION_REQUEST request);
+}

@@ -63,26 +63,13 @@ class CORE_EXPORT MacScrollbarAnimatorV2 : public MacScrollbarAnimator {
   void Trace(Visitor* visitor) const final {
     MacScrollbarAnimator::Trace(visitor);
   }
-  void ContentAreaWillPaint() const final {}
-  void MouseEnteredContentArea() const final {}
-  void MouseExitedContentArea() const final {}
-  void MouseMovedInContentArea() const final {}
   void MouseEnteredScrollbar(Scrollbar&) const final;
   void MouseExitedScrollbar(Scrollbar&) const final;
-  void ContentsResized() const final {}
   void DidAddVerticalScrollbar(Scrollbar&) final;
   void WillRemoveVerticalScrollbar(Scrollbar&) final;
   void DidAddHorizontalScrollbar(Scrollbar&) final;
   void WillRemoveHorizontalScrollbar(Scrollbar&) final;
-  bool SetScrollbarsVisibleForTesting(bool) final { return true; }
   void DidChangeUserVisibleScrollOffset(const ScrollOffset&) final;
-  void UpdateScrollerStyle() final { NOTREACHED_IN_MIGRATION(); }
-  bool ScrollbarPaintTimerIsActive() const final {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
-  void StartScrollbarPaintTimer() final { NOTREACHED_IN_MIGRATION(); }
-  void StopScrollbarPaintTimer() final { NOTREACHED_IN_MIGRATION(); }
   void Dispose() final;
 
  private:

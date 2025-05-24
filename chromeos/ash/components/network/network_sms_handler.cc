@@ -508,6 +508,17 @@ void NetworkSmsHandler::DevicePropertiesCallback(
   if (*service_name != modemmanager::kModemManager1ServiceName)
     return;
 
+  // Add observer for object path property.
+  if (cellular_device_path_ != device_path) {
+    if (!cellular_device_path_.empty()) {
+      ShillDeviceClient::Get()->RemovePropertyChangedObserver(
+          dbus::ObjectPath(cellular_device_path_), this);
+    }
+    cellular_device_path_ = device_path;
+    ShillDeviceClient::Get()->AddPropertyChangedObserver(
+        dbus::ObjectPath(cellular_device_path_), this);
+  }
+
   const std::string* object_path_string =
       properties->FindString(shill::kDBusObjectProperty);
   if (!object_path_string || object_path_string->empty()) {
@@ -524,20 +535,12 @@ void NetworkSmsHandler::DevicePropertiesCallback(
   device_handler_ = std::make_unique<ModemManager1NetworkSmsDeviceHandler>(
       this, *service_name, object_path);
 
-    OnActiveDeviceIccidChanged(
-        GetStringOptional(*properties, shill::kIccidProperty)
-            .value_or(std::string()));
-    device_handler_->SetLastActiveNetwork(
-        network_state_handler_->ConnectedNetworkByType(
-            NetworkTypePattern::Cellular()));
-
-  if (!cellular_device_path_.empty()) {
-    ShillDeviceClient::Get()->RemovePropertyChangedObserver(
-        dbus::ObjectPath(cellular_device_path_), this);
-  }
-  cellular_device_path_ = device_path;
-  ShillDeviceClient::Get()->AddPropertyChangedObserver(
-      dbus::ObjectPath(cellular_device_path_), this);
+  OnActiveDeviceIccidChanged(
+      GetStringOptional(*properties, shill::kIccidProperty)
+          .value_or(std::string()));
+  device_handler_->SetLastActiveNetwork(
+      network_state_handler_->ConnectedNetworkByType(
+          NetworkTypePattern::Cellular()));
 }
 
 void NetworkSmsHandler::OnObjectPathChanged(const base::Value& object_path) {

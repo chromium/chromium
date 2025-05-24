@@ -20,19 +20,13 @@
 
 namespace net {
 
-namespace {
-
-const int kBufferSize = 4096;
-
-}  // namespace
-
 class ContentDecoderToolTest : public PlatformTest {
  public:
   ContentDecoderToolTest(const ContentDecoderToolTest&) = delete;
   ContentDecoderToolTest& operator=(const ContentDecoderToolTest&) = delete;
 
  protected:
-  ContentDecoderToolTest() : gzip_encoded_len_(kBufferSize) {}
+  ContentDecoderToolTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -50,33 +44,30 @@ class ContentDecoderToolTest : public PlatformTest {
 
     // Read data from the encoded file into buffer.
     base::FilePath encoded_file_path = data_dir.AppendASCII("google.br");
-    ASSERT_TRUE(base::ReadFileToString(encoded_file_path, &brotli_encoded_));
+    auto maybe_brotli_encoded = ReadFileToBytes(encoded_file_path);
+    brotli_encoded_ = std::move(*maybe_brotli_encoded);
 
     // Compress original file using gzip.
-    CompressGzip(source_data_.data(), source_data_.size(), gzip_encoded_,
-                 &gzip_encoded_len_, true);
+    gzip_encoded_ = CompressGzip(source_data_);
   }
 
   const std::string& source_data() { return source_data_; }
 
-  const char* brotli_encoded() { return brotli_encoded_.data(); }
-  size_t brotli_encoded_len() { return brotli_encoded_.size(); }
+  base::span<const uint8_t> brotli_encoded() { return brotli_encoded_; }
 
-  char* gzip_encoded() { return gzip_encoded_; }
-  size_t gzip_encoded_len() { return gzip_encoded_len_; }
+  base::span<const uint8_t> gzip_encoded() { return gzip_encoded_; }
 
  private:
   // Original source.
   std::string source_data_;
   // Original source encoded with brotli.
-  std::string brotli_encoded_;
+  std::vector<uint8_t> brotli_encoded_;
   // Original source encoded with gzip.
-  char gzip_encoded_[kBufferSize];
-  size_t gzip_encoded_len_;
+  std::vector<uint8_t> gzip_encoded_;
 };
 
 TEST_F(ContentDecoderToolTest, TestGzip) {
-  std::istringstream in(std::string(gzip_encoded(), gzip_encoded_len()));
+  std::istringstream in(std::string(base::as_string_view(gzip_encoded())));
   std::vector<std::string> encodings;
   encodings.push_back("gzip");
   std::ostringstream out_stream;
@@ -93,7 +84,7 @@ TEST_F(ContentDecoderToolTest, TestBrotli) {
       CreateBrotliSourceStream(std::move(mock_source_stream)) == nullptr;
   if (brotli_disabled)
     return;
-  std::istringstream in(std::string(brotli_encoded(), brotli_encoded_len()));
+  std::istringstream in(std::string(base::as_string_view(brotli_encoded())));
   std::vector<std::string> encodings;
   encodings.push_back("br");
   std::ostringstream out_stream;

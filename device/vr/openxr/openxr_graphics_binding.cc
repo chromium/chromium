@@ -5,6 +5,7 @@
 #include "device/vr/openxr/openxr_graphics_binding.h"
 
 #include "components/viz/common/gpu/context_provider.h"
+#include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -12,6 +13,11 @@
 #include "ui/gl/gl_bindings.h"
 
 namespace device {
+
+// static
+std::vector<std::string> OpenXrGraphicsBinding::GetOptionalExtensions() {
+  return {XR_FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME};
+}
 
 #if BUILDFLAG(IS_WIN)
 SwapChainInfo::SwapChainInfo(ID3D11Texture2D* d3d11_texture)
@@ -41,9 +47,15 @@ void SwapChainInfo::Clear() {
 #endif
 }
 
-gpu::MailboxHolder SwapChainInfo::GetMailboxHolder() const {
-  CHECK(shared_image);
-  return gpu::MailboxHolder(shared_image->mailbox(), sync_token, GL_TEXTURE_2D);
+OpenXrGraphicsBinding::OpenXrGraphicsBinding(
+    const OpenXrExtensionEnumeration* extension_enum)
+    : fb_composition_layer_ext_enabled_(extension_enum->ExtensionSupported(
+          XR_FB_COMPOSITION_LAYER_IMAGE_LAYOUT_EXTENSION_NAME)) {
+  if (fb_composition_layer_ext_enabled_) {
+    y_flip_layer_layout_.type = XR_TYPE_COMPOSITION_LAYER_IMAGE_LAYOUT_FB;
+    y_flip_layer_layout_.flags =
+        XR_COMPOSITION_LAYER_IMAGE_LAYOUT_VERTICAL_FLIP_BIT_FB;
+  }
 }
 
 void OpenXrGraphicsBinding::PrepareViewConfigForRender(
@@ -82,16 +94,32 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
     // WebGL layers may give us flipped content. We need to instruct OpenXR
     // to flip the content before showing it to the user. Some XR runtimes
     // are able to efficiently do this as part of existing post processing
-    // steps.
-    if (ShouldFlipSubmittedImage()) {
+    // steps. However, if we have the composition layer extension enabled, we
+    // will instruct the runtime to invert the image in a different manner.
+    if (ShouldFlipSubmittedImage() && !fb_composition_layer_ext_enabled_) {
       projection_view.subImage.imageRect.offset.y = 0;
-      projection_view.fov.angleUp = view.fov.angleDown;
-      projection_view.fov.angleDown = view.fov.angleUp;
+      projection_view.fov.angleUp = -view.fov.angleUp;
+      projection_view.fov.angleDown = -view.fov.angleDown;
     }
   }
 }
 
-bool OpenXrGraphicsBinding::IsUsingSharedImages() {
+void OpenXrGraphicsBinding::MaybeFlipLayer(
+    XrCompositionLayerProjection& layer) const {
+  // If we don't need to flip the image, then we have nothing to do here.
+  // If we do need to flip the image and `fb_composition_layer_ext_enabled_`
+  // is false, we have already flipped the image during
+  // `PrepareViewConfigForRender`.
+  if (!ShouldFlipSubmittedImage() || !fb_composition_layer_ext_enabled_) {
+    return;
+  }
+
+  CHECK(layer.next == nullptr);
+
+  layer.next = &y_flip_layer_layout_;
+}
+
+bool OpenXrGraphicsBinding::IsUsingSharedImages() const {
   const auto swapchain_info = GetSwapChainImages();
   return ((swapchain_info.size() > 1) && swapchain_info[0].shared_image);
 }

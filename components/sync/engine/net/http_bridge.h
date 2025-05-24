@@ -120,7 +120,7 @@ class HttpBridge : public HttpPostProvider {
     // Our hook into the network layer is a SimpleURLLoader. USED ONLY ON THE IO
     // THREAD, so we can block the Sync thread while the fetch is in progress.
     // NOTE: This must be deleted on the same thread that created it, which
-    // isn't the same thread |this| gets deleted on. We must manually delete
+    // isn't the same thread `this` gets deleted on. We must manually delete
     // url_loader on the IO thread.
     std::unique_ptr<network::SimpleURLLoader> url_loader;
 
@@ -146,12 +146,12 @@ class HttpBridge : public HttpPostProvider {
   };
 
   // This lock synchronizes use of state involved in the flow to load a URL
-  // using URLLoader, including |fetch_state_| on any thread, for example,
+  // using URLLoader, including `fetch_state_` on any thread, for example,
   // this flow needs to be synchronized to gracefully
-  // clean up URLFetcher and return appropriate values in |error_code|.
+  // clean up URLFetcher and return appropriate values in `error_code`.
   //
   // TODO(crbug.com/41390139): Check whether we can get rid of
-  // |fetch_state_lock_| altogether after the migration to SimpleURLLoader.
+  // `fetch_state_lock_` altogether after the migration to SimpleURLLoader.
   mutable base::Lock fetch_state_lock_;
   URLFetchState fetch_state_;
 

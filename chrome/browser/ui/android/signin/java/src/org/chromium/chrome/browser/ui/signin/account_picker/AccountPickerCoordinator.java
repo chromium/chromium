@@ -8,8 +8,10 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.MainThread;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ItemType;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -18,17 +20,17 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * This class is responsible for setting up the account list's view and model and it serves as an
  * access point for users of the account picker MVC.
  */
+@NullMarked
 @MainThread
 public class AccountPickerCoordinator {
     /** Listener for account picker. */
     public interface Listener {
         /**
-         * Notifies that the user has selected an account. TODO(crbug.com/40144553): Use
-         * CoreAccountInfo instead of account's email as the first argument of the method.
+         * Notifies that the user has selected an account.
          *
-         * @param accountName The email of the selected account.
+         * @param coreAccountInfo The selected account.
          */
-        void onAccountSelected(String accountName);
+        void onAccountSelected(CoreAccountInfo coreAccountInfo);
 
         /** Notifies when the user clicked the "add account" button. */
         void addAccount();

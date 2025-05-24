@@ -13,8 +13,6 @@
 const char kDownloadCloseActionName[] = "IOSDownloadConfirmClose";
 const char kDownloadDoNotCloseActionName[] = "IOSDownloadDoNotClose";
 
-OVERLAY_USER_DATA_SETUP_IMPL(ConfirmDownloadClosingRequest);
-
 void ConfirmDownloadClosingRequest::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   const std::vector<std::vector<alert_overlays::ButtonConfig>> buttons{

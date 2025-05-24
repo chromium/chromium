@@ -68,8 +68,7 @@ const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
     case PaintInvalidationReason::kFullLayer:
       return "full layer";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& out, PaintInvalidationReason reason) {

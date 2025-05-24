@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/canvas.h"
 
 namespace ash {
@@ -16,10 +17,10 @@ namespace {
 
 gfx::ImageSkia Generator(const gfx::Size& size,
                          base_icu::UChar32 symbol,
-                         ui::ColorId color_id,
+                         ui::ColorVariant color,
                          const ui::ColorProvider* color_provider) {
   auto text_image = std::make_unique<TextImage>(size, symbol);
-  text_image->set_color(color_provider->GetColor(color_id));
+  text_image->set_color(color.ResolveToSkColor(color_provider));
   return gfx::ImageSkia(std::move(text_image), size);
 }
 
@@ -39,9 +40,9 @@ TextImage::~TextImage() = default;
 // static
 ui::ImageModel TextImage::AsImageModel(const gfx::Size& size,
                                        base_icu::UChar32 symbol,
-                                       ui::ColorId color_id) {
+                                       ui::ColorVariant color) {
   return ui::ImageModel::FromImageGenerator(
-      base::BindRepeating(&Generator, size, symbol, color_id), size);
+      base::BindRepeating(&Generator, size, symbol, color), size);
 }
 
 void TextImage::Draw(gfx::Canvas* canvas) {

@@ -10,7 +10,7 @@ namespace variations {
 // gaia IDs for a given syncing user.
 // The variables below are the pref name, and the key for the gaia ID within
 // the dictionary value.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kOsDogfoodGroupsSyncPrefName[] = "sync.os_dogfood_groups";
 #else
 inline constexpr char kDogfoodGroupsSyncPrefName[] = "sync.dogfood_groups";

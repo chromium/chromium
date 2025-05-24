@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -13,6 +14,7 @@
 #include "base/location.h"
 #include "base/not_fatal_until.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
@@ -32,8 +34,9 @@ mojom::ActivationState ComputeActivationState(
 
   IndexedRulesetMatcher matcher(ruleset->data());
   mojom::ActivationState activation_state = parent_activation_state;
-  if (activation_state.filtering_disabled_for_document)
+  if (activation_state.filtering_disabled_for_document) {
     return activation_state;
+  }
 
   // TODO(pkalinnikov): Match several activation types in a batch.
   if (matcher.ShouldDisableFilteringForDocument(
@@ -91,7 +94,8 @@ InitializationParams& InitializationParams::operator=(InitializationParams&&) =
 AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
     VerifiedRuleset::Handle* ruleset_handle,
     InitializationParams params,
-    base::OnceCallback<void(mojom::ActivationState)> activation_state_callback)
+    base::OnceCallback<void(mojom::ActivationState)> activation_state_callback,
+    std::string_view uma_tag)
     : task_runner_(ruleset_handle->task_runner()),
       core_(new Core(), base::OnTaskRunnerDeleter(task_runner_.get())) {
   CHECK_NE(mojom::ActivationLevel::kDisabled,
@@ -105,7 +109,8 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&Core::Initialize, base::Unretained(core_.get()),
-                     std::move(params), ruleset_handle->ruleset_.get()),
+                     std::move(params), ruleset_handle->ruleset_.get(),
+                     uma_tag),
       base::BindOnce(&AsyncDocumentSubresourceFilter::OnActivateStateCalculated,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(activation_state_callback)));
@@ -114,7 +119,8 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
 AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
     VerifiedRuleset::Handle* ruleset_handle,
     const url::Origin& inherited_document_origin,
-    const mojom::ActivationState& activation_state)
+    const mojom::ActivationState& activation_state,
+    std::string_view uma_tag)
     : task_runner_(ruleset_handle->task_runner()),
       core_(new Core(), base::OnTaskRunnerDeleter(task_runner_.get())) {
   CHECK_NE(mojom::ActivationLevel::kDisabled, activation_state.activation_level,
@@ -129,7 +135,7 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
       FROM_HERE, base::BindOnce(&Core::InitializeWithActivation,
                                 base::Unretained(core_.get()), activation_state,
                                 inherited_document_origin,
-                                ruleset_handle->ruleset_.get()));
+                                ruleset_handle->ruleset_.get(), uma_tag));
   OnActivateStateCalculated(base::DoNothing(), activation_state);
 }
 
@@ -183,8 +189,9 @@ void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocumentURLs(
 }
 
 void AsyncDocumentSubresourceFilter::ReportDisallowedLoad() {
-  if (!first_disallowed_load_callback_.is_null())
+  if (!first_disallowed_load_callback_.is_null()) {
     std::move(first_disallowed_load_callback_).Run();
+  }
 }
 
 void AsyncDocumentSubresourceFilter::UpdateWithMoreAccurateState(
@@ -192,8 +199,10 @@ void AsyncDocumentSubresourceFilter::UpdateWithMoreAccurateState(
   // DISABLED activation level implies that the ruleset is somehow invalid. Make
   // sure that we don't update the state in that case.
   CHECK(has_activation_state(), base::NotFatalUntil::M129);
-  if (activation_state_->activation_level == mojom::ActivationLevel::kDisabled)
+  if (activation_state_->activation_level ==
+      mojom::ActivationLevel::kDisabled) {
     return;
+  }
 
   // TODO(csharrison): Split mojom::ActivationState into multiple structs, with
   // one that includes members that are inherited from the parent without
@@ -247,12 +256,14 @@ void AsyncDocumentSubresourceFilter::Core::SetActivationState(
 
 mojom::ActivationState AsyncDocumentSubresourceFilter::Core::Initialize(
     InitializationParams params,
-    VerifiedRuleset* verified_ruleset) {
+    VerifiedRuleset* verified_ruleset,
+    std::string_view uma_tag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(verified_ruleset, base::NotFatalUntil::M129);
 
-  if (!verified_ruleset->Get())
+  if (!verified_ruleset->Get()) {
     return mojom::ActivationState();
+  }
 
   mojom::ActivationState activation_state = ComputeActivationState(
       params.document_url, params.parent_document_origin,
@@ -261,7 +272,7 @@ mojom::ActivationState AsyncDocumentSubresourceFilter::Core::Initialize(
   CHECK_NE(mojom::ActivationLevel::kDisabled, activation_state.activation_level,
            base::NotFatalUntil::M129);
   filter_.emplace(url::Origin::Create(params.document_url), activation_state,
-                  verified_ruleset->Get());
+                  verified_ruleset->Get(), uma_tag);
 
   return activation_state;
 }
@@ -269,7 +280,8 @@ mojom::ActivationState AsyncDocumentSubresourceFilter::Core::Initialize(
 void AsyncDocumentSubresourceFilter::Core::InitializeWithActivation(
     mojom::ActivationState activation_state,
     const url::Origin& inherited_document_origin,
-    VerifiedRuleset* verified_ruleset) {
+    VerifiedRuleset* verified_ruleset,
+    std::string_view uma_tag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(verified_ruleset, base::NotFatalUntil::M129);
 
@@ -283,7 +295,7 @@ void AsyncDocumentSubresourceFilter::Core::InitializeWithActivation(
   CHECK_NE(mojom::ActivationLevel::kDisabled, activation_state.activation_level,
            base::NotFatalUntil::M129);
   filter_.emplace(inherited_document_origin, activation_state,
-                  verified_ruleset->Get());
+                  verified_ruleset->Get(), uma_tag);
 }
 
 }  // namespace subresource_filter

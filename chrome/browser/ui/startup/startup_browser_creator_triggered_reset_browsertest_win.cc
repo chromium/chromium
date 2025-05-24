@@ -48,8 +48,9 @@ Browser* FindOneOtherBrowser(Browser* browser) {
 
   // Find the new browser.
   for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser)
+    if (b != browser) {
       return b;
+    }
   }
 
   return nullptr;

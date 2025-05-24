@@ -11,6 +11,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public class ResidentService extends Service {
     static {
         // Loading the native library.

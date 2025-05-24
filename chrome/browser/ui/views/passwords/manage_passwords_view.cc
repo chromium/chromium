@@ -61,6 +61,10 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
 
   page_container_ = AddChildView(
       std::make_unique<PageSwitcherView>(std::make_unique<views::View>()));
+  page_container_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets().set_bottom(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
 
   if (!controller_.GetCredentials().empty()) {
     // The request is cancelled when the |controller_| is destroyed.
@@ -164,7 +168,7 @@ ManagePasswordsView::CreatePasswordListView() {
                         kManagePasswordsButtonClicked);
           },
           base::Unretained(this)),
-      controller_.IsOptedInForAccountStorage());
+      controller_.IsAccountStorageEnabled());
 }
 
 std::unique_ptr<ManagePasswordsDetailsView>
@@ -186,7 +190,11 @@ ManagePasswordsView::CreatePasswordDetailsView() {
                 l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UPDATE));
             view->GetBubbleFrameView()->SetFootnoteView(
                 view->CreateFooterView());
-            view->PreferredSizeChanged();
+
+            // TODO(crbug.com/41493925): Remove this SizeToContents().
+            // This SizeToContent() is used for immediate layout to ensure that
+            // a subsequent RequestFocus() sets the correct focus.
+            view->SizeToContents();
           },
           base::Unretained(this)),
       base::BindRepeating(&ManagePasswordsView::ExtendAuthValidity,
@@ -268,7 +276,7 @@ ManagePasswordsView::CreateMovePasswordFooterView() {
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           vector_icons::kSaveCloudIcon, ui::kColorIcon,
           layout_provider->GetDistanceMetric(
-              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+              views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
   icon_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   icon_view->SetProperty(
       views::kMarginsKey,
@@ -311,7 +319,7 @@ void ManagePasswordsView::RecreateLayout() {
         CreatePasswordDetailsView();
     password_details_view_ = details_view.get();
     page_container_->SwitchToPage(std::move(details_view));
-    if (controller_.IsOptedInForAccountStorage() &&
+    if (controller_.IsAccountStorageEnabled() &&
         !controller_.get_details_bubble_credential()
              .value()
              .IsUsingAccountStore()) {
@@ -322,10 +330,6 @@ void ManagePasswordsView::RecreateLayout() {
     password_details_view_ = nullptr;
     frame_view->SetTitleView(CreateTitleView(controller_.GetTitle()));
     page_container_->SwitchToPage(CreatePasswordListView());
-    page_container_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets().set_bottom(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
   }
   SetTitle(controller_.GetTitle());
   PreferredSizeChanged();

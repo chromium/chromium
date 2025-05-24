@@ -13,6 +13,7 @@
 #include <string_view>
 
 #include "base/strings/cstring_view.h"
+#include "sql/database.h"
 
 // Collection of test-only convenience functions.
 
@@ -20,11 +21,11 @@ namespace base {
 class FilePath;
 }
 
-namespace sql {
-class Database;
-}
-
 namespace sql::test {
+
+// A convenience tag to use in tests as an argument to sql::Database
+// constructors.
+inline constexpr sql::Database::Tag kTestTag{"Test"};
 
 // Read a database's page size. Returns nullopt in case of error.
 std::optional<int> ReadDatabasePageSize(const base::FilePath& db_path);

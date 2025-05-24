@@ -10,10 +10,11 @@
 
 goog.provide('goog.ui.TriStateMenuItemRenderer');
 
+goog.forwardDeclare('goog.ui.TriStateMenuItem.State');  // TODO(user): remove this
 goog.require('goog.asserts');
 goog.require('goog.dom.classlist');
 goog.require('goog.ui.MenuItemRenderer');
-
+goog.requireType('goog.ui.Control');
 
 
 /**
@@ -54,6 +55,8 @@ goog.ui.TriStateMenuItemRenderer.CSS_CLASS =
  * @param {Element} element Element to decorate.
  * @return {!Element} Decorated element.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ * @suppress {missingRequire} TODO(user): remove this
  */
 goog.ui.TriStateMenuItemRenderer.prototype.decorate = function(item, element) {
   'use strict';

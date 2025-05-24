@@ -9,8 +9,6 @@ async_test(t => {
   // Ensure that we will show the volume slider.
   setPreferHiddenVolumeControlsForTest(t, false);
 
-  assert_true(internals.runtimeFlags.accessibilityObjectModelEnabled);
-
   var video = document.querySelector('video');
   video.src = '../content/test.ogv';
 

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
@@ -13,9 +14,9 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -208,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
 }
 
 // ChromeOS does not support signing out of a primary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnSignout) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
@@ -222,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnSignout) {
                   &GetPersonalDataManager()->address_data_manager(), IsEmpty())
                   .Wait());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Specialized fixture to test the behavior for custom passphrase users with and
 // without kSyncEnableContactInfoDataTypeForCustomPassphraseUsers enabled.
@@ -267,26 +268,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoPassphraseSyncTest,
                   .Wait());
 }
 
-// Specialized fixture that enables AutofillAccountProfilesOnSignIn.
-class SingleClientContactInfoTransportSyncTest
-    : public SingleClientContactInfoSyncTest {
- public:
-  SingleClientContactInfoTransportSyncTest() {
-    transport_feature_.InitWithFeatures(
-        /*enabled_features=*/{syncer::
-                                  kSyncEnableContactInfoDataTypeInTransportMode,
-                              switches::kExplicitBrowserSigninUIOnDesktop},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList transport_feature_;
-};
-
-// When SyncEnableContactInfoDataTypeInTransportMode is enabled, the
-// CONTACT_INFO type should run in transport mode and the availability of
+// Transport Mode is only supported on these platforms.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// CONTACT_INFO should be able to run in transport mode and the availability of
 // account profiles should depend on the signed-in state.
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        TransportMode) {
   AutofillProfile profile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(profile), GetFakeServer());
@@ -300,16 +286,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
                   UnorderedElementsAre(profile))
                   .Wait());
   // ChromeOS doesn't have the concept of sign-out.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   GetClient(0)->SignOutPrimaryAccount();
   EXPECT_TRUE(AddressDataManagerProfileChecker(
                   &GetPersonalDataManager()->address_data_manager(), IsEmpty())
                   .Wait());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        DeleteAccountDataInErrorState) {
   // Add a profile to account storage.
   AutofillProfile profile = BuildTestAccountProfile();
@@ -358,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
 }
 
 // Account storage is not enabled when the user is in auth error.
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        AuthErrorState) {
   // Setup transport mode.
   ASSERT_TRUE(SetupClients());
@@ -404,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
 }
 
 // Regression test for https://crbug.com/340194452
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        IsAutofillSyncToggleAvailable) {
   // Setup transport mode.
   ASSERT_TRUE(SetupClients());
@@ -439,7 +422,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
                    ->address_data_manager()
                    .IsAutofillSyncToggleAvailable());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Sign out.
   GetClient(0)->SignOutPrimaryAccount();
 
@@ -447,9 +429,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
   EXPECT_FALSE(GetPersonalDataManager()
                    ->address_data_manager()
                    .IsAutofillSyncToggleAvailable());
-#endif
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        PreservesUnsupportedFieldsDataOnCommits) {
   // Create an unsupported field with an unused tag.
@@ -529,52 +512,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoManagedAccountTest,
 
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-}
-
-// Tests the behavior for accounts under parental supervision, depending on
-// whether `kSyncEnableContactInfoDataTypeForChildUsers` is enabled.
-class SingleClientContactInfoChildAccountTest
-    : public SingleClientContactInfoSyncTest,
-      public testing::WithParamInterface<bool> {
- public:
-  SingleClientContactInfoChildAccountTest() {
-    feature_.InitWithFeatureState(
-        syncer::kSyncEnableContactInfoDataTypeForChildUsers, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SingleClientContactInfoChildAccountTest,
-                         testing::Bool());
-
-// TODO(crbug.com/40265115): Enable this test on Android.
-IN_PROC_BROWSER_TEST_P(SingleClientContactInfoChildAccountTest,
-                       DisableForChildAccounts) {
-  ASSERT_TRUE(SetupClients());
-  // Sign in with a child account.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile(0));
-  AccountInfo account = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
-  AccountCapabilitiesTestMutator mutator(&account.capabilities);
-  mutator.set_is_subject_to_parental_controls(true);
-  signin::UpdateAccountInfoForAccount(identity_manager, account);
-  ASSERT_TRUE(SetupSync());
-
-  EXPECT_EQ(GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO),
-            base::FeatureList::IsEnabled(
-                syncer::kSyncEnableContactInfoDataTypeForChildUsers));
-
-  // "Graduate" the account.
-  mutator.set_is_subject_to_parental_controls(false);
-  signin::UpdateAccountInfoForAccount(identity_manager, account);
-  EXPECT_TRUE(ContactInfoActiveChecker(GetSyncService(0),
-                                       /*expect_active=*/true)
-                  .Wait());
 }
 #endif
 

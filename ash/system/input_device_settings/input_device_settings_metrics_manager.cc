@@ -75,7 +75,7 @@ static constexpr struct {
     {"Backspace", ui::mojom::ModifierKey::kBackspace},
     {"Assistant", ui::mojom::ModifierKey::kAssistant},
     {"Function", ui::mojom::ModifierKey::kFunction},
-    {"RightAlt", ui::mojom::ModifierKey::kRightAlt},
+    {"QuickInsert", ui::mojom::ModifierKey::kQuickInsert},
 };
 
 // The modifier hash is made up of `kNumModifiers` blocks of
@@ -88,24 +88,24 @@ static constexpr struct {
 // For example, if `kModifierHashWidth` is 4, use the following bit ranges to
 // extract the value of the remapped modifier:
 
-// | index | ModifierKey             | Bit Range |
-// | 0     | kMeta                   | [0, 3]    |
-// | 1     | kControl                | [4, 7]    |
-// | 2     | kAlt                    | [8, 11]   |
-// | 3     | kCapsLock               | [12, 15]  |
-// | 4     | kEscape                 | [16, 19]  |
-// | 5     | kBackspace              | [20, 23]  |
-// | 6     | kAssistant | kRightAlt  | [24, 27]  |
-// | 7     | kFunction               | [28, 31]  |
+// | index | ModifierKey                | Bit Range |
+// | 0     | kMeta                      | [0, 3]    |
+// | 1     | kControl                   | [4, 7]    |
+// | 2     | kAlt                       | [8, 11]   |
+// | 3     | kCapsLock                  | [12, 15]  |
+// | 4     | kEscape                    | [16, 19]  |
+// | 5     | kBackspace                 | [20, 23]  |
+// | 6     | kAssistant | kQuickInsert  | [24, 27]  |
+// | 7     | kFunction                  | [28, 31]  |
 
 // Each modifier key will have 9 actions which requires 4 bits to encode.
 constexpr int kModifierHashWidth = 4;
 constexpr int kMaxModifierValue = (1 << kModifierHashWidth) - 1;
 
-// Remove Function and RightAlt for regular keyboards.
+// Remove Function and QuickInsert for regular keyboards.
 constexpr int kNumModifiers = std::size(kModifierNames) - 2;
-// Remove RightAlt for split modifier keyboard since it has the same domcode as
-// Assistant.
+// Remove QuickInsert for split modifier keyboard since it has the same domcode
+// as Assistant.
 constexpr int kSplitModifierNumModifiers = std::size(kModifierNames) - 1;
 
 // Verify that the number of modifiers we are trying to hash together into a
@@ -133,7 +133,7 @@ constexpr uint32_t PrecalculateSplitModifierDefaultModifierHash() {
   for (ssize_t i = kSplitModifierNumModifiers - 1u; i >= 0; i--) {
     hash <<= kModifierHashWidth;
     if (kModifierNames[i].modifier_key == ui::mojom::ModifierKey::kAssistant) {
-      hash += static_cast<int>(ui::mojom::ModifierKey::kRightAlt);
+      hash += static_cast<int>(ui::mojom::ModifierKey::kQuickInsert);
     } else {
       hash += static_cast<int>(kModifierNames[i].modifier_key);
     }
@@ -492,7 +492,7 @@ void RecordInitialButtonRemappingAction(
 std::optional<ui::KeyboardDevice> FindKeyboardWithId(int device_id) {
   const auto& keyboards =
       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices();
-  auto iter = base::ranges::find(
+  auto iter = std::ranges::find(
       keyboards, device_id,
       [](const ui::KeyboardDevice& keyboard) { return keyboard.id; });
   if (iter == keyboards.end()) {
@@ -678,7 +678,7 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
 
   // Record remapping metrics when keyboard is initialized.
   if (base::Contains(keyboard.modifier_keys,
-                     ui::mojom::ModifierKey::kRightAlt)) {
+                     ui::mojom::ModifierKey::kQuickInsert)) {
     RecordSplitModifierRemappingHash(keyboard);
   } else {
     RecordModifierRemappingHash(keyboard);

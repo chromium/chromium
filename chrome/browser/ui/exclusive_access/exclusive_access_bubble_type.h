@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "url/gurl.h"
+#include "url/origin.h"
 
 // Exclusive access bubble types that inform UI content for various states.
 // More comments about tab and browser fullscreen mode can be found in
@@ -39,8 +39,9 @@ enum ExclusiveAccessBubbleType {
 
 // Describes contents and traits of the exclusive access bubble.
 struct ExclusiveAccessBubbleParams {
-  // The URL with exclusive access; empty for browser or extension fullscreen.
-  GURL url;
+  // The origin with exclusive access; empty for browser or extension
+  // fullscreen.
+  url::Origin origin;
   // The type of bubble to show, which directly informs the text content.
   // Note: *_NONE and `has_download` means the current type should be kept.
   // TODO(msw): Use std::optional and nullopt to signify no type change.
@@ -53,11 +54,22 @@ struct ExclusiveAccessBubbleParams {
 
 namespace exclusive_access_bubble {
 
-// Gets the text instructing the user how to exit an exclusive access mode.
-// |accelerator| is the name of the key to exit fullscreen mode.
+// Gets the text shown in the exclusive access bubble, including the origin and
+// the instruction text.
+// i.e. "<origin.com> - To exit fullscreen, press [Esc]".
+//   |type|: the type of exclusive access mode that leads to the bubble being
+//   showed.
+//   |accelerator|: the keyboard shortcut used to exit the exclusive
+//   access mode.
+//   |origin|: the origin of the site requesting Exclusive Access.
+//   |has_download|: True if download in progress, which affects the text
+//   content.
+//   |notify_overridden|: True if the bubble is showing and its text needs to be
+//   overridden. Valid when |has_download| is True.
 std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
                                          const std::u16string& accelerator,
-                                         bool download,
+                                         const url::Origin& origin,
+                                         bool has_download,
                                          bool notify_overridden);
 
 // Helpers to categorize different types of ExclusiveAccessBubbleType.

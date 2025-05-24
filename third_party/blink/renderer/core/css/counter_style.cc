@@ -26,12 +26,6 @@
  * Boston, MA 02110-1301, USA.
  *
  */
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/counter_style.h"
 
 #include "base/auto_reset.h"
@@ -41,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/keywords.h"
@@ -97,7 +92,9 @@ String SymbolToString(const CSSValue& value) {
   return To<CSSCustomIdentValue>(value).Value();
 }
 
-std::pair<int, int> BoundsToIntegerPair(const CSSValuePair& bounds) {
+std::pair<int, int> BoundsToIntegerPair(
+    const CSSValuePair& bounds,
+    const CSSLengthResolver& length_resolver) {
   int lower_bound, upper_bound;
   if (bounds.First().IsIdentifierValue()) {
     DCHECK_EQ(CSSValueID::kInfinite,
@@ -105,7 +102,8 @@ std::pair<int, int> BoundsToIntegerPair(const CSSValuePair& bounds) {
     lower_bound = std::numeric_limits<int>::min();
   } else {
     DCHECK(bounds.First().IsPrimitiveValue());
-    lower_bound = To<CSSPrimitiveValue>(bounds.First()).GetIntValue();
+    lower_bound =
+        To<CSSPrimitiveValue>(bounds.First()).ComputeInteger(length_resolver);
   }
   if (bounds.Second().IsIdentifierValue()) {
     DCHECK_EQ(CSSValueID::kInfinite,
@@ -113,7 +111,8 @@ std::pair<int, int> BoundsToIntegerPair(const CSSValuePair& bounds) {
     upper_bound = std::numeric_limits<int>::max();
   } else {
     DCHECK(bounds.Second().IsPrimitiveValue());
-    upper_bound = To<CSSPrimitiveValue>(bounds.Second()).GetIntValue();
+    upper_bound =
+        To<CSSPrimitiveValue>(bounds.Second()).ComputeInteger(length_resolver);
   }
   return std::make_pair(lower_bound, upper_bound);
 }
@@ -228,7 +227,7 @@ enum CJKStyle { kFormal, kInformal };
 // The table uses the order from the CSS3 specification:
 // first 3 group markers, then 3 digit markers, then ten digits.
 String CJKIdeoGraphicAlgorithm(unsigned number,
-                               const UChar table[21],
+                               const std::array<UChar, 21>& table,
                                CJKStyle cjk_style) {
   enum AbstractCJKChar {
     kNoChar = 0,
@@ -254,20 +253,21 @@ String CJKIdeoGraphicAlgorithm(unsigned number,
   };
 
   if (number == 0) {
-    return String(&table[kDigit0], 1u);
+    return String(base::span_from_ref(table[kDigit0]));
   }
 
-  const unsigned kGroupLength =
+  constexpr unsigned kGroupLength =
       9;  // 4 digits, 3 digit markers, group marker of size 2.
-  const unsigned kBufferLength = 4 * kGroupLength;
-  AbstractCJKChar buffer[kBufferLength] = {kNoChar};
+  constexpr unsigned kBufferLength = 4 * kGroupLength;
+  std::array<AbstractCJKChar, kBufferLength> buffer = {kNoChar};
 
   for (unsigned i = 0; i < 4; ++i) {
     unsigned group_value = number % 10000;
     number /= 10000;
 
     // Process least-significant group first, but put it in the buffer last.
-    AbstractCJKChar* group = &buffer[(3 - i) * kGroupLength];
+    base::span<AbstractCJKChar> group =
+        base::span(buffer).subspan((3 - i) * kGroupLength);
 
     if (group_value && i) {
       group[8] = static_cast<AbstractCJKChar>(kSecondGroupMarker + i);
@@ -342,7 +342,7 @@ String CJKIdeoGraphicAlgorithm(unsigned number,
   // Convert into characters, omitting consecutive runs of Digit0 and
   // any trailing Digit0.
   unsigned length = 0;
-  UChar characters[kBufferLength];
+  std::array<UChar, kBufferLength> characters;
   AbstractCJKChar last = kNoChar;
   for (unsigned i = 0; i < kBufferLength; ++i) {
     AbstractCJKChar a = buffer[i];
@@ -366,11 +366,11 @@ String CJKIdeoGraphicAlgorithm(unsigned number,
     --length;
   }
 
-  return String(characters, length);
+  return String(base::span(characters).first(length));
 }
 
 String SimpChineseInformalAlgorithm(unsigned value) {
-  static const UChar kSimpleChineseInformalTable[21] = {
+  constexpr std::array<UChar, 21> kSimpleChineseInformalTable = {
       kChinese, 0x4E07, 0x0000, 0x4EBF, 0x0000, 0x4E07, 0x4EBF,
       0x5341,   0x767E, 0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09,
       0x56DB,   0x4E94, 0x516D, 0x4E03, 0x516B, 0x4E5D, 0x0000};
@@ -378,7 +378,7 @@ String SimpChineseInformalAlgorithm(unsigned value) {
 }
 
 String SimpChineseFormalAlgorithm(unsigned value) {
-  static const UChar kSimpleChineseFormalTable[21] = {
+  constexpr std::array<UChar, 21> kSimpleChineseFormalTable = {
       kChinese, 0x4E07, 0x0000, 0x4EBF, 0x0000, 0x4E07, 0x4EBF,
       0x62FE,   0x4F70, 0x4EDF, 0x96F6, 0x58F9, 0x8D30, 0x53C1,
       0x8086,   0x4F0D, 0x9646, 0x67D2, 0x634C, 0x7396, 0x0000};
@@ -386,7 +386,7 @@ String SimpChineseFormalAlgorithm(unsigned value) {
 }
 
 String TradChineseInformalAlgorithm(unsigned value) {
-  static const UChar kTraditionalChineseInformalTable[21] = {
+  constexpr std::array<UChar, 21> kTraditionalChineseInformalTable = {
       kChinese, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000,
       0x5341,   0x767E, 0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09,
       0x56DB,   0x4E94, 0x516D, 0x4E03, 0x516B, 0x4E5D, 0x0000};
@@ -395,7 +395,7 @@ String TradChineseInformalAlgorithm(unsigned value) {
 }
 
 String TradChineseFormalAlgorithm(unsigned value) {
-  static const UChar kTraditionalChineseFormalTable[21] = {
+  constexpr std::array<UChar, 21> kTraditionalChineseFormalTable = {
       kChinese, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000,
       0x62FE,   0x4F70, 0x4EDF, 0x96F6, 0x58F9, 0x8CB3, 0x53C3,
       0x8086,   0x4F0D, 0x9678, 0x67D2, 0x634C, 0x7396, 0x0000};
@@ -404,7 +404,7 @@ String TradChineseFormalAlgorithm(unsigned value) {
 }
 
 String KoreanHangulFormalAlgorithm(unsigned value) {
-  static const UChar kKoreanHangulFormalTable[21] = {
+  constexpr std::array<UChar, 21> kKoreanHangulFormalTable = {
       kKorean, 0xB9CC, 0x0000, 0xC5B5, 0x0000, 0xC870, 0x0000,
       0xC2ED,  0xBC31, 0xCC9C, 0xC601, 0xC77C, 0xC774, 0xC0BC,
       0xC0AC,  0xC624, 0xC721, 0xCE60, 0xD314, 0xAD6C, 0x0000};
@@ -412,7 +412,7 @@ String KoreanHangulFormalAlgorithm(unsigned value) {
 }
 
 String KoreanHanjaInformalAlgorithm(unsigned value) {
-  static const UChar kKoreanHanjaInformalTable[21] = {
+  constexpr std::array<UChar, 21> kKoreanHanjaInformalTable = {
       kKorean, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000,
       0x5341,  0x767E, 0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09,
       0x56DB,  0x4E94, 0x516D, 0x4E03, 0x516B, 0x4E5D, 0x0000};
@@ -420,7 +420,7 @@ String KoreanHanjaInformalAlgorithm(unsigned value) {
 }
 
 String KoreanHanjaFormalAlgorithm(unsigned value) {
-  static const UChar kKoreanHanjaFormalTable[21] = {
+  constexpr std::array<UChar, 21> kKoreanHanjaFormalTable = {
       kKorean, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000,
       0x62FE,  0x767E, 0x4EDF, 0x96F6, 0x58F9, 0x8CB3, 0x53C3,
       0x56DB,  0x4E94, 0x516D, 0x4E03, 0x516B, 0x4E5D, 0x0000};
@@ -447,8 +447,8 @@ String HebrewAlgorithmUnder1000(unsigned number) {
     letters.Append(static_cast<UChar>(1487 + number - 9));
   } else {
     if (unsigned tens = number / 10) {
-      static const UChar kHebrewTens[9] = {1497, 1499, 1500, 1502, 1504,
-                                           1505, 1506, 1508, 1510};
+      constexpr std::array<UChar, 9> kHebrewTens = {
+          1497, 1499, 1500, 1502, 1504, 1505, 1506, 1508, 1510};
       letters.Append(kHebrewTens[tens - 1]);
     }
     if (unsigned ones = number % 10) {
@@ -466,7 +466,7 @@ String HebrewAlgorithm(unsigned number) {
 
   if (number == 0) {
     static const UChar kHebrewZero[3] = {0x05D0, 0x05E4, 0x05E1};
-    return String(kHebrewZero, 3u);
+    return String(base::span(kHebrewZero));
   }
 
   if (number <= 999) {
@@ -536,16 +536,16 @@ String ArmenianAlgorithm(unsigned number, bool upper) {
 // https://drafts.csswg.org/css-counter-styles-3/#ethiopic-numeric-counter-style
 String EthiopicNumericAlgorithm(unsigned value) {
   // Ethiopic characters for 1-9
-  static const UChar units[9] = {0x1369, 0x136A, 0x136B, 0x136C, 0x136D,
-                                 0x136E, 0x136F, 0x1370, 0x1371};
+  constexpr std::array<UChar, 9> units = {
+      0x1369, 0x136A, 0x136B, 0x136C, 0x136D, 0x136E, 0x136F, 0x1370, 0x1371};
   // Ethiopic characters for 10, 20, ..., 90
-  static const UChar tens[9] = {0x1372, 0x1373, 0x1374, 0x1375, 0x1376,
-                                0x1377, 0x1378, 0x1379, 0x137A};
+  constexpr std::array<UChar, 9> tens = {0x1372, 0x1373, 0x1374, 0x1375, 0x1376,
+                                         0x1377, 0x1378, 0x1379, 0x137A};
   if (!value) {
     return String();
   }
   if (value < 10u) {
-    return String(&units[value - 1], 1u);
+    return String(base::span_from_ref(units[value - 1]));
   }
 
   // Generate characters in the reversed ordering
@@ -578,7 +578,7 @@ String EthiopicNumericAlgorithm(unsigned value) {
   std::reverse(result.begin(), result.end());
   // Remove the extra character from group 0
   result.pop_back();
-  return String(result.data(), result.size());
+  return String(result);
 }
 
 }  // namespace
@@ -649,8 +649,7 @@ CounterStyleSystem CounterStyle::ToCounterStyleSystemEnum(
     case CSSValueID::kExtends:
       return CounterStyleSystem::kUnresolvedExtends;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CounterStyleSystem::kSymbolic;
+      NOTREACHED();
   }
 }
 
@@ -667,8 +666,7 @@ CounterStyleSpeakAs ToCounterStyleSpeakAsEnum(
     case CSSValueID::kWords:
       return CounterStyleSpeakAs::kWords;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CounterStyleSpeakAs::kAuto;
+      NOTREACHED();
   }
 }
 
@@ -689,6 +687,11 @@ CounterStyle* CounterStyle::Create(const StyleRuleCounterStyle& rule) {
 
 CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
     : style_rule_(rule), style_rule_version_(rule.GetVersion()) {
+  // TODO(sesse): Send the LocalFrame down here, so that we can use
+  // MediaValues::CreateDynamicIfFrameExists() instead, which includes
+  // the effects of local font settings.
+  MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>();
+
   if (const CSSValue* system = rule.GetSystem()) {
     system_ = ToCounterStyleSystemEnum(system);
 
@@ -697,7 +700,8 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
       extends_name_ = To<CSSCustomIdentValue>(second).Value();
     } else if (system_ == CounterStyleSystem::kFixed && system->IsValuePair()) {
       const auto& second = To<CSSValuePair>(system)->Second();
-      first_symbol_value_ = To<CSSPrimitiveValue>(second).GetIntValue();
+      first_symbol_value_ =
+          To<CSSPrimitiveValue>(second).ComputeInteger(*media_values);
     }
   }
 
@@ -710,7 +714,7 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
       for (const auto& symbol : To<CSSValueList>(*rule.GetAdditiveSymbols())) {
         const auto& pair = To<CSSValuePair>(*symbol.Get());
         additive_weights_.push_back(
-            To<CSSPrimitiveValue>(pair.First()).GetIntValue());
+            To<CSSPrimitiveValue>(pair.First()).ComputeInteger(*media_values));
         symbols_.push_back(SymbolToString(pair.Second()));
       }
     } else {
@@ -731,7 +735,8 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
 
   if (const CSSValue* pad = rule.GetPad()) {
     const CSSValuePair& pair = To<CSSValuePair>(*pad);
-    pad_length_ = To<CSSPrimitiveValue>(pair.First()).GetIntValue();
+    pad_length_ =
+        To<CSSPrimitiveValue>(pair.First()).ComputeInteger(*media_values);
     pad_symbol_ = SymbolToString(pair.Second());
   }
 
@@ -741,7 +746,8 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
       // Empty |range_| already means 'auto'.
     } else {
       for (const CSSValue* bounds : To<CSSValueList>(*range)) {
-        range_.push_back(BoundsToIntegerPair(To<CSSValuePair>(*bounds)));
+        range_.push_back(
+            BoundsToIntegerPair(To<CSSValuePair>(*bounds), *media_values));
       }
     }
   }
@@ -851,8 +857,7 @@ bool CounterStyle::RangeContains(int value) const {
     case CounterStyleSystem::kUpperArmenian:
       return value >= 1 && value <= 99999999;
     case CounterStyleSystem::kUnresolvedExtends:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -881,8 +886,7 @@ bool CounterStyle::NeedsNegativeSign(int value) const {
     case CounterStyleSystem::kFixed:
       return false;
     case CounterStyleSystem::kUnresolvedExtends:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -983,8 +987,7 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
     case CounterStyleSystem::kEthiopicNumeric:
       return EthiopicNumericAlgorithm(abs_value);
     case CounterStyleSystem::kUnresolvedExtends:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
   }
 }
 
@@ -1064,8 +1067,7 @@ CounterStyleSpeakAs CounterStyle::EffectiveSpeakAs() const {
         case CounterStyleSystem::kEthiopicNumeric:
           return CounterStyleSpeakAs::kNumbers;
         case CounterStyleSystem::kUnresolvedExtends:
-          NOTREACHED_IN_MIGRATION();
-          return CounterStyleSpeakAs::kNumbers;
+          NOTREACHED();
       }
   }
 }
@@ -1107,8 +1109,7 @@ String CounterStyle::GenerateTextAlternativeWithoutPrefixSuffix(
       return GenerateRepresentation(value);
     case CounterStyleSpeakAs::kAuto:
     case CounterStyleSpeakAs::kReference:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
   }
 }
 

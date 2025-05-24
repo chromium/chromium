@@ -62,8 +62,12 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     });
   }
 
+  function textContentWithoutStylesAndWithLineBreaksTrimmed(node) {
+    return TestRunner.textContentWithoutStyles(node).replace(/\s{3,}/g, ' ');
+  }
+
   async function dumpConsoleMessages() {
-    await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaksTrimmed);
+    await ConsoleTestRunner.dumpConsoleMessages(false, false, textContentWithoutStylesAndWithLineBreaksTrimmed);
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

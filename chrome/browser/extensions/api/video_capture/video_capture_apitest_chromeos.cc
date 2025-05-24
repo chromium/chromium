@@ -89,8 +89,10 @@ IN_PROC_BROWSER_TEST_F(VideoCaptureApiTestChromeOs,
       << message_;
 }
 
+// TODO(crbug.com/405347945): EnterKioskSession is not actually emulating what
+// Kiosk is doing in the production. Fix the test set up.
 IN_PROC_BROWSER_TEST_F(VideoCaptureApiTestChromeOs,
-                       CameraPanTiltZoom_KioskSessionOnly) {
+                       DISABLED_CameraPanTiltZoom_KioskSessionOnly) {
   EnterKioskSession();
   ASSERT_TRUE(
       RunExtensionTest("api_test/video_capture/"
@@ -99,7 +101,10 @@ IN_PROC_BROWSER_TEST_F(VideoCaptureApiTestChromeOs,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(VideoCaptureApiTestChromeOs, CameraPanTiltZoom) {
+// TODO(crbug.com/405347945): EnterKioskSession is not actually emulating what
+// Kiosk is doing in the production. Fix the test set up.
+IN_PROC_BROWSER_TEST_F(VideoCaptureApiTestChromeOs,
+                       DISABLED_CameraPanTiltZoom) {
   EnterKioskSession();
   SetAutoLaunchApp();
   ASSERT_TRUE(RunExtensionTest("api_test/video_capture/camera_pan_tilt_zoom",

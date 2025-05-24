@@ -26,14 +26,14 @@ class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
     private final View mAndroidContentView;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
-    private PropertyModel.Builder mHostDialogModelBuilder;
+    private final PropertyModel.Builder mHostDialogModelBuilder;
     private PropertyModel mHostDialogModel;
     private PropertyModel mModel;
     private Resources mResources;
     private @ModalDialogManager.ModalDialogType int mDialogType;
 
     private static class DialogClickHandler implements ModalDialogProperties.Controller {
-        private Callback<Integer> mCallback;
+        private final Callback<Integer> mCallback;
 
         DialogClickHandler(Callback<Integer> onClick) {
             mCallback = onClick;

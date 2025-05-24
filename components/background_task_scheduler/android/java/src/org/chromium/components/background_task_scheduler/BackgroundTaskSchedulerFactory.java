@@ -5,12 +5,15 @@
 package org.chromium.components.background_task_scheduler;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerFactoryInternal;
 import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerUma;
 
 /** A factory for {@link BackgroundTaskScheduler}. */
+@NullMarked
 public final class BackgroundTaskSchedulerFactory {
-    private static BackgroundTaskSchedulerExternalUma sExternalUmaForTesting;
+    private static @Nullable BackgroundTaskSchedulerExternalUma sExternalUmaForTesting;
 
     /**
      * @return the current instance of the {@link BackgroundTaskScheduler}. Creates one if none

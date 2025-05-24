@@ -8,15 +8,16 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_model.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "ui/base/models/simple_menu_model.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/menus/simple_menu_model.h"
 
 class PrefRegistrySimple;
 
@@ -30,7 +31,8 @@ class BirchItem;
 // The controller used to manage the birch bar in every `OverviewGrid`. It will
 // fetch data from `BirchModel` and distribute the data to birch bars.
 class ASH_EXPORT BirchBarController : public BirchModel::Observer,
-                                      public ui::SimpleMenuModel::Delegate {
+                                      public ui::SimpleMenuModel::Delegate,
+                                      public BirchCoralProvider::Observer {
  public:
   explicit BirchBarController(bool from_pine_service);
   BirchBarController(const BirchBarController&) = delete;
@@ -57,7 +59,7 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   void ShowChipContextMenu(BirchChipButton* chip,
                            BirchSuggestionType chip_type,
                            const gfx::Point& point,
-                           ui::MenuSourceType source_type);
+                           ui::mojom::MenuSourceType source_type);
 
   // Called if a suggestion is hidden by user from context menu.
   void OnItemHiddenByUser(BirchItem* item);
@@ -80,6 +82,9 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // Toggles temperature units for weather chip between F and C.
   void ToggleTemperatureUnits();
 
+  // Launches feedback diaglog for Coral items.
+  void ProvideFeedbackForCoral();
+
   // Executes the commands from bar and chip context menus. `from_chip` will be
   // true if the command is from a chip context menu.
   // Please note that most of the bar menu commands should be executed by the
@@ -95,12 +100,19 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  // BirchCoralProvider::Observer:
+  void OnCoralGroupRemoved(const base::Token& group_id) override;
+  void OnCoralEntityRemoved(const base::Token& group_id,
+                            std::string_view identifier) override;
+  void OnCoralGroupTitleUpdated(const base::Token& group_id,
+                                const std::string& title) override;
+
   BirchBarMenuModelAdapter* chip_menu_model_adapter_for_testing() {
     return chip_menu_model_adapter_.get();
   }
 
  private:
-  friend class BirchBarMenuTest;
+  friend class BirchBarTestBase;
 
   // Fetches data from birch model if there is no fetching in progress.
   void MaybeFetchDataFromModel();

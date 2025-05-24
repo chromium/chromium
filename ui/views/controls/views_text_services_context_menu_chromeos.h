@@ -13,8 +13,7 @@
 namespace views {
 
 // This class is used to add and handle text service items in ChromeOS native UI
-// textfield context menus. The implementation is specific to the platform (Ash
-// or Lacros) where the textfield lives.
+// textfield context menus.
 class VIEWS_EXPORT ViewsTextServicesContextMenuChromeos
     : public ViewsTextServicesContextMenu {
  public:

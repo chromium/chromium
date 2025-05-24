@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * A {@link AppCompatTextView} that truncates content within a template, instead of truncating
  * the template text. Truncation only happens if maxLines is set to 1 and there's not enough space
@@ -25,10 +28,11 @@ import androidx.appcompat.widget.AppCompatTextView;
  * the TemplatePreservingTextView would truncate the content but not the template text:
  *   "https://www.google.com/webh... was closed"
  */
+@NullMarked
 public class TemplatePreservingTextView extends AppCompatTextView {
-    private String mTemplate;
+    private @Nullable String mTemplate;
     private CharSequence mContent = "";
-    private CharSequence mVisibleText;
+    private @Nullable CharSequence mVisibleText;
 
     /**
      * Builds an instance of an {@link TemplatePreservingTextView}.
@@ -44,9 +48,9 @@ public class TemplatePreservingTextView extends AppCompatTextView {
      * new template text to take effect.
      *
      * @param template Template format string (e.g. "Closed %s"), or null. If null is passed, this
-     *                 view acts like a normal TextView.
+     *     view acts like a normal TextView.
      */
-    public void setTemplate(String template) {
+    public void setTemplate(@Nullable String template) {
         mTemplate = TextUtils.isEmpty(template) ? null : template;
     }
 

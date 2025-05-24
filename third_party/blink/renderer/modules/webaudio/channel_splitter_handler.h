@@ -20,8 +20,9 @@ class ChannelSplitterHandler final : public AudioHandler {
   // AudioHandler
   void Process(uint32_t frames_to_process) override;
   void SetChannelCount(unsigned, ExceptionState&) final;
-  void SetChannelCountMode(const String&, ExceptionState&) final;
-  void SetChannelInterpretation(const String&, ExceptionState&) final;
+  void SetChannelCountMode(V8ChannelCountMode::Enum, ExceptionState&) final;
+  void SetChannelInterpretation(V8ChannelInterpretation::Enum,
+                                ExceptionState&) final;
 
   double TailTime() const override { return 0; }
   double LatencyTime() const override { return 0; }

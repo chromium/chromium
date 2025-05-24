@@ -81,7 +81,7 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
     /**
      * The {@link CallbackController} for any callbacks that may run after the class is destroyed.
      */
-    private CallbackController mCallbackController = new CallbackController();
+    private final CallbackController mCallbackController = new CallbackController();
 
     /**
      * A callback to add a {@link TabModelSelectorObserver} which notifies about the event when the

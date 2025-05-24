@@ -53,9 +53,9 @@ class AppIconDecoderTest : public testing::Test {
               .width();
       SkBitmap bitmap = gfx::test::CreateBitmap(icon_size_in_px, color);
 
-      std::vector<unsigned char> output;
-      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
-                                        &output);
+      std::optional<std::vector<uint8_t>> output =
+          gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                            /*discard_transparency=*/false);
 
       base::FilePath path;
       if (type == StoredIconType::kAdaptiveBackground) {
@@ -69,7 +69,7 @@ class AppIconDecoderTest : public testing::Test {
 
       base::ScopedAllowBlockingForTesting scoped_allow_blocking;
       ASSERT_TRUE(base::CreateDirectory(path.DirName()));
-      ASSERT_TRUE(base::WriteFile(path, output));
+      ASSERT_TRUE(base::WriteFile(path, output.value()));
     }
   }
 

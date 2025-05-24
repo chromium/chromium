@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_TREES_LAYER_TREE_IMPL_H_
 #define CC_TREES_LAYER_TREE_IMPL_H_
 
@@ -15,12 +10,10 @@
 #include <set>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
@@ -31,7 +24,6 @@
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/paint/discardable_image_map.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/layer_tree_host.h"
@@ -39,6 +31,7 @@
 #include "cc/trees/property_tree.h"
 #include "cc/trees/swap_promise.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace base {
@@ -109,11 +102,9 @@ class LayerTreeLifecycle {
 
 class CC_EXPORT LayerTreeImpl {
  public:
-  // This is the number of times a fixed point has to be hit continuously by a
-  // layer to consider it as jittering.
-  enum : int { kFixedPointHitsThreshold = 3 };
   LayerTreeImpl(
       LayerTreeHostImpl& host_impl,
+      viz::BeginFrameArgs begin_frame_args,
       scoped_refptr<SyncedScale> page_scale_factor,
       scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
       scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,
@@ -157,7 +148,14 @@ class CC_EXPORT LayerTreeImpl {
   // TODO(bokan): PinchGestureActive is a layering violation, it's not related
   // to what LayerTreeImpl does.
   bool PinchGestureActive() const;
+  // Current BFA represents the frame that will be rendered next.
+  // Created BFA represents the begin frame args of the frame which
+  // was rendered when the LTHI was created. These are used to
+  // determine whether or not the renderer re-used a tree.
+  viz::BeginFrameArgs last_frame_begin_frame_args;
   const viz::BeginFrameArgs& CurrentBeginFrameArgs() const;
+  const viz::BeginFrameArgs& CreatedBeginFrameArgs() const;
+  void SetCreatedBeginFrameArgs(viz::BeginFrameArgs other);
   base::TimeDelta CurrentBeginFrameInterval() const;
   const gfx::Rect ViewportRectForTilePriority() const;
   std::unique_ptr<ScrollbarAnimationController>
@@ -183,7 +181,7 @@ class CC_EXPORT LayerTreeImpl {
   // ---------------------------------------------------------------------------
   void SetNeedsRedraw();
 
-  // Tracing methods.
+  // Tracing methods
   // ---------------------------------------------------------------------------
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const;
@@ -273,29 +271,25 @@ class CC_EXPORT LayerTreeImpl {
     return const_reverse_iterator(layer_list_.crend());
   }
 
+  // Tests precondition for mutating a property based on element id.
+  // These enumerated values are used in metrics, and must not be renumbered.
+  // New values must be added to the end of the list increasing kMaxValue, and
+  // obsolete values must be preserved.
+  enum class PropertyMutation {
+    kTransform = 0,
+    kOpacity = 1,
+    kFilter = 2,
+    kBackdropFilter = 3,
+    kMaxValue = kBackdropFilter
+  };
+  void ValidateEffectTreeeMapping(ElementId, PropertyMutation);
+
   void SetTransformMutated(ElementId element_id,
                            const gfx::Transform& transform);
   void SetOpacityMutated(ElementId element_id, float opacity);
   void SetFilterMutated(ElementId element_id, const FilterOperations& filters);
   void SetBackdropFilterMutated(ElementId element_id,
                                 const FilterOperations& backdrop_filters);
-
-  const std::unordered_map<ElementId, float, ElementIdHash>&
-  element_id_to_opacity_animations_for_testing() const {
-    return element_id_to_opacity_animations_;
-  }
-  const std::unordered_map<ElementId, gfx::Transform, ElementIdHash>&
-  element_id_to_transform_animations_for_testing() const {
-    return element_id_to_transform_animations_;
-  }
-  const std::unordered_map<ElementId, FilterOperations, ElementIdHash>&
-  element_id_to_filter_animations_for_testing() const {
-    return element_id_to_filter_animations_;
-  }
-  const std::unordered_map<ElementId, FilterOperations, ElementIdHash>&
-  element_id_to_backdrop_filter_animations_for_testing() const {
-    return element_id_to_backdrop_filter_animations_;
-  }
 
   int source_frame_number() const { return source_frame_number_; }
   void set_source_frame_number(int frame_number) {
@@ -304,15 +298,6 @@ class CC_EXPORT LayerTreeImpl {
 
   BeginMainFrameTraceId trace_id() const { return trace_id_; }
   void set_trace_id(BeginMainFrameTraceId val) { trace_id_ = val; }
-
-  bool is_first_frame_after_commit() const {
-    return source_frame_number_ != is_first_frame_after_commit_tracker_;
-  }
-
-  void set_is_first_frame_after_commit(bool is_first_frame_after_commit) {
-    is_first_frame_after_commit_tracker_ =
-        is_first_frame_after_commit ? -1 : source_frame_number_;
-  }
 
   const HeadsUpDisplayLayerImpl* hud_layer() const { return hud_layer_; }
   HeadsUpDisplayLayerImpl* hud_layer() { return hud_layer_; }
@@ -374,7 +359,6 @@ class CC_EXPORT LayerTreeImpl {
 
   ScrollNode* CurrentlyScrollingNode();
   const ScrollNode* CurrentlyScrollingNode() const;
-  int LastScrolledScrollNodeIndex() const;
   void SetCurrentlyScrollingNode(const ScrollNode* node);
   void ClearCurrentlyScrollingNode();
 
@@ -438,7 +422,7 @@ class CC_EXPORT LayerTreeImpl {
       int64_t item_sequence_number) {
     primary_main_frame_item_sequence_number_ = item_sequence_number;
   }
-  uint64_t primary_main_frame_item_sequence_number() {
+  int64_t primary_main_frame_item_sequence_number() const {
     return primary_main_frame_item_sequence_number_;
   }
 
@@ -564,7 +548,7 @@ class CC_EXPORT LayerTreeImpl {
 
   bool IsElementInPropertyTree(ElementId element_id) const;
 
-  void SetSurfaceRanges(const base::flat_set<viz::SurfaceRange> surface_ranges);
+  void SetSurfaceRanges(base::flat_set<viz::SurfaceRange> surface_ranges);
   const base::flat_set<viz::SurfaceRange>& SurfaceRanges() const;
   void ClearSurfaceRanges();
 
@@ -701,6 +685,11 @@ class CC_EXPORT LayerTreeImpl {
   }
   void PushBrowserControlsFromMainThread(float top_controls_shown_ratio,
                                          float bottom_controls_shown_ratio);
+
+  void SetMaxSafeAreaInsetBottom(float max_safe_area_inset_bottom);
+  float max_safe_area_inset_bottom() const {
+    return max_safe_area_inset_bottom_;
+  }
   float bottom_controls_height() const {
     return browser_controls_params_.bottom_controls_height;
   }
@@ -736,6 +725,9 @@ class CC_EXPORT LayerTreeImpl {
   }
   void set_have_scroll_event_handlers(bool have_event_handlers) {
     have_scroll_event_handlers_ = have_event_handlers;
+  }
+  bool did_raster_inducing_scroll() const {
+    return did_raster_inducing_scroll_;
   }
 
   // See LayerTreeHost.
@@ -814,7 +806,7 @@ class CC_EXPORT LayerTreeImpl {
   // Returns all of the view transition requests stored so far, and empties
   // the internal list.
   std::vector<std::unique_ptr<ViewTransitionRequest>>
-  TakeViewTransitionRequests();
+  TakeViewTransitionRequests(bool should_set_needs_update_draw_properties);
 
   // Returns true if there are pending ViewTransition requests that need a draw.
   bool HasViewTransitionRequests() const;
@@ -823,9 +815,41 @@ class CC_EXPORT LayerTreeImpl {
   // output of the current frame.
   bool HasViewTransitionSaveRequest() const;
 
+  // Returns a set of all view transition tokens that are currently in the
+  // capture phase.
+  base::flat_set<blink::ViewTransitionToken> GetCaptureViewTransitionTokens()
+      const;
+
   void UpdateAllScrollbarGeometriesForTesting() {
     UpdateAllScrollbarGeometries();
   }
+
+  void SetViewTransitionContentRect(const viz::ViewTransitionElementResourceId&,
+                                    const gfx::RectF&);
+
+  void AddLayerNeedingUpdateDiscardableImageMap(PictureLayerImpl* layer);
+
+  void SetPageScaleFactorAndLimitsForDisplayTree(float page_scale_factor,
+                                                 float min_page_scale_factor,
+                                                 float max_page_scale_factor);
+
+  LayerTreeHostImpl* host_impl() { return host_impl_; }
+
+  class CC_EXPORT DiscardableImageMapUpdater {
+    STACK_ALLOCATED();
+
+   public:
+    explicit DiscardableImageMapUpdater(LayerTreeImpl* layer_tree_impl);
+    ~DiscardableImageMapUpdater();
+
+    void AddLayerNeedingUpdate(PictureLayerImpl* layer) {
+      layers_needing_update_.push_back(layer);
+    }
+
+   private:
+    LayerTreeImpl* const layer_tree_impl_;
+    std::vector<PictureLayerImpl*> layers_needing_update_;
+  };
 
  protected:
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;
@@ -858,14 +882,12 @@ class CC_EXPORT LayerTreeImpl {
   void UpdateScrollbarGeometries(const ScrollNode& scroll_node);
 
   raw_ptr<LayerTreeHostImpl> host_impl_;
-  int source_frame_number_;
+  viz::BeginFrameArgs created_begin_frame_args_;
+  int source_frame_number_ = 0;
   BeginMainFrameTraceId trace_id_{0};
-  int is_first_frame_after_commit_tracker_;
   raw_ptr<HeadsUpDisplayLayerImpl, DanglingUntriaged> hud_layer_;
   PropertyTrees property_trees_;
   SkColor4f background_color_;
-
-  int last_scrolled_scroll_node_index_;
 
   ViewportPropertyIds viewport_property_ids_;
 
@@ -902,6 +924,8 @@ class CC_EXPORT LayerTreeImpl {
 
   bool have_scroll_event_handlers_ : 1 = false;
 
+  bool did_raster_inducing_scroll_ : 1 = false;
+
   // Contains the physical rect of the device viewport, to be used in
   // determining what needs to be drawn.
   bool device_viewport_rect_changed_ : 1 = false;
@@ -913,6 +937,12 @@ class CC_EXPORT LayerTreeImpl {
   bool always_push_properties_on_picture_layers_ : 1 = false;
 
   gfx::Rect device_viewport_rect_;
+
+  // Used for supporting dynamic safe area insets in the Clank Edge-to-Edge
+  // bottom bar feature(go/cc-dynamic-sai) This is originally passed down from
+  // browser for the display cutout. It has been scaled to the size of physical
+  // pixels.
+  float max_safe_area_inset_bottom_ = 0;
 
   scoped_refptr<SyncedElasticOverscroll> elastic_overscroll_;
 
@@ -927,15 +957,6 @@ class CC_EXPORT LayerTreeImpl {
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
   RAW_PTR_EXCLUSION base::flat_set<LayerImpl*>
       layers_that_should_push_properties_;
-
-  std::unordered_map<ElementId, float, ElementIdHash>
-      element_id_to_opacity_animations_;
-  std::unordered_map<ElementId, gfx::Transform, ElementIdHash>
-      element_id_to_transform_animations_;
-  std::unordered_map<ElementId, FilterOperations, ElementIdHash>
-      element_id_to_filter_animations_;
-  std::unordered_map<ElementId, FilterOperations, ElementIdHash>
-      element_id_to_backdrop_filter_animations_;
 
   struct ScrollbarLayerIds {
     int horizontal = Layer::INVALID_ID;
@@ -974,8 +995,8 @@ class CC_EXPORT LayerTreeImpl {
 
   UIResourceRequestQueue ui_resource_request_queue_;
 
-  EventListenerProperties event_listener_properties_
-      [static_cast<size_t>(EventListenerClass::kLast) + 1];
+  std::array<EventListenerProperties, kEventListenerClassCount>
+      event_listener_properties_;
 
   BrowserControlsParams browser_controls_params_;
 
@@ -1007,19 +1028,16 @@ class CC_EXPORT LayerTreeImpl {
   // Document transition requests to be transferred to Viz.
   std::vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests_;
 
-  // The cumulative time spent performing visual updates for all Surfaces before
-  // this one.
-  base::TimeDelta previous_surfaces_visual_update_duration_;
-  // The cumulative time spent performing visual updates for the current
-  // Surface.
-  base::TimeDelta visual_update_duration_;
-
   // See `CommitState::screenshot_destination_token`.
   base::UnguessableToken screenshot_destination_;
 
   // See `CommitState::primary_main_frame_item_sequence_number`.
   int64_t primary_main_frame_item_sequence_number_ =
       RenderFrameMetadata::kInvalidItemSequenceNumber;
+
+  // Used during PullPropertiesFrom().
+  STACK_ALLOCATED_IGNORE("Correctness ensured by DiscardableImageMapUpdater")
+  raw_ptr<DiscardableImageMapUpdater> discardable_image_map_updater_;
 };
 
 }  // namespace cc

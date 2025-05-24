@@ -326,13 +326,11 @@ TEST_F(AudioDataTest, TransferBuffer) {
 TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
   V8TestingScope scope;
   const uint32_t frames = 3;
-  std::vector<float> data{0.0, 1.0, 2.0, 3.0, 4.0};
+  std::vector<int32_t> data{0, 1, 2, 3, 4};
   auto* buffer = DOMArrayBuffer::Create(base::as_byte_span(data));
   auto* view = DOMDataView::Create(
-      buffer, 1 /* offset one byte from the float ptr, that how we are sure that
-                   the view is not aligned to sizeof(float) */
-      ,
-      frames * sizeof(float));
+      buffer, 1 /* offset one byte to ensure misalignment */,
+      frames * sizeof(int32_t));
   auto* buffer_source = MakeGarbageCollected<AllowSharedBufferSource>(
       MaybeShared<DOMArrayBufferView>(view));
 
@@ -345,7 +343,7 @@ TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
   audio_data_init->setNumberOfChannels(1);
   audio_data_init->setNumberOfFrames(frames);
   audio_data_init->setSampleRate(kSampleRate);
-  audio_data_init->setFormat("f32");
+  audio_data_init->setFormat("s32");
   HeapVector<Member<DOMArrayBuffer>> transfer;
   transfer.push_back(Member<DOMArrayBuffer>(buffer));
   audio_data_init->setTransfer(std::move(transfer));
@@ -362,7 +360,7 @@ TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
 
   // Even though we copied the data, the buffer still needs to be aligned.
   EXPECT_TRUE(buffer->IsDetached());
-  EXPECT_EQ(allocations_size, frames * sizeof(float));
+  EXPECT_EQ(allocations_size, frames * sizeof(int32_t));
 }
 
 TEST_F(AudioDataTest, CopyTo_Offset) {

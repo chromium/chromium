@@ -192,7 +192,7 @@ void SynchronousCompositorHost::InitMojo() {
 
   SynchronousCompositorControlHost::Create(
       host_control.InitWithNewPipeAndPassReceiver(), bridge_,
-      rwhva_->GetRenderWidgetHost()->GetProcess()->GetID());
+      rwhva_->GetRenderWidgetHost()->GetProcess()->GetDeprecatedID());
   rwhva_->host()->GetWidgetInputHandler()->AttachSynchronousCompositor(
       std::move(host_control), host_receiver_.BindNewEndpointAndPassRemote(),
       sync_compositor_.BindNewEndpointAndPassReceiver());
@@ -286,7 +286,7 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
   if (compositor_frame) {
     if (!local_surface_id || !local_surface_id->is_valid()) {
       bad_message::ReceivedBadMessage(
-          rwhva_->GetRenderWidgetHost()->GetProcess()->GetID(),
+          rwhva_->GetRenderWidgetHost()->GetProcess()->GetDeprecatedID(),
           bad_message::SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID);
       return SynchronousCompositor::Frame();
     }
@@ -610,9 +610,9 @@ void SynchronousCompositorHost::SetNeedsBeginFrames(bool needs_begin_frames) {
     ClearBeginFrameRequest(PERSISTENT_BEGIN_FRAME);
 }
 
-void SynchronousCompositorHost::SetThreadIds(
-    const std::vector<int32_t>& thread_ids) {
-  client_->SetThreadIds(thread_ids);
+void SynchronousCompositorHost::SetThreads(
+    const std::vector<viz::Thread>& threads) {
+  client_->SetThreads(threads);
 }
 
 void SynchronousCompositorHost::LayerTreeFrameSinkCreated() {
@@ -716,8 +716,7 @@ void SynchronousCompositorHost::OnBeginFrame(const viz::BeginFrameArgs& args) {
   if (on_compute_scroll_called_ ||
       !rwhva_->GetViewRenderInputRouter()->is_currently_scrolling_viewport()) {
     rwhva_->host()->ProgressFlingIfNeeded(args.frame_time);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kWebViewSuppressTapDuringFling)) {
+  } else {
     // Normally, `OnComputeScroll` is called after `OnBeginFrame`, but before
     // `DemandDrawHwAsync`. So `OnBeginFrame` calls before the first draw will
     // end up here regardless of whether `OnComputeScroll` will be called. If

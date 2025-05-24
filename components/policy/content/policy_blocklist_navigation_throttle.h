@@ -15,6 +15,7 @@ class PrefService;
 
 namespace content {
 class BrowserContext;
+class NavigationThrottleRegistry;
 }  // namespace content
 
 // PolicyBlocklistNavigationThrottle provides a simple way to block a navigation
@@ -26,7 +27,7 @@ class BrowserContext;
 class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
  public:
   PolicyBlocklistNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationThrottleRegistry& registry,
       content::BrowserContext* context);
   PolicyBlocklistNavigationThrottle(const PolicyBlocklistNavigationThrottle&) =
       delete;
@@ -48,21 +49,6 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
   FRIEND_TEST_ALL_PREFIXES(PolicyBlocklistNavigationThrottleTest,
                            SafeSites_Porn);
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(RequestThrottleAction)
-  enum class RequestThrottleAction {
-    kNoRequest = 0,
-    kProceed = 1,
-    kBlock = 2,
-    kDefer = 3,
-    kProceedAfterDefer = 4,
-    kBlockAfterDefer = 5,
-    kMaxValue = kBlockAfterDefer,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PolicyBlocklistRequestThrottleAction)
-
   // Returns TRUE if this navigation is to view-source: and view-source is on
   // the URLBlocklist.
   bool IsBlockedViewSourceNavigation();
@@ -74,17 +60,7 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
   void OnDeferredSafeSitesResult(bool proceed,
                                  std::optional<ThrottleCheckResult> result);
 
-  void UpdateRequestThrottleAction(
-      content::NavigationThrottle::ThrottleAction action);
-
   ThrottleCheckResult WillStartOrRedirectRequest(bool is_redirect);
-
-  RequestThrottleAction request_throttle_action_ =
-      RequestThrottleAction::kNoRequest;
-
-  base::TimeTicks request_time_;
-  base::TimeTicks defer_time_;
-  base::TimeDelta defer_duration_;
 
   std::unique_ptr<content::NavigationThrottle> safe_sites_navigation_throttle_;
 

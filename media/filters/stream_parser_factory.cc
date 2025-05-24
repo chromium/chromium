@@ -94,8 +94,9 @@ typedef StreamParser* (*ParserFactoryFunction)(
 struct SupportedTypeInfo {
   const char* type;
   const ParserFactoryFunction factory_function;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
+  // This field is not a raw_ptr<> because both levels of pointer only ever
+  // point to statically-allocated data which is never freed, and hence cannot
+  // dangle.
   RAW_PTR_EXCLUSION const CodecInfo* const* codecs;
 };
 

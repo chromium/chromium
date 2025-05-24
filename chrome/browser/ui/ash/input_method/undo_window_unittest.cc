@@ -16,12 +16,12 @@ namespace ime {
 
 class UndoWindowTest : public ChromeViewsTestBase {
  public:
-  UndoWindowTest() {}
+  UndoWindowTest() = default;
 
   UndoWindowTest(const UndoWindowTest&) = delete;
   UndoWindowTest& operator=(const UndoWindowTest&) = delete;
 
-  ~UndoWindowTest() override {}
+  ~UndoWindowTest() override = default;
 
  protected:
   void SetUp() override {

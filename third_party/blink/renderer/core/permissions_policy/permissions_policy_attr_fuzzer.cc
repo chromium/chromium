@@ -24,8 +24,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       blink::SecurityOrigin::CreateFromString("https://example.com/");
   scoped_refptr<const blink::SecurityOrigin> child_origin =
       blink::SecurityOrigin::CreateFromString("https://example.net/");
+  // SAFETY: Just make a span from the function arguments provided by libfuzzer.
   blink::PermissionsPolicyParser::ParseAttribute(
-      WTF::String(data, static_cast<wtf_size_t>(size)), parent_origin.get(),
+      WTF::String(UNSAFE_BUFFERS(base::span(data, size))), parent_origin.get(),
       child_origin.get(), logger);
   return 0;
 }

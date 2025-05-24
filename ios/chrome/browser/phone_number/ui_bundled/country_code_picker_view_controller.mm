@@ -124,10 +124,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _searchController.searchResultsUpdater = self;
   self.navigationItem.searchController = _searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
-  if (@available(iOS 16, *)) {
-    self.navigationItem.preferredSearchBarPlacement =
-        UINavigationItemSearchBarPlacementStacked;
-  }
+  self.navigationItem.preferredSearchBarPlacement =
+      UINavigationItemSearchBarPlacementStacked;
 
   [self updateTitle];
 
@@ -159,7 +157,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
     [self registerForTraitChanges:traits withAction:@selector(updateTitle)];
   }
 }

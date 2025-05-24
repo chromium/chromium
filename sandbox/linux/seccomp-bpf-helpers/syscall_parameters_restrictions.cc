@@ -21,10 +21,12 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "base/allocator/partition_alloc_features.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/notreached.h"
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
@@ -35,8 +37,7 @@
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    !defined(__arm__) && !defined(__aarch64__) &&             \
+#if BUILDFLAG(IS_LINUX) && !defined(__arm__) && !defined(__aarch64__) && \
     !defined(PTRACE_GET_THREAD_AREA)
 // Also include asm/ptrace-abi.h since ptrace.h in older libc (for instance
 // the one in Ubuntu 16.04 LTS) is missing PTRACE_GET_THREAD_AREA.
@@ -107,7 +108,7 @@ inline bool IsArchitectureMips() {
 // to allow those futex(2) calls to fail with EINVAL, instead of crashing the
 // process. See crbug.com/598471.
 inline bool IsBuggyGlibcSemPost() {
-#if defined(LIBC_GLIBC) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(LIBC_GLIBC) && !BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
@@ -335,24 +336,35 @@ ResultExpr RestrictKillTarget(pid_t target_pid, int sysno) {
     case __NR_tkill:
       return CrashSIGSYSKill();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CrashSIGSYS();
+      NOTREACHED();
   }
 }
 
 ResultExpr RestrictFutex() {
   const uint64_t kAllowedFutexFlags = FUTEX_PRIVATE_FLAG | FUTEX_CLOCK_REALTIME;
+  ResultExpr error = IsBuggyGlibcSemPost() ? Error(EINVAL) : CrashSIGSYSFutex();
   const Arg<int> op(1);
   return Switch(op & ~kAllowedFutexFlags)
       .Cases({FUTEX_WAIT, FUTEX_WAKE, FUTEX_REQUEUE, FUTEX_CMP_REQUEUE,
-#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
-              // Enable priority-inheritance operations.
-              FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, FUTEX_TRYLOCK_PI,
-              FUTEX_WAIT_REQUEUE_PI, FUTEX_CMP_REQUEUE_PI,
-#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
               FUTEX_WAKE_OP, FUTEX_WAIT_BITSET, FUTEX_WAKE_BITSET},
              Allow())
-      .Default(IsBuggyGlibcSemPost() ? Error(EINVAL) : CrashSIGSYSFutex());
+#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+      // Priority-inheritance futex operations are enabled only on Android
+      // kernels 6.1+. Bionic uses the PI variants of the futex operations
+      // (FUTEX_LOCK_PI2, FUTEX_UNLOCK_PI) to implement priority inheriting
+      // mutexes.
+      .Cases({FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, FUTEX_TRYLOCK_PI,
+              FUTEX_WAIT_REQUEUE_PI, FUTEX_CMP_REQUEUE_PI, FUTEX_LOCK_PI2},
+             (base::KernelSupportsPriorityInheritanceFutex() &&
+                      (base::FeatureList::IsEnabled(
+                           base::features::kUsePriorityInheritanceMutex) ||
+                       base::FeatureList::IsEnabled(
+                           base::features::
+                               kPartitionAllocUsePriorityInheritanceLocks))
+                  ? Allow()
+                  : error))
+#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+      .Default(error);
 }
 
 ResultExpr RestrictGetSetpriority(pid_t target_pid) {
@@ -384,8 +396,7 @@ ResultExpr RestrictSchedTarget(pid_t target_pid, int sysno) {
           .Default(RewriteSchedSIGSYS());
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CrashSIGSYS();
+      NOTREACHED();
   }
 }
 

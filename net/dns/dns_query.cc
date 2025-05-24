@@ -73,8 +73,8 @@ std::unique_ptr<OptRecordRdata> AddPaddingIfNecessary(
 
   std::unique_ptr<OptRecordRdata> merged_opt_rdata;
   if (opt_rdata) {
-    merged_opt_rdata = OptRecordRdata::Create(
-        std::string_view(opt_rdata->buf().data(), opt_rdata->buf().size()));
+    merged_opt_rdata =
+        OptRecordRdata::Create(base::as_byte_span(opt_rdata->buf()));
   } else {
     merged_opt_rdata = std::make_unique<OptRecordRdata>();
   }
@@ -169,6 +169,10 @@ DnsQuery& DnsQuery::operator=(const DnsQuery& query) {
   return *this;
 }
 
+DnsQuery::DnsQuery(DnsQuery&& query) = default;
+
+DnsQuery& DnsQuery::operator=(DnsQuery&& query) = default;
+
 DnsQuery::~DnsQuery() = default;
 
 std::unique_ptr<DnsQuery> DnsQuery::CloneWithNewId(uint16_t id) const {
@@ -179,8 +183,7 @@ bool DnsQuery::Parse(size_t valid_bytes) {
   if (io_buffer_ == nullptr || io_buffer_->span().empty()) {
     return false;
   }
-  auto reader =
-      base::SpanReader<const uint8_t>(io_buffer_->span().first(valid_bytes));
+  auto reader = base::SpanReader<const uint8_t>(io_buffer_->first(valid_bytes));
   dns_protocol::Header header;
   if (!ReadHeader(&reader, &header)) {
     return false;

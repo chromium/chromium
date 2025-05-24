@@ -7,6 +7,9 @@
 
 #include <stddef.h>
 
+#include <string>
+#include <string_view>
+
 #include "base/time/time.h"
 #include "chrome/browser/diagnostics/diagnostics_model.h"
 
@@ -100,8 +103,8 @@ class DiagnosticsTest : public DiagnosticsModel::TestInfo {
 
   // DiagnosticsModel::TestInfo overrides
   int GetId() const override;
-  std::string GetName() const override;
-  std::string GetTitle() const override;
+  std::string_view GetName() const override;
+  std::string_view GetTitle() const override;
   DiagnosticsModel::TestResult GetResult() const override;
   std::string GetAdditionalInfo() const override;
   int GetOutcomeCode() const override;

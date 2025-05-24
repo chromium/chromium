@@ -4,17 +4,13 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.junit.Assert.assertEquals;
-
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_HUB_SEARCH;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_RETURN_TIME;
 
 import android.os.Build;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,40 +18,45 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherAppMenuFacility;
+import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+// TODO(crbug.com/419289558): Re-enable color surface feature flags
+@Features.DisableFeatures({
+    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
+    ChromeFeatureList.ANDROID_THEME_MODULE
+})
 @Batch(Batch.PER_CLASS)
-@DisableFeatures(ANDROID_HUB_SEARCH)
 public class HubLayoutPublicTransitTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Test
     @LargeTest
     public void testEnterAndExitHub() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
 
         firstPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
@@ -66,7 +67,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testEnterHubAndLeaveViaAppMenuNewTab() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
 
         TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
@@ -78,7 +79,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
 
         TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
@@ -90,34 +91,90 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testChangeTabSwitcherPanes() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        IncognitoNewTabPageStation incognitoNewTabPage =
-                firstPage.openGenericAppMenu().openNewIncognitoTab();
-
         IncognitoTabSwitcherStation incognitoTabSwitcher =
-                incognitoNewTabPage.openIncognitoTabSwitcher();
-        assertEquals(
-                incognitoTabSwitcher,
-                incognitoTabSwitcher.selectPane(
-                        PaneId.INCOGNITO_TAB_SWITCHER, IncognitoTabSwitcherStation.class));
+                mCtaTestRule
+                        .startOnBlankPage()
+                        .openNewIncognitoTabFast()
+                        .openIncognitoTabSwitcher();
 
-        RegularTabSwitcherStation tabSwitcher =
-                incognitoTabSwitcher.selectPane(
-                        PaneId.TAB_SWITCHER, RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation regularTabSwitcher = incognitoTabSwitcher.selectRegularTabsPane();
+        incognitoTabSwitcher = regularTabSwitcher.selectIncognitoTabsPane();
 
         // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
-        WebPageStation blankTab = tabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
-        assertFinalDestination(blankTab);
+        incognitoTabSwitcher.selectTabAtIndex(0, IncognitoNewTabPageStation.newBuilder());
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testTabGroupPane_newTabGroup() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
+        RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabToSelection(0, firstTabId);
+
+        NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
+                editor.openAppMenuWithEditor().groupTabs();
+        dialog = dialog.inputName("test_tab_group_name");
+        dialog = dialog.pickColor(TabGroupColorId.RED);
+        dialog.pressDone();
+
+        RegularNewTabPageStation finalStation =
+                tabSwitcher
+                        .selectTabGroupsPane()
+                        .createNewTabGroup()
+                        .pressDoneAsPartOfFlow()
+                        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+                        .openNewRegularTab();
+        assertFinalDestination(finalStation);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testRegularTabSwitcher_newTabGroup() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation finalPage =
+                firstPage
+                        .openRegularTabSwitcher()
+                        .openAppMenu()
+                        .openNewTabGroup()
+                        .pressDoneAsPartOfFlow()
+                        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+                        .openNewRegularTab();
+
+        assertFinalDestination(finalPage);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testIncognitoTabSwitcherStation_newTabGroup() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        IncognitoNewTabPageStation incognitoNewTabPageStation =
+                firstPage
+                        .openNewIncognitoTabFast()
+                        .openIncognitoTabSwitcher()
+                        .openAppMenu()
+                        .openNewTabGroup()
+                        .pressDoneAsPartOfFlow()
+                        .openNewIncognitoTab();
+
+        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+        RegularNewTabPageStation secondPage = incognitoNewTabPageStation.openAppMenu().openNewTab();
+        assertFinalDestination(secondPage);
     }
 
     @Test
     @LargeTest
     @EnableFeatures({START_SURFACE_RETURN_TIME})
     public void testExitHubOnStartSurfaceAsNtp() {
-        ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        ChromeFeatureList.sStartSurfaceReturnTimeTabletSecs.setForTesting(0);
 
-        WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
-        RegularNewTabPageStation newTabPage = blankPage.openGenericAppMenu().openNewTab();
+        WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation newTabPage = blankPage.openNewTabFast();
         RegularTabSwitcherStation tabSwitcher = newTabPage.openRegularTabSwitcher();
         blankPage = tabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
         tabSwitcher = blankPage.openRegularTabSwitcher();
@@ -136,10 +193,10 @@ public class HubLayoutPublicTransitTest {
         currentStation.travelToSync(
                 destination,
                 () -> {
-                    ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+                    ChromeTabbedActivity cta = mCtaTestRule.getActivity();
                     ChromeApplicationTestUtils.fireHomeScreenIntent(cta);
                     try {
-                        sActivityTestRule.resumeMainActivityFromLauncher();
+                        mCtaTestRule.resumeMainActivityFromLauncher();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

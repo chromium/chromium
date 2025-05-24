@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.mojo_base;
+import org.chromium.build.annotations.NullMarked;
 
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.SharedBufferHandle;
@@ -11,8 +12,10 @@ import org.chromium.mojo_base.mojom.BigBuffer;
 import org.chromium.mojo_base.mojom.BigBufferSharedMemoryRegion;
 
 import java.nio.ByteBuffer;
+import org.chromium.build.annotations.Nullable;
 
 /** Static helper methods for working with the mojom BigBuffer type. */
+@NullMarked
 public final class BigBufferUtil {
     public static final int MAX_INLINE_ARRAY_SIZE = 64 * 1024;
 
@@ -23,10 +26,10 @@ public final class BigBufferUtil {
      * be invalid thereafter. The simplest way to do this is by using try-with-resources.
      */
     public static class Mapping implements AutoCloseable {
-        private final SharedBufferHandle mHandle;
+        private final @Nullable SharedBufferHandle mHandle;
         private final ByteBuffer mBuffer;
 
-        Mapping(SharedBufferHandle handle, ByteBuffer buffer) {
+        Mapping(@Nullable SharedBufferHandle handle, ByteBuffer buffer) {
             mHandle = handle;
             mBuffer = buffer;
         }

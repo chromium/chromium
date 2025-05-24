@@ -44,8 +44,7 @@ bool IsShowingInterstitial(content::WebContents* tab) {
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
           tab);
-  return helper &&
-         helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
+  return helper && helper->IsDisplayingInterstitial();
 }
 
 bool IsShowingCaptivePortalInterstitial(content::WebContents* tab) {
@@ -99,12 +98,8 @@ HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab) {
                                    "you are in Incognito mode")) {
     return HFMInterstitialType::kIncognito;
   }
-  bool use_new_interstitial = base::FeatureList::IsEnabled(
-      features::kHttpsFirstModeInterstitialAugust2024Refresh);
-  std::string substring = use_new_interstitial
-                              ? "doesn’t support a secure connection"
-                              : "this site does not support HTTPS.";
-  if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(), substring)) {
+  if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
+                                   "doesn’t support a secure connection")) {
     return HFMInterstitialType::kStandard;
   }
   return HFMInterstitialType::kNone;

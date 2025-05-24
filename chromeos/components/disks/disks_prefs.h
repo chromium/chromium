@@ -11,6 +11,7 @@ namespace disks::prefs {
 
 extern const char kExternalStorageDisabled[];
 extern const char kExternalStorageReadOnly[];
+extern const char kExternalStorageAllowlist[];
 
 // Registers external storage specific profile preferences for browser prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

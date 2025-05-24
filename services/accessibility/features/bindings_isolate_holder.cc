@@ -41,6 +41,7 @@ void BindingsIsolateHolder::RemoveObserver(IsolateObserver* observer) {
 }
 
 void BindingsIsolateHolder::NotifyIsolateWillDestroy() {
+  v8::Isolate::Scope isolate_scope(GetIsolate());
   for (IsolateObserver& obs : observers_) {
     obs.OnIsolateWillDestroy();
   }

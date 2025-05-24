@@ -15,14 +15,14 @@
 
 #include "base/check.h"
 #include "base/debug/alias.h"
+#include "base/immediate_crash.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 namespace {
 
@@ -40,15 +40,16 @@ NOINLINE void CorruptMemoryBlock(bool induce_crash) {
   // This way the underflow won't be detected but the corruption will (as the
   // allocator will still be hooked).
   auto InterlockedIncrementFn =
-      reinterpret_cast<LONG (*)(LONG volatile * addend)>(
+      reinterpret_cast<LONG (*)(LONG volatile* addend)>(
           GetProcAddress(GetModuleHandle(L"kernel32"), "InterlockedIncrement"));
   CHECK(InterlockedIncrementFn);
 
   LONG volatile dummy = InterlockedIncrementFn(array - 1);
   base::debug::Alias(const_cast<LONG*>(&dummy));
 
-  if (induce_crash)
-    CHECK(false);
+  if (induce_crash) {
+    base::ImmediateCrash();
+  }
   delete[] array;
 }
 #endif  // BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
@@ -105,5 +106,4 @@ void AsanCorruptHeap() {
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // ADDRESS_SANITIZER
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

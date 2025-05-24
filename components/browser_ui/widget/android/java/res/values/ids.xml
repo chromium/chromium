@@ -13,4 +13,8 @@ found in the LICENSE file.
 
     <!-- ViewHighlighter tags -->
     <item type="id" name="highlight_state" />
+    <item type="id" name="highlight_drawable" />
+    <item type="id" name="highlight_view_rect_provider" />
+    <item type="id" name="highlight_drawable_overlay_added" />
+
 </resources>

@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -58,7 +59,8 @@ UIElementWithMetaData::GetCustomPropertiesForMatchedStyle() const {
     if (!!(flags & ui::metadata::PropertyFlags::kSerializable) ||
         !!(flags & ui::metadata::PropertyFlags::kReadOnly)) {
       class_properties.emplace_back(
-          (*member)->GetMemberNamePrefix() + (*member)->member_name(),
+          base::StrCat(
+              {(*member)->GetMemberNamePrefix(), (*member)->member_name()}),
           base::UTF16ToUTF8((*member)->GetValueAsString(instance)));
     }
 
@@ -73,7 +75,7 @@ UIElementWithMetaData::GetCustomPropertiesForMatchedStyle() const {
 void UIElementWithMetaData::GetVisible(bool* visible) const {
   // Visibility information should be directly retrieved from element's
   // metadata, no need for this function any more.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void UIElementWithMetaData::SetVisible(bool visible) {
@@ -134,7 +136,7 @@ void UIElementWithMetaData::InitSources() {
        metadata != nullptr; metadata = metadata->parent_class_meta_data()) {
     // If class has Metadata properties, add their sources.
     if (!metadata->members().empty()) {
-      AddSource(metadata->file(), metadata->line());
+      AddSource(std::string(metadata->file()), metadata->line());
     }
   }
 }

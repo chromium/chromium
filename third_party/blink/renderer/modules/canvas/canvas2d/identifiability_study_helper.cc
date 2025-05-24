@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 
 #include <cstdint>
@@ -41,10 +36,7 @@ void IdentifiabilityStudyHelper::AddTokens(
 
 uint64_t IdentifiabilityStudyHelper::DigestPartialData() const {
   return base::legacy::CityHash64WithSeed(
-      base::make_span(
-          reinterpret_cast<const uint8_t*>(partial_.data()),
-          reinterpret_cast<const uint8_t*>(partial_.data() + position_)),
-      chaining_value_);
+      base::as_bytes(base::span(partial_).first(position_)), chaining_value_);
 }
 
 }  // namespace blink

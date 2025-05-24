@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 
 #include <stddef.h>
@@ -16,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/esim_manager.h"
@@ -50,6 +43,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
+#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
@@ -87,8 +81,6 @@
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
@@ -155,6 +147,7 @@
 #include "chrome/grit/oobe_resources.h"
 #include "chrome/grit/oobe_resources_map.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
@@ -178,8 +171,8 @@
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 
@@ -248,8 +241,7 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
 }
 
 void AddAssistantScreensResources(content::WebUIDataSource* source) {
-  source->AddResourcePaths(
-      base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
+  source->AddResourcePaths(kAssistantOptinResources);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");
@@ -328,8 +320,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeLazyLoadingEnabled",
                      features::IsOobeLazyLoadingEnabled());
   source->AddBoolean("isOobeAiIntroEnabled", features::IsOobeAiIntroEnabled());
-  source->AddBoolean("isOobeGeminiIntroEnabled",
-                     features::IsOobeGeminiIntroEnabled());
   source->AddBoolean("isJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyModalEnabled",
@@ -370,9 +360,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeSoftwareUpdateEnabled",
                      features::IsOobeSoftwareUpdateEnabled());
 
-  source->AddBoolean("isPasswordlessGaiaEnabledForConsumers",
-                     features::IsPasswordlessGaiaEnabledForConsumers());
-
   source->AddBoolean("isRemoteActivityNotificationEnabled",
                      base::FeatureList::IsEnabled(
                          remoting::features::kEnableCrdAdminRemoteAccessV2));
@@ -382,6 +369,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 
   source->AddBoolean("isOobeAddUserDuringEnrollmentEnabled",
                      features::IsOobeAddUserDuringEnrollmentEnabled());
+
+  source->AddBoolean("isOobeDevOverlayEnabled",
+                     command_line->HasSwitch(switches::kShowOobeDevOverlay));
 
   // Configure shared resources
   AddProductLogoResources(source);
@@ -421,9 +411,7 @@ std::string GetDisplayType(const GURL& url) {
        OobeUI::kOobeDisplay, OobeUI::kOobeTestLoader});
 
   if (!kKnownDisplayTypes.contains(path)) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unknown display type '" << path << "'. Setting default.";
-    return OobeUI::kOobeDisplay;
+    NOTREACHED() << "Unknown display type '" << path << "'. Setting default.";
   }
   return path;
 }
@@ -488,11 +476,6 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<LocaleSwitchScreenHandler>());
 
-  AddScreenHandler(std::make_unique<LacrosDataMigrationScreenHandler>());
-
-  AddScreenHandler(
-      std::make_unique<LacrosDataBackwardMigrationScreenHandler>());
-
   AddScreenHandler(std::make_unique<TermsOfServiceScreenHandler>());
 
   AddScreenHandler(std::make_unique<SyncConsentScreenHandler>());
@@ -508,10 +491,7 @@ void OobeUI::ConfigureOobeDisplay() {
   if (features::IsOobeAiIntroEnabled()) {
     AddScreenHandler(std::make_unique<AiIntroScreenHandler>());
   }
-
-  if (features::IsOobeGeminiIntroEnabled()) {
-    AddScreenHandler(std::make_unique<GeminiIntroScreenHandler>());
-  }
+  AddScreenHandler(std::make_unique<GeminiIntroScreenHandler>());
 
   AddScreenHandler(std::make_unique<DemoSetupScreenHandler>());
 
@@ -654,7 +634,7 @@ void OobeUI::ConfigureOobeDisplay() {
     UpScaleOobe();
   }
 
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     oobe_display_chooser_ = std::make_unique<OobeDisplayChooser>();
   }
 }
@@ -805,16 +785,15 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
           "test_api/no_test_api.js",
           "test_api/test_api.js",
       });
-  for (const auto& path : base::make_span(kOobeResources, kOobeResourcesSize)) {
+  for (const auto& path : kOobeResources) {
     if (!kConditionalResources.contains(path.path)) {
       source->AddResourcePath(path.path, path.id);
     }
   }
   // Add Gaia Authenticator resources
-  source->AddResourcePaths(
-      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));
+  source->AddResourcePaths(kGaiaAuthHostResources);
 
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     source->AddResourcePath(
         kOobeCustomVarsCssJs,
         IDR_OOBE_COMPONENTS_OOBE_VARS_OOBE_CUSTOM_VARS_REMORA_CSS_JS);
@@ -875,10 +854,6 @@ base::Value::Dict OobeUI::GetLocalizedStrings() {
                                   ->ForceKeyboardDrivenUINavigation();
   localized_strings.Set("highlightStrength",
                         keyboard_driven_oobe ? "strong" : "normal");
-
-  localized_strings.Set(
-      "changePictureVideoModeEnabled",
-      base::FeatureList::IsEnabled(::features::kChangePictureVideoMode));
   return localized_strings;
 }
 

@@ -34,11 +34,12 @@ abstract class ElidedLogcatProvider {
     }
 
     public void getElidedLogcat(LogcatCallback callback) {
-        getRawLogcat((BufferedReader logsFileReader) -> {
-            // Run elideLogcat in background thread because it can be very slow
-            new AsyncTaskRunner(AsyncTask.THREAD_POOL_EXECUTOR).doAsync(
-                    () -> elideLogcat(logsFileReader), callback::onLogsDone);
-        });
+        getRawLogcat(
+                (BufferedReader logsFileReader) -> {
+                    // Run elideLogcat in background thread because it can be very slow
+                    new AsyncTaskRunner(AsyncTask.THREAD_POOL_EXECUTOR)
+                            .doAsync(() -> elideLogcat(logsFileReader), callback::onLogsDone);
+                });
     }
 
     @VisibleForTesting
@@ -54,8 +55,7 @@ abstract class ElidedLogcatProvider {
             Log.i(TAG, "elideLogcat took " + elapsedMillis + " ms");
         } catch (IOException e) {
             Log.e(TAG, "Can't read logs", e);
-        } finally {
-            return builder.toString();
         }
+        return builder.toString();
     }
 }

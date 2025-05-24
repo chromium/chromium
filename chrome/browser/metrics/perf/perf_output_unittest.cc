@@ -14,6 +14,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/sequenced_task_runner.h"
@@ -114,9 +115,9 @@ class FakeDebugDaemonClient : public ash::FakeDebugDaemonClient {
     base::ScopedAllowBlockingForTesting allow_block;
 
     auto perf_data = GetExamplePerfDataProto().SerializeAsString();
-    auto bytes_written = perf_output_file_.WriteAtCurrentPos(perf_data.c_str(),
-                                                             perf_data.size());
-    EXPECT_EQ(bytes_written, static_cast<ssize_t>(perf_data.size()));
+    EXPECT_TRUE(perf_output_file_.WriteAtCurrentPosAndCheck(
+        base::as_byte_span(perf_data)));
+
     // Need to close the pipe to unblock the pipe reader.
     perf_output_file_.Close();
   }

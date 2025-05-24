@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {openTab} from '/_test_resources/test_util/tabs_util.js';
-
-function getInjectedElementIds() {
-  let childIds = [];
-  for (const child of document.body.children)
-    childIds.push(child.id);
-  return childIds.sort();
-};
+import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
+import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_script_test_util.js';
 
 chrome.test.runTests([
+  waitForUserScriptsAPIAllowed,
+
   // Test that unregisterContentScripts unregisters only content scripts and
   // not user scripts.
   async function unregisterScript_CannotUnregisterUserScripts() {
@@ -39,13 +35,11 @@ chrome.test.runTests([
     const config = await chrome.test.getConfig();
     const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
     let tab = await openTab(url);
-    let results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
 
     // Both content and user scripts should be injected.
-    chrome.test.assertEq(1, results.length);
     chrome.test.assertEq(
-        ['injected_content_script', 'injected_user_script'], results[0].result);
+        ['injected_content_script', 'injected_user_script'],
+        await getInjectedElementIds(tab.id));
 
     // Try to unregister user script's id using the scripting API. It should
     // fail because it's not a content script.
@@ -62,11 +56,9 @@ chrome.test.runTests([
 
     // Re-navigate to the requested url, and verify both scripts are injected.
     tab = await openTab(url);
-    results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
-    chrome.test.assertEq(1, results.length);
     chrome.test.assertEq(
-        ['injected_content_script', 'injected_user_script'], results[0].result);
+        ['injected_content_script', 'injected_user_script'],
+        await getInjectedElementIds(tab.id));
 
     // Unregister all content scripts using the scripting API.
     await chrome.scripting.unregisterContentScripts();
@@ -81,10 +73,8 @@ chrome.test.runTests([
     // Re-navigate to the requested url, and verify only the user script is
     // injected.
     tab = await openTab(url);
-    results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(['injected_user_script'], results[0].result);
+    chrome.test.assertEq(
+        ['injected_user_script'], await getInjectedElementIds(tab.id));
 
     chrome.test.succeed();
   },

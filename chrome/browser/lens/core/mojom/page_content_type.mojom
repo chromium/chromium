@@ -1,0 +1,12 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lens.mojom;
+
+// The type of document the the Lens Overlay CSB is initialized on.
+enum PageContentType {
+  kUnknown = 0,
+  kPdf = 1,
+  kHtml = 2,
+};

@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_FAKE_BROWSING_DATA_REMOVER_OBSERVER_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_FAKE_BROWSING_DATA_REMOVER_OBSERVER_H_
 
-#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer_bridge.h"
-
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer_bridge.h"
 
 // Arguments passed to `-browsingDataRemover:didRemoveBrowsingDataWithMask:`.
 struct TestDidRemoveBrowsingDataWithMaskInfo {

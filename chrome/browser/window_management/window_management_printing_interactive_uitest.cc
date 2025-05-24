@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -17,15 +17,15 @@
 #include "ui/display/screen_base.h"
 #include "ui/display/test/test_screen.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "ui/display/test/display_manager_test_api.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif                                                 // BUILDFLAG(IS_CHROMEOS)
 
 class WindowManagementTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     display::Screen::SetScreenInstance(&screen_);
     screen_.display_list().AddDisplay({1, gfx::Rect(0, 0, 803, 600)},
                                       display::DisplayList::Type::PRIMARY);
@@ -43,14 +43,14 @@ class WindowManagementTest : public InProcessBrowserTest {
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     display::Screen::SetScreenInstance(nullptr);
 #endif
   }
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   display::ScreenBase screen_;
 #endif
 };
@@ -69,10 +69,10 @@ class WindowManagementTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(WindowManagementTest,
                        MAYBE_NoCrashOnEventsDuringHandlerPrint) {
   // Update the display configuration to mock display changes.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-803x600");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
   // Navigate in a new tab to observe the test screen instance as needed.
@@ -106,14 +106,14 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
   ASSERT_TRUE(EvalJs(tab, script).error.empty());
 
   // Alter the display to trigger the currentscreenchange event and print().
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-807x600");
 #else
   screen_.display_list().UpdateDisplay({1, gfx::Rect(0, 0, 807, 600)},
                                        display::DisplayList::Type::PRIMARY);
   EXPECT_EQ(screen_.display_list().displays().size(), 1u);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
   content::WebContents* print_preview =
@@ -123,14 +123,14 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
   content::AwaitDocumentOnLoadCompleted(print_preview);
 
   // Add a second display while the print preview dialog is showing.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-807x600,1000+0-804x600");
 #else
   screen_.display_list().AddDisplay({2, gfx::Rect(1000, 0, 804, 600)},
                                     display::DisplayList::Type::NOT_PRIMARY);
   EXPECT_EQ(screen_.display_list().displays().size(), 2u);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
   // Cancel print to unfreeze the tab's JS and check that no crash occurred.

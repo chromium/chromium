@@ -32,9 +32,6 @@ PenIdHandler::GetPenDeviceStatics get_pen_device_statics = nullptr;
 class PenIdStatics {
  public:
   PenIdStatics() {
-    if (skip_initialization_) {
-      return;
-    }
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
     base::win::AssertComInitialized();
     base::win::RoGetActivationFactory(
@@ -51,31 +48,13 @@ class PenIdStatics {
     return instance.get();
   }
 
-  static void SkipInitializationForTesting() {
-    if (skip_initialization_) {
-      return;
-    }
-
-    skip_initialization_ = true;
-
-    // Force PenIdStatics to skip initialization.
-    PenIdStatics::GetInstance();
-
-    // Check that initialization hasn't already occurred.
-    DCHECK_EQ(nullptr, PenIdStatics::GetInstance()->PenDeviceStatics());
-  }
-
   const ComPtr<IPenDeviceStatics> PenDeviceStatics() {
     return pen_device_statics_;
   }
 
  private:
   ComPtr<IPenDeviceStatics> pen_device_statics_;
-  static bool skip_initialization_;
 };
-
-// Declared private in PenIdStatics.
-bool PenIdStatics::skip_initialization_ = false;
 
 bool PenDeviceApiSupported() {
   // PenDevice API only works properly on WIN11 or Win10 post v19044.
@@ -90,9 +69,8 @@ bool PenDeviceApiSupported() {
 
 PenIdHandler::ScopedPenIdStaticsForTesting::ScopedPenIdStaticsForTesting(
     PenIdHandler::GetPenDeviceStatics pen_device_statics)
-    : pen_device_resetter_(&get_pen_device_statics, pen_device_statics) {
-  PenIdStatics::SkipInitializationForTesting();
-}
+    : pen_device_resetter_(&get_pen_device_statics, pen_device_statics) {}
+
 PenIdHandler::ScopedPenIdStaticsForTesting::~ScopedPenIdStaticsForTesting() =
     default;
 

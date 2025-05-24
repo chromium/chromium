@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.pwd_migration;
 
 import static org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetProperties.VISIBLE;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -17,10 +19,12 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Contains the logic for the post password migration sheet. It sets the state of the model and
  * reacts to events.
  */
+@NullMarked
 class PostPasswordMigrationSheetMediator {
     private PropertyModel mModel;
     private Profile mProfile;
 
+    @Initializer
     void initialize(Profile profile, PropertyModel model) {
         mProfile = profile;
         mModel = model;

@@ -1,5 +1,5 @@
 {
-  "extends": "../../../../tools/typescript/tsconfig_base_polymer.json",
+  "extends": "../../../../tools/typescript/tsconfig_base_mixed.json",
   "compilerOptions": {
     "typeRoots": ["../../../../third_party/node/node_modules/@types"],
     "types": ["dom-speech-recognition"]

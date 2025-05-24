@@ -42,7 +42,7 @@ class AudioBus;
 // Multi-channel convolution reverb with channel matrixing - one or more
 // ReverbConvolver objects are used internally.
 
-class PLATFORM_EXPORT Reverb {
+class PLATFORM_EXPORT Reverb final {
   USING_FAST_MALLOC(Reverb);
 
  public:

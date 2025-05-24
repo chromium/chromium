@@ -6,6 +6,9 @@ package org.chromium.components.offline_items_collection;
 
 import android.graphics.Bitmap;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * This class is the Java counterpart to the C++ OfflineItemVisuals
  * (components/offline_items_collection/core/offline_item.h) class.
@@ -13,6 +16,7 @@ import android.graphics.Bitmap;
  * For all member variable descriptions see the C++ class.
  * TODO(dtrainor): Investigate making all class members for this and the C++ counterpart const.
  */
+@NullMarked
 public class OfflineItemVisuals {
-    public Bitmap icon;
+    public @Nullable Bitmap icon;
 }

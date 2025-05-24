@@ -6,17 +6,21 @@ package org.chromium.components.browser_ui.widget.displaystyle;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Implementation of {@link DisplayStyleObserver} designed to play nicely with
  * {@link androidx.recyclerview.widget.RecyclerView}. It will not notify of changes when the
  * associated view is not attached to the window.
  */
+@NullMarked
 public class DisplayStyleObserverAdapter
         implements DisplayStyleObserver, View.OnAttachStateChangeListener {
     private final DisplayStyleObserver mObserver;
 
     /** Current display style, gets updated as the UiConfig detects changes and notifies us. */
-    private UiConfig.DisplayStyle mCurrentDisplayStyle;
+    private UiConfig.@Nullable DisplayStyle mCurrentDisplayStyle;
 
     private boolean mIsViewAttached;
 
@@ -50,7 +54,7 @@ public class DisplayStyleObserverAdapter
     }
 
     @Override
-    public void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
+    public void onDisplayStyleChanged(UiConfig.@Nullable DisplayStyle newDisplayStyle) {
         assert newDisplayStyle != null;
         mCurrentDisplayStyle = newDisplayStyle;
 

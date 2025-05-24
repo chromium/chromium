@@ -49,7 +49,7 @@ class InlineItemsBuilderTemplate {
   // Create a builder that appends items to |items|.
   InlineItemsBuilderTemplate(
       LayoutBlockFlow* block_flow,
-      HeapVector<InlineItem>* items,
+      InlineItems* items,
       const String& previous_text_content = String(),
       const SvgTextChunkOffsets* chunk_offsets = nullptr);
   ~InlineItemsBuilderTemplate();
@@ -171,14 +171,14 @@ class InlineItemsBuilderTemplate {
 
     BoxInfo(unsigned item_index, const InlineItem& item);
     bool ShouldCreateBoxFragmentForChild(const BoxInfo& child) const;
-    void SetShouldCreateBoxFragment(HeapVector<InlineItem>* items);
+    void SetShouldCreateBoxFragment(InlineItems* items);
   };
 
  private:
   static bool NeedsBoxInfo();
 
   LayoutBlockFlow* const block_flow_;
-  HeapVector<InlineItem>* items_;
+  InlineItems* items_;
   StringBuilder text_;
 
   // |mapping_builder_| builds the whitespace-collapsed offset mapping

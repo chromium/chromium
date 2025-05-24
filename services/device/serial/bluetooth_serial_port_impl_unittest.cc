@@ -16,7 +16,7 @@
 #include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -30,7 +30,6 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
-#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/test/fake_serial_port_client.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,6 +51,7 @@ constexpr char kDiscardedBuffer[] = "discarded";
 constexpr char kDeviceAddress[] = "00:00:00:00:00:00";
 constexpr uint32_t kElementNumBytes = 1;
 constexpr uint32_t kCapacityNumBytes = 64;
+constexpr std::string_view kOpenSocketResult = "Bluetooth.Serial.OpenSocketResult";
 
 std::string CreateTestData(size_t buffer_size) {
   std::string test_data(buffer_size, 'X');
@@ -104,10 +104,7 @@ MojoResult ReadConsumerData(mojo::ScopedDataPipeConsumerHandle& consumer,
 
 class BluetoothSerialPortImplTest : public testing::Test {
  public:
-  BluetoothSerialPortImplTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
-  }
+  BluetoothSerialPortImplTest() = default;
   BluetoothSerialPortImplTest(const BluetoothSerialPortImplTest&) = delete;
   BluetoothSerialPortImplTest& operator=(const BluetoothSerialPortImplTest&) =
       delete;
@@ -146,6 +143,9 @@ class BluetoothSerialPortImplTest : public testing::Test {
               loop.Quit();
             }));
     loop.Run();
+
+    histogram_tester().ExpectUniqueSample(kOpenSocketResult, /*sample=*/true,
+                                          /*expected_bucket_count=*/1);
   }
 
   void CreateDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
@@ -163,13 +163,16 @@ class BluetoothSerialPortImplTest : public testing::Test {
 
   MockBluetoothSocket& mock_socket() { return *mock_socket_; }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   scoped_refptr<MockBluetoothSocket> mock_socket_ =
       base::MakeRefCounted<MockBluetoothSocket>();
   std::unique_ptr<MockBluetoothDevice> mock_device_;
 
+  base::HistogramTester histogram_tester_;
+
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -201,6 +204,9 @@ TEST_F(BluetoothSerialPortImplTest, OpenFailure) {
             loop.Quit();
           }));
   loop.Run();
+
+  histogram_tester().ExpectUniqueSample(kOpenSocketResult, /*sample=*/false,
+                                        /*expected_bucket_count=*/1);
 }
 
 TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {

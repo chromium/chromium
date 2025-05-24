@@ -11,6 +11,7 @@
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 
 using DisplayType = ash::KeyboardBacklightColorController::DisplayType;
 

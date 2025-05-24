@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.Editable;
@@ -19,6 +21,8 @@ import android.widget.TextView.BufferType;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -28,6 +32,7 @@ import org.chromium.ui.text.EmptyTextWatcher;
 import java.util.Locale;
 
 /** Prompt that asks users to confirm user's name before saving card to Google. */
+@NullMarked
 public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase
         implements EmptyTextWatcher {
     /**
@@ -69,7 +74,7 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase
 
     private final EditText mUserNameInput;
     private final ImageView mNameFixFlowTooltipIcon;
-    private PopupWindow mNameFixFlowTooltipPopup;
+    private @Nullable PopupWindow mNameFixFlowTooltipPopup;
 
     /** Fix flow prompt to confirm user name before saving the card to Google. */
     private AutofillNameFixFlowPrompt(
@@ -166,6 +171,7 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase
 
     @Override
     public void onClick(PropertyModel model, int buttonType) {
+        assumeNonNull(mModalDialogManager);
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
             mDelegate.onUserAcceptCardholderName(mUserNameInput.getText().toString());
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);

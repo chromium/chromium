@@ -36,6 +36,35 @@
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
+bool NewTabUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // The URL chrome://newtab/ can be either a virtual or a real URL,
+  // depending on the context. In this case, it is always a real URL that
+  // points to the New Tab page for the incognito profile only. For other
+  // profile types, this URL must already be redirected to a different URL
+  // that matches the profile type.
+  //
+  // Returning NewWebUI<NewTabUI> for the wrong profile type will lead to
+  // crash in NTPResourceCache::GetNewTabHTML (Check: false), so here we add
+  // a sanity check to prevent further crashes.
+  //
+  // The switch statement below must be consistent with the code in
+  // NTPResourceCache::GetNewTabHTML!
+  switch (NTPResourceCache::GetWindowType(profile)) {
+    case NTPResourceCache::NORMAL:
+      LOG(ERROR) << "Requested load of chrome://newtab/ for incorrect "
+                    "profile type.";
+      // TODO(crbug.com/40244589): Add DumpWithoutCrashing() here.
+      return false;
+    case NTPResourceCache::INCOGNITO:
+      [[fallthrough]];
+    case NTPResourceCache::GUEST:
+      [[fallthrough]];
+    case NTPResourceCache::NON_PRIMARY_OTR:
+      return true;
+  }
+}
+
 namespace {
 
 // Strings sent to the page via jstemplates used to set the direction of the
@@ -44,8 +73,9 @@ const char kRTLHtmlTextDirection[] = "rtl";
 const char kLTRHtmlTextDirection[] = "ltr";
 
 const char* GetHtmlTextDirection(const std::u16string& text) {
-  if (base::i18n::IsRTL() && base::i18n::StringContainsStrongRTLChars(text))
+  if (base::i18n::IsRTL() && base::i18n::StringContainsStrongRTLChars(text)) {
     return kRTLHtmlTextDirection;
+  }
   return kLTRHtmlTextDirection;
 }
 
@@ -79,7 +109,7 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
-NewTabUI::~NewTabUI() {}
+NewTabUI::~NewTabUI() = default;
 
 // static
 bool NewTabUI::IsNewTab(const GURL& url) {
@@ -112,10 +142,11 @@ void NewTabUI::SetUrlTitleAndDirection(base::Value::Dict* dictionary,
   // title will be rendered as "!Yahoo" if its "dir" attribute is not set to
   // "ltr".
   std::string direction;
-  if (using_url_as_the_title)
+  if (using_url_as_the_title) {
     direction = kLTRHtmlTextDirection;
-  else
+  } else {
     direction = GetHtmlTextDirection(title);
+  }
 
   dictionary->Set("title", title_to_set);
   dictionary->Set("direction", direction);
@@ -147,17 +178,6 @@ void NewTabUI::NewTabHTMLSource::StartDataRequest(
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/40050262): Simplify usages of |path| since |url| is
-  // available.
-  const std::string path = content::URLDataSource::URLToRequestPath(url);
-  if (!path.empty() && path[0] != '#') {
-    // A path under new-tab was requested; it's likely a bad relative
-    // URL from the new tab page, but in any case it's an error.
-    NOTREACHED_IN_MIGRATION()
-        << path << " should not have been requested on the NTP";
-    std::move(callback).Run(nullptr);
-    return;
-  }
 
   // Sometimes the |profile_| is the parent (non-incognito) version of the user
   // so we check the |web_contents| if it is provided.
@@ -210,4 +230,4 @@ std::string NewTabUI::NewTabHTMLSource::GetContentSecurityPolicy(
   return content::URLDataSource::GetContentSecurityPolicy(directive);
 }
 
-NewTabUI::NewTabHTMLSource::~NewTabHTMLSource() {}
+NewTabUI::NewTabHTMLSource::~NewTabHTMLSource() = default;

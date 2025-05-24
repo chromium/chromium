@@ -6,7 +6,8 @@
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_FEED_TOP_SECTION_FEED_TOP_SECTION_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
+
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_view_controller_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/notifications_promo_view_constants.h"
@@ -16,6 +17,7 @@ class AuthenticationService;
 @protocol FeedTopSectionConsumer;
 @protocol NewTabPageDelegate;
 class PrefService;
+class ProvisionalPushNotificationService;
 @class SigninPromoViewMediator;
 
 namespace signin {
@@ -41,10 +43,12 @@ enum class ContentNotificationPromoProvisionalEntrypoint {
                 SigninPromoViewConsumer>
 
 - (instancetype)initWithConsumer:(id<FeedTopSectionConsumer>)consumer
-                 identityManager:(signin::IdentityManager*)identityManager
-                     authService:(AuthenticationService*)authService
-                     isIncognito:(BOOL)isIncognito
-                     prefService:(PrefService*)prefService
+                       identityManager:(signin::IdentityManager*)identityManager
+                           authService:(AuthenticationService*)authService
+    provisionalPushNotificationService:
+        (ProvisionalPushNotificationService*)provisionalPushNotificationService
+                             incognito:(BOOL)incognito
+                           prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

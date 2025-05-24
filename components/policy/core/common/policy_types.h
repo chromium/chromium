@@ -154,6 +154,10 @@ enum class PolicyFetchReason {
   kUserRequest,
   // Policy fetch as previous request failed.
   kRetry,
+  // Schema Update
+  kSchemaUpdated,
+  // Disconnect from cloud management
+  kDisconnect,
 };
 
 }  // namespace policy

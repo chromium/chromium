@@ -28,11 +28,6 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/platform_window/extensions/wayland_extension.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
-#endif
-
 DEFINE_UI_CLASS_PROPERTY_TYPE(chromeos::ImmersiveFullscreenController*)
 
 namespace chromeos {
@@ -111,6 +106,8 @@ void ImmersiveFullscreenController::Init(
   // This function may be called more than once (e.g. by
   // ClientControlledShellSurface).
   EnableWindowObservers(false);
+  widget_observation_.Reset();
+  widget_observation_.Observe(widget);
 
   delegate_ = delegate;
   top_container_ = top_container;
@@ -217,13 +214,7 @@ void ImmersiveFullscreenController::OnWindowPropertyChanged(
 }
 
 void ImmersiveFullscreenController::OnWindowDestroying(aura::Window* window) {
-  EnableEventObservers(false);
-  EnableWindowObservers(false);
-
-  // Set |enabled_| to false such that any calls to MaybeStartReveal() and
-  // MaybeEndReveal() have no effect.
-  enabled_ = false;
-  widget_ = nullptr;
+  CleanupOnWindowDestroy();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -241,6 +232,13 @@ void ImmersiveFullscreenController::OnViewIsDeleting(
     views::View* observed_view) {
   DCHECK_EQ(observed_view, top_container_);
   top_container_ = nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// views::WidgetObserver: overrides:
+
+void ImmersiveFullscreenController::OnWidgetDestroyed(views::Widget* widget) {
+  CleanupOnWindowDestroy();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -286,14 +284,7 @@ void ImmersiveFullscreenController::UnlockRevealedState() {
 // static
 void ImmersiveFullscreenController::EnableForWidget(views::Widget* widget,
                                                     bool enabled) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* wayland_extension = views::DesktopWindowTreeHostLacros::From(
-                                widget->GetNativeWindow()->GetHost())
-                                ->GetWaylandToplevelExtension();
-  wayland_extension->SetImmersiveFullscreenStatus(enabled);
-#else
   widget->GetNativeWindow()->SetProperty(kImmersiveIsActive, enabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 // static
@@ -796,6 +787,17 @@ void ImmersiveFullscreenController::EnableTouchInsets(bool enable) {
   widget_->GetNativeWindow()->targeter()->SetInsets(
       {}, gfx::Insets::TLBR(enable ? kImmersiveFullscreenTopEdgeInset : 0, 0, 0,
                             0));
+}
+
+void ImmersiveFullscreenController::CleanupOnWindowDestroy() {
+  EnableEventObservers(false);
+  EnableWindowObservers(false);
+  widget_observation_.Reset();
+
+  // Set `enabled_` to false such that any calls to MaybeStartReveal() and
+  // MaybeEndReveal() have no effect.
+  enabled_ = false;
+  widget_ = nullptr;
 }
 
 }  // namespace chromeos

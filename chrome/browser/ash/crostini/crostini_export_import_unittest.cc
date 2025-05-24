@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,6 +28,7 @@
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -119,6 +121,12 @@ class CrostiniExportImportTest : public testing::Test {
     ash::FakeConciergeClient::Get()->NotifyDiskImageProgress(signal);
   }
 
+  void SetImportResponse() {
+    vm_tools::concierge::ImportDiskImageResponse response;
+    response.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+    ash::FakeConciergeClient::Get()->set_import_disk_image_response(response);
+  }
+
   void SendImportProgress(
       const guest_os::GuestId& container_id,
       vm_tools::cicerone::ImportLxdContainerProgressSignal_Status status,
@@ -188,7 +196,7 @@ class CrostiniExportImportTest : public testing::Test {
     // If the file has been created (by an export), then delete it, but first
     // shutdown GuestOsSharePath to ensure watchers are destroyed, otherwise
     // they can trigger and execute against a destroyed service.
-    guest_os::GuestOsSharePath::GetForProfile(profile())->Shutdown();
+    guest_os::GuestOsSharePathFactory::GetForProfile(profile())->Shutdown();
     task_environment_.RunUntilIdle();
     base::DeleteFile(tarball_);
     test_helper_.reset();
@@ -360,6 +368,176 @@ TEST_F(CrostiniExportImportTest, TestExportDiskImageCancelled) {
 
   // CANCEL:
   crostini_export_import_->CancelOperation(ExportImportType::EXPORT_DISK_IMAGE,
+                                           custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::CANCELLING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), -1);
+    EXPECT_FALSE(notification.pinned());
+  }
+
+  // Should not be displayed as cancel is in progress
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 7);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::CANCELLING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), -1);
+    EXPECT_FALSE(notification.pinned());
+  }
+
+  // CANCELLED:
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(GetController(custom_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const std::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    EXPECT_EQ(ui_notification, std::nullopt);
+  }
+}
+
+TEST_F(CrostiniExportImportTest, TestImportDiskImageSuccess) {
+  SetImportResponse();
+  crostini_export_import_->FillOperationData(
+      ExportImportType::IMPORT_DISK_IMAGE);
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // 50% done.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 50);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 50);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Close notification and update progress. Should not update notification.
+  controller->get_delegate()->Close(false);
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_IN_PROGRESS, 60);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    EXPECT_EQ(notification.id(), notification_id);
+    EXPECT_EQ(notification.progress(), 50);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Done.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_CREATED, 100);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const std::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    ASSERT_NE(ui_notification, std::nullopt);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Linux apps & files have been successfully replaced");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+}
+
+TEST_F(CrostiniExportImportTest, TestImportDiskImageFail) {
+  SetImportResponse();
+  crostini_export_import_->FillOperationData(
+      ExportImportType::IMPORT_DISK_IMAGE);
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(default_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // Fails.
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_FAILED, 0);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const std::optional<message_center::Notification> ui_notification =
+        notification_display_service_->GetNotification(notification_id);
+    ASSERT_NE(ui_notification, std::nullopt);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Restoring couldn't be completed due to an error");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+}
+
+TEST_F(CrostiniExportImportTest, TestImportDiskImageCancelled) {
+  SetImportResponse();
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FillOperationData(
+      ExportImportType::IMPORT_DISK_IMAGE, custom_container_id_);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(),
+            CrostiniExportImportStatusTracker::Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification& notification =
+        GetNotification(custom_container_id_);
+    notification_id = notification.id();
+    EXPECT_EQ(notification.progress(), 0);
+    EXPECT_TRUE(notification.pinned());
+  }
+
+  // CANCEL:
+  crostini_export_import_->CancelOperation(ExportImportType::IMPORT_DISK_IMAGE,
                                            custom_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(),

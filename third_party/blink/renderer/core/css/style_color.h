@@ -51,6 +51,7 @@ class ColorProvider;
 
 namespace blink {
 class CalculationValue;
+class CSSLengthResolver;
 class CSSValue;
 
 class CORE_EXPORT StyleColor {
@@ -103,6 +104,12 @@ class CORE_EXPORT StyleColor {
    public:
     virtual void Trace(Visitor* vistor) const {}
     virtual CSSValue* ToCSSValue() const = 0;
+
+    // Resolves the function to a Color without making any assumption about
+    // where this function might appear in an expression tree. For example,
+    // the output value should *not* undergo any conversion of `none` values
+    // to zero if said `none` should propagate to the input of a containing
+    // function.
     virtual Color Resolve(const Color& current_color) const = 0;
 
     enum class Type { kColorMix, kRelativeColor };
@@ -172,7 +179,8 @@ class CORE_EXPORT StyleColor {
                             const CSSValue& channel0,
                             const CSSValue& channel1,
                             const CSSValue& channel2,
-                            const CSSValue* alpha);
+                            const CSSValue* alpha,
+                            const CSSLengthResolver& length_resolver);
     virtual ~UnresolvedRelativeColor() = default;
     void Trace(Visitor* visitor) const override;
     CSSValue* ToCSSValue() const override;
@@ -221,14 +229,13 @@ class CORE_EXPORT StyleColor {
     return color_or_unresolved_color_function_.unresolved_color_function !=
            nullptr;
   }
+  bool DependsOnCurrentColor() const {
+    return IsCurrentColor() || IsUnresolvedColorFunction();
+  }
   bool IsSystemColorIncludingDeprecated() const {
     return IsSystemColorIncludingDeprecated(color_keyword_);
   }
   bool IsSystemColor() const { return IsSystemColor(color_keyword_); }
-  const UnresolvedColorFunction& GetUnresolvedColorFunction() const {
-    DCHECK(IsUnresolvedColorFunction());
-    return *color_or_unresolved_color_function_.unresolved_color_function;
-  }
   bool IsAbsoluteColor() const {
     return !IsCurrentColor() && !IsUnresolvedColorFunction();
   }
@@ -242,16 +249,10 @@ class CORE_EXPORT StyleColor {
     return color_keyword_ != CSSValueID::kInvalid;
   }
 
+  // Resolves this StyleColor to an output color in its final form per spec.
   Color Resolve(const Color& current_color,
                 mojom::blink::ColorScheme color_scheme,
                 bool* is_current_color = nullptr) const;
-
-  // Resolve and override the resolved color's alpha channel as specified by
-  // |alpha|.
-  Color ResolveWithAlpha(Color current_color,
-                         mojom::blink::ColorScheme color_scheme,
-                         int alpha,
-                         bool* is_current_color = nullptr) const;
 
   // Re-resolve the current system color keyword. This is needed in cases such
   // as forced colors mode because initial values for some internal forced
@@ -260,6 +261,8 @@ class CORE_EXPORT StyleColor {
   StyleColor ResolveSystemColor(mojom::blink::ColorScheme color_scheme,
                                 const ui::ColorProvider* color_provider,
                                 bool is_in_web_app_scope) const;
+
+  const CSSValue* ToCSSValue() const;
 
   bool IsNumeric() const {
     return EffectiveColorKeyword() == CSSValueID::kInvalid;
@@ -297,6 +300,21 @@ class CORE_EXPORT StyleColor {
   ColorOrUnresolvedColorFunction color_or_unresolved_color_function_;
 
  private:
+  // An UnresolvedColorFunction may be directly accessed immediately after it's
+  // been built at computed-value time, so that sub-expressions can be resolved
+  // in context. However, once an UnresolvedColorFunction has been embedded
+  // into a StyleColor, we should only resolve the entire expression tree at
+  // once, which is accomplished by calling StyleColor::Resolve().
+  // Thus, only test/debug code and other instances of StyleColor, which need to
+  // determine equality, should reach for an UnresolvedColorFunction once it's
+  // been embedded into a StyleColor.
+  friend CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
+                                              const StyleColor& color);
+  const UnresolvedColorFunction& GetUnresolvedColorFunction() const {
+    DCHECK(IsUnresolvedColorFunction());
+    return *color_or_unresolved_color_function_.unresolved_color_function;
+  }
+
   CSSValueID EffectiveColorKeyword() const;
 };
 
@@ -325,4 +343,5 @@ CORE_EXPORT std::ostream& operator<<(
 
 }  // namespace blink
 
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::StyleColor)
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_COLOR_H_

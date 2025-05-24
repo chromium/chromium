@@ -34,8 +34,7 @@ OmniboxPrerender::OmniboxPrerender(JNIEnv* env,
                                    const jni_zero::JavaRef<jobject>& obj)
     : weak_java_omnibox_(env, obj) {}
 
-OmniboxPrerender::~OmniboxPrerender() {
-}
+OmniboxPrerender::~OmniboxPrerender() = default;
 
 static jlong JNI_OmniboxPrerender_Init(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj) {
@@ -124,8 +123,7 @@ void OmniboxPrerender::PrerenderMaybe(
     case AutocompleteActionPredictor::ACTION_NONE:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -145,10 +143,8 @@ void OmniboxPrerender::DoPrerender(const AutocompleteMatch& match,
   // SearchPrefetchService is responsible for handling search
   // AutocompleteMatches and preloading search result pages when needed.
   DCHECK(!AutocompleteMatch::IsSearchType(match.type));
-  gfx::Rect container_bounds = web_contents->GetContainerBounds();
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile)
-      ->StartPrerendering(match.destination_url, *web_contents,
-                          container_bounds.size());
+      ->StartPrerendering(match.destination_url, *web_contents);
 }
 
 void OmniboxPrerender::DoPreconnect(const AutocompleteMatch& match,

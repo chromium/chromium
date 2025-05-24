@@ -22,14 +22,14 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Resources;
-import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.LinearLayout;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -45,7 +45,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
@@ -56,11 +57,12 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
@@ -78,30 +80,33 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
+import org.chromium.chrome.browser.suggestions.tile.TilesLinearLayout;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -128,13 +133,16 @@ import java.util.concurrent.TimeUnit;
 public class NewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
 
-    private static final int RENDER_TEST_REVISION = 6;
+    private static final int RENDER_TEST_REVISION = 7;
 
     private static final String HISTOGRAM_NTP_MODULE_CLICK = "NewTabPage.Module.Click";
     private static final String HISTOGRAM_NTP_MODULE_LONGCLICK = "NewTabPage.Module.LongClick";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
@@ -146,7 +154,6 @@ public class NewTabPageTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_NEW_TAB_PAGE)
                     .build();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock OmniboxStub mOmniboxStub;
     @Mock VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock FeedReliabilityLogger mFeedReliabilityLogger;
@@ -167,7 +174,7 @@ public class NewTabPageTest {
     private TemplateUrlService mTemplateUrlService;
     private NewTabPage mNtp;
     private View mFakebox;
-    private ViewGroup mMvTilesLayout;
+    private TilesLinearLayout mMvTilesLayout;
     private FakeMostVisitedSites mMostVisitedSites;
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
@@ -175,8 +182,7 @@ public class NewTabPageTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        mActivityTestRule.startMainActivityWithURL("about:blank");
+        mActivityTestRule.startOnBlankPage();
         TemplateUrlService originalService =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -204,27 +210,49 @@ public class NewTabPageTest {
         mNtp = (NewTabPage) mTab.getNativePage();
         mFakebox = mNtp.getView().findViewById(R.id.search_box);
         mMvTilesLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
-        Assert.assertEquals(mSiteSuggestions.size(), mMvTilesLayout.getChildCount());
+        Assert.assertEquals(mSiteSuggestions.size(), mMvTilesLayout.getTileCount());
     }
 
     @Test
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @DisableFeatures({ChromeFeatureList.LOGO_POLISH})
     // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
-    public void testRender_FocusFakeBoxT() throws Exception {
-        ScrimCoordinator scrimCoordinator =
-                mActivityTestRule
-                        .getActivity()
-                        .getRootUiCoordinatorForTesting()
-                        .getScrimCoordinatorForTesting();
-        scrimCoordinator.disableAnimationForTesting(true);
+    public void testRender_FocusFakeBox() throws Exception {
+        ScrimManager scrimManager =
+                mActivityTestRule.getActivity().getRootUiCoordinatorForTesting().getScrimManager();
+        scrimManager.disableAnimationForTesting(true);
         onView(withId(R.id.search_box)).perform(click());
-        ChromeRenderTestRule.sanitize(mNtp.getView().getRootView());
-        mRenderTestRule.render(
-                mNtp.getView().getRootView(), "focus_fake_box_with_scrollable_mvt_v2");
-        scrimCoordinator.disableAnimationForTesting(false);
+        View view = mNtp.getView().findViewById(R.id.search_box);
+        ChromeRenderTestRule.sanitize(view);
+        mRenderTestRule.render(view, "focus_fake_box");
+        scrimManager.disableAnimationForTesting(false);
+    }
+
+    /**
+     * If this test fails because of new buttons being added to the new tab page toolbar
+     * (immediately adjacent to the real URL bar), ensure those buttons are manually wired for Tab
+     * key navigation following this crbug.com/394169187.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @Feature({"NewTabPage"})
+    public void testToolBar_Phone() {
+        ViewGroup toolBar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        int[] toolbarContentIds =
+                new int[] {
+                    R.id.home_button,
+                    R.id.home_page_buttons_stub,
+                    R.id.location_bar,
+                    R.id.toolbar_buttons
+                };
+        for (int i = 0; i < toolbarContentIds.length; i++) {
+            assertEquals(toolbarContentIds[i], toolBar.getChildAt(i).getId());
+        }
+
+        ViewGroup toolBarButtons = (ViewGroup) toolBar.getChildAt(toolbarContentIds.length - 1);
+        assertEquals(R.id.optional_toolbar_button_container, toolBarButtons.getChildAt(0).getId());
     }
 
     @Test
@@ -235,9 +263,9 @@ public class NewTabPageTest {
         onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
-        View view = mNtp.getCoordinatorForTesting().getSectionHeaderViewForTesting();
+        View view = mNtp.getCoordinatorForTesting().getHeaderViewForTesting();
         // Check header is expanded.
-        mRenderTestRule.render(view, "expandable_header_expanded");
+        mRenderTestRule.render(view, "expandable_header_expanded_v2");
 
         // Toggle header on the current tab.
         onView(withId(R.id.feed_stream_recycler_view))
@@ -245,7 +273,7 @@ public class NewTabPageTest {
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
         onView(withId(R.id.header_title)).perform(click());
         // Check header is collapsed.
-        mRenderTestRule.render(view, "expandable_header_collapsed_v2");
+        mRenderTestRule.render(view, "expandable_header_collapsed_v3");
     }
 
     /**
@@ -255,6 +283,8 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.P, message = "http://crbug.com/40664848")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.R, message = "http://crbug.com/40664848")
     public void testFocusFakebox() {
         int initialFakeboxTop = getFakeboxTop(mNtp);
 
@@ -302,7 +332,7 @@ public class NewTabPageTest {
                 new Runnable() {
                     @Override
                     public void run() {
-                        View mostVisitedItem = mMvTilesLayout.getChildAt(0);
+                        TileView mostVisitedItem = mMvTilesLayout.getTileAt(0);
                         TouchCommon.singleClickView(mostVisitedItem);
                     }
                 });
@@ -319,8 +349,8 @@ public class NewTabPageTest {
     public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(
-                mActivityTestRule,
-                mMvTilesLayout.getChildAt(0),
+                mActivityTestRule.getActivity(),
+                mMvTilesLayout.getTileAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB,
                 false,
                 mSiteSuggestions.get(0).url.getSpec());
@@ -330,13 +360,14 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @DisableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
     public void testOpenMostVisitedItemInIncognitoTab() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         HistogramWatcher histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
 
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(
-                mActivityTestRule,
-                mMvTilesLayout.getChildAt(0),
+                mActivityTestRule.getActivity(),
+                mMvTilesLayout.getTileAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB,
                 true,
                 mSiteSuggestions.get(0).url.getSpec());
@@ -348,11 +379,11 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisabledTest(message = "crbug.com/1036500")
+    @DisabledTest(message = "crbug.com/40664852")
     public void testRemoveMostVisitedItem() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         SiteSuggestion testSite = mSiteSuggestions.get(0);
-        View mostVisitedItem = mMvTilesLayout.getChildAt(0);
+        View mostVisitedItem = mMvTilesLayout.getTileAt(0);
         ArrayList<View> views = new ArrayList<>();
         mMvTilesLayout.findViewsWithText(views, testSite.title, View.FIND_VIEWS_WITH_TEXT);
         Assert.assertEquals(1, views.size());
@@ -509,7 +540,7 @@ public class NewTabPageTest {
         // and the placeholder has not been inflated yet.
         Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
         Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());
-        Assert.assertEquals(8, mMvTilesLayout.getChildCount());
+        Assert.assertEquals(8, mMvTilesLayout.getTileCount());
         Assert.assertNull(mNtp.getView().findViewById(R.id.tile_grid_placeholder));
 
         // When the search provider has no logo and there are no tile suggestions, the placeholder
@@ -537,9 +568,7 @@ public class NewTabPageTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            "The tile grid was not updated.",
-                            mMvTilesLayout.getChildCount(),
-                            is(0));
+                            "The tile grid was not updated.", mMvTilesLayout.getTileCount(), is(0));
                 });
         Assert.assertNotNull(mNtp.getView().findViewById(R.id.tile_grid_placeholder));
         Assert.assertEquals(
@@ -840,6 +869,7 @@ public class NewTabPageTest {
      */
     @Test
     @SmallTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40901674")
     public void testRecordHistogramHomeButtonClick_Ntp() {
         HistogramWatcher histogramWatcher = expectHomeButtonRecordForNtpModuleClick();
         onView(withId(R.id.home_button)).perform(click());
@@ -864,7 +894,7 @@ public class NewTabPageTest {
     @SmallTest
     public void testRecordHistogramProfileButtonClick_Ntp() {
         // Identity Disc should be shown on sign-in state.
-        addAccountWithNonDisplayableEmail();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.PROFILE_BUTTON);
@@ -872,7 +902,6 @@ public class NewTabPageTest {
         histogramWatcher.assertExpected(
                 HISTOGRAM_NTP_MODULE_CLICK
                         + " is not recorded correctly when click on the profile button.");
-        mSigninTestRule.signOut();
     }
 
     /**
@@ -883,7 +912,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage"})
     public void testRecordHistogramLogoClick_Ntp() {
-        mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridgeJniMock);
+        LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
         NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
         LogoCoordinator logoCoordinator = ntpLayout.getLogoCoordinatorForTesting();
         logoCoordinator.setLogoBridgeForTesting(mLogoBridge);
@@ -921,16 +950,37 @@ public class NewTabPageTest {
 
         Resources res = mActivityTestRule.getActivity().getResources();
         NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
-        View mvTilesLayout = ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        TilesLinearLayout mvTilesLayout = ntpLayout.findViewById(R.id.mv_tiles_layout);
 
         int expectedTitleTopMargin =
                 res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern);
-        TileView suggestionsTileElement = (TileView) ((LinearLayout) mvTilesLayout).getChildAt(0);
+        TileView suggestionsTileElement = mvTilesLayout.getTileAt(0);
         Assert.assertEquals(
                 "The top margin of the tile element's title is wrong.",
                 expectedTitleTopMargin,
                 ((MarginLayoutParams) suggestionsTileElement.getTitleView().getLayoutParams())
                         .topMargin);
+    }
+
+    /**
+     * Test whether the last touch position in {@link NewTabPage} is been set correctly. This is
+     * used for {@link
+     * org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabAnimationHostView}.
+     */
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage"})
+    public void testLastTouchPosition() {
+        // TODO(crbug.com/415303495): Update test to assert with exact values.
+        Point ntpPoint = mNtp.getLastTouchPosition();
+        Point defaultPoint = new Point(-1, -1);
+        Assert.assertEquals(defaultPoint, ntpPoint);
+
+        Assert.assertNotNull(mMvTilesLayout);
+        View mvTile = mMvTilesLayout.getTileAt(0);
+
+        TouchCommon.longPressView(mvTile, 0, 0);
+        Assert.assertNotEquals(defaultPoint, ntpPoint);
     }
 
     private void verifyMostVisitedTileMargin() {
@@ -951,7 +1001,7 @@ public class NewTabPageTest {
                 ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).rightMargin);
         Assert.assertEquals(
                 "The width of the most visited tiles container is wrong.",
-                expectedMvtLateralMargin * 2,
+                expectedMvtLateralMargin * 2L,
                 ntpLayout.getWidth() - mvTilesContainer.getWidth());
 
         int expectedMvtTopMargin = res.getDimensionPixelSize(R.dimen.mvt_container_top_margin);
@@ -983,11 +1033,6 @@ public class NewTabPageTest {
                 "The shape of the background of the most visited tiles container is wrong.",
                 GradientDrawable.RECTANGLE,
                 ((GradientDrawable) mvTilesContainerBackground).getShape());
-    }
-
-    private void captureThumbnail() {
-        Canvas canvas = new Canvas();
-        mNtp.captureThumbnail(canvas);
     }
 
     private boolean getUrlFocusAnimationsDisabled() {
@@ -1073,14 +1118,5 @@ public class NewTabPageTest {
 
     private static HistogramWatcher expectNoRecordsForNtpModuleClick() {
         return HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_NTP_MODULE_CLICK).build();
-    }
-
-    /** Transform the New Tab Page into the signed-in state. */
-    private void addAccountWithNonDisplayableEmail() {
-        mSigninTestRule.addAccountThenSignin(
-                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
-        //  is implemented.
-        ThreadUtils.runOnUiThreadBlocking(mTab::reload);
     }
 }

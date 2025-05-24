@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "gin/public/context_holder.h"
@@ -33,7 +34,10 @@ class TestIsolateHolder : public BindingsIsolateHolder {
   TestIsolateHolder() = default;
   TestIsolateHolder(const TestIsolateHolder&) = delete;
   TestIsolateHolder& operator=(const TestIsolateHolder&) = delete;
-  virtual ~TestIsolateHolder() = default;
+  virtual ~TestIsolateHolder() {
+    v8::HandleScope handle_scope(GetIsolate());
+    context_holder_.reset();
+  }
 
   // BindingsIsolateHolder:
   v8::Isolate* GetIsolate() const override {
@@ -67,7 +71,8 @@ class TestIsolateHolder : public BindingsIsolateHolder {
         gin::IsolateHolder::kSingleThread,
         gin::IsolateHolder::IsolateType::kUtility);
 
-    v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
+    isolate_scope_ =
+        std::make_unique<v8::Isolate::Scope>(isolate_holder_->isolate());
     v8::HandleScope handle_scope(isolate_holder_->isolate());
     v8::Local<v8::ObjectTemplate> global_template =
         v8::ObjectTemplate::New(isolate_holder_->isolate());
@@ -98,6 +103,7 @@ class TestIsolateHolder : public BindingsIsolateHolder {
   // outlive automation_bindings_, so the bindings are a field in this class.
   std::unique_ptr<AutomationInternalBindings> automation_bindings_;
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
+  std::unique_ptr<v8::Isolate::Scope> isolate_scope_;
   std::unique_ptr<gin::ContextHolder> context_holder_;
   int error_count_ = 0;
 

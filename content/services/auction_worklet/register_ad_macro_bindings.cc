@@ -8,12 +8,10 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/url_util.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
@@ -28,11 +26,6 @@ RegisterAdMacroBindings::RegisterAdMacroBindings(AuctionV8Helper* v8_helper)
 RegisterAdMacroBindings::~RegisterAdMacroBindings() = default;
 
 void RegisterAdMacroBindings::AttachToContext(v8::Local<v8::Context> context) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAdAuctionReportingWithMacroApi)) {
-    return;
-  }
-
   v8::Local<v8::External> v8_this =
       v8::External::New(v8_helper_->isolate(), this);
   v8::Local<v8::Function> v8_function =
@@ -69,7 +62,7 @@ void RegisterAdMacroBindings::RegisterAdMacro(
   }
 
   auto ContainsDisallowedCharacters = [](const std::string& str) -> bool {
-    return base::ranges::any_of(
+    return std::ranges::any_of(
         str, [](char c) { return !url::IsURIComponentChar(c) && c != '%'; });
   };
 

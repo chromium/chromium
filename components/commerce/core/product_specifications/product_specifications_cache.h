@@ -22,11 +22,21 @@ class ProductSpecificationsCache {
   const ProductSpecifications* GetEntry(std::vector<uint64_t> cluster_ids);
 
  private:
+  struct Entry {
+   public:
+    explicit Entry(ProductSpecifications specs);
+    ~Entry() = default;
+
+    ProductSpecifications specs;
+    base::Time creation_time;
+  };
+
   friend class ProductSpecificationsCacheTest;
 
   using Key = std::string;
   static const int kCacheSize = 10;
-  base::HashingLRUCache<Key, ProductSpecifications> cache_;
+  static constexpr base::TimeDelta kEntryInvalidationTime = base::Hours(6);
+  base::HashingLRUCache<Key, Entry> cache_;
   Key GetKey(std::vector<uint64_t> cluster_ids);
 };
 

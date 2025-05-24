@@ -138,5 +138,26 @@ function loadAllImages(imageSpecs, callbacks) {
   }
 }
 
+function smellsLikeImageData(imageData) {
+  // See if this object at least looks like an ImageData element.
+  // Unfortunately, we cannot use instanceof because the ImageData
+  // constructor is not public.
+  //
+  // We do this manually instead of using JSONSchema to avoid having these
+  // properties show up in the doc.
+  return (typeof imageData == 'object') && ('width' in imageData) &&
+         ('height' in imageData) && ('data' in imageData);
+}
+
+function verifyImageData(imageData) {
+  if (!smellsLikeImageData(imageData)) {
+    throw new Error(
+        'The imageData property must contain an ImageData object or' +
+        ' dictionary of ImageData objects.');
+  }
+}
+
 exports.$set('loadImageData', loadImageData);
 exports.$set('loadAllImages', loadAllImages);
+exports.$set('smellsLikeImageData', smellsLikeImageData);
+exports.$set('verifyImageData', verifyImageData);

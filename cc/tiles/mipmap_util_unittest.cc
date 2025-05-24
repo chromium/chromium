@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/tiles/mipmap_util.h"
 
+#include <array>
 #include <limits>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,8 +117,12 @@ TEST(MipMapUtilTest, Rounding) {
 
 // Ensures that we round up during mip calculation.
 TEST(MipMapUtilTest, RoundUp) {
-  const gfx::Size src_sizes[] = {gfx::Size(3, 3), gfx::Size(5, 7),
-                                 gfx::Size(11, 14), gfx::Size(17, 31)};
+  const auto src_sizes = std::to_array<gfx::Size>({
+      gfx::Size(3, 3),
+      gfx::Size(5, 7),
+      gfx::Size(11, 14),
+      gfx::Size(17, 31),
+  });
   for (int i = 0; i < 4; ++i) {
     EXPECT_EQ(MipMapUtil::GetSizeForLevel(src_sizes[i], i + 1),
               gfx::Size(2, 2));

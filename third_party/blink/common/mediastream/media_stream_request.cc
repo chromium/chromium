@@ -5,12 +5,21 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace blink {
+namespace {
+// TODO(crbug.com/410466097): Remove this kill switch once it's been confirmed
+// that there are no issues with classifying DISPLAY_AUDIO_CAPTURE as a desktop
+// capture type.
+BASE_FEATURE(kDisplayAudioCaptureKillSwitch,
+             "DisplayAudioCaptureKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace
 
 bool IsAudioInputMediaType(mojom::MediaStreamType type) {
   return (type == mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
@@ -38,8 +47,14 @@ bool IsVideoScreenCaptureMediaType(mojom::MediaStreamType type) {
 }
 
 bool IsDesktopCaptureMediaType(mojom::MediaStreamType type) {
-  return (type == mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE ||
+  return (IsAudioDesktopCaptureMediaType(type) ||
           IsVideoDesktopCaptureMediaType(type));
+}
+
+bool IsAudioDesktopCaptureMediaType(mojom::MediaStreamType type) {
+  return ((type == mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE &&
+           !base::FeatureList::IsEnabled(kDisplayAudioCaptureKillSwitch)) ||
+          type == mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE);
 }
 
 bool IsVideoDesktopCaptureMediaType(mojom::MediaStreamType type) {

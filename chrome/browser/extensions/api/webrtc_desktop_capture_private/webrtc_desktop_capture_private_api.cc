@@ -24,12 +24,10 @@ const char kUrlNotSecure[] =
 }  // namespace
 
 WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::
-    WebrtcDesktopCapturePrivateChooseDesktopMediaFunction() {
-}
+    WebrtcDesktopCapturePrivateChooseDesktopMediaFunction() = default;
 
 WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::
-    ~WebrtcDesktopCapturePrivateChooseDesktopMediaFunction() {
-}
+    ~WebrtcDesktopCapturePrivateChooseDesktopMediaFunction() = default;
 
 ExtensionFunction::ResponseAction
 WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::Run() {
@@ -80,9 +78,9 @@ WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::Run() {
 }
 
 WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction::
-    WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction() {}
+    WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction() = default;
 
 WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction::
-    ~WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction() {}
+    ~WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction() = default;
 
 }  // namespace extensions

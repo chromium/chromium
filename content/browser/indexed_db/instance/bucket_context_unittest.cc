@@ -9,6 +9,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -49,19 +50,17 @@ class BucketContextTest : public testing::Test {
     storage::BucketInfo bucket_info = quota_manager_->CreateBucket(
         storage::BucketInitParams::ForDefaultBucket(
             blink::StorageKey::CreateFromStringForTesting(
-                "https://example.com")),
-        blink::mojom::StorageType::kTemporary);
+                "https://example.com")));
     bucket_context_ = std::make_unique<BucketContext>(
         bucket_info, base::FilePath(), BucketContext::Delegate(),
+        scoped_refptr<base::UpdateableSequencedTaskRunner>(),
         quota_manager_proxy_,
-        /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
-        /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
+        /*file_system_access_context=*/mojo::NullRemote());
   }
 
   void SetQuotaLeft(int64_t quota_manager_response) {
     quota_manager_->SetQuota(bucket_context_->bucket_locator().storage_key,
-                             blink::mojom::StorageType::kTemporary,
                              quota_manager_response);
   }
 

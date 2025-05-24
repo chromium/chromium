@@ -22,7 +22,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -48,11 +47,6 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
 
   AccessibilityController* accessibility_controller() {
     return Shell::Get()->accessibility_controller();
-  }
-
-  void TearDown() override {
-    AshTestBase::TearDown();
-    features_.Reset();
   }
 
   FloatingAccessibilityController* controller() {
@@ -148,6 +142,10 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
                : gfx::Rect(-kMenuViewBoundsBuffer, -kMenuViewBoundsBuffer);
   }
 
+  float GetMenuOpacity() {
+    return controller()->bubble_view()->layer()->opacity();
+  }
+
   void Show() { accessibility_controller()->ShowFloatingMenuIfEnabled(); }
 
   void SetUpVisibleMenu() {
@@ -206,17 +204,10 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
                                /*available_imes=*/{ime_english, ime_pinyin});
   }
 
- protected:
-  base::test::ScopedFeatureList features_;
+  std::u16string GetAccessibleNameForBubble() {
+    return controller()->GetAccessibleNameForBubble();
+  }
 };
-
-TEST_F(FloatingAccessibilityControllerTest, ImeButtonNotShowWhenDisabled) {
-  features_.InitAndDisableFeature(features::kKioskEnableImeButton);
-
-  SetUpVisibleMenu();
-
-  EXPECT_FALSE(IsButtonVisible(FloatingAccessibilityView::ButtonId::kIme));
-}
 
 TEST_F(FloatingAccessibilityControllerTest, ImeButtonShownWhenEnabled) {
   SetUpVisibleMenu();
@@ -765,6 +756,20 @@ TEST_F(FloatingAccessibilityControllerTest,
 
   bubble_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
+  // FloatingAccessibilityController::Show sets the
+  // FloatingAccessibleBubbleView's CanActivate() to false, so we expect the
+  // accessible name to be empty.
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            std::u16string());
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
+
+TEST_F(FloatingAccessibilityControllerTest, CheckOpacity) {
+  SetUpVisibleMenu();
+  EXPECT_LT(GetMenuOpacity(), 1.0f);
+
+  controller()->FocusOnMenu();
+  EXPECT_EQ(GetMenuOpacity(), 1.0f);
 }
 
 }  // namespace ash

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/views_content_client/views_content_client_main_parts.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <utility>
@@ -15,9 +17,9 @@
 #include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_application_mac.h"
 #include "content/shell/browser/shell_browser_context.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views_content_client/views_content_client.h"
-#include "ui/views_content_client/views_content_client_main_parts.h"
 
 // A simple NSApplicationDelegate that provides a basic mainMenu and can
 // activate a task when the application has finished loading.
@@ -72,14 +74,13 @@ int ViewsContentClientMainPartsMac::PreMainMessageLoopRun() {
 
   // On Mac, the task must be deferred to applicationDidFinishLaunching. If not,
   // the widget can activate, but (even if configured) the mainMenu won't be
-  // ready to switch over in the OSX UI, so it will look strange.
-  NSWindow* window_context = nil;
+  // ready to switch over in the macOS UI, so it will look strange.
   [app_controller_
       setOnApplicationDidFinishLaunching:
           base::BindOnce(&ViewsContentClient::OnPreMainMessageLoopRun,
                          base::Unretained(views_content_client()),
                          base::Unretained(browser_context()),
-                         base::Unretained(window_context))];
+                         gfx::NativeWindow())];
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }

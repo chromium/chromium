@@ -6,9 +6,11 @@
 
 #include <optional>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/decoder_buffer.h"
 
 namespace blink {
 
@@ -45,18 +47,20 @@ void AudioTrackPcmEncoder::EncodeAudio(
   if (paused_)
     return;
 
-  std::string encoded_data_string;
-  encoded_data_string.resize(input_bus->frames() * input_bus->channels() *
-                             sizeof(float));
-  char* encoded_data_ptr = std::data(encoded_data_string);
+  auto encoded_data = base::HeapArray<uint8_t>::Uninit(
+      input_bus->frames() * input_bus->channels() * sizeof(float));
+
   input_bus->ToInterleaved<media::Float32SampleTypeTraits>(
-      input_bus->frames(), reinterpret_cast<float*>(encoded_data_ptr));
+      input_bus->frames(), reinterpret_cast<float*>(encoded_data.data()));
 
   const base::TimeTicks capture_time_of_first_sample =
       capture_time - media::AudioTimestampHelper::FramesToTime(
                          input_bus->frames(), input_params_.sample_rate());
-  on_encoded_audio_cb_.Run(input_params_, std::move(encoded_data_string),
-                           std::nullopt, capture_time_of_first_sample);
+
+  auto buffer = media::DecoderBuffer::FromArray(std::move(encoded_data));
+
+  on_encoded_audio_cb_.Run(input_params_, std::move(buffer), std::nullopt,
+                           capture_time_of_first_sample);
 }
 
 }  // namespace blink

@@ -17,7 +17,7 @@ TEST(TimerSamplingEventSourceTest, Basic) {
       test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   TimerSamplingEventSource source(kDelay);
-  EXPECT_TRUE(source.Start(BindLambdaForTesting([&]() { ++num_callbacks; })));
+  EXPECT_TRUE(source.Start(BindLambdaForTesting([&] { ++num_callbacks; })));
   EXPECT_EQ(0, num_callbacks);
   task_environment.FastForwardBy(kDelay / 2);
   EXPECT_EQ(0, num_callbacks);

@@ -7,20 +7,18 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/session/arc_management_transition.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -57,9 +55,6 @@ class ArcManagementTransitionNotificationTest
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
     arc_app_test_.SetUp(profile());
-
-    feature_list_.InitAndEnableFeature(
-        kEnableUnmanagedToManagedTransitionFeature);
   }
 
   void TearDown() override {
@@ -86,8 +81,6 @@ class ArcManagementTransitionNotificationTest
   ArcAppTest arc_app_test_;
 
   content::BrowserTaskEnvironment task_environment_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
@@ -28,19 +27,19 @@ using SafeSitesFilterBehavior = policy::SafeSitesFilterBehavior;
 // callback is safe because this object owns safe_sites_navigation_throttle_,
 // which runs the callback from within the object.
 PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     content::BrowserContext* context)
-    : content::NavigationThrottle(navigation_handle),
+    : content::NavigationThrottle(registry),
       blocklist_service_(PolicyBlocklistFactory::GetForBrowserContext(context)),
       prefs_(user_prefs::UserPrefs::Get(context)) {
   DCHECK(prefs_);
   auto safe_sites_navigation_throttle =
-      std::make_unique<SafeSitesNavigationThrottle>(navigation_handle, context);
+      std::make_unique<SafeSitesNavigationThrottle>(registry, context);
   if (base::FeatureList::IsEnabled(
           policy::features::kPolicyBlocklistProceedUntilResponse)) {
     safe_sites_navigation_throttle_ =
         std::make_unique<ProceedUntilResponseNavigationThrottle>(
-            navigation_handle, std::move(safe_sites_navigation_throttle),
+            registry, std::move(safe_sites_navigation_throttle),
             base::BindRepeating(
                 &PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult,
                 base::Unretained(this)));
@@ -53,14 +52,8 @@ PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
   }
 }
 
-PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() {
-  base::UmaHistogramEnumeration(
-      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
-      request_throttle_action_);
-  base::UmaHistogramTimes(
-      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime",
-      defer_duration_);
-}
+PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() =
+    default;
 
 bool PolicyBlocklistNavigationThrottle::IsBlockedViewSourceNavigation() {
   content::NavigationEntry* nav_entry =
@@ -69,8 +62,8 @@ bool PolicyBlocklistNavigationThrottle::IsBlockedViewSourceNavigation() {
     return false;
   }
 
-  GURL view_source_url = GURL(std::string("view-source:") +
-                              navigation_handle()->GetURL().spec());
+  GURL view_source_url =
+      GURL(std::string("view-source:") + navigation_handle()->GetURL().spec());
 
   return (blocklist_service_->GetURLBlocklistState(view_source_url) ==
           URLBlocklistState::URL_IN_BLOCKLIST);
@@ -79,15 +72,10 @@ bool PolicyBlocklistNavigationThrottle::IsBlockedViewSourceNavigation() {
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::WillStartOrRedirectRequest(
     bool is_redirect) {
-  if (request_time_.is_null()) {
-    request_time_ = base::TimeTicks::Now();
-  }
-  const GURL& url = navigation_handle()->GetURL();
-
   // Ignore blob scheme because we may use it to deliver navigation responses
   // to the renderer process.
+  const GURL& url = navigation_handle()->GetURL();
   if (url.SchemeIs(url::kBlobScheme)) {
-    UpdateRequestThrottleAction(PROCEED);
     return PROCEED;
   }
 
@@ -95,19 +83,15 @@ PolicyBlocklistNavigationThrottle::WillStartOrRedirectRequest(
       blocklist_service_->GetURLBlocklistState(url);
   if (blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST ||
       IsBlockedViewSourceNavigation()) {
-    UpdateRequestThrottleAction(BLOCK_REQUEST);
     return ThrottleCheckResult(BLOCK_REQUEST,
                                net::ERR_BLOCKED_BY_ADMINISTRATOR);
   }
 
   if (blocklist_state == URLBlocklistState::URL_IN_ALLOWLIST) {
-    UpdateRequestThrottleAction(PROCEED);
     return PROCEED;
   }
 
-  ThrottleCheckResult result = CheckSafeSitesFilter(url, is_redirect);
-  UpdateRequestThrottleAction(result.action());
-  return result;
+  return CheckSafeSitesFilter(url, is_redirect);
 }
 
 // SafeSitesNavigationThrottle is unconditional and does not check PrefService
@@ -140,12 +124,8 @@ PolicyBlocklistNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::WillProcessResponse() {
-  base::UmaHistogramTimes(
-      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime",
-      request_time_ - base::TimeTicks::Now());
   ThrottleCheckResult result =
       safe_sites_navigation_throttle_->WillProcessResponse();
-  UpdateRequestThrottleAction(result.action());
   return result;
 }
 
@@ -156,39 +136,10 @@ const char* PolicyBlocklistNavigationThrottle::GetNameForLogging() {
 void PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult(
     bool proceed,
     std::optional<ThrottleCheckResult> result) {
-  defer_duration_ += defer_time_ - base::TimeTicks::Now();
   if (proceed) {
     Resume();
   } else {
     CHECK(result.has_value());
     CancelDeferredNavigation(*result);
-  }
-}
-
-void PolicyBlocklistNavigationThrottle::UpdateRequestThrottleAction(
-    content::NavigationThrottle::ThrottleAction action) {
-  switch (action) {
-    case PROCEED:
-      request_throttle_action_ =
-          (request_throttle_action_ == RequestThrottleAction::kNoRequest ||
-           request_throttle_action_ == RequestThrottleAction::kProceed)
-              ? RequestThrottleAction::kProceed
-              : RequestThrottleAction::kProceedAfterDefer;
-      break;
-    case DEFER:
-      request_throttle_action_ = RequestThrottleAction::kDefer;
-      defer_time_ = base::TimeTicks::Now();
-      break;
-    case CANCEL:
-    case CANCEL_AND_IGNORE:
-    case BLOCK_REQUEST:
-    case BLOCK_REQUEST_AND_COLLAPSE:
-    case BLOCK_RESPONSE:
-      request_throttle_action_ =
-          (request_throttle_action_ == RequestThrottleAction::kNoRequest ||
-           request_throttle_action_ == RequestThrottleAction::kProceed)
-              ? RequestThrottleAction::kBlock
-              : RequestThrottleAction::kBlockAfterDefer;
-      break;
   }
 }

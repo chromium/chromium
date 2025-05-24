@@ -10,8 +10,11 @@ namespace content {
 
 MockIdpNetworkRequestManager::MockIdpNetworkRequestManager()
     : IdpNetworkRequestManager(url::Origin(),
+                               url::Origin(),
                                nullptr,
-                               network::mojom::ClientSecurityState::New()) {}
+                               nullptr,
+                               network::mojom::ClientSecurityState::New(),
+                               content::FrameTreeNodeId()) {}
 
 MockIdpNetworkRequestManager::~MockIdpNetworkRequestManager() = default;
 

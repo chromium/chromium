@@ -310,8 +310,7 @@ PasswordCheckUIStatus PasswordCheckManager::GetUIStatus(State state) const {
     case State::kServiceError:
       return PasswordCheckUIStatus::kErrorUnknown;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PasswordCheckUIStatus::kIdle;
+  NOTREACHED();
 }
 
 bool PasswordCheckManager::CanUseAccountCheck() const {
@@ -319,7 +318,6 @@ bool PasswordCheckManager::CanUseAccountCheck() const {
       SyncServiceFactory::GetForProfile(profile_));
   switch (sync_state) {
     case SyncState::kNotActive:
-      ABSL_FALLTHROUGH_INTENDED;
     case SyncState::kActiveWithCustomPassphrase:
       return false;
 

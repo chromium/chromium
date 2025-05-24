@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/sessions/model/NSCoder+Compatibility.h"
-
 #import "base/check.h"
+#import "ios/chrome/browser/sessions/model/NSCoder+Compatibility.h"
 
 namespace {
 // Note: `NSNotFound` is equal to `NSIntegerMax` in 32-bit and 64-bit that

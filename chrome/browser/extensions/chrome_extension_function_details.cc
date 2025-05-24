@@ -24,8 +24,7 @@ ChromeExtensionFunctionDetails::ChromeExtensionFunctionDetails(
     ExtensionFunction* function)
     : function_(function) {}
 
-ChromeExtensionFunctionDetails::~ChromeExtensionFunctionDetails() {
-}
+ChromeExtensionFunctionDetails::~ChromeExtensionFunctionDetails() = default;
 
 extensions::WindowController*
 ChromeExtensionFunctionDetails::GetCurrentWindowController() const {
@@ -102,7 +101,8 @@ gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
   // If there are no browser windows open, no window is available.
   // This could happen e.g. if extension launches a long process or simple
   // sleep() in the background script, during which browser is closed.
-  if (!browser)
-    return nullptr;
+  if (!browser) {
+    return gfx::NativeWindow();
+  }
   return browser->window()->GetNativeWindow();
 }

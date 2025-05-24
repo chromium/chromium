@@ -5,7 +5,7 @@
 #include "extensions/renderer/renderer_frame_context_data.h"
 
 #include "extensions/renderer/renderer_context_data.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/blink.h"
@@ -27,9 +27,12 @@ RendererFrameContextData::CloneFrameContextData() const {
 
 bool RendererFrameContextData::HasControlledFrameCapability() const {
   CHECK(frame_);
+  // Checking admin policies happens in the browser process in
+  // BrowserFrameContextData.
   return frame_->IsFeatureEnabled(
-             blink::mojom::PermissionsPolicyFeature::kControlledFrame) &&
-         RendererContextData::IsIsolatedWebAppContextAndEnabled();
+             network::mojom::PermissionsPolicyFeature::kControlledFrame) &&
+         RendererContextData::IsIsolatedWebAppContextAndEnabled() &&
+         frame_->GetContentSettings()->allow_controlled_frame;
 }
 
 std::unique_ptr<FrameContextData>

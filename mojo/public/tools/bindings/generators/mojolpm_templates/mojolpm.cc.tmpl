@@ -310,6 +310,19 @@ bool HandleReceiverAction(
   return result;
 }{{"\n"-}}
 {%-     for method in interface.methods %}
+
+{%-       if method.result_response != None %}
+{%-         set result_param = method.response_parameters[0] -%}
+{%-         set param_type = result_param.kind|cpp_wrapper_param_type(add_same_module_namespaces=true) %}
+{%-         set response_type = result_param.kind|get_qualified_name_for_kind %}
+static {{param_type}} {{interface.name}}_{{method.name}}Transform(base::expected<
+    {{method.result_response.success_kind|cpp_wrapper_type(add_same_module_namespaces=true)}},
+    {{method.result_response.failure_kind|cpp_wrapper_type}}> in) {
+  return in.has_value() ? {{response_type}}::NewSuccess(std::move(in.value())) :
+                          {{response_type}}::NewFailure(std::move(in.error()));
+}
+{%       endif %}
+
 {%-       if method.response_parameters != None %}
 static void {{interface.name}}_{{method.name}}Callback(
 {%-         for param in method.response_parameters %}
@@ -375,10 +388,15 @@ bool HandleCall(uint32_t instance_id,
 {%-       endfor -%}
 {%-       if method.response_parameters != None -%}
 {{ ',' if method.parameters }}
+{%-         if method.result_response != None -%}
+      base::BindOnce(&{{interface.name}}_{{method.name}}Transform)
+        .Then(base::BindOnce(&{{interface.name}}_{{method.name}}Callback)));
+{%-         else -%}
       base::BindOnce(&{{interface.name}}_{{method.name}}Callback));
+{%-         endif -%}
 {%-       else -%}
 );
-{%-       endif -%}
+{%-       endif %}
     mojolpm::GetContext()->EndDeserialization(Context::Rollback::kNoRollback);
   } else {
     mojolpm::GetContext()->EndDeserialization(Context::Rollback::kRollback);
@@ -441,17 +459,26 @@ bool HandleResponse(
 {%-           endif %}
 {%-         endfor %}
   if (mojolpm_result) {
+{%-         if method.result_response != None -%}
+{%-           set container = "local_" + method.response_parameters[0].name %}
+    if ({{container}}->is_success()) {
+      std::move(*mojolpm_callback).Run(base::ok(std::move({{container}}->get_success())));
+    } else {
+      std::move(*mojolpm_callback).Run(base::unexpected(std::move({{container}}->get_failure())));
+    }
+{%-         else -%}
     std::move(*mojolpm_callback).Run(
-{%-         for param in method.response_parameters -%}
-{%-           set name = param.name|camel_to_under %}
-{%-           set kind = param.kind %}
-{%-           if kind|is_interface_kind or kind|is_associated_kind %}
+{%-           for param in method.response_parameters -%}
+{%-             set name = param.name|camel_to_under %}
+{%-             set kind = param.kind %}
+{%-             if kind|is_interface_kind or kind|is_associated_kind %}
       {{kind|cpp_wrapper_param_type(add_same_module_namespaces=true)}}(std::move(local_{{name}})){{ ',' if not loop.last }}
-{%-           else %}
+{%-             else %}
       std::move(local_{{name}}){{ ',' if not loop.last }}
-{%-           endif %}
-{%-         endfor -%}
+{%-             endif %}
+{%-           endfor -%}
 );
+{%-         endif %}
     mojolpm::GetContext()->EndDeserialization(Context::Rollback::kNoRollback);
   } else {
     mojolpm::GetContext()->EndDeserialization(Context::Rollback::kRollback);

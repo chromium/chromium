@@ -9,14 +9,12 @@
 #include "base/feature_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/performance_manager/public/v8_memory/v8_detailed_memory_any_seq.h"
+#include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "content/public/browser/render_frame_host.h"
 
-namespace features {
-
-BASE_DECLARE_FEATURE(kV8PerFrameMemoryMonitoring);
-
-}  // namespace features
+namespace performance_manager {
+class ProcessNode;
+}
 
 namespace page_load_metrics {
 
@@ -26,7 +24,7 @@ namespace page_load_metrics {
 // frame.
 class PageLoadMetricsMemoryTracker
     : public KeyedService,
-      public performance_manager::v8_memory::V8DetailedMemoryObserverAnySeq {
+      public performance_manager::v8_memory::V8DetailedMemoryObserver {
  public:
   PageLoadMetricsMemoryTracker();
   ~PageLoadMetricsMemoryTracker() override;
@@ -37,13 +35,11 @@ class PageLoadMetricsMemoryTracker
   // KeyedService:
   void Shutdown() override;
 
-  // performance_manager::v8_memory::V8DetailedMemoryObserverAnySeq:
+  // performance_manager::v8_memory::V8DetailedMemoryObserver:
   void OnV8MemoryMeasurementAvailable(
-      performance_manager::RenderProcessHostId render_process_host_id,
-      const performance_manager::v8_memory::V8DetailedMemoryProcessData&
-          process_data,
-      const performance_manager::v8_memory::V8DetailedMemoryObserverAnySeq::
-          FrameDataMap& frame_data) override;
+      const performance_manager::ProcessNode* process_node,
+      const performance_manager::v8_memory::V8DetailedMemoryProcessData*
+          process_data) override;
 
   // Removes the entry for a deleted frame from `per_frame_memory_usage_map_`.
   void OnRenderFrameDeleted(content::RenderFrameHost* render_frame_host,
@@ -59,7 +55,7 @@ class PageLoadMetricsMemoryTracker
 
   // Allows receipt of per-frame V8 memory measurements once instantiated
   // and PageLoadMetricsMemoryTracker is added as an observer.
-  std::unique_ptr<performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>
+  std::unique_ptr<performance_manager::v8_memory::V8DetailedMemoryRequest>
       memory_request_;
 };
 

@@ -4,15 +4,14 @@
 
 #include "chrome/credential_provider/gaiacp/scoped_lsa_policy.h"
 
-#include <Windows.h>  // Needed for ACCESS_MASK, <lm.h>
-#include <Winternl.h>
-#include <lm.h>  // Needed for LSA_UNICODE_STRING
+#include <windows.h>
+
+#include <lm.h>
 #include <ntstatus.h>
 
-#define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
-#include <ntsecapi.h>  // For LSA_xxx types
-
-#include "chrome/credential_provider/gaiacp/gcp_utils.h"  // For STATUS_SUCCESS.
+#include "base/compiler_specific.h"
+#include "base/win/ntsecapi_shim.h"
+#include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 
 namespace credential_provider {
@@ -39,7 +38,7 @@ std::unique_ptr<ScopedLsaPolicy> ScopedLsaPolicy::Create(ACCESS_MASK mask) {
 
 ScopedLsaPolicy::ScopedLsaPolicy(ACCESS_MASK mask) {
   LSA_OBJECT_ATTRIBUTES oa;
-  memset(&oa, 0, sizeof(oa));
+  UNSAFE_TODO(memset(&oa, 0, sizeof(oa)));
   NTSTATUS sts = ::LsaOpenPolicy(nullptr, &oa, mask, &handle_);
   if (sts != STATUS_SUCCESS) {
     HRESULT hr = HRESULT_FROM_NT(sts);
@@ -102,7 +101,7 @@ HRESULT ScopedLsaPolicy::RetrievePrivateData(const wchar_t* key,
   if (sts != STATUS_SUCCESS)
     return HRESULT_FROM_NT(sts);
 
-  errno_t err = wcscpy_s(value, length, lsa_value->Buffer);
+  errno_t err = UNSAFE_TODO(wcscpy_s(value, length, lsa_value->Buffer));
   SecurelyClearBuffer(lsa_value->Buffer, lsa_value->Length);
   ::LsaFreeMemory(lsa_value);
 
@@ -191,8 +190,8 @@ HRESULT ScopedLsaPolicy::RemoveAccount(PSID sid) {
 void ScopedLsaPolicy::InitLsaString(const wchar_t* string,
                                     _UNICODE_STRING* lsa_string) {
   lsa_string->Buffer = const_cast<wchar_t*>(string);
-  lsa_string->Length =
-      static_cast<USHORT>(wcslen(lsa_string->Buffer) * sizeof(wchar_t));
+  lsa_string->Length = static_cast<USHORT>(
+      UNSAFE_TODO(wcslen(lsa_string->Buffer)) * sizeof(wchar_t));
   lsa_string->MaximumLength = lsa_string->Length + sizeof(wchar_t);
 }
 

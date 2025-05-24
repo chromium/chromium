@@ -42,9 +42,8 @@ value_store_util::ModelType ToFactoryModelType(syncer::DataType sync_type) {
     case syncer::EXTENSION_SETTINGS:
       return value_store_util::ModelType::EXTENSION;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return value_store_util::ModelType::EXTENSION;
 }
 
 }  // namespace
@@ -65,7 +64,7 @@ SyncStorageBackend::SyncStorageBackend(
          sync_type_ == syncer::APP_SETTINGS);
 }
 
-SyncStorageBackend::~SyncStorageBackend() {}
+SyncStorageBackend::~SyncStorageBackend() = default;
 
 value_store::ValueStore* SyncStorageBackend::GetStorage(
     const ExtensionId& extension_id) {

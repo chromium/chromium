@@ -30,24 +30,25 @@ build_webui("build") {
     "images/app_icons/settings.svg",
     "images/arc_vm_data_migration_icon.svg",
     "images/browser_sync.svg",
-    "images/error.svg",
-    "images/settings_gear.svg",
     "images/cfm/enrollment.svg",
     "images/cfm/welcome.svg",
+    "images/error.svg",
+    "images/settings_gear.svg",
 
     # PNG resources
-    "images/1x/thumbnail-theme-light-1x.png",
-    "images/2x/thumbnail-theme-light-2x.png",
-    "images/1x/thumbnail-theme-dark-1x.png",
-    "images/2x/thumbnail-theme-dark-2x.png",
     "images/1x/thumbnail-theme-auto-1x.png",
+    "images/1x/thumbnail-theme-dark-1x.png",
+    "images/1x/thumbnail-theme-light-1x.png",
     "images/2x/thumbnail-theme-auto-2x.png",
+    "images/2x/thumbnail-theme-dark-2x.png",
+    "images/2x/thumbnail-theme-light-2x.png",
 
     # Structure files
     "oobe.css",
     "oobe.html",
     "oobe_popup_overlay.css",
     "oobe_screen.css",
+    "screens/common/throbber.css",
   ]
 
   mojo_files_deps = [
@@ -112,9 +113,9 @@ build_webui("build") {
     "screens/common/os_install.ts",
     "screens/common/os_trial.ts",
     "screens/common/parental_handoff.ts",
-    "screens/common/quick_start.ts",
     "screens/common/perks_discovery.ts",
     "screens/common/personalized_recommend_apps.ts",
+    "screens/common/quick_start.ts",
     "screens/common/remote_activity_notification.ts",
 
     # Template used by the `tools/oobe/generate_screen_template.py` script.
@@ -136,8 +137,6 @@ build_webui("build") {
     "screens/login/arc_vm_data_migration.ts",
     "screens/login/checking_downloading_update.ts",
     "screens/login/encryption_migration.ts",
-    "screens/login/lacros_data_backward_migration.ts",
-    "screens/login/lacros_data_migration.ts",
     "screens/login/management_transition.ts",
     "screens/login/offline_login.ts",
     "screens/login/update_required_card.ts",
@@ -146,25 +145,25 @@ build_webui("build") {
     "screens/osauth/apply_online_password.ts",
     "screens/osauth/cryptohome_recovery.ts",
     "screens/osauth/cryptohome_recovery_setup.ts",
+    "screens/osauth/enter_old_password.ts",
     "screens/osauth/factor_setup_success.ts",
     "screens/osauth/fingerprint_setup.ts",
-    "screens/osauth/local_password_setup.ts",
     "screens/osauth/local_data_loss_warning.ts",
-    "screens/osauth/enter_old_password.ts",
+    "screens/osauth/local_password_setup.ts",
     "screens/osauth/osauth_error.ts",
     "screens/osauth/password_selection.ts",
     "screens/osauth/pin_setup.ts",
 
     # Components
-    "components/dialogs/oobe_adaptive_dialog.ts",
-    "components/dialogs/oobe_content_dialog.ts",
-    "components/dialogs/oobe_loading_dialog.ts",
-    "components/dialogs/oobe_modal_dialog.ts",
+    "components/api_keys_notice.ts",
     "components/buttons/oobe_back_button.ts",
     "components/buttons/oobe_icon_button.ts",
     "components/buttons/oobe_next_button.ts",
     "components/buttons/oobe_text_button.ts",
-    "components/api_keys_notice.ts",
+    "components/dialogs/oobe_adaptive_dialog.ts",
+    "components/dialogs/oobe_content_dialog.ts",
+    "components/dialogs/oobe_loading_dialog.ts",
+    "components/dialogs/oobe_modal_dialog.ts",
     "components/gaia_button.ts",
     "components/gaia_dialog.ts",
     "components/hd_iron_icon.ts",
@@ -173,36 +172,36 @@ build_webui("build") {
     "components/oobe_a11y_option.ts",
     "components/oobe_apps_list.ts",
     "components/oobe_carousel.ts",
-    "components/oobe_personalized_apps_list.ts",
     "components/oobe_categories_list.ts",
     "components/oobe_cr_lottie.ts",
     "components/oobe_display_size_selector.ts",
     "components/oobe_i18n_dropdown.ts",
+    "components/oobe_personalized_apps_list.ts",
     "components/oobe_screens_list.ts",
     "components/oobe_slide.ts",
     "components/progress_list_item.ts",
+    "components/quick_start_entry_point.ts",
+    "components/quick_start_pin.ts",
     "components/security_token_pin.ts",
     "components/throbber_notice.ts",
-    "components/quick_start_pin.ts",
-    "components/quick_start_entry_point.ts",
 
     # Conditional
     "debug/quick_start_debugger.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "components/buttons/oobe_base_button.ts",
+    "components/display_manager_types.ts",
+    "components/keyboard_utils.ts",
+    "components/keyboard_utils_oobe.ts",
+    "components/long_touch_detector.ts",
+    "components/mixins/login_screen_mixin.ts",
+    "components/mixins/multi_step_mixin.ts",
     "components/mixins/oobe_base_mixin.ts",
     "components/mixins/oobe_dialog_host_mixin.ts",
     "components/mixins/oobe_focus_mixin.ts",
     "components/mixins/oobe_i18n_mixin.ts",
     "components/mixins/oobe_scrollable_mixin.ts",
-    "components/mixins/login_screen_mixin.ts",
-    "components/mixins/multi_step_mixin.ts",
-    "components/display_manager_types.ts",
-    "components/keyboard_utils.ts",
-    "components/keyboard_utils_oobe.ts",
-    "components/long_touch_detector.ts",
     "components/oobe_select.ts",
     "components/oobe_types.ts",
     "components/qr_code_canvas.ts",
@@ -218,9 +217,9 @@ build_webui("build") {
     "login_ui_tools.ts",
     "multi_tap_detector.ts",
     "oobe.ts",
+    "oobe_screens_factory_proxy.ts",
     "oobe_trace.ts",
     "oobe_trace_start.ts",
-    "oobe_screens_factory_proxy.ts",
     "priority_screens_common_flow.ts",
     "priority_screens_oobe_flow.ts",
     "screens.ts",
@@ -239,15 +238,15 @@ build_webui("build") {
     "components/common_styles/oobe_common_styles.css",
     "components/common_styles/oobe_dialog_host_styles.css",
     "components/common_styles/oobe_flex_layout_styles.css",
-    "components/oobe_vars/oobe_shared_vars.css",
     "components/oobe_vars/oobe_custom_vars.css",
     "components/oobe_vars/oobe_custom_vars_remora.css",
+    "components/oobe_vars/oobe_shared_vars.css",
   ]
 
   ts_definitions = [
     "//chrome/browser/resources/chromeos/accessibility/definitions/tts.d.ts",
-    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
     "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
@@ -256,9 +255,12 @@ build_webui("build") {
     "//tools/typescript/definitions/quick_unlock_private.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
-    "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/webview_tag.d.ts",
   ]
+  if (is_chrome_branded) {
+    ts_definitions += [ "dummy.d.ts" ]
+  }
 
   ts_composite = true
 
@@ -272,10 +274,22 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  ts_path_mappings =
-      [ "//oobe/gaia_auth_host/*|" +
+  ts_path_mappings = [
+    "/assistant_optin/*|" + rebase_path(
+            "${root_gen_dir}/chrome/browser/resources/chromeos/assistant_optin/assistant_optin_preprocessed/*",
+            target_gen_dir),
+    "//oobe/gaia_auth_host/*|" +
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",
-                    target_gen_dir) ]
+                    target_gen_dir),
+  ]
+
+  if (is_chrome_branded) {
+    ts_path_mappings += [ "/sync-consent-icons.m.js|" +
+                          rebase_path("dummy.d.ts", target_gen_dir) ]
+  }
+
+  ts_extra_deps =
+      [ "//chrome/browser/resources/chromeos/assistant_optin:build_grd" ]
 
   webui_context_type = "trusted"
   extra_grdp_deps = [ "../supervision:build_oobe_grdp" ]

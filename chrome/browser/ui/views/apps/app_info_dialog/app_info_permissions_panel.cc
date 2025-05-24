@@ -170,7 +170,7 @@ AppInfoPermissionsPanel::AppInfoPermissionsPanel(
   CreatePermissionsList();
 }
 
-AppInfoPermissionsPanel::~AppInfoPermissionsPanel() {}
+AppInfoPermissionsPanel::~AppInfoPermissionsPanel() = default;
 
 void AppInfoPermissionsPanel::CreatePermissionsList() {
   auto permissions_heading = CreateHeading(
@@ -253,10 +253,9 @@ std::vector<std::u16string> AppInfoPermissionsPanel::GetRetainedFilePaths()
     if (service) {
       std::vector<extensions::SavedFileEntry> retained_file_entries =
           service->GetAllFileEntries(app_->id());
-      for (std::vector<extensions::SavedFileEntry>::const_iterator it =
-               retained_file_entries.begin();
-           it != retained_file_entries.end(); ++it) {
-        retained_file_paths.push_back(it->path.LossyDisplayName());
+      for (const auto& retained_file_entrie : retained_file_entries) {
+        retained_file_paths.push_back(
+            retained_file_entrie.path.LossyDisplayName());
       }
     }
   }

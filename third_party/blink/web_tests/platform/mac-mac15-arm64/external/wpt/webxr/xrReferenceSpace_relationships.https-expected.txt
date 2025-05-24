@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Bounded space, viewer space, local and local-floor space have correct poses w.r.t. each other - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Bounded space, viewer space, local and local-floor space have correct poses w.r.t. each other - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

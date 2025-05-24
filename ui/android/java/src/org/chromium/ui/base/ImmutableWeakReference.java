@@ -4,6 +4,9 @@
 
 package org.chromium.ui.base;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.ref.WeakReference;
 
 /**
@@ -11,8 +14,9 @@ import java.lang.ref.WeakReference;
  * This is so that it's safe to pass the same instance to multiple
  * clients without worrying about modification.
  */
+@NullMarked
 public class ImmutableWeakReference<T> extends WeakReference<T> {
-    public ImmutableWeakReference(T referent) {
+    public ImmutableWeakReference(@Nullable T referent) {
         super(referent);
     }
 

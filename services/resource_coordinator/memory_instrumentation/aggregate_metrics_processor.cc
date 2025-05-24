@@ -4,7 +4,6 @@
 
 #include "services/resource_coordinator/memory_instrumentation/aggregate_metrics_processor.h"
 
-#include <set>
 #include <string>
 #include <vector>
 
@@ -25,7 +24,7 @@
 
 namespace {
 
-void LogNativeCodeResidentPages(const std::set<size_t>& accessed_pages_set) {
+void LogNativeCodeResidentPages(base::span<size_t> accessed_pages_set) {
   // |SUPPORTS_CODE_ORDERING| can only be enabled on Android.
   const auto kResidentPagesPath = base::FilePath(
       "/data/local/tmp/chrome/native-library-resident-pages.txt");
@@ -73,12 +72,13 @@ mojom::AggregatedMetricsPtr ComputeGlobalNativeCodeResidentMemoryKb(
     }
   }
 
-  // |accessed_pages_set| will be ~40kB on 32 bit mode and ~80kB on 64 bit mode.
-  std::set<size_t> accessed_pages_set;
+  std::vector<size_t> accessed_pages_set;
+  // The typical size of this set is ~10k entries.
+  accessed_pages_set.reserve(10240);
   for (size_t i = 0; i < common_map.size(); i++) {
     for (int j = 0; j < 8; j++) {
       if (common_map[i] & (1 << j))
-        accessed_pages_set.insert(i * 8 + j);
+        accessed_pages_set.push_back(i * 8 + j);
     }
   }
 

@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
@@ -41,8 +40,7 @@ class TestScreen : public display::ScreenBase {
     display::Screen::SetScreenInstance(previous_screen_);
   }
 
-  void AddDisplay(const gfx::Rect& bounds,
-                  const gfx::Rect& work_area) {
+  void AddDisplay(const gfx::Rect& bounds, const gfx::Rect& work_area) {
     const int num_displays = GetNumDisplays();
     display::Display display(num_displays, bounds);
     display.set_work_area(work_area);
@@ -147,16 +145,19 @@ gfx::Rect WindowSizerTestUtil::GetWindowBounds() {
   test_screen.AddDisplay(monitor1_bounds_, monitor1_work_area_.IsEmpty()
                                                ? monitor1_bounds_
                                                : monitor1_work_area_);
-  if (!monitor2_bounds_.IsEmpty())
+  if (!monitor2_bounds_.IsEmpty()) {
     test_screen.AddDisplay(monitor2_bounds_, monitor2_bounds_);
+  }
 
   auto provider = std::make_unique<TestStateProvider>();
-  if (!persisted_bounds_.IsEmpty() || !persisted_work_area_.IsEmpty())
+  if (!persisted_bounds_.IsEmpty() || !persisted_work_area_.IsEmpty()) {
     provider->SetPersistentState(persisted_bounds_, persisted_work_area_,
                                  ui::mojom::WindowShowState::kDefault);
-  if (!last_active_bounds_.IsEmpty())
+  }
+  if (!last_active_bounds_.IsEmpty()) {
     provider->SetLastActiveState(last_active_bounds_,
                                  ui::mojom::WindowShowState::kDefault);
+  }
 
   ui::mojom::WindowShowState ignored;
   gfx::Rect out_bounds;
@@ -168,12 +169,12 @@ gfx::Rect WindowSizerTestUtil::GetWindowBounds() {
 
 #if !BUILDFLAG(IS_MAC)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Passing null for the browser parameter of GetWindowBounds makes the test skip
 // all Ash-specific logic, so there's no point running this on Chrome OS.
 TEST(WindowSizerTestCommon,
      PersistedWindowOffscreenWithNonAggressiveRepositioning) {
-  { // off the left but the minimum visibility condition is barely satisfied
+  {  // off the left but the minimum visibility condition is barely satisfied
     // without relocaiton.
     gfx::Rect initial_bounds(-470, 50, 500, 400);
 
@@ -184,7 +185,7 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ(initial_bounds.ToString(), window_bounds.ToString());
   }
 
-  { // off the left and the minimum visibility condition is satisfied by
+  {  // off the left and the minimum visibility condition is satisfied by
     // relocation.
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
@@ -195,7 +196,7 @@ TEST(WindowSizerTestCommon,
               window_bounds.ToString());
   }
 
-  { // off the top
+  {  // off the top
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -204,7 +205,7 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ("50,0 500x400", window_bounds.ToString());
   }
 
-  { // off the right but the minimum visibility condition is barely satisified
+  {  // off the right but the minimum visibility condition is barely satisified
     // without relocation.
     gfx::Rect initial_bounds(994, 50, 500, 400);
     gfx::Rect window_bounds = WindowSizerTestUtil()
@@ -214,7 +215,7 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ(initial_bounds.ToString(), window_bounds.ToString());
   }
 
-  { // off the right and the minimum visibility condition is satisified by
+  {  // off the right and the minimum visibility condition is satisified by
     // relocation.
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
@@ -225,7 +226,7 @@ TEST(WindowSizerTestCommon,
               window_bounds.ToString());
   }
 
-  { // off the bottom but the minimum visibility condition is barely satisified
+  {  // off the bottom but the minimum visibility condition is barely satisified
     // without relocation.
     gfx::Rect initial_bounds(50, 738, 500, 400);
     gfx::Rect window_bounds = WindowSizerTestUtil()
@@ -235,7 +236,7 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ(initial_bounds.ToString(), window_bounds.ToString());
   }
 
-  { // off the bottom and the minimum visibility condition is satisified by
+  {  // off the bottom and the minimum visibility condition is satisified by
     // relocation.
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
@@ -246,7 +247,7 @@ TEST(WindowSizerTestCommon,
               window_bounds.ToString());
   }
 
-  { // off the topleft
+  {  // off the topleft
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -256,7 +257,7 @@ TEST(WindowSizerTestCommon,
               window_bounds.ToString());
   }
 
-  { // off the topright and the minimum visibility condition is satisified by
+  {  // off the topright and the minimum visibility condition is satisified by
     // relocation.
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
@@ -267,35 +268,32 @@ TEST(WindowSizerTestCommon,
               window_bounds.ToString());
   }
 
-  { // off the bottomleft and the minimum visibility condition is satisified by
+  {  // off the bottomleft and the minimum visibility condition is satisified by
     // relocation.
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
             .WithPersistedBounds(gfx::Rect(-471, 739, 500, 400))
             .GetWindowBounds();
-    EXPECT_EQ(gfx::Rect(-470 /* not -471 */,
-                        738 /* not 739 */,
-                        500,
-                        400).ToString(),
-              window_bounds.ToString());
+    EXPECT_EQ(
+        gfx::Rect(-470 /* not -471 */, 738 /* not 739 */, 500, 400).ToString(),
+        window_bounds.ToString());
   }
 
-  { // off the bottomright and the minimum visibility condition is satisified by
+  {  // off the bottomright and the minimum visibility condition is satisified
+     // by
     // relocation.
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
             .WithPersistedBounds(gfx::Rect(995, 739, 500, 400))
             .GetWindowBounds();
-    EXPECT_EQ(gfx::Rect(994 /* not 995 */,
-                        738 /* not 739 */,
-                        500,
-                        400).ToString(),
-              window_bounds.ToString());
+    EXPECT_EQ(
+        gfx::Rect(994 /* not 995 */, 738 /* not 739 */, 500, 400).ToString(),
+        window_bounds.ToString());
   }
 
-  { // entirely off left
+  {  // entirely off left
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -305,7 +303,7 @@ TEST(WindowSizerTestCommon,
               window_bounds.ToString());
   }
 
-  { // entirely off left (monitor was detached since last run)
+  {  // entirely off left (monitor was detached since last run)
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -315,7 +313,7 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ("0,50 500x400", window_bounds.ToString());
   }
 
-  { // entirely off top
+  {  // entirely off top
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -324,7 +322,7 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ("50,0 500x400", window_bounds.ToString());
   }
 
-  { // entirely off top (monitor was detached since last run)
+  {  // entirely off top (monitor was detached since last run)
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -334,7 +332,7 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ("50,0 500x400", window_bounds.ToString());
   }
 
-  { // entirely off right
+  {  // entirely off right
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -344,7 +342,7 @@ TEST(WindowSizerTestCommon,
               window_bounds.ToString());
   }
 
-  { // entirely off right (monitor was detached since last run)
+  {  // entirely off right (monitor was detached since last run)
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -354,7 +352,7 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ("524,50 500x400", window_bounds.ToString());
   }
 
-  { // entirely off bottom
+  {  // entirely off bottom
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -364,7 +362,7 @@ TEST(WindowSizerTestCommon,
               window_bounds.ToString());
   }
 
-  { // entirely off bottom (monitor was detached since last run)
+  {  // entirely off bottom (monitor was detached since last run)
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -374,12 +372,12 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ("50,368 500x400", window_bounds.ToString());
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Test that the window is sized appropriately for the first run experience
 // where the default window bounds calculation is invoked.
 TEST(WindowSizerTestCommon, AdjustFitSize) {
-  { // Check that the window gets resized to the screen.
+  {  // Check that the window gets resized to the screen.
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
@@ -388,7 +386,7 @@ TEST(WindowSizerTestCommon, AdjustFitSize) {
     EXPECT_EQ("0,0 1024x768", window_bounds.ToString());
   }
 
-  { // Check that a window which hangs out of the screen get moved back in.
+  {  // Check that a window which hangs out of the screen get moved back in.
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)

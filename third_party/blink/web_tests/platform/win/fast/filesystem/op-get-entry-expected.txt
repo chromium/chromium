@@ -1,0 +1,88 @@
+* Running: CreateSimple
+PASS Succeeded: "/".getDirectory("a")
+PASS Succeeded: "/".getFile("b")
+PASS Verified entry: ENTRY {path:/a name:a type:DIRECTORY}
+PASS Verified entry: ENTRY {path:/b name:b type:FILE}
+* Running: CreateNested
+PASS Succeeded: "/".getDirectory("a")
+PASS Succeeded: "/a".getDirectory("b")
+PASS Succeeded: "/a/b".getDirectory("c")
+PASS Succeeded: "/a/b/c".getDirectory("d")
+PASS Succeeded: "/a/b/c/d".getFile("e")
+PASS Verified entry: ENTRY {path:/a/b/c/d/e name:e type:FILE}
+* Running: CreateNestedWithAbsolutePath
+PASS Succeeded: "/dummy".getDirectory("/a")
+PASS Succeeded: "/dummy".getDirectory("/a/b")
+PASS Succeeded: "/dummy".getDirectory("/a/b/c")
+PASS Succeeded: "/dummy".getDirectory("/a/b/c/d")
+PASS Succeeded: "/dummy".getFile("/a/b/c/d/e")
+PASS Verified entry: ENTRY {path:/dummy name:dummy type:DIRECTORY}
+PASS Verified entry: ENTRY {path:/a/b/c/d/e name:e type:FILE}
+* Running: CreateNestedWithRelativePath
+PASS Succeeded: "/a".getDirectory("./b")
+PASS Succeeded: "/a".getDirectory("../b")
+PASS Succeeded: "/a".getDirectory("../../b/c")
+PASS Succeeded: "/a".getDirectory("/a/../../d")
+PASS Succeeded: "/a".getDirectory("/a/../../b/./c/../../../../../e")
+FAIL this.expectedError + "" should be EncodingError. Was NotFoundError.
+PASS Succeeded: "/a".getFile("./b.txt")
+PASS Succeeded: "/a".getFile("../b.txt")
+PASS Succeeded: "/a".getFile("../../b/c.txt")
+PASS Succeeded: "/a".getFile("/a/../../d.txt")
+PASS Succeeded: "/a".getFile("/a/../../b/./c/../../../../../e.txt")
+FAIL this.expectedError + "" should be EncodingError. Was NotFoundError.
+PASS Verified entry: ENTRY {path:/a name:a type:DIRECTORY}
+PASS Verified entry: ENTRY {path:/a/b name:b type:DIRECTORY}
+PASS Verified entry: ENTRY {path:/b name:b type:DIRECTORY}
+PASS Verified entry: ENTRY {path:/b/c name:c type:DIRECTORY}
+PASS Verified entry: ENTRY {path:/d name:d type:DIRECTORY}
+PASS Verified entry: ENTRY {path:/e name:e type:DIRECTORY}
+PASS Verified entry does NOT exist: /f
+PASS Verified entry does NOT exist: /a/f
+PASS Verified entry does NOT exist: /g
+PASS Verified entry does NOT exist: /a/g
+PASS Verified entry: ENTRY {path:/a/b.txt name:b.txt type:FILE}
+PASS Verified entry: ENTRY {path:/b.txt name:b.txt type:FILE}
+PASS Verified entry: ENTRY {path:/b/c.txt name:c.txt type:FILE}
+PASS Verified entry: ENTRY {path:/d.txt name:d.txt type:FILE}
+PASS Verified entry: ENTRY {path:/e.txt name:e.txt type:FILE}
+PASS Verified entry does NOT exist: /f.txt
+PASS Verified entry does NOT exist: /a/f.txt
+PASS Verified entry does NOT exist: /g.txt
+PASS Verified entry does NOT exist: /a/g.txt
+* Running: GetExistingEntry
+PASS Succeeded: "/".getDirectory("a")
+PASS Succeeded: "/".getFile("b")
+PASS Succeeded: "/".getDirectory("a")
+PASS this.environment[this.entry.fullPath].fullPath is "/a"
+PASS this.environment[this.entry.fullPath].isFile + "" is "false"
+PASS this.environment[this.entry.fullPath].isDirectory + "" is "true"
+PASS Succeeded: "/".getFile("b")
+PASS this.environment[this.entry.fullPath].fullPath is "/b"
+PASS this.environment[this.entry.fullPath].isFile + "" is "true"
+PASS this.environment[this.entry.fullPath].isDirectory + "" is "false"
+PASS Verified entry: ENTRY {path:/a name:a type:DIRECTORY}
+PASS Verified entry: ENTRY {path:/b name:b type:FILE}
+* Running: GetNonExistent
+PASS this.expectedError + "" is "NotFoundError"
+PASS this.expectedError + "" is "NotFoundError"
+PASS this.expectedError + "" is "NotFoundError"
+PASS this.expectedError + "" is "NotFoundError"
+* Running: GetFileForDirectory
+PASS this.expectedError + "" is "TypeMismatchError"
+PASS this.expectedError + "" is "TypeMismatchError"
+PASS Verified entry: ENTRY {path:/a name:a type:DIRECTORY}
+* Running: GetDirectoryForFile
+PASS this.expectedError + "" is "TypeMismatchError"
+PASS this.expectedError + "" is "TypeMismatchError"
+PASS Verified entry: ENTRY {path:/a name:a type:FILE}
+* Running: CreateWithExclusive
+PASS this.expectedError + "" is "InvalidModificationError"
+PASS this.expectedError + "" is "InvalidModificationError"
+PASS Verified entry: ENTRY {path:/a name:a type:DIRECTORY}
+PASS Verified entry: ENTRY {path:/b name:b type:FILE}
+Finished running tests.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

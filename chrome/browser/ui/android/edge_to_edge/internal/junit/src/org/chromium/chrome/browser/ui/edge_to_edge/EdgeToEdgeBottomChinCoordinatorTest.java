@@ -8,35 +8,33 @@ import static org.mockito.Mockito.verify;
 
 import android.view.View;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class EdgeToEdgeBottomChinCoordinatorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private View mView;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    @Mock private InsetObserver mInsetObserver;
     @Mock private LayoutManager mLayoutManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private BottomControlsStacker mBottomControlsStacker;
-    @Mock private NavigationBarColorProvider mNavigationBarColorProvider;
     @Mock private EdgeToEdgeBottomChinSceneLayer mEdgeToEdgeBottomChinSceneLayer;
     @Mock private FullscreenManager mFullscreenManager;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void testEdgeToEdgeBottomChinCoordinator() {
@@ -44,9 +42,9 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
                 new EdgeToEdgeBottomChinCoordinator(
                         mView,
                         mKeyboardVisibilityDelegate,
+                        mInsetObserver,
                         mLayoutManager,
                         mEdgeToEdgeController,
-                        mNavigationBarColorProvider,
                         mBottomControlsStacker,
                         mEdgeToEdgeBottomChinSceneLayer,
                         mFullscreenManager);

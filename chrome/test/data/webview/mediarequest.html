@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--
+This page:
+1. Waits for a message, and records the source.
+2. Requests media.
+3. Sends a message back to the source, telling it whether it was given media
+access.
+-->
+<script>
+    function waitForSource() {
+        const {promise, resolve} = Promise.withResolvers();
+        window.addEventListener('message', (e)=>{
+            if (e.source) {
+                resolve(e.source);
+            }
+        });
+        return promise;
+    }
+
+    async function requestMedia() {
+        const {promise, resolve} = Promise.withResolvers();
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(()=>{
+            resolve(true);
+        }).catch(err=>{
+            resolve(false);
+        });
+        return promise;
+    }
+    async function run() {
+        const source = await waitForSource();
+        const granted = await requestMedia();
+        source.postMessage({granted}, '*');
+    }
+
+    run();
+
+</script>

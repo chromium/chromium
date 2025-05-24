@@ -29,6 +29,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
@@ -100,6 +101,8 @@ class ColorPickerElementView : public views::Button {
     GetViewAccessibility().SetCheckedState(
         selected_ ? ax::mojom::CheckedState::kTrue
                   : ax::mojom::CheckedState::kFalse);
+
+    UpdateCachedTooltipText();
   }
 
   ~ColorPickerElementView() override = default;
@@ -109,15 +112,20 @@ class ColorPickerElementView : public views::Button {
       return;
     }
     selected_ = selected;
-    GetViewAccessibility().SetCheckedState(
-        selected_ ? ax::mojom::CheckedState::kTrue
-                  : ax::mojom::CheckedState::kFalse);
+    UpdateAccessibleCheckedState();
     SchedulePaint();
   }
 
   bool GetSelected() const { return selected_; }
 
   // views::Button:
+
+  void UpdateAccessibleCheckedState() override {
+    GetViewAccessibility().SetCheckedState(
+        selected_ ? ax::mojom::CheckedState::kTrue
+                  : ax::mojom::CheckedState::kFalse);
+  }
+
   bool IsGroupFocusTraversable() const override {
     // Tab should only focus the selected element.
     return false;
@@ -128,9 +136,7 @@ class ColorPickerElementView : public views::Button {
     return parent()->GetSelectedViewForGroup(group);
   }
 
-  std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return color_name_;
-  }
+  void UpdateCachedTooltipText() { SetTooltipText(color_name_); }
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
@@ -165,6 +171,7 @@ class ColorPickerElementView : public views::Button {
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ColorPickerViewTest, TooltipText);
   // Paints a ring in our color circle to indicate selection or mouse hover.
   // Does nothing if not selected or hovered.
   void PaintSelectionIndicator(gfx::Canvas* canvas) {
@@ -179,7 +186,8 @@ class ColorPickerElementView : public views::Button {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(kThickness);
     flags.setAntiAlias(true);
-    flags.setColor(bubble_view_->color());
+    flags.setColor(bubble_view_->background_color().ResolveToSkColor(
+        bubble_view_->GetColorProvider()));
 
     gfx::RectF indicator_bounds(GetContentsBounds());
     indicator_bounds.Inset(gfx::InsetsF(kInset));
@@ -248,12 +256,9 @@ ColorPickerView::ColorPickerView(
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kUnbounded)
-              .WithAlignment(views::LayoutAlignment::kCenter)
-              .WithWeight(1));
+      .SetDefault(views::kFlexBehaviorKey,
+                  views::FlexSpecification().WithAlignment(
+                      views::LayoutAlignment::kCenter));
 }
 
 ColorPickerView::~ColorPickerView() = default;

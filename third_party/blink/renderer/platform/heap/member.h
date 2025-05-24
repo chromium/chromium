@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "v8/include/cppgc/member.h"  // IWYU pragma: export
+#include "v8/include/cppgc/tagged-member.h"
 
 namespace blink {
 
@@ -27,8 +28,13 @@ template <typename T>
 using UntracedMember = cppgc::UntracedMember<T>;
 
 namespace subtle {
+
 template <typename T>
 using UncompressedMember = cppgc::subtle::UncompressedMember<T>;
+
+template <typename T, typename Tag1, typename Tag2>
+using TaggedUncompressedMember =
+    cppgc::subtle::TaggedUncompressedMember<T, Tag1, Tag2>;
 }
 
 template <typename T>
@@ -150,8 +156,8 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
 #endif
     return WTF::GetHash(st.GetAsInteger());
   }
-  template <typename Member,
-            std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
+  template <typename Member>
+    requires(WTF::IsAnyMemberType<Member>::value)
   static unsigned GetHash(const Member& m) {
     return WTF::GetHash(m.GetRawStorage().GetAsInteger());
   }
@@ -180,6 +186,7 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
 template <typename T>
 struct MemberHashTraits : BaseMemberHashTraits<T, blink::Member<T>> {
   static constexpr bool kCanTraceConcurrently = true;
+  static constexpr bool kSupportsCompaction = true;
 };
 template <typename T>
 struct HashTraits<blink::Member<T>> : MemberHashTraits<T> {};
@@ -188,6 +195,7 @@ struct HashTraits<blink::Member<T>> : MemberHashTraits<T> {};
 template <typename T>
 struct WeakMemberHashTraits : BaseMemberHashTraits<T, blink::WeakMember<T>> {
   static constexpr bool kCanTraceConcurrently = true;
+  static constexpr bool kSupportsCompaction = true;
 };
 template <typename T>
 struct HashTraits<blink::WeakMember<T>> : WeakMemberHashTraits<T> {};

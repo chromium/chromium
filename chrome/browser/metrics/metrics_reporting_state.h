@@ -13,16 +13,15 @@ using OnMetricsReportingCallbackType = base::OnceCallback<void(bool)>;
 // metrics reporting is enabled from a settings page, histogram data that was
 // collected while metrics reporting was disabled should be cleared (marked as
 // reported) so as to not include them in the next log.
-// TODO(crbug.com/40821809): Make all call sites pass an appropriate value, and
-// remove |kUnknown|. Right now, |kUnknown| is used as a placeholder value while
-// call sites are being migrated.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.metrics
 enum class ChangeMetricsReportingStateCalledFrom {
-  kUnknown,
   kUiSettings,
 
   // The user opted out of metrics reporting in the First Run Experience.
   kUiFirstRun,
+
+  // Called from the session crashed dialog window.
+  kSessionCrashedDialog,
 
   // Called from Chrome OS settings change. Chrome OS manages settings
   // externally and metrics service listens for changes.
@@ -34,18 +33,20 @@ enum class ChangeMetricsReportingStateCalledFrom {
 
   // Called on ChromeOS from Lacros on initialization to initialize state.
   kCrosMetricsInitializedFromAsh,
+
+  // Called on ChromeOS pre-consent metrics. This happens once per powerwash.
+  kCrosMetricsPreConsent,
 };
 
 // Changes metrics reporting state without caring about the success of the
 // change. |called_from| should be set to |kUiSettings| when enabling metrics
 // from a settings page (to mark histogram data collected while metrics
 // reporting was disabled as reported so as to not include them in the next
-// log). If |called_from| is set to anything else (|kUnknown| by default), then
-// metrics will not be cleared when enabling metrics reporting.
+// log). If |called_from| is set to anything else, then metrics will not be
+// cleared when enabling metrics reporting.
 void ChangeMetricsReportingState(
     bool enabled,
-    ChangeMetricsReportingStateCalledFrom called_from =
-        ChangeMetricsReportingStateCalledFrom::kUnknown);
+    ChangeMetricsReportingStateCalledFrom called_from);
 
 // Changes metrics reporting state to the new value of |enabled|. Starts or
 // stops the metrics service based on the new state and then runs |callback_fn|
@@ -54,14 +55,13 @@ void ChangeMetricsReportingState(
 // |called_from| should be set to |kUiSettings| when enabling metrics from a
 // settings page (to mark histogram data collected while metrics reporting was
 // disabled as reported so as to not include them in the next log). If
-// |called_from| is set to anything else (|kUnknown| by default), then metrics
-// will not be cleared when enabling metrics reporting.
+// |called_from| is set to anything else, then metrics will not be cleared when
+// enabling metrics reporting.
 // TODO(crbug.com/40592297): Support setting the pref on all platforms.
 void ChangeMetricsReportingStateWithReply(
     bool enabled,
     OnMetricsReportingCallbackType callback_fn,
-    ChangeMetricsReportingStateCalledFrom called_from =
-        ChangeMetricsReportingStateCalledFrom::kUnknown);
+    ChangeMetricsReportingStateCalledFrom called_from);
 
 // Update metrics prefs on a permission (opt-in/out) change. When opting out,
 // this clears various client ids. When opting in, this resets saving crash
@@ -69,12 +69,11 @@ void ChangeMetricsReportingStateWithReply(
 // should be set to |kUiSettings| when enabling metrics from a settings page (to
 // mark histogram data collected while metrics reporting was disabled as
 // reported so as to not include them in the next log). If |called_from| is set
-// to anything else (|kUnknown| by default), then metrics will not be cleared
-// when enabling metrics reporting.
+// to anything else, then metrics will not be cleared when enabling metrics
+// reporting.
 void UpdateMetricsPrefsOnPermissionChange(
     bool metrics_enabled,
-    ChangeMetricsReportingStateCalledFrom called_from =
-        ChangeMetricsReportingStateCalledFrom::kUnknown);
+    ChangeMetricsReportingStateCalledFrom called_from);
 
 // Propagates the state of metrics reporting pref (which may be policy
 // managed) to GoogleUpdateSettings.

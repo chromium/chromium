@@ -23,8 +23,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash::printing::print_preview {
 
@@ -42,9 +42,7 @@ void ConfigurePolicies(content::WebUIDataSource* source) {
 // Setup app resources and ensure default resource is the app index page.
 void ConfigureResources(content::WebUIDataSource* source,
                         int default_resource) {
-  const auto resources = base::make_span(kAshPrintPreviewCrosAppResources,
-                                         kAshPrintPreviewCrosAppResourcesSize);
-  source->AddResourcePaths(resources);
+  source->AddResourcePaths(kAshPrintPreviewCrosAppResources);
   source->SetDefaultResource(default_resource);
   source->AddResourcePath("", default_resource);
 }

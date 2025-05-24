@@ -13,7 +13,7 @@ class AppContextMenuDelegate {
   virtual void ExecuteLaunchCommand(int event_flags) = 0;
 
  protected:
-  virtual ~AppContextMenuDelegate() {}
+  virtual ~AppContextMenuDelegate() = default;
 };
 
 }  // namespace app_list

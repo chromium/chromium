@@ -11,6 +11,8 @@ namespace media {
 
 // Enumerates the various representations of the ordering of audio channels.
 // Logged to UMA, so never reuse a value, always add new/greater ones!
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+// GENERATED_JAVA_PREFIX_TO_STRIP: CHANNEL_
 enum ChannelLayout {
   CHANNEL_LAYOUT_NONE = 0,
   CHANNEL_LAYOUT_UNSUPPORTED = 1,

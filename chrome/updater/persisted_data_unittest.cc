@@ -41,11 +41,10 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_TRUE(metadata->GetAppIds().empty());
 
   metadata->SetProductVersion("someappid", base::Version("1.0"));
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion("someappid").GetString().c_str());
+  EXPECT_EQ("1.0", metadata->GetProductVersion("someappid").GetString());
 
   metadata->SetFingerprint("someappid", "fp1");
-  EXPECT_STREQ("fp1", metadata->GetFingerprint("someappid").c_str());
+  EXPECT_EQ("fp1", metadata->GetFingerprint("someappid"));
 
   // Store some more apps in prefs, in addition to "someappid". Expect only
   // the app ids for apps with valid versions to be returned.
@@ -75,14 +74,10 @@ TEST(PersistedDataTest, MixedCase) {
 
   metadata->SetProductVersion("someappid", base::Version("1.0"));
   metadata->SetProductVersion("SOMEAPPID2", base::Version("2.0"));
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion("someAPPID").GetString().c_str());
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion("someappid").GetString().c_str());
-  EXPECT_STREQ("2.0",
-               metadata->GetProductVersion("someAPPID2").GetString().c_str());
-  EXPECT_STREQ("2.0",
-               metadata->GetProductVersion("someappid2").GetString().c_str());
+  EXPECT_EQ("1.0", metadata->GetProductVersion("someAPPID").GetString());
+  EXPECT_EQ("1.0", metadata->GetProductVersion("someappid").GetString());
+  EXPECT_EQ("2.0", metadata->GetProductVersion("someAPPID2").GetString());
+  EXPECT_EQ("2.0", metadata->GetProductVersion("someappid2").GetString());
 }
 
 TEST(PersistedDataTest, SharedPref) {
@@ -92,15 +87,13 @@ TEST(PersistedDataTest, SharedPref) {
       GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
   metadata->SetProductVersion("someappid", base::Version("1.0"));
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion("someappid").GetString().c_str());
+  EXPECT_EQ("1.0", metadata->GetProductVersion("someappid").GetString());
 
   // Now, create a new PersistedData reading from the same path, verify
   // that it loads the value.
   metadata = base::MakeRefCounted<PersistedData>(GetUpdaterScopeForTesting(),
                                                  pref.get(), nullptr);
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion("someappid").GetString().c_str());
+  EXPECT_EQ("1.0", metadata->GetProductVersion("someappid").GetString());
 }
 
 TEST(PersistedDataTest, RemoveAppId) {
@@ -111,6 +104,7 @@ TEST(PersistedDataTest, RemoveAppId) {
 
   RegistrationRequest data;
   data.app_id = "someappid";
+  data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
@@ -120,6 +114,7 @@ TEST(PersistedDataTest, RemoveAppId) {
   metadata->RegisterApp(data);
 
   data.app_id = "someappid2";
+  data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
   data.version = base::Version("2.0");
@@ -144,6 +139,7 @@ TEST(PersistedDataTest, RegisterApp_SetFirstActive) {
 
   RegistrationRequest data;
   data.app_id = "someappid";
+  data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
@@ -237,15 +233,17 @@ TEST(PersistedDataTest, SetEulaRequired) {
 class PersistedDataRegistrationRequestTest : public ::testing::Test {
 #if BUILDFLAG(IS_WIN)
  protected:
-  void SetUp() override { DeleteBrandCodeValueInRegistry(); }
-  void TearDown() override { DeleteBrandCodeValueInRegistry(); }
+  void SetUp() override { DeleteValuesInRegistry(); }
+  void TearDown() override { DeleteValuesInRegistry(); }
 
  private:
-  void DeleteBrandCodeValueInRegistry() {
-    base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
-                      GetAppClientStateKey(L"someappid").c_str(),
-                      Wow6432(KEY_SET_VALUE))
-        .DeleteValue(kRegValueBrandCode);
+  void DeleteValuesInRegistry() {
+    for (const auto value : {kRegValueBrandCode, kRegValueLang}) {
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_SET_VALUE))
+          .DeleteValue(value);
+    }
   }
 #endif
 };
@@ -258,6 +256,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
 
   RegistrationRequest data;
   data.app_id = "someappid";
+  data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
@@ -269,12 +268,12 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
 
   metadata->RegisterApp(data);
   EXPECT_TRUE(metadata->GetProductVersion("someappid").IsValid());
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion("someappid").GetString().c_str());
+  EXPECT_EQ("1.0", metadata->GetProductVersion("someappid").GetString());
   EXPECT_EQ(FILE_PATH_LITERAL("some/file/path"),
             metadata->GetExistenceCheckerPath("someappid").value());
-  EXPECT_STREQ("arandom-ap=likethis", metadata->GetAP("someappid").c_str());
-  EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid").c_str());
+  EXPECT_EQ("arandom-ap=likethis", metadata->GetAP("someappid"));
+  EXPECT_EQ("somelang", metadata->GetLang("someappid"));
+  EXPECT_EQ("somebrand", metadata->GetBrandCode("someappid"));
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(
       base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
@@ -282,12 +281,12 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
                         Wow6432(KEY_SET_VALUE))
           .WriteValue(kRegValueBrandCode, L"nbrnd"),
       ERROR_SUCCESS);
-  EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "nbrnd");
+  EXPECT_EQ(metadata->GetBrandCode("someappid"), "nbrnd");
 #endif
 
-  EXPECT_STREQ("testcohort", metadata->GetCohort("someappid").c_str());
-  EXPECT_STREQ("testcohortname", metadata->GetCohortName("someappid").c_str());
-  EXPECT_STREQ("testcohorthint", metadata->GetCohortHint("someappid").c_str());
+  EXPECT_EQ("testcohort", metadata->GetCohort("someappid"));
+  EXPECT_EQ("testcohortname", metadata->GetCohortName("someappid"));
+  EXPECT_EQ("testcohorthint", metadata->GetCohortHint("someappid"));
 
 #if BUILDFLAG(IS_WIN)
   base::win::RegKey key;
@@ -309,6 +308,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
 
   RegistrationRequest data;
   data.app_id = "someappid";
+  data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
@@ -316,23 +316,23 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
   metadata->RegisterApp(data);
   EXPECT_TRUE(metadata->GetProductVersion("someappid").IsValid());
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion("someappid").GetString().c_str());
+  EXPECT_EQ("1.0", metadata->GetProductVersion("someappid").GetString());
   EXPECT_EQ(FILE_PATH_LITERAL("some/file/path"),
             metadata->GetExistenceCheckerPath("someappid").value());
-  EXPECT_STREQ("arandom-ap=likethis", metadata->GetAP("someappid").c_str());
-  EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid").c_str());
+  EXPECT_EQ("arandom-ap=likethis", metadata->GetAP("someappid"));
+  EXPECT_EQ("somelang", metadata->GetLang("someappid"));
+  EXPECT_EQ("somebrand", metadata->GetBrandCode("someappid"));
 
   RegistrationRequest data2;
   data2.app_id = data.app_id;
   data2.ap = "different_ap";
   metadata->RegisterApp(data2);
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion(data.app_id).GetString().c_str());
+  EXPECT_EQ("1.0", metadata->GetProductVersion(data.app_id).GetString());
   EXPECT_EQ(FILE_PATH_LITERAL("some/file/path"),
             metadata->GetExistenceCheckerPath(data.app_id).value());
-  EXPECT_STREQ("different_ap", metadata->GetAP(data.app_id).c_str());
-  EXPECT_STREQ("somebrand", metadata->GetBrandCode(data.app_id).c_str());
+  EXPECT_EQ("different_ap", metadata->GetAP(data.app_id));
+  EXPECT_EQ("somelang", metadata->GetLang("someappid"));
+  EXPECT_EQ("somebrand", metadata->GetBrandCode(data.app_id));
 
   RegistrationRequest data3;
   data3.app_id = "someappid3";
@@ -340,12 +340,12 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
   data3.version = base::Version("1.0");
   metadata->RegisterApp(data3);
   EXPECT_TRUE(metadata->GetProductVersion("someappid3").IsValid());
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion("someappid3").GetString().c_str());
+  EXPECT_EQ("1.0", metadata->GetProductVersion("someappid3").GetString());
   EXPECT_EQ(FILE_PATH_LITERAL(""),
             metadata->GetExistenceCheckerPath("someappid3").value());
-  EXPECT_STREQ("", metadata->GetAP("someappid3").c_str());
-  EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid3").c_str());
+  EXPECT_EQ("", metadata->GetAP("someappid3"));
+  EXPECT_EQ("", metadata->GetLang("someappid3"));
+  EXPECT_EQ("somebrand", metadata->GetBrandCode("someappid3"));
 }
 
 }  // namespace updater

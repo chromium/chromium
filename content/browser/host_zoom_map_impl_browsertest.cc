@@ -66,28 +66,6 @@ class HostZoomMapImplBrowserTest : public ContentBrowserTest {
   raw_ptr<HostZoomMapImpl> host_zoom_map_impl_;
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// For Android, there are experimental features that affect the value of zoom.
-// These classes allow easy testing of the combination of enabled features.
-class HostZoomMapImplBrowserTestWithPageZoom
-    : public HostZoomMapImplBrowserTest {
- public:
-  HostZoomMapImplBrowserTestWithPageZoom() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kAccessibilityPageZoom, {{"AdjustForOSLevel", "true"}});
-  }
-};
-
-class HostZoomMapImplBrowserTestWithPageZoomNoOSAdjustment
-    : public HostZoomMapImplBrowserTest {
- public:
-  HostZoomMapImplBrowserTestWithPageZoomNoOSAdjustment() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kAccessibilityPageZoom, {{"AdjustForOSLevel", "false"}});
-  }
-};
-#endif
-
 // Test to make sure that GetZoomLevel() works properly for zoom levels
 // stored by host value, and can distinguish temporary zoom levels from
 // these.
@@ -119,12 +97,14 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
 // Test to make sure that GetZoomLevelForHostAndSchemeAndroid() adjusts zoom
 // level when there is a non-default OS-level font size setting on Android.
-IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTestWithPageZoom,
+IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
                        GetZoomLevelForHostAndSchemeAndroid) {
   // At the default level, there should be no adjustment.
   EXPECT_DOUBLE_EQ(host_zoom_map_impl_->GetDefaultZoomLevel(),
                    host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
                        url_.scheme(), url_.host()));
+
+  host_zoom_map_impl_->SetShouldAdjustForOSLevelForTesting(true);
 
   // Test various levels of system font size.
   // A scale of 1.3 is equivalent to an Android OS font size of XL.
@@ -146,12 +126,14 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTestWithPageZoom,
 }
 
 // Same as above test but without the OS-level adjustment.
-IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTestWithPageZoomNoOSAdjustment,
-                       GetZoomLevelForHostAndSchemeAndroid) {
+IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
+                       GetZoomLevelForHostAndSchemeAndroidNoAdjust) {
   // At the default level, there should be no adjustment.
   EXPECT_DOUBLE_EQ(host_zoom_map_impl_->GetDefaultZoomLevel(),
                    host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
                        url_.scheme(), url_.host()));
+
+  host_zoom_map_impl_->SetShouldAdjustForOSLevelForTesting(false);
 
   // Test various levels of system font size.
   // A scale of 1.3 is equivalent to an Android OS font size of XL.

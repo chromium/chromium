@@ -20,20 +20,26 @@ source_set("file_system") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//components/filename_generation",
-    "//content/public/browser",
-    "//extensions/browser/api/file_handlers",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
-    "//net",
-    "//storage/browser",
-    "//storage/common",
-    "//ui/base",
     "//ui/shell_dialogs",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//base:i18n",
+    "//components/filename_generation",
+    "//content/public/browser",
+    "//extensions/browser/api:extensions_api_client",
+    "//extensions/browser/api/file_handlers",
+    "//net",
+    "//storage/browser",
+    "//storage/common",
+    "//third_party/blink/public/common",
+    "//ui/base",
+    "//url",
+  ]
 }

@@ -10,14 +10,17 @@ import android.os.ParcelUuid;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Exposes android.bluetooth.le.ScanFilter.Builder as necessary for C++.
  * This class is used to implement
  * BluetoothAdapterAndroid::CreateAndroidFilter()
  */
 @JNINamespace("device")
+@NullMarked
 final class ChromeBluetoothScanFilterBuilder {
-    private ScanFilter.Builder mBuilder;
+    private final ScanFilter.Builder mBuilder;
 
     /** Constructs a ChromeBluetoothScanFilter */
     public ChromeBluetoothScanFilterBuilder() {

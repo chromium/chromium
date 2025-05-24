@@ -1,0 +1,97 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package feedwire;
+
+import "components/feed/core/proto/v2/wire/action_diagnostic_info.proto";
+import "components/feed/core/proto/v2/wire/action_surface.proto";
+import "components/feed/core/proto/v2/wire/code.proto";
+import "components/feed/core/proto/v2/wire/consistency_token.proto";
+import "components/feed/core/proto/v2/wire/data_operation.proto";
+import "components/feed/core/proto/v2/wire/error_details.proto";
+import "components/feed/core/proto/v2/wire/feed_action.proto";
+import "components/feed/core/proto/v2/wire/feed_request.proto";
+import "components/feed/core/proto/v2/wire/feed_response.proto";
+import "components/feed/core/proto/v2/wire/timestamp.proto";
+import "components/feed/core/proto/v2/wire/token.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+enum VisibilitySignal {
+  VISIBILITY_SIGNAL_UNSPECIFIED = 0;
+  VISIBLE = 1;
+  HIDDEN = 2;
+}
+message FullRefreshRequest {}
+message InitialView {
+  int32 stream_index = 1;
+  FeedAction feed_actions = 2;
+  VisibilitySignal visibility_signal = 3;
+}
+message FeedVisibilityChange {
+  ActionSurface action_surface = 1;
+  VisibilitySignal visibility_signal = 2;
+  Timestamp event_time = 3;
+}
+message ClientAction {
+  oneof client_action_payload {
+    FullRefreshRequest full_refresh_request = 1;
+    InitialView initial_view = 2;
+    FeedVisibilityChange feed_visibility_change = 3;
+  }
+}
+message ActionsPayload {
+  repeated FeedAction feed_actions = 1;
+  repeated ClientAction client_actions = 3;
+  string id = 2;
+  ActionDiagnosticInfo action_diagnostic_info = 4;
+}
+message InitializationPayload {
+  enum SessionType {
+    SESSION_TYPE_UNSPECIFIED = 0;
+    BACKGROUND = 1;
+    INTERACTIVE = 2;
+  }
+  optional FeedRequest feed_request = 1;
+  optional Token token = 2;
+  optional SessionType session_type = 4;
+}
+message StreamingTokenUpdatePayload {
+  optional Token token = 1;
+}
+message InitializationAckPayload {}
+message DataOperationPayload {
+  repeated DataOperation data_operations = 1;
+}
+message ResponseStatus {
+  optional Code response_code = 1;
+  optional ErrorInfo response_error_info = 2;
+}
+message NewFeedPayload {
+  FeedResponse feed_response = 1;
+  optional ResponseStatus status = 2;
+}
+message ActionsPayloadAck {
+  string processed_id = 1;
+  optional ResponseStatus status = 3;
+}
+message ClientStreamingMessage {
+  oneof payload {
+    InitializationPayload initialization_payload = 3;
+    StreamingTokenUpdatePayload streaming_token_update_payload = 4;
+  }
+  optional ActionsPayload actions_payload = 1;
+}
+message ServerStreamingMessage {
+  oneof payload {
+    InitializationAckPayload initialization_ack_payload = 4;
+    DataOperationPayload data_operation_payload = 1;
+    NewFeedPayload new_feed_payload = 5;
+    ActionsPayloadAck actions_payload_ack = 3;
+  }
+  optional Token token = 6;
+  optional ConsistencyToken consistency_token = 7;
+}

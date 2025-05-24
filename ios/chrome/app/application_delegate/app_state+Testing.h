@@ -11,9 +11,11 @@
 @interface AppState (Testing) <AppStateObserver>
 
 // Redefined internally as readwrite.
-@property(nonatomic, assign) InitStage initStage;
+@property(nonatomic, assign) AppInitStage initStage;
 
-- (void)completeUIInitialization;
+// Updates the value of `initStage` without any of the associated checks or
+// logic.
+- (void)updateInitStage:(AppInitStage)initStage;
 
 @end
 

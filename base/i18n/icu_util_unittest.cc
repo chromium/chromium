@@ -9,7 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_NACL) && (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE) && \
-    (BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID))
+    BUILDFLAG(IS_ANDROID)
 
 namespace base::i18n {
 

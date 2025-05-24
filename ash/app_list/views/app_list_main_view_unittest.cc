@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/app_list_main_view.h"
 
+#include <algorithm>
 #include <list>
 #include <memory>
 #include <string>
@@ -27,7 +28,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
@@ -67,7 +67,7 @@ class AppListMainViewTest : public AshTestBase {
                                             const gfx::Point& point) {
     const auto& entries = grid_view->view_model()->entries();
     const auto iter =
-        base::ranges::find_if(entries, [&point](const auto& entry) {
+        std::ranges::find_if(entries, [&point](const auto& entry) {
           return entry.view->bounds().Contains(point);
         });
     return iter == entries.end() ? nullptr

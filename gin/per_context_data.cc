@@ -17,7 +17,6 @@ PerContextData::PerContextData(ContextHolder* context_holder,
 }
 
 PerContextData::~PerContextData() {
-  v8::HandleScope handle_scope(context_holder_->isolate());
   context_holder_->context()->SetAlignedPointerInEmbedderData(
       int{kPerContextDataStartIndex} + kEmbedderNativeGin, NULL);
 }

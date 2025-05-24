@@ -16,8 +16,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
-#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/interval_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
@@ -130,12 +130,15 @@ class PLATFORM_EXPORT MultiBuffer {
     // Ask the data provider to stop giving us data.
     // It's ok if the effect is not immediate.
     virtual void SetDeferred(bool deferred) = 0;
+
+    // Ask the provider if it has been deferred too long.
+    virtual bool IsStale() const = 0;
   };
 
   // MultiBuffers use a global shared LRU to free memory.
   // This effectively means that recently used multibuffers can
   // borrow memory from less recently used ones.
-  class PLATFORM_EXPORT GlobalLRU : public RefCounted<GlobalLRU> {
+  class PLATFORM_EXPORT GlobalLRU : public ThreadSafeRefCounted<GlobalLRU> {
    public:
     typedef MultiBufferGlobalBlockId GlobalBlockId;
     explicit GlobalLRU(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -176,7 +179,7 @@ class PLATFORM_EXPORT MultiBuffer {
     int64_t Size() const;
 
    private:
-    friend class RefCounted<GlobalLRU>;
+    friend class ThreadSafeRefCounted<GlobalLRU>;
     ~GlobalLRU();
 
     // Schedule background pruning, if needed.
@@ -300,6 +303,8 @@ class PLATFORM_EXPORT MultiBuffer {
   // for a provider in a deferred state to wake up.
   void OnDataProviderEvent(DataProvider* provider);
 
+  size_t writer_index_size_for_testing() const { return writer_index_.size(); }
+
  protected:
   // Create a new writer at |pos| and return it.
   // Users needs to implemement this method.
@@ -332,7 +337,7 @@ class PLATFORM_EXPORT MultiBuffer {
   void ReleaseBlocks(const std::vector<MultiBufferBlockId>& blocks);
 
   // Figure out what state a writer at |pos| should be in.
-  ProviderState SuggestProviderState(const BlockId& pos) const;
+  ProviderState SuggestProviderState(const BlockId& pos, bool is_stale) const;
 
   // Returns true if a writer at |pos| is colliding with
   // output of another writer.
@@ -364,13 +369,12 @@ class PLATFORM_EXPORT MultiBuffer {
   base::Lock data_lock_;
 
   // Keeps track of readers waiting for data.
-  std::map<MultiBufferBlockId, std::set<raw_ptr<Reader, SetExperimental>>>
-      readers_ ALLOW_DISCOURAGED_TYPE("HashMap lacks key sorting");
+  base::flat_map<MultiBufferBlockId, std::set<raw_ptr<Reader, SetExperimental>>>
+      readers_;
 
   // Keeps track of writers by their position.
   // The writers are owned by this class.
-  std::map<BlockId, std::unique_ptr<DataProvider>> writer_index_
-      ALLOW_DISCOURAGED_TYPE("HashMap lacks key sorting");
+  base::flat_map<BlockId, std::unique_ptr<DataProvider>> writer_index_;
 
   // Gloabally shared LRU, decides which block to free next.
   scoped_refptr<GlobalLRU> lru_;

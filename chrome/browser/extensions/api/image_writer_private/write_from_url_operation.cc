@@ -181,7 +181,7 @@ void WriteFromUrlOperation::VerifyDownload(base::OnceClosure continuation) {
 
   SetStage(image_writer_api::Stage::kVerifyDownload);
 
-  GetMD5SumOfFile(image_path_, 0, 0, kProgressComplete,
+  GetMD5SumOfFile(image_path_,
                   base::BindOnce(&WriteFromUrlOperation::VerifyDownloadCompare,
                                  this, std::move(continuation)));
 }

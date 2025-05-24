@@ -39,8 +39,7 @@ cros::mojom::CameraClientType kSupportedCameraTypes[] = {
     cros::mojom::CameraClientType::CHROME,
     cros::mojom::CameraClientType::ANDROID,
     cros::mojom::CameraClientType::PLUGINVM,
-    cros::mojom::CameraClientType::ASH_CHROME,
-    cros::mojom::CameraClientType::LACROS_CHROME};
+    cros::mojom::CameraClientType::ASH_CHROME};
 
 constexpr base::TimeDelta kMinCameraOpenDurationForSurveyTest =
     base::Seconds(100);

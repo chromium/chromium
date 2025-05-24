@@ -18,7 +18,10 @@ function getReportHtml(this: TraceReportListElement) {
   }
 
   return html`${this.traces_.map((traceReport: ClientTraceReport) => html`
-    <trace-report .trace="${traceReport}"></trace-report>`)}`;
+    <trace-report
+        .trace="${traceReport}"
+        @show-toast="${this.showToastHandler_}">
+    </trace-report>`)}`;
   // clang-format on
 }
 
@@ -31,14 +34,19 @@ export function getHtml(this: TraceReportListElement) {
         ${this.traces_.length}
       </span>
     </h1>
-    ${this.hasTraces_() ? html`
     <div class="utility-bar">
+      <cr-button class="tonal-button"
+          @click="${this.onRefreshTracesClick_}">
+        <cr-icon icon="cr:sync" slot="prefix-icon"></cr-icon>
+        Refresh
+      </cr-button>
+    ${this.hasTraces_() ? html`
       <cr-button class="tonal-button" ?disabled="${!this.hasTraces_()}"
           @click="${this.onDeleteAllTracesClick_}">
         <cr-icon icon="cr:delete" slot="prefix-icon"></cr-icon>
         Delete All Traces
-      </cr-button>
-    </div>` : nothing}
+      </cr-button>` : nothing}
+    </div>
   </div>
   ${this.isLoading_ ? html`
   <div class="loading-spinner"><div class="spinner"></div></div>` :

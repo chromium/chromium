@@ -5,8 +5,7 @@
 // https://drafts.csswg.org/cssom/#the-cssmarginrule-interface
 
 [
-    Exposed=Window,
-    RuntimeEnabled=PageMarginBoxes
+    Exposed=Window
 ] interface CSSMarginRule : CSSRule {
     readonly attribute DOMString name;
     [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;

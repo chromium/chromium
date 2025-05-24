@@ -80,9 +80,7 @@ int HostResolverNat64Task::DoLoop(int result) {
         rv = DoSynthesizeToIpv6();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED();
     }
   } while (rv != ERR_IO_PENDING && next_state_ != State::kStateNone);
   return rv;
@@ -155,8 +153,9 @@ int HostResolverNat64Task::DoSynthesizeToIpv6() {
     converted_addresses = {IPEndPoint(ipv4_address, 0)};
   }
 
-  results_ = HostCache::Entry(OK, converted_addresses, std::move(aliases),
-                              HostCache::Entry::SOURCE_UNKNOWN);
+  results_ =
+      HostCache::Entry(OK, std::move(converted_addresses), std::move(aliases),
+                       HostCache::Entry::SOURCE_UNKNOWN);
   return OK;
 }
 

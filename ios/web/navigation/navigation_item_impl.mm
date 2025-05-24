@@ -10,6 +10,7 @@
 #import <utility>
 
 #import "base/check_op.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/web/common/features.h"
@@ -56,8 +57,7 @@ std::unique_ptr<NavigationItem> NavigationItem::Create() {
 NavigationItemImpl::NavigationItemImpl()
     : unique_id_(GetUniqueIDInConstructor()) {}
 
-NavigationItemImpl::~NavigationItemImpl() {
-}
+NavigationItemImpl::~NavigationItemImpl() {}
 
 NavigationItemImpl::NavigationItemImpl(
     const proto::NavigationItemStorage& storage)
@@ -77,18 +77,23 @@ NavigationItemImpl::NavigationItemImpl(
   // also update the virtual URL reported by this object.
   url_ = original_request_url_ = GURL(storage.url());
 
-  // In the cases where the URL to be restored is not an HTTP URL, it is
-  // very likely that we can't restore the page (e.g. for files, it could
-  // be an external PDF that has been deleted), don't restore it to avoid
-  // issues.
+  if (!storage.security_scoped_file_resource().empty()) {
+    const std::string& bytes = storage.security_scoped_file_resource();
+    security_scoped_file_resource_ = [NSData dataWithBytes:bytes.data()
+                                                    length:bytes.size()];
+  }
+
+  // Restore the `virtual_url`. In case the `url` is invalid, it should be set
+  // to the the value saved for `virtual_url` (we never store `virtual_url` if
+  // equal to `url`, so restore to `url` only in that case).
   const GURL virtual_url(storage.virtual_url());
-  if (url_.SchemeIsHTTPOrHTTPS()) {
-    if (virtual_url.is_valid() && virtual_url != url_) {
-      virtual_url_ = virtual_url;
-    }
-  } else {
-    if (virtual_url.is_valid()) {
+  if (virtual_url.is_valid()) {
+    if (!url_.is_valid()) {
       url_ = virtual_url;
+    } else {
+      if (virtual_url != url_) {
+        virtual_url_ = virtual_url;
+      }
     }
   }
 }
@@ -112,6 +117,11 @@ void NavigationItemImpl::SerializeToProto(
   if (http_request_headers_.count) {
     SerializeHttpRequestHeadersToProto(http_request_headers_,
                                        *storage.mutable_http_request_headers());
+  }
+  if (security_scoped_file_resource_) {
+    storage.set_security_scoped_file_resource(
+        static_cast<const char*>(security_scoped_file_resource_.bytes),
+        security_scoped_file_resource_.length);
   }
 }
 
@@ -158,8 +168,9 @@ const GURL& NavigationItemImpl::GetVirtualURL() const {
 }
 
 void NavigationItemImpl::SetTitle(const std::u16string& title) {
-  if (title_ == title)
+  if (title_ == title) {
     return;
+  }
 
   if (title.size() > kMaxTitleLength) {
     title_ = gfx::TruncateString(title, kMaxTitleLength, gfx::CHARACTER_BREAK);
@@ -176,13 +187,15 @@ const std::u16string& NavigationItemImpl::GetTitle() const {
 const std::u16string& NavigationItemImpl::GetTitleForDisplay() const {
   // Most pages have real titles. Don't even bother caching anything if this is
   // the case.
-  if (!title_.empty())
+  if (!title_.empty()) {
     return title_;
+  }
 
   // More complicated cases will use the URLs as the title. This result we will
   // cache since it's more complicated to compute.
-  if (!cached_display_title_.empty())
+  if (!cached_display_title_.empty()) {
     return cached_display_title_;
+  }
 
   // File urls have different display rules, so use one if it is present.
   cached_display_title_ = NavigationItemImpl::GetDisplayTitleForURL(
@@ -226,6 +239,14 @@ void NavigationItemImpl::SetUserAgentType(UserAgentType type) {
   user_agent_type_ = type;
 }
 
+void NavigationItemImpl::SetSecurityScopedFileResource(NSData* data) {
+  security_scoped_file_resource_ = [data copy];
+}
+
+NSData* NavigationItemImpl::GetSecurityScopedFileResource() {
+  return security_scoped_file_resource_;
+}
+
 void NavigationItemImpl::SetUntrusted() {
   is_untrusted_ = true;
 }
@@ -248,13 +269,15 @@ HttpRequestHeaders* NavigationItemImpl::GetHttpRequestHeaders() const {
 
 void NavigationItemImpl::AddHttpRequestHeaders(
     HttpRequestHeaders* additional_headers) {
-  if (!additional_headers)
+  if (!additional_headers) {
     return;
+  }
 
-  if (http_request_headers_)
+  if (http_request_headers_) {
     [http_request_headers_ addEntriesFromDictionary:additional_headers];
-  else
+  } else {
     http_request_headers_ = [additional_headers mutableCopy];
+  }
 }
 
 void NavigationItemImpl::SetHttpsUpgradeType(
@@ -312,8 +335,9 @@ NSData* NavigationItemImpl::GetPostData() const {
 void NavigationItemImpl::RemoveHttpRequestHeaderForKey(NSString* key) {
   DCHECK(key);
   [http_request_headers_ removeObjectForKey:key];
-  if (![http_request_headers_ count])
+  if (![http_request_headers_ count]) {
     http_request_headers_ = nil;
+  }
 }
 
 void NavigationItemImpl::ResetHttpRequestHeaders() {
@@ -336,21 +360,24 @@ void NavigationItemImpl::RestoreStateFromItem(NavigationItem* other) {
   }
   if (url_ == other->GetURL()) {
     SetVirtualURL(other->GetVirtualURL());
+    SetSecurityScopedFileResource(other->GetSecurityScopedFileResource());
   }
 }
 
 // static
 std::u16string NavigationItemImpl::GetDisplayTitleForURL(const GURL& url) {
-  if (url.is_empty())
+  if (url.is_empty()) {
     return std::u16string();
+  }
 
   std::u16string title = url_formatter::FormatUrl(url);
 
   // For file:// URLs use the filename as the title, not the full path.
   if (url.SchemeIsFile()) {
     std::u16string::size_type slashpos = title.rfind('/');
-    if (slashpos != std::u16string::npos && slashpos != (title.size() - 1))
+    if (slashpos != std::u16string::npos && slashpos != (title.size() - 1)) {
       title = title.substr(slashpos + 1);
+    }
   }
 
   const size_t kMaxTitleChars = 4 * 1024;

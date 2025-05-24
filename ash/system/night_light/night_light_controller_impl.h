@@ -16,6 +16,7 @@
 #include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/moving_window.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -195,9 +196,12 @@ class ASH_EXPORT NightLightControllerImpl
   // session. After that, it is set to false.
   bool is_first_user_init_ = true;
 
-  // Last ambient temperature read from the sensor. It is continuously
-  // updated for every new value even when GetAmbientColorEnabled() returns
-  // false.
+  // Moving average of ambient temperature read from the sensor. It is
+  // continuously updated for every new value even when GetAmbientColorEnabled()
+  // returns false.
+  base::MovingAverage<float, float> ambient_temperature_sensor_values_;
+
+  // The current ambient temperature being applied.
   float ambient_temperature_;
 
   // The ambient color R, G, and B scaling factors.

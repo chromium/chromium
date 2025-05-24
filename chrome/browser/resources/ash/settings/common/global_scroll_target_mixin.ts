@@ -15,12 +15,12 @@
  */
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin, type PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
-import {Route, Router} from '../router.js';
+import {RouteObserverMixin, type RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
+import {type Route, Router} from '../router.js';
 
-import {Constructor} from './types.js';
+import type {Constructor} from './types.js';
 
 let scrollTargetResolver = new PromiseResolver<HTMLElement>();
 

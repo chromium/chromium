@@ -24,6 +24,7 @@
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/proto/chrome_extension_policy.pb.h"
@@ -138,6 +139,8 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
     std::string policy_data_signature;
 
     ValidationResult();
+    ValidationResult(const ValidationResult&);
+    ValidationResult& operator=(const ValidationResult&);
     ~ValidationResult();
   };
 
@@ -185,7 +188,7 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   // matches the user credentials. It checks GAIA ID if policy blob has it,
   // otherwise falls back to username check.
   void ValidateUsernameAndGaiaId(const std::string& expected_user,
-                                 const std::string& gaia_id);
+                                 const GaiaId& gaia_id);
 
   // Instruct the validator to check that the policy blob is addressed to
   // |expected_domain|. This uses the domain part of the username field in the
@@ -382,7 +385,7 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   ValidateDMTokenOption dm_token_option_;
   ValidateDeviceIdOption device_id_option_;
   std::string username_;
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   bool canonicalize_user_;
   std::string domain_;
   std::string dm_token_;

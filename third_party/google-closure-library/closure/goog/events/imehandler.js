@@ -345,6 +345,7 @@ goog.events.ImeHandler.prototype.handleKeyUpSafari4_ = function(e) {
  * @param {!goog.events.Event} e The event.
  * @return {boolean} Whether the given event is an IME deactivate trigger.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.ImeHandler.isImeDeactivateKeyEvent_ = function(e) {
   'use strict';

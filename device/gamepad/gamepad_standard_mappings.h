@@ -32,7 +32,7 @@ typedef void (*GamepadStandardMappingFunction)(const Gamepad& original,
 // number reported by the device (bcdDevice). |bus_type| is the transport
 // used to connect to this device, or GAMEPAD_BUS_UNKNOWN if unknown.
 GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
-    const std::string_view product_name,
+    std::string_view product_name,
     const uint16_t vendor_id,
     const uint16_t product_id,
     const uint16_t hid_specification_version,

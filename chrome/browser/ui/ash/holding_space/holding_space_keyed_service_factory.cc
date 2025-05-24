@@ -71,8 +71,9 @@ HoldingSpaceKeyedServiceFactory::GetBrowserContextToUse(
   Profile* const profile = Profile::FromBrowserContext(context);
 
   // Guest sessions are supported but redirect to the primary OTR profile.
-  if (profile->IsGuestSession())
+  if (profile->IsGuestSession()) {
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
 
   // Don't create the service for OTR profiles outside of guest sessions.
   return profile->IsOffTheRecord() ? nullptr : context;
@@ -94,8 +95,9 @@ HoldingSpaceKeyedServiceFactory::BuildServiceInstanceForInternal(
   DCHECK_EQ(profile->IsGuestSession(), profile->IsOffTheRecord());
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
+  if (!user) {
     return nullptr;
+  }
 
   if (user->GetType() == user_manager::UserType::kKioskApp) {
     return nullptr;

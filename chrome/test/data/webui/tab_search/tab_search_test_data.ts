@@ -13,6 +13,7 @@ export function createTab(overrides: Partial<Tab>): Tab {
   return Object.assign(
       {
         active: false,
+        visible: false,
         faviconUrl: null,
         groupId: null,
         alertStates: [],

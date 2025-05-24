@@ -6,7 +6,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -20,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/test/test_sync_service.h"
@@ -30,7 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/help_app_ui/url_constants.h"
 #endif
 
@@ -39,17 +39,11 @@ namespace {
 const char kPrivacySandboxDialogDisplayHostHistogram[] =
     "Settings.PrivacySandbox.DialogDisplayHost";
 constexpr char kPrivacySandboxPromptHelperEventHistogram[] =
-    "Settings.PrivacySandbox.PromptHelperEvent";
+    "Settings.PrivacySandbox.PromptHelperEvent2";
 
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
 }
-
-std::unique_ptr<KeyedService> CreateMockPrivacySandboxService(
-    content::BrowserContext*) {
-  return std::make_unique<testing::NiceMock<MockPrivacySandboxService>>();
-}
-
 }  // namespace
 
 class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
@@ -57,6 +51,38 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
   PrivacySandboxPromptHelperTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  // This setup happens before the tests run as a second browser startup.
+  // Mock service creation happens here so that we have a valid browser() object
+  // to initialize the queue_manager_ with after the first browser startup in
+  // SetUpInProcessBrowserTestFixture().
+  void SetUpOnMainThread() override {
+    mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
+        PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(),
+            base::BindRepeating(&BuildMockPrivacySandboxService)));
+
+    ON_CALL(*mock_privacy_sandbox_service_,
+            GetRequiredPromptType(PrivacySandboxService::SurfaceType::kDesktop))
+        .WillByDefault(testing::Return(TestPromptType()));
+    ON_CALL(*mock_privacy_sandbox_service_, IsPromptOpenForBrowser(testing::_))
+        .WillByDefault(testing::Return(false));
+
+    queue_manager_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxQueueManager>(
+            browser()->profile());
+    ON_CALL(*mock_privacy_sandbox_service_,
+            GetPrivacySandboxNoticeQueueManager())
+        .WillByDefault(testing::ReturnRef(*queue_manager_.get()));
+  }
+
+  // Reset queue manager after all browser-related processes have completed,
+  // including tear down.
+  void PostRunTestOnMainThread() override {
+    InProcessBrowserTest::PostRunTestOnMainThread();
+    queue_manager_.reset();
+  }
+
+  // This setup happens before SetUpOnMainThread() as an initial startup.
   void SetUpInProcessBrowserTestFixture() override {
     PrivacySandboxService::SetPromptDisabledForTests(false);
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -73,18 +99,6 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
   void SetupTestFactories(content::BrowserContext* context) {
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
-    auto* mock_privacy_sandbox_service =
-        static_cast<MockPrivacySandboxService*>(
-            PrivacySandboxServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    context,
-                    base::BindRepeating(&CreateMockPrivacySandboxService)));
-
-    ON_CALL(*mock_privacy_sandbox_service,
-            GetRequiredPromptType(PrivacySandboxService::SurfaceType::kDesktop))
-        .WillByDefault(testing::Return(TestPromptType()));
-    ON_CALL(*mock_privacy_sandbox_service, IsPromptOpenForBrowser(testing::_))
-        .WillByDefault(testing::Return(false));
   }
 
   virtual PrivacySandboxService::PromptType TestPromptType() {
@@ -120,14 +134,16 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
         SyncServiceFactory::GetForProfile(browser()->profile()));
   }
   MockPrivacySandboxService* mock_privacy_sandbox_service() {
-    return static_cast<MockPrivacySandboxService*>(
-        PrivacySandboxServiceFactory::GetForProfile(browser()->profile()));
+    return mock_privacy_sandbox_service_;
   }
   net::EmbeddedTestServer* https_test_server() { return &https_test_server_; }
 
  private:
   base::CallbackListSubscription create_services_subscription_;
   net::EmbeddedTestServer https_test_server_;
+  std::unique_ptr<privacy_sandbox::PrivacySandboxQueueManager> queue_manager_;
+  raw_ptr<MockPrivacySandboxService, DanglingUntriaged>
+      mock_privacy_sandbox_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxPromptHelperTest, NoPromptRequired) {
@@ -174,7 +190,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("new-tab-page")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -205,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("about:blank")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("about:blank")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -231,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("settings")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("settings")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -243,11 +259,11 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
 }
 
 // TODO(crbug.com/40270789): Debug and re-enable the test.
-# if BUILDFLAG(IS_CHROMEOS)
-# define MAYBE_PromptOpensOnHistory DISABLED_PromptOpensOnHistory
-# else
-# define MAYBE_PromptOpensOnHistory PromptOpensOnHistory
-# endif
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PromptOpensOnHistory DISABLED_PromptOpensOnHistory
+#else
+#define MAYBE_PromptOpensOnHistory PromptOpensOnHistory
+#endif
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        MAYBE_PromptOpensOnHistory) {
   // Check when a navigation to the Chrome history occurs, which is a
@@ -263,7 +279,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("history")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("history")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -274,7 +290,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
         1}});
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        NoPromptNonDefaultNtp) {
   // Check that navigations to the generic chrome://newtab, when a non default
@@ -286,6 +302,8 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
               PromptOpenedForBrowser(browser(), testing::_))
       .Times(0);
 
+  // Sets up explicit redirect to invalid URL. Otherwise, redirects to
+  // chrome://new-tab-page/, which is considered a valid URL.
   GURL ntp_url = https_test_server()->GetURL("/title1.html");
   ntp_test_utils::SetUserSelectedDefaultSearchProvider(
       browser()->profile(), https_test_server()->base_url().spec(),
@@ -334,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, NoPromptSync) {
         1}});
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        NoPromptProfileSetup) {
   // Check when profile setup is in progress, that no prompt is shown.
@@ -361,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
             kSigninDialogShown,
         1}});
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, UnsuitableUrl) {
   // Check that no prompt is shown for navigations to unsuitable URLs.
@@ -370,26 +388,26 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, UnsuitableUrl) {
               PromptOpenedForBrowser(browser(), testing::_))
       .Times(0);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIWelcomeURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_test_server()->GetURL("a.test", "/title1.html")));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAutofillSubPage)));
-  int navigation_count = 3;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(ash::kChromeUIHelpAppURL)));
-  navigation_count++;
-#endif
+  std::vector<GURL> urls_to_open = {
+      https_test_server()->GetURL("a.test", "/title1.html"),
+      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAutofillSubPage),
 #if BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIOSSettingsURL)));
-  navigation_count++;
+      GURL(ash::kChromeUIHelpAppURL),
+      GURL(chrome::kChromeUIOSSettingsURL),
 #endif
+  };
+
+  for (size_t i = 0; i < urls_to_open.size(); ++i) {
+    if (i == 0) {
+      // Open the first URL in a new tab to create a fresh new tab helper.
+      ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+          browser(), urls_to_open[i], WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    } else {
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls_to_open[i]));
+    }
+  }
+
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(kPrivacySandboxDialogDisplayHostHistogram,
                                     0);
@@ -400,7 +418,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, UnsuitableUrl) {
         1},
        {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
             kUrlNotSuitable,
-        navigation_count}});
+        urls_to_open.size()}});
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
@@ -425,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("new-tab-page")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -456,10 +474,10 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   histogram_tester.ExpectBucketCount(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("new-tab-page")), 1);
   histogram_tester.ExpectBucketCount(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("about:blank")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("about:blank")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -592,9 +610,6 @@ IN_PROC_BROWSER_TEST_P(
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
-            kCreated,
-        1},
-       {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
             kSearchEngineChoiceDialogShown,
         1}});
 

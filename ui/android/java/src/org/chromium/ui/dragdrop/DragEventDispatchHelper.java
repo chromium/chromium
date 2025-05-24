@@ -9,8 +9,10 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Wrapper class that accounts for drag event coordinate differences when forwarding a
@@ -38,6 +40,7 @@ import androidx.annotation.VisibleForTesting;
  * }
  * </pre>
  */
+@NullMarked
 public class DragEventDispatchHelper implements OnDragListener {
     static final int[] ALL_DRAG_ACTIONS =
             new int[] {

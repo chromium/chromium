@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/state_machines/backward_grapheme_boundary_state_machine.h"
 
+#include <array>
 #include <ostream>
 
 #include "third_party/blink/renderer/core/editing/state_machines/state_machine_util.h"
@@ -48,15 +44,13 @@ enum class BackwardGraphemeBoundaryStateMachine::InternalState {
 std::ostream& operator<<(
     std::ostream& os,
     BackwardGraphemeBoundaryStateMachine::InternalState state) {
-  static const char* const kTexts[] = {
+  static const auto kTexts = std::to_array<const char*>({
 #define V(name) #name,
       FOR_EACH_BACKWARD_GRAPHEME_BOUNDARY_STATE(V)
 #undef V
-  };
-  auto* const* const it = std::begin(kTexts) + static_cast<size_t>(state);
-  DCHECK_GE(it, std::begin(kTexts)) << "Unknown state value";
-  DCHECK_LT(it, std::end(kTexts)) << "Unknown state value";
-  return os << *it;
+  });
+  DCHECK_LT(static_cast<size_t>(state), kTexts.size()) << "Unknown state value";
+  return os << kTexts[static_cast<size_t>(state)];
 }
 
 BackwardGraphemeBoundaryStateMachine::BackwardGraphemeBoundaryStateMachine()
@@ -168,11 +162,9 @@ BackwardGraphemeBoundaryStateMachine::FeedPrecedingCodeUnit(UChar code_unit) {
         boundary_offset_ -= 2;
       return Finish();
     case InternalState::kFinished:
-      NOTREACHED_IN_MIGRATION()
-          << "Do not call feedPrecedingCodeUnit() once it finishes.";
+      NOTREACHED() << "Do not call feedPrecedingCodeUnit() once it finishes.";
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << internal_state_;
-  return Finish();
+  NOTREACHED() << "Unhandled state: " << internal_state_;
 }
 
 TextSegmentationMachineState
@@ -197,17 +189,14 @@ BackwardGraphemeBoundaryStateMachine::TellEndOfPrecedingText() {
         boundary_offset_ -= 2;
       return Finish();
     case InternalState::kFinished:
-      NOTREACHED_IN_MIGRATION()
-          << "Do not call tellEndOfPrecedingText() once it finishes.";
+      NOTREACHED() << "Do not call tellEndOfPrecedingText() once it finishes.";
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << internal_state_;
-  return Finish();
+  NOTREACHED() << "Unhandled state: " << internal_state_;
 }
 
 TextSegmentationMachineState
 BackwardGraphemeBoundaryStateMachine::FeedFollowingCodeUnit(UChar code_unit) {
-  NOTREACHED_IN_MIGRATION();
-  return TextSegmentationMachineState::kInvalid;
+  NOTREACHED();
 }
 
 int BackwardGraphemeBoundaryStateMachine::FinalizeAndGetBoundaryOffset() {

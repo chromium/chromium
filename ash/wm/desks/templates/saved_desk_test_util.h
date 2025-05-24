@@ -66,9 +66,15 @@ class SavedDeskLibraryViewTestApi {
   SavedDeskLibraryViewTestApi& operator=(SavedDeskLibraryViewTestApi&) = delete;
   ~SavedDeskLibraryViewTestApi() = default;
 
-  const views::ScrollView* scroll_view() { return library_view_->scroll_view_; }
+  const SavedDeskGridView* coral_grid_view() const {
+    return library_view_->coral_grid_view_;
+  }
 
-  const views::Label* no_items_label() {
+  const views::ScrollView* scroll_view() const {
+    return library_view_->scroll_view_;
+  }
+
+  const views::Label* no_items_label() const {
     return library_view_->no_items_label_;
   }
 
@@ -184,8 +190,6 @@ SavedDeskItemView* GetItemViewFromSavedDeskGrid(size_t grid_item_index);
 
 // These buttons are the ones on the primary root window.
 const views::Button* GetLibraryButton();
-const views::Button* GetSaveDeskAsTemplateButton();
-const views::Button* GetSaveDeskForLaterButton();
 const views::Button* GetSavedDeskItemButton(int index);
 const views::Button* GetSavedDeskItemDeleteButton(int index);
 const views::Button* GetSavedDeskDialogAcceptButton();

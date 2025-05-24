@@ -128,7 +128,7 @@ Render tests are the recommended way to verify the appearance of night mode UI. 
 * Use class parameter [`NightModeTestUtils.NightModeParams.class`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=NightModeTestUtils.NightModeParams)
 * Pass in a boolean parameter that indicates night mode state in constructor
 * Set up night mode in constructor by calling [`NightModeTestUtils#setUpNightModeForBlankUiTestActivity()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=setUpNightModeForBlankUiTestActivity&sq=package:chromium) and [`RenderTestRule#setNightModeEnabled()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/RenderTestRule.java?type=cs&q=setNightModeEnabled)
-* During [`tearDownTest()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/BlankUiTestActivityTestCase.java?type=cs&q=tearDownTest), reset night mode state by calling [`NightModeTestUtils#tearDownNightModeForBlankUiTestActivity()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=tearDownNightModeForBlankUiTestActivity)
+* During `tearDown()`, reset night mode state by calling [`NightModeTestUtils#tearDownNightModeForBlankUiTestActivity()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=tearDownNightModeForBlankUiTestActivity)
 
 See [this CL](https://chromium-review.googlesource.com/c/chromium/src/+/1613883) as an example
 

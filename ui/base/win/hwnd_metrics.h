@@ -8,11 +8,40 @@
 #include <windows.h>
 
 #include "base/component_export.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
-// The size, in pixels, of the non-client frame around a window on |monitor|.
-COMPONENT_EXPORT(UI_BASE) int GetFrameThickness(HMONITOR monitor);
+// Returns the thickness, in pixels, of the non-client frame's left, right, and
+// bottom borders around a resizble (WS_THICKFRAME) window on the given monitor,
+// with no visible border.
+COMPONENT_EXPORT(UI_BASE) int GetResizeFrameOnlyThickness(HMONITOR monitor);
+
+// Returns the thickness, in pixels, of the non-client frame's left, right, and
+// bottom borders around a resizble (WS_THICKFRAME) window on the given monitor.
+// In contrast to `GetResizeFrameOnlyThickness`, this frame consists of both:
+//  - A non-visible resize handle.
+//  - A visible border.
+// This thickness *excludes* the top border (title bar), which is typically
+// thicker than other borders.
+// This function assumes the window has WS_THICKFRAME style.
+// `has_caption` means the window has the WS_CAPTION style, which adds adds 1px
+// to frame thickness.
+// TODO(kerenzhu): this should be renamed to GetResizableFrameThickness().
+COMPONENT_EXPORT(UI_BASE)
+int GetFrameThickness(HMONITOR monitor, bool has_caption);
+
+// Returns the above given the window handle. Note that during WM_NCCALCSIZE
+// Windows does not return the correct monitor for the HWND, so it must be
+// passed in explicitly (see HWNDMessageHandler::OnNCCalcSize for more details).
+// See Win32 MonitorFromWindow API for the available |default_options|.
+COMPONENT_EXPORT(UI_BASE)
+int GetFrameThicknessFromWindow(HWND hwnd, DWORD default_options);
+
+// Returns the above given the screen rectangle. This is intended to be used
+// only in Chrome Headless Mode.
+COMPONENT_EXPORT(UI_BASE)
+int GetFrameThicknessFromScreenRect(const gfx::Rect& screen_rect);
 
 }  // namespace ui
 

@@ -14,12 +14,11 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './add_languages_dialog.js';
 import '../icons.html.js';
@@ -82,14 +81,6 @@ export class SettingsLanguagesPageElement extends
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.
        */
@@ -115,13 +106,13 @@ export class SettingsLanguagesPageElement extends
     };
   }
 
-  languages?: LanguagesModel;
-  languageHelper: LanguageHelper;
-  private detailLanguage_?: LanguageState;
-  private showAddLanguagesDialog_: boolean;
-  private addLanguagesDialogLanguages_:
+  declare languages?: LanguagesModel;
+  declare languageHelper: LanguageHelper;
+  declare private detailLanguage_?: LanguageState;
+  declare private showAddLanguagesDialog_: boolean;
+  declare private addLanguagesDialogLanguages_:
       chrome.languageSettingsPrivate.Language[]|null;
-  private showManagedLanguageDialog_: boolean;
+  declare private showManagedLanguageDialog_: boolean;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
 
@@ -135,10 +126,10 @@ export class SettingsLanguagesPageElement extends
    */
   private onAddLanguagesClick_(e: Event) {
     e.preventDefault();
+    assert(this.languages);
     this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
         LanguageSettingsPageImpressionType.ADD_LANGUAGE);
-
-    this.addLanguagesDialogLanguages_ = this.languages!.supported.filter(
+    this.addLanguagesDialogLanguages_ = this.languages.supported.filter(
         language => this.languageHelper.canEnableLanguage(language));
     this.showAddLanguagesDialog_ = true;
   }
@@ -174,7 +165,7 @@ export class SettingsLanguagesPageElement extends
    * @return True if there is at least one available language.
    */
   private canEnableSomeSupportedLanguage_(languages?: LanguagesModel): boolean {
-    return languages === undefined || languages.supported.some(language => {
+    return languages !== undefined && languages.supported.some(language => {
       return this.languageHelper.canEnableLanguage(language);
     });
   }
@@ -194,7 +185,7 @@ export class SettingsLanguagesPageElement extends
       return false;
     }
 
-    const compareLanguage = this.languages.enabled[n]!;
+    const compareLanguage = this.languages.enabled[n];
     return this.detailLanguage_.language === compareLanguage.language;
   }
 

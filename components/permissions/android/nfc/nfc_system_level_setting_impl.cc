@@ -12,9 +12,9 @@
 
 namespace permissions {
 
-NfcSystemLevelSettingImpl::NfcSystemLevelSettingImpl() {}
+NfcSystemLevelSettingImpl::NfcSystemLevelSettingImpl() = default;
 
-NfcSystemLevelSettingImpl::~NfcSystemLevelSettingImpl() {}
+NfcSystemLevelSettingImpl::~NfcSystemLevelSettingImpl() = default;
 
 bool NfcSystemLevelSettingImpl::IsNfcAccessPossible() {
   JNIEnv* env = base::android::AttachCurrentThread();

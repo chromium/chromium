@@ -2,27 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_web_view_internal.h"
-
-#include <memory>
-#include <unordered_map>
-#include <utility>
-
 #import <WebKit/WebKit.h>
 
-#include "base/apple/foundation_util.h"
-#include "base/functional/bind.h"
+#import <memory>
+#import <unordered_map>
+#import <utility>
+
+#import "base/apple/foundation_util.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#include "base/json/json_writer.h"
+#import "base/json/json_writer.h"
 #import "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
-#include "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#include "components/url_formatter/elide_url.h"
-#include "google_apis/google_api_keys.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_helper.h"
@@ -31,14 +28,14 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/navigation/nscoder_util.h"
-#include "ios/web/public/favicon/favicon_url.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/favicon/favicon_url.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/navigation/referrer.h"
-#include "ios/web/public/navigation/reload_type.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/storage.pb.h"
@@ -48,23 +45,24 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_view_only/wk_web_view_configuration_util.h"
-#include "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/cwv_back_forward_list_internal.h"
 #import "ios/web_view/internal/cwv_favicon_internal.h"
 #import "ios/web_view/internal/cwv_find_in_page_controller_internal.h"
+#import "ios/web_view/internal/cwv_global_state_internal.h"
 #import "ios/web_view/internal/cwv_html_element_internal.h"
 #import "ios/web_view/internal/cwv_navigation_action_internal.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
+#import "ios/web_view/internal/cwv_web_view_internal.h"
 #import "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 #import "ios/web_view/internal/safe_browsing/web_view_safe_browsing_client_factory.h"
 #import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
 #import "ios/web_view/internal/translate/web_view_translate_client.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
-#include "ios/web_view/internal/web_view_global_state_util.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/internal/web_view_java_script_dialog_presenter.h"
 #import "ios/web_view/internal/web_view_message_handler_java_script_feature.h"
 #import "ios/web_view/internal/web_view_web_state_policy_decider.h"
@@ -73,13 +71,11 @@
 #import "ios/web_view/public/cwv_ui_delegate.h"
 #import "ios/web_view/public/cwv_web_view_configuration.h"
 #import "net/base/apple/url_conversions.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 namespace {
 
-NSString* gCustomUserAgent = nil;
-NSString* gUserAgentProduct = nil;
 BOOL gChromeContextMenuEnabled = NO;
 BOOL gUseOptimizedSessionStorage = NO;
 BOOL gWebInspectorEnabled = NO;
@@ -163,10 +159,8 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
   friend class web::WebStateUserData<WebViewHolder>;
 
   __weak CWVWebView* web_view_ = nil;
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }  // namespace
 
 // Used to serialize the protobuf message and the WebStateID.
@@ -243,7 +237,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
     (web::BrowserState*)browserState {
   return web::WebState::CreateWithStorage(
       browserState, self.webStateID, _storage.metadata(),
-      base::ReturnValueOnce(std::move(_storage)),
+      base::ReturnValueOnce(std::make_optional(std::move(_storage))),
       base::ReturnValueOnce<NSData*>(nil));
 }
 
@@ -467,7 +461,8 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
     return;
   }
 
-  ios_web_view::InitializeGlobalState();
+  DCHECK([[CWVGlobalState sharedInstance] isStarted]);
+  [[CWVGlobalState sharedInstance] start];
 }
 
 + (BOOL)chromeContextMenuEnabled {
@@ -500,37 +495,6 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 
 + (void)setSkipAccountStorageCheckEnabled:(BOOL)newValue {
   gSkipAccountStorageCheckEnabled = newValue;
-}
-
-+ (NSString*)customUserAgent {
-  return gCustomUserAgent;
-}
-
-+ (void)setCustomUserAgent:(NSString*)customUserAgent {
-  gCustomUserAgent = [customUserAgent copy];
-}
-
-+ (NSString*)userAgentProduct {
-  return gUserAgentProduct;
-}
-
-+ (void)setUserAgentProduct:(NSString*)product {
-  gUserAgentProduct = [product copy];
-}
-
-+ (void)setGoogleAPIKey:(NSString*)googleAPIKey
-               clientID:(NSString*)clientID
-           clientSecret:(NSString*)clientSecret {
-  google_apis::SetAPIKey(base::SysNSStringToUTF8(googleAPIKey));
-
-  std::string clientIDString = base::SysNSStringToUTF8(clientID);
-  std::string clientSecretString = base::SysNSStringToUTF8(clientSecret);
-  for (size_t i = 0; i < google_apis::CLIENT_NUM_ITEMS; ++i) {
-    google_apis::OAuth2Client client =
-        static_cast<google_apis::OAuth2Client>(i);
-    google_apis::SetOAuth2ClientID(client, clientIDString);
-    google_apis::SetOAuth2ClientSecret(client, clientSecretString);
-  }
 }
 
 + (CWVWebView*)webViewForWebState:(web::WebState*)webState {
@@ -568,15 +532,25 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (UIScrollView*)scrollView {
+  if (![self isWebStateSafeToUse]) {
+    return nil;
+  }
   return [_webState->GetWebViewProxy().scrollViewProxy asUIScrollView];
 }
 
 - (BOOL)allowsBackForwardNavigationGestures {
+  if (![self isWebStateSafeToUse]) {
+    return NO;
+  }
+
   return _webState->GetWebViewProxy().allowsBackForwardNavigationGestures;
 }
 
 - (void)setAllowsBackForwardNavigationGestures:
     (BOOL)allowsBackForwardNavigationGestures {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   _webState->GetWebViewProxy().allowsBackForwardNavigationGestures =
       allowsBackForwardNavigationGestures;
 }
@@ -592,16 +566,27 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)goBack {
-  if (_webState->GetNavigationManager())
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
+  if (_webState->GetNavigationManager()) {
     _webState->GetNavigationManager()->GoBack();
+  }
 }
 
 - (void)goForward {
-  if (_webState->GetNavigationManager())
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
+  if (_webState->GetNavigationManager()) {
     _webState->GetNavigationManager()->GoForward();
+  }
 }
 
 - (BOOL)goToBackForwardListItem:(CWVBackForwardListItem*)item {
+  if (![self isWebStateSafeToUse]) {
+    return NO;
+  }
   if (!_backForwardList) {
     return NO;  // Do nothing if |_backForwardList| is not generated yet.
   }
@@ -622,6 +607,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)reload {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   // |check_for_repost| is false because CWVWebView does not support repost form
   // dialogs.
   _webState->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
@@ -629,10 +617,16 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)stopLoading {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   _webState->Stop();
 }
 
 - (void)loadRequest:(NSURLRequest*)request {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   DCHECK_EQ(nil, request.HTTPBodyStream)
       << "request.HTTPBodyStream is not supported.";
 
@@ -646,6 +640,10 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 
 - (void)evaluateJavaScript:(NSString*)javaScriptString
          completionHandler:(void (^)(id result, NSError* error))completion {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
+
   web::WebFrame* mainFrame =
       _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!mainFrame) {
@@ -693,7 +691,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 #pragma mark - UIResponder
 
 - (BOOL)becomeFirstResponder {
-  if (_webState) {
+  if ([self isWebStateSafeToUse]) {
     return [_webState->GetWebViewProxy() becomeFirstResponder];
   } else {
     return [super becomeFirstResponder];
@@ -806,8 +804,8 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
     createNewWebStateForURL:(const GURL&)URL
                   openerURL:(const GURL&)openerURL
             initiatedByUser:(BOOL)initiatedByUser {
-  SEL selector =
-      @selector(webView:createWebViewWithConfiguration:forNavigationAction:);
+  SEL selector = @selector(webView:
+      createWebViewWithConfiguration:forNavigationAction:);
   if (![_UIDelegate respondsToSelector:selector]) {
     return nullptr;
   }
@@ -874,7 +872,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   } else if (micPermissionRequested) {
     mediaCaptureType = CWVMediaCaptureTypeMicrophone;
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unknown media permissions";
+    NOTREACHED() << "Unknown media permissions";
   }
 
   SEL selector = @selector(webView:
@@ -998,8 +996,6 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (CWVAutofillController*)newAutofillController {
-  auto autofillClient = autofill::WebViewAutofillClientIOS::Create(
-      _webState.get(), _configuration.browserState);
   AutofillAgent* autofillAgent = [[AutofillAgent alloc]
       initWithPrefService:_configuration.browserState->GetPrefs()
                  webState:_webState.get()];
@@ -1013,7 +1009,8 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   PasswordFormHelper* formHelper =
       [[PasswordFormHelper alloc] initWithWebState:_webState.get()];
   PasswordSuggestionHelper* suggestionHelper =
-      [[PasswordSuggestionHelper alloc] initWithWebState:_webState.get()];
+      [[PasswordSuggestionHelper alloc] initWithWebState:_webState.get()
+                                         passwordManager:passwordManager.get()];
   PasswordControllerDriverHelper* driverHelper =
       [[PasswordControllerDriverHelper alloc] initWithWebState:_webState.get()];
   SharedPasswordController* passwordController =
@@ -1025,13 +1022,10 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 
   return [[CWVAutofillController alloc]
            initWithWebState:_webState.get()
-             autofillClient:std::move(autofillClient)
               autofillAgent:autofillAgent
             passwordManager:std::move(passwordManager)
       passwordManagerClient:std::move(passwordManagerClient)
-         passwordController:passwordController
-          applicationLocale:ios_web_view::ApplicationContext::GetInstance()
-                                ->GetApplicationLocale()];
+         passwordController:passwordController];
 }
 
 #pragma mark - Find In Page
@@ -1059,7 +1053,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 #pragma mark - Private methods
 
 - (void)updateWebStateVisibility {
-  if (_webState == nullptr) {
+  if (![self isWebStateSafeToUse]) {
     return;
   }
   if (self.superview) {
@@ -1094,8 +1088,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   }
 
   BOOL allowsBackForwardNavigationGestures =
-      _webState &&
-      _webState->GetWebViewProxy().allowsBackForwardNavigationGestures;
+      self.allowsBackForwardNavigationGestures;
 
   // CWVWebView does not support unrealized WebState, so ignore the
   // over-realization check (this simply reset the recent realization
@@ -1189,6 +1182,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 
 // Adds the web view provided by |_webState| as a subview unless it has already.
 - (void)addInternalWebViewAsSubview {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   UIView* subview = _webState->GetView();
   if (subview.superview == self) {
     return;
@@ -1200,6 +1196,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (CWVBackForwardList*)backForwardList {
+  if (![self isWebStateSafeToUse]) {
+    return nil;
+  }
   if (!_backForwardList) {
     _backForwardList = [[CWVBackForwardList alloc]
         initWithNavigationManager:_webState->GetNavigationManager()];
@@ -1208,6 +1207,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)updateNavigationAvailability {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   self.canGoBack = _webState && _webState->GetNavigationManager()->CanGoBack();
   self.canGoForward =
       _webState && _webState->GetNavigationManager()->CanGoForward();
@@ -1216,6 +1218,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)updateCurrentURLs {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   self.lastCommittedURL = net::NSURLWithGURL(_webState->GetLastCommittedURL());
   self.visibleURL = net::NSURLWithGURL(_webState->GetVisibleURL());
   self.visibleLocationString = base::SysUTF16ToNSString(
@@ -1223,10 +1228,16 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)updateTitle {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   self.title = base::SysUTF16ToNSString(_webState->GetTitle());
 }
 
 - (void)updateVisibleSSLStatus {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
   web::NavigationItem* visibleItem =
       _webState->GetNavigationManager()->GetVisibleItem();
   if (visibleItem) {
@@ -1238,7 +1249,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)attachSecurityInterstitialHelpersToWebStateIfNecessary {
-  if (!_webState) {
+  if (![self isWebStateSafeToUse]) {
     return;
   }
 
@@ -1259,7 +1270,8 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
           respondsToSelector:@selector(webView:handleUnsafeURLWithHandler:)]) {
     SafeBrowsingClient* client =
         ios_web_view::WebViewSafeBrowsingClientFactory::GetForBrowserState(
-            _webState->GetBrowserState());
+            ios_web_view::WebViewBrowserState::FromBrowserState(
+                _webState->GetBrowserState()));
     SafeBrowsingQueryManager::CreateForWebState(_webState.get(), client);
     SafeBrowsingTabHelper::CreateForWebState(_webState.get(), client);
     SafeBrowsingUrlAllowList::CreateForWebState(_webState.get());
@@ -1273,6 +1285,10 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 #pragma mark - Internal Methods
+
+- (BOOL)isWebStateSafeToUse {
+  return _webState != nil && !_webState->IsBeingDestroyed();
+}
 
 - (void)shutDown {
   if (_webState) {

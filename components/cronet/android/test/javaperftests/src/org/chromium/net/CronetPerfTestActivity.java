@@ -16,6 +16,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.net.impl.CronetLibraryLoader;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -201,6 +202,7 @@ public class CronetPerfTestActivity extends Activity {
             }
             final ExperimentalCronetEngine.Builder cronetEngineBuilder =
                     new ExperimentalCronetEngine.Builder(CronetPerfTestActivity.this);
+            CronetLibraryLoader.switchToTestLibrary();
             System.loadLibrary("cronet_tests");
             if (mProtocol == Protocol.QUIC) {
                 cronetEngineBuilder.enableQuic(true);

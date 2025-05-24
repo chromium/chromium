@@ -25,9 +25,10 @@ AXWebArea
 ++AXTextField
 ++AXStaticText AXValue='Url input pointing to nested popover '
 ++AXGroup AXSubrole=AXApplicationGroup
-++++AXStaticText AXValue='Popover (showing)'
+++++AXStaticText AXValue='Popover (showing) '
 ++++AXGroup AXSubrole=AXApplicationGroup
 ++++++AXStaticText AXValue='Nested popover (showing)'
+++++AXButton AXTitle='Nested invoker pointing back to containing popover'
 ++AXButton AXExpanded=1 AXTitle='Hide button pointing to showing manual (should add aria-details)'
 ++AXTextField
 ++AXStaticText AXValue='Url input pointing to showing manual '

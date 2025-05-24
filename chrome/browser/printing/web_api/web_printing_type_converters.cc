@@ -163,6 +163,14 @@ void ProcessPrintColorMode(const PrinterSemanticCapsAndDefaults& caps,
   }
 }
 
+void ProcessPrintQuality(const PrinterSemanticCapsAndDefaults& caps,
+                         blink::mojom::WebPrinterAttributes* attributes) {
+  attributes->print_quality_default = blink::mojom::WebPrintQuality::kNormal;
+  attributes->print_quality_supported = {blink::mojom::WebPrintQuality::kDraft,
+                                         blink::mojom::WebPrintQuality::kNormal,
+                                         blink::mojom::WebPrintQuality::kHigh};
+}
+
 void ProcessSides(const PrinterSemanticCapsAndDefaults& caps,
                   blink::mojom::WebPrinterAttributes* attributes) {
   if (caps.duplex_default != mojom::DuplexMode::kUnknownDuplexMode) {
@@ -201,6 +209,7 @@ TypeConverter<blink::mojom::WebPrinterAttributesPtr,
   printing::ProcessOrientationRequested(capabilities, attributes.get());
   printing::ProcessPrinterResolution(capabilities, attributes.get());
   printing::ProcessPrintColorMode(capabilities, attributes.get());
+  printing::ProcessPrintQuality(capabilities, attributes.get());
   printing::ProcessSides(capabilities, attributes.get());
 
   return attributes;

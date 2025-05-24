@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
@@ -40,8 +41,7 @@ typedef MTPDeviceAsyncDelegate::ReadDirectorySuccessCallback
 class MTPDeviceDelegateImplMac::DeviceListener final
     : public storage_monitor::ImageCaptureDeviceListener {
  public:
-  DeviceListener(MTPDeviceDelegateImplMac* delegate)
-      : delegate_(delegate) {}
+  DeviceListener(MTPDeviceDelegateImplMac* delegate) : delegate_(delegate) {}
 
   DeviceListener(const DeviceListener&) = delete;
   DeviceListener& operator=(const DeviceListener&) = delete;
@@ -63,7 +63,7 @@ class MTPDeviceDelegateImplMac::DeviceListener final
 
   // Used during delegate destruction to ensure there are no more calls
   // to the delegate by the listener.
-  virtual void ResetDelegate();
+  void ResetDelegate();
 
   base::WeakPtr<storage_monitor::ImageCaptureDeviceListener> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -102,27 +102,31 @@ void MTPDeviceDelegateImplMac::DeviceListener::DownloadFile(
 void MTPDeviceDelegateImplMac::DeviceListener::ItemAdded(
     const std::string& name,
     const base::File::Info& info) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->ItemAdded(name, info);
+  }
 }
 
 void MTPDeviceDelegateImplMac::DeviceListener::NoMoreItems() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->NoMoreItems();
+  }
 }
 
 void MTPDeviceDelegateImplMac::DeviceListener::DownloadedFile(
     const std::string& name,
     base::File::Error error) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->DownloadedFile(name, error);
+  }
 }
 
 void MTPDeviceDelegateImplMac::DeviceListener::DeviceRemoved() {
   [camera_device_ close];
   camera_device_ = nil;
-  if (delegate_)
+  if (delegate_) {
     delegate_->NoMoreItems();
+  }
 }
 
 void MTPDeviceDelegateImplMac::DeviceListener::ResetDelegate() {
@@ -136,7 +140,6 @@ MTPDeviceDelegateImplMac::MTPDeviceDelegateImplMac(
       root_path_(synthetic_path),
       received_all_files_(false),
       weak_factory_(this) {
-
   // Make a synthetic entry for the root of the filesystem.
   base::File::Info info;
   info.is_directory = true;
@@ -158,10 +161,11 @@ void ForwardGetFileInfo(base::File::Info* info,
                         base::File::Error* error,
                         GetFileInfoSuccessCallback success_callback,
                         ErrorCallback error_callback) {
-  if (*error == base::File::FILE_OK)
+  if (*error == base::File::FILE_OK) {
     std::move(success_callback).Run(*info);
-  else
+  } else {
     std::move(error_callback).Run(*error);
+  }
 }
 
 }  // namespace
@@ -187,7 +191,7 @@ void MTPDeviceDelegateImplMac::CreateDirectory(
     const bool recursive,
     CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::ReadDirectory(
@@ -223,7 +227,7 @@ void MTPDeviceDelegateImplMac::ReadBytes(
     int buf_len,
     ReadBytesSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool MTPDeviceDelegateImplMac::IsReadOnly() const {
@@ -237,7 +241,7 @@ void MTPDeviceDelegateImplMac::CopyFileLocal(
     CopyFileProgressCallback progress_callback,
     CopyFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::MoveFileLocal(
@@ -246,7 +250,7 @@ void MTPDeviceDelegateImplMac::MoveFileLocal(
     CreateTemporaryFileCallback create_temporary_file_callback,
     MoveFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::CopyFileFromLocal(
@@ -254,21 +258,21 @@ void MTPDeviceDelegateImplMac::CopyFileFromLocal(
     const base::FilePath& device_file_path,
     CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::DeleteFile(
     const base::FilePath& file_path,
     DeleteFileSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::DeleteDirectory(
     const base::FilePath& file_path,
     DeleteDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::AddWatcher(
@@ -296,10 +300,9 @@ void MTPDeviceDelegateImplMac::CancelPendingTasksAndDeleteDelegate() {
                                 base::Unretained(this)));
 }
 
-void MTPDeviceDelegateImplMac::GetFileInfoImpl(
-    const base::FilePath& file_path,
-    base::File::Info* file_info,
-    base::File::Error* error) {
+void MTPDeviceDelegateImplMac::GetFileInfoImpl(const base::FilePath& file_path,
+                                               base::File::Info* file_info,
+                                               base::File::Error* error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto i = file_info_.find(file_path.value());
   if (i == file_info_.end()) {
@@ -334,8 +337,9 @@ void MTPDeviceDelegateImplMac::ReadDirectoryImpl(
 
 void MTPDeviceDelegateImplMac::ReadDirectoryTimeout(
     const base::FilePath& root) {
-  if (received_all_files_)
+  if (received_all_files_) {
     return;
+  }
 
   for (ReadDirTransactionList::iterator iter = read_dir_transactions_.begin();
        iter != read_dir_transactions_.end();) {
@@ -412,15 +416,17 @@ void MTPDeviceDelegateImplMac::CancelDownloads() {
 }
 
 // Called on the UI thread by the listener
-void MTPDeviceDelegateImplMac::ItemAdded(
-    const std::string& name, const base::File::Info& info) {
-  if (received_all_files_)
+void MTPDeviceDelegateImplMac::ItemAdded(const std::string& name,
+                                         const base::File::Info& info) {
+  if (received_all_files_) {
     return;
+  }
 
   // This kinda should go in a Join method in FilePath...
   base::FilePath item_filename = root_path_;
-  for (const auto& component : base::FilePath(name).GetComponents())
+  for (const auto& component : base::FilePath(name).GetComponents()) {
     item_filename = item_filename.Append(component);
+  }
 
   file_info_[item_filename.value()] = info;
   file_paths_.push_back(item_filename);
@@ -453,18 +459,22 @@ void MTPDeviceDelegateImplMac::NotifyReadDir() {
         continue;
       }
       if (!read_path.IsParent(file_paths_[i])) {
-        if (read_path < file_paths_[i].DirName())
+        if (read_path < file_paths_[i].DirName()) {
           break;
+        }
         continue;
       }
-      if (file_paths_[i].DirName() != read_path)
+      if (file_paths_[i].DirName() != read_path) {
         continue;
+      }
 
       base::FilePath relative_path;
       read_path.AppendRelativePath(file_paths_[i], &relative_path);
+      auto name = base::SafeBaseName::Create(relative_path);
+      CHECK(name) << relative_path;
       base::File::Info info = file_info_[file_paths_[i].value()];
       entry_list.emplace_back(
-          std::move(relative_path), base::FilePath(),
+          *name, std::string(),
           info.is_directory ? filesystem::mojom::FsFileType::DIRECTORY
                             : filesystem::mojom::FsFileType::REGULAR_FILE);
     }
@@ -484,11 +494,12 @@ void MTPDeviceDelegateImplMac::NotifyReadDir() {
 }
 
 // Invoked on UI thread from the listener.
-void MTPDeviceDelegateImplMac::DownloadedFile(
-    const std::string& name, base::File::Error error) {
+void MTPDeviceDelegateImplMac::DownloadedFile(const std::string& name,
+                                              base::File::Error error) {
   // If we're cancelled and deleting, we may have deleted the camera.
-  if (!camera_interface_.get())
+  if (!camera_interface_.get()) {
     return;
+  }
 
   bool found = false;
   ReadFileTransactionList::iterator iter = read_file_transactions_.begin();
@@ -498,8 +509,9 @@ void MTPDeviceDelegateImplMac::DownloadedFile(
       break;
     }
   }
-  if (!found)
+  if (!found) {
     return;
+  }
 
   if (error != base::File::FILE_OK) {
     content::GetIOThreadTaskRunner({})->PostTask(
@@ -509,8 +521,9 @@ void MTPDeviceDelegateImplMac::DownloadedFile(
   }
 
   base::FilePath item_filename = root_path_;
-  for (const auto& component : base::FilePath(name).GetComponents())
+  for (const auto& component : base::FilePath(name).GetComponents()) {
     item_filename = item_filename.Append(component);
+  }
 
   base::File::Info info = file_info_[item_filename.value()];
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -552,8 +565,8 @@ void CreateMTPDeviceAsyncDelegate(
   std::string device_name = base::FilePath(device_location).BaseName().value();
   std::string device_id;
   storage_monitor::StorageInfo::Type type;
-  bool cracked = storage_monitor::StorageInfo::CrackDeviceId(
-      device_name, &type, &device_id);
+  bool cracked = storage_monitor::StorageInfo::CrackDeviceId(device_name, &type,
+                                                             &device_id);
   DCHECK(cracked);
   DCHECK_EQ(storage_monitor::StorageInfo::MAC_IMAGE_CAPTURE, type);
 

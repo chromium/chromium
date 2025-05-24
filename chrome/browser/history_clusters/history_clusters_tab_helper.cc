@@ -53,9 +53,10 @@ bool IsPageInTabGroup(content::WebContents* contents) {
   return false;
 #else   // BUILDFLAG(IS_ANDROID)
   TabAndroid* const tab = TabAndroid::FromWebContents(contents);
-  if (!tab)
+  if (!tab) {
     return false;
-  return TabModelJniBridge::IsTabInTabGroup(tab);
+  }
+  return tab->GetGroup().has_value();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -431,8 +432,7 @@ void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
 history_clusters::HistoryClustersService*
 HistoryClustersTabHelper::GetHistoryClustersService() {
   if (!web_contents()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   return HistoryClustersServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
@@ -440,8 +440,7 @@ HistoryClustersTabHelper::GetHistoryClustersService() {
 
 history::HistoryService* HistoryClustersTabHelper::GetHistoryService() {
   if (!web_contents()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());

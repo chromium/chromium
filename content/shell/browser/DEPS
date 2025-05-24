@@ -1,6 +1,5 @@
 include_rules = [
   "+chromeos/ash/components/dbus",
-  "+chromeos/lacros",
   "+components/keyed_service/content",
   "+components/metrics",
   "+components/network_hints/browser",
@@ -13,4 +12,5 @@ include_rules = [
   "+services/service_manager/public/cpp",
   "+ui/linux",
   "+ui/ozone/public",
+  "+ui/menus",
 ]

@@ -34,6 +34,16 @@ static constexpr char kSharedStorageReturnValueToIntErrorMessage[] =
 static constexpr char kSharedStorageReturnValueOutOfRangeErrorMessage[] =
     "Promise resolved to a number outside the length of the input urls.";
 
+// Scope from which a shared storage call is made.
+// TODO(https://crbug.com/380291909): Implement DevTools event notifications for
+// shared storage access from PA worklet access.
+enum class SharedStorageAccessScope {
+  kWindow,
+  kSharedStorageWorklet,
+  kProtectedAudienceWorklet,
+  kHeader,
+};
+
 // Whether or not the worklet ever entered keep-alive, and if so, the reason the
 // keep-alive was terminated. Recorded to UMA; always add new values to the end
 // and do not reorder or delete values from this list.
@@ -60,8 +70,8 @@ enum class SharedStorageWorkletErrorType {
   kSelectURLWebVisible = 4,
   kOBSOLETE_SelectURLNonWebVisible = 5,  // Replaced by finer-grained types.
   kSuccess = 6,
-  kAddModuleNonWebVisibleMulipleWorkletsDisabled = 7,
-  kAddModuleNonWebVisibleCrossOriginWorkletsDisabled = 8,
+  kOBSOLETE_AddModuleNonWebVisibleMulipleWorkletsDisabled = 7,
+  kOBSOLETE_AddModuleNonWebVisibleCrossOriginWorkletsDisabled = 8,
   kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled = 9,
   kAddModuleNonWebVisibleOther = 10,
   kRunNonWebVisibleInvalidContextId = 11,
@@ -91,9 +101,10 @@ enum class SharedStorageWorkletErrorType {
   kSelectURLNonWebVisibleOther = 35,
   kRunNonWebVisibleInvalidFilteringIdMaxBytes = 36,
   kSelectURLNonWebVisibleInvalidFilteringIdMaxBytes = 37,
+  kAddModuleNonWebVisibleCustomDataOriginDisabled = 38,
 
   // Keep this at the end and equal to the last entry.
-  kMaxValue = kSelectURLNonWebVisibleInvalidFilteringIdMaxBytes,
+  kMaxValue = kAddModuleNonWebVisibleCustomDataOriginDisabled,
 };
 
 // Whether or not there is sufficient budget for the `selectURL()` call, and if
@@ -115,12 +126,6 @@ enum class SharedStorageSelectUrlBudgetStatus {
 // Whether the length of the urls input parameter (of the
 // sharedStorage.runURLSelectionOperation method) is valid.
 BLINK_COMMON_EXPORT bool IsValidSharedStorageURLsArrayLength(size_t length);
-
-// Whether the length of a shared storage's key is valid.
-BLINK_COMMON_EXPORT bool IsValidSharedStorageKeyStringLength(size_t length);
-
-// Whether the length of shared storage's value is valid.
-BLINK_COMMON_EXPORT bool IsValidSharedStorageValueStringLength(size_t length);
 
 // Logs histogram of the calling method and error type for worklet errors.
 BLINK_COMMON_EXPORT void LogSharedStorageWorkletError(

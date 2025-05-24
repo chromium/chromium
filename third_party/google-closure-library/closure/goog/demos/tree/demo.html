@@ -12,7 +12,6 @@ See the COPYING file for details.
   <script src="../../base.js"></script>
   <script>
     goog.require('goog.debug.DivConsole');
-    goog.require('goog.debug.Trace');
     goog.require('goog.dom');
     goog.require('goog.ui.tree.TreeControl');
   </script>
@@ -61,8 +60,6 @@ See the COPYING file for details.
     var logger = goog.log.getRootLogger();
 
     function makeTree() {
-      goog.debug.Trace.initCurrentTrace();
-      var tracerId = goog.debug.Trace.startTracer('makeTree');
       var treeConfig = goog.ui.tree.TreeControl.defaultConfig;
       treeConfig['cleardotPath'] = '../../images/tree/cleardot.gif';
       tree = new goog.ui.tree.TreeControl('root', treeConfig);
@@ -70,9 +67,6 @@ See the COPYING file for details.
       createTreeFromTestData(tree, testData);
 
       tree.render($('treeContainer'));
-
-      var elapsed = goog.debug.Trace.stopTracer(tracerId);
-      goog.log.info(logger, 'Trace:\n' + goog.debug.Trace.getFormattedTrace());
     }
 
 

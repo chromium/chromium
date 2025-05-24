@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_RESOURCE_USAGE_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_RESOURCE_USAGE_TAB_HELPER_H_
 
+#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/performance_manager/public/features.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+
+namespace tabs {
+class TabFeatures;
+class TabInterface;
+}  // namespace tabs
 
 class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
  public:
@@ -31,14 +35,9 @@ class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
 };
 
 // Per-tab class to keep track of current memory usage for each tab.
-class TabResourceUsageTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<TabResourceUsageTabHelper> {
+class TabResourceUsageTabHelper : public tabs::ContentsObservingTabFeature {
  public:
-  TabResourceUsageTabHelper(const TabResourceUsageTabHelper&) = delete;
-  TabResourceUsageTabHelper& operator=(const TabResourceUsageTabHelper&) =
-      delete;
-
+  explicit TabResourceUsageTabHelper(tabs::TabInterface& contents);
   ~TabResourceUsageTabHelper() override;
 
   // content::WebContentsObserver
@@ -50,9 +49,7 @@ class TabResourceUsageTabHelper
   scoped_refptr<const TabResourceUsage> resource_usage() const;
 
  private:
-  friend class content::WebContentsUserData<TabResourceUsageTabHelper>;
-  explicit TabResourceUsageTabHelper(content::WebContents* contents);
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  friend class tabs::TabFeatures;
 
   scoped_refptr<TabResourceUsage> resource_usage_;
 };

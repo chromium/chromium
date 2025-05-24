@@ -34,8 +34,9 @@ RouteRequestResult::RouteRequestResult(
       presentation_id_(presentation_id),
       error_(error),
       result_code_(result_code) {
-  if (route_)
+  if (route_) {
     presentation_url_ = route_->media_source().url();
+  }
 }
 
 RouteRequestResult::~RouteRequestResult() = default;

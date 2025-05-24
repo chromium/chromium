@@ -69,8 +69,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
       const override;
   void Shutdown() override;
   std::vector<HeadlessBrowserContext*> GetAllBrowserContexts() override;
-  HeadlessWebContents* GetWebContentsForDevToolsAgentHostId(
-      const std::string& devtools_agent_host_id) override;
   HeadlessBrowserContext* GetBrowserContextForId(
       const std::string& id) override;
   void SetDefaultBrowserContext(

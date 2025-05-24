@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.firstrun;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Gets and sets preferences related to the status of the first run experience. */
+@NullMarked
 public class FirstRunStatus {
     // Whether the first run flow is triggered in the current browser session.
     private static boolean sFirstRunTriggered;
@@ -105,7 +107,7 @@ public class FirstRunStatus {
     /**
      * @return Whether the First Run Experience is skipped by policy.
      * @see #setFirstRunSkippedByPolicy
-     * */
+     */
     public static boolean isFirstRunSkippedByPolicy() {
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(ChromePreferenceKeys.FIRST_RUN_SKIPPED_BY_POLICY, false);

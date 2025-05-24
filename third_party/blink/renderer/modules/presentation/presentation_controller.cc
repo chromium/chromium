@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_availability_callbacks.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
@@ -41,8 +40,9 @@ PresentationController* PresentationController::From(LocalDOMWindow& window) {
 // static
 PresentationController* PresentationController::FromContext(
     ExecutionContext* execution_context) {
-  if (!execution_context || execution_context->IsContextDestroyed())
+  if (!execution_context || execution_context->IsContextDestroyed()) {
     return nullptr;
+  }
   return From(*To<LocalDOMWindow>(execution_context));
 }
 
@@ -93,8 +93,9 @@ void PresentationController::OnConnectionStateChanged(
     mojom::blink::PresentationInfoPtr presentation_info,
     mojom::blink::PresentationConnectionState state) {
   PresentationConnection* connection = FindConnection(*presentation_info);
-  if (!connection)
+  if (!connection) {
     return;
+  }
 
   connection->DidChangeState(state);
 }
@@ -104,8 +105,9 @@ void PresentationController::OnConnectionClosed(
     mojom::blink::PresentationConnectionCloseReason reason,
     const String& message) {
   PresentationConnection* connection = FindConnection(*presentation_info);
-  if (!connection)
+  if (!connection) {
     return;
+  }
 
   connection->DidClose(reason, message);
 }
@@ -115,10 +117,11 @@ void PresentationController::OnDefaultPresentationStarted(
   DCHECK(result);
   DCHECK(result->presentation_info);
   DCHECK(result->connection_remote && result->connection_receiver);
-  if (!presentation_ || !presentation_->defaultRequest())
+  if (!presentation_ || !presentation_->defaultRequest()) {
     return;
+  }
 
-  auto* connection = ControllerPresentationConnection::Take(
+  auto* connection = ControllerPresentationConnection::Create(
       this, *result->presentation_info, presentation_->defaultRequest());
   // TODO(btolsch): Convert this and similar calls to just use InterfacePtrInfo
   // instead of constructing an InterfacePtr every time we have
@@ -129,8 +132,8 @@ void PresentationController::OnDefaultPresentationStarted(
 
 ControllerPresentationConnection*
 PresentationController::FindExistingConnection(
-    const blink::WebVector<blink::WebURL>& presentation_urls,
-    const blink::WebString& presentation_id) {
+    const std::vector<blink::WebURL>& presentation_urls,
+    const WebString& presentation_id) {
   for (const auto& connection : connections_) {
     for (const auto& presentation_url : presentation_urls) {
       if (connection->GetState() !=
@@ -167,8 +170,9 @@ PresentationController::GetPresentationService() {
 ControllerPresentationConnection* PresentationController::FindConnection(
     const mojom::blink::PresentationInfo& presentation_info) const {
   for (const auto& connection : connections_) {
-    if (connection->Matches(presentation_info.id, presentation_info.url))
+    if (connection->Matches(presentation_info.id, presentation_info.url)) {
       return connection.Get();
+    }
   }
 
   return nullptr;

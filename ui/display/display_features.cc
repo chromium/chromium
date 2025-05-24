@@ -6,22 +6,18 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace display {
 namespace features {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/368060445): Remove this when the feature is fully launched.
+BASE_FEATURE(kSkipEmptyDisplayHotplugEvent,
+             "SkipEmptyDisplayHotplugEvent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
-// Enables the rounded corners for the internal display.
-BASE_FEATURE(kRoundedDisplay,
-             "RoundedDisplay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsRoundedDisplayEnabled() {
-  return base::FeatureList::IsEnabled(kRoundedDisplay);
-}
-
+#if BUILDFLAG(IS_CHROMEOS)
 // Enables using HDR transfer function if the monitor says it supports it.
 BASE_FEATURE(kUseHDRTransferFunction,
              "UseHDRTransferFunction",
@@ -37,9 +33,7 @@ BASE_FEATURE(kUseHDRTransferFunction,
 BASE_FEATURE(kEnableExternalDisplayHDR10Mode,
              "EnableExternalDisplayHDR10Mode",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Feature to control if the CTM is dynamically set to the primary transform
 // from plane color space to output color space.
 BASE_FEATURE(kCtmColorManagement,
@@ -120,6 +114,33 @@ BASE_FEATURE(kExcludeDisplayInMirrorMode,
 
 bool IsExcludeDisplayInMirrorModeEnabled() {
   return base::FeatureList::IsEnabled(kExcludeDisplayInMirrorMode);
+}
+
+BASE_FEATURE(kFastDrmMasterDrop,
+             "FastDrmMasterDrop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsFastDrmMasterDropEnabled() {
+  return base::FeatureList::IsEnabled(kFastDrmMasterDrop);
+}
+
+// TODO(crbug.com/392021508): Remove the flag once the feature is launched.
+BASE_FEATURE(kFormFactorControlsSubpixelRendering,
+             "FormFactorControlsSubpixelRendering",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool DoesFormFactorControlSubpixelRendering() {
+  return base::FeatureList::IsEnabled(kFormFactorControlsSubpixelRendering);
+}
+
+// Open Pluggable Specification (OPS) is a special industry standard with
+// slot-in computing modules.
+BASE_FEATURE(kOpsDisplayScaleFactor,
+             "OpsDisplayScaleFactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsOpsDisplayScaleFactorEnabled() {
+  return base::FeatureList::IsEnabled(kOpsDisplayScaleFactor);
 }
 
 }  // namespace features

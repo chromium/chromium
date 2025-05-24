@@ -1,0 +1,9 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE tag:#document
+++IA2_ROLE_HEADING name='Image' tag:h1 class:headerClass id:headerID
+++++ROLE_SYSTEM_STATICTEXT name='Image'
+++ROLE_SYSTEM_GRAPHIC name='ImageAlt' READONLY tag:img class:imageClass id:imageID
+=== Start Continuation ===
+ROLE_SYSTEM_DOCUMENT name='changed-class' READONLY FOCUSABLE tag:#document
+++IA2_ROLE_HEADING name='Image' tag:h1 class:newClass id:headerID
+++++ROLE_SYSTEM_STATICTEXT name='Image'
+++ROLE_SYSTEM_GRAPHIC name='ImageAlt' READONLY tag:img class:imageClass id:imageID

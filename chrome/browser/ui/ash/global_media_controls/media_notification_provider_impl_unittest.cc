@@ -3,24 +3,25 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
+
 #include <memory>
 
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/test_shell_delegate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
@@ -135,7 +136,8 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   void SetUp() override {
     auto shell_delegate = std::make_unique<MediaTestShellDelegate>();
     shell_delegate_ = shell_delegate.get();
-    ChromeAshTestBase::SetUp(std::move(shell_delegate));
+    set_shell_delegate(std::move(shell_delegate));
+    ChromeAshTestBase::SetUp();
 
     crosapi_environment_.SetUp();
     provider_ = static_cast<MediaNotificationProviderImpl*>(
@@ -149,7 +151,7 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   void TearDown() override {
     observer_.reset();
     crosapi_environment_.TearDown();
-    AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
   void SimulateShowNotification(base::UnguessableToken id) {
@@ -191,7 +193,10 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   std::unique_ptr<MockMediaNotificationProviderObserver> observer_;
   raw_ptr<MediaNotificationProviderImpl, DanglingUntriaged> provider_ = nullptr;
   raw_ptr<MediaTestShellDelegate, DanglingUntriaged> shell_delegate_ = nullptr;
-  crosapi::TestCrosapiEnvironment crosapi_environment_;
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  crosapi::TestCrosapiEnvironment crosapi_environment_{
+      &testing_profile_manager_};
 };
 
 TEST_F(MediaNotificationProviderImplTest, NotificationListTest) {
@@ -264,12 +269,9 @@ class CastStartStopMediaNotificationProviderImplTest
   void SetUp() override {
     // This must be called before MediaNotificationProviderImplTest::SetUp()
     // starts the GPU service thread.
-    scoped_feature_list_.InitAndEnableFeature(
-        media_router::kGlobalMediaControlsCastStartStop);
     MediaNotificationProviderImplTest::SetUp();
 
-    profile_ = crosapi_environment_.profile_manager()->CreateTestingProfile(
-        "Profile", /*is_main_profile=*/true);
+    profile_ = testing_profile_manager_.CreateTestingProfile("Profile");
     InitProvider();
   }
 
@@ -294,7 +296,6 @@ class CastStartStopMediaNotificationProviderImplTest
   }
 
   raw_ptr<Profile> profile_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::View> list_view_;
 };
 

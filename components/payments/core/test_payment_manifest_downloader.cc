@@ -21,7 +21,7 @@ TestDownloader::TestDownloader(
                                 csp_checker,
                                 url_loader_factory) {}
 
-TestDownloader::~TestDownloader() {}
+TestDownloader::~TestDownloader() = default;
 
 void TestDownloader::AddTestServerURL(const std::string& prefix,
                                       const GURL& test_server_url) {

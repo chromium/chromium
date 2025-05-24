@@ -1,0 +1,661 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 4
+
+// This file defines the mojo interface between Android and Chrome OS for the
+// keymint implementation used in ARC.
+module arc.mojom.keymint;
+
+// Host is implemented in Chrome and called by arc-keymint-service (in ARC).
+// Listens until server and instance come online and forwards a server handle to
+// the instance.
+interface KeyMintHost {
+  // arc-keymint-service will call this to get an instance to KeyMintServer.
+  GetServer@0() => (pending_remote<KeyMintServer>? server_remote);
+};
+
+// Instance is implemented in arc-keymint-service (in ARC) and called by Chrome
+// (ConnectionHolderImpl).
+interface KeyMintInstance {
+  // As the first step to establish ARC-to-CrOS connection, between
+  // arc-keymint-service and arc-keymintd, Chrome calls this to give a
+  // KeyMintHost pending_remote to arc-keymint-service.
+  Init@0(pending_remote<KeyMintHost> host_remote) => ();
+};
+
+// Server is implemented in arc-keymintd in ChromeOS, and called by
+// arc-keymint-service (in ARC). This interface is the mojo equivalent of the
+// IKeyMintDevice AIDL interface. Current version is based on v2 of KeyMint ALDL
+// definitions.
+// The documentation here is very brief and lacks important details. Please
+// refer to Android's KeyMint AIDL files for a more detailed description on how
+// the methods and structs below should function.
+// https://cs.android.com/android/_/android/platform/hardware/interfaces/+/466f3c55a90631f5dd9a6fa949278a2a0a435b71:security/keymint/aidl/android/hardware/security/keymint/;bpv=1
+// Next Method ID: 27
+interface KeyMintServer {
+  // Sets the Android version information used.
+  SetSystemVersion@0(uint32 android_version, uint32 android_patchlevel);
+
+  // Adds entropy to the Random Number Generator (RNG) used by Keymint.
+  AddRngEntropy@1(array<uint8> data) => (int32 error);
+
+  // Generates a new cryptographic key, specifying associated parameters, which
+  // must be cryptographically bound to the key.
+  GenerateKey@2(GenerateKeyRequest request)
+      => (KeyCreationResultOrError response);
+
+  // Imports key material into an IKeyMintDevice.
+  ImportKey@3(ImportKeyRequest request)
+      => (KeyCreationResultOrError response);
+
+  // Securely imports a key, or key pair, returning a key blob and a description
+  // of the imported key.
+  ImportWrappedKey@4(ImportWrappedKeyRequest request)
+      => (KeyCreationResultOrError response);
+
+  // Upgrades an old key blob.
+  UpgradeKey@5(UpgradeKeyRequest request) => (ByteArrayOrError response);
+
+  // Deletes the key, or key pair, associated with the key blob.
+  DeleteKey@6(array<uint8> key_blob) => (int32 error);
+
+  // Deletes all keys in the hardware keystore. Used when keystore is reset
+  // completely.
+  DeleteAllKeys@7() => (int32 error);
+
+  // Destroys knowledge of the device's ids.  This prevents all device id
+  // attestation in the future.
+  DestroyAttestationIds@8() => (int32 error);
+
+  // Begins a cryptographic operation using the specified key. If all is well,
+  // begin() must create an KeyMintOperation handle which will be used to
+  // perform the cryptographic operation.
+  Begin@9(BeginRequest request) => (BeginResultOrError response);
+
+  // Called by client to notify the IKeyMintDevice that the device is now
+  // locked, and keys with the UNLOCKED_DEVICE_REQUIRED tag should no longer be
+  // usable.
+  //
+  // |password_only| specifies whether the device must be unlocked with a
+  // password, rather than a biometric, before UNLOCKED_DEVICE_REQUIRED keys can
+  // be used.
+  //
+  // |timestamp_token| is used by StrongBox implementations of IKeyMintDevice.
+  DeviceLocked@10(bool password_only, TimeStampToken? timestamp_token)
+      => (int32 error);
+
+  // Called by client to notify the IKeyMintDevice that the device has left the
+  // early boot state, and that keys with the EARLY_BOOT_ONLY tag may no longer
+  // be used.
+  EarlyBootEnded@11() => (int32 error);
+
+  // Called by the client to get a wrapped per-boot ephemeral key from a wrapped
+  // storage key. Clients will then use the returned per-boot ephemeral key in
+  // place of the wrapped storage key. Whenever the hardware is presented with a
+  // per-boot ephemeral key for an operation, it must use the storage key
+  // associated with that ephemeral key to perform the requested operation.
+  //
+  // |storage_key_blob| is the wrapped storage key, for which the client wants a
+  // per-boot ephemeral key.
+  //
+  // |ephemeral_key_blob| is the per-boot ephemeral keyblob that should
+  // henceforth be used in place of the input |storage_key_blob|.
+  ConvertStorageKeyToEphemeral@12(array<uint8> storage_key_blob)
+      => (ByteArrayOrError response);
+
+  // Returns KeyMint-enforced parameters associated with the provided key.
+  //
+  // |key_characteristics| is the characteristics of the generated key.
+  GetKeyCharacteristics@13(GetKeyCharacteristicsRequest request)
+      => (KeyCharacteristicsArrayOrError response);
+
+  // Returns a 16-byte random challenge nonce, used to prove freshness when
+  // exchanging root of trust data. This method may only be implemented by
+  // StrongBox KeyMint. TEE KeyMint implementations must return error.
+  GetRootOfTrustChallenge@14() => (ByteArrayOrError response);
+
+  // Returns the TEE KeyMint Root of Trust data. This method is required for TEE
+  // KeyMint.  StrongBox KeyMint implementations MUST return error.
+  GetRootOfTrust@15(array<uint8, 16> challenge)
+      => (ByteArrayOrError response);
+
+  // Delivers the TEE KeyMint Root of Trust data to StrongBox KeyMint.
+  // The implementation must verify the MAC on the RootOfTrust data.  If it is
+  // valid, and if this is the first time since reboot that StrongBox KeyMint
+  // has received this data, it must store the RoT data for use in key
+  // attestation requests.
+  SendRootOfTrust@16(array<uint8> root_of_trust) => (int32 error);
+
+  // KeyMint Operation methods.
+
+  // Provides additional authentication data (AAD) to a cryptographic operation
+  // begun with begin(), provided in the input argument.  This method only
+  // applies to AEAD modes.  This method may be called multiple times, supplying
+  // the AAD in chunks, but may not be called after update() is called.
+  UpdateAad@17(UpdateRequest request) => (int32 error);
+
+  // Provides data to, and possibly receives output from, an ongoing
+  // cryptographic operation begun with begin().
+  Update@18(UpdateRequest request) => (ByteArrayOrError response);
+
+  // Finalizes a cryptographic operation begun with begin() and invalidates the
+  // operation.
+  Finish@19(FinishRequest request) => (ByteArrayOrError response);
+
+  // Aborts this cryptographic operation.
+  // |op_handle| is the handle of the operation to abort.
+  Abort@20(uint64 op_handle) => (int32 error);
+
+  // Gets the secret parameters which are used in the process of agreeing on a
+  // shared key. Called by Android during startup.
+  GetSharedSecretParameters@21() => (SharedSecretParametersOrError response);
+
+  // Final step in the process of agreeing on a shared key. Called by Android
+  // during startup.
+  ComputeSharedSecret@22(array<SharedSecretParameters> secret_params)
+      => (ByteArrayOrError response);
+
+  // Generates an authenticated timestamp for ISecureClock.
+  GenerateTimeStamp@23(uint64 challenge) => (TimeStampTokenOrError response);
+
+  // Generates a new ECDSA P-256 key pair that can be attested by the remote
+  // server.
+  // |test_mode| indicates whether the returned public key should be marked
+  // as such for testing in order to differentiate them from private keys.
+  // If |test_mode| is accidentally set with production keys, an error is
+  // returned. Similarly, an error is returned if test keys are being used
+  // with |test_mode| set to false.
+  [MinVersion=1]
+  GenerateEcdsaP256KeyPair@24(bool test_mode)
+      => (GenerateEcdsaP256KeyPairResultOrError response);
+
+  // Creates a certificate request to be sent to Android Provisioning Server.
+  // This is the V1 method for GenerateCertificateRequest. V2 method applies
+  // from Android 14.
+  [MinVersion=2]
+  GenerateCertificateRequest@25(CertificateRequest request)
+      => (GenerateCertificateRequestResultOrError response);
+
+  // Sets the Android vendor patch level to be used.
+  [MinVersion=3]
+  SetVendorPatchLevel@26(uint32 android_vendor_patchlevel);
+};
+
+struct AttestationKey {
+  array<uint8> key_blob;
+  array<KeyParameter> attest_key_params;
+  array<uint8> issuer_subject_name;
+};
+
+[Extensible]
+enum KeyFormat {
+  [Default] UNKNOWN = -1,
+  X509 = 0,  // for public key export
+  PKCS8 = 1,  // for asymmetric key pair import
+  RAW = 3,  // for symmetric key import and export
+};
+
+// Identifies the key authorization parameters to be used with KeyMint.
+struct KeyParameter {
+  // |tag| specifies which kind of data is stored in |value|.
+  Tag tag = INVALID;
+  KeyParameterValue value;
+};
+
+union KeyParameterValue {
+  // Represent an invalid value type.
+  uint32 invalid;
+
+  Algorithm algorithm;
+  BlockMode block_mode;
+  PaddingMode padding_mode;
+  Digest digest;
+  EcCurve ec_curve;
+  KeyOrigin origin;
+  KeyPurpose key_purpose;
+  HardwareAuthenticatorType hardware_authenticator_type;
+  SecurityLevel security_level;
+
+  // Always true, if present.
+  bool bool_value;
+  uint32 integer;
+  uint64 long_integer;
+  // In milliseconds from epoch.
+  uint64 date_time;
+  array<uint8> blob;
+};
+
+// Enables agreement on a shared key.
+struct SharedSecretParameters {
+  // |seed| and |nonce| are used in the generation of Shared Secret Parameters.
+  array<uint8> seed;
+  array<uint8> nonce;
+};
+
+// This structure is returned when a new key is created with generateKey(),
+// importKey() or importWrappedKey().
+struct KeyCreationResult {
+  // A descriptor of the generated/imported key.
+  array<uint8> key_blob;
+  // A description of the generated key in the form of authorization lists
+  // associated with security levels.
+  array<KeyCharacteristics> key_characteristics;
+  // If the generated/imported key is an asymmetric key, `certificateChain` will
+  // contain a chain of one or more certificates.
+  array<Certificate> certificate_chain;
+};
+
+struct Certificate {
+  array<uint8> encoded_certificate;
+};
+
+struct KeyCharacteristics {
+  SecurityLevel security_level = SOFTWARE;
+  array<KeyParameter> authorizations;
+};
+
+// Parameters for generating a new key.
+struct GenerateKeyRequest {
+  // Key generation parameters.
+  array<KeyParameter> key_params;
+  // |attestation_key|, if provided, specifies the key that must be used to sign
+  // the attestation certificate.
+  AttestationKey? attestation_key;
+};
+
+// Parameters for importing a key.
+struct ImportKeyRequest {
+  // Key generation parameters.
+  array<KeyParameter> key_params;
+  // Format of the key material to import.
+  KeyFormat key_format;
+  // The key material to import.
+  array<uint8> key_data;
+  // |attestation_key| if provided, specifies the key that must be used to sign
+  // the attestation certificate.
+  AttestationKey? attestation_key;
+};
+
+struct ImportWrappedKeyRequest {
+  // The wrapped key material to import, as ASN.1 DER-encoded data.
+  array<uint8> wrapped_key_data;
+  // The opaque key descriptor returned by generateKey() or importKey().
+  array<uint8> wrapping_key_blob;
+  // The 32-byte value XOR'd with the transport key in the SecureWrappedKey
+  // structure.
+  array<uint8> masking_key;
+  // It must contain any parameters needed to perform the unwrapping operation.
+  array<KeyParameter> unwrapping_params;
+  // Specifies the password secure ID (SID) of the user that owns the key being
+  // installed.
+  uint64 password_sid;
+  // Specifies the biometric secure ID (SID) of the user that owns the key being
+  // installed.
+  uint64 biometric_sid;
+};
+
+struct UpgradeKeyRequest {
+  // The opaque descriptor returned by generateKey() or importKey().
+  array<uint8> key_blob_to_upgrade;
+  // A parameter list containing any parameters needed to complete the upgrade.
+  array<KeyParameter> upgrade_params;
+};
+
+struct BeginRequest {
+  // The purpose of the operation.
+  KeyPurpose key_purpose;
+  // The opaque key descriptor returned by generateKey() or importKey().
+  array<uint8> key_blob;
+  // Additional parameters for the operation.
+  array<KeyParameter> params;
+  // Authentication token.
+  HardwareAuthToken? auth_token;
+};
+
+struct BeginResult {
+  // This is the challenge used to verify authorization of an operation.
+  uint64 challenge;
+  // begin() uses this field to return additional data from the operation
+  // initialization, notably to return the IV or nonce from operations that
+  // generate an IV or nonce.
+  array<KeyParameter> params;
+  // Operation handle which is used to perform updateAad(), update(), finish()
+  // or abort() operations.
+  uint64 op_handle;
+};
+
+struct HardwareAuthToken {
+  // It is a value that's used to enable authentication tokens to authorize
+  // specific events.
+  uint64 challenge;
+  uint64 user_id;
+  // It is a "secure" user ID.
+  uint64 authenticator_id;
+  // It describes the type of authentication that took place, e.g. password or
+  // fingerprint.
+  HardwareAuthenticatorType authenticator_type = NONE;
+  // It indicates when the user authentication took place, in milliseconds since
+  // some starting point (generally the most recent device boot) which all of
+  // the applications within one secure environment must agree upon.
+  Timestamp timestamp;
+  array<uint8> mac;
+};
+
+struct Timestamp {
+  // Time in milliseconds since some arbitrary point in time.
+  uint64 milli_seconds;
+};
+
+struct TimeStampToken {
+  // The challenge that was provided as argument to
+  // ISecureClock.generateTimeStamp by the client.
+  uint64 challenge;
+  // The current time of the secure environment that generates the
+  // TimeStampToken.
+  Timestamp timestamp;
+  // 32-byte HMAC-SHA256 of the above values.
+  array<uint8> mac;
+};
+
+struct GetKeyCharacteristicsRequest {
+  // The opaque descriptor returned by generateKey, importKey or
+  // importWrappedKey.
+  array<uint8> key_blob;
+  // An opaque byte string identifying the client. This value must match the
+  // Tag::APPLICATION_ID data provided during key generation/import.
+  array<uint8> app_id;
+  // An opaque byte string provided by the application.  This value must match
+  // the Tag::APPLICATION_DATA data provided during key generation/import.
+  array<uint8> app_data;
+};
+
+struct UpdateRequest {
+  // Operation handle.
+  uint64 op_handle;
+  // Data to be processed.  update() must consume all input data.
+  array<uint8> input;
+  // Authentication token. It is optional.
+  HardwareAuthToken? auth_token;
+  // |timestamp_token| certifies the freshness of an auth token in case the
+  // security domain of this KeyMint instance has a different clock than the
+  // authenticator issuing the auth token.
+  TimeStampToken? timestamp_token;
+};
+
+struct FinishRequest {
+  // Operation handle.
+  uint64 op_handle;
+  // Data to be processed, per the parameters established in the call to
+  // begin(). finish() must consume all provided data or return
+  array<uint8>? input;
+  // The signature to be verified if the purpose specified in the begin() call
+  // was KeyPurpose.VERIFY.
+  array<uint8>? signature;
+  // Optional authentication token.
+  HardwareAuthToken? auth_token;
+  // |timestamp_token| certifies the freshness of an auth token in case the
+  // security domain of this KeyMint instance has a different clock than the
+  // authenticator issuing the auth token.
+  TimeStampToken? timestamp_token;
+  // |confirmation_token| is the confirmation token required by keys with
+  // Tag.TRUSTED_CONFIRMATION_REQUIRED.
+  array<uint8>? confirmation_token;
+};
+
+// Remote Provisioning Component Structs - from here.
+// Blob Structs for Remote Provisioning Component are using array of bytes
+// since the AIDL interface between Keystore and Android KeyMint HAL is defined
+// in such a way.
+struct KeyMintKeyBlob {
+  array<uint8> key_material;
+};
+
+struct KeyMintBlob {
+  array<uint8> data;
+};
+
+struct GenerateEcdsaP256KeyPairResult {
+  KeyMintBlob maced_public_key;
+  KeyMintKeyBlob handle_to_private_key;
+};
+
+union GenerateEcdsaP256KeyPairResultOrError {
+  GenerateEcdsaP256KeyPairResult key_pair_result;
+  int32 error;
+};
+
+struct CertificateRequest {
+  // |test_mode| indicates whether the generated certificate request is
+  // for testing only.
+  // If |test_mode| is accidentally set with production keys, an error is
+  // returned. Similarly, an error is returned if test keys are being used
+  // with |test_mode| set to false.
+  bool test_mode;
+  // Set of keys to certify. The IRemotelyProvisionedComponent will
+  // validate the MACs on each key.
+  array<KeyMintBlob> keys_to_sign;
+  // Contains public key used to encypt the BCC.
+  KeyMintBlob encryption_cert_chain;
+  // Contains a byte string from the provisioning server.
+  KeyMintBlob challenge;
+};
+
+struct GenerateCertificateRequestResult {
+  KeyMintBlob device_info;
+  KeyMintBlob protected_data;
+  KeyMintBlob mac_of_keys_to_sign;
+};
+
+union GenerateCertificateRequestResultOrError {
+  GenerateCertificateRequestResult certificate_request_result;
+  int32 error;
+};
+
+// Remote Provisioning Component Structs - till here.
+union KeyCharacteristicsArrayOrError {
+  array<KeyCharacteristics> key_characteristics;
+  int32 error;
+};
+
+union BeginResultOrError {
+  BeginResult begin_result;
+  int32 error;
+};
+
+// Used for Key Creation methods.
+union KeyCreationResultOrError {
+  KeyCreationResult key_creation_result;
+  int32 error;
+};
+
+// Result used for Array outputs.
+union ByteArrayOrError {
+  array<uint8> output;
+  int32 error;
+};
+
+// Result used for GetSharedSecretParameters.
+union SharedSecretParametersOrError {
+  SharedSecretParameters secret_parameters;
+  int32 error;
+};
+
+union TimeStampTokenOrError {
+  TimeStampToken timestamp_token;
+  int32 error;
+};
+
+// String used as label in the shared key derivation.
+const string shared_secret_key_agreement_label = "KeymasterSharedMac";
+
+// String used as context in the computation of the sharingCheck.
+const string shared_secret_key_check_label = "Keymaster HMAC Verification";
+
+// String used as context in the HMAC computation signing the generated time
+// stamp.
+const string secure_clock_time_stamp_mac_label = "Auth Verification";
+
+[Extensible]
+enum Algorithm {
+  [Default] UNKNOWN = -1,
+  RSA = 1,
+  EC = 3,
+  AES = 32,
+  TRIPLE_DES = 33,
+  HMAC = 128,
+};
+
+[Extensible]
+enum BlockMode {
+  [Default] UNKNOWN = -1,
+  ECB = 1,
+  CBC = 2,
+  CTR = 3,
+  GCM = 32,
+};
+
+[Extensible]
+enum PaddingMode {
+  [Default] UNKNOWN = -1,
+  NONE = 1,
+  RSA_OAEP = 2,
+  RSA_PSS = 3,
+  RSA_PKCS1_1_5_ENCRYPT = 4,
+  RSA_PKCS1_1_5_SIGN = 5,
+  PKCS7 = 64,
+};
+
+[Extensible]
+enum Digest {
+  [Default] UNKNOWN = -1,
+  NONE = 0,
+  MD5 = 1,
+  SHA1 = 2,
+  SHA_2_224 = 3,
+  SHA_2_256 = 4,
+  SHA_2_384 = 5,
+  SHA_2_512 = 6,
+};
+
+[Extensible]
+enum EcCurve {
+  [Default] UNKNOWN = -1,
+  P_224 = 0,
+  P_256 = 1,
+  P_384 = 2,
+  P_521 = 3,
+  CURVE_25519 = 4,
+};
+
+[Extensible]
+enum KeyOrigin {
+  [Default] UNKNOWN = -1,
+  GENERATED = 0,
+  DERIVED = 1,
+  IMPORTED = 2,
+  RESERVED = 3,
+  SECURELY_IMPORTED = 4,
+};
+
+[Extensible]
+enum KeyPurpose {
+  [Default] UNKNOWN = -1,
+  ENCRYPT = 0,
+  DECRYPT = 1,
+  SIGN = 2,
+  VERIFY = 3,
+  WRAP_KEY = 5,
+  AGREE_KEY = 6,
+  ATTEST_KEY = 7,
+};
+
+[Extensible]
+enum HardwareAuthenticatorType {
+  // Normal entries must be power of 2, thus invalid value is not power of 2.
+  [Default] UNKNOWN = 0xff00,
+  NONE = 0,
+  PASSWORD = 1,
+  FINGERPRINT = 2,
+  ANY = -1,
+};
+
+[Extensible]
+enum SecurityLevel {
+  [Default] UNKNOWN = -1,
+  SOFTWARE = 0,
+  TRUSTED_ENVIRONMENT = 1,
+  STRONGBOX = 2,
+  KEYSTORE = 100,
+};
+
+// Refer to Tag.aidl for detailed description of the values.
+[Extensible]
+enum Tag {
+  [Default] INVALID = 0,
+  PURPOSE = 536870913,
+  ALGORITHM = 268435458,
+  KEY_SIZE = 805306371,
+  BLOCK_MODE = 536870916,
+  DIGEST = 536870917,
+  PADDING = 536870918,
+  CALLER_NONCE = 1879048199,
+  MIN_MAC_LENGTH = 805306376,
+  EC_CURVE = 268435466,
+  RSA_PUBLIC_EXPONENT = 1342177480,
+  INCLUDE_UNIQUE_ID = 1879048394,
+  RSA_OAEP_MGF_DIGEST = 536871115,
+  BOOTLOADER_ONLY = 1879048494,
+  ROLLBACK_RESISTANCE = 1879048495,
+  HARDWARE_TYPE = 268435760,
+  EARLY_BOOT_ONLY = 1879048497,
+  ACTIVE_DATETIME = 1610613136,
+  ORIGINATION_EXPIRE_DATETIME = 1610613137,
+  USAGE_EXPIRE_DATETIME = 1610613138,
+  MIN_SECONDS_BETWEEN_OPS = 805306771,
+  MAX_USES_PER_BOOT = 805306772,
+  USAGE_COUNT_LIMIT = 805306773,
+  USER_ID = 805306869,
+  USER_SECURE_ID = -1610612234,
+  NO_AUTH_REQUIRED = 1879048695,
+  USER_AUTH_TYPE = 268435960,
+  AUTH_TIMEOUT = 805306873,
+  ALLOW_WHILE_ON_BODY = 1879048698,
+  TRUSTED_USER_PRESENCE_REQUIRED = 1879048699,
+  TRUSTED_CONFIRMATION_REQUIRED = 1879048700,
+  UNLOCKED_DEVICE_REQUIRED = 1879048701,
+  APPLICATION_ID = -1879047591,
+  APPLICATION_DATA = -1879047492,
+  CREATION_DATETIME = 1610613437,
+  ORIGIN = 268436158,
+  ROOT_OF_TRUST = -1879047488,
+  OS_VERSION = 805307073,
+  OS_PATCHLEVEL = 805307074,
+  UNIQUE_ID = -1879047485,
+  ATTESTATION_CHALLENGE = -1879047484,
+  ATTESTATION_APPLICATION_ID = -1879047483,
+  ATTESTATION_ID_BRAND = -1879047482,
+  ATTESTATION_ID_DEVICE = -1879047481,
+  ATTESTATION_ID_PRODUCT = -1879047480,
+  ATTESTATION_ID_SERIAL = -1879047479,
+  ATTESTATION_ID_IMEI = -1879047478,
+  ATTESTATION_ID_MEID = -1879047477,
+  ATTESTATION_ID_MANUFACTURER = -1879047476,
+  ATTESTATION_ID_MODEL = -1879047475,
+  VENDOR_PATCHLEVEL = 805307086,
+  BOOT_PATCHLEVEL = 805307087,
+  DEVICE_UNIQUE_ATTESTATION = 1879048912,
+  IDENTITY_CREDENTIAL_KEY = 1879048913,
+  STORAGE_KEY = 1879048914,
+  ASSOCIATED_DATA = -1879047192,
+  NONCE = -1879047191,
+  MAC_LENGTH = 805307371,
+  RESET_SINCE_ID_ROTATION = 1879049196,
+  CONFIRMATION_TOKEN = -1879047187,
+  CERTIFICATE_SERIAL = -2147482642,
+  CERTIFICATE_SUBJECT = -1879047185,
+  CERTIFICATE_NOT_BEFORE = 1610613744,
+  CERTIFICATE_NOT_AFTER = 1610613745,
+  MAX_BOOT_LEVEL = 805307378,
+};

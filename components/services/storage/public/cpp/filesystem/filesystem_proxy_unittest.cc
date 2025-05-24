@@ -200,8 +200,7 @@ TEST_P(FilesystemProxyTest, OpenFileCreateAndOpenOnlyIfNotExists) {
   EXPECT_EQ("", ReadFileContents(&new_file));
 
   const std::string kData = "yeet";
-  EXPECT_TRUE(
-      new_file.WriteAndCheck(0, base::as_bytes(base::make_span(kData))));
+  EXPECT_TRUE(new_file.WriteAndCheck(0, base::as_byte_span(kData)));
   EXPECT_EQ(kData, ReadFileContents(&new_file));
 }
 
@@ -266,8 +265,8 @@ TEST_P(FilesystemProxyTest, OpenFileReadOnly) {
   EXPECT_TRUE(file.IsValid());
 
   // Writes should fail.
-  EXPECT_FALSE(file.WriteAtCurrentPosAndCheck(
-      base::as_bytes(base::make_span("doesn't matter"))));
+  EXPECT_FALSE(
+      file.WriteAtCurrentPosAndCheck(base::as_byte_span("doesn't matter")));
   EXPECT_EQ(kFile1Contents, ReadFileContents(&file));
 }
 
@@ -284,7 +283,7 @@ TEST_P(FilesystemProxyTest, MAYBE_OpenFileWriteOnly) {
   EXPECT_TRUE(file.IsValid());
 
   const std::string kData{"files can have a little data, as a treat"};
-  EXPECT_TRUE(file.WriteAndCheck(0, base::as_bytes(base::make_span(kData))));
+  EXPECT_TRUE(file.WriteAndCheck(0, base::as_byte_span(kData)));
 
   // Reading from this handle should fail.
   std::vector<uint8_t> data;
@@ -309,14 +308,12 @@ TEST_P(FilesystemProxyTest, MAYBE_OpenFileAppendOnly) {
   EXPECT_TRUE(file.IsValid());
 
   const std::string kData{"files can have a little data, as a treat"};
-  EXPECT_TRUE(
-      file.WriteAtCurrentPosAndCheck(base::as_bytes(base::make_span(kData))));
+  EXPECT_TRUE(file.WriteAtCurrentPosAndCheck(base::as_byte_span(kData)));
 
   // Attempt to write somewhere other than the end of the file. The offset
   // should be ignored and the data should be appended instead.
   const std::string kMoreData{"!"};
-  EXPECT_TRUE(
-      file.WriteAndCheck(0, base::as_bytes(base::make_span(kMoreData))));
+  EXPECT_TRUE(file.WriteAndCheck(0, base::as_byte_span(kMoreData)));
 
   // Reading should still fail.
   std::vector<uint8_t> data;

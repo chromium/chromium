@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromecast/media/cma/test/frame_generator_for_test.h"
 
 #include <stdint.h>
 
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "media/base/decoder_buffer.h"
@@ -55,8 +61,7 @@ scoped_refptr<DecoderBufferBase> FrameGeneratorForTest::Generate() {
         new DecoderBufferAdapter(::media::DecoderBuffer::CreateEOSBuffer()));
   }
 
-  scoped_refptr< ::media::DecoderBuffer> buffer(
-      new ::media::DecoderBuffer(frame_spec.size));
+  auto buffer = base::MakeRefCounted<::media::DecoderBuffer>(frame_spec.size);
 
   // Timestamp.
   buffer->set_timestamp(frame_spec.timestamp);

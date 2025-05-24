@@ -4,33 +4,34 @@
 
 #include "components/attribution_reporting/registration_header_error.h"
 
+#include <variant>
+
 #include "base/functional/overloaded.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 
 std::string_view RegistrationHeaderError::HeaderName() const {
-  return absl::visit(base::Overloaded{
-                         [](mojom::SourceRegistrationError) {
-                           return kAttributionReportingRegisterSourceHeader;
-                         },
+  return std::visit(base::Overloaded{
+                        [](mojom::SourceRegistrationError) {
+                          return kAttributionReportingRegisterSourceHeader;
+                        },
 
-                         [](mojom::TriggerRegistrationError) {
-                           return kAttributionReportingRegisterTriggerHeader;
-                         },
+                        [](mojom::TriggerRegistrationError) {
+                          return kAttributionReportingRegisterTriggerHeader;
+                        },
 
-                         [](OsSourceRegistrationError) {
-                           return kAttributionReportingRegisterOsSourceHeader;
-                         },
+                        [](OsSourceRegistrationError) {
+                          return kAttributionReportingRegisterOsSourceHeader;
+                        },
 
-                         [](OsTriggerRegistrationError) {
-                           return kAttributionReportingRegisterOsTriggerHeader;
-                         },
-                     },
-                     error_details);
+                        [](OsTriggerRegistrationError) {
+                          return kAttributionReportingRegisterOsTriggerHeader;
+                        },
+                    },
+                    error_details);
 }
 
 }  // namespace attribution_reporting

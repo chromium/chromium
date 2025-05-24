@@ -13,7 +13,8 @@
 namespace blink {
 
 // Teach gTest how to print the actual value of the exception state.
-void PrintTo(const ExceptionState& exception_state, std::ostream* os);
+void PrintTo(const DummyExceptionStateForTesting& exception_state,
+             std::ostream* os);
 
 namespace internal {
 

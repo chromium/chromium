@@ -265,7 +265,7 @@ public final class CachingUmaRecorderTest {
      * #recordSparseHistogram(String, int)} }.
      */
     private static class BlockingUmaRecorder extends NoopUmaRecorder {
-        public Lock lock = new ReentrantLock();
+        public final Lock lock = new ReentrantLock();
 
         @SuppressWarnings("LockNotBeforeTry")
         @Override

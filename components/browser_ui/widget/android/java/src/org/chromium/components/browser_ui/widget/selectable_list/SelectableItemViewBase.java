@@ -14,8 +14,8 @@ import android.view.View.OnTouchListener;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Checkable;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -31,6 +31,7 @@ import java.util.List;
  *
  * @param <E> The type of the item associated with this SelectableItemViewBase.
  */
+@NullMarked
 public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLayout
         implements Checkable,
                 OnClickListener,
@@ -42,7 +43,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     private static final float LONG_CLICK_SLIDE_THRESHOLD_PX = 100.f;
 
     private @Nullable SelectionDelegate<E> mSelectionDelegate;
-    private E mItem;
+    private @Nullable E mItem;
     private @Nullable Boolean mIsChecked;
 
     // Controls whether selection should happen during onLongClick.
@@ -119,7 +120,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     }
 
     /** @return The item associated with this SelectableItemViewBase. */
-    public E getItem() {
+    public @Nullable E getItem() {
         return mItem;
     }
 
@@ -137,7 +138,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
      * @param item The given item.
      * @return Whether the item was in selected state after the toggle.
      */
-    protected boolean toggleSelectionForItem(E item) {
+    protected boolean toggleSelectionForItem(@Nullable E item) {
         if (mSelectionDelegate == null) return false;
         return mSelectionDelegate.toggleSelectionForItem(item);
     }

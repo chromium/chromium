@@ -115,14 +115,15 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
 
   auto new_width = image.Width();
   auto new_height = image.Height();
-  if (static_cast<bool>(Java_TabFavicon_shouldUpdateFaviconForBrowserUI(
+  if (static_cast<bool>(Java_TabFavicon_shouldUpdateFaviconForBrowserUi(
           env, jobj_, new_width, new_height))) {
     ScopedJavaLocalRef<jobject> j_icon_url =
         url::GURLAndroid::FromNativeGURL(env, icon_url);
     Java_TabFavicon_onFaviconAvailable(
         env, jobj_, gfx::ConvertToJavaBitmap(favicon), j_icon_url);
   }
-  if (base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions)) {
+  if (content::BackForwardTransitionAnimationManager::
+          AreBackForwardTransitionsEnabled()) {
     CHECK(active_web_contents_);
     if (static_cast<bool>(
             Java_TabFavicon_shouldUpdateFaviconForNavigationTransitions(

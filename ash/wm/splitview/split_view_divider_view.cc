@@ -78,8 +78,7 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
   SetPaintToLayer(ui::LAYER_TEXTURED);
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemBase));
+  SetBackground(views::CreateSolidBackground(cros_tokens::kCrosSysSystemBase));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       /*corner_radius=*/0,
@@ -110,12 +109,7 @@ void SplitViewDividerView::SetHandlerBarVisible(bool visible) {
 }
 
 void SplitViewDividerView::Layout(PassKey) {
-  // There is no divider in clamshell split view unless the feature flag
-  // `kSnapGroup` is enabled. If we are in clamshell mode without the feature
-  // flag and params, then we must be transitioning from tablet mode, and the
-  // divider will be destroyed and there is no need to update it.
-  if (!divider_ || (!display::Screen::GetScreen()->InTabletMode() &&
-                    !IsSnapGroupEnabledInClamshellMode())) {
+  if (!divider_) {
     return;
   }
 
@@ -211,10 +205,10 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
       divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
       break;
     case ui::EventType::kGestureEnd: {
+      auto weak_this = weak_ptr_factory_.GetWeakPtr();
       EndResizing(location, /*swap_windows=*/false);
-
-      // `EndResizing()` may set `divider_` to nullptr and causing crash.
-      if (divider_) {
+      // `EndResizing()` may delete the dividier view.
+      if (weak_this && divider_) {
         divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
       }
       break;
@@ -349,7 +343,7 @@ void SplitViewDividerView::RefreshDividerHandler() {
                              handler_long_side, handler_short_side);
   }
 
-  handler_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+  handler_view_->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysOutline, should_enlarge
                                         ? kDividerHandlerEnlargedCornerRadius
                                         : kDividerHandlerCornerRadius));

@@ -18,11 +18,7 @@
 #endif  // defined(SHELL_DIALOGS_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(SHELL_DIALOGS_IMPLEMENTATION)
 #define SHELL_DIALOGS_EXPORT __attribute__((visibility("default")))
-#else
-#define SHELL_DIALOGS_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

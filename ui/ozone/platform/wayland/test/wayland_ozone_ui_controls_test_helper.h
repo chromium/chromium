@@ -46,20 +46,9 @@ class WaylandOzoneUIControlsTestHelper : public ui::OzoneUIControlsTestHelper {
                       const gfx::Point& mouse_loc,
                       const gfx::Point& mouse_loc_in_screen,
                       base::OnceClosure closure) override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SendTouchEvent(gfx::AcceleratedWidget widget,
-                      int action,
-                      int id,
-                      const gfx::Point& touch_loc,
-                      base::OnceClosure closure) override;
-  void UpdateDisplay(const std::string& display_specs,
-                     base::OnceClosure closure) override;
-#endif
   void RunClosureAfterAllPendingUIEvents(base::OnceClosure closure) override;
   bool MustUseUiControlsForMoveCursorTo() override;
-#if BUILDFLAG(IS_LINUX)
   void ForceUseScreenCoordinatesOnce() override;
-#endif
 
  private:
   void RequestProcessed(uint32_t request_id);

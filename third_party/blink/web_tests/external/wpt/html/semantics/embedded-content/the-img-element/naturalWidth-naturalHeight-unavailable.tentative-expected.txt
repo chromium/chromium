@@ -1,0 +1,45 @@
+This is a testharness.js-based test.
+[FAIL] SVG image, no natural dimensions
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, percengage natural dimensions
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, negative percengage natural dimensions
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, with natural width
+  assert_equals: naturalHeight expected 150 but got 0
+[FAIL] SVG image, with natural height
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, with natural width of 0
+  assert_equals: naturalHeight expected 150 but got 0
+[FAIL] SVG image, with natural height of 0
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, with natural width being negative
+  assert_equals: naturalHeight expected 150 but got 0
+[FAIL] SVG image, with natural height being negative
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, no natural dimensions, and aspect ratio from viewBox
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, percengage natural dimensions, and aspect ratio from viewBox
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, negative percengage natural dimensions, and aspect ratio from viewBox
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, no natural dimensions, viewBox with 0 width/height
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, no natural dimensions, viewBox with 0 width
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, no natural dimensions, viewBox with 0 height
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, with natural width, viewBox with 0 width/height
+  assert_equals: naturalHeight expected 150 but got 0
+[FAIL] SVG image, with natural width, viewBox with 0 width
+  assert_equals: naturalHeight expected 150 but got 0
+[FAIL] SVG image, with natural width, viewBox with 0 height
+  assert_equals: naturalHeight expected 150 but got 0
+[FAIL] SVG image, with natural height, viewBox with 0 width/height
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, with natural height, viewBox with 0 width
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG image, with natural height, viewBox with 0 height
+  assert_equals: naturalWidth expected 300 but got 0
+Harness: the test ran to completion.
+

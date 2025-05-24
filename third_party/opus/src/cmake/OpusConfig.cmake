@@ -102,7 +102,10 @@ if(MINGW)
   endif()
 endif()
 
-if(NOT MSVC)
+if(MSVC)
+  # move cosmetic warnings to level 4
+  add_compile_options(/w44244 /w44305 /w44267)
+else()
   set(WARNING_LIST -Wall -W -Wstrict-prototypes -Wextra -Wcast-align -Wnested-externs -Wshadow)
   include(CheckCCompilerFlag)
   foreach(WARNING_FLAG ${WARNING_LIST})

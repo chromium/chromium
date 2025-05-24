@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -304,6 +304,7 @@ KerberosCredentialsManager::KerberosCredentialsManager(PrefService* local_state,
     : local_state_(local_state),
       primary_profile_(primary_profile),
       kerberos_files_handler_(std::make_unique<KerberosFilesHandler>(
+          *local_state,
           base::BindRepeating(&KerberosCredentialsManager::GetKerberosFiles,
                               base::Unretained(this)))),
       backoff_entry_for_managed_accounts_(&kBackoffPolicyForManagedAccounts) {
@@ -471,8 +472,8 @@ void KerberosCredentialsManager::OnAddAccountRunnerDone(
     kerberos::ErrorType error) {
   // Reset the |runner|. Note that |updated_principal| is passed by value,
   // not by reference, since |runner| owns the reference.
-  auto it = base::ranges::find(add_account_runners_, runner,
-                               &std::unique_ptr<KerberosAddAccountRunner>::get);
+  auto it = std::ranges::find(add_account_runners_, runner,
+                              &std::unique_ptr<KerberosAddAccountRunner>::get);
 
   // Semantically, this `CHECK()` should never trigger. However, it protects
   // the `erase()` call from semantically incorrect changes to this class.

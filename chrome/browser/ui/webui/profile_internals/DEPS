@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "profile_internals_handler\.cc": [
+    "+components/regional_capabilities/access/country_access_reason.h",
+  ],
+}

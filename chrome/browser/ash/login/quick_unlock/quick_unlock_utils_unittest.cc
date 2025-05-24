@@ -35,7 +35,7 @@ class QuickUnlockUtilsUnitTest : public testing::Test {
   QuickUnlockUtilsUnitTest()
       : profile_pref_registry_(new user_prefs::PrefRegistrySyncable),
         pref_store_(new TestingPrefStore) {}
-  ~QuickUnlockUtilsUnitTest() override {}
+  ~QuickUnlockUtilsUnitTest() override = default;
 
   void SetUp() override {
     RegisterProfilePrefs(profile_pref_registry_.get());

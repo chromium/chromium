@@ -20,6 +20,9 @@ FormInputAccessoryViewTextData* ChromiumAccessoryViewTextData() {
                           GetNSString(IDS_IOS_AUTOFILL_ACCNAME_NEXT_FIELD)
                   previousButtonAccessibilityLabel:
                       GetNSString(IDS_IOS_AUTOFILL_ACCNAME_PREVIOUS_FIELD)
+                             manualFillButtonTitle:
+                                 GetNSString(
+                                     IDS_IOS_AUTOFILL_ACCNAME_ALL_AUTOFILL_DATA)
                 manualFillButtonAccessibilityLabel:
                     GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA)
         passwordManualFillButtonAccessibilityLabel:

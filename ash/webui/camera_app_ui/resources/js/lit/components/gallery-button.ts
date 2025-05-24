@@ -81,7 +81,7 @@ export class GalleryButton extends LitElement {
 
   cover: CoverPhoto|null = null;
 
-  getCoverURLForTesting(): string {
+  getCoverUrlForTesting(): string {
     return this.shadowRoot?.querySelector('img')?.getAttribute('src') ?? '';
   }
 
@@ -134,7 +134,6 @@ window.customElements.define('gallery-button', GalleryButton);
 
 declare global {
   interface HTMLElementTagNameMap {
-    /* eslint-disable-next-line @typescript-eslint/naming-convention */
     'gallery-button': GalleryButton;
   }
 }

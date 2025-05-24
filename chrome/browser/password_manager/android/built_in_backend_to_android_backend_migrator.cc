@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/barrier_callback.h"
 #include "base/containers/flat_set.h"
@@ -130,12 +131,12 @@ struct BuiltInBackendToAndroidBackendMigrator::BackendAndLoginsResults {
   LoginsResultOrError logins_result;
 
   bool HasError() const {
-    return absl::holds_alternative<PasswordStoreBackendError>(logins_result);
+    return std::holds_alternative<PasswordStoreBackendError>(logins_result);
   }
 
   std::optional<int> GetApiError() const {
     if (HasError()) {
-      return absl::get<PasswordStoreBackendError>(logins_result)
+      return std::get<PasswordStoreBackendError>(logins_result)
           .android_backend_api_error;
     }
     return std::nullopt;
@@ -148,7 +149,7 @@ struct BuiltInBackendToAndroidBackendMigrator::BackendAndLoginsResults {
     DCHECK(!HasError());
 
     return base::MakeFlatSet<const PasswordForm*, IsPasswordLess>(
-        absl::get<LoginsResult>(logins_result), {},
+        std::get<LoginsResult>(logins_result), {},
         [](auto& form) { return &form; });
   }
 
@@ -462,9 +463,9 @@ void BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration(
     const std::string& backend_infix,
     BackendOperationForMigration backend_operation,
     PasswordChangesOrError changes_or_error) {
-  if (absl::holds_alternative<PasswordStoreBackendError>(changes_or_error)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(changes_or_error)) {
     const PasswordStoreBackendError& error =
-        absl::get<PasswordStoreBackendError>(changes_or_error);
+        std::get<PasswordStoreBackendError>(changes_or_error);
     metrics_reporter_->HandleBackendOperationResult(
         backend_infix, backend_operation, /*is_success=*/false,
         error.android_backend_api_error);
@@ -472,7 +473,7 @@ void BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration(
     return;
   }
 
-  const PasswordChanges& changes = absl::get<PasswordChanges>(changes_or_error);
+  const PasswordChanges& changes = std::get<PasswordChanges>(changes_or_error);
   // Nullopt changelist is returned on success by the backends that do not
   // provide exact changelist (e.g. Android). This indicates success operation
   // as well as non-empty changelist.
@@ -521,12 +522,12 @@ void BuiltInBackendToAndroidBackendMigrator::RemoveBlocklistedFormsWithValues(
     PasswordStoreBackend* backend,
     LoginsOrErrorReply result_callback,
     LoginsResultOrError logins_or_error) {
-  if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
     std::move(result_callback).Run(std::move(logins_or_error));
     return;
   }
 
-  LoginsResult all_forms = absl::get<LoginsResult>(std::move(logins_or_error));
+  LoginsResult all_forms = std::get<LoginsResult>(std::move(logins_or_error));
   LoginsResult clean_forms;
   LoginsResult forms_to_remove;
   clean_forms.reserve(all_forms.size());

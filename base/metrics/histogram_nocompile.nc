@@ -40,8 +40,8 @@ void MaxOutOfRange() {
   enum class TypeA { A = -1 };
   enum class TypeB : uint32_t { B = 0xffffffff };
 
-  UMA_HISTOGRAM_ENUMERATION("", TypeA::A, TypeA::A);  // expected-error {{|boundary| is out of range of HistogramBase::Sample}}
-  UMA_HISTOGRAM_ENUMERATION("", TypeB::B, TypeB::B);  // expected-error {{|boundary| is out of range of HistogramBase::Sample}}
+  UMA_HISTOGRAM_ENUMERATION("", TypeA::A, TypeA::A);  // expected-error {{|boundary| is out of range of HistogramBase::Sample32}}
+  UMA_HISTOGRAM_ENUMERATION("", TypeB::B, TypeB::B);  // expected-error {{|boundary| is out of range of HistogramBase::Sample32}}
 }
 
 void NoMaxValue() {

@@ -65,9 +65,9 @@ def _is_binary(path):
     This is done by inspecting its FourCC header.
     """
 
-    with open(path, 'rb') as f:
-        file_tag = f.read(4)
-    return file_tag == b'\x7fELF'
+    output = subprocess.check_output(
+                ['file', path]).decode('utf8')
+    return 'ELF 64-bit' in output
 
 
 def _write_build_ids_txt(readelf_exec, binary_paths, ids_txt_path):

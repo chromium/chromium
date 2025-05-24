@@ -102,6 +102,10 @@
   _parent->OnSystemColorsChanged();
 }
 
+- (void)onActiveSpaceChanged:(NSNotification*)notification {
+  _parent->OnSpaceActivationMayHaveChanged();
+}
+
 // NSWindowDelegate implementation.
 
 - (void)windowDidFailToEnterFullScreen:(NSWindow*)window {
@@ -153,7 +157,12 @@
   return resizedWindowRect.size().ToCGSize();
 }
 
+- (void)windowWillStartLiveResize:(NSNotification*)notification {
+  _parent->OnWindowWillStartLiveResize();
+}
+
 - (void)windowDidEndLiveResize:(NSNotification*)notification {
+  _parent->OnWindowDidEndLiveResize();
   _resizingHorizontally.reset();
 }
 
@@ -180,6 +189,10 @@
   if ([NSApp isActive] && ([NSApp keyWindow] == notification.object))
     return;
   _parent->OnWindowKeyStatusChangedTo(false);
+}
+
+- (void)windowDidChangeOcclusionState:(NSNotification*)notification {
+  _parent->OnSpaceActivationMayHaveChanged();
 }
 
 - (BOOL)windowShouldClose:(id)sender {

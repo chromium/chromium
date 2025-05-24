@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API gatherElements operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -64,8 +64,8 @@ tests.forEach(
 
       if (test.output) {
         const output = builder.gatherElements(input, indices, options);
-        assert_equals(output.dataType(), test.output.dataType);
-        assert_array_equals(output.shape(), test.output.shape);
+        assert_equals(output.dataType, test.output.dataType);
+        assert_array_equals(output.shape, test.output.shape);
       } else {
         const label = 'gatherElements_'
         options.label = label;

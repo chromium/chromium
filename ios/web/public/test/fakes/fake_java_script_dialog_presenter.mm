@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Foundation/Foundation.h>
-
 #import "ios/web/public/test/fakes/fake_java_script_dialog_presenter.h"
+
+#import <Foundation/Foundation.h>
 
 namespace web {
 
@@ -30,12 +30,12 @@ FakeJavaScriptDialogPresenter::~FakeJavaScriptDialogPresenter() {
 
 void FakeJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
     WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceClosure callback) {
   auto dialog = std::make_unique<FakeJavaScriptAlertDialog>();
   dialog->web_state = web_state;
-  dialog->origin_url = origin_url;
+  dialog->origin = origin;
   dialog->message_text = [message_text copy];
   dialog->callback = std::move(callback);
 
@@ -48,12 +48,12 @@ void FakeJavaScriptDialogPresenter::RunJavaScriptAlertDialog(
 
 void FakeJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
     WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceCallback<void(bool success)> callback) {
   auto dialog = std::make_unique<FakeJavaScriptConfirmDialog>();
   dialog->web_state = web_state;
-  dialog->origin_url = origin_url;
+  dialog->origin = origin;
   dialog->message_text = [message_text copy];
   dialog->callback = std::move(callback);
 
@@ -65,21 +65,22 @@ void FakeJavaScriptDialogPresenter::RunJavaScriptConfirmDialog(
 }
 void FakeJavaScriptDialogPresenter::RunJavaScriptPromptDialog(
     WebState* web_state,
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     NSString* default_prompt_text,
     base::OnceCallback<void(NSString* user_input)> callback) {
   auto dialog = std::make_unique<FakeJavaScriptPromptDialog>();
   dialog->web_state = web_state;
-  dialog->origin_url = origin_url;
+  dialog->origin = origin;
   dialog->message_text = [message_text copy];
   dialog->default_prompt_text = [default_prompt_text copy];
   dialog->callback = std::move(callback);
 
   requested_prompt_dialogs_.push_back(std::move(dialog));
 
-  if (!callback_execution_paused())
+  if (!callback_execution_paused()) {
     ExecutePromptDialogCallback(requested_prompt_dialogs_.back().get());
+  }
 }
 
 void FakeJavaScriptDialogPresenter::CancelDialogs(WebState* web_state) {

@@ -6,6 +6,7 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_STATE_OBSERVER_UTIL_H_
 
 #include <Foundation/Foundation.h>
+
 #include <memory>
 
 #import "base/memory/raw_ptr.h"
@@ -103,11 +104,6 @@ struct TestUpdateFaviconUrlCandidatesInfo {
   ~TestUpdateFaviconUrlCandidatesInfo();
   raw_ptr<WebState> web_state = nullptr;
   std::vector<web::FaviconURL> candidates;
-};
-
-// Arguments passed to `UnderPageBackgroundColorChanged`.
-struct TestUnderPageBackgroundColorChangedInfo {
-  raw_ptr<WebState> web_state = nullptr;
 };
 
 // Arguments passed to `RenderProcessGone`.

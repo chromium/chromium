@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** Model for cross device pane hosting a list of group items. */
+@NullMarked
 public class CrossDeviceListProperties {
     /** An indicator of whether the empty state should be visible. */
     public static final WritableBooleanPropertyKey EMPTY_STATE_VISIBLE =

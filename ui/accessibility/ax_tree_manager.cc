@@ -127,12 +127,6 @@ bool AXTreeManager::IsView() const {
   return false;
 }
 
-AXNode* AXTreeManager::GetNodeFromTree(const AXTreeID& tree_id,
-                                       const AXNodeID node_id) const {
-  auto* manager = AXTreeManager::FromID(tree_id);
-  return manager ? manager->GetNode(node_id) : nullptr;
-}
-
 void AXTreeManager::Initialize(const AXTreeUpdate& initial_tree) {
   if (!ax_tree()->Unserialize(initial_tree)) {
     LOG(FATAL) << "No recovery is possible if the initial tree is broken: "
@@ -141,7 +135,7 @@ void AXTreeManager::Initialize(const AXTreeUpdate& initial_tree) {
   }
 }
 
-AXNode* AXTreeManager::GetNode(const AXNodeID node_id) const {
+AXNode* AXTreeManager::GetNode(AXNodeID node_id) const {
   return ax_tree_ ? ax_tree_->GetFromId(node_id) : nullptr;
 }
 
@@ -175,7 +169,7 @@ std::optional<AXTreeID> AXTreeManager::last_focused_node_tree_id_ = {};
 
 // static
 void AXTreeManager::SetLastFocusedNode(AXNode* node) {
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   static auto* const ax_crash_key_focus = base::debug::AllocateCrashKeyString(
       "ax_focus", base::debug::CrashKeySize::Size256);
 #endif
@@ -190,7 +184,7 @@ void AXTreeManager::SetLastFocusedNode(AXNode* node) {
 
     // Only set specific focused node info in fail fast builds, in order to
     // avoid extra processing for every focus move.
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
     node_info_focus << node;
     base::debug::SetCrashKeyString(ax_crash_key_focus, node_info_focus.str());
 #endif
@@ -216,7 +210,7 @@ void AXTreeManager::SetLastFocusedNode(AXNode* node) {
     DCHECK(last_focused_node_tree_id_);
     DCHECK(last_focused_node_tree_id_ != AXTreeIDUnknown());
   } else {
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
     base::debug::ClearCrashKeyString(ax_crash_key_focus);
 #endif
     base::debug::ClearCrashKeyString(ax_crash_key_focus_top_frame);

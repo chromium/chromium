@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONTROLLER_H_
 
+#include <vector>
+
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/presentation/presentation.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_availability_callbacks.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -60,8 +60,8 @@ class MODULES_EXPORT PresentationController
   // url equals to one of |presentationUrls|, and state is not terminated.
   // Return null if such a connection does not exist.
   ControllerPresentationConnection* FindExistingConnection(
-      const blink::WebVector<blink::WebURL>& presentation_urls,
-      const blink::WebString& presentation_id);
+      const std::vector<blink::WebURL>& presentation_urls,
+      const WebString& presentation_id);
 
   // Returns a reference to the PresentationService remote, requesting the
   // remote service if needed. May return an invalid remote if the associated

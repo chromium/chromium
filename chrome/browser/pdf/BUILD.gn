@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -45,6 +44,10 @@ source_set("pdf") {
     "//url",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/browser_context_helper" ]
+  }
+
   if (enable_print_preview) {
     deps += [ "//chrome/common" ]
   }
@@ -57,7 +60,7 @@ source_set("pdf_pref_names") {
   ]
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("pdf_service") {
     sources = [
       "pdf_service.cc",
@@ -85,6 +88,7 @@ source_set("pdf_extension_test_utils") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//components/pdf/common:util",
     "//content/public/browser",
     "//content/test:test_support",

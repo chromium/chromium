@@ -18,14 +18,14 @@ namespace extensions {
 
 class WebRtcFromWebAccessibleResourceTest : public ExtensionApiTest {
  public:
-  WebRtcFromWebAccessibleResourceTest() {}
+  WebRtcFromWebAccessibleResourceTest() = default;
 
   WebRtcFromWebAccessibleResourceTest(
       const WebRtcFromWebAccessibleResourceTest&) = delete;
   WebRtcFromWebAccessibleResourceTest& operator=(
       const WebRtcFromWebAccessibleResourceTest&) = delete;
 
-  ~WebRtcFromWebAccessibleResourceTest() override {}
+  ~WebRtcFromWebAccessibleResourceTest() override = default;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {

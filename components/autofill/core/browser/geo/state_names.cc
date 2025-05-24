@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -84,8 +84,8 @@ std::u16string_view GetAbbreviationForName(std::u16string_view name) {
 
 std::u16string_view GetNameForAbbreviation(std::u16string_view abbreviation) {
   using Member = decltype(kStateData)::value_type;
-  auto it = base::ranges::find(kStateData, base::ToLowerASCII(abbreviation),
-                               &Member::second);
+  auto it = std::ranges::find(kStateData, base::ToLowerASCII(abbreviation),
+                              &Member::second);
   return it != kStateData.end() ? it->first : std::u16string_view();
 }
 

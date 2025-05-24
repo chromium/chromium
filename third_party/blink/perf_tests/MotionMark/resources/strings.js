@@ -23,11 +23,16 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 var Strings = {
-    version: "1.3",
+    version: "1.3.1",
     text: {
         testName: "Test Name",
         score: "Score",
         title: "MotionMark %s",
+        determininingFrameRate: "Detecting Frame Rate…",
+        runBenchmark: "Run Benchmark",
+        usingFrameRate: "Framerate %sfps",
+        frameRateDetectionFailure: "Failed to determine framerate, using 60fps",
+        non60FrameRate: "Framerate %sfps. If comparing browsers, be sure to <a href='about.html#set-display-fps'>set your display refresh rate to 60Hz</a>."
     },
     json: {
         version: "version",
@@ -39,10 +44,14 @@ var Strings = {
         samples: "samples",
         dataFieldMap: "dataFieldMap",
         controller: "controller",
+        frameType: "frameType",
         time: "time",
         complexity: "complexity",
         frameLength: "frameLength",
         smoothedFrameLength: "smoothedFrameLength",
+
+        mutationFrameType: "m",
+        animationFrameType: "a",
 
         result: "result",
         configuration: "configuration",

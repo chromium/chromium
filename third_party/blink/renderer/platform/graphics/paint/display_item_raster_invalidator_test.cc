@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_raster_invalidator.h"
+
+#include <array>
 
 #include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -363,7 +360,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, NewItemInMiddle) {
 
 TEST_P(DisplayItemRasterInvalidatorTest, Incremental) {
   gfx::Rect initial_rect(100, 100, 100, 100);
-  Persistent<FakeDisplayItemClient> clients[6];
+  std::array<Persistent<FakeDisplayItemClient>, 6> clients;
   for (size_t i = 0; i < std::size(clients); i++) {
     clients[i] =
         MakeGarbageCollected<FakeDisplayItemClient>(String::Format("%zu", i));
@@ -384,10 +381,14 @@ TEST_P(DisplayItemRasterInvalidatorTest, Incremental) {
                                                        *invalidator_);
     GraphicsContext context(paint_controller);
     InitRootChunk(paint_controller);
-    gfx::Rect visual_rects[] = {
-        gfx::Rect(100, 100, 150, 100), gfx::Rect(100, 100, 100, 150),
-        gfx::Rect(100, 100, 150, 80),  gfx::Rect(100, 100, 80, 150),
-        gfx::Rect(100, 100, 150, 150), gfx::Rect(100, 100, 80, 80)};
+    auto visual_rects = std::to_array<gfx::Rect>({
+        gfx::Rect(100, 100, 150, 100),
+        gfx::Rect(100, 100, 100, 150),
+        gfx::Rect(100, 100, 150, 80),
+        gfx::Rect(100, 100, 80, 150),
+        gfx::Rect(100, 100, 150, 150),
+        gfx::Rect(100, 100, 80, 80),
+    });
     for (size_t i = 0; i < std::size(clients); i++) {
       clients[i]->Invalidate(PaintInvalidationReason::kIncremental);
       DrawRect(context, *clients[i], kBackgroundType,

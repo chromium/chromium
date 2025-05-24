@@ -28,7 +28,7 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/native_theme_utils.h"
 
 using blink::WebRuntimeFeatures;
 using ::testing::DoAll;
@@ -87,10 +87,8 @@ class TestPhishingDOMFeatureExtractor : public PhishingDOMFeatureExtractor {
         const std::string document_domain = it->second;
         return !url.DomainIs(document_domain);
       }
-      NOTREACHED_IN_MIGRATION()
-          << "Testing input setup is incorrect. "
-             "Please check url_to_frame_domain_map_ setup.";
-      return true;
+      NOTREACHED() << "Testing input setup is incorrect. Please check "
+                      "url_to_frame_domain_map_ setup.";
     }
   }
 
@@ -130,12 +128,26 @@ class TestPhishingDOMFeatureExtractor : public PhishingDOMFeatureExtractor {
 
 class TestChromeContentRendererClient : public ChromeContentRendererClient {
  public:
-  TestChromeContentRendererClient() {}
-  ~TestChromeContentRendererClient() override {}
+  TestChromeContentRendererClient() = default;
+  ~TestChromeContentRendererClient() override = default;
   // Since visited_link_reader_ in ChromeContentRenderClient never get
-  // initiated, overrides VisitedLinkedHash() function to prevent crashing.
+  // initiated, overrides visited link functions to prevent crashing.
   uint64_t VisitedLinkHash(std::string_view canonical_url) override {
     return 0;
+  }
+
+  uint64_t PartitionedVisitedLinkFingerprint(
+      std::string_view canonical_link_url,
+      const net::SchemefulSite& top_level_site,
+      const url::Origin& frame_origin) override {
+    return 0;
+  }
+
+  bool IsLinkVisited(uint64_t link_hash) override { return false; }
+
+  void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                  uint64_t salt) override {
+    return;
   }
 };
 

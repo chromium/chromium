@@ -18,12 +18,12 @@
 
 class ProcessesApiTest : public extensions::ExtensionApiTest {
  public:
-  ProcessesApiTest() {}
+  ProcessesApiTest() = default;
 
   ProcessesApiTest(const ProcessesApiTest&) = delete;
   ProcessesApiTest& operator=(const ProcessesApiTest&) = delete;
 
-  ~ProcessesApiTest() override {}
+  ~ProcessesApiTest() override = default;
 
   int GetListenersCount() {
     return extensions::ProcessesAPI::Get(profile())->

@@ -1,0 +1,104 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Cached results for common pkg_config.py runs.
+data = [
+  {
+    sysroot = "../../build/linux/debian_bullseye_amd64-sysroot"
+    entries = [
+      {
+        args = ["atk", "atk-bridge-2.0"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/at-spi-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/at-spi2-atk/2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/atk-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/dbus-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/glib-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/dbus-1.0/include", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/glib-2.0/include"], [], ["atk-1.0", "atk-bridge-2.0", "glib-2.0", "gobject-2.0"], []]
+      },
+      {
+        args = ["atspi-2"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/at-spi-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/dbus-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/glib-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/dbus-1.0/include", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/glib-2.0/include"], [], ["atspi", "dbus-1", "glib-2.0"], []]
+      },
+      {
+        args = ["dbus-1"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/dbus-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/dbus-1.0/include"], [], ["dbus-1"], []]
+      },
+      {
+        args = ["dri"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libdrm"], [], [], []]
+      },
+      {
+        args = ["egl"]
+        pkgresult = [[], [], [ "EGL" ], []]
+      },
+      {
+        args = ["gbm"]
+        pkgresult = [[], [], [ "gbm" ], []]
+      },
+      {
+        args = ["gio-2.0", "gio-unix-2.0"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/blkid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gio-unix-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/glib-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libmount", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/glib-2.0/include"], [], ["gio-2.0", "glib-2.0", "gobject-2.0"], []]
+      },
+      {
+        args = ["gl"]
+        pkgresult = [[], [], [ "GL" ], []]
+      },
+      {
+        args = ["gmodule-2.0", "gthread-2.0", "gtk+-3.0"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/at-spi-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/at-spi2-atk/2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/atk-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/blkid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/cairo", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/dbus-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/freetype2", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/fribidi", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gdk-pixbuf-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gio-unix-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/glib-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gtk-3.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/harfbuzz", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libmount", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libpng16", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pango-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pixman-1", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/uuid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/dbus-1.0/include", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/glib-2.0/include"], [], ["atk-1.0", "cairo", "cairo-gobject", "gdk-3", "gdk_pixbuf-2.0", "gio-2.0", "glib-2.0", "glib-2.0", "glib-2.0", "gmodule-2.0", "gobject-2.0", "gthread-2.0", "gtk-3", "harfbuzz", "pango-1.0", "pangocairo-1.0"], []]
+      },
+      {
+        args = ["gmodule-2.0", "gthread-2.0", "gtk+-3.0", "gtk+-unix-print-3.0"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/at-spi-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/at-spi2-atk/2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/atk-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/blkid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/cairo", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/dbus-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/freetype2", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/fribidi", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gdk-pixbuf-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gio-unix-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/glib-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gtk-3.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gtk-3.0/unix-print", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/harfbuzz", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libmount", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libpng16", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pango-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pixman-1", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/uuid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/dbus-1.0/include", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/glib-2.0/include"], [], ["atk-1.0", "cairo", "cairo-gobject", "gdk-3", "gdk_pixbuf-2.0", "gio-2.0", "glib-2.0", "glib-2.0", "glib-2.0", "gmodule-2.0", "gobject-2.0", "gthread-2.0", "gtk-3", "harfbuzz", "pango-1.0", "pangocairo-1.0"], []]
+      },
+      {
+        args = ["gmodule-2.0", "gthread-2.0", "gtk4"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/blkid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/cairo", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/freetype2", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/fribidi", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gdk-pixbuf-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/glib-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/graphene-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gtk-4.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/harfbuzz", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libmount", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libpng16", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pango-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pixman-1", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/uuid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/glib-2.0/include", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/graphene-1.0/include"], ["-mfpmath=sse", "-msse", "-msse2"], ["cairo", "cairo-gobject", "gdk_pixbuf-2.0", "gio-2.0", "glib-2.0", "glib-2.0", "glib-2.0", "gmodule-2.0", "gobject-2.0", "graphene-1.0", "gthread-2.0", "gtk-4", "harfbuzz", "pango-1.0", "pangocairo-1.0"], []]
+      },
+      {
+        args = ["gmodule-2.0", "gthread-2.0", "gtk4", "gtk4-unix-print"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/blkid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/cairo", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/freetype2", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/fribidi", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gdk-pixbuf-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/glib-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/graphene-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gtk-4.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/gtk-4.0/unix-print", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/harfbuzz", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libmount", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libpng16", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pango-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pixman-1", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/uuid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/glib-2.0/include", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/graphene-1.0/include"], ["-mfpmath=sse", "-msse", "-msse2"], ["cairo", "cairo-gobject", "gdk_pixbuf-2.0", "gio-2.0", "glib-2.0", "glib-2.0", "glib-2.0", "gmodule-2.0", "gobject-2.0", "graphene-1.0", "gthread-2.0", "gtk-4", "harfbuzz", "pango-1.0", "pangocairo-1.0"], []]
+      },
+      {
+        args = ["glib-2.0", "gmodule-2.0", "gobject-2.0", "gthread-2.0"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/glib-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/glib-2.0/include"], [], ["glib-2.0", "glib-2.0", "gmodule-2.0", "gobject-2.0", "gthread-2.0"], []]
+      },
+      {
+        args = ["libdrm"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libdrm" ], [], [ "drm" ], []]
+      },
+      {
+        args = ["libffi"]
+        pkgresult = [[], [], ["ffi"], []]
+      },
+      {
+        args = ["libpipewire-0.3"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pipewire-0.3", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/spa-0.2"], ["-D_REENTRANT"], ["pipewire-0.3"], []]
+      },
+      {
+        args = ["libudev"]
+        pkgresult = [[], [], ["udev"], []]
+      },
+      {
+        args = ["libva"]
+        pkgresult = [[], [], ["va"], []]
+      },
+      {
+        args = ["nss", "-v", "-lssl3"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/nspr", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/nss"], [], ["nspr4", "nss3", "nssutil3", "plc4", "plds4", "smime3"], []]
+      },
+      {
+        args = ["pangocairo", "-v", "freetype"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/blkid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/cairo", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/fribidi", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/glib-2.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/harfbuzz", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libmount", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/libpng16", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pango-1.0", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/pixman-1", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/uuid", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/glib-2.0/include"], [], ["cairo", "glib-2.0", "gobject-2.0", "harfbuzz", "pango-1.0", "pangocairo-1.0"], []]
+      },
+      {
+        args = ["Qt5Core", "Qt5Widgets"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/qt5", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/qt5/QtCore", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/qt5/QtGui", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/qt5/QtWidgets"], ["-DQT_CORE_LIB", "-DQT_GUI_LIB", "-DQT_WIDGETS_LIB"], ["Qt5Core", "Qt5Gui", "Qt5Widgets"], []]
+      },
+      {
+        args = ["Qt6Core", "Qt6Widgets"]
+        pkgresult = [["../../build/linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/qt6", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/qt6/QtCore", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/qt6/QtGui", "../../build/linux/debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/qt6/QtWidgets", "../../build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++"], ["-DQT_CORE_LIB", "-DQT_GUI_LIB", "-DQT_WIDGETS_LIB"], ["Qt6Core", "Qt6Gui", "Qt6Widgets"], []]
+      },
+      {
+        args = ["xkbcommon"]
+        pkgresult = [[], [], ["xkbcommon"], []]
+      },
+    ]
+  },
+]

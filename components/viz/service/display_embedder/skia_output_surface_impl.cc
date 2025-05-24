@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
+
+#include <inttypes.h>
 
 #include <memory>
 #include <string>
@@ -23,6 +20,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -37,6 +35,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/output_surface_client.h"
@@ -417,7 +416,8 @@ SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
   // Flush GPU tasks and block until all tasks are finished.
-  FlushGpuTasksWithImpl(SyncMode::kWaitForTasksFinished, impl_on_gpu);
+  FlushGpuTasksWithImpl(SyncMode::kWaitForTasksFinished, impl_on_gpu,
+                        gpu::SyncToken());
 }
 
 gpu::SurfaceHandle SkiaOutputSurfaceImpl::GetSurfaceHandle() const {
@@ -578,7 +578,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
     bool force_rgbx) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(current_paint_);
-  DCHECK(!image_context->mailbox_holder().mailbox.IsZero());
+  DCHECK(!image_context->mailbox().IsZero());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
                "SkiaOutputSurfaceImpl::MakePromiseSkImage");
 
@@ -586,16 +586,15 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
       static_cast<ImageContextImpl*>(image_context);
   images_in_current_paint_.push_back(image_context_impl);
 
-  const auto& mailbox_holder = image_context->mailbox_holder();
+  const auto& sync_token = image_context->sync_token();
 
   if (is_using_raw_draw_) {
     auto* sync_point_manager = dependency_->GetSyncPointManager();
-    auto const& sync_token = mailbox_holder.sync_token;
     if (sync_token.HasData() &&
         !sync_point_manager->IsSyncTokenReleased(sync_token)) {
       gpu_task_sync_tokens_.push_back(sync_token);
       FlushGpuTasks(SyncMode::kWaitForTasksStarted);
-      image_context->mutable_mailbox_holder()->sync_token.Clear();
+      image_context->mutable_sync_token()->Clear();
     }
     CHECK(representation_factory_);
     if (image_context_impl->BeginRasterAccess(representation_factory_.get())) {
@@ -615,9 +614,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
     MakePromiseSkImageMultiPlane(image_context_impl, color_space);
   }
 
-  if (mailbox_holder.sync_token.HasData()) {
-    resource_sync_tokens_.push_back(mailbox_holder.sync_token);
-    image_context->mutable_mailbox_holder()->sync_token.Clear();
+  if (sync_token.HasData()) {
+    resource_sync_tokens_.push_back(sync_token);
+    image_context->mutable_sync_token()->Clear();
   }
 }
 
@@ -633,7 +632,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
   SkColorType color_type =
       format.PrefersExternalSampler()
           ? gpu::ToClosestSkColorTypeExternalSampler(format)
-          : ToClosestSkColorType(/*gpu_compositing=*/true, format);
+          : ToClosestSkColorType(format);
 
   if (force_rgbx) {
     if (color_type == SkColorType::kBGRA_8888_SkColorType ||
@@ -662,8 +661,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
   } else {
     CHECK(gr_context_thread_safe_);
     GrBackendFormat backend_format = GetGrBackendFormatForTexture(
-        format, /*plane_index=*/0,
-        image_context->mailbox_holder().texture_target,
+        format, /*plane_index=*/0, image_context->texture_target(),
         image_context->ycbcr_info(), color_space);
     auto image = SkImages::PromiseTextureFrom(
         gr_context_thread_safe_, backend_format,
@@ -682,12 +680,20 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
   CHECK(!image_context->has_image());
   auto format = image_context->format();
   CHECK(format.is_multi_plane());
+  // There should be no usages of RGB matrix for color space here.
+  CHECK(color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB,
+        base::NotFatalUntil::M139);
   SkYUVAInfo::PlaneConfig plane_config = gpu::ToSkYUVAPlaneConfig(format);
   SkYUVAInfo::Subsampling subsampling = gpu::ToSkYUVASubsampling(format);
-  // TODO(crbug.com/41380578): This should really default to rec709.
-  SkYUVColorSpace sk_yuv_color_space = kRec601_SkYUVColorSpace;
-  color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
-                                &sk_yuv_color_space);
+  // TODO(crbug.com/368870063): Implement RGB matrix support in
+  // ToSkYUVColorSpace.
+  SkYUVColorSpace sk_yuv_color_space = kIdentity_SkYUVColorSpace;
+  if (color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB) {
+    // TODO(crbug.com/41380578): This should really default to rec709.
+    sk_yuv_color_space = kRec601_SkYUVColorSpace;
+    color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
+                                  &sk_yuv_color_space);
+  }
   SkYUVAInfo yuva_info(gfx::SizeToSkISize(image_context->size()), plane_config,
                        subsampling, sk_yuv_color_space);
   if (graphite_recorder_) {
@@ -702,7 +708,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
 
     auto fulfill_array =
         base::HeapArray<FulfillForPlane>::WithSize(SkYUVAInfo::kMaxPlanes);
-    void* fulfill_ptrs[SkYUVAInfo::kMaxPlanes] = {};
+    std::array<void*, SkYUVAInfo::kMaxPlanes> fulfill_ptrs = {};
     std::vector<skgpu::graphite::TextureInfo> texture_infos;
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
          plane_index++) {
@@ -714,25 +720,25 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     }
 
     skgpu::graphite::YUVABackendTextureInfo yuva_backend_info(
-        graphite_recorder_, yuva_info, texture_infos, skgpu::Mipmapped::kNo);
+        yuva_info, texture_infos, skgpu::Mipmapped::kNo);
     void* fulfill_array_ptr = std::move(fulfill_array).leak().data();
     auto image = SkImages::PromiseTextureFromYUVA(
         graphite_recorder_, yuva_backend_info, image_context->color_space(),
         graphite_use_volatile_promise_images_, FulfillGraphite, CleanUpArray,
-        ReleaseGraphite, fulfill_array_ptr, fulfill_ptrs);
+        ReleaseGraphite, fulfill_array_ptr, fulfill_ptrs.data());
     LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
     image_context->SetImage(std::move(image), std::move(texture_infos));
   } else {
     CHECK(gr_context_thread_safe_);
     std::vector<GrBackendFormat> formats;
-    void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
+    std::array<void*, SkYUVAInfo::kMaxPlanes> fulfills = {};
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
          ++plane_index) {
       CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
       // NOTE: To compute the format, it is necessary to pass the ColorSpace
       // that came originally from the TransferableResource.
       formats.push_back(GetGrBackendFormatForTexture(
-          format, plane_index, image_context->mailbox_holder().texture_target,
+          format, plane_index, image_context->texture_target(),
           image_context->ycbcr_info(), color_space));
       fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
     }
@@ -742,7 +748,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
                                                kTopLeft_GrSurfaceOrigin);
     auto image = SkImages::PromiseTextureFromYUVA(
         gr_context_thread_safe_, yuva_backend_info,
-        image_context->color_space(), FulfillGanesh, CleanUp, fulfills);
+        image_context->color_space(), FulfillGanesh, CleanUp, fulfills.data());
     LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
     image_context->SetImage(std::move(image), std::move(formats));
   }
@@ -764,18 +770,12 @@ gpu::SyncToken SkiaOutputSurfaceImpl::ReleaseImageContexts(
 }
 
 std::unique_ptr<ExternalUseClient::ImageContext>
-SkiaOutputSurfaceImpl::CreateImageContext(
-    const gpu::MailboxHolder& holder,
-    const gfx::Size& size,
-    SharedImageFormat format,
-    bool maybe_concurrent_reads,
-    const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-    sk_sp<SkColorSpace> color_space,
-    bool raw_draw_if_possible) {
-  return std::make_unique<ImageContextImpl>(
-      holder, size, format, maybe_concurrent_reads, ycbcr_info,
-      std::move(color_space),
-      /*is_for_render_pass=*/false, raw_draw_if_possible);
+SkiaOutputSurfaceImpl::CreateImageContext(const TransferableResource& resource,
+                                          bool maybe_concurrent_reads,
+                                          bool raw_draw_if_possible,
+                                          uint32_t client_id) {
+  return std::make_unique<ImageContextImpl>(resource, maybe_concurrent_reads,
+                                            raw_draw_if_possible, client_id);
 }
 
 DBG_FLAG_FBOOL("skia_gpu.swap_buffers.force_disable_makecurrent",
@@ -846,8 +846,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   CHECK(!current_paint_);
   CHECK(resource_sync_tokens_.empty());
 
-  SkColorType color_type =
-      ToClosestSkColorType(/*gpu_compositing=*/true, format);
+  SkColorType color_type = ToClosestSkColorType(format);
   if (graphite_recorder_) {
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(surface_size), color_type,
@@ -983,11 +982,8 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
 
   auto& image_context = render_pass_image_cache_[id];
   if (!image_context) {
-    gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), GL_TEXTURE_2D);
-    image_context = std::make_unique<ImageContextImpl>(
-        mailbox_holder, size, format, /*maybe_concurrent_reads=*/false,
-        /*ycbcr_info=*/std::nullopt, std::move(color_space),
-        /*is_for_render_pass=*/true);
+    image_context = std::make_unique<ImageContextImpl>(mailbox, size, format,
+                                                       std::move(color_space));
   }
   if (!image_context->has_image()) {
     // NOTE: The ColorSpace parameter is relevant only for external sampling,
@@ -1063,12 +1059,15 @@ void SkiaOutputSurfaceImpl::ScheduleOverlays(
                  /*make_current=*/false, /*need_framebuffer=*/false);
 }
 
-void SkiaOutputSurfaceImpl::SetFrameRate(float frame_rate) {
+#if BUILDFLAG(IS_ANDROID)
+void SkiaOutputSurfaceImpl::SetFrameRate(
+    gfx::SurfaceControlFrameRate frame_rate) {
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetFrameRate,
                              base::Unretained(impl_on_gpu_.get()), frame_rate);
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
 }
+#endif
 
 void SkiaOutputSurfaceImpl::SetCapabilitiesForTesting(
     gfx::SurfaceOrigin output_surface_origin) {
@@ -1127,8 +1126,12 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(bool* result) {
   auto release_overlays_callback =
       base::BindRepeating(&SkiaOutputSurfaceImpl::ReleaseOverlays, weak_ptr_);
 
+  sync_point_client_state_ = gpu_task_scheduler_->CreateSyncPointClientState(
+      gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE,
+      display_compositor_controller_->controller_on_gpu()->command_buffer_id());
+
   impl_on_gpu_ = SkiaOutputSurfaceImplOnGpu::Create(
-      dependency_, renderer_settings_, gpu_task_scheduler_->GetSequenceId(),
+      dependency_, renderer_settings_,
       display_compositor_controller_->controller_on_gpu(),
       std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
@@ -1378,13 +1381,15 @@ void SkiaOutputSurfaceImpl::EnqueueGpuTask(
   need_framebuffer_ |= need_framebuffer;
 }
 
-void SkiaOutputSurfaceImpl::FlushGpuTasks(SyncMode sync_mode) {
-  FlushGpuTasksWithImpl(sync_mode, impl_on_gpu_.get());
+void SkiaOutputSurfaceImpl::FlushGpuTasks(SyncMode sync_mode,
+                                          const gpu::SyncToken& release) {
+  FlushGpuTasksWithImpl(sync_mode, impl_on_gpu_.get(), release);
 }
 
 void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
     SyncMode sync_mode,
-    SkiaOutputSurfaceImplOnGpu* impl_on_gpu) {
+    SkiaOutputSurfaceImplOnGpu* impl_on_gpu,
+    const gpu::SyncToken& release) {
   TRACE_EVENT1("viz", "SkiaOutputSurfaceImpl::FlushGpuTasks", "sync_mode",
                sync_mode);
 
@@ -1394,8 +1399,13 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
 
   // If |wait_for_finish| is true, a GPU task will be always scheduled to make
   // sure all pending tasks are finished on the GPU thread.
-  if (gpu_tasks_.empty() && sync_mode == SyncMode::kNoWait)
+  if (gpu_tasks_.empty() && sync_mode == SyncMode::kNoWait) {
+    if (release.HasData()) {
+      gpu_task_scheduler_->ScheduleGpuTask(base::DoNothing(),
+                                           /*sync_token_fences=*/{}, release);
+    }
     return;
+  }
 
   auto event = sync_mode != SyncMode::kNoWait
                    ? std::make_unique<base::WaitableEvent>()
@@ -1440,7 +1450,7 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
       std::move(gpu_tasks_), sync_mode, event.get(), impl_on_gpu, make_current_,
       need_framebuffer_, post_task_timestamp);
 
-  gpu::GpuTaskSchedulerHelper::ReportingCallback reporting_callback;
+  gpu::ReportingCallback reporting_callback;
   if (should_measure_next_post_task_) {
     // Note that the usage of base::Unretained() with the impl_on_gpu_ is
     // considered safe as it is also owned by |callback| and share the same
@@ -1452,7 +1462,7 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
 
   gpu_task_scheduler_->ScheduleGpuTask(std::move(callback),
                                        std::move(gpu_task_sync_tokens_),
-                                       std::move(reporting_callback));
+                                       release, std::move(reporting_callback));
 
   make_current_ = false;
   need_framebuffer_ = false;
@@ -1547,12 +1557,7 @@ gpu::SyncToken SkiaOutputSurfaceImpl::Flush() {
       gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE,
       impl_on_gpu_->command_buffer_id(), ++sync_fence_release_);
   sync_token.SetVerifyFlush();
-  auto callback =
-      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::ReleaseFenceSync,
-                     base::Unretained(impl_on_gpu_.get()), sync_fence_release_);
-  EnqueueGpuTask(std::move(callback), {}, /*make_current=*/false,
-                 /*need_framebuffer=*/false);
-  FlushGpuTasks(SyncMode::kNoWait);
+  FlushGpuTasks(SyncMode::kNoWait, sync_token);
   return sync_token;
 }
 

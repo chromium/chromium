@@ -17,6 +17,7 @@
 #include "ui/events/ozone/evdev/event_device_util.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
 #include "ui/events/ozone/keyboard/event_auto_repeat_handler.h"
+#include "ui/events/ozone/keyboard/slow_keys_handler.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 
 namespace ui {
@@ -42,7 +43,7 @@ class COMPONENT_EXPORT(EVDEV) KeyboardEvdev
   KeyboardEvdev(const KeyboardEvdev&) = delete;
   KeyboardEvdev& operator=(const KeyboardEvdev&) = delete;
 
-  ~KeyboardEvdev();
+  virtual ~KeyboardEvdev();
 
   // Handlers for raw key presses & releases.
   //
@@ -71,6 +72,11 @@ class COMPONENT_EXPORT(EVDEV) KeyboardEvdev
                          const base::TimeDelta& interval);
   void GetAutoRepeatRate(base::TimeDelta* delay, base::TimeDelta* interval);
 
+  // Configuration for slow keys.
+  void SetSlowKeysEnabled(bool enabled);
+  bool IsSlowKeysEnabled() const;
+  void SetSlowKeysDelay(base::TimeDelta delay);
+
   // Handle keyboard layout changes.
   void SetCurrentLayoutByName(const std::string& layout_name,
                               base::OnceCallback<void(bool)> callback);
@@ -89,6 +95,16 @@ class COMPONENT_EXPORT(EVDEV) KeyboardEvdev
                    base::TimeTicks timestamp,
                    int device_id,
                    int flags) override;
+
+  // Adapter function that simply reorders the arguments of OnKeyChange() for
+  // easier partial binding.
+  void OnKeyChangeCallbackAdapter(unsigned int key,
+                                  unsigned int scan_code,
+                                  bool down,
+                                  bool suppress_auto_repeat,
+                                  int device_id,
+                                  int flags,
+                                  base::TimeTicks timestamp);
 
   // Aggregated key state. There is only one bit of state per key; we do not
   // attempt to count presses of the same key on multiple keyboards.
@@ -112,6 +128,9 @@ class COMPONENT_EXPORT(EVDEV) KeyboardEvdev
 
   // Key repeat handler.
   EventAutoRepeatHandler auto_repeat_handler_;
+
+  // Slow keys handler.
+  SlowKeysHandler slow_keys_handler_;
 
   base::WeakPtrFactory<KeyboardEvdev> weak_ptr_factory_{this};
 };

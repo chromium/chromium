@@ -19,10 +19,19 @@ using base::win::EtwEventLevel;
 using base::win::EtwMofEvent;
 
 DEFINE_GUID(kLogEventId,
-    0x7fe69228, 0x633e, 0x4f06, 0x80, 0xc1, 0x52, 0x7f, 0xea, 0x23, 0xe3, 0xa7);
+            0x7fe69228,
+            0x633e,
+            0x4f06,
+            0x80,
+            0xc1,
+            0x52,
+            0x7f,
+            0xea,
+            0x23,
+            0xe3,
+            0xa7);
 
-LogEventProvider::LogEventProvider() : old_log_level_(LOG_NONE) {
-}
+LogEventProvider::LogEventProvider() : old_log_level_(LOG_NONE) {}
 
 LogEventProvider* LogEventProvider::GetInstance() {
   return base::Singleton<LogEventProvider, base::StaticMemorySingletonTraits<
@@ -30,8 +39,10 @@ LogEventProvider* LogEventProvider::GetInstance() {
 }
 
 bool LogEventProvider::LogMessage(logging::LogSeverity severity,
-    const char* file, int line, size_t message_start,
-    const std::string& message) {
+                                  const char* file,
+                                  int line,
+                                  size_t message_start,
+                                  const std::string& message) {
   EtwEventLevel level = TRACE_LEVEL_NONE;
 
   // Convert the log severity to the most appropriate ETW trace level.
@@ -57,14 +68,15 @@ bool LogEventProvider::LogMessage(logging::LogSeverity severity,
   // Bail if we're not logging, not at that level,
   // or if we're post-atexit handling.
   LogEventProvider* provider = LogEventProvider::GetInstance();
-  if (provider == NULL || level > provider->enable_level())
+  if (provider == NULL || level > provider->enable_level()) {
     return false;
+  }
 
   // And now log the event.
   if (provider->enable_flags() & ENABLE_LOG_MESSAGE_ONLY) {
     EtwMofEvent<1> event(kLogEventId, LOG_MESSAGE, level);
     event.SetField(0, message.length() + 1 - message_start,
-        message.c_str() + message_start);
+                   message.c_str() + message_start);
 
     provider->Log(event.get());
   } else {
@@ -74,12 +86,14 @@ bool LogEventProvider::LogMessage(logging::LogSeverity severity,
 
     // Capture a stack trace if one is requested.
     // requested per our enable flags.
-    if (provider->enable_flags() & ENABLE_STACK_TRACE_CAPTURE)
+    if (provider->enable_flags() & ENABLE_STACK_TRACE_CAPTURE) {
       depth = CaptureStackBackTrace(2, kMaxBacktraceDepth, backtrace, NULL);
+    }
 
     EtwMofEvent<5> event(kLogEventId, LOG_MESSAGE_FULL, level);
-    if (file == NULL)
+    if (file == NULL) {
       file = "";
+    }
 
     // Add the stack trace.
     event.SetField(0, sizeof(depth), &depth);
@@ -90,14 +104,15 @@ bool LogEventProvider::LogMessage(logging::LogSeverity severity,
     event.SetField(3, strlen(file) + 1, file);
     // And finally the message.
     event.SetField(4, message.length() + 1 - message_start,
-        message.c_str() + message_start);
+                   message.c_str() + message_start);
 
     provider->Log(event.get());
   }
 
   // Don't increase verbosity in other log destinations.
-  if (severity < provider->old_log_level_)
+  if (severity < provider->old_log_level_) {
     return true;
+  }
 
   return false;
 }

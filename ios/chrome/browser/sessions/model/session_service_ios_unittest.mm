@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/sessions/model/session_service_ios.h"
+
 #import <Foundation/Foundation.h>
 
 #import <memory>
@@ -16,7 +18,6 @@
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/sessions/model/session_service_ios.h"
 #import "ios/chrome/browser/sessions/model/session_window_ios.h"
 #import "ios/chrome/browser/sessions/model/session_window_ios_factory.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
@@ -39,8 +40,7 @@ constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);
 class SessionServiceTest : public PlatformTest {
  public:
   SessionServiceTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  }
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   SessionServiceTest(const SessionServiceTest&) = delete;
   SessionServiceTest& operator=(const SessionServiceTest&) = delete;
@@ -76,8 +76,9 @@ class SessionServiceTest : public PlatformTest {
       web_state_list->InsertWebState(std::move(web_state),
                                      WebStateList::InsertionParams::AtIndex(i));
     }
-    if (tabs_count > 0)
+    if (tabs_count > 0) {
       web_state_list->ActivateWebStateAt(0);
+    }
     return web_state_list;
   }
 
@@ -85,13 +86,15 @@ class SessionServiceTest : public PlatformTest {
   // `filename` or nil if the file cannot be found.
   NSString* SessionPathForTestData(const base::FilePath::CharType* filename) {
     base::FilePath session_path;
-    if (!base::PathService::Get(ios::DIR_TEST_DATA, &session_path))
+    if (!base::PathService::Get(ios::DIR_TEST_DATA, &session_path)) {
       return nil;
+    }
 
     session_path = session_path.Append(FILE_PATH_LITERAL("sessions"));
     session_path = session_path.Append(filename);
-    if (!base::PathExists(session_path))
+    if (!base::PathExists(session_path)) {
       return nil;
+    }
 
     return base::apple::FilePathToNSString(session_path);
   }

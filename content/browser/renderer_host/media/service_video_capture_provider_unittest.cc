@@ -13,7 +13,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/common/content_features.h"
@@ -29,6 +28,7 @@
 #include "services/video_capture/public/mojom/producer.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -81,7 +81,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
     // macOS.
     scoped_feature_list_.InitAndDisableFeature(
         features::kRetryGetVideoCaptureDeviceInfos);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     provider_ = std::make_unique<ServiceVideoCaptureProvider>(
         base::BindRepeating([]() {
           return std::unique_ptr<video_capture::mojom::AcceleratorFactory>();
@@ -90,7 +90,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
 #else
     provider_ =
         std::make_unique<ServiceVideoCaptureProvider>(kIgnoreLogMessageCB);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     ON_CALL(mock_video_capture_service_, DoConnectToVideoSourceProvider(_))
         .WillByDefault(Invoke(
@@ -258,7 +258,11 @@ TEST_F(ServiceVideoCaptureProviderTest,
   device_launcher_1->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, base::DoNothing(), &mock_callbacks,
-      wait_for_launch_1.QuitClosure(), {});
+      wait_for_launch_1.QuitClosure(),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      /*video_effects_processor=*/{},
+#endif
+      /*readonly_video_effects_manager=*/{});
   wait_for_connection_to_service_.Run();
   wait_for_launch_1.Run();
 
@@ -304,7 +308,11 @@ TEST_F(ServiceVideoCaptureProviderTest,
   device_launcher_2->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, base::DoNothing(), &mock_callbacks,
-      wait_for_launch_2.QuitClosure(), {});
+      wait_for_launch_2.QuitClosure(),
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+      /*video_effects_processor=*/{},
+#endif
+      /*readonly_video_effects_manager=*/{});
   wait_for_launch_2.Run();
   device_launcher_2.reset();
   {

@@ -261,6 +261,9 @@ XSLTPUBFUN xmlXPathCompExprPtr XSLTCALL
 #define XSLT_SOURCE_NODE_MASK       15u
 #define XSLT_SOURCE_NODE_HAS_KEY    1u
 #define XSLT_SOURCE_NODE_HAS_ID     2u
+#define XSLT_SOURCE_NODE_SHIFT      28u
+#define XSLT_SOURCE_NODE_VALUE_MASK ((1 << XSLT_SOURCE_NODE_SHIFT) - 1)
+#define XSLT_SOURCE_NODE_VALUE_MAX  XSLT_SOURCE_NODE_VALUE_MASK
 int
 xsltGetSourceNodeFlags(xmlNodePtr node);
 int
@@ -268,6 +271,12 @@ xsltSetSourceNodeFlags(xsltTransformContextPtr ctxt, xmlNodePtr node,
                        int flags);
 int
 xsltClearSourceNodeFlags(xmlNodePtr node, int flags);
+int
+xsltSetSourceNodeValue(xmlNodePtr node, int value);
+int
+xsltClearSourceNodeExtraData(xmlNodePtr node);
+int
+xsltGetSourceNodeValue(xmlNodePtr node);
 void **
 xsltGetPSVIPtr(xmlNodePtr cur);
 /** DOC_ENABLE */
@@ -339,5 +348,3 @@ XSLTPUBFUN void XSLTCALL
 #endif
 
 #endif /* __XML_XSLTUTILS_H__ */
-
-

@@ -20,7 +20,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.bottom_sheet_utils.DetailScreenScrollListener;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
@@ -29,6 +31,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** A ViewHolder and a static bind method for FastCheckout's Autofill profile screen. */
+@NullMarked
 public class DetailScreenViewBinder {
     /** A ViewHolder that inflates the toolbar and provides easy item look-up. */
     static class ViewHolder {
@@ -63,8 +66,8 @@ public class DetailScreenViewBinder {
     }
 
     /**
-     * Binds the {@link ViewHolder} to a {@link PropertyModel} with properties defined in
-     * {@link FastCheckoutProperties} and prefix DETAIL_SCREEN.
+     * Binds the {@link ViewHolder} to a {@link PropertyModel} with properties defined in {@link
+     * FastCheckoutProperties} and prefix DETAIL_SCREEN.
      */
     public static void bind(PropertyModel model, ViewHolder view, PropertyKey propertyKey) {
         if (propertyKey == DETAIL_SCREEN_BACK_CLICK_HANDLER) {
@@ -74,20 +77,15 @@ public class DetailScreenViewBinder {
             view.mToolbarSettingsImageButton.setOnClickListener(
                     (v) -> model.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER).run());
         } else if (propertyKey == DETAIL_SCREEN_TITLE) {
-            String titleText =
-                    view.mContext.getResources().getString(model.get(DETAIL_SCREEN_TITLE));
+            String titleText = view.mContext.getString(model.get(DETAIL_SCREEN_TITLE));
             view.mToolbarTitleTextView.setText(titleText);
         } else if (propertyKey == DETAIL_SCREEN_TITLE_DESCRIPTION) {
             String titleContentDescription =
-                    view.mContext
-                            .getResources()
-                            .getString(model.get(DETAIL_SCREEN_TITLE_DESCRIPTION));
+                    view.mContext.getString(model.get(DETAIL_SCREEN_TITLE_DESCRIPTION));
             view.mToolbarA11yOverlayView.setContentDescription(titleContentDescription);
         } else if (propertyKey == DETAIL_SCREEN_SETTINGS_MENU_TITLE) {
             String settingsContentDescription =
-                    view.mContext
-                            .getResources()
-                            .getString(model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
+                    view.mContext.getString(model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
             view.mToolbarSettingsImageButton.setContentDescription(settingsContentDescription);
         } else if (propertyKey == DETAIL_SCREEN_MODEL_LIST) {
             SimpleRecyclerViewAdapter adapter =
@@ -107,8 +105,11 @@ public class DetailScreenViewBinder {
             view.setAdapter(adapter);
         } else if (propertyKey == CURRENT_SCREEN && model.get(CURRENT_SCREEN) == HOME_SCREEN) {
             view.mRecyclerView.suppressLayout(/* suppress= */ false);
-            ((LinearLayoutManager) view.mRecyclerView.getLayoutManager())
-                    .scrollToPositionWithOffset(/* position= */ 0, /* offset= */ 0);
+            LayoutManager layoutManager = view.mRecyclerView.getLayoutManager();
+            if (layoutManager != null) {
+                ((LinearLayoutManager) layoutManager)
+                        .scrollToPositionWithOffset(/* position= */ 0, /* offset= */ 0);
+            }
             view.mScrollListener.reset();
         }
     }

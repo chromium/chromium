@@ -9,12 +9,12 @@
 #include <stdint.h>
 #include <xf86drmMode.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/files/file_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -1431,8 +1431,8 @@ TEST_F(HardwareDisplayControllerTest, CheckPinningAfterFailedPageFlip) {
   EXPECT_TRUE(last_presentation_feedback_.failed());
 
   size_t in_use_planes =
-      base::ranges::count_if(drm_->plane_manager()->planes(),
-                             [](const auto& plane) { return plane->in_use(); });
+      std::ranges::count_if(drm_->plane_manager()->planes(),
+                            [](const auto& plane) { return plane->in_use(); });
   EXPECT_EQ(0u, in_use_planes) << "Planes, including pinned planes, should not "
                                   "be in use after a failed flip.";
 }
@@ -1830,6 +1830,147 @@ TEST_F(HardwareDisplayControllerTest, TileDisplayMoveCursor) {
   EXPECT_EQ(drm_->get_crtc_cursor_location(primary_crtc_), kCursorLocation);
   EXPECT_EQ(drm_->get_crtc_cursor_location(secondary_crtc_),
             gfx::Point(kCursorLocation.x() - 300, kCursorLocation.y() - 0));
+}
+
+TEST_F(HardwareDisplayControllerTest, GetCurrentModesetPropsWithoutPlanes) {
+  InitializeDrmDevice(/*use_atomic=*/true);
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  EXPECT_TRUE(ModesetWithPlanes(modeset_planes));
+
+  CommitRequest request;
+  controller_->GetCurrentModesetPropsWithoutPlanes(&request);
+
+  ASSERT_THAT(request, SizeIs(1));
+  CrtcCommitRequest commit_request = request[0];
+  EXPECT_TRUE(commit_request.should_enable_crtc());
+  EXPECT_EQ(commit_request.crtc_id(), primary_crtc_);
+  EXPECT_EQ(commit_request.connector_id(), kConnectorIdBase);
+
+  ASSERT_NE(commit_request.plane_list(), nullptr);
+  EXPECT_THAT(commit_request.plane_list()->plane_list, testing::IsEmpty());
+  EXPECT_THAT(commit_request.overlays(), testing::IsEmpty());
+
+  EXPECT_EQ(commit_request.mode().hdisplay,
+            (uint16_t)controller_->GetModeSize().width());
+  EXPECT_EQ(commit_request.mode().vdisplay,
+            (uint16_t)controller_->GetModeSize().height());
+}
+
+TEST_F(HardwareDisplayControllerTest,
+       GetCurrentModesetPropsWithoutPlanesForDisabledController) {
+  InitializeDrmDevice(/*use_atomic=*/true);
+
+  ASSERT_TRUE(DisableController());
+  ASSERT_FALSE(controller_->IsEnabled());
+
+  CommitRequest request;
+  controller_->GetCurrentModesetPropsWithoutPlanes(&request);
+
+  ASSERT_THAT(request, testing::IsEmpty());
+}
+
+TEST_F(HardwareDisplayControllerTest,
+       GetCurrentModesetPropsWithoutPlanesTiledDisplayTiledMode) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/0);
+  // Property of a 600x200 tiled display.
+  TileProperty primary_tile_property = {.group_id = 123,
+                                        .scale_to_fit_display = true,
+                                        .tile_size = gfx::Size(300, 200),
+                                        .tile_layout = gfx::Size(2, 1),
+                                        .location = gfx::Point(0, 0)};
+
+  auto primary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), primary_crtc_, drm_->connector_property(0).id,
+      primary_tile_property);
+
+  TileProperty nonprimary_tile_property = primary_tile_property;
+  nonprimary_tile_property.location = gfx::Point(1, 0);
+  auto nonprimary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      nonprimary_tile_property);
+
+  controller_ = std::make_unique<HardwareDisplayController>(
+      std::move(primary_tiled_crtc_controller), gfx::Point(), nullptr);
+  controller_->AddCrtc(std::move(nonprimary_tiled_crtc_controller));
+
+  DrmOverlayPlaneList planes;
+  planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+
+  drmModeModeInfo tile_mode = {.hdisplay = 300, .vdisplay = 200};
+  EXPECT_TRUE(ModesetWithPlanes(planes, tile_mode));
+  EXPECT_EQ(1, drm_->get_commit_count());
+
+  CommitRequest request;
+  controller_->GetCurrentModesetPropsWithoutPlanes(&request);
+  ASSERT_THAT(request, SizeIs(2));
+
+  CrtcCommitRequest* commit_request = &request[0];
+  EXPECT_TRUE(commit_request->should_enable_crtc());
+  ASSERT_NE(commit_request->plane_list(), nullptr);
+  EXPECT_THAT(commit_request->plane_list()->plane_list, testing::IsEmpty());
+  EXPECT_THAT(commit_request->overlays(), testing::IsEmpty());
+  EXPECT_EQ(commit_request->mode().hdisplay, 300);
+  EXPECT_EQ(commit_request->mode().vdisplay, 200);
+
+  commit_request = &request[1];
+  EXPECT_TRUE(commit_request->should_enable_crtc());
+  ASSERT_NE(commit_request->plane_list(), nullptr);
+  EXPECT_THAT(commit_request->plane_list()->plane_list, testing::IsEmpty());
+  EXPECT_THAT(commit_request->overlays(), testing::IsEmpty());
+  EXPECT_EQ(commit_request->mode().hdisplay, 300);
+  EXPECT_EQ(commit_request->mode().vdisplay, 200);
+}
+
+TEST_F(HardwareDisplayControllerTest,
+       GetCurrentModesetPropsWithoutPlanesTiledDisplayNontiledMode) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/2);
+  TileProperty primary_tile_property = {.group_id = 123,
+                                        .scale_to_fit_display = true,
+                                        .tile_size = gfx::Size(300, 200),
+                                        .tile_layout = gfx::Size(2, 1),
+                                        .location = gfx::Point(0, 0)};
+
+  auto primary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), primary_crtc_, drm_->connector_property(0).id,
+      primary_tile_property);
+
+  TileProperty nonprimary_tile_property = primary_tile_property;
+  nonprimary_tile_property.location = gfx::Point(1, 0);
+  auto nonprimary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      nonprimary_tile_property);
+
+  controller_ = std::make_unique<HardwareDisplayController>(
+      std::move(primary_tiled_crtc_controller), gfx::Point(), nullptr);
+  controller_->AddCrtc(std::move(nonprimary_tiled_crtc_controller));
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+
+  // Modeset to non-tile mode - should disable the nonprimary tiles.
+  drmModeModeInfo nontile_mode = {.hdisplay = 1920, .vdisplay = 1080};
+  EXPECT_TRUE(ModesetWithPlanes(modeset_planes, nontile_mode));
+
+  CommitRequest request;
+  controller_->GetCurrentModesetPropsWithoutPlanes(&request);
+  ASSERT_THAT(request, SizeIs(1));
+  CrtcCommitRequest commit_request = request[0];
+  EXPECT_TRUE(commit_request.should_enable_crtc());
+  EXPECT_EQ(commit_request.crtc_id(), primary_crtc_);
+  EXPECT_EQ(commit_request.connector_id(), kConnectorIdBase);
+
+  ASSERT_NE(commit_request.plane_list(), nullptr);
+  EXPECT_THAT(commit_request.plane_list()->plane_list, testing::IsEmpty());
+  EXPECT_THAT(commit_request.overlays(), testing::IsEmpty());
+
+  EXPECT_EQ(commit_request.mode().hdisplay,
+            (uint16_t)controller_->GetModeSize().width());
+  EXPECT_EQ(commit_request.mode().vdisplay,
+            (uint16_t)controller_->GetModeSize().height());
 }
 
 }  // namespace ui

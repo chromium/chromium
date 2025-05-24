@@ -15,12 +15,12 @@ class DownloadTask;
 // thread.
 class DownloadTaskObserver : public base::CheckedObserver {
  public:
-  // Called when the download task has started, downloaded a chunk of data or
-  // the download has been completed. Clients may call DownloadTask::IsDone() to
-  // check if the task has completed, call DownloadTask::GetErrorCode() to check
-  // if the download has failed, DownloadTask::GetPercentComplete() to check
-  // the download progress, and DownloadTask::GetResponseWriter() to obtain the
-  // downloaded data.
+  // Called when the download task has started, has been redirected, downloaded
+  // a chunk of data or the download has been completed. Clients may call
+  // DownloadTask::IsDone() to check if the task has completed, call
+  // DownloadTask::GetErrorCode() to check if the download has failed,
+  // DownloadTask::GetPercentComplete() to check the download progress, and
+  // DownloadTask::GetResponseWriter() to obtain the downloaded data.
   virtual void OnDownloadUpdated(DownloadTask* task) {}
 
   // Called when the download task is about to be destructed. After this

@@ -98,8 +98,9 @@ void DesktopMediaListController::StartUpdating(
   dialog_window_id_ = dialog_window_id;
   // Defer calling StartUpdating on media lists with a delegated source list
   // until the first time they are focused.
-  if (!media_list_->IsSourceListDelegated())
+  if (!media_list_->IsSourceListDelegated()) {
     StartUpdatingInternal();
+  }
 }
 
 void DesktopMediaListController::StartUpdatingInternal() {
@@ -109,11 +110,13 @@ void DesktopMediaListController::StartUpdatingInternal() {
 }
 
 void DesktopMediaListController::FocusView() {
-  if (view_)
+  if (view_) {
     view_->RequestFocus();
+  }
 
-  if (media_list_->IsSourceListDelegated() && !is_updating_)
+  if (media_list_->IsSourceListDelegated() && !is_updating_) {
     StartUpdatingInternal();
+  }
 
   media_list_->FocusList();
 }
@@ -137,8 +140,9 @@ bool DesktopMediaListController::SupportsReselectButton() const {
 }
 
 void DesktopMediaListController::SetCanReselect(bool can_reselect) {
-  if (can_reselect_ == can_reselect)
+  if (can_reselect_ == can_reselect) {
     return;
+  }
   can_reselect_ = can_reselect;
   dialog_->OnCanReselectChanged(this);
 }
@@ -163,8 +167,9 @@ DesktopMediaListController::GetSelection() const {
 }
 
 void DesktopMediaListController::ClearSelection() {
-  if (view_)
+  if (view_) {
     view_->ClearSelection();
+  }
 }
 
 void DesktopMediaListController::OnSourceListLayoutChanged() {
@@ -176,8 +181,9 @@ void DesktopMediaListController::OnSourceSelectionChanged() {
 }
 
 void DesktopMediaListController::AcceptSource() {
-  if (GetSelection())
+  if (GetSelection()) {
     dialog_->AcceptSource();
+  }
 }
 
 void DesktopMediaListController::AcceptSpecificSource(
@@ -219,6 +225,8 @@ void DesktopMediaListController::OnSourceAdded(int index) {
   }
 
   const DesktopMediaList::Source& source = GetSource(index);
+
+  VLOG(1) << "DMLC::OnSourceAdded: source_id = " << source.id.id;
 
   if (ShouldAutoAccept(source)) {
     content::GetUIThreadTaskRunner({})->PostTask(

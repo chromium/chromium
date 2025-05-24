@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -300,8 +301,6 @@ public class FakeServerHelper {
      * <p>In other words, this method injects a tombstone into the fake Sync server.
      *
      * @param id the server ID of the entity to delete
-     * @param clientTagHash the client defined unique tag hash of the entity to delete (or an empty
-     *     string if sync does not care about this being a hash)
      */
     public void deleteEntity(final String id) {
         deleteEntity(id, "");
@@ -350,6 +349,31 @@ public class FakeServerHelper {
                 () -> FakeServerHelperJni.get().clearServerData(mNativeFakeServer));
     }
 
+    /** Adds collaboration to fake sync server. */
+    public void addCollaboration(String collaborationId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        FakeServerHelperJni.get()
+                                .addCollaboration(mNativeFakeServer, collaborationId));
+    }
+
+    /** Removes collaboration from fake sync server. */
+    public void removeCollaboration(String collaborationId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        FakeServerHelperJni.get()
+                                .removeCollaboration(mNativeFakeServer, collaborationId));
+    }
+
+    /** Adds collaboration group to fake sync server. */
+    public void addCollaborationGroupToFakeServer(String collaborationId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        FakeServerHelperJni.get()
+                                .addCollaborationGroupToFakeServer(
+                                        mNativeFakeServer, collaborationId));
+    }
+
     @NativeMethods
     interface Natives {
         long createFakeServer();
@@ -357,7 +381,7 @@ public class FakeServerHelper {
         void deleteFakeServer(long fakeServer);
 
         boolean verifyEntityCountByTypeAndName(
-                long fakeServer, int count, int dataType, String name);
+                long fakeServer, int count, int dataType, @JniType("std::string") String name);
 
         boolean verifySessions(long fakeServer, String[] urlArray);
 
@@ -365,52 +389,73 @@ public class FakeServerHelper {
 
         void injectUniqueClientEntity(
                 long fakeServer,
-                String nonUniqueName,
-                String clientTag,
+                @JniType("std::string") String nonUniqueName,
+                @JniType("std::string") String clientTag,
                 byte[] serializedEntitySpecifics);
 
         void setWalletData(long fakeServer, byte[] serializedEntity);
 
-        void modifyEntitySpecifics(long fakeServer, String id, byte[] serializedEntitySpecifics);
+        void modifyEntitySpecifics(
+                long fakeServer,
+                @JniType("std::string") String id,
+                byte[] serializedEntitySpecifics);
 
         void injectDeviceInfoEntity(
                 long fakeServer,
-                String cacheGuid,
-                String clientName,
+                @JniType("std::string") String cacheGuid,
+                @JniType("std::string") String clientName,
                 long creationTimestamp,
                 long lastUpdatedTimestamp);
 
         void injectBookmarkEntity(
-                long fakeServer, String title, GURL url, String parentId, String parentGuid);
+                long fakeServer,
+                @JniType("std::string") String title,
+                GURL url,
+                @JniType("std::string") String parentId,
+                @JniType("std::string") String parentGuid);
 
         void injectBookmarkFolderEntity(
-                long fakeServer, String title, String parentId, String parentGuid);
+                long fakeServer,
+                @JniType("std::string") String title,
+                @JniType("std::string") String parentId,
+                @JniType("std::string") String parentGuid);
 
         void modifyBookmarkEntity(
                 long fakeServer,
-                String bookmarkId,
-                String bookmarkGuid,
-                String title,
+                @JniType("std::string") String bookmarkId,
+                @JniType("std::string") String bookmarkGuid,
+                @JniType("std::string") String title,
                 GURL url,
-                String parentId,
-                String parentGuid);
+                @JniType("std::string") String parentId,
+                @JniType("std::string") String parentGuid);
 
         void modifyBookmarkFolderEntity(
                 long fakeServer,
-                String bookmarkId,
-                String bookmarkGuid,
-                String title,
-                String parentId,
-                String parentGuid);
+                @JniType("std::string") String bookmarkId,
+                @JniType("std::string") String bookmarkGuid,
+                @JniType("std::string") String title,
+                @JniType("std::string") String parentId,
+                @JniType("std::string") String parentGuid);
 
+        @JniType("std::string")
         String getBookmarkBarFolderId(long fakeServer);
 
-        void deleteEntity(long fakeServer, String id, String clientDefinedUniqueTag);
+        void deleteEntity(
+                long fakeServer,
+                @JniType("std::string") String id,
+                @JniType("std::string") String clientDefinedUniqueTag);
 
-        void setCustomPassphraseNigori(long fakeServer, String passphrase);
+        void setCustomPassphraseNigori(long fakeServer, @JniType("std::string") String passphrase);
 
         void setTrustedVaultNigori(long fakeServer, byte[] trustedVaultKey);
 
         void clearServerData(long fakeServer);
+
+        void addCollaboration(long fakeServer, @JniType("std::string") String collaborationId);
+
+        void removeCollaboration(long fakeServer, @JniType("std::string") String collaborationId);
+
+        void addCollaborationGroupToFakeServer(
+                long fakeServer, @JniType("std::string") String collaborationId);
     }
 }

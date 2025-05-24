@@ -43,27 +43,22 @@ WaylandOzoneUIControlsTestHelper::WaylandOzoneUIControlsTestHelper() {
 WaylandOzoneUIControlsTestHelper::~WaylandOzoneUIControlsTestHelper() = default;
 
 void WaylandOzoneUIControlsTestHelper::Reset() {
-  // There's nothing to do here, as the both Exo and Weston automatically reset
-  // the state when we close the connection.
+  // There's nothing to do here, as Weston automatically resets the state when
+  // we close the connection.
   // TODO(crbug.com/40235082): do we still need this method after the switch to
   // ui-controls instead of weston-test is complete?
 }
 
 bool WaylandOzoneUIControlsTestHelper::SupportsScreenCoordinates() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return true;
-#else
   return false;
-#endif
 }
 
 unsigned WaylandOzoneUIControlsTestHelper::ButtonDownMask() const {
-  // This code only runs on Lacros and desktop Linux Wayland, where we always
+  // This code only runs on desktop Linux Wayland, where we always
   // use SendMouseMotionNotifyEvent instead of calling MoveCursorTo via
   // aura::Window, regardless of what the button down mask is.
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void WaylandOzoneUIControlsTestHelper::SendKeyEvents(
@@ -109,42 +104,18 @@ void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
                                        request_id);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void WaylandOzoneUIControlsTestHelper::SendTouchEvent(
-    gfx::AcceleratedWidget widget,
-    int action,
-    int id,
-    const gfx::Point& touch_loc,
-    base::OnceClosure closure) {
-  uint32_t request_id = GetNextRequestId();
-
-  pending_closures_.insert_or_assign(request_id, std::move(closure));
-  input_emulate_->EmulateTouch(action, touch_loc, id, request_id);
-}
-
-void WaylandOzoneUIControlsTestHelper::UpdateDisplay(
-    const std::string& display_specs,
-    base::OnceClosure closure) {
-  uint32_t request_id = GetNextRequestId();
-  pending_closures_.insert_or_assign(request_id, std::move(closure));
-  input_emulate_->EmulateUpdateDisplay(display_specs, request_id);
-}
-#endif
-
 void WaylandOzoneUIControlsTestHelper::RunClosureAfterAllPendingUIEvents(
     base::OnceClosure closure) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool WaylandOzoneUIControlsTestHelper::MustUseUiControlsForMoveCursorTo() {
   return true;
 }
 
-#if BUILDFLAG(IS_LINUX)
 void WaylandOzoneUIControlsTestHelper::ForceUseScreenCoordinatesOnce() {
   input_emulate_->ForceUseScreenCoordinatesOnce();
 }
-#endif
 
 void WaylandOzoneUIControlsTestHelper::RequestProcessed(uint32_t request_id) {
   // The Wayland base protocol does not map cleanly onto ui_controls semantics.

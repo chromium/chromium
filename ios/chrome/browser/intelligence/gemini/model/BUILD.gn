@@ -1,0 +1,34 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "glic_service.h",
+    "glic_service.mm",
+  ]
+  deps = [
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/public/provider/chrome/browser/glic:glic_api",
+  ]
+  public_deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("glic_service_factory") {
+  sources = [
+    "glic_service_factory.h",
+    "glic_service_factory.mm",
+  ]
+  deps = [
+    ":model",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/public/provider/chrome/browser/glic:glic_api",
+  ]
+}

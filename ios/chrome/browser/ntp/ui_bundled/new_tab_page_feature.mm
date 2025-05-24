@@ -6,16 +6,25 @@
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/field_trial_params.h"
+#import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 #pragma mark - Constants
 
-// The default number of impressions for the top-of-feed sync promo before it
-// should be auto-dismissed.
-const int kFeedSyncPromoDefaultAutodismissImpressions = 6;
+const char kDeprecateFeedHeaderParameterRemoveLabel[] = "remove-feed-label";
+const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[] =
+    "enlarge-logo-n-fakebox";
+const char kDeprecateFeedHeaderParameterTopPadding[] = "top-padding";
+const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[] =
+    "search-field-top-margin";
+const char kDeprecateFeedHeaderParameterSpaceBetweenModules[] =
+    "space-between-modules";
+const char kDeprecateFeedHeaderParameterHeaderBottomPadding[] =
+    "header-bottom-padding";
 
 #pragma mark - Feature declarations
 
@@ -25,10 +34,6 @@ BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
 
 BASE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint,
              "EnableDiscoFeedEndpoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableDiscoverFeedTopSyncPromo,
-             "EnableDiscoverFeedTopSyncPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableNTPViewHierarchyRepair,
@@ -55,6 +60,14 @@ BASE_FEATURE(kIdentityDiscAccountMenu,
              "IdentityDiscAccountMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFeedSwipeInProductHelp,
+             "FeedSwipeInProductHelp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseFeedEligibilityService,
+             "UseFeedEligibilityService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
@@ -62,13 +75,6 @@ const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
 
 const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
     "DiscoverFeedSRSPreloadTemplatesEnabled";
-
-// EnableDiscoverFeedTopSyncPromo parameters.
-const char kDiscoverFeedTopSyncPromoStyle[] = "DiscoverFeedTopSyncPromoStyle";
-const char kDiscoverFeedTopSyncPromoAutodismissImpressions[] =
-    "autodismissImpressions";
-const char kDiscoverFeedTopSyncPromoIgnoreEngagementCondition[] =
-    "IgnoreFeedEngagementConditionForTopSyncPromo";
 
 // Feature parameters for `kOverrideFeedSettings`.
 const char kFeedSettingRefreshThresholdInSeconds[] =
@@ -81,6 +87,12 @@ const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[] =
     "TimeoutThresholdAfterClearBrowsingData";
 const char kFeedSettingDiscoverReferrerParameter[] =
     "DiscoverReferrerParameter";
+
+// Feature parameter for `kIdentityDiscAccountMenu`.
+const char kShowSettingsInAccountMenuParam[] =
+    "identity-disc-account-menu-with-settings-button";
+
+const char kFeedSwipeInProductHelpArmParam[] = "feed-swipe-in-product-help-arm";
 
 #pragma mark - Helpers
 
@@ -95,43 +107,6 @@ bool IsDiscoverFeedTopSyncPromoEnabled() {
       GetApplicationContext()->GetVariationsService();
   return variations_service &&
          variations_service->GetStoredPermanentCountry() != "gb";
-}
-
-SigninPromoViewStyle GetTopOfFeedPromoStyle() {
-  CHECK(IsDiscoverFeedTopSyncPromoEnabled());
-  SigninPromoViewStyle promoStyle =
-      static_cast<SigninPromoViewStyle>(base::GetFieldTrialParamByFeatureAsInt(
-          kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyle,
-          SigninPromoViewStyleCompactVertical));
-  // Don't handle default to force a compile-time failure if a value is added to
-  // the enum without being handled here.
-  switch (promoStyle) {
-    case SigninPromoViewStyleStandard:
-    case SigninPromoViewStyleCompactHorizontal:
-    case SigninPromoViewStyleCompactVertical:
-    case SigninPromoViewStyleOnlyButton:
-      return promoStyle;
-  }
-  // If no compile-time error was triggered above, it likely means that the
-  // value was incorrectly set through Finch. In this case, return the default
-  // vertical style.
-  return SigninPromoViewStyleCompactVertical;
-}
-
-bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo() {
-  if (IsDiscoverFeedTopSyncPromoEnabled()) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        kEnableDiscoverFeedTopSyncPromo,
-        kDiscoverFeedTopSyncPromoIgnoreEngagementCondition, false);
-  }
-  return true;
-}
-
-int FeedSyncPromoAutodismissCount() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kEnableDiscoverFeedTopSyncPromo,
-      kDiscoverFeedTopSyncPromoAutodismissImpressions,
-      kFeedSyncPromoDefaultAutodismissImpressions);
 }
 
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {
@@ -149,4 +124,59 @@ bool IsSignedOutViewDemotionEnabled() {
 
 bool IsiPadFeedGhostCardsEnabled() {
   return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
+}
+
+bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine) {
+  return is_google_default_search_engine && ShouldDeprecateFeedHeader() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             kDeprecateFeedHeader, kDeprecateFeedHeaderParameterRemoveLabel,
+             false);
+}
+
+bool ShouldEnlargeLogoAndFakebox() {
+  return ShouldDeprecateFeedHeader() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             kDeprecateFeedHeader,
+             kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, false);
+}
+
+double TopPaddingToNTP() {
+  return ShouldDeprecateFeedHeader()
+             ? base::GetFieldTrialParamByFeatureAsDouble(
+                   kDeprecateFeedHeader,
+                   kDeprecateFeedHeaderParameterTopPadding, 0)
+             : 0;
+}
+
+double GetDeprecateFeedHeaderParameterValueAsDouble(
+    const std::string& param_name,
+    double default_value) {
+  if (!ShouldDeprecateFeedHeader()) {
+    return default_value;
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(kDeprecateFeedHeader,
+                                                   param_name, default_value);
+}
+
+bool IdentityDiscAccountMenuEnabledWithSettings() {
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kIdentityDiscAccountMenu, kShowSettingsInAccountMenuParam, false);
+  }
+  return false;
+}
+
+FeedSwipeIPHVariation GetFeedSwipeIPHVariation() {
+  if (base::FeatureList::IsEnabled(kFeedSwipeInProductHelp)) {
+    return static_cast<FeedSwipeIPHVariation>(
+        base::GetFieldTrialParamByFeatureAsInt(
+            kFeedSwipeInProductHelp,
+            kFeedSwipeInProductHelpArmParam, /*default_value=*/
+            static_cast<int>(FeedSwipeIPHVariation::kStaticAfterFRE)));
+  }
+  return FeedSwipeIPHVariation::kDisabled;
+}
+
+bool UseFeedEligibilityService() {
+  return base::FeatureList::IsEnabled(kUseFeedEligibilityService);
 }

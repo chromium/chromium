@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_not_equals: If script-closable, then not due to history length got disallowed value 1
+[TIMEOUT] Window created by form with opener is script-closable
+  Test timed out
+[NOTRUN] Window created by form with noopener is script-closable
+[NOTRUN] Window created by link with opener is script-closable
+[NOTRUN] Window created by link with noopener is script-closable
+[NOTRUN] Window created by script with opener is script-closable
+[NOTRUN] Window created by script with noopener is script-closable
+Harness: the test ran to completion.
+

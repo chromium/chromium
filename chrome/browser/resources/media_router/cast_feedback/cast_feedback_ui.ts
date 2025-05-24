@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -27,27 +27,10 @@ export enum FeedbackType {
 }
 
 /**
- * Keep in sync with MediaRouterCastFeedbackEvent in enums.xml.
- */
-export enum FeedbackEvent {
-  OPENED = 0,
-  SENDING = 1,
-  RESENDING = 2,
-  SUCCEEDED = 3,
-  FAILED = 4,
-  MAX_VALUE = 4,
-}
-
-/**
  * See
  * https://docs.google.com/document/d/1c20VYdwpUPyBRQeAS0CMr6ahwWnb0s26gByomOwqDjk
  */
 export interface FeedbackUiBrowserProxy {
-  /**
-   * Records an event using Chrome Metrics.
-   */
-  recordEvent(event: FeedbackEvent): void;
-
   /**
    * Proxy for chrome.feedbackPrivate.sendFeedback().
    */
@@ -56,12 +39,6 @@ export interface FeedbackUiBrowserProxy {
 }
 
 export class FeedbackUiBrowserProxyImpl implements FeedbackUiBrowserProxy {
-  recordEvent(event: FeedbackEvent) {
-    chrome.send(
-        'metricsHandler:recordInHistogram',
-        ['MediaRouter.Cast.Feedback.Event', event, FeedbackEvent.MAX_VALUE]);
-  }
-
   sendFeedback(info: chrome.feedbackPrivate.FeedbackInfo) {
     return chrome.feedbackPrivate.sendFeedback(
         info, /*loadSystemInfo=*/ undefined, /*formOpenTime=*/ undefined);
@@ -126,23 +103,23 @@ export class CastFeedbackUiElement extends CrLitElement {
     };
   }
 
-  protected allowContactByEmail_: boolean = false;
-  protected attachLogs_: boolean = false;
-  protected audioQuality_: string = '';
-  protected comments_: string = '';
-  protected feedbackType_: FeedbackType = FeedbackType.BUG;
-  protected hasNetworkSoftware_: string = '';
-  private networkDescription_: string = '';
-  protected logData_: string = loadTimeData.getString('logData');
+  protected accessor allowContactByEmail_: boolean = false;
+  protected accessor attachLogs_: boolean = false;
+  protected accessor audioQuality_: string = '';
+  protected accessor comments_: string = '';
+  protected accessor feedbackType_: FeedbackType = FeedbackType.BUG;
+  protected accessor hasNetworkSoftware_: string = '';
+  private accessor networkDescription_: string = '';
+  protected accessor logData_: string = loadTimeData.getString('logData');
   private categoryTag_: string = loadTimeData.getString('categoryTag');
-  protected projectedContentUrl_: string = '';
-  protected sendDialogText_: string = '';
-  protected sendDialogIsInteractive_: boolean = false;
-  protected sufficientFeedback_: boolean = false;
-  protected userEmail_: string = '';
-  protected videoQuality_: string = '';
-  protected videoSmoothness_: string = '';
-  protected visibleInSetup_: string = '';
+  protected accessor projectedContentUrl_: string = '';
+  protected accessor sendDialogText_: string = '';
+  protected accessor sendDialogIsInteractive_: boolean = false;
+  protected accessor sufficientFeedback_: boolean = false;
+  protected accessor userEmail_: string = '';
+  protected accessor videoQuality_: string = '';
+  protected accessor videoSmoothness_: string = '';
+  protected accessor visibleInSetup_: string = '';
 
   private browserProxy_: FeedbackUiBrowserProxy =
       FeedbackUiBrowserProxyImpl.getInstance();
@@ -158,8 +135,6 @@ export class CastFeedbackUiElement extends CrLitElement {
     chrome.feedbackPrivate.getUserEmail(email => {
       this.userEmail_ = email;
     });
-
-    this.browserProxy_.recordEvent(FeedbackEvent.OPENED);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -168,7 +143,7 @@ export class CastFeedbackUiElement extends CrLitElement {
   }
 
   override firstUpdated() {
-    this.shadowRoot!.querySelector('#send-logs a')!.addEventListener(
+    this.shadowRoot.querySelector('#send-logs a')!.addEventListener(
         'click', event => {
           event.preventDefault();
           this.$.logsDialog.showModal();
@@ -250,7 +225,7 @@ export class CastFeedbackUiElement extends CrLitElement {
       };
     }
 
-    this.updateSendDialog_(FeedbackEvent.SENDING, 'sending', false);
+    this.updateSendDialog_('sending', false);
     this.$.sendDialog.showModal();
     this.trySendFeedback_(feedback, 0, 0);
   }
@@ -266,15 +241,15 @@ export class CastFeedbackUiElement extends CrLitElement {
       this.browserProxy_.sendFeedback(feedback).then(result => {
         if (result.status === chrome.feedbackPrivate.Status.SUCCESS) {
           this.feedbackSent = true;
-          this.updateSendDialog_(FeedbackEvent.SUCCEEDED, 'sendSuccess', true);
+          this.updateSendDialog_('sendSuccess', true);
         } else if (failureCount < this.maxResendAttempts) {
-          this.updateSendDialog_(FeedbackEvent.RESENDING, 'resending', false);
+          this.updateSendDialog_('resending', false);
           const sendDuration = Date.now() - sendStartTime;
           this.trySendFeedback_(
               feedback, failureCount + 1,
               Math.max(0, this.resendDelayMs - sendDuration));
         } else {
-          this.updateSendDialog_(FeedbackEvent.FAILED, 'sendFail', true);
+          this.updateSendDialog_('sendFail', true);
         }
       });
     }, delayMs);
@@ -283,9 +258,7 @@ export class CastFeedbackUiElement extends CrLitElement {
   /**
    * Updates the status of the "send" dialog and records the event.
    */
-  private updateSendDialog_(
-      event: FeedbackEvent, stringKey: string, isInteractive: boolean) {
-    this.browserProxy_.recordEvent(event);
+  private updateSendDialog_(stringKey: string, isInteractive: boolean) {
     this.sendDialogText_ = loadTimeData.getString(stringKey);
     this.sendDialogIsInteractive_ = isInteractive;
   }
@@ -311,11 +284,6 @@ export class CastFeedbackUiElement extends CrLitElement {
 
   private getProductSpecificData_(): Array<{key: string, value: string}> {
     const data = [
-      {
-        key: 'global_media_controls_cast_start_stop',
-        value: String(
-            !!loadTimeData.getBoolean('globalMediaControlsCastStartStop')),
-      },
       {
         key: 'feedbackUserCtlConsent',
         value: String(!!this.allowContactByEmail_),

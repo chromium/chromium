@@ -16,6 +16,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "net/base/features.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -80,9 +81,12 @@ TEST_F(FirstPartySetsNavigationThrottleTest,
        MaybeCreateNavigationThrottle_ClearingFeatureEnabled) {
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
-  EXPECT_TRUE(
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_EQ(registry.throttles().size(), 1u);
 }
 
 TEST_F(FirstPartySetsNavigationThrottleTest,
@@ -90,14 +94,18 @@ TEST_F(FirstPartySetsNavigationThrottleTest,
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
-  EXPECT_TRUE(
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_EQ(registry.throttles().size(), 1u);
 
   // Never create throttle for subframes.
   handle.set_render_frame_host(subframe());
   ASSERT_FALSE(handle.IsInOutermostMainFrame());
-  EXPECT_FALSE(
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+  registry.throttles().clear();
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_EQ(registry.throttles().size(), 0u);
 }
 
 TEST_F(FirstPartySetsNavigationThrottleTest,
@@ -105,9 +113,12 @@ TEST_F(FirstPartySetsNavigationThrottleTest,
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
   profile()->SetGuestSession(true);
-  EXPECT_FALSE(
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_EQ(registry.throttles().size(), 0u);
 }
 
 TEST_F(FirstPartySetsNavigationThrottleTest,
@@ -115,8 +126,11 @@ TEST_F(FirstPartySetsNavigationThrottleTest,
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
-  EXPECT_TRUE(
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_EQ(registry.throttles().size(), 1u);
 }
 
 TEST_F(FirstPartySetsNavigationThrottleTest,
@@ -124,25 +138,31 @@ TEST_F(FirstPartySetsNavigationThrottleTest,
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
   // Never create if service is ready.
   service()->InitForTesting();
-  EXPECT_FALSE(
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_EQ(registry.throttles().size(), 0u);
 }
 
 TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Defer) {
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
-  auto throttle =
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle);
-  EXPECT_TRUE(throttle);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(registry.throttles().size(), 1u);
+
   ASSERT_FALSE(
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile())
           ->is_ready());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
-            throttle->WillStartRequest().action());
+            registry.throttles().back()->WillStartRequest().action());
 }
 
 TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Proceed) {
@@ -151,9 +171,11 @@ TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Proceed) {
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
-  auto throttle =
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle);
-  EXPECT_TRUE(throttle);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(registry.throttles().size(), 1u);
 
   // Service is ready after the throttle is created.
   service()->InitForTesting();
@@ -161,7 +183,7 @@ TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Proceed) {
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile())
           ->is_ready());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            throttle->WillStartRequest().action());
+            registry.throttles().back()->WillStartRequest().action());
 
   histograms.ExpectTotalCount("FirstPartySets.NavigationThrottle.ResumeDelta",
                               0);
@@ -173,9 +195,13 @@ TEST_F(FirstPartySetsNavigationThrottleTest, ResumeOnReady) {
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
-  auto throttle =
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle);
-  EXPECT_TRUE(throttle);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(registry.throttles().size(), 1u);
+  auto* throttle = static_cast<FirstPartySetsNavigationThrottle*>(
+      registry.throttles().back().get());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillStartRequest().action());
   EXPECT_TRUE(throttle->GetTimerForTesting().IsRunning());
@@ -205,9 +231,13 @@ TEST_F(FirstPartySetsNavigationThrottleTest, ResumeOnTimeout) {
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
-  auto throttle =
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle);
-  EXPECT_TRUE(throttle);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(registry.throttles().size(), 1u);
+  auto* throttle = static_cast<FirstPartySetsNavigationThrottle*>(
+      registry.throttles().back().get());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillStartRequest().action());
 
@@ -249,8 +279,11 @@ TEST_F(FirstPartySetsNavigationThrottleNoDelayTest,
        MaybeCreateNavigationThrottle) {
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
-  EXPECT_FALSE(
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_EQ(registry.throttles().size(), 0u);
 }
 
 }  // namespace first_party_sets

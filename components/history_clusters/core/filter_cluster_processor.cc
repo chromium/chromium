@@ -60,11 +60,10 @@ void FilterClusterProcessor::ProcessClusters(
           GetHistogramNameSliceForRequestSource(clustering_request_source_),
       clusters->size());
 
-  clusters->erase(
-      base::ranges::remove_if(
-          *clusters,
-          [&](auto& cluster) { return !DoesClusterMatchFilter(cluster); }),
-      clusters->end());
+  auto to_remove = std::ranges::remove_if(*clusters, [&](auto& cluster) {
+    return !DoesClusterMatchFilter(cluster);
+  });
+  clusters->erase(to_remove.begin(), to_remove.end());
 
   base::UmaHistogramCounts1000(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter" +

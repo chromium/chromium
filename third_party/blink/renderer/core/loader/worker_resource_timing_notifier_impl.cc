@@ -27,10 +27,8 @@ Performance* GetPerformance(ExecutionContext& execution_context) {
     return DOMWindowPerformance::performance(*window);
   if (auto* global_scope = DynamicTo<WorkerGlobalScope>(execution_context))
     return WorkerGlobalScopePerformance::performance(*global_scope);
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected execution context, it should be either Window "
-         "or WorkerGlobalScope";
-  return nullptr;
+  NOTREACHED() << "Unexpected execution context, it should be either Window or "
+                  "WorkerGlobalScope";
 }
 
 }  // namespace

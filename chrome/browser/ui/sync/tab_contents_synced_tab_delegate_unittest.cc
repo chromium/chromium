@@ -41,8 +41,7 @@ class TestSyncedTabDelegate : public TabContentsSyncedTabDelegate {
   }
   std::unique_ptr<SyncedTabDelegate> ReadPlaceholderTabSnapshotIfItShouldSync(
       sync_sessions::SyncSessionsClient* sessions_client) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 };
 

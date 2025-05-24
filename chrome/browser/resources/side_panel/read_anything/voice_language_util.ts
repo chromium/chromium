@@ -9,6 +9,10 @@ const STATUS_SUCCESS = 'Successful response';
 const STATUS_FAILURE = 'Unsuccessful response';
 const PARSING_ERROR = 'Cannot parse LanguagePackManager response';
 
+// Expect to hear responses from the extension within 6 seconds. Otherwise,
+// infer it probably wasn't installed.
+export const EXTENSION_RESPONSE_TIMEOUT_MS = 6000;
+
 // Representation of server-side LanguagePackManager state
 interface VoicePackServerResponseSuccess {
   id: 'Successful response';
@@ -74,6 +78,18 @@ export enum VoiceClientSideStatusCode {
   INSTALL_ERROR_ALLOCATION,  // Couldn't install due to not enough memory
 }
 
+export enum NotificationType {
+  NONE,                       // No notification needed.
+  DOWNLOADING,                // Language is downloading.
+  DOWNLOADED,                 // Language is downloaded.
+  GOOGLE_VOICES_UNAVAILABLE,  // Google voices are not available due to not
+                              // accessing the extension.
+  NO_INTERNET,  // No available voices for this language due to no internet.
+  NO_SPACE,     // No available voices for this language due to no space.
+  NO_SPACE_HQ,  // No high-quality voices for this language due to no space.
+  GENERIC_ERROR,
+}
+
 // These strings are not localized and will be in English, even for non-English
 // Natural, Google, and eSpeak voices.
 const NATURAL_STRING_IDENTIFIER = '(Natural)';
@@ -111,14 +127,22 @@ export function getFilteredVoiceList(possibleVoices: SpeechSynthesisVoice[]):
         availableVoices.filter(voice => !isGoogle(voice))
             .reduce((map, voice) => {
               map[voice.lang] = map[voice.lang] || [];
-              map[voice.lang].push(voice);
+              map[voice.lang]!.push(voice);
               return map;
             }, {} as {[language: string]: SpeechSynthesisVoice[]});
+    // Only keep system voices that exactly match Google TTS supported locales,
+    // or for languages for which there are no Google TTS supported locales.
     const systemVoices =
-        Object.values(languageToNonGoogleVoices).map((voices) => {
-          const defaultVoice = voices.find(voice => voice.default);
-          return defaultVoice || voices[0];
-        });
+        Object.values(languageToNonGoogleVoices)
+            .map((voices) => {
+              const defaultVoice = voices.find(voice => voice.default);
+              return defaultVoice || voices[0];
+            })
+            .filter(
+                systemVoice => AVAILABLE_GOOGLE_TTS_LOCALES.has(
+                                   systemVoice!.lang.toLowerCase()) ||
+                    convertLangOrLocaleToExactVoicePackLocale(
+                        systemVoice!.lang.toLowerCase()) === undefined);
 
     // Keep all Google voices and one system voice per language.
     availableVoices = availableVoices.filter(
@@ -132,7 +156,7 @@ export function isNatural(voice: SpeechSynthesisVoice) {
   return voice.name.includes(NATURAL_STRING_IDENTIFIER);
 }
 
-export function isEspeak(voice: SpeechSynthesisVoice|undefined) {
+export function isEspeak(voice?: SpeechSynthesisVoice|null) {
   return voice && voice.name.includes(ESPEAK_STRING_IDENTIFIER);
 }
 
@@ -141,7 +165,11 @@ export function isGoogle(voice: SpeechSynthesisVoice|undefined) {
 }
 
 export function getNaturalVoiceOrDefault(voices: SpeechSynthesisVoice[]):
-    SpeechSynthesisVoice {
+    SpeechSynthesisVoice|null {
+  if (voices.length === 0) {
+    return null;
+  }
+
   const naturalVoice = voices.find(v => isNatural(v));
   if (naturalVoice) {
     return naturalVoice;
@@ -149,7 +177,63 @@ export function getNaturalVoiceOrDefault(voices: SpeechSynthesisVoice[]):
 
   const defaultVoice =
       voices.find(({default: isDefaultVoice}) => isDefaultVoice);
-  return defaultVoice ? defaultVoice : voices[0];
+  return defaultVoice ? defaultVoice : (voices[0] || null);
+}
+
+export function getNotification(
+    lang: string, status: VoiceClientSideStatusCode,
+    availableVoices: SpeechSynthesisVoice[],
+    onLine: boolean = window.navigator.onLine): NotificationType {
+  // No need to check the install status if the language is missing.
+  const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
+  if (!voicePackLanguage) {
+    return NotificationType.NONE;
+  }
+
+  // TODO: crbug.com/300259625 - Show more error messages.
+  switch (status) {
+    case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST:
+    case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY:
+    case VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE:
+      return NotificationType.DOWNLOADING;
+    case VoiceClientSideStatusCode.ERROR_INSTALLING:
+      // Don't show an error if there are available on-device voices for this
+      // language.
+      if (hasVoiceWithVoicePackLang(availableVoices, voicePackLanguage)) {
+        return NotificationType.NONE;
+      }
+      // There's not a specific error code from the language pack installer
+      // for internet connectivity, but if there's an installation error
+      // and we detect we're offline, we can assume that the install error
+      // was due to lack of internet connection.
+      if (!onLine) {
+        return NotificationType.NO_INTERNET;
+      }
+      // Show a generic error message.
+      return NotificationType.GENERIC_ERROR;
+    case VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION:
+      // If we get an allocation error but voices exist for the given
+      // language, show an allocation error specific to downloading high
+      // quality voices.
+      if (hasVoiceWithVoicePackLang(availableVoices, voicePackLanguage)) {
+        return NotificationType.NO_SPACE_HQ;
+      }
+      return NotificationType.NO_SPACE;
+    case VoiceClientSideStatusCode.AVAILABLE:
+      return NotificationType.DOWNLOADED;
+    case VoiceClientSideStatusCode.NOT_INSTALLED:
+      return NotificationType.NONE;
+    default:
+      // This ensures the switch statement is exhaustive
+      return status satisfies never;
+  }
+}
+
+function hasVoiceWithVoicePackLang(
+    availableVoices: SpeechSynthesisVoice[], voicePackLanguage: string) {
+  return availableVoices.some(
+      voice =>
+          getVoicePackConvertedLangIfExists(voice.lang) === voicePackLanguage);
 }
 
 export function createInitialListOfEnabledLanguages(
@@ -275,8 +359,8 @@ export function mojoVoicePackStatusToVoicePackStatusEnum(
   }
 }
 
-// TODO: b/40927698: Make this private and use getVoicePackConvertedLangIfExists
-// instead.
+// TODO: crbug.com/40927698 - Make this private and use
+// getVoicePackConvertedLangIfExists instead.
 // The ChromeOS VoicePackManager labels some voices by locale, and some by
 // base-language. The request for each needs to be exact, so this function
 // converts a locale or language into the code the VoicePackManager expects.
@@ -323,8 +407,8 @@ export function convertLangOrLocaleToExactVoicePackLocale(langOrLocale: string):
       locale => locale.startsWith(possibleConvertedLang.toLowerCase()));
 }
 
-export function isWaitingForInstallLocally(status: VoiceClientSideStatusCode|
-                                           undefined) {
+export function isWaitingForInstallLocally(
+    status: VoiceClientSideStatusCode|undefined) {
   return status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST ||
       status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY;
 }
@@ -345,7 +429,7 @@ function convertUnsupportedBaseLangToSupportedLocale(
     const enabledLocalesForLang =
         enabledLangs.filter(lang => lang.startsWith(baseLang));
     if (enabledLocalesForLang.length > 0) {
-      // TODO(crbug.com/335691447): If there is more than one enabled locale for
+      // TODO: crbug.com/335691447- If there is more than one enabled locale for
       // this lang, choose one based on browser prefs. For now, just default to
       // the first enabled locale.
       return enabledLocalesForLang[0];
@@ -359,14 +443,14 @@ function convertUnsupportedBaseLangToSupportedLocale(
     const availableLocalesForLang =
         availableLangs.filter(lang => lang.startsWith(baseLang));
     if (availableLocalesForLang.length > 0) {
-      // TODO(crbug.com/335691447): If there is more than one available locale
+      // TODO: crbug.com/335691447- If there is more than one available locale
       // for this lang, choose one based on browser prefs. For now, just default
       // to the first available locale.
       return availableLocalesForLang[0];
     }
   }
 
-  // TODO(crbug.com/335691447): Convert from base-lang to locale based on
+  // TODO: crbug.com/335691447- Convert from base-lang to locale based on
   // browser prefs.
 
   // Otherwise, just default to arbitrary locales.
@@ -449,8 +533,11 @@ export const AVAILABLE_GOOGLE_TTS_LOCALES = new Set([
 ]);
 
 export function areVoicesEqual(
-    voice1: SpeechSynthesisVoice|undefined,
-    voice2: SpeechSynthesisVoice|undefined): boolean {
+    voice1?: SpeechSynthesisVoice|null,
+    voice2?: SpeechSynthesisVoice|null): boolean {
+  if (voice1 === voice2) {
+    return true;
+  }
   if (!voice1 || !voice2) {
     return false;
   }

@@ -15,21 +15,20 @@ build_webui("build") {
 
   web_component_files = [
     "nearby_contact_visibility.ts",
-    "nearby_device_icon.ts",
     "nearby_device.ts",
+    "nearby_device_icon.ts",
     "nearby_onboarding_one_page.ts",
-    "nearby_onboarding_page.ts",
     "nearby_page_template.ts",
     "nearby_preview.ts",
     "nearby_progress.ts",
     "nearby_visibility_page.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "nearby_contact_manager.ts",
     "nearby_metrics_logger.ts",
-    "nearby_share_settings_mixin.ts",
     "nearby_share_settings.ts",
+    "nearby_share_settings_mixin.ts",
     "types.ts",
   ]
 

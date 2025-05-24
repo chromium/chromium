@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_WITH_APP_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_WITH_APP_LOCK_H_
 
-#include <memory>
-
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -22,7 +20,6 @@ class WebContents;
 
 namespace web_app {
 
-struct PartitionedLockHolder;
 class WebAppLockManager;
 
 // This locks both the background shared web contents AND the given app ids. The
@@ -50,14 +47,15 @@ class SharedWebContentsWithAppLockDescription : public LockDescription {
 // See `WebAppLockManager` for how to use locks. Destruction of this class will
 // release the lock or cancel the lock request if it is not acquired yet.
 //
-// Note: Accessing a lock will CHECK-fail if the WebAppProvider system has
-// shutdown (or the profile has shut down).
+// Note: Accessing a lock before it is granted or after the WebAppProvider
+// system has shutdown (or the profile has shut down) will CHECK-fail.
 class SharedWebContentsWithAppLock : public Lock,
                                      public WithSharedWebContentsResources,
                                      public WithAppResources {
  public:
   using LockDescription = SharedWebContentsWithAppLockDescription;
 
+  SharedWebContentsWithAppLock();
   ~SharedWebContentsWithAppLock();
 
   base::WeakPtr<SharedWebContentsWithAppLock> AsWeakPtr() {
@@ -66,9 +64,8 @@ class SharedWebContentsWithAppLock : public Lock,
 
  private:
   friend class WebAppLockManager;
-  SharedWebContentsWithAppLock(base::WeakPtr<WebAppLockManager> lock_manager,
-                               std::unique_ptr<PartitionedLockHolder> holder,
-                               content::WebContents& web_contents);
+  void GrantLock(WebAppLockManager& lock_manager,
+                 content::WebContents& web_contents);
 
   base::WeakPtrFactory<SharedWebContentsWithAppLock> weak_factory_{this};
 };

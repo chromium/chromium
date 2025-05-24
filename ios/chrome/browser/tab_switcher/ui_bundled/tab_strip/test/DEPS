@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/data_sharing/model",
+  "+components/data_sharing/public",
+  "+components/data_sharing/test_support",
+]

@@ -40,6 +40,8 @@ struct BLINK_COMMON_EXPORT IndexedDBIndexMetadata {
 
 struct BLINK_COMMON_EXPORT IndexedDBObjectStoreMetadata {
   static const int64_t kInvalidId = -1;
+  // TODO(crbug.com/40253999): Move this to LevelDB-specific code if it is only
+  // relevant there.
   static const int64_t kMinimumIndexId = 30;
 
   IndexedDBObjectStoreMetadata();
@@ -70,25 +72,24 @@ struct BLINK_COMMON_EXPORT IndexedDBDatabaseMetadata {
   enum { NO_VERSION = -1, DEFAULT_VERSION = 0 };
 
   IndexedDBDatabaseMetadata();
-  IndexedDBDatabaseMetadata(const std::u16string& name,
-                            int64_t id,
-                            int64_t version,
-                            int64_t max_object_store_id);
+  IndexedDBDatabaseMetadata(const std::u16string& name);
   IndexedDBDatabaseMetadata(const IndexedDBDatabaseMetadata& other);
   IndexedDBDatabaseMetadata(IndexedDBDatabaseMetadata&& other);
-  ~IndexedDBDatabaseMetadata();
+  // TODO(estade): this is virtual because it's extended in backend code.
+  // Backend code probably shouldn't be depending on Blink classes for its own
+  // bookkeeping; fix this.
+  virtual ~IndexedDBDatabaseMetadata();
   IndexedDBDatabaseMetadata& operator=(const IndexedDBDatabaseMetadata& other);
   IndexedDBDatabaseMetadata& operator=(IndexedDBDatabaseMetadata&& other);
   bool operator==(const IndexedDBDatabaseMetadata& other) const;
 
   std::u16string name;
-  int64_t id;
-  int64_t version;
-  int64_t max_object_store_id;
+  int64_t version = NO_VERSION;
+  int64_t max_object_store_id = 0;
 
   std::map<int64_t, IndexedDBObjectStoreMetadata> object_stores;
 
-  bool was_cold_open;
+  bool was_cold_open = true;
 };
 
 }  // namespace blink

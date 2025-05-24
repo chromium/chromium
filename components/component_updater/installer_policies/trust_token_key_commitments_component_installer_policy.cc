@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
 
 #include <memory>
@@ -155,9 +150,8 @@ TrustTokenKeyCommitmentsComponentInstallerPolicy::GetInstallerAttributes()
 void TrustTokenKeyCommitmentsComponentInstallerPolicy::GetPublicKeyHash(
     std::vector<uint8_t>* hash) {
   DCHECK(hash);
-  hash->assign(kTrustTokenKeyCommitmentsPublicKeySHA256,
-               kTrustTokenKeyCommitmentsPublicKeySHA256 +
-                   std::size(kTrustTokenKeyCommitmentsPublicKeySHA256));
+  hash->assign(std::begin(kTrustTokenKeyCommitmentsPublicKeySHA256),
+               std::end(kTrustTokenKeyCommitmentsPublicKeySHA256));
 }
 
 // static

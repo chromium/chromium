@@ -120,7 +120,6 @@ source_set("gbm") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/vulkan:buildflags",
     "//ipc",
@@ -163,8 +162,11 @@ source_set("gbm") {
     ]
   }
 
-  if (is_chromeos_ash) {
-    deps += [ "//ui/base/ime/ash" ]
+  if (is_chromeos) {
+    deps += [
+      "//ash/constants",
+      "//ui/base/ime/ash",
+    ]
   }
 
   if (enable_vulkan) {

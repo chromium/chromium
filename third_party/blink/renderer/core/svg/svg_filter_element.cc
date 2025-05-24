@@ -85,15 +85,11 @@ void SVGFilterElement::Trace(Visitor* visitor) const {
 void SVGFilterElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
-  bool is_xywh =
-      attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
-      attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
-  if (is_xywh)
-    UpdateRelativeLengthsInformation();
-
-  if (is_xywh || attr_name == svg_names::kFilterUnitsAttr ||
+  if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
+      attr_name == svg_names::kWidthAttr ||
+      attr_name == svg_names::kHeightAttr ||
+      attr_name == svg_names::kFilterUnitsAttr ||
       attr_name == svg_names::kPrimitiveUnitsAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     InvalidateFilterChain();
     return;
   }

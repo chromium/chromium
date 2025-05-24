@@ -22,7 +22,7 @@ function testGradient(css, queryProp)
 }
 
 test(() => {
-  assert_equals(testGradient("background-image: linear-gradient(black 0%", "background-image"), 'none');
+  assert_equals(testGradient("background-image: linear-gradient(black 0%", "background-image"), 'linear-gradient(rgb(0, 0, 0) 0%)');
   assert_equals(testGradient("background-image: linear-gradient(top)", "background-image"), 'none');
   assert_equals(testGradient("background-image: linear-gradient(10deg)", "background-image"), 'none');
   assert_equals(testGradient("background-image: linear-gradient(top center, black 0%)", "background-image"), 'none');
@@ -30,7 +30,7 @@ test(() => {
   assert_equals(testGradient("background-image: linear-gradient(left left)", "background-image"), 'none');
   assert_equals(testGradient("background-image: linear-gradient(left center)", "background-image"), 'none');
   assert_equals(testGradient("background-image: linear-gradient(left 10deg, black 0%)", "background-image"), 'none');
-  assert_equals(testGradient("background-image: linear-gradient(black)", "background-image"), 'none');
+  assert_equals(testGradient("background-image: linear-gradient(black)", "background-image"), 'linear-gradient(rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: linear-gradient(right bottom, black, white)", "background-image"), 'none');
   assert_equals(testGradient("background-image: linear-gradient(black, white)", "background-image"), 'linear-gradient(rgb(0, 0, 0), rgb(255, 255, 255))');
   assert_equals(testGradient("background-image: linear-gradient(black 0, white)", "background-image"), 'linear-gradient(rgb(0, 0, 0) 0px, rgb(255, 255, 255))');

@@ -10,13 +10,13 @@ build_webui("build") {
 
   static_files = [
     "history.html",
+    "images/compare_sync_promo.svg",
+    "images/compare_sync_promo_dark.svg",
     "images/history_embeddings_promo.svg",
     "images/history_embeddings_promo_dark.svg",
     "images/list.svg",
-    "images/sign_in_promo_dark.svg",
     "images/sign_in_promo.svg",
-    "images/compare_sync_promo_dark.svg",
-    "images/compare_sync_promo.svg",
+    "images/sign_in_promo_dark.svg",
   ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.
@@ -33,7 +33,7 @@ build_webui("build") {
     "synced_device_manager.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_service.ts",
     "constants.ts",
     "externs.ts",
@@ -46,8 +46,14 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "history_embeddings_promo.css",
+    "history_item.css",
+    "history_toolbar.css",
     "shared_style.css",
+    "shared_style_lit.css",
     "shared_vars.css",
+    "synced_device_card.css",
+    "synced_device_manager.css",
   ]
 
   icons_html_files = [ "shared_icons.html" ]
@@ -59,12 +65,16 @@ build_webui("build") {
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
 
-  mojo_files_deps = [
-    "//ui/webui/resources/cr_components/commerce:mojo_bindings_ts__generator",
+  mojo_files_deps =
+      [ "//components/commerce/core/mojom:mojo_bindings_ts__generator" ]
+  mojo_files = [
+    "$root_gen_dir/components/commerce/core/mojom/product_specifications.mojom-webui.ts",
+    "$root_gen_dir/components/commerce/core/mojom/shared.mojom-webui.ts",
+    "$root_gen_dir/components/commerce/core/mojom/shopping_service.mojom-webui.ts",
   ]
-  mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/commerce/shopping_service.mojom-webui.ts" ]
 
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/commerce:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",

@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
-#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -18,9 +17,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/preloading_trigger_type.h"
-#include "content/public/common/content_features.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -57,22 +54,6 @@ void AnalyzeCrossOriginRedirection(const url::Origin& current_origin,
         histogram_suffix);
     return;
   }
-}
-
-// Returns true if a host of the given url is on the predefined blocked list as
-// they cannot support prerendering.
-bool ShouldSkipHostInBlockList(const GURL& url) {
-  // Keep the blocked list as static because the blocked hosts are served via
-  // feature parameters and are never changed until browser restarts.
-  //
-  // Blocked hosts are expected to be passed as a comma separated string.
-  // e.g. example1.test,example2.test
-  const static base::NoDestructor<std::vector<std::string>>
-      embedder_blocked_hosts(base::SplitString(
-          features::kPrerender2EmbedderBlockedHostsParam.Get(), ",",
-          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-
-  return base::Contains(*embedder_blocked_hosts, url.host());
 }
 
 }  // namespace
@@ -135,12 +116,6 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // Reset the flags that should be calculated every time redirction happens.
   is_same_site_cross_origin_prerender_ = false;
   same_site_cross_origin_prerender_did_redirect_ = false;
-
-  if (prerender_host_->IsBrowserInitiated() &&
-      ShouldSkipHostInBlockList(navigation_url)) {
-    CancelPrerendering(PrerenderFinalStatus::kEmbedderHostDisallowed);
-    return CANCEL;
-  }
 
   // Allow only HTTP(S) schemes.
   // https://wicg.github.io/nav-speculation/prerendering.html#no-bad-navs
@@ -225,14 +200,6 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     // the initial prerendering navigation in a prerendered page. Compare the
     // origin of the initial prerendering URL to the origin of navigation
     // (redirection) URL.
-
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kPrerender2MainFrameNavigation)) {
-      // Navigations after the initial prerendering navigation are disallowed
-      // when the kPrerender2MainFrameNavigation feature is disabled.
-      CancelPrerendering(PrerenderFinalStatus::kMainFrameNavigation);
-      return CANCEL;
-    }
 
     // Cross-site navigations after the initial prerendering navigation are
     // disallowed.

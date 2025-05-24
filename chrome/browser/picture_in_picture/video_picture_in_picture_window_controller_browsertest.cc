@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/picture_in_picture_window_controller.h"
-
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -13,7 +11,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -33,6 +30,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/overlay_window.h"
+#include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -62,7 +60,7 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/hit_test.h"
 #endif
 
@@ -104,6 +102,8 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(GetWebContents, content::WebContents*());
   MOCK_METHOD0(GetChildWebContents, content::WebContents*());
   MOCK_METHOD0(TogglePlayPause, bool());
+  MOCK_METHOD0(Play, void());
+  MOCK_METHOD0(Pause, void());
   MOCK_METHOD0(SkipAd, void());
   MOCK_METHOD0(NextTrack, void());
   MOCK_METHOD0(PreviousTrack, void());
@@ -112,7 +112,15 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(HangUp, void());
   MOCK_METHOD0(PreviousSlide, void());
   MOCK_METHOD0(NextSlide, void());
+  MOCK_METHOD1(SeekTo, void(base::TimeDelta time));
   MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
+  void GetMediaImage(
+      const media_session::MediaImage& image,
+      int minimum_size_px,
+      int desired_size_px,
+      content::MediaSession::GetMediaImageBitmapCallback callback) override {
+    std::move(callback).Run(SkBitmap());
+  }
   MOCK_METHOD0(GetWindowBounds, std::optional<gfx::Rect>());
   MOCK_METHOD0(GetOrigin, std::optional<url::Origin>());
   MOCK_METHOD1(SetOnWindowCreatedNotifyObserversCallback,
@@ -401,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   EXPECT_TRUE(GetOverlayWindow()->AreControlsVisible());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
 class PictureInPicturePixelComparisonBrowserTest
     : public VideoPictureInPictureWindowControllerBrowserTest {
  public:
@@ -414,11 +422,11 @@ class PictureInPicturePixelComparisonBrowserTest
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
   }
 
-  base::FilePath GetFilePath(base::FilePath::StringPieceType relative_path) {
+  base::FilePath GetFilePath(base::FilePath::StringViewType relative_path) {
     base::FilePath base_dir;
     CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_dir));
     // The path relative to <chromium src> for pixel test data.
-    const base::FilePath::StringPieceType kTestDataPath =
+    const base::FilePath::StringViewType kTestDataPath =
         FILE_PATH_LITERAL("chrome/test/data/media/picture-in-picture/");
     base::FilePath full_path =
         base_dir.Append(kTestDataPath).Append(relative_path);
@@ -438,13 +446,11 @@ class PictureInPicturePixelComparisonBrowserTest
     quit_run_loop.Run();
   }
 
-  bool ReadImageFile(const base::FilePath& file_path, SkBitmap* read_image) {
+  SkBitmap ReadImageFile(const base::FilePath& file_path) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    std::string png_string;
-    base::ReadFileToString(file_path, &png_string);
-    return gfx::PNGCodec::Decode(
-        reinterpret_cast<const unsigned char*>(png_string.data()),
-        png_string.length(), read_image);
+    std::optional<std::vector<uint8_t>> png_data =
+        base::ReadFileToBytes(file_path);
+    return gfx::PNGCodec::Decode(png_data.value());
   }
 
   void TakeOverlayWindowScreenshot(const gfx::Size& window_size,
@@ -547,13 +553,13 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest, VideoPlay) {
 
   TakeOverlayWindowScreenshot({402, 268}, /*controls_visible=*/false);
 
-  SkBitmap expected_image;
   base::FilePath expected_image_path =
       GetFilePath(FILE_PATH_LITERAL("pixel_expected_video_play.png"));
-  ASSERT_TRUE(ReadImageFile(expected_image_path, &expected_image));
+  SkBitmap expected_image = ReadImageFile(expected_image_path);
+  ASSERT_FALSE(expected_image.isNull());
   EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that when an active WebContents accurately tracks whether a video
 // is in Picture-in-Picture.
@@ -1390,7 +1396,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that the back-to-tab, close, and resize controls move properly as
 // the window changes quadrants.
 IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
@@ -1489,7 +1495,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   // The resize button hit test should start a bottom right resizing drag.
   EXPECT_EQ(HTBOTTOMRIGHT, GetOverlayWindow()->GetResizeHTComponent());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the Play/Pause button is displayed appropriately in the
 // Picture-in-Picture window.

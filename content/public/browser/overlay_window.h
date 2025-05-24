@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "services/media_session/public/cpp/media_image.h"
+#include "services/media_session/public/cpp/media_position.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
@@ -67,6 +69,11 @@ class VideoOverlayWindow {
   virtual void SetHangUpButtonVisibility(bool is_visible) = 0;
   virtual void SetNextSlideButtonVisibility(bool is_visible) = 0;
   virtual void SetPreviousSlideButtonVisibility(bool is_visible) = 0;
+  virtual void SetMediaPosition(
+      const media_session::MediaPosition& position) = 0;
+  virtual void SetSourceTitle(const std::u16string& source_title) = 0;
+  virtual void SetFaviconImages(
+      const std::vector<media_session::MediaImage>& images) = 0;
 
   virtual void SetSurfaceId(const viz::SurfaceId& surface_id) = 0;
 };

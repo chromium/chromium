@@ -59,8 +59,9 @@ base::Value::Dict ConvertDiscoveredSinksToValues(
   base::Value::Dict dict;
   for (const auto& sinks_it : sinks) {
     base::Value::List list;
-    for (const auto& inner_sink : sinks_it.second)
+    for (const auto& inner_sink : sinks_it.second) {
       list.Append(ToValue(inner_sink));
+    }
     dict.Set(sinks_it.first, std::move(list));
   }
   return dict;

@@ -4,19 +4,24 @@
 
 package org.chromium.chrome.browser.incognito;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 
 /** Utilities for working with incognito tabs spread across multiple activities. */
+@NullMarked
 public class IncognitoUtils {
-    private static Boolean sIsEnabledForTesting;
+    private static @Nullable Boolean sIsEnabledForTesting;
 
     private IncognitoUtils() {}
 
@@ -40,19 +45,21 @@ public class IncognitoUtils {
     }
 
     /**
-     * Returns the {@link ProfileKey} from given {@link OTRProfileID}. If OTRProfileID is null, it
+     * Returns the {@link ProfileKey} from given {@link OtrProfileId}. If OtrProfileId is null, it
      * is the key of regular profile.
      *
-     * @param otrProfileID The {@link OTRProfileID} of the profile. Null for regular profile.
+     * @param otrProfileId The {@link OtrProfileId} of the profile. Null for regular profile.
      * @return The {@link ProfileKey} of the key.
      */
-    public static ProfileKey getProfileKeyFromOTRProfileID(OTRProfileID otrProfileID) {
+    public static ProfileKey getProfileKeyFromOtrProfileId(OtrProfileId otrProfileId) {
         // If off-the-record is not requested, the request might be before native initialization.
-        if (otrProfileID == null) return ProfileKeyUtil.getLastUsedRegularProfileKey();
+        if (otrProfileId == null) return ProfileKeyUtil.getLastUsedRegularProfileKey();
 
-        return ProfileManager.getLastUsedRegularProfile()
-                .getOffTheRecordProfile(otrProfileID, /* createIfNeeded= */ true)
-                .getProfileKey();
+        Profile profile =
+                ProfileManager.getLastUsedRegularProfile()
+                        .getOffTheRecordProfile(otrProfileId, /* createIfNeeded= */ true);
+        assumeNonNull(profile);
+        return profile.getProfileKey();
     }
 
     public static void setEnabledForTesting(Boolean enabled) {

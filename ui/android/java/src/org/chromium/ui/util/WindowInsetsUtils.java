@@ -10,17 +10,19 @@ import android.graphics.RegionIterator;
 import android.util.Size;
 import android.view.WindowInsets;
 
-import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
 /** Helper functions for working with WindowInsets and Rects. */
+@NullMarked
 public final class WindowInsetsUtils {
     private static final String TAG = "WindowInsetsUtils";
 
@@ -30,8 +32,8 @@ public final class WindowInsetsUtils {
     private static boolean sGetFrameMethodNotFound;
     private static boolean sGetBoundingRectsMethodNotFound;
 
-    private static Size sFrameForTesting;
-    private static Rect sWidestUnoccludedRectForTesting;
+    private static @Nullable Size sFrameForTesting;
+    private static @Nullable Rect sWidestUnoccludedRectForTesting;
 
     /** Private constructor to stop instantiation. */
     private WindowInsetsUtils() {}
@@ -67,7 +69,7 @@ public final class WindowInsetsUtils {
      * @return Rect that the insets represent in the windowRect. Empty rect if insets represent more
      *     than one edge.
      */
-    public static @NonNull Rect toRectInWindow(@NonNull Rect windowRect, @NonNull Insets insets) {
+    public static Rect toRectInWindow(Rect windowRect, Insets insets) {
         int sides = 0;
         Rect res = new Rect(windowRect);
 
@@ -101,7 +103,8 @@ public final class WindowInsetsUtils {
      * Get the Rect with the maximum width within the |regionRect| that is not blocked by any rects
      * within the |blockedRects|. This algorithm only prioritizes the width of the returned Rects,
      * so the returned area does not necessarily have the maximum area. If there are multiple rects
-     * with the same width, this method will bias the first Rect found in the region.
+     * with the same width, this method will bias the first Rect found in the region. If
+     * |blockedRects| is empty, this method will return an empty rect.
      *
      * @see Region
      * @see RegionIterator
@@ -109,10 +112,9 @@ public final class WindowInsetsUtils {
      * @param blockedRects Areas within the regionRect that are blocked.
      * @return The widest Rect seen in the regionRect that's not blocked by any blockedRects.
      */
-    public static @NonNull Rect getWidestUnoccludedRect(
-            @NonNull Rect regionRect, List<Rect> blockedRects) {
+    public static Rect getWidestUnoccludedRect(Rect regionRect, List<Rect> blockedRects) {
         if (sWidestUnoccludedRectForTesting != null) return sWidestUnoccludedRectForTesting;
-        if (regionRect.isEmpty()) return regionRect;
+        if (regionRect.isEmpty() || blockedRects.isEmpty()) return new Rect();
 
         Region region = new Region(regionRect);
         for (Rect rect : blockedRects) {
@@ -131,7 +133,7 @@ public final class WindowInsetsUtils {
 
     /** See {@link WindowInsets#getFrame()} for details. */
     @SuppressWarnings("NewApi")
-    public static Size getFrameFromInsets(WindowInsets windowInsets) {
+    public static Size getFrameFromInsets(@Nullable WindowInsets windowInsets) {
         if (sFrameForTesting != null) return sFrameForTesting;
 
         // This invocation is wrapped in a try-catch block to allow backporting of the #getFrame()
@@ -150,7 +152,7 @@ public final class WindowInsetsUtils {
     /** See {@link WindowInsets#getBoundingRects(int)} for details. */
     @SuppressWarnings("NewApi")
     public static List<Rect> getBoundingRectsFromInsets(
-            WindowInsets windowInsets, @InsetsType int insetType) {
+            @Nullable WindowInsets windowInsets, @InsetsType int insetType) {
         // This invocation is wrapped in a try-catch block to allow backporting of the
         // #getBoundingRects() API on pre-V devices. On pre-V devices not supporting this API, a
         // default value will be cached on the first failure and returned subsequently.

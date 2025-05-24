@@ -420,17 +420,19 @@ enum BulkPinStage {
 // It's usually MyFiles. When SkyVault is enabled the admin might
 // choose between Google Drive and OneDrive.
 // NOTE: This is independent of the Downloads folder which is mostly used
-// in the browser (lacros or ash).
+// in the browser.
 enum DefaultLocation {
   my_files,
   google_drive,
   onedrive
 };
 
-enum CloudProvider {
+// The value of the SkyVault LocalFilesMigrationDestination policy.
+enum MigrationDestination {
   not_specified,
   google_drive,
-  onedrive
+  onedrive,
+  delete
 };
 
 // These three fields together uniquely identify a task.
@@ -871,7 +873,8 @@ dictionary Preferences {
   boolean driveFsBulkPinningEnabled;
   boolean localUserFilesAllowed;
   DefaultLocation defaultLocation;
-  CloudProvider skyVaultMigrationDestination;
+  MigrationDestination skyVaultMigrationDestination;
+  DOMString? skyVaultMigrationStartTime;
 };
 
 dictionary PreferencesChange {
@@ -2008,9 +2011,6 @@ interface Functions {
   // Notifies the browser of the result of a dialog displayed earlier as a
   // result of the onDriveConfirmDialog event.
   static void notifyDriveDialogResult(DriveDialogResult result);
-
-  // Opens a new browser tab and navigates to `url`.
-  static void openURL(DOMString url);
 
   // Creates a new Files app window in the directory provided in `params`.
   [doesNotSupportPromises]

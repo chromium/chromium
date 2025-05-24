@@ -4,19 +4,35 @@
 
 #include "chrome/browser/ui/tabs/tab_model.h"
 
+#include <memory>
+
 #include "base/check.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "components/constrained_window/constrained_window_views.h"
+#include "components/tabs/public/split_tab_collection.h"
+#include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
+#include "components/web_modal/modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/views/widget/native_widget.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace tabs {
 
@@ -31,6 +47,7 @@ class TabLookupFromWebContents
   ~TabLookupFromWebContents() override = default;
 
   TabModel* model() { return model_; }
+  const TabModel* model() const { return model_; }
 
  private:
   friend WebContentsUserData;
@@ -78,8 +95,14 @@ void TabModel::OnAddedToModel(TabStripModel* owning_model) {
 
   // Being detached is equivalent to being in the background. So after
   // detachment, if the tab is in the foreground, we must send a notification.
-  if (IsInForeground()) {
+  if (IsActivated()) {
     did_enter_foreground_callback_list_.Notify(this);
+  }
+
+  // Being detached is equivalent to being in the background. So after
+  // detachment, if the tab is in the foreground, we must send a notification.
+  if (IsVisible()) {
+    did_become_visible_callback_list_.Notify(this);
   }
 }
 
@@ -90,42 +113,84 @@ void TabModel::OnRemovedFromModel() {
   owning_model_->RemoveObserver(this);
   owning_model_ = nullptr;
 
+  // At this point tab is detached.
+  will_be_detaching_ = false;
+
   // Opener stuff doesn't make sense to transfer between browsers.
   opener_ = nullptr;
   reset_opener_on_active_tab_change_ = false;
 
-  // Pinned state, blocked state, and group membership are all preserved, at
+  // Blocked state is preserved, at
   // least in some cases, but for now let's leave that to the existing
   // mechanisms that were handling that.
   // TODO(tbergquist): Decide whether to stick with this approach or not.
-  pinned_ = false;
   blocked_ = false;
-  group_ = std::nullopt;
 }
 
 TabCollection* TabModel::GetParentCollection(
     base::PassKey<TabCollection>) const {
-  CHECK(base::FeatureList::IsEnabled(tabs::kTabStripCollectionStorage));
+  return parent_collection_;
+}
+
+const TabCollection* TabModel::GetParentCollection() const {
   return parent_collection_;
 }
 
 void TabModel::OnReparented(TabCollection* parent,
-                            base::PassKey<TabCollection>) {
-  CHECK(base::FeatureList::IsEnabled(tabs::kTabStripCollectionStorage));
+                            base::PassKey<TabCollection> passkey) {
   parent_collection_ = parent;
+  OnAncestorChanged(passkey);
+}
+
+void TabModel::OnAncestorChanged(base::PassKey<TabCollection> passkey) {
+  // Do not update the properties twice during an operation in tab_collection.
+  // `will_be_detaching_` is needed to update properties when a tab is being
+  // removed from the model to differentiate it from an intermediate step of a
+  // move.
+  if (parent_collection_ || will_be_detaching_) {
+    UpdateProperties();
+  }
+}
+
+void TabModel::SetPinned(bool pinned) {
+  if (pinned_ == pinned) {
+    return;
+  }
+
+  pinned_ = pinned;
+  pinned_state_changed_callback_list_.Notify(this, pinned_);
+}
+
+void TabModel::SetGroup(std::optional<tab_groups::TabGroupId> group) {
+  if (group_ == group) {
+    return;
+  }
+
+  group_ = group;
+  group_changed_callback_list_.Notify(this, group_);
 }
 
 void TabModel::WillEnterBackground(base::PassKey<TabStripModel>) {
   will_enter_background_callback_list_.Notify(this);
+  will_become_hidden_callback_list_.Notify(this);
 }
 
 void TabModel::WillDetach(base::PassKey<TabStripModel>,
                           tabs::TabInterface::DetachReason reason) {
+  will_be_detaching_ = true;
   will_detach_callback_list_.Notify(this, reason);
 }
 
+void TabModel::DidInsert(base::PassKey<TabStripModel>) {
+  did_insert_callback_list_.Notify(this);
+}
+
+base::WeakPtr<TabInterface> TabModel::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 content::WebContents* TabModel::GetContents() const {
-  return contents();
+  return contents_;
 }
 
 base::CallbackListSubscription TabModel::RegisterWillDiscardContents(
@@ -133,23 +198,54 @@ base::CallbackListSubscription TabModel::RegisterWillDiscardContents(
   return will_discard_contents_callback_list_.Add(std::move(callback));
 }
 
-bool TabModel::IsInForeground() const {
-  return GetModelForTabInterface()->GetActiveTab() == this;
+bool TabModel::IsActivated() const {
+  // TODO(crbug.com/407148703): Remove the `owning_model_` check once clients of
+  // TabInterface::MaybeGetFromContents() have been removed.
+  return owning_model_ && GetModelForTabInterface()->GetActiveTab() == this;
 }
 
-base::CallbackListSubscription TabModel::RegisterDidEnterForeground(
-    TabInterface::DidEnterForegroundCallback callback) {
+base::CallbackListSubscription TabModel::RegisterDidActivate(
+    TabInterface::DidActivateCallback callback) {
   return did_enter_foreground_callback_list_.Add(std::move(callback));
 }
 
-base::CallbackListSubscription TabModel::RegisterWillEnterBackground(
-    TabInterface::WillEnterBackgroundCallback callback) {
+base::CallbackListSubscription TabModel::RegisterWillDeactivate(
+    TabInterface::WillDeactivateCallback callback) {
   return will_enter_background_callback_list_.Add(std::move(callback));
+}
+
+bool TabModel::IsVisible() const {
+  return contents_->GetVisibility() != content::Visibility::HIDDEN;
+}
+
+base::CallbackListSubscription TabModel::RegisterDidBecomeVisible(
+    TabInterface::DidBecomeVisibleCallback callback) {
+  return did_become_visible_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterWillBecomeHidden(
+    TabInterface::WillBecomeHiddenCallback callback) {
+  return will_become_hidden_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription TabModel::RegisterWillDetach(
     TabInterface::WillDetach callback) {
   return will_detach_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterDidInsert(
+    TabInterface::DidInsertCallback callback) {
+  return did_insert_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterPinnedStateChanged(
+    TabInterface::PinnedStateChangedCallback callback) {
+  return pinned_state_changed_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterGroupChanged(
+    TabInterface::GroupChangedCallback callback) {
+  return group_changed_callback_list_.Add(std::move(callback));
 }
 
 bool TabModel::CanShowModalUI() const {
@@ -160,6 +256,11 @@ std::unique_ptr<ScopedTabModalUI> TabModel::ShowModalUI() {
   return std::make_unique<ScopedTabModalUIImpl>(this);
 }
 
+base::CallbackListSubscription TabModel::RegisterModalUIChanged(
+    TabInterface::TabInterfaceCallback callback) {
+  return modal_ui_changed_callback_list_.Add(std::move(callback));
+}
+
 bool TabModel::IsInNormalWindow() const {
   return GetModelForTabInterface()->delegate()->IsNormalWindow();
 }
@@ -168,19 +269,39 @@ BrowserWindowInterface* TabModel::GetBrowserWindowInterface() {
   return GetModelForTabInterface()->delegate()->GetBrowserWindowInterface();
 }
 
+const BrowserWindowInterface* TabModel::GetBrowserWindowInterface() const {
+  return GetModelForTabInterface()->delegate()->GetBrowserWindowInterface();
+}
+
 tabs::TabFeatures* TabModel::GetTabFeatures() {
   return tab_features_.get();
 }
 
-uint32_t TabModel::GetTabHandle() {
-  return GetHandle().raw_value();
+const tabs::TabFeatures* TabModel::GetTabFeatures() const {
+  return tab_features_.get();
+}
+
+bool TabModel::IsPinned() const {
+  return pinned_;
+}
+
+bool TabModel::IsSplit() const {
+  return split_.has_value();
+}
+
+std::optional<split_tabs::SplitTabId> TabModel::GetSplit() const {
+  return split_;
+}
+
+std::optional<tab_groups::TabGroupId> TabModel::GetGroup() const {
+  return group_;
 }
 
 void TabModel::Close() {
   auto* window_interface = GetBrowserWindowInterface();
   auto* tab_strip = window_interface->GetTabStripModel();
   CHECK(tab_strip);
-  int tab_idx = tab_strip->GetIndexOfTab(GetHandle());
+  const int tab_idx = tab_strip->GetIndexOfTab(this);
   CHECK(tab_idx != TabStripModel::kNoTab);
   tab_strip->CloseWebContentsAt(tab_idx, TabCloseTypes::CLOSE_NONE);
 }
@@ -193,8 +314,9 @@ void TabModel::OnTabStripModelChanged(
     return;
   }
 
-  if (selection.new_contents == contents()) {
+  if (selection.new_contents == GetContents()) {
     did_enter_foreground_callback_list_.Notify(this);
+    did_become_visible_callback_list_.Notify(this);
     return;
   }
 }
@@ -204,20 +326,55 @@ TabStripModel* TabModel::GetModelForTabInterface() const {
   return soon_to_be_owning_model_ ? soon_to_be_owning_model_ : owning_model_;
 }
 
+// TODO(crbug.com/392950857): Consider making collections responsible for
+// updating the properties of their children. TabModel::OnAddedToModel could be
+// called from here instead of manually doing it in TabStripModel.
+void TabModel::UpdateProperties() {
+  bool pinned = false;
+  std::optional<tab_groups::TabGroupId> group = std::nullopt;
+  std::optional<split_tabs::SplitTabId> split = std::nullopt;
+
+  TabCollection* ancestor = parent_collection_;
+  while (ancestor) {
+    switch (ancestor->type()) {
+      case TabCollection::Type::PINNED:
+        pinned = true;
+        break;
+      case TabCollection::Type::GROUP:
+        group = static_cast<TabGroupTabCollection*>(ancestor)->GetTabGroupId();
+        break;
+      case TabCollection::Type::SPLIT:
+        split = static_cast<SplitTabCollection*>(ancestor)->GetSplitTabId();
+        break;
+      case TabCollection::Type::TABSTRIP:
+      case TabCollection::Type::UNPINNED:
+        break;
+    }
+    ancestor = ancestor->GetParentCollection();
+  }
+  SetPinned(pinned);
+  SetGroup(group);
+  set_split(split);
+}
+
 TabModel::ScopedTabModalUIImpl::ScopedTabModalUIImpl(TabModel* tab)
-    : tab_(tab) {
-  CHECK(!tab_->showing_modal_ui_);
+    : tab_(tab->weak_factory_.GetWeakPtr()) {
   tab_->showing_modal_ui_ = true;
+  tab_->modal_ui_changed_callback_list_.Notify(tab_.get());
 }
 
 TabModel::ScopedTabModalUIImpl::~ScopedTabModalUIImpl() {
-  tab_->showing_modal_ui_ = false;
+  if (tab_) {
+    tab_->showing_modal_ui_ = false;
+    tab_->modal_ui_changed_callback_list_.Notify(tab_.get());
+  }
 }
 
 void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("web_contents", contents());
-  dict.Add("pinned", pinned());
+  dict.Add("web_contents", GetContents());
+  dict.Add("pinned", IsPinned());
+  dict.Add("split", IsSplit());
   dict.Add("blocked", blocked());
 }
 
@@ -252,6 +409,12 @@ TabInterface* TabInterface::GetFromContents(
 }
 
 // static
+const TabInterface* TabInterface::GetFromContents(
+    const content::WebContents* web_contents) {
+  return TabLookupFromWebContents::FromWebContents(web_contents)->model();
+}
+
+// static
 TabInterface* TabInterface::MaybeGetFromContents(
     content::WebContents* web_contents) {
   TabLookupFromWebContents* lookup =
@@ -260,12 +423,6 @@ TabInterface* TabInterface::MaybeGetFromContents(
     return nullptr;
   }
   return lookup->model();
-}
-
-// static
-TabInterface* TabInterface::MaybeGetFromHandle(uint32_t handle_id) {
-  auto& helper = internal::HandleHelper<TabModel, int>::GetInstance();
-  return helper.LookupObject(handle_id);
 }
 
 }  // namespace tabs

@@ -535,8 +535,7 @@ void HTMLParserScriptRunner::ProcessScriptElementInternal(
       case ScriptSchedulingType::kImmediate:
       case ScriptSchedulingType::kNotSet:
       case ScriptSchedulingType::kDeprecatedForceDefer:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     // <spec>... Decrement the parser's script nesting level by one. If the

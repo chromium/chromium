@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -13,24 +14,28 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.Consumer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 
 /** Conditionally displays empty state for the tab group pane. */
+@NullMarked
 public class TabGroupListView extends FrameLayout {
     private RecyclerView mRecyclerView;
     private View mEmptyStateContainer;
     private TextView mEmptyStateSubheading;
     private UiConfig mUiConfig;
+    // Effectively final once set.
+    private boolean mEnableContainment;
 
     /** Constructor for inflation. */
     public TabGroupListView(Context context, @Nullable AttributeSet attrs) {
@@ -74,11 +79,20 @@ public class TabGroupListView extends FrameLayout {
         mRecyclerView.addOnScrollListener(
                 new OnScrollListener() {
                     @Override
-                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         onIsScrolledMaybeChanged.accept(
                                 mRecyclerView.computeVerticalScrollOffset() != 0);
                     }
                 });
+    }
+
+    void setEnableContainment(boolean enabled) {
+        mEnableContainment = enabled;
+
+        if (enabled) {
+            mRecyclerView.addItemDecoration(new TabGroupListItemDecoration(getContext()));
+        }
+        onDisplayStyleChanged(mUiConfig.getCurrentDisplayStyle());
     }
 
     void setEmptyStateVisible(boolean visible) {
@@ -93,9 +107,19 @@ public class TabGroupListView extends FrameLayout {
                         : R.string.tab_groups_empty_state_description_no_sync);
     }
 
+    View getRecyclerView() {
+        return mRecyclerView;
+    }
+
     private void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
+        Resources res = getResources();
         int padding =
-                SelectableListLayout.getPaddingForDisplayStyle(newDisplayStyle, getResources());
+                SelectableListLayout.getPaddingForDisplayStyle(newDisplayStyle, mRecyclerView, res);
+        if (mEnableContainment) {
+            final @Px int minPadding =
+                    res.getDimensionPixelSize(R.dimen.tab_group_recycler_view_min_padding);
+            padding = Math.max(padding, minPadding);
+        }
         mRecyclerView.setPaddingRelative(
                 padding, mRecyclerView.getPaddingTop(), padding, mRecyclerView.getPaddingBottom());
     }

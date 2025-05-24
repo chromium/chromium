@@ -5,17 +5,20 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "content/public/browser/navigation_handle.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -86,10 +89,9 @@ void TouchToFillPaymentMethodController::OnContentAutofillDriverCreated(
       std::make_unique<TouchToFillDelegateAndroidImpl>(&manager));
 }
 
-bool TouchToFillPaymentMethodController::Show(
+bool TouchToFillPaymentMethodController::ShowCreditCards(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const CreditCard> cards_to_suggest,
     base::span<const Suggestion> suggestions) {
   if (!keyboard_suppressor_.is_suppressing()) {
     return false;
@@ -99,8 +101,8 @@ bool TouchToFillPaymentMethodController::Show(
   if (view_)
     return false;
 
-  if (!view->Show(this, cards_to_suggest, suggestions,
-                  delegate->ShouldShowScanCreditCard())) {
+  if (!view->ShowCreditCards(this, suggestions,
+                             delegate->ShouldShowScanCreditCard())) {
     ResetJavaObject();
     return false;
   }
@@ -110,7 +112,7 @@ bool TouchToFillPaymentMethodController::Show(
   return true;
 }
 
-bool TouchToFillPaymentMethodController::Show(
+bool TouchToFillPaymentMethodController::ShowIbans(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const Iban> ibans_to_suggest) {
@@ -123,7 +125,32 @@ bool TouchToFillPaymentMethodController::Show(
     return false;
   }
 
-  if (!view->Show(this, ibans_to_suggest)) {
+  if (!view->ShowIbans(this, ibans_to_suggest)) {
+    ResetJavaObject();
+    return false;
+  }
+
+  view_ = std::move(view);
+  delegate_ = std::move(delegate);
+  return true;
+}
+
+bool TouchToFillPaymentMethodController::ShowLoyaltyCards(
+    std::unique_ptr<TouchToFillPaymentMethodView> view,
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const LoyaltyCard> loyalty_cards_to_suggest) {
+  // TODO(crbug.com/404437211): Unify `ShowX()` methods to avoid code
+  // duplication.
+  if (!keyboard_suppressor_.is_suppressing()) {
+    return false;
+  }
+
+  // Abort if TTF surface is already shown.
+  if (view_) {
+    return false;
+  }
+
+  if (!view->ShowLoyaltyCards(this, loyalty_cards_to_suggest)) {
     ResetJavaObject();
     return false;
   }
@@ -186,6 +213,19 @@ void TouchToFillPaymentMethodController::ServerIbanSuggestionSelected(
   if (delegate_) {
     delegate_->IbanSuggestionSelected(Iban::InstrumentId(instrument_id));
   }
+}
+
+void TouchToFillPaymentMethodController::LoyaltyCardSuggestionSelected(
+    JNIEnv* env,
+    const std::string& loyalty_card_number) {
+  if (delegate_) {
+    delegate_->LoyaltyCardSuggestionSelected(loyalty_card_number);
+  }
+}
+
+int TouchToFillPaymentMethodController::GetJavaResourceId(
+    int native_resource_id) {
+  return ResourceMapper::MapToJavaDrawableId(native_resource_id);
 }
 
 base::android::ScopedJavaLocalRef<jobject>

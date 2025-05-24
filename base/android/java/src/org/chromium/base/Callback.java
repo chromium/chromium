@@ -4,9 +4,11 @@
 
 package org.chromium.base;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -15,8 +17,10 @@ import java.util.Optional;
  *
  * @param <T> The type of the computation's result.
  */
+@NullMarked
 @FunctionalInterface
-public interface Callback<T> {
+public interface Callback<T extends @Nullable Object> {
+
     /** Invoked with the result of a computation. */
     void onResult(T result);
 
@@ -40,7 +44,8 @@ public interface Callback<T> {
      * @param callback The {@link Callback} to run.
      * @param object The payload to provide to the callback (may be null).
      */
-    static <T> void runNullSafe(@Nullable Callback<T> callback, @Nullable T object) {
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
+    static <T extends @Nullable Object> void runNullSafe(@Nullable Callback<T> callback, T object) {
         if (callback != null) callback.onResult(object);
     }
 

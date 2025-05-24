@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/i18n/case_conversion.h"
+
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 namespace {
 
@@ -109,8 +109,4 @@ TEST(CaseConversionTest, FoldCase) {
   EXPECT_EQ(u"ssss", FoldCase(u"\u00DF\u1E9E"));
 }
 
-}  // namespace i18n
-}  // namespace base
-
-
-
+}  // namespace base::i18n

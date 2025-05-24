@@ -7,7 +7,7 @@
 
 #import "components/metrics/metrics_provider.h"
 
-// Categorizes the primary account of each browser state into a FamilyLink
+// Categorizes the primary account of each profile into a FamilyLink
 // supervision type to segment the Chrome user population.
 class IOSFamilyLinkUserMetricsProvider : public metrics::MetricsProvider {
  public:

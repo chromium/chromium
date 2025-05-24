@@ -24,6 +24,19 @@ static void JNI_InterceptNavigationDelegateImpl_AssociateWithWebContents(
           env, jdelegate, /*escape_external_handler_value=*/true));
 }
 
+static void JNI_InterceptNavigationDelegateImpl_ClearWebContentsAssociation(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents) {
+    return;
+  }
+  navigation_interception::InterceptNavigationDelegate::Associate(web_contents,
+                                                                  nullptr);
+}
+
 static void JNI_InterceptNavigationDelegateImpl_OnSubframeAsyncActionTaken(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents,

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -126,10 +127,10 @@ struct LogicalLineItem {
   // Create an out-of-flow positioned object.
   LogicalLineItem(LayoutObject* out_of_flow_positioned_box,
                   UBiDiLevel bidi_level,
-                  TextDirection container_direction)
+                  WritingDirectionMode container_writing_direction)
       : out_of_flow_positioned_box(out_of_flow_positioned_box),
         bidi_level(bidi_level),
-        container_direction(container_direction) {}
+        container_writing_direction(container_writing_direction) {}
   // Create an unpositioned float.
   LogicalLineItem(LayoutObject* unpositioned_float,
                   UBiDiLevel bidi_level,
@@ -145,6 +146,12 @@ struct LogicalLineItem {
         bfc_offset(bfc_offset),
         bidi_level(bidi_level) {}
 
+  bool IsItemType(InlineItem::InlineItemType type) const {
+    return inline_item && inline_item->Type() == type;
+  }
+  bool IsNotItemType(InlineItem::InlineItemType type) const {
+    return inline_item && inline_item->Type() != type;
+  }
   bool IsFloating() const {
     return layout_result && layout_result->GetPhysicalFragment().IsFloating();
   }
@@ -156,15 +163,13 @@ struct LogicalLineItem {
     return layout_result && layout_result->GetPhysicalFragment().IsInlineBox();
   }
   bool HasInFlowFragment() const {
-    return (inline_item &&
-            inline_item->Type() != InlineItem::kRubyLinePlaceholder) ||
+    return IsNotItemType(InlineItem::kRubyLinePlaceholder) ||
            (layout_result &&
             !layout_result->GetPhysicalFragment().IsFloating());
   }
   bool HasInFlowOrFloatingFragment() const {
-    return (inline_item &&
-            inline_item->Type() != InlineItem::kRubyLinePlaceholder) ||
-           layout_result || layout_object;
+    return IsNotItemType(InlineItem::kRubyLinePlaceholder) || layout_result ||
+           layout_object;
   }
   bool HasOutOfFlowFragment() const {
     return out_of_flow_positioned_box != nullptr;
@@ -172,9 +177,7 @@ struct LogicalLineItem {
   bool HasFragment() const {
     return HasInFlowOrFloatingFragment() || HasOutOfFlowFragment();
   }
-  bool IsControl() const {
-    return inline_item && inline_item->Type() == InlineItem::kControl;
-  }
+  bool IsControl() const { return IsItemType(InlineItem::kControl); }
   bool CanCreateFragmentItem() const { return HasInFlowOrFloatingFragment(); }
   bool HasBidiLevel() const { return bidi_level != 0xff; }
   bool IsPlaceholder() const { return !HasFragment() && !HasBidiLevel(); }
@@ -194,8 +197,7 @@ struct LogicalLineItem {
     return false;
   }
   bool IsRubyLinePlaceholder() const {
-    return inline_item &&
-           inline_item->Type() == InlineItem::kRubyLinePlaceholder;
+    return IsItemType(InlineItem::kRubyLinePlaceholder);
   }
 
   const LogicalOffset& Offset() const { return rect.offset; }
@@ -229,7 +231,7 @@ struct LogicalLineItem {
 
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
-  const InlineItem* inline_item = nullptr;
+  Member<const InlineItem> inline_item;
   Member<const ShapeResultView> shape_result;
   TextOffsetRange text_offset;
 
@@ -265,8 +267,9 @@ struct LogicalLineItem {
   // inline box. Available only after |CreateBoxFragments()|.
   unsigned children_count = 0;
   UBiDiLevel bidi_level = 0xff;
-  // The current text direction for OOF positioned items.
-  TextDirection container_direction = TextDirection::kLtr;
+  // The current writing direction for OOF positioned items.
+  WritingDirectionMode container_writing_direction =
+      WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr);
   // When an item contains only trailing spaces, the original bidi level needs
   // to be ignored, and just use paragraph direction (UAX#9 L1)
   bool has_only_bidi_trailing_spaces = false;

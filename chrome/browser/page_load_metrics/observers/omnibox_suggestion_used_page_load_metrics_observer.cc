@@ -41,7 +41,8 @@ const char kSearchLargestContentfulPaint2Above2s[] =
 OmniboxSuggestionUsedMetricsObserver::OmniboxSuggestionUsedMetricsObserver() =
     default;
 
-OmniboxSuggestionUsedMetricsObserver::~OmniboxSuggestionUsedMetricsObserver() {}
+OmniboxSuggestionUsedMetricsObserver::~OmniboxSuggestionUsedMetricsObserver() =
+    default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 OmniboxSuggestionUsedMetricsObserver::OnPrerenderStart(

@@ -6,9 +6,12 @@ package org.chromium.components.data_sharing;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@NullMarked
 public interface DataSharingSDKDelegateProtoResponseCallback {
 
     // Determines the Status of the response.

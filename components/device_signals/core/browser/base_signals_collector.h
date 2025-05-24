@@ -20,13 +20,15 @@ class BaseSignalsCollector : public SignalsCollector {
   bool IsSignalSupported(SignalName signal_name) override;
   const std::unordered_set<SignalName> GetSupportedSignalNames() override;
   void GetSignal(SignalName signal_name,
+                 UserPermission permission,
                  const SignalsAggregationRequest& request,
                  SignalsAggregationResponse& response,
                  base::OnceClosure done_closure) override;
 
  protected:
   using GetSignalCallback =
-      base::RepeatingCallback<void(const SignalsAggregationRequest&,
+      base::RepeatingCallback<void(UserPermission permission,
+                                   const SignalsAggregationRequest&,
                                    SignalsAggregationResponse&,
                                    base::OnceClosure)>;
 

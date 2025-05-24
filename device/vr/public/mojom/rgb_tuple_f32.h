@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef DEVICE_VR_PUBLIC_MOJOM_RGB_TUPLE_F32_H_
 #define DEVICE_VR_PUBLIC_MOJOM_RGB_TUPLE_F32_H_
 
 #include <stddef.h>
+
+#include <array>
 
 namespace device {
 
@@ -29,7 +26,7 @@ struct RgbTupleF32 {
   float blue() const { return components[2]; }
   void set_blue(float blue) { components[2] = blue; }
 
-  float components[kNumComponents];
+  std::array<float, kNumComponents> components;
 };
 
 static_assert(sizeof(RgbTupleF32) ==

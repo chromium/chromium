@@ -14,10 +14,6 @@ class GPUMapMode : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // gpu_map_mode.idl
-  static constexpr uint32_t kRead = V8GPUMapMode::Constant::kRead;
-  static constexpr uint32_t kWrite = V8GPUMapMode::Constant::kWrite;
-
   GPUMapMode(const GPUMapMode&) = delete;
   GPUMapMode& operator=(const GPUMapMode&) = delete;
 };

@@ -7,23 +7,17 @@ package org.chromium.chrome.browser.browserservices.trustedwebactivityui;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.sharing.TwaSharingController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandlingStrategy;
-import org.chromium.chrome.browser.customtabs.content.DefaultCustomTabIntentHandlingStrategy;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-
-import javax.inject.Inject;
 
 /**
- * TWA-specific implementation of {@link CustomTabIntentHandlingStrategy}.
- * Currently adds Web Share Target capabilities on top of the Custom Tabs intent handling.
+ * TWA-specific implementation of {@link CustomTabIntentHandlingStrategy}. Currently adds Web Share
+ * Target capabilities on top of the Custom Tabs intent handling.
  */
-@ActivityScope
 public class TwaIntentHandlingStrategy implements CustomTabIntentHandlingStrategy {
-    private final DefaultCustomTabIntentHandlingStrategy mDefaultStrategy;
+    private final CustomTabIntentHandlingStrategy mDefaultStrategy;
     private final TwaSharingController mSharingController;
 
-    @Inject
     public TwaIntentHandlingStrategy(
-            DefaultCustomTabIntentHandlingStrategy defaultStrategy,
+            CustomTabIntentHandlingStrategy defaultStrategy,
             TwaSharingController sharingController) {
         mDefaultStrategy = defaultStrategy;
         mSharingController = sharingController;

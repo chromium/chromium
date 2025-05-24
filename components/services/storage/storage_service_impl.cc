@@ -78,12 +78,6 @@ void StorageServiceImpl::SetDataDirectory(
                           weak_ptr_factory_.GetWeakPtr()),
       base::SequencedTaskRunner::GetCurrentDefault()));
 
-  // Prevent SQLite from trying to use mmap, as SandboxedVfs does not currently
-  // support this.
-  //
-  // TODO(crbug.com/40144971): Configure this per Database instance.
-  sql::Database::DisableMmapByDefault();
-
   // SQLite needs our VFS implementation to work over a FilesystemProxy. This
   // installs it as the default implementation for the service process.
   sql::SandboxedVfs::Register(

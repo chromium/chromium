@@ -71,8 +71,7 @@ const char* ImageDecodeAcceleratorTypeToString(
     case gpu::ImageDecodeAcceleratorType::kUnknown:
       return "Unknown";
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid ImageDecodeAcceleratorType.";
-  return "";
+  NOTREACHED() << "Invalid ImageDecodeAcceleratorType.";
 }
 
 const char* ImageDecodeAcceleratorSubsamplingToString(
@@ -295,6 +294,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     std::string machine_model_name;
     std::string machine_model_version;
     std::string display_type;
+    SkiaBackendType skia_backend_type;
     std::string gl_version;
     std::string gl_vendor;
     std::string gl_renderer;
@@ -334,6 +334,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     uint32_t visibility_callback_call_count;
 
 #if BUILDFLAG(ENABLE_VULKAN)
+    bool hardware_supports_vulkan;
     std::optional<VulkanInfo> vulkan_info;
 #endif
   };
@@ -362,6 +363,8 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   enumerator->AddString("vertexShaderVersion", vertex_shader_version);
   enumerator->AddString("maxMsaaSamples", max_msaa_samples);
   enumerator->AddString("displayType", display_type);
+  enumerator->AddString("skiaBackendType",
+                        SkiaBackendTypeToString(skia_backend_type));
   enumerator->AddString("glVersion", gl_version);
   enumerator->AddString("glVendor", gl_vendor);
   enumerator->AddString("glRenderer", gl_renderer);
@@ -409,6 +412,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   enumerator->AddInt("visibilityCallbackCallCount",
                      visibility_callback_call_count);
 #if BUILDFLAG(ENABLE_VULKAN)
+  enumerator->AddBool("hardwareSupportsVulkan", hardware_supports_vulkan);
   if (vulkan_info) {
     auto blob = vulkan_info->Serialize();
     enumerator->AddBinary("vulkanInfo", base::span<const uint8_t>(blob));

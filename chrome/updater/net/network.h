@@ -11,11 +11,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "chrome/updater/policy/service.h"
 #include "components/update_client/network.h"
 
 namespace updater {
-
-struct PolicyServiceProxyConfiguration;
 
 // Creates instances of `NetworkFetcher`. Because of idiosyncrasies of how
 // the Windows implementation works, the instance of the factory class must

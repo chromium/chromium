@@ -22,7 +22,6 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
@@ -198,8 +197,7 @@ base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
     case PasswordConfirmationFrequency::WEEK:
       return base::Days(7);
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::TimeDelta();
+  NOTREACHED();
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -266,8 +264,7 @@ FingerprintLocation GetFingerprintLocation() {
     return FingerprintLocation::LEFT_SIDE;
   if (location_info == "left-of-power-button-top-right")
     return FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT;
-  NOTREACHED_IN_MIGRATION() << "Not handled value: " << location_info;
-  return default_location;
+  NOTREACHED() << "Not handled value: " << location_info;
 }
 
 bool IsFingerprintSupported() {

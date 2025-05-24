@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -33,6 +34,7 @@ class InlineContainingBlockUtils {
     // The accumulated relative offset of the inline container to be applied to
     // any descendants after fragmentation.
     LogicalOffset relative_offset;
+    bool is_hidden_for_paint;
   };
 
   // It is safe to use Persistent here because this is used only on stack.

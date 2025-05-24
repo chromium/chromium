@@ -17,7 +17,7 @@
 #include "ui/views/view_class_properties.h"
 
 #if DCHECK_IS_ON()
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 #endif
 
 namespace views {
@@ -33,10 +33,12 @@ SizeBounds AdjustAvailableSizeForParentAvailableSize(
   if (host && host->parent() && available_size != SizeBounds()) {
     SizeBounds host_additional_size = host->parent()->GetAvailableSize(host);
     host_additional_size.Enlarge(-host->width(), -host->height());
-    if (host_additional_size.width().is_bounded())
+    if (host_additional_size.width().is_bounded()) {
       available_size.width() += host_additional_size.width();
-    if (host_additional_size.height().is_bounded())
+    }
+    if (host_additional_size.height().is_bounded()) {
       available_size.height() += host_additional_size.height();
+    }
   }
   return available_size;
 }
@@ -51,8 +53,9 @@ LayoutManagerBase::~LayoutManagerBase() = default;
 
 gfx::Size LayoutManagerBase::GetPreferredSize(const View* host) const {
   DCHECK_EQ(host_view_, host);
-  if (!cached_preferred_size_)
+  if (!cached_preferred_size_) {
     cached_preferred_size_ = CalculateProposedLayout(SizeBounds()).host_size;
+  }
   return *cached_preferred_size_;
 }
 
@@ -69,8 +72,9 @@ gfx::Size LayoutManagerBase::GetPreferredSize(
 
 gfx::Size LayoutManagerBase::GetMinimumSize(const View* host) const {
   DCHECK_EQ(host_view_, host);
-  if (!cached_minimum_size_)
+  if (!cached_minimum_size_) {
     cached_minimum_size_ = CalculateProposedLayout(SizeBounds(0, 0)).host_size;
+  }
   return *cached_minimum_size_;
 }
 
@@ -88,14 +92,16 @@ int LayoutManagerBase::GetPreferredHeightForWidth(const View* host,
 SizeBounds LayoutManagerBase::GetAvailableSize(const View* host,
                                                const View* view) const {
   DCHECK_EQ(host_view_, host);
-  if (!cached_layout_size_)
+  if (!cached_layout_size_) {
     GetProposedLayout(host->size());
+  }
   if (cached_layout_size_) {
-    for (const auto& child_layout : cached_layout_.child_layouts)
+    for (const auto& child_layout : cached_layout_.child_layouts) {
       if (child_layout.child_view == view) {
         return AdjustAvailableSizeForParentAvailableSize(
             host, child_layout.available_size);
       }
+    }
   }
   return SizeBounds();
 }
@@ -170,8 +176,9 @@ bool LayoutManagerBase::IsChildIncludedInLayout(const View* child,
   // During callbacks when a child is removed we can get in a state where a view
   // in the child list of the host view is not in |child_infos_|. In that case,
   // the view is being removed and is not part of the layout.
-  if (it == child_infos_.end())
+  if (it == child_infos_.end()) {
     return false;
+  }
 
   return it->second.included_in_layout &&
          (include_hidden || it->second.can_be_visible);
@@ -216,8 +223,9 @@ void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
         !child_layout.bounds.IsEmpty()) {
       const bool size_changed =
           child_view->bounds().size() != child_layout.bounds.size();
-      if (child_view->bounds() != child_layout.bounds)
+      if (child_view->bounds() != child_layout.bounds) {
         child_view->SetBoundsRect(child_layout.bounds);
+      }
       // Child layouts which are not invalid will not be laid out by the default
       // View::Layout() implementation, but if there is an available size
       // constraint it's important that the child view be laid out. So we'll do
@@ -315,8 +323,9 @@ void LayoutManagerBase::ViewAdded(View* host, View* view) {
 
   base::AutoReset<bool> setter(&suppress_invalidate_, true);
   const bool invalidate = PropagateViewAdded(host, view);
-  if (invalidate || view->GetVisible())
+  if (invalidate || view->GetVisible()) {
     InvalidateHost(false);
+  }
 }
 
 void LayoutManagerBase::ViewRemoved(View* host, View* view) {
@@ -333,8 +342,9 @@ void LayoutManagerBase::ViewRemoved(View* host, View* view) {
 
   base::AutoReset<bool> setter(&suppress_invalidate_, true);
   const bool invalidate = PropagateViewRemoved(host, view);
-  if (invalidate || removed_visible)
+  if (invalidate || removed_visible) {
     InvalidateHost(false);
+  }
 }
 
 void LayoutManagerBase::ViewVisibilitySet(View* host,
@@ -366,7 +376,7 @@ void LayoutManagerBase::AddOwnedLayoutInternal(
   // If `owned_layout` knows about views the root doesn't, something is going to
   // go wrong.
   const LayoutManagerBase* const root_layout = GetRootLayoutManager();
-  base::ranges::for_each(
+  std::ranges::for_each(
       owned_layout->view_observations_.sources(), [&](View* source) {
         DCHECK(root_layout->view_observations_.IsObservingSource(source));
       });
@@ -393,8 +403,9 @@ void LayoutManagerBase::AddOwnedLayoutInternal(
 
 LayoutManagerBase* LayoutManagerBase::GetRootLayoutManager() {
   LayoutManagerBase* result = this;
-  while (result->parent_layout_)
+  while (result->parent_layout_) {
     result = result->parent_layout_;
+  }
   return result;
 }
 
@@ -418,8 +429,9 @@ bool LayoutManagerBase::PropagateViewAdded(View* host, View* view) {
 
   bool result = false;
 
-  for (auto& owned_layout : owned_layouts_)
+  for (auto& owned_layout : owned_layouts_) {
     result |= owned_layout->PropagateViewAdded(host, view);
+  }
 
   result |= OnViewAdded(host, view);
   return result;
@@ -430,8 +442,9 @@ bool LayoutManagerBase::PropagateViewRemoved(View* host, View* view) {
 
   bool result = false;
 
-  for (auto& owned_layout : owned_layouts_)
+  for (auto& owned_layout : owned_layouts_) {
     result |= owned_layout->PropagateViewRemoved(host, view);
+  }
 
   result |= OnViewRemoved(host, view);
   return result;
@@ -444,8 +457,9 @@ bool LayoutManagerBase::PropagateViewVisibilitySet(View* host,
 
   bool result = false;
 
-  for (auto& owned_layout : owned_layouts_)
+  for (auto& owned_layout : owned_layouts_) {
     result |= owned_layout->PropagateViewVisibilitySet(host, view, visible);
+  }
 
   result |= OnViewVisibilitySet(host, view, visible);
   return result;
@@ -459,15 +473,17 @@ void LayoutManagerBase::PropagateInstalled(View* host) {
                          .included_in_layout = IncludeInLayout(child)});
   }
 
-  for (auto& owned_layout : owned_layouts_)
+  for (auto& owned_layout : owned_layouts_) {
     owned_layout->PropagateInstalled(host);
+  }
 
   OnInstalled(host);
 }
 
 void LayoutManagerBase::PropagateInvalidateLayout() {
-  for (auto& owned_layout : owned_layouts_)
+  for (auto& owned_layout : owned_layouts_) {
     owned_layout->PropagateInvalidateLayout();
+  }
 
   OnLayoutChanged();
 }

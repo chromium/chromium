@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   import("//chrome/test/base/ash/js2gtest.gni")
 }
 
@@ -20,7 +19,7 @@ group("extensions") {
 
 group("extension_tests") {
   testonly = true
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps = [
       ":colorenhancer_tests",
       ":highcontrast_tests",
@@ -159,7 +158,7 @@ copy("colorenhancer_copy") {
   outputs = [ "$root_out_dir/{{source_target_relative}}" ]
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   webui_test_deps = [ "//chrome/test:browser_tests_runner" ]
 
   test("colorenhancer_tests") {
@@ -291,7 +290,7 @@ copy("caretbrowsing_copy") {
   outputs = [ "$root_out_dir/caretbrowsing/{{source_file_part}}" ]
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   test("highcontrast_tests") {
     deps = [ ":highcontrast_webui_js_tests" ]
     deps += webui_test_deps

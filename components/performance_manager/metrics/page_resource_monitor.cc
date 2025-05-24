@@ -38,7 +38,7 @@ using ResourceType = resource_attribution::ResourceType;
 // 100.0] range. The CPU usage is usually below 1%, so the UKM is
 // reported out of 10,000 instead of out of 100 to make analyzing the data
 // easier. This is the same scale factor used by the
-// PerformanceMonitor.AverageCPU8 histograms recorded in
+// PerformanceMonitor.AverageCPU9 histograms recorded in
 // chrome/browser/metrics/power/process_metrics_recorder_util.cc.
 constexpr int kCPUUsageFactor = 100 * 100;
 
@@ -47,17 +47,19 @@ constexpr base::TimeDelta kCollectionDelay = base::Minutes(2);
 
 PageMeasurementBackgroundState GetBackgroundStateForMeasurementPeriod(
     const PageNode* page_node,
-    base::TimeDelta time_since_last_measurement) {
-  if (page_node->GetTimeSinceLastVisibilityChange() <
-      time_since_last_measurement) {
+    base::TimeTicks now,
+    base::TimeTicks time_of_last_resource_usage) {
+  if (time_of_last_resource_usage < page_node->GetLastVisibilityChangeTime()) {
     return PageMeasurementBackgroundState::kMixedForegroundBackground;
   }
   if (page_node->IsVisible()) {
     return PageMeasurementBackgroundState::kForeground;
   }
   // Check if the page was audible for the entire measurement period.
+  const base::TimeDelta time_since_last_resource_usage =
+      now - time_of_last_resource_usage;
   if (page_node->GetTimeSinceLastAudibleChange().value_or(
-          base::TimeDelta::Max()) < time_since_last_measurement) {
+          base::TimeDelta::Max()) < time_since_last_resource_usage) {
     return PageMeasurementBackgroundState::kBackgroundMixedAudible;
   }
   if (page_node->IsAudible()) {
@@ -167,7 +169,7 @@ void PageResourceMonitor::OnPageResourceUsageResult(
     auto ukm = ukm::builders::PerformanceManager_PageResourceUsage2(source_id);
     ukm.SetBackgroundState(
         static_cast<int64_t>(GetBackgroundStateForMeasurementPeriod(
-            page_node, now - time_of_last_resource_usage_)));
+            page_node, now, time_of_last_resource_usage_)));
     ukm.SetMeasurementAlgorithm(
         static_cast<int64_t>(PageMeasurementAlgorithm::kEvenSplitAndAggregate));
     // Add CPU usage, if this page included it.

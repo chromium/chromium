@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/fake_audio_render_callback.h"
 
 #include <algorithm>
@@ -56,15 +51,15 @@ int FakeAudioRenderCallback::RenderInternal(AudioBus* audio_bus,
   last_delay_ = delay;
   last_channel_count_ = audio_bus->channels();
 
-  int number_of_frames = audio_bus->frames();
+  size_t number_of_frames = static_cast<size_t>(audio_bus->frames());
   if (half_fill_)
     number_of_frames /= 2;
 
-  float* channel_data = audio_bus->channel(0);
+  auto first_channel = audio_bus->channel_span(0);
 
   // Fill first channel with a sine wave.
-  for (int i = 0; i < number_of_frames; ++i) {
-    channel_data[i] = sin(2 * std::numbers::pi * (x_ + step_ * i)) * volume;
+  for (size_t i = 0; i < number_of_frames; ++i) {
+    first_channel[i] = sin(2 * std::numbers::pi * (x_ + step_ * i)) * volume;
   }
   x_ += number_of_frames * step_;
 
@@ -77,16 +72,19 @@ int FakeAudioRenderCallback::RenderInternal(AudioBus* audio_bus,
                      kFadeInDuration, sample_rate_)),
                  audio_bus->frames());
 
-    for (int i = 0; i < fade_in_frames; ++i)
-      channel_data[i] = channel_data[i] * i / fade_in_frames;
+    for (int i = 0; i < fade_in_frames; ++i) {
+      first_channel[i] = first_channel[i] * i / fade_in_frames;
+    }
 
     needs_fade_in_ = false;
   }
 
   // Copy first channel into the rest of the channels.
+  auto first_channel_data = first_channel.first(number_of_frames);
   for (int i = 1; i < audio_bus->channels(); ++i) {
-    memcpy(audio_bus->channel(i), audio_bus->channel(0),
-           number_of_frames * sizeof(*audio_bus->channel(i)));
+    audio_bus->channel_span(i)
+        .first(number_of_frames)
+        .copy_from_nonoverlapping(first_channel_data);
   }
 
   return number_of_frames;

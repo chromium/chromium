@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos/ash")
 
 mojom("mojom") {
   sources = [ "cros_audio_config.mojom" ]

@@ -14,6 +14,7 @@ enum class ResourceRequestBlockedReason {
   kMixedContent,
   kOrigin,
   kInspector,
+  kIntegrity,
   kSubresourceFilter,
   kContentType,
   kCoepFrameResourceNeedsCoepHeader,
@@ -24,6 +25,7 @@ enum class ResourceRequestBlockedReason {
   kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
   kCorpNotSameSite,
   kConversionRequest,
+  kSRIMessageSignatureMismatch,
   kMax = kConversionRequest,
 };
 

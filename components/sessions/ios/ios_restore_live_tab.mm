@@ -11,7 +11,7 @@ namespace sessions {
 RestoreIOSLiveTab::RestoreIOSLiveTab(web::proto::NavigationStorage storage)
     : storage_(std::move(storage)) {}
 
-RestoreIOSLiveTab::~RestoreIOSLiveTab() {}
+RestoreIOSLiveTab::~RestoreIOSLiveTab() = default;
 
 bool RestoreIOSLiveTab::IsInitialBlankNavigation() {
   return false;

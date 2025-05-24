@@ -8,16 +8,15 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/base/ui_base_types.h"
 #endif
 
 namespace gfx {
 class Size;
 class Rect;
-}
+}  // namespace gfx
 
 // Delegate interface to control layout decisions without having to depend on
 // Browser{,Frame,View}.

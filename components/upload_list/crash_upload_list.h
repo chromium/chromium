@@ -14,7 +14,7 @@ class CrashUploadList {
   static const char kReporterLogFilename[];
 
  private:
-  CrashUploadList() {}
+  CrashUploadList() = default;
 };
 
 #endif  // COMPONENTS_UPLOAD_LIST_CRASH_UPLOAD_LIST_H_

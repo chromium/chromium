@@ -1,0 +1,149 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "skrifa"
+  epoch = "0.29"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/attribute.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/charmap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/collections.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/color/instance.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/color/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/color/transform.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/color/traversal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/color/traversal_tests/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/color/traversal_tests/test_glyph_defs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/decycler.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/font.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/glyph_name.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/instance.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/metrics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/hint/edges.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/hint/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/hint/outline.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/instance.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/metrics/blues.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/metrics/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/metrics/scale.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/metrics/widths.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/outline.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/shape.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/style.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/topo/edges.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/topo/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/autohint/topo/segments.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/cff/hint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/cff/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/deltas.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/call_stack.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/cow_slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/cvt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/definition.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/arith.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/control_flow.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/cvt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/data.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/definition.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/delta.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/dispatch.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/graphics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/logical.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/misc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/outline.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/round.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/stack.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/engine/storage.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/graphics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/instance.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/math.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/program.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/projection.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/round.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/storage.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/value_stack.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/hint/zone.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/memory.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/glyf/outline.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/hint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/hint_reliant.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/memory.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/metrics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/path.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/pen.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/testing.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/outline/unscaled.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/setting.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/variation.rs",
+  ]
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/skrifa-v0_29/src/../generated/generated_autohint_styles.rs" ]
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_name = "skrifa"
+  cargo_pkg_description = "Metadata reader and glyph scaler for OpenType fonts."
+  cargo_pkg_version = "0.29.2"
+
+  allow_unsafe = false
+
+  deps = [
+    "//third_party/rust/bytemuck/v1:lib",
+    "//third_party/rust/read_fonts/v0_27:lib",
+  ]
+  features = [
+    "autohint_shaping",
+    "default",
+    "std",
+    "traversal",
+  ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

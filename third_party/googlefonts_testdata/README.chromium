@@ -1,8 +1,9 @@
 Name: Google Fonts font files for font backend comparison tests
-URL: cl/559229536
-Version: 0
+URL: http://cl/559229536
+Version: N/A
 Revision: 20230913
-License: OFL
+License: OFL-1.1
+License File: LICENSE
 Security Critical: no
 Shipped: no
 

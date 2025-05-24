@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_lock.h"
@@ -41,7 +42,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   frame_info->routing_id = frame->GetRoutingID();
   frame_info->agent_scheduling_group_id =
       frame->GetAgentSchedulingGroup().id_for_debugging();
-  frame_info->process_id = frame->GetProcess()->GetID();
+  frame_info->process_id = frame->GetProcess()->GetDeprecatedID();
   frame_info->last_committed_url =
       frame->GetLastCommittedURL().is_valid()
           ? std::make_optional(frame->GetLastCommittedURL())
@@ -62,6 +63,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   frame_info->site_instance->is_pdf = site_instance->IsPdf();
   frame_info->site_instance->is_sandbox_for_iframes =
       site_instance->GetSiteInfo().is_sandboxed();
+  frame_info->site_instance->are_javascript_optimizers_enabled =
+      !site_instance->GetSiteInfo().are_v8_optimizations_disabled();
   frame_info->site_instance->site_instance_group_id =
       site_instance->group() ? site_instance->group()->GetId().value() : 0;
   frame_info->site_instance->browsing_instance_id =
@@ -114,7 +117,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 
   // Execute over all frames appending any frames encountered to the parent's
   // subframe data.
-  frame->ForEachRenderFrameHostWithAction(
+  frame->ForEachRenderFrameHostImplWithAction(
       [web_contents, outermost_frame = frame, type,
        &all_frame_info](RenderFrameHostImpl* rfh) {
         // We've already handled the outermost frame outside of this.
@@ -129,7 +132,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
         ::mojom::FrameInfoPtr frame_info =
             RenderFrameHostToFrameInfoNoTraverse(rfh, type);
         all_frame_info[rfh] = frame_info.get();
-        RenderFrameHostImpl* parent = rfh->GetParentOrOuterDocument();
+        RenderFrameHostImpl* parent = rfh->GetParentOrOuterDocumentOrEmbedder();
         DCHECK(base::Contains(all_frame_info, parent));
         all_frame_info[parent]->subframes.push_back(std::move(frame_info));
         return RenderFrameHost::FrameIterationAction::kContinue;
@@ -171,8 +174,7 @@ std::string IsolatedOriginSourceToString(IsolatedOriginSource source) {
     case IsolatedOriginSource::WEB_TRIGGERED:
       return "Web-triggered";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -319,7 +321,7 @@ void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
     }
 
     // Retrieve prerendering root frames.
-    web_contents->ForEachRenderFrameHost(
+    web_contents->ForEachRenderFrameHostImpl(
         [web_contents, &prerender_root_frames = info->prerender_root_frames](
             RenderFrameHostImpl* rfh) {
           CollectPrerenders(web_contents, rfh, prerender_root_frames);

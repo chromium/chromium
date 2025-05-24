@@ -66,6 +66,52 @@ class V8ObjectBuilder;
 // FIXME: Make Keyframe immutable
 class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
  public:
+  struct EndIterator {};
+
+  class VirtualPropertyIterator {
+   public:
+    virtual ~VirtualPropertyIterator() = default;
+    virtual void Advance(const Keyframe* keyframe) = 0;
+    virtual PropertyHandle Deref(const Keyframe* keyframe) const = 0;
+    virtual bool AtEnd(const Keyframe* keyframe) const = 0;
+  };
+
+  class CORE_EXPORT PropertyIteratorWrapper {
+    STACK_ALLOCATED();
+
+   public:
+    explicit PropertyIteratorWrapper(
+        const Keyframe* keyframe,
+        std::unique_ptr<VirtualPropertyIterator> impl)
+        : keyframe_(keyframe), impl_(std::move(impl)) {}
+
+    bool operator==(EndIterator other) const { return impl_->AtEnd(keyframe_); }
+
+    PropertyIteratorWrapper& operator++() {
+      impl_->Advance(keyframe_);
+      return *this;
+    }
+
+    PropertyHandle operator*() const { return impl_->Deref(keyframe_); }
+
+   private:
+    const Keyframe* keyframe_;
+    std::unique_ptr<VirtualPropertyIterator> impl_;
+  };
+
+  class CORE_EXPORT IterableProperties
+      : public GarbageCollected<IterableProperties> {
+   public:
+    IterableProperties() = default;
+    virtual ~IterableProperties() = default;
+    virtual PropertyIteratorWrapper begin() const = 0;
+    EndIterator end() const { return EndIterator(); }
+    virtual size_t size() const = 0;
+    bool empty() const { return begin() == end(); }
+    virtual void Trace(Visitor*) const {}
+    virtual bool IsTransitionProperties() const { return false; }
+  };
+
   Keyframe(const Keyframe&) = delete;
   Keyframe& operator=(const Keyframe&) = delete;
   virtual ~Keyframe() = default;
@@ -124,8 +170,13 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
   void SetIndex(int index) { original_index_ = index; }
   std::optional<int> Index() { return original_index_; }
 
-  // Returns a set of the properties represented in this keyframe.
-  virtual PropertyHandleSet Properties() const = 0;
+  // Returns an iterable collection of the properties represented in this
+  // keyframe.
+  const IterableProperties& Properties() const { return *properties_; }
+
+  // Returns a copy of the properties represented in this keyframe.
+  // Prefer iterating over Properties() when a copy is not needed.
+  Vector<PropertyHandle> PropertiesVector() const;
 
   // Creates a clone of this keyframe.
   //
@@ -133,13 +184,6 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
   // composite operation, and timing function, as well as any other
   // subclass-specific data.
   virtual Keyframe* Clone() const = 0;
-
-  // Helper function to create a clone of this keyframe with a specific offset.
-  Keyframe* CloneWithOffset(double offset) const {
-    Keyframe* the_clone = Clone();
-    the_clone->SetOffset(offset);
-    return the_clone;
-  }
 
   // Comparator for stable sorting keyframes by offset. In the event of a tie
   // we sort by original index of the keyframe if specified.
@@ -161,7 +205,7 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
   virtual bool IsStringKeyframe() const { return false; }
   virtual bool IsTransitionKeyframe() const { return false; }
 
-  virtual void Trace(Visitor*) const {}
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(properties_); }
 
   // Represents a property-specific keyframe as defined in the spec. Refer to
   // the Keyframe class-level documentation for more details.
@@ -184,7 +228,6 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
     virtual bool IsNeutral() const = 0;
     virtual bool IsRevert() const = 0;
     virtual bool IsRevertLayer() const = 0;
-    virtual PropertySpecificKeyframe* CloneWithOffset(double offset) const = 0;
 
     // FIXME: Remove this once CompositorAnimations no longer depends on
     // CompositorKeyframeValues
@@ -200,7 +243,6 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
         const = 0;
 
     virtual bool IsCSSPropertySpecificKeyframe() const { return false; }
-    virtual bool IsSVGPropertySpecificKeyframe() const { return false; }
     virtual bool IsTransitionPropertySpecificKeyframe() const { return false; }
 
     virtual PropertySpecificKeyframe* NeutralKeyframe(
@@ -235,18 +277,23 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
       double offset) const = 0;
 
  protected:
-  Keyframe() : easing_(LinearTimingFunction::Shared()) {}
-  Keyframe(std::optional<double> offset,
+  explicit Keyframe(IterableProperties* properties)
+      : properties_(properties), easing_(LinearTimingFunction::Shared()) {}
+  Keyframe(IterableProperties* properties,
+           std::optional<double> offset,
            std::optional<TimelineOffset> timeline_offset,
            std::optional<EffectModel::CompositeOperation> composite,
            scoped_refptr<TimingFunction> easing)
-      : offset_(offset),
+      : properties_(properties),
+        offset_(offset),
         timeline_offset_(timeline_offset),
         composite_(composite),
         easing_(std::move(easing)) {
     if (!easing_)
       easing_ = LinearTimingFunction::Shared();
   }
+
+  Member<IterableProperties> properties_;
 
   // Either the specified offset or the offset resolved from a timeline offset.
   std::optional<double> offset_;

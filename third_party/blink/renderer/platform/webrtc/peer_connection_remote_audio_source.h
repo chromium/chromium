@@ -21,6 +21,8 @@ class AudioBus;
 
 namespace blink {
 
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPropagateEnabledEventForWebRtcAudioTrack);
+
 // PeerConnectionRemoteAudioTrack is a WebRTC specific implementation of an
 // audio track whose data is sourced from a PeerConnection.
 class PLATFORM_EXPORT PeerConnectionRemoteAudioTrack final

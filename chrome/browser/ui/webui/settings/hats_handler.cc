@@ -39,25 +39,6 @@ SurveyBitsData GetPrivacySettingsProductSpecificBitsData(Profile* profile) {
   return {{"3P cookies blocked", third_party_cookies_blocked}};
 }
 
-// Generate the Product Specific bits data which accompanies M1 Ad Privacy
-// survey responses from |profile|.
-SurveyBitsData GetAdPrivacyProductSpecificBitsData(Profile* profile) {
-  const bool third_party_cookies_blocked =
-      static_cast<content_settings::CookieControlsMode>(
-          profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
-      content_settings::CookieControlsMode::kBlockThirdParty;
-
-  return {
-      {"3P cookies blocked", third_party_cookies_blocked},
-      {"Topics enabled",
-       profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)},
-      {"Fledge enabled",
-       profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled)},
-      {"Ad Measurement enabled",
-       profile->GetPrefs()->GetBoolean(
-           prefs::kPrivacySandboxM1AdMeasurementEnabled)},
-  };
-}
 }  // namespace
 
 namespace settings {
@@ -250,8 +231,9 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
 
   // The HaTS service may not be available for the profile, for example if it
   // is a guest profile.
-  if (!hats_service)
+  if (!hats_service) {
     return;
+  }
 
   std::string trigger = "";
   int timeout_ms = 0;
@@ -290,48 +272,6 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
           HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
       break;
     }
-    case TrustSafetyInteraction::OPENED_AD_PRIVACY: {
-      trigger = kHatsSurveyTriggerM1AdPrivacyPage;
-      timeout_ms =
-          features::kHappinessTrackingSurveysForDesktopM1AdPrivacyPageTime.Get()
-              .InMilliseconds();
-      navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
-      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
-      break;
-    }
-    case TrustSafetyInteraction::OPENED_TOPICS_SUBPAGE: {
-      trigger = kHatsSurveyTriggerM1TopicsSubpage;
-      timeout_ms =
-          features::kHappinessTrackingSurveysForDesktopM1TopicsSubpageTime.Get()
-              .InMilliseconds();
-      navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
-      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
-      break;
-    }
-    case TrustSafetyInteraction::OPENED_FLEDGE_SUBPAGE: {
-      trigger = kHatsSurveyTriggerM1FledgeSubpage;
-      timeout_ms =
-          features::kHappinessTrackingSurveysForDesktopM1FledgeSubpageTime.Get()
-              .InMilliseconds();
-      navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
-      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
-      break;
-    }
-    case TrustSafetyInteraction::OPENED_AD_MEASUREMENT_SUBPAGE: {
-      trigger = kHatsSurveyTriggerM1AdMeasurementSubpage;
-      timeout_ms =
-          features::
-              kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpageTime
-                  .Get()
-                  .InMilliseconds();
-      navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
-      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
-      break;
-    }
     case TrustSafetyInteraction::OPENED_PASSWORD_MANAGER:
       [[fallthrough]];
     case TrustSafetyInteraction::RAN_PASSWORD_CHECK: {
@@ -351,8 +291,9 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
 void HatsHandler::InformSentimentService(TrustSafetyInteraction interaction) {
   auto* sentiment_service = TrustSafetySentimentServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui()));
-  if (!sentiment_service)
+  if (!sentiment_service) {
     return;
+  }
 
   if (interaction == TrustSafetyInteraction::USED_PRIVACY_CARD) {
     sentiment_service->InteractedWithPrivacySettings(

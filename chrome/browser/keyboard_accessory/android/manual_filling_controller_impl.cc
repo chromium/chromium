@@ -4,6 +4,8 @@
 
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 
+#include <inttypes.h>
+
 #include <numeric>
 #include <optional>
 #include <utility>
@@ -289,10 +291,6 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
 }
 
 void ManualFillingControllerImpl::InitializePlusProfilesCache() {
-  if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
-    return;
-  }
   auto* client =
       autofill::ContentAutofillClient::FromWebContents(&GetWebContents());
   auto* service = PlusAddressServiceFactory::GetForBrowserContext(
@@ -357,8 +355,9 @@ void ManualFillingControllerImpl::UpdateVisibility() {
         continue;  // Most-likely, the controller was cleaned up already.
       }
       std::optional<AccessorySheetData> sheet = controller->GetSheetData();
-      if (sheet.has_value())
+      if (sheet.has_value()) {
         view_->OnItemsAvailable(std::move(sheet.value()));
+      }
     }
     if (plus_profiles_cache_) {
       plus_profiles_cache_->FetchAffiliatedPlusProfiles();
@@ -397,7 +396,9 @@ void ManualFillingControllerImpl::OnSourceAvailabilityChanged(
   bool show_filling_source = sheet.has_value() && is_source_available;
   // TODO(crbug.com/40165275): Remove once all sheets pull this information
   // instead of waiting to get it pushed.
-  view_->OnItemsAvailable(std::move(sheet.value()));
+  if (sheet.has_value()) {
+    view_->OnItemsAvailable(std::move(sheet.value()));
+  }
   UpdateSourceAvailability(source, show_filling_source);
 }
 
@@ -413,9 +414,8 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForTabType(
     case AccessoryTabType::OBSOLETE_TOUCH_TO_FILL:
     case AccessoryTabType::ALL:
     case AccessoryTabType::COUNT:
-      NOTREACHED_IN_MIGRATION()
-          << "Controller not defined for tab: " << static_cast<int>(type);
-      return nullptr;
+      NOTREACHED() << "Controller not defined for tab: "
+                   << static_cast<int>(type);
   }
 }
 
@@ -439,12 +439,12 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
       return address_controller_.get();
     case AccessoryAction::MANAGE_CREDIT_CARDS:
+    case AccessoryAction::MANAGE_LOYALTY_CARDS:
       return payment_method_controller_.get();
     case AccessoryAction::AUTOFILL_SUGGESTION:
     case AccessoryAction::COUNT:
-      NOTREACHED_IN_MIGRATION()
-          << "Controller not defined for action: " << static_cast<int>(action);
-      return nullptr;
+      NOTREACHED() << "Controller not defined for action: "
+                   << static_cast<int>(action);
   }
 }
 
@@ -458,9 +458,8 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForFillingSource(
     case FillingSource::ADDRESS_FALLBACKS:
       return address_controller_.get();
     case FillingSource::AUTOFILL:
-      NOTREACHED_IN_MIGRATION() << "Controller not defined for filling source: "
-                                << static_cast<int>(filling_source);
-      return nullptr;
+      NOTREACHED() << "Controller not defined for filling source: "
+                   << static_cast<int>(filling_source);
   }
 }
 

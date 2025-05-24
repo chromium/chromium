@@ -33,13 +33,13 @@ function drawSRGBImageOnRec2020Canvas(source)
   canvas.width = 20;
   canvas.height = 20;
   var ctx = canvas.getContext('2d',
-      {colorSpace: 'rec2020', pixelFormat:'float16'});
+      {colorSpace: 'rec2020', colorType:'float16'});
   ctx.drawImage(source, 0, 0);
   var tests = [{x: 5, y: 5, color: rec2020OpaqueRed},
                {x: 15, y: 5, color: rec2020OpaqueGreen},
                {x: 5, y: 15, color: rec2020OpaqueBlue},
                {x: 15, y: 15, color: rec2020OpaqueBlack}];
-  testPixels(ctx, tests, {colorSpace: 'rec2020', storageFormat: 'float32'});
+  testPixels(ctx, tests, {colorSpace: 'rec2020', pixelFormat: 'rgba-float16'});
 }
 
 promise_test(function() {

@@ -39,18 +39,16 @@ void StorageInfoFetcher::FetchStorageInfo(FetchCallback fetch_callback) {
 }
 
 void StorageInfoFetcher::ClearStorage(const std::string& host,
-                                      blink::mojom::StorageType type,
                                       ClearCallback clear_callback) {
   // Balanced in OnUsageCleared.
   AddRef();
 
   clear_callback_ = std::move(clear_callback);
-  type_to_delete_ = type;
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &storage::QuotaManager::DeleteHostData, quota_manager_, host, type,
+          &storage::QuotaManager::DeleteHostData, quota_manager_, host,
           base::BindOnce(&StorageInfoFetcher::OnUsageClearedInternal, this)));
 }
 
@@ -81,7 +79,7 @@ void StorageInfoFetcher::OnUsageClearedInternal(
     blink::mojom::QuotaStatusCode code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  quota_manager_->ResetUsageTracker(type_to_delete_);
+  quota_manager_->ResetUsageTracker();
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

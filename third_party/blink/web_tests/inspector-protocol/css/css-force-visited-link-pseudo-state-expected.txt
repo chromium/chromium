@@ -1,0 +1,16 @@
+Test CSS.forcePseudoStates method for :link and :visited
+Matched rules for #unvisited:
+selector: a
+selector: a:link
+Matched rules for #visited:
+selector: a
+selector: a:visited
+Forcing new pseudo states
+Matched rules for #unvisited:
+selector: a
+selector: a:visited
+Matched rules for #visited:
+selector: a
+selector: a:link
+Completed
+

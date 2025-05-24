@@ -147,9 +147,9 @@ sorted so that the things that make the biggest difference are first.
 #### Use Reclient
 
 *** note
-**Warning:** If you are a Google employee, do not follow the instructions below.
-See
-[go/building-android-chrome#initialize-remote-execution-distributed-builds](https://goto.google.com/building-android-chrome#initialize-remote-execution-distributed-builds)
+**Warning:** If you are a Google employee, do not follow the Reclient instructions
+in this section. Set up remote execution as described in
+[go/building-android-chrome](https://goto.google.com/building-android-chrome)
 instead.
 ***
 
@@ -163,16 +163,16 @@ To use Reclient, follow the corresponding
 
 ## Build cast\_shell\_apk
 
-Build `cast_shell_apk` with Ninja using the command:
+Build `cast_browser_apk` with Ninja using the command:
 
 ```shell
-$ autoninja -C out/Default cast_shell_apk
+$ autoninja -C out/Default cast_browser_apk
 ```
 
 (`autoninja` is a wrapper that automatically provides optimal values for the
 arguments passed to `ninja`.)
 
-## Installing and Running `cast_shell_apk` on a device
+## Installing and Running `cast_browser_apk` on a device
 
 ### Plug in your Android device
 
@@ -201,15 +201,15 @@ unplugging and reattaching your device.
 ### Build the APK
 
 ```shell
-autoninja -C out/Release cast_shell_apk
+autoninja -C out/Release cast_browser_apk
 ```
 
 And deploy it to your Android device:
 
 ```shell
-out/Default/bin/cast_shell_apk install
+out/Default/bin/cast_browser_apk install
 # Or to install and run:
-out/Default/bin/cast_shell_apk run "http://google.com"
+out/Default/bin/cast_browser_apk run "http://google.com"
 ```
 
 The app will appear on the device as "Chromium".

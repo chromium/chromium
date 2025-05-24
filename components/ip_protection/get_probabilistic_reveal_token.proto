@@ -1,0 +1,70 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+syntax = "proto3";
+
+package ip_protection;
+
+option optimize_for = LITE_RUNTIME;
+
+message GetProbabilisticRevealTokenRequest {
+  enum ServiceType {
+    SERVICE_TYPE_UNSPECIFIED = 0;
+    CHROME = 1;
+  }
+  optional ServiceType service_type = 1;
+}
+
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  int32 nanos = 2;
+}
+
+// Response to get probabilistic reveal tokens.
+message GetProbabilisticRevealTokenResponse {
+  // A single probabilistic reveal token
+  message ProbabilisticRevealToken {
+    // Version 1 indicates curve secp224r1.
+    // Chrome verifies version is 1 and complains if not.
+    optional int32 version = 1;
+    // Elliptic curve point stored in compressed form, for version 1 size must
+    // be 29.
+    optional bytes u = 2;
+    // Elliptic curve point stored in compressed form, for version 1 size must
+    // be 29.
+    optional bytes e = 3;
+  }
+
+  // Stores a public key for curve secp224r1.
+  message PublicKey {
+    // Elliptic curve point stored in compressed form, for version 1 size must
+    // be 29.
+    optional bytes y = 1;
+  }
+
+  repeated ProbabilisticRevealToken tokens = 1;
+
+  optional PublicKey public_key = 2;
+
+  // Time since unix epoch, tokens are invalid past this expiration time.
+  optional Timestamp expiration_time = 3;
+
+  // Time since unix epoch. After this, chrome can ask for tokens with a later
+  // expiration time.
+  optional Timestamp next_epoch_start_time = 4;
+
+  // The number of tokens with the signal.
+  optional int32 num_tokens_with_signal = 5;
+
+  // The id of the epoch in which the tokens were issued, used to identify the
+  // corresponding key used to decrypt the tokens.
+  optional bytes epoch_id = 6;
+}

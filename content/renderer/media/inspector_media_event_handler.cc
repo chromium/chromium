@@ -31,7 +31,7 @@ std::optional<blink::InspectorPlayerError> ErrorFromParams(
       caused_by.push_back(*parsed_cause);
   }
 
-  blink::WebVector<blink::InspectorPlayerError::SourceLocation> stack_vec;
+  std::vector<blink::InspectorPlayerError::SourceLocation> stack_vec;
   if (const auto* vec = param.FindList(media::StatusConstants::kStackKey)) {
     for (const auto& loc : *vec) {
       const auto& loc_dict = loc.GetDict();
@@ -47,7 +47,7 @@ std::optional<blink::InspectorPlayerError> ErrorFromParams(
     }
   }
 
-  blink::WebVector<blink::InspectorPlayerError::Data> data_vec;
+  std::vector<blink::InspectorPlayerError::Data> data_vec;
   if (auto* data = param.FindDict(media::StatusConstants::kDataKey)) {
     for (const auto pair : *data) {
       std::string json;

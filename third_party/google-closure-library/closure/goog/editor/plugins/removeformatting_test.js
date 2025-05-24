@@ -249,7 +249,31 @@ testSuite({
                FORMATTER.removeFormatting_();
                assertHTMLEquals(
                    'link should not be removed',
-                   'FooPre<a href="http://www.google.com/">Outside SpanInside Span</a>',
+                   'FooPre<a href="http://www.google.com">Outside SpanInside Span</a>',
+                   div.innerHTML);
+             });
+  },
+
+  testRelativeLinksAreNotAbsolutified() {
+    let anchor;
+    const div = document.getElementById('html');
+    div.innerHTML = 'Foo<span id="link">Pre<a href="/hello.html">' +
+        'Outside Span<span style="font-size:15pt">Inside Span' +
+        '</span></a></span>';
+
+    anchor = document.getElementById('link');
+    Range.createFromNodeContents(anchor).select();
+
+    expectedFailures
+        .run(/**
+                @suppress {visibility} suppression added to enable type
+                checking
+              */
+             () => {
+               FORMATTER.removeFormatting_();
+               assertHTMLEquals(
+                   'link should not be absolutified',
+                   'FooPre<a href="/hello.html">Outside SpanInside Span</a>',
                    div.innerHTML);
              });
   },
@@ -417,7 +441,7 @@ testSuite({
                FORMATTER.removeFormatting_();
                // Test that we split the list.
                assertHTMLEquals(
-                   '<ul><li>one</li></ul><br>two<ul><li>three</li></ul>',
+                   '<ul><li>one</li></ul>two<ul><li>three</li></ul>',
                    div.innerHTML);
                FIELDMOCK.$verify();
              });
@@ -444,7 +468,7 @@ testSuite({
                            FORMATTER.removeFormatting_();
                            // Test that we completely remove the list.
                            assertHTMLEquals(
-                               '<br>one<br>two<br>threeafter', div.innerHTML);
+                               'one<br>two<br>threeafter', div.innerHTML);
                            FIELDMOCK.$verify();
                          });
   },
@@ -478,7 +502,7 @@ testSuite({
                            FORMATTER.removeFormatting_();
                            // Test that we leave the list start alone.
                            assertHTMLEquals(
-                               '<ul><li>one</li></ul><br>two<br>threeafter',
+                               '<ul><li>one</li></ul>two<br>threeafter',
                                div.innerHTML);
                            FIELDMOCK.$verify();
                          });
@@ -639,6 +663,24 @@ testSuite({
               ' even if deep inside anchor tag',
           testHtml.replace(/<\/?b>/g, '') + controlCleanHtml +
               insertImageBoldGarbage,
+          div.innerHTML);
+      FIELDMOCK.$verify();
+    });
+  },
+
+  /**
+   * @suppress {visibility} suppression added to enable type checking
+   */
+  testPreservesLinkFormatting() {
+    const testHtml = '<a href="http://www.google.com/">abc123</a>';
+    const div = document.getElementById('html');
+    div.innerHTML = testHtml + controlHtml;
+    Range.createFromNodeContents(div.firstChild).select();
+
+    expectedFailures.run(() => {
+      FORMATTER.removeFormatting_();
+      assertHTMLEquals(
+          'Anchor formatting should be preserved', testHtml + controlHtml,
           div.innerHTML);
       FIELDMOCK.$verify();
     });

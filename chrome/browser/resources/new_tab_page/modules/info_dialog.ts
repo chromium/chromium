@@ -38,7 +38,7 @@ export class InfoDialogElement extends CrLitElement {
     };
   }
 
-  showOnAttach: boolean = false;
+  accessor showOnAttach: boolean = false;
 
   showModal() {
     this.$.dialog.showModal();

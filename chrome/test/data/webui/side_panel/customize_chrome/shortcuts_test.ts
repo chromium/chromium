@@ -24,7 +24,7 @@ suite('ShortcutsTest', () => {
   let callbackRouterRemote: CustomizeChromePageRemote;
   let metrics: MetricsTracker;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         CustomizeChromePageHandlerRemote,
@@ -94,7 +94,7 @@ suite('ShortcutsTest', () => {
     await microtasksFinished();
 
     const selector =
-        customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
+        customizeShortcutsElement.shadowRoot.querySelector('cr-collapse');
     assertTrue(!!selector);
     assertEquals(true, selector.opened);
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
@@ -112,7 +112,7 @@ suite('ShortcutsTest', () => {
     await microtasksFinished();
 
     const selector =
-        customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
+        customizeShortcutsElement.shadowRoot.querySelector('cr-collapse');
     assertTrue(!!selector);
     assertEquals(false, selector.opened);
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
@@ -130,7 +130,7 @@ suite('ShortcutsTest', () => {
     await microtasksFinished();
 
     const selector =
-        customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
+        customizeShortcutsElement.shadowRoot.querySelector('cr-collapse');
     assertTrue(!!selector);
     assertEquals(true, selector.opened);
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
@@ -229,10 +229,10 @@ suite('ShortcutsTest', () => {
         document.createElement('customize-chrome-shortcuts');
     document.body.appendChild(customizeShortcutsElement);
     const crCollapse =
-        customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse')!;
+        customizeShortcutsElement.shadowRoot.querySelector('cr-collapse')!;
 
     // No animation before initialize.
-    assertTrue(crCollapse.noAnimation!);
+    assertTrue(crCollapse.noAnimation);
 
     // Initialize.
     callbackRouterRemote.setMostVisitedSettings(
@@ -240,7 +240,7 @@ suite('ShortcutsTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     // Animation after initialize.
-    assertFalse(crCollapse.noAnimation!);
+    assertFalse(crCollapse.noAnimation);
 
     // Update.
     callbackRouterRemote.setMostVisitedSettings(
@@ -248,7 +248,7 @@ suite('ShortcutsTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     // Still animation after update.
-    assertFalse(crCollapse.noAnimation!);
+    assertFalse(crCollapse.noAnimation);
   });
 
   suite('Metrics', () => {

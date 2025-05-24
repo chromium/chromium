@@ -7,7 +7,7 @@
 dictionary DetectedBarcode {
     required DOMString rawValue;
     required DOMRectReadOnly boundingBox;
-    required DOMString format;
+    required BarcodeFormat format;
     // 4 corner points in clockwise direction starting with top-left. Due to
     // possible perspective distortions, this is not necessarily a rectangle.
     required sequence<Point2D> cornerPoints;

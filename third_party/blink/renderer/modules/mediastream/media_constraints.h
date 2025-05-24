@@ -48,10 +48,10 @@ class MODULES_EXPORT BaseConstraint {
   bool IsPresent() const { return is_present_ || !IsUnconstrained(); }
   void SetIsPresent(bool is_present) { is_present_ = is_present; }
 
-  // true if the Cconstraint has neither Mandatory (min/max/exact) not Ideal
+  // true if the Constraint has neither Mandatory (min/max/exact) nor Ideal
   // values, false otherwise.
   virtual bool IsUnconstrained() const = 0;
-  bool HasMandatory() const;
+  virtual bool HasMandatory() const;
   virtual bool HasMin() const { return false; }
   virtual bool HasMax() const { return false; }
   virtual bool HasExact() const = 0;
@@ -118,7 +118,7 @@ class MODULES_EXPORT DoubleConstraint : public BaseConstraint {
  public:
   // Permit a certain leeway when comparing floats. The offset of 0.00001
   // is chosen based on observed behavior of doubles formatted with
-  // rtc::ToString.
+  // webrtc::ToString.
   static const double kConstraintEpsilon;
 
   explicit DoubleConstraint(const char* name);
@@ -165,6 +165,40 @@ class MODULES_EXPORT DoubleConstraint : public BaseConstraint {
   unsigned has_max_ : 1;
   unsigned has_exact_ : 1;
   unsigned has_ideal_ : 1;
+};
+
+class MODULES_EXPORT DoubleOrBooleanConstraint : public DoubleConstraint {
+ public:
+  explicit DoubleOrBooleanConstraint(const char* name);
+
+  bool HasMandatory() const override;
+  bool HasExactBoolean() const { return has_exact_boolean_; }
+  bool ExactBoolean() const { return exact_boolean_; }
+  bool HasIdealBoolean() const { return has_ideal_boolean_; }
+  bool IdealBoolean() const { return ideal_boolean_; }
+
+  void SetExactBoolean(bool value) {
+    exact_boolean_ = value;
+    has_exact_boolean_ = true;
+  }
+
+  void SetIdealBoolean(bool value) {
+    ideal_boolean_ = value;
+    has_ideal_boolean_ = true;
+  }
+
+  bool Matches(double value) const;
+  bool MatchesBoolean(bool value) const;
+  bool IsPresentAndNotFalse() const;
+  bool IsUnconstrained() const override;
+  void ResetToUnconstrained() override;
+  String ToString() const override;
+
+ private:
+  unsigned exact_boolean_ : 1 = 0;
+  unsigned ideal_boolean_ : 1 = 0;
+  unsigned has_exact_boolean_ : 1 = 0;
+  unsigned has_ideal_boolean_ : 1 = 0;
 };
 
 class MODULES_EXPORT StringConstraint : public BaseConstraint {
@@ -239,13 +273,15 @@ struct MediaTrackConstraintSetPlatform {
   LongConstraint sample_rate;
   LongConstraint sample_size;
   BooleanConstraint echo_cancellation;
+  BooleanConstraint auto_gain_control;
+  BooleanConstraint noise_suppression;
   BooleanConstraint voice_isolation;
-  StringConstraint echo_cancellation_type;
   DoubleConstraint latency;
   LongConstraint channel_count;
   StringConstraint device_id;
   BooleanConstraint disable_local_echo;
   BooleanConstraint suppress_local_audio_playback;
+  BooleanConstraint restrict_own_audio;
   StringConstraint group_id;
   StringConstraint display_surface;
 
@@ -259,9 +295,9 @@ struct MediaTrackConstraintSetPlatform {
   DoubleConstraint saturation;
   DoubleConstraint sharpness;
   DoubleConstraint focus_distance;
-  DoubleConstraint pan;
-  DoubleConstraint tilt;
-  DoubleConstraint zoom;
+  DoubleOrBooleanConstraint pan;
+  DoubleOrBooleanConstraint tilt;
+  DoubleOrBooleanConstraint zoom;
   BooleanConstraint torch;
 
   // W3C Media Capture Extensions
@@ -274,14 +310,6 @@ struct MediaTrackConstraintSetPlatform {
   // the legacy name interface.
   StringConstraint media_stream_source;  // tab, screen, desktop, system
   BooleanConstraint render_to_associated_sink;
-  BooleanConstraint goog_echo_cancellation;
-  BooleanConstraint goog_experimental_echo_cancellation;
-  BooleanConstraint goog_auto_gain_control;
-  BooleanConstraint goog_noise_suppression;
-  BooleanConstraint goog_highpass_filter;
-  BooleanConstraint goog_experimental_noise_suppression;
-  BooleanConstraint goog_audio_mirroring;
-  BooleanConstraint goog_da_echo_cancellation;
   BooleanConstraint goog_noise_reduction;
 
   MODULES_EXPORT bool IsUnconstrained() const;

@@ -17,14 +17,13 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/page_transition_types.h"
 
-PrerenderServiceImpl::PrerenderServiceImpl(ChromeBrowserState* browser_state)
-    : controller_(
-          [[PreloadController alloc] initWithBrowserState:browser_state]) {}
+PrerenderServiceImpl::PrerenderServiceImpl(ProfileIOS* profile)
+    : controller_([[PreloadController alloc] initWithProfile:profile]) {}
 
 PrerenderServiceImpl::~PrerenderServiceImpl() = default;
 
 void PrerenderServiceImpl::Shutdown() {
-  [controller_ browserStateDestroyed];
+  [controller_ profileDestroyed];
   controller_ = nil;
 }
 
@@ -92,8 +91,8 @@ bool PrerenderServiceImpl::MaybeLoadPrerenderedURL(
     LoadTimingTabHelper::FromWebState(active_web_state)
         ->DidPromotePrerenderTab();
   }
-  ChromeBrowserState* browser_state = browser->GetBrowserState();
-  SessionRestorationServiceFactory::GetForBrowserState(browser_state)
+  ProfileIOS* profile = browser->GetProfile();
+  SessionRestorationServiceFactory::GetForProfile(profile)
       ->ScheduleSaveSessions();
   return true;
 }

@@ -23,17 +23,15 @@ class DeferredSequencedTaskRunnerTest : public testing::Test {
  public:
   class ExecuteTaskOnDestructor : public RefCounted<ExecuteTaskOnDestructor> {
    public:
-    ExecuteTaskOnDestructor(
-        DeferredSequencedTaskRunnerTest* executor,
-        int task_id)
-        : executor_(executor),
-          task_id_(task_id) {
-    }
-  private:
-   friend class RefCounted<ExecuteTaskOnDestructor>;
-   virtual ~ExecuteTaskOnDestructor() { executor_->ExecuteTask(task_id_); }
-   raw_ptr<DeferredSequencedTaskRunnerTest> executor_;
-   int task_id_;
+    ExecuteTaskOnDestructor(DeferredSequencedTaskRunnerTest* executor,
+                            int task_id)
+        : executor_(executor), task_id_(task_id) {}
+
+   private:
+    friend class RefCounted<ExecuteTaskOnDestructor>;
+    virtual ~ExecuteTaskOnDestructor() { executor_->ExecuteTask(task_id_); }
+    raw_ptr<DeferredSequencedTaskRunnerTest> executor_;
+    int task_id_;
   };
 
   void ExecuteTask(int task_id) {
@@ -47,12 +45,9 @@ class DeferredSequencedTaskRunnerTest : public testing::Test {
                                Unretained(this), task_id));
   }
 
-  void StartRunner() {
-    runner_->Start();
-  }
+  void StartRunner() { runner_->Start(); }
 
-  void DoNothing(ExecuteTaskOnDestructor* object) {
-  }
+  void DoNothing(ExecuteTaskOnDestructor* object) {}
 
  protected:
   DeferredSequencedTaskRunnerTest()
@@ -85,8 +80,9 @@ TEST_F(DeferredSequencedTaskRunnerTest, StartWithMultipleElements) {
   EXPECT_FALSE(runner_->Started());
   StartRunner();
   EXPECT_TRUE(runner_->Started());
-  for (int i = 1; i < 5; ++i)
+  for (int i = 1; i < 5; ++i) {
     PostExecuteTask(i);
+  }
 
   RunLoop().RunUntilIdle();
   EXPECT_THAT(executed_task_ids_, testing::ElementsAre(1, 2, 3, 4));
@@ -112,16 +108,18 @@ TEST_F(DeferredSequencedTaskRunnerTest, DeferredStart) {
 }
 
 TEST_F(DeferredSequencedTaskRunnerTest, DeferredStartWithMultipleElements) {
-  for (int i = 1; i < 5; ++i)
+  for (int i = 1; i < 5; ++i) {
     PostExecuteTask(i);
+  }
   RunLoop().RunUntilIdle();
   EXPECT_THAT(executed_task_ids_, testing::ElementsAre());
   EXPECT_FALSE(runner_->Started());
 
   StartRunner();
   EXPECT_TRUE(runner_->Started());
-  for (int i = 5; i < 9; ++i)
+  for (int i = 5; i < 9; ++i) {
     PostExecuteTask(i);
+  }
   RunLoop().RunUntilIdle();
   EXPECT_THAT(executed_task_ids_, testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8));
   EXPECT_TRUE(runner_->Started());
@@ -153,8 +151,8 @@ TEST_F(DeferredSequencedTaskRunnerTest, DeferredStartWithMultipleThreads) {
 
   RunLoop().RunUntilIdle();
   EXPECT_TRUE(runner_->Started());
-  EXPECT_THAT(executed_task_ids_,
-      testing::WhenSorted(testing::ElementsAre(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)));
+  EXPECT_THAT(executed_task_ids_, testing::WhenSorted(testing::ElementsAre(
+                                      0, 1, 2, 3, 4, 5, 6, 7, 8, 9)));
 }
 
 TEST_F(DeferredSequencedTaskRunnerTest, ObjectDestructionOrder) {

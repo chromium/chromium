@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chromeos/ash/services/federated/public/cpp/federated_example_util.h"
 #include "chromeos/ash/services/federated/public/mojom/example.mojom.h"
@@ -58,21 +57,12 @@ ExamplePtr CreateExamplePtr(const std::string& query,
   return example;
 }
 
-bool AreFeatureFlagsEnabled() {
-  return ash::features::IsFederatedServiceEnabled() &&
-         search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled();
-}
-
 }  // namespace
 
 FederatedMetricsManager::FederatedMetricsManager(
     ash::AppListNotifier* notifier,
     ash::federated::FederatedServiceController* controller)
     : controller_(controller) {
-  if (!AreFeatureFlagsEnabled()) {
-    // Don't log InitStatus metrics if the feature is disabled.
-    return;
-  }
   if (!notifier) {
     LogInitStatus(InitStatus::kMissingNotifier);
     return;
@@ -147,7 +137,7 @@ bool FederatedMetricsManager::IsFederatedServiceAvailable() {
 bool FederatedMetricsManager::IsLoggingEnabled() {
   CHECK(is_default_search_engine_google_.has_value());
   return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() &&
-         AreFeatureFlagsEnabled() && is_default_search_engine_google_.value();
+         is_default_search_engine_google_.value();
 }
 
 void FederatedMetricsManager::TryToBindFederatedServiceIfNecessary() {

@@ -3,19 +3,21 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {resetRouterForTesting} from 'chrome://settings/settings.js';
-import type {SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import type {CrLinkRowElement, SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsPluralStringProxyImpl, PasswordManagerPage} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
-import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createIbanEntry, PaymentsManagerExpectations, STUB_USER_ACCOUNT_INFO, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
+import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, PaymentsManagerExpectations, STUB_USER_ACCOUNT_INFO, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // clang-format on
@@ -124,13 +126,20 @@ suite('PasswordsAndForms', function() {
     expected.requestedCreditCards = 1;
     expected.listeningCreditCards = 1;
     expected.requestedIbans = 1;
+    expected.requestedPayOverTimeIssuers = 1;
     return expected;
   }
 
   let autofillManager: TestAutofillManager;
   let paymentsManager: TestPaymentsManager;
+  let prefs: SettingsPrefsElement;
+  let element: SettingsAutofillPageElement;
 
-  setup(function() {
+  setup(async function() {
+    loadTimeData.overrideValues({
+      shouldShowPayOverTimeSettings: true,
+    });
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     // Override the AutofillManagerImpl for testing.
@@ -140,119 +149,120 @@ suite('PasswordsAndForms', function() {
     // Override the PaymentsManagerImpl for testing.
     paymentsManager = new TestPaymentsManager();
     PaymentsManagerImpl.setInstance(paymentsManager);
+
+    prefs = await createPrefs(true, true);
+    element = createAutofillElement(prefs);
+  });
+
+  teardown(function() {
+    destroyPrefs(prefs);
   });
 
   test('baseLoadAndRemove', function() {
-    return createPrefs(true, true).then(function(prefs) {
-      const element = createAutofillElement(prefs);
+    const autofillExpectations = baseAutofillExpectations();
+    autofillManager.assertExpectations(autofillExpectations);
 
-      const autofillExpectations = baseAutofillExpectations();
-      autofillManager.assertExpectations(autofillExpectations);
+    const paymentsExpectations = basePaymentsExpectations();
+    paymentsManager.assertExpectations(paymentsExpectations);
 
-      const paymentsExpectations = basePaymentsExpectations();
-      paymentsManager.assertExpectations(paymentsExpectations);
+    element.remove();
+    flush();
 
-      element.remove();
-      flush();
+    autofillExpectations.listeningAddresses = 0;
+    autofillManager.assertExpectations(autofillExpectations);
 
-      autofillExpectations.listeningAddresses = 0;
-      autofillManager.assertExpectations(autofillExpectations);
+    paymentsExpectations.listeningCreditCards = 0;
+    paymentsManager.assertExpectations(paymentsExpectations);
+  });
 
-      paymentsExpectations.listeningCreditCards = 0;
-      paymentsManager.assertExpectations(paymentsExpectations);
-
-      destroyPrefs(prefs);
+  test('autofillAiButtonHidden', async function() {
+    loadTimeData.overrideValues({
+      showAutofillAiControl: false,
     });
+    // Recreate the element with the new `loadTimeData`.
+    element.remove();
+    element = createAutofillElement(prefs);
+    // Make sure that the button is not created asynchronously.
+    await flushTasks();
+    // Assert that the button is not visible.
+    const autofillAiManagerButton =
+        element.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#autofillAiManagerButton');
+    assertTrue(autofillAiManagerButton === null);
+  });
+
+  test('AutofillAIButtonVisible', function() {
+    loadTimeData.overrideValues({
+      showAutofillAiControl: true,
+    });
+    // Recreate the element with the new `loadTimeData`.
+    element.remove();
+    element = createAutofillElement(prefs);
+    // Assert that the button is visible.
+    const autofillAiManagerButton =
+        element.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#autofillAiManagerButton');
+    assertTrue(autofillAiManagerButton !== null);
   });
 
   test('loadAddressesAsync', function() {
-    return createPrefs(true, true).then(function(prefs) {
-      const element = createAutofillElement(prefs);
+    const addressList = [createAddressEntry(), createAddressEntry()];
+    const cardList = [createCreditCardEntry(), createCreditCardEntry()];
+    const ibanList = [createIbanEntry(), createIbanEntry()];
+    const payOverTimeIssuerList =
+        [createPayOverTimeIssuerEntry(), createPayOverTimeIssuerEntry()];
+    const accountInfo = {
+      ...STUB_USER_ACCOUNT_INFO,
+      isSyncEnabledForAutofillProfiles: true,
+    };
+    autofillManager.lastCallback.setPersonalDataManagerListener!
+        (addressList, cardList, ibanList, payOverTimeIssuerList, accountInfo);
+    flush();
 
-      const addressList = [createAddressEntry(), createAddressEntry()];
-      const cardList = [createCreditCardEntry(), createCreditCardEntry()];
-      const ibanList = [createIbanEntry(), createIbanEntry()];
-      const accountInfo = {
-        ...STUB_USER_ACCOUNT_INFO,
-        isSyncEnabledForAutofillProfiles: true,
-      };
-      autofillManager.lastCallback.setPersonalDataManagerListener!
-          (addressList, cardList, ibanList, accountInfo);
-      flush();
+    assertDeepEquals(
+        addressList,
+        element.shadowRoot!
+            .querySelector<SettingsAutofillSectionElement>(
+                '#autofillSection')!.addresses);
 
-      assertDeepEquals(
-          addressList,
-          element.shadowRoot!
-              .querySelector<SettingsAutofillSectionElement>(
-                  '#autofillSection')!.addresses);
-
-      // The callback is coming from the manager, so the element shouldn't
-      // have additional calls to the manager after the base expectations.
-      autofillManager.assertExpectations(baseAutofillExpectations());
-      paymentsManager.assertExpectations(basePaymentsExpectations());
-
-      destroyPrefs(prefs);
-    });
+    // The callback is coming from the manager, so the element shouldn't
+    // have additional calls to the manager after the base expectations.
+    autofillManager.assertExpectations(baseAutofillExpectations());
+    paymentsManager.assertExpectations(basePaymentsExpectations());
   });
 
-  test('loadCreditCardsAsync', function() {
-    return createPrefs(true, true).then(function(prefs) {
-      const element = createAutofillElement(prefs);
+  test('loadPaymentMethodsAsync', function() {
+    const addressList = [createAddressEntry(), createAddressEntry()];
+    const cardList = [createCreditCardEntry(), createCreditCardEntry()];
+    const ibanList = [createIbanEntry(), createIbanEntry()];
+    const issuerList =
+        [createPayOverTimeIssuerEntry(), createPayOverTimeIssuerEntry()];
+    const accountInfo = {
+      ...STUB_USER_ACCOUNT_INFO,
+      isSyncEnabledForAutofillProfiles: true,
+    };
+    paymentsManager.lastCallback.setPersonalDataManagerListener!
+        (addressList, cardList, ibanList, issuerList, accountInfo);
+    flush();
 
-      const addressList = [createAddressEntry(), createAddressEntry()];
-      const cardList = [createCreditCardEntry(), createCreditCardEntry()];
-      const ibanList = [createIbanEntry(), createIbanEntry()];
-      const accountInfo = {
-        ...STUB_USER_ACCOUNT_INFO,
-        isSyncEnabledForAutofillProfiles: true,
-      };
-      paymentsManager.lastCallback.setPersonalDataManagerListener!
-          (addressList, cardList, ibanList, accountInfo);
-      flush();
+    const paymentsSection =
+        element.shadowRoot!.querySelector<SettingsPaymentsSectionElement>(
+            '#paymentsSection');
+    assertTrue(!!paymentsSection);
+    assertEquals(
+        cardList, paymentsSection.creditCards,
+        'The cardList should be loaded into the paymentsSection');
+    assertEquals(
+        ibanList, paymentsSection.ibans,
+        'The ibanList should be loaded into the paymentsSection');
+    assertEquals(
+        issuerList, paymentsSection.payOverTimeIssuers,
+        'The issuerList should be loaded into the paymentsSection');
 
-      assertEquals(
-          cardList,
-          element.shadowRoot!
-              .querySelector<SettingsPaymentsSectionElement>(
-                  '#paymentsSection')!.creditCards);
-
-      // The callback is coming from the manager, so the element shouldn't
-      // have additional calls to the manager after the base expectations.
-      autofillManager.assertExpectations(baseAutofillExpectations());
-      paymentsManager.assertExpectations(basePaymentsExpectations());
-
-      destroyPrefs(prefs);
-    });
-  });
-
-  test('loadIbansAsync', function() {
-    return createPrefs(true, true).then(function(prefs) {
-      const element = createAutofillElement(prefs);
-
-      const addressList = [createAddressEntry(), createAddressEntry()];
-      const cardList = [createCreditCardEntry(), createCreditCardEntry()];
-      const ibanList = [createIbanEntry(), createIbanEntry()];
-      const accountInfo = {
-        ...STUB_USER_ACCOUNT_INFO,
-        isSyncEnabledForAutofillProfiles: true,
-      };
-      paymentsManager.lastCallback.setPersonalDataManagerListener!
-          (addressList, cardList, ibanList, accountInfo);
-      flush();
-
-      assertEquals(
-          ibanList,
-          element.shadowRoot!
-              .querySelector<SettingsPaymentsSectionElement>(
-                  '#paymentsSection')!.ibans);
-
-      // The callback is coming from the manager, so the element shouldn't
-      // have additional calls to the manager after the base expectations.
-      autofillManager.assertExpectations(baseAutofillExpectations());
-      paymentsManager.assertExpectations(basePaymentsExpectations());
-
-      destroyPrefs(prefs);
-    });
+    // The callback is coming from the manager, so the element shouldn't
+    // have additional calls to the manager after the base expectations.
+    autofillManager.assertExpectations(baseAutofillExpectations());
+    paymentsManager.assertExpectations(basePaymentsExpectations());
   });
 });
 

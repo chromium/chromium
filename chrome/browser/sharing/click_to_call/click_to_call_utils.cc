@@ -4,9 +4,9 @@
 
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -97,7 +97,7 @@ std::optional<std::string> ExtractPhoneNumberForClickToCall(
 
   // See https://en.cppreference.com/w/cpp/string/byte/isdigit for why this uses
   // unsigned char.
-  int digits = base::ranges::count_if(
+  int digits = std::ranges::count_if(
       selection_text, [](unsigned char c) { return absl::ascii_isdigit(c); });
   if (digits > kSelectionTextMaxDigits)
     return std::nullopt;
@@ -114,7 +114,7 @@ bool IsUrlSafeForClickToCall(const GURL& url) {
   std::string unescaped = GetUnescapedURLContent(url);
   // We don't allow any number that contains any of these characters as they
   // might be used to create USSD codes.
-  return !unescaped.empty() && base::ranges::none_of(unescaped, [](char c) {
+  return !unescaped.empty() && std::ranges::none_of(unescaped, [](char c) {
     return c == '#' || c == '*' || c == '%';
   });
 }

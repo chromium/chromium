@@ -16,9 +16,11 @@ import android.widget.ScrollView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -28,6 +30,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 /** Unit tests for {@link AutofillSaveIbanBottomSheetContent} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillSaveIbanBottomSheetContentTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private Activity mActivity;
     private AutofillSaveIbanBottomSheetContent mContent;
     private View mContentView;
@@ -35,7 +39,6 @@ public class AutofillSaveIbanBottomSheetContentTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         // set a MaterialComponents theme which is required for the `OutlinedBox` text field.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -86,8 +89,11 @@ public class AutofillSaveIbanBottomSheetContentTest {
     @Test
     public void testBottomSheetAccessibilityContentDescription() {
         assertThat(
-                mContent.getSheetContentDescriptionStringId(),
-                equalTo(R.string.autofill_save_iban_prompt_bottom_sheet_content_description));
+                mContent.getSheetContentDescription(mActivity),
+                equalTo(
+                        mActivity.getString(
+                                R.string
+                                        .autofill_save_iban_prompt_bottom_sheet_content_description)));
     }
 
     @Test

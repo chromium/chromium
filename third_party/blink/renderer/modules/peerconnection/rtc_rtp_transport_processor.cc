@@ -47,7 +47,9 @@ webrtc::NetworkControlUpdate RTCRtpTransportProcessor::OnFeedback(
   // https://github.com/w3c/webrtc-rtptransport/pull/42#issuecomment-2142665283.
   acks_messages_.push_back(MakeGarbageCollected<RTCRtpAcks>(
       acks, feedback.feedback_time.IsFinite() ? feedback.feedback_time.ms() : 0,
-      /*received_time=*/0, /*explicit_congestion_notification=*/"unset"));
+      /*received_time=*/0, /*explicit_congestion_notification=*/
+      V8ExplicitCongestionNotification(
+          V8ExplicitCongestionNotification::Enum::kUnset)));
 
   return webrtc::NetworkControlUpdate();
 }

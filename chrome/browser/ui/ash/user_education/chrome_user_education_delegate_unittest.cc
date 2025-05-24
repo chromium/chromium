@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/user_education/user_education_class_properties.h"
@@ -28,16 +29,15 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/common/tutorial_description.h"
-#include "components/user_education/common/tutorial_registry.h"
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -113,8 +113,8 @@ TEST_F(ChromeUserEducationDelegateTest, GetElementIdentifierForAppId) {
       std::pair<const char*, std::optional<ui::ElementIdentifier>>;
 
   const std::array<AppIdWithElementIdentifier, 4u> kAppIdsWithElementIds = {
-      {{web_app::kHelpAppId, ash::kExploreAppElementId},
-       {web_app::kOsSettingsAppId, ash::kSettingsAppElementId},
+      {{ash::kHelpAppId, ash::kExploreAppElementId},
+       {ash::kOsSettingsAppId, ash::kSettingsAppElementId},
        {"unknown", std::nullopt},
        {"", std::nullopt}}};
 

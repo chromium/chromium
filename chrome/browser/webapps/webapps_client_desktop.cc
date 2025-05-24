@@ -4,9 +4,7 @@
 
 #include "chrome/browser/webapps/webapps_client_desktop.h"
 
-#include "base/auto_reset.h"
 #include "base/check_is_test.h"
-#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
@@ -15,20 +13,74 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/visited_manifest_manager.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/security_state/content/security_state_tab_helper.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
 namespace webapps {
+
+namespace {
+bool CheckNewWebAppConflictsWithExistingInstallation(
+    content::BrowserContext* browser_context,
+    const GURL& start_url,
+    const ManifestId& manifest_id) {
+  CHECK(browser_context);
+
+  // We prompt the user to re-install if the site wants to be in a
+  // standalone window but the user has opted for opening in browser tab. This
+  // is to support the situation where a site is not a PWA, users have installed
+  // it via Create Shortcut action, the site becomes a standalone PWA later and
+  // we want to prompt them to "install" the new PWA experience.
+  // TODO(crbug.com/40180519): Showing an install button when it's already
+  // installed is confusing. Perhaps different UX would be best.
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+
+  // We can install if it's not installed, or this is crafted app and already
+  // installed but opens in a tab.
+  std::optional<web_app::mojom::UserDisplayMode> user_display_mode =
+      provider->registrar_unsafe().GetAppUserDisplayMode(
+          web_app::GenerateAppIdFromManifestId(manifest_id));
+  if (user_display_mode == web_app::mojom::UserDisplayMode::kBrowser) {
+    return false;
+  }
+
+  // If there is an existing crafted or DIY app that has the same manifest_id,
+  // do not promote installation.
+  if (provider->registrar_unsafe().IsInstallState(
+          web_app::GenerateAppIdFromManifestId(manifest_id),
+          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION})) {
+    return true;
+  }
+
+  // We cannot install if we are in scope of an installed crafted app, no matter
+  // the user display type.
+  std::optional<AppId> non_diy_app_id =
+      provider->registrar_unsafe().FindBestAppWithUrlInScope(
+          start_url, web_app::WebAppFilter::IsCraftedApp());
+
+  if (non_diy_app_id) {
+    return true;
+  }
+
+  // Otherwise there is no app installed here, or there is a DIY app that
+  // controls this URL but that's fine.
+  return false;
+}
+}  // namespace
 
 // static
 void WebappsClientDesktop::CreateSingleton() {
@@ -59,58 +111,22 @@ AppBannerManager* WebappsClientDesktop::GetAppBannerManager(
   return AppBannerManagerDesktop::FromWebContents(web_contents);
 }
 
-bool WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
+void WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
     content::BrowserContext* browser_context,
     const GURL& start_url,
-    const ManifestId& manifest_id) const {
-  CHECK(browser_context);
-
-  // We prompt the user to re-install if the site wants to be in a
-  // standalone window but the user has opted for opening in browser tab. This
-  // is to support the situation where a site is not a PWA, users have installed
-  // it via Create Shortcut action, the site becomes a standalone PWA later and
-  // we want to prompt them to "install" the new PWA experience.
-  // TODO(crbug.com/40180519): Showing an install button when it's already
-  // installed is confusing. Perhaps different UX would be best.
-
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
-
-  // We can install if it's not installed, or this is crafted app and already
-  // installed but opens in a tab.
-  std::optional<web_app::mojom::UserDisplayMode> user_display_mode =
-      provider->registrar_unsafe().GetAppUserDisplayMode(
-          web_app::GenerateAppIdFromManifestId(manifest_id));
-  if (user_display_mode == web_app::mojom::UserDisplayMode::kBrowser) {
-    return false;
-  }
-
-  // We cannot install if we are in scope of an installed crafted app, no matter
-  // the user display type.
-  std::optional<AppId> non_diy_app_id =
-      provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
-          start_url,
-          /*window_only=*/false, /*exclude_diy_apps=*/true);
-  if (non_diy_app_id) {
-    return true;
-  }
-  // Otherwise there is no app installed here, or there is a DIY app that
-  // controls this URL but that's fine.
-  return false;
+    const ManifestId& manifest_id,
+    WebAppInstallationConflictCallback callback) const {
+  std::move(callback).Run(
+      /* does_conflict= */ CheckNewWebAppConflictsWithExistingInstallation(
+          browser_context, start_url, manifest_id));
 }
 
 bool WebappsClientDesktop::IsInAppBrowsingContext(
     content::WebContents* web_contents) const {
   CHECK(web_contents);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
-  if (!provider) {
-    return false;
-  }
-  return provider->ui_manager().IsInAppWindow(web_contents);
+  web_app::WebAppTabHelper* tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  return tab_helper && tab_helper->is_in_app_window();
 }
 
 bool WebappsClientDesktop::IsAppPartiallyInstalledForSiteUrl(

@@ -1,10 +1,10 @@
 Name: Node JS
 Short Name: node
 URL: https://github.com/nodejs/node
-Version: 12.14.1
-Revision: f098f8295c407e5a5126b501ed5f1aa80bd86106
-Date: 2016-12-06
-License: NodeJS
+Version: 22.11.0
+Revision: 4e0f2773ff9465148a654dd0a2c1668104c20fec
+Date: 2024-10-29
+License: Unicode-DFS-2016, NAIST-2003, MIT, HPND, BSD-3-Clause, OpenSSL, Zlib, ISC, BSD-2-Clause, Artistic-2.0, ICU, SSLeay
 License File: LICENSE
 Security Critical: no
 Shipped: no
@@ -22,7 +22,7 @@ URL: https://github.com/mochajs/mocha
 Version: 10.4.0
 Revision: 0501b9a278ae40a01f989d70801f4886ee686445
 License: MIT
-License File: LICENSE
+License File: node_modules/mocha/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -43,7 +43,7 @@ Version: 5.1.1
 Revision: 37263c08b85f1f7a55d9522607a9b40f2ee651cd
 Date: 2024-06-20
 License: MIT
-License File: LICENSE
+License File: node_modules/chai/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -80,8 +80,8 @@ Local Modifications:
 Name: Typescript Compiler
 Short Name: typescript
 URL: https://www.npmjs.com/package/typescript
-Version: 4.6.3
-License: Apache 2.0
+Version: 5.7.2
+License: Apache-2.0
 Security Critical: no
 Shipped: no
 
@@ -158,7 +158,7 @@ Local Modifications:
 Name: Type Definition for W3C Image Capture
 Short Name: @types/w3c-image-capture
 URL: https://www.npmjs.com/package/@types/w3c-image-capture
-Version: 1.0.4
+Version: 1.0.10
 License: MIT
 Security Critical: no
 Shipped: no
@@ -177,7 +177,7 @@ Local Modifications:
 Name: Type Definition for webrtc
 Short Name: @types/webrtc
 URL: https://www.npmjs.com/package/@types/webrtc
-Version: 0.0.31
+Version: 0.0.44
 License: MIT
 Security Critical: no
 Shipped: no
@@ -234,8 +234,8 @@ Local Modifications:
 Name: ESLint JSDoc Plugin
 Short Name: eslint-plugin-jsdoc
 URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
-Version: 37.5.1
-License: 3-Clause BSD
+Version: 50.2.2
+License: BSD-3-Clause
 Security Critical: no
 Shipped: no
 
@@ -252,8 +252,8 @@ Local Modifications:
 Name: ESLint Plugin TypeScript
 Short Name: @typescript-eslint/eslint-plugin
 URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
-Version: 6.7.4
-License: 2-Clause BSD
+Version: 8.4.0
+License: BSD-2-Clause
 Security Critical: no
 Shipped: no
 
@@ -270,8 +270,8 @@ Local Modifications:
 Name: TypeScript ESLint Parser
 Short Name: @typescript-eslint/parser
 URL: https://www.npmjs.com/package/@typescript-eslint/parser
-Version: 6.7.4
-License: 2-Clause BSD
+Version: 8.4.0
+License: BSD-2-Clause
 Security Critical: no
 Shipped: no
 
@@ -289,7 +289,7 @@ Local Modifications:
 Name: Types for the TypeScript-ESTree AST spec
 Short Name: @typescript-eslint/parser
 URL: https://www.npmjs.com/package/@typescript-eslint/types
-Version: 6.7.4
+Version: 8.4.0
 License: MIT
 Security Critical: no
 Shipped: no
@@ -309,7 +309,7 @@ Local Modifications:
 Name: TypeScript ESLint Utilities
 Short Name: @typescript-eslint/utils
 URL: https://npmjs.com/package/@typescript-eslint/utils
-Version: 6.7.4
+Version: 8.4.0
 License: MIT
 Security Critical: no
 Shipped: no
@@ -327,7 +327,7 @@ Local Modifications:
 Name: Type Definition for Trusted Types
 Short Name: @types/trusted-types
 URL: https://www.npmjs.com/package/@types/trusted-types
-Version: 1.0.6
+Version: 2.0.7
 License: MIT
 Security Critical: no
 Shipped: no
@@ -406,7 +406,7 @@ Chromium.
 Name: Type Definition for WebCodecs
 Short Name: @types/dom-webcodecs
 URL: https://www.npmjs.com/package/@types/dom-webcodecs
-Version: 0.1.5
+Version: 0.1.13
 License: MIT
 Security Critical: no
 Shipped: no
@@ -425,7 +425,7 @@ Local Modifications:
 Name: Type Definition for MediaStreamTrack Processing
 Short Name: @types/dom-mediacapture-transform
 URL: https://www.npmjs.com/package/@types/dom-mediacapture-transform
-Version: 0.1.4
+Version: 0.1.10
 License: MIT
 Security Critical: no
 Shipped: no
@@ -462,12 +462,12 @@ Local Modifications:
 Name: Lit
 Short Name: lit
 URL: https://lit.dev
-Version: 3.0.2
-Revision: N/A
-License: BSD 3-Clause
-License File: LICENSE
+Version: 3.2.1
+License: BSD-3-Clause
+License File: node_modules/lit/LICENSE
 Security Critical: no
 Shipped: yes
+License Android Compatible: yes
 
 Description:
 A thin library around native web component APIs, to be used in WebUI development
@@ -488,9 +488,8 @@ Name: Mediapipe Tasks Vision
 Short Name: @mediapipe/tasks-vision
 URL: https://www.npmjs.com/package/@mediapipe/tasks-vision
 Version: 0.10.9
-Revision: N/A
-License: Apache 2.0
-License File: LICENSE
+License: Apache-2.0
+License File: Apache-LICENSE-2.0.txt
 Security Critical: no
 Shipped: yes
 License Android Compatible: Yes
@@ -507,21 +506,108 @@ separately via DLC)
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
-Name: Type Definitions for Dom View Transitions API
-Short Name: @types/dom-view-transitions
-URL: https://www.npmjs.com/package/@types/dom-view-transitions
-Version: 1.0.4
-Revision: N/A
+Name: Stylistic rules for ESLint, works for both JavaScript and TypeScript.
+Short Name: @stylistic/eslint-plugin
+URL: https://www.npmjs.com/package/@stylistic/eslint-plugin
+Version: 2.8.0
 License: MIT
-License File: LICENSE
 Security Critical: no
 Shipped: no
 
 Description:
-This package contains type definitions for dom-view-transitions
-(https://drafts.csswg.org/css-view-transitions-1/).
+Styling rules were deprecated from eslint and typescript-eslint and moved to
+stylistic. We use styling rules.
 
-The types are only used when type checking the Dom View Transitions API.
+https://eslint.style/guide/why
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: An AST-based pattern checker for JavaScript.
+Short Name: eslint
+URL: https://www.npmjs.com/package/eslint
+Version: 9.10.0
+License: MIT
+Security Critical: no
+Shipped: no
+
+Description:
+Linting for JS and TS.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Microsoft Authentication Library for JavaScript (MSAL.js) for Browser-Based Single-Page Applications
+Short Name: msal-browser
+URL: https://www.npmjs.com/package/@azure/msal-browser
+Version: 4.2.1
+License: MIT
+License File: node_modules/@azure/msal-browser/LICENSE
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Authentication for Microsoft integrations within client-side JS.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: ts-proto
+Short Name: ts-proto
+URL: https://www.npmjs.com/package/ts-proto
+Version: 2.7.0
+License: Apache-2.0
+License File: node_modules/ts-proto/LICENSE
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+ts-proto generates TypeScript types from protobuf schemas.
+
+Local Modifications:
+Remove unused transitive import of dprint by ts-poet to reduce checkout size.
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: @bufbuild/protobuf
+Short Name: bufbuild
+URL: https://www.npmjs.com/package/@bufbuild/protobuf
+Version: 2.2.5
+License: Apache-2.0
+License File: Apache-LICENSE-2.0.txt
+Security Critical: no
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+This package provides the runtime library used by proto bindings that are generated by ts-proto plugin.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: messageformat
+Short Name: messageformat
+URL: https://www.npmjs.com/package/messageformat
+Version: 4.0.0-11
+License: Apache-2.0
+License File: Apache-LICENSE-2.0.txt
+License Android Compatible: Yes
+Security Critical: no
+Shipped: yes
+
+Description:
+Provides a formatter and other tools for Unicode MessageFormat 2.0 (MF2), the
+new standard for localization developed by the MessageFormat Working Group.
 
 Local Modifications:
 (none)

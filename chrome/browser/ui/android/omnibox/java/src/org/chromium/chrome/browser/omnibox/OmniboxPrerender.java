@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.omnibox;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -18,8 +20,9 @@ import org.chromium.chrome.browser.tab.Tab;
  * to the (native) AutocompleteActionPredictor. The predictor uses this data to update its database
  * and returns predictions on what page, if any, to pre-render or pre-connect.
  */
+@NullMarked
 public class OmniboxPrerender {
-    private long mNativeOmniboxPrerender;
+    private final long mNativeOmniboxPrerender;
 
     /** Constructor for creating a OmniboxPrerender instanace. */
     public OmniboxPrerender() {
@@ -64,7 +67,7 @@ public class OmniboxPrerender {
             String currentUrl,
             long nativeAutocompleteResult,
             Profile profile,
-            Tab tab) {
+            @Nullable Tab tab) {
         OmniboxPrerenderJni.get()
                 .prerenderMaybe(
                         mNativeOmniboxPrerender,
@@ -97,6 +100,6 @@ public class OmniboxPrerender {
                 String currentUrl,
                 long nativeAutocompleteResult,
                 @JniType("Profile*") Profile profile,
-                Tab tab);
+                @Nullable Tab tab);
     }
 }

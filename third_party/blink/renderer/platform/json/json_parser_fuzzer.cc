@@ -18,6 +18,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   blink::test::TaskEnvironment task_environment;
   blink::JSONCommentState comment_state =
       blink::JSONCommentState::kAllowedButAbsent;
-  blink::ParseJSON(WTF::String(data, size), comment_state, 500);
+  // SAFETY: Just make a span from the function arguments provided by libfuzzer.
+  blink::ParseJSON(WTF::String(UNSAFE_BUFFERS(base::span(data, size))),
+                   comment_state, 500);
   return 0;
 }

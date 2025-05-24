@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
@@ -111,7 +112,7 @@ bool PrefetchStartsSpareRenderer() {
              true);
 }
 
-base::TimeDelta PrefetchContainerLifetimeInPrefetchService() {
+base::TimeDelta PrefetchContainerDefaultTtlInPrefetchService() {
   // A value of 0 or less, indicates that |PrefetchService| should keep the
   // prefetch forever.
   return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
@@ -188,8 +189,23 @@ int PrefetchCanaryCheckRetries() {
       features::kPrefetchUseContentRefactor, "canary_check_retries", 1);
 }
 
-base::TimeDelta PrefetchBlockUntilHeadTimeout(
-    const PrefetchType& prefetch_type) {
+base::TimeDelta PrefetchBlockUntilHeadTimeout(const PrefetchType& prefetch_type,
+                                              bool is_nav_prerender) {
+  // Don't set a timeout for prerender because
+  //
+  // - The intention of prefetch ahead of prerender is not sending additional
+  //   fetch request. The options of the behavior of the timeout case are
+  //   1. (Current behavior) Making prerender fail, or 2. Falling back to
+  //   network.
+  // - 1 reduces the prerender activation rate.
+  //
+  // For more details, see
+  // https://docs.google.com/document/d/1ZP7lYrtqZL9jC2xXieNY_UBMJL1sCrfmzTB8K6v4sD4/edit?resourcekey=0-fkbeQhkT3PhBb9FnnPgnZA&tab=t.wphan8fb23kr
+  if (!features::kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout.Get() &&
+      is_nav_prerender) {
+    return base::Seconds(0);
+  }
+
   int timeout_in_milliseconds = 0;
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     switch (prefetch_type.GetEagerness()) {
@@ -217,17 +233,45 @@ base::TimeDelta PrefetchBlockUntilHeadTimeout(
   return base::Milliseconds(timeout_in_milliseconds);
 }
 
-std::string GetPrefetchEagernessHistogramSuffix(
-    blink::mojom::SpeculationEagerness eagerness) {
-  switch (eagerness) {
-    case blink::mojom::SpeculationEagerness::kEager:
-      return "Eager";
-    case blink::mojom::SpeculationEagerness::kModerate:
-      return "Moderate";
-    case blink::mojom::SpeculationEagerness::kConservative:
-      return "Conservative";
+// These strings (including `embedder_histogram_suffix`) are persisted to logs.
+// LINT.IfChange
+std::string GetMetricsSuffixTriggerTypeAndEagerness(
+    const PrefetchType prefetch_type,
+    const std::optional<std::string>& embedder_histogram_suffix) {
+  switch (prefetch_type.trigger_type()) {
+    case PreloadingTriggerType::kSpeculationRule:
+      switch (prefetch_type.GetEagerness()) {
+        case blink::mojom::SpeculationEagerness::kEager:
+          return "SpeculationRule_Eager";
+        case blink::mojom::SpeculationEagerness::kModerate:
+          return "SpeculationRule_Moderate";
+        case blink::mojom::SpeculationEagerness::kConservative:
+          return "SpeculationRule_Conservative";
+      }
+    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
+      switch (prefetch_type.GetEagerness()) {
+        case blink::mojom::SpeculationEagerness::kEager:
+          return "SpeculationRuleFromIsolatedWorld_Eager";
+        case blink::mojom::SpeculationEagerness::kModerate:
+          return "SpeculationRuleFromIsolatedWorld_Moderate";
+        case blink::mojom::SpeculationEagerness::kConservative:
+          return "SpeculationRuleFromIsolatedWorld_Conservative";
+      }
+    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+      switch (prefetch_type.GetEagerness()) {
+        case blink::mojom::SpeculationEagerness::kEager:
+          return "SpeculationRuleFromAutoSpeculationRules_Eager";
+        case blink::mojom::SpeculationEagerness::kModerate:
+          return "SpeculationRuleFromAutoSpeculationRules_Moderate";
+        case blink::mojom::SpeculationEagerness::kConservative:
+          return "SpeculationRuleFromAutoSpeculationRules_Conservative";
+      }
+    case PreloadingTriggerType::kEmbedder:
+      CHECK(!embedder_histogram_suffix.value().empty());
+      return base::StrCat({"Embedder_", embedder_histogram_suffix.value()});
   }
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/prefetch/histograms.xml:TriggerTypeAndEagerness)
 
 size_t MaxNumberOfEagerPrefetchesPerPage() {
   int max = base::GetFieldTrialParamByFeatureAsInt(features::kPrefetchNewLimits,
@@ -250,10 +294,16 @@ bool PrefetchBrowserInitiatedTriggersEnabled() {
       features::kPrefetchBrowserInitiatedTriggers);
 }
 
-bool UseNewWaitLoop() {
-  return base::FeatureList::IsEnabled(features::kPrefetchNewWaitLoop) ||
-         base::FeatureList::IsEnabled(
-             features::kPrerender2FallbackPrefetchSpecRules);
+size_t GetPrefetchDataPipeTeeBodySizeLimit() {
+  return std::max(
+      static_cast<size_t>(features::kPrefetchReusableBodySizeLimit.Get()),
+      features::kPrerender2FallbackBodySizeLimit.Get());
+}
+
+bool UsePrefetchScheduler() {
+  return base::FeatureList::IsEnabled(features::kPrefetchScheduler) ||
+         features::kPrerender2FallbackPrefetchSchedulerPolicy.Get() !=
+             features::Prerender2FallbackPrefetchSchedulerPolicy::kNotUse;
 }
 
 }  // namespace content

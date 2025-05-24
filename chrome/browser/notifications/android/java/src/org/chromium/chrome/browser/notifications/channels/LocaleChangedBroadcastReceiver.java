@@ -10,8 +10,10 @@ import android.content.Intent;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 
 /** Triggered when Android's locale changes. */
+@NullMarked
 public class LocaleChangedBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {

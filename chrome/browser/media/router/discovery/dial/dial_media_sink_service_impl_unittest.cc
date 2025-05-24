@@ -28,7 +28,7 @@ class MockDeviceDescriptionService : public DeviceDescriptionService {
   MockDeviceDescriptionService(DeviceDescriptionParseSuccessCallback success_cb,
                                DeviceDescriptionParseErrorCallback error_cb)
       : DeviceDescriptionService(success_cb, error_cb) {}
-  ~MockDeviceDescriptionService() override {}
+  ~MockDeviceDescriptionService() override = default;
 
   MOCK_METHOD1(GetDeviceDescriptions,
                void(const std::vector<DialDeviceData>& devices));

@@ -4,17 +4,19 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementBorealisDetailViewElement, AppManagementPinToShelfItemElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, AppManagementToggleRowElement, CrToggleElement, Router, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {App, AppType, Permission, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import type {AppManagementBorealisDetailViewElement, AppManagementPinToShelfItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {AppManagementToggleRowElement} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, Router, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import type {App, Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {getPermissionCrToggleByType, getPermissionToggleByType, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 
 suite('<app-management-borealis-detail-view>', () => {
@@ -32,8 +34,7 @@ suite('<app-management-borealis-detail-view>', () => {
   async function clickToggle(permissionType: PermissionTypeIndex):
       Promise<void> {
     const toggleRow =
-        getPermissionToggleByType(borealisDetailView, permissionType) as
-        AppManagementToggleRowElement;
+        getPermissionToggleByType(borealisDetailView, permissionType);
     toggleRow.click();
     await fakeHandler.flushPipesForTesting();
   }
@@ -88,22 +89,20 @@ suite('<app-management-borealis-detail-view>', () => {
   test('Toggle permissions', async () => {
     const checkToggle = async (permissionType: PermissionTypeIndex) => {
       assertTrue(getPermissionBoolByType(permissionType));
-      let toggle = getPermissionCrToggleByType(
-                       borealisDetailView, permissionType) as CrToggleElement;
+      let toggle =
+          getPermissionCrToggleByType(borealisDetailView, permissionType);
       assertTrue(toggle.checked);
 
       // Toggle off.
       await clickToggle(permissionType);
       assertFalse(getPermissionBoolByType(permissionType));
-      toggle = getPermissionCrToggleByType(
-                   borealisDetailView, permissionType) as CrToggleElement;
+      toggle = getPermissionCrToggleByType(borealisDetailView, permissionType);
       assertFalse(toggle.checked);
 
       // Toggle on.
       await clickToggle(permissionType);
       assertTrue(getPermissionBoolByType(permissionType));
-      toggle = getPermissionCrToggleByType(
-                   borealisDetailView, permissionType) as CrToggleElement;
+      toggle = getPermissionCrToggleByType(borealisDetailView, permissionType);
       assertTrue(toggle.checked);
     };
 

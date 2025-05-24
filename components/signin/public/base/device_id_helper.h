@@ -8,13 +8,12 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 class PrefService;
 
 namespace signin {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Returns device id that is scoped to single signin. This device id will be
 // regenerated if user signs out and signs back in.

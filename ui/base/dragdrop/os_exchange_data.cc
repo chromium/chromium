@@ -4,6 +4,7 @@
 
 #include "ui/base/dragdrop/os_exchange_data.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -47,11 +48,11 @@ bool OSExchangeData::IsFromPrivileged() const {
   return provider_->IsFromPrivileged();
 }
 
-void OSExchangeData::SetString(const std::u16string& data) {
+void OSExchangeData::SetString(std::u16string_view data) {
   provider_->SetString(data);
 }
 
-void OSExchangeData::SetURL(const GURL& url, const std::u16string& title) {
+void OSExchangeData::SetURL(const GURL& url, std::u16string_view title) {
   provider_->SetURL(url, title);
 }
 

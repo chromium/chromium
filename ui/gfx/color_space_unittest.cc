@@ -7,12 +7,14 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "ui/gfx/color_space.h"
+
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <tuple>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/color_space.h"
 #include "ui/gfx/skia_color_space_util.h"
 
 namespace gfx {
@@ -27,14 +29,14 @@ float Diff(const SkV4& u, const SkV4& v) {
 TEST(ColorSpace, RGBToYUV) {
   const float kEpsilon = 1.0e-3f;
   const size_t kNumTestRGBs = 3;
-  SkV4 test_rgbs[kNumTestRGBs] = {
+  std::array<SkV4, kNumTestRGBs> test_rgbs = {{
       {1.f, 0.f, 0.f, 1.f},
       {0.f, 1.f, 0.f, 1.f},
       {0.f, 0.f, 1.f, 1.f},
-  };
+  }};
 
   const size_t kNumColorSpaces = 4;
-  gfx::ColorSpace color_spaces[kNumColorSpaces] = {
+  std::array<gfx::ColorSpace, kNumColorSpaces> color_spaces = {
       gfx::ColorSpace::CreateREC601(),
       gfx::ColorSpace::CreateREC709(),
       gfx::ColorSpace::CreateJpeg(),
@@ -86,16 +88,16 @@ TEST(ColorSpace, RGBToYUV) {
 TEST(ColorSpace, RangeAdjust) {
   const float kEpsilon = 1.0e-3f;
   const size_t kNumTestYUVs = 2;
-  SkV4 test_yuvs[kNumTestYUVs] = {
+  std::array<SkV4, kNumTestYUVs> test_yuvs = {{
       {1.f, 1.f, 1.f, 1.f},
       {0.f, 0.f, 0.f, 1.f},
-  };
+  }};
 
   const size_t kNumBitDepths = 3;
-  int bit_depths[kNumBitDepths] = {8, 10, 12};
+  std::array<int, kNumBitDepths> bit_depths = {8, 10, 12};
 
   const size_t kNumColorSpaces = 3;
-  ColorSpace color_spaces[kNumColorSpaces] = {
+  std::array<ColorSpace, kNumColorSpaces> color_spaces = {
       ColorSpace::CreateREC601(),
       ColorSpace::CreateJpeg(),
       ColorSpace(ColorSpace::PrimaryID::INVALID,
@@ -196,7 +198,7 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
   }};
   skcms_TransferFunction transfer_fn = {2.1f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
-  ColorSpace color_spaces[] = {
+  auto color_spaces = std::to_array<ColorSpace>({
       ColorSpace(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::SRGB),
       ColorSpace(ColorSpace::PrimaryID::ADOBE_RGB,
                  ColorSpace::TransferID::SRGB),
@@ -205,8 +207,8 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
       ColorSpace::CreateCustom(primary_matrix, transfer_fn),
       // HDR
       ColorSpace::CreateSRGBLinear(),
-  };
-  sk_sp<SkColorSpace> sk_color_spaces[] = {
+  });
+  auto sk_color_spaces = std::to_array<sk_sp<SkColorSpace>>({
       SkColorSpace::MakeSRGB(),
       SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kAdobeRGB),
       SkColorSpace::MakeRGB(SkNamedTransferFn::kLinear,
@@ -215,7 +217,7 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
       SkColorSpace::MakeRGB(transfer_fn, primary_matrix),
       // HDR
       SkColorSpace::MakeSRGBLinear(),
-  };
+  });
 
   static_assert(std::size(color_spaces) == std::size(sk_color_spaces), "");
 
@@ -247,12 +249,12 @@ TEST(ColorSpace, PQAndHLGToSkColorSpace) {
 
   // For each test case, `pq_signal` maps to `pq_nits`.
   constexpr size_t kNumCases = 3;
-  float pq_signal[kNumCases] = {
+  std::array<float, kNumCases> pq_signal = {
       0.508078421517399f,
       0.5806888810416109f,
       0.6765848107833876,
   };
-  float pq_nits[kNumCases] = {
+  std::array<float, kNumCases> pq_nits = {
       100,
       203,
       500,

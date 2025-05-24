@@ -43,7 +43,6 @@
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace {
@@ -246,6 +245,7 @@ class PrivateNetworkAccessWithFeatureDisabledBrowserTest
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
+                network::features::kLocalNetworkAccessChecks,
             }) {}
 };
 
@@ -262,7 +262,6 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
       bool is_warning_only = false)
       : PrivateNetworkAccessBrowserTestBase(
             {
-                blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
@@ -271,13 +270,13 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
                 features::kPrivateNetworkAccessForWorkers,
             },
             is_warning_only
-                ? std::vector<base::test::FeatureRef>()
+                ? std::vector<base::test::FeatureRef>({
+                      network::features::kLocalNetworkAccessChecks,
+                  })
                 : std::vector<base::test::FeatureRef>({
                       features::kPrivateNetworkAccessForWorkersWarningOnly,
+                      network::features::kLocalNetworkAccessChecks,
                   })) {}
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PrivateNetworkAccessBrowserTestBase::SetUpCommandLine(command_line);
-  }
 };
 
 class PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest
@@ -296,16 +295,18 @@ class PrivateNetworkAccessRespectPreflightResultsBrowserTest
   PrivateNetworkAccessRespectPreflightResultsBrowserTest()
       : PrivateNetworkAccessBrowserTestBase(
             {
-                blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessSendPreflights,
                 features::kPrivateNetworkAccessRespectPreflightResults,
                 features::kPrivateNetworkAccessForWorkers,
             },
             GetParam().is_warning_only
-                ? std::vector<base::test::FeatureRef>()
+                ? std::vector<base::test::FeatureRef>({
+                      network::features::kLocalNetworkAccessChecks,
+                  })
                 : std::vector<base::test::FeatureRef>({
                       features::kPrivateNetworkAccessForWorkersWarningOnly,
+                      network::features::kLocalNetworkAccessChecks,
                   })) {}
 };
 
@@ -1323,11 +1324,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
       .SetManifestKey("web_accessible_resources",
                       base::test::ParseJson(kWebAccessibleResources));
 
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
   scoped_refptr<const extensions::Extension> extension = builder.Build();
-  service->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
+  extensions::ExtensionRegistrar::Get(browser()->profile())
+      ->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
 
   const GURL url = extension->GetResourceURL(kPageFile);
 
@@ -1406,7 +1405,9 @@ class PrivateNetworkAccessAutoReloadBrowserTest
                 features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
                 features::kPrivateNetworkAccessForNavigations,
             },
-            {}) {}
+            {
+                network::features::kLocalNetworkAccessChecks,
+            }) {}
 
   void SetUpOnMainThread() override {
     PrivateNetworkAccessBrowserTestBase::SetUpOnMainThread();
@@ -1468,7 +1469,6 @@ class PrivateNetworkAccessWithNullIPKillswitchTest
   PrivateNetworkAccessWithNullIPKillswitchTest()
       : PrivateNetworkAccessBrowserTestBase(
             {
-                blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
@@ -1477,7 +1477,9 @@ class PrivateNetworkAccessWithNullIPKillswitchTest
                 features::kPrivateNetworkAccessForWorkers,
                 network::features::kTreatNullIPAsPublicAddressSpace,
             },
-            {}) {}
+            {
+                network::features::kLocalNetworkAccessChecks,
+            }) {}
 };
 
 // This test verifies that 0.0.0.0 subresources are not blocked when the

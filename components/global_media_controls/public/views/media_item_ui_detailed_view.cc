@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/global_media_controls/media_view_utils.h"
+#include "components/global_media_controls/public/format_duration.h"
 #include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/media_notification_container.h"
@@ -35,7 +37,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/global_media_controls/public/views/chapter_item_view.h"
 #include "components/vector_icons/vector_icons.h"
 #endif
@@ -72,7 +74,7 @@ constexpr gfx::Size kControlsButtonSize = gfx::Size(32, 32);
 
 constexpr char kMediaDisplayPageHistogram[] = "Media.Notification.DisplayPage";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr int kProgressRowHeight = 20;
 constexpr gfx::Insets kButtonRowInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr char16_t kTimestampDelimiter[] = u" / ";
@@ -80,7 +82,7 @@ const gfx::FontList kTimestampFont({"Google Sans"},
                                    gfx::Font::NORMAL,
                                    13,
                                    gfx::Font::Weight::MEDIUM);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class MediaLabelButton : public views::Button {
   METADATA_HEADER(MediaLabelButton, views::Button)
@@ -105,7 +107,7 @@ class MediaLabelButton : public views::Button {
         AddChildView(std::make_unique<views::Label>(std::u16string(), font));
     label_->SetLineHeight(text_line_height);
     label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label_->SetEnabledColorId(text_color_id);
+    label_->SetEnabledColor(text_color_id);
   }
 
   views::Label* label() { return label_; }
@@ -147,8 +149,8 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
                                   media_display_page_);
   }
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      theme_.background_color_id, kBackgroundCornerRadius));
+  SetBackground(views::CreateRoundedRectBackground(theme_.background_color_id,
+                                                   kBackgroundCornerRadius));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kBackgroundInsets));
 
@@ -251,9 +253,9 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
       controls_column, static_cast<int>(MediaSessionAction::kPlay),
       media_message_center::kPlayArrowIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
-  play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-      theme_.play_button_container_color_id,
-      kPlayPauseButtonSize.height() / 2));
+  play_pause_button_->SetBackground(
+      views::CreateRoundedRectBackground(theme_.play_button_container_color_id,
+                                         kPlayPauseButtonSize.height() / 2));
 
   // `controls_row` holds all the available media action buttons and the
   // progress view.
@@ -294,7 +296,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
               base::Unretained(this))));
   controls_row->SetFlexForView(progress_view_, 1);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kBackgroundListening)) {
     controls_row->SetMinimumCrossAxisSize(kProgressRowHeight);
 
@@ -310,7 +312,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
         vector_icons::kForward10Icon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_FORWARD_10);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Create the next track button.
   CreateMediaActionButton(
@@ -321,7 +323,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   const gfx::VectorIcon* devices_icon =
       &media_message_center::kMediaCastStartIcon;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kBackgroundListening)) {
     // Create the chapter list button.
     // TODO(b/327505486): The string id is a place holder for now, the real
@@ -338,7 +340,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
     // Show the `kDevicesIcon` as the device selector button's icon.
     devices_icon = &vector_icons::kDevicesIcon;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Create the start casting button.
   if (device_selector_view) {
@@ -375,7 +377,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
         std::make_unique<views::BoxLayoutView>());
     separator->SetInsideBorderInsets(kDeviceSelectorSeparatorLineInsets);
     separator->SetBackground(
-        views::CreateThemedSolidBackground(theme_.separator_color_id));
+        views::CreateSolidBackground(theme_.separator_color_id));
     device_selector_view_separator_->SetFlexForView(separator, 1);
 
     // Create the device selector view.
@@ -411,7 +413,7 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
         media_message_center::kPauseIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE,
         theme_.pause_button_foreground_color_id);
-    play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+    play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
         theme_.pause_button_container_color_id,
         kPlayPauseButtonSize.height() / 2));
   } else {
@@ -420,7 +422,7 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
         media_message_center::kPlayArrowIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY,
         theme_.play_button_foreground_color_id);
-    play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+    play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
         theme_.play_button_container_color_id,
         kPlayPauseButtonSize.height() / 2));
   }
@@ -471,12 +473,12 @@ void MediaItemUIDetailedView::UpdateWithMediaPosition(
   position_ = position;
   progress_view_->UpdateProgress(position);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kBackgroundListening)) {
     total_duration_view_->SetText(kTimestampDelimiter +
                                   GetFormattedDuration(position.duration()));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void MediaItemUIDetailedView::UpdateWithMediaArtwork(
@@ -502,7 +504,7 @@ void MediaItemUIDetailedView::UpdateWithMediaArtwork(
 void MediaItemUIDetailedView::UpdateWithChapterArtwork(
     int index,
     const gfx::ImageSkia& image) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(media::kBackgroundListening)) {
     return;
   }
@@ -510,7 +512,7 @@ void MediaItemUIDetailedView::UpdateWithChapterArtwork(
   if (auto it = chapters_.find(index); it != chapters_.end()) {
     it->second->UpdateArtwork(image);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void MediaItemUIDetailedView::UpdateDeviceSelectorAvailability(
@@ -618,7 +620,7 @@ void MediaItemUIDetailedView::UpdateActionButtonsVisibility() {
 void MediaItemUIDetailedView::MediaActionButtonPressed(views::Button* button) {
   const auto action = static_cast<MediaSessionAction>(button->GetID());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (action == MediaSessionAction::kSeekBackward) {
     const auto backward_duration =
         std::max(base::Seconds(0), position_.GetPosition() - kSeekTime);
@@ -639,7 +641,7 @@ void MediaItemUIDetailedView::MediaActionButtonPressed(views::Button* button) {
     }
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (item_) {
     item_->OnMediaSessionActionButtonPressed(action);
@@ -700,19 +702,19 @@ void MediaItemUIDetailedView::StartCastingButtonPressed() {
       if (device_selector_view_->IsDeviceSelectorExpanded()) {
         device_selector_view_->HideDevices();
       } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         // Hide the chapter list view if it's shown.
         if (chapter_list_view_ && chapter_list_view_->GetVisible()) {
           ToggleChapterListView();
         }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         device_selector_view_->ShowDevices();
       }
       UpdateCastingState();
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -744,10 +746,10 @@ void MediaItemUIDetailedView::UpdateCastingState() {
     }
 
     bool is_ash_background_listening_enabled = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     is_ash_background_listening_enabled =
         base::FeatureList::IsEnabled(media::kBackgroundListening);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     device_selector_view_separator_->SetVisible(
         is_expanded && !is_ash_background_listening_enabled);
@@ -761,7 +763,7 @@ void MediaItemUIDetailedView::UpdateCastingState() {
 
 void MediaItemUIDetailedView::UpdateChapterListViewWithMetadata(
     const media_session::MediaMetadata& metadata) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(media::kBackgroundListening)) {
     return;
   }
@@ -834,11 +836,11 @@ void MediaItemUIDetailedView::UpdateChapterListViewWithMetadata(
             base::BindRepeating(&MediaItemUIDetailedView::SeekToTimestamp,
                                 weak_factory_.GetWeakPtr())));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 views::View* MediaItemUIDetailedView::CreateControlsRow() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(media::kBackgroundListening)) {
     return nullptr;
   }
@@ -860,16 +862,14 @@ views::View* MediaItemUIDetailedView::CreateControlsRow() {
                               GetFormattedDuration(position_.GetPosition()))
                           .SetFontList(kTimestampFont)
                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                          .SetEnabledColorId(
-                              theme_.primary_foreground_color_id),
+                          .SetEnabledColor(theme_.primary_foreground_color_id),
                       views::Builder<views::Label>()
                           .CopyAddressTo(&total_duration_view_)
                           .SetText(kTimestampDelimiter +
                                    GetFormattedDuration(position_.duration()))
                           .SetFontList(kTimestampFont)
                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                          .SetEnabledColorId(
-                              theme_.primary_foreground_color_id)))
+                          .SetEnabledColor(theme_.primary_foreground_color_id)))
           .AddChildren(
               views::Builder<views::BoxLayoutView>()
                   .CopyAddressTo(&button_container)
@@ -879,16 +879,16 @@ views::View* MediaItemUIDetailedView::CreateControlsRow() {
   return button_container;
 #else
   return nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void MediaItemUIDetailedView::OnProgressViewUpdateProgress(
     base::TimeDelta current_timestamp) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kBackgroundListening)) {
     current_timestamp_view_->SetText(GetFormattedDuration(current_timestamp));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Helper functions for testing:
@@ -914,8 +914,8 @@ views::ImageView* MediaItemUIDetailedView::GetChevronIconForTesting() {
 
 views::Button* MediaItemUIDetailedView::GetActionButtonForTesting(
     media_session::mojom::MediaSessionAction action) {
-  const auto i = base::ranges::find(action_buttons_, static_cast<int>(action),
-                                    &views::View::GetID);
+  const auto i = std::ranges::find(action_buttons_, static_cast<int>(action),
+                                   &views::View::GetID);
   return (i == action_buttons_.end()) ? nullptr : *i;
 }
 
@@ -944,7 +944,7 @@ views::View* MediaItemUIDetailedView::GetDeviceSelectorSeparatorForTesting() {
   return device_selector_view_separator_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 views::Button* MediaItemUIDetailedView::GetChapterListButtonForTesting() {
   return chapter_list_button_;
 }
@@ -961,7 +961,7 @@ views::Label* MediaItemUIDetailedView::GetTotalDurationViewForTesting() {
   return total_duration_view_;
 }
 
-base::flat_map<int, ChapterItemView*>
+base::flat_map<int, raw_ptr<ChapterItemView, CtnExperimental>>
 MediaItemUIDetailedView::GetChaptersForTesting() {
   return chapters_;
 }
@@ -1008,7 +1008,7 @@ void MediaItemUIDetailedView::ToggleChapterListView() {
   chapter_list_view_->SetVisible(!is_showing_chapters);
   container_->OnListViewSizeChanged();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 BEGIN_METADATA(MediaItemUIDetailedView)
 END_METADATA

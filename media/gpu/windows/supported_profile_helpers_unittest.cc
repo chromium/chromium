@@ -4,13 +4,16 @@
 
 #include "media/gpu/windows/supported_profile_helpers.h"
 
+#include <initguid.h>
+
 #include <d3d11.h>
 #include <d3d11_1.h>
-#include <initguid.h>
+
 #include <map>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_helpers.h"
@@ -158,7 +161,7 @@ class SupportedResolutionResolverTest : public ::testing::Test {
 
   struct GUIDComparison {
     bool operator()(const GUID& a, const GUID& b) const {
-      return memcmp(&a, &b, sizeof(GUID)) < 0;
+      return UNSAFE_TODO(memcmp(&a, &b, sizeof(GUID))) < 0;
     }
   };
   base::flat_map<GUID, gfx::Size, GUIDComparison> max_size_for_guids_;
@@ -192,10 +195,8 @@ TEST_F(SupportedResolutionResolverTest, HasH264SupportByDefault) {
 }
 
 TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableVpx) {
-  gpu_workarounds_.disable_accelerated_vp8_decode = true;
   gpu_workarounds_.disable_accelerated_vp9_decode = true;
-  EnableDecoders({D3D11_DECODER_PROFILE_VP8_VLD,
-                  D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0,
+  EnableDecoders({D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0,
                   D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2});
 
   AssertDefaultSupport(GetSupportedD3D11VideoDecoderResolutions(
@@ -204,8 +205,7 @@ TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableVpx) {
 
 TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableVp92) {
   gpu_workarounds_.disable_accelerated_vp9_profile2_decode = true;
-  EnableDecoders({D3D11_DECODER_PROFILE_VP8_VLD,
-                  D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0,
+  EnableDecoders({D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0,
                   D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2});
   const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
       mock_d3d11_device_, gpu_workarounds_);
@@ -232,24 +232,6 @@ TEST_F(SupportedResolutionResolverTest, H264Supports4k) {
     EXPECT_EQ(kSquare4k, it->second.max_landscape_resolution);
     EXPECT_EQ(kSquare4k, it->second.max_portrait_resolution);
   }
-}
-
-TEST_F(SupportedResolutionResolverTest, VP8Supports4k) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kMediaFoundationVP8Decoding);
-
-  EnableDecoders({D3D11_DECODER_PROFILE_VP8_VLD});
-  SetMaxResolution(D3D11_DECODER_PROFILE_VP8_VLD, kSquare4k);
-
-  const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
-      mock_d3d11_device_, gpu_workarounds_);
-  auto it = supported_resolutions.find(VP8PROFILE_ANY);
-  ASSERT_NE(it, supported_resolutions.end());
-  EXPECT_EQ(kSquare4k, it->second.max_landscape_resolution);
-  EXPECT_EQ(kSquare4k, it->second.max_portrait_resolution);
-
-  constexpr gfx::Size kMinVp8Resolution = gfx::Size(640, 480);
-  EXPECT_EQ(kMinVp8Resolution, it->second.min_resolution);
 }
 
 TEST_F(SupportedResolutionResolverTest, VP9Profile0Supports8k) {

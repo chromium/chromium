@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/origin.h"
@@ -53,8 +54,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
       mojom::RequestMode request_mode,
       mojom::RequestDestination request_destination,
       const CrossOriginEmbedderPolicy& embedder_policy,
-      mojom::CrossOriginEmbedderPolicyReporter* reporter,
-      const DocumentIsolationPolicy& document_isolation_policy);
+      mojom::CrossOriginEmbedderPolicyReporter* coep_reporter,
+      const DocumentIsolationPolicy& document_isolation_policy,
+      mojom::DocumentIsolationPolicyReporter* dip_reporter);
 
   // Same as IsBlocked(), but this method can take a raw value of
   // Cross-Origin-Resource-Policy header instead of using a URLResponseHead.
@@ -68,8 +70,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
       mojom::RequestDestination request_destination,
       bool request_include_credentials,
       const CrossOriginEmbedderPolicy& embedder_policy,
-      mojom::CrossOriginEmbedderPolicyReporter* reporter,
-      const DocumentIsolationPolicy& document_isolation_policy);
+      mojom::CrossOriginEmbedderPolicyReporter* coep_reporter,
+      const DocumentIsolationPolicy& document_isolation_policy,
+      mojom::DocumentIsolationPolicyReporter* dip_reporter);
 
   // The CORP check for navigation requests. This is expected to be called
   // from the navigation algorithm.
@@ -86,7 +89,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
       const network::mojom::URLResponseHead& response,
       mojom::RequestDestination request_destination,
       const CrossOriginEmbedderPolicy& embedder_policy,
-      mojom::CrossOriginEmbedderPolicyReporter* reporter);
+      mojom::CrossOriginEmbedderPolicyReporter* coep_reporter);
 
   // Parsing of the Cross-Origin-Resource-Policy http response header.
   enum ParsedHeader {

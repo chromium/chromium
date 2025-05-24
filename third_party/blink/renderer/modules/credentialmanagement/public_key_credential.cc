@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/functional/overloaded.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
@@ -49,7 +50,7 @@ void OnIsUserVerifyingComplete(ScriptPromiseResolver<IDLBoolean>* resolver,
   resolver->Resolve(available);
 }
 
-std::optional<std::string> AuthenticatorAttachmentToString(
+String AuthenticatorAttachmentToString(
     mojom::blink::AuthenticatorAttachment authenticator_attachment) {
   switch (authenticator_attachment) {
     case mojom::blink::AuthenticatorAttachment::PLATFORM:
@@ -57,7 +58,7 @@ std::optional<std::string> AuthenticatorAttachmentToString(
     case mojom::blink::AuthenticatorAttachment::CROSS_PLATFORM:
       return "cross-platform";
     case mojom::blink::AuthenticatorAttachment::NO_PREFERENCE:
-      return std::nullopt;
+      return g_null_atom;
   }
 }
 
@@ -68,9 +69,9 @@ void OnGetClientCapabilitiesComplete(
   for (const auto& capability : capabilities) {
     results.emplace_back(std::move(capability->name), capability->supported);
   }
-  // Add renderer computed capabilities.
-  // TODO(crbug.com/360327828): Update when supported.
-  results.emplace_back(kConditionalCreateCapability, false);
+  results.emplace_back(
+      kConditionalCreateCapability,
+      RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled());
 
   const bool report_enabled =
       RuntimeEnabledFeatures::CredentialManagerReportEnabled();
@@ -78,13 +79,49 @@ void OnGetClientCapabilitiesComplete(
   results.emplace_back(kSignalCurrentUserDetails, report_enabled);
   results.emplace_back(kSignalUnknownCredential, report_enabled);
 
+  // Extensions are added from the AuthenticationExtensionsClientInputs
+  // dictionary defined in authentication_extensions_client_inputs.idl.
+  // According to the specification, we should include a key for each
+  // extension implemented by the client, formed by prefixing "extension:"
+  // to the extension identifier.
+  //
+  // Excluded extensions: cableAuthentication, uvm, remoteDesktopClientOverride,
+  // and supplementalPubKeys.
+  results.emplace_back("extension:appid", true);
+  results.emplace_back("extension:appidExclude", true);
+  results.emplace_back("extension:hmacCreateSecret", true);
+  results.emplace_back("extension:credentialProtectionPolicy", true);
+  results.emplace_back("extension:enforceCredentialProtectionPolicy", true);
+  results.emplace_back("extension:minPinLength", true);
+  results.emplace_back("extension:credProps", true);
+  results.emplace_back("extension:largeBlob", true);
+  results.emplace_back("extension:credBlob", true);
+  results.emplace_back("extension:getCredBlob", true);
+  results.emplace_back(
+      "extension:payment",
+      RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled());
+  results.emplace_back("extension:prf",
+                       RuntimeEnabledFeatures::WebAuthenticationPRFEnabled());
+
   // Results should be sorted lexicographically based on the keys.
   std::sort(
       results.begin(), results.end(),
       [](const std::pair<String, bool>& a, const std::pair<String, bool>& b) {
         return CodeUnitCompare(a.first, b.first) < 0;
       });
-  resolver->Resolve(results);
+
+  // TODO(crbug.com/393055190): Remove this when the feature is graduated from
+  // origin trials.
+  if (!RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(
+          resolver->GetExecutionContext())) {
+    for (wtf_size_t i = 0; i < results.size(); ++i) {
+      if (results[i].first == "immediateGet") {
+        results.EraseAt(i);
+        break;
+      }
+    }
+  }
+  resolver->Resolve(std::move(results));
 }
 
 void OnSignalReportComplete(
@@ -133,7 +170,9 @@ PublicKeyCredential::getClientCapabilities(ScriptState* script_state) {
       ScriptPromiseResolver<IDLRecord<IDLString, IDLBoolean>>>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // TODO(crbug.com/360327828): Add "UseCounter".
+  UseCounter::Count(resolver->GetExecutionContext(),
+                    WebFeature::kWebAuthnGetClientCapabilities);
+
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->GetClientCapabilities(WTF::BindOnce(
@@ -202,7 +241,7 @@ ScriptPromise<IDLBoolean> PublicKeyCredential::isConditionalMediationAvailable(
   return promise;
 }
 
-v8::Local<v8::Value> PublicKeyCredential::toJSON(
+v8::Local<v8::Object> PublicKeyCredential::toJSON(
     ScriptState* script_state) const {
   // PublicKeyCredential.response holds an AuthenticatorAttestationResponse, if
   // it was returned from a create call, or an AuthenticatorAssertionResponse
@@ -210,23 +249,21 @@ v8::Local<v8::Value> PublicKeyCredential::toJSON(
   // return a RegistrationResponseJSON, and in the latter an
   // AuthenticationResponseJSON.  We can't reflect the type of `response_`
   // though, so we serialize it to JSON first and branch on the result type.
-  absl::variant<AuthenticatorAssertionResponseJSON*,
-                AuthenticatorAttestationResponseJSON*>
+  std::variant<AuthenticatorAssertionResponseJSON*,
+               AuthenticatorAttestationResponseJSON*>
       response_json = response_->toJSON();
 
-  // The return type of `toJSON()` is `PublicKeyCredentialJSON` which just
-  // aliases `object`, and thus this method just returns a `Value`.
   v8::Local<v8::Value> result;
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](AuthenticatorAttestationResponseJSON* attestation_response) {
             auto* registration_response = RegistrationResponseJSON::Create();
             registration_response->setId(id());
             registration_response->setRawId(WebAuthnBase64UrlEncode(rawId()));
             registration_response->setResponse(attestation_response);
-            if (authenticator_attachment_.has_value()) {
+            if (!authenticator_attachment_.IsNull()) {
               registration_response->setAuthenticatorAttachment(
-                  *authenticator_attachment_);
+                  authenticator_attachment_);
             }
             registration_response->setClientExtensionResults(
                 AuthenticationExtensionsClientOutputsToJSON(
@@ -240,9 +277,9 @@ v8::Local<v8::Value> PublicKeyCredential::toJSON(
             authentication_response->setId(id());
             authentication_response->setRawId(WebAuthnBase64UrlEncode(rawId()));
             authentication_response->setResponse(assertion_response);
-            if (authenticator_attachment_.has_value()) {
+            if (!authenticator_attachment_.IsNull()) {
               authentication_response->setAuthenticatorAttachment(
-                  *authenticator_attachment_);
+                  authenticator_attachment_);
             }
             authentication_response->setClientExtensionResults(
                 AuthenticationExtensionsClientOutputsToJSON(
@@ -251,7 +288,8 @@ v8::Local<v8::Value> PublicKeyCredential::toJSON(
             result = authentication_response->ToV8(script_state);
           }},
       response_json);
-  return result;
+  CHECK(result->IsObject());
+  return result.As<v8::Object>();
 }
 
 // static
@@ -287,7 +325,7 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalUnknownCredential(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  Vector<char> decoded_cred_id;
+  Vector<uint8_t> decoded_cred_id;
   if (!WTF::Base64UnpaddedURLDecode(options->credentialId(), decoded_cred_id)) {
     resolver->RejectWithTypeError("Invalid base64url string for credentialId.");
     return promise;
@@ -319,14 +357,14 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalAllAcceptedCredentials(
   auto promise = resolver->Promise();
 
   for (WTF::String credential_id : options->allAcceptedCredentialIds()) {
-    Vector<char> decoded_cred_id;
+    Vector<uint8_t> decoded_cred_id;
     if (!WTF::Base64UnpaddedURLDecode(credential_id, decoded_cred_id)) {
       resolver->RejectWithTypeError(
           "Invalid base64url string for allAcceptedCredentialIds.");
       return promise;
     }
   }
-  Vector<char> decoded_user_id;
+  Vector<uint8_t> decoded_user_id;
   if (!WTF::Base64UnpaddedURLDecode(options->userId(), decoded_user_id)) {
     resolver->RejectWithTypeError("Invalid base64url string for userId.");
     return promise;
@@ -357,7 +395,7 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalCurrentUserDetails(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  Vector<char> decoded_user_id;
+  Vector<uint8_t> decoded_user_id;
   if (!WTF::Base64UnpaddedURLDecode(options->userId(), decoded_user_id)) {
     resolver->RejectWithTypeError("Invalid base64url string for userId.");
     return promise;

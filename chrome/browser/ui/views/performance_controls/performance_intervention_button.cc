@@ -47,6 +47,10 @@ PerformanceInterventionButton::PerformanceInterventionButton(
 
   controller_ = std::make_unique<PerformanceInterventionButtonController>(
       this, browser_view->browser());
+
+  if (menu_model()) {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
+  }
 }
 
 PerformanceInterventionButton::~PerformanceInterventionButton() = default;

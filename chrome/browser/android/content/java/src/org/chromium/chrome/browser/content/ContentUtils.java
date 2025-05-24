@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.content;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** A utility class to expose content functionality. */
+@NullMarked
 public class ContentUtils {
     /**
      * @return The user agent string of Chrome.
@@ -29,6 +32,7 @@ public class ContentUtils {
 
     @NativeMethods
     interface Natives {
+        @JniType("std::string")
         String getBrowserUserAgent();
 
         void setUserAgentOverride(WebContents webContents, boolean overrideInNewTabs);

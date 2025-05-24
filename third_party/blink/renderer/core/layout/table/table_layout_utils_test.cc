@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
 
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/table/table_node.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -149,8 +151,12 @@ TEST_F(TableLayoutUtilsTest, DistributeColspanAutoExactMaxSize) {
   // should not be redistributed at all.
   // The error occurs if widths are redistributed, and column widths
   // change due to floating point rounding.
-  LayoutUnit column_widths[] = {LayoutUnit(0.1), LayoutUnit(22.123456),
-                                LayoutUnit(33.789012), LayoutUnit(2000.345678)};
+  auto column_widths = std::to_array<LayoutUnit>({
+      LayoutUnit(0.1),
+      LayoutUnit(22.123456),
+      LayoutUnit(33.789012),
+      LayoutUnit(2000.345678),
+  });
   scoped_refptr<TableTypes::Columns> column_constraints =
       base::MakeRefCounted<TableTypes::Columns>();
   column_constraints->data.Shrink(0);

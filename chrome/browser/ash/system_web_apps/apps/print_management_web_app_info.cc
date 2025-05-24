@@ -15,8 +15,15 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+PrintManagementSystemAppDelegate::PrintManagementSystemAppDelegate(
+    Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::PRINT_MANAGEMENT,
+                                "PrintManagement",
+                                GURL("chrome://print-management/pwa.html"),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForPrintManagementApp() {
+PrintManagementSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(ash::kChromeUIPrintManagementAppUrl);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -33,23 +40,9 @@ CreateWebAppInfoForPrintManagementApp() {
       web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/true);
   info->background_color = info->theme_color;
   info->dark_mode_background_color = info->dark_mode_theme_color;
-
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
   return info;
-}
-
-PrintManagementSystemAppDelegate::PrintManagementSystemAppDelegate(
-    Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::PRINT_MANAGEMENT,
-                                "PrintManagement",
-                                GURL("chrome://print-management/pwa.html"),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-PrintManagementSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForPrintManagementApp();
 }
 
 bool PrintManagementSystemAppDelegate::ShouldShowInLauncher() const {

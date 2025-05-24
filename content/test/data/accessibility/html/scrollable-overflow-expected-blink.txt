@@ -25,15 +25,15 @@ rootWebArea focusable scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=hidden'
 ++++++++++++++inlineTextBox name='x=hidden'
-++++++++genericContainer focusable className='x-hidden-large scrollable' name='x=hidden' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='x-hidden-large scrollable' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=hidden'
 ++++++++++++++inlineTextBox name='x=hidden'
-++++++++genericContainer focusable className='x-auto scrollable' name='x=auto' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='x-auto scrollable' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=auto'
 ++++++++++++++inlineTextBox name='x=auto'
-++++++++genericContainer focusable className='x-scroll scrollable' name='x=scroll' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='x-scroll scrollable' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=scroll'
 ++++++++++++++inlineTextBox name='x=scroll'
@@ -46,15 +46,15 @@ rootWebArea focusable scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=hidden'
 ++++++++++++++inlineTextBox name='y=hidden'
-++++++++genericContainer focusable className='y-hidden-large scrollable' name='y=hidden' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='y-hidden-large scrollable' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=hidden'
 ++++++++++++++inlineTextBox name='y=hidden'
-++++++++genericContainer focusable className='y-auto scrollable' name='y=auto' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='y-auto scrollable' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=auto'
 ++++++++++++++inlineTextBox name='y=auto'
-++++++++genericContainer focusable className='y-scroll scrollable' name='y=scroll' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='y-scroll scrollable' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=scroll'
 ++++++++++++++inlineTextBox name='y=scroll'

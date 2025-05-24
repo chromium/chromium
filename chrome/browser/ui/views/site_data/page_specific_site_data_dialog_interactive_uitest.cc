@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -42,11 +44,13 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -63,9 +67,9 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -172,12 +176,18 @@ class PageSpecificSiteDataDialogInteractiveUiTest
       CookieChangeObserver* cookie_observer = nullptr) {
     const GURL third_party_cookie_page_url =
         https_server()->GetURL("a.test", GetTestPageRelativeURL());
+    auto navigate_and_maybe_wait_cookies_accessed =
+        cookie_observer
+            ? Steps(InParallel(
+                  RunSubsequence(WaitForEvent(kBrowserViewElementId,
+                                              kCookieAccessedEvent)),
+                  RunSubsequence(NavigateWebContents(
+                      kWebContentsElementId, third_party_cookie_page_url))))
+            : NavigateWebContents(kWebContentsElementId,
+                                  third_party_cookie_page_url);
     return Steps(
         InstrumentTab(kWebContentsElementId),
-        NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
-        cookie_observer
-            ? Steps(WaitForEvent(kBrowserViewElementId, kCookieAccessedEvent))
-            : MultiStep(),
+        std::move(navigate_and_maybe_wait_cookies_accessed),
         PressButton(kLocationIconElementId),
         PressButton(PageInfoMainView::kCookieButtonElementId),
         PressButton(PageInfoCookiesContentView::kCookieDialogButton),
@@ -418,18 +428,14 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
 
   MultiStep LaunchBrowserForWebAppInTab(const webapps::AppId& app_id,
                                         ui::ElementIdentifier section_id) {
-    const auto desc =
-        base::StringPrintf("LaunchBrowserForWebAppInTab( %s )", app_id.c_str());
-
     auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
     const GURL target_app_url(
         provider->registrar_unsafe().GetAppLaunchUrl(app_id));
 
-    return Steps(
+    auto steps = Steps(
         std::move(
             StepBuilder()
-                .SetDescription(
-                    base::StrCat({desc, ": LaunchBrowserForWebAppInTab"}))
+                .SetDescription("LaunchBrowserForWebAppInTab")
                 .SetElementID(kWebContentsElementId)
                 .SetContext(ui::InteractionSequence::ContextMode::kAny)
                 .SetStartCallback(base::BindOnce(
@@ -439,8 +445,10 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
                           profile, app_id, WindowOpenDisposition::CURRENT_TAB);
                     },
                     browser()->profile(), app_id))),
-        std::move(WaitForWebContentsNavigation(section_id, target_app_url)
-                      .FormatDescription(base::StrCat({desc, ": %s"}))));
+        WaitForWebContentsNavigation(section_id, target_app_url));
+    AddDescriptionPrefix(
+        steps, base::StrCat({"LaunchBrowserForWebAppInTab( ", app_id, " )"}));
+    return steps;
   }
 
   MultiStep LaunchBrowserForWebAppInTabAndOpenDialog(
@@ -448,8 +456,10 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
       ui::ElementIdentifier section_id) {
     return Steps(
         InstrumentTab(section_id),
-        LaunchBrowserForWebAppInTab(app_id, section_id),
-        WaitForEvent(kBrowserViewElementId, kCookieAccessedEvent),
+        InParallel(
+            RunSubsequence(
+                WaitForEvent(kBrowserViewElementId, kCookieAccessedEvent)),
+            RunSubsequence(LaunchBrowserForWebAppInTab(app_id, section_id))),
         PressButton(kLocationIconElementId),
         PressButton(PageInfoMainView::kCookieButtonElementId),
         PressButton(PageInfoCookiesContentView::kCookieDialogButton),
@@ -468,7 +478,7 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
     return GURL("chrome://os-settings/app-management/detail?id=" + app_id);
 #else
     return GURL("chrome://app-settings/" + app_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
  protected:
@@ -488,12 +498,12 @@ IN_PROC_BROWSER_TEST_F(
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Make sure the system web apps are installed since the app management page
   // opens in the OS Settings app, and not a normal browser tab.
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Install an app so that the related application section will have something
   // to show. We don't actually care about the app in this test though.
@@ -530,12 +540,12 @@ IN_PROC_BROWSER_TEST_F(
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Make sure the system web apps are installed since the app management page
   // opens in the OS Settings app, and not a normal browser tab.
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Install and launch the web app.
   auto app_id = web_app::test::InstallDummyWebApp(
@@ -592,17 +602,19 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
 
  protected:
   void SetUpFeatureList() override {
-    feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+    feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
   }
 
   Browser* InstallAndLaunchIsolatedWebApp() {
     Profile* profile = browser()->profile();
-    auto iwa_dev_server = web_app::CreateAndStartDevServer(
-        FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-    auto iwa_url_info = web_app::InstallDevModeProxyIsolatedWebApp(
-        profile, iwa_dev_server->GetOrigin());
+
+    std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().SetName("Test App"))
+            .BuildBundle();
+    web_app::IsolatedWebAppUrlInfo iwa_url_info = app->InstallChecked(profile);
     app_id_ = iwa_url_info.app_id();
+
     content::RenderFrameHost* iwa_frame =
         web_app::OpenIsolatedWebApp(profile, app_id_);
 
@@ -615,20 +627,20 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
   // Installs and launches an IWA, then opens the PageSpecificSiteData dialog.
   MultiStep NavigateAndOpenDialog(Browser* iwa_browser,
                                   ui::ElementIdentifier section_id) {
-    return Steps(InstrumentTab(kWebContentsElementId,
-                               /*tab_index=*/std::nullopt, iwa_browser),
-                 PressButton(kToolbarAppMenuButtonElementId),
-                 WithView(kToolbarAppMenuButtonElementId,
-                          base::BindOnce([](AppMenuButton* button) {
-                            CHECK(button->IsMenuShowing());
-                            button->app_menu()->ExecuteCommand(
-                                IDC_WEB_APP_MENU_APP_INFO, 0);
-                          })),
-                 PressButton(PageInfoMainView::kCookieButtonElementId),
-                 PressButton(PageInfoCookiesContentView::kCookieDialogButton),
-                 InAnyContext(AfterShow(
-                     section_id,
-                     ExpectActionCount(kCookiesDialogOpenedActionName, 1))));
+    return Steps(
+        InstrumentTab(kWebContentsElementId,
+                      /*tab_index=*/std::nullopt, iwa_browser),
+        PressButton(kToolbarAppMenuButtonElementId),
+        WithView(kToolbarAppMenuButtonElementId,
+                 base::BindOnce([](AppMenuButton* button) {
+                   CHECK(button->IsMenuShowing());
+                   button->app_menu()->ExecuteCommand(IDC_WEB_APP_MENU_APP_INFO,
+                                                      0);
+                 })),
+        PressButton(PageInfoMainView::kCookieButtonElementId),
+        PressButton(PageInfoCookiesContentView::kCookieDialogButton),
+        InAnyContext(AfterShow(
+            section_id, ExpectActionCount(kCookiesDialogOpenedActionName, 1))));
   }
 
   // Returns a test step that verifies that the hostname for `row` is equal to
@@ -670,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(
       InAnyContext(
           EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
       // Verify the hostname label.
-      CheckHostnameLabel(kFirstPartyAllowedRow, u"Simple Isolated App"));
+      CheckHostnameLabel(kFirstPartyAllowedRow, u"Test App"));
 }
 
 class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
@@ -683,7 +695,7 @@ class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
  protected:
   void SetUpFeatureList() override {
     feature_list_.InitWithFeatures(
-        {blink::features::kSharedStorageAPI, blink::features::kFencedFrames,
+        {network::features::kSharedStorageAPI, blink::features::kFencedFrames,
          features::kPrivacySandboxAdsAPIsOverride},
         {});
   }

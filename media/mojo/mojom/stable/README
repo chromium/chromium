@@ -1,3 +1,4 @@
-This directory contains the Mojo API used both by LaCrOS and by out-of-process
-video decoding. This API is a stable version of VideoDecoder and should only be
-used for the mentioned purposes.
+This directory contains the Mojo API used by Chrome to communicate with
+other processes, like ARC, for video decoding.
+This API is stable order to provide a safe communication between independent
+version-skewed binaries and should only be used for the mentioned purposes.

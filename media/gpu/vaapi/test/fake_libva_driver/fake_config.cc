@@ -4,6 +4,8 @@
 
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_config.h"
 
+#include <utility>
+
 namespace media::internal {
 
 FakeConfig::FakeConfig(FakeConfig::IdType id,

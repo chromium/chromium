@@ -10,14 +10,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.when;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
+import android.app.Activity;
 import android.view.View;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.MediumTest;
 
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,32 +25,37 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync_device_info.FormFactor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Render tests for the send-tab-to-self bottom sheets. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class SendTabToSelfBottomSheetRenderTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
@@ -66,11 +70,16 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @Mock private IdentityManager mIdentityManager;
     @Mock private BottomSheetController mBottomSheetController;
 
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
     @Test
     @MediumTest
     @Feature("RenderTest")
     public void testDevicePickerBottomSheet() throws Throwable {
-        setUpAccountData(createFakeAccount());
+        setUpAccountData(TestAccounts.ACCOUNT1);
         long todayTimestamp = Calendar.getInstance().getTimeInMillis();
         List<TargetDeviceInfo> devices =
                 Arrays.asList(
@@ -85,13 +94,13 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                         () -> {
                             DevicePickerBottomSheetContent sheetContent =
                                     new DevicePickerBottomSheetContent(
-                                            getActivity(),
+                                            sActivity,
                                             JUnitTestGURLs.HTTP_URL.getSpec(),
                                             "Title",
                                             mBottomSheetController,
                                             devices,
                                             mProfile);
-                            getActivity().setContentView(sheetContent.getContentView());
+                            sActivity.setContentView(sheetContent.getContentView());
                             return sheetContent.getContentView();
                         });
         mRenderTestRule.render(view, "device_picker");
@@ -100,7 +109,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     public void testDevicePickerBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
-        AccountInfo account = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
+        AccountInfo account = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
         long todayTimestamp = Calendar.getInstance().getTimeInMillis();
         List<TargetDeviceInfo> devices =
@@ -115,13 +124,13 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                 () -> {
                     DevicePickerBottomSheetContent sheetContent =
                             new DevicePickerBottomSheetContent(
-                                    getActivity(),
+                                    sActivity,
                                     JUnitTestGURLs.HTTP_URL.getSpec(),
                                     "Title",
                                     mBottomSheetController,
                                     devices,
                                     mProfile);
-                    getActivity().setContentView(sheetContent.getContentView());
+                    sActivity.setContentView(sheetContent.getContentView());
                 });
         onView(withText(account.getEmail())).check(doesNotExist());
     }
@@ -130,13 +139,13 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @MediumTest
     @Feature("RenderTest")
     public void testNoTargetDeviceBottomSheet() throws Throwable {
-        setUpAccountData(createFakeAccount());
+        setUpAccountData(TestAccounts.ACCOUNT1);
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             NoTargetDeviceBottomSheetContent sheetContent =
-                                    new NoTargetDeviceBottomSheetContent(getActivity(), mProfile);
-                            getActivity().setContentView(sheetContent.getContentView());
+                                    new NoTargetDeviceBottomSheetContent(sActivity, mProfile);
+                            sActivity.setContentView(sheetContent.getContentView());
                             return sheetContent.getContentView();
                         });
         mRenderTestRule.render(view, "no_target_device_with_account");
@@ -145,44 +154,18 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     public void testNoTargetDeviceBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
-        AccountInfo account = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
+        AccountInfo account = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NoTargetDeviceBottomSheetContent sheetContent =
-                            new NoTargetDeviceBottomSheetContent(getActivity(), mProfile);
-                    getActivity().setContentView(sheetContent.getContentView());
+                            new NoTargetDeviceBottomSheetContent(sActivity, mProfile);
+                    sActivity.setContentView(sheetContent.getContentView());
                 });
         onView(withText(account.getEmail())).check(doesNotExist());
     }
 
-    private AccountInfo createFakeAccount() {
-        return createFakeAccount(new AccountCapabilities(new HashMap<>()));
-    }
-
-    private AccountInfo createFakeAccount(AccountCapabilities accountCapabilities) {
-        Drawable drawable =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_profile_picture);
-        Bitmap bitmap =
-                Bitmap.createBitmap(
-                        drawable.getIntrinsicWidth(),
-                        drawable.getIntrinsicHeight(),
-                        Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return new AccountInfo(
-                new CoreAccountId("id"),
-                "test@gmail.com",
-                "gaiaId",
-                "John Doe",
-                "John",
-                bitmap,
-                accountCapabilities);
-    }
-
-    /** Set up account data to be shown by the UI following createFakeAccount(). */
+    /** Set up account data to be shown by the UI. */
     private void setUpAccountData(AccountInfo account) {
         // Set up account data to be shown by the UI.
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);

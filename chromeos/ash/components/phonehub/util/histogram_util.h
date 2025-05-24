@@ -16,25 +16,33 @@ namespace util {
 // //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
+//
+// LINT.IfChange(PhoneHubOptInEntryPoint)
 enum class OptInEntryPoint {
   kSetupFlow = 0,
   kOnboardingFlow = 1,
   kSettings = 2,
   kMaxValue = kSettings,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubOptInEntryPoint)
 
 // Enumeration of possible opt-in entry points for Phone Hub Camera Roll
-// feature. Keep in sync with the corresponding
-// PhoneHubCameraRollOptInEntryPoint enum in
+// feature. Keep in sync with the corresponding CameraRollOptInEntryPoint enum
+// in
+// //chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom
+// and the PhoneHubCameraRollOptInEntryPoint enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
+//
+// LINT.IfChange(PhoneHubCameraRollOptInEntryPoint)
 enum class CameraRollOptInEntryPoint {
   kSetupFlow = 0,
   kOnboardingDialog = 1,
   kSettings = 2,
   kMaxValue = kSettings,
 };
+// LINT.ThenChange(//chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom:PhoneHubCameraRollOptInEntryPoint)
 
 // Enumeration of results of attempting to download a file from Phone Hub's
 // Camera Roll. Keep in sync with the corresponding
@@ -42,6 +50,8 @@ enum class CameraRollOptInEntryPoint {
 // //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
+//
+// LINT.IfChange(PhoneHubCameraRollDownloadResult)
 enum class CameraRollDownloadResult {
   // The download was successful.
   kSuccess = 0,
@@ -68,31 +78,44 @@ enum class CameraRollDownloadResult {
   kTargetFileNotAccessible = 8,
   kMaxValue = kTargetFileNotAccessible,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubCameraRollDownloadResult)
 
-// Enumeration of results of a tethering connection attempt.
+// Enumeration of results of a tethering connection attempt. Keep in sync with
+// the corresponding PhoneHubTetherConnectionResult enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+//
+// LINT.IfChange(PhoneHubTetherConnectionResult)
 enum class TetherConnectionResult {
   kAttemptConnection = 0,
   kSuccess = 1,
   kMaxValue = kSuccess,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubTetherConnectionResult)
 
 // Keep in sync with the corresponding PhoneHubMessageResult enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
+//
+// LINT.IfChange(PhoneHubMessageResult)
 enum class PhoneHubMessageResult {
   kRequestAttempted = 0,
   kResponseReceived = 1,
   kMaxValue = kResponseReceived,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubMessageResult)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Keep in sync with the corresponding PhoneHubPermissionsOnboardingSetUpMode
-// enum in //tools/metrics/histograms/metadata/phonehub/enums.xml.
+// and PhoneHubPermissionsOnboardingSetUpResult enums in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml.
 // Keep in sync with PhoneHubPermissionsSetupMode enum in
-// //chrome/browser/resources/ash/settings/multidevice_page/
-// multidevice_constants.ts
+// //chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts
+//
+// LINT.IfChange(PhoneHubPermissionsOnboardingSetUpMode)
 enum class PermissionsOnboardingSetUpMode {
   kNone = 0,
   kNotification = 1,
@@ -104,10 +127,12 @@ enum class PermissionsOnboardingSetUpMode {
   kAllPermissions = 7,
   kMaxValue = kAllPermissions
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubPermissionsOnboardingSetUpMode)
 
 // Keep in sync with the PhoneHubPermissionsSetupFlowScreens enum in
-// //chrome/browser/resources/ash/settings/multidevice_page/
-// multidevice_constants.ts
+// //chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts
+//
+// LINT.IfChange(PhoneHubPermissionsSetupFlowScreens)
 enum class PermissionsOnboardingStep {
   kUnknown = 0,
   kDialogIntroAction = 1,
@@ -118,14 +143,16 @@ enum class PermissionsOnboardingStep {
   kDialogSetupFinished = 6,
   kDialogSetAPinOrPassword = 7
 };
+// LINT.ThenChange(//chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts:PhoneHubPermissionsSetupFlowScreens)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Keep in sync with the corresponding PhoneHubPermissionsOnboardingScreenEvent
 // enum in //tools/metrics/histograms/metadata/phonehub/enums.xml.
 // Keep in sync with the PhoneHubPermissionsSetupAction enum in
-// //chrome/browser/resources/ash/settings/multidevice_page/
-// multidevice_constants.ts
+// //chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts
+//
+// LINT.IfChange(PhoneHubPermissionsOnboardingScreenEvent)
 enum class PermissionsOnboardingScreenEvent {
   kUnknown = 0,
   kShown = 1,
@@ -135,10 +162,14 @@ enum class PermissionsOnboardingScreenEvent {
   kNextOrTryAgain = 5,
   kMaxValue = kNextOrTryAgain
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubPermissionsOnboardingScreenEvent)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// Keep in sync with corresponding enum in
+// //tools/metrics/histograms/metadata/cross_device/enums.xml.
+//
+// LINT.IfChange(MultiDeviceSetupDialogEntrypoint)
 enum class MultiDeviceSetupDialogEntrypoint {
   kSettingsPage = 0,
   kSetupNotification = 1,
@@ -146,6 +177,7 @@ enum class MultiDeviceSetupDialogEntrypoint {
   kPhoneHubBubbleAferNudge = 3,
   kMaxValue = kPhoneHubBubbleAferNudge
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:MultiDeviceSetupDialogEntrypoint)
 
 // Logs a given opt-in |entry_point| for the PhoneHub feature.
 void LogFeatureOptInEntryPoint(OptInEntryPoint entry_point);

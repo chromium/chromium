@@ -92,6 +92,12 @@ export class SiteEntryElement extends SiteEntryElementBase {
         value: '',
       },
 
+      isRelatedWebsiteSetsV2UiEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
+      },
+
       /**
        * Mock preference used to power managed policy icon for related website
        * sets.
@@ -153,17 +159,18 @@ export class SiteEntryElement extends SiteEntryElementBase {
     ];
   }
 
-  siteGroup: SiteGroup;
-  private displayName_: string;
-  private cookieString_: string;
-  private rwsMembershipLabel_: string;
-  isRwsFiltered: boolean;
-  listIndex: number;
-  private overallUsageString_: string;
-  private originUsages_: string[];
-  private cookiesNum_: string[];
-  sortMethod?: SortMethod;
-  private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  declare siteGroup: SiteGroup;
+  declare private displayName_: string;
+  declare private cookieString_: string;
+  declare private rwsMembershipLabel_: string;
+  declare isRwsFiltered: boolean;
+  declare listIndex: number;
+  declare private overallUsageString_: string;
+  declare private originUsages_: string[];
+  declare private cookiesNum_: string[];
+  declare sortMethod?: SortMethod;
+  declare private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  declare private isRelatedWebsiteSetsV2UiEnabled_: boolean;
 
   private button_: Element|null = null;
   private eventTracker_: EventTracker = new EventTracker();
@@ -325,6 +332,11 @@ export class SiteEntryElement extends SiteEntryElementBase {
     return !!this.siteGroup && this.siteGroup.rwsOwner !== undefined;
   }
 
+  private showRwsLabel_(): boolean {
+    return this.isRwsMember_() &&
+        !(this.isRelatedWebsiteSetsV2UiEnabled_ && this.isRwsFiltered);
+  }
+
   /**
    * Evaluates whether the three dot menu should be shown for the site entry.
    * @returns True if site group is a related website set member and filter by
@@ -352,10 +364,12 @@ export class SiteEntryElement extends SiteEntryElementBase {
   private updateRwsMembershipLabel_() {
     if (!this.siteGroup.rwsOwner) {
       this.rwsMembershipLabel_ = '';
+    } else if (this.isRelatedWebsiteSetsV2UiEnabled_) {
+      this.rwsMembershipLabel_ = this.i18n('allSitesRwsMembershipLabel');
     } else {
       this.browserProxy
           .getRwsMembershipLabel(
-              this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner!)
+              this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner)
           .then(label => this.rwsMembershipLabel_ = label);
     }
   }
@@ -514,6 +528,10 @@ export class SiteEntryElement extends SiteEntryElementBase {
   private getSubpageLabel_(target: string): string {
     return this.i18n(
         'siteSettingsSiteDetailsSubpageAccessibilityLabel', target);
+  }
+
+  private getOriginSubpageLabel_(origin: string): string {
+    return this.getSubpageLabel_(this.originRepresentation(origin));
   }
 
   private getRemoveOriginButtonTitle_(origin: string): string {

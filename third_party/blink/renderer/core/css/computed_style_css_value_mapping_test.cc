@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/computed_style_css_value_mapping.h"
+
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 

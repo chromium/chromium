@@ -60,10 +60,10 @@ class CORE_EXPORT StylePendingImage final : public StyleImage {
                              CSSValuePhase value_phase) const override;
 
   bool IsAccessAllowed(String&) const override { return true; }
-  IntrinsicSizingInfo GetNaturalSizingInfo(
+  NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override {
-    return IntrinsicSizingInfo();
+    return NaturalSizingInfo();
   }
   gfx::SizeF ImageSize(float,
                        const gfx::SizeF&,
@@ -74,7 +74,7 @@ class CORE_EXPORT StylePendingImage final : public StyleImage {
   void AddClient(ImageResourceObserver*) override {}
   void RemoveClient(ImageResourceObserver*) override {}
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override {
     DUMP_WILL_BE_NOTREACHED();

@@ -29,6 +29,10 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   // Used to determine if NearbyShare has been enabled in the settings app.
   virtual bool IsEnabled() = 0;
 
+  // Used to enable/disable Quick Share (formerly Nearby Share) in the settings
+  // app.
+  virtual void SetEnabled(bool enabled) = 0;
+
   // Used by the pod button to determine whether it should be visible.
   virtual bool IsPodButtonVisible() = 0;
 

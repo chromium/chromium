@@ -11,13 +11,19 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_install_data.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace base {
+class FilePath;
+}
 
 namespace content {
 class BrowserContext;
@@ -25,6 +31,7 @@ class BrowserContext;
 
 namespace extensions {
 
+class Extension;
 class ExtensionPrefs;
 
 class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
@@ -42,7 +49,7 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
   void AddObserver(InstallObserver* observer);
   void RemoveObserver(InstallObserver* observer);
 
-  // If an install is currently in progress for |extension_id|, returns details
+  // If an install is currently in progress for `extension_id`, returns details
   // of the installation. This instance retains ownership of the returned
   // pointer. Returns NULL if the extension is not currently being installed.
   const ActiveInstallData* GetActiveInstall(
@@ -63,10 +70,10 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
   void OnBeginExtensionDownload(const std::string& extension_id);
   void OnDownloadProgress(const std::string& extension_id,
                           int percent_downloaded);
-  void OnBeginCrxInstall(const CrxInstaller& installer,
-                         const std::string& extension_id);
-  void OnFinishCrxInstall(const CrxInstaller& installer,
+  void OnBeginCrxInstall(const std::string& extension_id);
+  void OnFinishCrxInstall(const base::FilePath& source_file,
                           const std::string& extension_id,
+                          const Extension* extension,
                           bool success);
   void OnInstallFailure(const std::string& extension_id);
 
@@ -92,7 +99,7 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
   typedef std::map<std::string, ActiveInstallData> ActiveInstallsMap;
   ActiveInstallsMap active_installs_;
 
-  // Safe: |this| belongs to |browser_context_| via KeyedService, and this
+  // Safe: `this` belongs to `browser_context_` via KeyedService, and this
   // pointer is nulled in Shutdown().
   raw_ptr<content::BrowserContext> browser_context_;
 

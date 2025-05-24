@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
 
 #include <fcntl.h>
@@ -168,8 +173,9 @@ scoped_refptr<media::DecoderBuffer> ReassembleFragments(
   auto temp_buffer = base::HeapArray<uint8_t>::Uninit(frame_size);
   uint8_t* dst = temp_buffer.data();
   for (const auto& fragment : fragments) {
-    memcpy(dst, fragment->data(), fragment->size());
-    dst += fragment->size();
+    auto fragment_span = base::span(*fragment);
+    memcpy(dst, fragment_span.data(), fragment_span.size());
+    dst += fragment_span.size();
   }
 
   auto reassembled_frame =
@@ -202,8 +208,9 @@ class H264FrameReassembler {
   // contains multiple frames. In any case, it might return a vector of
   // DecoderBuffer + DecodeCB; if so, the caller can treat those as ready to be
   // enqueued in the driver: this method will hold onto and reassemble
-  // fragments as needed. |decode_cb| will be called internally to signal
-  // errors or correctly received |buffer|s.
+  // fragments as needed. This method is guaranteed to return a vector. If a
+  // partial frame is not ready, only the DecodeCB associated with |buffer|
+  // will returned.
   std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
   Process(scoped_refptr<DecoderBuffer> buffer,
           VideoDecoder::DecodeCB decode_cb);
@@ -373,12 +380,13 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // |OUTPUT_queue_| for the driver to know the output details. The driver will
   // let us know that moment via a V4L2_EVENT_SOURCE_CHANGE.
   // [1] https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#initialization
-  OUTPUT_queue_ = base::WrapRefCounted(new V4L2Queue(
+  OUTPUT_queue_ = base::MakeRefCounted<V4L2Queue>(
+      V4L2Queue::PassKey::Get(),
       base::BindRepeating(&HandledIoctl, device_fd_.get()),
       /*schedule_poll_cb=*/base::DoNothing(),
       /*mmap_cb=*/base::BindRepeating(&Mmap, device_fd_.get()),
       AllocateSecureBufferAsCallback(), V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE,
-      /*destroy_cb=*/base::DoNothing()));
+      /*destroy_cb=*/base::DoNothing());
 
   const auto profile_as_v4l2_fourcc =
       VideoCodecProfileToV4L2PixFmt(config.profile(), /*slice_based=*/false);
@@ -581,37 +589,27 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
 
 bool V4L2StatefulVideoDecoder::NeedsBitstreamConversion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED_IN_MIGRATION()
-      << "Our only owner VideoDecoderPipeline never calls here";
-  return false;
+  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
 }
 
 bool V4L2StatefulVideoDecoder::CanReadWithoutStalling() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED_IN_MIGRATION()
-      << "Our only owner VideoDecoderPipeline never calls here";
-  return true;
+  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
 }
 
 int V4L2StatefulVideoDecoder::GetMaxDecodeRequests() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED_IN_MIGRATION()
-      << "Our only owner VideoDecoderPipeline never calls here";
-  return 4;
+  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
 }
 
 VideoDecoderType V4L2StatefulVideoDecoder::GetDecoderType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED_IN_MIGRATION()
-      << "Our only owner VideoDecoderPipeline never calls here";
-  return VideoDecoderType::kV4L2;
+  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
 }
 
 bool V4L2StatefulVideoDecoder::IsPlatformDecoder() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED_IN_MIGRATION()
-      << "Our only owner VideoDecoderPipeline never calls here";
-  return true;
+  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
 }
 
 void V4L2StatefulVideoDecoder::ApplyResolutionChange() {
@@ -687,12 +685,13 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
 
-  CAPTURE_queue_ = base::WrapRefCounted(new V4L2Queue(
+  CAPTURE_queue_ = base::MakeRefCounted<V4L2Queue>(
+      V4L2Queue::PassKey::Get(),
       base::BindRepeating(&HandledIoctl, device_fd_.get()),
       /*schedule_poll_cb=*/base::DoNothing(),
       /*mmap_cb=*/base::BindRepeating(&Mmap, device_fd_.get()),
       AllocateSecureBufferAsCallback(), V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
-      /*destroy_cb=*/base::DoNothing()));
+      /*destroy_cb=*/base::DoNothing());
 
   const auto v4l2_format_or_error = CAPTURE_queue_->GetFormat();
   if (!v4l2_format_or_error.first || v4l2_format_or_error.second != kIoctlOk) {
@@ -972,6 +971,8 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
       CHECK(frame);
 
       frame->set_timestamp(TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()));
+      frame->set_color_space(config_.color_space_info().ToGfxColorSpace());
+      frame->set_hdr_metadata(config_.hdr_metadata());
 
       //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |frame| to return
       //  |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled". For a
@@ -1123,34 +1124,42 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
         std::move(decoder_buffer_and_callbacks_.front().second);
     decoder_buffer_and_callbacks_.pop();
 
-    if (media_buffer->end_of_stream()) {
-      // We had received an end_of_stream() buffer but there were still pending
-      // |decoder_buffer_and_callbacks_|, so we stored it; we can now process it
-      // and start the Flush.
-      if (!OUTPUT_queue_->SendStopCommand()) {
-        std::move(media_decode_cb).Run(DecoderStatus::Codes::kFailed);
+    // Every |decoder_buffer_and_callbacks_| entry is guaranteed to contain a
+    // valid DecodeCB. However, when the |h264_frame_reassembler_| is in use,
+    // not every |decoder_buffer_and_callbacks_| entry will contain a valid
+    // DecoderBuffer.
+    if (media_buffer) {
+      if (media_buffer->end_of_stream()) {
+        // We had received an end_of_stream() buffer but there were still
+        // pending |decoder_buffer_and_callbacks_|, so we stored it; we can now
+        // process it and start the Flush.
+        if (!OUTPUT_queue_->SendStopCommand()) {
+          std::move(media_decode_cb).Run(DecoderStatus::Codes::kFailed);
+          return false;
+        }
+        flush_cb_ = std::move(media_decode_cb);
+        return true;
+      }
+
+      CHECK_EQ(v4l2_buffer->PlanesCount(), 1u);
+      uint8_t* dst = static_cast<uint8_t*>(v4l2_buffer->GetPlaneMapping(0));
+      auto media_buffer_span = base::span(*media_buffer);
+      CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0),
+               media_buffer_span.size());
+      memcpy(dst, media_buffer_span.data(), media_buffer_span.size());
+      v4l2_buffer->SetPlaneBytesUsed(0, media_buffer_span.size());
+      VLOGF(4) << "Enqueuing " << media_buffer_span.size() << " bytes.";
+      v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(media_buffer->timestamp()));
+
+      const int64_t flat_timespec = media_buffer->timestamp().InMilliseconds();
+      encoding_timestamps_[flat_timespec] = base::TimeTicks::Now();
+
+      if (!std::move(*v4l2_buffer).QueueMMap()) {
+        LOG(ERROR) << "Error while queuing input |media_buffer|!";
+        std::move(media_decode_cb)
+            .Run(DecoderStatus::Codes::kPlatformDecodeFailure);
         return false;
       }
-      flush_cb_ = std::move(media_decode_cb);
-      return true;
-    }
-
-    CHECK_EQ(v4l2_buffer->PlanesCount(), 1u);
-    uint8_t* dst = static_cast<uint8_t*>(v4l2_buffer->GetPlaneMapping(0));
-    CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), media_buffer->size());
-    memcpy(dst, media_buffer->data(), media_buffer->size());
-    v4l2_buffer->SetPlaneBytesUsed(0, media_buffer->size());
-    VLOGF(4) << "Enqueuing " << media_buffer->size() << " bytes.";
-    v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(media_buffer->timestamp()));
-
-    const int64_t flat_timespec = media_buffer->timestamp().InMilliseconds();
-    encoding_timestamps_[flat_timespec] = base::TimeTicks::Now();
-
-    if (!std::move(*v4l2_buffer).QueueMMap()) {
-      LOG(ERROR) << "Error while queuing input |media_buffer|!";
-      std::move(media_decode_cb)
-          .Run(DecoderStatus::Codes::kPlatformDecodeFailure);
-      return false;
     }
     std::move(media_decode_cb).Run(DecoderStatus::Codes::kOk);
   }
@@ -1212,7 +1221,7 @@ std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
 H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
                               VideoDecoder::DecodeCB decode_cb) {
   std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
-      whole_frames;
+      frames;
 
   auto remaining = base::span(*buffer);
 
@@ -1230,42 +1239,38 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
     if (nalu_info->is_start_of_new_frame && HasFragments()) {
       VLOGF(4) << frame_fragments_.size()
                << " currently stored frame fragment(s) can be reassembled.";
-      whole_frames.emplace_back(ReassembleFragments(frame_fragments_),
-                                base::DoNothing());
+      frames.emplace_back(ReassembleFragments(frame_fragments_),
+                          base::DoNothing());
     }
 
     if (nalu_info->is_whole_frame) {
       VLOGF(3) << "Found a whole frame, size=" << found_nalu_size << " bytes";
-      whole_frames.emplace_back(
-          DecoderBuffer::CopyFrom(remaining.first(found_nalu_size)),
+      frames.emplace_back(
+          DecoderBuffer::CopyFrom(remaining.take_first(found_nalu_size)),
           base::DoNothing());
-      whole_frames.back().first->set_timestamp(buffer->timestamp());
-
-      remaining = remaining.subspan(found_nalu_size);
+      frames.back().first->set_timestamp(buffer->timestamp());
       continue;
     }
 
     VLOGF(4) << "This was a frame fragment; storing it for later reassembly.";
     frame_fragments_.emplace_back(
-        DecoderBuffer::CopyFrom(remaining.first(found_nalu_size)));
+        DecoderBuffer::CopyFrom(remaining.take_first(found_nalu_size)));
     frame_fragments_.back()->set_timestamp(buffer->timestamp());
-
-    remaining = remaining.subspan(found_nalu_size);
   } while (!remaining.empty());
 
   // |decode_cb| is used to signal to our client that encoded chunks have been
-  // "accepted", and that we are ready to receive more. If we have found (some)
-  // whole frame(s), then we can just return |decode_cb| so that it can be Run()
-  // at the actual enqueueing in driver moment; but if there were no frames
-  // found, we need to signal the callback now otherwise the client might stop
-  // sending fragments altogether and we'll wait forever.
-  if (whole_frames.empty()) {
-    std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
+  // "accepted", and that we are ready to receive more. It must be called in
+  // order of accepted frames. If there is no complete frame the callback still
+  // needs to be stuffed in |frames| so that when they are dequeued they are
+  // interleaved correctly. While there may not be compressed data to enqueue,
+  // there will always be a callback to enqueue.
+  if (frames.empty()) {
+    frames.emplace_back(nullptr, std::move(decode_cb));
   } else {
-    whole_frames.back().second = std::move(decode_cb);
+    frames.back().second = std::move(decode_cb);
   }
 
-  return whole_frames;
+  return frames;
 }
 
 std::optional<struct H264FrameReassembler::FrameBoundaryInfo>

@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/i18n/rtl.h"
@@ -32,12 +33,12 @@ namespace mojo {
 template <>
 struct StructTraits<autofill::mojom::FrameTokenDataView, autofill::FrameToken> {
   static const base::UnguessableToken& token(const autofill::FrameToken& r) {
-    return absl::visit([](const auto& t) -> const auto& { return t.value(); },
-                       r);
+    return std::visit([](const auto& t) -> const auto& { return t.value(); },
+                      r);
   }
 
   static bool is_local(const autofill::FrameToken& r) {
-    return absl::holds_alternative<autofill::LocalFrameToken>(r);
+    return std::holds_alternative<autofill::LocalFrameToken>(r);
   }
 
   static bool Read(autofill::mojom::FrameTokenDataView data,
@@ -100,18 +101,18 @@ struct UnionTraits<autofill::mojom::SectionValueDataView,
       const autofill::Section::SectionValue& r);
 
   static bool default_section(const autofill::Section::SectionValue& r) {
-    DCHECK(absl::holds_alternative<autofill::Section::Default>(r));
+    DCHECK(std::holds_alternative<autofill::Section::Default>(r));
     return true;
   }
 
   static const autofill::Section::Autocomplete& autocomplete(
       const autofill::Section::SectionValue& r) {
-    return absl::get<autofill::Section::Autocomplete>(r);
+    return std::get<autofill::Section::Autocomplete>(r);
   }
 
   static const autofill::Section::FieldIdentifier& field_identifier(
       const autofill::Section::SectionValue& r) {
-    return absl::get<autofill::Section::FieldIdentifier>(r);
+    return std::get<autofill::Section::FieldIdentifier>(r);
   }
 
   static bool Read(autofill::mojom::SectionValueDataView data,
@@ -188,6 +189,10 @@ struct StructTraits<autofill::mojom::AutocompleteParsingResultDataView,
     return r.webauthn;
   }
 
+  static bool webidentity(const autofill::AutocompleteParsingResult& r) {
+    return r.webidentity;
+  }
+
   static bool Read(autofill::mojom::AutocompleteParsingResultDataView data,
                    autofill::AutocompleteParsingResult* out);
 };
@@ -233,6 +238,10 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
   static const std::optional<autofill::AutocompleteParsingResult>&
   parsed_autocomplete(const autofill::FormFieldData& r) {
     return r.parsed_autocomplete();
+  }
+
+  static const std::u16string& pattern(const autofill::FormFieldData& r) {
+    return r.pattern();
   }
 
   static const std::u16string& placeholder(const autofill::FormFieldData& r) {
@@ -497,9 +506,24 @@ struct StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return r.overall_type;
   }
 
+  static const std::string& autofill_ai_type(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.autofill_ai_type;
+  }
+
+  static const std::string& format_string(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.format_string;
+  }
+
   static const std::string& parseable_name(
       const autofill::FormFieldDataPredictions& r) {
     return r.parseable_name;
+  }
+
+  static const std::string& parseable_label(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.parseable_label;
   }
 
   static const std::string& section(
@@ -575,6 +599,9 @@ struct StructTraits<autofill::mojom::PasswordAndMetadataDataView,
   static bool uses_account_store(const autofill::PasswordAndMetadata& r) {
     return r.uses_account_store;
   }
+  static bool is_grouped_affiliation(const autofill::PasswordAndMetadata& r) {
+    return r.is_grouped_affiliation;
+  }
 
   static bool Read(autofill::mojom::PasswordAndMetadataDataView data,
                    autofill::PasswordAndMetadata* out);
@@ -602,11 +629,6 @@ struct StructTraits<autofill::mojom::PasswordFormFillDataDataView,
     return r.password_element_renderer_id;
   }
 
-  static bool username_may_use_prefilled_placeholder(
-      const autofill::PasswordFormFillData& r) {
-    return r.username_may_use_prefilled_placeholder;
-  }
-
   static const autofill::PasswordAndMetadata& preferred_login(
       const autofill::PasswordFormFillData& r) {
     return r.preferred_login;
@@ -624,6 +646,11 @@ struct StructTraits<autofill::mojom::PasswordFormFillDataDataView,
   static std::vector<autofill::FieldRendererId> suggestion_banned_fields(
       const autofill::PasswordFormFillData& r) {
     return r.suggestion_banned_fields;
+  }
+
+  static bool notify_browser_of_successful_filling(
+      const autofill::PasswordFormFillData& r) {
+    return r.notify_browser_of_successful_filling;
   }
 
   static bool Read(autofill::mojom::PasswordFormFillDataDataView data,
@@ -685,9 +712,9 @@ struct StructTraits<autofill::mojom::PasswordGenerationUIDataDataView,
     return r.form_data;
   }
 
-  static bool input_field_empty(
+  static bool generation_rejected(
       const autofill::password_generation::PasswordGenerationUIData& r) {
-    return r.input_field_empty;
+    return r.generation_rejected;
   }
 
   static bool Read(
@@ -696,21 +723,55 @@ struct StructTraits<autofill::mojom::PasswordGenerationUIDataDataView,
 };
 
 template <>
+struct StructTraits<autofill::mojom::TriggeringFieldDataView,
+                    autofill::TriggeringField> {
+  static autofill::FieldRendererId element_id(
+      const autofill::TriggeringField& r) {
+    return r.element_id;
+  }
+
+  static autofill::AutofillSuggestionTriggerSource trigger_source(
+      const autofill::TriggeringField& r) {
+    return r.trigger_source;
+  }
+
+  static base::i18n::TextDirection text_direction(
+      const autofill::TriggeringField& r) {
+    return r.text_direction;
+  }
+
+  static const std::u16string& typed_username(
+      const autofill::TriggeringField& r) {
+    return r.typed_username;
+  }
+
+  static int show_webauthn_credentials(const autofill::TriggeringField& r) {
+    return r.show_webauthn_credentials;
+  }
+
+  static int show_identity_credentials(const autofill::TriggeringField& r) {
+    return r.show_identity_credentials;
+  }
+
+  static const gfx::RectF& bounds(const autofill::TriggeringField& r) {
+    return r.bounds;
+  }
+
+  static bool Read(autofill::mojom::TriggeringFieldDataView data,
+                   autofill::TriggeringField* out);
+};
+
+template <>
 struct StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
                     autofill::PasswordSuggestionRequest> {
-  static autofill::FieldRendererId element_id(
+  static autofill::TriggeringField field(
       const autofill::PasswordSuggestionRequest& r) {
-    return r.element_id;
+    return r.field;
   }
 
   static const autofill::FormData& form_data(
       const autofill::PasswordSuggestionRequest& r) {
     return r.form_data;
-  }
-
-  static autofill::AutofillSuggestionTriggerSource trigger_source(
-      const autofill::PasswordSuggestionRequest& r) {
-    return r.trigger_source;
   }
 
   static uint64_t username_field_index(
@@ -721,26 +782,6 @@ struct StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
   static uint64_t password_field_index(
       const autofill::PasswordSuggestionRequest& r) {
     return r.password_field_index;
-  }
-
-  static base::i18n::TextDirection text_direction(
-      const autofill::PasswordSuggestionRequest& r) {
-    return r.text_direction;
-  }
-
-  static const std::u16string& typed_username(
-      const autofill::PasswordSuggestionRequest& r) {
-    return r.typed_username;
-  }
-
-  static int show_webauthn_credentials(
-      const autofill::PasswordSuggestionRequest& r) {
-    return r.show_webauthn_credentials;
-  }
-
-  static const gfx::RectF& bounds(
-      const autofill::PasswordSuggestionRequest& r) {
-    return r.bounds;
   }
 
   static bool Read(autofill::mojom::PasswordSuggestionRequestDataView data,

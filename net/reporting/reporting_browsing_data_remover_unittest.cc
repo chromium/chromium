@@ -47,7 +47,7 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
   void AddReport(const GURL& url) {
     cache()->AddReport(std::nullopt, NetworkAnonymizationKey(), url,
                        kUserAgent_, kGroup_, kType_, base::Value::Dict(), 0,
-                       tick_clock()->NowTicks(), 0,
+                       tick_clock()->NowTicks(),
                        ReportingTargetType::kDeveloper);
   }
 

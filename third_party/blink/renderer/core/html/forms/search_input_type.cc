@@ -59,8 +59,8 @@ void SearchInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeSearch);
 }
 
-ControlPart SearchInputType::AutoAppearance() const {
-  return kSearchFieldPart;
+AppearanceValue SearchInputType::AutoAppearance() const {
+  return AppearanceValue::kSearchField;
 }
 
 bool SearchInputType::NeedsContainer() const {

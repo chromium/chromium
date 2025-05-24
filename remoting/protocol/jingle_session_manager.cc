@@ -4,9 +4,11 @@
 
 #include "remoting/protocol/jingle_session_manager.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/content_description.h"
 #include "remoting/protocol/jingle_messages.h"
@@ -112,8 +114,11 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
     }
 
     IncomingSessionResponse response = SessionManager::DECLINE;
+    std::string rejection_reason;
+    base::Location rejection_location;
     if (!incoming_session_callback_.is_null()) {
-      incoming_session_callback_.Run(session, &response);
+      incoming_session_callback_.Run(session, &response, &rejection_reason,
+                                     &rejection_location);
     }
 
     if (response == SessionManager::ACCEPT) {
@@ -133,7 +138,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
           NOTREACHED();
       }
 
-      session->Close(error);
+      session->Close(error, rejection_reason, rejection_location);
       delete session;
       DCHECK(sessions_.find(message->sid) == sessions_.end());
     }

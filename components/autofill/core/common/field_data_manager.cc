@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/common/field_data_manager.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/i18n/case_conversion.h"
 
@@ -49,16 +51,17 @@ bool FieldDataManager::FindMatchedValue(const std::u16string& value) const {
 }
 
 void FieldDataManager::UpdateFieldDataMap(FieldRendererId id,
-                                          std::u16string_view value,
+                                          std::u16string value,
                                           FieldPropertiesMask mask) {
+  const bool is_empty = value.empty();
   if (HasFieldData(id)) {
-    field_value_and_properties_map_[id].first = std::u16string(value);
+    field_value_and_properties_map_[id].first = std::move(value);
     field_value_and_properties_map_[id].second |= mask;
   } else {
-    field_value_and_properties_map_[id] = {std::u16string(value), mask};
+    field_value_and_properties_map_[id] = {std::move(value), mask};
   }
   // Reset kUserTyped and kAutofilled flags if the value is empty.
-  if (value.empty()) {
+  if (is_empty) {
     field_value_and_properties_map_[id].second &=
         ~(FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kAutofilled);
   }
@@ -80,8 +83,10 @@ bool FieldDataManager::DidUserType(FieldRendererId id) const {
 }
 
 bool FieldDataManager::WasAutofilledOnUserTrigger(FieldRendererId id) const {
-  return HasFieldData(id) && (GetFieldPropertiesMask(id) &
-                              FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  return HasFieldData(id) &&
+         (GetFieldPropertiesMask(id) &
+          (FieldPropertiesFlags::kAutofilledOnUserTrigger |
+           FieldPropertiesFlags::kAutofilledChangePasswordFormOnPageLoad));
 }
 
 FieldDataManager::~FieldDataManager() = default;

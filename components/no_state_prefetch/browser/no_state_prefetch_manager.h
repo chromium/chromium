@@ -19,10 +19,10 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_histograms.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
-#include "components/no_state_prefetch/browser/prerender_config.h"
-#include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 #include "content/public/browser/preloading_data.h"
@@ -98,9 +98,10 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   // Starts a prefetch for |url| if valid. |process_id| and |route_id| identify
   // the RenderView that the prefetch request came from. If |size| is empty, a
-  // default from the PrerenderConfig is used. Returns a NoStatePrefetchHandle
-  // if the URL was added, NULL if it was not. If the launching RenderView is
-  // itself prefetching, the prefetch is added as a pending prefetch.
+  // default from the NoStatePrefetchConfig is used. Returns a
+  // NoStatePrefetchHandle if the URL was added, NULL if it was not. If the
+  // launching RenderView is itself prefetching, the prefetch is added as a
+  // pending prefetch.
   std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingFromLinkRelPrerender(
       int process_id,
       int route_id,
@@ -175,8 +176,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Record a final status of a prerendered page in a histogram.
   void RecordFinalStatus(Origin origin, FinalStatus final_status) const;
 
-  const Config& config() const { return config_; }
-  Config& mutable_config() { return config_; }
+  const NoStatePrefetchConfig& config() const { return config_; }
+  NoStatePrefetchConfig& mutable_config() { return config_; }
 
   // Records that some visible tab navigated (or was redirected) to the
   // provided URL.
@@ -324,7 +325,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Starts a prefetch for |url| from |referrer|. The |origin| specifies how the
   // prefetch was started. If |bounds| is empty, then
   // NoStatePrefetchContents::StartPrerendering will instead use a default from
-  // PrerenderConfig. Returns a NoStatePrefetchHandle or NULL.
+  // NoStatePrefetchConfig. Returns a NoStatePrefetchHandle or NULL.
   // PreloadingAttempt helps us to log various metrics associated with
   // particular NoStatePrefetch attempt.
   // TODO(crbug.com/40238653): Remove nullptr as default parameter once NSP is
@@ -426,7 +427,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   void MaybePreconnect(Origin origin, const GURL& url_arg) const;
 
   // The configuration.
-  Config config_;
+  NoStatePrefetchConfig config_;
 
   // The browser_context that owns this NoStatePrefetchManager.
   raw_ptr<content::BrowserContext> browser_context_;
@@ -465,7 +466,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   const std::unique_ptr<NoStatePrefetchHistory> prefetch_history_;
 
-  const std::unique_ptr<PrerenderHistograms> histograms_;
+  const std::unique_ptr<NoStatePrefetchHistograms> histograms_;
 
   // Set of process hosts being prerendered.
   using PrerenderProcessSet =

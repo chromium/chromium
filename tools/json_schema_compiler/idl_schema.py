@@ -196,10 +196,6 @@ class Dictionary(object):
 
     if self.node.GetProperty('nodoc'):
       result['nodoc'] = True
-    elif self.node.GetProperty('inline_doc'):
-      result['inline_doc'] = True
-    elif self.node.GetProperty('noinline_doc'):
-      result['noinline_doc'] = True
     return result
 
 
@@ -420,9 +416,7 @@ class Enum(object):
         'type': 'string',
         'enum': enum
     }
-    for property_name in [
-        'cpp_enum_prefix_override', 'inline_doc', 'noinline_doc', 'nodoc'
-    ]:
+    for property_name in ['cpp_enum_prefix_override', 'nodoc']:
       if self.node.GetProperty(property_name):
         result[property_name] = self.node.GetProperty(property_name)
     if self.node.GetProperty('deprecated'):
@@ -442,8 +436,7 @@ class Namespace(object):
                nodoc=False,
                platforms=None,
                compiler_options=None,
-               deprecated=None,
-               documentation_options=None):
+               deprecated=None):
     self.namespace = namespace_node
     self.nodoc = nodoc
     self.platforms = platforms
@@ -454,9 +447,8 @@ class Namespace(object):
     self.manifest_keys = None
     self.types = []
     self.callbacks = OrderedDict()
-    self.description = description
+    self.description = description.strip().replace('\n', '')
     self.deprecated = deprecated
-    self.documentation_options = documentation_options
 
   def process(self):
     for node in self.namespace.GetChildren():
@@ -487,7 +479,6 @@ class Namespace(object):
       else:
         sys.exit('Did not process %s %s' % (node.cls, node))
     compiler_options = self.compiler_options or {}
-    documentation_options = self.documentation_options or {}
     return {
         'namespace': self.namespace.GetName(),
         'description': self.description,
@@ -500,7 +491,6 @@ class Namespace(object):
         'platforms': self.platforms,
         'compiler_options': compiler_options,
         'deprecated': self.deprecated,
-        'documentation_options': documentation_options
     }
 
   def process_interface(self, node, functions_are_properties=False):
@@ -538,7 +528,6 @@ class IDLSchema(object):
     platforms = None
     compiler_options = {}
     deprecated = None
-    documentation_options = {}
     for node in self.idl:
       if node.cls == 'Namespace':
         if not description:
@@ -551,8 +540,7 @@ class IDLSchema(object):
                               nodoc,
                               platforms=platforms,
                               compiler_options=compiler_options or None,
-                              deprecated=deprecated,
-                              documentation_options=documentation_options)
+                              deprecated=deprecated)
         namespaces.append(namespace.process())
         nodoc = False
         platforms = None
@@ -572,12 +560,6 @@ class IDLSchema(object):
           compiler_options['generate_error_messages'] = True
         elif node.name == 'deprecated':
           deprecated = str(node.value)
-        elif node.name == 'documentation_title':
-          documentation_options['title'] = node.value
-        elif node.name == 'documentation_namespace':
-          documentation_options['namespace'] = node.value
-        elif node.name == 'documented_in':
-          documentation_options['documented_in'] = node.value
         else:
           continue
       else:

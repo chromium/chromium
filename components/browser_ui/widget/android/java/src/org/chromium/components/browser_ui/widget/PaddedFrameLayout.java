@@ -9,6 +9,8 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A layout for displaying a View with padding, borders, and a maximum width and/or height. E.g.:
  *
@@ -18,6 +20,7 @@ import android.widget.FrameLayout;
  *       ... contents here ...
  *   </org.chromium.components.browser_ui.widget.PaddedFrameLayout>
  */
+@NullMarked
 public class PaddedFrameLayout extends FrameLayout {
     // Value for mMaxChildWidth or mMaxChildHeight to specify that the width or height should
     // not be constrained.

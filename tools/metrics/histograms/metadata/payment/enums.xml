@@ -67,6 +67,18 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(//components/payments/content/payment_request_display_manager.h:PaymentRequestTryShowOutcome) -->
 
+<!-- LINT.IfChange(SecurePaymentRequestOutcome) -->
+
+<enum name="SecurePaymentRequestOutcome">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="User wants to continue with the SPC authentication"/>
+  <int value="2" label="User wants to verify their transaction in another way"/>
+  <int value="3" label="User wants to cancel their entire transation"/>
+  <int value="4" label="User wants to opt out of future SPC authentications"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/payments/content/android/spc/java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnController.java:SecurePaymentRequestOutcome) -->
+
 </enums>
 
 </histogram-configuration>

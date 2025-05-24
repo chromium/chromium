@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 # This test_support library doesn't use extensions. It must not depend on
 # //chrome/test:test_support_ui as it is depended upon by those targets.
@@ -30,13 +30,12 @@ static_library("test_support") {
     "//chrome/browser",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/system_web_apps",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//components/crx_file",
     "//components/keyed_service/content",
     "//components/services/app_service",

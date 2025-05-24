@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -65,7 +66,7 @@ struct SourceOptions {
 // Opening a file typically requires at least these flags.
 constexpr int STD_OPEN = base::File::FLAG_OPEN | base::File::FLAG_READ;
 
-constexpr SourceOptions kSourceOptions[] = {
+constexpr auto kSourceOptions = std::to_array<SourceOptions>({
     // SOURCE_HISTOGRAMS_ATOMIC_FILE
     {
         // Ensure that no other process reads this at the same time.
@@ -89,7 +90,7 @@ constexpr SourceOptions kSourceOptions[] = {
         base::MemoryMappedFile::READ_WRITE,
         false,
     },
-};
+});
 
 void DeleteFileWhenPossible(const base::FilePath& path) {
   // Open (with delete) and then immediately close the file by going out of
@@ -129,7 +130,7 @@ struct FileMetricsProvider::SourceInfo {
   SourceInfo(const SourceInfo&) = delete;
   SourceInfo& operator=(const SourceInfo&) = delete;
 
-  ~SourceInfo() {}
+  ~SourceInfo() = default;
 
   struct FoundFile {
     base::FilePath path;
@@ -243,9 +244,8 @@ void FileMetricsProvider::RegisterSource(const Params& params,
 }
 
 // static
-void FileMetricsProvider::RegisterSourcePrefs(
-    PrefRegistrySimple* prefs,
-    const std::string_view prefs_key) {
+void FileMetricsProvider::RegisterSourcePrefs(PrefRegistrySimple* prefs,
+                                              std::string_view prefs_key) {
   prefs->RegisterInt64Pref(
       metrics::prefs::kMetricsLastSeenPrefix + std::string(prefs_key), 0);
 }
@@ -503,7 +503,7 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
     if (amount != kTestSize)
       return ACCESS_RESULT_INVALID_CONTENTS;
 
-    char zeros[kTestSize] = {0};
+    char zeros[kTestSize] = {};
     file.Write(0, zeros, kTestSize);
     file.Flush();
 
@@ -686,10 +686,7 @@ FileMetricsProvider::AccessResult FileMetricsProvider::HandleFilterSource(
       return ACCESS_RESULT_FILTER_SKIP_FILE;
   }
 
-  // Code never gets here but some compilers don't realize that and so complain
-  // that "not all control paths return a value".
-  NOTREACHED_IN_MIGRATION();
-  return ACCESS_RESULT_SUCCESS;
+  NOTREACHED();
 }
 
 /* static */
@@ -766,7 +763,7 @@ void FileMetricsProvider::AppendToSamplesCountPref(
 
 // static
 size_t FileMetricsProvider::CollectFileMetadataFromSource(SourceInfo* source) {
-  base::HistogramBase::Count samples_count = 0;
+  base::HistogramBase::Count32 samples_count = 0;
   base::PersistentHistogramAllocator::Iterator it{source->allocator.get()};
   std::unique_ptr<base::HistogramBase> histogram;
   while ((histogram = it.GetNext()) != nullptr) {

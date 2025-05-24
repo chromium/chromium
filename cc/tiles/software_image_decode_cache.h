@@ -46,16 +46,16 @@ class CC_EXPORT SoftwareImageDecodeCache
                                    const TracingInfo& tracing_info) override;
   TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
       ClientId client_id,
-      const DrawImage& image) override;
+      const DrawImage& image,
+      bool speculative = false) override;
   void UnrefImage(const DrawImage& image) override;
   DecodedDrawImage GetDecodedImageForDraw(const DrawImage& image) override;
   void DrawWithImageFinished(const DrawImage& image,
                              const DecodedDrawImage& decoded_image) override;
   void ReduceCacheUsage() override;
   // Software doesn't keep outstanding images pinned, so this is a no-op.
-  void SetShouldAggressivelyFreeResources(bool aggressively_free_resources,
-                                          bool context_lock_acquired) override {
-  }
+  void SetShouldAggressivelyFreeResources(
+      bool aggressively_free_resources) override {}
   void ClearCache() override;
   size_t GetMaximumMemoryLimitBytes() const override;
   bool UseCacheForDrawImage(const DrawImage& image) const override;
@@ -117,7 +117,9 @@ class CC_EXPORT SoftwareImageDecodeCache
   // if it was public (ie, all of the locks need to be properly acquired).
   TaskResult GetTaskForImageAndRefInternal(const DrawImage& image,
                                            const TracingInfo& tracing_info,
-                                           TaskType type) LOCKS_EXCLUDED(lock_);
+                                           TaskType type,
+                                           bool speculative)
+      LOCKS_EXCLUDED(lock_);
 
   CacheEntry* AddCacheEntry(const CacheKey& key)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

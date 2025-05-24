@@ -7,12 +7,12 @@
 namespace content {
 
 PermissionRequestDescription::PermissionRequestDescription(
-    const std::vector<blink::PermissionType>& permissions,
+    std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
     bool user_gesture,
     const GURL& requesting_origin,
     bool embedded_permission_element_initiated,
     const std::optional<gfx::Rect>& anchor_element_position)
-    : permissions(permissions),
+    : permissions(std::move(permissions)),
       user_gesture(user_gesture),
       requesting_origin(requesting_origin),
       embedded_permission_element_initiated(
@@ -20,20 +20,33 @@ PermissionRequestDescription::PermissionRequestDescription(
       anchor_element_position(anchor_element_position) {}
 
 PermissionRequestDescription::PermissionRequestDescription(
-    blink::PermissionType permission,
+    blink::mojom::PermissionDescriptorPtr permission,
     bool user_gesture,
     const GURL& requesting_origin,
     bool embedded_permission_element_initiated,
     const std::optional<gfx::Rect>& anchor_element_position)
-    : PermissionRequestDescription(
-          std::vector<blink::PermissionType>{permission},
-          user_gesture,
-          requesting_origin,
-          embedded_permission_element_initiated,
-          anchor_element_position) {}
+    : user_gesture(user_gesture),
+      requesting_origin(requesting_origin),
+      embedded_permission_element_initiated(
+          embedded_permission_element_initiated),
+      anchor_element_position(anchor_element_position) {
+  permissions.push_back(std::move(permission));
+}
 
 PermissionRequestDescription::PermissionRequestDescription(
-    const PermissionRequestDescription&) = default;
+    const PermissionRequestDescription& other) {
+  for (const auto& permission : other.permissions) {
+    permissions.push_back(permission.Clone());
+  }
+  user_gesture = other.user_gesture;
+  requesting_origin = other.requesting_origin;
+  embedded_permission_element_initiated =
+      other.embedded_permission_element_initiated;
+  anchor_element_position = other.anchor_element_position;
+  requested_audio_capture_device_ids = other.requested_audio_capture_device_ids;
+  requested_video_capture_device_ids = other.requested_video_capture_device_ids;
+}
+
 PermissionRequestDescription& PermissionRequestDescription::operator=(
     PermissionRequestDescription&&) = default;
 PermissionRequestDescription::PermissionRequestDescription(

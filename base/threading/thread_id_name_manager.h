@@ -71,7 +71,8 @@ class BASE_EXPORT ThreadIdNameManager {
       ThreadIdToHandleMap;
   typedef std::map<PlatformThreadHandle::Handle, std::string*>
       ThreadHandleToInternedNameMap;
-  typedef std::map<std::string, std::string*> NameToInternedNameMap;
+  typedef std::map<std::string, raw_ptr<std::string, CtnExperimental>>
+      NameToInternedNameMap;
 
   ThreadIdNameManager();
   ~ThreadIdNameManager();

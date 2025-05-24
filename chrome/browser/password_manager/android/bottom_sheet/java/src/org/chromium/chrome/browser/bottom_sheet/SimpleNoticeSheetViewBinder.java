@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperti
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TEXT;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TITLE;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Provides functions that map {@link SimpleNoticeSheetProperties} changes in a {@link
  * PropertyModel} to the suitable method in {@link SimpleNoticeSheetView}.
  */
+@NullMarked
 class SimpleNoticeSheetViewBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.

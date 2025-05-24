@@ -1,5 +1,23 @@
 This is a testharness.js-based test.
-Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] WebTransportDatagramsWritable interface: existence and properties of interface object
+  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
+[FAIL] WebTransportDatagramsWritable interface object length
+  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
+[FAIL] WebTransportDatagramsWritable interface object name
+  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
+[FAIL] WebTransportDatagramsWritable interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
+[FAIL] WebTransportDatagramsWritable interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
+[FAIL] WebTransportDatagramsWritable interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
+[FAIL] WebTransportDatagramsWritable interface: attribute sendGroup
+  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
+[FAIL] WebTransportDatagramsWritable interface: attribute sendOrder
+  assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
+[FAIL] WebTransportDatagramDuplexStream interface: operation createWritable(optional WebTransportSendOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "createWritable" missing
 [FAIL] WebTransport interface: attribute reliability
   assert_true: The prototype object must have a property "reliability" expected true got false
 [FAIL] WebTransport interface: attribute congestionControl

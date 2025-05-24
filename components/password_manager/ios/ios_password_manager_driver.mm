@@ -51,7 +51,7 @@ int IOSPasswordManagerDriver::GetId() const {
   return id_;
 }
 
-void IOSPasswordManagerDriver::SetPasswordFillData(
+void IOSPasswordManagerDriver::PropagateFillDataOnParsingCompletion(
     const autofill::PasswordFormFillData& form_data) {
   // Disable proactive generation and clear the pending forms if it is known
   // that there are passwords available for the site. This signal won't work for
@@ -109,8 +109,10 @@ void IOSPasswordManagerDriver::GeneratedPasswordAccepted(
   NOTIMPLEMENTED();
 }
 
-void IOSPasswordManagerDriver::FillSuggestion(const std::u16string& username,
-                                              const std::u16string& password) {
+void IOSPasswordManagerDriver::FillSuggestion(
+    const std::u16string& username,
+    const std::u16string& password,
+    base::OnceCallback<void(bool)> success_callback) {
   NOTIMPLEMENTED();
 }
 
@@ -118,7 +120,8 @@ void IOSPasswordManagerDriver::FillSuggestionById(
     autofill::FieldRendererId username_element_id,
     autofill::FieldRendererId password_element_id,
     const std::u16string& username,
-    const std::u16string& password) {
+    const std::u16string& password,
+    autofill::AutofillSuggestionTriggerSource suggestion_source) {
   NOTIMPLEMENTED() << "This function is used for non-iOS manual fallback";
 }
 

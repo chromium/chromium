@@ -56,4 +56,4 @@ void RecordActionFromOmnibox(bool is_incognito,
     }
   }
 }
-}
+}  // namespace new_tab_page_uma

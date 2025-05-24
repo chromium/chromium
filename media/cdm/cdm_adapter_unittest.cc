@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/check.h"
@@ -19,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "media/base/cdm_callback_promise.h"
 #include "media/base/cdm_factory.h"
@@ -37,14 +39,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Invoke;
 using ::testing::IsNull;
 using ::testing::NotNull;
 using ::testing::Return;
-using ::testing::Values;
 using ::testing::SaveArg;
 using ::testing::StrictMock;
-using ::testing::_;
+using ::testing::Values;
 
 MATCHER(IsNotEmpty, "") {
   return !arg.empty();
@@ -59,6 +62,18 @@ MATCHER(IsNullPlatformChallengeResponse, "") {
   return !arg.signed_data;
 }
 
+MATCHER_P(HasLicenseSdkVersion, expected_version, "") {
+  return arg.license_sdk_version == expected_version;
+}
+
+MATCHER(HasNoLicenseSdkVersion, "") {
+  return !arg.license_sdk_version.has_value();
+}
+
+MATCHER_P(HasBypassBlocksTotalCount, expected_value, "") {
+  return arg.decoder_bypass_block_count == expected_value;
+}
+
 // TODO(jrummell): These tests are a subset of those in aes_decryptor_unittest.
 // Refactor aes_decryptor_unittest.cc to handle AesDecryptor directly and
 // via CdmAdapter once CdmAdapter supports decrypting functionality. There
@@ -69,16 +84,32 @@ namespace media {
 
 namespace {
 
+const uint64_t kExpectedLicenseSdkVersion = 12345;
+
 // Random key ID used to create a session.
-const uint8_t kKeyId[] = {
+const auto kKeyId = std::to_array<uint8_t>({
     // base64 equivalent is AQIDBAUGBwgJCgsMDQ4PEA
-    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-    0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
-};
+    0x01,
+    0x02,
+    0x03,
+    0x04,
+    0x05,
+    0x06,
+    0x07,
+    0x08,
+    0x09,
+    0x0a,
+    0x0b,
+    0x0c,
+    0x0d,
+    0x0e,
+    0x0f,
+    0x10,
+});
 
 const char kKeyIdAsJWK[] = "{\"kids\": [\"AQIDBAUGBwgJCgsMDQ4PEA\"]}";
 
-const uint8_t kKeyIdAsPssh[] = {
+const auto kKeyIdAsPssh = std::to_array<uint8_t>({
     0x00, 0x00, 0x00, 0x34,                          // size = 52
     'p',  's',  's',  'h',                           // 'pssh'
     0x01,                                            // version = 1
@@ -89,7 +120,7 @@ const uint8_t kKeyIdAsPssh[] = {
     0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,  // key
     0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
     0x00, 0x00, 0x00, 0x00,  // datasize
-};
+});
 
 // Key is 0x0405060708090a0b0c0d0e0f10111213,
 // base64 equivalent is BAUGBwgJCgsMDQ4PEBESEw.
@@ -140,7 +171,14 @@ class CdmAdapterTestBase : public testing::Test,
   virtual CdmConfig GetCdmConfig() = 0;
   virtual CdmAdapter::CreateCdmFunc GetCreateCdmFunc() = 0;
 
+  void ClearCdm() {
+    cdm_helper_ = nullptr;
+    cdm_ = nullptr;
+  }
+
   int GetCdmInterfaceVersion() { return GetParam(); }
+
+  CdmAdapter* GetCdmAdapter() { return static_cast<CdmAdapter*>(cdm_.get()); }
 
   // Initializes the adapter. |expected_result| tests that the call succeeds
   // or generates an error.
@@ -161,7 +199,8 @@ class CdmAdapterTestBase : public testing::Test,
         base::BindRepeating(&MockCdmClient::OnSessionExpirationUpdate,
                             base::Unretained(&cdm_client_)),
         base::BindOnce(&CdmAdapterTestBase::OnCdmCreated,
-                       base::Unretained(this), expected_result));
+                       base::Unretained(this), expected_result),
+        /*is_debugger_attached=*/false);
     RunUntilIdle();
     ASSERT_EQ(expected_result == SUCCESS, !!cdm_);
   }
@@ -177,9 +216,9 @@ class CdmAdapterTestBase : public testing::Test,
     if (cdm) {
       ASSERT_EQ(expected_result, SUCCESS)
           << "CDM creation succeeded unexpectedly.";
-      CdmAdapter* cdm_adapter = static_cast<CdmAdapter*>(cdm.get());
-      ASSERT_EQ(GetCdmInterfaceVersion(), cdm_adapter->GetInterfaceVersion());
       cdm_ = cdm;
+      ASSERT_EQ(GetCdmInterfaceVersion(),
+                GetCdmAdapter()->GetInterfaceVersion());
     } else {
       ASSERT_EQ(expected_result, FAILURE)
           << "status = " << static_cast<int>(status);
@@ -189,11 +228,11 @@ class CdmAdapterTestBase : public testing::Test,
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   StrictMock<MockCdmClient> cdm_client_;
-  raw_ptr<StrictMock<MockCdmAuxiliaryHelper>, DanglingUntriaged> cdm_helper_ =
-      nullptr;
 
   // Keep track of the loaded CDM.
   scoped_refptr<ContentDecryptionModule> cdm_;
+  // Owned by `cdm_`.
+  raw_ptr<StrictMock<MockCdmAuxiliaryHelper>> cdm_helper_ = nullptr;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
@@ -202,7 +241,7 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
  public:
   ~CdmAdapterTestWithClearKeyCdm() {
     // Clear |cdm_| before we destroy |helper_|.
-    cdm_ = nullptr;
+    ClearCdm();
     RunUntilIdle();
   }
 
@@ -233,6 +272,15 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
 
     if (expected_result == SUCCESS) {
       EXPECT_CALL(cdm_client_, OnSessionMessage(IsNotEmpty(), _, _));
+    }
+
+    // The ClearKeyCdm records the LicenseSdkVersion in CreateSession.
+    if (GetCdmInterfaceVersion() > 10) {
+      EXPECT_CALL(*cdm_helper_,
+                  RecordUkm(HasLicenseSdkVersion(kExpectedLicenseSdkVersion)))
+          .Times(1);
+    } else {
+      EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
     }
 
     cdm_->CreateSessionAndGenerateRequest(
@@ -340,8 +388,6 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
   ~CdmAdapterTestWithMockCdm() override {
     // Makes sure Destroy() is called on CdmAdapter destruction.
     EXPECT_CALL(*mock_library_cdm_, DestroyCalled());
-    cdm_ = nullptr;
-    RunUntilIdle();
   }
 
   // CdmAdapterTestBase implementation.
@@ -362,8 +408,9 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
     ASSERT_TRUE(cdm_host_proxy_);
   }
 
-  raw_ptr<MockLibraryCdm, DanglingUntriaged> mock_library_cdm_ = nullptr;
-  raw_ptr<CdmHostProxy, DanglingUntriaged> cdm_host_proxy_ = nullptr;
+  // These are both owned by `cdm_`.
+  raw_ptr<MockLibraryCdm> mock_library_cdm_ = nullptr;
+  raw_ptr<CdmHostProxy> cdm_host_proxy_ = nullptr;
 };
 
 // Instantiate test cases
@@ -398,7 +445,9 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, BadLibraryPath) {
 TEST_P(CdmAdapterTestWithClearKeyCdm, CreateWebmSession) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   CreateSessionAndExpect(EmeInitDataType::WEBM, key_id, SUCCESS);
 }
 
@@ -414,8 +463,10 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, CreateKeyIdsSession) {
 TEST_P(CdmAdapterTestWithClearKeyCdm, CreateCencSession) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyIdAsPssh,
-                              kKeyIdAsPssh + std::size(kKeyIdAsPssh));
+  std::vector<uint8_t> key_id(kKeyIdAsPssh.data(),
+                              base::span<const uint8_t>(kKeyIdAsPssh)
+                                  .subspan(std::size(kKeyIdAsPssh))
+                                  .data());
   CreateSessionAndExpect(EmeInitDataType::CENC, key_id, SUCCESS);
 }
 
@@ -423,7 +474,9 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, CreateSessionWithBadData) {
   InitializeAndExpect(SUCCESS);
 
   // Use |kKeyId| but specify KEYIDS format.
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   CreateSessionAndExpect(EmeInitDataType::KEYIDS, key_id, FAILURE);
 }
 
@@ -431,14 +484,18 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, LoadSession) {
   InitializeAndExpect(SUCCESS);
 
   // LoadSession() is not supported by AesDecryptor.
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   CreateSessionAndExpect(EmeInitDataType::KEYIDS, key_id, FAILURE);
 }
 
 TEST_P(CdmAdapterTestWithClearKeyCdm, UpdateSession) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   CreateSessionAndExpect(EmeInitDataType::WEBM, key_id, SUCCESS);
 
   UpdateSessionAndExpect(SessionId(), kKeyAsJWK, SUCCESS, true);
@@ -447,7 +504,9 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, UpdateSession) {
 TEST_P(CdmAdapterTestWithClearKeyCdm, UpdateSessionWithBadData) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
+  std::vector<uint8_t> key_id(
+      kKeyId.data(),
+      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   CreateSessionAndExpect(EmeInitDataType::WEBM, key_id, SUCCESS);
 
   UpdateSessionAndExpect(SessionId(), "random data", FAILURE, true);
@@ -565,6 +624,85 @@ TEST_P(CdmAdapterTestWithMockCdm, GetDecryptor) {
   auto* cdm_context = cdm_->GetCdmContext();
   ASSERT_TRUE(cdm_context);
   EXPECT_TRUE(cdm_context->GetDecryptor());
+}
+
+TEST_P(CdmAdapterTestWithMockCdm, RecordUkmCalled) {
+  CdmConfig cdm_config = GetCdmConfig();
+  InitializeWithCdmConfig(cdm_config);
+
+  // UKM should be recorded when CdmAdapter destructed, only if supported by the
+  // CDM interface.
+  if (GetCdmInterfaceVersion() > 10) {
+    EXPECT_CALL(*cdm_helper_,
+                RecordUkm(HasLicenseSdkVersion(kExpectedLicenseSdkVersion)));
+  } else {
+    EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
+  }
+
+  cdm_host_proxy_->ReportMetrics(cdm::kSdkVersion, kExpectedLicenseSdkVersion);
+}
+
+TEST_P(CdmAdapterTestWithMockCdm, RecordUMA) {
+  CdmConfig cdm_config = GetCdmConfig();
+  InitializeWithCdmConfig(cdm_config);
+
+  if (GetCdmInterfaceVersion() < 11) {
+    GTEST_SKIP() << "ReportMetrics not supported";
+  }
+
+  // bypass_count = 0, should record 0
+  {
+    base::HistogramTester histogram_tester;
+    GetCdmAdapter()->SetFrameCountForTesting(100);
+    cdm_host_proxy_->ReportMetrics(cdm::kDecoderBypassBlockCount, 0);
+    histogram_tester.ExpectUniqueSample("Media.EME.DecoderBypassBlockCount", 0,
+                                        /* expected_bucket_count= */ 1);
+  }
+
+  // bypass_count set but total_frames = 0, should record 0
+  {
+    base::HistogramTester histogram_tester;
+    GetCdmAdapter()->SetFrameCountForTesting(0);
+    cdm_host_proxy_->ReportMetrics(cdm::kDecoderBypassBlockCount, 100);
+    histogram_tester.ExpectUniqueSample("Media.EME.DecoderBypassBlockCount", 0,
+                                        /* expected_bucket_count= */ 1);
+  }
+
+  // bypass_count = 1 in 1000000 frames, should record 1
+  {
+    base::HistogramTester histogram_tester;
+    GetCdmAdapter()->SetFrameCountForTesting(1000000);
+    cdm_host_proxy_->ReportMetrics(cdm::kDecoderBypassBlockCount, 1);
+    histogram_tester.ExpectUniqueSample("Media.EME.DecoderBypassBlockCount", 1,
+                                        /* expected_bucket_count= */ 1);
+  }
+
+  // bypass_count = 10 in 20 frames, should record 50
+  {
+    base::HistogramTester histogram_tester;
+    GetCdmAdapter()->SetFrameCountForTesting(20);
+    cdm_host_proxy_->ReportMetrics(cdm::kDecoderBypassBlockCount, 10);
+    histogram_tester.ExpectUniqueSample("Media.EME.DecoderBypassBlockCount", 50,
+                                        /* expected_bucket_count= */ 1);
+  }
+
+  // On destruction UKM should be logged containing the sum of all the reported
+  // kDecoderBypassBlockCount values (and no license SDK version as one is not
+  // set).
+  EXPECT_CALL(*cdm_helper_, RecordUkm(AllOf(HasBypassBlocksTotalCount(111),
+                                            HasNoLicenseSdkVersion())));
+}
+
+// When CDM reports an unexpected value (e.g. new value added in the future),
+// no metric will be reported, and there should not be any crash.
+TEST_P(CdmAdapterTestWithMockCdm, ReportMetricsWithUnexpectedValue) {
+  CdmConfig cdm_config = GetCdmConfig();
+  InitializeWithCdmConfig(cdm_config);
+
+  EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
+  const uint32_t kInvalidMetricName = 99999999;  // Arbitrary large metric name.
+  cdm_host_proxy_->ReportMetrics(
+      static_cast<cdm::MetricName>(kInvalidMetricName), 12345);
 }
 
 }  // namespace media

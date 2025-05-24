@@ -15,6 +15,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
+#include "ui/base/accelerators/command.h"
 
 namespace extensions {
 
@@ -52,7 +53,8 @@ const Command* CommandsInfo::GetActionCommand(const Extension* extension) {
 }
 
 // static
-const CommandMap* CommandsInfo::GetNamedCommands(const Extension* extension) {
+const ui::CommandMap* CommandsInfo::GetNamedCommands(
+    const Extension* extension) {
   auto* info =
       static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
   return info ? &info->named_commands : nullptr;
@@ -100,8 +102,9 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
       // Only media keys are allowed to work without modifiers, and because
       // media keys aren't registered exclusively they should not count towards
       // the max of four shortcuts per extension.
-      if (!Command::IsMediaKey(binding->accelerator()))
+      if (!binding->accelerator().IsMediaKey()) {
         ++keybindings_found;
+      }
 
       if (keybindings_found > kMaxCommandsWithKeybindingPerExtension &&
           !PermissionsParser::HasAPIPermission(

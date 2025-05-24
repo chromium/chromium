@@ -63,8 +63,7 @@ v8::Local<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::Wrap(
           kDOMWrappersTag,                                                     \
           WrapperTypeInfo::kWrapperTypeObjectPrototype,                        \
           WrapperTypeInfo::kObjectClassId,                                     \
-          WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,               \
-          WrapperTypeInfo::kIdlBufferSourceType,                               \
+          WrapperTypeInfo::kIdlOtherType,                                      \
       };                                                                       \
   template <>                                                                  \
   const WrapperTypeInfo& DOMTypedArray<val_t, v8::Type##Array,                 \

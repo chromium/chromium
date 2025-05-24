@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] a popover can be nested inside select
+  assert_true: precondition expected true got false
+[FAIL] a modal dialog can be nested inside select
+  assert_true: precondition expected true got null
+Harness: the test ran to completion.
+

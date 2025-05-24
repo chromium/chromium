@@ -6,4 +6,9 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("private_aggregation_budgets_proto") {
   sources = [ "private_aggregation_budgets.proto" ]
+
+  cc_generator_options = "dllexport_decl=CONTENT_EXPORT:"
+  cc_include = "content/common/content_export.h"
+  component_build_force_source_set = true
+  defines = [ "CONTENT_IMPLEMENTATION" ]
 }

@@ -24,6 +24,7 @@
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -93,7 +94,7 @@ void UpdateService::SendUninstallPing(const std::string& id,
   update_client_->SendPing(
       crx,
       {.event_type = update_client::protocol_request::kEventUninstall,
-       .result = 1,
+       .result = update_client::protocol_request::kEventResultSuccess,
        .error_code = 0,
        .extra_code1 = reason},
       base::BindOnce([](std::unique_ptr<ScopedExtensionUpdaterKeepAlive>,
@@ -103,7 +104,7 @@ void UpdateService::SendUninstallPing(const std::string& id,
 }
 
 void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
-                                     update_client::CrxUpdateItem item) {
+                                     const update_client::CrxUpdateItem& item) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Custom attributes can only be sent for NOT_UPDATED/UPDATE_FOUND events.
@@ -123,12 +124,10 @@ void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
     case update_client::ComponentState::kChecking:
     case update_client::ComponentState::kDownloadingDiff:
     case update_client::ComponentState::kDownloading:
-    case update_client::ComponentState::kDownloaded:
     case update_client::ComponentState::kUpdatingDiff:
     case update_client::ComponentState::kUpdating:
     case update_client::ComponentState::kUpdated:
     case update_client::ComponentState::kUpdateError:
-    case update_client::ComponentState::kPingOnly:
     case update_client::ComponentState::kRun:
     case update_client::ComponentState::kLastStatus:
       break;
@@ -235,11 +234,14 @@ void UpdateService::UpdateCheckComplete(InProgressUpdate update) {
   // check might have queued an update for this extension because it was in
   // use at the time. We should ask for the install of the queued update now
   // if it's ready.
+  DelayedInstallManager* delayed_install_manager =
+      DelayedInstallManager::Get(browser_context_);
   if (update.install_immediately) {
     for (const ExtensionId& extension_id : update.pending_extension_ids) {
-      ExtensionSystem::Get(browser_context_)
-          ->FinishDelayedInstallationIfReady(extension_id,
-                                             true /*install_immediately*/);
+      if (delayed_install_manager->GetPendingExtensionUpdate(extension_id)) {
+        delayed_install_manager->FinishDelayedInstallationIfReady(
+            extension_id, /*install_immediately=*/true);
+      }
     }
   }
 
@@ -263,7 +265,7 @@ void UpdateService::RemoveUpdateClientObserver(
 }
 
 base::Value::Dict UpdateService::GetExtensionOmahaAttributes(
-    update_client::CrxUpdateItem& update_item) {
+    const update_client::CrxUpdateItem& update_item) {
   base::Value::Dict attributes;
 
   for (const char* key : kOmahaAttributes) {

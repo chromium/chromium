@@ -1,0 +1,28 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:focusable*
+-->
+<!doctype html>
+
+<style>
+.carousel {
+  overflow: auto;
+  columns: 1;
+  height: 200px;
+
+  /* Request buttons for the carousel by setting a non-none content */
+  &::scroll-button(left) { content: '<'; }
+  &::scroll-button(right) { content: '>'; }
+  &::scroll-button(up) { content: 'u'; }
+  &::scroll-button(down) { content: 'd'; }
+  & > div { height: 100%; }
+}
+</style>
+
+<div class=carousel>
+  <div>One</div>
+  <div>Two</div>
+  <div>Three</div>
+</div>
+

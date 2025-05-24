@@ -54,7 +54,7 @@ enum GoogleUpdateErrorCode {
 // and results of an update check.
 class UpdateCheckDelegate {
  public:
-  virtual ~UpdateCheckDelegate() {}
+  virtual ~UpdateCheckDelegate() = default;
 
   // Invoked following a successful update check. |new_version|, if not empty,
   // indicates the new version that is available. Otherwise (if |new_version| is
@@ -86,7 +86,7 @@ class UpdateCheckDelegate {
                        const std::u16string& new_version) = 0;
 
  protected:
-  UpdateCheckDelegate() {}
+  UpdateCheckDelegate() = default;
 };
 
 // Begins an asynchronous update check. If a new version is
@@ -95,11 +95,10 @@ class UpdateCheckDelegate {
 // which should own any necessary elevation UI. Methods on |delegate| will be
 // invoked on the caller's thread to provide feedback on the operation, with
 // messages localized to |locale| if possible.
-void BeginUpdateCheck(
-    const std::string& locale,
-    bool install_update_if_possible,
-    gfx::AcceleratedWidget elevation_window,
-    const base::WeakPtr<UpdateCheckDelegate>& delegate);
+void BeginUpdateCheck(const std::string& locale,
+                      bool install_update_if_possible,
+                      gfx::AcceleratedWidget elevation_window,
+                      const base::WeakPtr<UpdateCheckDelegate>& delegate);
 
 // The state from a completed update check.
 struct UpdateState {

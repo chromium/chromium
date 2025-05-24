@@ -57,8 +57,14 @@ if (crashpad_is_external || crashpad_is_in_dart) {
 }
 
 if (crashpad_is_in_chromium) {
+  if (is_ios) {
+    # For `target_platform`.
+    import("//build/config/apple/mobile_config.gni")
+  }
+
   crashpad_is_mac = is_mac
   crashpad_is_ios = is_ios
+  crashpad_is_tvos = is_ios && target_platform == "tvos"
   crashpad_is_apple = is_apple
   crashpad_is_win = is_win
   crashpad_is_linux = is_linux || is_chromeos
@@ -72,8 +78,14 @@ if (crashpad_is_in_chromium) {
   import("$mini_chromium_import_root/build/compiler.gni")
   import("$mini_chromium_import_root/build/platform.gni")
 
+  if (mini_chromium_is_ios) {
+    # For `target_platform`.
+    import("$mini_chromium_import_root/build/ios/ios_sdk.gni")
+  }
+
   crashpad_is_mac = mini_chromium_is_mac
   crashpad_is_ios = mini_chromium_is_ios
+  crashpad_is_tvos = crashpad_is_ios && target_platform == "tvos"
   crashpad_is_apple = mini_chromium_is_apple
   crashpad_is_win = mini_chromium_is_win
   crashpad_is_linux = mini_chromium_is_linux

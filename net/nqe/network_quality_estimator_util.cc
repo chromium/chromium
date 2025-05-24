@@ -35,8 +35,7 @@ bool IsPrivateHost(HostResolver* host_resolver,
                                    network_anonymization_key, net_log,
                                    parameters);
 
-  int rv = request->Start(
-      base::BindOnce([](int error) { NOTREACHED_IN_MIGRATION(); }));
+  int rv = request->Start(base::BindOnce([](int error) { NOTREACHED(); }));
   DCHECK_NE(rv, ERR_IO_PENDING);
 
   if (rv == OK && request->GetAddressResults() &&

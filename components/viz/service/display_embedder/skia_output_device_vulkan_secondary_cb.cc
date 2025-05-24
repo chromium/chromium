@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
@@ -24,7 +25,7 @@ SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_provider->GetGrContext(),
-                       /*graphite_context=*/nullptr,
+                       /*graphite_shared_context=*/nullptr,
                        memory_tracker,
                        std::move(did_swap_buffer_complete_callback)),
       context_provider_(context_provider) {
@@ -59,8 +60,10 @@ SkiaOutputDeviceVulkanSecondaryCB::BeginScopedPaint() {
       std::move(end_semaphores), this, sk_surface);
 }
 
-void SkiaOutputDeviceVulkanSecondaryCB::Submit(bool sync_cpu,
-                                               base::OnceClosure callback) {
+void SkiaOutputDeviceVulkanSecondaryCB::Submit(
+    scoped_refptr<gpu::SharedContextState> context_state,
+    bool sync_cpu,
+    base::OnceClosure callback) {
   // Submit the primary command buffer which may render passes.
   context_provider_->GetGrContext()->submit(sync_cpu ? GrSyncCpu::kYes
                                                      : GrSyncCpu::kNo);

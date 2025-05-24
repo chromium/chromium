@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <queue>
 
 #include "base/memory/raw_ptr.h"
 #include "ppapi/host/host_message_context.h"

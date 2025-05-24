@@ -17,6 +17,9 @@ namespace crypto {
 // A wrapper to calculate secure hashes incrementally, allowing to
 // be used when the full input is not known in advance. The end result will the
 // same as if we have the full input in advance.
+//
+// TODO(https://issues.chromium.org/issues/374310081): Move this into
+// crypto/hash.h along with the oneshot functions.
 class CRYPTO_EXPORT SecureHash {
  public:
   enum Algorithm {

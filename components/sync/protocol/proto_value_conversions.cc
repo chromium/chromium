@@ -82,8 +82,8 @@ namespace {
 //    void Visit(const P& parent_proto,
 //               const char* field_name, const F& field);
 //
-//    By default Visit() serializes |field| and sets it to |value_| under
-//    |field_name| name. Default implementation is accessible via VisitImpl().
+//    By default Visit() serializes `field` and sets it to `value_` under
+//    `field_name` name. Default implementation is accessible via VisitImpl().
 //
 //    For example here is how you would serialize only GreenProto::content
 //    for all GreenProto fields:
@@ -114,7 +114,7 @@ namespace {
 //    base::Value ToValue(const P& proto) const;
 //
 //    By default ToValue() creates new instance of ToValueVisitor, calls
-//    VisitProtoFields(visitor, |proto|) and returns visitor's |value_|.
+//    VisitProtoFields(visitor, `proto`) and returns visitor's `value_`.
 //    Default implementation is accessible via ToValueDictImpl().
 //
 //    For example let's say you want to clobber a sensitive field:
@@ -144,7 +144,7 @@ class ToValueVisitor {
                   const char* field_name,
                   const std::string& field) {
     value_->Set(field_name,
-                base::Base64Encode(base::as_bytes(base::make_span(field))));
+                base::Base64Encode(base::as_bytes(base::span(field))));
   }
 
   template <class P>
@@ -155,7 +155,7 @@ class ToValueVisitor {
     if (!repeated_field.empty()) {
       base::Value::List list;
       for (const auto& field : repeated_field) {
-        list.Append(base::Base64Encode(base::as_bytes(base::make_span(field))));
+        list.Append(base::Base64Encode(base::as_byte_span(field)));
       }
       value_->Set(field_name, std::move(list));
     }

@@ -6,7 +6,7 @@
 
 namespace gfx {
 
-CALayerParams::CALayerParams() {}
+CALayerParams::CALayerParams() = default;
 CALayerParams::~CALayerParams() = default;
 CALayerParams::CALayerParams(CALayerParams&& params) = default;
 CALayerParams::CALayerParams(const CALayerParams& params) = default;

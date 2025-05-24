@@ -12,46 +12,9 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "components/strings/grit/components_branded_strings.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/upload_list/upload_list.h"
 
 namespace crash_reporter {
-
-const CrashesUILocalizedString kCrashesUILocalizedStrings[] = {
-    {"bugLinkText", IDS_CRASH_BUG_LINK_LABEL},
-    {"crashCaptureTimeFormat", IDS_CRASH_CAPTURE_TIME_FORMAT},
-    {"crashCountFormat", IDS_CRASH_CRASH_COUNT_BANNER_FORMAT},
-    {"crashStatus", IDS_CRASH_REPORT_STATUS},
-    {"crashStatusNotUploaded", IDS_CRASH_REPORT_STATUS_NOT_UPLOADED},
-    {"crashStatusPending", IDS_CRASH_REPORT_STATUS_PENDING},
-    {"crashStatusPendingUserRequested",
-     IDS_CRASH_REPORT_STATUS_PENDING_USER_REQUESTED},
-    {"crashStatusUploaded", IDS_CRASH_REPORT_STATUS_UPLOADED},
-    {"crashesTitle", IDS_CRASH_TITLE},
-    {"disabledHeader", IDS_CRASH_DISABLED_HEADER},
-    {"disabledMessage", IDS_CRASH_DISABLED_MESSAGE},
-    {"fileSize", IDS_CRASH_REPORT_FILE_SIZE},
-    {"localId", IDS_CRASH_REPORT_LOCAL_ID},
-    {"noCrashesMessage", IDS_CRASH_NO_CRASHES_MESSAGE},
-    {"showDeveloperDetails", IDS_CRASH_SHOW_DEVELOPER_DETAILS},
-    {"uploadCrashesLinkText", IDS_CRASH_UPLOAD_MESSAGE},
-    {"uploadId", IDS_CRASH_REPORT_UPLOADED_ID},
-    {"uploadNowLinkText", IDS_CRASH_UPLOAD_NOW_LINK_TEXT},
-    {"uploadTime", IDS_CRASH_REPORT_UPLOADED_TIME},
-};
-
-const size_t kCrashesUILocalizedStringsCount =
-    std::size(kCrashesUILocalizedStrings);
-
-const char kCrashesUICrashesJS[] = "crashes.js";
-const char kCrashesUICrashesCSS[] = "crashes.css";
-const char kCrashesUISadTabSVG[] = "sadtab.svg";
-const char kCrashesUIRequestCrashList[] = "requestCrashList";
-const char kCrashesUIRequestCrashUpload[] = "requestCrashUpload";
-const char kCrashesUIShortProductName[] = "shortProductName";
-const char kCrashesUIUpdateCrashList[] = "update-crash-list";
-const char kCrashesUIRequestSingleCrashUpload[] = "requestSingleCrashUpload";
 
 std::string UploadInfoStateAsString(UploadList::UploadInfo::State state) {
   switch (state) {
@@ -65,8 +28,7 @@ std::string UploadInfoStateAsString(UploadList::UploadInfo::State state) {
       return "uploaded";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void UploadListToValue(UploadList* upload_list, base::Value::List* out_value) {

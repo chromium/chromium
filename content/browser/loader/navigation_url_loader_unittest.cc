@@ -147,7 +147,8 @@ class NavigationURLLoaderTest : public testing::Test {
         /* trust_token_observer=*/mojo::NullRemote(),
         /* shared_dictionary_observer=*/mojo::NullRemote(),
         /* url_loader_network_observer */ mojo::NullRemote(),
-        /*devtools_observer=*/mojo::NullRemote());
+        /*devtools_observer=*/mojo::NullRemote(),
+        /*device_bound_session_observer=*/mojo::NullRemote());
   }
 
  protected:

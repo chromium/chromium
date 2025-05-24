@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("sys_internals") {
   sources = [
@@ -18,11 +16,11 @@ static_library("sys_internals") {
     "//base",
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",
     "//services/network/public/mojom:url_loader_base",
-    "//ui/resources:webui_resources_grd",
+    "//ui/webui",
+    "//ui/webui/resources:resources_grit",
   ]
 }

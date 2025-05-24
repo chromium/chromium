@@ -4,6 +4,7 @@
 
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/google_accounts_private_api_util.h"
@@ -28,8 +28,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/features.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/origin.h"
 
@@ -82,7 +82,8 @@ class EncryptionKeyApi
         DLOG(ERROR) << "Unknown vault type " << vault_name;
         continue;
       }
-      AddEncryptionKeysForSecurityDomain(gaia_id, *security_domain, keys);
+      AddEncryptionKeysForSecurityDomain(GaiaId(gaia_id), *security_domain,
+                                         keys);
     }
 
     std::move(callback).Run();
@@ -112,8 +113,8 @@ class EncryptionKeyApi
 
     trusted_vault_service_
         ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync)
-        ->AddTrustedRecoveryMethod(gaia_id, public_key, method_type_hint,
-                                   std::move(callback));
+        ->AddTrustedRecoveryMethod(GaiaId(gaia_id), public_key,
+                                   method_type_hint, std::move(callback));
   }
 
  private:
@@ -133,7 +134,7 @@ class EncryptionKeyApi
 
 #if !BUILDFLAG(IS_ANDROID)
   void AddEncryptionKeysForSecurityDomain(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       trusted_vault::SecurityDomainId security_domain,
       const std::vector<chrome::mojom::TrustedVaultKeyPtr>& keys) {
     CHECK(!keys.empty());
@@ -149,8 +150,8 @@ class EncryptionKeyApi
 
     std::vector<std::vector<uint8_t>> keys_as_bytes;
     keys_as_bytes.reserve(keys.size());
-    base::ranges::transform(keys, std::back_inserter(keys_as_bytes),
-                            &chrome::mojom::TrustedVaultKey::bytes);
+    std::ranges::transform(keys, std::back_inserter(keys_as_bytes),
+                           &chrome::mojom::TrustedVaultKey::bytes);
     const int32_t last_key_version = keys.back()->version;
 
     if (security_domain == trusted_vault::SecurityDomainId::kPasskeys) {
@@ -213,10 +214,8 @@ void TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
 
   EnclaveManager* enclave_manager = nullptr;
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-    enclave_manager =
-        EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
-  }
+  enclave_manager =
+      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
 #endif
 
   web_contents->SetUserData(

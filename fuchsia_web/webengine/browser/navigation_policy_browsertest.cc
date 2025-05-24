@@ -4,6 +4,7 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/test/browser_test.h"
@@ -65,7 +66,7 @@ class NavigationPolicyTest : public WebEngineBrowserTest {
 
  protected:
   FrameForTest frame_;
-  FrameImpl* frame_impl_ = nullptr;
+  raw_ptr<FrameImpl> frame_impl_ = nullptr;
   fidl::Binding<fuchsia::web::NavigationPolicyProvider>
       policy_provider_binding_;
   FakeNavigationPolicyProvider policy_provider_;
@@ -105,6 +106,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyTest, Deferred) {
   auto* current_state = frame_.navigation_listener().current_state();
   EXPECT_TRUE(current_state->has_is_main_document_loaded());
   EXPECT_FALSE(current_state->is_main_document_loaded());
+  EXPECT_EQ(current_state->page_type(), fuchsia::web::PageType::NORMAL);
 
   EXPECT_EQ(page_url.spec(), policy_provider_.requested_navigation()->url());
 }

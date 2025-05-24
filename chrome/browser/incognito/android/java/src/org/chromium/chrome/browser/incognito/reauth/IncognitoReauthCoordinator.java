@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 /**
@@ -16,6 +17,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
  * <p>TODO(crbug.com/40056462): This and any other internal re-auth related files should be put in
  * an internal folder. Ideally only the controller would be potentially exposed.
  */
+@NullMarked
 interface IncognitoReauthCoordinator {
     /** A method responsible to fire the re-auth screen. */
     void show();

@@ -22,7 +22,6 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -76,7 +75,6 @@ class IndexedDBContextTest : public testing::Test {
         temp_dir_.GetPath(), quota_manager_proxy_,
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 
@@ -140,17 +138,15 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   // Check default bucket exists for https://example.com.
   ASSERT_OK_AND_ASSIGN(storage::BucketInfo result,
                        quota_manager_proxy_sync.GetBucket(
-                           example_storage_key_, storage::kDefaultBucketName,
-                           blink::mojom::StorageType::kTemporary));
+                           example_storage_key_, storage::kDefaultBucketName));
   EXPECT_EQ(result.name, storage::kDefaultBucketName);
   EXPECT_EQ(result.storage_key, example_storage_key_);
   EXPECT_GT(result.id.value(), 0);
 
   // Check default bucket exists for https://google.com.
-  ASSERT_OK_AND_ASSIGN(result,
-                       quota_manager_proxy_sync.GetBucket(
-                           google_storage_key_, storage::kDefaultBucketName,
-                           blink::mojom::StorageType::kTemporary));
+  ASSERT_OK_AND_ASSIGN(
+      result, quota_manager_proxy_sync.GetBucket(google_storage_key_,
+                                                 storage::kDefaultBucketName));
   EXPECT_EQ(result.name, storage::kDefaultBucketName);
   EXPECT_EQ(result.storage_key, google_storage_key_);
   EXPECT_GT(result.id.value(), 0);

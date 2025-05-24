@@ -49,8 +49,7 @@ CryptoModulePasswordDialogView::CryptoModulePasswordDialogView(
   Init(hostname, slot_name, reason);
 }
 
-CryptoModulePasswordDialogView::~CryptoModulePasswordDialogView() {
-}
+CryptoModulePasswordDialogView::~CryptoModulePasswordDialogView() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // CryptoModulePasswordDialogView, private:
@@ -83,8 +82,7 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
   switch (reason) {
     case kCryptoModulePasswordCertEnrollment:
       text = l10n_util::GetStringFUTF8(
-          IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_ENROLLMENT,
-          slot16,
+          IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_ENROLLMENT, slot16,
           hostname16);
       break;
     case kCryptoModulePasswordClientAuth:

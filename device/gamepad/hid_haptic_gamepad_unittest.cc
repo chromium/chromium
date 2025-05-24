@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -71,10 +72,8 @@ class FakeHidWriter : public HidWriter {
 class HidHapticGamepadTest : public testing::Test {
  public:
   HidHapticGamepadTest()
-      : start_vibration_output_report_(kStartVibrationData,
-                                       kStartVibrationData + kReportLength),
-        stop_vibration_output_report_(kStopVibrationData,
-                                      kStopVibrationData + kReportLength),
+      : start_vibration_output_report_(base::ToVector(kStartVibrationData)),
+        stop_vibration_output_report_(base::ToVector(kStopVibrationData)),
         first_callback_count_(0),
         second_callback_count_(0),
         first_callback_result_(

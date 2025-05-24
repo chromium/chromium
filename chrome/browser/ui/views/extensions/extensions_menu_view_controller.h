@@ -88,14 +88,14 @@ class ExtensionsMenuViewController
   void OnShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
-  void OnSiteAccessRequestAdded(const extensions::ExtensionId& extension_id,
+  void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                 int tab_id) override;
-  void OnSiteAccessRequestUpdated(const extensions::ExtensionId& extension_id,
+  void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
                                   int tab_id) override;
-  void OnSiteAccessRequestRemoved(const extensions::ExtensionId& extension_id,
+  void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
                                   int tab_id) override;
-  void OnSiteAccessRequestsCleared(int tab_id) override;
-  void OnSiteAccessRequestDismissedByUser(
+  void OnHostAccessRequestsCleared(int tab_id) override;
+  void OnHostAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id,
       const url::Origin& origin) override;
 

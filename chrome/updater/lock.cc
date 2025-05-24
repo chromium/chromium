@@ -38,7 +38,7 @@ std::unique_ptr<ScopedLock> CreateScopedLock(const std::string& name,
       timeout);
 #elif BUILDFLAG(IS_WIN)
   NamedObjectAttributes lock_attr =
-      GetNamedObjectAttributes(base::ASCIIToWide(name).c_str(), scope);
+      GetNamedObjectAttributes(base::UTF8ToWide(name).c_str(), scope);
   return named_system_lock::ScopedLock::Create(lock_attr.name, &lock_attr.sa,
                                                timeout);
 #endif

@@ -4,14 +4,15 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 
 /** The utility class for PaymentRequestFactory and WebLayerPaymentRequestFactory. */
+@NullMarked
 public final class PaymentRequestServiceUtil {
     /**
      * Gets the WebContents from a RenderFrameHost if the WebContents has not been destroyed;
@@ -20,8 +21,7 @@ public final class PaymentRequestServiceUtil {
      *         WebContents contains.
      * @return The WebContents.
      */
-    @Nullable
-    public static WebContents getLiveWebContents(RenderFrameHost renderFrameHost) {
+    public static @Nullable WebContents getLiveWebContents(RenderFrameHost renderFrameHost) {
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(renderFrameHost);
         return webContents != null && !webContents.isDestroyed() ? webContents : null;
     }

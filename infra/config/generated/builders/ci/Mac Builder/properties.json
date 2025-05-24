@@ -146,6 +146,34 @@
                 "project": "chromium"
               }
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "mac15-x64-rel-tests",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.mac",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Mac Builder",
+                "project": "chromium"
+              }
+            }
           }
         ]
       },
@@ -176,6 +204,11 @@
           "bucket": "ci",
           "builder": "mac14-tests",
           "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "mac15-x64-rel-tests",
+          "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -196,6 +229,10 @@
           "group": "tryserver.chromium.mac"
         },
         {
+          "builder": "mac15-x64-rel-tests",
+          "group": "tryserver.chromium.mac"
+        },
+        {
           "builder": "mac_chromium_11.0_rel_ng",
           "group": "tryserver.chromium.mac"
         },
@@ -204,21 +241,19 @@
           "group": "tryserver.chromium.mac"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac Builder/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250
   },

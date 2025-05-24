@@ -5,6 +5,8 @@
 #ifndef TOOLS_CLANG_RAW_PTR_PLUGIN_SEPARATEREPOSITORYPATHS_H_
 #define TOOLS_CLANG_RAW_PTR_PLUGIN_SEPARATEREPOSITORYPATHS_H_
 
+#include <array>
+
 // Paths in separate repositories - i.e. in directories that
 // 1. Contain a ".git" subdirectory
 // 2. And hasn't been excluded via "third_party/" substring in their path
@@ -19,7 +21,7 @@
 //      grep -v third_party | \
 //      grep -v '^$' | \
 //      sort | uniq > ~/scratch/git-paths
-constexpr const char* const kSeparateRepositoryPaths[] = {
+inline constexpr std::array kSeparateRepositoryPaths = {
     "chrome/app/theme/default_100_percent/google_chrome/",
     "chrome/app/theme/default_200_percent/google_chrome/",
     "chrome/app/theme/google_chrome/",

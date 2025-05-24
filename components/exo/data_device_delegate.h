@@ -56,7 +56,7 @@ class DataDeviceDelegate {
   virtual bool CanAcceptDataEventsForSurface(Surface* surface) const = 0;
 
  protected:
-  virtual ~DataDeviceDelegate() {}
+  virtual ~DataDeviceDelegate() = default;
 };
 
 }  // namespace exo

@@ -48,7 +48,7 @@ class PPB_Graphics3D_Impl : public ppapi::PPB_Graphics3D_Shared,
   scoped_refptr<gpu::Buffer> CreateTransferBuffer(uint32_t size,
                                                   int32_t* id) override;
   PP_Bool DestroyTransferBuffer(int32_t id) override;
-  PP_Bool Flush(int32_t put_offset) override;
+  PP_Bool Flush(int32_t put_offset, uint64_t release_count) override;
   gpu::CommandBuffer::State WaitForTokenInRange(int32_t start,
                                                 int32_t end) override;
   gpu::CommandBuffer::State WaitForGetOffsetInRange(

@@ -98,7 +98,7 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
     // not allow profile mismatch when only software encoder factory is used for
     // creating the simulcast encoder adapter.
     if (base::EqualsCaseInsensitiveASCII(format.name.c_str(),
-                                         cricket::kH264CodecName) &&
+                                         webrtc::kH264CodecName) &&
         supported_in_hardware) {
       allow_h264_profile_fallback = IsFormatSupported(
           &software_encoder_factory_,
@@ -261,6 +261,40 @@ std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
 
   return std::make_unique<DecoderAdapter>(std::move(decoder_factory),
                                           stats_callback);
+}
+
+std::unique_ptr<webrtc::VideoEncoderFactory>
+CreateWebrtcVideoEncoderFactoryForUmaLogging(
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  if (gpu_factories && gpu_factories->IsGpuVideoEncodeAcceleratorEnabled() &&
+      Platform::Current()->IsWebRtcHWEncodingEnabled()) {
+    return std::make_unique<RTCVideoEncoderFactory>(
+        gpu_factories, /*encoder_metrics_provider_factory=*/nullptr,
+        /*override_disabled_profiles=*/true);
+  }
+
+  // EncoderAdapter without HW encoder will always return powerEfficient=false
+  // when QueryCodecSupport() is called.
+  return std::make_unique<EncoderAdapter>(nullptr, base::DoNothing());
+}
+
+std::unique_ptr<webrtc::VideoDecoderFactory>
+CreateWebrtcVideoDecoderFactoryForUmaLogging(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    const gfx::ColorSpace& render_color_space) {
+  const bool use_hw_decoding =
+      gpu_factories != nullptr &&
+      gpu_factories->IsGpuVideoDecodeAcceleratorEnabled() &&
+      Platform::Current()->IsWebRtcHWDecodingEnabled();
+
+  if (use_hw_decoding) {
+    return std::make_unique<RTCVideoDecoderFactory>(
+        gpu_factories, render_color_space, /*override_disabled_profiles=*/true);
+  }
+
+  // DecoderAdapter without HW decoder will always return powerEfficient=false
+  // when QueryCodecSupport() is called.
+  return std::make_unique<DecoderAdapter>(nullptr, base::DoNothing());
 }
 
 }  // namespace blink

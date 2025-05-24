@@ -111,7 +111,7 @@ suite('NewTabPageRealboxTest', () => {
     });
   });
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     // Set up Realbox's browser proxy.
@@ -220,7 +220,7 @@ suite('NewTabPageRealboxTest', () => {
     await whenOpenVoiceSearch;
   });
 
-  test('realbox default loupe icon', async () => {
+  test('realbox default loupe icon', () => {
     // Arrange.
     loadTimeData.overrideValues({
       searchboxDefaultIcon: 'search.svg',
@@ -233,7 +233,7 @@ suite('NewTabPageRealboxTest', () => {
     assertIconMaskImageUrl(realbox.$.icon, 'search.svg');
   });
 
-  test('realbox default Google G icon', async () => {
+  test('realbox default Google G icon', () => {
     // Arrange.
     loadTimeData.overrideValues({
       searchboxDefaultIcon:
@@ -531,13 +531,13 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
-  test('empty input does not query autocomplete', async () => {
+  test('empty input does not query autocomplete', () => {
     realbox.$.input.value = '';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
-  test('typing space does not query autocomplete', async () => {
+  test('typing space does not query autocomplete', () => {
     realbox.$.input.value = ' ';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
@@ -806,8 +806,8 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     assertEquals('hello', realbox.$.input.value);
-    const start = realbox.$.input.selectionStart!;
-    const end = realbox.$.input.selectionEnd!;
+    const start = realbox.$.input.selectionStart;
+    const end = realbox.$.input.selectionEnd;
     assertEquals('hell', realbox.$.input.value.substring(start, end));
   });
 
@@ -873,11 +873,66 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(2, matchEls.length);
   });
 
+  test('autocomplete should not query for empty inputs', async () => {
+    realbox.$.input.value = 'he';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // Deleting a character still queries autocomplete.
+    realbox.$.input.value = 'h';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(2, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // Deleting a character does not query autocomplete for empty input.
+    realbox.$.input.value = '';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    assertEquals(2, testProxy.handler.getCallCount('queryAutocomplete'));
+  });
+
+  test('query autocomplete for empty inputs when enabled', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      queryAutocompleteOnEmptyInput: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    realbox.$.input.value = 'he';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // Deleting a character queries autocomplete for non-empty input.
+    realbox.$.input.value = 'h';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(2, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // Deleting a character still queries autocomplete for empty input in lens
+    // searchboxes.
+    realbox.$.input.value = '';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(3, testProxy.handler.getCallCount('queryAutocomplete'));
+    // Restore.
+    loadTimeData.overrideValues({
+      queryAutocompleteOnEmptyInput: false,
+    });
+  });
+
   //============================================================================
   // Test Cut/Copy
   //============================================================================
 
-  test('Copying or cutting empty input fails', async () => {
+  test('Copying or cutting empty input fails', () => {
     realbox.$.input.value = '';
 
     const copyEvent = createClipboardEvent('copy');
@@ -2063,108 +2118,60 @@ suite('NewTabPageRealboxTest', () => {
         // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
         // assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
       });
+  test('lens searchboxes always use default icons in searchbox', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      searchboxDefaultIcon: 'hello.svg',
+      isLensSearchbox: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    assertIconMaskImageUrl(realbox.$.icon, 'hello.svg');  // Default icon.
+
+    realbox.$.input.value = 'hello';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    const matches = [
+      createUrlMatch({iconUrl: 'page.svg'}),
+    ];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: stringToMojoString16(realbox.$.input.value.trimStart()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    assertTrue(await areMatchesShowing());
+
+    const matchEls =
+        realbox.$.matches.shadowRoot!.querySelectorAll('cr-searchbox-match');
+    assertEquals(1, matchEls.length);
+
+    // Select the first match.
+    const arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    // First match is selected.
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    // Icon is still default while match is selected.
+    assertIconMaskImageUrl(realbox.$.icon, 'hello.svg');
+    // Restore.
+    loadTimeData.overrideValues({
+      searchboxDefaultIcon: 'search.svg',
+      isLensSearchbox: false,
+    });
+  });
 
   //============================================================================
   // Test suggestion groups
   //============================================================================
-
-  test('matches in a suggestion group can be made hidden/visible', async () => {
-    realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new InputEvent('input'));
-
-    const matches =
-        [createSearchMatch(), createUrlMatch({suggestionGroupId: 100})];
-    const suggestionGroupsMap = {
-      100: {
-        header: stringToMojoString16('Recommended for you'),
-        hideGroupA11yLabel: stringToMojoString16(''),
-        showGroupA11yLabel: stringToMojoString16(''),
-        hidden: true,
-        renderType: RenderType.kDefaultVertical,
-        sideType: SideType.kDefaultPrimary,
-      },
-      101: {
-        header: stringToMojoString16('Not recommended for you'),
-        hideGroupA11yLabel: stringToMojoString16(''),
-        showGroupA11yLabel: stringToMojoString16(''),
-        hidden: false,
-        renderType: RenderType.kDefaultVertical,
-        sideType: SideType.kDefaultPrimary,
-      },
-    };
-    testProxy.callbackRouterRemote.autocompleteResultChanged({
-      input: stringToMojoString16(realbox.$.input.value.trimStart()),
-      matches,
-      suggestionGroupsMap,
-    });
-    assertTrue(await areMatchesShowing());
-
-    // The first match is showing. The second match is initially hidden.
-    let matchEls = realbox.$.matches.selectableMatchElements;
-    assertEquals(1, matchEls.length);
-
-    // The suggestion group header and the toggle button are visible.
-    const headerEl =
-        realbox.$.matches.shadowRoot!.querySelectorAll<HTMLElement>(
-            '.header')[0]!;
-    assertTrue(window.getComputedStyle(headerEl).display !== 'none');
-    assertEquals('Recommended for you', headerEl.textContent!.trim());
-    const toggleButtonEl =
-        realbox.$.matches.shadowRoot!.querySelectorAll('cr-icon-button')[0]!;
-    assertTrue(window.getComputedStyle(toggleButtonEl).display !== 'none');
-
-    // Make the second match visible by pressing 'Space' on the toggle button.
-    toggleButtonEl.dispatchEvent(new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: ' ',
-    }));
-    toggleButtonEl.dispatchEvent(new KeyboardEvent('keyup', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: ' ',
-    }));
-
-    let args =
-        await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility');
-    assertEquals(100, args.suggestionGroupId);
-    assertEquals(
-        1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
-
-    testProxy.handler.reset();
-
-    // Second match is visible.
-    matchEls = realbox.$.matches.selectableMatchElements;
-    assertEquals(2, matchEls.length);
-
-    // Hide the second match by clicking the toggle button.
-    toggleButtonEl.click();
-
-    args =
-        await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility');
-    assertEquals(100, args.suggestionGroupId);
-    assertEquals(
-        1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
-
-    // Second match is hidden.
-    matchEls = realbox.$.matches.selectableMatchElements;
-    assertEquals(1, matchEls.length);
-
-    testProxy.handler.reset();
-
-    // Show the second match by clicking the header.
-    headerEl.click();
-    args =
-        await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility');
-    assertEquals(100, args.suggestionGroupId);
-    assertEquals(
-        1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
-    // Second match is visible again.
-    matchEls = realbox.$.matches.selectableMatchElements;
-    assertEquals(2, matchEls.length);
-  });
 
   test('HidesDropdownIfNoPrimaryMatches', async () => {
     realbox.$.input.value = '';
@@ -2174,9 +2181,6 @@ suite('NewTabPageRealboxTest', () => {
     const suggestionGroupsMap = {
       100: {
         header: stringToMojoString16('People also search for'),
-        hideGroupA11yLabel: stringToMojoString16(''),
-        showGroupA11yLabel: stringToMojoString16(''),
-        hidden: false,
         renderType: RenderType.kDefaultVertical,
         sideType: SideType.kSecondary,
       },
@@ -2198,63 +2202,6 @@ suite('NewTabPageRealboxTest', () => {
     });
     assertTrue(await areMatchesShowing());
   });
-
-  test(
-      'focusing suggestion group header resets selection and input text',
-      async () => {
-        realbox.$.input.value = '';
-        realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-
-        const matches =
-            [createSearchMatch(), createUrlMatch({suggestionGroupId: 100})];
-        const suggestionGroupsMap = {
-          100: {
-            header: stringToMojoString16('Recommended for you'),
-            hideGroupA11yLabel: stringToMojoString16(''),
-            showGroupA11yLabel: stringToMojoString16(''),
-            hidden: false,
-            renderType: RenderType.kDefaultVertical,
-            sideType: SideType.kDefaultPrimary,
-          },
-        };
-        testProxy.callbackRouterRemote.autocompleteResultChanged({
-          input: stringToMojoString16(realbox.$.input.value.trimStart()),
-          matches,
-          suggestionGroupsMap,
-        });
-        assertTrue(await areMatchesShowing());
-
-        const matchEls =
-            realbox.$.matches.shadowRoot!.querySelectorAll('cr-searchbox-match');
-        assertEquals(2, matchEls.length);
-
-        // Select the first match.
-        matchEls[0]!.dispatchEvent(new Event('focusin', {
-          bubbles: true,
-          cancelable: true,
-          composed: true,  // So it propagates across shadow DOM boundary.
-        }));
-
-        // First match is selected.
-        assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-        // Input is updated.
-        assertEquals('hello world', realbox.$.input.value);
-
-        // Focus the suggestion group header.
-        const headerEl =
-            realbox.$.matches.shadowRoot!.querySelectorAll<HTMLElement>(
-                '.header')[0]!;
-        headerEl.dispatchEvent(new Event('focusin', {
-          bubbles: true,
-          cancelable: true,
-          composed: true,  // So it propagates across shadow DOM boundary.
-        }));
-
-        // First match is no longer selected.
-        assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-        // Input is cleared.
-        assertEquals('', realbox.$.input.value);
-      });
 
   //============================================================================
   // Test calculator answer type
@@ -2341,6 +2288,63 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
 
     assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default Icon
+  });
+
+  //============================================================================
+  // Test custom action icons
+  //============================================================================
+
+  test('Test action with custom icon', async () => {
+    realbox.$.input.value = 'Open extension email';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    const matches = [
+      createSearchMatch({
+        actions: [{
+          a11yLabel: stringToMojoString16(''),
+          hint: stringToMojoString16('Open Email'),
+          suggestionContents: stringToMojoString16(''),
+          iconUrl: 'data:image/random',
+        }],
+      }),
+      createSearchMatch({
+        actions: [{
+          a11yLabel: stringToMojoString16(''),
+          hint: stringToMojoString16('Open Email'),
+          suggestionContents: stringToMojoString16(''),
+          iconUrl: 'icon.png',
+        }],
+      }),
+    ];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: stringToMojoString16(realbox.$.input.value.trimStart()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    assertTrue(await areMatchesShowing());
+
+    const matchEls =
+        realbox.$.matches.shadowRoot!.querySelectorAll('cr-searchbox-match');
+    verifyMatch(matches[0]!, matchEls[0]!);
+    verifyMatch(matches[1]!, matchEls[1]!);
+
+    // Match action that has a custom icon associated with it.
+    const actionElCustomIcon =
+        $$($$(matchEls[0]!, 'cr-searchbox-action')!, '.contents')!;
+    const actionIconCustom =
+        actionElCustomIcon.querySelector<HTMLElement>('#action-icon')!;
+    // Match action that has a standard vector icon associated with it.
+    const actionElStandardIcon =
+        $$($$(matchEls[1]!, 'cr-searchbox-action')!, '.contents')!;
+    const actionIconStandard =
+        actionElStandardIcon.querySelector<HTMLElement>('#action-icon')!;
+
+    // Custom icons should use `background-image` while standard vector icons
+    // should use `-webkit-mask-image`.
+    assertStyle(
+        actionIconCustom, 'background-image', 'url("data:image/random")');
+    assertStyle(
+        actionIconStandard, '-webkit-mask-image',
+        'url("chrome://new-tab-page/icon.png")');
   });
 
   //============================================================================

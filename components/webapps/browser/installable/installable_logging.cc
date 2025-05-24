@@ -113,7 +113,6 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case webapps::InstallableStatusCode::RENDERER_EXITING:
     case webapps::InstallableStatusCode::RENDERER_CANCELLED:
     case webapps::InstallableStatusCode::USER_NAVIGATED:
-    case webapps::InstallableStatusCode::INSUFFICIENT_ENGAGEMENT:
     case webapps::InstallableStatusCode::PACKAGE_NAME_OR_START_URL_EMPTY:
     case webapps::InstallableStatusCode::PREVIOUSLY_BLOCKED:
     case webapps::InstallableStatusCode::PREVIOUSLY_IGNORED:
@@ -213,7 +212,6 @@ content::InstallabilityError GetInstallabilityError(
     case webapps::InstallableStatusCode::RENDERER_EXITING:
     case webapps::InstallableStatusCode::RENDERER_CANCELLED:
     case webapps::InstallableStatusCode::USER_NAVIGATED:
-    case webapps::InstallableStatusCode::INSUFFICIENT_ENGAGEMENT:
     case webapps::InstallableStatusCode::PACKAGE_NAME_OR_START_URL_EMPTY:
     case webapps::InstallableStatusCode::PREVIOUSLY_BLOCKED:
     case webapps::InstallableStatusCode::PREVIOUSLY_IGNORED:

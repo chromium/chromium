@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.app.tabmodel;
 import android.app.Activity;
 import android.util.Pair;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -24,11 +27,14 @@ import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 
 /**
@@ -43,8 +49,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     // This class is driven by TabbedModeTabModelOrchestrator to prevent duplicate glue code in
     //  ChromeTabbedActivity.
     private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    private @Nullable Supplier<TabModel> mArchivedHistoricalObserverSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private TabCreatorManager mTabCreatorManager;
 
     /**
      * Constructor.
@@ -63,13 +69,24 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         mCipherFactory = cipherFactory;
     }
 
+    @Override
+    public void destroy() {
+        if (mArchivedTabModelOrchestrator != null) {
+            mArchivedTabModelOrchestrator.removeHistoricalTabModelObserver(
+                    mArchivedHistoricalObserverSupplier);
+            mArchivedTabModelOrchestrator.unregisterTabModelOrchestrator(this);
+        }
+        super.destroy();
+    }
+
     /**
      * Creates the TabModelSelector and the TabPersistentStore.
      *
      * @param activity The activity that hosts this TabModelOrchestrator.
+     * @param modalDialogManager The {@link ModalDialogManager}.
      * @param profileProviderSupplier Supplies the {@link ProfileProvider} for the activity.
      * @param tabCreatorManager Manager for the {@link TabCreator} for the {@link TabModelSelector}.
-     * @param nextTabPolicyProvider Policy for what to do when a tab is closed.
+     * @param nextTabPolicySupplier Policy for what to do when a tab is closed.
      * @param mismatchedIndicesHandler Handles when indices are mismatched.
      * @param selectorIndex Which index to use when requesting a selector.
      * @return Whether the creation was successful. It may fail is we reached the limit of number of
@@ -77,13 +94,13 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      */
     public boolean createTabModels(
             Activity activity,
+            ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
             MismatchedIndicesHandler mismatchedIndicesHandler,
             int selectorIndex) {
         mProfileProviderSupplier = profileProviderSupplier;
-        mTabCreatorManager = tabCreatorManager;
         boolean mergeTabsOnStartup = shouldMergeTabs(activity);
         if (mergeTabsOnStartup) {
             MultiInstanceManager.mergedOnStartup();
@@ -94,6 +111,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                 TabWindowManagerSingleton.getInstance()
                         .requestSelector(
                                 activity,
+                                modalDialogManager,
                                 profileProviderSupplier,
                                 tabCreatorManager,
                                 nextTabPolicySupplier,
@@ -179,12 +197,26 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
         super.onNativeLibraryReady(tabContentManager);
 
-        if (ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()) {
-            DeferredStartupHandler.getInstance()
-                    .addDeferredTask(
-                            () -> createAndInitArchivedTabModelOrchestrator(tabContentManager));
-            DeferredStartupHandler.getInstance().queueDeferredTasksOnIdleHandler();
+        if (!ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()) {
+            return;
         }
+
+        if (ChromeFeatureList.sAndroidTabDeclutterPerformanceImprovements.isEnabled()) {
+            TabModelUtils.runOnTabStateInitialized(
+                    mTabModelSelector,
+                    (selector) -> {
+                        createArchivedTabModelInDeferredTask(tabContentManager);
+                    });
+        } else {
+            createArchivedTabModelInDeferredTask(tabContentManager);
+        }
+    }
+
+    private void createArchivedTabModelInDeferredTask(TabContentManager tabContentManager) {
+        DeferredStartupHandler.getInstance()
+                .addDeferredTask(
+                        () -> createAndInitArchivedTabModelOrchestrator(tabContentManager));
+        DeferredStartupHandler.getInstance().queueDeferredTasksOnIdleHandler();
     }
 
     @Override
@@ -206,20 +238,16 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
         assert profile != null;
 
-        TabCreator regularTabCreator = mTabCreatorManager.getTabCreator(/* incognito= */ false);
         mArchivedTabModelOrchestrator = ArchivedTabModelOrchestrator.getForProfile(profile);
         mArchivedTabModelOrchestrator.maybeCreateAndInitTabModels(
-                tabContentManager, regularTabCreator, mCipherFactory);
+                tabContentManager, mCipherFactory);
+        mArchivedHistoricalObserverSupplier =
+                () -> getTabModelSelector().getModel(/* incognito= */ false);
         mArchivedTabModelOrchestrator.initializeHistoricalTabModelObserver(
-                () -> getTabModelSelector().getModel(/* incognito= */ false));
-
-        // If the feature flag is enabled, then start the declutter process. Otherwise, rescue
-        // tabs that may have been archived previously.
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
-            mArchivedTabModelOrchestrator.maybeBeginDeclutter();
-        } else {
-            mArchivedTabModelOrchestrator.maybeRescueArchivedTabs();
-        }
+                mArchivedHistoricalObserverSupplier);
+        // Registering will automatically do an archive pass, and schedule recrurring passes for
+        // long-running instances of Chrome.
+        mArchivedTabModelOrchestrator.registerTabModelOrchestrator(this);
     }
 
     public TabPersistentStore getTabPersistentStoreForTesting() {

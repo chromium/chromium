@@ -200,7 +200,7 @@ goog.ui.ActivityMonitor.prototype.addDocument = function(doc) {
   this.documents_.push(doc);
   var useCapture = !this.useBubble_;
 
-  var eventsToListenTo = goog.array.concat(
+  var eventsToListenTo = [].concat(
       goog.ui.ActivityMonitor.userEventTypesDocuments_,
       goog.ui.ActivityMonitor.userEventTypesBody_);
 
@@ -232,7 +232,7 @@ goog.ui.ActivityMonitor.prototype.removeDocument = function(doc) {
   goog.array.remove(this.documents_, doc);
   var useCapture = !this.useBubble_;
 
-  var eventsToUnlistenTo = goog.array.concat(
+  var eventsToUnlistenTo = [].concat(
       goog.ui.ActivityMonitor.userEventTypesDocuments_,
       goog.ui.ActivityMonitor.userEventTypesBody_);
 

@@ -6,10 +6,11 @@
  * @fileoverview Tests for text_extractor.ts.
  */
 
-import {TextChunk, TextChunkConsumer, TextExtractor} from '//ios/web/annotations/resources/text_extractor.js';
+import type {TextChunk, TextChunkConsumer} from '//ios/web/annotations/resources/text_extractor.js';
+import {TextExtractor} from '//ios/web/annotations/resources/text_extractor.js';
 import {expectEq, expectNeq, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
-class TestTextExtractor extends TestSuite {
+export class TestTextExtractor extends TestSuite {
   // Mark:  TextChunkConsumer
 
   textChunk?: TextChunk;
@@ -45,9 +46,7 @@ class TestTextExtractor extends TestSuite {
 
     // Simulates the visit.
     extractor.begin();
-    let run = '';
     for (const childNode of root.childNodes) {
-      run += ':' + childNode.nodeName;
       if (childNode.nodeType === Node.TEXT_NODE) {
         extractor.visibleTextNode(childNode as Text);
       } else if (childNode.nodeName === 'VISIBLE') {
@@ -106,5 +105,3 @@ class TestTextExtractor extends TestSuite {
     expectEq('345678', this.textChunk!.sections[7]!.textNode!.textContent);
   }
 }
-
-export {TestTextExtractor}

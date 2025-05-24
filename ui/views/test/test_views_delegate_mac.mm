@@ -21,8 +21,9 @@ void TestViewsDelegate::OnBeforeWidgetInit(
                           : Widget::InitParams::WindowOpacity::kOpaque;
   }
   // TODO(tapted): This should return a *Desktop*NativeWidgetMac.
-  if (!params->native_widget && use_desktop_native_widgets_)
+  if (!params->native_widget && use_desktop_native_widgets_) {
     params->native_widget = new NativeWidgetMac(delegate);
+  }
 }
 
 ui::ContextFactory* TestViewsDelegate::GetContextFactory() {

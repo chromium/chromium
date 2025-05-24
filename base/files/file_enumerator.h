@@ -62,6 +62,10 @@ class BASE_EXPORT FileEnumerator {
              off_t size,
              Time time);
 #endif
+    FileInfo(const FileInfo& that);
+    FileInfo& operator=(const FileInfo& that);
+    FileInfo(FileInfo&& that);
+    FileInfo& operator=(FileInfo&& that);
     ~FileInfo();
 
     bool IsDirectory() const;
@@ -70,6 +74,11 @@ class BASE_EXPORT FileEnumerator {
     // is in constrast to the value returned by FileEnumerator.Next() which
     // includes the |root_path| passed into the FileEnumerator constructor.
     FilePath GetName() const;
+
+#if BUILDFLAG(IS_ANDROID)
+    // Display names of subdirs.
+    const std::vector<std::string>& subdirs() const { return subdirs_; }
+#endif
 
     int64_t GetSize() const;
 
@@ -92,6 +101,7 @@ class BASE_EXPORT FileEnumerator {
 
 #if BUILDFLAG(IS_ANDROID)
     FilePath content_uri_;
+    std::vector<std::string> subdirs_;
 #endif
 #if BUILDFLAG(IS_WIN)
     CHROME_WIN32_FIND_DATA find_data_;
@@ -268,6 +278,12 @@ class BASE_EXPORT FileEnumerator {
   // A stack that keeps track of which subdirectories we still need to
   // enumerate in the breadth-first search.
   base::stack<FilePath> pending_paths_;
+#if BUILDFLAG(IS_ANDROID)
+  // Matches pending_paths_, but with display names.
+  base::stack<std::vector<std::string>> pending_subdirs_;
+  // Display names of subdirs of the current entry.
+  std::vector<std::string> subdirs_;
+#endif
 };
 
 }  // namespace base

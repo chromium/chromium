@@ -29,8 +29,8 @@
 namespace dbus {
 
 // Echo, SlowEcho, AsyncEcho, BrokenMethod, GetAll, Get, Set, PerformAction,
-// GetManagedObjects
-const int TestService::kNumMethodsToExport = 9;
+// GetManagedObjects.
+constexpr int TestService::kNumMethodsToExport = 9;
 
 TestService::Options::Options()
     : request_ownership_options(Bus::REQUIRE_PRIMARY) {
@@ -79,6 +79,10 @@ void TestService::ShutdownAndBlock() {
 
 bool TestService::HasDBusThread() {
   return bus_->HasDBusThread();
+}
+
+std::string TestService::GetConnectionName() {
+  return bus_->GetConnectionName();
 }
 
 void TestService::ShutdownAndBlockInternal() {
@@ -486,14 +490,12 @@ void TestService::OwnershipReleased(
                                   std::move(response_sender)));
 }
 
-
 void TestService::OwnershipRegained(
     MethodCall* method_call,
     ExportedObject::ResponseSender response_sender,
     bool success) {
   PerformActionResponse(method_call, std::move(response_sender));
 }
-
 
 void TestService::GetManagedObjects(
     MethodCall* method_call,

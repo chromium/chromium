@@ -7,7 +7,8 @@
 
 namespace file_manager::file_tasks {
 
-constexpr char kActionIdInstallIsolatedWebApp[] = "install-isolated-web-app";
+inline constexpr char kActionIdInstallIsolatedWebApp[] =
+    "install-isolated-web-app";
 
 }  // namespace file_manager::file_tasks
 

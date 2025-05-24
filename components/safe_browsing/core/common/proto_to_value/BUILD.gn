@@ -1,0 +1,28 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (current_toolchain == host_toolchain) {
+  executable("to_value_plugin") {
+    sources = [ "to_value_plugin.cc" ]
+    deps = [
+      "//base",
+      "//third_party/protobuf:protoc_lib",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "to_value_plugin_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/safe_browsing/core/common/proto_to_value/test_proto:test_proto",
+    "//components/safe_browsing/core/common/proto_to_value/test_proto:test_proto_to_value",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}

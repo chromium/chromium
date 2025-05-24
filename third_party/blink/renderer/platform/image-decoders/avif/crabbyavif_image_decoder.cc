@@ -15,13 +15,13 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/bits.h"
 #include "base/containers/adapters.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -32,13 +32,11 @@
 #include "cc/base/math_util.h"
 #include "media/base/video_color_space.h"
 #include "skia/ext/cicp.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
 #include "third_party/crabbyavif/src/include/avif/avif.h"
-#include "third_party/libavifinfo/src/avifinfo.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -115,10 +113,8 @@ gfx::ColorSpace GetColorSpace(
   if (color_space.IsSpecified()) {
     return color_space.ToGfxColorSpace();
   }
-  // media::VideoColorSpace and gfx::ColorSpace do not support CICP
-  // MatrixCoefficients 12, 13, 14.
-  DCHECK_GE(matrix, 12);
-  DCHECK_LE(matrix, 14);
+  // If the color space isn't specified by media::VideoColorSpace, use the
+  // default colorspace based on |yuv_range|.
   if (yuv_range == crabbyavif::AVIF_RANGE_FULL) {
     return gfx::ColorSpace::CreateJpeg();
   }
@@ -140,104 +136,6 @@ gfx::ColorSpace GetColorSpace(const crabbyavif::avifImage* image) {
 int UVSize(int y_size, int chroma_shift) {
   DCHECK(chroma_shift == 0 || chroma_shift == 1);
   return (y_size + chroma_shift) >> chroma_shift;
-}
-
-// Creates a copy of the given input (AVIF image data), with the primary item id
-// changed so that it now points to the gain map image.
-scoped_refptr<SegmentReader> CreateGainmapSegmentReader(
-    const AvifInfoFeatures& features,
-    const SegmentReader* input) {
-  const uint64_t primary_item_id_start = features.primary_item_id_location;
-  const uint64_t primary_item_id_end =
-      primary_item_id_start + features.primary_item_id_bytes;  // Exclusive.
-  const uint32_t new_id = features.gainmap_item_id;
-
-  // Copy the input data while changing the item id.
-  RWBuffer rw_buffer;
-  size_t item_id_bytes_to_write = features.primary_item_id_bytes;
-  CHECK(item_id_bytes_to_write == 2 || item_id_bytes_to_write == 4);
-  size_t position = 0;
-  const char* segment;
-  while (size_t length = input->GetSomeData(segment, position)) {
-    // Check if the location of the primary item id overlaps with the current
-    // segment.
-    if (position + length > primary_item_id_start &&
-        position < primary_item_id_end) {
-      size_t pos_in_segment =
-          (primary_item_id_start > position)
-              ? (static_cast<size_t>(primary_item_id_start) - position)
-              : 0;
-      // Append the part of the segment before the id.
-      if (pos_in_segment > 0) {
-        rw_buffer.Append(segment, pos_in_segment);
-      }
-      // Write the id bytes (big endian).
-      while (item_id_bytes_to_write > 0 && pos_in_segment < length) {
-        const uint8_t to_write =
-            (new_id >> (8 * (item_id_bytes_to_write - 1))) & 0xff;
-        rw_buffer.Append(&to_write, 1);
-        item_id_bytes_to_write--;
-        pos_in_segment++;
-      }
-      // Append the part of the segment after the id.
-      if (pos_in_segment < length) {
-        rw_buffer.Append(segment + pos_in_segment, length - pos_in_segment);
-      }
-    } else {
-      rw_buffer.Append(segment, length);
-    }
-    position += length;
-  }
-  return SegmentReader::CreateFromROBuffer(rw_buffer.MakeROBufferSnapshot());
-}
-
-// Stream object for use with libavifinfo.
-struct AvifInfoSegmentReaderStream {
-  scoped_refptr<const SegmentReader> reader;
-  size_t num_read_bytes = 0;
-  uint8_t buffer[AVIFINFO_MAX_NUM_READ_BYTES];
-};
-
-// Stream reading function for use with libavifinfo.
-const uint8_t* AvifInfoSegmentReaderRead(void* void_stream, size_t num_bytes) {
-  AvifInfoSegmentReaderStream* stream =
-      reinterpret_cast<AvifInfoSegmentReaderStream*>(void_stream);
-
-  if ((stream->reader->size() <= stream->num_read_bytes) ||
-      (stream->reader->size() - stream->num_read_bytes) < num_bytes) {
-    return nullptr;  // Not enough data.
-  }
-
-  const char* data;
-  size_t data_size =
-      stream->reader->GetSomeData(data, /*position=*/stream->num_read_bytes);
-  if (data_size >= num_bytes) {
-    // Enough data was read in one go.
-    stream->num_read_bytes += num_bytes;
-    return reinterpret_cast<const uint8_t*>(data);
-  }
-
-  // Read multiple times and concatenate data chunks in a buffer.
-  CHECK_LE(num_bytes, size_t{AVIFINFO_MAX_NUM_READ_BYTES});
-  size_t buffer_pos = 0;
-  while (num_bytes != 0) {
-    data_size =
-        stream->reader->GetSomeData(data, /*position=*/stream->num_read_bytes);
-    CHECK_NE(data_size, 0u);
-    const size_t copy_size = std::min(data_size, num_bytes);
-    memcpy(stream->buffer + buffer_pos, data, copy_size);
-    buffer_pos += copy_size;
-    stream->num_read_bytes += copy_size;
-    num_bytes -= copy_size;
-  }
-
-  return stream->buffer;
-}
-
-void AvifInfoSegmentReaderSkip(void* void_stream, size_t num_bytes) {
-  AvifInfoSegmentReaderStream* stream =
-      reinterpret_cast<AvifInfoSegmentReaderStream*>(void_stream);
-  stream->num_read_bytes += num_bytes;
 }
 
 float FractionToFloat(auto numerator, uint32_t denominator) {
@@ -314,12 +212,13 @@ CrabbyAVIFImageDecoder::CrabbyAVIFImageDecoder(
     AlphaOption alpha_option,
     HighBitDepthDecodingOption hbd_option,
     ColorBehavior color_behavior,
+    cc::AuxImage aux_image,
     wtf_size_t max_decoded_bytes,
     AnimationOption animation_option)
     : ImageDecoder(alpha_option,
                    hbd_option,
                    color_behavior,
-                   cc::AuxImage::kDefault,
+                   aux_image,
                    max_decoded_bytes),
       animation_option_(animation_option) {}
 
@@ -516,9 +415,8 @@ void CrabbyAVIFImageDecoder::DecodeToYUV() {
         libyuv::HalfFloatPlane(src, src_row_bytes, dst, dst_row_bytes,
                                kHighBitDepthMultiplier, width, height);
       } else {
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported color type: "
-            << static_cast<int>(image_planes_->color_type());
+        NOTREACHED() << "Unsupported color type: "
+                     << static_cast<int>(image_planes_->color_type());
       }
     }
     if (plane == cc::YUVIndex::kY) {
@@ -607,7 +505,9 @@ bool CrabbyAVIFImageDecoder::MatchesAVIFSignature(
 }
 
 gfx::ColorSpace CrabbyAVIFImageDecoder::GetColorSpaceForTesting() const {
-  return GetColorSpace(decoder_->image);
+  const auto* image = GetDecoderImage();
+  CHECK(image);
+  return GetColorSpace(image);
 }
 
 void CrabbyAVIFImageDecoder::ParseMetadata() {
@@ -804,19 +704,20 @@ crabbyavif::avifResult CrabbyAVIFImageDecoder::ReadFromSegmentReader(
   }
 
   out->size = size;
-  const char* data;
-  size_t data_size = io_data->reader->GetSomeData(data, position);
-  if (data_size >= size) {
-    out->data = reinterpret_cast<const uint8_t*>(data);
+
+  base::span<const uint8_t> data = io_data->reader->GetSomeData(position);
+  if (data.size() >= size) {
+    out->data = data.data();
     return crabbyavif::AVIF_RESULT_OK;
   }
 
   io_data->buffer.clear();
   io_data->buffer.reserve(size);
+
   while (size != 0) {
-    data_size = io_data->reader->GetSomeData(data, position);
-    size_t copy_size = std::min(data_size, size);
-    io_data->buffer.insert(io_data->buffer.end(), data, data + copy_size);
+    data = io_data->reader->GetSomeData(position);
+    size_t copy_size = std::min(data.size(), size);
+    io_data->buffer.insert(io_data->buffer.end(), data.begin(), data.end());
     position += copy_size;
     size -= copy_size;
   }
@@ -875,8 +776,8 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
     // crbug.com/1198455.
     decoder_->strictFlags &= ~crabbyavif::AVIF_STRICT_PIXI_REQUIRED;
 
-    if (base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
-      decoder_->enableParsingGainMapMetadata = crabbyavif::CRABBY_AVIF_TRUE;
+    if (aux_image_ == cc::AuxImage::kGainmap) {
+      decoder_->imageContentToDecode = crabbyavif::AVIF_IMAGE_CONTENT_GAIN_MAP;
     }
 
     avif_io_.destroy = nullptr;
@@ -896,7 +797,8 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
   }
   if (ret != crabbyavif::AVIF_RESULT_OK) {
     DVLOG(1) << "crabbyavif::crabby_avifDecoderParse failed: "
-             << crabbyavif::crabby_avifResultToString(ret);
+             << crabbyavif::crabby_avifResultToString(ret) << ". "
+             << decoder_->diag.error;
     return false;
   }
 
@@ -906,7 +808,10 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
   DCHECK_EQ(decoder_->imageIndex, -1);
   // This variable is named |container| to emphasize the fact that the current
   // contents of decoder_->image come from the container, not any frame.
-  const auto* container = decoder_->image;
+  const auto* container = GetDecoderImage();
+  if (!container) {
+    return false;
+  }
 
   // The container width and container height are read from either the tkhd
   // (track header) box of a track or the ispe (image spatial extents) property
@@ -1037,23 +942,24 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
   //
   // In the kAxisAngleToOrientation array, the first dimension is axis (with an
   // offset of 1). The second dimension is angle.
-  constexpr ImageOrientationEnum kAxisAngleToOrientation[3][4] = {
-      // No mirroring.
-      {ImageOrientationEnum::kOriginTopLeft,
-       ImageOrientationEnum::kOriginLeftBottom,
-       ImageOrientationEnum::kOriginBottomRight,
-       ImageOrientationEnum::kOriginRightTop},
-      // Top-to-bottom mirroring. Change Top<->Bottom in the first row.
-      {ImageOrientationEnum::kOriginBottomLeft,
-       ImageOrientationEnum::kOriginLeftTop,
-       ImageOrientationEnum::kOriginTopRight,
-       ImageOrientationEnum::kOriginRightBottom},
-      // Left-to-right mirroring. Change Left<->Right in the first row.
-      {ImageOrientationEnum::kOriginTopRight,
-       ImageOrientationEnum::kOriginRightBottom,
-       ImageOrientationEnum::kOriginBottomLeft,
-       ImageOrientationEnum::kOriginLeftTop},
-  };
+  constexpr std::array<std::array<ImageOrientationEnum, 4>, 3>
+      kAxisAngleToOrientation = {{
+          // No mirroring.
+          {ImageOrientationEnum::kOriginTopLeft,
+           ImageOrientationEnum::kOriginLeftBottom,
+           ImageOrientationEnum::kOriginBottomRight,
+           ImageOrientationEnum::kOriginRightTop},
+          // Top-to-bottom mirroring. Change Top<->Bottom in the first row.
+          {ImageOrientationEnum::kOriginBottomLeft,
+           ImageOrientationEnum::kOriginLeftTop,
+           ImageOrientationEnum::kOriginTopRight,
+           ImageOrientationEnum::kOriginRightBottom},
+          // Left-to-right mirroring. Change Left<->Right in the first row.
+          {ImageOrientationEnum::kOriginTopRight,
+           ImageOrientationEnum::kOriginRightBottom,
+           ImageOrientationEnum::kOriginBottomLeft,
+           ImageOrientationEnum::kOriginLeftTop},
+      }};
   orientation_ = kAxisAngleToOrientation[axis + 1][angle];
 
   // Determine whether the image can be decoded to YUV.
@@ -1128,7 +1034,8 @@ crabbyavif::avifResult CrabbyAVIFImageDecoder::DecodeImage(wtf_size_t index) {
     return ret;
   }
 
-  const auto* image = decoder_->image;
+  const auto* image = GetDecoderImage();
+  CHECK(image);
   // Frame size must be equal to container size.
   if (image->width != container_width_ || image->height != container_height_) {
     DVLOG(1) << "Frame size " << image->width << "x" << image->height
@@ -1336,130 +1243,79 @@ void CrabbyAVIFImageDecoder::ColorCorrectImage(int from_row,
 bool CrabbyAVIFImageDecoder::GetGainmapInfoAndData(
     SkGainmapInfo& out_gainmap_info,
     scoped_refptr<SegmentReader>& out_gainmap_data) const {
-  if (!base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
+  // Ensure that parsing succeeded.
+  if (!IsDecodedSizeAvailable()) {
     return false;
   }
-
-  // We already know that the file is an AVIF file so there is no need to
-  // call AvifInfoIdentify(). Get the features directly.
-  AvifInfoSegmentReaderStream stream;
-  stream.reader = data_;
-
-  // Extract gainmap image.
-  AvifInfoFeatures features;
-  const AvifInfoStatus status = AvifInfoGetFeaturesStream(
-      &stream, AvifInfoSegmentReaderRead, AvifInfoSegmentReaderSkip, &features);
-  if (status != kAvifInfoOk || !features.has_gainmap) {
+  if (!decoder_->image->gainMap) {
     return false;
   }
-  out_gainmap_data = CreateGainmapSegmentReader(features, data_.get());
-
-  // If libavif detected a gain map, it already parsed the metadata from the
-  // 'tmap' box.
-  if (decoder_->gainMapPresent) {
-    const crabbyavif::avifGainMap& gain_map = *decoder_->image->gainMap;
-    const crabbyavif::avifGainMapMetadata& metadata = gain_map.metadata;
-    if (metadata.baseHdrHeadroomD == 0 || metadata.alternateHdrHeadroomD == 0) {
+  const crabbyavif::avifGainMap& gain_map = *decoder_->image->gainMap;
+  if (gain_map.baseHdrHeadroom.d == 0 || gain_map.alternateHdrHeadroom.d == 0) {
+    DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
+    return false;
+  }
+  const float base_headroom = std::exp2(
+      FractionToFloat(gain_map.baseHdrHeadroom.n, gain_map.baseHdrHeadroom.d));
+  const float alternate_headroom = std::exp2(FractionToFloat(
+      gain_map.alternateHdrHeadroom.n, gain_map.alternateHdrHeadroom.d));
+  const bool base_is_hdr = base_headroom > alternate_headroom;
+  out_gainmap_info.fDisplayRatioSdr =
+      base_is_hdr ? alternate_headroom : base_headroom;
+  out_gainmap_info.fDisplayRatioHdr =
+      base_is_hdr ? base_headroom : alternate_headroom;
+  out_gainmap_info.fBaseImageType = base_is_hdr
+                                        ? SkGainmapInfo::BaseImageType::kHDR
+                                        : SkGainmapInfo::BaseImageType::kSDR;
+  if (!gain_map.useBaseColorSpace) {
+    // Try to use the alternate image's color space.
+    out_gainmap_info.fGainmapMathColorSpace =
+        GetAltImageColorSpace(*decoder_->image);
+  }
+  for (int i = 0; i < 3; ++i) {
+    if (gain_map.gainMapMin[i].d == 0 || gain_map.gainMapMax[i].d == 0 ||
+        gain_map.gainMapGamma[i].d == 0 || gain_map.baseOffset[i].d == 0 ||
+        gain_map.alternateOffset[i].d == 0) {
       DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
       return false;
     }
-    const float base_headroom = std::exp2(
-        FractionToFloat(metadata.baseHdrHeadroomN, metadata.baseHdrHeadroomD));
-    const float alternate_headroom = std::exp2(FractionToFloat(
-        metadata.alternateHdrHeadroomN, metadata.alternateHdrHeadroomD));
-    const bool base_is_hdr = base_headroom > alternate_headroom;
-    out_gainmap_info.fDisplayRatioSdr =
-        base_is_hdr ? alternate_headroom : base_headroom;
-    out_gainmap_info.fDisplayRatioHdr =
-        base_is_hdr ? base_headroom : alternate_headroom;
-    out_gainmap_info.fBaseImageType = base_is_hdr
-                                          ? SkGainmapInfo::BaseImageType::kHDR
-                                          : SkGainmapInfo::BaseImageType::kSDR;
-    for (int i = 0; i < 3; ++i) {
-      if (metadata.gainMapMinD[i] == 0 || metadata.gainMapMaxD[i] == 0 ||
-          metadata.gainMapGammaD[i] == 0 || metadata.baseOffsetD[i] == 0 ||
-          metadata.alternateOffsetD[i] == 0) {
-        DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
-        return false;
-      }
-
-      const float min_log2 =
-          FractionToFloat(metadata.gainMapMinN[i], metadata.gainMapMinD[i]);
-      const float max_log2 =
-          FractionToFloat(metadata.gainMapMaxN[i], metadata.gainMapMaxD[i]);
-      out_gainmap_info.fGainmapRatioMin[i] = std::exp2(min_log2);
-      out_gainmap_info.fGainmapRatioMax[i] = std::exp2(max_log2);
-
-      // Numerator and denominator intentionally swapped to get 1.0/gamma.
-      out_gainmap_info.fGainmapGamma[i] =
-          FractionToFloat(metadata.gainMapGammaD[i], metadata.gainMapGammaN[i]);
-      const float base_offset =
-          FractionToFloat(metadata.baseOffsetN[i], metadata.baseOffsetD[i]);
-      const float alternate_offset = FractionToFloat(
-          metadata.alternateOffsetN[i], metadata.alternateOffsetD[i]);
-      out_gainmap_info.fEpsilonSdr[i] =
-          base_is_hdr ? alternate_offset : base_offset;
-      out_gainmap_info.fEpsilonHdr[i] =
-          base_is_hdr ? base_offset : alternate_offset;
-
-      if (!metadata.useBaseColorSpace) {
-        // Try to use the alternate image's color space.
-        out_gainmap_info.fGainmapMathColorSpace =
-            GetAltImageColorSpace(*decoder_->image);
-      }
+    if (gain_map.gainMapGamma[i].n == 0) {
+      DVLOG(1) << "Invalid gainmap metadata: gamma is zero";
+      return false;
     }
 
-    return true;
-  }
-  // Otherwise, the metadata should be in the gain map image's XMP.
+    const float min_log2 =
+        FractionToFloat(gain_map.gainMapMin[i].n, gain_map.gainMapMin[i].d);
+    const float max_log2 =
+        FractionToFloat(gain_map.gainMapMax[i].n, gain_map.gainMapMax[i].d);
+    out_gainmap_info.fGainmapRatioMin[i] = std::exp2(min_log2);
+    out_gainmap_info.fGainmapRatioMax[i] = std::exp2(max_log2);
 
-  // Parse the gainmap image to get the gainmap XMP.
-  AvifIOData gainmap_avif_io_data(out_gainmap_data.get(), IsAllDataReceived());
-
-  crabbyavif::avifIO gainmap_avif_io = {
-      .destroy = nullptr,
-      .read = ReadFromSegmentReader,
-      .write = nullptr,
-      .sizeHint = gainmap_avif_io_data.all_data_received
-                      ? out_gainmap_data->size()
-                      : kMaxAvifFileSize,
-      .persistent = crabbyavif::CRABBY_AVIF_FALSE,
-      .data = &gainmap_avif_io_data};
-  auto decoder = std::unique_ptr<crabbyavif::avifDecoder,
-                                 void (*)(crabbyavif::avifDecoder*)>(
-      crabbyavif::crabby_avifDecoderCreate(),
-      crabbyavif::crabby_avifDecoderDestroy);
-  if (!decoder) {
-    return false;
+    // Numerator and denominator intentionally swapped to get 1.0/gamma.
+    out_gainmap_info.fGainmapGamma[i] =
+        FractionToFloat(gain_map.gainMapGamma[i].d, gain_map.gainMapGamma[i].n);
+    const float base_offset =
+        FractionToFloat(gain_map.baseOffset[i].n, gain_map.baseOffset[i].d);
+    const float alternate_offset = FractionToFloat(
+        gain_map.alternateOffset[i].n, gain_map.alternateOffset[i].d);
+    out_gainmap_info.fEpsilonSdr[i] =
+        base_is_hdr ? alternate_offset : base_offset;
+    out_gainmap_info.fEpsilonHdr[i] =
+        base_is_hdr ? base_offset : alternate_offset;
   }
-  crabbyavif::crabby_avifDecoderSetIO(decoder.get(), &gainmap_avif_io);
-  const crabbyavif::avifResult gainmap_parse_result =
-      crabbyavif::crabby_avifDecoderParse(decoder.get());
-  if (gainmap_parse_result == crabbyavif::AVIF_RESULT_WAITING_ON_IO) {
-    return false;  // Not enough data.
-  }
-  if (gainmap_parse_result != crabbyavif::AVIF_RESULT_OK) {
-    DVLOG(1) << "Failed to parse AVIF gainmap image";
-    return false;
-  }
-  if (decoder->image->xmp.size == 0) {
-    DVLOG(1) << "No XMP metadata found for AVIF gainmap image";
-    return false;
-  }
-
-  // Extract gainmap metadata from XMP.
-  sk_sp<SkData> xmp_sk_data = SkData::MakeWithoutCopy(decoder->image->xmp.data,
-                                                      decoder->image->xmp.size);
-  std::unique_ptr<SkXmp> xmp_sk = SkXmp::Make(xmp_sk_data);
-  if (!xmp_sk) {
-    DVLOG(1) << "Failed to parse AVIF gainmap XMP";
-    return false;
-  }
-  if (!xmp_sk->getGainmapInfoHDRGM(&out_gainmap_info)) {
-    DVLOG(1) << "Failed to parse AVIF gainmap XMP";
-    return false;
-  }
+  out_gainmap_data = data_;
   return true;
+}
+
+crabbyavif::avifImage* CrabbyAVIFImageDecoder::GetDecoderImage() const {
+  if (aux_image_ == cc::AuxImage::kGainmap) {
+    if (!decoder_->image->gainMap) {
+      DVLOG(1) << "Attempted to access gain map image, but gainMap is nullptr";
+      return nullptr;
+    }
+    return decoder_->image->gainMap->image;
+  }
+  return decoder_->image;
 }
 
 CrabbyAVIFImageDecoder::AvifIOData::AvifIOData() = default;

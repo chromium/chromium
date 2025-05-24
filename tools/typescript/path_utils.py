@@ -19,14 +19,13 @@ def isInAshFolder(path):
       'ash/webui',
       'chrome/browser/resources/ash',
       'chrome/browser/resources/chromeos',
-      'chrome/browser/resources/nearby_internals',
-      'chrome/browser/resources/nearby_share',
+      'chrome/browser/resources/dlp_internals',
+      'chromeos/ash/components/kiosk/vision/webui',
       'ui/file_manager',
 
       # Test folders
       'chrome/test/data/webui/chromeos',
       'chrome/test/data/webui/cr_components/chromeos',
-      'chrome/test/data/webui/nearby_share',
   ]
   return any(path.startswith(folder) for folder in ash_folders)
 

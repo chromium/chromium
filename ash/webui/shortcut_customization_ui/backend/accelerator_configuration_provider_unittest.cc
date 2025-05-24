@@ -4,6 +4,7 @@
 
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -33,13 +34,11 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -51,7 +50,6 @@
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -362,10 +360,6 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kImprovedKeyboardShortcuts,
-         ::features::kShortcutCustomization},
-        {});
     input_method_manager_ = new TestInputMethodManager();
     input_method::InputMethodManager::Initialize(input_method_manager_);
 
@@ -475,7 +469,6 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
 
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
   NonConfigurableActionsMap non_configurable_actions_map_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
   raw_ptr<TestInputMethodManager, DanglingUntriaged> input_method_manager_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
@@ -1202,7 +1195,7 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableLookup) {
       std::vector<ui::Accelerator> actual_accelerators =
           GetNonConfigurableAcceleratorsForActionId(
               static_cast<uint32_t>(ambient_action_id));
-      EXPECT_TRUE(base::ranges::is_permutation(
+      EXPECT_TRUE(std::ranges::is_permutation(
           actual_accelerators, accelerators_details.accelerators.value()));
     }
   }
@@ -1631,14 +1624,13 @@ TEST_F(AcceleratorConfigurationProviderTest, AddSameAccelerator) {
   EXPECT_EQ(mojom::AcceleratorConfigResult::kConflict, result->result);
 }
 
-// TODO(b/368487291): Consistently failing on linux-chromeos bots.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AddAcceleratorBadAccelerator DISABLED_AddAcceleratorBadAccelerator
-#else
-#define MAYBE_AddAcceleratorBadAccelerator AddAcceleratorBadAccelerator
-#endif
-TEST_F(AcceleratorConfigurationProviderTest,
-       MAYBE_AddAcceleratorBadAccelerator) {
+TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorBadAccelerator) {
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_USB,
+      /*name=*/"fake_Keyboard");
+  fake_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, "");
+
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
@@ -1711,14 +1703,14 @@ TEST_F(AcceleratorConfigurationProviderTest,
   EXPECT_EQ(mojom::AcceleratorConfigResult::kNonStandardWithSearch,
             result->result);
 
-  // Block right alt key pressing.
-  const ui::Accelerator right_alt_accelerator(ui::VKEY_RIGHT_ALT,
-                                              ui::EF_COMMAND_DOWN);
+  // Block quick insert key pressing.
+  const ui::Accelerator quick_insert_accelerator(ui::VKEY_QUICK_INSERT,
+                                                 ui::EF_COMMAND_DOWN);
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
-                          right_alt_accelerator, &result);
-  EXPECT_EQ(mojom::AcceleratorConfigResult::kBlockRightAlt, result->result);
+                          quick_insert_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kBlockQuickInsert, result->result);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorExceedsMaximum) {
@@ -1956,7 +1948,7 @@ TEST_F(AcceleratorConfigurationProviderTest,
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
-                          AcceleratorAction::kToggleAppList, accelerator,
+                          AcceleratorAction::kToggleAppList, accelerator2,
                           &result);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::AcceleratorConfigResult::kMaximumAcceleratorsReached,
@@ -2034,7 +2026,7 @@ TEST_F(AcceleratorConfigurationProviderTest,
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
-                          AcceleratorAction::kToggleAppList, accelerator,
+                          AcceleratorAction::kToggleAppList, accelerator2,
                           &result);
 
   base::RunLoop().RunUntilIdle();

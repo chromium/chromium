@@ -99,26 +99,17 @@ class SetContentDecryptionModuleResult final
 
   void CompleteWithContentDecryptionModule(
       std::unique_ptr<WebContentDecryptionModule>) override {
-    NOTREACHED_IN_MIGRATION();
-    std::move(failure_callback_)
-        .Run(kWebContentDecryptionModuleExceptionInvalidStateError,
-             "Unexpected completion.");
+    NOTREACHED();
   }
 
   void CompleteWithSession(
       WebContentDecryptionModuleResult::SessionStatus status) override {
-    NOTREACHED_IN_MIGRATION();
-    std::move(failure_callback_)
-        .Run(kWebContentDecryptionModuleExceptionInvalidStateError,
-             "Unexpected completion.");
+    NOTREACHED();
   }
 
   void CompleteWithKeyStatus(
       WebEncryptedMediaKeyInformation::KeyStatus key_status) override {
-    NOTREACHED_IN_MIGRATION();
-    std::move(failure_callback_)
-        .Run(kWebContentDecryptionModuleExceptionInvalidStateError,
-             "Unexpected completion.");
+    NOTREACHED();
   }
 
   void CompleteWithError(WebContentDecryptionModuleException code,

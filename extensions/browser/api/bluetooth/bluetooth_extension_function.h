@@ -44,7 +44,7 @@ class BluetoothExtensionFunction : public ExtensionFunction {
   void RunOnAdapterReady(scoped_refptr<device::BluetoothAdapter> adapter);
 
   // Implemented by individual bluetooth extension functions, called
-  // automatically on the UI thread once |adapter| has been initialized.
+  // automatically on the UI thread once `adapter` has been initialized.
   virtual void DoWork(scoped_refptr<device::BluetoothAdapter> adapter) = 0;
 };
 

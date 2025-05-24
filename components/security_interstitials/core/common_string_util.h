@@ -22,8 +22,8 @@ void PopulateSSLLayoutStrings(int cert_error,
                               base::Value::Dict& load_time_data);
 
 // For SSL-related errors that provide debugging information.
-void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
-                                 const base::Time time_triggered,
+void PopulateSSLDebuggingStrings(const net::SSLInfo& ssl_info,
+                                 base::Time time_triggered,
                                  base::Value::Dict& load_time_data);
 
 }  // namespace security_interstitials::common_string_util

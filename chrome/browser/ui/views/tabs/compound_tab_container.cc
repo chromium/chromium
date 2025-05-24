@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/to_address.h"
@@ -205,7 +204,7 @@ class UnpinnedTabContainerController final : public TabContainerController {
 };
 
 // Animates tabs being pinned or unpinned, then hands them back to
-// |tab_container_|.
+// `tab_container_`.
 class PinUnpinAnimationDelegate : public TabSlotAnimationDelegate {
  public:
   PinUnpinAnimationDelegate(TabContainer* tab_container, TabSlotView* slot_view)
@@ -249,10 +248,6 @@ CompoundTabContainer::CompoundTabContainer(
       scroll_contents_view_(scroll_contents_view),
       bounds_animator_(this) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
-
-  if (!gfx::Animation::ShouldRenderRichAnimation()) {
-    bounds_animator_.SetAnimationDuration(base::TimeDelta());
-  }
 }
 
 CompoundTabContainer::~CompoundTabContainer() {
@@ -271,16 +266,30 @@ void CompoundTabContainer::SetAvailableWidthCallback(
   available_width_callback_ = available_width_callback;
 }
 
-Tab* CompoundTabContainer::AddTab(std::unique_ptr<Tab> tab,
-                                  int model_index,
-                                  TabPinned pinned) {
-  if (pinned == TabPinned::kPinned) {
-    CHECK_LE(model_index, NumPinnedTabs());
-    return pinned_tab_container_->AddTab(std::move(tab), model_index, pinned);
+std::vector<Tab*> CompoundTabContainer::AddTabs(
+    std::vector<TabInsertionParams> tabs_params) {
+  std::vector<Tab*> added_tabs;
+
+  // Assume all tabs are either pinned or unpinned
+  if (!tabs_params.empty()) {
+    if (tabs_params[0].pinned == TabPinned::kPinned) {
+      for (const TabInsertionParams& param : tabs_params) {
+        CHECK_EQ(param.pinned, TabPinned::kPinned);
+        CHECK_LE(param.model_index, NumPinnedTabs());
+      }
+
+      added_tabs = pinned_tab_container_->AddTabs(std::move(tabs_params));
+    } else {
+      for (auto& param : tabs_params) {
+        CHECK_EQ(param.pinned, TabPinned::kUnpinned);
+        CHECK_GE(param.model_index, NumPinnedTabs());
+        param.model_index -= NumPinnedTabs();
+      }
+      added_tabs = unpinned_tab_container_->AddTabs(std::move(tabs_params));
+    }
   }
-  CHECK_GE(model_index, NumPinnedTabs());
-  return unpinned_tab_container_->AddTab(std::move(tab),
-                                         model_index - NumPinnedTabs(), pinned);
+
+  return added_tabs;
 }
 
 void CompoundTabContainer::MoveTab(int from_model_index, int to_model_index) {
@@ -435,12 +444,25 @@ void CompoundTabContainer::UpdateTabGroupVisuals(
   unpinned_tab_container_->UpdateTabGroupVisuals(group_id);
 }
 
-void CompoundTabContainer::NotifyTabGroupEditorBubbleOpened() {
-  unpinned_tab_container_->NotifyTabGroupEditorBubbleOpened();
+void CompoundTabContainer::NotifyTabstripBubbleOpened() {
+  unpinned_tab_container_->NotifyTabstripBubbleOpened();
 }
 
-void CompoundTabContainer::NotifyTabGroupEditorBubbleClosed() {
-  unpinned_tab_container_->NotifyTabGroupEditorBubbleClosed();
+void CompoundTabContainer::NotifyTabstripBubbleClosed() {
+  unpinned_tab_container_->NotifyTabstripBubbleClosed();
+}
+
+void CompoundTabContainer::OnSplitCreated(const std::vector<int>& indices) {
+  unpinned_tab_container_->OnSplitCreated(indices);
+}
+
+void CompoundTabContainer::OnSplitRemoved(const std::vector<int>& indices) {
+  unpinned_tab_container_->OnSplitRemoved(indices);
+}
+
+void CompoundTabContainer::OnSplitContentsChanged(
+    const std::vector<int>& indices) {
+  unpinned_tab_container_->OnSplitContentsChanged(indices);
 }
 
 std::optional<int> CompoundTabContainer::GetModelIndexOf(
@@ -605,7 +627,7 @@ void CompoundTabContainer::CompleteAnimationAndLayout() {
 
 int CompoundTabContainer::GetAvailableWidthForTabContainer() const {
   // Falls back to views::View::GetAvailableSize() when
-  // |available_width_callback_| is not defined, e.g. when tab scrolling is
+  // `available_width_callback_` is not defined, e.g. when tab scrolling is
   // disabled.
   return available_width_callback_
              ? available_width_callback_.Run()
@@ -647,16 +669,6 @@ const std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
 CompoundTabContainer::get_group_views_for_testing() const {
   // Only the unpinned container can have groups.
   return unpinned_tab_container_->get_group_views_for_testing();  // IN-TEST
-}
-
-int CompoundTabContainer::GetActiveTabWidth() const {
-  // Only the unpinned container has variable-width tabs.
-  return unpinned_tab_container_->GetActiveTabWidth();
-}
-
-int CompoundTabContainer::GetInactiveTabWidth() const {
-  // Only the unpinned container has variable-width tabs.
-  return unpinned_tab_container_->GetInactiveTabWidth();
 }
 
 gfx::Rect CompoundTabContainer::GetIdealBounds(int model_index) const {
@@ -956,8 +968,8 @@ void CompoundTabContainer::TransferTabBetweenContainers(int from_model_index,
       &from_container, this,
       gfx::RectF(
           from_container.GetTabAtModelIndex(from_container_index)->bounds()));
-  Tab* const tab =
-      AddChildView(from_container.RemoveTabFromViewModel(from_container_index));
+  Tab* const tab = AddChildViewRaw(
+      from_container.RemoveTabFromViewModel(from_container_index));
   tab->SetBoundsRect(ToEnclosingRect(initial_tab_bounds));
 
   // Let `to_container` update its layout data structures.
@@ -972,6 +984,8 @@ void CompoundTabContainer::AnimateTabTo(Tab* tab, gfx::Rect ideal_bounds) {
   if (bounds_animator_.IsAnimating(tab)) {
     bounds_animator_.SetTargetBounds(tab, ideal_bounds);
   } else {
+    bounds_animator_.SetAnimationDuration(
+        gfx::Animation::RichAnimationDuration(base::Milliseconds(200)));
     bounds_animator_.AnimateViewTo(tab, ideal_bounds,
                                    std::make_unique<PinUnpinAnimationDelegate>(
                                        &GetTabContainerFor(tab), tab));
@@ -1085,8 +1099,8 @@ void CompoundTabContainer::AnimateScrollToShowXCoordinate(
   gfx::Rect target_rect(target_edge, 0, 0, 0);
 
   tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
-      scroll_contents_view_, bounds_animator_.container(),
-      bounds_animator_.GetAnimationDuration(), start_rect, target_rect);
+      scroll_contents_view_, bounds_animator_.container(), start_rect,
+      target_rect);
   tab_scrolling_animation_->Start();
 }
 

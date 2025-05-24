@@ -73,8 +73,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
   if (!client_info || client_info->device_token != request_device_token) {
     device_management_response.add_error_detail(
         policy_storage()->error_detail());
-    return CreateHttpResponse(net::HTTP_GONE,
-                              device_management_response.SerializeAsString());
+    return CreateHttpResponse(net::HTTP_GONE, device_management_response);
   }
 
   em::DeviceManagementRequest device_management_request;
@@ -138,8 +137,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
     }
   }
 
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 bool RequestHandlerForPolicy::ProcessCloudPolicy(
@@ -230,6 +228,12 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
     if (policy_storage()->metrics_log_segment()) {
       policy_data.set_metrics_log_segment(
           policy_storage()->metrics_log_segment().value());
+    }
+    if (policy_storage()->k12_age_classification_metrics_log_segment()) {
+      policy_data.set_k12_age_classification_metrics_log_segment(
+          policy_storage()
+              ->k12_age_classification_metrics_log_segment()
+              .value());
     }
   } else if (policy_type == dm_protocol::kChromeDevicePolicyType) {
     std::vector<std::string> device_affiliation_ids =

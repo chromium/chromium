@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui.h"
@@ -22,7 +24,8 @@ class PageInfoViewFactory {
   PageInfoViewFactory(PageInfo* presenter,
                       ChromePageInfoUiDelegate* ui_delegate,
                       PageInfoNavigationHandler* navigation_handler,
-                      PageInfoHistoryController* history_controller);
+                      PageInfoHistoryController* history_controller,
+                      bool allow_extended_site_info);
 
   // Bubble width constraints.
   static constexpr int kMinBubbleWidth = 320;
@@ -38,6 +41,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_SUBTITLE,
     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE,
+    VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_PRIVACY_SITE_DATA_SUBPAGE,
     VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL,
     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS,
     VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER,
@@ -55,6 +59,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_PERMISSION_VIEW,
     VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL,
     VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL,
+    VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_LABEL,
     VIEW_ID_PAGE_INFO_BACK_BUTTON,
     VIEW_ID_PAGE_INFO_CLOSE_BUTTON,
     VIEW_ID_PAGE_INFO_CURRENT_VIEW,
@@ -68,6 +73,10 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_SUBPAGE_TITLE,
     VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW,
     VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE,
+    VIEW_ID_PAGE_INFO_EXTENDED_SITE_INFO_SECTION,
+    VIEW_ID_PAGE_INFO_COOKIES_SYNC,
+    VIEW_ID_PAGE_INFO_ACT_PROTECTIONS_BUTTON,
+    VIEW_ID_PAGE_INFO_BUTTON_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS,
   };
 
   // Creates a separator view with padding on top and bottom. Use with flex
@@ -79,6 +88,10 @@ class PageInfoViewFactory {
   // Supports multiple multiline labels in a column (ex. title and subtitle
   // labels). Use with flex layout only.
   [[nodiscard]] static std::unique_ptr<views::View> CreateLabelWrapper();
+
+  // ICONS:
+  // Only add helper methods for icons referenced in multiple files. If the icon
+  // is only used in one view, prefer using |GetImageModel()|.
 
   // Returns icons for the given PageInfo::PermissionInfo |info|. If |info|'s
   // current setting is CONTENT_SETTING_DEFAULT, it will return the icon for
@@ -92,27 +105,12 @@ class PageInfoViewFactory {
       const PageInfoUI::ChosenObjectInfo& info,
       bool deleted);
 
-  // Returns the icon for the page's certificate when it's valid.
-  static const ui::ImageModel GetValidCertificateIcon();
-
-  // Returns the icon for the page's certificate when it's invalid.
-  static const ui::ImageModel GetInvalidCertificateIcon();
-
   // Returns the icon for the button / link to Site settings.
   static const ui::ImageModel GetSiteSettingsIcon();
-
-  // Returns the icon for VR settings.
-  static const ui::ImageModel GetVrSettingsIcon();
 
   // Returns the icon for a button which opens an external dialog or page (ex.
   // cookies dialog or site settings page).
   static const ui::ImageModel GetLaunchIcon();
-
-  // Returns the not secure state icon for the SecurityInformationView.
-  static const ui::ImageModel GetConnectionNotSecureIcon();
-
-  // Returns the dangerous icon for the SecurityInformationView.
-  static const ui::ImageModel GetConnectionDangerousIcon();
 
   // Returns the icon for the secure connection button.
   static const ui::ImageModel GetConnectionSecureIcon();
@@ -120,49 +118,15 @@ class PageInfoViewFactory {
   // Returns the icon for a button which opens a subpage within page info.
   static const ui::ImageModel GetOpenSubpageIcon();
 
-  // Returns the icon for a permission in a state not managed by the user.
-  static const ui::ImageModel GetManagedPermissionIcon(
-      const PageInfo::PermissionInfo& info);
-
-  // Returns the icon for 'About this site' button.
-  static const ui::ImageModel GetAboutThisSiteIcon();
-
-  // Returns a reference to the color vector icon for 'About this site'
-  // sidepanel.
-  static const gfx::VectorIcon& GetAboutThisSiteColorVectorIcon();
-
   // Returns a reference to the vector icon for 'About this site' button.
   static const gfx::VectorIcon& GetAboutThisSiteVectorIcon();
-
-  // Returns the icon for the history button.
-  static const ui::ImageModel GetHistoryIcon();
-
-  // Returns the icon for the 'Ad personalization' button.
-  static const ui::ImageModel GetAdPersonalizationIcon();
-
-  // Returns the icon for the managed by policy state.
-  static const ui::ImageModel GetEnforcedByPolicyIcon();
-
-  // Returns the icon for the 'Third-party cookies' toggle, depending on the
-  // state of the toggle.
-  static const ui::ImageModel GetThirdPartyCookiesIcon(
-      bool third_party_cookies_enabled);
-
-  // Returns the icon for the 'Block third party cookies' button.
-  static const ui::ImageModel GetBlockingThirdPartyCookiesIcon();
-
-  // Returns the icon for enterprise business.
-  static const ui::ImageModel GetBusinessIcon();
-
-  // Returns the icon for the 'Cookies and site data' button.
-  static const ui::ImageModel GetCookiesAndSiteDataIcon();
-
-  // Returns the icon for the related website sets button.
-  static const ui::ImageModel GetRwsIcon();
 
   // Returns the image model for the vector icon.
   static const ui::ImageModel GetImageModel(const gfx::VectorIcon& icon);
 
+  [[nodiscard]] std::unique_ptr<views::View> CreatePageView(
+      std::u16string title,
+      std::unique_ptr<views::View> content_view);
   [[nodiscard]] std::unique_ptr<views::View> CreateMainPageView(
       base::OnceClosure initialized_callback);
   [[nodiscard]] std::unique_ptr<views::View> CreateSecurityPageView();
@@ -171,6 +135,8 @@ class PageInfoViewFactory {
       content::WebContents* web_contents);
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateCookiesPageView();
+  [[nodiscard]] std::unique_ptr<views::View> CreatePrivacyAndSiteDataPageView();
+  [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustPageView();
 
  private:
   // Creates a subpage header with back button that opens the main page, a
@@ -190,6 +156,7 @@ class PageInfoViewFactory {
   raw_ptr<ChromePageInfoUiDelegate, DanglingUntriaged> ui_delegate_;
   raw_ptr<PageInfoNavigationHandler> navigation_handler_;
   raw_ptr<PageInfoHistoryController, DanglingUntriaged> history_controller_;
+  const bool allow_extended_site_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_

@@ -11,25 +11,6 @@
 #include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
 
-namespace {
-
-bool IsSideSearch(content::BrowserContext* browser_context, const GURL& url) {
-  const TemplateURLService* const template_url_service =
-      GetTemplateURLServiceFromBrowserContext(browser_context);
-  if (!template_url_service)
-    return false;
-
-  auto* default_search_provider =
-      template_url_service->GetDefaultSearchProvider();
-  if (!default_search_provider)
-    return false;
-
-  return default_search_provider->ContainsSideSearchParam(url) ||
-         default_search_provider->ContainsSideImageSearchParam(url);
-}
-
-}  // namespace
-
 // Ensure new values do not fall in content internal reserved ranges.
 static_assert(
     static_cast<int>(ChromePreloadingEligibility::kMaxValue) <
@@ -55,7 +36,8 @@ TemplateURLService* GetTemplateURLServiceFromBrowserContext(
 bool HasCanonicalPreloadingOmniboxSearchURL(
     const GURL& preloading_url,
     content::BrowserContext* browser_context,
-    GURL* canonical_url) {
+    GURL* canonical_url,
+    std::u16string* search_terms) {
   const TemplateURLService* const template_url_service =
       GetTemplateURLServiceFromBrowserContext(browser_context);
   if (!template_url_service) {
@@ -71,7 +53,7 @@ bool HasCanonicalPreloadingOmniboxSearchURL(
   return default_search_provider->KeepSearchTermsInURL(
       preloading_url, template_url_service->search_terms_data(),
       /*keep_search_intent_params=*/true,
-      /*normalize_search_terms=*/true, canonical_url);
+      /*normalize_search_terms=*/true, canonical_url, search_terms);
 }
 
 bool IsSearchDestinationMatch(const GURL& canonical_preloading_search_url,
@@ -80,9 +62,6 @@ bool IsSearchDestinationMatch(const GURL& canonical_preloading_search_url,
   if (canonical_preloading_search_url.is_empty()) {
     return false;
   }
-  // Disable for side search as the formatting is different on those pages.
-  if (IsSideSearch(browser_context, navigation_url))
-    return false;
 
   GURL canonical_navigation_url;
   return HasCanonicalPreloadingOmniboxSearchURL(navigation_url, browser_context,

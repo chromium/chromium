@@ -35,23 +35,20 @@ unsigned FontSelectionRequest::GetHash() const {
       width.RawValue(),
       slope.RawValue(),
   };
-  return StringHasher::HashMemory(reinterpret_cast<const char*>(val),
-                                  sizeof(val));
+  return StringHasher::HashMemory(base::as_byte_span(val));
 }
 
 unsigned FontSelectionRequestKeyHashTraits::GetHash(
     const FontSelectionRequestKey& key) {
   uint32_t val[] = {key.request.GetHash(), key.isDeletedValue};
-  return StringHasher::HashMemory(reinterpret_cast<const char*>(val),
-                                  sizeof(val));
+  return StringHasher::HashMemory(base::as_byte_span(val));
 }
 
 unsigned FontSelectionCapabilitiesHashTraits::GetHash(
     const FontSelectionCapabilities& key) {
   uint32_t val[] = {key.width.UniqueValue(), key.slope.UniqueValue(),
                     key.weight.UniqueValue(), key.IsHashTableDeletedValue()};
-  return StringHasher::HashMemory(reinterpret_cast<const char*>(val),
-                                  sizeof(val));
+  return StringHasher::HashMemory(base::as_byte_span(val));
 }
 
 String FontSelectionValue::ToString() const {

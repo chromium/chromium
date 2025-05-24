@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom.h"
+#include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -37,6 +38,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfig
       std::vector<mojom::AudioDevicePtr>* output_devices_out,
       std::vector<mojom::AudioDevicePtr>* input_devices_out) const = 0;
   virtual mojom::MuteState GetInputMuteState() const = 0;
+  virtual mojom::VoiceIsolationUIAppearancePtr GetVoiceIsolationUIAppearance()
+      const = 0;
 
  private:
   // mojom::CrosAudioConfig:

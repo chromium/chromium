@@ -7,12 +7,17 @@
 #include <cstring>
 
 #include "build/build_config.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(ENABLE_VR)
 #include "device/vr/public/cpp/features.h"
+#endif
+
+#if BUILDFLAG(ENABLE_OPENXR)
+#include "content/public/common/content_switches.h"
 #endif
 
 using testing::_;
@@ -28,10 +33,6 @@ WebXrVrBrowserTestBase::~WebXrVrBrowserTestBase() = default;
 
 void WebXrVrBrowserTestBase::EnterSessionWithUserGesture(
     content::WebContents* web_contents) {
-  // Before requesting the session, set the requested auto-response so that the
-  // session is appropriately granted or rejected (or the request ignored).
-  GetPermissionRequestManager()->set_auto_response_for_test(
-      permission_auto_response_);
 
   // ExecJs runs with a user gesture, so we can just directly call
   // requestSession instead of having to do the hacky workaround the
@@ -65,6 +66,11 @@ void WebXrVrBrowserTestBase::EndSession(content::WebContents* web_contents) {
 void WebXrVrBrowserTestBase::EndSessionOrFail(
     content::WebContents* web_contents) {
   EndSession(web_contents);
+  WaitForSessionEndOrFail(web_contents);
+}
+
+void WebXrVrBrowserTestBase::WaitForSessionEndOrFail(
+    content::WebContents* web_contents) {
   PollJavaScriptBooleanOrFail(
       "sessionInfos[sessionTypes.IMMERSIVE].currentSession == null",
       kPollTimeoutLong, web_contents);
@@ -74,15 +80,40 @@ gfx::Vector3dF WebXrVrBrowserTestBase::GetControllerOffset() const {
   return gfx::Vector3dF();
 }
 
-permissions::PermissionRequestManager*
-WebXrVrBrowserTestBase::GetPermissionRequestManager() {
-  return GetPermissionRequestManager(GetCurrentWebContents());
+void WebXrVrBrowserTestBase::SetPermissionAutoResponse(
+    permissions::PermissionRequestManager::AutoResponseType
+        permission_auto_response) {
+  permission_auto_response_ = permission_auto_response;
+  for (auto& it : mock_permissions_map_) {
+    it.second->set_response_type(permission_auto_response_);
+  }
 }
 
-permissions::PermissionRequestManager*
-WebXrVrBrowserTestBase::GetPermissionRequestManager(
-    content::WebContents* web_contents) {
-  return permissions::PermissionRequestManager::FromWebContents(web_contents);
+permissions::MockPermissionPromptFactory*
+WebXrVrBrowserTestBase::GetPermissionPromptFactory() {
+  auto* web_contents = GetCurrentWebContents();
+  CHECK(web_contents);
+  if (!mock_permissions_map_.contains(web_contents)) {
+    return nullptr;
+  }
+
+  return mock_permissions_map_[web_contents].get();
+}
+
+void WebXrVrBrowserTestBase::OnBeforeLoadFile() {
+  auto* web_contents = GetCurrentWebContents();
+  CHECK(web_contents);
+  if (!mock_permissions_map_.contains(web_contents)) {
+    mock_permissions_map_.insert_or_assign(
+        web_contents,
+        std::make_unique<permissions::MockPermissionPromptFactory>(
+            permissions::PermissionRequestManager::FromWebContents(
+                GetCurrentWebContents())));
+    // Set the requested auto-response so that any session is appropriately
+    // granted or rejected (or the request ignored).
+    mock_permissions_map_[web_contents]->set_response_type(
+        permission_auto_response_);
+  }
 }
 
 WebXrVrRuntimelessBrowserTest::WebXrVrRuntimelessBrowserTest() {
@@ -113,8 +144,16 @@ XrBrowserTestBase::RuntimeType WebXrVrOpenXrBrowserTestBase::GetRuntimeType()
   return XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR;
 }
 
+void WebXrVrOpenXrBrowserTestBase::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  command_line->AppendSwitchASCII(switches::kWebXrForceRuntime,
+                                  switches::kWebXrRuntimeOpenXr);
+}
+
 WebXrVrOpenXrBrowserTest::WebXrVrOpenXrBrowserTest() {
+#if BUILDFLAG(IS_WIN)
   runtime_requirements_.push_back(XrTestRequirement::DIRECTX_11_1);
+#endif
 }
 
 WebXrVrOpenXrBrowserTestWebXrDisabled::WebXrVrOpenXrBrowserTestWebXrDisabled() {

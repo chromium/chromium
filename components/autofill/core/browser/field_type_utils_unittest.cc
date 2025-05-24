@@ -13,7 +13,7 @@ namespace autofill {
 namespace {
 
 TEST(AutofillFieldTypeUtils, NumberOfPossibleTypesInGroup) {
-  autofill::AutofillField field;
+  AutofillField field;
   field.set_possible_types({NAME_FIRST, NAME_LAST, CREDIT_CARD_NAME_FIRST});
 
   EXPECT_EQ(NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kName),
@@ -31,7 +31,7 @@ TEST(AutofillFieldTypeUtils, NumberOfPossibleTypesInGroup) {
 }
 
 TEST(AutofillFieldTypeUtils, FieldHasMeaningfulFieldTypes) {
-  autofill::AutofillField field;
+  AutofillField field;
 
   // Test that a meaningful type correctly detected.
   field.set_possible_types({NAME_FIRST, NAME_LAST, CREDIT_CARD_NAME_FIRST});

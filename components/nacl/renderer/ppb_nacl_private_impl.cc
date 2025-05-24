@@ -232,7 +232,7 @@ class ManifestServiceProxy : public ManifestServiceChannel::Delegate {
   ManifestServiceProxy(const ManifestServiceProxy&) = delete;
   ManifestServiceProxy& operator=(const ManifestServiceProxy&) = delete;
 
-  ~ManifestServiceProxy() override {}
+  ~ManifestServiceProxy() override = default;
 
   void StartupInitializationComplete() override {
     if (StartPpapiProxy(pp_instance_) == PP_TRUE) {
@@ -1042,10 +1042,7 @@ void DownloadManifestToBufferCompletion(PP_Instance instance,
                                     "access to manifest url was denied.");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      pp_error = PP_ERROR_FAILED;
-      load_manager->ReportLoadError(PP_NACL_ERROR_MANIFEST_LOAD_URL,
-                                    "could not load manifest url.");
+      NOTREACHED();
   }
 
   if (pp_error == PP_OK) {
@@ -1098,12 +1095,15 @@ bool ShouldUseSubzero(const PP_PNaClOptions* pnacl_options) {
     return false;
   // Check a list of allowed architectures.
   const char* arch = GetSandboxArch();
-  if (strcmp(arch, "x86-32") == 0)
+  if (UNSAFE_TODO(strcmp(arch, "x86-32")) == 0) {
     return true;
-  if (strcmp(arch, "x86-64") == 0)
+  }
+  if (UNSAFE_TODO(strcmp(arch, "x86-64")) == 0) {
     return true;
-  if (strcmp(arch, "arm") == 0)
+  }
+  if (UNSAFE_TODO(strcmp(arch, "arm")) == 0) {
     return true;
+  }
 
   return false;
 }

@@ -36,14 +36,12 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   // Returns true if the data is accepted by the muxer, false otherwise.
   bool OnEncodedVideo(
       const Muxer::VideoParameters& params,
-      std::string encoded_data,
-      std::string encoded_alpha,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp,
-      bool is_key_frame);
+      base::TimeTicks timestamp);
   bool OnEncodedAudio(
       const AudioParameters& params,
-      std::string encoded_data,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp);
 

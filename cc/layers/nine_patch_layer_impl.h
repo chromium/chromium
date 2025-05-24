@@ -34,15 +34,15 @@ class CC_EXPORT NinePatchLayerImpl : public UIResourceLayerImpl {
   void SetLayout(const gfx::Rect& image_aperture,
                  const gfx::Rect& border,
                  const gfx::Rect& layer_occlusion,
-                 bool fill_center,
-                 bool nearest_neighbor);
+                 bool fill_center);
 
   mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 
   void AsValueInto(base::trace_event::TracedValue* state) const override;

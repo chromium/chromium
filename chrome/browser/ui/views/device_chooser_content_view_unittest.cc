@@ -39,7 +39,7 @@ class MockTableViewObserver : public views::TableViewObserver {
 
 class DeviceChooserContentViewTest : public ChromeViewsTestBase {
  public:
-  DeviceChooserContentViewTest() {}
+  DeviceChooserContentViewTest() = default;
 
   DeviceChooserContentViewTest(const DeviceChooserContentViewTest&) = delete;
   DeviceChooserContentViewTest& operator=(const DeviceChooserContentViewTest&) =

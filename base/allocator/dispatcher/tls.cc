@@ -8,13 +8,13 @@
 
 #if USE_LOCAL_TLS_EMULATION()
 
+#include <sys/mman.h>
+
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/immediate_crash.h"
 #include "build/build_config.h"
-
-#include <sys/mman.h>
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #include <sys/prctl.h>
@@ -96,7 +96,7 @@ PThreadTLSSystem& PThreadTLSSystem::operator=(PThreadTLSSystem&& other) {
 
 bool PThreadTLSSystem::Setup(
     OnThreadTerminationFunction thread_termination_function,
-    const std::string_view instance_id) {
+    std::string_view instance_id) {
 #if DCHECK_IS_ON()
   // Initialize must happen outside of the allocation path. Therefore, it is
   // secure to verify with DCHECK.

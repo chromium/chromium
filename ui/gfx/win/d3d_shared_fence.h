@@ -9,10 +9,10 @@
 #include <d3d11_4.h>
 #include <wrl/client.h>
 
+#include "base/component_export.h"
 #include "base/containers/lru_cache.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/scoped_handle.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gfx {
@@ -23,7 +23,7 @@ namespace gfx {
 // multiple places e.g. as the signaling fence or in list of fences to wait for
 // next access, and also multiple threads e.g. the gpu main thread and the media
 // service thread. This class must be externally synchronized.
-class GFX_EXPORT D3DSharedFence
+class COMPONENT_EXPORT(GFX) D3DSharedFence
     : public base::RefCountedThreadSafe<D3DSharedFence> {
  public:
   // Create a new ID3D11Fence with initial value 0 on given

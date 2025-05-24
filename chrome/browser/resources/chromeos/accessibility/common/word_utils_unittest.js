@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/mv2/select_to_speak_e2e_test_base.js']);
 
 /**
  * Test fixture for word_utils.js.
  */
-SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await importModule('WordUtils', '/common/word_utils.js');
-  }
-};
+SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {};
 
 AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartWithoutWordStarts',

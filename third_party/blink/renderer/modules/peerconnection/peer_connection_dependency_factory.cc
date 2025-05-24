@@ -37,6 +37,7 @@
 #include "net/net_buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -88,8 +89,8 @@
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/ssl_adapter.h"
+#include "third_party/webrtc_overrides/environment.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
-#include "third_party/webrtc_overrides/task_queue_factory.h"
 #include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace WTF {
@@ -105,23 +106,6 @@ namespace blink {
 namespace {
 
 using PassKey = base::PassKey<PeerConnectionDependencyFactory>;
-
-enum WebRTCIPHandlingPolicy {
-  kDefault,
-  kDefaultPublicAndPrivateInterfaces,
-  kDefaultPublicInterfaceOnly,
-  kDisableNonProxiedUdp,
-};
-
-WebRTCIPHandlingPolicy GetWebRTCIPHandlingPolicy(const String& preference) {
-  if (preference == kWebRTCIPHandlingDefaultPublicAndPrivateInterfaces)
-    return kDefaultPublicAndPrivateInterfaces;
-  if (preference == kWebRTCIPHandlingDefaultPublicInterfaceOnly)
-    return kDefaultPublicInterfaceOnly;
-  if (preference == kWebRTCIPHandlingDisableNonProxiedUdp)
-    return kDisableNonProxiedUdp;
-  return kDefault;
-}
 
 bool IsValidPortRange(uint16_t min_port, uint16_t max_port) {
   DCHECK(min_port <= max_port);
@@ -156,14 +140,14 @@ class ProxyAsyncDnsResolverFactory final
     return ipc_psf_->CreateAsyncDnsResolver();
   }
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAndResolve(
-      const rtc::SocketAddress& addr,
+      const webrtc::SocketAddress& addr,
       absl::AnyInvocable<void()> callback) override {
     auto temp = Create();
     temp->Start(addr, std::move(callback));
     return temp;
   }
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAndResolve(
-      const rtc::SocketAddress& addr,
+      const webrtc::SocketAddress& addr,
       int family,
       absl::AnyInvocable<void()> callback) override {
     auto temp = Create();
@@ -241,23 +225,18 @@ class PeerConnectionStaticDeps {
   }
 
   void EnsureChromeThreadsStarted(ExecutionContext& context) {
-    base::ThreadType thread_type = base::ThreadType::kDefault;
-    if (base::FeatureList::IsEnabled(
-            features::kWebRtcThreadsUseResourceEfficientType)) {
-      thread_type = base::ThreadType::kResourceEfficient;
-    }
     if (!chrome_signaling_thread_.IsRunning()) {
       chrome_signaling_thread_.StartWithOptions(
-          base::Thread::Options(thread_type));
+          base::Thread::Options(base::ThreadType::kDefault));
     }
     if (chrome_network_thread_ && !chrome_network_thread_->IsRunning()) {
       chrome_network_thread_->StartWithOptions(
-          base::Thread::Options(thread_type));
+          base::Thread::Options(base::ThreadType::kDefault));
     }
 
     if (!chrome_worker_thread_.IsRunning()) {
       chrome_worker_thread_.StartWithOptions(
-          base::Thread::Options(thread_type));
+          base::Thread::Options(base::ThreadType::kDefault));
     }
     // To allow sending to the signaling/worker threads.
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
@@ -334,9 +313,9 @@ class PeerConnectionStaticDeps {
     return init_signaling_event;
   }
 
-  rtc::Thread* GetSignalingThread() { return signaling_thread_; }
-  rtc::Thread* GetWorkerThread() { return worker_thread_; }
-  rtc::Thread* GetNetworkThread() {
+  webrtc::Thread* GetSignalingThread() { return signaling_thread_; }
+  webrtc::Thread* GetWorkerThread() { return worker_thread_; }
+  webrtc::Thread* GetNetworkThread() {
     return chrome_network_thread_ ? network_thread_ : worker_thread_;
   }
   base::Thread& GetChromeSignalingThread() { return chrome_signaling_thread_; }
@@ -379,7 +358,7 @@ class PeerConnectionStaticDeps {
   }
 
   static void InitializeOnThread(
-      raw_ptr<rtc::Thread>* thread,
+      raw_ptr<webrtc::Thread>* thread,
       base::WaitableEvent* event,
       base::RepeatingCallback<void(base::TimeDelta)> latency_callback,
       base::RepeatingCallback<void(base::TimeDelta)> duration_callback) {
@@ -395,9 +374,9 @@ class PeerConnectionStaticDeps {
 
   // PeerConnection threads. signaling_thread_ is created from the "current"
   // (main) chrome thread.
-  raw_ptr<rtc::Thread> signaling_thread_ = nullptr;
-  raw_ptr<rtc::Thread> worker_thread_ = nullptr;
-  raw_ptr<rtc::Thread> network_thread_ = nullptr;
+  raw_ptr<webrtc::Thread> signaling_thread_ = nullptr;
+  raw_ptr<webrtc::Thread> worker_thread_ = nullptr;
+  raw_ptr<webrtc::Thread> network_thread_ = nullptr;
   base::Thread chrome_signaling_thread_;
   base::Thread chrome_worker_thread_;
   std::optional<base::Thread> chrome_network_thread_;
@@ -430,13 +409,13 @@ PeerConnectionStaticDeps& StaticDeps() {
   return instance;
 }
 
-rtc::Thread* GetSignalingThread() {
+webrtc::Thread* GetSignalingThread() {
   return StaticDeps().GetSignalingThread();
 }
-rtc::Thread* GetWorkerThread() {
+webrtc::Thread* GetWorkerThread() {
   return StaticDeps().GetWorkerThread();
 }
-rtc::Thread* GetNetworkThread() {
+webrtc::Thread* GetNetworkThread() {
   return StaticDeps().GetNetworkThread();
 }
 base::Thread& GetChromeSignalingThread() {
@@ -482,6 +461,76 @@ class InterceptingNetworkControllerFactory
   // instances.
   const CrossThreadWeakHandle<RTCRtpTransport> rtp_transport_;
 };
+
+// The enum is used for logging. Entries should not be renumbered or reused.
+// Keep in sync with the corresponding enum in
+// tools/metrics/histograms/metadata/web_rtc/enums.xml.
+enum class EncodeScalabilityMode {
+  NotSupported = 0,
+  kL1T1 = 1,
+  kL1T2 = 2,
+  kL1T3 = 3,
+  kMaxValue = kL1T3,
+};
+
+struct ScalabilityMap {
+  std::string scalability_string;
+  EncodeScalabilityMode scalability_enum;
+};
+
+void ReportUmaEncodeDecodeCapabilities(
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  const gfx::ColorSpace& render_color_space =
+      Platform::Current()->GetRenderingColorSpace();
+
+  // Create encoder/decoder factories.
+  std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
+      blink::CreateWebrtcVideoEncoderFactoryForUmaLogging(gpu_factories);
+  std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
+      blink::CreateWebrtcVideoDecoderFactoryForUmaLogging(gpu_factories,
+                                                          render_color_space);
+  if (webrtc_encoder_factory && webrtc_decoder_factory) {
+    const std::array<webrtc::SdpVideoFormat, 3> kSdpFormats = {
+        webrtc::SdpVideoFormat{"VP9"}, webrtc::SdpVideoFormat{"AV1"},
+        webrtc::SdpVideoFormat{"H265"}};
+    const std::array<ScalabilityMap, 3> kScalabilityModes = {
+        ScalabilityMap{"L1T1", EncodeScalabilityMode::kL1T1},
+        ScalabilityMap{"L1T2", EncodeScalabilityMode::kL1T2},
+        ScalabilityMap{"L1T3", EncodeScalabilityMode::kL1T3}};
+
+    for (const auto& sdp_format : kSdpFormats) {
+      bool decode_support =
+          webrtc_decoder_factory
+              ->QueryCodecSupport(sdp_format, /*reference_scaling=*/false)
+              .is_power_efficient;
+
+      EncodeScalabilityMode encode_support =
+          EncodeScalabilityMode::NotSupported;
+      for (const auto& mode : kScalabilityModes) {
+        if (webrtc_encoder_factory
+                ->QueryCodecSupport(sdp_format, mode.scalability_string)
+                .is_power_efficient) {
+          encode_support = mode.scalability_enum;
+        } else {
+          break;
+        }
+      }
+
+      base::UmaHistogramBoolean(
+          "WebRTC.Video.HwCapabilities.Decode." + sdp_format.name,
+          decode_support);
+      base::UmaHistogramEnumeration(
+          "WebRTC.Video.HwCapabilities.Encode." + sdp_format.name,
+          encode_support);
+    }
+  }
+}
+
+void WaitForEncoderSupportReady(
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  gpu_factories->NotifyEncoderSupportKnown(
+      base::BindOnce(&ReportUmaEncodeDecodeCapabilities, gpu_factories));
+}
 
 }  // namespace
 
@@ -542,7 +591,7 @@ PeerConnectionDependencyFactory::CreateRTCPeerConnectionHandler(
                                                     encoded_insertable_streams);
 }
 
-const rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>&
+const webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>&
 PeerConnectionDependencyFactory::GetPcFactory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -589,10 +638,8 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   // TODO: https://issues.webrtc.org/issues/339300437 - remove once
   // BoringSSL no longer requires this after
   // https://bugs.chromium.org/p/boringssl/issues/detail?id=35
-  if (!rtc::InitializeSSL()) {
-    LOG(ERROR) << "Failed on InitializeSSL.";
-    NOTREACHED_IN_MIGRATION();
-    return;
+  if (!webrtc::InitializeSSL()) {
+    NOTREACHED() << "Failed on InitializeSSL.";
   }
 
   base::WaitableEvent create_network_manager_event(
@@ -729,6 +776,17 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
                               WrapCrossThreadWeakPersistent(
                                   webrtc_video_perf_reporter_.Get())));
 
+  if (!encode_decode_capabilities_reported_) {
+    encode_decode_capabilities_reported_ = true;
+    if (gpu_factories) {
+      // Wait until decoder and encoder support are known.
+      gpu_factories->NotifyDecoderSupportKnown(
+          base::BindOnce(&WaitForEncoderSupportReady, gpu_factories));
+    } else {
+      ReportUmaEncodeDecodeCapabilities(gpu_factories);
+    }
+  }
+
   if (blink::Platform::Current()->UsesFakeCodecForPeerConnection()) {
     webrtc_encoder_factory =
         std::make_unique<webrtc::FakeVideoEncoderFactory>();
@@ -743,7 +801,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   if (pcf_deps.worker_thread == pcf_deps.network_thread) {
     LOG(INFO) << "Running WebRTC with a combined Network and Worker thread.";
   }
-  pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
+  pcf_deps.env = WebRtcEnvironment();
   pcf_deps.decode_metronome = StaticDeps().CreateDecodeMetronome();
   pcf_deps.encode_metronome = StaticDeps().MaybeCreateEncodeMetronome();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>();
@@ -755,7 +813,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
 
   // Audio Processing Module (APM) instances are owned and handled by the Blink
   // media stream module.
-  DCHECK_EQ(pcf_deps.audio_processing.get(), nullptr);
+  DCHECK_EQ(pcf_deps.audio_processing_builder, nullptr);
   webrtc::EnableMedia(pcf_deps);
   pc_factory_ = webrtc::CreateModularPeerConnectionFactory(std::move(pcf_deps));
   CHECK(pc_factory_.get());
@@ -799,7 +857,7 @@ bool PeerConnectionDependencyFactory::PeerConnectionFactoryCreated() {
   return !!pc_factory_;
 }
 
-rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
 PeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* web_frame,
@@ -833,7 +891,7 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
   }
 }
 
-std::unique_ptr<cricket::PortAllocator>
+std::unique_ptr<webrtc::PortAllocator>
 PeerConnectionDependencyFactory::CreatePortAllocator(
     blink::WebLocalFrame* web_frame) {
   DCHECK(web_frame);
@@ -868,39 +926,41 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
     VLOG(3) << "WebRTC routing preferences will not be enforced";
   } else {
     if (web_frame && web_frame->View()) {
-      WebString webrtc_ip_handling_policy;
+      mojom::blink::WebRtcIpHandlingPolicy webrtc_ip_handling_policy;
       Platform::Current()->GetWebRTCRendererPreferences(
           web_frame, &webrtc_ip_handling_policy, &min_port, &max_port,
           &allow_mdns_obfuscation);
-
+      DVLOG(1) << "Active WebRtcIPHandlingPolicy: "
+               << ToString(webrtc_ip_handling_policy);
       // TODO(guoweis): |enable_multiple_routes| should be renamed to
       // |request_multiple_routes|. Whether local IP addresses could be
       // collected depends on if mic/camera permission is granted for this
       // origin.
-      WebRTCIPHandlingPolicy policy =
-          GetWebRTCIPHandlingPolicy(webrtc_ip_handling_policy);
-      switch (policy) {
+      switch (webrtc_ip_handling_policy) {
         // TODO(guoweis): specify the flag of disabling local candidate
         // collection when webrtc is updated.
-        case kDefaultPublicInterfaceOnly:
-        case kDefaultPublicAndPrivateInterfaces:
+        case mojom::blink::WebRtcIpHandlingPolicy::kDefaultPublicInterfaceOnly:
+        case mojom::blink::WebRtcIpHandlingPolicy::
+            kDefaultPublicAndPrivateInterfaces:
           port_config.enable_multiple_routes = false;
           port_config.enable_nonproxied_udp = true;
           port_config.enable_default_local_candidate =
-              (policy == kDefaultPublicAndPrivateInterfaces);
+              (webrtc_ip_handling_policy ==
+               mojom::blink::WebRtcIpHandlingPolicy::
+                   kDefaultPublicAndPrivateInterfaces);
           break;
-        case kDisableNonProxiedUdp:
+        case mojom::blink::WebRtcIpHandlingPolicy::kDisableNonProxiedUdp:
           port_config.enable_multiple_routes = false;
           port_config.enable_nonproxied_udp = false;
           break;
-        case kDefault:
+        case mojom::blink::WebRtcIpHandlingPolicy::kDefault:
           port_config.enable_multiple_routes = true;
           port_config.enable_nonproxied_udp = true;
           break;
       }
 
-      VLOG(3) << "WebRTC routing preferences: "
-              << "policy: " << policy
+      VLOG(3) << "WebRTC routing preferences: " << "policy: "
+              << ToString(webrtc_ip_handling_policy)
               << ", multiple_routes: " << port_config.enable_multiple_routes
               << ", nonproxied_udp: " << port_config.enable_nonproxied_udp
               << ", min_udp_port: " << min_port
@@ -913,7 +973,7 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
     }
   }
 
-  std::unique_ptr<rtc::NetworkManager> network_manager;
+  std::unique_ptr<webrtc::NetworkManager> network_manager;
   if (port_config.enable_multiple_routes) {
     network_manager = std::make_unique<FilteringNetworkManager>(
         network_manager_.get(), media_permission, allow_mdns_obfuscation);
@@ -959,7 +1019,7 @@ PeerConnectionDependencyFactory::CreateLocalVideoTrack(
     webrtc::VideoTrackSourceInterface* source) {
   return GetPcFactory()
       ->CreateVideoTrack(
-          rtc::scoped_refptr<webrtc::VideoTrackSourceInterface>(source),
+          webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface>(source),
           id.Utf8())
       .get();
 }
@@ -1027,7 +1087,8 @@ void PeerConnectionDependencyFactory::CleanupPeerConnectionFactory() {
     signaling_thread->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf) {
+            [](webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
+                   pcf) {
               // The binding releases `pcf` on the signaling thread as this
               // method goes out of scope.
             },
@@ -1086,17 +1147,17 @@ void PeerConnectionDependencyFactory::EnsureWebRtcAudioDeviceImpl() {
   if (audio_device_.get())
     return;
 
-  audio_device_ = new rtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>();
+  audio_device_ = new webrtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>();
 }
 
 std::unique_ptr<webrtc::RtpCapabilities>
 PeerConnectionDependencyFactory::GetSenderCapabilities(const String& kind) {
   if (kind == "audio") {
     return std::make_unique<webrtc::RtpCapabilities>(
-        GetPcFactory()->GetRtpSenderCapabilities(cricket::MEDIA_TYPE_AUDIO));
+        GetPcFactory()->GetRtpSenderCapabilities(webrtc::MediaType::AUDIO));
   } else if (kind == "video") {
     return std::make_unique<webrtc::RtpCapabilities>(
-        GetPcFactory()->GetRtpSenderCapabilities(cricket::MEDIA_TYPE_VIDEO));
+        GetPcFactory()->GetRtpSenderCapabilities(webrtc::MediaType::VIDEO));
   }
   return nullptr;
 }
@@ -1105,10 +1166,10 @@ std::unique_ptr<webrtc::RtpCapabilities>
 PeerConnectionDependencyFactory::GetReceiverCapabilities(const String& kind) {
   if (kind == "audio") {
     return std::make_unique<webrtc::RtpCapabilities>(
-        GetPcFactory()->GetRtpReceiverCapabilities(cricket::MEDIA_TYPE_AUDIO));
+        GetPcFactory()->GetRtpReceiverCapabilities(webrtc::MediaType::AUDIO));
   } else if (kind == "video") {
     return std::make_unique<webrtc::RtpCapabilities>(
-        GetPcFactory()->GetRtpReceiverCapabilities(cricket::MEDIA_TYPE_VIDEO));
+        GetPcFactory()->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO));
   }
   return nullptr;
 }

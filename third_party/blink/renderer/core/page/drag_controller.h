@@ -26,6 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_DRAG_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_DRAG_CONTROLLER_H_
 
+#include <optional>
+
+#include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -121,6 +124,8 @@ class CORE_EXPORT DragController final
 
   void Trace(Visitor*) const final;
 
+  std::optional<PointerId> drag_pointer_id() const { return drag_pointer_id_; }
+
  private:
   DispatchEventResult DispatchTextInputEventFor(LocalFrame*, DragData*);
   bool CanProcessDrag(DragData*, LocalFrame& local_root);
@@ -162,6 +167,9 @@ class CORE_EXPORT DragController final
 
   DragDestinationAction drag_destination_action_;
   bool did_initiate_drag_;
+  // Used to set the correct pointer id to synthetic events. Principally added
+  // to track touch drag and drop when `TouchDragEndContextMenu` is enabled.
+  std::optional<PointerId> drag_pointer_id_;
 };
 
 }  // namespace blink

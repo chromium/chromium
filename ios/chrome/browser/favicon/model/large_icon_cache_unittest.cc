@@ -25,10 +25,11 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmap(int w,
   result.expired = false;
 
   // Create bitmap and fill with `color`.
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-  gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(w, h, color), false,
-                                    &data->as_vector());
-  result.bitmap_data = data;
+  std::optional<std::vector<uint8_t>> png_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(w, h, color),
+                                        /*discard_transparency=*/false);
+  result.bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(png_data.value()));
 
   result.pixel_size = gfx::Size(w, h);
   result.icon_url = GURL(kDummyUrl);
@@ -71,7 +72,8 @@ TEST_F(LargeIconCacheTest, RetreiveItem) {
   std::unique_ptr<favicon_base::LargeIconResult> expected_result2;
   expected_result1.reset(new favicon_base::LargeIconResult(expected_bitmap_));
   expected_result2.reset(new favicon_base::LargeIconResult(
-      new favicon_base::FallbackIconStyle(*expected_fallback_icon_style_)));
+      std::make_unique<favicon_base::FallbackIconStyle>(
+          *expected_fallback_icon_style_)));
 
   large_icon_cache_->SetCachedResult(GURL(kDummyUrl), *expected_result1);
   large_icon_cache_->SetCachedResult(GURL(kDummyUrl2), *expected_result2);

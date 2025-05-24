@@ -16,17 +16,18 @@ namespace cc {
 
 // Encodes a bitmap into a PNG and write to disk. Returns true on success. The
 // parent directory does not have to exist.
-bool WritePNGFile(const SkBitmap& bitmap, const base::FilePath& file_path,
-    bool discard_transparency);
+[[nodiscard]] bool WritePNGFile(const SkBitmap& bitmap,
+                                const base::FilePath& file_path,
+                                bool discard_transparency);
 
-// Reads and decodes a PNG image to a bitmap. Returns true on success. The PNG
-// should have been encoded using |gfx::PNGCodec::Encode|.
-bool ReadPNGFile(const base::FilePath& file_path, SkBitmap* bitmap);
+// Reads and decodes a PNG image to a bitmap. Returns a non-null SkBitmap on
+// success. The PNG should have been encoded using `gfx::PNGCodec::Encode`.
+SkBitmap ReadPNGFile(const base::FilePath& file_path);
 
 std::string GetPNGDataUrl(const SkBitmap& bitmap);
 
 // Compares with a PNG file on disk using the given PixelComparator, and returns
-// true if the comparator returns a match. |ref_img_path| is absolute.
+// true if the comparator returns a match. `ref_img_path` is absolute.
 bool MatchesPNGFile(const SkBitmap& gen_bmp,
                     base::FilePath ref_img_path,
                     const PixelComparator& comparator);

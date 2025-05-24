@@ -204,10 +204,15 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
+  if (@available(iOS 17, *)) {
+    return NO;
+  }
+
   DCHECK(self.textView == textView);
   CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
   DCHECK(crurl.gurl.is_valid());
@@ -215,6 +220,19 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
   [self.delegate view:self didTapLinkURL:crurl];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  DCHECK(self.textView == textView);
+  CrURL* crurl = [[CrURL alloc] initWithNSURL:textItem.link];
+  DCHECK(crurl.gurl.is_valid());
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate view:weakSelf didTapLinkURL:crurl];
+  }];
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {

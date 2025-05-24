@@ -37,9 +37,13 @@ VideoType VideoType::FromDecoderConfig(const VideoDecoderConfig& config) {
     case VideoCodec::kMPEG2:
     case VideoCodec::kMPEG4:
       break;
+    case VideoCodec::kHEVC:
+      // According to https://www.iana.org/assignments/media-types/video/H265 we
+      // should infer a value of 93 (level 3.1) if we do not know the level.
+      level = 93;
+      break;
     case VideoCodec::kH264:
     case VideoCodec::kVP9:
-    case VideoCodec::kHEVC:
       // 10 is the level_idc for level 1.0.
       level = 10;
       break;

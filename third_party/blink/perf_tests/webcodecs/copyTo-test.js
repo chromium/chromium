@@ -10,10 +10,10 @@ function makeSharedBuffer(size) {
 
 function runCopyToTest(frame, desc) {
   let isDone = false;
+  let size = frame.allocationSize();
+  let buf = new makeSharedBuffer(size);
 
   function runTest() {
-    let size = frame.allocationSize();
-    let buf = new makeSharedBuffer(size);
     let startTime = PerfTestRunner.now();
     PerfTestRunner.addRunTestStartMarker();
     frame.copyTo(buf)
@@ -43,16 +43,15 @@ function runCopyToTest(frame, desc) {
 
 function runBatchCopyToTest(frames, desc) {
   let isDone = false;
+  let frames_and_buffers = frames.map(frame => {
+    let size = frame.allocationSize();
+    let buf = new makeSharedBuffer(size);
+    return [frame, buf];
+  });
 
   function runTest() {
     let startTime = PerfTestRunner.now();
     PerfTestRunner.addRunTestStartMarker();
-
-    let frames_and_buffers = frames.map(frame => {
-      let size = frame.allocationSize();
-      let buf = new makeSharedBuffer(size);
-      return [frame, buf];
-    });
     let readback_promises = frames_and_buffers.map(([frame, buf]) => {
       return frame.copyTo(buf);
     });

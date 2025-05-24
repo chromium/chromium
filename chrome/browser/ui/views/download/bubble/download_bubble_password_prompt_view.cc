@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_password_prompt_view.h"
 
+#include <string_view>
+
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
@@ -52,7 +54,7 @@ void DownloadBubblePasswordPromptView::SetState(State state) {
   password_field_->RequestFocus();
 }
 
-const std::u16string& DownloadBubblePasswordPromptView::GetText() const {
+std::u16string_view DownloadBubblePasswordPromptView::GetText() const {
   return password_field_->GetText();
 }
 

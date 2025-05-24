@@ -1647,7 +1647,7 @@ TEST(AXLanguageDetectionTest, ShortLanguageDetectorLabeledTest) {
   // Empty output.
   annotation =
       tree.language_detection_manager->GetLanguageAnnotationForStringAttribute(
-          *item, ax::mojom::StringAttribute::kInnerHtml);
+          *item, ax::mojom::StringAttribute::kMathContent);
   ASSERT_EQ(0, (int)annotation.size());
   // Returns single AXLanguageSpan.
   annotation =

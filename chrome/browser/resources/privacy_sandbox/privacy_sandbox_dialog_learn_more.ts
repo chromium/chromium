@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './privacy_sandbox_dialog_learn_more.html.js';
@@ -34,8 +35,20 @@ export class PrivacySandboxDialogLearnMoreElement extends PolymerElement {
         notify: true,
         value: false,
       },
+
+      shouldShowV2_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean(
+            'isPrivacySandboxAdsApiUxEnhancementsEnabled'),
+      },
     };
   }
+
+  declare title: string;
+  declare expanded: boolean;
+
+  // If true, the Ads API UX Enhancement should be shown.
+  declare private shouldShowV2_: boolean;
 
   private onExpandedChanged_(expanded: boolean) {
     if (expanded) {
@@ -45,14 +58,18 @@ export class PrivacySandboxDialogLearnMoreElement extends PolymerElement {
 
   private scrollIntoCollapseElement_(element: HTMLElement) {
     const computedStyle = window.getComputedStyle(element);
-    const duration = parseFloat(
-        computedStyle.getPropertyValue('--iron-collapse-transition-duration'));
+    const duration =
+        parseFloat(computedStyle.getPropertyValue('--collapse-duration'));
     // Wait for collapse section transition to complete 70%.
     setTimeout(() => {
       // ...and scroll the content area up to make the section content
       // visible.
       element.scrollIntoView({block: 'start', behavior: 'smooth'});
     }, duration * 0.7);
+  }
+
+  private getDivClass_() {
+    return this.shouldShowV2_ ? 'styled-div' : '';
   }
 }
 

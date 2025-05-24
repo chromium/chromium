@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "Ensure using calc() for CSS numbers with + on transition-timing-function does not crash or produce incorrect values."
-[FAIL] Ensure using calc() for CSS numbers with / on invert() resulting bigger than 1 does not crash or produce incorrect values.
-  assert_equals: -webkit-filter: invert(calc(4 / 2)) expected "invert(calc(1))" but got "invert(1)"
-Harness: the test ran to completion.
-

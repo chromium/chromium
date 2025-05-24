@@ -30,7 +30,7 @@ namespace features {
 // guaranteed to be retrievable if OSCrypt Async is not used.
 BASE_FEATURE(kUseNewEncryptionKeyForWebData,
              "UseNewEncryptionKeyForWebData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 
@@ -39,7 +39,8 @@ BASE_FEATURE(kUseNewEncryptionKeyForWebData,
 class WebDatabaseService::BackendDelegate
     : public WebDatabaseBackend::Delegate {
  public:
-  BackendDelegate(const base::WeakPtr<WebDatabaseService>& web_database_service)
+  explicit BackendDelegate(
+      const base::WeakPtr<WebDatabaseService>& web_database_service)
       : web_database_service_(web_database_service),
         callback_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
@@ -49,6 +50,7 @@ class WebDatabaseService::BackendDelegate
         FROM_HERE, base::BindOnce(&WebDatabaseService::OnDatabaseLoadDone,
                                   web_database_service_, status, diagnostics));
   }
+
  private:
   const base::WeakPtr<WebDatabaseService> web_database_service_;
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
@@ -109,8 +111,9 @@ void WebDatabaseService::LoadDatabase(os_crypt_async::OSCryptAsync* os_crypt) {
 void WebDatabaseService::ShutdownDatabase() {
   error_callbacks_.clear();
   weak_ptr_factory_.InvalidateWeakPtrs();
-  if (!web_db_backend_)
+  if (!web_db_backend_) {
     return;
+  }
   db_task_runner_->PostTask(
       FROM_HERE,
       BindOnce(&WebDatabaseBackend::ShutdownDatabase, web_db_backend_));
@@ -133,7 +136,7 @@ void WebDatabaseService::ScheduleDBTask(const base::Location& from_here,
                                         WriteTask task) {
   DCHECK(web_db_backend_);
   std::unique_ptr<WebDataRequest> request =
-      web_db_backend_->request_manager()->NewRequest(nullptr);
+      web_db_backend_->request_manager()->NewRequest({});
   pending_task_queue_->PostTask(
       from_here,
       BindOnce(&WebDatabaseBackend::DBWriteTaskWrapper, web_db_backend_,
@@ -144,10 +147,20 @@ WebDataServiceBase::Handle WebDatabaseService::ScheduleDBTaskWithResult(
     const base::Location& from_here,
     ReadTask task,
     WebDataServiceConsumer* consumer) {
+  return ScheduleDBTaskWithResult(
+      from_here, std::move(task),
+      base::BindOnce(&WebDataServiceConsumer::OnWebDataServiceRequestDone,
+                     consumer->GetWebDataServiceConsumerWeakPtr()));
+}
+
+WebDataServiceBase::Handle WebDatabaseService::ScheduleDBTaskWithResult(
+    const base::Location& from_here,
+    ReadTask task,
+    WebDataServiceRequestCallback consumer) {
   DCHECK(consumer);
   DCHECK(web_db_backend_);
   std::unique_ptr<WebDataRequest> request =
-      web_db_backend_->request_manager()->NewRequest(consumer);
+      web_db_backend_->request_manager()->NewRequest(std::move(consumer));
   WebDataServiceBase::Handle handle = request->GetHandle();
   pending_task_queue_->PostTask(
       from_here,
@@ -157,20 +170,29 @@ WebDataServiceBase::Handle WebDatabaseService::ScheduleDBTaskWithResult(
 }
 
 void WebDatabaseService::CancelRequest(WebDataServiceBase::Handle h) {
-  if (web_db_backend_)
+  if (web_db_backend_) {
     web_db_backend_->request_manager()->CancelRequest(h);
+  }
 }
 
 void WebDatabaseService::RegisterDBErrorCallback(DBLoadErrorCallback callback) {
   error_callbacks_.push_back(std::move(callback));
 }
 
+bool WebDatabaseService::UsesInMemoryDatabaseForTesting() const {
+  // This mimics what WebDatabase::Init() does internally, as it would require
+  // significant test-only boilerplate to actually fetch the authoritative
+  // boolean from the very underlying `sql::Database::in_memory_`.
+  return path_.value() == WebDatabase::kInMemoryPath;
+}
+
 void WebDatabaseService::OnDatabaseLoadDone(sql::InitStatus status,
                                             const std::string& diagnostics) {
   // The INIT_OK_WITH_DATA_LOSS status is an initialization success but with
   // suspected data loss, so we also run the error callbacks.
-  if (status == sql::INIT_OK)
+  if (status == sql::INIT_OK) {
     return;
+  }
 
   // Notify that the database load failed.
   while (!error_callbacks_.empty()) {
@@ -181,7 +203,8 @@ void WebDatabaseService::OnDatabaseLoadDone(sql::InitStatus status,
     // |error_callbacks_| before it accesses it.
     DBLoadErrorCallback error_callback = std::move(error_callbacks_.back());
     error_callbacks_.pop_back();
-    if (!error_callback.is_null())
+    if (!error_callback.is_null()) {
       std::move(error_callback).Run(status, diagnostics);
+    }
   }
 }

@@ -26,6 +26,9 @@ declare_args() {
   # copied to the application bundle.
   ios_providers_resources_targets = []
 
+  # This defines targets that provides ressources for the cpe provider.
+  ios_providers_cpe_resources_targets = []
+
   # This defines targets to include resources needed by the providers which are
   # copied to the test application bundle.
   ios_providers_test_resources_targets = []

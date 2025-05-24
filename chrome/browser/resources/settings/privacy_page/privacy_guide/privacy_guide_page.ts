@@ -95,14 +95,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * Valid privacy guide states.
        */
       privacyGuideStepEnum_: {
@@ -135,7 +127,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       stepIndicatorModel_: {
         type: Object,
         computed:
-            'computeStepIndicatorModel(privacyGuideStep_, prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
+            'computeStepIndicatorModel(privacyGuideStep_, prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
       },
 
       shouldShowAdTopicsCard_: {
@@ -149,25 +141,25 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
   static get observers() {
     return [
-      'onPrefsChanged_(prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
+      'onPrefsChanged_(prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
       'exitIfNecessary(isPrivacyGuideAvailable)',
     ];
   }
 
-  private privacyGuideStep_: PrivacyGuideStep;
-  private stepIndicatorModel_: StepIndicatorModel;
+  declare private privacyGuideStep_: PrivacyGuideStep;
+  declare private stepIndicatorModel_: StepIndicatorModel;
   private privacyGuideStepToComponentsMap_:
       Map<PrivacyGuideStep, PrivacyGuideStepComponents>;
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
-  private syncStatus_: SyncStatus;
+  declare private syncStatus_: SyncStatus;
   private animationsEnabled_: boolean = true;
-  private translateMultiplier_: number;
+  declare private translateMultiplier_: number;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
       PrivacyGuideBrowserProxyImpl.getInstance();
-  private shouldShowAdTopicsCard_: boolean;
+  declare private shouldShowAdTopicsCard_: boolean;
 
   constructor() {
     super();
@@ -541,12 +533,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
       return false;
     }
-    // Don't show the 3PC card if the user has chosen to allow 3PCs or block
-    // 1PCs.
-    return this.getPref('profile.cookie_controls_mode').value !==
-        CookieControlsMode.OFF &&
-        this.getPref('generated.cookie_default_content_setting').value !==
-        ContentSetting.BLOCK;
+    // Don't show the 3PC card if the user has chosen to allow 3PCs, block
+    // 1PCs, or if AlwaysBlock3pcsIncognito is disabled.
+    return this.getPref('generated.cookie_default_content_setting').value !==
+        ContentSetting.BLOCK &&
+        (this.getPref('profile.cookie_controls_mode').value !==
+             CookieControlsMode.OFF ||
+         loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled'));
   }
 
   private shouldShowSafeBrowsingCard_(): boolean {

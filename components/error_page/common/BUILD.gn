@@ -4,6 +4,8 @@
 
 static_library("common") {
   sources = [
+    "alt_game_image_data.cc",
+    "alt_game_image_data.h",
     "alt_game_images.cc",
     "alt_game_images.h",
     "error.cc",
@@ -19,7 +21,6 @@ static_library("common") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/offline_pages/core:switches",
     "//components/strings",
     "//components/url_formatter",

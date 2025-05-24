@@ -5,22 +5,16 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "HomepageLocation": "http://chromium.org"
-        },
-        "prefs": {
-          "homepage": {
-            "value": "http://chromium.org/"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "homepage",
+      "default_value": "",
+      "values_to_test": [
+        "http://chromium.org/"
+      ]
+    }
   }
 ]

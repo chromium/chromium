@@ -41,7 +41,7 @@ export class SiteDetailsPermissionDeviceEntryElement extends PolymerElement {
     };
   }
 
-  exception: ChooserException;
+  declare exception: ChooserException;
 
   /**
    * Get the SiteException that is enforced from |this.exception.sites| if any.

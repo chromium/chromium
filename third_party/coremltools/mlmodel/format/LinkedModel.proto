@@ -28,11 +28,11 @@ message LinkedModelFile {
   // Multiple paths can be searched using the unix-style path separator ":"
   // Each path can be relative (to this model) or absolute
   //
-  // An empty string is the same as teh relative search path "."
+  // An empty string is the same as the relative search path "."
   // which searches in the same location as this model file
   //
   // There are some special paths which start with $
   // - $BUNDLE_MAIN - Indicates to look in the main bundle
-  // - $BUNDLE_IDENTIFIER(identifier) - Looks in Bunde with given identifer
+  // - $BUNDLE_IDENTIFIER(identifier) - Looks in Bunde with given identifier
   StringParameter linkedModelSearchPath = 2;
 }

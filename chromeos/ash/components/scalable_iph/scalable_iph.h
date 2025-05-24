@@ -9,6 +9,9 @@
 #include <ostream>
 #include <vector>
 
+#include "base/component_export.h"
+#include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -77,9 +80,10 @@ namespace scalable_iph {
 //             as it is in //chromeos/ash/components. `ScalableIph` delegates
 //             them again to `ScalableIphDelegate`.
 //
-class ScalableIph : public KeyedService,
-                    public ScalableIphDelegate::Observer,
-                    public IphSession::Delegate {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH) ScalableIph
+    : public KeyedService,
+      public ScalableIphDelegate::Observer,
+      public IphSession::Delegate {
  public:
   // List of events ScalableIph supports.
   enum class Event {
@@ -100,6 +104,20 @@ class ScalableIph : public KeyedService,
     kPrintJobCreated,
     kGameWindowOpened,
   };
+
+  enum SessionStateTransition {
+    // The state machine expects that it advances its state to the new state. In
+    // practice, this means that we update `session_state_` in `ScalableIph`
+    // instance.
+    kAdvanceState,
+    // Observe this session state transition as unlocked event. Note that
+    // unlocked event includes a session start in `ScalableIph`.
+    kUnlock
+  };
+
+  using TransitionSet = base::EnumSet<SessionStateTransition,
+                                      SessionStateTransition::kAdvanceState,
+                                      SessionStateTransition::kUnlock>;
 
   // Returns true if any iph feature flag is enabled. Otherwise false.
   static bool IsAnyIphFeatureEnabled();
@@ -172,6 +190,14 @@ class ScalableIph : public KeyedService,
 
   static const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
   GetFeatureListConstantForTesting();
+
+  static TransitionSet GetTransitionForTesting(
+      ScalableIphDelegate::SessionState from,
+      ScalableIphDelegate::SessionState to);
+
+  bool CheckTriggerEventForTesting(
+      const base::Feature& feature,
+      const std::optional<ScalableIph::Event>& trigger_event);
 
  private:
   void EnsureTimerStarted();

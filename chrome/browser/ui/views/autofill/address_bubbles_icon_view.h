@@ -23,10 +23,8 @@ class AddressBubblesIconView : public PageActionIconView {
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);
-  AddressBubblesIconView(const AddressBubblesIconView&) =
-      delete;
-  AddressBubblesIconView& operator=(
-      const AddressBubblesIconView&) = delete;
+  AddressBubblesIconView(const AddressBubblesIconView&) = delete;
+  AddressBubblesIconView& operator=(const AddressBubblesIconView&) = delete;
   ~AddressBubblesIconView() override;
 
   // PageActionIconView:

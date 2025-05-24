@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/gpu/vaapi/vaapi_image_decode_accelerator_worker.h"
 
 #include <utility>
@@ -188,8 +193,7 @@ void VaapiImageDecodeAcceleratorWorker::DecodeTask(
   }
   auto result =
       std::make_unique<gpu::ImageDecodeAcceleratorWorker::DecodeResult>();
-  result->handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-  result->handle.native_pixmap_handle = std::move(pixmap_handle);
+  result->handle = gfx::GpuMemoryBufferHandle(std::move(pixmap_handle));
   result->visible_size = exported_pixmap->pixmap->GetBufferSize();
   result->buffer_format = exported_pixmap->pixmap->GetBufferFormat();
   result->buffer_byte_size = exported_pixmap->byte_size;

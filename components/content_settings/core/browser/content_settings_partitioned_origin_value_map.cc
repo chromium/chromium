@@ -107,12 +107,12 @@ bool PartitionedOriginValueMap::SetValue(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value value,
-    const RuleMetaData& metadata,
+    RuleMetaData metadata,
     const PartitionKey& partition_key) {
   auto [it, is_new] = partitions_.try_emplace(partition_key, clock_);
   base::AutoLock auto_lock(it->second.GetLock());
   return it->second.SetValue(primary_pattern, secondary_pattern, content_type,
-                             std::move(value), metadata);
+                             std::move(value), std::move(metadata));
 }
 
 bool PartitionedOriginValueMap::DeleteValue(

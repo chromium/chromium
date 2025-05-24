@@ -19,14 +19,13 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 
 #include <algorithm>
+#include <array>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
@@ -249,7 +248,7 @@ TransformOperations TransformOperations::Accumulate(
 static void FindCandidatesInPlane(double px,
                                   double py,
                                   double nz,
-                                  double* candidates,
+                                  base::span<double> candidates,
                                   int* num_candidates) {
   // The angle that this point is rotated with respect to the plane nz
   double phi = atan2(px, py);
@@ -258,10 +257,10 @@ static void FindCandidatesInPlane(double px,
   candidates[0] = phi;  // The element at 0deg (maximum x)
 
   for (int i = 1; i < *num_candidates; ++i)
-    candidates[i] = candidates[i - 1] + M_PI_2;  // every 90 deg
+    UNSAFE_TODO(candidates[i] = candidates[i - 1] + M_PI_2);  // every 90 deg
   if (nz < 0.f) {
     for (int i = 0; i < *num_candidates; ++i)
-      candidates[i] *= -1;
+      UNSAFE_TODO(candidates[i] *= -1);
   }
 }
 
@@ -275,7 +274,7 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
                               double min_progress,
                               double max_progress,
                               gfx::BoxF& box) {
-  double candidates[6];
+  std::array<double, 6> candidates;
   int num_candidates = 0;
 
   gfx::Vector3dF axis = from_transform.Axis();
@@ -363,7 +362,7 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
   // Once we have the candidates, we now filter them down to ones that
   // actually live on the arc, rather than the entire circle.
   for (int i = 0; i < num_candidates; ++i) {
-    double radians = candidates[i];
+    double radians = UNSAFE_BUFFERS(candidates[i]);
 
     while (radians < min_radians)
       radians += 2.0 * M_PI;

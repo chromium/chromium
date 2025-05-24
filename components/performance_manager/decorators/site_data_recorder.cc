@@ -4,14 +4,23 @@
 
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 
 namespace performance_manager {
@@ -71,6 +80,88 @@ class DefaultHeuristics final : public SiteDataRecorderHeuristics {
     return DefaultIsOutsideBackgroundingGracePeriod(page_node, feature_type,
                                                     time_since_backgrounding);
   }
+};
+
+// Helper class that watches a PageNode, and invokes a callback when that node
+// has a SiteDataReader whose data is ready.
+class SiteDataReaderWaiter final : public PageNodeObserver {
+ public:
+  using DataReadyCallback = base::OnceCallback<void(const SiteDataReader&)>;
+
+  static void WaitForSiteData(const PageNode* page_node,
+                              DataReadyCallback callback) {
+    // SiteDataReaderWaiter will become self-owned.
+    new SiteDataReaderWaiter(page_node, std::move(callback));
+  }
+
+  ~SiteDataReaderWaiter() final = default;
+
+  SiteDataReaderWaiter(const SiteDataReaderWaiter&) = delete;
+  SiteDataReaderWaiter& operator=(const SiteDataReaderWaiter&) = delete;
+
+  // PageNodeObserver:
+  void OnBeforePageNodeRemoved(const PageNode* page_node) final {
+    if (page_node == watched_page_node_) {
+      // No longer needed.
+      DeleteSelfSoon();
+    }
+  }
+
+  void OnMainFrameUrlChanged(const PageNode* page_node) final {
+    if (page_node == watched_page_node_ && !waiting_for_data_ready_) {
+      CheckForSiteDataReader();
+    }
+  }
+
+ private:
+  SiteDataReaderWaiter(const PageNode* page_node, DataReadyCallback callback)
+      : watched_page_node_(page_node),
+        data_ready_callback_(std::move(callback)) {
+    self_ = base::WrapUnique(this);
+    watched_page_node_->GetGraph()->AddPageNodeObserver(this);
+    CheckForSiteDataReader();
+  }
+
+  void DeleteSelfSoon() {
+    // `watched_page_node_` may be deleted before the destructor runs,
+    // so clear it now.
+    CHECK(watched_page_node_);
+    watched_page_node_->GetGraph()->RemovePageNodeObserver(this);
+    watched_page_node_ = nullptr;
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(self_));
+  }
+
+  void CheckForSiteDataReader() {
+    CHECK(watched_page_node_);
+    CHECK(!waiting_for_data_ready_);
+    auto* site_data_reader =
+        SiteDataRecorder::Data::GetReaderForPageNode(watched_page_node_);
+    if (site_data_reader) {
+      waiting_for_data_ready_ = true;
+      // If data is already loaded, OnDataReady() will be called immediately.
+      site_data_reader->RegisterDataLoadedCallback(
+          base::BindOnce(&SiteDataReaderWaiter::OnDataReady,
+                         weak_factory_.GetWeakPtr(), site_data_reader));
+    }
+  }
+
+  void OnDataReady(const SiteDataReader* site_data_reader) {
+    CHECK(site_data_reader);
+    std::move(data_ready_callback_).Run(*site_data_reader);
+    DeleteSelfSoon();
+  }
+
+  raw_ptr<const PageNode> watched_page_node_;
+  DataReadyCallback data_ready_callback_;
+
+  bool waiting_for_data_ready_ = false;
+
+  // Self-owned. Will delete itself when `watched_page_node_` is deleted or
+  // OnDataReady() fires.
+  std::unique_ptr<SiteDataReaderWaiter> self_;
+
+  base::WeakPtrFactory<SiteDataReaderWaiter> weak_factory_{this};
 };
 
 SiteDataNodeData& GetSiteDataNodeDataFromPageNode(const PageNode* page_node) {
@@ -254,6 +345,14 @@ SiteDataReader* SiteDataRecorder::Data::GetReaderForPageNode(
     return SiteDataNodeData::Get(page_node_impl).reader();
   }
   return nullptr;
+}
+
+void WaitForSiteDataReader(
+    base::WeakPtr<PageNode> page_node,
+    base::OnceCallback<void(const SiteDataReader&)> callback) {
+  if (page_node) {
+    SiteDataReaderWaiter::WaitForSiteData(page_node.get(), std::move(callback));
+  }
 }
 
 }  // namespace performance_manager

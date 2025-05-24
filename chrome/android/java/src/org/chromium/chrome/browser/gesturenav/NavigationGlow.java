@@ -1,0 +1,46 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.gesturenav;
+
+import android.view.ViewGroup;
+
+import org.chromium.build.annotations.NullMarked;
+
+/** Shows overscroll-like glow on the right edge when forward navigation reaches the end. */
+@NullMarked
+abstract class NavigationGlow {
+    protected final ViewGroup mParentView;
+
+    public NavigationGlow(ViewGroup parentView) {
+        mParentView = parentView;
+    }
+
+    /**
+     * Prepares glow rendering by initialization of necessary objects and values.
+     *
+     * @param startX X position of the touch event at the beginning.
+     * @param startY Y position of the touch event at the beginning.
+     */
+    public abstract void prepare(float startX, float startY);
+
+    /**
+     * Called when user scroll is performed.
+     *
+     * @param offset Newly updated pull offset.
+     */
+    public abstract void onScroll(float offset);
+
+    /** Releases the glow UI in action. */
+    public abstract void release();
+
+    /** Cancels the glow UI in action. */
+    public abstract void reset();
+
+    /** Whether the glow is showing. */
+    public abstract boolean isShowing();
+
+    /** Destroys internal objects when navigation logic is destroyed. */
+    public abstract void destroy();
+}

@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/payments/core/payments_validators.h"
 
+#include <array>
 #include <ostream>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +16,7 @@ namespace {
 struct CurrencyCodeTestCase {
   CurrencyCodeTestCase(const char* code, bool expected_valid)
       : code(code), expected_valid(expected_valid) {}
-  ~CurrencyCodeTestCase() {}
+  ~CurrencyCodeTestCase() = default;
 
   const char* code;
   bool expected_valid;
@@ -29,11 +26,11 @@ class PaymentsCurrencyValidatorTest
     : public testing::TestWithParam<CurrencyCodeTestCase> {};
 
 const char* LongString2049() {
-  static char long_string[2050];
+  static std::array<char, 2050> long_string;
   for (int i = 0; i < 2049; i++)
     long_string[i] = 'a';
   long_string[2049] = '\0';
-  return long_string;
+  return long_string.data();
 }
 
 TEST_P(PaymentsCurrencyValidatorTest, IsValidCurrencyCodeFormat) {
@@ -73,7 +70,7 @@ INSTANTIATE_TEST_SUITE_P(
 struct TestCase {
   TestCase(const char* input, bool expected_valid)
       : input(input), expected_valid(expected_valid) {}
-  ~TestCase() {}
+  ~TestCase() = default;
 
   const char* input;
   bool expected_valid;

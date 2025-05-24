@@ -17,7 +17,6 @@
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_service.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {

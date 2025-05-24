@@ -71,7 +71,8 @@ enum class SnapGroupExitPoint {
   kSnapToReplace,
   kVisibleOnAllDesks,
   kSelectWindowInSnapGroupInPartialOverview,
-  kMaxValue = kSelectWindowInSnapGroupInPartialOverview,
+  kCoral,
+  kMaxValue = kCoral,
 };
 
 // Records the partial overview metrics for `item`. Should only be called while

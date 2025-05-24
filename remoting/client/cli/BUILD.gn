@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//remoting/remoting_options.gni")
+
+if (is_linux) {
+  executable("remoting_client_main") {
+    sources = [
+      "logging_frame_consumer.cc",
+      "logging_frame_consumer.h",
+      "remoting_client_main.cc",
+    ]
+
+    deps = [
+      "//base",
+      "//mojo/public/cpp/system",
+      "//net",
+      "//remoting/base",
+      "//remoting/client/common",
+      "//remoting/protocol",
+      "//remoting/resources",
+      "//services/network:network_service",
+      "//services/network/public/cpp",
+    ]
+  }
+}

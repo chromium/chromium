@@ -178,8 +178,7 @@ std::string ContentfulPaintTimingInfo::TextOrImageInString() const {
     case LargestContentTextOrImage::kImage:
       return "image";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "NOT_REACHED";
+      NOTREACHED();
   }
 }
 

@@ -40,7 +40,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -48,7 +49,6 @@ import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
@@ -57,7 +57,6 @@ import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.NavigationController;
@@ -101,7 +100,7 @@ public class TabUtilsUnitTest {
         }
     }
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
@@ -138,9 +137,8 @@ public class TabUtilsUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         ShadowProfile.setProfile(mProfile);
-        mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
 
         when(mTab.isNativePage()).thenReturn(false);
         when(mTabNative.isNativePage()).thenReturn(true);
@@ -339,6 +337,7 @@ public class TabUtilsUnitTest {
             qualifiers = "w" + TEST_SCREEN_WIDTH + "dp-h" + TEST_SCREEN_HEIGHT + "dp-land")
     public void testGetTabThumbnailAspectRatioWithHorizontalAutomotiveToolbar() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        AutomotiveUtils.forceHorizontalAutomotiveToolbarForTesting(true);
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -358,7 +357,6 @@ public class TabUtilsUnitTest {
             qualifiers = "w" + TEST_SCREEN_WIDTH + "dp-h" + TEST_SCREEN_HEIGHT + "dp-land")
     public void testGetTabThumbnailAspectRatioWithVerticalAutomotiveToolbar() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
-        BrowserUiUtilsCachedFlags.getInstance().setVerticalAutomotiveBackButtonToolbarFlag(true);
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(

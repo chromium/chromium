@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -25,11 +24,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paintpreview.player.CompositorStatus;
@@ -45,8 +45,7 @@ import org.chromium.url.GURL;
 public class EntryManagerTest {
     private static final long FAKE_CAPTURE_ADDR = 123L;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTabMock;
     @Mock private WebContents mWebContentsMock;
     @Mock private LongScreenshotsTabService mTabServiceMock;
@@ -68,11 +67,9 @@ public class EntryManagerTest {
 
     @Before
     public void setUp() {
-        initMocks(this);
         when(mTabMock.getWebContents()).thenReturn(mWebContentsMock);
 
-        mJniMocker.mock(
-                LongScreenshotsTabServiceFactoryJni.TEST_HOOKS,
+        LongScreenshotsTabServiceFactoryJni.setInstanceForTesting(
                 mLongScreenshotsTabServiceFactoryJniMock);
         mInOrder = inOrder(mTabServiceMock, mObserverMock);
         when(mLongScreenshotsTabServiceFactoryJniMock.getServiceInstanceForCurrentProfile())

@@ -11,7 +11,6 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/types/cxx23_to_underlying.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/sessions/model/legacy_session_restoration_service.h"
@@ -20,7 +19,6 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service_impl.h"
 #import "ios/chrome/browser/sessions/model/session_service_ios.h"
 #import "ios/chrome/browser/sessions/model/web_session_state_cache_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/web_state_id.h"
@@ -31,7 +29,7 @@ namespace {
 using RequestedStorageFormat = SessionRestorationServiceFactory::StorageFormat;
 
 // Threshold before retrying to migration the session storage.
-constexpr base::TimeDelta kRetryMigrationThreshold = base::Days(3);
+constexpr base::TimeDelta kRetryMigrationThreshold = base::Hours(4);
 
 // Value taken from Desktop Chrome.
 constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);
@@ -168,17 +166,16 @@ SessionStorageFormat DetectStorageFormat(
 }
 
 // Invoked when the session storage format has been detected.
-void OnStorageFormatDetected(
-    base::WeakPtr<ChromeBrowserState> weak_browser_state,
-    base::OnceClosure closure,
-    SessionStorageFormat storage_format) {
-  ChromeBrowserState* browser_state = weak_browser_state.get();
-  if (!browser_state) {
+void OnStorageFormatDetected(base::WeakPtr<ProfileIOS> weak_profile,
+                             base::OnceClosure closure,
+                             SessionStorageFormat storage_format) {
+  ProfileIOS* profile = weak_profile.get();
+  if (!profile) {
     return;
   }
 
   RecordSessionStorageFormatAndMigrationStatus(
-      browser_state->GetPrefs(), storage_format,
+      profile->GetPrefs(), storage_format,
       SessionStorageMigrationStatus::kSuccess);
 
   RecordSessionStorageFormatMetric(storage_format);
@@ -187,15 +184,14 @@ void OnStorageFormatDetected(
 }
 
 // Invoked when the session migration completes.
-void OnSessionMigrationDone(
-    base::WeakPtr<ChromeBrowserState> weak_browser_state,
-    RequestedStorageFormat requested_format,
-    base::TimeTicks migration_start,
-    int32_t next_session_identifier,
-    base::OnceClosure closure,
-    ios::sessions::MigrationResult result) {
-  ChromeBrowserState* browser_state = weak_browser_state.get();
-  if (!browser_state) {
+void OnSessionMigrationDone(base::WeakPtr<ProfileIOS> weak_profile,
+                            RequestedStorageFormat requested_format,
+                            base::TimeTicks migration_start,
+                            int32_t next_session_identifier,
+                            base::OnceClosure closure,
+                            ios::sessions::MigrationResult result) {
+  ProfileIOS* profile = weak_profile.get();
+  if (!profile) {
     return;
   }
 
@@ -219,7 +215,7 @@ void OnSessionMigrationDone(
       SessionStorageFormatFromRequestedFormat(requested_format, result.status);
 
   RecordSessionStorageFormatAndMigrationStatus(
-      browser_state->GetPrefs(), storage_format, migration_status);
+      profile->GetPrefs(), storage_format, migration_status);
 
   RecordSessionStorageFormatAndMigrationStatusMetrics(storage_format,
                                                       migration_status);
@@ -233,16 +229,10 @@ void OnSessionMigrationDone(
 }  // namespace
 
 // static
-SessionRestorationService* SessionRestorationServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SessionRestorationService* SessionRestorationServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<SessionRestorationService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<SessionRestorationService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -253,20 +243,19 @@ SessionRestorationServiceFactory::GetInstance() {
 }
 
 SessionRestorationServiceFactory::SessionRestorationServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SessionRestorationService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SessionRestorationService",
+                                    ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(WebSessionStateCacheFactory::GetInstance());
 }
 
 void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     StorageFormat requested_format,
     base::OnceClosure closure) {
-  DCHECK(!browser_state->IsOffTheRecord());
-  DCHECK(!GetServiceForBrowserState(browser_state, false));
+  DCHECK(!profile->IsOffTheRecord());
+  DCHECK(!GetServiceForBrowserState(profile, false));
 
-  PrefService* const prefs = browser_state->GetPrefs();
+  PrefService* const prefs = profile->GetPrefs();
   const SessionStorageMigrationStatus status =
       GetSessionStorageMigrationStatusPref(prefs);
 
@@ -295,9 +284,9 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
   if (format == SessionStorageFormat::kUnknown) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock{}},
-        base::BindOnce(&DetectStorageFormat, browser_state->GetStatePath(),
+        base::BindOnce(&DetectStorageFormat, profile->GetStatePath(),
                        requested_format),
-        base::BindOnce(&OnStorageFormatDetected, browser_state->AsWeakPtr(),
+        base::BindOnce(&OnStorageFormatDetected, profile->AsWeakPtr(),
                        std::move(closure)));
     return;
   }
@@ -335,10 +324,10 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
       base::to_underlying(SessionStorageMigrationStatus::kInProgress));
   prefs->SetTime(kSessionStorageMigrationStartedTimePref, base::Time::Now());
 
-  // Migrate all session in `browser_state`'s and OTR state paths.
+  // Migrate all session in `profile`'s and OTR state paths.
   std::vector<base::FilePath> paths = {
-      browser_state->GetStatePath(),
-      browser_state->GetOffTheRecordStatePath(),
+      profile->GetStatePath(),
+      profile->GetOffTheRecordStatePath(),
   };
 
   const web::WebStateID identifier = web::WebStateID::NewUnique();
@@ -348,7 +337,7 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
                          ? &ios::sessions::MigrateSessionsInPathsToLegacy
                          : &ios::sessions::MigrateSessionsInPathsToOptimized,
                      std::move(paths), identifier.identifier()),
-      base::BindOnce(&OnSessionMigrationDone, browser_state->AsWeakPtr(),
+      base::BindOnce(&OnSessionMigrationDone, profile->AsWeakPtr(),
                      requested_format, base::TimeTicks::Now(),
                      identifier.identifier(), std::move(closure)));
 }
@@ -358,8 +347,7 @@ SessionRestorationServiceFactory::~SessionRestorationServiceFactory() = default;
 std::unique_ptr<KeyedService>
 SessionRestorationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSingleThreadTaskRunner(
@@ -367,10 +355,10 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 
-  const base::FilePath storage_path = browser_state->GetStatePath();
+  const base::FilePath storage_path = profile->GetStatePath();
 
   SessionStorageFormat format =
-      GetSessionStorageFormatPref(browser_state->GetPrefs());
+      GetSessionStorageFormatPref(profile->GetPrefs());
 
   // During unit tests, it is the method MigrateSessionStorageFormat(...)
   // will not be called before the service is created and the preference
@@ -390,17 +378,12 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
     return std::make_unique<LegacySessionRestorationService>(
         IsPinnedTabsEnabled(), IsTabGroupInGridEnabled(), storage_path,
         session_service_ios,
-        WebSessionStateCacheFactory::GetForBrowserState(browser_state));
+        WebSessionStateCacheFactory::GetForProfile(profile));
   }
 
   return std::make_unique<SessionRestorationServiceImpl>(
       kSaveDelay, IsPinnedTabsEnabled(), IsTabGroupInGridEnabled(),
       storage_path, task_runner);
-}
-
-web::BrowserState* SessionRestorationServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
 }
 
 void SessionRestorationServiceFactory::RegisterBrowserStatePrefs(

@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
+#include <array>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -46,8 +49,8 @@ void NotificationsEngagementServiceTest::SetUp() {
 
 TEST_F(NotificationsEngagementServiceTest,
        NotificationsEngagementContentSetting) {
-  GURL hosts[] = {GURL("https://google.com/"),
-                  GURL("https://www.youtube.com/")};
+  auto hosts = std::to_array<GURL>(
+      {GURL("https://google.com/"), GURL("https://www.youtube.com/")});
 
   // Otherwise the test time and the service time will be out of sync and cause
   // the tests to fail.
@@ -189,6 +192,79 @@ TEST_F(NotificationsEngagementServiceTest,
 
   ASSERT_EQ(2, entryForDate->GetDict().FindInt(kDisplayedKey).value());
   ASSERT_EQ(3, entryForDate->GetDict().FindInt(kEngagementKey).value());
+}
+
+TEST_F(NotificationsEngagementServiceTest,
+       RecordNotificationDisplayedAndInteractionReportsUMA) {
+  GURL url1("https://url1.test/");
+  GURL url2("https://url2.test/");
+  GURL url3("https://url3.test/");
+  GURL url4("https://url4.test/");
+  GURL url5("https://url5.test/");
+  GURL url6("https://url6.test/");
+  GURL url7("https://url7.test/");
+  GURL url8("https://url8.test/");
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url1);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume0", 0, 1);
+  }
+
+  {
+    site_engagement::SiteEngagementService* site_engagement_service =
+        site_engagement::SiteEngagementService::Get(profile());
+    site_engagement_service->AddPointsForTesting(url2, 4);
+
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url2);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume0",
+        site_engagement_service->GetScore(url2) * 2, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url3, 7);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume1", 0, 7);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url4, 5 * 7);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume5", 0, 5 * 7);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url5, 10 * 7);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume10", 0, 10 * 7);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url6, 20 * 7);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.Volume20", 0, 20 * 7);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationDisplayed(url7, 30 * 7);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Displayed.VolumeAbove20", 0, 30 * 7);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    service()->RecordNotificationInteraction(url8);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.Engagement.Clicked.Volume0", 0, 1);
+  }
 }
 
 TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {

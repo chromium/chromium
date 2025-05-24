@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -21,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
     GroupSharedState.HAS_OTHER_USERS,
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 @interface GroupSharedState {
     int NOT_SHARED = 0;
     int COLLABORATION_ONLY = 1;

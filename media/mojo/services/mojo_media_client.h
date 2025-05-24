@@ -21,7 +21,6 @@
 #include "media/mojo/mojom/audio_decoder.mojom.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 
@@ -82,9 +81,8 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
   //
   // |cb| is always called on the same sequence as NotifyDecoderSupportKnown().
   virtual void NotifyDecoderSupportKnown(
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-      base::OnceCallback<
-          void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb);
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+      base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb);
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   virtual std::unique_ptr<VideoDecoder> CreateVideoDecoder(
@@ -93,7 +91,7 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
       mojom::CommandBufferIdPtr command_buffer_id,
       RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space,
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder);
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder);
 
   // Returns the Renderer to be used by MojoRendererService.
   // TODO(hubbe): Find out whether we should pass in |target_color_space| here.

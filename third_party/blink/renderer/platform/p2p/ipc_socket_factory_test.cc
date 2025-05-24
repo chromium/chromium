@@ -28,7 +28,7 @@ class IpcPacketSocketFactoryTest : public testing::Test {
         TRAFFIC_ANNOTATION_FOR_TESTS, false);
 
     socket_.reset(socket_factory_->CreateUdpSocket(
-        rtc::SocketAddress("127.0.0.1", 0), 0, 0));
+        webrtc::SocketAddress("127.0.0.1", 0), 0, 0));
     ASSERT_NE(socket_, nullptr);
   }
 
@@ -36,20 +36,23 @@ class IpcPacketSocketFactoryTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   Persistent<FakeMojoBindingContext> mojo_binding_context_;
-  std::unique_ptr<rtc::PacketSocketFactory> socket_factory_;
-  std::unique_ptr<rtc::AsyncPacketSocket> socket_;
+  std::unique_ptr<webrtc::PacketSocketFactory> socket_factory_;
+  std::unique_ptr<webrtc::AsyncPacketSocket> socket_;
 };
 
 // Verify that the socket correctly handles the OPT_RECV_ECCN option.
 TEST_F(IpcPacketSocketFactoryTest, SetOptions) {
   int desired_recv_ecn = 1;
   int recv_ecn_option = 0;
-  EXPECT_EQ(0, socket_->GetOption(rtc::Socket::OPT_RECV_ECN, &recv_ecn_option));
+  EXPECT_EQ(0,
+            socket_->GetOption(webrtc::Socket::OPT_RECV_ECN, &recv_ecn_option));
   EXPECT_EQ(-1, recv_ecn_option);
-  EXPECT_EQ(0, socket_->SetOption(rtc::Socket::OPT_RECV_ECN, desired_recv_ecn));
-  EXPECT_EQ(0, socket_->GetOption(rtc::Socket::OPT_RECV_ECN, &recv_ecn_option));
-  EXPECT_EQ(rtc::EcnMarking::kEct1,
-            static_cast<rtc::EcnMarking>(recv_ecn_option));
+  EXPECT_EQ(0,
+            socket_->SetOption(webrtc::Socket::OPT_RECV_ECN, desired_recv_ecn));
+  EXPECT_EQ(0,
+            socket_->GetOption(webrtc::Socket::OPT_RECV_ECN, &recv_ecn_option));
+  EXPECT_EQ(webrtc::EcnMarking::kEct1,
+            static_cast<webrtc::EcnMarking>(recv_ecn_option));
 }
 
 }  // namespace blink

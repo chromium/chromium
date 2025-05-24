@@ -4,6 +4,7 @@
 
 #include "content/browser/webrtc/webrtc_internals.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -641,34 +642,6 @@ TEST_F(WebRtcInternalsTest, OnAddStandardStats) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(WebRtcInternalsTest, OnAddLegacyStats) {
-  base::RunLoop loop;
-  MockWebRtcInternalsProxy observer(&loop);
-  WebRTCInternalsForTest webrtc_internals;
-  webrtc_internals.AddObserver(&observer);
-  webrtc_internals.OnPeerConnectionAdded(kFrameId, kLid, kPid, kUrl,
-                                         kRtcConfiguration);
-
-  base::Value::List list;
-  list.Append("xxx");
-  list.Append("yyy");
-  webrtc_internals.OnAddLegacyStats(kFrameId, kLid, list.Clone());
-
-  loop.Run();
-
-  EXPECT_EQ("add-legacy-stats", observer.event_name());
-  ASSERT_TRUE(observer.event_data());
-
-  ASSERT_TRUE(observer.event_data()->is_dict());
-  const base::Value::Dict& dict = observer.event_data()->GetDict();
-
-  VerifyInt(dict, "rid", kFrameId.child_id);
-  VerifyInt(dict, "lid", kLid);
-  VerifyList(dict, "reports", list);
-
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_F(WebRtcInternalsTest, AudioDebugRecordingsFileSelectionCanceled) {
   base::RunLoop loop;
 
@@ -847,7 +820,7 @@ TEST_F(WebRtcInternalsTest, WakeLockReconnect) {
 }
 
 TEST_F(WebRtcInternalsTest, WakeLockMultplePeerConnections) {
-  const int kLids[] = {71, 72, 73};
+  const auto kLids = std::to_array<int>({71, 72, 73});
 
   WebRTCInternalsForTest webrtc_internals;
   EXPECT_EQ(webrtc_internals.num_connected_connections(), 0);

@@ -22,16 +22,14 @@ UpdateServiceInternalStub::UpdateServiceInternalStub(
     UpdaterScope scope,
     base::RepeatingClosure task_start_listener,
     base::RepeatingClosure task_end_listener)
-    : server_(
-          {.server_name = GetUpdateServiceInternalServerName(scope),
-           .message_pipe_id =
+    : server_({GetUpdateServiceInternalServerName(scope),
                named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
-          base::BindRepeating(
-              [](mojom::UpdateServiceInternal* interface,
-                 std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> info) {
-                return interface;
-              },
-              this)),
+              base::BindRepeating(
+                  [](mojom::UpdateServiceInternal* interface,
+                     const named_mojo_ipc_server::ConnectionInfo& info) {
+                    return interface;
+                  },
+                  this)),
       impl_(impl),
       task_start_listener_(task_start_listener),
       task_end_listener_(task_end_listener) {

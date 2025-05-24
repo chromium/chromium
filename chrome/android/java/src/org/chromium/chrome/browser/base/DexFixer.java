@@ -16,6 +16,7 @@ import androidx.annotation.WorkerThread;
 import dalvik.system.DexFile;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -23,6 +24,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -32,6 +34,7 @@ import java.io.IOException;
 
 /** Performs work-arounds for Android bugs which result in invalid or unreadable dex. */
 @RequiresApi(Build.VERSION_CODES.O)
+@NullMarked
 public class DexFixer {
     private static final String TAG = "DexFixer";
     private static boolean sHasIsolatedSplits;
@@ -78,14 +81,15 @@ public class DexFixer {
         if (reason > DexFixerReason.NOT_NEEDED) {
             Log.w(TAG, "Triggering dex compile. Reason=%d", reason);
             try {
-                String cmd = "/system/bin/cmd package compile -r shared ";
-                if (reason == DexFixerReason.NOT_READABLE && BuildConfig.IS_BUNDLE) {
+                StringBuilder cmdBuilder =
+                        new StringBuilder("/system/bin/cmd package compile -r shared ");
+                if (reason == DexFixerReason.NOT_READABLE && BundleUtils.isBundle()) {
                     // Isolated processes need only access the base split.
                     String apkBaseName = new File(appInfo.sourceDir).getName();
-                    cmd += String.format("--split %s ", apkBaseName);
+                    cmdBuilder.append("--split ").append(apkBaseName).append(" ");
                 }
-                cmd += ContextUtils.getApplicationContext().getPackageName();
-                runtime.exec(cmd);
+                cmdBuilder.append(ContextUtils.getApplicationContext().getPackageName());
+                runtime.exec(cmdBuilder.toString());
             } catch (IOException e) {
                 // Don't crash.
             }

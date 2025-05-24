@@ -19,8 +19,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -1051,5 +1050,4 @@ TEST_F(MultideviceFeatureAccessManagerImplTest,
             GetCombinedAccessSetupOperationStatus());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

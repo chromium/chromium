@@ -21,6 +21,18 @@ bool ProfileIsActive(const ProfileAttributesIOS& attr) {
   return base::Time::Now() - attr.GetLastActiveTime() <= kActivityThreshold;
 }
 
+void UpdateCountsForProfileAttributes(profile_metrics::Counts* counts,
+                                      const ProfileAttributesIOS& attr) {
+  if (!ProfileIsActive(attr)) {
+    counts->unused++;
+  } else {
+    counts->active++;
+    if (attr.IsAuthenticated()) {
+      counts->signedin++;
+    }
+  }
+}
+
 void CountProfileInformation(const ProfileAttributesStorageIOS& storage,
                              profile_metrics::Counts* counts) {
   size_t profile_count = storage.GetNumberOfProfiles();
@@ -31,17 +43,8 @@ void CountProfileInformation(const ProfileAttributesStorageIOS& storage,
     return;
   }
 
-  for (size_t i = 0; i < profile_count; ++i) {
-    ProfileAttributesIOS attr = storage.GetAttributesForProfileAtIndex(i);
-    if (!ProfileIsActive(attr)) {
-      counts->unused++;
-    } else {
-      counts->active++;
-      if (attr.IsAuthenticated()) {
-        counts->signedin++;
-      }
-    }
-  }
+  storage.IterateOverProfileAttributes(
+      base::BindRepeating(&UpdateCountsForProfileAttributes, counts));
 }
 
 }  // namespace

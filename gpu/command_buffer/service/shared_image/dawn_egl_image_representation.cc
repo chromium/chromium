@@ -30,11 +30,13 @@ DawnEGLImageRepresentation::DawnEGLImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    const wgpu::Device& device)
+    const wgpu::Device& device,
+    std::vector<wgpu::TextureFormat> view_formats)
     : DawnImageRepresentation(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
       egl_image_(std::move(egl_image)),
-      device_(device) {
+      device_(device),
+      view_formats_(std::move(view_formats)) {
   DCHECK(device_);
 }
 
@@ -44,12 +46,14 @@ DawnEGLImageRepresentation::DawnEGLImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    const wgpu::Device& device)
+    const wgpu::Device& device,
+    std::vector<wgpu::TextureFormat> view_formats)
     : DawnImageRepresentation(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
       owned_egl_image_(std::move(owned_egl_image)),
       egl_image_(owned_egl_image_.get()),
-      device_(device) {
+      device_(device),
+      view_formats_(std::move(view_formats)) {
   DCHECK(device_);
 }
 
@@ -63,6 +67,8 @@ wgpu::Texture DawnEGLImageRepresentation::BeginAccess(
   gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage));
   wgpu::TextureDescriptor texture_descriptor;
   texture_descriptor.format = ToDawnFormat(format());
+  texture_descriptor.viewFormatCount = view_formats_.size();
+  texture_descriptor.viewFormats = view_formats_.data();
   texture_descriptor.usage = usage;
   texture_descriptor.dimension = wgpu::TextureDimension::e2D;
   texture_descriptor.size = {static_cast<uint32_t>(size().width()),
@@ -70,16 +76,16 @@ wgpu::Texture DawnEGLImageRepresentation::BeginAccess(
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
-  // TODO(crbug.com/40897964): once the forceReadback path is removed, determine
-  // the correct set of internal usages to apply and add
-  // DawnTextureInternalUsageDescriptor to the descriptor chain.
+  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
+  internalDesc.internalUsage = internal_usage;
+  texture_descriptor.nextInChain = &internalDesc;
 
   dawn::native::opengl::ExternalImageDescriptorEGLImage externalImageDesc;
   externalImageDesc.cTextureDescriptor =
       reinterpret_cast<WGPUTextureDescriptor*>(&texture_descriptor);
   externalImageDesc.image = egl_image_;
   DCHECK(externalImageDesc.image);
-  externalImageDesc.isInitialized = true;
+  externalImageDesc.isInitialized = IsCleared();
   texture_ = wgpu::Texture::Acquire(dawn::native::opengl::WrapExternalEGLImage(
       device_.Get(), &externalImageDesc));
   return texture_;

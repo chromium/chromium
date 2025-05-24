@@ -43,6 +43,9 @@ interface NativeWidgetNSWindowHost {
   // Update the views::Widget, ui::Compositor and ui::Layer's visibility.
   OnVisibilityChanged(bool visible);
 
+  // Called when -[NSWindow isOnActiveSpace] changes.
+  OnSpaceActivationChanged(bool is_space_active);
+
   // Called when the window's native theme changes.
   OnWindowNativeThemeChanged();
 
@@ -123,6 +126,12 @@ interface NativeWidgetNSWindowHost {
   OnWindowGeometryChanged(
       gfx.mojom.Rect window_bounds_in_screen_dips,
       gfx.mojom.Rect content_bounds_in_screen_dips);
+
+  // Called when the window is about to be live resized.
+  OnWindowWillStartLiveResize();
+
+  // Called when a live resize operation on the window has ended.
+  OnWindowDidEndLiveResize();
 
   // Called when the window begins transitioning to or from being fullscreen.
   OnWindowFullscreenTransitionStart(

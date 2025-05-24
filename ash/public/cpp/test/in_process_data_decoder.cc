@@ -42,19 +42,13 @@ class ImageDecoderImpl : public data_decoder::mojom::ImageDecoder {
     }
 
     switch (codec) {
-      case data_decoder::mojom::ImageCodec::kDefault: {
+      case data_decoder::mojom::ImageCodec::kDefault:
         // Only "default" codec currently used in ash/ is jpeg. Others may be
         // added here in the future if necessary.
-        std::unique_ptr<SkBitmap> decoded_jpeg =
-            gfx::JPEGCodec::Decode(encoded_data.data(), encoded_data.size());
-        if (decoded_jpeg) {
-          output = std::move(*decoded_jpeg);
-        }
+        output = gfx::JPEGCodec::Decode(encoded_data);
         break;
-      }
       case data_decoder::mojom::ImageCodec::kPng:
-        gfx::PNGCodec::Decode(encoded_data.data(), encoded_data.size(),
-                              &output);
+        output = gfx::PNGCodec::Decode(encoded_data);
         break;
     }
     std::move(callback).Run(timer.Elapsed(), output);

@@ -221,8 +221,8 @@ StorageQueue::~StorageQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
 
   // Stop timers.
-  upload_timer_.AbandonAndStop();
-  check_back_timer_.AbandonAndStop();
+  upload_timer_.Stop();
+  check_back_timer_.Stop();
   // Make sure no pending writes is present.
   CHECK(write_contexts_queue_.empty());
 
@@ -2365,7 +2365,7 @@ Status StorageQueue::SingleFile::Open(bool read_only) {
       filename_, read_only ? (base::File::FLAG_OPEN | base::File::FLAG_READ)
                            : (base::File::FLAG_OPEN_ALWAYS |
                               base::File::FLAG_APPEND | base::File::FLAG_READ));
-  if (!handle_ || !handle_->IsValid()) {
+  if (!handle_->IsValid()) {
     handle_.reset();
     base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                   DataLossErrorReason::FAILED_TO_OPEN_FILE,

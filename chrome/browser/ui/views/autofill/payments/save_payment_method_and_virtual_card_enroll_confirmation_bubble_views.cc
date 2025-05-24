@@ -21,7 +21,7 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
     SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews(
         views::View* anchor_view,
         content::WebContents* web_contents,
-        base::OnceCallback<void(PaymentsBubbleClosedReason)>
+        base::OnceCallback<void(PaymentsUiClosedReason)>
             controller_hide_callback,
         SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params)
     : AutofillLocationBarBubble(anchor_view, web_contents),
@@ -43,17 +43,18 @@ void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::Hide() {
   CloseBubble();
   if (!controller_hide_callback_.is_null()) {
     std::move(controller_hide_callback_)
-        .Run(GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        .Run(GetPaymentsUiClosedReasonFromWidget(GetWidget()));
   }
 }
 
-void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::AddedToWidget() {
+void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
+    AddedToWidget() {
   if (ui_params_.is_success) {
     auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
         ui::ImageModel::FromVectorIcon(kSaveCardAndVcnSuccessConfirmationIcon),
         ui::ImageModel::FromVectorIcon(
             kSaveCardAndVcnSuccessConfirmationDarkIcon),
-        base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+        base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                             base::Unretained(this)));
     image_view->SetBorder(
         views::CreateEmptyBorder(ChromeLayoutProvider::Get()
@@ -61,19 +62,22 @@ void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::AddedToWidget
                                      .set_bottom(0)));
     GetBubbleFrameView()->SetHeaderView(std::move(image_view));
   }
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string
-SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::GetWindowTitle() const {
+SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::GetWindowTitle()
+    const {
   return ui_params_.title_text;
 }
 
-void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::WindowClosing() {
+void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
+    WindowClosing() {
   if (!controller_hide_callback_.is_null()) {
     std::move(controller_hide_callback_)
-        .Run(GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        .Run(GetPaymentsUiClosedReasonFromWidget(GetWidget()));
   }
 }
 

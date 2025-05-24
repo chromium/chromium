@@ -26,7 +26,13 @@ ZeroSuggestPrefetchTabHelper::ZeroSuggestPrefetchTabHelper(
 
 ZeroSuggestPrefetchTabHelper::~ZeroSuggestPrefetchTabHelper() = default;
 
-void ZeroSuggestPrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
+void ZeroSuggestPrefetchTabHelper::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   // Make sure to observe the TabStripModel, if not already, in order to get
   // notified when a New Tab Page is switched to.
   // Note that this is done here, i.e., after the New Tab Page is navigated to,

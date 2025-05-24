@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/app_list/model/app_list_model.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_METRICS_REPORTER_MOCK_METRICS_REPORTER_H_
 
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockMetricsReporter : public MetricsReporter {

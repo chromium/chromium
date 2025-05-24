@@ -1,0 +1,17 @@
+Name: Libtess2
+URL: https://github.com/memononen/libtess2
+Version: 1.0.3
+Revision: 6e05801a57ca06bfd2908ceb9a73b6df5b0aae71
+License: SGI-B-2.0
+License File: LICENSE
+Shipped: yes
+Security Critical: yes
+License Android Compatible: yes
+
+Description:
+
+Game and tools oriented refactored version of GLU tesselator.
+
+Local Modifications:
+
+patches/0001-assert_always_on.patch: Changes assert() to CHECK().

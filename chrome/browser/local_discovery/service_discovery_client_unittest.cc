@@ -213,7 +213,7 @@ class ServiceDiscoveryTest : public ::testing::Test {
     EXPECT_EQ(net::OK, mdns_client_.StartListening(&socket_factory_));
   }
 
-  ~ServiceDiscoveryTest() override {}
+  ~ServiceDiscoveryTest() override = default;
 
  protected:
   void RunFor(base::TimeDelta time_period) {
@@ -434,7 +434,7 @@ class ServiceResolverTest : public ServiceDiscoveryTest {
     EXPECT_TRUE(ip_address_expected_.AssignFromIPLiteral("1.2.3.4"));
   }
 
-  ~ServiceResolverTest() override {}
+  ~ServiceResolverTest() override = default;
 
   void SetUp() override {
     resolver_ = service_discovery_client_.CreateServiceResolver(

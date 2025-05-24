@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 
@@ -40,9 +40,12 @@ class ChromeKioskExternalLoaderBroker {
   void RegisterSecondaryAppInstallDataObserver(
       InstallDataChangeCallback callback);
 
+  // Updates the primary app install data and notifies `primary_app_observer_`.
   void TriggerPrimaryAppInstall(
       const crosapi::mojom::AppInstallParams& install_data);
-  void TriggerSecondaryAppInstall(
+
+  // Updates the list of secondary apps and notifies `secondary_apps_observer_`.
+  void UpdateSecondaryAppList(
       const std::vector<std::string>& secondary_app_ids);
 
  private:

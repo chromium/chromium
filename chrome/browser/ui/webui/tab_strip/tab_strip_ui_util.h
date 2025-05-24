@@ -29,6 +29,17 @@ std::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
 // |group_id|.
 Browser* GetBrowserWithGroupId(Profile* profile, std::string group_id_string);
 
+// Moves all the tabs in a group from `source_browser`to `target_browser` at
+// `to_index`. If the operation results in a split tab group in the destination
+// browser, noop instead.
+void MoveGroupAcrossWindows(Browser* source_browser,
+                            Browser* target_browser,
+                            int to_index,
+                            const tab_groups::TabGroupId& group_id);
+
+// Moves a tab at `source_browser` in `source_browser`to `target_browser` at
+// `to_index`. If the operation results in a split tab group in the destination
+// browser, noop instead.
 void MoveTabAcrossWindows(
     Browser* source_browser,
     int from_index,

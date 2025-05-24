@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Calling end during an input callback stops processing at the right time - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Calling end during an input callback stops processing at the right time - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

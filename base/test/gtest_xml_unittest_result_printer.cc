@@ -9,6 +9,8 @@
 
 #include "base/test/gtest_xml_unittest_result_printer.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -28,7 +30,7 @@ const char kTestPartLesultsLimitExceeded[] =
     "Test part results limit exceeded. Use --test-launcher-test-part-limit to "
     "increase or disable limit.";
 
-std::string EscapeString(const std::string& input_string) {
+std::string EscapeString(std::string_view input_string) {
   std::string escaped_string;
   ReplaceChars(input_string, "&", "&amp;", &escaped_string);
   ReplaceChars(escaped_string, "<", "&lt;", &escaped_string);
@@ -107,6 +109,33 @@ void XmlUnitTestResultPrinter::AddTag(const std::string& name,
   fflush(output_file_);
 }
 
+void XmlUnitTestResultPrinter::AddSubTestResult(
+    std::string_view name,
+    testing::TimeInMillis elapsed_time,
+    std::optional<std::string_view> failure_message) {
+  CHECK(output_file_);
+  CHECK(!open_failed_);
+  // `name` should have already been canonicalized.
+  CHECK_EQ(EscapeString(name), name);
+  const testing::TestInfo* info =
+      testing::UnitTest::GetInstance()->current_test_info();
+  // `info` can only be null if this function is called outside of a test body,
+  // which violates this function's preconditions.
+  CHECK(info);
+
+  fprintf(output_file_.get(),
+          "    <x-sub-test-result name=\"%s\" classname=\"%s\" "
+          "subname=\"%s\" time=\"%.3f\"",
+          info->name(), info->test_suite_name(), name.data(),
+          static_cast<double>(elapsed_time) / Time::kMillisecondsPerSecond);
+  if (failure_message) {
+    std::string encoded = base::Base64Encode(*failure_message);
+    fprintf(output_file_.get(), " failure_message=\"%s\"", encoded.c_str());
+  }
+  fprintf(output_file_.get(), "></x-sub-test-result>\n");
+  fflush(output_file_);
+}
+
 bool XmlUnitTestResultPrinter::Initialize(const FilePath& output_file_path) {
   DCHECK(!output_file_);
   output_file_ = OpenFile(output_file_path, "w");
@@ -142,8 +171,7 @@ void XmlUnitTestResultPrinter::OnTestSuiteStart(
   fflush(output_file_);
 }
 
-void XmlUnitTestResultPrinter::OnTestStart(
-    const testing::TestInfo& test_info) {
+void XmlUnitTestResultPrinter::OnTestStart(const testing::TestInfo& test_info) {
   DCHECK(!test_running_);
   // This is our custom extension - it helps to recognize which test was
   // running when the test binary crashed. Note that we cannot even open the
@@ -180,8 +208,9 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
         CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kTestLauncherTestPartResultsLimit);
     int test_part_results_limit = std::strtol(limit_str.c_str(), nullptr, 10);
-    if (test_part_results_limit >= 0)
+    if (test_part_results_limit >= 0) {
       limit = std::min(limit, test_part_results_limit);
+    }
   } else {
     limit = std::min(limit, kDefaultTestPartResultsLimit);
   }
@@ -194,9 +223,9 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
   }
 
   if (test_info.result()->total_part_count() > limit) {
-    WriteTestPartResult(
-        "unknown", 0, testing::TestPartResult::kNonFatalFailure,
-        kTestPartLesultsLimitExceeded, kTestPartLesultsLimitExceeded);
+    WriteTestPartResult("unknown", 0, testing::TestPartResult::kNonFatalFailure,
+                        kTestPartLesultsLimitExceeded,
+                        kTestPartLesultsLimitExceeded);
   }
 
   fprintf(output_file_.get(), "    </testcase>\n");

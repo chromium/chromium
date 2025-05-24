@@ -3,12 +3,15 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='The <newline>textarea tag  defines a multi-line text input control.<newline>'
 ++++++++UNKNOWN
-++++++++++STATIC_TEXT label='The <newline>textarea tag  defines a multi-line text input control.<newline>'
+++++++++++STATIC_TEXT label='The '
 ++++++++++++UNKNOWN label='The '
+++++++++++UNKNOWN label='<newline>'
 ++++++++++++UNKNOWN label='<newline>'
+++++++++++STATIC_TEXT label='textarea tag  defines a multi-line text input control.'
 ++++++++++++UNKNOWN label='textarea tag  defines a multi-line text input'
 ++++++++++++UNKNOWN label=' '
 ++++++++++++UNKNOWN label='control.'
+++++++++++UNKNOWN label='<newline>'
 ++++++++++++UNKNOWN label='<newline>'
 ++++++++++UNKNOWN label='<newline>'
 ++++++++++++UNKNOWN label='<newline>'

@@ -31,6 +31,8 @@ class CustomElementReactionFactory {
       CustomElementDefinition& definition);
   static CustomElementReaction& CreateDisconnected(
       CustomElementDefinition& definition);
+  static CustomElementReaction& CreateConnectedMove(
+      CustomElementDefinition& definition);
   static CustomElementReaction& CreateAdopted(
       CustomElementDefinition& definition,
       Document& old_owner,

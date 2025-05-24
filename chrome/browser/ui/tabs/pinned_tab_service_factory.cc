@@ -8,8 +8,7 @@
 #include "chrome/browser/ui/tabs/pinned_tab_service.h"
 
 // static
-PinnedTabService* PinnedTabServiceFactory::GetForProfile(
-    Profile* profile) {
+PinnedTabService* PinnedTabServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<PinnedTabService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -34,9 +33,10 @@ PinnedTabServiceFactory::PinnedTabServiceFactory()
 
 PinnedTabServiceFactory::~PinnedTabServiceFactory() = default;
 
-KeyedService* PinnedTabServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PinnedTabServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return new PinnedTabService(static_cast<Profile*>(profile));
+  return std::make_unique<PinnedTabService>(static_cast<Profile*>(profile));
 }
 
 bool PinnedTabServiceFactory::ServiceIsCreatedWithBrowserContext() const {

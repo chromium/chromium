@@ -21,6 +21,13 @@ static_library("color") {
     "//ui/color",
   ]
 
+  if (toolkit_views) {
+    deps += [ "//components/fullscreen_control:color_mixer" ]
+
+    # For TOOLKIT_VIEWS ifdefs
+    configs += [ "//ui/views:flags" ]
+  }
+
   if (use_aura) {
     deps += [ "//components/eye_dropper:color_mixer" ]
   }

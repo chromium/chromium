@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bit_reader.h"
@@ -29,7 +30,7 @@ namespace mp2t {
 
 struct EsParserMpeg1Audio::Mpeg1AudioFrame {
   // Pointer to the ES data.
-  const uint8_t* data;
+  raw_ptr<const uint8_t> data;
 
   // Frame size.
   int size;
@@ -82,9 +83,11 @@ bool EsParserMpeg1Audio::ParseFromEsQueue() {
 
     // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
     // type and allow multiple audio tracks. See https://crbug.com/341581.
+    auto mpeg1audio_frame_span =
+        base::span(mpeg1audio_frame.data.get(),
+                   base::checked_cast<size_t>(mpeg1audio_frame.size));
     scoped_refptr<StreamParserBuffer> stream_parser_buffer =
-        StreamParserBuffer::CopyFrom(mpeg1audio_frame.data,
-                                     mpeg1audio_frame.size, is_key_frame,
+        StreamParserBuffer::CopyFrom(mpeg1audio_frame_span, is_key_frame,
                                      DemuxerStream::AUDIO, kMp2tAudioTrackId);
     stream_parser_buffer->set_timestamp(current_pts);
     stream_parser_buffer->set_duration(frame_duration);
@@ -146,7 +149,7 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
     }
 
     es_queue_->Pop(offset);
-    es_queue_->Peek(&mpeg1audio_frame->data, &es_size);
+    es_queue_->Peek(&mpeg1audio_frame->data.AsEphemeralRawAddr(), &es_size);
     mpeg1audio_frame->queue_offset = es_queue_->head();
     mpeg1audio_frame->size = header.frame_size;
     mpeg1audio_frame->sample_count = header.sample_count;

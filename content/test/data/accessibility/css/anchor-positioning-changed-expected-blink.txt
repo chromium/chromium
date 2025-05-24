@@ -1,0 +1,104 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++paragraph
+++++++++staticText name='target1'
+++++++++++inlineTextBox name='target1'
+++++++tooltip name='target2'
+++++++++staticText name='target2'
+++++++++++inlineTextBox name='target2'
+++++++button name='anchor1' detailsFrom=cssAnchor detailsIds=paragraph
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++button name='anchor2'
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'
+=== Start Continuation ===
+rootWebArea name='addAriaControls() done'
+++genericContainer ignored
+++++genericContainer
+++++++paragraph
+++++++++staticText name='target1'
+++++++++++inlineTextBox name='target1'
+++++++tooltip name='target2'
+++++++++staticText name='target2'
+++++++++++inlineTextBox name='target2'
+++++++button name='anchor1' controlsIds=paragraph
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++button name='anchor2'
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'
+=== Start Continuation ===
+rootWebArea name='removeTooltip() done'
+++genericContainer ignored
+++++genericContainer
+++++++paragraph
+++++++++staticText name='target1'
+++++++++++inlineTextBox name='target1'
+++++++checkBox name='target2' checkedState=false
+++++++++staticText name='target2'
+++++++++++inlineTextBox name='target2'
+++++++button name='anchor1' controlsIds=paragraph
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++button name='anchor2' detailsFrom=cssAnchor detailsIds=checkBox
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'
+=== Start Continuation ===
+rootWebArea name='addAnchor() done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='target1'
+++++++++++inlineTextBox name='target1'
+++++++checkBox name='target2' checkedState=false
+++++++++staticText name='target2'
+++++++++++inlineTextBox name='target2'
+++++++button name='anchor1' controlsIds=paragraph
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++button name='anchor2'
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'
+++++++heading name='my-heading' detailsFrom=cssAnchor detailsIds=checkBox
+++++++++staticText name='my-heading'
+++++++++++inlineTextBox name='my-heading'
+=== Start Continuation ===
+rootWebArea name='changeAnchorId() done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='target1'
+++++++++++inlineTextBox name='target1'
+++++++checkBox name='target2' checkedState=false
+++++++++staticText name='target2'
+++++++++++inlineTextBox name='target2'
+++++++button name='anchor1' controlsIds=paragraph
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++button name='anchor2'
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'
+++++++heading name='my-heading' detailsFrom=cssAnchor detailsIds=checkBox
+++++++++staticText name='my-heading'
+++++++++++inlineTextBox name='my-heading'
+=== Start Continuation ===
+rootWebArea name='changeTargetId() done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='target1'
+++++++++++inlineTextBox name='target1'
+++++++checkBox name='target2' checkedState=false
+++++++++staticText name='target2'
+++++++++++inlineTextBox name='target2'
+++++++button name='anchor1' controlsIds=paragraph
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++button name='anchor2'
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'
+++++++heading name='my-heading' detailsFrom=cssAnchor detailsIds=checkBox
+++++++++staticText name='my-heading'
+++++++++++inlineTextBox name='my-heading'

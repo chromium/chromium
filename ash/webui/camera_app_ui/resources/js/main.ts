@@ -12,6 +12,7 @@ import {
 import {
   getDefaultWindowSize,
 } from './app_window.js';
+import {setup as setupAspectRatioOrder} from './aspect_ratio_order.js';
 import {
   assert,
   assertEnumVariant,
@@ -25,9 +26,8 @@ import {CameraManager} from './device/index.js';
 import {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
-import {Flag} from './flag.js';
 import {Intent} from './intent.js';
-import * as Comlink from './lib/comlink.js';
+import * as comlink from './lib/comlink.js';
 import {startMeasuringMemoryUsage} from './memory_usage.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
@@ -58,10 +58,8 @@ import {
 import {addUnloadCallback} from './unload.js';
 import * as util from './util.js';
 import {Camera} from './views/camera.js';
-import {toggleIndicatorOnOpenPTZButton} from './views/camera/options.js';
 import * as timertick from './views/camera/timertick.js';
 import {CameraIntent} from './views/camera_intent.js';
-import {SuperResIntroDialog} from './views/dialog.js';
 import {View} from './views/view.js';
 import {Warning, WarningType} from './views/warning.js';
 import {WaitableEvent} from './waitable_event.js';
@@ -319,7 +317,7 @@ async function setupMultiWindowHandling(
   const multiWindowManagerWorker = new SharedWorker(
       getSanitizedScriptUrl('/js/multi_window_manager.js'), {type: 'module'});
   const windowInstance =
-      Comlink.wrap<WindowInstance>(multiWindowManagerWorker.port);
+      comlink.wrap<WindowInstance>(multiWindowManagerWorker.port);
   addUnloadCallback(() => {
     windowInstance.onWindowClosed().catch((e) => {
       reportError(
@@ -328,7 +326,7 @@ async function setupMultiWindowHandling(
     });
   });
   await windowInstance.init(
-      Comlink.proxy(handleSuspend), Comlink.proxy(handleResume));
+      comlink.proxy(handleSuspend), comlink.proxy(handleResume));
   await ChromeHelper.getInstance().initCameraWindowController();
   windowController.addWindowStateListener((states) => {
     const isMinimizing = states.includes(WindowStateType.kMinimized);
@@ -368,24 +366,12 @@ function setupSvgs() {
   }
 }
 
-function maybeIntroduceSuperRes() {
-  // Only introduce the feature when both digital zoom and super res flags are
-  // enabled for the first time.
-  if (!loadTimeData.getChromeFlag(Flag.DIGITAL_ZOOM) ||
-      !loadTimeData.getChromeFlag(Flag.SUPER_RES) ||
-      localStorage.getBool(LocalStorageKey.SUPER_RES_DIALOG_SHOWN) ||
-      window.isInTestSession) {
-    return;
-  }
-  nav.open(ViewName.SUPER_RES_INTRO_DIALOG);
-  toggleIndicatorOnOpenPTZButton(true);
-  localStorage.set(LocalStorageKey.SUPER_RES_DIALOG_SHOWN, true);
-}
-
 /**
  * Setup Camera App and starts camera stream.
  */
 async function main() {
+  const setupAspectRatioOrderTask = setupAspectRatioOrder();
+
   const {intent, facing, mode} = parseSearchParams();
 
   state.set(state.State.INTENT, intent !== null);
@@ -421,12 +407,20 @@ async function main() {
   // There are three possible cases:
   // 1. Regular instance
   //      (intent === null)
-  // 2. STILL_CAPTURE_CAMERA and VIDEO_CAMERA intents
+  // 2. Intents within [INTENT_ACTION_STILL_IMAGE_CAMERA,
+  //                    INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE,
+  //                    INTENT_ACTION_VIDEO_CAMERA]
   //      (intent !== null && shouldHandleResult === false)
-  // 3. Other intents
+  // 3. Intents within [ACTION_STILL_IMAGE_CAMERA,
+  //                    ACTION_STILL_IMAGE_CAMERA_SECURE,
+  //                    ACTION_VIDEO_CAMERA]
   //      (intent !== null && shouldHandleResult === true)
-  // `shouldHandleIntentResult` will be false in (1) and (2), and gallery
-  // button will be shown on the UI.
+  //
+  // For 1. and 2., CCA is opened in a normal window and there's no need of
+  // handling capture result and passed it back to ARC.
+  //
+  // For 3., CCA is opened in a system dialog, gallery button won't be shown,
+  // and camera folder won't be accessible. (See http://b/374629916#comment16)
   const shouldHandleIntentResult = intent?.shouldHandleResult === true;
   state.set(state.State.SHOULD_HANDLE_INTENT_RESULT, shouldHandleIntentResult);
 
@@ -436,6 +430,10 @@ async function main() {
   };
 
   PerfLogger.initializeInstance();
+
+  // Wait for aspect ratio order to be setup right before constructing the
+  // camera manager, which needs the aspect ratio order info.
+  await setupAspectRatioOrderTask;
   const cameraManager = new CameraManager(facing, modeConstraints);
 
   const resultSaver = new DefaultResultSaver();
@@ -447,7 +445,6 @@ async function main() {
   // Set up views navigation by their DOM z-order.
   nav.setup([
     cameraView,
-    new SuperResIntroDialog(),
     new Warning(),
     new View(ViewName.SPLASH),
   ]);
@@ -502,9 +499,9 @@ async function main() {
   const cameraStartSuccessful = await cameraManager.reconfigure();
 
   try {
-    await filesystem.initialize();
-    const cameraDir = filesystem.getCameraDirectory();
+    await filesystem.initialize(shouldHandleIntentResult);
     if (!shouldHandleIntentResult) {
+      const cameraDir = filesystem.getCameraDirectory();
       await resultSaver.initialize(cameraDir);
     }
   } catch (error) {
@@ -537,8 +534,6 @@ async function main() {
   perfLogger.stop(
       PerfEvent.LAUNCHING_FROM_WINDOW_CREATION,
       {hasError: !cameraStartSuccessful});
-
-  maybeIntroduceSuperRes();
 
   // Start the memory measurement when the camera preview is ready. The first
   // measurement is performed immediately. The following measurements are

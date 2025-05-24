@@ -24,9 +24,9 @@ suite('CrUrlListItemTest', () => {
   });
 
   test('TogglesBetweenIcons', async () => {
-    const favicon = element.shadowRoot!.querySelector<HTMLElement>('.favicon')!;
+    const favicon = element.shadowRoot.querySelector<HTMLElement>('.favicon')!;
     const folderIcon =
-        element.shadowRoot!.querySelector<HTMLElement>('.folder-and-count')!;
+        element.shadowRoot.querySelector<HTMLElement>('.folder-and-count')!;
 
     element.count = 4;
     await element.updateComplete;
@@ -44,7 +44,7 @@ suite('CrUrlListItemTest', () => {
   });
 
   test('TruncatesAndDisplaysCount', async () => {
-    const count = element.shadowRoot!.querySelector('.count')!;
+    const count = element.shadowRoot.querySelector('.count')!;
     element.count = 11;
     await element.updateComplete;
     assertEquals('11', count.textContent);
@@ -71,7 +71,7 @@ suite('CrUrlListItemTest', () => {
     element.imageUrls = ['http://google.com'];
     element.size = CrUrlListItemSize.COMPACT;
     const folderIcon =
-        element.shadowRoot!.querySelector<HTMLElement>('.icon-folder-open');
+        element.shadowRoot.querySelector<HTMLElement>('.icon-folder-open');
     assertTrue(!!folderIcon);
     await element.updateComplete;
     assertFalse(isVisible(folderIcon));
@@ -94,7 +94,7 @@ suite('CrUrlListItemTest', () => {
     const urlListItemElement = document.body.querySelector('cr-url-list-item');
     assertTrue(!!urlListItemElement);
     await element.updateComplete;
-    const slot = urlListItemElement.shadowRoot!.querySelector<HTMLSlotElement>(
+    const slot = urlListItemElement.shadowRoot.querySelector<HTMLSlotElement>(
         'slot[name="folder-icon"]');
     assertTrue(!!slot);
     const slotElements = slot.assignedElements();
@@ -109,7 +109,7 @@ suite('CrUrlListItemTest', () => {
     ];
     await element.updateComplete;
     const imageElements =
-        element.shadowRoot!.querySelectorAll<HTMLElement>('.folder-image');
+        element.shadowRoot.querySelectorAll<HTMLElement>('.folder-image');
     // No more than two images may be displayed for a folder.
     assertEquals(2, imageElements.length);
   });
@@ -121,11 +121,11 @@ suite('CrUrlListItemTest', () => {
     ];
     await microtasksFinished();
     const imageContainer =
-        element.shadowRoot!.querySelector<HTMLElement>('.image-container');
+        element.shadowRoot.querySelector<HTMLElement>('.image-container');
     assertTrue(!!imageContainer);
     assertFalse(isVisible(imageContainer));
 
-    const firstImage = element.shadowRoot!.querySelector('img');
+    const firstImage = element.shadowRoot.querySelector('img');
     assertTrue(!!firstImage);
     firstImage.dispatchEvent(new Event('load'));
     await microtasksFinished();

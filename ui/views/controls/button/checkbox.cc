@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -47,7 +48,7 @@ namespace {
 constexpr gfx::Size kCheckboxInkDropSize = gfx::Size(24, 24);
 constexpr float kCheckboxIconDipSize = 16;
 constexpr int kCheckboxIconCornerRadius = 2;
-}
+}  // namespace
 
 class Checkbox::FocusRingHighlightPathGenerator
     : public views::HighlightPathGenerator {
@@ -146,19 +147,21 @@ Checkbox::Checkbox(const std::u16string& label,
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
   SetAndUpdateAccessibleDefaultActionVerb();
+  UpdateAccessibleCheckedState();
 }
 
 Checkbox::~Checkbox() = default;
 
 void Checkbox::SetChecked(bool checked) {
-  if (GetChecked() == checked)
+  if (GetChecked() == checked) {
     return;
+  }
   checked_ = checked;
-  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
   UpdateImage();
   OnPropertyChanged(&checked_, kPropertyEffectsNone);
   NotifyViewControllerCallback();
   SetAndUpdateAccessibleDefaultActionVerb();
+  UpdateAccessibleCheckedState();
 }
 
 bool Checkbox::GetChecked() const {
@@ -171,8 +174,9 @@ base::CallbackListSubscription Checkbox::AddCheckedChangedCallback(
 }
 
 void Checkbox::SetMultiLine(bool multi_line) {
-  if (GetMultiLine() == multi_line)
+  if (GetMultiLine() == multi_line) {
     return;
+  }
   label()->SetMultiLine(multi_line);
   // TODO(pkasting): Remove this and forward callback subscriptions to the
   // underlying label property when Label is converted to properties.
@@ -185,14 +189,6 @@ bool Checkbox::GetMultiLine() const {
 
 void Checkbox::SetCheckedIconImageColor(SkColor color) {
   checked_icon_image_color_ = color;
-}
-
-void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  LabelButton::GetAccessibleNodeData(node_data);
-  const ax::mojom::CheckedState checked_state =
-      GetChecked() ? ax::mojom::CheckedState::kTrue
-                   : ax::mojom::CheckedState::kFalse;
-  node_data->SetCheckedState(checked_state);
 }
 
 gfx::ImageSkia Checkbox::GetImage(ButtonState for_state) const {
@@ -221,6 +217,12 @@ std::unique_ptr<LabelButtonBorder> Checkbox::CreateDefaultBorder() const {
 
 std::unique_ptr<ActionViewInterface> Checkbox::GetActionViewInterface() {
   return std::make_unique<CheckboxActionViewInterface>(this);
+}
+
+void Checkbox::UpdateAccessibleCheckedState() {
+  GetViewAccessibility().SetCheckedState(GetChecked()
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
 }
 
 void Checkbox::OnThemeChanged() {
@@ -285,7 +287,7 @@ ui::NativeTheme::Part Checkbox::GetThemePart() const {
 
 void Checkbox::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
   LabelButton::GetExtraParams(params);
-  absl::get<ui::NativeTheme::ButtonExtraParams>(*params).checked = GetChecked();
+  std::get<ui::NativeTheme::ButtonExtraParams>(*params).checked = GetChecked();
 }
 
 void Checkbox::SetAndUpdateAccessibleDefaultActionVerb() {

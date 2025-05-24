@@ -16,12 +16,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -46,11 +46,13 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/variations/synthetic_trials.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -59,31 +61,27 @@
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/signin/wait_for_network_callback_helper_ash.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include <optional>
-
-#include "chrome/browser/lacros/account_manager/account_manager_util.h"
-#include "chromeos/crosapi/mojom/account_manager.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_manager_util.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/ui/browser.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
 #endif
 
@@ -111,7 +109,7 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     // Allowed, because data has not been synced yet.
     signin_metrics::ProfileSignout::kAbortSignin,
     // Allowed, because the primary account must be cleared when the account is
-    // removed from device. Only used on Android and Lacros.
+    // removed from device. Only used on Android.
     signin_metrics::ProfileSignout::kAccountRemovedFromDevice,
     // Allowed, for tests.
     signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest,
@@ -143,18 +141,16 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
 std::string_view NameOfGroupedAccessPointHistogram(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+    case signin_metrics::AccessPoint::kWebSignin:
       return ".PreUnoWebSignin";
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+    case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
       return ".UnoSigninBubble";
-    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
-    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
-    case signin_metrics::AccessPoint::
-        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
+    case signin_metrics::AccessPoint::kUserManager:
+    case signin_metrics::AccessPoint::kForYouFre:
+    case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
+    case signin_metrics::AccessPoint::kStartPage:
       return ".ProfileCreation";
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
       return ".ProfileMenu";
     default:
       return ".Other";
@@ -212,7 +208,7 @@ void RecordExtensionsCounts(signin_metrics::AccessPoint access_point,
 
 ChromeSigninClient::ChromeSigninClient(Profile* profile)
     : wait_for_network_callback_helper_(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           std::make_unique<WaitForNetworkCallbackHelperAsh>()
 #else
           std::make_unique<WaitForNetworkCallbackHelperChrome>()
@@ -299,7 +295,7 @@ void ChromeSigninClient::PreSignOut(
   DCHECK(!on_signout_decision_reached_) << "SignOut already in-progress!";
   on_signout_decision_reached_ = std::move(on_signout_decision_reached);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // `signout_source_metric` is `signin_metrics::ProfileSignout::kAbortSignin`
   // if the user declines sync in the signin process. In case the user accepts
   // the managed account but declines sync, we should keep the window open.
@@ -364,7 +360,6 @@ std::unique_ptr<GaiaAuthFetcher> ChromeSigninClient::CreateGaiaAuthFetcher(
   if (BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
           BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);
       bound_session_cookie_refresh_service) {
-    CHECK(switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs()));
     return std::make_unique<ThrottledGaiaAuthFetcher>(
         consumer, source, GetURLLoaderFactory(),
         bound_session_cookie_refresh_service->GetBoundSessionThrottlerParams(),
@@ -384,6 +379,7 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
     signin::PrimaryAccountChangeEvent event_details) {
   for (signin::ConsentLevel consent_level :
        {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
+    // Only record metrics when setting the primary account.
     switch (event_details.GetEventTypeFor(consent_level)) {
       case signin::PrimaryAccountChangeEvent::Type::kNone:
       case signin::PrimaryAccountChangeEvent::Type::kCleared:
@@ -393,7 +389,6 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
         signin_metrics::AccessPoint access_point =
             event_details.GetSetPrimaryAccountAccessPoint().value();
 
-        // Only record metrics when setting the primary account.
         std::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
         std::optional<size_t> bar_bookmarks_count =
             GetBookmarkBarBookmarksCount();
@@ -403,6 +398,7 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
                                 all_bookmarks_count.value(),
                                 bar_bookmarks_count.value());
         }
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         std::optional<size_t> extensions_count = GetExtensionsCount();
         if (extensions_count.has_value()) {
@@ -410,6 +406,25 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
                                  extensions_count.value());
         }
 #endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+        RecordOpenTabCount(access_point, consent_level);
+#endif
+
+        if (consent_level == signin::ConsentLevel::kSignin &&
+            SigninPrefs(*GetPrefs())
+                .GetBookmarksExplicitBrowserSignin(
+                    event_details.GetCurrentState().primary_account.gaia)) {
+          // `Enabled` group contains all users that have butter for bookmarks
+          // active - this is used to differentiate between the users that have
+          // the feature active `switches::kSyncEnableBookmarksInTransportMode`
+          // and butter active (in this group).
+          // There is no equivalent control group recorded for the field trial.
+          ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+              "UnoDesktopBookmarksButterActive", "Enabled",
+              variations::SyntheticTrialAnnotationMode::kCurrentLog);
+        }
+        break;
     }
   }
 }
@@ -430,8 +445,7 @@ ChromeSigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
 SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
     bool has_sync_account,
     const std::optional<signin_metrics::ProfileSignout> signout_source) const {
-  // TODO(crbug.com/40239707): Revisit |kAlwaysAllowedSignoutSources| in general
-  // and for Lacros main profile.
+  // TODO(crbug.com/40239707): Revisit |kAlwaysAllowedSignoutSources|.
   for (const auto& always_allowed_source : kAlwaysAllowedSignoutSources) {
     if (!signout_source.has_value()) {
       break;
@@ -445,13 +459,6 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
     return is_clear_primary_account_allowed_for_testing_.value();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The primary account in Lacros main profile must be the device account and
-  // can't be changed/cleared.
-  if (profile_->IsMainProfile()) {
-    return SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
-  }
-#endif
 #if BUILDFLAG(IS_ANDROID)
   // On Android we do not allow supervised users to sign out.
   // We also don't allow sign out on ChromeOS, though this is enforced outside
@@ -466,23 +473,16 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
 #if !BUILDFLAG(IS_ANDROID)
   // Check if managed user.
   if (enterprise_util::UserAcceptedAccountManagement(profile_)) {
-    if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
-      // Allow revoke sync but disallow signout regardless of consent level of
-      // the primary account.
-      return SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
-    }
-    // Syncing users are not allowed to revoke sync or signout. Signed in non-
-    // syncing users don't have any signout restrictions related to management.
-    if (has_sync_account) {
-      return SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
-    }
+    // Allow revoke sync but disallow signout regardless of consent level of
+    // the primary account.
+    return SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
   }
 #endif
   return SigninClient::SignoutDecision::ALLOW;
 }
 
 void ChromeSigninClient::VerifySyncToken() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // We only verify the token once when Profile is just created.
   if (signin_util::IsForceSigninEnabled() && !force_signin_verifier_) {
     force_signin_verifier_ = std::make_unique<ForceSigninVerifier>(
@@ -493,7 +493,7 @@ void ChromeSigninClient::VerifySyncToken() {
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 void ChromeSigninClient::OnTokenFetchComplete(bool token_is_valid) {
   // If the token is valid we do need to do anything special and let the user
   // proceed.
@@ -578,90 +578,48 @@ std::optional<size_t> ChromeSigninClient::GetExtensionsCount() {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Returns the account that must be auto-signed-in to the Main Profile in
-// Lacros.
-// This is, when available, the account used to sign into the Chrome OS
-// session. This may be a Gaia account or a Microsoft Active Directory
-// account. This field will be null for Guest sessions, Managed Guest
-// sessions, Demo mode, and Kiosks. Note that this is different from the
-// concept of a Primary Account in the browser. A user may not be signed into
-// a Lacros browser Profile, or may be signed into a browser Profile with an
-// account which is different from the account which they used to sign into
-// the device - aka Device Account.
-// Also note that this will be null for Secondary / non-Main Profiles in
-// Lacros, because they do not start with the Chrome OS Device Account
-// signed-in by default.
-std::optional<account_manager::Account>
-ChromeSigninClient::GetInitialPrimaryAccount() {
-  if (!profile_->IsMainProfile()) {
-    return std::nullopt;
-  }
+#if !BUILDFLAG(IS_CHROMEOS)
+void ChromeSigninClient::RecordOpenTabCount(
+    signin_metrics::AccessPoint access_point,
+    signin::ConsentLevel consent_level) {
+  size_t tabs_count = 0;
 
-  const crosapi::mojom::AccountPtr& device_account =
-      chromeos::BrowserParamsProxy::Get()->DeviceAccount();
-  if (!device_account) {
-    return std::nullopt;
-  }
+#if BUILDFLAG(IS_ANDROID)
+  for (const TabModel* model : TabModelList::models()) {
+    // Note: Even though on Android only a single regular profile is supported,
+    // there can also be an incognito profile which should be excluded here.
+    if (model->GetProfile() != profile_) {
+      continue;
+    }
 
-  return account_manager::FromMojoAccount(device_account);
+    tabs_count += model->GetTabCount();
+  }
+#else   // !BUILDFLAG(IS_ANDROID)
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->profile() != profile_) {
+      continue;
+    }
+    if (TabStripModel* tab_strip_model = browser->tab_strip_model()) {
+      tabs_count += tab_strip_model->count();
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  signin_metrics::RecordOpenTabCountOnSignin(consent_level, tabs_count);
 }
-
-// Returns whether the account that must be auto-signed-in to the main profile
-// in Lacros is a child account.
-// Returns false for guest session, public session, kiosk, demo mode and Active
-// Directory account.
-// Returns null for secondary / non-main profiles in LaCrOS.
-std::optional<bool> ChromeSigninClient::IsInitialPrimaryAccountChild() const {
-  if (!profile_->IsMainProfile()) {
-    return std::nullopt;
-  }
-
-  const bool is_child_session =
-      chromeos::BrowserParamsProxy::Get()->SessionType() ==
-      crosapi::mojom::SessionType::kChildSession;
-  return is_child_session;
-}
-
-void ChromeSigninClient::RemoveAccount(
-    const account_manager::AccountKey& account_key) {
-  std::optional<account_manager::Account> device_account =
-      GetInitialPrimaryAccount();
-  if (device_account.has_value() && device_account->key == account_key) {
-    DLOG(ERROR)
-        << "The primary account should not be removed from the main profile";
-    return;
-  }
-
-  g_browser_process->profile_manager()
-      ->GetAccountProfileMapper()
-      ->RemoveAccount(profile_->GetPath(), account_key);
-}
-
-void ChromeSigninClient::RemoveAllAccounts() {
-  if (GetInitialPrimaryAccount().has_value()) {
-    DLOG(ERROR) << "It is not allowed to remove the initial primary account.";
-    return;
-  }
-
-  DCHECK(!profile_->IsMainProfile());
-  g_browser_process->profile_manager()
-      ->GetAccountProfileMapper()
-      ->RemoveAllAccounts(profile_->GetPath());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void ChromeSigninClient::SetURLLoaderFactoryForTest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   url_loader_factory_for_testing_ = url_loader_factory;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not make network requests in unit tests. ash::NetworkHandler should
   // not be used and is not expected to have been initialized in unit tests.
   wait_for_network_callback_helper_
       ->DisableNetworkCallsDelayedForTesting(  // IN-TEST
           url_loader_factory_for_testing_ &&
           !ash::NetworkHandler::IsInitialized());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeSigninClient::OnCloseBrowsersSuccess(
@@ -669,7 +627,7 @@ void ChromeSigninClient::OnCloseBrowsersSuccess(
     bool should_sign_out,
     bool has_sync_account,
     const base::FilePath& profile_path) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   if (signin_util::IsForceSigninEnabled() && force_signin_verifier_.get()) {
     force_signin_verifier_->Cancel();
   }
@@ -711,7 +669,7 @@ void ChromeSigninClient::LockForceSigninProfile(
 }
 
 void ChromeSigninClient::ShowUserManager(const base::FilePath& profile_path) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileLocked));
 #endif

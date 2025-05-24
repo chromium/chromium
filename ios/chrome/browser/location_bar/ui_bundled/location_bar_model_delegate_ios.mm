@@ -28,8 +28,8 @@
 
 LocationBarModelDelegateIOS::LocationBarModelDelegateIOS(
     WebStateList* web_state_list,
-    ChromeBrowserState* browser_state)
-    : web_state_list_(web_state_list), browser_state_(browser_state) {}
+    ProfileIOS* profile)
+    : web_state_list_(web_state_list), profile_(profile) {}
 
 LocationBarModelDelegateIOS::~LocationBarModelDelegateIOS() {}
 
@@ -55,14 +55,16 @@ LocationBarModelDelegateIOS::FormattedStringWithEquivalentMeaning(
 bool LocationBarModelDelegateIOS::GetURL(GURL* url) const {
   DCHECK(url);
   web::NavigationItem* item = GetNavigationItem();
-  if (!item)
+  if (!item) {
     return false;
+  }
   *url = item->GetVirtualURL();
   // Return `false` for about scheme pages.  This will result in the location
   // bar showing the default page, "about:blank". See crbug.com/989497 for
   // details on why.
-  if (url->SchemeIs(url::kAboutScheme))
+  if (url->SchemeIs(url::kAboutScheme)) {
     return false;
+  }
   return true;
 }
 
@@ -82,8 +84,9 @@ bool LocationBarModelDelegateIOS::ShouldDisplayURL() const {
     GURL virtual_url = item->GetVirtualURL();
     if (url.SchemeIs(kChromeUIScheme) ||
         virtual_url.SchemeIs(kChromeUIScheme)) {
-      if (!url.SchemeIs(kChromeUIScheme))
+      if (!url.SchemeIs(kChromeUIScheme)) {
         url = virtual_url;
+      }
       std::string_view host = url.host_piece();
       return host != kChromeUINewTabHost;
     }
@@ -106,8 +109,9 @@ LocationBarModelDelegateIOS::GetVisibleSecurityState() const {
 scoped_refptr<net::X509Certificate>
 LocationBarModelDelegateIOS::GetCertificate() const {
   web::NavigationItem* item = GetNavigationItem();
-  if (item)
+  if (item) {
     return item->GetSSL().certificate;
+  }
   return scoped_refptr<net::X509Certificate>();
 }
 
@@ -118,8 +122,9 @@ const gfx::VectorIcon* LocationBarModelDelegateIOS::GetVectorIconOverride()
 
 bool LocationBarModelDelegateIOS::IsOfflinePage() const {
   web::WebState* web_state = GetActiveWebState();
-  if (!web_state)
+  if (!web_state) {
     return false;
+  }
   return OfflinePageTabHelper::FromWebState(web_state)
       ->presenting_offline_page();
 }
@@ -132,8 +137,9 @@ bool LocationBarModelDelegateIOS::IsNewTabPage() const {
   // default search engine because if they're not using Google the Google
   // landing page is not shown.
   GURL currentURL;
-  if (!GetURL(&currentURL))
+  if (!GetURL(&currentURL)) {
     return false;
+  }
   return currentURL == kChromeUINewTabURL;
 }
 
@@ -149,5 +155,5 @@ bool LocationBarModelDelegateIOS::IsHomePage(const GURL& url) const {
 TemplateURLService* LocationBarModelDelegateIOS::GetTemplateURLService()
 
 {
-  return ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_);
+  return ios::TemplateURLServiceFactory::GetForProfile(profile_);
 }

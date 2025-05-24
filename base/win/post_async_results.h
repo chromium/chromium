@@ -76,21 +76,24 @@ HRESULT GetAsyncResultsT(IAsyncOperationT<T>* async_operation,
     // respectively, then requests the address, converting to T** or T*
     // respectively.
     HRESULT hr = async_operation->GetResults(&(*results));
-    if (FAILED(hr))
+    if (FAILED(hr)) {
       *results = AsyncResultsT<T>{};
+    }
     return hr;
   }
 
   *results = AsyncResultsT<T>{};
   Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IAsyncInfo> async_info;
   HRESULT hr = async_operation->QueryInterface(IID_PPV_ARGS(&async_info));
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   HRESULT operation_hr;
   hr = async_info->get_ErrorCode(&operation_hr);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   DCHECK(FAILED(operation_hr));
   return operation_hr;
@@ -124,14 +127,13 @@ HRESULT PostAsyncOperationCompletedHandler(
         // capture it in an appropriate ref-counted pointer.
         return std::make_pair(async_operation, async_status);
       })
-          .Then(
-              base::BindPostTaskToCurrentDefault(base::BindOnce(
-                  [](IAsyncOperationCompletedHandlerT<T> completed_handler,
-                     AsyncResult async_result) {
-                    std::move(completed_handler)
-                        .Run(async_result.first.Get(), async_result.second);
-                  },
-                  std::move(completed_handler))));
+          .Then(base::BindPostTaskToCurrentDefault(base::BindOnce(
+              [](IAsyncOperationCompletedHandlerT<T> completed_handler,
+                 AsyncResult async_result) {
+                std::move(completed_handler)
+                    .Run(async_result.first.Get(), async_result.second);
+              },
+              std::move(completed_handler))));
 
   using CompletedHandler = Microsoft::WRL::Implements<
       Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
@@ -177,8 +179,9 @@ HRESULT PostAsyncHandlers(
             internal::AsyncResultsT<T> results;
             HRESULT hr = internal::GetAsyncResultsT(async_operation,
                                                     async_status, &results);
-            if (SUCCEEDED(hr))
+            if (SUCCEEDED(hr)) {
               std::move(success_callback).Run(results);
+            }
           },
           std::move(success_callback)));
 }
@@ -210,10 +213,11 @@ HRESULT PostAsyncHandlers(
             internal::AsyncResultsT<T> results;
             HRESULT hr = internal::GetAsyncResultsT(async_operation,
                                                     async_status, &results);
-            if (SUCCEEDED(hr))
+            if (SUCCEEDED(hr)) {
               std::move(success_callback).Run(results);
-            else
+            } else {
               std::move(failure_callback).Run();
+            }
           },
           std::move(success_callback), std::move(failure_callback)));
 }
@@ -245,10 +249,11 @@ HRESULT PostAsyncHandlers(
             internal::AsyncResultsT<T> results;
             HRESULT hr = internal::GetAsyncResultsT(async_operation,
                                                     async_status, &results);
-            if (SUCCEEDED(hr))
+            if (SUCCEEDED(hr)) {
               std::move(success_callback).Run(results);
-            else
+            } else {
               std::move(failure_callback).Run(hr);
+            }
           },
           std::move(success_callback), std::move(failure_callback)));
 }
@@ -291,10 +296,11 @@ HRESULT PostAsyncHandlers(
                 async_status == AsyncStatus::Error ? AsyncStatus::Completed
                                                    : async_status,
                 &results);
-            if (SUCCEEDED(hr) && async_status == AsyncStatus::Completed)
+            if (SUCCEEDED(hr) && async_status == AsyncStatus::Completed) {
               std::move(success_callback).Run(results);
-            else
+            } else {
               std::move(failure_callback).Run(hr, results);
+            }
           },
           std::move(success_callback), std::move(failure_callback)));
 }

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/trace_event/trace_event.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -110,6 +111,10 @@ mojom::XRHitTestSubscriptionResultsDataPtr
 OpenXRSceneUnderstandingManager::GetHitTestResults(
     const gfx::Transform& mojo_from_viewer,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
+  TRACE_EVENT2("xr", "GetHitTestResults", "subscription_count",
+               hit_test_subscription_id_to_data_.size(),
+               "transient_subscription_count",
+               hit_test_subscription_id_to_transient_hit_test_data_.size());
   mojom::XRHitTestSubscriptionResultsDataPtr result =
       mojom::XRHitTestSubscriptionResultsData::New();
 

@@ -22,7 +22,8 @@ TEST(FocusModeUtilTests, VerifyYTMSourceTitle) {
   SelectedPlaylist selected_playlist;
   selected_playlist.id = "id0";
   selected_playlist.type = SoundType::kYouTubeMusic;
-  EXPECT_EQ(GetSourceTitleForMediaControls(selected_playlist), "YouTube Music");
+  EXPECT_EQ(GetSourceTitleForMediaControls(selected_playlist),
+            "music.youtube.com");
 }
 
 // Verify the Soundscape source string.

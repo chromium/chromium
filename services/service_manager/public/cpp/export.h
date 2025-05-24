@@ -15,11 +15,7 @@
 #endif  // defined(SERVICE_MANAGER_PUBLIC_CPP_IMPL)
 
 #else  // defined(WIN32)
-#if defined(SERVICE_MANAGER_PUBLIC_CPP_IMPL)
 #define SERVICE_MANAGER_PUBLIC_CPP_EXPORT __attribute__((visibility("default")))
-#else
-#define SERVICE_MANAGER_PUBLIC_CPP_EXPORT
-#endif  // defined(SERVICE_MANAGER_PUBLIC_CPP_IMPL)
 #endif
 
 #else  // defined(COMPONENT_BUILD)

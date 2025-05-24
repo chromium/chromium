@@ -95,8 +95,7 @@ class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
         base::StringPrintf("%s.%s", api_name_.c_str(), method_name.c_str());
     v8::Global<v8::Function>& entry = (*map)[qualified_method_name];
     if (!entry.IsEmpty()) {
-      NOTREACHED_IN_MIGRATION() << "Hooks can only be set once.";
-      return;
+      NOTREACHED() << "Hooks can only be set once.";
     }
     entry.Reset(isolate, hook);
   }
@@ -461,8 +460,8 @@ APIBindingHooks::RequestResult APIBindingHooks::RunHooks(
   // Safe to use synchronous JS since it's in direct response to JS calling
   // into the binding.
   v8::MaybeLocal<v8::Value> v8_result =
-      JSRunner::Get(context)->RunJSFunctionSync(
-          handle_request, context, arguments->size(), arguments->data());
+      JSRunner::Get(context)->RunJSFunctionSync(handle_request, context,
+                                                *arguments);
 
   if (!binding::IsContextValid(context))
     return RequestResult(RequestResult::CONTEXT_INVALIDATED);
@@ -540,8 +539,8 @@ bool APIBindingHooks::UpdateArguments(v8::Local<v8::Function> function,
     // Safe to use synchronous JS since it's in direct response to JS calling
     // into the binding.
     v8::MaybeLocal<v8::Value> maybe_result =
-        JSRunner::Get(context)->RunJSFunctionSync(
-            function, context, arguments->size(), arguments->data());
+        JSRunner::Get(context)->RunJSFunctionSync(function, context,
+                                                  *arguments);
     if (try_catch.HasCaught()) {
       try_catch.ReThrow();
       return false;

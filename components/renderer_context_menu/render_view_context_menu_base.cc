@@ -13,7 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"
 #include "url/origin.h"
 
@@ -104,17 +105,38 @@ void AddCustomItemsToMenu(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
                 item->action),
             item->label);
+        if (item->is_experimental_feature) {
+          menu_model->SetMinorIcon(
+              menu_model->GetItemCount() - 1,
+              ui::ImageModel::FromVectorIcon(vector_icons::kScienceIcon));
+        }
+        if (item->accelerator) {
+          menu_model->SetAcceleratorAt(
+              menu_model->GetItemCount() - 1,
+              ui::Accelerator(
+                  static_cast<ui::KeyboardCode>(item->accelerator->key_code),
+                  item->accelerator->modifiers));
+          if (item->force_show_accelerator_for_item) {
+            menu_model->SetForceShowAcceleratorForItemAt(
+                menu_model->GetItemCount() - 1, true);
+          }
+        }
         break;
-      case blink::mojom::CustomContextMenuItemType::kCheckableOption:
+      case blink::mojom::CustomContextMenuItemType::kCheckableOption: {
         menu_model->AddCheckItem(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
                 item->action),
             item->label);
+        if (item->is_experimental_feature) {
+          menu_model->SetMinorIcon(
+              menu_model->GetItemCount() - 1,
+              ui::ImageModel::FromVectorIcon(vector_icons::kScienceIcon));
+        }
         break;
+      }
       case blink::mojom::CustomContextMenuItemType::kGroup:
         // TODO(viettrungluu): I don't know what this is supposed to do.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case blink::mojom::CustomContextMenuItemType::kSeparator:
         menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
         break;
@@ -130,8 +152,7 @@ void AddCustomItemsToMenu(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -170,7 +191,7 @@ RenderViewContextMenuBase::RenderViewContextMenuBase(
       menu_model_(this),
       render_frame_id_(render_frame_host.GetRoutingID()),
       render_frame_token_(render_frame_host.GetFrameToken()),
-      render_process_id_(render_frame_host.GetProcess()->GetID()),
+      render_process_id_(render_frame_host.GetProcess()->GetDeprecatedID()),
       site_instance_(render_frame_host.GetSiteInstance()),
       command_executed_(false) {}
 
@@ -270,7 +291,7 @@ void RenderViewContextMenuBase::UpdateMenuIcon(int command_id,
     return;
 
   menu_model_.SetIcon(index.value(), icon);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (toolkit_delegate_)
     toolkit_delegate_->RebuildMenu();
 #endif
@@ -427,7 +448,8 @@ void RenderViewContextMenuBase::MenuClosed(ui::SimpleMenuModel* source) {
     return;
 
   source_web_contents_->SetShowingContextMenu(false);
-  source_web_contents_->NotifyContextMenuClosed(params_.link_followed);
+  source_web_contents_->NotifyContextMenuClosed(params_.link_followed,
+                                                params_.impression);
   for (auto& observer : observers_) {
     observer.OnMenuClosed();
   }

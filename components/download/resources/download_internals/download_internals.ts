@@ -9,17 +9,11 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {DownloadInternalsBrowserProxy, ServiceEntry, ServiceRequest, ServiceStatus} from './download_internals_browser_proxy.js';
 import {DownloadInternalsBrowserProxyImpl, ServiceEntryState} from './download_internals_browser_proxy.js';
-
-declare global {
-  class JsEvalContext {
-    constructor(data: any);
-  }
-
-  function jstProcess(context: JsEvalContext, template: HTMLElement): void;
-}
+import {getFinishedServiceEntryClass, getOngoingServiceEntryClass, getServiceRequestClass} from './download_internals_visuals.js';
 
 const browserProxy: DownloadInternalsBrowserProxy =
     DownloadInternalsBrowserProxyImpl.getInstance();
@@ -28,13 +22,107 @@ const ongoingServiceEntries: ServiceEntry[] = [];
 const finishedServiceEntries: ServiceEntry[] = [];
 const serviceRequests: ServiceRequest[] = [];
 
+function getOngoingEntriesHtml(entries: ServiceEntry[]) {
+  // clang-format off
+  return html`
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>State</th>
+          <th>Client</th>
+          <th>ID</th>
+          <th>URL</th>
+          <th>Bytes Downloaded</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${entries.map(item => html`
+          <tr class="${getOngoingServiceEntryClass(item)}"
+            <td>
+              <div>${item.state}</div>
+              ${item.driver ? html`
+                <div><span>${item.driver.state}</span></div>
+              ` : ''}
+            </td>
+            <td>${item.client}</td>
+            <td>${item.guid}</td>
+            <td>${item.url}</td>
+            <td>${item.bytes_downloaded}</td>
+          </tr>
+        `)}
+      </tbody>
+    </table>
+  `;
+  // clang-format on
+}
+
+function getFinishedEntriesHtml(entries: ServiceEntry[]) {
+  // clang-format off
+  return html`
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Result</th>
+          <th>Client</th>
+          <th>ID</th>
+          <th>URL</th>
+          <th>Size</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${entries.map(item => html`
+          <tr class="${getFinishedServiceEntryClass(item)}">
+            <td>${item.result}</td>
+            <td>${item.client}</td>
+            <td>${item.guid}</td>
+            <td>
+              <div>${item.url}</div>
+              <div>${item.file_path}</div>
+            </td>
+            <td>${item.bytes_downloaded}</td>
+            <td>${item.time_downloaded}</td>
+          </tr>
+        `)}
+      </tbody>
+    </table>
+  `;
+  // clang-format on
+}
+
+function getRequestInfoHtml(requests: ServiceRequest[]) {
+  // clang-format off
+  return html`
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Result</th>
+          <th>Client</th>
+          <th>ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${requests.map(item => html`
+          <tr class="${getServiceRequestClass(item)}">
+            <td>${item.result}</td>
+            <td>${item.client}</td>
+            <td>${item.guid}</td>
+          </tr>
+        `)}
+      </tbody>
+    </table>
+  `;
+  // clang-format on
+}
+
+
 /**
  * @param list A list to remove the entry from.
  * @param guid The guid to remove from the list.
  */
 function removeGuidFromList(list: ServiceEntry[], guid: string) {
-  const index = list.findIndex(entry => entry.guid == guid);
-  if (index != -1) {
+  const index = list.findIndex(entry => entry.guid === guid);
+  if (index !== -1) {
     list.splice(index, 1);
   }
 }
@@ -45,8 +133,8 @@ function removeGuidFromList(list: ServiceEntry[], guid: string) {
  * @param list A list to update.
  */
 function addOrUpdateEntryByGuid(list: ServiceEntry[], newEntry: ServiceEntry) {
-  const index = list.findIndex(entry => entry.guid == newEntry.guid);
-  if (index != -1) {
+  const index = list.findIndex(entry => entry.guid === newEntry.guid);
+  if (index !== -1) {
     list[index] = newEntry;
   } else {
     list.unshift(newEntry);
@@ -54,14 +142,11 @@ function addOrUpdateEntryByGuid(list: ServiceEntry[], newEntry: ServiceEntry) {
 }
 
 function updateEntryTables() {
-  const ongoingInput = new JsEvalContext({entries: ongoingServiceEntries});
-  jstProcess(
-      ongoingInput,
+  render(
+      getOngoingEntriesHtml(ongoingServiceEntries),
       getRequiredElement('download-service-ongoing-entries-info'));
-
-  const finishedInput = new JsEvalContext({entries: finishedServiceEntries});
-  jstProcess(
-      finishedInput,
+  render(
+      getFinishedEntriesHtml(finishedServiceEntries),
       getRequiredElement('download-service-finished-entries-info'));
 }
 
@@ -82,7 +167,7 @@ function onServiceStatusChanged(state: ServiceStatus) {
 function onServiceDownloadsAvailable(entries: ServiceEntry[]) {
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i]!;
-    if (entry.state == ServiceEntryState.COMPLETE) {
+    if (entry.state === ServiceEntryState.COMPLETE) {
       finishedServiceEntries.unshift(entry);
     } else {
       ongoingServiceEntries.unshift(entry);
@@ -96,7 +181,7 @@ function onServiceDownloadsAvailable(entries: ServiceEntry[]) {
  * @param entry The new state for a particular download service entry.
  */
 function onServiceDownloadChanged(entry: ServiceEntry) {
-  if (entry.state == ServiceEntryState.COMPLETE) {
+  if (entry.state === ServiceEntryState.COMPLETE) {
     removeGuidFromList(ongoingServiceEntries, entry.guid);
     addOrUpdateEntryByGuid(finishedServiceEntries, entry);
   } else {
@@ -121,8 +206,9 @@ function onServiceDownloadFailed(entry: ServiceEntry) {
  */
 function onServiceRequestMade(request: ServiceRequest) {
   serviceRequests.unshift(request);
-  const input = new JsEvalContext({requests: serviceRequests});
-  jstProcess(input, getRequiredElement('download-service-request-info'));
+  render(
+      getRequestInfoHtml(serviceRequests),
+      getRequiredElement('download-service-request-info'));
 }
 
 function initialize() {

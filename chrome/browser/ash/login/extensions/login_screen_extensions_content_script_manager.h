@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -46,7 +47,8 @@ class LoginScreenExtensionsContentScriptManager final
 
  private:
   extensions::ExtensionService* GetExtensionService();
-  void DisableExtension(const extensions::ExtensionId& extension_id);
+  void DisableExtension(content::BrowserContext* browser_context,
+                        const extensions::ExtensionId& extension_id);
 
   // Unowned pointers:
   raw_ptr<Profile> const signin_original_profile_;

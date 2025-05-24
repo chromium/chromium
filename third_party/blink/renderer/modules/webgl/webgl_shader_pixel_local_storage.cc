@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgl/webgl_shader_pixel_local_storage.h"
 
 #include <array>
@@ -146,7 +141,7 @@ void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValuefvWEBGL(
     return;
   }
   context->ContextGL()->FramebufferPixelLocalClearValuefvANGLE(
-      plane, value.data() + src_offset);
+      plane, value.subspan(src_offset).data());
 }
 
 void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueivWEBGL(
@@ -165,7 +160,7 @@ void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueivWEBGL(
     return;
   }
   context->ContextGL()->FramebufferPixelLocalClearValueivANGLE(
-      plane, value.data() + src_offset);
+      plane, value.subspan(src_offset).data());
 }
 
 void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueuivWEBGL(
@@ -184,7 +179,7 @@ void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueuivWEBGL(
     return;
   }
   context->ContextGL()->FramebufferPixelLocalClearValueuivANGLE(
-      plane, value.data() + src_offset);
+      plane, value.subspan(src_offset).data());
 }
 
 void WebGLShaderPixelLocalStorage::beginPixelLocalStorageWEBGL(

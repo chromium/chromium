@@ -27,8 +27,6 @@ class AudioUIConfig : public content::DefaultWebUIConfig<AudioUI> {
   AudioUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUIAudioHost) {}
-
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The WebUI Controller for chrome://audio

@@ -128,6 +128,7 @@ goog.ui.Button.prototype.getTooltip = function() {
 /**
  * Sets the tooltip for the button, and updates its DOM.
  * @param {string} tooltip New tooltip text.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Button.prototype.setTooltip = function(tooltip) {
   'use strict';
@@ -155,6 +156,7 @@ goog.ui.Button.prototype.setTooltipInternal = function(tooltip) {
  * multiple targets.
  * @param {number} sides Bitmap of one or more {@link goog.ui.ButtonSide}s for
  *     which borders should be collapsed.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Button.prototype.setCollapsed = function(sides) {
   'use strict';

@@ -14,11 +14,12 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.CancellationSignal;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Executor;
 
@@ -26,8 +27,10 @@ import java.util.concurrent.Executor;
  * The controller used for user authentication (either with screen lock or biometrics) for devices
  * with Android V or higher.
  */
+@NullMarked
 class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorControllerImpl {
     /** The bit is used to request for mandatory biometrics. */
+    @SuppressLint("WrongConstant")
     public static final int AUTHENTICATOR_MANDATORY_BIOMETRICS = 1 << 16;
 
     /** Mandatory biometrics is not in effect. */
@@ -46,8 +49,8 @@ class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorController
      */
     public static final int BIOMETRIC_ERROR_LOCKOUT_PERMANENT = 9;
 
-    private Context mContext;
-    private BiometricPrompt mBiometricPrompt;
+    private final Context mContext;
+    private @Nullable BiometricPrompt mBiometricPrompt;
 
     public MandatoryAuthenticatorControllerImpl(Context context, Delegate delegate) {
         super(context, delegate);
@@ -118,8 +121,7 @@ class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorController
                     callbackExecutor,
                     new BiometricPrompt.AuthenticationCallback() {
                         @Override
-                        public void onAuthenticationError(
-                                int errorCode, @NonNull CharSequence errString) {
+                        public void onAuthenticationError(int errorCode, CharSequence errString) {
                             super.onAuthenticationError(errorCode, errString);
                             if (errorCode == BIOMETRIC_ERROR_LOCKOUT_PERMANENT) {
                                 // TODO (crbug.com/367683201): trigger lockout dialog.
@@ -132,7 +134,7 @@ class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorController
 
                         @Override
                         public void onAuthenticationSucceeded(
-                                @NonNull BiometricPrompt.AuthenticationResult result) {
+                                BiometricPrompt.AuthenticationResult result) {
                             super.onAuthenticationSucceeded(result);
                             MandatoryAuthenticatorControllerImpl.this.onAuthenticationSucceeded(
                                     result);
@@ -150,8 +152,7 @@ class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorController
         BiometricPrompt.Builder promptBuilder =
                 new BiometricPrompt.Builder(mContext)
                         .setTitle(
-                                mContext.getResources()
-                                        .getString(R.string.password_filling_reauth_prompt_title));
+                                mContext.getString(R.string.password_filling_reauth_prompt_title));
         if (availability == BiometricsAvailability.REQUIRED) {
             promptBuilder.setAllowedAuthenticators(AUTHENTICATOR_MANDATORY_BIOMETRICS);
         }

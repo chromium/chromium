@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.customtabs.features.branding;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties of the toolbar branding overlay. */
+@NullMarked
 public class ToolbarBrandingOverlayProperties {
     /** Color data used to determine the background, text and icon tint. */
     public static class ColorData {

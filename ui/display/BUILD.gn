@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//remoting/remoting_enable.gni")
 import("//testing/test.gni")
@@ -15,10 +14,7 @@ component("display_features") {
   ]
   defines = [ "IS_DISPLAY_FEATURES_IMPL" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//base" ]
 }
 
 component("display") {
@@ -73,6 +69,8 @@ component("display") {
       "mac/display_link_mac.h",
       "mac/display_link_mac.mm",
       "mac/screen_mac.mm",
+      "mac/screen_mac_headless.h",
+      "mac/screen_mac_headless.mm",
     ]
   }
 
@@ -98,6 +96,8 @@ component("display") {
       "win/screen_win.h",
       "win/screen_win_display.cc",
       "win/screen_win_display.h",
+      "win/screen_win_headless.cc",
+      "win/screen_win_headless.h",
       "win/uwp_text_scale_factor.cc",
       "win/uwp_text_scale_factor.h",
     ]
@@ -121,7 +121,6 @@ component("display") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//mojo/public/cpp/bindings:struct_traits",
     "//ui/display/mojom:mojom_shared_cpp_sources",
@@ -137,7 +136,10 @@ component("display") {
   if (is_win) {
     # Don't conflict with Windows' "display.dll".
     output_name = "ui_display"
-    deps += [ "//ui/gfx/mojom:dxgi_info" ]
+    deps += [
+      "//components/headless/screen_info",
+      "//ui/gfx/mojom:dxgi_info",
+    ]
     libs = [ "shcore.lib" ]
     ldflags = [ "/DELAYLOAD:shcore.dll" ]
   }
@@ -147,6 +149,7 @@ component("display") {
   }
 
   if (is_mac) {
+    deps += [ "//components/headless/screen_info" ]
     frameworks = [
       "AppKit.framework",
       "CoreGraphics.framework",
@@ -156,37 +159,7 @@ component("display") {
   }
 }
 
-if (is_chromeos_lacros) {
-  component("managed_display_info") {
-    testonly = true
-    sources = [
-      "manager/managed_display_info.cc",
-      "manager/managed_display_info.h",
-      "manager/util/display_manager_test_util.cc",
-      "manager/util/display_manager_test_util.h",
-      "manager/util/display_manager_util.cc",
-      "manager/util/display_manager_util.h",
-    ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-    public_deps = [ "//ui/display" ]
-
-    deps = [
-      "//base",
-      "//build:chromeos_buildflags",
-      "//ui/base:base",
-      "//ui/display",
-      "//ui/display/types",
-      "//ui/display/util",
-      "//ui/display/util",
-    ]
-
-    defines = [ "DISPLAY_MANAGER_IMPLEMENTATION" ]
-  }
-}
-
-if (is_chromeos_ash) {
+if (is_chromeos) {
   component("display_manager_test_api") {
     testonly = true
     sources = [
@@ -200,7 +173,6 @@ if (is_chromeos_ash) {
 
     deps = [
       "//base",
-      "//build:chromeos_buildflags",
       "//ui/display",
       "//ui/display:test_support",
       "//ui/display/types",
@@ -265,16 +237,12 @@ static_library("test_support") {
     ]
     deps += [
       "//remoting/host:display_layout",
-      "//remoting/host:x11_display_utils",
+      "//remoting/host/linux:x11_display_utils",
       "//ui/gfx/x:x",
     ]
   }
 
   if (is_chromeos) {
-    sources += [ "test/display_test_util.cc" ]
-  }
-
-  if (is_chromeos_ash) {
     sources += [
       "manager/test/action_logger.cc",
       "manager/test/action_logger.h",
@@ -292,16 +260,13 @@ static_library("test_support") {
       "manager/test/touch_device_manager_test_api.h",
       "manager/test/touch_transform_controller_test_api.cc",
       "manager/test/touch_transform_controller_test_api.h",
+      "test/display_test_util.cc",
     ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
     public_deps += [ "//ui/display/manager" ]
   }
 
-  if (is_chromeos_lacros) {
-    public_deps += [ "//ui/display:managed_display_info" ]
-  }
-
-  if (!is_mac && !is_win && !is_chromeos_ash &&
+  if (!is_mac && !is_win && !is_chromeos &&
       !(is_linux && ozone_platform_x11 && enable_remoting)) {
     sources += [
       # Virtual display util stub for unimplemented platforms.
@@ -328,6 +293,7 @@ test("display_unittests") {
   if (is_win) {
     sources += [
       "win/scaling_util_unittest.cc",
+      "win/screen_win_headless_unittest.cc",
       "win/screen_win_unittest.cc",
     ]
   }
@@ -337,7 +303,6 @@ test("display_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc/base",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
@@ -358,7 +323,11 @@ test("display_unittests") {
     sources += [ "display_change_notifier_unittest.cc" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_win) {
+    deps += [ "//components/headless/screen_info" ]
+  }
+
+  if (is_chromeos) {
     sources += [
       "manager/apply_content_protection_task_unittest.cc",
       "manager/configure_displays_task_unittest.cc",

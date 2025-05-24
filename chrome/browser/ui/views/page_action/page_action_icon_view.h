@@ -160,7 +160,6 @@ class PageActionIconView : public IconLabelBubbleView {
   virtual void OnPressed(bool activated) {}
 
   // IconLabelBubbleView:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
   void OnThemeChanged() override;
@@ -169,6 +168,8 @@ class PageActionIconView : public IconLabelBubbleView {
   bool IsTriggerableEvent(const ui::Event& event) override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;
   void UpdateBorder() override;
+
+  virtual void UpdateTooltipText();
 
  protected:
   // Calls OnExecuting and runs |command_id_| with a valid |command_updater_|.
@@ -209,6 +210,9 @@ class PageActionIconView : public IconLabelBubbleView {
  private:
   void InstallLoadingIndicator();
 
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
+
   // What color to paint the icon with.
   SkColor icon_color_ = gfx::kPlaceholderColor;
 
@@ -243,6 +247,8 @@ class PageActionIconView : public IconLabelBubbleView {
 
   base::ObserverList<PageActionIconViewObserver>::UncheckedAndDanglingUntriaged
       observer_list_;
+
+  base::CallbackListSubscription name_changed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_VIEW_H_

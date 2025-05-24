@@ -105,7 +105,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
                          scoped_refptr<BlobDataHandle>& downloaded_blob,
                          std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
                              resource_load_info_notifier_wrapper) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
@@ -193,7 +193,7 @@ PrefetchedSignedExchangeManager* PrefetchedSignedExchangeManager::MaybeCreate(
     LocalFrame* frame,
     const String& outer_link_header,
     const String& inner_link_header,
-    WebVector<std::unique_ptr<WebNavigationParams::PrefetchedSignedExchange>>
+    std::vector<std::unique_ptr<WebNavigationParams::PrefetchedSignedExchange>>
         prefetched_signed_exchanges) {
   if (prefetched_signed_exchanges.empty())
     return nullptr;

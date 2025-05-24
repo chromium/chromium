@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/payments/core/payment_options_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,7 +30,7 @@ class MockPaymentOptionsProvider : public PaymentOptionsProvider {
  public:
   MockPaymentOptionsProvider(uint32_t options) : options_(options) {}
 
-  ~MockPaymentOptionsProvider() override {}
+  ~MockPaymentOptionsProvider() override = default;
   bool request_payer_name() const override {
     return options_ & kRequestPayerName;
   }

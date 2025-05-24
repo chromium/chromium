@@ -26,7 +26,6 @@ buildflag_header("buildflags") {
   flags = [
     "USE_EXTERNAL_POPUP_MENU=$use_external_popup_menu",
     "ALLOW_CRITICAL_MEMORY_PRESSURE_HANDLING_IN_FOREGROUND=$allow_critical_memory_pressure_handling_in_foreground",
-    "ENABLE_SCREEN_CAPTURE=$enable_screen_capture",
     "MBI_MODE_PER_RENDER_PROCESS_HOST=$_mbi_mode_per_render_process_host",
     "MBI_MODE_PER_SITE_INSTANCE=$_mbi_mode_per_site_instance",
     "CONTENT_ENABLE_LEGACY_IPC=$content_enable_legacy_ipc",
@@ -110,8 +109,6 @@ source_set("common") {
     "in_process_child_thread_params.h",
     "input/actions_parser.cc",
     "input/actions_parser.h",
-    "input/events_helper.cc",
-    "input/events_helper.h",
     "input/synthetic_gesture.cc",
     "input/synthetic_gesture.h",
     "input/synthetic_gesture_controller.cc",
@@ -159,8 +156,6 @@ source_set("common") {
     "navigation_gesture.h",
     "navigation_params_utils.h",
     "origin_util.cc",
-    "peak_gpu_memory_callback.cc",
-    "peak_gpu_memory_callback.h",
     "process_type.cc",
     "process_visibility_tracker.cc",
     "process_visibility_tracker.h",
@@ -170,6 +165,8 @@ source_set("common") {
     "service_worker/forwarded_race_network_request_url_loader_factory.h",
     "service_worker/race_network_request_read_buffer_manager.cc",
     "service_worker/race_network_request_read_buffer_manager.h",
+    "service_worker/race_network_request_simple_buffer_manager.cc",
+    "service_worker/race_network_request_simple_buffer_manager.h",
     "service_worker/race_network_request_url_loader_client.cc",
     "service_worker/race_network_request_url_loader_client.h",
     "service_worker/race_network_request_write_buffer_manager.cc",
@@ -185,11 +182,12 @@ source_set("common") {
     "trace_utils.h",
     "url_schemes.cc",
     "url_schemes.h",
-    "user_agent.cc",
     "user_level_memory_pressure_signal_features.cc",
     "user_level_memory_pressure_signal_features.h",
     "web_package/signed_exchange_utils.cc",
     "web_package/signed_exchange_utils.h",
+    "web_ui_loading_util.cc",
+    "web_ui_loading_util.h",
     "webid/identity_url_loader_throttle.cc",
     "webid/identity_url_loader_throttle.h",
   ]
@@ -221,12 +219,10 @@ source_set("common") {
     "//base",
     "//base/allocator:buildflags",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
-    "//build/util:chromium_git_revision",
     "//components/discardable_memory/common",
     "//components/input",
     "//components/services/filesystem/public/mojom",
-    "//components/tracing:startup_tracing",
+    "//components/tracing:tracing_config",
     "//content:content_resources",
     "//content/common/fetch:fetch_api_request_proto",
     "//content/public/common:interfaces",
@@ -340,8 +336,8 @@ source_set("common") {
     sources += [
       "mac/attributed_string_type_converters.h",
       "mac/attributed_string_type_converters.mm",
-      "mac/task_port_policy.cc",
-      "mac/task_port_policy.h",
+      "mac/system_policy.cc",
+      "mac/system_policy.h",
     ]
     deps += [ "//sandbox/mac:seatbelt" ]
   }
@@ -375,7 +371,7 @@ source_set("common") {
     deps += [ "//ppapi/proxy:ipc_sources" ]
   }
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources -= [ "cursors/webcursor_ash.cc" ]
   }
 
@@ -507,6 +503,10 @@ mojom("mojo_bindings") {
 
   if (is_android) {
     sources += [ "gin_java_bridge.mojom" ]
+  }
+
+  if (is_win) {
+    sources += [ "sandbox_support.mojom" ]
   }
 
   enabled_features = []
@@ -648,6 +648,7 @@ mojom("mojo_bindings") {
     "//mojo/public/mojom/base",
     "//services/audio/public/mojom",
     "//services/network/public/mojom",
+    "//services/network/public/mojom:mojom_permissions_policy",
     "//services/service_manager/public/mojom",
     "//services/tracing/public/mojom",
     "//services/video_capture/public/mojom",
@@ -675,7 +676,7 @@ mojom("mojo_bindings") {
   if (is_mac) {
     sources += [
       "render_widget_host_ns_view.mojom",
-      "sandbox_support_mac.mojom",
+      "sandbox_support.mojom",
       "web_contents_ns_view_bridge.mojom",
     ]
     public_deps += [
@@ -707,13 +708,4 @@ mojom("mojo_bindings") {
   export_class_attribute = "CONTENT_EXPORT"
   export_define = "CONTENT_IMPLEMENTATION=1"
   export_header = "content/common/content_export.h"
-}
-
-fuzzer_test("content_input_actions_parser_fuzzer") {
-  sources = [ "input/actions_parser_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//content/public/common",
-    "//third_party/abseil-cpp:absl",
-  ]
 }

@@ -140,8 +140,7 @@ static bool Serialize(const Value& node,
           s->append("undefined");
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case Value::Type::FLOAT_VALUE:
@@ -152,8 +151,7 @@ static bool Serialize(const Value& node,
       break;
 
     case Value::Type::TAG:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return true;

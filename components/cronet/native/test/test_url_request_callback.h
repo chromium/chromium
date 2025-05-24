@@ -41,8 +41,7 @@ class TestUrlRequestCallback {
     CANCEL_ASYNC_WITHOUT_PAUSE,
   };
 
-  class UrlResponseInfo {
-   public:
+  struct UrlResponseInfo {
     // Construct actual response info copied from Cronet_UrlResponseInfoPtr.
     explicit UrlResponseInfo(Cronet_UrlResponseInfoPtr response_info);
     // Construct expected response info for testing.
@@ -65,30 +64,6 @@ class TestUrlRequestCallback {
     std::string proxy_server;
     int64_t received_byte_count = 0;
   };
-
-  // TODO(crbug.com/41462044): Make these private with public accessors.
-  std::vector<std::unique_ptr<UrlResponseInfo>> redirect_response_info_list_;
-  std::vector<std::string> redirect_url_list_;
-  // Owned by UrlRequest, only valid until UrlRequest is destroyed.
-  Cronet_UrlResponseInfoPtr original_response_info_ = nullptr;
-  // |response_info_| is copied from |original_response_info_|, valid after
-  // UrlRequest is destroyed.
-  std::unique_ptr<UrlResponseInfo> response_info_;
-  // Owned by UrlRequest, only valid until UrlRequest is destroyed.
-  Cronet_ErrorPtr last_error_ = nullptr;
-  // Values copied from |last_error_| valid after UrlRequest is destroyed.
-  Cronet_Error_ERROR_CODE last_error_code_ =
-      Cronet_Error_ERROR_CODE_ERROR_OTHER;
-  std::string last_error_message_;
-
-  ResponseStep response_step_ = NOTHING;
-
-  int redirect_count_ = 0;
-  bool on_error_called_ = false;
-  bool on_canceled_called_ = false;
-
-  int response_data_length_ = 0;
-  std::string response_as_string_;
 
   explicit TestUrlRequestCallback(bool direct_executor);
   virtual ~TestUrlRequestCallback();
@@ -119,7 +94,38 @@ class TestUrlRequestCallback {
 
   bool IsDone() { return done_.IsSignaled(); }
 
+  std::vector<std::unique_ptr<UrlResponseInfo>>& redirect_response_info_list() {
+    return redirect_response_info_list_;
+  }
+  std::vector<std::string>& redirect_url_list() { return redirect_url_list_; }
+  Cronet_UrlResponseInfoPtr original_response_info() const {
+    return original_response_info_;
+  }
+  UrlResponseInfo* response_info() { return response_info_.get(); }
+  Cronet_ErrorPtr last_error() const { return last_error_; }
+  Cronet_Error_ERROR_CODE last_error_code() const { return last_error_code_; }
+  std::string_view last_error_message() const { return last_error_message_; }
+  ResponseStep response_step() const { return response_step_; }
+  int redirect_count() const { return redirect_count_; }
+  bool on_error_called() const { return on_error_called_; }
+  bool on_canceled_called() const { return on_canceled_called_; }
+  int response_data_length() const { return response_data_length_; }
+  std::string_view response_as_string() const { return response_as_string_; }
+  Cronet_ExecutorPtr GetExecutorRaw() { return executor_; }
+  void set_executor(Cronet_ExecutorPtr executor) { executor_ = executor; }
+  void set_response_step(ResponseStep response_step) {
+    response_step_ = response_step;
+  }
+
  protected:
+  virtual void OnSucceeded(Cronet_UrlRequestPtr request,
+                           Cronet_UrlResponseInfoPtr info);
+
+  void StartNextRead(Cronet_UrlRequestPtr request, Cronet_BufferPtr buffer) {
+    Cronet_UrlRequest_Read(request, buffer);
+  }
+
+ private:
   class Executor;
 
   virtual void OnRedirectReceived(Cronet_UrlRequestPtr request,
@@ -134,9 +140,6 @@ class TestUrlRequestCallback {
                                Cronet_BufferPtr buffer,
                                uint64_t bytes_read);
 
-  virtual void OnSucceeded(Cronet_UrlRequestPtr request,
-                           Cronet_UrlResponseInfoPtr info);
-
   virtual void OnFailed(Cronet_UrlRequestPtr request,
                         Cronet_UrlResponseInfoPtr info,
                         Cronet_ErrorPtr error);
@@ -149,10 +152,6 @@ class TestUrlRequestCallback {
     Cronet_Buffer_InitWithAlloc(buffer, READ_BUFFER_SIZE);
 
     StartNextRead(request, buffer);
-  }
-
-  void StartNextRead(Cronet_UrlRequestPtr request, Cronet_BufferPtr buffer) {
-    Cronet_UrlRequest_Read(request, buffer);
   }
 
   void SignalDone() { done_.Signal(); }
@@ -231,6 +230,29 @@ class TestUrlRequestCallback {
 
   // Thread on which |executor_| runs callback tasks.
   std::unique_ptr<base::Thread> executor_thread_;
+
+  std::vector<std::unique_ptr<UrlResponseInfo>> redirect_response_info_list_;
+  std::vector<std::string> redirect_url_list_;
+  // Owned by UrlRequest, only valid until UrlRequest is destroyed.
+  Cronet_UrlResponseInfoPtr original_response_info_ = nullptr;
+  // |response_info_| is copied from |original_response_info_|, valid after
+  // UrlRequest is destroyed.
+  std::unique_ptr<UrlResponseInfo> response_info_;
+  // Owned by UrlRequest, only valid until UrlRequest is destroyed.
+  Cronet_ErrorPtr last_error_ = nullptr;
+  // Values copied from |last_error_| valid after UrlRequest is destroyed.
+  Cronet_Error_ERROR_CODE last_error_code_ =
+      Cronet_Error_ERROR_CODE_ERROR_OTHER;
+  std::string last_error_message_;
+
+  ResponseStep response_step_ = NOTHING;
+
+  int redirect_count_ = 0;
+  bool on_error_called_ = false;
+  bool on_canceled_called_ = false;
+
+  int response_data_length_ = 0;
+  std::string response_as_string_;
 };
 
 }  // namespace test

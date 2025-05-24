@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 namespace extensions {
 
@@ -33,7 +33,7 @@ namespace extensions {
 //  - Avoid event pages. Some events such as navigation will be even worse than
 //    background pages since it will cause the extension to be frequently
 //    loaded and unloaded. Even if your event page is "good" now, it's
-//    something that is easy to regress with inocuous looking changes, so
+//    something that is easy to regress with innocuous looking changes, so
 //    try to use explicit C++ invocation of the extension when reasonable.
 //
 // =============================================================================
@@ -44,7 +44,7 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id);
 // Checks using resource ID of manifest.
 bool IsComponentExtensionAllowlisted(int manifest_resource_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Checks using extension id for sign in profile.
 bool IsComponentExtensionAllowlistedForSignInProfile(
     const std::string& extension_id);

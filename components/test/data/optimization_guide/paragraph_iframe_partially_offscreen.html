@@ -1,0 +1,33 @@
+<html>
+<head>
+  <title>OK</title>
+</head>
+<style>
+  body {
+    margin: 0;
+  }
+  iframe {
+    border: unset;
+    position: relative;
+    top: -10px;
+    left: -20px;
+    width: 100px;
+    height: 200px;
+  }
+</style>
+<script>
+  function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const value = urlParams.get(name);
+    if (value == null)
+    	return '';
+    return value;
+  }
+
+  window.onload = function() {
+    const iframe = document.getElementById('frame1');
+    iframe.src = getQueryParam('domain') + 'paragraph.html';
+  };
+</script>
+<iframe src="" id="frame1"></iframe>
+</html>

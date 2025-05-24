@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Point} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {Point, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
@@ -57,4 +57,15 @@ export function simulateStartDrag(
   // Since pointer move responds once per frame, we need to render a frame
   // instead of just relying on flushTasks.
   return waitAfterNextRender(selectionOverlayElement);
+}
+
+// Normalizes the given values to the size of the `element` provided..
+export function normalizeBoxInElement(box: RectF, element: Element): RectF {
+  const boundingRect = element.getBoundingClientRect();
+  return {
+    x: box.x / boundingRect.width,
+    y: box.y / boundingRect.height,
+    width: box.width / boundingRect.width,
+    height: box.height / boundingRect.height,
+  };
 }

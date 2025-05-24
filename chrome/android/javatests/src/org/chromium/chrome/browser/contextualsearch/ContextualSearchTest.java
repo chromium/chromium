@@ -12,13 +12,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -31,8 +31,8 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
-    @Rule public JniMocker mocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ContextualSearchManager.Natives mContextualSearchManagerJniMock;
 
     @Override
@@ -40,8 +40,7 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
     public void setUp() throws Exception {
         super.setUp();
 
-        MockitoAnnotations.initMocks(this);
-        mocker.mock(ContextualSearchManagerJni.TEST_HOOKS, mContextualSearchManagerJniMock);
+        ContextualSearchManagerJni.setInstanceForTesting(mContextualSearchManagerJniMock);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -52,7 +51,8 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
                                     activity.getCompositorViewHolderForTesting().getLayoutManager(),
                                     mPanelManager,
                                     ProfileProvider.getOrCreateProfile(
-                                            activity.getProfileProviderSupplier().get(), false));
+                                            activity.getProfileProviderSupplier().get(), false),
+                                    activity.getBrowserControlsManager());
                     mPanel.setManagementDelegate(mContextualSearchManager);
                     mContextualSearchManager.setContextualSearchPanel(mPanel);
                     mPanelManager.setDynamicResourceLoader(new DynamicResourceLoader(0, null));
@@ -76,7 +76,7 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
         Assert.assertEquals(1, mPanelManager.getRequestPanelShowCount());
         Assert.assertEquals(0, mPanelManager.getPanelHideCount());
         Assert.assertEquals(
-                mContextualSearchManager.getSelectionController().getSelectedText(), "text");
+                "text", mContextualSearchManager.getSelectionController().getSelectedText());
 
         // Fake tap on non-text.
         mockTapEmptySpace();

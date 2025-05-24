@@ -303,19 +303,6 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_MissingRequirements) {
   EXPECT_TRUE(candidates.empty());
 }
 
-TEST_F(SharingDeviceSourceSyncTest,
-       GetDeviceCandidates_AlternativeRequirement) {
-  auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
-  auto device_info = CreateDeviceInfo(
-      "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_VAPID);
-  fake_device_info_tracker_.Add(device_info.get());
-
-  auto devices = device_source->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
-  ASSERT_EQ(1u, devices.size());
-  EXPECT_EQ(device_info->guid(), devices[0].guid());
-}
-
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_RenameAfterFiltering) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
 
@@ -384,8 +371,9 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_FCMChannel) {
 
   auto devices = device_source->GetDeviceCandidates(
       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
-  ASSERT_EQ(1u, devices.size());
-  EXPECT_EQ(device_info->guid(), devices[0].guid());
+
+  // FCM channel (VAPID) is not supported.
+  ASSERT_EQ(0u, devices.size());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_SenderIDChannel) {

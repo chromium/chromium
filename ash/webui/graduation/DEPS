@@ -1,0 +1,19 @@
+include_rules = [
+  "+chromeos/ash/components/browser_context_helper",
+]
+
+specific_include_rules = {
+  "graduation_ui_handler.cc": [
+    "+components/user_manager/user.h",
+  ],
+  "webview_auth_handler\.(cc|h)": [
+    "+components/signin/public/base",
+    "+components/signin/public/identity_manager",
+    "+google_apis/gaia",
+  ],
+   "webview_auth_handler_unittest.cc": [
+    "+components/signin/public/base",
+    "+components/signin/public/identity_manager",
+    "+google_apis/gaia",
+  ],
+}

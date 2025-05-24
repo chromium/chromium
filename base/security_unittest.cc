@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include <fcntl.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -40,7 +45,7 @@ NOINLINE Type HideValueFromCompiler(Type value) {
 #if defined(__GNUC__)
   // In a GCC compatible compiler (GCC or Clang), make this compiler barrier
   // more robust.
-  __asm__ volatile ("" : "+r" (value));
+  __asm__ volatile("" : "+r"(value));
 #endif  // __GNUC__
   return value;
 }
@@ -54,8 +59,7 @@ void OverflowTestsSoftExpectTrue(bool overflow_detected) {
     BUILDFLAG(IS_APPLE)
     // Sadly, on Linux, Android, and OSX we don't have a good story yet. Don't
     // fail the test, but report.
-    printf("Platform has overflow: %s\n",
-           !overflow_detected ? "yes." : "no.");
+    printf("Platform has overflow: %s\n", !overflow_detected ? "yes." : "no.");
 #else
     // Otherwise, fail the test. (Note: EXPECT are ok in subfunctions, ASSERT
     // aren't).

@@ -39,7 +39,7 @@ suite('CrPolicyPrefIndicator', function() {
     const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
     assertTrue(icon.hidden);
 
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     // Check indicator behavior for a preference controlled by the device owner.
     indicator.set(
         'pref.controlledBy', chrome.settingsPrivate.ControlledBy.OWNER);
@@ -69,7 +69,7 @@ suite('CrPolicyPrefIndicator', function() {
     flush();
     assertEquals('matches', icon.tooltipText);
 
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     // Check indicator behavior for a preference that is enforced for a
     // supervised user.
     indicator.set(

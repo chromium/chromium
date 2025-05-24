@@ -6,6 +6,7 @@
 #define EXTENSIONS_COMMON_STACK_FRAME_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
 #include <string>

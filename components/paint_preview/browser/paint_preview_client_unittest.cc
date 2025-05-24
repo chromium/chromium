@@ -116,7 +116,7 @@ class PaintPreviewClientRenderViewHostTest
     : public content::RenderViewHostTestHarness,
       public testing::WithParamInterface<RecordingPersistence> {
  public:
-  PaintPreviewClientRenderViewHostTest() {}
+  PaintPreviewClientRenderViewHostTest() = default;
 
  protected:
   void SetUp() override {
@@ -234,8 +234,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
           } break;
 
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
 
         quit.Run();

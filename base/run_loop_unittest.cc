@@ -68,8 +68,9 @@ class SimpleSingleThreadTaskRunner : public SingleThreadTaskRunner {
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
                        base::TimeDelta delay) override {
-    if (delay.is_positive())
+    if (delay.is_positive()) {
       return false;
+    }
     AutoLock auto_lock(tasks_lock_);
     pending_tasks_.push(std::move(task));
     return true;
@@ -89,8 +90,9 @@ class SimpleSingleThreadTaskRunner : public SingleThreadTaskRunner {
     OnceClosure task;
     {
       AutoLock auto_lock(tasks_lock_);
-      if (pending_tasks_.empty())
+      if (pending_tasks_.empty()) {
         return false;
+      }
       task = std::move(pending_tasks_.front());
       pending_tasks_.pop();
     }
@@ -126,8 +128,9 @@ class InjectableTestDelegate : public RunLoop::Delegate {
 
   bool RunInjectedClosure() {
     AutoLock auto_lock(closure_lock_);
-    if (closure_.is_null())
+    if (closure_.is_null()) {
       return false;
+    }
     std::move(closure_).Run();
     return true;
   }
@@ -164,14 +167,18 @@ class TestBoundDelegate final : public InjectableTestDelegate {
     nested_run_allowing_tasks_incoming_ = false;
 
     while (!should_quit_) {
-      if (application_tasks_allowed && simple_task_runner_->ProcessSingleTask())
+      if (application_tasks_allowed &&
+          simple_task_runner_->ProcessSingleTask()) {
         continue;
+      }
 
-      if (ShouldQuitWhenIdle())
+      if (ShouldQuitWhenIdle()) {
         break;
+      }
 
-      if (RunInjectedClosure())
+      if (RunInjectedClosure()) {
         continue;
+      }
 
       PlatformThread::YieldCurrentThread();
     }
@@ -438,7 +445,7 @@ TEST_P(RunLoopTest, IsRunningOnCurrentThread) {
   EXPECT_FALSE(RunLoop::IsRunningOnCurrentThread());
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      BindOnce([]() { EXPECT_TRUE(RunLoop::IsRunningOnCurrentThread()); }));
+      BindOnce([] { EXPECT_TRUE(RunLoop::IsRunningOnCurrentThread()); }));
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop_.QuitClosure());
   run_loop_.Run();
@@ -448,15 +455,14 @@ TEST_P(RunLoopTest, IsNestedOnCurrentThread) {
   EXPECT_FALSE(RunLoop::IsNestedOnCurrentThread());
 
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, BindOnce([]() {
+      FROM_HERE, BindOnce([] {
         EXPECT_FALSE(RunLoop::IsNestedOnCurrentThread());
 
         RunLoop nested_run_loop(RunLoop::Type::kNestableTasksAllowed);
 
         SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, BindOnce([]() {
-              EXPECT_TRUE(RunLoop::IsNestedOnCurrentThread());
-            }));
+            FROM_HERE,
+            BindOnce([] { EXPECT_TRUE(RunLoop::IsNestedOnCurrentThread()); }));
         SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, nested_run_loop.QuitClosure());
 
@@ -521,8 +527,8 @@ class MockNestingObserver : public RunLoop::NestingObserver {
   MockNestingObserver& operator=(const MockNestingObserver&) = delete;
 
   // RunLoop::NestingObserver:
-  MOCK_METHOD0(OnBeginNestedRunLoop, void());
-  MOCK_METHOD0(OnExitNestedRunLoop, void());
+  MOCK_METHOD(void, OnBeginNestedRunLoop, ());
+  MOCK_METHOD(void, OnExitNestedRunLoop, ());
 };
 
 class MockTask {
@@ -543,7 +549,7 @@ TEST_P(RunLoopTest, NestingObservers) {
 
   RunLoop::AddNestingObserverOnCurrentThread(&nesting_observer);
 
-  const RepeatingClosure run_nested_loop = BindRepeating([]() {
+  const RepeatingClosure run_nested_loop = BindRepeating([] {
     RunLoop nested_run_loop(RunLoop::Type::kNestableTasksAllowed);
     SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, nested_run_loop.QuitClosure());

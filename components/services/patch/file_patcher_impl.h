@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SERVICES_PATCH_FILE_PATCHER_IMPL_H_
 #define COMPONENTS_SERVICES_PATCH_FILE_PATCHER_IMPL_H_
 
-#include "base/files/file.h"
+#include "base/functional/callback_forward.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -36,6 +36,12 @@ class FilePatcherImpl : public mojom::FilePatcher {
                           base::File patch_file_path,
                           base::File output_file_path,
                           PatchFilePuffPatchCallback callback) override;
+
+  void PatchFileZucchini(
+      base::File input_file_path,
+      base::File patch_file_path,
+      base::File output_file_path,
+      base::OnceCallback<void(zucchini::status::Code)> callback) override;
 
   mojo::Receiver<mojom::FilePatcher> receiver_{this};
 };

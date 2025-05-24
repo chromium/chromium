@@ -12,11 +12,13 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/guest_view/common/guest_view.mojom.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_version_base_info.h"
@@ -26,7 +28,6 @@
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/user_agent.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
@@ -113,7 +114,7 @@ ShellContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
 void ShellContentBrowserClient::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
 #if BUILDFLAG(ENABLE_NACL)
-  int render_process_id = host->GetID();
+  int render_process_id = host->GetDeprecatedID();
   BrowserContext* browser_context = browser_main_parts_->browser_context();
 
   // PluginInfoMessageFilter is not required because app_shell does not have
@@ -128,9 +129,9 @@ bool ShellContentBrowserClient::ShouldUseProcessPerSite(
     content::BrowserContext* browser_context,
     const GURL& site_url) {
   // This ensures that all render views created for a single app will use the
-  // same render process (see content::SiteInstance::GetProcess). Otherwise the
-  // default behavior of ContentBrowserClient will lead to separate render
-  // processes for the background page and each app window view.
+  // same render process (see content::SiteInstance::GetOrCreateProcess).
+  // Otherwise the default behavior of ContentBrowserClient will lead to
+  // separate render processes for the background page and each app window view.
   return true;
 }
 
@@ -168,7 +169,7 @@ void ShellContentBrowserClient::SiteInstanceGotProcessAndSite(
   }
 
   ProcessMap::Get(browser_main_parts_->browser_context())
-      ->Insert(extension->id(), site_instance->GetProcess()->GetID());
+      ->Insert(extension->id(), site_instance->GetProcess()->GetDeprecatedID());
 }
 
 void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
@@ -220,15 +221,16 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
-  associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
-      &RendererStartupHelper::BindForRenderer, render_process_host->GetID()));
+  associated_registry->AddInterface<mojom::RendererHost>(
+      base::BindRepeating(&RendererStartupHelper::BindForRenderer,
+                          render_process_host->GetDeprecatedID()));
 }
 
 void ShellContentBrowserClient::
     RegisterAssociatedInterfaceBindersForRenderFrameHost(
         content::RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
-  int render_process_id = render_frame_host.GetProcess()->GetID();
+  int render_process_id = render_frame_host.GetProcess()->GetDeprecatedID();
   associated_registry.AddInterface<mojom::EventRouter>(
       base::BindRepeating(&EventRouter::BindForRenderer, render_process_id));
   associated_registry.AddInterface<mojom::RendererHost>(base::BindRepeating(
@@ -250,17 +252,17 @@ void ShellContentBrowserClient::
                           render_frame_host.GetGlobalId()));
 }
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-ShellContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* navigation_handle) {
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+void ShellContentBrowserClient::CreateThrottlesForNavigation(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& navigation_handle =
+      registry.GetNavigationHandle();
   if (!extensions::ExtensionsBrowserClient::Get()
            ->AreExtensionsDisabledForContext(
-               navigation_handle->GetWebContents()->GetBrowserContext())) {
-    throttles.push_back(
-        std::make_unique<ExtensionNavigationThrottle>(navigation_handle));
+               navigation_handle.GetWebContents()->GetBrowserContext())) {
+    registry.AddThrottle(
+        std::make_unique<ExtensionNavigationThrottle>(registry));
   }
-  return throttles;
+  WebViewGuest::MaybeCreateAndAddNavigationThrottle(registry);
 }
 
 std::unique_ptr<content::NavigationUIData>
@@ -360,6 +362,7 @@ bool ShellContentBrowserClient::HandleExternalProtocol(
     bool has_user_gesture,
     const std::optional<url::Origin>& initiating_origin,
     content::RenderFrameHost* initiator_document,
+    const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   return false;
 }
@@ -368,9 +371,11 @@ void ShellContentBrowserClient::OverrideURLLoaderFactoryParams(
     content::BrowserContext* browser_context,
     const url::Origin& origin,
     bool is_for_isolated_world,
+    bool is_for_service_worker,
     network::mojom::URLLoaderFactoryParams* factory_params) {
   URLLoaderFactoryManager::OverrideURLLoaderFactoryParams(
-      browser_context, origin, is_for_isolated_world, factory_params);
+      browser_context, origin, is_for_isolated_world, is_for_service_worker,
+      factory_params);
 }
 
 base::FilePath
@@ -381,7 +386,7 @@ ShellContentBrowserClient::GetSandboxedStorageServiceDataDirectory() {
 std::string ShellContentBrowserClient::GetUserAgent() {
   // Must contain a user agent string for version sniffing. For example,
   // pluginless WebRTC Hangouts checks the Chrome version number.
-  return content::BuildUserAgentFromProduct("Chrome/" PRODUCT_VERSION);
+  return embedder_support::GetUserAgent();
 }
 
 std::unique_ptr<ShellBrowserMainParts>

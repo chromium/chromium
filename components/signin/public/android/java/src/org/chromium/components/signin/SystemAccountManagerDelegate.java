@@ -4,6 +4,8 @@
 
 package org.chromium.components.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -22,8 +24,6 @@ import android.os.PatternMatcher;
 import android.os.Process;
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
-
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 
@@ -33,8 +33,14 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.metrics.FetchAccountCapabilitiesFromSystemLibraryResult;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.io.IOException;
 
@@ -42,9 +48,10 @@ import java.io.IOException;
  * Default implementation of {@link AccountManagerDelegate} which delegates all calls to the
  * Android account manager.
  */
+@NullMarked
 public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     private final AccountManager mAccountManager;
-    private AccountsChangeObserver mObserver;
+    private @Nullable AccountsChangeObserver mObserver;
 
     private static final String TAG = "Auth";
 
@@ -67,7 +74,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
                 new BroadcastReceiver() {
                     @Override
                     public void onReceive(final Context context, final Intent intent) {
-                        mObserver.onCoreAccountInfosChanged();
+                        assumeNonNull(mObserver).onCoreAccountInfosChanged();
                     }
                 };
         IntentFilter accountsChangedIntentFilter = new IntentFilter();
@@ -105,7 +112,8 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public AccessTokenData getAuthToken(Account account, String authTokenScope)
+    @NullUnmarked
+    public AccessTokenData getAccessToken(Account account, String authTokenScope)
             throws AuthException {
         ThreadUtils.assertOnBackgroundThread();
         assert AccountUtils.GOOGLE_ACCOUNT_TYPE.equals(account.type);
@@ -117,22 +125,33 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
             // This case includes a UserRecoverableNotifiedException, but most clients will have
             // their own retry mechanism anyway.
             throw new AuthException(
-                    AuthException.NONTRANSIENT,
                     "Error while getting token for scope '" + authTokenScope + "'",
-                    ex);
+                    ex,
+                    new GoogleServiceAuthError(
+                            GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
         } catch (IOException ex) {
-            throw new AuthException(AuthException.TRANSIENT, ex);
+            throw new AuthException(
+                    "Error while getting token for scope '" + authTokenScope + "'",
+                    ex,
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.CONNECTION_FAILED));
         }
     }
 
     @Override
-    public void invalidateAuthToken(String authToken) throws AuthException {
+    public void invalidateAccessToken(String authToken) throws AuthException {
         try {
             GoogleAuthUtil.clearToken(ContextUtils.getApplicationContext(), authToken);
         } catch (GoogleAuthException ex) {
-            throw new AuthException(AuthException.NONTRANSIENT, ex);
+            throw new AuthException(
+                    "Error while invalidating access token",
+                    ex,
+                    new GoogleServiceAuthError(
+                            GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
         } catch (IOException ex) {
-            throw new AuthException(AuthException.TRANSIENT, ex);
+            throw new AuthException(
+                    "Error while invalidating access token",
+                    ex,
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.CONNECTION_FAILED));
         }
     }
 
@@ -153,18 +172,18 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public @CapabilityResponse int hasCapability(Account account, String capability) {
+    public @CapabilityResponse int hasCapability(@Nullable Account account, String capability) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.AccountCapabilities.GetFromSystemLibraryResult",
                 FetchAccountCapabilitiesFromSystemLibraryResult.API_NOT_AVAILABLE,
-                FetchAccountCapabilitiesFromSystemLibraryResult.MAX_VALUE + 1);
+                FetchAccountCapabilitiesFromSystemLibraryResult.MAX_VALUE);
         return CapabilityResponse.EXCEPTION;
     }
 
     // No permission is needed on 23+ and Chrome always has MANAGE_ACCOUNTS permission on lower APIs
     @SuppressLint("MissingPermission")
     @Override
-    public void createAddAccountIntent(Callback<Intent> callback) {
+    public void createAddAccountIntent(Callback<@Nullable Intent> callback) {
         AccountManagerCallback<Bundle> accountManagerCallback =
                 accountManagerFuture -> {
                     try {
@@ -189,7 +208,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     @SuppressLint("MissingPermission")
     @Override
     public void updateCredentials(
-            Account account, Activity activity, final Callback<Boolean> callback) {
+            Account account, Activity activity, final @Nullable Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
         AccountManagerCallback<Bundle> realCallback =
                 future -> {
@@ -214,11 +233,12 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
                 account, "android", emptyOptions, activity, realCallback, null);
     }
 
-    @Nullable
     @Override
-    public String getAccountGaiaId(String accountEmail) {
+    public @Nullable GaiaId getAccountGaiaId(String accountEmail) {
         try {
-            return GoogleAuthUtil.getAccountId(ContextUtils.getApplicationContext(), accountEmail);
+            return new GaiaId(
+                    GoogleAuthUtil.getAccountId(
+                            ContextUtils.getApplicationContext(), accountEmail));
         } catch (IOException | GoogleAuthException ex) {
             Log.e(TAG, "SystemAccountManagerDelegate.getAccountGaiaId", ex);
             return null;
@@ -226,7 +246,8 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback) {
+    public void confirmCredentials(
+            Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback) {
         AccountManagerCallback<Bundle> accountManagerCallback =
                 (accountManagerFuture) -> {
                     @Nullable Bundle result = null;

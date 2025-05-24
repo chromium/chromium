@@ -5,15 +5,16 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_ANALYSIS_SETTINGS_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_ANALYSIS_SETTINGS_H_
 
+#include <map>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -85,7 +86,7 @@ struct LocalAnalysisSettings {
 };
 
 class CloudOrLocalAnalysisSettings
-    : public absl::variant<CloudAnalysisSettings, LocalAnalysisSettings> {
+    : public std::variant<CloudAnalysisSettings, LocalAnalysisSettings> {
  public:
   CloudOrLocalAnalysisSettings();
   explicit CloudOrLocalAnalysisSettings(CloudAnalysisSettings settings);

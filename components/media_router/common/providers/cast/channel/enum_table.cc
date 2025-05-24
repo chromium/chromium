@@ -29,8 +29,9 @@ const GenericEnumTableEntry* GenericEnumTableEntry::FindByString(
     std::string_view str) {
   for (std::size_t i = 0; i < size; i++) {
     if (data[i].length == str.length() &&
-        std::memcmp(data[i].chars, str.data(), str.length()) == 0)
+        std::memcmp(data[i].chars, str.data(), str.length()) == 0) {
       return &data[i];
+    }
   }
   return nullptr;
 }
@@ -41,8 +42,9 @@ std::optional<std::string_view> GenericEnumTableEntry::FindByValue(
     std::size_t size,
     int value) {
   for (std::size_t i = 0; i < size; i++) {
-    if (data[i].value == value && data[i].has_str())
+    if (data[i].value == value && data[i].has_str()) {
       return data[i].str();
+    }
   }
   return std::nullopt;
 }

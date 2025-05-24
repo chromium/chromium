@@ -48,7 +48,7 @@ class LoginUserViewUnittest : public LoginTestBase {
     LoginUserInfo user =
         public_account ? CreatePublicAccountUser(email) : CreateUser(email);
     view->UpdateForUser(user, false /*animate*/);
-    container_->AddChildView(view);
+    container_->AddChildViewRaw(view);
     container_->InvalidateLayout();
     views::test::RunScheduledLayout(widget());
     return view;
@@ -65,7 +65,7 @@ class LoginUserViewUnittest : public LoginTestBase {
     auto* root = new views::View();
     root->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
-    root->AddChildView(container_.get());
+    root->AddChildViewRaw(container_.get());
     SetWidget(CreateWidgetWithContent(root));
   }
 

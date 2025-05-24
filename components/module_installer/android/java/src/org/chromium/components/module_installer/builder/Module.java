@@ -15,7 +15,8 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.module_installer.engine.InstallEngine;
 import org.chromium.components.module_installer.engine.InstallListener;
 
@@ -27,14 +28,15 @@ import org.chromium.components.module_installer.engine.InstallListener;
  * @param <T> The interface of the module
  */
 @JNINamespace("module_installer")
+@NullMarked
 public class Module<T> {
     private final String mName;
     private final Class<T> mInterfaceClass;
     private final String mImplClassName;
-    private ModuleDescriptor mModuleDescriptor;
-    private Context mContext;
-    private T mImpl;
-    private InstallEngine mInstaller;
+    private @Nullable ModuleDescriptor mModuleDescriptor;
+    private @Nullable Context mContext;
+    private @Nullable T mImpl;
+    private @Nullable InstallEngine mInstaller;
     private boolean mIsNativeLoaded;
 
     /**
@@ -156,7 +158,7 @@ public class Module<T> {
     private ModuleDescriptor getModuleDescriptor() {
         ModuleDescriptor ret = mModuleDescriptor;
         if (ret == null) {
-            if (BuildConfig.IS_BUNDLE) {
+            if (BundleUtils.isBundle()) {
                 ret =
                         (ModuleDescriptor)
                                 instantiateReflectively(
@@ -187,7 +189,7 @@ public class Module<T> {
     }
 
     /** Returns the Context associated with the module. */
-    public Context getContext() {
+    public @Nullable Context getContext() {
         // Ensure mContext is initialized.
         getImpl();
         return mContext;
@@ -208,7 +210,7 @@ public class Module<T> {
             context = ContextUtils.getApplicationContext();
             String moduleName = mName;
             if (BundleUtils.isIsolatedSplitInstalled(moduleName)) {
-                context = BundleUtils.createIsolatedSplitContext(context, moduleName);
+                context = BundleUtils.createIsolatedSplitContext(moduleName);
             }
         }
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

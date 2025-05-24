@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/preferences/preferences.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -13,10 +14,8 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -40,6 +39,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -113,7 +113,7 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
     }
 
    protected:
-    ~State() override {}
+    ~State() override = default;
 
    private:
     const raw_ptr<MyMockInputMethodManager> manager_;
@@ -127,7 +127,7 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
     state_ = new State(this);
   }
 
-  ~MyMockInputMethodManager() override {}
+  ~MyMockInputMethodManager() override = default;
 
   std::string last_input_method_id_;
 
@@ -141,12 +141,12 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
 
 class PreferencesTest : public testing::Test {
  public:
-  PreferencesTest() {}
+  PreferencesTest() = default;
 
   PreferencesTest(const PreferencesTest&) = delete;
   PreferencesTest& operator=(const PreferencesTest&) = delete;
 
-  ~PreferencesTest() override {}
+  ~PreferencesTest() override = default;
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -211,7 +211,6 @@ class PreferencesTest : public testing::Test {
   StringPrefMember previous_input_method_;
   StringPrefMember current_input_method_;
   BooleanPrefMember consumer_auto_update_toggle_;
-  base::test::ScopedFeatureList feature_list_;
 
   // Not owned.
   raw_ptr<FakeChromeUserManager> user_manager_;
@@ -255,21 +254,10 @@ TEST_F(PreferencesTest, TestConsumerAutoUpdateToggleOnSignals) {
 }
 
 TEST_F(PreferencesTest, TestDeviceOwnerInitCAUFeatureEnabled) {
-  feature_list_.InitAndEnableFeature(
-      features::kConsumerAutoUpdateToggleAllowed);
   user_manager_->SetOwnerId(test_user_->GetAccountId());
   InitPreferences();
   EXPECT_EQ(0, fake_update_engine_client_->toggle_feature_count());
   EXPECT_EQ(1, fake_update_engine_client_->is_feature_enabled_count());
-}
-
-TEST_F(PreferencesTest, TestDeviceOwnerInitCAUFeatureDisabled) {
-  feature_list_.InitAndDisableFeature(
-      features::kConsumerAutoUpdateToggleAllowed);
-  user_manager_->SetOwnerId(test_user_->GetAccountId());
-  InitPreferences();
-  EXPECT_EQ(1, fake_update_engine_client_->toggle_feature_count());
-  EXPECT_EQ(0, fake_update_engine_client_->is_feature_enabled_count());
 }
 
 TEST_F(PreferencesTest, TestNonDeviceOwnerInitCAUCheck) {
@@ -727,6 +715,50 @@ TEST_F(InputMethodPreferencesTest, MergeAfterSyncing) {
             ToInputMethodIds("xkb:jp::jpn"),
         std::string(kIdentityIMEID) + "," + kUnknownIMEID);
   }
+}
+
+TEST_F(InputMethodPreferencesTest, ConfiguredByPolicyPrefs) {
+  const auto input_methods =
+      base::Value::List().Append("xkb:us::eng").Append("xkb:jp::jpn");
+
+  InitPreferences();
+  // No restriction on allowed input methods, one default is enabled.
+  EXPECT_EQ(
+      0U,
+      mock_manager_->GetActiveIMEState()->GetAllowedInputMethodIds().size());
+  EXPECT_EQ(
+      1U,
+      mock_manager_->GetActiveIMEState()->GetEnabledInputMethodIds().size());
+
+  // Setting only AllowedInputMethodsForceEnabled does nothing.
+  pref_service_->SetManagedPref(prefs::kLanguageAllowedInputMethodsForceEnabled,
+                                base::Value(true));
+  EXPECT_EQ(
+      0U,
+      mock_manager_->GetActiveIMEState()->GetAllowedInputMethodIds().size());
+  EXPECT_EQ(
+      1U,
+      mock_manager_->GetActiveIMEState()->GetEnabledInputMethodIds().size());
+
+  // Setting only AllowedInputMethods enforces allowed, but doesn't enable them.
+  pref_service_->SetManagedPref(prefs::kLanguageAllowedInputMethodsForceEnabled,
+                                base::Value(false));
+  pref_service_->SetManagedPref(prefs::kLanguageAllowedInputMethods,
+                                input_methods.Clone());
+  EXPECT_THAT(mock_manager_->GetActiveIMEState()->GetAllowedInputMethodIds(),
+              testing::ElementsAre("xkb:us::eng", "xkb:jp::jpn"));
+  EXPECT_EQ(
+      1U,
+      mock_manager_->GetActiveIMEState()->GetEnabledInputMethodIds().size());
+
+  // Setting AllowedInputMethodsForceEnabled enforces all currently allowed
+  // input methods.
+  pref_service_->SetManagedPref(prefs::kLanguageAllowedInputMethodsForceEnabled,
+                                base::Value(true));
+  EXPECT_THAT(mock_manager_->GetActiveIMEState()->GetAllowedInputMethodIds(),
+              testing::ElementsAre("xkb:us::eng", "xkb:jp::jpn"));
+  EXPECT_THAT(mock_manager_->GetActiveIMEState()->GetEnabledInputMethodIds(),
+              testing::ElementsAre("xkb:us::eng", "xkb:jp::jpn"));
 }
 
 }  // namespace ash

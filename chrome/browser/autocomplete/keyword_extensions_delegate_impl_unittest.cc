@@ -30,14 +30,14 @@ namespace {
 
 class KeywordExtensionsDelegateImplTest : public ExtensionServiceTestBase {
  public:
-  KeywordExtensionsDelegateImplTest() {}
+  KeywordExtensionsDelegateImplTest() = default;
 
   KeywordExtensionsDelegateImplTest(const KeywordExtensionsDelegateImplTest&) =
       delete;
   KeywordExtensionsDelegateImplTest& operator=(
       const KeywordExtensionsDelegateImplTest&) = delete;
 
-  ~KeywordExtensionsDelegateImplTest() override {}
+  ~KeywordExtensionsDelegateImplTest() override = default;
 
  protected:
   void SetUp() override;
@@ -65,7 +65,7 @@ void KeywordExtensionsDelegateImplTest::RunTest(bool incognito) {
 
     TestExtensionRegistryObserver load_observer(registry());
     scoped_refptr<UnpackedInstaller> installer(
-        UnpackedInstaller::Create(service()));
+        UnpackedInstaller::Create(profile()));
     installer->Load(path);
     EXPECT_TRUE(load_observer.WaitForExtensionInstalled());
   }

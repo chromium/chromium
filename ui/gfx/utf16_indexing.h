@@ -7,15 +7,16 @@
 
 #include <stddef.h>
 
-#include <string>
+#include <string_view>
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
 // Returns false if s[index-1] is a high surrogate and s[index] is a low
 // surrogate, true otherwise.
-GFX_EXPORT bool IsValidCodePointIndex(const std::u16string& s, size_t index);
+COMPONENT_EXPORT(GFX)
+bool IsValidCodePointIndex(std::u16string_view s, size_t index);
 
 // |UTF16IndexToOffset| returns the number of code points between |base| and
 // |pos| in the given string. |UTF16OffsetToIndex| returns the index that is
@@ -40,12 +41,10 @@ GFX_EXPORT bool IsValidCodePointIndex(const std::u16string& s, size_t index);
 //   Always,
 //     UTF16IndexToOffset(s, base, UTF16OffsetToIndex(s, base, ofs)) == ofs
 //     UTF16IndexToOffset(s, i, j) == -UTF16IndexToOffset(s, j, i)
-GFX_EXPORT ptrdiff_t UTF16IndexToOffset(const std::u16string& s,
-                                        size_t base,
-                                        size_t pos);
-GFX_EXPORT size_t UTF16OffsetToIndex(const std::u16string& s,
-                                     size_t base,
-                                     ptrdiff_t offset);
+COMPONENT_EXPORT(GFX)
+ptrdiff_t UTF16IndexToOffset(std::u16string_view s, size_t base, size_t pos);
+COMPONENT_EXPORT(GFX)
+size_t UTF16OffsetToIndex(std::u16string_view s, size_t base, ptrdiff_t offset);
 
 }  // namespace gfx
 

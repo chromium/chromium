@@ -49,8 +49,7 @@ OfflinePagesNamespaceEnumeration ToNamespaceEnum(
 std::string AddHistogramSuffix(const std::string& name_space,
                                const char* histogram_name) {
   if (name_space.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return histogram_name;
+    NOTREACHED();
   }
   std::string adjusted_histogram_name(histogram_name);
   adjusted_histogram_name += ".";

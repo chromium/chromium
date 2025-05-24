@@ -36,11 +36,11 @@ public class SaveBitmapDelegate {
 
     /**
      * The SaveBitmapDelegate constructor.
+     *
      * @param context The context to use.
      * @param bitmap The bitmap to save.
      * @param fileNameResource The file name resource id to use when saving the image.
      * @param callback The callback to run when download is complete.
-     * @param permissionDelegate The permission delegate for requesting storage permissions.
      */
     public SaveBitmapDelegate(
             Context context,

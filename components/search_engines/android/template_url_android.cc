@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/search_engines/template_url.h"
+#include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/search_engines/android/jni_headers/TemplateUrl_jni.h"
@@ -32,14 +33,21 @@ ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetKeyword(JNIEnv* env,
   return base::android::ConvertUTF16ToJavaString(env, template_url->keyword());
 }
 
+ScopedJavaLocalRef<jobject> JNI_TemplateUrl_GetFaviconURL(
+    JNIEnv* env,
+    jlong template_url_ptr) {
+  TemplateURL* template_url = ToTemplateURL(template_url_ptr);
+
+  return url::GURLAndroid::FromNativeGURL(env, template_url->favicon_url());
+}
+
 jboolean JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
     JNIEnv* env,
     jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return template_url->prepopulate_id() > 0 ||
-         template_url->created_by_policy() !=
-             TemplateURLData::CreatedByPolicy::kNoPolicy ||
-         template_url->created_from_play_api();
+         template_url->CreatedByPolicy() ||
+         template_url->CreatedByRegulatoryProgram();
 }
 
 jlong JNI_TemplateUrl_GetLastVisitedTime(JNIEnv* env, jlong template_url_ptr) {

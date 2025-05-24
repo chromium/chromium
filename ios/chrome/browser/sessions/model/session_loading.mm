@@ -235,18 +235,6 @@ ios::proto::WebStateListStorage LoadSessionStorage(
     const auto web_state_id =
         web::WebStateID::FromSerializedValue(item.identifier());
 
-    const base::FilePath web_state_dir =
-        WebStateDirectory(directory, web_state_id);
-
-    const base::FilePath web_state_storage_file =
-        web_state_dir.Append(kWebStateStorageFilename);
-
-    // If the item storage does not exist, then the session has been
-    // corrupted; return an empty session.
-    if (!FileExists(web_state_storage_file)) {
-      return EmptyWebStateListStorage();
-    }
-
     // If the item would be empty, drop it before restoration.
     if (!item.metadata().navigation_item_count()) {
       items_to_drop.push_back(index);

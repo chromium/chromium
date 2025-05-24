@@ -124,7 +124,7 @@ void ExtensionGCMAppHandler::OnExtensionUnloaded(
     // GCMAccountMapper, which is automatically added and removed by
     // GCMDriverDesktop.
     //
-    // Also note that the GCM message routing will not be interruptted during
+    // Also note that the GCM message routing will not be interrupted during
     // the update process since unloading and reloading extension are done in
     // the single function ExtensionService::AddExtension.
     AddDummyAppHandler();
@@ -135,7 +135,7 @@ void ExtensionGCMAppHandler::OnExtensionUnloaded(
                        weak_factory_.GetWeakPtr()));
   }
 
-  // When the extention is being uninstalled, it will be unloaded first. We
+  // When the extension is being uninstalled, it will be unloaded first. We
   // should not remove the app handler in this case and it will be handled
   // in OnExtensionUninstalled.
   if (reason != UnloadedExtensionReason::UNINSTALL)

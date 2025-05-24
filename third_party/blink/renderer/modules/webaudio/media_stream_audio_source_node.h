@@ -63,6 +63,9 @@ class MediaStreamAudioSourceNode final
 
   // AudioSourceProviderClient
   void SetFormat(uint32_t number_of_channels, float sample_rate) override;
+  void lock() override {}
+  void unlock() override {}
+  void OnCurrentSrcChanged(const KURL& current_src) override {}
 
   // InspectorHelperMixin
   void ReportDidCreate() final;

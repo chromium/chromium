@@ -3,3 +3,11 @@ file://ash/webui/PLATFORM_OWNERS
 per-file *bluetooth*=file://ash/webui/common/resources/bluetooth/OWNERS
 per-file *net*=file://ash/webui/common/resources/network/OWNERS
 per-file cros_components*=file://third_party/cros-components/OWNERS
+
+# We're trying to avoid taking new dependencies on ash. But when they
+# happen, we want the chrome-side review to be easy for OWNERS there,
+# leaving the ash-side to approve or reject the new dependency.
+per-file DEPS=set noparent
+per-file DEPS=file://chrome/browser/ash/REFACTORING_OWNERS
+per-file .../DEPS=set noparent
+per-file .../DEPS=file://chrome/browser/ash/REFACTORING_OWNERS

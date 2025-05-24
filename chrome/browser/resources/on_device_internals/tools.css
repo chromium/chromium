@@ -1,0 +1,142 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/md_select_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit cr-hidden-style-lit md-select-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  margin: auto;
+  max-width: 800px;
+  padding: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    color: var(--google-grey-200);
+  }
+}
+
+.throbber {
+  background: url(chrome://resources/images/throbber_small.svg) no-repeat;
+  display: block;
+  height: 20px;
+  margin: auto;
+  width: 20px;
+}
+
+#textInput {
+  --cr-input-error-display: none;
+  margin: 0 0 10px 0;
+}
+
+.output-options {
+  margin-top: 20px;
+}
+
+.output-options cr-input {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline-end: 20px;
+  width: 100px;
+}
+
+.performance-class {
+  padding-bottom: 20px;
+  text-align: center;
+}
+
+.model-text {
+  margin: 15px 5px 20px 0;
+}
+
+.session {
+  margin-top: 20px;
+}
+
+.action-button {
+  margin-inline-end: 8px;
+}
+
+.multimodal-buttons {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+#imageInput {
+  display: none;
+}
+
+#audioInput {
+  display: none;
+}
+
+.text,
+.response {
+  background-color: var(--google-grey-300);
+  border-radius: 15px;
+  color: var(--google-grey-800);
+  margin: 10px 5px 5px 5px;
+  padding: 15px 20px;
+  white-space: pre-wrap;
+}
+
+.response {
+  background-color: var(--google-blue-200);
+  margin-bottom: 30px;
+  margin-inline-start: 50px;
+  overflow-wrap: break-word;
+}
+
+.retracted, .error {
+  background-color: var(--google-red-100);
+}
+
+.image-error, .audio-error {
+  color: var(--cr-fallback-color-error);
+  margin-bottom: 3px;
+}
+
+.text {
+  margin-inline-end: 50px;
+}
+
+#modelInput {
+  max-width: 400px;
+}
+
+cr-collapse {
+  padding: 10px var(--cr-section-padding);
+}
+
+cr-textarea {
+  margin-bottom: 10px;
+}
+
+cr-collapse,
+cr-expand-button {
+  background-color: var(--cr-card-background-color);
+}
+
+cr-expand-button:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.model-options {
+  display: flex;
+  flex-direction: row;
+}
+
+cr-checkbox {
+  margin-left: 20px;
+  --cr-checkbox-label-padding-start: 10px;
+}

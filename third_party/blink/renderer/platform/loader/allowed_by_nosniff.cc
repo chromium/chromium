@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -139,10 +140,10 @@ static bool AllowMimeTypeAsScript(
     counter = kTextHtmlFeatures[same_origin];
   } else if (mime_type.StartsWithIgnoringASCIICase("text/plain")) {
     counter = kTextPlainFeatures[same_origin];
-  } else if (mime_type.StartsWithIgnoringCase("text/xml")) {
+  } else if (mime_type.StartsWithIgnoringASCIICase("text/xml")) {
     counter = kTextXmlFeatures[same_origin];
-  } else if (mime_type.StartsWithIgnoringCase("text/json") ||
-             mime_type.StartsWithIgnoringCase("application/json")) {
+  } else if (mime_type.DeprecatedStartsWithIgnoringCase("text/json") ||
+             mime_type.DeprecatedStartsWithIgnoringCase("application/json")) {
     counter = kJsonFeatures[same_origin];
   } else {
     counter = kUnknownFeatures[same_origin];
@@ -158,10 +159,13 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
                                         const ResourceResponse& response,
                                         MimeTypeCheck mime_type_check_mode) {
   // The content type is really only meaningful for `http:`-family schemes.
-  if (!response.CurrentRequestUrl().ProtocolIsInHTTPFamily() &&
-      (response.CurrentRequestUrl().LastPathComponent().EndsWith(".js") ||
-       response.CurrentRequestUrl().LastPathComponent().EndsWith(".mjs"))) {
-    return true;
+  if (!response.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
+    String last_path_component =
+        response.CurrentRequestUrl().LastPathComponent().ToString();
+    if (last_path_component.EndsWith(".js") ||
+        last_path_component.EndsWith(".mjs")) {
+      return true;
+    }
   }
 
   // Exclude `data:`, `blob:` and `filesystem:` URLs from MIME checks.
@@ -180,10 +184,11 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
     console_logger->AddConsoleMessage(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        "Refused to execute script from '" +
-            response.CurrentRequestUrl().ElidedString() +
-            "' because its MIME type ('" + mime_type +
-            "') is not executable, and strict MIME type checking is enabled.");
+        WTF::StrCat({"Refused to execute script from '",
+                     response.CurrentRequestUrl().ElidedString(),
+                     "' because its MIME type ('", mime_type,
+                     "') is not executable, and strict MIME type checking is "
+                     "enabled."}));
     return false;
   }
 
@@ -216,9 +221,10 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
     console_logger->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "Refused to execute script from '" +
-            response.CurrentRequestUrl().ElidedString() +
-            "' because its MIME type ('" + mime_type + "') is not executable.");
+        WTF::StrCat({"Refused to execute script from '",
+                     response.CurrentRequestUrl().ElidedString(),
+                     "' because its MIME type ('", mime_type,
+                     "') is not executable."}));
   } else if (mime_type_check_mode == MimeTypeCheck::kLaxForWorker) {
     bool strict_allow = AllowMimeTypeAsScript(mime_type, same_origin,
                                               MimeTypeCheck::kStrict, counter);
@@ -244,10 +250,11 @@ bool AllowedByNosniff::MimeTypeAsXMLExternalEntity(
   console_logger->AddConsoleMessage(
       mojom::blink::ConsoleMessageSource::kSecurity,
       mojom::blink::ConsoleMessageLevel::kError,
-      "Refused to load XML external entity from '" +
-          response.CurrentRequestUrl().ElidedString() +
-          "' because its MIME type ('" + response.HttpContentType() +
-          "') is incorrect, and strict MIME type checking is enabled.");
+      WTF::StrCat(
+          {"Refused to load XML external entity from '",
+           response.CurrentRequestUrl().ElidedString(),
+           "' because its MIME type ('", response.HttpContentType(),
+           "') is incorrect, and strict MIME type checking is enabled."}));
   return false;
 }
 

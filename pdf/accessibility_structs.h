@@ -17,20 +17,16 @@
 
 namespace chrome_pdf {
 
-struct AccessibilityDocInfo {
-  bool operator==(const AccessibilityDocInfo& other) const;
-  bool operator!=(const AccessibilityDocInfo& other) const;
-
-  uint32_t page_count = 0;
-  bool text_accessible = false;
-  bool text_copyable = false;
+struct PageCharacterIndex {
+  // Index of PDF page.
+  uint32_t page_index = 0;
+  // Index of character within the PDF page.
+  uint32_t char_index = 0;
 };
 
-struct AccessibilityPageInfo {
-  uint32_t page_index = 0;
-  gfx::Rect bounds;
-  uint32_t text_run_count = 0;
-  uint32_t char_count = 0;
+struct Selection {
+  PageCharacterIndex start;
+  PageCharacterIndex end;
 };
 
 // See PDF Reference 1.7, page 402, table 5.3.
@@ -84,16 +80,74 @@ enum class AccessibilityTextDirection {
 struct AccessibilityTextRunInfo {
   AccessibilityTextRunInfo();
   AccessibilityTextRunInfo(uint32_t len,
+                           const std::string& tag_type,
                            const gfx::RectF& bounds,
                            AccessibilityTextDirection direction,
                            const AccessibilityTextStyleInfo& style);
+  AccessibilityTextRunInfo(uint32_t len,
+                           const std::string& tag_type,
+                           const gfx::RectF& bounds,
+                           AccessibilityTextDirection direction,
+                           const AccessibilityTextStyleInfo& style,
+                           bool is_searchified);
   AccessibilityTextRunInfo(const AccessibilityTextRunInfo& other);
   ~AccessibilityTextRunInfo();
 
   uint32_t len = 0;
+  // One of various types defined in a PDF tag, such as "Span", "P", "H1", "LI",
+  // etc.
+  std::string tag_type;
   gfx::RectF bounds;
   AccessibilityTextDirection direction = AccessibilityTextDirection::kNone;
   AccessibilityTextStyleInfo style;
+  bool is_searchified = false;
+};
+
+struct AccessibilityImageInfo {
+  AccessibilityImageInfo();
+  AccessibilityImageInfo(const std::string& alt_text,
+                         uint32_t text_run_index,
+                         const gfx::RectF& bounds,
+                         int32_t page_object_index);
+  AccessibilityImageInfo(const AccessibilityImageInfo& other);
+  ~AccessibilityImageInfo();
+
+  // Alternate text for the image provided by PDF.
+  std::string alt_text;
+
+  // We anchor the image to a char index, this denotes the text run before
+  // which the image should be inserted in the accessibility tree. The text run
+  // at this index should contain the anchor char index.
+  uint32_t text_run_index = 0;
+
+  // Bounding box of the image.
+  gfx::RectF bounds;
+
+  // Index of the image object in its page.
+  int32_t page_object_index;
+};
+
+struct AccessibilityDocInfo {
+  AccessibilityDocInfo();
+  AccessibilityDocInfo(const AccessibilityDocInfo&) = delete;
+  AccessibilityDocInfo& operator=(const AccessibilityDocInfo&) = delete;
+  ~AccessibilityDocInfo();
+
+  bool operator==(const AccessibilityDocInfo& other) const;
+  bool operator!=(const AccessibilityDocInfo& other) const;
+
+  uint32_t page_count = 0;
+  bool is_tagged = false;
+  bool text_accessible = false;
+  bool text_copyable = false;
+};
+
+struct AccessibilityPageInfo {
+  uint32_t page_index = 0;
+  gfx::Rect bounds;
+  uint32_t text_run_count = 0;
+  uint32_t char_count = 0;
+  bool is_searchified = false;
 };
 
 struct AccessibilityCharInfo {
@@ -125,30 +179,6 @@ struct AccessibilityLinkInfo {
   // Bounding box of the link.
   gfx::RectF bounds;
   AccessibilityTextRunRangeInfo text_range;
-};
-
-struct AccessibilityImageInfo {
-  AccessibilityImageInfo();
-  AccessibilityImageInfo(const std::string& alt_text,
-                         uint32_t text_run_index,
-                         const gfx::RectF& bounds,
-                         int32_t page_object_index);
-  AccessibilityImageInfo(const AccessibilityImageInfo& other);
-  ~AccessibilityImageInfo();
-
-  // Alternate text for the image provided by PDF.
-  std::string alt_text;
-
-  // We anchor the image to a char index, this denotes the text run before
-  // which the image should be inserted in the accessibility tree. The text run
-  // at this index should contain the anchor char index.
-  uint32_t text_run_index = 0;
-
-  // Bounding box of the image.
-  gfx::RectF bounds;
-
-  // Index of the image object in its page.
-  int32_t page_object_index;
 };
 
 struct AccessibilityHighlightInfo {
@@ -368,10 +398,7 @@ struct AccessibilityViewportInfo {
   gfx::Point scroll;
   gfx::Point offset;
   uint32_t orientation = 0;
-  uint32_t selection_start_page_index = 0;
-  uint32_t selection_start_char_index = 0;
-  uint32_t selection_end_page_index = 0;
-  uint32_t selection_end_char_index = 0;
+  Selection selection;
   AccessibilityFocusInfo focus_info;
 };
 
@@ -416,13 +443,6 @@ enum class AccessibilityScrollAlignment {
   kClosestToEdge,
   // Last enum value marker.
   kMaxValue = kClosestToEdge,
-};
-
-struct PageCharacterIndex {
-  // Index of PDF page.
-  uint32_t page_index = 0;
-  // Index of character within the PDF page.
-  uint32_t char_index = 0;
 };
 
 struct AccessibilityActionData {

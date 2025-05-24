@@ -92,7 +92,7 @@ goog.structs.StringSet.encode_ = function(element) {
  */
 goog.structs.StringSet.decode_ = function(key) {
   'use strict';
-  return key.charCodeAt(0) == 32 ? key.substr(1) : key;
+  return key.charCodeAt(0) == 32 ? key.slice(1) : key;
 };
 
 

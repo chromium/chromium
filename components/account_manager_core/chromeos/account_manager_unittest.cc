@@ -56,8 +56,6 @@ constexpr char kAccessTokenResponse[] = R"(
     })";
 const ::account_manager::AccountKey kGaiaAccountKey = {
     "gaia_id", ::account_manager::AccountType::kGaia};
-const ::account_manager::AccountKey kActiveDirectoryAccountKey = {
-    "object_guid", ::account_manager::AccountType::kActiveDirectory};
 
 bool IsAccountKeyPresent(
     const std::vector<::account_manager::Account>& accounts,
@@ -550,18 +548,6 @@ TEST_F(AccountManagerTest, TokenRevocationIsAttemptedForGaiaAccountRemovals) {
 }
 
 TEST_F(AccountManagerTest,
-       TokenRevocationIsNotAttemptedForNonGaiaAccountRemovals) {
-  ResetAndInitializeAccountManager();
-  EXPECT_CALL(*account_manager_spy(), RevokeGaiaTokenOnServer(_)).Times(0);
-
-  account_manager()->UpsertAccount(kActiveDirectoryAccountKey, kRawUserEmail,
-                                   AccountManager::kActiveDirectoryDummyToken);
-  RunAllPendingTasks();
-
-  account_manager()->RemoveAccount(kActiveDirectoryAccountKey);
-}
-
-TEST_F(AccountManagerTest,
        TokenRevocationIsNotAttemptedForInvalidTokenRemovals) {
   ResetAndInitializeAccountManager();
   EXPECT_CALL(*account_manager_spy(), RevokeGaiaTokenOnServer(_)).Times(0);
@@ -590,17 +576,6 @@ TEST_F(AccountManagerTest, IsTokenAvailableReturnsTrueForValidGaiaAccounts) {
   account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
   RunAllPendingTasks();
   EXPECT_TRUE(account_manager()->IsTokenAvailable(kGaiaAccountKey));
-}
-
-TEST_F(AccountManagerTest,
-       IsTokenAvailableReturnsFalseForActiveDirectoryAccounts) {
-  EXPECT_FALSE(account_manager()->IsTokenAvailable(kActiveDirectoryAccountKey));
-  account_manager()->UpsertAccount(kActiveDirectoryAccountKey, kRawUserEmail,
-                                   AccountManager::kActiveDirectoryDummyToken);
-  RunAllPendingTasks();
-  EXPECT_FALSE(account_manager()->IsTokenAvailable(kActiveDirectoryAccountKey));
-  EXPECT_TRUE(
-      IsAccountKeyPresent(GetAccountsBlocking(), kActiveDirectoryAccountKey));
 }
 
 TEST_F(AccountManagerTest, IsTokenAvailableReturnsTrueForInvalidTokens) {
@@ -687,25 +662,6 @@ TEST_F(AccountManagerTest, AccessTokenFetchSucceedsForGaiaAccounts) {
                         Eq(kFakeAccessToken))));
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
       account_manager()->CreateAccessTokenFetcher(kGaiaAccountKey, &consumer);
-  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
-  RunAllPendingTasks();
-}
-
-TEST_F(AccountManagerTest, AccessTokenFetchFailsForActiveDirectoryAccounts) {
-  ResetAndInitializeAccountManager();
-  account_manager()->UpsertAccount(kActiveDirectoryAccountKey, kRawUserEmail,
-                                   AccountManager::kActiveDirectoryDummyToken);
-  RunAllPendingTasks();
-
-  MockAccessTokenConsumer consumer;
-  EXPECT_CALL(consumer,
-              OnGetTokenFailure(Property(
-                  &GoogleServiceAuthError::state,
-                  Eq(GoogleServiceAuthError::State::USER_NOT_SIGNED_UP))));
-
-  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
-      account_manager()->CreateAccessTokenFetcher(kActiveDirectoryAccountKey,
-                                                  &consumer);
   access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
   RunAllPendingTasks();
 }

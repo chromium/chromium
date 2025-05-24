@@ -58,9 +58,12 @@ enum DistanceMetric {
   // two types have not been interchanged.
   VIEWS_DISTANCE_START = VIEWS_INSETS_MAX,
 
+  // Width and height of a vector icon in a bubble's header (i.e. the one
+  // returned from GetWindowIcon).
+  DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE = VIEWS_DISTANCE_START,
   // Width of a bubble unless the content is too wide to make that
   // feasible.
-  DISTANCE_BUBBLE_PREFERRED_WIDTH = VIEWS_DISTANCE_START,
+  DISTANCE_BUBBLE_PREFERRED_WIDTH,
   // The default padding to add on each side of a button's label.
   DISTANCE_BUTTON_HORIZONTAL_PADDING,
   // The maximum width a button can have and still influence the sizes of
@@ -70,8 +73,12 @@ enum DistanceMetric {
   // The distance between a dialog's edge and the close button in the upper
   // trailing corner.
   DISTANCE_CLOSE_BUTTON_MARGIN,
+  // Vertical spacing between a list of multiple controls in one column.
+  DISTANCE_CONTROL_LIST_VERTICAL,
   // The vertical padding applied to text in a control.
   DISTANCE_CONTROL_VERTICAL_TEXT_PADDING,
+  // The vertical padding applied to text in a table.
+  DISTANCE_TABLE_VERTICAL_TEXT_PADDING,
   // The default minimum width of a dialog button.
   DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH,
   // The distance between the bottom of a dialog's content, when the final
@@ -97,6 +104,8 @@ enum DistanceMetric {
   // Width of modal dialogs unless the content is too wide to make that
   // feasible.
   DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH,
+  // Width of larger modal dialogs that require extra width.
+  DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH,
   // The spacing between a pair of related horizontal buttons, used for
   // dialog layout.
   DISTANCE_RELATED_BUTTON_HORIZONTAL,
@@ -159,6 +168,7 @@ enum class ShapeContextTokens {
   kButtonRadius,
   kComboboxRadius,
   kDialogRadius,
+  kExtensionsMenuButtonRadius,
   kFindBarViewRadius,
   kMenuRadius,
   kMenuAuxRadius,
@@ -231,7 +241,10 @@ class VIEWS_EXPORT LayoutProvider {
 
   // Returns the corner radius specific to the given emphasis.
   virtual int GetCornerRadiusMetric(Emphasis emphasis,
-                                    const gfx::Size& size = gfx::Size()) const;
+                                    const gfx::Size& size) const;
+  int GetCornerRadiusMetric(Emphasis emphasis) const {
+    return GetCornerRadiusMetric(emphasis, gfx::Size());
+  }
 
   // Returns the shadow elevation metric for the given emphasis.
   virtual int GetShadowElevationMetric(Emphasis emphasis) const;

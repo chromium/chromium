@@ -52,10 +52,6 @@ void FakeMojoPasswordManagerDriver::RecordSavePasswordProgress(
   called_record_save_progress_ = true;
 }
 
-void FakeMojoPasswordManagerDriver::UserModifiedPasswordField() {
-  called_user_modified_password_field_ = true;
-}
-
 void FakeMojoPasswordManagerDriver::CheckSafeBrowsingReputation(
     const GURL& form_action,
     const GURL& frame_url) {

@@ -42,7 +42,7 @@ NavigationPredictorKeyedServiceFactory::NavigationPredictorKeyedServiceFactory()
               .Build()) {}
 
 NavigationPredictorKeyedServiceFactory::
-    ~NavigationPredictorKeyedServiceFactory() {}
+    ~NavigationPredictorKeyedServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
   NavigationPredictorKeyedServiceFactory::BuildServiceInstanceForBrowserContext(

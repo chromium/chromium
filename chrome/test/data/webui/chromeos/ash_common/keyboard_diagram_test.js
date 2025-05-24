@@ -176,7 +176,7 @@ suite('keyboardDiagramTestSuite', () => {
   });
 
   test('topRowKeys', async () => {
-    const topRowContainer = diagramElement.$.topRow;
+    const topRowContainer = diagramElement.root.getElementById('topRow');
     const testKeySet = [
       TopRowKey.kBack,
       TopRowKey.kRefresh,
@@ -187,12 +187,69 @@ suite('keyboardDiagramTestSuite', () => {
     ];
 
     diagramElement.topRowKeys = testKeySet;
+    diagramElement.numberPadLayout = null;
     await flushTasks();
 
     const keyElements = topRowContainer.getElementsByTagName('keyboard-key');
     // Add 2 for the escape and power keys, which are in the same container.
     assertEquals(testKeySet.length + 2, keyElements.length);
 
+    assertEquals('esc', keyElements[0].mainGlyph);
+    assertEquals('keyboard:back', keyElements[1].icon);
+    assertEquals('Back', keyElements[1].ariaName);
+    assertEquals('delete', keyElements[6].mainGlyph);
+  });
+
+  test('acerSplitModifierWithNumpad', async () => {
+    const topRowContainer = diagramElement.root.getElementById('topRow');
+    const testKeySet = [
+      TopRowKey.kBack,
+      TopRowKey.kRefresh,
+      TopRowKey.kNone,
+      TopRowKey.kNone,
+      TopRowKey.kScreenMirror,
+      TopRowKey.kDelete,
+    ];
+
+    diagramElement.topRowKeys = testKeySet;
+    diagramElement.physicalLayout = 'acer-split-modifier-with-numpad';
+    diagramElement.numberPadLayout = '3columns';
+    await flushTasks();
+
+    const keyElements = topRowContainer.getElementsByTagName('keyboard-key');
+    // Add 3 for the pg up, pg dn and esc keys, which are in the same container.
+    // Power key is moved to the number pad by design.
+    assertEquals(testKeySet.length + 3, keyElements.length);
+
+    assertEquals('esc', keyElements[0].mainGlyph);
+    assertEquals('keyboard:back', keyElements[1].icon);
+    assertEquals('Back', keyElements[1].ariaName);
+    assertEquals('delete', keyElements[6].mainGlyph);
+    assertEquals('pg up', keyElements[7].mainGlyph);
+    assertEquals('pg dn', keyElements[8].mainGlyph);
+  });
+
+  test('splitModifierWith3ColumnNumpad', async () => {
+    const topRowContainer = diagramElement.root.getElementById('topRow');
+    const testKeySet = [
+      TopRowKey.kBack,
+      TopRowKey.kRefresh,
+      TopRowKey.kNone,
+      TopRowKey.kNone,
+      TopRowKey.kScreenMirror,
+      TopRowKey.kDelete,
+    ];
+
+    diagramElement.topRowKeys = testKeySet;
+    diagramElement.numberPadLayout = '3columns';
+    await flushTasks();
+
+    const keyElements = topRowContainer.getElementsByTagName('keyboard-key');
+    // Add 1 for the esc key, which is in the same container.
+    // Power key is moved to the number pad by design.
+    assertEquals(testKeySet.length + 1, keyElements.length);
+
+    assertEquals('esc', keyElements[0].mainGlyph);
     assertEquals('keyboard:back', keyElements[1].icon);
     assertEquals('Back', keyElements[1].ariaName);
     assertEquals('delete', keyElements[6].mainGlyph);
@@ -200,9 +257,10 @@ suite('keyboardDiagramTestSuite', () => {
 
   test('topRightKeyAppearsDisabled', async () => {
     diagramElement.topRightKey = TopRightKey.POWER;
+    diagramElement.numberPadLayout = null;
     await flushTasks();
 
-    const topRightKey = diagramElement.$.topRightKey;
+    const topRightKey = diagramElement.root.getElementById('topRightKey');
     assertEquals(undefined, topRightKey.icon);
     assertEquals(undefined, topRightKey.ariaName);
 

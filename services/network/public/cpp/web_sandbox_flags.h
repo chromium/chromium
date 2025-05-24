@@ -61,7 +61,7 @@ struct WebSandboxFlagsParsingResult {
 //
 // Supposed to be called only from a (semi-)sandboxed processes, i.e. from blink
 // or from the network process. See: docs/security/rule-of-2.md.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 WebSandboxFlagsParsingResult ParseWebSandboxPolicy(
     std::string_view input,
     mojom::WebSandboxFlags ignored_flags);

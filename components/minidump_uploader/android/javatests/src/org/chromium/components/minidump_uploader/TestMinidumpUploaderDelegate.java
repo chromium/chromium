@@ -10,8 +10,8 @@ import java.io.File;
 
 /** Test-implementation of MinidumpUploaderDelegate. */
 class TestMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
-    private CrashReportingPermissionManager mPermissionManager;
-    private File mCacheDir;
+    private final CrashReportingPermissionManager mPermissionManager;
+    private final File mCacheDir;
 
     public TestMinidumpUploaderDelegate(
             File cacheDir, CrashReportingPermissionManager permissionManager) {

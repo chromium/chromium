@@ -1,7 +1,8 @@
 Name: bspatch
 URL: https://github.com/mozilla-services/services-central-legacy/tree/master/toolkit/mozapps/update/updater
-Version: unknown
-License: BSD 2-Clause License
+Version: N/A
+Revision: 465265d0d473d107b76e74d969199eaf2cdc8750
+License: BSD-2-Clause
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

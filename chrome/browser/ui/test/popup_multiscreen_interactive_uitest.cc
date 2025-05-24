@@ -8,7 +8,6 @@
 #include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -27,11 +26,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/shell.h"
-#include "ui/display/test/display_manager_test_api.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace {
 
 // Tests popups with multi-screen features from the Window Management API.
@@ -39,11 +33,17 @@ namespace {
 // Tests must run in series to manage virtual displays on supported platforms.
 // Use 2+ physical displays to run locally with --gtest_also_run_disabled_tests.
 // See: //docs/ui/display/multiscreen_testing.md
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_PopupMultiScreenTest PopupMultiScreenTest
 #else
 #define MAYBE_PopupMultiScreenTest DISABLED_PopupMultiScreenTest
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/371121282): Re-enable the test.
+// TODO(crbug.com/365126887): Re-enable the test.
+#undef MAYBE_PopupMultiScreenTest
+#define MAYBE_PopupMultiScreenTest DISABLED_PopupMultiScreenTest
+#endif  // BUILDFLAG(IS_WIN)
 class MAYBE_PopupMultiScreenTest : public PopupTestBase,
                                    public ::testing::WithParamInterface<bool> {
  public:
@@ -62,16 +62,14 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(NavigateToURL(web_contents,
-                embedded_test_server()->GetURL("/simple.html")));
+                              embedded_test_server()->GetURL("/simple.html")));
     EXPECT_TRUE(WaitForRenderFrameReady(web_contents->GetPrimaryMainFrame()));
     if (ShouldTestWindowManagement()) {
       SetUpWindowManagement(browser());
     }
   }
 
-  void TearDownOnMainThread() override {
-    virtual_display_util_.reset();
-  }
+  void TearDownOnMainThread() override { virtual_display_util_.reset(); }
 
  protected:
   bool ShouldTestWindowManagement() { return GetParam(); }
@@ -83,11 +81,6 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
     if (display::Screen::GetScreen()->GetNumDisplays() > 1) {
       return true;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("100+100-801x802,901+100-802x803");
-    return true;
-#else
     if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
              display::Screen::GetScreen()))) {
       virtual_display_util_->AddDisplay(
@@ -95,7 +88,6 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
       return true;
     }
     return false;
-#endif
   }
 
  private:
@@ -195,7 +187,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest,
             target_display.work_area().y());
         {
           SCOPED_TRACE(
-              testing::Message() << "\n"
+              testing::Message()
+              << "\n"
               << "script: " << open_script << " " << move_script << "\n"
               << "opener: " << browser()->window()->GetBounds().ToString()
               << " popup: " << popup->window()->GetBounds().ToString());

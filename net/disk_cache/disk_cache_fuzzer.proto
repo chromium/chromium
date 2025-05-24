@@ -42,7 +42,6 @@ message FuzzCommands {
 
 message FuzzCommand {
   oneof fuzz_command_oneof {
-    SetMaxSize set_max_size = 87;
     CreateEntry create_entry = 1;
     OpenEntry open_entry = 2;
     OpenOrCreateEntry open_or_create_entry = 345;
@@ -72,12 +71,15 @@ message FuzzCommand {
     DestructBackend destruct_backend = 22;
 
     AddRealDelay add_real_delay = 23;
+    SetMaxSize recreate_with_size = 24;
 
     // Not included: GetStats, CalculateSizesOf, GetEntryInMemoryData,
     // SetEntryInMemoryData, CouldBeSparse, ReadyForSparseIO
 
     // TODO(mpdenton) FlushWorkerPoolForTesting
   }
+
+  reserved 87;  // previously set_max_size member of the oneof.
 }
 
 message SetMaxSize {

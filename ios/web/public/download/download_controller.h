@@ -96,6 +96,7 @@ class DownloadController {
   virtual void CreateNativeDownloadTask(WebState* web_state,
                                         NSString* identifier,
                                         const GURL& original_url,
+                                        NSString* originating_host,
                                         NSString* http_method,
                                         const std::string& content_disposition,
                                         int64_t total_bytes,

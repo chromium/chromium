@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/path_service.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/common/chrome_paths.h"
@@ -16,38 +15,19 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/logging.h"
-#include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace extensions {
 
 namespace {
-
 constexpr char kInSessionExtensionCrxPath[] =
     "extensions/api_test/login_screen_apis/in_session_extension.crx";
 constexpr char kInSessionExtensionId[] = "ofcpkomnogjenhfajfjadjmjppbegnad";
 constexpr char kListenerMessage[] = "Waiting for test name";
-
-bool IsLoginScreenStorageCrosapiAvailable() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service->IsAvailable<crosapi::mojom::LoginScreenStorage>()) {
-    LOG(WARNING) << "Unsupported ash version.";
-    return false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return true;
-}
-
 }  // namespace
 
 class LoginScreenStorageExtensionApiTest
     : public extensions::MixinBasedExtensionApiTest {
  public:
-  LoginScreenStorageExtensionApiTest() {}
+  LoginScreenStorageExtensionApiTest() = default;
 
   LoginScreenStorageExtensionApiTest(
       const LoginScreenStorageExtensionApiTest&) = delete;
@@ -111,32 +91,20 @@ class LoginScreenStorageExtensionApiTest
 
 IN_PROC_BROWSER_TEST_F(LoginScreenStorageExtensionApiTest,
                        StorePersistentData) {
-  if (!IsLoginScreenStorageCrosapiAvailable())
-    return;
-
   RunTest("InSessionLoginScreenStorageStorePersistentData");
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenStorageExtensionApiTest,
                        RetrievePersistentData) {
-  if (!IsLoginScreenStorageCrosapiAvailable())
-    return;
-
   RunTest("InSessionLoginScreenStorageRetrievePersistentData");
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenStorageExtensionApiTest, StoreCredentials) {
-  if (!IsLoginScreenStorageCrosapiAvailable())
-    return;
-
   RunTest("InSessionLoginScreenStorageStoreCredentials");
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenStorageExtensionApiTest,
                        RetrieveCredentials) {
-  if (!IsLoginScreenStorageCrosapiAvailable())
-    return;
-
   RunTest("InSessionLoginScreenStorageRetrieveCredentials");
 }
 

@@ -15,10 +15,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_guest.h"
 #include "extensions/browser/guest_view/guest_view_events.h"
@@ -83,7 +85,7 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContextWithFeature(
   Feature::Availability availability = feature->IsAvailableToContext(
       owner_extension,
       process_map->GetMostLikelyContextType(
-          owner_extension, guest->owner_rfh()->GetProcess()->GetID(),
+          owner_extension, guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
           &owner_site_url),
       owner_site_url, util::GetBrowserContextId(context),
       BrowserFrameContextData(guest->owner_rfh()));
@@ -99,6 +101,7 @@ ExtensionsGuestViewManagerDelegate::~ExtensionsGuestViewManagerDelegate() =
 
 void ExtensionsGuestViewManagerDelegate::OnGuestAdded(
     content::WebContents* guest_web_contents) const {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   // Set the view type so extensions sees the guest view as a foreground page.
   SetViewType(guest_web_contents, mojom::ViewType::kExtensionGuest);
 }

@@ -1,1 +1,10 @@
+# See https://crbug.com/40222185
+# For remaining CrOS usages
+file://ash/webui/PLATFORM_OWNERS
+
+# For components/variations/proto/devtools/BUILD.gn, see
+# https://crbug.com/40253708
+asvitkine@chromium.org
+
+# Last resort, emeritus.
 dpapad@chromium.org

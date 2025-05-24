@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/paint_preview/renderer/paint_preview_recorder_impl.h"
-
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -12,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/paint_preview/common/file_stream.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
+#include "components/paint_preview/renderer/paint_preview_recorder_impl.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
@@ -25,7 +24,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 
 namespace paint_preview {
 
@@ -865,7 +864,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, CaptureSaveRestore) {
   EXPECT_EQ(out_response->links[0]->url, GURL("http://www.chromium.org"));
   EXPECT_NEAR(out_response->links[0]->rect.x(), 40, 3);
   EXPECT_NEAR(out_response->links[0]->rect.y(), 122, 3);
-  EXPECT_NEAR(out_response->links[0]->rect.width(), 80, 3);
+  EXPECT_NEAR(out_response->links[0]->rect.width(), 84, 5);
   EXPECT_NEAR(out_response->links[0]->rect.height(), 20, 3);
 
   EXPECT_EQ(out_response->links[1]->url, GURL("http://www.example.com"));

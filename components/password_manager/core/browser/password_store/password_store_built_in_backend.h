@@ -59,6 +59,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   void NotifyCredentialsChangedForTesting(
       base::PassKey<class PasswordStoreBuiltInBackendPasswordLossMetricsTest>,
       const PasswordStoreChangeList& changes);
+  void NotifyDeletionsHaveSyncedForTesting(bool success);
 
  private:
   // Implements PasswordStoreBackend interface.
@@ -72,8 +73,6 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   void GetAllLoginsWithAffiliationAndBrandingAsync(
       LoginsOrErrorReply callback) override;
   void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
-  void GetAllLoginsForAccountAsync(std::string account,
-                                   LoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsOrErrorReply callback,
       bool include_psl,
@@ -91,12 +90,6 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       const base::Location& location,
       base::Time delete_begin,
       base::Time delete_end,
-      PasswordChangesOrErrorReply callback) override;
-  void RemoveLoginsByURLAndTimeAsync(
-      const base::Location& location,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
       PasswordChangesOrErrorReply callback) override;
   void DisableAutoSignInForOriginsAsync(
@@ -106,8 +99,6 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
-  void RecordAddLoginAsyncCalledFromTheStore() override;
-  void RecordUpdateLoginAsyncCalledFromTheStore() override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   // SmartBubbleStatsStore:

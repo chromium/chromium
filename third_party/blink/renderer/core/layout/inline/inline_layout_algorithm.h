@@ -58,8 +58,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   const LayoutResult* Layout();
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
-    NOTREACHED_IN_MIGRATION();
-    return MinMaxSizesResult();
+    NOTREACHED();
   }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -68,6 +67,18 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   void PlaceBlockInInline(const InlineItem&,
                           InlineItemResult*,
                           LogicalLineItems* line_box);
+
+  struct LineClampEllipsis {
+    STACK_ALLOCATED();
+
+   public:
+    String text;
+    const ShapeResult* shape_result;
+    FontHeight text_metrics;
+  };
+  const std::optional<LineClampEllipsis>& GetLineClampEllipsis() {
+    return line_clamp_ellipsis_;
+  }
 
  private:
   friend class LineWidthsTest;
@@ -104,13 +115,24 @@ class CORE_EXPORT InlineLayoutAlgorithm final
       const FontHeight& line_box_metrics,
       std::optional<FontHeight> annotation_font_height);
 
+  LayoutUnit SetupLineClampEllipsis();
+
   enum class LineClampState {
     kShow,
-    kEllipsize,
+    kLineClampEllipsis,
+    kTextOverflowEllipsis,
     kHide,
   };
   LineClampState GetLineClampState(const LineInfo*,
                                    LayoutUnit line_box_height) const;
+
+  // Checks whether the remainder of the IFC (i.e. anything after the current
+  // break token) would be able to fit in the current line if it didn't have a
+  // line-clamp ellipsis that pushes some of that content to the next line.
+  //
+  // This method will try to compute that without performing actual line
+  // breaking, but it will return `nullopt` if it can't.
+  std::optional<bool> DoesRemainderFitInLineWithoutEllipsis(const LineInfo&);
 
   InlineLayoutStateStack* box_states_;
   InlineChildLayoutContext* context_;
@@ -118,7 +140,9 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   const ColumnSpannerPath* column_spanner_path_;
 
   MarginStrut end_margin_strut_;
-  std::optional<LineClampData::UntilClamp> state_until_clamp_;
+  std::optional<int> lines_until_clamp_;
+
+  std::optional<LineClampEllipsis> line_clamp_ellipsis_;
 
   FontBaseline baseline_type_ = FontBaseline::kAlphabeticBaseline;
 

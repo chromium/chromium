@@ -14,6 +14,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.StreamUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -24,6 +26,7 @@ import java.io.StringWriter;
  * serializing it again. This class is meant to be used from native code.
  */
 @JNINamespace("data_decoder")
+@NullMarked
 public class JsonSanitizer {
     // Disallow instantiating the class.
     private JsonSanitizer() {}
@@ -162,21 +165,15 @@ public class JsonSanitizer {
             // A lone surrogate is not allowed.
             if (Character.isLowSurrogate(c)) return false;
 
-            int codePoint;
             if (Character.isHighSurrogate(c)) {
                 // A high surrogate has to be followed by a low surrogate.
-                char high = c;
                 if (++i >= length) return false;
 
                 char low = string.charAt(i);
                 if (!Character.isLowSurrogate(low)) return false;
-
-                // Decode the high-low pair into a code point.
-                codePoint = Character.toCodePoint(high, low);
             } else {
                 // The code point is neither a low surrogate nor a high surrogate, so
                 // it's a valid Unicode character.
-                codePoint = c;
             }
         }
         return true;
@@ -186,6 +183,6 @@ public class JsonSanitizer {
     interface Natives {
         void onSuccess(long id, String json);
 
-        void onError(long id, String error);
+        void onError(long id, @Nullable String error);
     }
 }

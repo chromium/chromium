@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
@@ -36,7 +37,7 @@ class ASH_EXPORT PinStatusView : public views::View {
     TestApi(const TestApi&) = delete;
     TestApi& operator=(const TestApi&) = delete;
 
-    const std::u16string& GetCurrentText() const;
+    std::u16string_view GetCurrentText() const;
 
     raw_ptr<views::Label> GetTextLabel() const;
 
@@ -62,7 +63,7 @@ class ASH_EXPORT PinStatusView : public views::View {
   }
 
   void SetText(const std::u16string& text_str);
-  const std::u16string& GetCurrentText() const;
+  std::u16string_view GetCurrentText() const;
 
   void SetPinStatus(std::unique_ptr<cryptohome::PinStatus> pin_status);
 

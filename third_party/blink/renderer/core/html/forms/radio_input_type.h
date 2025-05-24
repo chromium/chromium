@@ -38,6 +38,8 @@ namespace blink {
 
 class RadioInputType final : public BaseCheckableInputType {
  public:
+  // This function finds the next radio button to navigate to using the keyboard
+  // arrow keys or for the accessibility screen reader.
   CORE_EXPORT static HTMLInputElement* NextRadioButtonInGroup(HTMLInputElement*,
                                                               bool forward);
 
@@ -47,13 +49,13 @@ class RadioInputType final : public BaseCheckableInputType {
 
  private:
   void CountUsage() override;
-  ControlPart AutoAppearance() const override;
+  AppearanceValue AutoAppearance() const override;
   void WillUpdateCheckedness(bool new_checked) override;
   String ValueMissingText() const override;
   void HandleClickEvent(MouseEvent&) override;
   void HandleKeydownEvent(KeyboardEvent&) override;
   void HandleKeyupEvent(KeyboardEvent&) override;
-  bool IsKeyboardFocusable(
+  bool IsKeyboardFocusableSlow(
       Element::UpdateBehavior update_behavior =
           Element::UpdateBehavior::kStyleAndLayout) const override;
   bool ShouldSendChangeEventAfterCheckedChanged() override;

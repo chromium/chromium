@@ -41,6 +41,17 @@ class TestingCursorManager : public wm::NativeCursorManager {
                      wm::NativeCursorManagerDelegate* delegate) override {
     delegate->CommitCursorSize(cursor_size);
   }
+
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      wm::NativeCursorManagerDelegate* delegate) override {
+    delegate->CommitLargeCursorSizeInDip(large_cursor_size_in_dip);
+  }
+
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override {
+    NOTIMPLEMENTED();
+  }
 };
 
 }  // namespace

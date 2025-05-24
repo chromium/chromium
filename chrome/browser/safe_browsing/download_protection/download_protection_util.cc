@@ -11,7 +11,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -20,13 +22,22 @@
 #include "net/cert/x509_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #endif
 
 namespace safe_browsing {
 
 namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+// File suffix for APKs.
+const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
+#endif
 
 // Escapes a certificate attribute so that it can be used in a allowlist
 // entry.  Currently, we only escape slashes, since they are used as a
@@ -62,7 +73,7 @@ void SelectEncryptedEntry(
     std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
     google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
         selected) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       *considering, &ClientDownloadRequest::ArchivedBinary::is_encrypted);
   if (it != considering->end()) {
     *selected->Add() = *it;
@@ -74,7 +85,7 @@ void SelectDeepestEntry(
     std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
     google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
         selected) {
-  auto it = base::ranges::max_element(*considering, {}, &ArchiveEntryDepth);
+  auto it = std::ranges::max_element(*considering, {}, &ArchiveEntryDepth);
   if (it != considering->end()) {
     *selected->Add() = *it;
     considering->erase(it);
@@ -85,7 +96,7 @@ void SelectWildcardEntryAtFront(
     std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
     google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
         selected) {
-  int remaining_executables = base::ranges::count_if(
+  int remaining_executables = std::ranges::count_if(
       *considering, &ClientDownloadRequest::ArchivedBinary::is_executable);
   for (auto it = considering->begin(); it != considering->end(); ++it) {
     if (it->is_executable()) {
@@ -129,6 +140,30 @@ void AddEventUrlToReferrerChain(const download::DownloadItem& item,
     event_url_entry->add_server_redirect_chain()->set_url(url.spec());
   }
 }
+
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+bool IsDownloadReportGatedByExtendedReporting(
+    ClientSafeBrowsingReportRequest::ReportType report_type) {
+  switch (report_type) {
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_RECOVERY:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_WARNING:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_BY_API:
+      return false;
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_OPENED:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_AUTO_DELETED:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_PROFILE_CLOSED:
+      return true;
+    default:
+      NOTREACHED();
+  }
+}
+#endif
 
 }  // namespace
 
@@ -273,6 +308,15 @@ void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event) {
   }
 }
 
+void LogDeepScanEvent(const DeepScanningMetadata& metadata,
+                      DeepScanEvent event) {
+  base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent3", event);
+  if (metadata.IsTopLevelEncryptedArchive()) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.PasswordProtectedDeepScanEvent3", event);
+  }
+}
+
 void LogLocalDecryptionEvent(DeepScanEvent event) {
   base::UmaHistogramEnumeration("SBClientDownload.LocalDecryptionEvent", event);
 }
@@ -353,12 +397,13 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
   std::unique_ptr<ReferrerChain> referrer_chain =
       std::make_unique<ReferrerChain>();
 
-  SessionID tab_id = sessions::SessionTabHelper::IdForTab(item.web_contents);
+  SessionID tab_id =
+      sessions::SessionTabHelper::IdForTab(item.web_contents.get());
 
   GURL tab_url = item.web_contents->GetVisibleURL();
 
   SafeBrowsingNavigationObserverManager::AttributionResult result =
-      GetNavigationObserverManager(item.web_contents)
+      GetNavigationObserverManager(item.web_contents.get())
           ->IdentifyReferrerChainByHostingPage(
               item.frame_url, tab_url, item.outermost_main_frame_id, tab_id,
               item.has_user_gesture, user_gesture_limit, referrer_chain.get());
@@ -378,7 +423,7 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
                                  CountOfRecentNavigationsToAppend(
                                      profile, profile->GetPrefs(), result)
                            : 0u;
-  GetNavigationObserverManager(item.web_contents)
+  GetNavigationObserverManager(item.web_contents.get())
       ->AppendRecentNavigations(recent_navigations_to_collect,
                                 referrer_chain.get());
 
@@ -387,36 +432,83 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
                                              recent_navigations_to_collect);
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-bool ShouldSendDangerousDownloadReport(download::DownloadItem* item) {
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+bool ShouldSendDangerousDownloadReport(
+    download::DownloadItem* item,
+    ClientSafeBrowsingReportRequest::ReportType report_type) {
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(item);
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile || !IsExtendedReportingEnabled(*profile->GetPrefs())) {
+  if (!profile) {
     return false;
   }
-
-  // When users are in incognito mode, no report will be sent and no
-  // |onDangerousDownloadOpened| extension API will be called.
+  if (!IsSafeBrowsingEnabled(*profile->GetPrefs())) {
+    return false;
+  }
+  if (IsDownloadReportGatedByExtendedReporting(report_type) &&
+      !IsExtendedReportingEnabled(*profile->GetPrefs())) {
+    return false;
+  }
   if (browser_context->IsOffTheRecord()) {
     return false;
   }
-
-  // Only report downloads that are known to be dangerous or was dangerous but
-  // was validated by the user.
-  if (!item->IsDangerous() &&
-      item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
+  if (item->GetURL().is_empty() || !item->GetURL().is_valid()) {
     return false;
   }
 
+  download::DownloadDangerType danger_type = item->GetDangerType();
   std::string token = DownloadProtectionService::GetDownloadPingToken(item);
-  // Only dangerous downloads have token stored.
-  if (token.empty()) {
+  bool has_token = !token.empty();
+
+  ClientDownloadResponse::Verdict download_verdict =
+      safe_browsing::DownloadProtectionService::GetDownloadProtectionVerdict(
+          item);
+  bool has_unsafe_verdict = download_verdict != ClientDownloadResponse::SAFE;
+
+  if (item->IsDangerous() ||
+      danger_type == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
+    // Report downloads that are known to be dangerous or was dangerous but
+    // was validated by the user.
+    // DANGEROUS_URL doesn't have token or unsafe verdict since this is flagged
+    // by blocklist check.
+    return (has_token && has_unsafe_verdict) ||
+           danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL;
+  } else if (danger_type ==
+                 download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING ||
+             danger_type == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
+    // Async scanning may be triggered when the verdict is safe. Still send the
+    // report in this case.
+    return has_token;
+  } else {
     return false;
   }
-
-  return true;
 }
 #endif
+
+std::optional<enterprise_connectors::AnalysisSettings>
+ShouldUploadBinaryForDeepScanning(download::DownloadItem* item) {
+#if BUILDFLAG(IS_ANDROID)
+  // Deep scanning is not supported on Android.
+  return std::nullopt;
+#else
+  // Create temporary metadata wrapper on the stack.
+  DownloadItemMetadata metadata(item);
+  return DeepScanningRequest::ShouldUploadBinary(metadata);
+#endif
+}
+
+bool IsFiletypeSupportedForFullDownloadProtection(
+    const base::FilePath& file_name) {
+  // On Android, do not use FileTypePolicies, which are currently only
+  // applicable to desktop platforms. Instead, hardcode the APK filetype check
+  // for Android here.
+  // TODO(chlily): Refactor/fix FileTypePolicies and then remove this
+  // platform-specific hardcoded behavior.
+#if BUILDFLAG(IS_ANDROID)
+  return file_name.MatchesExtension(kApkSuffix);
+#else
+  return FileTypePolicies::GetInstance()->IsCheckedBinaryFile(file_name);
+#endif
+}
 
 }  // namespace safe_browsing

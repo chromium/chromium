@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/best_match_ranker.h"
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
 #include "chrome/browser/ash/app_list/search/types.h"

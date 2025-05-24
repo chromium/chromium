@@ -54,6 +54,17 @@ class SubAppsInstallDialogController : public views::WidgetObserver {
             Profile* profile,
             gfx::NativeWindow window);
 
+  // Creates a dialog that requests the consent from the user to install the
+  // requested apps as sub apps to the named parent app. This is triggered by
+  // an app calling the Multi App API add() function. The dialog is modal to
+  // the browser containing the app calling the API. |sub_apps| contains the
+  // information to represent each app to the user.
+  static views::Widget* CreateWidget(
+      const std::u16string parent_app_name,
+      const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
+      base::RepeatingClosure settings_page_callback,
+      gfx::NativeWindow window);
+
   views::Widget* GetWidgetForTesting();
 
  private:

@@ -25,40 +25,76 @@
 // Autofill popup and keyboard accessory images.
 // We use Android's |VectorDrawableCompat| for the following images that are
 // displayed using |DropdownAdapter|.
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_AMEX_OLD, R.drawable.amex_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_AMEX, R.drawable.amex_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_DINERS_OLD, R.drawable.diners_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_DINERS, R.drawable.diners_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_DISCOVER_OLD, R.drawable.discover_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_DISCOVER, R.drawable.discover_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_ELO_OLD, R.drawable.elo_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_ELO, R.drawable.elo_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_GENERIC_OLD, R.drawable.ic_credit_card_black)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_GENERIC, R.drawable.ic_credit_card_black)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD,
+                 R.drawable.ic_credit_card_primary)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_GENERIC_PRIMARY,
                  R.drawable.ic_credit_card_primary)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_JCB_OLD, R.drawable.jcb_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_JCB, R.drawable.jcb_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_MASTERCARD_OLD, R.drawable.mc_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_MASTERCARD, R.drawable.mc_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_MIR_OLD, R.drawable.mir_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_MIR, R.drawable.mir_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_TROY_OLD, R.drawable.troy_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_TROY, R.drawable.troy_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_UNIONPAY_OLD, R.drawable.unionpay_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_UNIONPAY, R.drawable.unionpay_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VERVE_OLD, R.drawable.verve_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VERVE, R.drawable.verve_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA_OLD, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY, R.drawable.google_pay)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_AMEX_OLD,
+                 R.drawable.amex_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_AMEX, R.drawable.amex_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_CAPITALONE,
                  R.drawable.capitalone_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_DINERS_OLD,
+                 R.drawable.diners_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_DINERS,
                  R.drawable.diners_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_DISCOVER_OLD,
+                 R.drawable.discover_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_DISCOVER,
                  R.drawable.discover_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_ELO_OLD, R.drawable.elo_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_ELO, R.drawable.elo_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_GENERIC_OLD,
+                 R.drawable.ic_metadata_credit_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_GENERIC,
                  R.drawable.ic_metadata_credit_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_JCB_OLD, R.drawable.jcb_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_JCB, R.drawable.jcb_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_MASTERCARD_OLD,
+                 R.drawable.mc_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_MASTERCARD,
                  R.drawable.mc_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_MIR_OLD, R.drawable.mir_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_MIR, R.drawable.mir_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_TROY_OLD,
+                 R.drawable.troy_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_TROY, R.drawable.troy_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_UNIONPAY_OLD,
+                 R.drawable.unionpay_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
                  R.drawable.unionpay_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VERVE_OLD,
+                 R.drawable.verve_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VERVE, R.drawable.verve_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VISA_OLD,
+                 R.drawable.visa_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VISA, R.drawable.visa_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_IBAN_OLD, R.drawable.iban_icon)
 LINK_RESOURCE_ID(IDR_AUTOFILL_IBAN, R.drawable.iban_icon)
 
 // Use DECLARE_RESOURCE_ID here as these resources are used for android only.
@@ -80,3 +116,7 @@ DECLARE_RESOURCE_ID(IDR_AUTOFILL_PLUS_ADDRESS,
 // |VectorDrawableCompat|. We do not display these icons for autofill popup.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_SETTINGS, R.drawable.ic_settings_black)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CREATE, R.drawable.ic_edit_24dp)
+
+// Home and work icons.
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_HOME, R.drawable.home_logo)
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_WORK, R.drawable.work_logo)

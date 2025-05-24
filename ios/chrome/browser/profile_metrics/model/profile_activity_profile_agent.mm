@@ -30,9 +30,8 @@
       ->GetProfileAttributesStorage()
       ->UpdateAttributesForProfileWithName(
           profile->GetProfileName(),
-          base::BindOnce([](ProfileAttributesIOS attr) {
+          base::BindOnce([](ProfileAttributesIOS& attr) {
             attr.SetLastActiveTime(base::Time::Now());
-            return attr;
           }));
 
   // Update the primary account's last-active time (if there is a primary
@@ -46,7 +45,25 @@
       identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     CoreAccountInfo accountInfo =
         identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    activeAccountsTracker->MarkAccountAsActiveNow(accountInfo.gaia);
+    AccountInfo extendedInfo =
+        identityManager->FindExtendedAccountInfo(accountInfo);
+    signin::Tribool isManaged =
+        extendedInfo.hosted_domain.empty()
+            ? signin::Tribool::kUnknown
+            : signin::TriboolFromBool(extendedInfo.IsManaged());
+    activeAccountsTracker->MarkAccountAsActiveNow(accountInfo.gaia, isManaged);
+  }
+}
+
+#pragma mark - ProfileStateObserver
+
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage == ProfileInitStage::kUIReady) {
+    if (SceneState* sceneState = profileState.foregroundActiveScene) {
+      [self recordActivationForSceneState:sceneState];
+    }
   }
 }
 
@@ -54,9 +71,10 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  DCHECK_GE(self.profileState.initStage, ProfileInitStage::InitStageUIReady);
   if (level == SceneActivationLevelForegroundActive) {
-    [self recordActivationForSceneState:sceneState];
+    if (self.profileState.initStage >= ProfileInitStage::kUIReady) {
+      [self recordActivationForSceneState:sceneState];
+    }
   }
 }
 

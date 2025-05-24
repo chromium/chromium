@@ -65,8 +65,9 @@ ui::EventTarget* RootViewTargeter::FindNextBestTargetForGestureEvent(
   // the GESTURE_END event corresponding to the removal of the last touch
   // point. In either case, no further re-targeting of |gesture| should be
   // permitted.
-  if (!root_view_->gesture_handler_)
+  if (!root_view_->gesture_handler_) {
     return nullptr;
+  }
 
   return previous_target->GetParentTarget();
 }

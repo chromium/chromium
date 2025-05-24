@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sr-Latn">
+<translation id="1293272072740285747">Zadržite ovu grupu da biste dodali kartice kasnije ili je izbrišite ako vam više ne treba.
+
+Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_OF_GROUP" /> i ona će biti izbrisana sa svih uređaja.</translation>
+<translation id="1340839264183302272">Napusti grupu</translation>
+<translation id="1419023007528516122">Ovim ćete trajno izbrisati grupu sa uređaja</translation>
+<translation id="1501480321619201731">Izbriši grupu</translation>
+<translation id="2677748264148917807">Zatvori</translation>
+<translation id="3547352561153509682">Ovim ćete izbrisati grupu sa svih uređaja prijavljenih na <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Želite da razdvojite grupu kartica?</translation>
+<translation id="4139634748112164403">Kartice će ostati otvorene na ovom uređaju, ali će grupa biti trajno izbrisana</translation>
+<translation id="4431937619879060901">Odmah ćete izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će biti izbrisana sa svih uređaja</translation>
+<translation id="4460014764210899310">Razdvoji</translation>
+<translation id="4777866634702576038">Želite da izbrišete grupu kartica?</translation>
+<translation id="5094423602314093681">Želite da uklonite kartice i izbrišete grupu?</translation>
+<translation id="5647702255748985085">Želite da napustite grupu?</translation>
+<translation id="742664698522525515">Želite da zadržite grupu?</translation>
+<translation id="750886945254958667">Zadržite ovu grupu da biste dodali kartice kasnije ili je napustite ako više ne želite da joj pristupate</translation>
+<translation id="8261506727792406068">Izbriši</translation>
+<translation id="870736955561925754">Želite da zatvorite karticu i izbrišete grupu?</translation>
+<translation id="8804742093141782941">Zadrži grupu</translation>
+<translation id="9169141410816678175">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će biti izbrisana sa svih uređaja</translation>
+<translation id="9216898458513705996">Kartice će ostati otvorene na ovom uređaju, ali će se grupa izbrisati sa svih uređaja prijavljenih na <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Želite da izbrišete grupu?</translation>
+</translationbundle>

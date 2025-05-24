@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -14,7 +13,6 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -410,8 +408,9 @@ TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {
   // HidePopoverInternal causes :closed to match immediately, but schedules
   // the removal from the top layer.
   target->HidePopoverInternal(
-      HidePopoverFocusBehavior::kFocusPreviousElement,
-      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions, nullptr);
+      /*invoker=*/nullptr, HidePopoverFocusBehavior::kFocusPreviousElement,
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+      /*exception_state*/ nullptr);
   EXPECT_FALSE(target->popoverOpen());
   EXPECT_TRUE(target->IsInTopLayer());
   UpdateAllLifecyclePhasesForTest();
@@ -441,6 +440,33 @@ TEST_F(HTMLElementTest, DialogTopLayerRemovalTiming) {
   EXPECT_TRUE(target->IsInTopLayer());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(target->IsInTopLayer());
+}
+
+TEST_F(HTMLElementTest, InertAttributeUseCounted) {
+  SetBodyInnerHTML(R"HTML(
+    <div inert></div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
+
+  // Set via setAttribute
+  SetBodyInnerHTML(R"HTML(
+    <div id=target></div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(html_names::kInertAttr, AtomicString("true"));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
+
+  // Test that the use counter is not incremented when the inert is
+  // set via style.
+  SetBodyInnerHTML(R"HTML(
+    <div style="interactivity: inert;"></div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
 }
 
 }  // namespace blink

@@ -31,7 +31,7 @@ IndexedDBControlWrapper::IndexedDBControlWrapper(
   context_ = std::make_unique<IndexedDBContextImpl>(
       data_path, std::move(quota_manager_proxy),
       std::move(blob_storage_context), std::move(file_system_access_context),
-      io_task_runner, /*custom_task_runner=*/nullptr);
+      /*custom_task_runner=*/nullptr);
 
   if (special_storage_policy) {
     storage_policy_observer_.emplace(

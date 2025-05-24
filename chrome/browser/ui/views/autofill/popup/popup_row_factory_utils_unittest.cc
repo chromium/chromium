@@ -20,9 +20,10 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -91,7 +92,6 @@ class PopupRowFactoryUtilsTest : public ChromeViewsTestBase {
 // A test fixture for testing the creation of rows that contain a button.
 class PopupRowFactoryUtilsRowWithButtonTest : public PopupRowFactoryUtilsTest {
  public:
-
   void ShowAutocompleteSuggestion() {
     ShowSuggestion(
         Suggestion(u"Some entry", SuggestionType::kAutocompleteEntry));

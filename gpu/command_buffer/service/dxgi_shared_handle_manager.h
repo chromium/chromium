@@ -141,7 +141,7 @@ class GPU_GLES2_EXPORT DXGISharedHandleManager
   // will refer to the same D3D11 texture. |d3d11_device| is used for opening
   // the shared handle if a state is not found. Returns a nullptr on error.
   scoped_refptr<DXGISharedHandleState> GetOrCreateSharedHandleState(
-      gfx::DXGIHandleToken token,
+      const gfx::DXGIHandleToken& token,
       base::win::ScopedHandle shared_handle,
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 

@@ -35,18 +35,18 @@ DigitalIdentitySafetyInterstitialControllerDesktop::CloseOnNavigationObserver::
     return;
   }
   WebContentsModalDialogManager::FromWebContents(web_contents_.get())
-      ->RemoveCloseOnNavigationObserver(this);
+      ->RemoveObserver(this);
 }
 
 void DigitalIdentitySafetyInterstitialControllerDesktop::
     CloseOnNavigationObserver::Observe(content::WebContents& web_contents) {
   web_contents_ = web_contents.GetWeakPtr();
   WebContentsModalDialogManager::FromWebContents(web_contents_.get())
-      ->AddCloseOnNavigationObserver(this);
+      ->AddObserver(this);
 }
 
 void DigitalIdentitySafetyInterstitialControllerDesktop::
-    CloseOnNavigationObserver::OnWillClose() {
+    CloseOnNavigationObserver::OnWillCloseOnNavigation() {
   will_close_due_to_navigation_ = true;
 }
 
@@ -124,7 +124,7 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
                          DigitalIdentityInterstitialClosedReason::kOkButton),
           DialogButton::Params()
               .SetLabel(positive_button_label)
-              .SetStyle(ui::ButtonStyle::kText)
+              .SetStyle(ui::ButtonStyle::kDefault)
               .SetEnabled(positive_button_enabled))
       .AddCancelButton(
           base::BindOnce(
@@ -134,8 +134,8 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
               DigitalIdentityInterstitialClosedReason::kCancelButton),
           DialogButton::Params()
               .SetLabel(negative_button_label)
-              .SetStyle(ui::ButtonStyle::kProminent))
-      .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
+              .SetStyle(ui::ButtonStyle::kDefault))
+      .OverrideDefaultButton(ui::mojom::DialogButton::kNone)
       .SetDialogDestroyingCallback(base::BindOnce(
           &DigitalIdentitySafetyInterstitialControllerDesktop::OnDialogClosed,
           weak_ptr_factory_.GetWeakPtr(),

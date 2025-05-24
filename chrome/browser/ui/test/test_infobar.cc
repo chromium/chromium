@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/infobars/infobar_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -27,8 +26,8 @@ bool TestInfoBar::VerifyUi() {
     return false;
   }
 
-  return base::ranges::equal(*infobars, expected_identifiers_, {},
-                             &infobars::InfoBar::GetIdentifier);
+  return std::ranges::equal(*infobars, expected_identifiers_, {},
+                            &infobars::InfoBar::GetIdentifier);
 }
 
 void TestInfoBar::WaitForUserDismissal() {
@@ -67,8 +66,9 @@ const infobars::ContentInfoBarManager* TestInfoBar::GetInfoBarManager() const {
 
 std::optional<TestInfoBar::InfoBars> TestInfoBar::GetNewInfoBars() const {
   const infobars::ContentInfoBarManager* infobar_manager = GetInfoBarManager();
-  if (!infobar_manager)
+  if (!infobar_manager) {
     return std::nullopt;
+  }
   const auto& infobars = infobar_manager->infobars();
   if ((infobars.size() < starting_infobars_.size()) ||
       !std::equal(starting_infobars_.begin(), starting_infobars_.end(),

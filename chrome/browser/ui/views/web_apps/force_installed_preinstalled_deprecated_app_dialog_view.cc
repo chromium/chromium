@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -14,9 +15,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -119,7 +120,7 @@ void ForceInstalledPreinstalledDeprecatedAppDialogView::CreateAndShowDialog(
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->SetModalType(ui::mojom::ModalType::kChild);
   delegate->SetShowCloseButton(false);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetTitle(l10n_util::GetStringUTF16(
       IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_TITLE));
   delegate->SetButtonLabel(

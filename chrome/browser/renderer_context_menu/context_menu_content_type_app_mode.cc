@@ -8,8 +8,7 @@ ContextMenuContentTypeAppMode::ContextMenuContentTypeAppMode(
     const content::ContextMenuParams& params)
     : ContextMenuContentType(params, false) {}
 
-ContextMenuContentTypeAppMode::~ContextMenuContentTypeAppMode() {
-}
+ContextMenuContentTypeAppMode::~ContextMenuContentTypeAppMode() = default;
 
 bool ContextMenuContentTypeAppMode::SupportsGroup(int group) {
   switch (group) {

@@ -25,6 +25,7 @@ android_library("stubs_java") {
 android_library("test_java") {
   srcjar_deps = [ ":test_jni" ]
   sources = [
+    "java/src/org/jni_zero/NullMarked.java",
     "java/src/org/jni_zero/SampleForAnnotationProcessor.java",
     "java/src/org/jni_zero/SampleForTests.java",
     "java/src/org/jni_zero/SampleUnderSamePackage.java",

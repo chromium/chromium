@@ -28,17 +28,19 @@ If you're working on the plugin, you can build it locally like so:
 
 1.  Run `./tools/clang/scripts/build.py --without-android --without-fuchsia`
     to build the plugin.
-1.  Run `ninja -C third_party/llvm-build/Release+Asserts/` to build incrementally.
-1.  Build with clang like described above, but, if you use reclient, disable it.
+1.  Run `ninja -C third_party/llvm-build/Release+Asserts/` to build
+    incrementally after making changes.
+1.  Run `(cd tools/clang/plugins/tests && ./test.py ../../../../third_party/llvm-build/Release+Asserts/bin/clang)`
+    to test the plugin after making changes.
+1.  Build Chromium with clang as usual, but, if you use reclient, disable it.
 
-To test the FindBadConstructs plugin, run:
-
-    (cd tools/clang/plugins/tests && \
-     ./test.py ../../../../third_party/llvm-build/Release+Asserts/bin/clang)
+The local plugin will then be used for local builds until the next
+`gclient sync` restores the default toolchain.
 
 Since the plugin is rolled with clang changes, behavior changes to the plugin
-should be guarded by flags to make it easy to roll clang. A general outline:
-1.  Implement new plugin behavior behind a flag.
+should be guarded by flags to make it easy to roll clang without introducing
+unexpected breakage. A general outline:
+1.  Implement new plugin behavior behind a flag, disabled by default.
 1.  Wait for a compiler roll to bring in the flag.
 1.  Start passing the new flag in `GN` and verify the new behavior.
 1.  Enable the new plugin behavior unconditionally and update the plugin to
@@ -102,3 +104,6 @@ trying to build with is closer to clang trunk than to Chromium's pinned clang
 
 * [Clang Tool Refactoring](clang_tool_refactoring.md) has notes on how to build
   and run refactoring tools based on clang's libraries.
+
+* [Updating Clang format binaries](updating_clang_format_binaries.md) has notes
+  on how to update clang-format.

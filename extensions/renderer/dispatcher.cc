@@ -25,13 +25,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
+#include "base/strings/span_printf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
@@ -63,6 +64,7 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "extensions/common/user_scripts_allowed_state.h"
 #include "extensions/common/utils/extension_utils.h"
 #include "extensions/grit/extensions_renderer_resources.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
@@ -122,8 +124,31 @@ namespace extensions {
 
 namespace {
 
+// A feature flag for the crash issue in crbug.com/389971360.
+BASE_FEATURE(kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext,
+             "SpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 static const char kOnSuspendEvent[] = "runtime.onSuspend";
 static const char kOnSuspendCanceledEvent[] = "runtime.onSuspendCanceled";
+
+// TODO(crbug.com/389971360) Remove this enum class and
+// `service_worker_context_state` once the issue is fixed. This is completely
+// for the debugging purpose.
+enum class ServiceWorkerContextState {
+  kDefault = 0,
+  kInitializing = 1,
+  kInitialized = 2,
+  kScriptUrlIsNotExtensionScheme = 3,
+  kNoExtension = 4,
+  kExtensionAPIIsNotEnabledForServiceWorkerScript = 5,
+  kDestroying = 6,
+  kDestroyed = 7,
+  kMaxValue = kDestroyed,
+};
+
+constinit thread_local ServiceWorkerContextState service_worker_context_state =
+    extensions::ServiceWorkerContextState::kDefault;
 
 enum class ExtensionRendererLoadStatus {
   // Extension is neither loaded in the registry nor unloaded.
@@ -390,11 +415,13 @@ Dispatcher::Dispatcher(
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
       extension_scheme);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kAllowSharedArrayBuffersUnconditionally)) {
-    WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
-        extension_scheme);
-  }
+#if !BUILDFLAG(IS_ANDROID)
+  // Currently, extensions are only available on desktop, and are process-
+  // separated from regular web contents. Therefore, it is safe to give them
+  // access to SharedArrayBuffers.
+  WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
+      extension_scheme);
+#endif
 
   // chrome-extension: resources should be allowed to register ServiceWorkers.
   WebSecurityPolicy::RegisterURLSchemeAsAllowingServiceWorkers(
@@ -485,12 +512,16 @@ void Dispatcher::DidCreateScriptContext(
 
   bindings_system_->DidCreateScriptContext(context);
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // Inject custom JS into the platform app context.
   if (IsWithinPlatformApp()) {
     module_system->Require("platformApp");
   }
+#endif
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   RequireGuestViewModules(context);
+#endif
 
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   switch (context->context_type()) {
@@ -525,10 +556,6 @@ void Dispatcher::DidCreateScriptContext(
     case mojom::ContextType::kUntrustedWebUi:
       // Extension APIs in untrusted WebUIs are temporary so don't bother
       // recording metrics for them.
-      break;
-    case mojom::ContextType::kLockscreenExtension:
-      UMA_HISTOGRAM_TIMES(
-          "Extensions.DidCreateScriptContext_LockScreenExtension", elapsed);
       break;
     case mojom::ContextType::kOffscreenExtension:
     case mojom::ContextType::kUserScript:
@@ -583,6 +610,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     const GURL& script_url,
     const blink::ServiceWorkerToken& service_worker_token) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
+  service_worker_context_state = ServiceWorkerContextState::kInitializing;
 
   // TODO(crbug.com/40626913): We may want to give service workers not
   // registered by extensions minimal bindings, the same as other webpage-like
@@ -592,6 +620,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // the extension registry is unnecessary if it's not. Checking this will
     // also skip over hosted apps, which is the desired behavior - hosted app
     // service workers are not our concern.
+    service_worker_context_state =
+        ServiceWorkerContextState::kScriptUrlIsNotExtensionScheme;
     return;
   }
 
@@ -631,11 +661,14 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // Perhaps this could be solved with our own event on the service worker
     // saying that an extension is ready, and documenting that extension APIs
     // won't work before that event has fired?
+    service_worker_context_state = ServiceWorkerContextState::kNoExtension;
     return;
   }
 
   if (!ExtensionAPIEnabledForServiceWorkerScript(service_worker_scope,
                                                  script_url)) {
+    service_worker_context_state = ServiceWorkerContextState::
+        kExtensionAPIIsNotEnabledForServiceWorkerScript;
     return;
   }
 
@@ -691,9 +724,11 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
 
   worker_bindings_system->DidCreateScriptContext(context);
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // TODO(lazyboy): Get rid of RequireGuestViewModules() as this doesn't seem
   // necessary for Extension SW.
   RequireGuestViewModules(context);
+#endif
 
   WorkerThreadDispatcher::GetServiceWorkerData()->Init();
   g_worker_script_context_set.Get().Insert(base::WrapUnique(context));
@@ -701,6 +736,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   UMA_HISTOGRAM_TIMES(
       "Extensions.DidInitializeServiceWorkerContextOnWorkerThread2", elapsed);
+  service_worker_context_state = ServiceWorkerContextState::kInitialized;
 }
 
 void Dispatcher::WillReleaseScriptContext(
@@ -725,13 +761,35 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
     return;
   }
 
+  // TODO(crbug.com/389971360) Remove this once the bug is fixed.
+  SCOPED_CRASH_KEY_NUMBER("extensions", "worker_context_state",
+                          static_cast<int>(service_worker_context_state));
+
   const int thread_id = content::WorkerThread::GetCurrentId();
   CHECK_NE(thread_id, kMainThreadId);
   auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
-  service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
-      service_worker_data->context()->GetExtensionID(),
-      *service_worker_data->activation_sequence(), service_worker_scope,
-      service_worker_version_id, thread_id);
+  const ExtensionId& extension_id =
+      service_worker_data->context()->GetExtensionID();
+  CHECK(!extension_id.empty());
+  if (base::FeatureList::IsEnabled(
+          kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext)) {
+    // `service_worker_data` can be nullptr if the extension is already unloaded
+    // and the worker thread termination started.
+    //
+    // TODO(crbug.com/389971360) If this does seem to fix it, we should check
+    // `thread_state_` or `requested_to_terminate_` to confirm we're in
+    // termination when `service_worker_data` is false here.
+    if (service_worker_data) {
+      service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
+          extension_id, *service_worker_data->activation_sequence(),
+          service_worker_scope, service_worker_version_id, thread_id);
+    }
+  } else {
+    CHECK(service_worker_data);
+    service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
+        extension_id, *service_worker_data->activation_sequence(),
+        service_worker_scope, service_worker_version_id, thread_id);
+  }
 }
 
 void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
@@ -744,26 +802,35 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
   // Use the existence of ServiceWorkerData as the source of truth instead.
   if (auto* service_worker_data =
           WorkerThreadDispatcher::GetServiceWorkerData()) {
+    service_worker_context_state = ServiceWorkerContextState::kDestroying;
     const int thread_id = content::WorkerThread::GetCurrentId();
     CHECK_NE(thread_id, kMainThreadId);
 
     // TODO(lazyboy/devlin): Should this cleanup happen in a worker class, like
     // WorkerThreadDispatcher? If so, we should move the initialization as well.
     ScriptContext* script_context = service_worker_data->context();
+    const ExtensionId& extension_id =
+        service_worker_data->context()->GetExtensionID();
+    CHECK(!extension_id.empty());
     NativeExtensionBindingsSystem* worker_bindings_system =
         service_worker_data->bindings_system();
     if (worker_bindings_system) {
       worker_bindings_system->WillReleaseScriptContext(script_context);
       service_worker_data->GetServiceWorkerHost()->DidStopServiceWorkerContext(
-          script_context->GetExtensionID(),
-          *service_worker_data->activation_sequence(), service_worker_scope,
-          service_worker_version_id, thread_id);
+          extension_id, *service_worker_data->activation_sequence(),
+          service_worker_scope, service_worker_version_id, thread_id);
     }
     // Note: we have to remove the context (and thus perform invalidation on
     // the native handlers) prior to removing the worker data, which destroys
     // the associated bindings system.
     g_worker_script_context_set.Get().Remove(v8_context, script_url);
     WorkerThreadDispatcher::Get()->RemoveWorkerData(service_worker_version_id);
+
+    // TODO(crbug.com/389971360) Remove this after the fix. If ServiceWorkerData
+    // in `WorkerThreadDispatcher` is removed, update the eligibility status so
+    // that we make sure if ServiceWorkerData is already removed or not in the
+    // crash at `DidStartServiceWorkerContextOnWorkerThread()`.
+    service_worker_context_state = ServiceWorkerContextState::kDestroyed;
   } else {
     // If extension APIs in service workers aren't enabled, we just need to
     // remove the context.
@@ -924,11 +991,15 @@ void Dispatcher::OnEventDispatcherRequest(
     mojo::PendingAssociatedReceiver<mojom::EventDispatcher> dispatcher) {
   CHECK(!dispatcher_.is_bound());
   dispatcher_.Bind(std::move(dispatcher));
+  dispatcher_.reset_on_disconnect();
 }
 
 void Dispatcher::ActivateExtension(const ExtensionId& extension_id) {
   TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::ActivateExtension", extension_id);
 
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
+  DCHECK(!extension_id.empty());
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetByID(extension_id);
   if (!extension) {
@@ -939,8 +1010,8 @@ void Dispatcher::ActivateExtension(const ExtensionId& extension_id) {
     std::string& error = extension_load_errors_[extension_id];
     char minidump[256];
     base::debug::Alias(&minidump);
-    base::snprintf(minidump, std::size(minidump), "e::dispatcher:%s:%s",
-                   extension_id.c_str(), error.c_str());
+    base::SpanPrintf(minidump, "e::dispatcher:%s:%s", extension_id.c_str(),
+                     error.c_str());
     LOG(ERROR) << extension_id << " was never loaded: " << error;
     base::debug::DumpWithoutCrashing();
     return;
@@ -972,15 +1043,15 @@ void Dispatcher::LoadExtensions(
     ExtensionId id = param->id;
     std::optional<base::UnguessableToken> worker_activation_token =
         param->worker_activation_token;
+    SetCurrentUserScriptAllowedState(kRendererProfileId, id,
+                                     param->user_scripts_allowed);
 
     scoped_refptr<const Extension> extension =
         ConvertToExtension(std::move(param), kRendererProfileId, &error);
     if (!extension.get()) {
-      NOTREACHED_IN_MIGRATION() << error;
       // Note: in tests |param.id| has been observed to be empty (see comment
       // just below) so this isn't all that reliable.
-      extension_load_errors_[id] = error;
-      continue;
+      NOTREACHED() << error;
     }
 
     RendererExtensionRegistry* extension_registry =
@@ -1032,6 +1103,9 @@ void Dispatcher::LoadExtensions(
 void Dispatcher::UnloadExtension(const ExtensionId& extension_id) {
   TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::UnloadExtension", extension_id);
 
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
+  DCHECK(!extension_id.empty());
   // An extension should be in the registry if we are unloading it. Otherwise we
   // might be doing something out of the expected order.
   CHECK(RendererExtensionRegistry::Get()->Remove(extension_id));
@@ -1087,6 +1161,9 @@ void Dispatcher::SuspendExtension(
     mojom::Renderer::SuspendExtensionCallback callback) {
   TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::SuspendExtension", extension_id);
 
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
+  DCHECK(!extension_id.empty());
   // Dispatch the suspend event. This doesn't go through the standard event
   // dispatch machinery because it requires special handling. We need to let
   // the browser know when we are starting and stopping the event dispatch, so
@@ -1098,6 +1175,9 @@ void Dispatcher::SuspendExtension(
 }
 
 void Dispatcher::CancelSuspendExtension(const ExtensionId& extension_id) {
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
+  DCHECK(!extension_id.empty());
   DispatchEventHelper(GenerateHostIdFromExtensionId(extension_id),
                       kOnSuspendCanceledEvent, base::Value::List(), nullptr);
 }
@@ -1116,6 +1196,11 @@ void Dispatcher::SetWebViewPartitionID(const std::string& partition_id) {
 
 void Dispatcher::SetScriptingAllowlist(
     const std::vector<ExtensionId>& extension_ids) {
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
+  DCHECK(std::all_of(
+      extension_ids.begin(), extension_ids.end(),
+      [](const ExtensionId& extension_id) { return !extension_id.empty(); }));
   ExtensionsClient::Get()->SetScriptingAllowlist(extension_ids);
 }
 
@@ -1149,6 +1234,9 @@ void Dispatcher::UpdateUserScriptWorlds(
 void Dispatcher::ClearUserScriptWorldConfig(
     const ExtensionId& extension_id,
     const std::optional<std::string>& world_id) {
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
+  DCHECK(!extension_id.empty());
   IsolatedWorldManager::GetInstance().ClearUserScriptWorldProperties(
       extension_id, world_id);
 }
@@ -1169,6 +1257,9 @@ void Dispatcher::UpdateTabSpecificPermissions(const ExtensionId& extension_id,
                                               URLPatternSet new_hosts,
                                               int tab_id,
                                               bool update_origin_allowlist) {
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
+  DCHECK(!extension_id.empty());
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetByID(extension_id);
   if (!extension)
@@ -1195,6 +1286,9 @@ void Dispatcher::ClearTabSpecificPermissions(
     int tab_id,
     bool update_origin_allowlist) {
   for (const ExtensionId& id : extension_ids) {
+    // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that
+    // validation is always working.
+    DCHECK(!id.empty());
     const Extension* extension = RendererExtensionRegistry::Get()->GetByID(id);
     if (extension) {
       extension->permissions_data()->ClearTabSpecificPermissions(tab_id);
@@ -1255,12 +1349,24 @@ void Dispatcher::SetDeveloperMode(bool current_developer_mode) {
   UpdateAllBindings(/*api_permissions_changed=*/true);
 }
 
+void Dispatcher::SetUserScriptsAllowed(const ExtensionId& extension_id,
+                                       bool enabled) {
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
+  DCHECK(!extension_id.empty());
+  SetCurrentUserScriptAllowedState(kRendererProfileId, extension_id, enabled);
+  const Extension* extension =
+      RendererExtensionRegistry::Get()->GetByID(extension_id);
+  if (!extension) {
+    return;
+  }
+  UpdateBindingsForExtension(*extension);
+}
+
 void Dispatcher::SetSessionInfo(version_info::Channel channel,
-                                mojom::FeatureSessionType session_type,
-                                bool is_lock_screen_context) {
+                                mojom::FeatureSessionType session_type) {
   SetCurrentChannel(channel);
   SetCurrentFeatureSessionType(session_type);
-  script_context_set_->set_is_lock_screen_context(is_lock_screen_context);
 }
 
 void Dispatcher::ShouldSuspend(ShouldSuspendCallback callback) {
@@ -1277,6 +1383,9 @@ void Dispatcher::UpdatePermissions(const ExtensionId& extension_id,
                                    URLPatternSet policy_blocked_hosts,
                                    URLPatternSet policy_allowed_hosts,
                                    bool uses_default_policy_host_restrictions) {
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
+  DCHECK(!extension_id.empty());
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetByID(extension_id);
   if (!extension)
@@ -1419,6 +1528,7 @@ bool Dispatcher::IsWithinPlatformApp() {
   return false;
 }
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   ModuleSystem* module_system = context->module_system();
   bool requires_guest_view_module = false;
@@ -1435,7 +1545,6 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
       context->context_type() == mojom::ContextType::kPrivilegedExtension &&
       !context->IsForServiceWorker() && context->extension() &&
       context->extension()->is_platform_app();
-  const bool app_view_permission_exists = is_platform_app;
   // The webview permission is also available to internal allowlisted
   // extensions, but not to extensions in general.
   const bool web_view_permission_exists = is_platform_app;
@@ -1444,6 +1553,8 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   // It would be better if there were a light way of detecting when a webview
   // or appview is created and only then set up the infrastructure.
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+  const bool app_view_permission_exists = is_platform_app;
   // Require AppView.
   if (context->GetAvailability("appViewEmbedderInternal").is_available()) {
     requires_guest_view_module = true;
@@ -1451,6 +1562,7 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   } else if (app_view_permission_exists) {
     module_system->Require("appViewDeny");
   }
+#endif
 
   // Require ExtensionOptions.
   if (context->GetAvailability("extensionOptionsInternal").is_available()) {
@@ -1480,6 +1592,7 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
         ->SetForceMainWorldInitialization(true);
   }
 }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 std::unique_ptr<NativeExtensionBindingsSystem> Dispatcher::CreateBindingsSystem(
     NativeExtensionBindingsSystem::Delegate* delegate,

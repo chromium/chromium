@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_set.h"
 
 namespace content {
@@ -20,18 +21,26 @@ namespace extensions {
 // The controller for the ExtensionErrorUI. This examines extensions for any
 // blocklisted or external extensions in order to notify the user with an error.
 // On acceptance, this will acknowledge the extensions.
-class ExtensionErrorController : public ExtensionErrorUI::Delegate {
+class ExtensionErrorController : public KeyedService,
+                                 public ExtensionErrorUI::Delegate {
  public:
   typedef ExtensionErrorUI* (*UICreateMethod)(ExtensionErrorUI::Delegate*);
 
-  ExtensionErrorController(content::BrowserContext* context, bool is_first_run);
+  explicit ExtensionErrorController(content::BrowserContext* context);
 
   ExtensionErrorController(const ExtensionErrorController&) = delete;
   ExtensionErrorController& operator=(const ExtensionErrorController&) = delete;
 
-  virtual ~ExtensionErrorController();
+  ~ExtensionErrorController() override;
+
+  // Specifies whether this is first run or not.
+  void set_is_first_run(bool value) { is_first_run_ = value; }
 
   void ShowErrorIfNeeded();
+
+  // Returns the instance for the given `browser_context`.
+  static ExtensionErrorController* Get(
+      content::BrowserContext* browser_context);
 
   // Set the factory method for creating a new ExtensionErrorUI.
   static void SetUICreateMethodForTesting(UICreateMethod method);

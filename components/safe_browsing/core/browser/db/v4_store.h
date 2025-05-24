@@ -109,7 +109,7 @@ enum StoreWriteResult {
 // stores for testing.
 class V4StoreFactory {
  public:
-  virtual ~V4StoreFactory() {}
+  virtual ~V4StoreFactory() = default;
 
   virtual V4StorePtr CreateV4Store(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -199,6 +199,10 @@ class V4Store {
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestAddUnlumpedHashes);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestAddUnlumpedHashesWithEmptyString);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           TestAddUnlumpedHashesWithTooSmallPrefixSize);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           TestAddUnlumpedHashesWithTooLargePrefixSize);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
                            TestGetNextSmallestUnmergedPrefixWithEmptyPrefixMap);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestGetNextSmallestUnmergedPrefix);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdatesWithSameSizesInEachMap);
@@ -245,24 +249,41 @@ class V4Store {
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, GetMatchingHashPrefixSize32Or21);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
                            TestAdditionsWithRiceEncodingFailsWithInvalidInput);
+  FRIEND_TEST_ALL_PREFIXES(
+      V4StoreTest,
+      TestAdditionsWithRiceEncodingFailsWithInvalidCompressionType);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestAdditionsWithRiceEncodingSucceeds);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestRemovalsWithRiceEncodingSucceeds);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestMergeUpdatesFailsChecksum);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestChecksumErrorOnStartup);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, WriteToDiskFails);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FullUpdateFailsChecksumSynchronously);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           ApplyUpdateFailsWithInvalidResponseType);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           ApplyUpdateRemovalsFailsWithInvalidCompressionType);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, VerifyChecksumMmapFile);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FailedMmapOnRead);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToMmap);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateFileOffsets);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, CleanUpOldFiles);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FileSizeIncludesHashFiles);
-  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, ReserveSpaceInPrefixMap);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MergeUpdatesWithHashPrefixMap);
   FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, StressTest);
 
   friend class V4StoreTest;
   friend class V4StoreFuzzer;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ApplyUpdateType)
+  enum class ApplyUpdateType {
+    kInvalid = 0,
+    kFull = 1,
+    kPartial = 2,
+    kMaxValue = kPartial,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingV4UpdateType)
 
   // If |prefix_size| is within expected range, and |raw_hashes_length| is a
   // multiple of prefix_size, then it sets the string of length
@@ -295,16 +316,6 @@ class V4Store {
   static void InitializeIteratorMap(const HashPrefixMapView& hash_prefix_map,
                                     IteratorMap* iterator_map);
 
-  // Reserve the appropriate string size so that the string size of the merged
-  // list is exact. This ignores the space that would otherwise be released by
-  // deletions specified in the update because it is non-trivial to calculate
-  // those deletions upfront. This isn't so bad since deletions are supposed to
-  // be small and infrequent.
-  static void ReserveSpaceInPrefixMap(const HashPrefixMapView& old_map,
-                                      const HashPrefixMapView& additions_map,
-                                      size_t removals_count,
-                                      HashPrefixMap* prefix_map_to_update);
-
   // Same as the public GetMatchingHashPrefix method, but takes a
   // std::string_view, for performance reasons.
   HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash);
@@ -318,8 +329,7 @@ class V4Store {
   ApplyUpdateResult MergeUpdate(
       const HashPrefixMapView& old_hash_prefix_map,
       const HashPrefixMapView& additions_map,
-      const ::google::protobuf::RepeatedField<::google::protobuf::int32>*
-          raw_removals,
+      const ::google::protobuf::RepeatedField<int32_t>* raw_removals,
       const std::string& expected_checksum);
 
   // Processes the FULL_UPDATE |response| from the server, and writes the

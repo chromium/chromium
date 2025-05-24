@@ -185,8 +185,6 @@ public class UndoRefocusHelperTest {
         List<Tab> multipleTabs = Arrays.asList(mTab2, mTab3);
         tabModelObserver.willCloseMultipleTabs(true, multipleTabs);
         cancelTabsClosure(tabModelObserver, multipleTabs);
-        // Finalize closure cancellation completion.
-        tabModelObserver.allTabsClosureUndone();
 
         // Assert: Fourth tab is selected after undo.
         assertEquals(mTabModel.index(), 3);
@@ -303,8 +301,6 @@ public class UndoRefocusHelperTest {
         List<Tab> tabsToClose = Arrays.asList(mTab2, mTab3);
         tabModelObserver.willCloseMultipleTabs(true, tabsToClose);
         cancelTabsClosure(tabModelObserver, tabsToClose);
-        // Finalize closure cancellation completion.
-        tabModelObserver.allTabsClosureUndone();
 
         // Assert: Fourth tab is selected after undo.
         assertEquals(3, mTabModel.index());
@@ -328,10 +324,94 @@ public class UndoRefocusHelperTest {
         cancelTabsClosure(tabModelObserver, tabsToClose2);
         cancelTabsClosure(tabModelObserver, tabsToClose1);
 
-        // Finalize closure cancellation completion.
-        tabModelObserver.allTabsClosureUndone();
+        // Assert: mTab1 tab is selected after undo.
+        assertEquals(1, mTabModel.index());
+    }
+
+    @Test
+    public void testCommittedMultipleTabs_ThenUndoAnotherMultipleTabs_ReSelectsSelectedTab() {
+        // Arrange: Start with fourth tab as selected index.
+        initializeTabModel(3);
+        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
+
+        // Act: Close first set multiple tabs including selected tabs.
+        List<Tab> tabsToClose1 = Arrays.asList(mTab2, mTab3);
+        tabModelObserver.willCloseMultipleTabs(true, tabsToClose1);
+        // Set mTab1 as newly selected tab.
+        mTabModel.setIndex(1);
+
+        // Act: Close second set multiple tabs including selected tabs.
+        List<Tab> tabsToClose2 = Arrays.asList(mTab0, mTab1);
+        tabModelObserver.willCloseMultipleTabs(true, tabsToClose2);
+        // Set mTab5 as newly selected tab.
+        mTabModel.setIndex(4);
+
+        commitTabsClosure(tabModelObserver, tabsToClose1);
+        cancelTabsClosure(tabModelObserver, tabsToClose2);
 
         // Assert: mTab1 tab is selected after undo.
+        assertEquals(1, mTabModel.index());
+    }
+
+    @Test
+    public void
+            testUndoCloseSingleTab_InterleavedWithUndoMultipleTabsClosedTogether_ReSelectsSelectedTabOnce() {
+        // Arrange: Start with fourth tab as selected index
+        initializeTabModel(3);
+        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
+
+        // Act 1: Close just the fourth tab.
+        tabModelObserver.willCloseTab(mTab3, true);
+        // After fourth tab is closed, the third one should be selected.
+        mTabModel.setIndex(2);
+
+        // Act 2: Close multiple tabs.
+        List<Tab> multipleTabs = Arrays.asList(mTab1, mTab2);
+        tabModelObserver.willCloseMultipleTabs(true, multipleTabs);
+        // After second and third tab is closed, the first one should be selected.
+        mTabModel.setIndex(0);
+
+        // Undo multiple tab closure.
+        cancelTabsClosure(tabModelObserver, multipleTabs);
+
+        // Assert: Third tab is selected after undo.
+        assertEquals(2, mTabModel.index());
+
+        // Undo single tab closure.
+        tabModelObserver.tabClosureUndone(mTab3);
+
+        // Assert: Doesn't reselect the single undone tab.
+        assertEquals(2, mTabModel.index());
+    }
+
+    @Test
+    public void
+            testUndoMultipleTabsClosedTogether_InterleavedWithUndoCloseSingleTab_ReSelectsSelectedTabOnce() {
+        // Arrange: Start with fourth tab as selected index
+        initializeTabModel(3);
+        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
+
+        // Act 1: Close multiple tabs.
+        List<Tab> multipleTabs = Arrays.asList(mTab2, mTab3);
+        tabModelObserver.willCloseMultipleTabs(true, multipleTabs);
+        // After third and fourth tab is closed, the second should be selected.
+        mTabModel.setIndex(1);
+
+        // Act 1: Close just the second tab.
+        tabModelObserver.willCloseTab(mTab1, true);
+        // After second tab is closed, the first one should be selected.
+        mTabModel.setIndex(0);
+
+        // Undo single tab closure.
+        tabModelObserver.tabClosureUndone(mTab3);
+
+        // Assert: first tab is selected after undo.
+        assertEquals(1, mTabModel.index());
+
+        // Undo multiple tab closure.
+        cancelTabsClosure(tabModelObserver, multipleTabs);
+
+        // Assert: Doesn't reselect the single undone tab.
         assertEquals(1, mTabModel.index());
     }
 
@@ -344,7 +424,6 @@ public class UndoRefocusHelperTest {
         List<Tab> multipleTabs = Arrays.asList(mTab2, mTab3);
         tabModelObserver.willCloseMultipleTabs(true, multipleTabs);
         cancelTabsClosure(tabModelObserver, multipleTabs);
-        tabModelObserver.allTabsClosureUndone();
 
         // Assert: User action is recorded exactly once.
         assertEquals(1, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
@@ -359,8 +438,6 @@ public class UndoRefocusHelperTest {
         // Act: Close all tabs and undo closure.
         tabModelObserver.willCloseAllTabs(false);
         cancelTabsClosure(tabModelObserver, Arrays.asList(mTab0, mTab1, mTab2, mTab3));
-        // Finalize closure cancellation completion.
-        tabModelObserver.allTabsClosureUndone();
 
         // Assert: Fourth tab is selected after undo.
         assertEquals(3, mTabModel.index());
@@ -375,8 +452,6 @@ public class UndoRefocusHelperTest {
         // Act: Close all tabs and undo closure.
         tabModelObserver.willCloseAllTabs(false);
         cancelTabsClosure(tabModelObserver, Arrays.asList(mTab0, mTab1, mTab2, mTab3));
-        // Finalize closure cancellation completion.
-        tabModelObserver.allTabsClosureUndone();
 
         // Assert: User action is recorded exactly once.
         assertEquals(1, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
@@ -401,6 +476,13 @@ public class UndoRefocusHelperTest {
         when(mTabModelSelector.getModelForTabId(id)).thenReturn(mTabModel);
 
         return tab;
+    }
+
+    private void commitTabsClosure(
+            TabModelObserver tabModelObserver, List<Tab> closedTabsToCommit) {
+        for (int i = 0; i < closedTabsToCommit.size(); i++) {
+            tabModelObserver.tabClosureCommitted(closedTabsToCommit.get(i));
+        }
     }
 
     private void cancelTabsClosure(TabModelObserver tabModelObserver, List<Tab> tabsToUndo) {

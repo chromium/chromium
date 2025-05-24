@@ -51,11 +51,11 @@ suite('<history-toolbar>', function() {
     pressAndReleaseKeyOn(document.body, 70, modifier, 'f');
     await field.updateComplete;
     assertTrue(field.showingSearch);
-    assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
+    assertEquals(field.$.searchInput, field.shadowRoot.activeElement);
 
     pressAndReleaseKeyOn(field.$.searchInput, 27, [], 'Escape');
     await field.updateComplete;
     assertFalse(field.showingSearch, 'Pressing escape closes field.');
-    assertNotEquals(field.$.searchInput, field.shadowRoot!.activeElement);
+    assertNotEquals(field.$.searchInput, field.shadowRoot.activeElement);
   });
 });

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -16,7 +17,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
@@ -424,13 +424,15 @@ bool PageSchedulerImpl::OptedOutFromAggressiveThrottling() const {
 }
 
 bool PageSchedulerImpl::RequestBeginMainFrameNotExpected(bool new_state) {
+  CHECK(!base::FeatureList::IsEnabled(kUseWidgetSchedulerForIdlePeriodSignals));
   if (!delegate_)
     return false;
   return delegate_->RequestBeginMainFrameNotExpected(new_state);
 }
 
-scoped_refptr<WidgetScheduler> PageSchedulerImpl::CreateWidgetScheduler() {
-  return main_thread_scheduler_->CreateWidgetScheduler();
+scoped_refptr<WidgetScheduler> PageSchedulerImpl::CreateWidgetScheduler(
+    WidgetScheduler::Delegate* delegate) {
+  return main_thread_scheduler_->CreateWidgetScheduler(delegate);
 }
 
 bool PageSchedulerImpl::IsAudioPlaying() const {
@@ -480,7 +482,7 @@ void PageSchedulerImpl::OnTraceLogEnabled() {
 }
 
 bool PageSchedulerImpl::IsWaitingForMainFrameContentfulPaint() const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       frame_schedulers_, [](const FrameSchedulerImpl* fs) {
         return fs->IsWaitingForContentfulPaint() &&
                !fs->IsInEmbeddedFrameTree() &&
@@ -489,7 +491,7 @@ bool PageSchedulerImpl::IsWaitingForMainFrameContentfulPaint() const {
 }
 
 bool PageSchedulerImpl::IsWaitingForMainFrameMeaningfulPaint() const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       frame_schedulers_, [](const FrameSchedulerImpl* fs) {
         return fs->IsWaitingForMeaningfulPaint() &&
                !fs->IsInEmbeddedFrameTree() &&
@@ -498,7 +500,7 @@ bool PageSchedulerImpl::IsWaitingForMainFrameMeaningfulPaint() const {
 }
 
 bool PageSchedulerImpl::IsMainFrameLoading() const {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       frame_schedulers_, [](const FrameSchedulerImpl* fs) {
         return fs->IsLoading() && !fs->IsInEmbeddedFrameTree() &&
                fs->GetFrameType() == FrameScheduler::FrameType::kMainFrame;
@@ -801,14 +803,6 @@ bool PageSchedulerImpl::IsBackgrounded() const {
   // when virtual time is enabled.
   return !IsPageVisible() && !IsAudioPlaying() &&
          !main_thread_scheduler_->IsVirtualTimeEnabled();
-}
-
-FrameSchedulerImpl* PageSchedulerImpl::SelectFrameForUkmAttribution() {
-  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
-    if (frame_scheduler->GetUkmRecorder())
-      return frame_scheduler;
-  }
-  return nullptr;
 }
 
 bool PageSchedulerImpl::HasWakeUpBudgetPools() const {

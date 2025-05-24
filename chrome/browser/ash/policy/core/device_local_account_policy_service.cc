@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -89,6 +90,7 @@ DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
                  invalidation::InvalidationListener*>
         invalidation_service_provider_or_listener,
     scoped_refptr<base::SequencedTaskRunner> store_background_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> store_first_load_task_runner,
     scoped_refptr<base::SequencedTaskRunner> extension_cache_task_runner,
     scoped_refptr<base::SequencedTaskRunner>
         external_data_service_backend_task_runner,
@@ -103,6 +105,7 @@ DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
       waiting_for_cros_settings_(false),
       orphan_extension_cache_deletion_state_(NOT_STARTED),
       store_background_task_runner_(store_background_task_runner),
+      store_first_load_task_runner_(store_first_load_task_runner),
       extension_cache_task_runner_(extension_cache_task_runner),
       resource_cache_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
@@ -297,11 +300,15 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
     } else {
       auto store = std::make_unique<DeviceLocalAccountPolicyStore>(
           device_local_account.account_id, session_manager_client_,
-          device_settings_service_, store_background_task_runner_);
+          device_settings_service_, store_background_task_runner_,
+          store_first_load_task_runner_);
       scoped_refptr<DeviceLocalAccountExternalDataManager>
           external_data_manager =
               external_data_service_->GetExternalDataManager(
                   device_local_account.account_id, store.get());
+      // TODO(b/336629900): Remove the log when the root cause is identified.
+      SYSLOG(INFO) << "Creating the broker for account: "
+                   << device_local_account.account_id;
       broker = std::make_unique<DeviceLocalAccountPolicyBroker>(
           device_local_account,
           component_policy_cache_root_.Append(GetUniqueSubDirectoryForAccountID(

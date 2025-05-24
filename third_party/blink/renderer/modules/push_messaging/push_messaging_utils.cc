@@ -72,8 +72,7 @@ String PushRegistrationStatusToString(mojom::PushRegistrationStatus status) {
       return "Registration failed - GCM Sender IDs are no longer supported, "
              "please upgrade to VAPID authentication instead";
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 mojom::PushErrorType PushRegistrationStatusToPushErrorType(

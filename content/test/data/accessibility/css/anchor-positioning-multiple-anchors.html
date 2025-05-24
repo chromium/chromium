@@ -1,0 +1,49 @@
+<!--
+@BLINK-ALLOW:details*
+@EXECUTE-AND-WAIT-FOR:addAdditionalAnchor()
+@EXECUTE-AND-WAIT-FOR:removeAnchor()
+-->
+<html>
+<head><style>
+.anchor1 {
+  anchor-name: --anchor-1;
+  margin: 10dvh;
+}
+
+.anchor2 {
+  anchor-name: --anchor-2;
+}
+
+.target1 {
+  position: absolute;
+  top: anchor(--anchor-1 bottom);
+}
+
+</style></head>
+<body>
+  <p class="target1" id="t1">target1</p>
+  <button class="anchor1">anchor1</button>
+  <h1 class="anchor2">anchor2</h1>
+</body>
+</html>
+<script>
+// target1 is anchored to anchor1, so anchor1 should have detailsId set.
+
+// Step 1: Anchor target1 to anchor2 as well.
+// Expectation: Since target1 has two anchors, anchor1 and anchor2 do not have detailsId set.
+function addAdditionalAnchor() {
+  let target = document.querySelector('.target1');
+  target.style.right = "anchor(--anchor-2 right)";
+  document.title = "addAdditionalAnchor() done";
+  return "addAdditionalAnchor() done";
+}
+
+// Step 2: Remove anchor1 so that target1 only has one anchor.
+// Expectation: anchor2 has detailsId set.
+function removeAnchor() {
+  document.querySelector('.anchor1').remove();
+  document.title = "removeAnchor() done";
+  return "removeAnchor() done";
+}
+
+</script>

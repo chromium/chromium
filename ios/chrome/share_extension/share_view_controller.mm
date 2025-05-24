@@ -96,8 +96,8 @@ const CGFloat kMediumAlpha = 0.5;
   // On iOS 13, the default share extension presentation style already has a
   // mask behind the view.
   self.maskView.hidden = YES;
-  [self.maskView
-      setBackgroundColor:[UIColor colorWithWhite:0 alpha:kMediumAlpha]];
+  [self.maskView setBackgroundColor:[UIColor colorWithWhite:0
+                                                      alpha:kMediumAlpha]];
   [self.view addSubview:self.maskView];
   ui_util::ConstrainAllSidesOfViewToView(self.view, self.maskView);
 
@@ -188,7 +188,7 @@ const CGFloat kMediumAlpha = 0.5;
 
 - (void)constrainWidgetWidth {
   // Setting the constraints.
-  NSDictionary* views = @{ @"share" : self.shareView };
+  NSDictionary* views = @{@"share" : self.shareView};
 
   NSDictionary* metrics = @{
     @"margin" : @(kShareExtensionMargin),
@@ -341,14 +341,16 @@ const CGFloat kMediumAlpha = 0.5;
   NSTimeZone* timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
   [dateFormatter setTimeZone:timeZone];
   NSString* dateString = [dateFormatter stringFromDate:date];
-  NSURL* fileURL =
-      [readingListURL URLByAppendingPathComponent:dateString isDirectory:NO];
+  NSURL* fileURL = [readingListURL URLByAppendingPathComponent:dateString
+                                                   isDirectory:NO];
 
   NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-  if (URL)
+  if (URL) {
     [dict setObject:URL forKey:app_group::kShareItemURL];
-  if (title)
+  }
+  if (title) {
     [dict setObject:title forKey:app_group::kShareItemTitle];
+  }
   [dict setObject:date forKey:app_group::kShareItemDate];
   [dict setObject:app_group::kShareItemSourceShareExtension
            forKey:app_group::kShareItemSource];

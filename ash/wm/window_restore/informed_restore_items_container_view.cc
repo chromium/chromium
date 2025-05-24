@@ -18,7 +18,7 @@ InformedRestoreItemsContainerView::InformedRestoreItemsContainerView(
   const int elements = static_cast<int>(apps_infos.size());
   CHECK_GT(elements, 0);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated,
       informed_restore::kPreviewContainerRadius));
   SetBetweenChildSpacing(informed_restore::kItemsContainerChildSpacing);

@@ -176,11 +176,13 @@ extern const char kDeleteDMToken[];
 extern const char kDeleteOldVersions[];
 extern const char kDeleteProfile[];
 extern const char kDisableLogging[];
+inline constexpr char kDisableSystemTracing[] = "disable-system-tracing";
 extern const char kDmServerUrl[];
 extern const char kDoNotLaunchChrome[];
 extern const char kDoNotRegisterForUpdateLaunch[];
 extern const char kDoNotRemoveSharedItems[];
 extern const char kEnableLogging[];
+inline constexpr char kEnableSystemTracing[] = "enable-system-tracing";
 extern const char kForceConfigureUserSettings[];
 extern const char kForceUninstall[];
 extern const char kInstallArchive[];
@@ -216,7 +218,10 @@ extern const char kVerboseLogging[];
 
 namespace env_vars {
 
-extern const char kGoogleUpdateIsMachineEnvVar[];
+// The presence of this environment variable with a value of 1 implies that
+// setup.exe should run as a system installation regardless of what is on the
+// command line.
+inline constexpr char kGoogleUpdateIsMachineEnvVar[] = "GoogleUpdateIsMachine";
 
 }  // namespace env_vars
 

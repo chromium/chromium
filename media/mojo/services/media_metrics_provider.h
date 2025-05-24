@@ -12,6 +12,8 @@
 
 #include "base/time/time.h"
 #include "media/base/container_names.h"
+#include "media/base/demuxer.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/timestamp_constants.h"
@@ -41,13 +43,15 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
 
   using IsShuttingDownCallback = base::RepeatingCallback<bool(void)>;
 
-  MediaMetricsProvider(BrowsingMode is_incognito,
-                       FrameStatus is_top_frame,
-                       ukm::SourceId source_id,
-                       learning::FeatureValue origin,
-                       VideoDecodePerfHistory::SaveCallback save_cb,
-                       GetLearningSessionCallback learning_session_cb,
-                       IsShuttingDownCallback is_shutting_down_cb);
+  MediaMetricsProvider(
+      BrowsingMode is_incognito,
+      FrameStatus is_top_frame,
+      ukm::SourceId source_id,
+      learning::FeatureValue origin,
+      VideoDecodePerfHistory::SaveCallback save_cb,
+      GetLearningSessionCallback learning_session_cb,
+      IsShuttingDownCallback is_shutting_down_cb,
+      PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb);
 
   MediaMetricsProvider(const MediaMetricsProvider&) = delete;
   MediaMetricsProvider& operator=(const MediaMetricsProvider&) = delete;
@@ -76,6 +80,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
       VideoDecodePerfHistory::SaveCallback save_cb,
       GetLearningSessionCallback learning_session_cb,
       IsShuttingDownCallback is_shutting_down_cb,
+      PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb,
       mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver);
 
  private:
@@ -114,6 +119,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   void SetContainerName(
       container_names::MediaContainerName container_name) override;
   void SetRendererType(RendererType renderer_type) override;
+  void SetDemuxerType(DemuxerType renderer_type) override;
   void SetKeySystem(const std::string& key_system) override;
   void SetHasWaitingForKey() override;
   void SetIsHardwareSecure() override;
@@ -157,6 +163,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   const VideoDecodePerfHistory::SaveCallback save_cb_;
   const GetLearningSessionCallback learning_session_cb_;
   const IsShuttingDownCallback is_shutting_down_cb_;
+  const PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb_;
 
   // UMA pipeline packaged data
   PipelineInfo uma_info_;
@@ -165,6 +172,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   std::optional<MediaInfo> media_info_;
 
   RendererType renderer_type_ = RendererType::kRendererImpl;
+  DemuxerType demuxer_type_ = DemuxerType::kUnknownDemuxer;
   std::string key_system_;
   bool has_waiting_for_key_ = false;
   bool is_hardware_secure_ = false;

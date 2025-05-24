@@ -12,17 +12,6 @@ SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(
     : attributes_cbor_(attributes_cbor),
       signature_info_(std::move(signature_info)) {}
 
-bool SignedWebBundleSignatureStackEntry::operator==(
-    const SignedWebBundleSignatureStackEntry& other) const {
-  return attributes_cbor_ == other.attributes_cbor_ &&
-         signature_info_ == other.signature_info_;
-}
-
-bool SignedWebBundleSignatureStackEntry::operator!=(
-    const SignedWebBundleSignatureStackEntry& other) const {
-  return !operator==(other);
-}
-
 SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(
     const SignedWebBundleSignatureStackEntry&) = default;
 

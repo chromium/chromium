@@ -13,6 +13,7 @@ blink_core_sources("url_pattern") {
     "url_pattern_canon.h",
     "url_pattern_component.cc",
     "url_pattern_component.h",
+    "url_pattern_options.h",
   ]
 
   public_deps = [
@@ -20,6 +21,8 @@ blink_core_sources("url_pattern") {
     "//third_party/blink/renderer/platform",
     "//third_party/liburlpattern",
   ]
+
+  deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
 fuzzer_test("url_pattern_fuzzer") {

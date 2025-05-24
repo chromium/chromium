@@ -579,8 +579,7 @@ void NetworkingPrivateChromeOS::GetCaptivePortalStatus(
     std::move(success_callback).Run(kCaptivePortalStatusOffline);
     return;
   }
-  std::move(success_callback)
-      .Run(PortalStatusString(network->GetPortalState()));
+  std::move(success_callback).Run(PortalStatusString(network->portal_state()));
 }
 
 void NetworkingPrivateChromeOS::UnlockCellularSim(

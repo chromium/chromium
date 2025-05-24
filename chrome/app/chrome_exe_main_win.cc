@@ -77,7 +77,7 @@ void SetCwdForBrowserProcess() {
     return;
 
   base::SetCurrentDirectory(
-      base::FilePath(base::FilePath::StringPieceType(&buffer[0], length))
+      base::FilePath(base::FilePath::StringViewType(&buffer[0], length))
           .DirName());
 }
 
@@ -106,10 +106,11 @@ bool AttemptFastNotify(const base::CommandLine& command_line) {
     return false;
   policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
 
-  HWND chrome = chrome::FindRunningChromeWindow(user_data_dir);
+  HWND chrome = FindRunningChromeWindow(user_data_dir);
   if (!chrome)
     return false;
-  return chrome::AttemptToNotifyRunningChrome(chrome) == chrome::NOTIFY_SUCCESS;
+  return AttemptToNotifyRunningChrome(chrome) ==
+         NotifyChromeResult::NOTIFY_SUCCESS;
 }
 
 // Returns true if the child process |command_line| contains a /prefetch:#

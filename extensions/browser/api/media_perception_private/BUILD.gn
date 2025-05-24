@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
+assert(is_chromeos)
 
 source_set("media_perception_private") {
   sources = [
@@ -20,16 +22,22 @@ source_set("media_perception_private") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     "//base",
-    "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/media_analytics",
     "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
-    "//chromeos/ash/components/dbus/upstart",
     "//chromeos/services/media_perception/public/mojom",
-    "//chromeos/services/media_perception/public/mojom:mojom_js_data_deps",
     "//extensions/browser:browser_sources",
-    "//extensions/common",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common/api",
+    "//mojo/public/cpp/bindings",
+    "//services/video_capture/public/mojom",
+  ]
+
+  deps = [
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/upstart",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
   ]
 }

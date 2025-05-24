@@ -16,41 +16,15 @@
 
 namespace ui {
 
-namespace {
-
-// A global map from AXNodes to TestAXNodeHelpers.
-std::map<AXNodeID, TestAXNodeHelper*> g_node_id_to_helper_map;
-
-// A simple implementation of AXTreeObserver to catch when AXNodes are
-// deleted so we can delete their helpers.
-class TestAXTreeObserver : public AXTreeObserver {
- private:
-  void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override {
-    const auto iter = g_node_id_to_helper_map.find(node_id);
-    if (iter != g_node_id_to_helper_map.end()) {
-      TestAXNodeHelper* helper = iter->second;
-      delete helper;
-      g_node_id_to_helper_map.erase(node_id);
-    }
-  }
-};
-
-TestAXTreeObserver g_ax_tree_observer;
-
-}  // namespace
-
 // static
-TestAXNodeHelper* TestAXNodeHelper::GetOrCreate(AXTree* tree, AXNode* node) {
-  if (!tree || !node)
+std::unique_ptr<TestAXNodeHelper> TestAXNodeHelper::Create(AXTree* tree,
+                                                           AXNode* node) {
+  if (!tree || !node) {
     return nullptr;
+  }
 
-  if (!tree->HasObserver(&g_ax_tree_observer))
-    tree->AddObserver(&g_ax_tree_observer);
-  auto iter = g_node_id_to_helper_map.find(node->id());
-  if (iter != g_node_id_to_helper_map.end())
-    return iter->second;
-  TestAXNodeHelper* helper = new TestAXNodeHelper(tree, node);
-  g_node_id_to_helper_map[node->id()] = helper;
+  auto helper =
+      std::unique_ptr<TestAXNodeHelper>(new TestAXNodeHelper(tree, node));
   return helper;
 }
 
@@ -107,8 +81,8 @@ gfx::Rect TestAXNodeHelper::GetInnerTextRangeBoundsRect(
         bounds = GetInlineTextRect(start_offset, end_offset);
       } else if (node_->GetRole() == ax::mojom::Role::kStaticText &&
                  InternalChildCount() > 0) {
-        TestAXNodeHelper* child = InternalGetChild(0);
-        if (child != nullptr &&
+        auto child = InternalGetChild(0);
+        if (child &&
             child->node_->GetRole() == ax::mojom::Role::kInlineTextBox) {
           bounds = child->GetInlineTextRect(start_offset, end_offset);
         }
@@ -142,11 +116,12 @@ int TestAXNodeHelper::InternalChildCount() const {
   return static_cast<int>(node_->GetUnignoredChildCount());
 }
 
-TestAXNodeHelper* TestAXNodeHelper::InternalGetChild(int index) const {
+std::unique_ptr<TestAXNodeHelper> TestAXNodeHelper::InternalGetChild(
+    int index) const {
   CHECK_GE(index, 0);
   CHECK_LT(index, InternalChildCount());
-  return GetOrCreate(
-      tree_, node_->GetUnignoredChildAtIndex(static_cast<size_t>(index)));
+  return Create(tree_,
+                node_->GetUnignoredChildAtIndex(static_cast<size_t>(index)));
 }
 
 gfx::RectF TestAXNodeHelper::GetInlineTextRect(const int start_offset,

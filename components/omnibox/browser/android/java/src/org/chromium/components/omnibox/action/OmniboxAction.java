@@ -7,12 +7,12 @@ package org.chromium.components.omnibox.action;
 import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.omnibox.R;
 
@@ -20,6 +20,7 @@ import org.chromium.components.omnibox.R;
  * Omnibox Actions are additional actions associated with Omnibox Matches. For more information,
  * please check on OmniboxAction class definition on native side.
  */
+@NullMarked
 public abstract class OmniboxAction {
     /** Describes the ChipView decoration. */
     public static final class ChipIcon {
@@ -49,13 +50,13 @@ public abstract class OmniboxAction {
     public final @OmniboxActionId int actionId;
 
     /** The string to present/announce to the user when the action is shown. */
-    public final @NonNull String hint;
+    public final String hint;
 
     /** The text to announce when the action chip is focused. */
-    public final @NonNull String accessibilityHint;
+    public final String accessibilityHint;
 
     /** The icon to use to decorate the Action chip. */
-    public final @NonNull ChipIcon icon;
+    public final ChipIcon icon;
 
     public final int primaryTextAppearance;
 
@@ -65,9 +66,9 @@ public abstract class OmniboxAction {
     public OmniboxAction(
             @OmniboxActionId int actionId,
             long nativeInstance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
-            @NonNull ChipIcon icon,
+            String hint,
+            String accessibilityHint,
+            ChipIcon icon,
             int primaryTextAppearance) {
         assert !TextUtils.isEmpty(hint);
         this.actionId = actionId;
@@ -107,7 +108,7 @@ public abstract class OmniboxAction {
      *
      * @param delegate delegate capable of routing and executing variety of action-specific tasks
      */
-    public abstract void execute(@NonNull OmniboxActionDelegate delegate);
+    public abstract void execute(OmniboxActionDelegate delegate);
 
     @NativeMethods
     public interface Natives {

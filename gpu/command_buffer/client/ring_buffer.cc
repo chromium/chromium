@@ -18,16 +18,16 @@
 
 namespace gpu {
 
-RingBuffer::RingBuffer(uint32_t alignment,
+RingBuffer::RingBuffer(scoped_refptr<gpu::Buffer> buffer,
+                       uint32_t alignment,
                        Offset base_offset,
-                       uint32_t size,
-                       CommandBufferHelper* helper,
-                       void* base)
+                       CommandBufferHelper* helper)
     : helper_(helper),
+      buffer_(buffer),
       base_offset_(base_offset),
-      size_(size),
+      size_(buffer->size() - base_offset),
       alignment_(alignment),
-      base_(static_cast<int8_t*>(base) - base_offset) {}
+      base_(static_cast<int8_t*>(buffer->memory())) {}
 
 RingBuffer::~RingBuffer() {
   DCHECK_EQ(num_used_blocks_, 0u);
@@ -107,7 +107,7 @@ void RingBuffer::FreePendingToken(void* pointer, uint32_t token) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION() << "attempt to free non-existant block";
+  NOTREACHED() << "attempt to free non-existant block";
 }
 
 void RingBuffer::DiscardBlock(void* pointer) {
@@ -148,7 +148,7 @@ void RingBuffer::DiscardBlock(void* pointer) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION() << "attempt to discard non-existant block";
+  NOTREACHED() << "attempt to discard non-existant block";
 }
 
 uint32_t RingBuffer::GetLargestFreeSizeNoWaiting() {

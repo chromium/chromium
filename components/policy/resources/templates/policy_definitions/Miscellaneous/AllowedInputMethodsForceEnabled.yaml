@@ -1,0 +1,26 @@
+caption: Enforce all allowed input methods to be enabled in a user session
+desc: |-
+  Setting the policy to true enforces all input methods from <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME">AllowedInputMethods</ph> policy to be enabled in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> sessions.
+  No other input methods can be enabled in the user sessions.
+  Setting the policy to false or not setting it doesn't enforce any enabled input methods and <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME">AllowedInputMethods</ph> policy only configures which input methods are available to the user.
+
+  If <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME">AllowedInputMethods</ph> policy is unset or set to an empty list, this policy is ignored and users can enable any input methods.
+device_only: false
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enforce all allowed input methods to be enabled
+  value: true
+- caption: Do not enforce enabled input methods
+  value: false
+owners:
+- poromov@chromium.org
+- hendrich@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:133-
+tags: []
+type: main

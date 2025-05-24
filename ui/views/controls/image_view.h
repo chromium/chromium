@@ -41,19 +41,6 @@ class VIEWS_EXPORT ImageView : public ImageViewBase {
 
   ~ImageView() override;
 
-  // Set the image that should be displayed.
-  // TODO(pkasting): Change callers to pass an ImageModel and eliminate this.
-  void SetImage(const gfx::ImageSkia& image) {
-    SetImage(ui::ImageModel::FromImageSkia(image));
-  }
-
-  // Set the image that should be displayed from a pointer. Reset the image
-  // if the pointer is NULL.
-  // TODO(pkasting): Change callers to pass an ImageModel and eliminate this.
-  void SetImage(const gfx::ImageSkia* image_skia) {
-    SetImage(image_skia ? *image_skia : gfx::ImageSkia());
-  }
-
   // Sets the image that should be displayed.
   void SetImage(const ui::ImageModel& image_model);
 
@@ -62,6 +49,10 @@ class VIEWS_EXPORT ImageView : public ImageViewBase {
   gfx::ImageSkia GetImage() const;
 
   ui::ImageModel GetImageModel() const;
+
+  // Set or get the `corner_radius`.
+  void SetCornerRadius(int corner_radius);
+  int GetCornerRadius() const;
 
   // Overridden from View:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -92,12 +83,13 @@ class VIEWS_EXPORT ImageView : public ImageViewBase {
 
   // Caches the scaled image reps.
   gfx::ImageSkia scaled_image_;
+
+  int corner_radius_ = 0;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ImageView, ImageViewBase)
-VIEW_BUILDER_OVERLOAD_METHOD(SetImage, const gfx::ImageSkia&)
-VIEW_BUILDER_OVERLOAD_METHOD(SetImage, const gfx::ImageSkia*)
 VIEW_BUILDER_OVERLOAD_METHOD(SetImage, const ui::ImageModel&)
+VIEW_BUILDER_PROPERTY(int, CornerRadius)
 END_VIEW_BUILDER
 
 }  // namespace views

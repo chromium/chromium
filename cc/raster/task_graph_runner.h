@@ -75,12 +75,18 @@ class CC_EXPORT TaskGraphRunner {
   // even if it later gets canceled by another call to ScheduleTasks().
   virtual void ScheduleTasks(NamespaceToken token, TaskGraph* graph) = 0;
 
+  // Signals that an external dependency of `task` has completed.
+  virtual void ExternalDependencyCompletedForTask(NamespaceToken token,
+                                                  scoped_refptr<Task> task) = 0;
+
   // Wait for all scheduled tasks to finish running.
   virtual void WaitForTasksToFinishRunning(NamespaceToken token) = 0;
 
   // Collect all completed tasks in |completed_tasks|.
   virtual void CollectCompletedTasks(NamespaceToken token,
                                      Task::Vector* completed_tasks) = 0;
+
+  virtual void RunTasksUntilIdleForTest() = 0;
 };
 
 }  // namespace cc

@@ -2,7 +2,7 @@ Name: google-java-format
 URL: https://github.com/google/google-java-format
 Version: 1.17.0
 Revision: d6b1bcc610a1aadfcbddaa22b9d3fbe1b4c429d7
-License: Apache 2.0
+License: NCSA, Apache-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: no
@@ -13,6 +13,7 @@ Google Java Style (https://google.github.io/styleguide/javaguide.html).
 
 Local Modifications:
 - Customized import order to match Chromium style guide.
+- Tell it treat our @Nullable as TYPE_USE
 To see changes: diff -ur originals local_modifications
 
 Update instructions:
@@ -28,7 +29,9 @@ To update local modifications:
   diff -ur originals local_modifications > chromium.patch
 2) Update source files:
   curl -o originals/java/com/google/googlejavaformat/java/ImportOrderer.java 'https://raw.githubusercontent.com/google/google-java-format/master/core/src/main/java/com/google/googlejavaformat/java/ImportOrderer.java'
-  curl -o local_modifications/java/com/google/googlejavaformat/java/ImportOrderer.java 'https://raw.githubusercontent.com/google/google-java-format/master/core/src/main/java/com/google/googlejavaformat/java/ImportOrderer.java'
+  curl -o originals/java/com/google/googlejavaformat/java/JavaInputAstVisitor.java 'https://raw.githubusercontent.com/google/google-java-format/master/core/src/main/java/com/google/googlejavaformat/java/JavaInputAstVisitor.java'
+  cp originals/java/com/google/googlejavaformat/java/ImportOrderer.java local_modifications/java/com/google/googlejavaformat/java/ImportOrderer.java
+  cp originals/java/com/google/googlejavaformat/java/JavaInputAstVisitor.java local_modifications/java/com/google/googlejavaformat/java/JavaInputAstVisitor.java
   (cd local_modifications && patch -p1 < ../chromium.patch && rm ../chromium.patch)
 3) Rebuild chromium-overrides.jar:
   ./recreate_chromium_overrides_jar.sh

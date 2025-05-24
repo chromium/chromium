@@ -54,6 +54,8 @@
 
 namespace blink {
 
+class NGShapeCache;
+
 // Holds the glyph index and the corresponding SimpleFontData information for a
 // given
 // character.
@@ -82,13 +84,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
       bool subpixel_ascent_descent = false,
       const FontMetricsOverride& metrics_override = FontMetricsOverride());
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(platform_data_);
-    visitor->Trace(small_caps_);
-    visitor->Trace(emphasis_mark_);
-    visitor->Trace(custom_font_data_);
-    FontData::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const override;
 
   SimpleFontData(const SimpleFontData&) = delete;
   SimpleFontData(SimpleFontData&&) = delete;
@@ -97,6 +93,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   SimpleFontData& operator=(const SimpleFontData&&) = delete;
 
   const FontPlatformData& PlatformData() const { return *platform_data_; }
+  NGShapeCache& GetShapeCache() const { return *shape_cache_; }
 
   SimpleFontData* SmallCapsFontData(const FontDescription&) const;
   SimpleFontData* EmphasisMarkFontData(const FontDescription&) const;
@@ -114,6 +111,11 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   const std::optional<float>& IdeographicInlineSize() const;
   const std::optional<float>& IdeographicAdvanceWidth() const;
   const std::optional<float>& IdeographicAdvanceHeight() const;
+
+  // The approximated advance of “0” (ZERO, U+0030) character in the inline
+  // axis. This is currently used to support the `ch` unit.
+  // https://drafts.csswg.org/css-values-4/#ch
+  inline float ZeroInlineSize() const;
 
   // |sTypoAscender| and |sTypoDescender| in |OS/2| table, normalized to 1em.
   // This metrics can simulate ideographics em-box when the font doesn't have
@@ -190,6 +192,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   float avg_char_width_ = -1;
 
   Member<const FontPlatformData> platform_data_;
+  Member<NGShapeCache> shape_cache_;
   const SkFont font_;
 
   Glyph space_glyph_ = 0;

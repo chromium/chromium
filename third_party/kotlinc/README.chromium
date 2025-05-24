@@ -2,7 +2,8 @@ Name: Kotlin Compiler
 Short Name: kotlinc
 URL: https://github.com/JetBrains/kotlin/releases
 Version: v1.7.21
-License: Various
+License: Apache-2.0, BSL-1.0, BSD-3-Clause, EPL-1.0, LGPL-2.1, MIT, NPL-1.1
+License File: LICENSE, licenses/aether_license.txt, licenses/aosp_license.txt, licenses/args4j_LICENSE.txt, licenses/asmble_license.txt, licenses/asm_license.txt, licenses/assemblyscript_license.txt, licenses/boost_LICENSE.txt, licenses/closure-compiler_LICENSE.txt, licenses/dart_LICENSE.txt, licenses/fastutil_licence, licenses/gradle_license.txt, licenses/guava_license.txt, licenses/gwt_license.txt, licenses/jgit_license.txt, licenses/jquery_license.txt, licenses/jshashtable_license.txt, licenses/karma_LICENSE.txt, licenses/karma-teamcity-reporter_LICENSE.txt, licenses/lodash_LICENSE.txt, licenses/lombok_LICENSE.txt, licenses/maven_LICENSE.txt, licenses/mocha-teamcity-reporter_LICENSE.txt, licenses/okhttp_license.txt, licenses/pcollections_LICENSE.txt, licenses/prototype_license.txt, licenses/qunit_license.txt, licenses/rhino_LICENSE.txt, licenses/scala_license.txt, licenses/sl4f_license.txt, licenses/sun_license.txt, licenses/teamcity-service-messages_LICENSE.txt, licenses/trove_license.txt, licenses/trove_readme_license.txt, licenses/testdata/dagger_license.txt, licenses/testdata/eclipse_distribution_license.txt, licenses/testdata/eclipse_license.txt, licenses/testdata/findbugs_license.txt, licenses/testdata/jspecify_license.txt, licenses/testdata/lombok_license.txt, licenses/testdata/rxjava_license.txt, licenses/testdata/spring_license.txt
 Security Critical: no
 Shipped: no
 

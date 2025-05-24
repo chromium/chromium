@@ -109,7 +109,7 @@ class VolumeControl {
         private final float mMaxVolumeIndexAsFloat;
 
         // Cached minimum volume index.
-        private int mMinVolumeIndex;
+        private final int mMinVolumeIndex;
 
         // Current volume index. Stored as float for easier calculations.
         float mVolumeIndexAsFloat;
@@ -140,14 +140,14 @@ class VolumeControl {
 
     private final long mNativeVolumeControl;
 
-    private Context mContext;
+    private final Context mContext;
 
-    private AudioManager mAudioManager;
+    private final AudioManager mAudioManager;
 
     private BroadcastReceiver mMediaEventIntentListener;
 
     // Mapping from Cast's AudioContentType to their respective Settings instance.
-    private SparseArray<Settings> mSettings;
+    private final SparseArray<Settings> mSettings;
 
     @CalledByNative
     private static boolean isSingleVolumeDevice() {

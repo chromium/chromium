@@ -73,7 +73,7 @@ Reader::Config::~Config() = default;
 
 Reader::Reader(base::span<const uint8_t> data)
     : rest_(data), error_code_(DecoderError::CBOR_NO_ERROR) {}
-Reader::~Reader() {}
+Reader::~Reader() = default;
 
 // static
 std::optional<Value> Reader::Read(base::span<uint8_t const> data,
@@ -288,9 +288,7 @@ std::optional<Value> Reader::DecodeToSimpleValueOrFloat(
         return Value(result);
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        error_code_ = DecoderError::UNSUPPORTED_SIMPLE_VALUE;
-        return std::nullopt;
+        NOTREACHED();
     }
   }
 
@@ -502,8 +500,7 @@ const char* Reader::ErrorCodeToString(DecoderError error) {
     case DecoderError::UNKNOWN_ERROR:
       return kUnknownError;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "Unknown error code.";
+      NOTREACHED();
   }
 }
 

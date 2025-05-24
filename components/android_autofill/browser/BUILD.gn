@@ -116,6 +116,8 @@ static_library("android") {
     ":jni_headers",
     "//components/autofill/android:keyboard_suppressor",
     "//components/autofill/content/browser",
+    "//components/credential_management:browser",
+    "//components/credential_management/android:browser_sources",
     "//components/password_manager/core/browser/form_parsing",
     "//components/prefs",
     "//components/security_state/content",

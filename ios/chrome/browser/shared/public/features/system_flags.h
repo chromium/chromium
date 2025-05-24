@@ -20,11 +20,13 @@ enum class SafeBrowsingSafetyCheckState;
 
 namespace experimental_flags {
 
-// NSUserDefaults key to list the number of profile available.
-extern NSString* const kDisplaySwitchProfile;
-
 // Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
+
+// Whether the First Run UI will never be displayed. Useful when running
+// automated testing on the "chrome" build target which otherwise cannot skip
+// the FRE using tests_hook::DisableDefaultFirstRun
+bool NeverDisplayFirstRun();
 
 // Whether the Upgrade Promo UI will always be displayed.
 bool AlwaysDisplayUpgradePromo();
@@ -139,17 +141,15 @@ std::string GetSegmentForForcedDeviceSwitcherExperience();
 // former takes precedence.
 std::string GetSegmentForForcedShopperExperience();
 
-// Whether a phone backup/restore state should be simulated.
+// Whether a phone backup/restore state should be simulated due to experimental
+// settings. Uses `tests_hook::SimulatePostDeviceRestore()` to check whether
+// this feature should be enabled for EG tests.
 bool SimulatePostDeviceRestore();
 
 // In production, the history sync opt-in isn't shown if it was declined too
 // recently or too many consecutive times. If this function is true, those
 // limits are suppressed for simpler testing.
 bool ShouldIgnoreHistorySyncDeclineLimits();
-
-// Whether the developer-mode Switch Profile UI will be be displayed, returns
-// the number of test profiles that should be created.
-std::optional<int> DisplaySwitchProfile();
 
 // Returns the inactivity threshold to be used for displaying Safety Check
 // notifications, overriding the default value stored in the code or any value
@@ -158,10 +158,36 @@ std::optional<int> DisplaySwitchProfile();
 // Returns `std::nullopt` if no override is specified.
 std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications();
 
-// Returns the override for Tab Resumption decoration.
-// Returns nil is not set.
-NSString* GetTabResumptionDecorationOverride();
+// Returns the forced state of the Tips (Magic Stack) module.
+std::optional<int> GetForcedTipsMagicStackState();
 
+// Whether the Lens Shop state for Tips (Magic Stack) should display a product
+// image.
+bool ShouldDisplayLensShopTipWithImage();
+
+// Whether Inactive Tabs should be in Demo mode, where tabs are
+// considered inactive after a minute.
+bool ShouldUseInactiveTabsDemoThreshold();
+
+// Whether Inactive Tabs should be in Automated Testing mode, where
+// tabs are immediately considered inactive.
+bool ShouldUseInactiveTabsTestThreshold();
+
+// Whether the first party incognito experience should be simulated.
+bool ShouldOpenInIncognitoOverride();
+
+// Whether the a delay should be added to the asynchronous startup.
+bool ShouldDelayAsyncStartup();
+
+// Whether to always show the first party incognito experience UI.
+bool AlwaysShowTheFirstPartyIncognitoUI();
+
+// Enables the AI menu, which is a tool for debugging LLM queries.
+bool EnableAIPrototypingMenu();
+
+// Gets GWS URL base used to generate Lens result panel URLs. Returns nil if
+// there is no alternative URL specified.
+NSString* GetLensResultPanelGwsURL();
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

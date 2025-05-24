@@ -10,8 +10,6 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace aura {
 class Window;

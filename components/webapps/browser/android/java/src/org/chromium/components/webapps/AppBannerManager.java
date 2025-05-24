@@ -17,6 +17,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -27,6 +29,7 @@ import org.chromium.content_public.browser.WebContents;
  * removal of banners, among other things) is done by the native-side AppBannerManagerAndroid.
  */
 @JNINamespace("webapps")
+@NullMarked
 public class AppBannerManager {
     /**
      * A struct containing the string resources IDs for the strings to show in the install dialog
@@ -48,13 +51,13 @@ public class AppBannerManager {
             new InstallStringPair(R.string.menu_add_to_homescreen, R.string.add);
 
     /** Retrieves information about a given package. */
-    private static AppDetailsDelegate sAppDetailsDelegate;
+    private static @Nullable AppDetailsDelegate sAppDetailsDelegate;
 
     /** Pointer to the native side AppBannerManager. */
     private long mNativePointer;
 
     /** Whether add to home screen is permitted by the system. */
-    private static Boolean sIsSupported;
+    private static @Nullable Boolean sIsSupported;
 
     /**
      * Checks if the add to home screen intent is supported.
@@ -159,7 +162,7 @@ public class AppBannerManager {
      * Returns the manifest id if the current page is installable, otherwise returns the empty
      * string.
      */
-    public static String maybeGetManifestId(WebContents webContents) {
+    public static @Nullable String maybeGetManifestId(WebContents webContents) {
         AppBannerManager manager =
                 webContents != null ? AppBannerManager.forWebContents(webContents) : null;
         if (manager != null) {
@@ -198,11 +201,6 @@ public class AppBannerManager {
         AppBannerManagerJni.get().setTimeDeltaForTesting(days);
     }
 
-    /** Sets the total required engagement to trigger the banner. */
-    public static void setTotalEngagementForTesting(double engagement) {
-        AppBannerManagerJni.get().setTotalEngagementToTrigger(engagement);
-    }
-
     /** Sets the install promo result from segmentation service for testing purpose. */
     public static void setOverrideSegmentationResultForTesting(boolean show) {
         AppBannerManagerJni.get().setOverrideSegmentationResultForTesting(show);
@@ -229,9 +227,9 @@ public class AppBannerManager {
                 AppBannerManager caller,
                 int requestId,
                 AppData data,
-                String title,
+                @Nullable String title,
                 String packageName,
-                String imageUrl);
+                @Nullable String imageUrl);
 
         // Testing methods.
         void ignoreChromeChannelForTesting();
@@ -245,8 +243,6 @@ public class AppBannerManager {
         void setDaysAfterDismissAndIgnoreToTrigger(int dismissDays, int ignoreDays);
 
         void setTimeDeltaForTesting(int days);
-
-        void setTotalEngagementToTrigger(double engagement);
 
         void setOverrideSegmentationResultForTesting(boolean show);
     }

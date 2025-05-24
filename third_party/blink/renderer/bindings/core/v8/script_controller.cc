@@ -35,6 +35,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -209,8 +210,9 @@ Vector<const char*>& RegisteredExtensionNames() {
 void ScriptController::RegisterExtensionIfNeeded(
     std::unique_ptr<v8::Extension> extension) {
   for (const auto* extension_name : RegisteredExtensionNames()) {
-    if (!strcmp(extension_name, extension->name()))
+    if (!UNSAFE_TODO(strcmp(extension_name, extension->name()))) {
       return;
+    }
   }
   RegisteredExtensionNames().push_back(extension->name());
   v8::RegisterExtension(std::move(extension));
@@ -320,8 +322,7 @@ void ScriptController::ExecuteJavaScriptURL(
   String result = ToCoreString(isolate, v8::Local<v8::String>::Cast(v8_result));
   WebNavigationParams::FillStaticResponse(
       params.get(), "text/html", "UTF-8",
-      StringUTF8Adaptor(
-          result, kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD));
+      StringUTF8Adaptor(result, Utf8ConversionMode::kStrictReplacingErrors));
   params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
   window_->GetFrame()->Loader().CommitNavigation(std::move(params), nullptr,
                                                  CommitReason::kJavascriptUrl);

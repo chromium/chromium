@@ -962,17 +962,13 @@ index 4e4b727..2eb003f 100644
 +  for (const std::vector<std::string_view>& strings : ordered_dicts) {
 +    size_t rank = 1;
 +    for (const std::string_view& s : strings) {
-+      bool clean_string = true;
 +      for (char c : s) {
 +        if (MarkedBigEndianU15::IsPossibleMarkerByte(c)) {
-+          NOTREACHED_IN_MIGRATION()
-+              << "RankedDicts bad character " << static_cast<unsigned char>(c);
-+          clean_string = false;
++          NOTREACHED() << "RankedDicts bad character "
++                       << static_cast<unsigned char>(c);
 +        }
 +      }
-+      if (clean_string) {
-+        merged_dicts.push_back({rank++, s});
-+      }
+       merged_dicts.push_back({rank++, s});
 +    }
 +  }
 +  std::sort(merged_dicts.begin(), merged_dicts.end(),

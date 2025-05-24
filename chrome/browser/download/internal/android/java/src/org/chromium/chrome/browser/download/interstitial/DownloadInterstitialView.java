@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.chrome.browser.download.home.list.holder.GenericViewHolder;
@@ -27,6 +28,7 @@ import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Class for a download interstitial which handles all interaction with the view. */
+@NullMarked
 class DownloadInterstitialView {
     private final View mView;
     private final TextView mTitle;

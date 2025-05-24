@@ -23,6 +23,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom-shared.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -39,7 +40,7 @@ namespace ash {
 
 namespace {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kDeviceIdKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kDeviceIdKey)
 
 // Extra spacing to add between cast stop buttons and the edge of `tri_view()`
 // header entry.
@@ -156,10 +157,10 @@ void MediaCastListView::CreateCastingHeader() {
   // Set casting icon on left side.
   auto image_view = base::WrapUnique(
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
-  image_view->SetImage(gfx::CreateVectorIcon(
+  image_view->SetImage(ui::ImageModel::FromVectorIcon(
       on_stop_casting_callback_.is_null() ? kQuickSettingsCastIcon
                                           : kQuickSettingsCastConnectedIcon,
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)));
+      cros_tokens::kCrosSysOnSurface));
   image_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   casting_header->AddView(TriView::Container::START, image_view.release());
 
@@ -169,7 +170,7 @@ void MediaCastListView::CreateCastingHeader() {
   label->SetText(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_CAST_LIST_HEADER));
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   label->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
   casting_header->AddView(TriView::Container::CENTER, std::move(label));

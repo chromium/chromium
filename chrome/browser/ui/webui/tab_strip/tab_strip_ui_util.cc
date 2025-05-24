@@ -15,11 +15,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -31,8 +33,9 @@ namespace tab_strip_ui {
 std::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
     TabGroupModel* tab_group_model,
     std::string group_id_string) {
-  if (!tab_group_model)
+  if (!tab_group_model) {
     return std::nullopt;
+  }
   for (tab_groups::TabGroupId candidate : tab_group_model->ListTabGroups()) {
     if (candidate.ToString() == group_id_string) {
       return std::optional<tab_groups::TabGroupId>{candidate};
@@ -58,6 +61,44 @@ Browser* GetBrowserWithGroupId(Profile* profile, std::string group_id_string) {
   return nullptr;
 }
 
+void MoveGroupAcrossWindows(Browser* source_browser,
+                            Browser* target_browser,
+                            int to_index,
+                            const tab_groups::TabGroupId& group_id) {
+  TabStripModel* target_tab_strip = target_browser->GetTabStripModel();
+
+  if (!target_tab_strip->SupportsTabGroups()) {
+    return;
+  }
+
+  std::optional<tab_groups::TabGroupId> next_tab_dst_group =
+      target_tab_strip->GetTabGroupForTab(to_index);
+  std::optional<tab_groups::TabGroupId> prev_tab_dst_group =
+      target_tab_strip->GetTabGroupForTab(to_index - 1);
+
+  // Check whether group contiguity will be respected in the `target_browser`
+  // before performing the operation. Noop if the operation will result in a
+  // split tab group.
+  if (next_tab_dst_group.has_value() && prev_tab_dst_group.has_value() &&
+      next_tab_dst_group == prev_tab_dst_group) {
+    return;
+  }
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          source_browser->profile());
+
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
+  if (tab_group_service && tab_group_service->GetGroup(group_id)) {
+    observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
+  }
+
+  std::unique_ptr<DetachedTabCollection> detached_group =
+      source_browser->tab_strip_model()->DetachTabGroupForInsertion(group_id);
+  target_browser->tab_strip_model()->InsertDetachedTabGroupAt(
+      std::move(detached_group), to_index);
+}
+
 void MoveTabAcrossWindows(Browser* source_browser,
                           int from_index,
                           Browser* target_browser,
@@ -66,6 +107,24 @@ void MoveTabAcrossWindows(Browser* source_browser,
   bool was_active =
       source_browser->tab_strip_model()->active_index() == from_index;
   bool was_pinned = source_browser->tab_strip_model()->IsTabPinned(from_index);
+
+  TabStripModel* target_tab_strip = target_browser->GetTabStripModel();
+
+  if (target_tab_strip->SupportsTabGroups()) {
+    std::optional<tab_groups::TabGroupId> next_tab_dst_group =
+        target_tab_strip->GetTabGroupForTab(to_index);
+    std::optional<tab_groups::TabGroupId> prev_tab_dst_group =
+        target_tab_strip->GetTabGroupForTab(to_index - 1);
+
+    // Check whether group contiguity will be respected in the `target_browser`
+    // before performing the operation. Noop if the operation will result in a
+    // split tab group.
+    if (next_tab_dst_group.has_value() && prev_tab_dst_group.has_value() &&
+        next_tab_dst_group == prev_tab_dst_group &&
+        to_group_id != prev_tab_dst_group) {
+      return;
+    }
+  }
 
   std::unique_ptr<tabs::TabModel> detached_tab =
       source_browser->tab_strip_model()->DetachTabAtForInsertion(from_index);
@@ -121,8 +180,9 @@ bool DropTabsInNewBrowser(Browser* new_browser,
 bool DropTabsInNewBrowser(Browser* new_browser,
                           const std::u16string& tab_id_str,
                           const std::u16string& group_id_str) {
-  if (tab_id_str.empty() && group_id_str.empty())
+  if (tab_id_str.empty() && group_id_str.empty()) {
     return false;
+  }
 
   Browser* source_browser = nullptr;
   gfx::Range tab_indices_to_move;
@@ -134,14 +194,20 @@ bool DropTabsInNewBrowser(Browser* new_browser,
 
   if (!tab_id_str.empty()) {
     int tab_id = -1;
-    if (!base::StringToInt(tab_id_str, &tab_id))
+    if (!base::StringToInt(tab_id_str, &tab_id)) {
       return false;
+    }
 
+    extensions::WindowController* source_window = nullptr;
     int source_index = -1;
     if (!extensions::ExtensionTabUtil::GetTabById(
             tab_id, new_browser->profile(), /* include_incognito = */ false,
-            &source_browser, /* tab_strip = */ nullptr,
-            /* contents = */ nullptr, &source_index)) {
+            &source_window, /* contents = */ nullptr, &source_index) ||
+        !source_window) {
+      return false;
+    }
+    source_browser = source_window->GetBrowser();
+    if (!source_browser) {
       return false;
     }
     tab_indices_to_move = gfx::Range(source_index, source_index + 1);
@@ -149,25 +215,29 @@ bool DropTabsInNewBrowser(Browser* new_browser,
     std::string group_id_utf8 = base::UTF16ToUTF8(group_id_str);
     source_browser =
         GetBrowserWithGroupId(new_browser->profile(), group_id_utf8);
-    if (!source_browser)
+    if (!source_browser) {
       return false;
+    }
     TabGroupModel* source_group_model =
         source_browser->tab_strip_model()->group_model();
-    if (!source_group_model)
+    if (!source_group_model) {
       return false;
+    }
     source_group_id =
         GetTabGroupIdFromString(source_group_model, group_id_utf8);
-    if (!source_group_id)
+    if (!source_group_id) {
       return false;
+    }
     TabGroup* source_group = source_group_model->GetTabGroup(*source_group_id);
     tab_indices_to_move = source_group->ListTabs();
 
     TabGroupModel* new_group_model =
         new_browser->tab_strip_model()->group_model();
-    if (!new_group_model)
+    if (!new_group_model) {
       return false;
-    new_group_model->AddTabGroup(*source_group_id,
-                                 *source_group->visual_data());
+    }
+    new_browser->tab_strip_model()->AddTabGroup(*source_group_id,
+                                                *source_group->visual_data());
   }
 
   const int source_index = tab_indices_to_move.start();

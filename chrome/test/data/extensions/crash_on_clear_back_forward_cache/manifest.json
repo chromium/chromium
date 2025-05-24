@@ -1,0 +1,21 @@
+{
+  "name": "Kitten Redirector",
+  "description": "This is an example extension that redirects access to example.com to Kittens page on Wikipedia.",
+  "manifest_version": 3,
+  "version": "0.1",
+  "permissions": [
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "*://example.com/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset1",
+        "path": "rules.json",
+        "enabled": true
+      }
+    ]
+  }
+}

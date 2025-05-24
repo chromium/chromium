@@ -15,8 +15,7 @@ bool StructTraits<gfx::mojom::ANGLEFeatureDataView, gfx::ANGLEFeature>::Read(
     gfx::mojom::ANGLEFeatureDataView data,
     gfx::ANGLEFeature* out) {
   return data.ReadName(&out->name) && data.ReadCategory(&out->category) &&
-         data.ReadDescription(&out->description) && data.ReadBug(&out->bug) &&
-         data.ReadStatus(&out->status) && data.ReadCondition(&out->condition);
+         data.ReadStatus(&out->status);
 }
 
 // static

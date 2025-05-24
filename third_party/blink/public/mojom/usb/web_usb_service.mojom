@@ -15,7 +15,7 @@ struct WebUsbRequestDeviceOptions {
 
 // This is a parallel interface with UsbDeviceManager aimed to handle extra work
 // such as permission checking, chooser showing, etc. in browser.
-// WebUsbServiceImpl in //chrome/browser/usb will implement this interface, and
+// WebUsbServiceImpl in //content/browser/usb will implement this interface, and
 // it will be used by webusb module in //third_party/blink/renderer/modules/.
 interface WebUsbService {
   // Retrieves information about all devices available.

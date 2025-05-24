@@ -139,7 +139,7 @@ AudioParameters AudioManagerFuchsia::GetPreferredOutputStreamParameters(
                              kMinPeriodFrames, kMaxPeriodFrames));
 }
 
-const char* AudioManagerFuchsia::GetName() {
+const std::string_view AudioManagerFuchsia::GetName() {
   return "Fuchsia";
 }
 

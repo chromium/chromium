@@ -35,11 +35,6 @@
     margin-top: 12px;
   }
 
-  #backButton {
-    --cr-icon-button-margin-end: 6px;
-    --cr-icon-button-margin-start: 0px;
-  }
-
   #insecureCredentials {
     margin-top: 24px;
   }
@@ -54,7 +49,7 @@
   }
 </style>
 <div id="header">
-  <cr-icon-button class="icon-arrow-back" id="backButton"
+  <cr-icon-button class="icon-arrow-back back-button" id="backButton"
       on-click="navigateBack_" aria-label="$i18n{backToCheckup}">
   </cr-icon-button>
   <h2 id="title" class="page-title">[[pageTitle_]]</h2>

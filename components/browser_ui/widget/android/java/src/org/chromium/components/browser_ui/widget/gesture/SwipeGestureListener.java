@@ -14,6 +14,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 
 import java.lang.annotation.Retention;
@@ -45,6 +47,7 @@ import java.lang.annotation.RetentionPolicy;
  * is passed to the {@link GestureDetector}. This means that this class can also be
  * used to detect simple gestures defined in {@link GestureDetector}.
  */
+@NullMarked
 public class SwipeGestureListener extends SimpleOnGestureListener {
     @IntDef({
         ScrollDirection.UNKNOWN,
@@ -192,7 +195,8 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
     // Override #onDown if necessary. See JavaDoc of this class for more details.
 
     @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+    public boolean onScroll(
+            @Nullable MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if (mHandler == null || e1 == null || e2 == null) return false;
 
         if (mDirection == ScrollDirection.UNKNOWN && shouldRecognizeSwipe(e1, e2)) {
@@ -232,7 +236,8 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
     }
 
     @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+    public boolean onFling(
+            @Nullable MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         if (mHandler == null) return false;
 
         if (mDirection != ScrollDirection.UNKNOWN) {

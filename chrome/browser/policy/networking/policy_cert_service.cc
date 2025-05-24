@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -15,11 +16,8 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/components/onc/certificate_scope.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -42,6 +40,19 @@ PolicyCertService::PolicyCertService(
       may_use_profile_wide_trust_anchors_(may_use_profile_wide_trust_anchors) {
   DCHECK(policy_certificate_provider_);
   DCHECK(profile_);
+}
+
+PolicyCertService::PolicyCertService(Profile* profile)
+    : profile_(profile),
+      policy_certificate_provider_(nullptr),
+      may_use_profile_wide_trust_anchors_(true) {}
+
+void PolicyCertService::StartObservingCertChanges(
+    base::RepeatingClosure callback) {
+  CHECK(policy_certificate_provider_);
+  CHECK(callback);
+
+  on_policy_provided_certs_changed_callback_ = std::move(callback);
 
   policy_certificate_provider_->AddPolicyProvidedCertsObserver(this);
   profile_wide_all_server_and_authority_certs_ =
@@ -49,11 +60,6 @@ PolicyCertService::PolicyCertService(
           chromeos::onc::CertificateScope::Default());
   profile_wide_trust_anchors_ = GetAllowedProfileWideTrustAnchors();
 }
-
-PolicyCertService::PolicyCertService(Profile* profile)
-    : profile_(profile),
-      policy_certificate_provider_(nullptr),
-      may_use_profile_wide_trust_anchors_(true) {}
 
 void PolicyCertService::OnPolicyProvidedCertsChanged() {
   profile_wide_all_server_and_authority_certs_ =
@@ -74,9 +80,9 @@ void PolicyCertService::OnPolicyProvidedCertsChanged() {
       std::make_unique<network::NSSTempCertsCacheChromeOS>(
           profile_wide_all_server_and_authority_certs_);
 
-  auto* profile_network_context =
-      ProfileNetworkContextServiceFactory::GetForContext(profile_);
-  profile_network_context->UpdateAdditionalCertificates();
+  if (on_policy_provided_certs_changed_callback_) {
+    on_policy_provided_certs_changed_callback_.Run();
+  }
 }
 
 void PolicyCertService::OnPolicyCertificateProviderDestroying() {
@@ -125,8 +131,9 @@ void PolicyCertService::GetPolicyCertificatesForStoragePartition(
         extensions::util::GetStoragePartitionForExtensionId(
             extension_id, profile_,
             /*can_create=*/false);
-    if (!extension_partition)
+    if (!extension_partition) {
       continue;
+    }
     if (!extensions::util::HasIsolatedStorage(extension_id, profile_) ||
         extension_partition->GetPath() == default_storage_partition_path) {
       LOG(ERROR) << "Ignoring policy certificates for " << extension_id
@@ -139,8 +146,9 @@ void PolicyCertService::GetPolicyCertificatesForStoragePartition(
     }
   }
 
-  if (current_extension_id_with_policy_certificates.empty())
+  if (current_extension_id_with_policy_certificates.empty()) {
     return;
+  }
 
   net::CertificateList extension_all_server_and_authority_certificates =
       policy_certificate_provider_->GetAllServerAndAuthorityCertificates(
@@ -160,25 +168,13 @@ void PolicyCertService::GetPolicyCertificatesForStoragePartition(
                             extension_trust_anchors.end());
 }
 
-bool PolicyCertService::UsedPolicyCertificates() const {
-  return profile_->GetPrefs()->GetBoolean(prefs::kUsedPolicyCertificates);
-}
-
-void PolicyCertService::SetUsedPolicyCertificates() {
-  profile_->GetPrefs()->SetBoolean(prefs::kUsedPolicyCertificates, true);
-}
-
 net::CertificateList PolicyCertService::GetAllowedProfileWideTrustAnchors() {
-  if (!may_use_profile_wide_trust_anchors_)
+  if (!may_use_profile_wide_trust_anchors_) {
     return {};
+  }
 
   return policy_certificate_provider_->GetWebTrustedCertificates(
       chromeos::onc::CertificateScope::Default());
-}
-
-//  static
-void PolicyCertService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kUsedPolicyCertificates, false);
 }
 
 // static

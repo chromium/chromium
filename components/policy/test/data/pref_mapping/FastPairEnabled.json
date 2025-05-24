@@ -1,11 +1,11 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {
-        "note": "Check default values (no policy set)",
+        "note": "Check default values (no policy set, override by default_for_enterprise_users)",
         "policies": {},
         "prefs": {
           "ash.fast_pair.enabled": {

@@ -10,9 +10,9 @@
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/net_export.h"
+#include "net/third_party/quiche/src/quiche/http2/core/http2_frame_decoder_adapter.h"
 #include "net/third_party/quiche/src/quiche/http2/core/spdy_no_op_visitor.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_frame_decoder_adapter.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 
 namespace net {
 

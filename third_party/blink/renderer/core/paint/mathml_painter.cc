@@ -37,13 +37,13 @@ void MathMLPainter::PaintStretchyOrLargeOperator(const PaintInfo& info,
   const MathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
   UChar operator_character = parameters.operator_character;
   TextFragmentPaintInfo text_fragment_paint_info = {
-      StringView(&operator_character, 1), 0, 1,
+      StringView(base::span_from_ref(operator_character)), 0, 1,
       parameters.operator_shape_result_view.Get()};
   GraphicsContextStateSaver state_saver(info.context);
   info.context.SetFillColor(style.VisitedDependentColor(GetCSSPropertyColor()));
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
-  info.context.DrawText(style.GetFont(), text_fragment_paint_info,
+  info.context.DrawText(*style.GetFont(), text_fragment_paint_info,
                         gfx::PointF(paint_offset), kInvalidDOMNodeId,
                         auto_dark_mode);
 }
@@ -101,7 +101,7 @@ void MathMLPainter::PaintRadicalSymbol(const PaintInfo& info,
                                        PhysicalOffset paint_offset) {
   LayoutUnit base_child_width;
   LayoutUnit base_child_ascent;
-  if (box_fragment_.Children().size() > 0) {
+  if (!box_fragment_.Children().empty()) {
     const auto& base_child =
         To<PhysicalBoxFragment>(*box_fragment_.Children()[0]);
     base_child_width = base_child.Size().width;

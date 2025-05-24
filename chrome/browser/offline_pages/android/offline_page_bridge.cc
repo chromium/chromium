@@ -183,8 +183,7 @@ void ValidateFileCallback(
           offline_pages::OfflinePageHeader::Reason::NET_ERROR_SUGGESTION;
       break;
     case offline_items_collection::LaunchLocation::DOWNLOAD_SHELF:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case offline_items_collection::LaunchLocation::DOWNLOAD_INTERSTITIAL:
       offline_header.reason =
           offline_pages::OfflinePageHeader::Reason::DOWNLOAD;

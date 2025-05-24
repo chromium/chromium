@@ -77,6 +77,21 @@ interface PageHandler {
   // Record metric for a click event within a module.
   RecordModuleLinkClicked(string module_name, ModulePosition position);
 
+  // Record metric for a video starting within a module.
+  RecordModuleVideoStarted(string module_name, ModulePosition position);
+
+  // Record metric for a video ending within a module.
+  RecordModuleVideoEnded(string module_name, ModulePosition position);
+
+  // Record metric for a click event on the play button within a module.
+  RecordModulePlayClicked(string module_name, ModulePosition position);
+
+  // Record metric for a click event on the pause button within a module.
+  RecordModulePauseClicked(string module_name, ModulePosition position);
+
+  // Record metric for a click event on the restart button within a module.
+  RecordModuleRestartClicked(string module_name, ModulePosition position);
+
   // Record metric when browser commands are executed.
   RecordBrowserCommandExecuted();
 };

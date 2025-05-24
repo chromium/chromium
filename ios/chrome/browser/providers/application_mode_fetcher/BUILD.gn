@@ -1,0 +1,12 @@
+# Copyright 20224 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("chromium_application_mode_fetcher") {
+  sources = [ "chromium_application_mode_fetcher.mm" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/application_mode_fetcher:application_mode_fetcher_api",
+    "//url",
+  ]
+}

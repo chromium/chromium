@@ -28,7 +28,7 @@ namespace test {
 // These probably could be removed and replaced by
 // FakeGaiaMixin::kFakeUserEmail/kFakeUserGaiaId.
 inline constexpr char kTestEmail[] = "fake-email@gmail.com";
-inline constexpr char kTestGaiaId[] = "fake-gaia-id";
+inline constexpr GaiaId::Literal kTestGaiaId("fake-gaia-id");
 
 }  // namespace test
 

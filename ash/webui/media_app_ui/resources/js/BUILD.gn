@@ -4,12 +4,11 @@
 
 import("//ash/webui/media_app_ui/media_app_files.gni")
 import("//ash/webui/web_applications/system_apps.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/ts_definitions.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 # Where files are staged for rollup. .ts files should never be put here.
 stage_folder = "$root_gen_dir/ash/webui/media_app_ui/stage_rollup"

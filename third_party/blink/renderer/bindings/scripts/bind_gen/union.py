@@ -153,11 +153,17 @@ class _UnionMemberSubunion(_UnionMember):
         assert isinstance(union, web_idl.Union)
         assert isinstance(subunion, web_idl.Union)
 
-        _UnionMember.__init__(self, base_name=blink_class_name(subunion))
+        class_name = blink_class_name(subunion)
+        _UnionMember.__init__(self, base_name=class_name)
         self._type_info = blink_type_info(subunion.idl_types[0])
+        # Filter out aliases that match our class name (this may happen due to
+        # union name mapping)
         self._typedef_aliases = tuple(
-            map(lambda typedef: _UnionMemberAlias(impl=self, typedef=typedef),
-                subunion.aliasing_typedefs))
+            map(
+                lambda typedef: _UnionMemberAlias(impl=self, typedef=typedef),
+                filter(
+                    lambda idl_type: blink_class_name(idl_type) != class_name,
+                    subunion.aliasing_typedefs)))
         self._blink_class_name = blink_class_name(subunion)
 
     @property
@@ -203,8 +209,6 @@ def make_check_assignment_value(cg_context, union_member, assignment_value):
     assert isinstance(union_member, _UnionMember)
     assert isinstance(assignment_value, str)
 
-    if union_member.idl_type and union_member.idl_type.is_object:
-        return TextNode("DCHECK({}.IsObject());".format(assignment_value))
     if union_member.type_info.is_gc_type:
         return TextNode("DCHECK({});".format(assignment_value))
 
@@ -309,6 +313,13 @@ def make_factory_methods(cg_context):
                                   attribute=None,
                                   body=scope_node))
 
+    # 1. If the union type includes undefined and V is undefined, then return
+    # the unique undefined value.
+    member = find_by_type(lambda t: t.is_undefined)
+    if member:
+        dispatch_if("${v8_value}->IsUndefined()",
+                    S("blink_value", "ToV8UndefinedGenerator ${blink_value};"))
+
     # 2. If the union type includes a nullable type and V is null or undefined,
     #   ...
     member = find_by_member(lambda m: m.is_null)
@@ -381,7 +392,7 @@ def make_factory_methods(cg_context):
     typed_array_types = ("Int8Array", "Int16Array", "Int32Array",
                          "BigInt64Array", "Uint8Array", "Uint16Array",
                          "Uint32Array", "BigUint64Array", "Uint8ClampedArray",
-                         "Float32Array", "Float64Array")
+                         "Float16Array", "Float32Array", "Float64Array")
     for typed_array_type in typed_array_types:
         member = find_by_type(lambda t: t.keyword_typename == typed_array_type)
         if member:
@@ -474,7 +485,7 @@ def make_factory_methods(cg_context):
             # Shortcut to reduce the binary size
             S("blink_value",
               (_format("auto&& ${blink_value} = "
-                       "ScriptValue(${isolate}, ${v8_value});"))))
+                       "ScriptObject(${isolate}, ${v8_value});"))))
 
     # 11. If Type(V) is Boolean, then:
     # 11.1. If types includes boolean, ...
@@ -719,11 +730,9 @@ def make_accessor_functions(cg_context):
                                   class_name=cg_context.class_name)
         func_def.set_base_template_vars(cg_context.template_bindings())
         node = CxxSwitchNode(cond="content_type_")
-        node.append(
-            case=None,
-            body=[T("NOTREACHED_IN_MIGRATION();"),
-                  T("return nullptr;")],
-            should_add_break=False)
+        node.append(case=None,
+                    body=[T("NOTREACHED();")],
+                    should_add_break=False)
         for member in subunion_members:
             node.append(case=member.content_type(),
                         body=F("return MakeGarbageCollected<{}>({}());",
@@ -839,8 +848,7 @@ def make_tov8_function(cg_context):
     body.extend([
         branches,
         EmptyNode(),
-        TextNode("NOTREACHED_IN_MIGRATION();"),
-        TextNode("return v8::Local<v8::Value>();"),
+        TextNode("NOTREACHED();"),
     ])
 
     return func_decl, func_def
@@ -866,9 +874,9 @@ def make_trace_function(cg_context):
     for member in cg_context.union_members:
         if member.is_null:
             continue
-        body.append(
-            TextNode("TraceIfNeeded<{}>::Trace(visitor, {});".format(
-                member.type_info.member_t, member.var_name)))
+        if not member.type_info.is_traceable:
+            continue
+        body.append(TextNode("visitor->Trace({});".format(member.var_name)))
     body.append(TextNode("${base_class_name}::Trace(visitor);"))
 
     return func_decl, func_def

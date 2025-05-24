@@ -40,10 +40,10 @@ class HTMLDialog {
     virtual void OnBeforeDisplay(void* window) = 0;
 
    protected:
-    virtual ~CustomizationCallback() {}
+    virtual ~CustomizationCallback() = default;
   };
 
-  virtual ~HTMLDialog() {}
+  virtual ~HTMLDialog() = default;
 
   // Shows the HTML in a modal dialog. The buttons and other UI are also done
   // in HTML so each native implementation needs to map the user action into

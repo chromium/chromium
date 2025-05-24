@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -47,6 +46,7 @@
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
@@ -150,17 +150,12 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     fake_vm_plugin_dispatcher_client_ =
         static_cast<FakeVmPluginDispatcherClient*>(
             VmPluginDispatcherClient::Get());
-
-    mock_disk_mount_manager_ =
-        new testing::NiceMock<disks::MockDiskMountManager>;
-    disks::DiskMountManager::InitializeForTesting(mock_disk_mount_manager_);
   }
 
   CrosUsbDetectorTest(const CrosUsbDetectorTest&) = delete;
   CrosUsbDetectorTest& operator=(const CrosUsbDetectorTest&) = delete;
 
   ~CrosUsbDetectorTest() override {
-    disks::DiskMountManager::Shutdown();
     VmPluginDispatcherClient::Shutdown();
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
@@ -169,8 +164,14 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   }
 
   void SetUp() override {
-    cros_usb_detector_ = std::make_unique<CrosUsbDetector>();
+    // Inject DiskMountManager. BrowserWithTestWindowTest by default creates
+    // DiskMountManager as it needs. Injected instance is destroyed by
+    // by BrowserWithTestWindowTest::TearDown().
+    mock_disk_mount_manager_ =
+        new testing::NiceMock<disks::MockDiskMountManager>;
+    disks::DiskMountManager::InitializeForTesting(mock_disk_mount_manager_);
     BrowserWithTestWindowTest::SetUp();
+    cros_usb_detector_ = std::make_unique<CrosUsbDetector>();
     crostini_test_helper_ =
         std::make_unique<crostini::CrostiniTestHelper>(profile());
 
@@ -192,8 +193,9 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     crostini_test_helper_.reset();
-    BrowserWithTestWindowTest::TearDown();
     cros_usb_detector_.reset();
+    mock_disk_mount_manager_ = nullptr;
+    BrowserWithTestWindowTest::TearDown();
   }
 
   void ConnectToDeviceManager() {
@@ -267,14 +269,13 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
                int bus_number,
                int device_number,
                bool mounted) {
-    mock_disk_mount_manager_->CreateDiskEntryForMountDevice(
-        disks::Disk::Builder()
-            .SetBusNumber(bus_number)
-            .SetDeviceNumber(device_number)
-            .SetDevicePath("/dev/" + name)
-            .SetMountPath("/mount/" + name)
-            .SetIsMounted(mounted)
-            .Build());
+    mock_disk_mount_manager_->AddDiskForTest(disks::Disk::Builder()
+                                                 .SetBusNumber(bus_number)
+                                                 .SetDeviceNumber(device_number)
+                                                 .SetDevicePath("/dev/" + name)
+                                                 .SetMountPath("/mount/" + name)
+                                                 .SetIsMounted(mounted)
+                                                 .Build());
     if (mounted) {
       NotifyMountEvent(name, disks::DiskMountManager::MOUNTING);
     }
@@ -300,8 +301,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  raw_ptr<disks::MockDiskMountManager, DanglingUntriaged>
-      mock_disk_mount_manager_;
+  raw_ptr<disks::MockDiskMountManager> mock_disk_mount_manager_;
   disks::DiskMountManager::Disks disks_;
 
   raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;
@@ -427,6 +427,36 @@ TEST_F(CrosUsbDetectorTest, NotificationNotShownForEthernetInterface) {
   auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
       0x200, USB_CLASS_COMM, USB_COMM_SUBCLASS_ETHERNET, 0xff, 0x0100, 0, 0, 0,
       0, "my cool manufacturer", "my cool ethernet adapter", "SN1337");
+  std::string notification_id =
+      CrosUsbDetector::MakeNotificationId(device->guid());
+
+  // Notifications should not be shown if no VMs enabled.
+  crostini::FakeCrostiniFeatures crostini_features;
+  crostini_features.set_enabled(false);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  std::optional<message_center::Notification> notification =
+      display_service_->GetNotification(notification_id);
+  EXPECT_FALSE(notification);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  // Notification should never be shown
+  crostini_features.set_enabled(true);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+  notification = display_service_->GetNotification(notification_id);
+  ASSERT_FALSE(notification);
+}
+
+TEST_F(CrosUsbDetectorTest, NotificationNotShownForWacomDevices) {
+  ConnectToDeviceManager();
+  base::RunLoop().RunUntilIdle();
+
+  auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0x200, USB_CLASS_VENDOR_SPEC, 0, 0xff, 0x0100, 0x056a, 0x0357, 0, 0,
+      "Wacom", "Intuos M", "SN1337");
   std::string notification_id =
       CrosUsbDetector::MakeNotificationId(device->guid());
 

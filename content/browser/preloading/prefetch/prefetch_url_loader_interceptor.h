@@ -21,7 +21,7 @@ namespace content {
 
 class BrowserContext;
 class PrefetchContainer;
-class PrefetchMatchResolver;
+class ServiceWorkerMainResourceHandle;
 
 using PrefetchCompleteCallbackForTesting =
     base::RepeatingCallback<void(PrefetchContainer*)>;
@@ -31,6 +31,9 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
     : public NavigationLoaderInterceptor {
  public:
   PrefetchURLLoaderInterceptor(
+      PrefetchServiceWorkerState expected_service_worker_state,
+      base::WeakPtr<ServiceWorkerMainResourceHandle>
+          service_worker_handle_for_navigation,
       FrameTreeNodeId frame_tree_node_id,
       std::optional<blink::DocumentToken> initiator_document_token,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
@@ -62,17 +65,22 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
   // from `PrefetchService` and then goes through other checks in
   // `PrefetchUrlLoaderHelper`.
   // The |get_prefetch_callback| is called with this associated prefetch.
-
-  // TODO(crbug.com/40274818): It might be better to store
-  // PrefetchMatchResolver as part of PrefetchUrlLoaderInterceptor
-  // as this is related to serving a navigation. It would simplify GetPrefetch
-  // call.
   void GetPrefetch(const network::ResourceRequest& tentative_resource_request,
-                   PrefetchMatchResolver& potential_prefetch_matches_container,
                    base::OnceCallback<void(PrefetchContainer::Reader)>
                        get_prefetch_callback) const;
 
-  void OnGetPrefetchComplete(PrefetchContainer::Reader reader);
+  void OnGetPrefetchComplete(GURL navigation_url,
+                             PrefetchContainer::Reader reader);
+
+  // Matches prefetches only if its final PrefetchServiceWorkerState is
+  // `expected_service_worker_state_`, either `kControlled` or `kDisallowed`.
+  const PrefetchServiceWorkerState expected_service_worker_state_;
+
+  // `ServiceWorkerMainResourceHandle` used for the navigation to be intercepted
+  // (i.e. NOT the handle used for prefetch). This is used only for the
+  // `kControlled` case and can be null for `kDisallowed` case.
+  const base::WeakPtr<ServiceWorkerMainResourceHandle>
+      service_worker_handle_for_navigation_;
 
   // The frame tree node |this| is associated with, used to retrieve
   // |PrefetchService|.

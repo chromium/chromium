@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_JS_INJECTION_RENDERER_JS_BINDING_H_
 #define COMPONENTS_JS_INJECTION_RENDERER_JS_BINDING_H_
 
+#include <algorithm>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -68,6 +69,17 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
   // gin::Wrappable implementation
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+
+  auto find_listener(v8::Local<v8::Function> listener) {
+    // Can't just use `find(listeners_, listener)` because `v8::Global<T>` and
+    // `v8::Local<T>` do not have a common reference type and thus do not
+    // satisfy `std::equality_comparable_with<>`. We could project using
+    // `v8::Global<T>::Get()`, but that's less efficient.
+    return std::ranges::find_if(listeners_,
+                                [listener](const auto& global_listener) {
+                                  return global_listener == listener;
+                                });
+  }
 
   // For jsObject.postMessage(message[, ports]) JavaScript API.
   void PostMessage(gin::Arguments* args);

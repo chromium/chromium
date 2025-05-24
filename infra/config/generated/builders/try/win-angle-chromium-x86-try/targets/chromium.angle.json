@@ -1,0 +1,7 @@
+{
+  "win-angle-chromium-x86-builder": {
+    "additional_compile_targets": [
+      "telemetry_gpu_integration_test"
+    ]
+  }
+}

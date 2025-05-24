@@ -10,8 +10,12 @@
 <translation id="2447485272386224171">Chrome е овозможен од проектот со отворен код <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> и друг <ph name="BEGIN_LINK_OSS" />софтвер со отворен код<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Лого на Chrome</translation>
 <translation id="3444832043240812445">Страницава прикажува само информации за неодамнешните падови ако <ph name="BEGIN_LINK" />овозможите пријавување падови<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Странициве се наменети за да ги користат програмерите на Chrome и може да не се одржуваат или тестираат активно. За да ги овозможите, одете на <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликнете го копчето за да ги овозможите страниците за отстранување грешки, па одете на страницава повторно.</translation>
 <translation id="3875312571075912821">Дозволете Chromе да пристапи на мрежата во поставките за
         заштитен ѕид или антивирус.</translation>
+<translation id="4949828774841497663">Одете во „Applications &gt; System Settings &gt; Network“, изберете ја
+          активната мрежа, кликнете го копчето Details… и поништете го изборот на сите прокси-сервери
+          што може да се избрани.</translation>
 <translation id="5005121315113832363">Страницава е блокирана од Chrome</translation>
 <translation id="6011049234605203654">Одете на
           менито на Chrome &gt;
@@ -40,9 +44,6 @@
           Поставки за LAN
           и поништете го „Употребете прокси-сервер за LAN“.</translation>
 <translation id="7230956101631259640">Вие сте на безбедна страница на Chrome</translation>
-<translation id="8187289872471304532">Отидете на
-          Апликации &gt; Претпочитани вредности на системот &gt; Мрежа &gt; Напредно &gt; Проксија
-           а потоа поништете го изборот на проксијата што сте ги избрале.</translation>
 <translation id="8232971017369963250">Chrome го овозможува проектот за софтвер со отворен код на <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome го овозможува и друг <ph name="BEGIN_LINK_OSS" />софтвер со отворен код<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome се обидува да ги измени поставките за пополнување на начините на плаќање.</translation>

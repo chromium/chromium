@@ -36,7 +36,7 @@ class A : GarbageCollected<A> {
   void FinalizeGarbageCollectedObject();
 
  protected:
-  enum Type { TB, TC, TD };
+  enum Type { TB, TC, TD, TE };
   A(Type type) : m_type(type) {}
 
  private:
@@ -77,6 +77,15 @@ public:
     Member<A> m_a;
 };
 
+class E : public A {
+ public:
+  E() : A(TE) {}
+  void TraceAfterDispatch(Visitor*) const;
+  void FinalizeGarbageCollectedObject();
+
+ private:
+  Member<A> m_a;
+};
 }
 
 #endif

@@ -41,15 +41,17 @@ interface PeerConnectionManager {
     // Called when the browser process reports a new thermal state from the OS.
     OnThermalStateChange(DeviceThermalState thermal_state);
 
-    // Called when the browser process reports a new CPU speed limit change from
-    // the OS. Values are normally between 0 and 100.
-    OnSpeedLimitChange(int32 speed_limit);
-
     // Enable WebRtc event log output.
     StartEventLog(int32 peer_connection_local_id, int32 output_period_ms);
 
     // Disable WebRtc event log output.
     StopEventLog(int32 peer_connection_local_id);
+
+    // Enable WebRtc DataChannel log output.
+    StartDataChannelLog(int32 peer_connection_local_id);
+
+    // Disable WebRtc DataChannel log output.
+    StopDataChannelLog(int32 peer_connection_local_id);
 
     // Requests standard PeerConnection stats for webrtc-internals.
     GetStandardStats();
@@ -153,13 +155,11 @@ interface PeerConnectionTrackerHost {
   // Logs WebRtc log for the connection id.
   WebRtcEventLogWrite(int32 lid, array<uint8> output);
 
+  // Logs DataChannel log for the connection id.
+  WebRtcDataChannelLogWrite(int32 lid, array<uint8> output);
+
   // Adds standard PeerConnection stats for webrtc-internals.
   // |lid| is the renderer local id,
   // |value| is the list of stats reports.
   AddStandardStats(int32 lid, mojo_base.mojom.ListValue value);
-
-  // Adds legacy PeerConnection stats for webrtc-internals.
-  // |lid| is the renderer local id,
-  // |value| is the list of stats reports.
-  AddLegacyStats(int32 lid, mojo_base.mojom.ListValue value);
 };

@@ -77,6 +77,9 @@ struct RefreshResponseData {
   // List of experiments from the server, if provided.
   std::optional<Experiments> experiments;
 
+  // Serialized server-provided feed launch CUI metadata.
+  std::optional<std::string> feed_launch_cui_metadata;
+
   // Server-reported network timestamps. They can be compared to
   // each other but not to client timestamps.
   base::Time server_request_received_timestamp;

@@ -62,7 +62,7 @@ class FakeMigration : public AuthFactorMigration {
 
 class AuthFactorMigratorTest : public testing::Test {
  public:
-  AuthFactorMigratorTest() {}
+  AuthFactorMigratorTest() = default;
 
   AuthFactorMigratorTest(const AuthFactorMigratorTest&) = delete;
   AuthFactorMigratorTest& operator=(const AuthFactorMigratorTest&) = delete;

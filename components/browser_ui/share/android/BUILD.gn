@@ -56,7 +56,10 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/layout/share_dialog_item.xml" ]
+  sources = [
+    "java/res/layout/share_dialog_item.xml",
+    "java/res/values/dimens.xml",
+  ]
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
@@ -76,6 +79,7 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
+    "//components/browser_ui/notifications/android:utils_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

@@ -7,7 +7,7 @@
  * ash.settings.mojom.UserActionRecorderRemote for testing.
  */
 
-import {userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import type {userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
 
 /**
  * Fake implementation of ash.settings.mojom.UserActionRecorderRemote.

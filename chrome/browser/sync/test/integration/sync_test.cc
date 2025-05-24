@@ -30,7 +30,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -91,21 +90,16 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/test/arc_util_test_support.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/sync/test/integration/sync_arc_package_helper.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
@@ -131,18 +125,13 @@ void SetURLLoaderFactoryForTest(
       ChromeSigninClientFactory::GetForProfile(profile));
   signin_client->SetURLLoaderFactoryForTest(url_loader_factory);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::AccountManagerFactory* factory =
       g_browser_process->platform_part()->GetAccountManagerFactory();
   account_manager::AccountManager* account_manager =
       factory->GetAccountManager(profile->GetPath().value());
   account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  account_manager::AccountManager* account_manager =
-      MaybeGetAshAccountManagerForTests();
-  if (account_manager)
-    account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -193,19 +182,6 @@ SyncTest::SyncTest(TestType test_type)
       num_clients_ = 2;
       break;
     }
-  }
-
-  std::vector<base::test::FeatureRefAndParams> enabled_features;
-  if (num_clients_ > 1) {
-    // Workaround to turn off single client optimization for sync standalone
-    // invalidations in tests.
-    // TODO(crbug.com/40908214): Remove once resolved.
-    enabled_features.push_back(
-        {switches::kSyncFilterOutInactiveDevicesForSingleClient,
-         {{switches::kSyncActiveDeviceMargin.name, "-2d"}}});
-  }
-  if (!enabled_features.empty()) {
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -268,8 +244,14 @@ void SyncTest::PostRunTestOnMainThread() {
   PlatformBrowserTest::PostRunTestOnMainThread();
 
 #if BUILDFLAG(IS_ANDROID)
-  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    sync_test_utils_android::TearDownFakeAuthForTesting();
+  // TODO(crbug.com/368091420): Consider moving into SyncSigninDelegateAndroid.
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER:
+      sync_test_utils_android::ShutdownLiveAuthForTesting();
+      break;
+    case IN_PROCESS_FAKE_SERVER:
+      sync_test_utils_android::TearDownFakeAuthForTesting();
+      break;
   }
 #endif
 }
@@ -293,10 +275,17 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
     cl->AppendSwitch(switches::kBypassAccountAlreadyUsedByAnotherProfileCheck);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (server_type_ == EXTERNAL_LIVE_SERVER &&
+      !cl->HasSwitch(switches::kDisableSyncInvalidationOptimizations)) {
+    // This flag is required because multiple devices in tests become active at
+    // the same time, and they may populate a single client optimization flag
+    // incorrectly resulting in missed invalidations.
+    cl->AppendSwitch(switches::kDisableSyncInvalidationOptimizations);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
   cl->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
   cl->AppendSwitch(ash::switches::kDisableArcOptInVerification);
-  cl->AppendSwitch(ash::switches::kDisableLacrosKeepAliveForTesting);
   arc::SetArcAvailableCommandLineForTesting(cl);
 #endif
 }
@@ -485,7 +474,7 @@ bool SyncTest::SetupClients() {
     cl->AppendSwitchASCII(syncer::kSyncDeferredStartupTimeoutSeconds, "0");
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Sets Arc flags, need to be called before create test profiles.
   ArcAppListPrefsFactory::SetFactoryForSyncTest();
 
@@ -528,7 +517,7 @@ bool SyncTest::SetupClients() {
     WaitForDataModels(verifier());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ArcAppListPrefsFactory::IsFactorySetForSyncTest()) {
     // Init SyncArcPackageHelper to ensure that the arc services are initialized
     // for each Profile, only can be called after test profiles are created.
@@ -656,8 +645,8 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
 #if BUILDFLAG(IS_ANDROID)
   // For Android, currently the framework only supports one client.
   // The client uses the default profile.
-  DCHECK(num_clients_ == 1) << "For Android, currently it only supports "
-                            << "one client.";
+  CHECK(num_clients_ == 1)
+      << "For Android, currently it only supports one client.";
 #endif
 
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -743,7 +732,6 @@ void SyncTest::TearDownOnMainThread() {
              .action = syncer::DISABLE_SYNC_ON_CLIENT});
       }
 #endif  // BUILDFLAG(IS_ANDROID)
-
     }
   }
 
@@ -1017,7 +1005,7 @@ void SyncTest::TriggerSyncForDataTypes(int index,
 }
 
 arc::SyncArcPackageHelper* SyncTest::sync_arc_helper() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return arc::SyncArcPackageHelper::GetInstance();
 #else
   return nullptr;
@@ -1077,13 +1065,9 @@ void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
   syncer::DataTypeSet types_to_check = service->GetRegisteredDataTypesForTest();
   types_to_check.RemoveAll(excluded_types_from_check_for_data_type_failures_);
 
-  if (service->HasAnyDatatypeErrorForTest(types_to_check)) {
-    ADD_FAILURE() << "Data types failed during tests: "
-                  << GetClient(client_index)
-                         ->service()
-                         ->GetTypeStatusMapForDebugging()
-                         .DebugString();
-  }
+  ASSERT_FALSE(service->HasAnyModelErrorForTest(types_to_check))
+      << " for client " << client_index << " and types "
+      << syncer::DataTypeSetToDebugString(types_to_check);
 }
 
 void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
@@ -1095,13 +1079,14 @@ void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
 // enabled by default, e.g. HISTORY requires a dedicated opt-in via
 // SyncUserSettings::SetSelectedTypes().
 syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(53 == syncer::GetNumDataTypes(),
+  static_assert(55 == syncer::GetNumDataTypes(),
                 "Add new types below if they can run in transport mode");
   // Only some types will run by default in transport mode (i.e. without their
   // own separate opt-in).
   syncer::DataTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
                                        syncer::AUTOFILL_WALLET_DATA,
                                        syncer::AUTOFILL_WALLET_USAGE,
+                                       syncer::CONTACT_INFO,
                                        syncer::DEVICE_INFO,
                                        syncer::SECURITY_EVENTS,
                                        syncer::SEND_TAB_TO_SELF,
@@ -1109,15 +1094,8 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
                                        syncer::USER_CONSENTS};
   allowed_types.PutAll(syncer::ControlTypes());
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableContactInfoDataTypeInTransportMode)) {
-    allowed_types.Put(syncer::CONTACT_INFO);
-  }
-
   allowed_types.Put(syncer::PLUS_ADDRESS);
-  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
-    allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
-  }
+  allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
 
   if (base::FeatureList::IsEnabled(
           syncer::kSyncEnableWalletMetadataInTransportMode)) {
@@ -1128,38 +1106,22 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
   }
 
-  bool allow_passwords = base::FeatureList::IsEnabled(
-      syncer::kEnablePasswordsAccountStorageForNonSyncingUsers);
-#if !BUILDFLAG(IS_ANDROID)
-  // This is an approximation because passwords are only enabled if the signin
-  // is explicit (they are not enabled for users who signed in through Dice).
-  allow_passwords &= switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
-#endif
+  allowed_types.Put(syncer::PASSWORDS);
+  allowed_types.Put(syncer::WEBAUTHN_CREDENTIAL);
+  allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
+  allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
 
-  if (allow_passwords) {
-    allowed_types.Put(syncer::PASSWORDS);
-    allowed_types.Put(syncer::WEBAUTHN_CREDENTIAL);
-    allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
-    allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
-  }
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (base::FeatureList::IsEnabled(
+          switches::kEnablePreferencesAccountStorage)) {
     allowed_types.Put(syncer::PREFERENCES);
     allowed_types.Put(syncer::PRIORITY_PREFERENCES);
   }
   if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableBookmarksInTransportMode)) {
+          switches::kSyncEnableBookmarksInTransportMode)) {
     allowed_types.Put(syncer::BOOKMARKS);
   }
-  if (base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableSyncTransportModeUponSignIn)) {
+  if (syncer::IsReadingListAccountStorageEnabled()) {
     allowed_types.Put(syncer::READING_LIST);
-  }
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncSharedTabGroupDataInTransportMode)) {
-    allowed_types.Put(syncer::COLLABORATION_GROUP);
-    allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
   }
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
@@ -1167,6 +1129,14 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::SESSIONS);
     allowed_types.Put(syncer::PRODUCT_COMPARISON);
     allowed_types.Put(syncer::SAVED_TAB_GROUP);
+    allowed_types.Put(syncer::COLLABORATION_GROUP);
+    allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
+  }
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+    allowed_types.Put(syncer::AUTOFILL_VALUABLE);
+  }
+  if (base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
+    allowed_types.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
   }
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
@@ -1174,17 +1144,25 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, Apps-related types may run in transport mode.
-  allowed_types.PutAll({syncer::APPS, syncer::APP_SETTINGS, syncer::WEB_APPS});
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // OS sync types run in transport mode.
   allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
                         syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,
                         syncer::PRINTERS,
                         syncer::PRINTERS_AUTHORIZATION_SERVERS,
                         syncer::WIFI_CONFIGURATIONS, syncer::WORKSPACE_DESK});
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
+    allowed_types.Put(syncer::THEMES);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines)) {
+    allowed_types.Put(syncer::SEARCH_ENGINES);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return allowed_types;
 }

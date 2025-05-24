@@ -68,12 +68,12 @@ namespace base {
 
 // Initializer list forwards to the array version.
 inline std::string StrCat(std::initializer_list<std::string_view> pieces) {
-  return StrCat(make_span(pieces));
+  return StrCat(span(pieces));
 }
 
 inline std::u16string StrCat(
     std::initializer_list<std::u16string_view> pieces) {
-  return StrCat(make_span(pieces));
+  return StrCat(span(pieces));
 }
 
 // StrAppend -------------------------------------------------------------------
@@ -95,12 +95,12 @@ BASE_EXPORT void StrAppend(std::u16string* dest,
 // Initializer list forwards to the array version.
 inline void StrAppend(std::string* dest,
                       std::initializer_list<std::string_view> pieces) {
-  StrAppend(dest, make_span(pieces));
+  StrAppend(dest, span(pieces));
 }
 
 inline void StrAppend(std::u16string* dest,
                       std::initializer_list<std::u16string_view> pieces) {
-  StrAppend(dest, make_span(pieces));
+  StrAppend(dest, span(pieces));
 }
 
 }  // namespace base

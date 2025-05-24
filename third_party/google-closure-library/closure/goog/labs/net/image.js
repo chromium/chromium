@@ -12,7 +12,6 @@ goog.provide('goog.labs.net.image');
 
 goog.require('goog.Promise');
 goog.require('goog.dispose');
-goog.require('goog.dom.safe');
 goog.require('goog.events.EventHandler');
 goog.require('goog.events.EventType');
 goog.require('goog.html.SafeUrl');
@@ -95,6 +94,6 @@ goog.labs.net.image.load = function(uri, opt_image) {
                      });
 
                  // Initiate the image request.
-                 goog.dom.safe.setImageSrc(image, uri);
+                 image.src = uri;
                });
 };

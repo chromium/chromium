@@ -45,8 +45,7 @@ GeolocationPermissionContextExtensions::GeolocationPermissionContextExtensions(
 }
 
 GeolocationPermissionContextExtensions::
-~GeolocationPermissionContextExtensions() {
-}
+    ~GeolocationPermissionContextExtensions() = default;
 
 bool GeolocationPermissionContextExtensions::DecidePermission(
     const permissions::PermissionRequestID& request_id,

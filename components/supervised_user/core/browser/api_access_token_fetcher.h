@@ -19,8 +19,8 @@
 
 namespace supervised_user {
 
-// Responsible for initialising the access token workflow. Executes the
-// consuming callback when the fetch is done, and then becomes disposable.
+// Responsible for logic related to access tokens.
+// TODO(b/362901304): rename to ApiAccessTokenManager.
 class ApiAccessTokenFetcher {
  public:
   // For convenience, the interface of signin::PrimaryAccountAccessTokenFetcher
@@ -30,19 +30,34 @@ class ApiAccessTokenFetcher {
       base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>)>;
   // Non copyable.
   ApiAccessTokenFetcher() = delete;
-  explicit ApiAccessTokenFetcher(signin::IdentityManager& identity_manager,
-                                 const AccessTokenConfig& access_token_config,
-                                 Consumer consumer);
+  ApiAccessTokenFetcher(signin::IdentityManager& identity_manager,
+                        const AccessTokenConfig& access_token_config);
   ApiAccessTokenFetcher(const ApiAccessTokenFetcher&) = delete;
   ApiAccessTokenFetcher& operator=(const ApiAccessTokenFetcher&) = delete;
   ~ApiAccessTokenFetcher();
 
+  // Fetches an access token, calling `consumer` with the result or error.
+  void GetToken(Consumer consumer);
+
+  // Invalidates the access token. Should only be called after `GetToken()`
+  // succeeded.
+  //
+  // This removes the access token for the scope in `AccessTokenConfig` from
+  // the cache. It does not directly revoke the refresh token, though a
+  // subsequent access token request for the same scope may result in the
+  // refresh token being revoked.
+  void InvalidateToken();
+
  private:
-  void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
+  void OnAccessTokenFetchComplete(Consumer consumer,
+                                  GoogleServiceAuthError error,
                                   signin::AccessTokenInfo access_token_info);
-  Consumer consumer_;
+
+  raw_ref<signin::IdentityManager> identity_manager_;
+  const AccessTokenConfig access_token_config_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       primary_account_access_token_fetcher_;
+  signin::AccessTokenInfo access_token_info_;
 };
 
 }  // namespace supervised_user

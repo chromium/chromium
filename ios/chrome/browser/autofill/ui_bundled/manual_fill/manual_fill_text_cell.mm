@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_text_cell.h"
 
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 @implementation ManualFillTextItem
 

@@ -236,7 +236,7 @@ TEST_F(RemovingIndexesTest, TabGroupRange_Empty) {
       {.input = {0, 3}, .expected = {0, 3}},
   };
 
-  CheckRangeAfterRemoval(removing_indexes, base::make_span(test_cases));
+  CheckRangeAfterRemoval(removing_indexes, base::span(test_cases));
 }
 
 // Tests that one-tab RemovingIndexes returns the correct range.
@@ -266,7 +266,7 @@ TEST_F(RemovingIndexesTest, TabGroupRange_OneTab) {
       {.input = {4, 3}, .expected = {3, 3}},
   };
 
-  CheckRangeAfterRemoval(removing_indexes, base::make_span(test_cases));
+  CheckRangeAfterRemoval(removing_indexes, base::span(test_cases));
 }
 
 // Tests that RemovingIndexes from a range of tabs returns the correct tab
@@ -327,7 +327,7 @@ TEST_F(RemovingIndexesTest, TabGroupRange_RangeOfTabs) {
       {.input = {2, 5}, .expected = {2, 2}},
   };
 
-  CheckRangeAfterRemoval(removing_indexes, base::make_span(test_cases));
+  CheckRangeAfterRemoval(removing_indexes, base::span(test_cases));
 }
 
 // Tests that RemovingIndexes from a set of tabs returns the correct tab
@@ -392,5 +392,5 @@ TEST_F(RemovingIndexesTest, TabGroupRange_MultipleTabs) {
       {.input = {0, 6}, .expected = {0, 3}},
   };
 
-  CheckRangeAfterRemoval(removing_indexes, base::make_span(test_cases));
+  CheckRangeAfterRemoval(removing_indexes, base::span(test_cases));
 }

@@ -350,13 +350,6 @@ void LocalTranslator::TranslateWiFi() {
   // We currently only support managed and no adhoc networks.
   shill_dictionary_->Set(shill::kModeProperty, shill::kModeManaged);
 
-  std::optional<bool> allow_gateway_arp_polling =
-      onc_object_->FindBool(::onc::wifi::kAllowGatewayARPPolling);
-  if (allow_gateway_arp_polling) {
-    shill_dictionary_->Set(shill::kLinkMonitorDisableProperty,
-                           !*allow_gateway_arp_polling);
-  }
-
   CopyFieldsAccordingToSignature();
 }
 
@@ -596,7 +589,7 @@ void LocalTranslator::TranslateApn() {
     } else if (apn_type_string == ::onc::cellular_apn::kApnTypeTether) {
       contains_tether = true;
     } else {
-      NOTREACHED_IN_MIGRATION() << "Invalid APN type: " << apn_type;
+      NOTREACHED() << "Invalid APN type: " << apn_type;
     }
   }
   std::vector<std::string> apn_type_strings;

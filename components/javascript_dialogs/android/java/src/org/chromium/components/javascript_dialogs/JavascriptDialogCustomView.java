@@ -11,9 +11,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** The JavaScript dialog that is either app modal or tab modal. */
+@NullMarked
 public class JavascriptDialogCustomView extends LinearLayout {
     private EditText mPromptEditText;
     private CheckBox mSuppressCheckBox;
@@ -32,7 +34,7 @@ public class JavascriptDialogCustomView extends LinearLayout {
     }
 
     /** @param promptText Prompt text for prompt dialog. If null, prompt text is not visible. */
-    public void setPromptText(String promptText) {
+    public void setPromptText(@Nullable String promptText) {
         if (promptText == null) return;
         mPromptEditText.setVisibility(View.VISIBLE);
 

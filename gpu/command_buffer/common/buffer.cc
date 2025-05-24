@@ -45,7 +45,7 @@ MemoryBufferBacking::MemoryBufferBacking(uint32_t size, uint32_t alignment)
 
 MemoryBufferBacking::~MemoryBufferBacking() = default;
 
-void* MemoryBufferBacking::GetMemory() const {
+const void* MemoryBufferBacking::GetMemory() const {
   return alignment_ > 0 ? base::bits::AlignUp(memory_.get(), alignment_)
                         : memory_.get();
 }
@@ -74,7 +74,7 @@ base::UnguessableToken SharedMemoryBufferBacking::GetGUID() const {
   return shared_memory_region_.GetGUID();
 }
 
-void* SharedMemoryBufferBacking::GetMemory() const {
+const void* SharedMemoryBufferBacking::GetMemory() const {
   return shared_memory_mapping_.memory();
 }
 

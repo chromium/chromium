@@ -13,6 +13,8 @@ assert(is_android)
 
 source_set("android") {
   sources = [
+    "camera_availability_observer.cc",
+    "camera_availability_observer.h",
     "photo_capabilities.cc",
     "photo_capabilities.h",
     "video_capture_device_android.cc",
@@ -34,6 +36,7 @@ source_set("android") {
 
 generate_jni("capture_jni_headers") {
   sources = [
+    "java/src/org/chromium/media/CameraAvailabilityObserver.java",
     "java/src/org/chromium/media/PhotoCapabilities.java",
     "java/src/org/chromium/media/VideoCapture.java",
     "java/src/org/chromium/media/VideoCaptureFactory.java",
@@ -63,6 +66,7 @@ android_library("capture_java") {
   ]
 
   sources = [
+    "java/src/org/chromium/media/CameraAvailabilityObserver.java",
     "java/src/org/chromium/media/PhotoCapabilities.java",
     "java/src/org/chromium/media/VideoCapture.java",
     "java/src/org/chromium/media/VideoCaptureCamera.java",

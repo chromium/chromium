@@ -7,12 +7,15 @@ package org.chromium.net;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Class to access HttpUtil library from Java.
  *
  * The corresponding native code is in net/android/android_http_util.cc.
  */
 @JNINamespace("net")
+@NullMarked
 public final class HttpUtil {
     /**
      * Returns true iff:

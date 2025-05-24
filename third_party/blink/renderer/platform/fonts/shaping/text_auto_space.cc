@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/text_auto_space.h"
 
 #include <unicode/uchar.h>
@@ -15,6 +10,7 @@
 #include "base/check.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -25,17 +21,14 @@ float TextAutoSpace::GetSpacingWidth(const Font* font) {
                font_data->PlatformData().size()) /
            8;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // static
 TextAutoSpace::CharType TextAutoSpace::GetTypeAndNext(const String& text,
                                                       wtf_size_t& offset) {
   CHECK(!text.Is8Bit());
-  UChar32 ch;
-  U16_NEXT(text.Characters16(), offset, text.length(), ch);
-  return GetType(ch);
+  return GetType(CodePointAtAndNext(text.Span16(), offset));
 }
 
 // static
@@ -44,7 +37,7 @@ TextAutoSpace::CharType TextAutoSpace::GetPrevType(const String& text,
   DCHECK_GT(offset, 0u);
   CHECK(!text.Is8Bit());
   UChar32 last_ch;
-  U16_PREV(text.Characters16(), 0, offset, last_ch);
+  UNSAFE_TODO(U16_PREV(text.Characters16(), 0, offset, last_ch));
   return GetType(last_ch);
 }
 

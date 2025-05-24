@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
@@ -19,6 +20,7 @@ import java.util.List;
  * This component allows to fill credentials into a form. It suppresses the keyboard until dismissed
  * and acts as a safe surface to fill credentials from.
  */
+@NullMarked
 public interface TouchToFillComponent {
     /**
      * This delegate is called when the TouchToFill component is interacted with (e.g. dismissed or
@@ -101,4 +103,7 @@ public interface TouchToFillComponent {
             boolean managePasskeysHidesPasswords,
             boolean showHybridPasskeyOption,
             boolean showCredManEntry);
+
+    /** Clears all subscriptions to services (e. g. BottomSheetController) */
+    void cleanUp();
 }

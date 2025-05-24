@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google Inc.
+ * Copyright 2019 Google LLC.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <ostream>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/base/attributes.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
+#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
 #include "third_party/private-join-and-compute/src/util/status.inc"
 
@@ -31,13 +35,20 @@ namespace private_join_and_compute {
 // Makes use of a BN_CTX structure that holds temporary BIGNUMs needed for
 // arithmetic operations as dynamic memory allocation to create BIGNUMs is
 // expensive.
-class BigNum {
+class PRIVATE_COMPUTE_EXPORT BigNum {
  public:
   // Deletes a BIGNUM.
   class BnDeleter {
    public:
     void operator()(BIGNUM* bn) { BN_clear_free(bn); }
   };
+
+  // Deletes a BN_MONT_CTX.
+  class BnMontCtxDeleter {
+   public:
+    void operator()(BN_MONT_CTX* ctx) { BN_MONT_CTX_free(ctx); }
+  };
+  typedef std::unique_ptr<BN_MONT_CTX, BnMontCtxDeleter> BnMontCtxPtr;
 
   // Copies the given BigNum.
   BigNum(const BigNum& other);
@@ -55,6 +66,9 @@ class BigNum {
   // Converts this BigNum to a uint64_t value. Returns an INVALID_ARGUMENT
   // error code if the value of *this is larger than 64 bits.
   StatusOr<uint64_t> ToIntValue() const;
+
+  // Returns a string representation of the BigNum as a decimal number.
+  std::string ToDecimalString() const;
 
   // Returns the bit length of this BigNum.
   int BitLength() const;
@@ -140,8 +154,9 @@ class BigNum {
   BigNum ModSqr(const BigNum& m) const;
 
   // Returns a BigNum whose value is (*this ^ -1 mod m).
-  // Causes a check failure if the operation fails.
-  BigNum ModInverse(const BigNum& m) const;
+  // Returns a status error if the operation fails, for example if the inverse
+  // doesn't exist.
+  StatusOr<BigNum> ModInverse(const BigNum& m) const;
 
   // Returns r such that r ^ 2 == *this mod p.
   // Causes a check failure if the operation fails.
@@ -167,7 +182,7 @@ class BigNum {
 
  private:
   // Creates a new BigNum object from a bytes string.
-  explicit BigNum(BN_CTX* bn_ctx, const std::string& bytes);
+  explicit BigNum(BN_CTX* bn_ctx, absl::string_view bytes);
   // Creates a new BigNum object from a char array.
   explicit BigNum(BN_CTX* bn_ctx, const unsigned char* bytes, int length);
   // Creates a new BigNum object from the number.
@@ -237,6 +252,10 @@ inline BigNum& operator%=(BigNum& a, const BigNum& b) { return a = a % b; }
 inline BigNum& operator>>=(BigNum& a, int n) { return a = a >> n; }
 
 inline BigNum& operator<<=(BigNum& a, int n) { return a = a << n; }
+
+inline std::ostream& operator<<(std::ostream& strm, const BigNum& a) {
+  return strm << "BigNum(" << a.ToDecimalString() << ")";
+}
 
 }  // namespace private_join_and_compute
 

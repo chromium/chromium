@@ -30,4 +30,15 @@ addEventListener('notificationclick', function (event) {
 // has been closed by the user.
 addEventListener('notificationclose', function (event) {
   messagePort.postMessage('closing notification: ' + event.notification.title);
+
+  // When the notification data contains a 'close_event_timeout' value, use
+  // `ExtendableEvent::waitUntil()` and `setTimeout()` to delay
+  // 'notificationclose' event completion until the specified time.
+  if (event.notification.data &&
+      'close_event_timeout' in event.notification.data) {
+    const timeoutPromise = new Promise(resolve => {
+      setTimeout(resolve, event.notification.data['close_event_timeout']);
+    });
+    event.waitUntil(timeoutPromise);
+  }
 });

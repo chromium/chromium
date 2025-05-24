@@ -53,8 +53,7 @@ const IconSet& FakeExtensionProvider::GetIconSet() const {
 }
 
 RequestManager* FakeExtensionProvider::GetRequestManager() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool FakeExtensionProvider::RequestMount(Profile* profile,

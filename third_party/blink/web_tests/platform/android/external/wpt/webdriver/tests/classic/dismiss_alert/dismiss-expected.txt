@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_dismiss_alert
+  AssertionError: no such alert (404): no such alert
+[FAIL] test_dismiss_prompt
+  AssertionError: no such alert (404): no such alert
+Harness: the test ran to completion.
+

@@ -57,10 +57,10 @@ class ShellExtensionSystem : public ExtensionSystem {
   // Finish initialization for the shell extension system.
   void FinishInitialization();
 
-  // Launch the app with id |extension_id|.
+  // Launch the app with id `extension_id`.
   void LaunchApp(const ExtensionId& extension_id);
 
-  // Reloads the extension with id |extension_id|.
+  // Reloads the extension with id `extension_id`.
   void ReloadExtension(const ExtensionId& extension_id);
 
   // KeyedService implementation:
@@ -91,8 +91,6 @@ class ShellExtensionSystem : public ExtensionSystem {
   void PerformActionBasedOnOmahaAttributes(
       const ExtensionId& extension_id,
       const base::Value::Dict& attributes) override;
-  bool FinishDelayedInstallationIfReady(const ExtensionId& extension_id,
-                                        bool install_immediately) override;
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.

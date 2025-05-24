@@ -7,19 +7,22 @@ module network.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/alternate_protocol_usage.mojom";
-import "services/network/public/mojom/cors.mojom";
-import "services/network/public/mojom/encoded_body_length.mojom";
 import "services/network/public/mojom/attribution.mojom";
+import "services/network/public/mojom/cors.mojom";
+import "services/network/public/mojom/device_bound_sessions.mojom";
+import "services/network/public/mojom/encoded_body_length.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
+import "services/network/public/mojom/load_timing_internal_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/parsed_request_cookie.mojom";
 import "services/network/public/mojom/service_worker_router_info.mojom";
+import "services/network/public/mojom/source_type.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/url.mojom";
 
@@ -40,6 +43,11 @@ struct URLResponseHead {
   // The time at which the response headers were received.  For cached
   // responses, this time could be "far" in the past.
   mojo_base.mojom.Time response_time;
+
+  // The response_time for when the response was first received. For cached
+  // and revalidated responses, this is the time when the resource was first
+  // received, and is not updated after revalidation.
+  mojo_base.mojom.Time original_response_time;
 
   // The response headers or NULL if the URL type does not support headers.
   HttpResponseHeaders headers;
@@ -68,6 +76,10 @@ struct URLResponseHead {
   // Detailed timing information used by the WebTiming, HAR and Developer
   // Tools.  Includes socket ID and socket reuse information.
   LoadTimingInfo load_timing;
+
+  // Load timing internal information that is exposed only to trustworthy
+  // processes. Only provided if request has `trusted_params`.
+  LoadTimingInternalInfo? load_timing_internal_info;
 
   // Set to true if the request had devtools_request_id set and OnRawRequest
   // and OnRawResponse are called on the corresponding DevToolsObserver. This
@@ -147,6 +159,12 @@ struct URLResponseHead {
   // generated as in respondWith(new Response()). It is also empty if a service
   // worker did not respond to the request or did not call respondWith().
   array<url.mojom.Url> url_list_via_service_worker;
+
+  // The initial status of service worker on navigation request. This is the
+  // status when `ServiceWorkerMainResourceLoader` is constructed. This is
+  // similar to `evaluation_worker_status` in `service_worker_router_info`, but
+  // it's set even if the ServiceWorker Static Routing API is not involved.
+  ServiceWorkerStatus? initial_service_worker_status;
 
   // Information about ServiceWorker Static Routing API. If this field is set
   // with `matchedSourceType` field, a matching rule is found. If this field is
@@ -293,4 +311,14 @@ struct URLResponseHead {
   // True if the client should load the response content after setting the
   // environment's `has storage access` bit.
   bool load_with_storage_access = false;
+
+  // List of content decoding algorithms to attempt. The client needs to decode
+  // the response body using these algorithms, in the reverse order.
+  // This is only non-empty if `client_size_content_decoding_enabled` was set to
+  // true on the request?
+  array<SourceType> client_side_content_decoding_types;
+
+  // Whether the request is in the scope of a device bound session.
+  DeviceBoundSessionUsage device_bound_session_usage =
+      DeviceBoundSessionUsage.kUnknown;
 };

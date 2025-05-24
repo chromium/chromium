@@ -178,7 +178,6 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
 
    private:
     AX_EXPORT friend bool operator==(const Iterator& lhs, const Iterator& rhs);
-    AX_EXPORT friend bool operator!=(const Iterator& lhs, const Iterator& rhs);
     AX_EXPORT friend void swap(Iterator& lhs, Iterator& rhs);
 
     std::map<AXNodeID, std::set<EventParams>>::const_iterator map_iter_;

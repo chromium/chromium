@@ -4,10 +4,13 @@
 
 package org.chromium.ui;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Contains all of the command line switches that are specific to the ui/ portion of Chromium on
  * Android.
  */
+@NullMarked
 public abstract class UiSwitches {
     // Enables the screenshot mode, which disables certain UI elements (e.g. dialogs) to facilitate
     // more easily scripting screenshots of web content.

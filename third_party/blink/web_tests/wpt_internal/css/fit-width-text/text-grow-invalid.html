@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>Parsing text-grow with invalid values</title>
+<link rel="help" href="https://github.com/explainers-by-googlers/css-fit-text/blob/main/README.md">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<body>
+<div id="target" style="font-size:20px; line-height:1;"></div>
+<script>
+test_invalid_value('text-grow', 'lines');
+
+test_invalid_value('text-grow', 'per-line stretch');
+test_invalid_value('text-grow', 'consistent 32px scale');
+test_invalid_value('text-grow', 'consistent 100%');
+</script>
+</body>

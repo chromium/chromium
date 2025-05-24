@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/sessions/core/session_service_commands.h"
 
 #include <stdint.h>
@@ -75,6 +80,7 @@ static const SessionCommand::id_type kCommandSetWindowVisibleOnAllWorkspaces =
     32;
 static const SessionCommand::id_type kCommandAddTabExtraData = 33;
 static const SessionCommand::id_type kCommandAddWindowExtraData = 34;
+static const SessionCommand::id_type kCommandSetPlatformSessionId = 35;
 // ID 255 is used by CommandStorageBackend.
 
 namespace {
@@ -171,13 +177,6 @@ enum PersistedWindowShowState {
   PERSISTED_SHOW_STATE_END = 8,
 };
 
-// TODO(crbug.com/40946710): Remove this around December 2024. This is part of a
-// workaround added to support the transition from storing the last_active_time
-// as TimeTicks to Time that was added in December 2023. This is the threshold
-// at which we consider that if a tab is so far in the past, it must be a tab
-// serialized with TimeTicks and not Time.
-const base::TimeDelta kLastActiveWorkaroundThreshold = base::Days(366 * 15);
-
 // Assert to ensure PersistedWindowShowState is updated if ui::WindowShowState
 // is changed.
 // TODO(crbug.com/361560784): Investigate and Remove `kEnd`
@@ -205,8 +204,7 @@ PersistedWindowShowState ShowStateToPersistedShowState(
     case ui::mojom::WindowShowState::kEnd:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PERSISTED_SHOW_STATE_NORMAL;
+  NOTREACHED();
 }
 
 // Lints show state values when read back from persited disk.
@@ -321,17 +319,20 @@ static bool TabVisualIndexSortFunction(const std::unique_ptr<SessionTab>& t1,
 }
 
 // Does the following:
-// . Deletes and removes any windows with no tabs. NOTE: constrained windows
-//   that have been dragged out are of type browser. As such, this preserves any
-//   dragged out constrained windows (aka popups that have been dragged out).
+// . Deletes and removes any windows with no tabs and insert them into
+//   `discarded_window_ids`. NOTE: constrained windows that have been dragged
+//   out are of type browser. As such, this preserves any dragged out
+//   constrained windows (aka popups that have been dragged out).
 // . Sorts the tabs in windows with valid tabs based on the tabs;
 //   visual order, and adds the valid windows to |valid_windows|.
 void SortTabsBasedOnVisualOrderAndClear(
     IdToSessionWindow* windows,
-    std::vector<std::unique_ptr<SessionWindow>>* valid_windows) {
+    std::vector<std::unique_ptr<SessionWindow>>* valid_windows,
+    std::set<SessionID>* discarded_window_ids) {
   for (auto& window_pair : *windows) {
     std::unique_ptr<SessionWindow> window = std::move(window_pair.second);
     if (window->tabs.empty() || window->is_constrained) {
+      discarded_window_ids->insert(window->window_id);
       continue;
     } else {
       // Valid window; sort the tabs and add it to the list of valid windows.
@@ -455,7 +456,9 @@ void CreateTabsAndWindows(
     IdToSessionTab* tabs,
     GroupIdToSessionTabGroup* tab_groups,
     IdToSessionWindow* windows,
-    SessionID* active_window_id) {
+    SessionID* active_window_id,
+    std::string* platform_session_id,
+    std::set<SessionID>* discarded_window_ids) {
   // If the file is corrupt (command with wrong size, or unknown command), we
   // still return true and attempt to restore what we we can.
   DVLOG(1) << "CreateTabsAndWindows";
@@ -527,11 +530,13 @@ void CreateTabsAndWindows(
           DVLOG(1) << "Failed reading command " << command->id();
           return;
         }
-        if (command->id() == kCommandTabClosed)
-          tabs->erase(SessionID::FromSerializedValue(payload.id));
-        else
-          windows->erase(SessionID::FromSerializedValue(payload.id));
-
+        SessionID id = SessionID::FromSerializedValue(payload.id);
+        if (command->id() == kCommandTabClosed) {
+          tabs->erase(id);
+        } else {
+          windows->erase(id);
+          discarded_window_ids->insert(id);
+        }
         break;
       }
 
@@ -803,33 +808,8 @@ void CreateTabsAndWindows(
         }
         SessionTab* tab =
             GetTab(SessionID::FromSerializedValue(payload.tab_id), tabs);
-        base::Time deserialized_time = base::Time::FromDeltaSinceWindowsEpoch(
+        tab->last_active_time = base::Time::FromDeltaSinceWindowsEpoch(
             base::Microseconds(payload.last_active_time));
-
-        if (base::Time::Now() - deserialized_time >
-            kLastActiveWorkaroundThreshold) {
-          // TODO(crbug.com/40946710): Remove this once enough time has passed
-          // (added in December 2023, can be removed after ~1 year). This is a
-          // workaround put in place during the migration from base::TimeTicks
-          // internal representation to microseconds since Windows epoch. As the
-          // origin point may be vastely different, the values stored in the old
-          // format appear as really old when deserialized in the new format. So
-          // checking all value older than 15 years should be a good enough
-          // filter to catch them. If it is a value stored in the old format, it
-          // should be correctly decoded.
-          base::TimeTicks time_tick_value =
-              base::TimeTicks::FromInternalValue(payload.last_active_time);
-          base::TimeDelta delta_since_epoch =
-              time_tick_value - base::TimeTicks::UnixEpoch();
-          base::Time corrected_time =
-              base::Time::UnixEpoch() + delta_since_epoch;
-          if (base::Time::Now() < corrected_time) {
-            // If the correction is giving a time in the future, set it to now.
-            corrected_time = base::Time::Now();
-          }
-          deserialized_time = corrected_time;
-        }
-        tab->last_active_time = deserialized_time;
         break;
       }
 
@@ -930,6 +910,17 @@ void CreateTabsAndWindows(
         if (!RestoreSetWindowUserTitleCommand(*command, &window_id, &title))
           return;
         GetWindow(window_id, windows)->user_title = title;
+        break;
+      }
+
+      case kCommandSetPlatformSessionId: {
+        std::string id;
+        if (!RestoreSetPlatformSessionIdCommand(*command, &id)) {
+          DVLOG(1) << "Failed reading command " << command->id();
+          return;
+        }
+        DVLOG(1) << " restored platform_session_id=" << id;
+        *platform_session_id = id;
         break;
       }
 
@@ -1202,6 +1193,12 @@ std::unique_ptr<SessionCommand> CreateAddWindowExtraDataCommand(
                                    data);
 }
 
+std::unique_ptr<SessionCommand> CreateSetPlatformSessionIdCommand(
+    const std::string& platform_session_id) {
+  return CreateSetPlatformSessionIdCommand(kCommandSetPlatformSessionId,
+                                           platform_session_id);
+}
+
 bool ReplacePendingCommand(CommandStorageManager* command_storage_manager,
                            std::unique_ptr<SessionCommand>* command) {
   // We optimize page navigations, which can happen quite frequently and
@@ -1265,16 +1262,19 @@ bool IsClosingCommand(SessionCommand* command) {
 void RestoreSessionFromCommands(
     const std::vector<std::unique_ptr<SessionCommand>>& commands,
     std::vector<std::unique_ptr<SessionWindow>>* valid_windows,
-    SessionID* active_window_id) {
+    SessionID* active_window_id,
+    std::string* platform_session_id,
+    std::set<SessionID>* discarded_window_ids) {
   IdToSessionTab tabs;
   GroupIdToSessionTabGroup tab_groups;
   IdToSessionWindow windows;
 
   DVLOG(1) << "RestoreSessionFromCommands " << commands.size();
-  CreateTabsAndWindows(commands, &tabs, &tab_groups, &windows,
-                       active_window_id);
+  CreateTabsAndWindows(commands, &tabs, &tab_groups, &windows, active_window_id,
+                       platform_session_id, discarded_window_ids);
   AddTabsToWindows(&tabs, &tab_groups, &windows);
-  SortTabsBasedOnVisualOrderAndClear(&windows, valid_windows);
+  SortTabsBasedOnVisualOrderAndClear(&windows, valid_windows,
+                                     discarded_window_ids);
   UpdateSelectedTabIndex(valid_windows);
   // After processing, all windows should have at least one tab, and each
   // tab should have at least one navigation.

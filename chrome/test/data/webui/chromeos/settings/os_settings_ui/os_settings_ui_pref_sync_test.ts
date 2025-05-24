@@ -11,7 +11,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrSettingsPrefs, OsSettingsUiElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsUiElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

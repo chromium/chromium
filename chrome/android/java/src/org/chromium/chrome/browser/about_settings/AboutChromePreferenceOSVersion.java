@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.omaha.VersionNumberGetter;
  * Preference specifically made for the Android OS version. It supports displaying a warning when
  * the current OS version is unsupported.
  */
+@NullMarked
 public class AboutChromePreferenceOSVersion extends LongClickCopySummaryPreference {
     /** Constructor for inflating from XML. */
     public AboutChromePreferenceOSVersion(Context context, AttributeSet attrs) {

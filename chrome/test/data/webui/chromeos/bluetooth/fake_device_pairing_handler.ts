@@ -118,7 +118,7 @@ export class FakeDevicePairingHandler implements DevicePairingHandlerInterface {
   private getKeyEnteredHandlerPendingReceiver():
       KeyEnteredHandlerPendingReceiver {
     this.lastKeyEnteredHandlerRemote = new KeyEnteredHandlerRemote();
-    return this.lastKeyEnteredHandlerRemote!.$.bindNewPipeAndPassReceiver();
+    return this.lastKeyEnteredHandlerRemote.$.bindNewPipeAndPassReceiver();
   }
 
   getLastKeyEnteredHandlerRemote(): KeyEnteredHandlerRemote {

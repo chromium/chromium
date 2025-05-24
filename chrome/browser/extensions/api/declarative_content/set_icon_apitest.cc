@@ -15,6 +15,7 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -44,7 +45,7 @@ class SetIconAPITest : public ExtensionApiTest {
       // Set the channel to "trunk" since declarativeContent is restricted
       // to trunk.
       : current_channel_(version_info::Channel::UNKNOWN) {}
-  ~SetIconAPITest() override {}
+  ~SetIconAPITest() override = default;
 
  protected:
   const Extension* LoadTestExtension() {
@@ -112,11 +113,11 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Overview) {
   ASSERT_TRUE(action);
 
   EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
-  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://example.com/?show")));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("https://example.com/?show")));
   EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 
   // Navigating to an unmatched page should reset the icon.
-  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://example.com/?hide")));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("https://example.com/?hide")));
   EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 }
 
@@ -127,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Parameter) {
 
   scoped_refptr<RulesRegistry> rules_registry =
       extensions::RulesRegistryService::Get(browser()->profile())
-          ->GetRulesRegistry(RulesRegistryService::kDefaultRulesRegistryID,
+          ->GetRulesRegistry(rules_registry_ids::kDefaultRulesRegistryID,
                              "declarativeContent.onPageChanged");
   ASSERT_TRUE(rules_registry);
 

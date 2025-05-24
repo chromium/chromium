@@ -9,9 +9,7 @@
 #include <string>
 
 #include "base/base_paths.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 
 namespace shortcuts {
@@ -20,7 +18,7 @@ class ShortcutIntegrationInteractionTestPrivate;
 
 // API class that provides both base browser Kombucha functionality and
 // additional logic to facilitate writing tests for the "Create Shortcut"
-// feature.
+// flow.
 class ShortcutIntegrationInteractionTestApi : public InteractiveBrowserTestApi {
  public:
   ShortcutIntegrationInteractionTestApi();
@@ -44,7 +42,7 @@ class ShortcutIntegrationInteractionTestApi : public InteractiveBrowserTestApi {
       ui::ElementIdentifier identifier);
 
   // Launches the given shortcut.
-  [[nodiscard]] StepBuilder LaunchShortcut(ui::ElementIdentifier identifier);
+  [[nodiscard]] MultiStep LaunchShortcut(ui::ElementIdentifier identifier);
 
   // Check that `matcher` matches (the base::FilePath for) the shortcut
   // identified by `identifier`.
@@ -53,9 +51,8 @@ class ShortcutIntegrationInteractionTestApi : public InteractiveBrowserTestApi {
   // .SetMustBeVisibleAtStart(true), this test step will wait for `identifier`
   // to be shown (i.e. created) before proceeding.
   template <typename M>
-  [[nodiscard]] static StepBuilder CheckShortcut(
-      ui::ElementIdentifier identifier,
-      M&& matcher) {
+  [[nodiscard]] static auto CheckShortcut(ui::ElementIdentifier identifier,
+                                          M&& matcher) {
     return InAnyContext(CheckElement(identifier, &GetShortcutPath, matcher));
   }
 
@@ -65,8 +62,6 @@ class ShortcutIntegrationInteractionTestApi : public InteractiveBrowserTestApi {
   static base::FilePath GetShortcutPath(ui::TrackedElement* element);
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kShortcutsNotApps};
-
   ShortcutIntegrationInteractionTestPrivate& test_impl();
 };
 

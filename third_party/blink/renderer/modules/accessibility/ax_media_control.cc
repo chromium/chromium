@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 
@@ -26,11 +27,13 @@ AccessibilityMediaControl::AccessibilityMediaControl(
     : AXNodeObject(layout_object, ax_object_cache) {}
 
 bool AccessibilityMediaControl::InternalSetAccessibilityFocusAction() {
+  AXObject::InternalSetAccessibilityFocusAction();
   MediaControlElementsHelper::NotifyMediaControlAccessibleFocus(GetElement());
   return true;
 }
 
 bool AccessibilityMediaControl::InternalClearAccessibilityFocusAction() {
+  AXObject::InternalClearAccessibilityFocusAction();
   MediaControlElementsHelper::NotifyMediaControlAccessibleBlur(GetElement());
   return true;
 }

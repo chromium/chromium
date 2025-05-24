@@ -9,11 +9,15 @@ import android.content.res.Resources;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A class that defines a set of resource IDs and functionality to resolve
  * those IDs to concrete resources.
  */
 @JNINamespace("android_webview::AwResource")
+@NullMarked
 public class AwResource {
     // Array resource ID for the configuration of platform specific key-systems, must be initialized
     // by the embedder.
@@ -23,6 +27,7 @@ public class AwResource {
     // to resolve Resource IDs into the actual resources.
     private static Resources sResources;
 
+    @Initializer
     public static void setResources(Resources resources) {
         sResources = resources;
     }

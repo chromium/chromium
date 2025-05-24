@@ -22,12 +22,20 @@ SubframeHistoryNavigationThrottle::~SubframeHistoryNavigationThrottle() =
 NavigationThrottle::ThrottleCheckResult
 SubframeHistoryNavigationThrottle::WillStartRequest() {
   // This will defer cross-document subframe history requests.
+  if (state_ == State::kRunningAfterResumeSignal) {
+    return PROCEED;
+  }
+  state_ = State::kDeferred;
   return DEFER;
 }
 
 NavigationThrottle::ThrottleCheckResult
 SubframeHistoryNavigationThrottle::WillCommitWithoutUrlLoader() {
   // This will defer same-document subframe history commits.
+  if (state_ == State::kRunningAfterResumeSignal) {
+    return PROCEED;
+  }
+  state_ = State::kDeferred;
   return DEFER;
 }
 
@@ -36,7 +44,13 @@ const char* SubframeHistoryNavigationThrottle::GetNameForLogging() {
 }
 
 void SubframeHistoryNavigationThrottle::Resume() {
-  NavigationThrottle::Resume();
+  const bool should_resume = state_ == State::kDeferred;
+  state_ = State::kRunningAfterResumeSignal;
+  if (should_resume) {
+    NavigationThrottle::Resume();
+    // `Resume()` can synchronously delete this navigation throttle, so no code
+    // after this call should reference the throttle instance.
+  }
 }
 
 void SubframeHistoryNavigationThrottle::Cancel() {

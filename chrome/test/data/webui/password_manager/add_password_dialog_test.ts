@@ -258,9 +258,8 @@ suite('AddPasswordDialogTest', function() {
         dialog.$.websiteInput.value, Router.getInstance().currentRoute.details);
   });
 
-  test('account picker shows preferred storage account', async function() {
+  test('storage picker shown if account storage enabled', async function() {
     passwordManager.data.isAccountStorageEnabled = true;
-    passwordManager.data.isAccountStorageDefault = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
@@ -270,15 +269,15 @@ suite('AddPasswordDialogTest', function() {
     document.body.appendChild(dialog);
     await flushTasks();
 
+    // "Account" is selected by default.
     assertTrue(isVisible(dialog.$.storePicker));
     assertEquals(
         chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT,
         dialog.$.storePicker.value);
   });
 
-  test('account picker shows preferred storage device', async function() {
-    passwordManager.data.isAccountStorageEnabled = true;
-    passwordManager.data.isAccountStorageDefault = false;
+  test('storage picker hidden if account storage disabled', async function() {
+    passwordManager.data.isAccountStorageEnabled = false;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
@@ -288,10 +287,7 @@ suite('AddPasswordDialogTest', function() {
     document.body.appendChild(dialog);
     await flushTasks();
 
-    assertTrue(isVisible(dialog.$.storePicker));
-    assertEquals(
-        chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
-        dialog.$.storePicker.value);
+    assertFalse(isVisible(dialog.$.storePicker));
   });
 
   test('save to account', async function() {

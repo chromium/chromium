@@ -10,9 +10,9 @@
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
-import 'chrome://resources/ash/common/sea_pen/surface_effects/sparkle_placeholder.js';
+import './sea_pen.css.js';
+import './sea_pen_icons.html.js';
+import './surface_effects/sparkle_placeholder.js';
 import 'chrome://resources/ash/common/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
@@ -23,9 +23,10 @@ import './sea_pen_zero_state_svg_element.js';
 
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {QUERY, Query, SeaPenImageId} from './constants.js';
-import {isLacrosEnabled, isManagedSeaPenFeedbackEnabled, isSeaPenTextInputEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
-import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
+import type {Query, SeaPenImageId} from './constants.js';
+import {QUERY} from './constants.js';
+import {isManagedSeaPenFeedbackEnabled, isSeaPenTextInputEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
+import type {MantaStatusCode, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenThumbnail} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
@@ -35,7 +36,7 @@ import {WithSeaPenStore} from './sea_pen_store.js';
 import {isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_utils.js';
 
 const kFreeformLoadingPlaceholderCount = 4;
-const kTemplateLoadingPlaceholderCount = 8;
+const kTemplateLoadingPlaceholderCount = isSeaPenTextInputEnabled() ? 4 : 8;
 
 export class SeaPenHistoryPromptSelectedEvent extends CustomEvent<string> {
   static readonly EVENT_NAME = 'sea-pen-history-prompt-selected';
@@ -64,10 +65,8 @@ type Tile = 'loading'|SeaPenThumbnail;
 let cameraAspectRatio: number|null = null;
 (function() {
 // Try to set aspect ratio if it is not set yet.
-// We only need this when it is not Wallpaper, not Lacros, and aspectRatio
-// is not set.
-if (!isPersonalizationApp() && !isLacrosEnabled() &&
-    isVcResizeThumbnailEnabled()) {
+// We only need this when it is not Wallpaper and aspectRatio is not set.
+if (!isPersonalizationApp() && isVcResizeThumbnailEnabled()) {
   if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({video: true})
         .then((stream: MediaStream) => {
@@ -182,8 +181,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
 
       showHistory_: {
         type: Boolean,
-        computed:
-            'computeShowHistory_(thumbnailsLoading_, seaPenQuery_, textQueryHistory_)',
+        computed: 'computeShowHistory_(thumbnailsLoading_, textQueryHistory_)',
       },
 
       seaPenQuery_: {
@@ -195,6 +193,12 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         type: Array,
         value: null,
       },
+
+      latestTextQuery_: {
+        type: String,
+        value: null,
+        computed: 'computeLatestTextQuery_(seaPenQuery_)',
+      }
     };
   }
 
@@ -208,8 +212,11 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private showError_: boolean;
   private cameraFeed_: HTMLVideoElement|null;
   private isSeaPenTextInputEnabled_: boolean;
+  private isManagedSeaPenFeedbackEnabled_: boolean;
+  private showHistory_: boolean;
   private seaPenQuery_: SeaPenQuery|null;
   private textQueryHistory_: TextQueryHistoryEntry[]|null;
+  private latestTextQuery_: string|null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -321,7 +328,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       this.shadowRoot!.querySelector<HTMLElement>('.sea-pen-image')?.focus();
 
       // Resize images if cameraAspectRatio is set.
-      // This only happens when it is not wallpaper, not lacros.
+      // This only happens when it is not wallpaper.
       if (cameraAspectRatio) {
         // Handle each sea-pen-image element.
         this.shadowRoot!.querySelectorAll<HTMLElement>('.sea-pen-image')
@@ -358,7 +365,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   }
 
   private maybeCreateCameraFeed_(): HTMLVideoElement|null {
-    if (isPersonalizationApp() || isLacrosEnabled()) {
+    if (isPersonalizationApp()) {
       return null;
     }
     let cameraFeed: HTMLVideoElement|null = document.createElement('video');
@@ -394,8 +401,8 @@ export class SeaPenImagesElement extends WithSeaPenStore {
 
     if (this.cameraFeed_) {
       // Attached cameraFeed_ to the selected image.
-      const item = ((event.target as Element)!.shadowRoot as
-                    ShadowRoot)!.querySelector<HTMLElement>('.item')!;
+      const item = ((event.target as Element).shadowRoot as ShadowRoot)
+                       .querySelector<HTMLElement>('.item')!;
       this.cameraFeed_.remove();
       item.appendChild(this.cameraFeed_);
       this.cameraFeed_.width = item.clientWidth;
@@ -529,16 +536,28 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   }
 
   private computeShowHistory_(
-      thumbnailsLoading: boolean, seaPenQuery: SeaPenQuery|null,
+      thumbnailsLoading: boolean,
       textQueryHistory: TextQueryHistoryEntry[]): boolean {
-    return !thumbnailsLoading && !!seaPenQuery?.textQuery &&
-        isNonEmptyArray(textQueryHistory);
+    return !thumbnailsLoading && isNonEmptyArray(textQueryHistory);
   }
 
-  private onHistoryPromptClicked_(e: Event&
-                                  {model: {item: TextQueryHistoryEntry}}) {
+  private onHistoryPromptClicked_(e: Event&{
+    model: {queryHistoryEntry: TextQueryHistoryEntry}
+  }) {
     this.dispatchEvent(
-        new SeaPenHistoryPromptSelectedEvent(e.model.item.query));
+        new SeaPenHistoryPromptSelectedEvent(e.model.queryHistoryEntry.query));
+  }
+
+  private onLatestTextQueryClicked_() {
+    if (!this.latestTextQuery_) {
+      return;
+    }
+    this.dispatchEvent(
+        new SeaPenHistoryPromptSelectedEvent(this.latestTextQuery_));
+  }
+
+  private computeLatestTextQuery_(seaPenQuery_: SeaPenQuery): string|null {
+    return seaPenQuery_?.textQuery?.trim() || null;
   }
 }
 

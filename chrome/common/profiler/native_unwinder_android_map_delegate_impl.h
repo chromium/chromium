@@ -6,12 +6,12 @@
 #define CHROME_COMMON_PROFILER_NATIVE_UNWINDER_ANDROID_MAP_DELEGATE_IMPL_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/functional/callback.h"
 #include "base/profiler/native_unwinder_android_map_delegate.h"
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
-#include "chrome/android/modules/stack_unwinder/public/module.h"
 
 // The implementation of map delegate that manages the lifecycle of
 // libunwindstack resources. It is intended that this logic lives in chrome code
@@ -26,7 +26,7 @@
 class NativeUnwinderAndroidMapDelegateImpl
     : public base::NativeUnwinderAndroidMapDelegate {
  public:
-  explicit NativeUnwinderAndroidMapDelegateImpl(stack_unwinder::Module* module);
+  NativeUnwinderAndroidMapDelegateImpl();
 
   ~NativeUnwinderAndroidMapDelegateImpl() override;
 
@@ -35,7 +35,6 @@ class NativeUnwinderAndroidMapDelegateImpl
   void ReleaseMapReference() override;
 
  private:
-  const raw_ptr<stack_unwinder::Module> module_;
   uint32_t reference_count_ = 0u;
   std::unique_ptr<base::NativeUnwinderAndroidMemoryRegionsMap>
       memory_regions_map_;

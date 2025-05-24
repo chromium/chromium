@@ -15,7 +15,7 @@ namespace apps {
 
 class AlmanacAppIconLoaderBrowserTest : public InProcessBrowserTest {
  public:
-  AlmanacAppIconLoaderBrowserTest() {}
+  AlmanacAppIconLoaderBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();

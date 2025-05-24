@@ -22,16 +22,17 @@ class CSSPathValue : public CSSValue {
  public:
   static const CSSPathValue& EmptyPathValue();
 
-  explicit CSSPathValue(scoped_refptr<StylePath>,
+  explicit CSSPathValue(StylePath*,
                         PathSerializationFormat = kNoTransformation);
   explicit CSSPathValue(SVGPathByteStream,
                         WindRule wind_rule = RULE_NONZERO,
                         PathSerializationFormat = kNoTransformation);
 
-  StylePath* GetStylePath() const { return style_path_.get(); }
+  StylePath* GetStylePath() const { return style_path_.Get(); }
   String CustomCSSText() const;
 
   bool Equals(const CSSPathValue&) const;
+  unsigned CustomHash() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -41,7 +42,7 @@ class CSSPathValue : public CSSValue {
 
  private:
   const PathSerializationFormat serialization_format_;
-  scoped_refptr<StylePath> style_path_;
+  Member<StylePath> style_path_;
 };
 
 }  // namespace cssvalue

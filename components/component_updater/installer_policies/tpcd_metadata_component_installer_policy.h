@@ -64,8 +64,7 @@ class TpcdMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
   // End of ComponentInstallerPolicy overrides.
 
   static base::FilePath GetInstalledFilePath(const base::FilePath& base);
-  void MaybeFireCallback(
-      const std::optional<std::string>& maybe_classifications);
+  void MaybeFireCallback(std::optional<std::string> maybe_classifications);
 
   base::FilePath installed_file_path_;
 

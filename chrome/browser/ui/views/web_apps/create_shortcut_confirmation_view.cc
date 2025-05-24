@@ -13,9 +13,9 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -95,9 +95,9 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
                  views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kFixed, textfield_width, 0)
       .AddRows(1, views::TableLayout::kFixedSize)
-      .AddPaddingRow(
-          views::TableLayout::kFixedSize,
-          layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL))
+      .AddPaddingRow(views::TableLayout::kFixedSize,
+                     layout_provider->GetDistanceMetric(
+                         views::DISTANCE_CONTROL_LIST_VERTICAL))
       .AddRows(ShowRadioButtons() ? 3 : 1, views::TableLayout::kFixedSize);
 
   gfx::Size image_size(web_app::kWebAppIconSmall, web_app::kWebAppIconSmall);
@@ -239,6 +239,11 @@ void CreateShortcutConfirmationView::OnAccept() {
             ? web_app::mojom::UserDisplayMode::kStandalone
             : web_app::mojom::UserDisplayMode::kBrowser;
   }
+
+  if (base::FeatureList::IsEnabled(features::kDisableShortcutsEnableDiy)) {
+    web_app_info_->is_diy_app = true;
+  }
+
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
   // Some tests repeatedly create this class, and it's not guaranteed this class
   // is destroyed for subsequent calls. So reset the tracker manually here.

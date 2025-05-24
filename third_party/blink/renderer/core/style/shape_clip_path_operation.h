@@ -33,23 +33,27 @@
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 
 namespace blink {
 
 class ShapeClipPathOperation final : public ClipPathOperation {
  public:
-  ShapeClipPathOperation(scoped_refptr<const BasicShape> shape,
-                         GeometryBox geometry_box)
+  ShapeClipPathOperation(const BasicShape* shape, GeometryBox geometry_box)
       : shape_(std::move(shape)), geometry_box_(geometry_box) {
     DCHECK(shape_);
   }
 
-  const BasicShape* GetBasicShape() const { return shape_.get(); }
-  Path GetPath(const gfx::RectF& bounding_rect, float zoom) const {
-    Path path;
-    shape_->GetPath(path, bounding_rect, zoom);
-    return path;
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(shape_);
+    ClipPathOperation::Trace(visitor);
+  }
+
+  const BasicShape* GetBasicShape() const { return shape_.Get(); }
+  Path GetPath(const gfx::RectF& bounding_rect,
+               float zoom,
+               float path_scale) const {
+    return shape_->GetPath(bounding_rect, zoom, path_scale);
   }
 
   GeometryBox GetGeometryBox() const { return geometry_box_; }
@@ -58,7 +62,7 @@ class ShapeClipPathOperation final : public ClipPathOperation {
   bool operator==(const ClipPathOperation&) const override;
   OperationType GetType() const override { return kShape; }
 
-  scoped_refptr<const BasicShape> shape_;
+  Member<const BasicShape> shape_;
   GeometryBox geometry_box_;
 };
 

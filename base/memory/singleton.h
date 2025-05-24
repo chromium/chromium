@@ -38,7 +38,7 @@ namespace base {
 // Default traits for Singleton<Type>. Calls operator new and operator delete on
 // the object. Registers automatic deletion at process exit.
 // Overload if you need arguments or another memory allocation function.
-template<typename Type>
+template <typename Type>
 struct DefaultSingletonTraits {
   // Allocates the object.
   static Type* New() {
@@ -48,9 +48,7 @@ struct DefaultSingletonTraits {
   }
 
   // Destroys the object.
-  static void Delete(Type* x) {
-    delete x;
-  }
+  static void Delete(Type* x) { delete x; }
 
   // Set to true to automatically register deletion of the object on process
   // exit. See below for the required call that makes this happen.
@@ -64,11 +62,10 @@ struct DefaultSingletonTraits {
 #endif
 };
 
-
 // Alternate traits for use with the Singleton<Type>.  Identical to
 // DefaultSingletonTraits except that the Singleton will not be cleaned up
 // at exit.
-template<typename Type>
+template <typename Type>
 struct LeakySingletonTraits : public DefaultSingletonTraits<Type> {
   static const bool kRegisterAtExit = false;
 #if DCHECK_IS_ON()
@@ -102,15 +99,17 @@ struct StaticMemorySingletonTraits {
   // WARNING: User has to support a New() which returns null.
   static Type* New() {
     // Only constructs once and returns pointer; otherwise returns null.
-    if (dead_.exchange(true, std::memory_order_relaxed))
+    if (dead_.exchange(true, std::memory_order_relaxed)) {
       return nullptr;
+    }
 
     return new (buffer_) Type();
   }
 
   static void Delete(Type* p) {
-    if (p)
+    if (p) {
       p->Type::~Type();
+    }
   }
 
   static const bool kRegisterAtExit = true;
@@ -233,8 +232,9 @@ class Singleton {
   // Returns a pointer to the one true instance of the class.
   static Type* get() {
 #if DCHECK_IS_ON()
-    if (!Traits::kAllowedToAccessOnNonjoinableThread)
+    if (!Traits::kAllowedToAccessOnNonjoinableThread) {
       internal::AssertSingletonAllowed();
+    }
 #endif
 
     return subtle::GetOrCreateLazyPointer(
@@ -246,12 +246,14 @@ class Singleton {
   // construct it (and returns null) if it doesn't.
   static Type* GetIfExists() {
 #if DCHECK_IS_ON()
-    if (!Traits::kAllowedToAccessOnNonjoinableThread)
+    if (!Traits::kAllowedToAccessOnNonjoinableThread) {
       internal::AssertSingletonAllowed();
+    }
 #endif
 
-    if (!instance_.load(std::memory_order_relaxed))
+    if (!instance_.load(std::memory_order_relaxed)) {
       return nullptr;
+    }
 
     // Need to invoke get() nonetheless as some Traits return null after
     // destruction (even though |instance_| still holds garbage).

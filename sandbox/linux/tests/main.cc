@@ -43,8 +43,8 @@ void RunPostTestsChecks(const base::FilePath& orig_cwd) {
 #if !defined(SANDBOX_USES_BASE_TEST_SUITE)
 void UnitTestAssertHandler(const char* file,
                            int line,
-                           const std::string_view message,
-                           const std::string_view stack_trace) {
+                           std::string_view message,
+                           std::string_view stack_trace) {
   _exit(1);
 }
 #endif

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/render_widget_host_observer.h"
@@ -15,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/mojom/pdf.mojom.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/touch_selection/selection_event_type.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
@@ -47,6 +49,9 @@ class PDFDocumentHelper
       content::RenderFrameHost* rfh,
       std::unique_ptr<PDFDocumentHelperClient> client);
 
+  static PDFDocumentHelper* MaybeGetForWebContents(
+      content::WebContents* contents);
+
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostDestroyed(
       content::RenderWidgetHost* widget_host) override;
@@ -77,7 +82,7 @@ class PDFDocumentHelper
 
   // pdf::mojom::PdfHost:
   void SetListener(mojo::PendingRemote<mojom::PdfListener> listener) override;
-  void HasUnsupportedFeature() override;
+  void OnDocumentLoadComplete() override;
   void SaveUrlAs(const GURL& url,
                  network::mojom::ReferrerPolicy policy) override;
   void UpdateContentRestrictions(int32_t content_restrictions) override;
@@ -86,8 +91,30 @@ class PDFDocumentHelper
                         const gfx::PointF& right,
                         int32_t right_height) override;
   void SetPluginCanSave(bool can_save) override;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void OnSearchifyStarted() override;
+#endif
 
-  void GetPdfBytes(pdf::mojom::PdfListener::GetPdfBytesCallback callback);
+  // Returns whether document is loaded, at which point, the other calls to
+  // document metadata such as `GetPdfBytes`, `GetPageText` can return data.
+  bool IsDocumentLoadComplete() const { return is_document_load_complete_; }
+  // Get PDF bytes, if they do not exceed the size limit. If called before
+  // document is loaded, the callback will be invoked with an empty vector.
+  void GetPdfBytes(uint32_t size_limit,
+                   pdf::mojom::PdfListener::GetPdfBytesCallback callback);
+  // Returns text of the given page. If called before document is loaded, the
+  // callback will be invoked with an empty string.
+  void GetPageText(int32_t page_index,
+                   pdf::mojom::PdfListener::GetPageTextCallback callback);
+  void GetMostVisiblePageIndex(
+      pdf::mojom::PdfListener::GetMostVisiblePageIndexCallback callback);
+
+  // Registers `callback` to be run when document load completes successfully.
+  // When the PDF is already loaded, `callback` is invoked immediately. Will not
+  // be invoked when the load fails. This is useful to wait for document
+  // metadata to be loaded, before calls to `GetPdfBytes`, and `GetPageText`
+  // should be made.
+  void RegisterForDocumentLoadComplete(base::OnceClosure callback);
 
  private:
   friend class content::DocumentUserData<PDFDocumentHelper>;
@@ -118,6 +145,14 @@ class PDFDocumentHelper
   int32_t selection_right_height_ = 0;
   bool has_selection_ = false;
 
+  bool is_document_load_complete_ = false;
+
+  // Callbacks to invoke when document load is completed.
+  std::vector<base::OnceClosure> document_load_complete_callbacks_;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  bool searchify_started_ = false;
+#endif
   mojo::Remote<mojom::PdfListener> remote_pdf_client_;
 
   DOCUMENT_USER_DATA_KEY_DECL();

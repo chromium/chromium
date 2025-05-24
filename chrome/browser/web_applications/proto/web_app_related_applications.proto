@@ -1,0 +1,17 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package web_app.proto;
+
+// This message should be synced with
+// third_party/blink/public/common/manifest/manifest.h
+message RelatedApplications {
+  optional string platform = 1;
+  optional string url = 2;  // Required.
+  optional string id = 3;
+}

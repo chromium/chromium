@@ -50,6 +50,10 @@ private:
     StackObject m_anotherPart; // Also fine.
 };
 
+class IgnoringStackAllocated {
+ private:
+  STACK_ALLOCATED_IGNORE("for testing") StackObject m_stackObject;
+};
 }
 
 #endif

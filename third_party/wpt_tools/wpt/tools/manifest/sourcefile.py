@@ -5,8 +5,8 @@ from collections import deque
 from fnmatch import fnmatch
 from io import BytesIO
 from typing import (Any, BinaryIO, Callable, Deque, Dict, Iterable, List,
-                    Optional, Pattern, Set, Text, Tuple, TypedDict, Union, cast)
-from urllib.parse import urljoin
+                    Optional, Pattern, Set, Text, Tuple, TypedDict, Union)
+from urllib.parse import parse_qs, urlparse, urljoin
 
 try:
     from xml.etree import cElementTree as ElementTree
@@ -39,7 +39,7 @@ python_meta_re = re.compile(br"#\s*META:\s*(\w*)=(.*)$")
 
 reference_file_re = re.compile(r'(^|[\-_])(not)?ref[0-9]*([\-_]|$)')
 
-space_chars: Text = "".join(html5lib.constants.spaceCharacters)
+space_chars: Text = "".join(html5lib.constants.spaceCharacters)  # type: ignore[attr-defined]
 
 
 def replace_end(s: Text, old: Text, new: Text) -> Text:
@@ -85,7 +85,26 @@ _any_variants: Dict[Text, VariantData] = {
     "dedicatedworker-module": {"suffix": ".any.worker-module.html"},
     "worker": {"longhand": {"dedicatedworker", "sharedworker", "serviceworker"}},
     "worker-module": {},
-    "shadowrealm": {},
+    "shadowrealm-in-window": {},
+    "shadowrealm-in-shadowrealm": {},
+    "shadowrealm-in-dedicatedworker": {},
+    "shadowrealm-in-sharedworker": {},
+    "shadowrealm-in-serviceworker": {
+        "force_https": True,
+        "suffix": ".https.any.shadowrealm-in-serviceworker.html",
+    },
+    "shadowrealm-in-audioworklet": {
+        "force_https": True,
+        "suffix": ".https.any.shadowrealm-in-audioworklet.html",
+    },
+    "shadowrealm": {"longhand": {
+        "shadowrealm-in-window",
+        "shadowrealm-in-shadowrealm",
+        "shadowrealm-in-dedicatedworker",
+        "shadowrealm-in-sharedworker",
+        "shadowrealm-in-serviceworker",
+        "shadowrealm-in-audioworklet",
+    }},
     "jsshell": {"suffix": ".any.js"},
 }
 
@@ -160,8 +179,7 @@ def global_variant_url(url: Text, suffix: Text) -> Text:
 
 
 def _parse_html(f: BinaryIO) -> ElementTree.Element:
-    doc = html5lib.parse(f, treebuilder="etree", useChardet=False)
-    return cast(ElementTree.Element, doc)
+    return html5lib.parse(f, treebuilder="etree", useChardet=False)
 
 def _parse_xml(f: BinaryIO) -> ElementTree.Element:
     try:
@@ -704,7 +722,14 @@ class SourceFile:
         """List of ElementTree Elements corresponding to nodes representing a
         testdriver.js script"""
         assert self.root is not None
-        return self.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testdriver.js']")
+        # `xml.etree.ElementTree.findall` has a limited support of xPath, so
+        # explicit filter is required.
+        return [node for node in
+                self.root.findall(".//{http://www.w3.org/1999/xhtml}script")
+                if node.attrib.get('src',
+                                   "") == '/resources/testdriver.js' or
+                node.attrib.get('src', "").startswith(
+                    '/resources/testdriver.js?')]
 
     @cached_property
     def has_testdriver(self) -> Optional[bool]:
@@ -713,6 +738,46 @@ class SourceFile:
         if self.root is None:
             return None
         return bool(self.testdriver_nodes)
+
+    def ___get_testdriver_include_path(self) -> Optional[str]:
+        if self.script_metadata:
+            for (meta, content) in self.script_metadata:
+                if meta.strip() == 'script' and (
+                        content == '/resources/testdriver.js' or content.startswith(
+                        '/resources/testdriver.js?')):
+                    return content.strip()
+
+        if self.root is None:
+            return None
+
+        for node in self.testdriver_nodes:
+            if "src" in node.attrib:
+                return node.attrib.get("src")
+
+        return None
+
+    @cached_property
+    def testdriver_features(self) -> Optional[List[Text]]:
+        """
+        List of requested testdriver features.
+        """
+
+        testdriver_include_url = self.___get_testdriver_include_path()
+
+        if testdriver_include_url is None:
+            return None
+
+        # Parse the URL
+        parsed_url = urlparse(testdriver_include_url)
+        # Extract query parameters
+        query_params = parse_qs(parsed_url.query)
+        # Get the values for the 'feature' parameter
+        feature_values = query_params.get('feature', [])
+
+        if len(feature_values) > 0:
+            return feature_values
+
+        return None
 
     @cached_property
     def reftest_nodes(self) -> List[ElementTree.Element]:
@@ -927,7 +992,8 @@ class SourceFile:
                     self.tests_root,
                     self.rel_path,
                     self.url_base,
-                    self.rel_url
+                    self.rel_url,
+                    testdriver=self.has_testdriver,
                 )]
 
         elif self.name_is_print_reftest:
@@ -946,6 +1012,7 @@ class SourceFile:
                     viewport_size=self.viewport_size,
                     fuzzy=self.fuzzy,
                     page_ranges=self.page_ranges,
+                    testdriver=self.has_testdriver,
                 )]
 
         elif self.name_is_multi_global:
@@ -965,6 +1032,7 @@ class SourceFile:
                     global_variant_url(self.rel_url, suffix) + variant,
                     timeout=self.timeout,
                     pac=self.pac,
+                    testdriver_features=self.testdriver_features,
                     jsshell=jsshell,
                     script_metadata=self.script_metadata
                 )
@@ -983,6 +1051,7 @@ class SourceFile:
                     test_url + variant,
                     timeout=self.timeout,
                     pac=self.pac,
+                    testdriver_features=self.testdriver_features,
                     script_metadata=self.script_metadata
                 )
                 for variant in self.test_variants
@@ -999,6 +1068,7 @@ class SourceFile:
                     test_url + variant,
                     timeout=self.timeout,
                     pac=self.pac,
+                    testdriver_features=self.testdriver_features,
                     script_metadata=self.script_metadata
                 )
                 for variant in self.test_variants
@@ -1026,6 +1096,7 @@ class SourceFile:
                     url,
                     timeout=self.timeout,
                     pac=self.pac,
+                    testdriver_features=self.testdriver_features,
                     testdriver=testdriver,
                     script_metadata=self.script_metadata
                 ))
@@ -1046,7 +1117,8 @@ class SourceFile:
                     timeout=self.timeout,
                     viewport_size=self.viewport_size,
                     dpi=self.dpi,
-                    fuzzy=self.fuzzy
+                    fuzzy=self.fuzzy,
+                    testdriver=self.has_testdriver,
                 ))
 
         elif self.content_is_css_visual and not self.name_is_reference:

@@ -45,6 +45,12 @@ void SpeechRecognitionSession::StopCapture() {
   stopped_ = true;
 }
 
+void SpeechRecognitionSession::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  SpeechRecognitionManager::GetInstance()->UpdateRecognitionContextForSession(
+      session_id_, recognition_context);
+}
+
 // -------- SpeechRecognitionEventListener interface implementation -----------
 
 void SpeechRecognitionSession::OnRecognitionStart(int session_id) {

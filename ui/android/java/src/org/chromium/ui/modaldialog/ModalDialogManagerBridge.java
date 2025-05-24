@@ -4,22 +4,22 @@
 
 package org.chromium.ui.modaldialog;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.ModalDialogWrapper;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 @JNINamespace("ui")
+@NullMarked
 public class ModalDialogManagerBridge {
 
     private final ModalDialogManager mModalDialogManager;
     private long mNativePtr;
 
-    public ModalDialogManagerBridge(@NonNull ModalDialogManager manager) {
+    public ModalDialogManagerBridge(ModalDialogManager manager) {
         mModalDialogManager = manager;
         mNativePtr = ModalDialogManagerBridgeJni.get().create(this);
     }

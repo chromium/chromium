@@ -21,23 +21,24 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
-#include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -48,22 +49,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Initiates a `MovePasswordToAccountStoreHelper`, which takes care of moving
-// the `form` from profile to account store.
-void MovePasswordToAccount(
-    const password_manager::PasswordForm& form,
-    password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
-    content::WebContents* web_contents) {
-  PasswordsModelDelegateFromWebContents(web_contents)
-      ->MovePendingPasswordToAccountStoreUsingHelper(form, trigger);
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-}  // namespace
 
 PasswordSaveUpdateView::PasswordSaveUpdateView(
     content::WebContents* web_contents,
@@ -97,7 +82,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
         .SetDefault(
             views::kMarginsKey,
             gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                DISTANCE_CONTROL_LIST_VERTICAL),
+                                views::DISTANCE_CONTROL_LIST_VERTICAL),
                             0));
 
     const auto titles = GetCredentialLabelsForAccountChooser(password_form);
@@ -138,7 +123,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
         .SetDefault(
             views::kMarginsKey,
             gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                DISTANCE_CONTROL_LIST_VERTICAL),
+                                views::DISTANCE_CONTROL_LIST_VERTICAL),
                             0));
 
     username_dropdown_ = username_dropdown.get();
@@ -151,7 +136,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
     // `accessibility_alert_` to inform screen readers about that change.
     accessibility_alert_ =
         root_view->AddChildView(std::make_unique<views::View>());
-    AddChildView(accessibility_alert_.get());
+    AddChildViewRaw(accessibility_alert_.get());
   }
 
   {
@@ -169,10 +154,31 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
             .Then(base::BindRepeating(
                 &PasswordSaveUpdateView::CloseOrReplaceWithPromo,
                 base::Unretained(this))));
-    SetCancelCallback(base::BindOnce(
-        button_clicked, base::Unretained(this),
-        is_update_bubble_ ? &Controller::OnNoThanksClicked
-                          : &Controller::OnNeverForThisSiteClicked));
+
+    if (is_update_bubble_) {
+      SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
+                                       &Controller::OnNoThanksClicked));
+    } else if (base::FeatureList::IsEnabled(
+                   features::kThreeButtonPasswordSaveDialog)) {
+      // 3-button save dialog variant.
+      SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
+                                       &Controller::OnNotNowClicked));
+
+      extra_view_ = SetExtraView(std::make_unique<views::MdTextButton>());
+      extra_view_->SetProperty(views::kElementIdentifierKey,
+                               kExtraButtonElementId);
+      extra_view_->SetCallback(
+          base::BindOnce(button_clicked, base::Unretained(this),
+                         &Controller::OnNeverForThisSiteClicked));
+
+      // The third button will usually stretch the bubble beyond its intended
+      // width. Permit the bubble to use vertical buttons if this happens.
+      set_allow_vertical_buttons(true);
+    } else {
+      // 2-button save dialog variant.
+      SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
+                                       &Controller::OnNeverForThisSiteClicked));
+    }
   }
 
   SetShowIcon(true);
@@ -200,18 +206,6 @@ const PasswordBubbleControllerBase* PasswordSaveUpdateView::GetController()
   return &controller_;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-bool PasswordSaveUpdateView::OnCloseRequested(
-    views::Widget::ClosedReason close_reason) {
-  if (is_signin_promo_bubble_ &&
-      (close_reason == views::Widget::ClosedReason::kCloseButtonClicked ||
-       close_reason == views::Widget::ClosedReason::kEscKeyPressed)) {
-    AutofillBubbleSignInPromoView::RecordSignInPromoDismissed(web_contents());
-  }
-  return true;
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Close the bubble if the sign in promo should not be shown.
@@ -236,39 +230,21 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   accessibility_view->SetVisible(false);
   accessibility_alert_ = AddChildView(std::move(accessibility_view));
 
-  auto move_callback =
-      base::BindOnce(&MovePasswordToAccount, controller_.pending_password(),
-                     password_manager::metrics_util::MoveToAccountStoreTrigger::
-                         kUserOptedInAfterSavingLocally);
-
   // Show the sign in promo.
-  auto sign_in_promo = std::make_unique<AutofillBubbleSignInPromoView>(
+  auto sign_in_promo = std::make_unique<BubbleSignInPromoView>(
       controller_.GetWebContents(),
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
-      std::move(move_callback));
+      signin_metrics::AccessPoint::kPasswordBubble,
+      PasswordFormUniqueKey(controller_.pending_password()));
   AddChildView(std::move(sign_in_promo));
-
-  // Record that the sign in promo was shown.
-  Profile* profile = controller_.GetProfile();
-  AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(profile));
-
-  if (account.gaia.empty()) {
-    int show_count = profile->GetPrefs()->GetInteger(
-        prefs::kPasswordSignInPromoShownCountPerProfile);
-    profile->GetPrefs()->SetInteger(
-        prefs::kPasswordSignInPromoShownCountPerProfile, show_count + 1);
-  } else {
-    SigninPrefs(*profile->GetPrefs())
-        .IncrementPasswordSigninPromoImpressionCount(account.gaia);
-  }
+  // TODO(crbug.com/41493925) remove this SizeToContents() when the subsequent
+  // code no longer depends on the sync auto-size here.
+  SizeToContents();
 
   // Notify the screen reader that the bubble changed.
   AnnounceBubbleChange();
 
-  is_signin_promo_bubble_ = true;
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
-                                    kPasswordBubble);
+                                    kPasswordBubbleElementId);
 
   return false;
 #else
@@ -327,21 +303,31 @@ void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
 void PasswordSaveUpdateView::UpdateBubbleUIElements() {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
              static_cast<int>(ui::mojom::DialogButton::kCancel));
-  std::u16string ok_button_text;
-  if (controller_.IsAccountStorageOptInRequiredBeforeSave()) {
-    ok_button_text = l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_SAVE_BUBBLE_OPT_IN_BUTTON);
-  } else {
-    ok_button_text = l10n_util::GetStringUTF16(
-        controller_.IsCurrentStateUpdate() ? IDS_PASSWORD_MANAGER_UPDATE_BUTTON
-                                           : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
-  }
+  std::u16string ok_button_text = l10n_util::GetStringUTF16(
+      controller_.IsCurrentStateUpdate() ? IDS_PASSWORD_MANAGER_UPDATE_BUTTON
+                                         : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
   SetButtonLabel(ui::mojom::DialogButton::kOk, ok_button_text);
-  SetButtonLabel(
-      ui::mojom::DialogButton::kCancel,
-      l10n_util::GetStringUTF16(
-          is_update_bubble_ ? IDS_PASSWORD_MANAGER_CANCEL_BUTTON
-                            : IDS_PASSWORD_MANAGER_BUBBLE_BLOCKLIST_BUTTON));
+
+  if (is_update_bubble_) {
+    SetButtonLabel(
+        ui::mojom::DialogButton::kCancel,
+        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CANCEL_BUTTON));
+  } else if (extra_view_) {
+    // 3-button save dialog variant.
+    SetButtonLabel(
+        ui::mojom::DialogButton::kCancel,
+        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CANCEL_BUTTON));
+
+    extra_view_->SetText(l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_BUBBLE_BLOCKLIST_BUTTON));
+
+  } else {
+    // 2-button save dialog variant.
+    SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                   l10n_util::GetStringUTF16(
+                       IDS_PASSWORD_MANAGER_BUBBLE_BLOCKLIST_BUTTON));
+  }
+
   // If the title is going to change, we should announce it to the screen
   // readers.
   bool should_announce_save_update_change =
@@ -394,8 +380,8 @@ void PasswordSaveUpdateView::AnnounceBubbleChange() {
   views::ViewAccessibility& ax = accessibility_alert_->GetViewAccessibility();
   ax.SetRole(ax::mojom::Role::kAlert);
   ax.SetName(GetWindowTitle(), ax::mojom::NameFrom::kAttribute);
-  accessibility_alert_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                                 true);
+  accessibility_alert_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kAlert, true);
 }
 
 void PasswordSaveUpdateView::OnContentChanged() {
@@ -456,4 +442,10 @@ void PasswordSaveUpdateView::TogglePasswordRevealed() {
       base::Unretained(this), std::move(pin)));
 }
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordSaveUpdateView, kPasswordBubble);
+BEGIN_METADATA(PasswordSaveUpdateView)
+END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordSaveUpdateView,
+                                      kPasswordBubbleElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordSaveUpdateView,
+                                      kExtraButtonElementId);

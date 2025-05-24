@@ -58,6 +58,7 @@ class UkmDatabaseClient {
   void TearDownForTesting();
 
  private:
+  bool initialized_{false};
   raw_ptr<ukm::UkmRecorderImpl> ukm_recorder_for_testing_;
   std::unique_ptr<UkmObserver> ukm_observer_;
   std::unique_ptr<UkmDataManager> ukm_data_manager_;

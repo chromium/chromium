@@ -120,6 +120,7 @@ goog.ui.Checkbox.prototype.isUndetermined = function() {
  * Sets the checked state of the checkbox.
  * @param {?boolean} checked The checked state to set.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Checkbox.prototype.setChecked = function(checked) {
   'use strict';
@@ -236,6 +237,7 @@ goog.ui.Checkbox.prototype.enterDocument = function() {
  * Handles the click event.
  * @param {!goog.events.BrowserEvent} e The event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.Checkbox.prototype.handleClickOrSpace_ = function(e) {
   'use strict';

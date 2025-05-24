@@ -10,10 +10,9 @@
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_session_impl.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/check_op.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -31,11 +30,11 @@
 #include "third_party/blink/public/platform/web_encrypted_media_key_information.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise_helper.h"
 #include "third_party/blink/renderer/platform/media/cdm_session_adapter.h"
+#include "third_party/blink/renderer/platform/media/media_player_util.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -60,8 +59,7 @@ media::CdmSessionType ConvertSessionType(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return media::CdmSessionType::kTemporary;
+  NOTREACHED();
 }
 
 bool SanitizeInitData(media::EmeInitDataType init_data_type,
@@ -118,9 +116,7 @@ bool SanitizeInitData(media::EmeInitDataType init_data_type,
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  error_message->assign("Initialization data type is not supported.");
-  return false;
+  NOTREACHED();
 }
 
 bool SanitizeSessionId(const WebString& session_id,
@@ -200,7 +196,8 @@ enum class KeyStatusMixForUma {
   kEmpty = 7,
   kMixedWithUsable = 8,
   kMixedWithoutUsable = 9,
-  kMaxValue = kMixedWithoutUsable
+  kAllUsableInFuture = 10,
+  kMaxValue = kAllUsableInFuture
 };
 
 KeyStatusMixForUma GetKeyStatusMixForUma(const media::CdmKeysInfo& keys_info) {
@@ -237,6 +234,8 @@ KeyStatusMixForUma GetKeyStatusMixForUma(const media::CdmKeysInfo& keys_info) {
         return KeyStatusMixForUma::kAllKeyStatusPending;
       case media::CdmKeyInformation::KeyStatus::RELEASED:
         return KeyStatusMixForUma::kAllReleased;
+      case media::CdmKeyInformation::KeyStatus::USABLE_IN_FUTURE:
+        return KeyStatusMixForUma::kAllUsableInFuture;
     }
   } else {
     return has_usable ? KeyStatusMixForUma::kMixedWithUsable
@@ -362,7 +361,7 @@ void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
       eme_init_data_type, sanitized_init_data, session_type_,
       std::make_unique<NewSessionCdmResultPromise>(
           result, adapter_->GetKeySystemUMAPrefix(), kGenerateRequestUMAName,
-          base::BindOnce(
+          WTF::BindOnce(
               &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
               weak_ptr_factory_.GetWeakPtr()),
           std::vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION}));
@@ -394,7 +393,7 @@ void WebContentDecryptionModuleSessionImpl::Load(
       session_type_, sanitized_session_id,
       std::make_unique<NewSessionCdmResultPromise>(
           result, adapter_->GetKeySystemUMAPrefix(), kLoadSessionUMAName,
-          base::BindOnce(
+          WTF::BindOnce(
               &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
               weak_ptr_factory_.GetWeakPtr()),
           std::vector<SessionInitStatus>{
@@ -479,11 +478,10 @@ void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(
     bool has_additional_usable_key,
     media::CdmKeysInfo keys_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  WebVector<WebEncryptedMediaKeyInformation> keys(keys_info.size());
+  std::vector<WebEncryptedMediaKeyInformation> keys(keys_info.size());
   for (size_t i = 0; i < keys_info.size(); ++i) {
     auto& key_info = keys_info[i];
-    keys[i].SetId(WebData(reinterpret_cast<char*>(key_info->key_id.data()),
-                          key_info->key_id.size()));
+    keys[i].SetId(WebData(key_info->key_id));
     keys[i].SetStatus(ConvertCdmKeyStatus(key_info->status));
     keys[i].SetSystemCode(key_info->system_code);
 

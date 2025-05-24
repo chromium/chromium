@@ -7,16 +7,12 @@
 #import <memory>
 #import <utility>
 
-#import "base/no_destructor.h"
 #import "base/not_fatal_until.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/affiliations/core/browser/affiliation_constants.h"
 #import "components/affiliations/core/browser/affiliation_service_impl.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -30,22 +26,15 @@ IOSChromeAffiliationServiceFactory::GetInstance() {
 // static
 affiliations::AffiliationService*
 IOSChromeAffiliationServiceFactory::GetForProfile(ProfileIOS* profile) {
-  CHECK(profile, base::NotFatalUntil::M123);
+  CHECK(profile);
 
   return static_cast<affiliations::AffiliationService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
-// static
-affiliations::AffiliationService*
-IOSChromeAffiliationServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
 IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AffiliationService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("AffiliationService",
+                                    ProfileSelection::kRedirectedInIncognito) {}
 
 IOSChromeAffiliationServiceFactory::~IOSChromeAffiliationServiceFactory() =
     default;
@@ -66,9 +55,4 @@ IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(
           affiliations::kAffiliationDatabaseFileName));
 
   return affiliation_service;
-}
-
-web::BrowserState* IOSChromeAffiliationServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
 }

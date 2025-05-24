@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
@@ -33,8 +32,10 @@ import "services/network/public/mojom/network_service_test.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
+import "services/network/public/mojom/source_type.mojom";
 import "services/network/public/mojom/system_dns_resolution.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
+import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "url/mojom/origin.mojom";
@@ -204,7 +205,8 @@ interface NetworkService {
   StartNetLog(mojo_base.mojom.File file,
               uint64 max_total_size,
               NetLogCaptureMode capture_mode,
-              mojo_base.mojom.DictionaryValue constants);
+              mojo_base.mojom.DictionaryValue constants,
+              mojo_base.mojom.TimeDelta? duration);
 
   // Attaches an external source of NetLog events. Control events will be sent
   // to the |proxy_source| pipe indicating when netlogging is active, the
@@ -248,7 +250,11 @@ interface NetworkService {
   // e.g. HTTPS (DNS type 65) will be allowed besides the traditional A and AAAA
   // queries when a request is being made via insecure DNS. Has no effect on
   // Secure DNS which always allows additional types.
+  //
+  // `happy_eyeballs_v3_enabled` controls whether the Happy Eyeballs V3 is
+  //  enabled.
   ConfigureStubHostResolver(bool insecure_dns_client_enabled,
+                            bool happy_eyeballs_v3_enabled,
                             SecureDnsMode secure_dns_mode,
                             DnsOverHttpsConfig dns_over_https_config,
                             bool additional_dns_types_enabled);
@@ -388,7 +394,29 @@ interface NetworkService {
   // from the MDL. Subdomains of entries on this list should be excluded from
   // the MDL as well.
   UpdateMaskedDomainList(mojo_base.mojom.ProtoWrapper masked_domain_list,
-    array<string> exclusion_list);
+                         array<string> exclusion_list);
+
+  // Updates the Masked Domain List data used to generate custom proxy configs
+  // for the Privacy Proxy, with files pointing to flatbuffer files. Any
+  // existing NetworkContexts that are using the custom proxy configs will have
+  // their configs updated. This is not compatible with MDL policies that
+  // require exclusion list.
+  //
+  // These files are opened read-only, but are also deleted. Per comments in
+  // the mojom traits for `ReadOnlyFile`, the underlying file must not be
+  // deleted, so we use `File` here.
+  //
+  // File sizes must be included here, as otherwise `MemoryMappedFile` cannot
+  // tell how much memory to map.
+  UpdateMaskedDomainListFlatbuffer(mojo_base.mojom.File default_file,
+                                   uint64 default_file_size,
+                                   mojo_base.mojom.File regular_browsing_file,
+                                   uint64 regular_browsing_file_size);
+
+  // Updates the Probabilistic Reveal Token registry used to determine whether a
+  // request should include a PRT in the headers.
+  UpdateProbabilisticRevealTokenRegistry(
+      mojo_base.mojom.DictionaryValue registry);
 
   // Parses response headers and returns a structured version to the caller.
   // This call originates from the browser process. Used for navigations when
@@ -427,4 +455,28 @@ interface NetworkService {
   // service with that of the browser.
   SetTpcdMetadataGrants(
       array<content_settings.mojom.ContentSettingPatternSource> settings);
+
+  // Set up a content decoding interceptor for an existing URLLoader connection.
+  // This is typically used by the browser process when client-side decoding was
+  // initially requested, but the final consumer of the response body resides in
+  // the browser process (e.g., for downloads or Signed Exchanges) rather than
+  // the renderer.
+  //
+  // The interceptor reads the encoded data from the `source_body` pipe, decodes
+  // it according to the specified `content_encoding_types`, and writes the
+  // decoded data to the `dest_body` pipe. It manages the communication flow
+  // between the original URLLoader/URLLoaderClient pair (`source_url_loader`,
+  // `source_url_loader_client`) and presents a new pair (`dest_url_loader`,
+  // `dest_url_loader_client`) for the ultimate consumer to interact with.
+  InterceptUrlLoaderForBodyDecoding(
+      array<SourceType> content_encoding_types,
+      handle<data_pipe_consumer> source_body,
+      handle<data_pipe_producer> dest_body,
+      pending_remote<URLLoader> source_url_loader,
+      pending_receiver<URLLoaderClient> source_url_loader_client,
+      pending_receiver<URLLoader> dest_url_loader,
+      pending_remote<URLLoaderClient> dest_url_loader_client);
+
+  // Enables or disables TLS 1.3 Early Data.
+  SetTLS13EarlyDataEnabled(bool enabled);
 };

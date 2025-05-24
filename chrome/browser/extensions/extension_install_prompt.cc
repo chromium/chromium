@@ -87,8 +87,7 @@ ExtensionInstallPrompt::Prompt::Prompt(PromptType type)
   DCHECK_NE(type_, NUM_PROMPT_TYPES);
 }
 
-ExtensionInstallPrompt::Prompt::~Prompt() {
-}
+ExtensionInstallPrompt::Prompt::~Prompt() = default;
 
 void ExtensionInstallPrompt::Prompt::AddPermissionSet(
     const PermissionSet& permissions) {
@@ -154,7 +153,7 @@ std::u16string ExtensionInstallPrompt::Prompt::GetDialogTitle() const {
       break;
     case UNSET_PROMPT_TYPE:
     case NUM_PROMPT_TYPES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return l10n_util::GetStringFUTF16(
@@ -220,7 +219,7 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAcceptButtonLabel() const {
       break;
     case UNSET_PROMPT_TYPE:
     case NUM_PROMPT_TYPES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return id != -1 ? l10n_util::GetStringUTF16(id) : std::u16string();
@@ -247,7 +246,7 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAbortButtonLabel() const {
       break;
     case UNSET_PROMPT_TYPE:
     case NUM_PROMPT_TYPES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return l10n_util::GetStringUTF16(id);
@@ -274,7 +273,7 @@ std::u16string ExtensionInstallPrompt::Prompt::GetPermissionsHeading() const {
       break;
     case UNSET_PROMPT_TYPE:
     case NUM_PROMPT_TYPES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return l10n_util::GetStringUTF16(id);
 }
@@ -427,7 +426,7 @@ ExtensionInstallPrompt::ExtensionInstallPrompt(content::WebContents* contents)
                    ? Profile::FromBrowserContext(contents->GetBrowserContext())
                    : nullptr),
       extension_(nullptr),
-      install_ui_(std::make_unique<ExtensionInstallUI>(profile_)),
+      install_ui_(ExtensionInstallUI::Create(profile_)),
       show_params_(new ExtensionInstallPromptShowParams(contents)),
       did_call_show_dialog_(false) {}
 
@@ -435,13 +434,12 @@ ExtensionInstallPrompt::ExtensionInstallPrompt(Profile* profile,
                                                gfx::NativeWindow native_window)
     : profile_(profile),
       extension_(nullptr),
-      install_ui_(std::make_unique<ExtensionInstallUI>(profile_)),
+      install_ui_(ExtensionInstallUI::Create(profile_)),
       show_params_(
           new ExtensionInstallPromptShowParams(profile, native_window)),
       did_call_show_dialog_(false) {}
 
-ExtensionInstallPrompt::~ExtensionInstallPrompt() {
-}
+ExtensionInstallPrompt::~ExtensionInstallPrompt() = default;
 
 void ExtensionInstallPrompt::ShowDialog(
     DoneCallback done_callback,
@@ -633,6 +631,26 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/397754565): Implement a real dialog. This function always
+// accepts the install. On other platforms the implementation lives in the
+// directory //chrome/browser/ui/views/extensions.
+void AlwaysAcceptDialogCallback(
+    std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
+    ExtensionInstallPrompt::DoneCallback done_callback,
+    std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
+  NOTIMPLEMENTED() << "AlwaysAcceptDialogCallback";
+  std::move(done_callback)
+      .Run(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::ACCEPTED));
+}
+
+// static
+ExtensionInstallPrompt::ShowDialogCallback
+ExtensionInstallPrompt::GetDefaultShowDialogCallback() {
+  return base::BindRepeating(&AlwaysAcceptDialogCallback);
+}
+#endif

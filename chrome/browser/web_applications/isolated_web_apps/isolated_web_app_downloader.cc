@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -65,6 +66,13 @@ const base::FilePath& ScopedTempWebBundleFile::path() const {
 }
 
 // static
+std::unique_ptr<IsolatedWebAppDownloader> IsolatedWebAppDownloader::Create(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(
+      new IsolatedWebAppDownloader(std::move(url_loader_factory)));
+}
+
+// static
 std::unique_ptr<IsolatedWebAppDownloader>
 IsolatedWebAppDownloader::CreateAndStartDownloading(
     GURL url,
@@ -72,8 +80,7 @@ IsolatedWebAppDownloader::CreateAndStartDownloading(
     net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsolatedWebAppDownloader::DownloadCallback download_callback) {
-  auto downloader = base::WrapUnique(
-      new IsolatedWebAppDownloader(std::move(url_loader_factory)));
+  auto downloader = Create(std::move(url_loader_factory));
   downloader->DownloadSignedWebBundle(std::move(url), std::move(destination),
                                       std::move(partial_traffic_annotation),
                                       std::move(download_callback));
@@ -86,15 +93,12 @@ IsolatedWebAppDownloader::IsolatedWebAppDownloader(
 
 IsolatedWebAppDownloader::~IsolatedWebAppDownloader() = default;
 
-void IsolatedWebAppDownloader::DownloadSignedWebBundle(
-    GURL url,
-    base::FilePath destination,
-    net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation,
-    DownloadCallback download_callback) {
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::CompleteNetworkTrafficAnnotation("iwa_bundle_downloader",
-                                            partial_traffic_annotation,
-                                            R"(
+namespace {
+net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag(
+    net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation) {
+  return net::CompleteNetworkTrafficAnnotation("iwa_bundle_downloader",
+                                               partial_traffic_annotation,
+                                               R"(
     semantics {
       data:
         "This request does not send any user data. Its destination is the URL "
@@ -114,6 +118,16 @@ void IsolatedWebAppDownloader::DownloadSignedWebBundle(
     policy {
       cookies_allowed: NO
     })");
+}
+}  // namespace
+
+void IsolatedWebAppDownloader::DownloadSignedWebBundle(
+    GURL url,
+    base::FilePath destination,
+    net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation,
+    DownloadCallback download_callback) {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      GetNetworkTrafficAnnotationTag(std::move(partial_traffic_annotation));
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
@@ -136,6 +150,41 @@ void IsolatedWebAppDownloader::DownloadSignedWebBundle(
                      base::Unretained(this), destination)
           .Then(std::move(download_callback)),
       destination);
+}
+
+void IsolatedWebAppDownloader::DownloadInitialBytes(
+    GURL url,
+    net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation,
+    PartialDownloadCallback download_callback) {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      GetNetworkTrafficAnnotationTag(std::move(partial_traffic_annotation));
+
+  // 8 KiB - this should be enough to contain the entire integrity block of any
+  // signed web bundle. While it is technically possible to create a bigger one,
+  // there's no reason to do that. In such case, if it happens, this whole
+  // heuristic is skipped and the entire bundle is downloaded.
+  constexpr size_t kMaxInitialBytes = 8 * 1024;
+
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = std::move(url);
+  // Cookies are not allowed.
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kRange,
+      net::HttpByteRange::Bounded(0, kMaxInitialBytes - 1).GetHeaderValue());
+
+  simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), std::move(traffic_annotation));
+
+  simple_url_loader_->SetRetryOptions(
+      /* max_retries=*/3,
+      network::SimpleURLLoader::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+  simple_url_loader_->SetAllowPartialResults(true);
+
+  simple_url_loader_->DownloadToString(url_loader_factory_.get(),
+                                       std::move(download_callback),
+                                       kMaxInitialBytes);
 }
 
 int32_t IsolatedWebAppDownloader::OnSignedWebBundleDownloaded(

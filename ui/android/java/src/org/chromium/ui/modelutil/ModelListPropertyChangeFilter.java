@@ -4,8 +4,8 @@
 
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -19,6 +19,7 @@ import java.util.Set;
  * Observes and notifies when any of the filtered {@link PropertyKey}s are changed inside the
  * {@link ModelList}.
  */
+@NullMarked
 public class ModelListPropertyChangeFilter
         implements ListObserver<Void>, PropertyObserver<PropertyKey> {
     private final Runnable mOnPropertyChange;
@@ -67,7 +68,8 @@ public class ModelListPropertyChangeFilter
     }
 
     @Override
-    public void onPropertyChanged(PropertyObservable<PropertyKey> source, PropertyKey propertyKey) {
+    public void onPropertyChanged(
+            PropertyObservable<PropertyKey> source, @Nullable PropertyKey propertyKey) {
         if (mPropertyKeySet.contains(propertyKey)) {
             mOnPropertyChange.run();
         }
@@ -88,7 +90,7 @@ public class ModelListPropertyChangeFilter
      * set and the new set, and call  {@link PropertyModel#removeObserver(PropertyObserver)} on any
      * we figure out have been removed.
      */
-    private void prunePropertyModels(@NonNull Set<PropertyModel> newPropertyModels) {
+    private void prunePropertyModels(Set<PropertyModel> newPropertyModels) {
         for (PropertyModel existingPropertyModel : mTrackedPropertyModels) {
             if (!newPropertyModels.contains(existingPropertyModel)) {
                 existingPropertyModel.removeObserver(this);

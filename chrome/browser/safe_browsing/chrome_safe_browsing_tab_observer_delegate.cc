@@ -12,6 +12,7 @@
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #endif
@@ -40,7 +41,11 @@ ChromeSafeBrowsingTabObserverDelegate::GetClientSideDetectionServiceIfExists(
 }
 
 bool ChromeSafeBrowsingTabObserverDelegate::DoesSafeBrowsingServiceExist() {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return g_browser_process->safe_browsing_service();
+#else
+  return false;
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 
 std::unique_ptr<ClientSideDetectionHost>

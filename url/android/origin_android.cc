@@ -25,8 +25,8 @@ Origin CreateOpaqueOriginForAndroid(const std::string& scheme,
       scheme, host, port, Origin::Nonce(nonce_token));
 }
 
-base::android::ScopedJavaLocalRef<jobject> Origin::ToJavaObject() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+base::android::ScopedJavaLocalRef<jobject> Origin::ToJavaObject(
+    JNIEnv* env) const {
   const base::UnguessableToken* token = GetNonceForSerialization();
   return Java_Origin_Constructor(env, tuple_.scheme(), tuple_.host(),
                                  tuple_.port(), opaque(),
@@ -36,41 +36,43 @@ base::android::ScopedJavaLocalRef<jobject> Origin::ToJavaObject() const {
 
 // static
 Origin Origin::FromJavaObject(
+    JNIEnv* env,
     const base::android::JavaRef<jobject>& java_origin) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  std::unique_ptr<Origin> origin = base::WrapUnique<Origin>(
-      reinterpret_cast<Origin*>(Java_Origin_toNativeOrigin(env, java_origin)));
-  return std::move(*origin);
+  Origin ret;
+  Java_Origin_assignNativeOrigin(env, java_origin,
+                                 reinterpret_cast<jlong>(&ret));
+  return ret;
 }
 
 static base::android::ScopedJavaLocalRef<jobject> JNI_Origin_CreateOpaque(
     JNIEnv* env) {
-  return Origin().ToJavaObject();
+  return Origin().ToJavaObject(env);
 }
 
 static base::android::ScopedJavaLocalRef<jobject> JNI_Origin_CreateFromGURL(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_gurl) {
-  return Origin::Create(GURLAndroid::ToNativeGURL(env, j_gurl)).ToJavaObject();
+  return Origin::Create(GURLAndroid::ToNativeGURL(env, j_gurl))
+      .ToJavaObject(env);
 }
 
-static jlong JNI_Origin_CreateNative(JNIEnv* env,
-                                     std::string& scheme,
-                                     std::string& host,
-                                     jshort port,
-                                     jboolean is_opaque,
-                                     jlong token_high_bits,
-                                     jlong token_low_bits) {
-  Origin origin;
+static void JNI_Origin_AssignNativeOrigin(JNIEnv* env,
+                                          std::string& scheme,
+                                          std::string& host,
+                                          jshort port,
+                                          jboolean is_opaque,
+                                          jlong token_high_bits,
+                                          jlong token_low_bits,
+                                          jlong native_origin) {
+  Origin* origin = reinterpret_cast<Origin*>(native_origin);
   if (is_opaque) {
     std::optional<base::UnguessableToken> nonce_token =
         base::UnguessableToken::Deserialize(token_high_bits, token_low_bits);
-    origin =
+    *origin =
         CreateOpaqueOriginForAndroid(scheme, host, port, nonce_token.value());
   } else {
-    origin = Origin::CreateFromNormalizedTuple(scheme, host, port);
+    *origin = Origin::CreateFromNormalizedTuple(scheme, host, port);
   }
-  return reinterpret_cast<intptr_t>(new Origin(origin));
 }
 
 }  // namespace url

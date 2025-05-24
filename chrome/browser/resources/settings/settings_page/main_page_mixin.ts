@@ -346,6 +346,7 @@ export const MainPageMixin = dedupingMixin(
               if (!oldRoute!.contains(newRoute) &&
                   !newRoute.contains(oldRoute!)) {
                 this.enterMainPage_(oldRoute!).then(() => {
+                  this.switchToSections_(newRoute);
                   this.enterSubpage_(newRoute);
                 });
                 return;

@@ -4,13 +4,14 @@
 
 #include "ui/base/models/dialog_model.h"
 
+#include <algorithm>
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -60,7 +61,7 @@ DialogModel::Button::Button(
     base::RepeatingCallback<void(const Event&)> callback,
     const DialogModel::Button::Params& params)
     : DialogModelField(kCustom, params.id_, params.accelerators_, params),
-      label_(std::move(params.label_)),
+      label_(params.label_),
       style_(params.style_),
       is_enabled_(params.is_enabled_),
       callback_(std::move(callback)) {
@@ -110,7 +111,7 @@ DialogModel::Builder& DialogModel::Builder::AddButtonInternal(
     ButtonCallbackVariant& model_callback) {
   CHECK(params.is_visible_);
   CHECK(!model_button.has_value());
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [](decltype(base::DoNothing())& callback) {
             // Intentional noop
@@ -187,14 +188,14 @@ DialogModel::DialogModel(base::PassKey<Builder>,
 DialogModel::~DialogModel() = default;
 
 bool DialogModel::HasField(ElementIdentifier id) const {
-  return base::ranges::any_of(contents_.fields(),
-                              [id](auto& field) {
-                                // TODO(pbos): This does not
-                                // work recursively yet.
-                                CHECK_NE(field->type_,
-                                         DialogModelField::kSection);
-                                return field->id_ == id;
-                              }) ||
+  return std::ranges::any_of(contents_.fields(),
+                             [id](auto& field) {
+                               // TODO(pbos): This does not
+                               // work recursively yet.
+                               CHECK_NE(field->type_,
+                                        DialogModelField::kSection);
+                               return field->id_ == id;
+                             }) ||
          (ok_button_ && ok_button_->id_ == id) ||
          (cancel_button_ && cancel_button_->id_ == id) ||
          (extra_button_ && extra_button_->id_ == id);
@@ -239,7 +240,7 @@ bool DialogModel::OnDialogCancelAction(base::PassKey<DialogModelHost>) {
 }
 
 bool DialogModel::RunButtonCallback(ButtonCallbackVariant& callback_variant) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](decltype(base::DoNothing())& callback) { return true; },
           [](base::RepeatingCallback<bool()>& callback) {

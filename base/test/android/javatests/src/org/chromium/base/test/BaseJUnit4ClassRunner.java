@@ -15,6 +15,7 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.internal.util.AndroidRunnerParams;
 
+import org.jni_zero.JniTestInstancesSnapshot;
 import org.junit.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
@@ -26,11 +27,11 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ResettersForTesting.State;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.params.MethodParamAnnotationRule;
 import org.chromium.base.test.util.AndroidSdkLevelSkipCheck;
@@ -77,7 +78,6 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     public interface ClassHook {
         /**
          * @param targetContext the instrumentation context that will be used during the test.
-         * @param testMethod the test method to be run.
          */
         public void run(Context targetContext, Class<?> testClass);
     }
@@ -153,6 +153,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     protected final RestrictionSkipCheck mRestrictionSkipCheck = new RestrictionSkipCheck();
     private long mTestStartTimeMs;
     private String mFailedBatchTestName;
+    private JniTestInstancesSnapshot mJniZeroSnapshot;
 
     /**
      * Create a BaseJUnit4ClassRunner to run {@code klass} and initialize values.
@@ -462,9 +463,11 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         if (firstTestMethod) {
             BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext
                     .createSharedPreferencesSnapshot();
+            mJniZeroSnapshot = JniTestInstancesSnapshot.snapshotOverridesForTesting();
         } else {
             BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext
                     .restoreSharedPreferencesSnapshot();
+            JniTestInstancesSnapshot.restoreSnapshotForTesting(mJniZeroSnapshot);
         }
 
         // TODO: Might be slow to do this before every test.
@@ -487,6 +490,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         Class<?> testClass = getTestClass().getJavaClass();
         ResettersForTesting.beforeClassHooksWillExecute();
         BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext.resetSharedPreferences();
+        JniTestInstancesSnapshot.clearAllForTesting();
 
         CommandLineFlags.reset(testClass.getAnnotations(), null);
         TestAnimations.reset(testClass, null);

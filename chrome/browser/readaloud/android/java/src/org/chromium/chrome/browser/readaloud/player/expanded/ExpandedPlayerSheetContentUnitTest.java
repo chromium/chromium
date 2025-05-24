@@ -24,17 +24,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,13 +50,18 @@ import java.util.Locale;
 /** Unit tests for {@link ExpandedPlayerSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures({
+    ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_FEEDBACK,
+})
 public class ExpandedPlayerSheetContentUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private InteractionHandler mInteractionHandler;
     @Mock private PropertyModel mModel;
     @Mock private OptionsMenuSheetContent mOptionsMenu;
     @Mock private SpeedMenuSheetContent mSpeedMenu;
     @Mock private View.OnClickListener mOnClickListener;
+    @Mock private PlaybackModeIphController mPlaybackModeIphController;
 
     private Context mContext;
     private Drawable mPlayDrawable;
@@ -67,10 +78,12 @@ public class ExpandedPlayerSheetContentUnitTest {
     private Activity mActivity;
     private LinearLayout mNormalLayout;
     private LinearLayout mErrorLayout;
+    private ImageView mThumbUp;
+    private ImageView mThumbDown;
+    private ImageView mMoreOptions;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = ApplicationProvider.getApplicationContext();
         mPlayDrawable = mContext.getDrawable(R.drawable.play_button);
         mPauseDrawable = mContext.getDrawable(R.drawable.pause_button);
@@ -92,13 +105,48 @@ public class ExpandedPlayerSheetContentUnitTest {
         mSeekbar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
+        mThumbUp = (ImageView) mContentView.findViewById(R.id.readaloud_thumb_up_button);
+        mThumbDown = (ImageView) mContentView.findViewById(R.id.readaloud_thumb_down_button);
+        mMoreOptions = (ImageView) mContentView.findViewById(R.id.readaloud_more_button);
         mContent =
                 new ExpandedPlayerSheetContent(
-                        mActivity, mBottomSheetController, mContentView, mModel);
+                        mActivity,
+                        mBottomSheetController,
+                        mContentView,
+                        mModel,
+                        mPlaybackModeIphController);
         mContent.setOptionsMenuSheetContent(mOptionsMenu);
         mContent.setSpeedMenuSheetContent(mSpeedMenu);
         // PlayerMediator is responsible for setting initial speed.
         mContent.setSpeed(1f);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_FEEDBACK})
+    public void setPlaybackModeWithFeedback() {
+        mContent.setPlaybackMode(PlaybackMode.OVERVIEW);
+
+        assertTrue(mMoreOptions.getVisibility() == View.GONE);
+        assertTrue(mThumbUp.getVisibility() == View.VISIBLE);
+        assertTrue(mThumbDown.getVisibility() == View.VISIBLE);
+    }
+
+    @Test
+    public void setPlaybackModeWithoutFeedback() {
+        mContent.setPlaybackMode(PlaybackMode.OVERVIEW);
+
+        assertTrue(mMoreOptions.getVisibility() == View.GONE);
+        assertTrue(mThumbUp.getVisibility() == View.GONE);
+        assertTrue(mThumbDown.getVisibility() == View.GONE);
+    }
+
+    @Test
+    public void setPlaybackClassic_optionsButtonIsShown() {
+        mContent.setPlaybackMode(PlaybackMode.CLASSIC);
+
+        assertTrue(mMoreOptions.getVisibility() == View.VISIBLE);
+        assertTrue(mThumbUp.getVisibility() == View.GONE);
+        assertTrue(mThumbDown.getVisibility() == View.GONE);
     }
 
     @Test
@@ -213,12 +261,12 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
         assertTrue(mErrorLayout.getVisibility() == View.GONE);
         assertTrue(mNormalLayout.getVisibility() == View.VISIBLE);
-        assertEquals(mPlayPauseButton.getContentDescription(), "Pause");
+        assertEquals("Pause", mPlayPauseButton.getContentDescription());
 
         mContent.onPlaybackStateChanged(PlaybackListener.State.PAUSED);
         assertTrue(mErrorLayout.getVisibility() == View.GONE);
         assertTrue(mNormalLayout.getVisibility() == View.VISIBLE);
-        assertEquals(mPlayPauseButton.getContentDescription(), "Play");
+        assertEquals("Play", mPlayPauseButton.getContentDescription());
     }
 
     @Test

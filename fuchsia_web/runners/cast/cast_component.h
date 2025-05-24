@@ -104,6 +104,8 @@ class CastComponent final
   // fuchsia::component::runner::ComponentController implementation.
   void Kill() override;
   void Stop() override;
+  void handle_unknown_method(uint64_t ordinal,
+                             bool method_has_response) override;
 
   // base::MessagePumpFuchsia::ZxHandleWatcher implementation.
   // Called when the headless "view" token is disconnected.

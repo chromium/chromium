@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 
+#include <cstddef>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/base/models/image_model.h"

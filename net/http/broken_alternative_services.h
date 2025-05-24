@@ -174,7 +174,8 @@ class NET_EXPORT_PRIVATE BrokenAlternativeServices {
 
   struct AlternativeServiceHash {
     size_t operator()(const AlternativeService& entry) const {
-      return entry.protocol ^ std::hash<std::string>()(entry.host) ^ entry.port;
+      return static_cast<size_t>(entry.protocol) ^
+             std::hash<std::string>()(entry.host) ^ entry.port;
     }
   };
 

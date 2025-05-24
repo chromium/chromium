@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] removeEntry() while the file has an open writable fails
-  promise_test: Unhandled rejection with value: object "ReferenceError: cleanup_writable is not defined"
-[FAIL] removeEntry() of a directory while a containing file has an open writable fails
-  promise_test: Unhandled rejection with value: object "ReferenceError: cleanup_writable is not defined"
-[FAIL] createWritable after removeEntry succeeds but doesnt recreate the file
-  promise_test: Unhandled rejection with value: object "ReferenceError: cleanup_writable is not defined"
-Harness: the test ran to completion.
-

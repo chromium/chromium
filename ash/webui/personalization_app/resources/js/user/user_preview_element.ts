@@ -14,10 +14,10 @@ import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_uti
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 
-import {UserImage, UserInfo} from '../../personalization_app.mojom-webui.js';
+import type {UserImage, UserInfo} from '../../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyString} from '../utils.js';

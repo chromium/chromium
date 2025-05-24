@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
 
 // Class that defines policy for handling recent sessions.
 // Allows recording of metrics and possibly modifying promo behavior.

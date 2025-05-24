@@ -1,0 +1,112 @@
+This is a testharness.js-based test.
+Found 54 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] execCommand("insertLineBreak") when A[]B
+  assert_equals: expected "A<br>B" but got "A\\nB"
+[FAIL] execCommand("insertLineBreak") when <p>{}<br></p>
+  assert_equals: expected "<p><br><br></p>" but got "<p>\\n<br></p>"
+[FAIL] execCommand("insertLineBreak") when <p style="white-space:normal">A[]B</p>
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+[FAIL] execCommand("insertLineBreak") when <ul><li>[]AB</li></ul>
+  assert_equals: expected "<ul><li><br>AB</li></ul>" but got "<ul><li>\\nAB</li></ul>"
+[FAIL] execCommand("insertLineBreak") when <ul><li>A[]B</li></ul>
+  assert_equals: expected "<ul><li>A<br>B</li></ul>" but got "<ul><li>A\\nB</li></ul>"
+[FAIL] execCommand("insertLineBreak") when <ul><li>AB[]</li></ul>
+  assert_equals: expected "<ul><li>AB<br><br></li></ul>" but got "<ul><li>AB\\n\\n</li></ul>"
+[FAIL] execCommand("insertLineBreak") when <dl><dt>[]AB</dt></dl>
+  assert_equals: expected "<dl><dt><br>AB</dt></dl>" but got "<dl><dt>\\nAB</dt></dl>"
+[FAIL] execCommand("insertLineBreak") when <dl><dt>A[]B</dt></dl>
+  assert_equals: expected "<dl><dt>A<br>B</dt></dl>" but got "<dl><dt>A\\nB</dt></dl>"
+[FAIL] execCommand("insertLineBreak") when <dl><dt>AB[]</dt></dl>
+  assert_equals: expected "<dl><dt>AB<br><br></dt></dl>" but got "<dl><dt>AB\\n\\n</dt></dl>"
+[FAIL] execCommand("insertLineBreak") when <dl><dd>[]AB</dd></dl>
+  assert_equals: expected "<dl><dd><br>AB</dd></dl>" but got "<dl><dd>\\nAB</dd></dl>"
+[FAIL] execCommand("insertLineBreak") when <dl><dd>A[]B</dd></dl>
+  assert_equals: expected "<dl><dd>A<br>B</dd></dl>" but got "<dl><dd>A\\nB</dd></dl>"
+[FAIL] execCommand("insertLineBreak") when <dl><dd>AB[]</dd></dl>
+  assert_equals: expected "<dl><dd>AB<br><br></dd></dl>" but got "<dl><dd>AB\\n\\n</dd></dl>"
+[FAIL] execCommand("insertLineBreak") when <table><tbody><tr><td>[]AB</td></tr></tbody></table>
+  assert_equals: expected "<table><tbody><tr><td><br>AB</td></tr></tbody></table>" but got "<table><tbody><tr><td>\\nAB</td></tr></tbody></table>"
+[FAIL] execCommand("insertLineBreak") when <table><tbody><tr><td>A[]B</td></tr></tbody></table>
+  assert_equals: expected "<table><tbody><tr><td>A<br>B</td></tr></tbody></table>" but got "<table><tbody><tr><td>A\\nB</td></tr></tbody></table>"
+[FAIL] execCommand("insertLineBreak") when <table><tbody><tr><td>AB[]</td></tr></tbody></table>
+  assert_equals: expected "<table><tbody><tr><td>AB<br><br></td></tr></tbody></table>" but got "<table><tbody><tr><td>AB\\n\\n</td></tr></tbody></table>"
+[FAIL] execCommand("insertLineBreak") when <h1>[]AB</h1>
+  assert_equals: expected "<h1><br>AB</h1>" but got "<h1>\\nAB</h1>"
+[FAIL] execCommand("insertLineBreak") when <h1>A[]B</h1>
+  assert_equals: expected "<h1>A<br>B</h1>" but got "<h1>A\\nB</h1>"
+[FAIL] execCommand("insertLineBreak") when <h1>AB[]</h1>
+  assert_equals: expected "<h1>AB<br><br></h1>" but got "<h1>AB\\n\\n</h1>"
+[FAIL] Pressing Enter when A[]B should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "A<br>B" but got "A\\nB"
+[FAIL] Pressing Shift+Enter when A[]B should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "A<br>B" but got "A\\nB"
+[FAIL] Pressing Enter when <p>{}<br></p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p><br><br></p>" but got "<p>\\n<br></p>"
+[FAIL] Pressing Shift+Enter when <p>{}<br></p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p><br><br></p>" but got "<p>\\n<br></p>"
+[FAIL] Pressing Enter when <p style="white-space:normal">A[]B</p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+[FAIL] Pressing Shift+Enter when <p style="white-space:normal">A[]B</p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+[FAIL] Pressing Enter when <ul><li>[]AB</li></ul> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<ul><li><br>AB</li></ul>" but got "<ul><li>\\nAB</li></ul>"
+[FAIL] Pressing Shift+Enter when <ul><li>[]AB</li></ul> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<ul><li><br>AB</li></ul>" but got "<ul><li>\\nAB</li></ul>"
+[FAIL] Pressing Enter when <ul><li>A[]B</li></ul> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<ul><li>A<br>B</li></ul>" but got "<ul><li>A\\nB</li></ul>"
+[FAIL] Pressing Shift+Enter when <ul><li>A[]B</li></ul> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<ul><li>A<br>B</li></ul>" but got "<ul><li>A\\nB</li></ul>"
+[FAIL] Pressing Enter when <ul><li>AB[]</li></ul> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<ul><li>AB<br><br></li></ul>" but got "<ul><li>AB\\n\\n</li></ul>"
+[FAIL] Pressing Shift+Enter when <ul><li>AB[]</li></ul> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<ul><li>AB<br><br></li></ul>" but got "<ul><li>AB\\n\\n</li></ul>"
+[FAIL] Pressing Enter when <dl><dt>[]AB</dt></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dt><br>AB</dt></dl>" but got "<dl><dt>\\nAB</dt></dl>"
+[FAIL] Pressing Shift+Enter when <dl><dt>[]AB</dt></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dt><br>AB</dt></dl>" but got "<dl><dt>\\nAB</dt></dl>"
+[FAIL] Pressing Enter when <dl><dt>A[]B</dt></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dt>A<br>B</dt></dl>" but got "<dl><dt>A\\nB</dt></dl>"
+[FAIL] Pressing Shift+Enter when <dl><dt>A[]B</dt></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dt>A<br>B</dt></dl>" but got "<dl><dt>A\\nB</dt></dl>"
+[FAIL] Pressing Enter when <dl><dt>AB[]</dt></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dt>AB<br><br></dt></dl>" but got "<dl><dt>AB\\n\\n</dt></dl>"
+[FAIL] Pressing Shift+Enter when <dl><dt>AB[]</dt></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dt>AB<br><br></dt></dl>" but got "<dl><dt>AB\\n\\n</dt></dl>"
+[FAIL] Pressing Enter when <dl><dd>[]AB</dd></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dd><br>AB</dd></dl>" but got "<dl><dd>\\nAB</dd></dl>"
+[FAIL] Pressing Shift+Enter when <dl><dd>[]AB</dd></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dd><br>AB</dd></dl>" but got "<dl><dd>\\nAB</dd></dl>"
+[FAIL] Pressing Enter when <dl><dd>A[]B</dd></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dd>A<br>B</dd></dl>" but got "<dl><dd>A\\nB</dd></dl>"
+[FAIL] Pressing Shift+Enter when <dl><dd>A[]B</dd></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dd>A<br>B</dd></dl>" but got "<dl><dd>A\\nB</dd></dl>"
+[FAIL] Pressing Enter when <dl><dd>AB[]</dd></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dd>AB<br><br></dd></dl>" but got "<dl><dd>AB\\n\\n</dd></dl>"
+[FAIL] Pressing Shift+Enter when <dl><dd>AB[]</dd></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dd>AB<br><br></dd></dl>" but got "<dl><dd>AB\\n\\n</dd></dl>"
+[FAIL] Pressing Enter when <table><tbody><tr><td>[]AB</td></tr></tbody></table> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<table><tbody><tr><td><br>AB</td></tr></tbody></table>" but got "<table><tbody><tr><td>\\nAB</td></tr></tbody></table>"
+[FAIL] Pressing Shift+Enter when <table><tbody><tr><td>[]AB</td></tr></tbody></table> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<table><tbody><tr><td><br>AB</td></tr></tbody></table>" but got "<table><tbody><tr><td>\\nAB</td></tr></tbody></table>"
+[FAIL] Pressing Enter when <table><tbody><tr><td>A[]B</td></tr></tbody></table> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<table><tbody><tr><td>A<br>B</td></tr></tbody></table>" but got "<table><tbody><tr><td>A\\nB</td></tr></tbody></table>"
+[FAIL] Pressing Shift+Enter when <table><tbody><tr><td>A[]B</td></tr></tbody></table> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<table><tbody><tr><td>A<br>B</td></tr></tbody></table>" but got "<table><tbody><tr><td>A\\nB</td></tr></tbody></table>"
+[FAIL] Pressing Enter when <table><tbody><tr><td>AB[]</td></tr></tbody></table> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<table><tbody><tr><td>AB<br><br></td></tr></tbody></table>" but got "<table><tbody><tr><td>AB\\n\\n</td></tr></tbody></table>"
+[FAIL] Pressing Shift+Enter when <table><tbody><tr><td>AB[]</td></tr></tbody></table> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<table><tbody><tr><td>AB<br><br></td></tr></tbody></table>" but got "<table><tbody><tr><td>AB\\n\\n</td></tr></tbody></table>"
+[FAIL] Pressing Enter when <h1>[]AB</h1> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<h1><br>AB</h1>" but got "<h1>\\nAB</h1>"
+[FAIL] Pressing Shift+Enter when <h1>[]AB</h1> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<h1><br>AB</h1>" but got "<h1>\\nAB</h1>"
+[FAIL] Pressing Enter when <h1>A[]B</h1> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<h1>A<br>B</h1>" but got "<h1>A\\nB</h1>"
+[FAIL] Pressing Shift+Enter when <h1>A[]B</h1> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<h1>A<br>B</h1>" but got "<h1>A\\nB</h1>"
+[FAIL] Pressing Enter when <h1>AB[]</h1> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<h1>AB<br><br></h1>" but got "<h1>AB\\n\\n</h1>"
+[FAIL] Pressing Shift+Enter when <h1>AB[]</h1> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<h1>AB<br><br></h1>" but got "<h1>AB\\n\\n</h1>"
+Harness: the test ran to completion.
+

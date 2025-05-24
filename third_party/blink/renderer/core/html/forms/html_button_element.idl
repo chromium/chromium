@@ -24,7 +24,9 @@
     HTMLConstructor
 ] interface HTMLButtonElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean disabled;
-    [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;
+    // Until ReferenceTarget is enabled, this will only ever return HTMLFormElement.
+    // https://github.com/whatwg/html/pull/10995
+    [ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
     [CEReactions] attribute USVString formAction;
     [CEReactions] attribute DOMString formEnctype;
     [CEReactions] attribute DOMString formMethod;
@@ -34,6 +36,10 @@
     [CEReactions] attribute DOMString type;
     [CEReactions, Reflect] attribute DOMString value;
     // FIXME: attribute HTMLMenuElement? menu;
+
+    // Command Invokers
+    [RuntimeEnabled=HTMLCommandAttributes, CEReactions, Reflect=commandfor] attribute Element? commandForElement;
+    [RuntimeEnabled=HTMLCommandAttributes, CEReactions] attribute DOMString command;
 
     readonly attribute boolean willValidate;
     readonly attribute ValidityState validity;
@@ -46,5 +52,4 @@
 };
 
 HTMLButtonElement includes PopoverInvokerElement;
-HTMLButtonElement includes InvokerElement;
 HTMLButtonElement includes InterestInvokerElement;

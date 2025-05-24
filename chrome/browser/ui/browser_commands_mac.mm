@@ -4,19 +4,24 @@
 
 #include "chrome/browser/ui/browser_commands_mac.h"
 
-#include <unistd.h>
-
 #import <Cocoa/Cocoa.h>
+#include <unistd.h>
 
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
+
+@interface NSThemeFrame (PrivateButtonRevealAPI)
+- (void)setButtonRevealAmount:(double)amount;
+@end
 
 namespace chrome {
 
@@ -46,8 +51,9 @@ void SetAlwaysShowToolbarInFullscreenForTesting(Browser* browser,  // IN-TEST
 
 void ToggleJavaScriptFromAppleEventsAllowed(Browser* browser) {
   CGEventRef cg_event = NSApp.currentEvent.CGEvent;
-  if (!cg_event)
+  if (!cg_event) {
     return;
+  }
 
   // If the event is from another process, do not allow it to toggle this
   // secure setting.
@@ -73,6 +79,13 @@ void ToggleJavaScriptFromAppleEventsAllowed(Browser* browser) {
   PrefService* prefs = browser->profile()->GetPrefs();
   prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents,
                     !prefs->GetBoolean(prefs::kAllowJavascriptAppleEvents));
+}
+
+void RevealToolbarForTesting(Browser* browser) {
+  NSWindow* window = browser->window()->GetNativeWindow().GetNativeNSWindow();
+  NSThemeFrame* theme_frame =
+      base::apple::ObjCCastStrict<NSThemeFrame>(window.contentView.superview);
+  [theme_frame setButtonRevealAmount:1.0];
 }
 
 }  // namespace chrome

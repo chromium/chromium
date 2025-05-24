@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -222,13 +223,15 @@ URLBlocklist::URLBlocklist() : url_matcher_(new URLMatcher) {}
 URLBlocklist::~URLBlocklist() = default;
 
 void URLBlocklist::Block(const base::Value::List& filters) {
-  url_matcher::util::AddFilters(url_matcher_.get(), /*allow=*/false, &id_,
-                                filters, &filters_);
+  url_matcher::util::AddFiltersWithLimit(url_matcher_.get(), /*allow=*/false,
+                                         &id_, filters, &filters_,
+                                         kMaxUrlFiltersPerPolicy);
 }
 
 void URLBlocklist::Allow(const base::Value::List& filters) {
-  url_matcher::util::AddFilters(url_matcher_.get(), /*allow=*/true, &id_,
-                                filters, &filters_);
+  url_matcher::util::AddFiltersWithLimit(url_matcher_.get(), /*allow=*/true,
+                                         &id_, filters, &filters_,
+                                         kMaxUrlFiltersPerPolicy);
 }
 
 bool URLBlocklist::IsURLBlocked(const GURL& url) const {
@@ -284,7 +287,7 @@ URLBlocklistManager::URLBlocklistManager(
   // |pref_service_| lives on.
   ui_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::BEST_EFFORT});
+      {base::TaskPriority::USER_VISIBLE});
 
   default_blocklist_source_ = std::make_unique<DefaultBlocklistSource>(
       pref_service, blocklist_pref_path, allowlist_pref_path);
@@ -374,6 +377,11 @@ void URLBlocklistManager::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       policy_prefs::kSafeSitesFilterBehavior,
       static_cast<int>(SafeSitesFilterBehavior::kSafeSitesFilterDisabled));
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+  registry->RegisterListPref(policy_prefs::kPasswordManagerBlocklist);
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC)
 }
 
 void URLBlocklistManager::SetOverrideBlockListSource(

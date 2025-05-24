@@ -52,8 +52,6 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   // mojom::LocalMainFrame overrides:
   void SetInitialPageScale(double page_scale_factor) override;
   void SetTextZoomFactor(float zoom_factor) override;
-  void HitTest(const gfx::PointF& touch_center,
-               const gfx::SizeF& touch_area) override;
   void DocumentHasImage(DocumentHasImageCallback callback) override;
   void ResetScrollAndScaleState() override;
   void SmoothScroll(int32_t target_x,

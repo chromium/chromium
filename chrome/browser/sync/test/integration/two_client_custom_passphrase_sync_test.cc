@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
@@ -15,9 +14,9 @@
 #include "content/public/test/test_launcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -50,16 +49,16 @@ class TwoClientCustomPassphraseSyncTest : public SyncTest {
   }
 
   void AddTestBookmarksToClient(int index) {
-    ASSERT_TRUE(AddURL(index, 0, "What are you syncing about?",
+    ASSERT_TRUE(AddURL(index, 0, u"What are you syncing about?",
                        GURL("https://google.com/synced-bookmark-1")));
-    ASSERT_TRUE(AddURL(index, 1, "Test bookmark",
+    ASSERT_TRUE(AddURL(index, 1, u"Test bookmark",
                        GURL("https://google.com/synced-bookmark-2")));
   }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
                        DecryptionFailsWhenIncorrectPassphraseProvided) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllModelsMatch());
 
   GetSyncService(kEncryptingClientId)
@@ -75,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest, ClientsCanSyncData) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllModelsMatch());
 
   GetSyncService(kEncryptingClientId)

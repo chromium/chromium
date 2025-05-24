@@ -124,7 +124,6 @@ public final class BottomSheetSwipeDetectorTest {
      * @param y2 The end y.
      * @param detector The detector to apply the swipe to.
      * @param endScroll Whether or not to include the up event at the end of the stream.
-     * @return A list of motion events.
      */
     private static void performScroll(
             float x1,

@@ -96,7 +96,7 @@ OfflinePageURLLoader::OfflinePageURLLoader(
   request_handler_->Start();
 }
 
-OfflinePageURLLoader::~OfflinePageURLLoader() {}
+OfflinePageURLLoader::~OfflinePageURLLoader() = default;
 
 void OfflinePageURLLoader::SetTabIdGetterForTesting(
     OfflinePageRequestHandler::Delegate::TabIdGetter tab_id_getter) {
@@ -108,20 +108,12 @@ void OfflinePageURLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void OfflinePageURLLoader::SetPriority(net::RequestPriority priority,
                                        int32_t intra_priority_value) {
   // Ignore: this class doesn't have a concept of priority.
-}
-
-void OfflinePageURLLoader::PauseReadingBodyFromNet() {
-  // Ignore: this class doesn't read from network.
-}
-
-void OfflinePageURLLoader::ResumeReadingBodyFromNet() {
-  // Ignore: this class doesn't read from network.
 }
 
 void OfflinePageURLLoader::FallbackToDefault() {

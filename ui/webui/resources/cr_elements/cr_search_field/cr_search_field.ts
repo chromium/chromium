@@ -50,7 +50,7 @@ export class CrSearchFieldElement extends CrSearchFieldElementBase {
     };
   }
 
-  override autofocus: boolean = false;
+  override accessor autofocus: boolean = false;
 
   override getSearchInput(): CrInputElement {
     return this.$.searchInput;

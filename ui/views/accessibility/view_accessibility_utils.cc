@@ -4,11 +4,11 @@
 
 #include "ui/views/accessibility/view_accessibility_utils.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/views/view.h"
@@ -21,17 +21,18 @@ namespace views {
 Widget* ViewAccessibilityUtils::GetFocusedChildWidgetForAccessibility(
     const View* view) {
   const FocusManager* focus_manager = view->GetFocusManager();
-  if (!focus_manager)
+  if (!focus_manager) {
     return nullptr;
+  }
   const View* focused_view = view->GetFocusManager()->GetFocusedView();
-  if (!focused_view)
+  if (!focused_view) {
     return nullptr;
+  }
 
-  std::set<raw_ptr<Widget, SetExperimental>> child_widgets;
-  Widget::GetAllOwnedWidgets(view->GetWidget()->GetNativeView(),
-                             &child_widgets);
-  const auto i = base::ranges::find_if(
-      child_widgets, [focused_view](Widget* child_widget) {
+  Widget::Widgets child_widgets =
+      Widget::GetAllOwnedWidgets(view->GetWidget()->GetNativeView());
+  const auto i =
+      std::ranges::find_if(child_widgets, [focused_view](Widget* child_widget) {
         return IsFocusedChildWidget(child_widget, focused_view);
       });
   return (i == child_widgets.cend()) ? nullptr : *i;
@@ -83,6 +84,10 @@ void ViewAccessibilityUtils::Merge(const ui::AXNodeData& source,
 
   if (!source.relative_bounds.bounds.IsEmpty()) {
     destination.relative_bounds.bounds = source.relative_bounds.bounds;
+  }
+
+  if (source.id != ui::kInvalidAXNodeID) {
+    destination.id = source.id;
   }
 
   destination.state |= source.state;

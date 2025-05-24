@@ -50,10 +50,6 @@ class LayoutSVGHiddenContainer : public LayoutSVGContainer {
  private:
   // LayoutSVGHiddenContainer paints nothing.
   void Paint(const PaintInfo&) const final { NOT_DESTROYED(); }
-  PhysicalRect VisualRectInDocument(VisualRectFlags) const final {
-    NOT_DESTROYED();
-    return PhysicalRect();
-  }
   gfx::RectF VisualRectInLocalSVGCoordinates() const final {
     NOT_DESTROYED();
     return gfx::RectF();

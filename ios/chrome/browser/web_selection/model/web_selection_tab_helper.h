@@ -69,8 +69,6 @@ class WebSelectionTabHelper
   // A timer to limit the time taken to retrieve the selection.
   base::OneShotTimer time_out_callback_;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
   base::WeakPtrFactory<WebSelectionTabHelper> weak_ptr_factory_;
 };
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.filter;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.filter.FilterCoordinator.TabType;
 import org.chromium.chrome.browser.download.internal.R;
 
@@ -21,13 +25,14 @@ import org.chromium.chrome.browser.download.internal.R;
  * A View class responsible for setting specific properties from a {@link FilterModel} to a
  * Android {@code View} hierarchy.
  */
+@NullMarked
 class FilterView {
     private final ViewGroup mView;
 
     private final TabLayout mTabsView;
     private final ViewGroup mContentContainerView;
 
-    private Callback</* @TabType */ Integer> mTabSelectedCallback;
+    private @Nullable Callback</* @TabType */ Integer> mTabSelectedCallback;
 
     /** Builds a new FilterView. */
     public FilterView(Context context) {
@@ -76,7 +81,7 @@ class FilterView {
     public void setTabSelected(@TabType int selectedType) {
         int selectedIndex = selectedType == FilterCoordinator.TabType.FILES ? 0 : 1;
         if (mTabsView.getSelectedTabPosition() == selectedIndex) return;
-        mTabsView.getTabAt(selectedIndex).select();
+        assumeNonNull(mTabsView.getTabAt(selectedIndex)).select();
     }
 
     /** Sets the callback for when one of the tabs is selected. */

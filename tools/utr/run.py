@@ -12,13 +12,15 @@ as-is to all triggered tests. Example uses:
 
 - vpython3 run.py -B $BUCKET -b $BUILDER -t $TEST compile
 - vpython3 run.py -B $BUCKET -b $BUILDER -t $TEST compile-and-test
-- vpython3 run.py -B $BUCKET -b $BUILDER -t $TEST test --gtest_filter=Test.Case
+- vpython3 run.py -B $BUCKET -b $BUILDER -t $TEST test --
+    --gtest_filter=Test.Case
 """
 
 import argparse
 import logging
 import os
 import pathlib
+import random
 import re
 import sys
 
@@ -30,6 +32,15 @@ from rich.logging import RichHandler
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
+
+_SURVEY_LINK = 'https://forms.gle/tA41evzW5goqR5WF9'
+
+
+def maybe_print_survey_link():
+  # Only print the link every 5% of runs
+  if random.random() < 0.05:
+    logging.info('Help us improve by sharing your feedback in this short '
+                 'survey: %s' % _SURVEY_LINK)
 
 
 def add_common_args(parser):
@@ -74,8 +85,8 @@ def add_common_args(parser):
       '-o',
       type=pathlib.Path,
       help='Path to the build dir to use for compilation and/or for invoking '
-      'test binaries. Will use the output path used by the builder if not '
-      'specified (likely //out/Release/).')
+      'test binaries. Will use a build dir in //out/ named after the builder '
+      'if not specified: //out/UTR${{builder_name}}')
   parser.add_argument(
       '--recipe-dir',
       '--recipe-path',
@@ -88,6 +99,31 @@ def add_common_args(parser):
   parser.add_argument('--reuse-task',
                       type=str,
                       help='Ruse the cas digest of the provided swarming task')
+  parser.add_argument(
+      '--no-siso',
+      action='store_true',
+      help='Disables the use of siso ("use_siso" GN arg) in the compile, as '
+      "well as the use of siso when isolating tests. Will use the builder's "
+      'settings if not specified.')
+  # This only applies to test commands but making it common lets us avoid
+  # breaking up flag args with positional args
+  parser.add_argument('--dimension',
+                      '-d',
+                      action='append',
+                      default=[],
+                      dest='dimensions',
+                      help='Custom swarming dimensions to apply to all the '
+                      'tests to be run. These should be in the form '
+                      '"{key}={value}". To remove an existing dimension leave '
+                      'the value empty: "{key}="')
+  parser.add_argument(
+      '--shards',
+      type=int,
+      help='Shard count override to use for all swarming tests. Increasing '
+      'shard count can make a suite finish more quickly. However, this '
+      'will change the batching of test cases which may expose failures '
+      'caused by test cases that implicitly depend on running in the same '
+      'batch as others.')
 
 
 def add_compile_args(parser):
@@ -95,11 +131,6 @@ def add_compile_args(parser):
       '--no-rbe',
       action='store_true',
       help='Disables the use of rbe ("use_remoteexec" GN arg) in the compile. '
-      "Will use the builder's settings if not specified.")
-  parser.add_argument(
-      '--no-siso',
-      action='store_true',
-      help='Disables the use of siso ("use_siso" GN arg) in the compile. '
       "Will use the builder's settings if not specified.")
   parser.add_argument(
       '--no-coverage-instrumentation',
@@ -131,43 +162,41 @@ def parse_args(args=None):
   add_common_args(parser)
   subparsers = parser.add_subparsers(dest='run_mode')
 
-  compile_subp = subparsers.add_parser(
-      'compile',
-      aliases=['build'],
-      help='Only compiles. WARNING: this mode is not yet supported.')
+  compile_subp = subparsers.add_parser('compile',
+                                       aliases=['build'],
+                                       help='Only compiles.')
   add_compile_args(compile_subp)
 
-  test_subp = subparsers.add_parser(
-      'test',
-      help='Only run/trigger tests. WARNING: this mode is not yet supported.')
+  test_subp = subparsers.add_parser('test', help='Only run/trigger tests.')
   add_test_args(test_subp)
 
   compile_and_test_subp = subparsers.add_parser(
       'compile-and-test',
       aliases=['build-and-test', 'run'],
-      help='Both compile and run/trigger tests. WARNING: this mode is not yet '
-      'supported.')
+      help='Both compile and run/trigger tests.')
   add_compile_args(compile_and_test_subp)
   add_test_args(compile_and_test_subp)
-
-  rr_subp = subparsers.add_parser(
-      'rr',
-      aliases=['rr-record', 'record'],
-      help='Compile, run tests with rr tool and upload recorded traces. '
-      'WARNING: this mode is not yet supported.')
-  add_compile_args(rr_subp)
-  add_test_args(rr_subp)
 
   args = parser.parse_args(args)
   if not args.run_mode:
     parser.print_help()
     parser.error('Please select a run_mode: compile,test,compile-and-test')
-  if args.run_mode == 'rr':
-    parser.print_help()
-    parser.error('The rr mode is not yet supported in UTR')
   if args.reuse_task and args.run_mode != 'test':
     parser.print_help()
     parser.error('reuse-task is only compatible with "test"')
+  if args.run_mode == 'compile':
+    if args.dimensions:
+      parser.error(
+          'Dimensions flags (-d) are only applicable to run modes that run '
+          'tests: test or compile-and-test.')
+    if args.shards:
+      parser.error(
+          'Shards flag (--shards) is only applicable when running tests via '
+          '"test" or "compile-and-test" run modes.')
+  if args.dimensions and any(not re.match(r'^[^=]+=.*$', d)
+                             for d in args.dimensions):
+    parser.error('Dimensions flags (-d) must be in the format {key}={value} or '
+                 '{key}= to remove an existing dimenion.')
   if not args.tests:
     # Only compile mode should default to compile all
     if args.run_mode != 'compile':
@@ -211,12 +240,18 @@ def main():
   if not builder_props:
     return 1
 
+  build_dir = args.build_dir
+  if not args.build_dir:
+    build_dir = _SRC_DIR.joinpath('out', 'UTR' + '_'.join(args.builder.split()))
+    logging.info('[cyan]Using the following build dir:[/]')
+    logging.getLogger('basic_logger').info(build_dir)
+    logging.info('')
+
   if not args.recipe_dir:
     recipes_path = cipd.fetch_recipe_bundle(project,
                                             args.verbosity).joinpath('recipes')
   else:
     recipes_path = args.recipe_dir.joinpath('recipes')
-
   skip_compile = args.run_mode == 'test'
   skip_test = args.run_mode == 'compile'
   recipe_runner = recipe.LegacyRunner(
@@ -229,16 +264,21 @@ def main():
       skip_compile,
       skip_test,
       args.force,
-      args.build_dir,
+      build_dir,
       additional_test_args=None if skip_test else args.additional_test_args,
+      swarming_dimensions=args.dimensions,
+      swarming_shards=args.shards,
       reuse_task=args.reuse_task,
       skip_coverage=not skip_compile and args.no_coverage_instrumentation,
+      no_rbe=not skip_compile and args.no_rbe,
+      no_siso=args.no_siso,
   )
   exit_code, error_msg = recipe_runner.run_recipe(
       filter_stdout=args.verbosity < 2)
   if error_msg:
     logging.error('\nUTR failure:')
     logging.error(error_msg)
+  maybe_print_survey_link()
   return exit_code
 
 

@@ -40,12 +40,14 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
   // warn developers that they're trying to rely on uncertain behavior.
   CHECK(!options.prefer_own_symbols);
 #else
-  if (options.prefer_own_symbols)
+  if (options.prefer_own_symbols) {
     flags |= RTLD_DEEPBIND;
+  }
 #endif
   void* dl = dlopen(library_path.value().c_str(), flags);
-  if (!dl && error)
+  if (!dl && error) {
     error->message = dlerror();
+  }
 
   return dl;
 }

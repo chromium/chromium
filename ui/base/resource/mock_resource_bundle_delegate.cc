@@ -6,7 +6,7 @@
 
 namespace ui {
 
-MockResourceBundleDelegate::MockResourceBundleDelegate() {}
-MockResourceBundleDelegate::~MockResourceBundleDelegate() {}
+MockResourceBundleDelegate::MockResourceBundleDelegate() = default;
+MockResourceBundleDelegate::~MockResourceBundleDelegate() = default;
 
 }  // namespace ui

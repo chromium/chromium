@@ -13,7 +13,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.graphics.Rect;
 
@@ -23,10 +22,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Unit tests for the Long Screenshot Tab Service Test. */
@@ -35,14 +35,13 @@ import org.chromium.chrome.browser.tab.Tab;
 public class LongScreenshotsTabServiceJUnitTest {
     public static final long FAKE_NATIVE_ADDR = 345L;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
     private LongScreenshotsTabService mLongScreenshotsTabService;
     @Mock private LongScreenshotsTabService.Natives mLongScreenshotsTabServiceJniMock;
     private TestCaptureProcessor mProcessor;
 
-    class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
+    static class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
         @Status private int mActualStatus;
         private boolean mProcessCapturedTabCalled;
         private long mNativeCaptureResultPtr;
@@ -69,9 +68,8 @@ public class LongScreenshotsTabServiceJUnitTest {
 
     @Before
     public void setUp() {
-        initMocks(this);
         when(mTab.getWebContents()).thenReturn(null);
-        mJniMocker.mock(LongScreenshotsTabServiceJni.TEST_HOOKS, mLongScreenshotsTabServiceJniMock);
+        LongScreenshotsTabServiceJni.setInstanceForTesting(mLongScreenshotsTabServiceJniMock);
         mProcessor = new TestCaptureProcessor();
         mLongScreenshotsTabService = new LongScreenshotsTabService(FAKE_NATIVE_ADDR);
         mLongScreenshotsTabService.setCaptureProcessor(mProcessor);

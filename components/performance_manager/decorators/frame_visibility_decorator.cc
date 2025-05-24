@@ -30,27 +30,20 @@ FrameNode::Visibility GetFrameNodeVisibility(FrameNodeImpl* frame_node,
     return FrameNode::Visibility::kNotVisible;
   }
 
-  // The main frame is always visible if its page is visible. Fenced frames are
-  // an exception, as `IsMainFrame()` returns true for them, but they aren't
-  // really the outermost frame of the frame tree.
-  if (!frame_node->parent_or_outer_document_or_embedder()) {
-    return FrameNode::Visibility::kVisible;
-  }
+  switch (frame_node->GetViewportIntersection()) {
+    case ViewportIntersection::kUnknown:
+      // Too early in the frame's lifecycle, don't know yet if it intersects
+      // with the viewport. Can't determine the visibility.
+      return FrameNode::Visibility::kUnknown;
 
-  // Too early in the frame's lifecycle, don't know yet if it intersects with
-  // the viewport. Can't determine the visibility.
-  if (!frame_node->GetViewportIntersectionState().has_value()) {
-    return FrameNode::Visibility::kUnknown;
-  }
+    case ViewportIntersection::kNotIntersecting:
+      // Does not intersects with the viewport. The frame is not visible.
+      return FrameNode::Visibility::kNotVisible;
 
-  // The frame intersects with the viewport and is thus visible.
-  if (frame_node->GetViewportIntersectionState().value() !=
-      ViewportIntersectionState::kNotIntersecting) {
-    return FrameNode::Visibility::kVisible;
+    case ViewportIntersection::kIntersecting:
+      // The frame intersects with the viewport and is thus visible.
+      return FrameNode::Visibility::kVisible;
   }
-
-  // Does not intersects with the viewport. The frame is not visible.
-  return FrameNode::Visibility::kNotVisible;
 }
 
 // Update a frame node's visibility and its children following a change in the
@@ -75,11 +68,11 @@ FrameVisibilityDecorator::~FrameVisibilityDecorator() = default;
 void FrameVisibilityDecorator::OnPassedToGraph(Graph* graph) {
   DCHECK(graph->HasOnlySystemNode());
   graph->AddPageNodeObserver(this);
-  graph->AddInitializingFrameNodeObserver(this);
+  graph->AddFrameNodeObserver(this);
 }
 
 void FrameVisibilityDecorator::OnTakenFromGraph(Graph* graph) {
-  graph->RemoveInitializingFrameNodeObserver(this);
+  graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
 }
 
@@ -115,11 +108,15 @@ void FrameVisibilityDecorator::OnIsBeingMirroredChanged(
   OnPageUserVisibilityChanged(page_node, IsBeingMirrored(page_node));
 }
 
-void FrameVisibilityDecorator::OnFrameNodeInitializing(
-    const FrameNode* frame_node) {
+void FrameVisibilityDecorator::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
   FrameNodeImpl* frame_node_impl = FrameNodeImpl::FromNode(frame_node);
   frame_node_impl->SetInitialVisibility(GetFrameNodeVisibility(
-      frame_node_impl, IsPageUserVisible(frame_node_impl->page_node())));
+      frame_node_impl, IsPageUserVisible(pending_page_node)));
 }
 
 void FrameVisibilityDecorator::OnCurrentFrameChanged(
@@ -142,10 +139,11 @@ void FrameVisibilityDecorator::OnCurrentFrameChanged(
   }
 }
 
-void FrameVisibilityDecorator::OnViewportIntersectionStateChanged(
+void FrameVisibilityDecorator::OnViewportIntersectionChanged(
     const FrameNode* frame_node) {
   CHECK(frame_node->GetParentOrOuterDocumentOrEmbedder());
-  CHECK(frame_node->GetViewportIntersectionState().has_value());
+  CHECK_NE(frame_node->GetViewportIntersection(),
+           ViewportIntersection::kUnknown);
   OnFramePropertyChanged(frame_node);
 }
 
@@ -177,6 +175,7 @@ void FrameVisibilityDecorator::OnFramePropertyChanged(
   frame_node_impl->SetVisibility(new_visibility);
 }
 
+// static
 bool FrameVisibilityDecorator::IsPageUserVisible(const PageNode* page_node) {
   return page_node->IsVisible() || IsBeingMirrored(page_node);
 }

@@ -218,8 +218,7 @@ static WTF::String StateAsDebugString(
     DEBUG_STRING_CASE(kStopped);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 WTF::String DocumentLifecycle::ToString() const {

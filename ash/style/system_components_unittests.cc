@@ -77,6 +77,8 @@ std::unique_ptr<views::Widget> CreateSystemDialogWidget(
   return dialog_widget;
 }
 
+}  // namespace
+
 // WidgetWithSystemUIComponentView ---------------------------------------------
 
 // A WidgetDelegateView with given component as the only content.
@@ -102,8 +104,6 @@ std::unique_ptr<views::Widget> CreateWidgetWithComponent(
       new WidgetWithSystemUIComponentView(std::move(component)));
 }
 
-}  // namespace
-
 using SystemComponentsTest = AshTestBase;
 
 // Tests if the tooltip text of PillButton is same with the button text, unless
@@ -114,19 +114,19 @@ TEST_F(SystemComponentsTest, PillButtonTooltip) {
       std::make_unique<PillButton>(PillButton::PressedCallback(), u"Default");
 
   // The tooltip text should be same with initial button text.
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Default");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"Default");
 
   // Changing button text will also update the tooltip text.
   pill_button->SetText(u"New Text");
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"New Text");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"New Text");
 
   // If the tooltip text is explicitly set, the tooltip text will always be use.
   pill_button->SetTooltipText(u"Tooltip");
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Tooltip");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"Tooltip");
 
   // Updating button text won't change the preset tooltip text.
   pill_button->SetText(u"Foo");
-  EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Tooltip");
+  EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"Tooltip");
 }
 
 // TODO(crbug.com/40878458): Disable for constant failure.

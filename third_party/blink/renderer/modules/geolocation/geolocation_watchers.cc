@@ -74,7 +74,7 @@ void GeolocationWatchers::Swap(GeolocationWatchers& other) {
 
 void GeolocationWatchers::CopyNotifiersToVector(
     HeapVector<Member<GeoNotifier>>& vector) const {
-  CopyValuesToVector(id_to_notifier_map_, vector);
+  vector.assign(id_to_notifier_map_.Values());
 }
 
 }  // namespace blink

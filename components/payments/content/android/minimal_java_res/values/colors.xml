@@ -7,5 +7,5 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Payments UI colors -->
-    <color name="google_pay_icon_color">@color/modern_grey_700</color>
+    <color name="google_pay_icon_color">@color/google_pay_icon_grey_dark</color>
 </resources>

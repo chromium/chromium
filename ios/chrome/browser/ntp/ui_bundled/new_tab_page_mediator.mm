@@ -10,17 +10,37 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/image_fetcher/core/image_fetcher.h"
+#import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search/search.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer_bridge.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer_bridge.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -29,20 +49,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
-#import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
-#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
-#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -55,22 +62,8 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-namespace {
-// URL for 'Manage Activity' item in the Discover feed menu.
-const char kFeedManageActivityURL[] =
-    "https://myactivity.google.com/myactivity?product=50";
-// URL for 'Manage Interests' item in the Discover feed menu.
-const char kFeedManageInterestsURL[] =
-    "https://google.com/preferences/interests/yourinterests";
-// URL for 'Manage Hidden' item in the Discover feed menu.
-const char kFeedManageHiddenURL[] =
-    "https://google.com/preferences/interests/hidden";
-// URL for 'Learn More' item in the Discover feed menu;
-const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
-                                 "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1";
-}  // namespace
-
-@interface NewTabPageMediator () <ChromeAccountManagerServiceObserver,
+@interface NewTabPageMediator () <BrowserViewVisibilityObserving,
+                                  HomeBackgroundCustomizationServiceObserving,
                                   IdentityManagerObserverBridgeDelegate,
                                   PrefObserverDelegate,
                                   SearchEngineObserving,
@@ -83,25 +76,28 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 @property(nonatomic, assign) AuthenticationService* authService;
 // This is the object that knows how to update the Identity Disc UI.
 @property(nonatomic, weak) id<UserAccountImageUpdateDelegate> imageUpdater;
-// Yes if the browser is currently in incognito mode.
-@property(nonatomic, assign) BOOL isIncognito;
 // DiscoverFeed Service to display the Feed.
 @property(nonatomic, assign) DiscoverFeedService* discoverFeedService;
 
 @end
 
 @implementation NewTabPageMediator {
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   // Listen for default search engine changes.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   // Observes changes in identity and updates the Identity Disc.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
+  // Observes changes of the browser view visibility state.
+  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
+      _browserViewVisibilityNotifierBrowserAgent;
+  // Observes changes of the feed visibility state.
+  raw_ptr<DiscoverFeedVisibilityBrowserAgent>
+      _discoverFeedVisibilityBrowserAgent;
+  std::unique_ptr<BrowserViewVisibilityObserverBridge>
+      _browserViewVisibilityObserverBridge;
   // Used to load URLs.
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   raw_ptr<PrefService> _prefService;
-  BOOL _isSafeMode;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
@@ -110,55 +106,89 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   raw_ptr<const TemplateURL> _defaultSearchEngine;
   // Sync Service.
   raw_ptr<syncer::SyncService> _syncService;
+  // Used to check feed configuration based on the country.
+  raw_ptr<regional_capabilities::RegionalCapabilitiesService>
+      _regionalCapabilitiesService;
+  // Used to get and observe the background image or other state.
+  raw_ptr<HomeBackgroundCustomizationService> _backgroundCustomizationService;
+  // Observer for the customization service.
+  std::unique_ptr<HomeBackgroundCustomizationServiceObserverBridge>
+      _backgroundCustomizationServiceObserverBridge;
+  // Used to fetch and cache images for the background.
+  raw_ptr<image_fetcher::ImageFetcherService> _imageFetcherService;
   // Observer to keep track of the syncing status.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
+  raw_ptr<signin::IdentityManager> _identityManager;
+  id<SystemIdentity> _signedInIdentity;
 }
 
 // Synthesized from NewTabPageMutator.
 @synthesize scrollPositionToSave = _scrollPositionToSave;
 
 - (instancetype)
-    initWithTemplateURLService:(TemplateURLService*)templateURLService
-                     URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                   authService:(AuthenticationService*)authService
-               identityManager:(signin::IdentityManager*)identityManager
-         accountManagerService:
-             (ChromeAccountManagerService*)accountManagerService
-      identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
-                   isIncognito:(BOOL)isIncognito
-           discoverFeedService:(DiscoverFeedService*)discoverFeedService
-                   prefService:(PrefService*)prefService
-                   syncService:(syncer::SyncService*)syncService
-                    isSafeMode:(BOOL)isSafeMode {
+            initWithTemplateURLService:(TemplateURLService*)templateURLService
+                             URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                           authService:(AuthenticationService*)authService
+                       identityManager:(signin::IdentityManager*)identityManager
+                 accountManagerService:
+                     (ChromeAccountManagerService*)accountManagerService
+              identityDiscImageUpdater:
+                  (id<UserAccountImageUpdateDelegate>)imageUpdater
+                   discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                           prefService:(PrefService*)prefService
+                           syncService:(syncer::SyncService*)syncService
+           regionalCapabilitiesService:
+               (regional_capabilities::RegionalCapabilitiesService*)
+                   regionalCapabilitiesService
+        backgroundCustomizationService:
+            (HomeBackgroundCustomizationService*)backgroundCustomizationService
+                   imageFetcherService:
+                       (image_fetcher::ImageFetcherService*)imageFetcherService
+         browserViewVisibilityNotifier:
+             (BrowserViewVisibilityNotifierBrowserAgent*)
+                 browserViewVisibilityNotifierBrowserAgent
+    discoverFeedVisibilityBrowserAgent:(DiscoverFeedVisibilityBrowserAgent*)
+                                           discoverFeedVisibilityBrowserAgent {
   self = [super init];
   if (self) {
+    CHECK(identityManager);
     CHECK(accountManagerService);
     _templateURLService = templateURLService;
     _defaultSearchEngine = templateURLService->GetDefaultSearchProvider();
     _URLLoader = URLLoader;
     _authService = authService;
     _accountManagerService = accountManagerService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
-    _identityObserverBridge.reset(
-        new signin::IdentityManagerObserverBridge(identityManager, self));
+    _identityManager = identityManager;
+    _identityObserverBridge =
+        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                                self);
+    _browserViewVisibilityNotifierBrowserAgent =
+        browserViewVisibilityNotifierBrowserAgent;
+    _browserViewVisibilityObserverBridge =
+        std::make_unique<BrowserViewVisibilityObserverBridge>(self);
     // Listen for default search engine changes.
     _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
         self, self.templateURLService);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
     _imageUpdater = imageUpdater;
-    _isIncognito = isIncognito;
     _discoverFeedService = discoverFeedService;
+    _discoverFeedVisibilityBrowserAgent = discoverFeedVisibilityBrowserAgent;
     _prefService = prefService;
-    _isSafeMode = isSafeMode;
+    _regionalCapabilitiesService = regionalCapabilitiesService;
+    _backgroundCustomizationService = backgroundCustomizationService;
+    _imageFetcherService = imageFetcherService;
+    _signedInIdentity =
+        _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   }
   return self;
 }
 
+- (BOOL)isFeedHeaderVisible {
+  return _discoverFeedVisibilityBrowserAgent->ShouldBeVisible();
+}
+
 - (void)setUp {
-  _feedHeaderVisible = [self updatedFeedHeaderVisible];
   self.templateURLService->Load();
   [self updateModuleVisibilityForConsumer];
   [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
@@ -168,12 +198,24 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   [self updateAccountImage];
   [self updateAccountErrorBadge];
   [self startObservingPrefs];
+  _browserViewVisibilityNotifierBrowserAgent->AddObserver(
+      _browserViewVisibilityObserverBridge.get());
+  _discoverFeedVisibilityBrowserAgent->AddObserver(self.feedVisibilityObserver);
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    _backgroundCustomizationServiceObserverBridge =
+        std::make_unique<HomeBackgroundCustomizationServiceObserverBridge>(
+            _backgroundCustomizationService, self);
+  }
 }
 
 - (void)shutdown {
+  _browserViewVisibilityNotifierBrowserAgent->RemoveObserver(
+      _browserViewVisibilityObserverBridge.get());
+  _discoverFeedVisibilityBrowserAgent->RemoveObserver(
+      self.feedVisibilityObserver);
   _searchEngineObserver.reset();
   _identityObserverBridge.reset();
-  _accountManagerServiceObserver.reset();
+  _browserViewVisibilityObserverBridge.reset();
   self.accountManagerService = nil;
   self.discoverFeedService = nullptr;
   _prefChangeRegistrar.reset();
@@ -181,12 +223,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _prefService = nullptr;
   _syncObserver.reset();
   _syncService = nullptr;
+  _regionalCapabilitiesService = nullptr;
+  _identityManager = nullptr;
   self.feedControlDelegate = nil;
-}
-
-- (void)handleFeedLearnMoreTapped {
-  [self.feedMetricsRecorder recordHeaderMenuLearnMoreTapped];
-  [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
+  _backgroundCustomizationServiceObserverBridge = nullptr;
+  _backgroundCustomizationService = nullptr;
+  _imageFetcherService = nullptr;
 }
 
 - (void)saveNTPStateForWebState:(web::WebState*)webState {
@@ -216,33 +258,17 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   }
 }
 
-#pragma mark - FeedManagementNavigationDelegate
+#pragma mark - BrowserViewVisibilityObserving
 
-- (void)handleNavigateToActivity {
-  [self.feedMetricsRecorder recordHeaderMenuManageActivityTapped];
-  [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
-}
-
-- (void)handleNavigateToFollowing {
-  [self.feedMetricsRecorder recordHeaderMenuManageFollowingTapped];
-  [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
-}
-
-- (void)handleNavigateToHidden {
-  [self.feedMetricsRecorder recordHeaderMenuManageHiddenTapped];
-  [self openMenuItemWebPage:GURL(kFeedManageHiddenURL)];
-}
-
-- (void)handleNavigateToFollowedURL:(const GURL&)url {
-  // TODO(crbug.com/40227407): Add metrics.
-  [self openMenuItemWebPage:url];
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)identityUpdated:(id<SystemIdentity>)identity {
-  [self updateAccountImage];
-  [self updateAccountErrorBadge];
+- (void)browserViewDidChangeToVisibilityState:
+            (BrowserViewVisibilityState)currentState
+                                    fromState:(BrowserViewVisibilityState)
+                                                  previousState {
+  if (self.discoverFeedService && self.NTPVisible &&
+      [self isFeedHeaderVisible]) {
+    self.discoverFeedService->UpdateFeedViewVisibilityState(
+        self.contentCollectionView, currentState, previousState);
+  }
 }
 
 #pragma mark - SearchEngineObserving
@@ -256,37 +282,32 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _defaultSearchEngine = updatedDefaultSearchEngine;
   [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
                                             self.templateURLService)];
-  [self setFeedHeaderVisible:[self updatedFeedHeaderVisible]];
   [self.feedControlDelegate updateFeedForDefaultSearchEngineChanged];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
-- (void)onPrimaryAccountChanged:
-    (const signin::PrimaryAccountChangeEvent&)event {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      if (self.authService->IsAccountSwitchInProgress()) {
-        break;
-      }
-      [[fallthrough]];
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-      [self updateAccountImage];
-      [self updateAccountErrorBadge];
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
+- (void)onEndBatchOfPrimaryAccountChanges {
+  _signedInIdentity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  [self updateAccountImage];
+  [self updateAccountErrorBadge];
 }
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (info.gaia != GaiaId(_signedInIdentity.gaiaID)) {
+    return;
+  }
+  [self updateAccountImage];
+  [self updateAccountErrorBadge];
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  [self setFeedHeaderVisible:[self updatedFeedHeaderVisible]];
-
   // Handle customization prefs
   if (preferenceName == prefs::kHomeCustomizationMostVisitedEnabled ||
-      preferenceName == prefs::kHomeCustomizationMagicStackEnabled ||
-      preferenceName == prefs::kArticlesForYouEnabled) {
+      preferenceName == prefs::kHomeCustomizationMagicStackEnabled) {
     [self updateModuleVisibilityForConsumer];
     [self.NTPContentDelegate updateModuleVisibility];
   }
@@ -298,23 +319,47 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   [self updateAccountErrorBadge];
 }
 
+#pragma mark - HomeBackgroundCustomizationServiceObserving
+
+- (void)onBackgroundChanged {
+  const sync_pb::ThemeSpecifics::NtpCustomBackground& background =
+      _backgroundCustomizationService->GetCurrentBackground();
+
+  GURL imageURL = GURL(background.url());
+
+  image_fetcher::ImageFetcher* imageFetcher =
+      _imageFetcherService->GetImageFetcher(
+          image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+
+  __weak __typeof(self) weakSelf = self;
+  imageFetcher->FetchImage(
+      imageURL,
+      base::BindOnce(^(const gfx::Image& image,
+                       const image_fetcher::RequestMetadata& metadata) {
+        [weakSelf handleBackgroundImageFetch:image];
+      }),
+      // TODO (crbug.com/417234848): Add annotation.
+      image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));
+}
+
 #pragma mark - Private
 
 // Fetches and update user's avatar on NTP, or use default avatar if user is
 // not signed in.
 - (void)updateAccountImage {
   // Fetches user's identity from Authentication Service.
-  id<SystemIdentity> identity =
-      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (identity) {
+  if (_signedInIdentity) {
     // Only show an avatar if the user is signed in.
     UIImage* image = self.accountManagerService->GetIdentityAvatarWithIdentity(
-        identity, IdentityAvatarSize::SmallSize);
+        _signedInIdentity, IdentityAvatarSize::SmallSize);
     [self.imageUpdater updateAccountImage:image
-                                     name:identity.userFullName
-                                    email:identity.userEmail];
+                                     name:_signedInIdentity.userFullName
+                                    email:_signedInIdentity.userEmail];
   } else {
     [self.imageUpdater setSignedOutAccountImage];
+    signin_metrics::LogSignInOffered(
+        signin_metrics::AccessPoint::kNtpSignedOutIcon,
+        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
   }
 }
 
@@ -322,26 +367,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)openMenuItemWebPage:(GURL)URL {
   _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
   // TODO(crbug.com/40693626): Add metrics.
-}
-
-// Returns an updated value for feedHeaderVisible.
-- (BOOL)updatedFeedHeaderVisible {
-  return _prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
-         _prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
-         !IsFeedAblationEnabled() &&
-         IsContentSuggestionsForSupervisedUserEnabled(_prefService) &&
-         !_isSafeMode &&
-         !ShouldHideFeedWithSearchChoice(self.templateURLService);
-}
-
-// Sets whether the feed header should be visible.
-- (void)setFeedHeaderVisible:(BOOL)feedHeaderVisible {
-  if (feedHeaderVisible == _feedHeaderVisible) {
-    return;
-  }
-
-  _feedHeaderVisible = feedHeaderVisible;
-  [self.feedControlDelegate setFeedAndHeaderVisibility:_feedHeaderVisible];
 }
 
 // Updates the consumer with the current visibility of the NTP modules.
@@ -358,15 +383,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _prefChangeRegistrar->Init(_prefService);
   _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
 
-  // Observe feed visibility prefs.
-  _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
-  _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kNTPContentSuggestionsEnabled, _prefChangeRegistrar.get());
-  _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
-      _prefChangeRegistrar.get());
-
   // Observe customization prefs.
   _prefObserverBridge->ObserveChangesForPreference(
       prefs::kHomeCustomizationMostVisitedEnabled, _prefChangeRegistrar.get());
@@ -375,17 +391,23 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 - (void)updateAccountErrorBadge {
-  if (!base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableErrorBadgeOnIdentityDisc)) {
     return;
   }
-  id<SystemIdentity> identity =
-      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   BOOL primaryIdentityHasError =
-      identity && _syncService->GetUserActionableError() !=
-                      syncer::SyncService::UserActionableError::kNone;
-  [self.headerConsumer updateADPBadgeWithErrorFound:primaryIdentityHasError
-                                               name:identity.userFullName
-                                              email:identity.userEmail];
+      _signedInIdentity && _syncService->GetUserActionableError() !=
+                               syncer::SyncService::UserActionableError::kNone;
+  [self.headerConsumer
+      updateADPBadgeWithErrorFound:primaryIdentityHasError
+                              name:_signedInIdentity.userFullName
+                             email:_signedInIdentity.userEmail];
+}
+
+// Helper method to handle the image response after fetching the background
+// image for the new tab page.
+- (void)handleBackgroundImageFetch:(const gfx::Image&)image {
+  [self.consumer setBackgroundImage:image.ToUIImage()];
 }
 
 @end

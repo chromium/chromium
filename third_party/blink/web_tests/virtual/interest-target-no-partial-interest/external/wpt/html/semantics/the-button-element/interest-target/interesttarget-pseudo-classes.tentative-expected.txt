@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] Basic pseudo class function, with keyboard focus triggering
+  assert_equals: focusing invoker shows partial interest (and therefore also interest): :has-partial-interest mismatch expected true but got false
+[FAIL] Keyboard-triggered partial focus keeps contents from being keyboard focusable
+  assert_equals: initial: :has-interest mismatch expected false but got true
+[FAIL] Show interest hotkey confers "full interest", without any delays
+  assert_equals: initial: :has-interest mismatch expected false but got true
+[FAIL] Hovering the popover confers "full interest", without any delays
+  assert_equals: initial: :has-interest mismatch expected false but got true
+[FAIL] Hovering the invoker confers "full interest", without any delays
+  assert_equals: initial: :has-interest mismatch expected false but got true
+[FAIL] With full interest, contents are keyboard focusable
+  assert_equals: initial: :has-interest mismatch expected false but got true
+[FAIL] Lose interest hotkey works
+  assert_equals: initial: :has-interest mismatch expected false but got true
+[FAIL] Closing the target popover loses interest, without any delays (keyboard activation)
+  assert_equals: initial: :has-interest mismatch expected false but got true
+[FAIL] Closing the target popover loses interest, without any delays (mouse activation)
+  assert_equals: initial: :has-interest mismatch expected false but got true
+[FAIL] The pseudo classes only match after delays, once interest is shown
+  assert_equals: initial: :has-interest mismatch expected false but got true
+Harness: the test ran to completion.
+

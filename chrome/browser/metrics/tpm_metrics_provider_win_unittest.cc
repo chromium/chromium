@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
@@ -36,7 +35,6 @@ void VerifyNonEmptySystemProfileTPMData(
 class TPMMetricsProviderTest : public testing::Test {
  public:
   TPMMetricsProviderTest() {
-    scoped_feature_list_.InitAndEnableFeature(kReportFullTPMIdentifierDetails);
     mojo::PendingRemote<chrome::mojom::UtilWin> remote;
     util_win_impl_.emplace(remote.InitWithNewPipeAndPassReceiver());
     provider_.SetRemoteUtilWinForTesting(std::move(remote));
@@ -64,7 +62,6 @@ class TPMMetricsProviderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::optional<UtilWinImpl> util_win_impl_;
   TPMMetricsProvider provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TPMMetricsProviderTest, GetMetricsFullName) {

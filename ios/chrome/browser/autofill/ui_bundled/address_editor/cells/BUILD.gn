@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cells") {
+  sources = [
+    "autofill_edit_profile_button_footer_item.h",
+    "autofill_edit_profile_button_footer_item.mm",
+    "autofill_profile_edit_item.h",
+    "autofill_profile_edit_item.mm",
+    "country_item.h",
+    "country_item.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/common/ui/util",
+  ]
+}

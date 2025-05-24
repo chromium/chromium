@@ -74,12 +74,12 @@ TEST_F(InstantServiceTest, TestNoNtpTheme) {
 
 class InstantServiceThemeTest : public InstantServiceTest {
  public:
-  InstantServiceThemeTest() {}
+  InstantServiceThemeTest() = default;
 
   InstantServiceThemeTest(const InstantServiceThemeTest&) = delete;
   InstantServiceThemeTest& operator=(const InstantServiceThemeTest&) = delete;
 
-  ~InstantServiceThemeTest() override {}
+  ~InstantServiceThemeTest() override = default;
 
   ui::TestNativeTheme* theme() { return &theme_; }
 

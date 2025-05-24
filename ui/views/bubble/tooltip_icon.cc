@@ -88,7 +88,7 @@ void TooltipIcon::OnFocus() {
   ShowBubble();
 #if BUILDFLAG(IS_WIN)
   // Tooltip text does not announce on Windows; crbug.com/1245470
-  NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
 #endif
 }
 
@@ -135,8 +135,9 @@ void TooltipIcon::SetDrawAsHovered(bool hovered) {
 }
 
 void TooltipIcon::ShowBubble() {
-  if (bubble_)
+  if (bubble_) {
     return;
+  }
 
   SetDrawAsHovered(true);
 
@@ -160,8 +161,9 @@ void TooltipIcon::ShowBubble() {
 }
 
 void TooltipIcon::HideBubble() {
-  if (bubble_)
+  if (bubble_) {
     bubble_->Hide();
+  }
 }
 
 void TooltipIcon::OnWidgetDestroyed(Widget* widget) {

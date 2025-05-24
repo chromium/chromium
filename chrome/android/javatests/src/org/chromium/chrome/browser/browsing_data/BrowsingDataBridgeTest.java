@@ -10,26 +10,41 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
@@ -40,8 +55,9 @@ import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -60,13 +76,16 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class BrowsingDataBridgeTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    private static final String TEST_FILE_PATH_1 = "/chrome/test/data/browsing_data/a.html";
+    private static final String TEST_FILE_PATH_2 = "/chrome/test/data/browsing_data/b.html";
 
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private BrowsingDataBridge.Natives mBrowsingDataBridgeJniMock;
 
     private CallbackHelper mCallbackHelper;
     private BrowsingDataBridge.OnClearBrowsingDataListener mListener;
@@ -77,7 +96,7 @@ public class BrowsingDataBridgeTest {
     public void setUp() throws Exception {
         mCallbackHelper = new CallbackHelper();
         mListener = mCallbackHelper::notifyCalled;
-        mTestServer = sActivityTestRule.getTestServer();
+        mTestServer = mActivityTestRule.getTestServer();
         mActionTester = new UserActionTester();
     }
 
@@ -267,23 +286,26 @@ public class BrowsingDataBridgeTest {
     @Test
     @MediumTest
     public void testFrozenNavigationDeletion() throws Exception {
-        final String url1 = mTestServer.getURL("/chrome/test/data/browsing_data/a.html");
-        final String url2 = mTestServer.getURL("/chrome/test/data/browsing_data/b.html");
+        final String url1 = mTestServer.getURL(TEST_FILE_PATH_1);
+        final String url2 = mTestServer.getURL(TEST_FILE_PATH_2);
 
         // Navigate to url1 and url2, close and recreate as frozen tab.
-        Tab tab = sActivityTestRule.loadUrlInNewTab(url1);
-        sActivityTestRule.loadUrl(url2);
+        Tab tab = mActivityTestRule.loadUrlInNewTab(url1);
+        mActivityTestRule.loadUrl(url2);
         Tab[] frozen = new Tab[1];
         WebContents[] restored = new WebContents[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState state = TabStateExtractor.from(tab);
-                    sActivityTestRule
+                    mActivityTestRule
                             .getActivity()
                             .getCurrentTabModel()
-                            .closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
                     frozen[0] =
-                            sActivityTestRule
+                            mActivityTestRule
                                     .getActivity()
                                     .getCurrentTabCreator()
                                     .createFrozenTab(state, tab.getId(), 1);
@@ -334,7 +356,7 @@ public class BrowsingDataBridgeTest {
     public void testInitialNavigationEntryNotPersisted() throws Exception {
         TestWebServer webServer = TestWebServer.start();
         final String noContentUrl = webServer.setResponseWithNoContentStatus("/nocontent.html");
-        Tab tab = sActivityTestRule.loadUrlInNewTab(noContentUrl);
+        Tab tab = mActivityTestRule.loadUrlInNewTab(noContentUrl);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertNull(
@@ -347,12 +369,12 @@ public class BrowsingDataBridgeTest {
     @Test
     @MediumTest
     public void testNavigationDeletion() throws Exception {
-        final String url1 = mTestServer.getURL("/chrome/test/data/browsing_data/a.html");
-        final String url2 = mTestServer.getURL("/chrome/test/data/browsing_data/b.html");
+        final String url1 = mTestServer.getURL(TEST_FILE_PATH_1);
+        final String url2 = mTestServer.getURL(TEST_FILE_PATH_2);
 
         // Navigate to url1 and url2.
-        Tab tab = sActivityTestRule.loadUrlInNewTab(url1);
-        sActivityTestRule.loadUrl(url2);
+        Tab tab = mActivityTestRule.loadUrlInNewTab(url1);
+        mActivityTestRule.loadUrl(url2);
         NavigationController controller = tab.getWebContents().getNavigationController();
         assertTrue(tab.canGoBack());
         assertEquals(1, controller.getLastCommittedEntryIndex());
@@ -440,6 +462,54 @@ public class BrowsingDataBridgeTest {
         Assert.assertEquals("", storage.getScope());
         Assert.assertEquals("", storage.getUrl());
         Assert.assertEquals(0, storage.getLastUsedTimeMs());
+    }
+
+    /**
+     * Tests that the HaTS survey is triggered once on the next page load on any window when
+     * requested.
+     */
+    @Test
+    @MediumTest
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R) // https://crbug.com/1297370
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
+    public void testHatsSurveyTriggeredOnNextPageLoad() {
+        BrowsingDataBridgeJni.setInstanceForTesting(mBrowsingDataBridgeJniMock);
+        doNothing().when(mBrowsingDataBridgeJniMock).triggerHatsSurvey(any(), any(), anyBoolean());
+
+        final String url = mTestServer.getURL(TEST_FILE_PATH_1);
+
+        final ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
+        final ChromeTabbedActivity secondActivity =
+                MultiWindowTestHelper.createSecondChromeTabbedActivity(firstActivity);
+
+        // Wait for the second window to be fully initialized.
+        CriteriaHelper.pollUiThread(
+                () -> secondActivity.getTabModelSelector().isTabStateInitialized());
+
+        // Request the survey and start the observers.
+        ThreadUtils.runOnUiThreadBlocking(() -> getBrowsingDataBridge().requestHatsSurvey(false));
+
+        // Create a new tab in the first activity's TabModel and load a URL.
+        ChromeTabUtils.fullyLoadUrlInNewTab(
+                InstrumentationRegistry.getInstrumentation(),
+                firstActivity,
+                url,
+                /* incognito= */ false);
+
+        // Survey should be triggered on the first activity.
+        WebContents firstWebContents = firstActivity.getCurrentWebContents();
+        verify(mBrowsingDataBridgeJniMock, times(1))
+                .triggerHatsSurvey(any(), eq(firstWebContents), eq(false));
+
+        // Create a new tab in the second activity's TabModel and load a URL.
+        ChromeTabUtils.fullyLoadUrlInNewTab(
+                InstrumentationRegistry.getInstrumentation(),
+                secondActivity,
+                url,
+                /* incognito= */ false);
+
+        // No new Survey should be triggered on the second activity.
+        verify(mBrowsingDataBridgeJniMock, times(1)).triggerHatsSurvey(any(), any(), anyBoolean());
     }
 
     private List<String> getUrls(NavigationController controller) {

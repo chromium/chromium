@@ -87,7 +87,8 @@ suite('PaymentsSectionIban', function() {
       showIbansSettings: false,
     });
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
+        /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        {credit_card_enabled: {value: true}});
     const addPaymentMethodsButton =
         section.shadowRoot!.querySelector<CrButtonElement>(
             '#addPaymentMethods');
@@ -101,7 +102,8 @@ suite('PaymentsSectionIban', function() {
 
   test('verifyAddCardOrIbanPaymentMenu', async function() {
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
+        /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        {credit_card_enabled: {value: true}});
     const addPaymentMethodsButton =
         section.shadowRoot!.querySelector<CrButtonElement>(
             '#addPaymentMethods');
@@ -125,28 +127,61 @@ suite('PaymentsSectionIban', function() {
     const iban1 = createIbanEntry();
     const iban2 = createIbanEntry();
     await createPaymentsSection(
-        /*creditCards=*/[], [iban1, iban2], /*prefValues=*/ {});
+        /*creditCards=*/[], [iban1, iban2], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
 
     assertEquals(2, getIbanListItems().length);
   });
 
+  test(
+      'verifyIbanSummarySublabelWithNickname_newFopDisplayFlagOff',
+      async function() {
+        loadTimeData.overrideValues({
+          enableNewFopDisplay: false,
+        });
+        const iban =
+            createIbanEntry('BA393385804800211234', 'My doctor\'s IBAN');
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
+
+        assertEquals(1, getIbanListItems().length);
+
+        const ibanItemLabel = getIbanRowShadowRoot(section.$.paymentsList)
+                                  .querySelector<HTMLElement>('#label');
+        const ibanItemSubLabel = getIbanRowShadowRoot(section.$.paymentsList)
+                                     .querySelector<HTMLElement>('#subLabel');
+
+        assertTrue(!!ibanItemLabel);
+        assertTrue(!!ibanItemSubLabel);
+        assertEquals(
+            'BA39 **** **** **** 1234', ibanItemLabel.textContent!.trim());
+        assertEquals('My doctor\'s IBAN', ibanItemSubLabel.textContent!.trim());
+      });
+
   test('verifyIbanSummarySublabelWithNickname', async function() {
+    loadTimeData.overrideValues({
+      enableNewFopDisplay: true,
+    });
     const iban = createIbanEntry('BA393385804800211234', 'My doctor\'s IBAN');
 
     const section = await createPaymentsSection(
-        /*creditCards=*/[], [iban], /*prefValues=*/ {});
+        /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
 
     assertEquals(1, getIbanListItems().length);
 
-    const ibanItemValue = getIbanRowShadowRoot(section.$.paymentsList)
-                              .querySelector<HTMLElement>('#value');
-    const ibanItemNickname = getIbanRowShadowRoot(section.$.paymentsList)
-                                 .querySelector<HTMLElement>('#nickname');
+    const ibanItemLabel = getIbanRowShadowRoot(section.$.paymentsList)
+                              .querySelector<HTMLElement>('#label');
+    const ibanItemSubLabel = getIbanRowShadowRoot(section.$.paymentsList)
+                                 .querySelector<HTMLElement>('#subLabel');
 
-    assertTrue(!!ibanItemValue);
-    assertTrue(!!ibanItemNickname);
-    assertEquals('BA39 **** **** **** 1234', ibanItemValue.textContent!.trim());
-    assertEquals('My doctor\'s IBAN', ibanItemNickname.textContent!.trim());
+    assertTrue(!!ibanItemLabel);
+    assertTrue(!!ibanItemSubLabel);
+    assertEquals('My doctor\'s IBAN', ibanItemLabel.textContent!.trim());
+    assertEquals(
+        'BA39 **** **** **** 1234', ibanItemSubLabel.textContent!.trim());
   });
 
   test('verifySavingNewIBAN', async function() {
@@ -267,7 +302,7 @@ suite('PaymentsSectionIban', function() {
   test('verifyLocalIbanMenu', async function() {
     const iban = createIbanEntry();
     const section = await createPaymentsSection(
-        /*creditCards=*/[], [iban],
+        /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     assertEquals(1, getIbanListItems().length);
 
@@ -282,7 +317,7 @@ suite('PaymentsSectionIban', function() {
     assertTrue(!!menuEditIban);
     assertTrue(!!menuRemoveIban);
     assertFalse(menuEditIban.hidden);
-    assertFalse(menuRemoveIban!.hidden);
+    assertFalse(menuRemoveIban.hidden);
 
     flush();
   });
@@ -291,7 +326,8 @@ suite('PaymentsSectionIban', function() {
     const iban = createIbanEntry('FI1410093000123458', 'NickName');
 
     const section = await createPaymentsSection(
-        /*creditCards=*/[], [iban], /*prefValues=*/ {});
+        /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getIbanListItems().length);
 
     const rowShadowRoot = getIbanRowShadowRoot(section.$.paymentsList);
@@ -334,7 +370,8 @@ suite('PaymentsSectionIban', function() {
     const iban = createIbanEntry();
 
     const section = await createPaymentsSection(
-        /*creditCards=*/[], [iban], /*prefValues=*/ {});
+        /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getIbanListItems().length);
 
     const rowShadowRoot = getIbanRowShadowRoot(section.$.paymentsList);
@@ -376,7 +413,8 @@ suite('PaymentsSectionIban', function() {
     const iban = createIbanEntry();
     iban.metadata!.isLocal = false;
     const section = await createPaymentsSection(
-        /*creditCards=*/[], [iban], /*prefValues=*/ {});
+        /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getIbanListItems().length);
     assertTrue(
         isVisible(getIbanRowShadowRoot(section.$.paymentsList)
@@ -387,7 +425,8 @@ suite('PaymentsSectionIban', function() {
     const iban = createIbanEntry();
     iban.metadata!.isLocal = false;
     const section = await createPaymentsSection(
-        /*creditCards=*/[], [iban], /*prefValues=*/ {});
+        /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getIbanListItems().length);
     const rowShadowRoot = getIbanRowShadowRoot(section.$.paymentsList);
     const menuButton = rowShadowRoot.querySelector('#ibanMenu');

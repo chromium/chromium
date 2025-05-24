@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.trichromelibrary"
-    platformBuildVersionCode="35"
-    platformBuildVersionName="15"
+    platformBuildVersionCode="36"
+    platformBuildVersionName="16"
     android:versionCode="OFFSET=33"
     android:versionName="#.#.#.#">
   <uses-feature android:glEsVersion="0x00020000"/>

@@ -14,7 +14,12 @@ struct SVGLayoutInfo {
 };
 
 struct SVGLayoutResult {
-  bool bounds_changed = false;
+  SVGLayoutResult() = delete;
+  SVGLayoutResult(bool bounds_changed, bool has_viewport_dependence)
+      : bounds_changed(bounds_changed),
+        has_viewport_dependence(has_viewport_dependence) {}
+  bool bounds_changed;
+  bool has_viewport_dependence;
 };
 
 }  // namespace blink

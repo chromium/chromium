@@ -34,7 +34,7 @@ async function getDialog(): Promise<XfBulkPinningDialog> {
 
 
 // Gets a footer of the given dialog.
-function getFooter(dialog: XfBulkPinningDialog, id: string): HTMLDivElement {
+function getFooter(dialog: XfBulkPinningDialog, id: string): HTMLElement {
   return dialog.shadowRoot!.querySelector(`#${id}`)!;
 }
 

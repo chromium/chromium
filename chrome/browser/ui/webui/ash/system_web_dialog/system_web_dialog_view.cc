@@ -23,14 +23,15 @@ SystemWebDialogView::SystemWebDialogView(
                            std::move(handler),
                            web_contents) {}
 
-void SystemWebDialogView::UpdateWindowRoundedCorners(int corner_radius) {
+void SystemWebDialogView::UpdateWindowRoundedCorners(
+    const gfx::RoundedCornersF& window_radii) {
   gfx::RoundedCornersF radii;
 
   if (GetWebDialogFrameKind() == FrameKind::kDialog && GetBubbleFrameView()) {
     const auto* frame_view = GetBubbleFrameView();
 
     const bool round_top_corners =
-        frame_view->GetClientViewInsets().top() < corner_radius;
+        frame_view->GetClientViewInsets().top() < window_radii.upper_left();
 
     // If the frame kind of a dialog is FrameKind::kDialog, BubbleFrameView is
     // used as a frame for the dialog. For windows with BubbleFrameView, we draw
@@ -40,16 +41,17 @@ void SystemWebDialogView::UpdateWindowRoundedCorners(int corner_radius) {
     // straight line. If there are no decorations above client_view (i.e no
     // insets from frame), the rounded border will be just below the webview and
     // the top corners  of webview must match the radius of rounded border.
-    radii.set_upper_left(round_top_corners ? corner_radius : 0);
-    radii.set_upper_right(round_top_corners ? corner_radius : 0);
+    radii.set_upper_left(round_top_corners ? window_radii.upper_left() : 0);
+    radii.set_upper_right(round_top_corners ? window_radii.upper_right() : 0);
 
     const bool round_bottom_corners = frame_view->GetFootnoteView() == nullptr;
 
     // For BubbleFrameView, if footnote view is present, the footnote view will
     // be rounded alongside the border by BubbleFrameView. The client_view will
     // be a straight line and in turn webview should not have rounded corners.
-    radii.set_lower_left(round_bottom_corners ? corner_radius : 0);
-    radii.set_lower_right(round_bottom_corners ? corner_radius : 0);
+    radii.set_lower_left(round_bottom_corners ? window_radii.lower_left() : 0);
+    radii.set_lower_right(round_bottom_corners ? window_radii.lower_right()
+                                               : 0);
   } else {
     // If the frame kind of a dialog is FrameKind::kDialog,
     // NonClientFrameViewAsh is used as a frame for the dialog. For windows with
@@ -57,8 +59,8 @@ void SystemWebDialogView::UpdateWindowRoundedCorners(int corner_radius) {
     // rounded by the header in NonClientFrameViewAsh, therefore to round the
     // bottom corners of the dialog, we need to round the bottom corners of the
     // webview.
-    radii.set_lower_left(corner_radius);
-    radii.set_lower_right(corner_radius);
+    radii.set_lower_left(window_radii.lower_left());
+    radii.set_lower_right(window_radii.lower_right());
   }
 
   SetWebViewCornersRadii(radii);

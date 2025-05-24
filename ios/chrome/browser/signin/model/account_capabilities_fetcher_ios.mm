@@ -7,6 +7,7 @@
 #import <map>
 #import <optional>
 
+#import "base/containers/to_vector.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -14,11 +15,6 @@
 
 namespace ios {
 namespace {
-
-// Converts the vector of string to a set of string.
-std::set<std::string> SetFromVector(const std::vector<std::string>& strings) {
-  return std::set<std::string>(strings.begin(), strings.end());
-}
 
 // Converts the value returned by SystemIdentityManager::FetchCapabilities()
 // to the format expected from CompleteFetchAndMaybeDestroySelf().
@@ -58,7 +54,8 @@ AccountCapabilitiesFetcherIOS::AccountCapabilitiesFetcherIOS(
 
 void AccountCapabilitiesFetcherIOS::StartImpl() {
   id<SystemIdentity> identity =
-      account_manager_service_->GetIdentityWithGaiaID(account_info().gaia);
+      account_manager_service_->GetIdentityOnDeviceWithGaiaID(
+          account_info().gaia);
 
   // If the `account_manager_service_` and system identity manager are out of
   // sync the `identity` may not have been written yet to the latter. In this
@@ -75,7 +72,8 @@ void AccountCapabilitiesFetcherIOS::StartImpl() {
 
   GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
       identity,
-      SetFromVector(AccountCapabilities::GetSupportedAccountCapabilityNames()),
+      base::ToVector(AccountCapabilities::GetSupportedAccountCapabilityNames(),
+                     [](std::string_view sv) { return std::string(sv); }),
       std::move(callback));
 }
 

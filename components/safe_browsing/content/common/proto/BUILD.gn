@@ -5,8 +5,6 @@
 import("//components/safe_browsing/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-if (safe_browsing_mode != 0) {
-  proto_library("download_file_types_proto") {
-    sources = [ "download_file_types.proto" ]
-  }
+proto_library("download_file_types_proto") {
+  sources = [ "download_file_types.proto" ]
 }

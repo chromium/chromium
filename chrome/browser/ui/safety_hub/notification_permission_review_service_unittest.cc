@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 
+#include <array>
 #include <memory>
 
 #include "base/run_loop.h"
@@ -27,13 +28,20 @@
 #include "url/gurl.h"
 
 class NotificationPermissionReviewServiceTest : public testing::Test {
+  void SetUp() override {
+    testing::Test::SetUp();
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+  }
+
  protected:
   void CreateMockNotificationPermissionsForReview() {
     // Add a couple of notification permission and check they appear in review
     // list.
-    GURL urls[] = {GURL("https://google.com:443"),
-                   GURL("https://www.youtube.com:443"),
-                   GURL("https://www.example.com:443")};
+    auto urls = std::to_array<GURL>({
+        GURL("https://google.com:443"),
+        GURL("https://www.youtube.com:443"),
+        GURL("https://www.example.com:443"),
+    });
 
     auto* site_engagement_service =
         site_engagement::SiteEngagementServiceFactory::GetForProfile(profile());
@@ -114,8 +122,11 @@ class NotificationPermissionReviewServiceTest : public testing::Test {
 
 TEST_F(NotificationPermissionReviewServiceTest,
        IgnoreOriginForNotificationPermissionReview) {
-  std::string urls[] = {"https://google.com:443", "https://www.youtube.com:443",
-                        "https://www.example.com:443"};
+  auto urls = std::to_array<std::string>({
+      "https://google.com:443",
+      "https://www.youtube.com:443",
+      "https://www.example.com:443",
+  });
   SetNotificationPermissionAndRecordEngagement(GURL(urls[0]),
                                                CONTENT_SETTING_ALLOW, 1);
   SetNotificationPermissionAndRecordEngagement(GURL(urls[1]),
@@ -204,8 +215,11 @@ TEST_F(NotificationPermissionReviewServiceTest, SingleOriginTest) {
 
 TEST_F(NotificationPermissionReviewServiceTest,
        ShowOnlyGrantedNotificationPermissions) {
-  GURL urls[] = {GURL("https://google.com/"), GURL("https://www.youtube.com/"),
-                 GURL("https://www.example.com/")};
+  auto urls = std::to_array<GURL>({
+      GURL("https://google.com/"),
+      GURL("https://www.youtube.com/"),
+      GURL("https://www.example.com/"),
+  });
   SetNotificationPermissionAndRecordEngagement(urls[0], CONTENT_SETTING_ALLOW,
                                                1);
   SetNotificationPermissionAndRecordEngagement(urls[1], CONTENT_SETTING_BLOCK,
@@ -356,9 +370,6 @@ TEST_F(NotificationPermissionReviewServiceTest, ResultWarrantsNewNotification) {
 }
 
 TEST_F(NotificationPermissionReviewServiceTest, UpdateAsync) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(features::kSafetyHub);
-
   auto* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
 
@@ -391,9 +402,6 @@ TEST_F(NotificationPermissionReviewServiceTest, UpdateAsync) {
 }
 
 TEST_F(NotificationPermissionReviewServiceTest, LatestResultInSync) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(features::kSafetyHub);
-
   // Create mock notifications before the service is started.
   CreateMockNotificationPermissionsForReview();
 
@@ -464,4 +472,43 @@ TEST_F(NotificationPermissionReviewServiceTest,
   type = hcsm()->GetContentSetting(GURL(pattern.ToString()), GURL(),
                                    ContentSettingsType::NOTIFICATIONS);
   ASSERT_EQ(CONTENT_SETTING_ASK, type);
+}
+
+TEST_F(NotificationPermissionReviewServiceTest,
+       DisruptiveNotificationRevocationShadowRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kSafetyHubDisruptiveNotificationRevocation,
+      {
+          {features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
+           "true"},
+      });
+
+  CreateMockNotificationPermissionsForReview();
+
+  auto* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
+  const auto& notification_permissions =
+      service->PopulateNotificationPermissionReviewData();
+  // Check if the results are returned.
+  EXPECT_EQ(2UL, notification_permissions.size());
+}
+
+TEST_F(NotificationPermissionReviewServiceTest,
+       DisruptiveNotificationRevocation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kSafetyHubDisruptiveNotificationRevocation,
+      {
+          {features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
+           "false"},
+      });
+
+  CreateMockNotificationPermissionsForReview();
+  auto* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
+  const auto& notification_permissions =
+      service->PopulateNotificationPermissionReviewData();
+  // Check that no permissions are returned.
+  EXPECT_EQ(0UL, notification_permissions.size());
 }

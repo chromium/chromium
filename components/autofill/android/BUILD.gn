@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -43,10 +42,6 @@ source_set("unit_tests") {
 
 java_strings_grd("autofill_strings_grd") {
   grd_file = "java/strings/autofill_strings.grd"
-  outputs = [ "values/autofill_strings.xml" ] +
-            process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/autofill_strings.xml" ])
 }
 
 android_resources("autofill_payments_java_resources") {
@@ -176,27 +171,40 @@ android_resources("autofill_java_resources") {
   ]
 }
 
+# This target is only used by the Chrome browser and not included into the
+# WebView targets.
+android_resources("autofill_browser_resources") {
+  sources = [
+    "browser/java/res/drawable/autofill_chevron_right.xml",
+    "browser/java/res/drawable/autofill_external_link.xml",
+    "browser/java/res/drawable/home_logo.xml",
+    "browser/java/res/drawable/location_on_logo.xml",
+    "browser/java/res/drawable/work_logo.xml",
+  ]
+}
+
 java_cpp_enum("autofill_core_browser_java_enums") {
   sources = [
-    "../core/browser/data_model/autofill_profile.h",
-    "../core/browser/data_model/autofill_structured_address_component.h",
-    "../core/browser/data_model/credit_card.h",
-    "../core/browser/data_model/iban.h",
+    "../core/browser/data_model/addresses/autofill_profile.h",
+    "../core/browser/data_model/addresses/autofill_structured_address_component.h",
+    "../core/browser/data_model/payments/credit_card.h",
+    "../core/browser/data_model/payments/iban.h",
     "../core/browser/field_types.h",
+    "../core/browser/metrics/payments/iban_metrics.h",
     "../core/browser/metrics/payments/mandatory_reauth_metrics.h",
     "../core/browser/metrics/payments/virtual_card_enrollment_metrics.h",
     "../core/browser/payments/card_unmask_challenge_option.h",
+    "../core/browser/suggestions/suggestion.h",
+    "../core/browser/suggestions/suggestion_type.h",
     "../core/browser/ui/autofill_image_fetcher_base.h",
-    "../core/browser/ui/payments/payments_bubble_closed_reasons.h",
-    "../core/browser/ui/suggestion.h",
-    "../core/browser/ui/suggestion_type.h",
+    "../core/browser/ui/payments/payments_ui_closed_reasons.h",
   ]
 }
 
 java_cpp_enum("payments_autofill_core_browser_java_enums") {
   sources = [
-    "../core/browser/data_model/bank_account.h",
-    "../core/browser/data_model/payment_instrument.h",
+    "../core/browser/data_model/payments/bank_account.h",
+    "../core/browser/data_model/payments/payment_instrument.h",
   ]
 }
 
@@ -233,11 +241,15 @@ android_library("main_autofill_java") {
   ]
   sources = [
     "java/src/org/chromium/components/autofill/AddressNormalizer.java",
+    "java/src/org/chromium/components/autofill/AutofillAddressEditorUiInfo.java",
+    "java/src/org/chromium/components/autofill/AutofillAddressUiComponent.java",
     "java/src/org/chromium/components/autofill/AutofillDelegate.java",
     "java/src/org/chromium/components/autofill/AutofillDropdownAdapter.java",
     "java/src/org/chromium/components/autofill/AutofillPopup.java",
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
     "java/src/org/chromium/components/autofill/AutofillSuggestion.java",
+    "java/src/org/chromium/components/autofill/DropdownKeyValue.java",
+    "java/src/org/chromium/components/autofill/LoyaltyCard.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
   srcjar_deps = [
@@ -250,7 +262,11 @@ android_library("main_autofill_java") {
 generate_jni("main_autofill_jni_headers") {
   sources = [
     "java/src/org/chromium/components/autofill/AddressNormalizer.java",
+    "java/src/org/chromium/components/autofill/AutofillAddressEditorUiInfo.java",
+    "java/src/org/chromium/components/autofill/AutofillAddressUiComponent.java",
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
+    "java/src/org/chromium/components/autofill/DropdownKeyValue.java",
+    "java/src/org/chromium/components/autofill/LoyaltyCard.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
 }
@@ -265,20 +281,28 @@ android_library("autofill_switches_java") {
   srcjar_deps = [ ":java_switches_srcjar" ]
 }
 
+android_library("payments_interfaces_java") {
+  sources = [
+    "java/src/org/chromium/components/autofill/Completable.java",
+    "java/src/org/chromium/components/autofill/EditableOption.java",
+  ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
+
 # A library containing the minimal deps for payments, so that ui_java_resources
 # doesn't have to be pulled in.
 android_library("payments_autofill_java") {
   sources = [
-    "java/src/org/chromium/components/autofill/Completable.java",
-    "java/src/org/chromium/components/autofill/EditableOption.java",
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/BankAccount.java",
     "java/src/org/chromium/components/autofill/payments/CardDetail.java",
+    "java/src/org/chromium/components/autofill/payments/Ewallet.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
     "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
   ]
   deps = [
+    ":payments_interfaces_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -296,6 +320,7 @@ robolectric_library("payments_autofill_junit_tests") {
     "javatests/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfoTest.java",
     "javatests/src/org/chromium/components/autofill/payments/BankAccountTest.java",
     "javatests/src/org/chromium/components/autofill/payments/CardDetailTest.java",
+    "javatests/src/org/chromium/components/autofill/payments/EwalletTest.java",
     "javatests/src/org/chromium/components/autofill/payments/LegalMessageLineTest.java",
     "javatests/src/org/chromium/components/autofill/payments/PaymentInstrumentTest.java",
   ]
@@ -318,6 +343,7 @@ generate_jni("payments_jni_headers") {
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/BankAccount.java",
+    "java/src/org/chromium/components/autofill/payments/Ewallet.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
     "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
   ]

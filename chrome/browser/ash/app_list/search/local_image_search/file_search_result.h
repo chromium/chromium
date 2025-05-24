@@ -20,8 +20,8 @@ struct FileSearchResult {
   // query matches the file's annotation.
   double relevance;
 
-  FileSearchResult(const base::FilePath& file_path,
-                   const base::Time& last_modified,
+  FileSearchResult(base::FilePath file_path,
+                   base::Time last_modified,
                    double relevance);
 
   ~FileSearchResult();

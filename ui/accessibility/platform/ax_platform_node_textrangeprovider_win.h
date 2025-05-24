@@ -91,6 +91,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
   IFACEMETHODIMP GetChildren(SAFEARRAY** children) override;
 
   AXPlatformNodeWin* GetOwner() const;
+  AXPlatformNodeDelegate* GetDelegate() const;
   void SetOwnerForTesting(AXPlatformNodeWin* owner);
 
  private:
@@ -162,7 +163,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
                                         const int count,
                                         int* units_moved);
   AXPositionInstance MoveEndpointByFormat(const AXPositionInstance& endpoint,
-                                          const bool is_start_endpoint,
                                           const int count,
                                           int* units_moved);
   AXPositionInstance MoveEndpointByDocument(const AXPositionInstance& endpoint,

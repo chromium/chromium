@@ -47,13 +47,9 @@ class MODULES_EXPORT HtmlVideoElementCapturerSource final
 
   // VideoCapturerSource Implementation.
   media::VideoCaptureFormats GetPreferredFormats() override;
-  void StartCapture(
-      const media::VideoCaptureParams& params,
-      const VideoCaptureDeliverFrameCB& new_frame_callback,
-      const VideoCaptureSubCaptureTargetVersionCB&
-          sub_capture_target_version_callback,
-      const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
-      const RunningCallback& running_callback) override;
+  void StartCapture(const media::VideoCaptureParams& params,
+                    VideoCaptureCallbacks video_capture_callbacks,
+                    VideoCaptureRunningCallbackCB running_callback) override;
   void StopCapture() override;
 
  private:
@@ -70,7 +66,7 @@ class MODULES_EXPORT HtmlVideoElementCapturerSource final
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // These three configuration items are passed on StartCapture();
-  RunningCallback running_callback_;
+  VideoCaptureRunningCallbackCB running_callback_;
   VideoCaptureDeliverFrameCB new_frame_callback_;
   double capture_frame_rate_;
 

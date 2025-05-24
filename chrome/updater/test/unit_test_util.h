@@ -29,7 +29,7 @@ enum class UpdaterScope;
 
 namespace updater::test {
 
-extern const char kChromeAppId[];
+inline constexpr char kChromeAppId[] = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
 
 // Returns true if a process based on the named executable and optional filter
 // is running.
@@ -62,7 +62,7 @@ std::string GetTestName();
 // - the file does not exist.
 // - the directory is not empty.
 bool DeleteFileAndEmptyParentDirectories(
-    const std::optional<base::FilePath>& file_path);
+    std::optional<base::FilePath> file_path);
 
 // Fetches the path to the ${ISOLATED_OUTDIR} env var.
 // ResultDB reads logs and test artifacts info from there.
@@ -77,10 +77,6 @@ base::FilePath GetLogDestinationDir();
 void InitLoggingForUnitTest(const base::FilePath& log_base_path);
 
 #if BUILDFLAG(IS_WIN)
-// Change Windows Defender settings to skip scanning the paths used by the
-// updater if test runs with the flag `exclude-paths-from-win-defender`.
-void MaybeExcludePathsFromWindowsDefender();
-
 // Starts procmon logging if admin and procmon exists at
 // `C:\\tools\\Procmon.exe`. Returns the path to the PML file if procmon could
 // be successfully started.

@@ -5,15 +5,15 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/search/app_search_provider_test_base.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -84,11 +84,11 @@ TEST_F(AppZeroStateProviderTest, FetchRecommendations) {
 TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   // Disable the pre-installed high-priority extensions. This test simulates
   // a brand new profile being added to a device, and should not include these.
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   base::RunLoop().RunUntilIdle();
@@ -100,8 +100,8 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   // There are four default web apps. We use real app IDs here, as these are
   // used internally by the ranking logic. We can use arbitrary app names.
   const std::vector<std::string> kDefaultRecommendedWebAppIds = {
-      web_app::kCanvasAppId, web_app::kHelpAppId, web_app::kOsSettingsAppId,
-      web_app::kCameraAppId};
+      ash::kCanvasAppId, ash::kHelpAppId, ash::kOsSettingsAppId,
+      ash::kCameraAppId};
   const std::vector<std::string> kDefaultRecommendedWebAppNames = {
       "Canvas", "Help", "OsSettings", "Camera"};
 
@@ -116,7 +116,7 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
                  kDefaultRecommendedWebAppNames[i],
                  ManifestLocation::kExternalPrefDownload,
                  extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
-    service_->EnableExtension(kDefaultRecommendedWebAppIds[i]);
+    registrar()->EnableExtension(kDefaultRecommendedWebAppIds[i]);
   }
 
   // Install the default ARC app (Play Store). This is marked here as sticky so
@@ -153,7 +153,7 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
 
   // Simulate launching one of the default apps. Expect that this brings it to
   // higher precedence than all the others.
-  prefs->SetLastLaunchTime(web_app::kCanvasAppId, base::Time::Now());
+  prefs->SetLastLaunchTime(ash::kCanvasAppId, base::Time::Now());
   InitializeSearchProvider();
   EXPECT_EQ("Canvas," + std::string(kNormalAppName) +
                 ",OsSettings,Help,Play Store,Camera",
@@ -176,11 +176,11 @@ TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {
 
 TEST_F(AppZeroStateProviderTest, HideNotShownInLauncher) {
   // Disable the pre-installed high-priority extensions.
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   // Install two apps, one which is hidden and one shown in the launcher.
@@ -189,14 +189,14 @@ TEST_F(AppZeroStateProviderTest, HideNotShownInLauncher) {
   AddExtension(shown_app_id, kNormalAppName, ManifestLocation::kComponent,
                extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
                /*display_in_launcher=*/true);
-  service_->EnableExtension(shown_app_id);
+  registrar()->EnableExtension(shown_app_id);
 
   const std::string hidden_app_id =
       crx_file::id_util::GenerateId(kHiddenAppName);
   AddExtension(hidden_app_id, kHiddenAppName, ManifestLocation::kComponent,
                extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
                /*display_in_launcher=*/false);
-  service_->EnableExtension(hidden_app_id);
+  registrar()->EnableExtension(hidden_app_id);
 
   base::RunLoop().RunUntilIdle();
 

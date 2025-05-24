@@ -32,13 +32,15 @@ namespace {
 // respected or not. If false, secondary apps that specify this property will
 // be ignored.
 bool AllowSecondaryAppEnabledOnLaunch(const Extension* extension) {
-  if (!extension)
+  if (!extension) {
     return false;
+  }
 
   const Feature* feature = FeatureProvider::GetBehaviorFeatures()->GetFeature(
       behavior_feature::kAllowSecondaryKioskAppEnabledOnLaunch);
-  if (!feature)
+  if (!feature) {
     return false;
+  }
 
   return feature->IsAvailableToExtension(extension).is_available();
 }
@@ -65,8 +67,7 @@ KioskModeInfo::KioskModeInfo(
       required_platform_version(required_platform_version),
       always_update(always_update) {}
 
-KioskModeInfo::~KioskModeInfo() {
-}
+KioskModeInfo::~KioskModeInfo() = default;
 
 // static
 KioskModeInfo* KioskModeInfo::Get(const Extension* extension) {
@@ -98,11 +99,8 @@ bool KioskModeInfo::IsValidPlatformVersion(const std::string& version_string) {
   return version.IsValid() && version.components().size() <= 3u;
 }
 
-KioskModeHandler::KioskModeHandler() {
-}
-
-KioskModeHandler::~KioskModeHandler() {
-}
+KioskModeHandler::KioskModeHandler() = default;
+KioskModeHandler::~KioskModeHandler() = default;
 
 bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
   const Manifest* manifest = extension->manifest();
@@ -133,8 +131,9 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   KioskModeInfo::KioskStatus kiosk_status = KioskModeInfo::NONE;
-  if (kiosk_enabled)
+  if (kiosk_enabled) {
     kiosk_status = kiosk_only ? KioskModeInfo::ONLY : KioskModeInfo::ENABLED;
+  }
 
   // Kiosk secondary apps key is optional.
   std::vector<SecondaryKioskAppInfo> secondary_apps;
@@ -170,8 +169,9 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
       }
 
       std::optional<bool> enabled_on_launch;
-      if (app->enabled_on_launch)
+      if (app->enabled_on_launch) {
         enabled_on_launch = *app->enabled_on_launch;
+      }
 
       secondary_apps.emplace_back(app->id, enabled_on_launch);
       secondary_app_ids.insert(app->id);

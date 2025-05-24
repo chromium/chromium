@@ -53,10 +53,14 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsImagesMidSentence';
     case ContentSettingsTypes.JAVASCRIPT:
       return 'siteSettingsJavascriptMidSentence';
+    case ContentSettingsTypes.JAVASCRIPT_OPTIMIZER:
+      return 'siteSettingsJavascriptOptimizerMidsentence';
     case ContentSettingsTypes.KEYBOARD_LOCK:
       return 'siteSettingsKeyboardLockMidSentence';
     case ContentSettingsTypes.LOCAL_FONTS:
       return 'siteSettingsFontAccessMidSentence';
+    case ContentSettingsTypes.LOCAL_NETWORK_ACCESS:
+      return 'siteSettingsLocalNetworkAccessMidSentence';
     case ContentSettingsTypes.MIC:
       return 'siteSettingsMicMidSentence';
     case ContentSettingsTypes.MIDI_DEVICES:
@@ -97,7 +101,6 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsZoomLevelsMidSentence';
     // The following members do not have a mid-sentence localization.
     case ContentSettingsTypes.ANTI_ABUSE:
-    case ContentSettingsTypes.JAVASCRIPT_OPTIMIZER:
     case ContentSettingsTypes.PDF_DOCUMENTS:
     case ContentSettingsTypes.PERFORMANCE:
     case ContentSettingsTypes.PRIVATE_NETWORK_DEVICES:

@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -179,7 +180,7 @@ bool HTMLImageElement::IsPresentationAttribute(
 void HTMLImageElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
     if (FastHasAttribute(html_names::kHeightAttr)) {
@@ -211,7 +212,7 @@ void HTMLImageElement::CollectStyleForPresentationAttribute(
 }
 
 void HTMLImageElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (!source_)
     return;
 
@@ -294,7 +295,7 @@ void HTMLImageElement::SetBestFitURLAndDPRFromImageCandidate(
     layout_image->SetImageDevicePixelRatio(image_device_pixel_ratio_);
 
     if (old_image_device_pixel_ratio != image_device_pixel_ratio_)
-      layout_image->IntrinsicSizeChanged();
+      layout_image->NaturalSizeChanged();
   }
 
   if (intrinsic_sizing_viewport_dependant) {
@@ -404,9 +405,10 @@ void HTMLImageElement::ParseAttribute(
                                                               referrer_policy);
     }
   } else if (name == html_names::kSharedstoragewritableAttr &&
-             RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
+             RuntimeEnabledFeatures::SharedStorageAPIEnabled(
                  GetExecutionContext())) {
-    if (!GetExecutionContext()->IsSecureContext()) {
+    auto* execution_context = GetExecutionContext();
+    if (!execution_context || !execution_context->IsSecureContext()) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kError,
@@ -479,7 +481,7 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
     if (!source)
       continue;
 
-    if (!source->FastGetAttribute(html_names::kSrcAttr).IsNull()) {
+    if (source->FastHasAttribute(html_names::kSrcAttr)) {
       Deprecation::CountDeprecation(GetExecutionContext(),
                                     WebFeature::kPictureSourceSrc);
     }
@@ -494,8 +496,8 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
       continue;
 
     ImageCandidate candidate = BestFitSourceForSrcsetAttribute(
-        GetDocument().DevicePixelRatio(), SourceSize(*source),
-        source->FastGetAttribute(html_names::kSrcsetAttr), &GetDocument());
+        GetDocument().DevicePixelRatio(), SourceSize(*source), srcset,
+        &GetDocument());
     if (candidate.IsEmpty())
       continue;
     source_ = source;
@@ -518,12 +520,14 @@ LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style) {
       LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
       image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
       image->SetImageDevicePixelRatio(image_device_pixel_ratio_);
+      if (base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
+        GetDocument().View()->RegisterForLifecycleNotifications(this);
+      }
       return image;
     }
     case LayoutDisposition::kCollapsed:  // Falls through.
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -631,9 +635,7 @@ unsigned HTMLImageElement::width() {
       return width;
 
     // if the image is available, use its width
-    if (ImageResourceContent* image_content = GetImageLoader().GetContent()) {
-      return image_content->IntrinsicSize(kRespectImageOrientation).width();
-    }
+    return GetImageLoader().AccessNaturalSize().width();
   }
 
   return LayoutBoxWidth();
@@ -654,9 +656,7 @@ unsigned HTMLImageElement::height() {
       return height;
 
     // if the image is available, use its height
-    if (ImageResourceContent* image_content = GetImageLoader().GetContent()) {
-      return image_content->IntrinsicSize(kRespectImageOrientation).height();
-    }
+    return GetImageLoader().AccessNaturalSize().height();
   }
 
   return LayoutBoxHeight();
@@ -672,8 +672,7 @@ PhysicalSize HTMLImageElement::DensityCorrectedIntrinsicDimensions() const {
       image_content->DevicePixelRatioHeaderValue() > 0)
     pixel_density = 1 / image_content->DevicePixelRatioHeaderValue();
 
-  PhysicalSize natural_size(
-      image_content->GetImage()->Size(kRespectImageOrientation));
+  PhysicalSize natural_size(GetImageLoader().AccessNaturalSize());
   natural_size.Scale(pixel_density);
   return natural_size;
 }
@@ -764,9 +763,27 @@ void HTMLImageElement::SetIsAdRelated() {
   is_ad_related_ = true;
 }
 
+void HTMLImageElement::DidFinishLayout() {
+  if (base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
+    if (LayoutImage* layout_image = DynamicTo<LayoutImage>(GetLayoutObject())) {
+      // Populate cached values for load priority and speculative decode
+      // parameters.
+      layout_image->ComputeResourcePriority();
+      layout_image->ComputeSpeculativeDecodeSize();
+      layout_image->ComputeSpeculativeDecodeQuality();
+      // Once the image has a source ResourceFetcher will take over the updates.
+      if (!is_ad_related_ && GetImageLoader().GetContent()) {
+        GetDocument().View()->UnregisterFromLifecycleNotifications(this);
+      }
+    }
+  }
+}
+
 void HTMLImageElement::DidFinishLifecycleUpdate(
     const LocalFrameView& local_frame_view) {
-  DCHECK(is_ad_related_);
+  if (!is_ad_related_) {
+    return;
+  }
 
   // Scope to the outermost frame to avoid counting image ads that are (likely)
   // already in ad iframes.

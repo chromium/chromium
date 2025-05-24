@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.lens;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 @IntDef({
     LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
     LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM,
@@ -16,6 +18,7 @@ import androidx.annotation.IntDef;
     LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
     LensEntryPoint.GOOGLE_BOTTOM_BAR
 })
+@NullMarked
 public @interface LensEntryPoint {
     int CONTEXT_MENU_SEARCH_MENU_ITEM = 0;
     int CONTEXT_MENU_SHOP_MENU_ITEM = 1;

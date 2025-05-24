@@ -6,6 +6,7 @@
 #define BASE_PROCESS_CURRENT_PROCESS_TEST_H_
 
 #include <string>
+
 #include "base/process/current_process.h"
 
 namespace base::test {

@@ -2,18 +2,23 @@
   // chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDowC9B4+K6zbl4PnALNyOUgra/MPdD8gZ39Fk/IAJWt03qrN7vz1gd/mmrBg0EEIsyLRmUmfyVEfvcIUOZxFqn4A9D2aaRSvNHy9qkasZMBDEql8Nt2iNZm/kGS7sizidDV6Bc/vyLNiH1gKOXBQ42JIxKjgtrmnhGV2giw2vJGwIDAQAB",
   "name": "Image loader",
-  "version": "0.4",
+  // When updating this "0.5" string, keep it synchronized with what's in
+  // service_worker.ts near the §.
+  "version": "0.5",
   "description": "Image loader",
   "incognito" : "split",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "permissions": [
     "imageLoaderPrivate",
-    "nativeMessaging"
+    "nativeMessaging",
+    "offscreen"
   ],
-  "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' blob: filesystem:; style-src 'self' blob: filesystem:; frame-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; media-src 'self' blob: filesystem:; connect-src 'self' blob: filesystem:",
+  "content_security_policy": {
+    "extension_pages": "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; frame-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; media-src 'self' blob: filesystem:; connect-src 'self' blob: filesystem:"
+  },
   "background": {
-    "page": "background.html",
-    "persistent": false
+    "service_worker": "service_worker_20241016.js",
+    "type": "module"
   },
   "externally_connectable": {
     "matches": [
@@ -22,8 +27,16 @@
   },
   "natively_connectable": ["com.google.ash_thumbnail_loader"],
   "web_accessible_resources": [
-    "image_loader_client.js",
-    "image_orientation.js",
-    "load_image_request.js"
+    {
+      "resources": [
+        "image_loader_client.js",
+        "image_orientation.js",
+        "load_image_request.js"
+      ],
+      "matches": [
+        "chrome://file-manager/*",  // File Manager SWA
+        "chrome://webui-test/*"
+      ]
+    }
   ]
 }

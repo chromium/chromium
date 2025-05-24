@@ -30,8 +30,8 @@ void SerializeInVersion1Format(const FormData& form_data,
   pickle->WriteString(form_data.action().spec());
   pickle->WriteBool(true);  // Used to be |user_submitted|, which was removed.
   pickle->WriteInt(static_cast<int>(form_data.fields().size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    SerializeFormFieldData(form_data.fields()[i], pickle);
+  for (const FormFieldData& field : form_data.fields()) {
+    SerializeFormFieldData(field, pickle);
   }
 }
 
@@ -43,8 +43,8 @@ void SerializeInVersion2Format(const FormData& form_data,
   pickle->WriteString(form_data.action().spec());
   pickle->WriteBool(true);  // Used to be |user_submitted|, which was removed.
   pickle->WriteInt(static_cast<int>(form_data.fields().size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    SerializeFormFieldData(form_data.fields()[i], pickle);
+  for (const FormFieldData& field : form_data.fields()) {
+    SerializeFormFieldData(field, pickle);
   }
 }
 
@@ -56,8 +56,8 @@ void SerializeInVersion3Format(const FormData& form_data,
   pickle->WriteString(form_data.action().spec());
   pickle->WriteBool(true);  // Used to be |user_submitted|, which was removed.
   pickle->WriteInt(static_cast<int>(form_data.fields().size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    SerializeFormFieldData(form_data.fields()[i], pickle);
+  for (const FormFieldData& field : form_data.fields()) {
+    SerializeFormFieldData(field, pickle);
   }
   pickle->WriteBool(false);  // Used to be `is_form_tag`, which was removed
 }
@@ -69,8 +69,8 @@ void SerializeInVersion4Format(const FormData& form_data,
   pickle->WriteString(form_data.url().spec());
   pickle->WriteString(form_data.action().spec());
   pickle->WriteInt(static_cast<int>(form_data.fields().size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    SerializeFormFieldData(form_data.fields()[i], pickle);
+  for (const FormFieldData& field : form_data.fields()) {
+    SerializeFormFieldData(field, pickle);
   }
   pickle->WriteBool(false);  // Used to be `is_form_tag`, which was removed
 }
@@ -82,8 +82,8 @@ void SerializeInVersion5Format(const FormData& form_data,
   pickle->WriteString(form_data.url().spec());
   pickle->WriteString(form_data.action().spec());
   pickle->WriteInt(static_cast<int>(form_data.fields().size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    SerializeFormFieldData(form_data.fields()[i], pickle);
+  for (const FormFieldData& field : form_data.fields()) {
+    SerializeFormFieldData(field, pickle);
   }
   pickle->WriteBool(false);  // Used to be `is_form_tag`, which was removed
   pickle->WriteBool(/*is_formless_checkout=*/true);
@@ -96,8 +96,8 @@ void SerializeInVersion6Format(const FormData& form_data,
   pickle->WriteString(form_data.url().spec());
   pickle->WriteString(form_data.action().spec());
   pickle->WriteInt(static_cast<int>(form_data.fields().size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    SerializeFormFieldData(form_data.fields()[i], pickle);
+  for (const FormFieldData& field : form_data.fields()) {
+    SerializeFormFieldData(field, pickle);
   }
   pickle->WriteBool(false);  // Used to be `is_form_tag`, which was removed
   pickle->WriteBool(/*is_formless_checkout=*/true);
@@ -111,8 +111,8 @@ void SerializeInVersion7Format(const FormData& form_data,
   pickle->WriteString(form_data.url().spec());
   pickle->WriteString(form_data.action().spec());
   pickle->WriteInt(static_cast<int>(form_data.fields().size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    SerializeFormFieldData(form_data.fields()[i], pickle);
+  for (const FormFieldData& field : form_data.fields()) {
+    SerializeFormFieldData(field, pickle);
   }
   pickle->WriteBool(false);  // Used to be `is_form_tag`, which was removed
   pickle->WriteString(form_data.main_frame_origin().Serialize());
@@ -125,8 +125,8 @@ void SerializeInVersion8Format(const FormData& form_data,
   pickle->WriteString(form_data.url().spec());
   pickle->WriteString(form_data.action().spec());
   pickle->WriteInt(static_cast<int>(form_data.fields().size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    SerializeFormFieldData(form_data.fields()[i], pickle);
+  for (const FormFieldData& field : form_data.fields()) {
+    SerializeFormFieldData(field, pickle);
   }
   pickle->WriteString(form_data.main_frame_origin().Serialize());
 }
@@ -139,8 +139,8 @@ void SerializeIncorrectFormat(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteString(form_data.action().spec());
   pickle->WriteBool(true);  // Used to be |user_submitted|, which was removed.
   pickle->WriteInt(static_cast<int>(form_data.fields().size()));
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    SerializeFormFieldData(form_data.fields()[i], pickle);
+  for (const FormFieldData& field : form_data.fields()) {
+    SerializeFormFieldData(field, pickle);
   }
 }
 
@@ -184,7 +184,7 @@ TEST(FormDataTest, SerializeAndDeserialize) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v1_Deserialize_vCurrent) {
@@ -198,7 +198,7 @@ TEST(FormDataTest, Serialize_v1_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v2_Deserialize_vCurrent) {
@@ -212,7 +212,7 @@ TEST(FormDataTest, Serialize_v2_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent) {
@@ -226,7 +226,7 @@ TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent_IsFormTagFalse) {
@@ -241,7 +241,7 @@ TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent_IsFormTagFalse) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v4_Deserialize_vCurrent) {
@@ -255,7 +255,7 @@ TEST(FormDataTest, Serialize_v4_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v5_Deserialize_vCurrent) {
@@ -269,7 +269,7 @@ TEST(FormDataTest, Serialize_v5_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v6_Deserialize_vCurrent) {
@@ -283,7 +283,7 @@ TEST(FormDataTest, Serialize_v6_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v7_Deserialize_vCurrent) {
@@ -297,7 +297,7 @@ TEST(FormDataTest, Serialize_v7_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v8_Deserialize_vCurrent) {
@@ -311,7 +311,7 @@ TEST(FormDataTest, Serialize_v8_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, SerializeIncorrectFormatAndDeserialize) {
@@ -326,7 +326,7 @@ TEST(FormDataTest, SerializeIncorrectFormatAndDeserialize) {
   EXPECT_FALSE(DeserializeFormData(&iter, &actual));
 
   FormData empty;
-  EXPECT_TRUE(actual.SameFormAs(empty));
+  EXPECT_TRUE(FormData::DeepEqual(actual, empty));
 }
 
 }  // namespace

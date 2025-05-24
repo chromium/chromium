@@ -18,7 +18,7 @@ import java.lang.reflect.InvocationHandler;
 /** Adapter between JsReplyProxyBoundaryInterface and JsReplyProxy. */
 class SupportLibJsReplyProxyAdapter extends IsomorphicAdapter
         implements JsReplyProxyBoundaryInterface {
-    private JsReplyProxy mReplyProxy;
+    private final JsReplyProxy mReplyProxy;
 
     public SupportLibJsReplyProxyAdapter(JsReplyProxy replyProxy) {
         mReplyProxy = replyProxy;

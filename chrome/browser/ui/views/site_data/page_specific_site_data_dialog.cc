@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics_action.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -229,7 +229,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
 
     std::vector<PageSpecificSiteDataDialogSite> sites;
-    for (auto site : sites_map) {
+    for (const auto& site : sites_map) {
       sites.push_back(site.second);
     }
 
@@ -338,7 +338,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     // url::Origin, so here we convert host name to origin with some assumptions
     // (which might not be true). We should either convert to work only with
     // host names or BDM should return origins.
-    url::Origin entry_origin = absl::visit(
+    url::Origin entry_origin = std::visit(
         base::Overloaded{[&](const std::string& host) {
                            GURL current_url = web_contents_->GetVisibleURL();
                            GURL site_url = net::cookie_util::CookieOriginToURL(
@@ -400,8 +400,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     if (base::FeatureList::IsEnabled(
             privacy_sandbox::kTrackingProtectionContentSettingFor3pcb)) {
       has_site_level_exception |=
-          tracking_protection_settings_->GetTrackingProtectionSetting(
-              current_url) == CONTENT_SETTING_ALLOW;
+          tracking_protection_settings_->HasTrackingProtectionException(
+              current_url);
     }
 
     // Partitioned access is displayed when all of these conditions are met:
@@ -514,7 +514,7 @@ class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
     // If none of the children (except the empty state label) are visible, show
     // a label to explain the empty state.
     bool none_children_visible =
-        base::ranges::none_of(children(), [=, this](views::View* v) {
+        std::ranges::none_of(children(), [=, this](views::View* v) {
           return v != empty_state_label_ && v->GetVisible();
         });
     empty_state_label_->SetVisible(none_children_visible);

@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
 
+#import <Foundation/Foundation.h>
+
 @class FormSuggestion;
 
 // Handler for the passwords bottom sheet's context menu.
-@protocol PasswordSuggestionBottomSheetHandler
+@protocol PasswordSuggestionBottomSheetHandler <NSObject>
 
 // Displays the password manager menu.
 - (void)displayPasswordManager;

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <set>
 #include <string>
@@ -24,11 +20,9 @@
 #include "base/json/values_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
@@ -72,6 +66,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -85,6 +80,11 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_VR)
 #include "device/vr/public/cpp/features.h"
@@ -106,8 +106,10 @@ const char kUsbChooserDataGroupType[] = "usb-devices-data";
 const char kSerialChooserDataGroupType[] = "serial-ports-data";
 const char kHidChooserDataGroupType[] = "hid-devices-data";
 const char kBluetoothChooserDataGroupType[] = "bluetooth-devices-data";
+const char kSmartCardChooserDataGroupType[] = "smart-card-readers-data";
 
-const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
+constexpr auto kContentSettingsTypeGroupNames = std::to_array<
+    const ContentSettingsTypeNameEntry>({
     // The following ContentSettingsTypes have UI in Content Settings
     // and require a mapping from their Javascript string representation in
     // chrome/browser/resources/settings/site_settings/constants.ts to their C++
@@ -165,12 +167,12 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::SPEAKER_SELECTION, "speaker-selection"},
     {ContentSettingsType::AUTOMATIC_FULLSCREEN, "automatic-fullscreen"},
     {ContentSettingsType::KEYBOARD_LOCK, "keyboard-lock"},
-    {ContentSettingsType::POINTER_LOCK, "pointer-lock"},
     {ContentSettingsType::TRACKING_PROTECTION, "tracking-protection"},
     {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, "top-level-storage-access"},
     {ContentSettingsType::WEB_APP_INSTALLATION, "web-app-installation"},
     {ContentSettingsType::SMART_CARD_GUARD, "smart-card-readers"},
-    {ContentSettingsType::SMART_CARD_DATA, "smart-card-readers-data"},
+    {ContentSettingsType::SMART_CARD_DATA, kSmartCardChooserDataGroupType},
+    {ContentSettingsType::LOCAL_NETWORK_ACCESS, "local-network-access"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -190,7 +192,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::PASSWORD_PROTECTION, nullptr},
     {ContentSettingsType::MEDIA_ENGAGEMENT, nullptr},
     {ContentSettingsType::CLIENT_HINTS, nullptr},
-    {ContentSettingsType::ACCESSIBILITY_EVENTS, nullptr},
+    {ContentSettingsType::DEPRECATED_ACCESSIBILITY_EVENTS, nullptr},
     {ContentSettingsType::CLIPBOARD_SANITIZED_WRITE, nullptr},
     {ContentSettingsType::BACKGROUND_FETCH, nullptr},
     {ContentSettingsType::INTENT_PICKER_DISPLAY, nullptr},
@@ -202,7 +204,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA, nullptr},
     {ContentSettingsType::FILE_SYSTEM_READ_GUARD, nullptr},
     {ContentSettingsType::CAMERA_PAN_TILT_ZOOM, nullptr},
-    {ContentSettingsType::INSECURE_PRIVATE_NETWORK, nullptr},
     {ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, nullptr},
     {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, nullptr},
     {ContentSettingsType::DISPLAY_CAPTURE, nullptr},
@@ -245,10 +246,23 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL, nullptr},
     {ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO, nullptr},
     {ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL, nullptr},
-};
+    // TODO(crbug.com/368266658): Implement the UI for Direct Sockets PNA.
+    {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS, nullptr},
+    {ContentSettingsType::LEGACY_COOKIE_SCOPE, nullptr},
+    {ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+     nullptr},
+    {ContentSettingsType::CONTROLLED_FRAME, nullptr},
+    // POINTER_LOCK has been deprecated.
+    {ContentSettingsType::POINTER_LOCK, nullptr},
+    {ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, nullptr},
+    {ContentSettingsType::ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
+     nullptr},
+    {ContentSettingsType::INITIALIZED_TRANSLATIONS, nullptr},
+    {ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS, nullptr},
+});
 
 static_assert(
-    std::size(kContentSettingsTypeGroupNames) ==
+    kContentSettingsTypeGroupNames.size() ==
         // Add one since the sequence is kMinValue = -1, 0, ..., kMaxValue
         1 + static_cast<int32_t>(ContentSettingsType::kMaxValue) -
             static_cast<int32_t>(ContentSettingsType::kMinValue),
@@ -351,8 +365,7 @@ SiteSettingSource CalculateSiteSettingSource(
     return SiteSettingSource::kPreference;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SiteSettingSource::kPreference;
+  NOTREACHED();
 }
 
 bool IsFromWebUIAllowlistSource(const ContentSettingPatternSource& pattern) {
@@ -472,11 +485,25 @@ permissions::ObjectPermissionContextBase* GetBluetoothChooserContext(
   return nullptr;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+permissions::ObjectPermissionContextBase* GetSmartCardChooserContext(
+    Profile* profile) {
+  if (base::FeatureList::IsEnabled(blink::features::kSmartCard)) {
+    return &SmartCardPermissionContextFactory::GetForProfile(*profile);
+  }
+  return nullptr;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 const ChooserTypeNameEntry kChooserTypeGroupNames[] = {
     {&GetUsbChooserContext, kUsbChooserDataGroupType},
     {&GetSerialChooserContext, kSerialChooserDataGroupType},
     {&GetHidChooserContext, kHidChooserDataGroupType},
-    {&GetBluetoothChooserContext, kBluetoothChooserDataGroupType}};
+    {&GetBluetoothChooserContext, kBluetoothChooserDataGroupType},
+#if BUILDFLAG(IS_CHROMEOS)
+    {&GetSmartCardChooserContext, kSmartCardChooserDataGroupType}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+};
 
 // These variables represent different formatting options for default (i.e. not
 // extension or IWA) URLs as well as fallbacks for when the IWA/extension is not
@@ -496,9 +523,9 @@ constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
 }  // namespace
 
 bool HasRegisteredGroupName(ContentSettingsType type) {
-  for (size_t i = 0; i < std::size(kContentSettingsTypeGroupNames); ++i) {
-    if (type == kContentSettingsTypeGroupNames[i].type &&
-        kContentSettingsTypeGroupNames[i].name) {
+  for (auto kContentSettingsTypeGroupName : kContentSettingsTypeGroupNames) {
+    if (type == kContentSettingsTypeGroupName.type &&
+        kContentSettingsTypeGroupName.name) {
       return true;
     }
   }
@@ -535,9 +562,8 @@ std::string_view ContentSettingsTypeToGroupName(ContentSettingsType type) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION() << static_cast<int32_t>(type)
-                            << " is not a recognized content settings type.";
-  return std::string_view();
+  NOTREACHED() << static_cast<int32_t>(type)
+               << " is not a recognized content settings type.";
 }
 
 std::vector<ContentSettingsType> GetVisiblePermissionCategories(
@@ -557,6 +583,7 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
       ContentSettingsType::IDLE_DETECTION,
       ContentSettingsType::IMAGES,
       ContentSettingsType::JAVASCRIPT,
+      ContentSettingsType::JAVASCRIPT_OPTIMIZER,
       ContentSettingsType::LOCAL_FONTS,
       ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::MEDIASTREAM_MIC,
@@ -570,6 +597,9 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
 #endif
       ContentSettingsType::SENSORS,
       ContentSettingsType::SERIAL_GUARD,
+#if BUILDFLAG(IS_CHROMEOS)
+      ContentSettingsType::SMART_CARD_GUARD,
+#endif
       ContentSettingsType::SOUND,
       ContentSettingsType::STORAGE_ACCESS,
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
@@ -619,15 +649,13 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
     }
 
     if (base::FeatureList::IsEnabled(
-            features::kCapturedSurfaceControlKillswitch) &&
-        base::FeatureList::IsEnabled(
-            features::kCapturedSurfaceControlStickyPermissions)) {
+            features::kCapturedSurfaceControlKillswitch)) {
       base_types->push_back(ContentSettingsType::CAPTURED_SURFACE_CONTROL);
     }
 
-    if (base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+    if (base::FeatureList::IsEnabled(
+            permissions::features::kKeyboardLockPrompt)) {
       base_types->push_back(ContentSettingsType::KEYBOARD_LOCK);
-      base_types->push_back(ContentSettingsType::POINTER_LOCK);
     }
 
 #if BUILDFLAG(ENABLE_VR)
@@ -638,6 +666,11 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
 
     if (base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
       base_types->push_back(ContentSettingsType::WEB_APP_INSTALLATION);
+    }
+
+    if (base::FeatureList::IsEnabled(
+            network::features::kLocalNetworkAccessChecks)) {
+      base_types->push_back(ContentSettingsType::LOCAL_NETWORK_ACCESS);
     }
 
     initialized = true;
@@ -686,8 +719,7 @@ std::string SiteSettingSourceToString(const SiteSettingSource source) {
     case SiteSettingSource::kPreference:
       return "preference";
     case SiteSettingSource::kNumSources:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -695,6 +727,7 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
     const ProviderType provider_type) {
   switch (provider_type) {
     case ProviderType::kWebuiAllowlistProvider:
+    case ProviderType::kComponentExtensionProvider:
       return SiteSettingSource::kAllowlist;
     case ProviderType::kPolicyProvider:
     case ProviderType::kSupervisedProvider:
@@ -709,12 +742,12 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
     case ProviderType::kDefaultProvider:
       return SiteSettingSource::kDefault;
 
+    case ProviderType::kJavascriptOptimizerAndroidProvider:
     case ProviderType::kNone:
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kProviderForTests:
     case ProviderType::kOtherProviderForTests:
-      NOTREACHED_IN_MIGRATION();
-      return SiteSettingSource::kPreference;
+      NOTREACHED();
   }
 }
 
@@ -731,15 +764,15 @@ std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
       return "preference";
     case ProviderType::kInstalledWebappProvider:
     case ProviderType::kWebuiAllowlistProvider:
+    case ProviderType::kComponentExtensionProvider:
     case ProviderType::kDefaultProvider:
       return "default";
-
+    case ProviderType::kJavascriptOptimizerAndroidProvider:
     case ProviderType::kNone:
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kProviderForTests:
     case ProviderType::kOtherProviderForTests:
-      NOTREACHED_IN_MIGRATION();
-      return "preference";
+      NOTREACHED();
   }
 }
 
@@ -1017,7 +1050,7 @@ void GetRawExceptionsForContentSettingsType(
     }
 
     // Don't add auto-granted permissions for storage access exceptions.
-    if (IsGrantedByRelatedWebsiteSets(type, setting.metadata) &&
+    if (setting.metadata.decided_by_related_website_sets() &&
         !base::FeatureList::IsEnabled(
             permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
       continue;
@@ -1068,23 +1101,6 @@ void GetRawExceptionsForContentSettingsType(
   }
 }
 
-void Append3pcExceptions(Profile* profile,
-                         content::WebUI* web_ui,
-                         base::Value::List* exceptions) {
-  base::Value::List cookie_exceptions;
-  GetExceptionsForContentType(ContentSettingsType::COOKIES, profile, web_ui,
-                              /*incognito=*/false, &cookie_exceptions);
-  for (auto& cookie_exception : cookie_exceptions) {
-    auto& dict = cookie_exception.GetDict();
-    if (dict.contains(kOrigin) && *dict.FindString(kOrigin) == "*") {
-      dict.Set(kDescription,
-               l10n_util::GetStringUTF16(
-                   IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL));
-      exceptions->Append(std::move(cookie_exception));
-    }
-  }
-}
-
 void GetExceptionsForContentType(ContentSettingsType type,
                                  Profile* profile,
                                  content::WebUI* web_ui,
@@ -1112,12 +1128,12 @@ void GetExceptionsForContentType(ContentSettingsType type,
     for (const auto& secondary_setting : one_settings) {
       const SiteExceptionInfo& site_exception_info = secondary_setting.second;
       const auto& [secondary_pattern, is_incognito] = secondary_setting.first;
-      this_provider_exceptions.push_back(GetExceptionForPage(
-          type, profile, primary_pattern, secondary_pattern,
-          std::move(display_name), site_exception_info.content_setting,
-          ProviderTypeToSiteSettingsSource(source),
-          site_exception_info.expiration, is_incognito,
-          site_exception_info.is_embargoed));
+      this_provider_exceptions.push_back(
+          GetExceptionForPage(type, profile, primary_pattern, secondary_pattern,
+                              display_name, site_exception_info.content_setting,
+                              ProviderTypeToSiteSettingsSource(source),
+                              site_exception_info.expiration, is_incognito,
+                              site_exception_info.is_embargoed));
     }
   }
 
@@ -1146,11 +1162,6 @@ void GetExceptionsForContentType(ContentSettingsType type,
     for (auto& exception : one_provider_exceptions.second) {
       exceptions->Append(std::move(exception));
     }
-  }
-
-  // The TP exceptions list should also contain 3PC exceptions.
-  if (type == ContentSettingsType::TRACKING_PROTECTION) {
-    Append3pcExceptions(profile, web_ui, exceptions);
   }
 }
 
@@ -1240,8 +1251,11 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
     if (permissions::PermissionUtil::IsPermission(content_type)) {
       result = profile->GetPermissionController()
                    ->GetPermissionResultForOriginWithoutContext(
-                       permissions::PermissionUtil::
-                           ContentSettingTypeToPermissionType(content_type),
+                       content::PermissionDescriptorUtil::
+                           CreatePermissionDescriptorForPermissionType(
+                               permissions::PermissionUtil::
+                                   ContentSettingsTypeToPermissionType(
+                                       content_type)),
                        url::Origin::Create(origin));
     } else {
       permissions::PermissionDecisionAutoBlocker* auto_blocker =
@@ -1307,8 +1321,8 @@ void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
     }
   }
   // Sort exceptions by origin name, alphabetically.
-  base::ranges::sort(*exceptions, [](const base::Value::Dict& lhs,
-                                     const base::Value::Dict& rhs) {
+  std::ranges::sort(*exceptions, [](const base::Value::Dict& lhs,
+                                    const base::Value::Dict& rhs) {
     return lhs.Find(kOrigin)->GetString() < rhs.Find(kOrigin)->GetString();
   });
 }

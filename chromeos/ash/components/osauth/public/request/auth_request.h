@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 
 namespace ash {

@@ -10,10 +10,11 @@
 namespace network {
 
 // Adds cookie setting overrides for cookie accesses determined to be for
-// advertising purposes.
+// advertising purposes. Also may emit to histograms.
 void AddAdsHeuristicCookieSettingOverrides(
     bool is_ad_tagged,
-    net::CookieSettingOverrides& overrides);
+    net::CookieSettingOverrides& overrides,
+    bool emit_metrics);
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_AD_HEURISTIC_COOKIE_OVERRIDES_H_

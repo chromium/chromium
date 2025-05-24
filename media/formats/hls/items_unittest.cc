@@ -5,11 +5,11 @@
 #include "media/formats/hls/items.h"
 
 #include <string_view>
+#include <variant>
 
 #include "base/location.h"
 #include "media/formats/hls/source_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media::hls {
 
@@ -43,9 +43,9 @@ void RunTest(std::string_view source,
       auto value = std::move(result).value();
 
       // Ensure that resulting variants are the same
-      static_assert(absl::variant_size<LineResult>::value == 2, "");
-      if (auto* expected_tag = absl::get_if<TagItem>(&expected_value)) {
-        auto tag = absl::get<TagItem>(std::move(value));
+      static_assert(std::variant_size<LineResult>::value == 2, "");
+      if (auto* expected_tag = std::get_if<TagItem>(&expected_value)) {
+        auto tag = std::get<TagItem>(std::move(value));
         EXPECT_EQ(expected_tag->GetName(), tag.GetName()) << from.ToString();
         EXPECT_EQ(expected_tag->GetLineNumber(), tag.GetLineNumber())
             << from.ToString();
@@ -58,8 +58,8 @@ void RunTest(std::string_view source,
                             from);
         }
       } else {
-        auto expected_uri = absl::get<UriItem>(std::move(expected_value));
-        auto uri = absl::get<UriItem>(std::move(value));
+        auto expected_uri = std::get<UriItem>(std::move(expected_value));
+        auto uri = std::get<UriItem>(std::move(value));
         CheckSourceString(expected_uri.content, uri.content, from);
       }
     } else {

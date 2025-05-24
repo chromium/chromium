@@ -21,10 +21,18 @@ SET BAZEL_LLVM=C:\Program Files\LLVM
 CD %~dp0\..
 if %errorlevel% neq 0 EXIT /B 1
 
-:: Set the standard version, [c++14|c++17|c++20|c++latest]
+:: Use Bazel Vendor mode to reduce reliance on external dependencies.
+IF EXIST "%KOKORO_GFILE_DIR%\distdir\abseil-cpp_vendor.tar.gz" (
+  tar --force-local -xf "%KOKORO_GFILE_DIR%\distdir\abseil-cpp_vendor.tar.gz" -C c:\
+  SET VENDOR_FLAG=--vendor_dir=c:\abseil-cpp_vendor
+) ELSE (
+  SET VENDOR_FLAG=
+)
+
+:: Set the standard version, [c++17|c++20|c++latest]
 :: https://msdn.microsoft.com/en-us/library/mt490614.aspx
-:: The default is c++14 if not set on command line.
-IF "%STD%"=="" SET STD=c++14
+:: The default is c++17 if not set on command line.
+IF "%STD%"=="" SET STD=c++17
 
 :: Set the compilation_mode (fastbuild|opt|dbg)
 :: https://docs.bazel.build/versions/master/user-manual.html#flag--compilation_mode
@@ -39,7 +47,7 @@ IF NOT "%ALTERNATE_OPTIONS%"=="" copy %ALTERNATE_OPTIONS% absl\base\options.h
 :: /google/data/rw/teams/absl/kokoro/windows.
 ::
 :: TODO(absl-team): Remove -Wno-microsoft-cast
-%KOKORO_GFILE_DIR%\bazel-7.0.0-windows-x86_64.exe ^
+%KOKORO_GFILE_DIR%\bazel-8.2.1-windows-x86_64.exe ^
   test ... ^
   --compilation_mode=%COMPILATION_MODE% ^
   --compiler=clang-cl ^
@@ -47,7 +55,6 @@ IF NOT "%ALTERNATE_OPTIONS%"=="" copy %ALTERNATE_OPTIONS% absl\base\options.h
   --copt=-Wno-microsoft-cast ^
   --cxxopt=/std:%STD% ^
   --define=absl=1 ^
-  --distdir=%KOKORO_GFILE_DIR%\distdir ^
   --enable_bzlmod=true ^
   --extra_execution_platforms=//:x64_windows-clang-cl ^
   --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl ^
@@ -55,7 +62,8 @@ IF NOT "%ALTERNATE_OPTIONS%"=="" copy %ALTERNATE_OPTIONS% absl\base\options.h
   --test_env="GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1" ^
   --test_env=TZDIR="%CD%\absl\time\internal\cctz\testdata\zoneinfo" ^
   --test_output=errors ^
-  --test_tag_filters=-benchmark
+  --test_tag_filters=-benchmark ^
+  %VENDOR_FLAG%
 
 if %errorlevel% neq 0 EXIT /B 1
 EXIT /B 0

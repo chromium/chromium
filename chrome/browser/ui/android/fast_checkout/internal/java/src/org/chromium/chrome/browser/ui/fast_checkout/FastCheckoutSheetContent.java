@@ -8,19 +8,23 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.CREDIT_CARD_SCREEN;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.HOME_SCREEN;
 
+import android.content.Context;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** The {@link BottomSheetContent} for Fast Checkout. */
+@NullMarked
 public class FastCheckoutSheetContent implements BottomSheetContent {
     private static final float MAX_VISIBLE_WHOLE_ADDRESSES = 2.5f;
     private static final float MAX_VISIBLE_WHOLE_CREDIT_CARDS = 3.5f;
@@ -48,9 +52,8 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -84,11 +87,6 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public float getHalfHeightRatio() {
         if (shouldWrapContent()) {
             return HeightMode.DISABLED;
@@ -110,22 +108,22 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.fast_checkout_content_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.fast_checkout_content_description);
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.fast_checkout_sheet_closed;
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.fast_checkout_content_description;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.fast_checkout_content_description;
     }
 

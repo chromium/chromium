@@ -58,9 +58,7 @@ void DisplayHandler::HandleDragDisplayDelta(const base::Value::List& args) {
 
   int64_t display_id;
   if (!base::StringToInt64(display_id_str, &display_id)) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unable to parse |display_id| for HandleDragDisplayDelta";
-    return;
+    NOTREACHED() << "Unable to parse |display_id| for HandleDragDisplayDelta";
   }
 
   cros_display_config_->DragDisplayDelta(display_id, delta_x, delta_y);

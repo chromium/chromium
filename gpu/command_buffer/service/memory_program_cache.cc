@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "gpu/command_buffer/service/memory_program_cache.h"
 
 #include <stddef.h>
 
 #include "base/base64.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -212,7 +218,6 @@ bool ProgramBinaryExtensionsAvailable() {
          gl::g_current_gl_driver->ext.b_GL_OES_get_program_binary;
 }
 
-// Returns an empty vector if compression fails.
 std::vector<uint8_t> CompressData(const std::vector<uint8_t>& data) {
   uLongf compressed_size = compressBound(data.size());
   std::vector<uint8_t> compressed_data(compressed_size);
@@ -222,13 +227,9 @@ std::vector<uint8_t> CompressData(const std::vector<uint8_t>& data) {
                           data.size(), 1 /* level */);
   // It should be impossible for compression to fail with the provided
   // parameters.
-  bool success = Z_OK == result;
-  if (!success)
-    return std::vector<uint8_t>();
-
+  CHECK_EQ(result, Z_OK);
   compressed_data.resize(compressed_size);
   compressed_data.shrink_to_fit();
-
   return compressed_data;
 }
 
@@ -392,10 +393,6 @@ void MemoryProgramCache::SaveLinkedProgram(
 
   if (compress_program_binaries_) {
     binary = CompressData(binary);
-    if (binary.empty()) {
-      // Zero size indicates failure.
-      return;
-    }
   }
 
   // If the binary is so big it will never fit in the cache, throw it away.

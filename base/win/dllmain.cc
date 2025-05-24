@@ -15,7 +15,8 @@ NOINLINE static void CrashOnProcessDetach() {
 // Make DllMain call the listed callbacks.  This way any third parties that are
 // linked in will also be called.
 BOOL WINAPI DllMain(PVOID h, DWORD reason, PVOID reserved) {
-  if (DLL_PROCESS_DETACH == reason && base::win::ShouldCrashOnProcessDetach())
+  if (DLL_PROCESS_DETACH == reason && base::win::ShouldCrashOnProcessDetach()) {
     CrashOnProcessDetach();
+  }
   return true;
 }

@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -36,6 +35,7 @@
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -89,11 +89,15 @@ class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
 class BookmarkBrowsertest : public InProcessBrowserTest {
  public:
   BookmarkBrowsertest() {
-    // This needs to be disabled so that animations are guaranteed to work.
-#if BUILDFLAG(IS_WIN)
     feature_list_.InitWithFeatures(
-        {}, {features::kApplyNativeOcclusionToCompositor});
+        /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode},
+        /*disabled_features=*/{
+#if BUILDFLAG(IS_WIN)
+            // This needs to be disabled so that animations are guaranteed to
+            // work.
+            features::kApplyNativeOcclusionToCompositor
 #endif
+        });
   }
 
   BookmarkBrowsertest(const BookmarkBrowsertest&) = delete;
@@ -104,8 +108,9 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
   }
 
   static void CheckAnimation(Browser* browser, base::RunLoop* loop) {
-    if (!browser->window()->IsBookmarkBarAnimating())
+    if (!browser->window()->IsBookmarkBarAnimating()) {
       loop->Quit();
+    }
   }
 
   base::TimeDelta WaitForBookmarkBarAnimationToFinish() {
@@ -130,9 +135,7 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-#if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list_;
-#endif
 
   // We make the histogram tester a member field to make sure it starts
   // recording as early as possible.
@@ -182,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MAYBE_Persist) {
   EXPECT_EQ(kPersistLastUsedTime, nodes[0]->date_last_used());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)  // No multi-profile on ChromeOS.
 
 // Sanity check that bookmarks from different profiles are separate.
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MultiProfile) {
@@ -243,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(
   const BookmarkNode* const folder = bookmark_model->AddFolder(
       bookmark_model->bookmark_bar_node(), 0, u"Folder");
   const BookmarkNode* const page1 = bookmark_model->AddURL(
-      folder, 0, u"BookmarkManager", GURL(chrome::kChromeUIBookmarksURL));
+      folder, 0, u"Extensions", GURL(chrome::kChromeUIExtensionsURL));
   const BookmarkNode* const page2 = bookmark_model->AddURL(
       folder, 1, u"Settings", GURL(chrome::kChromeUISettingsURL));
 
@@ -264,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(
 
   chrome::OpenAllIfAllowed(incognito_browser, {incognito_folder},
                            WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                           /* add_to_group =*/true);
+                           bookmarks::OpenAllBookmarksContext::kInGroup);
 
   EXPECT_EQ(incognito_tabs,
             incognito_browser->tab_strip_model()->GetTabCount());
@@ -299,8 +302,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(regular_browser);
       close_all_tabs_except_first(incognito_browser);
       chrome::OpenAllIfAllowed(regular_browser, {bbar},
-                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                               false);
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB);
       int num_tabs_regular = regular_browser->tab_strip_model()->GetTabCount();
       int num_tabs_incognito =
           incognito_browser->tab_strip_model()->GetTabCount();
@@ -313,12 +315,13 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(regular_browser);
       close_all_tabs_except_first(incognito_browser);
       chrome::OpenAllIfAllowed(regular_browser, {bbar},
-                               WindowOpenDisposition::NEW_WINDOW, false);
+                               WindowOpenDisposition::NEW_WINDOW);
       Browser* regular_browser2 = nullptr;
       for (Browser* browser_instance : *BrowserList::GetInstance()) {
         if (browser_instance != incognito_browser &&
-            browser_instance != regular_browser)
+            browser_instance != regular_browser) {
           regular_browser2 = browser_instance;
+        }
       }
       // new browser needs to be opened
       EXPECT_NE(regular_browser2, nullptr);
@@ -335,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(regular_browser);
       close_all_tabs_except_first(incognito_browser);
       chrome::OpenAllIfAllowed(regular_browser, {bbar},
-                               WindowOpenDisposition::OFF_THE_RECORD, false);
+                               WindowOpenDisposition::OFF_THE_RECORD);
       int num_tabs_incognito =
           incognito_browser->tab_strip_model()->GetTabCount();
       EXPECT_EQ(num_tabs_incognito, 3);
@@ -351,8 +354,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(regular_browser);
       close_all_tabs_except_first(incognito_browser);
       chrome::OpenAllIfAllowed(incognito_browser, {incognito_bbar},
-                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                               false);
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB);
       int num_tabs_regular = regular_browser->tab_strip_model()->GetTabCount();
       int num_tabs_incognito =
           incognito_browser->tab_strip_model()->GetTabCount();
@@ -365,12 +367,13 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(regular_browser);
       close_all_tabs_except_first(incognito_browser);
       chrome::OpenAllIfAllowed(incognito_browser, {incognito_bbar},
-                               WindowOpenDisposition::NEW_WINDOW, false);
+                               WindowOpenDisposition::NEW_WINDOW);
       Browser* incognito_browser2 = nullptr;
       for (Browser* browser_instance : *BrowserList::GetInstance()) {
         if (browser_instance != incognito_browser &&
-            browser_instance != regular_browser)
+            browser_instance != regular_browser) {
           incognito_browser2 = browser_instance;
+        }
       }
       // new browser needs to be opened
       EXPECT_NE(incognito_browser2, nullptr);
@@ -782,6 +785,62 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, NonCommitURLNavigation) {
   EXPECT_FALSE(manager.was_committed());
   EXPECT_TRUE(bookmark_observer.is_starred());
 }
+
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
+                       BookmarkCurrentTab_WithoutAccountNodes) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+
+  // If no folders have been modified, bookmarks are saved to other bookmarks by
+  // default.
+  ASSERT_EQ(bookmark_model->other_node(),
+            bookmarks::GetParentForNewNodes(bookmark_model));
+
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
+  EXPECT_THAT(1u, bookmark_model->other_node()->children().size());
+
+  // Add a bookmark to the local bookmark bar node, so that it becomes the most
+  // recently modified one.
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Title",
+                         GURL("http://google.com"));
+  ASSERT_EQ(bookmark_model->bookmark_bar_node(),
+            bookmarks::GetParentForNewNodes(bookmark_model));
+
+  // After the bookmarks bar was modified, it should be the new default save
+  // location.
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
+  EXPECT_THAT(1u, bookmark_model->bookmark_bar_node()->children().size());
+}
+
+// Account nodes don't exist on ChromeOS, so this test does not apply.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
+                       BookmarkCurrentTab_WithAccountNodes) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  bookmark_model->CreateAccountPermanentFolders();
+
+  // If no folders have been modified, bookmarks are saved to account other
+  // bookmarks by default.
+  ASSERT_EQ(bookmark_model->account_other_node(),
+            bookmarks::GetParentForNewNodes(bookmark_model));
+
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
+  EXPECT_THAT(1u, bookmark_model->account_other_node()->children().size());
+
+  // Add a bookmark to the local bookmark bar node, so that it becomes the most
+  // recently modified one.
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Title",
+                         GURL("http://google.com"));
+  ASSERT_EQ(bookmark_model->bookmark_bar_node(),
+            bookmarks::GetParentForNewNodes(bookmark_model));
+
+  // After the bookmarks bar was modified, it should be the new default save
+  // location.
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB));
+  EXPECT_THAT(1u, bookmark_model->bookmark_bar_node()->children().size());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class BookmarkPrerenderBrowsertest : public BookmarkBrowsertest {
  public:

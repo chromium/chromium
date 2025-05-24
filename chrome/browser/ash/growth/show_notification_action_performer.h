@@ -21,11 +21,13 @@ class HandleNotificationClickAndCloseDelegate
  public:
   // The parameter is the index of the button that was clicked, or nullopt if
   // the body was clicked.
-  using ButtonClickCallback = base::RepeatingCallback<void(std::optional<int>)>;
+  using ButtonClickCallback =
+      base::RepeatingCallback<void(base::Value::Dict, std::optional<int>)>;
   using CloseCallback = base::RepeatingCallback<void(bool)>;
 
   // Creates a delegate that handles clicks on a button or on the body.
   explicit HandleNotificationClickAndCloseDelegate(
+      const base::Value::Dict* params,
       const ButtonClickCallback& click_callback,
       const CloseCallback& close_callback);
 
@@ -43,6 +45,12 @@ class HandleNotificationClickAndCloseDelegate
   ~HandleNotificationClickAndCloseDelegate() override;
 
  private:
+  // True if any button in the notification has been clicked.
+  bool button_clicked_ = false;
+
+  // The `params` needed to handle button click.
+  base::Value::Dict params_;
+
   ButtonClickCallback click_callback_;
   CloseCallback close_callback_;
 };
@@ -63,11 +71,11 @@ class ShowNotificationActionPerformer : public UiActionPerformer {
   growth::ActionType ActionType() const override;
 
  private:
-  void HandleNotificationClicked(const base::Value::Dict* params,
-                                 const std::string& notification_id,
+  void HandleNotificationClicked(const std::string& notification_id,
                                  int campaign_id,
                                  std::optional<int> group_id,
                                  bool should_log_cros_events,
+                                 base::Value::Dict params,
                                  std::optional<int> button_index);
   void HandleNotificationClose(int campaign_id,
                                std::optional<int> group_id,

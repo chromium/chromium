@@ -5,6 +5,7 @@
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "components/input/features.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
@@ -21,36 +22,36 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &blink::features::kCursorAnchorInfoMojoPipe,
     &blink::features::kDevicePosture,
-    &blink::features::kStylusPointerAdjustment,
-    &blink::features::kStylusRichGestures,
+    &blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
+    &blink::features::kSecurePaymentConfirmationBrowserBoundKeys,
     &blink::features::kViewportSegments,
+    &input::features::kInputOnViz,
+    &features::kAccessibilityDeprecateJavaNodeCache,
+    &features::kAccessibilityDeprecateTypeAnnounce,
     &features::kAccessibilityIncludeLongClickAction,
-    &features::kAccessibilityPageZoom,
-    &features::kAccessibilityPageZoomEnhancements,
+    &features::kAccessibilityPageZoomV2,
     &features::kAccessibilityUnifiedSnapshots,
     &features::kAccessibilityManageBroadcastReceiverOnBackground,
+    &features::kAndroidFallbackToNextSlot,
     &features::kAndroidOpenPdfInline,
     &features::kFedCm,
+    &features::kGroupRebindingForGroupImportance,
     &features::kHidePastePopupOnGSB,
-    &features::kMouseAndTrackpadDropdownMenu,
-    &features::kOptimizeImmHideCalls,
-    &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,
     &features::kContinueGestureOnLosingFocus,
-    &features::kSelectionMenuItemModification,
     &features::kSmartZoom,
     &features::kTouchDragAndContextMenu,
     &features::kWebBluetoothNewPermissionsBackend,
     &features::kWebIdentityDigitalCredentials,
-    &features::kWebNfc,
+    &features::kBtmTtl,
+    &features::kSpareRendererProcessPriority,
 };
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 

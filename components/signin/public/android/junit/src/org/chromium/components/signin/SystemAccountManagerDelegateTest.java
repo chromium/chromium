@@ -50,8 +50,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Config(manifest = Config.NONE)
 public class SystemAccountManagerDelegateTest {
     private static final Account[] GOOGLE_ACCOUNTS = {
-        AccountUtils.createAccountFromName("account-name"),
-        AccountUtils.createAccountFromName("other-account-name")
+        AccountUtils.createAccountFromEmail("account-email"),
+        AccountUtils.createAccountFromEmail("other-account-email")
     };
     @Mock private AccountManager mAccountManager;
     @Mock private AccountManagerFuture<Bundle> mAccountManagerFuture;

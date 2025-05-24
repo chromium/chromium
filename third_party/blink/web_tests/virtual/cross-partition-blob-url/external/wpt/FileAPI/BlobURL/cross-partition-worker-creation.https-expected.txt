@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Cross-partition Shared worker shouldn't be created from blob URL.
+  promise_test: Unhandled rejection with value: "Shared worker was created in not-same-top-level-site iframe"
+[FAIL] Cross-partition Dedicated worker shouldn't be created from blob URL.
+  promise_test: Unhandled rejection with value: "Dedicated worker was created in not-same-top-level-site iframe"
+Harness: the test ran to completion.
+

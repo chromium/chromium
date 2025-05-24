@@ -70,7 +70,7 @@ public class UrlSimilarityScorer {
     public static final int SCORE_REF_MATCH = 1;
 
     // These are the same ones used in VisitSegmentDatabase::ComputeSegmentName().
-    private static Set<String> sDiscardableHostPrefixes =
+    private static final Set<String> sDiscardableHostPrefixes =
             new HashSet<>(Arrays.asList("www", "m", "mobile", "touch"));
 
     private final GURL mKeyUrl;

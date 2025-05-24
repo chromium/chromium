@@ -127,6 +127,8 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
                  int net_error,
                  std::optional<int> response_code);
 
+  void OnHandshakeConfirmed(CompletionOnceCallback callback, int rv);
+
   HandshakeResult result_ = HandshakeResult::HTTP3_INCOMPLETE;
 
   std::unique_ptr<WebSocketSpdyStreamAdapter> adapter_;

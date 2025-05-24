@@ -140,6 +140,8 @@ bool FakeLoginDisplayHost::HandleAccelerator(LoginAcceleratorAction action) {
   return false;
 }
 
+void FakeLoginDisplayHost::SkipPostLoginScreensForDemoMode() {}
+
 void FakeLoginDisplayHost::HandleDisplayCaptivePortal() {}
 
 void FakeLoginDisplayHost::UpdateAddUserButtonStatus() {}
@@ -161,7 +163,7 @@ SigninUI* FakeLoginDisplayHost::GetSigninUI() {
 
 void FakeLoginDisplayHost::AddWizardCreatedObserverForTests(
     base::RepeatingClosure on_created) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeLoginDisplayHost::IsWizardControllerCreated() const {
@@ -169,8 +171,7 @@ bool FakeLoginDisplayHost::IsWizardControllerCreated() const {
 }
 
 WizardContext* FakeLoginDisplayHost::GetWizardContextForTesting() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool FakeLoginDisplayHost::IsWebUIStarted() const {

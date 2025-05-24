@@ -15,6 +15,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -39,13 +40,12 @@ const int kSubMenuBaseId = 200;
 //  virtual std::u16string GetLabelAt(int index) const = 0;
 class CommonMenuModel : public ui::MenuModel {
  public:
-  CommonMenuModel() {
-  }
+  CommonMenuModel() = default;
 
   CommonMenuModel(const CommonMenuModel&) = delete;
   CommonMenuModel& operator=(const CommonMenuModel&) = delete;
 
-  ~CommonMenuModel() override {}
+  ~CommonMenuModel() override = default;
 
  protected:
   // ui::MenuModel:
@@ -88,11 +88,9 @@ class SubMenuModel final : public CommonMenuModel {
   SubMenuModel(const SubMenuModel&) = delete;
   SubMenuModel& operator=(const SubMenuModel&) = delete;
 
-  ~SubMenuModel() override {}
+  ~SubMenuModel() override = default;
 
-  bool showing() const {
-    return showing_;
-  }
+  bool showing() const { return showing_; }
 
  private:
   // ui::MenuModel implementation.
@@ -121,17 +119,14 @@ class SubMenuModel final : public CommonMenuModel {
 
 class TopMenuModel final : public CommonMenuModel {
  public:
-  TopMenuModel() {
-  }
+  TopMenuModel() = default;
 
   TopMenuModel(const TopMenuModel&) = delete;
   TopMenuModel& operator=(const TopMenuModel&) = delete;
 
-  ~TopMenuModel() override {}
+  ~TopMenuModel() override = default;
 
-  bool IsSubmenuShowing() {
-    return sub_menu_model_.showing();
-  }
+  bool IsSubmenuShowing() { return sub_menu_model_.showing(); }
 
  private:
   // ui::MenuModel implementation.
@@ -256,7 +251,7 @@ class MenuModelAdapterTest : public ViewEventTestBase {
  private:
   // Generate a mouse click on the specified view and post a new task.
   virtual void Click(views::View* view, base::OnceClosure next) {
-    ui_test_utils::MoveMouseToCenterAndPress(
+    ui_test_utils::MoveMouseToCenterAndClick(
         view, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
         std::move(next));
   }
@@ -265,7 +260,7 @@ class MenuModelAdapterTest : public ViewEventTestBase {
     menu_runner_->RunMenuAt(button_->GetWidget(), button_->button_controller(),
                             button_->GetBoundsInScreen(),
                             views::MenuAnchorPosition::kTopLeft,
-                            ui::MENU_SOURCE_NONE);
+                            ui::mojom::MenuSourceType::kNone);
   }
 
   raw_ptr<views::MenuButton> button_ = nullptr;

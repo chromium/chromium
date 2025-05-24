@@ -11,6 +11,8 @@
 
 #include <xmmintrin.h>
 
+#include <array>
+
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
 
 namespace blink {
@@ -129,10 +131,10 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
   // Temporary arrays where we can gather up the wave data we need for
   // interpolation.  Align these for best efficiency on older CPUs where aligned
   // access is much faster than unaliged.
-  float sample1_lower[4] __attribute__((aligned(16)));
-  float sample2_lower[4] __attribute__((aligned(16)));
-  float sample1_higher[4] __attribute__((aligned(16)));
-  float sample2_higher[4] __attribute__((aligned(16)));
+  std::array<float, 4> sample1_lower __attribute__((aligned(16)));
+  std::array<float, 4> sample2_lower __attribute__((aligned(16)));
+  std::array<float, 4> sample1_higher __attribute__((aligned(16)));
+  std::array<float, 4> sample2_higher __attribute__((aligned(16)));
 
   int k = 0;
   int n_loops = n / 4;
@@ -159,10 +161,10 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
       sample2_higher[m] = higher_wave_data[r1[m]];
     }
 
-    const __m128 s1_low = _mm_load_ps(sample1_lower);
-    const __m128 s2_low = _mm_load_ps(sample2_lower);
-    const __m128 s1_high = _mm_load_ps(sample1_higher);
-    const __m128 s2_high = _mm_load_ps(sample2_higher);
+    const __m128 s1_low = _mm_load_ps(sample1_lower.data());
+    const __m128 s2_low = _mm_load_ps(sample2_lower.data());
+    const __m128 s1_high = _mm_load_ps(sample1_higher.data());
+    const __m128 s2_high = _mm_load_ps(sample2_higher.data());
 
     // Linearly interpolate within each table (lower and higher).
     const __m128 interpolation_factor =
@@ -212,7 +214,7 @@ double OscillatorHandler::ProcessARateVectorKernel(
   // Accumulate the phase increments so we can set up the virtual read index
   // vector appropriately.  This must be a double to preserve accuracy and
   // to match the scalar version.
-  double incr_sum[4];
+  std::array<double, 4> incr_sum;
   incr_sum[0] = phase_increments[0];
   for (int m = 1; m < 4; ++m) {
     incr_sum[m] = incr_sum[m - 1] + phase_increments[m];
@@ -250,10 +252,10 @@ double OscillatorHandler::ProcessARateVectorKernel(
     v_read1 = _mm_and_si128(v_read1, v_mask);
   }
 
-  float sample1_lower[4] __attribute__((aligned(16)));
-  float sample2_lower[4] __attribute__((aligned(16)));
-  float sample1_higher[4] __attribute__((aligned(16)));
-  float sample2_higher[4] __attribute__((aligned(16)));
+  std::array<float, 4> sample1_lower __attribute__((aligned(16)));
+  std::array<float, 4> sample2_lower __attribute__((aligned(16)));
+  std::array<float, 4> sample1_higher __attribute__((aligned(16)));
+  std::array<float, 4> sample2_higher __attribute__((aligned(16)));
 
   const unsigned* read0 = reinterpret_cast<const unsigned*>(&v_read0);
   const unsigned* read1 = reinterpret_cast<const unsigned*>(&v_read1);
@@ -272,14 +274,14 @@ double OscillatorHandler::ProcessARateVectorKernel(
       _mm_sub_ps(_mm_movelh_ps(_mm_cvtpd_ps(v_read_index_lo),
                                _mm_cvtpd_ps(v_read_index_hi)),
                  _mm_cvtepi32_ps(v_read0));
-  const __m128 sample_higher =
-      _mm_add_ps(_mm_load_ps(sample1_higher),
-                 _mm_mul_ps(v_factor, _mm_sub_ps(_mm_load_ps(sample2_higher),
-                                                 _mm_load_ps(sample1_higher))));
-  const __m128 sample_lower =
-      _mm_add_ps(_mm_load_ps(sample1_lower),
-                 _mm_mul_ps(v_factor, _mm_sub_ps(_mm_load_ps(sample2_lower),
-                                                 _mm_load_ps(sample1_lower))));
+  const __m128 sample_higher = _mm_add_ps(
+      _mm_load_ps(sample1_higher.data()),
+      _mm_mul_ps(v_factor, _mm_sub_ps(_mm_load_ps(sample2_higher.data()),
+                                      _mm_load_ps(sample1_higher.data()))));
+  const __m128 sample_lower = _mm_add_ps(
+      _mm_load_ps(sample1_lower.data()),
+      _mm_mul_ps(v_factor, _mm_sub_ps(_mm_load_ps(sample2_lower.data()),
+                                      _mm_load_ps(sample1_lower.data()))));
   const __m128 sample = _mm_add_ps(
       sample_higher, _mm_mul_ps(_mm_load_ps(table_interpolation_factor),
                                 _mm_sub_ps(sample_lower, sample_higher)));

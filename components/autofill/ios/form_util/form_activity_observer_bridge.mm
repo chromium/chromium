@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/ios/form_util/form_activity_observer_bridge.h"
+#import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 
-#include "base/check_op.h"
-#include "components/autofill/ios/form_util/form_activity_tab_helper.h"
+#import "base/check_op.h"
+#import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 
 namespace autofill {
 FormActivityObserverBridge::FormActivityObserverBridge(
@@ -35,19 +35,16 @@ void FormActivityObserverBridge::FormActivityRegistered(
 
 void FormActivityObserverBridge::DocumentSubmitted(web::WebState* web_state,
                                                    web::WebFrame* sender_frame,
-                                                   const std::string& form_name,
-                                                   const std::string& form_data,
+                                                   const FormData& form_data,
                                                    bool has_user_gesture) {
   DCHECK_EQ(web_state, web_state_);
   if ([owner_ respondsToSelector:@selector
               (webState:
-                  didSubmitDocumentWithFormNamed:withData:hasUserGesture:inFrame
-                                                :)]) {
+                  didSubmitDocumentWithFormData:hasUserGesture:inFrame:)]) {
     [owner_ webState:web_state
-        didSubmitDocumentWithFormNamed:form_name
-                              withData:form_data
-                        hasUserGesture:has_user_gesture
-                               inFrame:sender_frame];
+        didSubmitDocumentWithFormData:form_data
+                       hasUserGesture:has_user_gesture
+                              inFrame:sender_frame];
   }
 }
 

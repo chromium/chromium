@@ -10,7 +10,8 @@
 
 namespace arc {
 
-constexpr char kArcDisplayPowerObserverName[] = "ArcDisplayPowerObserver";
+inline constexpr char kArcDisplayPowerObserverName[] =
+    "ArcDisplayPowerObserver";
 
 // Listens to ARC power events and enforces throttle when display is off.
 // Enforcing throttle leads to idle state, ultimately leading to doze mode.

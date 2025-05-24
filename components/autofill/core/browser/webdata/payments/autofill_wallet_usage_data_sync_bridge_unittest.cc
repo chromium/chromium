@@ -15,8 +15,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
@@ -190,7 +190,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyIncrementalSyncChanges) {
   // `virtual_card_usage_data2`.
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateDelete(
-      *virtual_card_usage_data1.usage_data_id()));
+      *virtual_card_usage_data1.usage_data_id(), syncer::EntityData()));
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
       *virtual_card_usage_data2.usage_data_id(),
       VirtualCardUsageDataToEntity(virtual_card_usage_data2)));

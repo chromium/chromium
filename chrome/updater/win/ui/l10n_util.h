@@ -19,9 +19,8 @@ std::wstring GetPreferredLanguage();
 // the language tag. The string is read from the binary's string table, and the
 // localized message id of the string will be calculated based off of the
 // language offsets defined in updater_installer_strings.h.
-std::wstring GetLocalizedString(
-    unsigned int base_message_id,
-    const std::wstring& lang = GetPreferredLanguage());
+std::wstring GetLocalizedString(unsigned int base_message_id,
+                                std::wstring lang = GetPreferredLanguage());
 
 // Returns a formatted version of the localized string in which there is only
 // one replacement.
@@ -39,8 +38,11 @@ std::wstring GetLocalizedStringF(
 
 // Returns a localized version of the error message associated with a
 // metainstaller `exit_code`/`windows_error`.
-std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
-                                                  DWORD windows_error);
+std::wstring GetLocalizedMetainstallerErrorString(
+    DWORD exit_code,
+    DWORD windows_error,
+    const std::wstring& lang = GetPreferredLanguage());
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_UI_L10N_UTIL_H_

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
-#include <memory>
 
 #include <memory>
 
@@ -43,7 +42,7 @@ SkColor4f GetShadowColor(TabStrip* tab_strip) {
       tab_strip->GetColorProvider()->GetColor(ui::kColorShadowBase));
 }
 
-// Define a custom FlexRule for |scroll_view_|. Equivalent to using a
+// Define a custom FlexRule for `scroll_view_`. Equivalent to using a
 // (kScaleToMinimum, kPreferred) flex specification on the tabstrip itself,
 // bypassing the ScrollView.
 // TODO(crbug.com/40721975): Make ScrollView take on TabStrip's preferred size
@@ -124,7 +123,7 @@ TabStripScrollContainer::TabStripScrollContainer(
   overflow_indicator_strategy_->Init();
   // This base::Unretained is safe because the callback is called by the
   // layout manager, which is cleaned up before view children like
-  // |scroll_view| (which owns |tab_strip|).
+  // `scroll_view` (which owns `tab_strip`).
   scroll_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(base::BindRepeating(
@@ -152,6 +151,8 @@ TabStripScrollContainer::TabStripScrollContainer(
                               base::Unretained(this)));
   leading_scroll_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SCROLL_LEADING));
+  leading_scroll_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SCROLL_LEADING));
 
   std::unique_ptr<views::ImageButton> trailing_scroll_button =
       CreateScrollButton(base::BindRepeating(
@@ -159,6 +160,8 @@ TabStripScrollContainer::TabStripScrollContainer(
           base::Unretained(this)));
   trailing_scroll_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SCROLL_TRAILING));
+  trailing_scroll_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SCROLL_TRAILING));
 
   // The space in dips between the scroll buttons and the NTB.
   constexpr int kScrollButtonsTrailingMargin = 8;
@@ -209,9 +212,8 @@ void TabStripScrollContainer::OnViewPreferredSizeChanged(views::View* view) {
 
 void TabStripScrollContainer::OnContentsScrolledCallback() {
   views::Widget* root_widget = tab_strip()->GetWidget();
-  std::set<raw_ptr<views::Widget, SetExperimental>> children_widgets;
-  views::Widget::GetAllOwnedWidgets(root_widget->GetNativeView(),
-                                    &children_widgets);
+  views::Widget::Widgets children_widgets =
+      views::Widget::GetAllOwnedWidgets(root_widget->GetNativeView());
 
   for (views::Widget* child_widget : children_widgets) {
     views::BubbleDialogDelegate* bdd =

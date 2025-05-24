@@ -29,6 +29,8 @@ class WebUIContentsPreloadManagerTestAPI {
 
   std::optional<GURL> GetPreloadedURL();
 
+  content::WebContents* GetPreloadedWebContents();
+
   std::optional<GURL> GetNextWebUIURLToPreload(
       content::BrowserContext* browser_context);
 
@@ -39,13 +41,18 @@ class WebUIContentsPreloadManagerTestAPI {
       content::WebContents* busy_web_contents_to_watch,
       base::TimeDelta deadline);
 
-  void SetPreloadedContents(std::unique_ptr<content::WebContents> web_contents);
+  void PreloadUrl(content::BrowserContext* browser_context, const GURL& url);
+
+  // Sets a new preloaded contents and returns the previous preloaded contents.
+  std::unique_ptr<content::WebContents> SetPreloadedContents(
+    std::unique_ptr<content::WebContents> web_contents);
+
+  void DisableDelayPreload(bool disable);
 
   void SetPreloadCandidateSelector(
       std::unique_ptr<webui::PreloadCandidateSelector>
           preload_candidate_selector);
 
- private:
   WebUIContentsPreloadManager* preload_manager() {
     return WebUIContentsPreloadManager::GetInstance();
   }

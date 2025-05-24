@@ -13,6 +13,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
+#ifndef ML_INTERNAL_TEXT_SAFETY_SESSION_MIGRATION
+#define ML_INTERNAL_TEXT_SAFETY_SESSION_MIGRATION 1
+#endif
+
 namespace on_device_model {
 
 // Helper to accumulate a streamed response from model execution. This is only
@@ -32,6 +36,7 @@ class TestResponseHolder : public mojom::StreamingResponder {
   bool complete() const { return complete_; }
   bool disconnected() const { return disconnected_; }
   bool terminated() const { return disconnected_ || complete_; }
+  uint32_t output_token_count() const { return output_token_count_; }
 
   // Spins a RunLoop until this object observes completion of its response.
   void WaitForCompletion();
@@ -46,6 +51,7 @@ class TestResponseHolder : public mojom::StreamingResponder {
   std::vector<std::string> responses_;
   bool complete_ = false;
   bool disconnected_ = false;
+  uint32_t output_token_count_ = 0;
   mojo::Receiver<mojom::StreamingResponder> receiver_{this};
 };
 

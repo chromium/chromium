@@ -17,7 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter_test_utils.h"
 #include "components/subresource_filter/core/common/constants.h"
@@ -27,8 +27,10 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,13 +55,19 @@ class ActivationStateComputingNavigationThrottleTest
   ActivationStateComputingNavigationThrottleTest& operator=(
       const ActivationStateComputingNavigationThrottleTest&) = delete;
 
-  ~ActivationStateComputingNavigationThrottleTest() override {}
+  ~ActivationStateComputingNavigationThrottleTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL("https://example.first"));
     InitializeRuleset();
     Observe(RenderViewHostTestHarness::web_contents());
+    throttle_inserter_ =
+        std::make_unique<content::TestNavigationThrottleInserter>(
+            RenderViewHostTestHarness::web_contents(),
+            base::BindRepeating(
+                &ActivationStateComputingNavigationThrottleTest::InsertThrottle,
+                base::Unretained(this)));
   }
 
   void TearDown() override {
@@ -185,33 +193,37 @@ class ActivationStateComputingNavigationThrottleTest
   }
 
  protected:
-  // content::WebContentsObserver:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override {
+  void InsertThrottle(content::NavigationThrottleRegistry& registry) {
+    content::NavigationHandle& navigation_handle =
+        registry.GetNavigationHandle();
     std::unique_ptr<ActivationStateComputingNavigationThrottle> throttle =
-        IsInSubresourceFilterRoot(navigation_handle)
+        IsInSubresourceFilterRoot(&navigation_handle)
             ? ActivationStateComputingNavigationThrottle::CreateForRoot(
-                  navigation_handle)
+                  registry, kSafeBrowsingRulesetConfig.uma_tag)
             : ActivationStateComputingNavigationThrottle::CreateForChild(
-                  navigation_handle, ruleset_handle_.get(),
-                  parent_activation_state_.value());
-    if (navigation_handle->IsInMainFrame() && dryrun_speculation_) {
+                  registry, ruleset_handle_.get(),
+                  parent_activation_state_.value(),
+                  kSafeBrowsingRulesetConfig.uma_tag);
+    if (navigation_handle.IsInMainFrame() && dryrun_speculation_) {
       mojom::ActivationState dryrun_state;
       dryrun_state.activation_level = mojom::ActivationLevel::kDryRun;
       throttle->NotifyPageActivationWithRuleset(ruleset_handle_.get(),
                                                 dryrun_state);
     }
     test_throttle_ = throttle.get();
-    navigation_handle->RegisterThrottleForTesting(std::move(throttle));
+    registry.AddThrottle(std::move(throttle));
   }
 
+  // content::WebContentsObserver:
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (!test_throttle_)
+    if (!test_throttle_) {
       return;
+    }
     ASSERT_EQ(navigation_handle, test_throttle_->navigation_handle());
-    if (test_throttle_->filter())
+    if (test_throttle_->filter()) {
       test_throttle_->WillSendActivationToRenderer();
+    }
 
     if (auto filter = test_throttle_->ReleaseFilter()) {
       EXPECT_NE(mojom::ActivationLevel::kDisabled,
@@ -224,8 +236,9 @@ class ActivationStateComputingNavigationThrottleTest
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (!test_throttle_)
+    if (!test_throttle_) {
       return;
+    }
     last_committed_frame_host_ = navigation_handle->GetRenderFrameHost();
     test_throttle_ = nullptr;
   }
@@ -253,6 +266,8 @@ class ActivationStateComputingNavigationThrottleTest
       last_committed_frame_host_ = nullptr;
 
   bool dryrun_speculation_;
+
+  std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 };
 
 typedef ActivationStateComputingNavigationThrottleTest

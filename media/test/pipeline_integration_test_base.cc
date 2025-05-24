@@ -11,7 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -73,7 +75,15 @@ class TestDataSourceFactory
   ~TestDataSourceFactory() override = default;
   void CreateDataSource(GURL uri, bool, DataSourceCb callback) override {
     auto file_data_source = std::make_unique<FileDataSource>();
-    base::FilePath file_path(uri.GetContent());
+    base::FilePath file_path(
+#if BUILDFLAG(IS_WIN)
+        // Windows file paths can't start with '/' the way unix file paths can,
+        // So we have to strip the leading one which comes from GetContent().
+        base::UTF8ToWide(uri.GetContent().erase(0, 1))
+#else
+        uri.GetContent()
+#endif
+    );
     CHECK(file_data_source->Initialize(file_path))
         << "Is " << file_path.value() << " missing?";
     std::move(callback).Run(std::move(file_data_source));
@@ -280,6 +290,7 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithHlsManifest(
 
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
       std::move(hls_dsp), task_environment_.GetMainThreadTaskRunner(),
+      base::DoNothing(), base::DoNothing(),
       /*name=*/false, manifest_root, &media_log_);
   demuxer_ = std::make_unique<ManifestDemuxer>(
       task_environment_.GetMainThreadTaskRunner(), base::DoNothing(),
@@ -585,14 +596,14 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRendererImpl(
   if (!clockless_playback_) {
     DCHECK(!mono_output_) << " NullAudioSink doesn't specify output parameters";
 
-    audio_sink_ =
-        new NullAudioSink(task_environment_.GetMainThreadTaskRunner());
+    audio_sink_ = base::MakeRefCounted<NullAudioSink>(
+        task_environment_.GetMainThreadTaskRunner());
   } else {
     ChannelLayoutConfig output_layout_config =
         mono_output_ ? ChannelLayoutConfig::Mono()
                      : ChannelLayoutConfig::Stereo();
 
-    clockless_audio_sink_ = new ClocklessAudioSink(
+    clockless_audio_sink_ = base::MakeRefCounted<ClocklessAudioSink>(
         OutputDeviceInfo("", OUTPUT_DEVICE_STATUS_OK,
                          AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                          output_layout_config, 44100, 512)));

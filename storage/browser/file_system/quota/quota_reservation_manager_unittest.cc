@@ -32,12 +32,6 @@ const int64_t kInitialFileSize = 1;
 
 using ReserveQuotaCallback = QuotaReservationManager::ReserveQuotaCallback;
 
-int64_t GetFileSize(const base::FilePath& path) {
-  int64_t size = 0;
-  base::GetFileSize(path, &size);
-  return size;
-}
-
 void SetFileSize(const base::FilePath& path, int64_t size) {
   base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
   ASSERT_TRUE(file.IsValid());
@@ -131,15 +125,16 @@ class FakeWriter {
       consumed = max_offset - max_written_offset_;
       max_written_offset_ = max_offset;
     }
-    if (GetFileSize(path_) < max_offset)
+    if (base::GetFileSize(path_).value_or(0) < max_offset) {
       SetFileSize(path_, max_offset);
+    }
     return consumed;
   }
 
   int64_t Append(int64_t amount) {
     dirty_ = true;
     append_mode_write_amount_ += amount;
-    SetFileSize(path_, GetFileSize(path_) + amount);
+    SetFileSize(path_, base::GetFileSize(path_).value_or(0) + amount);
     return amount;
   }
 
@@ -240,7 +235,8 @@ TEST_F(QuotaReservationManagerTest, BasicTest) {
   }
 
   EXPECT_EQ(3, reservation->remaining_quota());
-  EXPECT_EQ(kInitialFileSize + 10 + 20, GetFileSize(file_path()));
+  EXPECT_EQ(kInitialFileSize + 10 + 20,
+            base::GetFileSize(file_path()).value_or(0));
   EXPECT_EQ(kInitialFileSize + 10 + 20, fake_backend()->on_disk_usage());
   EXPECT_EQ(kInitialFileSize + 10 + 20 + 3, fake_backend()->on_memory_usage());
 
@@ -254,7 +250,7 @@ TEST_F(QuotaReservationManagerTest, BasicTest) {
   }
 
   EXPECT_EQ(5, reservation->remaining_quota());
-  EXPECT_EQ(3, GetFileSize(file_path()));
+  EXPECT_EQ(3, base::GetFileSize(file_path()).value_or(0));
   EXPECT_EQ(3, fake_backend()->on_disk_usage());
   EXPECT_EQ(3 + 5, fake_backend()->on_memory_usage());
 
@@ -287,7 +283,8 @@ TEST_F(QuotaReservationManagerTest, MultipleWriter) {
     writer3.ReportUsage();
   }
 
-  EXPECT_EQ(kInitialFileSize + 20 + 30 + 40, GetFileSize(file_path()));
+  EXPECT_EQ(kInitialFileSize + 20 + 30 + 40,
+            base::GetFileSize(file_path()).value_or(0));
   EXPECT_EQ(kInitialFileSize + 10 + 20 + 30 + 40 + 5,
             fake_backend()->on_memory_usage());
   EXPECT_EQ(kInitialFileSize + 20 + 30 + 40, fake_backend()->on_disk_usage());
@@ -331,7 +328,8 @@ TEST_F(QuotaReservationManagerTest, MultipleClient) {
   writer1.reset();
   writer2.reset();
 
-  EXPECT_EQ(kInitialFileSize + 10 + 20, GetFileSize(file_path()));
+  EXPECT_EQ(kInitialFileSize + 10 + 20,
+            base::GetFileSize(file_path()).value_or(0));
   EXPECT_EQ(kInitialFileSize + 10 + 20 + 2 + 3,
             fake_backend()->on_memory_usage());
   EXPECT_EQ(kInitialFileSize + 10 + 20, fake_backend()->on_disk_usage());
@@ -362,7 +360,7 @@ TEST_F(QuotaReservationManagerTest, ClientCrash) {
   }
   reservation1 = nullptr;
 
-  EXPECT_EQ(kInitialFileSize + 10, GetFileSize(file_path()));
+  EXPECT_EQ(kInitialFileSize + 10, base::GetFileSize(file_path()).value_or(0));
   EXPECT_EQ(kInitialFileSize + 15 + 20, fake_backend()->on_memory_usage());
   EXPECT_EQ(kInitialFileSize + 10, fake_backend()->on_disk_usage());
 

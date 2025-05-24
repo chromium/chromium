@@ -57,8 +57,6 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub final
   void GetGpuFenceHandle(uint32_t gpu_fence_id,
                          GetGpuFenceHandleCallback callback) override;
 
-  void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
-
   // The group of contexts that share namespaces with this context.
   scoped_refptr<gles2::ContextGroup> context_group_;
 

@@ -41,9 +41,9 @@ struct ContentCondition {
 };
 
 // Factory function that instantiates a ContentCondition according to the
-// description |condition|, which should be an instance of
+// description `condition`, which should be an instance of
 // declarativeContent.PageStateMatcher from the Declarative Content
-// API. |predicate_factories| maps attribute names in the API to factories that
+// API. `predicate_factories` maps attribute names in the API to factories that
 // create the corresponding predicate.
 std::unique_ptr<ContentCondition> CreateContentCondition(
     const Extension* extension,

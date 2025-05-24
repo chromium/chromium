@@ -4,8 +4,9 @@
 
 #include "components/cast_receiver/browser/runtime_application_base.h"
 
+#include <algorithm>
+
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_receiver/browser/permissions_manager_impl.h"
 #include "components/media_control/browser/media_blocker.h"

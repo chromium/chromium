@@ -62,7 +62,7 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
   title_->SetText(l10n_util::GetStringUTF16(IDS_SHELF_KIOSK_APP_SETUP));
   title_->SetLineHeight(kTitleLineHeight);
   title_->SetMultiLine(true);
-  title_->SetEnabledColorId(kColorAshTextColorPrimary);
+  title_->SetEnabledColor(kColorAshTextColorPrimary);
   title_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *title_);
 }

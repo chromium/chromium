@@ -11,12 +11,16 @@
 #include "base/test/mock_callback.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -70,7 +74,7 @@ class TestPermissionManager : public MockPermissionManager {
   ~TestPermissionManager() override = default;
 
   PermissionStatus GetPermissionStatusForCurrentDocument(
-      PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status) override {
     RenderFrameHost* top_frame = render_frame_host->GetParentOrOuterDocument();
@@ -212,14 +216,9 @@ class PermissionControllerImplTest : public ::testing::Test {
       RenderProcessHost* render_process_host,
       const url::Origin& worker_origin) {
     return permission_controller()->GetPermissionStatusForWorker(
-        permission, render_process_host, worker_origin);
-  }
-
-  PermissionStatus GetPermissionStatusForCurrentDocument(
-      PermissionType permission,
-      RenderFrameHost* render_frame_host) {
-    return permission_controller()->GetPermissionStatusForCurrentDocument(
-        permission, render_frame_host);
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(permission),
+        render_process_host, worker_origin);
   }
 
   BrowserContext* browser_context() { return &browser_context_; }
@@ -277,19 +276,24 @@ TEST_F(PermissionControllerImplTest,
       if (test_case.expect_death) {
         // Death tests cannot track these expectations but arguments should be
         // forwarded to ensure death occurs.
-        ON_CALL(*mock_manager(), RequestPermissionsFromCurrentDocument(
-                                     rfh,
-                                     PermissionRequestDescription(
-                                         test_case.delegated_permissions,
-                                         /*user_gesture*/ true, GURL(kTestUrl)),
-                                     testing::_))
+        ON_CALL(*mock_manager(),
+                RequestPermissionsFromCurrentDocument(
+                    rfh,
+                    PermissionRequestDescription(
+                        content::PermissionDescriptorUtil::
+                            CreatePermissionDescriptorForPermissionTypes(
+                                test_case.delegated_permissions),
+                        /*user_gesture*/ true, GURL(kTestUrl)),
+                    testing::_))
             .WillByDefault(testing::Invoke(forward_callbacks));
       } else {
         EXPECT_CALL(*mock_manager(),
                     RequestPermissionsFromCurrentDocument(
                         rfh,
                         PermissionRequestDescription(
-                            test_case.delegated_permissions,
+                            content::PermissionDescriptorUtil::
+                                CreatePermissionDescriptorForPermissionTypes(
+                                    test_case.delegated_permissions),
                             /*user_gesture*/ true, GURL(kTestUrl)),
                         testing::_))
             .WillOnce(testing::Invoke(forward_callbacks));
@@ -306,8 +310,11 @@ TEST_F(PermissionControllerImplTest,
       EXPECT_DEATH_IF_SUPPORTED(
           PermissionControllerRequestPermissionsFromCurrentDocument(
               rfh,
-              PermissionRequestDescription(kTypesToQuery,
-                                           /*user_gesture*/ true),
+              PermissionRequestDescription(
+                  content::PermissionDescriptorUtil::
+                      CreatePermissionDescriptorForPermissionTypes(
+                          kTypesToQuery),
+                  /*user_gesture*/ true),
               callback.Get()),
           "");
     } else {
@@ -316,7 +323,10 @@ TEST_F(PermissionControllerImplTest,
                   Run(testing::ElementsAreArray(test_case.expected_results)));
       PermissionControllerRequestPermissionsFromCurrentDocument(
           rfh,
-          PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true),
+          PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionTypes(kTypesToQuery),
+              /*user_gesture*/ true),
           callback.Get());
     }
   }
@@ -365,20 +375,25 @@ TEST_F(PermissionControllerImplTest,
         // Death tests cannot track these expectations but arguments should be
         // forwarded to ensure death occurs.
         ON_CALL(*mock_manager(),
-                RequestPermissions(rfh,
-                                   PermissionRequestDescription(
-                                       test_case.delegated_permissions,
-                                       /*user_gesture*/ true, GURL(kTestUrl)),
-                                   testing::_))
+                RequestPermissions(
+                    rfh,
+                    PermissionRequestDescription(
+                        content::PermissionDescriptorUtil::
+                            CreatePermissionDescriptorForPermissionTypes(
+                                test_case.delegated_permissions),
+                        /*user_gesture*/ true, GURL(kTestUrl)),
+                    testing::_))
             .WillByDefault(testing::Invoke(forward_callbacks));
       } else {
-        EXPECT_CALL(
-            *mock_manager(),
-            RequestPermissions(rfh,
-                               PermissionRequestDescription(
-                                   test_case.delegated_permissions,
-                                   /*user_gesture*/ true, GURL(kTestUrl)),
-                               testing::_))
+        EXPECT_CALL(*mock_manager(),
+                    RequestPermissions(
+                        rfh,
+                        PermissionRequestDescription(
+                            content::PermissionDescriptorUtil::
+                                CreatePermissionDescriptorForPermissionTypes(
+                                    test_case.delegated_permissions),
+                            /*user_gesture*/ true, GURL(kTestUrl)),
+                        testing::_))
             .WillOnce(testing::Invoke(forward_callbacks));
       }
     } else {
@@ -393,8 +408,11 @@ TEST_F(PermissionControllerImplTest,
       EXPECT_DEATH_IF_SUPPORTED(
           PermissionControllerRequestPermissions(
               rfh,
-              PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true,
-                                           GURL(kTestUrl)),
+              PermissionRequestDescription(
+                  content::PermissionDescriptorUtil::
+                      CreatePermissionDescriptorForPermissionTypes(
+                          kTypesToQuery),
+                  /*user_gesture*/ true, GURL(kTestUrl)),
               callback.Get()),
           "");
     } else {
@@ -403,8 +421,10 @@ TEST_F(PermissionControllerImplTest,
                   Run(testing::ElementsAreArray(test_case.expected_results)));
       PermissionControllerRequestPermissions(
           rfh,
-          PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true,
-                                       GURL(kTestUrl)),
+          PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionTypes(kTypesToQuery),
+              /*user_gesture*/ true, GURL(kTestUrl)),
           callback.Get());
     }
   }
@@ -561,13 +581,13 @@ class PermissionControllerImplWithDelegateTest
   content::RenderFrameHost* AddChildRFH(
       content::RenderFrameHost* parent,
       const GURL& origin,
-      blink::mojom::PermissionsPolicyFeature feature =
-          blink::mojom::PermissionsPolicyFeature::kNotFound) {
-    blink::ParsedPermissionsPolicy frame_policy = {};
-    if (feature != blink::mojom::PermissionsPolicyFeature::kNotFound) {
+      network::mojom::PermissionsPolicyFeature feature =
+          network::mojom::PermissionsPolicyFeature::kNotFound) {
+    network::ParsedPermissionsPolicy frame_policy = {};
+    if (feature != network::mojom::PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,
-          std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+          std::vector{*network::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(origin))},
           /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
@@ -609,9 +629,13 @@ TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
 
   ASSERT_TRUE(parent);
 
+  const auto geolocation_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          PermissionType::GEOLOCATION);
+
   EXPECT_EQ(PermissionStatus::ASK,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, parent));
+                geolocation_permission_descriptor, parent));
 
   content::RenderFrameHost* child_without_policy =
       AddChildRFH(parent, GURL(kOrigin2));
@@ -621,18 +645,18 @@ TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
   // permission-gated functionality.
   EXPECT_EQ(PermissionStatus::DENIED,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, child_without_policy));
+                geolocation_permission_descriptor, child_without_policy));
 
   content::RenderFrameHost* child_with_policy =
       AddChildRFH(parent, GURL(kOrigin2),
-                  blink::mojom::PermissionsPolicyFeature::kGeolocation);
+                  network::mojom::PermissionsPolicyFeature::kGeolocation);
   ASSERT_TRUE(child_with_policy);
 
   // The top-level frame has no permission, hence a cross-origin iframe has no
   // permission as well.
   EXPECT_EQ(PermissionStatus::DENIED,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, child_without_policy));
+                geolocation_permission_descriptor, child_without_policy));
 
   permission_manager()->SetPermissionStatus(GURL(kOrigin1),
                                             PermissionStatus::GRANTED);
@@ -640,19 +664,19 @@ TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
   // The top-level frame has granted permission.
   EXPECT_EQ(PermissionStatus::GRANTED,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, parent));
+                geolocation_permission_descriptor, parent));
 
   // A cross-origin iframe with a permission policy has full access to a
   // permission-gated functionality as long as the top-level frame has
   // permission.
   EXPECT_EQ(PermissionStatus::GRANTED,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, child_with_policy));
+                geolocation_permission_descriptor, child_with_policy));
 
   // The frame without a permission policy still has no access.
   EXPECT_EQ(PermissionStatus::DENIED,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, child_without_policy));
+                geolocation_permission_descriptor, child_without_policy));
 }
 #endif
 

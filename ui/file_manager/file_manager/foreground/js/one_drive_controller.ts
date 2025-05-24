@@ -4,6 +4,7 @@
 
 import {OneDrivePlaceholder} from '../../common/js/files_app_entry_types.js';
 import {isSkyvaultV2Enabled} from '../../common/js/flags.js';
+import {str} from '../../common/js/translations.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {oneDriveFakeRootKey} from '../../state/ducks/volumes.js';
 import type {State} from '../../state/state.js';
@@ -50,8 +51,7 @@ export class OneDriveController {
     if (!this.localUserFilesAllowed_ &&
         this.defaultLocation_ ===
             chrome.fileManagerPrivate.DefaultLocation.ONEDRIVE) {
-      // TODO(b/334511998): Use proper strings.
-      const oneDriveFakeRoot = new OneDrivePlaceholder('Microsoft OneDrive');
+      const oneDriveFakeRoot = new OneDrivePlaceholder(str('ONEDRIVE'));
       this.store_.dispatch(addUiEntry(oneDriveFakeRoot));
     } else {
       this.store_.dispatch(removeUiEntry(oneDriveFakeRootKey));

@@ -233,8 +233,8 @@ void VaapiMjpegDecodeAccelerator::Decoder::DecodeFromDmaBufTask(
     error_cb_.Run(task_id, UNREADABLE_INPUT);
     return;
   }
-  base::span<const uint8_t> src_image =
-      base::make_span(static_cast<const uint8_t*>(src_addr), src_size);
+  base::span<const uint8_t> src_image(static_cast<const uint8_t*>(src_addr),
+                                      src_size);
 
   DecodeImpl(task_id, src_image, std::move(dst_frame));
 
@@ -405,9 +405,9 @@ bool VaapiMjpegDecodeAccelerator::Decoder::OutputPictureLibYuv(
   DCHECK(gfx::Rect(src_size).Contains(crop_rect));
 
   // Wrap |image| into VideoFrame.
-  std::vector<int32_t> strides(image->num_planes);
-  for (uint32_t i = 0; i < image->num_planes; ++i) {
-    if (!base::CheckedNumeric<uint32_t>(image->pitches[i])
+  std::vector<size_t> strides(image->num_planes);
+  for (size_t i = 0; i < image->num_planes; ++i) {
+    if (!base::CheckedNumeric<size_t>(image->pitches[i])
              .AssignIfValid(&strides[i])) {
       VLOGF(1) << "Invalid VAImage stride " << image->pitches[i]
                << " for plane " << i;

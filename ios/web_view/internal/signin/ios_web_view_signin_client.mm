@@ -4,7 +4,6 @@
 
 #import "ios/web_view/internal/signin/ios_web_view_signin_client.h"
 
-#import "components/signin/core/browser/cookie_settings_util.h"
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "components/version_info/channel.h"
@@ -20,8 +19,7 @@ IOSWebViewSigninClient::IOSWebViewSigninClient(
       pref_service_(pref_service),
       browser_state_(browser_state) {}
 
-IOSWebViewSigninClient::~IOSWebViewSigninClient() {
-}
+IOSWebViewSigninClient::~IOSWebViewSigninClient() {}
 
 void IOSWebViewSigninClient::Shutdown() {
   network_callback_helper_.reset();

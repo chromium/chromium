@@ -29,6 +29,7 @@ enum CdmKeyStatus {
     OUTPUT_DOWNSCALED,
     KEY_STATUS_PENDING,
     RELEASED,
+    USABLE_IN_FUTURE,
 };
 
 // See media::HdcpVersion

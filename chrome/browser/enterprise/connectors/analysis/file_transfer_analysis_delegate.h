@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -44,7 +45,7 @@ class FilesRequestHandler;
 // If `source_url` is a directory, all files contained within the directory or
 // any descended directory will be scanned. If `source_url` is a file only that
 // file will be scanned.
-class FileTransferAnalysisDelegate {
+class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
  public:
   using FileTransferAnalysisDelegateFactory = base::RepeatingCallback<
       std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>(
@@ -109,7 +110,7 @@ class FileTransferAnalysisDelegate {
   virtual ~FileTransferAnalysisDelegate();
 
   // Create the FileTransferAnalysisDelegate. This function uses the factory if
-  // it is set via `SetFactorForTesting()`.
+  // it is set via `SetFactoryForTesting()`.
   //
   // For `block_until_verdict == 0`, the `destination_url` has to point to the
   // copied file/directory and not its parent. If it points to the parent, all
@@ -124,7 +125,7 @@ class FileTransferAnalysisDelegate {
 
   // Set a factory for the FileTransferAnalysisDelegate.
   // Can be used in testing to create `MockFileTransferAnalysisDelegate`s.
-  static void SetFactorForTesting(FileTransferAnalysisDelegateFactory factory);
+  static void SetFactoryForTesting(FileTransferAnalysisDelegateFactory factory);
 
   // Returns a vector with the AnalysisSettings for file transfers from the
   // respective source url to the destination_url.
@@ -164,6 +165,21 @@ class FileTransferAnalysisDelegate {
   bool BypassRequiresJustification(const std::string& tag) const;
 
   FilesRequestHandler* GetFilesRequestHandlerForTesting();
+
+  // ContentAnalysisInfo:
+  const AnalysisSettings& settings() const override;
+  signin::IdentityManager* identity_manager() const override;
+  int user_action_requests_count() const override;
+  std::string tab_title() const override;
+  std::string user_action_id() const override;
+  std::string email() const override;
+  std::string url() const override;
+  const GURL& tab_url() const override;
+  ContentAnalysisRequest::Reason reason() const override;
+  google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+  referrer_chain() const override;
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
+      const override;
 
  protected:
   // For `block_until_verdict == 0`, the `destination_url` has to point to the

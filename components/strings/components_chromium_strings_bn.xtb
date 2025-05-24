@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Chromium ব্রাউজারে এই পৃষ্ঠা ব্লক করা হয়েছে</translation>
 <translation id="48558539577516920">আপনার ফায়ারওয়াল বা অ্যান্টিভাইরাস সেটিংসে Chromium কে নেটওয়ার্ক অ্যাক্সেস 
         করতে অনুমতি দিন।</translation>
+<translation id="4949828774841497663">'অ্যাপ্লিকেশন &gt; সিস্টেম সেটিংস &gt; নেটওয়ার্ক'-এ যান, চালু নেটওয়ার্ক
+          বেছে নিন, 'বিবরণ'... বোতামে ক্লিক করুন এবং যেকোনও প্রক্সি যা হয়ত বেছে নেওয়া হয়েছে সেটির
+          থেকে টিকচিহ্ন সরান।</translation>
 <translation id="580822234363523061">Chromium মেনুতে
           যান &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +32,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           এবং আপনার কনফিগারেশন "প্রক্সি নয়" বা "সরাসরি" তে সেট আছে কি না নিশ্চিত করুন৷</translation>
+<translation id="648062525172759633">এইসব পৃষ্ঠা Chromium ডেভেলপারদের ব্যবহার করার উদ্দেশ্যে তৈরি এবং এগুলি হয়ত সক্রিয়ভাবে রক্ষণাবেক্ষণ বা পরীক্ষা করা হয় না। এগুলি চালু করতে <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> লিঙ্কে যান, ডিবাগ পৃষ্ঠা চালু করতে বোতামে ক্লিক করে আবার এই পৃষ্ঠায় নেভিগেট করুন।</translation>
 <translation id="6549378540556750549">এছাড়াও Chromium অন্য <ph name="BEGIN_LINK_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_OSS" /> দ্বারা পরিচালিত।</translation>
 <translation id="6613594504749178791">আপনার পরিবর্তনগুলি পরবর্তী সময় আপনি Chromium আবার চালু হলে ফলপ্রদ হবে৷</translation>
 <translation id="691026815377248078">অন্য ডিভাইসের সাথে কানেক্ট করার জন্য Chromium-কে ব্লুটুথের অ্যাক্সেস দিতে 
@@ -41,8 +45,6 @@
         <ph name="ADVANCED_TITLE" />
         এবং অনির্বাচন করুন "<ph name="NO_PREFETCH_DESCRIPTION" />৷"
         যদি এটি সমস্যাটির সমাধান না করে, তাহলে উন্নত কার্য সম্পাদনার জন্য আবার এই বিকল্পটি নির্বাচন করা সুপারিশ আমরা করি৷</translation>
-<translation id="8187289872471304532">Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies এ যান
-          এবং নির্বাচিত থাকা যে কোনো প্রক্সি অনির্বাচন করুন৷</translation>
 <translation id="8597726643333341451">আপনি নিরাপদ Chrome for Testing পৃষ্ঠা দেখছেন</translation>
 <translation id="8684913864886094367">Chromium সঠিকভাবে বন্ধ হয়নি৷</translation>
 </translationbundle>

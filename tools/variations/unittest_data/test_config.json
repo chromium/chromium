@@ -81,5 +81,21 @@
         }
       ]
     }
+  ],
+  "TrialWithDisableBenchmarking": [
+    {
+      "platforms": ["windows"],
+      "experiments": [{"name": "TestGroup1", "disable_benchmarking": "true"}]
+    },
+    {
+      "platforms": ["windows"],
+      "experiments": [
+        {"name": "TestGroup2", "disable_benchmarking": "false"}
+      ]
+    },
+    {
+      "platforms": ["windows"],
+      "experiments": [{"name": "TestGroup3"}]
+    }
   ]
 }

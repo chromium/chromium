@@ -11,9 +11,14 @@
 
 namespace chrome_pdf {
 
+// TODO(crbug.com/c/360803943): Remove `rotate_image_to_upright` when PDF OCR
+// support is removed and set the default behavior to
+// rotate_image_to_upright = false.
 SkBitmap GetImageForOcr(FPDF_DOCUMENT doc,
                         FPDF_PAGE page,
-                        FPDF_PAGEOBJECT page_object);
+                        FPDF_PAGEOBJECT page_object,
+                        uint32_t max_image_dimension,
+                        bool rotate_image_to_upright);
 
 // Returns image bound's size in page coordinates. Returns (0,0) if fails.
 gfx::SizeF GetImageSize(FPDF_PAGEOBJECT page_object);

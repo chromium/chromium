@@ -30,7 +30,6 @@ goog.require('goog.html.SafeUrl');
 goog.require('goog.html.TrustedResourceUrl');
 goog.require('goog.string.Const');
 goog.require('goog.string.internal');
-goog.requireType('goog.i18n.bidi.Dir');
 
 
 /**
@@ -47,14 +46,11 @@ goog.requireType('goog.i18n.bidi.Dir');
  *     number.
  * @param {string} html A string that is claimed to adhere to the SafeHtml
  *     contract.
- * @param {?goog.i18n.bidi.Dir=} opt_dir The optional directionality of the
- *     SafeHtml to be constructed. A null or undefined value signifies an
- *     unknown directionality.
  * @return {!goog.html.SafeHtml} The value of html, wrapped in a SafeHtml
  *     object.
  */
 goog.html.uncheckedconversions.safeHtmlFromStringKnownToSatisfyTypeContract =
-    function(justification, html, opt_dir) {
+    function(justification, html) {
   'use strict';
   // unwrap() called inside an assert so that justification can be optimized
   // away in production code.
@@ -65,7 +61,7 @@ goog.html.uncheckedconversions.safeHtmlFromStringKnownToSatisfyTypeContract =
           goog.string.Const.unwrap(justification)),
       'must provide non-empty justification');
   return goog.html.SafeHtml.createSafeHtmlSecurityPrivateDoNotAccessOrElse(
-      html, opt_dir || null);
+      html);
 };
 
 

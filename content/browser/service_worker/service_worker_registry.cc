@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_info.h"
+#include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/service_worker/service_worker_router_evaluator.h"
@@ -41,13 +42,6 @@
 namespace content {
 
 namespace {
-
-// When this is enabled, the browser will schedule
-// ServiceWorkerStorageControl's response in a kHighest priority
-// queue during startup. After startup, it has a normal priority.
-BASE_FEATURE(kServiceWorkerStorageControlResponseQueue,
-             "ServiceWorkerStorageControlResponseQueue",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
     storage::mojom::ServiceWorkerDatabaseStatus status) {
@@ -91,11 +85,6 @@ void CompleteFindSoon(
     ServiceWorkerRegistry::FindRegistrationCallback callback) {
   RunSoon(from_here, base::BindOnce(&CompleteFindNow, std::move(registration),
                                     status, std::move(callback)));
-}
-
-void RecordRetryCount(size_t retries, size_t queue_size) {
-  base::UmaHistogramCounts100("ServiceWorker.Storage.RetryCountForRecovery",
-                              retries);
 }
 
 // Notifies quota manager that a disk write operation failed so that it can
@@ -381,6 +370,20 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
         /*callback=*/base::DoNothing(),
         storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
         std::vector(scopes->begin(), scopes->end()));
+    return;
+  }
+  if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
+          client_url)) {
+    // If `client_url` is eligible for SyntheticResponse, create a fake
+    // ServiceWorker registration so that the navigation is handled by
+    // ServiceWorker main resource loader.
+    CreateInvokerAndStartRemoteCall(
+        &storage::mojom::ServiceWorkerStorageControl::
+            GetFakeRegistrationForClientUrl,
+        base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
+                       weak_factory_.GetWeakPtr(), client_url, key,
+                       trace_event_id, base::DoNothing()),
+        client_url, key);
     return;
   }
   CreateInvokerAndStartRemoteCall(
@@ -1079,11 +1082,11 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
     version->set_used_features(std::move(used_features));
     // policy_container_host could be null for registration restored from old DB
     if (data.policy_container_policies) {
-      version->set_policy_container_host(
-          base::MakeRefCounted<PolicyContainerHost>(
-              PolicyContainerPolicies(*data.policy_container_policies)));
+      version->SetPolicyContainerHost(base::MakeRefCounted<PolicyContainerHost>(
+          PolicyContainerPolicies(*data.policy_container_policies,
+                                  /*is_web_secure_context=*/true)));
     }
-    if (data.router_rules && version->IsStaticRouterEnabled()) {
+    if (data.router_rules) {
       auto error = version->SetupRouterEvaluator(*data.router_rules);
       DCHECK_EQ(error, ServiceWorkerRouterEvaluatorErrorEnums::kNoError)
           << "Failed to setup RouterEvaluator from the provided "
@@ -1092,12 +1095,13 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   }
   version->set_script_response_time_for_devtools(data.script_response_time);
 
-  if (version->status() == ServiceWorkerVersion::ACTIVATED)
+  if (version->status() == ServiceWorkerVersion::ACTIVATED) {
     registration->SetActiveVersion(version);
-  else if (version->status() == ServiceWorkerVersion::INSTALLED)
+  } else if (version->status() == ServiceWorkerVersion::INSTALLED) {
     registration->SetWaitingVersion(version);
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   registration->EnableNavigationPreload(data.navigation_preload_state->enabled);
   registration->SetNavigationPreloadHeader(
@@ -1513,14 +1517,8 @@ void ServiceWorkerRegistry::NotifyRegistrationStored(
     const GURL& stored_scope,
     const blink::StorageKey& key,
     StatusCallback callback) {
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      context_->GetLiveRegistration(stored_registration_id);
-  if (registration) {
-    registration->SetStored();
-    registration->set_resources_total_size_bytes(
-        stored_resources_total_size_bytes);
-  }
-  context_->NotifyRegistrationStored(stored_registration_id, stored_scope, key);
+  context_->NotifyRegistrationStored(stored_registration_id, stored_scope, key,
+                                     stored_resources_total_size_bytes);
 
   auto iter = registration_scope_cache_.Get(key);
   if (iter != registration_scope_cache_.end()) {
@@ -1841,11 +1839,8 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
   if (!remote_storage_control_.is_bound()) {
     context_->wrapper()->BindStorageControl(
         remote_storage_control_.BindNewPipeAndPassReceiver(
-            base::FeatureList::IsEnabled(
-                kServiceWorkerStorageControlResponseQueue)
-                ? GetUIThreadTaskRunner(
-                      {BrowserTaskType::kServiceWorkerStorageControlResponse})
-                : base::SequencedTaskRunner::GetCurrentDefault()));
+            GetUIThreadTaskRunner(
+                {BrowserTaskType::kServiceWorkerStorageControlResponse})));
     DCHECK(remote_storage_control_.is_bound());
     remote_storage_control_.set_disconnect_handler(
         base::BindOnce(&ServiceWorkerRegistry::OnRemoteStorageDisconnected,
@@ -1879,9 +1874,7 @@ void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
   if (connection_state_ == ConnectionState::kRecovering) {
     ++recovery_retry_counts_;
     if (recovery_retry_counts_ > kMaxRetryCounts) {
-      RecordRetryCount(kMaxRetryCounts, inflight_calls_.size());
-      CHECK(false) << "The Storage Service consistently crashes.";
-      return;
+      NOTREACHED() << "The Storage Service consistently crashes.";
     }
   }
   connection_state_ = ConnectionState::kRecovering;
@@ -1901,8 +1894,6 @@ void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
 
 void ServiceWorkerRegistry::DidRecover() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  RecordRetryCount(recovery_retry_counts_, inflight_calls_.size());
 
   recovery_retry_counts_ = 0;
   connection_state_ = ConnectionState::kNormal;

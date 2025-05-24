@@ -32,16 +32,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostProxyTest,
   // all exist when this is finished.
   ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
 
-  // Helper for dereferencing a RenderProcessHostProxy on the main thread,
-  // and saving its value in |proxy_host|.
-  content::RenderProcessHost* proxy_host = nullptr;
-  auto deref_proxy = base::BindLambdaForTesting(
-      [&proxy_host](const RenderProcessHostProxy& proxy,
-                    base::OnceClosure quit_loop) {
-        proxy_host = proxy.Get();
-        std::move(quit_loop).Run();
-      });
-
   // Get the RPH associated with the main frame.
   content::RenderProcessHost* host =
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
@@ -53,53 +43,11 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostProxyTest,
   ProcessNode* process_node = render_process_user_data->process_node();
   ASSERT_NE(process_node, nullptr);
 
-  // Bounce over to the PM sequence, retrieve the proxy, bounce back to the UI
-  // thread, dereference it if possible, and save the returned host. To be
-  // fair, it's entirely valid to grab the weak pointer directly on the UI
-  // thread, as the lifetime of the process node is managed there and the
-  // property being accessed is thread safe. However, this test aims to simulate
-  // what would happen with a policy message being posted from the graph.
-  {
-    base::RunLoop run_loop;
-    PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindLambdaForTesting(
-            [&deref_proxy, process_node, quit_loop = run_loop.QuitClosure()]() {
-              content::GetUIThreadTaskRunner({})->PostTask(
-                  FROM_HERE,
-                  base::BindOnce(deref_proxy,
-                                 process_node->GetRenderProcessHostProxy(),
-                                 std::move(quit_loop)));
-            }));
-    run_loop.Run();
+  RenderProcessHostProxy proxy = process_node->GetRenderProcessHostProxy();
+  EXPECT_EQ(proxy.Get(), host);
 
-    // We should see the RPH via the proxy.
-    EXPECT_EQ(host, proxy_host);
-  }
-
-  // Run the same test but make sure the RPH is gone first.
-  {
-    base::RunLoop run_loop;
-    PerformanceManagerImpl::CallOnGraphImpl(
-        FROM_HERE,
-        base::BindLambdaForTesting([&deref_proxy, process_node,
-                                    shell = this->shell(),
-                                    quit_loop = run_loop.QuitClosure()]() {
-          content::GetUIThreadTaskRunner({})->PostTask(
-              FROM_HERE,
-              base::BindLambdaForTesting([shell]() { shell->Close(); }));
-          content::GetUIThreadTaskRunner({})->PostTask(
-              FROM_HERE,
-              base::BindOnce(deref_proxy,
-                             process_node->GetRenderProcessHostProxy(),
-                             std::move(quit_loop)));
-        }));
-    run_loop.Run();
-
-    // The process was destroyed on the UI thread prior to dereferencing the
-    // proxy, so it should return nullptr.
-    EXPECT_EQ(proxy_host, nullptr);
-  }
+  shell()->Close();
+  EXPECT_EQ(proxy.Get(), nullptr);
 }
 
 }  // namespace performance_manager

@@ -40,7 +40,7 @@ AddressNormalizerFactory::AddressNormalizerFactory()
           ValidationRulesStorageFactory::CreateStorage(),
           g_browser_process->GetApplicationLocale()) {}
 
-AddressNormalizerFactory::~AddressNormalizerFactory() {}
+AddressNormalizerFactory::~AddressNormalizerFactory() = default;
 
 #if BUILDFLAG(IS_ANDROID)
 static base::android::ScopedJavaLocalRef<jobject>

@@ -38,9 +38,10 @@ TranslateRankerFactory::TranslateRankerFactory()
 
 TranslateRankerFactory::~TranslateRankerFactory() = default;
 
-KeyedService* TranslateRankerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TranslateRankerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new TranslateRankerImpl(
+  return std::make_unique<TranslateRankerImpl>(
       TranslateRankerImpl::GetModelPath(browser_context->GetPath()),
       TranslateRankerImpl::GetModelURL(), ukm::UkmRecorder::Get());
 }

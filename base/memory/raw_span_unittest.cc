@@ -61,5 +61,5 @@ TEST(RawSpan, SameSlotAssignmentWhenDangling) {
   // This test is designed to test for crbug.com/347461704, but as #comment13
   // explains, `raw_span<>` doesn't exhibit the suspected buggy behavior. Keep
   // the test just in case the implementation changes in the future.
-  span = span.subspan(1);
+  span = span.subspan<1>();
 }

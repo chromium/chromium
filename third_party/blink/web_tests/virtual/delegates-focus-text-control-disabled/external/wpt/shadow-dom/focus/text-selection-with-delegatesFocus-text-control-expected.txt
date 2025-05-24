@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] shadow root has selectable text when focus is delegated. Selection goes to text control if it is the delegated focusable area.
+  assert_equals: keyboard typing will update the input value. expected "FOO" but got ""
+Harness: the test ran to completion.
+

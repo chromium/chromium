@@ -4,19 +4,24 @@
 
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 
+#include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/stat.h>
 
 #include <map>
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -24,8 +29,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/suspend_unmount_manager.h"
@@ -34,6 +43,10 @@ namespace ash::disks {
 namespace {
 
 using base::BindOnce;
+
+std::string Redact(std::string_view s) {
+  return LOG_IS_ON(INFO) ? base::StrCat({"'", s, "'"}) : "(redacted)";
+}
 
 DiskMountManager* g_disk_mount_manager = nullptr;
 
@@ -62,9 +75,165 @@ std::string FormatFileSystemTypeToString(FormatFileSystemType filesystem) {
     case FormatFileSystemType::kNtfs:
       return "ntfs";
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown filesystem type " << static_cast<int>(filesystem);
-  return "";
+  NOTREACHED() << "Unknown filesystem type " << static_cast<int>(filesystem);
+}
+
+// Fixes permissions along the given path if it is actually a local file path
+// designating a file under ~/MyFiles. Does nothing if the given path is not an
+// absolute local path designating a file under ~/MyFiles (like e.g. a URL-like
+// string). This is a best effort attempt to ensure that the ChromeOS archive
+// mounting daemons can access the archive files to mount.
+void FixPermissions(const std::string_view path) {
+  const base::ScopedBlockingCall guard(FROM_HERE,
+                                       base::BlockingType::MAY_BLOCK);
+
+  // Is path an absolute local path?
+  if (!path.starts_with('/')) {
+    // Not an absolute local path. Might be a URL-like string.
+    return;
+  }
+
+  // Is path in ~/MyFiles?
+  std::vector<std::string> parts = base::FilePath(path).GetComponents();
+  if (!(parts.size() > 5 && parts[0] == "/" && parts[1] == "home" &&
+        parts[2] == "chronos" && parts[3].starts_with("u-") &&
+        parts[4] == "MyFiles" && !parts[5].empty())) {
+    // Not in ~/MyFiles.
+    return;
+  }
+
+  // Path is in ~/MyFiles. Keep the last part for the end.
+  const std::string file_name = std::move(parts.back());
+  parts.pop_back();
+
+  // Pre-allocate the bytes of this path to avoid multiple memory allocations.
+  std::string path_so_far;
+  path_so_far.reserve(path.size());
+
+  // Don't check the permissions on the first 5 levels of directories (that is
+  // up to ~/MyFiles). Just get a file descriptor to ~/MyFiles. Using openat
+  // with O_DIRECTORY ensures that the considered item is really a directory and
+  // that no race condition could possibly affect the next steps.
+  base::StrAppend(&path_so_far,
+                  {"/", parts[1], "/", parts[2], "/", parts[3], "/", parts[4]});
+  base::ScopedFD fd(
+      HANDLE_EINTR(open(path_so_far.c_str(), O_DIRECTORY | O_PATH)));
+  if (!fd.is_valid()) {
+    PLOG(ERROR) << "Cannot open " << path_so_far;
+    return;
+  }
+
+  // GID for `chronos-access`.
+  const gid_t chronos_access = 1001;
+
+  // Check the permissions of all the directories from that point on (i.e. under
+  // ~/MyFiles).
+  for (size_t i = 5; i < parts.size(); ++i) {
+    const std::string& dir_name = parts[i];
+    if (dir_name.empty() || dir_name == "." || dir_name == "..") {
+      LOG(ERROR) << "Invalid directory name " << dir_name;
+      return;
+    }
+
+    // Get a file descriptor to the directory. Using openat with O_DIRECTORY
+    // ensures that the item is really a directory and that no race condition
+    // could possibly affect the next steps.
+    base::StrAppend(&path_so_far, {"/", dir_name});
+    fd.reset(
+        HANDLE_EINTR(openat(fd.get(), dir_name.c_str(), O_DIRECTORY | O_PATH)));
+    if (!fd.is_valid()) {
+      PLOG(ERROR) << "Cannot open " << path_so_far;
+      return;
+    }
+
+    // Get the current permissions of the directory.
+    struct stat z;
+    if (fstatat(fd.get(), "", &z, AT_EMPTY_PATH) < 0) {
+      PLOG(ERROR) << "Cannot stat " << path_so_far;
+      continue;
+    }
+
+    // Since openat was called with O_DIRECTORY, the item should really be a
+    // directory.
+    DCHECK(S_ISDIR(z.st_mode)) << " Not a directory: " << path_so_far;
+
+    // We want the directory to be traversable by a member of the chronos-access
+    // group. So, if its GID is chronos-access, then it needs to be at least
+    // group-traversable (S_IXGRP access bit), otherwise it also needs to be
+    // world-traversable (S_IXOTH access bit).
+    const mode_t mode = z.st_mode & 07777;
+    mode_t want = S_IXUSR | S_IXGRP;
+    if (z.st_gid != chronos_access) {
+      want |= S_IXOTH;
+    }
+
+    // Does the directory have the necessary permissions?
+    if ((mode & want) == want) {
+      // The directory already has the right permissions.
+      continue;
+    }
+
+    // Adjust the permissions as necessary.
+    if (fchmodat(fd.get(), "", mode | want, AT_EMPTY_PATH) < 0) {
+      PLOG(ERROR) << "Cannot change permissions of " << path_so_far;
+      continue;
+    }
+
+    VLOG(1) << "Changed permissions of " << path_so_far;
+  }
+
+  // Finished checking the directories.
+  // Check the last part of the path, which should be a file name.
+  if (file_name.empty() || file_name == "." || file_name == "..") {
+    LOG(ERROR) << "Invalid file name " << file_name;
+    return;
+  }
+
+  // Get a file descriptor to the file. Using openat ensures that no race
+  // condition could possibly affect the next steps.
+  base::StrAppend(&path_so_far, {"/", file_name});
+  fd.reset(HANDLE_EINTR(openat(fd.get(), file_name.c_str(), O_PATH)));
+  if (!fd.is_valid()) {
+    PLOG(ERROR) << "Cannot open " << path_so_far;
+    return;
+  }
+
+  // Get the current permissions of the file.
+  struct stat z;
+  if (fstatat(fd.get(), "", &z, AT_EMPTY_PATH) < 0) {
+    PLOG(ERROR) << "Cannot stat " << path_so_far;
+    return;
+  }
+
+  // Is the item a regular file?
+  if (!S_ISREG(z.st_mode)) {
+    LOG(ERROR) << "Item " << path_so_far << " is not a regular file";
+    return;
+  }
+
+  // We want the file to be readable by a member of the chronos-access group.
+  // So, if its GID is chronos-access, then it needs to be at least
+  // group-readable (S_IRGRP access bit), otherwise it also needs to be
+  // world-readable (S_IROTH access bit).
+  const mode_t mode = z.st_mode & 07777;
+  mode_t want = S_IRUSR | S_IRGRP;
+  if (z.st_gid != chronos_access) {
+    want |= S_IROTH;
+  }
+
+  // Does the file have the necessary permissions?
+  if ((mode & want) == want) {
+    // The file already has the right permissions.
+    return;
+  }
+
+  // Adjust the permissions as necessary.
+  if (fchmodat(fd.get(), "", mode | want, AT_EMPTY_PATH) < 0) {
+    PLOG(ERROR) << "Cannot change permissions of " << path_so_far;
+    return;
+  }
+
+  VLOG(1) << "Changed permissions of " << path_so_far;
 }
 
 // The DiskMountManager implementation.
@@ -78,13 +247,16 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   ~DiskMountManagerImpl() override { cros_disks_client_->RemoveObserver(this); }
 
+ private:
+  using DiskMountManager::Observer;
+
   // DiskMountManager override.
-  void AddObserver(DiskMountManager::Observer* observer) override {
+  void AddObserver(Observer* observer) override {
     observers_.AddObserver(observer);
   }
 
   // DiskMountManager override.
-  void RemoveObserver(DiskMountManager::Observer* observer) override {
+  void RemoveObserver(Observer* observer) override {
     observers_.RemoveObserver(observer);
   }
 
@@ -122,6 +294,22 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&FixPermissions, source_path),
+        base::BindOnce(&DiskMountManagerImpl::MountAfterFixingPermissions,
+                       weak_ptr_factory_.GetWeakPtr(), source_path,
+                       source_format, mount_label, mount_options, type,
+                       access_mode));
+  }
+
+  void MountAfterFixingPermissions(
+      const std::string& source_path,
+      const std::string& source_format,
+      const std::string& mount_label,
+      const std::vector<std::string>& mount_options,
+      const MountType type,
+      const MountAccessMode access_mode) {
     VLOG(1) << "Mounting '" << source_path << "'...";
     cros_disks_client_->Mount(
         source_path, source_format, mount_label, mount_options, access_mode,
@@ -135,25 +323,32 @@ class DiskMountManagerImpl : public DiskMountManager,
                    UnmountPathCallback callback) override {
     UnmountChildMounts(mount_path);
     VLOG(1) << "Unmounting '" << mount_path << "'...";
+
+    const base::FilePath mount_file_path(mount_path);
+    if (arc_delegate_ &&
+        cros_disks_client_->GetRemovableDiskMountPoint().IsParent(
+            mount_file_path)) {
+      VLOG(1) << "Dropping ARC caches for " << Redact(mount_path);
+      arc_delegate_->DropArcCaches(
+          mount_file_path, BindOnce(&DiskMountManagerImpl::UnmountPathContinue,
+                                    weak_ptr_factory_.GetWeakPtr(), mount_path,
+                                    std::move(callback)));
+      return;
+    }
+
+    UnmountPathContinue(mount_path, std::move(callback), true /* success */);
+  }
+
+  void UnmountPathContinue(const std::string& mount_path,
+                           UnmountPathCallback callback,
+                           bool success) {
+    if (!success) {
+      LOG(ERROR) << "Cannot drop ARC caches for " << Redact(mount_path);
+    }
     cros_disks_client_->Unmount(mount_path,
                                 BindOnce(&DiskMountManagerImpl::OnUnmountPath,
                                          weak_ptr_factory_.GetWeakPtr(),
                                          std::move(callback), mount_path));
-  }
-
-  void RemountAllRemovableDrives(MountAccessMode mode) override {
-    // TODO(yamaguchi): Retry for tentative remount failures. crbug.com/661455
-    for (const auto& disk : disks_) {
-      DCHECK(disk);
-      if (disk->is_read_only_hardware()) {
-        // Read-only devices can be mounted in RO mode only. No need to remount.
-        continue;
-      }
-      if (!disk->is_mounted()) {
-        continue;
-      }
-      RemountRemovableDrive(*disk, mode);
-    }
   }
 
   // DiskMountManager override.
@@ -162,7 +357,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                            const std::string& label) override {
     MountPoints::const_iterator mount_point = mount_points_.find(mount_path);
     if (mount_point == mount_points_.end()) {
-      LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
+      LOG(ERROR) << "Cannot find mount point " << Redact(mount_path);
       // We can't call OnFormatCompleted until |pending_format_changes_| has
       // been populated.
       NotifyFormatStatusUpdate(FORMAT_COMPLETED, FormatError::kUnknownError,
@@ -326,7 +521,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // DiskMountManager override.
   const Disk* FindDiskBySourcePath(
-      const std::string& source_path) const override {
+      std::string_view source_path) const override {
     const Disks::const_iterator it = disks_.find(source_path);
     return it == disks_.end() ? nullptr : it->get();
   }
@@ -360,7 +555,6 @@ class DiskMountManagerImpl : public DiskMountManager,
     return ok;
   }
 
- private:
   // A struct to represent information about a format changes.
   struct FormatChange {
     // new file system type
@@ -387,19 +581,30 @@ class DiskMountManagerImpl : public DiskMountManager,
   void OnMount(const std::string& source_path, MountType type, bool result) {
     // When succeeds, OnMountCompleted will be called by "MountCompleted",
     // signal instead. Do nothing now.
-    if (result)
+    if (result) {
       return;
+    }
 
     OnMountCompleted({source_path, {}, type, MountError::kInternalError});
   }
 
-  void RemountRemovableDrive(const Disk& disk, MountAccessMode access_mode) {
+  void RemountRemovableDrive(const Disk& disk,
+                             MountAccessMode access_mode) override {
+    // TODO(yamaguchi): Retry for tentative remount failures. crbug.com/661455
+    if (disk.is_read_only_hardware()) {
+      // Read-only devices can be mounted in RO mode only. No need to remount.
+      return;
+    }
+    if (!disk.is_mounted()) {
+      return;
+    }
+
     const std::string& mount_path = disk.mount_path();
     MountPoints::const_iterator mount_point = mount_points_.find(mount_path);
     if (mount_point == mount_points_.end()) {
       // Not in mount_points_. This happens when the mount_points and disks_ are
       // inconsistent.
-      LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
+      LOG(ERROR) << "Cannot find mount point " << Redact(mount_path);
       OnMountCompleted({disk.device_path(), mount_path, MountType::kDevice,
                         MountError::kPathNotMounted});
       return;
@@ -418,23 +623,26 @@ class DiskMountManagerImpl : public DiskMountManager,
     DCHECK(!mount_path.empty());
 
     // Let's make sure mount path has trailing slash.
-    if (mount_path.back() != '/')
+    if (mount_path.back() != '/') {
       mount_path += '/';
+    }
 
     // Paths to unmount, indexed by source path.
     std::map<std::string, std::string> paths_to_unmount;
 
     // For the already known mount points, use the mount path.
     for (const MountPoint& mount_point : mount_points_) {
-      if (base::StartsWith(mount_point.source_path, mount_path))
+      if (base::StartsWith(mount_point.source_path, mount_path)) {
         paths_to_unmount.try_emplace(mount_point.source_path,
                                      mount_point.mount_path);
+      }
     }
 
     // For the mount points that are not registered yet, use the source path.
     for (const auto& [source_path, _] : mount_callbacks_) {
-      if (base::StartsWith(source_path, mount_path))
+      if (base::StartsWith(source_path, mount_path)) {
         paths_to_unmount.try_emplace(source_path, source_path);
+      }
     }
 
     for (const auto& [_, path_to_unmount] : paths_to_unmount) {
@@ -452,7 +660,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       // Do standard processing for Unmount event.
       OnUnmountPath(UnmountPathCallback(), mount_path, error);
     } else {
-      LOG(ERROR) << "Cannot unmount '" << mount_path << "': " << error;
+      LOG(ERROR) << "Cannot unmount " << Redact(mount_path) << ": " << error;
       // This causes the last non-success error to be reported.
       cb_data->error_code = error;
     }
@@ -500,8 +708,9 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
     } else {
       if (base::SysInfo::IsRunningOnChromeOS()) {
-        LOG(ERROR) << "Cannot mount '" << mount_info.source_path << "' as '"
-                   << mount_info.mount_path << "': " << entry.mount_error;
+        LOG(ERROR) << "Cannot mount " << Redact(mount_info.source_path)
+                   << " as " << Redact(mount_info.mount_path) << ": "
+                   << entry.mount_error;
       }
       if (const MountPoints::const_iterator it =
               mount_points_.find(mount_info.mount_path);
@@ -537,11 +746,11 @@ class DiskMountManagerImpl : public DiskMountManager,
         it != mount_callbacks_.end()) {
       DCHECK_EQ(it->first, entry.source_path);
       VLOG(1) << "Calling mount callback for '" << entry.source_path
-              << "' with error = " << entry.mount_error;
+              << "' with result = " << entry.mount_error;
       std::move(it->second).Run(entry.mount_error, mount_info);
       mount_callbacks_.erase(std::move(it));
     } else {
-      LOG(ERROR) << "No mount callback for '" << entry.source_path << "'";
+      VLOG(1) << "No mount callback for " << Redact(entry.source_path);
     }
 
     NotifyMountStatusUpdate(MOUNTING, entry.mount_error, mount_info);
@@ -590,7 +799,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (error == MountError::kSuccess) {
       VLOG(1) << "Unmounted '" << mount_path << "'";
     } else {
-      LOG(ERROR) << "Cannot unmount '" << mount_path << "': " << error;
+      LOG(ERROR) << "Cannot unmount " << Redact(mount_path) << ": " << error;
       if (error == MountError::kPathNotMounted ||
           error == MountError::kInvalidPath) {
         // The path was already unmounted by something else.
@@ -598,26 +807,30 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
     }
 
-    if (const MountPoints::const_iterator mount_point =
-            mount_points_.find(mount_path);
-        mount_point != mount_points_.end()) {
-      NotifyMountStatusUpdate(UNMOUNTING, error, *mount_point);
-
+    if (const MountPoints::const_iterator it = mount_points_.find(mount_path);
+        it != mount_points_.end()) {
       if (error == MountError::kSuccess) {
+        const MountPoints::node_type n = mount_points_.extract(it);
+        DCHECK(n);
+        const MountPoint& mount_point = n.value();
+
         if (const Disks::const_iterator disk =
-                disks_.find(mount_point->source_path);
+                disks_.find(mount_point.source_path);
             disk != disks_.end()) {
           DCHECK(*disk);
           (*disk)->clear_mount_path();
           (*disk)->set_mounted(false);
         }
 
-        mount_points_.erase(mount_point);
+        NotifyMountStatusUpdate(UNMOUNTING, error, mount_point);
+      } else {
+        NotifyMountStatusUpdate(UNMOUNTING, error, *it);
       }
     }
 
-    if (callback)
+    if (callback) {
       std::move(callback).Run(error);
+    }
   }
 
   void OnUnmountPathForFormat(const std::string& device_path,
@@ -853,8 +1066,9 @@ class DiskMountManagerImpl : public DiskMountManager,
       DCHECK(disk);
 
       if (pending_change != pending_rename_changes_.end() &&
-          error_code == RenameError::kSuccess)
+          error_code == RenameError::kSuccess) {
         disk->set_device_label(pending_change->second);
+      }
     }
 
     pending_rename_changes_.erase(device_path);
@@ -867,12 +1081,14 @@ class DiskMountManagerImpl : public DiskMountManager,
   // GetDeviceProperties() call.
   void RunDeferredMountEvents(const std::string& device_path) {
     auto mount_events_iter = deferred_mount_events_.find(device_path);
-    if (mount_events_iter == deferred_mount_events_.end())
+    if (mount_events_iter == deferred_mount_events_.end()) {
       return;
+    }
     std::vector<MountPoint> entries = std::move(mount_events_iter->second);
     deferred_mount_events_.erase(mount_events_iter);
-    for (const MountPoint& entry : entries)
+    for (const MountPoint& entry : entries) {
       OnMountCompleted(entry);
+    }
   }
 
   // Callback for GetDeviceProperties.
@@ -962,16 +1178,18 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Part of EnsureMountInfoRefreshed(). Called after mount entries are listed.
   void RefreshAfterEnumerateMountEntries(
       const std::vector<MountPoint>& entries) {
-    for (const MountPoint& entry : entries)
+    for (const MountPoint& entry : entries) {
       OnMountCompleted(entry);
+    }
     RefreshCompleted(true);
   }
 
   // Part of EnsureMountInfoRefreshed(). Called when the refreshing is done.
   void RefreshCompleted(bool success) {
     already_refreshed_ = true;
-    for (auto& callback : refresh_callbacks_)
+    for (auto& callback : refresh_callbacks_) {
       std::move(callback).Run(success);
+    }
     refresh_callbacks_.clear();
   }
 
@@ -1024,7 +1242,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // Notifies all observers about disk status update.
   void NotifyDiskStatusUpdate(DiskEvent event, const Disk& disk) {
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       // Skip mounting of new partitioned disks while waiting for the format.
       if (IsPendingPartitioningDisk(disk.device_path())) {
         continue;
@@ -1037,40 +1255,45 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Notifies all observers about device status update.
   void NotifyDeviceStatusUpdate(DeviceEvent event,
                                 const std::string& device_path) {
-    for (auto& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnDeviceEvent(event, device_path);
+    }
   }
 
   // Notifies all observers about mount completion.
   void NotifyMountStatusUpdate(MountEvent event,
                                MountError error_code,
                                const MountPoint& mount_info) {
-    for (auto& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnMountEvent(event, error_code, mount_info);
+    }
   }
 
   void NotifyFormatStatusUpdate(FormatEvent event,
                                 FormatError error_code,
                                 const std::string& device_path,
                                 const std::string& device_label) {
-    for (auto& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnFormatEvent(event, error_code, device_path, device_label);
+    }
   }
 
   void NotifyPartitionStatusUpdate(PartitionEvent event,
                                    PartitionError error_code,
                                    const std::string& device_path,
                                    const std::string& device_label) {
-    for (auto& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnPartitionEvent(event, error_code, device_path, device_label);
+    }
   }
 
   void NotifyRenameStatusUpdate(RenameEvent event,
                                 RenameError error_code,
                                 const std::string& device_path,
                                 const std::string& device_label) {
-    for (auto& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnRenameEvent(event, error_code, device_path, device_label);
+    }
   }
 
   bool IsPendingPartitioningDisk(const std::string& device_path) {
@@ -1088,7 +1311,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   }
 
   // Mount event change observers.
-  base::ObserverList<DiskMountManager::Observer> observers_;
+  base::ObserverList<Observer> observers_;
 
   const raw_ptr<CrosDisksClient> cros_disks_client_ = CrosDisksClient::Get();
 

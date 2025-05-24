@@ -79,13 +79,19 @@ PowerBookmarkSyncBridge::ApplyIncrementalSyncChanges(
 }
 
 std::string PowerBookmarkSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return entity_data.specifics.power_bookmark().guid();
 }
 
 std::string PowerBookmarkSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
+}
+
+bool PowerBookmarkSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_power_bookmark());
+  return !entity_data.specifics.power_bookmark().guid().empty();
 }
 
 std::unique_ptr<syncer::DataBatch> PowerBookmarkSyncBridge::GetDataForCommit(

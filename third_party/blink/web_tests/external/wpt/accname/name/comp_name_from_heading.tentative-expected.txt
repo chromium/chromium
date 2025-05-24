@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] alertdialog role, name from heading
+  assert_equals: <div role="alertdialog" data-expectedlabel="alertdialog role heading contents" data-testname="alertdialog role, name from heading" class="ex-label">\n  <h2>alertdialog role heading contents</h2>\n  <p>More alertdialog content.</p>\n</div> expected "alertdialog role heading contents" but got ""
+[FAIL] article role, name from heading
+  assert_equals: <div role="article" data-expectedlabel="article role heading contents" data-testname="article role, name from heading" class="ex-label">\n  <h2>article role heading contents</h2>\n  <p>More article content.</p>\n</div> expected "article role heading contents" but got ""
+[FAIL] dialog role, name from heading
+  assert_equals: <div role="dialog" data-expectedlabel="dialog role heading contents" data-testname="dialog role, name from heading" class="ex-label">\n  <h2>dialog role heading contents</h2>\n  <p>More dialog content.</p>\n</div> expected "dialog role heading contents" but got ""
+[FAIL] native dialog element, name from heading
+  assert_equals: <dialog open="" data-expectedlabel="dialog heading contents" data-testname="native dialog element, name from heading" class="ex-label">\n  <h2>dialog heading contents</h2>\n  <p>More dialog content.</p>\n</dialog> expected "dialog heading contents" but got ""
+[FAIL] article role, name from DFS heading
+  assert_equals: <div role="article" data-expectedlabel="article role simple DFS" data-testname="article role, name from DFS heading" class="ex-label">\n  <div role="group">\n    <h3>article role simple DFS</h3>\n  </div>\n  <h2>Not this one</h2>\n  <p>More article content.</p>\n</div> expected "article role simple DFS" but got ""
+Harness: the test ran to completion.
+

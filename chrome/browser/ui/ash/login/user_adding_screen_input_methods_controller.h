@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_LOGIN_USER_ADDING_SCREEN_INPUT_METHODS_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <iosfwd>
-#include <tuple>
 #include <type_traits>
 #include <utility>
 

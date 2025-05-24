@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 class TemplateURL;
@@ -26,7 +25,7 @@ class EditSearchEngineControllerDelegate {
                                const std::string& url) = 0;
 
  protected:
-  virtual ~EditSearchEngineControllerDelegate() {}
+  virtual ~EditSearchEngineControllerDelegate() = default;
 };
 
 // EditSearchEngineController provides the core platform independent logic
@@ -43,7 +42,7 @@ class EditSearchEngineController {
   EditSearchEngineController& operator=(const EditSearchEngineController&) =
       delete;
 
-  ~EditSearchEngineController() {}
+  ~EditSearchEngineController() = default;
 
   // Returns true if the value of |title_input| is a valid search engine name.
   bool IsTitleValid(const std::u16string& title_input) const;

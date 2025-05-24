@@ -18,15 +18,17 @@
 
 namespace metrics {
 
-// static
-bool MachineIdProvider::HasId() {
+MachineIdProvider::MachineIdProvider() = default;
+
+MachineIdProvider::~MachineIdProvider() = default;
+
+bool MachineIdProvider::HasId() const {
   return true;
 }
 
 // On windows, the machine id is based on the serial number of the drive Chrome
 // is running from.
-// static
-std::string MachineIdProvider::GetMachineId() {
+std::string MachineIdProvider::GetMachineId() const {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -35,17 +37,11 @@ std::string MachineIdProvider::GetMachineId() {
   // This is fine as we do not support migrating Chrome installs to new drives.
   base::FilePath executable_path;
 
-  if (!base::PathService::Get(base::FILE_EXE, &executable_path)) {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
-  }
+  CHECK(base::PathService::Get(base::FILE_EXE, &executable_path));
 
   std::vector<base::FilePath::StringType> path_components =
       executable_path.GetComponents();
-  if (path_components.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
-  }
+  CHECK(!path_components.empty());
   base::FilePath::StringType drive_name = L"\\\\.\\" + path_components[0];
 
   base::win::ScopedHandle drive_handle(

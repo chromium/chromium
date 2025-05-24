@@ -52,6 +52,9 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
   // about to be destroyed.
   void DetachFromJavaAutofillProvider(JNIEnv* env);
 
+  // Asks the `Delegate` whether passkeys options are available.
+  jboolean HasPasskeyRequest(JNIEnv* env);
+
   // Informs the `Delegate` that the linked form should be sent to the renderer
   // for filling. Invoked when the user has accepted Autofill.
   void OnAutofillAvailable(JNIEnv* env);
@@ -77,6 +80,9 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
   void OnShowBottomSheetResult(JNIEnv* env,
                                jboolean is_shown,
                                jboolean provided_autofill_structure);
+
+  // Informs the `Delegate` that the user explicitly requested passkeys options.
+  void OnTriggerPasskeyRequest(JNIEnv* env);
 
  private:
   // The delegate of the bridge.

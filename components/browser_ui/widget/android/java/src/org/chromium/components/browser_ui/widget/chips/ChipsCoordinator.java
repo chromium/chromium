@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -27,6 +29,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * The coordinator responsible for managing a list of chips. To get the {@link View} that represents
  * this coordinator use {@link #getView()}.
  */
+@NullMarked
 public class ChipsCoordinator {
     private final ModelList mModelList;
     private final RecyclerView mView;
@@ -41,6 +44,7 @@ public class ChipsCoordinator {
         this(context, modelList, R.style.SuggestionChipThemeOverlay);
     }
 
+    @NullUnmarked
     public ChipsCoordinator(Context context, ModelList modelList, @StyleRes int themeOverlay) {
         assert context != null;
         assert modelList != null;
@@ -126,6 +130,7 @@ public class ChipsCoordinator {
             mSidePaddingPx = sidePaddingPx;
         }
 
+        @NullUnmarked
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
             int position = parent.getChildAdapterPosition(view);

@@ -16,6 +16,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/common/buffer.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
@@ -32,16 +33,14 @@ class GPU_EXPORT RingBuffer {
 
   // Creates a RingBuffer.
   // Parameters:
+  //   buffer: the buffer that this ring buffer's data backing is based on.
   //   alignment: Alignment for allocations.
   //   base_offset: The offset of the start of the buffer.
-  //   size: The size of the buffer in bytes.
   //   helper: A CommandBufferHelper for dealing with tokens.
-  //   base: The physical address that corresponds to base_offset.
-  RingBuffer(uint32_t alignment,
+  RingBuffer(scoped_refptr<gpu::Buffer> buffer,
+             uint32_t alignment,
              Offset base_offset,
-             uint32_t size,
-             CommandBufferHelper* helper,
-             void* base);
+             CommandBufferHelper* helper);
 
   RingBuffer(const RingBuffer&) = delete;
   RingBuffer& operator=(const RingBuffer&) = delete;
@@ -144,6 +143,9 @@ class GPU_EXPORT RingBuffer {
 
   // Used blocks are added to the end, blocks are freed from the beginning.
   Container blocks_;
+
+  // The buffer that this ring buffer's data backing is based on.
+  scoped_refptr<gpu::Buffer> buffer_;
 
   // The base offset of the ring buffer.
   Offset base_offset_;

@@ -27,7 +27,7 @@ DEFINE_BINARY_PROTO_FUZZER(
     const affiliation_pb::LookupAffiliationByHashPrefixResponse& response) {
   static IcuEnvironment env;
 
-  AffiliationFetcherDelegate::Result result;
+  AffiliationFetcherInterface::ParsedFetchResponse result;
 
   std::vector<FacetURI> uris;
   ParseLookupAffiliationResponse(uris, response, &result);

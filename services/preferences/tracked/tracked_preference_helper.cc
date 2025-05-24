@@ -45,15 +45,13 @@ TrackedPreferenceHelper::ResetAction TrackedPreferenceHelper::GetAction(
       // Accept secure legacy device ID based hashes.
       return DONT_RESET;
     case ValueState::UNSUPPORTED:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "GetAction should not be called with an UNSUPPORTED value state";
-      return DONT_RESET;
     case ValueState::UNTRUSTED_UNKNOWN_VALUE:  // Falls through.
     case ValueState::CHANGED:
       return enforce_ ? DO_RESET : WANTED_RESET;
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected ValueState: " << value_state;
-  return DONT_RESET;
+  NOTREACHED() << "Unexpected ValueState: " << value_state;
 }
 
 bool TrackedPreferenceHelper::IsPersonal() const {
@@ -90,10 +88,8 @@ void TrackedPreferenceHelper::ReportValidationResult(
           user_prefs::tracked::kTrackedPrefHistogramNullInitialized;
       break;
     case ValueState::UNSUPPORTED:
-      NOTREACHED_IN_MIGRATION()
-          << "ReportValidationResult should not be called with an "
-             "UNSUPPORTED value state";
-      return;
+      NOTREACHED() << "ReportValidationResult should not be called with an "
+                      "UNSUPPORTED value state";
   }
   DCHECK(histogram_name);
 

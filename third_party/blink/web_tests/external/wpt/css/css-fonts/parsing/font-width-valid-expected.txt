@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] e.style['font-width'] = "normal" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "ultra-condensed" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "extra-condensed" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "condensed" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "semi-condensed" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "semi-expanded" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "expanded" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "extra-expanded" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "ultra-expanded" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "234.5%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "calc(100%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "calc(0%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "calc(-100%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "calc(100% + 100%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-width'] = "calc(100% + (sign(20cqw - 10px) * 5%))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

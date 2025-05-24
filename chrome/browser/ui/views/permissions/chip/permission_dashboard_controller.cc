@@ -28,21 +28,6 @@
 
 namespace {
 
-// A duration of the expand animation. In other words, how long does it take to
-// expand the chip.
-constexpr auto kExpandAnimationDuration = base::Milliseconds(350);
-// A duration of the collapse animation. In other words, how long does it take
-// to collapse/shrink the chip.
-constexpr auto kCollapseAnimationDuration = base::Milliseconds(250);
-// A delay for the verbose state. In other words the delay that is used between
-// expand and collapse animations.
-constexpr auto kCollapseDelay = base::Seconds(4);
-
-base::TimeDelta GetAnimationDuration(base::TimeDelta duration) {
-  return gfx::Animation::ShouldRenderRichAnimation() ? duration
-                                                     : base::TimeDelta();
-}
-
 // This method updates indicators' visibility set in
 // `PageSpecificContentSettings`.
 void UpdateIndicatorsVisibilityFlags(LocationBarView* location_bar) {
@@ -232,7 +217,6 @@ bool PermissionDashboardController::Update(
     indicator_chip->SetTheme(PermissionChipTheme::kInUseActivityIndicator);
   }
 
-
   if (request_chip_controller_->is_confirmation_showing()) {
     request_chip_controller_->ResetPermissionPromptChip();
   }
@@ -257,7 +241,7 @@ bool PermissionDashboardController::Update(
           location_bar_view_->browser()
               ->tab_strip_model()
               ->GetActiveTab()
-              ->tab_features()
+              ->GetTabFeatures()
               ->permission_indicators_tab_data();
       if (permission_indicators_tab_data &&
           permission_indicators_tab_data->IsVerboseIndicatorAllowed(
@@ -265,7 +249,7 @@ bool PermissionDashboardController::Update(
                   kMediaStream)) {
         indicator_chip->ResetAnimation();
         indicator_chip->AnimateExpand(
-            GetAnimationDuration(kExpandAnimationDuration));
+            gfx::Animation::RichAnimationDuration(base::Milliseconds(350)));
       }
     }
   }
@@ -319,7 +303,7 @@ void PermissionDashboardController::OnCollapseAnimationEnded() {
       location_bar_view_->browser()
           ->tab_strip_model()
           ->GetActiveTab()
-          ->tab_features()
+          ->GetTabFeatures()
           ->permission_indicators_tab_data();
 
   if (permission_indicators_tab_data) {
@@ -357,7 +341,7 @@ void PermissionDashboardController::StartCollapseTimer() {
     return;
   }
 
-  collapse_timer_.Start(FROM_HERE, kCollapseDelay,
+  collapse_timer_.Start(FROM_HERE, base::Seconds(4),
                         base::BindOnce(&PermissionDashboardController::Collapse,
                                        weak_factory_.GetWeakPtr(),
                                        /*hide=*/false));
@@ -369,12 +353,12 @@ void PermissionDashboardController::Collapse(bool hide) {
   }
   if (!permission_dashboard_view_->GetIndicatorChip()->is_animating()) {
     permission_dashboard_view_->GetIndicatorChip()->AnimateCollapse(
-        GetAnimationDuration(kCollapseAnimationDuration));
+        gfx::Animation::RichAnimationDuration(base::Milliseconds(250)));
   }
 }
 
 void PermissionDashboardController::HideIndicators() {
-  collapse_timer_.AbandonAndStop();
+  collapse_timer_.Stop();
   permission_dashboard_view_->GetIndicatorChip()->ResetAnimation();
   is_verbose_ = false;
   permission_dashboard_view_->GetIndicatorChip()
@@ -481,7 +465,8 @@ void PermissionDashboardController::ShowPageInfoDialog() {
           permission_dashboard_view_->GetWidget()->GetNativeWindow(), contents,
           entry->GetVirtualURL(), std::move(initialized_callback),
           base::BindOnce(&PermissionDashboardController::OnPageInfoBubbleClosed,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr()),
+          /*allow_about_this_site=*/true);
   bubble->GetWidget()->Show();
   page_info_bubble_tracker_.SetView(bubble);
 }
@@ -596,6 +581,5 @@ std::u16string PermissionDashboardController::GetIndicatorTitle(
     return l10n_util::GetStringUTF16(IDS_MICROPHONE_IN_USE);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }

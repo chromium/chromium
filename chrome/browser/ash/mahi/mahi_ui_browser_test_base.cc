@@ -55,6 +55,7 @@ class MockMahiProvider : public manta::MahiProvider {
     ON_CALL(*this, Summarize)
         .WillByDefault([](const std::string& input, const std::string&,
                           const std::optional<std::string>&,
+                          const std::optional<std::string>&,
                           manta::MantaGenericCallback done_callback) {
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
@@ -89,6 +90,7 @@ class MockMahiProvider : public manta::MahiProvider {
               Summarize,
               (const std::string&,
                const std::string&,
+               const std::optional<std::string>&,
                const std::optional<std::string>&,
                manta::MantaGenericCallback),
               (override));

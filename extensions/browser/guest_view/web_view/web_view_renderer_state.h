@@ -7,8 +7,8 @@
 // This class's data can be accessed via its methods from both the UI and IO
 // threads, and uses locks to mediate this access. When making changes to this
 // class, ensure that you avoid introducing any reentrant code in the methods,
-// and that you always aquire the locks in the order |web_view_info_map_lock_|
-// -> |web_view_partition_id_map_lock_| (if both are needed in one method).
+// and that you always acquire the locks in the order `web_view_info_map_lock_`
+// -> `web_view_partition_id_map_lock_` (if both are needed in one method).
 
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_RENDERER_STATE_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_RENDERER_STATE_H_
@@ -19,6 +19,7 @@
 #include <utility>
 
 #include "base/memory/singleton.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace extensions {
@@ -28,7 +29,7 @@ class WebViewGuest;
 class WebViewRendererState {
  public:
   struct WebViewInfo {
-    int embedder_process_id;
+    content::ChildProcessId embedder_process_id;
     int instance_id;
     int rules_registry_id;
     std::string partition_id;
@@ -47,24 +48,24 @@ class WebViewRendererState {
 
   // Looks up the information for the embedder WebView for a RenderViewHost,
   // given its process and view ID. Returns true and writes the information to
-  // |web_view_info| if found, otherwise returns false.
+  // `web_view_info` if found, otherwise returns false.
   bool GetInfo(int guest_process_id,
                int guest_routing_id,
                WebViewInfo* web_view_info) const;
 
   // Looks up the information for the owner of a WebView guest process, given
-  // its process ID. Returns true and writes the info to |owner_process_id| and
-  // |owner_host| if found, otherwise returns false.
+  // its process ID. Returns true and writes the info to `owner_process_id` and
+  // `owner_host` if found, otherwise returns false.
   bool GetOwnerInfo(int guest_process_id,
                     int* owner_process_id,
                     std::string* owner_host) const;
 
   // Looks up the partition ID for a WebView guest process, given its
-  // process ID. Returns true and writes the partition ID to |partition_id| if
+  // process ID. Returns true and writes the partition ID to `partition_id` if
   // found, otherwise returns false.
   bool GetPartitionID(int guest_process_id, std::string* partition_id) const;
 
-  // Returns true if the renderer with process ID |render_process_id| is a
+  // Returns true if the renderer with process ID `render_process_id` is a
   // WebView guest process.
   bool IsGuest(int render_process_id) const;
 

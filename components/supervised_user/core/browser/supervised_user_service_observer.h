@@ -8,7 +8,7 @@
 class SupervisedUserServiceObserver {
  public:
   // Called whenever the URL filter is updated, e.g. a manual exception or a
-  // content pack is added, or the default fallback behavior is changed.
+  // content pack is added, or when filtering behavior is changed.
   virtual void OnURLFilterChanged() {}
 
   // Called when information about the supervised user's custodian is changed,
@@ -16,7 +16,7 @@ class SupervisedUserServiceObserver {
   virtual void OnCustodianInfoChanged() {}
 
  protected:
-  virtual ~SupervisedUserServiceObserver() {}
+  virtual ~SupervisedUserServiceObserver() = default;
 };
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SERVICE_OBSERVER_H_

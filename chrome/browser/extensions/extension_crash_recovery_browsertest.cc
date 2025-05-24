@@ -107,7 +107,8 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     extensions::ProcessMap* process_map =
         extensions::ProcessMap::Get(browser()->profile());
     ASSERT_TRUE(process_map->Contains(
-        extension_id, extension_host->render_process_host()->GetID()));
+        extension_id,
+        extension_host->render_process_host()->GetDeprecatedID()));
   }
 
   void LoadTestExtension() {
@@ -201,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, ReloadIndependently) {
   ASSERT_EQ(0U, CountNotifications());
 }
 
-// TODO(crbug.com/40931462): Flaky on wayland, lacros and mac.
+// TODO(crbug.com/40931462): Flaky on wayland and mac.
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
                        DISABLED_ReloadIndependentlyChangeTabs) {
   const size_t count_before = GetEnabledExtensionCount();
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   ASSERT_EQ(0U, CountNotifications());
 }
 
-// TODO(crbug.com/40931462): timeout on wayland, lacros and mac.
+// TODO(crbug.com/40931462): timeout on wayland and mac.
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
                        DISABLED_ReloadIndependentlyNavigatePage) {
   const size_t count_before = GetEnabledExtensionCount();

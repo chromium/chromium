@@ -9,7 +9,8 @@ namespace ash::graduation {
 
 extern const char kChromeUIGraduationAppHost[];
 extern const char kChromeUIGraduationAppURL[];
-extern const char kTakeoutTransferURL[];
+extern const char kEmbeddedTransferURLBase[];
+extern const char kTransferURLBase[];
 
 }  // namespace ash::graduation
 

@@ -94,8 +94,8 @@ class TestInterfaceFactory : public media::mojom::InterfaceFactory {
   // Stub out other mojom::InterfaceFactory interfaces.
   void CreateVideoDecoder(
       mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-          dst_video_decoder) override {}
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder)
+      override {}
   void CreateAudioDecoder(
       mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) override {}
   void CreateDefaultRenderer(
@@ -107,12 +107,6 @@ class TestInterfaceFactory : public media::mojom::InterfaceFactory {
       mojo::PendingReceiver<media::mojom::Renderer> receiver) override {}
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  void CreateMediaPlayerRenderer(
-      mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
-          client_extension_remote,
-      mojo::PendingReceiver<media::mojom::Renderer> receiver,
-      mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
-          renderer_extension_receiver) override {}
   void CreateFlingingRenderer(
       const std::string& presentation_id,
       mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
@@ -185,16 +179,14 @@ DEFINE_TEXT_PROTO_FUZZER(
       ToScriptStateForMainWorld(&page_holder->GetFrame());
   ScriptState::Scope scope(script_state);
 
-  Persistent<ScriptFunction> error_function =
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<FakeFunction>("error"));
   Persistent<V8WebCodecsErrorCallback> error_callback =
-      V8WebCodecsErrorCallback::Create(error_function->V8Function());
-  Persistent<ScriptFunction> output_function =
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<FakeFunction>("output"));
+      V8WebCodecsErrorCallback::Create(
+          MakeGarbageCollected<FakeFunction>("error")->ToV8Function(
+              script_state));
   Persistent<V8EncodedAudioChunkOutputCallback> output_callback =
-      V8EncodedAudioChunkOutputCallback::Create(output_function->V8Function());
+      V8EncodedAudioChunkOutputCallback::Create(
+          MakeGarbageCollected<FakeFunction>("output")->ToV8Function(
+              script_state));
 
   Persistent<AudioEncoderInit> audio_encoder_init =
       MakeGarbageCollected<AudioEncoderInit>();

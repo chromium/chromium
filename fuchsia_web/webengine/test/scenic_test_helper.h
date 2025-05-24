@@ -5,6 +5,7 @@
 #ifndef FUCHSIA_WEB_WEBENGINE_TEST_SCENIC_TEST_HELPER_H_
 #define FUCHSIA_WEB_WEBENGINE_TEST_SCENIC_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "fuchsia_web/webengine/browser/frame_impl.h"
@@ -29,7 +30,7 @@ class ScenicTestHelper {
   fuchsia::ui::views::ViewRef CloneViewRef();
 
  protected:
-  FrameImpl* frame_impl_;
+  raw_ptr<FrameImpl> frame_impl_;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_TEST_SCENIC_TEST_HELPER_H_

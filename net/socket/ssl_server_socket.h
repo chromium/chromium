@@ -72,6 +72,11 @@ NET_EXPORT std::unique_ptr<SSLServerContext> CreateSSLServerContext(
     EVP_PKEY* pkey,
     const SSLServerConfig& ssl_config);
 
+NET_EXPORT std::unique_ptr<SSLServerContext> CreateSSLServerContext(
+    base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
+    EVP_PKEY* pkey,
+    const SSLServerConfig& ssl_config);
+
 // As above, but takes an RSAPrivateKey object. Deprecated, use the EVP_PKEY
 // version instead.
 // TODO(mattm): convert existing callers and remove this function.

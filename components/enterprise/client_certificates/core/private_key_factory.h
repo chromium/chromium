@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
@@ -48,6 +49,12 @@ class PrivateKeyFactory {
   // a usable instance, and then invoke `callback` with it.
   virtual void LoadPrivateKey(
       const client_certificates_pb::PrivateKey& serialized_private_key,
+      PrivateKeyCallback callback) = 0;
+
+  // Will use the data in `serialized_private_key` to load the private key into
+  // a usable instance, and then invoke `callback` with it.
+  virtual void LoadPrivateKeyFromDict(
+      const base::Value::Dict& serialized_private_key,
       PrivateKeyCallback callback) = 0;
 
  protected:

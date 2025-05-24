@@ -7,16 +7,20 @@ package org.chromium.chrome.browser.services.gcm;
 import android.app.IntentService;
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * In the past, this class sent upstream messages for Invalidations using GCM.
  * It's now empty, but can't be deleted yet because it is listed in
  * AndroidManifest.xml.
  */
+@NullMarked
 public class InvalidationGcmUpstreamSender extends IntentService {
     InvalidationGcmUpstreamSender() {
         super("GcmUpstreamService");
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {}
+    protected void onHandleIntent(@Nullable Intent intent) {}
 }

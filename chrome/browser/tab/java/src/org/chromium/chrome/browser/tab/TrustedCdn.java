@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -20,6 +20,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /** Provides a trusted CDN publisher URL for the current web contents in a Tab. */
+@NullMarked
 public class TrustedCdn extends TabWebContentsUserData {
     @VisibleForTesting public static final Class<TrustedCdn> USER_DATA_KEY = TrustedCdn.class;
 
@@ -83,7 +84,7 @@ public class TrustedCdn extends TabWebContentsUserData {
      * @return The name of the publisher of the content if it can be reliably extracted, or null
      *         otherwise.
      */
-    public static String getContentPublisher(Tab tab) {
+    public static @Nullable String getContentPublisher(Tab tab) {
         if (tab == null) return null;
 
         GURL publisherUrl = TrustedCdn.getPublisherUrl(tab);
@@ -94,7 +95,7 @@ public class TrustedCdn extends TabWebContentsUserData {
         return null;
     }
 
-    static TrustedCdn from(@NonNull Tab tab) {
+    static TrustedCdn from(Tab tab) {
         TrustedCdn trustedCdn = get(tab);
         if (trustedCdn == null) {
             trustedCdn = tab.getUserDataHost().setUserData(USER_DATA_KEY, new TrustedCdn(tab));
@@ -102,11 +103,11 @@ public class TrustedCdn extends TabWebContentsUserData {
         return trustedCdn;
     }
 
-    public static void initForTesting(@NonNull Tab tab) {
+    public static void initForTesting(Tab tab) {
         from(tab);
     }
 
-    private static TrustedCdn get(@Nullable Tab tab) {
+    private static @Nullable TrustedCdn get(@Nullable Tab tab) {
         return tab != null ? tab.getUserDataHost().getUserData(USER_DATA_KEY) : null;
     }
 
@@ -122,7 +123,7 @@ public class TrustedCdn extends TabWebContentsUserData {
     }
 
     @Override
-    public void cleanupWebContents(WebContents webContents) {
+    public void cleanupWebContents(@Nullable WebContents webContents) {
         TrustedCdnJni.get().resetWebContents(mNativeTrustedCdn, TrustedCdn.this);
     }
 
@@ -131,9 +132,8 @@ public class TrustedCdn extends TabWebContentsUserData {
         TrustedCdnJni.get().onDestroyed(mNativeTrustedCdn, TrustedCdn.this);
     }
 
-    @Nullable
     @VisibleForTesting
-    public GURL getPublisherUrl() {
+    public @Nullable GURL getPublisherUrl() {
         WebContents webContents = mTab.getWebContents();
         if (webContents == null) return null;
 

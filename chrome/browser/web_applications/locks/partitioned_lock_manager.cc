@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -21,6 +22,14 @@
 #include "chrome/browser/web_applications/locks/partitioned_lock_id.h"
 
 namespace web_app {
+namespace {
+void CallIfHolderIsAlive(base::WeakPtr<PartitionedLockHolder> lock_holder,
+                         base::OnceClosure on_all_locks_acquired) {
+  if (lock_holder) {
+    std::move(on_all_locks_acquired).Run();
+  }
+}
+}  // namespace
 
 PartitionedLockHolder::PartitionedLockHolder() = default;
 PartitionedLockHolder::~PartitionedLockHolder() = default;
@@ -75,13 +84,9 @@ int64_t PartitionedLockManager::RequestsWaitingForTesting() const {
 
 void PartitionedLockManager::AcquireLocks(
     base::flat_set<PartitionedLockRequest> lock_requests,
-    base::WeakPtr<PartitionedLockHolder> locks_holder,
+    PartitionedLockHolder& locks_holder,
     LocksAcquiredCallback callback,
     const base::Location& location) {
-  if (!locks_holder) {
-    std::move(callback).Run();
-    return;
-  }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Pre-allocate all locks in the request, so the `locks_` map is not mutated
@@ -90,21 +95,23 @@ void PartitionedLockManager::AcquireLocks(
     locks_.try_emplace(request.lock_id);
     // Ensure that none of the locks are 'before' any already-held locks by the
     // holder.
-    for (const PartitionedLock& lock : locks_holder->locks) {
+    for (const PartitionedLock& lock : locks_holder.locks) {
       CHECK(lock.lock_id() < request.lock_id)
           << lock.lock_id() << " vs " << request.lock_id;
     }
   }
 
-  locks_holder->locks.reserve(locks_holder->locks.size() +
-                              lock_requests.size());
+  locks_holder.locks.reserve(locks_holder.locks.size() + lock_requests.size());
   auto stored_requests =
       std::make_unique<base::flat_set<PartitionedLockRequest>>(
           std::move(lock_requests));
   auto first_request = stored_requests->begin();
 
-  AcquireNextLockOrPostCompletion(std::move(stored_requests), first_request,
-                                  locks_holder, std::move(callback), location);
+  AcquireNextLockOrPostCompletion(
+      std::move(stored_requests), first_request, locks_holder.AsWeakPtr(),
+      base::BindOnce(CallIfHolderIsAlive, locks_holder.AsWeakPtr(),
+                     std::move(callback)),
+      location);
 }
 
 PartitionedLockManager::TestLockResult PartitionedLockManager::TestLock(

@@ -19,6 +19,18 @@ const base::FilePath::CharType WebDatabase::kInMemoryPath[] =
 
 namespace {
 
+// Limits the duration of transaction to the scope of their modifications. Avoid
+// keeping pending transactions and pending modifications outside of their
+// scope.
+//
+// TODO(6175955): When this is launched, replace
+// `WebDatabase::AcquireTransaction()` with the typical pattern:
+//     sql::Transaction transaction(db());
+//     if (!transaction.Begin()) {...}
+BASE_FEATURE(kSqlScopedTransactionWebDatabase,
+             "SqlScopedTransactionWebDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSqlWALModeOnWebDatabase,
              "SqlWALModeOnWebDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -43,9 +55,9 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 134 migrates address Autofill tables to a new format, changing table
-// names. It is thus is no longer compatible with version 133.
-constexpr int kCompatibleVersionNumber = 134;
+// Version 139 migrates valuables tables to a new format, changing the column
+// names. It is thus is no longer compatible with version 138.
+constexpr int kCompatibleVersionNumber = 139;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.
@@ -73,14 +85,19 @@ sql::InitStatus FailedMigrationTo(int version_num) {
 }  // namespace
 
 WebDatabase::WebDatabase()
-    : db_({.wal_mode = base::FeatureList::IsEnabled(kSqlWALModeOnWebDatabase),
-           // We don't store that much data in the tables so use a small page
-           // size. This provides a large benefit for empty tables (which is
-           // very likely with the tables we create).
-           .page_size = 2048,
-           // We shouldn't have much data and what access we currently have is
-           // quite infrequent. So we go with a small cache size.
-           .cache_size = 32}) {}
+    : db_(sql::DatabaseOptions()
+              .set_wal_mode(
+                  base::FeatureList::IsEnabled(kSqlWALModeOnWebDatabase))
+              // We don't store that much data in the tables so use a small page
+              // size. This provides a large benefit for empty tables (which is
+              // very likely with the tables we create).
+              .set_page_size(2048)
+              // We shouldn't have much data and what access we currently have
+              // is quite infrequent. So we go with a small cache size.
+              .set_cache_size(32),
+          /*tag=*/"Web"),
+      use_scoped_transaction_(
+          base::FeatureList::IsEnabled(kSqlScopedTransactionWebDatabase)) {}
 
 WebDatabase::~WebDatabase() {
   for (auto& [key, table] : tables_) {
@@ -93,15 +110,34 @@ void WebDatabase::AddTable(WebDatabaseTable* table) {
 }
 
 WebDatabaseTable* WebDatabase::GetTable(WebDatabaseTable::TypeKey key) {
-  return tables_[key];
+  WebDatabaseTable* table = tables_[key];
+  CHECK(table);
+  return table;
 }
 
 void WebDatabase::BeginTransaction() {
-  db_.BeginTransactionDeprecated();
+  if (!use_scoped_transaction_) {
+    db_.BeginTransactionDeprecated();
+  }
 }
 
 void WebDatabase::CommitTransaction() {
-  db_.CommitTransactionDeprecated();
+  if (!use_scoped_transaction_) {
+    db_.CommitTransactionDeprecated();
+  }
+}
+
+std::unique_ptr<sql::Transaction> WebDatabase::AcquireTransaction() {
+  if (use_scoped_transaction_) {
+    // Only one active transaction at the time is allowed.
+    DCHECK(!db_.HasActiveTransactions());
+    auto transaction = std::make_unique<sql::Transaction>(&db_);
+    if (transaction->Begin()) {
+      return transaction;
+    }
+  }
+
+  return nullptr;
 }
 
 std::string WebDatabase::GetDiagnosticInfo(int extended_error,
@@ -120,13 +156,13 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name,
   if (!encryptor) {
     CHECK_IS_TEST();
   }
-  db_.set_histogram_tag("Web");
 
   if ((db_name.value() == kInMemoryPath) ? !db_.OpenInMemory()
                                          : !db_.Open(db_name)) {
     LogInitResult(WebDatabaseInitResult::kCouldNotOpen);
     return sql::INIT_FAILURE;
   }
+  DCHECK(db_.is_open());
 
   // Dummy transaction to check whether the database is writeable and bail
   // early if that's not the case.
@@ -195,7 +231,9 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name,
     LogInitResult(WebDatabaseInitResult::kFailedToCommitInitTransaction);
     return sql::INIT_FAILURE;
   }
+
   LogInitResult(WebDatabaseInitResult::kSuccess);
+  DCHECK(db_.is_open());
   return sql::INIT_OK;
 }
 

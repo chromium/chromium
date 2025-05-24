@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 component("global_media_controls") {
   public = [
     "public/constants.h",
+    "public/format_duration.h",
     "public/media_dialog_delegate.h",
     "public/media_item_manager.h",
     "public/media_item_manager_observer.h",
@@ -45,9 +44,6 @@ component("global_media_controls") {
 
   if (is_chromeos) {
     deps += [ "//chromeos/constants:constants" ]
-  }
-
-  if (is_chromeos_ash) {
     public += [ "public/views/chapter_item_view.h" ]
   }
 
@@ -63,6 +59,7 @@ component("global_media_controls") {
     "media_item_manager_impl.h",
     "media_view_utils.cc",
     "media_view_utils.h",
+    "public/format_duration.cc",
     "public/media_item_ui_observer_set.cc",
     "public/media_session_item_producer.cc",
     "public/media_session_notification_item.cc",
@@ -77,7 +74,7 @@ component("global_media_controls") {
     "public/views/media_progress_view.cc",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "public/views/chapter_item_view.cc" ]
   }
 
@@ -89,7 +86,7 @@ source_set("unit_tests") {
 
   sources = [
     "media_item_manager_impl_unittest.cc",
-    "media_view_utils_unittest.cc",
+    "public/format_duration_unittest.cc",
     "public/media_session_item_producer_unittest.cc",
     "public/media_session_notification_item_unittest.cc",
     "public/views/media_action_button_unittest.cc",
@@ -101,7 +98,7 @@ source_set("unit_tests") {
     "public/views/media_progress_view_unittest.cc",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "public/views/chapter_item_view_unittest.cc" ]
   }
 

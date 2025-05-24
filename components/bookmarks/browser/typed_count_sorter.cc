@@ -4,8 +4,10 @@
 
 #include "components/bookmarks/browser/typed_count_sorter.h"
 
+#include <algorithm>
+
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/titled_url_node.h"
 
@@ -15,7 +17,8 @@ using UrlTypedCountMap = BookmarkClient::UrlTypedCountMap;
 
 namespace {
 
-using UrlNodeMap = std::map<const GURL*, const TitledUrlNode*>;
+using UrlNodeMap =
+    std::map<const GURL*, raw_ptr<const TitledUrlNode, CtnExperimental>>;
 using UrlTypedCountPair = std::pair<const GURL*, int>;
 using UrlTypedCountPairs = std::vector<UrlTypedCountPair>;
 
@@ -67,13 +70,13 @@ void TypedCountSorter::SortMatches(const TitledUrlNodeSet& matches,
     client_->GetTypedCountForUrls(&url_typed_count_map);
 
     UrlTypedCountPairs url_typed_counts;
-    base::ranges::copy(url_typed_count_map,
-                       std::back_inserter(url_typed_counts));
+    std::ranges::copy(url_typed_count_map,
+                      std::back_inserter(url_typed_counts));
     std::sort(url_typed_counts.begin(),
               url_typed_counts.end(),
               UrlTypedCountPairSortFunctor());
-    base::ranges::transform(url_typed_counts, std::back_inserter(*sorted_nodes),
-                            UrlTypedCountPairNodeLookupFunctor(url_node_map));
+    std::ranges::transform(url_typed_counts, std::back_inserter(*sorted_nodes),
+                           UrlTypedCountPairNodeLookupFunctor(url_node_map));
   } else {
     sorted_nodes->insert(sorted_nodes->end(), matches.begin(), matches.end());
   }

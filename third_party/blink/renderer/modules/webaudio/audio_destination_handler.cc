@@ -7,7 +7,7 @@
 namespace blink {
 
 AudioDestinationHandler::AudioDestinationHandler(AudioNode& node)
-    : AudioHandler(kNodeTypeDestination, node, 0) {
+    : AudioHandler(NodeType::kNodeTypeDestination, node, 0) {
   AddInput();
 }
 

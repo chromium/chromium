@@ -102,8 +102,8 @@ void ImageInputType::HandleDOMActivateEvent(Event& event) {
   event.SetDefaultHandled();
 }
 
-ControlPart ImageInputType::AutoAppearance() const {
-  return kNoControlPart;
+AppearanceValue ImageInputType::AutoAppearance() const {
+  return AppearanceValue::kNone;
 }
 
 LayoutObject* ImageInputType::CreateLayoutObject(
@@ -180,9 +180,7 @@ unsigned ImageInputType::Height() const {
     // If the image is available, use its height.
     HTMLImageLoader* image_loader = GetElement().ImageLoader();
     if (image_loader && image_loader->GetContent()) {
-      return image_loader->GetContent()
-          ->IntrinsicSize(kRespectImageOrientation)
-          .height();
+      return image_loader->AccessNaturalSize().height();
     }
   }
 
@@ -206,9 +204,7 @@ unsigned ImageInputType::Width() const {
     // If the image is available, use its width.
     HTMLImageLoader* image_loader = GetElement().ImageLoader();
     if (image_loader && image_loader->GetContent()) {
-      return image_loader->GetContent()
-          ->IntrinsicSize(kRespectImageOrientation)
-          .width();
+      return image_loader->AccessNaturalSize().width();
     }
   }
 
@@ -237,8 +233,7 @@ void ImageInputType::SetUseFallbackContent() {
   if (use_fallback_content_)
     return;
   use_fallback_content_ = true;
-  if (!HasCreatedShadowSubtree() &&
-      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+  if (!HasCreatedShadowSubtree()) {
     return;
   }
   if (GetElement().GetDocument().InStyleRecalc())
@@ -252,8 +247,7 @@ void ImageInputType::EnsurePrimaryContent() {
   if (!use_fallback_content_)
     return;
   use_fallback_content_ = false;
-  if (!HasCreatedShadowSubtree() &&
-      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+  if (!HasCreatedShadowSubtree()) {
     return;
   }
   if (ShadowRoot* root = GetElement().UserAgentShadowRoot())

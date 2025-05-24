@@ -18,7 +18,7 @@ namespace content {
 class WebContents;
 class WebDragDestDelegate;
 class RenderFrameHost;
-}
+}  // namespace content
 
 // A chrome specific class that extends WebContentsViewWin with features like
 // focus management, which live in chrome.

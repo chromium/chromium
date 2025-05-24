@@ -81,6 +81,10 @@ void ReplaceNodeWithSpanCommand::DoUnapply() {
                                             *span_element_);
 }
 
+String ReplaceNodeWithSpanCommand::ToString() const {
+  return "ReplaceNodeWithSpanCommand";
+}
+
 void ReplaceNodeWithSpanCommand::Trace(Visitor* visitor) const {
   visitor->Trace(element_to_replace_);
   visitor->Trace(span_element_);

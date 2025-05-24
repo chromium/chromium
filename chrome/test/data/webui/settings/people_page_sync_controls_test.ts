@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSyncControlsElement} from 'chrome://settings/lazy_load.js';
-import type {CrLinkRowElement, CrRadioButtonElement, CrToggleElement, SyncPrefs} from 'chrome://settings/settings.js';
+import type {CrRadioButtonElement, CrToggleElement, SyncPrefs} from 'chrome://settings/settings.js';
 import {Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -17,13 +17,9 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 import {getSyncAllPrefs, getSyncAllPrefsManaged} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
-// <if expr="chromeos_lacros">
-import {loadTimeData} from 'chrome://settings/settings.js';
-// </if>
-
 // clang-format on
 
-suite('SyncControlsTest', async function() {
+suite('SyncControlsTest', function() {
   let syncControls: SettingsSyncControlsElement;
   let browserProxy: TestSyncBrowserProxy;
   let syncEverything: CrRadioButtonElement;
@@ -64,17 +60,6 @@ suite('SyncControlsTest', async function() {
 
     // Assert that all the individual datatype controls are checked and enabled.
     for (const control of datatypeControls) {
-      // if lacros we check that Apps sync toggle is disabled when
-      // kSyncChromeOSAppsToggleSharing feature is enabled.
-      // <if expr="chromeos_lacros">
-      if (control.id === 'appsSyncToggle') {
-        const showSyncSettingsRevamp =
-            loadTimeData.getBoolean('showSyncSettingsRevamp');
-        assertEquals(control.disabled, showSyncSettingsRevamp);
-        assertTrue(control.checked);
-        continue;
-      }
-      // </if>
       assertFalse(control.disabled);
       assertTrue(control.checked);
     }
@@ -115,25 +100,6 @@ suite('SyncControlsTest', async function() {
 
     const prefs = await browserProxy.whenCalled('setSyncDatatypes');
     assertPrefs(prefs, datatypeControls);
-  });
-
-  test('OsSyncSettingsLink', function() {
-    // Check that the os sync settings link
-    // is available only in Lacros and kSyncChromeOSAppsToggleSharing
-    // feature is enabled.
-    const osSyncSettingsLink: CrLinkRowElement =
-        syncControls.shadowRoot!.querySelector('#osSyncSettingsLink')!;
-
-    // <if expr="chromeos_lacros">
-    assertTrue(!!osSyncSettingsLink);
-    const showSyncSettingsRevamp =
-        loadTimeData.getBoolean('showSyncSettingsRevamp');
-    assertEquals(osSyncSettingsLink.hidden, !showSyncSettingsRevamp);
-    // </if>
-
-    // <if expr="not chromeos_lacros">
-    assertFalse(!!osSyncSettingsLink);
-    // </if>
   });
 
   test('SignedIn', function() {
@@ -182,7 +148,7 @@ suite('SyncControlsTest', async function() {
     assertFalse(syncControls.hidden);
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('SyncCookiesSupported', async function() {
     // Sync everything enabled.
     assertTrue(syncEverything.checked);
@@ -292,7 +258,7 @@ suite('SyncControlsSubpageTest', function() {
 
 // Test to check that toggles are disabled when sync types are managed by
 // policy.
-suite('SyncControlsManagedTest', async function() {
+suite('SyncControlsManagedTest', function() {
   let syncControls: SettingsSyncControlsElement;
   let browserProxy: TestSyncBrowserProxy;
   let syncEverything: CrRadioButtonElement;
@@ -348,17 +314,6 @@ suite('SyncControlsManagedTest', async function() {
         syncControls.shadowRoot!.querySelectorAll('cr-policy-indicator');
     assertTrue(policyIndicators.length > 0);
     for (const indicator of policyIndicators) {
-      // On Lacros, if kSyncChromeOSAppsToggleSharing is enabled, syncing of Apps
-      // is controlled via the OS, not the browser. So in that case, the policy
-      // indicator should not be visible here.
-      // <if expr="chromeos_lacros">
-      if (indicator.id === 'appsSyncPolicyIndicator') {
-        const showSyncSettingsRevamp =
-            loadTimeData.getBoolean('showSyncSettingsRevamp');
-        assertEquals(isVisible(indicator), !showSyncSettingsRevamp);
-        continue;
-      }
-      // </if>
       assertTrue(isVisible(indicator));
     }
 
@@ -392,7 +347,7 @@ suite('SyncControlsManagedTest', async function() {
   });
 });
 
-suite('AutofillAndPaymentsToggles', async function() {
+suite('AutofillAndPaymentsToggles', function() {
   let autofillCheckbox: CrToggleElement;
   let paymentsCheckbox: CrToggleElement;
 

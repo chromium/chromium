@@ -7,8 +7,10 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
@@ -37,8 +39,14 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
 
   InterestGroupKAnonymityManager(
       InterestGroupManagerImpl* interest_group_manager,
+      InterestGroupCachingStorage* caching_storage,
       GetKAnonymityServiceDelegateCallback k_anonymity_service_callback);
   ~InterestGroupKAnonymityManager();
+
+  // Requests k-anonymity updates for all interest groups owned by `owners` that
+  // haven't been updated in 24 hours or more. Results are passed to
+  // interest_group_manager_->UpdateKAnonymity.
+  void QueryKAnonymityOfOwners(base::span<const url::Origin> owners);
 
   // Requests the k-anonymity status of elements of `k_anon_data` that
   // haven't been updated in 24 hours or more. Results are passed to
@@ -52,6 +60,8 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
   void RegisterAdKeysAsJoined(base::flat_set<std::string> hashed_keys);
 
  private:
+  friend class InterestGroupKAnonymityManagerTestPeer;
+
   struct InProgressQueryState {
     InProgressQueryState(base::Time update_time, bool replace_existing_values);
     InProgressQueryState(const InProgressQueryState&);
@@ -61,6 +71,16 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
     size_t remaining_responses{0};
     std::vector<std::string> positive_hashed_keys_from_received_responses;
   };
+
+  // Callback from QueryKAnonymityOfOwners
+  void OnGotInterestGroupsOfOwner(scoped_refptr<StorageInterestGroups> groups);
+
+  // Callback from LoadPositiveHashedKAnonymityKeysFromCache
+  void FetchUncachedKAnonymityData(
+      base::Time update_time,
+      const blink::InterestGroupKey& interest_group_key,
+      InterestGroupStorage::KAnonymityCacheResponse cache_response);
+
   // Callback from k-anonymity service QuerySets().
   void QuerySetsCallback(std::vector<std::string> query,
                          base::Time update_time,
@@ -86,6 +106,11 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
   // database.
   raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
+  // An unowned pointer to the interest_group_manager_'s
+  // InterestGroupCachingStorage. Used to talk to the database directly for
+  // fetching and storing cached hashed keys only.
+  raw_ptr<InterestGroupCachingStorage> caching_storage_;
+
   GetKAnonymityServiceDelegateCallback k_anonymity_service_callback_;
 
   // We keep track of joins in progress because the joins that haven't completed
@@ -93,7 +118,7 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
   // multiple times. We don't do this for query because the
   // size of the request could expose membership in overlapping groups through
   // traffic analysis.
-  base::flat_set<std::string> joins_in_progress;
+  base::flat_set<std::string> joins_in_progress_;
 
   // Keep track of updates for which we have not yet written values back to the
   // database. When we receive a new QueryKAnonymityData for an interest group
@@ -101,7 +126,7 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
   // choose to replace the query in progress or add more k-anonymity keys onto
   // it.
   base::flat_map<blink::InterestGroupKey, InProgressQueryState>
-      queries_in_progress;
+      queries_in_progress_;
 
   base::WeakPtrFactory<InterestGroupKAnonymityManager> weak_ptr_factory_;
 };

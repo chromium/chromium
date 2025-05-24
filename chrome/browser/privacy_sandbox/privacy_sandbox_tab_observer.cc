@@ -4,6 +4,9 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
 
+#include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
+#include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "privacy_sandbox_survey_desktop_controller.h"
@@ -18,20 +21,43 @@ PrivacySandboxTabObserver::PrivacySandboxTabObserver(
 
 PrivacySandboxTabObserver::~PrivacySandboxTabObserver() = default;
 
-void PrivacySandboxTabObserver::PrimaryPageChanged(content::Page& page) {
-  if (web_contents()->GetLastCommittedURL() != chrome::kChromeUINewTabPageURL &&
-      web_contents()->GetLastCommittedURL() != chrome::kChromeUINewTabURL) {
+void PrivacySandboxTabObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+
+  // Only valid top frame navigations are considered for showing notices and
+  // HATs.
+  if (!navigation_handle || !navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
     return;
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  auto* desktop_survey_controller =
-      PrivacySandboxSurveyDesktopControllerFactory::GetForProfile(profile);
-
-  if (desktop_survey_controller) {
-    desktop_survey_controller->MaybeShowSentimentSurvey(profile);
+  // Notices
+  auto* notice_service =
+      PrivacySandboxNoticeServiceFactory::GetForProfile(profile);
+  if (notice_service) {
+    notice_service->GetDesktopViewManager()
+        ->GetNavigationHandler()
+        ->HandleNewNavigation(navigation_handle, profile);
   }
+
+  // HATs
+  if (IsNewTabPage()) {
+    auto* desktop_survey_controller =
+        PrivacySandboxSurveyDesktopControllerFactory::GetForProfile(profile);
+    if (desktop_survey_controller) {
+      desktop_survey_controller->MaybeShowSentimentSurvey();
+      desktop_survey_controller->OnNewTabPageSeen();
+    }
+  }
+}
+
+bool PrivacySandboxTabObserver::IsNewTabPage() {
+  return web_contents()->GetLastCommittedURL() ==
+             chrome::kChromeUINewTabPageURL ||
+         web_contents()->GetLastCommittedURL() == chrome::kChromeUINewTabURL;
 }
 
 }  // namespace privacy_sandbox

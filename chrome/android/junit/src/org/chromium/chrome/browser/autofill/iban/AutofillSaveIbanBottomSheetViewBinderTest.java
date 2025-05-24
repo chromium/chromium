@@ -18,9 +18,11 @@ import androidx.annotation.DrawableRes;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.ThreadUtils;
@@ -40,6 +42,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillSaveIbanBottomSheetViewBinderTest {
     @DrawableRes private static final int TEST_DRAWABLE_RES = R.drawable.arrow_up;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private PropertyModel.Builder mModelBuilder;
     private PropertyModel mModel;
@@ -47,7 +50,6 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
 
     @Before
     public void setUpTest() throws Exception {
-        MockitoAnnotations.initMocks(this);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         // Set a MaterialComponents theme which is required for the `OutlinedBox` text field.
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -92,10 +94,10 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
 
     @Test
     @SmallTest
-    public void testIbanLabel() {
+    public void testIbanValue() {
         verifyPropertyBoundToTextView(
-                mView.mContentView.findViewById(R.id.autofill_save_iban_label),
-                AutofillSaveIbanBottomSheetProperties.IBAN_LABEL);
+                mView.mContentView.findViewById(R.id.autofill_save_iban_value),
+                AutofillSaveIbanBottomSheetProperties.IBAN_VALUE);
     }
 
     @Test

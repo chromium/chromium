@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_SUGGESTION_CONTROLLER_JAVA_SCRIPT_FEATURE_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_SUGGESTION_CONTROLLER_JAVA_SCRIPT_FEATURE_H_
 
-#include <string>
+#import <string>
 
-#include "base/functional/callback.h"
-#include "base/no_destructor.h"
-#include "ios/web/public/js_messaging/java_script_feature.h"
+#import "base/functional/callback.h"
+#import "base/no_destructor.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace web {
 class WebFrame;

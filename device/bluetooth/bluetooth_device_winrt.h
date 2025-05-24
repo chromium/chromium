@@ -148,7 +148,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
       ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice* ble_device,
       IInspectable* object);
 
-  void StartGattDiscovery();
+  void StartGattDiscovery(bool allow_cache);
   void OnGattDiscoveryComplete(bool success);
   void NotifyGattConnectFailure();
 

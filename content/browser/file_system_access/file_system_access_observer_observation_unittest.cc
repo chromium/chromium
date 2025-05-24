@@ -85,13 +85,20 @@ class FakeObservation : public blink::mojom::FileSystemAccessObserver {
   explicit FakeObservation(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessObserver>
           pending_receiver)
-      : receiver(this, std::move(pending_receiver)) {}
+      : receiver_(this, std::move(pending_receiver)) {
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &FakeObservation::OnRemoteDisconnected, weak_factory_.GetWeakPtr()));
+  }
 
   // Returns true if the the events received since the last call to this
   // function matches the `expected_changes`.
   bool EventsReceivedMatches(std::vector<MojoChangeInfo> expected_changes) {
     return testing::Matches(testing::ContainerEq(CollectEvents()))(
         expected_changes);
+  }
+
+  bool RemoteObservationDisconnected() {
+    return remote_observation_disconnected_;
   }
 
  private:
@@ -141,11 +148,18 @@ class FakeObservation : public blink::mojom::FileSystemAccessObserver {
     return future.Take();
   }
 
+  void OnRemoteDisconnected() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    remote_observation_disconnected_ = true;
+  }
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::vector<MojoChangeInfo> collected_events_;
 
-  mojo::Receiver<blink::mojom::FileSystemAccessObserver> receiver;
+  mojo::Receiver<blink::mojom::FileSystemAccessObserver> receiver_;
+
+  bool remote_observation_disconnected_ = false;
 
   base::WeakPtrFactory<FakeObservation> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
@@ -159,16 +173,22 @@ class FakeObserver {
       mojo::Remote<blink::mojom::FileSystemAccessObserverHost> observer)
       : observer_(std::move(observer)) {}
 
-  FakeObservation Observe(
-      std::unique_ptr<FileSystemAccessFileHandleImpl>& handle,
-      bool recursive) {
+  FakeObservation Observe(std::variant<FileSystemAccessFileHandleImpl*,
+                                       FileSystemAccessDirectoryHandleImpl*>
+                              file_or_directory_handle,
+                          bool recursive) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     CHECK(observer_.is_bound());
 
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
         transfer_token;
-    handle->Transfer(transfer_token.InitWithNewPipeAndPassReceiver());
+
+    std::visit(
+        [&transfer_token](auto* handle) {
+          handle->Transfer(transfer_token.InitWithNewPipeAndPassReceiver());
+        },
+        file_or_directory_handle);
 
     base::test::TestFuture<
         blink::mojom::FileSystemAccessErrorPtr,
@@ -197,9 +217,13 @@ class FakeChangeSource : public FileSystemAccessChangeSource {
  public:
   explicit FakeChangeSource(
       FileSystemAccessWatchScope scope,
-      scoped_refptr<storage::FileSystemContext> file_system_context)
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      FileSystemAccessWatcherManager& watcher_manager)
       : FileSystemAccessChangeSource(std::move(scope),
-                                     std::move(file_system_context)) {}
+                                     std::move(file_system_context)) {
+    watcher_manager.RegisterSourceForTesting(this);
+    EXPECT_TRUE(watcher_manager.HasSourceForTesting(this));
+  }
   FakeChangeSource(const FakeChangeSource&) = delete;
   FakeChangeSource& operator=(const FakeChangeSource&) = delete;
   ~FakeChangeSource() override = default;
@@ -218,6 +242,12 @@ class FakeChangeSource : public FileSystemAccessChangeSource {
     scope().root_url().virtual_path().AppendRelativePath(
         change_info.modified_path, &relative_path);
     NotifyOfChange(std::move(relative_path), false, std::move(change_info));
+  }
+
+  void SignalUsageChange(size_t old_usage, size_t new_usage) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    NotifyOfUsageChange(old_usage, new_usage);
   }
 
   void SignalError() {
@@ -277,7 +307,7 @@ class FileSystemAccessObserverObservationTest
   void RegisterChangeSource(FakeChangeSource& source) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    manager_->watcher_manager().RegisterSource(&source);
+    manager_->watcher_manager().RegisterSourceForTesting(&source);
     EXPECT_TRUE(manager_->watcher_manager().HasSourceForTesting(&source));
   }
 
@@ -296,6 +326,12 @@ class FileSystemAccessObserverObservationTest
     rfh->SetLifecycleState(RenderFrameHostImpl::LifecycleStateImpl::kActive);
   }
 
+  FakeChangeSource CreateFileChangeSource(storage::FileSystemURL file_url) {
+    return FakeChangeSource(
+        FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+        file_system_context_, manager_->watcher_manager());
+  }
+
   base::FilePath CreateFile() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -309,25 +345,70 @@ class FileSystemAccessObserverObservationTest
     return file_path;
   }
 
-  storage::FileSystemURL CreateFileSystemURL(
-      FileSystemAccessPermissionContext::PathType path_type,
-      const base::FilePath& file_path) {
+  storage::FileSystemURL CreateFileSystemURL(const base::FilePath& file_path) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    return manager_->CreateFileSystemURLFromPath(path_type, file_path);
+    return manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
   }
 
   std::unique_ptr<FileSystemAccessFileHandleImpl> CreateFileHandle(
-      const storage::FileSystemURL& file_url) {
+      const storage::FileSystemURL& file_url,
+      const base::FilePath& display_name) {
+    return CreateFileHandle(kTestOrigin, file_url, display_name);
+  }
+
+  std::unique_ptr<FileSystemAccessFileHandleImpl> CreateFileHandle(
+      const std::string& origin,
+      const storage::FileSystemURL& file_url,
+      const base::FilePath& display_name) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return std::make_unique<FileSystemAccessFileHandleImpl>(
-        manager_.get(), GetBindingContext(), file_url,
+        manager_.get(), GetBindingContext(origin), file_url,
+        display_name.AsUTF8Unsafe(),
         FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
                                                        allow_grant_));
   }
 
-  FakeObserver CreateObserver() {
+  FakeChangeSource CreateDirectoryChangeSource(storage::FileSystemURL dir_url,
+                                               bool is_recursive) {
+    return FakeChangeSource(
+        FileSystemAccessWatchScope::GetScopeForDirectoryWatch(dir_url,
+                                                              is_recursive),
+        file_system_context_, manager_->watcher_manager());
+  }
+
+  base::FilePath CreateDirectory() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    base::FilePath dir_path;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::CreateTemporaryDirInDir(
+          temp_dir_.GetPath(), FILE_PATH_LITERAL("test"), &dir_path));
+    }
+    return dir_path;
+  }
+
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> CreateDirectoryHandle(
+      const storage::FileSystemURL& dir_url) {
+    return CreateDirectoryHandle(kTestOrigin, dir_url);
+  }
+
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> CreateDirectoryHandle(
+      const std::string& origin,
+      const storage::FileSystemURL& dir_url) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    return std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+        manager_.get(), GetBindingContext(origin), dir_url,
+        FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                       allow_grant_));
+  }
+
+  FakeObserver CreateObserver() { return CreateObserver(kTestOrigin); }
+
+  FakeObserver CreateObserver(const std::string& origin) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     mojo::Remote<blink::mojom::FileSystemAccessObserverHost> observer;
 
@@ -336,30 +417,29 @@ class FileSystemAccessObserverObservationTest
 
     FakeObserver fake_observer(std::move(observer));
 
-    RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
-
-    auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-        kTestStorageKey, kTestURL, rfh->GetGlobalId());
-
-    manager_->watcher_manager().BindObserverHost(bf_cache_context,
+    manager_->watcher_manager().BindObserverHost(GetBindingContext(origin),
                                                  std::move(host_receiver));
     return fake_observer;
   }
 
  private:
-  FileSystemAccessManagerImpl::BindingContext GetBindingContext() {
+  FileSystemAccessManagerImpl::BindingContext GetBindingContext(
+      const std::string& origin) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    return FileSystemAccessManagerImpl::BindingContext(
-        kTestStorageKey, kTestURL,
-        web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+    GURL url = GURL(origin);
+    blink::StorageKey storage_key =
+        blink::StorageKey::CreateFromStringForTesting(origin);
+
+    RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+    return FileSystemAccessManagerImpl::BindingContext(storage_key, url,
+                                                       rfh->GetGlobalId());
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const GURL kTestURL = GURL("https://example.com/test");
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
+  std::string kTestOrigin = "https://example.com/test";
 
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
@@ -369,25 +449,20 @@ class FileSystemAccessObserverObservationTest
   scoped_refptr<FixedFileSystemAccessPermissionGrant> allow_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
-          base::FilePath());
+          PathInfo());
 };
 
 TEST_F(FileSystemAccessObserverObservationTest,
        NoChangesAfterAnErrorIsReported) {
   base::FilePath file_path = CreateFile();
-  storage::FileSystemURL file_url = CreateFileSystemURL(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
-      CreateFileHandle(file_url);
+      CreateFileHandle(file_url, file_path.BaseName());
 
-  FileSystemAccessWatchScope scope =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
-
-  FakeChangeSource source(scope, file_system_context());
-  RegisterChangeSource(source);
+  FakeChangeSource source = CreateFileChangeSource(file_url);
 
   FakeObserver observer = CreateObserver();
-  FakeObservation observation = observer.Observe(file_handle, false);
+  FakeObservation observation = observer.Observe(file_handle.get(), false);
 
   // Will receive changes before the error.
   source.SignalChange(
@@ -405,43 +480,35 @@ TEST_F(FileSystemAccessObserverObservationTest,
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
   EXPECT_TRUE(observation.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation.RemoteObservationDisconnected());
 }
 
 TEST_F(FileSystemAccessObserverObservationTest,
        AnErrorDestroysTheCorrectObservation) {
   base::FilePath file_path1 = CreateFile();
-  storage::FileSystemURL file_url1 = CreateFileSystemURL(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path1);
+  storage::FileSystemURL file_url1 = CreateFileSystemURL(file_path1);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle1 =
-      CreateFileHandle(file_url1);
+      CreateFileHandle(file_url1, file_path1.BaseName());
 
-  FileSystemAccessWatchScope scope1 =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url1);
-
-  FakeChangeSource source1(scope1, file_system_context());
-  RegisterChangeSource(source1);
+  FakeChangeSource source1 = CreateFileChangeSource(file_url1);
 
   base::FilePath file_path2 = CreateFile();
-  storage::FileSystemURL file_url2 = CreateFileSystemURL(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path2);
+  storage::FileSystemURL file_url2 = CreateFileSystemURL(file_path2);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle2 =
-      CreateFileHandle(file_url2);
+      CreateFileHandle(file_url2, file_path2.BaseName());
 
-  FileSystemAccessWatchScope scope2 =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url2);
-
-  FakeChangeSource source2(scope2, file_system_context());
-  RegisterChangeSource(source2);
+  FakeChangeSource source2 = CreateFileChangeSource(file_url2);
 
   FakeObserver observer = CreateObserver();
-  FakeObservation observation1 = observer.Observe(file_handle1, false);
-  FakeObservation observation2 = observer.Observe(file_handle2, false);
+  FakeObservation observation1 = observer.Observe(file_handle1.get(), false);
+  FakeObservation observation2 = observer.Observe(file_handle2.get(), false);
 
   // Only `observation1` receives the error for `source`.
   source1.SignalError();
   EXPECT_TRUE(observation1.EventsReceivedMatches(
       {{MojoChangeType::kErrored, MojoFilePathType::kFile, {}}}));
   EXPECT_TRUE(observation2.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation1.RemoteObservationDisconnected());
 
   // `observation1` won't receive any further error events or changes, and
   // `observation2` will continue not to receive changes for `source1`.
@@ -449,40 +516,282 @@ TEST_F(FileSystemAccessObserverObservationTest,
   source1.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path1));
   EXPECT_TRUE(observation1.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation1.RemoteObservationDisconnected());
   EXPECT_TRUE(observation2.EventsReceivedMatches({}));
 
   // `observation2` continues to receive changes.
   source2.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path2));
   EXPECT_TRUE(observation1.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation1.RemoteObservationDisconnected());
   EXPECT_TRUE(observation2.EventsReceivedMatches(
       {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {}}}));
 }
 
-TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {
+TEST_F(FileSystemAccessObserverObservationTest,
+       FileObservationDestructedAfterFileDeleted) {
   base::FilePath file_path = CreateFile();
-  storage::FileSystemURL file_url = CreateFileSystemURL(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
-      CreateFileHandle(file_url);
+      CreateFileHandle(file_url, file_path.BaseName());
 
-  FileSystemAccessWatchScope scope =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
-
-  FakeChangeSource source(scope, file_system_context());
-  RegisterChangeSource(source);
+  FakeChangeSource source = CreateFileChangeSource(file_url);
 
   FakeObserver observer = CreateObserver();
-  FakeObservation observation = observer.Observe(file_handle, false);
+  FakeObservation observation =
+      observer.Observe(file_handle.get(), /*recursive=*/false);
 
-  // Will receive changes before entering BFCache.
+  // Deleting the file should result in a disappeared and an errored event.
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kDeleted, file_path));
   EXPECT_TRUE(observation.EventsReceivedMatches(
       {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {}},
-       {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {}}}));
+       {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {}},
+       {MojoChangeType::kErrored, MojoFilePathType::kFile, {}}}));
+
+  // The remote observation should have been destructed and disconnected. So,
+  // further events should not be received.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kModified, file_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation.RemoteObservationDisconnected());
+}
+
+TEST_F(FileSystemAccessObserverObservationTest,
+       FileObservationDestructedWhenParentDirectoryDeleted) {
+  base::FilePath dir_path = CreateDirectory();
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(dir_path, &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
+  }
+  storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
+  std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
+      CreateFileHandle(file_url, file_path.BaseName());
+
+  FakeChangeSource source = CreateFileChangeSource(file_url);
+
+  FakeObserver observer = CreateObserver();
+  FakeObservation observation =
+      observer.Observe(file_handle.get(), /*recursive=*/false);
+
+  // Deleting the parent directory should result in a disappeared and an errored
+  // event on the file observation.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kModified, file_path));
+  // We handle directory deletion by signaling a deleted event on the file
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kDeleted, file_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kModified, MojoFilePathType::kFile, {}},
+       {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {}},
+       {MojoChangeType::kErrored, MojoFilePathType::kFile, {}}}));
+
+  // The remote observation should have been destructed and disconnected. So,
+  // further events should not be received.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kModified, file_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation.RemoteObservationDisconnected());
+}
+
+// TODO(crbug.com/393229134): Reenable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DirectoryObservationDestructedAfterScopeRootDeleted \
+  DISABLED_DirectoryObservationDestructedAfterScopeRootDeleted
+#else
+#define MAYBE_DirectoryObservationDestructedAfterScopeRootDeleted \
+  DirectoryObservationDestructedAfterScopeRootDeleted
+#endif
+TEST_F(FileSystemAccessObserverObservationTest,
+       MAYBE_DirectoryObservationDestructedAfterScopeRootDeleted) {
+  base::FilePath dir_path = CreateDirectory();
+  storage::FileSystemURL dir_url = CreateFileSystemURL(dir_path);
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle =
+      CreateDirectoryHandle(dir_url);
+
+  FakeChangeSource source =
+      CreateDirectoryChangeSource(dir_url, /*is_recursive=*/false);
+
+  FakeObserver observer = CreateObserver();
+  FakeObservation observation =
+      observer.Observe(dir_handle.get(), /*recursive=*/false);
+
+  base::FilePath file_path = dir_path.AppendASCII("file.txt");
+  // Deleting the directory root should result in a disappeared and an errored
+  // event.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
+  // We handle directory deletion by first signaling a deleted event and then an
+  // error.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kDirectory, ChangeType::kDeleted, dir_path));
+  source.SignalError();
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {"file.txt"}},
+       {MojoChangeType::kDisappeared, MojoFilePathType::kDirectory, {}},
+       {MojoChangeType::kErrored, MojoFilePathType::kDirectory, {}}}));
+
+  // The remote observation should have been destructed and disconnected. So,
+  // no further events should be received.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kDirectory, ChangeType::kModified, dir_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation.RemoteObservationDisconnected());
+}
+
+// TODO(crbug.com/393229134): Reenable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DirectoryObservationNotDestructedAfterFileDeleted \
+  DISABLED_DirectoryObservationNotDestructedAfterFileDeleted
+#else
+#define MAYBE_DirectoryObservationNotDestructedAfterFileDeleted \
+  DirectoryObservationNotDestructedAfterFileDeleted
+#endif
+TEST_F(FileSystemAccessObserverObservationTest,
+       MAYBE_DirectoryObservationNotDestructedAfterFileDeleted) {
+  base::FilePath dir_path = CreateDirectory();
+  storage::FileSystemURL dir_url = CreateFileSystemURL(dir_path);
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle =
+      CreateDirectoryHandle(dir_url);
+
+  FakeChangeSource source =
+      CreateDirectoryChangeSource(dir_url, /*is_recursive=*/false);
+
+  FakeObserver observer = CreateObserver();
+  FakeObservation observation =
+      observer.Observe(dir_handle.get(), /*recursive=*/false);
+
+  base::FilePath file_path = dir_path.AppendASCII("file.txt");
+
+  // Deleting a file in the dir should result in a disappeared but not an
+  // errored event.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kDeleted, file_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {"file.txt"}},
+       {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {"file.txt"}}}));
+
+  // The remote observation should not have been disconnected. So, we should
+  // continue receiving events.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kDirectory, ChangeType::kModified, dir_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kModified, MojoFilePathType::kDirectory, {}}}));
+}
+
+// TODO(crbug.com/393229134): Reenable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ObservationDestroyedOnQuotaExceeded \
+  DISABLED_ObservationDestroyedOnQuotaExceeded
+#else
+#define MAYBE_ObservationDestroyedOnQuotaExceeded \
+  ObservationDestroyedOnQuotaExceeded
+#endif
+TEST_F(FileSystemAccessObserverObservationTest,
+       MAYBE_ObservationDestroyedOnQuotaExceeded) {
+  base::FilePath favorites_path = CreateDirectory();
+  base::FilePath documents_path = CreateDirectory();
+  storage::FileSystemURL favorites_url = CreateFileSystemURL(favorites_path);
+  storage::FileSystemURL documents_url = CreateFileSystemURL(documents_path);
+  FakeChangeSource favorites_source =
+      CreateDirectoryChangeSource(favorites_url, /*is_recursive=*/false);
+  FakeChangeSource documents_source =
+      CreateDirectoryChangeSource(documents_url, /*is_recursive=*/false);
+
+  std::string foo_origin = "https://foo.com";
+  std::string bar_origin = "https://bar.com";
+
+  FakeObserver foo_observer = CreateObserver(foo_origin);
+  FakeObserver bar_observer = CreateObserver(bar_origin);
+
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> foo_favorites_handle =
+      CreateDirectoryHandle(foo_origin, favorites_url);
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> bar_favorites_handle =
+      CreateDirectoryHandle(bar_origin, favorites_url);
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> foo_documents_handle =
+      CreateDirectoryHandle(foo_origin, documents_url);
+
+  FakeObservation foo_favorites_observation =
+      foo_observer.Observe(foo_favorites_handle.get(), /*recursive=*/false);
+  FakeObservation bar_favorites_observation =
+      bar_observer.Observe(bar_favorites_handle.get(), /*recursive=*/false);
+  FakeObservation foo_documents_observation =
+      foo_observer.Observe(foo_documents_handle.get(), /*recursive=*/false);
+
+  auto quota_override = FilePathWatcher::SetQuotaLimitForTesting(100);
+
+  // Only foo is observing documents, so only its usage should rise. It is still
+  // under the quota limit though.
+  // - foo: (favorites usage = 0) + (documents usage = 50) = 50
+  //   - 50 < 100 so no quota error
+  // - bar: (favorites usage = 0) = 0
+  //   - 0 < 100 so no quota error
+  documents_source.SignalUsageChange(0, 50);
+  EXPECT_TRUE(foo_favorites_observation.EventsReceivedMatches({}));
+  EXPECT_FALSE(foo_favorites_observation.RemoteObservationDisconnected());
+  EXPECT_TRUE(bar_favorites_observation.EventsReceivedMatches({}));
+  EXPECT_FALSE(bar_favorites_observation.RemoteObservationDisconnected());
+  EXPECT_TRUE(foo_documents_observation.EventsReceivedMatches({}));
+  EXPECT_FALSE(foo_documents_observation.RemoteObservationDisconnected());
+
+  // Both origins are observing favorites, so both usages should rise. This
+  // sends foo over the quota limit but not bar. Foo's favorites observation
+  // should receive an error and be disconnected.
+  // - foo: (favorites usage = 60) + (documents usage = 50) = 110
+  //   - 110 > 100 so quota error
+  // - bar: (favorites usage = 60) = 60
+  //   - 60 < 100 so no quota error
+  favorites_source.SignalUsageChange(0, 60);
+  EXPECT_TRUE(foo_favorites_observation.EventsReceivedMatches(
+      {{MojoChangeType::kErrored, MojoFilePathType::kDirectory, {}}}));
+  EXPECT_TRUE(foo_favorites_observation.RemoteObservationDisconnected());
+  EXPECT_TRUE(bar_favorites_observation.EventsReceivedMatches({}));
+  EXPECT_FALSE(bar_favorites_observation.RemoteObservationDisconnected());
+  EXPECT_TRUE(foo_documents_observation.EventsReceivedMatches({}));
+  EXPECT_FALSE(foo_documents_observation.RemoteObservationDisconnected());
+
+  // Only bar should now receive events for favorites now.
+  std::string file_name = "file.txt";
+  favorites_source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated,
+                 favorites_path.AppendASCII(file_name)));
+  EXPECT_TRUE(foo_favorites_observation.EventsReceivedMatches({}));
+  EXPECT_TRUE(bar_favorites_observation.EventsReceivedMatches(
+      {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {file_name}}}));
+
+  // Foo can still receive events for documents.
+  documents_source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated,
+                 documents_path.AppendASCII(file_name)));
+  EXPECT_TRUE(foo_documents_observation.EventsReceivedMatches(
+      {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {file_name}}}));
+}
+
+TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {
+  base::FilePath file_path = CreateFile();
+  storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
+  std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
+      CreateFileHandle(file_url, file_path.BaseName());
+
+  FakeChangeSource source = CreateFileChangeSource(file_url);
+
+  FakeObserver observer = CreateObserver();
+  FakeObservation observation = observer.Observe(file_handle.get(), false);
+
+  // Will receive changes before entering BFCache.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kModified, file_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {}},
+       {MojoChangeType::kModified, MojoFilePathType::kFile, {}}}));
 
   // No event is emitted just for entering the BFCache.
   EnterBFCache();
@@ -504,28 +813,23 @@ TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {
 
 TEST_F(FileSystemAccessObserverObservationTest, ReceivedErrorsInBFCache) {
   base::FilePath file_path = CreateFile();
-  storage::FileSystemURL file_url = CreateFileSystemURL(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
-      CreateFileHandle(file_url);
+      CreateFileHandle(file_url, file_path.BaseName());
 
-  FileSystemAccessWatchScope scope =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
-
-  FakeChangeSource source(scope, file_system_context());
-  RegisterChangeSource(source);
+  FakeChangeSource source = CreateFileChangeSource(file_url);
 
   FakeObserver observer = CreateObserver();
-  FakeObservation observation = observer.Observe(file_handle, false);
+  FakeObservation observation = observer.Observe(file_handle.get(), false);
 
   // Will receive changes before entering BFCache.
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
   source.SignalChange(
-      ChangeInfo(FilePathType::kFile, ChangeType::kDeleted, file_path));
+      ChangeInfo(FilePathType::kFile, ChangeType::kModified, file_path));
   EXPECT_TRUE(observation.EventsReceivedMatches(
       {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {}},
-       {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {}}}));
+       {MojoChangeType::kModified, MojoFilePathType::kFile, {}}}));
 
   // No event is emitted just for entering the BFCache.
   EnterBFCache();

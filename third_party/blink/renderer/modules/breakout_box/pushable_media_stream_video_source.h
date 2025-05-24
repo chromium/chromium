@@ -86,7 +86,7 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
   ~PushableMediaStreamVideoSource() override;
 
   // See the definition of VideoCaptureDeliverFrameCB in
-  // third_party/blink/public/common/media/video_capture.h
+  // third_party/blink/public/platform/media/video_capture.h
   // for the documentation of |estimated_capture_time| and the difference with
   // media::VideoFrame::timestamp().
   // This function can be called on any thread.
@@ -99,10 +99,7 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
 
   // MediaStreamVideoSource
   void StartSourceImpl(
-      VideoCaptureDeliverFrameCB frame_callback,
-      EncodedVideoFrameCB encoded_frame_callback,
-      VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
-      VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) override;
+      MediaStreamVideoSourceCallbacks media_stream_callbacks) override;
   void StopSourceImpl() override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
   void OnSourceCanDiscardAlpha(bool can_discard_alpha) override;

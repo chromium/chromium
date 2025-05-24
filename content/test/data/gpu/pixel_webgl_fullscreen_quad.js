@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const vertexShader = [
-  "attribute vec3 pos;",
-  "void main(void)",
-  "{",
-  "  gl_Position = vec4(pos, 1.0);",
-  "}"
-].join("\n");
+const defaultVertexShader = [
+  'attribute vec3 pos;',
+  'void main(void)',
+  '{',
+  '  gl_Position = vec4(pos, 1.0);',
+  '}',
+].join('\n');
 
-const fragmentShader = [
-  "precision mediump float;",
-  "void main(void)",
-  "{",
-  "  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);",
-  "}"
-].join("\n");
+const defaultFragmentShader = [
+  'precision mediump float;',
+  'void main(void)',
+  '{',
+  '  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);',
+  '}',
+].join('\n');
 
 let gl;
 
@@ -37,9 +37,11 @@ function sendResult(status, detail) {
 function initGL(canvas, opt_attribs)
 {
   try {
-    let attribs = Object.assign({ powerPreference: "low-power" },
-                                opt_attribs || {});
-    gl = canvas.getContext("webgl", attribs);
+    opt_attribs = opt_attribs || {};
+    let contextType = opt_attribs.contextType || 'webgl';
+    delete opt_attribs.contextType;
+    let attribs = Object.assign({powerPreference: 'low-power'}, opt_attribs);
+    gl = canvas.getContext(contextType, attribs);
   } catch (e) {}
   return gl;
 }
@@ -48,12 +50,18 @@ function setupShader(source, type) {
   var shader = gl.createShader(type);
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    console.log(gl.getShaderInfoLog(shader));
     return null;
+  }
   return shader;
 }
 
 function setupProgram(vs_id, fs_id) {
+  let vertexShader =
+      document.getElementById(vs_id)?.innerHTML.trim() || defaultVertexShader;
+  let fragmentShader =
+      document.getElementById(fs_id)?.innerHTML.trim() || defaultFragmentShader;
   var vs = setupShader(vertexShader, gl.VERTEX_SHADER);
   var fs = setupShader(fragmentShader, gl.FRAGMENT_SHADER);
   if (!vs || !fs)
@@ -85,7 +93,7 @@ function setupBuffer(gl) {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexData), gl.STATIC_DRAW);
 }
 
-function setupGL() {
+function setupGL(gl) {
   var program = setupProgram("shader-vs", "shader-fs");
   if (!program)
     return false;
@@ -95,7 +103,6 @@ function setupGL() {
   var stride = 3 * Float32Array.BYTES_PER_ELEMENT;
   gl.vertexAttribPointer(posAttr, 3, gl.FLOAT, false, stride, 0);
   gl.clearColor(0.0, 0.0, 0.0, 0.0);
-  gl.viewport(0, 0, 300, 300);
   gl.disable(gl.DEPTH_TEST);
   if (gl.getError() != gl.NO_ERROR)
     return false;

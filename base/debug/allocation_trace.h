@@ -66,7 +66,7 @@ class BASE_EXPORT OperationRecord {
   // Number of allocated bytes. Returns 0 for free operations.
   size_t GetSize() const;
   // The stacktrace as taken by the Initialize*-functions.
-  const StackTraceContainer& GetStackTrace() const;
+  const StackTraceContainer& GetStackTrace() const LIFETIME_BOUND;
 
   // Initialize the record with data for another operation. Data from any
   // previous operation will be silently overwritten. These functions are

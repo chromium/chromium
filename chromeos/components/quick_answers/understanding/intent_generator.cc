@@ -176,11 +176,7 @@ void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
   base::i18n::BreakIterator iter(u16_text,
                                  base::i18n::BreakIterator::BREAK_WORD);
   if (!iter.Init() || !iter.Advance()) {
-    NOTREACHED_IN_MIGRATION() << "Failed to load BreakIterator.";
-
-    std::move(complete_callback_)
-        .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
-    return;
+    NOTREACHED() << "Failed to load BreakIterator.";
   }
 
   DCHECK(spell_checker_.get()) << "spell_checker_ should exist when the "

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
-
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 
 @implementation CWVAutofillSuggestion {
   BOOL _isPasswordSuggestion;

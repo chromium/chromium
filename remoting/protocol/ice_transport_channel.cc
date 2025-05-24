@@ -28,10 +28,10 @@ namespace {
 
 const int kIceUfragLength = 16;
 
-// Utility function to map a cricket::Candidate string type to a
+// Utility function to map a webrtc::Candidate string type to a
 // TransportRoute::RouteType enum value.
 TransportRoute::RouteType CandidateTypeToTransportRouteType(
-    const cricket::Candidate& c) {
+    const webrtc::Candidate& c) {
   if (c.is_local()) {
     return TransportRoute::DIRECT;
   } else if (c.is_stun() || c.is_prflx()) {
@@ -49,7 +49,7 @@ IceTransportChannel::IceTransportChannel(
     scoped_refptr<TransportContext> transport_context,
     const NetworkSettings& network_settings)
     : transport_context_(transport_context),
-      ice_username_fragment_(rtc::CreateRandomString(kIceUfragLength)),
+      ice_username_fragment_(webrtc::CreateRandomString(kIceUfragLength)),
       connect_attempts_left_(network_settings.ice_reconnect_attempts),
       network_settings_(network_settings) {
   DCHECK(!ice_username_fragment_.empty());
@@ -92,15 +92,16 @@ void IceTransportChannel::Connect(const std::string& name,
 
   // Create P2PTransportChannel, attach signal handlers and connect it.
   // TODO(sergeyu): Specify correct component ID for the channel.
-  channel_ = std::make_unique<cricket::P2PTransportChannel>(
+  channel_ = std::make_unique<webrtc::P2PTransportChannel>(
       std::string(), 0, port_allocator_.get());
-  std::string ice_password = rtc::CreateRandomString(cricket::ICE_PWD_LENGTH);
+  std::string ice_password = webrtc::CreateRandomString(webrtc::ICE_PWD_LENGTH);
   channel_->SetIceRole((transport_context_->role() == TransportRole::CLIENT)
-                           ? cricket::ICEROLE_CONTROLLING
-                           : cricket::ICEROLE_CONTROLLED);
+                           ? webrtc::ICEROLE_CONTROLLING
+                           : webrtc::ICEROLE_CONTROLLED);
   delegate_->OnChannelIceCredentials(this, ice_username_fragment_,
                                      ice_password);
-  channel_->SetIceCredentials(ice_username_fragment_, ice_password);
+  channel_->SetIceParameters(webrtc::IceParameters(
+      ice_username_fragment_, ice_password, /*ice_renomination=*/false));
   channel_->SignalCandidateGathered.connect(
       this, &IceTransportChannel::OnCandidateGathered);
   channel_->SignalRouteChange.connect(this,
@@ -115,8 +116,9 @@ void IceTransportChannel::Connect(const std::string& name,
 
   // Pass pending ICE credentials and candidates to the channel.
   if (!remote_ice_username_fragment_.empty()) {
-    channel_->SetRemoteIceCredentials(remote_ice_username_fragment_,
-                                      remote_ice_password_);
+    channel_->SetRemoteIceParameters(webrtc::IceParameters(
+        remote_ice_username_fragment_, remote_ice_password_,
+        /*ice_renomination=*/false));
   }
 
   while (!pending_candidates_.empty()) {
@@ -152,12 +154,13 @@ void IceTransportChannel::SetRemoteCredentials(const std::string& ufrag,
   remote_ice_password_ = password;
 
   if (channel_) {
-    channel_->SetRemoteIceCredentials(ufrag, password);
+    channel_->SetRemoteIceParameters(
+        webrtc::IceParameters(ufrag, password, /*ice_renomination=*/false));
   }
 }
 
 void IceTransportChannel::AddRemoteCandidate(
-    const cricket::Candidate& candidate) {
+    const webrtc::Candidate& candidate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // To enforce the no-relay setting, it's not enough to not produce relay
@@ -186,15 +189,15 @@ bool IceTransportChannel::is_connected() const {
 }
 
 void IceTransportChannel::OnCandidateGathered(
-    cricket::IceTransportInternal* ice_transport,
-    const cricket::Candidate& candidate) {
+    webrtc::IceTransportInternal* ice_transport,
+    const webrtc::Candidate& candidate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_->OnChannelCandidate(this, candidate);
 }
 
 void IceTransportChannel::OnRouteChange(
-    cricket::IceTransportInternal* ice_transport,
-    const cricket::Candidate& candidate) {
+    webrtc::IceTransportInternal* ice_transport,
+    const webrtc::Candidate& candidate) {
   // Ignore notifications if the channel is not writable.
   if (channel_->writable()) {
     NotifyRouteChanged();
@@ -202,9 +205,9 @@ void IceTransportChannel::OnRouteChange(
 }
 
 void IceTransportChannel::OnWritableState(
-    rtc::PacketTransportInternal* transport) {
+    webrtc::PacketTransportInternal* transport) {
   DCHECK_EQ(transport,
-            static_cast<rtc::PacketTransportInternal*>(channel_.get()));
+            static_cast<webrtc::PacketTransportInternal*>(channel_.get()));
 
   if (transport->writable()) {
     connect_attempts_left_ = network_settings_.ice_reconnect_attempts;
@@ -229,7 +232,7 @@ void IceTransportChannel::NotifyRouteChanged() {
   TransportRoute route;
 
   DCHECK(channel_->best_connection());
-  const cricket::Connection* connection = channel_->best_connection();
+  const webrtc::Connection* connection = channel_->best_connection();
 
   // A connection has both a local and a remote candidate. For our purposes, the
   // route type is determined by the most indirect candidate type. For example:
@@ -248,7 +251,7 @@ void IceTransportChannel::NotifyRouteChanged() {
     LOG(FATAL) << "Failed to convert peer IP address.";
   }
 
-  const cricket::Candidate& local_candidate =
+  const webrtc::Candidate& local_candidate =
       channel_->best_connection()->local_candidate();
   if (!webrtc::SocketAddressToIPEndPoint(local_candidate.address(),
                                          &route.local_address)) {
@@ -272,10 +275,11 @@ void IceTransportChannel::TryReconnect() {
   --connect_attempts_left_;
 
   // Restart ICE by resetting ICE password.
-  std::string ice_password = rtc::CreateRandomString(cricket::ICE_PWD_LENGTH);
+  std::string ice_password = webrtc::CreateRandomString(webrtc::ICE_PWD_LENGTH);
   delegate_->OnChannelIceCredentials(this, ice_username_fragment_,
                                      ice_password);
-  channel_->SetIceCredentials(ice_username_fragment_, ice_password);
+  channel_->SetIceParameters(webrtc::IceParameters(
+      ice_username_fragment_, ice_password, /*ice_renomination=*/false));
 }
 
 }  // namespace remoting::protocol

@@ -1,0 +1,13 @@
+; Copyright 2024 The Chromium Authors
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
+
+; --- The contents of common.sb implicitly included here. ---
+
+; Required to load the libtranslatekit.so binary downloaded by the component
+; updater.
+; When the TranslateKit binary path is passed via the command line, the binary
+; path is set. But when the TranslateKit binary is installed as a component, the
+; directory path of the component is set.
+(define translatekit-component-path "TRANSLATEKIT_COMPONENT_PATH")
+(allow file-read* (subpath (param translatekit-component-path)))

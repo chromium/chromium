@@ -40,22 +40,10 @@
 
 namespace blink {
 
-class ExceptionState;
-class StructuredSerializeOptions;
-class ScriptState;
-class ScriptValue;
-
 class CORE_EXPORT WindowOrWorkerGlobalScope {
  public:
-  void reportError(ScriptState*, const ScriptValue&);
-  String btoa(const String& string_to_encode, ExceptionState&);
-  String atob(const String& encoded_string, ExceptionState&);
   bool crossOriginIsolated();
   String crossOriginEmbedderPolicy();
-  ScriptValue structuredClone(ScriptState*,
-                              const ScriptValue& message,
-                              const StructuredSerializeOptions*,
-                              ExceptionState&);
 
  protected:
   virtual ExecutionContext* GetExecutionContext() const = 0;

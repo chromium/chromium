@@ -6,6 +6,7 @@
 #define COMPONENTS_DOM_DISTILLER_CONTENT_RENDERER_DISTILLER_NATIVE_JAVASCRIPT_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/dom_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -45,6 +46,8 @@ class DistillerNativeJavaScript {
 
   raw_ptr<content::RenderFrame> render_frame_;
   mojo::Remote<mojom::DistillerJavaScriptService> distiller_js_service_;
+
+  base::WeakPtrFactory<DistillerNativeJavaScript> weak_factory_{this};
 };
 
 // static

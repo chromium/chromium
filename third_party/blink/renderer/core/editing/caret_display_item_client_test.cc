@@ -617,7 +617,7 @@ TEST_P(CaretDisplayItemClientTest, CaretAtStartInWhiteSpacePreWrapRTL) {
       "<div dir=rtl contenteditable>&#1575;&#1582;&#1578;&#1576;&#1585; "
       "</div>");
 
-  const Element& div = *GetDocument().QuerySelector(AtomicString("div"));
+  const Element& div = *QuerySelector("div");
   const Position& position = Position::FirstPositionInNode(div);
   const PhysicalRect& rect = ComputeCaretRect(PositionWithAffinity(position));
   EXPECT_EQ(94, rect.X());
@@ -635,8 +635,7 @@ TEST_P(CaretDisplayItemClientTest, CaretAtEdgeOfInlineBlock) {
       "<span contenteditable=false>foo</span>"
       "</div>");
 
-  const Element& editable =
-      *GetDocument().QuerySelector(AtomicString("#editable"));
+  const Element& editable = *QuerySelector("#editable");
   const LayoutBlock* editable_block =
       To<LayoutBlock>(editable.GetLayoutObject());
 

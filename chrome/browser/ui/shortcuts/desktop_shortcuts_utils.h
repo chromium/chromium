@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_UI_SHORTCUTS_DESKTOP_SHORTCUTS_UTILS_H_
 #define CHROME_BROWSER_UI_SHORTCUTS_DESKTOP_SHORTCUTS_UTILS_H_
 
-class Browser;
+namespace content {
+class WebContents;
+}
 
 namespace shortcuts {
 
 // Returns whether a desktop shortcut can be created for the active web
 // contents.
-bool CanCreateDesktopShortcut(Browser* browser);
+bool CanCreateDesktopShortcut(content::WebContents* web_contents);
 
 }  // namespace shortcuts
 

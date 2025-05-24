@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_VALIDATION_DELEGATE_H_
 
 #include <string>
-
-
+#include <string_view>
 namespace views {
 class Textfield;
 }  // namespace views
@@ -22,7 +21,7 @@ class ValidationDelegate {
   virtual ~ValidationDelegate();
 
   virtual bool ShouldFormat();
-  virtual std::u16string Format(const std::u16string& text);
+  virtual std::u16string Format(std::u16string_view text);
 
   // Only the delegate knows how to validate the input fields.
   virtual bool IsValidTextfield(views::Textfield* textfield,

@@ -56,6 +56,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_observer.h"
 
@@ -93,7 +94,9 @@ class SessionManager {
   // Session::set_config(). The callback must take ownership of the |session| if
   // it ACCEPTs it.
   typedef base::RepeatingCallback<void(Session* session,
-                                       IncomingSessionResponse* response)>
+                                       IncomingSessionResponse* response,
+                                       std::string* rejection_reason,
+                                       base::Location* rejection_location)>
       IncomingSessionCallback;
 
   SessionManager() {}

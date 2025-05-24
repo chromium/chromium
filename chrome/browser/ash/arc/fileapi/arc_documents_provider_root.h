@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -20,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom-forward.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
@@ -95,9 +95,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
 
   ~ArcDocumentsProviderRoot() override;
 
-  // Queries information of a file just like AsyncFileUtil.GetFileInfo(). If the
-  // file metadata reports unknown size, it will attempt to open the file and
-  // read the size from the file descriptor.
+  // Queries information of a file just like AsyncFileUtil.GetFileInfo().
   void GetFileInfo(const base::FilePath& path,
                    storage::FileSystemOperation::GetMetadataFieldSet fields,
                    GetFileInfoCallback callback);
@@ -250,7 +248,6 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
 
   void GetFileInfoFromDocument(
       GetFileInfoCallback callback,
-      const base::FilePath& path,
       storage::FileSystemOperation::GetMetadataFieldSet fields,
       base::File::Error error,
       const mojom::DocumentPtr& document);

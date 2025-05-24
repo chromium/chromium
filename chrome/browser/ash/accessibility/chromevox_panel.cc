@@ -12,13 +12,15 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/constants.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
 
-const char kChromeVoxPanelRelativeUrl[] = "/chromevox/panel/panel.html";
+const char kChromeVoxMV2PanelRelativeUrl[] = "/chromevox/mv2/panel/panel.html";
+const char kChromeVoxPanelRelativeUrl[] = "/chromevox/mv3/panel/panel.html";
 const char kDisableSpokenFeedbackURLFragment[] = "close";
 const char kFocusURLFragment[] = "focus";
 const char kFullscreenURLFragment[] = "fullscreen";
@@ -41,7 +43,7 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
   ChromeVoxPanelWebContentsObserver& operator=(
       const ChromeVoxPanelWebContentsObserver&) = delete;
 
-  ~ChromeVoxPanelWebContentsObserver() override {}
+  ~ChromeVoxPanelWebContentsObserver() override = default;
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
@@ -71,7 +73,7 @@ ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context)
   SetAccessibilityPanelFullscreen(false);
 }
 
-ChromeVoxPanel::~ChromeVoxPanel() {}
+ChromeVoxPanel::~ChromeVoxPanel() = default;
 
 void ChromeVoxPanel::EnterFullscreen() {
   Focus();
@@ -100,7 +102,11 @@ void ChromeVoxPanel::SetAccessibilityPanelFullscreen(bool fullscreen) {
 std::string ChromeVoxPanel::GetUrlForContent() {
   std::string url(EXTENSION_PREFIX);
   url += extension_misc::kChromeVoxExtensionId;
-  url += kChromeVoxPanelRelativeUrl;
+  if (::features::IsAccessibilityManifestV3EnabledForChromeVox()) {
+    url += kChromeVoxPanelRelativeUrl;
+  } else {
+    url += kChromeVoxMV2PanelRelativeUrl;
+  }
 
   return url;
 }

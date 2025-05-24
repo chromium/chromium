@@ -1,0 +1,82 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+cr-input {
+  --cr-input-background-color: transparent;
+  --cr-input-error-display: none;
+  margin: 12px 20px;
+}
+
+cr-input.stroked:hover {
+  --cr-input-hover-background-color: transparent;
+}
+
+:host([showing-menu_]) #menuButton {
+  background-color: var(--cr-hover-background-color);
+}
+
+#logo {
+  margin-inline-end: 4px;
+}
+
+:host([is-page-title-clickable]) #title {
+  cursor: pointer;
+}
+
+.title-text {
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+#input {
+  --cr-input-font-size: 24px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.spacer {
+  flex: 1;
+}
+
+#title {
+  color: var(--cr-primary-text-color);
+}
+
+#divider {
+  background: var(--color-product-specifications-divider);
+  border-radius: 1px;
+  display: inline;
+  height: 2em;
+  margin: 4px 2px;
+  width: 2px;
+}
+
+#subtitle {
+  color: var(--cr-secondary-text-color);
+  flex: 1;
+}
+
+:host(:not([disabled])) #subtitle:hover {
+  border-bottom: 1px solid var(--color-product-specifications-divider);
+  margin-bottom: -1px; /* Don't move on hover */
+}
+
+#menuButton {
+  --cr-icon-button-size: 30px;
+}

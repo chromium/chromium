@@ -8,20 +8,16 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#else
 #include "content/public/test/scoped_accessibility_mode_override.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -64,16 +60,27 @@ class AccessibilityLabelsMenuObserverTest : public InProcessBrowserTest {
   std::unique_ptr<MockRenderViewContextMenu> menu_;
 };
 
-AccessibilityLabelsMenuObserverTest::AccessibilityLabelsMenuObserverTest() {}
+AccessibilityLabelsMenuObserverTest::AccessibilityLabelsMenuObserverTest() =
+    default;
 
-AccessibilityLabelsMenuObserverTest::~AccessibilityLabelsMenuObserverTest() {}
+AccessibilityLabelsMenuObserverTest::~AccessibilityLabelsMenuObserverTest() =
+    default;
 
 }  // namespace
 
 // Tests that opening a context menu does not show the menu option if a
 // screen reader is not enabled, regardless of the image labels setting.
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AccessibilityLabelsNotShownWithoutScreenReader \
+  DISABLED_AccessibilityLabelsNotShownWithoutScreenReader
+#else
+#define MAYBE_AccessibilityLabelsNotShownWithoutScreenReader \
+  AccessibilityLabelsNotShownWithoutScreenReader
+#endif
 IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
-                       AccessibilityLabelsNotShownWithoutScreenReader) {
+                       MAYBE_AccessibilityLabelsNotShownWithoutScreenReader) {
   menu()->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,
                                  false);
   InitMenu();
@@ -84,16 +91,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
   EXPECT_EQ(0u, menu()->GetMenuSize());
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
-                       AccessibilityLabelsShowWithScreenReaderEnabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Enable Chromevox.
-  ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AccessibilityLabelsShowWithScreenReaderEnabled \
+  DISABLED_AccessibilityLabelsShowWithScreenReaderEnabled
 #else
+#define MAYBE_AccessibilityLabelsShowWithScreenReaderEnabled \
+  AccessibilityLabelsShowWithScreenReaderEnabled
+#endif
+IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
+                       MAYBE_AccessibilityLabelsShowWithScreenReaderEnabled) {
   // Spoof a screen reader.
-  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
+  content::ScopedAccessibilityModeOverride screen_reader_mode(
       ui::AXMode::kScreenReader);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   menu()->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,
                                  false);
   InitMenu();

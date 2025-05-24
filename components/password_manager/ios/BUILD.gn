@@ -10,6 +10,7 @@ component("ios") {
 
   deps = [
     ":account_select_fill_data",
+    ":features",
     ":password_controller_js",
     "//base",
     "//components/autofill/core/browser",
@@ -18,8 +19,10 @@ component("ios") {
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:autofill_renderer_id_feature",
     "//components/autofill/ios/form_util:form_util_feature",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/common",
     "//components/security_state/ios",
@@ -64,6 +67,7 @@ component("ios") {
 
 source_set("password_manager_feature_header") {
   deps = [
+    ":features",
     "//base",
     "//components/autofill/core/common",
     "//ios/web/public/js_messaging",
@@ -76,6 +80,7 @@ source_set("password_manager_feature_header") {
 
 source_set("account_select_fill_data") {
   deps = [
+    ":features",
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",
@@ -91,6 +96,17 @@ source_set("account_select_fill_data") {
   ]
 }
 
+source_set("features") {
+  deps = [ "//base" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+}
+
 optimize_ts("password_controller_js") {
   sources = [ "resources/password_controller.ts" ]
 
@@ -98,6 +114,7 @@ optimize_ts("password_controller_js") {
     "//components/autofill/ios/form_util:fill_js_dependencies",
     "//components/autofill/ios/form_util:fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -131,6 +148,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":account_select_fill_data",
+    ":features",
     ":ios",
     ":test_support",
     "//base",
@@ -154,7 +172,6 @@ source_set("unit_tests") {
     "//components/password_manager/ios:test_support",
     "//components/ukm:test_support",
     "//components/ukm/ios:ukm_url_recorder",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public/js_messaging",

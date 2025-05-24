@@ -8,9 +8,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for base::Features listed in {@link DeviceFeatureList} */
 @JNINamespace("features")
+@NullMarked
 public final class DeviceFeatureMap extends FeatureMap {
     private static final DeviceFeatureMap sInstance = new DeviceFeatureMap();
 

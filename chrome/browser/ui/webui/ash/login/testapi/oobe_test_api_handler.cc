@@ -42,6 +42,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 #include "ui/display/screen.h"
 
@@ -81,12 +82,14 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
               &OobeTestAPIHandler::HandleGetShouldSkipTouchpadScroll);
   AddCallback("OobeTestApi.getMetricsClientID",
               &OobeTestAPIHandler::HandleGetMetricsClientID);
+  AddCallback("OobeTestApi.getShouldSkipSplitModifierScreen",
+              &OobeTestAPIHandler::HandleGetShouldSkipSplitModifierScreen);
 }
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   login::NetworkStateHelper helper_;
   dict->Set("testapi_shouldSkipNetworkFirstShow",
-                !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
+            !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
                 helper_.IsConnectedToEthernet());
 
   dict->Set(
@@ -101,6 +104,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   dict->Set("testapi_shouldSkipGeminiIntro",
             GeminiIntroScreen::ShouldBeSkipped());
 
+  // TODO(bohdanty): Remove in a follow-up CL to prevent CQ from breaking.
   dict->Set("testapi_shouldSkipSplitModifierKeyboardInfo",
             SplitModifierKeyboardInfoScreen::ShouldBeSkipped());
 
@@ -126,20 +130,20 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
             !features::IsOobeDisplaySizeEnabled());
   dict->Set("testapi_shouldSkipGaiaInfoScreen",
             !features::IsOobeGaiaInfoScreenEnabled());
-  dict->Set("testapi_isOobeQuickStartEnabled",
-            features::IsOobeQuickStartEnabled());
+  dict->Set("testapi_isCrossDeviceFeatureSuiteAllowed",
+            features::IsCrossDeviceFeatureSuiteAllowed());
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The current method is called early, before the user logs-in,
   // If Chrome was launched in OOBE, `is_owner` will be set to true since
-  // `user_manager->GetUsers().size()` would return 0.
+  // `user_manager->GetPersistedUsers().size()` would return 0.
   // If it's launched in the login screen to test the add person flow, then
   // the number of existing users before the new user logs-in should be > 0.
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   auto* user_manager = user_manager::UserManager::Get();
   bool is_owner = !connector->IsDeviceEnterpriseManaged() &&
-                  user_manager->GetUsers().size() == 0;
+                  user_manager->GetPersistedUsers().size() == 0;
   dict->Set("testapi_shouldSkipHwDataCollection",
             !is_owner || !switches::IsRevenBranding());
 #else
@@ -289,6 +293,12 @@ void OobeTestAPIHandler::HandleGetMetricsClientID(
         metrics::prefs::kMetricsProvisionalClientID);
   }
   ResolveJavascriptCallback(base::Value(callback_id), client_id);
+}
+
+void OobeTestAPIHandler::HandleGetShouldSkipSplitModifierScreen(
+    const std::string& callback_id) {
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            SplitModifierKeyboardInfoScreen::ShouldBeSkipped());
 }
 
 }  // namespace ash

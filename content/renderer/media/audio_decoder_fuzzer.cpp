@@ -6,6 +6,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "content/public/test/blink_test_environment.h"
 #include "media/base/media.h"
@@ -37,7 +38,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   blink::WebAudioBus web_audio_bus;
   bool success = content::DecodeAudioFileData(
-      &web_audio_bus, reinterpret_cast<const char*>(data), size);
+      &web_audio_bus, base::as_chars(UNSAFE_BUFFERS(base::span(data, size))));
 
   if (!success)
     return 0;

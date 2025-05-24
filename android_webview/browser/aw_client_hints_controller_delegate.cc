@@ -52,21 +52,16 @@ AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
   bool parse_result = base::StringToInt(major_version, &major_version_number);
   DCHECK(parse_result);
 
-  // The old grease brand algorithm will removed soon, we should always use the
-  // updated algorithm.
-  bool enable_updated_grease_by_policy = true;
   // Regenerate the brand version lists with Android WebView product name.
   metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
       major_version_number, kAndroidWebViewProductName, major_version,
-      std::nullopt, std::nullopt, enable_updated_grease_by_policy,
       blink::UserAgentBrandVersionType::kMajorVersion);
 
   if (!only_low_entropy_ch) {
     metadata.brand_full_version_list =
         embedder_support::GenerateBrandVersionList(
             major_version_number, kAndroidWebViewProductName,
-            metadata.full_version, std::nullopt, std::nullopt,
-            enable_updated_grease_by_policy,
+            metadata.full_version,
             blink::UserAgentBrandVersionType::kFullVersion);
   }
 
@@ -132,15 +127,6 @@ bool AwClientHintsControllerDelegate::IsJavaScriptAllowed(
     return true;
   }
   return aw_contents->IsJavaScriptAllowed();
-}
-
-bool AwClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
-    const GURL& url,
-    content::RenderFrameHost* rfh) {
-  // This function is related to an OT for the Sec-CH-UA-Reduced client hint
-  // and as this doesn't affect WebView at the moment, we have no reason to
-  // implement it.
-  return false;
 }
 
 blink::UserAgentMetadata

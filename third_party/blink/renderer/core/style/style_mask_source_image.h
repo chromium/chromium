@@ -50,7 +50,7 @@ class StyleMaskSourceImage : public StyleImage {
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(WTF::String& failing_url) const override;
 
-  IntrinsicSizingInfo GetNaturalSizingInfo(
+  NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override;
 
@@ -64,7 +64,7 @@ class StyleMaskSourceImage : public StyleImage {
   void RemoveClient(ImageResourceObserver*) override;
 
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override;
   float ImageScaleFactor() const override;

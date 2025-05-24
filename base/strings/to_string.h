@@ -6,7 +6,6 @@
 #define BASE_STRINGS_TO_STRING_H_
 
 #include <concepts>
-#include <ios>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -15,38 +14,39 @@
 #include <utility>
 
 #include "base/types/supports_ostream_operator.h"
+#include "base/types/supports_to_string.h"
 
 namespace base {
 
-template <typename... Ts>
-std::string ToString(const Ts&... values);
+template <typename T>
+std::string ToString(const T& values);
 
 namespace internal {
 
-template <typename T>
-concept SupportsToString = requires(const T& t) { t.ToString(); };
-
-// I/O manipulators are function pointers, but should be sent directly to the
-// `ostream` instead of being cast to `const void*` like other function
-// pointers.
-template <typename T>
-constexpr bool IsIomanip = false;
-template <typename T>
-  requires(std::derived_from<T, std::ios_base>)
-constexpr bool IsIomanip<T&(T&)> = true;
-
 // Function pointers implicitly convert to `bool`, so use this to avoid printing
-// function pointers as 1 or 0.
+// function pointers as "true"/"false".
 template <typename T>
 concept WillBeIncorrectlyStreamedAsBool =
-    std::is_function_v<std::remove_pointer_t<T>> &&
-    !IsIomanip<std::remove_pointer_t<T>>;
+    std::is_function_v<std::remove_pointer_t<T>>;
 
 // Fallback case when there is no better representation.
 template <typename T>
 struct ToStringHelper {
   static void Stringify(const T& v, std::ostringstream& ss) {
-    ss << "[" << sizeof(v) << "-byte object at 0x" << std::addressof(v) << "]";
+    // We cast to `void*` to avoid converting a char-like type to char-like*
+    // which operator<< treats as a string but does not support for multi-byte
+    // char-like types.
+    ss << "[" << sizeof(v) << "-byte object at 0x"
+       << static_cast<const void*>(std::addressof(v)) << "]";
+  }
+};
+
+// Boolean values. (Handled explicitly so as to not rely on the behavior of
+// std::boolalpha.)
+template <>
+struct ToStringHelper<bool> {
+  static void Stringify(const bool& v, std::ostringstream& ss) {
+    ss << (v ? "true" : "false");
   }
 };
 
@@ -66,6 +66,21 @@ struct ToStringHelper<T> {
   static void Stringify(const T& v, std::ostringstream& ss) {
     ToStringHelper<const void*>::Stringify(reinterpret_cast<const void*>(v),
                                            ss);
+  }
+};
+
+// Integral types that can't stream, like char16_t.
+template <typename T>
+  requires(!SupportsOstreamOperator<const T&> && std::is_integral_v<T>)
+struct ToStringHelper<T> {
+  static void Stringify(const T& v, std::ostringstream& ss) {
+    if constexpr (std::is_signed_v<T>) {
+      static_assert(sizeof(T) <= 8);
+      ss << static_cast<int64_t>(v);
+    } else {
+      static_assert(sizeof(T) <= 8);
+      ss << static_cast<uint64_t>(v);
+    }
   }
 };
 
@@ -110,14 +125,12 @@ struct ToStringHelper<std::tuple<T...>> {
 }  // namespace internal
 
 // Converts any type to a string, preferring defined operator<<() or ToString()
-// methods if they exist. If multiple `values` are given, returns the
-// concatenation of the result of applying `ToString` to each value.
-template <typename... Ts>
-std::string ToString(const Ts&... values) {
+// methods if they exist.
+template <typename T>
+std::string ToString(const T& value) {
   std::ostringstream ss;
-  (...,
-   internal::ToStringHelper<std::remove_cvref_t<decltype(values)>>::Stringify(
-       values, ss));
+  internal::ToStringHelper<std::remove_cvref_t<decltype(value)>>::Stringify(
+      value, ss);
   return ss.str();
 }
 

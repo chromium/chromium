@@ -28,11 +28,6 @@ class VIEWS_EXPORT NativeFrameView : public NonClientFrameView {
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
   int NonClientHitTest(const gfx::Point& point) override;
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
-  void ResetWindowControls() override;
-  void UpdateWindowIcon() override;
-  void UpdateWindowTitle() override;
-  void SizeConstraintsChanged() override;
 
   // View overrides:
   gfx::Size CalculatePreferredSize(

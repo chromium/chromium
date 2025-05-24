@@ -51,6 +51,26 @@ std::u16string TableModel::GetTooltip(size_t row) {
   return std::u16string();
 }
 
+std::u16string TableModel::GetAXNameForHeader(
+    const std::vector<std::u16string>& visible_column_titles,
+    const std::vector<std::u16string>& visible_column_sortable) {
+  return std::u16string();
+}
+
+std::u16string TableModel::GetAXNameForHeaderCell(
+    const std::u16string& visible_column_title,
+    const std::u16string& visible_column_sortable) {
+  return visible_column_title;
+}
+
+std::u16string TableModel::GetAXNameForRow(
+    size_t row,
+    const std::vector<int>& visible_column_ids) {
+  DCHECK_LT(row, RowCount());
+  DCHECK(!visible_column_ids.empty());
+  return GetText(row, visible_column_ids[0]);
+}
+
 int TableModel::CompareValues(size_t row1, size_t row2, int column_id) {
   DCHECK_LT(row1, RowCount());
   DCHECK_LT(row2, RowCount());

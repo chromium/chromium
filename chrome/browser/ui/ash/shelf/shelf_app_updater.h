@@ -14,7 +14,7 @@ namespace apps {
 class PackageId;
 class PromiseAppUpdate;
 class ShortcutUpdate;
-}
+}  // namespace apps
 
 namespace content {
 class BrowserContext;
@@ -46,7 +46,7 @@ class ShelfAppUpdater {
     virtual void OnShortcutRemoved(const apps::ShortcutId& id) {}
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   ShelfAppUpdater(const ShelfAppUpdater&) = delete;

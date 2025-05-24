@@ -74,6 +74,5 @@ void TestLoginScreenModel::SetPublicSessionKeyboardLayouts(
     const std::vector<ash::InputMethodItem>& keyboard_layouts) {}
 void TestLoginScreenModel::SetPublicSessionShowFullManagementDisclosure(
     bool show_full_management_disclosure) {}
-void TestLoginScreenModel::HandleFocusLeavingLockScreenApps(bool reverse) {}
 void TestLoginScreenModel::NotifyOobeDialogState(ash::OobeDialogState state) {}
 void TestLoginScreenModel::NotifyFocusPod(const AccountId& account_id) {}

@@ -43,7 +43,7 @@ class MockEventRouterForwarder : public EventRouterForwarder {
   }
 
  protected:
-  ~MockEventRouterForwarder() override {}
+  ~MockEventRouterForwarder() override = default;
 };
 
 static void BroadcastEventToRenderers(

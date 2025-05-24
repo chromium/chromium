@@ -7,13 +7,14 @@
 
 #include "components/input/event_with_latency_info.h"
 #include "components/input/mock_input_router.h"
-#include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/test/mock_render_input_router.h"
 #include "content/test/mock_widget_input_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
 
 namespace content {
 
@@ -73,10 +74,16 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
 
   input::RenderInputRouter* GetRenderInputRouter() override;
 
+  void RejectPointerLockOrUnlockIfNecessary(
+      blink::mojom::PointerLockResult result) override;
+
+  bool pointer_lock_rejected() const { return pointer_lock_rejected_; }
+
  protected:
   void NotifyNewContentRenderingTimeoutForTesting() override;
 
-  bool new_content_rendering_timeout_fired_;
+  bool new_content_rendering_timeout_fired_ = false;
+  bool pointer_lock_rejected_ = false;
 
  private:
   MockRenderWidgetHost(

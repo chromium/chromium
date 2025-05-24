@@ -25,3 +25,8 @@ For more information about Certificate Transparency, see
 https://certificate.transparency.dev/. For more information about Chrome's
 Certificate Transparency policies, see https://goo.gl/chrome/ct-policy and
 https://goo.gl/chrome/ct-log-policy.
+
+## Tests
+
+Tests for `make_ct_known_logs_list.py` can be run manually via
+`python3 make_ct_known_logs_list_unittest.py`.

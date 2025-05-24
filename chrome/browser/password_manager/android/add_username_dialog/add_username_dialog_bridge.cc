@@ -26,22 +26,16 @@ class JniDelegateImpl : public JniDelegate {
   JniDelegateImpl& operator=(const JniDelegateImpl&) = delete;
   ~JniDelegateImpl() override = default;
 
-  void Create(const gfx::NativeWindow window_android,
+  void Create(ui::WindowAndroid& window_android,
               AddUsernameDialogBridge* bridge) override {
-    if (!window_android) {
-      return;
-    }
-
     java_bridge_.Reset(Java_AddUsernameDialogBridge_Constructor(
         base::android::AttachCurrentThread(),
-        reinterpret_cast<intptr_t>(bridge), window_android->GetJavaObject()));
+        reinterpret_cast<intptr_t>(bridge), window_android.GetJavaObject()));
   }
 
   void ShowAddUsernameDialog(const std::u16string& password) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
     Java_AddUsernameDialogBridge_showAddUsernameDialog(
-        base::android::AttachCurrentThread(), java_bridge_,
-        base::android::ConvertUTF16ToJavaString(env, password));
+        base::android::AttachCurrentThread(), java_bridge_, password);
   }
 
   void Dismiss() override {
@@ -74,22 +68,23 @@ AddUsernameDialogBridge::AddUsernameDialogBridge(
     : jni_delegate_(std::move(jni_delegate)) {}
 
 void AddUsernameDialogBridge::ShowAddUsernameDialog(
-    const gfx::NativeWindow window_android,
+    gfx::NativeWindow window_android,
     const std::u16string& password,
     DialogAcceptedCallback dialog_accepted_callback,
     base::OnceClosure dialog_dismissed_callback) {
+  if (!window_android) {
+    return;  // Chrome is shutting down already. Exiting early prevents crashes.
+  }
   dialog_accepted_callback_ = std::move(dialog_accepted_callback);
   dialog_dismissed_callback_ = std::move(dialog_dismissed_callback);
 
-  jni_delegate_->Create(window_android, this);
+  jni_delegate_->Create(*window_android, this);
   jni_delegate_->ShowAddUsernameDialog(password);
 }
 
-void AddUsernameDialogBridge::OnDialogAccepted(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& username) {
-  std::move(dialog_accepted_callback_)
-      .Run(base::android::ConvertJavaStringToUTF16(env, username));
+void AddUsernameDialogBridge::OnDialogAccepted(JNIEnv* env,
+                                               const std::u16string& username) {
+  std::move(dialog_accepted_callback_).Run(username);
 }
 
 void AddUsernameDialogBridge::OnDialogDismissed(JNIEnv* env) {

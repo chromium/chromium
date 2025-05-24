@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -13,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -23,6 +23,7 @@ class AvatarToolbarButtonDelegate;
 class Browser;
 class BrowserView;
 struct AccountInfo;
+class GaiaId;
 
 // Enum used for testing. It allows overriding different delay values based on
 // their usage in the `AvatarToolbarButton` through helper testing functions.
@@ -32,9 +33,9 @@ enum class AvatarDelayType {
   // Delay for the SigninPending mode to show the "Verify it's you" text.
   kSigninPendingText,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Delay for the Management Label transient mode to stop showing "Work".
-  kManagementLabelTransientMode,
-#endif
+  // Delay for the History Sync Opt-in entry point.
+  kHistorySyncOptin,
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 };
 
 // This class takes care the Profile Avatar Button.
@@ -46,11 +47,6 @@ class AvatarToolbarButton : public ToolbarButton {
   METADATA_HEADER(AvatarToolbarButton, ToolbarButton)
 
  public:
-  enum ProfileLabelType : int {
-    kWork = 0,
-    kSchool = 1,
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnMouseExited() {}
@@ -74,7 +70,7 @@ class AvatarToolbarButton : public ToolbarButton {
       const std::u16string& text,
       std::optional<std::u16string> accessibility_label);
 
-  // Changes the button pressed action.
+  // Changes the button pressed action externally.
   // Returns a callback to be used when the new action should stop being used.
   [[nodiscard]] base::ScopedClosureRunner SetExplicitButtonAction(
       base::RepeatingClosure explicit_closure);
@@ -92,9 +88,11 @@ class AvatarToolbarButton : public ToolbarButton {
   // Attempts showing the In-Produce-Help for profile Switching.
   void MaybeShowProfileSwitchIPH();
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Attempts showing the In-Produce-Help when a supervised user signs-in in a
-  // profile or takes over an existing non-signed in profile.
-  void MaybeShowSupervisedUserSignInIPH(const AccountInfo& account_info);
+  // profile.
+  void MaybeShowSupervisedUserSignInIPH();
+#endif
 
   // Attempts showing the In-Product-Help in a subsequent web sign-in when the
   // explicit browser sign-in preference was remembered.
@@ -102,10 +100,13 @@ class AvatarToolbarButton : public ToolbarButton {
       const AccountInfo& account_info);
 
   // Attempts showing the In-Produce-Help for web sign out.
-  void MaybeShowWebSignoutIPH(const std::string& gaia_id);
+  void MaybeShowWebSignoutIPH(const GaiaId& gaia_id);
 
   // Returns true if a text is set and is visible.
   bool IsLabelPresentAndVisible() const;
+
+  // Updates the action button based on the current state.
+  void UpdateButtonAction();
 
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -120,7 +121,6 @@ class AvatarToolbarButton : public ToolbarButton {
   bool ShouldPaintBorder() const override;
   bool ShouldBlendHighlightColor() const override;
   void AddedToWidget() override;
-  void PaintButtonContents(gfx::Canvas* canvas) override;
 
   void ButtonPressed(bool is_source_accelerator = false);
 
@@ -129,7 +129,8 @@ class AvatarToolbarButton : public ToolbarButton {
   void RemoveObserver(Observer* observer);
 
   // Can be used in tests to reduce or remove the delay before showing the IPH.
-  static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
+  [[nodiscard]] static base::AutoReset<base::TimeDelta>
+  SetScopedIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
 
   // These helper functions allow tests to be time independent; tests that are
   // time dependent tend to create a lot of flakiness.
@@ -196,6 +197,11 @@ class AvatarToolbarButton : public ToolbarButton {
   // while an existing already exists. Priority to the last call.
   raw_ptr<base::ScopedClosureRunner> reset_button_action_button_closure_ptr_ =
       nullptr;
+
+  // Internal (owned by this class) closure to reset the button action.
+  // This is used to invalidate the button action whenever the button is updated
+  // by `AvatarToolbarButtonDelegate`.
+  base::ScopedClosureRunner internal_reset_button_action_closure_;
 
   base::WeakPtrFactory<AvatarToolbarButton> weak_ptr_factory_{this};
 };

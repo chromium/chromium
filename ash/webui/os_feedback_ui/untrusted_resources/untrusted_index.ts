@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import '//os-feedback/help_content.js';
 
-import {HelpContentElement} from '//os-feedback/help_content.js';
+import type {HelpContentElement} from '//os-feedback/help_content.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from '//resources/js/assert.js';
 

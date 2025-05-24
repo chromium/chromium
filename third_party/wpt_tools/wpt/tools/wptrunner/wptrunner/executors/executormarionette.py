@@ -3,7 +3,6 @@
 import json
 import os
 import threading
-import time
 import traceback
 import uuid
 
@@ -47,6 +46,8 @@ from .protocol import (AccessibilityProtocolPart,
                        VirtualSensorProtocolPart,
                        DevicePostureProtocolPart,
                        VirtualPressureSourceProtocolPart,
+                       DisplayFeaturesProtocolPart,
+                       WebExtensionsProtocolPart,
                        merge_dicts)
 
 
@@ -104,6 +105,9 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
         if timeout != self.timeout:
             self.marionette.timeout.script = timeout
             self.timeout = timeout
+
+    def create_window(self, type="tab", **kwargs):
+        return self.marionette.open(type=type, focus=True)["handle"]
 
     @property
     def current_window(self):
@@ -234,57 +238,6 @@ class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
                     pass
             else:
                 break
-
-    def get_test_window(self, window_id, parent, timeout=5):
-        """Find the test window amongst all the open windows.
-        This is assumed to be either the named window or the one after the parent in the list of
-        window handles
-
-        :param window_id: The DOM name of the Window
-        :param parent: The handle of the runner window
-        :param timeout: The time in seconds to wait for the window to appear. This is because in
-                        some implementations there's a race between calling window.open and the
-                        window being added to the list of WebDriver accessible windows."""
-        test_window = None
-        end_time = time.time() + timeout
-        while time.time() < end_time:
-            if window_id:
-                try:
-                    # Try this, it's in Level 1 but nothing supports it yet
-                    win_s = self.parent.base.execute_script("return window['%s'];" % self.window_id)
-                    win_obj = json.loads(win_s)
-                    test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
-                except Exception:
-                    pass
-
-            if test_window is None:
-                handles = self.marionette.window_handles
-                if len(handles) == 2:
-                    test_window = next(iter(set(handles) - {parent}))
-                elif len(handles) > 2 and handles[0] == parent:
-                    # Hope the first one here is the test window
-                    test_window = handles[1]
-
-            if test_window is not None:
-                assert test_window != parent
-                return test_window
-
-            time.sleep(0.1)
-
-        raise Exception("unable to find test window")
-
-    def test_window_loaded(self):
-        """Wait until the page in the new window has been loaded.
-
-        Hereby ignore Javascript execptions that are thrown when
-        the document has been unloaded due to a process change.
-        """
-        while True:
-            try:
-                self.parent.base.execute_script(self.window_loaded_script, asynchronous=True)
-                break
-            except errors.JavascriptException:
-                pass
 
 
 class MarionettePrefsProtocolPart(PrefsProtocolPart):
@@ -498,7 +451,8 @@ class MarionetteWindowProtocolPart(WindowProtocolPart):
         return self.marionette.minimize_window()
 
     def set_rect(self, rect):
-        self.marionette.set_window_rect(rect["x"], rect["y"], rect["height"], rect["width"])
+        self.marionette.set_window_rect(
+            rect.get("x"), rect.get("y"), rect.get("height"), rect.get("width"))
 
     def get_rect(self):
         return self.marionette.window_rect
@@ -769,11 +723,38 @@ class MarionetteVirtualPressureSourceProtocolPart(VirtualPressureSourceProtocolP
     def create_virtual_pressure_source(self, source_type, metadata):
         raise NotImplementedError("create_virtual_pressure_source not yet implemented")
 
-    def update_virtual_pressure_source(self, source_type, sample):
+    def update_virtual_pressure_source(self, source_type, sample, own_contribution_estimate):
         raise NotImplementedError("update_virtual_pressure_source not yet implemented")
 
     def remove_virtual_pressure_source(self, source_type):
         raise NotImplementedError("remove_virtual_pressure_source not yet implemented")
+
+class MarionetteDisplayFeaturesProtocolPart(DisplayFeaturesProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def set_display_features(self, features):
+        raise NotImplementedError("set_display_features not yet implemented")
+
+    def clear_display_features(self):
+        raise NotImplementedError("clear_display_features not yet implemented")
+
+
+class MarionetteWebExtensionsProtocolPart(WebExtensionsProtocolPart):
+    def setup(self):
+        self.addons = Addons(self.parent.marionette)
+
+    def install_web_extension(self, extension):
+        if extension["type"] == "base64":
+            extension_id = self.addons.install(data=extension["value"], temp=True)
+        else:
+            path = self.parent.test_dir + extension["path"]
+            extension_id = self.addons.install(path, temp=True)
+
+        return {'extension': extension_id}
+
+    def uninstall_web_extension(self, extension_id):
+        return self.addons.uninstall(extension_id)
 
 
 class MarionetteProtocol(Protocol):
@@ -798,7 +779,9 @@ class MarionetteProtocol(Protocol):
                   MarionetteAccessibilityProtocolPart,
                   MarionetteVirtualSensorProtocolPart,
                   MarionetteDevicePostureProtocolPart,
-                  MarionetteVirtualPressureSourceProtocolPart]
+                  MarionetteVirtualPressureSourceProtocolPart,
+                  MarionetteDisplayFeaturesProtocolPart,
+                  MarionetteWebExtensionsProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
         do_delayed_imports()
@@ -962,6 +945,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         self.debug_test = debug_test
 
         self.install_extensions = browser.extensions
+        self.initial_window_size = None
 
         self.original_pref_values = {}
 
@@ -976,6 +960,10 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
             addons.install(extension_path)
 
         self.protocol.testharness.load_runner(self.last_environment["protocol"])
+        try:
+            self.initial_window_size = self.protocol.window.get_rect()
+        except Exception:
+            pass
 
     def is_alive(self):
         return self.protocol.is_alive()
@@ -987,6 +975,10 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
             self.protocol.testharness.load_runner(new_environment["protocol"])
 
     def do_test(self, test):
+        # TODO: followup to do this properly, pass test as state on the CallbackHandler:
+        # https://phabricator.services.mozilla.com/D244400?id=1030480#inline-1369921
+        self.protocol.test_dir = os.path.dirname(test.path)
+
         timeout = (test.timeout * self.timeout_multiplier if self.debug_info is None
                    else None)
 
@@ -1015,16 +1007,16 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         return (test.make_result(extra=extra, *data), [])
 
     def do_testharness(self, protocol, url, timeout):
-        parent_window = protocol.testharness.close_old_windows(self.last_environment["protocol"])
+        protocol.testharness.close_old_windows(self.last_environment["protocol"])
 
         if self.protocol.coverage.is_enabled:
             self.protocol.coverage.reset()
 
-        protocol.base.execute_script("window.open('about:blank', '%s', 'noopener')" % self.window_id)
-        test_window = protocol.testharness.get_test_window(self.window_id, parent_window,
-                                                           timeout=10 * self.timeout_multiplier)
+        test_window = protocol.base.create_window()
         self.protocol.base.set_window(test_window)
-        protocol.testharness.test_window_loaded()
+        # Restore the window to the initial position
+        if self.browser.supports_window_resize and self.initial_window_size:
+            self.protocol.window.set_rect(self.initial_window_size)
 
         if self.debug_test and self.browser.supports_devtools:
             self.protocol.debug.load_devtools()
@@ -1088,8 +1080,6 @@ class MarionetteRefTestExecutor(RefTestExecutor):
 
         self.install_extensions = browser.extensions
 
-        with open(os.path.join(here, "reftest.js")) as f:
-            self.script = f.read()
         with open(os.path.join(here, "test-wait.js")) as f:
             self.wait_script = f.read() % {"classname": "reftest-wait"}
 
@@ -1137,10 +1127,19 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                 self.has_window = False
 
             if not self.has_window:
-                self.protocol.base.execute_script(self.script)
-                self.protocol.base.set_window(self.protocol.marionette.window_handles[-1])
+                self.protocol.base.create_window(type="window")
+                # Resize the browser window so that its inner dimensions have
+                # exactly a size of 800x600 pixels, which means ignoring all
+                # visible toolbars and sidebars.
+                offsets = self.protocol.marionette.execute_script("""
+                    return {
+                        width: window.outerWidth - window.innerWidth,
+                        height: window.outerHeight - window.innerHeight,
+                    };
+                """)
+                self.protocol.marionette.set_window_rect(
+                    x=0, y=0, width=800 + offsets["width"], height=600 + offsets["height"])
                 self.has_window = True
-                self.protocol.testharness.test_window_loaded()
 
         if self.protocol.coverage.is_enabled:
             self.protocol.coverage.reset()

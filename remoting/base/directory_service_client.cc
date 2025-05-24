@@ -12,6 +12,7 @@
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/proto/remoting/v1/directory_messages.pb.h"
+#include "remoting/proto/remoting/v1/remote_support_host_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -164,6 +165,20 @@ void DirectoryServiceClient::GetHostList(GetHostListCallback callback) {
 
   ExecuteRequest(kGetHostListTrafficAnnotation, path,
                  std::make_unique<apis::v1::GetHostListRequest>(),
+                 std::move(callback));
+}
+
+void DirectoryServiceClient::GetManagedChromeOsHost(
+    const std::string& support_id,
+    GetManagedChromeOsHostCallback callback) {
+  constexpr char path[] = "/v1/remotesupport:getManagedChromeOsHost";
+
+  auto request = std::make_unique<apis::v1::GetManagedChromeOsHostRequest>();
+  request->set_support_id(support_id);
+  request->set_client_os_version(STRINGIZE(VERSION));
+
+  // TODO: joedow - Fix the traffic annotation.
+  ExecuteRequest(kGetHostListTrafficAnnotation, path, std::move(request),
                  std::move(callback));
 }
 

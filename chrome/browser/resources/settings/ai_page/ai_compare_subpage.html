@@ -1,0 +1,85 @@
+<style include="settings-shared settings-columned-section">
+  cr-icon {
+    flex-shrink: 0;
+  }
+</style>
+
+<settings-ai-policy-indicator pref="[[enterprisePref_]]">
+</settings-ai-policy-indicator>
+<template is="dom-if" if="[[!isDisabled_(enterprisePref_)]]" restamp>
+  <cr-link-row label="$i18n{aiCompareLabel}"
+      on-click="onCompareLinkoutClick_" external>
+    <div slot="sub-label">
+      $i18n{aiCompareSublabel}$i18n{sentenceEnd}
+      <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+          aria-label="$i18n{aiCompareLearnMoreA11yLabel}"
+          aria-description="$i18n{opensInNewTab}"
+          on-click="onLearnMoreClick_" target="_blank">
+        $i18n{learnMore}
+      </a>
+    </div>
+  </cr-link-row>
+</template>
+<template is="dom-if" if="[[isDisabled_(enterprisePref_)]]" restamp>
+  <div class="cr-row first">
+    <div class="flex cr-padded-text">
+      <div>$i18n{aiCompareLabel}</div>
+      <div class="secondary">
+        $i18n{aiCompareSublabel}$i18n{sentenceEnd}
+        <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+            aria-label="$i18n{aiCompareLearnMoreA11yLabel}"
+            aria-description="$i18n{opensInNewTab}"
+            on-click="onLearnMoreClick_" target="_blank">
+          $i18n{learnMore}
+        </a>
+      </div>
+    </div>
+  </div>
+</template>
+<div class="settings-columned-section">
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingWhenUsed}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:table-chart-organize" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{aiCompareWhenOnProductDetails}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:text-compare" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{aiCompareWhenOnProductSuggest}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:filter-list" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{aiCompareWhenOnProductFilter}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:reviews" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{aiCompareWhenOnProductReviews}</div>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiSubpageSublabelAi}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiCompareConsiderData}</div>
+      </li>
+      <settings-ai-logging-info-bullet pref="[[enterprisePref_]]">
+      </settings-ai-logging-info-bullet>
+      <li>
+        <cr-icon icon="settings20:account-circle" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{aiCompareConsiderTablesInAccount}</div>
+      </li>
+    </ul>
+  </div>
+</div>

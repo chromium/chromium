@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/metrics/log_decoder.h"
@@ -20,7 +19,6 @@
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
-#include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_prefs.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
 #include "components/metrics/structured/test/test_event_storage.h"
@@ -69,8 +67,6 @@ class StructuredMetricsServiceTest : public testing::Test {
   ~StructuredMetricsServiceTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({kEnabledStructuredMetricsService}, {});
-
     Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
     StructuredMetricsClient::Get()->SetDelegate(&test_recorder_);
@@ -191,7 +187,6 @@ class StructuredMetricsServiceTest : public testing::Test {
   metrics::TestMetricsServiceClient client_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
 
   TestRecorder test_recorder_;

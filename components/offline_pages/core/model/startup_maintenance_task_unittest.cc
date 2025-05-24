@@ -49,9 +49,9 @@ class StartupMaintenanceTaskTest : public ModelTaskTestBase {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-StartupMaintenanceTaskTest::StartupMaintenanceTaskTest() {}
+StartupMaintenanceTaskTest::StartupMaintenanceTaskTest() = default;
 
-StartupMaintenanceTaskTest::~StartupMaintenanceTaskTest() {}
+StartupMaintenanceTaskTest::~StartupMaintenanceTaskTest() = default;
 
 void StartupMaintenanceTaskTest::SetUp() {
   ModelTaskTestBase::SetUp();

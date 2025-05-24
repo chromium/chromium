@@ -35,9 +35,10 @@ DataTypeStoreServiceFactory::DataTypeStoreServiceFactory()
 
 DataTypeStoreServiceFactory::~DataTypeStoreServiceFactory() = default;
 
-KeyedService* DataTypeStoreServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DataTypeStoreServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new syncer::DataTypeStoreServiceImpl(profile->GetPath(),
-                                              profile->GetPrefs());
+  return std::make_unique<syncer::DataTypeStoreServiceImpl>(
+      profile->GetPath(), profile->GetPrefs());
 }

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_SIGNATURE_STACK_ENTRY_H_
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_SIGNATURE_STACK_ENTRY_H_
 
+#include <variant>
+
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
@@ -32,8 +34,6 @@ class SignedWebBundleSignatureInfoBase {
   ~SignedWebBundleSignatureInfoBase() = default;
 
   bool operator==(const SignedWebBundleSignatureInfoBase& other) const =
-      default;
-  bool operator!=(const SignedWebBundleSignatureInfoBase& other) const =
       default;
 
   const PublicKey& public_key() const { return public_key_; }
@@ -71,9 +71,9 @@ using SignedWebBundleSignatureInfoEcdsaP256SHA256 =
                                      EcdsaP256SHA256Signature>;
 
 using SignedWebBundleSignatureInfo =
-    absl::variant<SignedWebBundleSignatureInfoUnknown,
-                  SignedWebBundleSignatureInfoEd25519,
-                  SignedWebBundleSignatureInfoEcdsaP256SHA256>;
+    std::variant<SignedWebBundleSignatureInfoUnknown,
+                 SignedWebBundleSignatureInfoEd25519,
+                 SignedWebBundleSignatureInfoEcdsaP256SHA256>;
 
 // This class represents an entry on the signature stack of the integrity block
 // of a Signed Web Bundle. See the documentation of
@@ -93,8 +93,8 @@ class SignedWebBundleSignatureStackEntry {
 
   ~SignedWebBundleSignatureStackEntry();
 
-  bool operator==(const SignedWebBundleSignatureStackEntry& other) const;
-  bool operator!=(const SignedWebBundleSignatureStackEntry& other) const;
+  friend bool operator==(const SignedWebBundleSignatureStackEntry&,
+                         const SignedWebBundleSignatureStackEntry&) = default;
 
   const std::vector<uint8_t>& attributes_cbor() const {
     return attributes_cbor_;

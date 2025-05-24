@@ -4,6 +4,8 @@
 
 package org.chromium.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.hardware.display.DisplayManager;
@@ -15,6 +17,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -23,11 +27,12 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Video Capture Device base class, defines a set of methods that native code
- * needs to use to configure, start capture, and to be reached by callbacks and
- * provides some necessary data type(s) with accessors.
- **/
+ * Video Capture Device base class, defines a set of methods that native code needs to use to
+ * configure, start capture, and to be reached by callbacks and provides some necessary data type(s)
+ * with accessors.
+ */
 @JNINamespace("media")
+@NullMarked
 public abstract class VideoCapture {
     /** Common class for storing a framerate range. Values should be multiplied by 1000. */
     protected static class FramerateRange {
@@ -47,7 +52,8 @@ public abstract class VideoCapture {
     // individual implementations.
     protected boolean mInvertDeviceOrientationReadings;
 
-    protected VideoCaptureFormat mCaptureFormat;
+    protected @Nullable VideoCaptureFormat mCaptureFormat;
+
     protected final int mId;
     // Native callback context variable.
     private long mNativeVideoCaptureDeviceAndroid;
@@ -141,21 +147,25 @@ public abstract class VideoCapture {
 
     @CalledByNative
     public final int queryWidth() {
+        assumeNonNull(mCaptureFormat);
         return mCaptureFormat.mWidth;
     }
 
     @CalledByNative
     public final int queryHeight() {
+        assumeNonNull(mCaptureFormat);
         return mCaptureFormat.mHeight;
     }
 
     @CalledByNative
     public final int queryFrameRate() {
+        assumeNonNull(mCaptureFormat);
         return mCaptureFormat.mFramerate;
     }
 
     @CalledByNative
     public final int getColorspace() {
+        assumeNonNull(mCaptureFormat);
         switch (mCaptureFormat.mPixelFormat) {
             case ImageFormat.YV12:
                 return AndroidImageFormat.YV12;
@@ -357,7 +367,7 @@ public abstract class VideoCapture {
     }
 
     protected void onGetPhotoCapabilitiesReply(
-            VideoCapture caller, long callbackId, PhotoCapabilities result) {
+            VideoCapture caller, long callbackId, @Nullable PhotoCapabilities result) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
                 VideoCaptureJni.get()
@@ -435,7 +445,7 @@ public abstract class VideoCapture {
                 long nativeVideoCaptureDeviceAndroid,
                 VideoCapture caller,
                 long callbackId,
-                PhotoCapabilities result);
+                @Nullable PhotoCapabilities result);
 
         // Callback for calls to takePhoto(). This can indicate both success and
         // failure. Failure is indicated by |data| being null.
@@ -443,7 +453,7 @@ public abstract class VideoCapture {
                 long nativeVideoCaptureDeviceAndroid,
                 VideoCapture caller,
                 long callbackId,
-                byte[] data);
+                byte @Nullable [] data);
 
         // Method for VideoCapture implementations to report device started event.
         void onStarted(long nativeVideoCaptureDeviceAndroid, VideoCapture caller);

@@ -36,7 +36,6 @@
 
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/filter_animation_curve.h"
-#include "cc/base/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_color.h"
@@ -52,7 +51,6 @@
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -75,15 +73,13 @@ namespace blink {
 
 namespace {
 
-constexpr auto kCompositableProperties = std::to_array<CSSPropertyID>({
-    CSSPropertyID::kBackdropFilter,
-    CSSPropertyID::kFilter,
-    CSSPropertyID::kOpacity,
-    CSSPropertyID::kRotate,
-    CSSPropertyID::kScale,
-    CSSPropertyID::kTransform,
-    CSSPropertyID::kTranslate,
-});
+constexpr auto kCompositableProperties = std::to_array<CSSPropertyID>(
+    {CSSPropertyID::kBackdropFilter, CSSPropertyID::kFilter,
+     CSSPropertyID::kOpacity, CSSPropertyID::kRotate, CSSPropertyID::kScale,
+     CSSPropertyID::kTransform, CSSPropertyID::kTranslate,
+     // The following are native paint worklet properties and compositor support
+     // hinges on having a corresponding paint image generator.
+     CSSPropertyID::kBackgroundColor, CSSPropertyID::kClipPath});
 
 bool ConsiderAnimationAsIncompatible(const Animation& animation,
                                      const Animation& animation_to_add,
@@ -95,12 +91,12 @@ bool ConsiderAnimationAsIncompatible(const Animation& animation,
     return true;
 
   switch (animation.CalculateAnimationPlayState()) {
-    case Animation::kIdle:
+    case V8AnimationPlayState::Enum::kIdle:
       return false;
-    case Animation::kRunning:
+    case V8AnimationPlayState::Enum::kRunning:
       return true;
-    case Animation::kPaused:
-    case Animation::kFinished:
+    case V8AnimationPlayState::Enum::kPaused:
+    case V8AnimationPlayState::Enum::kFinished:
       if (Animation::HasLowerCompositeOrdering(
               &animation, &animation_to_add,
               Animation::CompareAnimationsOrdering::kPointerOrder)) {
@@ -108,8 +104,7 @@ bool ConsiderAnimationAsIncompatible(const Animation& animation,
       }
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 
@@ -162,37 +157,27 @@ bool HasIncompatibleAnimations(const Element& target_element,
 }
 
 void DefaultToUnsupportedProperty(
-    PropertyHandleSet* unsupported_properties,
+    PropertyHandleSet* unsupported_properties_for_tracing,
     const PropertyHandle& property,
     CompositorAnimations::FailureReasons* reasons) {
   (*reasons) |= CompositorAnimations::kUnsupportedCSSProperty;
-  if (unsupported_properties) {
-    unsupported_properties->insert(property);
+  if (unsupported_properties_for_tracing) {
+    unsupported_properties_for_tracing->insert(property);
   }
 }
 
-// True if it is either a no-op background-color animation, or a no-op custom
-// property animation.
-bool IsNoOpPaintWorkletOrVariableAnimation(const PropertyHandle& property,
-                                      const LayoutObject* layout_object) {
-  // If the background color paint worklet was painted, a unique id will be
-  // generated. See BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams
-  // for details.
-  // Similar to that, if a CSS paint worklet was painted, a unique id will be
-  // generated. See CSSPaintValue::GetImage for details.
-  bool has_unique_id = layout_object->FirstFragment().HasUniqueId();
-  if (has_unique_id)
+// True if it is a no-op custom property animation.
+bool IsNoOpVariableAnimation(const PropertyHandle& property,
+                             const LayoutObject* layout_object) {
+  // If a CSS paint worklet was painted, a unique id will be generated. See
+  // CSSPaintValue::GetImage for details.
+  // TODO(kevers): Verify that we properly latch to the animation if initially
+  // outside the paint apron and scrolled into the viewport.
+  if (layout_object->FirstFragment().HasUniqueId()) {
     return false;
-  // Now the |has_unique_id| == false.
-  bool is_no_op_bgcolor_anim =
-      RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-      property.GetCSSProperty().PropertyID() == CSSPropertyID::kBackgroundColor;
-  bool is_no_op_clip_anim =
-      RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
-      property.GetCSSProperty().PropertyID() == CSSPropertyID::kClipPath;
-  bool is_no_op_variable_anim =
-      property.GetCSSProperty().PropertyID() == CSSPropertyID::kVariable;
-  return is_no_op_variable_anim || is_no_op_clip_anim || is_no_op_bgcolor_anim;
+  }
+
+  return property.GetCSSProperty().PropertyID() == CSSPropertyID::kVariable;
 }
 
 bool CompositedAnimationRequiresProperties(const PropertyHandle& property,
@@ -244,9 +229,8 @@ CompositorAnimations::CompositorElementNamespaceForProperty(
       // target node - the effect namespace.
       return CompositorElementIdNamespace::kPrimaryEffect;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return CompositorElementIdNamespace::kPrimary;
 }
 
 CompositorAnimations::FailureReasons
@@ -258,7 +242,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
     const EffectModel& effect,
     const PaintArtifactCompositor* paint_artifact_compositor,
     double animation_playback_rate,
-    PropertyHandleSet* unsupported_properties) {
+    PropertyHandleSet* unsupported_properties_for_tracing) {
   FailureReasons reasons = kNoFailure;
   const auto& keyframe_effect = To<KeyframeEffectModelBase>(effect);
 
@@ -270,19 +254,18 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
     reasons |= kTargetHasInvalidCompositingState;
   }
 
-  const PropertyHandleSet& properties =
-      keyframe_effect.EnsureDynamicProperties();
-  if (RuntimeEnabledFeatures::StaticAnimationOptimizationEnabled()) {
-    // If all properties are static, we don't need to composite. The animation
-    // can only change at a phase boundary.
-    if (properties.empty()) {
-      reasons |= kAnimationHasNoVisibleChange;
-    }
+  auto properties = keyframe_effect.DynamicProperties();
+  // If all properties are static, we don't need to composite. The animation
+  // can only change at a phase boundary.
+  if (properties.empty()) {
+    reasons |= kAnimationHasNoVisibleChange;
   }
   if (keyframe_effect.HasStaticProperty()) {
     UseCounter::Count(target_element.GetDocument(),
                       WebFeature::kStaticPropertyInAnimation);
   }
+
+  // Limit to one native property and one CSS custom property per animation.
   for (const auto& property : properties) {
     if (!property.IsCSSProperty()) {
       // None of the below reasons make any sense if |property| isn't CSS, so we
@@ -308,6 +291,56 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
         // transform.
         if (!property.GetCSSProperty().IDEquals(CSSPropertyID::kTransform))
           reasons |= kSVGTargetHasIndependentTransformProperty;
+      }
+    }
+
+    // Presently native paint worklets only work with monotonic timelines.
+    NativePaintImageGenerator* generator = nullptr;
+    Animation::NativePaintWorkletReasons npw_reasons =
+        Animation::NativePaintWorkletProperties::kNoPaintWorklet;
+    if (animation_to_add) {
+      AnimationTimeline* timeline = animation_to_add->TimelineInternal();
+      if (timeline && timeline->IsMonotonicallyIncreasing()) {
+        npw_reasons = animation_to_add->GetNativePaintWorkletReasons();
+      }
+    }
+
+    if (layout_object) {
+      // Not having a layout object is a reason for not compositing marked
+      // in CompositorAnimations::CheckCanStartElementOnCompositor.
+      switch (property.GetCSSProperty().PropertyID()) {
+        case CSSPropertyID::kBackgroundColor:
+          if (npw_reasons == Animation::NativePaintWorkletProperties::
+                                 kBackgroundColorPaintWorklet) {
+            DCHECK(RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled());
+            generator = target_element.GetDocument()
+                            .GetFrame()
+                            ->GetBackgroundColorPaintImageGenerator();
+          }
+          if (!generator ||
+              !generator->GetAnimationIfCompositable(&target_element)) {
+            DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                         property, &reasons);
+          }
+          break;
+
+        case CSSPropertyID::kClipPath:
+          if (npw_reasons ==
+              Animation::NativePaintWorkletProperties::kClipPathPaintWorklet) {
+            DCHECK(RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled());
+            generator = target_element.GetDocument()
+                            .GetFrame()
+                            ->GetClipPathPaintImageGenerator();
+          }
+          if (!generator ||
+              !generator->GetAnimationIfCompositable(&target_element)) {
+            DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                         property, &reasons);
+          }
+          break;
+
+        default:
+          break;
       }
     }
 
@@ -344,49 +377,10 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // like regular filters do, so they can still be composited.
           break;
         case CSSPropertyID::kBackgroundColor:
-        case CSSPropertyID::kBoxShadow:
-        case CSSPropertyID::kClipPath: {
-          NativePaintImageGenerator* generator = nullptr;
-          // Not having a layout object is a reason for not compositing marked
-          // in CompositorAnimations::CheckCanStartElementOnCompositor.
-          if (!layout_object) {
-            continue;
-          }
-          if (property.GetCSSProperty().PropertyID() ==
-                  CSSPropertyID::kBackgroundColor &&
-              RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
-            generator = target_element.GetDocument()
-                            .GetFrame()
-                            ->GetBackgroundColorPaintImageGenerator();
-          } else if (property.GetCSSProperty().PropertyID() ==
-                         CSSPropertyID::kBoxShadow &&
-                     RuntimeEnabledFeatures ::
-                         CompositeBoxShadowAnimationEnabled()) {
-            generator = target_element.GetDocument()
-                            .GetFrame()
-                            ->GetBoxShadowPaintImageGenerator();
-          } else if (property.GetCSSProperty().PropertyID() ==
-                         CSSPropertyID::kClipPath &&
-                     RuntimeEnabledFeatures::
-                         CompositeClipPathAnimationEnabled()) {
-            generator = target_element.GetDocument()
-                            .GetFrame()
-                            ->GetClipPathPaintImageGenerator();
-          }
-          Animation* compositable_animation = nullptr;
-
-          // The generator may be null in tests.
-          if (generator) {
-            compositable_animation =
-                generator->GetAnimationIfCompositable(&target_element);
-          }
-
-          if (!compositable_animation) {
-            DefaultToUnsupportedProperty(unsupported_properties, property,
-                                         &reasons);
-          }
+        case CSSPropertyID::kClipPath:
+          // Handled above. No additional checks required on a per-keyframe
+          // basis.
           break;
-        }
         case CSSPropertyID::kVariable: {
           // Custom properties are supported only in the case of
           // OffMainThreadCSSPaintEnabled, and even then only for some specific
@@ -402,8 +396,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
                 !layout_object->Style()->HasCSSPaintImagesUsingCustomProperty(
                     property.CustomPropertyName(),
                     layout_object->GetDocument())) {
-              DefaultToUnsupportedProperty(unsupported_properties, property,
-                                           &reasons);
+              DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                           property, &reasons);
             }
             // TODO: Add support for keyframes containing different types
             if (!keyframes.front() ||
@@ -415,8 +409,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           } else {
             // We skip the rest of the loop in this case for the same reason as
             // unsupported CSS properties - see below.
-            DefaultToUnsupportedProperty(unsupported_properties, property,
-                                         &reasons);
+            DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                         property, &reasons);
             continue;
           }
           break;
@@ -425,8 +419,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // We skip the rest of the loop in this case because
           // |GetCompositorKeyframeValue()| will be false so we will
           // accidentally count this as kInvalidAnimationOrEffect as well.
-          DefaultToUnsupportedProperty(unsupported_properties, property,
-                                       &reasons);
+          DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                       property, &reasons);
           continue;
       }
 
@@ -444,24 +438,9 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
     }
   }
 
-  if (CompositorPropertyAnimationsHaveNoEffect(target_element, effect,
+  if (CompositorPropertyAnimationsHaveNoEffect(target_element, animation_to_add,
+                                               effect,
                                                paint_artifact_compositor)) {
-#if DCHECK_IS_ON()
-    if (effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor()))) {
-      ElementAnimations* element_animations =
-          target_element.GetElementAnimations();
-      DCHECK(element_animations &&
-             element_animations->CompositedBackgroundColorStatus() !=
-                 ElementAnimations::CompositedPaintStatus::kComposited);
-    }
-    if (effect.Affects(PropertyHandle(GetCSSPropertyClipPath()))) {
-      ElementAnimations* element_animations =
-          target_element.GetElementAnimations();
-      DCHECK(element_animations &&
-             element_animations->CompositedClipPathStatus() !=
-                 ElementAnimations::CompositedPaintStatus::kComposited);
-    }
-#endif
     reasons |= kAnimationHasNoVisibleChange;
   }
 
@@ -484,6 +463,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
 
 bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
     const Element& target_element,
+    const Animation* animation_to_add,
     const EffectModel& effect,
     const PaintArtifactCompositor* paint_artifact_compositor) {
   LayoutObject* layout_object = target_element.GetLayoutObject();
@@ -533,6 +513,18 @@ bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
     // properties.
     DCHECK(!any_compositor_properties_present);
     return true;
+  }
+
+  // Properties composited via native paint worklets do not necessarily have
+  // a paint property. In such cases, the unique ID is assigned at paint time
+  // when the deferred image for the paint worklet is constructed.  If no ID
+  // has been assigned yet, it may be because the element is outside the paint
+  // apron. The animation should not run on the compositor until painted.
+  if (animation_to_add && animation_to_add->GetNativePaintWorkletReasons() !=
+                              Animation::kNoPaintWorklet) {
+    if (!layout_object || !layout_object->FirstFragment().HasUniqueId()) {
+      return true;
+    }
   }
 
   return false;
@@ -610,11 +602,11 @@ CompositorAnimations::CheckCanStartAnimationOnCompositor(
     const EffectModel& effect,
     const PaintArtifactCompositor* paint_artifact_compositor,
     double animation_playback_rate,
-    PropertyHandleSet* unsupported_properties) {
+    PropertyHandleSet* unsupported_properties_for_tracing) {
   FailureReasons reasons = CheckCanStartEffectOnCompositor(
       timing, normalized_timing, target_element, animation_to_add, effect,
       paint_artifact_compositor, animation_playback_rate,
-      unsupported_properties);
+      unsupported_properties_for_tracing);
   return reasons | CheckCanStartElementOnCompositor(target_element, effect);
 }
 
@@ -804,9 +796,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
   // after finishing until it is removed by a subsequent main thread commit.
   // This allows developers to apply a post animation style or start a
   // subsequent animation without flicker.
-  if ((base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
-       is_monotonic_timeline) ||
-      is_boundary_aligned) {
+  if (is_monotonic_timeline || is_boundary_aligned) {
     if (animation_playback_rate >= 0) {
       switch (out.fill_mode) {
         case Timing::FillMode::BOTH:
@@ -819,8 +809,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
           out.fill_mode = Timing::FillMode::FORWARDS;
           break;
         case Timing::FillMode::AUTO:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } else {
       switch (out.fill_mode) {
@@ -834,8 +823,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
           out.fill_mode = Timing::FillMode::BACKWARDS;
           break;
         case Timing::FillMode::AUTO:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }
@@ -850,17 +838,23 @@ bool CompositorAnimations::ConvertTimingForCompositor(
   // is the active duration or scaled active duration depending on the magnitude
   // of the playback rate. If this value cannot be expressed in int64, then we
   // cannot composite the animation.
+  // TODO(crbug.com/401244300): Consider treating animations with an effectively
+  // infinite iteration duration as static, since they don't require ticking on
+  // the compositor or main.
+  AnimationTimeDelta duration_saturation_check = out.scaled_duration;
   if (animation_playback_rate < 0) {
-    AnimationTimeDelta active_duration =
-        out.scaled_duration * out.adjusted_iteration_count;
-    if (std::abs(animation_playback_rate) < 1) {
-      active_duration /= std::abs(animation_playback_rate);
-    }
-    // base::TimeDelta ticks are in microseconds.
-    if (active_duration.InSecondsF() >
-        std::numeric_limits<int64_t>::max() / 1e6) {
-      return false;
-    }
+    // When the playback rate is positive, we only require that a single
+    // iteration has a finite duration; however, when negative, the entire
+    // active duration must be finite.
+    duration_saturation_check *= out.adjusted_iteration_count;
+  }
+  if (std::abs(animation_playback_rate) < 1) {
+    duration_saturation_check /= std::abs(animation_playback_rate);
+  }
+  // base::TimeDelta ticks are in microseconds.
+  if (duration_saturation_check.InSecondsF() >
+      std::numeric_limits<int64_t>::max() / 1e6) {
+    return false;
   }
 
   DCHECK_GT(out.scaled_duration, AnimationTimeDelta());
@@ -988,7 +982,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
       timing, normalized_timing, time_offset, compositor_timing,
       animation_playback_rate, is_monotonic_timeline, is_boundary_aligned);
 
-  const PropertyHandleSet& properties = effect.EnsureDynamicProperties();
+  auto properties = effect.DynamicProperties();
   DCHECK(!properties.empty());
   for (const auto& property : properties) {
     // If the animation duration is infinite, it doesn't make sense to scale
@@ -1060,9 +1054,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
                 cc::TargetProperty::TRANSFORM);
             break;
           default:
-            NOTREACHED_IN_MIGRATION()
-                << "only possible cases for nested switch";
-            break;
+            NOTREACHED() << "only possible cases for nested switch";
         }
         break;
       }
@@ -1107,8 +1099,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
     }
     DCHECK(curve.get());
     DCHECK(target_property_id.has_value());
@@ -1126,8 +1117,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
 
     // By default, it is a kInvalidElementId.
     CompositorElementId id;
-    if (!IsNoOpPaintWorkletOrVariableAnimation(
-            property, target_element.GetLayoutObject())) {
+    if (!IsNoOpVariableAnimation(property, target_element.GetLayoutObject())) {
       id = CompositorElementIdFromUniqueObjectId(
               target_element.GetLayoutObject()->UniqueId(),
               CompositorElementNamespaceForProperty(
@@ -1149,17 +1139,39 @@ bool CompositorAnimations::CanStartScrollTimelineOnCompositor(Node* target) {
   if (!target) {
     return false;
   }
-  DCHECK_GE(target->GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
+
+  DocumentLifecycle::LifecycleState lifecycle_state =
+      target->GetDocument().Lifecycle().GetState();
+
+  DCHECK_GE(lifecycle_state, DocumentLifecycle::kLayoutClean);
+
   auto* layout_box = target->GetLayoutBox();
   if (!layout_box) {
     return false;
   }
-  if (auto* properties = layout_box->FirstFragment().PaintProperties()) {
-    return properties->Scroll() &&
-           (!RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() ||
-            properties->Scroll()->UserScrollable());
+
+  // Use cached paint properties when available.
+  if (lifecycle_state >= DocumentLifecycle::kPrePaintClean) {
+    if (auto* properties = layout_box->FirstFragment().PaintProperties()) {
+      return properties->Scroll() && properties->Scroll()->UserScrollable();
+    }
+    return false;
   }
+
+  // Slow-path used when called during PrePaint as we cannot guarantee we have
+  // up to date paint properties. This case is hit when determining if a
+  // clip-path animation is compositable. Maintaining a separate slow-path as
+  // UserInputScrollable is non-trivial.
+  PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
+  if (!scrollable_area) {
+    return false;
+  }
+
+  if (scrollable_area->UserInputScrollable(kVerticalScrollbar) ||
+      scrollable_area->UserInputScrollable(kHorizontalScrollbar)) {
+    return true;
+  }
+
   return false;
 }
 
@@ -1167,8 +1179,9 @@ CompositorAnimations::FailureReasons
 CompositorAnimations::CheckCanStartSVGElementOnCompositor(
     const SVGElement& svg_element) {
   FailureReasons reasons = kNoFailure;
-  if (svg_element.HasNonCSSPropertyAnimations())
+  if (svg_element.HasSMILAnimations()) {
     reasons |= kTargetHasIncompatibleAnimations;
+  }
   if (!svg_element.InstancesForElement().empty()) {
     // TODO(crbug.com/785246): Currently when an SVGElement has svg:use
     // instances, each instance gets style from the original element, using

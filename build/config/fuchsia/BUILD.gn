@@ -42,11 +42,22 @@ group("deployment_resources") {
     }
   }
 
-  if (test_isolate_uses_emulator && test_host_cpu == "arm64") {
-    data += [
-      "//third_party/qemu-${host_os}-${test_host_cpu}/",
-      "//third_party/edk2/",
-    ]
+  if (test_isolate_uses_emulator) {
+    # This assumes we are testing on QEMU with (U)EFI emulation only
+    # if host_cpu == target_cpu, and also that these tests are executed
+    # on x64 and arm64 only.
+    if (test_host_cpu == "arm64") {
+      data += [
+        "//third_party/fuchsia-sdk/sdk/tools/qemu_uefi_internal/arm64",
+        "//third_party/fuchsia-sdk/sdk/tools/qemu_uefi_internal/arm64-meta.json",
+        "//third_party/qemu-${host_os}-${test_host_cpu}/",
+      ]
+    } else {
+      data += [
+        "//third_party/fuchsia-sdk/sdk/tools/qemu_uefi_internal/x64",
+        "//third_party/fuchsia-sdk/sdk/tools/qemu_uefi_internal/x64-meta.json",
+      ]
+    }
   }
 }
 

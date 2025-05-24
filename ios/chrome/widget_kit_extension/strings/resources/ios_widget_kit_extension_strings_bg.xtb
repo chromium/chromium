@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1149198577555059081">Търсете или въведете URL адрес</translation>
 <translation id="1324575488877808473">Отворете Chrome, за да видите най-посещаваните от вас сайтове тук.</translation>
 <translation id="2513892053093488070">Гласово търсене</translation>
 <translation id="2535710892645968259">Влизайте в играта с динозавъра в Chrome направо от заключения си екран.</translation>
@@ -15,11 +16,11 @@
 <translation id="405442954313519726">Търсете или навигирайте в нов раздел, в режим „инкогнито“, като ползвате гласа си или чрез QR код.</translation>
 <translation id="4557098988773644458">Отваряне на играта с динозавъра в Chrome</translation>
 <translation id="4678859075583681103">Извършвайте ново търсене или отваряйте най-посещаваните от вас сайтове от началната страница на своя iPhone.</translation>
-<translation id="4954445889641385956">Търсете или въведете URL адрес</translation>
 <translation id="4962772945748414465">Отваряне на WEBSITE_PLACEHOLDER</translation>
 <translation id="5234725349196694896">Търсете в Chrome с любимата си търсеща машина.</translation>
 <translation id="5277852985315196237">Търсете или въведете URL адрес</translation>
 <translation id="529497070985873480">Динозавърът в Chrome</translation>
+<translation id="5325847452011598583">Няма профил</translation>
 <translation id="5683557219437283801">Гласово търсене</translation>
 <translation id="6179961764474023795">Бързи действия</translation>
 <translation id="6330929932864892436">Търсете или въведете URL адрес</translation>
@@ -39,7 +40,9 @@
 <translation id="8104498668011127805">Отваряне на играта с динозавъра в Chrome</translation>
 <translation id="8150601371542319992">Обектив</translation>
 <translation id="8171952085734471362">Търсене в режим „инкогнито“</translation>
+<translation id="8310150944719146950">Профил</translation>
 <translation id="8564942608461410346">Търсете в Chrome с любимата си търсеща машина.</translation>
+<translation id="8858765528951093286">Профилът, използван с приспособлението, бе премахнат. За да изберете друг, докоснете „Редактиране на приспособлението“.</translation>
 <translation id="9175676375569833962">Търсене
 в паролите</translation>
 </translationbundle>

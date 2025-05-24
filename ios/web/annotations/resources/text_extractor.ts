@@ -7,8 +7,9 @@
  * at the ends, and pass it on to the a consumer.
  */
 
-import {nextLeaf, previousLeaf, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
-import {TextNodeVisitor} from '//ios/web/annotations/resources/text_intersection_observer.js';
+import type {TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import {nextLeaf, previousLeaf} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {TextNodeVisitor} from '//ios/web/annotations/resources/text_intersection_observer.js';
 
 // TODO(crbug.com/40936184): investigate concatening of nodes and RTL languages.
 
@@ -19,15 +20,28 @@ const SECTION_BREAK = ' ‡ ';
 const EXTRA_CHARACTERS_AT_END = 128;
 
 const KNOWN_INLINE_ELEMENTS: Set<string> = new Set([
-  'A', 'ABBR', 'B', 'CITE', 'CODE', 'I', 'DFN', 'EM', 'MARK', 'SMALL', 'SPAN',
-  'STRONG', 'SUB', 'SUP', 'VAR'
+  'A',
+  'ABBR',
+  'B',
+  'CITE',
+  'CODE',
+  'I',
+  'DFN',
+  'EM',
+  'MARK',
+  'SMALL',
+  'SPAN',
+  'STRONG',
+  'SUB',
+  'SUP',
+  'VAR',
 ]);
 
 // A section is a `textNode` and an index. The index is the position when this
 // node's text is in the full extracted text. Note that some text, like breaks
 // and spaces, are not in `TextSection`s. Neither are text nodes with no text or
 // with only spaces and newlines.
-class TextSection {
+export class TextSection {
   private sourceTextNode: WeakRef<TextWithSymbolIndex>;
 
   constructor(textNode: TextWithSymbolIndex, public index: number) {
@@ -40,13 +54,13 @@ class TextSection {
 }
 
 // Consumer of `TextChunk` callback.
-type TextChunkConsumer = {
+export interface TextChunkConsumer {
   (chunk: TextChunk): void;
-};
+}
 
 // A piece of extracted text and the sections needed to locate back the nodes
 // from which the text, at a given index, comes from.
-class TextChunk {
+export class TextChunk {
   text: string = '';
   sections: TextSection[] = [];
 
@@ -76,7 +90,7 @@ class TextChunk {
 // A `TextNodeVisitor` that assembles the text. It adds breaks where needed and
 // concatenates prefix and suffix text (of at most `extraCharactersAtEnd`) at
 // each end.
-class TextExtractor implements TextNodeVisitor {
+export class TextExtractor implements TextNodeVisitor {
   constructor(
       private consumer: TextChunkConsumer,
       private extraCharactersAtEnd = EXTRA_CHARACTERS_AT_END,
@@ -271,11 +285,4 @@ class TextExtractor implements TextNodeVisitor {
     }
     return ['', []];
   }
-}
-
-export {
-  TextSection,
-  TextChunk,
-  TextChunkConsumer,
-  TextExtractor,
 }

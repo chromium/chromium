@@ -55,7 +55,6 @@ namespace blink {
 class DOMDataStore;
 class ScriptWrappable;
 class SecurityOrigin;
-class V8ObjectDataStore;
 
 enum IsolatedWorldId {
   // Embedder isolated worlds can use IDs in [1, 1<<29).
@@ -200,9 +199,8 @@ class PLATFORM_EXPORT DOMWrapperWorld final
   WorldType GetWorldType() const { return world_type_; }
   int GetWorldId() const { return world_id_; }
   DOMDataStore& DomDataStore() const { return *dom_data_store_; }
-  V8ObjectDataStore& GetV8ObjectDataStore() const {
-    return *v8_object_data_store_;
-  }
+
+  v8::Isolate* GetIsolate() const { return isolate_; }
 
   void Trace(Visitor*) const;
 
@@ -227,7 +225,12 @@ class PLATFORM_EXPORT DOMWrapperWorld final
   const WorldType world_type_;
   const int32_t world_id_;
   const Member<DOMDataStore> dom_data_store_;
-  Member<V8ObjectDataStore> v8_object_data_store_;
+  // The pointer does not dangle in production configurations but only in unit
+  // tests. Specifically, for test that cycle through V8 isolates and reuse the
+  // same CppHeap, Oilpan objects are destroyed after isolate teardown which
+  // means that pointers dangle. The objects should be unreachable in the tests
+  // though.
+  const raw_ptr<v8::Isolate, base::RawPtrTraits::kMayDangle> isolate_;
 };
 
 }  // namespace blink

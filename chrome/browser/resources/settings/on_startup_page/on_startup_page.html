@@ -1,4 +1,4 @@
-    <style include="cr-shared-style settings-shared iron-flex">
+    <style include="cr-shared-style settings-shared">
       .block {
         display: block;
       }
@@ -8,7 +8,7 @@
           class="flex"
           pref="{{prefs.session.restore_on_startup}}"
           group-aria-label="$i18n{onStartup}">
-        <controlled-radio-button name="[[getName_(prefValues_.OPEN_NEW_TAB)]]"
+        <controlled-radio-button name="[[getName_(prefValuesEnum_.OPEN_NEW_TAB)]]"
             pref="[[prefs.session.restore_on_startup]]"
             label="$i18n{onStartupOpenNewTab}"
             no-extension-indicator>
@@ -20,16 +20,16 @@
               extension-can-be-disabled="[[ntpExtension_.canBeDisabled]]">
           </extension-controlled-indicator>
         </template>
-        <controlled-radio-button name="[[getName_(prefValues_.CONTINUE)]]"
+        <controlled-radio-button name="[[getName_(prefValuesEnum_.CONTINUE)]]"
             pref="[[prefs.session.restore_on_startup]]"
             label="$i18n{onStartupContinue}">
         </controlled-radio-button>
-        <controlled-radio-button name="[[getName_(prefValues_.OPEN_SPECIFIC)]]"
+        <controlled-radio-button name="[[getName_(prefValuesEnum_.OPEN_SPECIFIC)]]"
             pref="[[prefs.session.restore_on_startup]]"
             label="$i18n{onStartupOpenSpecific}">
         </controlled-radio-button>
         <controlled-radio-button name="[[getName_(
-          prefValues_.CONTINUE_AND_OPEN_SPECIFIC)]]"
+          prefValuesEnum_.CONTINUE_AND_OPEN_SPECIFIC)]]"
             pref="[[prefs.session.restore_on_startup]]"
             label="$i18n{onStartupContinueAndOpenSpecific}"
             hidden="[[!showContinueAndOpenSpecific_(

@@ -416,10 +416,10 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA1) {
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
-      base::as_bytes(base::make_span(signed_policy->policy_data_signature())),
+      base::as_byte_span(signed_policy->policy_data_signature()),
       pub_key->data()));
   signature_verifier.VerifyUpdate(
-      base::as_bytes(base::make_span(signed_policy->policy_data())));
+      base::as_byte_span(signed_policy->policy_data()));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
@@ -449,10 +449,10 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA256) {
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-      base::as_bytes(base::make_span(signed_policy->policy_data_signature())),
+      base::as_byte_span(signed_policy->policy_data_signature()),
       pub_key->data()));
   signature_verifier.VerifyUpdate(
-      base::as_bytes(base::make_span(signed_policy->policy_data())));
+      base::as_byte_span(signed_policy->policy_data()));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
@@ -573,14 +573,14 @@ TEST_F(OwnerSettingsServiceAshTest, TwoAppendAndRemoveList) {
 
 class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
  public:
-  OwnerSettingsServiceAshNoOwnerTest() {}
+  OwnerSettingsServiceAshNoOwnerTest() = default;
 
   OwnerSettingsServiceAshNoOwnerTest(
       const OwnerSettingsServiceAshNoOwnerTest&) = delete;
   OwnerSettingsServiceAshNoOwnerTest& operator=(
       const OwnerSettingsServiceAshNoOwnerTest&) = delete;
 
-  ~OwnerSettingsServiceAshNoOwnerTest() override {}
+  ~OwnerSettingsServiceAshNoOwnerTest() override = default;
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();

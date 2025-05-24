@@ -28,8 +28,9 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
   DCHECK(!parsed.has_opaque_path);
 
   // Scheme: this will append the colon.
-  bool success = CanonicalizeScheme(source.scheme, parsed.scheme,
-                                    output, &new_parsed->scheme);
+  bool success =
+      CanonicalizeScheme(parsed.scheme.maybe_as_string_view_on(source.scheme),
+                         output, &new_parsed->scheme);
 
   bool scheme_supports_user_info =
       (scheme_type == SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION);
@@ -54,8 +55,9 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
     // User info: the canonicalizer will handle the : and @.
     if (scheme_supports_user_info) {
       success &= CanonicalizeUserInfo(
-          source.username, parsed.username, source.password, parsed.password,
-          output, &new_parsed->username, &new_parsed->password);
+          parsed.username.maybe_as_string_view_on(source.username),
+          parsed.password.maybe_as_string_view_on(source.password), output,
+          &new_parsed->username, &new_parsed->password);
     } else {
       new_parsed->username.reset();
       new_parsed->password.reset();
@@ -104,11 +106,12 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
   }
 
   // Query
-  CanonicalizeQuery(source.query, parsed.query, query_converter,
-                    output, &new_parsed->query);
+  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query),
+                    query_converter, output, &new_parsed->query);
 
   // Ref: ignore failure for this, since the page can probably still be loaded.
-  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
+  CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
+                  &new_parsed->ref);
 
   // Carry over the flag for potentially dangling markup:
   if (parsed.potentially_dangling_markup)

@@ -20,10 +20,10 @@ namespace payments {
 // Returns the billing customer ID (a.k.a. the customer number) for the Google
 // Payments account for this user. Obtains it from the synced data. Returns 0
 // if the customer ID was not found.
-int64_t GetBillingCustomerId(const PaymentsDataManager* payments_data_manager);
+int64_t GetBillingCustomerId(const PaymentsDataManager& payments_data_manager);
 
 // Returns if the customer has an existing Google payments account.
-bool HasGooglePaymentsAccount(PaymentsDataManager* payments_data_manager);
+bool HasGooglePaymentsAccount(const PaymentsDataManager& payments_data_manager);
 
 // Checks if |card_number| matches one of the ranges in
 // |supported_card_bin_ranges|, inclusive of the start and end boundaries.

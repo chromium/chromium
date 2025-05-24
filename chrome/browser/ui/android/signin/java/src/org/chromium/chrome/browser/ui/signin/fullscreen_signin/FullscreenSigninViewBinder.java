@@ -4,33 +4,26 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
-import android.content.Context;
-import android.content.res.ColorStateList;
 import android.text.method.LinkMovementMethod;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.ImageView;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ProgressBar;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.widget.ImageViewCompat;
 
-import com.google.android.material.color.MaterialColors;
-
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.ExistingAccountRowViewBinder;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Stateless FullscreenSignin view binder. */
+@NullMarked
 class FullscreenSigninViewBinder {
     static void bind(PropertyModel model, FullscreenSigninView view, PropertyKey propertyKey) {
         if (propertyKey == FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED) {
@@ -71,10 +64,6 @@ class FullscreenSigninViewBinder {
                 // this case.
                 initialLoadProgressSpinner.animate().alpha(1.0f).setStartDelay(500);
             } else {
-                // Native needs to be ready before feature flag can be checked. Therefore the flag
-                // guarded layout update is done once the initial loading spinner disappears, since
-                // native is initialized at this point.
-                revampSelectedAccountViewIfNecessary(view.getSelectedAccountView());
                 TransitionManager.beginDelayedTransition(view);
                 initialLoadProgressSpinner.setVisibility(View.GONE);
             }
@@ -84,12 +73,37 @@ class FullscreenSigninViewBinder {
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
             updateSelectedAccount(view, model);
             updateBottomGroupVisibility(view, model);
+        } else if (propertyKey == FullscreenSigninProperties.LOGO_DRAWABLE_ID) {
+            int logoId = model.get(FullscreenSigninProperties.LOGO_DRAWABLE_ID);
+            LayoutParams params = view.getLogo().getLayoutParams();
+
+            // TODO(crbug.com/390418475): Remove the if block below and
+            // fullscreen_signin_logo_default_height when fre_product_logo will be a VectorDrawable
+            // with appropriate height.
+            if (logoId == 0) {
+                logoId = R.drawable.fre_product_logo;
+                params.height =
+                        view.getContext()
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.fullscreen_signin_logo_default_height);
+            } else {
+                params.height = LayoutParams.WRAP_CONTENT;
+            }
+            view.getLogo().setImageResource(logoId);
+            view.getLogo().setLayoutParams(params);
         } else if (propertyKey == FullscreenSigninProperties.TITLE_STRING_ID) {
             @StringRes int textId = model.get(FullscreenSigninProperties.TITLE_STRING_ID);
             view.getTitle().setText(textId);
         } else if (propertyKey == FullscreenSigninProperties.SUBTITLE_STRING_ID) {
             @StringRes int textId = model.get(FullscreenSigninProperties.SUBTITLE_STRING_ID);
-            view.getSubtitle().setText(textId);
+            if (textId != 0) {
+                view.getSubtitle().setText(textId);
+            }
+            updateBottomGroupVisibility(view, model);
+        } else if (propertyKey == FullscreenSigninProperties.DISMISS_BUTTON_STRING_ID) {
+            @StringRes int textId = model.get(FullscreenSigninProperties.DISMISS_BUTTON_STRING_ID);
+            view.getDismissButtonView().setText(textId);
         } else if (propertyKey == FullscreenSigninProperties.FOOTER_STRING) {
             final CharSequence footerText = model.get(FullscreenSigninProperties.FOOTER_STRING);
             if (footerText == null) {
@@ -164,12 +178,14 @@ class FullscreenSigninViewBinder {
                 model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
         final boolean showManagementNotice =
                 model.get(FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE);
+        final @StringRes int textId = model.get(FullscreenSigninProperties.SUBTITLE_STRING_ID);
         view.getTitle().setVisibility(showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE);
         view.getSubtitle()
                 .setVisibility(
                         !showInitialLoadProgressSpinner
                                         && !isSelectedAccountSupervised
                                         && !showManagementNotice
+                                        && textId != 0
                                 ? View.VISIBLE
                                 : View.GONE);
 
@@ -230,38 +246,6 @@ class FullscreenSigninViewBinder {
         view.getSigninProgressSpinner()
                 .setVisibility(showSigninProgressSpinner ? View.VISIBLE : View.GONE);
         view.getSigninProgressText().setVisibility(showSigningInText ? View.VISIBLE : View.GONE);
-    }
-
-    // TODO(b/40944124): Move the layout configurations to the xml file after UNO is launched.
-    public static void revampSelectedAccountViewIfNecessary(View accountPickerView) {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            Context context = accountPickerView.getContext();
-            accountPickerView.setBackground(
-                    AppCompatResources.getDrawable(
-                            context, R.drawable.account_row_background_rounded_all));
-
-            int padding = ViewUtils.dpToPx(context, 16);
-            accountPickerView.setPadding(padding, padding, padding, padding);
-            int sideMargin = ViewUtils.dpToPx(context, 24);
-            // Total margin should be 24dp but the continue button xml file adds an 8dp top margin.
-            int bottomMargin = ViewUtils.dpToPx(context, 16);
-            MarginLayoutParams params = (MarginLayoutParams) accountPickerView.getLayoutParams();
-            params.setMargins(
-                    /* left= */ sideMargin,
-                    /* top= */ 0,
-                    /* right= */ sideMargin,
-                    /* bottom= */ bottomMargin);
-
-            ImageView moreArrow =
-                    accountPickerView.findViewById(R.id.signin_fre_selected_account_expand_icon);
-            moreArrow.setImageResource(R.drawable.ic_expand_more_black_24dp);
-            ColorStateList colorStateList =
-                    ColorStateList.valueOf(
-                            MaterialColors.getColor(
-                                    accountPickerView, R.attr.colorOnSurfaceVariant));
-            ImageViewCompat.setImageTintList(moreArrow, colorStateList);
-        }
     }
 
     private FullscreenSigninViewBinder() {}

@@ -6,10 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/test/task_environment.h"
-#include "ios/net/cookies/system_cookie_store_unittest_template.h"
+#import "base/test/task_environment.h"
+#import "ios/net/cookies/system_cookie_store_unittest_template.h"
 
 namespace net {
 
@@ -41,8 +41,9 @@ class NSHTTPSystemCookieStoreTestDelegate {
     // The default cookie accept policy is allow, The test needs to make sure
     // that policy is set to default so the test can set cookies.
     [shared_store_ setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    for (NSHTTPCookie* cookie in shared_store_.cookies)
+    for (NSHTTPCookie* cookie in shared_store_.cookies) {
       [shared_store_ deleteCookie:cookie];
+    }
     EXPECT_EQ(0u, shared_store_.cookies.count);
   }
 

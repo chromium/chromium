@@ -41,7 +41,7 @@ class TaskQueue {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Invoked once when TaskQueue reached 0 tasks.
     virtual void OnTaskQueueIsIdle() = 0;

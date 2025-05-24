@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
@@ -25,23 +26,14 @@
 namespace component_updater {
 
 class ChromeComponentUpdaterConfiguratorTest : public testing::Test {
- public:
-  ChromeComponentUpdaterConfiguratorTest() = default;
-
-  ChromeComponentUpdaterConfiguratorTest(
-      const ChromeComponentUpdaterConfiguratorTest&) = delete;
-  ChromeComponentUpdaterConfiguratorTest& operator=(
-      const ChromeComponentUpdaterConfiguratorTest&) = delete;
-
-  ~ChromeComponentUpdaterConfiguratorTest() override = default;
-
+ protected:
   // Overrides from testing::Test.
   void SetUp() override;
 
- protected:
   TestingPrefServiceSimple* pref_service() { return pref_service_.get(); }
 
  private:
+  base::test::TaskEnvironment environment_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
 

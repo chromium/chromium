@@ -16,7 +16,7 @@ void ReportUnrecoverableError(version_info::Channel channel) {
     return;
   }
 
-  // We only want to upload |kErrorUploadRatio| ratio of errors.
+  // We only want to upload `kErrorUploadRatio` ratio of errors.
   // Note: crash reporting is disabled, and should only be enabled when
   // investigating a specific datatype error. In that event, a specific bug
   // should be referenced here.

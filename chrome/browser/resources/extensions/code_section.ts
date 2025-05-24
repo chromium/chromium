@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import './shared_vars.css.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -22,11 +22,16 @@ function visibleLineCount(totalCount: number, oppositeCount: number): number {
   return Math.min(max, totalCount);
 }
 
-// TODO (rbpotter): Rename back to ExtensionsCodeSectionElement when .html.ts
-// files are checked in.
-const CodeSectionElementBase = I18nMixinLit(CrLitElement);
+export interface ExtensionsCodeSectionElement {
+  $: {
+    'scroll-container': HTMLElement,
+  };
+}
 
-export class CodeSectionElement extends CodeSectionElementBase {
+const ExtensionsCodeSectionElementBase = I18nMixinLit(CrLitElement);
+
+export class ExtensionsCodeSectionElement extends
+    ExtensionsCodeSectionElementBase {
   static get is() {
     return 'extensions-code-section';
   }
@@ -68,16 +73,16 @@ export class CodeSectionElement extends CodeSectionElementBase {
     };
   }
 
-  code: chrome.developerPrivate.RequestFileSourceResponse|null = null;
-  isActive?: boolean;
-  couldNotDisplayCode: string = '';
-  protected highlighted_: string = '';
-  protected before_: string = '';
-  protected after_: string = '';
-  protected highlightDescription_: string = '';
-  protected lineNumbers_: string = '';
-  protected truncatedBefore_: number = 0;
-  protected truncatedAfter_: number = 0;
+  accessor code: chrome.developerPrivate.RequestFileSourceResponse|null = null;
+  accessor isActive: boolean|undefined;
+  accessor couldNotDisplayCode: string = '';
+  protected accessor highlighted_: string = '';
+  protected accessor before_: string = '';
+  protected accessor after_: string = '';
+  protected accessor highlightDescription_: string = '';
+  protected accessor lineNumbers_: string = '';
+  protected accessor truncatedBefore_: number = 0;
+  protected accessor truncatedAfter_: number = 0;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -138,12 +143,11 @@ export class CodeSectionElement extends CodeSectionElementBase {
     this.scrollToHighlight_(visibleLineCountBefore);
   }
 
-  protected getLinesNotShownLabel_(
-      lineCount: number, stringSingular: string,
-      stringPluralTemplate: string): string {
+  protected getLinesNotShownLabel_(lineCount: number): string {
     return lineCount === 1 ?
-        stringSingular :
-        loadTimeData.substituteString(stringPluralTemplate, lineCount);
+        loadTimeData.getString('errorLinesNotShownSingular') :
+        loadTimeData.substituteString(
+            loadTimeData.getString('errorLinesNotShownPlural'), lineCount);
   }
 
   private setLineNumbers_(start: number, end: number) {
@@ -185,9 +189,10 @@ export class CodeSectionElement extends CodeSectionElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'extensions-code-section': CodeSectionElement;
+    'extensions-code-section': ExtensionsCodeSectionElement;
   }
 }
 
 
-customElements.define(CodeSectionElement.is, CodeSectionElement);
+customElements.define(
+    ExtensionsCodeSectionElement.is, ExtensionsCodeSectionElement);

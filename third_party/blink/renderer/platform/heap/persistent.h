@@ -59,8 +59,8 @@ cppgc::internal::BasicCrossThreadPersistent<U, weakness> DownCast(
   return p.template To<U>();
 }
 
-template <typename T,
-          typename = std::enable_if_t<WTF::IsGarbageCollectedType<T>::value>>
+template <typename T>
+  requires(WTF::IsGarbageCollectedType<T>::value)
 Persistent<T> WrapPersistentIfNeeded(T* value) {
   return Persistent<T>(value);
 }

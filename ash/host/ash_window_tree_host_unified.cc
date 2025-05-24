@@ -4,6 +4,7 @@
 
 #include "ash/host/ash_window_tree_host_unified.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -136,10 +136,10 @@ void AshWindowTreeHostUnified::OnBoundsChanged(const BoundsChange& change) {
 }
 
 void AshWindowTreeHostUnified::OnWindowDestroying(aura::Window* window) {
-  auto iter = base::ranges::find(
-      mirroring_hosts_, window, [](AshWindowTreeHost* ash_host) {
-        return ash_host->AsWindowTreeHost()->window();
-      });
+  auto iter = std::ranges::find(mirroring_hosts_, window,
+                                [](AshWindowTreeHost* ash_host) {
+                                  return ash_host->AsWindowTreeHost()->window();
+                                });
   DCHECK(iter != mirroring_hosts_.end());
   window->RemoveObserver(this);
   mirroring_hosts_.erase(iter);

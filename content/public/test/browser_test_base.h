@@ -28,7 +28,6 @@
 #include "base/test/scoped_path_override.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/test/test_host_resolver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -44,6 +43,12 @@ class CommandLine;
 class FilePath;
 class TimeDelta;
 }  // namespace base
+
+#if BUILDFLAG(IS_ANDROID)
+namespace discardable_memory {
+class DiscardableSharedMemoryManager;
+}
+#endif
 
 namespace ui {
 class ScopedAnimationDurationScaleMode;
@@ -182,6 +187,63 @@ class BrowserTestBase : public ::testing::Test {
     return embedded_test_server_.get();
   }
 
+  // Initializes the HTTPS embedded test server. The HTTPS test server must be
+  // setup after any modifications done to the macOS `bundled` state as done
+  // with `SetOverrideAmIBundled`, since different browser test suites have
+  // different bundle behavior on macOS, and the HTTPS test server constructor
+  // reads in the local test root cert. In any case that the HTTPS test server
+  // is needed by tests under a child class of BrowserTestBase, the HTTPS test
+  // server must be initialized by calling this method during the test setup.
+  void InitializeHTTPSTestServer();
+
+  // Returns the HTTPS embedded test server.
+  // By default, the HTTPS test server is configured to have a valid
+  // certificate for the set of hostnames:
+  //   - [*.]example.com
+  //   - [*.]foo.com
+  //   - [*.]bar.com
+  //   - [*.]a.com
+  //   - [*.]b.com
+  //   - [*.]c.com
+  //
+  // After starting the server, you can get a working HTTPS URL for any of
+  // those hostnames. For example:
+  //
+  // ```
+  //   void SetUpOnMainThread() override {
+  //     host_resolver()->AddRule("*", "127.0.0.1");
+  //     ASSERT_TRUE(embedded_https_test_server().Start());
+  //     InProcessBrowserTest::SetUpOnMainThread();
+  //   }
+  //   ...
+  //   (later in the test logic):
+  //   embedded_https_test_server().GetURL("foo.com", "/simple.html");
+  // ```
+  //
+  // Tests can override the set of valid hostnames by calling
+  // `net::EmbeddedTestServer::SetCertHostnames()` before starting the test
+  // server, and a valid test certificate will be automatically generated for
+  // the hostnames passed in. For example:
+  //
+  //   ```
+  //   embedded_https_test_server().SetCertHostnames(
+  //       {"example.com", "example.org"});
+  //   ASSERT_TRUE(embedded_https_test_server().Start());
+  //   embedded_https_test_server().GetURL("example.org", "/simple.html");
+  //   ```
+  const net::EmbeddedTestServer& embedded_https_test_server() const {
+    CHECK(embedded_https_test_server_)
+        << "embedded_https_test_server() cannot be called before it was "
+           "initialized by calling InitializeHTTPSTestServer.";
+    return *embedded_https_test_server_;
+  }
+  net::EmbeddedTestServer& embedded_https_test_server() {
+    CHECK(embedded_https_test_server_)
+        << "embedded_https_test_server() cannot be called before it was "
+           "initialized by calling InitializeHTTPSTestServer.";
+    return *embedded_https_test_server_;
+  }
+
   bool set_up_called() { return set_up_called_; }
 
 #if BUILDFLAG(IS_POSIX)
@@ -251,6 +313,9 @@ class BrowserTestBase : public ::testing::Test {
   // Embedded HTTP test server, cheap to create, started on demand.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
 
+  // Embedded HTTPS test server, cheap to create, started on demand.
+  std::unique_ptr<net::EmbeddedTestServer> embedded_https_test_server_;
+
   // Host resolver used during tests.
   std::unique_ptr<TestHostResolver> test_host_resolver_;
 
@@ -310,6 +375,16 @@ class BrowserTestBase : public ::testing::Test {
 
 #if BUILDFLAG(IS_POSIX)
   bool handle_sigterm_;
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Mimic the destruction order of ContentMain:
+  // - ContentMainRunnerImpl::Shutdown() resets ipc support and shuts down the
+  //   BrowserTaskExecutor.
+  // - ContentMainRunnerImpl::~ContentMainRunnerImpl().
+  // - DiscardableSharedMemoryManager, owned by ContentMainRunnerImpl, is reset.
+  std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
+      discardable_shared_memory_manager_;
 #endif
 };
 

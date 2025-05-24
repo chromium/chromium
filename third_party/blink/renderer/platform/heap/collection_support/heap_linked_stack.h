@@ -39,16 +39,17 @@
 
 namespace blink {
 
-// HeapLinkedStack<> is an Oilpan-managed stack that avoids pre-allocation
+// GCedHeapLinkedStack<> is an Oilpan-managed stack that avoids pre-allocation
 // of memory and heap fragmentation.
 //
 // The API was originally implemented on the call stack by LinkedStack<>
 // (now removed: https://codereview.chromium.org/2761853003/).
 // See https://codereview.chromium.org/17314010 for the original use-case.
 template <typename T>
-class HeapLinkedStack final : public GarbageCollected<HeapLinkedStack<T>> {
+class GCedHeapLinkedStack final
+    : public GarbageCollected<GCedHeapLinkedStack<T>> {
  public:
-  HeapLinkedStack() = default;
+  GCedHeapLinkedStack() = default;
 
   inline wtf_size_t size() const;
   inline bool IsEmpty() const;
@@ -80,37 +81,37 @@ class HeapLinkedStack final : public GarbageCollected<HeapLinkedStack<T>> {
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(std::is_trivially_destructible_v<HeapLinkedStack<T>>,
-                    "HeapLinkedStack must be trivially destructible.");
+      static_assert(std::is_trivially_destructible_v<GCedHeapLinkedStack<T>>,
+                    "GCedHeapLinkedStack must be trivially destructible.");
       static_assert(WTF::IsMemberType<T>::value,
-                    "HeapLinkedStack supports only Member.");
+                    "GCedHeapLinkedStack supports only Member.");
     }
   };
   NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 template <typename T>
-HeapLinkedStack<T>::Node::Node(const T& data, Node* next)
+GCedHeapLinkedStack<T>::Node::Node(const T& data, Node* next)
     : data_(data), next_(next) {}
 
 template <typename T>
-bool HeapLinkedStack<T>::IsEmpty() const {
+bool GCedHeapLinkedStack<T>::IsEmpty() const {
   return !head_;
 }
 
 template <typename T>
-void HeapLinkedStack<T>::Push(const T& data) {
+void GCedHeapLinkedStack<T>::Push(const T& data) {
   head_ = MakeGarbageCollected<Node>(data, head_);
   ++size_;
 }
 
 template <typename T>
-const T& HeapLinkedStack<T>::Peek() const {
+const T& GCedHeapLinkedStack<T>::Peek() const {
   return head_->data_;
 }
 
 template <typename T>
-void HeapLinkedStack<T>::Pop() {
+void GCedHeapLinkedStack<T>::Pop() {
   DCHECK(head_);
   DCHECK(size_);
   head_ = head_->next_;
@@ -118,7 +119,7 @@ void HeapLinkedStack<T>::Pop() {
 }
 
 template <typename T>
-wtf_size_t HeapLinkedStack<T>::size() const {
+wtf_size_t GCedHeapLinkedStack<T>::size() const {
   return size_;
 }
 

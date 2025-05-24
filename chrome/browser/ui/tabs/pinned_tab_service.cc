@@ -17,8 +17,9 @@ PinnedTabService::PinnedTabService(Profile* profile) : profile_(profile) {
       base::BindRepeating(&PinnedTabService::OnClosingAllBrowsersChanged,
                           base::Unretained(this)));
 
-  for (Browser* browser : *BrowserList::GetInstance())
+  for (Browser* browser : *BrowserList::GetInstance()) {
     OnBrowserAdded(browser);
+  }
 
   BrowserList::AddObserver(this);
 }
@@ -43,29 +44,34 @@ void PinnedTabService::OnClosingAllBrowsersChanged(bool closing) {
   //   * pinned tabs are saved, without the window with the pinned tabs,
   //     over-writing the correct state.
   // Saving is re-enabled if a new tab or window is opened.
-  if (closing && TabStripModelObserver::IsObservingAny(this))
+  if (closing && TabStripModelObserver::IsObservingAny(this)) {
     WritePinnedTabsIfNecessary();
+  }
 }
 
 void PinnedTabService::OnBrowserAdded(Browser* browser) {
-  if (browser->profile() != profile_ || !browser->is_type_normal())
+  if (browser->profile() != profile_ || !browser->is_type_normal()) {
     return;
+  }
 
   need_to_write_pinned_tabs_ = true;
   browser->tab_strip_model()->AddObserver(this);
 }
 
 void PinnedTabService::OnBrowserClosing(Browser* browser) {
-  if (browser->profile() != profile_ || !browser->is_type_normal())
+  if (browser->profile() != profile_ || !browser->is_type_normal()) {
     return;
+  }
 
-  if (TabStripModelObserver::CountObservedModels(this) == 1)
+  if (TabStripModelObserver::CountObservedModels(this) == 1) {
     WritePinnedTabsIfNecessary();
+  }
 }
 
 void PinnedTabService::OnBrowserRemoved(Browser* browser) {
-  if (browser->profile() != profile_ || !browser->is_type_normal())
+  if (browser->profile() != profile_ || !browser->is_type_normal()) {
     return;
+  }
 
   browser->tab_strip_model()->RemoveObserver(this);
 
@@ -74,20 +80,23 @@ void PinnedTabService::OnBrowserRemoved(Browser* browser) {
   // pinned tabs to repopen on the next startup. So we should call
   // WritePinnedTab() to clear the data.
   // http://crbug.com/71939
-  if (!TabStripModelObserver::IsObservingAny(this))
+  if (!TabStripModelObserver::IsObservingAny(this)) {
     WritePinnedTabsIfNecessary();
+  }
 }
 
 void PinnedTabService::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::kInserted)
+  if (change.type() == TabStripModelChange::kInserted) {
     need_to_write_pinned_tabs_ = true;
+  }
 }
 
 void PinnedTabService::WritePinnedTabsIfNecessary() {
-  if (need_to_write_pinned_tabs_)
+  if (need_to_write_pinned_tabs_) {
     PinnedTabCodec::WritePinnedTabs(profile_);
+  }
   need_to_write_pinned_tabs_ = false;
 }

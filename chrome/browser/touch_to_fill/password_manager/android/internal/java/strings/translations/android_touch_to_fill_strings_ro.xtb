@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Lista datelor de conectare care trebuie completate la atingere este deschisă la înălțimea completă.</translation>
 <translation id="5591247451101092906">Folosești parola sau cheia de acces salvată?</translation>
 <translation id="5624120631404540903">Gestionați parolele</translation>
+<translation id="592182999816790476">Parola pentru <ph name="USERNAME" /> este salvată pentru <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Parola pentru <ph name="USERNAME" />; folosește blocarea ecranului</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Parolă nouă pentru acest site}few{Parole noi pentru acest site}other{Parole noi pentru acest site}}</translation>
 <translation id="7286867818472074330">Selectează cheia de acces</translation>

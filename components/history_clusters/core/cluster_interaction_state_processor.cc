@@ -53,40 +53,36 @@ void ClusterInteractionStateProcessor::ProcessClusters(
   // Remove visits having hidden search terms.
   if (filter_params_->filter_hidden_visits) {
     for (auto& cluster : *clusters) {
-      cluster.visits.erase(
-          base::ranges::remove_if(cluster.visits.begin(), cluster.visits.end(),
-                                  [&](history::ClusterVisit cluster_visit) {
-                                    return hidden_search_terms.contains(
-                                        cluster_visit.annotated_visit
-                                            .content_annotations.search_terms);
-                                  }),
-          cluster.visits.end());
+      auto to_remove = std::ranges::remove_if(
+          cluster.visits.begin(), cluster.visits.end(),
+          [&](history::ClusterVisit cluster_visit) {
+            return hidden_search_terms.contains(
+                cluster_visit.annotated_visit.content_annotations.search_terms);
+          });
+      cluster.visits.erase(to_remove.begin(), to_remove.end());
     }
   }
 
   // Remove cluster if any of it's visits have done search terms.
   if (filter_params_->filter_done_clusters) {
-    clusters->erase(base::ranges::remove_if(
-                        clusters->begin(), clusters->end(),
-                        [&](history::Cluster cluster) {
-                          for (const auto& visit : cluster.visits) {
-                            if (done_search_terms.contains(
-                                    visit.annotated_visit.content_annotations
-                                        .search_terms)) {
-                              return true;
-                            }
-                          }
-                          return false;
-                        }),
-                    clusters->end());
+    auto to_remove = std::ranges::remove_if(
+        clusters->begin(), clusters->end(), [&](history::Cluster cluster) {
+          for (const auto& visit : cluster.visits) {
+            if (done_search_terms.contains(
+                    visit.annotated_visit.content_annotations.search_terms)) {
+              return true;
+            }
+          }
+          return false;
+        });
+    clusters->erase(to_remove.begin(), to_remove.end());
   }
 
   // Remove clusters with empty visits.
-  clusters->erase(base::ranges::remove_if(clusters->begin(), clusters->end(),
-                                          [](history::Cluster cluster) {
-                                            return cluster.visits.empty();
-                                          }),
-                  clusters->end());
+  auto to_remove = std::ranges::remove_if(
+      clusters->begin(), clusters->end(),
+      [](history::Cluster cluster) { return cluster.visits.empty(); });
+  clusters->erase(to_remove.begin(), to_remove.end());
 }
 
 }  // namespace history_clusters

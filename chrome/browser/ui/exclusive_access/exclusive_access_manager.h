@@ -11,15 +11,12 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
+#include "components/input/native_web_keyboard_event.h"
+#include "url/origin.h"
 
 class ExclusiveAccessContext;
-class FullscreenController;
-class GURL;
-class KeyboardLockController;
-class PointerLockController;
 
 namespace content {
-struct NativeWebKeyboardEvent;
 class WebContents;
 }  // namespace content
 
@@ -57,7 +54,7 @@ class ExclusiveAccessManager {
   void UpdateBubble(ExclusiveAccessBubbleHideCallback first_hide_callback,
                     bool force_update = false);
 
-  GURL GetExclusiveAccessBubbleURL() const;
+  url::Origin GetExclusiveAccessBubbleOrigin() const;
 
   // Records the keyboard/pointer lock state in a histogram. These should be
   // called when the user enters fullscreen through the Fullscreen API or the

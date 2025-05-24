@@ -5,8 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("power") {
   sources = [
@@ -16,39 +16,26 @@ source_set("power") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//content/public/browser",
-    "//content/public/common",
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
   ]
 
+  deps = [ "//content/public/browser" ]
+
   if (is_chromeos) {
     sources += [
       "activity_reporter_delegate.cc",
       "activity_reporter_delegate.h",
+      "activity_reporter_delegate_ash.cc",
+      "activity_reporter_delegate_ash.h",
     ]
 
-    deps += [ "//build:chromeos_buildflags" ]
-
-    if (is_chromeos_ash) {
-      sources += [
-        "activity_reporter_delegate_ash.cc",
-        "activity_reporter_delegate_ash.h",
-      ]
-    } else if (is_chromeos_lacros) {
-      sources += [
-        "activity_reporter_delegate_lacros.cc",
-        "activity_reporter_delegate_lacros.h",
-      ]
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
-    }
+    deps += [ "//ui/base" ]
   }
-
-  public_deps = [ "//extensions/browser:browser_sources" ]
 }

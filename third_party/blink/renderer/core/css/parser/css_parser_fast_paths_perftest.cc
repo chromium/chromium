@@ -4,13 +4,16 @@
 //
 // A benchmark to verify the CSS parser fastpath performance.
 
+#include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
+
+#include <array>
+
 #include "base/command_line.h"
 #include "base/timer/elapsed_timer.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "testing/perf/perf_test.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
@@ -25,7 +28,7 @@ struct FastPathSampleCase {
 // A dump of the values received by the fast path parser during a run
 // of MotionMark's “multiply” subtest.
 TEST(StyleFastPathPerfTest, MotionMarkMultiply) {
-  constexpr FastPathSampleCase kCases[] = {
+  constexpr const auto kCases = std::to_array<FastPathSampleCase>({
       {CSSPropertyID::kDisplay, "block"},
       {CSSPropertyID::kTransform, "rotate(355.6972252029457deg)"},
       {CSSPropertyID::kColor,
@@ -331,14 +334,14 @@ TEST(StyleFastPathPerfTest, MotionMarkMultiply) {
       {CSSPropertyID::kTransform, "rotate(496.4692384171266deg)"},
       {CSSPropertyID::kColor,
        "hsla(53.59680000042915,100%,21.825936599357863%,0.6326435248456137)"},
-      {CSSPropertyID::kTransform, "rotate(450.42974914112926deg)"}};
+      {CSSPropertyID::kTransform, "rotate(450.42974914112926deg)"},
+  });
 
   const std::string parse_iterations_str =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           "style-fastpath-parse-iterations");
   int parse_iterations =
       parse_iterations_str.empty() ? 10000 : stoi(parse_iterations_str);
-  constexpr int kNumCases = sizeof(kCases) / sizeof(kCases[0]);
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
@@ -360,7 +363,7 @@ TEST(StyleFastPathPerfTest, MotionMarkMultiply) {
                                                 "MotionMarkMultiply");
   reporter.RegisterImportantMetric("ParseTime", "ns");
   reporter.AddResult("ParseTime", elapsed.InMicrosecondsF() * 1e3 /
-                                      parse_iterations / kNumCases);
+                                      (parse_iterations * kCases.size()));
 }
 
 }  // namespace blink

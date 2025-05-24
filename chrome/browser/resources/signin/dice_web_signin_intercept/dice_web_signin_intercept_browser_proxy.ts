@@ -13,6 +13,9 @@ export interface AccountInfo {
   pictureUrl: string;
   // Empty if no badge should be set (for non-managed users).
   avatarBadge: string;
+  // Empty for non-managed users. Used to convey information about the shown
+  // badge.
+  userBadgeAltText: string;
 }
 
 export interface InterceptionParameters {
@@ -29,6 +32,8 @@ export interface InterceptionParameters {
   primaryAccount: AccountInfo;
   useV2Design: boolean;
   showManagedDisclaimer: boolean;
+  interceptedProfileBadgeColor: string;
+  primaryProfileBadgeColor: string;
 }
 
 export interface ChromeSigninInterceptionParameters {
@@ -39,6 +44,9 @@ export interface ChromeSigninInterceptionParameters {
   email: string;
   pictureUrl: string;
   managedUserBadge: string;
+  // Empty for non-managed users. Used to convey information about the shown
+  // badge.
+  userBadgeAltText: string;
 }
 
 export interface DiceWebSigninInterceptBrowserProxy {

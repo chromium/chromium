@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/mime_util.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -55,9 +53,13 @@ const bool kHlsSupported = false;
 // |single_value|.
 static std::vector<bool> CreateTestVector(bool test_all_values,
                                           bool single_value) {
-  const bool kTestStates[] = {true, false};
-  if (test_all_values)
-    return std::vector<bool>(kTestStates, kTestStates + std::size(kTestStates));
+  const auto kTestStates = std::to_array<bool>({true, false});
+  if (test_all_values) {
+    return std::vector<bool>(kTestStates.data(),
+                             base::span<const bool>(kTestStates)
+                                 .subspan(std::size(kTestStates))
+                                 .data());
+  }
   return std::vector<bool>(1, single_value);
 }
 
@@ -206,8 +208,8 @@ TEST(MimeUtilTest, SplitAndStripCodecs) {
   const struct {
     const char* const original;
     size_t expected_size;
-    const char* const split_results[2];
-    const char* const strip_results[2];
+    const std::array<const char*, 2> split_results;
+    const std::array<const char*, 2> strip_results;
   } tests[] = {
       {"\"bogus\"", 1, {"bogus"}, {"bogus"}},
       {"0", 1, {"0"}, {"0"}},
@@ -232,13 +234,15 @@ TEST(MimeUtilTest, SplitAndStripCodecs) {
 
     SplitCodecs(test.original, &codecs_out);
     ASSERT_EQ(test.expected_size, codecs_out.size());
-    for (size_t j = 0; j < test.expected_size; ++j)
+    for (size_t j = 0; j < test.expected_size; ++j) {
       EXPECT_EQ(test.split_results[j], codecs_out[j]);
+    }
 
     StripCodecs(&codecs_out);
     ASSERT_EQ(test.expected_size, codecs_out.size());
-    for (size_t j = 0; j < test.expected_size; ++j)
+    for (size_t j = 0; j < test.expected_size; ++j) {
       EXPECT_EQ(test.strip_results[j], codecs_out[j]);
+    }
   }
 }
 

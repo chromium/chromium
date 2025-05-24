@@ -6,6 +6,12 @@ support underlying systems ranging from embedded SoC targets to new
 X11-alternative window systems on Linux such as Wayland or Mir to bring up Aura
 Chromium by providing an implementation of the platform interface.
 
+> Note: There are 2 buildflags which target platforms who use OZONE.
+> They are slightly different from each other:
+> * IS_OZONE: Targets Linux, ChromeOS, and Fuchsia.
+> * IS_OZONE_WAYLAND: Targets only Linux systems using the Wayland window
+> manager. Does not include ChromeOS or Fuchsia.
+
 ## Guiding Principles
 
 Our goal is to enable chromium to be used in a wide variety of projects by
@@ -304,21 +310,49 @@ use_glib=true
 use_gtk=true
 ```
 
-Running some test suites requires a Wayland server. If you're not
-running one you can use a locally compiled version of Weston. This is
-what the build bots do. Please note that this is required for
-interactive_ui_tests, as those tests use a patched version of Weston's
-test plugin. Add this to your gn args:
+Running some test suites requires a Wayland server. If you're not running one
+you can use a locally compiled version of Weston or Mutter. This is what the
+build bots do. Please note that this is required for interactive_ui_tests, as
+those tests use a patched version of the compositor.
+
+Mutter and its dependencies are not checked out by default to keep the disk
+usage optimal for most developers. In order to checkout mutter, add the
+`checkout_mutter` custom var in your .gclient file and set it to `True` and run `gclient sync`.
+
+```
+solutions = [
+  {
+    "url": "https://chromium.googlesource.com/chromium/src.git",
+    "managed": False,
+    "name": "src",
+    "custom_deps": {},
+    "custom_vars": {
+      "checkout_mutter": True,
+    },
+  },
+]
+```
+
+For weston, simply add this to your gn args:
 
 ``` shell
 use_bundled_weston = true
 ```
 
-Then run the xvfb.py wrapper script and tell it to start Weston:
+
+Then after building the test executable, run the xvfb.py wrapper script and tell
+it to start the compositor with the tests:
 
 ``` shell
 cd out/debug  # or your out directory
+```
+``` shell
+# For weston
 ../../testing/xvfb.py --use-weston --no-xvfb ./views_unittests --ozone-platform=wayland
+```
+``` shell
+# For mutter
+../../testing/xvfb.py --use-mutter --no-xvfb ./views_unittests --ozone-platform=wayland
 ```
 
 Feel free to discuss with us on freenode.net, `#ozone-wayland` channel or on

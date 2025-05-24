@@ -6,7 +6,8 @@ package org.chromium.ui.text;
 
 import android.text.SpannableString;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -22,6 +23,7 @@ import java.util.Arrays;
  *   SpannableString output = SpanApplier.applySpans(input,
  *           new Span("<tos>", "</tos>", tosSpan), new Span("<pn>", "</pn>", privacySpan));
  */
+@NullMarked
 public class SpanApplier {
     private static final int INVALID_INDEX = -1;
 
@@ -29,7 +31,7 @@ public class SpanApplier {
     public static final class SpanInfo implements Comparable<SpanInfo> {
         final String mStartTag;
         final String mEndTag;
-        final @Nullable Object[] mSpans;
+        final Object @Nullable [] mSpans;
         int mStartTagIndex;
         int mEndTagIndex;
 

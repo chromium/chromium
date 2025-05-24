@@ -7,17 +7,17 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
 
 using ErrorFromPasswordStoreOrAndroidBackend =
-    absl::variant<PasswordStoreBackendError, AndroidBackendError>;
+    std::variant<PasswordStoreBackendError, AndroidBackendError>;
 // TODO(b/322972811): Use the metrics recorder only for Android.
 using MethodName = base::StrongAlias<struct MetricNameTag, std::string>;
 using BackendInfix = base::StrongAlias<struct BackendNameTag, std::string>;

@@ -24,6 +24,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Test suite for Geo-Location functionality.
@@ -58,14 +59,11 @@ public class GeolocationTest {
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
-    /**
-     * Verify Geolocation creates a dialog and receives a mock location.
-     *
-     * @throws Exception
-     */
+    /** Verify Geolocation creates a dialog and receives a mock location. */
     @Test
     @MediumTest
     @Feature({"Location", "Main"})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486136
     public void testGeolocationPlumbingAllowedDialog() throws Exception {
         runTest("initiate_getCurrentPosition()", 1, true, true);
     }
@@ -73,8 +71,6 @@ public class GeolocationTest {
     /**
      * Verify Geolocation creates a dialog and receives a mock location when dialogs are enabled and
      * there is no user gesture.
-     *
-     * @throws Exception
      */
     @Test
     @MediumTest
@@ -83,11 +79,7 @@ public class GeolocationTest {
         runTest("initiate_getCurrentPosition()", 1, false, true);
     }
 
-    /**
-     * Verify Geolocation creates a dialog and receives multiple locations.
-     *
-     * @throws Exception
-     */
+    /** Verify Geolocation creates a dialog and receives multiple locations. */
     @Test
     @MediumTest
     @Feature({"Location"})

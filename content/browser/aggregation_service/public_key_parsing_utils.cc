@@ -22,8 +22,9 @@ namespace {
 // Constructs a public key from a single JSON key definition. Returns
 // `std::nullopt`in case of an error or invalid JSON.
 std::optional<PublicKey> GetPublicKey(base::Value& value) {
-  if (!value.is_dict())
+  if (!value.is_dict()) {
     return std::nullopt;
+  }
 
   base::Value::Dict& dict = value.GetDict();
   std::string* key_id = dict.FindString("id");
@@ -45,8 +46,9 @@ std::optional<PublicKey> GetPublicKey(base::Value& value) {
     return std::nullopt;
   }
 
-  if (key_string.size() != PublicKey::kKeyByteLength)
+  if (key_string.size() != PublicKey::kKeyByteLength) {
     return std::nullopt;
+  }
 
   return PublicKey(std::move(*key_id),
                    std::vector<uint8_t>(key_string.begin(), key_string.end()));
@@ -57,8 +59,9 @@ std::optional<PublicKey> GetPublicKey(base::Value& value) {
 namespace aggregation_service {
 
 std::vector<PublicKey> GetPublicKeys(base::Value& value) {
-  if (!value.is_dict())
+  if (!value.is_dict()) {
     return {};
+  }
 
   base::Value::List* keys_json = value.GetDict().FindList("keys");
   if (!keys_json) {
@@ -71,18 +74,21 @@ std::vector<PublicKey> GetPublicKeys(base::Value& value) {
   for (auto& key_json : *keys_json) {
     // Return error (i.e. empty vector) if more keys than expected are
     // specified.
-    if (public_keys.size() == PublicKeyset::kMaxNumberKeys)
+    if (public_keys.size() == PublicKeyset::kMaxNumberKeys) {
       return {};
+    }
 
     std::optional<PublicKey> key = GetPublicKey(key_json);
 
     // Return error (i.e. empty vector) if any of the keys are invalid.
-    if (!key.has_value())
+    if (!key.has_value()) {
       return {};
+    }
 
     // Return error (i.e. empty vector) if there's duplicate key id.
-    if (!key_ids_set.insert(key.value().id).second)
+    if (!key_ids_set.insert(key.value().id).second) {
       return {};
+    }
 
     public_keys.push_back(std::move(key.value()));
   }

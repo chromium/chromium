@@ -5,14 +5,12 @@
 #include "ui/compositor/layer_animator.h"
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
@@ -20,6 +18,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/mutator_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_delegate.h"
@@ -42,14 +41,6 @@
 namespace ui {
 
 namespace {
-
-// Converts |color| to a string. Each component of the color is separated by a
-// space and the order if A R G B.
-std::string ColorToString(SkColor color) {
-  return base::StringPrintf("%d %d %d %d", SkColorGetA(color),
-                            SkColorGetR(color), SkColorGetG(color),
-                            SkColorGetB(color));
-}
 
 // Creates vector with two LayerAnimationSequences, based on |first| and
 // |second| layer animation elements.
@@ -2886,9 +2877,11 @@ TEST(LayerAnimatorTest, Color) {
   TestLayerAnimationDelegate delegate;
   scoped_refptr<LayerAnimator> animator = CreateDefaultTestAnimator(&delegate);
 
-  SkColor start_color  = SkColorSetARGB( 64, 20, 40,  60);
-  SkColor middle_color = SkColorSetARGB(128, 35, 70, 120);
-  SkColor target_color = SkColorSetARGB(192, 40, 80, 140);
+  SkColor4f start_color = SkColor4f::FromColor(SkColorSetARGB(64, 20, 40, 60));
+  SkColor4f middle_color =
+      SkColor4f::FromColor(SkColorSetARGB(128, 35, 70, 120));
+  SkColor4f target_color =
+      SkColor4f::FromColor(SkColorSetARGB(192, 40, 80, 140));
 
   base::TimeDelta delta = base::Seconds(1);
 
@@ -2900,22 +2893,21 @@ TEST(LayerAnimatorTest, Color) {
           LayerAnimationElement::CreateColorElement(target_color, delta)));
 
   EXPECT_TRUE(animator->is_animating());
-  EXPECT_EQ(ColorToString(start_color),
-            ColorToString(delegate.GetColorForAnimation()));
+  EXPECT_EQ(start_color, delegate.GetColorForAnimation());
 
   base::TimeTicks start_time = animator->last_step_time();
 
   animator->Step(start_time + base::Milliseconds(500));
 
   EXPECT_TRUE(animator->is_animating());
-  EXPECT_EQ(ColorToString(middle_color),
-            ColorToString(delegate.GetColorForAnimation()));
+  // The color is not exactly middle_color because of the round errors.
+  EXPECT_EQ(middle_color.toSkColor(),
+            delegate.GetColorForAnimation().toSkColor());
 
   animator->Step(start_time + base::Milliseconds(1000));
 
   EXPECT_FALSE(animator->is_animating());
-  EXPECT_EQ(ColorToString(target_color),
-            ColorToString(delegate.GetColorForAnimation()));
+  EXPECT_EQ(target_color, delegate.GetColorForAnimation());
 }
 
 // Verifies SchedulePauseForProperties().

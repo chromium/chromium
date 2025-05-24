@@ -2,6 +2,7 @@ noparent = True
 
 include_rules = [
   "+base/android",
+  "+build/android",
 
   "-content/public/android",
   "+content/public/android/java/src/org/chromium/content_public",

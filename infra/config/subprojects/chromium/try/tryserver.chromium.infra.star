@@ -4,7 +4,7 @@
 """Definitions of builders in the tryserver.chromium.infra builder group."""
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "siso")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/html.star", "linkify")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -35,7 +35,6 @@ try_.builder(
                 "cmd": [
                     "{CHECKOUT}/src/third_party/android_deps/fetch_all.py",
                     "-v",
-                    "--ignore-vulnerabilities",
                 ],
             }],
             "gclient_config": "chromium",
@@ -63,6 +62,23 @@ try_.builder(
     properties = {
         "$build/chromium_3pp": {
             "platform": "mac-amd64",
+            "package_prefix": "chromium_3pp",
+            "gclient_config": "chromium",
+        },
+    },
+)
+
+try_.builder(
+    name = "3pp-mac-arm64-packager",
+    description_html = "chromium 3pp packager on Mac ARM64 platform.",
+    executable = "recipe:chromium_3pp",
+    builderless = True,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    contact_team_email = "clank-engprod@google.com",
+    properties = {
+        "$build/chromium_3pp": {
+            "platform": "mac-arm64",
             "package_prefix": "chromium_3pp",
             "gclient_config": "chromium",
         },
@@ -114,6 +130,9 @@ try_.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -172,6 +191,9 @@ try_.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",

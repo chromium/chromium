@@ -111,24 +111,17 @@ void DeviceStatusIconTestBase::CheckIcon(
   ASSERT_TRUE(status_tray);
   ASSERT_EQ(status_tray->GetStatusIconsForTest().size(), 1u);
   const auto* status_icon = static_cast<MockStatusIcon*>(
-      status_tray->GetStatusIconsForTest().back().get());
+      status_tray->GetStatusIconsForTest().back().icon.get());
 
   // Sort the |profile_connection_counts| by the address of the profile
   // pointer. This is necessary because the menu items are created by
   // iterating through a structure of flat_map<Profile*, bool>.
   auto sorted_profile_connection_counts = profile_connection_counts;
-  base::ranges::sort(sorted_profile_connection_counts);
+  std::ranges::sort(sorted_profile_connection_counts);
   size_t total_connection_count = 0;
   size_t total_origin_count = 0;
   auto* menu_item = status_icon->menu_item();
-#if !BUILDFLAG(IS_MAC)
-  // For non-MacOS, the system tray icon title (i.e menu_idx == 0) will be
-  // checked at the end when |total_connection_count| is calculated.
   int menu_idx = 1;
-#else
-  // For MacOs, the system tray icon title is the tooltip.
-  int menu_idx = 0;
-#endif  //! BUILDFLAG(IS_MAC)
   int expected_command_id = IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST;
   CheckClickableMenuItem(menu_item, menu_idx++, about_device_label_,
                          expected_command_id++, /*click=*/false);
@@ -138,7 +131,7 @@ void DeviceStatusIconTestBase::CheckIcon(
     // Sort the |origin_items| by origin. This is necessary because the origin
     // items for each profile in the menu are created by iterating through a
     // structure of flat_map<url::Origin, ...>.
-    base::ranges::sort(sorted_origin_items);
+    std::ranges::sort(sorted_origin_items);
     auto* connection_tracker = GetDeviceConnectionTracker(profile,
                                                           /*create=*/false);
     ASSERT_TRUE(connection_tracker);
@@ -160,13 +153,11 @@ void DeviceStatusIconTestBase::CheckIcon(
       total_connection_count += connection_count;
     }
   }
-#if !BUILDFLAG(IS_MAC)
   CheckMenuItemLabel(
       menu_item, 0,
       GetExpectedTitle(total_origin_count,
                        override_title_total_connection_count_.value_or(
                            total_connection_count)));
-#endif  //! BUILDFLAG(IS_MAC)
   EXPECT_EQ(status_icon->tool_tip(),
             GetExpectedTitle(total_origin_count,
                              override_title_total_connection_count_.value_or(
@@ -221,7 +212,7 @@ void DeviceStatusIconTestBase::TestNumCommandIdOverLimitExtensionOrigin() {
     // count.
     profile_connection_counts.push_back(
         {profile, {{extension->origin(), 1, extension->name()}}});
-    base::ranges::sort(profile_connection_counts);
+    std::ranges::sort(profile_connection_counts);
     profile_connection_counts.back().second.clear();
     // The total connection count in the title still captures all of the origins
     override_title_total_connection_count_ = 20;
@@ -255,49 +246,30 @@ void DeviceStatusIconTestBase::TestProfileUserNameExtensionOrigin() {
   ASSERT_TRUE(status_tray);
   ASSERT_EQ(status_tray->GetStatusIconsForTest().size(), 1u);
   const auto* status_icon = static_cast<MockStatusIcon*>(
-      status_tray->GetStatusIconsForTest().back().get());
+      status_tray->GetStatusIconsForTest().back().icon.get());
 
-  // Sort the |profiles| by the address of the profile
-  // pointer. This is necessary because the menu items are created by
-  // iterating through a structure of flat_map<Profile*, bool>.
-  base::ranges::sort(profiles);
+  // Sort the |profiles| by the address of the profile pointer. This is
+  // necessary because the menu items are created by iterating through a
+  // structure of flat_map<Profile*, bool>.
+  std::ranges::sort(profiles);
 
-  // The below is status icon items layout for non MacOS devices, profile1 name
-  // is on [3] and profile2
+  // The below is status icon items layout, profile1 name is on [3] and profile2
   // name is on [7].
   // ---------------------------------------------------
   // [0]|Google Chrome is accessing Device device(s)   |
   // [1]|About Device device                           |
   // [2]|---------------Separator----------------------|
   // [3]|Profile1 name                                 |
-  // [4]|Device Content Setting for Proifle1           |
+  // [4]|Device Content Setting for Profile1           |
   // [5]|Extension name                                |
   // [6]|---------------Separator----------------------|
   // [7]|Profile2 name                                 |
-  // [8]|Device Content Setting for Proifle2           |
+  // [8]|Device Content Setting for Profile2           |
   // [9]|Extension name                                |
   // ---------------------------------------------------
-  // The title of the status icon menu is from its tooltip on MacOS. The below
-  // is status icon items layout in MacOs, profile1 name is on [2] and profile2
-  // name is on [6].
-  // ---------------------------------------------------
-  // [0]|About Device device                           |
-  // [1]|---------------Separator----------------------|
-  // [2]|Profile1 name                                 |
-  // [3]|Device Content Setting for Proifle1           |
-  // [4]|Extension name                                |
-  // [5]|---------------Separator----------------------|
-  // [6]|Profile2 name                                 |
-  // [7]|Device Content Setting for Proifle2           |
-  // [8]|Extension name                                |
 
-#if !BUILDFLAG(IS_MAC)
   int profile_position1 = 3;
   int profile_position2 = 7;
-#else
-  int profile_position1 = 2;
-  int profile_position2 = 6;
-#endif  //! BUILDFLAG(IS_MAC)
 
   // Check the current profile names.
   {

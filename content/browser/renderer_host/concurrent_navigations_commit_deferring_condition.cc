@@ -57,4 +57,9 @@ ConcurrentNavigationsCommitDeferringCondition::WillCommitNavigation(
   return Result::kProceed;
 }
 
+const char* ConcurrentNavigationsCommitDeferringCondition::TraceEventName()
+    const {
+  return "ConcurrentNavigationsCommitDeferringCondition";
+}
+
 }  // namespace content

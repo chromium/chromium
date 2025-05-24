@@ -37,7 +37,7 @@ class FingerprintStorageUnitTest : public testing::Test {
 
  protected:
   FingerprintStorageUnitTest() : profile_(std::make_unique<TestingProfile>()) {}
-  ~FingerprintStorageUnitTest() override {}
+  ~FingerprintStorageUnitTest() override = default;
 
   // testing::Test:
   void SetUp() override {

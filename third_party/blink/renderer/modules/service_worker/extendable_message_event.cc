@@ -20,7 +20,7 @@ ExtendableMessageEvent* ExtendableMessageEvent::Create(
 ExtendableMessageEvent* ExtendableMessageEvent::Create(
     scoped_refptr<SerializedScriptValue> data,
     const String& origin,
-    MessagePortArray* ports,
+    GCedMessagePortArray* ports,
     ServiceWorkerClient* source,
     WaitUntilObserver* observer) {
   ExtendableMessageEvent* event = MakeGarbageCollected<ExtendableMessageEvent>(
@@ -32,7 +32,7 @@ ExtendableMessageEvent* ExtendableMessageEvent::Create(
 ExtendableMessageEvent* ExtendableMessageEvent::Create(
     scoped_refptr<SerializedScriptValue> data,
     const String& origin,
-    MessagePortArray* ports,
+    GCedMessagePortArray* ports,
     ServiceWorker* source,
     WaitUntilObserver* observer) {
   ExtendableMessageEvent* event = MakeGarbageCollected<ExtendableMessageEvent>(
@@ -43,7 +43,7 @@ ExtendableMessageEvent* ExtendableMessageEvent::Create(
 
 ExtendableMessageEvent* ExtendableMessageEvent::CreateError(
     const String& origin,
-    MessagePortArray* ports,
+    GCedMessagePortArray* ports,
     ServiceWorkerClient* source,
     WaitUntilObserver* observer) {
   ExtendableMessageEvent* event =
@@ -54,7 +54,7 @@ ExtendableMessageEvent* ExtendableMessageEvent::CreateError(
 
 ExtendableMessageEvent* ExtendableMessageEvent::CreateError(
     const String& origin,
-    MessagePortArray* ports,
+    GCedMessagePortArray* ports,
     ServiceWorker* source,
     WaitUntilObserver* observer) {
   ExtendableMessageEvent* event =
@@ -99,7 +99,7 @@ MessagePortArray ExtendableMessageEvent::ports() const {
   // Avoid copying once we can make sure that the binding layer won't
   // modify the content.
   if (ports_) {
-    return *ports_;
+    return MessagePortArray(*ports_.Get());
   }
   return MessagePortArray();
 }
@@ -150,13 +150,13 @@ ExtendableMessageEvent::ExtendableMessageEvent(
     }
   }
   if (initializer->hasPorts())
-    ports_ = MakeGarbageCollected<MessagePortArray>(initializer->ports());
+    ports_ = MakeGarbageCollected<GCedMessagePortArray>(initializer->ports());
 }
 
 ExtendableMessageEvent::ExtendableMessageEvent(
     scoped_refptr<SerializedScriptValue> data,
     const String& origin,
-    MessagePortArray* ports,
+    GCedMessagePortArray* ports,
     WaitUntilObserver* observer)
     : ExtendableEvent(event_type_names::kMessage,
                       ExtendableMessageEventInit::Create(),
@@ -170,7 +170,7 @@ ExtendableMessageEvent::ExtendableMessageEvent(
 }
 
 ExtendableMessageEvent::ExtendableMessageEvent(const String& origin,
-                                               MessagePortArray* ports,
+                                               GCedMessagePortArray* ports,
                                                WaitUntilObserver* observer)
     : ExtendableEvent(event_type_names::kMessageerror,
                       ExtendableMessageEventInit::Create(),

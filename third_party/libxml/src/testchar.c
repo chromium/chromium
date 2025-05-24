@@ -6,6 +6,7 @@
  */
 
 #define XML_DEPRECATED
+#define XML_DEPRECATED_MEMBER
 
 #include <stdio.h>
 #include <string.h>
@@ -666,7 +667,7 @@ static int testCharRanges(void) {
     input->cur =
     input->base = xmlBufContent(input->buf->buffer);
     input->end = input->base + 4;
-    inputPush(ctxt, input);
+    xmlCtxtPushInput(ctxt, input);
 
     printf("testing char range: 1");
     fflush(stdout);
@@ -750,21 +751,20 @@ error:
 static char *
 convert(xmlCharEncodingHandlerPtr handler, const char *utf8, int size,
         int *outSize) {
+    xmlBufferPtr in, out;
     char *ret;
-    int inlen;
-    int res;
 
-    inlen = size;
-    *outSize = size * 2;
-    ret = xmlMalloc(*outSize);
-    if (ret == NULL)
-        return(NULL);
-    res = handler->output(BAD_CAST ret, outSize, BAD_CAST utf8, &inlen);
-    if ((res < 0) || (inlen != size)) {
-        xmlFree(ret);
-        return(NULL);
-    }
+    in = xmlBufferCreate();
+    xmlBufferAdd(in, BAD_CAST utf8, size);
+    out = xmlBufferCreate();
+    xmlCharEncOutFunc(handler, out, in);
 
+    if (outSize)
+        *outSize = out->use;
+    ret = (char *) xmlBufferDetach(out);
+
+    xmlBufferFree(out);
+    xmlBufferFree(in);
     return(ret);
 }
 
@@ -879,8 +879,110 @@ error:
 
 #endif
 
-int main(void) {
+static void
+bufDump(const char *prefix, const xmlChar *content, int len) {
+    int i;
 
+    fprintf(stderr, "%s", prefix);
+    for (i = 0; i < len; i++) {
+        fprintf(stderr, " %02X", content[i]);
+    }
+    fprintf(stderr, "\n");
+}
+
+static int
+bufCompare(xmlBufferPtr got, const xmlChar *expectContent, int expectLen) {
+    const xmlChar *gotContent = xmlBufferContent(got);
+    int gotLen = xmlBufferLength(got);
+
+    if ((gotLen == expectLen) &&
+        (memcmp(gotContent, expectContent, gotLen) == 0))
+        return(0);
+
+    bufDump("got:     ", gotContent, gotLen);
+    bufDump("expected:", expectContent, expectLen);
+
+    return(-1);
+}
+
+static int
+testEncHandler(xmlCharEncodingHandlerPtr handler, const xmlChar *dec,
+                int decSize, const xmlChar *enc, int encSize) {
+    xmlBufferPtr encBuf = xmlBufferCreate();
+    xmlBufferPtr decBuf = xmlBufferCreate();
+    int ret = 0;
+
+    xmlBufferAdd(encBuf, enc, encSize);
+    xmlCharEncInFunc(handler, decBuf, encBuf);
+    if (bufCompare(decBuf, dec, decSize) != 0) {
+        fprintf(stderr, "Decoding %s failed\n", handler->name);
+        ret = -1;
+    }
+
+#ifdef LIBXML_OUTPUT_ENABLED
+    xmlBufferEmpty(decBuf);
+    xmlBufferAdd(decBuf, dec, decSize);
+    xmlCharEncOutFunc(handler, encBuf, decBuf);
+    if (bufCompare(encBuf, enc, encSize) != 0) {
+        fprintf(stderr, "Encoding %s failed\n", handler->name);
+        ret = -1;
+    }
+#endif
+
+    xmlBufferFree(decBuf);
+    xmlBufferFree(encBuf);
+    return(ret);
+}
+
+static int
+testUTF16(void) {
+    static const xmlChar utf8[] =
+        "\x01"
+        "\x7F"
+        "\xC2\x80"
+        "\xDF\xBF"
+        "\xE0\xA0\x80"
+        "\xEF\xBF\xBF"
+        "\xF0\x90\x80\x80"
+        "\xF4\x8F\xBF\xBF";
+    static const xmlChar utf16LE[] =
+        "\x01\x00"
+        "\x7F\x00"
+        "\x80\x00"
+        "\xFF\x07"
+        "\x00\x08"
+        "\xFF\xFF"
+        "\x00\xD8\x00\xDC"
+        "\xFF\xDB\xFF\xDF";
+    static const xmlChar utf16BE[] =
+        "\x00\x01"
+        "\x00\x7F"
+        "\x00\x80"
+        "\x07\xFF"
+        "\x08\x00"
+        "\xFF\xFF"
+        "\xD8\x00\xDC\x00"
+        "\xDB\xFF\xDF\xFF";
+
+    xmlCharEncodingHandlerPtr handler16LE, handler16BE;
+    int ret = 0;
+
+    handler16LE = xmlFindCharEncodingHandler("UTF-16LE");
+    handler16BE = xmlFindCharEncodingHandler("UTF-16BE");
+
+    if (testEncHandler(handler16LE,
+                       utf8, sizeof(utf8) - 1,
+                       utf16LE, sizeof(utf16LE) - 1) != 0)
+        ret = -1;
+    if (testEncHandler(handler16BE,
+                       utf8, sizeof(utf8) - 1,
+                       utf16BE, sizeof(utf16BE) - 1) != 0)
+        ret = -1;
+
+    return(ret);
+}
+
+int main(void) {
     int ret = 0;
 
     /*
@@ -906,6 +1008,7 @@ int main(void) {
     ret += testUserEncodingPush();
     ret += testUTF8Chunks();
 #endif
+    ret += testUTF16();
 
     /*
      * Cleanup function for the XML library.

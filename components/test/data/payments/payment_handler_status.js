@@ -22,7 +22,7 @@ async function getStatus(method) {
  */
 async function getStatusList(methods) {
   const methodData = [];
-  for (let method of methods) {
+  for (const method of methods) {
     methodData.push({supportedMethods: method});
   }
   return getStatusForMethodData(methodData);

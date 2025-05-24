@@ -8,12 +8,12 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/about_flags.h"
-#include "components/flags_ui/feature_entry_macros.h"
-#include "components/flags_ui/flags_ui_pref_names.h"
-#include "components/flags_ui/flags_ui_switches.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/webui/flags/feature_entry_macros.h"
+#include "components/webui/flags/flags_ui_pref_names.h"
+#include "components/webui/flags/flags_ui_switches.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Test GetRestartCommandLine function behavior. It should remove the program at

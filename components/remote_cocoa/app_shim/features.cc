@@ -21,4 +21,5 @@ BASE_FEATURE(kImmersiveFullscreenSpaceSwitchMitigation,
 BASE_FEATURE(kImmersiveFullscreenOverlayWindowDebug,
              "ImmersiveFullscreenOverlayWindowDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace remote_cocoa::features

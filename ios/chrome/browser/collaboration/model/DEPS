@@ -1,0 +1,18 @@
+include_rules = [
+  "+components/collaboration",
+  "+components/data_sharing/public",
+  "+components/saved_tab_groups/public",
+  "+ios/chrome/browser/data_sharing/model",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/saved_tab_groups",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/share_kit/model",
+  "+ios/chrome/browser/authentication/ui_bundled",
+]
+
+specific_include_rules = {
+  ".*test\.mm": [
+    "+components/saved_tab_groups/test_support",
+  ]
+}

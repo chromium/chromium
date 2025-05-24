@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
@@ -20,6 +21,7 @@ import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog that confirms whether the user wishes to unenroll their card from Virtual Cards. */
+@NullMarked
 public class AutofillVirtualCardUnenrollmentDialog {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
@@ -58,7 +60,7 @@ public class AutofillVirtualCardUnenrollmentDialog {
                                     "Autofill.VirtualCard.SettingsPageUnenrollment.LinkClicked",
                                     VirtualCardEnrollmentLinkType
                                             .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
-                                    VirtualCardEnrollmentLinkType.MAX_VALUE + 1);
+                                    VirtualCardEnrollmentLinkType.MAX_VALUE);
                             CustomTabActivity.showInfoPage(context, url);
                         });
         int unenrollTitle = R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_title;

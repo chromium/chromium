@@ -38,7 +38,6 @@ class CONTENT_EXPORT IndexedDBExternalObject {
   IndexedDBExternalObject();
   // These two are used for Blobs.
   IndexedDBExternalObject(mojo::PendingRemote<blink::mojom::Blob> blob_remote,
-                          const std::string& uuid,
                           const std::u16string& type,
                           int64_t size);
   IndexedDBExternalObject(const std::u16string& type,
@@ -50,7 +49,6 @@ class CONTENT_EXPORT IndexedDBExternalObject {
   // to disk. If these don't match, then something modified the file on disk and
   // it should be considered corrupt.
   IndexedDBExternalObject(mojo::PendingRemote<blink::mojom::Blob> blob_remote,
-                          const std::string& uuid,
                           const std::u16string& file_name,
                           const std::u16string& type,
                           const base::Time& last_modified,
@@ -80,10 +78,6 @@ class CONTENT_EXPORT IndexedDBExternalObject {
   };
   ObjectType object_type() const { return object_type_; }
   bool is_remote_valid() const { return blob_remote_.is_bound(); }
-  const std::string& uuid() const {
-    DCHECK(is_remote_valid());
-    return uuid_;
-  }
   void Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) const;
   mojo::SharedRemote<blink::mojom::Blob> remote() const { return blob_remote_; }
   const std::u16string& type() const { return type_; }
@@ -124,8 +118,6 @@ class CONTENT_EXPORT IndexedDBExternalObject {
 
   // Always for Blob; sometimes for File.
   mojo::SharedRemote<blink::mojom::Blob> blob_remote_;
-  // If blob_remote_ is true, this is the blob's uuid.
-  std::string uuid_;
   // Mime type.
   std::u16string type_;
   // This is the path of the file that was copied into the IndexedDB system.

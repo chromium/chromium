@@ -106,13 +106,17 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   virtual void DeleteTextFromNode(Text*, unsigned offset, unsigned count);
   bool IsRemovableBlock(const Node*);
   void InsertNodeAfter(Node*, Node* ref_child, EditingState*);
+  // Insert nodes starting `insert_first_child` after `ref_child`.
+  void InsertNodeListAfter(Node& insert_first_child,
+                           Node& ref_child,
+                           EditingState* editing_state);
   void InsertNodeAt(Node*, const Position&, EditingState*);
   void InsertNodeAtTabSpanPosition(Node*, const Position&, EditingState*);
   void InsertNodeBefore(Node*,
                         Node* ref_child,
                         EditingState*,
                         ShouldAssumeContentIsAlwaysEditable =
-                            kDoNotAssumeContentIsAlwaysEditable);
+                            ShouldAssumeContentIsAlwaysEditable(false));
   void InsertParagraphSeparator(
       EditingState*,
       bool use_default_paragraph_element = false,
@@ -131,21 +135,23 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   void RemoveCSSProperty(Element*, CSSPropertyID);
   void RemoveElementAttribute(Element*, const QualifiedName& attribute);
   // Remove all children if possible
-  void RemoveAllChildrenIfPossible(ContainerNode*,
-                                   EditingState*,
-                                   ShouldAssumeContentIsAlwaysEditable =
-                                       kDoNotAssumeContentIsAlwaysEditable);
+  void RemoveAllChildrenIfPossible(
+      ContainerNode*,
+      EditingState*,
+      ShouldAssumeContentIsAlwaysEditable =
+          ShouldAssumeContentIsAlwaysEditable(false));
   void RemoveChildrenInRange(Node*, unsigned from, unsigned to, EditingState*);
   virtual void RemoveNode(Node*,
                           EditingState*,
                           ShouldAssumeContentIsAlwaysEditable =
-                              kDoNotAssumeContentIsAlwaysEditable);
+                              ShouldAssumeContentIsAlwaysEditable(false));
   HTMLSpanElement* ReplaceElementWithSpanPreservingChildrenAndAttributes(
       HTMLElement*);
-  void RemoveNodePreservingChildren(Node*,
-                                    EditingState*,
-                                    ShouldAssumeContentIsAlwaysEditable =
-                                        kDoNotAssumeContentIsAlwaysEditable);
+  void RemoveNodePreservingChildren(
+      Node*,
+      EditingState*,
+      ShouldAssumeContentIsAlwaysEditable =
+          ShouldAssumeContentIsAlwaysEditable(false));
   void RemoveNodeAndPruneAncestors(Node*,
                                    EditingState*,
                                    Node* exclude_node = nullptr);

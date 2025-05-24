@@ -19,17 +19,15 @@ source_set("serial") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//content/public/common",
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//net",
     "//services/device/public/mojom",
-    "//services/service_manager/public/cpp",
-  ]
-
-  public_deps = [
-    "//content/public/browser",
-    "//extensions/browser:browser_sources",
   ]
 }

@@ -49,7 +49,8 @@ bool StyleGeneratedImage::IsEqual(const StyleImage& other) const {
   if (!container_sizes_.SizesEqual(other_generated.container_sizes_)) {
     return false;
   }
-  return image_generator_value_ == other_generated.image_generator_value_;
+  return base::ValuesEquivalent(image_generator_value_,
+                                other_generated.image_generator_value_);
 }
 
 CSSValue* StyleGeneratedImage::CssValue() const {
@@ -69,10 +70,10 @@ CSSValue* StyleGeneratedImage::ComputedCSSValue(
   return image_generator_value_.Get();
 }
 
-IntrinsicSizingInfo StyleGeneratedImage::GetNaturalSizingInfo(
+NaturalSizingInfo StyleGeneratedImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {
-  return IntrinsicSizingInfo::None();
+  return NaturalSizingInfo::None();
 }
 
 gfx::SizeF StyleGeneratedImage::ImageSize(float multiplier,
@@ -102,10 +103,10 @@ bool StyleGeneratedImage::IsUsingCurrentColor() const {
 
 scoped_refptr<Image> StyleGeneratedImage::GetImage(
     const ImageResourceObserver& observer,
-    const Document& document,
+    const Node& node,
     const ComputedStyle& style,
     const gfx::SizeF& target_size) const {
-  return image_generator_value_->GetImage(observer, document, style,
+  return image_generator_value_->GetImage(observer, node, style,
                                           container_sizes_, target_size);
 }
 

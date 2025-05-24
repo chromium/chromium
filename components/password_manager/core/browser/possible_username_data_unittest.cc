@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
@@ -39,11 +40,7 @@ TEST_F(IsPossibleUsernameValidTest, IsPossibleUsernameStale) {
 
   // Fast forward for a little less than expiration time, but not
   // exactly to not flake the test.
-  task_environment_.FastForwardBy(
-      base::FeatureList::IsEnabled(
-          features::kUsernameFirstFlowWithIntermediateValues)
-          ? base::Minutes(features::kSingleUsernameTimeToLive.Get())
-          : kPossibleUsernameExpirationTimeout - base::Seconds(3));
+  task_environment_.FastForwardBy(kSingleUsernameTimeToLive);
   EXPECT_FALSE(possible_username_data_.IsStale());
 
   // Fast forward more until the data becomes stale.

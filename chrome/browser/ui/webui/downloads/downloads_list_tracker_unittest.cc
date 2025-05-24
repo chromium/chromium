@@ -31,14 +31,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
 using download::DownloadItem;
 using download::MockDownloadItem;
@@ -76,10 +73,10 @@ class TestDownloadsListTracker : public DownloadsListTracker {
       : DownloadsListTracker(manager,
                              std::move(page),
                              base::BindRepeating(&ShouldShowItem)) {}
-  ~TestDownloadsListTracker() override {}
+  ~TestDownloadsListTracker() override = default;
 
-  using DownloadsListTracker::IsIncognito;
   using DownloadsListTracker::GetItemForTesting;
+  using DownloadsListTracker::IsIncognito;
   using DownloadsListTracker::SetChunkSizeForTesting;
 
  protected:
@@ -94,18 +91,20 @@ class TestDownloadsListTracker : public DownloadsListTracker {
 // A fixture to test DownloadsListTracker.
 class DownloadsListTrackerTest : public testing::Test {
  public:
-  DownloadsListTrackerTest() {}
+  DownloadsListTrackerTest() = default;
 
   ~DownloadsListTrackerTest() override {
-    for (const auto& mock_item : mock_items_)
+    for (const auto& mock_item : mock_items_) {
       testing::Mock::VerifyAndClear(mock_item.get());
+    }
   }
 
   // testing::Test:
   void SetUp() override {
     ON_CALL(manager_, GetBrowserContext()).WillByDefault(Return(&profile_));
-    ON_CALL(manager_, GetAllDownloads(_)).WillByDefault(
-        testing::Invoke(this, &DownloadsListTrackerTest::GetAllDownloads));
+    ON_CALL(manager_, GetAllDownloads(_))
+        .WillByDefault(
+            testing::Invoke(this, &DownloadsListTrackerTest::GetAllDownloads));
   }
 
   MockDownloadItem* CreateMock(uint64_t id, const base::Time& started) {
@@ -149,8 +148,9 @@ class DownloadsListTrackerTest : public testing::Test {
 
  private:
   void GetAllDownloads(DownloadVector* result) {
-    for (const auto& mock_item : mock_items_)
+    for (const auto& mock_item : mock_items_) {
       result->push_back(mock_item.get());
+    }
   }
 
   // NOTE: The initialization order of these members matters.
@@ -181,12 +181,14 @@ TEST_F(DownloadsListTrackerTest, SetSearchTerms) {
 }
 
 MATCHER_P(MatchIds, expected, "") {
-  if (arg.size() != expected.size())
+  if (arg.size() != expected.size()) {
     return false;
+  }
 
   for (size_t i = 0; i < arg.size(); ++i) {
-    if (arg[i]->id != base::NumberToString(expected[i]))
+    if (arg[i]->id != base::NumberToString(expected[i])) {
       return false;
+    }
   }
   return true;
 }
@@ -271,8 +273,9 @@ TEST_F(DownloadsListTrackerTest, StartExcludesHiddenItems) {
 
 TEST_F(DownloadsListTrackerTest, Incognito) {
   testing::NiceMock<content::MockDownloadManager> incognito_manager;
-  ON_CALL(incognito_manager, GetBrowserContext()).WillByDefault(Return(
-      TestingProfile::Builder().BuildIncognito(profile())));
+  ON_CALL(incognito_manager, GetBrowserContext())
+      .WillByDefault(
+          Return(TestingProfile::Builder().BuildIncognito(profile())));
 
   MockDownloadItem item;
   EXPECT_CALL(item, GetId()).WillRepeatedly(Return(0));
@@ -612,7 +615,7 @@ TEST_F(DownloadsListTrackerTest, RenamingProgress) {
   EXPECT_EQ(data->percent, 70);
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 TEST_F(DownloadsListTrackerTest, CreateDownloadData_SafeBrowsing) {
   auto tracker = std::make_unique<DownloadsListTracker>(
       manager(), page_.BindAndGetRemote());
@@ -690,21 +693,14 @@ TEST_F(DownloadsListTrackerTest, CreateDownloadData_SafeBrowsing) {
             download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE));
     TailoredVerdict tailored_verdict;
     tailored_verdict.set_tailored_verdict_type(TailoredVerdict::COOKIE_THEFT);
-    tailored_verdict.add_adjustments(TailoredVerdict::ACCOUNT_INFO_STRING);
     safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
         item, "token",
         safe_browsing::ClientDownloadResponse::SAFE,  // placeholder
         tailored_verdict);
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile());
-    signin::SetPrimaryAccount(identity_manager, "test@example.com",
-                              signin::ConsentLevel::kSignin);
 
     downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
-    EXPECT_EQ(
-        data->tailored_warning_type,
-        downloads::mojom::TailoredWarningType::kCookieTheftWithAccountInfo);
-    EXPECT_EQ(data->account_email, "test@example.com");
+    EXPECT_EQ(data->tailored_warning_type,
+              downloads::mojom::TailoredWarningType::kCookieTheft);
   }
 }
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

@@ -4,7 +4,8 @@
 
 #include "components/exo/touch.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/trace_event/trace_event.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/seat.h"
@@ -170,8 +171,7 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
       seat_->AbortPendingDragOperation();
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   if (send_details) {
     // Some devices do not report radius_y/minor. We assume a circular shape
@@ -231,7 +231,7 @@ Surface* Touch::GetEffectiveTargetForEvent(ui::LocatedEvent* event) const {
 }
 
 void Touch::CancelAllTouches() {
-  base::ranges::for_each(surface_touch_count_map_, [this](auto& it) {
+  std::ranges::for_each(surface_touch_count_map_, [this](auto& it) {
     it.first->RemoveSurfaceObserver(this);
   });
   touch_points_surface_map_.clear();

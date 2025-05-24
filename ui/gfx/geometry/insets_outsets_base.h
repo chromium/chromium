@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/numerics/clamped_math.h"
-#include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -107,14 +107,8 @@ class InsetsOutsetsBase {
     right_ = std::max(right_, other.right_);
   }
 
-  bool operator==(const InsetsOutsetsBase<T>& other) const {
-    return top_ == other.top_ && left_ == other.left_ &&
-           bottom_ == other.bottom_ && right_ == other.right_;
-  }
-
-  bool operator!=(const InsetsOutsetsBase<T>& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const InsetsOutsetsBase<T>&,
+                         const InsetsOutsetsBase<T>&) = default;
 
   void operator+=(const T& other) {
     top_ = base::ClampAdd(top_, other.top_);
@@ -139,9 +133,7 @@ class InsetsOutsetsBase {
   }
 
   // Returns a string representation of the insets/outsets.
-  std::string ToString() const {
-    return base::StringPrintf("x:%d,%d y:%d,%d", left_, right_, top_, bottom_);
-  }
+  COMPONENT_EXPORT(GEOMETRY) std::string ToString() const;
 
  private:
   // Clamp the bottom/right to avoid integer over/underflow in width() and

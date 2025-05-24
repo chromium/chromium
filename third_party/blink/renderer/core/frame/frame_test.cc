@@ -11,9 +11,13 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -275,6 +279,49 @@ TEST_F(FrameTest, NavigateClearsScrollSnapshotClients) {
   EXPECT_EQ(
       GetDocument().GetFrame()->GetScrollSnapshotClientsForTesting().size(),
       0U);
+}
+
+class FrameDetachTest : public ::testing::Test {
+ public:
+  Frame* MainFrame() {
+    return web_view_helper_.GetWebView()->GetPage()->MainFrame();
+  }
+
+  frame_test_helpers::WebViewHelper& WebViewHelper() {
+    return web_view_helper_;
+  }
+
+ private:
+  test::TaskEnvironment task_environment_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
+};
+
+// Verify that a local frame cannot be looked up by token after detach.
+TEST_F(FrameDetachTest, Local) {
+  WebViewHelper().Initialize();
+
+  // Keep a reference to the main frame on the stack to keep the GC from
+  // collecting it.
+  auto* frame = DynamicTo<LocalFrame>(MainFrame());
+  ASSERT_TRUE(frame);
+
+  WebViewHelper().Reset();
+  EXPECT_EQ(nullptr, Frame::ResolveFrame(frame->GetFrameToken()));
+  EXPECT_EQ(nullptr, LocalFrame::FromFrameToken(frame->GetLocalFrameToken()));
+}
+
+// Verify that a remote frame cannot be looked up by token after detach.
+TEST_F(FrameDetachTest, Remote) {
+  WebViewHelper().InitializeRemote();
+
+  // Keep a reference to the main frame on the stack to keep the GC from
+  // collecting it.
+  auto* frame = DynamicTo<RemoteFrame>(MainFrame());
+  ASSERT_TRUE(frame);
+
+  WebViewHelper().Reset();
+  EXPECT_EQ(nullptr, Frame::ResolveFrame(frame->GetFrameToken()));
+  EXPECT_EQ(nullptr, RemoteFrame::FromFrameToken(frame->GetRemoteFrameToken()));
 }
 
 }  // namespace blink

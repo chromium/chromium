@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // <if expr="is_linux or is_chromeos">
-import './strings.m.js';
+import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>

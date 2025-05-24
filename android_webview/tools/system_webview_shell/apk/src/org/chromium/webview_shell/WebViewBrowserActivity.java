@@ -25,20 +25,15 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.webkit.TracingConfig;
 import androidx.webkit.TracingController;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
@@ -78,11 +73,10 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         ContextUtils.initApplicationContext(getApplicationContext());
 
-        setupEdgeToEdge();
+        EdgeToEdgeUtil.setupEdgeToEdge(this);
         setContentView(R.layout.activity_webview_browser);
         setSupportActionBar((Toolbar) findViewById(R.id.browser_toolbar));
         mWebViewVersion = WebViewCompat.getCurrentWebViewPackage(this).versionName;
@@ -104,6 +98,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     }
 
     @Override
+    @SuppressWarnings("GestureBackNavigation")
     public void onBackPressed() {
         if (mWebView != null && mWebView.canGoBack()) {
             mWebView.goBack();
@@ -118,8 +113,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.TRACING_CONTROLLER_BASIC_USAGE)) {
             menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
         }
-        if (!WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)
-                || BuildInfo.targetsAtLeastT()) {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             menu.findItem(R.id.menu_force_dark_off).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_auto).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_on).setEnabled(false);
@@ -130,8 +124,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             menu.findItem(R.id.menu_night_mode_on).setEnabled(false);
         }
-        if (!BuildInfo.targetsAtLeastT()
-                || !WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
             menu.findItem(R.id.menu_algorithmic_darkening_on).setEnabled(false);
         }
         return super.onCreateOptionsMenu(menu);
@@ -146,8 +139,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else {
             menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
         }
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)
-                && !BuildInfo.targetsAtLeastT()) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             int forceDarkState = WebSettingsCompat.getForceDark(mWebView.getSettings());
             switch (forceDarkState) {
                 case WebSettingsCompat.FORCE_DARK_OFF:
@@ -175,8 +167,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             }
             menu.findItem(R.id.menu_night_mode_on).setChecked(checked);
         }
-        if (BuildInfo.targetsAtLeastT()
-                && WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
             menu.findItem(R.id.menu_algorithmic_darkening_on)
                     .setChecked(
                             WebSettingsCompat.isAlgorithmicDarkeningAllowed(
@@ -210,6 +201,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             if (url != null) {
                 String cookie = CookieManager.getInstance().getCookie(url);
                 Log.w(TAG, "GetCookie: " + cookie);
+                Toast.makeText(this, "Printing cookie values to adb logcat", Toast.LENGTH_SHORT)
+                        .show();
             } else {
                 Toast.makeText(this, "Error: Url is not set", Toast.LENGTH_SHORT).show();
             }
@@ -234,10 +227,10 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                     try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                         String outFileName = getFilesDir() + "/webview_tracing.json";
                         try {
+                            mIsStoppingTracing = true;
                             tracingController.stop(
                                     new TracingLogger(outFileName, this),
                                     Executors.newSingleThreadExecutor());
-                            mIsStoppingTracing = true;
                         } catch (FileNotFoundException e) {
                             throw new RuntimeException(e);
                         }
@@ -408,7 +401,6 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
     private class TracingLogger extends FileOutputStream {
         private long mByteCount;
-        private long mChunkCount;
         private final Activity mActivity;
 
         public TracingLogger(String fileName, Activity activity) throws FileNotFoundException {
@@ -419,26 +411,22 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         @Override
         public void write(byte[] chunk) throws IOException {
             mByteCount += chunk.length;
-            mChunkCount++;
             super.write(chunk);
         }
 
         @Override
         public void close() throws IOException {
             super.close();
-            showDialog(mByteCount);
-            mIsStoppingTracing = false;
-        }
 
-        private void showDialog(long nbBytes) {
             StringBuilder info = new StringBuilder();
             info.append("Tracing data written to file\n");
-            info.append("number of bytes: " + nbBytes);
+            info.append("number of bytes: " + mByteCount);
 
             mActivity.runOnUiThread(
                     new Runnable() {
                         @Override
                         public void run() {
+                            mIsStoppingTracing = false;
                             AlertDialog dialog =
                                     new AlertDialog.Builder(mActivity)
                                             .setTitle("Tracing API")
@@ -449,19 +437,5 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                         }
                     });
         }
-    }
-
-    private void setupEdgeToEdge() {
-        ViewCompat.setOnApplyWindowInsetsListener(
-                findViewById(android.R.id.content),
-                (v, windowInsets) -> {
-                    Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-                    // Apply the insets paddings to the view.
-                    v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
-
-                    // Return CONSUMED to indicate we have handled the insets for this view
-                    // and don't want them to be passed down to descendant views.
-                    return WindowInsetsCompat.CONSUMED;
-                });
     }
 }

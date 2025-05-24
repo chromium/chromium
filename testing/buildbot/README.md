@@ -128,18 +128,19 @@ test suites to the CQ builders is to:
      `'experiment_percentage': 100` line to the test's definition in the pyl
      files here.
      ([Example.](https://chromium.googlesource.com/chromium/src/+/79ed7956/testing/buildbot/test_suite_exceptions.pyl#888))
-1. After about one day's worth of builds have passed, examine the results of the
-   the test on the affected post-submit builders. If they're green with little
-   to no flakes, it can be promoted out of experimental. If there's more than
-   a handful of flakes (e.g. 1 or more per day), then the test needs to be
-   de-flaked before moving on. Once that's done, it can then be moved out of
-   experimental and you can proceed to the next step.
+1. After a few day's worth of builds have passed, examine the results of the
+   the test on the affected post-submit builders. If they're green with
+   near-zero flakes in all recent runs, it can be promoted out of experimental.
+   If there's more than a handful of flakes (e.g. 1 or more per day), then the
+   test needs to be de-flaked before moving on. Once that's done, it can then be
+   moved out of experimental and you can proceed to the next step.
 1. After a sufficient amount of time (suggest 2 weeks), examine the results of
    the test on the affected post-submit builders to determine the amount of
    regressions they're catching. Note: unless the new test is providing unique
    info/artifacts (e.g. stack traces, log files) that pre-existing tests lack,
-   exclude any regressions that _other_ tests also caught. We're only interested
-   in the regressions that these new tests catch alone.
+   exclude any regressions that _other_ tests on the CQ also caught. We're only
+   interested in the regressions that these new tests would catch alone in the
+   CQ.
 1. If the new tests aren't excessively flaky (use
    [this dashboard](http://shortn/_gP9pAC2IS3) to verify) and if they catch a
    sufficient number of regressions over that trial period, then they can be
@@ -425,7 +426,7 @@ Each bot's description is a dictionary containing the following:
        isolate, invoke a wrapper script from src/testing/scripts as their
        top-level entry point, and are used to adapt to multiple kinds of test
        harnesses. These must implement the
-       [Test Executable API](//docs/testing/test_executable_api.md) and
+       [Test Executable API](/docs/testing/test_executable_api.md) and
        can also be run either locally or under Swarming.
     * `junit_tests`: (Android-specific) JUnit tests. These are not run
        under Swarming.

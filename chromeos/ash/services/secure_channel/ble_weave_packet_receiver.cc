@@ -9,13 +9,7 @@
 
 #include "chromeos/ash/services/secure_channel/ble_weave_packet_receiver.h"
 
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <winsock2.h>
-#else
 #include <netinet/in.h>
-#endif
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -107,7 +101,7 @@ BluetoothLowEnergyWeavePacketReceiver::ReceivePacket(const Packet& packet) {
         // Counter not verified.
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return state_;
@@ -209,7 +203,7 @@ void BluetoothLowEnergyWeavePacketReceiver::ReceiveNonFirstPacket(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

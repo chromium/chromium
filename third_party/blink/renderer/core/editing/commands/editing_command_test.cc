@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -30,11 +27,11 @@ struct CommandNameEntry {
   EditingCommandType type;
 };
 
-const CommandNameEntry kCommandNameEntries[] = {
+constexpr auto kCommandNameEntries = std::to_array<CommandNameEntry>({
 #define V(name) {#name, EditingCommandType::k##name},
     FOR_EACH_BLINK_EDITING_COMMAND_NAME(V)
 #undef V
-};
+});
 // Test all commands except EditingCommandType::Invalid.
 static_assert(
     std::size(kCommandNameEntries) + 1 ==
@@ -96,7 +93,7 @@ TEST_F(EditingCommandTest, EnabledVisibleSelection) {
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable>a|b<div>"),
       SetSelectionOptions());
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   GetDocument().SetFocusedElement(
       div, FocusParams(SelectionBehaviorOnFocus::kNone,
                        mojom::blink::FocusType::kNone, nullptr));
@@ -113,7 +110,7 @@ TEST_F(EditingCommandTest, EnabledVisibleSelectionAndMark) {
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable>a|b<div>"),
       SetSelectionOptions());
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   GetDocument().SetFocusedElement(
       div, FocusParams(SelectionBehaviorOnFocus::kNone,
                        mojom::blink::FocusType::kNone, nullptr));
@@ -140,7 +137,7 @@ TEST_F(EditingCommandTest, EnabledInEditableTextOrCaretBrowsing) {
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable>a|b<div>"),
       SetSelectionOptions());
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   GetDocument().SetFocusedElement(
       div, FocusParams(SelectionBehaviorOnFocus::kNone,
                        mojom::blink::FocusType::kNone, nullptr));
@@ -156,12 +153,12 @@ TEST_F(EditingCommandTest, DeleteSoftLineBackwardTargetRanges) {
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable>abcdef<br>123|<div>"),
       SetSelectionOptions());
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   GetDocument().SetFocusedElement(
       div, FocusParams(SelectionBehaviorOnFocus::kNone,
                        mojom::blink::FocusType::kNone, nullptr));
   EXPECT_TRUE(command.IsEnabled());
-  const StaticRangeVector* ranges = command.GetTargetRanges();
+  const GCedStaticRangeVector* ranges = command.GetTargetRanges();
   EXPECT_EQ(1u, ranges->size());
   const StaticRange& range = *ranges->at(0);
   EXPECT_EQ("123", range.startContainer()->textContent());

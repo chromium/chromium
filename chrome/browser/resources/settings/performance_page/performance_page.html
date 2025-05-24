@@ -1,12 +1,10 @@
-<template is="dom-if" if="[[isPerformanceInterventionUiEnabled_]]">
-  <settings-toggle-button id="performanceInterventionToggleButton"
-      on-change="onPerformanceInterventionToggleButtonChange_"
-      pref="{{prefs.performance_tuning.intervention_notification.enabled}}"
-      label="$i18n{performanceInterventionEnabledLabel}"
-      sub-label-with-link="$i18n{performanceInterventionEnabledDescription}"
-      on-sub-label-link-clicked="onPerformanceInterventionLearnMoreLinkClick_">
-  </settings-toggle-button>
-</template>
+<settings-toggle-button id="performanceInterventionToggleButton"
+  on-change="onPerformanceInterventionToggleButtonChange_"
+  pref="{{prefs.performance_tuning.intervention_notification.enabled}}"
+  label="$i18n{performanceInterventionEnabledLabel}"
+  sub-label-with-link="$i18n{performanceInterventionEnabledDescription}"
+  on-sub-label-link-clicked="onPerformanceInterventionLearnMoreLinkClick_">
+</settings-toggle-button>
 <settings-toggle-button id="discardRingTreatmentToggleButton"
   on-change="onDiscardRingChange_"
   pref="{{prefs.performance_tuning.discard_ring_treatment.enabled}}"

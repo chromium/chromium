@@ -174,6 +174,18 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
         const std::string& language_code,
         const std::vector<std::string>& initial_layouts) = 0;
 
+    // Enables OOBE-eligible (based on the allowlist) input methods that are
+    // attached to the |language_code| and then switches to
+    // |initial_input_methods| if the given list is not empty.
+    // For example, if |language_code| is "en-US", US Qwerty, US International,
+    // US Extended, US Dvorak, and US Colemak input methods would be enabled.
+    // Likewise, for Japan locale, "Alphanumeric with Japanese keyboard"
+    // together with the "fuzzy" Japanese input methods will be enabled as they
+    // are part of the allowlist.
+    virtual void EnableOobeInputMethods(
+        const std::string& language_code,
+        const std::vector<std::string>& initial_input_methods) = 0;
+
     // Filters current state layouts and leaves only suitable for lock screen.
     virtual void DisableNonLockScreenLayouts() = 0;
 
@@ -212,10 +224,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     virtual void SetEnabledExtensionImes(base::span<const std::string> ids) = 0;
 
     // Sets current input method to login default (first owners, then hardware).
-    virtual void SetInputMethodLoginDefault() = 0;
+    virtual void SetInputMethodLoginDefault(bool is_in_oobe_context) = 0;
 
     // Sets current input method to login default with the given locale and
     // layout info from VPD.
+    // This function is called only during system setup in OOBE.
     virtual void SetInputMethodLoginDefaultFromVPD(
         const std::string& locale,
         const std::string& layout) = 0;

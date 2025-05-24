@@ -15,13 +15,14 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.base.ViewUtils;
 
 /** View class representing an expandable/collapsible view holding option chips for the feed. */
+@NullMarked
 public class FeedOptionsView extends LinearLayout {
     private LinearLayout mChipsContainer;
     private static final int ANIMATION_DURATION_MS = 200;
@@ -64,7 +65,7 @@ public class FeedOptionsView extends LinearLayout {
     private void expand() {
         // If the view's parent is not shown, we want to set this view as VISIBLE without the
         // animation, and reset the height if it was previously set by collapse() animation.
-        if (getParent() == null || !(((View) getParent()).isShown())) {
+        if (getParent() == null || !((View) getParent()).isShown()) {
             setVisibility(VISIBLE);
             setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
             return;
@@ -112,7 +113,7 @@ public class FeedOptionsView extends LinearLayout {
     private void collapse() {
         // If the view's parent is not shown, we want to set this view as GONE without the
         // animation.
-        if (getParent() == null || !(((View) getParent()).isShown())) {
+        if (getParent() == null || !((View) getParent()).isShown()) {
             setVisibility(GONE);
             return;
         }

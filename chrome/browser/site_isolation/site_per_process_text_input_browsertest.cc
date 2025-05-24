@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -279,14 +278,14 @@ class RecordActiveViewsObserver {
 // Main class for all TextInputState and IME related tests.
 class SitePerProcessTextInputManagerTest : public InProcessBrowserTest {
  public:
-  SitePerProcessTextInputManagerTest() {}
+  SitePerProcessTextInputManagerTest() = default;
 
   SitePerProcessTextInputManagerTest(
       const SitePerProcessTextInputManagerTest&) = delete;
   SitePerProcessTextInputManagerTest& operator=(
       const SitePerProcessTextInputManagerTest&) = delete;
 
-  ~SitePerProcessTextInputManagerTest() override {}
+  ~SitePerProcessTextInputManagerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
@@ -890,7 +889,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 // This test makes sure browser correctly tracks focused editable element inside
 // each RenderFrameHost.
 // Test is flaky on chromeOS; https://crbug.com/705203.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TrackingFocusedElementForAllFrames \
   DISABLED_TrackingFocusedElementForAllFrames
 #else
@@ -937,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 // in both cases the test verifies that WebContents is aware whether or not a
 // focused editable element exists on the page.
 // Test is flaky on ChromeOS. crbug.com/705289
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TrackPageFocusEditableElement \
   DISABLED_TrackPageFocusEditableElement
 #else
@@ -979,7 +978,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 // WebContents to clear focused element and verifies that there is no longer
 // a focused editable element on the page.
 // Test is flaky on ChromeOS; https://crbug.com/705203.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ClearFocusedElementOnPage DISABLED_ClearFocusedElementOnPage
 #else
 #define MAYBE_ClearFocusedElementOnPage ClearFocusedElementOnPage
@@ -1198,15 +1197,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
     ~TextDeleteDelegate() override = default;
 
-    bool GetTextEditCommandsForEvent(
-        const ui::Event& event,
-        int text_flags,
-        std::vector<ui::TextEditCommandAuraLinux>* commands) override {
-      if (commands) {
-        commands->emplace_back(ui::TextEditCommand::DELETE_TO_BEGINNING_OF_LINE,
-                               "");
-      }
-      return true;
+    ui::TextEditCommand GetTextEditCommandForEvent(const ui::Event& event,
+                                                   int text_flags) override {
+      return ui::TextEditCommand::DELETE_TO_BEGINNING_OF_LINE;
     }
   };
 
@@ -1246,7 +1239,7 @@ class ShowDefinitionForWordObserver
   ShowDefinitionForWordObserver& operator=(
       const ShowDefinitionForWordObserver&) = delete;
 
-  ~ShowDefinitionForWordObserver() override {}
+  ~ShowDefinitionForWordObserver() override = default;
 
   const std::string& WaitForWordLookUp() {
     if (did_receive_string_)
@@ -1333,7 +1326,7 @@ IN_PROC_BROWSER_TEST_F(
   // Destroy the RenderWidgetHost from the browser side right after the
   // dictionary message is received. The destruction is post tasked to UI
   // thread.
-  int32_t child_process_id = child_frame->GetProcess()->GetID();
+  int32_t child_process_id = child_frame->GetProcess()->GetDeprecatedID();
   int32_t child_frame_routing_id = child_frame->GetRoutingID();
 
   text_input_local_frame.SetStringForRangeCallback(base::BindRepeating(
@@ -1402,7 +1395,7 @@ IN_PROC_BROWSER_TEST_F(
   // Destroy the RenderWidgetHost from the browser side right after the
   // dictionary message is received. The destruction is post tasked to UI
   // thread.
-  int32_t main_frame_process_id = main_frame->GetProcess()->GetID();
+  int32_t main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int32_t main_frame_routing_id = main_frame->GetRoutingID();
   text_input_local_frame.SetStringForRangeCallback(base::BindRepeating(
       [](int32_t process_id, int32_t routing_id,

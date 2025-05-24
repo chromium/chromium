@@ -1,0 +1,26 @@
+Verifies that Cookie blocks when schemes do not match.
+
+Cookie schemes do not match:[
+    [0] : {
+        blockedReasons : [
+            [0] : SchemeMismatch
+        ]
+        cookie : {
+            domain : example.test
+            expires : -1
+            httpOnly : false
+            name : foo
+            path : /
+            priority : Medium
+            sameParty : false
+            secure : false
+            session : true
+            size : 6
+            sourcePort : 80
+            sourceScheme : NonSecure
+            value : bar
+        }
+        exemptionReason : None
+    }
+]
+

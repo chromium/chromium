@@ -16,12 +16,19 @@ See the COPYING file for details.
 
 <head>
 <title>XPC test inner frame</title>
-
-<!-- MOE:insert <script src="../../../base.js" type="text/javascript"></script> -->
+<script>
+  var CLOSURE_DEFINES = CLOSURE_DEFINES || {};
+  CLOSURE_DEFINES["goog.ENABLE_DEBUG_LOADER"] = true;
+</script>
+<!-- MOE:begin_strip -->
+<script src="../../../../../../javascript/closure/base.js"></script>
+<!-- MOE:end_strip_and_replace
+<script src="../../../base.js" type="text/javascript"></script> -->
 <script type="text/javascript">
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.events.EventType');
+goog.require('goog.functions');
 goog.require('goog.net.xpc.CrossPageChannel');
 </script>
 <script type="text/javascript">
@@ -47,7 +54,7 @@ function instantiateChannel(cfg) {
 }
 
 function connectChannel(opt_callback) {
-  window.channel.connect(opt_callback || goog.nullFunction);
+  window.channel.connect(opt_callback || goog.functions.UNDEFINED);
 }
 
 function sendEcho(payload) {

@@ -1,6 +1,7 @@
-rockot@google.com
-
 per-file sandbox_helper_win.cc=file://sandbox/win/OWNERS
 
 # For threading and startup/shutdown sequences (ContentMainRunner, etc.)
 per-file content_main_runner*=gab@chromium.org
+
+# Security reviews for xpc IPC
+per-file ios/appex/child_process_bridge.mm=file://ipc/SECURITY_OWNERS

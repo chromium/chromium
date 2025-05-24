@@ -1,0 +1,11 @@
+Name: displaydoc
+URL: https://crates.io/crates/displaydoc
+Version: 0.2.5
+Revision: e4028851bfb82998300237f7568a45f589a19e40
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: A derive macro for implementing the display Trait via a doc comment and string interpolation
+

@@ -8,10 +8,13 @@ import android.app.Activity;
 import android.view.WindowManager;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -27,14 +30,15 @@ import org.chromium.ui.base.WindowAndroid;
  * extend HttpAuthHandler due to the private access of HttpAuthHandler's
  * constructor.
  */
+@NullMarked
 public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginPrompt.Observer {
-    private static Callback<ChromeHttpAuthHandler> sTestCreationCallback;
+    private static @Nullable Callback<ChromeHttpAuthHandler> sTestCreationCallback;
 
     private long mNativeChromeHttpAuthHandler;
-    private String mAutofillUsername;
-    private String mAutofillPassword;
-    private LoginPrompt mLoginPrompt;
-    private Tab mTab;
+    private @Nullable String mAutofillUsername;
+    private @Nullable String mAutofillPassword;
+    private @Nullable LoginPrompt mLoginPrompt;
+    private @Nullable Tab mTab;
 
     private ChromeHttpAuthHandler(long nativeChromeHttpAuthHandler) {
         assert nativeChromeHttpAuthHandler != 0;
@@ -69,12 +73,14 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
 
     @Override
     public void cancel() {
+        if (mNativeChromeHttpAuthHandler == 0) return;
         ChromeHttpAuthHandlerJni.get()
                 .cancelAuth(mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this);
     }
 
     @Override
     public void proceed(String username, String password) {
+        if (mNativeChromeHttpAuthHandler == 0) return;
         ChromeHttpAuthHandlerJni.get()
                 .setAuth(
                         mNativeChromeHttpAuthHandler,
@@ -110,6 +116,7 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
                         .getMessageBody(mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this);
         mLoginPrompt = new LoginPrompt(activity, messageBody, null, this);
         // In case the autofill data arrives before the prompt is created.
+
         if (mAutofillUsername != null && mAutofillPassword != null) {
             mLoginPrompt.onAutofillDataAvailable(mAutofillUsername, mAutofillPassword);
         }
@@ -139,7 +146,9 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
     }
 
     @CalledByNative
-    private void onAutofillDataAvailable(String username, String password) {
+    private void onAutofillDataAvailable(
+            @JniType("std::u16string") String username,
+            @JniType("std::u16string") String password) {
         mAutofillUsername = username;
         mAutofillPassword = password;
         if (mLoginPrompt != null) {
@@ -152,11 +161,12 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
         void setAuth(
                 long nativeChromeHttpAuthHandler,
                 ChromeHttpAuthHandler caller,
-                String username,
-                String password);
+                @JniType("std::u16string") String username,
+                @JniType("std::u16string") String password);
 
         void cancelAuth(long nativeChromeHttpAuthHandler, ChromeHttpAuthHandler caller);
 
+        @JniType("std::u16string")
         String getMessageBody(long nativeChromeHttpAuthHandler, ChromeHttpAuthHandler caller);
     }
 }

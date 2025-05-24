@@ -50,8 +50,7 @@ OrientationType RotationToOrientation(OrientationType natural,
         return OrientationType::kLandscapeSecondary;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return OrientationType::kAny;
+  NOTREACHED();
 }
 
 display::Display::Rotation OrientationToRotation(OrientationType natural,
@@ -88,8 +87,7 @@ display::Display::Rotation OrientationToRotation(OrientationType natural,
         break;
     }
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(orientation);
-  return display::Display::ROTATE_0;
+  NOTREACHED() << static_cast<int>(orientation);
 }
 
 bool IsPrimaryOrientation(OrientationType type) {

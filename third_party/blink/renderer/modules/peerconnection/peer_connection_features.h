@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 namespace blink {
 MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncodedTransformDirectCallback);
+MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncryptedRtpHeaderExtensions);
 MODULES_EXPORT BASE_DECLARE_FEATURE(
     kWebRtcRtpScriptTransformerFrameRestrictions);
 }  // namespace blink

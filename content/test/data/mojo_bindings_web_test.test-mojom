@@ -29,13 +29,15 @@ interface TestMessageTarget {
   Echo(NestedEnum nested) => (NestedEnum nested);
 
   Deconstruct(TestStruct test_struct)
-       => (int32 x, int32 y,
-           // Using TestStruct.StructEnum causes a compile failure. Use
-           // int32 instead.
-           // TODO(crbug.com/40102018): Change |z| to TestStruct.StructEnum.
-           int32 z);
+      => (int32 x,
+          int32 y,
+          // Using TestStruct.StructEnum causes a compile failure. Use
+          // int32 instead.
+          // TODO(crbug.com/40102018): Change |z| to TestStruct.StructEnum.
+          int32 z);
 
   Flatten(array<TestStruct> values) => (array<int32> values);
+
   FlattenUnions(array<TestUnion> unions) => (array<int32> x, array<int32> s);
 
   RequestSubinterface(pending_receiver<Subinterface> receiver,
@@ -44,6 +46,7 @@ interface TestMessageTarget {
 
 interface Subinterface {
   Push(int32 value);
+
   Flush();
 };
 
@@ -54,8 +57,12 @@ interface SubinterfaceClient {
 struct StructVersionTest {
   string a;
   string b;
-  [MinVersion=1] string? c;
-  [MinVersion=2] string? d;
+
+  [MinVersion=1]
+  string? c;
+
+  [MinVersion=2]
+  string? d;
 };
 
 interface InterfaceVersionTest {
@@ -63,15 +70,25 @@ interface InterfaceVersionTest {
 };
 
 interface Counter {
-  // Two different varieties of observer addition to exercise sending remotes
+  // Three different varieties of observer addition to exercise sending remotes
   // and receiving receivers.
-  AddObserver(pending_associated_remote<CounterObserver> observer);
+  AddObserver1(pending_associated_remote<CounterObserver> observer);
+
+  // `unused` is mainly to ensure we correctly encode calls with
+  // associated interfaces alongside other parameters.
+  AddObserver2(
+      pending_associated_remote<CounterObserver> observer, int32 unused);
+
   AddNewObserver() => (pending_associated_receiver<CounterObserver> receiver);
+
   RemoveAllObservers();
 
-  // Two different varieties of cloning to exercise sending receivers and
+  // Three different varieties of cloning to exercise sending receivers and
   // receiving remotes.
-  Clone(pending_associated_receiver<Counter> receiver);
+  Clone1(pending_associated_receiver<Counter> receiver);
+
+  Clone2(pending_associated_receiver<Counter> receiver, int32 unused);
+
   CloneToNewRemote() => (pending_associated_remote<Counter> remote);
 
   // Increments the counter, notifies all observers, then replies. Because
@@ -82,5 +99,6 @@ interface Counter {
 
 interface CounterObserver {
   OnCountChanged(int32 count);
+
   OnCloneDisconnected();
 };

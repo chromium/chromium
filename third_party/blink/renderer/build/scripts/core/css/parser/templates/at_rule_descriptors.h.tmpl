@@ -14,6 +14,9 @@ namespace blink {
 
 enum class AtRuleDescriptorID {
   Invalid = 0,
+  Variable = 1,
+{# The first generated value is '2', see `first_descriptor_id`
+   in make_atrule_names.py. #}
 {% for descriptor in descriptors %}
   {{descriptor.name.to_upper_camel_case()}} = {{descriptor.enum_value}},
 {% endfor %}

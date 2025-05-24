@@ -4,7 +4,8 @@
 
 #include "extensions/browser/load_and_localize_file.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -98,7 +99,7 @@ void LoadAndLocalizeResources(const Extension& extension,
                               size_t max_script_length,
                               LoadAndLocalizeResourcesCallback callback) {
   DCHECK(!resources.empty());
-  DCHECK(base::ranges::all_of(resources, [](const ExtensionResource& resource) {
+  DCHECK(std::ranges::all_of(resources, [](const ExtensionResource& resource) {
     return !resource.extension_root().empty() &&
            !resource.relative_path().empty();
   }));

@@ -1,0 +1,15 @@
+Name: firebase-datatransport
+Short Name: firebase-datatransport
+URL: https://firebase.google.com
+Version: 19.0.0
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Firebase firebase datatransport pulled in via gradle.
+
+Local Modifications:
+No modifications.

@@ -84,7 +84,7 @@ class MediaMobile(_MediaBenchmark):
   ]
   SUPPORTED_PLATFORMS = [
       story.expectations.ANDROID_NOT_WEBVIEW, story.expectations.FUCHSIA_ASTRO,
-      story.expectations.FUCHSIA_SHERLOCK
+      story.expectations.FUCHSIA_SHERLOCK, story.expectations.FUCHSIA_NELSON
   ]
 
   def CreateStorySet(self, options):

@@ -4,7 +4,8 @@ Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 
-Material 3: Forward/backward transition
+This is a variation of GM3's Forward/backward transition, with changes
+on the durations.
 https://m3.material.io/styles/motion/transitions/transition-patterns
 -->
 <set xmlns:android="http://schemas.android.com/apk/res/android">
@@ -14,13 +15,13 @@ https://m3.material.io/styles/motion/transitions/transition-patterns
             android:fillEnabled="true"
             android:fillBefore="true"
             android:fillAfter="true"
-            android:startOffset="100"
-            android:duration="350" />
-    <translate android:fromXDelta="-30dp"
+            android:startOffset="@integer/shared_x_axis_exit_duration"
+            android:duration="@integer/shared_x_axis_enter_transition_duration" />
+    <translate android:fromXDelta="-25%"
             android:toXDelta="0"
             android:fillEnabled="true"
             android:fillBefore="true"
             android:fillAfter="true"
             android:interpolator="@interpolator/m3_sys_motion_easing_emphasized"
-            android:duration="450" />
+            android:duration="@integer/shared_x_axis_transition_duration" />
 </set>

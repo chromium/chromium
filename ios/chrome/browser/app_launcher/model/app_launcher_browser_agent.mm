@@ -26,8 +26,6 @@
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
-BROWSER_USER_DATA_KEY_IMPL(AppLauncherBrowserAgent)
-
 using app_launcher_overlays::AllowAppLaunchResponse;
 using app_launcher_overlays::AppLaunchConfirmationRequest;
 
@@ -155,7 +153,8 @@ RequestCauseFromActionCause(AppLauncherAlertCause cause) {
 #pragma mark - AppLauncherBrowserAgent
 
 AppLauncherBrowserAgent::AppLauncherBrowserAgent(Browser* browser)
-    : tab_helper_delegate_(browser),
+    : BrowserUserData(browser),
+      tab_helper_delegate_(browser),
       tab_helper_delegate_installer_(&tab_helper_delegate_, browser) {
   browser->AddObserver(this);
   app_launcher_scene_state_observer_ = [[AppLauncherSceneStateObserver alloc]

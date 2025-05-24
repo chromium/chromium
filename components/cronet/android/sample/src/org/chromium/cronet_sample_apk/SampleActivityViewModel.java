@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SampleActivityViewModel extends ViewModel {
-    private Map<Integer, Fragment> mFragmentMap = new HashMap<>();
+    private final Map<Integer, Fragment> mFragmentMap = new HashMap<>();
 
     public static final int FRAGMENT_ID_HOME = 0;
     public static final int FRAGMENT_ID_FLAGS = 1;

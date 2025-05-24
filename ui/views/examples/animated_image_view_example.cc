@@ -64,7 +64,7 @@ class AnimationGallery : public BoxLayoutView, public TextfieldController {
                 .AddChild(
                     Builder<AnimatedImageView>()
                         .CopyAddressTo(&animated_image_view_)
-                        .SetBorder(CreateThemedSolidBorder(
+                        .SetBorder(CreateSolidBorder(
                             1, ExamplesColorIds::
                                    kColorAnimatedImageViewExampleBorder))),
             Builder<BoxLayoutView>()
@@ -122,10 +122,11 @@ class AnimationGallery : public BoxLayoutView, public TextfieldController {
 
  private:
   void Update() {
-    if (size_ > 24)
+    if (size_ > 24) {
       animated_image_view_->SetImageSize(gfx::Size(size_, size_));
-    else
+    } else {
       animated_image_view_->ResetImageSize();
+    }
     InvalidateLayout();
   }
 

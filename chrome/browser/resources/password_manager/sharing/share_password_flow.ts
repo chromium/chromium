@@ -49,9 +49,15 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
       iconUrl: String,
       password: Object,
 
-      flowState: Number,
+      flowState: {
+        type: Number,
+        lalue: ShareFlowState.NO_DIALOG,
+      },
 
-      fetchResults_: Object,
+      fetchResults_: {
+        type: Object,
+        value: null,
+      },
 
       recipients_: {
         type: Array,
@@ -66,12 +72,13 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
     };
   }
 
-  passwordName: string;
-  iconUrl: string;
-  password: chrome.passwordsPrivate.PasswordUiEntry;
-  flowState: ShareFlowState = ShareFlowState.NO_DIALOG;
-  private recipients_: chrome.passwordsPrivate.RecipientInfo[];
-  private fetchResults_: chrome.passwordsPrivate.FamilyFetchResults|null = null;
+  declare passwordName: string;
+  declare iconUrl: string;
+  declare password: chrome.passwordsPrivate.PasswordUiEntry;
+  declare flowState: ShareFlowState;
+  declare private recipients_: chrome.passwordsPrivate.RecipientInfo[];
+  declare private fetchResults_: chrome.passwordsPrivate.FamilyFetchResults|
+      null;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 

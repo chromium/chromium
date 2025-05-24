@@ -35,5 +35,15 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/ResourceFetcher.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/StreamType.java",
   ]
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  deps = [
+    "//third_party/android_deps:org_jspecify_jspecify_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+  ]
+
+  # Prevent automatic dep on build_java.
+  chromium_code = false
+
+  # Do not let chromium_code = false disable Error Prone.
+  enable_errorprone = true
 }

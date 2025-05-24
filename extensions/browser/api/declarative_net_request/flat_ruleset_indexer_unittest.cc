@@ -2,23 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/declarative_net_request/flat_ruleset_indexer.h"
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <array>
 #include <map>
 #include <optional>
 #include <string>
 #include <string_view>
 
-#include "base/format_macros.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
@@ -383,8 +379,8 @@ void VerifyExtensionMetadata(
         [](const ::flatbuffers::Vector<
                ::flatbuffers::Offset<flat::ModifyHeaderInfo>>* metadata_headers,
            const std::vector<dnr_api::ModifyHeaderInfo>& indexed_headers) {
-          return base::ranges::equal(
-              indexed_headers, ToVector(metadata_headers), EqualsForTesting);
+          return std::ranges::equal(indexed_headers, ToVector(metadata_headers),
+                                    EqualsForTesting);
         };
 
     EXPECT_TRUE(are_header_modifications_equal(
@@ -428,19 +424,18 @@ const flat::ExtensionIndexedRuleset* AddRuleAndGetRuleset(
 //    - Verifies that the ExtensionIndexedRuleset created is valid.
 // Note: this does not test regex rules which are part of the
 // ExtensionIndexedRuleset.
-void AddRulesAndVerifyIndex(
-    const std::vector<IndexedRule>& rules_to_index,
-    const std::vector<const IndexedRule*>
-        before_request_expected_index_lists[flat::IndexType_count],
-    const std::vector<const IndexedRule*>
-        headers_received_expected_index_lists[flat::IndexType_count]) {
+void AddRulesAndVerifyIndex(const std::vector<IndexedRule>& rules_to_index,
+                            base::span<const std::vector<const IndexedRule*>>
+                                before_request_expected_index_lists,
+                            base::span<const std::vector<const IndexedRule*>>
+                                headers_received_expected_index_lists) {
   flatbuffers::DetachedBuffer buffer;
   const flat::ExtensionIndexedRuleset* ruleset =
       AddRuleAndGetRuleset(rules_to_index, &buffer);
   ASSERT_TRUE(ruleset);
 
   for (size_t i = 0; i < flat::IndexType_count; ++i) {
-    SCOPED_TRACE(base::StringPrintf("Testing index %" PRIuS, i));
+    SCOPED_TRACE(base::StringPrintf("Testing index %zu", i));
     VerifyIndexEquality(before_request_expected_index_lists[i],
                         ruleset->before_request_index_list()->Get(i));
     VerifyIndexEquality(headers_received_expected_index_lists[i],
@@ -631,8 +626,8 @@ TEST_F(FlatRulesetIndexerTest, MultipleRules) {
   // Hence we build `expected_before_request_index_lists` and
   // `expected_headers_received_index_lists` once the vector `rules_to_index` is
   // finalized.
-  std::vector<const IndexedRule*>
-      expected_before_request_index_lists[flat::IndexType_count];
+  std::array<std::vector<const IndexedRule*>, flat::IndexType_count>
+      expected_before_request_index_lists;
   expected_before_request_index_lists
       [flat::IndexType_before_request_except_allow_all_requests] = {
           &rules_to_index[0], &rules_to_index[1], &rules_to_index[2],
@@ -645,8 +640,8 @@ TEST_F(FlatRulesetIndexerTest, MultipleRules) {
   expected_before_request_index_lists[flat::IndexType_modify_headers] = {
       &rules_to_index[9], &rules_to_index[10]};
 
-  std::vector<const IndexedRule*>
-      expected_headers_received_index_lists[flat::IndexType_count];
+  std::array<std::vector<const IndexedRule*>, flat::IndexType_count>
+      expected_headers_received_index_lists;
   expected_headers_received_index_lists
       [flat::IndexType_before_request_except_allow_all_requests] = {
           &rules_to_index[11]};
@@ -720,7 +715,7 @@ TEST_F(FlatRulesetIndexerTest, RegexRules) {
 
   // All the indices should be empty, since we only have regex rules.
   for (size_t i = 0; i < flat::IndexType_count; ++i) {
-    SCOPED_TRACE(base::StringPrintf("Testing index %" PRIuS, i));
+    SCOPED_TRACE(base::StringPrintf("Testing index %zu", i));
     VerifyIndexEquality({}, ruleset->before_request_index_list()->Get(i));
     VerifyIndexEquality({}, ruleset->headers_received_index_list()->Get(i));
   }

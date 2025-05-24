@@ -5,8 +5,10 @@
 #include "cc/trees/frame_rate_estimator.h"
 
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
@@ -14,12 +16,6 @@ namespace cc {
 namespace {
 
 constexpr auto kInputPriorityDelay = base::Milliseconds(250);
-
-bool IsThrottleFrameRateOnManyDidNotProduceFrameEnabled() {
-  static const bool feature_allowed = base::FeatureList::IsEnabled(
-      features::kThrottleFrameRateOnManyDidNotProduceFrame);
-  return feature_allowed;
-}
 
 }  // namespace
 
@@ -33,9 +29,7 @@ FrameRateEstimator::FrameRateEstimator(base::SequencedTaskRunner* task_runner)
 FrameRateEstimator::~FrameRateEstimator() = default;
 
 void FrameRateEstimator::SetVideoConferenceMode(bool enabled) {
-  static const bool feature_allowed =
-      base::FeatureList::IsEnabled(features::kReducedFrameRateEstimation);
-  if (!feature_allowed || enabled == in_video_conference_mode_) {
+  if (enabled == in_video_conference_mode_) {
     return;
   }
 
@@ -45,7 +39,12 @@ void FrameRateEstimator::SetVideoConferenceMode(bool enabled) {
 }
 
 void FrameRateEstimator::WillDraw(base::TimeTicks now) {
-  num_did_not_produce_frame_since_last_draw_ = 0u;
+  TRACE_EVENT1(
+      "cc,benchmark", "FrameRateEstimator::WillDraw", "Info",
+      base::StringPrintf("\nin_video_conference_mode: %d\ninput_priority_mode: "
+                         "%d",
+                         in_video_conference_mode_, input_priority_mode_));
+
   if (!in_video_conference_mode_ || input_priority_mode_) {
     return;
   }
@@ -82,15 +81,6 @@ base::TimeDelta FrameRateEstimator::GetPreferredInterval() const {
     return viz::BeginFrameArgs::DefaultInterval() * 2;
   }
 
-  static const uint64_t num_did_not_produce_frame_before_throttle =
-      static_cast<uint64_t>(
-          features::kNumDidNotProduceFrameBeforeThrottle.Get());
-  if (IsThrottleFrameRateOnManyDidNotProduceFrameEnabled() &&
-      num_did_not_produce_frame_since_last_draw_ >
-          num_did_not_produce_frame_before_throttle) {
-    return viz::BeginFrameArgs::DefaultInterval() * 2;
-  }
-
   return viz::BeginFrameArgs::MinInterval();
 }
 
@@ -107,7 +97,6 @@ void FrameRateEstimator::OnExitInputPriorityMode() {
 
 void FrameRateEstimator::DidNotProduceFrame() {
   num_of_consecutive_frames_with_min_delta_ = 0u;
-  ++num_did_not_produce_frame_since_last_draw_;
 }
 
 }  // namespace cc

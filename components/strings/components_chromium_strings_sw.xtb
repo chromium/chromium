@@ -20,6 +20,9 @@
          na uondoe tiki "Tumia seva ya proksi kwa kikasha kaguzi chako cha LAN".</translation>
 <translation id="4622039161600275920">Ukurasa huu umezuiwa na Chromium</translation>
 <translation id="48558539577516920">Ruhusu Chromium ifikie mtandao kwenye mipangilio yako ya kinga mtandao au kingavirusi.</translation>
+<translation id="4949828774841497663">Nenda kwenye Programu &gt; Mipangilio ya Mfumo &gt; Mtandao, chagua
+          mtandao unaotumika, bofya kitufe cha Maelezo... kisha uache kuchagua seva zozote mbadala
+          ambazo huenda umechagua.</translation>
 <translation id="580822234363523061">Nenda kwenye
           menyu ya Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -28,6 +31,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
          na uhakikishe kuwa usanidi wako umewekwa kwenye "hakuna proksi" au "moja kwa moja."</translation>
+<translation id="648062525172759633">Kurasa hizi zinanuiwa kutumiwa na wasanidi programu wa Chromium na huenda zisiweze kufanyiwa majaribio wala kudumishwa kila wakati. Ili uzifungue, nenda kwenye <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, bofya kitufe ili ufungue kurasa za utatuzi kisha urudi kwenye ukurasa huu tena.</translation>
 <translation id="6549378540556750549">Chromium inawezeshwa pia na <ph name="BEGIN_LINK_OSS" />programu nyingine huria<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Mabadiliko yako yataanza kufanya kazi wakati ujao utakapozindua upya Chromium.</translation>
 <translation id="691026815377248078">Chromium inahitaji ruhusa ya kufikia Bluetooth ili iendelee 
@@ -38,8 +42,6 @@
         <ph name="SETTINGS_TITLE" />
         <ph name="ADVANCED_TITLE" />na uondoe tiki kwenye "<ph name="NO_PREFETCH_DESCRIPTION" />."
         Ikiwa hili halitatatua tatizo, tunapendekeza uchague tena chaguo hili kwa utendaji ulioboreshwa.</translation>
-<translation id="8187289872471304532">Nenda kwenye
-          Programu &gt; Mapendeleo ya Mfumo &gt; Mtandao &gt; Uboreshaji &gt; Proksi na uondoe tiki kwenye proksi zozote ambazo zimechaguliwa.</translation>
 <translation id="8597726643333341451">Unaangalia ukurasa salama wa Chrome ya Majaribio</translation>
 <translation id="8684913864886094367">Chromium haikuzimika kwa njia sahihi.</translation>
 </translationbundle>

@@ -7,11 +7,10 @@
 
 #include <vector>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace sharesheet {
 
@@ -26,13 +25,13 @@ class SharesheetUiDelegate : public SharesheetController {
                           apps::IntentPtr intent,
                           DeliveredCallback delivered_callback,
                           CloseCallback close_callback) = 0;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog.
   virtual void ShowNearbyShareBubbleForArc(apps::IntentPtr intent,
                                            DeliveredCallback delivered_callback,
                                            CloseCallback close_callback) = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Invoked immediately after an action has launched in the event that UI
   // changes need to occur at this point.

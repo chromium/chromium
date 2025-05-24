@@ -8,6 +8,7 @@
 #include <bitset>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"

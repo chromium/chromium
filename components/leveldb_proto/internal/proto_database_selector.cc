@@ -473,8 +473,7 @@ void ProtoDatabaseSelector::AddTransaction(base::OnceClosure task) {
       pending_tasks_.push(std::move(task));
       break;
     case InitStatus::NOT_STARTED:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case InitStatus::DONE:
       std::move(task).Run();
       break;

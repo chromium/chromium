@@ -4,10 +4,11 @@
 
 #include "ash/system/notification_center/notification_center_test_api.h"
 
+#include <algorithm>
 #include <cstdint>
 
 #include "ash/constants/ash_features.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -20,7 +21,6 @@
 #include "ash/system/notification_center/views/notification_list_view.h"
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "ui/base/models/image_model.h"
@@ -252,7 +252,7 @@ bool NotificationCenterTestApi::IsDoNotDisturbIconShown() {
 NotificationIconTrayItemView*
 NotificationCenterTestApi::GetNotificationIconForId(const std::string& id) {
   auto tray_items = GetTray()->notification_icons_controller_->tray_items();
-  auto tray_item_iter = base::ranges::find_if(
+  auto tray_item_iter = std::ranges::find_if(
       tray_items, [&id](NotificationIconTrayItemView* tray_item) {
         return tray_item->GetNotificationId() == id;
       });

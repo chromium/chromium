@@ -26,8 +26,6 @@
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -96,10 +94,9 @@ using MeasurementMode = V8DetailedMemoryRequest::MeasurementMode;
 
 // Forwards the pending receiver to the RenderProcessHost and binds it on the
 // UI thread.
-void BindReceiverOnUIThread(
-    mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>
-        pending_receiver,
-    RenderProcessHostProxy proxy) {
+void BindReceiver(mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>
+                      pending_receiver,
+                  RenderProcessHostProxy proxy) {
   auto* render_process_host = proxy.Get();
   if (render_process_host) {
     render_process_host->BindReceiver(std::move(pending_receiver));
@@ -140,7 +137,7 @@ const V8DetailedMemoryRequest* ChooseHigherPriorityRequest(
 internal::BindV8DetailedMemoryReporterCallback* g_test_bind_callback = nullptr;
 
 // Per-frame memory measurement involves the following classes that live on the
-// PM sequence:
+// UI thread:
 //
 // V8DetailedMemoryDecorator: Central rendezvous point. Coordinates
 //     V8DetailedMemoryRequest and V8DetailedMemoryObserver objects. Owned by
@@ -150,8 +147,8 @@ internal::BindV8DetailedMemoryReporterCallback* g_test_bind_callback = nullptr;
 //     there are no more measurements scheduled.
 //
 // V8DetailedMemoryRequest: Indicates that a caller wants memory to be measured
-//     at a specific interval. Owned by the caller but must live on the PM
-//     sequence. V8DetailedMemoryRequest objects register themselves with
+//     at a specific interval. Owned by the caller but must live on the UI
+//     thread. V8DetailedMemoryRequest objects register themselves with
 //     V8DetailedMemoryDecorator on creation and unregister themselves on
 //     deletion, which cancels the corresponding measurement.
 //
@@ -181,17 +178,7 @@ internal::BindV8DetailedMemoryReporterCallback* g_test_bind_callback = nullptr;
 // V8DetailedMemoryObserver: Callers can implement this and register with
 //     V8DetailedMemoryDecorator::AddObserver() to be notified when
 //     measurements are available for a process. Owned by the caller but must
-//     live on the PM sequence.
-//
-// Additional wrapper classes can access these classes from other sequences:
-//
-// V8DetailedMemoryRequestAnySeq: Wraps V8DetailedMemoryRequest. Owned by the
-//     caller and lives on any sequence.
-//
-// V8DetailedMemoryObserverAnySeq: Callers can implement this and register it
-//     with V8DetailedMemoryRequestAnySeq::AddObserver() to be notified when
-//     measurements are available for a process. Owned by the caller and lives
-//     on the same sequence as the V8DetailedMemoryRequestAnySeq.
+//     live on the UI thread.
 
 ////////////////////////////////////////////////////////////////////////////////
 // ExecutionContextAttachedData
@@ -623,10 +610,7 @@ void NodeAttachedProcessData::EnsureRemote() {
   if (g_test_bind_callback) {
     g_test_bind_callback->Run(std::move(pending_receiver), std::move(proxy));
   } else {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BindReceiverOnUIThread, std::move(pending_receiver),
-                       std::move(proxy)));
+    BindReceiver(std::move(pending_receiver), std::move(proxy));
   }
 }
 

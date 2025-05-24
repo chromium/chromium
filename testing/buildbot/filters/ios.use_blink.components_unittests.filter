@@ -310,6 +310,7 @@
 -AutofillAcrossIframesTest.FillMultiFrameForm_SingleField
 -AutofillAcrossIframesTest.FillSingleFrameForm
 -AutofillAcrossIframesTest.SubmitMultiFrameForm
+-AutofillAcrossIframesTest.SubmitMultiFrameForm_XHR
 -AutofillAcrossIframesTest.TextChangeOnMultiFrameForm
 -AutofillAcrossIframesTest.UpdateOnFrameDeletion
 
@@ -364,3 +365,48 @@
 -BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrialOutputPath
 -BackgroundTracingUtilsTest.SetupSystemTracingFromFieldTrial
 -BackgroundTracingUtilsTest.SetupSystemTracingFromFieldTrial
+
+# TODO(crbug.com/370751353): These tests have been failing since
+# https://crrev.com/c/5873728.
+-RemoteFrameTokenRegistrationTest.ChildFrameRegistersItself
+-RemoteFrameTokenRegistrationTest.MainFrameRegistersItself
+
+# TODO(crbug.com/371838042): These tests have been failing since
+# https://crrev.com/c/5888544.
+-SharedPasswordControllerTest.PresavesGeneratedPassword_Empty
+-SharedPasswordControllerTest.TriggerPasswordGeneration_Proactively
+
+# TODO(crbug.com/380309588): These tests have been failing since
+# https://crrev.com/c/6000833.
+-All/FormSubmittedHookTest.TestFormSubmittedHook/0
+-All/FormSubmittedHookTest.TestFormSubmittedHook/1
+-All/FormSubmittedHookTest.TestFormSubmittedHookAcrossIframes/0
+-All/FormSubmittedHookTest.TestFormSubmittedHookAcrossIframes/1
+
+# TODO(crbug.com/381917887): This test has been failing since
+# https://crrev.com/c/6038336.
+-SharedPasswordControllerTest.PasswordManagerIsNotifiedAboutModelPredictions
+
+# TODO(crbug.com/388135869): This test has been failing since
+# https://crrev.com/c/6143155.
+-LocalStorageImplStaleDeletionTest.StaleStorageAreaDeletion
+-LocalStorageImplTest.Basic
+-LocalStorageImplTest.DeleteStorageNotifiesWrapper
+-LocalStorageImplTest.DeleteStorageWithPendingWrites
+-LocalStorageImplTest.DeleteStorageWithoutConnection
+-LocalStorageImplTest.GetStorageUsage_Data
+-LocalStorageImplTest.MetaDataClearedOnDelete
+-LocalStorageImplTest.OpeningWrappersPurgesInactiveWrappers
+-LocalStorageImplTest.ShutdownClearsData
+-LocalStorageImplTest.StorageKeysAreIndependent
+-LocalStorageImplTest.WrapperOutlivesMojoConnection
+-LocalStorageImplTest.MetaDataClearedOnDeleteAll
+
+# TODO(crbug.com/395384787): This test has been failing since
+# https://crrev.com/c/6185554.
+-MlEmbedderTest.EmbedderRunningStatus
+-MlEmbedderTest.ReturnsEmbeddings
+-MlEmbedderTest.ReturnsExecutionFailure
+
+# TODO(crbug.com/413598265): The test is flaky both on simulator and on device.
+-FeaturedSearchProviderTest.FLAKY_StarterPackExpansionRelevance

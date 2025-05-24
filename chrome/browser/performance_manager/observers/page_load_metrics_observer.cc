@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/navigation_handle.h"
@@ -21,6 +22,10 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/process_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "components/guest_view/browser/guest_view_base.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -279,6 +284,13 @@ void PageLoadMetricsWebContentsObserver::DidFinishNavigation(
       !navigation_handle->GetRenderFrameHost()->IsActive()) {
     return;
   }
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  // Ignore navigations within guests. They don't affect the load state.
+  if (guest_view::GuestViewBase::IsGuest(navigation_handle)) {
+    return;
+  }
+#endif
 
   DCHECK(is_loading_);
 

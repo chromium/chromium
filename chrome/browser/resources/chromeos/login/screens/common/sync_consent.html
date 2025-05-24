@@ -155,13 +155,10 @@ found in the LICENSE file.
     aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
     for-step="ash-sync">
   <iron-icon slot="icon" icon="sync-consent-32:googleg"></iron-icon>
-  <h1 slot="title" consent-description hidden="[[isLacrosEnabled]]">
+  <h1 slot="title" consent-description>
     [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
   </h1>
-  <h1 slot="title" consent-description hidden="[[!isLacrosEnabled]]">
-    [[i18nDynamic(locale, 'syncConsentScreenTitleArcRestrictions')]]
-  </h1>
-  <div slot="subtitle" consent-description hidden="[[isLacrosEnabled]]">
+  <div slot="subtitle" consent-description>
     [[i18nDynamic(locale, 'syncConsentScreenSubtitle')]]
   </div>
   <iron-icon slot="subtitle-illustration" icon="oobe-illos:sync-consent-illo"
@@ -169,8 +166,7 @@ found in the LICENSE file.
   </iron-icon>
   </div>
   <div slot="content" class="landscape-header-aligned">
-    <div class="overview-list-item layout horizontal"
-        hidden="[[isLacrosEnabled]]">
+    <div class="overview-list-item layout horizontal">
       <iron-icon icon="oobe-24:settings-gear" class="overview-list-item-icon"
           aria-hidden="true"></iron-icon>
       <div class="flex layout vertical center-justified">
@@ -180,8 +176,7 @@ found in the LICENSE file.
         </div>
       </div>
     </div>
-    <div class="overview-list-item layout horizontal"
-        hidden="[[isLacrosEnabled]]">
+    <div class="overview-list-item layout horizontal">
       <iron-icon icon="oobe-24:browser-sync" class="overview-list-item-icon"
           aria-hidden="true"></iron-icon>
       <div class="flex layout vertical center-justified">
@@ -195,14 +190,10 @@ found in the LICENSE file.
         </div>
       </div>
     </div>
-    <div hidden="[[!isLacrosEnabled]]" consent-description>
-      [[i18nDynamic(locale,
-          'syncConsentScreenOsSyncDescriptionArcRestrictions')]]
-    </div>
 
     <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode]]"
         consent-description>
-      [[getReviewSettingText(locale, isLacrosEnabled)]]
+      [[getReviewSettingText(locale)]]
     </cr-checkbox>
   </div>
   <div slot="bottom-buttons">
@@ -230,198 +221,3 @@ found in the LICENSE file.
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
 </oobe-loading-dialog>
 
-<oobe-adaptive-dialog id="syncConsentLacrosOverviewDialog" role="dialog"
-  for-step="lacros-overview">
-  <iron-icon slot="icon" icon="oobe-32:sync-chrome"></iron-icon>
-  <h1 slot="title" consent-description>
-    [[i18nDynamic(locale, 'syncConsentScreenTitleLacros')]]
-  </h1>
-  <div slot="subtitle">
-    <p consent-description>
-      [[i18nDynamic(locale, 'syncConsentScreenSubtitleLacros')]]
-    </p>
-    <p consent-description>
-      [[i18nDynamic(locale, 'syncConsentScreenAdditionalSubtitleLacros')]]
-    </p>
-  </div>
-  <div slot="content" class="layout vertical landscape-vertical-centered">
-    <iron-icon icon="oobe-illos:sync-consent-illo" class="illustration-jelly">
-    </iron-icon>
-  </div>
-  <div slot="bottom-buttons" hidden="[[isMinorMode]]">
-    <oobe-text-button id="manageButtonRegularUser"
-        on-click="onManageClicked"
-        label-for-aria="[[i18nDynamic(locale, 'syncConsentScreenManage')]]">
-      <div slot="text" consent-description consent-confirmation>
-        [[i18nDynamic(locale, 'syncConsentScreenManage')]]
-      </div>
-    </oobe-text-button>
-    <oobe-text-button class="focus-on-show" inverse
-        id="syncEverythingButton"
-        on-click="onSyncEverything"
-        label-for-aria="[[i18nDynamic(locale, 'syncConsentTurnOnSync')]]">
-      <div slot="text" consent-description consent-confirmation>
-        [[i18nDynamic(locale, 'syncConsentTurnOnSync')]]
-      </div>
-    </oobe-text-button>
-  </div>
-  <div class="bottom-buttons" slot="bottom-buttons" hidden="[[!isMinorMode]]">
-    <oobe-text-button id="manageButtonMinorUser"
-        on-click="onManageClicked"
-        label-for-aria="[[i18nDynamic(locale, 'syncConsentScreenManage')]]">
-      <div slot="text" consent-description consent-confirmation>
-        [[i18nDynamic(locale, 'syncConsentScreenManage')]]
-      </div>
-    </oobe-text-button>
-    <div id="rightButtons">
-      <oobe-text-button id="declineLacrosButton"
-          on-click="onLacrosDeclineClicked"
-          label-for-aria="[[i18nDynamic(locale,
-                                          'syncConsentScreenDecline')]]">
-        <div slot="text" consent-description consent-confirmation>
-          [[i18nDynamic(locale, 'syncConsentScreenDecline')]]
-        </div>
-      </oobe-text-button>
-      <oobe-text-button class="focus-on-show"
-          id="syncEverythingButton"
-          on-click="onSyncEverything"
-          label-for-aria="[[i18nDynamic(locale, 'syncConsentTurnOnSync')]]">
-        <div slot="text" consent-description consent-confirmation>
-          [[i18nDynamic(locale, 'syncConsentTurnOnSync')]]
-        </div>
-      </oobe-text-button>
-    </div>
-  </div>
-</oobe-adaptive-dialog>
-
-<oobe-adaptive-dialog id="syncConsentLacrosCustomizeDialog" role="dialog"
-  for-step="lacros-customize">
-  <iron-icon slot="icon" icon="oobe-32:sync-chrome"></iron-icon>
-  <h1 slot="title">
-    [[i18nDynamic(locale, 'syncConsentScreenManageTitleLacros')]]
-  </h1>
-  <div slot="subtitle">
-    [[i18nDynamic(locale, 'syncConsentScreenManageSubtitleLacros')]]
-  </div>
-  <div slot="back-navigation">
-    <oobe-back-button id="backButton"
-        on-click="onBackClicked"></oobe-back-button>
-  </div>
-  <div slot="content" class="layout vertical landscape-header-aligned ">
-    <div id="cards-container">
-      <!--Apps card-->
-      <div class="card layout horizontal">
-        <div class="card-icon">
-          <iron-icon icon="oobe-32:sync-app"></iron-icon>
-        </div>
-        <div aria-hidden="true"
-            class="text-container flex layout vertical center-justified">
-          <div class="card-title">
-            [[i18nDynamic(locale,
-                'syncConsentScreenOsSyncItemOptionAppsTitle')]]
-          </div>
-          <div class="card-subtitle">
-            [[i18nDynamic(locale,
-                'syncConsentScreenOsSyncItemOptionAppsSubtitle')]]
-          </div>
-        </div>
-        <div style="display:inline-block">
-          <iron-icon id="tooltip-icon" icon="oobe-32:sync-tooltip"
-            role="img" aria-label$="[[getAriaLabeltooltip(locale)]]">
-          </iron-icon>
-          <paper-tooltip id="tooltip-element" position="left"
-              aria-hidden="true"
-              for="tooltip-icon"
-              animation-delay="0">
-            <p  class="tooltip-text">
-              [[i18nDynamic(locale,
-                'syncConsentScreenOsSyncAppsTooltipText')]]
-            </p>
-            <p  class="tooltip-text">
-              [[i18nDynamic(locale,
-                'syncConsentScreenOsSyncAppsTooltipAdditionalText')]]
-            </p>
-          </paper-tooltip>
-        </div>
-        <cr-toggle id="appsTogglebutton" checked="{{osSyncItemsStatus.osApps}}"
-          aria-label$="[[getAriaLabelToggleButtons(locale,
-            'syncConsentScreenOsSyncItemOptionAppsTitle' ,
-            'syncConsentScreenOsSyncItemOptionAppsSubtitle')]]">
-        </cr-toggle>
-      </div>
-       <!--Settings card-->
-      <div class="card layout horizontal">
-        <div class="card-icon">
-          <iron-icon icon="oobe-32:sync-settings"></iron-icon>
-        </div>
-        <div aria-hidden="true" class="text-container">
-          <div class="card-title">
-            [[i18nDynamic(locale,
-              'syncConsentScreenOsSyncItemOptionSettingsTitle')]]
-          </div>
-          <div class="card-subtitle">
-            [[i18nDynamic(locale,
-              'syncConsentScreenOsSyncItemOptionSettingsSubtitle')]]
-          </div>
-        </div>
-        <cr-toggle id="settingsTogglebutton"
-                   on-change="onSettingsSyncedChanged"
-                   checked="{{osSyncItemsStatus.osPreferences}}"
-                   aria-label$="[[getAriaLabelToggleButtons(locale,
-                      'syncConsentScreenOsSyncItemOptionSettingsTitle' ,
-                      'syncConsentScreenOsSyncItemOptionSettingsSubtitle')]]">
-        </cr-toggle>
-      </div>
-      <!--Wifi card-->
-      <div class="card layout horizontal">
-        <div class="card-icon">
-          <iron-icon icon="oobe-32:sync-wifi"></iron-icon>
-        </div>
-        <div aria-hidden="true" class="text-container">
-          <div class="card-title">
-            [[i18nDynamic(locale,
-              'syncConsentScreenOsSyncItemOptionWifiTitle')]]
-          </div>
-          <div class="card-subtitle">
-            [[i18nDynamic(locale,
-              'syncConsentScreenOsSyncItemOptionWifiSubtitle')]]
-          </div>
-        </div>
-        <cr-toggle id="wifiTogglebutton"
-            checked="{{osSyncItemsStatus.osWifiConfigurations}}"
-            aria-label$="[[getAriaLabelToggleButtons(locale,
-                      'syncConsentScreenOsSyncItemOptionWifiTitle' ,
-                      'syncConsentScreenOsSyncItemOptionWifiSubtitle')]]">
-        </cr-toggle>
-      </div>
-       <!--Wallpaper card-->
-      <div class="card layout horizontal">
-        <div class="card-icon">
-          <iron-icon icon="oobe-32:sync-wallpaper"></iron-icon>
-        </div>
-        <div aria-hidden="true" class="text-container">
-          <div class="card-title">
-            [[i18nDynamic(locale,
-              'syncConsentScreenOsSyncItemOptionWallpaperTitle')]]
-          </div>
-          <div class="card-subtitle">
-            [[i18nDynamic(locale,
-              'syncConsentScreenOsSyncItemOptionWallpaperSubtitle')]]
-          </div>
-        </div>
-        <cr-toggle id="wallpaperTogglebutton"
-                   checked="{{osSyncItemsStatus.osWallpaper}}"
-                   disabled="[[!osSyncItemsStatus.osPreferences]]"
-                   aria-label$="[[getAriaLabelToggleButtons(locale,
-                      'syncConsentScreenOsSyncItemOptionWallpaperTitle' ,
-                      'syncConsentScreenOsSyncItemOptionWallpaperSubtitle')]]">
-        </cr-toggle>
-      </div>
-    </div>
-  </div>
-  <div slot="bottom-buttons">
-    <oobe-next-button id="nextButton" class="focus-on-show"
-      on-click="onNextClicked">
-    </oobe-next-button>
-  </div>
-</oobe-adaptive-dialog>

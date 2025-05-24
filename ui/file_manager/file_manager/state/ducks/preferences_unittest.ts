@@ -28,7 +28,7 @@ const INITIAL_PREFERENCES: Preferences = {
   localUserFilesAllowed: true,
   defaultLocation: chrome.fileManagerPrivate.DefaultLocation.MY_FILES,
   skyVaultMigrationDestination:
-      chrome.fileManagerPrivate.CloudProvider.NOT_SPECIFIED,
+      chrome.fileManagerPrivate.MigrationDestination.NOT_SPECIFIED,
 };
 
 /**

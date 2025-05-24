@@ -20,6 +20,9 @@
           i poništite odabir potvrdnog okvira "Upotrijebi proxy poslužitelj za LAN".</translation>
 <translation id="4622039161600275920">Chromium je blokirao ovu stranicu</translation>
 <translation id="48558539577516920">U postavkama vatrozida ili antivirusnog programa omogućite Chromiumu da pristupa mreži.</translation>
+<translation id="4949828774841497663">Idite na Aplikacije &gt; Postavke sustava &gt; Mreža, odaberite
+          aktivnu mrežu, kliknite gumb Pojedinosti... i poništite odabir svih proxyja
+          koji su možda odabrani.</translation>
 <translation id="580822234363523061">Idite na
           izbornik Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -28,6 +31,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i provjerite je li konfiguracija postavljena na "bez proxyja" ili "izravno".</translation>
+<translation id="648062525172759633">Te su stranice namijenjene razvojnim programerima Chromiuma i možda se ne održavaju ili testiraju aktivno. Da biste ih omogućili, otvorite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb za omogućivanje stranica za otklanjanje pogrešaka, a zatim se ponovo vratite na ovu stranicu.</translation>
 <translation id="6549378540556750549">Chromium je omogućio i drugi <ph name="BEGIN_LINK_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Promjene će početi vrijediti sljedeći put kad ponovo pokrenete Chromium.</translation>
 <translation id="691026815377248078">Chromium treba pristup Bluetoothu za nastavak 
@@ -41,9 +45,6 @@
         pa poništite odabir stavke "<ph name="NO_PREFETCH_DESCRIPTION" />".
         Ako se time ne riješi poteškoća, preporučujemo da ponovo odaberete tu opciju
         radi bolje izvedbe.</translation>
-<translation id="8187289872471304532">Idite na
-          Aplikacije &gt; Postavke sustava &gt; Mreža &gt; Napredno &gt; Proxy poslužitelji
-          i poništite odabir proxy poslužitelja.</translation>
 <translation id="8597726643333341451">Pregledavate sigurnu stranicu Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium se nije ispravno zatvorio.</translation>
 </translationbundle>

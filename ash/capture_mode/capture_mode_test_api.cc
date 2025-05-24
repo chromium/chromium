@@ -132,7 +132,7 @@ void CaptureModeTestApi::SetOnVideoRecordCountdownFinishedCallback(
 }
 
 void CaptureModeTestApi::SetOnImageCapturedForSearchCallback(
-    base::OnceClosure callback) {
+    OnImageCapturedForSearchCallback callback) {
   controller_->on_image_captured_for_search_callback_for_test_ =
       std::move(callback);
 }
@@ -208,7 +208,7 @@ aura::Window* CaptureModeTestApi::GetFolderSelectionDialogWindow() {
 
 void CaptureModeTestApi::SetForceUseGpuMemoryBufferForCameraFrames(bool value) {
   DCHECK(controller_->camera_controller());
-  capture_mode::CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(
+  ::capture_mode::CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(
       value);
 }
 

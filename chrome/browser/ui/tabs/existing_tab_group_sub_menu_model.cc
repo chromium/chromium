@@ -13,7 +13,7 @@
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
@@ -23,8 +23,11 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/color/color_provider.h"
@@ -32,9 +35,23 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_elider.h"
 
 namespace {
 constexpr int kIconSize = 14;
+
+// TODO(crbug.com/418774949) Move to TabGroupFeatures for desktop.
+std::u16string GetContentString(const TabGroup& group) {
+  constexpr size_t kContextMenuTabTitleMaxLength = 30;
+  std::u16string format_string = l10n_util::GetPluralStringFUTF16(
+      IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, group.tab_count() - 1);
+  std::u16string short_title;
+  gfx::ElideString(
+      group.GetFirstTab()->GetTabFeatures()->tab_ui_helper()->GetTitle(),
+      kContextMenuTabTitleMaxLength, &short_title);
+  return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
+}
+
 }  // anonymous namespace
 
 ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
@@ -67,8 +84,9 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
   if (tab_menu_model_delegate_) {
     for (Browser* browser :
          tab_menu_model_delegate_->GetOtherBrowserWindows(/*is_app=*/false)) {
-      if (browser->tab_strip_model() == model)
+      if (browser->tab_strip_model() == model) {
         continue;
+      }
       const std::vector<MenuItemInfo> retrieved_menu_item_infos =
           GetMenuItemsFromModel(browser->tab_strip_model());
       menu_item_infos.insert(menu_item_infos.end(),
@@ -93,8 +111,9 @@ ExistingTabGroupSubMenuModel::~ExistingTabGroupSubMenuModel() = default;
 const std::vector<tab_groups::TabGroupId>
 ExistingTabGroupSubMenuModel::GetGroupsFromModel(TabStripModel* current_model) {
   // No model, no group model, no service.
-  if (!current_model || !current_model->group_model())
+  if (!current_model || !current_model->group_model()) {
     return {};
+  }
 
   // Add tab groups to `groups` if they differ from our indexes current group.
   std::vector<tab_groups::TabGroupId> groups;
@@ -125,7 +144,7 @@ ExistingTabGroupSubMenuModel::GetMenuItemsFromModel(
     // TODO(dljames): Add method to tab_group.cc to return displayed_title.
     // TODO(dljames): Add unit tests for all of tab_group.h
     const std::u16string displayed_title =
-        group_title.empty() ? tab_group->GetContentString() : group_title;
+        group_title.empty() ? GetContentString(*tab_group) : group_title;
     const int color_id =
         GetTabGroupContextMenuColorId(tab_group->visual_data()->color());
     const ui::ColorProvider& color_provider =
@@ -146,8 +165,9 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
     int context_index,
     TabMenuModelDelegate* tab_menu_model_delegate) {
   TabGroupModel* group_model = model->group_model();
-  if (!group_model)
+  if (!group_model) {
     return false;
+  }
 
   // Look at tab groups in current window
   for (tab_groups::TabGroupId group : group_model->ListTabGroups()) {
@@ -162,12 +182,14 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
          tab_menu_model_delegate->GetOtherBrowserWindows(/*is_app=*/false)) {
       TabGroupModel* browser_group_model =
           browser->tab_strip_model()->group_model();
-      if (!browser_group_model)
+      if (!browser_group_model) {
         continue;
+      }
       for (tab_groups::TabGroupId group :
            browser_group_model->ListTabGroups()) {
-        if (ShouldShowGroup(model, context_index, group))
+        if (ShouldShowGroup(model, context_index, group)) {
           return true;
+        }
       }
     }
   }
@@ -184,8 +206,9 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
 
   DCHECK_LE(size_t(target_index), target_index_to_group_mapping_.size());
   TabGroupModel* group_model = model()->group_model();
-  if (!group_model)
+  if (!group_model) {
     return;
+  }
 
   base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
 
@@ -212,8 +235,9 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   }
 
   // Do nothing if the browser does not exist.
-  if (!browser_index.has_value())
+  if (!browser_index.has_value()) {
     return;
+  }
 
   std::vector<int> selected_indices;
   if (!model()->IsTabSelected(GetContextIndex())) {
@@ -226,30 +250,42 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
     selected_indices =
         std::vector<int>(selection_indices.begin(), selection_indices.end());
   }
+  // Collect the selected tab indices from the source model into a list.
+  std::vector<tabs::TabInterface*> tabs;
+  std::transform(selected_indices.begin(), selected_indices.end(),
+                 std::back_inserter(tabs),
+                 [this](int index) { return model()->GetTabAtIndex(index); });
 
-  // At the time this was written, all tabs moved to a new window via
-  // MoveToExistingWindow() are placed at the end of the tabstrip where any
-  // previously selected tabs in the new window are unselected.
+  // Unpin the tabs before moving from end
+  for (int i = selected_indices.size() - 1; i >= 0; --i) {
+    int tab_index = selected_indices[i];
+    if (model()->IsTabPinned(tab_index)) {
+      model()->SetTabPinned(tab_index, false);
+    }
+  }
+  // Unpinning can move tabs; repopulate `selected_indices`.
+  selected_indices.clear();
+  for (tabs::TabInterface* tab : tabs) {
+    selected_indices.push_back(model()->GetIndexOfTab(tab));
+  }
   model()->delegate()->MoveToExistingWindow(selected_indices,
                                             browser_index.value());
 
-  TabStripModel* found_model =
+  TabStripModel* const found_model =
       browsers[browser_index.value()]->tab_strip_model();
-
+  // Find the tabs in the new window.
+  selected_indices.clear();
+  for (tabs::TabInterface* tab : tabs) {
+    selected_indices.push_back(found_model->GetIndexOfTab(tab));
+  }
   // Ensure that the selected_indices maintain selection in the new window.
-  // Our indices to consider are guaranteed to be at the end of the tabstrip.
-  for (size_t count = 0; count < selected_indices.size(); ++count) {
-    const int tab_index = found_model->count() - 1 - count;
+  for (int tab_index : selected_indices) {
     if (!found_model->IsTabSelected(tab_index)) {
-      found_model->ToggleSelectionAt(tab_index);
+      found_model->SelectTabAt(tab_index);
     }
   }
 
-  // Move all selected tabs into `group`. Note, we can choose any tab that is
-  // currently selected. For consistency we choose the last tab since we know
-  // where it is.
-  found_model->ExecuteAddToExistingGroupCommand(found_model->count() - 1,
-                                                group);
+  found_model->ExecuteAddToExistingGroupCommand(selected_indices.back(), group);
 }
 
 // static
@@ -258,8 +294,9 @@ bool ExistingTabGroupSubMenuModel::ShouldShowGroup(
     int context_index,
     tab_groups::TabGroupId group) {
   if (!model->IsTabSelected(context_index)) {
-    if (group != model->GetTabGroupForTab(context_index))
+    if (group != model->GetTabGroupForTab(context_index)) {
       return true;
+    }
   } else {
     for (int index : model->selection_model().selected_indices()) {
       if (group != model->GetTabGroupForTab(index)) {

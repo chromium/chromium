@@ -13,10 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Represents a more advanced way for the user to choose a color, based on selecting each of
  * the Hue, Saturation and Value attributes.
  */
+@NullMarked
 public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChangeListener {
     private static final int HUE_SEEK_BAR_MAX = 360;
 
@@ -36,7 +40,7 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
 
     ColorPickerAdvancedComponent mValueDetails;
 
-    private OnColorChangedListener mOnColorChangedListener;
+    private @Nullable OnColorChangedListener mOnColorChangedListener;
 
     private int mCurrentColor;
 

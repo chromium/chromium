@@ -22,7 +22,6 @@
 #include "components/download/internal/background_service/proto/entry.pb.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/clients.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "ios/chrome/browser/optimization_guide/model/prediction_model_download_client.h"
@@ -42,15 +41,10 @@ const base::FilePath::CharType kFilesStorageDir[] = FILE_PATH_LITERAL("Files");
 
 // static
 download::BackgroundDownloadService*
-BackgroundDownloadServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-download::BackgroundDownloadService*
 BackgroundDownloadServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<download::BackgroundDownloadService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<download::BackgroundDownloadService>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -61,9 +55,7 @@ BackgroundDownloadServiceFactory::GetInstance() {
 }
 
 BackgroundDownloadServiceFactory::BackgroundDownloadServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "BackgroundDownloadService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("BackgroundDownloadService") {}
 
 BackgroundDownloadServiceFactory::~BackgroundDownloadServiceFactory() = default;
 
@@ -76,7 +68,7 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
   if (optimization_guide::features::IsModelDownloadingEnabled()) {
     auto prediction_model_download_client =
         std::make_unique<optimization_guide::PredictionModelDownloadClient>(
-            ChromeBrowserState::FromBrowserState(context));
+            ProfileIOS::FromBrowserState(context));
     clients->insert(std::make_pair(
         download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS,
         std::move(prediction_model_download_client)));

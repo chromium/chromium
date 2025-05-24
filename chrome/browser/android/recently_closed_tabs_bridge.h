@@ -49,7 +49,6 @@ class TabIterator {
   TabIterator& operator++();
   TabIterator operator++(int);
   bool operator==(TabIterator other) const;
-  bool operator!=(TabIterator other) const;
   const sessions::tab_restore::Tab& operator*() const;
   const sessions::tab_restore::Tab* operator->() const;
 

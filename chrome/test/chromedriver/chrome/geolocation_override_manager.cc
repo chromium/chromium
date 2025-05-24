@@ -15,8 +15,7 @@ GeolocationOverrideManager::GeolocationOverrideManager(DevToolsClient* client)
   client_->AddListener(this);
 }
 
-GeolocationOverrideManager::~GeolocationOverrideManager() {
-}
+GeolocationOverrideManager::~GeolocationOverrideManager() = default;
 
 Status GeolocationOverrideManager::OverrideGeolocation(
     const Geoposition& geoposition) {

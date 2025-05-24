@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/promos_manager/model",
+  "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+]

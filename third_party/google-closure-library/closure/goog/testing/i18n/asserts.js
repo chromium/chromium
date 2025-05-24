@@ -35,7 +35,8 @@
 goog.provide('goog.testing.i18n.asserts');
 goog.setTestOnly('goog.testing.i18n.asserts');
 
-goog.require('goog.testing.jsunit');
+goog.require('goog.testing.asserts');
+goog.require('goog.testing.i18n.whitespace');
 
 
 /**
@@ -48,32 +49,79 @@ goog.testing.i18n.asserts.EXPECTED_VALUE_MAP_ = {
     // NOTE: Add mappings for each test file using addI18nMapping.
 };
 
-
 /**
  * Asserts that the two values are "almost equal" from i18n perspective.
+ * All horizontal white space is stripped before comparison.
  * I18n-equivalent strings are set with addI18nMapping.
  *
- * @param {string} expected The expected value.
- * @param {string} actual The actual value.
+ * @param {string|null|undefined} a The expected value or comment.
+ * @param {string|null|undefined} b The actual or expected.
+ * @param {string=} opt_c Null or the actual value.
  */
-goog.testing.i18n.asserts.assertI18nEquals = function(expected, actual) {
+goog.testing.i18n.asserts.assertI18nEquals = function(a, b, opt_c) {
   'use strict';
+  let expected;
+  let actual;
+  let msg;  // The comment to be added, if any
+  // If there are 3 arguments, the first is a comment.
+  if (arguments.length === 3) {
+    msg = a;
+    expected = b;
+    actual = opt_c;
+  } else {
+    expected = a;
+    actual = b;
+  }
+
+  if (typeof expected !== 'string' || typeof actual !== 'string') {
+    // If we aren't comparing string<->string, then no amount of whitespace
+    // removal will make them equal, so fall through to direct comparison.
+    assertEquals.apply(undefined, arguments);
+    return;
+  }
+
   if (expected === actual) {
     return;
   }
 
-  const newExpected = goog.testing.i18n.asserts.EXPECTED_VALUE_MAP_[expected];
-  if (newExpected === actual) {
+  // Compare with all horizontal white space characters removed, making
+  // this less brittle.
+  const wsFixedActual = goog.testing.i18n.whitespace.removeWhitespace(actual);
+  const wsFixedExpected =
+      goog.testing.i18n.whitespace.removeWhitespace(expected);
+
+  // Now, check if the expected string and the actual result differ only
+  // in whitespace by stripping white space characters from each.
+  if (wsFixedExpected === wsFixedActual) {
     return;
   }
 
-  assertEquals(expected, actual);
+  // Also handle an alternate expected string, similarly ignoring whitespace.
+  // Note that expected can be null!
+  const alternativeExpected =
+      goog.testing.i18n.asserts.EXPECTED_VALUE_MAP_[expected] ||
+      goog.testing.i18n.asserts.EXPECTED_VALUE_MAP_[wsFixedExpected];
+  if (alternativeExpected &&
+      wsFixedActual ===
+          goog.testing.i18n.whitespace.removeWhitespace(alternativeExpected)) {
+    return;
+  }
+
+  // At this point, all comparisons have failed.
+  // Re-compare the whitespace-fixed actual and original expected as the
+  // error messages produced are clearer.
+  if (msg) {
+    assertEquals(msg, wsFixedExpected, wsFixedActual);
+  } else {
+    assertEquals(wsFixedExpected, wsFixedActual);
+  }
 };
 
 
 /**
  * Asserts that needle, or a string i18n-equivalent to needle, is a substring of
  * haystack. I18n-equivalent strings are set with addI18nMapping.
+ * Horizontal white space is removed before comparison.
  *
  * @param {string} needle The substring to search for.
  * @param {string} haystack The string to search within.
@@ -89,7 +137,11 @@ goog.testing.i18n.asserts.assertI18nContains = function(needle, haystack) {
     return;
   }
 
-  assertContains(needle, haystack);
+  const wsFixedNeedle = goog.testing.i18n.whitespace.removeWhitespace(needle);
+  const wsFixedHaystack =
+      goog.testing.i18n.whitespace.removeWhitespace(haystack);
+
+  assertContains(wsFixedNeedle, wsFixedHaystack);
 };
 
 

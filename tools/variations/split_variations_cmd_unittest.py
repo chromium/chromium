@@ -125,10 +125,18 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
     input_string = (
         '--force-fieldtrials="*Trial2/Enabled/" '
         '--enable-features="FeatureA<FeatureA" '
-        '--disable-features="FeatureC<FeatureC"')
+        '--disable-features="FeatureC<FeatureC" '
+        '--disable-field-trial-config')
     splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
     self.assertEqual(1, len(splits))
 
+  def testFieldTrialsEncodingParams(self):
+    """Check that spaces in force-fieldtrial-params are duly decoded."""
+    input_string = (
+        '--force-fieldtrials="*ScaleTile MemoryLimit/Scale 120%/" '
+        '--force-fieldtrial-params="ScaleTile+MemoryLimit.Scale+120%:x/100/y/Test"')
+    splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
+    self.assertEqual(1, len(splits))
 
 if __name__ == '__main__':
   unittest.main()

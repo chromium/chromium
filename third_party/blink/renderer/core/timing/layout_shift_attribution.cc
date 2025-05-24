@@ -43,12 +43,12 @@ DOMRectReadOnly* LayoutShiftAttribution::currentRect() const {
   return current_rect_.Get();
 }
 
-ScriptValue LayoutShiftAttribution::toJSONForBinding(
+ScriptObject LayoutShiftAttribution::toJSONForBinding(
     ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.Add("previousRect", previous_rect_.Get());
   builder.Add("currentRect", current_rect_.Get());
-  return builder.GetScriptValue();
+  return builder.ToScriptObject();
 }
 
 void LayoutShiftAttribution::Trace(Visitor* visitor) const {

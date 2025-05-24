@@ -1,10 +1,12 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef TOOLS_CLANG_SPANIFY_TESTS_BASE_MEMORY_RAW_PTR_H_
 #define TOOLS_CLANG_SPANIFY_TESTS_BASE_MEMORY_RAW_PTR_H_
 
 namespace base {
+
 template <typename T>
 class raw_ptr {
  public:
@@ -13,6 +15,8 @@ class raw_ptr {
   raw_ptr(T* data) : data_(data) {}
 
   operator T*() const { return data_; }
+
+  constexpr T* operator->() const { return data_; }
 
   T& operator[](int n) { return data_[n]; }
 
@@ -41,10 +45,14 @@ class raw_ptr {
 
   T* get() { return data_; }
 
+  constexpr explicit operator bool() const { return !!data_; }
+
  private:
   T* data_;
 };
+
 }  // namespace base
+
 using base::raw_ptr;
 
 #endif  // TOOLS_CLANG_SPANIFY_TESTS_BASE_MEMORY_RAW_PTR_H_

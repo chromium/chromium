@@ -68,6 +68,8 @@ class CC_PAINT_EXPORT FilterOperations {
 
   // Expands `rect` to add any additional area that applying pixel moving
   // filters will modify.
+  // DEPRECATED: Once features::kUseMapRectForPixelMovement is enabled and
+  // stable, this will be removed. Use MapRect() with an appropriate transform.
   gfx::Rect ExpandRectForPixelMovement(const gfx::Rect& rect) const;
 
   bool HasFilterThatAffectsOpacity() const;
@@ -82,6 +84,10 @@ class CC_PAINT_EXPORT FilterOperations {
     DCHECK_LT(index, size());
     return operations_[index];
   }
+
+  // Returns false if the filter operations can potentially cause visible
+  // color fringing of LCD-text (i.e. subpixel anti-aliased) pixels.
+  bool AllowsLCDText() const;
 
   // If |from| is of the same size as this, where in each position, the filter
   // in |from| is of the same type as the filter in this, and if this doesn't
@@ -99,6 +105,7 @@ class CC_PAINT_EXPORT FilterOperations {
   std::string ToString() const;
 
  private:
+  // DEPRECATED: Can be removed when ExpandRectForPixelMovement() is removed.
   float MaximumPixelMovement() const;
 
   std::vector<FilterOperation> operations_;

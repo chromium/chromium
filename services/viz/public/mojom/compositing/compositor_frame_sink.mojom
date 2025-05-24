@@ -12,7 +12,7 @@ import "services/viz/public/mojom/compositing/layer_context.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/frame_timing_details.mojom";
 import "services/viz/public/mojom/compositing/returned_resource.mojom";
-import "services/viz/public/mojom/compositing/shared_bitmap_id.mojom";
+import "services/viz/public/mojom/compositing/thread.mojom";
 import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
 
 // Tags the frame sink with the type of source producing its content.
@@ -37,12 +37,6 @@ interface CompositorFrameSink {
   // BeginFrames with the animate_only flag set. Only clients that opt in
   // will receive such BeginFrames.
   SetWantsAnimateOnlyBeginFrames();
-
-  // Lets the display compositor know that the client wants merged OnBeginFrame,
-  // DidReceiveCompositorFrameAck, and ReclaimResources. Only supported when
-  // features::OnBeginFrameAcks is enabled. Only clients that opt in will
-  // receive such BeginFrames, others will still receive the signals separately.
-  SetWantsBeginFrameAcks();
 
   // Lets the display compositor know that the client wants to use unsolicited
   // compositor frame submission to indicate that it wants to receive subsequent
@@ -87,20 +81,9 @@ interface CompositorFrameSink {
   // CompositorFrame was produced as a result of it.
   DidNotProduceFrame(BeginFrameAck ack);
 
-  // Informs the display compositor that the client allocated a shared bitmap.
-  // The |id| can then be used in subsequent CompositorFrames given to
-  // SubmitCompositorFrame. The |id| is a SharedBitmapId.
-  DidAllocateSharedBitmap(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
-                          SharedBitmapId id);
-
-  // Informs the display compositor that the client deleted a shared bitmap. This
-  // allows the service to free the shared memory that was previously given to it
-  // via DidAllocateSharedBitmap(). The |id| is a SharedBitmapId.
-  DidDeleteSharedBitmap(SharedBitmapId id);
-
-  // This should be called atmost once for the lifetime of this frame sink. Once
-  // the value has been set to anything other than kUnspecified, subsequent calls
-  // are silently ignored.
+  // This should be called at most once for the lifetime of this frame sink.
+  // Once the value has been set to anything other than kUnspecified, subsequent
+  // calls are silently ignored.
   InitializeCompositorFrameSinkType(CompositorFrameSinkType type);
 
   // Binds to the LayerContext interface for this frame sink. Once this is bound
@@ -108,13 +91,13 @@ interface CompositorFrameSink {
   // longer submit frames through the CompositorFrameSink interface. Instead
   // frames will automtaically be submitted by Viz based on the state of a
   // GPU-side layer tree which can be manipulated through this LayerContext.
-  BindLayerContext(PendingLayerContext context);
+  BindLayerContext(PendingLayerContext context, bool draw_mode_is_gpu);
 
   // Informs the display compositor the IDs of the thread involved in frame
   // production. This is used on Android PerformanceHint API to dynamically
   // adjust performance to allow power saving.
   [EnableIf=is_android]
-  SetThreadIds(array<int32> thread_ids);
+  SetThreads(array<Thread> threads);
 };
 
 interface CompositorFrameSinkClient {
@@ -130,13 +113,10 @@ interface CompositorFrameSinkClient {
   // Notification for the client to generate a CompositorFrame. The client is
   // required to respond with either SubmitCompositorFrame() or
   // DidNotProduceFrame(). If the client is unresponsive then begin frames will
-  // be throttled and eventually stopped entirely. We also return whether this
-  // OnBeginFrame is to act as DidReceiveCompositorFrameAck. We also return a
-  // list of resources, previously sent to SubmitCompositorFrame, to be reused
-  // or freed.
+  // be throttled and eventually stopped entirely. We also return a list of
+  // resources, previously sent to SubmitCompositorFrame, to be reused or freed.
   OnBeginFrame(BeginFrameArgs args,
                map<uint32, FrameTimingDetails> details,
-               bool frame_ack,
                array<ReturnedResource> resources);
 
   // Inform the client that OnBeginFrame may not be called for some time.

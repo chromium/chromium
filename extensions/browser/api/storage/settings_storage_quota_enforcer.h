@@ -47,6 +47,7 @@ class SettingsStorageQuotaEnforcer : public value_store::ValueStore {
   size_t GetBytesInUse(const std::string& key) override;
   size_t GetBytesInUse(const std::vector<std::string>& keys) override;
   size_t GetBytesInUse() override;
+  ReadResult GetKeys() override;
   ReadResult Get(const std::string& key) override;
   ReadResult Get(const std::vector<std::string>& keys) override;
   ReadResult Get() override;
@@ -78,7 +79,7 @@ class SettingsStorageQuotaEnforcer : public value_store::ValueStore {
   // The delegate storage area.
   std::unique_ptr<value_store::ValueStore> const delegate_;
 
-  // Total bytes in used by |delegate_|. Includes both key lengths and
+  // Total bytes in used by `delegate_`. Includes both key lengths and
   // JSON-encoded values.
   size_t used_total_;
 

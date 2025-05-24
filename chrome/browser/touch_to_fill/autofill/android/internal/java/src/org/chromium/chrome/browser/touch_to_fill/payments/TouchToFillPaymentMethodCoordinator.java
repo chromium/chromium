@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
@@ -20,12 +21,12 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -48,7 +49,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     @Override
     public void initialize(
             Context context,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             BottomSheetController sheetController,
             Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
@@ -57,30 +58,32 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 (metaData) ->
                         getCardIcon(
                                 context,
-                                personalDataManager,
+                                imageFetcher,
                                 metaData.artUrl,
                                 metaData.iconId,
                                 ImageSize.LARGE,
                                 /* showCustomIcon= */ true);
-        mMediator.initialize(
-                context, delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
+        mMediator.initialize(delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
         setUpModelChangeProcessors(
                 mTouchToFillPaymentMethodModel,
                 new TouchToFillPaymentMethodView(context, sheetController));
     }
 
     @Override
-    public void showSheet(
-            List<CreditCard> cards,
-            List<AutofillSuggestion> suggestions,
-            boolean shouldShowScanCreditCard) {
-        assert mCardImageFunction != null : "Attempting to call showSheet before initialize.";
-        mMediator.showSheet(cards, suggestions, shouldShowScanCreditCard, mCardImageFunction);
+    public void showCreditCards(
+            List<AutofillSuggestion> suggestions, boolean shouldShowScanCreditCard) {
+        assert mCardImageFunction != null : "Attempting to call showCreditCards before initialize.";
+        mMediator.showCreditCards(suggestions, shouldShowScanCreditCard, mCardImageFunction);
     }
 
     @Override
-    public void showSheet(List<Iban> ibans) {
-        mMediator.showSheet(ibans);
+    public void showIbans(List<Iban> ibans) {
+        mMediator.showIbans(ibans);
+    }
+
+    @Override
+    public void showLoyaltyCards(List<LoyaltyCard> loyaltyCards) {
+        mMediator.showLoyaltyCards(loyaltyCards);
     }
 
     @Override
@@ -109,6 +112,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 IBAN,
                 TouchToFillPaymentMethodViewBinder::createIbanItemView,
                 TouchToFillPaymentMethodViewBinder::bindIbanItemView);
+        adapter.registerType(
+                LOYALTY_CARD,
+                TouchToFillPaymentMethodViewBinder::createLoyaltyCardItemView,
+                TouchToFillPaymentMethodViewBinder::bindLoyaltyCardItemView);
         adapter.registerType(
                 HEADER,
                 TouchToFillPaymentMethodViewBinder::createHeaderItemView,

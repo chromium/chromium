@@ -4,7 +4,8 @@
 
 #include "ash/shelf/login_shelf_widget.h"
 
-#include "ash/focus_cycler.h"
+#include "ash/accessibility/ui/accessibility_focusable_widget_delegate.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
@@ -16,15 +17,14 @@
 
 namespace ash {
 
-// LoginShelfWidget::LoginShelfWidgetDelegate ----------------------------------
+// LoginShelfWidgetDelegate ----------------------------------------------------
 // The delegate of the login shelf widget.
 
-class LoginShelfWidget::LoginShelfWidgetDelegate
-    : public views::AccessiblePaneView,
-      public views::WidgetDelegate {
+class LoginShelfWidgetDelegate : public views::AccessiblePaneView,
+                                 public AccessibilityFocusableWidgetDelegate {
  public:
   explicit LoginShelfWidgetDelegate(Shelf* shelf) : shelf_(shelf) {
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
     set_allow_deactivate_on_esc(true);
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }
@@ -57,15 +57,6 @@ class LoginShelfWidget::LoginShelfWidgetDelegate
         &dummy_focus_traversable, &dummy_focus_traversable_view);
   }
 
-  // views::WidgetDelegate:
-  bool CanActivate() const override {
-    // We don't want mouse clicks to activate us, but we need to allow
-    // activation when the user is using the keyboard (FocusCycler).
-    bool can_active = Shell::Get()->focus_cycler()->widget_activating() ==
-                      views::View::GetWidget();
-    return can_active;
-  }
-
   void ChildPreferredSizeChanged(views::View* child) override {
     shelf_->shelf_layout_manager()->LayoutShelf(/*animate=*/false);
   }
@@ -88,9 +79,8 @@ LoginShelfWidget::LoginShelfWidget(Shelf* shelf, aura::Window* container)
       delegate_(new LoginShelfWidgetDelegate(shelf)),
       scoped_session_observer_(this) {
   DCHECK(container);
-  login_shelf_view_ = delegate_->AddChildView(std::make_unique<LoginShelfView>(
-      RootWindowController::ForWindow(container)
-          ->lock_screen_action_background_controller()));
+  login_shelf_view_ =
+      delegate_->AddChildView(std::make_unique<LoginShelfView>());
 
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,

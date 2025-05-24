@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/sad_tab_view.h"
 
+#include <algorithm>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -196,6 +196,9 @@ std::u16string ErrorToString(int error_code) {
       break;
     case 7013:
       error_string = "SBOX_FATAL_WARMUP";
+      break;
+    case 7014:
+      error_string = "SBOX_FATAL_BROKER_SHUTDOWN_HUNG";
       break;
     case 36861:
       error_string = "Crashpad_NotConnectedToHandler";
@@ -490,9 +493,9 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   // This view gets inserted as a child of a WebView, but we don't want the
   // WebView to delete us if the WebView gets deleted before the SadTabHelper
   // does.
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
-  SetBackground(views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDialogBackground));
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -560,6 +563,18 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
       container->AddChildView(std::make_unique<views::FlexLayoutView>());
   actions_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
+  // TODO(crbug.com/363826230): See View::SetLayoutManagerUseConstrainedSpace.
+  //
+  // `actions_container` is a horizontal FlexLayout, and its child element
+  // `action_button` has an unbounded horizontal size. This causes it to consume
+  // the size of the entire constraint space when we calculate the preferred
+  // size under the current constraint space. This causes the actual width
+  // occupied by action_button to be too wide.
+  //
+  // There is currently no good way to handle kEnd alignment for a single
+  // element.
+  actions_container->SetLayoutManagerUseConstrainedSpace(false);
+
   EnableHelpLink(actions_container);
 
   action_button_ =
@@ -584,20 +599,22 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
     // If the `owner_` ContentsWebView has a rounded background, the sad tab
     // should also have matching rounded corners as well.
     SetBackgroundRadii(
-        static_cast<ContentsWebView*>(owner_)->background_radii());
+        static_cast<ContentsWebView*>(owner_)->GetBackgroundRadii());
   }
 
   // Make the accessibility role of this view an alert dialog, and
   // put focus on the action button. This causes screen readers to
   // immediately announce the text of this view.
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  if (action_button_->GetWidget() && action_button_->GetWidget()->IsActive())
+  if (action_button_->GetWidget() && action_button_->GetWidget()->IsActive()) {
     action_button_->RequestFocus();
+  }
 }
 
 SadTabView::~SadTabView() {
-  if (owner_)
+  if (owner_) {
     owner_->SetCrashedOverlayView(nullptr);
+  }
 }
 
 void SadTabView::ReinstallInWebView() {
@@ -637,20 +654,26 @@ void SadTabView::RemovedFromWidget() {
 void SadTabView::AttachToWebView() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // This can be null during prefetch.
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   // In unit tests, browser->window() might not be a real BrowserView.
-  if (!browser->window()->GetNativeWindow())
+  if (!browser->window()->GetNativeWindow()) {
     return;
+  }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   DCHECK(browser_view);
 
-  views::WebView* web_view = browser_view->contents_web_view();
-  if (web_view->GetWebContents() == web_contents()) {
-    owner_ = web_view;
-    owner_->SetCrashedOverlayView(this);
+  std::vector<ContentsWebView*> visible_contents_views =
+      browser_view->GetAllVisibleContentsWebViews();
+  for (ContentsWebView* contents_view : visible_contents_views) {
+    if (contents_view->GetWebContents() == web_contents()) {
+      owner_ = contents_view;
+      owner_->SetCrashedOverlayView(this);
+      break;
+    }
   }
 }
 

@@ -46,7 +46,6 @@ ShortcutInputProvider::~ShortcutInputProvider() {
 void ShortcutInputProvider::BindInterface(
     mojo::PendingReceiver<common::mojom::ShortcutInputProvider> receiver) {
   CHECK(features::IsPeripheralCustomizationEnabled() ||
-        ::features::IsShortcutCustomizationEnabled() ||
         ::features::IsAccessibilityFaceGazeEnabled());
   if (shortcut_input_receiver_.is_bound()) {
     shortcut_input_receiver_.reset();
@@ -56,26 +55,38 @@ void ShortcutInputProvider::BindInterface(
 
 void ShortcutInputProvider::OnShortcutInputEventPressed(
     const mojom::KeyEvent& key_event) {
-  if (observing_paused_ || prerewritten_event_.is_null()) {
+  if (observing_paused_) {
     return;
   }
 
+  // If there is no `prerewritten_event_` then the event must have been sent
+  // via a non-standard method, e.g. virtual keyboard or IME extension. These
+  // events are still valid as they do not go through event rewrites.
+  const bool is_fabricated_event_ = prerewritten_event_.is_null();
+
   for (auto& observer : shortcut_input_observers_) {
-    observer->OnShortcutInputEventPressed(prerewritten_event_.Clone(),
-                                          key_event.Clone());
+    observer->OnShortcutInputEventPressed(
+        is_fabricated_event_ ? key_event.Clone() : prerewritten_event_.Clone(),
+        key_event.Clone());
   }
   prerewritten_event_.reset();
 }
 
 void ShortcutInputProvider::OnShortcutInputEventReleased(
     const mojom::KeyEvent& key_event) {
-  if (observing_paused_ || prerewritten_event_.is_null()) {
+  if (observing_paused_) {
     return;
   }
 
+  // If there is no `prerewritten_event_` then the event must have been sent
+  // via a non-standard method, e.g. virtual keyboard or IME extension. These
+  // events are still valid as they do not go through event rewrites.
+  const bool is_fabricated_event_ = prerewritten_event_.is_null();
+
   for (auto& observer : shortcut_input_observers_) {
-    observer->OnShortcutInputEventReleased(prerewritten_event_.Clone(),
-                                           key_event.Clone());
+    observer->OnShortcutInputEventReleased(
+        is_fabricated_event_ ? key_event.Clone() : prerewritten_event_.Clone(),
+        key_event.Clone());
   }
   prerewritten_event_.reset();
 }

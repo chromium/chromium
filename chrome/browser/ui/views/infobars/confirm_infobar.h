@@ -13,7 +13,7 @@
 namespace views {
 class Label;
 class MdTextButton;
-}
+}  // namespace views
 
 // An infobar that shows a message, up to two optional buttons, and an optional,
 // right-aligned link.  This is commonly used to do things like:

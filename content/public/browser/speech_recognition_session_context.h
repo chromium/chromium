@@ -9,7 +9,6 @@
 
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
 namespace content {

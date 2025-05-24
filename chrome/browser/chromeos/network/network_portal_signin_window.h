@@ -21,8 +21,7 @@ class WebContents;
 
 namespace chromeos {
 
-// Class controlling the captive portal signin window used in Ash and Lacros
-// when the CaptivePortalPopupWindow feature is enabled.
+// Class controlling the captive portal signin window used in Ash and Lacros.
 // See also the NetworkPortalSigninController class.
 class NetworkPortalSigninWindow {
  public:

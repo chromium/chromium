@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/observer_list.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -29,6 +30,10 @@ AppMenuButton::AppMenuButton(PressedCallback callback)
   SetButtonController(std::move(menu_button_controller));
   SetProperty(views::kInternalPaddingKey, gfx::Insets());
   SetProperty(views::kElementIdentifierKey, kToolbarAppMenuButtonElementId);
+
+  if (menu_model()) {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
+  }
 }
 
 AppMenuButton::~AppMenuButton() = default;
@@ -42,8 +47,9 @@ void AppMenuButton::RemoveObserver(AppMenuButtonObserver* observer) {
 }
 
 void AppMenuButton::CloseMenu() {
-  if (menu_)
+  if (menu_) {
     menu_->CloseMenu();
+  }
   menu_.reset();
 }
 
@@ -64,7 +70,8 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   menu_.reset();
   menu_model_ = std::move(menu_model);
   if (BrowserWindow* browser_window = browser->window()) {
-    if (auto* controller = browser_window->GetFeaturePromoController()) {
+    if (auto* controller = browser_window->GetFeaturePromoController(
+            base::PassKey<AppMenuButton>())) {
       if (auto* promo_specification =
               controller->GetCurrentPromoSpecificationForAnchor(
                   GetProperty(views::kElementIdentifierKey))) {

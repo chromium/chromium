@@ -21,15 +21,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -95,8 +91,7 @@ FilterEffect* FilterEffect::InputEffect(unsigned number) const {
 }
 
 void FilterEffect::DisposeImageFilters() {
-  for (int i = 0; i < 4; i++)
-    image_filters_[i] = nullptr;
+  std::ranges::fill(image_filters_, nullptr);
 }
 
 void FilterEffect::DisposeImageFiltersRecursive() {
@@ -114,8 +109,8 @@ Color FilterEffect::AdaptColorToOperatingInterpolationSpace(
       device_color, OperatingInterpolationSpace());
 }
 
-WTF::TextStream& FilterEffect::ExternalRepresentation(WTF::TextStream& ts,
-                                                      int) const {
+StringBuilder& FilterEffect::ExternalRepresentation(StringBuilder& ts,
+                                                    wtf_size_t) const {
   // FIXME: We should dump the subRegions of the filter primitives here later.
   // This isn't possible at the moment, because we need more detailed
   // information from the target object.

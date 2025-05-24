@@ -28,8 +28,8 @@ const ClientId kClientId1("download", "1234");
 
 class MarkAttemptAbortedTaskTest : public RequestQueueTaskTestBase {
  public:
-  MarkAttemptAbortedTaskTest() {}
-  ~MarkAttemptAbortedTaskTest() override {}
+  MarkAttemptAbortedTaskTest() = default;
+  ~MarkAttemptAbortedTaskTest() override = default;
 
   void AddItemToStore(RequestQueueStore* store);
   void ChangeRequestsStateCallback(UpdateRequestsResult result);

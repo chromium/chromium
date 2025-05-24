@@ -9,20 +9,21 @@
 
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 
+#include <algorithm>
 #include <limits>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_service.h"
@@ -32,7 +33,7 @@
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/zlib/zlib.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
@@ -61,8 +62,8 @@ const char kRemoteBoundWebRtcEventLogFileNamePrefix[] = "webrtc_event_log";
 
 // Important! These values may be relied on by web-apps. Do not change.
 const char kStartRemoteLoggingFailureAlreadyLogging[] = "Already logging.";
-const char kStartRemoteLoggingFailureDeadRenderProcessHost[] =
-    "RPH already dead.";
+// const char OBSOLETE_kStartRemoteLoggingFailureDeadRenderProcessHost[] =
+//     "RPH already dead.";
 const char kStartRemoteLoggingFailureFeatureDisabled[] = "Feature disabled.";
 const char kStartRemoteLoggingFailureFileCreationError[] =
     "Could not create file.";
@@ -83,6 +84,7 @@ const char kStartRemoteLoggingFailureUnknownOrInactivePeerConnection[] =
     "Unknown or inactive peer connection.";
 const char kStartRemoteLoggingFailureUnlimitedSizeDisallowed[] =
     "Unlimited size disallowed.";
+const char kBrowserContextNotFound[] = "BrowserContext not found.";
 
 const BrowserContextId kNullBrowserContextId =
     reinterpret_cast<BrowserContextId>(nullptr);
@@ -347,17 +349,14 @@ bool BaseLogFileWriter::WriteInternal(const std::string& input, bool metadata) {
   // numeric_limits<int>::max() bytes at a time.
   DCHECK_LE(input.length(),
             static_cast<size_t>(std::numeric_limits<int>::max()));
-  const int input_len = static_cast<int>(input.length());
 
-  int written = file_.WriteAtCurrentPos(input.c_str(), input_len);
-  if (written != input_len) {
+  if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(input))) {
     LOG(WARNING) << "WebRTC event log couldn't be written to the "
                     "locally stored file in its entirety.";
     return false;
   }
 
-  budget_.Consume(static_cast<size_t>(written));
-
+  budget_.Consume(input.length());
   return true;
 }
 
@@ -745,7 +744,7 @@ size_t ExtractWebAppId(std::string_view str) {
   DCHECK_EQ(str.length(), kWebAppIdLength);
 
   // Avoid leading '+', etc.
-  if (!base::ranges::all_of(str, absl::ascii_isdigit)) {
+  if (!std::ranges::all_of(str, absl::ascii_isdigit)) {
     return kInvalidWebRtcEventLogWebAppId;
   }
 
@@ -774,7 +773,7 @@ size_t BaseLogFileWriterFactory::MinFileSizeBytes() const {
   return 0;
 }
 
-base::FilePath::StringPieceType BaseLogFileWriterFactory::Extension() const {
+base::FilePath::StringViewType BaseLogFileWriterFactory::Extension() const {
   return kWebRtcEventLogUncompressedExtension;
 }
 
@@ -844,7 +843,7 @@ size_t GzippedLogFileWriterFactory::MinFileSizeBytes() const {
   return gzip_compressor_factory_->MinSizeBytes();
 }
 
-base::FilePath::StringPieceType GzippedLogFileWriterFactory::Extension() const {
+base::FilePath::StringViewType GzippedLogFileWriterFactory::Extension() const {
   return kWebRtcEventLogGzippedExtension;
 }
 
@@ -910,11 +909,10 @@ base::FilePath GetRemoteBoundWebRtcEventLogsDir(
   return browser_context_dir.Append(kRemoteBoundLogSubDirectory);
 }
 
-base::FilePath WebRtcEventLogPath(
-    const base::FilePath& remote_logs_dir,
-    const std::string& log_id,
-    size_t web_app_id,
-    const base::FilePath::StringPieceType& extension) {
+base::FilePath WebRtcEventLogPath(const base::FilePath& remote_logs_dir,
+                                  const std::string& log_id,
+                                  size_t web_app_id,
+                                  base::FilePath::StringViewType extension) {
   DCHECK_GE(web_app_id, kMinWebRtcEventLogWebAppId);
   DCHECK_LE(web_app_id, kMaxWebRtcEventLogWebAppId);
 
@@ -1019,7 +1017,7 @@ size_t ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(
 
 bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
 // For Chrome OS, exclude special profiles and users.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   // We do not log an error here since this can happen in several cases,

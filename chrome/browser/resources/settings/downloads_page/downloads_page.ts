@@ -9,7 +9,6 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/controlled_button.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
@@ -39,14 +38,6 @@ export class SettingsDownloadsPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       autoOpenDownloads_: {
         type: Boolean,
         value: false,
@@ -82,13 +73,13 @@ export class SettingsDownloadsPageElement extends
   // </if>
 
 
-  private autoOpenDownloads_: boolean;
+  declare private autoOpenDownloads_: boolean;
 
   // <if expr="chromeos_ash">
-  private downloadLocation_: string;
+  declare private downloadLocation_: string;
   // </if>
 
-  private downloadBubblePartialViewControlledByPref_: boolean;
+  declare private downloadBubblePartialViewControlledByPref_: boolean;
 
   private browserProxy_: DownloadsBrowserProxy =
       DownloadsBrowserProxyImpl.getInstance();

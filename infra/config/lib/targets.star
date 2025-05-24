@@ -270,69 +270,6 @@ def _resultdb(
         inv_extended_properties_dir = inv_extended_properties_dir,
     )
 
-def _skylab(
-        *,
-        cros_board = "",
-        cros_img = "",
-        cros_build_target = "",
-        use_lkgm = False,
-        cros_model = None,
-        cros_cbx = False,
-        autotest_name = None,
-        bucket = None,
-        dut_pool = None,
-        public_builder = None,
-        public_builder_bucket = None,
-        shards = None,
-        run_cft = False,
-        args = []):
-    """Define a Skylab test target.
-
-    Args:
-        cros_board: The CrOS DUT board name, e.g. "eve", "kevin".
-        cros_build_target: The CrOS build target name, e.g. "eve-arc-t".
-            If unspecified, the build target equals to cros_board will be used.
-        cros_img: ChromeOS image version to be deployed to DUT.
-            Must be empty when use_lkgm is true.
-            For example, "brya-release/R118-15604.42.0"
-        use_lkgm: If True, use a ChromeOS image version derived from
-            chromeos/CHROMEOS_LKGM file.
-        cros_model: Optional ChromeOS DUT model.
-        cros_cbx: Whether to require a CBX DUT for given cros_board. For a
-             board, not all models are CBX-capable.
-        autotest_name: The name of the autotest to be executed in
-            Skylab.
-        bucket: Optional Google Storage bucket where the specified
-            image(s) are stored.
-        dut_pool: The skylab device pool to run the test. By default the
-            quota pool, shared by all CrOS tests.
-        public_builder: Optional Public CTP Builder.
-            The public_builder and public_builder_bucket fields can be
-            used when default CTP builder is not sufficient/advised
-            (ex: chromium cq, satlab for partners).
-        public_builder_bucket: Optional luci bucket. See public_builder
-            above.
-        shards: The number of shards used to run the test.
-        run_cft: Whether enabled CFT mode for chromium tests on Skylab.
-        args: The list of test arguments to be added to test CLI.
-    """
-    return struct(
-        cros_board = cros_board,
-        cros_build_target = cros_build_target,
-        cros_img = cros_img,
-        use_lkgm = use_lkgm,
-        cros_model = cros_model,
-        cros_cbx = cros_cbx,
-        autotest_name = autotest_name,
-        bucket = bucket,
-        dut_pool = dut_pool,
-        public_builder = public_builder,
-        public_builder_bucket = public_builder_bucket,
-        shards = shards,
-        run_cft = run_cft,
-        args = args,
-    )
-
 def _mixin_values(
         description = None,
         args = None,
@@ -357,8 +294,6 @@ def _mixin_values(
         resultdb = None,
         isolate_profile_data = None,
         merge = None,
-        timeout_sec = None,
-        shards = None,
         experiment_percentage = None):
     """Define values to be mixed into a target.
 
@@ -438,7 +373,6 @@ def _mixin_values(
             isolates.
         merge: A targets.merge describing the invocation to merge the
             results from the test's tasks.
-        timeout_sec: The maximum time the test can take to run.
         shards: The number of shards to use for running the test on
             skylab.
         experiment_percentage: An integer in the range [0, 100]
@@ -473,13 +407,13 @@ def _mixin_values(
         resultdb = resultdb,
         isolate_profile_data = isolate_profile_data,
         merge = merge,
-        timeout_sec = timeout_sec,
-        shards = shards,
         experiment_percentage = experiment_percentage,
     )
     return {k: v for k, v in mixin_values.items() if v != None}
 
-def _mixin(*, name = None, generate_pyl_entry = True, **kwargs):
+_IGNORE_UNUSED = "ignore_unused"
+
+def _mixin(*, name = None, generate_pyl_entry = None, **kwargs):
     """Define a mixin used for defining tests.
 
     //infra/config/generated/testing/mixins.pyl will be generated from
@@ -488,14 +422,28 @@ def _mixin(*, name = None, generate_pyl_entry = True, **kwargs):
 
     Args:
         name: The name of the mixin.
-        generate_pyl_entry: If true and name is provided, then the
-            generated mixin.pyl file will contain an entry allowing this
-            mixin to be used by generate_buildbot_json.py.
+        generate_pyl_entry: If true, the generated mixin.pyl will
+            contain an entry allowing the mixin to be used by
+            generate_buildbot_json.py. If set to targets.IGNORE_UNUSED,
+            then an entry will be generated that
+            generate_buildbot_json.py which won't cause an error if it
+            isn't used. This enables mixins to be generated to the pyl
+            file that are only used by the angle repo, which reuses the
+            generated mixins.pyl. By default, this will be True if name
+            is provided.
         **kwargs: The mixin values, see _mixin_values for allowed
             keywords and their meanings.
     """
+    if generate_pyl_entry not in (None, False, True, _IGNORE_UNUSED):
+        fail("unexpected value for generate_pyl_entry: {}".format(generate_pyl_entry))
+    if generate_pyl_entry == None:
+        generate_pyl_entry = name != None
+    elif generate_pyl_entry:
+        if name == None:
+            fail("pyl entries can't be generated for anonymous mixins")
     key = _targets_nodes.MIXIN.add(name, props = dict(
         mixin_values = _mixin_values(**kwargs),
+        pyl_fail_if_unused = generate_pyl_entry == True,
     ))
     if generate_pyl_entry and name != None:
         graph.add_edge(keys.project(), key)
@@ -505,6 +453,7 @@ def _variant(
         *,
         name,
         identifier,
+        generate_pyl_entry = True,
         enabled = None,
         mixins = None,
         **kwargs):
@@ -520,6 +469,9 @@ def _variant(
             identifies the variant of the test being run. When tests are
             expanded with the variant, this will be appended to the test
             name.
+        generate_pyl_entry: If true, the generated variants.pyl will
+            contain an entry allowing the mixin to be used by
+            generate_buildbot_json.py.
         enabled: Whether or not the variant is enabled. By default, a
             variant is enabled. If a variant is not enabled, then it
             will be ignored when expanding a test suite with variants.
@@ -530,14 +482,20 @@ def _variant(
     """
     if enabled == None:
         enabled = True
-    key = _targets_nodes.VARIANT.add(name, props = dict(
+    variant_key = _targets_nodes.VARIANT.add(name, props = dict(
         identifier = identifier,
         enabled = enabled,
-        mixins = mixins,
         mixin_values = _mixin_values(**kwargs),
     ))
 
-    graph.add_edge(keys.project(), key)
+    for m in mixins or []:
+        if generate_pyl_entry and type(m) != type(""):
+            fail("variants used by //testing/buildbot cannot use anonymous mixins", trace = stacktrace(skip = 2))
+        mixin_key = _targets_nodes.MIXIN.key(m)
+        graph.add_edge(variant_key, mixin_key)
+
+    if generate_pyl_entry:
+        graph.add_edge(keys.project(), variant_key)
 
 def _bundle(*, name = None, additional_compile_targets = None, targets = None, mixins = None, variants = None, per_test_modifications = None):
     """Define a targets bundle.
@@ -618,22 +576,12 @@ def _legacy_basic_suite(*, name, tests):
 
 def _legacy_test_config(
         *,
-        # TODO(gbeaty) Tast tests should have their own test function defined
-        # and this should be removed from this function
-        tast_expr = None,
-        # TODO(gbeaty) Skylab details should be modified to be under a separate
-        # structure like swarming details are and this should be made a part of
-        # mixins and removed from this function
-        test_level_retries = None,
         mixins = None,
         remove_mixins = None,
         **kwargs):
     """Define the details of a test in a basic suite.
 
     Args:
-        tast_expr: The tast expression to run. Only applicable to skylab tests.
-        test_level_retries: The number of times to retry tests. Only applicable
-            to skylab tests.
         mixins: A list of names of mixins to apply to the test.
         remove_mixins: A list of names of mixins to skip applying to the test.
         **kwargs: The mixin values, see _mixin_values for allowed keywords and
@@ -644,8 +592,6 @@ def _legacy_test_config(
         tests argument of targets.legacy_basic_suite.
     """
     return struct(
-        tast_expr = tast_expr,
-        test_level_retries = test_level_retries,
         mixins = mixins,
         remove_mixins = remove_mixins,
         mixin_values = _mixin_values(**kwargs) or None,
@@ -710,15 +656,16 @@ def _legacy_matrix_compound_suite(*, name, basic_suites):
         matrix_config_key = _targets_nodes.LEGACY_MATRIX_CONFIG.add(name, basic_suite_name)
         graph.add_edge(key, matrix_config_key)
         config = config or _legacy_matrix_config()
+        for v in config.variants:
+            graph.add_edge(matrix_config_key, _targets_nodes.VARIANT.key(v))
         for m in config.mixins:
             graph.add_edge(matrix_config_key, _targets_nodes.MIXIN.key(m))
-        if config.variants:
+        if config.variants or config.mixins:
             dep_targets.append(_bundle(
                 targets = basic_suite_name,
                 variants = config.variants,
+                mixins = config.mixins,
             ))
-            for v in config.variants:
-                graph.add_edge(matrix_config_key, _targets_nodes.VARIANT.key(v))
         else:
             dep_targets.append(basic_suite_name)
 
@@ -771,6 +718,7 @@ targets = struct(
     # Functions for declaring bundles
     bundle = _bundle,
     per_test_modification = _targets_common.per_test_modification,
+    replacements = _targets_common.replacements,
     builder_defaults = _targets_common.builder_defaults,
     settings = _targets_common.settings,
     settings_defaults = _targets_common.settings_defaults,
@@ -782,12 +730,13 @@ targets = struct(
     legacy_matrix_compound_suite = _legacy_matrix_compound_suite,
     legacy_matrix_config = _legacy_matrix_config,
     mixin = _mixin,
+    IGNORE_UNUSED = _IGNORE_UNUSED,
     variant = _variant,
     cipd_package = _cipd_package,
     merge = _targets_common.merge,
     remove = _targets_common.remove,
     resultdb = _resultdb,
     swarming = _targets_common.swarming,
-    skylab = _skylab,
+    skylab = _targets_common.skylab,
     magic_args = _targets_magic_args,
 )

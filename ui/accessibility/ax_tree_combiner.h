@@ -31,7 +31,8 @@ class AX_EXPORT AXTreeCombiner {
   void AddTree(AXTreeUpdate& tree, bool is_root);
   bool Combine();
 
-  std::optional<AXTreeUpdate> combined() { return combined_; }
+  std::optional<AXTreeUpdate>& combined() { return combined_; }
+  const std::optional<AXTreeUpdate>& combined() const { return combined_; }
 
  private:
   AXNodeID MapId(AXTreeID tree_id, AXNodeID node_id);

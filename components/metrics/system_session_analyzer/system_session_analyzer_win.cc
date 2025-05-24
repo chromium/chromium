@@ -55,7 +55,7 @@ base::Time ULLFileTimeToTime(ULONGLONG time_ulonglong) {
 SystemSessionAnalyzer::SystemSessionAnalyzer(uint32_t max_session_cnt)
     : max_session_cnt_(max_session_cnt), sessions_queried_(0) {}
 
-SystemSessionAnalyzer::~SystemSessionAnalyzer() {}
+SystemSessionAnalyzer::~SystemSessionAnalyzer() = default;
 
 SystemSessionAnalyzer::ExtendedStatus
 SystemSessionAnalyzer::GetExtendedFailureStatus() const {

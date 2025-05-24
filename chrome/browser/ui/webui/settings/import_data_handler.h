@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/importer/importer_progress_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "chrome/common/importer/importer_data_types.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 class ExternalProcessImporterHost;
@@ -38,7 +38,7 @@ class ImportDataHandler : public SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  private:
-  void StartImport(const importer::SourceProfile& source_profile,
+  void StartImport(const user_data_importer::SourceProfile& source_profile,
                    uint16_t imported_items);
 
   // Handler for the "importData" message. First argument is the selected
@@ -57,8 +57,8 @@ class ImportDataHandler : public SettingsPageUIHandler,
 
   // importer::ImporterProgressObserver:
   void ImportStarted() override;
-  void ImportItemStarted(importer::ImportItem item) override;
-  void ImportItemEnded(importer::ImportItem item) override;
+  void ImportItemStarted(user_data_importer::ImportItem item) override;
+  void ImportItemEnded(user_data_importer::ImportItem item) override;
   void ImportEnded() override;
 
   // ui::SelectFileDialog::Listener:

@@ -7,19 +7,27 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/fake_active_display_monitor.h"
-#include "remoting/host/fake_mouse_cursor_monitor.h"
 #include "remoting/host/input_injector.h"
+#include "remoting/protocol/clipboard_stub.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
+#include "remoting/protocol/input_stub.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
 
@@ -98,7 +106,7 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
     frame_generator_ = std::move(frame_generator);
   }
 
-  void set_desktop_session_id(uint32_t desktop_session_id) {
+  void set_desktop_session_id(std::uint32_t desktop_session_id) {
     desktop_session_id_ = desktop_session_id;
   }
 
@@ -124,7 +132,7 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
       override;
   std::string GetCapabilities() const override;
   void SetCapabilities(const std::string& capabilities) override;
-  uint32_t GetDesktopSessionId() const override;
+  std::uint32_t GetDesktopSessionId() const override;
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
 
@@ -141,7 +149,7 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
 
   scoped_refptr<base::SingleThreadTaskRunner> capture_thread_;
   protocol::FakeDesktopCapturer::FrameGenerator frame_generator_;
-  uint32_t desktop_session_id_ = UINT32_MAX;
+  std::uint32_t desktop_session_id_ = UINT32_MAX;
 
   base::WeakPtr<FakeInputInjector> last_input_injector_;
   base::WeakPtr<FakeActiveDisplayMonitor> last_active_display_monitor_;
@@ -171,7 +179,7 @@ class FakeDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
     frame_generator_ = std::move(frame_generator);
   }
 
-  void set_desktop_session_id(uint32_t desktop_session_id) {
+  void set_desktop_session_id(std::uint32_t desktop_session_id) {
     desktop_session_id_ = desktop_session_id;
   }
 
@@ -183,10 +191,10 @@ class FakeDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
   }
 
   // DesktopEnvironmentFactory implementation.
-  std::unique_ptr<DesktopEnvironment> Create(
-      base::WeakPtr<ClientSessionControl> client_session_control,
-      base::WeakPtr<ClientSessionEvents> client_session_events,
-      const DesktopEnvironmentOptions& options) override;
+  void Create(base::WeakPtr<ClientSessionControl> client_session_control,
+              base::WeakPtr<ClientSessionEvents> client_session_events,
+              const DesktopEnvironmentOptions& options,
+              CreateCallback callback) override;
   bool SupportsAudioCapture() const override;
 
   base::WeakPtr<FakeDesktopEnvironment> last_desktop_environment() {
@@ -196,7 +204,7 @@ class FakeDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> capture_thread_;
   protocol::FakeDesktopCapturer::FrameGenerator frame_generator_;
-  uint32_t desktop_session_id_ = UINT32_MAX;
+  std::uint32_t desktop_session_id_ = UINT32_MAX;
   std::string capabilities_;
 
   base::WeakPtr<FakeDesktopEnvironment> last_desktop_environment_;

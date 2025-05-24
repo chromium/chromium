@@ -58,7 +58,7 @@
 #include "net/test/key_util.h"
 #include "net/test/revocation_builder.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_frame_builder.h"
 #include "third_party/boringssl/src/pki/extended_key_usage.h"
 #include "url/origin.h"
 
@@ -347,8 +347,8 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
 
   do {
     if (++num_tries > max_tries) {
-      LOG(ERROR) << "Failed to listen on a valid port after " << max_tries
-                 << " attempts.";
+      DVLOG(1) << "Failed to listen on a valid port after " << max_tries
+               << " attempts.";
       listen_socket_.reset();
       return false;
     }
@@ -358,14 +358,14 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
     int result =
         listen_socket_->ListenWithAddressAndPort(address.data(), port, 10);
     if (result) {
-      LOG(ERROR) << "Listen failed: " << ErrorToString(result);
+      DVLOG(1) << "Listen failed: " << ErrorToString(result);
       listen_socket_.reset();
       return false;
     }
 
     result = listen_socket_->GetLocalAddress(&local_endpoint_);
     if (result != OK) {
-      LOG(ERROR) << "GetLocalAddress failed: " << ErrorToString(result);
+      DVLOG(1) << "GetLocalAddress failed: " << ErrorToString(result);
       listen_socket_.reset();
       return false;
     }
@@ -387,8 +387,10 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
 
   listen_socket_->DetachFromThread();
 
-  if (is_using_ssl_ && !InitializeSSLServerContext())
+  if (is_using_ssl_ && !InitializeSSLServerContext()) {
+    DVLOG(1) << "Unable to initialize SSL";
     return false;
+  }
 
   return true;
 }
@@ -437,6 +439,9 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
       root->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
       root->SetKeyUsages(
           {bssl::KEY_USAGE_BIT_KEY_CERT_SIGN, bssl::KEY_USAGE_BIT_CRL_SIGN});
+      if (!cert_config_.root_dns_names.empty()) {
+        root->SetSubjectAltNames(cert_config_.root_dns_names, {});
+      }
       break;
   }
 
@@ -459,13 +464,21 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   std::vector<GURL> leaf_ocsp_urls;
 
   leaf->SetValidity(now - base::Days(1), now + base::Days(20));
-  leaf->SetBasicConstraints(/*is_ca=*/false, /*path_len=*/-1);
+  leaf->SetBasicConstraints(/*is_ca=*/cert_config_.leaf_is_ca, /*path_len=*/-1);
   leaf->SetExtendedKeyUsages({bssl::der::Input(bssl::kServerAuth)});
+
+  if (!cert_config_.subject_tlv.empty()) {
+    leaf->SetSubjectTLV(cert_config_.subject_tlv);
+  }
 
   if (!cert_config_.policy_oids.empty()) {
     leaf->SetCertificatePolicies(cert_config_.policy_oids);
     if (intermediate)
       intermediate->SetCertificatePolicies(cert_config_.policy_oids);
+  }
+
+  if (!cert_config_.qwac_qc_types.empty()) {
+    leaf->SetQwacQcStatements(cert_config_.qwac_qc_types);
   }
 
   if (!cert_config_.dns_names.empty() || !cert_config_.ip_addresses.empty()) {
@@ -541,13 +554,14 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
     leaf->SetCaIssuersAndOCSPUrls(leaf_ca_issuers_urls, leaf_ocsp_urls);
   }
 
-  if (cert_config_.intermediate == IntermediateType::kByAIA ||
-      cert_config_.intermediate == IntermediateType::kMissing) {
-    // Server certificate chain does not include the intermediate.
-    x509_cert_ = leaf->GetX509Certificate();
-  } else {
-    // Server certificate chain will include the intermediate, if there is one.
+  cert_chain_.push_back(leaf->DupCertBuffer());
+  if (cert_config_.intermediate == IntermediateType::kInHandshake) {
+    // Server certificate chain will include the intermediate.
     x509_cert_ = leaf->GetX509CertificateChain();
+    cert_chain_.push_back(intermediate->DupCertBuffer());
+  } else {
+    // Server certificate chain does not include the intermediate (if any).
+    x509_cert_ = leaf->GetX509Certificate();
   }
 
   if (intermediate) {
@@ -571,11 +585,15 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
 
 bool EmbeddedTestServer::InitializeSSLServerContext() {
   if (UsingStaticCert()) {
-    if (!InitializeCertAndKeyFromFile())
+    if (!InitializeCertAndKeyFromFile()) {
+      DVLOG(1) << "Unable to initialize cert and key from file";
       return false;
+    }
   } else {
-    if (!GenerateCertAndKey())
+    if (!GenerateCertAndKey()) {
+      DVLOG(1) << "Unable to generate cert and key";
       return false;
+    }
   }
 
   if (protocol_ == HttpConnection::Protocol::kHttp2) {
@@ -635,8 +653,13 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
     }
   }
 
-  context_ =
-      CreateSSLServerContext(x509_cert_.get(), private_key_.get(), ssl_config_);
+  if (!cert_chain_.empty()) {
+    context_ =
+        CreateSSLServerContext(cert_chain_, private_key_.get(), ssl_config_);
+  } else {
+    context_ = CreateSSLServerContext(x509_cert_.get(), private_key_.get(),
+                                      ssl_config_);
+  }
   return true;
 }
 
@@ -694,6 +717,7 @@ base::FilePath EmbeddedTestServer::GetRootCertPemPath() {
 void EmbeddedTestServer::ShutdownOnIOThread() {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   weak_factory_.InvalidateWeakPtrs();
+  shutdown_closures_.Notify();
   listen_socket_.reset();
   connections_.clear();
 }
@@ -719,6 +743,14 @@ void EmbeddedTestServer::HandleRequest(
 
   HttpConnection* connection = GetConnectionForSocket(socket);
   CHECK(connection);
+
+  if (auth_handler_) {
+    auto auth_result = auth_handler_.Run(*request);
+    if (auth_result) {
+      DispatchResponseToDelegate(std::move(auth_result), delegate);
+      return;
+    }
+  }
 
   for (const auto& upgrade_request_handler : upgrade_request_handlers_) {
     auto upgrade_response = upgrade_request_handler.Run(*request, connection);
@@ -751,8 +783,7 @@ void EmbeddedTestServer::HandleRequest(
   }
 
   if (!response) {
-    LOG(WARNING) << "Request not handled. Returning 404: "
-                 << request->relative_url;
+    DVLOG(2) << "Request not handled. Returning 404: " << request->relative_url;
     auto not_found_response = std::make_unique<BasicHttpResponse>();
     not_found_response->set_code(HTTP_NOT_FOUND);
     response = std::move(not_found_response);
@@ -868,8 +899,6 @@ std::string EmbeddedTestServer::GetCertificateName() const {
       return "sha1_leaf.pem";
     case CERT_OK_BY_INTERMEDIATE:
       return "ok_cert_by_intermediate.pem";
-    case CERT_BAD_VALIDITY:
-      return "bad_validity.pem";
     case CERT_TEST_NAMES:
       return "test_names.pem";
     case CERT_KEY_USAGE_RSA_ENCIPHERMENT:
@@ -943,6 +972,16 @@ base::FilePath EmbeddedTestServer::GetFullPathFromSourceDirectory(
   return test_data_dir.Append(relative);
 }
 
+void EmbeddedTestServer::RegisterAuthHandler(
+    const HandleRequestCallback& callback) {
+  CHECK(!io_thread_)
+      << "Handlers must be registered before starting the server.";
+  if (auth_handler_) {
+    DVLOG(2) << "Overwriting existing Auth handler.";
+  }
+  auth_handler_ = callback;
+}
+
 void EmbeddedTestServer::RegisterUpgradeRequestHandler(
     const HandleUpgradeRequestCallback& callback) {
   CHECK_NE(protocol_, HttpConnection::Protocol::kHttp2)
@@ -1007,6 +1046,11 @@ void EmbeddedTestServer::FlushAllSocketsAndConnections() {
 void EmbeddedTestServer::SetAlpsAcceptCH(std::string hostname,
                                          std::string accept_ch) {
   alps_accept_ch_.insert_or_assign(std::move(hostname), std::move(accept_ch));
+}
+
+base::CallbackListSubscription EmbeddedTestServer::RegisterShutdownClosure(
+    base::OnceClosure closure) {
+  return shutdown_closures_.Add(std::move(closure));
 }
 
 void EmbeddedTestServer::OnAcceptCompleted(int rv) {

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Does not block window.open(`resources/empty.html?\n<`,'_self')
+  assert_false: expected false got true
+[FAIL] Does not block location.replace(`resources/empty.html?\n<`)
+  assert_false: expected false got true
+[FAIL] Does not block xhr
+  promise_test: Unhandled rejection with value: "get_requests timed out"
+[FAIL] Does not block EventSource
+  promise_test: Unhandled rejection with value: "get_requests timed out"
+[FAIL] Does not block fetch
+  promise_test: Unhandled rejection with value: "get_requests timed out"
+[FAIL] Does not block importScripts
+  promise_test: Unhandled rejection with value: "get_requests timed out"
+Harness: the test ran to completion.
+

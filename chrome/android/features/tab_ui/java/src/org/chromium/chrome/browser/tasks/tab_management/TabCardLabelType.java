@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Types of tab card labels. */
 @IntDef({TabCardLabelType.ACTIVITY_UPDATE, TabCardLabelType.PRICE_DROP})
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 @interface TabCardLabelType {
     /** Price drops. */
     int PRICE_DROP = 0;

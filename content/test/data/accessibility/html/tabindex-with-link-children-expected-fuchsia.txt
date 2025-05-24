@@ -1,0 +1,21 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN focusable
+++++++++STATIC_TEXT label='All of the following '
+++++++++++UNKNOWN label='All of the following '
+++++++++LINK focusable label='links' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='links'
+++++++++++++UNKNOWN label='links'
+++++++++STATIC_TEXT label=' are included '
+++++++++++UNKNOWN label=' are included '
+++++++++LINK focusable label='within' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='within'
+++++++++++++UNKNOWN label='within'
+++++++++STATIC_TEXT label=' one '
+++++++++++UNKNOWN label=' one '
+++++++++LINK focusable label='span' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='span'
+++++++++++++UNKNOWN label='span'
+++++++++STATIC_TEXT label='.'
+++++++++++UNKNOWN label='.'

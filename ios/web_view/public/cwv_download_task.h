@@ -76,7 +76,7 @@ CWV_EXPORT
 @end
 
 // Delegate to observe updates to CWVDownloadTask.
-@protocol CWVDownloadTaskDelegate<NSObject>
+@protocol CWVDownloadTaskDelegate <NSObject>
 @optional
 
 // Called when the download has finished. |error| is nil when it has completed

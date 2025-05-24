@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Listen over loginoplysninger, der udfyldes ved berøring, er åbnet i fuld højde.</translation>
 <translation id="5591247451101092906">Vil du bruge din gemte adgangskode eller adgangsnøgle?</translation>
 <translation id="5624120631404540903">Administrer adgangskoder</translation>
+<translation id="592182999816790476">Adgangskoden til <ph name="WEBSITE" /> er gemt for <ph name="USERNAME" /></translation>
 <translation id="6560306912274274630">Adgangsnøgle for <ph name="USERNAME" />, brug din skærmlås.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Ny adgangskode til dette website}one{Ny adgangskode til dette website}other{Nye adgangskoder til dette website}}</translation>
 <translation id="7286867818472074330">Vælg adgangsnøgle</translation>

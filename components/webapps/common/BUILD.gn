@@ -8,8 +8,6 @@ source_set("common") {
   sources = [
     "constants.cc",
     "constants.h",
-    "switches.cc",
-    "switches.h",
     "web_app_id.h",
   ]
 }

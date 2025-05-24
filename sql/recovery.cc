@@ -73,10 +73,9 @@ bool Recovery::RecoverIfPossible(Database* database,
 Recovery::Recovery(Database* database, Strategy strategy)
     : strategy_(strategy),
       db_(database),
-      recover_db_(sql::DatabaseOptions{
-          .page_size = database ? database->page_size() : 0,
-          .cache_size = 0,
-      }) {
+      recover_db_(
+          DatabaseOptions().set_page_size(database ? database->page_size() : 0),
+          "Recovery") {
   CHECK(db_);
   CHECK(db_->is_open());
   // Recovery is likely to be used in error handling. To prevent re-entry due to

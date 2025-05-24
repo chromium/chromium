@@ -4,6 +4,6 @@ rootWebArea
 ++++++genericContainer
 ++++++++staticText name='Unfocusable div'
 ++++++++++inlineTextBox name='Unfocusable div'
-++++++genericContainer name='Focusable div'
+++++++genericContainer
 ++++++++staticText name='Focusable div'
 ++++++++++inlineTextBox name='Focusable div'

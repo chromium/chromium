@@ -59,7 +59,7 @@ PopupRowContentView::~PopupRowContentView() = default;
 
 void PopupRowContentView::UpdateStyle(bool selected) {
   SetBackground(selected
-                    ? views::CreateThemedRoundedRectBackground(
+                    ? views::CreateRoundedRectBackground(
                           ui::kColorDropdownBackgroundSelected,
                           ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
                               views::Emphasis::kMedium))

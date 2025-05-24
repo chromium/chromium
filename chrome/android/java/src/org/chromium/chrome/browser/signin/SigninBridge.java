@@ -9,11 +9,11 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -33,7 +33,7 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
@@ -60,25 +60,12 @@ final class SigninBridge {
                     deviceLockActivityLauncher,
                     accountPickerLaunchMode,
                     /* isWebSignin= */ true,
-                    SigninAccessPoint.WEB_SIGNIN);
+                    SigninAccessPoint.WEB_SIGNIN,
+                    /* selectedAccountId= */ null);
         }
     }
 
     @VisibleForTesting static final int ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT = 3;
-
-    /**
-     * Launches {@link SyncConsentActivity}.
-     * @param windowAndroid WindowAndroid from which to get the Context.
-     * @param accessPoint for metrics purposes.
-     */
-    @CalledByNative
-    private static void launchSigninActivity(
-            WindowAndroid windowAndroid, @SigninAccessPoint int accessPoint) {
-        final Context context = windowAndroid.getContext().get();
-        if (context != null) {
-            SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(context, accessPoint);
-        }
-    }
 
     /** Opens account management screen. */
     @CalledByNative
@@ -93,7 +80,8 @@ final class SigninBridge {
 
     /** Opens account picker bottom sheet. */
     @CalledByNative
-    private static void openAccountPickerBottomSheet(Tab tab, String continueUrl) {
+    private static void openAccountPickerBottomSheet(
+            Tab tab, @JniType("std::string") String continueUrl) {
         openAccountPickerBottomSheet(
                 tab, continueUrl, new AccountPickerBottomSheetCoordinatorFactory());
     }
@@ -112,16 +100,16 @@ final class SigninBridge {
         Profile profile = tab.getProfile();
         SigninManager signinManager =
                 IdentityServicesProvider.get().getSigninManager(profile.getOriginalProfile());
-        if (!signinManager.isSyncOptInAllowed()) {
+        if (!signinManager.isSigninAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
                     SigninAccessPoint.WEB_SIGNIN);
             return;
         }
-        final List<CoreAccountInfo> coreAccountInfos =
-                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
-        if (coreAccountInfos.isEmpty()) {
+        List<AccountInfo> accounts =
+                AccountUtils.getAccountsIfFulfilledOrEmpty(
+                        AccountManagerFacadeProvider.getInstance().getAccounts());
+        if (accounts.isEmpty()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS,
                     SigninAccessPoint.WEB_SIGNIN);
@@ -144,19 +132,11 @@ final class SigninBridge {
         }
         // TODO(b/41493784): Update this when the new sign-in flow will be used for the web signin
         // entry point.
-        int titleId =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? R.string.signin_account_picker_bottom_sheet_title
-                        : R.string.signin_account_picker_dialog_title;
-        int subtitleId =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin
-                        : R.string.signin_account_picker_bottom_sheet_subtitle;
         AccountPickerBottomSheetStrings strings =
-                new AccountPickerBottomSheetStrings.Builder(titleId)
-                        .setSubtitleStringId(subtitleId)
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .setSubtitleStringId(
+                                R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin)
                         .setDismissButtonStringId(R.string.signin_account_picker_dismiss_button)
                         .build();
 

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/identity_manager/account_capabilities.h"
-#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -163,6 +163,19 @@ TEST_F(AccountCapabilitiesTest, CanUseMantaService) {
   EXPECT_EQ(capabilities.can_use_manta_service(), signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, CanUseCopyEditorFeature) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_copyeditor_feature(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_copyeditor_feature(true);
+  EXPECT_EQ(capabilities.can_use_copyeditor_feature(), signin::Tribool::kTrue);
+
+  mutator.set_can_use_copyeditor_feature(false);
+  EXPECT_EQ(capabilities.can_use_copyeditor_feature(), signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, CanUseModelExecutionFeatures) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_use_model_execution_features(),
@@ -222,6 +235,68 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToParentalControls) {
   EXPECT_EQ(capabilities.is_subject_to_parental_controls(),
             signin::Tribool::kFalse);
 }
+
+TEST_F(AccountCapabilitiesTest, CanUseSpeakerLabelInRecorderApp) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_speaker_label_in_recorder_app(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_speaker_label_in_recorder_app(true);
+  EXPECT_EQ(capabilities.can_use_speaker_label_in_recorder_app(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_speaker_label_in_recorder_app(false);
+  EXPECT_EQ(capabilities.can_use_speaker_label_in_recorder_app(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiInRecorderApp) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_generative_ai_in_recorder_app(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_generative_ai_in_recorder_app(true);
+  EXPECT_EQ(capabilities.can_use_generative_ai_in_recorder_app(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_generative_ai_in_recorder_app(false);
+  EXPECT_EQ(capabilities.can_use_generative_ai_in_recorder_app(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiPhotoEditing) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_generative_ai_photo_editing(true);
+  EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_generative_ai_photo_editing(false);
+  EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
+            signin::Tribool::kFalse);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(AccountCapabilitiesTest, CanUseGenerativeAi) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_chromeos_generative_ai(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_chromeos_generative_ai(true);
+  EXPECT_EQ(capabilities.can_use_chromeos_generative_ai(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_chromeos_generative_ai(false);
+  EXPECT_EQ(capabilities.can_use_chromeos_generative_ai(),
+            signin::Tribool::kFalse);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(AccountCapabilitiesTest,
        IsSubjectToPrivacySandboxRestrictedMeasurementApiNotice) {

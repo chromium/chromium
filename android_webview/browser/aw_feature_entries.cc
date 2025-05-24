@@ -9,10 +9,10 @@
 #include "android_webview/common/aw_switches.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/feature_entry_macros.h"
-#include "components/flags_ui/flags_state.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/webui/flags/feature_entry.h"
+#include "components/webui/flags/feature_entry_macros.h"
+#include "components/webui/flags/flags_state.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace android_webview {

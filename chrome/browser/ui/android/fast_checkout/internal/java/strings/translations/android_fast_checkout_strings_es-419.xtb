@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1122068467107743258">Trabajo</translation>
 <translation id="1275718070701477396">Seleccionada</translation>
 <translation id="138513070655895675">Cambia la forma de pago en este elemento de menú.</translation>
 <translation id="2129442648318919291">Administrar direcciones</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Dirección de envío</translation>
 <translation id="8873105120914375071">¿Quieres pagar más rápido?</translation>
 <translation id="9032876013752408138">Autocompletar mi información</translation>
+<translation id="932327136139879170">Página principal</translation>
 <translation id="984275831282074731">Formas de pago</translation>
 </translationbundle>

@@ -1,8 +1,0 @@
-include_rules = [
-    "+base/files/file.h",
-    "+base/files/file_path.h",
-    "+base/threading/platform_thread.h",
-    "+sql/initialization.h",
-    "+sql/sandboxed_vfs.h",
-    "+third_party/sqlite/sqlite3.h",
-]

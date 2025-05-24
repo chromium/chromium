@@ -6,7 +6,6 @@ enum ScrollAxis { "block", "inline", "x", "y" };
 
 // https://wicg.github.io/scroll-animations/#scrolltimeline-interface
 [
-    RuntimeEnabled=ScrollTimeline,
     Exposed=Window
 ] interface ScrollTimeline : AnimationTimeline {
     [CallWith=Document, RaisesException, MeasureAs=ScrollTimelineConstructor] constructor(optional ScrollTimelineOptions options = {});

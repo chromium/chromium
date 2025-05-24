@@ -6,17 +6,19 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '/images/icons.html.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {DisclosureVersion} from 'chrome://resources/cr_components/commerce/product_specifications.mojom-webui.js';
+import type {ProductSpecificationsBrowserProxy} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import type {ShoppingServiceBrowserProxy} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {ProductSpecificationsDisclosureVersion} from './../shopping_service.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
@@ -38,7 +40,10 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
   }
 
   protected items_: DisclosureItem[];
-  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
+      ProductSpecificationsBrowserProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceBrowserProxy =
+      ShoppingServiceBrowserProxyImpl.getInstance();
 
   constructor() {
     super();
@@ -74,11 +79,19 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
   protected async acceptDisclosure_() {
     chrome.metricsPrivate.recordUserAction(
         'Commerce.Compare.FirstRunExperience.Accept');
-    this.shoppingApi_.setProductSpecificationDisclosureAcceptVersion(
-        ProductSpecificationsDisclosureVersion.kV1);
+    this.productSpecificationsProxy_.setAcceptedDisclosureVersion(
+        DisclosureVersion.kV1);
 
-    // On accept, continue to create and show the product spec set.
+    // On accept, if `set_id` is available, open the existing set; otherwise
+    // create a new set with `urls` and `name`.
     const args = JSON.parse(chrome.getVariableValue('dialogArguments'));
+    const setId = args['set_id'];
+    if (setId.length !== 0) {
+      this.productSpecificationsProxy_.showProductSpecificationsSetForUuid(
+          {value: setId}, false);
+      chrome.send('dialogClose');
+      return;
+    }
     let name: string = args['name'];
     if (name.length === 0) {
       name = loadTimeData.getString('defaultTableTitle');
@@ -88,7 +101,7 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
     const {createdSet} = await this.shoppingApi_.addProductSpecificationsSet(
         name, urls.map(url => ({url})));
     if (createdSet) {
-      this.shoppingApi_.showProductSpecificationsSetForUuid(
+      this.productSpecificationsProxy_.showProductSpecificationsSetForUuid(
           createdSet.uuid, inNewTab);
     }
     chrome.send('dialogClose');
@@ -97,7 +110,7 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
   protected declineDisclosure_() {
     chrome.metricsPrivate.recordUserAction(
         'Commerce.Compare.FirstRunExperience.Reject');
-    this.shoppingApi_.declineProductSpecificationDisclosure();
+    this.productSpecificationsProxy_.declineDisclosure();
     chrome.send('dialogClose');
   }
 

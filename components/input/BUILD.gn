@@ -12,9 +12,15 @@ assert(
 component("input") {
   defines = [ "IS_INPUT_IMPL" ]
   sources = [
+    "child_frame_input_helper.cc",
+    "child_frame_input_helper.h",
     "cursor_manager.cc",
     "cursor_manager.h",
+    "dispatch_to_renderer_callback.cc",
+    "dispatch_to_renderer_callback.h",
     "event_with_latency_info.h",
+    "events_helper.cc",
+    "events_helper.h",
     "features.cc",
     "features.h",
     "fling_controller.cc",
@@ -24,6 +30,7 @@ component("input") {
     "gesture_event_queue.h",
     "gesture_event_stream_validator.cc",
     "gesture_event_stream_validator.h",
+    "input_constants.h",
     "input_disposition_handler.h",
     "input_event_ack_state.cc",
     "input_event_ack_state.h",
@@ -40,7 +47,6 @@ component("input") {
     "native_web_keyboard_event.h",
     "passthrough_touch_event_queue.cc",
     "passthrough_touch_event_queue.h",
-    "peak_gpu_memory_tracker.h",
     "render_input_router.cc",
     "render_input_router.h",
     "render_input_router_client.h",
@@ -81,6 +87,7 @@ component("input") {
     "web_touch_event_traits.cc",
     "web_touch_event_traits.h",
   ]
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
   deps = [
     ":mojom",
     "//base",
@@ -100,10 +107,26 @@ component("input") {
   }
   if (is_android) {
     sources += [
+      "android/android_input_callback.cc",
+      "android/android_input_callback.h",
+      "android/input_feature_map.cc",
+      "android/input_receiver_data.cc",
+      "android/input_receiver_data.h",
+      "android/input_token_forwarder.cc",
+      "android/input_token_forwarder.h",
+      "android/scoped_input_receiver.cc",
+      "android/scoped_input_receiver.h",
+      "android/scoped_input_receiver_callbacks.cc",
+      "android/scoped_input_receiver_callbacks.h",
+      "android/scoped_input_transfer_token.cc",
+      "android/scoped_input_transfer_token.h",
+      "android_input_helper.cc",
+      "android_input_helper.h",
       "native_web_keyboard_event_android.cc",
       "web_input_event_builders_android.cc",
       "web_input_event_builders_android.h",
     ]
+    deps += [ "//components/input/android:jni_headers" ]
   }
   if (is_ios) {
     sources += [
@@ -128,7 +151,12 @@ component("input") {
 
 mojom_component("mojom") {
   sources = [ "render_input_router.mojom" ]
-  public_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  public_deps = [
+    "//services/viz/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/events/mojom",
+    "//ui/events/mojom:event_latency_metadata_mojom",
+  ]
 
   overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
   component_deps = [ "//third_party/blink/public/common" ]
@@ -171,7 +199,10 @@ source_set("unit_tests") {
     "//ui/events/blink:blink",
   ]
   if (is_android) {
-    sources += [ "web_input_event_builders_android_unittest.cc" ]
+    sources += [
+      "utils_unittest.cc",
+      "web_input_event_builders_android_unittest.cc",
+    ]
   }
   if (is_mac) {
     sources += [

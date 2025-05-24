@@ -22,8 +22,7 @@ class PaymentRequestBrowserTestBase;
 // left to right. It manages the animation and lifetime of views that are
 // pushed and popped on it. To use this class, add it to a view hierarchy, and
 // call Push/Pop to animate views in and out.
-class ViewStack : public views::BoundsAnimatorObserver,
-                  public views::View {
+class ViewStack : public views::BoundsAnimatorObserver, public views::View {
   METADATA_HEADER(ViewStack, views::View)
 
  public:
@@ -62,8 +61,8 @@ class ViewStack : public views::BoundsAnimatorObserver,
   views::View* top() { return stack_.back(); }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(
-      ViewStackTest, TestPopStateRemovesChildViewAndCleansUpState);
+  FRIEND_TEST_ALL_PREFIXES(ViewStackTest,
+                           TestPopStateRemovesChildViewAndCleansUpState);
   FRIEND_TEST_ALL_PREFIXES(ViewStackTest, TestDeletingViewCleansUpState);
   FRIEND_TEST_ALL_PREFIXES(ViewStackTest, TestInitialStateAddedAsChildView);
   FRIEND_TEST_ALL_PREFIXES(ViewStackTest, TestPushStateAddsViewToChildren);
@@ -74,8 +73,8 @@ class ViewStack : public views::BoundsAnimatorObserver,
   // Marks all views, except the topmost, as invisible.
   void HideCoveredViews();
 
-  void UpdateAnimatorBounds(
-      views::BoundsAnimator* animator, const gfx::Rect& target);
+  void UpdateAnimatorBounds(views::BoundsAnimator* animator,
+                            const gfx::Rect& target);
 
   // views::BoundsAnimatorObserver:
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override {}

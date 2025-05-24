@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
+
 #import "ios/intents/src/AppDelegate.h"
 
 int main(int argc, char** argv) {

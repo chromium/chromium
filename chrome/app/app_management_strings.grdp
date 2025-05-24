@@ -201,6 +201,15 @@
   <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT_WITH_DETAILS" desc="Label explaining that access to microphone is allowed for an app but microphone is blocked by hardware switch with details.">
     Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on microphone using physical switch.
   </message>
+  <message name="IDS_APP_MANAGEMENT_APP_VERSION_TITLE" desc="Text for application version section">
+    Version
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_SIZE_TITLE" desc="Text for application size section">
+    Size
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DATA_SIZE_TITLE" desc="Text for application data section">
+    Data stored in app
+  </message>
 
   <!-- File Handling -->
   <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_HEADER" desc="Main text for toggling a web app's ability to use the File Handling API. This controls whether the app can appear in an 'Open With' list in a file's context menu.">

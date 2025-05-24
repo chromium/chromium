@@ -56,8 +56,7 @@ const char* ServiceWorkerStatusToString(ServiceWorkerStatusCode status) {
     case ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
       return "Storage data corrupted";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace blink

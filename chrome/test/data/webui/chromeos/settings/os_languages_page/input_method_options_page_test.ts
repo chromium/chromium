@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsInputMethodOptionsPageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsInputMethodOptionsPageElement} from 'chrome://os-settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -150,7 +150,7 @@ suite('<settings-input-method-options-page>', () => {
     const autoCorrectToggleButton = options[0]!.querySelector('cr-toggle');
     assertTrue(!!autoCorrectToggleButton);
     assertEquals(false, autoCorrectToggleButton.checked);
-    autoCorrectToggleButton!.click();
+    autoCorrectToggleButton.click();
     await waitAfterNextRender(autoCorrectToggleButton);
     assertEquals(true, autoCorrectToggleButton.checked);
     assertEquals(

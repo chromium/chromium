@@ -14,7 +14,7 @@ suite('NetInternalsMainTest', function() {
       sockets: true,
       hsts: true,
       sharedDictionary: true,
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       chromeos: true,
       // </if>
     };

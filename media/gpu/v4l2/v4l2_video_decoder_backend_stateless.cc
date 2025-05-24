@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateless.h"
 
 #include <fcntl.h>
@@ -351,7 +356,7 @@ void V4L2StatelessVideoDecoderBackend::SurfaceReady(
   // produces multiple surfaces with the same |bitstream_id|, so we shouldn't
   // remove the timestamp from the cache.
   const auto it = bitstream_id_to_timestamp_.Peek(bitstream_id);
-  CHECK(it != bitstream_id_to_timestamp_.end(), base::NotFatalUntil::M130);
+  CHECK(it != bitstream_id_to_timestamp_.end());
   base::TimeDelta timestamp = it->second;
 
   dec_surface->SetVisibleRect(visible_rect);

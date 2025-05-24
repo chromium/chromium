@@ -5,12 +5,14 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrToggleElement, IronIconElement, OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes, SettingsBluetoothSummaryElement} from 'chrome://os-settings/os_settings.js';
+import type {CrToggleElement, IronIconElement, SettingsBluetoothSummaryElement} from 'chrome://os-settings/os_settings.js';
+import {OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {setHidPreservingControllerForTesting} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothSystemProperties, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {BluetoothSystemState, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/chromeos/bluetooth/fake_bluetooth_config.js';
@@ -38,15 +40,10 @@ suite('<os-settings-bluetooth-summary>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  async function init(isBluetoothDisconnectWarningEnabled: boolean = false) {
-    if (isBluetoothDisconnectWarningEnabled) {
-      loadTimeData.overrideValues({'bluetoothDisconnectWarningFlag': true});
-      hidPreservingController = new FakeHidPreservingBluetoothStateController();
-      hidPreservingController.setBluetoothConfigForTesting(bluetoothConfig);
-      setHidPreservingControllerForTesting(hidPreservingController);
-    } else {
-      loadTimeData.overrideValues({'bluetoothDisconnectWarningFlag': false});
-    }
+  function init() {
+    hidPreservingController = new FakeHidPreservingBluetoothStateController();
+    hidPreservingController.setBluetoothConfigForTesting(bluetoothConfig);
+    setHidPreservingControllerForTesting(hidPreservingController);
 
     browserProxy = new TestOsBluetoothDevicesSubpageBrowserProxy();
     OsBluetoothDevicesSubpageBrowserProxyImpl.setInstanceForTesting(
@@ -66,9 +63,9 @@ suite('<os-settings-bluetooth-summary>', () => {
     bluetoothConfig.observeSystemProperties(propertiesObserver);
   }
 
-  test('Toggle Bluetooth with bluetoothDisconnectWarningFlag on', async () => {
+  test('Toggle Bluetooth', async () => {
     await flushTasks();
-    await init(/* isBluetoothDisconnectWarningEnabled= */ true);
+    await init();
     bluetoothConfig.setSystemState(BluetoothSystemState.kDisabled);
     await flushTasks();
 
@@ -78,25 +75,25 @@ suite('<os-settings-bluetooth-summary>', () => {
     assertTrue(!!enableBluetoothToggle);
 
     const enableBluetooth = async () => {
-      assertTrue(
-          bluetoothSummary.systemProperties.systemState ===
-          BluetoothSystemState.kDisabled);
+      assertEquals(
+          BluetoothSystemState.kDisabled,
+          bluetoothSummary.systemProperties.systemState);
 
       // Simulate clicking toggle.
       enableBluetoothToggle.click();
       await flushTasks();
 
       // Toggle should be on since systemState is enabling.
-      assertTrue(
-          bluetoothSummary.systemProperties.systemState ===
-          BluetoothSystemState.kEnabling);
+      assertEquals(
+          BluetoothSystemState.kEnabling,
+          bluetoothSummary.systemProperties.systemState);
 
       // Mock operation success.
       bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
       await flushTasks();
-      assertTrue(
-          bluetoothSummary.systemProperties.systemState ===
-          BluetoothSystemState.kEnabled);
+      assertEquals(
+          BluetoothSystemState.kEnabled,
+          bluetoothSummary.systemProperties.systemState);
     };
 
     await enableBluetooth();
@@ -110,16 +107,16 @@ suite('<os-settings-bluetooth-summary>', () => {
 
     assertTrue(enableBluetoothToggle.checked);
     assertEquals(hidPreservingController.getDialogShownCount(), 1);
-    assertTrue(
-        bluetoothSummary.systemProperties.systemState ===
-        BluetoothSystemState.kEnabled);
+    assertEquals(
+        BluetoothSystemState.kEnabled,
+        bluetoothSummary.systemProperties.systemState);
     hidPreservingController.completeShowDialog(true);
     await flushTasks();
 
     assertFalse(enableBluetoothToggle.checked);
-    assertTrue(
-        bluetoothSummary.systemProperties.systemState ===
-        BluetoothSystemState.kDisabling);
+    assertEquals(
+        BluetoothSystemState.kDisabling,
+        bluetoothSummary.systemProperties.systemState);
     bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
     await flushTasks();
     await enableBluetooth();
@@ -133,9 +130,9 @@ suite('<os-settings-bluetooth-summary>', () => {
 
     assertTrue(enableBluetoothToggle.checked);
     assertEquals(hidPreservingController.getDialogShownCount(), 2);
-    assertTrue(
-        bluetoothSummary.systemProperties.systemState ===
-        BluetoothSystemState.kEnabled);
+    assertEquals(
+        BluetoothSystemState.kEnabled,
+        bluetoothSummary.systemProperties.systemState);
     hidPreservingController.completeShowDialog(false);
 
     await flushTasks();

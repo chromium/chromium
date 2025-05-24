@@ -87,7 +87,7 @@ void OnscreenContentProvider::RemoveConsumer(ContentCaptureConsumer& consumer) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ContentCaptureReceiver* OnscreenContentProvider::ContentCaptureReceiverForFrame(
@@ -147,6 +147,17 @@ void OnscreenContentProvider::TitleWasSet(content::NavigationEntry* entry) {
     // To match what the user sees, intentionally get the title from WebContents
     // instead of NavigationEntry, though they might be same.
     receiver->SetTitle(web_contents()->GetTitle());
+  }
+}
+
+void OnscreenContentProvider::FlushCaptureContent(
+    ContentCaptureReceiver* content_capture_receiver,
+    const ContentCaptureFrame& data) {
+  ContentCaptureSession parent_session;
+  BuildContentCaptureSession(content_capture_receiver, true /* ancestor_only */,
+                             &parent_session);
+  for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
+    consumer->FlushCaptureContent(parent_session, data);
   }
 }
 

@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -117,14 +118,17 @@ bool SupportsNecessaryGLExtension() {
 
   return gl_context->HasExtension("GL_EXT_YUV_target");
 }
-scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
-                                          VideoFrame::StorageType type) {
+scoped_refptr<VideoFrame> CreateNV12Frame(
+    const gfx::Size& size,
+    VideoFrame::StorageType type,
+    gpu::TestSharedImageInterface* test_sii) {
   const gfx::Rect visible_rect(size);
   constexpr base::TimeDelta kNullTimestamp;
   if (type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    return CreateGpuMemoryBufferVideoFrame(
+    CHECK(test_sii);
+    return CreateMappableVideoFrame(
         VideoPixelFormat::PIXEL_FORMAT_NV12, size, visible_rect, size,
-        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii);
   } else if (type == VideoFrame::STORAGE_DMABUFS) {
     return CreatePlatformVideoFrame(VideoPixelFormat::PIXEL_FORMAT_NV12, size,
                                     visible_rect, size, kNullTimestamp,
@@ -143,7 +147,8 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
   DCHECK_EQ(size.height(), base::bits::AlignUpDeprecatedDoNotUse(
                                size.height(), kMM21TileHeight));
 
-  scoped_refptr<VideoFrame> frame = CreateNV12Frame(size, type);
+  scoped_refptr<VideoFrame> frame =
+      CreateNV12Frame(size, type, /*test_sii=*/nullptr);
   if (!frame) {
     LOG(ERROR) << "Failed to create MM21 frame";
     return nullptr;
@@ -249,9 +254,11 @@ class ImageProcessorPerfTest : public ::testing::Test {
     }
 
     ASSERT_EQ(test_type == kMM21Detiling, output_size == test_image_size_);
-    output_frame_ =
-        CreateNV12Frame(output_size, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+    output_frame_ = CreateNV12Frame(
+        output_size, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii_.get());
     ASSERT_TRUE(output_frame_) << "Error creating output frame";
+
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
 
     error_cb_ = base::BindRepeating(
         [](scoped_refptr<base::SequencedTaskRunner> client_task_runner_,
@@ -282,7 +289,7 @@ class ImageProcessorPerfTest : public ::testing::Test {
     ASSERT_TRUE(tmp_video_frame);
 
     input_image_frame_ = test::CloneVideoFrame(
-        tmp_video_frame.get(), *input_layout,
+        tmp_video_frame.get(), *input_layout, test_sii_.get(),
         use_cpu_memory ? VideoFrame::STORAGE_OWNED_MEMORY
                        : VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
@@ -304,6 +311,7 @@ class ImageProcessorPerfTest : public ::testing::Test {
   ImageProcessor::ErrorCB error_cb_;
   ImageProcessorFactory::PickFormatCB pick_format_cb_;
   scoped_refptr<VideoFrame> input_image_frame_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 // Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique input
@@ -574,11 +582,12 @@ TEST_F(ImageProcessorPerfTest, GLNV12ScalingComparisonTest) {
 
   scoped_refptr<VideoFrame> gl_upscaling_output_frame =
       CreateNV12Frame(gfx::Size(kUpScalingOutputWidth, kUpScalingOutputHeight),
-                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii_.get());
   ASSERT_TRUE(gl_upscaling_output_frame) << "Error creating GL output frame";
 
-  scoped_refptr<VideoFrame> gl_downscaling_output_frame = CreateNV12Frame(
-      input_image_frame_->coded_size(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  scoped_refptr<VideoFrame> gl_downscaling_output_frame =
+      CreateNV12Frame(input_image_frame_->coded_size(),
+                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii_.get());
   ASSERT_TRUE(gl_downscaling_output_frame) << "Error creating GL output frame";
 
   ImageProcessor::FrameReadyCB gl_callback2 =

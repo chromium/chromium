@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 #include "components/crash/core/common/crash_key.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -27,7 +27,7 @@ namespace gfx {
 //   auto logger = CrashIdHelper::Get()->OnWillProcessMessages(crash_id);
 //   <do message processing>
 // }
-class GFX_EXPORT CrashIdHelper {
+class COMPONENT_EXPORT(GFX) CrashIdHelper {
  public:
   static CrashIdHelper* Get();
 
@@ -38,7 +38,7 @@ class GFX_EXPORT CrashIdHelper {
   static void RegisterMainThread(base::PlatformThreadId thread_id);
 
   // RAII style class that unregisters in the destructor.
-  class GFX_EXPORT ScopedLogger {
+  class COMPONENT_EXPORT(GFX) ScopedLogger {
    public:
     ScopedLogger(const ScopedLogger&) = delete;
     ScopedLogger& operator=(const ScopedLogger&) = delete;

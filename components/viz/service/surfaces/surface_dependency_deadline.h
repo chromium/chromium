@@ -48,9 +48,6 @@ class VIZ_SERVICE_EXPORT SurfaceDependencyDeadline {
   }
 
   bool operator==(const SurfaceDependencyDeadline& other) const;
-  bool operator!=(const SurfaceDependencyDeadline& other) const {
-    return !(*this == other);
-  }
 
  private:
   raw_ptr<const base::TickClock> tick_clock_;

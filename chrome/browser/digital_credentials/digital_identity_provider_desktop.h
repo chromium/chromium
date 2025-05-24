@@ -6,13 +6,16 @@
 #define CHROME_BROWSER_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_PROVIDER_DESKTOP_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_multi_step_dialog.h"
+#include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "content/public/browser/digital_identity_provider.h"
 
 namespace content {
 class WebContents;
+class RenderFrameHost;
 }
 
 namespace device::cablev2 {
@@ -27,21 +30,40 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   ~DigitalIdentityProviderDesktop() override;
 
   // content::DigitalIdentityProvider:
-  bool IsLowRiskOrigin(const url::Origin& to_check) const override;
+  bool IsLowRiskOrigin(
+      content::RenderFrameHost& render_frame_host) const override;
   DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
       content::WebContents& web_contents,
       const url::Origin& origin,
       content::DigitalIdentityInterstitialType interstitial_type,
       DigitalIdentityInterstitialCallback callback) override;
-  void Request(content::WebContents* web_contents,
-               const url::Origin& rp_origin,
-               base::Value request,
-               DigitalIdentityCallback callback) override;
+  void Get(content::WebContents* web_contents,
+           const url::Origin& rp_origin,
+           base::ValueView request,
+           DigitalIdentityCallback callback) override;
+  void Create(content::WebContents* web_contents,
+              const url::Origin& rp_origin,
+              base::ValueView request,
+              DigitalIdentityCallback callback) override;
 
  private:
+  // Shared implementation between `Request()` and `Create()` above.
+  void Transact(
+      content::WebContents* web_contents,
+      content::digital_credentials::cross_device::RequestInfo::RequestType
+          request_type,
+      const url::Origin& rp_origin,
+      base::ValueView request,
+      DigitalIdentityCallback callback);
+
   // Called whenever some significant event occurs during the transaction.
-  void OnEvent(const std::string qr_url,
+  void OnEvent(const std::string& qr_url,
                content::digital_credentials::cross_device::Event);
+
+  // caBLE events notify when the user has started the transaction on their
+  // phone. This method updates the desktop UI to inform about the current state
+  // or to instruct the user to complete the action on the phone.
+  void OnCableEvent(device::cablev2::Event event);
 
   // Called when the transaction is finished (successfully or not).
   void OnFinished(
@@ -52,7 +74,7 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   DigitalIdentityMultiStepDialog* EnsureDialogCreated();
 
   // Shows dialog with QR code.
-  void ShowQrCodeDialog(const std::string qr_url);
+  void ShowQrCodeDialog(const std::string& qr_url);
 
   // Shows dialog which prompts user to manually turn on bluetooth.
   void ShowBluetoothManualTurnOnDialog();
@@ -60,6 +82,17 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   // Called when the user clicks a button on the dialog requesting Bluetooth
   // power.
   void OnUserRequestedBluetoothPowerOn();
+
+  // Called upon receiving a BLE advert from the phone which starts the
+  // connection between the phone and the desktop via the tunnel service.
+  void ShowConnectingToPhoneDialog();
+
+  // Called when the tunnel connection is established in which case the user
+  // should follow the instruction on the phone.
+  void ShowContinueStepsOnThePhoneDialog();
+
+  // Called when `cable_connecting_dialog_timer_` completes.
+  void OnCableConnectingTimerComplete();
 
   // Called when the request has failed, possibly as a result of the user
   // canceling the dialog.
@@ -86,6 +119,16 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   std::unique_ptr<DigitalIdentityMultiStepDialog> dialog_;
 
   DigitalIdentityCallback callback_;
+
+  // cable_connecting_dialog_timer_ is started when we start displaying
+  // the "connecting..." dialog for a caBLE connection. To avoid flashing the
+  // UI, the dialog won't be automatically replaced until this timer completes.
+  base::OneShotTimer cable_connecting_dialog_timer_;
+
+  // cable_connecting_ready_to_advance_ is set to true if we are ready to
+  // advance the "connecting" dialog but are waiting for
+  // `cable_connecting_dialog_timer_` to complete.
+  bool cable_connecting_ready_to_advance_ = false;
 
   base::WeakPtrFactory<DigitalIdentityProviderDesktop> weak_ptr_factory_{this};
 };

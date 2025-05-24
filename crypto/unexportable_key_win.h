@@ -5,22 +5,18 @@
 #ifndef CRYPTO_UNEXPORTABLE_KEY_WIN_H_
 #define CRYPTO_UNEXPORTABLE_KEY_WIN_H_
 
-#include <windows.h>
-
-#include <ncrypt.h>
-
 #include "base/containers/span.h"
+#include "base/win/wincrypt_shim.h"
 #include "crypto/crypto_export.h"
 #include "crypto/scoped_cng_types.h"
+#include "crypto/unexportable_key.h"
 
 namespace crypto {
 
-// Attempts to load a TPM-backed CNG key from the given `wrapped` value. Will
-// assign the out `provider` and `key` values respectively. Returns true if all
-// operations were successful.
-CRYPTO_EXPORT bool LoadWrappedTPMKey(base::span<const uint8_t> wrapped,
-                                     ScopedNCryptProvider& provider,
-                                     ScopedNCryptKey& key);
+// Attempts to reload a CNG key's handle from the given `key`. Returns the key
+// on success or an invalid handle on error.
+CRYPTO_EXPORT ScopedNCryptKey
+DuplicatePlatformKeyHandle(const UnexportableSigningKey& key);
 
 }  // namespace crypto
 

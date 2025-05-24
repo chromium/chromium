@@ -43,7 +43,7 @@ class TestOSCryptAsync : public OSCryptAsync {
     return base::CallbackListSubscription();
   }
 
-  static Encryptor GetTestEncryptorForTesting() {
+  static TestEncryptor GetTestEncryptorForTesting() {
     Encryptor::KeyRing keys;
     keys.emplace(kDefaultTestKeyPrefix,
                  Encryptor::Key(crypto::RandBytesAsVector(
@@ -52,22 +52,18 @@ class TestOSCryptAsync : public OSCryptAsync {
     Encryptor::Key key(
         crypto::RandBytesAsVector(Encryptor::Key::kAES256GCMKeySize),
         mojom::Algorithm::kAES256GCM);
-    // This test keyring has a second key that is OS Crypt Sync compatible.
-    // When a test requests an Encryptor that is OS Crypt Sync compatible, the
-    // k2 key will be picked, instead of the default k1 key. This allows
-    // testing of key upgrade scenarios.
-    key.is_os_crypt_sync_compatible_ = true;
     keys.emplace(kOsCryptSyncCompatibleTestKeyPrefix, std::move(key));
-    Encryptor encryptor(std::move(keys), kDefaultTestKeyPrefix);
+    TestEncryptor encryptor(std::move(keys), kDefaultTestKeyPrefix,
+                            kOsCryptSyncCompatibleTestKeyPrefix);
     return encryptor;
   }
 
-  static Encryptor CloneEncryptorForTesting(Encryptor::Option option) {
+  static TestEncryptor CloneEncryptorForTesting(Encryptor::Option option) {
     return GetTestEncryptorForTesting().Clone(option);
   }
 
  private:
-  Encryptor encryptor_;
+  TestEncryptor encryptor_;
   const bool is_sync_for_unittests_;
 };
 
@@ -76,7 +72,7 @@ std::unique_ptr<OSCryptAsync> GetTestOSCryptAsyncForTesting(
   return std::make_unique<TestOSCryptAsync>(is_sync_for_unittests);
 }
 
-Encryptor GetTestEncryptorForTesting(Encryptor::Option option) {
+TestEncryptor GetTestEncryptorForTesting(Encryptor::Option option) {
   return TestOSCryptAsync::CloneEncryptorForTesting(option);
 }
 

@@ -9,6 +9,7 @@
 
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
+#include "components/device_signals/core/common/common_types.h"
 
 namespace base {
 class FilePath;
@@ -39,6 +40,19 @@ std::optional<CrowdStrikeSignals> GetCrowdStrikeSignals();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 base::FilePath GetCrowdStrikeZtaFilePath();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+std::string GetOsName();
+std::string GetOsVersion();
+std::string GetDeviceModel();
+std::string GetSerialNumber();
+SettingValue GetScreenlockSecured();
+SettingValue GetDiskEncrypted();
+std::vector<std::string> GetMacAddresses();
+
+#if BUILDFLAG(IS_WIN)
+SettingValue GetSecureBootEnabled();
+std::optional<std::string> GetWindowsMachineDomain();
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device_signals
 

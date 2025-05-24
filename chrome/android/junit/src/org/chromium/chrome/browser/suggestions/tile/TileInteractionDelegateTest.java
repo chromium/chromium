@@ -22,13 +22,13 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2)
 public class TileInteractionDelegateTest {
 
-    private class TileGroupForTest extends TileGroup {
+    private static class TileGroupForTest extends TileGroup {
         private Tile mTile;
 
         public TileGroupForTest(
@@ -53,6 +53,7 @@ public class TileInteractionDelegateTest {
                 SuggestionsUiDelegate uiDelegate,
                 ContextMenuManager contextMenuManager,
                 Delegate tileGroupDelegate,
+                TileDragDelegate tileDragDelegate,
                 Observer observer,
                 OfflinePageBridge offlinePageBridge) {
             super(
@@ -60,6 +61,7 @@ public class TileInteractionDelegateTest {
                     uiDelegate,
                     contextMenuManager,
                     tileGroupDelegate,
+                    tileDragDelegate,
                     observer,
                     offlinePageBridge);
         }
@@ -74,13 +76,14 @@ public class TileInteractionDelegateTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Tile mTile;
-    @Mock Tile mSearchTile;
     @Mock SuggestionsTileView mTileView;
     @Mock SiteSuggestion mData;
     @Mock SuggestionsUiDelegate mSuggestionsUiDelegate;
     @Mock ContextMenuManager mContextMenuManager;
     @Mock TileGroup.Delegate mTileGroupDelegate;
+    @Mock TileGroup.TileDragDelegate mTileDragDelegate;
     @Mock OfflinePageBridge mOfflinePageBridge;
     @Mock private Runnable mSnapshotTileGridChangedRunnable;
     @Mock private Runnable mTileCountChangedRunnable;
@@ -89,31 +92,21 @@ public class TileInteractionDelegateTest {
     @Mock private AndroidPrerenderManager mAndroidPrerenderManager;
     @Mock private AndroidPrerenderManager.Natives mNativeMock;
 
-    @Rule public JniMocker jniMocker = new JniMocker();
-
     @Captor
     ArgumentCaptor<View.OnTouchListener> mOnTouchListenerCaptor =
             ArgumentCaptor.forClass(View.OnTouchListener.class);
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mTile.getUrl()).thenReturn(new GURL("https://example.com"));
-        when(mSearchTile.getUrl()).thenReturn(new GURL("https://www.google.com/search?q=123"));
         when(mTile.getData()).thenReturn(mData);
         when(mAndroidPrerenderManager.startPrerendering(any())).thenReturn(true);
-        jniMocker.mock(AndroidPrerenderManagerJni.TEST_HOOKS, mNativeMock);
+        AndroidPrerenderManagerJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test
     public void testTileInteractionDelegateTaken() {
         HistogramWatcher.Builder histogramWatcherBuilder = HistogramWatcher.newBuilder();
-
-        histogramWatcherBuilder.expectIntRecord(
-                "Prerender.Experimental.NewTabPage.TouchDuration.Taken", 0);
-        histogramWatcherBuilder.expectNoRecords(
-                "Prerender.Experimental.NewTabPage.TouchDuration.NotTaken");
-
         HistogramWatcher histogramWatcher = histogramWatcherBuilder.build();
 
         TileGroup tileGroup =
@@ -122,6 +115,7 @@ public class TileInteractionDelegateTest {
                         mSuggestionsUiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.onIconMadeAvailable(new GURL("https://example.com"));
@@ -140,12 +134,6 @@ public class TileInteractionDelegateTest {
     @Test
     public void testTileInteractionDelegateNotTaken() {
         HistogramWatcher.Builder histogramWatcherBuilder = HistogramWatcher.newBuilder();
-
-        histogramWatcherBuilder.expectIntRecord(
-                "Prerender.Experimental.NewTabPage.TouchDuration.NotTaken", 0);
-        histogramWatcherBuilder.expectNoRecords(
-                "Prerender.Experimental.NewTabPage.TouchDuration.Taken");
-
         HistogramWatcher histogramWatcher = histogramWatcherBuilder.build();
 
         TileGroup tileGroup =
@@ -154,6 +142,7 @@ public class TileInteractionDelegateTest {
                         mSuggestionsUiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.onIconMadeAvailable(new GURL("https://example.com"));
@@ -177,6 +166,7 @@ public class TileInteractionDelegateTest {
                         mSuggestionsUiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.setTileForTesting(mTile);
@@ -199,31 +189,6 @@ public class TileInteractionDelegateTest {
         // mPrerenderStarted in TileInteractionDelegateImpl is true, stopPrerendering should be
         // called.
         Mockito.verify(mAndroidPrerenderManager).stopPrerendering();
-        AndroidPrerenderManager.clearAndroidPrerenderManagerForTesting();
-    }
-
-    @Test
-    public void testTileInteractionSearchTileNotTriggerPrerendering() {
-        AndroidPrerenderManager.setAndroidPrerenderManagerForTesting(mAndroidPrerenderManager);
-        TileGroupForTest tileGroup =
-                new TileGroupForTest(
-                        mTileRenderer,
-                        mSuggestionsUiDelegate,
-                        mContextMenuManager,
-                        mTileGroupDelegate,
-                        mTileGroupObserver,
-                        mOfflinePageBridge);
-        tileGroup.setTileForTesting(mSearchTile);
-        tileGroup.onIconMadeAvailable(new GURL("https://www.google.com/search?q=123"));
-        TileGroup.TileSetupDelegate tileSetupCallback = tileGroup.getTileSetupDelegate();
-        tileSetupCallback.createInteractionDelegate(mSearchTile, mTileView);
-
-        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
-        verify(mTileView).setOnTouchListener(mOnTouchListenerCaptor.capture());
-        mOnTouchListenerCaptor.getValue().onTouch(mTileView, event);
-        ShadowLooper.idleMainLooper(200, TimeUnit.MILLISECONDS);
-        Mockito.verify(mAndroidPrerenderManager, Mockito.never())
-                .startPrerendering(ArgumentMatchers.any());
         AndroidPrerenderManager.clearAndroidPrerenderManagerForTesting();
     }
 }

@@ -97,7 +97,8 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, CreateAndRunTasks) {
       "WebApk.Sync.Restore.InstallResult.Fallback", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, NoManifestPage) {
+// TODO(https://crbug.com/370441986): Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DISABLED_NoManifestPage) {
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   GURL test_url = embedded_test_server()->GetURL("/no_manifest_test_page.html");
@@ -157,7 +158,9 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, StartUrlNotLoadable) {
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, ManifestIdMismatch) {
+// TODO(crbug.com/379851961): The test is flaky.
+IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest,
+                       DISABLED_ManifestIdMismatch) {
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   GURL test_url = embedded_test_server()->GetURL("/manifest_test_page.html");

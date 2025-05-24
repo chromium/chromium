@@ -29,10 +29,10 @@ namespace ipp_converter {
 using HttpHeader = std::pair<std::string, std::string>;
 
 // Carriage return; Http header-pair delimiter.
-const char kCarriage[] = "\r\n";
+inline constexpr char kCarriage[] = "\r\n";
 
 // Defined IPP end-of-message sentinel.
-const char kIppSentinel[] = "\x03";
+inline constexpr char kIppSentinel[] = "\x03";
 
 // Request line converters
 // Parses |status_line| into vector of 3, individual terms, returns empty

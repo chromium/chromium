@@ -1,9 +1,18 @@
 include_rules = [
+  "+components/optimization_guide",
+  "+components/version_info",
   "+google/protobuf",
   "+net",
-  "+components/optimization_guide",
   "+services/network/public",
   "+services/network/test",
+  "+skia/ext/image_operations.h",
   "+third_party/googletest",
+  "+third_party/skia/include/core/SkBitmap.h",
   "+third_party/tflite_support",
 ]
+
+specific_include_rules = {
+   "permissions_aiv3_handler_unittest.cc": [
+      "+components/optimization_guide/core",
+   ],
+}

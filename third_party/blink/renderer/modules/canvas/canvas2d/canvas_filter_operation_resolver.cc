@@ -77,7 +77,7 @@ ColorMatrixFilterOperation* ResolveColorMatrix(
   }
 
   return MakeGarbageCollected<ColorMatrixFilterOperation>(
-      *values, FilterOperation::OperationType::kColorMatrix);
+      *std::move(values), FilterOperation::OperationType::kColorMatrix);
 }
 
 struct KernelMatrix {
@@ -438,7 +438,7 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
 }  // namespace
 
 FilterOperations CanvasFilterOperationResolver::CreateFilterOperationsFromList(
-    const HeapVector<ScriptValue>& filters,
+    const HeapVector<ScriptObject>& filters,
     ExecutionContext& execution_context,
     ExceptionState& exception_state) {
   FilterOperations operations;
@@ -529,7 +529,7 @@ CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
     const String& filter_string,
     const ExecutionContext& execution_context,
     Element* style_resolution_host,
-    const Font& font) {
+    const Font* font) {
   FilterOperations operations;
   const CSSValue* css_value = CSSParser::ParseSingleValue(
       CSSPropertyID::kFilter, filter_string,
@@ -543,7 +543,7 @@ CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
       style_resolution_host->GetDocument().GetFrame() != nullptr) {
     return style_resolution_host->GetDocument()
         .GetStyleResolver()
-        .ComputeFilterOperations(style_resolution_host, font, *css_value);
+        .ComputeFilterOperations(style_resolution_host, *font, *css_value);
   } else {
     return FilterOperationResolver::CreateOffscreenFilterOperations(*css_value,
                                                                     font);

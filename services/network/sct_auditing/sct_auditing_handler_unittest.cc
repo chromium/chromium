@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/feature_list.h"
@@ -35,7 +36,6 @@
 #include "services/network/test/test_utils.h"
 #include "services/network/url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace network {
 

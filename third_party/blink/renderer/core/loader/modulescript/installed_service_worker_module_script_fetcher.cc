@@ -30,7 +30,8 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
     ModuleType expected_module_type,
     ResourceFetcher*,
     ModuleGraphLevel level,
-    ModuleScriptFetcher::Client* client) {
+    ModuleScriptFetcher::Client* client,
+    ModuleImportPhase import_phase) {
   DCHECK_EQ(fetch_params.GetScriptType(), mojom::blink::ScriptType::kModule);
   DCHECK(global_scope_->IsContextThread());
   auto* installed_scripts_manager = global_scope_->GetInstalledScriptsManager();
@@ -76,7 +77,7 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
 
   // TODO(sasebree) De-duplicate similar logic that lives in
   // ModuleScriptFetcher::WasModuleLoadSuccessful
-  if (expected_module_type_ != ModuleType::kJavaScript ||
+  if (expected_module_type_ != ModuleType::kJavaScriptOrWasm ||
       !MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
           script_data->GetHttpContentType())) {
     // This should never happen.
@@ -92,11 +93,13 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
     return;
   }
 
+  // Use the resolved module type since only JS scripts can be installed.
+  ResolvedModuleType resolved_module_type = ResolvedModuleType::kJavaScript;
   // Create an external module script where base_url == source_url.
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/fetch_params.Url(), /*base_url=*/fetch_params.Url(),
-      ScriptSourceLocationType::kExternalFile, expected_module_type_,
+      ScriptSourceLocationType::kExternalFile, resolved_module_type,
       ParkableString(script_data->TakeSourceText().Impl()),
       /*cache_handler=*/nullptr, response_referrer_policy));
 }

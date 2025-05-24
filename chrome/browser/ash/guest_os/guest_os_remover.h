@@ -42,7 +42,7 @@ class GuestOsRemover : public base::RefCountedThreadSafe<GuestOsRemover> {
   ~GuestOsRemover();
 
   void StopVmFinished(
-      std::optional<vm_tools::concierge::StopVmResponse> response);
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response);
   void DestroyDiskImageFinished(
       std::optional<vm_tools::concierge::DestroyDiskImageResponse> response);
 

@@ -6,11 +6,18 @@
 '''
 
 
+import re
 import sys
 import xml.sax
 import xml.sax.handler
 
 import grit.node.base
+from grit import constants
+
+
+GRAMMATICAL_GENDER_RE = re.compile(
+    (r'^\s*variants\s*{\s*grammatical_gender_variant\s*{\s*'
+     r'grammatical_gender_case:\s*(\w+)\s*}\s*}\s*$'))
 
 
 class XtbContentHandler(xml.sax.handler.ContentHandler):
@@ -24,10 +31,17 @@ class XtbContentHandler(xml.sax.handler.ContentHandler):
     # 0 if we are not currently parsing a translation, otherwise the message
     # ID of that translation.
     self.current_id = 0
+    # None if we are not currently parsing a gendered translation, otherwise a
+    # string (expected to be 'OTHER', 'MASCULINE', 'FEMININE', or 'NEUTER').
+    # This can be accessed using self.get_effective_gender() to handle the
+    # default gender if the value is None.
+    self.current_gender = None
     # Empty if we are not currently parsing a translation, otherwise the
-    # parts we have for that translation - a list of tuples
-    # (is_placeholder, text)
-    self.current_structure = []
+    # parts we have for that translation per gender - a dict of gender -> list
+    # of tuples - {gender: [(is_placeholder, text)]}
+    # This can be accessed using self.get_current_structure() to handle
+    # gender and initialization.
+    self.current_structure = {}
     # Set to the language ID when we see the <translationbundle> node.
     self.language = ''
     # Keep track of the if block we're inside.  We can't nest ifs.
@@ -50,12 +64,18 @@ class XtbContentHandler(xml.sax.handler.ContentHandler):
       self.current_id = attrs.getValue('id')
     elif name == 'ph':
       assert self.current_id != 0, "Didn't expect a <ph> element here."
-      self.current_structure.append((True, attrs.getValue('name')))
+      self.get_current_structure().append((True, attrs.getValue('name')))
     elif name == 'translationbundle':
       self.language = attrs.getValue('lang')
     elif name in ('if', 'then', 'else'):
       assert self.if_expr is None, "Can't nest <if> or use <else> in xtb files"
       self.if_expr = attrs.getValue('expr')
+    elif name == 'branch':
+      assert self.current_gender is None, "Can't nest <branch> in xtb files"
+      variants = attrs.getValue('variants')
+      match = GRAMMATICAL_GENDER_RE.match(variants)
+      assert match is not None, f'invalid branch variant format: {variants}'
+      self.current_gender = match.group(1)
 
   def endElement(self, name):
     if name == 'translation':
@@ -77,10 +97,13 @@ class XtbContentHandler(xml.sax.handler.ContentHandler):
         self.callback(self.current_id, self.current_structure)
 
       self.current_id = 0
-      self.current_structure = []
+      self.current_structure = {}
     elif name == 'if':
       assert self.if_expr is not None
       self.if_expr = None
+    elif name == 'branch':
+      assert self.current_gender is not None, 'unmatched </branch> tag'
+      self.current_gender = None
 
   def characters(self, content):
     if self.current_id != 0:
@@ -90,7 +113,19 @@ class XtbContentHandler(xml.sax.handler.ContentHandler):
       # This naive way of handling characters is OK because in the XTB format,
       # <ph> nodes are always empty (always <ph name="XXX"/>) and whitespace
       # inside the <translation> node should be preserved.
-      self.current_structure.append((False, content))
+      self.get_current_structure().append((False, content))
+
+  # Gets the current gender, or DEFAULT_GENDER if the current gender is None.
+  def get_effective_gender(self):
+    return self.current_gender or constants.DEFAULT_GENDER
+
+  # Gets the self.current_structure entry for the current gender, including
+  # proper initialization.
+  def get_current_structure(self):
+    g = self.get_effective_gender()
+    if g not in self.current_structure:
+      self.current_structure[g] = []
+    return self.current_structure[g]
 
 
 class XtbErrorHandler(xml.sax.handler.ErrorHandler):

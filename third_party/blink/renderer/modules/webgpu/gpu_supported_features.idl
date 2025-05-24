@@ -8,25 +8,28 @@ enum GPUFeatureName {
     "depth-clip-control",
     "depth32float-stencil8",
     "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
     "texture-compression-etc2",
     "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
     "timestamp-query",
     "indirect-first-instance",
     "shader-f16",
     "rg11b10ufloat-renderable",
     "bgra8unorm-storage",
     "float32-filterable",
-    "dual-source-blending",
+    "float32-blendable",
     "clip-distances",
+    "dual-source-blending",
+    "subgroups",
+    "core-features-and-limits",
 
     // Non-standard (not currently in the spec).
     "chromium-experimental-timestamp-query-inside-passes",
-    "chromium-experimental-subgroups",
-    "chromium-experimental-subgroup-uniform-control-flow",
     "chromium-experimental-multi-draw-indirect",
-    // Currently subgroups features are under OT.
-    "subgroups",
-    "subgroups-f16",
+    "chromium-experimental-unorm16-texture-formats",
+    "chromium-experimental-snorm16-texture-formats",
+    "chromium-experimental-subgroup-matrix",
 };
 
 [

@@ -16,8 +16,8 @@
 #error "Instant is only used on desktop";
 #endif
 
-class Browser;
 class Profile;
+class TabStripModel;
 
 // BrowserInstantController is responsible for reloading any Instant tabs (which
 // today just means NTPs) when the default search provider changes. This can
@@ -25,7 +25,7 @@ class Profile;
 // Google base URL changes while Google is the default search engine.
 class BrowserInstantController {
  public:
-  explicit BrowserInstantController(Browser* browser);
+  BrowserInstantController(Profile* profile, TabStripModel* tab_strip_model);
 
   BrowserInstantController(const BrowserInstantController&) = delete;
   BrowserInstantController& operator=(const BrowserInstantController&) = delete;
@@ -36,9 +36,9 @@ class BrowserInstantController {
   void OnSearchEngineBaseURLChanged(
       SearchEngineBaseURLTracker::ChangeReason change_reason);
 
-  Profile* profile() const;
+  const raw_ptr<Profile> profile_;
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
 
   InstantController instant_;
 

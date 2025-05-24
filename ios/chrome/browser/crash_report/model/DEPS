@@ -1,5 +1,6 @@
 include_rules = [
   "+components/breadcrumbs/core",
+  "+components/gwp_asan/crash_handler/crash_handler.h",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/infobars/model",

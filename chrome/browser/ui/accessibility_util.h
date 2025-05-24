@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 // Announces |message| as an accessibility alert in the currently active normal
 // browser window, if there is one. Otherwise, no announcement is made.
 void AnnounceInActiveBrowser(const std::u16string& message);

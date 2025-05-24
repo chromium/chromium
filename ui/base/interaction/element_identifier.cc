@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "ui/base/interaction/element_identifier.h"
 
 #include <cstring>
@@ -52,7 +57,8 @@ void ElementIdentifier::RegisterKnownIdentifier(
 #if DCHECK_IS_ON()
   // Enforce uniqueness in DCHECK builds.
   const ElementIdentifier existing = FromName(element_identifier.handle_->name);
-  DCHECK(!existing || existing == element_identifier);
+  DCHECK(!existing || existing == element_identifier)
+      << "Duplicate identifier: " << element_identifier.handle_->name;
 #endif
 
   GetKnownIdentifiers().insert(element_identifier.handle_);

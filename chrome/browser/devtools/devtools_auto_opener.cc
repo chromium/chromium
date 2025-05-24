@@ -12,8 +12,7 @@ DevToolsAutoOpener::DevToolsAutoOpener()
   browser_tab_strip_tracker_.Init();
 }
 
-DevToolsAutoOpener::~DevToolsAutoOpener() {
-}
+DevToolsAutoOpener::~DevToolsAutoOpener() = default;
 
 void DevToolsAutoOpener::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,

@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.toolbar;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
 /** Defines the data that is exposed to properly render the Toolbar. */
+@NullMarked
 public interface ToolbarDataProvider {
     /** Observer interface for consumers who wish to subscribe to updates of ToolbarData. */
     interface Observer {
@@ -31,22 +32,18 @@ public interface ToolbarDataProvider {
     /**
      * @return The tab that contains the information currently displayed in the toolbar.
      */
-    @Nullable
-    Tab getTab();
+    @Nullable Tab getTab();
 
     /** Returns The url of the current tab. Returns empty string when there is no tab. */
-    @NonNull
     String getCurrentUrl();
 
     /**
      * Returns The url of the current tab, represented as a GURL. Returns an empty GURL when there
      * is no tab.
      */
-    @NonNull
     GURL getCurrentGurl();
 
     /** Returns the delegate for the NewTabPage shown for the current tab. */
-    @NonNull
     NewTabPageDelegate getNewTabPageDelegate();
 
     /**
@@ -75,7 +72,7 @@ public interface ToolbarDataProvider {
     /**
      * @return The current {@link Profile}.
      */
-    Profile getProfile();
+    @Nullable Profile getProfile();
 
     /**
      * @return The contents of the {@link org.chromium.chrome.browser.omnibox.UrlBar}.

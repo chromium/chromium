@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "storage/browser/quota/quota_callbacks.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
@@ -39,7 +38,6 @@ class StorageInfoFetcher
 
   // Asynchronously clears storage for the given host.
   void ClearStorage(const std::string& host,
-                    blink::mojom::StorageType type,
                     ClearCallback clear_callback);
 
  private:
@@ -67,9 +65,6 @@ class StorageInfoFetcher
 
   // Hosts and their usage.
   storage::UsageInfoEntries entries_;
-
-  // The storage type to delete.
-  blink::mojom::StorageType type_to_delete_;
 
   // The callback to use when fetching is complete.
   FetchCallback fetch_callback_;

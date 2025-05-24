@@ -60,11 +60,9 @@ std::vector<ObservationCategory> Observation::GetObservationCategories() const {
           ObservationCategory::OBSERVATION_CATEGORY_END_TO_END);
       return observation_categories;
     case NETWORK_QUALITY_OBSERVATION_SOURCE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return observation_categories;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return observation_categories;
+  NOTREACHED();
 }
 
 }  // namespace net::nqe::internal

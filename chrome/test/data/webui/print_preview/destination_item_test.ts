@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://print/print_preview.js';
+
 import type {PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('DestinationItemTest', function() {
   let item: PrintPreviewDestinationListItemElement;
@@ -29,23 +31,23 @@ suite('DestinationItemTest', function() {
   // Test that the destination is displayed correctly for the basic case of a
   // destination with no search query.
   test('NoQuery', function() {
-    const name = item.shadowRoot!.querySelector('.name')!;
+    const name = item.shadowRoot.querySelector('.name')!;
     assertEquals(printerName, name.textContent);
     assertEquals('1', window.getComputedStyle(name).opacity);
     assertEquals(
-        '',
-        item.shadowRoot!.querySelector('.search-hint')!.textContent!.trim());
-    assertFalse(item.shadowRoot!
+        '', item.shadowRoot.querySelector('.search-hint')!.textContent!.trim());
+    assertFalse(item.shadowRoot
                     .querySelector<HTMLElement>(
                         '.extension-controlled-indicator')!.hidden);
   });
 
   // Test that the destination is displayed correctly when the search query
   // matches its display name.
-  test('QueryName', function() {
+  test('QueryName', async function() {
     item.searchQuery = /(Foo)/ig;
+    await microtasksFinished();
 
-    const name = item.shadowRoot!.querySelector('.name')!;
+    const name = item.shadowRoot.querySelector('.name')!;
     assertEquals(printerName + printerName, name.textContent);
 
     // Name should be highlighted.
@@ -55,13 +57,12 @@ suite('DestinationItemTest', function() {
 
     // No hints.
     assertEquals(
-        '',
-        item.shadowRoot!.querySelector('.search-hint')!.textContent!.trim());
+        '', item.shadowRoot.querySelector('.search-hint')!.textContent!.trim());
   });
 
   // Test that the destination is displayed correctly when the search query
   // matches its description.
-  test('QueryDescription', function() {
+  test('QueryDescription', async function() {
     const params = {
       description: 'ABCPrinterBrand Model 123',
       location: 'Building 789 Floor 6',
@@ -71,14 +72,15 @@ suite('DestinationItemTest', function() {
     item.destination = new Destination(
         printerId, DestinationOrigin.EXTENSION, printerName, params);
     item.searchQuery = /(ABC)/ig;
+    await microtasksFinished();
 
     // No highlighting on name.
-    const name = item.shadowRoot!.querySelector('.name')!;
+    const name = item.shadowRoot.querySelector('.name')!;
     assertEquals(printerName, name.textContent);
     assertEquals(0, name.querySelectorAll('.search-highlight-hit').length);
 
     // Search hint should be have the description and be highlighted.
-    const hint = item.shadowRoot!.querySelector('.search-hint')!;
+    const hint = item.shadowRoot.querySelector('.search-hint')!;
     assertTrue(hint.textContent!.includes(params.description));
     assertFalse(hint.textContent!.includes(params.location));
     const searchHits = hint.querySelectorAll('.search-highlight-hit');

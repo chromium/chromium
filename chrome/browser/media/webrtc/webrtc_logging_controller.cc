@@ -37,6 +37,22 @@ namespace {
 // Key used to attach the handler to the RenderProcessHost.
 constexpr char kRenderProcessHostKey[] = "kWebRtcLoggingControllerKey";
 
+std::string ToString(WebRtcTextLogHandler::LoggingState state) {
+  switch (state) {
+    case WebRtcTextLogHandler::LoggingState::CLOSED:
+      return "CLOSED";
+    case WebRtcTextLogHandler::LoggingState::STARTING:
+      return "STARTING";
+    case WebRtcTextLogHandler::LoggingState::STARTED:
+      return "STARTED";
+    case WebRtcTextLogHandler::LoggingState::STOPPING:
+      return "STOPPING";
+    case WebRtcTextLogHandler::LoggingState::STOPPED:
+      return "STOPPED";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // static
@@ -45,7 +61,7 @@ void WebRtcLoggingController::AttachToRenderProcessHost(
   host->SetUserData(
       kRenderProcessHostKey,
       std::make_unique<base::UserDataAdapter<WebRtcLoggingController>>(
-          new WebRtcLoggingController(host->GetID(),
+          new WebRtcLoggingController(host->GetDeprecatedID(),
                                       host->GetBrowserContext())));
 }
 
@@ -364,12 +380,18 @@ void WebRtcLoggingController::OnAddMessages(
 void WebRtcLoggingController::OnStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (text_log_handler_->GetChannelIsClosing()) {
+    return;
+  }
+
   if (text_log_handler_->GetState() != WebRtcTextLogHandler::STOPPING) {
     // If an out-of-order response is received, stop_callback_ may be invalid,
     // and must not be invoked.
-    DLOG(ERROR) << "OnStopped invoked in state "
-                << text_log_handler_->GetState();
-    receiver_.ReportBadMessage("WRLHH: OnStopped invoked in unexpected state.");
+    std::string error =
+        base::StrCat({"WRLHH: OnStopped invoked in unexpected state ",
+                      ToString(text_log_handler_->GetState())});
+    DLOG(ERROR) << error;
+    receiver_.ReportBadMessage(error);
     return;
   }
   text_log_handler_->StopDone();
@@ -420,7 +442,7 @@ void WebRtcLoggingController::OnAgentDisconnected() {
       // Do nothing
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

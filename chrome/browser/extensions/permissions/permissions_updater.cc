@@ -15,11 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
-#include "chrome/browser/extensions/permissions/permissions_helpers.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/permissions.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -30,11 +26,14 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/script_injection_tracker.h"
+#include "extensions/browser/service_worker/service_worker_host.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -47,15 +46,12 @@
 #include "extensions/common/url_pattern_set.h"
 
 using content::RenderProcessHost;
-using extensions::permissions_api_helpers::PackPermissionSet;
 
 namespace extensions {
 
-namespace permissions = api::permissions;
-
 namespace {
 
-// A helper class to watch profile lifetime.
+// A helper class to watch profile lifetime. See `Subscribe()` call below.
 class PermissionsUpdaterShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
@@ -77,9 +73,10 @@ class PermissionsUpdaterShutdownNotifierFactory
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "PermissionsUpdaterShutdownFactory") {
     DependsOn(EventRouterFactory::GetInstance());
-    DependsOn(ExtensionSystemFactory::GetInstance());
+    CHECK(ExtensionsBrowserClient::Get());
+    DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   }
-  ~PermissionsUpdaterShutdownNotifierFactory() override {}
+  ~PermissionsUpdaterShutdownNotifierFactory() override = default;
 };
 
 // Returns an URLPatternSet containing the sites that the user has indicated
@@ -207,7 +204,7 @@ PermissionsUpdater::NetworkPermissionsUpdateHelper::
                   base::Unretained(this)))) {}
 
 PermissionsUpdater::NetworkPermissionsUpdateHelper::
-    ~NetworkPermissionsUpdateHelper() {}
+    ~NetworkPermissionsUpdateHelper() = default;
 
 void PermissionsUpdater::NetworkPermissionsUpdateHelper::OnShutdown() {
   // The profile is shutting down. Don't dispatch the permissions updated
@@ -230,7 +227,7 @@ PermissionsUpdater::PermissionsUpdater(content::BrowserContext* browser_context,
                                        InitFlag init_flag)
     : browser_context_(browser_context), init_flag_(init_flag) {}
 
-PermissionsUpdater::~PermissionsUpdater() {}
+PermissionsUpdater::~PermissionsUpdater() = default;
 
 void PermissionsUpdater::GrantOptionalPermissions(
     const Extension& extension,
@@ -661,26 +658,16 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
   }
 
   PermissionsManager::UpdateReason reason;
-  events::HistogramValue histogram_value = events::UNKNOWN;
-  const char* event_name = nullptr;
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   if (event_type == REMOVED) {
     reason = PermissionsManager::UpdateReason::kRemoved;
-    histogram_value = events::PERMISSIONS_ON_REMOVED;
-    event_name = permissions::OnRemoved::kEventName;
   } else if (event_type == ADDED) {
     reason = PermissionsManager::UpdateReason::kAdded;
-    histogram_value = events::PERMISSIONS_ON_ADDED;
-    event_name = permissions::OnAdded::kEventName;
   } else {
     DCHECK_EQ(POLICY, event_type);
     reason = PermissionsManager::UpdateReason::kPolicy;
   }
-
-  // Notify other APIs or interested parties.
-  PermissionsManager::Get(browser_context)
-      ->NotifyExtensionPermissionsUpdated(*extension, *changed, reason);
 
   // Send the new permissions to the renderers iff extension is enabled.
   // A disabled extension can have its permissions updated by the user in
@@ -696,6 +683,13 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
           !profile->IsSameOrParent(
               Profile::FromBrowserContext(host->GetBrowserContext()))) {
         continue;
+      }
+
+      // Update permissions for service workers.
+      std::vector<ServiceWorkerHost*> service_worker_hosts =
+          ServiceWorkerHost::GetServiceWorkerHostList(host);
+      for (ServiceWorkerHost* service_worker_host : service_worker_hosts) {
+        service_worker_host->UpdateExtensionPermissions(*extension, *changed);
       }
 
       mojom::Renderer* renderer =
@@ -723,19 +717,9 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
     }
   }
 
-  // Trigger the onAdded and onRemoved events in the extension. We explicitly
-  // don't do this for policy-related events.
-  EventRouter* event_router =
-      event_name ? EventRouter::Get(browser_context) : nullptr;
-  if (event_router) {
-    base::Value::List event_args;
-    std::unique_ptr<api::permissions::Permissions> permissions =
-        PackPermissionSet(*changed);
-    event_args.Append(permissions->ToValue());
-    auto event = std::make_unique<Event>(
-        histogram_value, event_name, std::move(event_args), browser_context);
-    event_router->DispatchEventToExtension(extension->id(), std::move(event));
-  }
+  // Notify APIs or other interested parties.
+  PermissionsManager::Get(browser_context)
+      ->NotifyExtensionPermissionsUpdated(*extension, *changed, reason);
 
   std::move(completion_callback).Run();
 }

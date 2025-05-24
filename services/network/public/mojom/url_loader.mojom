@@ -53,24 +53,6 @@ interface URLLoader {
   // requests within a given priority level. If -1 is passed, the existing
   // intra priority value is maintained.
   SetPriority(RequestPriority priority, int32 intra_priority_value);
-
-  // If the resource is being fetched from the network,
-  // PauseReadingBodyFromNet() pauses fetching the response body. It is okay to
-  // call this method before fetching the body starts, too.
-  // ResumeReadingBodyFromNet() resumes fetching the body if it has been paused.
-  //
-  // Note that PauseReadingBodyFromNet() is asynchronous and only gurantees to
-  // pause if the response body is fetched from the network. This means:
-  // - any data in flight before PauseReadingBodyFromNet() is processed will
-  //   still be passed to the client data pipe.
-  // - a response body not from the network, e.g. from blob, may not be paused
-  //   at all.
-  //
-  // Redundant calls to these methods are ingored. It is not required to match
-  // pause and resume calls. It is not an error to resume a non-paused request,
-  // or pause a request multiple times.
-  PauseReadingBodyFromNet();
-  ResumeReadingBodyFromNet();
 };
 
 // Receives messages from a single URLLoader.
@@ -86,12 +68,16 @@ interface URLLoaderClient {
   // The client must not discard the data pipe until the OnComplete IPC arrives,
   // even if it knows the body is empty. Otherwise, the request will be handled
   // as cancelled.
+  //
+  // Called at most once.
   OnReceiveResponse(URLResponseHead head,
                     handle<data_pipe_consumer>? body,
                     mojo_base.mojom.BigBuffer? cached_metadata);
 
   // Called when the request has been redirected. The receiver is expected to
   // call FollowRedirect or cancel the request.
+  //
+  // May be called multiple times, followed by `OnReceiveResponse` if called.
   OnReceiveRedirect(URLRequestRedirectInfo redirect_info, URLResponseHead head);
 
   // Called when the service made some progress on the file upload. This is

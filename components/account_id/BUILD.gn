@@ -2,13 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("account_id") {
+component("account_id") {
+  defines = [ "IS_COMPONENTS_ACCOUNT_ID_IMPL" ]
+
   sources = [
     "account_id.cc",
     "account_id.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//google_apis",
   ]

@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/collaboration/public",
+  "+components/saved_tab_groups/public",
+  "+ios/chrome/browser/settings/ui_bundled",
+  "+ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "tab_grid_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

@@ -21,10 +21,10 @@ build_webui("build") {
     "icons/play.svg",
     "icons/sheets.svg",
     "icons/slides.svg",
-    "images/connect_one_drive_app_icon.svg",
     "images/connect_one_drive.svg",
-    "images/install_office_pwa_app_icon.svg",
+    "images/connect_one_drive_app_icon.svg",
     "images/install_office_pwa.svg",
+    "images/install_office_pwa_app_icon.svg",
     "images/install_onedrive_alone.svg",
     "images/one_drive_success.svg",
     "images/onedrive_app_icon.svg",
@@ -43,7 +43,7 @@ build_webui("build") {
     "sign_in_page.ts",
     "welcome_page.ts",
   ]
-  non_web_component_files = [
+  ts_files = [
     "cloud_upload_browser_proxy.ts",
     "cloud_upload_dialog.ts",
     "main.ts",
@@ -63,6 +63,7 @@ build_webui("build") {
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/cros-components:cros_components_ts",
+    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

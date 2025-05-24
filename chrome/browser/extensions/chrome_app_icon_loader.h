@@ -29,8 +29,8 @@ class ChromeAppIconLoader : public AppIconLoader, public ChromeAppIconDelegate {
   using ResizeFunction =
       base::RepeatingCallback<void(const gfx::Size&, gfx::ImageSkia*)>;
 
-  // |resize_function| overrides icon resizing behavior if non-null. Otherwise
-  // IconLoader with perform the resizing. In both cases |resource_size_in_dip|
+  // `resize_function` overrides icon resizing behavior if non-null. Otherwise
+  // IconLoader with perform the resizing. In both cases `resource_size_in_dip`
   // is used to pick the correct icon representation from resources.
   ChromeAppIconLoader(Profile* profile,
                       int icon_size_in_dip,
@@ -51,7 +51,7 @@ class ChromeAppIconLoader : public AppIconLoader, public ChromeAppIconDelegate {
   void ClearImage(const std::string& id) override;
   void UpdateImage(const std::string& id) override;
 
-  // Sets |extensions_only_| as true to load icons for extensions only.
+  // Sets `extensions_only_` as true to load icons for extensions only.
   void SetExtensionsOnly();
 
  private:

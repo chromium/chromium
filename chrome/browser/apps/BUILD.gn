@@ -23,7 +23,6 @@ source_set("user_type_filter") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/profiles:profile",
     "//content/public/browser:browser",
   ]

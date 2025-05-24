@@ -18,12 +18,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
@@ -38,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** This class represents the location bar where the user types in URLs and search terms. */
+@NullMarked
 public class LocationBarLayout extends FrameLayout {
     protected ImageButton mDeleteButton;
     protected ImageButton mMicButton;
@@ -59,11 +63,11 @@ public class LocationBarLayout extends FrameLayout {
 
     protected LinearLayout mUrlActionContainer;
 
-    protected CompositeTouchDelegate mCompositeTouchDelegate;
-    protected SearchEngineUtils mSearchEngineUtils;
+    protected @Nullable CompositeTouchDelegate mCompositeTouchDelegate;
+    protected @Nullable SearchEngineUtils mSearchEngineUtils;
     private float mUrlFocusPercentage;
     private boolean mUrlBarLaidOutAtFocusedWidth;
-    private int mStatusIconAndUrlBarOffset;
+    private final int mStatusIconAndUrlBarOffset;
     private int mUrlActionContainerEndMargin;
     private boolean mIsUrlFocusChangeInProgress;
 
@@ -83,7 +87,7 @@ public class LocationBarLayout extends FrameLayout {
         mUrlBar = findViewById(R.id.url_bar);
         mMicButton = findViewById(R.id.mic_button);
         mLensButton = findViewById(R.id.lens_camera_button);
-        mUrlActionContainer = (LinearLayout) findViewById(R.id.url_action_container);
+        mUrlActionContainer = findViewById(R.id.url_action_container);
         mStatusViewLeftSpace = findViewById(R.id.location_bar_status_view_left_space);
         mStatusViewRightSpace = findViewById(R.id.location_bar_status_view_right_space);
         mMinimumUrlBarWidthPx =
@@ -96,6 +100,7 @@ public class LocationBarLayout extends FrameLayout {
     }
 
     /** Called when activity is being destroyed. */
+    @SuppressWarnings("NullAway")
     void destroy() {
         if (mAutocompleteCoordinator != null) {
             // Don't call destroy() on mAutocompleteCoordinator since we don't own it.
@@ -130,14 +135,14 @@ public class LocationBarLayout extends FrameLayout {
      * @param urlCoordinator The coordinator for interacting with the url bar.
      * @param statusCoordinator The coordinator for interacting with the status icon.
      * @param locationBarDataProvider Provider of LocationBar data, e.g. url and title.
-     * @param searchEngineUtils Allows querying the state of the search engine logo feature.
      */
+    @Initializer
     @CallSuper
     public void initialize(
-            @NonNull AutocompleteCoordinator autocompleteCoordinator,
-            @NonNull UrlBarCoordinator urlCoordinator,
-            @NonNull StatusCoordinator statusCoordinator,
-            @NonNull LocationBarDataProvider locationBarDataProvider) {
+            AutocompleteCoordinator autocompleteCoordinator,
+            UrlBarCoordinator urlCoordinator,
+            StatusCoordinator statusCoordinator,
+            LocationBarDataProvider locationBarDataProvider) {
         mAutocompleteCoordinator = autocompleteCoordinator;
         mUrlCoordinator = urlCoordinator;
         mStatusCoordinator = statusCoordinator;
@@ -145,7 +150,7 @@ public class LocationBarLayout extends FrameLayout {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public AutocompleteCoordinator getAutocompleteCoordinator() {
+    public @Nullable AutocompleteCoordinator getAutocompleteCoordinator() {
         return mAutocompleteCoordinator;
     }
 
@@ -166,6 +171,10 @@ public class LocationBarLayout extends FrameLayout {
 
     /* package */ void setDeleteButtonTint(ColorStateList colorStateList) {
         ImageViewCompat.setImageTintList(mDeleteButton, colorStateList);
+    }
+
+    /* package */ void setDeleteButtonBackground(@DrawableRes int resourceId) {
+        mDeleteButton.setBackgroundResource(resourceId);
     }
 
     /* package */ void setLensButtonTint(ColorStateList colorStateList) {
@@ -553,6 +562,11 @@ public class LocationBarLayout extends FrameLayout {
     /** Returns the entrypoint used to launch Lens. */
     public int getLensEntryPoint() {
         return LensEntryPoint.OMNIBOX;
+    }
+
+    /** Returns whether the Omnibox text should be cleared on focus. */
+    public boolean shouldClearTextOnFocus() {
+        return true;
     }
 
     /**

@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "components/cast/cast_component_export.h"
 #include "components/cast/message_port/message_port.h"
 
@@ -77,8 +78,8 @@ class CAST_COMPONENT_EXPORT ScopedApiBinding final
                      ports) override;
   void OnPipeError() override;
 
-  Manager* const bindings_manager_;
-  Delegate* const delegate_;
+  const raw_ptr<Manager> bindings_manager_;
+  const raw_ptr<Delegate> delegate_;
   const std::string js_bindings_id_;
 
   // The MessagePort used to receive messages from the receiver JS.

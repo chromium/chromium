@@ -10,8 +10,6 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
 class UnguessableToken;
@@ -19,23 +17,12 @@ class UnguessableToken;
 
 namespace ash {
 
-class VideoConferenceManagerAsh;
-
-// |VideoConferenceClientWrapper| abstracts away the details of communicating
-// with VC Clients. This class implements all methods defined on
-// crosapi::mojom::VideoConferenceClient and, depending on whether it's
-// wrapping a mojo client or a non-mojo client, calls methods on a mojo
-// remote connected to a client or directly on a client instance.
+// |VideoConferenceClientWrapper| adds a VideoConferenceMediaState member
+// variable for use by VideoConferenceManagerAsh.
 class VideoConferenceClientWrapper {
  public:
-  VideoConferenceClientWrapper(
-      mojo::PendingRemote<crosapi::mojom::VideoConferenceManagerClient> client,
-      const base::UnguessableToken& client_id,
-      VideoConferenceManagerAsh* vc_manager);
-
-  VideoConferenceClientWrapper(
-      crosapi::mojom::VideoConferenceManagerClient* client,
-      VideoConferenceManagerAsh* vc_manager);
+  explicit VideoConferenceClientWrapper(
+      crosapi::mojom::VideoConferenceManagerClient* client);
 
   ~VideoConferenceClientWrapper();
 
@@ -58,10 +45,7 @@ class VideoConferenceClientWrapper {
   VideoConferenceMediaState& state();
 
  private:
-  raw_ptr<VideoConferenceManagerAsh> vc_manager_;
   VideoConferenceMediaState state_;
-  // Exactly one of the following is non-null.
-  mojo::Remote<crosapi::mojom::VideoConferenceManagerClient> mojo_client_;
   raw_ptr<crosapi::mojom::VideoConferenceManagerClient> cpp_client_{nullptr};
 };
 

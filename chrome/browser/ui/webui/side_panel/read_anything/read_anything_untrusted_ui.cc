@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 
 #include <string>
@@ -16,7 +11,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_read_anything_resources.h"
@@ -30,8 +24,9 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/webui/resources/grit/webui_resources.h"
+#include "ui/webui/webui_util.h"
 
 ReadAnythingUIUntrustedConfig::ReadAnythingUIUntrustedConfig()
     : DefaultTopChromeWebUIConfig(
@@ -120,15 +115,20 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_LANGUAGE_MENU_VOICES_UNAVAILABLE},
       {"readingModeLanguageMenuNoInternet",
        IDS_READING_MODE_LANGUAGE_MENU_NO_INTERNET},
+      {"readingModeVoiceMenuNoInternet",
+       IDS_READING_MODE_VOICE_MENU_NO_INTERNET},
       {"readingModeLanguageMenuNoSpace",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE},
       {"readingModeLanguageMenuNoSpaceButVoicesExist",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST},
+      {"readingModeVoiceMenuNoSpace", IDS_READING_MODE_VOICE_MENU_NO_SPACE},
       {"previewVoiceAccessibilityLabel",
        IDS_READING_MODE_VOICE_MENU_PREVIEW_LANGUAGE},
       {"languageMenuNoResults", IDS_READING_MODE_LANGUAGE_MENU_NO_RESULTS},
       {"readingModeVoiceDownloadedTitle",
        IDS_READING_MODE_VOICE_DOWNLOADED_TITLE},
+      {"readingModeLanguageMenuItemLabel",
+       IDS_READING_MODE_LANGUAGE_MENU_ITEM_LABEL},
       {"readingModeVoiceDownloadedMessage",
        IDS_READING_MODE_VOICE_DOWNLOADED_MESSAGE},
       {"menu", IDS_MENU},
@@ -136,8 +136,10 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"allocationError", IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE},
       {"allocationErrorHighQuality",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST},
+      {"allocationErrorNoVoices", IDS_READING_MODE_TOAST_NO_SPACE},
       {"languageMenuDownloadFailed",
        IDS_READING_MODE_LANGUAGE_MENU_DOWNLOAD_FAILED},
+      {"cantUseReadAloud", IDS_READING_MODE_CANT_USE_READ_ALOUD},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
@@ -153,11 +155,9 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   webui::EnableTrustedTypesCSP(source);
-  source->AddResourcePaths(base::make_span(
-      kSidePanelReadAnythingResources, kSidePanelReadAnythingResourcesSize));
+  source->AddResourcePaths(kSidePanelReadAnythingResources);
   source->AddResourcePath("", IDR_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(kSidePanelSharedResources);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src 'self' chrome-untrusted://resources "
@@ -207,7 +207,8 @@ void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(
   DCHECK(page);
   read_anything_untrusted_page_handler_ =
       std::make_unique<ReadAnythingUntrustedPageHandler>(
-          std::move(page), std::move(receiver), web_ui());
+          std::move(page), std::move(receiver), web_ui(),
+          /*use_screen_ai_service=*/true);
 
   // This code is called as part of a screen2x data generation workflow, where
   // the browser is opened by a CLI and the read-anything side panel is

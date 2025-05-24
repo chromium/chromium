@@ -5,9 +5,14 @@
 #include "extensions/browser/view_type_utils.h"
 
 #include "base/lazy_instance.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
 
 using content::WebContents;
 
@@ -38,6 +43,15 @@ mojom::ViewType GetViewType(WebContents* tab) {
       tab->GetUserData(&kViewTypeUserDataKey));
 
   return user_data ? user_data->type() : mojom::ViewType::kInvalid;
+}
+
+mojom::ViewType GetViewType(content::RenderFrameHost* frame_host) {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  if (guest_view::GuestViewBase::IsGuest(frame_host)) {
+    return mojom::ViewType::kExtensionGuest;
+  }
+#endif
+  return GetViewType(content::WebContents::FromRenderFrameHost(frame_host));
 }
 
 void SetViewType(WebContents* tab, mojom::ViewType type) {

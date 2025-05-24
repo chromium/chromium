@@ -10,6 +10,7 @@
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <inttypes.h>
 #include <lib/zx/eventpair.h>
 #include <vulkan/vulkan.h>
 
@@ -165,14 +166,11 @@ class FuchsiaVideoDecoder::OutputMailbox {
     reuse_callback_ = std::move(reuse_callback);
 
     auto frame = VideoFrame::WrapSharedImage(
-        pixel_format, shared_image_, create_sync_token_, 0,
+        pixel_format, shared_image_, create_sync_token_,
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &OutputMailbox::OnFrameDestroyed, base::Unretained(this))),
         coded_size, visible_rect, natural_size, timestamp);
     create_sync_token_.Clear();
-
-    frame->set_shared_image_format_type(
-        media::SharedImageFormatType::kSharedImageFormatExternalSampler);
 
     // Request a fence we'll wait on before reusing the buffer.
     frame->metadata().read_lock_fences_enabled = true;
@@ -600,17 +598,16 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   }
 
   if (!output_mailboxes_[buffer_index]) {
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::NATIVE_PIXMAP;
+    gfx::NativePixmapHandle native_pixmap_handle;
     auto status = output_buffer_collection_handle_.duplicate(
-        ZX_RIGHT_SAME_RIGHTS,
-        &gmb_handle.native_pixmap_handle.buffer_collection_handle);
+        ZX_RIGHT_SAME_RIGHTS, &native_pixmap_handle.buffer_collection_handle);
     ZX_DCHECK(status == ZX_OK, status);
-    gmb_handle.native_pixmap_handle.buffer_index = buffer_index;
+    native_pixmap_handle.buffer_index = buffer_index;
 
     output_mailboxes_[buffer_index] = new OutputMailbox(
-        raster_context_provider_, std::move(gmb_handle), coded_size, si_format,
-        client_native_pixmap_factory_.get(),
+        raster_context_provider_,
+        gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle)), coded_size,
+        si_format, client_native_pixmap_factory_.get(),
         current_config_.color_space_info().ToGfxColorSpace());
   } else {
     raster_context_provider_->SharedImageInterface()->UpdateSharedImage(

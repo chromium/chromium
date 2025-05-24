@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -259,7 +260,7 @@ TEST_F(SharedBufferTest, MAYBE_PassHandleBetweenCousins) {
   MojoHandle b;
   RunTestClient("CreateAndPassBufferParent", [&](MojoHandle child1) {
     RunTestClient("ReceiveAndEditBufferParent", [&](MojoHandle child2) {
-      MojoHandle pipe[2];
+      std::array<MojoHandle, 2> pipe;
       CreateMessagePipe(&pipe[0], &pipe[1]);
 
       WriteMessageWithHandles(child1, message, &pipe[0], 1);
@@ -303,7 +304,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndMapWriteSharedBuffer,
               base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
     EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 
@@ -380,7 +381,7 @@ TEST_F(SharedBufferTest, MAYBE_CreateAndPassFromChildReadOnlyBuffer) {
                 base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
       EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     }
 

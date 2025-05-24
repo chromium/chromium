@@ -4,7 +4,11 @@
 
 #include "base/containers/linked_list.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/containers/span.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,8 +27,8 @@ class Node : public LinkNode<Node> {
 
 class MultipleInheritanceNodeBase {
  public:
-  MultipleInheritanceNodeBase() : field_taking_up_space_(0) {}
-  int field_taking_up_space_;
+  MultipleInheritanceNodeBase() = default;
+  int field_taking_up_space_ = 0;
 };
 
 class MultipleInheritanceNode : public MultipleInheritanceNodeBase,
@@ -52,11 +56,10 @@ void ExpectListContentsForDirection(const LinkedList<Node>& list,
                                     bool forward) {
   size_t i = 0;
   for (const LinkNode<Node>* node = (forward ? list.head() : list.tail());
-       node != list.end();
-       node = (forward ? node->next() : node->previous())) {
+       node != list.end(); node = (forward ? node->next() : node->previous())) {
     ASSERT_LT(i, node_ids.size());
-    int index_of_id = forward ? i : node_ids.size() - i - 1;
-    EXPECT_EQ(node_ids[index_of_id], node->value()->id());
+    EXPECT_EQ(node_ids[forward ? i : node_ids.size() - i - 1],
+              node->value()->id());
     ++i;
   }
   EXPECT_EQ(node_ids.size(), i);
@@ -336,14 +339,42 @@ TEST(LinkedList, NodeMoveConstructor) {
 
   MovableNode n2_new(std::move(n2));
 
-  EXPECT_EQ(nullptr, n2.next());
-  EXPECT_EQ(nullptr, n2.previous());
+  EXPECT_EQ(nullptr, n2.next());      // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(nullptr, n2.previous());  // NOLINT(bugprone-use-after-move)
 
   EXPECT_EQ(&n1, n2_new.previous());
   EXPECT_EQ(&n2_new, n1.next());
   EXPECT_EQ(&n3, n2_new.next());
   EXPECT_EQ(&n2_new, n3.previous());
   EXPECT_EQ(2, n2_new.id());
+}
+
+TEST(LinkedList, LinkedListMoveConstructor) {
+  // Moving list sizes 0 (head==end), 1 (head==tail), 2 (head!=tail) all stress
+  // different cases. Also test size 3 in case it does something weird.
+  for (size_t size = 0; size <= 3; ++size) {
+    SCOPED_TRACE(StringPrintf("List size %zu", size));
+    LinkedList<Node> original_list;
+
+    std::vector<Node> nodes;
+    std::vector<int> expected_contents;
+    nodes.reserve(size);
+    for (int id = 0; id < size; ++id) {
+      nodes.emplace_back(id);
+      original_list.Append(&nodes.back());
+      expected_contents.push_back(id);
+    }
+
+    LinkedList<Node> new_list = std::move(original_list);
+
+    ExpectListContents(new_list, expected_contents);
+
+    EXPECT_TRUE(original_list.empty());  // NOLINT(bugprone-use-after-move)
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    EXPECT_EQ(original_list.head(), original_list.tail());
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    EXPECT_EQ(original_list.tail(), original_list.end());
+  }
 }
 
 TEST(LinkedListDeathTest, ChecksOnInsertBeforeWhenInList) {

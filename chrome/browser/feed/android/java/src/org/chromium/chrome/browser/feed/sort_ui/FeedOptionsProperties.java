@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.feed.sort_ui;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Represents data for the Feed Options pane. */
+@NullMarked
 public class FeedOptionsProperties {
     public static final PropertyModel.WritableBooleanPropertyKey VISIBILITY_KEY =
             new PropertyModel.WritableBooleanPropertyKey();

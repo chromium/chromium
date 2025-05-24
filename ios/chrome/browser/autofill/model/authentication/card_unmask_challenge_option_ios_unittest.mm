@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/autofill/model/authentication/card_unmask_challenge_option_ios.h"
-#import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 
+#import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

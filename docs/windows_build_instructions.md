@@ -23,8 +23,8 @@ Are you a Google employee? See
 
 ### Visual Studio
 
-Chromium requires [Visual Studio 2022](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes) (>=17.0.0)
-to build. Visual Studio can also be used to debug Chromium.
+Chromium requires [Visual Studio 2022](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes)
+(>=17.0.0) to build. Visual Studio can also be used to debug Chromium.
 The clang-cl compiler is used but Visual Studio's header files, libraries, and
 some tools are required. Visual Studio Community Edition should work if its
 license is appropriate for you. You must install the "Desktop development with
@@ -52,18 +52,27 @@ $ PATH_TO_INSTALLER.EXE ^
 Required
 
 * [Windows 11 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/)
-version 10.0.22621.2428. This can be installed separately or by checking the
+version 10.0.26100.3323. This can be installed separately or by checking the
 appropriate box in the Visual Studio Installer.
-* (Windows 11) SDK Debugging Tools 10.0.22621.755 or higher. This version of the
+* (Windows 11) SDK Debugging Tools 10.0.26100.3323 or higher. This version of the
 Debugging tools is needed in order to support reading the large-page PDBs that
-Chrome uses to allow greater-than 4 GiB PDBs. This can be installed after the
-matching Windows SDK version is installed, from: Control Panel -> Programs and
-Features
--> Windows Software Development Kit [version] -> Change -> Debugging Tools for
-Windows. If building on ARM64 Windows then you will need to manually copy the
-Debuggers\x64 directory from another machine because it does not get installed
-on ARM64 and is needed, whether you are building Chromium for x64 or ARM64 on
-ARM64.
+Chrome uses to allow greater-than 4 GiB PDBs. If the current SDK installation
+does not include debugging tools, they can be installed at:
+Control Panel -> Programs and Features -> Windows Software Development Kit [version]
+-> Change -> Debugging Tools for Windows. If building on ARM64 Windows then you
+will need to manually copy the Debuggers\x64 directory from another machine because
+it does not get installed on ARM64 and is needed, whether you are building Chromium
+for x64 or ARM64 on ARM64.
+
+WARNING: On sufficiently old versions of Windows (1909 or earlier), dawn or
+related components may fail with a D3d-related error when using the 26100 SDK.
+This is because the d3dcompiler_47.dll file in the new SDK attempts to
+dynamically link versions of the Universal C Runtime which are not present by
+default on older systems. If you experience these errors, you can either update
+the UCRT on your system, or install the 22621 SDK and use the d3dcompiler_47.dll
+file included there, which statically links the UCRT.
+
+This problem may also manifest as a DLL failure to load `__CxxFrameHandler4`.
 
 ## git installation
 
@@ -76,16 +85,13 @@ https://git-scm.com/download/win.
 For more information on Git for Windows (which is a separate project from Git),
 see https://gitforwindows.org.
 
-Note: if you are a Google employee, see [go/building-chrome-win#install-git](https://goto.google.com/building-chrome-win#install-git).
+Note: if you are a Google employee, see git installation instructions at
+[go/building-chrome-win](https://goto.google.com/building-chrome-win#install-updates-and-required-software).
 
 ### Update git
 
 Note: this section is about updating a direct installation of `git` because
 `depot_tools` will soon stop bundling `git`.
-
-If you have already set up `depot_tools` and would like to update an existing
-directly-installed `git`, you must first
-[modify your PATH](#modify-path-for-git) to prefer the non-`depot_tools` `git`.
 
 Updating to the latest version of `git` will depend on which version you
 currently have installed. First, check your `git` version. From a cmd.exe shell,
@@ -102,26 +108,18 @@ $ git version
 
 ## Install `depot_tools`
 
-***
-**Warning:** `depot_tools` will stop bundling Git for Windows from Sep 23, 2024
-onwards. To prepare for this change, Windows users should
-[install Git](#git-installation) directly before then.
-***
+From a command shell, navigate to the directory where you want to put
+`depot_tools` and clone the `depot_tools` repository. For example, if you
+want it to be cloned to `C:\src\depot_tools`:
 
-Download the
-[depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
-and extract it somewhere (eg: C:\src\depot_tools).
-
-***
-**Warning:** **DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
-this will not extract the hidden “.git” folder which is necessary for
-depot_tools to autoupdate itself. You can use “Extract all…” from the
-context menu though.
-***
+```shell
+$ cd C:\src
+$ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+```
 
 Add depot_tools to the start of your PATH (must be ahead of any installs of
 Python. Note that environment variable names are case insensitive).
-* Assuming you unzipped the bundle to `C:\src\depot_tools`, open:
+* Assuming you cloned the repo to `C:\src\depot_tools`, open:
   Control Panel → System and Security → System
 * Select which PATH variable to edit.
   * If you have Administrator access, you can edit the **system** PATH. Click
@@ -135,25 +133,10 @@ Python. Note that environment variable names are case insensitive).
   Note: If you can only modify your user-level PATH and the system PATH has a
   Python in it, you will be out of luck.
 
-***
-### Modify PATH for git
-**Optional:** You can modify your PATH to prefer using an independently installed
-`git` over the version currently bundled with `depot_tools`. If you are happy to
-keep using the bundled `git` within `depot_tools` until it is removed, you can
-skip this step.
-
-* Assuming you installed Git at `C:\Program Files\Git`, edit your system or
-  user-level PATH in the same way when `C:\src\depot_tools` was added.
-  Modify the Path variable by adding the following *before*
-  `C:\src\depot_tools`:
-  * `C:\Program Files\Git\cmd`
-  * `C:\Program Files\Git\mingw64\bin`
-  * `C:\Program Files\Git\usr\bin`
-***
-
-Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and set
-it to 0. This tells depot_tools to use your locally installed version of Visual
-Studio (by default, depot_tools will try to use a google-internal version).
+Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and
+set it to 0. This tells depot_tools to use your locally installed version of
+Visual Studio (by default, depot_tools will try to use a google-internal
+version).
 
 You may also have to set variable `vs2022_install` to your installation path of
 Visual Studio 2022, like
@@ -195,6 +178,8 @@ $ git config --global user.name "My Name"
 $ git config --global user.email "my-name@chromium.org"
 $ git config --global core.autocrlf false
 $ git config --global core.filemode false
+$ git config --global core.preloadindex true
+$ git config --global core.fscache true
 $ git config --global branch.autosetuprebase always
 ```
 
@@ -309,8 +294,8 @@ binaries as well.
 
 #### Use Reclient
 
-In addition, Google employees should use Reclient, a distributed compilation system.
-Detailed information is available internally but the relevant gn arg is:
+In addition, Google employees should use Reclient, a distributed compilation
+system. Detailed information is available internally but the relevant gn arg is:
 * `use_remoteexec = true`
 
 Google employees can visit
@@ -324,7 +309,6 @@ You might be able to use [sccache](https://github.com/mozilla/sccache) for the
 build process by enabling the following arguments:
 
 * `cc_wrapper = "sccache"` - assuming the `sccache` binary is in your `%PATH%`
-* `chrome_pgo_phase = 0`
 
 ### Why is my build slow?
 
@@ -388,7 +372,8 @@ will have a weighted time that is the same or similar to its elapsed time. A
 compile that runs in parallel with 999 other compiles will have a weighted time
 that is tiny.
 
-You can also generate these reports by manually running the script after a build:
+You can also generate these reports by manually running the script after a
+build:
 
 ```shell
 $ python depot_tools\post_build_ninja_summary.py -C out\Default

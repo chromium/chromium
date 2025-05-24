@@ -16,7 +16,7 @@
 
 import {assert} from './assert.js';
 
-interface LoadTimeDataRaw {
+export interface LoadTimeDataRaw {
   [key: string]: any;
 }
 

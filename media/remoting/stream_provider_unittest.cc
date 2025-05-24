@@ -5,6 +5,7 @@
 #include "media/remoting/stream_provider.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_decoder_config.h"
@@ -33,7 +34,7 @@ class StreamProviderTest : public testing::Test {
   StreamProviderTest()
       : audio_config_(TestAudioConfig::Normal()),
         video_config_(TestVideoConfig::Normal()),
-        audio_buffer_(new DecoderBuffer(kBufferSize)),
+        audio_buffer_(base::MakeRefCounted<DecoderBuffer>(kBufferSize)),
         video_buffer_(DecoderBuffer::CreateEOSBuffer()) {}
 
   void SetUp() override {
@@ -81,7 +82,7 @@ class StreamProviderTest : public testing::Test {
         } else if (type == DemuxerStream::Type::VIDEO) {
           receiver_video_demuxer_stream_handle_ = message->integer_value();
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
 
         RpcInitializeCallback(type);
@@ -124,7 +125,7 @@ class StreamProviderTest : public testing::Test {
       }
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     rpc_messenger_->SendMessageToRemote(*rpc);
@@ -139,7 +140,7 @@ class StreamProviderTest : public testing::Test {
         SendVideoFrame();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -227,7 +228,7 @@ class StreamProviderTest : public testing::Test {
         received_video_buffer_ = buffer;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

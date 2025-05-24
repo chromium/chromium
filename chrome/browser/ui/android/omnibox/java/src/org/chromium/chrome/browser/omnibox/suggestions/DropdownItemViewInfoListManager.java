@@ -7,8 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -20,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** Manages the list of DropdownItemViewInfo elements. */
+@NullMarked
 class DropdownItemViewInfoListManager {
     private final Context mContext;
     private final ModelList mManagedModel;
@@ -27,7 +27,7 @@ class DropdownItemViewInfoListManager {
     private @BrandedColorScheme int mBrandedColorScheme;
     private List<DropdownItemViewInfo> mSourceViewInfoList;
 
-    DropdownItemViewInfoListManager(@NonNull ModelList managedModel, @NonNull Context context) {
+    DropdownItemViewInfoListManager(ModelList managedModel, Context context) {
         assert managedModel != null : "Must specify a non-null model.";
         mContext = context;
         mLayoutDirection = View.LAYOUT_DIRECTION_INHERIT;
@@ -79,7 +79,7 @@ class DropdownItemViewInfoListManager {
      *
      * @param sourceList Source list of ViewInfo elements.
      */
-    void setSourceViewInfoList(@NonNull List<DropdownItemViewInfo> sourceList) {
+    void setSourceViewInfoList(List<DropdownItemViewInfo> sourceList) {
         mSourceViewInfoList = sourceList;
 
         // Build a new list of suggestions. Honor the default collapsed state.

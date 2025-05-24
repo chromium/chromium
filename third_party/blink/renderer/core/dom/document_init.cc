@@ -291,6 +291,10 @@ DocumentInit& DocumentInit::ForDiscard(bool is_for_discard) {
   return *this;
 }
 
+bool DocumentInit::IsForDiscard() const {
+  return is_for_discard_;
+}
+
 DocumentInit& DocumentInit::WithUkmSourceId(ukm::SourceId ukm_source_id) {
   ukm_source_id_ = ukm_source_id;
   return *this;
@@ -337,12 +341,10 @@ Document* DocumentInit::CreateDocument() const {
       return MakeGarbageCollected<TextDocument>(*this);
     }
     case Type::kUnspecified:
-      [[fallthrough]];
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace blink

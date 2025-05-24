@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
+#include "build/buildflag.h"
 #include "ui/display/display_export.h"
 
 namespace display {
@@ -62,6 +63,11 @@ class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
 
   // Called when display changes between conventional and tablet mode.
   virtual void OnDisplayTabletStateChanged(TabletState state) {}
+
+#if BUILDFLAG(IS_MAC)
+  // Called when the primary display that contains the (0,0) origin changed.
+  virtual void OnPrimaryDisplayChanged() {}
+#endif
 
  protected:
   ~DisplayObserver() override;

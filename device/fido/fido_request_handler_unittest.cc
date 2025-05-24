@@ -128,7 +128,7 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
   void CollectPIN(
       CollectPINOptions options,
       base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void OnRetryUserVerification(int attempts) override {}
@@ -137,7 +137,7 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
 
   void OnSampleCollected(int remaining_samples) override {}
 
-  void FinishCollectToken() override { NOTREACHED_IN_MIGRATION(); }
+  void FinishCollectToken() override { NOTREACHED(); }
 
  private:
   TransportAvailabilityNotificationReceiver transport_availability_future_;

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.page_image_service;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JniType;
@@ -14,6 +13,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.page_image_service.ImageServiceMetrics.SalientImageUrlFetchResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Allows java access to the native ImageService. */
+@NullMarked
 public class ImageServiceBridge {
     private final @ClientId.EnumType int mClientId;
     private final String mImageFetcherClientName;
@@ -32,7 +34,7 @@ public class ImageServiceBridge {
     private final CallbackController mCallbackController = new CallbackController();
     private final ImageFetcher mImageFetcher;
 
-    private long mNativeImageServiceBridge;
+    private final long mNativeImageServiceBridge;
 
     /**
      * @param clientId The ImageService client the salient image url is being fetched for.
@@ -42,9 +44,9 @@ public class ImageServiceBridge {
      */
     public ImageServiceBridge(
             @ClientId.EnumType int clientId,
-            @NonNull String imageFetcherClientName,
-            @NonNull Profile profile,
-            @NonNull ImageFetcher imageFetcher) {
+            String imageFetcherClientName,
+            Profile profile,
+            ImageFetcher imageFetcher) {
         mClientId = clientId;
         mImageFetcherClientName = imageFetcherClientName;
         mNativeImageServiceBridge = ImageServiceBridgeJni.get().init(profile);
@@ -74,9 +76,9 @@ public class ImageServiceBridge {
     @Deprecated
     public void fetchImageFor(
             boolean isAccountData,
-            @NonNull GURL pageUrl,
+            GURL pageUrl,
             int imageSize,
-            Callback<Bitmap> callback) {
+            Callback<@Nullable Bitmap> callback) {
         Callback<GURL> imageUrlCallback =
                 mCallbackController.makeCancelable(
                         (imageUrl) -> {
@@ -97,12 +99,20 @@ public class ImageServiceBridge {
     }
 
     /**
+     * @param isAccountData Whether the underlying primitive being fetched for is account-bound.
+     * @return Whether the client has the necessary consent pre-conditions to send an image request.
+     */
+    public boolean hasConsentToFetchImages(boolean isAccountData) {
+        return ImageServiceBridgeJni.get()
+                .hasConsentToFetchImages(mNativeImageServiceBridge, isAccountData);
+    }
+
+    /**
      * Fetches the URL of the salient image and pass to the callback. The URL of the salient image
      * will be cached.
      */
     @VisibleForTesting
-    void fetchImageUrlFor(
-            boolean isAccountData, @NonNull GURL pageUrl, @NonNull Callback<GURL> callback) {
+    void fetchImageUrlFor(boolean isAccountData, GURL pageUrl, Callback<GURL> callback) {
         if (mSalientImageUrlCache.containsKey(pageUrl)) {
             GURL cacheResult = mSalientImageUrlCache.get(pageUrl);
             callback.onResult(cacheResult);
@@ -163,5 +173,7 @@ public class ImageServiceBridge {
                 @ClientId.EnumType int clientId,
                 @JniType("GURL") GURL pageUrl,
                 Callback<GURL> callback);
+
+        boolean hasConsentToFetchImages(long nativeImageServiceBridge, boolean isAccountData);
     }
 }

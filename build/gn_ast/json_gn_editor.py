@@ -196,12 +196,23 @@ class BuildFile:
         recursive_find(self._content)
         return results
 
-    def _normalize(self, name: Optional[str], abs_path: bool = True):
+    def _normalize(self,
+                   name: Optional[str],
+                   abs_path: bool = True,
+                   allow_relative: bool = False):
         """Returns the absolute GN path to the target with |name|.
 
         This method normalizes target names, assuming that relative targets are
         referenced based on the current file, allowing targets to be compared
         by name to determine whether they are the same or not.
+
+        If |abs_path| is true, the path is always converted to an absolute path
+        before further processing. Otherwise no absolute path checks are
+        performed.
+
+        If |allow_relative| is true, the path returned may be relative to the
+        current build file when possible, i.e. //base:java will be :java in
+        base/BUILD.gn.
 
         Given the current file is chrome/android/BUILD.gn:
 
@@ -222,6 +233,10 @@ class BuildFile:
             name = self._gn_rel_path + name
         if not ':' in name:
             name += ':' + os.path.basename(name)
+        if allow_relative:
+            base_path, target_name = name.split(':')
+            if base_path == self._gn_rel_path:
+                return ':' + target_name
         return name
 
     def _find_all_list_assignments(self):
@@ -325,6 +340,8 @@ class BuildFile:
                 self._normalize(child.get(NODE_VALUE), abs_path=False)
                 for child in dep_list.child_nodes)
             for new_dep_name in deps:
+                new_dep_name = self._normalize(new_dep_name,
+                                               allow_relative=True)
                 if new_dep_name in existing_dep_names:
                     logging.info(
                         f'Skipping existing {new_dep_name} in {target}.deps')

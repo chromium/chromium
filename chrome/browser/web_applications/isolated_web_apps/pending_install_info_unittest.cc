@@ -27,11 +27,6 @@ using ::testing::Optional;
 
 std::unique_ptr<TestingProfile> CreateTestingProfile() {
   TestingProfile::Builder builder;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   return builder.Build();
 }
 

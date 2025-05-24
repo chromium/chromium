@@ -23,12 +23,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics.DeviceLockDialogAction;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -43,9 +42,9 @@ import java.util.concurrent.TimeUnit;
  * The mediator handles which design the device lock UI displays and interacts through the
  * coordinator delegate.
  */
+@NullMarked
 public class DeviceLockMediator {
-    static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM =
-            "account_reauthentication_recent_time_window_minutes";
+    static final int ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_MINUTES = 10;
 
     private final PropertyModel mModel;
     private final DeviceLockCoordinator.Delegate mDelegate;
@@ -201,11 +200,6 @@ public class DeviceLockMediator {
             onSuccess.run();
             return;
         }
-        int accountReauthenticationRecentTimeWindowMinutes =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW,
-                        ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM,
-                        10);
         mAccountReauthenticationUtils.confirmCredentialsOrRecentAuthentication(
                 getAccountManager(),
                 mAccount,
@@ -218,6 +212,6 @@ public class DeviceLockMediator {
                         mModel.set(UI_ENABLED, true);
                     }
                 },
-                TimeUnit.MINUTES.toMillis(accountReauthenticationRecentTimeWindowMinutes));
+                TimeUnit.MINUTES.toMillis(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_MINUTES));
     }
 }

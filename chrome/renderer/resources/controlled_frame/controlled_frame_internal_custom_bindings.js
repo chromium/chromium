@@ -12,4 +12,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest(
       'contextMenusCreate', handlers.requestHandlers.create);
+
+  apiFunctions.setHandleRequest(
+      'contextMenusUpdate', handlers.requestHandlers.update);
 });

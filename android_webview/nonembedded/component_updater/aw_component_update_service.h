@@ -23,6 +23,7 @@
 
 namespace base {
 class TimeTicks;
+class FilePath;
 }
 
 namespace component_updater {
@@ -52,6 +53,13 @@ class AwComponentUpdateService {
   void CheckForUpdates(UpdateCallback on_finished, bool on_demand_update);
 
   void IncrementComponentsUpdatedCount();
+
+  // Gets the highest sequence number for a given component path.
+  int GetHighestSequenceNumber(base::FilePath cps_component_base_path);
+
+  // Returns the directory path for a given component hash.
+  base::FilePath GetComponentsProviderServiceDirectory(
+      const std::vector<uint8_t>& hash);
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -90,6 +98,7 @@ class AwComponentUpdateService {
                                   base::OnceClosure on_finished);
 
   scoped_refptr<update_client::UpdateClient> update_client_;
+  scoped_refptr<update_client::Configurator> configurator_;
 
   // A collection of every registered component.
   base::flat_map<std::string, component_updater::ComponentRegistration>
@@ -104,6 +113,14 @@ class AwComponentUpdateService {
 
   void RecordComponentsUpdated(UpdateCallback on_finished,
                                update_client::Error error);
+
+  void UpdateMetadataFiles(UpdateCallback on_finished, int32_t count_of_comps);
+
+  // Gets the highest sequence number directory for a given component path.
+  std::string GetHighestSequenceNumberDirectory(
+      base::FilePath cps_component_base_path);
+
+  std::string GetCohortId(const std::string& component_id);
 
   // Counts how many components were updated, for UMA logging.
   int32_t components_updated_count_ = 0;

@@ -20,8 +20,9 @@ InputEventActivationProtector::~InputEventActivationProtector() {
 }
 
 void InputEventActivationProtector::VisibilityChanged(bool is_visible) {
-  if (is_visible)
+  if (is_visible) {
     view_protected_time_stamp_ = base::TimeTicks::Now();
+  }
 }
 
 void InputEventActivationProtector::MaybeUpdateViewProtectedTimeStamp(

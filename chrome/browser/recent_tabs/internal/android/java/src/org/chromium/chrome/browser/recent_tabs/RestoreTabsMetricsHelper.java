@@ -8,8 +8,10 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 
 /** Metrics helper class for the restore tabs feature. */
+@NullMarked
 public class RestoreTabsMetricsHelper {
     private static int sPromoShownCount;
 

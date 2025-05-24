@@ -15,9 +15,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -26,20 +27,21 @@ import org.chromium.ui.widget.ViewRectProvider;
  * The dropdown popup window for use on Lollipop+. Internally uses an AnchoredPopupWindow
  * anchored to a view to display a list of options.
  */
+@NullMarked
 class DropdownPopupWindowImpl
         implements AnchoredPopupWindow.LayoutObserver, DropdownPopupWindowInterface {
     private final Context mContext;
     private final View mAnchorView;
     private boolean mRtl;
     private int mInitialSelection = -1;
-    private OnLayoutChangeListener mLayoutChangeListener;
-    private CharSequence mDescription;
-    private AnchoredPopupWindow mAnchoredPopupWindow;
-    ListAdapter mAdapter;
+    private final OnLayoutChangeListener mLayoutChangeListener;
+    private @Nullable CharSequence mDescription;
+    private final AnchoredPopupWindow mAnchoredPopupWindow;
+    @Nullable ListAdapter mAdapter;
 
     private final ListView mListView;
-    private Drawable mBackground;
-    private int mHorizontalPadding;
+    private final Drawable mBackground;
+    private final int mHorizontalPadding;
 
     public DropdownPopupWindowImpl(Context context, View anchorView) {
         this(context, anchorView, null);

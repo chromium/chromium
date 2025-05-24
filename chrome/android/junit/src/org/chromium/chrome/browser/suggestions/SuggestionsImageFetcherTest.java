@@ -14,7 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -33,6 +34,7 @@ public class SuggestionsImageFetcherTest {
     public static final int IMAGE_SIZE_PX = 100;
     public static final GURL URL = JUnitTestGURLs.EXAMPLE_URL;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
     @Mock private ThumbnailProvider mThumbnailProvider;
@@ -40,7 +42,6 @@ public class SuggestionsImageFetcherTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mSuggestionsDeps.getFactory().largeIconBridge = mLargeIconBridge;
         mSuggestionsDeps.getFactory().thumbnailProvider = mThumbnailProvider;

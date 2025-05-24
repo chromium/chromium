@@ -9,11 +9,15 @@ per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
 per-file initiator_lock_compatibility*=creis@chromium.org
 per-file initiator_lock_compatibility*=lukasza@chromium.org
 
-# Cross origin opener policy.
-per-file cross_origin_opener_policy*=clamy@chromium.org
 
-# Document Isolation policy.
-per-file document_isolation_policy*=clamy@chromium.org
+# Web-facing security features
+per-file cross_origin_embedder_policy*=file://third_party/blink/SECURITY_OWNERS
+per-file cross_origin_opener_policy*=file://third_party/blink/SECURITY_OWNERS
+per-file cross_origin_resource_policy*=file://third_party/blink/SECURITY_OWNERS
+per-file document_isolation_policy*=file://third_party/blink/SECURITY_OWNERS
+per-file sri_message_signatures*=file://third_party/blink/SECURITY_OWNERS
+per-file web_sandbox_flags*=file://third_party/blink/SECURITY_OWNERS
+per-file x_frame_options*=file://third_party/blink/SECURITY_OWNERS
 
 # Files and features related to component:Internals>Network>TrustTokens
 per-file trust_token*=file://services/network/trust_tokens/OWNERS

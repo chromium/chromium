@@ -90,10 +90,12 @@ class WindowSizerChromeOSTest : public ChromeAshTestBase {
       ui::mojom::WindowShowState* out_show_state) {
     DCHECK(out_show_state);
     auto provider = std::make_unique<TestStateProvider>();
-    if (source == PERSISTED || source == BOTH)
+    if (source == PERSISTED || source == BOTH) {
       provider->SetPersistentState(bounds, work_area, show_state_persisted);
-    if (source == LAST_ACTIVE || source == BOTH)
+    }
+    if (source == LAST_ACTIVE || source == BOTH) {
       provider->SetLastActiveState(bounds, show_state_last);
+    }
 
     WindowSizer::GetBrowserWindowBoundsAndShowState(
         std::move(provider), passed_in, browser, out_bounds, out_show_state);
@@ -131,8 +133,9 @@ const int kWindowTilePixels = WindowSizer::kWindowTilePixels;
 std::unique_ptr<Browser> CreateTestBrowser(aura::Window* window,
                                            const gfx::Rect& bounds,
                                            Browser::CreateParams* params) {
-  if (!bounds.IsEmpty())
+  if (!bounds.IsEmpty()) {
     window->SetBounds(bounds);
+  }
   std::unique_ptr<Browser> browser =
       chrome::CreateBrowserWithAuraTestWindowForParams(base::WrapUnique(window),
                                                        params);

@@ -34,6 +34,8 @@ class TabHandleLayer : public Layer {
   void SetProperties(int id,
                      ui::Resource* close_button_resource,
                      ui::Resource* close_button_background_resource,
+                     bool is_close_keyboard_focused,
+                     ui::Resource* close_button_keyboard_focus_ring_resource,
                      ui::Resource* divider_resource,
                      ui::NinePatchResource* tab_handle_resource,
                      ui::NinePatchResource* tab_handle_outline_resource,
@@ -55,7 +57,13 @@ class TabHandleLayer : public Layer {
                      bool is_end_divider_visible,
                      bool is_loading,
                      float spinner_rotation,
-                     float opacity);
+                     float opacity,
+                     bool is_keyboard_focused,
+                     ui::NinePatchResource* keyboard_focus_ring_drawable,
+                     int keyboard_focus_ring_offset,
+                     int stroke_width,
+                     float folio_foot_length);
+  bool foreground();
   scoped_refptr<cc::slim::Layer> layer() override;
 
  protected:
@@ -69,13 +77,15 @@ class TabHandleLayer : public Layer {
   scoped_refptr<cc::slim::Layer> tab_;
   scoped_refptr<cc::slim::UIResourceLayer> close_button_;
   scoped_refptr<cc::slim::UIResourceLayer> close_button_hover_highlight_;
+  scoped_refptr<cc::slim::UIResourceLayer> close_keyboard_focus_ring_;
   scoped_refptr<cc::slim::UIResourceLayer> start_divider_;
   scoped_refptr<cc::slim::UIResourceLayer> end_divider_;
   scoped_refptr<cc::slim::NinePatchLayer> decoration_tab_;
   scoped_refptr<cc::slim::NinePatchLayer> tab_outline_;
   scoped_refptr<cc::slim::Layer> title_layer_;
 
-  float brightness_;
+  scoped_refptr<cc::slim::NinePatchLayer> keyboard_focus_ring_;
+
   float opacity_;
   bool foreground_;
 };

@@ -9,13 +9,14 @@ import android.content.Context;
 import android.os.Debug;
 import android.os.Process;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Allows calling ActivityManager#getProcessMemoryInfo() from native. */
+@NullMarked
 public class MemoryInfoBridge {
     /**
      * Returns the result of ActivityManager#getProcessMemoryInfo() on itself.
@@ -25,7 +26,7 @@ public class MemoryInfoBridge {
      * throttling handling code there would become incorrect otherwise.
      */
     @CalledByNative
-    public static @Nullable Debug.MemoryInfo getActivityManagerMemoryInfoForSelf() {
+    public static Debug.@Nullable MemoryInfo getActivityManagerMemoryInfoForSelf() {
         ActivityManager activityManager =
                 (ActivityManager)
                         ContextUtils.getApplicationContext()

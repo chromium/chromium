@@ -9,6 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -26,6 +27,8 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -79,6 +82,9 @@ public class ChromeSiteSettingsDelegateTest {
     // This is a regression test for crbug.com/1077716.
     @Test
     @SmallTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/396752397")
     public void testFallbackFaviconLoads() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -113,6 +119,7 @@ public class ChromeSiteSettingsDelegateTest {
     // Tests that getBrowsingDataInfo returns the correct sample test data in the hashmap.
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/396752397")
     public void testGetBrowsingDataInfoCookie() throws TimeoutException {
         setCookie(Scheme.HTTP, BROWSING_DATA_HOST, "'foo1=bar1'");
         setCookie(Scheme.HTTPS, BROWSING_DATA_HOST, "'foo2=bar2'");
@@ -139,6 +146,7 @@ public class ChromeSiteSettingsDelegateTest {
     // Tests that removeBrowsingData removes data correctly for a given host.
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/396752397")
     public void testRemoveBrowsingData() throws TimeoutException {
         setCookie(Scheme.HTTP, BROWSING_DATA_HOST, null);
 

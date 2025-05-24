@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 
@@ -146,12 +142,11 @@ class ProfilePrefStoreManagerTest : public testing::Test,
         mock_validation_delegate_record_);
 
     ProfilePrefStoreManager::RegisterProfilePrefs(profile_pref_registry_.get());
-    for (const prefs::TrackedPreferenceMetadata* it = kConfiguration;
-         it != kConfiguration + std::size(kConfiguration); ++it) {
-      if (it->strategy == PrefTrackingStrategy::ATOMIC) {
-        profile_pref_registry_->RegisterStringPref(it->name, std::string());
+    for (const prefs::TrackedPreferenceMetadata& config : kConfiguration) {
+      if (config.strategy == PrefTrackingStrategy::ATOMIC) {
+        profile_pref_registry_->RegisterStringPref(config.name, std::string());
       } else {
-        profile_pref_registry_->RegisterDictionaryPref(it->name);
+        profile_pref_registry_->RegisterDictionaryPref(config.name);
       }
     }
     profile_pref_registry_->RegisterStringPref(kUnprotectedPref, std::string());

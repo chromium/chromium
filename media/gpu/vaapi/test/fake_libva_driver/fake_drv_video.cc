@@ -12,9 +12,11 @@
 #include <va/va_backend.h>
 #include <va/va_drmcommon.h>
 
+#include <array>
 #include <set>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_driver.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -37,7 +39,25 @@ struct Capability {
   int num_attribs;
   VAConfigAttrib attrib_list[MAX_CAPABILITY_ATTRIBUTES];
 };
-const struct Capability kCapabilities[] = {
+const auto kCapabilities = std::to_array<Capability>({
+    {VAProfileH264ConstrainedBaseline,
+     VAEntrypointVLD,
+     1,
+     {
+         {VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420},
+     }},
+    {VAProfileH264Main,
+     VAEntrypointVLD,
+     1,
+     {
+         {VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420},
+     }},
+    {VAProfileH264High,
+     VAEntrypointVLD,
+     1,
+     {
+         {VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420},
+     }},
     {VAProfileAV1Profile0,
      VAEntrypointVLD,
      1,
@@ -155,10 +175,12 @@ const struct Capability kCapabilities[] = {
          {VAConfigAttribRateControl, VA_RC_CQP | VA_RC_CBR},
          {VAConfigAttribEncPackedHeaders, VA_ENC_PACKED_HEADER_NONE},
          {VAConfigAttribEncMaxRefFrames, 1},
-     }}};
+     }},
+});
 
 const size_t kCapabilitiesSize =
-    sizeof(kCapabilities) / sizeof(struct Capability);
+    (kCapabilities.size() * sizeof(decltype(kCapabilities)::value_type)) /
+    sizeof(struct Capability);
 
 /**
  * Original comment:
@@ -367,9 +389,7 @@ VAStatus FakeCreateSurfaces(VADriverContextP ctx,
                             int format,
                             int num_surfaces,
                             VASurfaceID* surfaces) {
-  CHECK(false);
-
-  return VA_STATUS_SUCCESS;
+  NOTREACHED();
 }
 
 VAStatus FakeDestroySurfaces(VADriverContextP ctx,
@@ -521,9 +541,7 @@ VAStatus FakeSyncSurface(VADriverContextP ctx, VASurfaceID render_target) {
 VAStatus FakeQuerySurfaceStatus(VADriverContextP ctx,
                                 VASurfaceID render_target,
                                 VASurfaceStatus* status) {
-  CHECK(false);
-
-  return VA_STATUS_SUCCESS;
+  NOTREACHED();
 }
 
 VAStatus FakePutSurface(VADriverContextP ctx,
@@ -745,18 +763,14 @@ VAStatus FakeAssociateSubpicture(VADriverContextP ctx,
                                  uint16_t dest_width,
                                  uint16_t dest_height,
                                  uint32_t flags) {
-  CHECK(false);
-
-  return VA_STATUS_SUCCESS;
+  NOTREACHED();
 }
 
 VAStatus FakeDeassociateSubpicture(VADriverContextP ctx,
                                    VASubpictureID subpicture,
                                    VASurfaceID* target_surfaces,
                                    int num_surfaces) {
-  CHECK(false);
-
-  return VA_STATUS_SUCCESS;
+  NOTREACHED();
 }
 
 VAStatus FakeQueryDisplayAttributes(VADriverContextP ctx,
@@ -864,7 +878,7 @@ VAStatus FakeCreateSurfaces2(VADriverContextP ctx,
   return VA_STATUS_SUCCESS;
 }
 
-#define MAX_PROFILES 9
+#define MAX_PROFILES 12
 #define MAX_ENTRYPOINTS 8
 #define MAX_CONFIG_ATTRIBUTES 32
 #if MAX_CAPABILITY_ATTRIBUTES >= MAX_CONFIG_ATTRIBUTES

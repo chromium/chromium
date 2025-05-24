@@ -14,6 +14,7 @@ import android.os.Build;
 
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.Map;
  * <p>This should only be called in processes which have called {@link
  * ContextUtils.initApplicationContext(Context)}.
  */
+@NullMarked
 public final class DeveloperModeUtils {
     // Do not instantiate this class.
     private DeveloperModeUtils() {}

@@ -23,6 +23,7 @@
 #ifndef NDEBUG
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/task/thread_pool.h"
 #endif  // NDEBUG
 
 namespace {
@@ -105,7 +106,7 @@ void DependencyManager::RegisterPrefsForServices(
     user_prefs::PrefRegistrySyncable* pref_registry) {
   std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   for (DependencyNode* dependency_node : construction_order) {
@@ -185,15 +186,16 @@ void DependencyManager::PerformInterlockedTwoPhaseShutdown(
 DependencyManager::OrderedFactories DependencyManager::GetConstructionOrder() {
   OrderedDependencyNodes construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return OrderedFactoriesFromOrderedDependencyNodes(construction_order);
 }
 
 DependencyManager::OrderedFactories DependencyManager::GetDestructionOrder() {
   OrderedDependencyNodes destruction_order;
-  if (!dependency_graph_.GetDestructionOrder(&destruction_order))
-    NOTREACHED_IN_MIGRATION();
+  if (!dependency_graph_.GetDestructionOrder(&destruction_order)) {
+    NOTREACHED();
+  }
   return OrderedFactoriesFromOrderedDependencyNodes(destruction_order);
 }
 
@@ -216,7 +218,7 @@ void DependencyManager::DestroyFactoriesInOrder(
 void DependencyManager::AssertContextWasntDestroyed(void* context) const {
   if (dead_context_pointers_.find(context) != dead_context_pointers_.end()) {
     // We want to see all possible use-after-destroy in production environment.
-    CHECK(false) << "Attempted to access a context that was ShutDown(). "
+    NOTREACHED() << "Attempted to access a context that was ShutDown(). "
                  << "This is most likely a heap smasher in progress. After "
                  << "KeyedService::Shutdown() completes, your service MUST "
                  << "NOT refer to depended services again.";
@@ -271,7 +273,16 @@ void DependencyManager::DumpDependenciesAsGraphviz(
   DCHECK(!dot_file.empty());
   std::string contents = dependency_graph_.DumpAsGraphviz(
       top_level_name, base::BindRepeating(&KeyedServiceBaseFactoryGetNodeName));
-  base::WriteFile(dot_file, contents);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(
+          [](const base::FilePath& dot_file, const std::string& contents) {
+            base::WriteFile(dot_file, contents);
+          },
+          dot_file, contents));
 }
 #endif  // NDEBUG
 

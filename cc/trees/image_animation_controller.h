@@ -162,8 +162,7 @@ class CC_EXPORT ImageAnimationController {
     bool ShouldAnimate() const;
     bool ShouldAnimate(int repetitions_completed, size_t pending_index) const;
     bool AdvanceFrame(const viz::BeginFrameArgs& args,
-                      bool enable_image_animation_resync,
-                      bool use_resume_behavior);
+                      bool enable_image_animation_resync);
     void UpdateMetadata(const DiscardableImageMap::AnimatedImageMetadata& data);
     void PushPendingToActive();
     // If all frames have same frame duration, return that duration.
@@ -195,12 +194,10 @@ class CC_EXPORT ImageAnimationController {
 
       // The time at which we would like to display the next frame. This can be
       // in the past, for instance, if we pause the animation from the image
-      // becoming invisible. This time is updated based on either the animation
-      // timeline provided by the image (when using Catch-up behavior) or the
-      // next displayed frame (when using Resume behavior). Here, "displayed
-      // frame" means an animation that updates faster than the display's
-      // refresh rate and might skip frames to maintain display speed. See
-      // kAnimatedImageResume.
+      // becoming invisible. This time is updated based on the animation
+      // timeline provided by the image. Here, "displayed frame" means an
+      // animation that updates faster than the display's refresh rate and
+      // might skip frames to maintain display speed.
       base::TimeTicks next_desired_frame_time;
 
       // The time of the next tick at which we want to invalidate and update the
@@ -333,7 +330,6 @@ class CC_EXPORT ImageAnimationController {
   InvalidationScheduler scheduler_;
 
   const bool enable_image_animation_resync_;
-  const bool use_resume_behavior_;
 
   bool did_navigate_ = false;
 };

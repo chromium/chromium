@@ -14,8 +14,9 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_service.h"  // nogncheck
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -71,10 +72,9 @@ TEST_F(CreateChooserTitleTest, ExtensionsFrameTree) {
   extensions::TestExtensionSystem* extension_system =
       static_cast<extensions::TestExtensionSystem*>(
           extensions::ExtensionSystem::Get(profile()));
-  extensions::ExtensionService* extension_service =
-      extension_system->CreateExtensionService(
-          base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-  extension_service->AddExtension(extension.get());
+  extension_system->CreateExtensionService(
+      base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+  extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension.get());
 
   NavigateAndCommit(extension->GetResourceURL("index.html"));
   content::RenderFrameHost* subframe =

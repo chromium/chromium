@@ -7,15 +7,19 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "content/browser/cache_storage/cache_storage_cache.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <limits>
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -28,6 +32,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -40,7 +45,6 @@
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cache_storage/cache_storage.h"
-#include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
@@ -49,7 +53,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
-#include "crypto/symmetric_key.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -77,7 +80,7 @@ namespace content {
 namespace cache_storage_cache_unittest {
 
 const char kTestData[] = "Hello World";
-const char kCacheName[] = "test_cache";
+const char16_t kCacheName[] = u"test_cache";
 const FetchAPIRequestHeadersMap kHeaders({{"a", "a"}, {"b", "b"}});
 
 void SizeCallback(base::RunLoop* run_loop,
@@ -215,9 +218,6 @@ class FailableCacheEntry : public disk_cache::Entry {
   void Close() override { entry_->Close(); }
   std::string GetKey() const override { return entry_->GetKey(); }
   base::Time GetLastUsed() const override { return entry_->GetLastUsed(); }
-  base::Time GetLastModified() const override {
-    return entry_->GetLastModified();
-  }
   int32_t GetDataSize(int index) const override {
     return entry_->GetDataSize(index);
   }
@@ -419,7 +419,7 @@ blink::mojom::FetchAPIResponsePtr SetCacheName(
     blink::mojom::FetchAPIResponsePtr response) {
   response->response_source =
       network::mojom::FetchResponseSource::kCacheStorage;
-  response->cache_storage_cache_name = kCacheName;
+  response->cache_storage_cache_name = base::UTF16ToUTF8(kCacheName);
   return response;
 }
 
@@ -432,7 +432,7 @@ class TestCacheStorageCache : public CacheStorageCache {
  public:
   TestCacheStorageCache(
       const storage::BucketLocator& bucket_locator,
-      const std::string& cache_name,
+      const std::u16string& cache_name,
       const base::FilePath& path,
       CacheStorage* cache_storage,
       const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy,
@@ -573,8 +573,7 @@ class CacheStorageCacheTest : public testing::Test {
 
     blob_storage_context_->context()->RegisterFromMemory(
         blob_remote_.BindNewPipeAndPassReceiver(), expected_blob_uuid_,
-        std::vector<uint8_t>(expected_blob_data_.begin(),
-                             expected_blob_data_.end()));
+        base::as_byte_span(expected_blob_data_));
 
     ASSERT_OK_AND_ASSIGN(auto bucket_locator,
                          GetOrCreateDefaultBucket(kTestUrl));
@@ -715,7 +714,7 @@ class CacheStorageCacheTest : public testing::Test {
     blob->size = data.size();
     blob_storage_context_->context()->RegisterFromMemory(
         blob->blob.InitWithNewPipeAndPassReceiver(), uuid,
-        std::vector<uint8_t>(data.begin(), data.end()));
+        base::as_byte_span(data));
   }
 
   blink::mojom::FetchAPIRequestPtr CopyFetchRequest(
@@ -1007,7 +1006,7 @@ class CacheStorageCacheTest : public testing::Test {
   void SetQuota(uint64_t quota) {
     mock_quota_manager_->SetQuota(
         blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl)),
-        blink::mojom::StorageType::kTemporary, quota);
+        quota);
   }
 
   void SetMaxQuerySizeBytes(size_t max_bytes) {

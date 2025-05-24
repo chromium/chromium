@@ -4,9 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
 
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {MouseHoverableMixinLit} from 'chrome://resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
@@ -26,7 +27,7 @@ const navigationKeys: Set<string> =
 export interface ReadingListItemElement {
   $: {
     crUrlListItem: CrUrlListItemElement,
-    updateStatusButton: HTMLElement,
+    updateStatusButton: CrIconButtonElement,
     deleteButton: HTMLElement,
   };
 }
@@ -53,7 +54,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
     };
   }
 
-  data: ReadLaterEntry = {
+  accessor data: ReadLaterEntry = {
     title: '',
     url: {url: ''},
     displayUrl: '',
@@ -62,7 +63,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
     displayTimeSinceUpdate: '',
   };
 
-  buttonRipples: boolean = false;
+  accessor buttonRipples: boolean = false;
   private apiProxy_: ReadingListApiProxy =
       ReadingListApiProxyImpl.getInstance();
 
@@ -116,8 +117,8 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
       this.$.updateStatusButton,
       this.$.deleteButton,
     ];
-    const focusedIndex = focusableElements.indexOf(
-        this.shadowRoot!.activeElement as HTMLElement);
+    const focusedIndex =
+        focusableElements.indexOf(this.shadowRoot.activeElement as HTMLElement);
 
     switch (e.key) {
       case ' ':
@@ -160,9 +161,9 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
   /**
    * @return The appropriate icon for the current state
    */
-  protected getUpdateStatusButtonIcon_(
-      markAsUnreadIcon: string, markAsReadIcon: string): string {
-    return this.data.read ? markAsUnreadIcon : markAsReadIcon;
+  protected getUpdateStatusButtonIcon_(): string {
+    return this.data.read ? 'read-later:check-circle-reverse' :
+                            'cr:check-circle';
   }
 
   /**

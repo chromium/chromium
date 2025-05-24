@@ -6,7 +6,7 @@ import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("arc") {
   sources = [
@@ -23,8 +23,6 @@ static_library("arc") {
     "arc_support_host.h",
     "arc_ui_availability_reporter.cc",
     "arc_ui_availability_reporter.h",
-    "arc_util.cc",
-    "arc_util.h",
     "icon_decode_request.cc",
     "icon_decode_request.h",
   ]
@@ -32,9 +30,8 @@ static_library("arc") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    ":arc_util",
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -48,6 +45,7 @@ static_library("arc") {
     "//chrome/browser/ash/arc/app_shortcuts",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/boot_phase_monitor",
+    "//chrome/browser/ash/arc/dlc_installer",
     "//chrome/browser/ash/arc/enterprise",
     "//chrome/browser/ash/arc/extensions",
     "//chrome/browser/ash/arc/fileapi",
@@ -55,6 +53,7 @@ static_library("arc") {
     "//chrome/browser/ash/arc/input_overlay",
     "//chrome/browser/ash/arc/instance_throttle",
     "//chrome/browser/ash/arc/intent_helper",
+    "//chrome/browser/ash/arc/locked_fullscreen",
     "//chrome/browser/ash/arc/metrics",
     "//chrome/browser/ash/arc/nearby_share",
     "//chrome/browser/ash/arc/notification",
@@ -79,13 +78,16 @@ static_library("arc") {
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/components/mgs",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/consent_auditor",
-    "//components/embedder_support:browser_util",
     "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
@@ -149,8 +151,7 @@ source_set("unit_tests") {
 
   deps = [
     ":arc",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
+    ":arc_util",
     "//base",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/extensions:test_support",
@@ -162,7 +163,8 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes",
-    "//components/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/test:test_support",
@@ -184,6 +186,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/input_overlay:unit_tests",
     "//chrome/browser/ash/arc/instance_throttle:unit_tests",
     "//chrome/browser/ash/arc/intent_helper:unit_tests",
+    "//chrome/browser/ash/arc/locked_fullscreen:unit_tests",
     "//chrome/browser/ash/arc/memory_pressure:unit_tests",
     "//chrome/browser/ash/arc/nearby_share:unit_tests",
     "//chrome/browser/ash/arc/net:unit_tests",
@@ -192,7 +195,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/pip:unit_tests",
     "//chrome/browser/ash/arc/policy:unit_tests",
     "//chrome/browser/ash/arc/privacy_items:unit_tests",
-    "//chrome/browser/ash/arc/process:unit_tests",
     "//chrome/browser/ash/arc/session:unit_tests",
     "//chrome/browser/ash/arc/sharesheet:unit_tests",
     "//chrome/browser/ash/arc/survey:unit_tests",
@@ -234,4 +236,51 @@ if (is_chromeos_device && is_chrome_branded) {
       "//ui/aura",
     ]
   }
+}
+
+source_set("arc_util") {
+  sources = [ "arc_util.h" ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/experiences/arc/session:arc_base_enums",
+    "//storage/browser",
+  ]
+}
+source_set("arc_util_impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [ "arc_util.cc" ]
+
+  deps = [
+    ":arc_util",
+    "//ash/constants",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/arc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/shelf",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/components/mgs",
+    "//components/embedder_support:user_agent",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/aura",
+    "//ui/base",
+    "//url",
+  ]
 }

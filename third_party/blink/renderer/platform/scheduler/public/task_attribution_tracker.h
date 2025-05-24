@@ -17,10 +17,9 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-class AbortSignal;
-class DOMTaskSignal;
+class SchedulerTaskContext;
 class ScriptState;
-class ScriptWrappableTaskState;
+class ScriptWrappableTaskStateBase;
 class SoftNavigationContext;
 }  // namespace blink
 
@@ -83,7 +82,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
     TaskScope(TaskAttributionTracker* tracker,
               ScriptState* script_state,
-              ScriptWrappableTaskState* previous_task_state)
+              ScriptWrappableTaskStateBase* previous_task_state)
         : task_tracker_(tracker),
           script_state_(script_state),
           previous_task_state_(previous_task_state) {}
@@ -95,7 +94,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     // The rest are on the Oilpan heap, so these are stored as raw pointers
     // since the class is stack allocated.
     ScriptState* script_state_;
-    ScriptWrappableTaskState* previous_task_state_;
+    ScriptWrappableTaskStateBase* previous_task_state_;
   };
 
   class Observer : public GarbageCollectedMixin {
@@ -155,13 +154,13 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   virtual TaskScope CreateTaskScope(ScriptState*, SoftNavigationContext*) = 0;
 
   // Creates a new `TaskScope` with web scheduling context. `task_state` will be
-  // propagated to descendant tasks and continuations; `abort_source` and
-  // `priority_source` will only be propagated to continuations.
-  virtual TaskScope CreateTaskScope(ScriptState*,
-                                    TaskAttributionInfo* task_state,
-                                    TaskScopeType type,
-                                    AbortSignal* abort_source,
-                                    DOMTaskSignal* priority_source) = 0;
+  // propagated to descendant tasks and continuations; `continuation_context`
+  // will only be propagated to continuations.
+  virtual TaskScope CreateTaskScope(
+      ScriptState*,
+      TaskAttributionInfo* task_state,
+      TaskScopeType type,
+      SchedulerTaskContext* continuation_context) = 0;
 
   // Conditionally create a `TaskScope` for a generic v8 callback. A `TaskScope`
   // is always created if `task_state` is non-null, and one is additionally

@@ -16,9 +16,10 @@ export class TestPrivateStateTokensPageHandler extends TestBrowserProxy
     super(['getIssuerTokenCounts']);
   }
 
-  async getIssuerTokenCounts() {
+  getIssuerTokenCounts() {
     this.methodCalled('getIssuerTokenCounts');
-    return {privateStateTokensCount: this.privateStateTokensCounts};
+    return Promise.resolve(
+        {privateStateTokensCount: this.privateStateTokensCounts});
   }
 }
 

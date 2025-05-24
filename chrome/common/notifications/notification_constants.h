@@ -7,6 +7,6 @@
 
 // Value used to represent the absence of a button index following a user
 // interaction with a notification.
-constexpr int kNotificationInvalidButtonIndex = -1;
+inline constexpr int kNotificationInvalidButtonIndex = -1;
 
 #endif  // CHROME_COMMON_NOTIFICATIONS_NOTIFICATION_CONSTANTS_H_

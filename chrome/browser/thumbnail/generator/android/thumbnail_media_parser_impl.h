@@ -50,7 +50,7 @@ class ThumbnailMediaParserImpl : public ThumbnailMediaParser,
   void Start(ParseCompleteCB parse_complete_cb) override;
 
  private:
-  void OnReadFileSize(int64_t file_size);
+  void OnReadFileSize(std::optional<int64_t> file_size);
 
   // MediaParserProvider implementation:
   void OnMediaParserCreated() override;

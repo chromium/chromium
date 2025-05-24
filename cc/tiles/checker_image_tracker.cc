@@ -64,8 +64,7 @@ CheckerImagingDecision GetAnimationDecision(const PaintImage& image) {
       return CheckerImagingDecision::kCanChecker;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CheckerImagingDecision::kCanChecker;
+  NOTREACHED();
 }
 
 CheckerImagingDecision GetLoadDecision(const PaintImage& image) {
@@ -76,8 +75,7 @@ CheckerImagingDecision GetLoadDecision(const PaintImage& image) {
       return CheckerImagingDecision::kVetoedPartiallyLoadedImage;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CheckerImagingDecision::kCanChecker;
+  NOTREACHED();
 }
 
 CheckerImagingDecision GetSizeDecision(const SkIRect& src_rect,
@@ -437,8 +435,10 @@ void CheckerImageTracker::ScheduleNextImageDecode() {
       "cc", "CheckerImageTracker::DeferImageDecode", TRACE_ID_LOCAL(image_id));
   ImageController::ImageDecodeRequestId request_id =
       image_controller_->QueueImageDecode(
-          draw_image, base::BindOnce(&CheckerImageTracker::DidFinishImageDecode,
-                                     weak_factory_.GetWeakPtr(), image_id));
+          draw_image,
+          base::BindOnce(&CheckerImageTracker::DidFinishImageDecode,
+                         weak_factory_.GetWeakPtr(), image_id),
+          /*speculative*/ false);
 
   image_id_to_decode_.emplace(image_id, std::make_unique<ScopedDecodeHolder>(
                                             image_controller_, request_id));

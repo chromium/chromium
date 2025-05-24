@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/android/resources/resource_manager_impl.h"
 
 #include <inttypes.h>
@@ -17,6 +12,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -256,6 +252,16 @@ void ResourceManagerImpl::RemoveResource(
     jint res_type,
     jint res_id) {
   resources_[res_type].erase(res_id);
+}
+
+void ResourceManagerImpl::DumpIfNoResource(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jobj,
+    jint res_type,
+    jint res_id) {
+  if (resources_[res_type].find(res_id) == resources_[res_type].end()) {
+    base::debug::DumpWithoutCrashing();  // Investigating crbug.com/388600389.
+  }
 }
 
 bool ResourceManagerImpl::OnMemoryDump(

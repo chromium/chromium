@@ -83,7 +83,6 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
   void ProcessCapturedAudio(const media::AudioBus& audio_source,
                             base::TimeTicks audio_capture_time,
                             double volume,
-                            bool key_pressed,
                             const media::AudioGlitchInfo& audio_glitch_info);
 
   // The format of audio input to the processor; constant throughout its

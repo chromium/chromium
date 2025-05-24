@@ -1,16 +1,18 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {stringToMojoString16} from './mojo_type_util.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {MessagePipe} from '//system_apps/message_pipe.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {PageHandlerFactory, PageHandlerRemote} from './help_app_ui.mojom-webui.js';
 import {Index} from './index.mojom-webui.js';
-import {MessagePipe} from '//system_apps/message_pipe.js';
 import {Message} from './message_types.js';
-import {SearchConcept, SearchHandler} from './search.mojom-webui.js';
-import {Content, ResponseStatus, Result} from './types.mojom-webui.js';
+import {stringToMojoString16} from './mojo_type_util.js';
+import type {SearchConcept} from './search.mojom-webui.js';
+import {SearchHandler} from './search.mojom-webui.js';
+import type {Content, Result} from './types.mojom-webui.js';
+import {ResponseStatus} from './types.mojom-webui.js';
 
 const helpApp = {
   handler: new PageHandlerRemote(),
@@ -37,10 +39,6 @@ const MAX_STRING_LEN = 9999;
 const guestFrame = document.createElement('iframe');
 guestFrame.src = `${GUEST_ORIGIN}${location.pathname}${location.search}`;
 document.body.appendChild(guestFrame);
-
-// Cached result whether Local Search Service is enabled.
-const isLssEnabled =
-    helpApp.handler.isLssEnabled().then(result => result.enabled);
 
 // Cached result of whether Launcher Search is enabled.
 const isLauncherSearchEnabled =
@@ -94,9 +92,6 @@ guestMessagePipe.registerHandler(
 
 guestMessagePipe.registerHandler(
     Message.ADD_OR_UPDATE_SEARCH_INDEX, async (data: SearchableItem[]) => {
-      if (!(await isLssEnabled)) {
-        return;
-      }
       const dataToSend = data.map(searchableItem => {
         const contents: Content[] = [
           {
@@ -149,18 +144,12 @@ guestMessagePipe.registerHandler(
     });
 
 guestMessagePipe.registerHandler(Message.CLEAR_SEARCH_INDEX, async () => {
-  if (!(await isLssEnabled)) {
-    return;
-  }
   return indexRemote.clearIndex();
 });
 
 guestMessagePipe.registerHandler(
   Message.FIND_IN_SEARCH_INDEX,
   async (dataFromApp: {query: string, maxResults: number}) => {
-      if (!(await isLssEnabled)) {
-        return {results: null};
-      }
       const response = await indexRemote.find(
           toTruncatedString16(dataFromApp.query), dataFromApp.maxResults || 50);
 
@@ -285,11 +274,28 @@ guestMessagePipe.registerHandler(Message.GET_DEVICE_INFO, async () => {
 });
 
 guestMessagePipe.registerHandler(
+    Message.OPEN_SETTINGS,
+    (path: number) => void helpApp.handler.openSettings(path));
+
+guestMessagePipe.registerHandler(
   Message.OPEN_URL_IN_BROWSER_AND_TRIGGER_INSTALL_DIALOG,
   (url: string | object) => {
     helpApp.handler.openUrlInBrowserAndTriggerInstallDialog(toUrl(url));
   },
 );
+
+guestMessagePipe.registerHandler(
+    Message.SET_HAS_COMPLETED_NEW_DEVICE_CHECKLIST,
+    () => void helpApp.handler.setHasCompletedNewDeviceChecklist());
+
+guestMessagePipe.registerHandler(
+    Message.SET_HAS_VISITED_HOW_TO_PAGE,
+    () => void helpApp.handler.setHasVisitedHowToPage());
+
+guestMessagePipe.registerHandler(
+    Message.OPEN_APP_MALL_PATH, ({path}: {path: string}) => {
+      window.open(`chrome://mall/${path}`);
+    });
 
 /** Compare two positions by their start index. Use for sorting. */
 function compareByStart(a: Position, b: Position): number {

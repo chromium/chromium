@@ -72,8 +72,8 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     answer_card_view_->SetActive(true);
 
     widget_->SetBounds(gfx::Rect(0, 0, 700, 500));
-    widget_->GetContentsView()->AddChildView(default_view_.get());
-    widget_->GetContentsView()->AddChildView(answer_card_view_.get());
+    widget_->GetContentsView()->AddChildViewRaw(default_view_.get());
+    widget_->GetContentsView()->AddChildViewRaw(answer_card_view_.get());
     widget_->Show();
     default_view_->SetResults(GetResults());
     answer_card_view_->SetResults(GetResults());

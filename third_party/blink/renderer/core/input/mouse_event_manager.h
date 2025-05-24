@@ -10,7 +10,6 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/input/boundary_event_dispatcher.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
@@ -33,14 +32,12 @@ enum class DragInitiator;
 // This class takes care of dispatching all mouse events and keeps track of
 // positions and states of mouse.
 class CORE_EXPORT MouseEventManager final
-    : public GarbageCollected<MouseEventManager>,
-      public SynchronousMutationObserver {
+    : public GarbageCollected<MouseEventManager> {
  public:
   MouseEventManager(LocalFrame&, ScrollManager&);
   MouseEventManager(const MouseEventManager&) = delete;
   MouseEventManager& operator=(const MouseEventManager&) = delete;
-  virtual ~MouseEventManager();
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   WebInputEventResult DispatchMouseEvent(
       EventTarget*,
@@ -75,6 +72,9 @@ class CORE_EXPORT MouseEventManager final
   // Resets the internal state of this object.
   void Clear();
 
+  void NodeChildrenWillBeRemoved(ContainerNode&);
+  void NodeWillBeRemoved(Node& node_to_be_removed);
+
   void SendBoundaryEvents(EventTarget* exited_target,
                           bool original_exited_target_removed,
                           EventTarget* entered_target,
@@ -90,7 +90,8 @@ class CORE_EXPORT MouseEventManager final
   void SetLastKnownMousePosition(const WebMouseEvent&);
   void SetLastMousePositionAsUnknown();
 
-  bool HandleDragDropIfPossible(const GestureEventWithHitTestResults&);
+  bool HandleDragDropIfPossible(const GestureEventWithHitTestResults&,
+                                PointerId pointer_id);
 
   WebInputEventResult HandleMouseDraggedEvent(
       const MouseEventWithHitTestResults&);
@@ -171,23 +172,15 @@ class CORE_EXPORT MouseEventManager final
     const WebMouseEvent* web_mouse_event_;
   };
 
-  // If the given element is a shadow host and its root has delegatesFocus=false
-  // flag, slide focus to its inner element. Returns true if the resulting focus
-  // is different from the given element.
-  bool SlideFocusOnShadowHostIfNecessary(const Element&);
-
   bool DragThresholdExceeded(const gfx::Point&) const;
   bool HandleDrag(const MouseEventWithHitTestResults&, DragInitiator);
   bool TryStartDrag(const MouseEventWithHitTestResults&);
   void ClearDragDataTransfer();
   DataTransfer* CreateDraggingDataTransfer() const;
 
+  void HandleRemoveSubtree(Node& node, bool inclusive);
   void ResetDragSource();
   bool HoverStateDirty();
-
-  // Implementations of |SynchronousMutationObserver|
-  void NodeChildrenWillBeRemoved(ContainerNode&) final;
-  void NodeWillBeRemoved(Node& node_to_be_removed) final;
 
   // NOTE: If adding a new field to this class please ensure that it is
   // cleared in |MouseEventManager::clear()|.

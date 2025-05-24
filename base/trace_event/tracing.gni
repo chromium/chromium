@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
   # Enable more trace events. Disabled by default due to binary size impact,
@@ -17,5 +16,5 @@ declare_args() {
   # Disabled by default on Android and ChromeOS due to binary size impact,
   # enabled everywhere else.
   optional_trace_events_enabled =
-      (!is_android && !is_chromeos_ash) || extended_tracing_enabled
+      (!is_android && !is_chromeos) || extended_tracing_enabled
 }

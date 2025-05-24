@@ -4,6 +4,8 @@
 
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 
+#include <utility>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,7 +27,6 @@
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
@@ -109,7 +110,7 @@ net::HashValue ComputeCacheKey(
   std::string encoded_sct;
   net::ct::EncodeSignedCertificateTimestamp(sct_list.at(0).sct, &encoded_sct);
   SHA256_Update(&ctx, encoded_sct.data(), encoded_sct.size());
-  SHA256_Final(reinterpret_cast<uint8_t*>(cache_key.data()), &ctx);
+  SHA256_Final(cache_key.span().data(), &ctx);
   return cache_key;
 }
 

@@ -6,7 +6,7 @@
 #define ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_CONTEXT_MENU_MODEL_H_
 
 #include "ash/ash_export.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace ash {
 

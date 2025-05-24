@@ -29,7 +29,7 @@ class ClientIncidentReport;
 class IncidentReportUploaderImpl : public IncidentReportUploader {
  public:
   // The id associated with the URLFetcher, for use by tests.
-  static const int kTestUrlFetcherId;
+  static constexpr int kTestUrlFetcherId = 47;
 
   IncidentReportUploaderImpl(const IncidentReportUploaderImpl&) = delete;
   IncidentReportUploaderImpl& operator=(const IncidentReportUploaderImpl&) =

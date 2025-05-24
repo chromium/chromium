@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/resource/resource_bundle.h"

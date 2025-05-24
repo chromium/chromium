@@ -8,13 +8,12 @@
 #ifndef MEDIA_CAPTURE_VIDEO_WIN_PIN_BASE_WIN_H_
 #define MEDIA_CAPTURE_VIDEO_WIN_PIN_BASE_WIN_H_
 
-#include "base/memory/raw_ptr.h"
-
 // Avoid including strsafe.h via dshow as it will cause build warnings.
 #define NO_DSHOW_STRSAFE
 #include <dshow.h>
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 
 namespace media {
@@ -23,6 +22,8 @@ class PinBase : public IPin,
                 public IMemInputPin,
                 public base::RefCountedThreadSafe<PinBase> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   explicit PinBase(IBaseFilter* owner);
 
   // Function used for changing the owner.

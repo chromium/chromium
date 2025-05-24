@@ -1,7 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h",
-  "+ios/chrome/browser/ui/scoped_iphone_portrait_only",
-  "+ios/chrome/browser/ui/search_engine_choice",
-  "+ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h",
-  "+ios/chrome/browser/ui/settings/cells/settings_cells_constants.h",
-]

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("keyed_service") {
   sources = [
@@ -25,6 +25,7 @@ static_library("keyed_service") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode/arcvm_app",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/arc/session",
@@ -56,7 +57,6 @@ static_library("keyed_service") {
     "//chrome/browser/ash/kcer",
     "//chrome/browser/ash/kcer/nssdb_migration",
     "//chrome/browser/ash/kerberos",
-    "//chrome/browser/ash/lock_screen_apps",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/extensions",
     "//chrome/browser/ash/login/lock/online_reauth",
@@ -83,12 +83,10 @@ static_library("keyed_service") {
     "//chrome/browser/ash/scanning",
     "//chrome/browser/ash/secure_channel",
     "//chrome/browser/ash/smb_client",
-    "//chrome/browser/ash/sparky",
     "//chrome/browser/ash/sync",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
     "//chrome/browser/ash/tether",
-    "//chrome/browser/ash/trusted_vault",
     "//chrome/browser/ui/ash/birch",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/glanceables",

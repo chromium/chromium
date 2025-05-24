@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/universal_global_scope.h"
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 #include "third_party/blink/renderer/core/frame/window_event_handlers.h"
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
@@ -65,7 +66,6 @@ namespace blink {
 
 class BarProp;
 class CSSStyleDeclaration;
-class ComputedAccessibleNode;
 class CustomElementRegistry;
 class Document;
 class DocumentInit;
@@ -91,11 +91,11 @@ class ScriptState;
 class ScrollToOptions;
 class SecurityOrigin;
 class SerializedScriptValue;
+class SoftNavigationHeuristics;
 class SourceLocation;
 class StyleMedia;
 class TrustedTypePolicyFactory;
 class V8FrameRequestCallback;
-class V8VoidFunction;
 struct WebPictureInPictureWindowOptions;
 class WindowAgent;
 
@@ -113,6 +113,7 @@ enum PageTransitionEventPersistence {
 class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                                          public ExecutionContext,
                                          public WindowOrWorkerGlobalScope,
+                                         public UniversalGlobalScope,
                                          public WindowEventHandlers,
                                          public Supplementable<LocalDOMWindow> {
   USING_PRE_FINALIZER(LocalDOMWindow, Dispose);
@@ -192,10 +193,17 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   }
   ScriptWrappable* ToScriptWrappable() final { return this; }
   void ReportPermissionsPolicyViolation(
-      mojom::blink::PermissionsPolicyFeature,
+      network::mojom::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
-      const std::optional<String>& reporting_endpoint,
+      const String& reporting_endpoint,
       const String& message = g_empty_string) const final;
+  void ReportPotentialPermissionsPolicyViolation(
+      network::mojom::PermissionsPolicyFeature,
+      mojom::blink::PolicyDisposition,
+      const String& reporting_endpoint,
+      const String& message = g_empty_string,
+      const String& allow_attribute = g_empty_string,
+      const String& src_attribute = g_empty_string) const final;
   void ReportDocumentPolicyViolation(
       mojom::blink::DocumentPolicyFeature,
       mojom::blink::PolicyDisposition,
@@ -229,7 +237,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Count permissions policy feature usage through use counter.
   void CountPermissionsPolicyUsage(
-      mojom::blink::PermissionsPolicyFeature feature,
+      network::mojom::PermissionsPolicyFeature feature,
       UseCounterImpl::PermissionsPolicyUsageType type);
 
   // Checks if navigation to Javascript URL is allowed. This check should run
@@ -344,17 +352,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       Element*,
       const String& pseudo_elt = String()) const;
 
-  // Acessibility Object Model
-  ScriptPromise<ComputedAccessibleNode> getComputedAccessibleNode(ScriptState*,
-                                                                  Element*);
-
   // WebKit animation extensions
   int requestAnimationFrame(V8FrameRequestCallback*);
   int webkitRequestAnimationFrame(V8FrameRequestCallback*);
   void cancelAnimationFrame(int id);
-
-  // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
-  void queueMicrotask(V8VoidFunction*);
 
   // https://html.spec.whatwg.org/C/#dom-originagentcluster
   bool originAgentCluster() const;
@@ -370,8 +371,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void captureEvents() {}
   void releaseEvents() {}
   External* external();
-
-  bool isSecureContext() const;  // NOLINT(bugprone-virtual-near-miss)
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(search, kSearch)
 
@@ -406,7 +405,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       MessageEvent* event,
       scoped_refptr<const SecurityOrigin> intended_target_origin,
       std::unique_ptr<SourceLocation> location,
-      const base::UnguessableToken& source_agent_cluster_id);
+      const base::UnguessableToken& source_agent_cluster_id,
+      scheduler::TaskAttributionInfo* parent_task);
 
   void DispatchMessageEventWithOriginCheck(
       const SecurityOrigin* intended_target_origin,
@@ -432,7 +432,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void EnqueueNonPersistedPageshowEvent();
   void EnqueueHashchangeEvent(const String& old_url, const String& new_url);
   void DispatchPopstateEvent(scoped_refptr<SerializedScriptValue>,
-                             scheduler::TaskAttributionInfo* parent_task);
+                             scheduler::TaskAttributionInfo* parent_task,
+                             bool has_ua_visual_transition);
   void DispatchWindowLoadEvent();
   void DocumentWasClosed();
 
@@ -531,13 +532,27 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     is_picture_in_picture_window_ = is_picture_in_picture;
   }
 
+  // This enum represents whether or not a call to `SetStorageAccessApiStatus`
+  // needs to also pass the status back up to the browser.
+  enum class StorageAccessApiNotifyEmbedder {
+    // No notification.
+    kNone,
+    // Notify the browser process.
+    kBrowserProcess,
+  };
+
   // Sets the StorageAccessApiStatus. Calls to this method must not downgrade
   // the status.
-  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status);
+  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status,
+                                 StorageAccessApiNotifyEmbedder notify);
 
   // https://html.spec.whatwg.org/multipage/browsing-the-web.html#has-been-revealed
   bool HasBeenRevealed() const { return has_been_revealed_; }
   void SetHasBeenRevealed(bool revealed);
+
+  SoftNavigationHeuristics* GetSoftNavigationHeuristics() {
+    return soft_navigation_heuristics_.Get();
+  }
 
  protected:
   // EventTarget overrides.
@@ -629,7 +644,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Member<TextSuggestionController> text_suggestion_controller_;
 
   // Map from isolated world IDs to their ContentSecurityPolicy instances.
-  Member<HeapHashMap<int, Member<ContentSecurityPolicy>>>
+  Member<GCedHeapHashMap<int, Member<ContentSecurityPolicy>>>
       isolated_world_csp_map_;
 
   // Tracks which features have already been potentially violated in this
@@ -664,6 +679,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Member<Fence> fence_;
 
   Member<CloseWatcher::WatcherStack> closewatcher_stack_;
+
+  Member<SoftNavigationHeuristics> soft_navigation_heuristics_;
 
   // If set, this window is a Document Picture in Picture window.
   // https://wicg.github.io/document-picture-in-picture/

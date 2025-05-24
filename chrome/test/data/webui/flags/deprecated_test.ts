@@ -16,15 +16,14 @@ suite('chrome://flags/deprecated', function() {
   let searchTextArea: HTMLInputElement;
   let browserProxy: TestFlagsBrowserProxy;
 
-  setup(async function() {
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestFlagsBrowserProxy();
     FlagsBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('flags-app');
     document.body.appendChild(app);
     app.setAnnounceStatusDelayMsForTesting(0);
     app.setSearchDebounceDelayMsForTesting(0);
-    await app.experimentalFeaturesReadyForTesting();
     searchTextArea = app.getRequiredElement<HTMLInputElement>('#search');
   });
 

@@ -5,9 +5,9 @@
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import './strings.m.js';
-import './tangible_sync_style_shared.css.js';
+import '/strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowsingDataHandling} from './managed_user_profile_notice_browser_proxy.js';
@@ -34,8 +34,14 @@ export class ManagedUserProfileNoticeDataHandlingElement extends CrLitElement {
     };
   }
 
-  override title: string;
-  selectedDataHandling: BrowsingDataHandling;
+  override accessor title: string = '';
+  accessor selectedDataHandling: BrowsingDataHandling|null = null;
+
+  override firstUpdated() {
+    const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');
+    assert(titleElement);
+    titleElement.focus();
+  }
 
   protected onSelectedRadioOptionChanged_(
       e: CustomEvent<{value: BrowsingDataHandling}>) {

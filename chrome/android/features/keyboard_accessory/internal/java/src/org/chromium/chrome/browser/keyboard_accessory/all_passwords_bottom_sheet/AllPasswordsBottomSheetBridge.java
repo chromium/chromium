@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -23,6 +24,7 @@ import java.util.List;
  * This bridge creates and initializes a {@link AllPasswordsBottomSheetCoordinator} on construction
  * and forwards native calls to it.
  */
+@NullMarked
 class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinator.Delegate {
     private long mNativeView;
     private final AllPasswordsBottomSheetCoordinator mAllPasswordsBottomSheetCoordinator;

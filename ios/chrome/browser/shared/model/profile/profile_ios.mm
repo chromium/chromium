@@ -14,7 +14,6 @@
 #import "components/variations/net/variations_http_headers.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
-#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/webui/url_data_manager_ios_backend.h"
@@ -22,63 +21,68 @@
 #import "net/url_request/url_request_interceptor.h"
 
 namespace {
-// All ChromeBrowserState will store a dummy base::SupportsUserData::Data
+// All ProfileIOS will store a dummy base::SupportsUserData::Data
 // object with this key. It can be used to check that a web::BrowserState
-// is effectively a ChromeBrowserState when converting.
-const char kBrowserStateIsChromeBrowserState[] = "IsChromeBrowserState";
+// is effectively a ProfileIOS when converting.
+const char kBrowserStateIsProfileIOS[] = "IsProfileIOS";
 }  // namespace
 
-ChromeBrowserState::ChromeBrowserState(
-    const base::FilePath& state_path,
-    std::string_view profile_name,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+ProfileIOS::ProfileIOS(const base::FilePath& state_path,
+                       std::string_view profile_name,
+                       scoped_refptr<base::SequencedTaskRunner> io_task_runner)
     : state_path_(state_path),
       profile_name_(profile_name),
       io_task_runner_(std::move(io_task_runner)) {
   DCHECK(io_task_runner_);
   DCHECK(!state_path_.empty());
-  SetUserData(kBrowserStateIsChromeBrowserState,
+  SetUserData(kBrowserStateIsProfileIOS,
               std::make_unique<base::SupportsUserData::Data>());
 }
 
-ChromeBrowserState::~ChromeBrowserState() {}
+ProfileIOS::~ProfileIOS() {}
 
 // static
-ChromeBrowserState* ChromeBrowserState::FromBrowserState(
-    web::BrowserState* browser_state) {
+ProfileIOS* ProfileIOS::FromBrowserState(web::BrowserState* browser_state) {
   if (!browser_state) {
     return nullptr;
   }
 
-  // Check that the BrowserState is a ChromeBrowserState. It should always
+  // Check that the BrowserState is a ProfileIOS. It should always
   // be true in production and during tests as the only BrowserState that
-  // should be used in ios/chrome inherits from ChromeBrowserState.
-  DCHECK(browser_state->GetUserData(kBrowserStateIsChromeBrowserState));
-  return static_cast<ChromeBrowserState*>(browser_state);
+  // should be used in ios/chrome inherits from ProfileIOS.
+  DCHECK(browser_state->GetUserData(kBrowserStateIsProfileIOS));
+  ProfileIOS* profile = static_cast<ProfileIOS*>(browser_state);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(profile->sequence_checker_);
+  return profile;
 }
 
 // static
-ChromeBrowserState* ChromeBrowserState::FromWebUIIOS(web::WebUIIOS* web_ui) {
+ProfileIOS* ProfileIOS::FromWebUIIOS(web::WebUIIOS* web_ui) {
   return FromBrowserState(web_ui->GetWebState()->GetBrowserState());
 }
 
-const std::string& ChromeBrowserState::GetProfileName() const {
+const std::string& ProfileIOS::GetProfileName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return profile_name_;
 }
 
-scoped_refptr<base::SequencedTaskRunner> ChromeBrowserState::GetIOTaskRunner() {
+scoped_refptr<base::SequencedTaskRunner> ProfileIOS::GetIOTaskRunner() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return io_task_runner_;
 }
 
-PrefService* ChromeBrowserState::GetPrefs() {
+PrefService* ProfileIOS::GetPrefs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetSyncablePrefs();
 }
 
-const PrefService* ChromeBrowserState::GetPrefs() const {
+const PrefService* ProfileIOS::GetPrefs() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetSyncablePrefs();
 }
 
-base::FilePath ChromeBrowserState::GetOffTheRecordStatePath() const {
+base::FilePath ProfileIOS::GetOffTheRecordStatePath() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsOffTheRecord()) {
     return state_path_;
   }
@@ -86,12 +90,13 @@ base::FilePath ChromeBrowserState::GetOffTheRecordStatePath() const {
   return state_path_.Append(FILE_PATH_LITERAL("OTR"));
 }
 
-base::FilePath ChromeBrowserState::GetStatePath() const {
+base::FilePath ProfileIOS::GetStatePath() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_path_;
 }
 
-net::URLRequestContextGetter* ChromeBrowserState::GetRequestContext() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+net::URLRequestContextGetter* ProfileIOS::GetRequestContext() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!request_context_getter_) {
     ProtocolHandlerMap protocol_handlers;
     protocol_handlers[kChromeUIScheme] =
@@ -102,7 +107,8 @@ net::URLRequestContextGetter* ChromeBrowserState::GetRequestContext() {
   return request_context_getter_.get();
 }
 
-void ChromeBrowserState::UpdateCorsExemptHeader(
+void ProfileIOS::UpdateCorsExemptHeader(
     network::mojom::NetworkContextParams* params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   variations::UpdateCorsExemptHeaderForVariations(params);
 }

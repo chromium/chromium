@@ -14,25 +14,30 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 
-import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.payments.AndroidPaymentAppFactory;
 
 import java.util.Map;
 
 /** Preference fragment to allow users to control use of the Android payment apps on device. */
-public class AndroidPaymentAppsFragment extends PreferenceFragmentCompat implements SettingsPage {
+@NullMarked
+public class AndroidPaymentAppsFragment extends ChromeBaseSettingsFragment
+        implements EmbeddableSettingsPage {
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.payment_apps_title));
 
         // Create blank preference screen.
@@ -46,7 +51,7 @@ public class AndroidPaymentAppsFragment extends PreferenceFragmentCompat impleme
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Disable animations of preference changes (crbug.com/986241).
@@ -54,8 +59,8 @@ public class AndroidPaymentAppsFragment extends PreferenceFragmentCompat impleme
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         rebuildPaymentAppsList();
     }
 
@@ -64,6 +69,7 @@ public class AndroidPaymentAppsFragment extends PreferenceFragmentCompat impleme
         getPreferenceScreen().setOrderingAsAdded(true);
 
         ServiceWorkerPaymentAppBridge.getServiceWorkerPaymentAppsInfo(
+                getProfile(),
                 new ServiceWorkerPaymentAppBridge.GetServiceWorkerPaymentAppsInfoCallback() {
                     @Override
                     public void onGetServiceWorkerPaymentAppsInfo(
@@ -104,5 +110,10 @@ public class AndroidPaymentAppsFragment extends PreferenceFragmentCompat impleme
 
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

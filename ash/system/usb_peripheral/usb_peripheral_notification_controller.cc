@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -37,6 +38,8 @@ const char kUsbPeripheralInvalidTBTCableNotificationId[] =
     "cros_usb_peripheral_invalid_tbt_cable_notification_id";
 const char kUsbPeripheralSpeedLimitingCableNotificationId[] =
     "cros_usb_peripheral_speed_limiting_cable_notification_id";
+const char kUsbPeripheralDeviceOrEndpointLimitNotificationId[] =
+    "cros_usb_peripheral_device_or_endpoint_limit_notification_id";
 const char kNotificationDisplayLandingPageUrl[] =
     "https://support.google.com/chromebook?p=cable_notification";
 const char kNotificationDeviceLandingPageUrl[] =
@@ -266,6 +269,37 @@ void UsbPeripheralNotificationController::OnSpeedLimitingCableWarning() {
                   kUsbPeripheralSpeedLimitingCableNotificationId,
                   kNotificationDeviceLandingPageUrl)),
           kSettingsIcon,
+          message_center::SystemNotificationWarningLevel::WARNING);
+
+  message_center_->AddNotification(std::move(notification));
+}
+
+// Notify the user that they have reached a USB device or endpoint limit.
+void UsbPeripheralNotificationController::OnUsbDeviceOrEndpointLimit() {
+  if (!ShouldDisplayNotification()) {
+    return;
+  }
+
+  message_center::RichNotificationData optional;
+  optional.pinned = false;
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotificationPtr(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kUsbPeripheralDeviceOrEndpointLimitNotificationId,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_LIMIT_REACHED_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_USB_NOTIFICATION_LIMIT_REACHED_BODY),
+          /*display_source=*/std::u16string(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kNotifierUsbPeripheral,
+              NotificationCatalogName::kUsbPeripheralDeviceOrEndpointLimit),
+          optional,
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              message_center::HandleNotificationClickDelegate::
+                  ButtonClickCallback(base::DoNothing())),
+          vector_icons::kUsbIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
 
   message_center_->AddNotification(std::move(notification));

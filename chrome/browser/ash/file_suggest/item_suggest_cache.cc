@@ -337,7 +337,7 @@ void ItemSuggestCache::MaybeUpdateCache() {
 }
 
 void ItemSuggestCache::UpdateCacheWithJsonForTest(
-    const std::string json_response) {
+    const std::string& json_response) {
   data_decoder::DataDecoder::ParseJsonIsolated(
       json_response, base::BindOnce(&ItemSuggestCache::OnJsonParsed,
                                     weak_factory_.GetWeakPtr()));
@@ -370,7 +370,7 @@ void ItemSuggestCache::OnTokenReceived(GoogleServiceAuthError error,
 }
 
 void ItemSuggestCache::OnSuggestionsReceived(
-    const std::unique_ptr<std::string> json_response) {
+    std::unique_ptr<std::string> json_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const int net_error = url_loader_->NetError();

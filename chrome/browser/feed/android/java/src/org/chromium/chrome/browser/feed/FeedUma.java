@@ -5,28 +5,12 @@
 package org.chromium.chrome.browser.feed;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 
 /** Records UMA stats for the actions that the user takes on the feed in the NTP. */
+@NullMarked
 public class FeedUma {
-    // Possible actions taken by the user to control the feed. These values are also defined in
-    // enums.xml as FeedControlsActions.
-    // WARNING: these values must stay in sync with enums.xml.
-    public static final int CONTROLS_ACTION_CLICKED_MY_ACTIVITY = 0;
-    public static final int CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS = 1;
-    public static final int CONTROLS_ACTION_CLICKED_LEARN_MORE = 2;
-    public static final int CONTROLS_ACTION_TOGGLED_FEED = 3;
-    public static final int CONTROLS_ACTION_CLICKED_FEED_HEADER_MENU = 4;
-    public static final int DEPRECATED_CONTROLS_ACTION_CLICKED_MANAGE_AUTOPLAY = 5;
-    public static final int CONTROLS_ACTION_CLICKED_MANAGE = 6;
-    public static final int NUM_CONTROLS_ACTIONS = 7;
-
-    public static void recordFeedControlsAction(int action) {
-        assert action >= 0;
-        assert action < NUM_CONTROLS_ACTIONS;
-        RecordHistogram.recordEnumeratedHistogram(
-                "ContentSuggestions.Feed.Controls.Actions", action, NUM_CONTROLS_ACTIONS);
-    }
-
     public static final String[] TOTAL_CARDS_HISTOGRAM_NAMES = {
         "ContentSuggestions.Feed.LoadMoreTrigger.TotalCards",
         "ContentSuggestions.Feed.WebFeed.LoadMoreTrigger.TotalCards",
@@ -40,6 +24,9 @@ public class FeedUma {
         "ContentSuggestions.Feed.SingleWebFeed.LoadMoreTrigger.OffsetFromEndOfStream",
         "ContentSuggestions.Feed.SupervisedFeed.LoadMoreTrigger.OffsetFromEndOfStream",
     };
+
+    private static final String HISTOGRAM_ARTICLES_LIST_VISIBLE =
+            "NewTabPage.ContentSuggestions.ArticlesListVisible";
 
     /**
      * Records the number of remaining cards (for the user to scroll through) at which the feed is
@@ -62,5 +49,28 @@ public class FeedUma {
                 TOTAL_CARDS_HISTOGRAM_NAMES[sectionType], totalCards);
         RecordHistogram.recordCount100Histogram(
                 OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES[sectionType], numCardsRemaining);
+    }
+
+    /**
+     * Records distinct metrics for each click on the section or button of the feed settings bottom
+     * sheet in the NTP customization.
+     *
+     * @param feedUserActionType The section or button got clicked in the Feed bottom sheet.
+     */
+    public static void recordFeedBottomSheetItemsClicked(
+            @FeedUserActionType int feedUserActionType) {
+        FeedServiceBridge.reportOtherUserAction(feedUserActionType);
+
+        if (feedUserActionType == FeedUserActionType.TAPPED_TURN_ON) {
+            recordArticlesListVisible(/* isArticlesListVisible= */ true);
+        } else if (feedUserActionType == FeedUserActionType.TAPPED_TURN_OFF) {
+            recordArticlesListVisible(/* isArticlesListVisible= */ false);
+        }
+    }
+
+    /** Records whether article suggestions are set visible by user. */
+    public static void recordArticlesListVisible(boolean isArticlesListVisible) {
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_ARTICLES_LIST_VISIBLE, isArticlesListVisible);
     }
 }

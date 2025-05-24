@@ -14,12 +14,12 @@ namespace blink {
 
 class CSSLengthPairInterpolationType : public CSSLengthListInterpolationType {
  public:
-  CSSLengthPairInterpolationType(PropertyHandle property)
+  explicit CSSLengthPairInterpolationType(PropertyHandle property)
       : CSSLengthListInterpolationType(property) {}
 
  private:
   InterpolationValue MaybeConvertValue(const CSSValue& value,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final {
     const auto* pair = DynamicTo<CSSValuePair>(value);
     if (!pair)

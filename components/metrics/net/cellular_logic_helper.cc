@@ -7,7 +7,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_features.h"
 #include "net/base/network_change_notifier.h"
 

@@ -31,6 +31,9 @@ class TaskFetcher;
 struct TaskId {
   bool empty() const { return !pending && (id.empty() || list_id.empty()); }
 
+  // Returns true if the task id is suitable for retrieval from the Tasks API.
+  bool IsValid() const;
+
   std::strong_ordering operator<=>(const TaskId& other) const;
   bool operator==(const TaskId& other) const = default;
   bool operator<(const TaskId& other) const = default;

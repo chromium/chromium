@@ -42,7 +42,7 @@ class ScopedDisableLoggingForTesting {
 // directly.
 class ScopedLogMessage {
  public:
-  ScopedLogMessage(const std::string_view file,
+  ScopedLogMessage(std::string_view file,
                    int line,
                    logging::LogSeverity severity);
 

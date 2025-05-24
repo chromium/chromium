@@ -13,6 +13,8 @@
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_STUB_AUTOGEN_H_
 
 void DissociateMailbox(GLuint texture_id, GLuint texture_generation) override;
+void DissociateMailboxForBuffer(GLuint buffer_id,
+                                GLuint buffer_generation) override;
 void DissociateMailboxForPresent(GLuint device_id,
                                  GLuint device_generation,
                                  GLuint texture_id,

@@ -22,7 +22,6 @@ class CompositorTimingHistory;
 }  // namespace perfetto
 
 namespace cc {
-class RenderingStatsInstrumentation;
 
 class CC_EXPORT CompositorTimingHistory {
  public:
@@ -33,9 +32,7 @@ class CC_EXPORT CompositorTimingHistory {
   };
   class UMAReporter;
 
-  CompositorTimingHistory(
-      UMACategory uma_category,
-      RenderingStatsInstrumentation* rendering_stats_instrumentation);
+  explicit CompositorTimingHistory(UMACategory uma_category);
   CompositorTimingHistory(const CompositorTimingHistory&) = delete;
   virtual ~CompositorTimingHistory();
 
@@ -134,10 +131,6 @@ class CC_EXPORT CompositorTimingHistory {
   bool pending_tree_is_impl_side_;
 
   const UMACategory uma_category_;
-
-  // Owned by LayerTreeHost and is destroyed when LayerTreeHost is destroyed.
-  raw_ptr<RenderingStatsInstrumentation, DanglingUntriaged>
-      rendering_stats_instrumentation_;
 };
 
 }  // namespace cc

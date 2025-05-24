@@ -50,8 +50,9 @@ void ThumbnailSchedulerImpl::SetTabCapturePriority(
     TabCapturer* tab,
     TabCapturePriority priority) {
   TabNode* const node = GetTabNode(tab);
-  if (node->data.priority == priority)
+  if (node->data.priority == priority) {
     return;
+  }
 
   const TabSchedulingData old_data = node->data;
   node->data.priority = priority;
@@ -68,13 +69,13 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
   // First, move the tab node to the correct list and update the
   // capturing counts.
 
-  if (tab_node->next())
+  if (tab_node->next()) {
     tab_node->RemoveFromList();
+  }
   if (tab_node->is_capturing) {
     switch (old_data.priority) {
       case TabCapturePriority::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case TabCapturePriority::kLow:
         lo_prio_capture_count_ -= 1;
         break;

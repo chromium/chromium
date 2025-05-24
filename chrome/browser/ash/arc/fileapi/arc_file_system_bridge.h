@@ -12,8 +12,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/mojom/file_system.mojom-forward.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +20,8 @@
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_handler.h"
 #include "chrome/browser/ash/arc/fileapi/file_stream_forwarder.h"
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/watcher_manager.h"
@@ -53,7 +53,7 @@ class ArcFileSystemBridge
 
     // Propagates `mojom::FileSystemHost::OnMediaStoreUriAdded()` events from
     // ARC to observers. See payload details in mojo interface documentation:
-    // /ash/components/arc/mojom/file_system.mojom.
+    // /chromeos/ash/experiences/arc/mojom/file_system.mojom.
     virtual void OnMediaStoreUriAdded(
         const GURL& uri,
         const mojom::MediaStoreMetadata& metadata) {}
@@ -61,7 +61,7 @@ class ArcFileSystemBridge
     virtual void OnRootsChanged() {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   ArcFileSystemBridge(content::BrowserContext* context,

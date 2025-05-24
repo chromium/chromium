@@ -12,11 +12,14 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import type {PrefsState} from '../common/types.js';
 
-import {getVMNameForGuestOsType, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsType} from './guest_os_browser_proxy.js';
+import type {GuestOsBrowserProxy, GuestOsType} from './guest_os_browser_proxy.js';
+import {getVMNameForGuestOsType, GuestOsBrowserProxyImpl} from './guest_os_browser_proxy.js';
 import {getTemplate} from './guest_os_shared_paths.html.js';
 
 interface PathObject {
@@ -34,7 +37,6 @@ export interface SettingsGuestOsSharedPathsElement {
 
 const SettingsGuestOsSharedPathsElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class SettingsGuestOsSharedPathsElement extends
     SettingsGuestOsSharedPathsElementBase {
   static get is() {
@@ -82,7 +84,7 @@ export class SettingsGuestOsSharedPathsElement extends
     ];
   }
 
-  prefs: {[key: string]: any};
+  prefs: PrefsState;
   guestOsType: GuestOsType;
   private browserProxy_: GuestOsBrowserProxy;
   private sharedPaths_: PathObject[];

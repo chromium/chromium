@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
-import './strings.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import '/strings.m.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -57,10 +57,10 @@ export class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
     };
   }
 
-  private url_: string =
+  private accessor url_: string =
       new URLSearchParams(window.location.search).get('url') || '';
-  private error_: string = '';
-  private secondCounter_: number = 0;
+  private accessor error_: string = '';
+  private accessor secondCounter_: number = 0;
 
   override connectedCallback() {
     super.connectedCallback();

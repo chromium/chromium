@@ -6,15 +6,17 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/foundation_util.h"
+#include "base/containers/to_vector.h"
 #include "ui/gfx/image/image.h"
 
 namespace gfx {
 
-bool JPEG1xEncodedDataFromImage(const Image& image,
-                                int quality,
-                                std::vector<unsigned char>* dst) {
+std::optional<std::vector<uint8_t>> JPEG1xEncodedDataFromImage(
+    const Image& image,
+    int quality) {
   if (!image.HasRepresentation(gfx::Image::kImageRepCocoa)) {
-    return JPEG1xEncodedDataFromSkiaRepresentation(image, quality, dst);
+    return JPEG1xEncodedDataFromSkiaRepresentation(image, quality);
   }
 
   NSImage* nsImage = image.ToNSImage();
@@ -29,12 +31,10 @@ bool JPEG1xEncodedDataFromImage(const Image& image,
                                    properties:options];
 
   if (data.length == 0) {
-    return false;
+    return std::nullopt;
   }
 
-  dst->resize(data.length);
-  [data getBytes:&dst->at(0) length:data.length];
-  return true;
+  return base::ToVector(base::apple::NSDataToSpan(data));
 }
 
 }  // end namespace gfx

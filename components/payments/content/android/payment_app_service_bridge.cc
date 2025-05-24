@@ -287,8 +287,7 @@ bool PaymentAppServiceBridge::IsOffTheRecord() const {
 base::WeakPtr<ContentPaymentRequestDelegate>
 PaymentAppServiceBridge::GetPaymentRequestDelegate() const {
   // PaymentAppService flow should have short-circuited before this point.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void PaymentAppServiceBridge::ShowProcessingSpinner() {

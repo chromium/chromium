@@ -222,7 +222,7 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
              proto::CustomInput::PRICE_TRACKING_HINTS) {
     feature_processor_state.SetError(
         stats::FeatureProcessingError::kCustomInputError);
-    NOTREACHED_IN_MIGRATION() << "InputDelegate is not found";
+    NOTREACHED() << "InputDelegate is not found";
   } else if (custom_input.fill_policy() == proto::CustomInput::FILL_RANDOM) {
     if (!AddRandom(custom_input, tensor_result)) {
       feature_processor_state.SetError(
@@ -232,7 +232,7 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
              proto::CustomInput::FILL_FROM_SHOPPING_SERVICE) {
     feature_processor_state.SetError(
         stats::FeatureProcessingError::kCustomInputError);
-    NOTREACHED_IN_MIGRATION() << "InputDelegate is not found";
+    NOTREACHED() << "InputDelegate is not found";
   }
 
   return tensor_result;
@@ -247,11 +247,8 @@ bool CustomInputProcessor::AddFromInputContext(
   }
   scoped_refptr<InputContext> input_context =
       feature_processor_state.input_context();
-  std::string input_name = custom_input.name();
-  auto custom_input_iter = custom_input.additional_args().find("name");
-  if (custom_input_iter != custom_input.additional_args().end()) {
-    input_name = custom_input_iter->second;
-  }
+  std::string input_name =
+      metadata_utils::GetInputKeyForInputContextCustomInput(custom_input);
 
   std::optional<processing::ProcessedValue> input_context_value;
   if (input_context) {

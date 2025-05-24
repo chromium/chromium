@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "sql/database.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -49,7 +50,7 @@ class StatisticsTableTest : public testing::Test {
     base::FilePath file = temp_dir_.GetPath().AppendASCII("TestDatabase");
     db_ = std::make_unique<StatisticsTable>();
     connection_ = std::make_unique<sql::Database>(
-        sql::DatabaseOptions{.page_size = 4096, .cache_size = 500});
+        sql::test::kTestTag);
     ASSERT_TRUE(connection_->Open(file));
     db_->Init(connection_.get());
     ASSERT_TRUE(db_->CreateTableIfNecessary());

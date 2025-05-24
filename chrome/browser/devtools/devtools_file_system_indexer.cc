@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <set>
@@ -22,7 +23,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -221,8 +221,8 @@ vector<FilePath> Index::Search(const string& query) {
   for (; it != trigrams.end(); ++it) {
     Trigram trigram = *it;
     if (first) {
-      base::ranges::copy(index_[trigram],
-                         std::inserter(file_ids, file_ids.begin()));
+      std::ranges::copy(index_[trigram],
+                        std::inserter(file_ids, file_ids.begin()));
       first = false;
       continue;
     }
@@ -283,7 +283,8 @@ DevToolsFileSystemIndexer::FileSystemIndexingJob::FileSystemIndexingJob(
   pending_folders_.push_back(file_system_path);
 }
 
-DevToolsFileSystemIndexer::FileSystemIndexingJob::~FileSystemIndexingJob() {}
+DevToolsFileSystemIndexer::FileSystemIndexingJob::~FileSystemIndexingJob() =
+    default;
 
 void DevToolsFileSystemIndexer::FileSystemIndexingJob::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

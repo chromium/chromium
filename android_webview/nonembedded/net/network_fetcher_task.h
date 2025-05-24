@@ -71,7 +71,7 @@ class NetworkFetcherTask {
   void InvokeDownloadToFileCompleteCallback(int network_error,
                                             int64_t content_size);
   void InvokePostRequestCompleteCallback(
-      std::unique_ptr<std::string> response_body,
+      std::optional<std::string> response_body,
       int net_error,
       const std::string& header_etag,
       const std::string& header_x_cup_server_proof,

@@ -56,7 +56,7 @@ CSSValuePool::CSSValuePool()
           MakeGarbageCollected<cssvalue::CSSColor>(Color::kTransparent)),
       color_white_(MakeGarbageCollected<cssvalue::CSSColor>(Color::kWhite)),
       color_black_(MakeGarbageCollected<cssvalue::CSSColor>(Color::kBlack)) {
-  identifier_value_cache_.resize(numCSSValueKeywords);
+  identifier_value_cache_.resize(kNumCSSValueKeywords);
   pixel_value_cache_.resize(kMaximumCacheableIntegerValue + 1);
   percent_value_cache_.resize(kMaximumCacheableIntegerValue + 1);
   number_value_cache_.resize(kMaximumCacheableIntegerValue + 1);

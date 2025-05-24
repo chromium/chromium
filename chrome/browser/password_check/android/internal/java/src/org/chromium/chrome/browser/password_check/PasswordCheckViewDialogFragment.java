@@ -18,12 +18,15 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
 
 /** Shows the dialog that allows the user to see the compromised credential. */
+@NullMarked
 public class PasswordCheckViewDialogFragment extends PasswordCheckDialogFragment {
-    private CompromisedCredential mCredential;
+    private final CompromisedCredential mCredential;
 
     PasswordCheckViewDialogFragment(Handler handler, CompromisedCredential credential) {
         super(handler);
@@ -32,7 +35,7 @@ public class PasswordCheckViewDialogFragment extends PasswordCheckDialogFragment
 
     /** Opens the dialog with the compromised credential */
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         getActivity().getWindow().setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE);
         View dialogContent =
                 getActivity()

@@ -41,4 +41,8 @@ void WebXrBrowserTestBase::EndSessionOrFail() {
   EndSessionOrFail(GetCurrentWebContents());
 }
 
+void WebXrBrowserTestBase::WaitForSessionEndOrFail() {
+  WaitForSessionEndOrFail(GetCurrentWebContents());
+}
+
 }  // namespace vr

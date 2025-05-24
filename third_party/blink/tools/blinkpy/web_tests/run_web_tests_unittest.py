@@ -32,11 +32,12 @@ import json
 import re
 import six
 import unittest
+from io import StringIO
 from unittest import mock
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
+from blinkpy.common.path_finder import PathFinder, WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.system.path import abspath_to_uri
 from blinkpy.common.system.system_host import SystemHost
 
@@ -47,17 +48,16 @@ from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port import test
 from blinkpy.web_tests.views.printing import Printer
 
-from six import StringIO
 
-
-def parse_args(extra_args=None, tests_included=False):
+def parse_args(extra_args=None, tests_included=False, show_results=False):
     extra_args = extra_args or []
     args = []
     if not '--platform' in extra_args:
         args.extend(['--platform', 'test'])
-
     if not {'--jobs', '-j', '--child-processes'}.intersection(set(args)):
         args.extend(['--jobs', '1'])
+    if not show_results:
+        args.append('--no-show-results')
     args.extend(extra_args)
     if not tests_included:
         # We use the glob to test that globbing works.
@@ -88,11 +88,22 @@ def passing_run(extra_args=None,
 def logging_run(extra_args=None,
                 port_obj=None,
                 tests_included=False,
+                show_results=False,
                 host=None,
                 shared_port=True):
-    options, parsed_args = parse_args(
-        extra_args=extra_args, tests_included=tests_included)
+    options, parsed_args = parse_args(extra_args=extra_args,
+                                      tests_included=tests_included,
+                                      show_results=show_results)
     host = host or MockHost()
+    if show_results:
+        finder = PathFinder(host.filesystem)
+        host.filesystem.write_text_file(
+            finder.path_from_blink_tools('blinkpy', 'web_tests',
+                                         'results.html'),
+            '<h1>Test run summary</h1> ...')
+        host.filesystem.write_text_file(
+            finder.path_from_blink_tools('blinkpy', 'web_tests',
+                                         'results.html.version'), '1.0')
     if not port_obj:
         port_obj = host.port_factory.get(
             port_name=options.platform, options=options)
@@ -1443,6 +1454,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
             _, _, user = logging_run(
                 ['--results-directory=' + str(tmpdir), '--order', 'natural'],
                 tests_included=True,
+                show_results=True,
                 host=host)
             self.assertEqual(user.opened_urls, [
                 abspath_to_uri(
@@ -1456,7 +1468,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         # look for what the output results url was.
 
         # This is the default location.
-        _, _, user = logging_run(tests_included=True)
+        _, _, user = logging_run(tests_included=True, show_results=True)
         self.assertEqual(user.opened_urls, [
             abspath_to_uri(MockHost().platform,
                            '/tmp/layout-test-results/results.html')
@@ -1470,6 +1482,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         host.filesystem.chdir('/tmp/cwd')
         _, _, user = logging_run(['--results-directory=foo'],
                                  tests_included=True,
+                                 show_results=True,
                                  host=host)
         self.assertEqual(user.opened_urls, [
             abspath_to_uri(host.platform,

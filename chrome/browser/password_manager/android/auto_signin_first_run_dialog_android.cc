@@ -42,7 +42,7 @@ AutoSigninFirstRunDialogAndroid::AutoSigninFirstRunDialogAndroid(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents), web_contents_(web_contents) {}
 
-AutoSigninFirstRunDialogAndroid::~AutoSigninFirstRunDialogAndroid() {}
+AutoSigninFirstRunDialogAndroid::~AutoSigninFirstRunDialogAndroid() = default;
 
 void AutoSigninFirstRunDialogAndroid::ShowDialog() {
   gfx::NativeWindow native_window = web_contents_->GetTopLevelNativeWindow();
@@ -94,6 +94,9 @@ void AutoSigninFirstRunDialogAndroid::OnTurnOffClicked(JNIEnv* env,
   DCHECK(!profile->IsOffTheRecord());
   password_manager::PasswordManagerSettingsService* service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile);
+  // The service can be null if the password manger is not available, but there
+  // shouldn't be any credential to auto-sign in with in that case.
+  CHECK(service);
   service->TurnOffAutoSignIn();
   MarkAutoSignInFirstRunExperienceShown(web_contents_);
 }

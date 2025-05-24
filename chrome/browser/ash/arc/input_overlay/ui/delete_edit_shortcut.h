@@ -62,7 +62,6 @@ class DeleteEditShortcut : public views::BubbleDialogDelegateView {
 
   // views::View:
   void OnMouseExited(const ui::MouseEvent& event) override;
-  void OnThemeChanged() override;
 
   // DisplayOverlayController owns this class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> controller_ = nullptr;

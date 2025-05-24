@@ -45,7 +45,9 @@ class HostWindowProxy::Core : public base::RefCountedThreadSafe<Core>,
 
   // ClientSessionControl interface.
   const std::string& client_jid() const override;
-  void DisconnectSession(protocol::ErrorCode error) override;
+  void DisconnectSession(ErrorCode error,
+                         std::string_view error_details,
+                         const SourceLocation& error_location) override;
   void OnLocalKeyPressed(uint32_t usb_keycode) override;
   void OnLocalPointerMoved(const webrtc::DesktopVector& position,
                            ui::EventType type) override;
@@ -151,15 +153,20 @@ const std::string& HostWindowProxy::Core::client_jid() const {
   return client_jid_;
 }
 
-void HostWindowProxy::Core::DisconnectSession(protocol::ErrorCode error) {
+void HostWindowProxy::Core::DisconnectSession(
+    ErrorCode error,
+    std::string_view error_details,
+    const SourceLocation& error_location) {
   if (!caller_task_runner_->BelongsToCurrentThread()) {
     caller_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Core::DisconnectSession, this, error));
+        FROM_HERE, base::BindOnce(&Core::DisconnectSession, this, error,
+                                  std::string(error_details), error_location));
     return;
   }
 
   if (client_session_control_.get()) {
-    client_session_control_->DisconnectSession(error);
+    client_session_control_->DisconnectSession(error, error_details,
+                                               error_location);
   }
 }
 

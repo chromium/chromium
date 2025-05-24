@@ -15,7 +15,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
@@ -79,7 +78,6 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     private final Set<String> mPhoneNumbers;
     private final Set<String> mEmailAddresses;
     @Nullable private PayerErrors mPayerErrors;
-    @Nullable private EditorFieldValidator mEmailValidator;
     private boolean mContactNew;
     private AutofillContact mContact;
     private Optional<PropertyModel> mNameField;
@@ -199,20 +197,21 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     }
 
     /**
-     * Allows calling |edit| with a single callback used for both 'done' and 'cancel'.
-     * @see #edit(AutofillContact, Callback, Callback)
+     * Allows calling |showEditPrompt| with a single callback used for both 'done' and 'cancel'.
+     *
+     * @see #showEditPrompt(AutofillContact, Callback, Callback)
      */
-    public void edit(
+    public void showEditPrompt(
             @Nullable final AutofillContact toEdit, final Callback<AutofillContact> callback) {
-        edit(toEdit, callback, callback);
+        showEditPrompt(toEdit, callback, callback);
     }
 
     @Override
-    public void edit(
+    public void showEditPrompt(
             @Nullable final AutofillContact toEdit,
             final Callback<AutofillContact> doneCallback,
             final Callback<AutofillContact> cancelCallback) {
-        super.edit(toEdit, doneCallback, cancelCallback);
+        super.showEditPrompt(toEdit, doneCallback, cancelCallback);
         mDoneCallback = doneCallback;
         mCancelCallback = cancelCallback;
 
@@ -309,7 +308,6 @@ public class ContactEditor extends EditorBase<AutofillContact> {
         mEditorModel =
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(EDITOR_TITLE, editorTitle)
-                        .with(SHOW_REQUIRED_INDICATOR, true)
                         .with(EDITOR_FIELDS, editorFields)
                         .with(DONE_RUNNABLE, this::onDone)
                         .with(CANCEL_RUNNABLE, this::onCancel)

@@ -9,10 +9,13 @@ import android.media.MediaCodecInfo.CodecProfileLevel;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @JNINamespace("media")
+@NullMarked
 class CodecProfileLevelList {
     private static final String TAG = "CodecProfileLevelList";
 
@@ -211,6 +214,8 @@ class CodecProfileLevelList {
                         return 51;
                     case CodecProfileLevel.AVCLevel52:
                         return 52;
+                    case CodecProfileLevel.AVCLevel6:
+                        return 60;
                     case CodecProfileLevel.AVCLevel61:
                         return 61;
                     case CodecProfileLevel.AVCLevel62:

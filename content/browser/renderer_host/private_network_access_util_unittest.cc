@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -89,7 +91,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
       },
       {
           {kNonSecure, AddressSpace::kPublic, RequestContext::kSubresource},
-          Policy::kBlock,
+          Policy::kWarn,
       },
       {
           {kNonSecure, AddressSpace::kPrivate, RequestContext::kSubresource},
@@ -97,7 +99,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
       },
       {
           {kNonSecure, AddressSpace::kLocal, RequestContext::kSubresource},
-          Policy::kBlock,
+          Policy::kWarn,
       },
       {
           {kSecure, AddressSpace::kUnknown, RequestContext::kSubresource},
@@ -279,9 +281,9 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyWorkers) {
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
   expected[{kNonSecure, AddressSpace::kPublic, RequestContext::kWorker}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kLocal, RequestContext::kWorker}] =
-      Policy::kBlock;
+      Policy::kWarn;
 
   TestPolicyMap(expected);
 }
@@ -298,9 +300,9 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyWorkersWithPreflights) {
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
 
   expected[{kNonSecure, AddressSpace::kPublic, RequestContext::kWorker}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kLocal, RequestContext::kWorker}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kSecure, AddressSpace::kPublic, RequestContext::kWorker}] =
       Policy::kPreflightBlock;
   expected[{kSecure, AddressSpace::kPrivate, RequestContext::kWorker}] =
@@ -397,11 +399,11 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframes) {
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
   expected[{kNonSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =
       Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kLocal, RequestContext::kNavigation}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
       Policy::kPreflightWarn;
   expected[{kSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =
@@ -424,11 +426,11 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframesWithPreflights) {
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
 
   expected[{kNonSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =
       Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kLocal, RequestContext::kNavigation}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
       Policy::kPreflightBlock;
   expected[{kSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =
@@ -444,6 +446,32 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframesWithPreflights) {
   expected[{kSecure, AddressSpace::kLocal, RequestContext::kSubresource}] =
       Policy::kPreflightBlock;
 
+  TestPolicyMap(expected);
+}
+
+TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccess) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["LocalNetworkAccessChecksWarn"] = "false";
+  feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kLocalNetworkAccessChecks, params);
+
+  std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
+  for (auto& entry : expected) {
+    entry.second = entry.first.is_web_secure_context ? Policy::kPermissionBlock
+                                                     : Policy::kBlock;
+  }
+  TestPolicyMap(expected);
+}
+
+TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccessWarn) {
+  base::test::ScopedFeatureList feature_list(
+      network::features::kLocalNetworkAccessChecks);
+
+  std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
+  for (auto& entry : expected) {
+    entry.second = Policy::kPermissionWarn;
+  }
   TestPolicyMap(expected);
 }
 

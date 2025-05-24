@@ -57,6 +57,7 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   // leaving unclosed layer content unflushed, available to be closed and
   // flushed later.
   cc::PaintRecord ReleaseMainRecording();
+  cc::PaintRecord CopyMainRecording();
 
   // Drop all the draw ops recorded in the current layer level. This is used
   // when we are about to draw over the whole canvas or layer, masking away all

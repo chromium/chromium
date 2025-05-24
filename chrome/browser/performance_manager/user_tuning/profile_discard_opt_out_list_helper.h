@@ -15,12 +15,12 @@ class Profile;
 namespace performance_manager::user_tuning {
 
 // This class observes changes to each Profile's Discard Opt Out List
-// preference, and updates the PageDiscardingHelper accordingly.
+// preference, and updates the DiscardEligibilityPolicy accordingly.
 class ProfileDiscardOptOutListHelper {
  public:
   // Subclasses of this `Delegate` can be used in tests to observe the effects
   // of `ProfileDiscardOptOutListHelper` without instantiating a
-  // `PageDiscardingHelper`.
+  // `DiscardEligibilityPolicy`.
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -30,7 +30,7 @@ class ProfileDiscardOptOutListHelper {
   };
 
   // If `delegate` is null, a default implementation that sets patterns on the
-  // `PageDiscardingHelper` instance is used.
+  // `DiscardEligibilityPolicy` instance is used.
   explicit ProfileDiscardOptOutListHelper(
       std::unique_ptr<Delegate> delegate = nullptr);
   ~ProfileDiscardOptOutListHelper();

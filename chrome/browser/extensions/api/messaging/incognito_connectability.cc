@@ -55,8 +55,7 @@ IncognitoConnectability::IncognitoConnectability(
   CHECK(context->IsOffTheRecord());
 }
 
-IncognitoConnectability::~IncognitoConnectability() {
-}
+IncognitoConnectability::~IncognitoConnectability() = default;
 
 // static
 IncognitoConnectability* IncognitoConnectability::Get(

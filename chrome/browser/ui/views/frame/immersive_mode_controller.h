@@ -14,7 +14,7 @@ class BrowserView;
 namespace gfx {
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace views {
 class Widget;
@@ -25,10 +25,10 @@ class Widget;
 // See ImmersiveModeController::GetRevealedLock for details.
 class ImmersiveRevealedLock {
  public:
-  virtual ~ImmersiveRevealedLock() {}
+  virtual ~ImmersiveRevealedLock() = default;
 
  protected:
-  ImmersiveRevealedLock() {}
+  ImmersiveRevealedLock() = default;
 };
 
 // Controller for an "immersive mode" similar to MacOS presentation mode where
@@ -38,10 +38,7 @@ class ImmersiveRevealedLock {
 // Currently, immersive mode is only available for Chrome OS and macOS.
 class ImmersiveModeController {
  public:
-  enum AnimateReveal {
-    ANIMATE_REVEAL_YES,
-    ANIMATE_REVEAL_NO
-  };
+  enum AnimateReveal { ANIMATE_REVEAL_YES, ANIMATE_REVEAL_NO };
 
   class Observer {
    public:
@@ -61,7 +58,7 @@ class ImmersiveModeController {
     virtual void OnImmersiveFullscreenExited() {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   ImmersiveModeController();

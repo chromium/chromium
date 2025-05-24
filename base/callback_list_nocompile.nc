@@ -17,8 +17,8 @@ namespace base {
 
 class Foo {
  public:
-  Foo() {}
-  ~Foo() {}
+  Foo() = default;
+  ~Foo() = default;
 };
 
 class FooListener {

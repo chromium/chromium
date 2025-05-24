@@ -33,13 +33,13 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
  private:
   // HoldingSpaceItemView:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  std::u16string GetTooltipText(const gfx::Point& point) const override;
   void OnHoldingSpaceItemUpdated(
       const HoldingSpaceItem* item,
       const HoldingSpaceItemUpdatedFields& updated_fields) override;
   void OnThemeChanged() override;
 
   void UpdateImage();
+  void UpdateTooltipText();
 
   // Owned by view hierarchy.
   raw_ptr<RoundedImageView> image_ = nullptr;

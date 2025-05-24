@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android, "This is desktop code for fedcm.")
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "account_selection_view_test_base.cc",
+    "account_selection_view_test_base.h",
+    "fake_delegate.cc",
+    "fake_delegate.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui",
+    "//content/public/browser",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+  deps = [
+    "//ui/events:test_support",
+    "//ui/views:test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "fedcm_interactive_uitest.cc" ]
+  deps = [
+    ":test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/base:test_support",
+  ]
+}

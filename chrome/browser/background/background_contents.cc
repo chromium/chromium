@@ -43,8 +43,9 @@ BackgroundContents::BackgroundContents(
       site_instance->GetBrowserContext());
 
   WebContents::CreateParams create_params(profile_, std::move(site_instance));
+  create_params.is_never_composited = true;
   create_params.opener_render_process_id =
-      opener ? opener->GetProcess()->GetID() : MSG_ROUTING_NONE;
+      opener ? opener->GetProcess()->GetDeprecatedID() : MSG_ROUTING_NONE;
   create_params.opener_render_frame_id =
       opener ? opener->GetRoutingID() : MSG_ROUTING_NONE;
 
@@ -119,12 +120,6 @@ WebContents* BackgroundContents::AddNewContents(
   delegate_->AddWebContents(std::move(new_contents), target_url, disposition,
                             window_features, was_blocked);
   return nullptr;
-}
-
-bool BackgroundContents::IsNeverComposited(content::WebContents* web_contents) {
-  DCHECK_EQ(extensions::mojom::ViewType::kBackgroundContents,
-            extensions::GetViewType(web_contents));
-  return true;
 }
 
 void BackgroundContents::PrimaryMainFrameRenderProcessGone(

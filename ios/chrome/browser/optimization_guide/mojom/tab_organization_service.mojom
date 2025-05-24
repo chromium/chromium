@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ai.mojom;
+
+import "mojo/public/mojom/base/proto_wrapper.mojom";
+
+// Used to bridge a mojo service and execute query requests related to the tab
+// organization feature.
+interface TabOrganizationService {
+  // Used to execute grouping tabs with a specific tab organization model
+  // request.
+  ExecuteGroupTabs(mojo_base.mojom.ProtoWrapper request) => (string output);
+};

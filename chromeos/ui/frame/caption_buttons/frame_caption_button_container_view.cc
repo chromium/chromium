@@ -187,8 +187,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_COUNT:
         break;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   bool IsEnabled(views::CaptionButtonIcon type) const override {
     if (type == views::CAPTION_BUTTON_ICON_CLOSE) {
@@ -254,7 +253,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
                           base::Unretained(this)),
       views::CAPTION_BUTTON_ICON_MENU, HTMENU);
   menu_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MENU));
-  AddChildView(menu_button_.get());
+  AddChildViewRaw(menu_button_.get());
 
   minimize_button_ = new views::FrameCaptionButton(
       base::BindRepeating(
@@ -263,7 +262,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       views::CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
   minimize_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
-  AddChildView(minimize_button_.get());
+  AddChildViewRaw(minimize_button_.get());
 
   float_button_ = AddChildView(std::make_unique<views::FrameCaptionButton>(
       base::BindRepeating(&FrameCaptionButtonContainerView::FloatButtonPressed,
@@ -278,7 +277,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       this);
   size_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE));
-  AddChildView(size_button_.get());
+  AddChildViewRaw(size_button_.get());
 
   close_button_ = new views::FrameCaptionButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::CloseButtonPressed,
@@ -288,7 +287,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       is_close_button_enabled
           ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE)
           : l10n_util::GetStringUTF16(IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN));
-  AddChildView(close_button_.get());
+  AddChildViewRaw(close_button_.get());
 
   SetButtonImage(views::CAPTION_BUTTON_ICON_FLOAT,
                  chromeos::kWindowControlFloatIcon);

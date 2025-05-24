@@ -2,9 +2,11 @@ include_rules = [
   "+components/bookmarks/common/android/bookmarks_jni_headers",
   "+components/favicon_base",
   "+components/keyed_service",
+  "+components/omnibox/common",
   "+components/pref_registry",
   "+components/prefs",
   "+components/query_parser",
+  "+components/signin/public/base",
   "+components/strings/grit/components_strings.h",
   # TODO(crbug.com/40943550): Remove this dependency once the feature toggle is
   # cleaned up.

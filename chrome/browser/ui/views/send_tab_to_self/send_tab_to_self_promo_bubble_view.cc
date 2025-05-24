@@ -81,8 +81,9 @@ SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
 }
 
 SendTabToSelfPromoBubbleView::~SendTabToSelfPromoBubbleView() {
-  if (controller_)
+  if (controller_) {
     controller_->OnBubbleClosed();
+  }
 }
 
 void SendTabToSelfPromoBubbleView::Hide() {
@@ -90,8 +91,9 @@ void SendTabToSelfPromoBubbleView::Hide() {
 }
 
 void SendTabToSelfPromoBubbleView::AddedToWidget() {
-  if (!controller_->show_back_button())
+  if (!controller_->show_back_button()) {
     return;
+  }
 
   // Adding a title view will replace the default title.
   GetBubbleFrameView()->SetTitleView(
@@ -106,17 +108,17 @@ void SendTabToSelfPromoBubbleView::OnSignInButtonClicked() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   chrome::FindBrowserWithTab(web_contents())
       ->signin_view_controller()
-      ->ShowDiceAddAccountTab(
-          signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO,
-          /*email_hint=*/std::string());
+      ->ShowDiceAddAccountTab(signin_metrics::AccessPoint::kSendTabToSelfPromo,
+                              /*email_hint=*/std::string());
 #else
   NOTREACHED() << "The promo bubble shouldn't show if dice-support is disabled";
 #endif
 }
 
 void SendTabToSelfPromoBubbleView::OnBackButtonClicked() {
-  if (controller_)
+  if (controller_) {
     controller_->OnBackButtonPressed();
+  }
   CloseBubble();
 }
 

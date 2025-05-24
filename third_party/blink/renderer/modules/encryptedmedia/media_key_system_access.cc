@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_session.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_keys.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
@@ -43,7 +44,7 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
   NewCdmResultPromise(
       ScriptPromiseResolver<MediaKeys>* resolver,
       const MediaKeysConfig& config,
-      const WebVector<WebEncryptedMediaSessionType>& supported_session_types)
+      const std::vector<WebEncryptedMediaSessionType>& supported_session_types)
       : ContentDecryptionModuleResultPromise(resolver,
                                              config,
                                              EmeApiType::kCreateMediaKeys),
@@ -74,13 +75,14 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
 
  private:
   MediaKeysConfig config_;
-  WebVector<WebEncryptedMediaSessionType> supported_session_types_;
+  std::vector<WebEncryptedMediaSessionType> supported_session_types_
+      ALLOW_DISCOURAGED_TYPE("Matches WebMediaKeySystemConfiguration");
 };
 
 // These methods are the inverses of those with the same names in
 // NavigatorRequestMediaKeySystemAccess.
 Vector<String> ConvertInitDataTypes(
-    const WebVector<media::EmeInitDataType>& init_data_types) {
+    const std::vector<media::EmeInitDataType>& init_data_types) {
   Vector<String> result(base::checked_cast<wtf_size_t>(init_data_types.size()));
   for (wtf_size_t i = 0; i < result.size(); i++)
     result[i] =
@@ -89,7 +91,7 @@ Vector<String> ConvertInitDataTypes(
 }
 
 HeapVector<Member<MediaKeySystemMediaCapability>> ConvertCapabilities(
-    const WebVector<WebMediaKeySystemMediaCapability>& capabilities) {
+    const std::vector<WebMediaKeySystemMediaCapability>& capabilities) {
   HeapVector<Member<MediaKeySystemMediaCapability>> result(
       base::checked_cast<wtf_size_t>(capabilities.size()));
   for (wtf_size_t i = 0; i < result.size(); i++) {
@@ -117,9 +119,8 @@ HeapVector<Member<MediaKeySystemMediaCapability>> ConvertCapabilities(
         capability->setEncryptionScheme("cbcs-1-9");
         break;
       case WebMediaKeySystemMediaCapability::EncryptionScheme::kUnrecognized:
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Unrecognized encryption scheme should never be returned.";
-        break;
     }
 
     result[i] = capability;
@@ -128,7 +129,7 @@ HeapVector<Member<MediaKeySystemMediaCapability>> ConvertCapabilities(
 }
 
 Vector<String> ConvertSessionTypes(
-    const WebVector<WebEncryptedMediaSessionType>& session_types) {
+    const std::vector<WebEncryptedMediaSessionType>& session_types) {
   Vector<String> result(base::checked_cast<wtf_size_t>(session_types.size()));
   for (wtf_size_t i = 0; i < result.size(); i++)
     result[i] = EncryptedMediaUtils::ConvertFromSessionType(session_types[i]);
@@ -190,10 +191,10 @@ MediaKeySystemConfiguration* MediaKeySystemAccess::getConfiguration() const {
   // |distinctiveIdentifier|, |persistentState|, and |sessionTypes| are always
   // set by requestMediaKeySystemAccess().
   result->setDistinctiveIdentifier(
-      EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
+      EncryptedMediaUtils::ConvertMediaKeysRequirementToEnum(
           configuration.distinctive_identifier));
   result->setPersistentState(
-      EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
+      EncryptedMediaUtils::ConvertMediaKeysRequirementToEnum(
           configuration.persistent_state));
   result->setSessionTypes(ConvertSessionTypes(configuration.session_types));
 

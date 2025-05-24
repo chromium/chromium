@@ -4,9 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/fake_browser_tabs_metadata_fetcher.h"
 
-namespace ash {
-
-namespace phonehub {
+namespace ash::phonehub {
 
 FakeBrowserTabsMetadataFetcher::FakeBrowserTabsMetadataFetcher() = default;
 
@@ -33,5 +31,4 @@ const sync_sessions::SyncedSession* FakeBrowserTabsMetadataFetcher::GetSession()
   return session_;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

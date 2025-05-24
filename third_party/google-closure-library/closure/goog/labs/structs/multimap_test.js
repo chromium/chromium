@@ -9,16 +9,8 @@ goog.setTestOnly();
 
 const Multimap = goog.require('goog.labs.structs.Multimap');
 const testSuite = goog.require('goog.testing.testSuite');
-const userAgent = goog.require('goog.userAgent');
 
 let map;
-
-function shouldRunTests() {
-  if (userAgent.IE) {
-    return userAgent.isVersionOrHigher(9);
-  }
-  return true;
-}
 
 /**
  * @param {T} entry

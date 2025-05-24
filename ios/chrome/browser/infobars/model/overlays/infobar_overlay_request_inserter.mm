@@ -18,8 +18,6 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 
-WEB_STATE_USER_DATA_KEY_IMPL(InfobarOverlayRequestInserter)
-
 InsertParams::InsertParams(InfoBarIOS* infobar) : infobar(infobar) {}
 
 InfobarOverlayRequestInserter::InfobarOverlayRequestInserter(

@@ -1,5 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
+#include "build/branding_buildflags.h"
 #include "installer_resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -29,7 +30,14 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_MINI_INSTALLER      ICON                    "installer.ico"
+IDI_MINI_INSTALLER      ICON                "installer.ico"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  IDB_LOGO         BITMAP                   "chrome/updater/internal/logo.bmp"
+#else
+  IDB_LOGO         BITMAP                   "logo.bmp"
+#endif
+
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -53,3 +61,11 @@ END
 
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
+
+IDD_SPLASH DIALOGEX 0, 0, 55, 47
+STYLE DS_SETFONT | WS_POPUP
+EXSTYLE WS_EX_TRANSPARENT
+FONT 12, "Segoe UI", 0, 0, 0x0
+BEGIN
+    CONTROL         IDB_LOGO,IDC_LOGO,"Static",SS_BITMAP,1,1,0,0
+END

@@ -8,6 +8,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.JavascriptInjector;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -31,7 +32,7 @@ public class JavascriptEventObserver {
      */
     public void register(WebContents webContents, String name) {
         JavascriptInjector.fromWebContents(webContents)
-                .addPossiblyUnsafeInterface(this, name, null);
+                .addPossiblyUnsafeInterface(this, name, null, List.of("*"));
     }
 
     /**

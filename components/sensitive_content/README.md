@@ -7,8 +7,7 @@ redact the view during screen sharing, screen recording, and similar actions.
 
 The `SensitiveContentClient` is used for dependency injection from the embedder.
 The client communicates with the embedder, in order to mark/unmark the content
-as being sensitive. The client has different implementations for Clank and
-WebView.
+as being sensitive.
 
 The `SensitiveContentManager` is owned by the client. It contains
 platform-independent logic and tracks whether sensitive fields are present or

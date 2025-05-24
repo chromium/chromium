@@ -85,17 +85,14 @@ class CategorizedWorkerPoolTaskGraphRunnerTestDelegate {
       base::MakeRefCounted<T>();
 };
 
-class CategorizedWorkerPoolTest : public testing::TestWithParam<bool> {
+class CategorizedWorkerPoolTest : public testing::Test {
  protected:
   CategorizedWorkerPoolTest() = default;
   ~CategorizedWorkerPoolTest() override = default;
 
   void SetUp() override {
-    categorized_worker_pool_ =
-        GetParam() ? scoped_refptr<CategorizedWorkerPool>(
-                         base::MakeRefCounted<CategorizedWorkerPoolImpl>())
-                   : scoped_refptr<CategorizedWorkerPool>(
-                         base::MakeRefCounted<CategorizedWorkerPoolJob>());
+    categorized_worker_pool_ = scoped_refptr<CategorizedWorkerPool>(
+        base::MakeRefCounted<CategorizedWorkerPoolJob>());
     categorized_worker_pool_->Start(kNumThreads);
     namespace_token_ = categorized_worker_pool_->GenerateNamespaceToken();
   }
@@ -134,7 +131,7 @@ class ClosureTask : public Task {
 // Verify that multiple tasks posted with TASK_CATEGORY_BACKGROUND and
 // TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY don't run
 // concurrently.
-TEST_P(CategorizedWorkerPoolTest, BackgroundTasksDontRunConcurrently) {
+TEST_F(CategorizedWorkerPoolTest, BackgroundTasksDontRunConcurrently) {
   Task::Vector tasks;
   TaskGraph graph;
   bool is_running_task = false;
@@ -164,7 +161,7 @@ TEST_P(CategorizedWorkerPoolTest, BackgroundTasksDontRunConcurrently) {
 
 // Verify that a TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY task
 // doesn't run at background thread priority.
-TEST_P(CategorizedWorkerPoolTest,
+TEST_F(CategorizedWorkerPoolTest,
        AcquiresForegroundResourcesNotBackgroundThreadPriority) {
   Task::Vector tasks;
   TaskGraph graph;
@@ -182,10 +179,6 @@ TEST_P(CategorizedWorkerPoolTest,
   categorized_worker_pool_->FlushForTesting();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CategorizedWorkerPoolTest,
-                         testing::Values(false, true));
-
 }  // namespace cc
 
 // Test suite instantiation needs to be in the same namespace as test suite
@@ -194,18 +187,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 namespace base {
 
 INSTANTIATE_TYPED_TEST_SUITE_P(
-    CategorizedWorkerPoolImpl,
-    TaskRunnerTest,
-    cc::CategorizedWorkerPoolTestDelegate<cc::CategorizedWorkerPoolImpl>);
-INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPoolJob,
     TaskRunnerTest,
     cc::CategorizedWorkerPoolTestDelegate<cc::CategorizedWorkerPoolJob>);
 
-INSTANTIATE_TYPED_TEST_SUITE_P(CategorizedWorkerPoolImpl,
-                               SequencedTaskRunnerTest,
-                               cc::CategorizedWorkerPoolSequencedTestDelegate<
-                                   cc::CategorizedWorkerPoolImpl>);
 INSTANTIATE_TYPED_TEST_SUITE_P(CategorizedWorkerPoolJob,
                                SequencedTaskRunnerTest,
                                cc::CategorizedWorkerPoolSequencedTestDelegate<
@@ -216,27 +201,6 @@ INSTANTIATE_TYPED_TEST_SUITE_P(CategorizedWorkerPoolJob,
 namespace cc {
 
 // Multithreaded tests.
-using CategorizedWorkerPoolImplTaskGraphRunnerTestDelegate_1_5 =
-    ::testing::Types<CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         CategorizedWorkerPoolImpl,
-                         1>,
-                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         CategorizedWorkerPoolImpl,
-                         2>,
-                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         CategorizedWorkerPoolImpl,
-                         3>,
-                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         CategorizedWorkerPoolImpl,
-                         4>,
-                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         CategorizedWorkerPoolImpl,
-                         5>>;
-
-INSTANTIATE_TYPED_TEST_SUITE_P(
-    CategorizedWorkerPoolImpl_1_5_Threads,
-    TaskGraphRunnerTest,
-    CategorizedWorkerPoolImplTaskGraphRunnerTestDelegate_1_5);
 using CategorizedWorkerPoolJobTaskGraphRunnerTestDelegate_1_5 =
     ::testing::Types<CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
                          CategorizedWorkerPoolJob,
@@ -259,13 +223,6 @@ INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPoolJobTaskGraphRunnerTestDelegate_1_5);
 
 // Single threaded tests.
-using CategorizedWorkerPoolImplTaskGraphRunnerTestDelegate =
-    CategorizedWorkerPoolTaskGraphRunnerTestDelegate<CategorizedWorkerPoolImpl,
-                                                     1>;
-INSTANTIATE_TYPED_TEST_SUITE_P(
-    CategorizedWorkerPoolImpl,
-    SingleThreadTaskGraphRunnerTest,
-    CategorizedWorkerPoolImplTaskGraphRunnerTestDelegate);
 using CategorizedWorkerPoolJobTaskGraphRunnerTestDelegate =
     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<CategorizedWorkerPoolJob,
                                                      1>;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 
 #include <string>
+#include <vector>
 
 std::vector<std::u16string>
 AuthenticatorRequestSheetModel::GetAdditionalDescriptions() const {

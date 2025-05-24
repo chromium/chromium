@@ -17,22 +17,22 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 
 /**
  * An adapter that exposes a {@link View} as a {@link DynamicResourceSnapshot}. In order to properly
  * use this adapter {@link ViewResourceAdapter#invalidate(Rect)} must be called when parts of the
- * {@link View} are invalidated.  For {@link ViewGroup}s the easiest way to do this is to override
+ * {@link View} are invalidated. For {@link ViewGroup}s the easiest way to do this is to override
  * {@link ViewGroup#invalidateChildInParent(int[], Rect)}.
  */
+@NullMarked
 public class ViewResourceAdapter
         implements DynamicResource, OnLayoutChangeListener, CaptureObserver {
-    /** Abstraction around the mechanism for actually capturing bitmaps.  */
+    /** Abstraction around the mechanism for actually capturing bitmaps. */
     public interface CaptureMechanism {
-        /** See {@link Resource#shouldRemoveResourceOnNullBitmap()}. */
-        boolean shouldRemoveResourceOnNullBitmap();
-
         /** Called when the size of the view changes. */
         default void onViewSizeChange(View view, float scale) {}
 
@@ -63,7 +63,6 @@ public class ViewResourceAdapter
     private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
     private final CaptureMechanism mCaptureMechanism;
     private float mScale = 1;
-
     private final ObserverList<Callback<Resource>> mOnResourceReadyObservers = new ObserverList<>();
 
     /**
@@ -102,12 +101,7 @@ public class ViewResourceAdapter
 
     private void onCapture(Bitmap bitmap) {
         mThreadChecker.assertOnValidThread();
-        Resource resource =
-                new DynamicResourceSnapshot(
-                        bitmap,
-                        mCaptureMechanism.shouldRemoveResourceOnNullBitmap(),
-                        mViewSize,
-                        createNativeResource());
+        Resource resource = new DynamicResourceSnapshot(bitmap, mViewSize, createNativeResource());
         for (Callback<Resource> observer : mOnResourceReadyObservers) observer.onResult(resource);
     }
 
@@ -184,7 +178,7 @@ public class ViewResourceAdapter
      * @param dirtyRect The region to invalidate, or {@code null} if the entire {@code Bitmap}
      *                  should be redrawn.
      */
-    public void invalidate(Rect dirtyRect) {
+    public void invalidate(@Nullable Rect dirtyRect) {
         if (dirtyRect == null) {
             mDirtyRect.set(0, 0, mView.getWidth(), mView.getHeight());
         } else {

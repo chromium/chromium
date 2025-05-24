@@ -9,8 +9,9 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/notreached.h"
+#include "base/logging.h"
 #include "base/time/time.h"
+#include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata/common/web_database.h"
 #include "content/public/common/content_features.h"
@@ -51,9 +52,12 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
                      "expire_date INTEGER NOT NULL DEFAULT 0, "
                      "method_name VARCHAR, "
                      "web_app_id VARCHAR)")) {
-    NOTREACHED_IN_MIGRATION();
+    LOG(ERROR) << "Cannot create the payment_method_manifest table";
     return false;
   }
+
+  // TODO(crbug.com/384940851): Update secure_payment_confirmation_instrument's
+  // primary key to the pair of (credential_id, relying_party_id).
 
   // The `credential_id` column is 20 bytes for UbiKey on Linux, but the size
   // can vary for different authenticators. The relatively small sizes make it
@@ -64,7 +68,8 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
           "relying_party_id VARCHAR NOT NULL, "
           "label VARCHAR NOT NULL, "
           "icon BLOB NOT NULL)")) {
-    NOTREACHED_IN_MIGRATION();
+    LOG(ERROR)
+        << "Cannot create the secure_payment_confirmation_instrument table";
     return false;
   }
 
@@ -73,7 +78,8 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
     if (!db()->Execute(
             "ALTER TABLE secure_payment_confirmation_instrument ADD COLUMN "
             "date_created INTEGER NOT NULL DEFAULT 0")) {
-      NOTREACHED_IN_MIGRATION();
+      LOG(ERROR)
+          << "Cannot alter the secure_payment_confirmation_instrument table";
       return false;
     }
   }
@@ -83,9 +89,22 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
     if (!db()->Execute(
             "ALTER TABLE secure_payment_confirmation_instrument ADD COLUMN "
             "user_id BLOB")) {
-      NOTREACHED_IN_MIGRATION();
+      LOG(ERROR)
+          << "Cannot alter the secure_payment_confirmation_instrument table";
       return false;
     }
+  }
+
+  if (!db()->Execute("CREATE TABLE IF NOT EXISTS "
+                     "secure_payment_confirmation_browser_bound_key ( "
+                     "credential_id BLOB NOT NULL, "
+                     "relying_party_id TEXT NOT NULL, "
+                     "browser_bound_key_id BLOB, "
+                     "PRIMARY KEY (credential_id, relying_party_id))")) {
+    LOG(ERROR)
+        << "Cannot create the secure_payment_confirmation_browser_bound_key "
+        << "table";
+    return false;
   }
 
   return true;
@@ -108,6 +127,8 @@ void PaymentMethodManifestTable::RemoveExpiredData() {
 bool PaymentMethodManifestTable::ClearSecurePaymentConfirmationCredentials(
     base::Time begin,
     base::Time end) {
+  // TODO(crbug.com/384959121): Clear browser bound key identifiers along with
+  // the associated browser bound keys.
   sql::Statement s(db()->GetUniqueStatement(
       "DELETE FROM secure_payment_confirmation_instrument WHERE (date_created "
       ">= ? AND date_created < ?) OR (date_created = 0)"));
@@ -276,6 +297,78 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
   }
 
   return credentials;
+}
+
+bool PaymentMethodManifestTable::SetBrowserBoundKey(
+    std::vector<uint8_t> credential_id,
+    std::string_view relying_party_id,
+    std::vector<uint8_t> browser_bound_key_id) {
+  if (credential_id.empty() || relying_party_id.empty() ||
+      browser_bound_key_id.empty()) {
+    return false;
+  }
+  sql::Statement s(db()->GetUniqueStatement(
+      "INSERT INTO secure_payment_confirmation_browser_bound_key ( "
+      "credential_id, relying_party_id, browser_bound_key_id) "
+      "VALUES (?, ?, ?)"));
+  int index = 0;
+  s.BindBlob(index++, credential_id);
+  s.BindString(index++, relying_party_id);
+  s.BindBlob(index++, browser_bound_key_id);
+  return s.Run();
+}
+
+std::optional<std::vector<uint8_t>>
+PaymentMethodManifestTable::GetBrowserBoundKey(
+    std::vector<uint8_t> credential_id,
+    std::string_view relying_party_id) {
+  sql::Statement s(db()->GetUniqueStatement(
+      "SELECT browser_bound_key_id "
+      "FROM secure_payment_confirmation_browser_bound_key "
+      "WHERE credential_id = ? AND relying_party_id = ?"));
+  int index = 0;
+  s.BindBlob(index++, credential_id);
+  s.BindString(index++, relying_party_id);
+  if (!s.Step()) {
+    return std::nullopt;
+  }
+  if (s.GetColumnType(0) != sql::ColumnType::kBlob) {
+    return std::nullopt;
+  }
+  base::span<const uint8_t> browser_bound_key_span = s.ColumnBlob(0);
+  return std::vector<uint8_t>(browser_bound_key_span.begin(),
+                              browser_bound_key_span.end());
+}
+
+std::vector<BrowserBoundKeyMetadata>
+PaymentMethodManifestTable::GetAllBrowserBoundKeys() {
+  sql::Statement s(db()->GetUniqueStatement(
+      "SELECT relying_party_id, credential_id, browser_bound_key_id "
+      "FROM secure_payment_confirmation_browser_bound_key"));
+  std::vector<BrowserBoundKeyMetadata> browser_bound_keys;
+  while (s.Step()) {
+    BrowserBoundKeyMetadata& entry = browser_bound_keys.emplace_back();
+    entry.passkey.relying_party_id = s.ColumnString(0);
+    s.ColumnBlobAsVector(1, &entry.passkey.credential_id);
+    s.ColumnBlobAsVector(2, &entry.browser_bound_key_id);
+  }
+  return browser_bound_keys;
+}
+
+bool PaymentMethodManifestTable::DeleteBrowserBoundKeys(
+    std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>
+        passkeys) {
+  for (auto passkey : passkeys) {
+    sql::Statement s(db()->GetUniqueStatement(
+        "DELETE FROM secure_payment_confirmation_browser_bound_key "
+        "WHERE relying_party_id = ? AND credential_id = ?"));
+    s.BindString(0, passkey.relying_party_id);
+    s.BindBlob(1, passkey.credential_id);
+    if (!s.Run()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool PaymentMethodManifestTable::ExecuteForTest(const base::cstring_view sql) {

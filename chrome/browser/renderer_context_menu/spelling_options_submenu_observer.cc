@@ -40,7 +40,7 @@ SpellingOptionsSubMenuObserver::SpellingOptionsSubMenuObserver(
   DCHECK(proxy_);
 }
 
-SpellingOptionsSubMenuObserver::~SpellingOptionsSubMenuObserver() {}
+SpellingOptionsSubMenuObserver::~SpellingOptionsSubMenuObserver() = default;
 
 void SpellingOptionsSubMenuObserver::InitMenu(
     const content::ContextMenuParams& params) {

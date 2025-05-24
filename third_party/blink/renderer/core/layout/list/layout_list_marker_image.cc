@@ -4,9 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/list/layout_list_marker_image.h"
 
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
-#include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
-#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 
 namespace blink {
 
@@ -21,41 +19,31 @@ LayoutListMarkerImage* LayoutListMarkerImage::CreateAnonymous(
   return object;
 }
 
-gfx::SizeF LayoutListMarkerImage::DefaultSize() const {
+PhysicalSize LayoutListMarkerImage::DefaultSize() const {
   NOT_DESTROYED();
-  const SimpleFontData* font_data = Style()->GetFont().PrimaryFont();
+  const SimpleFontData* font_data = StyleRef().GetFont()->PrimaryFont();
   DCHECK(font_data);
-  if (!font_data)
-    return gfx::SizeF(kDefaultWidth, kDefaultHeight);
-  float bullet_width = font_data->GetFontMetrics().Ascent() / 2.f;
-  return gfx::SizeF(bullet_width, bullet_width);
-}
-
-// Because ImageResource() is always LayoutImageResourceStyleImage. So we could
-// use StyleImage::ImageSize to determine the concrete object size with
-// default object size(ascent/2 x ascent/2).
-void LayoutListMarkerImage::ComputeIntrinsicSizingInfoByDefaultSize(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  NOT_DESTROYED();
-  gfx::SizeF concrete_size = ImageResource()->ConcreteObjectSize(
-      Style()->EffectiveZoom(), DefaultSize());
-  concrete_size.Scale(ImageDevicePixelRatio());
-
-  intrinsic_sizing_info.size = concrete_size;
-  intrinsic_sizing_info.has_width = true;
-  intrinsic_sizing_info.has_height = true;
-}
-
-void LayoutListMarkerImage::ComputeIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
-  NOT_DESTROYED();
-  LayoutImage::ComputeIntrinsicSizingInfo(intrinsic_sizing_info);
-
-  // If this is an image without intrinsic width and height, compute the
-  // concrete object size by using the specified default object size.
-  if (intrinsic_sizing_info.size.IsEmpty()) {
-    ComputeIntrinsicSizingInfoByDefaultSize(intrinsic_sizing_info);
+  if (!font_data) {
+    return PhysicalSize(LayoutUnit(kDefaultWidth), LayoutUnit(kDefaultHeight));
   }
+  const LayoutUnit bullet_width =
+      LayoutUnit(font_data->GetFontMetrics().Ascent()) / 2;
+  return PhysicalSize(bullet_width, bullet_width);
+}
+
+PhysicalNaturalSizingInfo LayoutListMarkerImage::GetNaturalDimensions() const {
+  NOT_DESTROYED();
+  PhysicalNaturalSizingInfo sizing_info = LayoutImage::GetNaturalDimensions();
+
+  // If this is an image without natural width and height, compute the concrete
+  // object size by using a default object size of (ascent/2 x ascent/2).
+  if (sizing_info.size.IsEmpty()) {
+    const auto natural_dimensions = PhysicalNaturalSizingInfo::FromSizingInfo(
+        ImageResource()->GetNaturalDimensions(StyleRef().EffectiveZoom()));
+    sizing_info = PhysicalNaturalSizingInfo::MakeFixed(
+        ConcreteObjectSize(natural_dimensions, DefaultSize()));
+  }
+  return sizing_info;
 }
 
 }  // namespace blink

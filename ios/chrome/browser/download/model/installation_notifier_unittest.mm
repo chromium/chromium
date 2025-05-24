@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/download/model/installation_notifier.h"
-#import "ios/chrome/browser/download/model/installation_notifier+Testing.h"
 
 #import <UIKit/UIKit.h>
 #import <stdint.h>
 
 #import "base/ios/block_types.h"
 #import "base/task/current_thread.h"
+#import "ios/chrome/browser/download/model/installation_notifier+Testing.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/backoff_entry.h"
 #import "testing/platform_test.h"
@@ -26,8 +26,9 @@
 }
 
 - (instancetype)init {
-  if ((self = [super init]))
+  if ((self = [super init])) {
     _blocks = [[NSMutableDictionary alloc] init];
+  }
   return self;
 }
 
@@ -48,8 +49,9 @@
   _lastDelayInNSec = delayInNSec;
   void (^blockToCallForThisIteration)(void) =
       [_blocks objectForKey:[NSNumber numberWithInt:_dispatchCount]];
-  if (blockToCallForThisIteration)
+  if (blockToCallForThisIteration) {
     blockToCallForThisIteration();
+  }
   _dispatchCount++;
   block();
 }

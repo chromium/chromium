@@ -10,4 +10,5 @@ Do not modify it manually. -->
   <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Özel. Hızlı. Daha Az Reklam. DuckDuckGo sizi asla izlemez.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Google ile aradığınızı bulun</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Gizliliğinizi koruyan bir arama motoru.</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Reklam gelirlerini içerik oluşturucularla paylaşmayı amaçlayan web arama motoru.</translation>
 </translationbundle>

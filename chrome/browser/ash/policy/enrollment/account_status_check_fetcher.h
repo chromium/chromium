@@ -44,12 +44,12 @@ struct AccountStatus {
     kMaxValue = kDasher
   };
 
+  friend constexpr bool operator==(const AccountStatus&,
+                                   const AccountStatus&) = default;
+
   Type type = Type::kUnknown;
   bool enrollment_required = false;
 };
-
-bool operator==(const AccountStatus&, const AccountStatus&);
-bool operator!=(const AccountStatus&, const AccountStatus&);
 
 // This class handles sending request to check account to DM server,
 // waits for the response and retrieves the account status from it.

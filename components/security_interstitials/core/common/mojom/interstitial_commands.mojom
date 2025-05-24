@@ -20,4 +20,8 @@ interface InterstitialCommands {
   ReportPhishingError();
   // Opens the enhanced protection settings in a new tab.
   OpenEnhancedProtectionSettings();
+
+  // Opens advanced protection settings native-UI.
+  [EnableIf=is_android]
+  OpenAndroidAdvancedProtectionSettings();
 };

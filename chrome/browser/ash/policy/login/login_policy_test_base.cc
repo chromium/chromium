@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -21,6 +22,7 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "google_apis/gaia/fake_gaia.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -39,7 +41,7 @@ constexpr char kTestSessionLSIDCookie[] = "fake-session-LSID-cookie";
 // which cannot be enterprise domain. See kNonManagedDomainPatterns in
 // browser_policy_connector.cc.
 constexpr char kAccountId[] = "user@example.com";
-constexpr char kAccountGaiaId[] = "user-example-com-test-gaia-id";
+constexpr GaiaId::Literal kAccountGaiaId("user-example-com-test-gaia-id");
 }  // namespace
 
 LoginPolicyTestBase::LoginPolicyTestBase()
@@ -81,6 +83,10 @@ void LoginPolicyTestBase::SetUpOnMainThread() {
   FakeGaia::Configuration params;
   params.id_token = GetIdToken();
   fake_gaia_.fake_gaia()->UpdateConfiguration(params);
+
+  cryptohome_mixin_.ApplyAuthConfigIfUserExists(
+      account_id(),
+      ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
 }
 
 std::string LoginPolicyTestBase::GetIdToken() const {

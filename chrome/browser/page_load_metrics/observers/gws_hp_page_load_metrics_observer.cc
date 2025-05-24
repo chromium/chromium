@@ -17,6 +17,8 @@
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "components/page_load_metrics/google/browser/google_url_util.h"
+#include "components/page_load_metrics/google/browser/histogram_suffixes.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace internal {
@@ -131,7 +133,7 @@ GWSHpPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 }
 
 std::string GWSHpPageLoadMetricsObserver::AddHistogramSuffix(
-    const std::string histogram_name) {
+    const std::string& histogram_name) {
   std::string suffix =
       (is_first_navigation_ ? internal::kSuffixFirstNavigation
                             : internal::kSuffixSubsequentNavigation);

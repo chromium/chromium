@@ -28,8 +28,6 @@ class PolicyUrlBlockingTabHelper
   PolicyUrlBlockingTabHelper(const PolicyUrlBlockingTabHelper&) = delete;
   PolicyUrlBlockingTabHelper& operator=(const PolicyUrlBlockingTabHelper&) =
       delete;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_MODEL_POLICY_URL_BLOCKING_TAB_HELPER_H_

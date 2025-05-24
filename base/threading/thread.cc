@@ -162,8 +162,9 @@ bool Thread::Start() {
 
   Options options;
 #if BUILDFLAG(IS_WIN)
-  if (com_status_ == STA)
+  if (com_status_ == STA) {
     options.message_pump_type = MessagePumpType::UI;
+  }
 #endif
   return StartWithOptions(std::move(options));
 }
@@ -227,16 +228,18 @@ bool Thread::StartWithOptions(Options options) {
 bool Thread::StartAndWaitForTesting() {
   DCHECK(owning_sequence_checker_.CalledOnValidSequence());
   bool result = Start();
-  if (!result)
+  if (!result) {
     return false;
+  }
   WaitUntilThreadStarted();
   return true;
 }
 
 bool Thread::WaitUntilThreadStarted() const {
   DCHECK(owning_sequence_checker_.CalledOnValidSequence());
-  if (!delegate_)
+  if (!delegate_) {
     return false;
+  }
   // https://crbug.com/918039
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   start_event_.Wait();
@@ -245,8 +248,9 @@ bool Thread::WaitUntilThreadStarted() const {
 
 void Thread::FlushForTesting() {
   DCHECK(owning_sequence_checker_.CalledOnValidSequence());
-  if (!delegate_)
+  if (!delegate_) {
     return;
+  }
 
   WaitableEvent done(WaitableEvent::ResetPolicy::AUTOMATIC,
                      WaitableEvent::InitialState::NOT_SIGNALED);
@@ -267,8 +271,9 @@ void Thread::Stop() {
   StopSoon();
 
   // Can't join if the |thread_| is either already gone or is non-joinable.
-  if (thread_.is_null())
+  if (thread_.is_null()) {
     return;
+  }
 
   // Wait for the thread to exit.
   //
@@ -289,8 +294,9 @@ void Thread::StopSoon() {
   // enable this check.
   // DCHECK(owning_sequence_checker_.CalledOnValidSequence());
 
-  if (stopping_ || !delegate_)
+  if (stopping_ || !delegate_) {
     return;
+  }
 
   stopping_ = true;
 
@@ -321,8 +327,9 @@ bool Thread::IsRunning() const {
   // not yet requested to stop (i.e. |stopping_| is false) we can just return
   // true. (Note that |stopping_| is touched only on the same sequence that
   // starts / started the new thread so we need no locking here.)
-  if (delegate_ && !stopping_)
+  if (delegate_ && !stopping_) {
     return true;
+  }
   // Otherwise check the |running_| flag, which is set to true by the new thread
   // only while it is inside Run().
   AutoLock lock(running_lock_);
@@ -354,8 +361,15 @@ bool Thread::GetThreadWasQuitProperly() {
 }
 
 void Thread::ThreadMain() {
-  // First, make GetThreadId() available to avoid deadlocks. It could be called
-  // any place in the following thread initialization code.
+  // First, set the thread name. It is important to do this first because some
+  // of the code below may end up storing/caching the thread name. One example
+  // is Perfetto being triggered by a TRACE_EVENT call from id_event_.Signal().
+  // See https://crbug.com/333597498.
+  PlatformThread::SetName(name_.c_str());
+  ABSL_ANNOTATE_THREAD_NAME(name_.c_str());  // Tell the name to race detector.
+
+  // Make GetThreadId() available to avoid deadlocks. It could be called any
+  // place in the following thread initialization code.
   DCHECK(!id_event_.IsSignaled());
   // Note: this read of |id_| while |id_event_| isn't signaled is exceptionally
   // okay because ThreadMain has a happens-after relationship with the other
@@ -364,10 +378,6 @@ void Thread::ThreadMain() {
   id_ = PlatformThread::CurrentId();
   DCHECK_NE(kInvalidThreadId, id_);
   id_event_.Signal();
-
-  // Complete the initialization of our Thread object.
-  PlatformThread::SetName(name_.c_str());
-  ABSL_ANNOTATE_THREAD_NAME(name_.c_str());  // Tell the name to race detector.
 
   // Lazily initialize the |message_loop| so that it can run on this thread.
   DCHECK(delegate_);

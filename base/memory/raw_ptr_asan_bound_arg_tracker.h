@@ -79,7 +79,7 @@ class BASE_EXPORT RawPtrAsanBoundArgTracker {
       auto inner = arg.get();
       // The argument may unwrap into a raw_ptr or a T* depending if it is
       // allowed to dangle.
-      if constexpr (IsRawPtrV<decltype(inner)>) {
+      if constexpr (IsRawPtr<decltype(inner)>) {
         Add(reinterpret_cast<uintptr_t>(inner.get()));
       } else {
         Add(reinterpret_cast<uintptr_t>(inner));

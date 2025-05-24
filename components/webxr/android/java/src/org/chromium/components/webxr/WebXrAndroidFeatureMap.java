@@ -7,7 +7,10 @@ package org.chromium.components.webxr;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 @JNINamespace("webxr")
+@NullMarked
 public final class WebXrAndroidFeatureMap {
     /** Convenience method to check if OpenXR should be enabled due to complex state. */
     public static boolean isOpenXrEnabled() {

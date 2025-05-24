@@ -7,7 +7,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import './firmware_update.mojom-webui.js';
 
-import {FirmwareUpdate, InstallControllerInterface, UpdateProviderInterface} from './firmware_update.mojom-webui.js';
+import type {FirmwareUpdate, InstallControllerInterface, UpdateProviderInterface} from './firmware_update.mojom-webui.js';
 
 /**
  * @fileoverview

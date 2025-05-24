@@ -16,16 +16,11 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_bindings.h"
 
-namespace gl {
-class SurfaceTexture;
-}  // namespace gl
-
 namespace gfx {
 class GpuFence;
 }  // namespace gfx
 
 namespace gpu {
-struct MailboxHolder;
 struct SyncToken;
 }  // namespace gpu
 
@@ -43,12 +38,6 @@ using XrInitStatusCallback = base::OnceCallback<void(bool success)>;
 // purposes.
 class XrImageTransportBase {
  public:
-  // If true, use shared buffer transport aka DRAW_INTO_TEXTURE_MAILBOX.
-  // If false, use Surface transport aka SUBMIT_AS_MAILBOX_HOLDER.
-  static bool UseSharedBuffer();
-
-  static GLuint SharedBufferTextureTarget();
-
   explicit XrImageTransportBase(
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
 
@@ -65,7 +54,12 @@ class XrImageTransportBase {
   // GL context via MailboxToSurfaceBridge, and the callback is called
   // once that's complete.
   virtual void Initialize(WebXrPresentationState* webxr,
-                          XrInitStatusCallback callback);
+                          XrInitStatusCallback callback,
+                          bool webgpu_session);
+
+  // Indicates if the session uses WebGPU to produce it's frames. Does not
+  // have any effect on the API used for compositing/display.
+  bool IsWebGPUSession() { return webgpu_session_; }
 
   // Only valid when using SharedBuffers, this ensures that the current
   // animating frame is populated with texture information for a valid and
@@ -85,11 +79,7 @@ class XrImageTransportBase {
       const gpu::SyncToken& sync_token,
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>);
   virtual void WaitSyncToken(const gpu::SyncToken& sync_token);
-  virtual void CopyMailboxToSurfaceAndSwap(const gfx::Size& frame_size,
-                                           const gpu::MailboxHolder& mailbox,
-                                           const gfx::Transform& uv_transform);
 
-  void SetFrameAvailableCallback(XrFrameCallback on_frame_available);
   void ServerWaitForGpuFence(std::unique_ptr<gfx::GpuFence> gpu_fence);
 
  protected:
@@ -112,32 +102,16 @@ class XrImageTransportBase {
   // Runs before the rest of the initialization for the XrImageTransport to
   // allow for any specialized gl context setup or other setup that may be
   // needed by the particular runtime that's in use.
-  virtual void DoRuntimeInitialization(int texture_target) = 0;
+  virtual void DoRuntimeInitialization() = 0;
 
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 
  private:
-  // Used to disable UseSharedBuffer on platforms where the feature is available
-  // but unusable due to driver bugs. Must be mutable so that it can be switched
-  // to true persistently before retrying session creation, so it can't be
-  // constexpr or inline.
-  static bool disable_shared_buffer_;
-
-  void ResizeSurface(const gfx::Size& size);
   void OnMailboxBridgeReady(XrInitStatusCallback callback);
-  void OnFrameAvailable();
 
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;
 
-  // Used for Surface transport (Android N)
-  //
-  // samplerExternalOES texture data for WebXR content image.
-  LocalTexture transport_texture_;
-  gfx::Size surface_size_;
-  scoped_refptr<gl::SurfaceTexture> transport_surface_texture_;
-  gfx::Transform transport_surface_texture_uv_transform_;
-  float transport_surface_texture_uv_matrix_[16];
-  XrFrameCallback on_transport_frame_available_;
+  bool webgpu_session_ = false;
 
   // Must be last.
   base::WeakPtrFactory<XrImageTransportBase> weak_ptr_factory_{this};

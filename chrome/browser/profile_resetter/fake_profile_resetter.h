@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILE_RESETTER_FAKE_PROFILE_RESETTER_H_
 #define CHROME_BROWSER_PROFILE_RESETTER_FAKE_PROFILE_RESETTER_H_
 
+#include "build/build_config.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/test/base/testing_profile.h"
 
@@ -22,9 +23,9 @@ class FakeProfileResetter : public ProfileResetter {
 
   size_t Resets() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void ResetDnsConfigurations() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   size_t reset_count_ = 0;

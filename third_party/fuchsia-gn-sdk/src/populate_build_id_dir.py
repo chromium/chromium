@@ -60,6 +60,11 @@ def populate_build_id_dir(readelf_exec, ids_txt_path, output_dir, build_id_dirs,
         output_path = os.path.join(output_dir, output_filename)
         if not os.path.exists(os.path.dirname(output_path)):
             os.makedirs(os.path.dirname(output_path))
+
+        # Remove symlink if one exists. See https://crbug.com/407890258.
+        if os.path.islink(output_path):
+            os.remove(output_path)
+
         if not os.path.exists(output_path):
             os.link(symbol_source_path, output_path)
         filenames.add(output_path)

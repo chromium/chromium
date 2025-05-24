@@ -12,11 +12,13 @@ import static org.mockito.Mockito.when;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStor
 /** Tests for {@link TabModelOrchestrator} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabModelOrchestratorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ObservableSupplierImpl<TabModelStartupInfo> mMockTabModelStartupInfoSupplier;
     @Mock private TabModel mMockTabModel;
     @Mock private TabModelSelectorBase mMockTabModelSelectorBase;
@@ -40,7 +43,6 @@ public class TabModelOrchestratorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         when(mMockTabModelSelectorBase.getModel(anyBoolean())).thenReturn(mMockTabModel);
 

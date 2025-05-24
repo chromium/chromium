@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
@@ -13,17 +15,21 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceDialogFragmentCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
 
 /** The fragment used to display the clear website storage confirmation dialog. */
+@NullMarked
 public class ClearWebsiteStorageDialog extends PreferenceDialogFragmentCompat {
     public static final String TAG = "ClearWebsiteStorageDialog";
     private static final String IS_GROUP = "is_group";
 
-    private static Callback<Boolean> sCallback;
+    private static @Nullable Callback<Boolean> sCallback;
 
     // The view containing the dialog ui elements.
-    private View mDialogView;
+    private @MonotonicNonNull View mDialogView;
 
     public static ClearWebsiteStorageDialog newInstance(
             Preference preference, Callback<Boolean> callback, boolean isGroup) {
@@ -56,19 +62,19 @@ public class ClearWebsiteStorageDialog extends PreferenceDialogFragmentCompat {
             // When the device switches to multi-window in landscape mode, the height of the
             // offlineTextView is not calculated correctly (its height gets truncated) and a layout
             // pass is needed to fix it. See https://crbug.com/1072922.
-            mDialogView
-                    .getHandler()
+            assumeNonNull(mDialogView.getHandler())
                     .post(
                             () -> {
                                 ViewUtils.requestLayout(
                                         mDialogView,
-                                        "ClearWebsiteStorageDialog.onConfigurationChanged Runnable");
+                                        "ClearWebsiteStorageDialog.onConfigurationChanged"
+                                                + " Runnable");
                             });
         }
     }
 
     @Override
     public void onDialogClosed(boolean positiveResult) {
-        sCallback.onResult(positiveResult);
+        assumeNonNull(sCallback).onResult(positiveResult);
     }
 }

@@ -25,8 +25,7 @@ items:
 - caption: Allow the user to decide
   value: null
 owners:
-- amraboelkher@chromium.org
-- emaxx@chromium.org
+- file://ash/accessibility/OWNERS
 schema:
   type: boolean
 supported_on:

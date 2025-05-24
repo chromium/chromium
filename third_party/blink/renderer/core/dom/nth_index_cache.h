@@ -186,7 +186,7 @@ class CORE_EXPORT NthIndexCache final {
 
   // Effectively maps (parent, optional tag name, child) → index.
   // (The child part of the key is in NthIndexData.)
-  HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>* cache_ =
+  GCedHeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>* cache_ =
       nullptr;
 
 #if DCHECK_IS_ON()

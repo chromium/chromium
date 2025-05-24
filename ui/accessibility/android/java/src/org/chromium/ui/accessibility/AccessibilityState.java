@@ -6,14 +6,17 @@ package org.chromium.ui.accessibility;
 
 import static android.accessibilityservice.AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES;
 import static android.accessibilityservice.AccessibilityServiceInfo.CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION;
-import static android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_SPOKEN;
 import static android.accessibilityservice.AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE;
 import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_CONTROLS;
 import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_ICONS;
 import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
+import android.app.UiModeManager;
+import android.app.UiModeManager.ContrastChangeListener;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -27,8 +30,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -41,9 +43,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,6 +59,7 @@ import java.util.WeakHashMap;
  * counterpart in accessibility::AccessibilityState.
  */
 @JNINamespace("ui")
+@NullMarked
 public class AccessibilityState {
     private static final String TAG = "A11yState";
 
@@ -62,6 +68,11 @@ public class AccessibilityState {
 
     public static final String AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID =
             "android/com.android.server.autofill.AutofillCompatAccessibilityService";
+
+    // Known screen reader service IDs, currently set only to TalkBack but can be expanded to a list
+    // if more screen readers appear in the ecosystem.
+    public static final String KNOWN_SCREEN_READER_SERVICE_IDS =
+            "com.google.android.marvin.talkback/.TalkBackService";
 
     // Constant value to multiply animation timeouts by for pre-Q Android versions.
     private static final int ANIMATION_TIMEOUT_MULTIPLIER = 2;
@@ -103,10 +114,13 @@ public class AccessibilityState {
 
     /** A representation of the current accessibility state. */
     public static class State {
-        // True when we determine that genuine assistive technology such as a screen reader
-        // is running, based on the information from running accessibility services. False
-        // otherwise.
-        public final boolean isScreenReaderEnabled;
+        // True when we determine that an assistive technology that performs complex user
+        // interactions is enabled. False otherwise.
+        // Note: This is based on a heuristic from an analysis of the most common assistive
+        // technologies on Android. Certain AccessibilityEvents are associated with complex ATs, but
+        // do not necessarily indicate the presence of a screen reader. See {@link
+        // COMPLEX_USER_INTERACTION_SERVICE_EVENT_TYPE_MASK}.
+        public final boolean isComplexUserInteractionServiceEnabled;
 
         // True when the user has touch exploration enabled. False otherwise.
         public final boolean isTouchExplorationEnabled;
@@ -121,44 +135,48 @@ public class AccessibilityState {
         // returns true for isAccessibilityTool(). False otherwise.
         public final boolean isAccessibilityToolPresent;
 
-        // True when the user is running at least one service that requests the FEEDBACK_SPOKEN
-        // feedback type in AccessibilityServiceInfo. False otherwise.
-        public final boolean isSpokenFeedbackServicePresent;
-
         // True when the user has enabled the Android-OS privacy setting for showing passwords,
         // found in: Settings > Privacy > Show passwords. (Settings.System.TEXT_SHOW_PASSWORD).
         // False otherwise.
         public final boolean isTextShowPasswordEnabled;
 
+        // True when the autofill manager is enabled and the autofill service is the only service
+        // running that requires accessibility.
+        public final boolean isOnlyAutofillRunning;
+
         // True when we suspect that only password managers are enabled, based on the information
         // from running accessibility services. False otherwise.
         public final boolean isOnlyPasswordManagersEnabled;
 
+        // True when a known screen reader is enabled, based on service IDs. False otherwise.
+        public final boolean isKnownScreenReaderEnabled;
+
         public State(
-                boolean isScreenReaderEnabled,
+                boolean isComplexUserInteractionServiceEnabled,
                 boolean isTouchExplorationEnabled,
                 boolean isPerformGesturesEnabled,
                 boolean isAnyAccessibilityServiceEnabled,
                 boolean isAccessibilityToolPresent,
-                boolean isSpokenFeedbackServicePresent,
                 boolean isTextShowPasswordEnabled,
-                boolean isOnlyPasswordManagersEnabled) {
-            this.isScreenReaderEnabled = isScreenReaderEnabled;
+                boolean isOnlyAutofillRunning,
+                boolean isOnlyPasswordManagersEnabled,
+                boolean isKnownScreenReaderEnabled) {
+            this.isComplexUserInteractionServiceEnabled = isComplexUserInteractionServiceEnabled;
             this.isTouchExplorationEnabled = isTouchExplorationEnabled;
             this.isPerformGesturesEnabled = isPerformGesturesEnabled;
             this.isAnyAccessibilityServiceEnabled = isAnyAccessibilityServiceEnabled;
             this.isAccessibilityToolPresent = isAccessibilityToolPresent;
-            this.isSpokenFeedbackServicePresent = isSpokenFeedbackServicePresent;
             this.isTextShowPasswordEnabled = isTextShowPasswordEnabled;
+            this.isOnlyAutofillRunning = isOnlyAutofillRunning;
             this.isOnlyPasswordManagersEnabled = isOnlyPasswordManagersEnabled;
+            this.isKnownScreenReaderEnabled = isKnownScreenReaderEnabled;
         }
 
-        @NonNull
         @Override
         public String toString() {
             return "State{"
-                    + "isScreenReaderEnabled="
-                    + isScreenReaderEnabled
+                    + "isComplexUserInteractionServiceEnabled="
+                    + isComplexUserInteractionServiceEnabled
                     + ", isTouchExplorationEnabled="
                     + isTouchExplorationEnabled
                     + ", isPerformGesturesEnabled="
@@ -167,21 +185,24 @@ public class AccessibilityState {
                     + isAnyAccessibilityServiceEnabled
                     + ", isAccessibilityToolPresent="
                     + isAccessibilityToolPresent
-                    + ", isSpokenFeedbackServicePresent="
-                    + isSpokenFeedbackServicePresent
                     + ", isTextShowPasswordEnabled="
                     + isTextShowPasswordEnabled
+                    + ", isOnlyAutofillRunning="
+                    + isOnlyAutofillRunning
                     + ", isOnlyPasswordManagersEnabled="
                     + isOnlyPasswordManagersEnabled
+                    + ", isKnownScreenReaderEnabled="
+                    + isKnownScreenReaderEnabled
                     + '}';
         }
     }
 
-    // Analysis of the most popular accessibility services on Android suggests
-    // that any service that requests any of these three events is a screen reader
-    // or other complete assistive technology. If none of these events are requested,
-    // we can enable some optimizations.
-    private static final int SCREEN_READER_EVENT_TYPE_MASK =
+    // Analysis of the most popular accessibility services on Android suggests that any service that
+    // requests any of these three events is an accessibility service that has a more complex user
+    // interaction than something like password managers, but not as much as screen readers. This
+    // heuristic can be used to identify states where some, but not all, accessibility
+    // considerations of clients are required.
+    private static final int COMPLEX_USER_INTERACTION_SERVICE_EVENT_TYPE_MASK =
             AccessibilityEvent.TYPE_VIEW_SELECTED
                     | AccessibilityEvent.TYPE_VIEW_SCROLLED
                     | AccessibilityEvent.TYPE_ANNOUNCEMENT;
@@ -222,31 +243,38 @@ public class AccessibilityState {
     private static int sFlagsMaskHeuristic;
     private static int sCapabilitiesMaskHeuristic;
 
-    private static State sState;
+    private static @Nullable State sState;
+
     private static boolean sInitialized;
+    private static boolean sHasRegisteredObservers;
     private static boolean sIsInTestingMode;
-    private static Boolean sPreInitCachedValuePerformGesturesEnabled;
-    private static List<AccessibilityServiceInfo> sServiceInfoListForTesting;
-    private static String sEnabledServiceStringForTesting;
+    private static @Nullable Boolean sPreInitCachedValuePerformGesturesEnabled;
+    private static @Nullable List<AccessibilityServiceInfo> sServiceInfoListForTesting;
+    private static @Nullable String sEnabledServiceStringForTesting;
 
     private static boolean sExtraStateInitialized;
     private static boolean sDisplayInversionEnabled;
     private static boolean sHighContrastEnabled;
     private static int sFontWeightAdjustment;
+    private static float sAnimatorDurationScale;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
     private static final ApplicationStatus.ActivityStateListener sActivityStateListener =
             AccessibilityState::onActivityStateChange;
     private static final ApplicationStatus.ApplicationStateListener sApplicationStateListener =
             AccessibilityState::onApplicationStateChange;
-    private static ServicesObserver sAccessibilityServicesObserver;
-    private static ServicesObserver sAnimationDurationScaleObserver;
-    private static ServicesObserver sDisplayInversionEnabledObserver;
-    private static ServicesObserver sTextContrastObserver;
-    private static AccessibilityManager sAccessibilityManager;
+    private static @Nullable ServicesObserver sAccessibilityServicesObserver;
+    private static @Nullable ServicesObserver sAnimationDurationScaleObserver;
+    private static @Nullable ServicesObserver sDisplayInversionEnabledObserver;
+    private static @Nullable ServicesObserver sTextContrastObserver;
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private static @Nullable ContrastChangeListener sContrastChangeListener;
+
+    private static @Nullable AccessibilityManager sAccessibilityManager;
 
     // The IDs of all running accessibility services.
-    private static List<String> sServiceIds;
+    private static @Nullable List<String> sServiceIds;
 
     // The set of listeners of AccessibilityState, implemented using
     // a WeakHashSet behind the scenes so that listeners can be garbage-collected
@@ -266,9 +294,9 @@ public class AccessibilityState {
         sListeners.add(listener);
     }
 
-    public static boolean isScreenReaderEnabled() {
+    public static boolean isComplexUserInteractionServiceEnabled() {
         if (!sInitialized) updateAccessibilityServices();
-        return sState.isScreenReaderEnabled;
+        return assumeNonNull(sState).isComplexUserInteractionServiceEnabled;
     }
 
     /**
@@ -282,10 +310,9 @@ public class AccessibilityState {
      */
     public static boolean isTouchExplorationEnabled() {
         if (!sInitialized) {
-            fetchAccessibilityManager();
-            return sAccessibilityManager.isTouchExplorationEnabled();
+            return fetchAccessibilityManager().isTouchExplorationEnabled();
         }
-        return sState.isTouchExplorationEnabled;
+        return assumeNonNull(sState).isTouchExplorationEnabled;
     }
 
     /**
@@ -304,9 +331,10 @@ public class AccessibilityState {
             }
 
             fetchAccessibilityManager();
-            if (sAccessibilityManager.isEnabled()) {
+            AccessibilityManager accessibilityManager = fetchAccessibilityManager();
+            if (accessibilityManager.isEnabled()) {
                 for (AccessibilityServiceInfo service :
-                        sAccessibilityManager.getEnabledAccessibilityServiceList(
+                        accessibilityManager.getEnabledAccessibilityServiceList(
                                 AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) {
                     if ((service.getCapabilities()
                                     & AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES)
@@ -320,7 +348,7 @@ public class AccessibilityState {
             return false;
         }
 
-        return sState.isPerformGesturesEnabled;
+        return assumeNonNull(sState).isPerformGesturesEnabled;
     }
 
     /**
@@ -334,30 +362,34 @@ public class AccessibilityState {
      */
     public static boolean isAnyAccessibilityServiceEnabled() {
         if (!sInitialized) {
-            fetchAccessibilityManager();
-            return sAccessibilityManager.isEnabled();
+            return fetchAccessibilityManager().isEnabled();
         }
-        return sState.isAnyAccessibilityServiceEnabled;
+        return assumeNonNull(sState).isAnyAccessibilityServiceEnabled;
     }
 
     public static boolean isAccessibilityToolPresent() {
         if (!sInitialized) updateAccessibilityServices();
-        return sState.isAccessibilityToolPresent;
-    }
-
-    public static boolean isSpokenFeedbackServicePresent() {
-        if (!sInitialized) updateAccessibilityServices();
-        return sState.isSpokenFeedbackServicePresent;
+        return assumeNonNull(sState).isAccessibilityToolPresent;
     }
 
     public static boolean isTextShowPasswordEnabled() {
         if (!sInitialized) updateAccessibilityServices();
-        return sState.isTextShowPasswordEnabled;
+        return assumeNonNull(sState).isTextShowPasswordEnabled;
+    }
+
+    public static boolean isOnlyAutofillRunning() {
+        if (!sInitialized) updateAccessibilityServices();
+        return assumeNonNull(sState).isOnlyAutofillRunning;
     }
 
     public static boolean isOnlyPasswordManagersEnabled() {
         if (!sInitialized) updateAccessibilityServices();
-        return sState.isOnlyPasswordManagersEnabled;
+        return assumeNonNull(sState).isOnlyPasswordManagersEnabled;
+    }
+
+    public static boolean isKnownScreenReaderEnabled() {
+        if (!sInitialized) updateAccessibilityServices();
+        return assumeNonNull(sState).isKnownScreenReaderEnabled;
     }
 
     public static boolean isDisplayInversionEnabled() {
@@ -368,6 +400,11 @@ public class AccessibilityState {
     public static boolean isHighContrastEnabled() {
         if (!sExtraStateInitialized) updateExtraState();
         return sHighContrastEnabled;
+    }
+
+    public static int getNumberOfRunningServices() {
+        if (!sInitialized) updateAccessibilityServices();
+        return assumeNonNull(sServiceIds).size();
     }
 
     /**
@@ -420,9 +457,10 @@ public class AccessibilityState {
         int recommendedTimeout = nonA11yTimeout;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             recommendedTimeout =
-                    sAccessibilityManager.getRecommendedTimeoutMillis(
-                            nonA11yTimeout,
-                            FLAG_CONTENT_ICONS | FLAG_CONTENT_TEXT | FLAG_CONTENT_CONTROLS);
+                    fetchAccessibilityManager()
+                            .getRecommendedTimeoutMillis(
+                                    nonA11yTimeout,
+                                    FLAG_CONTENT_ICONS | FLAG_CONTENT_TEXT | FLAG_CONTENT_CONTROLS);
         } else {
             // For pre-Q Android versions, we will multiply by a constant when services are enabled.
             if (AccessibilityState.isAnyAccessibilityServiceEnabled()) {
@@ -450,19 +488,35 @@ public class AccessibilityState {
     public static void sendAccessibilityEvent(AccessibilityEvent event) {
         if (!sInitialized) updateAccessibilityServices();
 
-        if (sAccessibilityManager.isEnabled()) {
-            sAccessibilityManager.sendAccessibilityEvent(event);
+        AccessibilityManager accessibilityManager = fetchAccessibilityManager();
+        if (accessibilityManager.isEnabled()) {
+            accessibilityManager.sendAccessibilityEvent(event);
         }
     }
 
-    private static void fetchAccessibilityManager() {
-        if (sAccessibilityManager != null) return;
+    /** Returns the current ANIMATOR_DURATION_SCALE from the users OS accessibility settings. */
+    public static float getAnimatorDurationScale() {
+        if (!sExtraStateInitialized) updateExtraState();
+        return sAnimatorDurationScale;
+    }
 
-        // This instance is valid for the entire lifecycle of the app.
-        sAccessibilityManager =
-                (AccessibilityManager)
-                        ContextUtils.getApplicationContext()
-                                .getSystemService(Context.ACCESSIBILITY_SERVICE);
+    /** Returns whether the user settings specify preferred reduced motion. */
+    @CalledByNative
+    public static boolean prefersReducedMotion() {
+        return getAnimatorDurationScale() == 0.0;
+    }
+
+    private static AccessibilityManager fetchAccessibilityManager() {
+        AccessibilityManager ret = sAccessibilityManager;
+        if (ret == null) {
+            // This instance is valid for the entire lifecycle of the app.
+            ret =
+                    (AccessibilityManager)
+                            ContextUtils.getApplicationContext()
+                                    .getSystemService(Context.ACCESSIBILITY_SERVICE);
+            sAccessibilityManager = ret;
+        }
+        return ret;
     }
 
     static void updateExtraState() {
@@ -475,13 +529,30 @@ public class AccessibilityState {
                         0);
         sDisplayInversionEnabled = displayInversionEnabledSetting == 1;
 
+        sAnimatorDurationScale =
+                Settings.Global.getFloat(
+                        ContextUtils.getApplicationContext().getContentResolver(),
+                        Settings.Global.ANIMATOR_DURATION_SCALE,
+                        1f);
+
         int highTextContrastEnabled =
                 Settings.Secure.getInt(
                         context.getContentResolver(),
                         /*Settings.Secure.ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED*/
                         "high_text_contrast_enabled",
                         0);
-        sHighContrastEnabled = highTextContrastEnabled == 1;
+        float contrastLevel = 0f;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            UiModeManager uiModeManager =
+                    (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+            // This value can be between -1 and 1, but in practice the UI
+            // exposes 0 (default), 0.5 (medium), or 1 (high).
+            contrastLevel = uiModeManager.getContrast();
+        }
+        // If high text contrast is enabled or the colour contrast level is high,
+        // then high contrast is enabled.
+        sHighContrastEnabled = highTextContrastEnabled == 1 || contrastLevel == 1f;
     }
 
     protected static List<AccessibilityServiceInfo> getRunningServiceInfoList() {
@@ -491,8 +562,8 @@ public class AccessibilityState {
             return sServiceInfoListForTesting;
         }
 
-        return sAccessibilityManager.getEnabledAccessibilityServiceList(
-                AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
+        return fetchAccessibilityManager()
+                .getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
     }
 
     protected static String getEnabledServiceString(Context context) {
@@ -568,7 +639,7 @@ public class AccessibilityState {
     protected static void updateAccessibilityServices() {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
         if (!sInitialized) {
-            sState = new State(false, false, false, false, false, false, false, false);
+            sState = new State(false, false, false, false, false, false, false, false, false);
             fetchAccessibilityManager();
         }
         sInitialized = true;
@@ -637,8 +708,8 @@ public class AccessibilityState {
         // immediately. To ensure we always have an up-to-date value, check that the
         // set of services match, and if they don't, schedule an update with an exponential
         // back-off.
-        Collections.sort(runningServiceNames);
-        Collections.sort(enabledServiceNames);
+        runningServiceNames.sort(Comparator.naturalOrder());
+        enabledServiceNames.sort(Comparator.naturalOrder());
 
         // In some cases, Autofill will be running but will not be listed as an enabled service,
         // such as when some third-party password managers are running. In these cases, we will
@@ -686,8 +757,9 @@ public class AccessibilityState {
         }
 
         // Calculate heuristic state value derivations.
-        boolean isScreenReaderEnabled =
-                (0 != (sEventTypeMaskHeuristic & SCREEN_READER_EVENT_TYPE_MASK));
+        boolean isComplexUserInteractionServiceEnabled =
+                (0 != (sEventTypeMaskHeuristic & COMPLEX_USER_INTERACTION_SERVICE_EVENT_TYPE_MASK));
+        boolean isKnownScreenReaderEnabled = sServiceIds.contains(KNOWN_SCREEN_READER_SERVICE_IDS);
 
         boolean isOnlyAutofillRunning = false;
         try {
@@ -729,7 +801,6 @@ public class AccessibilityState {
         }
 
         // Calculate traditional state values.
-        boolean isSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
         boolean isTouchExplorationEnabled =
                 (0 != (sCapabilitiesMask & CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION))
                         && (0 != (sFlagsMask & FLAG_REQUEST_TOUCH_EXPLORATION_MODE));
@@ -753,17 +824,19 @@ public class AccessibilityState {
         Log.i(TAG, "Informing listeners of changes.");
         updateAndNotifyStateChange(
                 new State(
-                        isScreenReaderEnabled,
+                        isComplexUserInteractionServiceEnabled,
                         isTouchExplorationEnabled,
                         isPerformGesturesEnabled,
                         isAnyAccessibilityServiceEnabled,
                         isAccessibilityToolPresent,
-                        isSpokenFeedbackServicePresent,
                         isTextShowPasswordEnabled,
-                        isOnlyPasswordManagersEnabled));
+                        isOnlyAutofillRunning,
+                        isOnlyPasswordManagersEnabled,
+                        isKnownScreenReaderEnabled));
     }
 
     private static void updateAndNotifyStateChange(State newState) {
+        assert sState != null;
         State oldState = sState;
         sState = newState;
 
@@ -791,8 +864,6 @@ public class AccessibilityState {
     /**
      * Return a bitmask containing the union of all event types that running accessibility services
      * listen to.
-     *
-     * @return
      */
     @CalledByNative
     private static int getAccessibilityServiceEventTypeMask() {
@@ -803,7 +874,6 @@ public class AccessibilityState {
     /**
      * Return a bitmask containing the union of all feedback types that running accessibility
      * services provide.
-     * @return
      */
     @CalledByNative
     private static int getAccessibilityServiceFeedbackTypeMask() {
@@ -811,10 +881,7 @@ public class AccessibilityState {
         return sFeedbackTypeMask;
     }
 
-    /**
-     * Return a bitmask containing the union of all flags from running accessibility services.
-     * @return
-     */
+    /** Return a bitmask containing the union of all flags from running accessibility services. */
     @CalledByNative
     private static int getAccessibilityServiceFlagsMask() {
         if (!sInitialized) updateAccessibilityServices();
@@ -822,9 +889,8 @@ public class AccessibilityState {
     }
 
     /**
-     * Return a bitmask containing the union of all service capabilities from running
-     * accessibility services.
-     * @return
+     * Return a bitmask containing the union of all service capabilities from running accessibility
+     * services.
      */
     @CalledByNative
     private static int getAccessibilityServiceCapabilitiesMask() {
@@ -832,24 +898,21 @@ public class AccessibilityState {
         return sCapabilitiesMask;
     }
 
-    /**
-     * Return a list of ids of all running accessibility services.
-     * @return
-     */
+    /** Return a list of ids of all running accessibility services. */
     @CalledByNative
     private static String[] getAccessibilityServiceIds() {
         if (!sInitialized) updateAccessibilityServices();
-        return sServiceIds.toArray(new String[0]);
+        return assumeNonNull(sServiceIds).toArray(new String[0]);
     }
 
     /**
      * Register observers of various system properties and initialize a state for clients.
      *
-     * Note: This should only be called once, and before any client queries of accessibility state.
-     *       The first time any client queries the state, |this| will be initialized.
+     * <p>Note: This should only be called once, and before any client queries of accessibility
+     * state. The first time any client queries the state, |this| will be initialized.
      */
     public static void registerObservers() {
-        assert !sInitialized || sIsInTestingMode
+        assert !sInitialized || !sHasRegisteredObservers || sIsInTestingMode
                 : "AccessibilityState has been called to register observers, but observers have"
                         + " already been registered, or, a client has already queried the state."
                         + " Observers should only be registered once during browser init and before"
@@ -859,7 +922,7 @@ public class AccessibilityState {
         sAnimationDurationScaleObserver =
                 new ServicesObserver(
                         ThreadUtils.getUiThreadHandler(),
-                        () -> AccessibilityStateJni.get().onAnimatorDurationScaleChanged());
+                        AccessibilityState::processExtraStateChange);
         sAccessibilityServicesObserver =
                 new ServicesObserver(
                         ThreadUtils.getUiThreadHandler(),
@@ -872,6 +935,11 @@ public class AccessibilityState {
                 new ServicesObserver(
                         ThreadUtils.getUiThreadHandler(),
                         AccessibilityState::processExtraStateChange);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            sContrastChangeListener = (contrast) ->
+                AccessibilityState.processExtraStateChange();
+        }
 
         // We want to be notified whenever the user has updated the animator duration scale.
         contentResolver.registerContentObserver(
@@ -905,13 +973,26 @@ public class AccessibilityState {
                 false,
                 sDisplayInversionEnabledObserver);
 
-        // We want to be notified if the user changes their contrast settings.
+        // We want to be notified if the user changes their text contrast settings.
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(
                         /*Settings.Secure.ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED*/
                         "high_text_contrast_enabled"),
                 false,
                 sTextContrastObserver);
+
+        // We want to be notified if the user changes their colour contrast settings.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            Context context = ContextUtils.getApplicationContext();
+            UiModeManager uiModeManager =
+                (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+            if (uiModeManager != null && sContrastChangeListener != null) {
+                uiModeManager.addContrastChangeListener(context.getMainExecutor(),
+                    sContrastChangeListener);
+            }
+        }
+
+        sHasRegisteredObservers = true;
     }
 
     public static void initializeOnStartup() {
@@ -949,23 +1030,39 @@ public class AccessibilityState {
         if (newState != ApplicationState.HAS_RUNNING_ACTIVITIES
                 && newState != ApplicationState.HAS_PAUSED_ACTIVITIES) {
             unregisterObservers();
-        } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES && !sInitialized) {
+        } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
+                && (!sInitialized || !sHasRegisteredObservers)) {
             registerObservers();
         }
     }
 
     private static void unregisterObservers() {
-        ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
+        assert sAccessibilityServicesObserver != null;
+        assert sAnimationDurationScaleObserver != null;
+        assert sDisplayInversionEnabledObserver != null;
+        assert sTextContrastObserver != null;
+        Context context = ContextUtils.getApplicationContext();
+        ContentResolver contentResolver = context.getContentResolver();
         contentResolver.unregisterContentObserver(sAccessibilityServicesObserver);
         contentResolver.unregisterContentObserver(sAnimationDurationScaleObserver);
         contentResolver.unregisterContentObserver(sDisplayInversionEnabledObserver);
         contentResolver.unregisterContentObserver(sTextContrastObserver);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            UiModeManager uiModeManager =
+                (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+            if (uiModeManager != null && sContrastChangeListener != null) {
+                uiModeManager.removeContrastChangeListener(sContrastChangeListener);
+            }
+            sContrastChangeListener = null;
+        }
         sState = null;
         sPreInitCachedValuePerformGesturesEnabled = null;
         sInitialized = false;
+        sHasRegisteredObservers = false;
         sExtraStateInitialized = false;
         sDisplayInversionEnabled = false;
         sHighContrastEnabled = false;
+        sAnimatorDurationScale = 1f;
         sAccessibilityManager = null;
     }
 
@@ -976,6 +1073,7 @@ public class AccessibilityState {
 
     private static void processExtraStateChange() {
         updateExtraState();
+        AccessibilityStateJni.get().onAnimatorDurationScaleChanged();
         AccessibilityStateJni.get().onDisplayInversionEnabledChanged(isDisplayInversionEnabled());
         AccessibilityStateJni.get().onContrastLevelChanged(isHighContrastEnabled());
     }
@@ -1012,137 +1110,172 @@ public class AccessibilityState {
 
     // ForTesting methods.
 
-    public static void setIsScreenReaderEnabledForTesting(boolean enabled) {
+    public static void setIsComplexUserInteractionServiceEnabledForTesting(boolean enabled) {
         if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
 
         State newState =
                 new State(
                         enabled,
-                        sState.isTouchExplorationEnabled,
-                        sState.isPerformGesturesEnabled,
-                        sState.isAnyAccessibilityServiceEnabled,
-                        sState.isAccessibilityToolPresent,
-                        sState.isSpokenFeedbackServicePresent,
-                        sState.isTextShowPasswordEnabled,
-                        sState.isOnlyPasswordManagersEnabled);
+                        oldState.isTouchExplorationEnabled,
+                        oldState.isPerformGesturesEnabled,
+                        oldState.isAnyAccessibilityServiceEnabled,
+                        oldState.isAccessibilityToolPresent,
+                        oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
 
     public static void setIsTouchExplorationEnabledForTesting(boolean enabled) {
         if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
 
         State newState =
                 new State(
-                        sState.isScreenReaderEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
                         enabled,
-                        sState.isPerformGesturesEnabled,
-                        sState.isAnyAccessibilityServiceEnabled,
-                        sState.isAccessibilityToolPresent,
-                        sState.isSpokenFeedbackServicePresent,
-                        sState.isTextShowPasswordEnabled,
-                        sState.isOnlyPasswordManagersEnabled);
+                        oldState.isPerformGesturesEnabled,
+                        oldState.isAnyAccessibilityServiceEnabled,
+                        oldState.isAccessibilityToolPresent,
+                        oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
 
     public static void setIsPerformGesturesEnabledForTesting(boolean enabled) {
         if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
 
         State newState =
                 new State(
-                        sState.isScreenReaderEnabled,
-                        sState.isTouchExplorationEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
+                        oldState.isTouchExplorationEnabled,
                         enabled,
-                        sState.isAnyAccessibilityServiceEnabled,
-                        sState.isAccessibilityToolPresent,
-                        sState.isSpokenFeedbackServicePresent,
-                        sState.isTextShowPasswordEnabled,
-                        sState.isOnlyPasswordManagersEnabled);
+                        oldState.isAnyAccessibilityServiceEnabled,
+                        oldState.isAccessibilityToolPresent,
+                        oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
 
     public static void setIsAnyAccessibilityServiceEnabledForTesting(boolean enabled) {
         if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
 
         State newState =
                 new State(
-                        sState.isScreenReaderEnabled,
-                        sState.isTouchExplorationEnabled,
-                        sState.isPerformGesturesEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
+                        oldState.isTouchExplorationEnabled,
+                        oldState.isPerformGesturesEnabled,
                         enabled,
-                        sState.isAccessibilityToolPresent,
-                        sState.isSpokenFeedbackServicePresent,
-                        sState.isTextShowPasswordEnabled,
-                        sState.isOnlyPasswordManagersEnabled);
+                        oldState.isAccessibilityToolPresent,
+                        oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
 
     public static void setIsAccessibilityToolPresentForTesting(boolean enabled) {
         if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
 
         State newState =
                 new State(
-                        sState.isScreenReaderEnabled,
-                        sState.isTouchExplorationEnabled,
-                        sState.isPerformGesturesEnabled,
-                        sState.isAnyAccessibilityServiceEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
+                        oldState.isTouchExplorationEnabled,
+                        oldState.isPerformGesturesEnabled,
+                        oldState.isAnyAccessibilityServiceEnabled,
                         enabled,
-                        sState.isSpokenFeedbackServicePresent,
-                        sState.isTextShowPasswordEnabled,
-                        sState.isOnlyPasswordManagersEnabled);
-
-        updateAndNotifyStateChange(newState);
-    }
-
-    public static void setIsSpokenFeedbackServicePresentForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-
-        State newState =
-                new State(
-                        sState.isScreenReaderEnabled,
-                        sState.isTouchExplorationEnabled,
-                        sState.isPerformGesturesEnabled,
-                        sState.isAnyAccessibilityServiceEnabled,
-                        sState.isAccessibilityToolPresent,
-                        enabled,
-                        sState.isTextShowPasswordEnabled,
-                        sState.isOnlyPasswordManagersEnabled);
+                        oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
 
     public static void setIsTextShowPasswordEnabledForTesting(boolean enabled) {
         if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
 
         State newState =
                 new State(
-                        sState.isScreenReaderEnabled,
-                        sState.isTouchExplorationEnabled,
-                        sState.isPerformGesturesEnabled,
-                        sState.isAnyAccessibilityServiceEnabled,
-                        sState.isAccessibilityToolPresent,
-                        sState.isSpokenFeedbackServicePresent,
+                        oldState.isComplexUserInteractionServiceEnabled,
+                        oldState.isTouchExplorationEnabled,
+                        oldState.isPerformGesturesEnabled,
+                        oldState.isAnyAccessibilityServiceEnabled,
+                        oldState.isAccessibilityToolPresent,
                         enabled,
-                        sState.isOnlyPasswordManagersEnabled);
+                        oldState.isOnlyAutofillRunning,
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
+
+        updateAndNotifyStateChange(newState);
+    }
+
+    public static void setIsOnlyAutofillRunningForTesting(boolean enabled) {
+        if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
+
+        State newState =
+                new State(
+                        oldState.isComplexUserInteractionServiceEnabled,
+                        oldState.isTouchExplorationEnabled,
+                        oldState.isPerformGesturesEnabled,
+                        oldState.isAnyAccessibilityServiceEnabled,
+                        oldState.isAccessibilityToolPresent,
+                        oldState.isTextShowPasswordEnabled,
+                        enabled,
+                        oldState.isOnlyPasswordManagersEnabled,
+                        oldState.isKnownScreenReaderEnabled);
 
         updateAndNotifyStateChange(newState);
     }
 
     public static void setIsOnlyPasswordManagersEnabledForTesting(boolean enabled) {
         if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
 
         State newState =
                 new State(
-                        sState.isScreenReaderEnabled,
-                        sState.isTouchExplorationEnabled,
-                        sState.isPerformGesturesEnabled,
-                        sState.isAnyAccessibilityServiceEnabled,
-                        sState.isAccessibilityToolPresent,
-                        sState.isSpokenFeedbackServicePresent,
-                        sState.isTextShowPasswordEnabled,
+                        oldState.isComplexUserInteractionServiceEnabled,
+                        oldState.isTouchExplorationEnabled,
+                        oldState.isPerformGesturesEnabled,
+                        oldState.isAnyAccessibilityServiceEnabled,
+                        oldState.isAccessibilityToolPresent,
+                        oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
+                        enabled,
+                        oldState.isKnownScreenReaderEnabled);
+
+        updateAndNotifyStateChange(newState);
+    }
+
+    public static void setIsKnownScreenReaderEnabledForTesting(boolean enabled) {
+        if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
+
+        State newState =
+                new State(
+                        oldState.isComplexUserInteractionServiceEnabled,
+                        oldState.isTouchExplorationEnabled,
+                        oldState.isPerformGesturesEnabled,
+                        oldState.isAnyAccessibilityServiceEnabled,
+                        oldState.isAccessibilityToolPresent,
+                        oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
+                        oldState.isOnlyPasswordManagersEnabled,
                         enabled);
 
         updateAndNotifyStateChange(newState);
@@ -1187,8 +1320,16 @@ public class AccessibilityState {
         sEnabledServiceStringForTesting = enabledServiceString;
     }
 
+    public static void setServiceIdsForTesting(String newServiceId) {
+        if (!sInitialized) initializeForTesting();
+
+        sServiceIds = new ArrayList<String>();
+        sServiceIds.add(newServiceId);
+    }
+
     private static void initializeForTesting() {
-        sState = new State(false, false, false, false, false, false, false, false);
+        sState = new State(false, false, false, false, false, false, false, false, false);
+        sServiceIds = new ArrayList<String>();
         fetchAccessibilityManager();
         sInitialized = true;
         sIsInTestingMode = true;
@@ -1196,6 +1337,7 @@ public class AccessibilityState {
 
     protected static void uninitializeForTesting() {
         sState = null;
+        sServiceIds = null;
         sAccessibilityManager = null;
         sInitialized = false;
         sIsInTestingMode = false;

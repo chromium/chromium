@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -15,13 +14,14 @@ import org.chromium.ui.modelutil.PropertyModel;
  * The mediator responsible for listening to back-end changes affecting the quick delete {@link
  * View}.
  */
+@NullMarked
 class QuickDeleteMediator
         implements QuickDeleteDialogDelegate.TimePeriodChangeObserver,
                 QuickDeleteBridge.DomainVisitsCallback {
-    private final @NonNull PropertyModel mPropertyModel;
-    private final @NonNull Profile mProfile;
-    private final @NonNull QuickDeleteBridge mQuickDeleteBridge;
-    private final @NonNull QuickDeleteTabsFilter mQuickDeleteRegularTabsFilter;
+    private final PropertyModel mPropertyModel;
+    private final Profile mProfile;
+    private final QuickDeleteBridge mQuickDeleteBridge;
+    private final QuickDeleteTabsFilter mQuickDeleteRegularTabsFilter;
     // Null when declutter is disabled.
     private final @Nullable QuickDeleteTabsFilter mQuickDeleteArchivedTabsFilter;
 
@@ -34,10 +34,10 @@ class QuickDeleteMediator
      *     closed data.
      */
     QuickDeleteMediator(
-            @NonNull PropertyModel propertyModel,
-            @NonNull Profile profile,
-            @NonNull QuickDeleteBridge quickDeleteBridge,
-            @NonNull QuickDeleteTabsFilter quickDeleteRegularTabsFilter,
+            PropertyModel propertyModel,
+            Profile profile,
+            QuickDeleteBridge quickDeleteBridge,
+            QuickDeleteTabsFilter quickDeleteRegularTabsFilter,
             @Nullable QuickDeleteTabsFilter quickDeleteArchivedTabsFilter) {
         mPropertyModel = propertyModel;
         mProfile = profile;

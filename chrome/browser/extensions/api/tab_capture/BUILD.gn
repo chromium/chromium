@@ -27,6 +27,7 @@ source_set("tab_capture") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common:non_code_constants",
     "//components/sessions",
     "//content/public/browser",

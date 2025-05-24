@@ -61,13 +61,6 @@ export interface FingerprintBrowserProxy {
   removeEnrollment(index: number, authToken: string): Promise<boolean>;
 
   changeEnrollmentLabel(index: number, newLabel: string): Promise<boolean>;
-
-  /**
-   * TODO(sammiequon): Temporary function to let the handler know when a
-   * completed scan has been sent via click on the setup fingerprint dialog.
-   * Remove this when real scans are implemented.
-   */
-  fakeScanComplete(): void;
 }
 
 let instance: FingerprintBrowserProxy|null = null;
@@ -107,9 +100,5 @@ export class FingerprintBrowserProxyImpl implements FingerprintBrowserProxy {
 
   changeEnrollmentLabel(index: number, newLabel: string): Promise<boolean> {
     return sendWithPromise('changeEnrollmentLabel', index, newLabel);
-  }
-
-  fakeScanComplete(): void {
-    chrome.send('fakeScanComplete');
   }
 }

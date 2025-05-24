@@ -4,7 +4,8 @@
 
 #include "remoting/host/linux/gnome_display_config.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "third_party/webrtc/modules/portal/scoped_glib.h"

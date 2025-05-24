@@ -9,7 +9,6 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -26,6 +25,7 @@
 
 static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX));
 
+class Browser;
 class ExtensionEnableFlow;
 
 namespace content {

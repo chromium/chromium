@@ -15,7 +15,8 @@ class WebState;
 
 namespace autofill {
 
-class FormUtilJavaScriptFeature;
+class AutofillRendererIDJavaScriptFeature;
+class RemoteFrameRegistrationJavaScriptFeature;
 
 // Registers listeners that are used to handle forms, enabling autofill and the
 // replacement method to dismiss the keyboard needed because of the Autofill
@@ -30,10 +31,6 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   // added form activity and a removed form activity when `allowBatching` is
   // true.
   void TrackFormMutations(web::WebFrame* frame, int mutation_tracking_delay);
-
-  // Toggles tracking the source of the input events in the frame.
-  void ToggleTrackingUserEditedFields(web::WebFrame* frame,
-                                      bool track_user_edited_fields);
 
  private:
   friend class base::NoDestructor<FormHandlersJavaScriptFeature>;
@@ -57,7 +54,9 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   // TODO(crbug.com/359538514): Remove test constructor once isolated world for
   // Autofill is launched.
   FormHandlersJavaScriptFeature(
-      FormUtilJavaScriptFeature* form_util_java_script_feature);
+      AutofillRendererIDJavaScriptFeature* renderer_id_feature,
+      RemoteFrameRegistrationJavaScriptFeature*
+          remote_frame_registration_java_script_feature);
 };
 
 }  // namespace autofill

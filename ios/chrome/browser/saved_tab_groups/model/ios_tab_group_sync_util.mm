@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 
-#import "components/saved_tab_groups/saved_tab_group.h"
-#import "components/saved_tab_groups/saved_tab_group_tab.h"
-#import "components/saved_tab_groups/tab_group_sync_delegate.h"
-#import "components/saved_tab_groups/tab_group_sync_service.h"
-#import "components/saved_tab_groups/types.h"
-#import "components/saved_tab_groups/utils.h"
+#import "base/debug/dump_without_crashing.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_service.h"
+#import "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/types.h"
+#import "components/saved_tab_groups/public/utils.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -93,7 +96,8 @@ void CloseTabGroupLocally(const TabGroup* tab_group,
                           TabGroupSyncService* sync_service) {
   // `sync_service` is nullptr in incognito.
   if (sync_service && sync_service->GetGroup(tab_group->tab_group_id())) {
-    sync_service->RemoveLocalTabGroupMapping(tab_group->tab_group_id());
+    sync_service->RemoveLocalTabGroupMapping(tab_group->tab_group_id(),
+                                             ClosingSource::kClosedByUser);
   }
   CloseAllWebStatesInGroup(*web_state_list, tab_group,
                            WebStateList::CLOSE_USER_ACTION);
@@ -285,6 +289,58 @@ bool IsSaveableNavigation(web::NavigationContext* navigation_context) {
   }
 
   return IsURLValidForSavedTabGroups(navigation_context->GetUrl());
+}
+
+bool IsTabGroupShared(const TabGroup* tab_group,
+                      TabGroupSyncService* sync_service) {
+  if (!sync_service || !tab_group) {
+    return false;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      sync_service->GetGroup(tab_group->tab_group_id());
+  return saved_group.has_value() && saved_group->collaboration_id().has_value();
+}
+
+data_sharing::MemberRole GetUserRoleForGroup(
+    const TabGroup* tab_group,
+    TabGroupSyncService* tab_group_sync_service,
+    collaboration::CollaborationService* collaboration_service) {
+  if (!collaboration_service) {
+    return data_sharing::MemberRole::kUnknown;
+  }
+
+  CollaborationId collab_id =
+      GetTabGroupCollabID(tab_group, tab_group_sync_service);
+  if (collab_id == CollaborationId()) {
+    return data_sharing::MemberRole::kUnknown;
+  }
+
+  data_sharing::GroupId group_id = data_sharing::GroupId(collab_id.value());
+  return collaboration_service->GetCurrentUserRoleForGroup(group_id);
+}
+
+CollaborationId GetTabGroupCollabID(
+    const TabGroup* tab_group,
+    TabGroupSyncService* tab_group_sync_service) {
+  if (!tab_group) {
+    return CollaborationId();
+  }
+  return GetTabGroupCollabID(tab_group->tab_group_id(), tab_group_sync_service);
+}
+
+CollaborationId GetTabGroupCollabID(
+    const tab_groups::EitherGroupID& tab_group_id,
+    TabGroupSyncService* tab_group_sync_service) {
+  if (tab_group_sync_service) {
+    std::optional<tab_groups::SavedTabGroup> saved_group =
+        tab_group_sync_service->GetGroup(tab_group_id);
+    if (saved_group.has_value() &&
+        saved_group->collaboration_id().has_value()) {
+      return saved_group->collaboration_id().value();
+    }
+  }
+  return CollaborationId();
 }
 
 }  // namespace utils

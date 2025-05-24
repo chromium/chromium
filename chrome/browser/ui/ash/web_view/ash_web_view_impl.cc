@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/ash/web_view/ash_web_view_impl.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_session.h"
@@ -115,6 +117,7 @@ void AshWebViewImpl::AddedToWidget() {
 }
 
 bool AshWebViewImpl::IsWebContentsCreationOverridden(
+    content::RenderFrameHost* opener,
     content::SiteInstance* source_site_instance,
     content::mojom::WindowContainerType window_container_type,
     const GURL& opener_url,
@@ -127,8 +130,8 @@ bool AshWebViewImpl::IsWebContentsCreationOverridden(
     return true;
   }
   return content::WebContentsDelegate::IsWebContentsCreationOverridden(
-      source_site_instance, window_container_type, opener_url, frame_name,
-      target_url);
+      opener, source_site_instance, window_container_type, opener_url,
+      frame_name, target_url);
 }
 
 content::WebContents* AshWebViewImpl::OpenURLFromTab(
@@ -143,6 +146,24 @@ content::WebContents* AshWebViewImpl::OpenURLFromTab(
   }
   return content::WebContentsDelegate::OpenURLFromTab(
       source, params, std::move(navigation_handle_callback));
+}
+
+void AshWebViewImpl::ActivateContents(content::WebContents* contents) {
+  // In cases where the widget is not activatable, an `activation_url` may be
+  // provided to show instead.
+  // This is currently used for Focus Mode YTM for when the user clicks on the
+  // media controls view. Since the media window is a custom hidden window, a
+  // separately provided URL tab (navigating to `activation_url`) is shown when
+  // the hidden media window is activated.
+  if (!GetWidget()->CanActivate() && !params_.activation_url.is_empty()) {
+    ChromeNewWindowClient::Get()->OpenUrl(
+        params_.activation_url,
+        ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+        ash::NewWindowDelegate::Disposition::kSwitchToTab);
+    return;
+  }
+
+  content::WebContentsDelegate::ActivateContents(contents);
 }
 
 void AshWebViewImpl::ResizeDueToAutoResize(content::WebContents* web_contents,

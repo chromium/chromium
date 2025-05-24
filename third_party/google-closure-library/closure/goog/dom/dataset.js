@@ -186,8 +186,8 @@ goog.dom.dataset.getAll = function(element) {
     for (var i = 0; i < attributes.length; ++i) {
       var attribute = attributes[i];
       if (goog.string.startsWith(attribute.name, goog.dom.dataset.PREFIX_)) {
-        // We use substr(5), since it's faster than replacing 'data-' with ''.
-        var key = goog.string.toCamelCase(attribute.name.substr(5));
+        // We use slice(5), since it's faster than replacing 'data-' with ''.
+        var key = goog.string.toCamelCase(attribute.name.slice(5));
         dataset[key] = attribute.value;
       }
     }

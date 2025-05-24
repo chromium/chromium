@@ -127,11 +127,13 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
   // all.
   bool hw_support_for_multiple_refresh_rates_;
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_MAC)
   // For SetPreferredFrameInterval(), Display calls root_compositor_frame_sink
   // SetPreferredFrameInterval(). If |output_surface_supports_set_frame_rate_|
   // is true, Display also calls output_surface->SetFrameRate() and the new
   // frame rate is not limited to the list of |supported_intervals_|.
   const bool output_surface_supports_set_frame_rate_;
+#endif
 };
 
 }  // namespace viz

@@ -5,9 +5,8 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_CWV_SSL_ERROR_HANDLER_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_CWV_SSL_ERROR_HANDLER_INTERNAL_H_
 
-#include "ios/web_view/public/cwv_ssl_error_handler.h"
-
 #import "ios/web/public/web_state.h"
+#include "ios/web_view/public/cwv_ssl_error_handler.h"
 #include "net/ssl/ssl_info.h"
 
 NS_ASSUME_NONNULL_BEGIN

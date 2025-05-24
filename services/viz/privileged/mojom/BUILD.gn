@@ -12,6 +12,9 @@ mojom("mojom") {
   if (use_viz_debugger) {
     enabled_features += [ "use_viz_debugger" ]
   }
+  if (use_ozone) {
+    enabled_features += [ "use_ozone" ]
+  }
 
   public_deps = [
     "//components/discardable_memory/public/mojom",

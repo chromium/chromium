@@ -13,6 +13,7 @@
 #include "ash/system/notification_center/message_view_factory.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/growth/metrics.h"
@@ -136,22 +137,48 @@ std::string GetNotificationId(int campaign_id) {
 
 HandleNotificationClickAndCloseDelegate::
     HandleNotificationClickAndCloseDelegate(
+        const base::Value::Dict* params,
         const ButtonClickCallback& click_callback,
         const CloseCallback& close_callback)
-    : click_callback_(click_callback), close_callback_(close_callback) {}
+    :  // Copy ctor and assignment of Dict are not allowed. Need to use Clone()
+       // explicitly.
+       // `params` are currently owned by CampaignManager. When campaigns are
+       // reloaded at session start (e.g: lock and unlock), the memory will
+       // become invalid, so store the value in
+       // HandleNotificationClickAndCloseDelegate.
+       // HandleNotificationClickAndCloseDelegate is one instance per
+       // notification.
+      params_(params->Clone()),
+      click_callback_(click_callback),
+      close_callback_(close_callback) {}
 HandleNotificationClickAndCloseDelegate::
-    ~HandleNotificationClickAndCloseDelegate() {}
+    ~HandleNotificationClickAndCloseDelegate() = default;
 
 void HandleNotificationClickAndCloseDelegate::Click(
     const std::optional<int>& button_index,
     const std::optional<std::u16string>& reply) {
+  if (button_index) {
+    button_clicked_ = true;
+  }
+
   if (click_callback_.is_null()) {
     return;
   }
-  click_callback_.Run(button_index);
+
+  // Need to make another clone here because the Dict value is passed to
+  // multiple functions. If pass by reference, current test will fail due to
+  // dangling pointer.
+  click_callback_.Run(params_.Clone(), button_index);
 }
 
 void HandleNotificationClickAndCloseDelegate::Close(bool by_user) {
+  // Click any button in the notification will also trigger `Close()`.
+  // Return here because we only want to log the close metric with explicit
+  // close actions, such as clicking the close button.
+  if (button_clicked_) {
+    return;
+  }
+
   if (close_callback_.is_null()) {
     return;
   }
@@ -200,10 +227,11 @@ void ShowNotificationActionPerformer::Run(
               ash::NotificationCatalogName::kGrowthFramework),
           optional_fields,
           base::MakeRefCounted<HandleNotificationClickAndCloseDelegate>(
+              params,
               base::BindRepeating(
                   &ShowNotificationActionPerformer::HandleNotificationClicked,
-                  weak_ptr_factory_.GetWeakPtr(), params, id, campaign_id,
-                  group_id, show_notification_params->should_log_cros_events),
+                  weak_ptr_factory_.GetWeakPtr(), id, campaign_id, group_id,
+                  show_notification_params->should_log_cros_events),
               base::BindRepeating(
                   &ShowNotificationActionPerformer::HandleNotificationClose,
                   weak_ptr_factory_.GetWeakPtr(), campaign_id, group_id,
@@ -246,11 +274,11 @@ void ShowNotificationActionPerformer::HandleNotificationClose(
 }
 
 void ShowNotificationActionPerformer::HandleNotificationClicked(
-    const base::Value::Dict* params,
     const std::string& notification_id,
     int campaign_id,
     std::optional<int> group_id,
     bool should_log_cros_events,
+    base::Value::Dict params,
     std::optional<int> button_index) {
   if (!button_index) {
     // Notification message body clicked.
@@ -265,12 +293,13 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
     button_id = CampaignButtonId::kSecondary;
   }
 
-  const auto* buttons_value = params->FindList(kButtonsPath);
+  const auto* buttons_value = params.FindList(kButtonsPath);
   CHECK(buttons_value);
 
   const auto& button_value = (*buttons_value)[button_index_value];
   if (!button_value.is_dict()) {
     CAMPAIGNS_LOG(ERROR) << "Invalid button payload.";
+    return;
   }
 
   const auto should_mark_dismissed =

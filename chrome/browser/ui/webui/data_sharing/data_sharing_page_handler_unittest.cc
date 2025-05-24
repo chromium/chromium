@@ -7,9 +7,11 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -28,8 +30,18 @@ class MockPage : public data_sharing::mojom::Page {
   MOCK_METHOD(void, OnAccessTokenFetched, (const std::string& access_token));
   MOCK_METHOD(void,
               ReadGroups,
-              (const std::vector<std::string>& group_ids,
+              (data_sharing::mojom::ReadGroupsParamsPtr read_groups_params,
                ReadGroupsCallback callback));
+  MOCK_METHOD(void,
+              ReadGroupWithToken,
+              (data_sharing::mojom::ReadGroupWithTokenParamPtr param,
+               ReadGroupWithTokenCallback callback));
+  MOCK_METHOD(void,
+              DeleteGroup,
+              (const std::string& group_id, DeleteGroupCallback callback));
+  MOCK_METHOD(void,
+              LeaveGroup,
+              (const std::string& group_id, LeaveGroupCallback callback));
 
   mojo::Receiver<data_sharing::mojom::Page> receiver_{this};
 };
@@ -54,11 +66,9 @@ class DataSharingPageHandlerUnitTest : public BrowserWithTestWindowTest {
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            data_sharing::features::kDataSharingFeature,
-        },
-        /*disabled_features=*/{});
+        {data_sharing::features::kDataSharingFeature,
+         tab_groups::kTabGroupSyncServiceDesktopMigration},
+        {});
     BrowserWithTestWindowTest::SetUp();
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
@@ -92,6 +102,19 @@ TEST_F(DataSharingPageHandlerUnitTest, GetShareLink) {
       base::BindLambdaForTesting(
           [&](const GURL& url) { ASSERT_TRUE(url.is_valid()); });
   handler()->GetShareLink("GROUP_ID", "ACCESS_TOKEN", std::move(callback));
+}
+
+TEST_F(DataSharingPageHandlerUnitTest, GetTabGroupPreview) {
+  data_sharing::mojom::PageHandler::GetTabGroupPreviewCallback callback =
+      base::BindLambdaForTesting(
+          [&](data_sharing::mojom::GroupPreviewPtr preview) {
+            EXPECT_EQ(preview->title, "");
+            EXPECT_EQ(preview->shared_tabs.size(), size_t(0));
+            EXPECT_EQ(preview->status_code,
+                      mojo_base::mojom::AbslStatusCode::kUnknown);
+          });
+  handler()->GetTabGroupPreview("GROUP_ID", "ACCESS_TOKEN",
+                                std::move(callback));
 }
 
 TEST_F(DataSharingPageHandlerUnitTest, OnAccessTokenFetched) {

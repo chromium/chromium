@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
-#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher+testing.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
@@ -16,11 +15,11 @@
 #import "components/variations/variations_url_constants.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/variations/model/constants.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher+testing.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+fetcher.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
 #import "net/http/http_status_code.h"
-
-#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+fetcher.h"
 
 namespace {
 
@@ -119,9 +118,7 @@ static BOOL g_seed_fetching_in_progress = NO;
   // from `doActualFetch` immediately. Note that the block will retain `self`.
   dispatch_async(queue, ^{
     if (g_seed_fetching_in_progress) {
-      NOTREACHED_IN_MIGRATION()
-          << "SeedFetch started while already in progress";
-      [self notifyDelegateSeedFetchResult:NO];
+      NOTREACHED() << "SeedFetch started while already in progress";
     } else {
       [self doActualFetch];
     }

@@ -1,0 +1,73 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("braille_display_private") {
+  sources = [
+    "braille_display_private_api.cc",
+    "braille_display_private_api.h",
+  ]
+
+  if (use_brlapi) {
+    sources += [
+      "braille_controller_brlapi.cc",
+      "braille_controller_brlapi.h",
+      "brlapi_connection.cc",
+      "brlapi_connection.h",
+      "brlapi_keycode_map.cc",
+      "brlapi_keycode_map.h",
+    ]
+  } else {
+    sources += [ "braille_controller_stub.cc" ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    ":controller",
+    "//base",
+    "//chrome/common/extensions/api",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles:profile",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/login/lock",
+    ]
+  }
+
+  if (use_brlapi) {
+    public_deps += [ "//third_party/libbrlapi" ]
+
+    deps += [
+      "//content/public/browser",
+      "//content/public/common",
+    ]
+  }
+}
+
+source_set("controller") {
+  sources = [
+    "braille_controller.h",
+    "stub_braille_controller.cc",
+    "stub_braille_controller.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//chrome/common/extensions/api" ]
+
+  deps = [ "//base" ]
+}

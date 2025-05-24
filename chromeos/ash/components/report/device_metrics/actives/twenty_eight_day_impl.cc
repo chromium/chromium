@@ -68,26 +68,22 @@ base::WeakPtr<TwentyEightDayImpl> TwentyEightDayImpl::GetWeakPtr() {
 }
 
 void TwentyEightDayImpl::CheckMembershipOprf() {
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 void TwentyEightDayImpl::OnCheckMembershipOprfComplete(
     std::unique_ptr<std::string> response_body) {
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 void TwentyEightDayImpl::CheckMembershipQuery(
     const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response) {
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 void TwentyEightDayImpl::OnCheckMembershipQueryComplete(
     std::unique_ptr<std::string> response_body) {
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 void TwentyEightDayImpl::CheckIn() {
@@ -118,8 +114,7 @@ void TwentyEightDayImpl::CheckIn() {
 
 void TwentyEightDayImpl::OnCheckInComplete(
     std::unique_ptr<std::string> response_body) {
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 void TwentyEightDayImpl::OnCheckInCompleteCustom(
@@ -680,17 +675,14 @@ TwentyEightDayImpl::GetPsmIdentifiersToQueryPhaseTwo() {
     return {};
   }
 
-  // TODO(hirthanan): Thoroughly evaluate different scenarios of calculations.
   base::TimeDelta time_diff = right_ts - left_ts;
   base::Time query_day = (left_ts + time_diff / 2).UTCMidnight();
   std::string window_id_query_day = utils::TimeToYYYYMMDDString(query_day);
 
   if (actives_cache_.contains(window_id_query_day)) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unexpectedly the Window ID is contained in the actives "
-           "cache already = "
-        << window_id_query_day;
-    return {};
+    NOTREACHED() << "Unexpectedly the Window ID is contained in the actives "
+                    "cache already = "
+                 << window_id_query_day;
   }
 
   std::optional<psm_rlwe::RlwePlaintextId> psm_id_query_day =
@@ -715,9 +707,7 @@ void TwentyEightDayImpl::CheckMembershipOprfSecondPhase() {
   DCHECK(!url_loader_);
 
   if (!IsFirstPhaseComplete()) {
-    NOTREACHED_IN_MIGRATION();
-    std::move(callback_).Run();
-    return;
+    NOTREACHED();
   }
   PsmClientManager* psm_client_manager = GetParams()->GetPsmClientManager();
   psm_client_manager->SetPsmRlweClient(kPsmUseCase,
@@ -911,7 +901,6 @@ void TwentyEightDayImpl::OnCheckMembershipQueryCompleteSecondPhase(
   SaveActivesCachePref();
 
   if (IsSecondPhaseComplete()) {
-    // TODO(hirthanan): Finish implementation here.
     base::Time last_ping_ts = FindLeftMostKnownMembership() - base::Days(28);
     LOG(ERROR) << "Device pinged last on = " << last_ping_ts;
     SetLastPingTimestamp(last_ping_ts);

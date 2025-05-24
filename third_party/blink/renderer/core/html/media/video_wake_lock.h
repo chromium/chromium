@@ -59,6 +59,12 @@ class CORE_EXPORT VideoWakeLock final
   float GetSizeThresholdForTests() const;
   bool HasStrictWakeLockForTests() const;
 
+  // Anecdotally, most screen timeouts are at least 5s, so we don't need high
+  // frequency intersection updates. Choose a value such that we're never more
+  // than 5s apart w/ a 100ms of delivery leeway.
+  static constexpr base::TimeDelta kIntersectionObserverDelay =
+      base::Milliseconds(5000 / 2 - 100);
+
  private:
   friend class VideoWakeLockTest;
 

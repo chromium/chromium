@@ -4,17 +4,18 @@
 
 #include "third_party/blink/renderer/platform/media/url_index.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -49,9 +50,9 @@ void ResourceMultiBuffer::OnEmpty() {
 }
 
 UrlData::UrlData(base::PassKey<UrlIndex>,
-                 const GURL& url,
+                 const KURL& url,
                  CorsMode cors_mode,
-                 UrlIndex* url_index,
+                 base::WeakPtr<UrlIndex> url_index,
                  CacheMode cache_lookup_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : UrlData(url,
@@ -60,9 +61,9 @@ UrlData::UrlData(base::PassKey<UrlIndex>,
               cache_lookup_mode,
               std::move(task_runner)) {}
 
-UrlData::UrlData(const GURL& url,
+UrlData::UrlData(const KURL& url,
                  CorsMode cors_mode,
-                 UrlIndex* url_index,
+                 base::WeakPtr<UrlIndex> url_index,
                  CacheMode cache_lookup_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : url_(url),
@@ -78,7 +79,7 @@ UrlData::UrlData(const GURL& url,
 
 UrlData::~UrlData() = default;
 
-std::pair<GURL, UrlData::CorsMode> UrlData::key() const {
+std::pair<KURL, UrlData::CorsMode> UrlData::key() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return std::make_pair(url(), cors_mode());
 }
@@ -174,14 +175,19 @@ void UrlData::Use() {
   last_used_ = base::Time::Now();
 }
 
-bool UrlData::ValidateDataOrigin(const GURL& origin) {
+bool UrlData::ValidateDataOrigin(const KURL& origin) {
   if (!have_data_origin_) {
     data_origin_ = origin;
     have_data_origin_ = true;
     return true;
   }
   if (cors_mode_ == UrlData::CORS_UNSPECIFIED) {
-    return data_origin_ == origin;
+    // If both origins are null return true, otherwise
+    // SecurityOrigin::AreSameOrigin will create a unique nonce for each.
+    if (data_origin_.IsNull() && origin.IsNull()) {
+      return true;
+    }
+    return SecurityOrigin::SecurityOrigin::AreSameOrigin(data_origin_, origin);
   }
   // The actual cors checks is done in the net layer.
   return true;
@@ -189,7 +195,9 @@ bool UrlData::ValidateDataOrigin(const GURL& origin) {
 
 void UrlData::OnEmpty() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  url_index_->RemoveUrlData(this);
+  if (url_index_) {
+    url_index_->RemoveUrlData(this);
+  }
 }
 
 bool UrlData::FullyCached() {
@@ -250,48 +258,41 @@ UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
       lru_(base::MakeRefCounted<MultiBuffer::GlobalLRU>(task_runner)),
       block_shift_(block_shift),
       memory_pressure_listener_(FROM_HERE,
-                                base::BindRepeating(&UrlIndex::OnMemoryPressure,
-                                                    base::Unretained(this))),
+                                WTF::BindRepeating(&UrlIndex::OnMemoryPressure,
+                                                   WTF::Unretained(this))),
       task_runner_(std::move(task_runner)) {}
 
-UrlIndex::~UrlIndex() {
-#if DCHECK_IS_ON()
-  // Verify that only |this| holds reference to UrlData instances.
-  auto dcheck_has_one_ref = [](const UrlDataMap::value_type& entry) {
-    DCHECK(entry.second->HasOneRef());
-  };
-  base::ranges::for_each(indexed_data_, dcheck_has_one_ref);
-#endif
-}
+UrlIndex::~UrlIndex() = default;
 
 void UrlIndex::RemoveUrlData(const scoped_refptr<UrlData>& url_data) {
   DCHECK(url_data->multibuffer()->map().empty());
 
   auto i = indexed_data_.find(url_data->key());
-  if (i != indexed_data_.end() && i->second == url_data)
+  if (i != indexed_data_.end() && i->value == url_data) {
     indexed_data_.erase(i);
+  }
 }
 
-scoped_refptr<UrlData> UrlIndex::GetByUrl(const GURL& gurl,
+scoped_refptr<UrlData> UrlIndex::GetByUrl(const KURL& url,
                                           UrlData::CorsMode cors_mode,
                                           UrlData::CacheMode cache_mode) {
   if (cache_mode == UrlData::kNormal) {
-    auto i = indexed_data_.find(std::make_pair(gurl, cors_mode));
-    if (i != indexed_data_.end() && i->second->Valid()) {
-      return i->second;
+    auto i = indexed_data_.find(std::make_pair(url, cors_mode));
+    if (i != indexed_data_.end() && i->value->Valid()) {
+      return i->value;
     }
   }
 
-  return NewUrlData(gurl, cors_mode, cache_mode);
+  return NewUrlData(url, cors_mode, cache_mode);
 }
 
 scoped_refptr<UrlData> UrlIndex::NewUrlData(
-    const GURL& url,
+    const KURL& url,
     UrlData::CorsMode cors_mode,
     UrlData::CacheMode cache_lookup_mode) {
   return base::MakeRefCounted<UrlData>(base::PassKey<UrlIndex>(), url,
-                                       cors_mode, this, cache_lookup_mode,
-                                       task_runner_);
+                                       cors_mode, weak_factory_.GetWeakPtr(),
+                                       cache_lookup_mode, task_runner_);
 }
 
 void UrlIndex::OnMemoryPressure(
@@ -333,7 +334,7 @@ scoped_refptr<UrlData> UrlIndex::TryInsert(
   if (iter == indexed_data_.end()) {
     // If valid and not already indexed, index it.
     if (url_data->Valid()) {
-      indexed_data_.insert(iter, std::make_pair(url_data->key(), url_data));
+      indexed_data_.insert(url_data->key(), url_data);
     }
     return url_data;
   }
@@ -342,14 +343,15 @@ scoped_refptr<UrlData> UrlIndex::TryInsert(
 
   // If the indexed instance is the same as |url_data|,
   // nothing needs to be done.
-  if (iter->second == url_data)
+  if (iter->value == url_data) {
     return url_data;
+  }
 
   // The indexed instance is different.
   // Check if it should be replaced with |url_data|.
-  if (IsNewDataForSameResource(url_data, iter->second)) {
+  if (IsNewDataForSameResource(url_data, iter->value)) {
     if (url_data->Valid()) {
-      iter->second = url_data;
+      iter->value = url_data;
     }
     return url_data;
   }
@@ -360,14 +362,14 @@ scoped_refptr<UrlData> UrlIndex::TryInsert(
   }
 
   if (url_data->Valid()) {
-    if ((!iter->second->Valid() ||
-         url_data->CachedSize() > iter->second->CachedSize())) {
-      iter->second = url_data;
+    if ((!iter->value->Valid() ||
+         url_data->CachedSize() > iter->value->CachedSize())) {
+      iter->value = url_data;
     } else {
-      iter->second->MergeFrom(url_data);
+      iter->value->MergeFrom(url_data);
     }
   }
-  return iter->second;
+  return iter->value;
 }
 
 }  // namespace blink

@@ -37,7 +37,7 @@ PolicyValueStore::PolicyValueStore(
       observer_(std::move(observer)),
       delegate_(std::move(delegate)) {}
 
-PolicyValueStore::~PolicyValueStore() {}
+PolicyValueStore::~PolicyValueStore() = default;
 
 void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   DCHECK(IsOnBackendSequence());
@@ -128,6 +128,10 @@ size_t PolicyValueStore::GetBytesInUse(const std::vector<std::string>& keys) {
 size_t PolicyValueStore::GetBytesInUse() {
   // See note above.
   return 0;
+}
+
+ValueStore::ReadResult PolicyValueStore::GetKeys() {
+  return delegate_->GetKeys();
 }
 
 ValueStore::ReadResult PolicyValueStore::Get(const std::string& key) {

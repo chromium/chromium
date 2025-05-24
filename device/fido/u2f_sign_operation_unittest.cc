@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -51,11 +52,17 @@ class U2fSignOperationTest : public ::testing::Test {
     return request;
   }
 
+  void ExpectHistogram(U2fSignOperationResult result) {
+    histogram_tester_.ExpectUniqueSample("WebAuthentication.U2fSignOperation",
+                                         result, 1);
+  }
+
   TestSignFuture& sign_future() { return sign_future_; }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   TestSignFuture sign_future_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(U2fSignOperationTest, SignSuccess) {
@@ -83,6 +90,7 @@ TEST_F(U2fSignOperationTest, SignSuccess) {
               ::testing::ElementsAreArray(test_data::kU2fSignature));
   EXPECT_THAT(response->credential->id,
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
+  ExpectHistogram(U2fSignOperationResult::kSuccess);
 }
 
 TEST_F(U2fSignOperationTest, SignSuccessWithFakeDevice) {
@@ -112,6 +120,7 @@ TEST_F(U2fSignOperationTest, SignSuccessWithFakeDevice) {
   // Counter starts at zero and is incremented for every sign request.
   EXPECT_EQ(1, std::get<1>(sign_future().Get())
                    ->authenticator_data.SerializeToByteArray()[36]);  // counter
+  ExpectHistogram(U2fSignOperationResult::kSuccess);
 }
 
 TEST_F(U2fSignOperationTest, DelayedSuccess) {
@@ -142,6 +151,7 @@ TEST_F(U2fSignOperationTest, DelayedSuccess) {
               ::testing::ElementsAreArray(test_data::kU2fSignature));
   EXPECT_THAT(std::get<1>(sign_future().Get())->credential->id,
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
+  ExpectHistogram(U2fSignOperationResult::kSuccess);
 }
 
 TEST_F(U2fSignOperationTest, MultipleHandles) {
@@ -176,6 +186,7 @@ TEST_F(U2fSignOperationTest, MultipleHandles) {
               ::testing::ElementsAreArray(test_data::kU2fSignature));
   EXPECT_THAT(std::get<1>(sign_future().Get())->credential->id,
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
+  ExpectHistogram(U2fSignOperationResult::kSuccess);
 }
 
 TEST_F(U2fSignOperationTest, MultipleHandlesLengthError) {
@@ -208,6 +219,7 @@ TEST_F(U2fSignOperationTest, MultipleHandlesLengthError) {
               ::testing::ElementsAreArray(test_data::kU2fSignature));
   EXPECT_THAT(std::get<1>(sign_future().Get())->credential->id,
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
+  ExpectHistogram(U2fSignOperationResult::kSuccess);
 }
 
 // Test that Fake U2F registration is invoked when no credentials in the allowed
@@ -237,6 +249,7 @@ TEST_F(U2fSignOperationTest, FakeEnroll) {
   EXPECT_EQ(CtapDeviceResponseCode::kCtap2ErrNoCredentials,
             std::get<0>(sign_future().Get()));
   EXPECT_FALSE(std::get<1>(sign_future().Get()));
+  ExpectHistogram(U2fSignOperationResult::kNoCredentials);
 }
 
 // Tests that U2F fake enrollment should be re-tried repeatedly if no
@@ -269,6 +282,7 @@ TEST_F(U2fSignOperationTest, DelayedFakeEnrollment) {
   EXPECT_EQ(CtapDeviceResponseCode::kCtap2ErrNoCredentials,
             std::get<0>(sign_future().Get()));
   EXPECT_FALSE(std::get<1>(sign_future().Get()));
+  ExpectHistogram(U2fSignOperationResult::kNoCredentials);
 }
 
 // Tests that request is dropped gracefully if device returns error on all
@@ -297,6 +311,7 @@ TEST_F(U2fSignOperationTest, FakeEnrollErroringOut) {
   EXPECT_EQ(CtapDeviceResponseCode::kCtap2ErrOther,
             std::get<0>(sign_future().Get()));
   EXPECT_FALSE(std::get<1>(sign_future().Get()));
+  ExpectHistogram(U2fSignOperationResult::kFatalError);
 }
 
 // Tests the scenario where device returns success response, but the response is
@@ -320,6 +335,7 @@ TEST_F(U2fSignOperationTest, SignWithCorruptedResponse) {
   EXPECT_EQ(CtapDeviceResponseCode::kCtap2ErrOther,
             std::get<0>(sign_future().Get()));
   EXPECT_FALSE(std::get<1>(sign_future().Get()));
+  ExpectHistogram(U2fSignOperationResult::kFatalError);
 }
 
 TEST_F(U2fSignOperationTest, AlternativeApplicationParameter) {
@@ -353,6 +369,7 @@ TEST_F(U2fSignOperationTest, AlternativeApplicationParameter) {
   EXPECT_THAT(response_value->authenticator_data.application_parameter(),
               ::testing::ElementsAreArray(base::span<const uint8_t, 32>(
                   test_data::kAlternativeApplicationParameter)));
+  ExpectHistogram(U2fSignOperationResult::kSuccess);
 }
 
 // This is a regression test in response to https://crbug.com/833398.
@@ -390,6 +407,38 @@ TEST_F(U2fSignOperationTest, AlternativeApplicationParameterRejection) {
   EXPECT_EQ(CtapDeviceResponseCode::kCtap2ErrOther,
             std::get<0>(sign_future().Get()));
   EXPECT_FALSE(std::get<1>(sign_future().Get()));
+  ExpectHistogram(U2fSignOperationResult::kFatalError);
+}
+
+// Tests that Chrome will retry if a low level error happens.
+TEST_F(U2fSignOperationTest, LowLevelErrorRetries) {
+  auto request = CreateSignRequest(
+      {fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+
+  // Simulates a device that throws a low level error before responding
+  // successfully.
+  auto device = std::make_unique<MockFidoDevice>();
+  EXPECT_CALL(*device, GetId()).WillRepeatedly(::testing::Return("device"));
+  device->ExpectWinkedAtLeastOnce();
+
+  InSequence s;
+  device->ExpectRequestAndRespondWith(test_data::kU2fSignCommandApdu,
+                                      std::nullopt);
+  device->ExpectRequestAndRespondWith(
+      test_data::kU2fSignCommandApdu,
+      test_data::kApduEncodedNoErrorSignResponse);
+
+  auto u2f_sign = std::make_unique<U2fSignOperation>(
+      device.get(), std::move(request), sign_future().GetCallback());
+  u2f_sign->Start();
+
+  EXPECT_TRUE(sign_future().Wait());
+  EXPECT_EQ(CtapDeviceResponseCode::kSuccess, std::get<0>(sign_future().Get()));
+  EXPECT_THAT(std::get<1>(sign_future().Get())->signature,
+              ::testing::ElementsAreArray(test_data::kU2fSignature));
+  EXPECT_THAT(std::get<1>(sign_future().Get())->credential->id,
+              ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
+  ExpectHistogram(U2fSignOperationResult::kLowLevelErrorThenSuccess);
 }
 
 }  // namespace device

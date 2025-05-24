@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/modules/media_capabilities/media_capabilities.h"
 
 #include <math.h>
+#include <stdint.h>
 
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +34,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_capabilities_decoding_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_capabilities_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_decoding_configuration.h"
@@ -216,6 +219,7 @@ class FakeMediaMetricsProvider
       media::mojom::blink::MediaContainerName container_name) override {}
   void SetRendererType(
       media::mojom::blink::RendererType renderer_type) override {}
+  void SetDemuxerType(media::mojom::DemuxerType demuxer_type) override {}
   void SetKeySystem(const String& key_system) override {}
   void SetHasWaitingForKey() override {}
   void SetIsHardwareSecure() override {}
@@ -572,17 +576,17 @@ MlCallback(const Vector<media::learning::FeatureValue>& expected_features,
 // Callback will verify |features| and |framerate| matches |expected_features|
 // and |expected_framreate| and run with provided values for |is_smooth|.
 testing::Action<void(media::mojom::blink::WebrtcPredictionFeaturesPtr,
-                     int,
+                     int32_t,
                      MockWebrtcPerfHistoryService::GetPerfInfoCallback)>
 WebrtcDbCallback(
     const media::mojom::blink::WebrtcPredictionFeatures& expected_features,
-    int expected_framerate,
+    double expected_framerate,
     bool is_smooth) {
   return [=](media::mojom::blink::WebrtcPredictionFeaturesPtr features,
              int framerate,
              MockWebrtcPerfHistoryService::GetPerfInfoCallback got_info_cb) {
     EXPECT_TRUE(features->Equals(expected_features));
-    EXPECT_EQ(framerate, expected_framerate);
+    EXPECT_EQ(framerate, base::ClampRound(expected_framerate));
     std::move(got_info_cb).Run(is_smooth);
   };
 }
@@ -607,7 +611,7 @@ base::FieldTrialParams MakeMlParams(double bad_window_threshold,
 MediaCapabilitiesInfo* DecodingInfo(
     const MediaDecodingConfiguration* decoding_config,
     MediaCapabilitiesTestContext* context) {
-  ScriptPromiseUntyped promise = context->GetMediaCapabilities()->decodingInfo(
+  auto promise = context->GetMediaCapabilities()->decodingInfo(
       context->GetScriptState(), decoding_config, context->GetExceptionState());
 
   ScriptPromiseTester tester(context->GetScriptState(), promise);
@@ -625,7 +629,7 @@ MediaCapabilitiesInfo* DecodingInfo(
 MediaCapabilitiesInfo* EncodingInfo(
     const MediaEncodingConfiguration* encoding_config,
     MediaCapabilitiesTestContext* context) {
-  ScriptPromiseUntyped promise = context->GetMediaCapabilities()->encodingInfo(
+  auto promise = context->GetMediaCapabilities()->encodingInfo(
       context->GetScriptState(), encoding_config, context->GetExceptionState());
 
   ScriptPromiseTester tester(context->GetScriptState(), promise);
@@ -1098,7 +1102,7 @@ void RunCallbackPermutationTest(std::vector<PredictionType> callback_order) {
   }
 
   // Call decodingInfo() to kick off the calls to prediction services.
-  ScriptPromiseUntyped promise = context.GetMediaCapabilities()->decodingInfo(
+  auto promise = context.GetMediaCapabilities()->decodingInfo(
       context.GetScriptState(), kDecodingConfig, context.GetExceptionState());
   ScriptPromiseTester tester(context.GetScriptState(), promise);
 

@@ -4,6 +4,7 @@
 
 #include "content/browser/xr/service/vr_service_impl.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -28,6 +28,7 @@
 #include "content/browser/xr/webxr_internals/webxr_internals_handler_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -45,12 +46,6 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
 namespace {
-
-#if BUILDFLAG(IS_ANDROID)
-constexpr base::TimeDelta kPermissionsDelay = base::Milliseconds(0);
-#else
-constexpr base::TimeDelta kPermissionsDelay = base::Milliseconds(300);
-#endif
 
 device::mojom::XRRuntimeSessionOptionsPtr GetRuntimeOptions(
     device::mojom::XRSessionOptions* options) {
@@ -107,7 +102,7 @@ std::vector<blink::PermissionType> GetRequiredPermissionsForFeatures(
   return permissions;
 }
 
-// TODO(crbug.com/40930146): Replace with base::ranges::set_difference
+// TODO(crbug.com/40930146): Replace with std::ranges::set_difference
 std::unordered_set<device::mojom::XRSessionFeature> GetMissingRequiredFeatures(
     const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
     const std::unordered_set<device::mojom::XRSessionFeature>&
@@ -430,6 +425,8 @@ void VRServiceImpl::OnImmersiveSessionCreated(
           GetSessionMetricsHelper()->StartImmersiveSession(
               request.runtime_id, *(request.options), enabled_features);
 
+  render_frame_host_->GetProcess()->OnImmersiveXrSessionStarted();
+
   // If the session specified a FrameSinkId that means that it is handling its
   // own compositing in a way that we should notify the WebContents about.
   if (session_result->frame_sink_id) {
@@ -581,8 +578,10 @@ void VRServiceImpl::DoRequestPermissions(
 
   permission_controller->RequestPermissionsFromCurrentDocument(
       render_frame_host_,
-      PermissionRequestDescription(request_permissions,
-                                   /*user_gesture=*/true),
+      PermissionRequestDescription(
+          PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionTypes(request_permissions),
+          /*user_gesture=*/true),
       std::move(result_callback));
 }
 
@@ -655,14 +654,7 @@ void VRServiceImpl::OnPermissionResultsForMode(
     return;
   }
 
-  // TODO(https://crbug.com/364669911): Remove posted task once permissions code
-  // is fixed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&VRServiceImpl::DoRequestPermissions,
-                     weak_ptr_factory_.GetWeakPtr(), permissions_for_features,
-                     std::move(result_callback)),
-      kPermissionsDelay);
+  DoRequestPermissions(permissions_for_features, std::move(result_callback));
 }
 
 void VRServiceImpl::OnPermissionResultsForFeatures(
@@ -741,7 +733,7 @@ void VRServiceImpl::EnsureRuntimeInstalled(SessionRequestData request,
   }
 
   runtime->EnsureInstalled(
-      render_frame_host_->GetProcess()->GetID(),
+      render_frame_host_->GetProcess()->GetDeprecatedID(),
       render_frame_host_->GetRoutingID(),
       base::BindOnce(&VRServiceImpl::OnInstallResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request)));
@@ -817,7 +809,7 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
 #endif
     if (send_renderer_information) {
       runtime_options->render_process_id =
-          render_frame_host_->GetProcess()->GetID();
+          render_frame_host_->GetProcess()->GetDeprecatedID();
       runtime_options->render_frame_id = render_frame_host_->GetRoutingID();
     }
   }
@@ -935,6 +927,7 @@ void VRServiceImpl::OnExitPresent() {
   static_cast<WebContentsImpl*>(GetWebContents())
       ->OnXrHasRenderTarget(default_frame_sink_id);
 
+  render_frame_host_->GetProcess()->OnImmersiveXrSessionStopped();
   GetSessionMetricsHelper()->StopAndRecordImmersiveSession();
 
   if (on_exit_present_) {

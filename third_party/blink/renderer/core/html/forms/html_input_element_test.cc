@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -157,11 +159,7 @@ TEST_F(HTMLInputElementTest, create) {
       GetDocument(), CreateElementFlags::ByParser(&GetDocument()));
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
   input->ParserSetAttributes(Vector<Attribute, kAttributePrealloc>());
-  if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
-    EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
-  } else {
-    EXPECT_NE(nullptr, input->UserAgentShadowRoot());
-  }
+  EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
 }
 
 TEST_F(HTMLInputElementTest, NoAssertWhenMovedInNewDocument) {
@@ -354,6 +352,33 @@ TEST_F(HTMLInputElementTest, LazilyCreateShadowTreeWithValue) {
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
   ASSERT_TRUE(input);
   EXPECT_FALSE(IsShadowHost(*input));
+}
+
+// Tests that HasBeenPasswordField() remains true as the form control type
+// changes, until it changes to a non-text form control type.
+TEST_F(HTMLInputElementTest, HasBeenPasswordField) {
+  GetDocument().body()->setInnerHTML("<input>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
+  ASSERT_TRUE(input);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kPassword);
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kText);
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kNumber);
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kCheckbox);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+
+  // MaybeSetHasBeenPasswordField() only has an effect on IsTextType() elements.
+  input->setType(input_type_names::kUrl);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+  input->MaybeSetHasBeenPasswordField();
+  EXPECT_TRUE(input->HasBeenPasswordField());
+  input->setType(input_type_names::kRadio);
+  EXPECT_FALSE(input->HasBeenPasswordField());
+  input->MaybeSetHasBeenPasswordField();
+  EXPECT_FALSE(input->HasBeenPasswordField());
 }
 
 struct PasswordFieldResetParam {

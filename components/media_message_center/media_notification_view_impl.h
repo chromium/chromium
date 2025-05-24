@@ -6,6 +6,7 @@
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_IMPL_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -108,7 +109,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   }
 
   views::Button* GetHeaderRowForTesting() const;
-  std::u16string GetSourceTitleForTesting() const;
+  std::u16string_view GetSourceTitleForTesting() const;
 
  private:
   friend class MediaNotificationViewImplTest;

@@ -16,22 +16,62 @@ _SWARMING_CLIENT = os.path.join(_SRC_ROOT, 'tools', 'luci-go', 'swarming')
 _SWARMING_SERVER = 'chromium-swarm.appspot.com'
 
 
-def _get_bots(swarming_server, pool, cache):
+def get_xcode_caches_for_all_bots(bots_state):
+  """Extracts Xcode cache names for each bot from a list of bot states.
+
+  Args:
+    bots_state: A list of bot state dictionaries.
+
+  Returns:
+    A dict where keys are bot IDs and values are lists of Xcode cache names.
+  """
+  xcode_caches_dict = {}
+  for bot_state in bots_state:
+    xcode_caches = []
+
+    for dimension in bot_state['dimensions']:
+      if dimension['key'] == 'caches':
+        for cache in dimension['value']:
+          if cache.startswith('xcode'):
+            xcode_caches.append(cache)
+    if xcode_caches:
+      xcode_caches_dict[bot_state['bot_id']] = xcode_caches
+  return xcode_caches_dict
+
+
+def get_bots_state_by_dimensions(swarming_server, dimensions):
+  """Gets the states of bots matching given dimensions."""
   cmd = [
       _SWARMING_CLIENT,
       'bots',
       '-S',
       swarming_server,
-      '-dimension',
-      'caches=' + cache,
-      '-dimension',
-      'pool=' + pool,
   ]
-  return [bot['bot_id'] for bot in json.loads(subprocess.check_output(cmd))]
+  for d in dimensions:
+    cmd.extend(['-dimension', d])
+  try:
+    return json.loads(subprocess.check_output(cmd))
+  except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
+    print(f"Error getting bot states: {e}")
+    return []
 
 
-def _trigger_clobber(swarming_server, pool, realm, cache, bot, mount_rel_path,
-                     dry_run):
+def trigger_clobber_cache(swarming_server, pool, realm, cache, bot_id,
+                          mount_rel_path, dry_run):
+  """Clobber a specific cache on a given bot.
+
+  Args:
+    swarming_server: The swarming_server instance to lookup bots to clobber
+        caches on.
+    pool: The pool of machines to lookup bots to clobber caches on.
+    realm: The realm to trigger tasks into.
+    cache: The name of the cache to clobber.
+    bot_id: the id of the bot that you wish to clobber.
+    mount_rel_path: The relative path to mount the cache to when clobbering.
+    dry_run: Whether a dry-run should be performed where the commands that
+        would be executed to trigger the clobber task are printed rather than
+        actually triggering the clobber task.
+  """
   cmd = [
       _SWARMING_CLIENT,
       'trigger',
@@ -42,7 +82,7 @@ def _trigger_clobber(swarming_server, pool, realm, cache, bot, mount_rel_path,
       '-dimension',
       'pool=' + pool,
       '-dimension',
-      'id=' + bot,
+      'id=' + bot_id,
       '-cipd-package',
       'cpython3:infra/3pp/tools/cpython3/${platform}=latest',
       '-named-cache',
@@ -84,53 +124,54 @@ def add_common_args(argument_parser):
   argument_parser.add_argument('-n', '--dry-run', action='store_true')
 
 
-def clobber_caches(swarming_server,
-                   pool,
-                   realm,
-                   cache,
-                   mount_rel_path,
-                   dry_run,
-                   bot_id=None):
-  """Clobber caches on bots.
-
-  The set of bots in `pool` in `swarming_server` with a cache named `cache` will
-  be looked up and printed out then the user will be asked to confirm that the
-  caches should be clobbered. If the user confirms, tasks that clobber the cache
-  will be triggered on each bot or if `dry_run` is true, the command that would
-  trigger such a task is printed instead.
+def confirm_and_trigger_clobber_bots(swarming_server,
+                                     pool,
+                                     realm,
+                                     cache,
+                                     mount_rel_path,
+                                     dry_run,
+                                     bot_id=None):
+  """Gets bot IDs, confirms with the user, handles dry-run and removes caches.
 
   Args:
-    * swarming_server - The swarming_server instance to lookup bots to clobber
-      caches on.
-    * pool - The pool of machines to lookup bots to clobber caches on.
-    * realm - The realm to trigger tasks into.
-    * cache - The name of the cache to clobber.
-    * mount_rel_path - The relative path to mount the cache to when clobbering.
-    * dry_run - Whether a dry-run should be performed where the commands that
-      would be executed to trigger the clobber task are printed rather than
-      actually triggering the clobber task.
-    * bot_id - optional, the id of the bot that you wish to clobber.
+      swarming_server: The Swarming server URL.
+      pool: The Swarming pool.
+      realm: The Swarming realm.
+      cache: The name of the cache to clobber.
+      mount_rel_path - The relative path to mount the cache to when clobbering.
+      dry_run:  If True, don't actually clobber or prompt.
+      bot_id: Optional, the id of a specific bot that you wish to clobber.
+
+  Returns:
+      A list of botsto clobber, or an empty list if no bots
+      should be clobbered (either none were found, or the user cancelled).
   """
+
   if bot_id:
-    bots = [bot_id]
+    bot_ids = [bot_id]  # Use explicitly provided bot IDs.
+    bots_state = get_bots_state_by_dimensions(swarming_server, ['id=' + bot_id])
   else:
-    bots = _get_bots(swarming_server, pool, cache)
-    if not bots:
-      print(f'There are no bots on swarming server {swarming_server}'
-            f' in pool {pool} that have cache {cache}')
-      return 0
+    bots_state = get_bots_state_by_dimensions(
+        swarming_server, ['pool=' + pool, 'caches=' + cache])
+    bot_ids = [bot['bot_id'] for bot in bots_state]
 
-  print('The following bots will be clobbered:')
-  print()
-  for bot in bots:
-    print('  %s' % bot)
-  print()
-  val = input('Proceed? [Y/n] ')
-  if val and not val[0] in ('Y', 'y'):
-    print('Cancelled.')
-    return 1
+  if not bot_ids:
+    print(f"No bots found in pool {pool} with cache {cache}.")
+    return []
 
-  for bot in bots:
-    _trigger_clobber(swarming_server, pool, realm, cache, bot, mount_rel_path,
-                     dry_run)
-  return 0
+  print(f"The following bots with {cache} will be clobbered:")
+  for b_id in bot_ids:
+    print(f"  {b_id}")
+  print()
+
+  if not dry_run:
+    val = input('Proceed? [Y/n] ')
+    if val and not val.lower().startswith('y'):
+      print('Cancelled.')
+      return []
+
+  for b_id in bot_ids:
+    trigger_clobber_cache(swarming_server, pool, realm, cache, b_id,
+                          mount_rel_path, dry_run)
+
+  return bots_state

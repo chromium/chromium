@@ -24,7 +24,7 @@
 
 namespace skgpu::graphite {
 class TextureInfo;
-struct DawnTextureInfo;
+class DawnTextureInfo;
 }
 
 namespace gpu {
@@ -201,6 +201,11 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     std::optional<VulkanYCbCrInfo> ycbcr_info,
     int plane_index = 0,
     bool mipmapped = false);
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(SKIA_USE_DAWN)
+GPU_GLES2_EXPORT wgpu::YCbCrVkDescriptor ToDawnYCbCrVkDescriptor(
+    const VulkanYCbCrInfo& ycbcr_info);
+#endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(

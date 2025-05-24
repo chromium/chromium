@@ -16,8 +16,9 @@ NativeWindowTrackerAura::NativeWindowTrackerAura(gfx::NativeWindow window)
 }
 
 NativeWindowTrackerAura::~NativeWindowTrackerAura() {
-  if (window_)
+  if (window_) {
     window_->RemoveObserver(this);
+  }
 }
 
 bool NativeWindowTrackerAura::WasNativeWindowDestroyed() const {

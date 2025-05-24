@@ -8,12 +8,13 @@
 #define SILENT
 #endif
 
+
 #include <new>
 #include <string>
 #include <vector>
 #include <deque>
 #include <memory> // For automatic pointers.
-
+#include <algorithm>
 
 #ifdef _WIN_ALL
 
@@ -61,6 +62,9 @@
 #include <wincrypt.h>
 #include <wchar.h>
 #include <wctype.h>
+#include <Sddl.h>
+#include <ntsecapi.h>
+
 
 // For WMI requests.
 #include <comdef.h>

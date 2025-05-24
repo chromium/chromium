@@ -18,6 +18,7 @@
 #include "base/scoped_native_library.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/types/pass_key.h"
 #include "components/crash/core/common/crash_key.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/callback_registry.h"
@@ -30,19 +31,20 @@
 #include "media/base/media_export.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/cdm/api/content_decryption_module.h"
+#include "media/cdm/cdm_auxiliary_helper.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
 class AudioFramesImpl;
-class CdmAuxiliaryHelper;
 class CdmWrapper;
 
 class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
                                       public CdmContext,
                                       public Decryptor,
                                       public cdm::Host_10,
-                                      public cdm::Host_11 {
+                                      public cdm::Host_11,
+                                      public cdm::Host_12 {
  public:
   using CreateCdmFunc = void* (*)(int cdm_interface_version,
                                   const char* key_system,
@@ -63,8 +65,18 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
       const SessionClosedCB& session_closed_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb,
-      CdmCreatedCB cdm_created_cb);
+      CdmCreatedCB cdm_created_cb,
+      bool is_debugger_attached);
 
+  CdmAdapter(base::PassKey<CdmAdapter>,
+             const CdmConfig& cdm_config,
+             CreateCdmFunc create_cdm_func,
+             std::unique_ptr<CdmAuxiliaryHelper> helper,
+             const SessionMessageCB& session_message_cb,
+             const SessionClosedCB& session_closed_cb,
+             const SessionKeysChangeCB& session_keys_change_cb,
+             const SessionExpirationUpdateCB& session_expiration_update_cb,
+             bool is_debugger_attached);
   CdmAdapter(const CdmAdapter&) = delete;
   CdmAdapter& operator=(const CdmAdapter&) = delete;
 
@@ -115,13 +127,29 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   void ResetDecoder(StreamType stream_type) final;
   void DeinitializeDecoder(StreamType stream_type) final;
 
-  // Common cdm::Host_10 and cdm::Host_11 implementation.
+  // cdm::Host_12 implementation
+  void OnResolveKeyStatusPromise(uint32_t promise_id,
+                                 cdm::KeyStatus_2 key_status) override;
+  void OnSessionKeysChange(const char* session_id,
+                           uint32_t session_id_size,
+                           bool has_additional_usable_key,
+                           const cdm::KeyInformation_2* keys_info,
+                           uint32_t keys_info_count) override;
+
+  // cdm::Host_10 and cdm::Host_11 implementation.
+  void OnResolveKeyStatusPromise(uint32_t promise_id,
+                                 cdm::KeyStatus key_status) override;
+  void OnSessionKeysChange(const char* session_id,
+                           uint32_t session_id_size,
+                           bool has_additional_usable_key,
+                           const cdm::KeyInformation* keys_info,
+                           uint32_t keys_info_count) override;
+
+  // Common cdm::Host_10, cdm::Host_11, cdm::Host_12 implementation.
   cdm::Buffer* Allocate(uint32_t capacity) override;
   void SetTimer(int64_t delay_ms, void* context) override;
   cdm::Time GetCurrentWallTime() override;
   void OnInitialized(bool success) override;
-  void OnResolveKeyStatusPromise(uint32_t promise_id,
-                                 cdm::KeyStatus key_status) override;
   void OnResolveNewSessionPromise(uint32_t promise_id,
                                   const char* session_id,
                                   uint32_t session_id_size) override;
@@ -136,11 +164,6 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
                         cdm::MessageType message_type,
                         const char* message,
                         uint32_t message_size) override;
-  void OnSessionKeysChange(const char* session_id,
-                           uint32_t session_id_size,
-                           bool has_additional_usable_key,
-                           const cdm::KeyInformation* keys_info,
-                           uint32_t keys_info_count) override;
   void OnExpirationChange(const char* session_id,
                           uint32_t session_id_size,
                           cdm::Time new_expiry_time) override;
@@ -156,15 +179,11 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
                                     cdm::Status decoder_status) override;
   cdm::FileIO* CreateFileIO(cdm::FileIOClient* client) override;
   void RequestStorageId(uint32_t version) override;
+  void ReportMetrics(cdm::MetricName metric_name, uint64_t value) override;
 
  private:
-  CdmAdapter(const CdmConfig& cdm_config,
-             CreateCdmFunc create_cdm_func,
-             std::unique_ptr<CdmAuxiliaryHelper> helper,
-             const SessionMessageCB& session_message_cb,
-             const SessionClosedCB& session_closed_cb,
-             const SessionKeysChangeCB& session_keys_change_cb,
-             const SessionExpirationUpdateCB& session_expiration_update_cb);
+  FRIEND_TEST_ALL_PREFIXES(CdmAdapterTestWithMockCdm, RecordUMA);
+
   ~CdmAdapter() final;
 
   // Resolves the |promise| if the CDM is successfully initialized; rejects it
@@ -208,6 +227,9 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   // cdm::FileIO.
   void OnFileRead(int file_size_bytes);
 
+  // Set `frames_processed_` for testing
+  void SetFrameCountForTesting(uint64_t count) { frames_processed_ = count; }
+
   const CdmConfig cdm_config_;
 
   CreateCdmFunc create_cdm_func_;
@@ -222,8 +244,9 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   SessionExpirationUpdateCB session_expiration_update_cb_;
 
   // CDM origin and crash key to be used in crash reporting.
-  const std::string cdm_origin_;
+  const url::Origin cdm_origin_;
   crash_reporter::ScopedCrashKeyString scoped_crash_key_;
+  crash_reporter::ScopedCrashKeyString debugger_attached_crash_key_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<AudioBufferMemoryPool> pool_;
@@ -252,9 +275,16 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   bool uma_for_output_protection_query_reported_ = false;
   bool uma_for_output_protection_positive_result_reported_ = false;
 
+  // Track number of frames processed since last call to
+  // InitializeVideoDecoder().
+  uint64_t frames_processed_ = 0;
+
   // Tracks CDM file IO related states.
   int last_read_file_size_kb_ = 0;
   bool file_size_uma_reported_ = false;
+
+  // Tracks UKM related data.
+  CdmMetricsData cdm_metrics_data_;
 
   // Used to keep track of promises while the CDM is processing the request.
   CdmPromiseAdapter cdm_promise_adapter_;

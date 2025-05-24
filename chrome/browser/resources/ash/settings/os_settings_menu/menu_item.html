@@ -7,32 +7,21 @@
     background: transparent;
     /* Always apply border so item doesn't shift when focused. */
     border-color: transparent;
+    border-radius: 16px;
     border-style: solid;
     border-width: var(--settings-menu-item-border-width);
+    box-sizing: border-box;
     color: var(--cros-text-color-primary);
     display: flex;
     flex-direction: row;
     font: var(--cros-button-1-font);
-    text-decoration: none;
-  }
-
-  :host-context(body:not(.revamp-wayfinding-enabled)):host {
-    /* No border or border radius on window edge (left in LTR, right in RTL). */
-    border-end-end-radius: 20px;
-    border-start-end-radius: 20px;
-    border-inline-start-width: 0;
-    min-height: 32px;
-    padding: var(--tap-target-padding) 0;
-    padding-inline-start: 20px;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled):host {
-    border-radius: 16px;
-    box-sizing: border-box;
     height: 60px;
+
     /* Consider border width for padding */
     padding-inline-start: calc(12px - var(--settings-menu-item-border-width));
     padding-inline-end: calc(12px - var(--settings-menu-item-border-width));
+
+    text-decoration: none;
     width: var(--settings-menu-item-width);
   }
 
@@ -62,19 +51,11 @@
 
   /* Default icon styles */
   iron-icon {
+    margin-inline-end: 12px;
     pointer-events: none;
   }
 
-  :host-context(body:not(.revamp-wayfinding-enabled)) iron-icon {
-    margin-inline-end: 16px;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) iron-icon {
-    margin-inline-end: 12px;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled):host(:not(.iron-selected))
-      iron-icon {
+  :host(:not(.iron-selected)) iron-icon {
     --iron-icon-fill-color: var(--cros-sys-primary);
   }
 

@@ -116,8 +116,8 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 # platform separator for readability
 
 TARGET_DIR="$PREFIX/arm64/R"
-IN_ZIPFILE=android-cts-11_r15-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm64-11_r15.zip
+IN_ZIPFILE=android-cts-11_r16-linux_x86-arm.zip
+OUT_ZIPFILE=android-cts-arm64-11_r16.zip
 
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
@@ -136,8 +136,8 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 # platform separator for readability
 
 TARGET_DIR="$PREFIX/x86/R"
-IN_ZIPFILE=android-cts-11_r15-linux_x86-x86.zip
-OUT_ZIPFILE=android-cts-x86-11_r15.zip
+IN_ZIPFILE=android-cts-11_r16-linux_x86-x86.zip
+OUT_ZIPFILE=android-cts-x86-11_r16.zip
 
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
@@ -156,8 +156,8 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 # platform separator for readability
 
 TARGET_DIR="$PREFIX/arm64/S"
-IN_ZIPFILE=android-cts-12_r11-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm64-12_r11.zip
+IN_ZIPFILE=android-cts-12_r14-linux_x86-arm.zip
+OUT_ZIPFILE=android-cts-arm64-12_r14.zip
 
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
@@ -176,8 +176,8 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 # platform separator for readability
 
 TARGET_DIR="$PREFIX/x86/S"
-IN_ZIPFILE=android-cts-12_r11-linux_x86-x86.zip
-OUT_ZIPFILE=android-cts-x86-12_r11.zip
+IN_ZIPFILE=android-cts-12_r14-linux_x86-x86.zip
+OUT_ZIPFILE=android-cts-x86-12_r14.zip
 
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
@@ -200,8 +200,8 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 # assumes they will be the same across archs for a given release.
 
 TARGET_DIR="$PREFIX/arm64/T"
-IN_ZIPFILE=android-cts-13_r7-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm64-13_r7.zip
+IN_ZIPFILE=android-cts-13_r10-linux_x86-arm.zip
+OUT_ZIPFILE=android-cts-arm64-13_r10.zip
 UNZIP_DEST=android-cts/testcases
 
 mkdir -p "$TARGET_DIR"
@@ -227,8 +227,8 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 # platform separator for readability
 
 TARGET_DIR="$PREFIX/x86/T"
-IN_ZIPFILE=android-cts-13_r7-linux_x86-x86.zip
-OUT_ZIPFILE=android-cts-x86-13_r7.zip
+IN_ZIPFILE=android-cts-13_r10-linux_x86-x86.zip
+OUT_ZIPFILE=android-cts-x86-13_r10.zip
 
 mkdir -p "$TARGET_DIR"
 mkdir -p "$UNZIP_DEST"
@@ -253,8 +253,61 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 # platform separator for readability
 
 TARGET_DIR="$PREFIX/arm64/U"
-IN_ZIPFILE=android-cts-14_r3-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm64-14_r3.zip
+IN_ZIPFILE=android-cts-14_r6-linux_x86-arm.zip
+OUT_ZIPFILE=android-cts-arm64-14_r6.zip
+UNZIP_DEST=android-cts/testcases
+
+mkdir -p "$TARGET_DIR"
+mkdir -p "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases/arm64/CtsWebkitTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWebViewStartupApp/arm64/CtsWebViewStartupApp.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWidgetTestCases/arm64/CtsWidgetTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistTestCases/arm64/CtsAssistTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistApp/arm64/CtsAssistApp.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistService/arm64/CtsAssistService.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsMockInputMethod/arm64/CtsMockInputMethod.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAutoFillServiceTestCases/arm64/CtsAutoFillServiceTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsTextTestCases/arm64/CtsTextTestCases.apk" -d "$UNZIP_DEST"
+# host-driven CTS separator for readability
+unzip "$IN_ZIPFILE" "android-cts/testcases/CtsHostsideWebViewTests/*"
+UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE unzip "$IN_ZIPFILE" "android-cts/tools/*"
+UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE unzip "$IN_ZIPFILE" "android-cts/jdk/*"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsSecurityTestCases/CtsDeviceInfo.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsPreconditions/arm64/CtsPreconditions.apk" -d "$UNZIP_DEST"
+
+zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
+
+# platform separator for readability
+
+TARGET_DIR="$PREFIX/x86/U"
+IN_ZIPFILE=android-cts-14_r6-linux_x86-x86.zip
+OUT_ZIPFILE=android-cts-x86-14_r6.zip
+
+mkdir -p "$TARGET_DIR"
+mkdir -p "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases/x86_64/CtsWebkitTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWebViewStartupApp/x86_64/CtsWebViewStartupApp.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWidgetTestCases/x86_64/CtsWidgetTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistTestCases/x86_64/CtsAssistTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistApp/x86_64/CtsAssistApp.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistService/x86_64/CtsAssistService.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsMockInputMethod/x86_64/CtsMockInputMethod.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAutoFillServiceTestCases/x86_64/CtsAutoFillServiceTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsTextTestCases/x86_64/CtsTextTestCases.apk" -d "$UNZIP_DEST"
+# host-driven CTS separator for readability
+unzip "$IN_ZIPFILE" "android-cts/testcases/CtsHostsideWebViewTests/*"
+UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE unzip "$IN_ZIPFILE" "android-cts/tools/*"
+UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE unzip "$IN_ZIPFILE" "android-cts/jdk/*"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsSecurityTestCases/CtsDeviceInfo.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsPreconditions/x86_64/CtsPreconditions.apk" -d "$UNZIP_DEST"
+
+zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
+
+# platform separator for readability
+
+TARGET_DIR="$PREFIX/arm64/V"
+IN_ZIPFILE=android-cts-15_r2-linux_x86-arm.zip
+OUT_ZIPFILE=android-cts-arm64-15_r2.zip
 UNZIP_DEST=android-cts/testcases
 
 mkdir -p "$TARGET_DIR"
@@ -273,9 +326,9 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 
 # platform separator for readability
 
-TARGET_DIR="$PREFIX/x86/U"
-IN_ZIPFILE=android-cts-14_r3-linux_x86-x86.zip
-OUT_ZIPFILE=android-cts-x86-14_r3.zip
+TARGET_DIR="$PREFIX/x86/V"
+IN_ZIPFILE=android-cts-15_r2-linux_x86-x86.zip
+OUT_ZIPFILE=android-cts-x86-15_r2.zip
 
 mkdir -p "$TARGET_DIR"
 mkdir -p "$UNZIP_DEST"

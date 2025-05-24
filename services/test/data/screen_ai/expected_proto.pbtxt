@@ -31,6 +31,10 @@ ui_elements {
     name: "text"
     string_value: ""
   }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: false
+  }
   bounding_box_pixels {
     top: 8
     left: 4
@@ -44,10 +48,10 @@ ui_elements {
   parent_id: 0
   child_ids: 2
   bounding_box {
-    top: 0.333333343
-    left: 0.210526317
-    bottom: 1
-    right: 1
+    top: 0.375
+    left: 0.263157904
+    bottom: 0.583333313
+    right: 0.526315808
   }
   attributes {
     name: "axnode_id"
@@ -69,11 +73,15 @@ ui_elements {
     name: "text"
     string_value: ""
   }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: false
+  }
   bounding_box_pixels {
-    top: 8
-    left: 4
-    bottom: 24
-    right: 19
+    top: 9
+    left: 5
+    bottom: 14
+    right: 10
   }
 }
 ui_elements {
@@ -81,10 +89,10 @@ ui_elements {
   type: VIEW
   parent_id: 1
   bounding_box {
-    top: 0.333333343
-    left: 0.210526317
-    bottom: 1
-    right: 1
+    top: 1.16666663
+    left: 1.26315784
+    bottom: 1.375
+    right: 1.52631581
   }
   attributes {
     name: "axnode_id"
@@ -106,11 +114,15 @@ ui_elements {
     name: "text"
     string_value: "StaticText00"
   }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: true
+  }
   bounding_box_pixels {
-    top: 8
-    left: 4
-    bottom: 24
-    right: 19
+    top: 28
+    left: 24
+    bottom: 33
+    right: 29
   }
 }
 ui_elements {
@@ -119,10 +131,10 @@ ui_elements {
   parent_id: 0
   child_ids: 4
   bounding_box {
-    top: 0.333333343
-    left: 0.210526317
-    bottom: 1
-    right: 1
+    top: 0.583333313
+    left: 0.263157904
+    bottom: 0.791666687
+    right: 0.526315808
   }
   attributes {
     name: "axnode_id"
@@ -144,11 +156,15 @@ ui_elements {
     name: "text"
     string_value: ""
   }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: false
+  }
   bounding_box_pixels {
-    top: 8
-    left: 4
-    bottom: 24
-    right: 19
+    top: 14
+    left: 5
+    bottom: 19
+    right: 10
   }
 }
 ui_elements {
@@ -156,10 +172,10 @@ ui_elements {
   type: VIEW
   parent_id: 3
   bounding_box {
-    top: 0.333333343
-    left: 0.210526317
-    bottom: 1
-    right: 1
+    top: 0.833333313
+    left: 0.578947365
+    bottom: 1.04166663
+    right: 0.842105269
   }
   attributes {
     name: "axnode_id"
@@ -181,11 +197,15 @@ ui_elements {
     name: "text"
     string_value: "StaticText10"
   }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: true
+  }
   bounding_box_pixels {
-    top: 8
-    left: 4
-    bottom: 24
-    right: 19
+    top: 20
+    left: 11
+    bottom: 25
+    right: 16
   }
 }
 ui_elements {
@@ -194,10 +214,10 @@ ui_elements {
   parent_id: 0
   child_ids: 6
   bounding_box {
-    top: 0.333333343
+    top: 0.75
     left: 0.210526317
-    bottom: 1
-    right: 1
+    bottom: 0.958333313
+    right: 0.473684222
   }
   attributes {
     name: "axnode_id"
@@ -219,11 +239,15 @@ ui_elements {
     name: "text"
     string_value: ""
   }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: false
+  }
   bounding_box_pixels {
-    top: 8
+    top: 18
     left: 4
-    bottom: 24
-    right: 19
+    bottom: 23
+    right: 9
   }
 }
 ui_elements {
@@ -233,10 +257,10 @@ ui_elements {
   child_ids: 7
   child_ids: 8
   bounding_box {
-    top: 0.333333343
-    left: 0.210526317
-    bottom: 1
-    right: 1
+    top: 0.375
+    left: 0.263157904
+    bottom: 0.416666657
+    right: 0.315789461
   }
   attributes {
     name: "axnode_id"
@@ -258,11 +282,15 @@ ui_elements {
     name: "text"
     string_value: ""
   }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: false
+  }
   bounding_box_pixels {
-    top: 8
-    left: 4
-    bottom: 24
-    right: 19
+    top: 9
+    left: 5
+    bottom: 10
+    right: 6
   }
 }
 ui_elements {
@@ -270,10 +298,10 @@ ui_elements {
   type: VIEW
   parent_id: 6
   bounding_box {
-    top: 0.333333343
-    left: 0.210526317
-    bottom: 1
-    right: 1
+    top: 0.416666657
+    left: 0.263157904
+    bottom: 0.458333343
+    right: 0.315789461
   }
   attributes {
     name: "axnode_id"
@@ -295,22 +323,29 @@ ui_elements {
     name: "text"
     string_value: "StaticText200"
   }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: false
+  }
   bounding_box_pixels {
-    top: 8
-    left: 4
-    bottom: 24
-    right: 19
+    top: 10
+    left: 5
+    bottom: 11
+    right: 6
   }
 }
 ui_elements {
   id: 8
   type: VIEW
   parent_id: 6
+  child_ids: 9
+  child_ids: 10
+  child_ids: 11
   bounding_box {
-    top: 0.333333343
-    left: 0.210526317
-    bottom: 1
-    right: 1
+    top: 0.458333343
+    left: 0.263157904
+    bottom: 0.625
+    right: 0.315789461
   }
   attributes {
     name: "axnode_id"
@@ -330,12 +365,139 @@ ui_elements {
   }
   attributes {
     name: "text"
-    string_value: "StaticText201"
+    string_value: "Static Text 201"
+  }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: false
   }
   bounding_box_pixels {
-    top: 8
-    left: 4
-    bottom: 24
-    right: 19
+    top: 11
+    left: 5
+    bottom: 15
+    right: 6
+  }
+}
+ui_elements {
+  id: 9
+  type: VIEW
+  parent_id: 8
+  bounding_box {
+    top: 0.458333343
+    left: 0.263157904
+    bottom: 0.5
+    right: 0.315789461
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 10
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "inlineTextBox"
+  }
+  attributes {
+    name: "text"
+    string_value: "Static"
+  }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: false
+  }
+  bounding_box_pixels {
+    top: 11
+    left: 5
+    bottom: 12
+    right: 6
+  }
+}
+ui_elements {
+  id: 10
+  type: VIEW
+  parent_id: 8
+  bounding_box {
+    top: 0.5
+    left: 0.263157904
+    bottom: 0.541666687
+    right: 0.315789461
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 11
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "inlineTextBox"
+  }
+  attributes {
+    name: "text"
+    string_value: "Text"
+  }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: false
+  }
+  bounding_box_pixels {
+    top: 12
+    left: 5
+    bottom: 13
+    right: 6
+  }
+}
+ui_elements {
+  id: 11
+  type: VIEW
+  parent_id: 8
+  bounding_box {
+    top: 0.541666687
+    left: 0.263157904
+    bottom: 0.583333313
+    right: 0.315789461
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 12
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "inlineTextBox"
+  }
+  attributes {
+    name: "text"
+    string_value: "201"
+  }
+  attributes {
+    name: "/extras/styles/offscreen"
+    bool_value: false
+  }
+  bounding_box_pixels {
+    top: 13
+    left: 5
+    bottom: 14
+    right: 6
   }
 }

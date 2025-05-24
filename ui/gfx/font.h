@@ -7,9 +7,9 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -32,7 +32,7 @@ class PlatformFont;
 //   |        |-------------------+------------------+
 //   |        | descent (height - baseline)          |
 //   +--------+--------------------------------------+
-class GFX_EXPORT Font {
+class COMPONENT_EXPORT(GFX) Font {
  public:
   // The following constants indicate the font style.
   // These are treated as bitwise operators.
@@ -137,12 +137,12 @@ class GFX_EXPORT Font {
 };
 
 #ifndef NDEBUG
-GFX_EXPORT std::ostream& operator<<(std::ostream& stream,
-                                    const Font::Weight weight);
+COMPONENT_EXPORT(GFX)
+std::ostream& operator<<(std::ostream& stream, const Font::Weight weight);
 #endif
 
 // Returns the Font::Weight that matches |weight| or the next bigger one.
-GFX_EXPORT Font::Weight FontWeightFromInt(int weight);
+COMPONENT_EXPORT(GFX) Font::Weight FontWeightFromInt(int weight);
 
 }  // namespace gfx
 

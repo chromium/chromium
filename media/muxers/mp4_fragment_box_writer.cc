@@ -137,7 +137,7 @@ void Mp4TrackFragmentHeaderBoxWriter::Write(BoxByteStream& writer) {
   if (box_->flags &
       static_cast<uint32_t>(mp4::writable_boxes::TrackFragmentHeaderFlags::
                                 kSampleDescriptionIndexPresent)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   if (box_->flags &
@@ -389,7 +389,7 @@ Mp4FragmentRandomAccessOffsetBoxBoxWriter::
 void Mp4FragmentRandomAccessOffsetBoxBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_MFRO, /*flags=*/0, /*version=*/1);
+  writer.StartFullBox(mp4::FOURCC_MFRO, /*flags=*/0, /*version=*/0);
 
   // `size` property of the `mfro` box is the total size of the `mfra` box.
   writer.WriteU32(writer.size() + 4);

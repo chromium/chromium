@@ -13,14 +13,17 @@ class UI_ANDROID_EXPORT ViewAndroidObserver {
  public:
   // Notifies that view gets attached to window. Note that the notification
   // is not sent if view is already in attached state.
-  virtual void OnAttachedToWindow() = 0;
+  virtual void OnAttachedToWindow() {}
 
   // Notifies that view gets detached from window. Note that the notification
   // is not sent if view is already in detached state.
-  virtual void OnDetachedFromWindow() = 0;
+  virtual void OnDetachedFromWindow() {}
 
   // Notifies the view has been destroyed.
   virtual void OnViewAndroidDestroyed() {}
+
+  // Notifies that the delegate has been set.
+  virtual void OnDelegateSet() {}
 
  protected:
   virtual ~ViewAndroidObserver() {}

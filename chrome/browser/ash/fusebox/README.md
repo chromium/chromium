@@ -7,16 +7,17 @@ on the 'real' (kernel-level) virtual file system, via [Linux's
 FUSE](https://www.kernel.org/doc/html/latest/filesystems/fuse.html) protocol.
 
 It enables sharing virtual-file-like things *across processes* (e.g. between
-ash-chrome and lacros-chrome) or *with Virtual Machines* (e.g. the Android or
-Crostini VMs) just by sharing a string file name or an integer file descriptor.
+ash-chrome and lacros-chrome, although lacros-chrome is now deprecated) or
+*with Virtual Machines* (e.g. the Android or Crostini VMs) just by sharing a
+string file name or an integer file descriptor.
 
 Fusebox doesn't *replace* the `storage` C++ API. It provides *an alternative
 mechanism* for accessing those virtual files. Workflows that stay entirely
 within ash-chrome can continue to use the C++ API. But when the GMail web-app
-(running in a sandboxed lacros-chrome process) wants to upload files from a
-phone attached to a Chromebook via USB cable, and the MTP (Media Transfer
-Protocol) volume (virtual directory) is served by ash-chrome code, that access
-is facilitated by Fusebox.
+(running in a sandboxed and now deprecated lacros-chrome process) wants to
+upload files from a phone attached to a Chromebook via USB cable, and the MTP
+(Media Transfer Protocol) volume (virtual directory) is served by ash-chrome
+code, that access is facilitated by Fusebox.
 
 
 ## Structure

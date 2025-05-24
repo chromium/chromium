@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
@@ -22,18 +23,17 @@
 class SigninUtilTest : public PlatformTest {
  public:
   explicit SigninUtilTest() {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
-    pref_service_ = chrome_browser_state_.get()->GetPrefs();
+    profile_ = TestProfileIOS::Builder().Build();
+    pref_service_ = profile_.get()->GetPrefs();
 
     account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
 
   AccountInfo FakeAccountFull() {
     AccountInfo account;
     account.account_id = CoreAccountId::FromString("account_id");
-    account.gaia = "gaia";
+    account.gaia = GaiaId("gaia");
     account.email = "person@example.org";
     account.full_name = "Full Name";
     account.given_name = "Given Name";
@@ -43,7 +43,7 @@ class SigninUtilTest : public PlatformTest {
 
   AccountInfo FakeAccountMinimal() {
     AccountInfo account;
-    account.gaia = "gaia";
+    account.gaia = GaiaId("gaia");
     account.email = "person@example.org";
     return account;
   }
@@ -64,8 +64,8 @@ class SigninUtilTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  PrefService* pref_service_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  raw_ptr<PrefService> pref_service_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 

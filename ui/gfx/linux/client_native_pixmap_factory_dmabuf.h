@@ -5,12 +5,13 @@
 #ifndef UI_GFX_LINUX_CLIENT_NATIVE_PIXMAP_FACTORY_DMABUF_H_
 #define UI_GFX_LINUX_CLIENT_NATIVE_PIXMAP_FACTORY_DMABUF_H_
 
+#include "base/component_export.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
-GFX_EXPORT ClientNativePixmapFactory* CreateClientNativePixmapFactoryDmabuf();
+COMPONENT_EXPORT(GFX)
+ClientNativePixmapFactory* CreateClientNativePixmapFactoryDmabuf();
 
 }  // namespace gfx
 

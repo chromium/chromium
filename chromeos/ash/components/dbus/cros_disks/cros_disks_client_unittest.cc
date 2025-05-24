@@ -165,30 +165,25 @@ TEST(CrosDisksClientTest, ComposeMountOptions) {
   const std::string label = "/tmp/cros-disks-test";
   const std::string label_option = base::StrCat({"mountlabel=", label});
 
-  // TODO(b/364409158) Remove with files-kernel-drivers feature flag.
-  const std::string driver_option = "prefer-driver=kernel";
-
   EXPECT_THAT(CrosDisksClient::ComposeMountOptions(
                   {}, label, MountAccessMode::kReadWrite,
                   RemountOption::kMountNewDevice),
-              UnorderedElementsAre("rw", label_option, driver_option));
+              UnorderedElementsAre("rw", label_option));
 
   EXPECT_THAT(CrosDisksClient::ComposeMountOptions(
                   {}, label, MountAccessMode::kReadOnly,
                   RemountOption::kMountNewDevice),
-              UnorderedElementsAre("ro", label_option, driver_option));
+              UnorderedElementsAre("ro", label_option));
 
-  EXPECT_THAT(
-      CrosDisksClient::ComposeMountOptions(
-          {}, label, MountAccessMode::kReadWrite,
-          RemountOption::kRemountExistingDevice),
-      UnorderedElementsAre("rw", "remount", label_option, driver_option));
+  EXPECT_THAT(CrosDisksClient::ComposeMountOptions(
+                  {}, label, MountAccessMode::kReadWrite,
+                  RemountOption::kRemountExistingDevice),
+              UnorderedElementsAre("rw", "remount", label_option));
 
   EXPECT_THAT(CrosDisksClient::ComposeMountOptions(
                   {"foo", "bar=baz"}, label, MountAccessMode::kReadWrite,
                   RemountOption::kMountNewDevice),
-              UnorderedElementsAre("foo", "bar=baz", "rw", label_option,
-                                   driver_option));
+              UnorderedElementsAre("foo", "bar=baz", "rw", label_option));
 }
 
 }  // namespace ash

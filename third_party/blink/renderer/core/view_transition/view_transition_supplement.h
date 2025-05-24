@@ -48,6 +48,13 @@ class CORE_EXPORT ViewTransitionSupplement
                                                 Document&,
                                                 ExceptionState&);
 
+  static DOMViewTransition* StartViewTransitionForElement(
+      ScriptState*,
+      Element*,
+      V8ViewTransitionCallback* callback,
+      const std::optional<Vector<String>>& types,
+      ExceptionState&);
+
   // Creates a ViewTransition to cache the state of a Document before a
   // navigation. The cached state is provided to the caller using the
   // |ViewTransitionStateCallback|.
@@ -68,6 +75,13 @@ class CORE_EXPORT ViewTransitionSupplement
   static void AbortTransition(Document&);
 
   ViewTransition* GetTransition();
+  ViewTransition* GetTransition(const Element&);
+  void ForEachTransition(base::FunctionRef<void(ViewTransition&)>);
+
+  void WillEnterGetComputedStyleScope();
+  void WillExitGetComputedStyleScope();
+
+  void WillUpdateStyleAndLayoutTree();
 
   explicit ViewTransitionSupplement(Document&);
   ~ViewTransitionSupplement() override;
@@ -79,6 +93,8 @@ class CORE_EXPORT ViewTransitionSupplement
   void AddPendingRequest(std::unique_ptr<ViewTransitionRequest>) override;
   VectorOf<std::unique_ptr<ViewTransitionRequest>> TakePendingRequests();
   void OnTransitionFinished(ViewTransition* transition) override;
+  void OnSkipTransitionWithPendingCallback(ViewTransition*) override;
+  void OnSkippedTransitionDOMCallback(ViewTransition*) override;
 
   // TODO(https://crbug.com/1422251): Expand this to receive a the full set of
   // @view-transition options.
@@ -102,7 +118,8 @@ class CORE_EXPORT ViewTransitionSupplement
 
   // Generates a new ID usable from viz to refer to a snapshot resource.
   viz::ViewTransitionElementResourceId GenerateResourceId(
-      const blink::ViewTransitionToken& transition_token);
+      const blink::ViewTransitionToken& transition_token,
+      bool for_subframe_snapshot);
 
   // Initializes the sequence such that the next call to GenerateResourceId()
   // will return `next_local_id`. Used to ensure a unique and continuous
@@ -110,14 +127,7 @@ class CORE_EXPORT ViewTransitionSupplement
   void InitializeResourceIdSequence(uint32_t next_local_id);
 
  private:
-  static DOMViewTransition* StartViewTransitionInternal(
-      ScriptState*,
-      Document&,
-      V8ViewTransitionCallback* callback,
-      const std::optional<Vector<String>>& types,
-      ExceptionState&);
-
-  DOMViewTransition* StartTransition(Document& document,
+  DOMViewTransition* StartTransition(Element& element,
                                      V8ViewTransitionCallback* callback,
                                      const std::optional<Vector<String>>& types,
                                      ExceptionState& exception_state);
@@ -132,7 +142,20 @@ class CORE_EXPORT ViewTransitionSupplement
 
   void SendOptInStatusToHost();
 
-  Member<ViewTransition> transition_;
+  // Document-level view transition.
+  // TODO(crbug.com/394052227): Change document transitions to be stored in
+  // element_transitions_ (keyed on the documentElement), and remove
+  // document_transition_.
+  Member<ViewTransition> document_transition_;
+
+  // Element-scoped view transitions.
+  HeapHashMap<WeakMember<const Element>, Member<ViewTransition>>
+      element_transitions_;
+
+  // view-transitions that have been skipped but still have a pending DOM
+  // callback.
+  HeapHashMap<WeakMember<const Element>, Member<ViewTransition>>
+      skipped_with_pending_dom_callback_;
 
   VectorOf<std::unique_ptr<ViewTransitionRequest>> pending_requests_;
 
@@ -143,6 +166,9 @@ class CORE_EXPORT ViewTransitionSupplement
       viz::ViewTransitionElementResourceId::kInvalidLocalId;
 
   Vector<String> cross_document_types_;
+
+  bool in_get_computed_style_scope_ = false;
+  bool last_update_had_computed_style_scope_ = false;
 };
 
 }  // namespace blink

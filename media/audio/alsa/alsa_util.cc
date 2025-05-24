@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/audio/alsa/alsa_util.h"
 
 #include <stddef.h>
@@ -198,11 +203,11 @@ static snd_pcm_t* OpenDevice(media::AlsaWrapper* wrapper,
                              snd_pcm_format_t pcm_format,
                              int buffer_us,
                              int period_us = 0) {
-  snd_pcm_t* handle = NULL;
+  snd_pcm_t* handle = nullptr;
   int error = wrapper->PcmOpen(&handle, device_name, type, SND_PCM_NONBLOCK);
   if (error < 0) {
     LOG(ERROR) << "PcmOpen: " << device_name << "," << wrapper->StrError(error);
-    return NULL;
+    return nullptr;
   }
 
   error =
@@ -235,7 +240,7 @@ static snd_pcm_t* OpenDevice(media::AlsaWrapper* wrapper,
       // TODO(ajwong): Retry on certain errors?
       LOG(WARNING) << "Unable to close audio device. Leaking handle.";
     }
-    return NULL;
+    return nullptr;
   }
 
   return handle;
@@ -294,13 +299,13 @@ snd_pcm_t* OpenPlaybackDevice(media::AlsaWrapper* wrapper,
 
 snd_mixer_t* OpenMixer(media::AlsaWrapper* wrapper,
                        const std::string& device_name) {
-  snd_mixer_t* mixer = NULL;
+  snd_mixer_t* mixer = nullptr;
 
   int error = wrapper->MixerOpen(&mixer, 0);
   if (error < 0) {
     LOG(ERROR) << "MixerOpen: " << device_name << ", "
                << wrapper->StrError(error);
-    return NULL;
+    return nullptr;
   }
 
   std::string control_name = DeviceNameToControlName(device_name);
@@ -309,15 +314,15 @@ snd_mixer_t* OpenMixer(media::AlsaWrapper* wrapper,
     LOG(ERROR) << "MixerAttach, " << control_name << ", "
                << wrapper->StrError(error);
     alsa_util::CloseMixer(wrapper, mixer, device_name);
-    return NULL;
+    return nullptr;
   }
 
-  error = wrapper->MixerElementRegister(mixer, NULL, NULL);
+  error = wrapper->MixerElementRegister(mixer, nullptr, nullptr);
   if (error < 0) {
     LOG(ERROR) << "MixerElementRegister: " << control_name << ", "
                << wrapper->StrError(error);
     alsa_util::CloseMixer(wrapper, mixer, device_name);
-    return NULL;
+    return nullptr;
   }
 
   return mixer;
@@ -349,16 +354,16 @@ void CloseMixer(media::AlsaWrapper* wrapper, snd_mixer_t* mixer,
 snd_mixer_elem_t* LoadCaptureMixerElement(media::AlsaWrapper* wrapper,
                                           snd_mixer_t* mixer) {
   if (!mixer)
-    return NULL;
+    return nullptr;
 
   int error = wrapper->MixerLoad(mixer);
   if (error < 0) {
     LOG(ERROR) << "MixerLoad: " << wrapper->StrError(error);
-    return NULL;
+    return nullptr;
   }
 
-  snd_mixer_elem_t* elem = NULL;
-  snd_mixer_elem_t* mic_elem = NULL;
+  snd_mixer_elem_t* elem = nullptr;
+  snd_mixer_elem_t* mic_elem = nullptr;
   const char kCaptureElemName[] = "Capture";
   const char kMicElemName[] = "Mic";
   for (elem = wrapper->MixerFirstElem(mixer);

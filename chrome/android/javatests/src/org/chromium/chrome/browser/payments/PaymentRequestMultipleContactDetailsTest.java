@@ -236,7 +236,7 @@ public class PaymentRequestMultipleContactDetailsTest {
         // The complete profiles should still come first, despite having a lower frecency score. The
         // profile without either a phone or email should have been sorted to last, and is then not
         // shown because we have more than PaymentUiService.SUGGESTIONS_LIMIT profiles.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -276,7 +276,7 @@ public class PaymentRequestMultipleContactDetailsTest {
 
         setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -317,7 +317,7 @@ public class PaymentRequestMultipleContactDetailsTest {
 
         setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -349,7 +349,7 @@ public class PaymentRequestMultipleContactDetailsTest {
 
         setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -380,7 +380,7 @@ public class PaymentRequestMultipleContactDetailsTest {
 
         setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(

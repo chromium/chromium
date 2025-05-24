@@ -8,8 +8,9 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 namespace autofill {
 
@@ -17,19 +18,10 @@ class AutocompleteHistoryManager;
 
 // Singleton that owns all AutocompleteHistoryManagers and associates them with
 // profiles.
-class AutocompleteHistoryManagerFactory
-    : public BrowserStateKeyedServiceFactory {
+class AutocompleteHistoryManagerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static AutocompleteHistoryManager* GetForBrowserState(ProfileIOS* profile);
-
   static AutocompleteHistoryManager* GetForProfile(ProfileIOS* profile);
   static AutocompleteHistoryManagerFactory* GetInstance();
-
-  AutocompleteHistoryManagerFactory(const AutocompleteHistoryManagerFactory&) =
-      delete;
-  AutocompleteHistoryManagerFactory& operator=(
-      const AutocompleteHistoryManagerFactory&) = delete;
 
  private:
   friend class base::NoDestructor<AutocompleteHistoryManagerFactory>;
@@ -39,8 +31,6 @@ class AutocompleteHistoryManagerFactory
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

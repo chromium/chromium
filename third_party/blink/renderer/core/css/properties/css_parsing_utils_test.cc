@@ -5,6 +5,11 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_progress_value.h"
+#include "third_party/blink/renderer/core/css/css_scroll_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -20,6 +25,7 @@ namespace {
 
 using css_parsing_utils::AtDelimiter;
 using css_parsing_utils::AtIdent;
+using css_parsing_utils::ConsumeAbsoluteColor;
 using css_parsing_utils::ConsumeAngle;
 using css_parsing_utils::ConsumeIfDelimiter;
 using css_parsing_utils::ConsumeIfIdent;
@@ -42,6 +48,19 @@ TEST(CSSParsingUtilsTest, BasicShapeUseCount) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
+TEST(CSSParsingUtilsTest, OverflowClipUseCount) {
+  test::TaskEnvironment task_environment;
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+  WebDXFeature feature = WebDXFeature::kOverflowClip;
+  EXPECT_FALSE(document.IsWebDXFeatureCounted(feature));
+  document.documentElement()->setInnerHTML(
+      "<style>span { overflow: clip; }</style>");
+  EXPECT_TRUE(document.IsWebDXFeatureCounted(feature));
+}
+
 TEST(CSSParsingUtilsTest, Revert) {
   EXPECT_TRUE(css_parsing_utils::IsCSSWideKeyword(CSSValueID::kRevert));
   EXPECT_TRUE(css_parsing_utils::IsCSSWideKeyword("revert"));
@@ -49,13 +68,20 @@ TEST(CSSParsingUtilsTest, Revert) {
 
 double ConsumeAngleValue(String target) {
   CSSParserTokenStream stream(target);
-  return ConsumeAngle(stream, *MakeContext(), std::nullopt)->ComputeDegrees();
+  // This function only works on calc() expressions that can be resolved at
+  // parse time.
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
+  return ConsumeAngle(stream, *MakeContext(), std::nullopt)
+      ->ComputeDegrees(conversion_data);
 }
 
 double ConsumeAngleValue(String target, double min, double max) {
   CSSParserTokenStream stream(target);
+  // This function only works on calc() expressions that can be resolved at
+  // parse time.
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   return ConsumeAngle(stream, *MakeContext(), std::nullopt, min, max)
-      ->ComputeDegrees();
+      ->ComputeDegrees(conversion_data);
 }
 
 TEST(CSSParsingUtilsTest, ConsumeAngles) {
@@ -67,7 +93,7 @@ TEST(CSSParsingUtilsTest, ConsumeAngles) {
 
   EXPECT_EQ(kMaxDegreeValue, ConsumeAngleValue("calc(infinity * 1deg)"));
   EXPECT_EQ(-kMaxDegreeValue, ConsumeAngleValue("calc(-infinity * 1deg)"));
-  EXPECT_EQ(kMaxDegreeValue, ConsumeAngleValue("calc(NaN * 1deg)"));
+  EXPECT_EQ(0, ConsumeAngleValue("calc(NaN * 1deg)"));
 
   // Math function with min and max ranges
 
@@ -179,10 +205,16 @@ TEST(CSSParsingUtilsTest, DashedIdent) {
 }
 
 TEST(CSSParsingUtilsTest, ConsumeAbsoluteColor) {
-  auto ConsumeColorForTest = [](String css_text, auto func) {
+  auto ConsumeColorForTest = [](String css_text) {
     CSSParserTokenStream stream(css_text);
     CSSParserContext* context = MakeContext();
-    return func(stream, *context);
+    return ConsumeColor(stream, *context,
+                        css_parsing_utils::ColorParserContext());
+  };
+  auto ConsumeAbsoluteColorForTest = [](String css_text) {
+    CSSParserTokenStream stream(css_text);
+    CSSParserContext* context = MakeContext();
+    return ConsumeAbsoluteColor(stream, *context);
   };
 
   struct {
@@ -208,11 +240,9 @@ TEST(CSSParsingUtilsTest, ConsumeAbsoluteColor) {
        nullptr},
   };
   for (auto& expectation : expectations) {
-    EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
-                                  css_parsing_utils::ConsumeColor),
+    EXPECT_EQ(ConsumeColorForTest(expectation.css_text),
               expectation.consume_color_expectation);
-    EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
-                                  css_parsing_utils::ConsumeAbsoluteColor),
+    EXPECT_EQ(ConsumeAbsoluteColorForTest(expectation.css_text),
               expectation.consume_absolute_color_expectation);
   }
 }
@@ -318,6 +348,76 @@ TEST(CSSParsingUtilsTest, ConsumePositionTryFallbacksInUAMode) {
       stream, *MakeContext(kUASheetMode));
   ASSERT_TRUE(value);
   EXPECT_EQ("block-start span-inline-end", value->CssText());
+}
+
+namespace {
+
+cssvalue::CSSProgressValue* MakeProgressTypeValue(
+    const CSSValue& progress,
+    const CSSValue* easing_function = nullptr) {
+  return MakeGarbageCollected<cssvalue::CSSProgressValue>(progress,
+                                                          easing_function);
+}
+
+}  // namespace
+
+TEST(CSSParsingUtilsTest, ConsumeProgressType) {
+  CSSValue* number_0_3 = MakeGarbageCollected<CSSNumericLiteralValue>(
+      0.3, CSSPrimitiveValue::UnitType::kNumber);
+  CSSValue* function_number_0_3 =
+      CSSMathFunctionValue::Create(CSSMathExpressionNumericLiteral::Create(
+          0.3, CSSPrimitiveValue::UnitType::kNumber));
+  CSSValue* linear =
+      MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kLinear);
+  CSSValue* view =
+      MakeGarbageCollected<cssvalue::CSSViewValue>(nullptr, nullptr);
+  CSSValue* scroll =
+      MakeGarbageCollected<cssvalue::CSSScrollValue>(nullptr, nullptr);
+  CSSValue* custom_ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("--test"));
+  struct {
+    STACK_ALLOCATED();
+
+   public:
+    String input;
+    CSSValue* output;
+  } expectations[]{
+      /* number and percent */
+      {"30%", MakeProgressTypeValue(*number_0_3)},
+      {"calc(30%)", nullptr},
+      {"0.3", MakeProgressTypeValue(*number_0_3)},
+      {"calc(0.3)", MakeProgressTypeValue(*function_number_0_3)},
+      {"30% by linear", MakeProgressTypeValue(*number_0_3, linear)},
+      {"calc(30% by linear)", nullptr},
+      {"0.3 by linear", MakeProgressTypeValue(*number_0_3, linear)},
+      {"calc(0.3) by linear",
+       MakeProgressTypeValue(*function_number_0_3, linear)},
+      /* animation timeline */
+      {"auto", nullptr},
+      {"auto by linear", nullptr},
+      {"none by linear", nullptr},
+      {"none by linear", nullptr},
+      {"scroll()", MakeProgressTypeValue(*scroll)},
+      {"scroll() by linear", MakeProgressTypeValue(*scroll, linear)},
+      {"view()", MakeProgressTypeValue(*view)},
+      {"view() by linear", MakeProgressTypeValue(*view, linear)},
+      {"--test", MakeProgressTypeValue(*custom_ident)},
+      {"--test by linear", MakeProgressTypeValue(*custom_ident, linear)},
+      /* rejected cases */
+      {"calc(30 * 1%)", nullptr},
+      {"30px", nullptr},
+      {"test", nullptr},
+  };
+  for (auto& expectation : expectations) {
+    CSSParserTokenStream stream(expectation.input);
+    CSSValue* progress =
+        css_parsing_utils::ConsumeProgressType(stream, *MakeContext());
+    if (!expectation.output) {
+      EXPECT_FALSE(progress);
+    } else {
+      EXPECT_TRUE(*progress == *expectation.output);
+    }
+  }
 }
 
 }  // namespace

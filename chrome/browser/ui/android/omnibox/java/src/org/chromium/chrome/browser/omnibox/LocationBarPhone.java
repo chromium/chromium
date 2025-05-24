@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -13,8 +15,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 /** A location bar implementation specific for smaller/phone screens. */
+@NullMarked
 class LocationBarPhone extends LocationBarLayout {
     private static final int ACTION_BUTTON_TOUCH_OVERFLOW_LEFT = 15;
 
@@ -38,7 +43,7 @@ class LocationBarPhone extends LocationBarLayout {
         delegateArea.left -= ACTION_BUTTON_TOUCH_OVERFLOW_LEFT;
         TouchDelegate touchDelegate = new TouchDelegate(delegateArea, mUrlActionContainer);
         assert mUrlActionContainer.getParent() == this;
-        mCompositeTouchDelegate.addDelegateForDescendantView(touchDelegate);
+        assumeNonNull(mCompositeTouchDelegate).addDelegateForDescendantView(touchDelegate);
     }
 
     @Override
@@ -94,7 +99,9 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     int getOffsetOfFirstVisibleFocusedView() {
-        if (mLocationBarDataProvider.isIncognito() && mStatusView.getVisibility() != View.GONE) {
+        if (!OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()
+                && mLocationBarDataProvider.isIncognito()
+                && mStatusView.getVisibility() != View.GONE) {
             return mStatusView.getMeasuredWidth();
         }
 

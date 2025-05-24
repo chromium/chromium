@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
@@ -55,7 +60,7 @@ TEST_F(SetAggressivelyFreeResourcesTest, FreeAllMemory_TransferBuffer) {
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
 
-  const char kPixels[4 * 4 * 4] = {0};
+  const char kPixels[4 * 4 * 4] = {};
   // Allocates transfer buffer space for the pixels.
   size_t old_size = gl_.GetSharedMemoryBytesAllocated();
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 4, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -71,7 +76,7 @@ TEST_F(SetAggressivelyFreeResourcesTest, FreeAllMemory_MappedMemory) {
   GLuint buffer = 0;
   glGenBuffers(1, &buffer);
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  const char kData[256] = {0};
+  const char kData[256] = {};
   glBufferData(GL_ARRAY_BUFFER, sizeof(kData), kData, GL_STATIC_DRAW);
 
   size_t old_size = gl_.GetSharedMemoryBytesAllocated();
@@ -114,7 +119,7 @@ TEST_F(SetAggressivelyFreeResourcesTest, FreeAllMemory) {
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
 
-  const char kPixels[4 * 4 * 4] = {0};
+  const char kPixels[4 * 4 * 4] = {};
   // Allocates transfer buffer space for the pixels.
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 4, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                kPixels);
@@ -122,7 +127,7 @@ TEST_F(SetAggressivelyFreeResourcesTest, FreeAllMemory) {
   GLuint buffer = 0;
   glGenBuffers(1, &buffer);
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  const char kData[256] = {0};
+  const char kData[256] = {};
   // Allocates transfer buffer space for kData.
   glBufferData(GL_ARRAY_BUFFER, sizeof(kData), kData, GL_STATIC_DRAW);
 

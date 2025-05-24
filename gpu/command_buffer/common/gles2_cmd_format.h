@@ -14,7 +14,6 @@
 #include "base/atomicops.h"
 #include "base/check_op.h"
 #include "base/rand_util.h"
-#include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/common_cmd_format.h"
 #include "gpu/command_buffer/common/constants.h"

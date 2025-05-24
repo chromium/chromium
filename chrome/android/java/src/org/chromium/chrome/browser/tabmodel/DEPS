@@ -1,8 +1,13 @@
 include_rules = [
   "+chrome/browser/profiles/android/java/src/org/chromium/chrome/browser/profiles/Profile.java",
+  "+components/collaboration/public/android/java",
+  "+components/saved_tab_groups/public/android/java",
 ]
 
 specific_include_rules = {
+  "TabModelRemoverUnitTest.java": [
+    "+components/data_sharing/test_support/android/java"
+  ],
   "TabPersistentStore.java": [
     "+chrome/browser/tabpersistence/android/java",
   ],

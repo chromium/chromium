@@ -38,7 +38,7 @@ import java.util.Random;
 public class CoreImplTest {
     @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
-    private List<Handle> mHandlesToClose = new ArrayList<Handle>();
+    private final List<Handle> mHandlesToClose = new ArrayList<Handle>();
 
     /**
      * @see MojoTestCase#tearDown()

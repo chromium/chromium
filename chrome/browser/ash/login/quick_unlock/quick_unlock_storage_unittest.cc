@@ -47,7 +47,7 @@ class QuickUnlockStorageUnitTest : public testing::Test {
 
  protected:
   QuickUnlockStorageUnitTest() : profile_(std::make_unique<TestingProfile>()) {}
-  ~QuickUnlockStorageUnitTest() override {}
+  ~QuickUnlockStorageUnitTest() override = default;
 
   // testing::Test:
   void SetUp() override { UserDataAuthClient::InitializeFake(); }

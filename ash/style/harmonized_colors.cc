@@ -4,10 +4,10 @@
 
 #include "ash/style/harmonized_colors.h"
 
+#include <algorithm>
 #include <functional>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "third_party/material_color_utilities/src/cpp/palettes/tones.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"

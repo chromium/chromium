@@ -67,7 +67,7 @@ SharesheetTargetButton::SharesheetTargetButton(
 
   image_ = AddChildView(std::make_unique<views::ImageView>());
   if (icon.has_value()) {
-    image_->SetImage(icon.value());
+    image_->SetImage(ui::ImageModel::FromImageSkia(icon.value()));
     vector_icon_ = nullptr;
   }
   image_->SetCanProcessEventsWithinSubtree(false);
@@ -79,7 +79,7 @@ SharesheetTargetButton::SharesheetTargetButton(
   auto* label =
       label_view->AddChildView(std::make_unique<views::Label>(display_name));
   label->SetID(SharesheetViewID::TARGET_LABEL_VIEW_ID);
-  label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
+  label->SetEnabledColor(cros_tokens::kTextColorSecondary);
 
   bubble_utils::ApplyStyle(label, TypographyToken::kCrosButton1);
   SetLabelProperties(label);
@@ -89,7 +89,7 @@ SharesheetTargetButton::SharesheetTargetButton(
       secondary_display_name != display_name) {
     auto* secondary_label = label_view->AddChildView(
         std::make_unique<views::Label>(secondary_display_name));
-    secondary_label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
+    secondary_label->SetEnabledColor(cros_tokens::kTextColorSecondary);
 
     bubble_utils::ApplyStyle(secondary_label, TypographyToken::kCrosBody2);
     SetLabelProperties(secondary_label);
@@ -114,8 +114,9 @@ SharesheetTargetButton::SharesheetTargetButton(
 void SharesheetTargetButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
-  if (!vector_icon_)
+  if (!vector_icon_) {
     return;
+  }
 
   // TODO(b/284175205): Convert this to an ImageModel after Jelly launches.
   auto* color_provider = GetColorProvider();
@@ -139,14 +140,14 @@ void SharesheetTargetButton::OnThemeChanged() {
   gfx::ImageSkia circle_icon_with_shadow =
       gfx::ImageSkiaOperations::CreateImageWithDropShadow(circle_icon,
                                                           shadow_values);
-  image_->SetImage(circle_icon_with_shadow);
+  image_->SetImage(ui::ImageModel::FromImageSkia(circle_icon_with_shadow));
 }
 
 void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
   label->SetMultiLine(true);
   label->SetMaximumWidth(kButtonTextMaxWidth);
   label->SetHandlesTooltips(true);
-  label->SetTooltipText(label->GetText());
+  label->SetCustomTooltipText(label->GetText());
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 }

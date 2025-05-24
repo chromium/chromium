@@ -142,6 +142,10 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                                const std::string& protocol,
                                const GURL& url,
                                bool user_gesture) override;
+  void UnregisterProtocolHandler(RenderFrameHost* requesting_frame,
+                                 const std::string& protocol,
+                                 const GURL& url,
+                                 bool user_gesture) override;
 #endif
   void RequestPointerLock(WebContents* web_contents,
                           bool user_gesture,
@@ -181,7 +185,8 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                           const base::FilePath& path) override;
   bool IsBackForwardCacheSupported(WebContents& contents) override;
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override;
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override;
   bool ShouldAllowRunningInsecureContent(WebContents* web_contents,
                                          bool allowed_per_prefs,
                                          const url::Origin& origin,

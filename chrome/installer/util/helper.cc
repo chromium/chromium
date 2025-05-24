@@ -19,6 +19,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
+#include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/installation_state.h"
 #include "chrome/installer/util/util_constants.h"
 
@@ -140,13 +141,13 @@ base::span<const int> GetInstallationPathKeys(bool system_install) {
   if (!system_install) {
     // %LOCALAPPDATA% is the only location for per-user installs.
     static constexpr int kPerUserKeys[] = {base::DIR_LOCAL_APP_DATA};
-    return base::make_span(kPerUserKeys);
+    return base::span(kPerUserKeys);
   }
   if (base::win::OSInfo::GetArchitecture() ==
       base::win::OSInfo::X86_ARCHITECTURE) {
     // %PROGRAMFILES% is the only location for 32-bit Windows.
     static constexpr int kPerMachineKeys[] = {base::DIR_PROGRAM_FILES};
-    return base::make_span(kPerMachineKeys);
+    return base::span(kPerMachineKeys);
   }
   // %PROGRAMFILES%, which matches the current binary's bitness, is the default
   // for 64-bit Windows (x64 and arm64). The "opposite" location is the
@@ -159,7 +160,7 @@ base::span<const int> GetInstallationPathKeys(bool system_install) {
       base::DIR_PROGRAM_FILES6432,  // Folder for 64-bit apps.
 #endif
   };
-  return base::make_span(kx64PerMachineKeys);
+  return base::span(kx64PerMachineKeys);
 }
 
 }  // namespace
@@ -204,6 +205,21 @@ base::FilePath FindInstallPath(bool system_install,
     }
   }
   return {};
+}
+
+bool IsCurrentProcessInstalled() {
+  // Get the directory in which the product is installed as per its registration
+  // with the updater.
+  const base::FilePath install_dir = GetInstalledDirectory(
+      /*system_install=*/!InstallUtil::IsPerUserInstall());
+
+  if (install_dir.empty()) {
+    return false;  // No product installed at this level and mode.
+  }
+
+  // Return true if the current process resides within that directory.
+  const base::FilePath this_exe = base::PathService::CheckedGet(base::FILE_EXE);
+  return install_dir.IsParent(this_exe);
 }
 
 }  // namespace installer.

@@ -8,10 +8,10 @@
 namespace ash::test {
 
 // Test constants used during enrollment wherever appropriate.
-constexpr char kTestDomain[] = "test-domain.com";
-constexpr char kTestRlzBrandCodeKey[] = "TEST";
-constexpr char kTestSerialNumber[] = "111111";
-constexpr char kTestHardwareClass[] = "hw";
+inline constexpr char kTestDomain[] = "test-domain.com";
+inline constexpr char kTestRlzBrandCodeKey[] = "TEST";
+inline constexpr char kTestSerialNumber[] = "111111";
+inline constexpr char kTestHardwareClass[] = "hw";
 
 }  // namespace ash::test
 

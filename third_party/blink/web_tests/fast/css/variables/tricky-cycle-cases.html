@@ -25,17 +25,17 @@ div {
 #twocycleinfallback_b {
     --c: var(--d, red);
     --d: var(--e, var(--c));
-    --e: yellow;
+    --e: green;
     background-color: orange;
-    background-color: var(--d, green);
+    background-color: var(--d, yellow);
 }
 
 #twocycleinfallback_rb {
     --d: var(--c, red);
     --c: var(--e, var(--d));
-    --e: yellow;
+    --e: green;
     background-color: orange;
-    background-color: var(--c, green);
+    background-color: var(--c, yellow);
 }
 
 #twocycleinchain_a {
@@ -87,17 +87,17 @@ div {
 #secondarycycle_fallback {
   --m: var(--n, pink);
   --n: var(--m, var(--o));
-  --o: var(--n, red);
+  --o: var(--n, green);
   background-color: orange;
-  background-color: var(--m, var(--o, green));
+  background-color: var(--m, var(--o, red));
 }
 
 #secondarycycle_fallback_r {
   --n: var(--m, pink);
   --m: var(--n, var(--o));
-  --o: var(--m, red);
+  --o: var(--m, green);
   background-color: orange;
-  background-color: var(--n, var(--o, green));
+  background-color: var(--n, var(--o, red));
 }
 
 #twocycle_with_separate_fallback {
@@ -124,27 +124,27 @@ div {
 }
 
 #fallback_self_reference_a {
-  --a: red;
+  --a: green;
   --b: var(--a, var(--b));
-  --c: var(--b, green);
+  --c: var(--b, red);
   background-color: orange;
-  background-color: var(--c, red);
+  background-color: var(--c, yellow);
 }
 
 #fallback_self_reference_b {
-  --b: red;
+  --b: green;
   --c: var(--b, var(--c));
-  --a: var(--c, green);
+  --a: var(--c, red);
   background-color: orange;
-  background-color: var(--a, red);
+  background-color: var(--a, yellow);
 }
 
 #fallback_self_reference_c {
-  --c: red;
+  --c: green;
   --a: var(--c, var(--a));
-  --b: var(--a, green);
+  --b: var(--a, red);
   background-color: orange;
-  background-color: var(--b, red);
+  background-color: var(--b, yellow);
 }
 
 </style>

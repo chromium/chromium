@@ -161,8 +161,8 @@ class GlobalPersistentSystemProfile : public PersistentSystemProfile {
  private:
   friend struct base::DefaultSingletonTraits<GlobalPersistentSystemProfile>;
 
-  GlobalPersistentSystemProfile() {}
-  ~GlobalPersistentSystemProfile() {}
+  GlobalPersistentSystemProfile() = default;
+  ~GlobalPersistentSystemProfile() = default;
 };
 
 }  // namespace metrics

@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("process") {
+  sources = [
+    "arc_process.cc",
+    "arc_process.h",
+    "arc_process_service.cc",
+    "arc_process_service.h",
+  ]
+
+  public_deps = [ "//chromeos/ash/components/process_snapshot" ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "arc_process_unittest.cc" ]
+
+  deps = [
+    ":process",
+    "//base/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//testing/gtest",
+  ]
+}

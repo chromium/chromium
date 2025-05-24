@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <string_view>
 
@@ -21,7 +20,6 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/incognito_observer.h"
 #include "chrome/browser/metrics/metrics_memory_details.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
@@ -43,6 +41,10 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
+#endif
+
 class BrowserActivityWatcher;
 class Profile;
 class ProfileManager;
@@ -56,7 +58,7 @@ namespace metrics {
 class MetricsService;
 class MetricsStateManager;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class PerUserStateManagerChromeOS;
 #endif
 }  // namespace metrics
@@ -86,15 +88,16 @@ class ChromeMetricsServiceClient
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Registers profile prefs used by this class.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // metrics::MetricsServiceClient:
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
+  metrics::dwa::DwaService* GetDwaService() override;
   IdentifiabilityStudyState* GetIdentifiabilityStudyState() override;
   metrics::structured::StructuredMetricsService* GetStructuredMetricsService()
       override;
@@ -117,11 +120,13 @@ class ChromeMetricsServiceClient
       const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;
   base::TimeDelta GetStandardUploadInterval() override;
+  std::optional<base::TimeDelta> GetCustomUploadInterval() const override;
   void LoadingStateChanged(bool is_loading) override;
   bool IsReportingPolicyManaged() override;
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
   bool IsOnCellularConnection() override;
   bool IsUkmAllowedForAllProfiles() override;
+  bool IsDwaAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetAppPackageNameIfLoggable() override;
   std::string GetUploadSigningKey() override;
@@ -130,13 +135,13 @@ class ChromeMetricsServiceClient
   bool ShouldResetClientIdsOnClonedInstall() override;
   base::CallbackListSubscription AddOnClonedInstallDetectedCallback(
       base::OnceClosure callback) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool ShouldUploadMetricsForUserId(const uint64_t user_id) override;
   void InitPerUserMetrics() override;
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent) override;
   std::optional<bool> GetCurrentUserMetricsConsent() const override;
   std::optional<std::string> GetCurrentUserId() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // ukm::HistoryDeleteObserver:
   void OnHistoryDeleted() override;
@@ -218,7 +223,7 @@ class ChromeMetricsServiceClient
   // Called when a URL is opened from the Omnibox.
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Helper function for initialization of system profile provider.
   virtual void AsyncInitSystemProfileProvider();
 #endif
@@ -267,6 +272,9 @@ class ChromeMetricsServiceClient
   // The UkmService that |this| is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
 
+  // The DwaService that |this| is a client of.
+  std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
+
   // Listener for changes in incognito activity.
   std::unique_ptr<IncognitoObserver> incognito_observer_;
 
@@ -290,7 +298,7 @@ class ChromeMetricsServiceClient
   std::unique_ptr<BrowserActivityWatcher> browser_activity_watcher_;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // PerUserStateManagerChromeOS that |this| is a client of.
   std::unique_ptr<metrics::PerUserStateManagerChromeOS> per_user_state_manager_;
 
@@ -301,6 +309,12 @@ class ChromeMetricsServiceClient
   // system.
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observation_{this};
+
+  // Manages the consent of UMA before the user has been created. This object is
+  // only created during OOBE before the primary user has given intent to
+  // metrics consent.
+  std::unique_ptr<metrics::CrOSPreConsentMetricsManager>
+      cros_pre_consent_manager_;
 #endif
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,

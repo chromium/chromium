@@ -17,7 +17,7 @@ namespace blink {
 // (or fill) style.
 
 template <typename T>
-void SetFillStyleHelper(BaseRenderingContext2D* ctx,
+void SetFillStyleHelper(Canvas2DRecorderContext* ctx,
                         ScriptState* script_state,
                         T* value) {
   NonThrowableExceptionState exception_state;
@@ -25,18 +25,18 @@ void SetFillStyleHelper(BaseRenderingContext2D* ctx,
                     ToV8Traits<T>::ToV8(script_state, value), exception_state);
 }
 
-void SetFillStyleString(BaseRenderingContext2D* ctx,
+void SetFillStyleString(Canvas2DRecorderContext* ctx,
                         ScriptState* script_state,
                         const String& string);
 
-void SetStrokeStyleString(BaseRenderingContext2D* ctx,
+void SetStrokeStyleString(Canvas2DRecorderContext* ctx,
                           ScriptState* script_state,
                           const String& string);
 
-String GetStrokeStyleAsString(BaseRenderingContext2D* ctx,
+String GetStrokeStyleAsString(Canvas2DRecorderContext* ctx,
                               ScriptState* script_state);
 
-String GetFillStyleAsString(BaseRenderingContext2D* ctx,
+String GetFillStyleAsString(Canvas2DRecorderContext* ctx,
                             ScriptState* script_state);
 
 }  // namespace blink

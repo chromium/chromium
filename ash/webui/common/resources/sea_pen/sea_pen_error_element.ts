@@ -7,7 +7,7 @@
  */
 
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
+import './sea_pen.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -34,7 +34,7 @@ export class SeaPenErrorElement extends SeaPenErrorElementBase {
       },
 
       errorMessage_: {
-        type: String,
+        type: Object,
         computed: 'getErrorMessage_(thumbnailResponseStatusCode)',
       },
 
@@ -46,29 +46,31 @@ export class SeaPenErrorElement extends SeaPenErrorElementBase {
   }
 
   thumbnailResponseStatusCode: MantaStatusCode;
-  private errorMessage_: string;
+  private errorMessage_: TrustedHTML;
   private errorIllo_: string;
 
-  private getErrorMessage_(statusCode: MantaStatusCode): string {
+  private getErrorMessage_(statusCode: MantaStatusCode): TrustedHTML {
     switch (statusCode) {
       case MantaStatusCode.kNoInternetConnection:
         return isSeaPenTextInputEnabled() ?
-            this.i18n('seaPenFreeformErrorNoInternet') :
-            this.i18n('seaPenErrorNoInternet');
+            this.i18nAdvanced('seaPenFreeformErrorNoInternet') :
+            this.i18nAdvanced('seaPenErrorNoInternet');
       case MantaStatusCode.kPerUserQuotaExceeded:
       case MantaStatusCode.kResourceExhausted:
-        return this.i18n('seaPenErrorResourceExhausted');
+        return this.i18nAdvanced('seaPenErrorResourceExhausted');
     }
 
     if (isSeaPenTextInputEnabled()) {
       switch (statusCode) {
         case MantaStatusCode.kUnsupportedLanguage:
-          return this.i18n('seaPenFreeformErrorUnsupportedLanguage');
+          return this.i18nAdvanced('seaPenFreeformErrorUnsupportedLanguage');
         case MantaStatusCode.kBlockedOutputs:
-          return this.i18n('seaPenFreeformErrorBlockedOutputs');
+          return this.i18nAdvanced('seaPenFreeformErrorBlockedOutputs');
+        case MantaStatusCode.kImageHasPerson:
+          return this.i18nAdvanced('seaPenFreeformErrorPerson');
       }
     }
-    return this.i18n('seaPenErrorGeneric');
+    return this.i18nAdvanced('seaPenErrorGeneric');
   }
 
   private getErrorIllo_(statusCode: MantaStatusCode): string {

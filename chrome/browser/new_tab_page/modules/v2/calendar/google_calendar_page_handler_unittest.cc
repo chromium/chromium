@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -376,9 +377,9 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
   }
   histogram_tester().ExpectBucketCount(
       "NewTabPage.GoogleCalendar.RequestResult", kNumEvents, 1);
-  histogram_tester().ExpectBucketCount("NewTabPage.Modules.DataRequest",
-                                       base::PersistentHash("google_calendar"),
-                                       1);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.Modules.DataRequest",
+      base::PersistentHash(ntp_modules::kGoogleCalendarModuleId), 1);
 }
 
 TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {

@@ -9,4 +9,7 @@ enum Algorithm {
   // Algorithm used on Windows: 256 bit key with 96 bit random nonce at the
   // start of the data.
   kAES256GCM,
+
+  // Compatible with "v11" os_crypt_sync encryption on Linux.
+  kAES128CBC,
 };

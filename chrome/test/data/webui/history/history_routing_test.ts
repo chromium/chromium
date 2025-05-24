@@ -248,31 +248,29 @@ suite(`routing-test-with-history-clusters-pref-set`, () => {
     return flushTasks();
   });
 
-  async function initialize() {
+  function initialize() {
     app = document.createElement('history-app');
     document.body.appendChild(app);
   }
 
-  test(
-      `route to non default last selected tab when no url params set `,
-      async () => {
-        await initialize();
-        assertEquals(`chrome://history/grouped`, window.location.href);
-      });
+  test(`route to non default last selected tab when no url params set `, () => {
+    initialize();
+    assertEquals(`chrome://history/grouped`, window.location.href);
+  });
 
   test(`route to grouped url when last tab is grouped`, async () => {
-    await initialize();
+    initialize();
     assertEquals(`chrome://history/grouped`, window.location.href);
     navigateTo('/grouped', app);
     assertEquals(`chrome://history/grouped`, window.location.href);
     const lastSelectedTab =
-        await testBrowserService.whenCalled('setLastSelectedTab');
+        await testBrowserService.handler.whenCalled('setLastSelectedTab');
     assertEquals(lastSelectedTab, 1);
   });
 
-  test(`route to list url when last tab is list`, async () => {
+  test(`route to list url when last tab is list`, () => {
     loadTimeData.overrideValues({lastSelectedTab: 0});
-    await initialize();
+    initialize();
     assertEquals(`chrome://history/`, window.location.href);
   });
 });

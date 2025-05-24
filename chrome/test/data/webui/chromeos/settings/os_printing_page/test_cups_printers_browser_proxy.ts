@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity, PrintServerResult} from 'chrome://os-settings/lazy_load.js';
+import type {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://os-settings/lazy_load.js';
+import {PrinterSetupResult, PrintServerResult} from 'chrome://os-settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestCupsPrintersBrowserProxy extends TestBrowserProxy implements

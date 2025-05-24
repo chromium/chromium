@@ -202,7 +202,7 @@ class ServiceWorkerVersionTest
     if (in_different_process) {
       auto client_render_process_host =
           std::make_unique<MockRenderProcessHost>(helper_->browser_context());
-      controllee_process_id = client_render_process_host->GetID();
+      controllee_process_id = client_render_process_host->GetDeprecatedID();
       client_render_process_hosts_.push_back(
           std::move(client_render_process_host));
     } else {
@@ -1460,10 +1460,13 @@ TEST_P(ServiceWorkerVersionTest,
       1,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
-  // Establish a dummy connection to allow sending messages without errors.
+  // Establish dummy connections to allow sending messages without errors.
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      reporter;
-  auto dummy = reporter.InitWithNewPipeAndPassReceiver();
+      coep_reporter;
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  auto dummy_coep = coep_reporter.InitWithNewPipeAndPassReceiver();
+  auto dummy_dip = dip_reporter.InitWithNewPipeAndPassReceiver();
 
   // Now begin the navigation commit with the same process id used by the
   // worker. This should cause the worker to stop being considered foreground
@@ -1471,8 +1474,8 @@ TEST_P(ServiceWorkerVersionTest,
   auto container_info = service_worker_client.CommitResponseAndRelease(
       GlobalRenderFrameHostId(version_->embedded_worker()->process_id(),
                               /*frame_routing_id=*/1),
-      PolicyContainerPolicies(), std::move(reporter),
-      ukm::UkmRecorder::GetNewSourceID());
+      PolicyContainerPolicies(), std::move(coep_reporter),
+      std::move(dip_reporter), ukm::UkmRecorder::GetNewSourceID());
 
   // RenderProcessHost should be notified of foreground worker.
   base::RunLoop().RunUntilIdle();
@@ -1781,9 +1784,9 @@ TEST_P(ServiceWorkerVersionTest, WriteMetadata_RemoteStorageDisconnection) {
   const std::string kMetadata("Test metadata");
 
   net::TestCompletionCallback completion;
-  version_->script_cache_map()->WriteMetadata(
-      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
-      completion.callback());
+  version_->script_cache_map()->WriteMetadata(version_->script_url(),
+                                              base::as_byte_span(kMetadata),
+                                              completion.callback());
 
   helper_->SimulateStorageRestartForTesting();
 
@@ -1799,9 +1802,9 @@ TEST_P(ServiceWorkerVersionTest, WriteMetadata_StorageDisabled) {
   loop.Run();
 
   net::TestCompletionCallback completion;
-  version_->script_cache_map()->WriteMetadata(
-      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
-      completion.callback());
+  version_->script_cache_map()->WriteMetadata(version_->script_url(),
+                                              base::as_byte_span(kMetadata),
+                                              completion.callback());
 
   ASSERT_EQ(completion.WaitForResult(), net::ERR_FAILED);
 }
@@ -1811,13 +1814,13 @@ TEST_P(ServiceWorkerVersionTest, WriteMetadata_MultipleWrites) {
   const std::string kMetadata("Test metadata");
 
   net::TestCompletionCallback completion1;
-  version_->script_cache_map()->WriteMetadata(
-      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
-      completion1.callback());
+  version_->script_cache_map()->WriteMetadata(version_->script_url(),
+                                              base::as_byte_span(kMetadata),
+                                              completion1.callback());
   net::TestCompletionCallback completion2;
-  version_->script_cache_map()->WriteMetadata(
-      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
-      completion2.callback());
+  version_->script_cache_map()->WriteMetadata(version_->script_url(),
+                                              base::as_byte_span(kMetadata),
+                                              completion2.callback());
 
   ASSERT_EQ(completion1.WaitForResult(), static_cast<int>(kMetadata.size()));
   ASSERT_EQ(completion2.WaitForResult(), static_cast<int>(kMetadata.size()));
@@ -2009,12 +2012,7 @@ TEST_P(ServiceWorkerVersionTest, SetResources) {
 
 class ServiceWorkerVersionStaticRouterTest : public ServiceWorkerVersionTest {
  public:
-  ServiceWorkerVersionStaticRouterTest() {
-    feature_list_.InitWithFeatures({features::kServiceWorkerStaticRouter}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  ServiceWorkerVersionStaticRouterTest() = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(

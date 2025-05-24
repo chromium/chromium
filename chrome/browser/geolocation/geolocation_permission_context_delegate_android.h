@@ -22,9 +22,7 @@ class GeolocationPermissionContextDelegateAndroid
 
   // GeolocationPermissionContext::Delegate:
   bool DecidePermission(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      bool user_gesture,
+      const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback* callback,
       permissions::GeolocationPermissionContext* context) override;
 

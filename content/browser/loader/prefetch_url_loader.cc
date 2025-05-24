@@ -133,22 +133,6 @@ void PrefetchURLLoader::SetPriority(net::RequestPriority priority,
   }
 }
 
-void PrefetchURLLoader::PauseReadingBodyFromNet() {
-  // TODO(kinuko): Propagate or handle the case where |loader_| is
-  // detached (for SignedExchanges), see OnReceiveResponse.
-  if (loader_) {
-    loader_->PauseReadingBodyFromNet();
-  }
-}
-
-void PrefetchURLLoader::ResumeReadingBodyFromNet() {
-  // TODO(kinuko): Propagate or handle the case where |loader_| is
-  // detached (for SignedExchanges), see OnReceiveResponse.
-  if (loader_) {
-    loader_->ResumeReadingBodyFromNet();
-  }
-}
-
 void PrefetchURLLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));

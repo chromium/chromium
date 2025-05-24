@@ -347,7 +347,7 @@ void ShaderManager::RemoveShaderIfUnused(Shader* shader) {
         return;
       }
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

@@ -264,6 +264,10 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
     // RSS and PMF to each node proportionally to its V8 heap size.
     uint64_t process_rss = process_dump_iter.os_dump().resident_set_kb;
     process_node->set_resident_set_kb(process_rss);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+    process_node->set_private_swap_kb(
+        process_dump_iter.os_dump().private_footprint_swap_kb);
+#endif
     resource_attribution::SplitResourceAmongFrameAndWorkerImpls(
         process_rss, process_node, &FrameNodeImpl::SetResidentSetKbEstimate,
         &WorkerNodeImpl::SetResidentSetKbEstimate);

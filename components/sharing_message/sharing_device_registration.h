@@ -25,7 +25,7 @@ class SharingDeviceRegistration {
   using RegistrationCallback =
       base::OnceCallback<void(SharingDeviceRegistrationResult)>;
 
-  virtual ~SharingDeviceRegistration() {}
+  virtual ~SharingDeviceRegistration() = default;
 
   // Registers device with sharing sync preferences. Takes a |callback| function
   // which receives the result of FCM registration for device.

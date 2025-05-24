@@ -28,18 +28,18 @@
 [Exposed=Window]
 interface SVGTextPathElement : SVGTextContentElement {
     // textPath Method Types
-    [MeasureAs=SVG1DOMText] const unsigned short TEXTPATH_METHODTYPE_UNKNOWN   = 0;
-    [MeasureAs=SVG1DOMText] const unsigned short TEXTPATH_METHODTYPE_ALIGN     = 1;
-    [MeasureAs=SVG1DOMText] const unsigned short TEXTPATH_METHODTYPE_STRETCH   = 2;
+    const unsigned short TEXTPATH_METHODTYPE_UNKNOWN   = 0;
+    const unsigned short TEXTPATH_METHODTYPE_ALIGN     = 1;
+    const unsigned short TEXTPATH_METHODTYPE_STRETCH   = 2;
 
     // textPath Spacing Types
-    [MeasureAs=SVG1DOMText] const unsigned short TEXTPATH_SPACINGTYPE_UNKNOWN  = 0;
-    [MeasureAs=SVG1DOMText] const unsigned short TEXTPATH_SPACINGTYPE_AUTO     = 1;
-    [MeasureAs=SVG1DOMText] const unsigned short TEXTPATH_SPACINGTYPE_EXACT    = 2;
+    const unsigned short TEXTPATH_SPACINGTYPE_UNKNOWN  = 0;
+    const unsigned short TEXTPATH_SPACINGTYPE_AUTO     = 1;
+    const unsigned short TEXTPATH_SPACINGTYPE_EXACT    = 2;
 
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedLength startOffset;
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedEnumeration method;
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedEnumeration spacing;
+    readonly attribute SVGAnimatedLength startOffset;
+    readonly attribute SVGAnimatedEnumeration method;
+    readonly attribute SVGAnimatedEnumeration spacing;
 };
 
 SVGTextPathElement includes SVGURIReference;

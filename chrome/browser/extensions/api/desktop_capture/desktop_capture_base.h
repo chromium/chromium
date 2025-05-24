@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
@@ -62,7 +63,7 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
       bool suppress_local_audio_playback_intended,
       content::RenderFrameHost* render_frame_host,
       const GURL& origin,
-      const std::u16string target_name);
+      const std::u16string& target_name);
 
   // Returns the calling application name to show in the picker.
   std::string GetCallerDisplayName() const;
@@ -124,8 +125,9 @@ class DesktopCaptureRequestsRegistry {
     int request_id;
   };
 
-  using RequestsMap =
-      std::map<RequestId, DesktopCaptureChooseDesktopMediaFunctionBase*>;
+  using RequestsMap = std::map<
+      RequestId,
+      raw_ptr<DesktopCaptureChooseDesktopMediaFunctionBase, CtnExperimental>>;
 
   RequestsMap requests_;
 };

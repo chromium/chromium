@@ -23,7 +23,7 @@ const CGFloat kSymbolSize = 18;
   if (self) {
     _symbolView = [[UIImageView alloc] init];
     _symbolView.translatesAutoresizingMaskIntoConstraints = NO;
-    _symbolView.contentMode = UIViewContentModeCenter;
+    _symbolView.contentMode = UIViewContentModeScaleToFill;
     [self addSubview:_symbolView];
 
     self.layer.cornerRadius = kColorfulBackgroundSymbolCornerRadius;

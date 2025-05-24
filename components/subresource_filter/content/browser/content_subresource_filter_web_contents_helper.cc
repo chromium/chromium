@@ -12,7 +12,7 @@
 #include "base/not_fatal_until.h"
 #include "base/supports_user_data.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -78,11 +78,13 @@ void ContentSubresourceFilterWebContentsHelper::CreateForWebContents(
     SubresourceFilterProfileContext* profile_context,
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
     VerifiedRulesetDealer::Handle* dealer_handle) {
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter))
+  if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter)) {
     return;
+  }
 
-  if (FromWebContents(web_contents))
+  if (FromWebContents(web_contents)) {
     return;
+  }
 
   content::WebContentsUserData<ContentSubresourceFilterWebContentsHelper>::
       CreateForWebContents(web_contents, profile_context, database_manager,
@@ -129,8 +131,9 @@ ContentSubresourceFilterWebContentsHelper::GetThrottleManager(
   if (WillCreateNewThrottleManager(handle)) {
     auto* container =
         ThrottleManagerInUserDataContainer::GetForNavigationHandle(handle);
-    if (!container)
+    if (!container) {
       return nullptr;
+    }
 
     ContentSubresourceFilterThrottleManager* throttle_manager =
         container->Get();
@@ -186,8 +189,9 @@ void ContentSubresourceFilterWebContentsHelper::RenderFrameDeleted(
     content::RenderFrameHost* frame_host) {
   ContentSubresourceFilterThrottleManager* throttle_manager =
       GetThrottleManager(frame_host->GetPage());
-  if (!throttle_manager)
+  if (!throttle_manager) {
     return;
+  }
 
   throttle_manager->RenderFrameDeleted(frame_host);
 }
@@ -209,8 +213,9 @@ void ContentSubresourceFilterWebContentsHelper::FrameDeleted(
 
 void ContentSubresourceFilterWebContentsHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!WillCreateNewThrottleManager(*navigation_handle))
+  if (!WillCreateNewThrottleManager(*navigation_handle)) {
     return;
+  }
 
   std::unique_ptr<ContentSubresourceFilterThrottleManager> new_manager =
       ContentSubresourceFilterThrottleManager::CreateForNewPage(

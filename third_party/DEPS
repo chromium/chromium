@@ -2,6 +2,7 @@
 include_rules = [
   '-base',
   '-build',
+  '+build/android',
   '-ipc',
   '-third_party/perfetto/include/perfetto/tracing',
   '-third_party/perfetto/include/perfetto/test',

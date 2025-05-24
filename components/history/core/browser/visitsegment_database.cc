@@ -261,7 +261,9 @@ bool VisitSegmentDatabase::UpdateSegmentVisitCount(SegmentID segment_id,
 std::vector<std::unique_ptr<PageUsageData>>
 VisitSegmentDatabase::QuerySegmentUsage(
     int max_result_count,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter) {
+    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+    const std::optional<std::string>& recency_factor_name,
+    std::optional<size_t> recency_window_days) {
   // Phase 1: Gather all segments and compute scores.
   std::vector<std::unique_ptr<PageUsageData>> segments;
   base::Time now = base::Time::Now();
@@ -276,7 +278,8 @@ VisitSegmentDatabase::QuerySegmentUsage(
   SegmentVisitor segment_visitor(&statement);
   SegmentInfo segment_info;
   std::unique_ptr<SegmentScorer> scorer =
-      SegmentScorer::CreateFromFeatureFlags();
+      recency_factor_name ? SegmentScorer::Create(recency_factor_name.value())
+                          : SegmentScorer::CreateFromFeatureFlags();
   while (segment_visitor.Step(&segment_info)) {
     DCHECK(!segment_info.time_slots.empty());
     DCHECK_EQ(segment_info.time_slots.size(), segment_info.visit_counts.size());
@@ -288,15 +291,26 @@ VisitSegmentDatabase::QuerySegmentUsage(
     segment->SetVisitCount(std::accumulate(segment_info.visit_counts.begin(),
                                            segment_info.visit_counts.end(), 0));
     segment->SetScore(scorer->Compute(segment_info.time_slots,
-                                      segment_info.visit_counts, now));
+                                      segment_info.visit_counts, now,
+                                      recency_window_days));
     segments.push_back(std::move(segment));
   }
 
+  constexpr float kFloatEpsilon = std::numeric_limits<float>::epsilon();
   // Order by descending scores.
   std::sort(segments.begin(), segments.end(),
             [](const std::unique_ptr<PageUsageData>& lhs,
                const std::unique_ptr<PageUsageData>& rhs) {
-              return lhs->GetScore() > rhs->GetScore();
+              if (lhs->GetScore() - rhs->GetScore() > kFloatEpsilon) {
+                return true;
+              }
+              if (rhs->GetScore() - lhs->GetScore() > kFloatEpsilon) {
+                return false;
+              }
+
+              // If we reach here, scores are considered close enough.
+              // Sort by descending last visit time.
+              return lhs->GetLastVisitTimeslot() > rhs->GetLastVisitTimeslot();
             });
 
   // Phase 2: Read details (url, title, etc.) for the highest-ranked segments.
@@ -312,7 +326,7 @@ VisitSegmentDatabase::QuerySegmentUsage(
   for (std::unique_ptr<PageUsageData>& pud : segments) {
     statement2.BindInt64(0, pud->GetID());
     if (statement2.Step()) {
-      GURL url(statement2.ColumnString(0));
+      GURL url(statement2.ColumnStringView(0));
       if (url_filter.is_null() || url_filter.Run(url)) {
         pud->SetURL(url);
         pud->SetTitle(statement2.ColumnString16(1));
@@ -349,47 +363,6 @@ bool VisitSegmentDatabase::DeleteSegmentForURL(URLID url_id) {
   delete_seg.BindInt64(0, url_id);
 
   return delete_seg.Run();
-}
-
-bool VisitSegmentDatabase::MigratePresentationIndex() {
-  sql::Transaction transaction(&GetDB());
-  return transaction.Begin() &&
-      GetDB().Execute("DROP TABLE presentation") &&
-      GetDB().Execute("CREATE TABLE segments_tmp ("
-                      "id INTEGER PRIMARY KEY,"
-                      "name VARCHAR,"
-                      "url_id INTEGER NON NULL)") &&
-      GetDB().Execute("INSERT INTO segments_tmp SELECT "
-                      "id, name, url_id FROM segments") &&
-      GetDB().Execute("DROP TABLE segments") &&
-      GetDB().Execute("ALTER TABLE segments_tmp RENAME TO segments") &&
-      transaction.Commit();
-}
-
-bool VisitSegmentDatabase::MigrateVisitSegmentNames() {
-  sql::Statement select(
-      GetDB().GetUniqueStatement("SELECT id, name FROM segments"));
-  if (!select.is_valid())
-    return false;
-
-  bool success = true;
-  while (select.Step()) {
-    SegmentID id = select.ColumnInt64(0);
-    std::string old_name = select.ColumnString(1);
-    std::string new_name = ComputeSegmentName(GURL(old_name));
-    if (new_name.empty() || old_name == new_name)
-      continue;
-
-    SegmentID to_segment_id = GetSegmentNamed(new_name);
-    if (to_segment_id) {
-      // `new_name` is already in use, so merge.
-      success = success && MergeSegments(/*from_segment_id=*/id, to_segment_id);
-    } else {
-      // Trivial rename of the segment.
-      success = success && RenameSegment(id, new_name);
-    }
-  }
-  return success;
 }
 
 bool VisitSegmentDatabase::RenameSegment(SegmentID segment_id,

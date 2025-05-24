@@ -16,6 +16,7 @@
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -196,7 +197,8 @@ bool RegisterShortcutsMenuWithOsTask(
         base::MakeRefCounted<ShellLinkItem>();
 
     shortcut_link->GetCommandLine()->CopySwitchesFrom(
-        *base::CommandLine::ForCurrentProcess(), {{switches::kUserDataDir}});
+        *base::CommandLine::ForCurrentProcess(),
+        base::span_from_ref(+switches::kUserDataDir));
 
     // Set switches to launch shortcut items in the specified app.
     shortcut_link->GetCommandLine()->AppendSwitchASCII(switches::kAppId,

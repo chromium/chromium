@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/process/process.h"
-#include "base/profiler/process_type.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
@@ -27,13 +26,12 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler_client.h"
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 #include "base/process/port_provider_mac.h"
 #endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
-
-using CallStackProfileParams = base::CallStackProfileParams;
 
 namespace sampling_profiler {
 namespace {
@@ -46,6 +44,12 @@ ThreadProfiler* g_main_thread_instance = nullptr;
 // Pointer to the embedder-specific client implementation.
 // |g_thread_profiler_client| is intentionally leaked on shutdown.
 ThreadProfilerClient* g_thread_profiler_client = nullptr;
+
+// The kFractionOfExecutionTimeToSample and SamplingParams settings in
+// ThreadProfilerConfiguration::GetSamplingParams() specify fraction = 0.02 and
+// sampling period = 1 sample / .1s sampling interval * 300 samples = 30s. The
+// period length works out to 30s/0.02 = 1500s = 25m. So every 25 minutes a
+// random 30 second continuous interval will be picked to sample.
 
 // Run continuous profiling 2% of the time.
 constexpr double kFractionOfExecutionTimeToSample = 0.02;
@@ -62,8 +66,8 @@ bool IsCurrentProcessBackgrounded() {
 }
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
-    base::ProfilerProcessType process) {
-  if (process != base::ProfilerProcessType::kRenderer) {
+    ProfilerProcessType process) {
+  if (process != ProfilerProcessType::kRenderer) {
     return base::RepeatingClosure();
   }
   static const base::SampleMetadata process_backgrounded(
@@ -76,53 +80,6 @@ const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
 }
 
 }  // namespace
-
-// The scheduler works by splitting execution time into repeated periods such
-// that the time to take one collection represents
-// |fraction_of_execution_time_to_sample| of the period, and the time not spent
-// sampling represents 1 - |fraction_of_execution_time_to_sample| of the period.
-// The collection start time is chosen randomly within each period such that the
-// entire collection is contained within the period.
-//
-// The kFractionOfExecutionTimeToSample and SamplingParams settings at the top
-// of the file specify fraction = 0.02 and sampling period = 1 sample / .1s
-// sampling interval * 300 samples = 30s. The period length works out to
-// 30s/0.02 = 1500s = 25m. So every 25 minutes a random 30 second continuous
-// interval will be picked to sample.
-PeriodicSamplingScheduler::PeriodicSamplingScheduler(
-    base::TimeDelta sampling_duration,
-    double fraction_of_execution_time_to_sample,
-    base::TimeTicks start_time)
-    : period_duration_(sampling_duration /
-                       fraction_of_execution_time_to_sample),
-      sampling_duration_(sampling_duration),
-      period_start_time_(start_time) {
-  DCHECK(sampling_duration_ <= period_duration_);
-}
-
-PeriodicSamplingScheduler::~PeriodicSamplingScheduler() = default;
-
-base::TimeDelta PeriodicSamplingScheduler::GetTimeToNextCollection() {
-  const base::TimeTicks now = Now();
-  // Avoid scheduling in the past in the presence of discontinuous jumps in
-  // the current TimeTicks.
-  period_start_time_ = std::max(period_start_time_, now);
-
-  const base::TimeDelta sampling_offset =
-      (period_duration_ - sampling_duration_) * RandDouble();
-  const base::TimeTicks next_collection_time =
-      period_start_time_ + sampling_offset;
-  period_start_time_ += period_duration_;
-  return next_collection_time - now;
-}
-
-double PeriodicSamplingScheduler::RandDouble() const {
-  return base::RandDouble();
-}
-
-base::TimeTicks PeriodicSamplingScheduler::Now() const {
-  return base::TimeTicks::Now();
-}
 
 // Records the current unique id for the work item being executed in the target
 // thread's message loop.
@@ -158,7 +115,7 @@ std::unique_ptr<ThreadProfiler> ThreadProfiler::CreateAndStartOnMainThread() {
       GetClient()->IsSingleProcess(*base::CommandLine::ForCurrentProcess());
   DCHECK(!g_main_thread_instance || is_single_process);
   auto instance =
-      base::WrapUnique(new ThreadProfiler(base::ProfilerThreadType::kMain));
+      base::WrapUnique(new ThreadProfiler(ProfilerThreadType::kMain));
   if (!g_main_thread_instance) {
     g_main_thread_instance = instance.get();
   }
@@ -186,7 +143,7 @@ void ThreadProfiler::SetAuxUnwinderFactory(
 }
 
 // static
-void ThreadProfiler::StartOnChildThread(base::ProfilerThreadType thread) {
+void ThreadProfiler::StartOnChildThread(ProfilerThreadType thread) {
   // The profiler object is stored in a SequenceLocalStorageSlot on child
   // threads to give it the same lifetime as the threads.
   static base::SequenceLocalStorageSlot<std::unique_ptr<ThreadProfiler>>
@@ -233,7 +190,7 @@ ThreadProfilerClient* ThreadProfiler::GetClient() {
 // The process in previous paragraph continues until the ThreadProfiler is
 // destroyed prior to thread exit.
 ThreadProfiler::ThreadProfiler(
-    base::ProfilerThreadType thread,
+    ProfilerThreadType thread,
     scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner)
     : process_(
           GetClient()->GetProcessType(*base::CommandLine::ForCurrentProcess())),
@@ -262,9 +219,11 @@ ThreadProfiler::ThreadProfiler(
       base::TimeTicks::Now() +
       sampling_params.samples_per_profile * sampling_params.sampling_interval;
 
-  periodic_sampling_scheduler_ = std::make_unique<PeriodicSamplingScheduler>(
-      sampling_params.samples_per_profile * sampling_params.sampling_interval,
-      kFractionOfExecutionTimeToSample, startup_profiling_completion_time);
+  periodic_sampling_scheduler_ =
+      std::make_unique<base::PeriodicSamplingScheduler>(
+          sampling_params.samples_per_profile *
+              sampling_params.sampling_interval,
+          kFractionOfExecutionTimeToSample, startup_profiling_completion_time);
 
   if (owning_thread_task_runner_) {
     ScheduleNextPeriodicCollection();
@@ -274,7 +233,7 @@ ThreadProfiler::ThreadProfiler(
 std::unique_ptr<base::StackSamplingProfiler>
 ThreadProfiler::CreateSamplingProfiler(
     base::StackSamplingProfiler::SamplingParams sampling_params,
-    base::CallStackProfileParams::Trigger trigger,
+    CallStackProfileParams::Trigger trigger,
     base::OnceClosure builder_completed_callback) {
   return std::make_unique<base::StackSamplingProfiler>(
       base::GetSamplingProfilerCurrentThreadToken(), sampling_params,

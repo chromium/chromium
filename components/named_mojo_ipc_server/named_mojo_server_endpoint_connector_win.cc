@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -116,7 +117,7 @@ void NamedMojoServerEndpointConnectorWin::Connect() {
   // The |lpOverlapped| argument of ConnectNamedPipe() has the annotation of
   // [in, out, optional], so we reset the content before passing it in, just to
   // be safe.
-  memset(&connect_overlapped_, 0, sizeof(connect_overlapped_));
+  UNSAFE_TODO(memset(&connect_overlapped_, 0, sizeof(connect_overlapped_)));
   connect_overlapped_.hEvent = client_connected_event_.handle();
   BOOL ok =
       ConnectNamedPipe(pending_named_pipe_handle_.Get(), &connect_overlapped_);

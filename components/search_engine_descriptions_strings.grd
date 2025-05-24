@@ -3,7 +3,7 @@
 locale. The strings in the file are not translated by the Chrome translation
 process but are generated using a script that pulls them from outside the repo.-->
 
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/search_engine_descriptions_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -134,6 +134,7 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_gl.xtb" lang="gl" />
     <file path="strings/search_engine_descriptions_strings_gu.xtb" lang="gu" />
     <file path="strings/search_engine_descriptions_strings_he.xtb" lang="he" />
+    <file path="strings/search_engine_descriptions_strings_hi.xtb" lang="hi" />
     <file path="strings/search_engine_descriptions_strings_hr.xtb" lang="hr" />
     <file path="strings/search_engine_descriptions_strings_hu.xtb" lang="hu" />
     <file path="strings/search_engine_descriptions_strings_id.xtb" lang="id" />
@@ -156,6 +157,8 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_sl.xtb" lang="sl" />
     <file path="strings/search_engine_descriptions_strings_sr.xtb" lang="sr" />
     <file path="strings/search_engine_descriptions_strings_sv.xtb" lang="sv" />
+    <file path="strings/search_engine_descriptions_strings_sw.xtb" lang="sw" />
+    <file path="strings/search_engine_descriptions_strings_ta.xtb" lang="ta" />
     <file path="strings/search_engine_descriptions_strings_te.xtb" lang="te" />
     <file path="strings/search_engine_descriptions_strings_th.xtb" lang="th" />
     <file path="strings/search_engine_descriptions_strings_tr.xtb" lang="tr" />
@@ -180,25 +183,13 @@ process but are generated using a script that pulls them from outside the repo.-
         Private. Fast. Fewer Ads. DuckDuckGo never tracks you.
       </message>
       <message name="IDS_ECOSIA_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Plant trees as you search, for free. 200 million trees planted already.
+        Plant trees as you search, for free. 225 million trees planted already.
       </message>
       <message name="IDS_GOOGLE_SEARCH_DESCRIPTION" use_name_for_id="true">
         Find what you need with Google
       </message>
-      <message name="IDS_KARMA_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Protect animals and biodiversity - make every search count!
-      </message>
       <message name="IDS_LILO_SEARCH_DESCRIPTION" use_name_for_id="true">
         Your internet searches fund for free social and environmental projects
-      </message>
-      <message name="IDS_METAGER_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Search safely while having your privacy respected.
-      </message>
-      <message name="IDS_OCEANHERO_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Your searches power the cleaning of our oceans and beaches of plastic waste
-      </message>
-      <message name="IDS_PANDA_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Search with Panda and support WWF projects and campaigns.
       </message>
       <message name="IDS_PRIVACYWALL_SEARCH_DESCRIPTION" use_name_for_id="true">
         A search engine that protects your privacy.
@@ -209,11 +200,14 @@ process but are generated using a script that pulls them from outside the repo.-
       <message name="IDS_SEZNAM_SEARCH_DESCRIPTION" use_name_for_id="true">
         Useful, entertaining, inspirational. Seznam – I find there what I don't know.
       </message>
+      <message name="IDS_STARTPAGE_SEARCH_DESCRIPTION" use_name_for_id="true">
+        A safer way to search online: no data collection, tracking, or targeting.
+      </message>
       <message name="IDS_YAHOO_SEARCH_DESCRIPTION" use_name_for_id="true">
         Search the web and answer life’s daily questions with Yahoo.
       </message>
-      <message name="IDS_YOU_SEARCH_DESCRIPTION" use_name_for_id="true">
-        AI enhanced search
+      <message name="IDS_YEP_SEARCH_DESCRIPTION" use_name_for_id="true">
+        Web search engine that aims to share ad revenue with creators.
       </message>
     </messages>
   </release>

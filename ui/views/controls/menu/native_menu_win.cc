@@ -63,10 +63,11 @@ void NativeMenuWin::Rebuild(MenuInsertionDelegateWin* delegate) {
   for (size_t model_index = 0; model_index < model_->GetItemCount();
        ++model_index) {
     size_t menu_index = model_index + first_item_index_;
-    if (model_->GetTypeAt(model_index) == ui::MenuModel::TYPE_SEPARATOR)
+    if (model_->GetTypeAt(model_index) == ui::MenuModel::TYPE_SEPARATOR) {
       AddSeparatorItemAt(menu_index, model_index);
-    else
+    } else {
       AddMenuItemAt(menu_index, model_index);
+    }
   }
 }
 
@@ -83,8 +84,9 @@ void NativeMenuWin::UpdateStates() {
                        model_->GetLabelAt(model_index));
     }
     NativeMenuWin* submenu = item->submenu.get();
-    if (submenu)
+    if (submenu) {
       submenu->UpdateStates();
+    }
     ++model_index;
   }
 }
@@ -117,8 +119,9 @@ void NativeMenuWin::AddMenuItemAt(size_t menu_index, size_t model_index) {
     mii.hSubMenu = item_data->submenu->menu_;
     GetNativeMenuWinFromHMENU(mii.hSubMenu)->parent_ = this;
   } else {
-    if (type == ui::MenuModel::TYPE_RADIO)
+    if (type == ui::MenuModel::TYPE_RADIO) {
       mii.fType |= MFT_RADIOCHECK;
+    }
     mii.wID = static_cast<UINT>(model_->GetCommandIdAt(model_index));
   }
   item_data->native_menu_win = this;
@@ -147,14 +150,17 @@ void NativeMenuWin::SetMenuItemState(size_t menu_index,
                                      bool enabled,
                                      bool checked,
                                      bool is_default) {
-  if (IsSeparatorItemAt(menu_index))
+  if (IsSeparatorItemAt(menu_index)) {
     return;
+  }
 
   UINT state = enabled ? MFS_ENABLED : MFS_DISABLED;
-  if (checked)
+  if (checked) {
     state |= MFS_CHECKED;
-  if (is_default)
+  }
+  if (is_default) {
     state |= MFS_DEFAULT;
+  }
 
   MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(mii);
@@ -166,8 +172,9 @@ void NativeMenuWin::SetMenuItemState(size_t menu_index,
 void NativeMenuWin::SetMenuItemLabel(size_t menu_index,
                                      size_t model_index,
                                      const std::u16string& label) {
-  if (IsSeparatorItemAt(menu_index))
+  if (IsSeparatorItemAt(menu_index)) {
     return;
+  }
 
   MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(mii);

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.payments.handler.toolbar;
 
 import android.app.Activity;
+import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
@@ -87,9 +88,13 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
         mIsSmallDevice = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mMediator = new PaymentHandlerToolbarMediator(mModel, webContents, /* delegate= */ this);
         mToolbarView = new PaymentHandlerToolbarView(mActivity);
-        webContents.addObserver(mMediator);
         PropertyModelChangeProcessor.create(
                 mModel, mToolbarView, PaymentHandlerToolbarViewBinder::bind);
+    }
+
+    /** Perform any necessary cleanup. */
+    public void destroy() {
+        mMediator.observe(null);
     }
 
     /** Set a callback for the close button's onclick event. */
@@ -135,7 +140,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                 securityLevel,
                 mIsSmallDevice,
                 /* skipIconForNeutralState= */ false,
-                /* useUpdatedConnectionSecurityIndicators= */ false);
+                /* useLockIconForSecureState= */ true);
     }
 
     // Implement PaymentHandlerToolbarMediatorDelegate.
@@ -166,6 +171,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                         /* ephemeralTabCoordinatorSupplier= */ null,
                         ChromePageInfoHighlight.noHighlight(),
                         null),
-                ChromePageInfoHighlight.noHighlight());
+                ChromePageInfoHighlight.noHighlight(),
+                Gravity.TOP);
     }
 }

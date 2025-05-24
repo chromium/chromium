@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/display.h"
@@ -48,7 +48,7 @@ ArcAppInfoLinksPanel::ArcAppInfoLinksPanel(Profile* profile,
   }
 }
 
-ArcAppInfoLinksPanel::~ArcAppInfoLinksPanel() {}
+ArcAppInfoLinksPanel::~ArcAppInfoLinksPanel() = default;
 
 void ArcAppInfoLinksPanel::OnAppRegistered(
     const std::string& app_id,

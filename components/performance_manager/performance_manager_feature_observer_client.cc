@@ -14,8 +14,9 @@ namespace {
 
 void OnChangeNodeUsing(content::GlobalRenderFrameHostId id,
                        blink::mojom::ObservedFeatureType feature_type,
-                       bool is_using,
-                       GraphImpl* graph) {
+                       bool is_using) {
+  GraphImpl* graph = PerformanceManagerImpl::GetGraphImpl();
+
   FrameNodeImpl* frame_node = graph->GetFrameNodeById(
       RenderProcessHostId(id.child_id), id.frame_routing_id);
   if (!frame_node)
@@ -26,15 +27,12 @@ void OnChangeNodeUsing(content::GlobalRenderFrameHostId id,
       frame_node->SetIsHoldingWebLock(is_using);
       return;
 
-    // TODO(crbug.com/40634530): Rename
-    // FrameNodeImpl::SetIsHoldingIndexedDBLock() to
-    // SetIsHoldingIndexedDBConnections().
-    case blink::mojom::ObservedFeatureType::kIndexedDBConnection:
-      frame_node->SetIsHoldingIndexedDBLock(is_using);
+    case blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock:
+      frame_node->SetIsHoldingBlockingIndexedDBLock(is_using);
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -49,18 +47,14 @@ void PerformanceManagerFeatureObserverClient::OnStartUsing(
     content::GlobalRenderFrameHostId id,
     blink::mojom::ObservedFeatureType feature_type) {
   bool is_using = true;
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&OnChangeNodeUsing, id, feature_type, is_using));
+  OnChangeNodeUsing(id, feature_type, is_using);
 }
 
 void PerformanceManagerFeatureObserverClient::OnStopUsing(
     content::GlobalRenderFrameHostId id,
     blink::mojom::ObservedFeatureType feature_type) {
   bool is_using = false;
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&OnChangeNodeUsing, id, feature_type, is_using));
+  OnChangeNodeUsing(id, feature_type, is_using);
 }
 
 }  // namespace performance_manager

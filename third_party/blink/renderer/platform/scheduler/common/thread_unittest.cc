@@ -21,6 +21,7 @@ TEST(ThreadTest, IsBeforeThreadCreated) {
   thread.reset();
 
   EXPECT_FALSE(WTF::IsBeforeThreadCreated());
+  WTF::SetIsBeforeThreadCreatedForTest();
 }
 #endif
 

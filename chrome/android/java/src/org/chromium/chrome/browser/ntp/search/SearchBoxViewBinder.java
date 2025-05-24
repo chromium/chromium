@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.chrome.R;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,10 +38,13 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.ALPHA == propertyKey) {
             searchBoxContainer.setAlpha(model.get(SearchBoxProperties.ALPHA));
             // Disable the search box contents if it is the process of being animated away.
-            ViewUtils.setEnabledRecursive(
-                    searchBoxContainer, searchBoxContainer.getAlpha() == 1.0f);
-        } else if (SearchBoxProperties.BACKGROUND == propertyKey) {
-            searchBoxContainer.setBackground(model.get(SearchBoxProperties.BACKGROUND));
+            // If the DSE icon is always visible on the NTP, we need to leave the container enabled
+            // (even though it will have alpha 0) because it, not the omnibox, will handle click
+            // events until the omnibox is "pinned" to the top.
+            if (!OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
+                ViewUtils.setEnabledRecursive(
+                        searchBoxContainer, searchBoxContainer.getAlpha() == 1.0f);
+            }
         } else if (SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST == propertyKey) {
             ImageViewCompat.setImageTintList(
                     voiceSearchButton,

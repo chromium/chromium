@@ -2,12 +2,13 @@
   // chrome-extension://oobinhbdbiehknkpbpejbbpdbkdjmoco/
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBjsTE4ocXJWzgcCDCUcsPASoRCGaTHrHn6b4zDTCayTuJtyGKzw4xZPMiG4dbEbmSAwEU7UCoyJAM1XfLS7UQ/Zz7ft8wpZkSS8/PJW+E4Qu++tMS0csj2Wdrrd2c5yyWxlJ+H9o2ivwtwuxs7pd+LXt+gsBA0epnT04T9EvOTQIDAQAB",
   "name": "Files test extension",
-  "version": "0.1",
+  "version": "0.2",
   "incognito": "split",  // Run a separate instance for the incognito mode.
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Files test extension",
   "background": {
-    "page": "file_manager/background.html"
+    "service_worker": "file_manager/background.js",
+    "type": "module"
   },
   "permissions": [
     {"fileSystem": ["write"]},
@@ -16,5 +17,7 @@
     "commandLinePrivate",
     "chrome-extension://oobinhbdbiehknkpbpejbbpdbkdjmoco/*"
   ],
-  "content_security_policy": "script-src 'self' chrome://resources ;"
+  "content_security_policy": {
+    "extension_page": "script-src 'self' chrome://resources ;"
+  }
 }

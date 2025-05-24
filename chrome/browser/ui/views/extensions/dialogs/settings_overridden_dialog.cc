@@ -98,11 +98,11 @@ void ShowSettingsOverriddenDialog(
       .OverrideShowCloseButton(false);
 
   if (show_params.icon) {
-    gfx::ImageSkia icon =
-        gfx::CreateVectorIcon(*show_params.icon,
-                              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
-                              ui::kColorIcon);
+    gfx::ImageSkia icon = gfx::CreateVectorIcon(
+        *show_params.icon,
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
+        ui::kColorIcon);
 
     dialog_builder.SetIcon(ui::ImageModel::FromImageSkia(icon));
   }

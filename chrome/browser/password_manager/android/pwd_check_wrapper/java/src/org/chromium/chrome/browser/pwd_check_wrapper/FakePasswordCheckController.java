@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 public class FakePasswordCheckController implements PasswordCheckController {
-    private HashMap<Integer, CompletableFuture<PasswordCheckResult>> mPasswordCheckResults =
+    private final HashMap<Integer, CompletableFuture<PasswordCheckResult>> mPasswordCheckResults =
             new HashMap<>();
 
     public void setPasswordCheckResult(

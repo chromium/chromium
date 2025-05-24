@@ -7,7 +7,6 @@ module nearby.connections.mojom;
 import "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom";
 import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 
 // Listener invoked during endpoint discovery. This interface is used by the
 // browser process to listen for remote endpoints status during endpoint
@@ -179,7 +178,8 @@ interface PayloadListenerV3 {
   //               receiving this payload.
   // update      - The PayloadTransferUpdate structure describing the status
   //               of the transfer.
-  OnPayloadTransferUpdateV3(string endpoint_id, PayloadTransferUpdate update);
+  OnPayloadTransferUpdateV3(
+      string endpoint_id, PayloadTransferUpdate update);
 };
 
 // Main interface to control the NearbyConnections library. Implemented in a
@@ -207,7 +207,8 @@ interface NearbyConnections {
   //   Status::kAlreadyAdvertising if the app is already advertising.
   //   Status::kOutOfOrderApiCall if the app is currently connected to remote
   //       endpoints; call StopAllEndpoints first.
-  StartAdvertising(string service_id, array<uint8> endpoint_info,
+  StartAdvertising(string service_id,
+                   array<uint8> endpoint_info,
                    AdvertisingOptions options,
                    pending_remote<ConnectionLifecycleListener> listener)
       => (Status status);
@@ -235,7 +236,8 @@ interface NearbyConnections {
   //       discovering the specified service.
   //   Status::kOutOfOrderApiCall if the app is currently
   //       connected to remote endpoints; call StopAllEndpoints first.
-  StartDiscovery(string service_id, DiscoveryOptions options,
+  StartDiscovery(string service_id,
+                 DiscoveryOptions options,
                  pending_remote<EndpointDiscoveryListener> listener)
       => (Status status);
 
@@ -278,11 +280,11 @@ interface NearbyConnections {
   //   Status::kSuccess if endpoint injection was attempted.
   //   Status::kError if |remote_bluetooth_mac_address| is malformed.
   //   Status::kOutOfOrderApiCall if the app is not discovering.
-  InjectBluetoothEndpoint(
-      string service_id,
-      string endpoint_id,
-      array<uint8> endpoint_info,
-      array<uint8, 6> remote_bluetooth_mac_address) => (Status status);
+  InjectBluetoothEndpoint(string service_id,
+                          string endpoint_id,
+                          array<uint8> endpoint_info,
+                          array<uint8, 6> remote_bluetooth_mac_address)
+      => (Status status);
 
   // Sends a request to connect to a remote endpoint.
   //
@@ -354,8 +356,8 @@ interface NearbyConnections {
   // endpoint_id - The identifier for the remote endpoint to disconnect from.
   // Possible return values include:
   //   Status::kSuccess disconnected successfully.
-  DisconnectFromEndpoint(string service_id,
-                         string endpoint_id) => (Status status);
+  DisconnectFromEndpoint(string service_id, string endpoint_id)
+      => (Status status);
 
   // Sends a Payload to a list of remote endpoints. Payloads can only be sent to
   // remote endpoints once a notice of connection acceptance has been delivered
@@ -376,9 +378,9 @@ interface NearbyConnections {
   //       still occur during transmission (and at different times for different
   //       endpoints), and will be delivered via
   //       PayloadListener::OnPayloadTransferUpdate().
-  SendPayload(string service_id,
-              array<string> endpoint_ids,
-              Payload payload) => (Status status);
+  SendPayload(
+      string service_id, array<string> endpoint_ids, Payload payload)
+      => (Status status);
 
   // Cancels a Payload currently in-flight to or from remote endpoint(s).
   //
@@ -419,8 +421,8 @@ interface NearbyConnections {
   //               ConnectionLifecycleListener::OnBandwidthChanged.
   // Possible return values include:
   //   Status::kSuccess if upgraded successfully.
-  InitiateBandwidthUpgrade(string service_id,
-                           string endpoint_id) => (Status status);
+  InitiateBandwidthUpgrade(string service_id, string endpoint_id)
+      => (Status status);
 
   // Register a pair of input and output file for handling incoming file
   // payload associated with |payload_id_|, which is determined by feature
@@ -435,8 +437,7 @@ interface NearbyConnections {
   RegisterPayloadFile(string service_id,
                       int64 payload_id,
                       mojo_base.mojom.ReadOnlyFile input_file,
-                      mojo_base.mojom.File output_file)
-      => (Status status);
+                      mojo_base.mojom.File output_file) => (Status status);
 
   //******************************* V3 *******************************
   // NOTE: Do NOT mix with the V1 APIs above, this might result in undefined
@@ -518,8 +519,9 @@ interface NearbyConnections {
   // client applications, and therefore uses a PresenceDevice type for its
   // `remote_device` argument. This will eventually be replaced with the
   // NearbyDevice type to allow use by Nearby Connections/non-Presence clients.
-  DisconnectFromDeviceV3(string service_id,
-                         ash.nearby.presence.mojom.PresenceDevice remote_device)
+  DisconnectFromDeviceV3(
+      string service_id,
+      ash.nearby.presence.mojom.PresenceDevice remote_device)
       => (Status status);
 
   // Registers Nearby Presence's `LocalDeviceProvider` with the Nearby

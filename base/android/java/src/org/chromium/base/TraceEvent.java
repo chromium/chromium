@@ -22,6 +22,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -41,6 +43,7 @@ import java.util.ArrayList;
  * It is OK to use tracing before the native library has loaded, in a slightly restricted fashion.
  * @see EarlyTraceEvent for details.
  */
+@NullMarked
 @JNINamespace("base::android")
 public class TraceEvent implements AutoCloseable {
     private static volatile boolean sEnabled; // True when tracing into Chrome's tracing service.
@@ -56,7 +59,7 @@ public class TraceEvent implements AutoCloseable {
         static final String FILTERED_EVENT_NAME = LOOPER_TASK_PREFIX + "EVENT_NAME_FILTERED";
 
         private static final int SHORTEST_LOG_PREFIX_LENGTH = "<<<<< Finished to ".length();
-        private String mCurrentTarget;
+        private @Nullable String mCurrentTarget;
 
         @Override
         public void println(final String line) {
@@ -260,7 +263,7 @@ public class TraceEvent implements AutoCloseable {
     private final String mName;
 
     /** Constructor used to support the "try with resource" construct. */
-    private TraceEvent(String name, String arg) {
+    private TraceEvent(String name, @Nullable String arg) {
         mName = name;
         begin(name, arg);
     }
@@ -285,7 +288,7 @@ public class TraceEvent implements AutoCloseable {
      * @param arg The arguments of the event.
      * @return a TraceEvent, or null if tracing is not enabled.
      */
-    public static TraceEvent scoped(String name, String arg) {
+    public static @Nullable TraceEvent scoped(String name, @Nullable String arg) {
         if (!(EarlyTraceEvent.enabled() || enabled())) return null;
         return new TraceEvent(name, arg);
     }
@@ -299,13 +302,13 @@ public class TraceEvent implements AutoCloseable {
      * @param arg An integer argument of the event.
      * @return a TraceEvent, or null if tracing is not enabled.
      */
-    public static TraceEvent scoped(String name, int arg) {
+    public static @Nullable TraceEvent scoped(String name, int arg) {
         if (!(EarlyTraceEvent.enabled() || enabled())) return null;
         return new TraceEvent(name, arg);
     }
 
     /** Similar to {@link #scoped(String, String arg)}, but uses null for |arg|. */
-    public static TraceEvent scoped(String name) {
+    public static @Nullable TraceEvent scoped(String name) {
         return scoped(name, null);
     }
 
@@ -439,29 +442,46 @@ public class TraceEvent implements AutoCloseable {
     }
 
     /**
-     * Records 'WebView.Startup.CreationTime.Stage2.ProviderInit.Warm' and
-     * 'WebView.Startup.CreationTime.Stage2.ProviderInit.Cold' events depending on the value of
-     * `isColdStartup` with the 'android_webview.timeline' category starting at `startTimeMs` with
-     * the duration of `durationMs`.
+     * Records 'WebView.Startup.CreationTime.FirstInstanceWithGlobalStartup' or
+     * 'WebView.Startup.CreationTime.FirstInstanceWithoutGlobalStartup' events depending on the
+     * value of `includedGlobalStartup` with the 'android_webview.timeline' category starting at
+     * `startTimeMs` with the duration of `durationMs`.
      */
-    public static void webViewStartupStage2(
-            long startTimeMs, long durationMs, boolean isColdStartup) {
+    public static void webViewStartupFirstInstance(
+            long startTimeMs, long durationMs, boolean includedGlobalStartup) {
         if (sEnabled) {
-            TraceEventJni.get().webViewStartupStage2(startTimeMs, durationMs, isColdStartup);
+            TraceEventJni.get()
+                    .webViewStartupFirstInstance(startTimeMs, durationMs, includedGlobalStartup);
+        }
+    }
+
+    /**
+     * Records a 'WebView.Startup.CreationTime.NotFirstInstance' event with the
+     * 'android_webview.timeline' category starting at `startTimeMs` with the duration of
+     * `durationMs`.
+     */
+    public static void webViewStartupNotFirstInstance(long startTimeMs, long durationMs) {
+        if (sEnabled) {
+            TraceEventJni.get().webViewStartupNotFirstInstance(startTimeMs, durationMs);
         }
     }
 
     /**
      * Records a 'WebView.Startup.CreationTime.StartChromiumLocked' event with the
      * 'android_webview.timeline' category starting at `startTimeMs` with the duration of
-     * `durationMs`. `callSite` and `fromUIThread` are set as the arguments for the event.
+     * `durationMs`. `startCallSite`, `finishCallSite` and `startupMode are set as the arguments for
+     * the event.
      */
     public static void webViewStartupStartChromiumLocked(
-            long startTimeMs, long durationMs, int callSite, boolean fromUIThread) {
+            long startTimeMs,
+            long durationMs,
+            int startCallSite,
+            int finishCallSite,
+            int startupMode) {
         if (sEnabled) {
             TraceEventJni.get()
                     .webViewStartupStartChromiumLocked(
-                            startTimeMs, durationMs, callSite, fromUIThread);
+                            startTimeMs, durationMs, startCallSite, finishCallSite, startupMode);
         }
     }
 
@@ -560,7 +580,7 @@ public class TraceEvent implements AutoCloseable {
      * @param name The name of the event.
      * @param arg  The arguments of the event.
      */
-    public static void begin(String name, String arg) {
+    public static void begin(String name, @Nullable String arg) {
         EarlyTraceEvent.begin(name, /* isToplevel= */ false);
         if (sEnabled) {
             TraceEventJni.get().begin(name, arg);
@@ -592,7 +612,7 @@ public class TraceEvent implements AutoCloseable {
      * @param name The name of the event.
      * @param arg  The arguments of the event.
      */
-    public static void end(String name, String arg) {
+    public static void end(String name, @Nullable String arg) {
         end(name, arg, 0);
     }
 
@@ -602,7 +622,7 @@ public class TraceEvent implements AutoCloseable {
      * @param arg  The arguments of the event.
      * @param flow The flow ID to associate with this event (0 is treated as invalid).
      */
-    public static void end(String name, String arg, long flow) {
+    public static void end(String name, @Nullable String arg, long flow) {
         EarlyTraceEvent.end(name, /* isToplevel= */ false);
         if (sEnabled) {
             TraceEventJni.get().end(arg, flow);
@@ -630,13 +650,13 @@ public class TraceEvent implements AutoCloseable {
     interface Natives {
         void registerEnabledObserver();
 
-        void instant(String name, String arg);
+        void instant(String name, @Nullable String arg);
 
-        void begin(String name, String arg);
+        void begin(String name, @Nullable String arg);
 
         void beginWithIntArg(String name, int arg);
 
-        void end(String arg, long flow);
+        void end(@Nullable String arg, long flow);
 
         void beginToplevel(String target);
 
@@ -669,10 +689,17 @@ public class TraceEvent implements AutoCloseable {
 
         void webViewStartupStage1(long startTimeMs, long durationMs);
 
-        void webViewStartupStage2(long startTimeMs, long durationMs, boolean isColdStartup);
+        void webViewStartupFirstInstance(
+                long startTimeMs, long durationMs, boolean includedGlobalStartup);
+
+        void webViewStartupNotFirstInstance(long startTimeMs, long durationMs);
 
         void webViewStartupStartChromiumLocked(
-                long startTimeMs, long durationMs, int callSite, boolean fromUIThread);
+                long startTimeMs,
+                long durationMs,
+                int startCallSite,
+                int finishCallSite,
+                int startupMode);
 
         void startupActivityStart(long activityId, long startTimeMs);
 
@@ -746,13 +773,13 @@ public class TraceEvent implements AutoCloseable {
             mRes = res;
         }
 
-        private int mId;
-        private int mParentId;
-        private boolean mIsShown;
-        private boolean mIsDirty;
-        private String mClassName;
+        private final int mId;
+        private final int mParentId;
+        private final boolean mIsShown;
+        private final boolean mIsDirty;
+        private final String mClassName;
         // One can use mRes to resolve mId to a resource name.
-        private android.content.res.Resources mRes;
+        private final android.content.res.Resources mRes;
     }
 
     /**
@@ -776,6 +803,7 @@ public class TraceEvent implements AutoCloseable {
      * the trace. Enabled/disabled via the disabled-by-default-android_view_hierarchy trace
      * category.
      *
+     * <pre>
      * The class registers itself as an idle handler, so that it can run when there are no other
      * tasks in the queue (but not more often than once a second). When the queue is idle,
      * it calls the initViewHierarchyDump() native function which in turn calls the
@@ -788,12 +816,11 @@ public class TraceEvent implements AutoCloseable {
      *            -> JNI#startActivityDump()
      *            -> ViewHierarchyDumper.dumpView()
      *                -> JNI#addViewDump()
+     * </pre>
      */
     private static final class ViewHierarchyDumper implements MessageQueue.IdleHandler {
-        private static final String EVENT_NAME = "TraceEvent.ViewHierarchyDumper";
         private static final long MIN_VIEW_DUMP_INTERVAL_MILLIS = 1000L;
-        private static boolean sEnabled;
-        private static ViewHierarchyDumper sInstance;
+        private static @Nullable ViewHierarchyDumper sInstance;
         private long mLastDumpTs;
 
         @Override
@@ -811,18 +838,7 @@ public class TraceEvent implements AutoCloseable {
         public static void updateEnabledState() {
             PostTask.runOrPostTask(
                     TaskTraits.UI_DEFAULT,
-                    () -> {
-                        if (TraceEventJni.get().viewHierarchyDumpEnabled()) {
-                            if (sInstance == null) {
-                                sInstance = new ViewHierarchyDumper();
-                            }
-                            enable();
-                        } else {
-                            if (sInstance != null) {
-                                disable();
-                            }
-                        }
-                    });
+                    () -> setEnabled(TraceEventJni.get().viewHierarchyDumpEnabled()));
         }
 
         private static void dumpView(ActivityInfo collection, int parentId, View v) {
@@ -845,19 +861,14 @@ public class TraceEvent implements AutoCloseable {
             }
         }
 
-        private static void enable() {
+        private static void setEnabled(boolean value) {
             ThreadUtils.assertOnUiThread();
-            if (!sEnabled) {
+            if (sInstance == null && value) {
+                sInstance = new ViewHierarchyDumper();
                 Looper.myQueue().addIdleHandler(sInstance);
-                sEnabled = true;
-            }
-        }
-
-        private static void disable() {
-            ThreadUtils.assertOnUiThread();
-            if (sEnabled) {
+            } else if (sInstance != null && !value) {
                 Looper.myQueue().removeIdleHandler(sInstance);
-                sEnabled = false;
+                sInstance = null;
             }
         }
     }

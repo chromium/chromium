@@ -25,6 +25,7 @@ desc: |-
   resolution on the <ph name="LOG_IN">Log-in</ph> screen.
 device_only: true
 features:
+  internal_only: true
   dynamic_refresh: true
   per_profile: false
 supported_on:

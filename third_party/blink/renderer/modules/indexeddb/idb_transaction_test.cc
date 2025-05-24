@@ -86,7 +86,7 @@ class IDBTransactionTest : public testing::Test,
     auto* execution_context = scope.GetExecutionContext();
 
     db_ = MakeGarbageCollected<IDBDatabase>(
-        execution_context, mojo::NullAssociatedReceiver(), mojo::NullRemote(),
+        execution_context, mojo::NullAssociatedReceiver(),
         mock_database.BindNewEndpointAndPassDedicatedRemote(), /*priority=*/0);
 
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
@@ -128,8 +128,8 @@ TEST_F(IDBTransactionTest, ContextDestroyedEarlyDeath) {
   EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+  Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -166,8 +166,8 @@ TEST_F(IDBTransactionTest, ContextDestroyedAfterDone) {
   EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+  Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -205,8 +205,8 @@ TEST_F(IDBTransactionTest, ContextDestroyedWithQueuedResult) {
   EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+  Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -246,8 +246,8 @@ TEST_F(IDBTransactionTest, ContextDestroyedWithTwoQueuedResults) {
   EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+  Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -298,8 +298,8 @@ TEST_F(IDBTransactionTest, DocumentShutdownWithQueuedAndBlockedResults) {
 
     BuildTransaction(scope, database_backend, transaction_backend);
 
-    Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-        MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+    Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+        MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
     live_transactions->insert(transaction_);
 
     ThreadState::Current()->CollectAllGarbageForTesting();
@@ -348,8 +348,8 @@ TEST_F(IDBTransactionTest, TransactionFinish) {
   EXPECT_CALL(database_backend, OnDisconnect()).Times(1);
   BuildTransaction(scope, database_backend, transaction_backend);
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+  Persistent<GCedHeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+      MakeGarbageCollected<GCedHeapHashSet<WeakMember<IDBTransaction>>>();
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -389,8 +389,8 @@ TEST_F(IDBTransactionTest, ValueSizeTest) {
   const size_t kMaxValueSizeForTesting = 10 * 1024 * 1024;  // 10 MB
 
   const Vector<char> value_data(kMaxValueSizeForTesting + 1);
-  const Vector<WebBlobInfo> blob_info;
-  auto value = std::make_unique<IDBValue>(Vector<char>(value_data), blob_info);
+  auto value = std::make_unique<IDBValue>();
+  value->SetData(Vector<char>(value_data));
   std::unique_ptr<IDBKey> key = IDBKey::CreateNumber(0);
   const int64_t object_store_id = 2;
 
@@ -423,8 +423,8 @@ TEST_F(IDBTransactionTest, KeyAndValueSizeTest) {
   const size_t kKeySize = 1024 * 1024;
 
   const Vector<char> value_data(kMaxValueSizeForTesting - kKeySize);
-  const Vector<WebBlobInfo> blob_info;
-  auto value = std::make_unique<IDBValue>(Vector<char>(value_data), blob_info);
+  auto value = std::make_unique<IDBValue>();
+  value->SetData(Vector<char>(value_data));
   const int64_t object_store_id = 2;
 
   // For this test, we want IDBKey::SizeEstimate() minus kKeySize to be the

@@ -53,8 +53,7 @@ window.onload = () => {
             deltaX, deltaY, x, y,
             GestureSourceType.MOUSE_INPUT,
             SPEED_INSTANT, false /* precise_scrolling_deltas */,
-            false /* scroll_by_page */, true /* cursor_visible */,
-            false /* scroll_by_percentage */);
+            false /* scroll_by_page */, true /* cursor_visible */);
     return Promise.all([
       animatedScrollPromise(document),
       gestureScroll

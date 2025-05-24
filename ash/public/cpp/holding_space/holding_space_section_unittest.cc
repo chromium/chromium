@@ -35,7 +35,6 @@ void ExpectSection(const HoldingSpaceSection* section,
                       HoldingSpaceItem::Type::kArcDownload,
                       HoldingSpaceItem::Type::kDiagnosticsLog,
                       HoldingSpaceItem::Type::kDownload,
-                      HoldingSpaceItem::Type::kLacrosDownload,
                       HoldingSpaceItem::Type::kNearbyShare,
                       HoldingSpaceItem::Type::kPhoneHubCameraRoll,
                       HoldingSpaceItem::Type::kPhotoshopWeb,
@@ -93,7 +92,6 @@ TEST_F(HoldingSpaceSectionTest, GetHoldingSpaceSectionByType) {
       case HoldingSpaceItem::Type::kArcDownload:
       case HoldingSpaceItem::Type::kDiagnosticsLog:
       case HoldingSpaceItem::Type::kDownload:
-      case HoldingSpaceItem::Type::kLacrosDownload:
       case HoldingSpaceItem::Type::kNearbyShare:
       case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
       case HoldingSpaceItem::Type::kPhotoshopWeb:

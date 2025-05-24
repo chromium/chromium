@@ -10,7 +10,6 @@
 #import "base/containers/contains.h"
 #import "base/strings/string_split.h"
 #import "base/strings/stringprintf.h"
-#import "base/test/task_environment.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -24,6 +23,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -75,7 +75,7 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
     BreadcrumbManagerTabHelper::CreateForWebState(&first_web_state_);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState first_web_state_;
   web::FakeWebState second_web_state_;

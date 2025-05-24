@@ -9,8 +9,8 @@
 #include <string>
 #include <tuple>
 
+#include "base/types/pass_key.h"
 #include "net/base/net_export.h"
-#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
@@ -20,37 +20,17 @@ class GURL;
 
 namespace net {
 
+class RefUniqueCookieKey;
+class UniqueCookieKey;
+
+struct CookieAccessParams;
+struct CookieAccessResult;
+
 // A base class for cookies and cookie-like objects. Encapsulates logic for
 // determining whether a cookie could be sent/set, based on its attributes and
 // the request context.
 class NET_EXPORT CookieBase {
  public:
-  // StrictlyUniqueCookieKey always populates the cookie's source scheme and
-  // source port.
-  using StrictlyUniqueCookieKey = std::tuple<std::optional<CookiePartitionKey>,
-                                             /*name=*/std::string,
-                                             /*domain=*/std::string,
-                                             /*path=*/std::string,
-                                             CookieSourceScheme,
-                                             /*source_port=*/int>;
-
-  // Conditionally populates the source scheme and source port depending on the
-  // state of their associated feature.
-  using UniqueCookieKey = std::tuple<std::optional<CookiePartitionKey>,
-                                     /*name=*/std::string,
-                                     /*domain=*/std::string,
-                                     /*path=*/std::string,
-                                     std::optional<CookieSourceScheme>,
-                                     /*source_port=*/std::optional<int>>;
-
-  // Same as UniqueCookieKey but for use with Domain cookies, which do not
-  // consider the source_port.
-  using UniqueDomainCookieKey = std::tuple<std::optional<CookiePartitionKey>,
-                                           /*name=*/std::string,
-                                           /*domain=*/std::string,
-                                           /*path=*/std::string,
-                                           std::optional<CookieSourceScheme>>;
-
   // Returns if the cookie should be included (and if not, why) for the given
   // request |url| using the CookieInclusionStatus enum. HTTP only cookies can
   // be filter by using appropriate cookie |options|.
@@ -153,10 +133,9 @@ class NET_EXPORT CookieBase {
   // This corresponds to the "cookie's domain" as described in RFC 6265bis.
   std::string DomainWithoutDot() const;
 
-  StrictlyUniqueCookieKey StrictlyUniqueKey() const {
-    return std::make_tuple(partition_key_, name_, domain_, path_,
-                           source_scheme_, source_port_);
-  }
+  // StrictlyUniqueKey always includes the cookie's source scheme and source
+  // port.
+  UniqueCookieKey StrictlyUniqueKey() const;
 
   // Returns a key such that two cookies with the same UniqueKey() are
   // guaranteed to be equivalent in the sense of IsEquivalent().
@@ -166,9 +145,21 @@ class NET_EXPORT CookieBase {
   // associated features are enabled.
   UniqueCookieKey UniqueKey() const;
 
-  // Same as UniqueKey() except it does not contain a source_port field. For use
-  // with Domain cookies, which do not consider the source_port.
-  UniqueDomainCookieKey UniqueDomainKey() const;
+  // Returns a non-copyable and non-movable key such that two cookies with the
+  // same RefUniqueKey() are guaranteed to be equivalent in the sense of
+  // IsEquivalent().
+  // The `partition_key_` field will always be nullopt when partitioned cookies
+  // are not enabled.
+  // The source_scheme and source_port fields depend on whether or not their
+  // associated features are enabled.
+  // A RefUniqueKey keeps string_views that point to the original strings in the
+  // CookieBase, so it must not be stored beyond the lifetime of the CookieBase.
+  RefUniqueCookieKey RefUniqueKey() const;
+
+  // Same as UniqueKey() except it does not contain a source_port or
+  // source_scheme field. For use for determining aliasing cookies, which do not
+  // consider the source_port or source_scheme.
+  UniqueCookieKey LegacyUniqueKey() const;
 
   void SetSourceScheme(CookieSourceScheme source_scheme) {
     source_scheme_ = source_scheme;

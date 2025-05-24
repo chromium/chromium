@@ -130,8 +130,7 @@ class CORE_EXPORT SpaceSplitString {
     void CreateVector(const AtomicString&);
     template <typename CharacterType>
     inline void CreateVector(const AtomicString&,
-                             const CharacterType*,
-                             unsigned);
+                             base::span<const CharacterType>);
 
     bool might_be_shared_;
     Vector<AtomicString, 4> vector_;

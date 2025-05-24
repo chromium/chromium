@@ -7,16 +7,20 @@
 #import "base/check.h"
 #import "components/prefs/pref_service.h"
 #import "components/sessions/ios/ios_serialized_navigation_builder.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/features.h"
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/synced_window_delegates_getter.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -51,6 +55,28 @@ base::Time GetMostRecentActivityTime(const web::WebState* web_state) {
     }
   }
   return result;
+}
+
+// Returns whether the given `profile` is the personal profile.
+bool IsPersonalProfile(ProfileIOS* profile) {
+  return profile->GetProfileName() == GetApplicationContext()
+                                          ->GetProfileManager()
+                                          ->GetProfileAttributesStorage()
+                                          ->GetPersonalProfileName();
+}
+
+// Returns whether the primary identity for `profile` is managed.
+bool ProfileHasPrimaryIdentityManaged(ProfileIOS* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return false;
+  }
+
+  return identity_manager
+      ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin))
+      .IsManaged();
 }
 
 }  // namespace
@@ -132,25 +158,13 @@ bool IOSChromeSyncedTabDelegate::ProfileHasChildAccount() const {
 
 const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
 IOSChromeSyncedTabDelegate::GetBlockedNavigations() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool IOSChromeSyncedTabDelegate::IsPlaceholderTab() const {
-  // A tab is considered as "placeholder" if it is not fully loaded. This
-  // corresponds to "unrealized" tabs or tabs that are still restoring their
-  // navigation history.
-  if (!web_state_->IsRealized()) {
-    return true;
-  }
-
-  if (web_state_->GetNavigationManager()->IsRestoreSessionInProgress()) {
-    return true;
-  }
-
-  // The WebState is realized and the navigation history fully loaded, the
-  // tab can be considered as valid for sync.
-  return false;
+  // A tab is considered as "placeholder" if it is not fully
+  // loaded. This corresponds to "unrealized" tabs.
+  return !web_state_->IsRealized();
 }
 
 bool IOSChromeSyncedTabDelegate::ShouldSync(
@@ -165,16 +179,15 @@ bool IOSChromeSyncedTabDelegate::ShouldSync(
     return false;  // This deliberately ignores a new pending entry.
   }
 
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
-    // If fast account switching via the account particle disk on the NTP is
-    // enabled, then for managed accounts, only sync tabs that have been updated
-    // after the signin.
+  if (IsIdentityDiscAccountMenuEnabled()) {
+    // For managed accounts in the personal profile, only sync tabs that have
+    // been updated after the signin.
+    // TODO(crbug.com/407498240): Remove this once all managed accounts have
+    // been migrated into their own profiles.
     ProfileIOS* profile =
         ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-    AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForProfile(profile);
-    if (auth_service && auth_service->HasPrimaryIdentityManaged(
-                            signin::ConsentLevel::kSignin)) {
+    if (ProfileHasPrimaryIdentityManaged(profile) &&
+        IsPersonalProfile(profile)) {
       base::Time signin_time =
           profile->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
       // Note: Don't use GetLastActiveTime() here: (a) it only tracks when the
@@ -225,10 +238,6 @@ int64_t IOSChromeSyncedTabDelegate::GetRootTaskIdForNavigationId(
 std::unique_ptr<sync_sessions::SyncedTabDelegate>
 IOSChromeSyncedTabDelegate::ReadPlaceholderTabSnapshotIfItShouldSync(
     sync_sessions::SyncSessionsClient* sessions_client) {
-  NOTREACHED_IN_MIGRATION()
-      << "ReadPlaceholderTabSnapshotIfItShouldSync is not supported for the "
-         "iOS platform.";
-  return nullptr;
+  NOTREACHED() << "ReadPlaceholderTabSnapshotIfItShouldSync is not supported "
+                  "for the iOS platform.";
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(IOSChromeSyncedTabDelegate)

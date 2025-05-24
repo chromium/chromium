@@ -25,7 +25,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,7 +44,6 @@ import java.util.Collections;
 public final class AutofillSaveCardBottomSheetBridgeTest {
     private static final long NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE = 0xb00fb00fL;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private AutofillSaveCardBottomSheetBridge.Natives mBridgeNatives;
     private WindowAndroid mWindow;
     @Mock private ManagedBottomSheetController mBottomSheetController;
@@ -55,9 +53,9 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(AutofillSaveCardBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
+        AutofillSaveCardBottomSheetBridgeJni.setInstanceForTesting(mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        mWindow = new WindowAndroid(activity);
+        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);

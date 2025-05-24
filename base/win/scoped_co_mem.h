@@ -7,6 +7,8 @@
 
 #include <objbase.h>
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
@@ -26,6 +28,13 @@ class ScopedCoMem {
 
   ScopedCoMem(const ScopedCoMem&) = delete;
   ScopedCoMem& operator=(const ScopedCoMem&) = delete;
+
+  ScopedCoMem(ScopedCoMem&& other)
+      : mem_ptr_(std::exchange(other.mem_ptr_, nullptr)) {}
+  ScopedCoMem& operator=(ScopedCoMem&& other) {
+    Reset(std::exchange(other.mem_ptr_, nullptr));
+    return *this;
+  }
 
   ~ScopedCoMem() { Reset(nullptr); }
 
@@ -47,15 +56,18 @@ class ScopedCoMem {
   }
 
   void Reset(T* ptr) {
-    if (mem_ptr_)
+    if (mem_ptr_) {
       CoTaskMemFree(mem_ptr_);
+    }
     mem_ptr_ = ptr;
   }
 
   T* get() const { return mem_ptr_; }
 
  private:
-  // RAW_PTR_EXCLUSION: #addr-of, #union
+  // RAW_PTR_EXCLUSION: This memory is handled by the OS instead
+  // of PartitionAlloc, so there's no point rewriting it to a
+  // raw_ptr
   RAW_PTR_EXCLUSION T* mem_ptr_;
 };
 

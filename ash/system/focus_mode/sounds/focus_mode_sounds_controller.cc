@@ -244,8 +244,9 @@ bool MayContainsSelectedPlaylist(
                         &FocusModeSoundsController::Playlist::playlist_id);
 }
 
-bool HasAudioFocus(const base::UnguessableToken& focus_mode_request_id,
-                   const base::UnguessableToken& session_request_id) {
+bool MatchesFocusModeRequestId(
+    const base::UnguessableToken& focus_mode_request_id,
+    const base::UnguessableToken& session_request_id) {
   return !focus_mode_request_id.is_empty() &&
          focus_mode_request_id == session_request_id;
 }
@@ -274,8 +275,9 @@ void RecordPlaylistPlayedLatency(focus_mode_util::SoundType playlist_type,
 }
 
 focus_mode_histogram_names::FocusModePlaylistChosen GetPlaylistChosenType(
-    int index,
+    size_t index,
     focus_mode_util::SoundType sound_type) {
+  CHECK_LT(index, kFocusModePlaylistViewsNum);
   switch (sound_type) {
     case focus_mode_util::SoundType::kSoundscape:
       return soundscapes_chosen[index];
@@ -287,20 +289,11 @@ focus_mode_histogram_names::FocusModePlaylistChosen GetPlaylistChosenType(
 }
 
 void RecordPlaylistChosenHistogram(
-    const focus_mode_util::SelectedPlaylist& selected_playlist,
-    const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
-        selected_playlist_list) {
-  for (size_t i = 0; i < selected_playlist_list.size(); ++i) {
-    if (selected_playlist_list.at(i)->playlist_id == selected_playlist.id) {
-      base::UmaHistogramEnumeration(
-          /*name=*/focus_mode_histogram_names::kPlaylistChosenHistogram,
-          /*sample=*/GetPlaylistChosenType(i, selected_playlist.type));
-      return;
-    }
-  }
+    const focus_mode_util::SelectedPlaylist& selected_playlist) {
   base::UmaHistogramEnumeration(
       /*name=*/focus_mode_histogram_names::kPlaylistChosenHistogram,
-      /*sample=*/focus_mode_histogram_names::FocusModePlaylistChosen::kNone);
+      /*sample=*/GetPlaylistChosenType(selected_playlist.list_position,
+                                       selected_playlist.type));
 }
 
 }  // namespace
@@ -309,8 +302,6 @@ FocusModeSoundsController::FocusModeSoundsController(const std::string& locale)
     : youtube_music_delegate_(
           std::make_unique<FocusModeYouTubeMusicDelegate>()) {
   soundscape_delegate_ = FocusModeSoundscapeDelegate::Create(locale);
-  soundscape_playlists_.reserve(kFocusModePlaylistViewsNum);
-  youtube_music_playlists_.reserve(kFocusModePlaylistViewsNum);
 
   // Default sound sections to enabled.
   enabled_sound_sections_ = {focus_mode_util::SoundType::kSoundscape,
@@ -399,23 +390,23 @@ void FocusModeSoundsController::OnFocusGained(
   CHECK(session->request_id.has_value());
   const auto& request_id =
       FocusModeController::Get()->GetMediaSessionRequestId();
-  has_audio_focus_ = HasAudioFocus(request_id, session->request_id.value());
-
-  // If it's not our focus mode media gained the focus, or if the request id
-  // isn't changed, we will do nothing.
-  if (!has_audio_focus_ || media_session_request_id_ == request_id) {
+  has_audio_focus_ =
+      MatchesFocusModeRequestId(request_id, session->request_id.value());
+  // If it's not the Focus Mode media session gaining focus, do nothing.
+  if (!has_audio_focus_) {
     return;
   }
 
-  RecordPlaylistPlayedLatency(selected_playlist_.type, sounds_started_time_);
-  RecordPlaylistChosenHistogram(
-      selected_playlist_,
-      selected_playlist_.type == focus_mode_util::SoundType::kSoundscape
-          ? soundscape_playlists_
-          : youtube_music_playlists_);
+  // If it is a new `request_id`, that means a new playlist is starting, so we
+  // should record the metrics. This is checked because switching tracks in a
+  // playlist also trigger the focus to be lost and gained.
+  if (media_session_request_id_ != request_id) {
+    RecordPlaylistPlayedLatency(selected_playlist_.type, sounds_started_time_);
+    RecordPlaylistChosenHistogram(selected_playlist_);
+  }
 
-  // Otherwise, we will bind the media controller observer with the specific
-  // request id to observe our media state.
+  // We will bind the media controller observer with the specific request id to
+  // observe our media state.
   media_session_request_id_ = request_id;
 
   // `media_controller_manager_remote_` is null in test.
@@ -440,9 +431,12 @@ void FocusModeSoundsController::OnFocusLost(
   }
 
   CHECK(session->request_id.has_value());
-  has_audio_focus_ =
-      HasAudioFocus(FocusModeController::Get()->GetMediaSessionRequestId(),
-                    session->request_id.value());
+  // If the request id matches the focus mode request id, it means the Focus
+  // Mode media session is losing focus, so we need to mark it as such. This
+  // happens when we are switching tracks or starting/stopping playlists.
+  has_audio_focus_ = !MatchesFocusModeRequestId(
+      FocusModeController::Get()->GetMediaSessionRequestId(),
+      session->request_id.value());
 }
 
 void FocusModeSoundsController::OnRequestIdReleased(
@@ -492,6 +486,7 @@ void FocusModeSoundsController::MediaSessionInfoChanged(
 
 void FocusModeSoundsController::TogglePlaylist(
     const focus_mode_util::SelectedPlaylist& playlist_data) {
+  CHECK_LT(playlist_data.list_position, kFocusModePlaylistViewsNum);
   if (playlist_data.state != focus_mode_util::SoundState::kNone) {
     // When the user toggles a selected playlist, we will deselect it.
     ResetSelectedPlaylist();
@@ -611,6 +606,19 @@ void FocusModeSoundsController::SetYouTubeMusicNoPremiumCallback(
     base::RepeatingClosure callback) {
   CHECK(callback);
   youtube_music_delegate_->SetNoPremiumCallback(std::move(callback));
+}
+
+void FocusModeSoundsController::SetErrorCallback(bool is_soundscape,
+                                                 ApiErrorCallback callback) {
+  CHECK(callback);
+  CHECK(!is_soundscape) << "Soundscapes errors are unsupported";
+
+  youtube_music_delegate_->SetErrorCallback(std::move(callback));
+}
+
+const std::optional<FocusModeApiError>&
+FocusModeSoundsController::last_youtube_music_error() const {
+  return youtube_music_delegate_->last_api_error();
 }
 
 void FocusModeSoundsController::ReportYouTubeMusicPlayback(
@@ -747,36 +755,23 @@ void FocusModeSoundsController::OnAllThumbnailsDownloaded(
           std::make_unique<Playlist>(selected_playlist_.id,
                                      selected_playlist_.title,
                                      selected_playlist_.thumbnail));
+      selected_playlist_.list_position = 1;
     } else {
       ResetSelectedPlaylist();
     }
   }
 
-  if (is_soundscape_type) {
-    soundscape_playlists_.swap(sorted_playlists);
-  } else {
-    youtube_music_playlists_.swap(sorted_playlists);
-  }
-
   // Only trigger the observer function when all the thumbnails are finished
   // downloading.
   // TODO(b/321071604): We may need to update this once caching is implemented.
-  std::move(update_sounds_view_callback).Run(is_soundscape_type);
+  std::move(update_sounds_view_callback)
+      .Run(is_soundscape_type, std::move(sorted_playlists));
 }
 
 void FocusModeSoundsController::OnPrefChanged() {
   PrefService* active_user_prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
   enabled_sound_sections_ = ReadSoundSectionPolicy(active_user_prefs);
-
-  // TODO: If we want to block the whole YTM section, we should make changes
-  // here. And remove the calls to `FocusModeSoundsController::IsMinorUser()` in
-  // `FocusModeSoundsView`.
-
-  // Hide the YTM sound section if the flag isn't enabled.
-  if (!features::IsFocusModeYTMEnabled()) {
-    enabled_sound_sections_.erase(focus_mode_util::SoundType::kYouTubeMusic);
-  }
 }
 
 }  // namespace ash

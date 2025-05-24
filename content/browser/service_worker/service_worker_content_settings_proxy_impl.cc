@@ -18,10 +18,12 @@ namespace content {
 ServiceWorkerContentSettingsProxyImpl::ServiceWorkerContentSettingsProxyImpl(
     const GURL& script_url,
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-    mojo::PendingReceiver<blink::mojom::WorkerContentSettingsProxy> receiver)
+    mojo::PendingReceiver<blink::mojom::WorkerContentSettingsProxy> receiver,
+    blink::StorageKey storage_key)
     : origin_(url::Origin::Create(script_url)),
       context_wrapper_(context_wrapper),
-      receiver_(this, std::move(receiver)) {
+      receiver_(this, std::move(receiver)),
+      storage_key_(std::move(storage_key)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -46,7 +48,8 @@ void ServiceWorkerContentSettingsProxyImpl::AllowIndexedDB(
   // so just pass an empty |render_frames|.
   std::vector<GlobalRenderFrameHostId> render_frames;
   std::move(callback).Run(GetContentClient()->browser()->AllowWorkerIndexedDB(
-      origin_.GetURL(), context_wrapper_->browser_context(), render_frames));
+      origin_.GetURL(), context_wrapper_->browser_context(), render_frames,
+      storage_key_));
 }
 
 void ServiceWorkerContentSettingsProxyImpl::AllowCacheStorage(
@@ -68,8 +71,8 @@ void ServiceWorkerContentSettingsProxyImpl::AllowCacheStorage(
   std::vector<GlobalRenderFrameHostId> render_frames;
   std::move(callback).Run(
       GetContentClient()->browser()->AllowWorkerCacheStorage(
-          origin_.GetURL(), context_wrapper_->browser_context(),
-          render_frames));
+          origin_.GetURL(), context_wrapper_->browser_context(), render_frames,
+          storage_key_));
 }
 
 void ServiceWorkerContentSettingsProxyImpl::AllowWebLocks(
@@ -90,7 +93,8 @@ void ServiceWorkerContentSettingsProxyImpl::AllowWebLocks(
   // so just pass an empty |render_frames|.
   std::vector<GlobalRenderFrameHostId> render_frames;
   std::move(callback).Run(GetContentClient()->browser()->AllowWorkerWebLocks(
-      origin_.GetURL(), context_wrapper_->browser_context(), render_frames));
+      origin_.GetURL(), context_wrapper_->browser_context(), render_frames,
+      storage_key_));
 }
 
 void ServiceWorkerContentSettingsProxyImpl::RequestFileSystemAccessSync(

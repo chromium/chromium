@@ -4,7 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {DisplaySettingsProvider, DisplaySettingsProviderInterface} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import type {DisplaySettingsProviderInterface} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {DisplaySettingsProvider} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 
 /**
  * @fileoverview

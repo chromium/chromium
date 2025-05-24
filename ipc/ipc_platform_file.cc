@@ -7,6 +7,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include "base/win/windows_handle_util.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <unistd.h>
 
@@ -18,8 +20,16 @@ namespace IPC {
 #if BUILDFLAG(IS_WIN)
 PlatformFileForTransit::PlatformFileForTransit() : handle_(nullptr) {}
 
-PlatformFileForTransit::PlatformFileForTransit(HANDLE handle)
-    : handle_(handle) {}
+PlatformFileForTransit::PlatformFileForTransit(HANDLE handle) {
+  // Refuse to represent handles that cannot be sent in transit, if it is
+  // necessary to send a process or thread handle callers should duplicate them
+  // before construction.
+  if (!handle || base::win::IsPseudoHandle(handle)) {
+    handle_ = nullptr;
+    return;
+  }
+  handle_ = handle;
+}
 
 bool PlatformFileForTransit::operator==(
     const PlatformFileForTransit& platform_file) const {
@@ -44,11 +54,13 @@ bool PlatformFileForTransit::IsValid() const {
 PlatformFileForTransit GetPlatformFileForTransit(base::PlatformFile handle,
                                                  bool close_source_handle) {
 #if BUILDFLAG(IS_WIN)
-  HANDLE raw_handle = INVALID_HANDLE_VALUE;
+  HANDLE raw_handle = nullptr;
   DWORD options = DUPLICATE_SAME_ACCESS;
-  if (close_source_handle)
+  if (close_source_handle) {
     options |= DUPLICATE_CLOSE_SOURCE;
-  if (handle == INVALID_HANDLE_VALUE ||
+  }
+  // Avoid duplicating pseudo handle values like ::GetCurrentProcess().
+  if (!handle || base::win::IsPseudoHandle(handle) ||
       !::DuplicateHandle(::GetCurrentProcess(), handle, ::GetCurrentProcess(),
                          &raw_handle, 0, FALSE, options)) {
     return IPC::InvalidPlatformFileForTransit();

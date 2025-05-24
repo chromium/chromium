@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -41,10 +40,6 @@
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
 
 namespace content {
 
@@ -109,7 +104,6 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         const media::AudioParameters& params,
         uint32_t shared_memory_count,
         bool enable_agc,
-        base::ReadOnlySharedMemoryRegion key_press_count_buffer,
         media::mojom::AudioProcessingConfigPtr processing_config,
         CreateInputStreamCallback created_callback) override {
       last_created_callback = std::move(created_callback);
@@ -139,7 +133,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         mojo::PendingRemote<media::mojom::AudioInputStream> stream,
         mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
             client_receiver,
-        media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+        media::mojom::ReadWriteAudioDataPipePtr data_pipe,
         bool initially_muted,
         const std::optional<base::UnguessableToken>& stream_id) override {}
   };
@@ -185,10 +179,6 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
   const std::string kDeviceName = "test name";
   const bool kAGC = false;
   const uint32_t kSharedMemoryCount = 123;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Instantiate LacrosService for WakeLock support.
-  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
-#endif
   MockStreamFactory audio_service_stream_factory_;
   media::FakeAudioLogFactory log_factory_;
   media::FakeAudioManager audio_manager_;
@@ -236,8 +226,8 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       main_rfh());
 
   RenderFrameHost* main_frame = source_contents->GetPrimaryMainFrame();
-  WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
-                                       main_frame->GetRoutingID());
+  WebContentsMediaCaptureId capture_id(
+      main_frame->GetProcess()->GetDeprecatedID(), main_frame->GetRoutingID());
   base::UnguessableToken session_id =
       audio_input_device_manager()->Open(blink::MediaStreamDevice(
           blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
@@ -264,8 +254,8 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       main_rfh());
 
   RenderFrameHost* main_frame = source_contents->GetPrimaryMainFrame();
-  WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
-                                       main_frame->GetRoutingID());
+  WebContentsMediaCaptureId capture_id(
+      main_frame->GetProcess()->GetDeprecatedID(), main_frame->GetRoutingID());
   base::UnguessableToken session_id =
       audio_input_device_manager()->Open(blink::MediaStreamDevice(
           blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,

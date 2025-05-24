@@ -1,0 +1,66 @@
+source_set("impression_limits") {
+  sources = [
+    "impression_limit_service.cc",
+    "impression_limit_service.h",
+    "impression_limit_service_factory.cc",
+    "impression_limit_service_factory.h",
+  ]
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core/subscriptions",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:prefs",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}
+
+source_set("observer_bridge") {
+  sources = [
+    "impression_limit_service_observer_bridge.h",
+    "impression_limit_service_observer_bridge.mm",
+  ]
+  deps = [
+    ":impression_limits",
+    "//ios/third_party/material_components_ios",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "impression_limit_service_unittest.cc" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/bookmarks/test",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/commerce/core/subscriptions:test_support",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:prefs",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test:util",
+  ]
+}

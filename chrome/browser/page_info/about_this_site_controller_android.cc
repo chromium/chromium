@@ -56,7 +56,7 @@ JNI_PageInfoAboutThisSiteController_GetSiteInfo(
   // Serialize the proto to pass it to Java. This will copy the whole object
   // but it only contains a few strings and ints and this method is called only
   // when PageInfo is opened.
-  int size = info->ByteSize();
+  size_t size = info->ByteSizeLong();
   std::vector<uint8_t> data(size);
   info->SerializeToArray(data.data(), size);
   return base::android::ToJavaByteArray(env, data);

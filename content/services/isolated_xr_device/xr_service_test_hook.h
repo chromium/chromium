@@ -10,8 +10,11 @@
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace device {
+namespace webxr {
 class XRTestHookWrapper;
+}
+
+namespace device {
 
 class XRServiceTestHook final : public device_test::mojom::XRServiceTestHook {
  public:
@@ -28,7 +31,7 @@ class XRServiceTestHook final : public device_test::mojom::XRServiceTestHook {
       DeviceCrashCallback callback) override;
 
  private:
-  std::unique_ptr<XRTestHookWrapper> wrapper_;
+  std::unique_ptr<webxr::XRTestHookWrapper> wrapper_;
 };
 
 }  // namespace device

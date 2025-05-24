@@ -30,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -162,13 +163,16 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
     bool is_enterprise,
     int small_icon_size,
     int icon_size,
-    int icon_label_spacing) {
+    int icon_label_spacing,
+    int button_icon_label_spacing) {
   auto button_builder =
       views::Builder<HoverButton>(
           std::make_unique<HoverButton>(std::move(callback), std::u16string()))
-          .SetTitleTextStyle(views::style::STYLE_BODY_5,
-                             ui::kColorDialogBackground,
-                             kColorExtensionsMenuSecondaryText)
+          .SetLabelStyle(views::style::STYLE_BODY_5)
+          .SetEnabledTextColors(kColorExtensionsMenuSecondaryText)
+          .SetTextColor(views::Button::ButtonState::STATE_DISABLED,
+                        kColorExtensionsMenuSecondaryText)
+          .SetImageLabelSpacing(button_icon_label_spacing)
           // Align the main and secondary row text by adding the primary
           // action button's icon size as margin.
           .SetProperty(views::kMarginsKey, gfx::Insets::VH(0, icon_size))
@@ -183,13 +187,12 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
         .SetImageModel(views::Button::ButtonState::STATE_NORMAL,
                        ui::ImageModel::FromVectorIcon(
                            vector_icons::kBusinessChromeRefreshIcon,
-                           ui::kColorIcon, small_icon_size));
-
+                           kColorExtensionMenuIcon, small_icon_size));
   } else {
     // Add right-aligned arrow icon for non-enterprise extensions when the
     // button is not disabled.
     auto arrow_icon = ui::ImageModel::FromVectorIcon(
-        vector_icons::kSubmenuArrowChromeRefreshIcon, ui::kColorIcon,
+        vector_icons::kSubmenuArrowChromeRefreshIcon, kColorExtensionMenuIcon,
         small_icon_size);
 
     button_builder.SetHorizontalAlignment(gfx::ALIGN_RIGHT)
@@ -202,6 +205,8 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
 }
 
 }  // namespace
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionMenuItemViewElementId);
 
 ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
@@ -311,6 +316,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SMALL_SIZE);
   const int icon_label_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  const int button_icon_label_spacing =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_LABEL_ICON_SPACING);
   const int horizontal_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
   const gfx::Insets icon_padding =
@@ -322,8 +329,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       .SetNotifyEnterExitOnChild(true)
       .SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetProperty(views::kBoxLayoutFlexKey,
-                   views::BoxLayoutFlexSpecification())
+      .SetProperty(views::kElementIdentifierKey,
+                   kExtensionMenuItemViewElementId)
       .AddChildren(
           // Main row.
           views::Builder<views::FlexLayoutView>()
@@ -389,7 +396,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
           views::Builder<views::FlexLayoutView>().AddChildren(
               GetSitePermissionsButtonBuilder(
                   std::move(site_permissions_button_callback), is_enterprise,
-                  small_icon_size, icon_size, icon_label_spacing)
+                  small_icon_size, icon_size, icon_label_spacing,
+                  button_icon_label_spacing)
                   .CopyAddressTo(&site_permissions_button_)))
       .BuildChildren();
 
@@ -403,6 +411,11 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
   site_permissions_button_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+  // Add rounded corners to the site permissions button.
+  site_permissions_button_->SetFocusRingCornerRadius(
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::ShapeContextTokens::kExtensionsMenuButtonRadius));
 }
 
 ExtensionMenuItemView::~ExtensionMenuItemView() = default;
@@ -458,7 +471,7 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
                           !browser_->profile()->IsOffTheRecord());
 
   // Update the icon based on whether the extension is pinned.
-  const gfx::VectorIcon& icon = is_pinned ? kKeepFilledIcon : kKeepIcon;
+  const gfx::VectorIcon& icon = is_pinned ? kKeepOffIcon : kKeepIcon;
   const ui::ColorId icon_color_id =
       is_pinned ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon;
   const ui::ColorId disabled_icon_color_id =
@@ -488,10 +501,9 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
   // pinned in the toolbar. All other states should look, and behave, the same.
   context_menu_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      is_action_pinned
-          ? ui::ImageModel::FromVectorIcon(
-                kKeepIcon, kColorExtensionMenuPinButtonIcon, icon_size)
-          : three_dot_icon);
+      is_action_pinned ? ui::ImageModel::FromVectorIcon(
+                             kKeepIcon, kColorExtensionMenuIcon, icon_size)
+                       : three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_HOVERED,
                                       three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,
@@ -534,7 +546,7 @@ void ExtensionMenuItemView::OnContextMenuPressed() {
   // TODO(crbug.com/41478477): Cleanup the menu source type.
   context_menu_controller_->ShowContextMenuForViewImpl(
       context_menu_button_, context_menu_button_->GetMenuPosition(),
-      ui::MenuSourceType::MENU_SOURCE_MOUSE);
+      ui::mojom::MenuSourceType::kMouse);
 }
 
 void ExtensionMenuItemView::OnPinButtonPressed() {
@@ -550,6 +562,27 @@ void ExtensionMenuItemView::OnPinButtonPressed() {
 
 bool ExtensionMenuItemView::IsContextMenuRunningForTesting() const {
   return context_menu_controller_->IsMenuRunning();
+}
+
+ExtensionsMenuButton*
+ExtensionMenuItemView::primary_action_button_for_testing() {
+  return primary_action_button_;
+}
+
+views::ToggleButton* ExtensionMenuItemView::site_access_toggle_for_testing() {
+  return site_access_toggle_;
+}
+
+HoverButton* ExtensionMenuItemView::context_menu_button_for_testing() {
+  return context_menu_button_;
+}
+
+HoverButton* ExtensionMenuItemView::pin_button_for_testing() {
+  return pin_button_;
+}
+
+HoverButton* ExtensionMenuItemView::site_permissions_button_for_testing() {
+  return site_permissions_button_;
 }
 
 BEGIN_METADATA(ExtensionMenuItemView)

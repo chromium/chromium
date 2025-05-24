@@ -154,7 +154,7 @@ namespace debug {
 // Helper for adding a set of `ScriptInjectionTracker`-related crash keys.
 //
 // For example, the `extension_registry_status` crash key will log if the
-// affected extension has been enebled, and the
+// affected extension has been enabled, and the
 // `do_static_content_scripts_match` crash key will log if the tracker thinks
 // that the affected frame matches the content script URL patterns from the
 // extension manifest.  Search for the `Get...CrashKey` functions in the `.cc`

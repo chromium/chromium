@@ -6,7 +6,6 @@
 
 #include "base/check_is_test.h"
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
-#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,9 +19,10 @@
 #include "extensions/browser/extension_system.h"
 #include "ui/accessibility/accessibility_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
+#include "chrome/browser/extensions/component_loader.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -31,6 +31,11 @@ namespace {
 constexpr int kRemoveExtensionDelaySeconds = 30;
 
 }  // namespace
+
+#if !BUILDFLAG(IS_CHROMEOS)
+const base::FilePath::CharType kManifestFileName[] =
+    FILE_PATH_LITERAL("wasm_tts_manifest.json");
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 ReadAnythingService::ReadAnythingService(Profile* profile) : profile_(profile) {
   if (features::IsReadAnythingDocsIntegrationEnabled()) {
@@ -63,6 +68,12 @@ ReadAnythingService* ReadAnythingService::Get(Profile* profile) {
 }
 
 void ReadAnythingService::OnReadAnythingSidePanelEntryShown() {
+// The TTS download extension should only be installed on non-ChromeOS devices
+// when the Read Aloud flag is enabled.
+#if !BUILDFLAG(IS_CHROMEOS)
+  SetupDesktopEngine();
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   if (!features::IsReadAnythingDocsIntegrationEnabled()) {
     return;
   }
@@ -70,6 +81,35 @@ void ReadAnythingService::OnReadAnythingSidePanelEntryShown() {
   active_local_side_panel_count_++;
   InstallGDocsHelperExtension();
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void ReadAnythingService::SetupDesktopEngine() {
+  // If the WasmTtsComponentUpdater flag is disabled, install the Tts
+  // extension as a component extension.
+  if (features::IsReadAnythingReadAloudEnabled() &&
+      !features::IsWasmTtsComponentUpdaterEnabled() &&
+      !features::IsWasmTtsEngineAutoInstallDisabled()) {
+    InstallTtsDownloadExtension();
+    return;
+  }
+
+  // If the extension was previously installed but now the Read Aloud flag
+  // is disabled, or if the component updater flag is enabled, we should
+  // uninstall the component extension.
+  RemoveTtsDownloadExtension();
+
+  // Install the TTS extension via the component updater if the
+  // component updater flag is enabled.
+  if (features::IsReadAnythingReadAloudEnabled() &&
+      features::IsWasmTtsComponentUpdaterEnabled() &&
+      !features::IsWasmTtsEngineAutoInstallDisabled()) {
+    // Signal that the reading mode panel is opened and it's now safe to
+    // install the WasmTtsEngineComponent.
+    component_updater::WasmTtsEngineComponentInstallerPolicy::
+        GetWasmTTSEngineDirectory(base::BindOnce(InstallComponent));
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void ReadAnythingService::OnReadAnythingSidePanelEntryHidden() {
   if (!features::IsReadAnythingDocsIntegrationEnabled()) {
@@ -82,24 +122,18 @@ void ReadAnythingService::OnReadAnythingSidePanelEntryHidden() {
 
 void ReadAnythingService::InstallGDocsHelperExtension() {
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EmbeddedA11yManagerLacros::GetInstance()->SetReadingModeEnabled(true);
-#else
   EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithId(
       extension_misc::kReadingModeGDocsHelperExtensionId,
       extension_misc::kReadingModeGDocsHelperExtensionPath,
       extension_misc::kReadingModeGDocsHelperManifestFilename,
       /*should_localize=*/false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #else
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (!service) {
-    // In tests, the service might not be created.
+  auto* component_loader = extensions::ComponentLoader::Get(profile_);
+  if (!component_loader) {
+    // In tests, the loader might not be created.
     CHECK_IS_TEST();
     return;
   }
-  extensions::ComponentLoader* component_loader = service->component_loader();
   if (!component_loader->Exists(
           extension_misc::kReadingModeGDocsHelperExtensionId)) {
     component_loader->Add(
@@ -111,22 +145,16 @@ void ReadAnythingService::InstallGDocsHelperExtension() {
 
 void ReadAnythingService::RemoveGDocsHelperExtension() {
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EmbeddedA11yManagerLacros::GetInstance()->SetReadingModeEnabled(false);
-#else
   EmbeddedA11yExtensionLoader::GetInstance()->RemoveExtensionWithId(
       extension_misc::kReadingModeGDocsHelperExtensionId);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #else
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (!service) {
-    // In tests, the service might not be created.
+  auto* component_loader = extensions::ComponentLoader::Get(profile_);
+  if (!component_loader) {
+    // In tests, the loader might not be created.
     CHECK_IS_TEST();
     return;
   }
-  service->component_loader()->Remove(
-      extension_misc::kReadingModeGDocsHelperExtensionId);
+  component_loader->Remove(extension_misc::kReadingModeGDocsHelperExtensionId);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -155,3 +183,40 @@ void ReadAnythingService::OnBrowserSetLastActive(Browser* browser) {
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   }
 }
+
+void ReadAnythingService::InstallTtsDownloadExtension() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto* component_loader = extensions::ComponentLoader::Get(profile_);
+  if (!component_loader) {
+    // In tests, the loader might not be created.
+    CHECK_IS_TEST();
+    return;
+  }
+  if (!component_loader->Exists(extension_misc::kTTSEngineExtensionId)) {
+    component_loader->Add(IDR_TTS_ENGINE_MANIFEST,
+                          base::FilePath(FILE_PATH_LITERAL("tts_engine")));
+  }
+#endif  // BUILDFLAG(!IS_CHROMEOS)
+}
+
+void ReadAnythingService::RemoveTtsDownloadExtension() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto* component_loader = extensions::ComponentLoader::Get(profile_);
+  if (!component_loader) {
+    // In tests, the service might not be created.
+    CHECK_IS_TEST();
+    return;
+  }
+  component_loader->Remove(extension_misc::kTTSEngineExtensionId);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void ReadAnythingService::InstallComponent(const base::FilePath& new_dir) {
+  EmbeddedA11yExtensionLoader::GetInstance()->Init();
+  EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithIdAndPath(
+      extension_misc::kComponentUpdaterTTSEngineExtensionId, new_dir,
+      kManifestFileName,
+      /*should_localize=*/false);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)

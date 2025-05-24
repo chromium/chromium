@@ -9,11 +9,14 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 /** Native bridge for finding payment apps. */
+@NullMarked
 public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
     private static boolean sCanMakePaymentForTesting;
 
@@ -152,7 +155,7 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
                 RenderFrameHost initiatorRenderFrameHost,
                 String topOrigin,
                 PaymentRequestSpec spec,
-                String twaPackageName,
+                @Nullable String twaPackageName,
                 boolean mayCrawlForInstallablePaymentApps,
                 boolean isOffTheRecord,
                 long nativeCSPCheckerAndroid,

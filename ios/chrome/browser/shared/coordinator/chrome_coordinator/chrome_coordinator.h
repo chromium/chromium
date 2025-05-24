@@ -8,7 +8,9 @@
 #import <UIKit/UIKit.h>
 
 @class ChromeCoordinator;
+@class SceneState;
 class Browser;
+class ProfileIOS;
 
 typedef NSMutableArray<ChromeCoordinator*> MutableCoordinatorArray;
 
@@ -43,6 +45,17 @@ typedef NSMutableArray<ChromeCoordinator*> MutableCoordinatorArray;
 
 // The coordinator's Browser, if one was assigned.
 @property(assign, nonatomic, readonly) Browser* browser;
+
+// The profile associated with the `browser`, if one is assigned.
+@property(assign, nonatomic, readonly) ProfileIOS* profile;
+
+// The scene state associated with `browser`, if one is assigned.
+@property(weak, nonatomic, readonly) SceneState* sceneState;
+
+// Is profile associated with the `browser` off the record (incognito).
+// It is an error to call this method when the profile is nil (in most cases,
+// this is only the case when the coordinator stops). This will CHECK.
+- (BOOL)isOffTheRecord;
 
 // The basic lifecycle methods for coordinators are -start and -stop. These
 // are blank template methods; child classes are expected to implement them and

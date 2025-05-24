@@ -166,9 +166,10 @@ class AudioInputTest : public testing::TestWithParam<bool> {
   }
 
   void CloseAudioInputStreamOnAudioThread() {
-    RunOnAudioThread(base::BindOnce(&AudioInputStream::Close,
-                                    base::Unretained(audio_input_stream_)));
+    AudioInputStream* stream_to_close = audio_input_stream_;
     audio_input_stream_ = nullptr;
+    RunOnAudioThread(base::BindOnce(&AudioInputStream::Close,
+                                    base::Unretained(stream_to_close)));
   }
 
   void OpenAndCloseAudioInputStreamOnAudioThread() {
@@ -209,8 +210,9 @@ class AudioInputTest : public testing::TestWithParam<bool> {
     ASSERT_TRUE(audio_input_stream_);
     EXPECT_EQ(audio_input_stream_->Open(),
               AudioInputStream::OpenOutcome::kSuccess);
-    audio_input_stream_->Close();
+    AudioInputStream* stream_to_close = audio_input_stream_;
     audio_input_stream_ = nullptr;
+    stream_to_close->Close();
   }
 
   void OpenAndStart(AudioInputStream::AudioInputCallback* sink) {
@@ -227,16 +229,18 @@ class AudioInputTest : public testing::TestWithParam<bool> {
     EXPECT_EQ(audio_input_stream_->Open(),
               AudioInputStream::OpenOutcome::kSuccess);
     audio_input_stream_->Stop();
-    audio_input_stream_->Close();
+    AudioInputStream* stream_to_close = audio_input_stream_;
     audio_input_stream_ = nullptr;
+    stream_to_close->Close();
   }
 
   void StopAndClose() {
     DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
     ASSERT_TRUE(audio_input_stream_);
     audio_input_stream_->Stop();
-    audio_input_stream_->Close();
+    AudioInputStream* stream_to_close = audio_input_stream_;
     audio_input_stream_ = nullptr;
+    stream_to_close->Close();
   }
 
   // Synchronously runs the provided callback/closure on the audio thread.

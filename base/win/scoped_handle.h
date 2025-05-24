@@ -6,12 +6,15 @@
 #define BASE_WIN_SCOPED_HANDLE_H_
 
 #include <ostream>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
+#include "base/types/expected.h"
+#include "base/win/windows_handle_util.h"
 #include "base/win/windows_types.h"
 #include "build/build_config.h"
 
@@ -144,9 +147,14 @@ class HandleTraits {
   // Closes the handle.
   static bool BASE_EXPORT CloseHandle(HANDLE handle);
 
-  // Returns true if the handle value is valid.
+  // Returns true if `handle` is neither null nor a pseudo handle like
+  // GetCurrentProcess() or INVALID_HANDLE_VALUE. This means it has a value in
+  // the range used for real handle values. It is still possible for `handle` to
+  // not be associated with an actual open handle.
+  // Note: Use TakeHandleOfType() to adopt a handle of a particular type with
+  // additional validation.
   static bool IsHandleValid(HANDLE handle) {
-    return handle != nullptr && handle != INVALID_HANDLE_VALUE;
+    return handle != nullptr && !base::win::IsPseudoHandle(handle);
   }
 
   // Returns NULL handle value.
@@ -211,6 +219,15 @@ BASE_EXPORT void DisableHandleVerifier();
 // tracked by the handle verifier and ScopedHandle is not the one closing it,
 // a CHECK is generated.
 BASE_EXPORT void OnHandleBeingClosed(HANDLE handle, HandleOperation operation);
+
+// Returns a smart pointer wrapping `handle` if it references an object of type
+// `object_type_name`. Crashes the process if `handle` is valid but of an
+// unexpected type. This function will fail with STATUS_INVALID_HANDLE if called
+// with the pseudo handle returned by `::GetCurrentProcess()` or
+// `GetCurrentProcessHandle()`.
+BASE_EXPORT expected<ScopedHandle, NTSTATUS> TakeHandleOfType(
+    HANDLE handle,
+    std::wstring_view object_type_name);
 
 }  // namespace win
 }  // namespace base

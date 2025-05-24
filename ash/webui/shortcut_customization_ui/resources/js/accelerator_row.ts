@@ -4,20 +4,23 @@
 
 import './accelerator_view.js';
 import './text_accelerator.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
-import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_row.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {AcceleratorInfo, AcceleratorSource, LayoutStyle, ShortcutProviderInterface, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
+import type {AcceleratorInfo, AcceleratorSource, ShortcutProviderInterface, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
+import {LayoutStyle} from './shortcut_types.js';
 import {getAriaLabelForStandardAccelerators, getAriaLabelForTextAccelerators, getTextAcceleratorParts, isCustomizationAllowed} from './shortcut_utils.js';
 
 export type ShowEditDialogEvent = CustomEvent<{
@@ -26,6 +29,13 @@ export type ShowEditDialogEvent = CustomEvent<{
   action: number,
   source: AcceleratorSource,
 }>;
+
+export interface AcceleratorRowElement {
+  $: {
+    descriptionText: HTMLElement,
+    container: HTMLElement,
+  };
+}
 
 declare global {
   interface HTMLElementEventMap {
@@ -76,6 +86,11 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
         value: 0,
         observer: AcceleratorRowElement.prototype.onSourceChanged,
       },
+
+      isEllipsisActive_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -90,8 +105,9 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
       AcceleratorLookupManager.getInstance();
   private shortcutInterfaceProvider: ShortcutProviderInterface =
       getShortcutProvider();
+  private isEllipsisActive_: boolean;
 
-  override async connectedCallback(): Promise<void> {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.subcategoryIsLocked = this.lookupManager.isSubcategoryLocked(
         this.lookupManager.getAcceleratorSubcategory(this.source, this.action));
@@ -209,6 +225,13 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
 
   private getEditButtonAriaLabel(): string {
     return this.i18n('editButtonForRow', this.description);
+  }
+
+  private onMouseEnterDescriptionText_(): void {
+    const descriptionText = this.$.descriptionText;
+    const container = this.$.container;
+    this.isEllipsisActive_ =
+        container.clientHeight < descriptionText.scrollHeight;
   }
 
   static get template(): HTMLTemplateElement {

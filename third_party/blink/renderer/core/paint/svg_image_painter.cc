@@ -40,7 +40,7 @@ ImagePaintTimingInfo ComputeImagePaintTimingInfo(
 
 void SVGImagePainter::Paint(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground ||
-      layout_svg_image_.StyleRef().UsedVisibility() != EVisibility::kVisible ||
+      layout_svg_image_.StyleRef().Visibility() != EVisibility::kVisible ||
       !layout_svg_image_.ImageResource()->HasImage()) {
     return;
   }
@@ -153,7 +153,9 @@ gfx::SizeF SVGImagePainter::ComputeImageViewportSize() const {
   if (image_resource.ErrorOccurred()) {
     return gfx::SizeF();
   }
-  return image_resource.ConcreteObjectSize(zoom, default_object_size);
+  const NaturalSizingInfo sizing_info =
+      image_resource.GetNaturalDimensions(zoom);
+  return ConcreteObjectSize(sizing_info, default_object_size);
 }
 
 }  // namespace blink

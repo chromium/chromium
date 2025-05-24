@@ -4,13 +4,13 @@
 
 #include "components/password_manager/core/browser/password_generation_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <unordered_set>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "crypto/random.h"
 
 namespace password_manager {
 namespace {
@@ -216,8 +217,8 @@ std::unordered_set<char16_t> FindSetOfCharacterClassInPassword(
     const std::u16string& password,
     const base::FunctionRef<bool(char16_t)>& belongs_to_character_class) {
   std::unordered_set<char16_t> result;
-  base::ranges::copy_if(password, std::inserter(result, result.begin()),
-                        belongs_to_character_class);
+  std::ranges::copy_if(password, std::inserter(result, result.begin()),
+                       belongs_to_character_class);
   return result;
 }
 
@@ -318,6 +319,16 @@ void SendUmaHistogramsOnGeneratedPasswordAttributeChanges(
   }
 }
 
+std::u16string CreateRandomString() {
+  constexpr size_t kSyncPasswordSaltLength = 16;
+
+  uint8_t buffer[kSyncPasswordSaltLength];
+  crypto::RandBytes(buffer);
+  // Explicit std::string constructor with a string length must be used in order
+  // to avoid treating '\0' symbols as a string ends.
+  return std::u16string(std::begin(buffer), std::end(buffer));
+}
+
 }  // namespace
 
 PasswordGenerationManager::PasswordGenerationManager(
@@ -370,7 +381,15 @@ void PasswordGenerationManager::PresaveGeneratedPassword(
   // the same username in order to prevent overwriting.
   if (FindUsernameConflict(generated, matches)) {
     generated.username_value.clear();
+
+    // Generate random `username_element` during password change to avoid
+    // overriding any existing credentials with an empty username.
+    if (FindUsernameConflict(generated, matches) &&
+        client_->IsPasswordChangeOngoing()) {
+      generated.username_element = CreateRandomString();
+    }
   }
+
   generated.date_created = base::Time::Now();
   if (presaved_) {
     form_saver->UpdateReplace(generated, {} /* matches */,

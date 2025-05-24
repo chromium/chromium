@@ -12,4 +12,15 @@ declare_args() {
 
   # Checks if Weston must be compiled
   use_bundled_weston = false
+
+  # Checks if Weston must be compiled
+  use_bundled_weston = false
+
+  # Checks if mutter must be compiled
+  use_bundled_mutter = checkout_mutter
 }
+
+assert(
+    !use_bundled_mutter || checkout_mutter,
+    "'use_bundled_mutter' gn arg is set to true but sources not checked out. " +
+        "Set 'checkout_mutter' custom var in .gclient and run gclient sync.")

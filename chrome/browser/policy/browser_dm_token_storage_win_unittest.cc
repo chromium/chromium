@@ -30,8 +30,8 @@ constexpr char kDMToken2[] = "fake-dm-token-2";
 
 class BrowserDMTokenStorageWinTest : public testing::Test {
  protected:
-  BrowserDMTokenStorageWinTest() {}
-  ~BrowserDMTokenStorageWinTest() override {}
+  BrowserDMTokenStorageWinTest() = default;
+  ~BrowserDMTokenStorageWinTest() override = default;
 
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(

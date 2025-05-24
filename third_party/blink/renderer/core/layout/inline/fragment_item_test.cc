@@ -26,24 +26,6 @@ class FragmentItemTest : public RenderingTest {
     return To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
   }
 
-  Vector<InlineCursorPosition> GetLines(InlineCursor* cursor) {
-    Vector<InlineCursorPosition> lines;
-    for (cursor->MoveToFirstLine(); *cursor; cursor->MoveToNextLine())
-      lines.push_back(cursor->Current());
-    return lines;
-  }
-
-  wtf_size_t IndexOf(const Vector<InlineCursorPosition>& items,
-                     const FragmentItem* target) {
-    wtf_size_t index = 0;
-    for (const auto& item : items) {
-      if (item.Item() == target)
-        return index;
-      ++index;
-    }
-    return kNotFound;
-  }
-
   void TestFirstDirtyLineIndex(const char* id, wtf_size_t expected_index) {
     LayoutBlockFlow* block_flow = GetLayoutBlockFlowByElementId(id);
     const PhysicalBoxFragment* fragment = block_flow->GetPhysicalFragment(0);
@@ -53,8 +35,17 @@ class FragmentItemTest : public RenderingTest {
         items->EndOfReusableItems(*fragment);
 
     InlineCursor cursor(*fragment, *items);
-    const auto lines = GetLines(&cursor);
-    EXPECT_EQ(IndexOf(lines, end_reusable_item), expected_index);
+    wtf_size_t index = 0;
+    bool found = false;
+    for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine()) {
+      if (cursor.Current().Item() == end_reusable_item) {
+        found = true;
+        break;
+      }
+      index++;
+    }
+    EXPECT_TRUE(found);
+    EXPECT_EQ(index, expected_index);
   }
 
   Vector<const FragmentItem*> ItemsForAsVector(

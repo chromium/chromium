@@ -77,10 +77,8 @@ Client::FailureReason FailureReasonFromCompletionType(CompletionType type) {
     case CompletionType::CANCEL:
       return Client::FailureReason::CANCELLED;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return Client::FailureReason::UNKNOWN;
 }
 
 // Helper function to determine if more downloads can be activated based on
@@ -448,7 +446,7 @@ void ControllerImpl::HandleTaskFinished(DownloadTaskType task_type,
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
     case DownloadTaskType::DOWNLOAD_LATER_TASK:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -888,14 +886,12 @@ void ControllerImpl::ResolveInitialRequestStates() {
             new_state = Entry::State::COMPLETE;
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     // Update the Entry::State to the new correct state.
@@ -938,8 +934,7 @@ void ControllerImpl::ResolveInitialRequestStates() {
         }
         break;
       case Entry::State::COUNT:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -1116,8 +1111,9 @@ DownloadBlockageStatus ControllerImpl::IsDownloadBlocked(Entry* entry) {
 }
 
 void ControllerImpl::KillTimedOutUploads() {
-  for (const std::string& guid : std::move(pending_uploads_))
+  for (const std::string& guid : pending_uploads_) {
     HandleCompleteDownload(CompletionType::UPLOAD_TIMEOUT, guid);
+  }
 }
 
 void ControllerImpl::NotifyClientsOfStartup(bool state_lost) {
@@ -1189,10 +1185,10 @@ void ControllerImpl::HandleCompleteDownload(CompletionType type,
   uint64_t file_size =
       driver_entry.has_value() ? driver_entry->bytes_downloaded : 0;
   stats::LogDownloadCompletion(entry->client, type, file_size);
-  LOG(WARNING) << "Background download complete, client: "
-               << static_cast<int>(entry->client)
-               << ", completion type: " << static_cast<int>(type)
-               << ", file size:" << file_size;
+  DVLOG(1) << "Background download complete, client: "
+           << static_cast<int>(entry->client)
+           << ", completion type: " << static_cast<int>(type)
+           << ", file size:" << file_size;
 
   if (type == CompletionType::SUCCEED) {
     DCHECK(driver_entry.has_value());

@@ -77,10 +77,8 @@ AppModalDialogController::AppModalDialogController(
     bool is_before_unload_dialog,
     bool is_reload,
     content::JavaScriptDialogManager::DialogClosedCallback callback)
-    : title_(title),
-      valid_(true),
-      view_(nullptr),
-      web_contents_(web_contents),
+    : content::WebContentsObserver(web_contents),
+      title_(title),
       extra_data_map_(extra_data_map),
       javascript_dialog_type_(javascript_dialog_type),
       message_text_(EnforceMaxTextSize(message_text)),
@@ -170,6 +168,10 @@ void AppModalDialogController::SetOverridePromptText(
   use_override_prompt_text_ = true;
 }
 
+void AppModalDialogController::WebContentsDestroyed() {
+  Invalidate();
+}
+
 void AppModalDialogController::NotifyDelegate(bool success,
                                               const std::u16string& user_input,
                                               bool suppress_js_messages) {
@@ -181,10 +183,12 @@ void AppModalDialogController::NotifyDelegate(bool success,
   // The close callback above may delete web_contents_, thus removing the extra
   // data from the map owned by ::AppModalDialogManager. Make sure
   // to only use the data if still present. http://crbug.com/236476
-  auto extra_data = extra_data_map_->find(web_contents_);
-  if (extra_data != extra_data_map_->end()) {
-    extra_data->second.has_already_shown_a_dialog_ = true;
-    extra_data->second.suppress_javascript_messages_ = suppress_js_messages;
+  if (auto* contents = web_contents()) {
+    auto extra_data = extra_data_map_->find(contents);
+    if (extra_data != extra_data_map_->end()) {
+      extra_data->second.has_already_shown_a_dialog_ = true;
+      extra_data->second.suppress_javascript_messages_ = suppress_js_messages;
+    }
   }
 
   // On Views, we can end up coming through this code path twice :(.

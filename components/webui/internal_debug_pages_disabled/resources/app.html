@@ -1,0 +1,46 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <meta charset="utf-8">
+    <title>$i18n{pageHeading}</title>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <style>
+      html {
+        background: rgb(248, 249, 250); /* --md-background-color */
+        color: #6e6e6e; /* --md-loading-message-color */
+        text-align: center;
+      }
+
+      a {
+       color: rgb(11, 87, 208); /* --cr-fallback-color-primary */
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html {
+          background: rgb(32, 33, 36); /* --md-background-color */
+          color: #9aa0a6; /* --md-loading-message-color */
+        }
+
+        a {
+         color: rgb(168, 199, 250); /* --cr-fallback-color-primary */
+        }
+      }
+
+      h1 {
+        font-weight: 500;
+        margin-top: 80px;
+      }
+
+      p {
+       line-height: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <if expr="not is_ios">
+      <script type="module" src="./app.js"></script>
+    </if>
+    <h1>$i18n{pageHeading}</h1>
+    <p>$i18nRaw{pageBody}</p>
+  </body>
+</html>

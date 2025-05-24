@@ -36,18 +36,19 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
 
 constexpr char kUser1Email[] = "test-user1@gmail.com";
-constexpr char kGaia1ID[] = "111111";
+constexpr GaiaId::Literal kGaia1ID("111111");
 
 constexpr char kUser2Email[] = "test-user2@gmail.com";
-constexpr char kGaia2ID[] = "222222";
+constexpr GaiaId::Literal kGaia2ID("222222");
 
 constexpr char kUser3Email[] = "test-user3@gmail.com";
-constexpr char kGaia3ID[] = "333333";
+constexpr GaiaId::Literal kGaia3ID("333333");
 
 constexpr base::TimeDelta kLoginOnlineShortDelay = base::Seconds(10);
 constexpr base::TimeDelta kLoginOnlineLongDelay = base::Seconds(20);

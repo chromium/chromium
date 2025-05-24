@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_IMPL_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,8 +14,8 @@
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -79,13 +81,13 @@ class IbanBubbleControllerImpl
   std::u16string GetDeclineButtonText() const override;
   AccountInfo GetAccountInfo() override;
   const Iban& GetIban() const override;
-  base::OnceCallback<void(PaymentsBubbleClosedReason)>
-  GetOnBubbleClosedCallback() override;
+  base::OnceCallback<void(PaymentsUiClosedReason)> GetOnBubbleClosedCallback()
+      override;
 
-  void OnAcceptButton(const std::u16string& nickname) override;
+  void OnAcceptButton(std::u16string_view nickname) override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageSavedIbanExtraButtonClicked() override;
-  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
   IbanBubbleType GetBubbleType() const override;
 
   // SavePaymentIconController:
@@ -124,9 +126,6 @@ class IbanBubbleControllerImpl
   bool IsUploadSave() const override;
   // Returns empty vector if no legal message should be shown.
   const LegalMessageLines& GetLegalMessageLines() const override;
-
-  // Should outlive this object.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // Observer for when a bubble is created. Initialized only during tests.
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;

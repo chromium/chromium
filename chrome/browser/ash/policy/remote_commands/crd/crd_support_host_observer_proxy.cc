@@ -6,8 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_session_observer.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
 #include "remoting/protocol/errors.h"
 
 using remoting::protocol::ErrorCode;

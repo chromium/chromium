@@ -49,9 +49,8 @@ class CodecImageTest : public testing::Test {
     codec_ = codec.get();
     wrapper_ = std::make_unique<CodecWrapper>(
         CodecSurfacePair(std::move(codec), new CodecSurfaceBundle()),
-        base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
-        kFrameSize, gfx::ColorSpace::CreateREC709(), std::nullopt,
-        /*use_block_model=*/false);
+        base::DoNothing(), kFrameSize, gfx::ColorSpace::CreateREC709(),
+        std::nullopt);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(OkStatus()));
 
@@ -266,7 +265,7 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresTextureBindings) {
   glBindTexture(GL_TEXTURE_EXTERNAL_OES, pre_bound_texture);
   auto i = NewImage(kTextureOwner);
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              UpdateTexImage());
+              UpdateTexImage(_));
   EXPECT_CALL(*this,
               OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
   i->RenderToFrontBuffer();
@@ -281,7 +280,7 @@ TEST_F(CodecImageTestExplicitBind, RenderToFrontBufferDoesNotBindTexture) {
   glBindTexture(GL_TEXTURE_EXTERNAL_OES, pre_bound_texture);
   auto i = NewImage(kTextureOwner);
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              UpdateTexImage());
+              UpdateTexImage(_));
   EXPECT_CALL(*this,
               OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
   i->RenderToFrontBuffer();
@@ -304,7 +303,7 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresGLContext) {
   auto i = NewImage(kTextureOwner);
   // UpdateTexImage sets it's own context.
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              UpdateTexImage());
+              UpdateTexImage(_));
   EXPECT_CALL(*this,
               OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
   i->RenderToFrontBuffer();
@@ -323,7 +322,7 @@ TEST_F(CodecImageTest, GetAHardwareBuffer) {
   EXPECT_FALSE(i->was_rendered_to_front_buffer());
 
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              UpdateTexImage());
+              UpdateTexImage(_));
   EXPECT_CALL(*this,
               OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
   i->GetAHardwareBuffer();

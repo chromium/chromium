@@ -952,7 +952,7 @@ TEST_P(ServiceWorkerJobTest, UnregisterWaitingSetsRedundant) {
       registration.get(), script_url, blink::mojom::ScriptType::kClassic, 1L,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
-  version->set_policy_container_host(
+  version->SetPolicyContainerHost(
       base::MakeRefCounted<PolicyContainerHost>(PolicyContainerPolicies()));
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StartServiceWorker(version.get()));
@@ -1509,7 +1509,7 @@ void WriteResponse(
 void WriteStringResponse(
     mojo::Remote<storage::mojom::ServiceWorkerResourceWriter>& writer,
     const std::string& body) {
-  mojo_base::BigBuffer body_buffer(base::as_bytes(base::make_span(body)));
+  mojo_base::BigBuffer body_buffer(base::as_bytes(base::span(body)));
   const char kHttpHeaders[] = "HTTP/1.0 200 HONKYDORY\0\0";
   std::string headers(kHttpHeaders, std::size(kHttpHeaders));
   WriteResponse(writer, headers, std::move(body_buffer));
@@ -1590,7 +1590,6 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
         blink::mojom::ServiceWorkerRegistrationObjectInfoPtr,
         blink::mojom::ServiceWorkerObjectInfoPtr,
         blink::mojom::FetchHandlerExistence,
-        mojo::PendingReceiver<blink::mojom::ReportingObserver>,
         blink::mojom::AncestorFrameType,
         const blink::StorageKey& storage_key) override {
       client_->SimulateFailureOfScriptEvaluation();

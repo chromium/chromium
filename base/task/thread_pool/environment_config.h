@@ -7,7 +7,10 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread.h"
 
@@ -37,14 +40,14 @@ struct EnvironmentParams {
   ThreadType thread_type_hint;
 };
 
-constexpr EnvironmentParams kEnvironmentParams[] = {
+constexpr auto kEnvironmentParams = std::to_array<EnvironmentParams>({
     {"Foreground", base::ThreadType::kDefault},
     {"ForegroundBlocking", base::ThreadType::kDefault},
     {"Utility", base::ThreadType::kUtility},
     {"UtilityBlocking", base::ThreadType::kUtility},
     {"Background", base::ThreadType::kBackground},
     {"BackgroundBlocking", base::ThreadType::kBackground},
-};
+});
 
 // Returns true if this platform supports having WorkerThreads running with a
 // background thread type.
@@ -53,6 +56,11 @@ bool BASE_EXPORT CanUseBackgroundThreadTypeForWorkerThread();
 // Returns true if this platform supports having WorkerThreads running with a
 // utility thread type.
 bool BASE_EXPORT CanUseUtilityThreadTypeForWorkerThread();
+
+#if BUILDFLAG(IS_ANDROID)
+const base::Feature& BASE_EXPORT
+FeatureControllingBackgroundPriorityWorkerThreads();
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace internal
 }  // namespace base

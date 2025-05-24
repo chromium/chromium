@@ -14,10 +14,16 @@ static_library("internal") {
     "//chrome/browser",
     "//chrome/browser/data_sharing:*",
     "//chrome/test:*",
+    "//components/data_sharing:test_support",
     "//ios/chrome/browser/data_sharing/model",
   ]
 
   sources = [
+    "android/fake_preview_server_proxy.cc",
+    "android/fake_preview_server_proxy.h",
+    "avatar_fetcher.cc",
+    "avatar_fetcher.h",
+    "client_version_info.h",
     "collaboration_group_sync_bridge.cc",
     "collaboration_group_sync_bridge.h",
     "data_sharing_network_loader_impl.cc",
@@ -32,18 +38,23 @@ static_library("internal") {
     "group_data_proto_utils.h",
     "group_data_store.cc",
     "group_data_store.h",
+    "logger_impl.cc",
+    "logger_impl.h",
     "preview_server_proxy.cc",
     "preview_server_proxy.h",
   ]
 
   deps = [
     "//components/data_sharing/internal/protocol",
+    "//components/data_sharing/public:logger",
     "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/image_fetcher/core:core",
     "//components/signin/public/identity_manager",
     "//components/sqlite_proto",
     "//components/sync/base:base",
     "//components/sync/model:model",
     "//components/sync/protocol:protocol",
+    "//google_apis/common",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//sql",
@@ -70,7 +81,7 @@ static_library("internal") {
 
     deps += [
       ":jni_headers",
-      "//components/data_sharing/public:jni_headers",
+      "//components/data_sharing/public:android_utils",
     ]
   }
 }
@@ -81,6 +92,7 @@ source_set("unit_tests") {
   visibility = [ "//components/data_sharing:unit_tests" ]
 
   sources = [
+    "avatar_fetcher_unittest.cc",
     "collaboration_group_sync_bridge_unittest.cc",
     "data_sharing_network_loader_impl_unittest.cc",
     "data_sharing_service_impl_unittest.cc",
@@ -88,6 +100,7 @@ source_set("unit_tests") {
     "group_data_model_unittest.cc",
     "group_data_proto_utils_unittest.cc",
     "group_data_store_unittest.cc",
+    "logger_impl_unittest.cc",
     "preview_server_proxy_unittest.cc",
   ]
 
@@ -104,8 +117,11 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/data_sharing:test_support",
+    "//components/data_sharing/public:logger",
     "//components/endpoint_fetcher",
     "//components/endpoint_fetcher:test_support",
+    "//components/image_fetcher/core:core",
+    "//components/image_fetcher/core:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//net/traffic_annotation:test_support",
@@ -113,6 +129,8 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gtest",
+    "//ui/base:base",
+    "//ui/gfx:test_support",
   ]
 
   if (is_android) {
@@ -128,14 +146,13 @@ source_set("unit_tests") {
 if (is_android) {
   android_library("internal_java") {
     visibility = [
+      ":*",
       "//chrome/android:chrome_all_java",
+      "//chrome/android/javatests:chrome_test_java_org.chromium.chrome.browser.collaboration",
       "//components:*",
       "//components/data_sharing/internal:native_test_helper_java",
     ]
-    srcjar_deps = [
-      ":jni_headers",
-      "//components/data_sharing/public:jni_headers",
-    ]
+    srcjar_deps = [ ":jni_headers" ]
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingConversionBridge.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoaderImpl.java",
@@ -147,10 +164,13 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//components/data_sharing/public:logger_interfaces_java",
+      "//components/data_sharing/public:logger_java",
       "//components/data_sharing/public:public_java",
       "//components/data_sharing/public/protocol:proto_java",
       "//net/android:net_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]
@@ -207,6 +227,7 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//components/data_sharing/public:public_java",
       "//net/android:net_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",

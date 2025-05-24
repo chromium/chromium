@@ -9,7 +9,7 @@
 #include <map>
 #include <utility>
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/image/image.h"
 
 namespace gfx {
@@ -25,7 +25,7 @@ class Size;
 // size, with high-DPI bitmap versions; use an Image or ImageSkia for that. Each
 // image in an ImageFamily should have a different logical size (and may also
 // include high-DPI representations).
-class GFX_EXPORT ImageFamily {
+class COMPONENT_EXPORT(GFX) ImageFamily {
  private:
   // An <aspect ratio, DIP width> pair.
   // A 0x0 image has aspect ratio 1.0. 0xN and Nx0 images are treated as 0x0.
@@ -41,7 +41,7 @@ class GFX_EXPORT ImageFamily {
  public:
   // Type for iterating over all images in the family, in order.
   // Dereferencing this iterator returns a gfx::Image.
-  class GFX_EXPORT const_iterator {
+  class COMPONENT_EXPORT(GFX) const_iterator {
    public:
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = const gfx::Image;
@@ -77,13 +77,8 @@ class GFX_EXPORT ImageFamily {
       return result;
     }
 
-    bool operator==(const const_iterator& other) const {
-      return map_iterator_ == other.map_iterator_;
-    }
-
-    bool operator!=(const const_iterator& other) const {
-      return map_iterator_ != other.map_iterator_;
-    }
+    friend bool operator==(const const_iterator&,
+                           const const_iterator&) = default;
 
     const gfx::Image& operator*() const {
       return map_iterator_->second;

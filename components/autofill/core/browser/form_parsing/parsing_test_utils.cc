@@ -5,8 +5,7 @@
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/form_parsing/buildflags.h"
-#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser_test_api.h"
 
 namespace autofill {
 
@@ -74,7 +73,8 @@ void FormFieldParserTestBase::ClassifyAndVerify(
     PatternFile pattern_file) {
   UpdateRanks(fields_);
   AutofillScanner scanner(fields_);
-  ParsingContext context(client_country, page_language, pattern_file);
+  ParsingContext context(client_country, page_language, pattern_file,
+                         GetActiveRegexFeatures());
   std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
 
   if (parse_result == ParseResult::kNotParsed) {
@@ -83,7 +83,7 @@ void FormFieldParserTestBase::ClassifyAndVerify(
     return;
   }
   ASSERT_NE(nullptr, field.get());
-  field->AddClassificationsForTesting(field_candidates_map_);
+  test_api(*field).AddClassifications(field_candidates_map_);
 
   TestClassificationExpectations();
 }
@@ -103,7 +103,7 @@ void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
     if (field == nullptr) {
       scanner.Advance();
     } else {
-      field->AddClassificationsForTesting(field_candidates_map_);
+      test_api(*field).AddClassifications(field_candidates_map_);
     }
   }
   TestClassificationExpectations();

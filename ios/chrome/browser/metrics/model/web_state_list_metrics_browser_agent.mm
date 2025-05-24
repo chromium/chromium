@@ -26,12 +26,11 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-BROWSER_USER_DATA_KEY_IMPL(WebStateListMetricsBrowserAgent)
-
 WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
     Browser* browser,
     SessionMetrics* session_metrics)
-    : web_state_list_(browser->GetWebStateList()),
+    : BrowserUserData(browser),
+      web_state_list_(browser->GetWebStateList()),
       session_metrics_(session_metrics) {
   DCHECK(web_state_list_);
   DCHECK(session_metrics_);
@@ -40,11 +39,11 @@ WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
   web_state_forwarder_ =
       std::make_unique<AllWebStateObservationForwarder>(web_state_list_, this);
 
-  ChromeBrowserState* browser_state = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
   session_restoration_service_observation_.Observe(
-      SessionRestorationServiceFactory::GetForBrowserState(browser_state));
+      SessionRestorationServiceFactory::GetForProfile(profile));
 
-  is_off_record_ = browser_state->IsOffTheRecord();
+  is_off_record_ = profile->IsOffTheRecord();
   is_inactive_ = browser->IsInactive();
 }
 

@@ -22,23 +22,6 @@ class TestingProfile;
 
 namespace ash {
 
-// Wraps the singleton device settings and initializes it to the point where it
-// reports OwnershipStatus::kOwnershipNone for the ownership status.
-class ScopedDeviceSettingsTestHelper {
- public:
-  ScopedDeviceSettingsTestHelper();
-
-  ScopedDeviceSettingsTestHelper(const ScopedDeviceSettingsTestHelper&) =
-      delete;
-  ScopedDeviceSettingsTestHelper& operator=(
-      const ScopedDeviceSettingsTestHelper&) = delete;
-
-  ~ScopedDeviceSettingsTestHelper();
-
- private:
-  FakeSessionManagerClient session_manager_client_;
-};
-
 // A convenience test base class that initializes a DeviceSettingsService
 // instance for testing and allows for straightforward updating of device
 // settings. |device_settings_service_| starts out in uninitialized state, so

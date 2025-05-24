@@ -6,7 +6,10 @@ if (is_android) {
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "proto/about_this_site_metadata.proto" ]
+  sources = [
+    "proto/about_this_site_metadata.proto",
+    "proto/privacy_policy_annotation_metadata.proto",
+  ]
 
   deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 }
@@ -30,18 +33,29 @@ static_library("core") {
     "about_this_site_validation.h",
     "features.cc",
     "features.h",
+    "merchant_trust_service.cc",
+    "merchant_trust_service.h",
+    "merchant_trust_validation.cc",
+    "merchant_trust_validation.h",
     "page_info_action.cc",
     "page_info_action.h",
     "page_info_history_data_source.cc",
     "page_info_history_data_source.h",
+    "page_info_types.cc",
+    "page_info_types.h",
+    "pref_names.h",
+    "privacy_policy_insights_service.cc",
+    "privacy_policy_insights_service.h",
   ]
 
   deps = [
     ":proto",
     "//base",
+    "//components/commerce/core:proto",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//components/pref_registry",
     "//components/search:search",
     "//components/search_engines:search_engines",
     "//components/strings:components_strings_grit",
@@ -63,7 +77,10 @@ source_set("unit_tests") {
   sources = [
     "about_this_site_service_unittest.cc",
     "about_this_site_validation_unittest.cc",
+    "merchant_trust_service_unittest.cc",
+    "merchant_trust_validation_unittest.cc",
     "page_info_history_data_source_unittest.cc",
+    "privacy_policy_insights_service_unittest.cc",
   ]
 
   deps = [
@@ -71,12 +88,15 @@ source_set("unit_tests") {
     ":proto",
     "//base",
     "//base/test:test_support",
+    "//components/commerce/core:proto",
     "//components/history/core/browser",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines:search_engines",
     "//components/search_engines:test_support",
     "//components/strings:components_strings_grit",
+    "//components/sync_preferences:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gtest",
     "//ui/base",

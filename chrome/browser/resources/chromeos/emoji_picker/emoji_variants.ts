@@ -8,7 +8,7 @@ import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/
 
 import {getTemplate} from './emoji_variants.html.js';
 import {createCustomEvent, EMOJI_VARIANTS_SHOWN} from './events.js';
-import {Emoji} from './types.js';
+import type {Emoji} from './types.js';
 
 const SKIN_TONE_MEDIUM = '🏽';  // U+1F3FD EMOJI MODIFIER FITZPATRICK TYPE-4
 const FAMILY = '👪';               // U+1F46A FAMILY

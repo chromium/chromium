@@ -19,6 +19,7 @@ enum class SecureContextMode;
 
 class CSSStyleValue;
 using CSSStyleValueVector = HeapVector<Member<CSSStyleValue>>;
+using GCedCSSStyleValueVector = GCedHeapVector<Member<CSSStyleValue>>;
 
 // The base class for all CSS values returned by the Typed OM.
 // See CSSStyleValue.idl for additional documentation about this class.

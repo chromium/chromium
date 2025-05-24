@@ -11,13 +11,18 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
 namespace {
 
-class MultiColumnRenderingTest : public RenderingTest {
+class MultiColumnRenderingTest : public RenderingTest,
+                                 ScopedFlowThreadLessForTest {
+ public:
+  MultiColumnRenderingTest() : ScopedFlowThreadLessForTest(false) {}
+
  protected:
   LayoutMultiColumnFlowThread* FindFlowThread(const char* id) const;
 
@@ -391,234 +396,6 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpannerBeforeSpanner) {
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(
                 GetLayoutObjectByElementId("outer")),
             nullptr);
-}
-
-TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffset) {
-  SetMulticolHTML(R"HTML(
-      <div id='mc' style='line-height:100px;'>
-        text<br>
-        text<br>
-        text<br>
-        text<br>
-        text
-        <div id='spanner1'>spanner</div>
-        text<br>
-        text
-        <div id='spanner2'>
-          text<br>
-          text
-        </div>
-        text
-      </div>
-  )HTML");
-  LayoutMultiColumnFlowThread* flow_thread = FindFlowThread("mc");
-  EXPECT_EQ(ColumnSetSignature(flow_thread), "cscsc");
-  LayoutMultiColumnSet* first_row = flow_thread->FirstMultiColumnSet();
-  LayoutMultiColumnSet* second_row = first_row->NextSiblingMultiColumnSet();
-  LayoutMultiColumnSet* third_row = second_row->NextSiblingMultiColumnSet();
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(-10000), LayoutBox::kAssociateWithFormerPage),
-            first_row);  // negative overflow
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(-10000), LayoutBox::kAssociateWithLatterPage),
-            first_row);  // negative overflow
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(), LayoutBox::kAssociateWithFormerPage),
-            first_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(), LayoutBox::kAssociateWithLatterPage),
-            first_row);
-  LayoutUnit offset(600);
-  // The first column row contains 5 lines, split into two columns, i.e. 3 lines
-  // in the first and 2 lines in the second. Line height is 100px. There's 100px
-  // of unused space at the end of the second column.
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
-            first_row);  // bottom of last line in first row.
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
-            first_row);  // bottom of last line in first row.
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithFormerPage),
-            first_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithLatterPage),
-            second_row);
-  offset += LayoutUnit(200);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
-            second_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
-            second_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithFormerPage),
-            second_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithLatterPage),
-            third_row);
-  offset += LayoutUnit(100);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
-            third_row);  // bottom of last row
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(10000), LayoutBox::kAssociateWithFormerPage),
-            third_row);  // overflow
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(10000), LayoutBox::kAssociateWithLatterPage),
-            third_row);  // overflow
-}
-
-TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffsetVerticalRl) {
-  SetMulticolHTML(R"HTML(
-      <div id='mc' style='line-height:100px; writing-mode:vertical-rl;'>
-        text<br>
-        text<br>
-        text<br>
-        text<br>
-        text
-        <div id='spanner1'>spanner</div>
-        text<br>
-        text
-        <div id='spanner2'>
-          text<br>
-          text
-        </div>
-        text
-      </div>
-  )HTML");
-  LayoutMultiColumnFlowThread* flow_thread = FindFlowThread("mc");
-  EXPECT_EQ(ColumnSetSignature(flow_thread), "cscsc");
-  LayoutMultiColumnSet* first_row = flow_thread->FirstMultiColumnSet();
-  LayoutMultiColumnSet* second_row = first_row->NextSiblingMultiColumnSet();
-  LayoutMultiColumnSet* third_row = second_row->NextSiblingMultiColumnSet();
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(-10000), LayoutBox::kAssociateWithFormerPage),
-            first_row);  // negative overflow
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(-10000), LayoutBox::kAssociateWithLatterPage),
-            first_row);  // negative overflow
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(), LayoutBox::kAssociateWithFormerPage),
-            first_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(), LayoutBox::kAssociateWithLatterPage),
-            first_row);
-  LayoutUnit offset(600);
-  // The first column row contains 5 lines, split into two columns, i.e. 3 lines
-  // in the first and 2 lines in the second. Line height is 100px. There's 100px
-  // of unused space at the end of the second column.
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
-            first_row);  // bottom of last line in first row.
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
-            first_row);  // bottom of last line in first row.
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithFormerPage),
-            first_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithLatterPage),
-            second_row);
-  offset += LayoutUnit(200);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
-            second_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
-            second_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithFormerPage),
-            second_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithLatterPage),
-            third_row);
-  offset += LayoutUnit(100);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
-            third_row);  // bottom of last row
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(10000), LayoutBox::kAssociateWithFormerPage),
-            third_row);  // overflow
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(10000), LayoutBox::kAssociateWithLatterPage),
-            third_row);  // overflow
-}
-
-TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffsetVerticalLr) {
-  SetMulticolHTML(R"HTML(
-      <div id='mc' style='line-height:100px; writing-mode:vertical-lr;'>
-        text<br>
-        text<br>
-        text<br>
-        text<br>
-        text
-        <div id='spanner1'>spanner</div>
-        text<br>
-        text
-        <div id='spanner2'>
-          text<br>
-          text
-        </div>
-        text
-      </div>
-  )HTML");
-  LayoutMultiColumnFlowThread* flow_thread = FindFlowThread("mc");
-  EXPECT_EQ(ColumnSetSignature(flow_thread), "cscsc");
-  LayoutMultiColumnSet* first_row = flow_thread->FirstMultiColumnSet();
-  LayoutMultiColumnSet* second_row = first_row->NextSiblingMultiColumnSet();
-  LayoutMultiColumnSet* third_row = second_row->NextSiblingMultiColumnSet();
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(-10000), LayoutBox::kAssociateWithFormerPage),
-            first_row);  // negative overflow
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(-10000), LayoutBox::kAssociateWithLatterPage),
-            first_row);  // negative overflow
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(), LayoutBox::kAssociateWithFormerPage),
-            first_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(), LayoutBox::kAssociateWithLatterPage),
-            first_row);
-  LayoutUnit offset(600);
-  // The first column row contains 5 lines, split into two columns, i.e. 3 lines
-  // in the first and 2 lines in the second. Line height is 100px. There's 100px
-  // of unused space at the end of the second column.
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
-            first_row);  // bottom of last line in first row.
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
-            first_row);  // bottom of last line in first row.
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithFormerPage),
-            first_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithLatterPage),
-            second_row);
-  offset += LayoutUnit(200);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
-            second_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
-            second_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithFormerPage),
-            second_row);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset, LayoutBox::kAssociateWithLatterPage),
-            third_row);
-  offset += LayoutUnit(100);
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
-            third_row);  // bottom of last row
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(10000), LayoutBox::kAssociateWithFormerPage),
-            third_row);  // overflow
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(10000), LayoutBox::kAssociateWithLatterPage),
-            third_row);  // overflow
 }
 
 class MultiColumnTreeModifyingTest : public MultiColumnRenderingTest {

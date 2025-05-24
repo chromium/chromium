@@ -112,4 +112,36 @@ TEST_F(ExternalDateTimeChooserTest,
   // Crash should not happen after calling OpenDateTimeChooser().
 }
 
+TEST_F(ExternalDateTimeChooserTest, IsPickerVisible) {
+  ScopedInputMultipleFieldsUIForTest input_multiple_fields_ui(false);
+  GetDocument().documentElement()->setInnerHTML("<input id=test type=date>");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* input =
+      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("test")));
+  ASSERT_TRUE(input);
+
+  DateTimeChooserParameters params;
+  bool success = input->SetupDateTimeChooserParameters(params);
+  ASSERT_TRUE(success);
+
+  auto* client = MakeGarbageCollected<TestDateTimeChooserClient>(
+      GetDocument().documentElement());
+  auto* external_date_time_chooser =
+      MakeGarbageCollected<ExternalDateTimeChooser>(client);
+  client->SetDateTimeChooser(external_date_time_chooser);
+  EXPECT_FALSE(external_date_time_chooser->IsPickerVisible());
+
+  external_date_time_chooser->OpenDateTimeChooser(GetDocument().GetFrame(),
+                                                  params);
+  EXPECT_TRUE(external_date_time_chooser->IsPickerVisible());
+
+  external_date_time_chooser->EndChooser();
+  EXPECT_FALSE(external_date_time_chooser->IsPickerVisible());
+
+  external_date_time_chooser->OpenDateTimeChooser(GetDocument().GetFrame(),
+                                                  params);
+  EXPECT_TRUE(external_date_time_chooser->IsPickerVisible());
+}
+
 }  // namespace blink

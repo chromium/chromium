@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <initializer_list>
 #include <memory>
 #include <string>
@@ -16,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/pattern.h"
@@ -26,7 +26,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -143,6 +142,16 @@ class DragAndDropSimulator {
                          const base::FilePath& file) {
     os_exchange_data_ = std::make_unique<ui::OSExchangeData>();
     os_exchange_data_->SetFilename(file);
+    return SimulateDragEnter(location, *os_exchange_data_);
+  }
+
+  // Simulates notification that multiple files were dragged from outside of the
+  // browser, into the specified `location` inside `web_contents`. `location` is
+  // relative to `web_contents`. Returns true upon success.
+  bool SimulateDragEnter(const gfx::Point& location,
+                         const std::vector<ui::FileInfo>& file_infos) {
+    os_exchange_data_ = std::make_unique<ui::OSExchangeData>();
+    os_exchange_data_->SetFilenames(file_infos);
     return SimulateDragEnter(location, *os_exchange_data_);
   }
 
@@ -319,9 +328,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
   // Starts monitoring |web_contents| for a start of a drag-and-drop.
   explicit DragStartWaiter(content::WebContents* web_contents)
       : web_contents_(web_contents),
-        message_loop_runner_(new content::MessageLoopRunner),
-        suppress_passing_of_start_drag_further_(false),
-        drag_started_(false) {
+        message_loop_runner_(new content::MessageLoopRunner) {
     DCHECK(web_contents_);
 
     // Intercept calls to the old DragDropClient.
@@ -467,10 +474,10 @@ class DragStartWaiter : public aura::client::DragDropClient {
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   raw_ptr<aura::client::DragDropClient> old_client_;
   base::OnceClosure callback_to_run_inside_drag_and_drop_message_loop_;
-  bool suppress_passing_of_start_drag_further_;
+  bool suppress_passing_of_start_drag_further_ = false;
 
   // Data captured during the first intercepted StartDragAndDrop call.
-  bool drag_started_;
+  bool drag_started_ = false;
   std::optional<url::Origin> source_origin_;
   std::string text_;
   std::string html_;
@@ -675,8 +682,8 @@ class DOMDragEventCounter {
                              });
         };
 
-    return base::ranges::count_if(received_events_,
-                                  received_event_has_matching_event_type);
+    return std::ranges::count_if(received_events_,
+                                 received_event_has_matching_event_type);
   }
 
   void StoreAccumulatedEvents() {
@@ -800,13 +807,13 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
                          const std::string& filename) {
     AssertTestPageIsLoaded();
     base::StringPairs replacement_text;
-    replacement_text.push_back(
-        std::make_pair("REPLACE_WITH_HOST_AND_PORT",
-                       base::StringPrintf("%s:%d", image_origin.c_str(),
-                                          https_test_server()->port())));
-    replacement_text.push_back(std::make_pair(
+    replacement_text.emplace_back(
+        "REPLACE_WITH_HOST_AND_PORT",
+        base::StringPrintf("%s:%d", image_origin.c_str(),
+                           https_test_server()->port()));
+    replacement_text.emplace_back(
         "REPLACE_WITH_CROSSORIGIN",
-        std::string(image_crossorigin_attr ? "crossorigin" : "")));
+        std::string(image_crossorigin_attr ? "crossorigin" : ""));
     std::string path = net::test_server::GetFilePathWithReplacements(
         filename, replacement_text);
     return NavigateNamedFrame("left", frame_origin, path);
@@ -938,6 +945,12 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   bool SimulateDragEnterToRightFrame(const base::FilePath& file) {
     AssertTestPageIsLoaded();
     return drag_simulator_->SimulateDragEnter(kMiddleOfRightFrame, file);
+  }
+
+  bool SimulateDragEnterToRightFrame(
+      const std::vector<ui::FileInfo>& file_infos) {
+    AssertTestPageIsLoaded();
+    return drag_simulator_->SimulateDragEnter(kMiddleOfRightFrame, file_infos);
   }
 
   bool SimulateDropInRightFrame() {
@@ -1127,7 +1140,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
 // Scenario: drag a URL into the Omnibox.  This is a regression test for
 // https://crbug.com/670123.
 // TODO(crbug.com/344168586): Very flaky on linux-chromeos-rel bots.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG)
 #define MAYBE_DropUrlIntoOmnibox DISABLED_DropUrlIntoOmnibox
 #else
 #define MAYBE_DropUrlIntoOmnibox DropUrlIntoOmnibox
@@ -1153,7 +1166,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
 
   // Click into Omnibox, so the text will be unselected.
   base::RunLoop loop1;
-  ui_test_utils::MoveMouseToCenterAndPress(omnibox_view, ui_controls::LEFT,
+  ui_test_utils::MoveMouseToCenterAndClick(omnibox_view, ui_controls::LEFT,
                                            ui_controls::DOWN | ui_controls::UP,
                                            loop1.QuitClosure());
   loop1.Run();
@@ -1176,7 +1189,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
   // The omnibox popup is open, and the browser's center point falls inside,
   // near the bottom of the popup. Offset the click down 5px, so that it
   // actually clicks the browser window and not the popup.
-  ui_test_utils::MoveMouseToCenterWithOffsetAndPress(
+  ui_test_utils::MoveMouseToCenterWithOffsetAndClick(
       browser_view, {0, 5}, ui_controls::LEFT,
       ui_controls::DOWN | ui_controls::UP, loop2.QuitClosure());
   loop2.Run();
@@ -1238,6 +1251,43 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
   // Verify that the focus moved from the omnibox to the tab contents.
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+}
+
+// This test verifies that dropping multiple files from outside the browser
+// opens all files in new tab.
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropMultipleFilesFromOutside) {
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Drag files from outside the browser into/over the right frame.
+  std::vector<ui::FileInfo> file_infos;
+  base::FilePath dragged_file_1 = ui_test_utils::GetTestFilePath(
+      base::FilePath(), base::FilePath().AppendASCII("title1.html"));
+  base::FilePath dragged_file_2 = ui_test_utils::GetTestFilePath(
+      base::FilePath(), base::FilePath().AppendASCII("title2.html"));
+  file_infos.emplace_back(dragged_file_1, dragged_file_1.BaseName());
+  file_infos.emplace_back(dragged_file_2, dragged_file_2.BaseName());
+  ASSERT_TRUE(SimulateDragEnterToRightFrame(file_infos));
+
+  const int expected_new_tab_count = 2;
+  // Create a TestNavigationObserver for each expected tab.
+  std::vector<std::unique_ptr<content::TestNavigationObserver>> observers;
+  for (int i = 0; i < expected_new_tab_count; ++i) {
+    observers.push_back(
+        std::make_unique<content::TestNavigationObserver>(nullptr));
+    observers.back()->StartWatchingNewWebContents();
+  }
+  // Drop into the right frame.
+  ASSERT_TRUE(SimulateDropInRightFrame());
+  for (auto& observer : observers) {
+    observer->Wait();
+  }
+
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+  // First file tab should be focused after drop.
+  EXPECT_EQ(
+      net::FilePathToFileURL(dragged_file_1),
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
 // Scenario: drag URL from outside the browser and drop to the right frame.
@@ -1662,11 +1712,8 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
 // Also disable the test on Linux due to flaky: crbug.com/1164442
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
 // TODO(crbug.com/40876472): Enable on ChromeOS ASAN once flakiness is fixed.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) ||            \
     (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
 #define MAYBE_DragImageFromDisappearingFrame \
   DISABLED_DragImageFromDisappearingFrame
@@ -2009,7 +2056,7 @@ void DragAndDropBrowserTest::CrossNavCrossSiteDrag_Step3(
 
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS) && \
                           (defined(ADDRESS_SANITIZER) || !defined(NDEBUG)))
 // https://crbug.com/1393605: Flaky at ChromeOS ASAN and Debug builds
 #define MAYBE_CrossTabDrag DISABLED_CrossTabDrag
@@ -2286,8 +2333,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragUpdateScreenCoordinates) {
 // navigation.
 
 // Injecting input with scaling works as expected on Chromeos.
-// TODO(crbug.com/40231833): Enable tests with a scale factor on lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr std::initializer_list<double> ui_scaling_factors = {1.0, 1.25, 2.0};
 #else
 // Injecting input with non-1x scaling doesn't work correctly with x11 ozone or
@@ -2307,7 +2353,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values(true),
                        ::testing::ValuesIn(ui_scaling_factors)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class DragAndDropBrowserTestNoParam : public InProcessBrowserTest {
  protected:
   void SimulateDragFromOmniboxToWebContents(base::OnceClosure quit) {
@@ -2379,6 +2425,6 @@ IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam, CloseTabDuringDrag) {
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace chrome

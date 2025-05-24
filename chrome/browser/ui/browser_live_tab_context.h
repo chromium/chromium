@@ -41,7 +41,7 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
   BrowserLiveTabContext(const BrowserLiveTabContext&) = delete;
   BrowserLiveTabContext& operator=(const BrowserLiveTabContext&) = delete;
 
-  ~BrowserLiveTabContext() override {}
+  ~BrowserLiveTabContext() override = default;
 
   // Overridden from LiveTabContext:
   void ShowBrowserWindow() override;
@@ -73,6 +73,7 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
       const sessions::tab_restore::Tab& tab,
       int tab_index,
       bool select,
+      bool is_restoring_group_or_window,
       sessions::tab_restore::Type original_session_type) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const sessions::tab_restore::Tab& tab) override;

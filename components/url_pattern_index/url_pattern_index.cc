@@ -4,6 +4,7 @@
 
 #include "components/url_pattern_index/url_pattern_index.h"
 
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <string_view>
@@ -18,7 +19,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/url_pattern_index/ngram_extractor.h"
@@ -100,7 +100,7 @@ std::string_view ToStringView(const flatbuffers::String* string) {
 }
 
 bool HasNoUpperAscii(std::string_view string) {
-  return base::ranges::none_of(string, base::IsAsciiUpper<char>);
+  return std::ranges::none_of(string, base::IsAsciiUpper<char>);
 }
 
 // Comparator to sort UrlRule. Sorts rules by descending order of rule priority.
@@ -774,8 +774,7 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
       return nullptr;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace

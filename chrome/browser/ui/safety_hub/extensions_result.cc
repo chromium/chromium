@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -43,9 +43,8 @@ SafetyHubExtensionsResult::~SafetyHubExtensionsResult() = default;
 
 // static
 std::optional<std::unique_ptr<SafetyHubService::Result>>
-SafetyHubExtensionsResult::GetResult(
-    Profile* profile,
-    bool only_unpublished_extensions = false) {
+SafetyHubExtensionsResult::GetResult(Profile* profile,
+                                     bool only_unpublished_extensions = false) {
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
   std::set<extensions::ExtensionId> triggering_extensions;
@@ -142,8 +141,8 @@ bool SafetyHubExtensionsResult::WarrantsNewMenuNotification(
   if (!is_unpublished_extensions_only_) {
     return false;
   }
-  return !base::ranges::includes(previous_triggering_extensions,
-                                 triggering_extensions_);
+  return !std::ranges::includes(previous_triggering_extensions,
+                                triggering_extensions_);
 }
 
 std::u16string SafetyHubExtensionsResult::GetNotificationString() const {

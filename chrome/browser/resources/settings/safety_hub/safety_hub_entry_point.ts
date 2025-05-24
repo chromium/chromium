@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './safety_hub_module.js';
@@ -66,11 +66,11 @@ export class SettingsSafetyHubEntryPointElement extends
     };
   }
 
-  private buttonClass_: string;
-  private hasRecommendations_: boolean;
-  private headerString_: string;
-  private subheaderString_: string;
-  private headerIconColor_: string;
+  declare private buttonClass_: string;
+  declare private hasRecommendations_: boolean;
+  declare private headerString_: string;
+  declare private subheaderString_: string;
+  declare private headerIconColor_: string;
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =

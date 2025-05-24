@@ -4,7 +4,7 @@
 import 'chrome://oobe/components/security_token_pin.js';
 
 import {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {SecurityTokenPin} from 'chrome://oobe/components/security_token_pin.js';
+import type {SecurityTokenPin} from 'chrome://oobe/components/security_token_pin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertGT, assertLE, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

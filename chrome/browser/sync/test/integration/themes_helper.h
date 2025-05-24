@@ -36,6 +36,9 @@ bool IsSystemThemeDistinctFromDefaultTheme(Profile* profile);
 // Returns true iff |profile| is using the system theme.
 [[nodiscard]] bool UsingSystemTheme(Profile* profile);
 
+// Returns true iff `profile` has grayscale theme enabled.
+[[nodiscard]] bool UsingGrayscaleTheme(Profile* profile);
+
 // Returns true iff a theme with the given ID is pending install in
 // |profile|.
 [[nodiscard]] bool ThemeIsPendingInstall(Profile* profile,
@@ -43,6 +46,9 @@ bool IsSystemThemeDistinctFromDefaultTheme(Profile* profile);
 
 // Sets |profile| to use the custom theme with the given index.
 void UseCustomTheme(Profile* profile, int index);
+
+// Sets `profile` to use the grayscale theme.
+void UseGrayscaleTheme(Profile* profile);
 
 // Sets |profile| to use the default theme.
 void UseDefaultTheme(Profile* profile);
@@ -120,6 +126,13 @@ class DefaultThemeChecker : public ThemeConditionChecker {
 class CustomThemeChecker : public ThemeConditionChecker {
  public:
   explicit CustomThemeChecker(Profile* profile);
+};
+
+// Waits until `profile` has grayscale theme enabled.
+// Returns false in case of timeout.
+class GrayscaleThemeChecker : public ThemeConditionChecker {
+ public:
+  explicit GrayscaleThemeChecker(Profile* profile);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_THEMES_HELPER_H_

@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -82,6 +83,7 @@ class ImageServiceImplTest : public testing::Test {
 
     remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
         /*document_suggestions_service=*/nullptr,
+        /*enterprise_search_aggregator_suggestions_service=*/nullptr,
         test_url_loader_factory_.GetSafeWeakWrapper());
     test_opt_guide_ =
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
@@ -384,10 +386,8 @@ TEST_F(ImageServiceImplTest, OptimizationGuideSalientImagesEndToEnd) {
     auto* thumbnail = salient_image_metadata.add_thumbnails();
     thumbnail->set_image_url("https://image-url.com/foo.png");
 
-    optimization_guide::proto::Any any;
-    any.set_type_url(salient_image_metadata.GetTypeName());
-    salient_image_metadata.SerializeToString(any.mutable_value());
-    decision.metadata.set_any_metadata(any);
+    decision.metadata.set_any_metadata(
+        optimization_guide::AnyWrapProto(salient_image_metadata));
   }
 
   // Verify the decision can be parsed and sent back to the original caller.
@@ -400,10 +400,8 @@ TEST_F(ImageServiceImplTest, OptimizationGuideSalientImagesEndToEnd) {
     auto* thumbnail = salient_image_metadata.add_thumbnails();
     thumbnail->set_image_url("http://image-url.com/foo.png");
 
-    optimization_guide::proto::Any any;
-    any.set_type_url(salient_image_metadata.GetTypeName());
-    salient_image_metadata.SerializeToString(any.mutable_value());
-    http_decision.metadata.set_any_metadata(any);
+    http_decision.metadata.set_any_metadata(
+        optimization_guide::AnyWrapProto(salient_image_metadata));
   }
 
   // Verify that the repeating callback can be called twice with the two
@@ -484,6 +482,7 @@ class DisabledOptGuideImageServiceImplTest : public ImageServiceImplTest {
 
     remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
         /*document_suggestions_service=*/nullptr,
+        /*enterprise_search_aggregator_suggestions_service=*/nullptr,
         test_url_loader_factory_.GetSafeWeakWrapper());
     test_opt_guide_ =
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();

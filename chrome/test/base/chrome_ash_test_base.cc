@@ -9,7 +9,7 @@
 #include "content/public/test/browser_task_environment.h"
 
 ChromeAshTestBase::ChromeAshTestBase()
-    : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
+    : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
           std::make_unique<content::BrowserTaskEnvironment>())) {}
 
 ChromeAshTestBase::~ChromeAshTestBase() = default;

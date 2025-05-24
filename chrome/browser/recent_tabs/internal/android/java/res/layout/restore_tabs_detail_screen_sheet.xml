@@ -77,7 +77,8 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:gravity="center"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:contentDescription="@string/restore_tabs_review_tabs_screen_change_all_tabs_selection_button_clicked_description"/>
         <Space
             android:layout_height="wrap_content"
             android:layout_width="0dp"
@@ -89,6 +90,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:gravity="center"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:contentDescription="@string/restore_tabs_open_tabs_button_clicked_description"/>
     </LinearLayout>
 </LinearLayout>

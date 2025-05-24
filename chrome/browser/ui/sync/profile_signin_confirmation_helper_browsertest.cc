@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
@@ -20,7 +19,7 @@
 
 class ProfileSigninConfirmationHelperBrowserTest : public InProcessBrowserTest {
  public:
-  ProfileSigninConfirmationHelperBrowserTest() {}
+  ProfileSigninConfirmationHelperBrowserTest() = default;
 
   ProfileSigninConfirmationHelperBrowserTest(
       const ProfileSigninConfirmationHelperBrowserTest&) = delete;
@@ -42,7 +41,7 @@ class ProfileSigninConfirmationHelperBrowserTest : public InProcessBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(ProfileSigninConfirmationHelperBrowserTest,
                        MAYBE_HasNotBeenShutdown) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(first_run::auto_import_state() & first_run::AUTO_IMPORT_CALLED);
 #endif
   EXPECT_FALSE(ui::HasBeenShutdown(browser()->profile()));

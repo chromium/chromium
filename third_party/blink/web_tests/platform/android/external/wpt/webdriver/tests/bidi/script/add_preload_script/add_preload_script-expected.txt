@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_add_preload_script_order_with_different_configuration[types0]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_add_preload_script_order_with_different_configuration[types1]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_add_preload_script_order_with_different_configuration[types2]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_add_preload_script_order_with_different_configuration[types3]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_add_preload_script_order_with_different_configuration[types4]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_add_preload_script_order_with_different_configuration[types5]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+Harness: the test ran to completion.
+

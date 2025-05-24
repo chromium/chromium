@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/browser/bookmark_utils.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
@@ -75,11 +76,18 @@ using bookmarks::BookmarkNode;
       [_parentDataSource editedNodes], _bookmarkModel, _type);
 }
 
+- (std::vector<const bookmarks::BookmarkNode*>)visibleFolderNodesForQuery:
+    (const bookmarks::QueryFields&)query {
+  std::vector<std::u16string> words = bookmarks::ParseBookmarkQuery(query);
+  return bookmark_utils_ios::VisibleNonDescendantNodes(
+      [_parentDataSource editedNodes], _bookmarkModel, _type, words);
+}
+
 #pragma mark - BookmarkModelBridgeObserver
 
 - (void)bookmarkModelLoaded {
   // The bookmark model is assumed to be loaded when this controller is created.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {

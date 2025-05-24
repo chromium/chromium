@@ -15,7 +15,6 @@
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -77,7 +76,7 @@ class CustomEventWithData final : public Event {
 
   explicit CustomEventWithData(const AtomicString& event_type,
                                scoped_refptr<SerializedScriptValue> data,
-                               MessagePortArray* ports)
+                               GCedMessagePortArray* ports)
       : Event(event_type, Bubbles::kNo, Cancelable::kNo),
         data_as_serialized_script_value_(
             SerializedScriptValue::Unpack(std::move(data))),
@@ -95,11 +94,11 @@ class CustomEventWithData final : public Event {
     return data_as_serialized_script_value_->Value();
   }
 
-  MessagePortArray* ports() { return ports_; }
+  GCedMessagePortArray* ports() { return ports_; }
 
  private:
   Member<UnpackedSerializedScriptValue> data_as_serialized_script_value_;
-  Member<MessagePortArray> ports_;
+  Member<GCedMessagePortArray> ports_;
 };
 
 ScriptValue CreateStringScriptValue(ScriptState* script_state,
@@ -145,7 +144,7 @@ CustomEventWithPortsFactoryCallback(base::RepeatingClosure quit_closure,
   return CrossThreadBindRepeating(base::BindLambdaForTesting(
       [quit_closure = std::move(quit_closure), out_event](
           ScriptState* script_state, CustomEventMessage message) -> Event* {
-        MessagePortArray* ports = MessagePort::EntanglePorts(
+        GCedMessagePortArray* ports = MessagePort::EntanglePorts(
             *ExecutionContext::From(script_state), std::move(message.ports));
         CustomEventWithData* result = MakeGarbageCollected<CustomEventWithData>(
             AtomicString::FromUTF8(kCustomEventName),
@@ -313,14 +312,13 @@ class DedicatedWorkerMessagingProxyForTest
             WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow),
         WorkerObjectProxy().token());
 
-    if (base::FeatureList::IsEnabled(features::kPlzDedicatedWorker)) {
-      PostCrossThreadTask(
-          *GetDedicatedWorkerThread()->GetTaskRunner(TaskType::kInternalTest),
-          FROM_HERE,
-          CrossThreadBindOnce(
-              &DedicatedWorkerThreadForTest::InitializeGlobalScope,
-              CrossThreadUnretained(GetDedicatedWorkerThread()), script_url_));
-    }
+    PostCrossThreadTask(
+        *GetDedicatedWorkerThread()->GetTaskRunner(TaskType::kInternalTest),
+        FROM_HERE,
+        CrossThreadBindOnce(
+            &DedicatedWorkerThreadForTest::InitializeGlobalScope,
+            CrossThreadUnretained(GetDedicatedWorkerThread()), script_url_));
+
   }
 
   void EvaluateClassicScript(const String& source) {
@@ -352,11 +350,6 @@ class FakeWebDedicatedWorkerHostFactoryClient
     : public WebDedicatedWorkerHostFactoryClient {
  public:
   // Implements WebDedicatedWorkerHostFactoryClient.
-  void CreateWorkerHostDeprecated(
-      const DedicatedWorkerToken& dedicated_worker_token,
-      const WebURL& script_url,
-      const WebSecurityOrigin& origin,
-      CreateWorkerHostCallback callback) override {}
   void CreateWorkerHost(
       const DedicatedWorkerToken& dedicated_worker_token,
       const WebURL& script_url,
@@ -660,7 +653,8 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
       .SetSecurityOriginForTesting(security_origin);
   StartWorker(WorkerObject()->CreateGlobalScopeCreationParams(
       script_url, network::mojom::ReferrerPolicy::kDefault,
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>()));
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      mojo::NullReceiver(), mojo::NullReceiver()));
   base::RunLoop run_loop;
 
   PostCrossThreadTask(
@@ -687,8 +681,8 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
               auto nested_worker_params =
                   nested_worker_object->CreateGlobalScopeCreationParams(
                       script_url, network::mojom::ReferrerPolicy::kDefault,
-                      Vector<
-                          network::mojom::blink::ContentSecurityPolicyPtr>());
+                      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+                      mojo::NullReceiver(), mojo::NullReceiver());
               ASSERT_TRUE(
                   nested_worker_params->top_level_frame_security_origin);
               EXPECT_TRUE(nested_worker_params->top_level_frame_security_origin
@@ -774,7 +768,7 @@ TEST_F(DedicatedWorkerTest, PostCustomEventWithString) {
   WaitUntilWorkerIsRunning();
 
   base::RunLoop run_loop;
-  HeapVector<ScriptValue> transfer;
+  HeapVector<ScriptObject> transfer;
   CustomEventWithData* event = nullptr;
   String data = "postEventWithDataTesting";
   WorkerObject()->PostCustomEvent(
@@ -804,7 +798,7 @@ TEST_F(DedicatedWorkerTest, PostCustomEventWithNumber) {
   WaitUntilWorkerIsRunning();
 
   base::RunLoop run_loop;
-  HeapVector<ScriptValue> transfer;
+  HeapVector<ScriptObject> transfer;
   CustomEventWithData* event = nullptr;
   const double kNumber = 2.34;
   v8::Local<v8::Value> v8_number =
@@ -837,7 +831,7 @@ TEST_F(DedicatedWorkerTest, PostCustomEventBeforeWorkerStarts) {
   ScriptState* script_state = v8_scope.GetScriptState();
 
   base::RunLoop run_loop;
-  HeapVector<ScriptValue> transfer;
+  HeapVector<ScriptObject> transfer;
   CustomEventWithData* event = nullptr;
   String data = "postEventWithDataTesting";
   WorkerObject()->PostCustomEvent(
@@ -872,16 +866,16 @@ TEST_F(DedicatedWorkerTest, PostCustomEventWithPort) {
 
   MessageChannel* channel =
       MakeGarbageCollected<MessageChannel>(v8_scope.GetExecutionContext());
-  ScriptValue script_value =
-      ScriptValue::From(v8_scope.GetScriptState(), channel->port1());
-  HeapVector<ScriptValue> transfer = {script_value};
+  ScriptObject script_object =
+      ScriptObject::From(v8_scope.GetScriptState(), channel->port1());
+  HeapVector<ScriptObject> transfer = {script_object};
   CustomEventWithData* event = nullptr;
   base::RunLoop run_loop;
 
   WorkerObject()->PostCustomEvent(
       TaskType::kPostedMessage, script_state,
       CustomEventWithPortsFactoryCallback(run_loop.QuitClosure(), &event),
-      CustomEventFactoryErrorCallback(run_loop.QuitClosure()), script_value,
+      CustomEventFactoryErrorCallback(run_loop.QuitClosure()), script_object,
       transfer, v8_scope.GetExceptionState());
   run_loop.Run();
 
@@ -909,7 +903,7 @@ TEST_F(DedicatedWorkerTest, PostCustomEventCannotDeserialize) {
             return false;
           }));
   base::RunLoop run_loop;
-  HeapVector<ScriptValue> transfer;
+  HeapVector<ScriptObject> transfer;
   String data = "postEventWithDataTesting";
   Event* event = nullptr;
   WorkerObject()->PostCustomEvent(
@@ -931,7 +925,7 @@ TEST_F(DedicatedWorkerTest, PostCustomEventNoMessage) {
   WaitUntilWorkerIsRunning();
 
   base::RunLoop run_loop;
-  HeapVector<ScriptValue> transfer;
+  HeapVector<ScriptObject> transfer;
   CustomEventWithData* event = nullptr;
 
   WorkerObject()->PostCustomEvent(

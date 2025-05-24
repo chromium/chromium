@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -105,7 +104,6 @@ class SecurityTokenSessionController
   bool ShouldApplyPolicyInCurrentSessionState() const;
   Behavior GetBehaviorFromPrefAndSessionState() const;
   void UpdateBehavior();
-  void UpdateKeepAlive();
   void UpdateNotificationPref();
 
   void ExtensionProvidesAllRequiredCertificates(
@@ -129,7 +127,6 @@ class SecurityTokenSessionController
       nullptr;
   extensions::ForceInstalledTracker extensions_tracker_;
   const raw_ptr<session_manager::SessionManager> session_manager_;
-  std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive> keep_alive_;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};

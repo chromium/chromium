@@ -5,7 +5,9 @@
 #include "content/web_test/browser/web_test_cookie_manager.h"
 
 #include "content/public/browser/storage_partition.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
 
@@ -13,9 +15,20 @@ namespace content {
 
 WebTestCookieManager::WebTestCookieManager(
     network::mojom::CookieManager* const cookie_manager,
-    const GURL& url)
-    : cookie_manager_(cookie_manager), url_(url) {
+    const GURL& url,
+    const net::IsolationInfo& isolation_info)
+    : cookie_manager_(cookie_manager),
+      url_(url),
+      isolation_info_(isolation_info) {
   DCHECK(url_->is_valid());
+}
+
+std::optional<net::CookiePartitionKey>
+WebTestCookieManager::GetCookiePartitionKey() const {
+  return net::CookiePartitionKey::FromNetworkIsolationKey(
+      isolation_info_->network_isolation_key(),
+      isolation_info_->site_for_cookies(), net::SchemefulSite(*url_),
+      /*main_frame_navigation=*/false);
 }
 
 void WebTestCookieManager::DeleteAllCookies(
@@ -41,7 +54,7 @@ void WebTestCookieManager::GetAllCookies(
         callback) {
   cookie_manager_->GetCookieList(
       *url_, net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeyCollection(),
+      net::CookiePartitionKeyCollection(GetCookiePartitionKey()),
       base::BindOnce(
           [](blink::test::mojom::CookieManagerAutomation::GetAllCookiesCallback
                  callback,
@@ -58,7 +71,7 @@ void WebTestCookieManager::GetNamedCookie(
         callback) {
   cookie_manager_->GetCookieList(
       *url_, net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeyCollection(),
+      net::CookiePartitionKeyCollection(GetCookiePartitionKey()),
       base::BindOnce(
           [](const std::string& name,
              blink::test::mojom::CookieManagerAutomation::GetNamedCookieCallback

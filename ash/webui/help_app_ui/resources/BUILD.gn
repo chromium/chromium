@@ -4,12 +4,11 @@
 
 import("//ash/webui/help_app_ui/help_app_files.gni")
 import("//ash/webui/web_applications/system_apps.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//tools/typescript/ts_library.gni")
 import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
-assert(is_chromeos_ash, "Help App is ash-chrome only")
+assert(is_chromeos, "Help App is ChromeOS only")
 
 stage_folder = "$target_gen_dir/stage_rollup"
 ts_root_dir = "$target_gen_dir/stage_ts"
@@ -17,17 +16,17 @@ ts_root_dir = "$target_gen_dir/stage_ts"
 copy("copy_for_tsc") {
   visibility = [ ":build_ts" ]
   public_deps = [
-    "//ash/webui/help_app_ui:mojo_bindings_js__generator",
-    "//ash/webui/help_app_ui/search:mojo_bindings_js__generator",
+    "//ash/webui/help_app_ui:mojo_bindings_ts__generator",
+    "//ash/webui/help_app_ui/search:mojo_bindings_ts__generator",
     "//ash/webui/system_apps/public/js:build_ts",
-    "//chromeos/ash/components/local_search_service/public/mojom:mojom_js__generator",
+    "//chromeos/ash/components/local_search_service/public/mojom:mojom_ts__generator",
   ]
   sources = [
+    "$root_gen_dir/ash/webui/help_app_ui/help_app_ui.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/help_app_ui/search/search.mojom-webui.ts",
     "$root_gen_dir/ash/webui/system_apps/public/js/message_pipe.js",
-    "$root_gen_dir/mojom-webui/ash/webui/help_app_ui/help_app_ui.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/ash/webui/help_app_ui/search/search.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chromeos/ash/components/local_search_service/public/mojom/index.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chromeos/ash/components/local_search_service/public/mojom/types.mojom-webui.js",
+    "$root_gen_dir/chromeos/ash/components/local_search_service/public/mojom/index.mojom-webui.ts",
+    "$root_gen_dir/chromeos/ash/components/local_search_service/public/mojom/types.mojom-webui.ts",
     "//ui/webui/resources/js/mojo_type_util.ts",
     "browser_proxy.ts",
     "message_types.ts",
@@ -37,6 +36,7 @@ copy("copy_for_tsc") {
 }
 
 webui_ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
   root_dir = ts_root_dir
   in_files = []
   foreach(o, get_target_outputs(":copy_for_tsc")) {
@@ -103,6 +103,7 @@ optimize_webui("receiver_rollup") {
 }
 
 ts_library("test_build_ts") {
+  tsconfig_base = "tsconfig_base.json"
   root_dir = ts_root_dir
   testonly = true
   in_files = help_app_test_ts

@@ -45,12 +45,12 @@ class TouchInjectorObserver;
 // If the following touch move sent immediately, the touch move event is not
 // processed correctly by apps. This is a delayed time to send touch move
 // event.
-constexpr base::TimeDelta kSendTouchMoveDelay = base::Milliseconds(50);
+inline constexpr base::TimeDelta kSendTouchMoveDelay = base::Milliseconds(50);
 
 gfx::RectF CalculateWindowContentBounds(aura::Window* window);
 
 // Maximum default action ID. User-added actions have ID > kMaxDefaultActionID.
-constexpr int kMaxDefaultActionID = 9999;
+inline constexpr int kMaxDefaultActionID = 9999;
 
 // TouchInjector includes all the touch actions related to the specific window
 // and performs as a bridge between the ArcInputOverlayManager and the touch
@@ -94,27 +94,14 @@ class TouchInjector : public ui::EventRewriter {
   // DisplayMode::kView).
   void OnInputBindingChange(Action* target_action,
                             std::unique_ptr<InputElement> input_element);
-  // Apply pending binding as current binding, but don't save into the storage.
-  void OnApplyPendingBinding();
   // Save customized input binding/pending binding as current binding and go
   // back from edit mode to view mode.
   void OnBindingSave();
-  // Set input binding back to previous status before entering to the edit mode
-  // and go back from edit mode to view mode.
-  void OnBindingCancel();
-  // Set input binding back to original binding.
-  void OnBindingRestore();
   void OnProtoDataAvailable(AppDataProto& proto);
   // Save proto file.
   void OnSaveProtoFile();
   // Save the input menu state when the menu is closed.
   void OnInputMenuViewRemoved();
-  void NotifyFirstTimeLaunch();
-  // Save the menu entry view position when it's changed.
-  void SaveMenuEntryLocation(gfx::Point menu_entry_location_point);
-  std::optional<gfx::Vector2dF> menu_entry_location() const {
-    return menu_entry_location_;
-  }
 
   void MaybeBindDefaultInputElement(Action* action);
 
@@ -178,12 +165,6 @@ class TouchInjector : public ui::EventRewriter {
   void set_can_rewrite_event(bool can_rewrite_event) {
     can_rewrite_event_ = can_rewrite_event;
   }
-
-  bool first_launch() const { return first_launch_; }
-  void set_first_launch(bool first_launch) { first_launch_ = first_launch; }
-
-  bool show_nudge() const { return show_nudge_; }
-  void set_show_nudge(bool show_nudge) { show_nudge_ = show_nudge; }
 
   void set_display_mode(DisplayMode mode) { display_mode_ = mode; }
   void set_display_overlay_controller(DisplayOverlayController* controller) {
@@ -256,13 +237,7 @@ class TouchInjector : public ui::EventRewriter {
   // Load menu state from `proto`. The default state is on for the toggles.
   void LoadMenuStateFromProto(AppDataProto& proto);
 
-  // Add the menu entry view position to `proto`, if it has been customized.
-  void AddMenuEntryToProtoIfCustomized(AppDataProto& proto) const;
-  // Load menu entry position from `proto`, if it exists.
-  void LoadMenuEntryFromProto(AppDataProto& proto);
-
   void AddSystemVersionToProto(AppDataProto& proto);
-  void LoadSystemVersionFromProto(AppDataProto& proto);
 
   // Overwrite the default `action` from `proto`.
   void OverwriteDefaultAction(const ActionProto& proto, Action* action);
@@ -325,13 +300,6 @@ class TouchInjector : public ui::EventRewriter {
   bool touch_injector_enable_uma_ = true;
   bool input_mapping_visible_uma_ = true;
 
-  // The game app is launched for the first time when input overlay is enabled
-  // if the value is true.
-  bool first_launch_ = false;
-  // Check whether to show the nudge view. We only show the nudge view for the
-  // first time launch and before it is dismissed.
-  bool show_nudge_ = false;
-
   // Key is the original touch id. Value is a struct containing required info
   // for this touch event.
   base::flat_map<ui::PointerId, TouchPointInfo> rewritten_touch_infos_;
@@ -347,6 +315,9 @@ class TouchInjector : public ui::EventRewriter {
 
   // Use default position if it is null.
   std::optional<gfx::Vector2dF> menu_entry_location_;
+
+  // Used to track whether the game has been played with Game Controls.
+  bool played_with_game_controls_ = false;
 
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };

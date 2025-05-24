@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] <select> should fire input and change events when new option is selected.
+  assert_false: expected false got true
+[FAIL] <select> should fire input and change events when option in listbox is clicked
+  promise_test: Unhandled rejection with value: object "Error: element event-dispatch intercepted error"
+[FAIL] Check that <Space> opens <select>.
+  assert_false: <Enter> should close select expected false got true
+[FAIL] Check that <Space> opens <select> when <select> specifies tabindex
+  assert_false: <Enter> should close select expected false got true
+Harness: the test ran to completion.
+

@@ -4,39 +4,45 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+@NullMarked
 public class HistorySyncCoordinator {
+
     /*Delegate for the History Sync MVC */
     public interface HistorySyncDelegate {
-        void dismissHistorySync();
+        void dismissHistorySync(boolean isHistorySyncAccepted);
 
-        default void maybeRecordFreProgress(@MobileFreProgress int state) {}
+        void recordHistorySyncOptIn(
+                @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonType);
     }
 
     private final Activity mActivity;
-    private final HistorySyncDelegate mDelegate;
     private final Profile mProfile;
     private @Nullable HistorySyncView mView;
     private final HistorySyncMediator mMediator;
     private boolean mUseLandscapeLayout;
-    private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     /**
      * Creates an instance of {@link HistorySyncCoordinator} and shows the sign-in bottom sheet.
@@ -56,12 +62,12 @@ public class HistorySyncCoordinator {
             Activity activity,
             HistorySyncDelegate delegate,
             Profile profile,
+            HistorySyncConfig config,
             @SigninAccessPoint int accessPoint,
             boolean showEmailInFooter,
             boolean shouldSignOutOnDecline,
             @Nullable HistorySyncView view) {
         mActivity = activity;
-        mDelegate = delegate;
         mProfile = profile;
         mView = view;
 
@@ -71,6 +77,7 @@ public class HistorySyncCoordinator {
                         activity,
                         delegate,
                         profile,
+                        config,
                         accessPoint,
                         showEmailInFooter,
                         shouldSignOutOnDecline,
@@ -78,13 +85,13 @@ public class HistorySyncCoordinator {
 
         setView(view, mUseLandscapeLayout);
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Started", accessPoint, SigninAccessPoint.MAX);
+                "Signin.HistorySyncOptIn.Started", accessPoint, SigninAccessPoint.MAX_VALUE);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        assumeNonNull(signinManager);
+        IdentityManager identityManager = signinManager.getIdentityManager();
         MinorModeHelper.resolveMinorMode(
-                IdentityServicesProvider.get().getSigninManager(mProfile).getIdentityManager(),
-                IdentityServicesProvider.get()
-                        .getSigninManager(mProfile)
-                        .getIdentityManager()
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN),
+                identityManager,
+                assumeNonNull(identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)),
                 mMediator::onMinorModeRestrictionStatusUpdated);
     }
 
@@ -93,7 +100,7 @@ public class HistorySyncCoordinator {
         mMediator.destroy();
     }
 
-    public HistorySyncView getView() {
+    public @Nullable HistorySyncView getView() {
         return mView;
     }
 

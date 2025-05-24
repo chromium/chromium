@@ -39,7 +39,6 @@ enum HttpssvcDnsRcode TranslateDnsRcodeForHttpssvcExperiment(uint8_t rcode) {
     default:
       return HttpssvcDnsRcode::kUnrecognizedRcode;
   }
-  NOTREACHED_IN_MIGRATION();
 }
 
 HttpssvcMetrics::HttpssvcMetrics(bool secure) : secure_(secure) {}
@@ -54,10 +53,6 @@ void HttpssvcMetrics::SaveForAddressQuery(base::TimeDelta resolve_time,
 
   if (rcode != HttpssvcDnsRcode::kNoError)
     disqualified_ = true;
-}
-
-void HttpssvcMetrics::SaveAddressQueryFailure() {
-  disqualified_ = true;
 }
 
 void HttpssvcMetrics::SaveForHttps(enum HttpssvcDnsRcode rcode,

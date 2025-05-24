@@ -103,31 +103,31 @@ void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
     if (auto it = autofill_fields.find(form_field_data_android->global_id());
         it != autofill_fields.end()) {
       const AutofillField* autofill_field = it->second;
-      std::vector<AutofillType> server_predictions;
+      std::vector<FieldType> server_predictions;
       for (const auto& prediction : autofill_field->server_predictions()) {
         server_predictions.emplace_back(
             ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
       }
-      form_field_data_android->UpdateAutofillTypes(
+      form_field_data_android->UpdateFieldTypes(
           FormFieldDataAndroid::FieldTypes(
-              AutofillType(autofill_field->heuristic_type()),
-              AutofillType(autofill_field->server_type()),
-              autofill_field->ComputedType(), std::move(server_predictions)));
+              autofill_field->heuristic_type(), autofill_field->server_type(),
+              autofill_field->ComputedType().ToStringView(),
+              std::move(server_predictions)));
     }
   }
 }
 
 void FormDataAndroid::UpdateFieldTypes(
-    const base::flat_map<FieldGlobalId, AutofillType>& types) {
+    const base::flat_map<FieldGlobalId, FieldType>& types) {
   for (const std::unique_ptr<FormFieldDataAndroid>& field : fields_) {
     auto it = types.find(field->global_id());
     if (it == types.end()) {
       continue;
     }
 
-    const AutofillType& new_type = it->second;
+    FieldType new_type = it->second;
     if (field->field_types() != new_type) {
-      field->UpdateAutofillTypes(FormFieldDataAndroid::FieldTypes(new_type));
+      field->UpdateFieldTypes(FormFieldDataAndroid::FieldTypes(new_type));
     }
   }
 }

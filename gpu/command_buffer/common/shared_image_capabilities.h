@@ -18,6 +18,14 @@ struct GPU_EXPORT SharedImageCapabilities {
   ~SharedImageCapabilities();
 
   bool supports_scanout_shared_images = false;
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows, overlays are in general not supported. However, in some cases
+  // they are supported for the software video frame use case in particular.
+  // This cap details whether that support is present.
+  bool supports_scanout_shared_images_for_software_video_frames = false;
+#endif
+
   bool supports_luminance_shared_images = false;
   bool supports_r16_shared_images = false;
   bool supports_native_nv12_mappable_shared_images = false;

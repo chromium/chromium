@@ -5,6 +5,7 @@
 #ifndef SERVICES_WEBNN_DML_TENSOR_IMPL_DML_H_
 #define SERVICES_WEBNN_DML_TENSOR_IMPL_DML_H_
 
+#include "services/webnn/d3d12_backend.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
 #include "services/webnn/webnn_tensor_impl.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
@@ -14,9 +15,25 @@
 
 namespace webnn::dml {
 
+class CommandQueue;
 class ContextImplDml;
 
-class TensorImplDml final : public WebNNTensorImpl {
+struct SharedFence final : public native::d3d12::WebNNSharedFence {
+  SharedFence(Microsoft::WRL::ComPtr<ID3D12Fence> fence, UINT64 fence_value);
+  ~SharedFence() override;
+
+  SharedFence(SharedFence&&);
+
+  // native::d3d12::WebNNSharedFence implementation
+  Microsoft::WRL::ComPtr<ID3D12Fence> GetD3D12Fence() const override;
+  uint64_t GetFenceValue() const override;
+
+  const Microsoft::WRL::ComPtr<ID3D12Fence> fence;
+  const uint64_t fence_value;
+};
+
+class TensorImplDml final : public WebNNTensorImpl,
+                            public native::d3d12::WebNNTensor {
  public:
   TensorImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
                 Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
@@ -39,9 +56,17 @@ class TensorImplDml final : public WebNNTensorImpl {
     return weak_factory_.GetWeakPtr();
   }
 
+  HRESULT WaitForExternalFenceAndReset(CommandQueue* command_queue);
+
  private:
   void ReadTensorImpl(ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
+
+  // native::d3d12::WebNNTensor implementation
+  bool BeginAccessWebNN(Microsoft::WRL::ComPtr<ID3D12Fence> wait_fence,
+                        uint64_t wait_fence_value) override;
+  std::unique_ptr<native::d3d12::WebNNSharedFence> EndAccessWebNN() override;
+  ID3D12Resource* GetD3D12Buffer() const override;
 
   // The D3D12 resource that holds the tensor data.
   // The buffer must always remain valid after creation and could outlive
@@ -53,6 +78,11 @@ class TensorImplDml final : public WebNNTensorImpl {
   // this buffer. Comparing it with the command queue's completed fence can
   // indicate whether commands have completed execution.
   uint64_t last_submission_fence_value_ = 0;
+
+  // Required input to `BeginAccessWebNN()` to resume WebNN execution after
+  // this fence is signaled. If no value, there is no need to wait for access to
+  // the tensor.
+  std::optional<SharedFence> wait_fence_external_;
 
   base::WeakPtrFactory<TensorImplDml> weak_factory_{this};
 };

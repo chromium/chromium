@@ -93,10 +93,6 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   // empty.
   static void PerformIsolateGlobalMicrotasksCheckpoint(v8::Isolate* isolate);
 
-  // Disables or enables all controlled frames.
-  void Disable();
-  void Enable();
-
   void AttachScheduler(FrameOrWorkerScheduler*);
   void DetachScheduler(FrameOrWorkerScheduler*);
 

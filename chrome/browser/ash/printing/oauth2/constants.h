@@ -12,15 +12,15 @@ namespace oauth2 {
 // This is the (internal) URL which the internet browser must be redirected to
 // to complete the authorization procedure. This URI does not point to a real
 // page.
-constexpr char kRedirectURI[] =
+inline constexpr char kRedirectURI[] =
     "https://chromeos.test/printing/oauth2/redirectURI";
 
 // When required, ChromeOS tries to register to Authorization Server with this
 // name.
-constexpr char kClientName[] = "ChromeOS";
+inline constexpr char kClientName[] = "ChromeOS";
 
 // Max number of parallel OAuth2 sessions with one Authorization Server.
-constexpr size_t kMaxNumberOfSessions = 8;
+inline constexpr size_t kMaxNumberOfSessions = 8;
 
 }  // namespace oauth2
 }  // namespace printing

@@ -6,6 +6,7 @@ import type {TestEntryInfo} from '../test_util.js';
 import {addEntries, ENTRIES, getCaller, openEntryChoosingWindow, pending, pollForChosenEntry, repeatUntil, sendBrowserTestCommand, sendTestMessage} from '../test_util.js';
 
 import {remoteCall} from './background.js';
+import {NO_ENTRIES_CHOSEN} from './choose_entry_const.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
@@ -107,12 +108,11 @@ async function openFileDialogClickOkButton(
 
   const entrySet = await setUpFileEntrySet(volume);
   const result = await remoteCall.openAndWaitForClosingDialog(
-                     {type: 'openFile'}, volume, entrySet, closer,
-                     useBrowserOpen) as Entry;
+      {type: 'openFile'}, volume, entrySet, closer, useBrowserOpen);
   // If the file is opened via the filesystem API, check the name matches.
   // Otherwise, the caller is responsible for verifying the returned URL.
   if (!useBrowserOpen) {
-    chrome.test.assertEq(name, result.name);
+    chrome.test.assertEq(name, result);
   }
 
   return result;
@@ -168,10 +168,9 @@ async function saveFileDialogClickOkButton(
   };
 
   const entrySet = await setUpFileEntrySet(volume);
-  const result =
-      await remoteCall.openAndWaitForClosingDialog(
-          {type: 'saveFile'}, volume, entrySet, closer, false) as Entry;
-  chrome.test.assertEq(name, result.name);
+  const result = await remoteCall.openAndWaitForClosingDialog(
+      {type: 'saveFile'}, volume, entrySet, closer, false);
+  chrome.test.assertEq(name, result);
 }
 
 /**
@@ -203,7 +202,7 @@ async function openFileDialogExpectOkButtonDisabled(
 
   const entrySet = await setUpFileEntrySet(volume);
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type}, volume, entrySet, closer));
 }
@@ -241,7 +240,7 @@ async function openFileDialogExpectEntryDimmed(
 
   const entrySet = await setUpFileEntrySet(volume);
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type}, volume, entrySet, closer));
 }
@@ -261,7 +260,7 @@ async function openFileDialogClickCancelButton(
 
   const entrySet = await setUpFileEntrySet(volume);
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'openFile'}, volume, entrySet, closer));
 }
@@ -281,7 +280,7 @@ async function openFileDialogSendEscapeKey(
 
   const entrySet = await setUpFileEntrySet(volume);
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'openFile'}, volume, entrySet, closer));
 }
@@ -567,8 +566,7 @@ export async function openMultiFileDialogDriveOfficeFile() {
   await directoryTree.navigateToPath('/My Drive');
 
   // Sort the file names so we can compare the array directly with the entries
-  // returned from pollForChosenEntry() without worrying about
-  // order.
+  // returned from pollForChosenEntry() without worrying about order.
   const selectFileNames = [
     ENTRIES.hello.nameText,
     ENTRIES.docxFile.nameText,
@@ -584,10 +582,8 @@ export async function openMultiFileDialogDriveOfficeFile() {
   const okButton = '.button-panel button.ok:enabled';
   await remoteCall.waitAndClickElement(appId, okButton);
 
-  const chosenEntries = ((await pollForChosenEntry(getCaller())) as Entry[])
-                            .map(entry => entry.name)
-                            .sort();
-  chrome.test.assertEq(selectFileNames, chosenEntries);
+  const chosenEntries = await pollForChosenEntry(getCaller());
+  chrome.test.assertEq(selectFileNames.toString(), chosenEntries);
 }
 
 /**
@@ -856,8 +852,7 @@ async function showSaveAndConfirmExpecting(
   await remoteCall.waitForElement(dialog, '#filename-input-textbox');
 
   await clickOkButtonExpectName(dialog, expectName, 'saveAs');
-  const entry = await pollForChosenEntry(caller) as Entry;
-  return entry.name;
+  return await pollForChosenEntry(caller);
 }
 
 /**

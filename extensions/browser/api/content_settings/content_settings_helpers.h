@@ -16,8 +16,8 @@ namespace content_settings_helpers {
 
 // Parses an extension match pattern and returns a corresponding
 // content settings pattern object.
-// If |pattern_str| is invalid or can't be converted to a content settings
-// pattern, |error| is set to the parsing error and an invalid pattern
+// If `pattern_str` is invalid or can't be converted to a content settings
+// pattern, `error` is set to the parsing error and an invalid pattern
 // is returned.
 ContentSettingsPattern ParseExtensionPattern(const std::string& pattern_str,
                                              std::string* error);

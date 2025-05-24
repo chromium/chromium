@@ -240,12 +240,9 @@ developer::SafetyCheckWarningReason GetSafetyCheckWarningReasonHelper(
   developer::SafetyCheckWarningReason acknowledged_reason =
       GetPrefAcknowledgeSafetyCheckWarningReason(extension,
                                                  ExtensionPrefs::Get(profile));
-  std::optional<CWSInfoService::CWSInfo> cws_info;
-  bool valid_cws_info = false;
-  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
-    cws_info = cws_info_service->GetCWSInfo(extension);
-    valid_cws_info = cws_info.has_value() && cws_info->is_present;
-  }
+  std::optional<CWSInfoService::CWSInfo> cws_info =
+      cws_info_service->GetCWSInfo(extension);
+  bool valid_cws_info = cws_info.has_value() && cws_info->is_present;
   if (unpublished_only) {
     if (valid_cws_info && cws_info->unpublished_long_ago) {
       top_warning_reason = developer::SafetyCheckWarningReason::kUnpublished;

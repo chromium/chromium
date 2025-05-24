@@ -17,12 +17,13 @@ source_set("system_storage") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
+    "//base",
     "//components/storage_monitor",
-    "//content/public/browser",
+    "//extensions/browser:browser_sources",
     "//extensions/browser/api/system_info",
     "//extensions/common/api",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [ "//content/public/browser" ]
 }

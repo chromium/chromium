@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <grit latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="values-af/autofill_strings.xml" lang="af" type="android" />
     <output filename="values-am/autofill_strings.xml" lang="am" type="android" />
@@ -175,6 +175,9 @@
     <messages fallback_to_english="true">
       <message name="IDS_AUTOFILL_POPUP_CONTENT_DESCRIPTION" desc="The text announced by the screen reader when the Autofill popup is shown.">
         Showing Autofill popup
+      </message>
+      <message name="IDS_AUTOFILL_LONG_PRESS_PASSKEY_OPTION" desc="The text of the fallback option triggering a passkey request when long-pressing on a Passkey-enabled text field.">
+        Use a passkey
       </message>
     </messages>
   </release>

@@ -12,7 +12,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/grit/branded_strings.h"
@@ -25,9 +24,10 @@
 #include "content/public/browser/web_ui.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/accessibility/caption_settings_dialog.h"
@@ -59,17 +59,16 @@ base::Value::List SortByDisplayName(
 namespace settings {
 
 CaptionsHandler::CaptionsHandler(PrefService* prefs) : prefs_(prefs) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   soda_available_ =
       base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  soda_available_ = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 CaptionsHandler::~CaptionsHandler() {
-  if (soda_available_)
+  if (soda_available_) {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  }
 }
 
 void CaptionsHandler::RegisterMessages() {
@@ -100,13 +99,15 @@ void CaptionsHandler::RegisterMessages() {
 }
 
 void CaptionsHandler::OnJavascriptAllowed() {
-  if (soda_available_)
+  if (soda_available_) {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
+  }
 }
 
 void CaptionsHandler::OnJavascriptDisallowed() {
-  if (soda_available_)
+  if (soda_available_) {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  }
 }
 
 void CaptionsHandler::HandleLiveCaptionSectionReady(
@@ -245,8 +246,9 @@ void CaptionsHandler::OnSodaInstalled(speech::LanguageCode language_code) {
     // early. We do not check for a matching language if multi-language is
     // enabled because we show all of the languages' download status in the UI,
     // even ones that are not currently selected.
-    if (!prefs::IsLanguageCodeForLiveCaption(language_code, prefs_))
+    if (!prefs::IsLanguageCodeForLiveCaption(language_code, prefs_)) {
       return;
+    }
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   }
 

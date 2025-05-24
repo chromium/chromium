@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CLIENT_PROVIDER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CLIENT_PROVIDER_H_
 
+#include <string>
+
+#include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefService;
@@ -39,7 +43,16 @@ class AutofillClientProvider : public KeyedService {
   bool uses_platform_autofill() const { return uses_platform_autofill_; }
 
  private:
+#if BUILDFLAG(IS_ANDROID)
+  // Posts a low-priority task to register the client in a synthetic field trial
+  // based on whether its package is still allowed to use a11y compat mode.
+  // Non-Android users are never affected by the configuration change.
+  void DelayRegisteringFieldTrialForA11yDeprecation();
+  void RegisterSyntheticFieldTrialForPackage(const std::string& package);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   const bool uses_platform_autofill_;
+  base::WeakPtrFactory<AutofillClientProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

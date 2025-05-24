@@ -22,9 +22,7 @@ class NfcPermissionContextAndroid : public NfcPermissionContext {
   friend class NfcPermissionContextTests;
 
   // NfcPermissionContext:
-  void NotifyPermissionSet(const PermissionRequestID& id,
-                           const GURL& requesting_origin,
-                           const GURL& embedding_origin,
+  void NotifyPermissionSet(const PermissionRequestData& request_data,
                            BrowserPermissionCallback callback,
                            bool persist,
                            ContentSetting content_setting,

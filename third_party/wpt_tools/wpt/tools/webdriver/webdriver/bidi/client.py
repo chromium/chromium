@@ -90,14 +90,17 @@ class BidiSession:
 
         # Modules.
         # For each module, have a property representing that module
+        self.bluetooth = modules.Bluetooth(self)
         self.browser = modules.Browser(self)
         self.browsing_context = modules.BrowsingContext(self)
+        self.emulation = modules.Emulation(self)
         self.input = modules.Input(self)
         self.network = modules.Network(self)
         self.permissions = modules.Permissions(self)
         self.script = modules.Script(self)
         self.session = modules.Session(self)
         self.storage = modules.Storage(self)
+        self.web_extension = modules.WebExtension(self)
 
     @property
     def event_loop(self):
@@ -195,7 +198,9 @@ class BidiSession:
                 exception = from_error_details(data["error"],
                                                data["message"],
                                                data.get("stacktrace"))
-                future.set_exception(exception)
+                # Only set the exception if the future is not cancelled.
+                if future.cancelled() is not True:
+                    future.set_exception(exception)
         elif data["type"] == "event":
             # This is an event
             assert isinstance(data["method"], str)

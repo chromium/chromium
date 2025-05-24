@@ -11,13 +11,13 @@
 @interface OtpInputDialogContent : NSObject
 
 // The title of the dialog.
-@property(nonatomic, strong) NSString* windowTitle;
+@property(nonatomic, copy) NSString* windowTitle;
 
 // The placeholder text to show in the empty textfield.
-@property(nonatomic, strong) NSString* textFieldPlaceholder;
+@property(nonatomic, copy) NSString* textFieldPlaceholder;
 
 // The text label for the confirm button.
-@property(nonatomic, strong) NSString* confirmButtonLabel;
+@property(nonatomic, copy) NSString* confirmButtonLabel;
 
 // TODO(b/324611600): Add footer link text message.
 

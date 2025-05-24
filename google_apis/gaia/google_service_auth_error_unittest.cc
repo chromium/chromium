@@ -19,7 +19,14 @@ TEST(GoogleServiceAuthErrorTest, State) {
     if (!GoogleServiceAuthError::IsValid(i))
       continue;
 
-    GoogleServiceAuthError error(i);
+    GoogleServiceAuthError error;
+    if (i == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidScope);
+    } else {
+      error = GoogleServiceAuthError(i);
+    }
     EXPECT_EQ(i, error.state());
     EXPECT_TRUE(error.error_message().empty());
 
@@ -78,6 +85,19 @@ TEST(GoogleServiceAuthErrorTest, FromInvalidGaiaCredentialsReason) {
             error.GetInvalidGaiaCredentialsReason());
   EXPECT_EQ("Invalid credentials (credentials rejected by server).",
             error.ToString());
+}
+
+TEST(GoogleServiceAuthErrorTest, FromScopeLimitedUnrecoverableErrorReason) {
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kAdminPolicyEnforced);
+  EXPECT_EQ(GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR,
+            error.state());
+  EXPECT_EQ(GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+                kAdminPolicyEnforced,
+            error.GetScopeLimitedUnrecoverableErrorReason());
+  EXPECT_EQ("OAuth scope error (admin policy enforced).", error.ToString());
 }
 
 TEST(GoogleServiceAuthErrorTest, AuthErrorNone) {

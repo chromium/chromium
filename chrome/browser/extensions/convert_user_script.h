@@ -7,7 +7,10 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
 
@@ -20,7 +23,7 @@ class Extension;
 
 // Wraps the specified user script in an extension. The extension is created
 // unpacked in the system temp dir. Returns a valid extension that the caller
-// should take ownership on success, or NULL and |error| on failure.
+// should take ownership on success, or NULL and `error` on failure.
 //
 // NOTE: This function does file IO and should not be called on the UI thread.
 // NOTE: The caller takes ownership of the directory at extension->path() on the

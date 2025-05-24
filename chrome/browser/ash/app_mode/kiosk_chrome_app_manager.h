@@ -8,6 +8,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/time/time.h"
@@ -48,6 +50,9 @@ extern const char kKioskExternalUpdateSuccessHistogram[];
 class KioskChromeAppManager : public KioskAppManagerBase,
                               public chromeos::ExternalCacheDelegate {
  public:
+  // A tuple with the path and version string of a CRX in the external cache.
+  using CachedCrxInfo = std::tuple<base::FilePath, std::string>;
+
   // Result of downloading primary app from ExternalCache. Should be in sync
   // with extensions::ExtensionDownloaderDelegate::Error. Used in UMA metrics.
   enum class PrimaryAppDownloadResult {
@@ -118,7 +123,7 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   ~KioskChromeAppManager() override;
 
   // Returns auto launcher app id or an empty string if there is none.
-  std::string GetAutoLaunchApp() const;
+  const std::string& GetAutoLaunchApp() const;
 
   // Returns the cached required platform version of the auto launch with
   // zero delay kiosk app.
@@ -130,7 +135,7 @@ class KioskChromeAppManager : public KioskAppManagerBase,
 
   // Gets app data for the given app id. Returns true if `app_id` is known and
   // `app` is populated. Otherwise, return false.
-  bool GetApp(const std::string& app_id, App* app) const;
+  std::optional<App> GetApp(const std::string& app_id) const;
 
   // Clears locally cached Gdata.
   void ClearAppData(const std::string& app_id);
@@ -149,11 +154,9 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // Returns true if the app is found in cache.
   bool HasCachedCrx(const std::string& app_id) const;
 
-  // Gets the path and version of the cached crx with `app_id`.
-  // Returns true if the app is found in cache.
-  bool GetCachedCrx(const std::string& app_id,
-                    base::FilePath* file_path,
-                    std::string* version) const;
+  // Returns the path and version of the cached CRX with `app_id`, or `nullopt`
+  // if the app is not found in cache.
+  std::optional<CachedCrxInfo> GetCachedCrx(std::string_view app_id) const;
 
   crosapi::mojom::AppInstallParams CreatePrimaryAppInstallData(
       const std::string& id) const;
@@ -209,7 +212,6 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   friend class GlobalManager;
   friend class ChromeAppKioskAppManagerTest;
   friend class KioskAutoLaunchViewsTest;
-  friend class KioskBaseTest;
 
   // Gets KioskAppData for the given app id.
   const KioskAppData* GetAppData(const std::string& app_id) const;

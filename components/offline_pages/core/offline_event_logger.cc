@@ -15,7 +15,7 @@ namespace offline_pages {
 OfflineEventLogger::OfflineEventLogger()
     : activities_(0), is_logging_(false), client_(nullptr) {}
 
-OfflineEventLogger::~OfflineEventLogger() {}
+OfflineEventLogger::~OfflineEventLogger() = default;
 
 void OfflineEventLogger::Clear() {
   activities_.clear();

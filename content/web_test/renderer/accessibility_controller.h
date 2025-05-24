@@ -63,7 +63,6 @@ class AccessibilityController {
   v8::Local<v8::Object> FocusedElement();
   v8::Local<v8::Object> RootElement();
   v8::Local<v8::Object> AccessibleElementById(const std::string& id);
-  bool CanCallAOMEventListeners() const;
   bool IsInstalled() { return elements_ != nullptr && ax_context_ != nullptr; }
 
   v8::Local<v8::Object> FindAccessibleElementByIdRecursive(

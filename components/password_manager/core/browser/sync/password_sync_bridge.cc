@@ -395,22 +395,6 @@ void PasswordSyncBridge::Init(
   base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError2",
                                 sync_metadata_read_error);
 
-  if (wipe_model_upon_sync_disabled_behavior_ ==
-          syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata &&
-      (!batch || !syncer::IsInitialSyncDone(
-                     batch->GetDataTypeState().initial_sync_state()))) {
-    // Since the model isn't initially tracking metadata, move away from
-    // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync
-    // is turned on later and back to off.
-    //
-    // Note that implementing this using IsInitialSyncDone(), instead of
-    // invoking IsTrackingMetadata() later, is more reliable, because the
-    // function cannot be trusted in ApplyDisableSyncChanges(), as it can
-    // return false negatives.
-    wipe_model_upon_sync_disabled_behavior_ =
-        syncer::WipeModelUponSyncDisabledBehavior::kNever;
-  }
-
   if (batch) {
     this->change_processor()->ModelReadyToSync(std::move(batch));
   }
@@ -740,7 +724,7 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
   metrics_util::LogPasswordSyncState(
       metrics_util::PasswordSyncState::kSyncingOk);
   if (password_store_sync_->IsAccountStore()) {
-    int password_count = base::ranges::count_if(
+    int password_count = std::ranges::count_if(
         entity_data,
         [](const std::unique_ptr<syncer::EntityChange>& entity_change) {
           return !entity_change->data()
@@ -753,10 +737,6 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     metrics_util::
         LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
             entity_data.size() - password_count);
-  } else {
-    base::UmaHistogramCustomCounts(
-        "PasswordManager.ProfileStore.TotalAccountsBeforeInitialSync",
-        key_to_local_specifics_map.size(), 0, 1000, 100);
   }
 
   sync_enabled_or_disabled_cb_.Run();
@@ -986,7 +966,7 @@ PasswordSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string PasswordSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_password())
       << "EntityData does not have password specifics.";
 
@@ -995,10 +975,16 @@ std::string PasswordSyncBridge::GetClientTag(
 }
 
 std::string PasswordSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
-  NOTREACHED_IN_MIGRATION()
-      << "PasswordSyncBridge does not support GetStorageKey.";
-  return std::string();
+    const syncer::EntityData& entity_data) const {
+  NOTREACHED() << "PasswordSyncBridge does not support GetStorageKey.";
+}
+
+bool PasswordSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_password());
+  // GetClientTag() always returns a non-empty string.
+  CHECK(!GetClientTag(entity_data).empty());
+  return true;
 }
 
 bool PasswordSyncBridge::SupportsGetStorageKey() const {
@@ -1017,14 +1003,6 @@ void PasswordSyncBridge::ApplyDisableSyncChanges(
           syncer::PASSWORDS);
       sync_enabled_or_disabled_cb_.Run();
       return;
-    case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
-      CHECK(!password_store_sync_->IsAccountStore());
-      // Wipe the model data this once, and flip the behavior to kNever so it
-      // doesn't get wiped again.
-      syncer::SyncRecordModelClearedOnceHistogram(syncer::PASSWORDS);
-      wipe_model_upon_sync_disabled_behavior_ =
-          syncer::WipeModelUponSyncDisabledBehavior::kNever;
-      break;
     case syncer::WipeModelUponSyncDisabledBehavior::kAlways:
       CHECK(password_store_sync_->IsAccountStore());
       break;

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_METRICS_RECORDER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_METRICS_RECORDER_H_
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -45,9 +45,18 @@ class AddSupervisionMetricsRecorder {
   // Records UMA metrics for users going through the Add Supervision process.
   void RecordAddSupervisionEnrollment(EnrollmentState action);
 
-  // Method intended for testing purposes only.
-  // Set clock used for timing to enable manipulation during tests.
-  void SetClockForTesting(const base::TickClock* tick_clock);
+  // For testing purposes only: RAII helper to set the clock to a dummy clock
+  // for testing, and restore the original clock afterwards.
+  class ScopedClockForTesting {
+   public:
+    ScopedClockForTesting(AddSupervisionMetricsRecorder& recorder,
+                          const base::TickClock& clock);
+    ~ScopedClockForTesting();
+
+   private:
+    raw_ref<AddSupervisionMetricsRecorder> recorder_;
+    raw_ref<const base::TickClock> original_clock_;
+  };
 
  private:
   AddSupervisionMetricsRecorder();
@@ -57,12 +66,9 @@ class AddSupervisionMetricsRecorder {
   void RecordUserTime(const char* metric_name) const;
 
   // Points to the base::DefaultTickClock by default.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
-  RAW_PTR_EXCLUSION const base::TickClock* clock_;
+  raw_ref<const base::TickClock> clock_;
 
   // Records when the user initiates the Add Supervision process.
   base::TimeTicks start_time_;
 };
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_METRICS_RECORDER_H_

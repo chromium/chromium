@@ -19,11 +19,6 @@ bool IsSaveToDriveAvailable(bool is_incognito,
                             signin::IdentityManager* identity_manager,
                             drive::DriveService* drive_service,
                             PrefService* pref_service) {
-  // Check flag.
-  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    return false;
-  }
-
   // Check if DriveService is supported.
   if (!drive_service || !drive_service->IsSupported()) {
     return false;

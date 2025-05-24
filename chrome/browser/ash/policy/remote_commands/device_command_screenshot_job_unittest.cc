@@ -118,16 +118,17 @@ scoped_refptr<base::RefCountedBytes> GenerateTestPNG(const int& width,
       *bmp.getAddr32(x, y) = background_color;
     }
   }
-  scoped_refptr<base::RefCountedBytes> png_bytes(new base::RefCountedBytes());
-  gfx::PNGCodec::ColorFormat color_format = gfx::PNGCodec::FORMAT_RGBA;
-  if (!gfx::PNGCodec::Encode(
-          reinterpret_cast<const unsigned char*>(bmp.getPixels()), color_format,
-          gfx::Size(bmp.width(), bmp.height()),
-          static_cast<int>(bmp.rowBytes()), false,
-          std::vector<gfx::PNGCodec::Comment>(), &png_bytes->as_vector())) {
+  std::optional<std::vector<uint8_t>> png_bytes = gfx::PNGCodec::Encode(
+      reinterpret_cast<const unsigned char*>(bmp.getPixels()),
+      gfx::PNGCodec::FORMAT_RGBA, gfx::Size(bmp.width(), bmp.height()),
+      static_cast<int>(bmp.rowBytes()), false,
+      std::vector<gfx::PNGCodec::Comment>());
+  if (!png_bytes) {
     LOG(ERROR) << "Failed to encode image";
+    return base::MakeRefCounted<base::RefCountedBytes>();
   }
-  return png_bytes;
+  return base::MakeRefCounted<base::RefCountedBytes>(
+      std::move(png_bytes).value());
 }
 
 class FakeScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {

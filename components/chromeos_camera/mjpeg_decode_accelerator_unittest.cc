@@ -133,8 +133,9 @@ struct ParsedJpegImage {
     // Encode the generated image in the JPEG format, the output buffer will be
     // automatically resized while encoding.
     constexpr int kJpegQuality = 100;
-    std::vector<unsigned char> encoded;
-    LOG_ASSERT(gfx::JPEGCodec::Encode(src, kJpegQuality, downsample, &encoded));
+    std::optional<std::vector<uint8_t>> encoded =
+        gfx::JPEGCodec::Encode(src, kJpegQuality, downsample);
+    LOG_ASSERT(encoded.has_value());
 
     base::FilePath filename;
     LOG_ASSERT(base::GetTempDir(&filename));
@@ -142,7 +143,8 @@ struct ParsedJpegImage {
         filename.Append(base::StringPrintf("black-%dx%d.jpg", width, height));
 
     auto image = std::make_unique<ParsedJpegImage>(filename);
-    image->data_str.append(encoded.begin(), encoded.end());
+    image->data_str =
+        std::string(base::as_string_view(std::move(encoded).value()));
     image->InitializeSizes(width, height);
     return image;
   }
@@ -340,8 +342,9 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
     return nullptr;
   }
 
+  auto native_pixmap_handle = gmb_handle.Clone().native_pixmap_handle();
   const size_t num_planes = media::VideoFrame::NumPlanes(format);
-  if (gmb_handle.native_pixmap_handle.planes.size() != num_planes) {
+  if (native_pixmap_handle.planes.size() != num_planes) {
     LOG(ERROR) << "The number of planes of NativePixmapHandle doesn't match "
                   "the pixel format";
     return nullptr;
@@ -353,7 +356,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
     return nullptr;
   }
   for (size_t i = 0; i < num_planes; i++) {
-    gfx::NativePixmapPlane& plane = gmb_handle.native_pixmap_handle.planes[i];
+    gfx::NativePixmapPlane& plane = native_pixmap_handle.planes[i];
     memset(gmb->memory(i), 0, plane.size);
   }
   gmb->Unmap();
@@ -362,7 +365,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
   std::vector<media::ColorPlaneLayout> planes;
   std::vector<base::ScopedFD> dmabuf_fds;
   for (size_t i = 0; i < num_planes; i++) {
-    gfx::NativePixmapPlane& plane = gmb_handle.native_pixmap_handle.planes[i];
+    gfx::NativePixmapPlane& plane = native_pixmap_handle.planes[i];
     planes.emplace_back(base::checked_cast<int32_t>(plane.stride),
                         base::checked_cast<size_t>(plane.offset),
                         base::checked_cast<size_t>(plane.size));
@@ -372,14 +375,15 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
       media::VideoFrameLayout::CreateWithPlanes(
           format, coded_size, std::move(planes),
           media::VideoFrameLayout::kBufferAddressAlignment,
-          gmb_handle.native_pixmap_handle.modifier);
+          native_pixmap_handle.modifier);
   if (!layout) {
     LOG(ERROR) << "Failed to create VideoFrameLayout";
     return nullptr;
   }
 
-  if (backing_gmb)
+  if (backing_gmb) {
     *backing_gmb = std::move(gmb);
+  }
 
   return media::VideoFrame::WrapExternalDmabufs(
       *layout, gfx::Rect(visible_size), visible_size, std::move(dmabuf_fds),
@@ -436,12 +440,13 @@ base::ScopedFD MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufFd(
     LOG(ERROR) << "The GpuMemoryBufferHandle doesn't have type NATIVE_PIXMAP";
     return base::ScopedFD();
   }
-  if (gmb_handle.native_pixmap_handle.planes.size() != 1) {
+  auto native_pixmap_handle = std::move(gmb_handle).native_pixmap_handle();
+  if (native_pixmap_handle.planes.size() != 1) {
     LOG(ERROR) << "The number of planes of NativePixmapHandle is not 1 for R_8 "
                   "format";
     return base::ScopedFD();
   }
-  if (gmb_handle.native_pixmap_handle.planes[0].offset != 0) {
+  if (native_pixmap_handle.planes[0].offset != 0) {
     LOG(ERROR) << "The memory offset is not zero";
     return base::ScopedFD();
   }
@@ -454,7 +459,7 @@ base::ScopedFD MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufFd(
   memcpy(gmb->memory(0), data, size);
   gmb->Unmap();
 
-  return std::move(gmb_handle.native_pixmap_handle.planes[0].fd);
+  return std::move(native_pixmap_handle.planes[0].fd);
 }
 
 std::vector<media::VideoPixelFormat>
@@ -601,7 +606,7 @@ JpegClient::JpegClient(
       use_dmabuf_(use_dmabuf),
       skip_result_checking_(skip_result_checking) {}
 
-JpegClient::~JpegClient() {}
+JpegClient::~JpegClient() = default;
 
 void JpegClient::CreateJpegDecoder() {
   decoder_ = nullptr;
@@ -776,18 +781,16 @@ void JpegClient::SaveToFile(int32_t task_id,
   LOG_ASSERT(conversion_status == 0);
 
   // Save as a PNG.
-  std::vector<uint8_t> png_output;
-  const bool png_encode_status = gfx::PNGCodec::Encode(
+  std::optional<std::vector<uint8_t>> png_output = gfx::PNGCodec::Encode(
       argb_out_frame->visible_data(media::VideoFrame::Plane::kARGB),
       gfx::PNGCodec::FORMAT_BGRA, argb_out_frame->visible_rect().size(),
       argb_out_frame->stride(media::VideoFrame::Plane::kARGB),
-      true, /* discard_transparency */
-      std::vector<gfx::PNGCodec::Comment>(), &png_output);
-  LOG_ASSERT(png_encode_status);
+      /*discard_transparency=*/true, std::vector<gfx::PNGCodec::Comment>());
+  LOG_ASSERT(png_output.has_value());
   const base::FilePath in_filename(task.image->filename());
   const base::FilePath out_filename =
       in_filename.ReplaceExtension(".png").InsertBeforeExtension(suffix);
-  const bool success = base::WriteFile(out_filename, png_output);
+  const bool success = base::WriteFile(out_filename, png_output.value());
   LOG_ASSERT(success);
 }
 

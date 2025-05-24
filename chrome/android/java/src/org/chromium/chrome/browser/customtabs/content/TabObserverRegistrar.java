@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.customtabs.content;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
@@ -21,8 +20,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 /**
  * Adds and removes the given {@link PageLoadMetrics.Observer}s and {@link TabObserver}s to Tabs as
  * they enter/leave the TabModel. These managed TabObservers will listen to Tab lifecycle events for
@@ -32,7 +29,6 @@ import javax.inject.Inject;
  * Different than the regular managed {@link TabObserver}, this new type of observer will only
  * attach to the current active tab.
  */
-@ActivityScope
 public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     private CustomTabActivityTabProvider mTabProvider;
     private final Set<PageLoadMetrics.Observer> mPageLoadMetricsObservers = new HashSet<>();
@@ -73,6 +69,8 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
                     }
                 }
             };
+
+    public TabObserverRegistrar() {}
 
     /** Registers a {@link PageLoadMetrics.Observer} to be managed by this Registrar. */
     public void registerPageLoadMetricsObserver(PageLoadMetrics.Observer observer) {
@@ -119,8 +117,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
         }
     }
 
-    @Inject
-    public TabObserverRegistrar(
+    public void associateWithActivity(
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CustomTabActivityTabProvider tabProvider) {
         mTabProvider = tabProvider;

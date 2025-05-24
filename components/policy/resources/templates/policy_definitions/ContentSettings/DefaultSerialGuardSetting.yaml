@@ -9,6 +9,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
+- android
 - fuchsia
 items:
 - caption: Do not allow any site to request access to serial ports via the Serial

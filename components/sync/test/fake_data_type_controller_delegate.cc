@@ -59,12 +59,18 @@ int FakeDataTypeControllerDelegate::clear_metadata_count() const {
   return clear_metadata_count_;
 }
 
+void FakeDataTypeControllerDelegate::SetNodesForDebugging(
+    base::Value::List nodes) {
+  all_nodes_for_debugging_ = std::move(nodes);
+}
+
 void FakeDataTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,
     StartCallback callback) {
   sync_started_ = true;
 
   error_handler_ = request.error_handler;
+  previously_syncing_gaia_id_info_ = request.previously_syncing_gaia_id_info;
 
   // If the model has already experienced the error, report it immediately.
   if (model_error_) {
@@ -92,14 +98,14 @@ void FakeDataTypeControllerDelegate::OnSyncStopping(
   sync_started_ = false;
 }
 
-void FakeDataTypeControllerDelegate::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
+void FakeDataTypeControllerDelegate::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  std::move(callback).Run(/*count=*/0);
 }
 
 void FakeDataTypeControllerDelegate::GetAllNodesForDebugging(
     DataTypeControllerDelegate::AllNodesCallback callback) {
-  std::move(callback).Run(type_, base::Value::List());
+  std::move(callback).Run(all_nodes_for_debugging_.Clone());
 }
 
 void FakeDataTypeControllerDelegate::RecordMemoryUsageAndCountsHistograms() {}

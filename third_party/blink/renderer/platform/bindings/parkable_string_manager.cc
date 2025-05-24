@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
@@ -183,8 +184,19 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
   ScheduleAgingTaskIfNeeded();
 
   auto string_impl = string;
-  if (!digest)
+  if (!digest) {
     digest = ParkableStringImpl::HashString(string_impl.get());
+  } else {
+#if DCHECK_IS_ON()
+    // Verify that the provided hash is the same that we would have computed.
+    // Otherwise the lookups below would not correctly deduplicate strings.
+    std::unique_ptr<ParkableStringImpl::SecureDigest> expected_digest =
+        ParkableStringImpl::HashString(string_impl.get());
+    base::span<const uint8_t> expected_span(*expected_digest);
+    base::span<const uint8_t> provided_span(*digest);
+    CHECK_EQ(expected_span, provided_span);
+#endif  // DCHECK_IS_ON()
+  }
   DCHECK(digest.get());
 
   auto it = unparked_strings_.find(digest.get());
@@ -377,7 +389,8 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
   }
 }
 
-void ParkableStringManager::AgeStringsAndPark() {
+void ParkableStringManager::AgeStringsAndPark(
+    base::MemoryReductionTaskContext context) {
   DCHECK(CompressionEnabled());
   has_pending_aging_task_ = false;
 
@@ -386,6 +399,14 @@ void ParkableStringManager::AgeStringsAndPark() {
   }
 
   TRACE_EVENT0("blink", "ParkableStringManager::AgeStringsAndPark");
+
+  if (context == base::MemoryReductionTaskContext::kProactive) {
+    ParkAll(ParkableStringImpl::ParkingMode::kCompressThenToDisk);
+    // Don't reschedule, because we don't want to cause any further task
+    // execution.
+    return;
+  }
+
   auto unparked = EnumerateStrings(unparked_strings_);
   auto parked = EnumerateStrings(parked_strings_);
 
@@ -434,8 +455,8 @@ void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
     first_string_aging_was_delayed_ = true;
   }
 
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
+  PostDelayedMemoryReductionTask(
+      task_runner_, FROM_HERE,
       base::BindOnce(&ParkableStringManager::AgeStringsAndPark,
                      base::Unretained(this)),
       delay);
@@ -462,7 +483,7 @@ ParkableStringManager::Statistics ParkableStringManager::ComputeStatistics()
     size_t size = str->CharactersSizeInBytes();
     stats.original_size += size;
     stats.uncompressed_size += size;
-    stats.metadata_size += kParkableStringImplActualSize;
+    stats.metadata_size += kParkableStringImplActualSize + sizeof(StringImpl);
 
     if (str->has_compressed_data())
       stats.overhead_size += str->compressed_size();
@@ -476,7 +497,7 @@ ParkableStringManager::Statistics ParkableStringManager::ComputeStatistics()
     // computations to be consistent, hence the DCHECK().
     size_t memory_footprint =
         (str->has_compressed_data() ? str->compressed_size() : 0) + size +
-        kParkableStringImplActualSize;
+        kParkableStringImplActualSize + sizeof(StringImpl);
     DCHECK_EQ(memory_footprint, str->MemoryFootprintForDump());
   }
 

@@ -142,13 +142,13 @@ TEST_F(AppListItemViewTest, NewInstallDot) {
   views::View* new_install_dot = GetNewInstallDot(item_view);
   ASSERT_TRUE(new_install_dot);
   EXPECT_FALSE(new_install_dot->GetVisible());
-  EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz");
+  EXPECT_EQ(item_view->GetRenderedTooltipText({}), u"Google Buzz");
   EXPECT_EQ(item_view->GetViewAccessibility().GetCachedDescription(), u"");
 
   // When the app is a new install the dot is visible and the tooltip changes.
   item->SetIsNewInstall(true);
   EXPECT_TRUE(new_install_dot->GetVisible());
-  EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz\nNew install");
+  EXPECT_EQ(item_view->GetRenderedTooltipText({}), u"Google Buzz\nNew install");
 
   EXPECT_EQ(item_view->GetViewAccessibility().GetCachedDescription(),
             l10n_util::GetStringUTF16(
@@ -521,6 +521,77 @@ TEST_F(AppListItemViewTest, FolderItemAccessibleDescription) {
   EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(),
             l10n_util::GetPluralStringFUTF16(
                 IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION, 2));
+}
+
+TEST_F(AppListItemViewTest, AppListItemViewTooltipText) {
+  AppListItem* item = CreateAppListItem("Tooltip");
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+  views::View* new_install_dot = GetNewInstallDot(view);
+  ASSERT_TRUE(new_install_dot);
+  EXPECT_FALSE(new_install_dot->GetVisible());
+
+  // Initially default tooltip is not used.
+  EXPECT_EQ(view->GetRenderedTooltipText(gfx::Point()), u"");
+
+  view->title()->SetCustomTooltipText(u"Sample Text");
+
+  EXPECT_EQ(view->GetRenderedTooltipText(gfx::Point()), u"Sample Text");
+
+  // When the app is a new install the dot is visible and the tooltip changes.
+  item->SetIsNewInstall(true);
+  EXPECT_TRUE(new_install_dot->GetVisible());
+  EXPECT_EQ(
+      view->GetRenderedTooltipText(gfx::Point()),
+      l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, u"Sample Text"));
+}
+
+TEST_F(AppListItemViewTest, AppListItemViewTooltipTextAccessibility) {
+  AppListItem* item = CreateAppListItem("Tooltip");
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+  views::View* new_install_dot = GetNewInstallDot(view);
+  ASSERT_TRUE(new_install_dot);
+  EXPECT_FALSE(new_install_dot->GetVisible());
+
+  ui::AXNodeData data;
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            view->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            view->GetRenderedTooltipText(gfx::Point()));
+
+  view->title()->SetCustomTooltipText(u"Sample Text");
+
+  data = ui::AXNodeData();
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            view->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            view->GetRenderedTooltipText(gfx::Point()));
+
+  // When the app is a new install the dot is visible and the tooltip changes.
+  item->SetIsNewInstall(true);
+  EXPECT_TRUE(new_install_dot->GetVisible());
+  data = ui::AXNodeData();
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            view->GetRenderedTooltipText(gfx::Point()));
+  // Description itself changes during new installation so tooltip info is not
+  // used.
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            view->GetRenderedTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION));
 }
 
 TEST_F(AppListItemViewTest, UpdateProgressOnPromiseIcon) {

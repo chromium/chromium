@@ -13,8 +13,9 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/component_export.h"
+#include "base/containers/span.h"
 #include "ui/gfx/geometry/double4.h"
-#include "ui/gfx/geometry/geometry_skia_export.h"
 
 namespace gfx {
 
@@ -39,7 +40,7 @@ struct DecomposedTransform;
 // The components correspond to the DOMMatrix mij (i,j = 1..4) components:
 //   i = col + 1
 //   j = row + 1
-class GEOMETRY_SKIA_EXPORT Matrix44 {
+class COMPONENT_EXPORT(GEOMETRY_SKIA) Matrix44 {
  public:
   enum UninitializedTag { kUninitialized };
 
@@ -65,8 +66,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
     return AllTrue(Col(0) == other.Col(0)) && AllTrue(Col(1) == other.Col(1)) &&
            AllTrue(Col(2) == other.Col(2)) && AllTrue(Col(3) == other.Col(3));
   }
-  bool operator!=(const Matrix44& other) const { return !(other == *this); }
-
   // Returns true if the matrix is identity.
   bool IsIdentity() const { return *this == Matrix44(); }
 
@@ -157,7 +156,7 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   // this = this * |0    1    skew[2] 0|
   //               |0    0      1     0|
   //               |0    0      0     1|
-  void ApplyDecomposedSkews(const double skews[3]);
+  void ApplyDecomposedSkews(base::span<const double, 3> skews);
 
   // this = this * perspective.
   void ApplyPerspectiveDepth(double perspective);

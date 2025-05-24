@@ -416,6 +416,34 @@ TEST_P(GoogleURLLoaderThrottleTest, EmptyBoundSessionThrottlerParams) {
       /*expect_defer=*/false, kGoogleSubdomainURL);
 }
 
+TEST_F(GoogleURLLoaderThrottleTest, InterceptRequestWithSameOriginCredsMode) {
+  ConfigureBoundSessionThrottlerParams("google.com", "/", base::Time::Min());
+  bool defer = false;
+  network::ResourceRequest request;
+  request.url = kTestGoogleURL;
+  request.credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
+  throttle()->WillStartRequest(&request, &defer);
+  EXPECT_TRUE(defer);
+  EXPECT_TRUE(bound_session_handler()->IsRequestBlocked());
+  UnblockRequestAndVerifyCallbackAction(
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume);
+
+  // Subsequent redirects should be intercepted as well.
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = kTestGoogleURL;
+  network::mojom::URLResponseHead response_head;
+  std::vector<std::string> to_be_removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  net::HttpRequestHeaders modified_cors_exempt_headers;
+  throttle()->WillRedirectRequest(&redirect_info, response_head, &defer,
+                                  &to_be_removed_headers, &modified_headers,
+                                  &modified_cors_exempt_headers);
+  EXPECT_TRUE(defer);
+  EXPECT_TRUE(bound_session_handler()->IsRequestBlocked());
+  UnblockRequestAndVerifyCallbackAction(
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume);
+}
+
 TEST_F(GoogleURLLoaderThrottleTest, NoInterceptRequestWithSendCookiesFalse) {
   ConfigureBoundSessionThrottlerParams("google.com", "/", base::Time::Min());
   bool defer = false;

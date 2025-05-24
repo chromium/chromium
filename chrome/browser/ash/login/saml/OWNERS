@@ -4,4 +4,4 @@ xiyuan@chromium.org
 # (in CET)
 file://ash/login/SAML_INTEGRATION_OWNERS
 
-per-file *security_token*=emaxx@chromium.org
+per-file *security_token*=file://chrome/browser/certificate_provider/OWNERS

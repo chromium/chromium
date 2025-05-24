@@ -8,7 +8,7 @@ namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
-FakeBrightnessMonitor::FakeBrightnessMonitor() {}
+FakeBrightnessMonitor::FakeBrightnessMonitor() = default;
 
 FakeBrightnessMonitor::~FakeBrightnessMonitor() = default;
 

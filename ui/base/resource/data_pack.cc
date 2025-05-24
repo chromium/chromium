@@ -28,6 +28,8 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/synchronization/lock.h"
+#include "base/types/expected_macros.h"
+#include "build/build_config.h"
 #include "net/filter/gzip_header.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -76,14 +78,6 @@ void MaybePrintResourceId(uint16_t resource_id) {
   }
 }
 
-bool MmapHasGzipHeader(const base::MemoryMappedFile* mmap) {
-  net::GZipHeader header;
-  const char* header_end = nullptr;
-  net::GZipHeader::Status header_status = header.ReadMore(
-      reinterpret_cast<const char*>(mmap->data()), mmap->length(), &header_end);
-  return header_status == net::GZipHeader::COMPLETE_HEADER;
-}
-
 }  // namespace
 
 namespace ui {
@@ -106,8 +100,8 @@ void DataPack::Iterator::UpdateResourceData() {
   const Entry* const next_entry = entry_ + 1;
   resource_data_ = new ResourceData(
       entry_->resource_id,
-      GetStringPieceFromOffset(entry_->file_offset, next_entry->file_offset,
-                               data_source_));
+      GetStringViewFromOffset(entry_->file_offset, next_entry->file_offset,
+                              data_source_));
 }
 
 DataPack::Iterator DataPack::begin() const {
@@ -189,9 +183,23 @@ DataPack::DataPack(ResourceScaleFactor resource_scale_factor)
 DataPack::~DataPack() {
 }
 
+namespace {
+
+#if BUILDFLAG(IS_WIN)
+inline DWORD GetLastErrorOrErrno() {
+  return ::GetLastError();
+}
+#else
+inline int GetLastErrorOrErrno() {
+  return errno;
+}
+#endif
+
+}  // namespace
+
 // static
-std::unique_ptr<DataPack::DataSource> DataPack::LoadFromPathInternal(
-    const base::FilePath& path) {
+base::expected<std::unique_ptr<DataPack::DataSource>, DataPack::ErrorState>
+DataPack::LoadFromPathInternal(const base::FilePath& path) {
   std::unique_ptr<base::MemoryMappedFile> mmap =
       std::make_unique<base::MemoryMappedFile>();
   // Open the file for reading; allowing other consumers to also open it for
@@ -200,33 +208,43 @@ std::unique_ptr<DataPack::DataSource> DataPack::LoadFromPathInternal(
                                  base::File::FLAG_WIN_EXCLUSIVE_WRITE |
                                  base::File::FLAG_WIN_SHARE_DELETE);
   if (!data_file.IsValid()) {
-    DLOG(ERROR) << "Failed to open datapack with base::File::Error "
-                << data_file.error_details();
-    return nullptr;
+    const auto error = GetLastErrorOrErrno();
+    DPLOG(ERROR) << "Failed to open datapack";
+    return base::unexpected(
+        ErrorState{FailureReason::kOpenFile, error, data_file.error_details()});
   }
   if (!mmap->Initialize(std::move(data_file))) {
-    DLOG(ERROR) << "Failed to mmap datapack";
-    return nullptr;
+    const auto error = GetLastErrorOrErrno();
+    DPLOG(ERROR) << "Failed to mmap datapack";
+    return base::unexpected(ErrorState{FailureReason::kMapFile, error});
   }
-  if (MmapHasGzipHeader(mmap.get())) {
+  if (net::GZipHeader::HasGZipHeader(mmap->bytes())) {
     std::string_view compressed(reinterpret_cast<char*>(mmap->data()),
                                 mmap->length());
     std::string data;
     if (!compression::GzipUncompress(compressed, &data)) {
+      const auto error = GetLastErrorOrErrno();
       LOG(ERROR) << "Failed to unzip compressed datapack: " << path;
-      return nullptr;
+      return base::unexpected(ErrorState{FailureReason::kUnzip, error});
     }
-    return std::make_unique<StringDataSource>(std::move(data));
+    return base::ok(std::make_unique<StringDataSource>(std::move(data)));
   }
-  return std::make_unique<MemoryMappedDataSource>(std::move(mmap));
+  return base::ok(std::make_unique<MemoryMappedDataSource>(std::move(mmap)));
 }
 
 bool DataPack::LoadFromPath(const base::FilePath& path) {
-  std::unique_ptr<DataSource> data_source = LoadFromPathInternal(path);
-  if (!data_source)
-    return false;
+  return LoadFromPathWithError(path).has_value();
+}
 
-  return LoadImpl(std::move(data_source));
+base::expected<void, DataPack::ErrorState> DataPack::LoadFromPathWithError(
+    const base::FilePath& path) {
+  std::unique_ptr<DataPack::DataSource> data_source;
+  ASSIGN_OR_RETURN(data_source, LoadFromPathInternal(path));
+  RETURN_IF_ERROR(LoadImpl(std::move(data_source)),
+                  [](DataPack::FailureReason failure_reason) {
+                    return ErrorState{failure_reason};
+                  });
+  return base::ok();
 }
 
 bool DataPack::LoadFromFile(base::File file) {
@@ -244,16 +262,18 @@ bool DataPack::LoadFromFileRegion(
     mmap.reset();
     return false;
   }
-  return LoadImpl(std::make_unique<MemoryMappedDataSource>(std::move(mmap)));
+  return LoadImpl(std::make_unique<MemoryMappedDataSource>(std::move(mmap)))
+      .has_value();
 }
 
 bool DataPack::LoadFromBuffer(base::span<const uint8_t> buffer) {
-  return LoadImpl(std::make_unique<BufferDataSource>(buffer));
+  return LoadImpl(std::make_unique<BufferDataSource>(buffer)).has_value();
 }
 
-bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
-                                                   const uint8_t* data,
-                                                   size_t data_length) {
+base::expected<void, DataPack::FailureReason>
+DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
+                                              const uint8_t* data,
+                                              size_t data_length) {
   // 1) Check we have enough entries. There's an extra entry after the last item
   // which gives the length of the last item.
   size_t resource_table_size = (resource_count_ + 1) * sizeof(Entry);
@@ -266,7 +286,7 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
                << " bytes, expected longer than "
                << margin_to_skip + resource_table_size + alias_table_size
                << " bytes.";
-    return false;
+    return base::unexpected(FailureReason::kTooShort);
   }
 
   resource_table_ = reinterpret_cast<const Entry*>(&data[margin_to_skip]);
@@ -279,7 +299,7 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
     if (resource_table_[i].file_offset > data_length) {
       LOG(ERROR) << "Data pack file corruption: "
                  << "Entry #" << i << " past end.";
-      return false;
+      return base::unexpected(FailureReason::kBoundsExceeded);
     }
   }
 
@@ -288,7 +308,7 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
     if (resource_table_[i].file_offset > resource_table_[i + 1].file_offset) {
       LOG(ERROR) << "Data pack file corruption: " << "Entry #" << i + 1
                  << " before Entry #" << i << ".";
-      return false;
+      return base::unexpected(FailureReason::kOrderingViolation);
     }
   }
 
@@ -297,14 +317,15 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
     if (alias_table_[i].entry_index >= resource_count_) {
       LOG(ERROR) << "Data pack file corruption: "
                  << "Alias #" << i << " past end.";
-      return false;
+      return base::unexpected(FailureReason::kAliasTableCorrupt);
     }
   }
 
-  return true;
+  return base::ok();
 }
 
-bool DataPack::LoadImpl(std::unique_ptr<DataPack::DataSource> data_source) {
+base::expected<void, DataPack::FailureReason> DataPack::LoadImpl(
+    std::unique_ptr<DataPack::DataSource> data_source) {
   const uint8_t* data = data_source->GetData();
   size_t data_length = data_source->GetLength();
   // Parse the version and check for truncated header.
@@ -316,7 +337,7 @@ bool DataPack::LoadImpl(std::unique_ptr<DataPack::DataSource> data_source) {
       version == kFileFormatV4 ? kHeaderLengthV4 : kHeaderLengthV5;
   if (version == 0 || data_length < header_length) {
     DLOG(ERROR) << "Data pack file corruption: incomplete file header.";
-    return false;
+    return base::unexpected(FailureReason::kIncompleteHeader);
   }
 
   // Parse the header of the file.
@@ -332,22 +353,22 @@ bool DataPack::LoadImpl(std::unique_ptr<DataPack::DataSource> data_source) {
   } else {
     LOG(ERROR) << "Bad data pack version: got " << version << ", expected "
                << kFileFormatV4 << " or " << kFileFormatV5;
-    return false;
+    return base::unexpected(FailureReason::kBadPakVersion);
   }
 
   if (text_encoding_type_ != UTF8 && text_encoding_type_ != UTF16 &&
       text_encoding_type_ != BINARY) {
     LOG(ERROR) << "Bad data pack text encoding: got " << text_encoding_type_
                << ", expected between " << BINARY << " and " << UTF16;
-    return false;
+    return base::unexpected(FailureReason::kBadEncodingType);
   }
 
   // Sanity check the file.
-  if (!SanityCheckFileAndRegisterResources(header_length, data, data_length))
-    return false;
+  RETURN_IF_ERROR(
+      SanityCheckFileAndRegisterResources(header_length, data, data_length));
 
   data_source_ = std::move(data_source);
-  return true;
+  return base::ok();
 }
 
 const DataPack::Entry* DataPack::LookupEntryById(uint16_t resource_id) const {
@@ -372,15 +393,14 @@ bool DataPack::HasResource(uint16_t resource_id) const {
 }
 
 // static
-std::string_view DataPack::GetStringPieceFromOffset(
-    uint32_t target_offset,
-    uint32_t next_offset,
-    const uint8_t* data_source) {
+std::string_view DataPack::GetStringViewFromOffset(uint32_t target_offset,
+                                                   uint32_t next_offset,
+                                                   const uint8_t* data_source) {
   size_t length = next_offset - target_offset;
   return {reinterpret_cast<const char*>(data_source + target_offset), length};
 }
 
-std::optional<std::string_view> DataPack::GetStringPiece(
+std::optional<std::string_view> DataPack::GetStringView(
     uint16_t resource_id) const {
   const Entry* target = LookupEntryById(resource_id);
   if (!target)
@@ -410,14 +430,14 @@ std::optional<std::string_view> DataPack::GetStringPiece(
   }
 
   MaybePrintResourceId(resource_id);
-  return GetStringPieceFromOffset(target->file_offset, next_entry->file_offset,
-                                  data_source_->GetData());
+  return GetStringViewFromOffset(target->file_offset, next_entry->file_offset,
+                                 data_source_->GetData());
 }
 
 base::RefCountedStaticMemory* DataPack::GetStaticMemory(
     uint16_t resource_id) const {
-  if (auto piece = GetStringPiece(resource_id); piece.has_value()) {
-    return new base::RefCountedStaticMemory(base::as_byte_span(*piece));
+  if (auto view = GetStringView(resource_id); view.has_value()) {
+    return new base::RefCountedStaticMemory(base::as_byte_span(*view));
   }
   return nullptr;
 }
@@ -476,7 +496,7 @@ bool DataPack::WritePack(const base::FilePath& path,
   std::vector<uint16_t> resource_ids;
   std::map<uint16_t, uint16_t> aliases;  // resource_id -> entry_index
   if (resources_count > 0) {
-    // A reverse map from string pieces to the index of the corresponding
+    // A reverse map from string view to the index of the corresponding
     // original id in the final resource list.
     std::map<std::string_view, uint16_t> rev_map;
     for (const auto& entry : resources) {

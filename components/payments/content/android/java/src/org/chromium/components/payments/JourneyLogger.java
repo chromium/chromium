@@ -7,12 +7,14 @@ package org.chromium.components.payments;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
 /** A class used to record journey metrics for the Payment Request feature. */
 @JNINamespace("payments")
+@NullMarked
 public class JourneyLogger {
     /** Pointer to the native implementation. */
     private long mJourneyLoggerAndroid;

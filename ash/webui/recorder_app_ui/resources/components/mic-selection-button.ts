@@ -23,6 +23,9 @@ import {
 import {MicrophoneInfo} from '../core/microphone_manager.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings} from '../core/state/settings.js';
+import {assert} from '../core/utils/assert.js';
+
+import {withTooltip} from './directives/with-tooltip.js';
 
 /**
  * A button that allows the user to select the input mic of the app.
@@ -30,11 +33,42 @@ import {settings} from '../core/state/settings.js';
 export class MicSelectionButton extends ReactiveLitElement {
   static override styles = css`
     :host {
-      display: contents;
+      display: block;
+    }
+
+    cra-icon-dropdown {
+      display: block;
     }
 
     cra-icon-dropdown::part(menu) {
       --cros-menu-width: 320px;
+    }
+
+    #mic-error-container {
+      align-items: center;
+      background: var(--cros-sys-warning_container);
+      border-radius: 8px;
+      box-sizing: border-box;
+      display: flex;
+      flex-flow: row;
+      gap: 16px;
+      margin: 0 8px;
+      padding: 6px 8px;
+      width: var(--cros-menu-width);
+
+      & > cra-icon {
+        height: 20px;
+        width: 20px;
+      }
+
+      & > .content {
+        color: var(--cros-sys-on_warning_container);
+        margin: 0;
+      }
+
+      & > #text {
+        font: var(--cros-button-2-font);
+      }
     }
   `;
 
@@ -65,7 +99,7 @@ export class MicSelectionButton extends ReactiveLitElement {
 
   private renderMicrophone(
     mic: MicrophoneInfo,
-    selectedMic: string|null,
+    selectedMic: string,
   ): RenderResult {
     const micIcon = mic.isInternal ? 'mic' : 'mic_external_on';
     const isSelectedMic = mic.deviceId === selectedMic;
@@ -141,7 +175,7 @@ export class MicSelectionButton extends ReactiveLitElement {
     return html`
       <cros-menu-separator></cros-menu-separator>
       <cra-icon-dropdown-option
-        headline=${i18n.micSelectionMenuChromebookAudioOption}
+        headline=${i18n.micSelectionMenuSystemAudioOption}
         itemStart="icon"
         itemEnd="switch"
         .switchSelected=${live(includeSystemAudio)}
@@ -153,10 +187,28 @@ export class MicSelectionButton extends ReactiveLitElement {
     `;
   }
 
-  override render(): RenderResult {
-    const microphones = this.microphoneManager.getMicrophoneList().value;
+  private renderMicList(): RenderResult {
     const selectedMic = this.microphoneManager.getSelectedMicId().value;
+    if (selectedMic === null) {
+      return html`
+        <div id="mic-error-container">
+          <cra-icon class="content" name="mic_alert"></cra-icon>
+          <div id="text" class="content">
+            ${i18n.micSelectionMenuMicConnectionErrorDescription}
+          </div>
+        </div>
+      `;
+    }
+    const microphones = this.microphoneManager.getMicrophoneList().value;
+    // `getSelectedMicId` should return null when microphone list is empty.
+    assert(
+      microphones.length !== 0,
+      'No connected mic but `getSelectedMicId` returns non-null id.',
+    );
+    return map(microphones, (mic) => this.renderMicrophone(mic, selectedMic));
+  }
 
+  override render(): RenderResult {
     return html`
       <cra-icon-dropdown
         id="mic-selection-button"
@@ -165,9 +217,10 @@ export class MicSelectionButton extends ReactiveLitElement {
         menu-corner="end-start"
         menu-type="menu"
         aria-label=${i18n.micSelectionMenuButtonTooltip}
+        ${withTooltip()}
       >
         <cra-icon slot="button-icon" name="mic"></cra-icon>
-        ${map(microphones, (mic) => this.renderMicrophone(mic, selectedMic))}
+        ${this.renderMicList()}
         ${this.renderSystemAudioSwitch()}
       </cra-icon-dropdown>
     `;

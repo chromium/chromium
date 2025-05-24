@@ -25,8 +25,8 @@
 #include "build/branding_buildflags.h"
 #include "components/cbor/writer.h"
 #include "crypto/apple_keychain_v2.h"
+#include "crypto/hash.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 
@@ -109,7 +109,7 @@ AuthenticatorData MakeAuthenticatorData(
   if (attested_credential_data) {
     flags |= static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation);
   }
-  return AuthenticatorData(fido_parsing_utils::CreateSHA256Hash(rp_id), flags,
+  return AuthenticatorData(crypto::hash::Sha256(rp_id), flags,
                            MakeSignatureCounter(counter_type),
                            std::move(attested_credential_data));
 }
@@ -137,9 +137,8 @@ std::optional<std::vector<uint8_t>> GenerateSignature(
     LOG(ERROR) << "SecKeyCreateSignature failed: " << err.get();
     return std::nullopt;
   }
-  return std::vector<uint8_t>(
-      CFDataGetBytePtr(sig_data.get()),
-      CFDataGetBytePtr(sig_data.get()) + CFDataGetLength(sig_data.get()));
+  auto sig_data_span = base::apple::CFDataToSpan(sig_data.get());
+  return std::vector<uint8_t>(sig_data_span.begin(), sig_data_span.end());
 }
 
 // SecKeyRefToECPublicKey converts a SecKeyRef for a public key into an
@@ -154,9 +153,7 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref) {
     LOG(ERROR) << "SecCopyExternalRepresentation failed: " << err.get();
     return nullptr;
   }
-  base::span<const uint8_t> key_data = base::make_span(
-      CFDataGetBytePtr(data_ref.get()),
-      base::checked_cast<size_t>(CFDataGetLength(data_ref.get())));
+  auto key_data = base::apple::CFDataToSpan(data_ref.get());
   auto key = P256PublicKey::ParseX962Uncompressed(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), key_data);
   if (!key) {

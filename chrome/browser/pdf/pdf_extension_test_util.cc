@@ -222,11 +222,6 @@ gfx::Point ConvertPageCoordToScreenCoord(
   return {x, y};
 }
 
-void SetInputFocusOnPlugin(extensions::MimeHandlerViewGuest* guest) {
-  SetInputFocusOnPlugin(guest->GetGuestMainFrame(),
-                        guest->embedder_web_contents());
-}
-
 void SetInputFocusOnPlugin(content::RenderFrameHost* extension_host,
                            content::WebContents* embedder_web_contents) {
   content::WaitForHitTestData(extension_host);

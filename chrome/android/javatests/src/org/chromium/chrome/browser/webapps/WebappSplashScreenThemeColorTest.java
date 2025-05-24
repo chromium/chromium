@@ -14,14 +14,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -29,12 +32,13 @@ import java.util.concurrent.TimeoutException;
 /** Tests for splash screens with EXTRA_THEME_COLOR specified in the Intent. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 public class WebappSplashScreenThemeColorTest {
     @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     @Test
     @SmallTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     // Customizing status bar color is disallowed for tablets.
     @Feature({"StatusBar", "Webapps"})
     public void testThemeColorWhenSpecified() {
@@ -52,9 +56,10 @@ public class WebappSplashScreenThemeColorTest {
 
     @Test
     @SmallTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     // Customizing status bar color is disallowed for tablets.
     @Feature({"StatusBar", "Webapps"})
+    @DisabledTest(message = "crbug.com/405922441")
     public void testThemeColorNotUsedIfPagesHasOne() throws ExecutionException, TimeoutException {
         final int intentThemeColor = Color.MAGENTA;
         final int pageThemeColor = Color.RED;

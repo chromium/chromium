@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/password_manager/promo_cards_handler.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
@@ -30,10 +30,6 @@
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo.h"
-#endif
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/password_manager/promo_cards/screenlock_reauth_promo.h"
 #endif
 
 namespace password_manager {
@@ -80,9 +76,6 @@ std::vector<std::unique_ptr<PasswordPromoCardBase>> GetAllPromoCardsForProfile(
       std::make_unique<RelaunchChromePromo>(profile->GetPrefs()));
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-  promo_cards.push_back(std::make_unique<ScreenlockReauthPromo>(profile));
-#endif
   return promo_cards;
 }
 
@@ -164,7 +157,7 @@ PasswordPromoCardBase* PromoCardsHandler::GetPromoToShowAndUpdatePref() {
     return nullptr;
   }
   // Sort based on last time shown.
-  auto* promo_to_show = *base::ranges::min_element(
+  auto* promo_to_show = *std::ranges::min_element(
       promo_card_to_show_candidates, [](auto* lhs, auto* rhs) {
         return lhs->last_time_shown() < rhs->last_time_shown();
       });

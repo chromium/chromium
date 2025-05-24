@@ -1,0 +1,23 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - show-modal' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - unrelated action' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d1 button - outside - close' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - outside - show-modal' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - outside - unrelated action' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - outside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - outside - close' FOCUSABLE
+++++ROLE_SYSTEM_DIALOG FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - inside - show-modal' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - inside - close' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='Button inside popover, with unrelated action' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='d2 button - inside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - show-modal' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - unrelated action' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - close' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - show-modal' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - unrelated action' COLLAPSED FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - custom action' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='d3 button - outside - close' FOCUSABLE

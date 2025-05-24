@@ -8,15 +8,17 @@
 #include <wayland-server-protocol-core.h>
 #include <xdg-shell-server-protocol.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "ash/display/display_util.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -26,9 +28,9 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/window_state.h"
 #include "base/bit_cast.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -295,7 +297,8 @@ void aura_surface_show_tooltip(wl_client* client,
                                uint32_t show_delay,
                                uint32_t hide_delay) {
   GetUserDataAs<AuraSurface>(resource)->ShowTooltip(
-      text, gfx::Point(x, y), trigger, base::Milliseconds((uint64_t)show_delay),
+      base::UTF8ToUTF16(text), gfx::Point(x, y), trigger,
+      base::Milliseconds((uint64_t)show_delay),
       base::Milliseconds((uint64_t)hide_delay));
 }
 
@@ -651,7 +654,7 @@ void AuraSurface::ThrottleFrameRate(bool on) {
 }
 
 void AuraSurface::OnTooltipShown(Surface* surface,
-                                 const std::u16string& text,
+                                 std::u16string_view text,
                                  const gfx::Rect& bounds) {
   if (wl_resource_get_version(resource_) <
       ZAURA_SURFACE_TOOLTIP_SHOWN_SINCE_VERSION) {
@@ -691,12 +694,12 @@ void AuraSurface::Unpin() {
   surface_->Unpin();
 }
 
-void AuraSurface::ShowTooltip(const char* text,
+void AuraSurface::ShowTooltip(std::u16string text,
                               const gfx::Point& position,
                               uint32_t trigger,
                               const base::TimeDelta& show_delay,
                               const base::TimeDelta& hide_delay) {
-  tooltip_text_ = base::UTF8ToUTF16(text);
+  tooltip_text_ = std::move(text);
   auto* window = surface_->window();
   wm::SetTooltipText(window, &tooltip_text_);
   wm::SetTooltipId(window, surface_);
@@ -1384,7 +1387,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
       std::string name = base::UTF16ToUTF8(desk->name());
       char* desk_name =
           static_cast<char*>(wl_array_add(&desk_names, name.size() + 1));
-      strcpy(desk_name, name.c_str());
+      UNSAFE_TODO(strcpy(desk_name, name.c_str()));
     }
 
     zaura_shell_send_desks_changed(aura_shell_resource_, &desk_names);
@@ -1634,8 +1637,7 @@ ui::ZOrderLevel AuraTopLevelZOrderLevel(uint32_t z_order_level) {
       return ui::ZOrderLevel::kSecuritySurface;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ui::ZOrderLevel::kNormal;
+  NOTREACHED();
 }
 
 void aura_toplevel_set_z_order(wl_client* client,

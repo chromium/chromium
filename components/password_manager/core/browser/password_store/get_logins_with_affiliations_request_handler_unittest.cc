@@ -91,7 +91,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, NoMatchesTest) {
   EXPECT_CALL(affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
+      .WillOnce(RunOnceCallback<1>(std::vector<Facet>(), true));
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
@@ -117,7 +117,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, ExactAndPslMatchesTest) {
   EXPECT_CALL(affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
+      .WillOnce(RunOnceCallback<1>(std::vector<Facet>(), true));
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
@@ -155,7 +155,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchesOnlyTest) {
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(facets, true));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(facets, true));
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
@@ -209,7 +209,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(facets, true));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(facets, true));
 
   PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
   base::MockCallback<LoginsOrErrorReply> result_callback;
@@ -251,7 +251,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliationsArePSLTest) {
   facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
   facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestPSLURL));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(facets, true));
+      .WillOnce(RunOnceCallback<1>(facets, true));
 
   PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
   base::MockCallback<LoginsOrErrorReply> result_callback;
@@ -278,7 +278,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesOnlyTest) {
   EXPECT_CALL(affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
+      .WillOnce(RunOnceCallback<1>(std::vector<Facet>(), true));
 
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
@@ -316,7 +316,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(facets, true));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(facets, true));
 
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
@@ -364,7 +364,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec("https://b.slack.com/"));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(facets, true));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(facets, true));
 
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
@@ -401,7 +401,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   EXPECT_CALL(affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"slack.com"}));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
+      .WillOnce(RunOnceCallback<1>(std::vector<Facet>(), true));
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
@@ -477,7 +477,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(facets, true));
+      .WillOnce(RunOnceCallback<1>(facets, true));
   GroupedFacets group;
   group.facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedWebURL));

@@ -76,7 +76,8 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
  private:
-  using DownloadMap = std::map<std::string, DownloadItem*>;
+  using DownloadMap =
+      std::map<std::string, raw_ptr<DownloadItem, CtnExperimental>>;
 
   // NetworkStatusListener::Observer implementation.
   void OnNetworkStatusReady(network::mojom::ConnectionType type) override;

@@ -60,7 +60,7 @@ class NaClBPFSandboxPolicy : public sandbox::bpf_dsl::Policy {
   NaClBPFSandboxPolicy(const NaClBPFSandboxPolicy&) = delete;
   NaClBPFSandboxPolicy& operator=(const NaClBPFSandboxPolicy&) = delete;
 
-  ~NaClBPFSandboxPolicy() override {}
+  ~NaClBPFSandboxPolicy() override = default;
 
   ResultExpr EvaluateSyscall(int system_call_number) const override;
   ResultExpr InvalidSyscall() const override {
@@ -152,9 +152,7 @@ ResultExpr NaClBPFSandboxPolicy::EvaluateSyscall(int sysno) const {
     default:
       return baseline_policy_->EvaluateSyscall(sysno);
   }
-  NOTREACHED_IN_MIGRATION();
-  // GCC wants this.
-  return Error(EPERM);
+  NOTREACHED();
 }
 
 void RunSandboxSanityChecks() {

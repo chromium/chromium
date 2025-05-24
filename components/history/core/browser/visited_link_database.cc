@@ -58,8 +58,8 @@ void VisitedLinkDatabase::FillVisitedLinkRow(sql::Statement& s,
                                              VisitedLinkRow& i) {
   i.id = s.ColumnInt64(0);
   i.link_url_id = s.ColumnInt64(1);
-  i.top_level_url = GURL(s.ColumnString(2));
-  i.frame_url = GURL(s.ColumnString(3));
+  i.top_level_url = GURL(s.ColumnStringView(2));
+  i.frame_url = GURL(s.ColumnStringView(3));
   i.visit_count = s.ColumnInt(4);
 }
 

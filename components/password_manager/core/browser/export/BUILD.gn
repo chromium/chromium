@@ -22,6 +22,22 @@ source_set("export") {
     "//components/password_manager/core/browser/ui",
     "//components/sync/base:features",
   ]
+
+  if (is_android) {
+    sources += [
+      "login_db_deprecation_password_exporter.cc",
+      "login_db_deprecation_password_exporter.h",
+      "login_db_deprecation_password_exporter_interface.h",
+      "login_db_deprecation_runner.cc",
+      "login_db_deprecation_runner.h",
+    ]
+    deps += [
+      "//components/password_manager/core/browser/features:password_features",
+      "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//components/password_manager/core/common:common",
+      "//components/prefs:prefs",
+    ]
+  }
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
@@ -41,4 +57,15 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_android) {
+    sources += [
+      "login_db_deprecation_password_exporter_unittest.cc",
+      "login_db_deprecation_runner_unittest.cc",
+    ]
+    deps += [
+      "//components/password_manager/core/browser/features:password_features",
+      "//components/prefs:test_support",
+    ]
+  }
 }

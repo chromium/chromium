@@ -26,6 +26,15 @@ export enum VendorCapabilityValueType {
   STRING = 'STRING',
 }
 
+/**
+ * Values matching the types of duplex in a CDD.
+ */
+export enum DuplexType {
+  NO_DUPLEX = 'NO_DUPLEX',
+  LONG_EDGE = 'LONG_EDGE',
+  SHORT_EDGE = 'SHORT_EDGE',
+}
+
 interface SelectCapability {
   option?: VendorCapabilitySelectOption[];
 }
@@ -101,23 +110,10 @@ export type SelectOption = {
 export type MediaSizeOption = {
   type?: string,
   vendor_id?: string, height_microns: number, width_microns: number,
-  imageable_area_left_microns?: number,
-  imageable_area_bottom_microns?: number,
-  imageable_area_right_microns?: number,
-  imageable_area_top_microns?: number,
-  has_borderless_variant?: boolean,
 }&SelectOption;
 
 export type MediaSizeCapability = {
   option: MediaSizeOption[],
-}&CapabilityWithReset;
-
-export type MediaTypeOption = {
-  vendor_id: string,
-}&SelectOption;
-
-export type MediaTypeCapability = {
-  option: MediaTypeOption[],
 }&CapabilityWithReset;
 
 export type DpiOption = {
@@ -127,11 +123,6 @@ export type DpiOption = {
 export type DpiCapability = {
   option: DpiOption[],
 }&CapabilityWithReset;
-
-interface PinCapability {
-  supported?: boolean;
-}
-
 
 /**
  * Capabilities of a print destination represented in a CDD.
@@ -146,11 +137,7 @@ export interface CddCapabilities {
   duplex?: DuplexCapability;
   page_orientation?: PageOrientationCapability;
   media_size?: MediaSizeCapability;
-  media_type?: MediaTypeCapability;
   dpi?: DpiCapability;
-  // <if expr="is_chromeos">
-  pin?: PinCapability;
-  // </if>
 }
 
 /**

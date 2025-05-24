@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/prefetch_cache.h"
+#include "services/network/prefetch_matches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -78,10 +79,23 @@ PrefetchURLLoaderClient::BindNewPipeAndPassRemote() {
   return pending_remote;
 }
 
-void PrefetchURLLoaderClient::SetClient(
+bool PrefetchURLLoaderClient::Matches(
+    const ResourceRequest& real_request) const {
+  return PrefetchMatches(request_, real_request);
+}
+
+void PrefetchURLLoaderClient::Consume(
+    mojo::PendingReceiver<mojom::URLLoader> loader,
     mojo::PendingRemote<mojom::URLLoaderClient> client) {
   // Remove ourselves from the PrefetchCache.
   prefetch_cache_->Consume(this);
+
+  // This is safe because we never call any methods on the URLLoader.
+  mojo::PendingRemote<mojom::URLLoader> unbound_loader = url_loader_.Unbind();
+  bool fuse_success =
+      mojo::FusePipes(std::move(loader), std::move(unbound_loader));
+  // TODO(ricea): Can this fail?
+  CHECK(fuse_success);
 
   real_client_.Bind(std::move(client));
   // This use of base::Unretained is safe because the disconnect handler will

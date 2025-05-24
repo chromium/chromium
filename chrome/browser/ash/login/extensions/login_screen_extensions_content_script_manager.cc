@@ -9,10 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -53,7 +53,7 @@ void LoginScreenExtensionsContentScriptManager::Shutdown() {
 }
 
 void LoginScreenExtensionsContentScriptManager::OnExtensionLoaded(
-    content::BrowserContext* /*browser_context*/,
+    content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
   if (!extension->is_login_screen_extension())
     return;
@@ -68,34 +68,19 @@ void LoginScreenExtensionsContentScriptManager::OnExtensionLoaded(
           FROM_HERE,
           base::BindOnce(
               &LoginScreenExtensionsContentScriptManager::DisableExtension,
-              weak_factory_.GetWeakPtr(), extension->id()));
+              weak_factory_.GetWeakPtr(), browser_context, extension->id()));
       return;
     }
   }
 }
 
-extensions::ExtensionService*
-LoginScreenExtensionsContentScriptManager::GetExtensionService() {
-  // Note that we cannot cache the service pointer in our constructor, because
-  // the service doesn't exist at that point.
-  extensions::ExtensionService* service =
-      extension_system_->extension_service();
-  if (!service) {
-    // Many unit tests skip initialization of profile services, including the
-    // extension service. In production, the service should always be present at
-    // this point (after the profile initialization completion).
-    CHECK_IS_TEST();
-  }
-  return service;
-}
-
 void LoginScreenExtensionsContentScriptManager::DisableExtension(
+    content::BrowserContext* browser_context,
     const extensions::ExtensionId& extension_id) {
-  extensions::ExtensionService* const extension_service = GetExtensionService();
-  if (!extension_service)
-    return;
-  extension_service->DisableExtension(
-      extension_id, extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY);
+  auto* extension_registrar =
+      extensions::ExtensionRegistrar::Get(browser_context);
+  extension_registrar->DisableExtension(
+      extension_id, {extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY});
 }
 
 }  // namespace ash

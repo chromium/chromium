@@ -2,9 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1613742542373525524">APPLICATION_NAME ne reconnaît pas ce lien.</translation>
+<translation id="3086502722585482455">Ouvrir dans</translation>
 <translation id="4655616150233109325">Ouvrir dans Chrome</translation>
+<translation id="5244924493358516288">(Limite maximale)</translation>
+<translation id="5596627076506792578">Plus d'options</translation>
 <translation id="601731541915429022">Ajouter à la liste de lecture</translation>
+<translation id="6527303717912515753">Partager</translation>
 <translation id="6930009216791986919">Ajouter aux favoris</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="712865579676939176">Rechercher dans</translation>
+<translation id="7440631557836890806">Rechercher en navigation privée</translation>
+<translation id="7658239707568436148">Annuler</translation>
 <translation id="8258999165172757081">Ajouté</translation>
+<translation id="850600235656508448">Ouvrir en mode navigation privée</translation>
 </translationbundle>

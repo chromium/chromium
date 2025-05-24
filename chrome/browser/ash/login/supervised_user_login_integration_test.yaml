@@ -8,7 +8,7 @@ name: "SupervisedUserLoginIntegrationTest"
 harness: "crosier"
 category: "integration"
 owners:
-  - email: "courtneywong@chromium.org"
+  - email: "cros-families-eng@google.com"
   - email: "chromeos-sw-engprod@google.com"
 hw_agnostic: False
 criteria: |

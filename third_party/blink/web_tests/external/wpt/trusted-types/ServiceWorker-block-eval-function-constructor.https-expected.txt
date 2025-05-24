@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Blocked eval in ServiceWorkerGlobalScope.
+  assert_throws_js: function "_ => eval("'42'")" did not throw
+[FAIL] Blocked indirect eval in ServiceWorkerGlobalScope.
+  assert_throws_js: function "_ => eval?.("'42'")" did not throw
+[FAIL] Blocked Function constructor in ServiceWorkerGlobalScope.
+  assert_throws_js: function "_ => new functionConstructor("return;")" did not throw
+[FAIL] Blocked AsyncFunction constructor in ServiceWorkerGlobalScope.
+  assert_throws_js: function "_ => new functionConstructor("return;")" did not throw
+[FAIL] Blocked GeneratorFunction constructor in ServiceWorkerGlobalScope.
+  assert_throws_js: function "_ => new functionConstructor("return;")" did not throw
+[FAIL] Blocked AsyncGeneratorFunction constructor in ServiceWorkerGlobalScope.
+  assert_throws_js: function "_ => new functionConstructor("return;")" did not throw
+Harness: the test ran to completion.
+

@@ -156,7 +156,7 @@ void GetAutocompleteSearchTermsFromEnumerator(
   // Populate `search_terms` with the top `count` search terms in descending
   // recency or frecency scores.
   size_t num_search_terms = std::min(search_terms->size(), count);
-  base::ranges::partial_sort(
+  std::ranges::partial_sort(
       search_terms->begin(), std::next(search_terms->begin(), num_search_terms),
       search_terms->end(), [&](const auto& a, const auto& b) {
         return ranking_policy == SearchTermRankingPolicy::kFrecency
@@ -293,7 +293,7 @@ void GetMostRepeatedSearchTermsFromEnumerator(
   // Populate `search_terms` with the top `count` search terms in descending
   // frecency scores.
   size_t num_search_terms = std::min(search_terms->size(), count);
-  base::ranges::partial_sort(
+  std::ranges::partial_sort(
       search_terms->begin(), std::next(search_terms->begin(), num_search_terms),
       search_terms->end(),
       [](const auto& a, const auto& b) { return a->score > b->score; });

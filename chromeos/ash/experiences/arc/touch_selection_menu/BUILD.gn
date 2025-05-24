@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("touch_selection_menu") {
+  sources = [
+    "touch_selection_menu_chromeos.cc",
+    "touch_selection_menu_chromeos.h",
+    "touch_selection_menu_runner_chromeos.cc",
+    "touch_selection_menu_runner_chromeos.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//ui/aura",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//chromeos/ash/experiences/arc/session",
+    "//ui/base",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/touch_selection",
+  ]
+}

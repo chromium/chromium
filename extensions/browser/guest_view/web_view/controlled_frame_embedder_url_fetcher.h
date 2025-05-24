@@ -21,7 +21,7 @@ class SimpleURLLoader;
 namespace extensions {
 
 // ControlledFrameEmbedderURLFetcher downloads the content of a file by giving
-// its |url| in the app.  Each ControlledFrameEmbedderURLFetcher is associated
+// its `url` in the app.  Each ControlledFrameEmbedderURLFetcher is associated
 // with a given |render_process_id, render_view_id| pair.
 class ControlledFrameEmbedderURLFetcher : public extensions::URLFetcher {
  public:

@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
@@ -126,7 +127,6 @@ void AXTreeFormatterAuraLinux::RecursiveBuildTree(
   DCHECK(platform_node);
 
   AXPlatformNodeDelegate* node = platform_node->GetDelegate();
-  DCHECK(node);
 
   if (!ShouldDumpNode(*node))
     return;
@@ -439,7 +439,7 @@ void AXTreeFormatterAuraLinux::AddTableProperties(
   // Caption details.
   AtkObject* caption = atk_table_get_caption(table);
   table_properties.Append(
-      base::StringPrintf("caption=%s;", caption ? "true" : "false"));
+      base::StringPrintf("caption=%s;", base::ToString<bool>(caption)));
 
   // Summarize information about the cells from the table's perspective here.
   std::vector<std::string> span_info;
@@ -508,7 +508,6 @@ void AXTreeFormatterAuraLinux::AddProperties(AtkObject* atk_object,
   DCHECK(platform_node);
 
   AXPlatformNodeDelegate* node = platform_node->GetDelegate();
-  DCHECK(node);
 
   dict->Set("id", node->GetId());
 
@@ -618,20 +617,25 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
     "container-live",
     "container-relevant",
     "current",
+    "datetime",
     "description",
     "description-from",
+    "details-from",
     "details-roles",
     "display",
     "dropeffect",
     "explicit-name",
     "grabbed",
     "haspopup",
+    "has-interest-target",
     "hidden",
+    "html-input-name",
     "id",
     "keyshortcuts",
     "level",
     "link-target",
     "live",
+    "maxlength",
     "name-from",
     "placeholder",
     "posinset",

@@ -136,6 +136,50 @@ constexpr int kMinDistanceFromSettingsToScreen = 8;
 // The minimum height of the settings menu while constrained and scrollable.
 constexpr int kSettingsMenuMinHeight = 50;
 
+// Animation parameters for capture UI (capture bar, capture label) overlapping
+// the user capture region or camera preview. The default animation duration for
+// opacity changes to the capture UI.
+inline constexpr base::TimeDelta kCaptureUIOpacityChangeDuration =
+    base::Milliseconds(100);
+
+// Search result panel dimensions.
+inline constexpr int kPanelPaddingSize = 16;
+inline constexpr int kSearchResultsPanelWebViewWidth = 360;
+inline constexpr int kSearchResultsPanelTotalHeight = 492;
+inline constexpr int kSearchResultsPanelTotalWidth =
+    capture_mode::kSearchResultsPanelWebViewWidth +
+    2 * capture_mode::kPanelPaddingSize;
+inline constexpr int kSearchResultsPanelWebViewHeight =
+    kSearchResultsPanelTotalHeight - 2 * kPanelPaddingSize -
+    /*button_size=*/24 - /*padding_size=*/12;
+
+// The distance between the search result panel and the work area.
+constexpr int kPanelWorkAreaSpacing = 10;
+
+// The distance between the search result panel and the feedback button (if
+// available).
+constexpr int kPanelButtonSpacing = 10;
+
+// The ID for the nudge anchored to the Sunfish button in the launcher.
+inline constexpr char kSunfishLauncherNudgeId[] = "kSunfishLauncherNudge";
+
+// The nudge will not be shown if it already been shown 3 times, or if 24
+// hours have not yet passed since it was last shown.
+constexpr int kSunfishNudgeMaxShownCount = 3;
+inline constexpr base::TimeDelta kSunfishNudgeTimeBetweenShown =
+    base::Hours(24);
+
+// The minimum and maximum region glow blur amount.
+inline constexpr float kRegionGlowAnimationMinBlurDp = 16.0f;
+inline constexpr float kRegionGlowAnimationMaxBlurDp = 32.0f;
+
+// The minimum and maximum glow outset from the edge of the capture region.
+inline constexpr int kRegionGlowMinOutsetDp = 0;
+inline constexpr int kRegionGlowMaxOutsetDp = 6;
+
+// The view ID for the search results panel loading animation.
+inline constexpr int kLoadingAnimationViewId = 1;
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_

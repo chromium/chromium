@@ -36,6 +36,9 @@
                               gaia:(NSString*)gaia
                      shouldReplace:(BOOL)shouldReplace;
 
+// Returns the gaia for the account used for credential creation.
+- (NSString*)gaia;
+
 @end
 
 // View Controller where a user can create a new credential and use a suggested
@@ -48,7 +51,7 @@
 @property(nonatomic, weak) id<NewCredentialHandler> credentialHandler;
 
 // The host for the password being generated.
-@property(nonatomic, strong) NSString* currentHost;
+@property(nonatomic, copy) NSString* currentHost;
 
 @end
 

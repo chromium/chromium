@@ -8,7 +8,7 @@ import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("diagnostics") {
   sources = [
@@ -18,12 +18,13 @@ source_set("diagnostics") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//chromeos/ash/components/dbus",
-    "//chromeos/ash/components/dbus/debug_daemon",
-    "//extensions/common",
+  public_deps = [
+    "//extensions/browser:browser_sources",
     "//extensions/common/api",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/debug_daemon",
+  ]
 }

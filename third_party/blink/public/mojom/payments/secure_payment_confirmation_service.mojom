@@ -1,0 +1,51 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module payments.mojom;
+
+import "third_party/blink/public/mojom/webauthn/authenticator.mojom";
+
+enum PaymentCredentialStorageStatus {
+  SUCCESS,
+  FAILED_TO_STORE_CREDENTIAL,
+};
+
+// https://w3c.github.io/secure-payment-confirmation/#enumdef-securepaymentconfirmationavailability
+enum SecurePaymentConfirmationAvailabilityEnum {
+  kAvailable,
+  kUnavailableUnknownReason,
+  kUnavailableFeatureNotEnabled,
+  kUnavailableNoPermissionPolicy,
+  kUnavailableNoUserVerifyingPlatformAuthenticator,
+};
+
+// Interface providing browser services related to SecurePaymentConfirmation,
+// which are not tied to a specific PaymentRequest instantiation. This includes
+// services required at credential-creation time, which occurs outside of the
+// scope of PaymentRequest.
+interface SecurePaymentConfirmationService {
+
+  // Determine if SecurePaymentConfirmation is enabled and believed to be
+  // available to the current browsing context (e.g., there is a compatible
+  // authenticator device, etc).
+  //
+  // https://w3c.github.io/secure-payment-confirmation/#dom-paymentrequest-securepaymentconfirmationavailability
+  SecurePaymentConfirmationAvailability() => (SecurePaymentConfirmationAvailabilityEnum availability);
+
+  // Store a new PublicKeyCredential with "payment" extension on disk. It can be
+  // later used for PaymentRequests.
+  StorePaymentCredential(array<uint8> credential_id, string rp_id, array<uint8> user_id)
+      => (PaymentCredentialStorageStatus status);
+
+  // Creates a browser bound key before getting the credential info for a new
+  // public key credential created by an authenticator for the given
+  // |PublicKeyCredentialCreationOptions|.
+  // [MakeCredentialAuthenticatorResponse] will be set if and only if status ==
+  // SUCCESS. [WebAuthnDOMExceptionDetails] will be set if and only if status
+  // == ERROR_WITH_DOM_EXCEPTION_DETAILS.
+  MakePaymentCredential(blink.mojom.PublicKeyCredentialCreationOptions options)
+      => (blink.mojom.AuthenticatorStatus status,
+          blink.mojom.MakeCredentialAuthenticatorResponse? credential,
+          blink.mojom.WebAuthnDOMExceptionDetails? dom_exception_details);
+};

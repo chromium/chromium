@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // This file contains download browser tests that are known to be runnable
 // in a pure content context.  Over time tests should be migrated here.
 
@@ -28,6 +33,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -85,6 +91,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/network/public/cpp/content_decoding_interceptor.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -1517,6 +1525,10 @@ class DownloadFencedFrameTest : public DownloadContentTest {
  public:
   DownloadFencedFrameTest() {
     fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
+
+    // Fenced frame requires a secure context to disable untrusted network.
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
   }
 
   ~DownloadFencedFrameTest() override = default;
@@ -1556,6 +1568,10 @@ class DownloadFencedFrameTest : public DownloadContentTest {
 
     EXPECT_FALSE(target_node->current_frame_host()->IsErrorDocument());
     return target_node->current_frame_host();
+  }
+
+  test::FencedFrameTestHelper* fenced_frame_helper() {
+    return fenced_frame_helper_.get();
   }
 
  private:
@@ -4105,6 +4121,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
   EXPECT_TRUE(NavigateToURL(shell(), referrer_url));
 
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
   // Alt-click the link.
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseDown, blink::WebInputEvent::kAltKey,
@@ -4404,6 +4422,113 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DuplicateContentDisposition) {
 
   EXPECT_EQ(FILE_PATH_LITERAL("Jumboshrimp.txt"),
             downloads[0]->GetTargetFilePath().BaseName().value());
+}
+
+// Test fixture for forcing RendererSideContentDecoding feature.
+class DownloadContentRendererSideContentDecodingTest
+    : public DownloadContentTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  DownloadContentRendererSideContentDecodingTest() {
+    if (GetParam()) {
+      features_.InitWithFeatures(
+          {network::features::kRendererSideContentDecoding}, {});
+    } else {
+      features_.InitWithFeatures(
+          {}, {network::features::kRendererSideContentDecoding});
+    }
+  }
+  ~DownloadContentRendererSideContentDecodingTest() override = default;
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "FeatureEnabled" : "FeatureDisabled";
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DownloadContentRendererSideContentDecodingTest,
+    ::testing::Bool(),
+    &DownloadContentRendererSideContentDecodingTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(DownloadContentRendererSideContentDecodingTest,
+                       CompressedResponseWithContentDisposition) {
+  // gzip-content-with-content-disposition.gz is served with Content-Disposition
+  // headers, and `Content-Encoding: gzip`.
+  NavigateToURLAndWaitForDownload(
+      shell(),
+      embedded_test_server()->GetURL(
+          "/download/gzip-content-with-content-disposition.gz"),
+      download::DownloadItem::COMPLETE);
+
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+
+  EXPECT_EQ(FILE_PATH_LITERAL("hello.txt"),
+            downloads[0]->GetTargetFilePath().BaseName().value());
+
+  // Verify the file is downloaded correctly.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string downloaded_content;
+    ASSERT_TRUE(base::ReadFileToString(downloads[0]->GetTargetFilePath(),
+                                       &downloaded_content));
+    EXPECT_EQ(downloaded_content, "Hello World!\n");
+  }
+}
+
+// Test fixture for forcing RendererSideContentDecoding feature failure.
+class DownloadContentRendererSideContentDecodingFailureTest
+    : public DownloadContentTest {
+ public:
+  DownloadContentRendererSideContentDecodingFailureTest() {
+    features_.InitWithFeaturesAndParameters(
+        {{network::features::kRendererSideContentDecoding,
+          {{"RendererSideContentDecodingForceMojoFailureForTesting", "true"}}}},
+        {});
+  }
+  ~DownloadContentRendererSideContentDecodingFailureTest() override = default;
+
+ protected:
+  class FinishNavigationObserver : public WebContentsObserver {
+   public:
+    FinishNavigationObserver(WebContents* contents,
+                             base::OnceClosure done_closure)
+        : WebContentsObserver(contents),
+          done_closure_(std::move(done_closure)) {}
+    void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+      error_code_ = navigation_handle->GetNetErrorCode();
+      std::move(done_closure_).Run();
+    }
+    const std::optional<net::Error>& error_code() const { return error_code_; }
+
+   private:
+    base::OnceClosure done_closure_;
+    std::optional<net::Error> error_code_;
+  };
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DownloadContentRendererSideContentDecodingFailureTest,
+    CompressedResponseWithContentDispositionInsufficientResources) {
+  base::RunLoop run_loop;
+  FinishNavigationObserver finish_navigation_observer(shell()->web_contents(),
+                                                      run_loop.QuitClosure());
+  // gzip-content-with-content-disposition.gz is served with Content-Disposition
+  // headers, and `Content-Encoding: gzip`.
+  EXPECT_TRUE(NavigateToURLAndExpectNoCommit(
+      shell(), embedded_test_server()->GetURL(
+                   "/download/gzip-content-with-content-disposition.gz")));
+  run_loop.Run();
+  EXPECT_THAT(finish_navigation_observer.error_code(), net::ERR_ABORTED);
 }
 
 // Test that the network isolation key is populated for:
@@ -4819,8 +4944,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, UploadBytes) {
           shell()->web_contents(), url, TRAFFIC_ANNOTATION_FOR_TESTS));
 
   download_parameters->set_post_body(
-      network::ResourceRequestBody::CreateFromBytes(kUploadString.data(),
-                                                    kUploadString.size()));
+      network::ResourceRequestBody::CreateFromCopyOfBytes(
+          base::as_byte_span(kUploadString)));
 
   DownloadManager* download_manager = DownloadManagerForShell(shell());
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
@@ -5152,6 +5277,91 @@ IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest, DisallowRenderMessageRfc822Iframe) {
       1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
 }
 
+// MhtmlLoadingTest with `kMHTML_Improvements` enabled.
+class MHTMLImprovementsLoadingTest : public MhtmlLoadingTest {
+ protected:
+  void SetUpOnMainThread() override {
+    MhtmlLoadingTest::SetUpOnMainThread();
+
+    browser_client_ = std::make_unique<DownloadTestContentBrowserClient>();
+    browser_client_->set_allowed_rendering_mhtml_over_http(true);
+  }
+
+  void TearDownOnMainThread() override {
+    browser_client_.reset();
+    MhtmlLoadingTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList features_ =
+      base::test::ScopedFeatureList({blink::features::kMHTML_Improvements});
+  std::unique_ptr<DownloadTestContentBrowserClient> browser_client_;
+};
+
+IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
+                       FormsDisabledWhenRenderedFromHttp) {
+  // Note that normally Chrome will not load MHTML over HTTP(s), and instead
+  // will download the file. On Android, Chrome supports loading 'trusted'
+  // offline pages, which are loaded through `OfflinePageURLLoader`, and are
+  // simulated as loading from the original URL. For these trusted MHTML files,
+  // forms are disabled.
+  // This test forces loading MHTML over HTTP to trigger the form disabling
+  // functionality.
+  net::EmbeddedTestServer server;
+  net::test_server::ControllableHttpResponse response(&server, "/");
+  EXPECT_TRUE(server.Start());
+
+  GURL url = server.GetURL(kOrigin, "/");
+
+  std::string mhtml_content;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::ReadFileToString(
+        GetTestFilePath("download", "forms.mhtml"), &mhtml_content));
+  }
+
+  auto observer = std::make_unique<content::TestNavigationObserver>(url);
+  observer->WatchExistingWebContents();
+  observer->StartWatchingNewWebContents();
+
+  shell()->LoadURL(url);
+
+  response.WaitForRequest();
+  response.Send(net::HTTP_OK, "multipart/related", mhtml_content);
+  response.Done();
+
+  observer->WaitForNavigationFinished();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // <input> is disabled. It won't have the disabled property set, but it will
+  // have the effects. One effect is changing the cursor.
+  EXPECT_EQ(
+      "default",
+      EvalJs(
+          shell(),
+          "window.getComputedStyle(document.querySelector('input')).cursor"));
+}
+
+IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
+                       FormsNotDisabledWhenRenderedFromFile) {
+  GURL url = GetFileURL(FILE_PATH_LITERAL("download/forms.mhtml"));
+  auto observer = std::make_unique<content::TestNavigationObserver>(url);
+  observer->WatchExistingWebContents();
+  observer->StartWatchingNewWebContents();
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  observer->WaitForNavigationFinished();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // <input> is not disabled.
+  EXPECT_EQ(
+      "text",
+      EvalJs(
+          shell(),
+          "window.getComputedStyle(document.querySelector('input')).cursor"));
+}
+
 // Verify that downloads not triggered by navigation are discarded when
 // initiated from a non-active page.
 // Navigation downloads won't reach the DownloadManager. That is tested in
@@ -5193,7 +5403,7 @@ IN_PROC_BROWSER_TEST_F(DownloadPrerenderTest, DiscardNonNavigationDownload) {
   // prerendered page and mark it as rendered-initiated, otherwise the download
   // won't be checked.
   auto download_parameters = std::make_unique<download::DownloadUrlParameters>(
-      kDownloadUrl, render_frame_host->GetProcess()->GetID(),
+      kDownloadUrl, render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), TRAFFIC_ANNOTATION_FOR_TESTS);
   download_parameters->set_content_initiated(true);
   download_manager->DownloadUrl(std::move(download_parameters));
@@ -5243,6 +5453,66 @@ IN_PROC_BROWSER_TEST_F(DownloadFencedFrameTest, DiscardNonNavigationDownload) {
   EXPECT_TRUE(downloads.empty());
 }
 
+// An interrupted download will be created if fenced frame has revoked its
+// untrusted network access.
+// NOTE: Normally a download cannot be initiated from a network revoked fenced
+// frame. In case there are download entry points that are not properly
+// disabled, the network status check during the creation of download should
+// catch these and create an interrupted download.
+IN_PROC_BROWSER_TEST_F(DownloadFencedFrameTest,
+                       CreateInterruptedDownloadIfNetworkRevoked) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  const GURL kInitialUrl = embedded_https_test_server().GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})");
+  const GURL kDownloadUrl =
+      embedded_https_test_server().GetURL("/download/download-test.lib");
+
+  // Create the fenced frame.
+  EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  std::vector<content::RenderFrameHost*> child_frames =
+      fenced_frame_helper()->GetChildFencedFrameHosts(
+          shell()->web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(child_frames.size(), 1u);
+  content::RenderFrameHost* fenced_frame_host = child_frames[0];
+
+  // Create a download with the fenced frame untrusted network revoked. An
+  // interrupted download should be created.
+  auto* download_manager =
+      fenced_frame_host->GetBrowserContext()->GetDownloadManager();
+  MockDownloadManagerObserver dm_observer(download_manager);
+  EXPECT_CALL(dm_observer, OnDownloadCreated(_, _)).Times(1);
+  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(0);
+
+  auto params = blink::mojom::DownloadURLParams::New();
+  // Set this to be a context menu save so that it is not considered as content
+  // initiated. Otherwise no download item will be created.
+  params->is_context_menu_save = true;
+  params->url = kDownloadUrl;
+
+  std::unique_ptr<DownloadTestObserverInterrupted> observer =
+      std::make_unique<DownloadTestObserverInterrupted>(
+          download_manager, 1,
+          DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+
+  content::test::RevokeFencedFrameUntrustedNetwork(fenced_frame_host);
+
+  // Download the URL.
+  static_cast<RenderFrameHostImpl*>(fenced_frame_host)
+      ->DownloadURL(std::move(params));
+
+  // Verify that an interrupted download has been created.
+  observer->WaitForFinished();
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  EXPECT_EQ(1u, downloads.size());
+  download::DownloadItem* download = downloads[0];
+
+  ASSERT_EQ(download->GetState(), download::DownloadItem::INTERRUPTED);
+  EXPECT_EQ(download->GetLastReason(),
+            download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED);
+}
+
 // A download triggered by clicking on a link with a |download| attribute should
 // have the user-gesture flag set.
 IN_PROC_BROWSER_TEST_F(DownloadContentTest,
@@ -5271,6 +5541,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
 
   // Load the download page and click on the link.
   EXPECT_TRUE(NavigateToURL(shell(), referrer_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
   content::SimulateMouseClickOrTapElementWithId(shell()->web_contents(),
                                                 "downloadlink");
 

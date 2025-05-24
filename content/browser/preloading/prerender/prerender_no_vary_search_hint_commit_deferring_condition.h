@@ -37,6 +37,7 @@ class CONTENT_EXPORT PrerenderNoVarySearchHintCommitDeferringCondition
       NavigationType navigation_type,
       std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
   Result WillCommitNavigation(base::OnceClosure resume) override;
+  const char* TraceEventName() const override;
 
   // Only used for tests. This task runner is used for precise injection in
   // tests and for timing control.

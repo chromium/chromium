@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
@@ -20,7 +19,6 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
@@ -180,28 +178,13 @@ V8MemoryPerformanceManagerTestHarness::
 void V8MemoryPerformanceManagerTestHarness::SetUp() {
   PerformanceManagerTestHarness::SetUp();
 
-  if (!base::FeatureList::IsEnabled(features::kRunOnMainThreadSync)) {
-    // Precondition: CallOnGraph must run on a different sequence. Note that
-    // all tasks passed to CallOnGraph will only run when run_loop.Run() is
-    // called.
-    ASSERT_TRUE(GetMainThreadTaskRunner()->RunsTasksInCurrentSequence());
-    base::RunLoop run_loop;
-    PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindLambdaForTesting([&] {
-          EXPECT_FALSE(
-              this->GetMainThreadTaskRunner()->RunsTasksInCurrentSequence());
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-
   // Set the active contents and simulate a navigation, which adds nodes to
   // the graph.
   content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   SetContents(CreateTestWebContents());
   main_frame_ = content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kMainFrameUrl));
-  main_process_id_ = RenderProcessHostId(main_frame_->GetProcess()->GetID());
+  main_process_id_ = main_frame_->GetProcess()->GetID();
 }
 
 void V8MemoryPerformanceManagerTestHarness::CreateCrossProcessChildFrame() {
@@ -211,7 +194,7 @@ void V8MemoryPerformanceManagerTestHarness::CreateCrossProcessChildFrame() {
       content::RenderFrameHostTester::For(main_frame_)->AppendChild("frame1");
   child_frame_ = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL(kChildFrameUrl), child_frame_);
-  child_process_id_ = RenderProcessHostId(child_frame_->GetProcess()->GetID());
+  child_process_id_ = child_frame_->GetProcess()->GetID();
   ASSERT_NE(main_process_id_, child_process_id_);
 }
 

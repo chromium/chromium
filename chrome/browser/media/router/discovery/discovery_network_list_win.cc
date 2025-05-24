@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -462,15 +463,15 @@ std::vector<DiscoveryNetworkInfo> GetDiscoveryNetworkInfoList() {
   // will both require increasing the buffer size, there's no guarantee that
   // this won't happen; this is what the maximum retry count guards against.
   ULONG addresses_buffer_size = kGetAdaptersAddressesInitialBufferSize;
-  std::unique_ptr<char[]> addresses_buffer;
+  base::HeapArray<char> addresses_buffer;
   PIP_ADAPTER_ADDRESSES adapter_addresses = nullptr;
   ULONG result = ERROR_BUFFER_OVERFLOW;
   for (int i = 0;
        result == ERROR_BUFFER_OVERFLOW && i < kMaxGetAdaptersAddressTries;
        ++i) {
-    addresses_buffer.reset(new char[addresses_buffer_size]);
+    addresses_buffer = base::HeapArray<char>::Uninit(addresses_buffer_size);
     adapter_addresses =
-        reinterpret_cast<PIP_ADAPTER_ADDRESSES>(addresses_buffer.get());
+        reinterpret_cast<PIP_ADAPTER_ADDRESSES>(addresses_buffer.data());
     result =
         GetWindowsOsApi().ip_helper_api.get_adapters_addresses_callback.Run(
             AF_UNSPEC, kAddressFlags, nullptr, adapter_addresses,

@@ -5,9 +5,11 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 
 #include "ash/birch/birch_model.h"
+#include "ash/birch/coral_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
@@ -15,15 +17,21 @@
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -151,10 +159,11 @@ void BirchBarController::OnBarDestroying(BirchBarView* bar_view) {
   }
 }
 
-void BirchBarController::ShowChipContextMenu(BirchChipButton* chip,
-                                             BirchSuggestionType chip_type,
-                                             const gfx::Point& point,
-                                             ui::MenuSourceType source_type) {
+void BirchBarController::ShowChipContextMenu(
+    BirchChipButton* chip,
+    BirchSuggestionType chip_type,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
   chip_menu_model_adapter_ = std::make_unique<BirchBarMenuModelAdapter>(
       std::make_unique<BirchChipContextMenuModel>(
           /*delegate=*/chip, chip_type),
@@ -178,14 +187,23 @@ void BirchBarController::OnItemHiddenByUser(BirchItem* item) {
     return;
   }
 
+  auto iter = std::ranges::find_if(items_, base::MatchesUniquePtr(item));
+  if (iter == items_.end()) {
+    return;
+  }
+
   RemoveItemChips(item);
+
+  // Move the removing item out of the `items_` such that item-removed observers
+  // could know the item is being removed to avoid duplicated removing.
+  auto removing_item = std::move(*iter);
+  items_.erase(iter);
 
   // Erase the item from model and controller.
   Shell::Get()->birch_model()->RemoveItem(item);
   if (item->GetType() == BirchItemType::kLostMedia) {
     OnLostMediaItemRemoved();
   }
-  std::erase_if(items_, base::MatchesUniquePtr(item));
 }
 
 void BirchBarController::SetShowBirchSuggestions(bool show) {
@@ -225,6 +243,24 @@ void BirchBarController::ToggleTemperatureUnits() {
     bar_view->SetState(BirchBarView::State::kReloading);
   }
   MaybeFetchDataFromModel();
+}
+
+void BirchBarController::ProvideFeedbackForCoral() {
+  if (!coral_util::IsCoralFeedbackAllowedByPolicy(GetPrefService())) {
+    return;
+  }
+
+  base::Value::List root;
+  for (auto& item : items_) {
+    if (item->GetType() == BirchItemType::kCoral) {
+      root.Append(
+          static_cast<BirchCoralItem*>(item.get())->ToCoralItemDetails());
+    }
+  }
+  Shell::Get()->coral_controller()->OpenFeedbackDialog(
+      /*group_description=*/
+      base::WriteJsonWithOptions(root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
+          .value_or(std::string()));
 }
 
 void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {
@@ -295,6 +331,65 @@ void BirchBarController::ExecuteCommand(int command_id, int event_flags) {
   ExecuteMenuCommand(command_id, /*from_chip=*/false);
 }
 
+void BirchBarController::OnCoralGroupRemoved(const base::Token& group_id) {
+  auto iter =
+      std::find_if(items_.begin(), items_.end(), [&group_id](const auto& item) {
+        if (item->GetType() != BirchItemType::kCoral) {
+          return false;
+        }
+        return static_cast<BirchCoralItem*>(item.get())->group_id() == group_id;
+      });
+  if (iter == items_.end()) {
+    return;
+  }
+
+  RemoveItemChips(iter->get());
+  items_.erase(iter);
+}
+
+void BirchBarController::OnCoralEntityRemoved(const base::Token& group_id,
+                                              std::string_view identifier) {
+  for (auto& bar_view : bar_views_) {
+    for (const auto& chip : bar_view->chips()) {
+      auto* coral_chip = views::AsViewClass<CoralChipButton>(chip);
+      if (!coral_chip) {
+        continue;
+      }
+      const auto* item = chip->GetItem();
+      if (static_cast<const BirchCoralItem*>(item)->group_id() == group_id) {
+        if (auto* tab_app_selector_widget =
+                coral_chip->tab_app_selection_widget()) {
+          tab_app_selector_widget->RemoveItem(identifier);
+        } else {
+          coral_chip->ReloadIcon();
+        }
+      }
+    }
+  }
+}
+
+void BirchBarController::OnCoralGroupTitleUpdated(const base::Token& group_id,
+                                                  const std::string& title) {
+  for (auto& bar_view : bar_views_) {
+    for (const auto& chip : bar_view->chips()) {
+      auto* coral_chip = views::AsViewClass<CoralChipButton>(chip);
+      if (!coral_chip) {
+        continue;
+      }
+
+      auto* coral_item = static_cast<BirchCoralItem*>(coral_chip->GetItem());
+      // If `title` is empty, keep the existing placeholder title. We still want
+      // to update the chip to remove the loading animation.
+      if (coral_item->group_id() == group_id) {
+        if (!title.empty()) {
+          coral_item->set_title(base::UTF8ToUTF16(title));
+        }
+        coral_chip->UpdateTitle(base::UTF16ToUTF8(coral_item->title()));
+      }
+    }
+  }
+}
+
 void BirchBarController::MaybeFetchDataFromModel() {
   if (data_fetch_in_progress_) {
     return;
@@ -335,6 +430,16 @@ void BirchBarController::OnItemsFetchedFromModel() {
   base::UmaHistogramCustomCounts("Ash.Birch.ChipCount", items.size(),
                                  /*min=*/0, /*exclusive_max=*/10,
                                  /*buckets=*/10);
+
+  // Record the number of coral items shown.
+  auto num_coral_items =
+      std::count_if(items.begin(), items.end(),
+                    [](const std::unique_ptr<ash::BirchItem>& item) {
+                      return item->GetType() == BirchItemType::kCoral;
+                    });
+  base::UmaHistogramExactLinear("Ash.Birch.Coral.ClusterCount", num_coral_items,
+                                /*exclusive_max=*/3);
+
   RecordTimeOfDayRankingHistogram(items);
 
   for (auto& bar_view : bar_views_) {

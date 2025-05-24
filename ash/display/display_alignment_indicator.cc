@@ -242,7 +242,7 @@ class IndicatorPillView : public views::View {
 
     text_label_->SetText(text);
 
-    icon_->SetImage(arrow_image_);
+    icon_->SetImage(ui::ImageModel::FromImageSkia(arrow_image_));
   }
 
   IndicatorPillView(const IndicatorPillView&) = delete;
@@ -303,20 +303,23 @@ class IndicatorPillView : public views::View {
 
     switch (position) {
       case IndicatorPosition::kLeft:
-        icon_->SetImage(gfx::ImageSkiaOperations::CreateRotatedImage(
-            arrow_image_, SkBitmapOperations::ROTATION_180_CW));
+        icon_->SetImage(ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateRotatedImage(
+                arrow_image_, SkBitmapOperations::ROTATION_180_CW)));
         return;
       case IndicatorPosition::kRight:
         // |arrow_image_| points to right by default; no rotation required.
-        icon_->SetImage(arrow_image_);
+        icon_->SetImage(ui::ImageModel::FromImageSkia(arrow_image_));
         return;
       case IndicatorPosition::kTop:
-        icon_->SetImage(gfx::ImageSkiaOperations::CreateRotatedImage(
-            arrow_image_, SkBitmapOperations::ROTATION_270_CW));
+        icon_->SetImage(ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateRotatedImage(
+                arrow_image_, SkBitmapOperations::ROTATION_270_CW)));
         return;
       case IndicatorPosition::kBottom:
-        icon_->SetImage(gfx::ImageSkiaOperations::CreateRotatedImage(
-            arrow_image_, SkBitmapOperations::ROTATION_90_CW));
+        icon_->SetImage(ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateRotatedImage(
+                arrow_image_, SkBitmapOperations::ROTATION_90_CW)));
         return;
     }
   }

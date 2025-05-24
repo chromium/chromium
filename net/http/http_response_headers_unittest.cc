@@ -24,10 +24,7 @@
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !BUILDFLAG(CRONET_BUILD)
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
-#endif
 
 namespace net {
 
@@ -576,6 +573,18 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_Coalesced) {
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   size_t iter = 0;
+  EXPECT_EQ("", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("private", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("no-cache=\"set-cookie,server\"",
+            parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("no-store", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_EQ("", parsed->EnumerateHeader(&iter, "cache-control"));
+  EXPECT_FALSE(parsed->EnumerateHeader(&iter, "cache-control"));
+
+  // Test the deprecated overload that returns values as std::strings.
+  iter = 0;
   std::string value;
   ASSERT_TRUE(parsed->EnumerateHeader(&iter, "cache-control", &value));
   EXPECT_EQ("", value);
@@ -605,6 +614,14 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_Challenge) {
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   size_t iter = 0;
+  EXPECT_EQ("Digest realm=foobar, nonce=x, domain=y",
+            parsed->EnumerateHeader(&iter, "WWW-Authenticate"));
+  EXPECT_EQ("Basic realm=quatar",
+            parsed->EnumerateHeader(&iter, "WWW-Authenticate"));
+  EXPECT_FALSE(parsed->EnumerateHeader(&iter, "WWW-Authenticate"));
+
+  // Test the deprecated overload that returns values as std::strings.
+  iter = 0;
   std::string value;
   EXPECT_TRUE(parsed->EnumerateHeader(&iter, "WWW-Authenticate", &value));
   EXPECT_EQ("Digest realm=foobar, nonce=x, domain=y", value);
@@ -623,6 +640,12 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_DateValued) {
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
+  EXPECT_EQ("Tue, 07 Aug 2007 23:10:55 GMT",
+            parsed->EnumerateHeader(nullptr, "date"));
+  EXPECT_EQ("Wed, 01 Aug 2007 23:23:45 GMT",
+            parsed->EnumerateHeader(nullptr, "last-modified"));
+
+  // Test the deprecated overload that returns values as std::strings.
   std::string value;
   EXPECT_TRUE(parsed->EnumerateHeader(nullptr, "date", &value));
   EXPECT_EQ("Tue, 07 Aug 2007 23:10:55 GMT", value);
@@ -740,8 +763,7 @@ TEST_P(ContentTypeTest, GetMimeType) {
   value.clear();
   EXPECT_EQ(test.has_charset, parsed->GetCharset(&value));
   EXPECT_EQ(test.charset, value);
-  EXPECT_TRUE(parsed->GetNormalizedHeader("content-type", &value));
-  EXPECT_EQ(test.all_content_type, value);
+  EXPECT_EQ(parsed->GetNormalizedHeader("content-type"), test.all_content_type);
 }
 
 // clang-format off
@@ -1095,7 +1117,22 @@ const struct RequiresValidationTestData requires_validation_tests[] = {
      "stale-while-revalidate=3600\n"
      "\n",
      VALIDATION_SYNCHRONOUS},
+    // must-revalidate overrides stale-while-revalidate, so synchronous
+    // validation is needed.
+    {"HTTP/1.1 200 OK\n"
+     "date: Wed, 28 Nov 2007 00:40:11 GMT\n"
+     "cache-control: must-revalidate, max-age=300, "
+     "stale-while-revalidate=3600\n"
+     "\n",
+     VALIDATION_SYNCHRONOUS},
 
+    // must-revalidate overrides stale-while-revalidate even when they appear
+    // in reverse order in the header
+    {"HTTP/1.1 200 OK\n"
+     "date: Wed, 28 Nov 2007 00:40:11 GMT\n"
+     "cache-control: stale-while-revalidate=30, must-revalidate\n"
+     "\n",
+     VALIDATION_SYNCHRONOUS},
     // TODO(darin): Add many many more tests here.
 };
 
@@ -1452,11 +1489,17 @@ const HasStorageAccessRetryTestData has_storage_access_retry_tests[] = {
      R"(Activate-Storage-Access: retry; allowed-origin="https://example.com")"
      "\n",
      "https://example.com:123", false},
-    // Unrelated items are ignored.
+    // This is a list, not an item, so it is ignored.
     {"HTTP/1.1 200 OK\n"
      R"(Activate-Storage-Access: foo, retry; allowed-origin=*, bar)"
      "\n",
-     "https://example.com", true},
+     "https://example.com", false},
+    // This is a list (supplied in multiple field lines), not an item, so it is
+    // ignored.
+    {"HTTP/1.1 200 OK\n"
+     "Activate-Storage-Access: foo\n"
+     "Activate-Storage-Access: retry; allowed-origin=*, bar\n",
+     "https://example.com", false},
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
@@ -1780,6 +1823,10 @@ TEST_P(HasStrongValidatorsTest, HasStrongValidators) {
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   EXPECT_EQ(test.expected_result, parsed->HasStrongValidators());
+  // Having string validators implies having validators.
+  if (parsed->HasStrongValidators()) {
+    EXPECT_TRUE(parsed->HasValidators());
+  }
 }
 
 const HasStrongValidatorsTestData strong_validators_tests[] = {
@@ -1881,19 +1928,13 @@ TEST(HttpResponseHeadersTest, GetNormalizedHeaderWithEmptyValues) {
       "a:\n");
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  std::string value;
 
-  EXPECT_TRUE(parsed->GetNormalizedHeader("a", &value));
-  EXPECT_EQ(value, ", , ");
-  EXPECT_TRUE(parsed->GetNormalizedHeader("b", &value));
-  EXPECT_EQ(value, ", *");
-  EXPECT_TRUE(parsed->GetNormalizedHeader("c", &value));
-  EXPECT_EQ(value, "*, ");
-  EXPECT_TRUE(parsed->GetNormalizedHeader("d", &value));
-  EXPECT_EQ(value, "*, *");
-  EXPECT_TRUE(parsed->GetNormalizedHeader("e", &value));
-  EXPECT_EQ(value, "");
-  EXPECT_FALSE(parsed->GetNormalizedHeader("f", &value));
+  EXPECT_EQ(parsed->GetNormalizedHeader("a"), ", , ");
+  EXPECT_EQ(parsed->GetNormalizedHeader("b"), ", *");
+  EXPECT_EQ(parsed->GetNormalizedHeader("c"), "*, ");
+  EXPECT_EQ(parsed->GetNormalizedHeader("d"), "*, *");
+  EXPECT_EQ(parsed->GetNormalizedHeader("e"), "");
+  EXPECT_EQ(parsed->GetNormalizedHeader("f"), std::nullopt);
 }
 
 TEST(HttpResponseHeadersTest, GetNormalizedHeaderWithCommas) {
@@ -1907,21 +1948,15 @@ TEST(HttpResponseHeadersTest, GetNormalizedHeaderWithCommas) {
       "a: ,");
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  std::string value;
 
   // TODO(mmenke): "Normalized" headers probably should preserve the
   // leading/trailing whitespace from the original headers.
-  ASSERT_TRUE(parsed->GetNormalizedHeader("a", &value));
-  EXPECT_EQ("foo, bar, ,", value);
-  ASSERT_TRUE(parsed->GetNormalizedHeader("b", &value));
-  EXPECT_EQ(", foo, bar,", value);
-  ASSERT_TRUE(parsed->GetNormalizedHeader("c", &value));
-  EXPECT_EQ(",,,", value);
-  ASSERT_TRUE(parsed->GetNormalizedHeader("d", &value));
-  EXPECT_EQ(",  ,  ,", value);
-  ASSERT_TRUE(parsed->GetNormalizedHeader("e", &value));
-  EXPECT_EQ(",\t,\t,", value);
-  EXPECT_FALSE(parsed->GetNormalizedHeader("f", &value));
+  EXPECT_EQ(parsed->GetNormalizedHeader("a"), "foo, bar, ,");
+  EXPECT_EQ(parsed->GetNormalizedHeader("b"), ", foo, bar,");
+  EXPECT_EQ(parsed->GetNormalizedHeader("c"), ",,,");
+  EXPECT_EQ(parsed->GetNormalizedHeader("d"), ",  ,  ,");
+  EXPECT_EQ(parsed->GetNormalizedHeader("e"), ",\t,\t,");
+  EXPECT_EQ(parsed->GetNormalizedHeader("f"), std::nullopt);
 }
 
 TEST(HttpResponseHeadersTest, AddHeader) {
@@ -1995,8 +2030,6 @@ TEST(HttpResponseHeadersTest, TryToCreateWithNul) {
   EXPECT_EQ(headers, nullptr);
 }
 
-#if !BUILDFLAG(CRONET_BUILD)
-// Cronet disables tracing so this test would fail.
 TEST(HttpResponseHeadersTest, TracingSupport) {
   scoped_refptr<HttpResponseHeaders> headers = HttpResponseHeaders::TryToCreate(
       "HTTP/1.1 200 OK\n"
@@ -2006,7 +2039,6 @@ TEST(HttpResponseHeadersTest, TracingSupport) {
   EXPECT_EQ(perfetto::TracedValueToString(headers),
             "{response_code:200,headers:[{name:connection,value:keep-alive}]}");
 }
-#endif
 
 struct RemoveHeaderTestData {
   const char* orig_headers;
@@ -2785,6 +2817,64 @@ TEST(HttpResponseHeadersTest, StrictlyEqualsRawMismatch) {
 // There's no known way to produce an HttpResponseHeaders object with the same
 // `raw_headers_` but different `parsed_` structures, so there's no test for
 // that.
+
+struct FreshnessLifetimesTestCase {
+  const char* headers;
+  base::TimeDelta freshness;
+  base::TimeDelta staleness;
+};
+
+class HttpResponseHeadersFreshnessTest
+    : public testing::TestWithParam<FreshnessLifetimesTestCase> {};
+
+TEST_P(HttpResponseHeadersFreshnessTest, GetFreshnessLifetimes) {
+  const FreshnessLifetimesTestCase& test_case = GetParam();
+
+  scoped_refptr<HttpResponseHeaders> parsed(
+      new HttpResponseHeaders(HttpUtil::AssembleRawHeaders(test_case.headers)));
+
+  base::Time response_time = base::Time::Now();
+
+  HttpResponseHeaders::FreshnessLifetimes lifetimes =
+      parsed->GetFreshnessLifetimes(response_time);
+
+  EXPECT_EQ(test_case.freshness, lifetimes.freshness);
+  EXPECT_EQ(test_case.staleness, lifetimes.staleness);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    HttpResponseHeaders,
+    HttpResponseHeadersFreshnessTest,
+    testing::Values(
+        // Basic max-age directive
+        FreshnessLifetimesTestCase{"HTTP/1.1 200 OK\n"
+                                   "Cache-Control: max-age10, max-age=8a0, "
+                                   "max-age= 500, max-age=900\n\n",
+                                   base::Seconds(500), base::TimeDelta()},
+        // max-age with stale-while-revalidate
+        FreshnessLifetimesTestCase{
+            "HTTP/1.1 200 OK\n"
+            "Cache-Control: max-age=300, stale-while-revalidate=600\n\n",
+            base::Seconds(300), base::Seconds(600)},
+        // must-revalidate overrides stale-while-revalidate
+        FreshnessLifetimesTestCase{
+            "HTTP/1.1 200 OK\n"
+            "Cache-Control: max-age=400, must-revalidate, "
+            "stale-while-revalidate=200\n\n",
+            base::Seconds(400), base::TimeDelta()},
+        // no-store directive should have zero freshness and staleness
+        FreshnessLifetimesTestCase{"HTTP/1.1 200 OK\n"
+                                   "Cache-Control: no-store\n\n",
+                                   base::TimeDelta(), base::TimeDelta()},
+        // no-cache directive should have zero freshness and staleness
+        FreshnessLifetimesTestCase{"HTTP/1.1 200 OK\n"
+                                   "Cache-Control: no-cache\n\n",
+                                   base::TimeDelta(), base::TimeDelta()},
+        // no-store overrides max-age and stale-while-revalidate
+        FreshnessLifetimesTestCase{"HTTP/1.1 200 OK\n"
+                                   "Cache-Control: max-age=500, "
+                                   "stale-while-revalidate=600, no-store\n\n",
+                                   base::TimeDelta(), base::TimeDelta()}));
 
 }  // namespace
 

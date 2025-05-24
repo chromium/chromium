@@ -27,6 +27,9 @@ namespace {
 // The name for the implicit/default bucket before V10.
 constexpr char kDefaultNamePreV10[] = "default";
 
+// Quota type for deprecated persistent quota.
+constexpr int kDeprecatedPersistentQuotaType = 1;
+
 // Overwrites the buckets table with the new_buckets table after data has been
 // copied from the former into the latter.
 bool OverwriteBucketsTableSetUpIndexes(sql::Database* db) {
@@ -181,7 +184,7 @@ bool QuotaDatabaseMigrations::MigrateFromVersion7ToVersion8(
     insert_statement.BindInt64(0, bucket_id.value());
 
     // Populate storage key and host.
-    std::string storage_key_string = select_statement.ColumnString(1);
+    std::string_view storage_key_string = select_statement.ColumnStringView(1);
     insert_statement.BindString(1, storage_key_string);
 
     std::optional<blink::StorageKey> storage_key =
@@ -194,7 +197,7 @@ bool QuotaDatabaseMigrations::MigrateFromVersion7ToVersion8(
     // Populate type, name, use_count, last_accessed, last_modified,
     // expiration and quota.
     insert_statement.BindInt(3, select_statement.ColumnInt(2));
-    insert_statement.BindString(4, select_statement.ColumnString(3));
+    insert_statement.BindString(4, select_statement.ColumnStringView(3));
     insert_statement.BindInt(5, select_statement.ColumnInt(4));
     insert_statement.BindTime(6, select_statement.ColumnTime(5));
     insert_statement.BindTime(7, select_statement.ColumnTime(6));
@@ -282,11 +285,10 @@ bool QuotaDatabaseMigrations::MigrateFromVersion8ToVersion9(
     last_bucket_id = BucketId(select_statement.ColumnInt64(0));
 
     insert_statement.BindInt64(0, select_statement.ColumnInt64(0));
-    insert_statement.BindString(1, select_statement.ColumnString(1));
-    insert_statement.BindString(2, select_statement.ColumnString(2));
+    insert_statement.BindString(1, select_statement.ColumnStringView(1));
+    insert_statement.BindString(2, select_statement.ColumnStringView(2));
     insert_statement.BindInt(3, select_statement.ColumnInt(3));
-    const std::string bucket_name = select_statement.ColumnString(4);
-    insert_statement.BindString(4, bucket_name);
+    insert_statement.BindString(4, select_statement.ColumnStringView(4));
     insert_statement.BindInt(5, select_statement.ColumnInt(5));
     insert_statement.BindTime(6, select_statement.ColumnTime(6));
     insert_statement.BindTime(7, select_statement.ColumnTime(7));
@@ -352,8 +354,7 @@ bool QuotaDatabaseMigrations::MigrateFromVersion9ToVersion10(
       "DELETE FROM buckets WHERE type = ? ";
   sql::Statement delete_statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeletePersistentTypeBuckets));
-  delete_statement.BindInt(
-      0, static_cast<int>(blink::mojom::StorageType::kDeprecatedPersistent));
+  delete_statement.BindInt(0, kDeprecatedPersistentQuotaType);
   if (!delete_statement.Run()) {
     return false;
   }

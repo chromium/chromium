@@ -67,8 +67,9 @@ BackForwardButton::~BackForwardButton() = default;
 const std::u16string BackForwardButton::GetAccessiblePageLoadingMessage() {
   // If we don't have a model, there is no menu from which to obtain the title
   // of the page that is about to be loaded.
-  if (!menu_model())
+  if (!menu_model()) {
     return std::u16string();
+  }
 
   // The title of the page which is about to be loaded should be at the top of
   // the menu.
@@ -82,8 +83,9 @@ void BackForwardButton::NotifyClick(const ui::Event& event) {
   if (GetFocusManager()->GetFocusedView() !=
       BrowserView::GetBrowserViewForBrowser(browser_)->contents_web_view()) {
     const std::u16string message = GetAccessiblePageLoadingMessage();
-    if (!message.empty())
+    if (!message.empty()) {
       GetViewAccessibility().AnnounceText(message);
+    }
   }
 
   content::WebContents* web_contents =

@@ -4,7 +4,7 @@
 
 import 'chrome://internet-config-dialog/internet_config_dialog.js';
 
-import {InternetConfigDialogElement} from 'chrome://internet-config-dialog/internet_config_dialog.js';
+import type {InternetConfigDialogElement} from 'chrome://internet-config-dialog/internet_config_dialog.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -34,13 +34,12 @@ suite('internet-config-dialog', () => {
     internetConfigDialog.setErrorForTesting('bad-passphrase');
     await flushAsync();
 
-    assertTrue(!!internetConfigDialog.shadowRoot!.querySelector<HTMLDivElement>(
+    assertTrue(!!internetConfigDialog.shadowRoot!.querySelector<HTMLElement>(
         '#errorDiv'));
 
     internetConfigDialog.setErrorForTesting('out-of-range');
     await flushAsync();
-    assertFalse(
-        !!internetConfigDialog.shadowRoot!.querySelector<HTMLDivElement>(
-            '#errorDiv'));
+    assertFalse(!!internetConfigDialog.shadowRoot!.querySelector<HTMLElement>(
+        '#errorDiv'));
   });
 });

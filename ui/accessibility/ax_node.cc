@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_computed_node_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -66,7 +67,7 @@ size_t AXNode::GetChildCount() const {
   return children_.size();
 }
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
 size_t AXNode::GetSubtreeCount() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   size_t count = 1;  // |this| counts as one.
@@ -75,7 +76,7 @@ size_t AXNode::GetSubtreeCount() const {
   }
   return count;
 }
-#endif  // DCHECK_IS_ON()
+#endif  // AX_FAIL_FAST_BUILD()
 
 size_t AXNode::GetChildCountCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
@@ -726,10 +727,8 @@ std::optional<int> AXNode::CompareTo(const AXNode& other) const {
     return 1;
 
   if (our_ancestors.empty() || other_ancestors.empty()) {
-    NOTREACHED_IN_MIGRATION()
-        << "The common ancestor should be followed by two uncommon "
-           "children in the two corresponding lists of ancestors.";
-    return std::nullopt;
+    NOTREACHED() << "The common ancestor should be followed by two uncommon "
+                    "children in the two corresponding lists of ancestors.";
   }
 
   size_t this_uncommon_ancestor_index = our_ancestors.top()->GetIndexInParent();
@@ -778,6 +777,16 @@ void AXNode::SetLocation(AXNodeID offset_container_id,
   } else {
     data_.relative_bounds.transform.reset();
   }
+}
+
+void AXNode::SetScrollInfo(const int& scroll_x, const int& scroll_y) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollX, scroll_x);
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollY, scroll_y);
+}
+
+void AXNode::GetScrollInfo(int* scroll_x, int* scroll_y) const {
+  *scroll_x = GetIntAttribute(ax::mojom::IntAttribute::kScrollX);
+  *scroll_y = GetIntAttribute(ax::mojom::IntAttribute::kScrollY);
 }
 
 void AXNode::SetIndexInParent(size_t index_in_parent) {
@@ -914,41 +923,113 @@ bool AXNode::HasIntAttribute(ax::mojom::IntAttribute attribute) const {
   if (data().HasIntAttribute(attribute)) {
     return true;
   }
-  return AXComputedNodeData::CanComputeAttribute(attribute, this);
+  return CanComputeIntAttribute(attribute);
 }
 
-int AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
-  int value;
-  if (GetIntAttribute(attribute, &value)) {
-    return value;
+bool AXNode::CanComputeIntAttribute(ax::mojom::IntAttribute attribute) const {
+  // NOTE: This method must be kept strictly in sync with parent deferral logic
+  // in AXInlineTextBox::(next|previous)OnLine.
+  if (attribute != ax::mojom::IntAttribute::kNextOnLineId &&
+      attribute != ax::mojom::IntAttribute::kPreviousOnLineId) {
+    return false;
   }
-  // If missing, return the default value for AXNodeData::GetIntAttribute
-  return 0;
-}
 
-bool AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute,
-                             int* value) const {
-  if (data().GetIntAttribute(attribute, value)) {
-    return true;
+  if (!::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()) {
+    return false;
   }
-  if (AXComputedNodeData::CanComputeAttribute(attribute, this)) {
-    return GetComputedNodeData().ComputeAttribute(attribute, value);
+
+  // Inline text boxes share the same next- or previous-on-line ID with the
+  // parent when traversing across the parent's boundary. Determination of the
+  // next- or previous-on-line IDs for this type of connectivity is expensive
+  // during the serialization process. Unnecessary to duplicate the effort.
+  if (data().role != ax::mojom::Role::kInlineTextBox) {
+    return false;
   }
+
+  if (!GetParent()) {
+    return false;
+  }
+
+  if (this == GetParent()->GetFirstChild() &&
+      attribute == ax::mojom::IntAttribute::kPreviousOnLineId) {
+    return GetParent()->data().HasIntAttribute(attribute);
+  }
+
+  if (this == GetParent()->GetLastChild() &&
+      attribute == ax::mojom::IntAttribute::kNextOnLineId) {
+    return GetParent()->data().HasIntAttribute(attribute);
+  }
+
   return false;
 }
 
+int AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
+  int value = data().GetIntAttribute(attribute);
+  if (value != kDefaultIntValue || data().HasIntAttribute(attribute)) {
+    return value;
+  }
+  if (CanComputeIntAttribute(attribute)) {
+    return GetParent()->data().GetIntAttribute(attribute);
+  }
+  return kDefaultIntValue;
+}
+
 bool AXNode::HasStringAttribute(ax::mojom::StringAttribute attribute) const {
-  return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
+  if (data().HasStringAttribute(attribute)) {
+    return true;
+  }
+  return CanComputeStringAttribute(attribute);
+}
+
+bool AXNode::CanComputeStringAttribute(
+    ax::mojom::StringAttribute attribute) const {
+  switch (attribute) {
+    case ax::mojom::StringAttribute::kValue:
+      // The value attribute could be computed on the browser for content
+      // editables and ARIA text/search boxes.
+      return data().IsNonAtomicTextField();
+
+    case ax::mojom::StringAttribute::kName:
+      // The name may be suppressed when serializing an AXInlineTextBox if it
+      // can be inferred from the parent.
+      return data().role == ax::mojom::Role::kInlineTextBox &&
+             data().GetNameFrom() == ax::mojom::NameFrom::kContents &&
+             GetParent() &&
+             GetParent()->data().GetNameFrom() ==
+                 ax::mojom::NameFrom::kContents &&
+             GetParent()->data().HasStringAttribute(
+                 ax::mojom::StringAttribute::kName);
+
+    default:
+      return false;
+  }
 }
 
 const std::string& AXNode::GetStringAttribute(
     ax::mojom::StringAttribute attribute) const {
-  return GetComputedNodeData().GetOrComputeAttributeUTF8(attribute);
+  if (data().HasStringAttribute(attribute)) {
+    return data().GetStringAttribute(attribute);
+  }
+  if (CanComputeStringAttribute(attribute)) {
+    // Computed string attributes are cached.
+    return GetComputedNodeData().ComputeAttributeUTF8(attribute);
+  }
+  return base::EmptyString();
 }
 
 std::u16string AXNode::GetString16Attribute(
     ax::mojom::StringAttribute attribute) const {
-  return GetComputedNodeData().GetOrComputeAttributeUTF16(attribute);
+  // String values in AXNodeData are in utf8 format. The getter for UTF16 does
+  // an implicit conversion.
+  if (data().HasStringAttribute(attribute)) {
+    const std::string& value_utf8 = data().GetStringAttribute(attribute);
+    return base::UTF8ToUTF16(value_utf8);
+  }
+
+  if (CanComputeStringAttribute(attribute)) {
+    return GetComputedNodeData().ComputeAttributeUTF16(attribute);
+  }
+  return std::u16string();
 }
 
 bool AXNode::HasInheritedStringAttribute(
@@ -977,12 +1058,37 @@ std::u16string AXNode::GetInheritedString16Attribute(
 }
 
 bool AXNode::HasIntListAttribute(ax::mojom::IntListAttribute attribute) const {
-  return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
+  if (data().HasIntListAttribute(attribute)) {
+    return true;
+  }
+  return CanComputeIntListAttribute(attribute);
+}
+
+bool AXNode::CanComputeIntListAttribute(
+    ax::mojom::IntListAttribute attribute) const {
+  switch (attribute) {
+    case ax::mojom::IntListAttribute::kLineStarts:
+    case ax::mojom::IntListAttribute::kLineEnds:
+    case ax::mojom::IntListAttribute::kSentenceStarts:
+    case ax::mojom::IntListAttribute::kSentenceEnds:
+    case ax::mojom::IntListAttribute::kWordStarts:
+    case ax::mojom::IntListAttribute::kWordEnds:
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 const std::vector<int32_t>& AXNode::GetIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
-  return GetComputedNodeData().GetOrComputeAttribute(attribute);
+  if (data().HasIntListAttribute(attribute)) {
+    return data().GetIntListAttribute(attribute);
+  }
+  if (CanComputeIntListAttribute(attribute)) {
+    return GetComputedNodeData().ComputeAttribute(attribute);
+  }
+  return data().GetIntListAttribute(ax::mojom::IntListAttribute::kNone);
 }
 
 AXLanguageInfo* AXNode::GetLanguageInfo() const {
@@ -1439,6 +1545,9 @@ const std::vector<raw_ptr<AXNode, VectorExperimental>>*
 AXNode::GetExtraMacNodes() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   // Should only be available on the table node itself, not any of its children.
+  if (!IsTable() || IsInvisibleOrIgnored()) {
+    return nullptr;
+  }
   const AXTableInfo* table_info = tree_->GetTableInfo(this);
   if (!table_info)
     return nullptr;
@@ -1446,9 +1555,27 @@ AXNode::GetExtraMacNodes() const {
   return &table_info->extra_mac_nodes;
 }
 
+#if BUILDFLAG(IS_LINUX)
+AXNode* AXNode::GetExtraAnnouncementNode(
+    ax::mojom::AriaNotificationPriority priority_property) const {
+  if (!tree_->extra_announcement_nodes()) {
+    tree_->CreateExtraAnnouncementNodes();
+  }
+
+  switch (priority_property) {
+    case ax::mojom::AriaNotificationPriority::kHigh:
+      return &tree_->extra_announcement_nodes()->AssertiveNode();
+    case ax::mojom::AriaNotificationPriority::kNormal:
+      return &tree_->extra_announcement_nodes()->PoliteNode();
+  }
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 bool AXNode::IsGenerated() const {
   bool is_generated_node = id() < 0 && id() > kInitialEmptyDocumentRootNodeID;
 #if DCHECK_IS_ON()
+#if BUILDFLAG(IS_APPLE)
   // Currently, the only generated nodes are columns and table header
   // containers, and when those roles occur, they are always extra mac nodes.
   // This could change in the future.
@@ -1456,7 +1583,13 @@ bool AXNode::IsGenerated() const {
       GetRole() == ax::mojom::Role::kColumn ||
       GetRole() == ax::mojom::Role::kTableHeaderContainer;
   DCHECK_EQ(is_generated_node, is_extra_mac_node_role);
+#elif BUILDFLAG(IS_LINUX)
+  //  On Linux, generated nodes are always children of the root.
+  if (GetParent() && GetParent()->GetManager()) {
+    DCHECK(GetParent()->GetManager()->IsRoot());
+  }
 #endif
+#endif  // DCHECK_IS_ON()
   return is_generated_node;
 }
 
@@ -1584,9 +1717,11 @@ std::optional<int> AXNode::GetTableCellColSpan() const {
 
   // Otherwise, try to return a colspan, with 1 as the default if it's not
   // specified.
-  int col_span;
-  if (GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan, &col_span))
+  int col_span = GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan);
+  if (col_span ||
+      HasIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan)) {
     return col_span;
+  }
   return 1;
 }
 
@@ -1597,9 +1732,10 @@ std::optional<int> AXNode::GetTableCellRowSpan() const {
 
   // Otherwise, try to return a row span, with 1 as the default if it's not
   // specified.
-  int row_span;
-  if (GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan, &row_span))
+  int row_span = GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan);
+  if (row_span || HasIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan)) {
     return row_span;
+  }
   return 1;
 }
 
@@ -1698,11 +1834,13 @@ bool AXNode::IsCellOrHeaderOfAriaGrid() const {
 
 AXTableInfo* AXNode::GetAncestorTableInfo() const {
   const AXNode* node = this;
-  while (node && !node->IsTable())
-    node = node->GetParent();
-  if (node)
-    return tree_->GetTableInfo(node);
-  return nullptr;
+  while (node && !node->IsTable()) {
+    node = node->GetUnignoredParent();
+  }
+  if (!node || node->IsInvisibleOrIgnored()) {
+    return nullptr;
+  }
+  return tree_->GetTableInfo(node);
 }
 
 void AXNode::IdVectorToNodeVector(const std::vector<AXNodeID>& ids,
@@ -1766,6 +1904,7 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
   // Tree grid rows and grouped disclosure triangles should be treated as
   // ordered set items.
   if (IsRowInTreeGrid(ordered_set) ||
+      item_role == ax::mojom::Role::kDisclosureTriangle ||
       item_role == ax::mojom::Role::kDisclosureTriangleGrouped) {
     return true;
   }
@@ -1820,10 +1959,15 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
 
 bool AXNode::IsIgnoredContainerForOrderedSet() const {
   return IsIgnored() || IsEmbeddedGroup() ||
+         GetRole() == ax::mojom::Role::kCell ||
          GetRole() == ax::mojom::Role::kDetails ||
          GetRole() == ax::mojom::Role::kLabelText ||
+         GetRole() == ax::mojom::Role::kLayoutTableCell ||
+         GetRole() == ax::mojom::Role::kLayoutTableRow ||
          GetRole() == ax::mojom::Role::kListItem ||
          GetRole() == ax::mojom::Role::kGenericContainer ||
+         GetRole() == ax::mojom::Role::kGridCell ||
+         GetRole() == ax::mojom::Role::kRow ||
          GetRole() == ax::mojom::Role::kScrollView ||
          GetRole() == ax::mojom::Role::kUnknown;
 }
@@ -1955,14 +2099,16 @@ std::string AXNode::GetTextForRangeValue() const {
   DCHECK(data().IsRangeValueSupported());
   std::string range_value =
       GetStringAttribute(ax::mojom::StringAttribute::kValue);
-  float numeric_value;
-  if (range_value.empty() &&
-      GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
-                        &numeric_value)) {
-    // This method of number to string conversion creates a localized string
-    // and avoids padding with extra zeros after the decimal point.
-    // For example, 3.5 is converted to "3.5" rather than "3.50000".
-    return base::StringPrintf("%g", numeric_value);
+  if (range_value.empty()) {
+    float numeric_value =
+        GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
+    if (numeric_value != AXNode::kDefaultFloatValue ||
+        HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange)) {
+      // This method of number to string conversion creates a localized string
+      // and avoids padding with extra zeros after the decimal point.
+      // For example, 3.5 is converted to "3.5" rather than "3.50000".
+      return base::StringPrintf("%g", numeric_value);
+    }
   }
   return range_value;
 }

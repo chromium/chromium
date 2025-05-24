@@ -4,9 +4,10 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 
+#include <algorithm>
+
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -109,14 +110,12 @@ void SharedImageBacking::OnContextLost() {
 SkImageInfo SharedImageBacking::AsSkImageInfo(int plane_index) const {
   gfx::Size plane_size = format_.GetPlaneSize(plane_index, size_);
   return SkImageInfo::Make(plane_size.width(), plane_size.height(),
-                           viz::ToClosestSkColorType(
-                               /*gpu_compositing=*/true, format(), plane_index),
+                           viz::ToClosestSkColorType(format(), plane_index),
                            alpha_type_, color_space_.ToSkColorSpace());
 }
 
 bool SharedImageBacking::CopyToGpuMemoryBuffer() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void SharedImageBacking::CopyToGpuMemoryBufferAsync(
@@ -128,14 +127,12 @@ void SharedImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
 
 bool SharedImageBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SharedImageBacking::ReadbackToMemory(
     const std::vector<SkPixmap>& pixmaps) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void SharedImageBacking::ReadbackToMemoryAsync(
@@ -347,7 +344,7 @@ void SharedImageBacking::ReleaseRef(SharedImageRepresentation* representation) {
   AutoLock auto_lock(this);
   DCHECK(is_ref_counted_);
 
-  auto found = base::ranges::find(refs_, representation);
+  auto found = std::ranges::find(refs_, representation);
   CHECK(found != refs_.end(), base::NotFatalUntil::M130);
 
   // If the found representation is the first (owning) ref, free the attributed
@@ -388,6 +385,12 @@ void SharedImageBacking::UnregisterImageFactory() {
   factory_ = nullptr;
 }
 
+void SharedImageBacking::SetSharedImagePoolId(SharedImagePoolId pool_id) {
+  // There should be no existing pool_id already on this backing.
+  CHECK(!pool_id_);
+  pool_id_ = std::move(pool_id);
+}
+
 const char* SharedImageBacking::GetName() const {
   return BackingTypeToString(GetType());
 }
@@ -396,19 +399,6 @@ bool SharedImageBacking::HasAnyRefs() const {
   AutoLock auto_lock(this);
 
   return !refs_.empty();
-}
-
-void SharedImageBacking::OnReadSucceeded() {
-  AutoLock auto_lock(this);
-  if (scoped_write_uma_) {
-    scoped_write_uma_->SetConsumed();
-    scoped_write_uma_.reset();
-  }
-}
-
-void SharedImageBacking::OnWriteSucceeded() {
-  AutoLock auto_lock(this);
-  scoped_write_uma_.emplace();
 }
 
 size_t SharedImageBacking::GetEstimatedSize() const {
@@ -483,6 +473,14 @@ void ClearTrackingSharedImageBacking::SetClearedRectInternal(
   cleared_rect_ = cleared_rect;
 }
 
+void ClearTrackingSharedImageBacking::SetClearedInternal() {
+  cleared_rect_ = gfx::Rect(size());
+}
+
+bool ClearTrackingSharedImageBacking::IsClearedInternal() const {
+  return cleared_rect_ == gfx::Rect(size());
+}
+
 scoped_refptr<gfx::NativePixmap> SharedImageBacking::GetNativePixmap() {
   return nullptr;
 }
@@ -491,8 +489,7 @@ gfx::GpuMemoryBufferHandle SharedImageBacking::GetGpuMemoryBufferHandle() {
   // Reaching here is invalid since this method should be only called for
   // backings which implements it,i.e., memory buffer handle should only be
   // retrieved from the backings which supports native buffer or shared memory.
-  NOTREACHED_IN_MIGRATION();
-  return gfx::GpuMemoryBufferHandle();
+  NOTREACHED();
 }
 
 bool SharedImageBacking::IsPurgeable() const {

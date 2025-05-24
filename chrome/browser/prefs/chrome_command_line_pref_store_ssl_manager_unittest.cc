@@ -22,7 +22,7 @@
 
 class CommandLinePrefStoreSSLManagerTest : public testing::Test {
  public:
-  CommandLinePrefStoreSSLManagerTest() {}
+  CommandLinePrefStoreSSLManagerTest() = default;
 
  protected:
   content::BrowserTaskEnvironment task_environment_;

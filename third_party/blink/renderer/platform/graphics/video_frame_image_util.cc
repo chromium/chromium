@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/release_callback.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_frame.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -43,7 +45,11 @@ bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
   return false;
 #else
-  return frame.NumTextures() == 1 &&
+  // A VF created from MappableSI will have a mappable shared image but might
+  // not be intended for rendering in the tests.
+  // |frame.IsTexturableForTesting()| here checks whether the tests have
+  // explicitly marked the VF as non texturable or not.
+  return frame.HasSharedImage() && frame.IsTexturableForTesting() &&
          (frame.format() == media::PIXEL_FORMAT_ARGB ||
           frame.format() == media::PIXEL_FORMAT_XRGB ||
           frame.format() == media::PIXEL_FORMAT_ABGR ||
@@ -134,23 +140,16 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     CanvasResourceProvider* resource_provider,
     media::PaintCanvasVideoRenderer* video_renderer,
     const gfx::Rect& dest_rect,
-    bool prefer_tagged_orientation) {
-  auto frame_sk_color_space = frame->CompatRGBColorSpace().ToSkColorSpace();
-  if (!frame_sk_color_space) {
-    frame_sk_color_space = SkColorSpace::MakeSRGB();
-  }
+    bool prefer_tagged_orientation,
+    bool reinterpret_video_as_srgb) {
+  auto frame_color_space = frame->CompatRGBColorSpace();
 
   DCHECK(frame);
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
-  if (allow_zero_copy_images && dest_rect.IsEmpty() &&
-      transform == media::kNoTransformation && CanUseZeroCopyImages(*frame)) {
-    // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
-    // may never happen, and SkColorSpace doesn't know about it.
-    const SkImageInfo sk_image_info = SkImageInfo::Make(
-        frame->coded_size().width(), frame->coded_size().height(),
-        kN32_SkColorType, kUnpremul_SkAlphaType, frame_sk_color_space);
-
+  if (allow_zero_copy_images && !reinterpret_video_as_srgb &&
+      dest_rect.IsEmpty() && transform == media::kNoTransformation &&
+      CanUseZeroCopyImages(*frame)) {
     // Hold a ref by storing it in the release callback.
     auto release_callback = WTF::BindOnce(
         [](scoped_refptr<media::VideoFrame> frame,
@@ -158,55 +157,28 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
            const gpu::SyncToken& sync_token, bool is_lost) {
           if (is_lost || !context_provider)
             return;
-          auto* ri = context_provider->ContextProvider()->RasterInterface();
+          auto* ri = context_provider->ContextProvider().RasterInterface();
           media::WaitAndReplaceSyncTokenClient client(ri);
           frame->UpdateReleaseSyncToken(&client);
         },
         frame, SharedGpuContext::ContextProviderWrapper());
 
-    if (frame->HasSharedImage()) {
-      return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          frame->shared_image(), frame->mailbox_holder(0).sync_token, 0u,
-          sk_image_info, frame->mailbox_holder(0).texture_target,
-          frame->metadata().texture_origin_is_top_left,
-          // Pass nullptr for |context_provider_wrapper|, because we don't
-          // know which context the mailbox came from. It is used only to
-          // detect when the mailbox is invalid due to context loss, and is
-          // ignored when |is_cross_thread|.
-          base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
-          // Pass null |context_thread_ref|, again because we don't know
-          // which context the mailbox came from. This should always trigger
-          // |is_cross_thread|.
-          base::PlatformThreadRef(),
-          // The task runner is only used for |release_callback|.
-          ThreadScheduler::Current()->CleanupTaskRunner(),
-          std::move(release_callback),
-          /*supports_display_compositing=*/true,
-          // TODO(junov): Figure out how to determine whether frame is an
-          // overlay candidate. StorageType info seems insufficient.
-          /*is_overlay_candidate=*/false);
-    } else {
-      return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-          frame->mailbox_holder(0).mailbox, frame->mailbox_holder(0).sync_token,
-          0u, sk_image_info, frame->mailbox_holder(0).texture_target,
-          frame->metadata().texture_origin_is_top_left,
-          // Pass nullptr for |context_provider_wrapper|, because we don't
-          // know which context the mailbox came from. It is used only to
-          // detect when the mailbox is invalid due to context loss, and is
-          // ignored when |is_cross_thread|.
-          base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
-          // Pass null |context_thread_ref|, again because we don't know
-          // which context the mailbox came from. This should always trigger
-          // |is_cross_thread|.
-          base::PlatformThreadRef(),
-          // The task runner is only used for |release_callback|.
-          ThreadScheduler::Current()->CleanupTaskRunner(),
-          std::move(release_callback),
-          /*supports_display_compositing=*/true,
-          // TODO(junov): Figure out how to determine whether frame is an
-          // overlay candidate. StorageType info seems insufficient.
-          /*is_overlay_candidate=*/false);
-    }
+    return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+        frame->shared_image(), frame->acquire_sync_token(), 0u,
+        frame->coded_size(), GetN32FormatForCanvas(), kUnpremul_SkAlphaType,
+        frame_color_space,
+        // Pass nullptr for |context_provider_wrapper|, because we don't
+        // know which context the mailbox came from. It is used only to
+        // detect when the mailbox is invalid due to context loss, and is
+        // ignored when |is_cross_thread|.
+        base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
+        // Pass null |context_thread_ref|, again because we don't know
+        // which context the mailbox came from. This should always trigger
+        // |is_cross_thread|.
+        base::PlatformThreadRef(),
+        // The task runner is only used for |release_callback|.
+        ThreadScheduler::Current()->CleanupTaskRunner(),
+        std::move(release_callback));
   }
 
   gfx::Rect final_dest_rect = dest_rect;
@@ -232,15 +204,13 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   }
 
   auto raster_context_provider = GetRasterContextProvider();
-  // TODO(https://crbug.com/1341235): The choice of color type and alpha type
-  // inappropriate in many circumstances.
-  const auto resource_provider_info = SkImageInfo::Make(
-      gfx::SizeToSkISize(final_dest_rect.size()), kN32_SkColorType,
-      kPremul_SkAlphaType, frame_sk_color_space);
   std::unique_ptr<CanvasResourceProvider> local_resource_provider;
+  // TODO(https://crbug.com/1341235): The choice of format and alpha type
+  // is inappropriate in many circumstances.
   if (!resource_provider) {
     local_resource_provider = CreateResourceProviderForVideoFrame(
-        resource_provider_info, raster_context_provider.get());
+        final_dest_rect.size(), GetN32FormatForCanvas(), kPremul_SkAlphaType,
+        frame_color_space, raster_context_provider.get());
     if (!local_resource_provider) {
       DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
       return nullptr;
@@ -255,7 +225,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   if (!DrawVideoFrameIntoResourceProvider(
           std::move(frame), resource_provider, raster_context_provider.get(),
           final_dest_rect, video_renderer,
-          /*ignore_video_transformation=*/prefer_tagged_orientation)) {
+          /*ignore_video_transformation=*/prefer_tagged_orientation,
+          /*reinterpret_video_as_srgb=*/reinterpret_video_as_srgb)) {
     return nullptr;
   }
 
@@ -272,12 +243,17 @@ bool DrawVideoFrameIntoResourceProvider(
     viz::RasterContextProvider* raster_context_provider,
     const gfx::Rect& dest_rect,
     media::PaintCanvasVideoRenderer* video_renderer,
-    bool ignore_video_transformation) {
+    bool ignore_video_transformation,
+    bool reinterpret_video_as_srgb) {
   DCHECK(frame);
   DCHECK(resource_provider);
   DCHECK(gfx::Rect(resource_provider->Size()).Contains(dest_rect));
 
-  if (frame->HasTextures()) {
+  // A VF created from MappableSI will have a mappable shared image but might
+  // not be intended for rendering in the tests.
+  // |frame.IsTexturableForTesting()| here checks whether the tests have
+  // explicitly marked the VF as non texturable or not.
+  if (frame->HasSharedImage() && frame->IsTexturableForTesting()) {
     if (!raster_context_provider) {
       DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
                      "RasterContextProvider.";
@@ -319,6 +295,7 @@ bool DrawVideoFrameIntoResourceProvider(
       ignore_video_transformation
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
+  params.reinterpret_as_srgb = reinterpret_video_as_srgb;
   video_renderer->Paint(frame.get(),
                         &resource_provider->Canvas(/*needs_will_draw*/ true),
                         media_flags, params, raster_context_provider);
@@ -331,8 +308,8 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
                               bool ignore_video_transformation) {
   viz::RasterContextProvider* raster_context_provider = nullptr;
   if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-    if (auto* context_provider = wrapper->ContextProvider())
-      raster_context_provider = context_provider->RasterContextProvider();
+    raster_context_provider =
+        wrapper->ContextProvider().RasterContextProvider();
   }
 
   media::PaintCanvasVideoRenderer video_renderer;
@@ -351,24 +328,24 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
   if (!wrapper)
     return nullptr;
 
-  if (auto* provider = wrapper->ContextProvider())
-    return base::WrapRefCounted(provider->RasterContextProvider());
-
-  return nullptr;
+  return base::WrapRefCounted(
+      wrapper->ContextProvider().RasterContextProvider());
 }
 
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
-    const SkImageInfo& info,
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
     viz::RasterContextProvider* raster_context_provider) {
-  constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kLow;
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
-    return CanvasResourceProvider::CreateBitmapProvider(info, kFilterQuality,
-                                                        kShouldInitialize);
+    return CanvasResourceProvider::CreateBitmapProvider(
+        size, format, alpha_type, color_space, kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(
-      info, kFilterQuality, kShouldInitialize,
+      size, format, alpha_type, color_space, kShouldInitialize,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }

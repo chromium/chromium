@@ -1,0 +1,86 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "lens_coordinator.h",
+    "lens_coordinator.mm",
+    "lens_modal_animator.h",
+    "lens_modal_animator.mm",
+  ]
+  deps = [
+    ":features",
+    ":lens_availability",
+    ":lens_entrypoint",
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/lens",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/first_run/ui_bundled/best_features/ui:best_features_item",
+    "//ios/chrome/browser/first_run/ui_bundled/welcome_back/model",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/tips_manager/model:factory",
+    "//ios/chrome/browser/tips_manager/model:tips_manager",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web_state_list/model",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/common/app_group",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ios/web/public/navigation",
+    "//ui/base",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("lens_availability") {
+  sources = [
+    "lens_availability.h",
+    "lens_availability.mm",
+  ]
+  deps = [
+    ":lens_entrypoint",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ui/base",
+  ]
+}
+
+source_set("lens_entrypoint") {
+  sources = [
+    "lens_entrypoint.h",
+    "lens_entrypoint.mm",
+  ]
+  deps = []
+}

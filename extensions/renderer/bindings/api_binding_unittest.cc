@@ -739,12 +739,7 @@ TEST_F(APIBindingUnittest, TestProperties) {
       "    'type': 'string',"
       "    'platforms': ['linux']"
       "  },"
-      "  'lacrosOnly': {"
-      "    'value': 'lacros',"
-      "    'type': 'string',"
-      "    'platforms': ['lacros']"
-      "  },"
-      "  'notLinuxOrLacros': {"
+      "  'notLinux': {"
       "    'value': 'nonlinux',"
       "    'type': 'string',"
       "    'platforms': ["
@@ -761,29 +756,16 @@ TEST_F(APIBindingUnittest, TestProperties) {
   EXPECT_EQ(R"({"subprop1":"some value","subprop2":true})",
             GetStringPropertyFromObject(binding_object, context, "prop2"));
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_EQ("\"lacros\"",
-            GetStringPropertyFromObject(binding_object, context, "lacrosOnly"));
-  EXPECT_EQ("undefined",
-            GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
-  EXPECT_EQ("undefined", GetStringPropertyFromObject(binding_object, context,
-                                                     "notLinuxOrLacros"));
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   EXPECT_EQ("\"linux\"",
             GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
-  EXPECT_EQ("undefined", GetStringPropertyFromObject(binding_object, context,
-                                                     "notLinuxOrLacros"));
   EXPECT_EQ("undefined",
-            GetStringPropertyFromObject(binding_object, context, "lacrosOnly"));
+            GetStringPropertyFromObject(binding_object, context, "notLinux"));
 #else
   EXPECT_EQ("undefined",
             GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
-  EXPECT_EQ("undefined",
-            GetStringPropertyFromObject(binding_object, context, "lacrosOnly"));
-  EXPECT_EQ("\"nonlinux\"", GetStringPropertyFromObject(binding_object, context,
-                                                        "notLinuxOrLacros"));
+  EXPECT_EQ("\"nonlinux\"",
+            GetStringPropertyFromObject(binding_object, context, "notLinux"));
 #endif
 }
 
@@ -2672,6 +2654,32 @@ TEST_F(APIBindingUnittest, TestPromiseWithJSUpdateArgumentsPostValidate) {
     EXPECT_EQ(R"(6)", GetStringPropertyFromObject(context->Global(), context,
                                                   "firstArgument"));
   }
+}
+
+TEST_F(APIBindingUnittest, UnicodeArgumentsPassedCorrectly) {
+  SetFunctions(kFunctions);
+  InitializeBinding();
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  // This contains a non-BMP Unicode character, which should be correctly passed
+  // as an argument to the function, through the UTF-8 -> UTF-16 -> UTF-8 round
+  // trip.
+  constexpr char kSource[] = u8"(function(obj) { obj.oneString('🤡'); })";
+  constexpr char kExpectation[] = u8"🤡";
+
+  v8::Local<v8::Function> func = FunctionFromString(context, kSource);
+  ASSERT_FALSE(func.IsEmpty());
+
+  v8::Local<v8::Value> argv[] = {binding()->CreateInstance(context)};
+  RunFunction(func, context, 1, argv);
+  ASSERT_TRUE(last_request());
+
+  ASSERT_EQ(1u, last_request()->arguments_list.size());
+  base::Value str_value = last_request()->arguments_list.front().Clone();
+  ASSERT_TRUE(str_value.is_string());
+  ASSERT_EQ(kExpectation, *str_value.GetIfString());
 }
 
 }  // namespace extensions

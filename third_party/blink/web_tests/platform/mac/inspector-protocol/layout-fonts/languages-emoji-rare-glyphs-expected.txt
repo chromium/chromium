@@ -29,8 +29,11 @@
 
 ☔︎♐︎☺☺︎☃☃︎☯︎☯™™︎00︎
 #text_emoji:
-"Apple Symbols" : 17,
-"Times" : 2
+"Times" : 4,
+"Apple Symbols" : 2,
+"AppleMyungjo" : 2,
+"Hiragino Mincho ProN" : 2,
+"Times New Roman" : 2
 
 𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏
 #egyptian_hieroglyphs:

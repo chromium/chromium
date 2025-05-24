@@ -8,10 +8,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** Java wrapper of the payment manifest web data service. */
 @JNINamespace("payments")
+@NullMarked
 public class PaymentManifestWebDataService {
     /** Interface for the callback to invoke when getting data from the web data service. */
     public interface PaymentManifestWebDataServiceCallback {

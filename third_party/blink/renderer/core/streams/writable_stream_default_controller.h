@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_DEFAULT_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_DEFAULT_CONTROLLER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -17,7 +18,6 @@ class AbortController;
 class AbortSignal;
 class ExceptionState;
 class QueueWithSizes;
-class ScriptFunction;
 class ScriptState;
 class ScriptValue;
 class StrategySizeAlgorithm;
@@ -47,7 +47,8 @@ class CORE_EXPORT WritableStreamDefaultController final
   //
 
   // https://streams.spec.whatwg.org/#ws-default-controller-private-abort
-  v8::Local<v8::Promise> AbortSteps(ScriptState*, v8::Local<v8::Value> reason);
+  ScriptPromise<IDLUndefined> AbortSteps(ScriptState*,
+                                         v8::Local<v8::Value> reason);
 
   // https://streams.spec.whatwg.org/#ws-default-controller-private-error
   void ErrorSteps();
@@ -120,6 +121,9 @@ class CORE_EXPORT WritableStreamDefaultController final
   void Trace(Visitor*) const override;
 
  private:
+  class ProcessWriteResolveFunction;
+  class ProcessWriteRejectFunction;
+
   // https://streams.spec.whatwg.org/#writable-stream-default-controller-clear-algorithms
   static void ClearAlgorithms(WritableStreamDefaultController*);
 
@@ -156,8 +160,8 @@ class CORE_EXPORT WritableStreamDefaultController final
   double strategy_high_water_mark_ = 0.0;
   Member<StrategySizeAlgorithm> strategy_size_algorithm_;
   Member<StreamAlgorithm> write_algorithm_;
-  Member<ScriptFunction> resolve_function_;
-  Member<ScriptFunction> reject_function_;
+  Member<ProcessWriteResolveFunction> resolve_function_;
+  Member<ProcessWriteRejectFunction> reject_function_;
 };
 
 }  // namespace blink

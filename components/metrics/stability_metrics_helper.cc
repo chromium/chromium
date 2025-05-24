@@ -87,6 +87,18 @@ void RecordRendererAbnormalTerminationByHostedContentType(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+std::string CdmMetricsNameToUmaPrefix(const std::string& metrics_name) {
+  const std::string uma_prefix = "Stability.Media.";
+
+  if (metrics_name == "media.mojom.CdmServiceBroker") {
+    return uma_prefix + "CdmServiceBroker.";
+  } else if (metrics_name == "media.mojom.MediaFoundationServiceBroker") {
+    return uma_prefix + "MediaFoundationServiceBroker.";
+  }
+
+  NOTREACHED();
+}
+
 }  // namespace
 
 StabilityMetricsHelper::StabilityMetricsHelper(PrefService* local_state)
@@ -94,7 +106,7 @@ StabilityMetricsHelper::StabilityMetricsHelper(PrefService* local_state)
   DCHECK(local_state_);
 }
 
-StabilityMetricsHelper::~StabilityMetricsHelper() {}
+StabilityMetricsHelper::~StabilityMetricsHelper() = default;
 
 #if BUILDFLAG(IS_ANDROID)
 void StabilityMetricsHelper::ProvideStabilityMetrics(
@@ -174,6 +186,54 @@ void StabilityMetricsHelper::BrowserUtilityProcessLaunchFailed(
   // trigger a Stability Event.
 }
 
+void StabilityMetricsHelper::CdmUtilityProcessLaunched(
+    const std::string& metrics_name) {
+  DVLOG(3) << __func__ << ": metrics_name=" << metrics_name;
+
+  // If failed to launch, we will record the same UMA as False in
+  // `CdmUtilityProcessLaunchFailed()` method.
+  base::UmaHistogramBoolean(CdmMetricsNameToUmaPrefix(metrics_name) + "Launch",
+                            true);
+}
+
+void StabilityMetricsHelper::CdmUtilityProcessCrashed(
+    const std::string& metrics_name,
+    int exit_code) {
+  DVLOG(3) << __func__ << ": metrics_name=" << metrics_name
+           << ", exit_code=" << exit_code;
+
+  base::UmaHistogramSparse(
+      CdmMetricsNameToUmaPrefix(metrics_name) + "Crash.ExitCode", exit_code);
+}
+
+void StabilityMetricsHelper::CdmUtilityProcessLaunchFailed(
+    const std::string& metrics_name,
+    int launch_error_code
+#if BUILDFLAG(IS_WIN)
+    ,
+    DWORD last_error
+#endif
+) {
+  DVLOG(3) << __func__ << ": metrics_name=" << metrics_name
+#if BUILDFLAG(IS_WIN)
+           << ", launch_error_code=" << launch_error_code
+           << ", last_error=" << last_error;
+#else
+           << ", launch_error_code=" << launch_error_code;
+#endif
+
+  base::UmaHistogramBoolean(CdmMetricsNameToUmaPrefix(metrics_name) + "Launch",
+                            false);
+  base::UmaHistogramSparse(
+      CdmMetricsNameToUmaPrefix(metrics_name) + "Launch.LaunchErrorCode",
+      launch_error_code);
+#if BUILDFLAG(IS_WIN)
+  base::UmaHistogramSparse(
+      CdmMetricsNameToUmaPrefix(metrics_name) + "Launch.WinLastError",
+      last_error);
+#endif
+}
+
 void StabilityMetricsHelper::LogLoadStarted() {
 #if BUILDFLAG(IS_ANDROID)
   IncrementPrefValue(prefs::kStabilityPageLoadCount);
@@ -242,8 +302,7 @@ void StabilityMetricsHelper::LogRendererCrash(
       break;
 #endif
     case base::TERMINATION_STATUS_MAX_ENUM:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -276,12 +335,13 @@ void StabilityMetricsHelper::LogRendererCrashImpl(
     CoarseRendererType renderer_type,
     int exit_code) {
   if (renderer_type == CoarseRendererType::kExtension) {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-    NOTREACHED_IN_MIGRATION();
-#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     RecordStabilityEvent(StabilityEventType::kExtensionCrash);
     base::UmaHistogramSparse("CrashExitCodes.Extension",
                              MapCrashExitCodeForHistogram(exit_code));
+#else
+    NOTREACHED();
+#endif
   } else {
     IncreaseRendererCrashCount();
     base::UmaHistogramSparse("CrashExitCodes.Renderer",

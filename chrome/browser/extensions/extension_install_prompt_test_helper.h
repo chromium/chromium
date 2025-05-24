@@ -24,13 +24,13 @@ class ExtensionInstallPromptTestHelper {
   // Returns a callback to be used with the ExtensionInstallPrompt.
   ExtensionInstallPrompt::DoneCallback GetCallback();
 
-  // Note: This causes |ADD_FAILURE()| if |payload_| has not been set.
+  // Note: This causes `ADD_FAILURE()` if `payload_` has not been set.
   ExtensionInstallPrompt::DoneCallbackPayload payload() const;
 
-  // Note: This causes |ADD_FAILURE()| if |payload_| has not been set.
+  // Note: This causes `ADD_FAILURE()` if `payload_` has not been set.
   ExtensionInstallPrompt::Result result() const;
 
-  // Note: This causes |ADD_FAILURE()| if |payload_| has not been set.
+  // Note: This causes `ADD_FAILURE()` if `payload_` has not been set.
   std::string justification() const;
 
   bool has_payload() const { return payload_ != nullptr; }

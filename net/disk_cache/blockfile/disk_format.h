@@ -144,7 +144,7 @@ enum EntryFlags {
 // Rankings information for a given entry.
 struct RankingsNode {
   uint64_t last_used;           // LRU info.
-  uint64_t last_modified;       // LRU info.
+  uint64_t no_longer_used_last_modified;
   CacheAddr   next;             // LRU list.
   CacheAddr   prev;             // LRU list.
   CacheAddr   contents;         // Address of the EntryStore.

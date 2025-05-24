@@ -20,6 +20,9 @@ enum ClientId {
 
   // Tracked at launch/4279123.
   NtpTabResumption,
+
+  // Tracked at launch/4341062.
+  HistoryEmbeddings,
 };
 
 // Options for image fetching.

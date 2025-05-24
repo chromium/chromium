@@ -16,31 +16,22 @@ namespace autofill {
 HeuristicSource GetActiveHeuristicSource() {
   if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions) &&
       features::kAutofillModelPredictionsAreActive.Get()) {
-    return HeuristicSource::kMachineLearning;
+    return HeuristicSource::kAutofillMachineLearning;
   }
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  return GetActiveRegexFeatures().empty()
-             ? HeuristicSource::kDefaultRegexes
-             : HeuristicSource::kExperimentalRegexes;
-#else
-  return HeuristicSource::kLegacyRegexes;
-#endif
+  return HeuristicSource::kRegexes;
 }
 
 std::optional<PatternFile> HeuristicSourceToPatternFile(
     HeuristicSource source) {
   switch (source) {
+    case HeuristicSource::kRegexes:
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    case HeuristicSource::kLegacyRegexes:
       return PatternFile::kLegacy;
 #else
-    case HeuristicSource::kDefaultRegexes:
-    case HeuristicSource::kExperimentalRegexes:
       return PatternFile::kDefault;
-    case HeuristicSource::kPredictionImprovementRegexes:
-      return PatternFile::kPredictionImprovements;
 #endif
-    case autofill::HeuristicSource::kMachineLearning:
+    case HeuristicSource::kAutofillMachineLearning:
+    case HeuristicSource::kPasswordManagerMachineLearning:
       return std::nullopt;
   }
   NOTREACHED();

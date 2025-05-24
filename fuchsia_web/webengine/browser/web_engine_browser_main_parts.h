@@ -7,10 +7,12 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromecast_buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"
@@ -120,7 +122,7 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   // Quits the main loop and gracefully shuts down the instance.
   void BeginGracefulShutdown();
 
-  content::ContentBrowserClient* const browser_client_;
+  const raw_ptr<content::ContentBrowserClient> browser_client_;
 
   std::unique_ptr<aura::ScreenOzone> screen_;
 

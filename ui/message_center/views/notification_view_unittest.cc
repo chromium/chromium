@@ -8,10 +8,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
@@ -38,7 +38,7 @@
 #include "ui/views/widget/widget_utils.h"
 
 // ChromeOS/Ash uses `AshNotificationView` instead of `NotificationView`.
-static_assert(!BUILDFLAG(IS_CHROMEOS_ASH));
+static_assert(!BUILDFLAG(IS_CHROMEOS));
 
 namespace message_center {
 
@@ -72,15 +72,6 @@ SkColor DeriveMinContrastColor(SkColor foreground, SkColor background) {
   EXPECT_GE(contrast_ratio, color_utils::kMinimumReadableContrastRatio);
   return contrast_color;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns the same value as AshColorProvider::Get()->
-// GetContentLayerColor(ContentLayerType::kIconColorPrimary).
-SkColor GetAshIconColorPrimary(bool is_dark_mode) {
-  return is_dark_mode ? SkColorSetRGB(0xE8, 0xEA, 0xED)
-                      : SkColorSetRGB(0x5F, 0x63, 0x68);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class NotificationTestDelegate : public NotificationDelegate {
  public:
@@ -622,14 +613,8 @@ TEST_F(NotificationViewTest, AppIconWebAppNotification) {
   EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorTRANSPARENT),
             color_utils::SkColorToRgbaString(app_icon_view->getColor(8, 8)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(color_utils::SkColorToRgbaString(
-                GetAshIconColorPrimary(/*is_dark_mode=*/false)),
-            color_utils::SkColorToRgbaString(app_icon_view->getColor(0, 0)));
-#else
   EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorYELLOW),
             color_utils::SkColorToRgbaString(app_icon_view->getColor(0, 0)));
-#endif
 }
 
 TEST_F(NotificationViewTest, PreferredSize) {
@@ -752,10 +737,11 @@ TEST_F(NotificationViewTest, TestAccentColorTextFlagAffectsActionButtons) {
   notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
   UpdateNotificationViews(*notification);
   EXPECT_EQ(action_buttons().size(), 2u);
+
   for (views::LabelButton* action_button : action_buttons()) {
-    EXPECT_NE(
-        notification_view()->GetActionButtonColorForTesting(action_button),
-        data.accent_color);
+    const auto& color =
+        notification_view()->GetActionButtonColorForTesting(action_button);
+    EXPECT_FALSE(color);
   }
 
   data.ignore_accent_color_for_text = false;
@@ -764,15 +750,18 @@ TEST_F(NotificationViewTest, TestAccentColorTextFlagAffectsActionButtons) {
   notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
   UpdateNotificationViews(*notification);
   EXPECT_EQ(action_buttons().size(), 2u);
+
   for (views::LabelButton* action_button : action_buttons()) {
-    EXPECT_EQ(
-        notification_view()->GetActionButtonColorForTesting(action_button),
-        data.accent_color);
+    const auto& color =
+        notification_view()->GetActionButtonColorForTesting(action_button);
+    CHECK(color);
+    EXPECT_EQ(color->ResolveToSkColor(notification_view()->GetColorProvider()),
+              data.accent_color);
   }
 }
 
 TEST_F(NotificationViewTest, UpdateFiresAccessibilityEvents) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
 
   // Setting the title does not result in a text-changed accessibility event

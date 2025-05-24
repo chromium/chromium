@@ -10,11 +10,13 @@ import android.os.Bundle;
 import android.os.UserManager;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Concrete app restriction provider, that uses the default android mechanism to retrieve the
  * restrictions.
  */
+@NullMarked
 public class AppRestrictionsProvider extends AbstractAppRestrictionsProvider {
     private static final String TAG = "AppResProvider";
 

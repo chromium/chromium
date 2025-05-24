@@ -60,6 +60,8 @@ enum class CSSAtRuleID {
   kCSSAtRuleFunction,
   kCSSAtRuleMixin,
   kCSSAtRuleApplyMixin,
+
+  kCount  // Must go last.
 };
 
 CSSAtRuleID CssAtRuleID(StringView name);

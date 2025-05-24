@@ -6,6 +6,7 @@
 #define DBUS_MOCK_BUS_H_
 
 #include <stdint.h>
+#include <string>
 
 #include "base/task/sequenced_task_runner.h"
 #include "dbus/bus.h"
@@ -22,10 +23,10 @@ class MockBus : public Bus {
  public:
   MockBus(const Bus::Options& options);
 
-  MOCK_METHOD2(GetObjectProxy, ObjectProxy*(const std::string& service_name,
+  MOCK_METHOD2(GetObjectProxy, ObjectProxy*(std::string_view service_name,
                                             const ObjectPath& object_path));
   MOCK_METHOD3(GetObjectProxyWithOptions,
-               ObjectProxy*(const std::string& service_name,
+               ObjectProxy*(std::string_view service_name,
                             const ObjectPath& object_path,
                             int options));
   MOCK_METHOD1(GetExportedObject, ExportedObject*(

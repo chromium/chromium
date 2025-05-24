@@ -63,7 +63,7 @@ ESimProfile::InstallProfileCallback CreateTimedInstallProfileCallback(
         std::move(callback).Run(result);
         if (result != mojom::ProfileInstallResult::kSuccess)
           return;
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
             "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency",
             base::Time::Now() - installation_start_time);
       },

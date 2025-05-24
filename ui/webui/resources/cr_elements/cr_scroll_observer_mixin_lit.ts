@@ -58,7 +58,7 @@ export const CrScrollObserverMixinLit =
 
         getContainer(): HTMLElement {
           const container =
-              this.shadowRoot!.querySelector<HTMLElement>('#container');
+              this.shadowRoot.querySelector<HTMLElement>('#container');
           assert(container);
           return container;
         }

@@ -11,6 +11,7 @@
 #include <chrono>
 #include <random>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
@@ -92,13 +93,13 @@ TEST_P(SwapStorageTest, SimpleWriteRead) {
 
   // Read the region from swap in [swap_pos, swap_pos + swap_len]
   char read_buf[buffer_len];
-  memset(read_buf, 0, sizeof(read_buf));
+  UNSAFE_TODO(memset(read_buf, 0, sizeof(read_buf)));
   ASSERT_EQ(
       swap_->ReadFromSwap(swap_region, Region(read_buf, sizeof(read_buf))),
       static_cast<ssize_t>(sizeof(read_buf)));
 
   // We should have correctly read back what we wrote.
-  ASSERT_EQ(memcmp(read_buf, buffer.c_str(), sizeof(read_buf)), 0);
+  ASSERT_EQ(UNSAFE_TODO(memcmp(read_buf, buffer.c_str(), sizeof(read_buf))), 0);
 }
 
 TEST_P(SwapStorageTest, ManyWriteRead) {
@@ -140,7 +141,8 @@ TEST_P(SwapStorageTest, ManyWriteRead) {
               static_cast<ssize_t>(read_buf.memsize()));
 
     // We should have correctly read back what we wrote.
-    ASSERT_EQ(memcmp(read_buf.data(), buf.first.c_str(), read_buf.memsize()),
+    ASSERT_EQ(UNSAFE_TODO(memcmp(read_buf.data(), buf.first.c_str(),
+                                 read_buf.memsize())),
               0);
 
     // Now drop it from the swap.
@@ -178,7 +180,9 @@ TEST_P(SwapStorageTest, DropFromSwap) {
             static_cast<ssize_t>(read_buf.memsize()));
 
   // We should have correctly read back what we wrote.
-  ASSERT_EQ(memcmp(read_buf.data(), buffer.c_str(), read_buf.memsize()), 0);
+  ASSERT_EQ(
+      UNSAFE_TODO(memcmp(read_buf.data(), buffer.c_str(), read_buf.memsize())),
+      0);
 
   // Now we will drop it.
   ASSERT_TRUE(swap_->DropFromSwap(swap_region));

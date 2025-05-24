@@ -20,7 +20,7 @@ suite('ThemeSnapshotTest', () => {
   let callbackRouterRemote: CustomizeChromePageRemote;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         CustomizeChromePageHandlerRemote,
@@ -56,7 +56,7 @@ suite('ThemeSnapshotTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
     const page =
-        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+        themeSnapshotElement.shadowRoot.querySelector('.snapshot-container');
     assertTrue(!!page);
     assertEquals(
         CustomizeThemeType.CUSTOM_THEME, page.getAttribute('theme-type'));
@@ -88,7 +88,7 @@ suite('ThemeSnapshotTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
     const page =
-        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+        themeSnapshotElement.shadowRoot.querySelector('.snapshot-container');
     assertTrue(!!page);
     assertEquals(
         CustomizeThemeType.CLASSIC_CHROME, page.getAttribute('theme-type'));
@@ -118,7 +118,7 @@ suite('ThemeSnapshotTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
     const page =
-        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+        themeSnapshotElement.shadowRoot.querySelector('.snapshot-container');
     assertTrue(!!page);
     assertEquals(
         CustomizeThemeType.UPLOADED_IMAGE, page.getAttribute('theme-type'));
@@ -144,7 +144,7 @@ suite('ThemeSnapshotTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
     const page =
-        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+        themeSnapshotElement.shadowRoot.querySelector('.snapshot-container');
     assertTrue(!!page);
     assertEquals(
         CustomizeThemeType.CLASSIC_CHROME, page.getAttribute('theme-type'));

@@ -8,6 +8,7 @@ source_set("prefs") {
     ":unit_tests",
     "//chrome/browser",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/prefs:impl",
     "//chrome/browser/ui",
     "//chrome/test/*",
   ]

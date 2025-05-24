@@ -42,7 +42,8 @@ class DriverTransport
     // Accepts a raw message from the transport. Note that this is called
     // without *any* validation of the size or content of `message`.
     virtual bool OnTransportMessage(const RawMessage& message,
-                                    const DriverTransport& transport) = 0;
+                                    const DriverTransport& transport,
+                                    IpczDriverHandle envelope) = 0;
 
     // Indicates that some unrecoverable error has occurred with the transport.
     virtual void OnTransportError() = 0;
@@ -87,10 +88,6 @@ class DriverTransport
     return std::move(transport_);
   }
 
-  // Releases the driver handle so that it's no longer controlled by this
-  // DriverTranport.
-  IpczDriverHandle Release();
-
   // Begins listening on the transport for incoming data and driver objects.
   // Once this is called, the transport's Listener may be invoked by the driver
   // at any time from arbitrary threads, as determined by the driver
@@ -110,7 +107,7 @@ class DriverTransport
 
   // Invoked by the driver any time this transport receives data and driver
   // handles to be passed back into ipcz.
-  bool Notify(const RawMessage& message);
+  bool Notify(const RawMessage& message, IpczDriverHandle envelope);
   void NotifyError();
 
   // Invoked once the driver has finalized deactivation of this transport, as

@@ -46,8 +46,6 @@ namespace ash {
 
 namespace {
 
-using assistant::features::IsWaitSchedulingEnabled;
-
 // Android.
 constexpr char kAndroidIntentScheme[] = "intent://";
 constexpr char kAndroidIntentPrefix[] = "#Intent";
@@ -643,7 +641,6 @@ void AssistantInteractionControllerImpl::OnTtsStarted(bool due_to_error) {
 }
 
 void AssistantInteractionControllerImpl::OnWaitStarted() {
-  DCHECK(IsWaitSchedulingEnabled());
   if (!HasActiveInteraction()) {
     DVLOG(1) << "Assistant: Dropping response outside of active interaction";
     return;

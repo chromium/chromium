@@ -9,7 +9,7 @@
 #import "ios/web_view/test/observer.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
-#include "testing/gtest_mac.h"
+#import "testing/gtest_mac.h"
 
 namespace ios_web_view {
 

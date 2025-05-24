@@ -5,17 +5,21 @@
 #ifndef ASH_SCANNER_SCANNER_SESSION_H_
 #define ASH_SCANNER_SCANNER_SESSION_H_
 
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
-#include "ash/public/cpp/scanner/scanner_enums.h"
+#include "ash/scanner/scanner_action_view_model.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/manta/manta_status.h"
+#include "components/manta/proto/scanner.pb.h"
 
 namespace ash {
 
@@ -29,39 +33,54 @@ class ScannerProfileScopedDelegate;
 // SunfishSession.
 class ASH_EXPORT ScannerSession {
  public:
-  // Callback used to receive the actions returned from a FetchActions call.
-  using FetchActionsCallback =
-      base::OnceCallback<void(std::vector<ScannerAction>)>;
-
-  // Observer of ScannerSession events.
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called when the Scanner session is about to be destroyed.
-    virtual void OnScannerSessionDestroying() = 0;
+  // Contains data about an error that may have occurred while fetching actions
+  // during a Scanner session.
+  struct FetchError {
+    // The error message to show.
+    std::u16string error_message;
+    // Whether the user can try the same query again after encountering this
+    // error.
+    bool can_try_again = false;
   };
 
-  ScannerSession(ScannerProfileScopedDelegate* delegate);
+  using FetchActionsResponse =
+      base::expected<std::vector<ScannerActionViewModel>, FetchError>;
+  // Callback used to receive the actions returned from a FetchActions call.
+  using FetchActionsCallback =
+      base::OnceCallback<void(FetchActionsResponse response)>;
+  using PopulateActionCallback =
+      base::OnceCallback<void(manta::proto::ScannerAction action)>;
+
+  explicit ScannerSession(ScannerProfileScopedDelegate* delegate);
   ScannerSession(const ScannerSession&) = delete;
   ScannerSession& operator=(const ScannerSession&) = delete;
   ~ScannerSession();
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  // Fetches Scanner actions that are available based on the contents of
+  // `jpeg_bytes`. The actions are returned via `callback`.
+  void FetchActionsForImage(scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+                            FetchActionsCallback callback);
 
-  // Returns the actions that are currently available for this session. The
-  // method will return the actions via the callback given as a param.
-  //
-  // TODO(b/363100868): Pass the required params here.
-  void FetchActions(FetchActionsCallback callback);
+  // Populates the selected action based on the contents of
+  // `downscaled_jpeg_bytes`.
+  void PopulateAction(
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
+      manta::proto::ScannerAction unpopulated_action,
+      PopulateActionCallback callback);
+
+  void SetMockScannerOutput(
+      std::unique_ptr<manta::proto::ScannerOutput> mock_output);
 
  private:
   void OnActionsReturned(
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
+      base::TimeTicks request_start_time,
       FetchActionsCallback callback,
-      base::expected<std::vector<ScannerAction>, ScannerError> returned);
+      std::unique_ptr<manta::proto::ScannerOutput> output,
+      manta::MantaStatus status);
 
   const raw_ptr<ScannerProfileScopedDelegate> delegate_;
-
-  base::ObserverList<Observer> observers_;
+  std::unique_ptr<manta::proto::ScannerOutput> mock_scanner_output_;
 
   base::WeakPtrFactory<ScannerSession> weak_ptr_factory_{this};
 };

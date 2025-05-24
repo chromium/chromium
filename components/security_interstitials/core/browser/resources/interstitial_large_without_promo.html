@@ -21,7 +21,12 @@
   <link rel="stylesheet" href="interstitial_ssl.css">
   <link rel="stylesheet" href="interstitial_enterpriseblock.css">
   <link rel="stylesheet" href="interstitial_enterprisewarn.css">
+<if expr="not optimize_webui">
   <script src="%ROOT_GEN_DIR%/components/security_interstitials/core/browser/resources/interstitial_large/interstitial_large.rollup.js"></script>
+</if>
+<if expr="optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/security_interstitials/core/browser/resources/minified/interstitial_large/interstitial_large.rollup.js"></script>
+</if>
 </head>
 <body id="body" <if expr="is_ios">style="font-size: $i18n{fontsize}"</if>>
   <div class="interstitial-wrapper">
@@ -34,9 +39,6 @@
           <div id="error-code" class="error-code"></div>
           <div id="error-debugging-info" class="hidden"></div>
         </div>
-      </div>
-      <div id="recurrent-error-message">
-        $i18nRaw{recurrentErrorParagraph}
       </div>
       <div id="extended-reporting-opt-in" class="hidden">
         <label>

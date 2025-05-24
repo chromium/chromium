@@ -99,14 +99,14 @@ void EventSourceParser::ParseLine() {
     return;
   }
   if (field_name == "id") {
-    if (base::ranges::find(field_value, '\0') == field_value.end()) {
+    if (std::ranges::find(field_value, '\0') == field_value.end()) {
       id_ = AtomicString(FromUTF8(field_value));
     }
     return;
   }
   if (field_name == "retry") {
     const bool has_only_digits =
-        base::ranges::all_of(field_value, IsASCIIDigit<char>);
+        std::ranges::all_of(field_value, IsASCIIDigit<char>);
     if (field_value.empty()) {
       client_->OnReconnectionTimeSet(EventSource::kDefaultReconnectDelay);
     } else if (has_only_digits) {

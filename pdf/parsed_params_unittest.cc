@@ -6,12 +6,12 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkColor.h"
 

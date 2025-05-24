@@ -27,7 +27,7 @@
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -127,8 +127,8 @@ sk_sp<PaintFilter> FEDisplacementMap::CreateImageFilter() {
       std::move(displ), std::move(color), base::OptionalToPtr(crop_rect));
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const ChannelSelectorType& type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const ChannelSelectorType& type) {
   switch (type) {
     case CHANNEL_UNKNOWN:
       ts << "UNKNOWN";
@@ -149,8 +149,9 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-WTF::TextStream& FEDisplacementMap::ExternalRepresentation(WTF::TextStream& ts,
-                                                           int indent) const {
+StringBuilder& FEDisplacementMap::ExternalRepresentation(
+    StringBuilder& ts,
+    wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feDisplacementMap";
   FilterEffect::ExternalRepresentation(ts);

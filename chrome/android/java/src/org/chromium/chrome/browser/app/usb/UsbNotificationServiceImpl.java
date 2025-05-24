@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.app.usb;
 import android.content.Intent;
 import android.os.IBinder;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManagerDelegate;
@@ -18,7 +17,7 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
  * to a USB device.
  */
 public class UsbNotificationServiceImpl extends UsbNotificationService.Impl {
-    private UsbNotificationManagerDelegate mManagerDelegate =
+    private final UsbNotificationManagerDelegate mManagerDelegate =
             new UsbNotificationManagerDelegate() {
                 @Override
                 public Intent createTrustedBringTabToFrontIntent(int tabId) {
@@ -43,9 +42,7 @@ public class UsbNotificationServiceImpl extends UsbNotificationService.Impl {
     public void onCreate() {
         mManager =
                 new UsbNotificationManager(
-                        BaseNotificationManagerProxyFactory.create(
-                                ContextUtils.getApplicationContext()),
-                        mManagerDelegate);
+                        BaseNotificationManagerProxyFactory.create(), mManagerDelegate);
         super.onCreate();
     }
 

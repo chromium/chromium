@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.util.TokenHolder;
 
 import java.lang.annotation.Retention;
@@ -14,6 +15,7 @@ import java.lang.annotation.RetentionPolicy;
  * Passes around the ability to set a view that is obscuring all tabs and optionally also the
  * toolbar.
  */
+@NullMarked
 public class TabObscuringHandler {
     @Retention(RetentionPolicy.SOURCE)
     public @interface Target {

@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -59,10 +63,9 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
         });
   }
 
-  const std::vector<
-      raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
-  Requests() override {
-    return raw_requests_;
+  const std::vector<std::unique_ptr<permissions::PermissionRequest>>& Requests()
+      override {
+    return requests_;
   }
 
   GURL GetRequestingOrigin() const override {
@@ -78,7 +81,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void Deny() override { requests_.clear(); }
   void Dismiss() override { requests_.clear(); }
   void Ignore() override { requests_.clear(); }
-  void FinalizeCurrentRequests() override { NOTREACHED_IN_MIGRATION(); }
+  void FinalizeCurrentRequests() override { NOTREACHED(); }
   void OpenHelpCenterLink(const ui::Event& event) override {}
   void PreIgnoreQuietPrompt() override { requests_.clear(); }
   void SetManageClicked() override { requests_.clear(); }
@@ -86,6 +89,9 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
 
   bool RecreateView() override { return false; }
+  const permissions::PermissionPrompt* GetCurrentPrompt() const override {
+    return nullptr;
+  }
 
   bool WasCurrentRequestAlreadyDisplayed() override {
     return was_current_request_already_displayed_;
@@ -197,6 +203,48 @@ TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
   // All chips are feature auto popup bubble. They should not resolve a prompt
   // automatically.
   ASSERT_TRUE(delegate.IsRequestInProgress());
+}
+
+TEST_F(PermissionChipUnitTest, AccessibleName) {
+  TestDelegate delegate(GURL("https://test.origin"),
+                        {permissions::RequestType::kNotifications}, false,
+                        web_contents_);
+  delegate.SetAlreadyDisplayed();
+
+  EXPECT_TRUE(delegate.WasCurrentRequestAlreadyDisplayed());
+
+  PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
+  ChipController* chip_controller =
+      chip_prompt.get_chip_controller_for_testing();
+
+  AddTab(browser(), GURL("http://a.com"));
+
+  std::u16string tab_title = browser()->GetTitleForTab(0);
+  std::u16string permission_title = l10n_util::GetStringFUTF16(
+      IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT, tab_title);
+
+  chip_controller->ShowPermissionUi(delegate.GetWeakPtr());
+  chip_controller->AnimateExpand();
+  ui::AXNodeData data;
+  browser()
+      ->GetBrowserView()
+      .tabstrip_->tab_at(0)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
+  EXPECT_EQ(permission_title,
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  chip_controller->HideChip();
+  data = ui::AXNodeData();
+  browser()
+      ->GetBrowserView()
+      .tabstrip_->tab_at(0)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());
+  EXPECT_EQ(tab_title,
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 TEST_F(PermissionChipUnitTest, ClickOnRequestChipTest) {

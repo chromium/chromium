@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 
+#include "base/strings/stringprintf.h"
+
 namespace ash::settings {
 
 WebContentsInteractionTestUtil::DeepQuery InternetPage() {
@@ -69,6 +71,10 @@ WebContentsInteractionTestUtil::DeepQuery AddConnectionsExpandButton() {
 
 WebContentsInteractionTestUtil::DeepQuery AddWiFiRow() {
   return InternetPage() + "div#add-wifi-label";
+}
+
+WebContentsInteractionTestUtil::DeepQuery AddWifiIcon() {
+  return InternetPage() + "cr-icon-button.icon-add-wifi";
 }
 
 WebContentsInteractionTestUtil::DeepQuery AddBuiltInVpnRow() {
@@ -188,6 +194,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton() {
   return InternetPage() + "button#createCustomApnButton";
 }
 
+WebContentsInteractionTestUtil::DeepQuery ApnSubpagePolicyIcon() {
+  return InternetPage() + "cr-tooltip-icon#apnManagedIcon";
+}
+
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageShowKnownApnsButton() {
   return InternetPage() + "button#discoverMoreApnsButton";
 }
@@ -279,6 +289,11 @@ WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle() {
 }
 
 WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsSubpageApnPolicyIcon() {
+  return InternetDetailsSubpage() + "cr-policy-indicator#apnManagedIcon";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
 CellularDetailsSubpageAutoConnectToggle() {
   return InternetDetailsSubpage() + "settings-toggle-button#autoConnectToggle";
 }
@@ -286,6 +301,12 @@ CellularDetailsSubpageAutoConnectToggle() {
 WebContentsInteractionTestUtil::DeepQuery
 CellularDetailsAllowDataRoamingToggle() {
   return InternetDetailsSubpage() + "cellular-roaming-toggle-button";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsAllowDataRoamingTogglePolicyIcon() {
+  return InternetDetailsSubpage() + "cellular-roaming-toggle-button" +
+         "network-config-toggle" + "cr-policy-network-indicator-mojo";
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsNetworkOperator() {
@@ -489,9 +510,26 @@ WebContentsInteractionTestUtil::DeepQuery WifiNetworksList() {
          "network-list#networkList";
 }
 
+WebContentsInteractionTestUtil::DeepQuery WifiNetworksListDiv() {
+  return InternetPage() + "settings-internet-subpage" + "div#networkListDiv";
+}
+
 WebContentsInteractionTestUtil::DeepQuery WifiSubpageEnableToggle() {
   return InternetPage() + "settings-internet-subpage" +
          "cr-toggle#deviceEnabledButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemToggle() {
+  return InternetPage() + "network-summary" + "network-summary-item#WiFi" +
+         "cr-toggle#deviceEnabledButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemNetworkState() {
+  return WifiSummaryItem() + "div#networkState";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemSubpageArrow() {
+  return WifiSummaryItem() + "cr-icon-button.subpage-arrow";
 }
 
 WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem() {
@@ -600,6 +638,21 @@ WebContentsInteractionTestUtil::DeepQuery
 PasspointSubpageRemoveDialogConfirmButton() {
   return InternetPage() + "settings-passpoint-subpage" +
          "cr-button#removalConfirmButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageNetworkListDiv() {
+  return InternetPage() + "settings-internet-subpage" + "#networkListDiv";
+}
+
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageSearchForNetworks() {
+  return InternetPage() + "settings-internet-subpage" + "#networkListDiv" +
+         "localized-link" + "#container";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+WiFiSubpageSearchForNetworksSpinner() {
+  return InternetPage() + "os-settings-subpage.iron-selected" +
+         "paper-spinner-lite";
 }
 
 }  // namespace wifi

@@ -134,8 +134,8 @@ export function queryDecoratedElement<T extends DecoratableElement>(
 export function queryRequiredExactlyOne(
     selectors: string[], context: Document|DocumentFragment|Element = document):
     Array<HTMLElement|null> {
-  const elements = selectors.map(
-      selector => context.querySelector(selector) as HTMLElement | null);
+  const elements =
+      selectors.map(selector => context.querySelector<HTMLElement>(selector));
   assert(
       elements.filter(el => !!el).length === 1,
       'Exactly one of the elements should exist.');

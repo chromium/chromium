@@ -2,8 +2,8 @@
 Partial workspace defintion for the TFLite Support Library. See WORKSPACE for usage.
 """
 
-load("@robolectric//bazel:robolectric.bzl", "robolectric_repositories")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@robolectric//bazel:robolectric.bzl", "robolectric_repositories")
 load("//third_party/flatbuffers:workspace.bzl", flatbuffers = "repo")
 
 def tflite_support_workspace7():

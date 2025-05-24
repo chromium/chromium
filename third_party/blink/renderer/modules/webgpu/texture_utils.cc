@@ -181,14 +181,13 @@ TexelBlockInfo GetTexelBlockInfoForCopy(wgpu::TextureFormat format,
       }
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return kInvalidTexelBlockInfo;
+      NOTREACHED();
   }
 }
 
 }  // anonymous namespace
 
-size_t EstimateWriteTextureBytesUpperBound(wgpu::TextureDataLayout layout,
+size_t EstimateWriteTextureBytesUpperBound(wgpu::TexelCopyBufferLayout layout,
                                            wgpu::Extent3D extent,
                                            wgpu::TextureFormat format,
                                            wgpu::TextureAspect aspect) {

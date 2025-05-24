@@ -38,8 +38,6 @@ class View;
 
 namespace ash::window_util {
 
-ASH_EXPORT int GetMiniWindowRoundedCornerRadius();
-
 // Returns the rounded corners for a mini window representation of
 // `source_window`. It takes into account if the `source_window`
 // belongs to a snap group or not.

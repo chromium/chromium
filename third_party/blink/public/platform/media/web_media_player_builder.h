@@ -43,7 +43,6 @@ namespace blink {
 class ResourceFetchContext;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class UrlIndex;
-class VideoFrameCompositor;
 class WebContentDecryptionModule;
 class WebLocalFrame;
 class WebMediaPlayerClient;
@@ -51,6 +50,7 @@ class WebMediaPlayerEncryptedMediaClient;
 class WebMediaPlayerDelegate;
 class WebSurfaceLayerBridge;
 class WebSurfaceLayerBridgeObserver;
+class WebVideoFrameSubmitter;
 
 using CreateSurfaceLayerBridgeCB =
     base::OnceCallback<std::unique_ptr<WebSurfaceLayerBridge>(
@@ -75,7 +75,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
       WebMediaPlayerEncryptedMediaClient* encrypted_client,
       WebMediaPlayerDelegate* delegate,
       std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
-      std::unique_ptr<VideoFrameCompositor> compositor,
+      std::unique_ptr<WebVideoFrameSubmitter> video_frame_submitter,
       std::unique_ptr<media::MediaLog> media_log,
       media::MediaPlayerLoggingID player_id,
       DeferLoadCB defer_load_cb,

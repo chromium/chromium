@@ -35,8 +35,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -45,6 +45,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,7 +57,7 @@ namespace policy {
 namespace {
 
 constexpr char kEmailId[] = "test@example.com";
-constexpr char kGaiaId[] = "12345";
+constexpr GaiaId::Literal kGaiaId("12345");
 constexpr char kSrcPattern[] = "example";
 constexpr char kRuleName[] = "ruleName";
 constexpr char kRuleId[] = "obfuscatedId";
@@ -859,7 +860,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
   EXPECT_CALL(cb, Run(true)).Times(1);   // WebContents destroyed.
 
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/0, /*warned_count=*/0,
       /*total_count=*/1,
@@ -869,7 +871,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotRestricted);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kScreenshotRestricted);
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/1, /*warned_count=*/0,
       /*total_count=*/2,
@@ -885,7 +888,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
   helper_.DestroyWebContents(web_contents.get());
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/1, /*warned_count=*/0,
       /*total_count=*/3,
@@ -912,7 +916,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kScreenshotWarned);
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
 
   VerifyHistogramCounts(
       /*blocked_count=*/0, /*warned_count=*/1,
@@ -932,7 +937,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
           kRuleId, DlpRulesManager::Level::kWarn)));
 
   // Check again: allow based on cached user's response - no dialog is shown.
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/0, /*warned_count=*/2,
       /*total_count=*/2,
@@ -968,7 +974,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kScreenshotWarned);
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/0, /*warned_count=*/1,
       /*total_count=*/1,
@@ -986,7 +993,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
           kRuleId, DlpRulesManager::Level::kWarn)));
 
   // Check again: since the user previously cancelled, dialog is shown again.
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/0, /*warned_count=*/2,
       /*total_count=*/2,
@@ -1180,7 +1188,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   GetManager()->CheckScreenShareRestriction(media_id, kApplicationName,
                                             cb.Get());
@@ -1239,7 +1247,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Warn restriction is enforced: allow and remember that the user proceeded.
@@ -1293,7 +1301,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Warn restriction is enforced: reject since the user canceled.
@@ -1338,6 +1346,87 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
           kRuleId, DlpRulesManager::Level::kWarn)));
 }
 
-TEST_F(DlpContentManagerAshTest, OnWindowRestrictionChanged) {}
+// Tests that the DLP warning dialog is not shown to users while trying to take
+// a screenshot for informed restore on shutdown, and instead the callback is
+// immediately run with `false`.
+TEST_F(DlpContentManagerAshTest, NoWarningOnShutdown) {
+  MockDlpWarnNotifier* mock_dlp_warn_notifier =
+      CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
+  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(0);
+
+  // Due to the shutdown request, we should immediately reply back with `false`.
+  MockWarningCallback cb;
+  testing::InSequence s;
+  EXPECT_CALL(cb, Run(false)).Times(1);
+
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kScreenshotWarned);
+
+  // For metrics purposes, we would still consider a warn on shutdown as a warn.
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/true,
+                                                cb.Get());
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/1,
+      /*total_count=*/1,
+      /*blocked_suffix=*/data_controls::dlp::kCaptureModeInitBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kCaptureModeInitWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenshotWarnShutdownOverrideUMA,
+      true, 1);
+}
+
+// Tests that the DLP warning dialog is not shown to users while trying to take
+// a screenshot for informed restore on shutdown if the content was previously
+// allowed.
+TEST_F(DlpContentManagerAshTest, RememberProceedOnShutdown) {
+  MockDlpWarnNotifier* mock_dlp_warn_notifier =
+      CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
+  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
+      .Times(1)
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
+
+  MockWarningCallback cb;
+  EXPECT_CALL(cb, Run(true)).Times(2);
+
+  // Warn restriction is enforced: allow and remember that the user proceeded.
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kScreenshotWarned);
+
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/1,
+      /*total_count=*/1,
+      /*blocked_suffix=*/data_controls::dlp::kCaptureModeInitBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kCaptureModeInitWarnedUMA);
+  EXPECT_EQ(events_.size(), 1u);
+  EXPECT_THAT(
+      events_[0],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kSrcPattern, DlpRulesManager::Restriction::kScreenshot, kRuleName,
+          kRuleId, DlpRulesManager::Level::kWarn)));
+
+  // Check again: allow based on cached user's response - no dialog is shown on
+  // shutdown.
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/true,
+                                                cb.Get());
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/2,
+      /*total_count=*/2,
+      /*blocked_suffix=*/data_controls::dlp::kCaptureModeInitBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kCaptureModeInitWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenshotWarnProceededUMA,
+      true, 1);
+  EXPECT_EQ(events_.size(), 1u);
+}
 
 }  // namespace policy

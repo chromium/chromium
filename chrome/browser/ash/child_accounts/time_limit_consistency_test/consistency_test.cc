@@ -9,18 +9,17 @@
 #include <memory.h>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_converter.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_loader.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.pb.h"
-#include "chrome/browser/ash/child_accounts/time_limit_consistency_test/proto_matcher.h"
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace time_limit_consistency {
+namespace ash::time_limit_consistency {
 
 using TimeLimitConsistencyTest = testing::TestWithParam<GoldenParam>;
 
@@ -49,7 +48,7 @@ TEST_P(TimeLimitConsistencyTest, OutputMatchesGolden) {
   ConsistencyGoldenOutput actual_output =
       ConvertProcessorOutputToGoldenOutput(state);
 
-  EXPECT_THAT(actual_output, EqualsProto(golden_case.output()));
+  EXPECT_THAT(actual_output, base::test::EqualsProto(golden_case.output()));
 }
 
 // Generate the test case name from the metadata included in GoldenParam.
@@ -66,5 +65,4 @@ INSTANTIATE_TEST_SUITE_P(Parameterized,
                          testing::ValuesIn(LoadGoldenCases()),
                          GetTestCaseName);
 
-}  // namespace time_limit_consistency
-}  // namespace ash
+}  // namespace ash::time_limit_consistency

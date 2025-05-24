@@ -4,26 +4,25 @@
 
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace metrics {
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsLoggedIn() {
   return user_manager::UserManager::IsInitialized() &&
          user_manager::UserManager::Get()->IsUserLoggedIn();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -41,7 +40,7 @@ Profile* CachedMetricsProfile::GetMetricsProfile() {
   if (cached_profile_ && profile_manager->IsValidProfile(cached_profile_))
     return cached_profile_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Select the primary user profile for ChromeOS.
   if (!IsLoggedIn())
     return nullptr;
@@ -54,7 +53,7 @@ Profile* CachedMetricsProfile::GetMetricsProfile() {
   // Find a suitable profile to use, and cache it so that we continue to report
   // statistics on the same profile.
   cached_profile_ = profile_manager->GetLastUsedProfileIfLoaded();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (cached_profile_) {
     // Ensure that the returned profile is not an incognito profile.
     cached_profile_ = cached_profile_->GetOriginalProfile();

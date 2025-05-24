@@ -11,10 +11,12 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "crypto/sha2.h"
@@ -23,7 +25,6 @@
 
 namespace safe_browsing {
 
-using ::google::protobuf::int32;
 using ::google::protobuf::RepeatedField;
 using ::google::protobuf::RepeatedPtrField;
 using ::testing::Pair;
@@ -31,7 +32,7 @@ using ::testing::UnorderedElementsAre;
 
 class V4StoreTest : public PlatformTest {
  public:
-  V4StoreTest() {}
+  V4StoreTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -183,6 +184,21 @@ TEST_F(V4StoreTest, TestAddUnlumpedHashesWithEmptyString) {
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             V4Store::AddUnlumpedHashes(5, "", &prefix_map));
   EXPECT_TRUE(prefix_map[5].empty());
+}
+
+TEST_F(V4StoreTest, TestAddUnlumpedHashesWithTooSmallPrefixSize) {
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map;
+  EXPECT_EQ(PREFIX_SIZE_TOO_SMALL_FAILURE,
+            V4Store::AddUnlumpedHashes(3, "abcde5432100000-----", &prefix_map));
+  EXPECT_TRUE(prefix_map.empty());
+}
+
+TEST_F(V4StoreTest, TestAddUnlumpedHashesWithTooLargePrefixSize) {
+  std::unordered_map<PrefixSize, HashPrefixes> prefix_map;
+  EXPECT_EQ(
+      PREFIX_SIZE_TOO_LARGE_FAILURE,
+      V4Store::AddUnlumpedHashes(33, "abcde5432100000-----", &prefix_map));
+  EXPECT_TRUE(prefix_map.empty());
 }
 
 TEST_F(V4StoreTest, TestAddUnlumpedHashes) {
@@ -410,7 +426,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesFailsWhenRemovalsIndexTooLarge) {
   // Even though the merged map could have size 3 without removals, the
   // removals index should only count the entries in the old map.
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222"]
   raw_removals.Add(1);
   std::string expected_checksum;
@@ -429,7 +445,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesOnlyElement) {
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222"]
   raw_removals.Add(0);  // Removes "2222"
   std::string expected_checksum = std::string(
@@ -458,7 +474,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesFirstElement) {
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222", "4444"]
   raw_removals.Add(0);  // Removes "2222"
   std::string expected_checksum = std::string(
@@ -490,7 +506,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMiddleElement) {
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222", "3333", 4444"]
   raw_removals.Add(1);  // Removes "3333"
   std::string expected_checksum = std::string(
@@ -521,7 +537,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesLastElement) {
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222", "3333", 4444"]
   raw_removals.Add(2);  // Removes "4444"
   std::string expected_checksum = std::string(
@@ -553,7 +569,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesWhenOldHasDifferentSizes) {
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222", "3333", 4444", "aaaaa", "bbbbb"]
   raw_removals.Add(3);  // Removes "aaaaa"
   std::string expected_checksum = std::string(
@@ -586,7 +602,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMultipleAcrossDifferentSizes) {
             V4Store::AddUnlumpedHashes(5, "11111", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222", "3333", "33333", "44444", "aaaa", "bbbbb"]
   raw_removals.Add(1);  // Removes "3333"
   raw_removals.Add(3);  // Removes "44444"
@@ -803,6 +819,18 @@ TEST_F(V4StoreTest, TestAdditionsWithRiceEncodingFailsWithInvalidInput) {
                                                   &additions_map));
 }
 
+TEST_F(V4StoreTest,
+       TestAdditionsWithRiceEncodingFailsWithInvalidCompressionType) {
+  RepeatedPtrField<ThreatEntrySet> additions;
+  ThreatEntrySet* addition = additions.Add();
+  addition->set_compression_type(COMPRESSION_TYPE_UNSPECIFIED);
+  std::unordered_map<PrefixSize, HashPrefixes> additions_map;
+  EXPECT_EQ(UNEXPECTED_COMPRESSION_TYPE_ADDITIONS_FAILURE,
+            V4Store(task_runner(), store_path_)
+                .UpdateHashPrefixMapFromAdditions("V4Metric", additions,
+                                                  &additions_map));
+}
+
 TEST_F(V4StoreTest, TestAdditionsWithRiceEncodingSucceeds) {
   RepeatedPtrField<ThreatEntrySet> additions;
   ThreatEntrySet* addition = additions.Add();
@@ -963,6 +991,7 @@ TEST_F(V4StoreTest, WriteToDiskFails) {
 }
 
 TEST_F(V4StoreTest, FullUpdateFailsChecksumSynchronously) {
+  base::HistogramTester histogram_tester;
   V4Store store(task_runner(), store_path_);
   base::RunLoop run_loop;
   UpdatedStoreReadyCallback store_ready_callback =
@@ -985,6 +1014,71 @@ TEST_F(V4StoreTest, FullUpdateFailsChecksumSynchronously) {
   // Ensure that the file is still not created.
   EXPECT_FALSE(base::PathExists(store.store_path_));
   EXPECT_FALSE(updated_store_);
+
+  EXPECT_EQ(store.last_apply_update_result_, CHECKSUM_MISMATCH_FAILURE);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V4ProcessUpdate.UpdateType",
+                                      V4Store::ApplyUpdateType::kFull, 1);
+}
+
+TEST_F(V4StoreTest, ApplyUpdateFailsWithInvalidResponseType) {
+  base::HistogramTester histogram_tester;
+  V4Store store(task_runner(), store_path_);
+  base::RunLoop run_loop;
+  UpdatedStoreReadyCallback store_ready_callback =
+      base::BindOnce(&V4StoreTest::UpdatedStoreReady, base::Unretained(this),
+                     &run_loop, false /* expect_store */);
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+  EXPECT_FALSE(store.HasValidData());  // Never actually read from disk.
+
+  // Now create a response with an invalid response type.
+  std::unique_ptr<ListUpdateResponse> lur(new ListUpdateResponse);
+  lur->set_response_type(ListUpdateResponse::RESPONSE_TYPE_UNSPECIFIED);
+  store.ApplyUpdate(std::move(lur), task_runner(),
+                    std::move(store_ready_callback));
+  // The update should fail synchronously and not create a store file.
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+
+  run_loop.Run();
+
+  // Ensure that the file is still not created.
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+  EXPECT_FALSE(updated_store_);
+
+  EXPECT_EQ(store.last_apply_update_result_, UNEXPECTED_RESPONSE_TYPE_FAILURE);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V4ProcessUpdate.UpdateType",
+                                      V4Store::ApplyUpdateType::kInvalid, 1);
+}
+
+TEST_F(V4StoreTest, ApplyUpdateRemovalsFailsWithInvalidCompressionType) {
+  base::HistogramTester histogram_tester;
+  V4Store store(task_runner(), store_path_);
+  base::RunLoop run_loop;
+  UpdatedStoreReadyCallback store_ready_callback =
+      base::BindOnce(&V4StoreTest::UpdatedStoreReady, base::Unretained(this),
+                     &run_loop, false /* expect_store */);
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+  EXPECT_FALSE(store.HasValidData());  // Never actually read from disk.
+
+  // Now create a response with an invalid removals compression type.
+  std::unique_ptr<ListUpdateResponse> lur(new ListUpdateResponse);
+  lur->set_response_type(ListUpdateResponse::PARTIAL_UPDATE);
+  ThreatEntrySet* removal = lur->add_removals();
+  removal->set_compression_type(COMPRESSION_TYPE_UNSPECIFIED);
+  store.ApplyUpdate(std::move(lur), task_runner(),
+                    std::move(store_ready_callback));
+  // The update should fail synchronously and not create a store file.
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+
+  run_loop.Run();
+
+  // Ensure that the file is still not created.
+  EXPECT_FALSE(base::PathExists(store.store_path_));
+  EXPECT_FALSE(updated_store_);
+
+  EXPECT_EQ(store.last_apply_update_result_,
+            UNEXPECTED_COMPRESSION_TYPE_REMOVALS_FAILURE);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V4ProcessUpdate.UpdateType",
+                                      V4Store::ApplyUpdateType::kPartial, 1);
 }
 
 TEST_F(V4StoreTest, VerifyChecksumMmapFile) {
@@ -1084,33 +1178,6 @@ TEST_F(V4StoreTest, MigrateToMmap) {
   EXPECT_EQ(mmap_store2.GetMatchingHashPrefix(kFullHash), kHash);
 }
 
-TEST_F(V4StoreTest, MigrateFileOffsets) {
-  const std::string kFullHash = "abcdefghijklmnopqrstu";
-  const std::string kHash = "abcd";
-  const std::string kFullHash2 = "zzzzefghijklmnopqrstu";
-  const std::string kHash2 = "zzzz";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "8"}});
-  V4Store write_store(task_runner(), store_path_);
-  write_store.state_ = "test_client_state";
-  write_store.hash_prefix_map_->Append(4, kHash + kHash2);
-  EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
-  EXPECT_EQ(write_store.GetMatchingHashPrefix(kFullHash), kHash);
-  EXPECT_EQ(write_store.GetMatchingHashPrefix(kFullHash2), kHash2);
-
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "4"}});
-
-  V4Store mmap_store(task_runner(), store_path_);
-
-  EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
-  EXPECT_EQ("test_client_state", mmap_store.state());
-  EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash), kHash);
-  EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash2), kHash2);
-}
-
 TEST_F(V4StoreTest, CleanUpOldFiles) {
   base::FilePath old_hashes_path = HashPrefixMap::GetPath(store_path_, "foo");
   base::WriteFile(old_hashes_path, "abcde");
@@ -1145,48 +1212,7 @@ TEST_F(V4StoreTest, FileSizeIncludesHashFiles) {
   EXPECT_EQ(read_store.file_size(), original_file_size + 4);
 }
 
-TEST_F(V4StoreTest, ReserveSpaceInPrefixMap) {
-  class ReserveTrackingHashPrefixMap : public HashPrefixMap {
-   public:
-    explicit ReserveTrackingHashPrefixMap(base::FilePath store_path)
-        : HashPrefixMap(store_path) {}
-
-    void Reserve(PrefixSize size, size_t capacity) override {
-      reserve_map_[size] = capacity;
-    }
-
-    std::unordered_map<PrefixSize, size_t> reserve_map_;
-  };
-
-  std::unordered_map<PrefixSize, HashPrefixes> old_map;
-  std::unordered_map<PrefixSize, HashPrefixes> additions_map;
-  old_map[4] = "abcdefgh";
-  old_map[5] = "abcdefghij";
-  additions_map[4] = "123456789012zzzz";
-  additions_map[5] = "1234567890";
-
-  ReserveTrackingHashPrefixMap reserve_map(store_path_);
-  V4Store::ReserveSpaceInPrefixMap(PrefixMapToView(old_map),
-                                   PrefixMapToView(additions_map), 0,
-                                   &reserve_map);
-
-  EXPECT_EQ(reserve_map.reserve_map_[4], 24u);
-  EXPECT_EQ(reserve_map.reserve_map_[5], 20u);
-
-  ReserveTrackingHashPrefixMap reserve_map_with_removals(store_path_);
-  V4Store::ReserveSpaceInPrefixMap(PrefixMapToView(old_map),
-                                   PrefixMapToView(additions_map), 2,
-                                   &reserve_map_with_removals);
-
-  EXPECT_EQ(reserve_map_with_removals.reserve_map_[4], 16u);
-  EXPECT_EQ(reserve_map_with_removals.reserve_map_[5], 10u);
-}
-
 TEST_F(V4StoreTest, MergeUpdatesWithHashPrefixMap) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "2"}});
-
   std::unordered_map<PrefixSize, HashPrefixes> prefix_map_old;
   prefix_map_old[4] = "abcdefgh";
   prefix_map_old[5] = "54321abcde";
@@ -1226,8 +1252,6 @@ TEST_F(V4StoreTest, MergeUpdatesWithHashPrefixMap) {
   EXPECT_TRUE(file_format.ParseFromString(proto_contents));
 
   EXPECT_EQ(file_format.hash_files().size(), 2);
-  for (const auto& hash_file : file_format.hash_files())
-    EXPECT_EQ(hash_file.offsets().size(), 10);
 }
 
 }  // namespace safe_browsing

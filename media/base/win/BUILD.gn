@@ -29,6 +29,7 @@ source_set("media_foundation_util") {
     "//gpu/ipc/common",
     "//media:shared_memory_support",
     "//media/base",
+    "//media/gpu:command_buffer_helper",
     "//third_party/libyuv",
   ]
   libs = [
@@ -91,6 +92,8 @@ source_set("test_support") {
     "d3d11_mocks.h",
     "d3d12_mocks.cc",
     "d3d12_mocks.h",
+    "d3d12_video_mocks.cc",
+    "d3d12_video_mocks.h",
     "mf_mocks.cc",
     "mf_mocks.h",
     "test_utils.h",

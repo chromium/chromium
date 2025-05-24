@@ -8,11 +8,13 @@ import android.os.StrictMode;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Utility class for WebView's CommandLine - this is compiled into a separate target that can be
  * reached from WebView's separate minidump-uploading Services.
  */
+@NullMarked
 public final class CommandLineUtil {
     private CommandLineUtil() {}
 

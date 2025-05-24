@@ -66,8 +66,7 @@ class MediaSink {
   }
   mojom::MediaRouteProviderId provider_id() const { return provider_id_; }
 
-  bool operator==(const MediaSink& other) const;
-  bool operator!=(const MediaSink& other) const;
+  friend bool operator==(const MediaSink&, const MediaSink&) = default;
 
   // Compares |this| to |other| first by their icon types, then their names
   // using |collator|, and finally their IDs.

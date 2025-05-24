@@ -31,18 +31,9 @@
   <message name="IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_CONTENT" desc="The text to show in place of reading list article content if the article is not found.">
     Could not find the requested article.
   </message>
-  <if expr="is_android or is_ios">
-    <then>
-      <message name="IDS_DOM_DISTILLER_VIEWER_LOADING_TITLE" desc="The text to show in place of a reading list article title while the article is loading. Translation should match TC ID 7558334641404735182, 7078777000119799848, and 8486137854427127199.">
-        Simplified view
-      </message>
-    </then>
-    <else> <!-- Desktop -->
-      <message name="IDS_DOM_DISTILLER_VIEWER_LOADING_TITLE" desc="The text to show in place of a reading list article title while the article is loading.">
-        Loading...
-      </message>
-    </else>
-  </if>
+  <message name="IDS_DOM_DISTILLER_VIEWER_LOADING_TITLE" desc="The text to show in place of a reading mode article title while the article is loading.">
+    Reading Mode
+  </message>
   <message name="IDS_DOM_DISTILLER_VIEWER_CUSTOMIZE_APPEARANCE" desc="Title of the Reader Mode dialog where you can customize the font, style, and color of the Reader Mode page..">
     Customize appearance
   </message>
@@ -88,17 +79,8 @@
   <message name="IDS_DOM_DISTILLER_WEBUI_TITLE" desc="The title to show on the DOM Distiller debug page.">
     DOM Distiller
   </message>
-  <if expr="is_android">
-    <then>
-      <message name="IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX" desc="The suffix to show after the page title to indicate we are in reader mode. For example, if the page title was 'An Article', this would be appended to create the title 'An Article - Simplified View'.">
-        Simplified View
-      </message>
-    </then>
-    <else>
-      <message name="IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX" desc="The suffix to show after the page title to indicate we are in reader mode. For example, if the page title was 'An Article', this would be appended to create the title 'An Article - Reader Mode'.">
-        Reader Mode
-      </message>
-    </else>
-  </if>
+  <message name="IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX" desc="The suffix to show after the page title to indicate we are in reading mode. For example, if the page title was 'An Article', this would be appended to create the title 'An Article - Reading Mode'.">
+    Reading Mode
+  </message>
 
 </grit-part>

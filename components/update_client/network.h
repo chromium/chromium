@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -27,10 +28,11 @@ class NetworkFetcher {
   // If the request does not have an X-Retry-After header, implementations
   // should pass -1 for |xheader_retry_after_sec|.
   using PostRequestCompleteCallback =
-      base::OnceCallback<void(std::unique_ptr<std::string> response_body,
+      base::OnceCallback<void(std::optional<std::string> response_body,
                               int net_error,
                               const std::string& header_etag,
                               const std::string& header_x_cup_server_proof,
+                              const std::string& header_cookie,
                               int64_t xheader_retry_after_sec)>;
   using DownloadToFileCompleteCallback =
       base::OnceCallback<void(int net_error, int64_t content_size)>;
@@ -55,6 +57,11 @@ class NetworkFetcher {
   // do a subsequent update check. Only the values retrieved over HTTPS are
   // trusted.
   static constexpr char kHeaderXRetryAfter[] = "X-Retry-After";
+
+  // The HTTP 'Cookie' header to pass through to the
+  // `PostRequestCompleteCallback`. This header isn't used by the Omaha update
+  // protocol but is necessary for other uses of `NetworkFetcher`.
+  static constexpr char kHeaderCookie[] = "Cookie";
 
   NetworkFetcher(const NetworkFetcher&) = delete;
   NetworkFetcher& operator=(const NetworkFetcher&) = delete;

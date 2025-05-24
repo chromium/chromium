@@ -36,11 +36,17 @@
         color: var(--cr-secondary-text-color);
         font-size: 11px;
         font-weight: 400;
+        text-wrap: pretty;
       }
 
       #historyEmbeddingsDisclaimer[narrow] {
         padding-inline: 24px;
         max-width: none;
+      }
+
+      #historyEmbeddingsDisclaimer:not([narrow])
+          #historyEmbeddingsDisclaimerContent {
+        max-width: 680px;
       }
 
       cr-history-embeddings-filter-chips {
@@ -158,14 +164,16 @@
           <div id="historyEmbeddingsDisclaimer" class="history-cards"
               hidden$="[[!enableHistoryEmbeddings_]]"
               narrow$="[[hasDrawer_]]">
-            $i18n{historyEmbeddingsDisclaimer}
-            <a id="historyEmbeddingsDisclaimerLink"
-                href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank"
-                aria-describedby="historyEmbeddingsDisclaimer"
-                on-click="onHistoryEmbeddingsDisclaimerLinkClick_"
-                on-auxclick="onHistoryEmbeddingsDisclaimerLinkClick_">
-              $i18n{learnMore}
-            </a>
+            <div id="historyEmbeddingsDisclaimerContent">
+              $i18n{historyEmbeddingsDisclaimer}
+              <a id="historyEmbeddingsDisclaimerLink"
+                  href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank"
+                  aria-describedby="historyEmbeddingsDisclaimer"
+                  on-click="onHistoryEmbeddingsDisclaimerLinkClick_"
+                  on-auxclick="onHistoryEmbeddingsDisclaimerLinkClick_">
+                $i18n{learnMore}
+              </a>
+            </div>
           </div>
           <template is="dom-if" if="[[showTabs_]]">
             <div id="tabs">
@@ -197,7 +205,11 @@
                       on-more-from-site-click="onHistoryEmbeddingsItemMoreFromSiteClick_"
                       on-remove-item-click="onHistoryEmbeddingsItemRemoveClick_"
                       on-is-empty-changed="onHistoryEmbeddingsIsEmptyChanged_"
-                      force-suppress-logging="[[historyEmbeddingsDisclaimerLinkClicked_]]">
+                      force-suppress-logging="[[historyEmbeddingsDisclaimerLinkClicked_]]"
+                      show-more-from-site-menu-option="[[!getShowResultsByGroup_(selectedPage_)]]"
+                      show-relative-times="[[
+                          getShowResultsByGroup_(selectedPage_)]]"
+                      other-history-result-clicked="[[nonEmbeddingsResultClicked_]]">
                   </cr-history-embeddings>
                 </template>
               </div>
@@ -206,6 +218,7 @@
                 selected="[[tabsContentPage_]]"
                 on-iron-select="updateScrollTarget_">
               <history-list id="history" query-state="[[queryState_]]"
+                  is-active="[[getShowHistoryList_(selectedPage_)]]"
                   searched-term="[[queryResult_.info.term]]"
                   pending-delete="{{pendingDelete_}}"
                   query-result="[[queryResult_]]"
@@ -216,6 +229,7 @@
               <template is="dom-if"
                   if="[[historyClustersSelected_(selectedPage_, showHistoryClusters_)]]">
                 <history-clusters id="history-clusters"
+                    is-active="[[getShowResultsByGroup_(selectedPage_)]]"
                     query="[[queryState_.searchTerm]]"
                     time-range-start="[[queryStateAfterDate_]]"
                     path="grouped"
@@ -257,7 +271,3 @@
         </cr-drawer>
       </template>
     </cr-lazy-render>
-
-    <iron-media-query query="(max-width: 1023px)"
-        query-matches="{{hasDrawer_}}">
-    </iron-media-query>

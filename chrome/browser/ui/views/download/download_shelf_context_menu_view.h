@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_VIEW_H_
 
+#include <array>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_shelf_context_menu.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class DownloadItemView;
 
@@ -21,7 +22,7 @@ class Rect;
 namespace views {
 class MenuRunner;
 class Widget;
-}
+}  // namespace views
 
 class DownloadBubbleUIController;
 
@@ -45,7 +46,7 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
   // The menu will be positioned above or below but not overlapping |rect|.
   void Run(views::Widget* parent_widget,
            const gfx::Rect& rect,
-           ui::MenuSourceType source_type,
+           ui::mojom::MenuSourceType source_type,
            base::RepeatingClosure on_menu_closed_callback);
 
   void SetOnMenuWillShowCallback(base::OnceClosure on_menu_will_show_callback);
@@ -72,8 +73,8 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
   base::TimeTicks close_time_;
 
   // Determines whether we should record if a DownloadCommand was executed.
-  bool download_commands_executed_recorded_[DownloadCommands::kMaxValue + 1] = {
-      false};
+  std::array<bool, DownloadCommands::kMaxValue + 1>
+      download_commands_executed_recorded_{false};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_VIEW_H_

@@ -10,7 +10,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -57,7 +56,6 @@ class GCM_EXPORT GCMStore {
     std::map<std::string, std::string> gservices_settings;
     std::string gservices_digest;
     base::Time last_checkin_time;
-    std::set<std::string> last_checkin_accounts;
     AccountMappings account_mappings;
     base::Time last_token_fetch_time;
     std::map<std::string, int> heartbeat_intervals;
@@ -127,7 +125,6 @@ class GCM_EXPORT GCMStore {
 
   // Sets last device's checkin information.
   virtual void SetLastCheckinInfo(const base::Time& time,
-                                  const std::set<std::string>& accounts,
                                   UpdateCallback callback) = 0;
 
   // G-service settings handling.

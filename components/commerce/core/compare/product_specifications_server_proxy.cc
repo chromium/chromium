@@ -21,6 +21,9 @@
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointResponse;
+
 namespace commerce {
 
 namespace {
@@ -29,6 +32,7 @@ const char kEndpointUrl[] =
     "https://memex-pa.googleapis.com/v1/shopping/products:specifications";
 
 const char kAltTextKey[] = "alternativeText";
+const char kBuyingOptionsURLKey[] = "buyingOptionsUrl";
 const char kDescriptionKey[] = "description";
 const char kFaviconUrlKey[] = "faviconUrl";
 const char kGPCKey[] = "gpcId";
@@ -115,12 +119,14 @@ std::optional<ProductSpecifications::DescriptionText> ParseDescriptionText(
           url_object.GetDict().FindString(kFaviconUrlKey);
       const std::string* thumbnail_url =
           url_object.GetDict().FindString(kThumbnailUrlKey);
+      const std::string* url_text = url_object.GetDict().FindString(kTextKey);
       description->urls.push_back(UrlInfo(
           GURL(url_string ? *url_string : ""),
           base::UTF8ToUTF16(title ? *title : ""),
           favicon_url ? std::make_optional(GURL(*favicon_url)) : std::nullopt,
           thumbnail_url ? std::make_optional(GURL(*thumbnail_url))
-                        : std::nullopt));
+                        : std::nullopt,
+          url_text ? std::make_optional(*url_text) : std::nullopt));
     }
   }
 
@@ -293,12 +299,11 @@ ProductSpecificationsServerProxy::CreateEndpointFetcher(
     const GURL& url,
     const std::string& http_method,
     const std::string& post_data) {
-  signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin;
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, kOAuthName, url, http_method, kContentType,
       std::vector<std::string>{kOAuthScope}, base::Milliseconds(kTimeoutMs),
       post_data, kShoppingListTrafficAnnotation, identity_manager_,
-      consent_level);
+      signin::ConsentLevel::kSync);
 }
 
 std::optional<ProductSpecifications>
@@ -388,6 +393,12 @@ ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
     const std::string* image_url = spec.GetDict().FindString(kImageURLKey);
     if (image_url) {
       product.image_url = GURL(*image_url);
+    }
+
+    const std::string* buying_options_url =
+        spec.GetDict().FindString(kBuyingOptionsURLKey);
+    if (buying_options_url) {
+      product.buying_options_url = GURL(*buying_options_url);
     }
 
     const base::Value::List* product_spec_values =

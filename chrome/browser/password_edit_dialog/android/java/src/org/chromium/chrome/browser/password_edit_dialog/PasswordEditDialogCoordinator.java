@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_edit_dialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.password_edit_dialog.PasswordEditDialogMediator.getTitle;
 import static org.chromium.chrome.browser.password_edit_dialog.PasswordEditDialogMediator.isUpdate;
 
@@ -11,11 +12,12 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProvider;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.ui.base.WindowAndroid;
@@ -30,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Coordinator for password edit dialog. */
+@NullMarked
 class PasswordEditDialogCoordinator {
     /**
      * A delegate interface for PasswordEditDialogBridge to receive the results of password edit
@@ -67,7 +70,7 @@ class PasswordEditDialogCoordinator {
     private PropertyModel mDialogModel;
     private PropertyModel mDialogViewModel;
 
-    private PasswordEditDialogMediator mMediator;
+    private final PasswordEditDialogMediator mMediator;
 
     /**
      * Creates the {@link PasswordEditDialogCoordinator}.
@@ -75,13 +78,13 @@ class PasswordEditDialogCoordinator {
      * @param windowAndroid The window where the dialog will be displayed.
      * @param delegate The delegate to be called with results of interaction.
      */
-    static PasswordEditDialogCoordinator create(
-            @NonNull WindowAndroid windowAndroid, @NonNull Delegate delegate) {
+    static PasswordEditDialogCoordinator create(WindowAndroid windowAndroid, Delegate delegate) {
         Context context = windowAndroid.getContext().get();
+        assumeNonNull(context);
 
         return new PasswordEditDialogCoordinator(
                 context,
-                windowAndroid.getModalDialogManager(),
+                assumeNonNull(windowAndroid.getModalDialogManager()),
                 createPasswordEditDialogView(context),
                 delegate);
     }
@@ -102,10 +105,10 @@ class PasswordEditDialogCoordinator {
      */
     @VisibleForTesting
     PasswordEditDialogCoordinator(
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull PasswordEditDialogView dialogView,
-            @NonNull Delegate delegate) {
+            Context context,
+            ModalDialogManager modalDialogManager,
+            PasswordEditDialogView dialogView,
+            Delegate delegate) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mDialogView = dialogView;
@@ -126,11 +129,9 @@ class PasswordEditDialogCoordinator {
      * @param account The account name where the password will be saved. When the user is not signed
      *     in the account is null.
      */
+    @Initializer
     void showPasswordEditDialog(
-            @NonNull String[] savedUsernames,
-            @NonNull String username,
-            @NonNull String password,
-            @Nullable String account) {
+            String[] savedUsernames, String username, String password, @Nullable String account) {
         List<String> savedUsernameList = Arrays.asList(savedUsernames);
         boolean update = isUpdate(savedUsernameList, username);
         // The Save password dialog has only user-entered username in the spinner's list.
@@ -157,7 +158,10 @@ class PasswordEditDialogCoordinator {
     }
 
     private PropertyModel createDialogViewModel(
-            List<String> displayedUsernames, String username, String password, String account) {
+            List<String> displayedUsernames,
+            String username,
+            String password,
+            @Nullable String account) {
         return new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
                 .with(
                         PasswordEditDialogProperties.USERNAMES,

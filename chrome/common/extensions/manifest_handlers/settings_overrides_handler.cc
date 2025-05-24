@@ -121,9 +121,9 @@ std::string FormatUrlForDisplay(const GURL& url) {
 
 }  // namespace
 
-SettingsOverrides::SettingsOverrides() {}
+SettingsOverrides::SettingsOverrides() = default;
 
-SettingsOverrides::~SettingsOverrides() {}
+SettingsOverrides::~SettingsOverrides() = default;
 
 // static
 const SettingsOverrides* SettingsOverrides::Get(
@@ -132,9 +132,9 @@ const SettingsOverrides* SettingsOverrides::Get(
       extension->GetManifestData(manifest_keys::kSettingsOverride));
 }
 
-SettingsOverridesHandler::SettingsOverridesHandler() {}
+SettingsOverridesHandler::SettingsOverridesHandler() = default;
 
-SettingsOverridesHandler::~SettingsOverridesHandler() {}
+SettingsOverridesHandler::~SettingsOverridesHandler() = default;
 
 bool SettingsOverridesHandler::Parse(Extension* extension,
                                      std::u16string* error) {

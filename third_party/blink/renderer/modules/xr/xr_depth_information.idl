@@ -13,4 +13,12 @@
   [SameObject, SaveSameObject]
   readonly attribute XRRigidTransform normDepthBufferFromNormView;
   readonly attribute float rawValueToMeters;
+
+  // These properties should be taken from XRViewGeometry
+  [RuntimeEnabled=WebXRDepthPerformance] readonly attribute Float32Array projectionMatrix;
+  [SameObject, RuntimeEnabled=WebXRDepthPerformance, ImplementedAs=viewGeometryTransform] readonly attribute XRRigidTransform transform;
 };
+
+// Enable use of the mixin once WebXRDepthPerformance is enabled/cleaned up.
+// We cannot use it at the present time, as otherwise it will be stable-exposed.
+// XRDepthInformation includes XRViewGeometry;

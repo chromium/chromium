@@ -33,8 +33,9 @@ OverlayRequestSupport::~OverlayRequestSupport() = default;
 
 bool OverlayRequestSupport::IsRequestSupported(OverlayRequest* request) const {
   for (const OverlayRequestSupport* support : aggregated_support_) {
-    if (support->IsRequestSupported(request))
+    if (support->IsRequestSupported(request)) {
       return true;
+    }
   }
   return false;
 }

@@ -19,6 +19,7 @@
 namespace web {
 
 namespace {
+NSString* const kOriginatingHost = @"host.test";
 const char kContentDisposition[] = "attachment; filename=file.test";
 const char kMimeType[] = "application/pdf";
 const base::FilePath::CharType kTestFileName[] = FILE_PATH_LITERAL("file.test");
@@ -73,7 +74,8 @@ TEST_F(DownloadControllerImplTest, OnNativeDownloadCreated) {
                                             delegate:fake_delegate];
 
   download_controller_->CreateNativeDownloadTask(
-      &web_state_, identifier, url, @"POST", kContentDisposition,
+      &web_state_, identifier, url, kOriginatingHost, @"POST",
+      kContentDisposition,
       /*total_bytes=*/-1, kMimeType, fake_task_bridge);
 
   ASSERT_EQ(1U, delegate_->alive_download_tasks().size());
@@ -81,6 +83,7 @@ TEST_F(DownloadControllerImplTest, OnNativeDownloadCreated) {
   EXPECT_EQ(&web_state_, delegate_->alive_download_tasks()[0].first);
   EXPECT_NSEQ(identifier, task->GetIdentifier());
   EXPECT_EQ(url, task->GetOriginalUrl());
+  EXPECT_EQ(kOriginatingHost, task->GetOriginatingHost());
   EXPECT_NSEQ(@"POST", task->GetHttpMethod());
   EXPECT_FALSE(task->IsDone());
   EXPECT_EQ(0, task->GetErrorCode());
@@ -104,7 +107,8 @@ TEST_F(DownloadControllerImplTest, NullDelegate) {
                                             delegate:fake_delegate];
 
   download_controller_->CreateNativeDownloadTask(
-      &web_state_, [NSUUID UUID].UUIDString, url, @"GET", kContentDisposition,
+      &web_state_, [NSUUID UUID].UUIDString, url, kOriginatingHost, @"GET",
+      kContentDisposition,
       /*total_bytes=*/-1, kMimeType, fake_task_bridge);
 }
 

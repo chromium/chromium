@@ -24,6 +24,9 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
 
   ui::ColorMixer& mixer = provider->AddMixer();
+  // When adding a new color ID to this mixer, ensure it is ALSO added
+  // to the GM2 color mixer.
+  // LINT.IfChange
   mixer[kColorNewTabPageActiveBackground] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorNewTabPageAddShortcutBackground] = {ui::kColorSysTonalContainer};
@@ -56,14 +59,11 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       ui::kColorSysNeutralContainer};
   mixer[kColorNewTabPageDoodleShareButtonIcon] = {ui::kColorSysOnSurface};
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
-    mixer[kColorNewTabPageModuleItemBackground] = {
-        ui::kColorSysBaseContainerElevated};
-    mixer[kColorNewTabPageModuleItemBackgroundHovered] = {
-        ui::kColorSysStateHoverBrightBlendProtection};
-  } else {
-    mixer[kColorNewTabPageModuleItemBackground] = {ui::kColorSysBaseContainer};
-  }
+  mixer[kColorNewTabPageModuleItemBackground] = {
+      ui::kColorSysBaseContainerElevated};
+  mixer[kColorNewTabPageModuleItemBackgroundHovered] = {
+      ui::kColorSysStateHoverBrightBlendProtection};
+
   mixer[kColorNewTabPageModuleElementDivider] = {ui::kColorSysDivider};
   mixer[kColorNewTabPageModuleContextMenuDivider] = {ui::kColorSysDivider};
 
@@ -121,7 +121,8 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
     mixer[kColorSearchboxResultsIconFocusedOutline] = {
         kColorOmniboxResultsButtonIconSelected};
     mixer[kColorSearchboxResultsUrl] = {kColorOmniboxResultsUrl};
-    mixer[kColorSearchboxResultsUrlSelected] = {kColorOmniboxResultsUrlSelected};
+    mixer[kColorSearchboxResultsUrlSelected] = {
+        kColorOmniboxResultsUrlSelected};
     mixer[kColorSearchboxShadow] =
         ui::SetAlpha(gfx::kGoogleGrey900,
                      (dark_mode ? /* % opacity */ 0.32 : 0.1) * SK_AlphaOPAQUE);
@@ -133,7 +134,13 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       mixer[kColorSearchboxResultsBackground] = {
           kColorToolbarBackgroundSubtleEmphasis};
     } else {
-      mixer[kColorSearchboxResultsBackground] = {kColorOmniboxResultsBackground};
+      mixer[kColorSearchboxResultsBackground] = {
+          kColorOmniboxResultsBackground};
     }
   }
+
+  /* NewTabFooter */
+  mixer[kColorNewTabFooterBackground] = {ui::kColorSysSurface2};
+  mixer[kColorNewTabFooterText] = {ui::kColorSysOnSurface};
+  // LINT.ThenChange(chrome/browser/ui/color/new_tab_page_color_mixer.cc)
 }

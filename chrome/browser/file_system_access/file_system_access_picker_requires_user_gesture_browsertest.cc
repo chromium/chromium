@@ -148,7 +148,7 @@ class FileSystemAccessPickerRequiresUserGestureTest
       case MethodName::kShowDirectoryPicker:
         return kShowDirectoryPickerScript;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

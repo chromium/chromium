@@ -156,8 +156,6 @@ class AppLauncherTabHelper
 
   // Must be last member to ensure it is destroyed last.
   base::WeakPtrFactory<AppLauncherTabHelper> weak_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_APP_LAUNCHER_MODEL_APP_LAUNCHER_TAB_HELPER_H_

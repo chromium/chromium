@@ -40,12 +40,6 @@ MockWaylandPlatformWindowDelegate::CreateWaylandWindow(
 int64_t MockWaylandPlatformWindowDelegate::OnStateUpdate(
     const PlatformWindowDelegate::State& old,
     const PlatformWindowDelegate::State& latest) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (old.fullscreen_type != latest.fullscreen_type) {
-    OnFullscreenTypeChanged(old.fullscreen_type, latest.fullscreen_type);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   if (old.window_state != latest.window_state) {
     OnWindowStateChanged(old.window_state, latest.window_state);
   }
@@ -54,10 +48,6 @@ int64_t MockWaylandPlatformWindowDelegate::OnStateUpdate(
       old.window_scale != latest.window_scale) {
     bool origin_changed = old.bounds_dip.origin() != latest.bounds_dip.origin();
     OnBoundsChanged({origin_changed});
-  }
-
-  if (old.occlusion_state != latest.occlusion_state) {
-    OnOcclusionStateChanged(latest.occlusion_state);
   }
 
   if (!on_state_update_callback_.is_null()) {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {GoogleCalendarPageHandlerRemote} from 'chrome://new-tab-page/google_calendar.mojom-webui.js';
-import type {DismissModuleEvent, GoogleCalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {DismissModuleInstanceEvent, GoogleCalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {googleCalendarDescriptor, GoogleCalendarProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -31,7 +31,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     document.body.append(module);
   }
 
-  setup(async () => {
+  setup(() => {
     loadTimeData.overrideValues({
       modulesGoogleCalendarTitle: title,
       modulesGoogleCalendarDismissToastMessage: dismissToast,
@@ -71,13 +71,13 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
      ).dispatchEvent(new Event('dismiss-button-click'));
 
     // Assert.
-    const event: DismissModuleEvent = await whenFired;
+    const event: DismissModuleInstanceEvent = await whenFired;
     assertEquals(dismissToast, event.detail.message);
     assertTrue(!!event.detail.restoreCallback);
     assertEquals(1, handler.getCallCount('dismissModule'));
 
     // Act.
-    event.detail.restoreCallback!();
+    event.detail.restoreCallback();
 
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));
@@ -112,8 +112,8 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     // Assert.
     const dismissButton = $$(module.$.moduleHeaderElementV2, '#dismiss');
     assertTrue(!!dismissButton);
-    assertTrue(!!dismissButton!.textContent);
+    assertTrue(!!dismissButton.textContent);
     assertEquals(
-        dismissButton!.textContent!.trim(), `Hide for ${dismissTime} hours`);
+        dismissButton.textContent.trim(), `Hide for ${dismissTime} hours`);
   });
 });

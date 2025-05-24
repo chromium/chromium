@@ -125,7 +125,7 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     EXPECT_TRUE(future.Wait());
     DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
         AuthenticatorType::kOther, kRpId, credential_id,
-        PublicKeyCredentialUserEntity());
+        PublicKeyCredentialUserEntity(), /*provider_name=*/std::nullopt);
     EXPECT_THAT(std::get<0>(future.Get()),
                 testing::UnorderedElementsAre(expected));
     EXPECT_EQ(
@@ -147,10 +147,12 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     authenticator_->GetPlatformCredentialInfoForRequest(
         request, CtapGetAssertionOptions(), future.GetCallback());
     EXPECT_TRUE(future.Wait());
-    DiscoverableCredentialMetadata expected1 = DiscoverableCredentialMetadata(
-        AuthenticatorType::kOther, kRpId, id1, user1);
-    DiscoverableCredentialMetadata expected2 = DiscoverableCredentialMetadata(
-        AuthenticatorType::kOther, kRpId, id2, user2);
+    DiscoverableCredentialMetadata expected1 =
+        DiscoverableCredentialMetadata(AuthenticatorType::kOther, kRpId, id1,
+                                       user1, /*provider_name=*/std::nullopt);
+    DiscoverableCredentialMetadata expected2 =
+        DiscoverableCredentialMetadata(AuthenticatorType::kOther, kRpId, id2,
+                                       user2, /*provider_name=*/std::nullopt);
     EXPECT_THAT(std::get<0>(future.Get()),
                 testing::UnorderedElementsAre(expected1, expected2));
     EXPECT_EQ(

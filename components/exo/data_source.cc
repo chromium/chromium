@@ -41,7 +41,6 @@ constexpr char kTextHTML[] = "text/html";
 constexpr char kTextUriList[] = "text/uri-list";
 constexpr char kApplicationOctetStream[] = "application/octet-stream";
 constexpr char kWebCustomData[] = "chromium/x-web-custom-data";
-constexpr char kDataTransferEndpoint[] = "chromium/x-data-transfer-endpoint";
 
 constexpr char kUtfPrefix[] = "UTF";
 constexpr char kEncoding16[] = "16";
@@ -250,7 +249,7 @@ void DataSource::ReadData(const std::string& mime_type,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ReadDataOnWorkerThread, std::move(read_fd)),
       base::BindOnce(
           &DataSource::OnDataRead, read_data_weak_ptr_factory_.GetWeakPtr(),
@@ -268,16 +267,6 @@ void DataSource::OnDataRead(base::WeakPtr<DataSource> data_source_ptr,
     return;
   }
   std::move(callback).Run(mime_type, *data);
-}
-
-void DataSource::ReadDataTransferEndpoint(
-    ReadTextDataCallback dte_reader,
-    base::RepeatingClosure failure_callback) {
-  ReadData(kDataTransferEndpoint,
-           base::BindOnce(&DataSource::OnTextRead,
-                          read_data_weak_ptr_factory_.GetWeakPtr(),
-                          std::move(dte_reader)),
-           failure_callback);
 }
 
 void DataSource::GetDataForPreferredMimeTypes(

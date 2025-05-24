@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_autofill_form_internal.h"
+#import <ranges>
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/common/dense_set.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/form_structure.h"
+#import "components/autofill/core/common/dense_set.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_form_internal.h"
 
 @implementation CWVAutofillForm
 
@@ -29,7 +30,11 @@
     // not consider password forms as autofillable. In other words, |formTypes|
     // will never contain PASSWORD_FORM. Luckily, it already provides a function
     // to check if it has any password fields.
-    if (formStructure.has_password_field()) {
+    auto isPasswordField = [](const auto& field) {
+      return field->form_control_type() ==
+             autofill::FormControlType::kInputPassword;
+    };
+    if (std::ranges::any_of(formStructure.fields(), isPasswordField)) {
       _type |= CWVAutofillFormTypePasswords;
     }
   }

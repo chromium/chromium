@@ -55,8 +55,7 @@ std::string GetMessageSendStatusString(
     case gcm::MCSClient::TTL_EXCEEDED:
       return "TTL_EXCEEDED";
     case gcm::MCSClient::SEND_STATUS_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return "UNKNOWN";
 }
@@ -79,8 +78,7 @@ std::string GetConnectionResetReasonString(
     case gcm::ConnectionFactory::NEW_HEARTBEAT_INTERVAL:
       return "NEW_HEARTBEAT_INTERVAL";
     case gcm::ConnectionFactory::CONNECTION_RESET_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return "UNKNOWN_REASON";
 }
@@ -158,8 +156,7 @@ std::string GetUnregistrationStatusString(
     case gcm::UnregistrationRequest::DEVICE_REGISTRATION_ERROR:
       return "DEVICE_REGISTRATION_ERROR";
     case gcm::UnregistrationRequest::UNREGISTRATION_STATUS_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return "UNKNOWN_STATUS";
 }
@@ -483,17 +480,15 @@ void GCMStatsRecorderImpl::RecordNotifySendStatus(
     const std::string& receiver_id,
     const std::string& message_id,
     gcm::MCSClient::MessageSendStatus status,
-    int byte_size,
+    size_t byte_size,
     int ttl) {
   if (!is_recording_)
     return;
   RecordSending(
-      app_id,
-      receiver_id,
-      message_id,
+      app_id, receiver_id, message_id,
       base::StringPrintf("SEND status: %s",
                          GetMessageSendStatusString(status).c_str()),
-      base::StringPrintf("Msg size: %d bytes, TTL: %d", byte_size, ttl));
+      base::StringPrintf("Msg size: %zu bytes, TTL: %d", byte_size, ttl));
 }
 
 void GCMStatsRecorderImpl::RecordIncomingSendError(

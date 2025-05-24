@@ -17,3 +17,5 @@ interface PerformanceElementTiming : PerformanceEntry {
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
+
+PerformanceElementTiming includes PaintTimingMixin;

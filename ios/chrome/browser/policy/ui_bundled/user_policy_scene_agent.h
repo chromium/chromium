@@ -29,8 +29,8 @@ class UserPolicySigninService;
 // before).
 //
 // The agent will show the dialog when the UI of the scene is initialized which
-// corresponds to the moment where the scene is active in the foreground,
-// the app is at the InitStageFinal stage, and the UI to present the
+// corresponds to the moment where the scene is active in the foreground, the
+// profile is at the ProfileInitStage::kFinal stage, and the UI to present the
 // notification on is able to present views. Ideally there shouldn't be modals
 // before showing the dialog, but if it happens the modals will be dismissed to
 // make sure that the user has the opportunity to see the notification.

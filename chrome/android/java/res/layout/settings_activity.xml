@@ -42,4 +42,12 @@ found in the LICENSE file.
 
     <!-- Container for displaying a bottom sheet. -->
     <include layout="@layout/bottom_sheet_container"/>
+
+    <!-- Container for displaying a HaTS survey. -->
+    <ViewStub
+        android:id="@+id/hats_survey_container_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inflatedId="@+id/survey_container"
+        android:layout="@layout/hats_survey_container" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

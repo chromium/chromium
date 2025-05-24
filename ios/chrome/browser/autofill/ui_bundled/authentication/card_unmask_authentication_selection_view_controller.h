@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_selection_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_selection_mutator.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
 // A view controller showing a selection of challenge options for unmasking
 // cards.
@@ -22,6 +22,8 @@
 
 // Creates the card unmask authentication selection view controller.
 - (instancetype)init;
+
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end
 

@@ -7,15 +7,15 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "ui/gfx/geometry/rect.h"
+#include "xr_webgl_drawing_buffer.h"
 
 namespace media {
 class VideoFrame;
@@ -45,11 +45,11 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       wgpu::TextureUsage usage,
       std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource);
 
-  static scoped_refptr<WebGPUMailboxTexture> FromExistingMailbox(
+  static scoped_refptr<WebGPUMailboxTexture> FromExistingSharedImage(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       const wgpu::Device& device,
       const wgpu::TextureDescriptor& desc,
-      const gpu::Mailbox& mailbox,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
       gpu::webgpu::MailboxFlags mailbox_flags =
           gpu::webgpu::WEBGPU_MAILBOX_NONE,
@@ -82,14 +82,13 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   uint32_t GetTextureIdForTest() { return wire_texture_id_; }
   uint32_t GetTextureGenerationForTest() { return wire_texture_generation_; }
   const wgpu::Device& GetDeviceForTest() { return device_; }
-  const gpu::Mailbox& GetMailbox() { return mailbox_; }
 
  private:
   WebGPUMailboxTexture(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       const wgpu::Device& device,
       const wgpu::TextureDescriptor& desc,
-      const gpu::Mailbox& mailbox,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
       gpu::webgpu::MailboxFlags mailbox_flags,
       wgpu::TextureUsage additional_internal_usage,
@@ -98,7 +97,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   wgpu::Device device_;
-  gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback_;
   wgpu::Texture texture_;
   uint32_t wire_device_id_ = 0;

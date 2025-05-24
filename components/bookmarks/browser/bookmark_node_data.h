@@ -142,7 +142,7 @@ struct BookmarkNodeData {
   // Writes elements to data. If there is only one element and it is a URL
   // the URL and title are written to the clipboard in a format other apps can
   // use.
-  // |profile_path| is used to identify which profile the data came from. Use an
+  // `profile_path` is used to identify which profile the data came from. Use an
   // empty path to indicate that the data is not associated with any profile.
   void Write(const base::FilePath& profile_path,
              ui::OSExchangeData* data) const;
@@ -152,11 +152,11 @@ struct BookmarkNodeData {
 #endif
 
 #if !BUILDFLAG(IS_APPLE)
-  // Writes the data for a drag to |pickle|.
+  // Writes the data for a drag to `pickle`.
   void WriteToPickle(const base::FilePath& profile_path,
                      base::Pickle* pickle) const;
 
-  // Reads the data for a drag from a |pickle|.
+  // Reads the data for a drag from a `pickle`.
   bool ReadFromPickle(base::Pickle* pickle);
 #endif
 
@@ -185,7 +185,7 @@ struct BookmarkNodeData {
   // Clears the data.
   void Clear();
 
-  // Sets |profile_path_|. This is useful for the constructors/readers that
+  // Sets `profile_path_`. This is useful for the constructors/readers that
   // don't set it. This should only be called if the profile path is not
   // already set.
   void SetOriginatingProfilePath(const base::FilePath& profile_path);

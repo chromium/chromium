@@ -3,13 +3,20 @@
 // found in the LICENSE file.
 
 #include <cassert>
+#include <string>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
+#include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "ash/system/toast/system_nudge_view.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -26,8 +33,10 @@
 #include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/env.h"
+#include "ui/aura/window.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
@@ -36,13 +45,29 @@
 
 namespace {
 using NudgeTestVariantsParam = std::tuple</*tablet_mode=*/bool,
-                                          /*anchor_type_window_bounds=*/bool>;
+                                          /*anchor_type=*/int>;
 
 constexpr char kCampaignsFileName[] = "campaigns.json";
+
+// Personalization SWA app.
+constexpr char kAppId[] = "glenkcidjgckcomnliblmkokolehpckn";
 
 constexpr char kEmptyCampaigns[] = R"(
 {
 }
+)";
+
+constexpr char kAnchorActiveAppWindowOption[] = R"(
+  "arrow": %d,
+  "anchor": {
+    "activeAppWindowAnchorType": %d
+  },
+)";
+
+constexpr char kAnchorShelfAppButtonOption[] = R"(
+  "anchor": {
+    "shelfAppButtonId": "%s"
+  },
 )";
 
 // Targeting Personalization App.
@@ -68,10 +93,7 @@ constexpr char kCampaignsNudgeTemplate[] = R"(
           "image": {
             "builtInIcon": 0
           },
-          "arrow": %s,
-          "anchor": {
-            "activeAppWindowAnchorType": %s
-          },
+          %s
           "primaryButton": {
             "label": "Yes",
             "action": {
@@ -149,6 +171,13 @@ constexpr char kCampaignsNotification[] = R"(
 }
 )";
 
+enum class TestNudgeAnchorOption {
+  kAnchorWindowBound = 0,
+  kAnchorWindowCaptionButtonContainer = 1,
+  kAnchorToShelfIcon = 2,
+  kAnchorDefaultPosition = 3
+};
+
 base::FilePath GetCampaignsFilePath(const base::ScopedTempDir& dir) {
   return dir.GetPath().Append(kCampaignsFileName);
 }
@@ -173,6 +202,16 @@ class TestCampaignsManagerObserver : public growth::CampaignsManager::Observer {
   bool loaded_ = false;
 };
 
+std::unique_ptr<aura::Window> CreateAuraWindow(std::u16string window_title) {
+  ash::TestWidgetBuilder builder;
+  builder.SetWindowTitle(window_title);
+  builder.SetTestWidgetDelegate();
+  builder.SetContext(ash::Shell::GetPrimaryRootWindow());
+  builder.SetBounds(gfx::Rect(0, 0, 600, 400));
+  views::Widget* widget = builder.BuildOwnedByNativeWidget();
+  return std::unique_ptr<aura::Window>(widget->GetNativeWindow());
+}
+
 }  // namespace
 
 // CampaignsManagerInteractiveUiTest -------------------------------------------
@@ -187,6 +226,9 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
     CHECK(temp_dir_.CreateUniqueTempDir());
 
     base::WriteFile(GetCampaignsFilePath(temp_dir_), kEmptyCampaigns);
+    // Disable the Sunfish system nudges, as they also use `SystemNudgeView` and
+    // will interfere with this test.
+    ash::AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
   }
 
   // InteractiveBrowserTest:
@@ -211,16 +253,9 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
     InteractiveAshTest::TearDownOnMainThread();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&CampaignsManagerInteractiveUiTest::
-                                        OnWillCreateBrowserContextServices,
-                                    weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InteractiveAshTest::SetUpBrowserContextKeyedServices(context);
     feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(CreateMockTracker));
   }
@@ -283,7 +318,6 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
   bool InTabletMode() { return display::Screen::GetScreen()->InTabletMode(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
   ui::ScopedAnimationDurationScaleMode animation_duration_;
   std::unique_ptr<TestCampaignsManagerObserver> observer_;
@@ -347,6 +381,17 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest, ClearConfig) {
                                               "abcd");
 }
 
+IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
+                       NotifyEventGameWindowOpened) {
+  const std::string event_name = "ChromeOSAshGrowthCampaigns_GameWindowOpened";
+  EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
+
+  std::unique_ptr<aura::Window> window =
+      CreateAuraWindow(u"TestGameWindowTitle");
+  window->SetProperty(ash::kAppIDKey,
+                      std::string(extension_misc::kGeForceNowAppId));
+}
+
 // CampaignsManagerInteractiveUiNudgeTest ----------------------------------
 
 class CampaignsManagerInteractiveUiNudgeTest
@@ -354,11 +399,29 @@ class CampaignsManagerInteractiveUiNudgeTest
       public testing::WithParamInterface<NudgeTestVariantsParam> {
  public:
   CampaignsManagerInteractiveUiNudgeTest() {
-    std::string arrow = AnchorToWindowBounds() ? "2" : "1";
-    std::string anchor_type = AnchorToWindowBounds() ? "1" : "0";
-    base::WriteFile(GetCampaignsFilePath(temp_dir_),
-                    base::StringPrintf(kCampaignsNudgeTemplate, arrow.c_str(),
-                                       anchor_type.c_str()));
+    auto anchor_option =
+        static_cast<TestNudgeAnchorOption>(std::get<1>(GetParam()));
+    std::string anchor = std::string();
+    switch (anchor_option) {
+      case TestNudgeAnchorOption::kAnchorWindowBound:
+        anchor = base::StringPrintf(kAnchorActiveAppWindowOption, /*arrow=*/2,
+                                    /*activeAppWindowAnchorType=*/1);
+        break;
+      case TestNudgeAnchorOption::kAnchorWindowCaptionButtonContainer:
+        anchor = base::StringPrintf(kAnchorActiveAppWindowOption, /*arrow=*/1,
+                                    /*activeAppWindowAnchorType=*/0);
+        break;
+      case TestNudgeAnchorOption::kAnchorToShelfIcon:
+        anchor = base::StringPrintf(kAnchorShelfAppButtonOption, kAppId);
+        break;
+      default:
+        // If no anchor option is provided in the payload, the nudge will be
+        // shown at default position.
+        break;
+    }
+    base::WriteFile(
+        GetCampaignsFilePath(temp_dir_),
+        base::StringPrintf(kCampaignsNudgeTemplate, anchor.c_str()));
   }
 
   void SetUpOnMainThread() override {
@@ -366,34 +429,58 @@ class CampaignsManagerInteractiveUiNudgeTest
 
     // Use SWA as targets and anchors in the tests.
     InstallSystemApps();
+
+    // Pin Personalization App Icon to shelf.
+    PinAppToShelf(kAppId);
   }
 
  protected:
+  void PinAppToShelf(const std::string& app_id) {
+    ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
+    ASSERT_TRUE(shelf_model);
+
+    ash::ShelfItem item;
+    item.id = ash::ShelfID(app_id);
+    item.type = ash::ShelfItemType::TYPE_PINNED_APP;
+    shelf_model->Add(item,
+                     std::make_unique<ash::TestShelfItemDelegate>(item.id));
+
+    int app_index = shelf_model->ItemIndexByAppID(app_id);
+    ASSERT_LE(0, app_index);
+  }
+
   auto LaunchSystemWebApp(ash::SystemWebAppType type) {
     return Steps(
         Do([=, this]() {
           ash::LaunchSystemWebAppAsync(GetActiveUserProfile(), type);
         }),
-        std::move(
-            WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true)));
+        WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true));
   }
 
   bool ShouldUseTabletMode() { return std::get<0>(GetParam()); }
-
-  bool AnchorToWindowBounds() { return std::get<1>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     CampaignsManagerInteractiveUiNudgeTest,
     testing::Combine(/*tablet_mode=*/testing::Bool(),
-                     /*anchor_type_window_bounds=*/testing::Bool()),
+                     /*anchor_type=*/testing::Range(0, 4)),
     [](const testing::TestParamInfo<NudgeTestVariantsParam>& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "TabletModeEnabled" : "TabletModeDisabled",
-           "_",
-           std::get<1>(info.param) ? "AnchorInsideWindowBounds"
-                                   : "AnchorToCaptionButtonContainer"});
+      std::string tablet_mode =
+          std::get<0>(info.param) ? "TabletModeEnabled" : "TabletModeDisabled";
+
+      auto anchor = static_cast<TestNudgeAnchorOption>(std::get<1>(info.param));
+      switch (anchor) {
+        case TestNudgeAnchorOption::kAnchorWindowBound:
+          return base::StrCat({tablet_mode, "_", "AnchorInsideWindowBounds"});
+        case TestNudgeAnchorOption::kAnchorWindowCaptionButtonContainer:
+          return base::StrCat(
+              {tablet_mode, "_", "AnchorToCaptionButtonContainer"});
+        case TestNudgeAnchorOption::kAnchorToShelfIcon:
+          return base::StrCat({tablet_mode, "_", "AnchorToShelfIcon"});
+        default:
+          return base::StrCat({tablet_mode, "_", "AnchorToDefaultPosition"});
+      }
     });
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
@@ -406,14 +493,17 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
       LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION),
       WaitForWindowWithTitle(env, u"Wallpaper & style"),
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 100, 0),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100, 0),
-          ToggleTabletMode())));
+          ToggleTabletMode()));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
@@ -426,10 +516,13 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
       LaunchSystemWebApp(ash::SystemWebAppType::SETTINGS),
       WaitForWindowWithTitle(env, u"Settings"),
       EnsureNotPresent(ash::SystemNudgeView::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
+              0),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100, 0),
-          ToggleTabletMode())));
+          ToggleTabletMode()));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
@@ -444,14 +537,17 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
       PressButton(ash::SystemNudgeView::kPrimaryButtonIdForTesting),
       WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting),
       WaitForWindowWithTitle(env, u"www.google.com"),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 100, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
-                               1))));
+                               1)));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
@@ -459,20 +555,23 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
   aura::Env* env = aura::Env::GetInstance();
   ASSERT_TRUE(env);
 
-  RunTestSequence(Steps(
+  RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
       LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION),
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting),
       PressButton(ash::SystemNudgeView::kSecondaryButtonIdForTesting),
       WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 100, 0),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 1),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
-                               1)))));
+                               1)));
 }
 
 // CampaignsManagerInteractiveUiNotificationTest
@@ -500,6 +599,16 @@ class CampaignsManagerInteractiveUiNotificationTest
     });
   }
 
+  // Reload campaigns, which can simulate a situation that locks and unlocks
+  // device.
+  auto ReloadCampaigns() {
+    return Do([]() {
+      auto* campaigns_manager = growth::CampaignsManager::Get();
+      auto empty_campaigns = base::Value::Dict();
+      campaigns_manager->SetCampaignsForTesting(&empty_campaigns);
+    });
+  }
+
   bool ShouldUseTabletMode() { return GetParam(); }
 };
 
@@ -512,14 +621,17 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
   RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
       WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 101,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 101, 0),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101, 0),
-          ToggleTabletMode())));
+          ToggleTabletMode()));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
@@ -533,14 +645,17 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
       Click(/*button_index=*/0),
       WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
       WaitForWindowWithTitle(env, u"www.google.com"),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 101,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 101, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101,
-                               0))));
+                               0)));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
@@ -553,12 +668,28 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
       WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
       Click(/*button_index=*/1),
       WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
+          CheckHistogramCounts(
+              "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 101,
+              1),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 101, 0),
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 1),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101,
-                               0))));
+                               0)));
+}
+
+IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
+                       ClickPrimaryButtonOnNotificationAfterCampaignsReload) {
+  aura::Env* env = aura::Env::GetInstance();
+  ASSERT_TRUE(env);
+
+  RunTestSequence(
+      SetTabletMode(ShouldUseTabletMode()),
+      WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
+      ReloadCampaigns(), Click(/*button_index=*/0),
+      WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
+      WaitForWindowWithTitle(env, u"www.google.com"));
 }

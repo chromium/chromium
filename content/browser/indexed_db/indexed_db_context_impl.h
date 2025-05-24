@@ -5,9 +5,7 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONTEXT_IMPL_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONTEXT_IMPL_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -17,8 +15,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
@@ -70,7 +66,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
           blob_storage_context,
       mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
           file_system_access_context,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
 
   ~IndexedDBContextImpl() override;
@@ -105,7 +100,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void SetForceKeepSessionState() override;
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
                               policy_updates) override;
-  void BindTestInterface(
+  void BindTestInterfaceForTesting(
       mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver)
       override;
   void AddObserver(
@@ -117,36 +112,29 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void GetFilePathForTesting(const storage::BucketLocator& bucket_locator,
                              GetFilePathForTestingCallback callback) override;
   void ResetCachesForTesting(base::OnceClosure callback) override;
-  void WriteToIndexedDBForTesting(const storage::BucketLocator& bucket_locator,
-                                  const std::string& key,
-                                  const std::string& value,
-                                  base::OnceClosure callback) override;
   void GetPathForBlobForTesting(
       const storage::BucketLocator& bucket_locator,
       int64_t database_id,
       int64_t blob_number,
       GetPathForBlobForTestingCallback callback) override;
-  void CompactBackingStoreForTesting(
-      const storage::BucketLocator& bucket_locator,
-      base::OnceClosure callback) override;
+  void FlushBackingStoreForTesting(const storage::BucketLocator& bucket_locator,
+                                   base::OnceClosure callback) override;
   void GetUsageForTesting(GetUsageForTestingCallback) override;
+  void GetSchedulingPriorityForTesting(
+      GetSchedulingPriorityForTestingCallback callback) override;
   void BindMockFailureSingletonForTesting(
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver)
       override;
-  void GetDatabaseKeysForTesting(
-      GetDatabaseKeysForTestingCallback callback) override;
   void ForceInitializeFromFilesForTesting(
       ForceInitializeFromFilesForTestingCallback callback) override;
 
   // storage::mojom::QuotaClient implementation:
   void GetBucketUsage(const storage::BucketLocator& bucket,
                       GetBucketUsageCallback callback) override;
-  void GetStorageKeysForType(blink::mojom::StorageType type,
-                             GetStorageKeysForTypeCallback callback) override;
+  void GetDefaultStorageKeys(GetDefaultStorageKeysCallback callback) override;
   void DeleteBucketData(const storage::BucketLocator& bucket,
                         DeleteBucketDataCallback callback) override;
-  void PerformStorageCleanup(blink::mojom::StorageType type,
-                             PerformStorageCleanupCallback callback) override;
+  void PerformStorageCleanup(PerformStorageCleanupCallback callback) override;
 
   // Exposed for testing.
   bool BucketContextExists(storage::BucketId bucket_id);
@@ -238,9 +226,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       GetAllBucketsDetailsCallback callback,
       std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos);
 
-  // Applies the given `callback` to all bucket contexts.
-  void ForEachBucketContext(BucketContext::InstanceClosure callback);
-
   // Calculates in-memory/incognito usage for usage reporting.
   void GetInMemorySize(storage::BucketId bucket_id,
                        base::OnceCallback<void(int64_t)> on_got_size) const;
@@ -285,7 +270,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   bool in_memory() const { return base_data_path_.empty(); }
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
-  const scoped_refptr<base::TaskRunner> io_task_runner_;
 
   // Bound and accessed on the `idb_task_runner_`.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;
@@ -348,10 +332,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   mojo::ReceiverSet<storage::mojom::IndexedDBControl> control_receivers_;
   mojo::ReceiverSet<storage::mojom::IndexedDBControlTest> test_receivers_;
-  // See comment above IDBFactory overrides.
-  mojo::ReceiverSet<blink::mojom::IDBFactory> factory_receivers_;
-  std::optional<mojo::Receiver<storage::mojom::MockFailureInjector>>
-      mock_failure_injector_;
+
   mojo::RemoteSet<storage::mojom::IndexedDBObserver> observers_;
 
   // For testing: when non-null, this receiver will be passed off to the next
@@ -378,8 +359,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   };
   std::map<net::SchemefulSite, TaskRunnerLimiter> task_runner_limiters_;
 
-  BucketContext::InstanceClosure for_each_bucket_context_;
-
   // When true, run backing stores (and bucket contexts) on `idb_task_runner_`
   // to simplify unit tests. This is set to true when the ctor param
   // `custom_task_runner` is non null.
@@ -388,7 +367,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // If recording begins on a bucket ID that doesn't currently have a context,
   // add it to a pending set and actually begin once the context is created.
   std::set<storage::BucketId> pending_bucket_recording_;
-  std::vector<storage::mojom::IdbBucketMetadataPtr> metadata_record_buffer_;
+
   // When `Shutdown()` was called, or null if it's not been called. Used for
   // UMA.
   base::TimeTicks shutdown_start_time_;

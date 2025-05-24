@@ -120,17 +120,17 @@ class WPTServe(server_base.ServerBase):
         self._output_log_path = self._filesystem.join(output_dir,
                                                       'wptserve_stdout.txt')
 
-        expiration_date = datetime.date(2025, 1, 4)
+        expiration_date = datetime.date(2033, 2, 22)
         if datetime.date.today() > expiration_date - datetime.timedelta(30):
             _log.error(
                 'Pre-generated keys and certificates are going to be expired at %s.'
-                ' Please re-generate them by following steps in %s/README.chromium.',
+                ' Please re-generate them by following steps in %s/README.md.',
                 expiration_date.strftime('%b %d %Y'), self.path_to_wpt_support)
 
     def _prepare_config(self):
         fs = self._filesystem
         finder = PathFinder(fs)
-        template_path = finder.path_from_wpt_tests('config.json')
+        template_path = finder.path_from_wpt_tests('.config.json')
         config = json.loads(fs.read_text_file(template_path))
         for alias in config['aliases']:
             if alias['url-path'] == "/resources/testdriver-vendor.js":

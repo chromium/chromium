@@ -7,7 +7,6 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/base/command_id_constants.h"
 
@@ -15,6 +14,11 @@
 // It is used by Windows RC files, Mac NIB files, and other platforms too.
 
 // clang-format off
+
+// Note: Add `NO_IFTTT=<reason>` in the CL description if the linter is not
+// applicable.
+//
+// LINT.IfChange(ChromeCommandIds)
 
 // Values below IDC_MinimumLabelValue are reserved for dynamic menu items.
 #define IDC_MinimumLabelValue           4000
@@ -72,13 +76,13 @@
 #define IDC_USE_SYSTEM_TITLE_BAR        34051
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #define IDC_RESTORE_WINDOW              34052
 #endif
 
 #define IDC_OPEN_IN_PWA_WINDOW          34053
-#define IDC_MOVE_TAB_TO_NEW_WINDOW          34054
+#define IDC_MOVE_TAB_TO_NEW_WINDOW      34054
+#define IDC_NEW_SPLIT_TAB               34055
 
 // Web app window commands
 #define IDC_COPY_URL                    34060
@@ -86,7 +90,7 @@
 #define IDC_WEB_APP_SETTINGS            34062
 #define IDC_WEB_APP_MENU_APP_INFO    34063
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Move window to other user commands
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_2 34080
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_3 34081
@@ -95,6 +99,13 @@
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_NEXT IDC_VISIT_DESKTOP_OF_LRU_USER_2
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_LAST IDC_VISIT_DESKTOP_OF_LRU_USER_5
 #endif
+
+// Tab group Commands
+#define IDC_ADD_NEW_TAB_TO_GROUP      34100
+#define IDC_CREATE_NEW_TAB_GROUP      34101
+#define IDC_FOCUS_NEXT_TAB_GROUP      34102
+#define IDC_FOCUS_PREV_TAB_GROUP      34103
+#define IDC_CLOSE_TAB_GROUP           34104
 
 // Page-related commands
 #define IDC_BOOKMARK_THIS_TAB           35000
@@ -123,7 +134,7 @@
 #define IDC_WEBAUTHN                    35027
 #define IDC_SHARING_HUB                 35028
 #define IDC_SHARING_HUB_MENU            35029
-#define IDC_VIRTUAL_CARD_MANUAL_FALLBACK 35030
+#define IDC_FILLED_CARD_INFORMATION     35030
 #define IDC_SHARING_HUB_SCREENSHOT      35031
 #define IDC_VIRTUAL_CARD_ENROLL         35032
 #define IDC_SAVE_IBAN_FOR_PAGE          35035
@@ -134,7 +145,8 @@
 #define IDC_SHOW_PAYMENT_METHODS        35042
 #define IDC_SHOW_ADDRESSES              35043
 #define IDC_ORGANIZE_TABS               35044
-#define IDC_CREATE_NEW_TAB_GROUP        35045
+#define IDC_DECLUTTER_TABS              35045
+#define IDC_SEND_SHARED_TAB_GROUP_FEEDBACK 35046
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.
@@ -258,7 +270,6 @@
 #define IDC_READING_LIST_MENU_SHOW_UI   40272
 #define IDC_SHOW_READING_MODE_SIDE_PANEL 40273
 #define IDC_SHOW_BOOKMARK_SIDE_PANEL    40274
-#define IDC_SHOW_SEARCH_COMPANION       40275
 #define IDC_SHOW_CHROME_LABS            40276
 #define IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS  40277
 #define IDC_OPEN_RECENT_TAB             40278
@@ -268,6 +279,17 @@
 #define IDC_SHOW_GOOGLE_LENS_SHORTCUT   40282
 #define IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL 40283
 #define IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR 40284
+#define IDC_TASK_MANAGER_APP_MENU       40285
+#define IDC_TASK_MANAGER_SHORTCUT       40286
+#define IDC_TASK_MANAGER_CONTEXT_MENU   40287
+#define IDC_TASK_MANAGER_MAIN_MENU      40288
+#define IDC_COMPARE_MENU                40289
+#define IDC_SHOW_ALL_COMPARISON_TABLES  40290
+#define IDC_ADD_TO_COMPARISON_TABLE_MENU 40291
+#define IDC_CREATE_NEW_COMPARISON_TABLE_WITH_TAB 40292
+#define IDC_SHOW_HISTORY_SIDE_PANEL     40293
+#define IDC_OPEN_GLIC                   40294
+#define IDC_FIND_EXTENSIONS  40295
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.
@@ -329,6 +351,7 @@
 #define IDC_CONTENT_CONTEXT_OPENLINKINPROFILE 50108
 #define IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP 50109
 #define IDC_CONTENT_CONTEXT_OPENLINKPREVIEW 50110
+#define IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW 50111
 // Image items.
 #define IDC_CONTENT_CONTEXT_SAVEIMAGEAS 50120
 #define IDC_CONTENT_CONTEXT_COPYIMAGELOCATION 50121
@@ -338,8 +361,6 @@
 #define IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB 50125
 #define IDC_CONTENT_CONTEXT_LOAD_IMAGE 50126
 #define IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE 50127
-#define IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB 50128
-#define IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS 50129
 // Audio/video items.
 #define IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS 50130
 #define IDC_CONTENT_CONTEXT_SAVEAVAS 50131
@@ -401,6 +422,8 @@
 #define IDC_CONTENT_CONTEXT_SEARCHWEBFOR 50191
 #define IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB 50192
 #define IDC_CONTENT_CONTEXT_LENS_OVERLAY 50193
+// Use passkey from another device from the top level of context menu.
+#define IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE 50194
 // Open with items.
 #define IDC_CONTENT_CONTEXT_OPEN_WITH1 50200
 #define IDC_CONTENT_CONTEXT_OPEN_WITH2 50201
@@ -420,6 +443,9 @@
 // Context menu items that provide fast access to input methods.
 #define IDC_CONTENT_CONTEXT_EMOJI 50220
 #define IDC_CONTEXT_COMPOSE 50230
+// Context menu items to control glic
+#define IDC_CONTENT_CONTEXT_CLOSE_GLIC  50231
+#define IDC_CONTENT_CONTEXT_RELOAD_GLIC  50232
 // Context menu items in the bookmark bar
 #define IDC_BOOKMARK_BAR_OPEN_ALL 51000
 #define IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW 51001
@@ -443,6 +469,8 @@
 #define IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR 51019
 #define IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR 51020
 #define IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS 51021
+#define IDC_BOOKMARK_BAR_MOVE 51022
+#define IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW 51023
 
 // Context menu items for Sharing
 #define IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE 51030
@@ -451,12 +479,13 @@
 #define IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES 51033
 #define IDC_CONTENT_CONTEXT_GENERATE_QR_CODE 51034
 #define IDC_CONTENT_CONTEXT_SHARING_SUBMENU 51035
-// Context menu item to show the clipboard history menu
-#define IDC_CONTENT_CLIPBOARD_HISTORY_MENU 51036
+
+// ChromeOS clipboard history
 #define IDC_CONTENT_PASTE_FROM_CLIPBOARD 51037
 
 // Context menu items in the status tray
 #define IDC_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND 51100
+#define IDC_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND_SETTING 51101
 
 // Context menu items for media router
 #define IDC_MEDIA_ROUTER_ABOUT 51200
@@ -505,7 +534,7 @@
 #define IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS 52411
 #define IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE 52412
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Quick Answers context menu items.
 #define IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_ANSWER 52413
 #define IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_QUERY 52414
@@ -524,15 +553,11 @@
 // Autofill feedback.
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK 52990
 // Autofill context menu commands
-#define IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS 52993
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS 52994
-#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS 52995
-#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS 52996
-#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS 52997
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD 52998
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS 52999
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD 53000
-#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS 53001
+#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE 53002
 
 // Live Caption
 #define IDC_LIVE_CAPTION 53251
@@ -544,8 +569,16 @@
 // Default browser prompt
 #define IDC_SET_BROWSER_AS_DEFAULT 53300
 
-// Enable / Disable compact mode for the browser
-#define IDC_COMPACT_MODE 53301
+// Glic status tray icon menu
+#define IDC_GLIC_STATUS_ICON_MENU_SHOW                        53310
+#define IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT 53311
+#define IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON                 53312
+#define IDC_GLIC_STATUS_ICON_MENU_SETTINGS                    53313
+#define IDC_GLIC_STATUS_ICON_MENU_EXIT                        53314
+#define IDC_GLIC_STATUS_ICON_MENU_CLOSE                       53315
+
+// Glic button context menu and tabstrip context menu
+#define IDC_GLIC_TOGGLE_PIN 53320
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx
@@ -560,5 +593,7 @@
 // each other, by only using every Nth id (where N is the number of unbounded
 // menus).
 #define IDC_FIRST_UNBOUNDED_MENU COMMAND_ID_FIRST_UNBOUNDED
+
+// LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.h:CommandsGatedOnFencedFrameUntrustedNetworkStatus)
 
 #endif  // CHROME_APP_CHROME_COMMAND_IDS_H_

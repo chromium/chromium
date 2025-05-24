@@ -30,7 +30,6 @@ class PaymentItem {
   PaymentItem(const PaymentItem& other);
 
   bool operator==(const PaymentItem& other) const;
-  bool operator!=(const PaymentItem& other) const;
   PaymentItem& operator=(const PaymentItem& other);
 
   // Populates the properties of this PaymentItem from |dict|. Returns true if

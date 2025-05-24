@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <cstdint>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -16,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/proto/features/scam_detection.pb.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
@@ -26,6 +29,7 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -42,6 +46,8 @@ namespace safe_browsing {
 class ClientPhishingRequest;
 class ClientSideDetectionService;
 
+using HostInnerTextCallback = base::OnceCallback<void(std::string)>;
+
 // This class is used to receive the IPC from the renderer which
 // notifies the browser that a URL was classified as phishing.  This
 // class relays this information to the client-side detection service
@@ -55,9 +61,10 @@ class ClientSideDetectionHost
   // numeric values should never be reused.
   enum class AsyncCheckTriggerForceRequestResult {
     kTriggered = 0,
-    kSkippedTriggerModelsPingNotSkipped = 1,
+    kSkippedTriggerModelsPingNotSkipped = 1,  // DEPRECATED
     kSkippedNotForced = 2,
-    kMaxValue = kSkippedNotForced,
+    kSkippedTriggerModelsPingSentAsForceRequest = 3,
+    kMaxValue = kSkippedTriggerModelsPingSentAsForceRequest,
   };
 
   // A callback via which the client of this component indicates whether the
@@ -85,6 +92,11 @@ class ClientSideDetectionHost
     virtual VerdictCacheManager* GetCacheManager() = 0;
     // Returns the management status for current profile.
     virtual ChromeUserPopulation GetUserPopulation() = 0;
+    // Returns the inner text from the tab, which is combined inner-text of all
+    // suitable iframes . The callback is used to retrieve a string back from
+    // the delegate when the inner text function is completed. This string is
+    // then used to provide the on-device model the information about the page.
+    virtual void GetInnerText(HostInnerTextCallback callback) = 0;
   };
 
   // The caller keeps ownership of the tab object and is responsible for
@@ -110,10 +122,16 @@ class ClientSideDetectionHost
   // pending callbacks that could show an interstitial, and check to see whether
   // we should classify the new URL. If a request to lock the keyboard or
   // pointer or vibrate the page has arrived, we will re-trigger classification.
+  // If a request to fullscreen the tab happens, check in preclassification
+  // check for allowlist matches for metric collection.
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
   void KeyboardLockRequested() override;
   void PointerLockRequested() override;
   void VibrationRequested() override;
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
+                                     bool will_cause_resize) override;
 
   // permissions::PermissionRequestManager::Observer methods:
   void OnPromptAdded() override;
@@ -143,6 +161,7 @@ class ClientSideDetectionHost
  private:
   friend class ClientSideDetectionHostTestBase;
   friend class ClientSideDetectionHostNotificationTest;
+  friend class ClientSideDetectionHostScamDetectionTest;
   class ShouldClassifyUrlRequest;
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
@@ -167,10 +186,33 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
       KeyboardLockClassificationTriggersCSPPPing);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      FullscreenApiCallChecksAllowlistInPreClassificationAndDoesNotProceedWithClassification);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TwoFullscreenApiTriggersOnSamePageOnlyLogsOnePreclassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TwoKeyboardLockRequestsOnSamePageOnlyLogsOnePreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
                            VibrationApiTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
                            VibrationApiClassificationTriggersCSPPPing);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TestPreClassificationCheckMatchHighConfidenceAllowlist);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TestPreClassificationCheckDoesNotMatchHighConfidenceAllowlist);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TestPreClassificationCheckDoesNotMatchHighConfidenceAllowlistDueToDisabledFeature);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionRTLookupResponseForceRequestTest,
+      AsyncCheckTrackerTriggersClassificationRequestOnAllowlistMatch);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostScamDetectionTest,
+                           KeyboardLockRequestTriggersOnDeviceLLM);
 
   // Helper function to create preclassification check once requirements are
   // met.
@@ -210,6 +252,18 @@ class ClientSideDetectionHost
       mojom::PhishingImageEmbeddingResult result,
       std::optional<mojo_base::ProtoWrapper> image_feature_embedding);
 
+  // |verdict| is an encoded ClientPhishingRequest protocol message, which will
+  // contain on device model output if the execution is successful.
+  void MaybeInquireOnDeviceForScamDetection(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist);
+
+  // |verdict| is an encoded ClientPhishingRequest protocol message. This is the
+  // last step before sending the ping to the server.
+  void MaybeGetAccessToken(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist);
+
   // Callback that is called when the server ping back is
   // done. Display an interstitial if |is_phishing| is true.
   // Otherwise, we do nothing. Called in UI thread. |is_from_cache| indicates
@@ -222,7 +276,8 @@ class ClientSideDetectionHost
       std::optional<bool> did_match_high_confidence_allowlist,
       GURL phishing_url,
       bool is_phishing,
-      std::optional<net::HttpStatusCode> response_code);
+      std::optional<net::HttpStatusCode> response_code,
+      std::optional<IntelligentScanVerdict> intelligent_scan_verdict);
 
   // Whether request is forced for |current_url_|. This function also checks
   // whether enhanced protection is enabled.
@@ -255,6 +310,13 @@ class ClientSideDetectionHost
     account_signed_in_callback_ = account_signed_in_callback;
   }
 
+  void set_high_confidence_allowlist_acceptance_rate_for_testing(
+      float acceptance_rate);
+
+  void set_delegate_for_testing(std::unique_ptr<Delegate> delegate) {
+    delegate_ = std::move(delegate);
+  }
+
   // Check if CSD can get an access Token. Should be enabled only for ESB
   // users, who are signed in and not in incognito mode.
   bool CanGetAccessToken();
@@ -272,6 +334,26 @@ class ClientSideDetectionHost
   // Check if sample ping can be sent to Safe Browsing.
   bool CanSendSamplePing();
 
+  // Callback function when GetInnerText is completed in the delegate. This
+  // inner text is fetched as part of querying the on-device model through the
+  // CSD service class.
+  void OnInnerTextComplete(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      std::string inner_text);
+
+  // Callback function when InquireOnDeviceModel from the CSD service is
+  // completed.
+  void OnInquireOnDeviceModelDone(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      std::optional<optimization_guide::proto::ScamDetectionResponse> response);
+
+  // Returns bool if for a |client_side_detection_Type|, the last URL is the
+  // same as the last committed URL on the RenderFrameHost.
+  bool HasDonePreclassificationCheckOnSameURL(
+      ClientSideDetectionType client_side_detection_type);
+
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.
   base::WeakPtr<ClientSideDetectionService> csd_service_;
@@ -287,6 +369,13 @@ class ClientSideDetectionHost
   GURL current_url_;
   // The current outermost main frame's id.
   content::GlobalRenderFrameHostId current_outermost_main_frame_id_;
+  // The navigation ID that commits the current URL. Used to set UnsafeResource.
+  int64_t current_navigation_id_;
+
+  // The last URL that the fullscreen API was called. This is used because the
+  // DidToggleFullscreenModeForTab can be called for both entering and exiting
+  // fullscreen.
+  GURL last_fullscreen_url_;
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;
@@ -319,9 +408,19 @@ class ClientSideDetectionHost
                           permissions::PermissionRequestManager::Observer>
       permission_request_observation_{this};
 
-  // A boolean indicates whether TRIGGER_MODELS request is skipped. This is
-  // used to decide whether async check is allowed to trigger FORCE_REQUEST.
-  bool trigger_models_request_skipped_ = false;
+  // A boolean indicates whether TRIGGER_MODELS request is sent via
+  // FORCE_REQUEST. This is used to decide whether async check is allowed to
+  // trigger FORCE_REQUEST.
+  bool trigger_model_request_sent_as_force_request_ = false;
+
+  // Modified through tests only. Initial value is set to the const
+  // kProbabilityForAcceptingHCAllowlistTrigger.
+  float probability_for_accepting_hc_allowlist_trigger_;
+
+  // This map is used to track the last committed URL per
+  // ClientSideDetectionType. This is because for some ClientSideDetectionType,
+  // it can be triggered at a frequent basis per same URL.
+  base::flat_map<ClientSideDetectionType, GURL> last_committed_url_map_;
 
   base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
       async_check_observation_{this};

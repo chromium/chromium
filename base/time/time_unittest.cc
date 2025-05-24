@@ -15,9 +15,11 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/test/gtest_util.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
@@ -81,10 +83,7 @@ class ScopedLibcTZ {
  public:
   explicit ScopedLibcTZ(const std::string& timezone) {
     auto env = base::Environment::Create();
-    std::string old_timezone_value;
-    if (env->GetVar(kTZ, &old_timezone_value)) {
-      old_timezone_ = old_timezone_value;
-    }
+    old_timezone_ = env->GetVar(kTZ);
     if (!env->SetVar(kTZ, timezone)) {
       success_ = false;
     }
@@ -192,15 +191,15 @@ class TimeTest : public testing::Test {
     // must be a time guaranteed to be outside of a DST fallback hour in
     // any timezone.
     struct tm local_comparison_tm = {
-      0,            // second
-      45,           // minute
-      12,           // hour
-      15,           // day of month
-      10 - 1,       // month
-      2007 - 1900,  // year
-      0,            // day of week (ignored, output only)
-      0,            // day of year (ignored, output only)
-      -1            // DST in effect, -1 tells mktime to figure it out
+        0,            // second
+        45,           // minute
+        12,           // hour
+        15,           // day of month
+        10 - 1,       // month
+        2007 - 1900,  // year
+        0,            // day of week (ignored, output only)
+        0,            // day of year (ignored, output only)
+        -1            // DST in effect, -1 tells mktime to figure it out
     };
 
     time_t converted_time = mktime(&local_comparison_tm);
@@ -617,11 +616,9 @@ TEST_F(TimeTest, ParseTimeTestEpoch0) {
   Time parsed_time;
 
   // time_t == epoch == 0
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:00 +0100 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:00 +0100 1970", &parsed_time));
   EXPECT_EQ(0, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:00 GMT 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:00 GMT 1970", &parsed_time));
   EXPECT_EQ(0, parsed_time.ToTimeT());
 }
 
@@ -629,11 +626,9 @@ TEST_F(TimeTest, ParseTimeTestEpoch1) {
   Time parsed_time;
 
   // time_t == 1 second after epoch == 1
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:01 +0100 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:01 +0100 1970", &parsed_time));
   EXPECT_EQ(1, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:01 GMT 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:01 GMT 1970", &parsed_time));
   EXPECT_EQ(1, parsed_time.ToTimeT());
 }
 
@@ -641,11 +636,9 @@ TEST_F(TimeTest, ParseTimeTestEpoch2) {
   Time parsed_time;
 
   // time_t == 2 seconds after epoch == 2
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:02 +0100 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:02 +0100 1970", &parsed_time));
   EXPECT_EQ(2, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:02 GMT 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:02 GMT 1970", &parsed_time));
   EXPECT_EQ(2, parsed_time.ToTimeT());
 }
 
@@ -653,11 +646,9 @@ TEST_F(TimeTest, ParseTimeTestEpochNeg1) {
   Time parsed_time;
 
   // time_t == 1 second before epoch == -1
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:59:59 +0100 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:59:59 +0100 1970", &parsed_time));
   EXPECT_EQ(-1, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:59 GMT 1969",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:59 GMT 1969", &parsed_time));
   EXPECT_EQ(-1, parsed_time.ToTimeT());
 }
 
@@ -667,8 +658,7 @@ TEST_F(TimeTest, ParseTimeTestEpochNeg1) {
 TEST_F(TimeTest, ParseTimeTestEpochNotNeg1) {
   Time parsed_time;
 
-  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:59 GMT 2100",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:59 GMT 2100", &parsed_time));
   EXPECT_NE(-1, parsed_time.ToTimeT());
 }
 
@@ -676,11 +666,9 @@ TEST_F(TimeTest, ParseTimeTestEpochNeg2) {
   Time parsed_time;
 
   // time_t == 2 seconds before epoch == -2
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:59:58 +0100 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:59:58 +0100 1970", &parsed_time));
   EXPECT_EQ(-2, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:58 GMT 1969",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:58 GMT 1969", &parsed_time));
   EXPECT_EQ(-2, parsed_time.ToTimeT());
 }
 
@@ -688,14 +676,11 @@ TEST_F(TimeTest, ParseTimeTestEpoch1960) {
   Time parsed_time;
 
   // time_t before Epoch, in 1960
-  EXPECT_TRUE(Time::FromString("Wed Jun 29 19:40:01 +0100 1960",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Jun 29 19:40:01 +0100 1960", &parsed_time));
   EXPECT_EQ(-299999999, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Wed Jun 29 18:40:01 GMT 1960",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Jun 29 18:40:01 GMT 1960", &parsed_time));
   EXPECT_EQ(-299999999, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Wed Jun 29 17:40:01 GMT 1960",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Jun 29 17:40:01 GMT 1960", &parsed_time));
   EXPECT_EQ(-300003599, parsed_time.ToTimeT());
 }
 
@@ -900,7 +885,7 @@ TEST_F(TimeTest, MaxConversions) {
   tval = t.ToTimeVal();
   EXPECT_EQ(std::numeric_limits<time_t>::max(), tval.tv_sec);
   EXPECT_EQ(static_cast<suseconds_t>(Time::kMicrosecondsPerSecond) - 1,
-      tval.tv_usec);
+            tval.tv_usec);
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -998,13 +983,14 @@ TEST_F(TimeTest, TimeTOverflow) {
 TEST_F(TimeTest, FromLocalExplodedCrashOnAndroid) {
   // This crashed inside Time:: FromLocalExploded() on Android 4.1.2.
   // See http://crbug.com/287821
-  Time::Exploded midnight = {2013,  // year
-                             10,    // month
-                             0,     // day_of_week
-                             13,    // day_of_month
-                             0,     // hour
-                             0,     // minute
-                             0,     // second
+  Time::Exploded midnight = {
+      2013,  // year
+      10,    // month
+      0,     // day_of_week
+      13,    // day_of_month
+      0,     // hour
+      0,     // minute
+      0,     // second
   };
   // The string passed to putenv() must be a char* and the documentation states
   // that it 'becomes part of the environment', so use a static buffer.
@@ -1395,8 +1381,9 @@ TEST(TimeTicks, Deltas) {
 static void HighResClockTest(TimeTicks (*GetTicks)()) {
   // IsHighResolution() is false on some systems.  Since the product still works
   // even if it's false, it makes this entire test questionable.
-  if (!TimeTicks::IsHighResolution())
+  if (!TimeTicks::IsHighResolution()) {
     return;
+  }
 
   // Why do we loop here?
   // We're trying to measure that intervals increment in a VERY small amount
@@ -1420,8 +1407,10 @@ static void HighResClockTest(TimeTicks (*GetTicks)()) {
       delta = GetTicks() - ticks_start;
     } while (delta.InMilliseconds() == 0);
 
-    if (delta.InMicroseconds() <= kTargetGranularityUs)
+    if (delta.InMicroseconds() <= kTargetGranularityUs) {
       success = true;
+      break;
+    }
   }
 
   // In high resolution mode, we expect to see the clock increment
@@ -1432,6 +1421,71 @@ static void HighResClockTest(TimeTicks (*GetTicks)()) {
 TEST(TimeTicks, HighRes) {
   HighResClockTest(&TimeTicks::Now);
 }
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+// Check that MaybeTimeTicksNowIgnoringOverride() and TimeTicks::Now()
+// measurements are "very close". i.e. that they're effectively using the same
+// clock.
+TEST(TimeTicks, MaybeHighRes) {
+  // Loop to avoid flakiness if we happen to context switch between the two
+  // calls to get the current ticks.
+  bool success = false;
+  int retries = 100;  // Arbitrary.
+  TimeDelta delta;
+  while (!success && retries--) {
+    std::optional<TimeTicks> maybe_ticks =
+        subtle::MaybeTimeTicksNowIgnoringOverride();
+    TimeTicks time_ticks = TimeTicks::Now();
+
+    // MaybeTimeTicksNowIgnoringOverride() should always produce a value when
+    // not called from a signal handler.
+    ASSERT_TRUE(maybe_ticks.has_value());
+
+    delta = time_ticks - *maybe_ticks;
+
+    if (delta <= Milliseconds(16)) {
+      success = true;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(success);
+
+  // We expect the second call to be at least as large as the first.
+  EXPECT_GE(delta, Milliseconds(0));
+}
+#endif
+
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
+// Check that the low resolution tick value is "close" to the high resolution
+// tick value across platforms. This property holds on non-Apple platforms.
+TEST(TimeTicks, LowRes) {
+  const TimeDelta kExpectedMaxDifference = Milliseconds(64);
+
+  // Loop to avoid flakiness if we happen to context switch between the two
+  // calls to get the current ticks.
+  bool success = false;
+  int retries = 100;  // Arbitrary.
+  TimeDelta delta;
+  while (!success && retries--) {
+    TimeTicks low_res_ticks = TimeTicks::LowResolutionNow();
+    TimeTicks high_res_ticks = TimeTicks::Now();
+
+    delta = high_res_ticks - low_res_ticks;
+
+    if (delta <= kExpectedMaxDifference) {
+      success = true;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(success);
+
+  // We don't expect the low res ticks to be behind the high res ticks, when
+  // evaluated first.
+  EXPECT_GE(delta, Milliseconds(0));
+}
+#endif
 
 class TimeTicksOverride {
  public:
@@ -1478,6 +1532,62 @@ TEST(TimeTicks, NowOverride) {
   EXPECT_GT(TimeTicks::Max(), TimeTicks::Now());
   EXPECT_LT(TimeTicks::UnixEpoch(), subtle::TimeTicksNowIgnoringOverride());
   EXPECT_GT(TimeTicks::Max(), subtle::TimeTicksNowIgnoringOverride());
+}
+
+class TimeTicksLowResolutionOverride {
+ public:
+  static TimeTicks Now() {
+    now_ticks_ += Seconds(1);
+    return now_ticks_;
+  }
+
+  static TimeTicks now_ticks_;
+};
+
+// static
+TimeTicks TimeTicksLowResolutionOverride::now_ticks_;
+
+TEST(TimeTicks, LowResolutionNowOverride) {
+  TimeTicksLowResolutionOverride::now_ticks_ = TimeTicks::Min();
+
+  // Override is not active. All LowResolutionNow() methods should return a
+  // sensible value.
+  EXPECT_LT(TimeTicks::UnixEpoch(), TimeTicks::LowResolutionNow());
+  EXPECT_GT(TimeTicks::Max(), TimeTicks::LowResolutionNow());
+  EXPECT_LT(TimeTicks::UnixEpoch(),
+            subtle::TimeTicksLowResolutionNowIgnoringOverride());
+  EXPECT_GT(TimeTicks::Max(),
+            subtle::TimeTicksLowResolutionNowIgnoringOverride());
+
+  {
+    // Set override.
+    subtle::ScopedTimeClockOverrides overrides(
+        nullptr, nullptr, nullptr, nullptr,
+        &TimeTicksLowResolutionOverride::Now);
+
+    // Overridden value is returned and incremented when LowResolutionNow() is
+    // called.
+    EXPECT_EQ(TimeTicks::Min() + Seconds(1), TimeTicks::LowResolutionNow());
+    EXPECT_EQ(TimeTicks::Min() + Seconds(2), TimeTicks::LowResolutionNow());
+
+    // LowResolutionNowIgnoringOverride() still returns real ticks.
+    EXPECT_LT(TimeTicks::UnixEpoch(),
+              subtle::TimeTicksLowResolutionNowIgnoringOverride());
+    EXPECT_GT(TimeTicks::Max(),
+              subtle::TimeTicksLowResolutionNowIgnoringOverride());
+
+    // IgnoringOverride methods didn't call
+    // TimeTicksLowResolutionOverride::Now().
+    EXPECT_EQ(TimeTicks::Min() + Seconds(3), TimeTicks::LowResolutionNow());
+  }
+
+  // All methods return real ticks again.
+  EXPECT_LT(TimeTicks::UnixEpoch(), TimeTicks::LowResolutionNow());
+  EXPECT_GT(TimeTicks::Max(), TimeTicks::LowResolutionNow());
+  EXPECT_LT(TimeTicks::UnixEpoch(),
+            subtle::TimeTicksLowResolutionNowIgnoringOverride());
+  EXPECT_GT(TimeTicks::Max(),
+            subtle::TimeTicksLowResolutionNowIgnoringOverride());
 }
 
 class ThreadTicksOverride {
@@ -1832,6 +1942,33 @@ TEST(TimeDelta, TimeSpecConversion) {
   EXPECT_EQ(result.tv_sec, 1);
   EXPECT_EQ(result.tv_nsec, 1000);
   EXPECT_EQ(delta, TimeDelta::FromTimeSpec(result));
+
+  delta = Milliseconds(10600) - Seconds(20);
+  EXPECT_TRUE(delta.is_negative());
+  result = delta.ToTimeSpec();
+  EXPECT_EQ(result.tv_sec, 0);
+  EXPECT_EQ(result.tv_nsec, 0);
+  EXPECT_NE(delta, TimeDelta::FromTimeSpec(result));
+
+  delta = TimeDelta::Max();
+  result = delta.ToTimeSpec();
+  EXPECT_EQ(result.tv_sec,
+            saturated_cast<time_t>(TimeDelta::Max().InSeconds()));
+  const int64_t expected_extra_microseconds =
+      TimeDelta::Max().InMicroseconds() % Time::kMicrosecondsPerSecond;
+  EXPECT_EQ(result.tv_nsec,
+            static_cast<long>(expected_extra_microseconds *
+                              Time::kNanosecondsPerMicrosecond));
+  if (TimeDelta::Max().InSeconds() <= std::numeric_limits<time_t>::max()) {
+    EXPECT_EQ(delta, TimeDelta::FromTimeSpec(result));
+  }
+
+  delta = TimeDelta::Min();
+  EXPECT_TRUE(delta.is_negative());
+  result = delta.ToTimeSpec();
+  EXPECT_EQ(result.tv_sec, 0);
+  EXPECT_EQ(result.tv_nsec, 0);
+  EXPECT_NE(delta, TimeDelta::FromTimeSpec(result));
 }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 

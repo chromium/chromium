@@ -16,7 +16,7 @@ CredentialManagerProxy::CredentialManagerProxy(LocalDOMWindow& window)
       authenticator_(window.GetExecutionContext()),
       credential_manager_(window.GetExecutionContext()),
       webotp_service_(window.GetExecutionContext()),
-      payment_credential_(window.GetExecutionContext()),
+      spc_service_(window.GetExecutionContext()),
       federated_auth_request_(window.GetExecutionContext()),
       digital_identity_request_(window.GetExecutionContext()) {}
 
@@ -55,16 +55,16 @@ mojom::blink::WebOTPService* CredentialManagerProxy::WebOTPService() {
   return webotp_service_.get();
 }
 
-payments::mojom::blink::PaymentCredential*
-CredentialManagerProxy::PaymentCredential() {
-  if (!payment_credential_.is_bound()) {
+payments::mojom::blink::SecurePaymentConfirmationService*
+CredentialManagerProxy::SecurePaymentConfirmationService() {
+  if (!spc_service_.is_bound()) {
     LocalFrame* frame = GetSupplementable()->GetFrame();
     DCHECK(frame);
     frame->GetBrowserInterfaceBroker().GetInterface(
-        payment_credential_.BindNewPipeAndPassReceiver(
+        spc_service_.BindNewPipeAndPassReceiver(
             frame->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
-  return payment_credential_.get();
+  return spc_service_.get();
 }
 
 template <typename Interface>
@@ -152,7 +152,7 @@ void CredentialManagerProxy::Trace(Visitor* visitor) const {
   visitor->Trace(authenticator_);
   visitor->Trace(credential_manager_);
   visitor->Trace(webotp_service_);
-  visitor->Trace(payment_credential_);
+  visitor->Trace(spc_service_);
   visitor->Trace(federated_auth_request_);
   visitor->Trace(digital_identity_request_);
   Supplement<LocalDOMWindow>::Trace(visitor);

@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -49,6 +49,8 @@ void CreateTestFieldDataPredictions(const std::string& signature,
   field_predict->server_type = "TestServerType";
   field_predict->html_type = "TestHtmlType";
   field_predict->overall_type = "TestOverallType";
+  field_predict->autofill_ai_type = "TestAutofillAiType";
+  field_predict->format_string = "TestFormatString";
   field_predict->parseable_name = "TestParseableName";
   field_predict->section = "TestSection";
   field_predict->rank = 0;
@@ -92,17 +94,21 @@ void CreatePasswordGenerationUIData(
   data->form_data = test::CreateTestAddressFormData();
 }
 
-void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
+void CreateTriggeringField(TriggeringField* data) {
   data->element_id = FieldRendererId(123);
-  data->form_data = test::CreateTestAddressFormData();
   data->trigger_source =
       AutofillSuggestionTriggerSource::kFormControlElementClicked;
-  data->username_field_index = 0ul;
-  data->password_field_index = 1ul;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
   data->typed_username = u"username";
   data->show_webauthn_credentials = true;
+  data->show_identity_credentials = true;
+}
+
+void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
+  CreateTriggeringField(&data->field);
   data->form_data = test::CreateTestAddressFormData();
+  data->username_field_index = 0ul;
+  data->password_field_index = 1ul;
 }
 
 void CheckEqualPasswordFormFillData(const PasswordFormFillData& expected,
@@ -126,24 +132,31 @@ void CheckEqualPassPasswordGenerationUIData(
   EXPECT_EQ(expected.is_generation_element_password_type,
             actual.is_generation_element_password_type);
   EXPECT_EQ(expected.text_direction, actual.text_direction);
-  EXPECT_TRUE(test::WithoutUnserializedData(expected.form_data)
-                  .SameFormAs(actual.form_data));
+  EXPECT_TRUE(FormData::DeepEqual(
+      test::WithoutUnserializedData(expected.form_data), actual.form_data));
+}
+
+void CheckEqualTriggeringField(const TriggeringField& expected,
+                               const TriggeringField& actual) {
+  EXPECT_EQ(expected.element_id, actual.element_id);
+  EXPECT_EQ(expected.trigger_source, actual.trigger_source);
+  EXPECT_EQ(expected.text_direction, actual.text_direction);
+  EXPECT_EQ(expected.typed_username, actual.typed_username);
+  EXPECT_EQ(expected.show_webauthn_credentials,
+            actual.show_webauthn_credentials);
+  EXPECT_EQ(expected.show_identity_credentials,
+            actual.show_identity_credentials);
+  EXPECT_EQ(expected.bounds, actual.bounds);
 }
 
 void CheckEqualPasswordSuggestionRequest(
     const PasswordSuggestionRequest& expected,
     const PasswordSuggestionRequest& actual) {
-  EXPECT_EQ(expected.element_id, actual.element_id);
-  EXPECT_TRUE(test::WithoutUnserializedData(expected.form_data)
-                  .SameFormAs(actual.form_data));
-  EXPECT_EQ(expected.trigger_source, actual.trigger_source);
+  CheckEqualTriggeringField(expected.field, actual.field);
+  EXPECT_TRUE(FormData::DeepEqual(
+      test::WithoutUnserializedData(expected.form_data), actual.form_data));
   EXPECT_EQ(expected.username_field_index, actual.username_field_index);
   EXPECT_EQ(expected.password_field_index, actual.password_field_index);
-  EXPECT_EQ(expected.text_direction, actual.text_direction);
-  EXPECT_EQ(expected.typed_username, actual.typed_username);
-  EXPECT_EQ(expected.show_webauthn_credentials,
-            actual.show_webauthn_credentials);
-  EXPECT_EQ(expected.bounds, actual.bounds);
 }
 
 class AutofillTypeTraitsTestImpl : public testing::Test,
@@ -348,6 +361,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
       AutocompleteParsingResult{.section = "autocomplete_section",
                                 .mode = HtmlFieldMode::kShipping,
                                 .field_type = HtmlFieldType::kAddressLine1});
+  input.set_pattern(u"a pattern");
   input.set_placeholder(u"placeholder");
   input.set_css_classes(u"class1");
   input.set_aria_label(u"aria label");
@@ -387,6 +401,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   input.set_name_attribute(u"name");
   input.set_autocomplete_attribute("on");
   input.set_parsed_autocomplete(std::nullopt);
+  input.set_pattern(u"a pattern");
   input.set_placeholder(u"placeholder");
   input.set_css_classes(u"class1");
   input.set_aria_label(u"aria label");
@@ -511,11 +526,13 @@ TEST_F(AutofillTypeTraitsTestImpl, PassPasswordSuggestionRequest) {
 }
 
 TEST(AutofillTypesMojomTraitsTest, AutocompleteParsingResult) {
-  // Simulate a parsed "name webauthn" attribute.
+  // Simulate a parsed "section-test name webauthn webidentity" attribute.
   autofill::AutocompleteParsingResult original;
+  original.section = "section-test";
   original.mode = HtmlFieldMode::kNone;
   original.field_type = HtmlFieldType::kName;
   original.webauthn = true;
+  original.webidentity = true;
 
   autofill::AutocompleteParsingResult copy;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<

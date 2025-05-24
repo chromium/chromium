@@ -27,9 +27,7 @@ SampleSystemWebAppUntrustedUI::SampleSystemWebAppUntrustedUI(
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           kChromeUISampleSystemWebAppUntrustedURL);
-  untrusted_source->AddResourcePaths(
-      base::make_span(kAshSampleSystemWebAppUntrustedResources,
-                      kAshSampleSystemWebAppUntrustedResourcesSize));
+  untrusted_source->AddResourcePaths(kAshSampleSystemWebAppUntrustedResources);
   untrusted_source->AddFrameAncestor(GURL(kChromeUISampleSystemWebAppURL));
 }
 

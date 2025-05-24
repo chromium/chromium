@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   PlusAddressActionsSectionIdentifier,
   // Must be declared last as it is used as the starting point to dynamically
   // create section identifiers for each data item when the
-  // kIOSKeyboardAccessoryUpgrade feature is enabled.
+  // Keyboard Accessory Upgrade feature is enabled.
   DataItemsSectionIdentifier
 };
 
@@ -65,6 +65,14 @@ enum class ItemType {
   kItemTypeAction,
   kItemTypePlusAddressAction
 };
+
+// Returns whether the view should be resized to match the desired popover UI on
+// tablets.
+bool ShouldResizeViewForPopover(
+    UIModalPresentationStyle modal_presentation_style) {
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+         modal_presentation_style == UIModalPresentationPopover;
+}
 
 }  // namespace
 
@@ -128,7 +136,7 @@ enum class ItemType {
   self.tableView.allowsSelection = NO;
   self.definesPresentationContext = YES;
   if (!self.tableViewModel) {
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (ShouldResizeViewForPopover(self.modalPresentationStyle)) {
       self.preferredContentSize = CGSizeMake(
           PopoverPreferredWidth, AlignValueToPixel(PopoverLoadingHeight));
     }
@@ -139,7 +147,7 @@ enum class ItemType {
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ShouldResizeViewForPopover(self.modalPresentationStyle)) {
     CGSize systemLayoutSize = self.tableView.contentSize;
     CGFloat preferredHeight =
         std::min(systemLayoutSize.height, PopoverMaxHeight);
@@ -328,7 +336,7 @@ enum class ItemType {
           ? 1
           : 0;
 
-  // If the kIOSKeyboardAccessoryUpgrade feature is enabled, remove any excess
+  // If the Keyboard Accessory Upgrade feature is enabled, remove any excess
   // data item sections, and present the queued data items.
   if (IsKeyboardAccessoryUpgradeEnabled()) {
     [self removeUnusedDataItemSections];

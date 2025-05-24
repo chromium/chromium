@@ -122,7 +122,6 @@ void PrepopulatedComputedStylePropertyMap::ForEachProperty(
 String PrepopulatedComputedStylePropertyMap::SerializationForShorthand(
     const CSSProperty&) const {
   // TODO(816722): Shorthands not yet supported for this style map.
-  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

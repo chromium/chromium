@@ -1,0 +1,46 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("client") {
+  sources = [
+    "reminder_notification_builder.h",
+    "reminder_notification_builder.mm",
+    "reminder_notification_client.h",
+    "reminder_notification_client.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//net",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "UserNotifications.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "reminder_notification_client_unittests.mm" ]
+  deps = [
+    ":client",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//net",
+    "//ui/base",
+  ]
+}

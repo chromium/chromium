@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_TAB_GROUP_SYNC_TAB_GROUP_SYNC_UTILS_H_
 #define CHROME_BROWSER_TAB_GROUP_SYNC_TAB_GROUP_SYNC_UTILS_H_
 
+#include "components/saved_tab_groups/public/types.h"
+
 namespace content {
 class NavigationHandle;
 }
 
 namespace tab_groups {
+class TabGroupSyncService;
 
 class TabGroupSyncUtils {
  public:
@@ -17,6 +20,13 @@ class TabGroupSyncUtils {
   // can be reloaded later on another machine.
   static bool IsSaveableNavigation(
       content::NavigationHandle* navigation_handle);
+
+  // Record UKM metrics for navigations in saved tab groups.
+  static void RecordSavedTabGroupNavigationUkmMetrics(
+      const LocalTabID& id,
+      SavedTabGroupType type,
+      content::NavigationHandle* navigation_handle,
+      TabGroupSyncService* tab_group_sync_service);
 };
 
 }  // namespace tab_groups

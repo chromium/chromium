@@ -14,9 +14,9 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 // </if>
 import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/js/action_link.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -104,25 +104,25 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     };
   }
 
-  data?: MojomData;
+  accessor data: MojomData|undefined;
   // <if expr="_google_chrome">
-  showEsbPromotion: boolean = false;
+  accessor showEsbPromotion: boolean = false;
   // </if>
   private mojoHandler_: PageHandlerInterface|null = null;
-  protected isDangerous_: boolean = false;
-  protected isReviewable_: boolean = false;
-  protected pauseOrResumeText_: string = '';
-  protected showCancel_: boolean = false;
-  protected showProgress_: boolean = false;
-  protected showDeepScan_: boolean = false;
-  protected showOpenAnyway_: boolean = false;
-  protected useFileIcon_: boolean = false;
-  protected showReferrerUrl_: boolean =
+  protected accessor isDangerous_: boolean = false;
+  protected accessor isReviewable_: boolean = false;
+  protected accessor pauseOrResumeText_: string = '';
+  protected accessor showCancel_: boolean = false;
+  protected accessor showProgress_: boolean = false;
+  protected accessor showDeepScan_: boolean = false;
+  protected accessor showOpenAnyway_: boolean = false;
+  protected accessor useFileIcon_: boolean = false;
+  protected accessor showReferrerUrl_: boolean =
       loadTimeData.getBoolean('showReferrerUrl');
   private restoreFocusAfterCancel_: boolean = false;
-  private displayType_: DisplayType = DisplayType.NORMAL;
-  private completelyOnDisk_: boolean = true;
-  protected shouldLinkFilename_: boolean = true;
+  private accessor displayType_: DisplayType = DisplayType.NORMAL;
+  private accessor completelyOnDisk_: boolean = true;
+  protected accessor shouldLinkFilename_: boolean = true;
   override overrideCustomEquivalent: boolean = true;
 
   override firstUpdated() {
@@ -164,10 +164,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   /** Overrides FocusRowMixin. */
   override getCustomEquivalent(sampleElement: HTMLElement): HTMLElement|null {
     if (sampleElement.getAttribute('focus-type') === 'cancel') {
-      return this.shadowRoot!.querySelector('[focus-type="retry"]');
+      return this.shadowRoot.querySelector('[focus-type="retry"]');
     }
     if (sampleElement.getAttribute('focus-type') === 'retry') {
-      return this.shadowRoot!.querySelector('[focus-type="pauseOrResume"]');
+      return this.shadowRoot.querySelector('[focus-type="pauseOrResume"]');
     }
     return null;
   }
@@ -178,12 +178,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   getMoreActionsButton(): CrIconButtonElement|null {
     const button =
-        this.shadowRoot!.querySelector<CrIconButtonElement>('#more-actions');
+        this.shadowRoot.querySelector<CrIconButtonElement>('#more-actions');
     return button || null;
   }
 
   getMoreActionsMenu(): CrActionMenuElement {
-    const menu = this.shadowRoot!.querySelector<CrActionMenuElement>(
+    const menu = this.shadowRoot.querySelector<CrActionMenuElement>(
         '#more-actions-menu');
     assert(!!menu);
     return menu;
@@ -549,12 +549,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
             switch (data.tailoredWarningType) {
               case TailoredWarningType.kCookieTheft:
                 return loadTimeData.getString('dangerDownloadCookieTheft');
-              case TailoredWarningType.kCookieTheftWithAccountInfo:
-                return data.accountEmail ?
-                    loadTimeData.getStringF(
-                        'dangerDownloadCookieTheftAndAccountDesc',
-                        data.accountEmail) :
-                    loadTimeData.getString('dangerDownloadCookieTheft');
               case TailoredWarningType.kSuspiciousArchive:
               case TailoredWarningType.kNoApplicableTailoredWarningType:
                 return loadTimeData.getString('dangerDownloadDesc');
@@ -567,7 +561,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
                 return loadTimeData.getString(
                     'dangerUncommonSuspiciousArchiveDesc');
               case TailoredWarningType.kCookieTheft:
-              case TailoredWarningType.kCookieTheftWithAccountInfo:
               case TailoredWarningType.kNoApplicableTailoredWarningType:
                 return loadTimeData.getString('dangerUncommonDesc');
               default:
@@ -695,7 +688,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       }
 
       assert(this.displayType_ === DisplayType.NORMAL);
-      const dangerType = this.data.dangerType as DangerType;
+      const dangerType: DangerType = this.data.dangerType;
       if (this.isSuspiciousEnterpriseApVerdict_(
               loadTimeData.getBoolean('requestsApVerdicts'), dangerType)) {
         return 'cr:warning';
@@ -770,10 +763,25 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     if (!this.data) {
       return true;
     }
-    if (this.data && this.data.fileExternallyRemoved) {
+    if (this.data.fileExternallyRemoved) {
       return false;
     }
-    return this.completelyOnDisk_;
+    switch (this.data.state) {
+      case State.kComplete:
+      case State.kInProgress:
+        return true;
+      case State.kCancelled:
+      case State.kInterrupted:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInsecure:
+      case State.kAsyncScanning:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private computeIsDangerous_(): boolean {
@@ -1011,7 +1019,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     const controlledBy = this.computeControlledBy_();
     this.$['controlled-by'].innerHTML = sanitizeInnerHtml(controlledBy);
     if (controlledBy) {
-      const link = this.shadowRoot!.querySelector('#controlled-by a');
+      const link = this.shadowRoot.querySelector('#controlled-by a');
       link!.setAttribute('focus-row-control', '');
       link!.setAttribute('focus-type', 'controlledBy');
     }
@@ -1318,7 +1326,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     setTimeout(() => {
       const element = this.getFocusRow().getFirstFocusable('retry');
       if (element) {
-        (element as HTMLElement).focus();
+        element.focus();
       }
     });
   }

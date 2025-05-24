@@ -95,7 +95,7 @@ AppInstallData PreloadAppDefinition::ToAppInstallData() const {
     web_app_data.proxied_manifest_url = GetWebAppManifestUrl();
     web_app_data.document_url = GetWebAppManifestId().GetWithEmptyPath();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return result;
 }
@@ -106,7 +106,7 @@ std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {
      << (app.GetPackageId() ? app.GetPackageId()->ToString() : std::string())
      << std::endl;
   os << "- Name: " << app.GetName() << std::endl;
-  os << "- Platform: " << EnumToString(app.GetPlatform()) << std::endl;
+  os << "- Platform: " << app.GetPlatform() << std::endl;
   os << "- OEM: " << app.IsOemApp() << std::endl;
   os << "- Default: " << app.IsDefaultApp() << std::endl;
 

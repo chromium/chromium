@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_STATE_MACHINES_STATE_MACHINE_TEST_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_STATE_MACHINES_STATE_MACHINE_TEST_UTIL_H_
 
@@ -34,11 +29,7 @@ class GraphemeStateMachineTestBase : public testing::Test {
 
   template <typename... Args>
   Vector<UChar32> AsCodePoints(Args... args) {
-    UChar32 code_points[] = {args...};
-    Vector<UChar32> result(sizeof...(args));
-    for (wtf_size_t index = 0; index < sizeof...(args); ++index)
-      result[index] = code_points[index];
-    return result;
+    return Vector<UChar32>({args...});
   }
 
   // Processes the |machine| with preceding/following code points.

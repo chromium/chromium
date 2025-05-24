@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 
 import java.util.List;
 
 /** An interface of methods that perform actions related to the restore tabs promo. */
+@NullMarked
 public interface RestoreTabsControllerDelegate {
     /**
      * Action to perform when the restore tabs promo should be shown.

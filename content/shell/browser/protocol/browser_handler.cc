@@ -44,7 +44,7 @@ Response BrowserHandler::Disable() {
 }
 
 Response BrowserHandler::GetWindowForTarget(
-    Maybe<std::string> target_id,
+    std::optional<std::string> target_id,
     int* out_window_id,
     std::unique_ptr<Browser::Bounds>* out_bounds) {
   scoped_refptr<DevToolsAgentHost> agent_host =

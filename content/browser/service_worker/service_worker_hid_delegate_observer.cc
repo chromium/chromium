@@ -136,15 +136,17 @@ void ServiceWorkerHidDelegateObserver::DispatchHidDeviceEventToWorkers(
 
     // Avoid waking up the worker if eventually the device event won't be
     // delivered for the HidService.
-    if (!HasDevicePermission(GetContentClient()->browser()->GetHidDelegate(),
-                             GetBrowserContext(), info.key, device_info)) {
+    auto* delegate = GetContentClient()->browser()->GetHidDelegate();
+    if (!HasDevicePermission(delegate, GetBrowserContext(), info.key,
+                             device_info)) {
       continue;
     }
     auto filtered_device_info = device_info.Clone();
     HidService::RemoveProtectedReports(
         *filtered_device_info,
-        GetContentClient()->browser()->GetHidDelegate()->IsFidoAllowedForOrigin(
-            GetBrowserContext(), info.key.origin()));
+        delegate->IsKnownSecurityKey(GetBrowserContext(), device_info),
+        delegate->IsFidoAllowedForOrigin(GetBrowserContext(),
+                                         info.key.origin()));
     if (filtered_device_info->collections.empty()) {
       continue;
     }

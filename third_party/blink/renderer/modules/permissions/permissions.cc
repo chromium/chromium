@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -30,6 +31,12 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
+namespace {
+void RecordTopLevelStorageAccessQueryMetrics(bool is_top_level_storage_access) {
+  base::UmaHistogramBoolean("Permissions.Query.TopLevelStorageAccess",
+                            is_top_level_storage_access);
+}
+}  // namespace
 
 using mojom::blink::PermissionDescriptorPtr;
 using mojom::blink::PermissionName;
@@ -82,6 +89,9 @@ ScriptPromise<PermissionStatus> Permissions::query(
       ParsePermissionDescriptor(script_state, raw_permission, exception_state);
   if (exception_state.HadException())
     return EmptyPromise();
+
+  RecordTopLevelStorageAccessQueryMetrics(
+      descriptor->name == PermissionName::TOP_LEVEL_STORAGE_ACCESS);
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PermissionStatus>>(
@@ -155,7 +165,7 @@ ScriptPromise<PermissionStatus> Permissions::revoke(
 
 ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
     ScriptState* script_state,
-    const HeapVector<ScriptValue>& raw_permissions,
+    const HeapVector<ScriptObject>& raw_permissions,
     ExceptionState& exception_state) {
   Vector<PermissionDescriptorPtr> internal_permissions;
   Vector<int> caller_index_to_internal_index;
@@ -164,7 +174,7 @@ ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   for (wtf_size_t i = 0; i < raw_permissions.size(); ++i) {
-    const ScriptValue& raw_permission = raw_permissions[i];
+    const ScriptObject& raw_permission = raw_permissions[i];
 
     auto descriptor = ParsePermissionDescriptor(script_state, raw_permission,
                                                 exception_state);

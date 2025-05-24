@@ -105,24 +105,34 @@ bool IsSystemLocationSettingEnabled() {
            status == DeviceAccessStatus::DeviceAccessStatus_DeniedByUser);
 }
 
-ComPtr<IGeopoint> GetPointFromCoordinate(
-    const ComPtr<IGeocoordinate>& coordinate) {
+HRESULT GetPointFromCoordinate(const ComPtr<IGeocoordinate>& coordinate,
+                               IGeopoint** point) {
+  CHECK(point);
+
   ComPtr<IGeocoordinateWithPoint> coordinate_with_point = nullptr;
-  const HRESULT query_result = coordinate.As(&coordinate_with_point);
-  if (FAILED(query_result) || !coordinate_with_point) {
+  HRESULT result = coordinate.As(&coordinate_with_point);
+  if (FAILED(result)) {
     GEOLOCATION_LOG(ERROR) << "Failed to cast to GeocoordinateWithPoint. "
-                           << logging::SystemErrorCodeToString(query_result);
-    return nullptr;
+                           << logging::SystemErrorCodeToString(result);
+    return result;
+  }
+  if (!coordinate_with_point) {
+    GEOLOCATION_LOG(ERROR) << "coordinate_with_point is null.";
+    return E_POINTER;
   }
 
-  ComPtr<IGeopoint> point = nullptr;
-  const HRESULT point_result = coordinate_with_point->get_Point(&point);
-  if (FAILED(point_result)) {
+  result = coordinate_with_point->get_Point(point);
+  if (FAILED(result)) {
     GEOLOCATION_LOG(ERROR) << "Failed to get point from coordinate. "
-                           << logging::SystemErrorCodeToString(point_result);
-    return nullptr;
+                           << logging::SystemErrorCodeToString(result);
+    return result;
   }
-  return point;
+  if (!*point) {
+    GEOLOCATION_LOG(ERROR) << "Failed to get a valid point";
+    return E_POINTER;
+  }
+
+  return result;
 }
 
 AltitudeReferenceSystem GetAltitudeReferenceSystemFromPoint(
@@ -208,6 +218,11 @@ void RecordUmaPositionSource(PositionSource source) {
                            source);
 }
 
+void RecordUmaSessionResult(HRESULT result) {
+  base::UmaHistogramSparse("Geolocation.LocationProviderWinrt.SessionResult",
+                           result);
+}
+
 }  // namespace
 
 // LocationProviderWinrt
@@ -253,6 +268,7 @@ void LocationProviderWinrt::StartProvider(bool high_accuracy) {
     hr = GetGeolocator(&geo_locator_);
     if (FAILED(hr)) {
       RecordUmaStartProviderError(hr);
+      SetSessionErrorIfNotSet(hr);
       HandleErrorCondition(mojom::GeopositionErrorCode::kPositionUnavailable,
                            "Unable to create instance of Geolocation API. " +
                                logging::SystemErrorCodeToString(hr));
@@ -286,6 +302,13 @@ void LocationProviderWinrt::StopProvider() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   is_started_ = false;
+
+  // Only report to the metric if we have either encountered an error or
+  // retrieved a valid Geoposition.
+  if (session_error_ || position_received_) {
+    RecordUmaSessionResult(session_error_.value_or(S_OK));
+    session_error_.reset();
+  }
 
   // Reset the reference location state (provider+position)
   // so that future starts use fresh locations from
@@ -360,6 +383,7 @@ void LocationProviderWinrt::RegisterCallbacks() {
 
     if (FAILED(hr)) {
       RecordUmaRegisterCallbacksError(hr);
+      SetSessionErrorIfNotSet(hr);
       if (!HasValidLastPosition()) {
         HandleErrorCondition(
             mojom::GeopositionErrorCode::kPositionUnavailable,
@@ -434,6 +458,7 @@ void LocationProviderWinrt::OnPositionChanged(
   HRESULT hr = position_update->get_Position(&position);
   if (FAILED(hr)) {
     RecordUmaOnPositionChangedError(hr);
+    SetSessionErrorIfNotSet(hr);
     if (!HasValidLastPosition()) {
       HandleErrorCondition(mojom::GeopositionErrorCode::kPositionUnavailable,
                            "Unable to get position from Geolocation API. " +
@@ -484,11 +509,13 @@ void LocationProviderWinrt::OnStatusChanged(
   switch (status) {
     case PositionStatus::PositionStatus_Disabled:
       RecordUmaErrorStatus(status);
+      SetSessionErrorIfNotSet(ERROR_ACCESS_DENIED);
       HandleErrorCondition(mojom::GeopositionErrorCode::kPermissionDenied,
                            "User has not allowed access to Windows Location.");
       break;
     case PositionStatus::PositionStatus_NotAvailable:
       RecordUmaErrorStatus(status);
+      SetSessionErrorIfNotSet(ERROR_NOT_SUPPORTED);
       HandleErrorCondition(
           mojom::GeopositionErrorCode::kPositionUnavailable,
           "Location API is not available on this version of Windows.");
@@ -504,6 +531,7 @@ mojom::GeopositionPtr LocationProviderWinrt::CreateGeoposition(
   HRESULT hr = geoposition->get_Coordinate(&coordinate);
   if (FAILED(hr)) {
     RecordUmaCreateGeopositionError(hr);
+    SetSessionErrorIfNotSet(hr);
     GEOLOCATION_LOG(ERROR)
         << "Failed to get a coordinate from geoposition from windows "
            "geolocation API. "
@@ -511,9 +539,11 @@ mojom::GeopositionPtr LocationProviderWinrt::CreateGeoposition(
     return nullptr;
   }
 
-  ComPtr<IGeopoint> point = GetPointFromCoordinate(coordinate);
-  if (!point) {
-    RecordUmaCreateGeopositionError(E_POINTER);
+  ComPtr<IGeopoint> point;
+  hr = GetPointFromCoordinate(coordinate, &point);
+  if (FAILED(hr)) {
+    RecordUmaCreateGeopositionError(hr);
+    SetSessionErrorIfNotSet(hr);
     return nullptr;
   }
 
@@ -523,6 +553,7 @@ mojom::GeopositionPtr LocationProviderWinrt::CreateGeoposition(
     GEOLOCATION_LOG(ERROR) << "Failed to get position from point. "
                            << logging::SystemErrorCodeToString(hr);
     RecordUmaCreateGeopositionError(hr);
+    SetSessionErrorIfNotSet(hr);
     return nullptr;
   }
 
@@ -572,6 +603,13 @@ HRESULT LocationProviderWinrt::GetGeolocator(IGeolocator** geo_locator) {
   }
 
   return hr;
+}
+
+void LocationProviderWinrt::SetSessionErrorIfNotSet(HRESULT error) {
+  if (session_error_) {
+    return;
+  }
+  session_error_ = error;
 }
 
 std::unique_ptr<LocationProvider> NewSystemLocationProvider() {

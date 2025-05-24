@@ -164,12 +164,10 @@ TEST_F(VpnDetailedViewTest, Basics) {
 TEST_F(VpnDetailedViewTest, ParentContainerConfiguration) {
   AddVpnProvidersAndNetwork();
   for (const views::View* view : GetProviderViews()) {
-    const views::View* parent = view->parent();
-    EXPECT_STREQ(parent->GetClassName(), "RoundedContainer");
+    EXPECT_EQ(view->parent()->GetClassName(), "RoundedContainer");
   }
   for (const views::View* view : GetNetworkViews()) {
-    const views::View* parent = view->parent();
-    EXPECT_STREQ(parent->GetClassName(), "RoundedContainer");
+    EXPECT_EQ(view->parent()->GetClassName(), "RoundedContainer");
   }
 }
 

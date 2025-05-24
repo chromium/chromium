@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -37,16 +38,28 @@ class MEDIA_EXPORT DXGIDeviceScopedHandle {
 class MEDIA_EXPORT DXGIDeviceManager
     : public base::RefCountedThreadSafe<DXGIDeviceManager> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
+  DXGIDeviceManager(
+      base::PassKey<DXGIDeviceManager>,
+      Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> mf_dxgi_device_manager,
+      UINT d3d_device_reset_token,
+      CHROME_LUID luid);
   DXGIDeviceManager(const DXGIDeviceManager&) = delete;
   DXGIDeviceManager& operator=(const DXGIDeviceManager&) = delete;
 
   // Returns a DXGIDeviceManager with associated D3D device set, or nullptr on
   // failure.
   static scoped_refptr<DXGIDeviceManager> Create(CHROME_LUID luid);
+  static scoped_refptr<DXGIDeviceManager> Create(CHROME_LUID luid,
+                                                 ID3D11Device* shared_device);
 
   // Associates a new D3D device with the DXGI Device Manager
   // returns it in the parameter, which can't be nullptr.
   virtual HRESULT ResetDevice(Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device);
+
+  // Associates a shared D3D device  with the DXGI Device Manager
+  virtual HRESULT ResetDeviceWithSharedDevice(ID3D11Device* shared_device);
 
   // Checks if the local device was removed, recreates it if needed.
   // Returns DeviceRemovedReason HRESULT value.

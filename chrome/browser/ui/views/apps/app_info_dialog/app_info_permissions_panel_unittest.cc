@@ -37,7 +37,7 @@ using testing::Eq;
 
 class AppInfoPermissionsPanelTest : public testing::Test {
  protected:
-  AppInfoPermissionsPanelTest() {}
+  AppInfoPermissionsPanelTest() = default;
 
   base::Value::Dict ValidAppManifest() {
     return base::Value::Dict()
@@ -93,8 +93,7 @@ TEST_F(AppInfoPermissionsPanelTest, RequiredPermissionsObtainedCorrectly) {
   EXPECT_TRUE(VerifyTwoPermissionMessages(
       panel.app_->permissions_data(),
       l10n_util::GetStringUTF8(IDS_EXTENSION_PROMPT_WARNING_DESKTOP_CAPTURE),
-      l10n_util::GetStringUTF8(IDS_EXTENSION_PROMPT_WARNING_SERIAL),
-      false));
+      l10n_util::GetStringUTF8(IDS_EXTENSION_PROMPT_WARNING_SERIAL), false));
 }
 
 // Tests that an app's optional permissions are detected and converted to

@@ -13,6 +13,12 @@ namespace content {
 base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_create(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& surface,
+    jboolean canBeUsedWithSurfaceControl,
+    const base::android::JavaRef<jobject>& browserInputToken);
+
+base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_create(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& surface,
     jboolean canBeUsedWithSurfaceControl);
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -34,6 +40,11 @@ base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_takeSurface(
 
 base::android::ScopedJavaLocalRef<jobject>
 JNI_SurfaceWrapper_takeSurfaceControl(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj);
+
+base::android::ScopedJavaLocalRef<jobject>
+JNI_SurfaceWrapper_getBrowserInputToken(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj);
 

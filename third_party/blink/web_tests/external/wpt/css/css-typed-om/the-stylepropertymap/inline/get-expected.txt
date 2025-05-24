@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Getting a custom property not in the inline style returns undefined
+  assert_equals: expected (undefined) undefined but got (object) null
+[FAIL] Getting a valid property not in the inline style returns undefined
+  assert_equals: expected (undefined) undefined but got (object) null
+Harness: the test ran to completion.
+

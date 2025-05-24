@@ -18,6 +18,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
+#include "media/gpu/chromeos/mock_native_pixmap_dmabuf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -45,51 +46,6 @@ std::vector<base::ScopedFD> CreateMockDMABufs(size_t num_planes) {
     }
   }
   return dmabuf_fds;
-}
-
-// Creates a NativePixmapDmaBuf with valid strides and other metadata, but with
-// FD's that reference a /dev/null instead of referencing a DMABuf.
-scoped_refptr<const gfx::NativePixmapDmaBuf> CreateMockNativePixmapDmaBuf(
-    VideoPixelFormat pixel_format,
-    const gfx::Size& coded_size) {
-  // Uses VideoFrameLayout::Create() to create a VideoFrameLayout with correct
-  // planes and strides. The values from |layout| will be used to construct a
-  // gfx::NativePixmapHandle.
-  const std::optional<VideoFrameLayout> layout =
-      VideoFrameLayout::Create(pixel_format, coded_size);
-  if (!layout.has_value()) {
-    LOG(ERROR) << "Failed to create video frame layout";
-    return nullptr;
-  }
-
-  // This converts |layout|'s VideoPixelFormat to a gfx::BufferFormat, which is
-  // needed by the NativePixmapDmaBuf constructor.
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
-  if (!buffer_format) {
-    LOG(ERROR) << "Unable to convert pixel format " << pixel_format
-               << " to BufferFormat";
-    return nullptr;
-  }
-
-  gfx::NativePixmapHandle handle;
-  const size_t num_planes = layout->num_planes();
-  handle.planes.reserve(num_planes);
-  for (size_t i = 0; i < num_planes; ++i) {
-    const auto& plane = layout->planes()[i];
-    // For the NativePixmapHandle FD's this creates an FD to "/dev/null".
-    base::File file(base::FilePath("/dev/null"),
-                    base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (!file.IsValid()) {
-      LOG(ERROR) << "Failed to open a file";
-      return nullptr;
-    }
-    handle.planes.emplace_back(plane.stride, plane.offset, plane.size,
-                               base::ScopedFD(file.TakePlatformFile()));
-  }
-  handle.modifier = layout->modifier();
-
-  return base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-      coded_size, *buffer_format, std::move(handle));
 }
 
 }  // namespace

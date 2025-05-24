@@ -31,11 +31,18 @@ See [Deploying and running gtests on Fuchsia](gtests.md).
 Alternatively, testing can be done step by step. The following steps are
 equivalent to the [E2E testing script](#e2e-testing-script).
 
-Before starting the steps, it is recommended to set the device that will be used
-as the default device that `ffx` uses:
+If you have more than one device connected, it's recommended to set the `ffx`
+default device by setting the `$FUCHSIA_NODENAME` environment variable before
+running these tests:
 
 ```bash
-$ ./third_party/fuchsia_sdk/sdk/tools/x64/ffx target default set [EMULATOR_NAME]
+$ export FUCHSIA_NODENAME=[EMULATOR_NAME]
+```
+
+You can verify the `ffx` default target by running this command:
+
+```bash
+$ ./third_party/fuchsia_sdk/sdk/tools/x64/ffx target default get
 ```
 
 If the device is not set as default, all the steps other than package publishing

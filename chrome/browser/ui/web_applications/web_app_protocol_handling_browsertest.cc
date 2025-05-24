@@ -45,13 +45,15 @@ class WebAppProtocolHandlingBrowserTest : public WebAppNavigationBrowserTest {
     GURL start_url = embedded_test_server()->GetURL(path);
     page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
         browser()->tab_strip_model()->GetActiveWebContents());
-    if (await_metric)
+    if (await_metric) {
       metrics_waiter.AddWebFeatureExpectation(protocol_handling_feature);
+    }
 
     webapps::AppId app_id =
         web_app::InstallWebAppFromPage(browser(), start_url);
-    if (await_metric)
+    if (await_metric) {
       metrics_waiter.Wait();
+    }
 
     return app_id;
   }

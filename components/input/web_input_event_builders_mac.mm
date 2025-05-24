@@ -668,7 +668,7 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(NSEvent* event, NSView* view) {
       state = blink::WebTouchPoint::State::kStateMoved;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid types for touch events." << type;
+      NOTREACHED() << "Invalid types for touch events." << type;
   }
 
   blink::WebTouchEvent result(event_type, ModifiersFromEvent(event),

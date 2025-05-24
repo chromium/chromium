@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file tests the chrome.alarms extension API.
 
 #include "extensions/browser/api/alarms/alarms_api.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -116,7 +112,7 @@ class ExtensionAlarmsTest : public ApiUnitTest {
   void CreateAlarms(size_t num_alarms) {
     CHECK_LE(num_alarms, 3U);
 
-    const char* const kCreateArgs[] = {
+    static constexpr std::array kCreateArgs = {
         "[null, {\"periodInMinutes\": 0.001}]",
         "[\"7\", {\"periodInMinutes\": 7}]",
         "[\"0\", {\"delayInMinutes\": 0}]",
@@ -720,7 +716,7 @@ void FrequencyTestGetAlarmsCallback(ExtensionAlarmsTest* test, Alarm* alarm) {
 // subjected to minimum polling interval.
 // Regression test for https://crbug.com/618540.
 TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
-  struct {
+  static constexpr struct {
     bool is_unpacked;
     int manifest_version;
     base::TimeDelta delay_minimum;
@@ -733,7 +729,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
   };
 
   // Test once for unpacked and once for crx extension.
-  for (size_t i = 0; i < std::size(test_data); ++i) {
+  for (const auto& entry : test_data) {
     test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10));
 
     // Mimic retrieving an alarm from StateStore.
@@ -741,7 +737,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
         "[{\"name\": \"hello\", \"scheduledTime\": 10000, "
         "\"periodInMinutes\": 0.0001}]";
     base::TimeDelta min_delay = alarms_api_constants::GetMinimumDelay(
-        test_data[i].is_unpacked, test_data[i].manifest_version);
+        entry.is_unpacked, entry.manifest_version);
 
     alarm_manager_->ReadFromStorage(extension()->id(), min_delay,
                                     base::test::ParseJson(alarm_args));
@@ -760,7 +756,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
         // 10s initial clock.
         base::Time::FromSecondsSinceUnixEpoch(10) +
         // 10ms in FrequencyTestGetAlarmsCallback.
-        base::Milliseconds(10) + test_data[i].delay_minimum;
+        base::Milliseconds(10) + entry.delay_minimum;
     // The alarm should not trigger before our expected poll time...
     EXPECT_GE(alarm_manager_->next_poll_time_, expected_poll_time);
     // And should trigger within a few seconds of it (to account for test

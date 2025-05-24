@@ -47,8 +47,9 @@ bool SupervisedUserCrosSettingsProvider::HandlesSetting(
   if (!user_manager::UserManager::IsInitialized())
     return false;
   auto* user_manager = user_manager::UserManager::Get();
-  if (user_manager->GetUsers().empty())
+  if (user_manager->GetPersistedUsers().empty()) {
     return false;
+  }
 
   const AccountId owner_account_id = user_manager->GetOwnerAccountId();
   if (!owner_account_id.is_valid()) {

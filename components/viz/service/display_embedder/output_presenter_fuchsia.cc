@@ -85,15 +85,7 @@ void OutputPresenterFuchsia::Present(
 
 void OutputPresenterFuchsia::ScheduleOverlayPlane(
     const OutputPresenter::OverlayPlaneCandidate& overlay_plane_candidate,
-    ScopedOverlayAccess* access,
-    std::unique_ptr<gfx::GpuFence> acquire_fence) {
-  // TODO(msisov): this acquire fence is only valid when tiles are rastered for
-  // scanout usage, which are used for DelegatedCompositing in LaCros. It's not
-  // expected to have this fence created for fuchsia. As soon as a better place
-  // for this fence is found, this will be removed. For now, add a dcheck that
-  // verifies the fence is null.
-  DCHECK(!acquire_fence);
-
+    ScopedOverlayAccess* access) {
   if (!next_frame_)
     next_frame_.emplace();
 

@@ -8,11 +8,13 @@
 #include <optional>
 #include <string>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -103,10 +105,19 @@ TEST_F(FixedLengthCodeInputTest, AccessibleProperties) {
   input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_FALSE(data.HasState(ax::mojom::State::kProtected));
   EXPECT_EQ(data.role, ax::mojom::Role::kTextField);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_LOGIN_PARENT_ACCESS_GENERIC_DESCRIPTION));
 
   data = ui::AXNodeData();
   obscure_input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kProtected));
+
+  std::unique_ptr<AccessibleInputField> field =
+      std::make_unique<AccessibleInputField>();
+  data = ui::AXNodeData();
+  field->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
 }
 
 TEST_F(FixedLengthCodeInputTest, AccessibilityTextSelectionBound) {

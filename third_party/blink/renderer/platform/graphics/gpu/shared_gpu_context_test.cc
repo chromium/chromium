@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_canvas_resource_host.h"
@@ -187,17 +186,15 @@ TEST_F(SharedGpuContextTest, contextLossAutoRecovery) {
   EXPECT_FALSE(!!context);
 }
 
-TEST_F(SharedGpuContextTest, Canvas2DLayerBridgeAutoRecovery) {
-  // Verifies that after a context loss, attempting to allocate a
-  // Canvas2DLayerBridge will restore the context and succeed.
+TEST_F(SharedGpuContextTest, GetRasterModeAutoRecovery) {
+  // Verifies that after a context loss, getting the raster mode from
+  // CanvasResourceHost will restore the context and succeed.
   GlInterface().SetIsContextLost(true);
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
   gfx::Size size(10, 10);
   std::unique_ptr<FakeCanvasResourceHost> host =
       std::make_unique<FakeCanvasResourceHost>(size);
   host->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      std::make_unique<Canvas2DLayerBridge>(host.get());
   EXPECT_EQ(host->GetRasterMode(), RasterMode::kGPU);
   EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());
 }
@@ -220,8 +217,8 @@ TEST_F(BadSharedGpuContextTest, AccelerateImageBufferSurfaceCreationFails) {
   // return a nullptr provider
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          SkImageInfo::MakeN32Premul(10, 10),
-          cc::PaintFlags::FilterQuality::kLow,
+          gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
+          gfx::ColorSpace::CreateSRGB(),
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           gpu::SharedImageUsageSet());
@@ -247,8 +244,8 @@ TEST_F(SharedGpuContextTestViz, AccelerateImageBufferSurfaceAutoRecovery) {
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          SkImageInfo::MakeN32Premul(10, 10),
-          cc::PaintFlags::FilterQuality::kLow,
+          gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
+          gfx::ColorSpace::CreateSRGB(),
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           gpu::SharedImageUsageSet());

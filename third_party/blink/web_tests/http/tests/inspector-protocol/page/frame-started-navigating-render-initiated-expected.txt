@@ -1,0 +1,82 @@
+Tests frameStartedNavigating events when navigation is initiated by renderer
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 0>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-1.html
+    }
+    sessionId : <string>
+}
+frameRequestedNavigation{
+    frameId : <string>
+    url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 1>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html
+    }
+    sessionId : <string>
+}
+frameRequestedNavigation{
+    frameId : <string>
+    url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=1
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 2>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=1
+    }
+    sessionId : <string>
+}
+frameRequestedNavigation{
+    frameId : <string>
+    url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=2
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 3>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=2
+    }
+    sessionId : <string>
+}
+frameRequestedNavigation{
+    frameId : <string>
+    url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=3
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 4>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=3
+    }
+    sessionId : <string>
+}
+frameRequestedNavigation{
+    frameId : <string>
+    url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=4
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 5>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=4
+    }
+    sessionId : <string>
+}
+

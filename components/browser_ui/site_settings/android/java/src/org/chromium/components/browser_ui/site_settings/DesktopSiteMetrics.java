@@ -7,9 +7,11 @@ package org.chromium.components.browser_ui.site_settings;
 import static org.chromium.components.browser_ui.site_settings.WebsiteAddress.ANY_SUBDOMAIN_PATTERN;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingValues;
 
 /** Metrics recording functions for {@link SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE}. */
+@NullMarked
 public final class DesktopSiteMetrics {
     /**
      * Records when a user manually adds a domain or subdomain level Request Desktop Setting from

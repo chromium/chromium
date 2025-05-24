@@ -12,11 +12,12 @@
 #include <AppKit/AppKit.h>
 #import <Carbon/Carbon.h>
 
+#include <algorithm>
 #include <optional>
 
+#include "base/apple/foundation_util.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -97,8 +98,10 @@ void DropCompletionCallback(WebDragDest* drag_dest,
                             const content::DropContext context,
                             std::optional<content::DropData> drop_data) {
   // This is an async callback. Make sure RWH is still valid.
-  if (!context.target_rwh)
+  if (!context.target_rwh) {
+    [drag_dest resetDragDropState];
     return;
+  }
 
   [drag_dest completeDropAsync:drop_data withContext:context];
 }
@@ -131,6 +134,15 @@ void DropCompletionCallback(WebDragDest* drag_dest,
 
   // True if the drag has been canceled.
   bool _canceled;
+
+  // True for as long as `OnPerformingDrop` is pending, false otherwise.
+  // This is used to properly order "dragend" after "drop" if the drop operation
+  // is delayed by that callback being delayed.
+  bool _drop_in_progress;
+
+  // Used to store closures passed in `endDrag`. This is called by
+  // `completeDropAsync` after the "drop" event has fired.
+  base::ScopedClosureRunner _end_drag_runner;
 }
 
 // |contents| is the WebContentsImpl representing this tab, used to communicate
@@ -140,6 +152,7 @@ void DropCompletionCallback(WebDragDest* drag_dest,
   if ((self = [super init])) {
     _webContents = contents;
     _canceled = false;
+    _drop_in_progress = false;
   }
   return self;
 }
@@ -261,6 +274,8 @@ void DropCompletionCallback(WebDragDest* drag_dest,
   if (_webContents->ShouldIgnoreInputEvents())
     return;
 
+  _webContents->PreHandleDragExit();
+
   if (!_dropDataFiltered || !_dropDataUnfiltered)
     return;
 
@@ -286,12 +301,18 @@ void DropCompletionCallback(WebDragDest* drag_dest,
   if (_webContents->ShouldIgnoreInputEvents())
     return NSDragOperationNone;
 
-  if (!_dropDataFiltered || !_dropDataUnfiltered)
-    return NSDragOperationNone;
-
   if (_canceled) {
     // TODO(ekaramad,paulmeyer): We probably shouldn't be checking for
     // |canceled_| twice in this method.
+    return NSDragOperationNone;
+  }
+
+  if (_dropDataUnfiltered) {
+    _webContents->PreHandleDragUpdate(*_dropDataUnfiltered,
+                                      info->location_in_view);
+  }
+
+  if (!_dropDataFiltered || !_dropDataUnfiltered) {
     return NSDragOperationNone;
   }
 
@@ -373,6 +394,7 @@ void DropCompletionCallback(WebDragDest* drag_dest,
                                  /*target_rwh=*/targetRWH->GetWeakPtr());
     // Use a separate variable since `context` is about to move.
     content::DropData drop_data = context.drop_data;
+    _drop_in_progress = true;
     webContentsViewDelegate->OnPerformingDrop(
         std::move(drop_data),
         base::BindOnce(&DropCompletionCallback, self, std::move(context)));
@@ -391,6 +413,9 @@ void DropCompletionCallback(WebDragDest* drag_dest,
 
 - (void)completeDropAsync:(std::optional<content::DropData>)dropData
               withContext:(const content::DropContext)context {
+  _drop_in_progress = false;
+  base::ScopedClosureRunner end_drag_runner(std::move(_end_drag_runner));
+
   if (dropData.has_value()) {
     if (_delegate)
       _delegate->OnDrop();
@@ -424,8 +449,26 @@ void DropCompletionCallback(WebDragDest* drag_dest,
   _dragSecurityInfo.OnDragInitiated(rwhi, dropData);
 }
 
-- (void)endDrag {
+- (void)endDrag:(base::OnceClosure)closure {
   _dragSecurityInfo.OnDragEnded();
+  if (_drop_in_progress) {
+    _end_drag_runner.ReplaceClosure(std::move(closure));
+  } else {
+    std::move(closure).Run();
+  }
+}
+
+- (void)resetDragDropState {
+  _drop_in_progress = false;
+  std::ignore = _end_drag_runner.Release();
+}
+
+- (bool)dropInProgressForTesting {
+  return _drop_in_progress;
+}
+
+- (void)setDropInProgressForTesting {
+  _drop_in_progress = true;
 }
 
 @end
@@ -466,8 +509,8 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
   if ([types containsObject:NSPasteboardTypeHTML]) {
     NSString* html = [pboard stringForType:NSPasteboardTypeHTML];
     drop_data.html = base::SysNSStringToUTF16(html);
-  } else if ([types containsObject:ui::kUTTypeChromiumImageAndHTML]) {
-    NSString* html = [pboard stringForType:ui::kUTTypeChromiumImageAndHTML];
+  } else if ([types containsObject:ui::kUTTypeChromiumImageAndHtml]) {
+    NSString* html = [pboard stringForType:ui::kUTTypeChromiumImageAndHtml];
     drop_data.html = base::SysNSStringToUTF16(html);
   } else if ([types containsObject:NSPasteboardTypeRTF]) {
     NSString* html = ui::clipboard_util::GetHTMLFromRTFOnPasteboard(pboard);
@@ -483,8 +526,7 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
         [pboard dataForType:ui::kUTTypeChromiumDataTransferCustomData];
     if (std::optional<std::unordered_map<std::u16string, std::u16string>>
             maybe_custom_data = ui::ReadCustomDataIntoMap(
-                base::span(reinterpret_cast<const uint8_t*>([customData bytes]),
-                           [customData length]));
+                base::apple::NSDataToSpan(customData));
         maybe_custom_data) {
       drop_data.custom_data = std::move(*maybe_custom_data);
     }

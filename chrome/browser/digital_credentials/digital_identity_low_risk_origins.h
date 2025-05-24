@@ -7,12 +7,20 @@
 
 #include "url/origin.h"
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace digital_credentials {
 
-// Returns whether the origin is a known low risk origin for which the
-// digital credential interstitial should not be shown regardless of the
-// credential being requested.
-bool IsLowRiskOrigin(const url::Origin& to_check);
+// Returns whether the last committed origin is a known low risk origin for
+// which the digital credential interstitial should not be shown regardless of
+// the credential being requested.
+bool IsLowRiskOrigin(content::RenderFrameHost& render_frame_host);
+
+bool IsLowRiskOriginMatcherForTesting(
+    const url::Origin& to_check,
+    const std::vector<std::string>& known_origins);
 
 }  // namespace digital_credentials
 

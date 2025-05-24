@@ -14,7 +14,7 @@ class ChosenObjectViewObserver {
       const PageInfoUI::ChosenObjectInfo& info) = 0;
 
  protected:
-  virtual ~ChosenObjectViewObserver() {}
+  virtual ~ChosenObjectViewObserver() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_OBSERVER_H_

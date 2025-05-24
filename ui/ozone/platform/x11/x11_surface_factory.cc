@@ -128,8 +128,7 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
               display->GetAs<gl::GLDisplayEGL>(),
               static_cast<x11::Window>(window)));
         default:
-          NOTREACHED_IN_MIGRATION();
-          return nullptr;
+          NOTREACHED();
       }
     }
   }

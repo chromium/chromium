@@ -56,7 +56,7 @@ const GURL GetDistillerViewUrlFromUrl(const std::string& scheme,
   return net::AppendOrReplaceQueryParameter(view_url, kUrlKey, url.spec());
 }
 
-const GURL GetOriginalUrlFromDistillerUrl(const GURL& url) {
+GURL GetOriginalUrlFromDistillerUrl(const GURL& url) {
   if (!IsUrlDistilledFormat(url))
     return url;
 

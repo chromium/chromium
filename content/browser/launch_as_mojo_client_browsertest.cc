@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switches.h"
@@ -30,7 +29,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) || defined(MEMORY_SANITIZER)
 #include "ui/gl/gl_switches.h"
 #endif
 
@@ -76,7 +75,7 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
     command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line.AppendSwitchASCII(switches::kUseGL,
                                    gl::kGLImplementationANGLEName);
     command_line.AppendSwitchASCII(switches::kUseANGLE,
@@ -158,10 +157,6 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
   mojo::Remote<mojom::ShellController> shell_controller_;
 };
 
-// TODO(http://crbug.com/323984075): This test invokes content_shell in a way
-// that is not supported on Lacros (without crosapi data). Figure out what to
-// do about that.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest, LaunchAndBindInterface) {
   // Verifies that we can launch an instance of Content Shell with a Mojo
   // invitation on the command line and reach the new browser process's exposed
@@ -187,7 +182,6 @@ IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest, LaunchAndBindInterface) {
 
   shell_controller->ShutDown();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 }  // namespace content

@@ -50,7 +50,7 @@ bool HTMLOListElement::IsPresentationAttribute(
 void HTMLOListElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kTypeAttr) {
     if (value == "a") {
       AddPropertyToPresentationAttributeStyle(

@@ -24,7 +24,8 @@ class TailoredSecurityConsentedModalAndroid {
   // setting has been `enabled`.
   TailoredSecurityConsentedModalAndroid(content::WebContents* web_contents,
                                         bool enabled,
-                                        base::OnceClosure dismiss_callback);
+                                        base::OnceClosure dismiss_callback,
+                                        bool is_requested_by_synced_esb);
   ~TailoredSecurityConsentedModalAndroid();
 
  private:
@@ -35,12 +36,16 @@ class TailoredSecurityConsentedModalAndroid {
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
 
   std::unique_ptr<messages::MessageWrapper> message_;
+  raw_ptr<content::WebContents> web_contents_;
   raw_ptr<ui::WindowAndroid> window_android_ = nullptr;
   base::OnceClosure dismiss_callback_;
 
   // Whether the message is shown for Tailored Security being enabled or
   // disabled.
   bool is_enable_message_;
+
+  // Whether the message is requested by ESB As A Synced Setting flow.
+  bool is_requested_by_synced_esb_;
 };
 
 }  // namespace safe_browsing

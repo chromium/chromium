@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 
@@ -21,13 +22,19 @@ class MailboxTextureBacking : public TextureBacking {
   explicit MailboxTextureBacking(
       sk_sp<SkImage> sk_image,
       scoped_refptr<MailboxRef> mailbox_ref,
-      const SkImageInfo& info,
+      const gfx::Size& size,
+      const viz::SharedImageFormat& format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper);
   explicit MailboxTextureBacking(
       const gpu::Mailbox& mailbox,
       scoped_refptr<MailboxRef> mailbox_ref,
-      const SkImageInfo& info,
+      const gfx::Size& size,
+      const viz::SharedImageFormat& format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper);
   ~MailboxTextureBacking() override;
@@ -53,4 +60,4 @@ class MailboxTextureBacking : public TextureBacking {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MAILBOX_TEXTURE_BACKING_H__
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MAILBOX_TEXTURE_BACKING_H_

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/wm/pip/pip_double_tap_handler.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -240,9 +239,6 @@ class ASH_EXPORT ToplevelWindowEventHandler
 
   // Are we running a nested run loop from RunMoveLoop().
   bool in_move_loop_ = false;
-
-  // Event handler for double tap/click events on CrOS PiP windows.
-  std::unique_ptr<PipDoubleTapHandler> pip_double_tap_;
 
   base::WeakPtrFactory<ToplevelWindowEventHandler> weak_factory_{this};
 };

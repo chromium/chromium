@@ -13,6 +13,8 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -25,6 +27,7 @@
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -230,8 +233,14 @@ class ImagePaintTimingDetectorTest : public testing::Test,
 
   void InvokePresentationTimeCallback(
       MockPaintTimingCallbackManager* image_callback_manager) {
+    base::TimeTicks presentation_time = test_task_runner_->NowTicks();
+    DOMHighResTimeStamp timestamp =
+        (presentation_time -
+         DOMWindowPerformance::performance(*GetDocument().domWindow())
+             ->GetTimeOriginInternal())
+            .InMillisecondsF();
     image_callback_manager->InvokePresentationTimeCallback(
-        test_task_runner_->NowTicks());
+        presentation_time, {timestamp, timestamp});
     UpdateCandidate();
   }
 
@@ -302,7 +311,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     return original_image_content;
   }
 
-  PaintTimingCallbackManager::CallbackQueue callback_queue_;
+  MockPaintTimingCallbackManager::CallbackQueue callback_queue_;
   Persistent<MockPaintTimingCallbackManager> mock_callback_manager_;
   Persistent<MockPaintTimingCallbackManager> child_mock_callback_manager_;
 };
@@ -1292,9 +1301,7 @@ TEST_P(ImagePaintTimingDetectorTest, MAYBE_LargestImagePaint_Detached_Frame) {
   viz::FrameTimingDetails presentation_details;
   presentation_details.presentation_feedback.timestamp =
       test_task_runner_->NowTicks();
-  child_detector->callback_manager_->ReportPaintTime(
-      std::make_unique<PaintTimingCallbackManager::CallbackQueue>(),
-      presentation_details);
+  child_detector->UpdateLcpCandidate();
 
   auto analyzer = trace_analyzer::Stop();
   trace_analyzer::TraceEventVector events;
@@ -1369,10 +1376,7 @@ TEST_P(ImagePaintTimingDetectorFencedFrameTest, NotReported) {
 class ImagePaintTimingDetectorTransparentPlaceholderImageTest
     : public ImagePaintTimingDetectorTest {
  public:
-  ImagePaintTimingDetectorTransparentPlaceholderImageTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSimplifyLoadingTransparentPlaceholderImage);
-  }
+  ImagePaintTimingDetectorTransparentPlaceholderImageTest() = default;
   ~ImagePaintTimingDetectorTransparentPlaceholderImageTest() override {
     // Must destruct all objects before toggling back feature flags.
     std::unique_ptr<base::test::TaskEnvironment> task_environment;
@@ -1380,7 +1384,6 @@ class ImagePaintTimingDetectorTransparentPlaceholderImageTest
       // Create a TaskEnvironment for the garbage collection below.
       task_environment = std::make_unique<base::test::TaskEnvironment>();
     }
-    scoped_feature_list_.Reset();
     WebHeap::CollectAllGarbageForTesting();
   }
 
@@ -1391,9 +1394,6 @@ class ImagePaintTimingDetectorTransparentPlaceholderImageTest
         url_test_helpers::ToKURL(TRANSPARENT_PLACEHOLDER_IMAGE));
     To<HTMLImageElement>(element)->SetImageForTest(resource->GetContent());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(

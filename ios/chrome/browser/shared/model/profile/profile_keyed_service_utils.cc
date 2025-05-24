@@ -23,8 +23,7 @@ web::BrowserState* GetContextToUseForKeyedServiceFactory(
       return nullptr;
 
     case ProfileSelection::kRedirectedInIncognito:
-      return ProfileIOS::FromBrowserState(context)
-          ->GetOriginalChromeBrowserState();
+      return ProfileIOS::FromBrowserState(context)->GetOriginalProfile();
 
     case ProfileSelection::kOwnInstanceInIncognito:
       return context;

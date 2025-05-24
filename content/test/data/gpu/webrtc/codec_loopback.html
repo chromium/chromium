@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" href="data:;base64,="><!-- prevent request for favicon -->
+
+  <script src="webrtc_common.js"></script>
+  <script type="text/javascript">
+    'use strict';
+
+    async function pollGetStatsUntil(pc, condition, pollingMs = 100) {
+      return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => { reject(new Error('Timeout after 30s')) }, 30000);
+        const pollGetStats = async () => {
+          const report = await pc.getStats();
+          for (const stats of report.values()) {
+            if (condition(report, stats)) {
+              clearTimeout(timeoutId);
+              resolve(report);
+              return;
+            }
+          }
+          // No match, then set timeout and try again.
+          setTimeout(pollGetStats, pollingMs);
+        };
+        pollGetStats();
+      });
+    }
+
+    function isRtpWithCodec(report, stats, mimeType) {
+      if (stats.type !== 'outbound-rtp' && stats.type !== 'inbound-rtp') {
+        return false;  // Not an RTP stats object.
+      }
+      const codec = report.get(stats.codecId);
+      return codec && codec.mimeType == mimeType;
+    }
+
+    async function main(arg) {
+      const preferredCodec = arg.codec;
+      const sendCodec =
+        RTCRtpSender.getCapabilities('video').codecs.find(
+          codec => codec.mimeType == preferredCodec);
+      const canRecv =
+        RTCRtpReceiver.getCapabilities('video').codecs.find(
+          codec => codec.mimeType == preferredCodec) != undefined;
+      const canSend = sendCodec !== undefined;
+      if (!canSend || !canRecv) {
+        TEST.skip(`${preferredCodec} either does not support send(${canSend}) or receive (${canRecv})`);
+        return;
+      }
+
+      const pc1 = new RTCPeerConnection();
+      TEST.addCleanup(() => pc1.close());
+      const pc2 = new RTCPeerConnection();
+      TEST.addCleanup(() => pc2.close());
+      pc1.onicecandidate = (e) => pc2.addIceCandidate(e.candidate);
+      pc2.onicecandidate = (e) => pc1.addIceCandidate(e.candidate);
+
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 360 } });
+      const [track] = stream.getVideoTracks();
+      TEST.addCleanup(() => track.stop());
+      const transceiver = pc1.addTransceiver(track);
+      transceiver.setCodecPreferences([sendCodec]);
+      await pc1.setLocalDescription();
+      await pc2.setRemoteDescription(pc1.localDescription);
+      await pc2.setLocalDescription();
+      await pc1.setRemoteDescription(pc2.localDescription);
+
+      // Wait for frames to be encoded and sent.
+      await pollGetStatsUntil(pc1, (report, stats) => {
+        if (!isRtpWithCodec(report, stats, preferredCodec)) {
+          return false;
+        }
+        TEST.assert_equals(stats.type, 'outbound-rtp');
+        return stats.framesEncoded > 0 && stats.framesSent > 0;
+      });
+      // Wait for frames to be received and decoded.
+      await pollGetStatsUntil(pc2, (report, stats) => {
+        if (!isRtpWithCodec(report, stats, preferredCodec)) {
+          return false;
+        }
+        TEST.assert_equals(stats.type, 'inbound-rtp');
+        return stats.framesReceived > 0 && stats.framesDecoded > 0;
+      });
+    }
+  </script>
+</head>
+
+<body>
+  <p id="consoleId"></p>
+</body>
+
+</html>

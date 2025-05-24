@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/profile_helper.h"
+
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -10,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -31,10 +31,6 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_ui.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/browser_test_util.h"
-#endif
 
 namespace {
 
@@ -57,14 +53,13 @@ class ExpectBrowserActivationForProfile : public BrowserListObserver {
     BrowserList::RemoveObserver(this);
   }
 
-  void Wait() {
-    loop_.Run();
-  }
+  void Wait() { loop_.Run(); }
 
  protected:
   void OnBrowserSetLastActive(Browser* browser) override {
-    if (browser->profile() == profile_)
+    if (browser->profile() == profile_) {
       loop_.Quit();
+    }
   }
 
  private:
@@ -139,10 +134,6 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
   activation_observer->Wait();
   Browser* additional_browser = browser_list->GetLastActive();
   EXPECT_EQ(additional_profile, additional_browser->profile());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Await complete window creation to avoid interference with the next steps.
-  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(additional_browser));
-#endif
 
 // On Macs OpenNewWindowForProfile does not activate existing browser
 // while non of the browser windows have focus. BrowserWindowCocoa::Show() got
@@ -160,8 +151,6 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
 #endif
 }
 
-// The solo profile on Lacros is the main profile which can never be deleted.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
   content::TestWebUI web_ui;
   Browser* original_browser = browser();
@@ -188,7 +177,6 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
   EXPECT_NE(original_browser_profile_path, new_browser->profile()->GetPath());
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   content::TestWebUI web_ui;
@@ -203,32 +191,6 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
 
   Profile* additional_profile = CreateProfile();
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The original browser belongs to the main profile which can't be deleted.
-  // Make the additional profile active and close the original browser.
-  profiles::SwitchToProfile(additional_profile->GetPath(), false);
-  content::RunAllTasksUntilIdle();
-  EXPECT_EQ(2U, browser_list->size());
-  CloseBrowserSynchronously(original_browser);
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
-  // ProfileManager will switch active profile upon observing
-  // BrowserListObserver::OnBrowserSetLastActive(). Wait until the event
-  // is observed if the active profile has not switched to `additional_profile`
-  // yet.
-  bool wait_for_set_last_active_observed =
-      ProfileManager::GetLastUsedProfileIfLoaded() != additional_profile;
-  ui_test_utils::WaitForBrowserSetLastActive(browser_list->get(0),
-                                             wait_for_set_last_active_observed);
-
-  // Ensure the last active browser and the`LastUsedProfile` is set.
-  EXPECT_EQ(chrome::FindLastActive(), browser_list->get(0));
-  EXPECT_EQ(g_browser_process->profile_manager()->GetLastUsedProfileDir(),
-            additional_profile->GetPath());
-
-  // Original browser now belongs to the additional profile.
-  original_browser = browser_list->get(0);
-#endif
 
   // Original browser will be closed, and browser with the new profile created.
   webui::DeleteProfileAtPath(original_browser->profile()->GetPath(),
@@ -237,11 +199,7 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(1u, browser_list->size());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_TRUE(browser_list->get(0)->profile()->IsMainProfile());
-#else
   EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
-#endif
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
 

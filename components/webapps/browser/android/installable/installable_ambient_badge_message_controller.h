@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
-#include "components/messages/android/throttler/domain_session_throttler.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -52,8 +51,6 @@ class InstallableAmbientBadgeMessageController {
   void DismissMessage();
 
  private:
-  static messages::DomainSessionThrottler* GetThrottler();
-
   void HandleInstallButtonClicked();
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
 

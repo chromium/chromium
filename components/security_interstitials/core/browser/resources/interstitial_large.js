@@ -73,16 +73,16 @@ function setupEvents() {
   const billing =
       interstitialType === 'SAFEBROWSING' && loadTimeData.getBoolean('billing');
   const blockedInterception = interstitialType === 'BLOCKED_INTERCEPTION';
-  const insecureForm = interstitialType == 'INSECURE_FORM';
-  const httpsOnly = interstitialType == 'HTTPS_ONLY';
+  const insecureForm = interstitialType === 'INSECURE_FORM';
+  const httpsOnly = interstitialType === 'HTTPS_ONLY';
   const enterpriseBlock = interstitialType === 'ENTERPRISE_BLOCK';
   const enterpriseWarn = interstitialType === 'ENTERPRISE_WARN';
+  const managedProfileRequired =
+      interstitialType === 'MANAGED_PROFILE_REQUIRED';
   const supervisedUserVerify = interstitialType === 'SUPERVISED_USER_VERIFY';
   const supervisedUserVerifySubframe =
       interstitialType === 'SUPERVISED_USER_VERIFY_SUBFRAME';
   const hidePrimaryButton = loadTimeData.getBoolean('hide_primary_button');
-  const showRecurrentErrorParagraph =
-      loadTimeData.getBoolean('show_recurrent_error_paragraph');
   const showBlockedSiteMessage =
       loadTimeData.valueExists('show_blocked_site_message') ?
       loadTimeData.getBoolean('show_blocked_site_message') :
@@ -114,6 +114,8 @@ function setupEvents() {
     body.classList.add('enterprise-block');
   } else if (enterpriseWarn) {
     body.classList.add('enterprise-warn');
+  } else if (managedProfileRequired) {
+    body.classList.add('managed-profile-required');
   } else if (supervisedUserVerify) {
     body.classList.add('supervised-user-verify');
   } else if (supervisedUserVerifySubframe) {
@@ -152,6 +154,7 @@ function setupEvents() {
         case 'SAFEBROWSING':
         case 'ENTERPRISE_BLOCK':
         case 'ENTERPRISE_WARN':
+        case 'MANAGED_PROFILE_REQUIRED':
         case 'ORIGIN_POLICY':
           sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
           break;
@@ -209,14 +212,6 @@ function setupEvents() {
     document.querySelector('#final-paragraph').classList.add(HIDDEN_CLASS);
   }
 
-
-  if (!ssl || !showRecurrentErrorParagraph) {
-    document.querySelector('#recurrent-error-message')
-        .classList.add(HIDDEN_CLASS);
-  } else {
-    body.classList.add('showing-recurrent-error-message');
-  }
-
   if (showBlockedSiteMessage) {
     document.querySelector('#blocked-site-message')
         .classList.remove(HIDDEN_CLASS);
@@ -241,10 +236,19 @@ function setupEvents() {
     });
   }
 
+  const androidAdvancedProtectionLink =
+      document.querySelector('#android-advanced-protection-settings-link');
+  if (androidAdvancedProtectionLink) {
+    androidAdvancedProtectionLink.addEventListener('click', function(event) {
+      sendCommand(SecurityInterstitialCommandId
+                      .CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS);
+    });
+  }
+
   const detailsButton = document.querySelector('#details-button');
   if (captivePortal || billing || lookalike || insecureForm || httpsOnly ||
       enterpriseWarn || enterpriseBlock || supervisedUserVerify ||
-      supervisedUserVerifySubframe) {
+      managedProfileRequired || supervisedUserVerifySubframe) {
     // Captive portal, billing, lookalike pages, insecure form, enterprise warn,
     // enterprise block, and HTTPS only mode interstitials don't
     // have details buttons.

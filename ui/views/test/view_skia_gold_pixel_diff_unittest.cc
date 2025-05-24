@@ -56,8 +56,9 @@ class ViewSkiaGoldPixelDiffTest : public views::test::WidgetTest {
 
   views::View* AddChildViewToWidget(views::Widget* widget) {
     auto view_unique_ptr = std::make_unique<views::View>();
-    if (widget->client_view())
+    if (widget->client_view()) {
       return widget->client_view()->AddChildView(std::move(view_unique_ptr));
+    }
 
     return widget->SetContentsView(std::move(view_unique_ptr));
   }
@@ -100,7 +101,7 @@ TEST_F(ViewSkiaGoldPixelDiffTest, CompareScreenshotByView) {
   views::Widget* widget = CreateTopLevelNativeWidget();
   views::View* child_view = AddChildViewToWidget(widget);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   constexpr char kPrefix[] = "Prefix.Demo.";
 #else
   constexpr char kPrefix[] = "Prefix_Demo_";

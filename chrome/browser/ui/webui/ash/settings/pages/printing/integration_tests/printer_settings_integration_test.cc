@@ -139,7 +139,7 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
 
   PrinterSettingsIntegrationTest() {
     feature_list_.InitAndEnableFeature(
-        printing::features::kAddPrinterViaPrintscanmgr);
+        ::printing::features::kAddPrinterViaPrintscanmgr);
     // Keep test running after dismissing login screen.
     set_exit_when_last_browser_closes(false);
     login_mixin().SetMode(ChromeOSIntegrationLoginMixin::Mode::kTestLogin);
@@ -312,6 +312,8 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
                                        kEditButtonQuery),
         ClickElement(kSettingsWebContentsId, kEditButtonQuery),
         Log("Editing the printer name"),
+        WaitForElementToExistAndRender(kSettingsWebContentsId,
+                                       kEditNameInputQuery),
         ExecuteJsAt(
             kSettingsWebContentsId, kEditNameInputQuery,
             base::StrCat({"(el) => { el.value = '", printer_name,

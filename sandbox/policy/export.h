@@ -15,11 +15,7 @@
 #endif  // defined(SANDBOX_POLICY_IMPL)
 
 #else  // defined(WIN32)
-#if defined(SANDBOX_POLICY_IMPL)
 #define SANDBOX_POLICY_EXPORT __attribute__((visibility("default")))
-#else
-#define SANDBOX_POLICY_EXPORT
-#endif  // defined(SANDBOX_POLICY_IMPL)
 #endif
 
 #else  // defined(COMPONENT_BUILD)

@@ -54,7 +54,7 @@ class TestSecurityKeysPhonesBrowserProxy extends TestBrowserProxy implements
     assertTrue(
         result !== null,
         'browserProxy methods called without result have being set for it');
-    return Promise.resolve(result!);
+    return Promise.resolve(result);
   }
 
   /**
@@ -147,7 +147,7 @@ suite('SecurityKeysPhonesSubpage', function() {
     assertEquals(browserProxy.getCallCount('enumerate'), 1);
   });
 
-  test('Initialization', async function() {
+  test('Initialization', function() {
     const shown = getPhones(page);
 
     // The default entries should be shown.

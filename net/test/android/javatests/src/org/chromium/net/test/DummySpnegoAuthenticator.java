@@ -40,9 +40,6 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
     private static final int GSS_S_CONTINUE_NEEDED = 1;
     private static final int GSS_S_FAILURE = 2;
 
-    /**
-     * @param context
-     */
     public DummySpnegoAuthenticator(Context context) {
         super(context);
     }
@@ -96,7 +93,6 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
 
     /**
      * @param DummySpnegoAuthenticatorJni.get().getResult
-     * @return
      */
     private int decodeResult(int gssApiResult) {
         // This only handles the result values currently used in the tests.
@@ -176,10 +172,6 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
         /**
          * Send the relevant decoded arguments of getAuthToken to C++ for checking by googletest
          * checks If the checks fail then the C++ unit test using this authenticator will fail.
-         *
-         * @param authTokenType
-         * @param spn
-         * @param incomingToken
          */
         @NativeClassQualifiedName("DummySpnegoAuthenticator::SecurityContextQuery")
         void checkGetTokenArguments(long nativeQuery, String incomingToken);

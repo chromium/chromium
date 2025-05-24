@@ -8,7 +8,10 @@ import android.content.Context;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.chromium.build.annotations.NullMarked;
+
 // Refer to go/doubledown-play-services#new-apis for more detail.
+@NullMarked
 public final class ChromiumPlayServicesAvailability {
     /**
      * The minimum GMS version we're requesting. isGooglePlayServicesAvailable will fail if the

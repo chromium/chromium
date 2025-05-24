@@ -23,6 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_A_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/rel_list.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 
@@ -37,10 +38,12 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   explicit SVGAElement(Document&);
 
-  Element* interestTargetElement() override;
-  AtomicString interestAction() const override;
+  Element* InterestTargetElement() const override;
 
   void Trace(Visitor*) const override;
+
+  bool HasRel(uint32_t relation) const;
+  DOMTokenList& relList() const { return *rel_list_; }
 
  private:
   String title() const override;
@@ -56,8 +59,9 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   bool ShouldHaveFocusAppearance() const final;
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const override;
+  bool IsKeyboardFocusableSlow(
+      UpdateBehavior update_behavior =
+          UpdateBehavior::kStyleAndLayout) const override;
   bool IsURLAttribute(const Attribute&) const override;
   bool CanStartSelection() const override;
   int DefaultTabIndex() const override;
@@ -68,7 +72,13 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
       const QualifiedName& attribute_name) const override;
   void SynchronizeAllSVGAttributes() const override;
 
+  void ParseAttribute(const AttributeModificationParams&) override;
+
+  void SetRel(const AtomicString&);
+
   Member<SVGAnimatedString> svg_target_;
+  Member<RelList> rel_list_;
+  uint32_t link_relations_ = 0;
 };
 
 }  // namespace blink

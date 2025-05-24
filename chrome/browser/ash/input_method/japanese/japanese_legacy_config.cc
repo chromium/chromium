@@ -100,43 +100,77 @@ constexpr auto kShiftKeyModeSwitch =
 base::Value::Dict CreatePrefsDictFromJapaneseLegacyConfig(
     JapaneseLegacyConfigPtr config) {
   base::Value::Dict dict;
-  if (auto it = kPreedits.find(config->preedit_method); it != kPreedits.end()) {
-    dict.Set(kJpPrefInputMode, it->second);
+  if (const auto& preedit_method = config->preedit_method;
+      preedit_method.has_value()) {
+    if (auto it = kPreedits.find(*preedit_method); it != kPreedits.end()) {
+      dict.Set(kJpPrefInputMode, it->second);
+    }
   }
-  if (auto it = kPunctuations.find(config->punctuation_method);
-      it != kPunctuations.end()) {
-    dict.Set(kJpPrefPunctuationStyle, it->second);
+  if (const auto& punctuation_method = config->punctuation_method;
+      punctuation_method.has_value()) {
+    if (auto it = kPunctuations.find(*punctuation_method);
+        it != kPunctuations.end()) {
+      dict.Set(kJpPrefPunctuationStyle, it->second);
+    }
   }
-  if (auto it = kSymbols.find(config->symbol_method); it != kSymbols.end()) {
-    dict.Set(kJpPrefSymbolStyle, it->second);
+  if (const auto& symbol_method = config->symbol_method;
+      symbol_method.has_value()) {
+    if (auto it = kSymbols.find(*symbol_method); it != kSymbols.end()) {
+      dict.Set(kJpPrefSymbolStyle, it->second);
+    }
   }
-  if (auto it = kFundamentalCharacterForms.find(config->space_character_form);
-      it != kFundamentalCharacterForms.end()) {
-    dict.Set(kJpPrefSpaceInputStyle, it->second);
+  if (const auto& space_character_form = config->space_character_form;
+      space_character_form.has_value()) {
+    if (auto it = kFundamentalCharacterForms.find(*space_character_form);
+        it != kFundamentalCharacterForms.end()) {
+      dict.Set(kJpPrefSpaceInputStyle, it->second);
+    }
   }
-  if (auto it = kSelectionShortcuts.find(config->selection_shortcut);
-      it != kSelectionShortcuts.end()) {
-    dict.Set(kJpPrefSelectionShortcut, it->second);
+  if (const auto& selection_shortcut = config->selection_shortcut;
+      selection_shortcut.has_value()) {
+    if (auto it = kSelectionShortcuts.find(*selection_shortcut);
+        it != kSelectionShortcuts.end()) {
+      dict.Set(kJpPrefSelectionShortcut, it->second);
+    }
   }
-  if (auto it = kSessionKeymaps.find(config->session_keymap);
-      it != kSessionKeymaps.end()) {
-    dict.Set(kJpPrefKeymapStyle, it->second);
+  if (const auto& session_keymap = config->session_keymap;
+      session_keymap.has_value()) {
+    if (auto it = kSessionKeymaps.find(*session_keymap);
+        it != kSessionKeymaps.end()) {
+      dict.Set(kJpPrefKeymapStyle, it->second);
+    }
   }
-  if (auto it = kShiftKeyModeSwitch.find(config->shift_key_mode_switch);
-      it != kShiftKeyModeSwitch.end()) {
-    dict.Set(kJpPrefShiftKeyModeStyle, it->second);
+  if (const auto& shift_key_mode_switch = config->shift_key_mode_switch;
+      shift_key_mode_switch.has_value()) {
+    if (auto it = kShiftKeyModeSwitch.find(*shift_key_mode_switch);
+        it != kShiftKeyModeSwitch.end()) {
+      dict.Set(kJpPrefShiftKeyModeStyle, it->second);
+    }
   }
-
-  dict.Set(kJpPrefAutomaticallySwitchToHalfwidth, config->use_auto_conversion);
-  dict.Set(kJpPrefUseInputHistory, config->use_history_suggest);
-  dict.Set(kJpPrefUseSystemDictionary, config->use_dictionary_suggest);
-  dict.Set(kJpPrefDisablePersonalizedSuggestions, config->incognito_mode);
-  dict.Set(kJpPrefAutomaticallySendStatisticsToGoogle,
-           config->upload_usage_stats);
-
-  dict.Set(kJpPrefNumberOfSuggestions,
-           static_cast<int>(config->suggestion_size));
-
+  if (const auto& use_auto_conversion = config->use_auto_conversion;
+      use_auto_conversion.has_value()) {
+    dict.Set(kJpPrefAutomaticallySwitchToHalfwidth, *use_auto_conversion);
+  }
+  if (const auto& use_history_suggest = config->use_history_suggest;
+      use_history_suggest.has_value()) {
+    dict.Set(kJpPrefUseInputHistory, *use_history_suggest);
+  }
+  if (const auto& use_dictionary_suggest = config->use_dictionary_suggest;
+      use_dictionary_suggest.has_value()) {
+    dict.Set(kJpPrefUseSystemDictionary, *use_dictionary_suggest);
+  }
+  if (const auto& incognito_mode = config->incognito_mode;
+      incognito_mode.has_value()) {
+    dict.Set(kJpPrefDisablePersonalizedSuggestions, *incognito_mode);
+  }
+  if (const auto& upload_usage_stats = config->upload_usage_stats;
+      upload_usage_stats.has_value()) {
+    dict.Set(kJpPrefAutomaticallySendStatisticsToGoogle, *upload_usage_stats);
+  }
+  if (const auto& suggestion_size = config->suggestion_size;
+      suggestion_size.has_value()) {
+    dict.Set(kJpPrefNumberOfSuggestions, static_cast<int>(*suggestion_size));
+  }
   return dict;
 }
 

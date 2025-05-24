@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/recording/video_capture_params.h"
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "chromeos/ash/services/recording/recording_service_constants.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "media/base/video_types.h"
@@ -307,15 +308,13 @@ bool VideoCaptureParams::OnRecordedWindowChangingRoot(
     viz::FrameSinkId new_frame_sink_id,
     const gfx::Size& new_frame_sink_size_dip,
     float new_device_scale_factor) {
-  CHECK(false) << "This can only be called when recording a window";
-  return false;
+  NOTREACHED() << "This can only be called when recording a window";
 }
 
 bool VideoCaptureParams::OnRecordedWindowSizeChanged(
     mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
     const gfx::Size& new_window_size_dip) {
-  CHECK(false) << "This can only be called when recording a window";
-  return false;
+  NOTREACHED() << "This can only be called when recording a window";
 }
 
 bool VideoCaptureParams::OnFrameSinkSizeChanged(

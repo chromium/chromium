@@ -4,10 +4,11 @@
 
 #include "components/safe_browsing/core/common/utils.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -137,7 +138,7 @@ bool CanGetReputationOfUrl(const GURL& url) {
   const std::string hostname = url.host();
   // There is no reason to send URLs with very short or single-label hosts.
   // The Safe Browsing server does not check them.
-  if (hostname.size() < 4 || base::ranges::count(hostname, '.') < 1) {
+  if (hostname.size() < 4 || std::ranges::count(hostname, '.') < 1) {
     return false;
   }
 
@@ -205,6 +206,64 @@ std::string GetExtraMetricsSuffix(
       break;
   }
   NOTREACHED();
+}
+
+std::string GetExtraExtraMetricsSuffix(
+    security_interstitials::UnsafeResource unsafe_resource) {
+  switch (unsafe_resource.threat_subtype) {
+    case safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1:
+      return "scam_experiment_verdict_1";
+    case safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_2:
+      return "scam_experiment_verdict_2";
+    case safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT:
+      return "scam_experiment_catch_all";
+    case safe_browsing::ThreatSubtype::UNKNOWN:
+      return "";
+  }
+  // Subtype is not always set.
+  return "";
+}
+
+std::string GetThreatTypeStringForInterstitial(
+    safe_browsing::SBThreatType threat_type) {
+  using enum SBThreatType;
+
+  switch (threat_type) {
+    case SB_THREAT_TYPE_URL_PHISHING:
+    case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+      return "SOCIAL_ENGINEERING";
+    case SB_THREAT_TYPE_URL_MALWARE:
+      return "MALWARE";
+    case SB_THREAT_TYPE_URL_UNWANTED:
+      return "UNWANTED_SOFTWARE";
+    case SB_THREAT_TYPE_BILLING:
+      return "THREAT_TYPE_UNSPECIFIED";
+    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+      return "MANAGED_POLICY_WARN";
+    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+      return "MANAGED_POLICY_BLOCK";
+    case SB_THREAT_TYPE_UNUSED:
+    case SB_THREAT_TYPE_SAFE:
+    case SB_THREAT_TYPE_URL_BINARY_MALWARE:
+    case SB_THREAT_TYPE_EXTENSION:
+    case SB_THREAT_TYPE_API_ABUSE:
+    case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+    case SB_THREAT_TYPE_CSD_ALLOWLIST:
+    case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+    case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_AD_SAMPLE:
+    case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SB_THREAT_TYPE_SUSPICIOUS_SITE:
+    case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_APK_DOWNLOAD:
+    case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+      NOTREACHED();
+  }
+  return std::string();
 }
 
 }  // namespace safe_browsing

@@ -4,7 +4,8 @@
 
 #include "chromecast/cast_core/runtime/browser/core_conversions.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "chromecast/common/feature_constants.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
@@ -17,15 +18,15 @@ namespace {
 std::vector<blink::PermissionType> GetFeaturePermissions(
     const cast::common::ApplicationConfig& core_config) {
   std::vector<blink::PermissionType> feature_permissions;
-  auto it = base::ranges::find(core_config.extra_features().entries(),
-                               feature::kCastCoreFeaturePermissions,
-                               &cast::common::Dictionary::Entry::key);
+  auto it = std::ranges::find(core_config.extra_features().entries(),
+                              feature::kCastCoreFeaturePermissions,
+                              &cast::common::Dictionary::Entry::key);
   if (it == core_config.extra_features().entries().end()) {
     return feature_permissions;
   }
 
   CHECK(it->value().value_case() == cast::common::Value::kArray);
-  base::ranges::for_each(
+  std::ranges::for_each(
       it->value().array().values(),
       [&feature_permissions](const cast::common::Value& value) {
         CHECK(value.value_case() == cast::common::Value::kNumber);
@@ -40,15 +41,15 @@ std::vector<blink::PermissionType> GetFeaturePermissions(
 std::vector<url::Origin> GetAdditionalFeaturePermissionOrigins(
     const cast::common::ApplicationConfig& core_config) {
   std::vector<url::Origin> feature_permission_origins;
-  auto it = base::ranges::find(core_config.extra_features().entries(),
-                               feature::kCastCoreFeaturePermissionOrigins,
-                               &cast::common::Dictionary::Entry::key);
+  auto it = std::ranges::find(core_config.extra_features().entries(),
+                              feature::kCastCoreFeaturePermissionOrigins,
+                              &cast::common::Dictionary::Entry::key);
   if (it == core_config.extra_features().entries().end()) {
     return feature_permission_origins;
   }
 
   CHECK(it->value().value_case() == cast::common::Value::kArray);
-  base::ranges::for_each(
+  std::ranges::for_each(
       it->value().array().values(),
       [&feature_permission_origins](const cast::common::Value& value) {
         CHECK(value.value_case() == cast::common::Value::kText);

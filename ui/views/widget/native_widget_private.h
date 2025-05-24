@@ -8,10 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "build/build_config.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
@@ -64,10 +66,8 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   static NativeWidgetPrivate* GetTopLevelNativeWidget(
       gfx::NativeView native_view);
 
-  static void GetAllChildWidgets(gfx::NativeView native_view,
-                                 Widget::Widgets* children);
-  static void GetAllOwnedWidgets(gfx::NativeView native_view,
-                                 Widget::Widgets* owned);
+  static Widget::Widgets GetAllChildWidgets(gfx::NativeView native_view);
+  static Widget::Widgets GetAllOwnedWidgets(gfx::NativeView native_view);
   static void ReparentNativeView(gfx::NativeView native_view,
                                  gfx::NativeView new_parent);
 
@@ -130,6 +130,17 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // hierarchy.
   virtual void ViewRemoved(View* view) = 0;
 
+  // Notifies the NativeWidget that its Widget was destroyed by the client.
+  // NativeWidgets should override this to clear any references to its
+  // associated Widget. The NativeWidget destruction will be initiated
+  // separately by the host platform.
+  //
+  // Only relevant for CLIENT_OWNS_WIDGET ownership schemes. Not relevant for
+  // other widget ownership schemes
+  //  - NATIVE_WIDGET_OWNS_WIDGET - NativeWidget initiates Widget destruction.
+  //  - WIDGET_OWNS_NATIVE_WIDGET - Widget synchronously destroys NativeWidget.
+  virtual void ClientDestroyedWidget();
+
   // Sets/Gets a native window property on the underlying native window object.
   // Returns NULL if the property does not exist. Setting the property value to
   // NULL removes the property.
@@ -167,13 +178,16 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // app switching UI.
   virtual void SetWindowIcons(const gfx::ImageSkia& window_icon,
                               const gfx::ImageSkia& app_icon) = 0;
-  virtual const gfx::ImageSkia* GetWindowIcon() = 0;
-  virtual const gfx::ImageSkia* GetWindowAppIcon() = 0;
 
   // Initializes the modal type of the window to |modal_type|. Called from
   // NativeWidgetDelegate::OnNativeWidgetCreated() before the widget is
   // initially parented.
   virtual void InitModalType(ui::mojom::ModalType modal_type) = 0;
+
+  // Notifies the NativeWidget that the widget theme has changed.
+  // At the moment, the platform window only cares about the color mode.
+  virtual void OnWidgetThemeChanged(
+      ui::ColorProviderKey::ColorMode color_mode) = 0;
 
   // See method documentation in Widget.
   virtual gfx::Rect GetWindowBoundsInScreen() const = 0;
@@ -193,12 +207,16 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
                     const gfx::Rect& restore_bounds) = 0;
   virtual void Hide() = 0;
   virtual bool IsVisible() const = 0;
+  virtual bool IsVisibleOnScreen() const = 0;
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
   virtual bool IsActive() const = 0;
   virtual void PaintAsActiveChanged();
   virtual void SetZOrderLevel(ui::ZOrderLevel order) = 0;
   virtual ui::ZOrderLevel GetZOrderLevel() const = 0;
+#if BUILDFLAG(IS_MAC)
+  virtual void SetActivationIndependence(bool independence) = 0;
+#endif
   virtual void SetVisibleOnAllWorkspaces(bool always_visible) = 0;
   virtual bool IsVisibleOnAllWorkspaces() const = 0;
   virtual void Maximize() = 0;
@@ -206,6 +224,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual bool IsMaximized() const = 0;
   virtual bool IsMinimized() const = 0;
   virtual void Restore() = 0;
+  virtual void ShowWindowControlsMenu(const gfx::Point& point);
   virtual void SetFullscreen(bool fullscreen, int64_t target_display_id) = 0;
   virtual bool IsFullscreen() const = 0;
   virtual void SetCanAppearInExistingFullscreenSpaces(

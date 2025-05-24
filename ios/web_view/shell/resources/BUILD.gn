@@ -31,6 +31,11 @@ bundle_data_xcassets("resources") {
   ]
 }
 
-bundle_data_ib_file("launchscreen") {
+bundle_data_storyboard_file("launchscreen") {
   source = "LaunchScreen.storyboard"
+  bundle_files = [
+    "01J-lp-oVM-view-Ze5-6b-2t3.nib",
+    "UIViewController-01J-lp-oVM.nib",
+    "Info.plist",
+  ]
 }

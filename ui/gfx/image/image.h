@@ -24,11 +24,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_policy.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -51,7 +51,7 @@ class ImageRep;
 class ImageStorage;
 }
 
-class GFX_EXPORT Image {
+class COMPONENT_EXPORT(GFX) Image {
  public:
   enum RepresentationType {
     kImageRepCocoa,

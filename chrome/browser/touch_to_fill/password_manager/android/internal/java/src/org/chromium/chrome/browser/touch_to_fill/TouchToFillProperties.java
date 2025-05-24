@@ -69,8 +69,6 @@ class TouchToFillProperties {
                 FAVICON_OR_FALLBACK = new PropertyModel.WritableObjectPropertyKey<>("favicon");
         static final PropertyModel.ReadableObjectPropertyKey<Credential> CREDENTIAL =
                 new PropertyModel.ReadableObjectPropertyKey<>("credential");
-        static final PropertyModel.ReadableObjectPropertyKey<String> FORMATTED_ORIGIN =
-                new PropertyModel.ReadableObjectPropertyKey<>("formatted_url");
         static final PropertyModel.ReadableObjectPropertyKey<Boolean> SHOW_SUBMIT_BUTTON =
                 new PropertyModel.ReadableObjectPropertyKey<>("submit_credential");
         static final PropertyModel.ReadableObjectPropertyKey<Callback<Credential>>
@@ -83,7 +81,6 @@ class TouchToFillProperties {
         static final PropertyKey[] ALL_KEYS = {
             FAVICON_OR_FALLBACK,
             CREDENTIAL,
-            FORMATTED_ORIGIN,
             ON_CLICK_LISTENER,
             SHOW_SUBMIT_BUTTON,
             ITEM_COLLECTION_INFO

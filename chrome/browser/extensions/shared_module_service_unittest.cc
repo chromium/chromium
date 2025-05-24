@@ -12,12 +12,12 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/version_info/version_info.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install_flag.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
@@ -109,8 +109,8 @@ testing::AssertionResult SharedModuleServiceUnitTest::InstallExtension(
 
   // Notify the service that the extension is installed. This adds it to the
   // registry, notifies interested parties, etc.
-  service()->OnExtensionInstalled(
-      extension, syncer::StringOrdinal(), kInstallFlagInstallImmediately);
+  registrar()->OnExtensionInstalled(extension, syncer::StringOrdinal(),
+                                    kInstallFlagInstallImmediately);
 
   // Verify that the extension is now installed.
   if (!registry()->enabled_extensions().Contains(extension->id())) {
@@ -128,14 +128,14 @@ TEST_F(SharedModuleServiceUnitTest, AddDependentSharedModules) {
       std::vector<std::string>(1, import_id), extension_id, "1.0");
 
   PendingExtensionManager* pending_extension_manager =
-      service()->pending_extension_manager();
+      PendingExtensionManager::Get(profile());
 
   // Verify that we don't currently want to install the imported module.
   EXPECT_FALSE(pending_extension_manager->IsIdPending(import_id));
 
   // Try to satisfy imports for the extension. This should queue the imported
   // module's installation.
-  service()->shared_module_service()->SatisfyImports(extension.get());
+  SharedModuleService::Get(profile())->SatisfyImports(extension.get());
   EXPECT_TRUE(pending_extension_manager->IsIdPending(import_id));
 }
 
@@ -156,8 +156,8 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUninstall) {
 
   // Uninstall the extension that imports our module.
   std::u16string error;
-  service()->UninstallExtension(importing_extension->id(),
-                                UNINSTALL_REASON_FOR_TESTING, &error);
+  registrar()->UninstallExtension(importing_extension->id(),
+                                  UNINSTALL_REASON_FOR_TESTING, &error);
   EXPECT_TRUE(error.empty());
 
   // Since the module was only referenced by that single extension, it should
@@ -202,7 +202,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUpdate) {
           "1.1");
   EXPECT_TRUE(InstallExtension(importing_extension_2.get(), true));
 
-  // Since the extension v1.1 depends the module 2 insteand module 1.
+  // Since the extension v1.1 depends the module 2 instead module 1.
   // So the module 1 should be uninstalled.
   EXPECT_FALSE(registry()->GetExtensionById(shared_module_1->id(),
                                             ExtensionRegistry::EVERYTHING));
@@ -287,8 +287,8 @@ TEST_F(SharedModuleServiceUnitTest, PruneMultipleSharedModules) {
 
   // Uninstall the extension that imports our modules.
   std::u16string error;
-  service()->UninstallExtension(importing_extension->id(),
-                                UNINSTALL_REASON_FOR_TESTING, &error);
+  registrar()->UninstallExtension(importing_extension->id(),
+                                  UNINSTALL_REASON_FOR_TESTING, &error);
   EXPECT_TRUE(error.empty());
 
   // Since the modules were only referenced by that single extension, they

@@ -76,6 +76,8 @@ class LocationProviderManager : public LocationProvider {
   friend class GeolocationLocationProviderManagerTest;
   FRIEND_TEST_ALL_PREFIXES(GeolocationLocationProviderManagerTest,
                            HybridPlatformFallback);
+  FRIEND_TEST_ALL_PREFIXES(GeolocationLocationProviderManagerTest,
+                           HybridPlatformFallback2);
   void RegisterProvider(LocationProvider& provider);
 
   // Initializes the appropriate LocationProvider based on the configured mode

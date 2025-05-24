@@ -18,7 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -93,6 +94,7 @@ public class PaymentManifestVerifierTest {
     };
     public static final Signature BOB_PAY_SIGNATURE = new Signature("01020304050607080900");
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
 
     @Mock private PaymentManifestWebDataService mWebDataService;
@@ -101,8 +103,6 @@ public class PaymentManifestVerifierTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
         mTestOrigin = PaymentManifestDownloader.createOpaqueOriginForTest();
@@ -366,11 +366,11 @@ public class PaymentManifestVerifierTest {
         Mockito.verify(mCallback).onFinishedUsingResources();
     }
 
-    private class CountingParser extends PaymentManifestParser {
+    private static class CountingParser extends PaymentManifestParser {
         public int mParseWebAppManifestCounter;
     }
 
-    private class CountingDownloader extends PaymentManifestDownloader {
+    private static class CountingDownloader extends PaymentManifestDownloader {
         public int mDownloadWebAppManifestCounter;
     }
 

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/build/chrome_build.gni")
+
 source_set("model") {
   sources = [
     "browser_agent_util.h",
@@ -18,19 +20,27 @@ source_set("model") {
     "//base",
     "//components/breadcrumbs/core:status",
     "//ios/chrome/browser/app_launcher/model",
+    "//ios/chrome/browser/browser_view/model",
+    "//ios/chrome/browser/bubble/model",
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
+    "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/device_sharing/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/follow/model:browser_agent",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model/overlays/browser_agent:browser_agent_util",
-    "//ios/chrome/browser/intents:user_activity_browser_agent",
-    "//ios/chrome/browser/iph_for_new_chrome_user/model",
+    "//ios/chrome/browser/intents/model:user_activity_browser_agent",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",
-    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/model:browser_agent",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
     "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -54,6 +64,10 @@ source_set("model") {
     "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/web/public",
   ]
+
+  if (ios_enable_credential_provider_extension) {
+    deps += [ "//ios/chrome/browser/credential_provider/model" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -74,6 +88,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:model_common",
+    "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

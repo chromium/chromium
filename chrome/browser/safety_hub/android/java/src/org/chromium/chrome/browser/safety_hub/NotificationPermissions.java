@@ -9,7 +9,10 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Container class needed to pass information from Native to Java and vice versa. */
+@NullMarked
 public class NotificationPermissions {
     private final String mPrimaryPattern;
     private final String mSecondaryPattern;

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_FEED_TOP_SECTION_NOTIFICATIONS_PROMO_VIEW_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
+
 #import "base/time/time.h"
 
 // Enum actions for content notification promo UMA metrics. Entries should not

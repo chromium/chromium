@@ -15,8 +15,9 @@ IncognitoClearBrowsingDataDialogCoordinator::
     ~IncognitoClearBrowsingDataDialogCoordinator() {
   // Forcefully close the Widget if it hasn't been closed by the time the
   // browser is torn down to avoid dangling references.
-  if (IsShowing())
+  if (IsShowing()) {
     bubble_tracker_.view()->GetWidget()->CloseNow();
+  }
 }
 
 void IncognitoClearBrowsingDataDialogCoordinator::Show(

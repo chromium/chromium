@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "device/fido/hid/fido_hid_device.h"
 
 #include <limits>
@@ -337,7 +342,7 @@ void FidoHidDevice::PacketWritten(FidoHidMessage message, bool success) {
       ReadMessage();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -398,7 +403,7 @@ void FidoHidDevice::OnRead(bool success,
     case BusyState::kReading:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   MessageReceived(std::move(*message));

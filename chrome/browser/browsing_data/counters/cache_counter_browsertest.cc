@@ -13,13 +13,14 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
+#include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,12 +40,15 @@ using content::BrowserThread;
 
 namespace {
 
+typedef base::test::TestFuture<
+    std::unique_ptr<browsing_data::BrowsingDataCounter::Result>>
+    CounterFuture;
+
 class CacheCounterTest : public InProcessBrowserTest {
  public:
-  CacheCounterTest() {}
+  CacheCounterTest() = default;
 
   void SetUpOnMainThread() override {
-    run_loop_ = std::make_unique<base::RunLoop>();
     SetCacheDeletionPref(true);
     SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
 
@@ -93,61 +97,45 @@ class CacheCounterTest : public InProcessBrowserTest {
     simple_loader_helper.WaitForCallback();
   }
 
-  void WaitForCountingResult() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    run_loop_->Run();
-    run_loop_ = std::make_unique<base::RunLoop>();
-  }
-
-  // Callback from the counter.
-  void CountingCallback(
-      std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    finished_ = result->Finished();
-
-    if (finished_) {
-      auto* cache_result =
-          static_cast<CacheCounter::CacheResult*>(result.get());
-      result_ = cache_result->cache_size();
-      is_upper_limit_ = cache_result->is_upper_limit();
-    }
-
-    if (run_loop_ && finished_)
-      run_loop_->Quit();
-  }
-
-  browsing_data::BrowsingDataCounter::ResultInt GetResult() {
-    DCHECK(finished_);
-    return result_;
-  }
-
-  bool IsUpperLimit() {
-    DCHECK(finished_);
-    return is_upper_limit_;
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-
-  bool finished_;
-  browsing_data::BrowsingDataCounter::ResultInt result_;
-  bool is_upper_limit_;
+ protected:
+  CounterFuture future;
 };
 
+int64_t WaitForCountingResultAndReturnCacheSize(CounterFuture& future) {
+  std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result =
+      future.Take();
+  while (!result->Finished()) {
+    future.Clear();
+    result = future.Take();
+  }
+
+  CacheCounter::CacheResult* finished_result =
+      static_cast<CacheCounter::CacheResult*>(result.get());
+  return finished_result->cache_size();
+}
+
+void WaitForCountingResult(CounterFuture& future) {
+  std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result =
+      future.Take();
+  while (!result->Finished()) {
+    future.Clear();
+    result = future.Take();
+  }
+}
 // Tests that for the empty cache, the result is zero.
 IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
+  base::test::TestFuture<void> clean_cache_future;
+
   Profile* profile = browser()->profile();
 
   // Clear the |profile| to ensure that there was no data added from other
   // processes unrelated to this test.
-  base::RunLoop wait_until_empty;
   browser()
       ->profile()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time::Max(), nullptr,
-                       wait_until_empty.QuitClosure());
-  wait_until_empty.Run();
+                       clean_cache_future.GetRepeatingCallback());
 
   // This test occasionally flakes, where the cache size is still seen as
   // non-zero after deletion. However, the exact value is consistent across all
@@ -159,20 +147,24 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
   // runs before our deletion - in that case the delay ensures that the deletion
   // finishes. If this process happens after deletion, then this doesn't help
   // and the test will still fail.
+  int64_t result_cache_size;
+
   while (true) {
     CacheCounter counter(profile);
     counter.Init(profile->GetPrefs(),
                  browsing_data::ClearBrowsingDataTab::ADVANCED,
-                 base::BindRepeating(&CacheCounterTest::CountingCallback,
-                                     base::Unretained(this)));
+                 future.GetRepeatingCallback());
     counter.Restart();
-    WaitForCountingResult();
 
-    if (GetResult() == 0u)
+    result_cache_size = WaitForCountingResultAndReturnCacheSize(future);
+    if (result_cache_size == 0u) {
       break;
+    }
+
     base::PlatformThread::Sleep(base::Milliseconds(100));
   }
-  EXPECT_EQ(0u, GetResult());
+
+  EXPECT_EQ(0u, result_cache_size);
 }
 
 // Tests that for a non-empty cache, the result is nonzero.
@@ -183,25 +175,23 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, NonEmpty) {
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
-               base::BindRepeating(&CacheCounterTest::CountingCallback,
-                                   base::Unretained(this)));
+               future.GetRepeatingCallback());
   counter.Restart();
 
-  WaitForCountingResult();
-
-  EXPECT_NE(0u, GetResult());
+  EXPECT_NE(0u, WaitForCountingResultAndReturnCacheSize(future));
 }
 
 // Tests that after dooming a nonempty cache, the result is zero.
 IN_PROC_BROWSER_TEST_F(CacheCounterTest, AfterDoom) {
+  base::test::TestFuture<void> clean_cache_future;
+
   CreateCacheEntry();
 
   Profile* profile = browser()->profile();
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
-               base::BindRepeating(&CacheCounterTest::CountingCallback,
-                                   base::Unretained(this)));
+               future.GetRepeatingCallback());
 
   browser()
       ->profile()
@@ -211,8 +201,7 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, AfterDoom) {
           base::Time(), base::Time::Max(), nullptr,
           base::BindOnce(&CacheCounter::Restart, base::Unretained(&counter)));
 
-  WaitForCountingResult();
-  EXPECT_EQ(0u, GetResult());
+  EXPECT_EQ(0u, WaitForCountingResultAndReturnCacheSize(future));
 }
 
 // Tests that the counter starts counting automatically when the deletion
@@ -224,14 +213,13 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, PrefChanged) {
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
-               base::BindRepeating(&CacheCounterTest::CountingCallback,
-                                   base::Unretained(this)));
+               future.GetRepeatingCallback());
   SetCacheDeletionPref(true);
 
   // Test that changing the pref causes the counter to be restarted. If it
-  // doesn't, this WaitForCountingResult() statement will time out. The actual
+  // doesn't, future.Wait() statement will time out. The actual
   // value returned by the counter is not important.
-  WaitForCountingResult();
+  ASSERT_TRUE(future.Wait()) << "Init did not call back";
 }
 
 // Tests that the counting is restarted when the time period changes.
@@ -242,23 +230,22 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, PeriodChanged) {
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
-               base::BindRepeating(&CacheCounterTest::CountingCallback,
-                                   base::Unretained(this)));
+               future.GetRepeatingCallback());
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_HOUR);
-  WaitForCountingResult();
+  WaitForCountingResult(future);
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_DAY);
-  WaitForCountingResult();
+  WaitForCountingResult(future);
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_WEEK);
-  WaitForCountingResult();
+  WaitForCountingResult(future);
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::FOUR_WEEKS);
-  WaitForCountingResult();
+  WaitForCountingResult(future);
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
-  WaitForCountingResult();
+  WaitForCountingResult(future);
 }
 
 }  // namespace

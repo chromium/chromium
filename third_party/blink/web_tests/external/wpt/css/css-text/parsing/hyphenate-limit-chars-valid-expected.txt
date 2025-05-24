@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] e.style['hyphenate-limit-chars'] = "auto auto" should set the property value
+  assert_equals: serialization should be canonical expected "auto" but got "auto auto"
+[FAIL] e.style['hyphenate-limit-chars'] = "auto auto auto" should set the property value
+  assert_equals: serialization should be canonical expected "auto" but got "auto auto auto"
+[FAIL] e.style['hyphenate-limit-chars'] = "5 2 2" should set the property value
+  assert_equals: serialization should be canonical expected "5 2" but got "5 2 2"
+[FAIL] e.style['hyphenate-limit-chars'] = "auto 2 2" should set the property value
+  assert_equals: serialization should be canonical expected "auto 2" but got "auto 2 2"
+Harness: the test ran to completion.
+

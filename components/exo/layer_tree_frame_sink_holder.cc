@@ -118,9 +118,11 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(viz::CompositorFrame frame,
 
   // Needs to be after DiscardCachedFrame(), because discarding a frame will
   // reset the frame arrival information in `frame_timing_history_`.
-  frame_timing_history_->FrameArrived();
+  if (frame_timing_history_) {
+    frame_timing_history_->FrameArrived();
 
-  frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/true);
+    frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/true);
+  }
 
   ObserveBeginFrameSource(true);
 
@@ -304,8 +306,13 @@ bool LayerTreeFrameSinkHolder::OnBeginFrameDerivedImpl(
     const viz::BeginFrameArgs& args) {
   DCHECK(reactive_frame_submission_);
 
-  frame_timing_history_->BeginFrameArrived(args.frame_id);
-  frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/false);
+  base::TimeDelta timing_estimate = base::Milliseconds(0);
+  if (frame_timing_history_) {
+    frame_timing_history_->BeginFrameArrived(args.frame_id);
+    frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(
+        /*valid=*/false);
+    timing_estimate = frame_timing_history_->GetFrameTransferDurationEstimate();
+  }
 
   pending_begin_frames_.emplace();
   pending_begin_frames_.back().begin_frame_ack =
@@ -313,7 +320,7 @@ bool LayerTreeFrameSinkHolder::OnBeginFrameDerivedImpl(
   pending_begin_frames_.back().send_deadline_estimate =
       args.deadline -
       viz::BeginFrameArgs::DefaultEstimatedDisplayDrawTime(args.interval) -
-      frame_timing_history_->GetFrameTransferDurationEstimate();
+      timing_estimate;
 
   if (pending_begin_frames_.size() > 1) {
     return true;
@@ -410,8 +417,9 @@ void LayerTreeFrameSinkHolder::DiscardCachedFrame(
         });
   }
   cached_frame_.reset();
-
-  frame_timing_history_->FrameDiscarded();
+  if (frame_timing_history_) {
+    frame_timing_history_->FrameDiscarded();
+  }
 }
 
 void LayerTreeFrameSinkHolder::SendDiscardedFrameNotifications(
@@ -448,17 +456,22 @@ void LayerTreeFrameSinkHolder::OnSendDeadlineExpired(bool update_timer) {
     frame_sink_->DidNotProduceFrame(pending_begin_frame.begin_frame_ack,
                                     cc::FrameSkippedReason::kNoDamage);
 
-    frame_timing_history_->FrameDidNotProduce(
-        pending_begin_frame.begin_frame_ack.frame_id);
+    if (frame_timing_history_) {
+      frame_timing_history_->FrameDidNotProduce(
+          pending_begin_frame.begin_frame_ack.frame_id);
+    }
 
     pending_begin_frames_.pop();
 
     bool should_pause_begin_frame =
         frame_sink_->auto_needs_begin_frame() &&
-        frame_timing_history_->consecutive_did_not_produce_count() >=
-            kPauseBeginFrameThreshold;
+        (frame_timing_history_
+             ? (frame_timing_history_->consecutive_did_not_produce_count() >=
+                kPauseBeginFrameThreshold)
+             : false);
 
-    if (!pending_begin_frames_.empty() || should_pause_begin_frame) {
+    if ((!pending_begin_frames_.empty() || should_pause_begin_frame) &&
+        frame_timing_history_) {
       frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(
           /*valid=*/false);
     }

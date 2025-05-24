@@ -50,19 +50,21 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -76,16 +78,18 @@ import java.lang.ref.WeakReference;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
+@EnableFeatures(ChromeFeatureList.CCT_REPORT_PRERENDER_EVENTS)
 public class CustomTabMinimizationManagerUnitTest {
     @Rule
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private static final String TITLE = "Google";
-    private static final String HOST = JUnitTestGURLs.SEARCH_URL.getHost();
+    private static final String HOST =
+            UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                    JUnitTestGURLs.SEARCH_URL);
 
     @Spy private AppCompatActivity mActivity;
     @Mock private ActivityTabProvider mTabProvider;
@@ -106,7 +110,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = spy(activity));
-        mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
 
         CustomTabsConnection.setInstanceForTesting(mConnection);
         when(mTab.getWebContents()).thenReturn(mWebContents);
@@ -228,6 +232,21 @@ public class CustomTabMinimizationManagerUnitTest {
     public void testAboutBlank() {
         // Simulate having about:blank URL in the tab.
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.ABOUT_BLANK);
+        when(mTab.getTitle()).thenReturn("google.com");
+
+        mManager.minimize();
+        mManager.accept(new PictureInPictureModeChangedInfo(true));
+
+        assertEquals(View.GONE, mActivity.findViewById(R.id.title).getVisibility());
+        assertEquals(
+                JUnitTestGURLs.ABOUT_BLANK.getSpec(),
+                ((TextView) mActivity.findViewById(R.id.url)).getText());
+    }
+
+    @Test
+    public void testAboutBlank_fragment() {
+        // Simulate having about:blank#google.com URL in the tab.
+        when(mTab.getUrl()).thenReturn(new GURL("about:blank#google.com"));
         when(mTab.getTitle()).thenReturn("google.com");
 
         mManager.minimize();

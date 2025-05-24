@@ -9,7 +9,7 @@ function initializeBlankCanvas(canvasColorSpace, canvasPixelFormat)
     testCanvas.width = 4;
     testCanvas.height = 4;
     var testCtx = testCanvas.getContext('2d',
-        {colorSpace: canvasColorSpace, pixelFormat:canvasPixelFormat});
+        {colorSpace: canvasColorSpace, colorType:canvasPixelFormat});
     return testCtx;
 }
 
@@ -19,7 +19,7 @@ function initializeCanvas(canvasColorSpace, canvasPixelFormat)
     testCanvas.width = 4;
     testCanvas.height = 4;
     var testCtx = testCanvas.getContext('2d',
-        {colorSpace: canvasColorSpace, pixelFormat:canvasPixelFormat});
+        {colorSpace: canvasColorSpace, colorType:canvasPixelFormat});
     testCtx.fillStyle = "rgba(155, 27, 27, 1)";
     testCtx.fillRect(0, 0, 2, 2);
     testCtx.fillStyle = "rgba(27, 155, 27, 1)";
@@ -37,7 +37,7 @@ function initializeCanvasTransparent(canvasColorSpace, canvasPixelFormat)
     testCanvas.width = 4;
     testCanvas.height = 4;
     var testCtx = testCanvas.getContext('2d',
-        {colorSpace: canvasColorSpace, pixelFormat:canvasPixelFormat});
+        {colorSpace: canvasColorSpace, colorType:canvasPixelFormat});
     testCtx.fillStyle = "rgba(155, 27, 27, 0.5)";
     testCtx.fillRect(0, 0, 2, 2);
     testCtx.fillStyle = "rgba(27, 155, 27, 0.5)";
@@ -57,7 +57,7 @@ function initializeOffscreenCanvas(canvasColorSpace, canvasPixelFormat)
     canvas.height = 4;
     var offscreen = canvas.transferControlToOffscreen();
     var ctx = offscreen.getContext('2d',
-        {colorSpace: canvasColorSpace, pixelFormat:canvasPixelFormat});
+        {colorSpace: canvasColorSpace, colorType:canvasPixelFormat});
     ctx.fillStyle = "rgba(155, 27, 27, 1)";
     ctx.fillRect(0, 0, 2, 2);
     ctx.fillStyle = "rgba(27, 155, 27, 1)";
@@ -76,7 +76,7 @@ function initializeOffscreenCanvasTransparent(canvasColorSpace, canvasPixelForma
     canvas.height = 4;
     var offscreen = canvas.transferControlToOffscreen();
     var ctx = offscreen.getContext('2d',
-        {colorSpace: canvasColorSpace, pixelFormat:canvasPixelFormat});
+        {colorSpace: canvasColorSpace, colorType:canvasPixelFormat});
     ctx.fillStyle = "rgba(155, 27, 27, 0.5)";
     ctx.fillRect(0, 0, 2, 2);
     ctx.fillStyle = "rgba(27, 155, 27, 0.5)";
@@ -88,13 +88,13 @@ function initializeOffscreenCanvasTransparent(canvasColorSpace, canvasPixelForma
     return offscreen;
 }
 
-function testPixels(testCtx, refCtx, pixelFormat, isTrnasparent, imageSetting)
+function testPixels(testCtx, refCtx, colorType, isTrnasparent, imageSetting)
 {
     var actual = testCtx.getImageData(0, 0, 4, 4, imageSetting).data;
     var expected = refCtx.getImageData(0, 0, 4, 4, imageSetting).data;
 
     var tolerance = 4;
-    if (pixelFormat === 'float16')
+    if (colorType === 'float16')
         tolerance = 0.02;
     if (isTrnasparent)
         tolerance = tolerance * 2;
@@ -114,7 +114,7 @@ function runDrawOffscreenCanvasTestOpaque(testScenario) {
     testPixels(canvas_ctx_blank, canvas_ctx_opaque,
                testScenario.canvasPixelFormat, false,
                {colorSpace: testScenario.canvasColorSpace,
-                storageFormat: testScenario.imageStorageFormat});
+                pixelFormat: testScenario.imageStorageFormat});
 }
 
 function runDrawOffscreenCanvasTestTransparent(testScenario) {
@@ -129,13 +129,13 @@ function runDrawOffscreenCanvasTestTransparent(testScenario) {
     testPixels(canvas_ctx_blank, canvas_ctx_transparent,
                testScenario.canvasPixelFormat, true,
                {colorSpace: testScenario.canvasColorSpace,
-                storageFormat: testScenario.imageStorageFormat});
+                pixelFormat: testScenario.imageStorageFormat});
 }
 
 function runAllTests() {
     var canvasColorSpaces = ['srgb', 'display-p3', 'rec2020'];
-    var canvasPixelFormats = ['uint8', 'float16'];
-    var imageStorageFormat = ['uint8', 'float32']
+    var canvasPixelFormats = ['unorm8', 'float16'];
+    var imageStorageFormat = ['rgba-unorm8', 'rgba-float16']
     var testScenarioSet = [];
     for (var i = 0; i < canvasColorSpaces.length; i++) {
         for (var j = 0; j < canvasPixelFormats.length; j++) {

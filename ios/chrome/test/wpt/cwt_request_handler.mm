@@ -187,68 +187,76 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
                               kWebDriverNoActiveSessionMessage);
     }
 
-    if (command == kWebDriverWindowCommand)
+    if (command == kWebDriverWindowCommand) {
       return GetTargetTabId();
+    }
 
-    if (command == kWebDriverWindowHandlesCommand)
+    if (command == kWebDriverWindowHandlesCommand) {
       return GetAllTabIds();
+    }
 
-    if (command == kWebDriverScreenshotCommand)
+    if (command == kWebDriverScreenshotCommand) {
       return GetSnapshot();
+    }
 
-    if (command == kChromeVersionInfoCommand)
+    if (command == kChromeVersionInfoCommand) {
       return GetVersionInfo();
+    }
 
     return std::nullopt;
   }
 
   if (http_method == net::test_server::METHOD_POST) {
-    std::optional<base::Value> content =
-        base::JSONReader::Read(request_content);
-    if (!content || !content->is_dict()) {
+    std::optional<base::Value::Dict> content_dict =
+        base::JSONReader::ReadDict(request_content);
+    if (!content_dict) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
                               kWebDriverMissingRequestMessage);
     }
-    const base::Value::Dict& content_dict = content->GetDict();
 
-    if (command == kWebDriverSessionCommand)
+    if (command == kWebDriverSessionCommand) {
       return InitializeSession();
+    }
 
     if (session_id_.empty()) {
       return CreateErrorValue(kWebDriverInvalidSessionError,
                               kWebDriverNoActiveSessionMessage);
     }
 
-    if (command == kChromeCrashTestCommand)
-      return NavigateToUrlForCrashTest(*content);
+    if (command == kChromeCrashTestCommand) {
+      return NavigateToUrlForCrashTest(base::Value(std::move(*content_dict)));
+    }
 
-    if (command == kWebDriverNavigationCommand)
-      return NavigateToUrl(content_dict.FindString(kWebDriverURLRequestField));
+    if (command == kWebDriverNavigationCommand) {
+      return NavigateToUrl(content_dict->FindString(kWebDriverURLRequestField));
+    }
 
-    if (command == kWebDriverTimeoutsCommand)
-      return SetTimeouts(*content);
+    if (command == kWebDriverTimeoutsCommand) {
+      return SetTimeouts(base::Value(std::move(*content_dict)));
+    }
 
     if (command == kWebDriverWindowCommand) {
       return SwitchToTabWithId(
-          content_dict.FindString(kWebDriverWindowHandleRequestField));
+          content_dict->FindString(kWebDriverWindowHandleRequestField));
     }
 
     if (command == kWebDriverSyncScriptCommand) {
       return ExecuteScript(
-          content_dict.FindString(kWebDriverScriptRequestField),
+          content_dict->FindString(kWebDriverScriptRequestField),
           /*is_async_function=*/false,
-          content_dict.FindList(kWebDriverArgsRequestField));
+          content_dict->FindList(kWebDriverArgsRequestField));
     }
 
     if (command == kWebDriverAsyncScriptCommand) {
       return ExecuteScript(
-          content_dict.FindString(kWebDriverScriptRequestField),
+          content_dict->FindString(kWebDriverScriptRequestField),
           /*is_async_function=*/true,
-          content_dict.FindList(kWebDriverArgsRequestField));
+          content_dict->FindList(kWebDriverArgsRequestField));
     }
 
-    if (command == kWebDriverWindowRectCommand)
-      return SetWindowRect(*content);
+    if (command == kWebDriverWindowRectCommand) {
+      return SetWindowRect(base::Value(std::move(*content_dict)));
+    }
 
     return std::nullopt;
   }
@@ -259,14 +267,17 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
                               kWebDriverNoActiveSessionMessage);
     }
 
-    if (command == session_id_)
+    if (command == session_id_) {
       return CloseSession();
+    }
 
-    if (command == kWebDriverWindowCommand)
+    if (command == kWebDriverWindowCommand) {
       return CloseTargetTab();
+    }
 
-    if (command == kWebDriverActionsCommand)
+    if (command == kWebDriverActionsCommand) {
       return ReleaseActions();
+    }
 
     return std::nullopt;
   }
@@ -358,8 +369,9 @@ base::Value CWTRequestHandler::NavigateToUrl(const std::string* url) {
       [CWTWebDriverAppInterface loadURL:base::SysUTF8ToNSString(*url)
                                   inTab:base::SysUTF8ToNSString(target_tab_id_)
                                 timeout:page_load_timeout_];
-  if (!error)
+  if (!error) {
     return base::Value(base::Value::Type::NONE);
+  }
 
   return CreateErrorValue(kWebDriverTimeoutError,
                           kWebDriverPageLoadTimeoutMessage);
@@ -453,10 +465,11 @@ base::Value CWTRequestHandler::SetTimeouts(const base::Value& timeouts) {
 
     // Only script and page load timeouts are supported in CWTChromeDriver.
     // Other values are ignored.
-    if (pair.first == kWebDriverScriptTimeoutRequestField)
+    if (pair.first == kWebDriverScriptTimeoutRequestField) {
       script_timeout_ = timeout;
-    else if (pair.first == kWebDriverPageLoadTimeoutRequestField)
+    } else if (pair.first == kWebDriverPageLoadTimeoutRequestField) {
       page_load_timeout_ = timeout;
+    }
   }
   return base::Value(base::Value::Type::NONE);
 }

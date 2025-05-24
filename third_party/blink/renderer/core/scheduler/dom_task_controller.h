@@ -13,15 +13,16 @@ namespace blink {
 class ExceptionState;
 class ExecutionContext;
 class TaskControllerInit;
+class V8TaskPriority;
 
 class CORE_EXPORT DOMTaskController final : public AbortController {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static DOMTaskController* Create(ExecutionContext*, TaskControllerInit*);
-  DOMTaskController(ExecutionContext*, const AtomicString& priority);
+  DOMTaskController(ExecutionContext*, const V8TaskPriority& priority);
 
-  void setPriority(const AtomicString& priority, ExceptionState&);
+  void setPriority(const V8TaskPriority& priority, ExceptionState&);
 };
 
 }  // namespace blink

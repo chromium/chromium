@@ -45,10 +45,6 @@ IN_PROC_BROWSER_TEST_F(SmartDimIntegrationTest, SmartDim) {
   // ML service.
   histograms.ExpectBucketCount("PowerML.SmartDimComponent.WorkerType", 0, 1);
 
-  // Bucket 0 is ash. This is emitted before chrome queries the ML service.
-  histograms.ExpectBucketCount("PowerML.SmartDimFeature.WebPageInfoSource", 0,
-                               1);
-
   // Bucket 0 is success. This is emitted after the ML Service replies
   // to chrome.
   histograms.ExpectBucketCount("PowerML.SmartDimModel.Result", 0, 1);
@@ -115,10 +111,6 @@ IN_PROC_BROWSER_TEST_F(SmartDimComponentIntegrationTest, SmartDim) {
 
   // WorkerType 1 is the download worker.
   histograms.ExpectBucketCount("PowerML.SmartDimComponent.WorkerType", 1, 1);
-
-  // Bucket 0 is ash. This is emitted before chrome queries the ML service.
-  histograms.ExpectBucketCount("PowerML.SmartDimFeature.WebPageInfoSource", 0,
-                               1);
 
   // Bucket 0 is success. This is emitted after the ML Service replies
   // to chrome.

@@ -1,0 +1,20 @@
+Tests that deprecation issues for ISO-2022-JP are reported
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : 0
+                    url : https://example.test:8443/inspector-protocol/resources/iso_2022_jp.html
+                }
+                type : CharsetAutoDetectionISO2022JP
+            }
+        }
+    }
+}
+

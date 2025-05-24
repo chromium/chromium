@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder_broker.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -134,12 +135,13 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
   // Stub out other mojom::InterfaceFactory interfaces.
   void CreateVideoDecoder(
       mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-          dst_video_decoder) override {}
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder)
+      override {}
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  void CreateStableVideoDecoder(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-          video_decoder) override {}
+  void CreateVideoDecoderWithTracker(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) override {
+  }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void CreateDefaultRenderer(
       const std::string& audio_device_id,
@@ -150,12 +152,6 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
       mojo::PendingReceiver<media::mojom::Renderer> receiver) override {}
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  void CreateMediaPlayerRenderer(
-      mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
-          client_extension_remote,
-      mojo::PendingReceiver<media::mojom::Renderer> receiver,
-      mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
-          renderer_extension_receiver) override {}
   void CreateFlingingRenderer(
       const std::string& presentation_id,
       mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
@@ -305,10 +301,10 @@ TEST_F(AudioDecoderBrokerTest, Decode_Uninitialized) {
 media::AudioDecoderConfig MakeVorbisConfig() {
   std::string extradata_name = "vorbis-extradata";
   base::FilePath extradata_path = media::GetTestDataFilePath(extradata_name);
-  int64_t tmp = 0;
-  CHECK(base::GetFileSize(extradata_path, &tmp))
-      << "Failed to get file size for '" << extradata_name << "'";
-  int file_size = base::checked_cast<int>(tmp);
+  std::optional<int64_t> tmp = base::GetFileSize(extradata_path);
+  CHECK(tmp.has_value()) << "Failed to get file size for '" << extradata_name
+                         << "'";
+  int file_size = base::checked_cast<int>(tmp.value());
   std::vector<uint8_t> extradata(file_size);
   CHECK_EQ(file_size,
            base::ReadFile(extradata_path,

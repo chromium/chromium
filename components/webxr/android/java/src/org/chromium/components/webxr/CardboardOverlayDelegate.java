@@ -4,6 +4,8 @@
 
 package org.chromium.components.webxr;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.view.Gravity;
@@ -18,12 +20,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Provides a fullscreen overlay for immersive Cardboard (VR) mode. */
+@NullMarked
 public class CardboardOverlayDelegate
         implements XrImmersiveOverlay.Delegate, PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "CardboardOverlay";
@@ -37,13 +40,12 @@ public class CardboardOverlayDelegate
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
-    private Activity mActivity;
-    private VrCompositorDelegate mCompositorDelegate;
+    private final Activity mActivity;
+    private final VrCompositorDelegate mCompositorDelegate;
 
-    private View mCardboardView;
+    private @Nullable View mCardboardView;
 
-    public CardboardOverlayDelegate(
-            VrCompositorDelegate compositorDelegate, @NonNull Activity activity) {
+    public CardboardOverlayDelegate(VrCompositorDelegate compositorDelegate, Activity activity) {
         if (DEBUG_LOGS) {
             Log.i(TAG, "constructor");
         }
@@ -145,6 +147,7 @@ public class CardboardOverlayDelegate
         int flags = mActivity.getWindow().getDecorView().getSystemUiVisibility();
         mActivity.getWindow().getDecorView().setSystemUiVisibility(flags | VR_SYSTEM_UI_FLAGS);
 
+        assumeNonNull(mCardboardView);
         FrameLayout surface_view_holder =
                 (FrameLayout) mCardboardView.findViewById(R.id.surface_view_holder);
         surface_view_holder.addView(surfaceView);

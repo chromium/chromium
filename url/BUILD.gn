@@ -265,15 +265,6 @@ fuzzer_test("gurl_fuzzer") {
   dict = "gurl_fuzzer.dict"
 }
 
-fuzzer_test("url_idna_icu_fuzzer") {
-  sources = [ "url_idna_icu_fuzzer.cc" ]
-  deps = [
-    ":url",
-    "//third_party/icu:icuuc",
-    "//third_party/icu/fuzzers:fuzzer_support",
-  ]
-}
-
 fuzzer_test("url_canon_icu_fuzzer") {
   sources = [ "url_canon_icu_fuzzer.cc" ]
   deps = [

@@ -1,0 +1,38 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "fuchsia"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "webrtc.ip_handling_url",
+      "pref_location": "user_profile",
+      "default_value": [],
+      "values_to_test": [
+        [],
+        [
+          {
+            "url": "https://[*.]company.com",
+            "handling": "default"
+          },
+          {
+            "url": "https://www.company2.com:*",
+            "handling": "default_public_and_private_interfaces"
+          },
+          {
+            "url": "https://www.company3.com",
+            "handling": "default_public_interface_only"
+          },
+          {
+            "url": "*",
+            "handling": "disable_non_proxied_udp"
+          }
+        ]
+      ]
+    }
+  }
+]

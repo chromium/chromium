@@ -5,9 +5,9 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 
 #include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -132,7 +132,8 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
     const std::string kKillURL("chrome://crash");
     auto url = ExtensionTabUtil::PrepareURLForNavigation(
         kKillURL, extension.get(), browser_context());
-    EXPECT_THAT(url, base::test::ErrorIs(tabs_constants::kNoCrashBrowserError));
+    EXPECT_THAT(url,
+                base::test::ErrorIs(ExtensionTabUtil::kNoCrashBrowserError));
   }
   // Hang URLs and other similar debug urls should also return false and set the
   // error.
@@ -141,7 +142,7 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
     auto url = ExtensionTabUtil::PrepareURLForNavigation(
         kHangURL, extension.get(), browser_context());
     ASSERT_FALSE(url.has_value());
-    EXPECT_EQ(tabs_constants::kNoCrashBrowserError, url.error());
+    EXPECT_EQ(ExtensionTabUtil::kNoCrashBrowserError, url.error());
   }
   // JavaScript URLs should return false and set the error.
   {
@@ -149,7 +150,7 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
     auto url = ExtensionTabUtil::PrepareURLForNavigation(
         kJavaScriptURL, extension.get(), browser_context());
     ASSERT_FALSE(url.has_value());
-    EXPECT_EQ(tabs_constants::kJavaScriptUrlsNotAllowedInExtensionNavigations,
+    EXPECT_EQ(ExtensionTabUtil::kJavaScriptUrlsNotAllowedInExtensionNavigations,
               url.error());
   }
   // File URLs should return false and set the error.
@@ -158,7 +159,7 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
     auto url = ExtensionTabUtil::PrepareURLForNavigation(
         kFileURL, extension.get(), browser_context());
     ASSERT_FALSE(url.has_value());
-    EXPECT_EQ(tabs_constants::kFileUrlsNotAllowedInExtensionNavigations,
+    EXPECT_EQ(ExtensionTabUtil::kFileUrlsNotAllowedInExtensionNavigations,
               url.error());
   }
   // File URLs with view-source scheme should return false and set the error.
@@ -167,7 +168,7 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
     auto url = ExtensionTabUtil::PrepareURLForNavigation(
         kViewSourceFileURL, extension.get(), browser_context());
     ASSERT_FALSE(url.has_value());
-    EXPECT_EQ(tabs_constants::kFileUrlsNotAllowedInExtensionNavigations,
+    EXPECT_EQ(ExtensionTabUtil::kFileUrlsNotAllowedInExtensionNavigations,
               url.error());
   }
   // File URLs are returned when the extension has access to file.
@@ -185,6 +186,13 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
     auto url = ExtensionTabUtil::PrepareURLForNavigation(
         kFileURL, /*extension=*/nullptr, browser_context());
     EXPECT_THAT(url, base::test::ValueIs(GURL(kFileURL)));
+  }
+  // Regression test for crbug.com/348405962.
+  {
+    const std::string kTestPath("mailto:8080?cc=&bcc=&subject=&body=");
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kTestPath, extension.get(), browser_context());
+    EXPECT_THAT(url, base::test::ValueIs(GURL(kTestPath)));
   }
 }
 
@@ -234,8 +242,8 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigationOnDevtools) {
     auto no_permission_extension = ExtensionBuilder("none").Build();
     auto url = ExtensionTabUtil::PrepareURLForNavigation(
         kDevtoolsURL, no_permission_extension.get(), browser_context());
-    EXPECT_THAT(url,
-                base::test::ErrorIs(tabs_constants::kCannotNavigateToDevtools));
+    EXPECT_THAT(
+        url, base::test::ErrorIs(ExtensionTabUtil::kCannotNavigateToDevtools));
   }
   // Having the devtools permissions should allow access.
   {
@@ -263,7 +271,7 @@ TEST_F(ChromeExtensionNavigationTest,
   auto url = ExtensionTabUtil::PrepareURLForNavigation(
       kChromeUntrustedURL, extension.get(), browser_context());
   EXPECT_THAT(url, base::test::ErrorIs(
-                       tabs_constants::kCannotNavigateToChromeUntrusted));
+                       ExtensionTabUtil::kCannotNavigateToChromeUntrusted));
 }
 
 }  // namespace extensions

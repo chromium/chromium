@@ -26,11 +26,11 @@ import org.chromium.base.test.util.Feature;
 public class AwContentsLifecycleNotifierTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
     private static class LifecycleObserver implements AwContentsLifecycleNotifier.Observer {
-        public CallbackHelper mFirstWebViewCreatedCallback = new CallbackHelper();
-        public CallbackHelper mLastWebViewDestroyedCallback = new CallbackHelper();
+        public final CallbackHelper mFirstWebViewCreatedCallback = new CallbackHelper();
+        public final CallbackHelper mLastWebViewDestroyedCallback = new CallbackHelper();
 
         @Override
         public void onFirstWebViewCreated() {

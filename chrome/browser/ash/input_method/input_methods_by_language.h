@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHODS_BY_LANGUAGE_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHODS_BY_LANGUAGE_H_
 
-#include <string>
-#include <vector>
+#include <string_view>
+
+#include "base/containers/span.h"
 
 namespace ash::input_method {
 
@@ -28,33 +29,33 @@ enum class LanguageCategory {
   kOther,
 };
 
-const std::vector<std::string>& AfrikaansInputMethods();
+base::span<const std::string_view> AfrikaansInputMethods();
 
-const std::vector<std::string>& DanishInputMethods();
+base::span<const std::string_view> DanishInputMethods();
 
-const std::vector<std::string>& DutchInputMethods();
+base::span<const std::string_view> DutchInputMethods();
 
-const std::vector<std::string>& FinnishInputMethods();
+base::span<const std::string_view> FinnishInputMethods();
 
-const std::vector<std::string>& EnglishInputMethods();
+base::span<const std::string_view> EnglishInputMethods();
 
-const std::vector<std::string>& FrenchInputMethods();
+base::span<const std::string_view> FrenchInputMethods();
 
-const std::vector<std::string>& GermanInputMethods();
+base::span<const std::string_view> GermanInputMethods();
 
-const std::vector<std::string>& ItalianInputMethods();
+base::span<const std::string_view> ItalianInputMethods();
 
-const std::vector<std::string>& JapaneseInputMethods();
+base::span<const std::string_view> JapaneseInputMethods();
 
-const std::vector<std::string>& NorwegianInputMethods();
+base::span<const std::string_view> NorwegianInputMethods();
 
-const std::vector<std::string>& PolishInputMethods();
+base::span<const std::string_view> PolishInputMethods();
 
-const std::vector<std::string>& PortugeseInputMethods();
+base::span<const std::string_view> PortugeseInputMethods();
 
-const std::vector<std::string>& SpanishInputMethods();
+base::span<const std::string_view> SpanishInputMethods();
 
-const std::vector<std::string>& SwedishInputMethods();
+base::span<const std::string_view> SwedishInputMethods();
 
 LanguageCategory InputMethodToLanguageCategory(std::string_view input_method);
 

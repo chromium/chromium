@@ -25,9 +25,10 @@ namespace {
 
 class LoginHandlerAndroid : public LoginHandler {
  public:
-  LoginHandlerAndroid(const net::AuthChallengeInfo& auth_info,
-                      content::WebContents* web_contents,
-                      LoginAuthRequiredCallback auth_required_callback)
+  LoginHandlerAndroid(
+      const net::AuthChallengeInfo& auth_info,
+      content::WebContents* web_contents,
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
       : LoginHandler(auth_info,
                      web_contents,
                      std::move(auth_required_callback)) {}
@@ -62,14 +63,15 @@ class LoginHandlerAndroid : public LoginHandler {
       return true;
     } else {
       LOG(WARNING) << "HTTP Authentication failed because TabAndroid is "
-          "missing";
+                      "missing";
       return false;
     }
   }
 
   void CloseDialog() override {
-    if (chrome_http_auth_handler_)
+    if (chrome_http_auth_handler_) {
       chrome_http_auth_handler_->CloseDialog();
+    }
   }
 
  private:
@@ -82,7 +84,7 @@ class LoginHandlerAndroid : public LoginHandler {
 std::unique_ptr<LoginHandler> LoginHandler::Create(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   return std::make_unique<LoginHandlerAndroid>(
       auth_info, web_contents, std::move(auth_required_callback));
 }

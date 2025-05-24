@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -19,6 +20,7 @@
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_tracker.h"
 
@@ -29,6 +31,7 @@
 namespace views::test {
 
 using ui::test::internal::SpecifyElement;
+using GestureParams = InteractionTestUtilMouse::GestureParams;
 
 namespace {
 
@@ -118,7 +121,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
         test->test_impl().mouse_error_message_.clear();
         const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
-                test->test_impl().GetWindowHintFor(el),
+                test->test_impl().GetGestureParamsForStep(el, seq),
                 InteractionTestUtilMouse::MoveTo(
                     std::move(pos_callback).Run(el)))) {
           if (weak_seq) {
@@ -138,27 +141,30 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
 
 InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ClickMouse(
     ui_controls::MouseButton button,
-    bool release) {
+    bool release,
+    int modifier_keys) {
   RequireInteractiveTest();
   StepBuilder step;
   step.SetDescription("ClickMouse()");
   step.SetElementID(kInteractiveTestPivotElementId);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
-         bool release, ui::InteractionSequence* seq, ui::TrackedElement* el) {
+         bool release, int modifier_keys, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
         const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
-                test->test_impl().GetWindowHintFor(el),
-                release ? InteractionTestUtilMouse::Click(button)
+                test->test_impl().GetGestureParamsForStep(el, seq),
+                release ? InteractionTestUtilMouse::Click(button, modifier_keys)
                         : InteractionTestUtilMouse::MouseGestures{
-                              InteractionTestUtilMouse::MouseDown(button)})) {
+                              InteractionTestUtilMouse::MouseDown(
+                                  button, modifier_keys)})) {
           if (weak_seq) {
             weak_seq->FailForTesting();
           }
         }
       },
-      base::Unretained(this), button, release));
+      base::Unretained(this), button, release, modifier_keys));
   step.SetMustRemainVisible(false);
   return step;
 }
@@ -178,7 +184,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
         const gfx::Point target = std::move(pos_callback).Run(el);
         const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
-                test->test_impl().GetWindowHintFor(el),
+                test->test_impl().GetGestureParamsForStep(el, seq),
                 release ? InteractionTestUtilMouse::DragAndRelease(target)
                         : InteractionTestUtilMouse::DragAndHold(target))) {
           if (weak_seq) {
@@ -199,25 +205,27 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
 }
 
 InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
-    ui_controls::MouseButton button) {
+    ui_controls::MouseButton button,
+    int modifier_keys) {
   RequireInteractiveTest();
   StepBuilder step;
   step.SetDescription("ReleaseMouse()");
   step.SetElementID(kInteractiveTestPivotElementId);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
-         ui::InteractionSequence* seq, ui::TrackedElement* el) {
+         int modifier_keys, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
         const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
-                test->test_impl().GetWindowHintFor(el),
-                InteractionTestUtilMouse::MouseUp(button))) {
+                test->test_impl().GetGestureParamsForStep(el, seq),
+                InteractionTestUtilMouse::MouseUp(button, modifier_keys))) {
           if (weak_seq) {
             weak_seq->FailForTesting();
           }
         }
       },
-      base::Unretained(this), button));
+      base::Unretained(this), button, modifier_keys));
   step.SetMustRemainVisible(false);
   return step;
 }
@@ -292,12 +300,14 @@ View* InteractiveViewsTestApi::FindMatchingView(const View* from,
                                                 ViewMatcher& matcher,
                                                 bool recursive) {
   for (views::View* const child : from->children()) {
-    if (matcher.Run(child))
+    if (matcher.Run(child)) {
       return child;
+    }
     if (recursive) {
       auto* const result = FindMatchingView(child, matcher, true);
-      if (result)
+      if (result) {
         return result;
+      }
     }
   }
   return nullptr;

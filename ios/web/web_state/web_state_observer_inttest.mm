@@ -724,9 +724,7 @@ class WebStateObserverMock : public WebStateObserver {
   MOCK_METHOD1(DidStopLoading, void(WebState*));
   MOCK_METHOD2(PageLoaded, void(WebState*, PageLoadCompletionStatus));
   MOCK_METHOD1(DidChangeBackForwardState, void(WebState*));
-  void WebStateDestroyed(WebState* web_state) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
 };
 
 // Mocks WebStateObserver navigation callbacks, including TitleWasSet.
@@ -746,9 +744,7 @@ class WebStateObserverWithTitleMock : public WebStateObserver {
   MOCK_METHOD2(PageLoaded, void(WebState*, PageLoadCompletionStatus));
   MOCK_METHOD1(DidChangeBackForwardState, void(WebState*));
   MOCK_METHOD1(TitleWasSet, void(WebState*));
-  void WebStateDestroyed(WebState* web_state) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
 };
 
 // Mocks WebStatePolicyDecider decision callbacks.
@@ -774,14 +770,14 @@ class PolicyDeciderMock : public WebStatePolicyDecider {
 
 }  // namespace
 
-using net::test_server::EmbeddedTestServer;
-using ::testing::Return;
-using ::testing::StrictMock;
-using ::testing::_;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using net::test_server::EmbeddedTestServer;
 using test::WaitForWebViewContainingText;
+using ::testing::_;
+using ::testing::Return;
+using ::testing::StrictMock;
 
 // Test fixture to test navigation and load callbacks from WebStateObserver and
 // WebStatePolicyDecider.

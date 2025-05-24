@@ -581,6 +581,27 @@ testSuite({
     assertEquals(picker.elTable_[2 + 1][3], document.activeElement);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
+  testKeyboardNavigationOnUnselectableRange_homeKey() {
+    // This is a Sunday, so it's the first cell in the grid.
+    picker = new DatePicker(new Date(2017, 9, 1));
+    // Make the first column be Sunday, not week numbers
+    picker.setShowWeekNum(false);
+    picker.render(dom.getElement('sandbox'));
+    const selectEvents = recordFunction();
+    const changeEvents = recordFunction();
+    events.listen(picker, DatePicker.Events.SELECT, selectEvents);
+    events.listen(picker, DatePicker.Events.CHANGE, changeEvents);
+    picker.setUserSelectableDateRange(
+        new DateRange(new DateDate(200, 1, 1), new DateDate(300, 1, 1)));
+
+    testingEvents.fireNonAsciiKeySequence(
+        picker.getElement(), KeyCodes.HOME, KeyCodes.HOME);
+
+    changeEvents.assertCallCount(0);
+    selectEvents.assertCallCount(0);
+  },
+
   testDayGridHasNonEmptyAriaLabels() {
     picker = new DatePicker(new Date(2017, 8, 9));
     picker.render(dom.getElement('sandbox'));

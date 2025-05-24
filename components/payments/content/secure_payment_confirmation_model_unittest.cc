@@ -25,6 +25,12 @@ TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
   std::u16string instrument_label(u"Payment");
   std::u16string instrument_value(u"Mastercard ****4444");
   SkBitmap instrument_icon;
+  std::u16string network_label(u"Network");
+  std::u16string network_value(u"Mastercard");
+  SkBitmap network_icon;
+  std::u16string issuer_label(u"Issuer");
+  std::u16string issuer_value(u"Chase");
+  SkBitmap issuer_icon;
   std::u16string total_label(u"Total");
   std::u16string total_value(u"$20.00 USD");
   std::u16string verify_button_label(u"Verify");
@@ -53,6 +59,24 @@ TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
 
   model.set_instrument_icon(&instrument_icon);
   EXPECT_EQ(&instrument_icon, model.instrument_icon());
+
+  model.set_network_label(network_label);
+  EXPECT_EQ(network_label, model.network_label());
+
+  model.set_network_value(network_value);
+  EXPECT_EQ(network_value, model.network_value());
+
+  model.set_network_icon(&network_icon);
+  EXPECT_EQ(&network_icon, model.network_icon());
+
+  model.set_issuer_label(issuer_label);
+  EXPECT_EQ(issuer_label, model.issuer_label());
+
+  model.set_issuer_value(issuer_value);
+  EXPECT_EQ(issuer_value, model.issuer_value());
+
+  model.set_issuer_icon(&issuer_icon);
+  EXPECT_EQ(&issuer_icon, model.issuer_icon());
 
   model.set_total_label(total_label);
   EXPECT_EQ(total_label, model.total_label());

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/devtools/device/adb/adb_device_provider.h"
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
@@ -23,6 +24,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
 using content::WebContents;
@@ -33,7 +35,7 @@ const char kSharedWorkerTestPage[] = "/workers/workers_ui_shared_worker.html";
 
 class InspectUITest : public WebUIMochaBrowserTest {
  public:
-  InspectUITest() {}
+  InspectUITest() = default;
 
   InspectUITest(const InspectUITest&) = delete;
   InspectUITest& operator=(const InspectUITest&) = delete;
@@ -147,7 +149,7 @@ class InspectUISharedStorageTest : public InspectUITest {
  public:
   InspectUISharedStorageTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kSharedStorageAPI,
+        /*enabled_features=*/{network::features::kSharedStorageAPI,
                               features::kPrivacySandboxAdsAPIsOverride,
                               privacy_sandbox::
                                   kOverridePrivacySandboxSettingsLocalTesting},

@@ -44,18 +44,18 @@ suite('WordStreamer', () => {
     }
   }
 
-  test('noCalls', async () => {
+  test('noCalls', () => {
     mockTimer.tick(10000);
     assertUpdatesEqual([]);
   });
 
-  test('setTextEmpty', async () => {
+  test('setTextEmpty', () => {
     streamer.setText('', true);
     mockTimer.tick(10000);
     assertUpdatesEqual([{words: [], isComplete: true}]);
   });
 
-  test('setTextNotCompleteLastWordNotShown', async () => {
+  test('setTextNotCompleteLastWordNotShown', () => {
     streamer.setText('Hello Wor', false);
     mockTimer.tick(10000);
     assertUpdatesEqual([
@@ -63,7 +63,7 @@ suite('WordStreamer', () => {
     ]);
   });
 
-  test('setTextMultipleWords', async () => {
+  test('setTextMultipleWords', () => {
     streamer.setText('Hello World!', true);
     mockTimer.tick(10000);
     assertUpdatesEqual([
@@ -73,7 +73,7 @@ suite('WordStreamer', () => {
     ]);
   });
 
-  test('setTextAppend', async () => {
+  test('setTextAppend', () => {
     streamer.setText('Hello ', false);
     mockTimer.tick(10000);
     assertUpdatesEqual([
@@ -96,7 +96,7 @@ suite('WordStreamer', () => {
     ]);
   });
 
-  test('setTextChangeDisplayedText', async () => {
+  test('setTextChangeDisplayedText', () => {
     streamer.setText('Hello World Today', false);
     mockTimer.tick(10000);
     streamer.setText('Hello Mom', true);
@@ -110,14 +110,14 @@ suite('WordStreamer', () => {
     ]);
   });
 
-  test('resetPreventsFutureUpdates', async () => {
+  test('resetPreventsFutureUpdates', () => {
     streamer.setText('Hello World!', true);
     streamer.reset();
     mockTimer.tick(10000);
     assertUpdatesEqual([]);
   });
 
-  test('outputRate', async () => {
+  test('outputRate', () => {
     streamer.setText('1234 1234 1234 1234', true);
 
     mockTimer.tick(msPerTick);
@@ -132,7 +132,7 @@ suite('WordStreamer', () => {
     ]);
   });
 
-  test('outputRateAfterSlowInput', async () => {
+  test('outputRateAfterSlowInput', () => {
     streamer.setText('1234 ', false);
 
     mockTimer.tick(msPerTick);

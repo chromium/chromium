@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -101,8 +102,7 @@ CrtcController* GetCrtcController(HardwareDisplayController* controller,
       return crtc_controller.get();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ParamsToTracedValue(
@@ -164,7 +164,9 @@ std::string GenerateConfigurationLogForController(
       const std::string size = ModeSize(*(param.mode.get())).ToString();
       const std::string refresh_rate =
           base::NumberToString(ModeRefreshRate(*param.mode));
-      mode = base::StrCat({size, "@", refresh_rate});
+      const char* scan_mode =
+          param.mode.get()->flags & DRM_MODE_FLAG_INTERLACE ? "i" : "p";
+      mode = base::StrCat({size, scan_mode, "@", refresh_rate});
     } else {
       mode = "Disabled";
     }
@@ -839,8 +841,9 @@ void ScreenManager::UpdateControllerToWindowMapping() {
   // First create a unique mapping between a window and a controller. Note, a
   // controller may be associated with at most 1 window.
   for (const auto& controller : controllers_) {
-    if (!controller->IsEnabled())
+    if (!controller->IsEnabled() || !controller->GetDrmDevice()->has_master()) {
       continue;
+    }
 
     DrmWindow* window = FindWindowAt(
         gfx::Rect(controller->origin(), controller->GetModeSize()));
@@ -1056,6 +1059,27 @@ bool ScreenManager::ReplaceDisplayControllersCrtcs(
 
   // No need to UpdateControllerToWindowMapping() since the underlying
   // HardwareDisplayController remained intact - just changed their CRTCs.
+
+  return true;
+}
+
+bool ScreenManager::DetachPlanesFromAllControllers() {
+  base::flat_map<scoped_refptr<DrmDevice>, CommitRequest>
+      commit_request_per_device;
+  for (const auto& controller : controllers_) {
+    scoped_refptr<DrmDevice> drm = controller->GetDrmDevice();
+    CommitRequest& commit_request = commit_request_per_device[drm];
+    controller->GetCurrentModesetPropsWithoutPlanes(&commit_request);
+  }
+
+  for (auto& [drm, commit_request] : commit_request_per_device) {
+    if (!drm->plane_manager()->Commit(
+            commit_request, /*flags=*/DRM_MODE_ATOMIC_ALLOW_MODESET)) {
+      LOG(ERROR) << __func__ << " detach plane commit failure for drm device: "
+                 << drm->device_path().value();
+      return false;
+    }
+  }
 
   return true;
 }

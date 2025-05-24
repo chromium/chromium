@@ -19,17 +19,11 @@ SharedDictionaryNetworkTransactionFactory::
 SharedDictionaryNetworkTransactionFactory::
     ~SharedDictionaryNetworkTransactionFactory() = default;
 
-int SharedDictionaryNetworkTransactionFactory::CreateTransaction(
-    RequestPriority priority,
-    std::unique_ptr<HttpTransaction>* trans) {
-  std::unique_ptr<HttpTransaction> network_transaction;
-  int rv = network_layer_->CreateTransaction(priority, &network_transaction);
-  if (rv != OK) {
-    return rv;
-  }
-  *trans = std::make_unique<SharedDictionaryNetworkTransaction>(
-      std::move(network_transaction), enable_shared_zstd_);
-  return OK;
+std::unique_ptr<HttpTransaction>
+SharedDictionaryNetworkTransactionFactory::CreateTransaction(
+    RequestPriority priority) {
+  return std::make_unique<SharedDictionaryNetworkTransaction>(
+      network_layer_->CreateTransaction(priority), enable_shared_zstd_);
 }
 
 HttpCache* SharedDictionaryNetworkTransactionFactory::GetCache() {

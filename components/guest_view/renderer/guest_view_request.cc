@@ -56,8 +56,9 @@ void GuestViewAttachRequest::ExecuteCallbackIfAvailable(
   v8::Local<v8::Function> callback =
       v8::Local<v8::Function>::New(isolate_, callback_);
   v8::Local<v8::Context> context;
-  if (!callback->GetCreationContext().ToLocal(&context))
+  if (!callback->GetCreationContext(isolate_).ToLocal(&context)) {
     return;
+  }
 
   v8::Context::Scope context_scope(context);
   v8::MicrotasksScope microtasks(isolate_, context->GetMicrotaskQueue(),

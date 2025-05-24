@@ -27,7 +27,10 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
+import androidx.preference.TwoStatePreference;
 
+import org.chromium.base.CallbackController;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -41,10 +44,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
 import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -66,7 +69,7 @@ import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -85,9 +88,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Settings fragment to customize Sync options (data types, encryption). Corresponds to
@@ -230,6 +233,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
+    private CallbackController mCallbackController = new CallbackController();
+
     /**
      * Creates an argument bundle for this fragment.
      *
@@ -246,19 +251,17 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         Profile profile = getProfile();
         mSyncService = SyncServiceFactory.getForProfile(profile);
 
+        // This should only be true if the user has sync consent.
         mIsFromSigninScreen =
-                IntentUtils.safeGetBoolean(getArguments(), IS_FROM_SIGNIN_SCREEN, false);
+                IntentUtils.safeGetBoolean(getArguments(), IS_FROM_SIGNIN_SCREEN, false)
+                        && mSyncService.hasSyncConsent();
 
         setHasOptionsMenu(true);
 
-        mShouldReplaceSyncSettingsWithAccountSettings =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        && !mSyncService.hasSyncConsent();
+        mShouldReplaceSyncSettingsWithAccountSettings = !mSyncService.hasSyncConsent();
 
         if (mShouldReplaceSyncSettingsWithAccountSettings) {
-            // Set title with an empty string to have no title on the top of the page.
-            mPageTitle.set("");
+            mPageTitle.set(getString(R.string.account_settings_title));
 
             SettingsUtils.addPreferencesFromResource(
                     this, R.xml.unified_account_settings_preferences);
@@ -277,16 +280,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                             findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
             identityErrorCardPreference.initialize(profile, this);
 
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
-                mBatchUploadCardPreference =
-                        (BatchUploadCardPreference)
-                                findPreference(PREF_BATCH_UPLOAD_CARD_PREFERENCE);
-                mBatchUploadCardPreference.initialize(
-                        getActivity(),
-                        profile,
-                        ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
-                mBatchUploadCardPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
-            }
+            mBatchUploadCardPreference =
+                    (BatchUploadCardPreference) findPreference(PREF_BATCH_UPLOAD_CARD_PREFERENCE);
+            mBatchUploadCardPreference.initialize(
+                    getActivity(),
+                    profile,
+                    ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
+            mBatchUploadCardPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
 
             if (mSyncService.isSyncDisabledByEnterprisePolicy()) {
                 ChromeBasePreference settingsSyncDisabledByAdministrator =
@@ -303,12 +303,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             mSyncTypeSwitchPreferencesMap.put(
                     UserSelectableType.BOOKMARKS,
                     findPreference(PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE));
+
             // HISTORY and TABS are bundled in the same switch in the new settings panel.
-            mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.HISTORY,
-                    findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE));
-            mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.TABS, findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE));
+            ChromeSwitchPreference historyAndTabsToggle =
+                    (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
+            mSyncTypeSwitchPreferencesMap.put(UserSelectableType.HISTORY, historyAndTabsToggle);
+            mSyncTypeSwitchPreferencesMap.put(UserSelectableType.TABS, historyAndTabsToggle);
+            historyAndTabsToggle.setViewId(R.id.history_and_tabs_toggle);
+
             ChromeSwitchPreference passwordsToggle =
                     (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
             mSyncTypeSwitchPreferencesMap.put(UserSelectableType.PASSWORDS, passwordsToggle);
@@ -357,7 +359,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 mSignOutPreference.initialize(
                         requireContext(),
                         getProfile(),
-                        getChildFragmentManager(),
+                        getActivity().getSupportFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
             }
             mSignOutPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
@@ -487,6 +489,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
         if (!mShouldReplaceSyncSettingsWithAccountSettings) {
             mSyncSetupInProgressHandle.close();
         }
@@ -549,6 +555,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         super.onStart();
         mSyncService.addSyncStateChangedListener(this);
         IdentityServicesProvider.get().getIdentityManager(getProfile()).addObserver(this);
+
+        // This is necessary to refresh the batch upload card if the user leaves Chrome open on the
+        // settings screen, changes their screen lock settings, and then returns to Chrome.
+        if (mShouldReplaceSyncSettingsWithAccountSettings) {
+            mBatchUploadCardPreference.hideBatchUploadCardAndUpdate();
+        }
+        updateSyncPreferences();
     }
 
     @Override
@@ -556,19 +569,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         super.onStop();
         mSyncService.removeSyncStateChangedListener(this);
         IdentityServicesProvider.get().getIdentityManager(getProfile()).removeObserver(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // This is necessary to refresh the batch upload card if the user leaves Chrome open on the
-        // settings screen, changes their screen lock settings, and then returns to Chrome.
-        if (mShouldReplaceSyncSettingsWithAccountSettings
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
-            mBatchUploadCardPreference.hideBatchUploadCardAndUpdate();
-        }
-        updateSyncPreferences();
     }
 
     @Override
@@ -600,7 +600,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         // A change to Preference state hasn't been applied yet. Defer
         // updateSyncStateFromSelectedTypes so it gets the updated state from
         // isChecked().
-        PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncStateFromSelectedTypes);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(this::updateSyncStateFromSelectedTypes));
         return true;
     }
 
@@ -614,7 +616,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     public void syncStateChanged() {
         // This is invoked synchronously from SyncService.setSelectedTypes, postpone the
         // update to let updateSyncStateFromSelectedTypes finish saving the state.
-        PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncPreferences);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(this::updateSyncPreferences));
     }
 
     /** IdentityManager.Observer implementation. */
@@ -626,7 +630,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 // users have been migrated.
                 || eventDetails.getEventTypeFor(ConsentLevel.SYNC)
                         == PrimaryAccountChangeEvent.Type.CLEARED) {
-            if (getActivity() != null) getActivity().finish();
+            finishCurrentSettings();
         }
     }
 
@@ -653,7 +657,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                                                 : ConsentLevel.SYNC));
         // May happen if account is removed from the device while this screen is shown.
         if (signedInAccountName == null) {
-            if (getActivity() != null) getActivity().finish();
+            finishCurrentSettings();
             return;
         }
 
@@ -672,16 +676,18 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 getUserSelectedTypes());
 
         // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
-        PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncPreferences);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(this::updateSyncPreferences));
     }
 
     /**
      * Update the encryption state.
      *
-     * If sync's engine is initialized, the button is enabled and the dialog will present the
-     * valid encryption options for the user. Otherwise, any encryption dialogs will be closed
-     * and the button will be disabled because the engine is needed in order to know and
-     * modify the encryption state.
+     * <p>If sync's engine is initialized, the button is enabled and the dialog will present the
+     * valid encryption options for the user. Otherwise, any encryption dialogs will be closed and
+     * the button will be disabled because the engine is needed in order to know and modify the
+     * encryption state.
      */
     private void updateEncryptionState() {
         boolean isEngineInitialized = mSyncService.isEngineInitialized();
@@ -729,13 +735,17 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private Set<Integer> getUserSelectedTypes() {
-        return (mShouldReplaceSyncSettingsWithAccountSettings
+        Map<Integer, ? extends TwoStatePreference> map =
+                mShouldReplaceSyncSettingsWithAccountSettings
                         ? mSyncTypeSwitchPreferencesMap
-                        : mSyncTypeCheckBoxPreferencesMap)
-                .entrySet().stream()
-                        .filter(e -> e.getValue().isChecked())
-                        .map(Map.Entry::getKey)
-                        .collect(Collectors.toSet());
+                        : mSyncTypeCheckBoxPreferencesMap;
+        Set<Integer> ret = new HashSet<>();
+        for (var entry : map.entrySet()) {
+            if (entry.getValue().isChecked()) {
+                ret.add(entry.getKey());
+            }
+        }
+        return ret;
     }
 
     private void displayPassphraseTypeDialog() {
@@ -838,8 +848,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private void onGoogleActivityControlsClicked(String signedInAccountName) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINKED_SERVICES_SETTING)
                 && isEeaChoiceCountry()) {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(getContext(), PersonalizeGoogleServicesSettings.class);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(getContext(), PersonalizeGoogleServicesSettings.class);
             RecordUserAction.record("Signin_AccountSettings_PersonalizeGoogleServicesClicked");
         } else {
             GoogleActivityController.create()
@@ -855,15 +865,17 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
+        // TODO: crbug.com/343933167 - Stop suppressing the snackbar.
         SignOutCoordinator.startSignOutFlow(
                 requireContext(),
                 getProfile(),
-                getChildFragmentManager(),
+                getActivity().getSupportFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 mSnackbarManagerSupplier.get(),
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                 /* showConfirmDialog= */ false,
-                () -> {});
+                CallbackUtils.emptyRunnable(),
+                /* suppressSnackbar= */ true);
     }
 
     private void onTurnOffSyncClicked() {
@@ -876,12 +888,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         SignOutCoordinator.startSignOutFlow(
                 requireContext(),
                 getProfile(),
-                getChildFragmentManager(),
+                getActivity().getSupportFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 mSnackbarManagerSupplier.get(),
                 SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
                 /* showConfirmDialog= */ false,
-                () -> {});
+                CallbackUtils.emptyRunnable());
     }
 
     private void showAdressesNotEncryptedDialog(Preference preference) {
@@ -897,7 +909,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                                 ((ChromeSwitchPreference) preference).setChecked(true);
                                 PostTask.postTask(
                                         TaskTraits.UI_DEFAULT,
-                                        this::updateSyncStateFromSelectedTypes);
+                                        mCallbackController.makeCancelable(
+                                                this::updateSyncStateFromSelectedTypes));
                             }
                         });
         PropertyModel dialog =
@@ -1065,7 +1078,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         IdentityServicesProvider.get()
                 .getSigninManager(getProfile())
                 .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
-        getActivity().finish();
+        finishCurrentSettings();
     }
 
     @Override
@@ -1106,14 +1119,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 SignOutCoordinator.startSignOutFlow(
                         requireContext(),
                         profile,
-                        getChildFragmentManager(),
+                        getActivity().getSupportFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                         mSnackbarManagerSupplier.get(),
                         profile.isChild()
                                 ? SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS
                                 : SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                         /* showConfirmDialog= */ false,
-                        () -> {});
+                        CallbackUtils.emptyRunnable());
                 return;
             case SyncError.PASSPHRASE_REQUIRED:
                 displayPassphraseDialog();
@@ -1131,7 +1144,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
                 return;
             case SyncError.SYNC_SETUP_INCOMPLETE:
-                mSyncService.setSyncRequested();
                 mSyncService.setInitialSyncFeatureSetupComplete(
                         SyncFirstSetupCompleteSource.ADVANCED_FLOW_INTERRUPTED_TURN_SYNC_ON);
                 return;
@@ -1153,7 +1165,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 profile, mUrlKeyedAnonymizedData.isChecked());
         UnifiedConsentServiceBridge.recordSyncSetupDataTypesHistogram(profile);
         // Settings will be applied when mSyncSetupInProgressHandle is released in onDestroy.
-        getActivity().finish();
+        finishCurrentSettings();
     }
 
     private void cancelSync() {
@@ -1169,12 +1181,26 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         } else {
             signinManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
         }
-        getActivity().finish();
+        finishCurrentSettings();
     }
 
     private boolean isEeaChoiceCountry() {
-        TemplateUrlService templateUrlService =
-                TemplateUrlServiceFactory.getForProfile(getProfile());
-        return templateUrlService.isEeaChoiceCountry();
+        RegionalCapabilitiesService regionalCapabilities =
+                RegionalCapabilitiesServiceFactory.getForProfile(getProfile());
+        return regionalCapabilities.isInEeaCountry();
+    }
+
+    /**
+     * Finishes the current page.
+     *
+     * <p>This method is idempotent, i.e. it does nothing if it was called before.
+     */
+    private void finishCurrentSettings() {
+        SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

@@ -7,21 +7,28 @@
 
 #include <string>
 
+#include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/lobster/lobster.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash {
 
 class LobsterSession;
 
-class LobsterPageHandler : public lobster::mojom::LobsterPageHandler {
+class LobsterPageHandler : public lobster::mojom::UntrustedLobsterPageHandler {
  public:
   explicit LobsterPageHandler(LobsterSession* active_session, Profile* profile);
 
   ~LobsterPageHandler() override;
+
+  void BindInterface(
+      mojo::PendingReceiver<lobster::mojom::UntrustedLobsterPageHandler>
+          pending_receiver);
 
   // lobster::mojom::LobsterPageHandler overrides
   void RequestCandidates(const std::string& query,
@@ -36,11 +43,17 @@ class LobsterPageHandler : public lobster::mojom::LobsterPageHandler {
   void SubmitFeedback(uint32_t candidate_id,
                       const std::string& description,
                       SubmitFeedbackCallback) override;
+  void ShowUI() override;
+  void CloseUI() override;
+  void EmitMetricEvent(ash::LobsterMetricState metric_event) override;
+  void OpenUrlInNewWindow(const GURL& url) override;
 
  private:
   // Not owned by this class
   raw_ptr<LobsterSession> session_;
   raw_ptr<Profile> profile_;
+
+  mojo::Receiver<lobster::mojom::UntrustedLobsterPageHandler> receiver_{this};
 };
 
 }  // namespace ash

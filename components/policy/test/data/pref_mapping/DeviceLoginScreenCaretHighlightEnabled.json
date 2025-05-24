@@ -2,7 +2,7 @@
   {
     "can_be_recommended": true,
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "settings.a11y.caret_highlight",

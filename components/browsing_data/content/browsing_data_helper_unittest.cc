@@ -18,7 +18,7 @@ namespace {
 
 class BrowsingDataHelperTest : public testing::Test {
  public:
-  BrowsingDataHelperTest() {}
+  BrowsingDataHelperTest() = default;
 
   BrowsingDataHelperTest(const BrowsingDataHelperTest&) = delete;
   BrowsingDataHelperTest& operator=(const BrowsingDataHelperTest&) = delete;

@@ -5,8 +5,10 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- LINT.IfChange -->
     <macro name="default_bg_color">?attr/colorSurface</macro>
     <macro name="default_bg_color_elev_0">?attr/colorSurface</macro>
+    <macro name="default_bg_color_inverse">?attr/colorSurfaceInverse</macro>
 
     <macro name="default_control_color_active">?attr/colorPrimary</macro>
     <macro name="default_control_color_normal">?attr/colorOnSurfaceVariant</macro>
@@ -27,7 +29,7 @@ found in the LICENSE file.
     <macro name="default_text_color_link">?attr/colorPrimary</macro>
 
     <macro name="hairline_stroke_color">?attr/colorOutline</macro>
-    <macro name="divider_line_bg_color">?attr/colorSurfaceVariant</macro>
+    <macro name="divider_line_bg_color">?attr/colorSurfaceContainerHighest</macro>
     <macro name="drag_handlebar_color" tools:ignore="UnusedResources">@macro/divider_line_bg_color</macro>
 
     <macro name="chip_bg_color">@macro/default_bg_color</macro>
@@ -42,7 +44,18 @@ found in the LICENSE file.
 
     <macro name="custom_tabs_toast_bg_color">?attr/colorOnSurfaceInverse</macro>
 
+    <macro name="progress_bar_bg_color" tools:ignore="UnusedResources">?attr/colorSurfaceContainerHighest</macro>
+
+    <macro name="sheet_bg_color" tools:ignore="UnusedResources">?attr/colorSurface</macro>
+    <macro name="sheet_container_bg_color" tools:ignore="UnusedResources">?attr/colorSurfaceContainer</macro>
+    <macro name="sheet_chrome_icon_bg" tools:ignore="UnusedResources">?attr/colorSurfaceContainerHigh</macro>
+
+    <macro name="filled_button_bg_color" tools:ignore="UnusedResources">?attr/colorPrimary</macro>
+
     <!-- Gated by full dynamic colors param, no fallback needed. -->
     <macro name="circular_progress_icon_color_small_large">?attr/colorPrimary</macro>
     <macro name="circular_progress_outer_circle_progress_color_small">?attr/colorPrimary</macro>
+
+    <macro name="default_card_bg_color">?attr/colorSurfaceContainer</macro>
+    <!-- LINT.ThenChange(//components/browser_ui/styles/android/java/src/org/chromium/components/browser_ui/styles/SemanticColorUtils.java) -->
 </resources>

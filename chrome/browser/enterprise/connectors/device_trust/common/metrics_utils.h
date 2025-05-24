@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 
 namespace enterprise_connectors {
@@ -48,7 +49,7 @@ enum class DTAttestationPolicyLevel {
   kMaxValue = kUserAndBrowser
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Possible origins of the Device Trust connector attestation flow on ChromeOS.
 // These values are persisted to logs and should not be renumbered. Please
 // update the DTOrigins enum in enums.xml when adding a new step here.
@@ -57,7 +58,7 @@ enum class DTOrigin {
   kLoginScreen = 1,
   kMaxValue = kLoginScreen,
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void LogAttestationFunnelStep(DTAttestationFunnelStep step);
 
@@ -68,11 +69,11 @@ void LogAttestationResult(DTAttestationResult result);
 void LogDeviceTrustResponse(const DeviceTrustResponse& response,
                             base::TimeTicks start_time);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void LogOrigin(DTOrigin origin);
 
 void LogEnrollmentStatus();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors
 

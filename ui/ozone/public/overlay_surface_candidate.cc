@@ -4,6 +4,8 @@
 
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
+#include <variant>
+
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace ui {
@@ -27,12 +29,12 @@ bool OverlaySurfaceCandidate::operator<(
   gfx::Rect lrect = gfx::ToNearestRect(display_rect);
   gfx::Rect rrect = gfx::ToNearestRect(param.display_rect);
   gfx::OverlayTransform ltransform =
-      absl::holds_alternative<gfx::OverlayTransform>(transform)
-          ? absl::get<gfx::OverlayTransform>(transform)
+      std::holds_alternative<gfx::OverlayTransform>(transform)
+          ? std::get<gfx::OverlayTransform>(transform)
           : gfx::OVERLAY_TRANSFORM_INVALID;
   gfx::OverlayTransform rtransform =
-      absl::holds_alternative<gfx::OverlayTransform>(param.transform)
-          ? absl::get<gfx::OverlayTransform>(param.transform)
+      std::holds_alternative<gfx::OverlayTransform>(param.transform)
+          ? std::get<gfx::OverlayTransform>(param.transform)
           : gfx::OVERLAY_TRANSFORM_INVALID;
 
   return std::tie(plane_z_order, format, lrect, lwidth, lheight, ltransform,

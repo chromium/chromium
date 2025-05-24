@@ -74,12 +74,13 @@ GURL MakeImageDataURL(const gfx::ImageSkia& image) {
   }
   gfx::ImageSkia resized_image = EnsureMinSize(image);
 
-  std::vector<unsigned char> webp_data;
-  if (!gfx::WebpCodec::Encode(*resized_image.bitmap(), 50, &webp_data)) {
+  std::optional<std::vector<uint8_t>> webp_data =
+      gfx::WebpCodec::Encode(*resized_image.bitmap(), /*quality=*/50);
+  if (!webp_data) {
     return {};
   }
 
-  GURL url("data:image/webp;base64," + base::Base64Encode(webp_data));
+  GURL url("data:image/webp;base64," + base::Base64Encode(webp_data.value()));
   if (url.spec().size() > url::kMaxURLChars) {
     return {};
   }
@@ -320,8 +321,7 @@ FocusModeUI::FocusModeUI(content::WebUI* web_ui)
   // Setup chrome://focus-mode-media main page.
   source->AddResourcePath("", IDR_ASH_FOCUS_MODE_FOCUS_MODE_HTML);
   // Add chrome://focus-mode-media content.
-  source->AddResourcePaths(
-      base::make_span(kAshFocusModeResources, kAshFocusModeResourcesSize));
+  source->AddResourcePaths(kAshFocusModeResources);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc, "default-src 'self';");
@@ -356,7 +356,7 @@ FocusModeUIConfig::FocusModeUIConfig()
 
 bool FocusModeUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::features::IsFocusModeEnabled();
+  return true;
 }
 
 }  // namespace ash

@@ -16,6 +16,14 @@ namespace remoting {
 
 // Policies to be applied to the CRD host.
 struct SessionPolicies {
+  SessionPolicies();
+  ~SessionPolicies();
+
+  SessionPolicies(const SessionPolicies&);
+  SessionPolicies& operator=(const SessionPolicies&);
+  SessionPolicies(SessionPolicies&&);
+  SessionPolicies& operator=(SessionPolicies&&);
+
   // Minimum value of `maximum_session_duration`, when set.
   static constexpr base::TimeDelta kMinMaximumSessionDuration =
       base::Minutes(30);
@@ -58,6 +66,16 @@ struct SessionPolicies {
   // Enable curtaining of remote access hosts. Defaults to false.
   // Corresponding Chrome policy: RemoteAccessHostRequireCurtain
   std::optional<bool> curtain_required;
+
+  // Require that the name of the local user and the remote access host owner
+  // match. For example, if the host owner's email address is foo@gmail.com,
+  // then the local user of the OS must be foo. Defaults to false.
+  // Corresponding Chrome policy: RemoteAccessHostMatchUsername
+  std::optional<bool> host_username_match_required;
+
+  // Allow the client to remotely control the host. When disabled the host will
+  // be in a view-only session. Defaults to true.
+  std::optional<bool> allow_remote_input;
 };
 
 std::ostream& operator<<(std::ostream& os,

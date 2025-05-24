@@ -11,11 +11,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
 
-#include <atomic>
 #include <string_view>
-#include <tuple>
 #include <utility>
 
 #include "base/check_op.h"
@@ -25,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -36,10 +32,6 @@
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 
 namespace mojo {
-
-BASE_FEATURE(kMojoMessageAlwaysUseLatestVersion,
-             "MojoMessageAlwaysUseLatestVersion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -115,40 +107,15 @@ void WriteMessageHeader(uint32_t name,
                         size_t payload_interface_id_count,
                         internal::Buffer* payload_buffer,
                         int64_t creation_timeticks_us) {
-  if (creation_timeticks_us > 0 ||
-      base::FeatureList::IsEnabled(kMojoMessageAlwaysUseLatestVersion)) {
-    // Version 3
-    internal::MessageHeaderV3* header;
-    AllocateHeaderFromBuffer(payload_buffer, &header);
-    header->version = 3;
-    header->name = name;
-    header->flags = flags;
-    header->trace_nonce = trace_nonce;
-    // The payload immediately follows the header.
-    header->payload.Set(header + 1);
-    header->creation_timeticks_us = creation_timeticks_us;
-  } else if (payload_interface_id_count > 0) {
-    // Version 2
-    internal::MessageHeaderV2* header;
-    AllocateHeaderFromBuffer(payload_buffer, &header);
-    header->version = 2;
-    header->name = name;
-    header->flags = flags;
-    header->trace_nonce = trace_nonce;
-    // The payload immediately follows the header.
-    header->payload.Set(header + 1);
-  } else if (flags &
-             (Message::kFlagExpectsResponse | Message::kFlagIsResponse)) {
-    // Version 1
-    WriteMessageHeaderV1(name, flags, trace_nonce, payload_buffer);
-  } else {
-    internal::MessageHeader* header;
-    AllocateHeaderFromBuffer(payload_buffer, &header);
-    header->version = 0;
-    header->name = name;
-    header->flags = flags;
-    header->trace_nonce = trace_nonce;
-  }
+  internal::MessageHeaderV3* header;
+  AllocateHeaderFromBuffer(payload_buffer, &header);
+  header->version = 3;
+  header->name = name;
+  header->flags = flags;
+  header->trace_nonce = trace_nonce;
+  // The payload immediately follows the header.
+  header->payload.Set(header + 1);
+  header->creation_timeticks_us = creation_timeticks_us;
 }
 
 void CreateSerializedMessageObject(uint32_t name,
@@ -170,7 +137,7 @@ void CreateSerializedMessageObject(uint32_t name,
   void* buffer;
   uint32_t buffer_size;
   const size_t total_size = internal::ComputeSerializedMessageSize(
-      flags, payload_size, payload_interface_id_count, creation_timeticks_us);
+      payload_size, payload_interface_id_count);
   const size_t total_allocation_size = internal::EstimateSerializedMessageSize(
       name, payload_size, total_size, estimated_payload_size);
 
@@ -254,7 +221,7 @@ Message CreateUnserializedMessage(
 
 Message::Message() = default;
 
-Message::Message(Message&& other)
+Message::Message(Message&& other) noexcept
     : handle_(std::move(other.handle_)),
       payload_buffer_(std::move(other.payload_buffer_)),
       handles_(std::move(other.handles_)),
@@ -397,7 +364,7 @@ Message::Message(base::span<const uint8_t> payload,
     std::ignore = handle.release();
 
   payload_buffer_ = internal::Buffer(buffer, payload.size(), payload.size());
-  base::ranges::copy(payload, static_cast<uint8_t*>(payload_buffer_.data()));
+  std::ranges::copy(payload, static_cast<uint8_t*>(payload_buffer_.data()));
   transferable_ = true;
   serialized_ = true;
 }
@@ -453,7 +420,7 @@ Message Message::CreateFromMessageHandle(ScopedMessageHandle* message_handle) {
 
 Message::~Message() = default;
 
-Message& Message::operator=(Message&& other) {
+Message& Message::operator=(Message&& other) noexcept {
   handle_ = std::move(other.handle_);
   payload_buffer_ = std::move(other.payload_buffer_);
   handles_ = std::move(other.handles_);

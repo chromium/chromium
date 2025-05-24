@@ -19,7 +19,7 @@ import type {FilesSafeMedia} from './files_safe_media.js';
 
 export interface FilesQuickView {
   $: {
-    contentPanel: HTMLDivElement,
+    contentPanel: HTMLElement,
     dialog: CrDialogElement,
     'metadata-box': FilesMetadataBox,
   };

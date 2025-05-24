@@ -46,6 +46,9 @@ LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
   }
 
   if (IsColumnSpanAll()) {
+    if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+      return ContainerForColumnSpanner(skip_info);
+    }
     LayoutObject* multicol_container = SpannerPlaceholder()->Container();
     if (skip_info) {
       // We jumped directly from the spanner to the multicol container. Need to
@@ -57,43 +60,7 @@ LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
     return multicol_container;
   }
 
-  if (IsFloating() && !IsInLayoutNGInlineFormattingContext()) {
-    // TODO(crbug.com/1229581): Remove this when removing support for legacy
-    // layout.
-    //
-    // In the legacy engine, floats inside non-atomic inlines belong to their
-    // nearest containing block, not the parent non-atomic inline (if any). Skip
-    // past all non-atomic inlines. Note that the reason for not simply using
-    // ContainingBlock() here is that we want to stop at any kind of LayoutBox,
-    // such as LayoutVideo. Otherwise we won't mark the container chain
-    // correctly when marking for re-layout.
-    LayoutObject* walker = Parent();
-    while (walker && walker->IsLayoutInline()) {
-      if (skip_info)
-        skip_info->Update(*walker);
-      walker = walker->Parent();
-    }
-    return walker;
-  }
-
   return Parent();
-}
-
-LayoutBox* LayoutObject::DeprecatedEnclosingScrollableBox() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  for (LayoutObject* ancestor = Parent(); ancestor;
-       ancestor = ancestor->Parent()) {
-    if (!ancestor->IsBox())
-      continue;
-
-    auto* ancestor_box = To<LayoutBox>(ancestor);
-    if (ancestor_box->IsUserScrollable()) {
-      return ancestor_box;
-    }
-  }
-
-  return nullptr;
 }
 
 void LayoutObject::SetNeedsOverflowRecalc(
@@ -260,7 +227,11 @@ LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   }
   LayoutObject* object;
   if (IsColumnSpanAll()) {
-    object = SpannerPlaceholder()->ContainingBlock();
+    if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+      object = ContainerForColumnSpanner(skip_info);
+    } else {
+      object = SpannerPlaceholder()->ContainingBlock();
+    }
   } else {
     object = Parent();
     if (!object && IsLayoutCustomScrollbarPart()) {

@@ -20,17 +20,15 @@
 ../../third_party/catapult/devil/devil/android/apk_helper.py
 ../../third_party/catapult/devil/devil/android/constants/__init__.py
 ../../third_party/catapult/devil/devil/android/constants/chrome.py
-../../third_party/catapult/devil/devil/android/constants/file_system.py
 ../../third_party/catapult/devil/devil/android/decorators.py
 ../../third_party/catapult/devil/devil/android/device_denylist.py
 ../../third_party/catapult/devil/devil/android/device_errors.py
 ../../third_party/catapult/devil/devil/android/device_signal.py
 ../../third_party/catapult/devil/devil/android/device_temp_file.py
 ../../third_party/catapult/devil/devil/android/device_utils.py
+../../third_party/catapult/devil/devil/android/devil_util.py
 ../../third_party/catapult/devil/devil/android/flag_changer.py
-../../third_party/catapult/devil/devil/android/install_commands.py
 ../../third_party/catapult/devil/devil/android/logcat_monitor.py
-../../third_party/catapult/devil/devil/android/md5sum.py
 ../../third_party/catapult/devil/devil/android/ndk/__init__.py
 ../../third_party/catapult/devil/devil/android/ndk/abis.py
 ../../third_party/catapult/devil/devil/android/sdk/__init__.py
@@ -50,7 +48,6 @@
 ../../third_party/catapult/devil/devil/devil_env.py
 ../../third_party/catapult/devil/devil/utils/__init__.py
 ../../third_party/catapult/devil/devil/utils/cmd_helper.py
-../../third_party/catapult/devil/devil/utils/host_utils.py
 ../../third_party/catapult/devil/devil/utils/lazy/__init__.py
 ../../third_party/catapult/devil/devil/utils/lazy/weak_constant.py
 ../../third_party/catapult/devil/devil/utils/logging_common.py
@@ -61,7 +58,6 @@
 ../../third_party/catapult/devil/devil/utils/run_tests_helper.py
 ../../third_party/catapult/devil/devil/utils/timeout_retry.py
 ../../third_party/catapult/devil/devil/utils/watchdog_timer.py
-../../third_party/catapult/devil/devil/utils/zip_utils.py
 ../../third_party/catapult/third_party/six/six.py
 ../../third_party/jinja2/__init__.py
 ../../third_party/jinja2/_identifier.py

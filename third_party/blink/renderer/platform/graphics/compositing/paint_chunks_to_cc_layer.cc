@@ -13,6 +13,8 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/render_surface_filters.h"
+#include "cc/trees/layer_tree_host.h"
+#include "cc/trees/property_tree.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/chunk_to_layer_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/property_tree_manager.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -145,7 +147,7 @@ class ConversionContext {
   ConversionContext(const PropertyTreeState& layer_state,
                     const gfx::Vector2dF& layer_offset,
                     Result& result,
-                    const StateEntry* outer_state_stack_top = nullptr)
+                    const HeapVector<StateEntry>* outer_state_stack = nullptr)
       : chunk_to_layer_mapper_(layer_state, layer_offset),
         current_transform_(&layer_state.Transform()),
         current_clip_(&layer_state.Clip()),
@@ -153,7 +155,7 @@ class ConversionContext {
         current_scroll_translation_(
             &current_transform_->NearestScrollTranslationNode()),
         result_(result),
-        outer_state_stack_top_(outer_state_stack_top) {}
+        outer_state_stack_(outer_state_stack) {}
   ~ConversionContext();
 
  private:
@@ -350,9 +352,9 @@ class ConversionContext {
 
   Result& result_;
 
-  // Points to the top of stack_stack_ of the outer ConversionContext that
-  // initiated the current ConversionContext in EmitDrawScrollingContentsOp().
-  const StateEntry* outer_state_stack_top_ = nullptr;
+  // Points to stack_stack_ of the outer ConversionContext that initiated the
+  // current ConversionContext in EmitDrawScrollingContentsOp().
+  const HeapVector<StateEntry>* outer_state_stack_ = nullptr;
 };
 
 template <typename Result>
@@ -452,11 +454,10 @@ ScrollTranslationAction ConversionContext<Result>::SwitchToClip(
         &target_clip.LowestCommonAncestor(*current_clip_).Unalias();
     const auto* clip = current_clip_;
     while (clip != lca_clip) {
-      if (!state_stack_.size() && outer_state_stack_top_) {
+      if (!state_stack_.size() && outer_state_stack_ &&
+          !outer_state_stack_->empty() && outer_state_stack_->back().IsClip()) {
         // We are ending a clip that is started from the outer
-        // ConversionContext. outer_state_stack_top_ should be always the
-        // overflow clip of the current scroll translation.
-        CHECK(outer_state_stack_top_->IsClip());
+        // ConversionContext.
         return {ScrollTranslationAction::kEnd};
       }
       if (!state_stack_.size() || !state_stack_.back().IsClip()) {
@@ -672,7 +673,7 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
     return action;
   }
 
-  bool has_filter = !effect.Filter().IsEmpty();
+  bool has_filter = !!effect.Filter();
   bool has_opacity = effect.Opacity() != 1.f;
   // TODO(crbug.com/1334293): Normally backdrop filters should be composited and
   // effect.BackdropFilter() should be null, but compositing can be disabled in
@@ -701,7 +702,7 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
     // bounds, which we never generate.
     cc::PaintFlags filter_flags;
     filter_flags.setImageFilter(cc::RenderSurfaceFilters::BuildImageFilter(
-        effect.Filter().AsCcFilterOperations()));
+        effect.Filter()->AsCcFilterOperations()));
     save_layer_id = push<cc::SaveLayerOp>(filter_flags);
   }
   result_.EndPaintOfPairedBegin();
@@ -717,19 +718,17 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
   current_clip_ = input_clip;
   current_effect_ = &effect;
 
-  if (effect.Filter().HasReferenceFilter()) {
-    // Map a random point in the reference box through the filter to determine
-    // the bounds of the effect on an empty source. For empty chunks, or chunks
-    // with empty bounds, with a filter applied that produces output even when
-    // there's no input this will expand the bounds to match.
-    gfx::RectF filtered_bounds = current_effect_->MapRect(
-        gfx::RectF(effect.Filter().ReferenceBox().CenterPoint(), gfx::SizeF()));
-    effect_bounds_stack_.back().bounds = filtered_bounds;
+  if (effect.HasReferenceFilter()) {
+    // For empty chunks, or chunks with empty bounds, with a filter applied
+    // that produces output even when there's no input this will expand the
+    // bounds to match.
+    gfx::Rect filtered_bounds = effect.FilterOutputBounds();
+    effect_bounds_stack_.back().bounds = gfx::RectF(filtered_bounds);
     // Emit an empty paint operation to add the filtered bounds (mapped to layer
     // space) to the visual rect of the filter's SaveLayerOp.
     result_.StartPaint();
-    result_.EndPaintOfUnpaired(chunk_to_layer_mapper_.MapVisualRect(
-        gfx::ToEnclosingRect(filtered_bounds)));
+    result_.EndPaintOfUnpaired(
+        chunk_to_layer_mapper_.MapVisualRect(filtered_bounds));
   }
   return {};
 }
@@ -762,18 +761,18 @@ void ConversionContext<Result>::EndEffect() {
   DCHECK(effect_bounds_stack_.size());
   const auto& bounds_info = effect_bounds_stack_.back();
   gfx::RectF bounds = bounds_info.bounds;
-  if (current_effect_->Filter().IsEmpty()) {
+  if (!current_effect_->Filter()) {
     if (!bounds.IsEmpty()) {
       result_.UpdateSaveLayerBounds(bounds_info.save_layer_id,
                                     gfx::RectFToSkRect(bounds));
     }
   } else {
-    // We need an empty bounds for empty filter to avoid performance issue of
-    // PDF renderer. See crbug.com/740824.
+    // Don't check bounds.IsEmpty() because we need an empty bounds for empty
+    // filter to avoid performance issue of PDF renderer. See crbug.com/740824.
     result_.UpdateSaveLayerBounds(bounds_info.save_layer_id,
                                   gfx::RectFToSkRect(bounds));
     // We need to propagate the filtered bounds to the parent.
-    bounds = current_effect_->MapRect(bounds);
+    bounds = gfx::RectF(current_effect_->MapRect(gfx::ToEnclosingRect(bounds)));
   }
 
   effect_bounds_stack_.pop_back();
@@ -788,11 +787,9 @@ ScrollTranslationAction ConversionContext<Result>::EndClips() {
   while (state_stack_.size() && state_stack_.back().IsClip()) {
     EndClip();
   }
-  if (!state_stack_.size() && outer_state_stack_top_) {
-    // outer_state_stack_top_ should be always the overflow clip of the current
-    // scroll translation. The outer ConversionState should continue to end the
-    // clips.
-    CHECK(outer_state_stack_top_->IsClip());
+  if (!state_stack_.size() && outer_state_stack_ &&
+      !outer_state_stack_->empty() && outer_state_stack_->back().IsClip()) {
+    // The outer ConversionState should continue to end the clips.
     return {ScrollTranslationAction::kEnd};
   }
   return {};
@@ -885,7 +882,8 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
   DCHECK_EQ(previous_transform_, nullptr);
 
   // Switch to the parent of the scroll translation in the current context.
-  auto action = SwitchToTransform(*scroll_translation.UnaliasedParent());
+  const auto* scroll_container_transform = scroll_translation.UnaliasedParent();
+  auto action = SwitchToTransform(*scroll_container_transform);
   // This should not need to switch to any other scroll translation.
   CHECK(!action);
 
@@ -894,21 +892,27 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
   auto scrolling_contents_list = base::MakeRefCounted<cc::DisplayItemList>();
   ConversionContext<cc::DisplayItemList>(
       PropertyTreeState(scroll_translation, *current_clip_, *current_effect_),
-      gfx::Vector2dF(), *scrolling_contents_list, &state_stack_.back())
+      gfx::Vector2dF(), *scrolling_contents_list, &state_stack_)
       .Convert(chunk_it, end_chunk);
 
   EndTransform();
   scrolling_contents_list->Finalize();
 
   gfx::Rect visual_rect = chunk_to_layer_mapper_.MapVisualRectFromState(
-      InfiniteIntRect(),
-      PropertyTreeState(scroll_translation,
+      scroll_translation.ScrollNode()->ContainerRect(),
+      PropertyTreeState(*scroll_container_transform,
                         *scroll_translation.ScrollNode()->OverflowClipNode(),
                         // The effect state doesn't matter.
                         chunk_to_layer_mapper_.LayerState().Effect()));
   result_.PushDrawScrollingContentsOp(
       scroll_translation.ScrollNode()->GetCompositorElementId(),
       std::move(scrolling_contents_list), visual_rect);
+
+  // Accumulate effect bounds in case the scrolling contents op is a part of an
+  // effect group.
+  UpdateEffectBounds(
+      gfx::RectF(scroll_translation.ScrollNode()->ContainerRect()),
+      *scroll_container_transform);
 }
 
 template <>
@@ -1029,7 +1033,7 @@ void ConversionContext<Result>::Convert(PaintChunkIterator& chunk_it,
       continue;
     }
     if (action.type == ScrollTranslationAction::kEnd) {
-      if (outer_state_stack_top_) {
+      if (outer_state_stack_) {
         // Return to the calling EmitDrawScrollingContentsOp().
         return;
       } else {
@@ -1179,7 +1183,7 @@ class LayerPropertiesUpdater {
   cc::Layer& layer_;
   const PaintChunkSubset& chunks_;
   cc::LayerSelection& layer_selection_;
-  bool selection_only_;
+  const bool selection_only_;
   const TransformPaintPropertyNode& layer_scroll_translation_;
 
   cc::TouchActionRegion touch_action_region_;
@@ -1274,14 +1278,26 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
     if (!scroll_node) {
       return;
     }
+
     auto scroll_element_id = scroll_node->GetCompositorElementId();
+    auto& scroll_tree =
+        layer_.layer_tree_host()->property_trees()->scroll_tree_mutable();
+    if (hit_test_data.scrolling_contents_cull_rect == InfiniteIntRect() ||
+        hit_test_data.scrolling_contents_cull_rect.Contains(
+            scroll_node->ContentsRect())) {
+      scroll_tree.ClearScrollingContentsCullRect(scroll_element_id);
+    } else {
+      scroll_tree.SetScrollingContentsCullRect(
+          scroll_element_id, hit_test_data.scrolling_contents_cull_rect);
+    }
+
     if (layer_.element_id() == scroll_element_id) {
       // layer_ is the composited layer of the scroll hit test chunk.
       return;
     }
   }
 
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled() &&
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() &&
       hit_test_data.scroll_translation) {
     CHECK_EQ(chunk.id.type, DisplayItem::Type::kScrollHitTest);
     AddNonCompositedScroll(chunk);
@@ -1319,7 +1335,7 @@ LayerPropertiesUpdater::TopNonCompositedScroll(
 }
 
 void LayerPropertiesUpdater::AddNonCompositedScroll(const PaintChunk& chunk) {
-  DCHECK(RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled());
+  DCHECK(RuntimeEnabledFeatures::RasterInducingScrollEnabled());
   const auto& scroll_translation = *chunk.hit_test_data->scroll_translation;
   const auto& top_scroll = TopNonCompositedScroll(scroll_translation);
   if (&top_scroll == &scroll_translation) {
@@ -1353,7 +1369,7 @@ void LayerPropertiesUpdater::UpdatePreviousNonCompositedScrolls(
   if (top_non_composited_scrolls_.empty()) {
     return;
   }
-  DCHECK(RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled());
+  DCHECK(RuntimeEnabledFeatures::RasterInducingScrollEnabled());
 
   if (chunk.hit_test_data && chunk.hit_test_data->scroll_translation) {
     // ScrollHitTest has been handled in AddNonCompositedScroll().
@@ -1489,7 +1505,17 @@ LayerPropertiesUpdater::PaintedSelectionBoundToLayerSelectionBound(
     const PaintedSelectionBound& bound) const {
   cc::LayerSelectionBound layer_bound;
   layer_bound.type = bound.type;
-  layer_bound.hidden = bound.hidden;
+  if (RuntimeEnabledFeatures::SelectionVisibilityAfterPaintEnabled()) {
+    // This is similar to ComputeViewportSelectionBound() but is a bit simpler.
+    // Use the end point expanded by 1 as the sample rect to check visibility.
+    gfx::Rect sample(bound.edge_end, gfx::Size());
+    sample.Outset(1);
+    // The bound is treated as visible if the sample rect mapped to layer is
+    // not empty.
+    layer_bound.hidden = chunk_to_layer_mapper_.MapVisualRect(sample).IsEmpty();
+  } else {
+    layer_bound.hidden = bound.hidden;
+  }
   layer_bound.edge_start = MapSelectionBoundPoint(bound.edge_start);
   layer_bound.edge_end = MapSelectionBoundPoint(bound.edge_end);
   return layer_bound;

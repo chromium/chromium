@@ -17,7 +17,6 @@
 #include "base/strings/cstring_view.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/pepper/content_browser_pepper_host_factory.h"
 #include "content/browser/renderer_host/pepper/pepper_socket_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -101,7 +100,7 @@ PepperTCPSocketMessageFilter::PepperTCPSocketMessageFilter(
   host_->AddInstanceObserver(instance_, this);
   if (!host->GetRenderFrameIDsForInstance(instance, &render_process_id_,
                                           &render_frame_id_)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -302,8 +301,7 @@ int32_t PepperTCPSocketMessageFilter::OnMsgBind(
 
   // This is only supported by PPB_TCPSocket v1.1 or above.
   if (version_ != ppapi::TCP_SOCKET_VERSION_1_1_OR_ABOVE) {
-    NOTREACHED_IN_MIGRATION();
-    return PP_ERROR_NOACCESS;
+    NOTREACHED();
   }
 
   if (!pepper_socket_utils::CanUseSocketAPIs(
@@ -362,8 +360,7 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnect(
 
   // This is only supported by PPB_TCPSocket_Private.
   if (!IsPrivateAPI()) {
-    NOTREACHED_IN_MIGRATION();
-    return PP_ERROR_NOACCESS;
+    NOTREACHED();
   }
 
   SocketPermissionRequest request(SocketPermissionRequest::TCP_CONNECT, host,
@@ -375,10 +372,8 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnect(
   }
 
   if (!state_.IsValidTransition(TCPSocketState::CONNECT)) {
-    NOTREACHED_IN_MIGRATION()
-        << "This shouldn't be reached since the renderer only tries "
-        << "to connect once.";
-    return PP_ERROR_FAILED;
+    NOTREACHED() << "This shouldn't be reached since the renderer only tries "
+                    "to connect once.";
   }
 
   network::mojom::NetworkContext* network_context = GetNetworkContext();
@@ -391,7 +386,6 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnect(
     return PP_ERROR_FAILED;
 
   // Intentionally using a HostPortPair because scheme isn't specified.
-  // TODO(mmenke): Pass in correct NetworkAnonymizationKey.
   network_context->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair(host, port)),
@@ -566,8 +560,7 @@ int32_t PepperTCPSocketMessageFilter::OnMsgListen(
 
   // This is only supported by PPB_TCPSocket v1.1 or above.
   if (version_ != ppapi::TCP_SOCKET_VERSION_1_1_OR_ABOVE) {
-    NOTREACHED_IN_MIGRATION();
-    return PP_ERROR_NOACCESS;
+    NOTREACHED();
   }
 
   SocketPermissionRequest request =
@@ -719,8 +712,7 @@ int32_t PepperTCPSocketMessageFilter::OnMsgSetOption(
       return PP_OK;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return PP_ERROR_BADARGUMENT;
+      NOTREACHED();
     }
   }
 }
@@ -813,12 +805,12 @@ void PepperTCPSocketMessageFilter::TryWrite() {
 
     DCHECK(write_watcher_);
 
-    auto view = base::cstring_view(pending_write_data_);
-    view.remove_prefix(pending_write_bytes_written_);
-    DCHECK_GT(view.size(), 0u);
+    auto span_to_write = base::as_byte_span(pending_write_data_);
+    span_to_write = span_to_write.subspan(pending_write_bytes_written_);
+    DCHECK_GT(span_to_write.size(), 0u);
     size_t bytes_written = 0;
     int mojo_result = send_stream_->WriteData(
-        base::as_byte_span(view), MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
+        span_to_write, MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
     if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
       write_watcher_->ArmOrNotify();
       break;

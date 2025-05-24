@@ -11,8 +11,7 @@ ChromeZoomLevelOTRDelegate::ChromeZoomLevelOTRDelegate(
     base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager)
     : zoom_event_manager_(zoom_event_manager), host_zoom_map_(nullptr) {}
 
-ChromeZoomLevelOTRDelegate::~ChromeZoomLevelOTRDelegate() {
-}
+ChromeZoomLevelOTRDelegate::~ChromeZoomLevelOTRDelegate() = default;
 
 void ChromeZoomLevelOTRDelegate::InitHostZoomMap(
     content::HostZoomMap* host_zoom_map) {
@@ -31,6 +30,7 @@ void ChromeZoomLevelOTRDelegate::OnZoomLevelChanged(
   // If there's a manager to aggregate ZoomLevelChanged events, pass this event
   // along. Since we already hold a subscription from our associated
   // HostZoomMap, we don't need to create a separate subscription for this.
-  if (zoom_event_manager_)
+  if (zoom_event_manager_) {
     zoom_event_manager_->OnZoomLevelChanged(change);
+  }
 }

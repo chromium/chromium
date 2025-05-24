@@ -47,7 +47,7 @@ class CrowdDenyPreloadDataTest : public testing::Test {
  public:
   using SiteReputation = chrome_browser_crowd_deny::SiteReputation;
 
-  CrowdDenyPreloadDataTest() {}
+  CrowdDenyPreloadDataTest() = default;
 
   CrowdDenyPreloadDataTest(const CrowdDenyPreloadDataTest&) = delete;
   CrowdDenyPreloadDataTest& operator=(const CrowdDenyPreloadDataTest&) = delete;
@@ -61,7 +61,7 @@ class CrowdDenyPreloadDataTest : public testing::Test {
   CrowdDenyPreloadData* preload_data() { return &preload_data_; }
 
   base::FilePath GetPathInTempDir(
-      base::FilePath::StringPieceType filename) const {
+      base::FilePath::StringViewType filename) const {
     return scoped_temp_dir_.GetPath().Append(filename);
   }
 

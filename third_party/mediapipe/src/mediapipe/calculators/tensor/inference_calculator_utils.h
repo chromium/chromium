@@ -17,6 +17,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -31,21 +32,14 @@ namespace mediapipe {
 
 // Returns number of threads to configure XNNPACK delegate with.
 // Returns user provided value if specified. Otherwise, tries to choose optimal
-// number of threads depending on the device.
+// number of threads depending on the device. The default can be overridden by
+// setting the --xnnpack_default_num_threads flag.
 int GetXnnpackNumThreads(
-    const bool opts_has_delegate,
+    bool opts_has_delegate,
     const mediapipe::InferenceCalculatorOptions::Delegate& opts_delegate);
-
-absl::Status CopyCpuInputIntoInterpreterTensor(const Tensor& input_tensor,
-                                               tflite::Interpreter& interpreter,
-                                               int input_tensor_index);
 
 absl::Status CopyCpuInputIntoTfLiteTensor(const Tensor& input_tensor,
                                           TfLiteTensor& tflite_tensor);
-
-absl::Status CopyInterpreterTensorIntoCpuOutput(
-    const tflite::Interpreter& interpreter, int output_tensor_index,
-    Tensor& output_tensor);
 
 absl::Status CopyTfLiteTensorIntoCpuOutput(const TfLiteTensor& tflite_tensor,
                                            Tensor& output_tensor);
@@ -86,6 +80,10 @@ absl::Status SetTfLiteCustomAllocation(tflite::Interpreter& interpreter,
 absl::StatusOr<Tensor> CreateTensorWithTfLiteTensorSpecs(
     const TfLiteTensor& reference_tflite_tensor,
     MemoryManager* memory_manager = nullptr, int alignment = 0);
+
+// Checks that MP and TfLite tensor size and type matches.
+absl::Status TensorDimsAndTypeEqual(const Tensor& mp_tensor,
+                                    const TfLiteTensor& tflite_tensor);
 
 }  // namespace mediapipe
 

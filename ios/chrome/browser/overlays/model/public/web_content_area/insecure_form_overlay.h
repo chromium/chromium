@@ -16,7 +16,7 @@ class InsecureFormOverlayRequestConfig
   ~InsecureFormOverlayRequestConfig() override;
 
  private:
-  OVERLAY_USER_DATA_SETUP(InsecureFormOverlayRequestConfig);
+  friend class OverlayUserData<InsecureFormOverlayRequestConfig>;
   InsecureFormOverlayRequestConfig();
 
   // OverlayUserData:
@@ -32,7 +32,7 @@ class InsecureFormDialogResponse
   bool allow_send() const { return allow_send_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(InsecureFormDialogResponse);
+  friend class OverlayUserData<InsecureFormDialogResponse>;
   InsecureFormDialogResponse(bool allow_send);
   const bool allow_send_;
 };

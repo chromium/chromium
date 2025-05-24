@@ -41,7 +41,7 @@ class PLATFORM_EXPORT H265ParameterSetsTracker {
   };
   struct FixedBitstream {
     PacketAction action;
-    rtc::scoped_refptr<webrtc::EncodedImageBuffer> bitstream;
+    webrtc::scoped_refptr<webrtc::EncodedImageBuffer> bitstream;
   };
 
   H265ParameterSetsTracker();
@@ -59,7 +59,7 @@ class PLATFORM_EXPORT H265ParameterSetsTracker {
   // parameter set is not found, the returned FixedBitstream will get |action|
   // set to kRequestkeyframe, and its |bitstream| member will not be set.
   virtual FixedBitstream MaybeFixBitstream(
-      rtc::ArrayView<const uint8_t> bitstream);
+      webrtc::ArrayView<const uint8_t> bitstream);
 
  private:
   // Stores PPS payload and the active SPS ID.

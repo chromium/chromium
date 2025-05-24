@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "components/account_id/account_id.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -36,7 +37,7 @@ NotificationManager::NotificationManager(
 
 NotificationManager::~NotificationManager() {
   if (callbacks_.size()) {
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, GetNotificationId());
   }
 }
@@ -54,7 +55,7 @@ void NotificationManager::HideUnresponsiveNotification(int id) {
   if (callbacks_.size()) {
     ShowNotification();
   } else {
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, GetNotificationId());
   }
 }
@@ -113,7 +114,7 @@ void NotificationManager::ShowNotification() {
           weak_factory_.GetWeakPtr()));
   notification.SetSystemPriority();
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
 }
 

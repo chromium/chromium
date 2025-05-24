@@ -186,8 +186,9 @@ void MD5Update(MD5Context* context, base::span<const uint8_t> data) {
   /* Update bitcount */
 
   uint32_t t = ctx->bits[0];
-  if ((ctx->bits[0] = t + (static_cast<uint32_t>(len) << 3)) < t)
+  if ((ctx->bits[0] = t + (static_cast<uint32_t>(len) << 3)) < t) {
     ctx->bits[1]++; /* Carry from low to high */
+  }
   ctx->bits[1] += static_cast<uint32_t>(len >> 29);
 
   t = (t >> 3) & 0x3f; /* Bytes already in shsInfo->data */

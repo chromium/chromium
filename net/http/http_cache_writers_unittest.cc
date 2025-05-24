@@ -20,6 +20,7 @@
 #include "net/http/http_transaction.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/mock_http_cache.h"
+#include "net/http/no_vary_search_cache_storage_file_operations.h"
 #include "net/http/partial_data.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
@@ -56,7 +57,9 @@ class TestHttpCache : public HttpCache {
  public:
   TestHttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
                 std::unique_ptr<BackendFactory> backend_factory)
-      : HttpCache(std::move(network_layer), std::move(backend_factory)) {}
+      : HttpCache(std::move(network_layer),
+                  std::move(backend_factory),
+                  /*file_operations=*/nullptr) {}
 
   void WritersDoneWritingToEntry(scoped_refptr<ActiveEntry> entry,
                                  bool success,
@@ -111,10 +114,8 @@ class WritersTest : public TestWithTaskEnvironment {
   }
 
   std::unique_ptr<HttpTransaction> CreateNetworkTransaction() {
-    std::unique_ptr<HttpTransaction> transaction;
     MockNetworkLayer* network_layer = cache_.network_layer();
-    network_layer->CreateTransaction(DEFAULT_PRIORITY, &transaction);
-    return transaction;
+    return network_layer->CreateTransaction(DEFAULT_PRIORITY);
   }
 
   void CreateWritersAddTransaction(

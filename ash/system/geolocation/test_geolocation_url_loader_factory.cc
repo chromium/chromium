@@ -5,15 +5,17 @@
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 
 namespace ash {
 
 namespace {
 
 // Creates a serialized dictionary string of the geoposition.
-std::string CreateResponseBody(const Geoposition& position) {
+std::optional<std::string> CreateResponseBody(const Geoposition& position) {
   base::Value::Dict value;
   value.Set("accuracy", position.accuracy);
 
@@ -28,10 +30,7 @@ std::string CreateResponseBody(const Geoposition& position) {
     value.Set("error", std::move(error));
   }
 
-  std::string serialized_response;
-  JSONStringValueSerializer serializer(&serialized_response);
-  serializer.Serialize(value);
-  return serialized_response;
+  return base::WriteJson(value);
 }
 
 }  // namespace
@@ -47,8 +46,9 @@ void TestGeolocationUrlLoaderFactory::CreateLoaderAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   // Response must be added before `CreateLoaderAndStart()` to ensure the latest
   // `position_` is reflected in the incoming request.
-  test_url_loader_factory_.AddResponse(url_request.url.spec(),
-                                       CreateResponseBody(position_));
+  test_url_loader_factory_.AddResponse(
+      url_request.url.spec(),
+      CreateResponseBody(position_).value_or(std::string()));
   test_url_loader_factory_.CreateLoaderAndStart(
       std::move(receiver), request_id, options, url_request, std::move(client),
       traffic_annotation);

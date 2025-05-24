@@ -79,7 +79,7 @@ TEST(String16MojomTraitsTest, BigString16_Long) {
   WTF::Vector<char> random_latin1_string(1024 * 1024);
   base::RandBytes(base::as_writable_byte_span(random_latin1_string));
 
-  String str(random_latin1_string.data(), random_latin1_string.size());
+  String str(random_latin1_string);
   String output;
 
   ASSERT_TRUE(

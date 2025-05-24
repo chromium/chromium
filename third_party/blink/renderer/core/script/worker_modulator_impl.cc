@@ -31,8 +31,7 @@ ModuleScriptFetcher* WorkerModulatorImpl::CreateModuleScriptFetcher(
       return MakeGarbageCollected<InstalledServiceWorkerModuleScriptFetcher>(
           global_scope, pass_key);
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool WorkerModulatorImpl::IsDynamicImportForbidden(String* reason) {

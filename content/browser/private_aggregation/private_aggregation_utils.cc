@@ -12,7 +12,7 @@
 
 namespace content::private_aggregation {
 
-std::string GetReportingPath(PrivateAggregationCallerApi api,
+std::string GetReportingPath(PrivateAggregationCallerApi caller_api,
                              bool is_immediate_debug_report) {
   // TODO(alexmt): Consider updating or making a FeatureParam.
   static constexpr char kSharedReportingPathPrefix[] =
@@ -24,7 +24,7 @@ std::string GetReportingPath(PrivateAggregationCallerApi api,
       "report-shared-storage";
 
   std::string_view api_suffix;
-  switch (api) {
+  switch (caller_api) {
     case PrivateAggregationCallerApi::kProtectedAudience:
       api_suffix = kProtectedAudienceReportingPathSuffix;
       break;
@@ -38,8 +38,8 @@ std::string GetReportingPath(PrivateAggregationCallerApi api,
        is_immediate_debug_report ? kDebugReportingPathInfix : "", api_suffix});
 }
 
-std::string GetApiIdentifier(PrivateAggregationCallerApi api) {
-  switch (api) {
+std::string GetApiIdentifier(PrivateAggregationCallerApi caller_api) {
+  switch (caller_api) {
     case PrivateAggregationCallerApi::kProtectedAudience:
       return "protected-audience";
     case PrivateAggregationCallerApi::kSharedStorage:

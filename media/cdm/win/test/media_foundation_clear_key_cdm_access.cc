@@ -7,7 +7,7 @@
 #include <mfapi.h>
 #include <mferror.h>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
 #include "media/base/win/mf_helpers.h"

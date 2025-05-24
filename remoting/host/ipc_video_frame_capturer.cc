@@ -70,6 +70,12 @@ bool IpcVideoFrameCapturer::SelectSource(SourceId id) {
   return true;
 }
 
+void IpcVideoFrameCapturer::SetComposeEnabled(bool enabled) {
+  if (capturer_control_) {
+    capturer_control_->SetComposeEnabled(enabled);
+  }
+}
+
 void IpcVideoFrameCapturer::OnSharedMemoryRegionCreated(
     int id,
     base::ReadOnlySharedMemoryRegion region,

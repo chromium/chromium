@@ -69,11 +69,10 @@ function exactSearch<T extends ItemData>(
 
   // Controls how heavily weighted the search field weights are relative to each
   // other in the scoring function.
-  const searchFieldWeights =
-      (options.keys as OptionKeyObject[]).reduce((acc, {name, weight}) => {
-        acc[name as string] = weight;
-        return acc;
-      }, {} as {[key: string]: number});
+  const searchFieldWeights = (options.keys).reduce((acc, {name, weight}) => {
+    acc[name] = weight;
+    return acc;
+  }, {} as {[key: string]: number});
 
   // Perform an exact match search with range discovery.
   const exactMatches = [];
@@ -165,7 +164,7 @@ function scoringFunction(
   // [1, 0].
   for (const key in searchFieldWeights) {
     if (tabData.highlightRanges[key]) {
-      for (const {start} of tabData.highlightRanges[key]!) {
+      for (const {start} of tabData.highlightRanges[key]) {
         score += Math.max((distance - start) / distance, 0) *
             searchFieldWeights[key]!;
       }

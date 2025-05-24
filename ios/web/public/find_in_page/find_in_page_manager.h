@@ -14,23 +14,16 @@ namespace web {
 // JavaScriptFindInPageManager, this manager does not rely on JavaScript but on
 // the Find interaction API available on iOS 16 or later.
 class FindInPageManager : public AbstractFindInPageManager,
-                          public web::WebStateUserData<FindInPageManager> {
- public:
-  // Need to overload as the default implementation inherited from
-  // WebStateUserData<FindInPageManager> would create a
-  // FindInPageManager which is a pure abstract class. Should only be called if
-  // the web state is realized.
-  static void CreateForWebState(WebState* web_state);
-
-  FindInPageManager() = default;
-
-  FindInPageManager(const FindInPageManager&) = delete;
-  FindInPageManager& operator=(const FindInPageManager&) = delete;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
-
+                          public WebStateUserData<FindInPageManager> {
  protected:
-  ~FindInPageManager() override = default;
+  friend class WebStateUserData<FindInPageManager>;
+
+  // Overload WebStateUserData<FindInPageManager>::Create() since
+  // FindInPageManager is an abstract class and the factory needs
+  // to create an instance of a sub-class.
+  static std::unique_ptr<FindInPageManager> Create(WebState* web_state);
+  static std::unique_ptr<FindInPageManager> Create(WebState* web_state,
+                                                   base::TimeDelta delay);
 };
 
 }  // namespace web

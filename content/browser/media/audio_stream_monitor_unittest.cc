@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -21,10 +20,6 @@
 #include "media/base/audio_power_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
 
 using ::testing::InvokeWithoutArgs;
 
@@ -169,11 +164,6 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   void ExpectNotRecentlyAudible() const {
     EXPECT_FALSE(monitor_->WasRecentlyAudible());
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Instantiate LacrosService for WakeLock support.
-  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
-#endif
 
   MockWebContentsDelegate mock_web_contents_delegate_;
 };

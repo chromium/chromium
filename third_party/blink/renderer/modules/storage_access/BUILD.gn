@@ -15,6 +15,7 @@ blink_modules_sources("storage_access") {
   ]
 
   deps = [
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/modules/broadcastchannel",
     "//third_party/blink/renderer/modules/cache_storage",

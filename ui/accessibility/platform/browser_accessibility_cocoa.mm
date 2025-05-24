@@ -18,27 +18,31 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/accessibility/platform/browser_accessibility_mac.h"
-#include "ui/accessibility/platform/browser_accessibility_manager.h"
-#include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
-#include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_range.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
+#include "ui/accessibility/platform/browser_accessibility_mac.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
+#include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/strings/grit/ax_strings.h"
 
@@ -498,7 +502,7 @@ AXTextEdit::~AXTextEdit() = default;
 
 bool ui::IsNSRange(id value) {
   return [value isKindOfClass:[NSValue class]] &&
-         0 == strcmp([value objCType], @encode(NSRange));
+         0 == UNSAFE_TODO(strcmp([value objCType], @encode(NSRange)));
 }
 
 @implementation BrowserAccessibilityCocoa {
@@ -506,8 +510,6 @@ bool ui::IsNSRange(id value) {
   raw_ptr<ui::BrowserAccessibility, DanglingUntriaged> _owner;
   // An array of children of this object. Cached to avoid re-computing.
   NSMutableArray* __strong _children;
-  // Whether the children have changed and need to be updated.
-  bool _needsToUpdateChildren;
   // Whether _children is currently being computed.
   bool _gettingChildren;
   // Stores the previous value of an edit field.
@@ -519,7 +521,6 @@ bool ui::IsNSRange(id value) {
     NSString* attribute;
     NSString* methodName;
   } attributeToMethodNameContainer[] = {
-      {NSAccessibilityChildrenAttribute, @"children"},
       {NSAccessibilityColumnsAttribute, @"columns"},
       {NSAccessibilityColumnIndexRangeAttribute, @"columnIndexRange"},
       {NSAccessibilityContentsAttribute, @"contents"},
@@ -530,18 +531,13 @@ bool ui::IsNSRange(id value) {
       {NSAccessibilityEnabledAttribute, @"enabled"},
       {NSAccessibilityEndTextMarkerAttribute, @"endTextMarker"},
       {NSAccessibilityExpandedAttribute, @"expanded"},
-      {NSAccessibilityFocusedAttribute, @"focused"},
       {NSAccessibilityHeaderAttribute, @"header"},
       {NSAccessibilityIndexAttribute, @"index"},
-      {NSAccessibilityInsertionPointLineNumberAttribute,
-       @"insertionPointLineNumber"},
       {NSAccessibilityLanguageAttribute, @"language"},
       {NSAccessibilityLinkedUIElementsAttribute, @"linkedUIElements"},
       {NSAccessibilityMaxValueAttribute, @"maxValue"},
       {NSAccessibilityMinValueAttribute, @"minValue"},
-      {NSAccessibilityNumberOfCharactersAttribute, @"numberOfCharacters"},
       {NSAccessibilityOrientationAttribute, @"orientation"},
-      {NSAccessibilityParentAttribute, @"parent"},
       {NSAccessibilityPositionAttribute, @"position"},
       {NSAccessibilityRoleAttribute, @"role"},
       {NSAccessibilityRowHeaderUIElementsAttribute, @"rowHeaders"},
@@ -551,8 +547,6 @@ bool ui::IsNSRange(id value) {
       // NSAccessibilityServesAsTitleForUIElementsAttribute
       {NSAccessibilityStartTextMarkerAttribute, @"startTextMarker"},
       {NSAccessibilitySelectedChildrenAttribute, @"selectedChildren"},
-      {NSAccessibilitySelectedTextAttribute, @"selectedText"},
-      {NSAccessibilitySelectedTextRangeAttribute, @"selectedTextRange"},
       {NSAccessibilitySelectedTextMarkerRangeAttribute,
        @"selectedTextMarkerRange"},
       {NSAccessibilitySortDirectionAttribute, @"sortDirection"},
@@ -567,7 +561,6 @@ bool ui::IsNSRange(id value) {
       // Not currently supported by Chrome -- mismatch of types supported:
       // {NSAccessibilityValueAutofillTypeAttribute, @"valueAutofillType"},
       {NSAccessibilityValueDescriptionAttribute, @"valueDescription"},
-      {NSAccessibilityVisibleCharacterRangeAttribute, @"visibleCharacterRange"},
       {NSAccessibilityVisibleCellsAttribute, @"visibleCells"},
       {NSAccessibilityVisibleChildrenAttribute, @"visibleChildren"},
       {NSAccessibilityVisibleColumnsAttribute, @"visibleColumns"},
@@ -586,37 +579,41 @@ bool ui::IsNSRange(id value) {
               withPlatformNode:(ui::AXPlatformNodeMac*)platform_node {
   if ((self = [super initWithNode:platform_node])) {
     _owner = accessibility;
-    _needsToUpdateChildren = true;
     _gettingChildren = false;
   }
   return self;
 }
 
-- (void)detach {
+- (void)detachAndNotifyDestroyed:(BOOL)shouldNotify {
   if (!_owner)
     return;
 
   _owner = nullptr;
-  [super detach];
-}
-
-- (NSArray*)AXChildren {
-  return [self children];
+  [super detachAndNotifyDestroyed:shouldNotify];
 }
 
 // Returns an array of BrowserAccessibilityCocoa objects, representing the
 // accessibility children of this object.
-- (NSArray*)children {
+- (NSArray*)accessibilityChildren {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.BrowserAccessibilityCocoa::"
+      "childrenChanged");
+  base::UmaHistogramBoolean("Accessibility.Performance."
+                            "BrowserAccessibilityCocoa::needsToUpdateChildren",
+                            !!_children);
+
   if (![self instanceActive])
     return nil;
-  if (_needsToUpdateChildren) {
+  if (!_children) {
     base::AutoReset<bool> set_getting_children(&_gettingChildren, true);
     // PlatformChildCount may add extra mac nodes if the node requires them.
     uint32_t childCount = _owner->PlatformChildCount();
     _children = [[NSMutableArray alloc] initWithCapacity:childCount];
     for (auto it = _owner->PlatformChildrenBegin();
          it != _owner->PlatformChildrenEnd(); ++it) {
-      AXPlatformNodeCocoa* child = it->GetNativeViewAccessible();
+      AXPlatformNodeCocoa* child =
+          base::apple::ObjCCastStrict<AXPlatformNodeCocoa>(
+              it->GetNativeViewAccessible().Get());
       if ([child isIncludedInPlatformTree])
         [_children addObject:child];
       else
@@ -626,35 +623,40 @@ bool ui::IsNSRange(id value) {
     // Also, add indirect children (if any).
     const std::vector<int32_t>& indirectChildIds = _owner->GetIntListAttribute(
         ax::mojom::IntListAttribute::kIndirectChildIds);
-    for (uint32_t i = 0; i < indirectChildIds.size(); ++i) {
-      int32_t child_id = indirectChildIds[i];
-      BrowserAccessibility* child = _owner->manager()->GetFromID(child_id);
+    for (int childId : indirectChildIds) {
+      BrowserAccessibility* child = _owner->manager()->GetFromID(childId);
 
-      // This only became necessary as a result of crbug.com/93095. It should be
-      // a DCHECK in the future.
-      if (child)
-        [_children addObject:child->GetNativeViewAccessible()];
+      // This only became necessary as a result of https://crbug.com/41440696.
+      // It should be a DCHECK in the future.
+      if (child) {
+        [_children addObject:child->GetNativeViewAccessible().Get()];
+      }
     }
-    _needsToUpdateChildren = false;
   }
   return _children;
 }
 
 - (void)childrenChanged {
-  // This function may be called in the middle of children() if this node adds
-  // extra mac nodes while its children are being requested. If _gettingChildren
-  // is true, we don't need to do anything here.
-  if (![self instanceActive] || _gettingChildren)
+  // This function may be called in the middle of -accessibilityChildren if
+  // this node adds extra mac nodes while its children are being requested. If
+  // _gettingChildren is true, we don't need to do anything here.
+  if (![self instanceActive] || _gettingChildren) {
     return;
-  _needsToUpdateChildren = true;
+  }
+  _children = nil;
   if (![self isIncludedInPlatformTree]) {
     BrowserAccessibility* parent = _owner->PlatformGetParent();
-    if (parent)
-      [parent->GetNativeViewAccessible() childrenChanged];
+    if (parent) {
+      BrowserAccessibilityCocoa* parentCocoa =
+          base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+              parent->GetNativeViewAccessible().Get());
+      [parentCocoa childrenChanged];
+    }
   }
 }
 
 - (NSValue*)columnIndexRange {
+  // Note: keep in sync with accessibilityColumnIndexRange.
   if (![self instanceActive])
     return nil;
 
@@ -665,6 +667,7 @@ bool ui::IsNSRange(id value) {
   return nil;
 }
 
+// LINT.IfChange(accessibilityColumns)
 - (NSArray*)columns {
   if (![self instanceActive])
     return nil;
@@ -675,6 +678,7 @@ bool ui::IsNSRange(id value) {
   }
   return ret;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityColumns)
 
 - (BrowserAccessibility*)containingTable {
   BrowserAccessibility* table = _owner;
@@ -685,47 +689,19 @@ bool ui::IsNSRange(id value) {
 }
 
 - (NSNumber*)disclosing {
-  if (![self instanceActive])
-    return nil;
-  if ([self internalRole] == ax::mojom::Role::kTreeItem) {
-    return @(GetState(_owner, ax::mojom::State::kExpanded));
-  } else {
-    return nil;
-  }
+  return @([self isAccessibilityDisclosed]);
 }
 
 - (id)disclosedByRow {
-  if (![self instanceActive])
-    return nil;
-
-  // The row that contains this row.
-  // It should be the same as the first parent that is a treeitem.
-  return nil;
+  return [self accessibilityDisclosedByRow];
 }
 
 - (NSNumber*)disclosureLevel {
-  if (![self instanceActive])
-    return nil;
-  ax::mojom::Role role = [self internalRole];
-  if (role == ax::mojom::Role::kRow || role == ax::mojom::Role::kTreeItem ||
-      role == ax::mojom::Role::kHeading) {
-    int level =
-        _owner->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
-    // Mac disclosureLevel is 0-based, but web levels are 1-based.
-    if (level > 0)
-      level--;
-    return @(level);
-  } else {
-    return nil;
-  }
+  return [NSNumber numberWithInteger:[self accessibilityDisclosureLevel]];
 }
 
 - (id)disclosedRows {
-  if (![self instanceActive])
-    return nil;
-
-  // The rows that are considered inside this row.
-  return nil;
+  return [self accessibilityDisclosedRows];
 }
 
 - (NSNumber*)enabled {
@@ -745,19 +721,21 @@ bool ui::IsNSRange(id value) {
 }
 
 - (NSNumber*)expanded {
+  // Keep logic consistent with `-[AXPlatformNodeCocoa isAccessibilityExpanded]`
   if (![self instanceActive])
     return nil;
   return @(GetState(_owner, ax::mojom::State::kExpanded));
 }
 
-- (NSNumber*)focused {
-  if (![self instanceActive])
-    return nil;
+- (void)setAccessibilityFocused:(BOOL)flag {
   BrowserAccessibilityManager* manager = _owner->manager();
-  return @(manager->GetFocus() == _owner);
+  if (flag) {
+    manager->SetFocus(*_owner);
+  }
 }
 
 - (id)header {
+  // Keep logic consistent with `-[AXPlatformNodeCocoa accessibilityHeader]`
   if (![self instanceActive])
     return nil;
   int headerElementId = -1;
@@ -772,7 +750,7 @@ bool ui::IsNSRange(id value) {
     if (childCount > 0) {
       BrowserAccessibility* tableHeader = _owner->PlatformGetLastChild();
       if (tableHeader->GetRole() == ax::mojom::Role::kTableHeaderContainer)
-        return tableHeader->GetNativeViewAccessible();
+        return tableHeader->GetNativeViewAccessible().Get();
     }
   } else if ([self internalRole] == ax::mojom::Role::kColumn) {
     _owner->GetIntAttribute(ax::mojom::IntAttribute::kTableColumnHeaderId,
@@ -786,12 +764,13 @@ bool ui::IsNSRange(id value) {
     BrowserAccessibility* headerObject =
         _owner->manager()->GetFromID(headerElementId);
     if (headerObject)
-      return headerObject->GetNativeViewAccessible();
+      return headerObject->GetNativeViewAccessible().Get();
   }
   return nil;
 }
 
 - (NSNumber*)index {
+  // Keep logic consistent with `-[AXPlatformNodeCocoa accessibilityIndex]`
   if (![self instanceActive])
     return nil;
 
@@ -830,7 +809,8 @@ bool ui::IsNSRange(id value) {
     return nil;
 
   const BrowserAccessibilityCocoa* cocoaContainer =
-      container->GetNativeViewAccessible();
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          container->GetNativeViewAccessible().Get());
   int currentIndex = 0;
   if ([cocoaContainer findRowIndex:self withCurrentIndex:&currentIndex]) {
     return @(currentIndex);
@@ -864,11 +844,51 @@ bool ui::IsNSRange(id value) {
   return false;
 }
 
-- (NSNumber*)AXInsertionPointLineNumber {
-  return [self insertionPointLineNumber];
-}
+// LINT.IfChange
+- (NSInteger)accessibilityInsertionPointLineNumber {
+  if (![self instanceActive]) {
+    return NSNotFound;
+  }
+  if (!_owner->HasVisibleCaretOrSelection()) {
+    return NSNotFound;
+  }
 
-- (NSNumber*)insertionPointLineNumber {
+  const AXRange range = GetSelectedRange(*_owner);
+
+  // If the selection is not collapsed, then there is no visible caret.
+  if (!range.IsCollapsed()) {
+    return NSNotFound;
+  }
+
+  // "ax::mojom::MoveDirection" is only relevant on platforms that use object
+  // replacement characters in the accessibility tree. Mac is not one of them.
+  const AXPosition caretPosition = range.focus()->LowestCommonAncestorPosition(
+      *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
+  DCHECK(!caretPosition->IsNullPosition())
+      << "Calling HasVisibleCaretOrSelection() should have ensured that there "
+         "is a valid selection focus inside the current object.";
+  const std::vector<int> lineStarts =
+      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
+
+  // Find the text offset that starts the next line after the current caret
+  // position, then subtract 1 to get the current line number.
+  auto iterator =
+      std::upper_bound(lineStarts.begin(), lineStarts.end(),
+                       caretPosition->AsTextPosition()->text_offset());
+
+  // If the caret is on a single line and the line is empty, then
+  // the iterator will be equal to lineStarts.begin() because the lineStarts
+  // vector will be empty. The line number should be 0 in this case.
+  if (iterator == lineStarts.begin()) {
+    return 0;
+  }
+
+  return std::distance(lineStarts.begin(), std::prev(iterator));
+}
+// LINT.ThenChange(AXInsertionPointLineNumber)
+
+// LINT.IfChange
+- (NSNumber*)AXInsertionPointLineNumber {
   if (![self instanceActive])
     return nil;
   if (!_owner->HasVisibleCaretOrSelection())
@@ -904,6 +924,7 @@ bool ui::IsNSRange(id value) {
 
   return @(std::distance(lineStarts.begin(), std::prev(iterator)));
 }
+// LINT.ThenChange(accessibilityInsertionPointLineNumber)
 
 - (NSString*)language {
   if (![self instanceActive])
@@ -913,42 +934,33 @@ bool ui::IsNSRange(id value) {
   return base::SysUTF8ToNSString(node->GetLanguage());
 }
 
-// private
-- (void)addLinkedUIElementsFromAttribute:(ax::mojom::IntListAttribute)attribute
-                                   addTo:(NSMutableArray*)outArray {
-  const std::vector<int32_t>& attributeValues =
-      _owner->GetIntListAttribute(attribute);
-  for (size_t i = 0; i < attributeValues.size(); ++i) {
-    BrowserAccessibility* element =
-        _owner->manager()->GetFromID(attributeValues[i]);
-    if (element)
-      [outArray addObject:element->GetNativeViewAccessible()];
-  }
-}
-
-// private
+// LINT.IfChange(accessibilityLinkedUIElements)
 - (NSArray*)linkedUIElements {
-  NSMutableArray* ret = [[NSMutableArray alloc] init];
-  [self
-      addLinkedUIElementsFromAttribute:ax::mojom::IntListAttribute::kControlsIds
-                                 addTo:ret];
-  [self addLinkedUIElementsFromAttribute:ax::mojom::IntListAttribute::kFlowtoIds
-                                   addTo:ret];
+  NSMutableArray* elements = [[NSMutableArray alloc] init];
+  [elements
+      addObjectsFromArray:[self uiElementsForAttribute:
+                                    ax::mojom::IntListAttribute::kControlsIds]];
+  [elements
+      addObjectsFromArray:[self uiElementsForAttribute:
+                                    ax::mojom::IntListAttribute::kFlowtoIds]];
 
   int target_id;
   if (_owner->GetIntAttribute(ax::mojom::IntAttribute::kInPageLinkTargetId,
                               &target_id)) {
     BrowserAccessibility* target =
         _owner->manager()->GetFromID(static_cast<int32_t>(target_id));
-    if (target)
-      [ret addObject:target->GetNativeViewAccessible()];
+    if (target) {
+      [elements addObject:target->GetNativeViewAccessible().Get()];
+    }
   }
 
-  [self addLinkedUIElementsFromAttribute:ax::mojom::IntListAttribute::
-                                             kRadioGroupIds
-                                   addTo:ret];
-  return ret;
+  [elements
+      addObjectsFromArray:[self
+                              uiElementsForAttribute:
+                                  ax::mojom::IntListAttribute::kRadioGroupIds]];
+  return elements;
 }
+// LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityLinkedUIElements)
 
 - (NSNumber*)maxValue {
   if (![self instanceActive])
@@ -985,22 +997,37 @@ bool ui::IsNSRange(id value) {
   return @"";
 }
 
+// LINT.IfChange
+- (NSInteger)accessibilityNumberOfCharacters {
+  // TODO(crbug.com/363275809): Why do we limit support to text fields here, but
+  // not in `AXPlatformNodeCocoa`?
+  if (![self instanceActive] || !_owner->IsTextField()) {
+    return 0;
+  }
+
+  return static_cast<int>(_owner->GetValueForControl().size());
+}
+// LINT.ThenChange(AXNumberOfCharacters)
+
+// LINT.IfChange
 - (NSNumber*)AXNumberOfCharacters {
-  return [self numberOfCharacters];
-}
-
-- (NSNumber*)numberOfCharacters {
-  if ([self instanceActive] && _owner->IsTextField())
-    return @(static_cast<int>(_owner->GetValueForControl().size()));
-  return nil;
-}
-
-- (id)parent {
-  if (![self instanceActive])
+  // TODO(crbug.com/363275809): Why do we limit support to text fields here, but
+  // not in `AXPlatformNodeCocoa`?
+  if (![self instanceActive] || !_owner->IsTextField()) {
     return nil;
+  }
+
+  return @(static_cast<int>(_owner->GetValueForControl().size()));
+}
+// LINT.ThenChange(accessibilityNumberOfCharacters)
+
+- (id)accessibilityParent {
+  if (![self instanceActive]) {
+    return nil;
+  }
   if (_owner->PlatformGetParent()) {
     id unignored_parent = NSAccessibilityUnignoredAncestor(
-        _owner->PlatformGetParent()->GetNativeViewAccessible());
+        _owner->PlatformGetParent()->GetNativeViewAccessible().Get());
     DCHECK(unignored_parent);
     return unignored_parent;
   }
@@ -1131,11 +1158,7 @@ bool ui::IsNSRange(id value) {
   } else if (_owner->IsTextField() &&
              _owner->HasState(ax::mojom::State::kMultiline) &&
              !_owner->GetData().IsSpinnerTextField()) {
-    if (_owner->IsNonAtomicTextField()) {
-      cocoa_role = NSAccessibilityGroupRole;
-    } else {
-      cocoa_role = NSAccessibilityTextAreaRole;
-    }
+    cocoa_role = NSAccessibilityTextAreaRole;
   } else if (ui::IsImage(_owner->GetRole()) && _owner->GetChildCount()) {
     // An image map is an image with children, and exposed on Mac as a group.
     cocoa_role = NSAccessibilityGroupRole;
@@ -1144,6 +1167,13 @@ bool ui::IsNSRange(id value) {
     cocoa_role = NSAccessibilityUnknownRole;
   } else if (_owner->IsRootWebAreaForPresentationalIframe()) {
     cocoa_role = NSAccessibilityGroupRole;
+  } else if (role == ax::mojom::Role::kListBoxOption && _owner->IsWebContent()) {
+    // Short term solution that allows children until Mac gets a more
+    // appropriate role for options than AXStaticText, which can result
+    // truncation or incorrect announcements of the option text when there are
+    // children. For now, only do this for web content, and not UI, where
+    // there are not interesting descendants of list box options.
+    cocoa_role = NSAccessibilityMenuItemRole;
   } else {
     cocoa_role = [AXPlatformNodeCocoa nativeRoleFromAXRole:role];
   }
@@ -1153,6 +1183,7 @@ bool ui::IsNSRange(id value) {
   return cocoa_role;
 }
 
+// LINT.IfChange(accessibilityRowHeaderUIElements)
 - (NSArray*)rowHeaders {
   if (![self instanceActive]) {
     return nil;
@@ -1194,7 +1225,7 @@ bool ui::IsNSRange(id value) {
     for (int32_t headerId : headerIds) {
       BrowserAccessibility* cell = _owner->manager()->GetFromID(headerId);
       if (cell) {
-        [rowHeaders addObject:cell->GetNativeViewAccessible()];
+        [rowHeaders addObject:cell->GetNativeViewAccessible().Get()];
       }
     }
   } else {
@@ -1202,15 +1233,17 @@ bool ui::IsNSRange(id value) {
     for (int32_t nodeId : _owner->node()->GetTableCellRowHeaderNodeIds()) {
       BrowserAccessibility* cell = _owner->manager()->GetFromID(nodeId);
       if (cell) {
-        [rowHeaders addObject:cell->GetNativeViewAccessible()];
+        [rowHeaders addObject:cell->GetNativeViewAccessible().Get()];
       }
     }
   }
 
   return [rowHeaders count] ? rowHeaders : nil;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityRowHeaderUIElements)
 
 - (NSValue*)rowIndexRange {
+  // Note: keep in sync with accessibilityRowIndexRange.
   if (![self instanceActive])
     return nil;
 
@@ -1219,31 +1252,6 @@ bool ui::IsNSRange(id value) {
   if (row && rowspan)
     return [NSValue valueWithRange:NSMakeRange(*row, *rowspan)];
   return nil;
-}
-
-- (NSArray*)accessibilityRows {
-  if (![self instanceActive])
-    return nil;
-  NSMutableArray* ret = [[NSMutableArray alloc] init];
-
-  std::vector<int32_t> node_id_list;
-  if (_owner->GetRole() == ax::mojom::Role::kTree)
-    [self getTreeItemDescendantNodeIds:&node_id_list];
-  else if (ui::IsTableLike(_owner->GetRole()))
-    node_id_list = _owner->node()->GetTableRowNodeIds();
-  // Rows attribute for a column is the list of all the elements in that column
-  // at each row.
-  else if ([self internalRole] == ax::mojom::Role::kColumn)
-    node_id_list = _owner->GetIntListAttribute(
-        ax::mojom::IntListAttribute::kIndirectChildIds);
-
-  for (int32_t node_id : node_id_list) {
-    BrowserAccessibility* rowElement = _owner->manager()->GetFromID(node_id);
-    if (rowElement)
-      [ret addObject:rowElement->GetNativeViewAccessible()];
-  }
-
-  return ret;
 }
 
 - (NSArray*)selectedChildren {
@@ -1262,7 +1270,7 @@ bool ui::IsNSRange(id value) {
     // selection is tethered to the focus.
     if (!GetState(_owner, ax::mojom::State::kMultiselectable) &&
         focusedChild->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
-      [ret addObject:focusedChild->GetNativeViewAccessible()];
+      [ret addObject:focusedChild->GetNativeViewAccessible().Get()];
       return ret;
     }
 
@@ -1277,7 +1285,7 @@ bool ui::IsNSRange(id value) {
     // Safari always append the focused item, whether selected or not, to the
     // list of selected items.
     if (GetState(_owner, ax::mojom::State::kMultiselectable))
-      [ret addObject:focusedChild->GetNativeViewAccessible()];
+      [ret addObject:focusedChild->GetNativeViewAccessible().Get()];
   }
 
   // If this container is multi-selectable, we need to return any additional
@@ -1289,18 +1297,33 @@ bool ui::IsNSRange(id value) {
     BrowserAccessibility* child = it.get();
     if (child->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
         child != focusedChild) {
-      [ret addObject:child->GetNativeViewAccessible()];
+      [ret addObject:child->GetNativeViewAccessible().Get()];
     }
   }
 
   return ret;
 }
 
-- (NSString*)AXSelectedText {
-  return [self selectedText];
-}
+// LINT.IfChange
+- (NSString*)accessibilitySelectedText {
+  if (![self instanceActive]) {
+    return nil;
+  }
 
-- (NSString*)selectedText {
+  if (!_owner->HasVisibleCaretOrSelection()) {
+    return nil;
+  }
+
+  const AXRange range = GetSelectedRange(*_owner);
+  if (range.IsNull()) {
+    return nil;
+  }
+  return base::SysUTF16ToNSString(range.GetText());
+}
+// LINT.ThenChange(AXSelectedText)
+
+// LINT.IfChange
+- (NSString*)AXSelectedText {
   if (![self instanceActive])
     return nil;
   if (!_owner->HasVisibleCaretOrSelection())
@@ -1311,16 +1334,43 @@ bool ui::IsNSRange(id value) {
     return nil;
   return base::SysUTF16ToNSString(range.GetText());
 }
+// LINT.ThenChange(accessibilitySelectedText)
 
-- (NSValue*)AXSelectedTextRange {
-  return [self selectedTextRange];
+// LINT.IfChange
+- (NSRange)accessibilitySelectedTextRange {
+  if (![self instanceActive]) {
+    return NSMakeRange(0, 0);
+  }
+
+  if (!_owner->HasVisibleCaretOrSelection()) {
+    return NSMakeRange(0, 0);
+  }
+
+  const AXRange range = GetSelectedRange(*_owner).AsForwardRange();
+  if (range.IsNull()) {
+    return NSMakeRange(0, 0);
+  }
+
+  // "ax::mojom::MoveDirection" is only relevant on platforms that use object
+  // replacement characters in the accessibility tree. Mac is not one of them.
+  const AXPosition startPosition = range.anchor()->LowestCommonAncestorPosition(
+      *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
+  DCHECK(!startPosition->IsNullPosition())
+      << "Calling HasVisibleCaretOrSelection() should have ensured that there "
+         "is a valid selection anchor inside the current object.";
+  int selectionStart = startPosition->AsTextPosition()->text_offset();
+  DCHECK_GE(selectionStart, 0);
+  int selectionLength = range.GetText().length();
+  return NSMakeRange(selectionStart, selectionLength);
 }
+// LINT.ThenChange(AXSelectedTextRange)
 
 // Returns range of text under the current object that is selected.
 //
 // Example, caret at offset 5:
 // NSRange:  “pos=5 len=0”
-- (NSValue*)selectedTextRange {
+// LINT.IfChange
+- (NSValue*)AXSelectedTextRange {
   if (![self instanceActive])
     return nil;
   if (!_owner->HasVisibleCaretOrSelection())
@@ -1342,6 +1392,7 @@ bool ui::IsNSRange(id value) {
   int selLength = range.GetText().length();
   return [NSValue valueWithRange:NSMakeRange(selStart, selLength)];
 }
+// LINT.ThenChange(accessibilitySelectedTextRange)
 
 - (void)setAccessibilitySelectedTextRange:(NSRange)range {
   if (![self instanceActive])
@@ -1365,8 +1416,18 @@ bool ui::IsNSRange(id value) {
 }
 
 - (NSString*)sortDirection {
+  // Keep logic consistent with
+  // `-[AXPlatformNodeCocoa accessibilitySortDirection]`
   if (![self instanceActive])
     return nil;
+
+  // If we know this object does not support `sortDirection`, don't return
+  // anything.
+  if (![[self internalAccessibilityAttributeNames]
+          containsObject:NSAccessibilitySortDirectionAttribute]) {
+    return nil;
+  }
+
   int sortDirection;
   if (!_owner->GetIntAttribute(ax::mojom::IntAttribute::kSortDirection,
                                &sortDirection))
@@ -1382,10 +1443,8 @@ bool ui::IsNSRange(id value) {
     case ax::mojom::SortDirection::kOther:
       return NSAccessibilityUnknownSortDirectionValue;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return nil;
 }
 
 // Returns a text marker that points to the first character in the document that
@@ -1423,22 +1482,24 @@ bool ui::IsNSRange(id value) {
 }
 
 // Returns all tabs in this subtree.
+// LINT.IfChange(accessibilityTabs)
 - (NSArray*)tabs {
-  if (![self instanceActive])
+  if (![self instanceActive]) {
     return nil;
+  }
+
   NSMutableArray* tabSubtree = [[NSMutableArray alloc] init];
 
   if ([self internalRole] == ax::mojom::Role::kTab)
     [tabSubtree addObject:self];
 
-  for (uint i = 0; i < [[self children] count]; ++i) {
-    NSArray* tabChildren = [[[self children] objectAtIndex:i] tabs];
-    if ([tabChildren count] > 0)
-      [tabSubtree addObjectsFromArray:tabChildren];
+  for (id child in [self accessibilityChildren]) {
+    [tabSubtree addObjectsFromArray:[child tabs]];
   }
 
   return tabSubtree;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityTabs)
 
 - (id)AXValue {
   return [self value];
@@ -1450,12 +1511,7 @@ bool ui::IsNSRange(id value) {
   DCHECK(_owner->node()->IsDataValid());
 
   if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
-    std::u16string name = _owner->GetTextContentUTF16();
-    // Leaf node with aria-label will have empty text content.
-    // e.g. <div role="option" aria-label="label">content</div>
-    // So we use its computed name for AXValue.
-    if (name.empty())
-      name = _owner->GetNameAsString16();
+    std::u16string name = _owner->GetNameAsString16();
     if (!IsSelectedStateRelevant(_owner)) {
       return base::SysUTF16ToNSString(name);
     }
@@ -1467,13 +1523,12 @@ bool ui::IsNSRange(id value) {
     int msg_id =
         is_selected ? IDS_AX_OBJECT_SELECTED : IDS_AX_OBJECT_NOT_SELECTED;
     std::u16string name_with_selection = base::ReplaceStringPlaceholders(
-        _owner->GetLocalizedString(msg_id), {name}, nullptr);
-
+        _owner->GetLocalizedString(msg_id), name, nullptr);
     return base::SysUTF16ToNSString(name_with_selection);
   }
 
   NSString* role = [self role];
-  if ([role isEqualToString:@"AXHeading"]) {
+  if (ui::IsHeading(_owner->GetRole())) {
     int level = 0;
     if (_owner->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
                                 &level)) {
@@ -1552,21 +1607,36 @@ bool ui::IsNSRange(id value) {
       _owner->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
-- (NSValue*)AXVisibleCharacterRange {
-  return [self visibleCharacterRange];
-}
+// LINT.IfChange
+- (NSRange)accessibilityVisibleCharacterRange {
+  if (![self instanceActive]) {
+    return NSMakeRange(0, 0);
+  }
+  // TODO(crbug.com/363275809): Why do we limit support to text fields here, but
+  // not in `AXPlatformNodeCocoa`?
+  if (!_owner->IsTextField() || _owner->IsPasswordField()) {
+    return NSMakeRange(0, 0);
+  }
 
-- (NSValue*)visibleCharacterRange {
+  return NSMakeRange(
+      0, static_cast<NSUInteger>(_owner->GetValueForControl().size()));
+}
+// LINT.ThenChange(AXVisibleCharacterRange)
+
+// LINT.IfChange
+- (NSValue*)AXVisibleCharacterRange {
   if ([self instanceActive] && _owner->IsTextField() &&
       !_owner->IsPasswordField()) {
     return [NSValue
         valueWithRange:NSMakeRange(0,
-                                   static_cast<int>(
+                                   static_cast<NSUInteger>(
                                        _owner->GetValueForControl().size()))];
   }
   return nil;
 }
+// LINT.ThenChange(accessibilityVisibleCharacterRange)
 
+// LINT.IfChange(accessibilityVisibleCells)
 - (NSArray*)visibleCells {
   if (![self instanceActive])
     return nil;
@@ -1575,28 +1645,33 @@ bool ui::IsNSRange(id value) {
   for (int32_t id : _owner->node()->GetTableUniqueCellIds()) {
     BrowserAccessibility* cell = _owner->manager()->GetFromID(id);
     if (cell)
-      [ret addObject:cell->GetNativeViewAccessible()];
+      [ret addObject:cell->GetNativeViewAccessible().Get()];
   }
   return ret;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityVisibleCells)
 
 - (NSArray*)visibleChildren {
   if (![self instanceActive])
     return nil;
-  return [self children];
+  return [self accessibilityChildren];
 }
 
+// LINT.IfChange(accessibilityVisibleColumns)
 - (NSArray*)visibleColumns {
   if (![self instanceActive])
     return nil;
   return [self columns];
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityVisibleColumns)
 
+// LINT.IfChange(accessibilityVisibleRows)
 - (NSArray*)visibleRows {
   if (![self instanceActive])
     return nil;
   return [self accessibilityRows];
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityVisibleRows)
 
 - (id)window {
   if (![self instanceActive])
@@ -1621,32 +1696,8 @@ bool ui::IsNSRange(id value) {
   return root_manager->GetWindow();  // Can be null for inactive tabs.
 }
 
-- (void)getTreeItemDescendantNodeIds:(std::vector<int32_t>*)tree_item_ids {
-  for (auto it = _owner->PlatformChildrenBegin();
-       it != _owner->PlatformChildrenEnd(); ++it) {
-    const BrowserAccessibilityCocoa* child = it->GetNativeViewAccessible();
-
-    if ([child internalRole] == ax::mojom::Role::kTreeItem) {
-      tree_item_ids->push_back([child hash]);
-    }
-    [child getTreeItemDescendantNodeIds:tree_item_ids];
-  }
-}
-
 - (NSString*)methodNameForAttribute:(NSString*)attribute {
   return [gAttributeToMethodNameMap objectForKey:attribute];
-}
-
-- (NSString*)valueForRange:(NSRange)range {
-  if (![self instanceActive])
-    return nil;
-
-  std::u16string textContent = _owner->GetTextContentUTF16();
-  if (NSMaxRange(range) > textContent.length())
-    return nil;
-
-  return base::SysUTF16ToNSString(
-      textContent.substr(range.location, range.length));
 }
 
 - (NSRect)frameForRange:(NSRange)range {
@@ -1667,6 +1718,13 @@ bool ui::IsNSRange(id value) {
   if (![self instanceActive])
     return nil;
 
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
+    // TODO(crbug.com/376723178): We should be able to add a NOTREACHED()
+    // here, but at the moment, test infrastructure still directly calls this
+    // api endpoint.
+    return nil;
+  }
+
   SEL selector = NSSelectorFromString([self methodNameForAttribute:attribute]);
   if (selector)
 #pragma clang diagnostic push
@@ -1677,39 +1735,46 @@ bool ui::IsNSRange(id value) {
   return [super accessibilityAttributeValue:attribute];
 }
 
-- (id)AXStringForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
-  return [self valueForRange:[(NSValue*)parameter rangeValue]];
+- (NSString*)accessibilityStringForRange:(NSRange)range {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  std::u16string textContent = _owner->GetTextContentUTF16();
+  if (NSMaxRange(range) > textContent.length()) {
+    return nil;
+  }
+
+  return base::SysUTF16ToNSString(
+      textContent.substr(range.location, range.length));
 }
 
-- (id)AXLineForIndex:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
-  int lineIndex = [(NSNumber*)parameter intValue];
+- (NSInteger)accessibilityLineForIndex:(NSInteger)index {
   const std::vector<int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
-  auto iterator =
-      std::lower_bound(lineStarts.begin(), lineStarts.end(), lineIndex);
-  return @(std::distance(lineStarts.begin(), iterator));
+  auto iterator = std::lower_bound(lineStarts.begin(), lineStarts.end(), index);
+  return std::distance(lineStarts.begin(), iterator);
 }
 
-- (id)AXRangeForLine:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
-  if (!_owner->IsTextField())
-    return nil;
+- (NSRange)accessibilityRangeForLine:(NSInteger)lineIndex {
+  if (![self instanceActive]) {
+    return NSMakeRange(0, 0);
+  }
 
-  int lineIndex = [(NSNumber*)parameter intValue];
   const std::vector<int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
   std::u16string value = _owner->GetValueForControl();
   int valueLength = static_cast<int>(value.size());
 
   int lineCount = static_cast<int>(lineStarts.size());
-  if (lineIndex < 0 || lineIndex >= lineCount)
-    return nil;
+  if (lineIndex < 0 || lineIndex >= lineCount) {
+    return NSMakeRange(0, 0);
+  }
+
   int start = lineStarts[lineIndex];
   int end =
       (lineIndex < (lineCount - 1)) ? lineStarts[lineIndex + 1] : valueLength;
-  return [NSValue valueWithRange:NSMakeRange(start, end - start)];
+  return NSMakeRange(start, end - start);
 }
 
 // Returns the accessibility value for the given attribute and parameter. If the
@@ -1734,21 +1799,14 @@ bool ui::IsNSRange(id value) {
   if (![self instanceActive])
     return nil;
 
-  if ([attribute isEqualToString:
-                     NSAccessibilityStringForRangeParameterizedAttribute]) {
-    return [self AXStringForRange:parameter];
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
+    // TODO(crbug.com/376723178): We should be able to add a NOTREACHED()
+    // here, but at the moment, test infrastructure still directly calls this
+    // api endpoint.
+    return nil;
   }
 
-  if ([attribute
-          isEqualToString:NSAccessibilityLineForIndexParameterizedAttribute]) {
-    return [self AXLineForIndex:parameter];
-  }
-
-  if ([attribute
-          isEqualToString:NSAccessibilityRangeForLineParameterizedAttribute]) {
-    return [self AXRangeForLine:parameter];
-  }
-
+  // LINT.IfChange(accessibilityCellForColumn)
   if ([attribute
           isEqualToString:
               NSAccessibilityCellForColumnAndRowParameterizedAttribute]) {
@@ -1767,9 +1825,11 @@ bool ui::IsNSRange(id value) {
       return nil;
 
     BrowserAccessibility* cell = _owner->manager()->GetFromID(cellNode->id());
-    if (cell)
-      return cell->GetNativeViewAccessible();
+    if (cell) {
+      return cell->GetNativeViewAccessible().Get();
+    }
   }
+  // LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityCellForColumn)
 
   if ([attribute
           isEqualToString:
@@ -1778,8 +1838,9 @@ bool ui::IsNSRange(id value) {
     if (!position->IsNullPosition()) {
       BrowserAccessibility* ui_element =
           _owner->manager()->GetFromAXNode(position->GetAnchor());
-      if (ui_element)
-        return ui_element->GetNativeViewAccessible();
+      if (ui_element) {
+        return ui_element->GetNativeViewAccessible().Get();
+      }
     }
 
     return nil;
@@ -2135,7 +2196,7 @@ bool ui::IsNSRange(id value) {
       NSMutableArray* result = [NSMutableArray arrayWithCapacity:count];
       for (size_t i = 0; i < count; ++i) {
         BrowserAccessibility* match = search.GetMatchAtIndex(i);
-        [result addObject:match->GetNativeViewAccessible()];
+        [result addObject:match->GetNativeViewAccessible().Get()];
       }
       return result;
     }
@@ -2268,16 +2329,12 @@ bool ui::IsNSRange(id value) {
 
 // Returns an array of parameterized attributes names that this object will
 // respond to.
-- (NSArray*)accessibilityParameterizedAttributeNames {
-  TRACE_EVENT1(
-      "accessibility",
-      "BrowserAccessibilityCocoa::accessibilityParameterizedAttributeNames",
-      "role=", ui::ToString([self internalRole]));
+- (NSArray*)internalAccessibilityParameterizedAttributeNames {
   if (![self instanceActive])
     return nil;
 
   // General attributes.
-  NSMutableArray* ret = [@[
+  NSMutableArray* attributeNames = [@[
     NSAccessibilityUIElementForTextMarkerParameterizedAttribute,
     NSAccessibilityTextMarkerRangeForUIElementParameterizedAttribute,
     NSAccessibilityLineForTextMarkerParameterizedAttribute,
@@ -2318,14 +2375,14 @@ bool ui::IsNSRange(id value) {
 
   if ([[self role] isEqualToString:NSAccessibilityTableRole] ||
       [[self role] isEqualToString:NSAccessibilityGridRole]) {
-    [ret addObject:NSAccessibilityCellForColumnAndRowParameterizedAttribute];
+    [attributeNames
+        addObject:NSAccessibilityCellForColumnAndRowParameterizedAttribute];
   }
 
   if (_owner->HasState(ax::mojom::State::kEditable)) {
-    [ret addObjectsFromArray:@[
+    [attributeNames addObjectsFromArray:@[
       NSAccessibilityLineForIndexParameterizedAttribute,
       NSAccessibilityRangeForLineParameterizedAttribute,
-      NSAccessibilityStringForRangeParameterizedAttribute,
       NSAccessibilityRangeForPositionParameterizedAttribute,
       NSAccessibilityRangeForIndexParameterizedAttribute,
       NSAccessibilityBoundsForRangeParameterizedAttribute,
@@ -2335,28 +2392,28 @@ bool ui::IsNSRange(id value) {
   }
 
   if ([self internalRole] == ax::mojom::Role::kStaticText)
-    [ret addObject:NSAccessibilityBoundsForRangeParameterizedAttribute];
+    [attributeNames
+        addObject:NSAccessibilityBoundsForRangeParameterizedAttribute];
 
   if (ui::IsPlatformDocument(_owner->GetRole())) {
-    [ret addObjectsFromArray:@[
+    [attributeNames addObjectsFromArray:@[
       NSAccessibilityTextMarkerIsValidParameterizedAttribute,
       NSAccessibilityIndexForTextMarkerParameterizedAttribute,
       NSAccessibilityTextMarkerForIndexParameterizedAttribute
     ]];
   }
 
-  NSArray* super_ret = [super accessibilityParameterizedAttributeNames];
-  [ret addObjectsFromArray:super_ret];
-  return ret;
+  NSArray* superclassAttributeNames =
+      [super internalAccessibilityParameterizedAttributeNames];
+  [attributeNames addObjectsFromArray:superclassAttributeNames];
+  return attributeNames;
 }
 
 // Returns an array of action names that this object will respond to.
-- (NSArray*)accessibilityActionNames {
-  TRACE_EVENT1("accessibility",
-               "BrowserAccessibilityCocoa::accessibilityActionNames",
-               "role=", ui::ToString([self internalRole]));
-  if (![self instanceActive])
-    return nil;
+- (NSMutableArray*)internalAccessibilityActionNames {
+  if (![self instanceActive]) {
+    return [NSMutableArray array];
+  }
 
   NSMutableArray* actions = [NSMutableArray
       arrayWithObjects:NSAccessibilityShowMenuAction,
@@ -2380,10 +2437,7 @@ bool ui::IsNSRange(id value) {
 }
 
 // Returns the list of accessibility attributes that this object supports.
-- (NSArray*)accessibilityAttributeNames {
-  TRACE_EVENT1("accessibility",
-               "BrowserAccessibilityCocoa::accessibilityAttributeNames",
-               "role=", ui::ToString([self internalRole]));
+- (NSMutableArray*)internalAccessibilityAttributeNames {
   if (![self instanceActive])
     return nil;
 
@@ -2423,8 +2477,18 @@ bool ui::IsNSRange(id value) {
     [ret addObjectsFromArray:@[
       NSAccessibilityColumnIndexRangeAttribute,
       NSAccessibilityRowIndexRangeAttribute,
-      @"AXSortDirection",
     ]];
+    if ([self internalRole] == ax::mojom::Role::kRowHeader ||
+        [self internalRole] == ax::mojom::Role::kColumnHeader) {
+      // The Core-AAM states that `aria-sort=none` is "not mapped".
+      int sortDirection;
+      if (_owner->GetIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                                  &sortDirection) &&
+          static_cast<ax::mojom::SortDirection>(sortDirection) !=
+              ax::mojom::SortDirection::kUnsorted) {
+        [ret addObject:@"AXSortDirection"];
+      }
+    }
     if ([self internalRole] != ax::mojom::Role::kRowHeader)
       [ret addObject:NSAccessibilityRowHeaderUIElementsAttribute];
   } else if ([role isEqualToString:NSAccessibilityTabGroupRole]) {
@@ -2507,8 +2571,7 @@ bool ui::IsNSRange(id value) {
   // TODO(aboxhall): expose NSAccessibilityServesAsTitleForUIElementsAttribute
   // for elements which are referred to by labelledby or are labels
 
-  NSArray* super_ret = [super accessibilityAttributeNames];
-  [ret addObjectsFromArray:super_ret];
+  [ret addObjectsFromArray:[super internalAccessibilityAttributeNames]];
   return ret;
 }
 
@@ -2531,6 +2594,7 @@ bool ui::IsNSRange(id value) {
 
 // Returns whether or not the specified attribute can be set by the
 // accessibility API via |accessibilitySetValue:forAttribute:|.
+// This API is deprecated.
 - (BOOL)accessibilityIsAttributeSettable:(NSString*)attribute {
   TRACE_EVENT2("accessibility",
                "BrowserAccessibilityCocoa::accessibilityIsAttributeSettable",
@@ -2538,6 +2602,10 @@ bool ui::IsNSRange(id value) {
                "attribute=", base::SysNSStringToUTF8(attribute));
   if (![self instanceActive])
     return NO;
+
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
+    return NO;
+  }
 
   if ([attribute isEqualToString:NSAccessibilityFocusedAttribute]) {
     if ([self internalRole] == ax::mojom::Role::kDateTime)
@@ -2605,29 +2673,36 @@ bool ui::IsNSRange(id value) {
 
 // Performs the given accessibility action on the webkit accessibility object
 // that backs this object.
+// This API is deprecated.
 - (void)accessibilityPerformAction:(NSString*)action {
   TRACE_EVENT2("accessibility",
                "BrowserAccessibilityCocoa::accessibilityPerformAction",
                "role=", ui::ToString([self internalRole]),
                "action=", base::SysNSStringToUTF8(action));
-  if (![self instanceActive])
+  if (![self instanceActive]) {
     return;
+  }
 
   // TODO(dmazzoni): Support more actions.
   BrowserAccessibility* actionTarget = [self actionTarget];
   BrowserAccessibilityManager* manager = actionTarget->manager();
   if ([action isEqualToString:NSAccessibilityPressAction]) {
+    // LINT.IfChange(NSAccessibilityPressAction)
+    ui::AXNode* node = actionTarget->node();
+    if (!node || !actionTarget->HasDefaultAction()) {
+      return;
+    }
+
     manager->DoDefaultAction(*actionTarget);
     if (actionTarget->GetData().GetRestriction() !=
             ax::mojom::Restriction::kNone ||
-        ![self isCheckable])
+        ![self isCheckable]) {
       return;
+    }
+
     // Hack: preemptively set the checked state to what it should become,
     // otherwise VoiceOver will very likely report the old, incorrect state to
     // the user as it requests the value too quickly.
-    ui::AXNode* node = actionTarget->node();
-    if (!node)
-      return;
     AXNodeData data(node->TakeData());  // Temporarily take data.
     if (data.role == ax::mojom::Role::kRadioButton) {
       data.SetCheckedState(ax::mojom::CheckedState::kTrue);
@@ -2642,15 +2717,69 @@ bool ui::IsNSRange(id value) {
       data.SetCheckedState(newCheckedState);
     }
     node->SetData(data);  // Set the data back in the node.
+    // LINT.ThenChange(accessibilityPerformPress)
   } else if ([action isEqualToString:NSAccessibilityShowMenuAction]) {
     manager->ShowContextMenu(*actionTarget);
   } else if ([action isEqualToString:NSAccessibilityScrollToVisibleAction]) {
-    manager->ScrollToMakeVisible(*actionTarget, gfx::Rect());
+    ui::AXPlatformNodeBase* mac_obj =
+        [base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+            actionTarget->GetNativeViewAccessible().Get()) node];
+    mac_obj->ScrollToNode(ui::AXPlatformNodeMac::ScrollType::Anywhere);
   } else if ([action isEqualToString:NSAccessibilityIncrementAction]) {
     manager->Increment(*actionTarget);
   } else if ([action isEqualToString:NSAccessibilityDecrementAction]) {
     manager->Decrement(*actionTarget);
   }
+}
+
+// LINT.IfChange(accessibilityPerformPress)
+- (BOOL)accessibilityPerformPress {
+  if (![self instanceActive]) {
+    return NO;
+  }
+
+  BrowserAccessibility* actionTarget = [self actionTarget];
+  ui::AXNode* node = actionTarget->node();
+  if (!node || !actionTarget->HasDefaultAction()) {
+    return NO;
+  }
+
+  BrowserAccessibilityManager* manager = actionTarget->manager();
+  manager->DoDefaultAction(*actionTarget);
+  if (actionTarget->GetData().GetRestriction() !=
+          ax::mojom::Restriction::kNone ||
+      ![self isCheckable]) {
+    return NO;
+  }
+
+  // Hack: preemptively set the checked state to what it should become,
+  // otherwise VoiceOver will very likely report the old, incorrect state to
+  // the user as it requests the value too quickly.
+  AXNodeData data(node->TakeData());  // Temporarily take data.
+  if (data.role == ax::mojom::Role::kRadioButton) {
+    data.SetCheckedState(ax::mojom::CheckedState::kTrue);
+  } else if (data.role == ax::mojom::Role::kCheckBox ||
+             data.role == ax::mojom::Role::kSwitch ||
+             data.role == ax::mojom::Role::kToggleButton) {
+    ax::mojom::CheckedState checkedState = data.GetCheckedState();
+    ax::mojom::CheckedState newCheckedState =
+        checkedState == ax::mojom::CheckedState::kFalse
+            ? ax::mojom::CheckedState::kTrue
+            : ax::mojom::CheckedState::kFalse;
+    data.SetCheckedState(newCheckedState);
+  }
+  node->SetData(data);  // Set the data back in the node.
+  return YES;
+}
+
+- (BOOL)accessibilityPerformShowMenu {
+  if (![self instanceActive]) {
+    return NO;
+  }
+  BrowserAccessibility* actionTarget = [self actionTarget];
+  BrowserAccessibilityManager* manager = actionTarget->manager();
+  manager->ShowContextMenu(*actionTarget);
+  return YES;
 }
 
 // Returns the description of the given action.
@@ -2664,6 +2793,7 @@ bool ui::IsNSRange(id value) {
 
   return NSAccessibilityActionDescription(action);
 }
+// LINT.ThenChange(NSAccessibilityPressAction)
 
 // Sets an override value for a specific accessibility attribute.
 // This class does not support this.
@@ -2680,6 +2810,7 @@ bool ui::IsNSRange(id value) {
 }
 
 // Sets the value for an accessibility attribute via the accessibility API.
+// This API is deprecated.
 - (void)accessibilitySetValue:(id)value forAttribute:(NSString*)attribute {
   TRACE_EVENT2("accessibility",
                "BrowserAccessibilityCocoa::accessibilitySetValue:forAttribute",
@@ -2688,12 +2819,12 @@ bool ui::IsNSRange(id value) {
   if (![self instanceActive])
     return;
 
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
+    return;
+  }
+
   if ([attribute isEqualToString:NSAccessibilityFocusedAttribute]) {
-    NSNumber* focusedNumber = value;
-    BrowserAccessibilityManager* manager = _owner->manager();
-    BOOL focused = [focusedNumber intValue];
-    if (focused)
-      manager->SetFocus(*_owner);
+    [self setAccessibilityFocused:[value boolValue]];
   }
   if ([attribute isEqualToString:NSAccessibilitySelectedTextRangeAttribute]) {
     if (ui::IsNSRange(value)) {
@@ -2724,7 +2855,7 @@ bool ui::IsNSRange(id value) {
     return nil;
 
   ui::AXPlatformNodeDelegate* focus_node = _owner->manager()->GetFocus();
-  return focus_node ? focus_node->GetNativeViewAccessible() : nullptr;
+  return focus_node ? focus_node->GetNativeViewAccessible().Get() : nullptr;
 }
 
 // Returns the deepest accessibility child that should not be ignored.
@@ -2762,7 +2893,7 @@ bool ui::IsNSRange(id value) {
   if (!hit)
     return nil;
 
-  return NSAccessibilityUnignoredAncestor(hit->GetNativeViewAccessible());
+  return NSAccessibilityUnignoredAncestor(hit->GetNativeViewAccessible().Get());
 }
 
 - (BOOL)isEqual:(id)object {

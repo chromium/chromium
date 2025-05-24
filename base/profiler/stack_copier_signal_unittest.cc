@@ -7,20 +7,23 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "base/profiler/stack_copier_signal.h"
+
 #include <string.h>
+
 #include <algorithm>
+#include <array>
 #include <utility>
 
 #include "base/debug/alias.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_buffer.h"
-#include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/thread_delegate_posix.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -28,8 +31,12 @@ namespace base {
 namespace {
 
 // Values to write to the stack and look for in the copy.
-static const uint32_t kStackSentinels[] = {0xf312ecd9, 0x1fcd7f19, 0xe69e617d,
-                                           0x8245f94f};
+static const auto kStackSentinels = std::to_array<uint32_t>({
+    0xf312ecd9,
+    0x1fcd7f19,
+    0xe69e617d,
+    0x8245f94f,
+});
 
 class TargetThread : public SimpleThread {
  public:
@@ -45,9 +52,10 @@ class TargetThread : public SimpleThread {
 
     // Copy the sentinel values onto the stack. Volatile to defeat compiler
     // optimizations.
-    volatile uint32_t sentinels[std::size(kStackSentinels)];
-    for (size_t i = 0; i < std::size(kStackSentinels); ++i)
+    std::array<volatile uint32_t, std::size(kStackSentinels)> sentinels;
+    for (size_t i = 0; i < std::size(kStackSentinels); ++i) {
       sentinels[i] = kStackSentinels[i];
+    }
 
     started_.Signal();
     copy_finished_.Wait();
@@ -68,9 +76,7 @@ class TargetThread : public SimpleThread {
 
 class TestStackCopierDelegate : public StackCopier::Delegate {
  public:
-  void OnStackCopy() override {
-    on_stack_copy_was_invoked_ = true;
-  }
+  void OnStackCopy() override { on_stack_copy_was_invoked_ = true; }
 
   bool on_stack_copy_was_invoked() const { return on_stack_copy_was_invoked_; }
 
@@ -109,8 +115,9 @@ TEST(StackCopierSignalTest, MAYBE_CopyStack) {
 
   // Copy the sentinel values onto the stack.
   uint32_t sentinels[std::size(kStackSentinels)];
-  for (size_t i = 0; i < std::size(kStackSentinels); ++i)
+  for (size_t i = 0; i < std::size(kStackSentinels); ++i) {
     sentinels[i] = kStackSentinels[i];
+  }
   base::debug::Alias((void*)sentinels);  // Defeat compiler optimizations.
 
   bool result = copier.CopyStack(&stack_buffer, &stack_top, &timestamp,
@@ -122,7 +129,8 @@ TEST(StackCopierSignalTest, MAYBE_CopyStack) {
       reinterpret_cast<uint32_t*>(RegisterContextStackPointer(&context)), end,
       [](const uint32_t& location) {
         return memcmp(&location, &kStackSentinels[0],
-                      sizeof(kStackSentinels)) == 0;
+                      (kStackSentinels.size() *
+                       sizeof(decltype(kStackSentinels)::value_type))) == 0;
       });
   EXPECT_NE(end, sentinel_location);
 }
@@ -231,7 +239,8 @@ TEST(StackCopierSignalTest, MAYBE_CopyStackFromOtherThread) {
       reinterpret_cast<uint32_t*>(RegisterContextStackPointer(&context)), end,
       [](const uint32_t& location) {
         return memcmp(&location, &kStackSentinels[0],
-                      sizeof(kStackSentinels)) == 0;
+                      (kStackSentinels.size() *
+                       sizeof(decltype(kStackSentinels)::value_type))) == 0;
       });
   EXPECT_NE(end, sentinel_location);
 }

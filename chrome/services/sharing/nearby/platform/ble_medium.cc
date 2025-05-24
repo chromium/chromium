@@ -13,8 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 // Client name for logging in BLE scanning.
@@ -402,5 +401,4 @@ chrome::BlePeripheral* BleMedium::GetDiscoveredBlePeripheral(
   return it == discovered_ble_peripherals_map_.end() ? nullptr : &it->second;
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

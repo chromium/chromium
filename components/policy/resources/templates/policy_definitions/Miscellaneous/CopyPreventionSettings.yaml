@@ -24,7 +24,7 @@ future_on:
 - fuchsia
 owners:
 - domfc@chromium.org
-- dpr-eng@google.com
+- cbe-cep-eng@google.com
 schema:
   properties:
     disable:

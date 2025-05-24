@@ -5,8 +5,17 @@
 #ifndef REMOTING_HOST_ME2ME_DESKTOP_ENVIRONMENT_H_
 #define REMOTING_HOST_ME2ME_DESKTOP_ENVIRONMENT_H_
 
+#include <memory>
+#include <string>
+
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/host/action_executor.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/basic_desktop_environment.h"
+#include "remoting/host/desktop_environment.h"
+#include "remoting/host/desktop_interaction_strategy.h"
 
 namespace remoting {
 
@@ -32,9 +41,8 @@ class Me2MeDesktopEnvironment : public BasicDesktopEnvironment {
   friend class Me2MeDesktopEnvironmentFactory;
   Me2MeDesktopEnvironment(
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+      std::unique_ptr<DesktopInteractionStrategy> interaction_strategy,
       base::WeakPtr<ClientSessionControl> client_session_control,
       const DesktopEnvironmentOptions& options);
 
@@ -60,9 +68,9 @@ class Me2MeDesktopEnvironmentFactory : public BasicDesktopEnvironmentFactory {
  public:
   Me2MeDesktopEnvironmentFactory(
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+      std::unique_ptr<DesktopInteractionStrategyFactory>
+          interaction_strategy_factory);
 
   Me2MeDesktopEnvironmentFactory(const Me2MeDesktopEnvironmentFactory&) =
       delete;
@@ -72,10 +80,10 @@ class Me2MeDesktopEnvironmentFactory : public BasicDesktopEnvironmentFactory {
   ~Me2MeDesktopEnvironmentFactory() override;
 
   // DesktopEnvironmentFactory interface.
-  std::unique_ptr<DesktopEnvironment> Create(
-      base::WeakPtr<ClientSessionControl> client_session_control,
-      base::WeakPtr<ClientSessionEvents> client_session_events,
-      const DesktopEnvironmentOptions& options) override;
+  void Create(base::WeakPtr<ClientSessionControl> client_session_control,
+              base::WeakPtr<ClientSessionEvents> client_session_events,
+              const DesktopEnvironmentOptions& options,
+              CreateCallback callback) override;
 };
 
 }  // namespace remoting

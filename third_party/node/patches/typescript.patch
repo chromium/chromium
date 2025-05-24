@@ -1,28 +1,40 @@
 diff --git a/node_modules/typescript/lib/lib.dom.d.ts b/node_modules/typescript/lib/lib.dom.d.ts
-index 91596a00aee3e..aaa71bbf139d5 100644
+index 9ecd352b1050f..08c42c975bf51 100644
 --- a/node_modules/typescript/lib/lib.dom.d.ts
 +++ b/node_modules/typescript/lib/lib.dom.d.ts
-@@ -12308,7 +12308,10 @@ interface HTMLScriptElement extends HTMLElement {
-     /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/HTMLScriptElement/referrerPolicy) */
-     referrerPolicy: string;
-     /** Retrieves the URL to an external file that contains the source code or data. */
--    src: string;
-+    // Chromium modification to work around
-+    // https://github.com/microsoft/TypeScript/issues/30024.
-+    get src(): string;
-+    set src(url: string|TrustedScriptURL);
-     /** Retrieves or sets the text of the object as a string. */
-     text: string;
-     /** Sets or retrieves the MIME type for the associated scripting engine. */
-@@ -14274,7 +14277,10 @@ declare var ImageData: {
- 
- interface InnerHTML {
+@@ -7712,7 +7712,10 @@ interface Element extends Node, ARIAMixin, Animatable, ChildNode, NonDocumentTyp
+      */
+     id: string;
      /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Element/innerHTML) */
 -    innerHTML: string;
 +    // Chromium modification to work around
 +    // https://github.com/microsoft/TypeScript/issues/30024.
 +    get innerHTML(): string;
 +    set innerHTML(html: string|TrustedHTML);
- }
- 
- /**
+     /**
+      * Returns the local name.
+      *
+@@ -12092,7 +12095,10 @@ interface HTMLScriptElement extends HTMLElement {
+      *
+      * [MDN Reference](https://developer.mozilla.org/docs/Web/API/HTMLScriptElement/src)
+      */
+-    src: string;
++    // Chromium modification to work around
++    // https://github.com/microsoft/TypeScript/issues/30024.
++    get src(): string;
++    set src(url: string|TrustedScriptURL);
+     /**
+      * Retrieves or sets the text of the object as a string.
+      *
+@@ -21026,7 +21032,10 @@ interface ShadowRoot extends DocumentFragment, DocumentOrShadowRoot {
+     /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/ShadowRoot/host) */
+     readonly host: Element;
+     /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/ShadowRoot/innerHTML) */
+-    innerHTML: string;
++    // Chromium modification to work around
++    // https://github.com/microsoft/TypeScript/issues/30024.
++    get innerHTML(): string;
++    set innerHTML(html: string|TrustedHTML);
+     /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/ShadowRoot/mode) */
+     readonly mode: ShadowRootMode;
+     onslotchange: ((this: ShadowRoot, ev: Event) => any) | null;

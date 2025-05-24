@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_
 
-#include "base/functional/callback_helpers.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
-
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +15,7 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
 class View;
@@ -67,12 +66,12 @@ class DiceWebSigninInterceptionBubbleView
                            BubbleDeclined);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleAccepted);
-  FRIEND_TEST_ALL_PREFIXES(
-      DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest,
-      BubbleDismissedByEscapeKey);
-  FRIEND_TEST_ALL_PREFIXES(
-      DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest,
-      BubbleDismissedByPressingAvatarButton);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           BubbleDismissedByEscapeKey);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           BubbleDismissedByEscapeKeyTwice);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           BubbleDismissedByPressingAvatarButton);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleAcceptedGuestMode);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,

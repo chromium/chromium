@@ -40,17 +40,12 @@ class PagePlaceholderBrowserAgent final
 
   explicit PagePlaceholderBrowserAgent(Browser* browser);
 
-  // The Browser this object is attached to.
-  raw_ptr<Browser> browser_ = nullptr;
-
   // Observation for SessionRestorationService events.
   base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
       session_restoration_service_observation_{this};
 
   // True if waiting for a foreground tab due to expectNewForegroundTab.
   bool expecting_foreground_tab_ = false;
-
-  BROWSER_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_PAGE_PLACEHOLDER_BROWSER_AGENT_H_

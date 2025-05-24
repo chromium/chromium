@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_UTIL_KEYWORD_CACHE_H_
 
 #include <map>
+#include <set>
 #include <vector>
 
 #include "chrome/browser/ash/app_list/search/scoring.h"

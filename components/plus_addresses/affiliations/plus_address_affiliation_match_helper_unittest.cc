@@ -14,7 +14,7 @@
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
-#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_service_impl.h"
 #include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -43,7 +43,7 @@ constexpr char kUmaKeyResponseTime[] =
 class PlusAddressAffiliationMatchHelperTest : public testing::Test {
  public:
   PlusAddressAffiliationMatchHelperTest() {
-    plus_address_service_ = std::make_unique<PlusAddressService>(
+    plus_address_service_ = std::make_unique<PlusAddressServiceImpl>(
         &plus_environment_.pref_service(),
         plus_environment_.identity_env().identity_manager(),
         &plus_environment_.setting_service(),
@@ -84,7 +84,7 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
     return &plus_environment_.affiliation_service();
   }
 
-  PlusAddressService* plus_address_service() {
+  PlusAddressServiceImpl* plus_address_service() {
     return plus_address_service_.get();
   }
 
@@ -98,7 +98,7 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   test::PlusAddressTestEnvironment plus_environment_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<PlusAddressService> plus_address_service_;
+  std::unique_ptr<PlusAddressServiceImpl> plus_address_service_;
   std::unique_ptr<PlusAddressAffiliationMatchHelper> match_helper_;
 };
 

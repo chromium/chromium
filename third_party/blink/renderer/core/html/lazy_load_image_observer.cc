@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -40,7 +39,7 @@ bool IsElementInInvisibleSubTree(const Element& element) {
     if (ancestor.IsHTMLElement() && !ancestor.GetLayoutObject())
       return true;
     const ComputedStyle* style = ancestor_element->EnsureComputedStyle();
-    if (style && (style->UsedVisibility() != EVisibility::kVisible ||
+    if (style && (style->Visibility() != EVisibility::kVisible ||
                   style->Display() == EDisplay::kNone)) {
       return true;
     }
@@ -134,7 +133,7 @@ void LazyLoadImageObserver::LoadIfNearViewport(
       // attribute, etc. Style might also not be calculated if the ancestors
       // were invisible.
       const ComputedStyle* style = entry->target()->GetComputedStyle();
-      if (!style || style->UsedVisibility() != EVisibility::kVisible ||
+      if (!style || style->Visibility() != EVisibility::kVisible ||
           style->Display() == EDisplay::kNone) {
         // Check that style was null because it was not computed since the
         // element was in an invisible subtree.
@@ -181,8 +180,7 @@ int LazyLoadImageObserver::GetLazyLoadingImageMarginPx(
     case WebEffectiveConnectionType::kType4G:
       return settings->GetLazyLoadingImageMarginPx4G();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

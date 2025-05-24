@@ -2,17 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "printing/common/metafile_utils.h"
 
 #include <string_view>
 #include <variant>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
+#include "skia/ext/codec_utils.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -24,12 +33,12 @@
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "third_party/skia/include/private/chromium/SkImageChromium.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(IS_WIN)
 // XpsObjectModel.h indirectly includes <wincrypt.h> which is
@@ -231,6 +240,21 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
   return valid;
 }
 
+sk_sp<SkData> GetImageData(SkImage* img) {
+  // Skip the encoding step if the image is already encoded
+  if (sk_sp<SkData> data = img->refEncodedData()) {
+    return data;
+  }
+
+  // TODO(crbug.com/40073326) Convert texture-backed images to raster
+  // *before* they get this far if possible.
+  if (img->isTextureBacked()) {
+    GrDirectContext* ctx = SkImages::GetContext(img);
+    return skia::EncodePngAsSkData(ctx, img);
+  }
+  return skia::EncodePngAsSkData(nullptr, img);
+}
+
 }  // namespace
 
 namespace printing {
@@ -284,10 +308,11 @@ sk_sp<SkData> SerializeOopPicture(SkPicture* pic, void* ctx) {
   const auto* context = reinterpret_cast<const ContentToProxyTokenMap*>(ctx);
   uint32_t pic_id = pic->uniqueID();
   auto iter = context->find(pic_id);
-  if (iter == context->end())
+  if (iter == context->end()) {
     return nullptr;
+  }
 
-  return SkData::MakeWithCopy(&pic_id, sizeof(pic_id));
+  return gfx::MakeSkDataFromSpanWithCopy(base::byte_span_from_ref(pic_id));
 }
 
 sk_sp<SkPicture> DeserializeOopPicture(const void* data,
@@ -359,38 +384,86 @@ sk_sp<SkTypeface> DeserializeOopTypeface(const void* data,
   return typeface;
 }
 
-sk_sp<SkData> SerializeRasterImage(SkImage* img, void*) {
+sk_sp<SkData> SerializeRasterImage(SkImage* img, void* ctx) {
   if (!img) {
     return nullptr;
   }
-  // Skip the encoding step if the image is already encoded
-  if (sk_sp<SkData> data = img->refEncodedData()) {
-    return data;
+
+  auto* context = reinterpret_cast<ImageSerializationContext*>(ctx);
+
+  uint32_t img_id = img->uniqueID();
+  if (context->contains(img_id)) {
+    return SkData::MakeWithCopy(&img_id, sizeof(img_id));
   }
 
-  // TODO(crbug.com/40073326) Convert texture-backed images to raster
-  // *before* they get this far if possible.
-  if (img->isTextureBacked()) {
-    GrDirectContext* ctx = SkImages::GetContext(img);
-    return SkPngEncoder::Encode(ctx, img, SkPngEncoder::Options{});
+  sk_sp<SkData> img_data = GetImageData(img);
+  if (!img_data) {
+    return nullptr;
   }
-  return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
+
+  // Store image id followed by the image data on the first occurrence
+  // of an image.
+  auto data = SkData::MakeUninitialized(
+      base::CheckAdd(img_data->size(), sizeof(img_id)).ValueOrDie());
+
+  // SAFETY: The span is used as a view to avoid direct pointer access.
+  auto [id_span, data_span] =
+      UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(data->writable_data()),
+                                data->size()))
+          .split_at<sizeof(img_id)>();
+  id_span.copy_from(base::byte_span_from_ref(img_id));
+  data_span.copy_from(gfx::SkDataToSpan(img_data));
+
+  context->insert(img_id);
+
+  return data;
 }
 
-sk_sp<SkImage> DeserializeRasterImage(const void* bytes, size_t length, void*) {
-  auto data = SkData::MakeWithoutCopy(bytes, length);
-  //TODO(b/40045064): Explicitly decode other supported codecs
-  auto codec = SkPngDecoder::Decode(data, nullptr);
-  if (codec) {
-    return std::get<0>(codec->getImage());
+sk_sp<SkImage> DeserializeRasterImage(const void* bytes,
+                                      size_t length,
+                                      void* ctx) {
+  auto* context = reinterpret_cast<ImageDeserializationContext*>(ctx);
+
+  // SAFETY: The caller must provide a valid pointer and length.
+  base::SpanReader reader{
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(bytes), length))};
+
+  uint32_t img_id;
+  if (!reader.ReadU32NativeEndian(img_id)) {
+    // If there is no room for id, there cannot be meaningful image data.
+    return nullptr;
   }
-  return nullptr;
+
+  auto iter = context->find(img_id);
+  if (iter != context->end() && iter->second) {
+    return iter->second;
+  }
+
+  if (!reader.remaining()) {
+    return nullptr;
+  }
+
+  // Copy the data to avoid `bytes` being freed before the image is decoded.
+  auto data_span = reader.remaining_span();
+  auto img_data = SkData::MakeWithCopy(data_span.data(), data_span.size());
+
+  // Need to explicitly decode here, as the data are prefixed with image id,
+  // invalidating the built-in Skia fallback.
+  auto image = SkImages::DeferredFromEncodedData(img_data);
+  if (!image) {
+    return nullptr;
+  }
+
+  (*context)[img_id] = image;
+  return image;
 }
 
 SkSerialProcs SerializationProcs(PictureSerializationContext* picture_ctx,
-                                 TypefaceSerializationContext* typeface_ctx) {
+                                 TypefaceSerializationContext* typeface_ctx,
+                                 ImageSerializationContext* image_ctx) {
   SkSerialProcs procs;
   procs.fImageProc = SerializeRasterImage;
+  procs.fImageCtx = image_ctx;
   procs.fPictureProc = SerializeOopPicture;
   procs.fPictureCtx = picture_ctx;
   procs.fTypefaceProc = SerializeOopTypeface;
@@ -400,9 +473,11 @@ SkSerialProcs SerializationProcs(PictureSerializationContext* picture_ctx,
 
 SkDeserialProcs DeserializationProcs(
     PictureDeserializationContext* picture_ctx,
-    TypefaceDeserializationContext* typeface_ctx) {
+    TypefaceDeserializationContext* typeface_ctx,
+    ImageDeserializationContext* image_ctx) {
   SkDeserialProcs procs;
   procs.fImageProc = DeserializeRasterImage;
+  procs.fImageCtx = image_ctx;
   procs.fPictureProc = DeserializeOopPicture;
   procs.fPictureCtx = picture_ctx;
   procs.fTypefaceProc = DeserializeOopTypeface;

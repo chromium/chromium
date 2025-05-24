@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
@@ -26,14 +27,8 @@ namespace ash {
 namespace {
 
 // TODO(b/365490226): replace this error with shill constant.
-constexpr char kTemporaryServiceConfiguredButNotUsable[] =
+constexpr char kConfigFailureTemporaryServiceConfiguredButNotUsable[] =
     "Config.CreateConfiguration Temporary service configured but not usable";
-
-void OnGetWiFiPassphraseError(const std::string& error_name,
-                              const std::string& error_message) {
-  NET_LOG(ERROR) << "Wi-Fi passphrase error:" << error_name << " "
-                 << error_message;
-}
 
 void CopyPropertyIfExists(std::string_view key,
                           const base::Value::Dict& shill_properties,
@@ -70,9 +65,14 @@ bool KioskNetworkStateObserver::IsPolicyEnabled() const {
       prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled);
 }
 
+void KioskNetworkStateObserver::SetWifiExposureAttemptCallbackForTesting(
+    base::RepeatingCallback<void(bool is_successful_attempt)> callback) {
+  wifi_exposure_attempt_callback_ = std::move(callback);
+}
+
 void KioskNetworkStateObserver::ActiveNetworksChanged(
     const std::vector<const NetworkState*>& active_networks) {
-  ExposeActiveWiFiConfiguration();
+  ExposeActiveWifiConfiguration();
 }
 
 void KioskNetworkStateObserver::StartActiveWifiExposureProcess() {
@@ -81,14 +81,14 @@ void KioskNetworkStateObserver::StartActiveWifiExposureProcess() {
   }
   network_state_handler_observation_.Observe(
       NetworkHandler::Get()->network_state_handler());
-  ExposeActiveWiFiConfiguration();
+  ExposeActiveWifiConfiguration();
 }
 
 void KioskNetworkStateObserver::StopActiveWifiExposureProcess() {
   network_state_handler_observation_.Reset();
 }
 
-void KioskNetworkStateObserver::ExposeActiveWiFiConfiguration() {
+void KioskNetworkStateObserver::ExposeActiveWifiConfiguration() {
   if (active_wifi_exposed_) {
     return;
   }
@@ -97,24 +97,34 @@ void KioskNetworkStateObserver::ExposeActiveWiFiConfiguration() {
       ash::NetworkHandler::Get()->network_state_handler()->ActiveNetworkByType(
           NetworkTypePattern::WiFi());
   if (!network_state) {
+    MaybeRunWifiExposureAttemptCallback(false);
     return;
   }
 
   active_wifi_exposed_ = true;
   ShillServiceClient::Get()->GetWiFiPassphrase(
       dbus::ObjectPath(network_state->path()),
-      base::BindOnce(&KioskNetworkStateObserver::OnGetWiFiPassphraseResult,
+      base::BindOnce(&KioskNetworkStateObserver::OnGetWifiPassphraseResult,
                      weak_ptr_factory_.GetWeakPtr(), network_state->path()),
-      base::BindOnce(&OnGetWiFiPassphraseError));
+      base::BindOnce(&KioskNetworkStateObserver::OnGetWifiPassphraseError,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void KioskNetworkStateObserver::OnGetWiFiPassphraseResult(
+void KioskNetworkStateObserver::OnGetWifiPassphraseResult(
     const std::string& service_path,
     const std::string& passphrase) {
   NetworkHandler::Get()->network_configuration_handler()->GetShillProperties(
       service_path,
       base::BindOnce(&KioskNetworkStateObserver::ReceiveProperties,
                      weak_ptr_factory_.GetWeakPtr(), passphrase));
+}
+
+void KioskNetworkStateObserver::OnGetWifiPassphraseError(
+    const std::string& error_name,
+    const std::string& error_message) {
+  NET_LOG(ERROR) << "Wi-Fi passphrase error:" << error_name << " "
+                 << error_message;
+  FailCurrentAttempt();
 }
 
 void KioskNetworkStateObserver::ReceiveProperties(
@@ -165,24 +175,20 @@ void KioskNetworkStateObserver::OnCreatedShillConfigSuccess(
          "level settings.";
   // Copy only the first active wifi configuration.
   StopActiveWifiExposureProcess();
+  MaybeRunWifiExposureAttemptCallback(true);
 }
 
 void KioskNetworkStateObserver::OnCreatedShillConfigFailure(
     const std::string& error) {
-  if (error == kTemporaryServiceConfiguredButNotUsable) {
+  if (error == kConfigFailureTemporaryServiceConfiguredButNotUsable) {
     // The service is moved to the default profile, which means the successful
     // WiFi scope change.
     OnCreatedShillConfigSuccess("", "");
     return;
   }
-  // We set `active_wifi_exposed_` to true when we attempt to expose the active
-  // WiFi. If the attempt fails, we need to reset it.
-  active_wifi_exposed_ = false;
-  NET_LOG(ERROR) << "Shill config failure: " << error;
 
-  if (++wifi_exposure_attempts_ > kMaxWifiExposureAttempts) {
-    StopActiveWifiExposureProcess();
-  }
+  NET_LOG(ERROR) << "Shill config failure: " << error;
+  FailCurrentAttempt();
 }
 
 void KioskNetworkStateObserver::PolicyChanged() {
@@ -190,6 +196,24 @@ void KioskNetworkStateObserver::PolicyChanged() {
     StartActiveWifiExposureProcess();
   } else {
     StopActiveWifiExposureProcess();
+  }
+}
+
+void KioskNetworkStateObserver::FailCurrentAttempt() {
+  // We set `active_wifi_exposed_` to true when we attempt to expose the active
+  // WiFi. If the attempt fails, we need to reset it.
+  active_wifi_exposed_ = false;
+
+  if (++wifi_exposure_attempts_ >= kMaxWifiExposureAttempts) {
+    StopActiveWifiExposureProcess();
+  }
+  MaybeRunWifiExposureAttemptCallback(false);
+}
+
+void KioskNetworkStateObserver::MaybeRunWifiExposureAttemptCallback(
+    bool is_successful_attempt) {
+  if (wifi_exposure_attempt_callback_) {
+    wifi_exposure_attempt_callback_.Run(is_successful_attempt);
   }
 }
 

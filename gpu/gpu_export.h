@@ -15,11 +15,7 @@
 #endif  // defined(GPU_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(GPU_IMPLEMENTATION)
 #define GPU_EXPORT __attribute__((visibility("default")))
-#else
-#define GPU_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

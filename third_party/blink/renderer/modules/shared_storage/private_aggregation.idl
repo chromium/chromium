@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://patcg-individual-drafts.github.io/private-aggregation-api/#exposed-interface
 [
-  Exposed=(SharedStorageWorklet),
-  ContextEnabled=PrivateAggregationInSharedStorage
+    Exposed=(SharedStorageWorklet),
+    ContextEnabled=PrivateAggregationInSharedStorage
 ] interface PrivateAggregation {
-  [
-    CallWith=ScriptState,
-    RaisesException
-  ] void contributeToHistogram(PrivateAggregationHistogramContribution contribution);
-
-  [
-    CallWith=ScriptState,
-    RaisesException
-  ] void enableDebugMode(optional PrivateAggregationDebugModeOptions options);
+    [CallWith=ScriptState, RaisesException] void contributeToHistogram(PrivateAggregationHistogramContribution contribution);
+    [CallWith=ScriptState, RaisesException, RuntimeEnabled=PrivateAggregationApiErrorReporting] void contributeToHistogramOnEvent(
+        DOMString event, PrivateAggregationHistogramContribution contribution);
+    [CallWith=ScriptState, RaisesException] void enableDebugMode(optional PrivateAggregationDebugModeOptions options);
 };

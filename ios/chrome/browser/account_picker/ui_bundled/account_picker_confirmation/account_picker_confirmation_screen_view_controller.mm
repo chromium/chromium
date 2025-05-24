@@ -10,18 +10,19 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_constants.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_layout_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
+#import "ios/chrome/browser/authentication/ui_bundled/views/identity_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
-#import "ios/chrome/browser/ui/authentication/views/identity_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/font/font_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -63,7 +64,9 @@ BrandedNavigationItemTitleView* CreateGooglePhotosImageView(
     NSString* title,
     NSString* brandedSymbolName) {
   BrandedNavigationItemTitleView* title_view =
-      [[BrandedNavigationItemTitleView alloc] init];
+      [[BrandedNavigationItemTitleView alloc]
+          initWithFont:ios::provider::GetBrandedProductRegularFont(
+                           UIFont.labelFontSize)];
   title_view.title = title;
   title_view.imageLogo = MakeSymbolMulticolor(CustomSymbolWithPointSize(
       brandedSymbolName, UIFont.labelFontSize * kLogoTitleFontMultiplier));
@@ -226,10 +229,11 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   self.navigationController.navigationBar.maximumContentSizeCategory =
       UIContentSizeCategoryExtraExtraLarge;
   // Create the skip button.
-  UIBarButtonItem* cancelButtonItem = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self
-                           action:@selector(cancelButtonAction:)];
+  UIBarButtonItem* cancelButtonItem =
+      [[UIBarButtonItem alloc] initWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(cancelButtonAction:)];
   cancelButtonItem.accessibilityIdentifier =
       kAccountPickerCancelButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = cancelButtonItem;
@@ -304,7 +308,8 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   _identityButtonControl =
       [[IdentityButtonControl alloc] initWithFrame:CGRectZero];
   _identityButtonControl.arrowDirection = IdentityButtonControlArrowRight;
-  _identityButtonControl.identityViewStyle = IdentityViewStyleConsistency;
+  _identityButtonControl.identityViewStyle =
+      IdentityViewStyleConsistencyDefaultIdentity;
   [_identityButtonControl addTarget:self
                              action:@selector(identityButtonControlAction:
                                                                  forEvent:)
@@ -485,14 +490,15 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
 - (void)showDefaultAccountWithFullName:(NSString*)fullName
                              givenName:(NSString*)givenName
                                  email:(NSString*)email
-                                avatar:(UIImage*)avatar {
+                                avatar:(UIImage*)avatar
+                               managed:(BOOL)managed {
   if (!self.viewLoaded) {
     // Load the view.
     [self view];
   }
   _submitString = _configuration.submitButtonTitle;
 
-  [_identityButtonControl setIdentityName:fullName email:email];
+  [_identityButtonControl setIdentityName:fullName email:email managed:managed];
   [_identityButtonControl setIdentityAvatar:avatar];
 
   // If spinner is active, delay UI updates until stopSpinner() is called.

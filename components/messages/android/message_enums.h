@@ -15,6 +15,8 @@ namespace messages {
 // TODO(crbug.com/40755174): Revisit enum values. TAB_SWITCHED is not currently
 // used. Likely the same for TAB_DESTROYED and ACTIVITY_DESTROYED. We also need
 // a dedicated value for message dismissed from feature code.
+//
+// LINT.IfChange(DismissReason)
 enum class DismissReason {
   // Dismiss reasons that are fully controlled by clients (i.e. are not used
   // inside the Messages implementation are marked "Controlled by client" on
@@ -42,12 +44,15 @@ enum class DismissReason {
   SCOPE_DESTROYED = 8,
   // A message was dismissed explicitly in feature code.
   DISMISSED_BY_FEATURE = 9,
+  // A message was dismissed by a close button click.
+  CLOSE_BUTTON = 10,
 
   // Insert new values before this line.
   COUNT,
 
   kMaxValue = COUNT,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MessageDismissReason)
 
 // "Urgent" means the user should take actions ASAP, such as responding to
 // permissions or safety warnings.
@@ -79,6 +84,8 @@ enum class MessageScopeType {
 //
 // A Java counterpart is generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
+//
+// LINT.IfChange(MessageIdentifier)
 enum class MessageIdentifier {
   INVALID_MESSAGE = 0,
   SAVE_PASSWORD = 1,
@@ -89,7 +96,7 @@ enum class MessageIdentifier {
   SAVE_ADDRESS_PROFILE = 6,
   MERCHANT_TRUST = 7,
   // Removed: ADD_TO_HOMESCREEN_IPH = 8,
-  SEND_TAB_TO_SELF = 9,
+  // Removed: SEND_TAB_TO_SELF = 9,
   READER_MODE = 10,
   CHROME_SURVEY = 11,
   SAVE_CARD = 12,
@@ -133,9 +140,18 @@ enum class MessageIdentifier {
   VIRTUAL_CARD_ENROLL_FAILURE = 50,
   PROMPT_HATS_QUICK_DELETE = 51,
   PROMPT_HATS_SAFETY_HUB = 52,
+  DEFAULT_BROWSER_PROMO = 53,
+  TAB_REMOVED_THROUGH_COLLABORATION = 54,
+  TAB_NAVIGATED_THROUGH_COLLABORATION = 55,
+  COLLABORATION_MEMBER_ADDED = 56,
+  COLLABORATION_REMOVED = 57,
+  CCT_ACCOUNT_MISMATCH_NOTICE = 58,
+  PROMPT_HATS_CLEAR_BROWSING_DATA = 59,
+  OS_ADVANCED_PROTECTION_SETTING_CHANGED_MESSAGE = 60,
   // Insert new values before this line.
   COUNT
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:MessageIdentifier)
 
 // The behavior the message should follow when the primary button is clicked,
 // after running the primary action callback.

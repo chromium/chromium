@@ -196,7 +196,7 @@ export function createBrowserApi(): Promise<BrowserApi> {
                 chrome.tabs.get(streamInfo.tabId, resolve);
               }).then(function(tab) {
                 if (tab) {
-                  (streamInfo as StreamInfoWithExtras).tabUrl = tab!.url;
+                  (streamInfo as StreamInfoWithExtras).tabUrl = tab.url;
                 }
               }));
         }

@@ -13,7 +13,7 @@ namespace speech {
 // AudioSourceFetcherImpl.
 class AudioSourceConsumer {
  public:
-  virtual ~AudioSourceConsumer() {}
+  virtual ~AudioSourceConsumer() = default;
 
   // Passes the captured audio to consumer.
   virtual void AddAudio(media::mojom::AudioDataS16Ptr buffer) = 0;

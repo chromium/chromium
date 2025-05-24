@@ -9,7 +9,6 @@
 
 #include "base/values.h"
 #include "content/browser/security/coop/cross_origin_opener_policy_reporter.h"
-#include "content/browser/security/coop/coop_swap_result.h"
 
 namespace content {
 
@@ -36,37 +35,14 @@ class CrossOriginOpenerPolicyAccessReportManager {
   // CoopAccessMonitor. The first window is identified by |node|.
   static void InstallAccessMonitorsIfNeeded(FrameTreeNode* node);
 
-  // Return a new virtual browsing context group ID belong to a new
-  // CoopRelatedGroup.
-  static int GetNewVirtualBrowsingContextGroup();
-
-  // Return a virtual browsing context group ID that is suitable given the
-  // information passed in. `enforce_result` and `report_only_result` indicate
-  // whether actual COOP values and report-only COOP values, respectively, need
-  // a browsing context group swap. It also accounts for swapping in the same
-  // CoopRelatedGroup or in a different one. Combined with
-  // `current_virtual_browsing_context_group`, we can decide what virtual
-  // browsing context group is suitable and return its ID.
-  static int GetVirtualBrowsingContextGroup(
-      CoopSwapResult enforce_result,
-      CoopSwapResult report_only_result,
-      int current_virtual_browsing_context_group);
-
- private:
   // Generate a new, previously unused, virtual browsing context group ID.
   static int NextVirtualBrowsingContextGroup();
 
-  // Generate a new, previously unused, virtual CoopRelatedGroup ID.
-  static int NextVirtualCoopRelatedGroup();
-
+ private:
   // Install the CoopAccessMonitors monitoring accesses from `accessing_node`
-  // toward `accessed_node`. `is_in_same_virtual_coop_related_group` indicates
-  // whether the two nodes would be in the same CoopRelatedGroup. If that's the
-  // case, do not report window.postMessage() and window.closed accesses, which
-  // would be permitted by COOP: restrict-properties.
+  // toward `accessed_node`.
   void MonitorAccesses(FrameTreeNode* accessing_node,
-                       FrameTreeNode* accessed_node,
-                       bool is_in_same_virtual_coop_related_group);
+                       FrameTreeNode* accessed_node);
 
   std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter_;
 };

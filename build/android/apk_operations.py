@@ -122,13 +122,18 @@ def _GenerateBundleApks(info,
       optimize_for=optimize_for)
 
 
-def _InstallBundle(devices, apk_helper_instance, modules, fake_modules):
+def _InstallBundle(devices,
+                   apk_helper_instance,
+                   modules,
+                   fake_modules,
+                   locales=None):
 
   def Install(device):
     device.Install(apk_helper_instance,
                    permissions=[],
                    modules=modules,
                    fake_modules=fake_modules,
+                   additional_locales=locales,
                    allow_downgrade=True,
                    reinstall=True)
 
@@ -1152,9 +1157,15 @@ def _GenerateMissingAllFlagMessage(devices):
           'or use --device to select a device by serial.\n\n' +
           _GenerateAvailableDevicesMessage(devices))
 
+def _SanitizeFilename(filename):
+  for sep in os.path.sep, os.path.altsep:
+    if sep is not None:
+      filename = filename.replace(sep, '_')
+  return filename
+
 
 def _DeviceCachePath(device, output_directory):
-  file_name = 'device_cache_%s.json' % device.serial
+  file_name = 'device_cache_%s.json' % _SanitizeFilename(device.serial)
   return os.path.join(output_directory, file_name)
 
 
@@ -1363,6 +1374,12 @@ class _Command:
 
       if any(abi in app_abis for abi in device_abis):
         fully_supported.append(device)
+        if is_webview and not all(abi in app_abis for abi in device_abis):
+          logging.warning(
+              'Using a webview that supports only %s on a device that '
+              'supports %s. You probably need to set GN arg:\n\n'
+              '    enable_android_secondary_abi=true\n', ','.join(app_abis),
+              ','.join(device_abis))
       else:  # No common supported ABIs between the device and app.
         if device_primary_abi == 'x86':
           target_cpu = 'x86'
@@ -1523,6 +1540,11 @@ class _InstallCommand(_Command):
   def _RegisterExtraArgs(self, group):
     if self.is_bundle:
       group.add_argument(
+          '--locales',
+          action='append',
+          help=
+          'Locale splits to install (english is in base, so always installed).')
+      group.add_argument(
           '-m',
           '--module',
           action='append',
@@ -1551,7 +1573,8 @@ class _InstallCommand(_Command):
       modules = list(
           set(self.args.module) - set(self.args.no_module) -
           set(self.args.fake))
-      _InstallBundle(self.devices, self.apk_helper, modules, self.args.fake)
+      _InstallBundle(self.devices, self.apk_helper, modules, self.args.fake,
+                     self.args.locales)
     else:
       _InstallApk(self.devices, self.apk_helper, self.install_dict)
     if self.args.is_official_build:

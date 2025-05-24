@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 
 #include "third_party/blink/renderer/core/css/css_function_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -69,9 +68,7 @@ FilterOperation::OperationType FilterOperationResolver::FilterOperationForType(
     case CSSValueID::kDropShadow:
       return FilterOperation::OperationType::kDropShadow;
     default:
-      NOTREACHED_IN_MIGRATION();
-      // FIXME: We shouldn't have a type None since we never create them
-      return FilterOperation::OperationType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -79,13 +76,11 @@ static void CountFilterUse(FilterOperation::OperationType operation_type,
                            const Document& document) {
   std::optional<WebFeature> feature;
   switch (operation_type) {
-    case FilterOperation::OperationType::kNone:
     case FilterOperation::OperationType::kBoxReflect:
     case FilterOperation::OperationType::kConvolveMatrix:
     case FilterOperation::OperationType::kComponentTransfer:
     case FilterOperation::OperationType::kTurbulence:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case FilterOperation::OperationType::kReference:
       feature = WebFeature::kCSSFilterReference;
       break;
@@ -143,10 +138,21 @@ double FilterOperationResolver::ResolveNumericArgumentForFunction(
     case CSSValueID::kOpacity: {
       if (filter.length() == 1) {
         const CSSPrimitiveValue& value = To<CSSPrimitiveValue>(filter.Item(0));
+        double computed_value;
         if (value.IsPercentage()) {
-          return value.ComputePercentage(length_resolver) / 100;
+          computed_value = value.ComputePercentage(length_resolver) / 100;
+        } else {
+          computed_value = value.ComputeNumber(length_resolver);
         }
-        return value.ComputeNumber(length_resolver);
+        if (filter.FunctionType() != CSSValueID::kBrightness &&
+            filter.FunctionType() != CSSValueID::kSaturate &&
+            filter.FunctionType() != CSSValueID::kContrast) {
+          // Most values will be clamped at parse time, but the ones within
+          // calc() will not, so we need to clamp them again here.
+          return std::clamp(computed_value, 0.0, 1.0);
+        } else {
+          return computed_value;
+        }
       }
       return 1;
     }
@@ -183,12 +189,10 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
       CountFilterUse(FilterOperation::OperationType::kReference,
                      state.GetDocument());
 
-      SVGResource* resource =
-          state.GetElementStyleResources().GetSVGResourceFromValue(property_id,
-                                                                   *url_value);
       operations.Operations().push_back(
           MakeGarbageCollected<ReferenceFilterOperation>(
-              url_value->ValueForSerialization(), resource));
+              url_value->ValueForSerialization(),
+              state.GetSVGResource(property_id, *url_value)));
       continue;
     }
 
@@ -239,8 +243,7 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -249,7 +252,7 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
 
 FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
     const CSSValue& in_value,
-    const Font& font) {
+    const Font* font) {
   FilterOperations operations;
 
   if (auto* in_identifier_value = DynamicTo<CSSIdentifierValue>(in_value)) {
@@ -260,7 +263,7 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
   // TODO(layout-dev): Should document zoom factor apply for offscreen canvas?
   float zoom = 1.0f;
   CSSToLengthConversionData::FontSizes font_sizes(
-      kOffScreenCanvasEmFontSize, kOffScreenCanvasRemFontSize, &font, zoom);
+      kOffScreenCanvasEmFontSize, kOffScreenCanvasRemFontSize, font, zoom);
   CSSToLengthConversionData::LineHeightSize line_height_size;
   CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
   CSSToLengthConversionData::ContainerSizes container_sizes;
@@ -268,7 +271,8 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
   CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData conversion_data(
       WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
-      container_sizes, anchor_data, 1 /* zoom */, ignored_flags);
+      container_sizes, anchor_data, 1 /* zoom */, ignored_flags,
+      /*element=*/nullptr);
 
   for (auto& curr_value : To<CSSValueList>(in_value)) {
     if (curr_value->IsURIValue()) {
@@ -324,8 +328,7 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return operations;

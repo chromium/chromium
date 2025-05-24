@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,9 +24,15 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/navigation_handle.h"
@@ -82,6 +87,21 @@ bool IsValidWebContentsForIntentPicker(content::WebContents* web_contents) {
     return false;
   }
   return true;
+}
+
+bool IsValidIntentPickerUrl(const GURL& url, bool is_error_page) {
+  if (url.SchemeIsHTTPOrHTTPS() && !is_error_page) {
+    return true;
+  }
+
+  // chrome://password-manager is a valid PWA, so it should be considered when
+  // evaluating whether to show the intent picker.
+  if (url.SchemeIs(content::kChromeUIScheme) &&
+      url.host() == password_manager::kChromeUIPasswordManagerHost) {
+    return true;
+  }
+
+  return false;
 }
 
 void ShowIntentPickerBubbleForApps(
@@ -148,8 +168,9 @@ void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(const GURL& url) {
 void IntentPickerTabHelper::ShowOrHideIcon(content::WebContents* web_contents,
                                            bool should_show_icon) {
   IntentPickerTabHelper* tab_helper = FromWebContents(web_contents);
-  if (!tab_helper)
+  if (!tab_helper) {
     return;
+  }
 
   if (apps::features::ShouldShowLinkCapturingUX()) {
     tab_helper->current_app_icon_ = ui::ImageModel();
@@ -229,8 +250,9 @@ IntentPickerTabHelper::IntentPickerTabHelper(content::WebContents* web_contents)
   intent_picker_delegate_ =
       std::make_unique<apps::ChromeOsAppsIntentPickerDelegate>(profile);
 #else
-  intent_picker_delegate_ =
-      std::make_unique<apps::WebAppsIntentPickerDelegate>(profile);
+  intent_picker_delegate_ = std::make_unique<apps::WebAppsIntentPickerDelegate>(
+      profile, std::vector<int>{GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+                                GetIntentPickerBubbleIconSize()});
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -241,10 +263,11 @@ void IntentPickerTabHelper::OnAppIconLoaded(
     ui::ImageModel app_icon) {
   apps[index].icon_model = app_icon;
 
-  if (index == apps.size() - 1)
+  if (index == apps.size() - 1) {
     std::move(callback).Run(std::move(apps));
-  else
+  } else {
     LoadAppIcon(std::move(apps), index + 1, std::move(callback));
+  }
 }
 
 void IntentPickerTabHelper::LoadAppIcon(
@@ -322,7 +345,14 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
   if (!browser) {
     return;
   }
-  browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
+
+  if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
+    tabs::TabInterface* tab_interface =
+        tabs::TabInterface::GetFromContents(&GetWebContents());
+    UpdatePageAction(tab_interface, should_show_icon);
+  } else {
+    browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
+  }
 
   icon_resolved_ = true;
   if (icon_update_closure_for_testing_) {
@@ -440,9 +470,8 @@ void IntentPickerTabHelper::DidFinishNavigation(
   if (IsNavigatingToNewSite(navigation_handle)) {
     per_navigation_weak_factory_.InvalidateWeakPtrs();
 
-    bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
-                         !navigation_handle->IsErrorPage();
-    if (is_valid_page) {
+    if (IsValidIntentPickerUrl(navigation_handle->GetURL(),
+                               navigation_handle->IsErrorPage())) {
       MaybeShowIntentPickerIcon();
     } else {
       ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);
@@ -455,13 +484,26 @@ void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
   // WebAppTabHelper has an app_id but it is reset during
   // OnWebAppWillBeUninstalled so using FindAppWithUrlInScope.
   std::optional<webapps::AppId> local_app_id =
-      registrar_->FindAppWithUrlInScope(web_contents()->GetLastCommittedURL());
-  if (app_id == local_app_id)
+      registrar_->FindBestAppWithUrlInScope(
+          web_contents()->GetLastCommittedURL(),
+          web_app::WebAppFilter::InstalledInChrome());
+  if (app_id == local_app_id) {
     ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);
+  }
 }
 
 void IntentPickerTabHelper::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
+}
+
+void IntentPickerTabHelper::UpdatePageAction(tabs::TabInterface* tab_interface,
+                                             bool show_icon) {
+  if (auto* const tab_features = tab_interface->GetTabFeatures()) {
+    if (auto* controller =
+            tab_features->intent_picker_view_page_action_controller()) {
+      controller->UpdatePageActionVisibility(show_icon, app_icon());
+    }
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IntentPickerTabHelper);

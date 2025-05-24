@@ -26,8 +26,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 namespace printing {
@@ -147,9 +147,7 @@ PrintManagementUI::PrintManagementUI(
       "script-src chrome://resources chrome://webui-test 'self';");
   ash::EnableTrustedTypesCSP(html_source);
 
-  const auto resources = base::make_span(kAshPrintManagementResources,
-                                         kAshPrintManagementResourcesSize);
-  SetUpWebUIDataSource(html_source, resources,
+  SetUpWebUIDataSource(html_source, kAshPrintManagementResources,
                        IDR_ASH_PRINT_MANAGEMENT_INDEX_HTML);
 
   html_source->AddResourcePath(

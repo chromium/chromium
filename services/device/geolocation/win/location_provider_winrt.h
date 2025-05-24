@@ -62,6 +62,7 @@ class LocationProviderWinrt : public LocationProvider {
           status_update);
   mojom::GeopositionPtr CreateGeoposition(
       ABI::Windows::Devices::Geolocation::IGeoposition* geoposition);
+  void SetSessionErrorIfNotSet(HRESULT error);
 
   bool is_started_ = false;
   mojom::GeopositionResultPtr last_result_;
@@ -71,6 +72,11 @@ class LocationProviderWinrt : public LocationProvider {
   bool position_received_ = false;
   ABI::Windows::Devices::Geolocation::PositionStatus position_status_;
   base::TimeTicks position_callback_initialized_time_;
+
+  // Records any error code encountered that stops the location provider from
+  // getting its a valid Geoposition.
+  std::optional<HRESULT> session_error_;
+
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<LocationProviderWinrt> weak_ptr_factory_{this};
 };

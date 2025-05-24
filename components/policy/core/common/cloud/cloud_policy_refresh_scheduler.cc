@@ -381,6 +381,7 @@ void CloudPolicyRefreshScheduler::ScheduleRefresh() {
     case DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
     case DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE:
     case DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
+    case DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
       // Need a re-registration, no use in retrying.
       CancelRefresh();
       return;
@@ -389,9 +390,7 @@ void CloudPolicyRefreshScheduler::ScheduleRefresh() {
       return;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid client status " << client_->last_dm_status();
-  RefreshAfter(kUnmanagedRefreshDelayMs, PolicyFetchReason::kUnspecified);
+  NOTREACHED() << "Invalid client status " << client_->last_dm_status();
 }
 
 void CloudPolicyRefreshScheduler::PerformRefresh(PolicyFetchReason reason) {
@@ -413,7 +412,7 @@ void CloudPolicyRefreshScheduler::PerformRefresh(PolicyFetchReason reason) {
 
   // This should never happen, as the registration change should have been
   // handled via OnRegistrationStateChanged().
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms,

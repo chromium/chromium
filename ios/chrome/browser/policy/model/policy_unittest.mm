@@ -10,7 +10,6 @@
 #import "base/functional/bind.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
-#import "base/test/task_environment.h"
 #import "components/policy/core/browser/policy_pref_mapping_test.h"
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/policy/core/common/policy_map.h"
@@ -19,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -50,7 +50,8 @@ class PolicyTest : public PlatformTest {
   base::ScopedTempDir state_directory_;
 
   // The task environment for this test.
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
 
   // Enterprise policy boilerplate configuration.
   std::unique_ptr<EnterprisePolicyTestHelper> enterprise_policy_helper_;

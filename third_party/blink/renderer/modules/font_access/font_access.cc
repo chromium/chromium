@@ -9,9 +9,9 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -82,7 +82,7 @@ ScriptPromise<IDLSequence<FontMetadata>> FontAccess::QueryLocalFontsImpl(
   }
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kLocalFonts,
+          network::mojom::PermissionsPolicyFeature::kLocalFonts,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise<IDLSequence<FontMetadata>>();

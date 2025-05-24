@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bottom_sheet;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -14,14 +15,17 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** This class is responsible for rendering the simple notice sheet. */
+@NullMarked
 class SimpleNoticeSheetView implements BottomSheetContent {
     private final RelativeLayout mContentView;
 
@@ -29,6 +33,7 @@ class SimpleNoticeSheetView implements BottomSheetContent {
         mContentView =
                 (RelativeLayout)
                         LayoutInflater.from(context).inflate(R.layout.simple_notice_sheet, null);
+        mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
         ImageView sheetHeaderImage = mContentView.findViewById(R.id.sheet_header_image);
         sheetHeaderImage.setImageDrawable(
                 AppCompatResources.getDrawable(
@@ -60,15 +65,13 @@ class SimpleNoticeSheetView implements BottomSheetContent {
                 });
     }
 
-    @Nullable
     @Override
     public View getContentView() {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -91,28 +94,28 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
+    public String getSheetContentDescription(Context context) {
         // TODO(crbug.com/366158726): Make the string configurable.
-        return R.string.password_migration_warning_content_description;
+        return context.getString(R.string.pwd_access_loss_warning_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // The sheet doesn't have a half height state.
         assert false;
-        return 0;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         // TODO(crbug.com/366158726): Make the string configurable.
-        return R.string.password_migration_warning_content_description;
+        return R.string.pwd_access_loss_warning_content_description;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         // TODO(crbug.com/366158726): Make the string configurable.
-        return R.string.password_migration_warning_closed;
+        return R.string.pwd_access_loss_warning_closed;
     }
 
     @Override
@@ -123,10 +126,5 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     @Override
     public float getFullHeightRatio() {
         return HeightMode.WRAP_CONTENT;
-    }
-
-    @Override
-    public int getPeekHeight() {
-        return HeightMode.DISABLED;
     }
 }

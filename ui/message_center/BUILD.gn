@@ -26,7 +26,6 @@ aggregate_vector_icons("message_center_vector_icons") {
 component("message_center") {
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//ui/base",
     "//ui/strings",
     "//url",
@@ -89,7 +88,7 @@ component("message_center") {
     }
 
     if (toolkit_views) {
-      # TODO(b/257291597): Skip the sources that are unused on is_chromeos_ash
+      # TODO(crbug.com/257291597): Skip the sources that are unused on is_chromeos
       # (e.g. notification_view.cc). This will require refactoring to break
       # dependencies (e.g. MessagePopupCollection must become an interface).
       sources += [
@@ -138,11 +137,8 @@ component("message_center") {
       if (is_mac) {
         frameworks = [ "Foundation.framework" ]
       }
-      if (is_chromeos) {
-        deps += [ "//chromeos/constants:constants" ]
-      }
     }
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//ash/constants" ]
     }
   } else {
@@ -192,7 +188,6 @@ if (enable_message_center) {
       ":test_support",
       "//base",
       "//base/test:test_support",
-      "//build:chromeos_buildflags",
       "//mojo/core/embedder",
       "//skia",
       "//testing/gmock",
@@ -219,7 +214,7 @@ if (enable_message_center) {
       "//ui/resources:ui_test_pak_data",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//ash/constants" ]
     }
 
@@ -236,7 +231,7 @@ if (enable_message_center) {
       ]
 
       # ChromeOS/Ash uses AshNotificationView, not NotificationView.
-      if (!is_chromeos_ash) {
+      if (!is_chromeos) {
         sources += [ "views/notification_view_unittest.cc" ]
       }
 
@@ -247,10 +242,6 @@ if (enable_message_center) {
         "//ui/views",
         "//ui/views:test_support",
       ]
-
-      if (is_chromeos) {
-        deps += [ "//chromeos/constants:constants" ]
-      }
     }
 
     if (is_fuchsia) {

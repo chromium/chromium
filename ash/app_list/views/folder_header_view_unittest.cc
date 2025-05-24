@@ -20,7 +20,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -28,7 +27,6 @@
 
 namespace ash {
 
-// Parameterized by whether kJelly feature is enabled.
 class FolderHeaderViewTest : public AshTestBase {
  public:
   FolderHeaderViewTest() = default;
@@ -84,7 +82,6 @@ class FolderHeaderViewTest : public AshTestBase {
     PressAndReleaseKey(key_code, flags);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<test::AppListTestModel, DanglingUntriaged> model_ = nullptr;
   raw_ptr<FolderHeaderView, DanglingUntriaged> folder_header_view_ = nullptr;
 };

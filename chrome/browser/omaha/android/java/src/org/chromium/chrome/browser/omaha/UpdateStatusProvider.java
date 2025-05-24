@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omaha;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +15,6 @@ import android.os.StatFs;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -27,6 +27,9 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.AsyncTask.Status;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.omaha.metrics.UpdateSuccessMetrics;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -42,6 +45,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * For manually testing this functionality, see {@link UpdateConfigs}.
  */
+@NullMarked
 public class UpdateStatusProvider {
     /**
      * Possible update states.
@@ -71,13 +75,13 @@ public class UpdateStatusProvider {
         public @UpdateState int updateState;
 
         /** URL to direct the user to when Omaha detects a newer version available. */
-        public String updateUrl;
+        public @Nullable String updateUrl;
 
         /**
          * The latest Chrome version available if OmahaClient.isNewerVersionAvailable() returns
          * true.
          */
-        public String latestVersion;
+        public @Nullable String latestVersion;
 
         /**
          * If the current OS version is unsupported, and we show the menu badge, and then the user
@@ -85,7 +89,7 @@ public class UpdateStatusProvider {
          * preference and cache it here. This preference is read on startup to ensure we only show
          * the unsupported message once per version.
          */
-        public String latestUnsupportedVersion;
+        public @Nullable String latestUnsupportedVersion;
 
         /**
          * Whether or not we are currently trying to simulate the update.  Used to ignore other
@@ -201,6 +205,7 @@ public class UpdateStatusProvider {
         mMetrics = new UpdateSuccessMetrics();
     }
 
+    @RequiresNonNull("mStatus")
     private void pingObservers() {
         for (Callback<UpdateStatus> observer : mObservers) observer.onResult(mStatus);
     }
@@ -211,10 +216,10 @@ public class UpdateStatusProvider {
         }
 
         // We pull the Omaha result once as it will never change.
-        if (mStatus == null) mStatus = new UpdateStatus(mOmahaQuery.getResult());
+        if (mStatus == null) mStatus = new UpdateStatus(assumeNonNull(mOmahaQuery.getResult()));
 
         if (!mStatus.mIsSimulated) {
-            mStatus.updateState = mOmahaQuery.getResult().updateState;
+            mStatus.updateState = assumeNonNull(mOmahaQuery.getResult()).updateState;
         }
 
         if (!mRecordedInitialStatus) {
@@ -234,11 +239,11 @@ public class UpdateStatusProvider {
 
         private @Nullable UpdateStatus mStatus;
 
-        public UpdateQuery(@NonNull Runnable resultReceiver) {
+        public UpdateQuery(Runnable resultReceiver) {
             mCallback = resultReceiver;
         }
 
-        public UpdateStatus getResult() {
+        public @Nullable UpdateStatus getResult() {
             return mStatus;
         }
 
@@ -255,7 +260,7 @@ public class UpdateStatusProvider {
             PostTask.postTask(TaskTraits.UI_DEFAULT, mCallback);
         }
 
-        private UpdateStatus getTestStatus() {
+        private @Nullable UpdateStatus getTestStatus() {
             @UpdateState Integer forcedUpdateState = UpdateConfigs.getMockUpdateState();
             if (forcedUpdateState == null) return null;
 

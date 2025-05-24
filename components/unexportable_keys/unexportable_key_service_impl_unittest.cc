@@ -4,24 +4,34 @@
 
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 
+#include <optional>
+#include <variant>
+
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/mock_unexportable_key.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
+#include "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace unexportable_keys {
+
+using testing::ElementsAreArray;
+using testing::NiceMock;
+using testing::Return;
 
 namespace {
 
@@ -56,14 +66,25 @@ class UnexportableKeyServiceImplTest : public testing::Test {
     scoped_key_provider_.emplace<crypto::ScopedNullUnexportableKeyProvider>();
   }
 
+  unexportable_keys::ScopedMockUnexportableKeyProvider&
+  SwitchToMockKeyProvider() {
+    // Using `emplace()` to destroy the existing scoped object before
+    // constructing a new one.
+    scoped_key_provider_
+        .emplace<unexportable_keys::ScopedMockUnexportableKeyProvider>();
+    return std::get<unexportable_keys::ScopedMockUnexportableKeyProvider>(
+        scoped_key_provider_);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadPoolExecutionMode::
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
-  // Provides a mock key provider by default.
-  absl::variant<crypto::ScopedMockUnexportableKeyProvider,
-                crypto::ScopedNullUnexportableKeyProvider>
+  // Provides a fake key provider by default.
+  std::variant<crypto::ScopedFakeUnexportableKeyProvider,
+               crypto::ScopedNullUnexportableKeyProvider,
+               unexportable_keys::ScopedMockUnexportableKeyProvider>
       scoped_key_provider_;
   std::unique_ptr<UnexportableKeyTaskManager> task_manager_;
   std::unique_ptr<UnexportableKeyServiceImpl> service_;
@@ -127,9 +148,9 @@ TEST_F(UnexportableKeyServiceImplTest, GenerateKeyMultiplePendingRequests) {
 }
 
 TEST_F(UnexportableKeyServiceImplTest, GenerateKeyFails) {
-  // RSA is not supported by the mock key provider, so the key generation should
-  // fail.
-  auto unsupported_algorithm = {crypto::SignatureVerifier::RSA_PKCS1_SHA256};
+  // RSA_PKCS1_SHA1 is not supported by the protocol, so the key generation
+  // should fail.
+  auto unsupported_algorithm = {crypto::SignatureVerifier::RSA_PKCS1_SHA1};
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
   service().GenerateSigningKeySlowlyAsync(unsupported_algorithm, kTaskPriority,
                                           future.GetCallback());
@@ -193,6 +214,29 @@ TEST_F(UnexportableKeyServiceImplTest, FromWrappedKeyMultiplePendingRequests) {
   }
 }
 
+// Verify that a `FromWrappedSigningKeySlowlyAsync()` callback is executed
+// correctly when it's posted from another `FromWrappedSigningKeySlowlyAsync()`
+// callback.
+TEST_F(UnexportableKeyServiceImplTest,
+       FromWrappedKeyNewRequestFromFailedCallback) {
+  std::vector<uint8_t> invalid_wrapped_key = {1, 2, 3};
+
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>>
+      inner_request_future;
+  service().FromWrappedSigningKeySlowlyAsync(
+      invalid_wrapped_key, kTaskPriority,
+      base::BindLambdaForTesting(
+          [&](ServiceErrorOr<UnexportableKeyId> key_id_or_error) {
+            service().FromWrappedSigningKeySlowlyAsync(
+                invalid_wrapped_key, kTaskPriority,
+                inner_request_future.GetCallback());
+          }));
+  RunBackgroundTasks();
+  EXPECT_TRUE(inner_request_future.IsReady());
+  EXPECT_EQ(inner_request_future.Get(),
+            base::unexpected(ServiceError::kCryptoApiFailed));
+}
+
 TEST_F(UnexportableKeyServiceImplTest,
        FromWrappedKeyMultiplePendingRequestsFail) {
   std::vector<uint8_t> empty_wrapped_key;
@@ -244,7 +288,7 @@ TEST_F(UnexportableKeyServiceImplTest, Sign) {
 
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   std::vector<uint8_t> data = {1, 2, 3};
-  service().SignSlowlyAsync(key_id, data, kTaskPriority,
+  service().SignSlowlyAsync(key_id, data, kTaskPriority, /*max_retries=*/0,
                             sign_future.GetCallback());
   EXPECT_FALSE(sign_future.IsReady());
   RunBackgroundTasks();
@@ -264,10 +308,61 @@ TEST_F(UnexportableKeyServiceImplTest, NonExistingKeyId) {
   // `SignSlowlyAsync()` should fail.
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   std::vector<uint8_t> data = {1, 2, 3};
-  service().SignSlowlyAsync(fake_key_id, data, kTaskPriority,
+  service().SignSlowlyAsync(fake_key_id, data, kTaskPriority, /*max_retries=*/0,
                             sign_future.GetCallback());
   EXPECT_TRUE(sign_future.IsReady());
   EXPECT_EQ(sign_future.Get(), base::unexpected(ServiceError::kKeyNotFound));
+}
+
+TEST_F(UnexportableKeyServiceImplTest, SignFailed) {
+  auto key_to_generate = std::make_unique<NiceMock<MockUnexportableKey>>();
+  ON_CALL(*key_to_generate, Algorithm)
+      .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
+  ON_CALL(*key_to_generate, GetWrappedKey)
+      .WillByDefault(Return(std::vector<uint8_t>{0, 0, 1}));
+  std::vector<uint8_t> data = {1, 2, 3};
+  EXPECT_CALL(*key_to_generate, SignSlowly(ElementsAreArray(data)))
+      .WillOnce(Return(std::nullopt));
+  SwitchToMockKeyProvider().AddNextGeneratedKey(std::move(key_to_generate));
+
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
+  service().SignSlowlyAsync(key_id, data, kTaskPriority, /*max_retries=*/0,
+                            sign_future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_EQ(sign_future.Get(),
+            base::unexpected(ServiceError::kCryptoApiFailed));
+}
+
+TEST_F(UnexportableKeyServiceImplTest, SignWithRetry) {
+  auto key_to_generate = std::make_unique<NiceMock<MockUnexportableKey>>();
+  ON_CALL(*key_to_generate, Algorithm)
+      .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
+  ON_CALL(*key_to_generate, GetWrappedKey)
+      .WillByDefault(Return(std::vector<uint8_t>{0, 0, 1}));
+  std::vector<uint8_t> data = {1, 2, 3};
+  std::vector<uint8_t> signed_data = {3, 2, 1};
+  EXPECT_CALL(*key_to_generate, SignSlowly(ElementsAreArray(data)))
+      .WillOnce(Return(std::nullopt))
+      .WillOnce(Return(signed_data));
+  SwitchToMockKeyProvider().AddNextGeneratedKey(std::move(key_to_generate));
+
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
+  service().SignSlowlyAsync(key_id, data, kTaskPriority, /*max_retries=*/3,
+                            sign_future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_EQ(sign_future.Get(), signed_data);
 }
 
 }  // namespace unexportable_keys

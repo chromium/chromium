@@ -13,7 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.util.TempDirectory;
@@ -21,7 +22,6 @@ import org.robolectric.util.TempDirectory;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -35,21 +35,20 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
 public class CustomTabCookiesFetcherUnitTest {
-    @Rule public JniMocker jniMocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ProfileProvider mProfileProvider;
 
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
 
-    private PausedExecutorService mExecutor = new PausedExecutorService();
+    private final PausedExecutorService mExecutor = new PausedExecutorService();
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         PostTask.setPrenativeThreadPoolExecutorForTesting(mExecutor);
 
-        jniMocker.mock(CookiesFetcherJni.TEST_HOOKS, mCookiesFetcherJni);
+        CookiesFetcherJni.setInstanceForTesting(mCookiesFetcherJni);
 
         TempDirectory tmpDir = new TempDirectory();
         String cookieFileDir = tmpDir.create("foo").toAbsolutePath().toString();

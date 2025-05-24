@@ -4,7 +4,10 @@
 
 package org.chromium.components.feature_engagement;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** EventConstants contains the String name of all in-product help events. */
+@NullMarked
 public final class EventConstants {
     /** The page load has failed and user has landed on an offline dino page. */
     public static final String USER_HAS_SEEN_DINO = "user_has_seen_dino";
@@ -65,8 +68,16 @@ public final class EventConstants {
     public static final String KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED =
             "autofill_virtual_card_suggestion_accepted";
 
+    /** The keyboard accessory was used to fill card info retrieval data into a form. */
+    public static final String KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED =
+            "autofill_card_info_retrieval_suggestion_accepted";
+
     /** The keyboard accessory was swiped to reveal more suggestions. */
     public static final String KEYBOARD_ACCESSORY_BAR_SWIPED = "keyboard_accessory_bar_swiped";
+
+    /** The keyboard accessory was used to fill home and work address data into a form. */
+    public static final String KEYBOARD_ACCESSORY_HOME_AND_WORK_ADDRESS_AUTOFILLED =
+            "keyboard_accessory_home_and_work_address_autofilled";
 
     /** The keyboard accessory was used to create a new plus address. */
     public static final String KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION =
@@ -132,6 +143,10 @@ public final class EventConstants {
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED =
             "adaptive_toolbar_customization_new_tab_opened";
 
+    /** AdaptiveButtonInTopToolbarCustomization open in browser events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_OPENED =
+            "adaptive_toolbar_customization_open_in_browser_opened";
+
     /** AdaptiveButtonInTopToolbarCustomization share events. */
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED =
             "adaptive_toolbar_customization_share_opened";
@@ -155,6 +170,9 @@ public final class EventConstants {
     /** Open new incognito tab from app menu. */
     public static final String APP_MENU_NEW_INCOGNITO_TAB_CLICKED =
             "app_menu_new_incognito_tab_clicked";
+
+    /** User has activated menu allowing them to move the toolbar to the bottom of the screen. */
+    public static final String BOTTOM_TOOLBAR_MENU_TRIGGERED = "bottom_toolbar_menu_triggered";
 
     /** Voice search button click on NTP. */
     public static final String NTP_VOICE_SEARCH_BUTTON_CLICKED = "ntp_voice_search_button_clicked";
@@ -203,13 +221,19 @@ public final class EventConstants {
 
     public static final String RESTORE_TABS_PROMO_USED = "restore_tabs_promo_used";
 
-    public static final String TAB_GROUP_SYNC_ON_STRIP_USED = "tab_group_sync_on_strip_used";
-
     /** Description text for tab group sync functionality in the tab group creation dialog. */
     public static final String TAB_GROUP_CREATION_DIALOG_SHOWN = "tab_group_creation_dialog_shown";
 
     /** IPH dialog of RTL gesture navigation dialog is shown. */
     public static final String RTL_GESTURE_NAVIGATION_DIALOG_SHOW = "rtl_gesture_iph_show";
+
+    /** An app menu pdf page download event. */
+    public static final String APP_MENU_PDF_PAGE_DOWNLOADED = "app_menu_pdf_page_downloaded";
+
+    public static final String ADAPTIVE_TOOLBAR_PAGE_SUMMARY_WEB_USED =
+            "adaptive_toolbar_page_summary_web_used";
+    public static final String ADAPTIVE_TOOLBAR_PAGE_SUMMARY_PDF_USED =
+            "adaptive_toolbar_page_summary_pdf_used";
 
     /** Do not instantiate. */
     private EventConstants() {}

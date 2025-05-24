@@ -4,10 +4,10 @@
 
 #include "net/base/network_delegate.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 
 namespace net {
@@ -136,16 +137,11 @@ bool NetworkDelegate::CanSetCookie(
 }
 
 std::optional<cookie_util::StorageAccessStatus>
-NetworkDelegate::GetStorageAccessStatus(const URLRequest& request) const {
+NetworkDelegate::GetStorageAccessStatus(
+    const URLRequest& request,
+    base::optional_ref<const RedirectInfo> redirect_info) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return OnGetStorageAccessStatus(request);
-}
-
-bool NetworkDelegate::IsStorageAccessHeaderEnabled(
-    const url::Origin* top_frame_origin,
-    const GURL& url) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return OnIsStorageAccessHeaderEnabled(top_frame_origin, url);
+  return OnGetStorageAccessStatus(request, redirect_info);
 }
 
 NetworkDelegate::PrivacySetting NetworkDelegate::ForcePrivacyMode(
@@ -211,14 +207,14 @@ void NetworkDelegate::ExcludeAllCookiesExceptPartitioned(
     net::CookieAccessResultList& excluded_cookies) {
   // If cookies are not universally disabled, we will preserve partitioned
   // cookies
-  const auto to_be_moved = base::ranges::stable_partition(
+  const auto to_be_moved = std::ranges::stable_partition(
       maybe_included_cookies, [](const net::CookieWithAccessResult& cookie) {
         return cookie.cookie.IsPartitioned();
       });
-  excluded_cookies.insert(
-      excluded_cookies.end(), std::make_move_iterator(to_be_moved),
-      std::make_move_iterator(maybe_included_cookies.end()));
-  maybe_included_cookies.erase(to_be_moved, maybe_included_cookies.end());
+  excluded_cookies.insert(excluded_cookies.end(),
+                          std::make_move_iterator(to_be_moved.begin()),
+                          std::make_move_iterator(to_be_moved.end()));
+  maybe_included_cookies.erase(to_be_moved.begin(), to_be_moved.end());
 
   // Add the ExclusionReason for all excluded cookies.
   for (net::CookieWithAccessResult& cookie : excluded_cookies) {
@@ -230,13 +226,13 @@ void NetworkDelegate::ExcludeAllCookiesExceptPartitioned(
 void NetworkDelegate::MoveExcludedCookies(
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
-  const auto to_be_moved = base::ranges::stable_partition(
+  const auto to_be_moved = std::ranges::stable_partition(
       maybe_included_cookies, [](const CookieWithAccessResult& cookie) {
         return cookie.access_result.status.IsInclude();
       });
-  excluded_cookies.insert(
-      excluded_cookies.end(), std::make_move_iterator(to_be_moved),
-      std::make_move_iterator(maybe_included_cookies.end()));
-  maybe_included_cookies.erase(to_be_moved, maybe_included_cookies.end());
+  excluded_cookies.insert(excluded_cookies.end(),
+                          std::make_move_iterator(to_be_moved.begin()),
+                          std::make_move_iterator(to_be_moved.end()));
+  maybe_included_cookies.erase(to_be_moved.begin(), to_be_moved.end());
 }
 }  // namespace net

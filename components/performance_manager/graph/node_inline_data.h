@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_INLINE_DATA_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_INLINE_DATA_H_
 
+#include <tuple>
 #include <utility>
 
 #include "base/types/pass_key.h"
@@ -94,8 +95,19 @@ class NodeInlineData {
   template <class NodeImplClass>
   static T& Get(NodeImplClass* node);
 
-  // Creates the instance.
+  // Retrieves the instance associated with `node`. Asserts that it exists.
+  // `Create()` must have been called before calling this.
+  template <class NodeImplClass>
+  static const T& Get(const NodeImplClass* node);
+
+  // Creates the instance. `args` is passed as arguments to the constructor of
+  // `T`. If `T`'s first argument is the node type, `node` is also passed as an
+  // argument to the constructor.
   template <class NodeImplClass, class... Args>
+    requires std::is_constructible_v<T, Args...>
+  static T& Create(NodeImplClass* node, Args&&... args);
+  template <class NodeImplClass, class... Args>
+    requires std::is_constructible_v<T, NodeImplClass*, Args...>
   static T& Create(NodeImplClass* node, Args&&... args);
 
   // Destroys the instance associated with `node`. Asserts that it exists. Note
@@ -120,6 +132,9 @@ class SupportsNodeInlineData {
   template <class T>
   T& GetNodeData(base::PassKey<NodeInlineData<T>>);
 
+  template <class T>
+  const T& GetNodeData(base::PassKey<NodeInlineData<T>>) const;
+
   template <class T, class... Args>
   T& CreateNodeData(base::PassKey<NodeInlineData<T>>, Args&&... args);
 
@@ -134,6 +149,9 @@ class SupportsNodeInlineData {
  private:
   template <class T>
   internal::Storage<T>& GetStorage();
+
+  template <class T>
+  const internal::Storage<T>& GetStorage() const;
 
   using UnderlyingStorage = std::tuple<internal::Storage<Ts>...>;
   UnderlyingStorage storage_;
@@ -161,9 +179,25 @@ T& NodeInlineData<T>::Get(NodeImplClass* node) {
 
 // static
 template <class T>
+template <class NodeImplClass>
+const T& NodeInlineData<T>::Get(const NodeImplClass* node) {
+  return node->GetNodeData(PassKey());
+}
+
+// static
+template <class T>
 template <class NodeImplClass, class... Args>
+  requires std::is_constructible_v<T, Args...>
 T& NodeInlineData<T>::Create(NodeImplClass* node, Args&&... args) {
   return node->CreateNodeData(PassKey(), std::forward<Args>(args)...);
+}
+
+// static
+template <class T>
+template <class NodeImplClass, class... Args>
+  requires std::is_constructible_v<T, NodeImplClass*, Args...>
+T& NodeInlineData<T>::Create(NodeImplClass* node, Args&&... args) {
+  return node->CreateNodeData(PassKey(), node, std::forward<Args>(args)...);
 }
 
 // static
@@ -190,6 +224,13 @@ T& SupportsNodeInlineData<Ts...>::GetNodeData(
 }
 
 template <class... Ts>
+template <class T>
+const T& SupportsNodeInlineData<Ts...>::GetNodeData(
+    base::PassKey<NodeInlineData<T>>) const {
+  return GetStorage<T>().Get();
+}
+
+template <class... Ts>
 template <class T, class... Args>
 T& SupportsNodeInlineData<Ts...>::CreateNodeData(
     base::PassKey<NodeInlineData<T>>,
@@ -212,6 +253,12 @@ void SupportsNodeInlineData<Ts...>::DestroyNodeInlineDataStorage() {
 template <class... Ts>
 template <class T>
 internal::Storage<T>& SupportsNodeInlineData<Ts...>::GetStorage() {
+  return std::get<internal::Storage<T>>(storage_);
+}
+
+template <class... Ts>
+template <class T>
+const internal::Storage<T>& SupportsNodeInlineData<Ts...>::GetStorage() const {
   return std::get<internal::Storage<T>>(storage_);
 }
 

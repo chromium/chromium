@@ -12,7 +12,7 @@ import org.chromium.android_webview.AwServiceWorkerSettings;
  */
 @SuppressWarnings("NoSynchronizedMethodCheck")
 public class ServiceWorkerSettingsAdapter extends android.webkit.ServiceWorkerWebSettings {
-    private AwServiceWorkerSettings mAwServiceWorkerSettings;
+    private final AwServiceWorkerSettings mAwServiceWorkerSettings;
 
     public ServiceWorkerSettingsAdapter(AwServiceWorkerSettings awSettings) {
         mAwServiceWorkerSettings = awSettings;

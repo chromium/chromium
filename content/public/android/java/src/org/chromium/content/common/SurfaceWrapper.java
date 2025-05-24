@@ -4,30 +4,49 @@
 
 package org.chromium.content.common;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.Surface;
 import android.view.SurfaceControl;
+import android.window.InputTransferToken;
 
 import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A wrapper for marshalling a Surface without self-destruction. */
 @JNINamespace("content")
+@NullMarked
 public class SurfaceWrapper implements Parcelable {
     private final boolean mWrapsSurface;
-    private Surface mSurface;
+    private @Nullable Surface mSurface;
     private final boolean mCanBeUsedWithSurfaceControl;
-    private SurfaceControl mSurfaceControl;
+    private @Nullable SurfaceControl mSurfaceControl;
+    private @Nullable InputTransferToken mBrowserInputToken;
 
     private SurfaceWrapper(Surface surface, boolean canBeUsedWithSurfaceControl) {
         mWrapsSurface = true;
         mSurface = surface;
         mCanBeUsedWithSurfaceControl = canBeUsedWithSurfaceControl;
         mSurfaceControl = null;
+        mBrowserInputToken = null;
+    }
+
+    private SurfaceWrapper(
+            Surface surface,
+            boolean canBeUsedWithSurfaceControl,
+            InputTransferToken browserInputToken) {
+        this(surface, canBeUsedWithSurfaceControl);
+        assert browserInputToken != null;
+        mBrowserInputToken = browserInputToken;
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -36,6 +55,12 @@ public class SurfaceWrapper implements Parcelable {
         mSurface = null;
         mCanBeUsedWithSurfaceControl = true;
         mSurfaceControl = surfaceControl;
+        mBrowserInputToken = null;
+    }
+
+    @CalledByNative
+    public @Nullable InputTransferToken getBrowserInputToken() {
+        return mBrowserInputToken;
     }
 
     @CalledByNative
@@ -44,7 +69,7 @@ public class SurfaceWrapper implements Parcelable {
     }
 
     @CalledByNative
-    private Surface takeSurface() {
+    private @Nullable Surface takeSurface() {
         assert mWrapsSurface;
         Surface surface = mSurface;
         mSurface = null;
@@ -57,7 +82,7 @@ public class SurfaceWrapper implements Parcelable {
     }
 
     @CalledByNative
-    private SurfaceControl takeSurfaceControl() {
+    private @Nullable SurfaceControl takeSurfaceControl() {
         assert !mWrapsSurface;
         SurfaceControl sc = mSurfaceControl;
         mSurfaceControl = null;
@@ -69,17 +94,40 @@ public class SurfaceWrapper implements Parcelable {
         return 0;
     }
 
+    @SuppressLint("NewApi")
+    private void writeInputTokenToParcel(Parcel out) {
+        assert mBrowserInputToken != null;
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM;
+        mBrowserInputToken.writeToParcel(out, 0);
+    }
+
     @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(mWrapsSurface ? 1 : 0);
         if (mWrapsSurface) {
+            assumeNonNull(mSurface);
+            boolean hasBrowserInputToken = mBrowserInputToken != null;
+            out.writeInt(hasBrowserInputToken ? 1 : 0);
             // Ignore flags so that the Surface won't call release()
             mSurface.writeToParcel(out, 0);
             out.writeInt(mCanBeUsedWithSurfaceControl ? 1 : 0);
+            if (hasBrowserInputToken) {
+                writeInputTokenToParcel(out);
+            }
         } else {
             // Ignore flags so that SurfaceControl won't call release().
+            assumeNonNull(mSurfaceControl);
             mSurfaceControl.writeToParcel(out, 0);
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @CalledByNative
+    private static SurfaceWrapper create(
+            Surface surface,
+            boolean canBeUsedWithSurfaceControl,
+            InputTransferToken browserInputToken) {
+        return new SurfaceWrapper(surface, canBeUsedWithSurfaceControl, browserInputToken);
     }
 
     @CalledByNative
@@ -93,14 +141,28 @@ public class SurfaceWrapper implements Parcelable {
         return new SurfaceWrapper(surfaceControl);
     }
 
+    @SuppressLint("NewApi")
+    private static InputTransferToken createInputTokenFromParcel(Parcel in) {
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM;
+        InputTransferToken token = InputTransferToken.CREATOR.createFromParcel(in);
+        assert token != null;
+        return token;
+    }
+
     public static final Parcelable.Creator<SurfaceWrapper> CREATOR =
             new Parcelable.Creator<SurfaceWrapper>() {
                 @Override
                 public SurfaceWrapper createFromParcel(Parcel in) {
                     final boolean wrapsSurface = (in.readInt() == 1);
                     if (wrapsSurface) {
+                        final boolean hasBrowserInputToken = (in.readInt() == 1);
                         Surface surface = Surface.CREATOR.createFromParcel(in);
                         boolean canBeUsedWithSurfaceControl = (in.readInt() == 1);
+                        if (hasBrowserInputToken) {
+                            InputTransferToken browserInputToken = createInputTokenFromParcel(in);
+                            return new SurfaceWrapper(
+                                    surface, canBeUsedWithSurfaceControl, browserInputToken);
+                        }
                         return new SurfaceWrapper(surface, canBeUsedWithSurfaceControl);
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         SurfaceControl surfaceControl = SurfaceControl.CREATOR.createFromParcel(in);

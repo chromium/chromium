@@ -21,6 +21,7 @@
 <translation id="4622039161600275920">Cette page a été bloquée par Chromium</translation>
 <translation id="48558539577516920">Autorisez Chromium à accéder au réseau depuis les paramètres du pare-feu ou
         de l'antivirus.</translation>
+<translation id="4949828774841497663">Accédez à Applications &gt; Réglages système &gt; Réseau, puis sélectionnez le réseau actif, cliquez sur le bouton "Détails..." et désélectionnez tous les proxys qui auraient pu être sélectionnés.</translation>
 <translation id="580822234363523061">Accédez au
           menu Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +30,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           et assurez-vous que vos paramètres sont définis sur "sans proxy" ou "direct".</translation>
+<translation id="648062525172759633">Ces pages sont destinées aux développeurs Chromium, et il est possible qu'elles ne fassent pas l'objet d'une maintenance ni de tests actifs. Pour les activer, accédez à <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliquez sur le bouton pour activer les pages de débogage, puis accédez à nouveau à cette page.</translation>
 <translation id="6549378540556750549">Chromium fonctionne également grâce à d'autres <ph name="BEGIN_LINK_OSS" />logiciels Open Source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
 <translation id="691026815377248078">Chromium a besoin d'accéder au Bluetooth pour continuer 
@@ -42,9 +44,6 @@
           puis désélectionnez "<ph name="NO_PREFETCH_DESCRIPTION" />".
           Si le problème persiste, nous vous conseillons de
           réactiver cette option pour des performances optimales.</translation>
-<translation id="8187289872471304532">Sélectionnez
-          Applications &gt; Préférences système &gt; Réseau &gt; Avancé &gt; Proxys
-          et désélectionnez les serveurs proxy sélectionnés.</translation>
 <translation id="8597726643333341451">Cette page Chrome for Testing est sécurisée</translation>
 <translation id="8684913864886094367">Chrome n'a pas été arrêté correctement.</translation>
 </translationbundle>

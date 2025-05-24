@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 
 #include <algorithm>
@@ -129,7 +124,7 @@ void IdentifiableTokenBuilder::DigestBlock(ConstFullBlockSpan block) {
   // study has more-or-less accepted for some metrics and is dealt with during
   // the analysis phase.
   chaining_value_ =
-      base::legacy::CityHash64WithSeed(base::make_span(block), chaining_value_);
+      base::legacy::CityHash64WithSeed(base::span(block), chaining_value_);
 }
 
 size_t IdentifiableTokenBuilder::PartialSize() const {
@@ -140,7 +135,7 @@ size_t IdentifiableTokenBuilder::PartialSize() const {
 IdentifiableTokenBuilder::ConstFullBlockSpan
 IdentifiableTokenBuilder::TakeCompletedBlock() {
   DCHECK(position_ == partial_.end());
-  auto buffer = base::make_span(partial_);
+  auto buffer = base::span(partial_);
   position_ = partial_.begin();
   return buffer;
 }
@@ -151,7 +146,7 @@ bool IdentifiableTokenBuilder::IsAligned() const {
 
 IdentifiableTokenBuilder::ByteSpan IdentifiableTokenBuilder::GetPartialBlock()
     const {
-  return ByteSpan(partial_.begin(), position_);
+  return ByteSpan(partial_).first(PartialSize());
 }
 
 }  // namespace blink

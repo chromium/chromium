@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/follow/follow_api.h"
-
 #import "base/functional/callback.h"
 #import "base/observer_list.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/follow/model/follow_service_observer.h"
+#import "ios/public/provider/chrome/browser/follow/follow_api.h"
 
 namespace ios {
 namespace provider {

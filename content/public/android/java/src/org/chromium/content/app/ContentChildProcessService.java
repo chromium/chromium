@@ -4,11 +4,15 @@
 
 package org.chromium.content.app;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
 import org.chromium.base.process_launcher.ChildProcessService;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.app.ChildProcessServiceFactory;
 
 /**
@@ -26,10 +30,9 @@ import org.chromium.content_public.app.ChildProcessServiceFactory;
  *     <service android:name="org.chromium.content.app.[Sandboxed|Privileged]ProcessServiceX"
  *              android:process=":[sandboxed|privileged]_processX" />
  */
+@NullMarked
 public class ContentChildProcessService extends Service {
-    private ChildProcessService mService;
-
-    public ContentChildProcessService() {}
+    private @Nullable ChildProcessService mService;
 
     @Override
     public void onCreate() {
@@ -41,12 +44,14 @@ public class ContentChildProcessService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        assumeNonNull(mService);
         mService.onDestroy();
         mService = null;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+        assumeNonNull(mService);
         return mService.onBind(intent);
     }
 }

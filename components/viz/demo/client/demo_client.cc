@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/demo/client/demo_client.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -71,8 +67,11 @@ void DemoClient::Resize(const gfx::Size& size,
 }
 
 viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
-  constexpr SkColor4f colors[] = {SkColors::kRed, SkColors::kGreen,
-                                  SkColors::kYellow};
+  constexpr auto colors = std::to_array<SkColor4f>({
+      SkColors::kRed,
+      SkColors::kGreen,
+      SkColors::kYellow,
+  });
   viz::CompositorFrame frame;
 
   frame.metadata.begin_frame_ack = viz::BeginFrameAck(args, true);
@@ -178,7 +177,6 @@ void DemoClient::DidReceiveCompositorFrameAck(
 
 void DemoClient::OnBeginFrame(const viz::BeginFrameArgs& args,
                               const viz::FrameTimingDetailsMap& timing_details,
-                              bool frame_ack,
                               std::vector<viz::ReturnedResource> resources) {
   // Generate a new compositor-frame for each begin-frame. This demo client
   // generates and submits the compositor-frame immediately. But it is possible

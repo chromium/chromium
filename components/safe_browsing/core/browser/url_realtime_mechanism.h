@@ -15,6 +15,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -40,7 +41,8 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
           web_contents_getter,
       SessionID tab_id,
       std::unique_ptr<SafeBrowsingLookupMechanism>
-          hash_realtime_lookup_mechanism);
+          hash_realtime_lookup_mechanism,
+      std::optional<internal::ReferringAppInfo> referring_app_info);
   UrlRealTimeMechanism(const UrlRealTimeMechanism&) = delete;
   UrlRealTimeMechanism& operator=(const UrlRealTimeMechanism&) = delete;
   ~UrlRealTimeMechanism() override;
@@ -66,6 +68,7 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       const GURL& url,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   // Checks the eligibility of sending a sampled ping first;
@@ -75,6 +78,7 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       const GURL& url,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   // Called when the |response| from the real-time lookup service is received.
@@ -164,16 +168,23 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // will be used when the URL real-time lookup completes.
   std::optional<SBThreatType> hash_realtime_lookup_result_threat_type_;
 
+  // A helper method to log background HPRT related metrics and construct CSBRR
+  // reports.
+  void LogBackgroundHprtLookupResults(SBThreatType urt_threat_type);
+
   // Converts a |SBThreatType| to the one used for
   // the UrlRealTimeAndHashRealTimeDiscrepancyInfo threat type CSBRR.
   static ClientSafeBrowsingReportRequest::
       UrlRealTimeAndHashRealTimeDiscrepancyInfo::LookupThreatType
-      getDiscrepancyThreatType(SBThreatType threat_type);
+      GetDiscrepancyThreatType(SBThreatType threat_type);
 
   // This will be populated in cases where the sampled HPRT lookup should be
   // sent.
   std::unique_ptr<SafeBrowsingLookupMechanism> hash_realtime_lookup_mechanism_ =
       nullptr;
+
+  // The Android app that launched a Chrome activity.
+  std::optional<internal::ReferringAppInfo> referring_app_info_;
 
   base::OnceCallback<void(std::unique_ptr<ClientSafeBrowsingReportRequest>)>
       save_report_info_for_testing_;

@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/containers/contains.h"
@@ -29,17 +28,19 @@
 #include "chrome/browser/ash/app_list/search/app_search_provider_test_base.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -150,12 +151,12 @@ TEST_F(AppSearchProviderTest, NonLatinLocale) {
   AddExtension(test_app_id_1, "Тестна апликација 1",
                ManifestLocation::kExternalPrefDownload,
                extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
-  service_->EnableExtension(test_app_id_1);
+  registrar()->EnableExtension(test_app_id_1);
   const std::string test_app_id_2 = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
   AddExtension(test_app_id_2, "Тестна апликација 2",
                ManifestLocation::kExternalPrefDownload,
                extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
-  service_->EnableExtension(test_app_id_2);
+  registrar()->EnableExtension(test_app_id_2);
 
   AddArcApp("Лажна апликација 1", "fake.app.first", "activity");
   AddArcApp("Лажна апликација 2", "fake.app.second", "activity");
@@ -196,11 +197,11 @@ TEST_F(AppSearchProviderTest, DisableAndEnable) {
 
   EXPECT_EQ("Hosted App", RunQuery("host"));
 
-  service_->DisableExtension(kHostedAppId,
-                             extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      kHostedAppId, {extensions::disable_reason::DISABLE_USER_ACTION});
   EXPECT_EQ("Hosted App", RunQuery("host"));
 
-  service_->EnableExtension(kHostedAppId);
+  registrar()->EnableExtension(kHostedAppId);
   EXPECT_EQ("Hosted App", RunQuery("host"));
 }
 
@@ -208,7 +209,7 @@ TEST_F(AppSearchProviderTest, UninstallExtension) {
   InitializeSearchProvider();
 
   EXPECT_EQ("Packaged App 1", RunQuery("app 1 p"));
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   // Allow async callbacks to run.
@@ -324,7 +325,7 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
 
 TEST_F(AppSearchProviderTest, WebApp) {
   const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      testing_profile(), kWebAppName, GURL(kWebAppUrl));
+      profile(), kWebAppName, GURL(kWebAppUrl));
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
@@ -344,7 +345,6 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
   }
 
   void TearDown() override {
-    profile_.reset();
     AppSearchProviderTest::TearDown();
 
     // |profile_| is initialized in AppListTestBase::SetUp but not destroyed in
@@ -361,7 +361,7 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
 
 TEST_F(AppSearchProviderCrostiniTest, CrostiniApp) {
   // This both allows Crostini UI and enables Crostini.
-  crostini::CrostiniTestHelper crostini_test_helper(testing_profile());
+  crostini::CrostiniTestHelper crostini_test_helper(profile());
   crostini_test_helper.ReInitializeAppServiceIntegration();
   InitializeSearchProvider();
 
@@ -389,7 +389,7 @@ TEST_F(AppSearchProviderCrostiniTest, CrostiniAppWithExactMathing) {
   // Set a non-latin locale, which don't support fuzzy matching.
   base::i18n::SetICUDefaultLocale("sr");
   // This both allows Crostini UI and enables Crostini.
-  crostini::CrostiniTestHelper crostini_test_helper(testing_profile());
+  crostini::CrostiniTestHelper crostini_test_helper(profile());
   crostini_test_helper.ReInitializeAppServiceIntegration();
   InitializeSearchProvider();
 
@@ -493,11 +493,11 @@ class AppSearchProviderOemAppTest
 TEST_P(AppSearchProviderOemAppTest, OemResultsOnFirstBoot) {
   // Disable the pre-installed high-priority extensions. This test simulates
   // a brand new profile being added to a device, and should not include these.
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   base::RunLoop().RunUntilIdle();
@@ -521,9 +521,9 @@ TEST_P(AppSearchProviderOemAppTest, OemResultsOnFirstBoot) {
                  ManifestLocation::kExternalPrefDownload,
                  extensions::Extension::WAS_INSTALLED_BY_OEM);
 
-    service_->EnableExtension(internal_app_id);
+    registrar()->EnableExtension(internal_app_id);
 
-    EXPECT_TRUE(prefs->WasInstalledByOem(internal_app_id));
+    EXPECT_TRUE(WasInstalledByOem(prefs, internal_app_id));
   }
 
   // Allow OEM app install to finish.

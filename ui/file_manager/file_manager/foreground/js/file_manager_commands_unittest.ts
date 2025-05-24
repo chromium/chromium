@@ -221,7 +221,7 @@ export async function testToggleHoldingSpaceCommand() {
 
   // Run test cases.
   for (const testCase of testCases) {
-    console.log('Starting test case... ' + testCase.description);
+    console.info('Starting test case... ' + testCase.description);
 
     // Mock `Event`.
     const event = createMockEvent();

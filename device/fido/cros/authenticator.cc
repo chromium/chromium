@@ -214,7 +214,7 @@ void ChromeOSAuthenticator::OnMakeCredentialResponse(
 
   std::optional<AuthenticatorData> authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(
-          base::as_bytes(base::make_span(response->authenticator_data())));
+          base::as_byte_span(response->authenticator_data()));
   if (!authenticator_data) {
     FIDO_LOG(ERROR) << "Authenticator data corrupted.";
     std::move(callback).Run(MakeCredentialStatus::kAuthenticatorResponseInvalid,
@@ -222,8 +222,8 @@ void ChromeOSAuthenticator::OnMakeCredentialResponse(
     return;
   }
 
-  std::optional<cbor::Value> statement_map = cbor::Reader::Read(
-      base::as_bytes(base::make_span(response->attestation_statement())));
+  std::optional<cbor::Value> statement_map =
+      cbor::Reader::Read(base::as_byte_span(response->attestation_statement()));
   if (!statement_map ||
       statement_map.value().type() != cbor::Value::Type::MAP) {
     FIDO_LOG(ERROR) << "Attestation statement is not a CBOR map.";
@@ -337,7 +337,7 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
 
   std::optional<AuthenticatorData> authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(
-          base::as_bytes(base::make_span(assertion.authenticator_data())));
+          base::as_byte_span(assertion.authenticator_data()));
   if (!authenticator_data) {
     FIDO_LOG(ERROR) << "Authenticator data corrupted.";
     std::move(callback).Run(GetAssertionStatus::kAuthenticatorResponseInvalid,
@@ -445,18 +445,6 @@ void ChromeOSAuthenticator::IsPowerButtonModeEnabled(
           [](base::OnceCallback<void(bool is_enabled)> callback,
              std::optional<u2f::IsU2fEnabledResponse> response) {
             std::move(callback).Run(response && response->enabled());
-          },
-          std::move(callback)));
-}
-
-void ChromeOSAuthenticator::IsLacrosSupported(
-    base::OnceCallback<void(bool supported)> callback) {
-  chromeos::U2FClient::Get()->GetSupportedFeatures(
-      u2f::GetSupportedFeaturesRequest(),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool is_enabled)> callback,
-             std::optional<u2f::GetSupportedFeaturesResponse> response) {
-            std::move(callback).Run(response && response->support_lacros());
           },
           std::move(callback)));
 }

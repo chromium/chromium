@@ -38,6 +38,8 @@ constexpr char kNumberOfPasswordAttemptHistogram[] =
     "Ash.Auth.ActiveSessionAuthPasswordAttempt";
 constexpr char kNumberOfFingerprintAttemptHistogram[] =
     "Ash.Auth.ActiveSessionAuthFingerprintAttempt";
+constexpr char kClosedPasswordlessUserWithSuccessHistogram[] =
+    "Ash.Auth.ActiveSessionPasswordlessAuthClosedWithSuccess";
 
 // The ceiling to use when clamping the number of PIN attempts that can be
 // recorded for UMA collection.
@@ -57,7 +59,9 @@ ActiveSessionAuthMetricsRecorder::ActiveSessionAuthMetricsRecorder() = default;
 
 ActiveSessionAuthMetricsRecorder::~ActiveSessionAuthMetricsRecorder() = default;
 
-void ActiveSessionAuthMetricsRecorder::RecordShow(AuthRequest::Reason reason) {
+void ActiveSessionAuthMetricsRecorder::RecordShow(
+    AuthRequest::Reason reason,
+    AuthFactorSet available_factors) {
   CHECK(!open_reason_.has_value());
   CHECK(!open_timer_.has_value());
 
@@ -65,6 +69,7 @@ void ActiveSessionAuthMetricsRecorder::RecordShow(AuthRequest::Reason reason) {
   base::UmaHistogramEnumeration(kShowReasonHistogram, reason);
 
   open_reason_ = reason;
+  available_factors_ = available_factors;
   open_timer_.emplace(base::ElapsedTimer());
 }
 
@@ -75,6 +80,11 @@ void ActiveSessionAuthMetricsRecorder::RecordClose() {
   // Record to metric the dialog was closed after authentication succeeded or
   // not.
   base::UmaHistogramBoolean(kClosedWithSuccessHistogram, auth_succeeded_);
+
+  if (!available_factors_.Has(AuthInputType::kPassword)) {
+    base::UmaHistogramBoolean(kClosedPasswordlessUserWithSuccessHistogram,
+                              auth_succeeded_);
+  }
 
   // Record to metric the dialog was closed during authentication or not.
   base::UmaHistogramBoolean(kClosedDuringAuthHistogram,
@@ -99,6 +109,7 @@ void ActiveSessionAuthMetricsRecorder::RecordClose() {
 
   // Reset the state.
   auth_succeeded_ = false;
+  available_factors_.Clear();
   pin_attempt_counter_ = 0;
   password_attempt_counter_ = 0;
   fingerprint_attempt_counter_ = 0;

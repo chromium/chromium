@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_URL_LOADER_THROTTLE_PROVIDER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/types/optional_ref.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace network {
 struct ResourceRequest;
@@ -78,7 +78,7 @@ class BLINK_PLATFORM_EXPORT URLLoaderThrottleProvider {
   // Dedicated, shared and service workers call it on the worker thread.
   //`local_frame_token` will be set to the corresponding frame for frame and
   // dedicated worker requests, otherwise it will not be set.
-  virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+  virtual std::vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       base::optional_ref<const LocalFrameToken> local_frame_token,
       const network::ResourceRequest& request) = 0;
 

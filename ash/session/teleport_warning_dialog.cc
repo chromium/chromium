@@ -82,8 +82,8 @@ void TeleportWarningDialog::InitDialog() {
       l10n_util::GetStringUTF16(IDS_ASH_TELEPORT_WARNING_MESSAGE));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(label);
-  AddChildView(never_show_again_checkbox_.get());
+  AddChildViewRaw(label);
+  AddChildViewRaw(never_show_again_checkbox_.get());
 }
 
 }  // namespace ash

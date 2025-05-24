@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "content/public/browser/web_contents.h"
@@ -34,13 +35,10 @@ class ProfileManagementFlowController {
     kUnknown,
     // Renders the `chrome://profile-picker` app, covering the profile picker,
     // the profile type choice at the beginning of the profile creation
-    // flow and the account selection on Lacros.
+    // flow and the account selection.
     kProfilePicker,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     // Renders the sign in screen on Dice platforms.
-    // TODO(crbug.com/40237764): Support the `kAccountSelection` step on
-    // Lacros. Picking an account during the `kLacrosSelectAvailableAccount`
-    // flow and the profile creation should be implemented as a standalone step.
     kAccountSelection,
     // Moves the rest of the flow to a browser tab so that the user can complete
     // the SAML sign in they started at the previous step.
@@ -72,11 +70,7 @@ class ProfileManagementFlowController {
   virtual ~ProfileManagementFlowController();
 
   // Starts the flow by registering and switching to the first step.
-  // If `step_switch_finished_callback` is provided, it will be called with
-  // `true` when the navigation to the initial step succeeded, or with `false`
-  // otherwise.
-  virtual void Init(StepSwitchFinishedCallback step_switch_finished_callback =
-                        StepSwitchFinishedCallback()) = 0;
+  virtual void Init() = 0;
 
   // Instructs a step registered as `step` to be shown.
   // If `step_switch_finished_callback` is provided, it will be called
@@ -98,6 +92,10 @@ class ProfileManagementFlowController {
   // Cancel the signed-in profile setup and returns back to the main picker
   // screen (if the original EntryPoint was to open the picker).
   virtual void CancelPostSignInFlow() = 0;
+
+  // Picks the profile with `profile_path`.
+  virtual void PickProfile(const base::FilePath& profile_path,
+                           ProfilePicker::ProfilePickingArgs args) = 0;
 
   // Clears the current state and reset it to the initial state that shows the
   // main screen. When calling this function the state should not be the
@@ -122,6 +120,9 @@ class ProfileManagementFlowController {
   void UnregisterStep(Step step);
 
   bool IsStepInitialized(Step step) const;
+
+  // Checks whether the flow has already attempted to exit.
+  bool HasFlowExited() const;
 
   // Closes the flow, calling `clear_host_callback_`, which would cause the
   // `host()` to be deleted.

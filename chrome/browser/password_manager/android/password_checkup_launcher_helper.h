@@ -28,7 +28,7 @@ class PasswordCheckupLauncherHelper {
   // Launch the bulk password check in passwords.google.com
   virtual void LaunchCheckupOnlineWithWindowAndroid(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& checkupUrl,
+      std::string& checkupUrl,
       const base::android::JavaRef<jobject>& windowAndroid) = 0;
 
   // Launch the bulk password check on device.
@@ -48,12 +48,17 @@ class PasswordCheckupLauncherHelper {
   // rather than a WindowAndroid
   virtual void LaunchCheckupOnlineWithActivity(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& checkupUrl,
+      std::string& checkupUrl,
       const base::android::JavaRef<jobject>& activity) = 0;
 
-  // Opens the safety check menu in Chrome Settings.
+  // Opens the old safety check UI in Chrome Settings.
   virtual void LaunchSafetyCheck(JNIEnv* env,
                                  ui::WindowAndroid* windowAndroid) = 0;
+
+  // Opens the new safety check UI (also known as Safety Hub) in Chrome
+  // Settings.
+  virtual void LaunchSafetyHub(JNIEnv* env,
+                               ui::WindowAndroid* windowAndroid) = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_CHECKUP_LAUNCHER_HELPER_H_

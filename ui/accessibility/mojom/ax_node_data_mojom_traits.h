@@ -50,7 +50,7 @@ struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
   static const std::vector<int32_t>& child_ids(const ui::AXNodeData& p) {
     return p.child_ids;
   }
-  static ui::AXRelativeBounds relative_bounds(const ui::AXNodeData& p) {
+  static const ui::AXRelativeBounds& relative_bounds(const ui::AXNodeData& p) {
     return p.relative_bounds;
   }
   static bool Read(ax::mojom::AXNodeDataDataView data, ui::AXNodeData* out);

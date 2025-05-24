@@ -7,30 +7,21 @@ module viz.mojom;
 import "services/viz/public/mojom/compositing/transferable_resource.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "cc/mojom/missing_tile_reason.mojom";
 
 // Describes a tile resource prepared by the client.
 struct TileResource {
   // Identifies the actual texture resource containing rasterized tile contents.
   TransferableResource resource;
 
-  // Whether or not the texture has a premultiplied alpha channel.
-  bool is_premultiplied;
-
   // Whether or not the texture was rasterized with checker-imaged content.
   bool is_checkered;
-};
-
-// For tiles that are missing or otherwise not ready to draw, this is the
-// reason why.
-enum MissingTileReason {
-  kOutOfMemory,
-  kResourceNotReady,
 };
 
 // Describes the visual contents of a tile.
 union TileContents {
   // No contents.
-  MissingTileReason missing_reason;
+  cc.mojom.MissingTileReason missing_reason;
 
   // A rasterized tile, identified by a Viz resource which the client produced.
   TileResource resource;
@@ -69,4 +60,11 @@ struct Tiling {
 
   // New or updated tiles.
   array<Tile> tiles;
+
+  // Used to find a tiling in service side when it's already deleted in client
+  // side.
+  float scale_key;
+
+  // Set to true if the client has deleted this tiling.
+  bool is_deleted;
 };

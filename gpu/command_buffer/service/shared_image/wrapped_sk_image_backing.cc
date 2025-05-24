@@ -335,7 +335,7 @@ SharedImageBackingType WrappedSkImageBacking::GetType() const {
 }
 
 void WrappedSkImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool WrappedSkImageBacking::UploadFromMemory(
@@ -370,8 +370,7 @@ WrappedSkImageBacking::GetPromiseTextures() {
 }
 
 SkColorType WrappedSkImageBacking::GetSkColorType(int plane_index) {
-  return viz::ToClosestSkColorType(/*gpu_compositing=*/true, format(),
-                                   plane_index);
+  return viz::ToClosestSkColorType(format(), plane_index);
 }
 
 std::vector<sk_sp<SkSurface>> WrappedSkImageBacking::GetSkSurfaces(

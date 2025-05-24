@@ -219,7 +219,7 @@
               managedProperties_.priority)]]">
         <div id="preferNetworkToggleLabel" class="start settings-box-text">
           $i18n{networkPrefer}
-          <div class="secondary" hidden="[[!isRevampWayfindingEnabled_]]">
+          <div class="secondary">
             $i18n{networkPreferDescription}
           </div>
         </div>
@@ -349,8 +349,7 @@
   </template>
 
   <template is="dom-if" if="[[hasAdvancedSection_(managedProperties_,
-                              propertiesReceived_, showMeteredToggle_,
-                              deviceState_)]]">
+                              propertiesReceived_, deviceState_)]]">
     <!-- Advanced toggle. -->
     <cr-expand-button
         id="advancedSectionToggle"
@@ -393,7 +392,7 @@
 
         <!-- Metered (WiFi and Cellular only). -->
         <template is="dom-if"
-            if="[[showMetered_(managedProperties_, showMeteredToggle_)]]">
+            if="[[showMetered_(managedProperties_)]]">
           <network-config-toggle id="meteredToggle" policy-on-left
               property="[[managedProperties_.metered]]"
               label="$i18n{networkMetered}"

@@ -1,75 +1,75 @@
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_1:
-"Tinos" : 25,
-"Ahem" : 1
+"Tinos (Fontations)" : 25,
+"Ahem (Fontations)" : 1
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #font_usage_reference__must_match_test_1:
-"Tinos" : 25,
-"Ahem" : 1
+"Tinos (Fontations)" : 25,
+"Ahem (Fontations)" : 1
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_2:
-"Ahem" : 15,
-"Tinos" : 11
+"Ahem (Fontations)" : 15,
+"Tinos (Fontations)" : 11
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #font_usage_reference__must_match_test_2:
-"Ahem" : 15,
-"Tinos" : 11
+"Ahem (Fontations)" : 15,
+"Tinos (Fontations)" : 11
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_3:
-"Tinos" : 23,
-"Ahem" : 3
+"Tinos (Fontations)" : 23,
+"Ahem (Fontations)" : 3
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #font_usage_reference__must_match_test_3:
-"Tinos" : 23,
-"Ahem" : 3
+"Tinos (Fontations)" : 23,
+"Ahem (Fontations)" : 3
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_4:
-"Tinos" : 16,
-"Ahem" : 7,
-"Cousine" : 3
+"Tinos (Fontations)" : 16,
+"Ahem (Fontations)" : 7,
+"Cousine (Fontations)" : 3
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #font_usage_reference__must_match_test_4:
-"Tinos" : 16,
-"Ahem" : 7,
-"Cousine" : 3
+"Tinos (Fontations)" : 16,
+"Ahem (Fontations)" : 7,
+"Cousine (Fontations)" : 3
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_5:
-"Tinos" : 17,
-"Ahem" : 5,
-"Cousine" : 4
+"Tinos (Fontations)" : 17,
+"Ahem (Fontations)" : 5,
+"Cousine (Fontations)" : 4
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #font_usage_must_match_test_5:
-"Tinos" : 17,
-"Ahem" : 5,
-"Cousine" : 4
+"Tinos (Fontations)" : 17,
+"Ahem (Fontations)" : 5,
+"Cousine (Fontations)" : 4
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_5a:
-"Tinos" : 17,
-"Ahem" : 5,
-"Cousine" : 4
+"Tinos (Fontations)" : 17,
+"Ahem (Fontations)" : 5,
+"Cousine (Fontations)" : 4
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #font_usage_reference__must_match_test_5a:
-"Tinos" : 17,
-"Ahem" : 5,
-"Cousine" : 4
+"Tinos (Fontations)" : 17,
+"Ahem (Fontations)" : 5,
+"Cousine (Fontations)" : 4
 
 '''
 #test_6:
-"Cousine" : 3
+"Cousine (Fontations)" : 3
 
 '''
 #font_usage_reference__must_match_test_6:
-"Cousine" : 3
+"Cousine (Fontations)" : 3
 
 

@@ -75,8 +75,8 @@ class DeviceAttesterTest : public testing::Test {
                           base::OnceCallback<void(
                               std::optional<std::vector<uint8_t>>)> callback) {
               if (can_sign) {
-                signature = test_key_pair_->key()->SignSlowly(
-                    base::as_bytes(base::make_span(str)));
+                signature =
+                    test_key_pair_->key()->SignSlowly(base::as_byte_span(str));
                 std::move(callback).Run(signature);
               } else {
                 std::move(callback).Run(std::nullopt);

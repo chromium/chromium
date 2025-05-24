@@ -24,7 +24,7 @@ browser itself. This returns info solely on the browser's management regardless
 of the OS or device management since the OS or device could be managed without
 the browser being managed.
 - The browser is managed if there are policies being applied on the browser
-- The browser is managed is the primary signed in account comes from a managed
+- The browser is managed if the primary signed in account comes from a managed
 domain.
 - The browser is not managed if the device is managed but no policy is applied
  on the browser.

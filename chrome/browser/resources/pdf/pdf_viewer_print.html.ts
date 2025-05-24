@@ -12,7 +12,6 @@ export function getHtml(this: PdfViewerPrintElement) {
 <div id="sizer"></div>
 
 <viewer-zoom-toolbar id="zoomToolbar"
-    .pdfCr23Enabled="${this.pdfCr23Enabled}"
     @fit-to-changed="${this.onFitToChanged}"
     @zoom-in="${this.onZoomIn}" @zoom-out="${this.onZoomOut}">
 </viewer-zoom-toolbar>

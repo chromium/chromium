@@ -13,6 +13,7 @@
 #include "base/types/pass_key.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_graphite_texture_holder.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -69,6 +70,15 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
+  // Only used for testing 1-copy path where CopySharedImageToGLTexture is
+  // called via passthrough command decoder with GL context. This happens on
+  // test scenarios with Graphite-Swiftshader-Vulkan backend whereas in
+  // production IOSurfaceImageBacking would be used.
+  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override;
+
 #if BUILDFLAG(SKIA_USE_DAWN)
   std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
@@ -86,9 +96,9 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
  private:
   class SkiaGraphiteImageRepresentationImpl;
 
-  const std::vector<scoped_refptr<WrappedGraphiteTextureHolder>>&
+  const std::vector<
+      scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>&
   GetWrappedGraphiteTextureHolders();
-  std::vector<skgpu::graphite::BackendTexture> GetGraphiteBackendTextures();
   bool InsertRecordingAndSubmit();
 
   skgpu::graphite::Recorder* recorder() const {
@@ -96,7 +106,8 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
   }
 
   scoped_refptr<SharedContextState> context_state_;
-  std::vector<scoped_refptr<WrappedGraphiteTextureHolder>> texture_holders_;
+  std::vector<scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>
+      texture_holders_;
 
   // Only stored for thread safe backings.
   scoped_refptr<base::SingleThreadTaskRunner> created_task_runner_;

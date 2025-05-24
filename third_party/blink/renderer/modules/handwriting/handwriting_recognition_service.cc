@@ -50,8 +50,7 @@ void OnCreateHandwritingRecognizer(
     }
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "CreateHandwritingRecognizer returns an invalid result.";
+  NOTREACHED() << "CreateHandwritingRecognizer returns an invalid result.";
 }
 
 void OnQueryHandwritingRecognizer(

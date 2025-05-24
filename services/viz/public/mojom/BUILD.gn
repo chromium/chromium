@@ -1,12 +1,12 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   generate_java = true
   sources = [
+    "compositing/animation.mojom",
     "compositing/begin_frame_args.mojom",
     "compositing/bitmap_in_shared_memory.mojom",
     "compositing/compositing_mode_watcher.mojom",
@@ -36,31 +36,37 @@ mojom("mojom") {
     "compositing/resource_id.mojom",
     "compositing/returned_resource.mojom",
     "compositing/selection.mojom",
-    "compositing/shared_bitmap_id.mojom",
     "compositing/shared_quad_state.mojom",
     "compositing/subtree_capture_id.mojom",
     "compositing/surface_id.mojom",
     "compositing/surface_info.mojom",
     "compositing/surface_range.mojom",
     "compositing/texture_releaser.mojom",
+    "compositing/thread.mojom",
     "compositing/tiling.mojom",
     "compositing/transferable_resource.mojom",
     "compositing/vertical_scroll_direction.mojom",
     "compositing/video_detector_observer.mojom",
     "compositing/view_transition_element_resource_id.mojom",
+    "compositing/view_transition_request.mojom",
     "gpu.mojom",
     "hit_test/aggregated_hit_test_region.mojom",
     "hit_test/hit_test_region_list.mojom",
     "hit_test/input_target_client.mojom",
   ]
 
-  deps = [ "//gpu/ipc/common:gmb_interface" ]
+  # Used in thread.mojom
+  enabled_features = []
+  if (is_fuchsia || is_apple) {
+    enabled_features += [ "thread_id_is_64_bit" ]
+  } else {
+    enabled_features += [ "thread_id_is_32_bit" ]
+  }
 
   public_deps = [
     ":shared_image_format",
     ":singleplanar_format",
-    "//cc/mojom:element_id",
-    "//cc/mojom:layer_type",
+    "//cc/mojom:layer_trees",
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
@@ -72,7 +78,7 @@ mojom("mojom") {
     "//ui/gl/mojom",
     "//ui/latency/mojom",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [ "//components/chromeos_camera/common" ]
   }
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
@@ -213,17 +219,6 @@ mojom("mojom") {
       traits_public_deps = [
         "//components/viz/common",
         "//ui/gfx/geometry/mojom",
-      ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.SharedBitmapId"
-          cpp = "::viz::SharedBitmapId"
-        },
-      ]
-      traits_headers = [
-        "//services/viz/public/cpp/compositing/shared_bitmap_id_mojom_traits.h",
       ]
     },
   ]
@@ -549,6 +544,19 @@ mojom("mojom") {
         "//ui/gfx/geometry/mojom",
       ]
     },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.Thread"
+          cpp = "::viz::Thread"
+        },
+      ]
+      traits_headers =
+          [ "//services/viz/public/cpp/compositing/thread_mojom_traits.h" ]
+      traits_sources =
+          [ "//services/viz/public/cpp/compositing/thread_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
   ]
   blink_cpp_typemaps = shared_cpp_typemaps
   blink_cpp_typemaps += [
@@ -608,6 +616,17 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/frame_timing_details_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.Thread"
+          cpp = "::viz::Thread"
+        },
+      ]
+      traits_headers =
+          [ "//services/viz/public/cpp/compositing/thread_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {

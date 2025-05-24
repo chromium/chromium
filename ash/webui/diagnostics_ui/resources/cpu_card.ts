@@ -10,18 +10,19 @@ import './diagnostics_shared.css.js';
 import './icons.html.js';
 import './realtime_cpu_chart.js';
 import './routine_section.js';
-import './strings.m.js';
+import '/strings.m.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cpu_card.html.js';
 import {convertKibToMib} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
-import {CpuUsage, CpuUsageObserverReceiver, MemoryUsage, MemoryUsageObserverReceiver, SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
+import type {CpuUsage, MemoryUsage, SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
+import {CpuUsageObserverReceiver, MemoryUsageObserverReceiver} from './system_data_provider.mojom-webui.js';
 import {RoutineType} from './system_routine_controller.mojom-webui.js';
 
 /**
@@ -164,7 +165,7 @@ export class CpuCardElement extends CpuCardElementBase {
   }
 
   private convertKhzToGhz(num: number): string {
-    return (num / 1000000).toFixed(2);
+    return (num / 1000000).toFixed(3);
   }
 
   protected getCurrentCpuSpeed(): string {

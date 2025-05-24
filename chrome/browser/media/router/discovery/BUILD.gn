@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(!is_android)
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
@@ -61,7 +59,6 @@ static_library("discovery") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/media/router:data_decoder_util",
@@ -86,7 +83,7 @@ static_library("discovery") {
     sources += [ "discovery_network_list_wifi_linux.cc" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/network" ]
   }
 

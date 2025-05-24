@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.version_info.VersionConstants;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omaha.UpdateConfigs;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Source;
@@ -22,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
  * A helper class for tracking whether or not an update was successful.  This tracker works across
  * restarts, as update success cannot be immediately determined.
  */
+@NullMarked
 public class UpdateSuccessMetrics {
     /** The type of update currently running.  Used for identifying which metric to tag. */
     public static int INTENT_UPDATE_TYPE = 1;

@@ -7,6 +7,10 @@
 
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
+namespace v8 {
+enum class ModuleImportPhase;
+}
+
 namespace blink {
 
 class ModuleScript;
@@ -23,7 +27,8 @@ class ModuleScriptLoaderClient : public GarbageCollectedMixin {
   friend class ModuleScriptLoader;
   friend class ModuleMapTestModulator;
 
-  virtual void NotifyNewSingleModuleFinished(ModuleScript*) = 0;
+  virtual void NotifyNewSingleModuleFinished(ModuleScript*,
+                                             v8::ModuleImportPhase) = 0;
 };
 
 }  // namespace blink

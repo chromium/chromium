@@ -11,43 +11,54 @@ description("WebSocket should fail if subprotocol contains a forbidden character
 
 window.jsTestIsAsync = true;
 
+const URL = "ws://127.0.0.1:8880/accept-first-subprotocol";
+const SEPARATORS = "()<>@,;:\\\"/[]?={} \t";
+
 function escapeUnicodeCharacter(codePoint)
 {
-    var hexCode = codePoint.toString(16);
-    while (hexCode.length < 4)
-        hexCode = "0" + hexCode;
-    return "\\u" + hexCode;
+  let hexCode = codePoint.toString(16);
+  while (hexCode.length < 4)
+    hexCode = "0" + hexCode;
+  return "\\u" + hexCode;
 }
 
-var url = "ws://127.0.0.1:8880/accept-first-subprotocol";
-var separators = "()<>@,;:\\\"/[]?={} \t";
-
-function runTest(codePoint)
+function toCharacter(codePoint)
 {
-    if (codePoint == 128) {
-        finishJSTest();
-        return;
-    }
-
-    var character = String.fromCharCode(codePoint);
-    if (codePoint >= 0x21 && codePoint <= 0x7E && separators.indexOf(character) === -1) {
-        var ws = new WebSocket(url, character);
-        ws.onopen = function()
-        {
-            testPassed("WebSocket correctly accepted subprotocol \"" + escapeUnicodeCharacter(codePoint) + "\"");
-            ws.close();
-        };
-        ws.onclose = function()
-        {
-            setTimeout("runTest(" + (codePoint + 1) + ")", 0);
-        };
-    } else {
-        shouldThrow("new WebSocket(url, \"" + escapeUnicodeCharacter(codePoint) + "\")");
-        setTimeout("runTest(" + (codePoint + 1) + ")", 0);
-    }
+  return String.fromCharCode(codePoint);
 }
 
-runTest(0);
+function isValidSubprotocolCodepoint(codePoint)
+{
+  return codePoint >= 0x21 && codePoint <= 0x7E &&
+      SEPARATORS.indexOf(toCharacter(codePoint)) === -1;
+}
+
+function assertValidSubprotocolAndFinish(subProtocol)
+{
+  const ws = new WebSocket(URL, subProtocol);
+  ws.onopen = () => {
+    testPassed(`WebSocket correctly accepted subprotocol "${subProtocol}"`);
+    ws.close();
+  };
+  ws.onclose = () => finishJSTest();
+}
+
+function runTest()
+{
+  let validSubProtocol = "";
+  for (let codePoint = 0; codePoint < 128; ++codePoint) {
+    if (isValidSubprotocolCodepoint(codePoint)) {
+      // We concatenate all the valid codepoints into a single string so we
+      // can test them all at once.
+      validSubProtocol += toCharacter(codePoint);
+    } else {
+      shouldThrow(`new WebSocket(URL, "${escapeUnicodeCharacter(codePoint)}")`);
+    }
+  }
+  assertValidSubprotocolAndFinish(validSubProtocol);
+}
+
+runTest();
 
 </script>
 </body>

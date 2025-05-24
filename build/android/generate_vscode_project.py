@@ -67,15 +67,17 @@ def _ProcessBuildConfigFile(output_dir, build_config_path, source_dirs, libs,
 
   logging.info('Processing build config: %s', build_config_path)
 
-  with open(os.path.join(output_dir, build_config_path)) as build_config_file:
-    build_config = json.load(build_config_file)
+  params_json = build_config_path.replace('.build_config.json', '.params.json')
+  with open(os.path.join(output_dir, params_json)) as f:
+    build_config = json.load(f)
+  with open(os.path.join(output_dir, build_config_path)) as f:
+    build_config.update(json.load(f))
 
-  deps_info = build_config['deps_info']
-  target_sources_file = deps_info.get('target_sources_file')
+  target_sources_file = build_config.get('target_sources_file')
   if target_sources_file is not None:
     _ProcessSourcesFile(output_dir, target_sources_file, source_dirs)
   else:
-    unprocessed_jar_path = deps_info.get('unprocessed_jar_path')
+    unprocessed_jar_path = build_config.get('unprocessed_jar_path')
     if unprocessed_jar_path is not None:
       lib_path = os.path.normpath(os.path.join(output_dir,
                                                unprocessed_jar_path))
@@ -107,7 +109,7 @@ def _ProcessBuildConfigFile(output_dir, build_config_path, source_dirs, libs,
                 os.pardir, os.pardir, 'build-tools',
                 android_sdk_build_tools_version, 'core-lambda-stubs.jar')))
 
-  for dep_config in deps_info['deps_configs']:
+  for dep_config in build_config.get('deps_configs', []):
     _ProcessBuildConfigFile(output_dir, dep_config, source_dirs, libs,
                             already_processed_build_config_files,
                             android_sdk_build_tools_version)

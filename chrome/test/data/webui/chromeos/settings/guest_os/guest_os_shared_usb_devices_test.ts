@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {GuestOsBrowserProxyImpl, SettingsGuestOsSharedUsbDevicesElement} from 'chrome://os-settings/lazy_load.js';
-import {CrDialogElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsGuestOsSharedUsbDevicesElement} from 'chrome://os-settings/lazy_load.js';
+import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrDialogElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

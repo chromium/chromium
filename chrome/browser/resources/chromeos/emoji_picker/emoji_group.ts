@@ -7,15 +7,17 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './emoji_variants.js';
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
-import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {VISUAL_CONTENT_WIDTH} from './constants.js';
 import {getTemplate} from './emoji_group.html.js';
 import {EmojiImageComponent} from './emoji_image.js';
 import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
-import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiClearRecentClickEvent, EmojiTextButtonClickEvent} from './events.js';
-import {CategoryEnum, EmojiVariants, Gender, PreferenceMapping, Tone} from './types.js';
+import type {EmojiClearRecentClickEvent, EmojiTextButtonClickEvent} from './events.js';
+import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN} from './events.js';
+import type {EmojiVariants, PreferenceMapping} from './types.js';
+import {CategoryEnum, Gender, Tone} from './types.js';
 
 // Note - grid-layout and flex-layout names are used directly in CSS.
 export enum EmojiGroupLayoutType {

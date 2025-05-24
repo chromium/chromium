@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 
 class PrefRegistrySimple;
@@ -51,7 +52,8 @@ class ASH_EXPORT CalendarController : public SessionObserver {
   // The currently active user account id.
   AccountId active_user_account_id_;
 
-  std::map<const AccountId, CalendarClient*> clients_by_account_id_;
+  std::map<const AccountId, raw_ptr<CalendarClient, CtnExperimental>>
+      clients_by_account_id_;
 };
 
 }  // namespace ash

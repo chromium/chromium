@@ -7,6 +7,8 @@
 typedef (CanvasRenderingContext2D or
          WebGLRenderingContext or
          WebGL2RenderingContext or
+         WebGLRenderingContextWebGPU or
+         WebGL2RenderingContextWebGPU or
          ImageBitmapRenderingContext or
          GPUCanvasContext) RenderingContext;
 

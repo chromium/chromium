@@ -1,0 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Example WebIDL schema which will throw a SchemaCompilerError due to using an
+// extended attribute with a name we don't have processing for.
+[UnknownExtendedAttribute]
+interface TestWebIdl {
+
+};
+
+partial interface Browser {
+  static attribute TestWebIdl testWebIdl;
+};

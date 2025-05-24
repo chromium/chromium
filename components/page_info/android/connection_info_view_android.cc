@@ -66,7 +66,7 @@ ConnectionInfoViewAndroid::ConnectionInfoViewAndroid(
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
-ConnectionInfoViewAndroid::~ConnectionInfoViewAndroid() {}
+ConnectionInfoViewAndroid::~ConnectionInfoViewAndroid() = default;
 
 void ConnectionInfoViewAndroid::Destroy(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj) {
@@ -90,16 +90,8 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
     int icon_color_id = page_info_client_->GetJavaResourceId(
         PageInfoUI::GetIdentityIconColorID(identity_info.identity_status));
 
-    // The headline and the certificate dialog link of the site's identity
-    // section is only displayed if the site's identity was verified. If the
-    // site's identity was verified, then the headline contains the organization
-    // name from the provided certificate. If the organization name is not
-    // available than the hostname of the site is used instead.
-    std::string headline;
-    if (identity_info.certificate) {
-      headline = identity_info.site_identity;
-    }
-
+    // The certificate dialog link of the site's identity
+    // section is displayed only if the site's identity was verified.
     ScopedJavaLocalRef<jstring> description = ConvertUTF8ToJavaString(
         env, identity_info.identity_status_description_android);
     std::u16string certificate_label;
@@ -113,9 +105,8 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
     }
 
     Java_ConnectionInfoView_addCertificateSection(
-        env, popup_jobject_, icon_id, ConvertUTF8ToJavaString(env, headline),
-        description, ConvertUTF16ToJavaString(env, certificate_label),
-        icon_color_id);
+        env, popup_jobject_, icon_id, description,
+        ConvertUTF16ToJavaString(env, certificate_label), icon_color_id);
 
     if (identity_info.show_ssl_decision_revoke_button) {
       std::u16string reset_button_label = l10n_util::GetStringUTF16(
@@ -130,8 +121,7 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
     ScopedJavaLocalRef<jstring> description = ConvertUTF8ToJavaString(
         env, identity_info.connection_status_description);
     Java_ConnectionInfoView_addDescriptionSection(
-        env, popup_jobject_, /*iconId=*/0, nullptr, description,
-        /*iconColorId=*/0);
+        env, popup_jobject_, /*iconId=*/0, description, /*iconColorId=*/0);
   }
 
   Java_ConnectionInfoView_addMoreInfoLink(

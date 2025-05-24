@@ -55,6 +55,9 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     // Exclude internal definitions of undocumented Windows structures.
     "sandbox/win/src/nt_internals.h",
 
+    // Cannot dep on //base as files are also used by chrome_elf.
+    "sandbox/policy/win/hook_util/",
+
     // Exclude directories that don't depend on //base, because nothing there
     // uses
     // anything from /base.

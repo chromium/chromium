@@ -186,6 +186,16 @@ TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior() {
 }
 
 // static
+TextIteratorBehavior TextIteratorBehavior::
+    AllVisiblePositionsIncludingShadowRootRangeLengthBehavior() {
+  return TextIteratorBehavior::Builder()
+      .SetEmitsObjectReplacementCharacter(true)
+      .SetEmitsCharactersBetweenAllVisiblePositions(true)
+      .SetEntersOpenShadowRoots(true)
+      .Build();
+}
+
+// static
 TextIteratorBehavior
 TextIteratorBehavior::NoTrailingSpaceRangeLengthBehavior() {
   return TextIteratorBehavior::Builder()

@@ -1,0 +1,6 @@
+monorail: {
+  component: "UI>Browser>TopChrome>TabStrip"
+}
+buganizer_public: {
+  component_id: 1456118
+}

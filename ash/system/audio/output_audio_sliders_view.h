@@ -57,6 +57,9 @@ class ASH_EXPORT OutputAudioSlidersView
   // Updates with the current output devices.
   void Update();
 
+  // Creates and adds the slider container.
+  void CreateSliderContainer();
+
   // Output audio sliders container.
   raw_ptr<views::View> slider_container_ = nullptr;
 

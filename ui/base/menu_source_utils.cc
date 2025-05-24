@@ -4,27 +4,28 @@
 
 #include "ui/base/menu_source_utils.h"
 
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/event.h"
 
 namespace ui {
 
-MenuSourceType GetMenuSourceTypeForEvent(const Event& event) {
+mojom::MenuSourceType GetMenuSourceTypeForEvent(const Event& event) {
   if (event.IsKeyEvent())
-    return MENU_SOURCE_KEYBOARD;
+    return mojom::MenuSourceType::kKeyboard;
   if (event.IsTouchEvent() || event.IsGestureEvent())
-    return MENU_SOURCE_TOUCH;
-  return MENU_SOURCE_MOUSE;
+    return mojom::MenuSourceType::kTouch;
+  return mojom::MenuSourceType::kMouse;
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
-MenuSourceType GetMenuSourceType(int event_flags) {
+mojom::MenuSourceType GetMenuSourceType(int event_flags) {
   if (event_flags & EF_MOUSE_BUTTON) {
-    return MENU_SOURCE_MOUSE;
+    return mojom::MenuSourceType::kMouse;
   }
   if (event_flags & EF_FROM_TOUCH) {
-    return MENU_SOURCE_TOUCH;
+    return mojom::MenuSourceType::kTouch;
   }
-  return MENU_SOURCE_KEYBOARD;
+  return mojom::MenuSourceType::kKeyboard;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

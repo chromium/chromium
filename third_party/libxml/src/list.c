@@ -188,13 +188,15 @@ xmlListPtr
 xmlListCreate(xmlListDeallocator deallocator, xmlListDataCompare compare)
 {
     xmlListPtr l;
-    if (NULL == (l = (xmlListPtr )xmlMalloc( sizeof(xmlList))))
+    l = (xmlListPtr)xmlMalloc(sizeof(xmlList));
+    if (l == NULL)
         return (NULL);
     /* Initialize the list to NULL */
     memset(l, 0, sizeof(xmlList));
 
     /* Add the sentinel */
-    if (NULL ==(l->sentinel = (xmlLinkPtr )xmlMalloc(sizeof(xmlLink)))) {
+    l->sentinel = (xmlLinkPtr)xmlMalloc(sizeof(xmlLink));
+    if (l->sentinel == NULL) {
 	xmlFree(l);
         return (NULL);
     }
@@ -565,7 +567,8 @@ xmlListPushBack(xmlListPtr l, void *data)
         return(0);
     lkPlace = l->sentinel->prev;
     /* Add the new link */
-    if (NULL ==(lkNew = (xmlLinkPtr )xmlMalloc(sizeof(xmlLink))))
+    lkNew = (xmlLinkPtr)xmlMalloc(sizeof(xmlLink));
+    if (lkNew == NULL)
         return (0);
     lkNew->data = data;
     lkNew->next = lkPlace->next;
@@ -638,12 +641,12 @@ xmlListSort(xmlListPtr l)
      * an insert. This is slow...
      */
 
-    if (NULL ==(lTemp = xmlListDup(l)))
+    lTemp = xmlListDup(l);
+    if (lTemp == NULL)
         return;
     xmlListClear(l);
     xmlListMerge(l, lTemp);
     xmlListDelete(lTemp);
-    return;
 }
 
 /**
@@ -724,7 +727,8 @@ xmlListDup(xmlListPtr old)
      * set it to be the old list for the time being whilst I work out
      * the answer
      */
-    if (NULL ==(cur = xmlListCreate(NULL, old->linkCompare)))
+    cur = xmlListCreate(NULL, old->linkCompare);
+    if (cur == NULL)
         return (NULL);
     if (0 != xmlListCopy(cur, old))
         return NULL;

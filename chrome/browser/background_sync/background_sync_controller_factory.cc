@@ -42,9 +42,10 @@ BackgroundSyncControllerFactory::BackgroundSyncControllerFactory()
 
 BackgroundSyncControllerFactory::~BackgroundSyncControllerFactory() = default;
 
-KeyedService* BackgroundSyncControllerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BackgroundSyncControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new BackgroundSyncControllerImpl(
+  return std::make_unique<BackgroundSyncControllerImpl>(
       context, std::make_unique<BackgroundSyncDelegateImpl>(
                    Profile::FromBrowserContext(context)));
 }

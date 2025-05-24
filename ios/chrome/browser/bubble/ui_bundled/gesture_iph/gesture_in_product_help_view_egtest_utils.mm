@@ -34,19 +34,24 @@ void ResetFirstRunRecency() {
 }
 
 void RelaunchWithIPHFeature(NSString* feature, BOOL safari_switcher) {
+  RelaunchConfigurationWithIPHFeature(AppLaunchConfiguration(), feature,
+                                      safari_switcher);
+}
+
+void RelaunchConfigurationWithIPHFeature(AppLaunchConfiguration config,
+                                         NSString* feature,
+                                         BOOL safari_switcher) {
   // Enable the flag to ensure the IPH triggers.
-  AppLaunchConfiguration config = AppLaunchConfiguration();
   config.iph_feature_enabled = base::SysNSStringToUTF8(feature);
   if (safari_switcher) {
-    config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
     // Force the conditions that allow the iph to show.
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("SyncedAndFirstDevice");
   }
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 void AssertGestureIPHVisibleWithDismissAction(NSString* description,
@@ -150,5 +155,5 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
     error = [MetricsAppInterface expectTotalCount:1
                                      forHistogram:dismissalHistogramName];
   }
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
 }

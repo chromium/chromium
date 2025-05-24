@@ -34,8 +34,7 @@ namespace scheduler {
 CompositorThreadSchedulerImpl::CompositorThreadSchedulerImpl(
     base::sequence_manager::SequenceManager* sequence_manager)
     : NonMainThreadSchedulerBase(sequence_manager,
-                                 TaskType::kCompositorThreadTaskQueueDefault),
-      compositor_metrics_helper_(GetHelper().HasCPUTimingForEachTask()) {
+                                 TaskType::kCompositorThreadTaskQueueDefault) {
   DCHECK(!g_compositor_thread_scheduler);
   g_compositor_thread_scheduler = this;
 }
@@ -57,7 +56,6 @@ void CompositorThreadSchedulerImpl::OnTaskCompleted(
     base::LazyNow* lazy_now) {
   task_timing->RecordTaskEnd(lazy_now);
   DispatchOnTaskCompletionCallbacks();
-  compositor_metrics_helper_.RecordTaskMetrics(task, *task_timing);
 }
 
 scoped_refptr<scheduler::SingleThreadIdleTaskRunner>
@@ -72,8 +70,7 @@ CompositorThreadSchedulerImpl::IdleTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadSchedulerImpl::V8TaskRunner() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -127,18 +124,14 @@ void CompositorThreadSchedulerImpl::PostIdleTask(const base::Location& location,
   IdleTaskRunner()->PostIdleTask(location, std::move(task));
 }
 
-void CompositorThreadSchedulerImpl::PostNonNestableIdleTask(
-    const base::Location& location,
-    Thread::IdleTask task) {
-  IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
-}
-
 void CompositorThreadSchedulerImpl::PostDelayedIdleTask(
     const base::Location& location,
     base::TimeDelta delay,
     Thread::IdleTask task) {
   IdleTaskRunner()->PostDelayedIdleTask(location, delay, std::move(task));
 }
+
+void CompositorThreadSchedulerImpl::RemoveCancelledIdleTasks() {}
 
 base::TimeTicks
 CompositorThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {

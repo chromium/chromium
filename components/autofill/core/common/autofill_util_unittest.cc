@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -107,6 +108,46 @@ TEST(StripAuthAndParamsTest, StripsAll) {
 
 TEST(SanitizeCreditCardFieldValueTest, SanitizeCreditCardFieldValue) {
   EXPECT_EQ(u"1231231111", SanitizeCreditCardFieldValue(u" 123-123-1111 "));
+}
+
+class AutofillUtilSelectTest : public testing::Test {
+ public:
+  AutofillUtilSelectTest() = default;
+
+ private:
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+};
+
+TEST_F(AutofillUtilSelectTest, FindShortestSubstringMatchInSelect) {
+  FormFieldData field = test::CreateTestSelectField({"États-Unis", "Canada"});
+
+  // Case 1: Exact match
+  EXPECT_EQ(
+      1, FindShortestSubstringMatchInSelect(u"Canada", false, field.options()));
+
+  // Case 2: Case-insensitive
+  EXPECT_EQ(
+      1, FindShortestSubstringMatchInSelect(u"CANADA", false, field.options()));
+
+  // Case 3: Proper substring
+  EXPECT_EQ(
+      0, FindShortestSubstringMatchInSelect(u"États", false, field.options()));
+
+  // Case 4: Accent-insensitive
+  EXPECT_EQ(0, FindShortestSubstringMatchInSelect(u"Etats-Unis", false,
+                                                  field.options()));
+
+  // Case 5: Whitespace-insensitive
+  EXPECT_EQ(1, FindShortestSubstringMatchInSelect(u"Ca na da", true,
+                                                  field.options()));
+
+  // Case 6: No match (whitespace-sensitive)
+  EXPECT_EQ(std::nullopt, FindShortestSubstringMatchInSelect(u"Ca Na Da", false,
+                                                             field.options()));
+
+  // Case 7: No match (not present)
+  EXPECT_EQ(std::nullopt, FindShortestSubstringMatchInSelect(u"Canadia", true,
+                                                             field.options()));
 }
 
 }  // namespace autofill

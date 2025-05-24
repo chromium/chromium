@@ -11,7 +11,6 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.AwBrowserProcess;
@@ -21,8 +20,10 @@ import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 
 import java.net.HttpURLConnection;
@@ -31,12 +32,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * A custom WebView AndroidMetricsLogConsumer. It
- * sends metrics logs to the nonembedded {@link
+ * A custom WebView AndroidMetricsLogConsumer. It sends metrics logs to the nonembedded {@link
  * org.chromium.android_webview.services.MetricsUploadService} which then uploads them accordingly
  * depending on the platform implementation.
  */
 @Lifetime.Singleton
+@NullMarked
 public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     private static final String TAG = "AwMetricsLogUploader";
     private static final long SERVICE_CONNECTION_TIMEOUT_MS = 10_000;
@@ -75,33 +76,43 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            // If onServiceConnected is incorrectly called twice in a row without
-            // onServiceDisconnected, we will still try take the latest service connection for
-            // a hope of working.
-            mConnectionsQueue.clear();
-            IMetricsUploadService uploadService = IMetricsUploadService.Stub.asInterface(service);
-            // Keep track of if the service is updated again since the last clear.
-            if (!mConnectionsQueue.offer(uploadService)) {
-                Log.d(TAG, "Attempted to re-bind with service twice.");
-            }
+            // Posting this to ensure it doesn't run while async startup is in progress.
+            ThreadUtils.runOnUiThread(
+                    () -> {
+                        // If onServiceConnected is incorrectly called twice in a row without
+                        // onServiceDisconnected, we will still try take the latest service
+                        // connection for a hope of working.
+                        mConnectionsQueue.clear();
+                        IMetricsUploadService uploadService =
+                                IMetricsUploadService.Stub.asInterface(service);
+                        // Keep track of if the service is updated again since the last clear.
+                        if (!mConnectionsQueue.offer(uploadService)) {
+                            Log.d(TAG, "Attempted to re-bind with service twice.");
+                        }
+                    });
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            // If we get an unexpected disconnection, we should no longer trust the connection we
-            // have queued.
-            // If the metrics service already has a connection it will simply fail when trying to
-            // make a call.
-            // This should be helpful for the first connection where there is a more considerable
-            // delta between when we first bind, and when we try to send data.
-            mConnectionsQueue.clear();
+            // Posting this to ensure it doesn't run while async startup is in progress.
+            ThreadUtils.runOnUiThread(
+                    () -> {
+                        // If we get an unexpected disconnection, we should no longer trust the
+                        // connection we have queued.
+                        // If the metrics service already has a connection it will simply fail when
+                        // trying to make a call.
+                        // This should be helpful for the first connection where there is a more
+                        // considerable delta between when we first bind, and when we try to send
+                        // data.
+                        mConnectionsQueue.clear();
+                    });
         }
 
         /**
          * Note: Once this method has run, it will automatically unbind the connection so this
          * connection should not be used after calling this method "once".
          */
-        public int sendData(boolean isAsync, @NonNull byte[] data) {
+        public int sendData(boolean isAsync, byte[] data) {
             // If we are on the main thread, we cannot block waiting to connect to the service so we
             // need to fire and forget. In this case all we can do is report back OK.
             if (!isAsync) {
@@ -117,7 +128,7 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
             return uploadToService(data);
         }
 
-        private int uploadToService(@NonNull byte[] data) {
+        private int uploadToService(byte[] data) {
             try {
                 IMetricsUploadService uploadService =
                         mConnectionsQueue.poll(
@@ -149,14 +160,12 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
      * @param data serialized ChromeUserMetricsExtension proto message.
      */
     @Override
-    public int log(@NonNull byte[] data) {
-        return log(data, new LinkedBlockingQueue(1));
+    public int log(byte[] data) {
+        return log(data, new LinkedBlockingQueue<>(1));
     }
 
     @VisibleForTesting
-    public int log(
-            @NonNull byte[] data,
-            @NonNull LinkedBlockingQueue<IMetricsUploadService> connectionsQueue) {
+    public int log(byte[] data, LinkedBlockingQueue<IMetricsUploadService> connectionsQueue) {
         MetricsLogUploaderServiceConnection connection = mInitialConnection.getAndSet(null);
 
         if (connection == null) {
@@ -182,7 +191,7 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
      */
     public void initialize() {
         MetricsLogUploaderServiceConnection connection =
-                new MetricsLogUploaderServiceConnection(new LinkedBlockingQueue(1));
+                new MetricsLogUploaderServiceConnection(new LinkedBlockingQueue<>(1));
         if (connection.bind()) {
             mInitialConnection.set(connection);
         } else {

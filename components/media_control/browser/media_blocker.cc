@@ -16,7 +16,7 @@ MediaBlocker::MediaBlocker(content::WebContents* web_contents) {
   content::WebContentsObserver::Observe(web_contents);
 }
 
-MediaBlocker::~MediaBlocker() {}
+MediaBlocker::~MediaBlocker() = default;
 
 void MediaBlocker::BlockMediaLoading(bool blocked) {
   if (media_loading_blocked_ == blocked)

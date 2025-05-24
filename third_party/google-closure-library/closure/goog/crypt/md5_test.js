@@ -70,7 +70,7 @@ testSuite({
     // Message + padding fits in two 64-byte blocks.
     const md5 = new Md5();
     md5.update(sixty);
-    md5.update(sixty.substr(0, 59));
+    md5.update(sixty.slice(0, 59));
     assertEquals(
         '6261005311809757906e04c0d670492d', crypt.byteArrayToHex(md5.digest()));
 

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
@@ -24,6 +25,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
  * clips for items with an associated property model with DropdownCommonProperties.SHOW_DIVIDER ==
  * true.
  */
+@NullMarked
 public class SuggestionHorizontalDivider extends ItemDecoration {
     private final int mHeight;
 
@@ -57,6 +59,7 @@ public class SuggestionHorizontalDivider extends ItemDecoration {
         }
         SimpleRecyclerViewAdapter.ViewHolder simpleRecyclerViewHolder =
                 (ViewHolder) parent.getChildViewHolder(view);
-        return simpleRecyclerViewHolder.model.get(DropdownCommonProperties.SHOW_DIVIDER);
+        var model = simpleRecyclerViewHolder.model;
+        return model != null && model.get(DropdownCommonProperties.SHOW_DIVIDER);
     }
 }

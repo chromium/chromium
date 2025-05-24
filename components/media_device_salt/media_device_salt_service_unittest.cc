@@ -46,17 +46,10 @@ blink::StorageKey StorageKey3() {
 
 }  // namespace
 
-class MediaDeviceSaltServiceTest : public testing::TestWithParam<bool> {
+class MediaDeviceSaltServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    if (UsePerStorageKeySalts()) {
-      feature_list_.InitWithFeatures(
-          {kMediaDeviceIdPartitioning, kMediaDeviceIdRandomSaltsPerStorageKey},
-          {});
-    } else {
-      feature_list_.InitWithFeatures({kMediaDeviceIdPartitioning},
-                                     {kMediaDeviceIdRandomSaltsPerStorageKey});
-    }
+    feature_list_.InitWithFeatures({kMediaDeviceIdPartitioning}, {});
     BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(
         &browser_context_);
 
@@ -86,8 +79,6 @@ class MediaDeviceSaltServiceTest : public testing::TestWithParam<bool> {
     return pref_service_;
   }
   MediaDeviceSaltService* service() const { return service_.get(); }
-
-  bool UsePerStorageKeySalts() const { return GetParam(); }
 
   std::string GetSalt(const blink::StorageKey& storage_key) const {
     base::test::TestFuture<const std::string&> future;
@@ -144,7 +135,7 @@ class MediaDeviceSaltServiceTest : public testing::TestWithParam<bool> {
   std::unique_ptr<MediaDeviceSaltService> service_;
 };
 
-TEST_P(MediaDeviceSaltServiceTest, ResetGlobalSaltFiresDeviceChange) {
+TEST_F(MediaDeviceSaltServiceTest, ResetGlobalSaltFiresDeviceChange) {
   feature_list().Reset();
   feature_list().InitAndDisableFeature(kMediaDeviceIdPartitioning);
   base::SystemMonitor monitor;
@@ -162,29 +153,29 @@ TEST_P(MediaDeviceSaltServiceTest, ResetGlobalSaltFiresDeviceChange) {
   monitor.RemoveDevicesChangedObserver(&observer);
 }
 
-TEST_P(MediaDeviceSaltServiceTest, DeleteSingleSaltUsingMatcher) {
+TEST_F(MediaDeviceSaltServiceTest, DeleteSingleSaltUsingMatcher) {
   // Deletion of individual salts is not supported when using the global salt.
   std::string salt1 = GetSalt(StorageKey1());
   std::string salt2 = GetSalt(StorageKey2());
   EXPECT_FALSE(salt1.empty());
-  EXPECT_EQ(salt1 != salt2, UsePerStorageKeySalts());
+  EXPECT_NE(salt1, salt2);
 
   DeleteSaltUsingMatcher(StorageKey1());
   std::string salt1b = GetSalt(StorageKey1());
   std::string salt2b = GetSalt(StorageKey2());
   EXPECT_FALSE(salt1b.empty());
-  EXPECT_EQ(salt1 != salt1b, UsePerStorageKeySalts());
+  EXPECT_NE(salt1, salt1b);
   EXPECT_EQ(salt2b, salt2);
 
   DeleteSaltUsingMatcher(StorageKey2());
   std::string salt1c = GetSalt(StorageKey1());
   std::string salt2c = GetSalt(StorageKey2());
   EXPECT_EQ(salt1c, salt1b);
-  EXPECT_EQ(salt2c != salt2b, UsePerStorageKeySalts());
-  EXPECT_EQ(salt2c != salt1c, UsePerStorageKeySalts());
+  EXPECT_NE(salt2c, salt2b);
+  EXPECT_NE(salt2c, salt1c);
 }
 
-TEST_P(MediaDeviceSaltServiceTest, DeleteMultipleSaltsUsingMatcher) {
+TEST_F(MediaDeviceSaltServiceTest, DeleteMultipleSaltsUsingMatcher) {
   // Deletion of individual salts is not supported when using the global salt.
   std::string salt1 = GetSalt(StorageKey1());
   std::string salt2 = GetSalt(StorageKey2());
@@ -195,34 +186,34 @@ TEST_P(MediaDeviceSaltServiceTest, DeleteMultipleSaltsUsingMatcher) {
   std::string salt2b = GetSalt(StorageKey2());
   std::string salt3b = GetSalt(StorageKey3());
 
-  EXPECT_EQ(salt1 != salt1b, UsePerStorageKeySalts());
-  EXPECT_EQ(salt2 != salt2b, UsePerStorageKeySalts());
+  EXPECT_NE(salt1, salt1b);
+  EXPECT_NE(salt2, salt2b);
   EXPECT_EQ(salt3, salt3b);
 }
 
-TEST_P(MediaDeviceSaltServiceTest, DeleteSingleSalt) {
+TEST_F(MediaDeviceSaltServiceTest, DeleteSingleSalt) {
   // Deletion of individual salts is not supported when using the global salt.
   std::string salt1 = GetSalt(StorageKey1());
   std::string salt2 = GetSalt(StorageKey2());
   EXPECT_FALSE(salt1.empty());
-  EXPECT_EQ(salt1 != salt2, UsePerStorageKeySalts());
+  EXPECT_NE(salt1, salt2);
 
   DeleteSingleSalt(StorageKey1());
   std::string salt1b = GetSalt(StorageKey1());
   std::string salt2b = GetSalt(StorageKey2());
   EXPECT_FALSE(salt1b.empty());
-  EXPECT_EQ(salt1 != salt1b, UsePerStorageKeySalts());
+  EXPECT_NE(salt1, salt1b);
   EXPECT_EQ(salt2b, salt2);
 
   DeleteSingleSalt(StorageKey2());
   std::string salt1c = GetSalt(StorageKey1());
   std::string salt2c = GetSalt(StorageKey2());
   EXPECT_EQ(salt1c, salt1b);
-  EXPECT_EQ(salt2c != salt2b, UsePerStorageKeySalts());
-  EXPECT_EQ(salt2c != salt1c, UsePerStorageKeySalts());
+  EXPECT_NE(salt2c, salt2b);
+  EXPECT_NE(salt2c, salt1c);
 }
 
-TEST_P(MediaDeviceSaltServiceTest, DeleteSaltsInTimeRange) {
+TEST_F(MediaDeviceSaltServiceTest, DeleteSaltsInTimeRange) {
   // Deletion of salts by time range is supported with both the global and
   // per-storage-key salts.
   base::Time time1 = base::Time::Now();
@@ -269,7 +260,7 @@ TEST_P(MediaDeviceSaltServiceTest, DeleteSaltsInTimeRange) {
   EXPECT_NE(salt3e, salt3d);
 }
 
-TEST_P(MediaDeviceSaltServiceTest, GetAllStorageKeys) {
+TEST_F(MediaDeviceSaltServiceTest, GetAllStorageKeys) {
   // Deletion of individual salts is not supported when using the global salt.
   std::string salt1 = GetSalt(StorageKey1());
   std::string salt2 = GetSalt(StorageKey2());
@@ -286,7 +277,7 @@ TEST_P(MediaDeviceSaltServiceTest, GetAllStorageKeys) {
   EXPECT_THAT(GetAllStorageKeys(), IsEmpty());
 }
 
-TEST_P(MediaDeviceSaltServiceTest, OpaqueKey) {
+TEST_F(MediaDeviceSaltServiceTest, OpaqueKey) {
   // Storage keys with opaque origin use an ephemeral global salt.
   std::string salt1 = GetSalt(blink::StorageKey());
 
@@ -301,7 +292,7 @@ TEST_P(MediaDeviceSaltServiceTest, OpaqueKey) {
   EXPECT_EQ(salt2, salt3);
 }
 
-TEST_P(MediaDeviceSaltServiceTest, ManyGetSalts) {
+TEST_F(MediaDeviceSaltServiceTest, ManyGetSalts) {
   const size_t n = 100;
   std::vector<std::string> salts;
   base::RunLoop run_loop;
@@ -322,7 +313,7 @@ TEST_P(MediaDeviceSaltServiceTest, ManyGetSalts) {
   }
 }
 
-TEST_P(MediaDeviceSaltServiceTest, DeviceChangeEvent) {
+TEST_F(MediaDeviceSaltServiceTest, DeviceChangeEvent) {
   base::SystemMonitor monitor;
   ASSERT_EQ(base::SystemMonitor::Get(), &monitor);
   testing::StrictMock<base::MockDevicesChangedObserver> observer;
@@ -345,5 +336,4 @@ TEST_P(MediaDeviceSaltServiceTest, DeviceChangeEvent) {
   monitor.RemoveDevicesChangedObserver(&observer);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, MediaDeviceSaltServiceTest, testing::Bool());
 }  // namespace media_device_salt

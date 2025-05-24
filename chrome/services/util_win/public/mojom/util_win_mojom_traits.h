@@ -156,8 +156,7 @@ struct StructTraits<chrome::mojom::AntiVirusProductDataView,
       case metrics::SystemProfileProto_AntiVirusState_STATE_EXPIRED:
         return chrome::mojom::AntiVirusProductState::kExpired;
     }
-    NOTREACHED_IN_MIGRATION();
-    return chrome::mojom::AntiVirusProductState::kOff;
+    NOTREACHED();
   }
 
   static bool Read(chrome::mojom::AntiVirusProductDataView data,
@@ -182,21 +181,6 @@ struct StructTraits<chrome::mojom::TpmIdentifierDataView,
   static const std::string& tpm_specific_version(
       const metrics::SystemProfileProto_TpmIdentifier& input) {
     return input.tpm_specific_version();
-  }
-
-  static uint32_t manufacturer_version_hash(
-      const metrics::SystemProfileProto_TpmIdentifier& input) {
-    return input.manufacturer_version_hash();
-  }
-
-  static uint32_t manufacturer_version_info_hash(
-      const metrics::SystemProfileProto_TpmIdentifier& input) {
-    return input.manufacturer_version_info_hash();
-  }
-
-  static uint32_t tpm_specific_version_hash(
-      const metrics::SystemProfileProto_TpmIdentifier& input) {
-    return input.tpm_specific_version_hash();
   }
 
   static bool Read(chrome::mojom::TpmIdentifierDataView data,

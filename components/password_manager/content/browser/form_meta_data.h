@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_FORM_META_DATA_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_FORM_META_DATA_H_
 
-#include "components/autofill/core/common/form_data.h"
 #include "url/gurl.h"
+
+namespace autofill {
+class FormData;
+}
 
 namespace content {
 class RenderFrameHost;

@@ -24,8 +24,9 @@ class WallClockTimerTest : public ::testing::Test {
   // suspended.
   // Power event will be triggered if |with_power| is set to false.
   void FastForwardBy(base::TimeDelta delay, bool with_power = true) {
-    if (!with_power)
+    if (!with_power) {
       fake_power_monitor_source_.Suspend();
+    }
 
     clock_.Advance(delay);
 
@@ -85,7 +86,7 @@ TEST_F(WallClockTimerTest, UseTimerTwiceInRow) {
   wall_clock_timer.Start(FROM_HERE, clock_.Now() + delay, first_callback.Get());
   EXPECT_CALL(first_callback, Run())
       .WillOnce(::testing::InvokeWithoutArgs(
-          [this, &wall_clock_timer, &second_callback, delay]() {
+          [this, &wall_clock_timer, &second_callback, delay] {
             wall_clock_timer.Start(FROM_HERE, clock_.Now() + delay,
                                    second_callback.Get());
           }));

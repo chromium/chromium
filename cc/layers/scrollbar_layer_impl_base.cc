@@ -50,7 +50,7 @@ DamageReasonSet ScrollbarLayerImplBase::GetDamageReasons() const {
     reasons.Put(DamageReason::kScrollbarFadeOutAnimation);
   }
   if (property_changed_for_other_reasons_ || !update_rect().IsEmpty()) {
-    reasons.Put(DamageReason::kUntracked);
+    reasons.Put(DamageReason::kCompositorScroll);
   }
   return reasons;
 }

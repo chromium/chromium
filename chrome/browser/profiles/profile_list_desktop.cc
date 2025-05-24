@@ -18,8 +18,7 @@ ProfileListDesktop::ProfileListDesktop(
     : profile_storage_(profile_storage) {
 }
 
-ProfileListDesktop::~ProfileListDesktop() {
-}
+ProfileListDesktop::~ProfileListDesktop() = default;
 
 size_t ProfileListDesktop::GetNumberOfItems() const {
   return items_.size();

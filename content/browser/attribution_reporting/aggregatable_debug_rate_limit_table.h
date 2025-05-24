@@ -5,11 +5,14 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_AGGREGATABLE_DEBUG_RATE_LIMIT_TABLE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_AGGREGATABLE_DEBUG_RATE_LIMIT_TABLE_H_
 
+#include <set>
+
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace base {
@@ -61,6 +64,9 @@ class CONTENT_EXPORT AggregatableDebugRateLimitTable {
       base::Time delete_begin,
       base::Time delete_end,
       StoragePartition::StorageKeyMatcherFunction filter);
+
+  void AppendRateLimitDataKeys(sql::Database* db,
+                               std::set<AttributionDataModel::DataKey>& keys);
 
   void SetDelegate(const AttributionResolverDelegate&);
 

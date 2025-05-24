@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.RelatedSearchesSectionHost;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.RelatedSearchesUma;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
 import org.chromium.ui.base.LocalizationUtils;
@@ -91,7 +92,7 @@ public class RelatedSearchesControl {
     private float mViewY;
 
     /** The reference to the host for this part of the panel (callbacks to the Panel). */
-    private RelatedSearchesSectionHost mPanelSectionHost;
+    private final RelatedSearchesSectionHost mPanelSectionHost;
 
     /** The number of chips that have been selected so far. */
     private int mChipsSelected;
@@ -512,20 +513,18 @@ public class RelatedSearchesControl {
      */
     private class RelatedSearchesControlView extends OverlayPanelInflater {
         private final ChipsCoordinator mChipsCoordinator;
-        // TODO(donnd): track the offset of the carousel here, so we can use it for snapshotting
-        // and log that the user has scrolled it.
-        private float mLastOffset;
         private final int mControlId;
 
         /**
          * Constructs a view that can be shown in the panel.
-         * @param panel             The panel.
-         * @param context           The Android Context used to inflate the View.
-         * @param container         The container View used to inflate the View.
-         * @param resourceLoader    The resource loader that will handle the snapshot capturing.
-         * @param layoutId          The XML Layout that declares the View.
-         * @param viewId            The id of the root View of the Layout.
-         * @param controlId         The id of the control View.
+         *
+         * @param panel The panel.
+         * @param context The Android Context used to inflate the View.
+         * @param container The container View used to inflate the View.
+         * @param resourceLoader The resource loader that will handle the snapshot capturing.
+         * @param layoutId The XML Layout that declares the View.
+         * @param viewId The id of the root View of the Layout.
+         * @param controlId The id of the control View.
          */
         RelatedSearchesControlView(
                 OverlayPanel panel,
@@ -557,6 +556,29 @@ public class RelatedSearchesControl {
                             if (newState == RecyclerView.SCROLL_STATE_IDLE) invalidate(false);
                         }
                     });
+            setBottomMargin();
+        }
+
+        /**
+         * Sets the bottom margin of the control view.
+         */
+        private void setBottomMargin() {
+            View controlView = getControlView();
+            if (controlView == null) return;
+
+            ViewGroup.MarginLayoutParams params =
+                    (ViewGroup.MarginLayoutParams) controlView.getLayoutParams();
+            if (ChromeFeatureList.sAndroidProgressBarVisualUpdate.isEnabled()) {
+                params.bottomMargin =
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.toolbar_progress_bar_increased_height);
+            } else {
+                params.bottomMargin =
+                        mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
+            }
+            controlView.setLayoutParams(params);
         }
 
         /**
@@ -601,6 +623,8 @@ public class RelatedSearchesControl {
             ViewGroup parent = (ViewGroup) coordinatorView.getParent();
             if (parent != null) parent.removeView(coordinatorView);
             relatedSearchesViewGroup.addView(coordinatorView);
+            // Ensure the bottom margin is correctly set after view updates.
+            setBottomMargin();
             invalidate(false);
 
             // Log carousel visible item position

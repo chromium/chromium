@@ -184,7 +184,7 @@ public class ChromeActivitySessionTracker {
                 TraceEvent.scoped(
                         "ChromeActivitySessionTracker.handlePerProfileForegroundSessionStart")) {
             updatePasswordEchoState(profile);
-            FontSizePrefs.getInstance(profile).onSystemFontScaleChanged();
+            FontSizePrefs.getInstance(profile).setFontScaleFactor();
             DeviceAccessibilitySettingsHandler.getInstance(profile).updateFontWeightAdjustment();
             updateAcceptLanguages(profile);
             SafetyHubFetchServiceFactory.getForProfile(profile).onForegroundSessionStart();

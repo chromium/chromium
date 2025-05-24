@@ -2,6 +2,7 @@
 file://gpu/GRAPHICS_TEAM_OWNERS
 
 per-file webcodecs_expectations.txt=file://third_party/blink/renderer/modules/webcodecs/OWNERS
+per-file webrtc_expectations.txt=file://third_party/blink/renderer/modules/peerconnection/OWNERS
 
 # Service accounts for automated expectation scripts.
 chrome-automated-expectation@chops-service-accounts.iam.gserviceaccount.com

@@ -4,7 +4,6 @@
 
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
@@ -77,10 +76,10 @@ if (enable_swiftshader) {
   packaging_files += [ "$root_out_dir/vk_swiftshader_icd.json" ]
 }
 
-if (use_qt) {
-  # Even though this is a shared library, add it to `packaging_files` instead of
-  # `packaging_files_shlibs` to skip the dependency check.  This is intentional
-  # to prevent a hard dependency on QT for the package.
+# Even though this is a shared library, add it to `packaging_files` instead of
+# `packaging_files_shlibs` to skip the dependency check.  This is intentional
+# to prevent a hard dependency on QT for the package.
+if (use_qt5) {
   packaging_files += [ "$root_out_dir/libqt5_shim.so" ]
 }
 if (use_qt6) {
@@ -104,8 +103,7 @@ action_foreach("calculate_deb_dependencies") {
     target_cpu,
     "deb_{{source_name_part}}.deps",
   ]
-  if ((is_linux || is_chromeos_lacros) && target_cpu == "x64" &&
-      enable_distro_version_check) {
+  if (is_linux && target_cpu == "x64" && enable_distro_version_check) {
     args += [ "--distro-check" ]
   }
 }
@@ -139,8 +137,7 @@ action_foreach("calculate_rpm_dependencies") {
     "rpm_{{source_name_part}}.deps",
   ]
   args += rebase_path(packaging_files_shlibs, root_build_dir)
-  if ((is_linux || is_chromeos_lacros) && target_cpu == "x64" &&
-      enable_distro_version_check) {
+  if (is_linux && target_cpu == "x64" && enable_distro_version_check) {
     args += [ "--distro-check" ]
   }
 }
@@ -189,9 +186,11 @@ strip_binary("strip_libGLESv2_shlib") {
   deps = [ "//third_party/angle:libGLESv2" ]
 }
 
-strip_binary("strip_libvulkan_shlib") {
-  binary_input = "$root_out_dir/libvulkan.so.1"
-  deps = [ "//third_party/vulkan-loader/src:libvulkan" ]
+if (angle_shared_libvulkan && !is_chromeos) {
+  strip_binary("strip_libvulkan_shlib") {
+    binary_input = "$root_out_dir/libvulkan.so.1"
+    deps = [ "//third_party/vulkan-loader/src:libvulkan" ]
+  }
 }
 
 strip_binary("strip_libvk_swiftshader.shlib") {
@@ -208,7 +207,7 @@ if (build_with_internal_optimization_guide) {
   }
 }
 
-if (use_qt) {
+if (use_qt5) {
   strip_binary("strip_qt5_shim") {
     binary_input = "$root_out_dir/libqt5_shim.so"
     deps = [ "//ui/qt:qt5_shim" ]
@@ -240,6 +239,7 @@ copy("common_packaging_files") {
   visibility = [ ":*" ]
   sources = [
     "//chrome/app/resources/manpage.1.in",
+    "common/appdata.xml.template",
     "common/apt.include",
     "common/default-app-block.template",
     "common/default-app.template",
@@ -257,15 +257,9 @@ copy("common_packaging_files") {
   ]
 
   if (is_chrome_branded) {
-    sources += [
-      "common/google-chrome/google-chrome.appdata.xml.template",
-      "common/google-chrome/google-chrome.info",
-    ]
+    sources += [ "common/google-chrome.info" ]
   } else {
-    sources += [
-      "common/chromium-browser/chromium-browser.appdata.xml",
-      "common/chromium-browser/chromium-browser.info",
-    ]
+    sources += [ "common/chromium-browser.info" ]
   }
 
   sources += [ "//buildtools/third_party/eu-strip/bin/eu-strip" ]
@@ -331,7 +325,7 @@ copy("theme_files") {
   outputs = [ "$root_out_dir/installer/theme/{{source_file_part}}" ]
 }
 
-if (!is_chromeos_ash) {
+if (!is_chromeos) {
   copy("rpm_packaging_files") {
     visibility = [ ":*" ]
     sources = [
@@ -397,7 +391,7 @@ group("installer_deps") {
       "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
     ]
   }
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     public_deps += [ ":rpm_packaging_files" ]
   }
   if (build_with_internal_optimization_guide) {
@@ -406,7 +400,7 @@ group("installer_deps") {
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]
   }
-  if (use_qt) {
+  if (use_qt5) {
     public_deps += [
       ":strip_qt5_shim",
       "//ui/qt:qt5_shim",
@@ -486,7 +480,7 @@ template("linux_package") {
     ]
   }
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     rpm_target_name = "${target_name}_rpm"
     action(rpm_target_name) {
       visibility = [ ":*" ]
@@ -540,7 +534,7 @@ template("linux_package") {
 
   group(target_name) {
     deps = [ ":$deb_target_name" ]
-    if (!is_chromeos_ash) {
+    if (!is_chromeos) {
       deps += [ ":$rpm_target_name" ]
     }
   }

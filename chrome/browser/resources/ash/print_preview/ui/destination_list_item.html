@@ -1,0 +1,15 @@
+<style include="destination-list-item-style">
+</style>
+<cr-icon icon="[[destination.icon]]"></cr-icon>
+<span class="name searchable">[[destination.displayName]]</span>
+<span class="search-hint searchable" hidden="[[!searchHint_]]">
+  [[searchHint_]]
+</span>
+<span class="extension-controlled-indicator"
+    hidden$="[[!destination.isExtension]]">
+  <span class="extension-name searchable">
+    [[destination.extensionName]]
+  </span>
+  <span class="extension-icon" role="button" tabindex="0"
+      title="[[getExtensionPrinterTooltip_(destination)]]"></span>
+</span>

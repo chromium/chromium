@@ -16,7 +16,8 @@ FileSelectionDialogsPolicyHandler::FileSelectionDialogsPolicyHandler()
     : TypeCheckingPolicyHandler(key::kAllowFileSelectionDialogs,
                                 base::Value::Type::BOOLEAN) {}
 
-FileSelectionDialogsPolicyHandler::~FileSelectionDialogsPolicyHandler() {}
+FileSelectionDialogsPolicyHandler::~FileSelectionDialogsPolicyHandler() =
+    default;
 
 void FileSelectionDialogsPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,

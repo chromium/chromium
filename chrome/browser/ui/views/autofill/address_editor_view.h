@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_EDITOR_VIEW_H_
 
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -60,7 +61,7 @@ class AddressEditorView : public views::View {
   void SelectCountryForTesting(const std::u16string& code);
   void SetTextInputFieldValueForTesting(autofill::FieldType type,
                                         const std::u16string& value);
-  std::u16string GetValidationErrorForTesting() const;
+  std::u16string_view GetValidationErrorForTesting() const;
 
  private:
   // Creates the whole editor view to go within the editor dialog. It

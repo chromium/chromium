@@ -26,14 +26,13 @@ suite('routing-with-query-param', function() {
     window.history.replaceState({}, '', '/?q=query');
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
-    // Ignore the initial empty query so that we can correctly check the
-    // search term for the second call to queryHistory().
-    testService.ignoreNextQuery();
 
-    testService.setQueryResult({
-      info: createHistoryInfo('query'),
-      value: [],
-    });
+    testService.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {
+        info: createHistoryInfo('query'),
+        value: [],
+      },
+    }));
 
     embeddingsHandler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
@@ -47,9 +46,9 @@ suite('routing-with-query-param', function() {
   });
 
   test('search initiated on load', function() {
-    return testService.whenCalled('queryHistory')
+    return testService.handler.whenCalled('queryHistory')
         .then(query => {
-          assertEquals(expectedQuery, query);
+          assertEquals(expectedQuery, query[0]);
           return flushTasks();
         })
         .then(function() {
@@ -61,8 +60,8 @@ suite('routing-with-query-param', function() {
 
   test('search with after date', async () => {
     // Wait for initial query to get called.
-    await testService.whenCalled('queryHistory');
-    testService.reset();
+    await testService.handler.whenCalled('queryHistory');
+    testService.handler.reset();
 
     loadTimeData.overrideValues({enableHistoryEmbeddings: true});
 
@@ -70,22 +69,38 @@ suite('routing-with-query-param', function() {
     expectedDate.setHours(0, 0, 0, 0);
     const expectedTimestamp = expectedDate.getTime();
 
+    testService.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {
+        info: createHistoryInfo(''),
+        value: [],
+      },
+    }));
+
     navigateTo('/?q=query&after=2011-04-05', app);
-    const [query, timestamp] = await testService.whenCalled('queryHistory');
+    const [query, numResults, timestamp] =
+        await testService.handler.whenCalled('queryHistory');
     assertEquals(expectedQuery, query);
+    assertEquals(numResults, 150);
     assertEquals(expectedTimestamp, timestamp);
   });
 
   test('invalidates wrongly formatted dates', async () => {
     // Wait for initial query to get called.
-    await testService.whenCalled('queryHistory');
-    testService.reset();
+    await testService.handler.whenCalled('queryHistory');
+    testService.handler.reset();
 
     loadTimeData.overrideValues({enableHistoryEmbeddings: true});
 
+    testService.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {
+        info: createHistoryInfo(''),
+        value: [],
+      },
+    }));
+
     // Invalid date format should only query the search term.
     navigateTo('/?q=hello', app);
-    const searchTerm = await testService.whenCalled('queryHistory');
-    assertEquals('hello', searchTerm);
+    const queryArgs = await testService.handler.whenCalled('queryHistory');
+    assertEquals('hello', queryArgs[0]);
   });
 });

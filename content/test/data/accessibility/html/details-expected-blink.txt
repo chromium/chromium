@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++details
 ++++++++genericContainer ignored
-++++++++++disclosureTriangle collapsed name='details tag'
+++++++++++disclosureTriangle collapsed name='details tag' setSize=2 posInSet=1
 ++++++++++++listMarker ignored
 ++++++++++++++staticText ignored
 ++++++++++++staticText name='details tag'
@@ -15,7 +15,7 @@ rootWebArea
 ++++++++++staticText ignored invisible
 ++++++details
 ++++++++genericContainer ignored
-++++++++++disclosureTriangle name='details tag open'
+++++++++++disclosureTriangle name='details tag open' setSize=2 posInSet=2
 ++++++++++++listMarker ignored
 ++++++++++++++staticText ignored
 ++++++++++++staticText name='details tag open'

@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,6 +19,8 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -29,8 +32,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -42,7 +45,6 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -57,8 +59,6 @@ public class TabModelImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     /** Disable native calls from {@link TabModelJniBridge}. */
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private TabModelJniBridge.Natives mTabModelJniBridge;
 
     /** Required to be non-null for {@link TabModelJniBridge}. */
@@ -75,15 +75,15 @@ public class TabModelImplUnitTest {
     /** Required to handle some actions and initialize {@link TabModelOrderControllerImpl}. */
     @Mock private TabModelSelector mTabModelSelector;
 
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock private TabModelFilter mTabModelFilter;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
 
     @Mock private Callback<Tab> mTabSupplierObserver;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private WeakReference<Context> mWeakReferenceContext;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
+    @Mock private TabModel mEmptyModel;
 
     private int mNextTabId;
 
@@ -93,22 +93,27 @@ public class TabModelImplUnitTest {
         HomepageManager.getInstance().setPrefHomepageEnabled(false);
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
-        mJniMocker.mock(TabModelJniBridgeJni.TEST_HOOKS, mTabModelJniBridge);
+        TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridge);
         when(mTabModelJniBridge.init(any(), any(), anyInt(), anyBoolean()))
                 .thenReturn(FAKE_NATIVE_ADDRESS);
 
         when(mTabModelDelegate.isReparentingInProgress()).thenReturn(false);
+        when(mTabModelDelegate.getModel(anyBoolean())).thenReturn(mEmptyModel);
 
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mTabModelFilter);
-        when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mTabModelFilter);
-        when(mTabModelFilter.getValidPosition(any(), anyInt()))
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
+                .thenReturn(mTabGroupModelFilter);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(true))
+                .thenReturn(mTabGroupModelFilter);
+        when(mTabGroupModelFilter.getValidPosition(any(), anyInt()))
                 .thenAnswer(i -> i.getArguments()[1]);
 
         when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
         when(mWindowAndroid.getContext()).thenReturn(mWeakReferenceContext);
+        doReturn(new ObservableSupplierImpl<>(false)).when(mWindowAndroid).getOcclusionSupplier();
         when(mTabGroupModelFilter.getValidPosition(any(), anyInt()))
                 .thenAnswer(i -> i.getArguments()[1]);
 
@@ -139,13 +144,46 @@ public class TabModelImplUnitTest {
     }
 
     /** Create a {@link TabModel} to use for the test. */
-    private TabModel createTabModel(boolean isActive, boolean isIncognito) {
+    private TabModelImpl createTabModel(boolean isActive, boolean isIncognito) {
         AsyncTabParamsManager realAsyncTabParamsManager =
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
         TabModelOrderControllerImpl orderController =
                 new TabModelOrderControllerImpl(mTabModelSelector);
         Profile profile = isIncognito ? mIncognitoProfile : mProfile;
-        TabModel tabModel =
+        TabRemover tabRemover =
+                new TabRemover() {
+                    @Override
+                    public void closeTabs(
+                            @NonNull TabClosureParams tabClosureParams,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener) {
+                        forceCloseTabs(tabClosureParams);
+                    }
+
+                    @Override
+                    public void prepareCloseTabs(
+                            @NonNull TabClosureParams tabClosureParams,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener,
+                            @NonNull Callback<TabClosureParams> onPreparedCallback) {
+                        onPreparedCallback.onResult(tabClosureParams);
+                    }
+
+                    @Override
+                    public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
+                        ((TabModelImpl) mTabModelSelector.getModel(isIncognito))
+                                .closeTabs(tabClosureParams);
+                    }
+
+                    @Override
+                    public void removeTab(
+                            @NonNull Tab tab,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener) {
+                        ((TabModelImpl) mTabModelSelector.getModel(isIncognito)).removeTab(tab);
+                    }
+                };
+        TabModelImpl tabModel =
                 new TabModelImpl(
                         profile,
                         ActivityType.TABBED,
@@ -156,8 +194,9 @@ public class TabModelImplUnitTest {
                         () -> NextTabPolicy.HIERARCHICAL,
                         realAsyncTabParamsManager,
                         mTabModelDelegate,
+                        tabRemover,
                         /* supportUndo= */ true,
-                        /* trackInNativeModelList= */ true);
+                        /* isArchivedTabModel= */ true);
         when(mTabModelSelector.getModel(isIncognito)).thenReturn(tabModel);
         tabModel.setActive(isActive);
         if (isActive) {
@@ -174,9 +213,9 @@ public class TabModelImplUnitTest {
         TabModel activeIncognito = createTabModel(true, true);
         TabModel inactiveNormal = createTabModel(false, false);
 
-        Tab incognitoTab0 = createTab(activeIncognito);
+        createTab(activeIncognito);
         Tab incognitoTab1 = createTab(activeIncognito);
-        Tab tab0 = createTab(inactiveNormal);
+        createTab(inactiveNormal);
         Tab tab1 = createTab(inactiveNormal);
 
         selectTab(activeIncognito, incognitoTab1);
@@ -190,7 +229,7 @@ public class TabModelImplUnitTest {
     public void testGetNextTabIfClosed_NotCurrentTab() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         Tab tab0 = createTab(activeNormal);
         Tab tab1 = createTab(activeNormal);
@@ -214,10 +253,10 @@ public class TabModelImplUnitTest {
     public void testGetNextTabIfClosed_ParentTab() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         Tab tab0 = createTab(activeNormal);
-        Tab tab1 = createTab(activeNormal);
+        createTab(activeNormal);
         Tab tab2 = createTab(activeNormal, 0, tab0.getId());
 
         selectTab(activeNormal, tab2);
@@ -229,7 +268,7 @@ public class TabModelImplUnitTest {
     public void testGetNextTabIfClosed_Adjacent() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         Tab tab0 = createTab(activeNormal);
         Tab tab1 = createTab(activeNormal);
@@ -267,7 +306,7 @@ public class TabModelImplUnitTest {
     public void testGetNextTabIfClosed_MostRecentTab() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         // uponExit overrides parent selection..
         Tab tab0 = createTab(activeNormal, 10, Tab.INVALID_TAB_ID);
@@ -289,7 +328,7 @@ public class TabModelImplUnitTest {
     public void testGetNextTabIfClosed_InvalidSelection() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         Tab tab0 = createTab(activeNormal);
         selectTab(activeNormal, tab0);
@@ -305,14 +344,17 @@ public class TabModelImplUnitTest {
         Tab incognitoTab0 = createTab(activeIncognito);
         Tab incognitoTab1 = createTab(activeIncognito);
         Tab incognitoTab2 = createTab(activeIncognito);
-        Tab tab0 = createTab(inactiveNormal);
+        createTab(inactiveNormal);
 
         selectTab(activeIncognito, incognitoTab0);
 
-        activeIncognito.closeTabs(
-                TabClosureParams.closeTabs(List.of(incognitoTab0, incognitoTab1))
-                        .allowUndo(false)
-                        .build());
+        activeIncognito
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(incognitoTab0, incognitoTab1))
+                                .allowUndo(false)
+                                .build(),
+                        /* allowDialog= */ false);
         verify(mTabModelSelector, never()).selectModel(anyBoolean());
         assertEquals(incognitoTab2, activeIncognito.getTabAt(activeIncognito.index()));
     }
@@ -322,7 +364,7 @@ public class TabModelImplUnitTest {
     public void testObserveCurrentTabSupplierActiveNormal() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         assertNull(activeNormal.getCurrentTabSupplier().get());
         assertEquals(0, activeNormal.getTabCountSupplier().get().intValue());
@@ -343,7 +385,7 @@ public class TabModelImplUnitTest {
         assertEquals(2, activeNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab0));
 
-        activeNormal.removeTab(tab0);
+        activeNormal.getTabRemover().removeTab(tab0, /* allowDialog= */ true);
         assertEquals(tab1, activeNormal.getCurrentTabSupplier().get());
         assertEquals(1, activeNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab1));
@@ -354,7 +396,7 @@ public class TabModelImplUnitTest {
     public void testObserveCurrentTabSupplierInactiveNormal() {
         TabModel inactiveNormal = createTabModel(false, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel activeIncognito = createTabModel(true, true);
+        createTabModel(true, true);
 
         assertNull(inactiveNormal.getCurrentTabSupplier().get());
         assertEquals(0, inactiveNormal.getTabCountSupplier().get().intValue());
@@ -375,7 +417,7 @@ public class TabModelImplUnitTest {
         assertEquals(2, inactiveNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab0));
 
-        inactiveNormal.removeTab(tab0);
+        inactiveNormal.getTabRemover().removeTab(tab0, /* allowDialog= */ true);
         assertEquals(tab1, inactiveNormal.getCurrentTabSupplier().get());
         assertEquals(1, inactiveNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab1));
@@ -384,7 +426,7 @@ public class TabModelImplUnitTest {
     @Test
     @SmallTest
     public void testGetTabById() {
-        TabModel tabModel = createTabModel(/* isActive= */ true, /* isIncognito= */ false);
+        TabModelImpl tabModel = createTabModel(/* isActive= */ true, /* isIncognito= */ false);
         createTabModel(/* isActive= */ false, /* isIncognito= */ true);
 
         Tab tab1 = createTab(tabModel);
@@ -403,8 +445,7 @@ public class TabModelImplUnitTest {
     @Test
     @SmallTest
     public void testGetTabsNavigatedInTimeWindow() {
-        TabModelImpl tabModel =
-                (TabModelImpl) createTabModel(/* isActive= */ true, /* isIncognito= */ false);
+        TabModelImpl tabModel = createTabModel(/* isActive= */ true, /* isIncognito= */ false);
         MockTab tab1 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
         tab1.setLastNavigationCommittedTimestampMillis(200);
 
@@ -427,11 +468,10 @@ public class TabModelImplUnitTest {
     @Test
     @SmallTest
     public void testCloseTabsNavigatedInTimeWindow() {
-        when(mTabModelFilterProvider.getTabModelFilter(/* isIncognito= */ false))
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(/* isIncognito= */ false))
                 .thenReturn(mTabGroupModelFilter);
 
-        TabModelImpl tabModel =
-                (TabModelImpl) createTabModel(/* isActive= */ true, /* isIncognito= */ false);
+        TabModelImpl tabModel = createTabModel(/* isActive= */ true, /* isIncognito= */ false);
 
         MockTab tab1 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
         tab1.setLastNavigationCommittedTimestampMillis(200);
@@ -446,11 +486,7 @@ public class TabModelImplUnitTest {
         tab3.updateAttachment(mWindowAndroid, mTabDelegateFactory);
 
         tabModel.closeTabsNavigatedInTimeWindow(20, 50);
-        verify(mTabGroupModelFilter)
-                .closeTabs(
-                        TabClosureParams.closeTabs(Arrays.asList(tab2, tab3))
-                                .allowUndo(false)
-                                .saveToTabRestoreService(false)
-                                .build());
+        assertEquals(1, tabModel.getCount());
+        assertEquals(tab1, tabModel.getTabAt(0));
     }
 }

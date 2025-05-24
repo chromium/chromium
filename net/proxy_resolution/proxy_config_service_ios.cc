@@ -9,6 +9,8 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/proxy_chain.h"
 #include "net/proxy_resolution/proxy_chain_util_apple.h"
@@ -27,14 +29,16 @@ bool GetBoolFromDictionary(CFDictionaryRef dict,
                            bool default_value) {
   CFNumberRef number =
       base::apple::GetValueFromDictionary<CFNumberRef>(dict, key);
-  if (!number)
+  if (!number) {
     return default_value;
+  }
 
   int int_value;
-  if (CFNumberGetValue(number, kCFNumberIntType, &int_value))
+  if (CFNumberGetValue(number, kCFNumberIntType, &int_value)) {
     return int_value;
-  else
+  } else {
     return default_value;
+  }
 }
 
 void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
@@ -49,12 +53,12 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
   // PAC file
 
   if (GetBoolFromDictionary(config_dict.get(),
-                            kCFNetworkProxiesProxyAutoConfigEnable,
-                            false)) {
+                            kCFNetworkProxiesProxyAutoConfigEnable, false)) {
     CFStringRef pac_url_ref = base::apple::GetValueFromDictionary<CFStringRef>(
         config_dict.get(), kCFNetworkProxiesProxyAutoConfigURLString);
-    if (pac_url_ref)
+    if (pac_url_ref) {
       proxy_config.set_pac_url(GURL(base::SysCFStringRefToUTF8(pac_url_ref)));
+    }
   }
 
   // Proxies (for now http).
@@ -102,7 +106,7 @@ void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
 ProxyConfigServiceIOS::ProxyConfigServiceIOS(
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : PollingProxyConfigService(base::Seconds(kPollIntervalSec),
-                                GetCurrentProxyConfig,
+                                base::BindRepeating(GetCurrentProxyConfig),
                                 traffic_annotation) {}
 
 ProxyConfigServiceIOS::~ProxyConfigServiceIOS() = default;

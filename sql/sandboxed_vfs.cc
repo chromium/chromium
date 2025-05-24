@@ -16,7 +16,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/dcheck_is_on.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -124,7 +124,6 @@ base::Time SqliteEpoch() {
       -kUnixEpochAsJulianDay * base::Time::kMillisecondsPerDay);
 }
 
-#if DCHECK_IS_ON()
 // `full_path_cstr` must be a filename argument passed to the VFS from SQLite.
 SandboxedVfsFileType VfsFileTypeFromPath(const char* full_path_cstr) {
   std::string_view full_path(full_path_cstr);
@@ -145,7 +144,6 @@ SandboxedVfsFileType VfsFileTypeFromPath(const char* full_path_cstr) {
       << "Argument is not a file name buffer passed from SQLite to a VFS: "
       << full_path;
 }
-#endif  // DCHECK_IS_ON()
 
 }  // namespace
 
@@ -181,9 +179,7 @@ int SandboxedVfs::Open(const char* full_path,
   }
 
   SandboxedVfsFile::Create(std::move(file), std::move(file_path),
-#if DCHECK_IS_ON()
                            VfsFileTypeFromPath(full_path),
-#endif  // DCHECK_IS_ON()
                            this, result_file);
   if (granted_flags)
     *granted_flags = requested_flags;
@@ -233,7 +229,7 @@ int SandboxedVfs::FullPathname(const char* file_path,
   size_t file_path_size = std::strlen(file_path) + 1;
   if (static_cast<size_t>(result_size) < file_path_size)
     return SQLITE_CANTOPEN;
-  std::memcpy(result, file_path, file_path_size);
+  UNSAFE_TODO(std::memcpy(result, file_path, file_path_size));
   return SQLITE_OK;
 }
 
@@ -242,7 +238,7 @@ int SandboxedVfs::Randomness(int result_size, char* result) {
   DCHECK(result);
 
   // TODO(pwnall): Figure out if we need a real implementation.
-  std::memset(result, 0, result_size);
+  UNSAFE_TODO(std::memset(result, 0, result_size));
   return result_size;
 }
 

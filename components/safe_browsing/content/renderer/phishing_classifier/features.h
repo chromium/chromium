@@ -73,8 +73,6 @@ class FeatureMap {
   std::unordered_map<std::string, double> features_;
 };
 
-BASE_DECLARE_FEATURE(kConditionalImageResize);
-
 BASE_DECLARE_FEATURE(kClientSideDetectionRetryLimit);
 
 extern const base::FeatureParam<int> kClientSideDetectionRetryLimitTime;

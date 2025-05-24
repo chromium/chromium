@@ -27,7 +27,7 @@ class OAuth2TokenFetcher : public GaiaAuthConsumer {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     virtual void OnOAuth2TokensAvailable(
         const GaiaAuthConsumer::ClientOAuthResult& oauth2_tokens) = 0;
     virtual void OnOAuth2TokensFetchFailed() = 0;

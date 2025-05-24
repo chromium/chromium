@@ -4,17 +4,16 @@
 
 package org.chromium.chrome.browser.homepage;
 
-import static org.mockito.Mockito.doReturn;
-
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -25,11 +24,6 @@ import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.components.search_engines.TemplateUrl;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -47,7 +41,7 @@ public class HomepageManagerTest {
         static GURL sHomepageUrl;
 
         @Implementation
-        public static boolean isHomepageManagedByPolicy() {
+        public static boolean isHomepageLocationManaged() {
             return true;
         }
 
@@ -72,19 +66,14 @@ public class HomepageManagerTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PartnerBrowserCustomizations mPartnerBrowserCustomizations;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ShadowPartnerBrowserCustomizations.setPartnerBrowserCustomizations(
                 mPartnerBrowserCustomizations);
         DseNewTabUrlManager.resetIsEeaChoiceCountryForTesting();
-    }
-
-    @After
-    public void tearDown() {
-        ShadowHomepagePolicyManager.sHomepageUrl = null;
     }
 
     @Test
@@ -213,45 +202,5 @@ public class HomepageManagerTest {
         ChromeSharedPreferences.getInstance()
                 .writeString(ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, url1.serialize());
         Assert.assertEquals(url1, homepageManager.getPrefHomepageCustomGurl());
-    }
-
-    @Test
-    public void testOverrideNtpHomepage() {
-        HomepageManager homepageManager = HomepageManager.getInstance();
-
-        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
-        ShadowHomepagePolicyManager.sHomepageUrl = GURL.emptyGURL();
-        DseNewTabUrlManager.SWAP_OUT_NTP.setForTesting(true);
-        Assert.assertTrue(DseNewTabUrlManager.SWAP_OUT_NTP.getValue());
-
-        Assert.assertNull(DseNewTabUrlManager.getDSENewTabUrl(null));
-        Assert.assertEquals(ChromeUrlConstants.nativeNtpGurl(), homepageManager.getHomepageGurl());
-
-        TemplateUrlService templateUrlService = Mockito.mock(TemplateUrlService.class);
-        initializeProfile(false, templateUrlService);
-
-        Assert.assertEquals(
-                JUnitTestGURLs.SEARCH_URL.getSpec(),
-                DseNewTabUrlManager.getDSENewTabUrl(templateUrlService));
-        Assert.assertEquals(JUnitTestGURLs.SEARCH_URL, homepageManager.getHomepageGurl());
-
-        ProfileManager.resetForTesting();
-    }
-
-    private void initializeProfile(boolean isOffTheRecord, TemplateUrlService templateUrlService) {
-        Profile profile = Mockito.mock(Profile.class);
-        doReturn(isOffTheRecord).when(profile).isOffTheRecord();
-
-        TemplateUrl templateUrl = Mockito.mock(TemplateUrl.class);
-        doReturn(templateUrl).when(templateUrlService).getDefaultSearchEngineTemplateUrl();
-        doReturn(JUnitTestGURLs.SEARCH_URL.getSpec()).when(templateUrl).getNewTabURL();
-
-        ProfileManager.setLastUsedProfileForTesting(profile);
-        TemplateUrlServiceFactory.setInstanceForTesting(templateUrlService);
-        ProfileManager.onProfileAdded(profile);
-
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false);
-        Assert.assertFalse(DseNewTabUrlManager.isDefaultSearchEngineGoogle());
     }
 }

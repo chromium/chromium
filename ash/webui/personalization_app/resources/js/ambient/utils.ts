@@ -7,6 +7,7 @@
  */
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {AmbientTheme, TopicSource} from '../../personalization_app.mojom-webui.js';
 
@@ -51,3 +52,10 @@ export function isValidTopicSourceAndTheme(
       (ambientTheme !== AmbientTheme.kVideo &&
        topicSource !== TopicSource.kVideo);
 }
+
+/**
+ * Represents a mapping from AmbientTheme to its preview image.
+ */
+export type AmbientThemePreviewMap = {
+  [key in AmbientTheme]?: Url;
+};

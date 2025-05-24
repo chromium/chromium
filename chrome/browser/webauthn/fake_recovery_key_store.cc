@@ -4,11 +4,12 @@
 
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -265,7 +266,7 @@ bssl::UniquePtr<EVP_PKEY> NewECKey() {
 
 class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
  public:
-  explicit FakeRecoveryKeyStoreImpl()
+  FakeRecoveryKeyStoreImpl()
       : root_key_(GetRSAKey(kRootRSAPrivateKey)),
         sig_key_(GetRSAKey(kSigRSAPrivateKey)),
         endpoint_key_(NewECKey()) {
@@ -325,7 +326,7 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
         /*offsets=*/nullptr);
 
     const auto certs_xml_hash =
-        crypto::SHA256Hash(base::as_bytes(base::make_span(certs_xml_)));
+        crypto::SHA256Hash(base::as_byte_span(certs_xml_));
     RSA* const sig_key = EVP_PKEY_get0_RSA(sig_key_.get());
     unsigned sig_len = RSA_size(sig_key);
     std::vector<uint8_t> sig(sig_len, 0);
@@ -420,7 +421,7 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
     CHECK(request.ParseFromArray(body.data(), body.size()));
     CHECK(!request.vault_parameters().vault_handle().empty());
     CHECK_EQ(request.vault_parameters().vault_handle()[0], 3 /* GPM PIN */);
-    auto existing = base::ranges::find_if(
+    auto existing = std::ranges::find_if(
         vaults_, [&request](const auto& candidate) -> bool {
           const auto& candidate_params = candidate.vault_parameters();
           const auto& request_params = request.vault_parameters();

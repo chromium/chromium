@@ -142,12 +142,6 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
 
 IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
                        DiagnosticsAppRecordsScreenOpenDuration) {
-  // TODO(b/287165206): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287165206.";
-  }
-
   content::WebContents* web_contents = LaunchDiagnosticsApp();
 
   histogram_tester_.ExpectUniqueSample("ChromeOS.DiagnosticsUi.InitialScreen",
@@ -166,12 +160,6 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
 
 IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
                        DiagnosticsAppIgnoresInvalidRecordNavigationCall) {
-  // TODO(b/287165206): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287165206.";
-  }
-
   content::WebContents* web_contents = LaunchDiagnosticsApp();
 
   histogram_tester_.ExpectUniqueSample("ChromeOS.DiagnosticsUi.InitialScreen",

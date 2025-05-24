@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * This class is responsible for binding and translating the IBAN model defined in
  * AutofillSaveIbanBottomSheetProperties to an AutofillSaveIbanBottomSheetView View.
  */
+@NullMarked
 /*package*/ class AutofillSaveIbanBottomSheetViewBinder {
     static void bind(
             PropertyModel model, AutofillSaveIbanBottomSheetView view, PropertyKey propertyKey) {
@@ -37,8 +39,8 @@ import org.chromium.ui.modelutil.PropertyModel;
             setMaybeEmptyText(
                     view.mDescription,
                     model.get(AutofillSaveIbanBottomSheetProperties.DESCRIPTION));
-        } else if (AutofillSaveIbanBottomSheetProperties.IBAN_LABEL == propertyKey) {
-            view.mIbanLabel.setText(model.get(AutofillSaveIbanBottomSheetProperties.IBAN_LABEL));
+        } else if (AutofillSaveIbanBottomSheetProperties.IBAN_VALUE == propertyKey) {
+            view.mIbanValue.setText(model.get(AutofillSaveIbanBottomSheetProperties.IBAN_VALUE));
         } else if (AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL == propertyKey) {
             view.mAcceptButton.setText(
                     model.get(AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL));

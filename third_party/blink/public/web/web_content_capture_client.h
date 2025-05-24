@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CONTENT_CAPTURE_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CONTENT_CAPTURE_CLIENT_H_
 
+#include <vector>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
@@ -21,17 +22,21 @@ class WebContentCaptureClient {
   // tasks.
   virtual base::TimeDelta GetTaskInitialDelay() const = 0;
 
+  // Invoked to notify that a batch of Content Capture has completed.
+  virtual void DidCompleteBatchCaptureContent() = 0;
+
   // Invoked when a list of |content| is captured, |first_content| indicates if
   // this is first captured content in the current document.
-  virtual void DidCaptureContent(const WebVector<WebContentHolder>& content,
+  virtual void DidCaptureContent(const std::vector<WebContentHolder>& content,
                                  bool first_data) = 0;
 
   // Invoked when a list of |content| is updated.
-  virtual void DidUpdateContent(const WebVector<WebContentHolder>& content) = 0;
+  virtual void DidUpdateContent(
+      const std::vector<WebContentHolder>& content) = 0;
 
   // Invoked when the previously captured content is removed, |content_ids| is a
   // list of removed content id.
-  virtual void DidRemoveContent(WebVector<int64_t> content_ids) = 0;
+  virtual void DidRemoveContent(std::vector<int64_t> content_ids) = 0;
 
  protected:
   virtual ~WebContentCaptureClient() = default;

@@ -6,20 +6,26 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 
 import java.util.function.DoubleConsumer;
 
 /** A factory interface for building a {@link CrossDevicePane} instance. */
+@NullMarked
 public class CrossDevicePaneFactory {
     /**
      * Create an instance of the {@link CrossDevicePane}.
      *
      * @param context Used to inflate UI.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     public static CrossDevicePane create(
-            @NonNull Context context, @NonNull DoubleConsumer onToolbarAlphaChange) {
-        return new CrossDevicePaneImpl(context, onToolbarAlphaChange);
+            Context context,
+            DoubleConsumer onToolbarAlphaChange,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+        return new CrossDevicePaneImpl(context, onToolbarAlphaChange, edgeToEdgeSupplier);
     }
 }

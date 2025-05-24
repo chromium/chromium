@@ -1,8 +1,8 @@
 {%- import "struct_macros.tmpl" as struct_macros %}
 
-{%- macro declare_params(prefix, parameters) %}
+{%- macro declare_params(prefix, parameters, allow_non_const_ref=False) %}
 {%-   for param in parameters -%}
-{{param.kind|cpp_wrapper_param_type}} {{prefix}}{{param.name}}
+{{param.kind|cpp_wrapper_param_type(allow_non_const_ref=allow_non_const_ref)}} {{prefix}}{{param.name}}
 {%- if not loop.last %}, {% endif %}
 {%-   endfor %}
 {%- endmacro %}
@@ -16,8 +16,18 @@ base::OnceCallback<void(
 )>
 {%- endmacro -%}
 
-{%- macro declare_request_params(prefix, method) -%}
-{{declare_params(prefix, method.parameters)}}
+{%- macro declare_result_callback(method) -%}
+base::OnceCallback<void({{result_response_to_expected(method.result_response)}})>
+{%- endmacro -%}
+
+{% macro result_response_to_expected(result_response) -%}
+base::expected<
+  {{result_response.success_kind|cpp_wrapper_type}},
+  {{result_response.failure_kind|cpp_wrapper_type}}>
+{%- endmacro -%}
+
+{%- macro declare_request_params(prefix, method, allow_non_const_ref=False) -%}
+{{declare_params(prefix, method.parameters, allow_non_const_ref=allow_non_const_ref)}}
 {%-   if method.response_parameters != None -%}
 {%-     if method.parameters %}, {% endif -%}
 {{method.name}}Callback callback
@@ -56,12 +66,17 @@ base::OnceCallback<void(
 
 {%- macro declare_sync_method_params(prefix, method) -%}
 {{declare_params(prefix, method.parameters)}}
-{%-   if method.response_parameters %}
-{%-     if method.parameters %}, {% endif %}
-{%-     for param in method.response_parameters -%}
+{%-   if method.result_response != None %}
+{%-       if method.parameters %},{% endif %}
+{{result_response_to_expected(method.result_response)}}* out_{{prefix}}{{method.response_parameters[0].name}}
+{%-   else -%}
+{%-     if method.response_parameters %}
+{%-       if method.parameters %}, {% endif %}
+{%-       for param in method.response_parameters -%}
 {{param.kind|cpp_wrapper_call_type}}* out_{{prefix}}{{param.name}}
-{%-       if not loop.last %}, {% endif %}
-{%-     endfor %}
+{%-         if not loop.last %}, {% endif %}
+{%-       endfor %}
+{%-     endif -%}
 {%-   endif -%}
 {%- endmacro -%}
 
@@ -84,6 +99,7 @@ base::OnceCallback<void(
 {%- macro build_serialized_message(message_name, method, param_name_prefix,
                                    params_struct, params_description,
                                    flags_text, message_object_name,
+                                   send_validation,
                                    has_size_estimator = False) %}
   const size_t estimated_payload_size =
 {%-   if has_size_estimator and method.estimate_message_size  %}
@@ -104,8 +120,17 @@ base::OnceCallback<void(
   mojo::internal::MessageFragment<
       {{params_struct|get_qualified_name_for_kind(internal=True)}}> params(
           {{message_object_name}});
+{%-   set send_validation_compiler_setting = "runtime" if send_validation
+                                                      else "default" %}
+{%-   if send_validation %}
+{%-     set feature_cpp = method.send_validation|get_qualified_name_for_feature %}
+  mojo::internal::SendValidation send_validation =
+      (base::FeatureList::IsEnabled({{feature_cpp}})) ?
+        mojo::internal::SendValidation::kFatal :
+        mojo::internal::SendValidation::kWarning;
+{%-   endif %}
   {{struct_macros.serialize(
-      params_struct, params_description, param_name_prefix, "params")}}
+      params_struct, params_description, param_name_prefix, "params", send_validation_compiler_setting)}}
 {%- endmacro %}
 
 {%- macro define_message_type(interface, message_typename, message_name,
@@ -171,7 +196,7 @@ class {{message_typename}}
 
     DCHECK(serialize);
     {{build_serialized_message(message_name, method, "param_%s", params_struct,
-                               params_description, "kFlags", "message")}}
+                               params_description, "kFlags", "message", method.send_validation)}}
     return message;
   }
 
@@ -260,8 +285,17 @@ class {{message_typename}}
     mojo::internal::MessageFragment<
         {{params_struct|get_qualified_name_for_kind(internal=True)}}> params(
             message);
+{%-  set send_validation_compiler_setting = "runtime" if send_validation
+                                                      else "default" %}
+{%-  if send_validation %}
+{%-    set feature_cpp = method.send_validation|get_qualified_name_for_feature %}
+    mojo::internal::SendValidation send_validation =
+      (base::FeatureList::IsEnabled({{feature_cpp}})) ?
+        mojo::internal::SendValidation::kFatal :
+        mojo::internal::SendValidation::kWarning;
+{%-  endif %}
     {{struct_macros.serialize(
-        params_struct, params_description, "param_%s_", "params")}}
+        params_struct, params_description, "param_%s_", "params", send_validation_compiler_setting)}}
   }
 
 {%-     for param in parameters %}

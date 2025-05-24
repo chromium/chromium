@@ -34,7 +34,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
 #include "net/filter/gzip_source_stream.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_util.h"
 #include "net/url_request/url_request_error_job.h"
 #include "url/gurl.h"
@@ -152,7 +152,7 @@ URLRequestTestJobBackedByFile::SetUpSourceStream() {
   if (!base::EqualsCaseInsensitiveASCII(file_path_.Extension(), ".svgz"))
     return source;
 
-  return GzipSourceStream::Create(std::move(source), SourceStream::TYPE_GZIP);
+  return GzipSourceStream::Create(std::move(source), SourceStreamType::kGzip);
 }
 
 std::unique_ptr<URLRequestTestJobBackedByFile::FileMetaInfo>

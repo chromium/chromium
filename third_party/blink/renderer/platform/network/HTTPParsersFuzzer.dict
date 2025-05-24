@@ -55,6 +55,7 @@
 "allow-popups-to-escape-sandbox"
 "allow-presentation"
 "allow-same-origin"
+"allow-same-site-none-cookies"
 "allow-scripts"
 "allow-storage-access-by-user-activation"
 "allow-top-navigation"

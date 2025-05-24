@@ -4,13 +4,17 @@
 
 package org.chromium.components.content_capture;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.autofill.AutofillId;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
 /** The task to update the title change to plateform */
+@NullMarked
 public class TitleUpdateTask extends NotificationTask {
-    private ContentCaptureFrame mMainFrame;
+    private final ContentCaptureFrame mMainFrame;
 
     public TitleUpdateTask(ContentCaptureFrame mainFrame, PlatformSession platformSession) {
         super(null, platformSession);
@@ -27,6 +31,7 @@ public class TitleUpdateTask extends NotificationTask {
         // To notify the text change, the parent ContentCaptureSession and this view's autofill id
         // are needed.
         PlatformSessionData parentPlatformSessionData = buildCurrentSession();
+        assumeNonNull(parentPlatformSessionData);
         AutofillId autofillId =
                 PlatformAPIWrapper.getInstance()
                         .newAutofillId(

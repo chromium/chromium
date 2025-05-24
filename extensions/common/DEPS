@@ -4,6 +4,7 @@ include_rules = [
   "+components/url_formatter",
   "+tools/json_schema_compiler",
   "+components/nacl/common/buildflags.h",
+  "+components/pdf/common/pdf_util.h",
   "+components/safe_browsing/core/common",
   "+components/safe_browsing/core/common/hashprefix_realtime",
   "+components/version_info/channel.h",
@@ -14,6 +15,7 @@ include_rules = [
   "+services/metrics/public/cpp",
   "+services/network/public/mojom/cors_origin_pattern.mojom-forward.h",
   "+services/network/public/mojom/cors_origin_pattern.mojom.h",
+  "+third_party/blink/public/common",
   "+third_party/blink/public/common/privacy_budget",
   "+third_party/blink/public/mojom/blob",
   "+third_party/re2",
@@ -25,4 +27,7 @@ specific_include_rules = {
   ".*fuzzer\.cc$": [
     "+third_party/icu",
   ],
+  "manifest_fuzzer.cc": [
+    "+content/public",
+  ]
 }

@@ -7,8 +7,7 @@
 namespace ash {
 namespace system {
 
-SystemClockObserver::~SystemClockObserver() {
-}
+SystemClockObserver::~SystemClockObserver() = default;
 
 }  // namespace system
 }  // namespace ash

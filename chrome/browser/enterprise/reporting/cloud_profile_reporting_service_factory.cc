@@ -10,6 +10,10 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 namespace enterprise_reporting {
 
 // static
@@ -33,6 +37,7 @@ CloudProfileReportingServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<CloudProfileReportingService>(profile);
 }
+
 bool CloudProfileReportingServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
@@ -42,6 +47,13 @@ CloudProfileReportingServiceFactory::CloudProfileReportingServiceFactory()
     : ProfileKeyedServiceFactory("CloudProfileReporting",
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Depends on this service because
+  // `CloudProfileReportingService.profile_request_generator_` has a dependency
+  // on it.
+  DependsOn(enterprise_signals::SignalsAggregatorFactory::GetInstance());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 CloudProfileReportingServiceFactory::~CloudProfileReportingServiceFactory() =

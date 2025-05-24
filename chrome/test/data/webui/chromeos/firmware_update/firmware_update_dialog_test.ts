@@ -4,17 +4,18 @@
 
 import 'chrome://accessory-update/firmware_update_dialog.js';
 
-import {fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
-import {DeviceRequest, DeviceRequestId, DeviceRequestKind, UpdateState} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
-import {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {fakeFirmwareUpdate, fakeFirmwareUpdateWithReboot} from 'chrome://accessory-update/fake_data.js';
+import type {DeviceRequest} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
+import {DeviceRequestId, DeviceRequestKind, UpdateState} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
+import type {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
-import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import type {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
+import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -26,10 +27,10 @@ suite('FirmwareUpdateDialogTest', () => {
     updateDialogElement = null;
   });
 
-  function createUpdateDialogElement(): void {
+  function createUpdateDialogElement(update = fakeFirmwareUpdate): void {
     updateDialogElement = document.createElement('firmware-update-dialog');
     assert(updateDialogElement);
-    updateDialogElement.update = fakeFirmwareUpdate;
+    updateDialogElement.update = update;
     updateDialogElement.installationProgress = {
       percentage: 0,
       state: UpdateState.kIdle,
@@ -47,7 +48,7 @@ suite('FirmwareUpdateDialogTest', () => {
   function clickDoneButton(): Promise<void> {
     assert(updateDialogElement?.shadowRoot);
     const button = strictQuery(
-        '#updateDoneButton', updateDialogElement?.shadowRoot, CrButtonElement)!;
+        '#updateDoneButton', updateDialogElement?.shadowRoot, CrButtonElement);
     button.click();
     return flushTasks();
   }
@@ -80,7 +81,7 @@ suite('FirmwareUpdateDialogTest', () => {
     createUpdateDialogElement();
     assert(updateDialogElement?.shadowRoot);
     // Start update.
-    await setInstallationProgress(1, UpdateState.kUpdating);
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
     assertTrue(getUpdateDialog().open);
 
     // |UpdateState.KIdle| handled correctly while an update is still
@@ -102,11 +103,114 @@ suite('FirmwareUpdateDialogTest', () => {
         !!updateDialogElement.shadowRoot.querySelector('#updateDialog'));
   });
 
+  test('DialogModifiedForUEFIUpdatesWithReboot', async () => {
+    createUpdateDialogElement(fakeFirmwareUpdateWithReboot);
+    assert(updateDialogElement?.shadowRoot);
+
+    // Start update.
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
+    assertTrue(getUpdateDialog().open);
+
+    // Finish Update
+    await setInstallationProgress(100, UpdateState.kSuccess);
+
+    // Check that the "Update Done" button isn't visible.
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#updateDoneButton')));
+
+    // Check "Restart Now" button for existence and content.
+    assertEquals(
+        getTextContent('#restartNowButton'),
+        loadTimeData.getString('restartNowButton'));
+
+    // Check "Restart Later" button for existence and content.
+    assertEquals(
+        getTextContent('#restartLaterButton'),
+        loadTimeData.getString('restartLaterButton'));
+
+    // Dialog closes when the "Restart Later" button is clicked.
+    const restart_later_button = strictQuery(
+        '#restartLaterButton', updateDialogElement?.shadowRoot, HTMLElement);
+    restart_later_button.click();
+    flushTasks();
+    assertFalse(
+        !!updateDialogElement.shadowRoot.querySelector('#updateDialog'));
+  });
+
+  test('RestartButtonsNotShownForSuccessfulPeripheralUpdates', async () => {
+    createUpdateDialogElement();
+    assert(updateDialogElement?.shadowRoot);
+
+    // Start update.
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
+    assertTrue(getUpdateDialog().open);
+
+    // Finish Update
+    await setInstallationProgress(100, UpdateState.kSuccess);
+
+    // Check that the "Restart Later" and "Restart Now" buttons aren't visible.
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#restartNowButton')));
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#restartLaterButton')));
+
+    // Check that the "Update Done" button is visible.
+    assertEquals(
+        getTextContent('#updateDoneButton'),
+        loadTimeData.getString('doneButton'));
+  });
+
+  test('RestartButtonsNotShownForFailedPeripheralUpdate', async () => {
+    createUpdateDialogElement();
+    assert(updateDialogElement?.shadowRoot);
+
+    // Start update.
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
+    assertTrue(getUpdateDialog().open);
+
+    // Fail Update
+    await setInstallationProgress(1, UpdateState.kFailed);
+
+    // Check that the "Restart Later" and "Restart Now" buttons aren't visible.
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#restartNowButton')));
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#restartLaterButton')));
+
+    // Check that the "Update Done" button is visible.
+    assertEquals(
+        getTextContent('#updateDoneButton'),
+        loadTimeData.getString('okButton'));
+  });
+
+  test('RestartButtonsNotShownForFailedUEFIUpdate', async () => {
+    createUpdateDialogElement(fakeFirmwareUpdateWithReboot);
+    assert(updateDialogElement?.shadowRoot);
+
+    // Start update.
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
+    assertTrue(getUpdateDialog().open);
+
+    // Fail Update
+    await setInstallationProgress(1, UpdateState.kFailed);
+
+    // Check that the "Restart Later" and "Restart Now" buttons aren't visible.
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#restartNowButton')));
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#restartLaterButton')));
+
+    // Check that the "Update Done" button is visible.
+    assertEquals(
+        getTextContent('#updateDoneButton'),
+        loadTimeData.getString('okButton'));
+  });
+
   test('DeviceRestarting', async () => {
     createUpdateDialogElement();
     assert(updateDialogElement?.shadowRoot);
     // Start update.
-    await setInstallationProgress(1, UpdateState.kUpdating);
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
     assertTrue(getUpdateDialog().open);
 
     // Dialog remains open while the device is restarting.
@@ -143,8 +247,8 @@ suite('FirmwareUpdateDialogTest', () => {
     createUpdateDialogElement();
     assert(updateDialogElement?.shadowRoot);
     // Start update.
-    await setInstallationProgress(1, UpdateState.kUpdating);
-    assertTrue(getUpdateDialog()!.open);
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
+    assertTrue(getUpdateDialog().open);
 
     // Check dialog contents
     assertEquals(
@@ -155,8 +259,10 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('updatingInfo'));
-    const percentBar = updateDialogElement.shadowRoot.querySelector(
-                           '#updateProgressBar') as PaperProgressElement;
+    const percentBar =
+        updateDialogElement.shadowRoot.querySelector<PaperProgressElement>(
+            '#updateProgressBar');
+    assertTrue(!!percentBar);
     const percentBarStatus = percentBar.value;
     assertEquals(1, percentBarStatus);
 
@@ -210,7 +316,7 @@ suite('FirmwareUpdateDialogTest', () => {
     assert(updateDialogElement?.shadowRoot);
 
     // Start update.
-    await setInstallationProgress(1, UpdateState.kUpdating);
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
     assertTrue(getUpdateDialog().open);
 
     // Dialog remains open while the device is waiting for user action.
@@ -249,7 +355,7 @@ suite('FirmwareUpdateDialogTest', () => {
     createUpdateDialogElement();
 
     // Start update.
-    await setInstallationProgress(1, UpdateState.kUpdating);
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
     assertTrue(getUpdateDialog().open);
 
     // Dialog remains open while the device is waiting for user action.
@@ -271,7 +377,7 @@ suite('FirmwareUpdateDialogTest', () => {
     assert(updateDialogElement?.shadowRoot);
 
     // Start update.
-    await setInstallationProgress(1, UpdateState.kUpdating);
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
     assertTrue(getUpdateDialog().open);
 
     // Dialog remains open while the device is waiting for user action.
@@ -289,8 +395,10 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('updatingInfo'));
-    const percentBar = updateDialogElement.shadowRoot.querySelector(
-                           '#updateProgressBar') as PaperProgressElement;
+    const percentBar =
+        updateDialogElement.shadowRoot.querySelector<PaperProgressElement>(
+            '#updateProgressBar');
+    assertTrue(!!percentBar);
     const percentBarStatus = percentBar.value;
     assertEquals(70, percentBarStatus);
   });
@@ -303,7 +411,7 @@ suite('FirmwareUpdateDialogTest', () => {
         assert(updateDialogElement?.shadowRoot);
 
         // Start update.
-        await setInstallationProgress(1, UpdateState.kUpdating);
+        await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
         assertTrue(getUpdateDialog().open);
 
         // Dialog remains open while the device is waiting for user action.
@@ -323,8 +431,10 @@ suite('FirmwareUpdateDialogTest', () => {
         assertEquals(
             getTextContent('#updateDialogBody'),
             loadTimeData.getString('updatingInfo'));
-        let percentBar = updateDialogElement.shadowRoot.querySelector(
-                             '#updateProgressBar') as PaperProgressElement;
+        let percentBar =
+            updateDialogElement.shadowRoot.querySelector<PaperProgressElement>(
+                '#updateProgressBar');
+        assertTrue(!!percentBar);
         let percentBarStatus = percentBar.value;
         assertEquals(70, percentBarStatus);
 
@@ -342,8 +452,10 @@ suite('FirmwareUpdateDialogTest', () => {
         assertEquals(
             getTextContent('#updateDialogBody'),
             loadTimeData.getString('updatingInfo'));
-        percentBar = updateDialogElement.shadowRoot.querySelector(
-                         '#updateProgressBar') as PaperProgressElement;
+        percentBar =
+            updateDialogElement.shadowRoot.querySelector<PaperProgressElement>(
+                '#updateProgressBar');
+        assertTrue(!!percentBar);
         percentBarStatus = percentBar.value;
         assertEquals(70, percentBarStatus);
       });
@@ -354,7 +466,7 @@ suite('FirmwareUpdateDialogTest', () => {
     assert(updateDialogElement?.shadowRoot);
 
     // Start update.
-    await setInstallationProgress(1, UpdateState.kUpdating);
+    await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
     assertTrue(getUpdateDialog().open);
 
     // Dialog remains open while the device is waiting for user action.

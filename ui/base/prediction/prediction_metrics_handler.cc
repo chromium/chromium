@@ -7,7 +7,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/cpu_reduction_experiment.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/strcat.h"
 

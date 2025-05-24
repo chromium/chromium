@@ -13,10 +13,6 @@
 
 namespace page_load_metrics {
 
-BASE_FEATURE(kClickInputTracker,
-             "ClickInputTracker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This class considers user input clicks for a page load to determine if a
 // burst of clicks occurs at the screen position. This is a possible signal
 // that the user may be rage clicking on an unresponsive page.

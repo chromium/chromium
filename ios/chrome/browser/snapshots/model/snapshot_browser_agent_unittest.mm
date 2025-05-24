@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -26,7 +26,7 @@ class SnapshotBrowserAgentTest : public PlatformTest {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
 };

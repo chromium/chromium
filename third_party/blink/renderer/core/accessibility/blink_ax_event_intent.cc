@@ -196,9 +196,8 @@ BlinkAXEventIntent BlinkAXEventIntent::FromEditCommand(
       break;
 
     case InputEvent::InputType::kNumberOfInputTypes:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Should never be assigned as an input type to |edit_command|.";
-      return BlinkAXEventIntent();
   }
 
   return BlinkAXEventIntent(command, input_event_type);
@@ -260,8 +259,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
     case TextGranularity::kWord:
       switch (move_direction) {
         case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED_IN_MIGRATION();
-          return BlinkAXEventIntent();
+          NOTREACHED();
         case ax::mojom::blink::MoveDirection::kBackward:
           // All platforms behave the same when moving backward by word.
           text_boundary = ax::mojom::blink::TextBoundary::kWordStart;
@@ -302,8 +300,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
       // sentence, depending on the direction.
       switch (move_direction) {
         case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED_IN_MIGRATION();
-          return BlinkAXEventIntent();
+          NOTREACHED();
         case ax::mojom::blink::MoveDirection::kBackward:
           text_boundary = ax::mojom::blink::TextBoundary::kSentenceStart;
           break;
@@ -317,8 +314,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
       // line, depending on the direction.
       switch (move_direction) {
         case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED_IN_MIGRATION();
-          return BlinkAXEventIntent();
+          NOTREACHED();
         case ax::mojom::blink::MoveDirection::kBackward:
           text_boundary = ax::mojom::blink::TextBoundary::kLineStart;
           break;
@@ -332,8 +328,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
       // paragraph, depending on the direction.
       switch (move_direction) {
         case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED_IN_MIGRATION();
-          return BlinkAXEventIntent();
+          NOTREACHED();
         case ax::mojom::blink::MoveDirection::kBackward:
           text_boundary = ax::mojom::blink::TextBoundary::kParagraphStart;
           break;

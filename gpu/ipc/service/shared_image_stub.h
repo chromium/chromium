@@ -17,6 +17,10 @@
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "ui/gfx/gpu_extra_info.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#endif
+
 namespace gfx {
 #if BUILDFLAG(IS_WIN)
 class D3DSharedFence;
@@ -70,15 +74,17 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   SharedImageDestructionCallback GetSharedImageDestructionCallback(
       const Mailbox& mailbox);
 
-  bool CreateSharedImage(const Mailbox& mailbox,
-                         gfx::GpuMemoryBufferHandle handle,
-                         viz::SharedImageFormat format,
-                         const gfx::Size& size,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         SharedImageUsageSet usage,
-                         std::string debug_label);
+  bool CreateSharedImage(
+      const Mailbox& mailbox,
+      gfx::GpuMemoryBufferHandle handle,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      SharedImageUsageSet usage,
+      std::string debug_label,
+      std::optional<SharedImagePoolId> pool_id = std::nullopt);
 
   bool UpdateSharedImage(const Mailbox& mailbox,
                          gfx::GpuFenceHandle in_fence_handle);
@@ -128,6 +134,9 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
                              gfx::DXGIHandleToken dxgi_token);
 #endif  // BUILDFLAG(IS_WIN)
 
+  void OnCreateSharedImagePool(mojom::CreateSharedImagePoolParamsPtr params);
+  void OnDestroySharedImagePool(mojom::DestroySharedImagePoolParamsPtr params);
+
   ContextResult Initialize();
   void OnError();
 
@@ -157,8 +166,10 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
 #if BUILDFLAG(IS_WIN)
   // Fences held by external processes. Registered and signaled from ipc
   // channel. Using DXGIHandleToken to identify the fence.
-  base::flat_map<Mailbox, base::flat_set<scoped_refptr<gfx::D3DSharedFence>>>
-      registered_dxgi_fences_;
+  using DXGITokenToFenceMap =
+      absl::flat_hash_map<gfx::DXGIHandleToken,
+                          scoped_refptr<gfx::D3DSharedFence>>;
+  absl::flat_hash_map<Mailbox, DXGITokenToFenceMap> registered_dxgi_fences_;
 #endif
 
   base::WeakPtrFactory<SharedImageStub> weak_factory_{this};

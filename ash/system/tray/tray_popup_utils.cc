@@ -303,9 +303,6 @@ void TrayPopupUtils::InitializeAsCheckableRow(HoverHighlightView* container,
                                               bool checked,
                                               bool enterprise_managed) {
   const int dip_size = GetDefaultSizeOfVectorIcon(kCheckCircleIcon);
-  // The mapping of `cros_tokens::kCrosSysSystemOnPrimaryContainer` cannot
-  // accommodate `check_mark` and other components, so we still want to
-  // guard with Jelly flag here.
   ui::ImageModel check_mark =
       CreateCheckMark(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   if (enterprise_managed) {

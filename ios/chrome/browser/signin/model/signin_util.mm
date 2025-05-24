@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
+#import "base/check_is_test.h"
+#import "base/containers/to_vector.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
@@ -13,6 +15,7 @@
 #import "components/signin/public/identity_manager/tribool.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -20,6 +23,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
+#import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 
 namespace {
 
@@ -30,6 +34,12 @@ const char kAccountInfoKeyFullName[] = "full_name";
 const char kAccountInfoKeyGivenName[] = "given_name";
 const char kAccountInfoKeyPictureUrl[] = "picture_url";
 const char kHistorySyncEnabled[] = "history_sync_enabled";
+
+// Information about the device restore. The value is loaded by
+// `LoadDeviceRestoreData()`.
+static std::optional<signin::RestoreData> g_restore_data;
+static_assert(
+    std::is_trivially_destructible<std::optional<signin::RestoreData>>::value);
 
 // Copies a string value from a dictionary if the given key is present.
 void CopyStringFromDict(std::string& to,
@@ -48,12 +58,26 @@ AccountInfo DictToAccountInfo(const base::Value::Dict& dict) {
   if (account_id_str) {
     account.account_id = CoreAccountId::FromString(*account_id_str);
   }
-  CopyStringFromDict(account.gaia, dict, kAccountInfoKeyGaia);
+  const std::string* gaia_id_str = dict.FindString(kAccountInfoKeyGaia);
+  if (gaia_id_str) {
+    account.gaia = GaiaId(*gaia_id_str);
+  }
   CopyStringFromDict(account.email, dict, kAccountInfoKeyEmail);
   CopyStringFromDict(account.full_name, dict, kAccountInfoKeyFullName);
   CopyStringFromDict(account.given_name, dict, kAccountInfoKeyGivenName);
   CopyStringFromDict(account.picture_url, dict, kAccountInfoKeyPictureUrl);
   return account;
+}
+
+// Loads data related to the device restore. This method needs to be called
+// before IO is disallowed on UI thread. This method is called by
+// `IsFirstSessionAfterDeviceRestore()` or `LastDeviceRestoreTimestamp()`.
+const signin::RestoreData& LoadDeviceRestoreData(
+    base::OnceClosure completion = base::DoNothing()) {
+  if (!g_restore_data.has_value()) {
+    g_restore_data = LoadDeviceRestoreDataInternal(std::move(completion));
+  }
+  return g_restore_data.value();
 }
 
 }  // namespace
@@ -91,18 +115,15 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
   return CGSizeMake(size, size);
 }
 
-signin::Tribool IsFirstSessionAfterDeviceRestore() {
-  if (experimental_flags::SimulatePostDeviceRestore()) {
-    return signin::Tribool::kTrue;
-  }
-  static signin::Tribool is_first_session_after_device_restore =
-      signin::Tribool::kUnknown;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    is_first_session_after_device_restore =
-        IsFirstSessionAfterDeviceRestoreInternal();
-  });
-  return is_first_session_after_device_restore;
+signin::Tribool IsFirstSessionAfterDeviceRestore(base::OnceClosure completion) {
+  const signin::RestoreData& restore_data =
+      LoadDeviceRestoreData(std::move(completion));
+  return restore_data.is_first_session_after_device_restore;
+}
+
+std::optional<base::Time> LastDeviceRestoreTimestamp() {
+  const signin::RestoreData& restore_data = LoadDeviceRestoreData();
+  return restore_data.last_restore_timestamp;
 }
 
 void StorePreRestoreIdentity(PrefService* profile_pref,
@@ -110,7 +131,7 @@ void StorePreRestoreIdentity(PrefService* profile_pref,
                              bool history_sync_enabled) {
   ScopedDictPrefUpdate update(profile_pref, prefs::kIosPreRestoreAccountInfo);
   update->Set(kAccountInfoKeyAccountId, account.account_id.ToString());
-  update->Set(kAccountInfoKeyGaia, account.gaia);
+  update->Set(kAccountInfoKeyGaia, account.gaia.ToString());
   update->Set(kAccountInfoKeyEmail, account.email);
   update->Set(kAccountInfoKeyFullName, account.full_name);
   update->Set(kAccountInfoKeyGivenName, account.given_name);
@@ -141,21 +162,23 @@ bool GetPreRestoreHistorySyncEnabled(PrefService* profile_pref) {
   return history_sync_enabled.value_or(false);
 }
 
-const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch() {
+base::span<const std::string_view> GetAccountCapabilityNamesForPrefetch() {
   return AccountCapabilities::GetSupportedAccountCapabilityNames();
 }
 
 void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities) {
-  const std::vector<std::string>& supported_capabilities =
-      GetAccountCapabilityNamesForPrefetch();
-  std::set<std::string> supported_capabilities_set(
-      supported_capabilities.begin(), supported_capabilities.end());
-
   for (id<SystemIdentity> identity : identities) {
     GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
-        identity, supported_capabilities_set,
+        identity,
+        base::ToVector(GetAccountCapabilityNamesForPrefetch(),
+                       [](std::string_view sv) { return std::string(sv); }),
         base::BindOnce(^(std::map<std::string, SystemIdentityCapabilityResult>){
             // Ignore the result.
         }));
   }
+}
+
+void ResetDeviceRestoreDataForTesting() {
+  CHECK_IS_TEST();
+  g_restore_data.reset();
 }

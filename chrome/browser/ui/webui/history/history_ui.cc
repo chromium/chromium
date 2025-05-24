@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/history/history_ui.h"
 
 #include <memory>
@@ -26,6 +21,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,7 +29,9 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
+#include "chrome/browser/ui/webui/cr_components/history/history_util.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -45,16 +43,17 @@
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/history_resources.h"
 #include "chrome/grit/history_resources_map.h"
 #include "chrome/grit/locale_settings.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/commerce/core/webui/product_specifications_handler.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
-#include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history_clusters/core/config.h"
@@ -66,40 +65,24 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
-
-constexpr char kIsUserSignedInKey[] = "isUserSignedIn";
-
-bool IsUserSignedIn(Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  return identity_manager &&
-         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
-}
 
 content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIHistoryHost);
 
+  HistoryUtil::PopulateSourceForSidePanelHistory(source, profile);
+
   static constexpr webui::LocalizedString kStrings[] = {
       // Localized strings (alphabetical order).
-      {"actionMenuDescription", IDS_HISTORY_ACTION_MENU_DESCRIPTION},
-      {"ariaRoleDescription", IDS_HISTORY_ARIA_ROLE_DESCRIPTION},
-      {"bookmarked", IDS_HISTORY_ENTRY_BOOKMARKED},
-      {"cancel", IDS_CANCEL},
-      {"clearBrowsingData", IDS_CLEAR_BROWSING_DATA_TITLE},
-      {"clearBrowsingDataLinkTooltip", IDS_SETTINGS_OPENS_IN_NEW_TAB},
-      {"clearSearch", IDS_CLEAR_SEARCH},
-      {"collapseSessionButton", IDS_HISTORY_OTHER_SESSIONS_COLLAPSE_SESSION},
       {"compareHistoryEmpty", IDS_COMPARE_HISTORY_EMPTY},
       {"compareHistoryRemove", IDS_COMPARE_HISTORY_REMOVE},
       {"compareHistoryHeader", IDS_COMPARE_HISTORY_HEADER},
@@ -107,35 +90,9 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"compareHistoryListsMenuItem", IDS_COMPARE_HISTORY_MENU_ITEM},
       {"compareHistoryRow", IDS_COMPARE_HISTORY_ROW},
       {"compareHistoryMenuAriaLabel", IDS_COMPARE_HISTORY_MENU_ARIA_LABEL},
-      {"delete", IDS_HISTORY_DELETE},
-      {"deleteSuccess", IDS_HISTORY_REMOVE_PAGE_SUCCESS},
-      {"deleteConfirm", IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON},
-      {"deleteSession", IDS_HISTORY_OTHER_SESSIONS_HIDE_FOR_NOW},
-      {"deleteWarning", IDS_HISTORY_DELETE_PRIOR_VISITS_WARNING},
-      {"entrySummary", IDS_HISTORY_ENTRY_SUMMARY},
-      {"expandSessionButton", IDS_HISTORY_OTHER_SESSIONS_EXPAND_SESSION},
-      {"foundSearchResults", IDS_HISTORY_FOUND_SEARCH_RESULTS},
-      {"historyMenuButton", IDS_HISTORY_HISTORY_MENU_DESCRIPTION},
-      {"historyMenuItem", IDS_HISTORY_HISTORY_MENU_ITEM},
-      {"itemsSelected", IDS_HISTORY_ITEMS_SELECTED},
-      {"itemsUnselected", IDS_HISTORY_ITEMS_UNSELECTED},
-      {"loading", IDS_HISTORY_LOADING},
-      {"menu", IDS_MENU},
-      {"moreFromSite", IDS_HISTORY_MORE_FROM_SITE},
-      {"openAll", IDS_HISTORY_OTHER_SESSIONS_OPEN_ALL},
-      {"openTabsMenuItem", IDS_HISTORY_OPEN_TABS_MENU_ITEM},
-      {"noResults", IDS_HISTORY_NO_RESULTS},
-      {"noSearchResults", IDS_HISTORY_NO_SEARCH_RESULTS},
       {"noSyncedResults", IDS_HISTORY_NO_SYNCED_RESULTS},
-      {"removeBookmark", IDS_HISTORY_REMOVE_BOOKMARK},
-      {"removeFromHistory", IDS_HISTORY_REMOVE_PAGE},
-      {"removeSelected", IDS_HISTORY_REMOVE_SELECTED_ITEMS},
-      {"searchPrompt", IDS_HISTORY_SEARCH_PROMPT},
-      {"searchResult", IDS_HISTORY_SEARCH_RESULT},
-      {"searchResults", IDS_HISTORY_SEARCH_RESULTS},
       {"turnOnSyncPromo", IDS_HISTORY_TURN_ON_SYNC_PROMO},
       {"turnOnSyncPromoDesc", IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC},
-      {"title", IDS_HISTORY_TITLE},
       {"compareHistorySyncMessage", IDS_COMPARE_SYNC_PROMO_MESSAGE},
       {"compareHistorySyncDescription", IDS_COMPARE_SYNC_PROMO_DESCRIPTION},
       {"compareHistorySyncButton", IDS_COMPARE_SYNC_PROMO_BUTTON},
@@ -151,7 +108,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_CLEAR_DATA_MYACTIVITY_URL_IN_HISTORY)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   source->AddLocalizedString("turnOnSyncButton",
                              IDS_HISTORY_TURN_ON_SYNC_BUTTON);
 #else
@@ -161,8 +118,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   AccountInfo account_info =
       signin_ui_util::GetSingleAccountForPromos(identity_manager);
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-      !has_primary_account && !account_info.IsEmpty()) {
+  if (!has_primary_account && !account_info.IsEmpty()) {
     source->AddString("turnOnSyncButton",
                       l10n_util::GetStringFUTF16(
                           IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
@@ -173,22 +129,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
     source->AddLocalizedString("turnOnSyncButton",
                                IDS_HISTORY_TURN_ON_SYNC_BUTTON);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  PrefService* prefs = profile->GetPrefs();
-  bool allow_deleting_history =
-      prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory);
-  source->AddBoolean("allowDeletingHistory", allow_deleting_history);
-
-  source->AddBoolean("isGuestSession", profile->IsGuestSession());
-  source->AddBoolean("isSignInAllowed",
-                     prefs->GetBoolean(prefs::kSigninAllowed));
-
-  source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
-
-  source->AddInteger(
-      "lastSelectedTab",
-      prefs->GetInteger(history_clusters::prefs::kLastSelectedTab));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool enable_history_embeddings =
       history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile);
@@ -197,63 +138,27 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       "maybeShowEmbeddingsIph",
       history_embeddings::IsHistoryEmbeddingsSettingVisible(profile) &&
           !enable_history_embeddings);
-  source->AddBoolean("enableHistoryEmbeddingsAnswers",
-                     history_embeddings::kEnableAnswers.Get());
+
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
-      {"historyEmbeddingsSearchPrompt", IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT},
-      {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
       {"historyEmbeddingsPromoLabel", IDS_HISTORY_EMBEDDINGS_PROMO_LABEL},
       {"historyEmbeddingsPromoClose", IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE},
       {"historyEmbeddingsPromoHeading", IDS_HISTORY_EMBEDDINGS_PROMO_HEADING},
       {"historyEmbeddingsPromoBody", IDS_HISTORY_EMBEDDINGS_PROMO_BODY},
+      {"historyEmbeddingsAnswersPromoHeading",
+       IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_HEADING},
+      {"historyEmbeddingsAnswersPromoBody",
+       IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_BODY},
       {"historyEmbeddingsPromoSettingsLinkText",
        IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT},
-      {"historyEmbeddingsShowByLabel",
-       IDS_HISTORY_EMBEDDINGS_SHOW_BY_ARIA_LABEL},
-      {"historyEmbeddingsShowByDate", IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE},
-      {"historyEmbeddingsShowByGroup", IDS_HISTORY_EMBEDDINGS_SHOW_BY_GROUP},
-      {"historyEmbeddingsSuggestion1", IDS_HISTORY_EMBEDDINGS_SUGGESTION_1},
-      {"historyEmbeddingsSuggestion2", IDS_HISTORY_EMBEDDINGS_SUGGESTION_2},
-      {"historyEmbeddingsSuggestion3", IDS_HISTORY_EMBEDDINGS_SUGGESTION_3},
-      {"historyEmbeddingsSuggestion1AriaLabel",
-       IDS_HISTORY_EMBEDDINGS_SUGGESTION_1_ARIA_LABEL},
-      {"historyEmbeddingsSuggestion2AriaLabel",
-       IDS_HISTORY_EMBEDDINGS_SUGGESTION_2_ARIA_LABEL},
-      {"historyEmbeddingsSuggestion3AriaLabel",
-       IDS_HISTORY_EMBEDDINGS_SUGGESTION_3_ARIA_LABEL},
-      {"historyEmbeddingsHeading", IDS_HISTORY_EMBEDDINGS_HEADING},
-      {"historyEmbeddingsHeadingLoading",
-       IDS_HISTORY_EMBEDDINGS_HEADING_LOADING},
-      {"historyEmbeddingsFooter", IDS_HISTORY_EMBEDDINGS_FOOTER},
-      {"learnMore", IDS_LEARN_MORE},
-      {"thumbsUp", IDS_THUMBS_UP_RESULTS_A11Y_LABEL},
-      {"thumbsDown", IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL},
-      {"historyEmbeddingsAnswerHeading", IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING},
   };
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
-  source->AddInteger("historyEmbeddingsSearchMinimumWordCount",
-                     history_embeddings::kSearchQueryMinimumWordCount.Get());
-  source->AddString("historyEmbeddingsSettingsUrl",
-                    chrome::kHistorySearchSettingURL);
+
+  // Product specifications:
+  // Used to determine when the compare tab on history sidepanel is shown.
+  source->AddBoolean("compareHistoryEnabled", false);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
-
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kHistoryResources, kHistoryResourcesSize),
-      IDR_HISTORY_HISTORY_HTML);
-
-  content::URLDataSource::Add(
-      profile, std::make_unique<FaviconSource>(
-                   profile, chrome::FaviconUrlFormat::kFavicon2));
-
-  // Product specifications:
-  commerce::ShoppingService* service =
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-  source->AddBoolean("compareHistoryEnabled",
-                     commerce::CanManageProductSpecificationsSets(
-                         service->GetAccountChecker(),
-                         service->GetProductSpecificationsService()));
 
   return source;
 }
@@ -289,11 +194,6 @@ HistoryUI::HistoryUI(content::WebUI* web_ui)
                                                  base::Unretained(this)));
 
   web_ui->AddMessageHandler(std::make_unique<webui::NavigationHandler>());
-  auto browsing_history_handler = std::make_unique<BrowsingHistoryHandler>();
-  BrowsingHistoryHandler* browsing_history_handler_ptr =
-      browsing_history_handler.get();
-  web_ui->AddMessageHandler(std::move(browsing_history_handler));
-  browsing_history_handler_ptr->StartQueryHistory();
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   auto foreign_session_handler =
@@ -324,7 +224,15 @@ void HistoryUI::BindInterface(
         pending_page_handler) {
   history_embeddings_handler_ = std::make_unique<HistoryEmbeddingsHandler>(
       std::move(pending_page_handler),
-      Profile::FromWebUI(web_ui())->GetWeakPtr(), web_ui());
+      Profile::FromWebUI(web_ui())->GetWeakPtr(), web_ui(),
+      /*for_side_panel=*/false);
+}
+
+void HistoryUI::BindInterface(
+    mojo::PendingReceiver<history::mojom::PageHandler> pending_page_handler) {
+  browsing_history_handler_ = std::make_unique<BrowsingHistoryHandler>(
+      std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
+      web_ui()->GetWebContents());
 }
 
 void HistoryUI::BindInterface(
@@ -360,7 +268,6 @@ void HistoryUI::BindInterface(
 }
 
 void HistoryUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -372,10 +279,9 @@ void HistoryUI::CreateShoppingServiceHandler(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker,
-          std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
-                                                                profile),
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker,
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile),
           nullptr);
 }
 
@@ -385,7 +291,7 @@ void HistoryUI::UpdateDataSource() {
   Profile* profile = Profile::FromWebUI(web_ui());
 
   base::Value::Dict update;
-  update.Set(kIsUserSignedInKey, IsUserSignedIn(profile));
+  update.Set(kIsUserSignedInKey, HistoryUtil::IsUserSignedIn(profile));
 
   const bool is_managed = profile->GetPrefs()->IsManagedPreference(
       history_clusters::prefs::kVisible);
@@ -416,4 +322,30 @@ void HistoryUI::CreateHelpBubbleHandler(
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(handler), std::move(client), this,
       std::vector<ui::ElementIdentifier>{kHistorySearchInputElementId});
+}
+
+void HistoryUI::BindInterface(
+    mojo::PendingReceiver<commerce::product_specifications::mojom::
+                              ProductSpecificationsHandlerFactory> receiver) {
+  product_specifications_handler_factory_receiver_.reset();
+  product_specifications_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
+void HistoryUI::CreateProductSpecificationsHandler(
+    mojo::PendingRemote<commerce::product_specifications::mojom::Page> page,
+    mojo::PendingReceiver<
+        commerce::product_specifications::mojom::ProductSpecificationsHandler>
+        receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  product_specifications_handler_ =
+      std::make_unique<commerce::ProductSpecificationsHandler>(
+          std::move(page), std::move(receiver),
+          std::make_unique<commerce::ProductSpecificationsUIHandlerDelegate>(
+              web_ui()),
+          HistoryServiceFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          profile->GetPrefs(),
+          shopping_service->GetProductSpecificationsService(), nullptr);
 }

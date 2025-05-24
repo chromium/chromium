@@ -4,6 +4,7 @@
 
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -49,38 +50,55 @@ bool MatchesStorageKey(const std::set<url::Origin>& origins,
                        BrowsingDataFilterBuilder::OriginMatchingMode match_mode,
                        const blink::StorageKey& storage_key) {
   bool is_delete_list = mode == BrowsingDataFilterBuilder::Mode::kDelete;
+
   for (const auto& origin : origins) {
-    if (match_mode == OriginMatchingMode::kThirdPartiesIncluded &&
-        storage_key.MatchesOriginForTrustedStorageDeletion(origin)) {
-      return is_delete_list;
-    }
-    if (match_mode == OriginMatchingMode::kOriginInAllContexts &&
-        storage_key.origin() == origin) {
-      return is_delete_list;
+    switch (match_mode) {
+      case BrowsingDataFilterBuilder::OriginMatchingMode::kThirdPartiesIncluded:
+        if (storage_key.MatchesOriginForTrustedStorageDeletion(origin)) {
+          return is_delete_list;
+        }
+        break;
+      case BrowsingDataFilterBuilder::OriginMatchingMode::kOriginInAllContexts:
+        if (storage_key.origin() == origin) {
+          return is_delete_list;
+        }
+        break;
+      case BrowsingDataFilterBuilder::OriginMatchingMode::kOriginAndThirdParty:
+        if (storage_key.origin() == origin ||
+            storage_key.MatchesOriginForTrustedStorageDeletion(origin)) {
+          return is_delete_list;
+        }
+        break;
     }
   }
 
+  auto third_party_predicate = [&]() {
+    return is_delete_list ==
+           std::ranges::any_of(
+               registerable_domains, [&](const std::string& domain) {
+                 return storage_key
+                     .MatchesRegistrableDomainForTrustedStorageDeletion(domain);
+               });
+  };
+
+  auto origin_all_context_predicate = [&]() {
+    std::string registerable_domain =
+        GetDomainAndRegistry(storage_key.origin(), INCLUDE_PRIVATE_REGISTRIES);
+    if (registerable_domain.empty()) {
+      registerable_domain = storage_key.origin().host();
+    }
+
+    return is_delete_list ==
+           base::Contains(registerable_domains, registerable_domain);
+  };
+
   switch (match_mode) {
-    case OriginMatchingMode::kThirdPartiesIncluded: {
-      return is_delete_list ==
-             base::ranges::any_of(
-                 registerable_domains, [&](const std::string& domain) {
-                   return storage_key
-                       .MatchesRegistrableDomainForTrustedStorageDeletion(
-                           domain);
-                 });
-    }
-
-    case OriginMatchingMode::kOriginInAllContexts: {
-      std::string registerable_domain = GetDomainAndRegistry(
-          storage_key.origin(), INCLUDE_PRIVATE_REGISTRIES);
-      if (registerable_domain.empty()) {
-        registerable_domain = storage_key.origin().host();
-      }
-
-      return is_delete_list ==
-             base::Contains(registerable_domains, registerable_domain);
-    }
+    case OriginMatchingMode::kThirdPartiesIncluded:
+      return third_party_predicate();
+    case OriginMatchingMode::kOriginInAllContexts:
+      return origin_all_context_predicate();
+    case OriginMatchingMode::kOriginAndThirdParty:
+      return third_party_predicate() || origin_all_context_predicate();
   }
 
   return !is_delete_list;
@@ -119,10 +137,7 @@ bool MatchesPluginSiteForRegisterableDomainsAndIPs(
 
 template <typename T>
 base::RepeatingCallback<bool(const T&)> NotReachedFilter() {
-  return base::BindRepeating([](const T&) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  });
+  return base::BindRepeating([](const T&) -> bool { NOTREACHED(); });
 }
 
 bool StorageKeyInCookiePartitionKeyCollection(
@@ -212,12 +227,6 @@ bool BrowsingDataFilterBuilderImpl::HasStorageKey() const {
   return storage_key_.has_value();
 }
 
-bool BrowsingDataFilterBuilderImpl::MatchesWithSavedStorageKey(
-    const blink::StorageKey& other_key) const {
-  DCHECK(storage_key_.has_value());
-  return storage_key_.value() == other_key;
-}
-
 bool BrowsingDataFilterBuilderImpl::MatchesAllOriginsAndDomains() {
   return MatchesMostOriginsAndDomains() && origins_.empty() &&
          domains_.empty() && cookie_partition_key_collection_.ContainsAllKeys();
@@ -266,9 +275,8 @@ BrowsingDataFilterBuilderImpl::BuildStorageKeyFilter() {
   if (HasStorageKey()) {
     CHECK(StorageKeyInCookiePartitionKeyCollection(
         *storage_key_, cookie_partition_key_collection_));
-    return base::BindRepeating(
-        &BrowsingDataFilterBuilderImpl::MatchesWithSavedStorageKey,
-        base::Unretained(this));
+    return base::BindRepeating(std::equal_to<const blink::StorageKey&>(),
+                               *storage_key_);
   }
   return base::BindRepeating(&MatchesStorageKey, origins_, domains_, mode_,
                              origin_mode_);

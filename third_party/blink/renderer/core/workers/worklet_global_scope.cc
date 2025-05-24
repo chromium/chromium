@@ -108,7 +108,8 @@ WorkletGlobalScope::WorkletGlobalScope(
               : blink::LocalFrameToken()),
       parent_cross_origin_isolated_capability_(
           creation_params->parent_cross_origin_isolated_capability),
-      parent_is_isolated_context_(creation_params->parent_is_isolated_context) {
+      parent_is_isolated_context_(creation_params->parent_is_isolated_context),
+      browser_interface_broker_proxy_(this) {
   DCHECK((thread_type_ == ThreadType::kMainThread && frame_) ||
          (thread_type_ == ThreadType::kOffMainThread && worker_thread_));
 
@@ -151,6 +152,13 @@ WorkletGlobalScope::WorkletGlobalScope(
             std::move(creation_params->code_cache_host_interface)));
   }
 
+  if (creation_params->browser_interface_broker.is_valid()) {
+    browser_interface_broker_proxy_.Bind(
+        ToCrossVariantMojoType(
+            std::move(creation_params->browser_interface_broker)),
+        GetTaskRunner(TaskType::kInternalDefault));
+  }
+
   blob_url_store_pending_remote_ = std::move(creation_params->blob_url_store);
 }
 
@@ -158,6 +166,11 @@ WorkletGlobalScope::~WorkletGlobalScope() = default;
 
 const BrowserInterfaceBrokerProxy&
 WorkletGlobalScope::GetBrowserInterfaceBroker() const {
+  if (browser_interface_broker_proxy_.is_bound()) {
+    CHECK(IsSharedStorageWorkletGlobalScope());
+    return browser_interface_broker_proxy_;
+  }
+
   return GetEmptyBrowserInterfaceBroker();
 }
 
@@ -342,6 +355,7 @@ WorkletGlobalScope::TakeBlobUrlStorePendingRemote() {
 
 void WorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(browser_interface_broker_proxy_);
   WorkerOrWorkletGlobalScope::Trace(visitor);
 }
 

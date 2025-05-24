@@ -297,4 +297,38 @@ TEST_F(DrmWindowTest, CheckPageflipFailureOnFailedSwap) {
       task_environment_.FastForwardBy(kWaitForModesetTimeout), gpu_crash_log);
 }
 
+TEST_F(DrmWindowTest, CheckPageflipFailureOnDrmMasterDropped) {
+  DrmOverlayPlaneList planes;
+  planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+
+  // Window was re-sized, so the expectation is to re-create the buffers first.
+  DrmWindow* window = screen_manager_->GetWindow(kDefaultWidgetHandle);
+  drm_->set_page_flip_expectation(false);
+  window->SchedulePageFlip(
+      DrmOverlayPlane::Clone(planes),
+      base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
+      base::BindOnce(&DrmWindowTest::OnPresentation, base::Unretained(this)));
+  drm_->RunCallbacks();
+  EXPECT_EQ(0, on_successful_swap_buffers_count_);
+  EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS,
+            last_swap_buffers_result_);
+  EXPECT_EQ(static_cast<uint32_t>(gfx::PresentationFeedback::Flags::kFailure),
+            last_presentation_feedback_.flags);
+
+  drm_->DropMaster();
+  ASSERT_FALSE(drm_->has_master());
+
+  // DRM master was dropped, so expect no pageflip commits.
+  drm_->set_page_flip_expectation(false);
+  window->SchedulePageFlip(
+      DrmOverlayPlane::Clone(planes),
+      base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
+      base::BindOnce(&DrmWindowTest::OnPresentation, base::Unretained(this)));
+  drm_->RunCallbacks();
+  EXPECT_EQ(0, on_successful_swap_buffers_count_);
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_buffers_result_);
+  EXPECT_EQ(static_cast<uint32_t>(gfx::PresentationFeedback::Flags::kFailure),
+            last_presentation_feedback_.flags);
+}
+
 }  // namespace ui

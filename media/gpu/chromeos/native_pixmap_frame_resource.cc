@@ -4,14 +4,18 @@
 
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 
-#include "atomic"
+#include <atomic>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/lock.h"
+#include "base/types/pass_key.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -87,7 +91,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
   return Create(visible_rect, natural_size, timestamp, buffer_usage,
                 base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
                     coded_size, *buffer_format,
-                    std::move(gmb_handle.native_pixmap_handle)));
+                    std::move(gmb_handle).native_pixmap_handle()));
 }
 
 scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
@@ -96,6 +100,10 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     const gfx::Size& natural_size,
     std::vector<base::ScopedFD> dmabuf_fds,
     base::TimeDelta timestamp) {
+  // If |layout| comes from Mojo, the VideoFrame traits should have validated
+  // this.
+  CHECK_EQ(layout.num_planes(), VideoFrame::NumPlanes(layout.format()));
+
   // Performs a sanity check that the number of planes matches the number of
   // file descriptors.
   if (dmabuf_fds.size() != layout.num_planes()) {
@@ -129,19 +137,16 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     handle.planes.emplace_back(plane.stride, plane.offset, plane.size,
                                std::move(dmabuf_fds[i]));
   }
-
-  // This is only ever called with V4L2-allocated buffers, so |layout.modifier|
-  // is expected to be kNoModifier.
-  CHECK_EQ(layout.modifier(), gfx::NativePixmapHandle::kNoModifier);
   handle.modifier = layout.modifier();
 
   // Note: |buffer_usage| is not set. As a result, the constructed
-  // NativePixmapFrameResource cannot be converted to a VideoFrame with the
-  // method, CreateVideoFrame().
-  return base::WrapRefCounted(new NativePixmapFrameResource(
-      layout, visible_rect, natural_size, timestamp, *buffer_format,
-      GetNextSharedMemoryId(), /*buffer_usage=*/std::nullopt,
-      std::move(handle)));
+  // NativePixmapFrameResource cannot be converted to a
+  // STORAGE_GPU_MEMORY_BUFFER VideoFrame.
+  return base::MakeRefCounted<NativePixmapFrameResource>(
+      base::PassKey<NativePixmapFrameResource>(), layout, visible_rect,
+      natural_size, timestamp, *buffer_format, GetNextSharedMemoryId(),
+      base::UnguessableToken::Create(),
+      /*buffer_usage=*/std::nullopt, std::move(handle));
 }
 
 scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
@@ -196,37 +201,44 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     return nullptr;
   }
 
-  return base::WrapRefCounted(new NativePixmapFrameResource(
-      *layout, visible_rect, natural_size, timestamp, GetNextSharedMemoryId(),
-      buffer_usage, std::move(pixmap)));
+  return base::MakeRefCounted<NativePixmapFrameResource>(
+      base::PassKey<NativePixmapFrameResource>(), *layout, visible_rect,
+      natural_size, timestamp, GetNextSharedMemoryId(),
+      base::UnguessableToken::Create(), buffer_usage, std::move(pixmap));
 }
 
 NativePixmapFrameResource::NativePixmapFrameResource(
+    base::PassKey<NativePixmapFrameResource> pass_key,
     const media::VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     gfx::BufferFormat buffer_format,
     gfx::GenericSharedMemoryId id,
+    const base::UnguessableToken& tracking_token,
     std::optional<gfx::BufferUsage> buffer_usage,
     gfx::NativePixmapHandle handle)
     : NativePixmapFrameResource(
+          std::move(pass_key),
           layout,
           visible_rect,
           natural_size,
           timestamp,
           id,
+          tracking_token,
           buffer_usage,
           base::MakeRefCounted<gfx::NativePixmapDmaBuf>(layout.coded_size(),
                                                         buffer_format,
                                                         std::move(handle))) {}
 
 NativePixmapFrameResource::NativePixmapFrameResource(
+    base::PassKey<NativePixmapFrameResource>,
     const media::VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     gfx::GenericSharedMemoryId id,
+    const base::UnguessableToken& tracking_token,
     std::optional<gfx::BufferUsage> buffer_usage,
     scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap)
     : pixmap_(std::move(pixmap)),
@@ -237,6 +249,8 @@ NativePixmapFrameResource::NativePixmapFrameResource(
       natural_size_(natural_size),
       timestamp_(timestamp) {
   metadata().is_webgpu_compatible = pixmap_->SupportsZeroCopyWebGPUImport();
+  CHECK(!tracking_token.is_empty());
+  metadata().tracking_token = tracking_token;
 }
 
 NativePixmapFrameResource::~NativePixmapFrameResource() {
@@ -296,12 +310,10 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
     return gfx::GpuMemoryBufferHandle();  // Invalid
   }
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+  gfx::GpuMemoryBufferHandle gmb_handle(std::move(native_pixmap_handle));
   // |gmb_handle.id| is set to the GenericSharedMemoryId from |this|. This
   // allows for more predictable caching when converting to a VideoFrame.
-  gmb_handle.id = GetSharedMemoryId();
-  gmb_handle.native_pixmap_handle = std::move(native_pixmap_handle);
+  gmb_handle.id = id_;
   return gmb_handle;
 }
 
@@ -310,11 +322,6 @@ NativePixmapFrameResource::MapGMBOrSharedImage() const {
   // This accessor is used for frames with STORAGE_GPU_MEMORY_BUFFER. This class
   // is coded to advertise STORAGE_DMABUFS, so this always returns nullptr.
   return nullptr;
-}
-
-gfx::GenericSharedMemoryId NativePixmapFrameResource::GetSharedMemoryId()
-    const {
-  return id_;
 }
 
 const VideoFrameLayout& NativePixmapFrameResource::layout() const {
@@ -381,7 +388,17 @@ VideoFrameMetadata& NativePixmapFrameResource::metadata() {
 
 void NativePixmapFrameResource::set_metadata(
     const VideoFrameMetadata& metadata) {
+  // This keeps the original tracking token in |metadata_|.
+  base::UnguessableToken original_tracking_token = tracking_token();
   metadata_ = metadata;
+  metadata_.tracking_token = original_tracking_token;
+}
+
+const base::UnguessableToken& NativePixmapFrameResource::tracking_token()
+    const {
+  CHECK(metadata().tracking_token.has_value());
+  CHECK(!metadata().tracking_token->is_empty());
+  return *metadata().tracking_token;
 }
 
 base::TimeDelta NativePixmapFrameResource::timestamp() const {
@@ -413,10 +430,9 @@ scoped_refptr<FrameResource> NativePixmapFrameResource::CreateWrappingFrame(
   // frame into the wrapping frame.
   // Note: Uses WrapRefCounted() since MakeRefCounted() cannot access a private
   // constructor.
-  auto wrapping_frame = base::WrapRefCounted<NativePixmapFrameResource>(
-      new NativePixmapFrameResource(layout(), visible_rect, natural_size,
-                                    timestamp(), GetSharedMemoryId(),
-                                    buffer_usage_, pixmap_));
+  auto wrapping_frame = base::MakeRefCounted<NativePixmapFrameResource>(
+      base::PassKey<NativePixmapFrameResource>(), layout(), visible_rect,
+      natural_size, timestamp(), id_, tracking_token(), buffer_usage_, pixmap_);
 
   // All other metadata is copied to the "wrapping" frame.
   wrapping_frame->metadata().MergeMetadataFrom(metadata());
@@ -453,15 +469,51 @@ NativePixmapFrameResource::GetGpuMemoryBufferHandleForTesting() const {
   return gfx::GpuMemoryBufferHandle();
 }
 
-scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateVideoFrame() const {
+scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateDmabufVideoFrame()
+    const {
+  std::vector<base::ScopedFD> duped_fds;
+  const size_t num_fds = NumDmabufFds();
+  duped_fds.reserve(num_fds);
+  for (size_t i = 0; i < num_fds; ++i) {
+    base::ScopedFD duped_fd(HANDLE_EINTR(dup(GetDmabufFd(i))));
+    if (!duped_fd.is_valid()) {
+      LOG(ERROR) << "Unable to dup() an FD";
+      return nullptr;
+    }
+    duped_fds.push_back(std::move(duped_fd));
+  }
+
+  scoped_refptr<VideoFrame> video_frame =
+      VideoFrame::WrapExternalDmabufs(layout(), visible_rect(), natural_size(),
+                                      std::move(duped_fds), timestamp());
+  if (!video_frame) {
+    DLOGF(ERROR) << "Unable to create a VideoFrame";
+    return nullptr;
+  }
+
+  // Copies VideoFrameMetadata from |this| to the output VideoFrame.
+  video_frame->metadata().MergeMetadataFrom(metadata());
+  video_frame->set_color_space(ColorSpace());
+  video_frame->set_hdr_metadata(hdr_metadata());
+
+  // Adds a reference to |this| from the output VideoFrame to make sure the
+  // underlying frame does not get recycled back into the frame pool before it
+  // is used.
+  video_frame->AddDestructionObserver(base::DoNothingWithBoundArgs(
+      base::WrapRefCounted<const NativePixmapFrameResource>(this)));
+
+  return video_frame;
+}
+
+scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateMappableVideoFrame(
+    gpu::SharedImageInterface* sii) const {
   LOG_ASSERT(buffer_usage_.has_value())
       << "Unsupported conversion from wrapped DMA buffers to GpuMemoryBuffer "
          "VideoFrame.";
-
   // Creates a GMB-backed frame with using duplicated file descriptors.
   auto video_frame = CreateVideoFrameFromGpuMemoryBufferHandle(
       CreateGpuMemoryBufferHandle(), format(), coded_size(), visible_rect(),
-      natural_size(), timestamp(), *buffer_usage_);
+      natural_size(), timestamp(), *buffer_usage_, sii);
   if (!video_frame) {
     DLOGF(ERROR) << "Unable to create a VideoFrame";
     return nullptr;

@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="Mobile_Messages_Confirm_Type">
+  <variant name=".ConfirmInfobarTypeBlockPopups"
+      summary="Recorded for Block Popups Confirm Messages."/>
+  <variant name=".ConfirmInfobarTypeRestore"
+      summary="Recorded for Restore Tabs Confirm Messages."/>
+</variants>
+
+<variants name="Mobile_Messages_Password_Type">
+  <variant name=".InfobarTypePasswordSave" summary=""/>
+  <variant name=".InfobarTypePasswordUpdate" summary=""/>
+</variants>
+
 <variants name="MobileFreInflationSpeedComparison">
   <variant name=".FasterThanInflation"
       summary="This histogram reports just those timings that were faster
@@ -35,8 +47,6 @@ chromium-metrics-reviews@google.com.
   <variant name="InfobarTypeAutofillAddressProfile"
       summary="Recorded for Autofill Address Infobar."/>
   <variant name="InfobarTypeConfirm" summary="Recorded for Confirm Messages."/>
-  <variant name="InfobarTypeParcelTracking"
-      summary="Recorded for Parcel Tracking Infobar."/>
   <variant name="InfobarTypePasswordSave"
       summary="Recorded for Save Password Infobar."/>
   <variant name="InfobarTypePasswordUpdate"
@@ -45,6 +55,8 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for PermissionsInfobar."/>
   <variant name="InfobarTypeSaveCard"
       summary="Recorded for Save Card Infobar."/>
+  <variant name="InfobarTypeSignin"
+      summary="Recorded for non modal sign-in promo Infobar."/>
   <variant name="InfobarTypeSyncError"
       summary="Recorded for Sync Error Infobar."/>
   <variant name="InfobarTypeTailoredSecurityService"
@@ -53,8 +65,18 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for Translate Infobar."/>
 </variants>
 
+<variants name="SystemNotificationAgeType">
+  <variant name=".ClickToCall" summary="Click To Call"/>
+  <variant name=".PriceDropChromeManaged"
+      summary="Chrome Managed Price Drop Alerts"/>
+  <variant name=".PriceDropUserManaged"
+      summary="User Managed Price Drop Alerts"/>
+  <variant name=".SendTabToSelf" summary="Send Tab To Self"/>
+  <variant name=".SharedClipboard" summary="Shared Clipboard"/>
+</variants>
+
 <histogram name="Mobile.AppMenu.TimeToTakeAction.Abandoned" units="ms"
-    expires_after="2023-05-07">
+    expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -63,11 +85,13 @@ chromium-metrics-reviews@google.com.
     is abandoned. See Mobile.AppMenu.TimeToTakeAction.SelectedItem for the cases
     where it is closed as a result of user interaction with the menu. Android
     only.
+
+    (Expired in 2023-05-07. Revived in 2025-01-07.)
   </summary>
 </histogram>
 
 <histogram name="Mobile.AppMenu.TimeToTakeAction.SelectedItem" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -75,6 +99,8 @@ chromium-metrics-reviews@google.com.
     menu is closed as a result of the user clicking a menu item. See
     Mobile.AppMenu.TimeToTakeAction.Abandoned for the cases where it is
     abandoned by the user. Android only.
+
+    (Expired in 2023-11-12. Revived in 2025-01-07.)
   </summary>
 </histogram>
 
@@ -89,8 +115,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.CopyImage" enum="ContextMenuIOSCopyImage"
-    expires_after="2025-03-10">
-  <owner>djean@chromium.org</owner>
+    expires_after="2026-01-31">
+  <owner>olivierrobin@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     Logged when &quot;copy image&quot; from context menu is invoked. Log the
@@ -99,7 +125,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.EntryPoints" enum="IOSMenuScenario"
-    expires_after="2025-03-09">
+    expires_after="2026-01-31">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
@@ -110,13 +136,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.GetImageDataByJsResult"
-    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2024-06-30">
-  <owner>djean@chromium.org</owner>
+    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2026-01-31">
+  <owner>olivierrobin@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     Result of getting image data by JavaScript for CopyImage, SaveImage and
     SearchByImage from iOS context menu. Recorded when the JavaScript returns,
-    or fails for timeout.
+    or fails for timeout. Warning: data gap between 2024-07 - 2025-02.
   </summary>
 </histogram>
 
@@ -163,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.{EntryPoint}.Actions" enum="IOSMenuAction"
-    expires_after="2025-02-10">
+    expires_after="2025-10-26">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
@@ -186,6 +212,8 @@ chromium-metrics-reviews@google.com.
     <variant name="BookmarkFolder" summary="Bookmark folder"/>
     <variant name="HistoryEntry" summary="History entry"/>
     <variant name="InactiveTabsEntry" summary="Inactive Tabs entry"/>
+    <variant name="LastVisitedHistoryEntry"
+        summary="History entry in Last Visited"/>
     <variant name="MostVisitedEntry" summary="Most Visited entry"/>
     <variant name="OmniboxMostVisitedEntry"
         summary="Omnibox Most Visited entry"/>
@@ -215,18 +243,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Mobile.DefaultBrowser.BrowserCount" units="units"
-    expires_after="never">
-<!-- Name completed by histogram_suffixes name="Mobile.DefaultBrowser.Type" -->
-
+<histogram
+    name="Mobile.DefaultBrowser.BrowserCount{Mobile_DefaultBrowser_Type}"
+    units="units" expires_after="never">
 <!-- expires-never: Used to keep track of Android browser ecosystem. -->
 
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
     Android: The number of browsers installed on the device. Logged when a new
-    session is started.
+    session is started. {Mobile_DefaultBrowser_Type}
   </summary>
+  <token key="Mobile_DefaultBrowser_Type">
+    <variant name=".ChromeDefault" summary="Chrome is the default browser."/>
+    <variant name=".NoDefault" summary="There is no default browser."/>
+    <variant name=".OtherDefault"
+        summary="Another browser is the default browser."/>
+  </token>
 </histogram>
 
 <histogram name="Mobile.DefaultBrowser.State" enum="MobileDefaultBrowserState"
@@ -264,19 +297,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Mobile.DefaultBrowser.SystemBrowserCount"
+<histogram
+    name="Mobile.DefaultBrowser.SystemBrowserCount.{SystemDefaultBrowserType}"
     units="units" expires_after="never">
-<!-- Name completed by histogram_suffixes
-    name="Mobile.DefaultBrowser.SystemDefaultBrowser.Type" -->
-
 <!-- expires-never: Used to keep track of Android browser ecosystem. -->
 
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
     Android: The number of system installed browsers. Logged when a new session
-    is started.
+    is started. {SystemDefaultBrowserType}
   </summary>
+  <token key="SystemDefaultBrowserType">
+    <variant name="ChromeNotSystem"
+        summary="Chrome is not a system installed browser."/>
+    <variant name="ChromeSystem"
+        summary="Chrome is a system installed browser."/>
+  </token>
 </histogram>
 
 <histogram name="Mobile.Keyboard.LensSupportStatus" enum="IOSLensSupportStatus"
@@ -291,7 +328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Badge.Tapped.{MobileInfobarType}"
-    enum="MobileMessagesBadgeState" expires_after="2025-03-02">
+    enum="MobileMessagesBadgeState" expires_after="2026-05-11">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -301,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Dismiss.{MobileInfobarType}"
-    enum="MobileMessagesBannerDismissType" expires_after="2025-03-02">
+    enum="MobileMessagesBannerDismissType" expires_after="2025-07-06">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -311,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Event.{MobileInfobarType}"
-    enum="MobileMessagesBannerEvent" expires_after="2025-03-09">
+    enum="MobileMessagesBannerEvent" expires_after="2025-07-13">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records infobar banner events. {MobileInfobarType}</summary>
@@ -319,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.OnScreenTime" units="ms"
-    expires_after="2025-02-26">
+    expires_after="2026-02-26">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -339,70 +376,73 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Mobile.Messages.Confirm.Accept.Time" units="ms"
-    expires_after="2025-04-06">
-<!-- Name completed by histogram_suffixes name="Mobile.Messages.Confirm.Type" -->
-
+<histogram
+    name="Mobile.Messages.Confirm.Accept.Time{Mobile_Messages_Confirm_Type}"
+    units="ms" expires_after="2026-04-06">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
     Records the time between the Infobar Delegate is created, and the user
-    accepts a Confirm Infobar action.
+    accepts a Confirm Infobar action. {Mobile_Messages_Confirm_Type}
   </summary>
 </histogram>
 
-<histogram base="true" name="Mobile.Messages.Confirm.Event"
+<histogram name="Mobile.Messages.Confirm.Event{Mobile_Messages_Confirm_Type}"
     enum="MobileMessagesConfirmInfobarEvents" expires_after="2025-06-16">
-<!-- Name completed by histogram_suffixes name="Mobile.Messages.Confirm.Type" -->
-
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     Records the events related to Confirm Infobars (e.g. Presented, Accepted,
-    Dismissed,etc.)
+    Dismissed,etc.) {Mobile_Messages_Confirm_Type}
   </summary>
 </histogram>
 
 <histogram name="Mobile.Messages.Modal.Event.{MobileInfobarType}"
-    enum="MobileMessagesModalEvent" expires_after="2025-03-02">
+    enum="MobileMessagesModalEvent" expires_after="2025-07-06">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records generic infobar modal events. {MobileInfobarType}</summary>
   <token key="MobileInfobarType" variants="MobileInfobarType"/>
 </histogram>
 
-<histogram base="true" name="Mobile.Messages.OverflowRow.Tapped"
+<histogram name="Mobile.Messages.OverflowRow.Tapped"
     enum="MobileMessagesInfobarType" expires_after="2024-06-20">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records a tap on an Infobar overflow menu row.</summary>
 </histogram>
 
-<histogram base="true" name="Mobile.Messages.Passwords.Modal.Dismiss"
-    enum="MobileMessagesPasswordsModalDismiss" expires_after="2025-01-05">
-<!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
-
+<histogram
+    name="Mobile.Messages.Passwords.Modal.Dismiss{Mobile_Messages_Password_Type}"
+    enum="MobileMessagesPasswordsModalDismiss" expires_after="2026-01-05">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
-  <summary>Records the reason why a Password Modal was dismissed.</summary>
+  <summary>
+    Records the reason why a Password Modal was dismissed.
+    {Mobile_Messages_Password_Type}
+  </summary>
 </histogram>
 
-<histogram base="true" name="Mobile.Messages.Passwords.Modal.Event"
+<histogram
+    name="Mobile.Messages.Passwords.Modal.Event{Mobile_Messages_Password_Type}"
     enum="MobileMessagesPasswordsModalEvent" expires_after="2025-09-29">
-<!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
-
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
-  <summary>Records Password specific Infobar Modal events.</summary>
+  <summary>
+    Records Password specific Infobar Modal events.
+    {Mobile_Messages_Password_Type}
+  </summary>
 </histogram>
 
-<histogram base="true" name="Mobile.Messages.Passwords.Modal.Present"
+<histogram
+    name="Mobile.Messages.Passwords.Modal.Present{Mobile_Messages_Password_Type}"
     enum="MobileMessagesPasswordsModalPresent" expires_after="2025-06-20">
-<!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
-
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
-  <summary>Records the context when a Password Modal was presented.</summary>
+  <summary>
+    Records the context when a Password Modal was presented.
+    {Mobile_Messages_Password_Type}
+  </summary>
 </histogram>
 
 <histogram name="Mobile.Messages.Save.Card.Modal.Event"
@@ -423,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Modal.Event"
-    enum="MobileMessagesTranslateModalEvent" expires_after="2025-01-28">
+    enum="MobileMessagesTranslateModalEvent" expires_after="2025-10-12">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -476,7 +516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.EntryPoints" enum="IOSActivityScenario"
-    expires_after="2025-02-10">
+    expires_after="2025-10-26">
   <owner>dimich@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <owner>chrome-with-friends-robots@google.com</owner>
@@ -489,7 +529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.{EntryPoint}.Actions" enum="IOSShareAction"
-    expires_after="2025-01-26">
+    expires_after="2025-10-12">
   <owner>dimich@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <owner>chrome-with-friends-robots@google.com</owner>
@@ -510,7 +550,7 @@ chromium-metrics-reviews@google.com.
     <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
     <variant name="ShareChrome" summary="link to Chrome in the app store"/>
     <variant name="SharedHighlight" summary="highlighted fragment"/>
-    <variant name="ShareInContextMenu" summary="share in context menu"/>
+    <variant name="ShareInWebContextMenu" summary="share in context menu"/>
     <variant name="TabGridItem" summary="tab grid item"/>
     <variant name="TabGridSelectionMode" summary="tab grid selection mode"/>
     <variant name="TabShareButton" summary="current tab"/>
@@ -541,19 +581,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mobile.SystemNotification.Action.Click.Age" units="minutes"
-    expires_after="never">
-<!-- Name completed by histogram_suffixes
-       name="SystemNotificationAgeType" -->
-
+<histogram
+    name="Mobile.SystemNotification.Action.Click.Age{SystemNotificationAgeType}"
+    units="minutes" expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
   <summary>
     Records the duration in minutes from the time when the system notification
     is shown to the time that the user clicked on an action button on the
-    Android notification.
+    Android notification. {SystemNotificationAgeType}
   </summary>
+  <token key="SystemNotificationAgeType" variants="SystemNotificationAgeType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Blocked"
@@ -606,18 +647,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mobile.SystemNotification.Content.Click.Age" units="minutes"
-    expires_after="never">
-<!-- Name completed by histogram_suffixes
-       name="SystemNotificationAgeType" -->
-
+<histogram
+    name="Mobile.SystemNotification.Content.Click.Age{SystemNotificationAgeType}"
+    units="minutes" expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
   <summary>
     Records the duration in minutes from the time when the system notification
     is shown to the time that the user clicked the notification on Android.
+    {SystemNotificationAgeType}
   </summary>
+  <token key="SystemNotificationAgeType" variants="SystemNotificationAgeType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Dismiss"
@@ -631,22 +674,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mobile.SystemNotification.Dismiss.Age" units="minutes"
-    expires_after="never">
-<!-- Name completed by histogram_suffixes
-       name="SystemNotificationAgeType" -->
-
+<histogram
+    name="Mobile.SystemNotification.Dismiss.Age{SystemNotificationAgeType}"
+    units="minutes" expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
   <summary>
     Records the duration in minutes from the time when the system notification
     is shown to the time that the user dismissed the notification on Android.
+    {SystemNotificationAgeType}
   </summary>
+  <token key="SystemNotificationAgeType" variants="SystemNotificationAgeType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Permission.Change"
-    enum="BooleanEnabled" expires_after="2025-01-26">
+    enum="BooleanEnabled" expires_after="2025-10-12">
   <owner>salg@google.com</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -658,7 +703,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.DuplicatePreUnsubscribeRealDelay"
-    units="ms" expires_after="2025-01-26">
+    units="ms" expires_after="2025-08-10">
   <owner>engedy@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -675,7 +720,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.IsDuplicatePreUnsubscribe"
-    enum="Boolean" expires_after="2025-01-26">
+    enum="Boolean" expires_after="2025-10-12">
   <owner>engedy@chromium.org</owner>
   <summary>
     Records whether the origin was already in the provisionally unsubscribed
@@ -687,7 +732,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.PreUnsubscribePreNativeDuration"
-    units="ms" expires_after="2025-01-26">
+    units="ms" expires_after="2025-10-12">
   <owner>engedy@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -705,7 +750,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.PreUnsubscribePreNativeRealDuration"
-    units="ms" expires_after="2025-01-26">
+    units="ms" expires_after="2025-08-10">
   <owner>engedy@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -723,7 +768,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.SuspendedNotificationCount"
-    units="notifications" expires_after="2025-01-26">
+    units="notifications" expires_after="2025-10-12">
   <owner>engedy@chromium.org</owner>
   <summary>
     Records the number of notifications that were suspended, each time the user
@@ -734,7 +779,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.WasGlobalStatePreserved.{ForAction}"
-    enum="Boolean" expires_after="2025-01-26">
+    enum="Boolean" expires_after="2025-10-12">
   <owner>engedy@chromium.org</owner>
   <summary>
     Records whether the Java global state was preserved between the
@@ -954,8 +999,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="MobileFre.FragmentInflationSpeed" units="ms"
-    expires_after="2023-06-04">
+<histogram
+    name="MobileFre.FragmentInflationSpeed{MobileFreFragmentInflationVsAppRestriction}"
+    units="ms" expires_after="2023-06-04">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -964,11 +1010,16 @@ chromium-metrics-reviews@google.com.
     inflation was slower or faster than the appRestrictions call, and wether the
     UI had to wait. Note this is recorded for all clients, not just enterprise.
     Not applicable for light weight FRE.
+    {MobileFreFragmentInflationVsAppRestriction}
   </summary>
+  <token key="MobileFreFragmentInflationVsAppRestriction">
+    <variant name=".FasterThanAppRestriction" summary=""/>
+    <variant name=".SlowerThanAppRestriction" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="MobileFre.FromLaunch.{Target}" units="ms"
-    expires_after="2025-02-23">
+    expires_after="2025-11-09">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -997,7 +1048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.NativeInitialized" units="ms"
-    expires_after="2025-01-26">
+    expires_after="2025-10-12">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -1007,7 +1058,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.Progress.{MobileFreEntryType}"
-    enum="MobileFreProgress" expires_after="2025-03-09">
+    enum="MobileFreProgress" expires_after="2025-11-16">
   <owner>bsazonov@chromium.org</owner>
   <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1053,81 +1104,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileFullscreenVideo.DurationAfterPotraitRotation" units="ms"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the duration that a fullscreen video is played after device
-    rotates from portrait to landscape mode for the first time, and before it
-    exits fullscreen. If there is no device rotation or if the video starts with
-    landscape mode, it is not recorded. If there are mutiple rotations between
-    portrait and landscape mode, only one record is emitted and it is equal to
-    the time period from the first rotation to the moment when the video exits
-    fullscreen.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.LandscapeDuration" units="ms"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the duration that a fullscreen video is played in landscape
-    mode. If a video starts playing in landscape mode, and then it is switched
-    back and forth between landscape and portrait mode, only the time period
-    before the first switch is accounted. If a video starts playing in portrait
-    mode, it is not recorded.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.LandscapeRotation" enum="BooleanEnabled"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records whether a fullscreen video is switched from landscape to
-    portrait mode at any point during playback.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.OrientationPortrait"
-    enum="BooleanEnabled" expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the device orientation when a video enters fullscreen. The
-    value is true if device orientation is portrait, or false otherwise. The
-    video doesn't necessarily needs to be in a playing state.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.PortraitDuration" units="ms"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the duration that a fullscreen video is played in portrait
-    mode. If a video starts playing in portrait mode, and then it is switched
-    back and forth between landscape and portrait mode, only the time period
-    before the first switch is accounted. If a video starts playing in landscape
-    mode, it is not recorded.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.PortraitRotation" enum="BooleanEnabled"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records whether a fullscreen video is switched from portrait to
-    landscape mode at any point during playback.
-  </summary>
-</histogram>
-
-<histogram name="MobileFullscreenVideo.VideoPortrait" enum="BooleanEnabled"
-    expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records whether a video has a larger height than width when it
-    enters the fullscreen mode.
-  </summary>
-</histogram>
-
 <histogram name="MobileIntent.PageLoadDueToExternalApp" enum="ClientAppId"
     expires_after="never">
 <!-- expires-never: Navigation (external-apps) heartbeat metric for Android. -->
@@ -1140,31 +1116,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileOmnibox.LongPressPasteAge" units="ms"
-    expires_after="2021-04-18">
-  <owner>gangwu@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Recorded when user long presses and pastes clipboard content into omnibox.
-    The value indicates the estimated age of the clipboard.
-
-    Intended to be compared to Omnibox.ClipboardSuggestionShownAge.
-  </summary>
-</histogram>
-
-<histogram name="MobileOmnibox.PopupOpenDuration" units="ms"
-    expires_after="2022-02-02">
-  <owner>stkhapugin@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Recorded when the omnibox popup is closed. Indicates the duration it was
-    open.
-  </summary>
-</histogram>
-
 <histogram name="MobileOmnibox.PressedClipboardSuggestionAge" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
@@ -1179,18 +1134,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilDismiss"
-    units="impressions" expires_after="2025-04-01">
-  <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts how many times the signin promo is implicitly dismissed (by closing
-    the bookmark manager) per impression.
-  </summary>
-</histogram>
-
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="2025-04-01">
+    units="impressions" expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1202,22 +1147,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilXButton"
-    units="impressions" expires_after="2025-04-01">
+    units="impressions" expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times the explicit &quot;X&quot;-to-close button is clicked
     per impression.
-  </summary>
-</histogram>
-
-<histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilDismiss"
-    units="impressions" expires_after="2025-09-15">
-  <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts how many times the signin promo is implicitly dismissed (by leaving
-    the NTP) per impression of the NTP feed top section sign in promo.
   </summary>
 </histogram>
 
@@ -1229,7 +1164,8 @@ chromium-metrics-reviews@google.com.
     Counts how many times one of the &quot;sign in&quot; buttons (any of the
     signed-out &quot;Sign in to Chrome&quot; button, the &quot;Continue as
     |name|&quot; button, or the &quot;Not |email|?&quot; button) is clicked per
-    impression of the NTP feed top section sign in promo.
+    impression of the NTP feed top section sign in promo. This histogram expired
+    by mistake between 2023-06-01 and 2024-09-16.
   </summary>
 </histogram>
 
@@ -1243,22 +1179,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileSignInPromo.ReadingList.ImpressionsTilDismiss"
-    units="impressions" expires_after="2025-04-01">
-  <owner>myuu@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts how many times the signin promo is implicitly dismissed (by closing
-    the reading list) per impression. Recorded when the sign-in promo is removed
-    from the reading list view without being used. If the promo is removed by
-    user authentication (eg. sign-in from another view), the histogram is not
-    recorded.
-  </summary>
-</histogram>
-
 <histogram name="MobileSignInPromo.ReadingList.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="2025-04-01">
-  <owner>myuu@google.com</owner>
+    units="impressions" expires_after="2026-04-01">
+  <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times one of the &quot;sign in&quot; buttons (any of the
@@ -1270,8 +1193,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.ReadingList.ImpressionsTilXButton"
-    units="impressions" expires_after="2025-04-01">
-  <owner>myuu@google.com</owner>
+    units="impressions" expires_after="2026-04-01">
+  <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times the explicit &quot;X&quot;-to-close button is clicked
@@ -1281,7 +1204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.DailyLaunchCount" units="units"
-    expires_after="2025-02-10">
+    expires_after="2025-10-26">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1313,20 +1236,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileStartup.IntentToCreationTime" units="ms"
-    expires_after="2025-03-09">
+<histogram name="MobileStartup.IntentToCreationTime{ActivityType}" units="ms"
+    expires_after="2025-11-16">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Android: The time it takes from creating an intent for ChromeActivity to
     activity creation. This includes activity creation time spent in the
-    framework.
+    framework. {ActivityType}
   </summary>
+  <token key="ActivityType">
+    <variant name=""/>
+    <variant name=".CustomTabs" summary="CustomTabs"/>
+    <variant name=".TabbedMode" summary="TabbedMode"/>
+    <variant name=".WebApk" summary="WebApk"/>
+    <variant name=".WebApp" summary="WebApp"/>
+  </token>
 </histogram>
 
 <histogram name="MobileStartup.LaunchCause" enum="LaunchCause"
-    expires_after="2025-02-10">
+    expires_after="2025-10-26">
   <owner>mthiesse@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -1338,12 +1268,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="MobileStartup.ToolbarInflationTime" units="ms"
-    expires_after="2023-12-28">
+<histogram name="MobileStartup.ToolbarInflationTime{ChromeActivityName}"
+    units="ms" expires_after="2023-12-28">
   <owner>pasko@chromium.org</owner>
   <summary>
     Android: The time spent performing toolbar layout inflation.
+    {ChromeActivityName}
   </summary>
+  <token key="ChromeActivityName">
+    <variant name=".ChromeTabbedActivity"
+        summary="Activity launched in TABBED mode on Android"/>
+    <variant name=".CustomTabActivity"
+        summary="Activity launched with a CUSTOM TAB on Android"/>
+    <variant name=".DocumentActivity"
+        summary="Activity launched in DOCUMENT mode (Tabs and apps together)
+                 on Android"/>
+  </token>
 </histogram>
 
 </histograms>

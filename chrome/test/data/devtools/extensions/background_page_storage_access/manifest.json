@@ -1,0 +1,10 @@
+{
+   "description": "Test Extension - Background Page Storage Access",
+   "name": "Test Extension - Background Page Storage Access",
+   "version": "0.1",
+   "manifest_version": 2,
+   "background":  {
+       "scripts": [ "background.js" ]
+   },
+   "permissions": [ "storage" ]
+}

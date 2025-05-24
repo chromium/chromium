@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.components.browser_ui.widget.chips;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -25,6 +27,8 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.LoadingView;
@@ -46,6 +50,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  *   <li>An optional boolean (showLoadingView) to show a loading view in place of the start icon.
  * </ul>
  */
+@NullMarked
 public class ChipView extends LinearLayout {
     /** An id to use for {@link #setIcon(int, boolean)} when there is no icon on the chip. */
     public static final int INVALID_ICON_ID = -1;
@@ -64,10 +69,9 @@ public class ChipView extends LinearLayout {
     private final int mEndIconEndPadding;
     private final int mCornerRadius;
 
-    private ViewGroup mEndIconWrapper;
-    private AppCompatTextView mSecondaryText;
+    private @Nullable ViewGroup mEndIconWrapper;
+    private @Nullable AppCompatTextView mSecondaryText;
     private int mMaxWidth = Integer.MAX_VALUE;
-    private boolean mTintWithTextColor;
 
     /** Constructor for applying a theme overlay. */
     public ChipView(Context context, @StyleRes int themeOverlay) {
@@ -86,7 +90,7 @@ public class ChipView extends LinearLayout {
     /** Constructor for base classes and programmatic creation. */
     public ChipView(
             Context context,
-            AttributeSet attrs,
+            @Nullable AttributeSet attrs,
             @AttrRes int defStyleAttr,
             @StyleRes int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
@@ -236,7 +240,7 @@ public class ChipView extends LinearLayout {
         }
         if (textAlignStart) {
             // Default of 'center' is defined in the ChipTextView style.
-            mPrimaryText.setTextAlignment((View.TEXT_ALIGNMENT_VIEW_START));
+            mPrimaryText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         }
         if (reduceTextStartPadding) {
             mPrimaryText.setPaddingRelative(
@@ -316,17 +320,17 @@ public class ChipView extends LinearLayout {
         mLoadingView.addObserver(
                 new LoadingView.Observer() {
                     @Override
-                    public void onShowLoadingUIComplete() {
+                    public void onShowLoadingUiComplete() {
                         mStartIcon.setVisibility(GONE);
                     }
 
                     @Override
-                    public void onHideLoadingUIComplete() {
+                    public void onHideLoadingUiComplete() {
                         mStartIcon.setVisibility(VISIBLE);
                     }
                 });
         mLoadingView.addObserver(loadingViewObserver);
-        mLoadingView.showLoadingUI();
+        mLoadingView.showLoadingUi();
     }
 
     /**
@@ -336,7 +340,7 @@ public class ChipView extends LinearLayout {
      */
     public void hideLoadingView(LoadingView.Observer loadingViewObserver) {
         mLoadingView.addObserver(loadingViewObserver);
-        mLoadingView.hideLoadingUI();
+        mLoadingView.hideLoadingUi();
     }
 
     /** Adds a remove icon (X button) at the trailing end of the chip next to the primary text. */
@@ -401,6 +405,7 @@ public class ChipView extends LinearLayout {
      * @param listener The listener to be invoked on click events.
      */
     public void setRemoveIconClickListener(OnClickListener listener) {
+        assumeNonNull(mEndIconWrapper);
         mEndIconWrapper.setOnClickListener(listener);
         String chipText = mPrimaryText.getText().toString();
         assert !TextUtils.isEmpty(chipText);
@@ -456,7 +461,6 @@ public class ChipView extends LinearLayout {
      *     color. If not, the tint will be cleared.
      */
     private void setTint(boolean tintWithTextColor) {
-        mTintWithTextColor = tintWithTextColor;
         if (mPrimaryText.getTextColors() != null && tintWithTextColor) {
             ImageViewCompat.setImageTintList(mStartIcon, mPrimaryText.getTextColors());
         } else {
@@ -480,7 +484,7 @@ public class ChipView extends LinearLayout {
     }
 
     @Override
-    public void setBackgroundTintList(ColorStateList color) {
+    public void setBackgroundTintList(@Nullable ColorStateList color) {
         mRippleBackgroundHelper.setBackgroundColor(color);
     }
 
@@ -541,19 +545,5 @@ public class ChipView extends LinearLayout {
             super.onMeasure(
                     MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
         }
-    }
-
-    @Override
-    public boolean isFocused() {
-        // When the selection does not follow focus, we still want to properly reflect the user
-        // selection by highlighting the chip.
-        // An example where this happens is: the user interacts with the Omnibox, and the typed
-        // query triggers an Action chip to be shown.
-        // These chips can be navigated to using physical keyboard (arrow keys to select
-        // corresponding suggestion, tab to activate the chip).
-        // At this time the Omnibox continues to retain focus, but Chip should be highlighted, as
-        // pressing <Enter> on the keyboard will activate the Chip.
-        // Make sure the highlight is properly reflected.
-        return super.isFocused() || isSelected();
     }
 }

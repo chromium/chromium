@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.logo;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -23,43 +25,43 @@ import android.view.View.OnClickListener;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifDrawable;
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.ui.widget.LoadingView;
-import org.chromium.ui.widget.LoadingView.Observer;
 
 /**
  * This view shows the default search provider's logo and fades in a new logo if one becomes
  * available. It also maintains a {@link BaseGifDrawable} that will be played when the user clicks
  * this view and we have an animated GIF logo ready.
  */
+@NullMarked
 public class LogoView extends FrameLayout implements OnClickListener {
     // Number of milliseconds for a new logo to fade in.
     private static final int LOGO_TRANSITION_TIME_MS = 400;
 
     // mLogo and mNewLogo are remembered for cross fading animation.
-    private Bitmap mLogo;
-    private Bitmap mNewLogo;
-    private Bitmap mDefaultGoogleLogo;
-    private BaseGifDrawable mAnimatedLogoDrawable;
+    private @Nullable Bitmap mLogo;
+    private @Nullable Bitmap mNewLogo;
+    private @Nullable Bitmap mDefaultGoogleLogo;
+    private @Nullable BaseGifDrawable mAnimatedLogoDrawable;
 
-    private ObjectAnimator mFadeAnimation;
-    private Paint mPaint;
-    private Matrix mLogoMatrix;
-    private Matrix mNewLogoMatrix;
-    private Matrix mAnimatedLogoMatrix;
+    private @Nullable ObjectAnimator mFadeAnimation;
+    private final Paint mPaint;
+    private @Nullable Matrix mLogoMatrix;
+    private @Nullable Matrix mNewLogoMatrix;
+    private @Nullable Matrix mAnimatedLogoMatrix;
     private boolean mLogoIsDefault;
     private boolean mNewLogoIsDefault;
     private boolean mAnimationEnabled = true;
 
-    private LoadingView mLoadingView;
+    private final LoadingView mLoadingView;
 
     /**
      * A measure from 0 to 1 of how much the new logo has faded in. 0 shows the old logo, 1 shows
@@ -68,10 +70,9 @@ public class LogoView extends FrameLayout implements OnClickListener {
      */
     private float mTransitionAmount;
 
-    private ClickHandler mClickHandler;
-    private Callback<LogoBridge.Logo> mOnLogoAvailableCallback;
-    private boolean mIsLogoPolishFlagEnabled;
-    private int mLogoSizeForLogoPolish;
+    private @Nullable ClickHandler mClickHandler;
+    private @Nullable Callback<LogoBridge.Logo> mOnLogoAvailableCallback;
+    private int mDoodleSize;
 
     private final FloatProperty<LogoView> mTransitionProperty =
             new FloatProperty<LogoView>("") {
@@ -144,17 +145,12 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mOnLogoAvailableCallback = onLogoAvailableCallback;
     }
 
-    /** Sets the isLogoPolishFlagEnabled to determine if logo polish flag is enabled. */
-    void setLogoPolishFlagEnabled(boolean isLogoPolishFlagEnabled) {
-        mIsLogoPolishFlagEnabled = isLogoPolishFlagEnabled;
-    }
-
     /**
-     * Sets the logo size to use when logo polish is enabled. When logo polish is disabled, this
-     * value should be invalid.
+     * Sets the logo size to use when logo is a google doodle. When logo is not a google doodle,
+     * this value should be invalid.
      */
-    void setLogoSizeForLogoPolish(int logoSizeForLogoPolish) {
-        mLogoSizeForLogoPolish = logoSizeForLogoPolish;
+    void setDoodleSize(int doodleSize) {
+        mDoodleSize = doodleSize;
     }
 
     /** Jumps to the end of the logo cross-fading animation, if any. */
@@ -170,9 +166,9 @@ public class LogoView extends FrameLayout implements OnClickListener {
         return mAnimatedLogoDrawable != null;
     }
 
-    /** Starts playing the given animated GIF logo.*/
+    /** Starts playing the given animated GIF logo. */
     void playAnimatedLogo(BaseGifImage gifImage) {
-        mLoadingView.hideLoadingUI();
+        mLoadingView.hideLoadingUi();
         mAnimatedLogoDrawable = new BaseGifDrawable(gifImage, Config.ARGB_8888);
         mAnimatedLogoMatrix = new Matrix();
         setMatrix(
@@ -189,7 +185,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     void showLoadingView() {
         mLogo = null;
         invalidate();
-        mLoadingView.showLoadingUI();
+        mLoadingView.showLoadingUi();
     }
 
     /**
@@ -248,7 +244,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     private void updateLogoImpl(
             Bitmap logo,
-            final String contentDescription,
+            final @Nullable String contentDescription,
             boolean isDefaultLogo,
             boolean isClickable,
             @Nullable Runnable onAnimationFinished) {
@@ -256,7 +252,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
         if (mFadeAnimation != null) mFadeAnimation.end();
 
-        mLoadingView.hideLoadingUI();
+        mLoadingView.hideLoadingUi();
 
         // Don't crossfade if the new logo is the same as the old one.
         if (mLogo == logo) return;
@@ -269,10 +265,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         int oldLogoHeight = logoViewLayoutParams.height;
         int oldLogoTopMargin = logoViewLayoutParams.topMargin;
         int[] newLogoViewLayoutParams =
-                LogoUtils.getLogoViewLayoutParams(
-                        getResources(),
-                        mIsLogoPolishFlagEnabled && !isDefaultLogo,
-                        mLogoSizeForLogoPolish);
+                LogoUtils.getLogoViewLayoutParams(getResources(), !isDefaultLogo, mDoodleSize);
         int newLogoHeight = newLogoViewLayoutParams[0];
         int newLogoTopMargin = newLogoViewLayoutParams[1];
 
@@ -285,8 +278,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
-                        if (!ChromeFeatureList.sLogoPolishAnimationKillSwitch.isEnabled()
-                                || newLogoHeight == oldLogoHeight) return;
+                        if (newLogoHeight == oldLogoHeight) return;
 
                         float animationValue = (Float) animation.getAnimatedValue();
                         if (animationValue <= 0.5f) {
@@ -309,7 +301,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
                                                         * 2
                                                         * (animationValue - 0.5f)));
 
-                        LogoUtils.setLogoViewLayoutParams(LogoView.this, logoHeight, logoTopMargin);
+                        LogoUtils.setLogoViewLayoutParamsForDoodle(
+                                LogoView.this, logoHeight, logoTopMargin);
                     }
                 });
         mFadeAnimation.addListener(
@@ -330,7 +323,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
                         mTransitionAmount = 0f;
                         mFadeAnimation = null;
                         if (newLogoHeight != oldLogoHeight) {
-                            LogoUtils.setLogoViewLayoutParams(
+                            LogoUtils.setLogoViewLayoutParamsForDoodle(
                                     LogoView.this, newLogoHeight, newLogoTopMargin);
                         }
                         setContentDescription(contentDescription);
@@ -428,7 +421,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
             canvas.save();
             canvas.concat(mAnimatedLogoMatrix);
-            mAnimatedLogoDrawable.draw(canvas);
+            assumeNonNull(mAnimatedLogoDrawable).draw(canvas);
             canvas.restore();
         } else {
             if (mLogo != null && mTransitionAmount < 0.5f) {
@@ -440,11 +433,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
             }
 
             if (mNewLogo != null && mTransitionAmount > 0.5f) {
-                if (ChromeFeatureList.sLogoPolishAnimationKillSwitch.isEnabled()) {
-                    mPaint.setAlpha((int) (255 * Math.pow(2 * (mTransitionAmount - 0.5f), 3)));
-                } else {
-                    mPaint.setAlpha((int) (255 * 2 * (mTransitionAmount - 0.5f)));
-                }
+                mPaint.setAlpha((int) (255 * Math.pow(2 * (mTransitionAmount - 0.5f), 3)));
                 canvas.save();
                 canvas.concat(mNewLogoMatrix);
                 canvas.drawBitmap(mNewLogo, 0, 0, mPaint);
@@ -456,17 +445,17 @@ public class LogoView extends FrameLayout implements OnClickListener {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         if (w != oldw || h != oldh) {
-            if (mAnimatedLogoDrawable != null) {
+            if (mAnimatedLogoDrawable != null && mAnimatedLogoMatrix != null) {
                 setMatrix(
                         mAnimatedLogoDrawable.getIntrinsicWidth(),
                         mAnimatedLogoDrawable.getIntrinsicHeight(),
                         mAnimatedLogoMatrix,
                         false);
             }
-            if (mLogo != null) {
+            if (mLogo != null && mLogoMatrix != null) {
                 setMatrix(mLogo.getWidth(), mLogo.getHeight(), mLogoMatrix, mLogoIsDefault);
             }
-            if (mNewLogo != null) {
+            if (mNewLogo != null && mNewLogoMatrix != null) {
                 setMatrix(
                         mNewLogo.getWidth(),
                         mNewLogo.getHeight(),
@@ -484,18 +473,18 @@ public class LogoView extends FrameLayout implements OnClickListener {
     }
 
     public void endAnimationsForTesting() {
-        mFadeAnimation.end();
+        if (mFadeAnimation != null) mFadeAnimation.end();
     }
 
-    ObjectAnimator getFadeAnimationForTesting() {
+    @Nullable ObjectAnimator getFadeAnimationForTesting() {
         return mFadeAnimation;
     }
 
-    Bitmap getNewLogoForTesting() {
+    @Nullable Bitmap getNewLogoForTesting() {
         return mNewLogo;
     }
 
-    Bitmap getLogoForTesting() {
+    @Nullable Bitmap getLogoForTesting() {
         return mLogo;
     }
 
@@ -503,19 +492,11 @@ public class LogoView extends FrameLayout implements OnClickListener {
         return mAnimationEnabled;
     }
 
-    boolean checkLoadingViewObserverEmptyForTesting() {
-        return mLoadingView.isObserverListEmpty();
-    }
-
-    void addLoadingViewObserverForTesting(Observer listener) {
-        mLoadingView.addObserver(listener);
-    }
-
-    ClickHandler getClickHandlerForTesting() {
+    @Nullable ClickHandler getClickHandlerForTesting() {
         return mClickHandler;
     }
 
-    Bitmap getDefaultGoogleLogoForTesting() {
+    @Nullable Bitmap getDefaultGoogleLogoForTesting() {
         return mDefaultGoogleLogo;
     }
 
@@ -527,15 +508,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mLoadingView.setVisibility(visibility);
     }
 
-    void setIsLogoPolishFlagEnabledForTesting(boolean isLogoPolishFlagEnabled) {
-        mIsLogoPolishFlagEnabled = isLogoPolishFlagEnabled;
-    }
-
-    boolean getIsLogoPolishFlagEnabledForTesting() {
-        return mIsLogoPolishFlagEnabled;
-    }
-
-    int getLogoSizeForLogoPolishForTesting() {
-        return mLogoSizeForLogoPolish;
+    int getDoodleSizeForTesting() {
+        return mDoodleSize;
     }
 }

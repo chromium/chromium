@@ -10,6 +10,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -19,6 +21,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * or an onbeforeunload dialog.
  */
 @JNINamespace("javascript_dialogs")
+@NullMarked
 public class JavascriptAppModalDialog extends JavascriptModalDialog {
     private long mNativeDialogPointer;
 
@@ -26,7 +29,7 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     private JavascriptAppModalDialog(
             String title,
             String message,
-            String promptText,
+            @Nullable String promptText,
             boolean shouldShowSuppressCheckBox,
             int positiveButtonTextId,
             int negativeButtonTextId) {

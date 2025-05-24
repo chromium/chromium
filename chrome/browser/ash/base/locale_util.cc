@@ -50,6 +50,7 @@ struct SwitchLanguageData {
   const bool enable_locale_keyboard_layouts;
   const bool login_layouts_only;
   raw_ptr<Profile, DanglingUntriaged> profile;
+  bool keep_cached_fonts = false;
 };
 
 // Runs on ThreadPool thread under PostTaskAndReply().
@@ -108,10 +109,13 @@ void FinishSwitchLanguage(std::unique_ptr<SwitchLanguageData> data) {
     }
   }
 
-  // The font clean up of ResourceBundle should be done on UI thread, since the
-  // cached fonts are thread unsafe.
-  ui::ResourceBundle::GetSharedInstance().ReloadFonts();
-  gfx::PlatformFontSkia::ReloadDefaultFont();
+  if (!data->keep_cached_fonts) {
+    // The font clean up of ResourceBundle should be done on UI thread, since
+    // the cached fonts are thread unsafe.
+    ui::ResourceBundle::GetSharedInstance().ReloadFonts();
+    gfx::PlatformFontSkia::ReloadDefaultFont();
+  }
+
   if (!data->callback.is_null())
     std::move(data->callback).Run(data->result);
 }
@@ -148,6 +152,22 @@ void SwitchLanguage(const std::string& locale,
   auto data = std::make_unique<SwitchLanguageData>(
       locale, enable_locale_keyboard_layouts, login_layouts_only,
       std::move(callback), profile);
+
+  // Skip resource reloading if requested locale matches the loaded one.
+  if (const auto& loaded_locale =
+          ui::ResourceBundle::GetSharedInstance().GetLoadedLocale();
+      loaded_locale == locale) {
+    // Use resolved locale to match `ResourceBundle::LoadLocaleResources`
+    // behavior. And skip reloading if locale is resolved successfully.
+    if (l10n_util::CheckAndResolveLocale(locale, &data->result.loaded_locale,
+                                         /*perform_io=*/false)) {
+      data->result.success = true;
+      data->keep_cached_fonts = true;
+      FinishSwitchLanguage(std::move(data));
+      return;
+    }
+  }
+
   // USER_BLOCKING because it blocks startup on ChromeOS. crbug.com/968554
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},

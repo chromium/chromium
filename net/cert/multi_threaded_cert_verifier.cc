@@ -9,11 +9,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/timer/elapsed_timer.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
+#include "net/base/url_util.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_certificate.h"
@@ -51,8 +54,6 @@ int GetFlagsForConfig(const CertVerifier::Config& config) {
     flags |= CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS;
   if (config.enable_sha1_local_anchors)
     flags |= CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS;
-  if (config.disable_symantec_enforcement)
-    flags |= CertVerifyProc::VERIFY_DISABLE_SYMANTEC_ENFORCEMENT;
 
   return flags;
 }
@@ -67,6 +68,7 @@ std::unique_ptr<ResultHelper> DoVerifyOnWorkerThread(
     int flags,
     const NetLogWithSource& net_log) {
   TRACE_EVENT0(NetTracingCategory(), "DoVerifyOnWorkerThread");
+  base::ElapsedTimer timer;
   auto verify_result = std::make_unique<ResultHelper>();
   verify_result->net_log = net_log;
   MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives
@@ -74,6 +76,20 @@ std::unique_ptr<ResultHelper> DoVerifyOnWorkerThread(
   verify_result->error =
       verify_proc->Verify(cert.get(), hostname, ocsp_response, sct_list, flags,
                           &verify_result->result, net_log);
+  base::TimeDelta elapsed_time = timer.Elapsed();
+  UMA_HISTOGRAM_CUSTOM_TIMES("Net.CertVerifier.DoVerifyOnWorkerThreadTime",
+                             elapsed_time, base::Milliseconds(1),
+                             base::Minutes(10), 100);
+  if (IsGoogleHost(hostname)) {
+    if (IsGoogleHostWithAlpnH3(hostname)) {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Net.CertVerifier.DoVerifyOnWorkerThreadTime.GoogleWithAlpnH3",
+          elapsed_time, base::Milliseconds(1), base::Minutes(10), 100);
+    }
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Net.CertVerifier.DoVerifyOnWorkerThreadTime.Google", elapsed_time,
+        base::Milliseconds(1), base::Minutes(10), 100);
+  }
   return verify_result;
 }
 
@@ -139,6 +155,9 @@ void MultiThreadedCertVerifier::InternalRequest::Start(
   int flags = GetFlagsForConfig(config);
   if (params.flags() & CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES) {
     flags |= CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES;
+  }
+  if (params.flags() & CertVerifier::VERIFY_SXG_CT_REQUIREMENTS) {
+    flags |= CertVerifyProc::VERIFY_SXG_CT_REQUIREMENTS;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

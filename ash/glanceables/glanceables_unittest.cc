@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/common/glanceables_contents_scroll_view.h"
@@ -23,12 +22,13 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
@@ -61,7 +61,7 @@ class ResizeAnimationWaiter {
     // Force frames and wait for all throughput trackers to be gone to allow
     // animation throughput data to be passed from cc to ui.
     ui::Compositor* compositor = bubble_view_->GetWidget()->GetCompositor();
-    while (compositor->has_throughput_trackers_for_testing()) {
+    while (compositor->has_compositor_metrics_trackers_for_testing()) {
       compositor->ScheduleFullRedraw();
       std::ignore = ui::WaitForNextFrameToBePresented(compositor,
                                                       base::Milliseconds(500));
@@ -77,19 +77,11 @@ class ResizeAnimationWaiter {
 
 class GlanceablesBaseTest : public AshTestBase {
  public:
-  GlanceablesBaseTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kGlanceablesTimeManagementTasksView,
-         features::kGlanceablesTimeManagementClassroomStudentView},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     AshTestBase::SetUp();
 
     const auto account_id =
-        AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
+        AccountId::FromUserEmailGaiaId("test_user@gmail.com", GaiaId("123456"));
     SimulateUserLogin(account_id);
 
     classroom_client_ = std::make_unique<FakeGlanceablesClassroomClient>();
@@ -113,7 +105,6 @@ class GlanceablesBaseTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList features_;
   std::unique_ptr<FakeGlanceablesClassroomClient> classroom_client_;
   std::unique_ptr<api::FakeTasksClient> tasks_client_;
 };

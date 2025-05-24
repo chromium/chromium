@@ -25,18 +25,77 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SessionType) -->
 
 <variants name="SessionType">
-  <variant name="Assistant" summary="AI assistant session"/>
+  <variant name="LanguageDetector" summary="AI language detector session"/>
+  <variant name="LanguageModel" summary="AI language model session"/>
+  <variant name="Proofreader" summary="AI proofreader session"/>
   <variant name="Rewriter" summary="AI rewriter session"/>
   <variant name="Summarizer" summary="AI summarizer session"/>
+  <variant name="Translator" summary="AI translator session"/>
   <variant name="Writer" summary="AI writer session"/>
 </variants>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AISessionType) -->
 
+<variants name="WritingAssistanceFunctionName">
+  <variant name="availability" summary="Check availability of the model."/>
+  <variant name="create" summary="Create a session."/>
+</variants>
+
+<variants name="WritingAssistanceType">
+  <variant name="Rewriter" summary="AI rewriter session"/>
+  <variant name="Summarizer" summary="AI summarizer session"/>
+  <variant name="Writer" summary="AI writer session"/>
+</variants>
+
+<histogram name="AI.Session.{SessionType}.ContextTime" units="ms"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Measures the time it takes to process prompt input. This is recorded each
+    time a prompt is added.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.Session.{SessionType}.ContextTokens" units="tokens"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Measures the size of the prompt in tokens. This is recorded each time a
+    prompt is added.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.Session.{SessionType}.Crashed" enum="BooleanYesNo"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Records whether the model crashed while a session was active. Recorded each
+    time a session is destroyed.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.Session.{SessionType}.FirstResponseTime" units="ms"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Measures the time it takes until the first tokens of the response are
+    received. This is recorded each time the model gives a response.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
-    expires_after="2025-02-10">
+    expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Measures the size of the prompt request in bytes. This is recorded each time
     when the model is executed.
@@ -45,9 +104,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseCallbackCount"
-    units="times" expires_after="2025-02-10">
+    units="times" expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Measures the number of times that the callback is triggered in one prompt
     request. This is recorded each time when the model execution completes.
@@ -56,9 +116,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseSize" units="bytes"
-    expires_after="2024-12-11">
+    expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Measures the size of the prompt response in bytes. This is recorded each
     time when the model execution completes.
@@ -67,9 +128,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseStatus"
-    enum="AIModelStreamingResponseStatus" expires_after="2025-02-10">
+    enum="AIModelStreamingResponseStatus" expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the final response status for each prompt request. This is recorded
     each time when the stream completes or encounters errors.
@@ -77,10 +139,47 @@ chromium-metrics-reviews@google.com.
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
+<histogram name="AI.Session.{SessionType}.ResponseCompleteTime" units="ms"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Measures the time it takes until the full response is complete. This is
+    recorded each time the model gives a response.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram name="AI.Session.{SessionType}.ResponseTokens" units="tokens"
+    expires_after="2026-05-19">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    Measures the number of tokens in the completed response. This is recorded
+    each time the model gives a response.
+  </summary>
+  <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram
+    name="AI.Summarizer.APIUsage.{WritingAssistanceFunctionName}.CoreOptionType"
+    enum="WritingAssistanceMetricsOptionType" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the `type` option.
+  </summary>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
+</histogram>
+
 <histogram name="AI.Translation.LoadTranslateKitErrorCode"
-    enum="WinGetLastError" expires_after="2025-03-01">
+    enum="WinGetLastError" expires_after="2025-10-27">
   <owner>mych@google.com</owner>
   <owner>fergal@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the error code of a failed attempt to load the TranslateKit binary
     for on-device translation. It may happen when browser tries to initialize
@@ -90,9 +189,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Translation.LoadTranslateKitResult"
-    enum="LoadTranslateKitResult" expires_after="2025-03-01">
+    enum="LoadTranslateKitResult" expires_after="2025-10-27">
   <owner>mych@google.com</owner>
   <owner>fergal@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the result of an attempt to load the TranslateKit binary for
     on-device translation. It is logged when browser tries to initialize the
@@ -102,9 +202,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.{SessionType}.APIUsage" enum="AIAPI"
-    expires_after="2024-12-11">
+    expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     This is recorded each time when the prompt JavaScript API is invoked. This
     can be used to measure the number of calls of each API within a particular
@@ -113,15 +214,83 @@ chromium-metrics-reviews@google.com.
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="AI.{SessionType}.Availability" enum="AICapabilityAvailability"
-    expires_after="2025-02-10">
+<histogram name="AI.{SessionType}.AvailabilityV2" enum="Availability"
+    expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the availability of model execution as returned in methods like
-    `ai.canCreateTextSession()`.
+    `LanguageModel.availability()`.
   </summary>
   <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram
+    name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionFormat"
+    enum="WritingAssistanceMetricsOptionFormat" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the `format` option.
+  </summary>
+  <token key="WritingAssistanceType" variants="WritingAssistanceType"/>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
+</histogram>
+
+<histogram
+    name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionLength"
+    enum="WritingAssistanceMetricsOptionLength" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the `length` option.
+  </summary>
+  <token key="WritingAssistanceType" variants="WritingAssistanceType"/>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
+</histogram>
+
+<histogram
+    name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionTone"
+    enum="WritingAssistanceMetricsOptionTone" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the `tone` option.
+  </summary>
+  <token key="WritingAssistanceType" variants="WritingAssistanceType"/>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
+</histogram>
+
+<histogram
+    name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.{LanguageMetric}"
+    enum="LocaleCodeBCP47" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the language options.
+  </summary>
+  <token key="WritingAssistanceType" variants="WritingAssistanceType"/>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
+  <token key="LanguageMetric">
+    <variant name="ExpectedContextLanguage"
+        summary="Expected context language specified."/>
+    <variant name="ExpectedInputLanguage"
+        summary="Expected input language specified."/>
+    <variant name="OutputLanguage" summary="Output language specified."/>
+  </token>
 </histogram>
 
 </histograms>

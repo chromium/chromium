@@ -78,8 +78,8 @@ class RequestNotifierStub : public RequestNotifier {
 
 class CleanupTaskTest : public RequestQueueTaskTestBase {
  public:
-  CleanupTaskTest() {}
-  ~CleanupTaskTest() override {}
+  CleanupTaskTest() = default;
+  ~CleanupTaskTest() override = default;
 
   void SetUp() override;
 

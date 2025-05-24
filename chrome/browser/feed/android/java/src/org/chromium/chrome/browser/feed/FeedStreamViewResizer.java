@@ -11,19 +11,21 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.FeatureList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.display.DisplayUtil;
 
 /**
  * Updates the paddings used to display the feed stream when switching to landscape mode. Due to the
  * fact that the search bar is floating at the top, the entire feed stream needs to shrink a little
  * bit in order to have large image or video preview fit in the viewport.
  */
+@NullMarked
 public class FeedStreamViewResizer extends ViewResizer {
     // The aspect ratio of large images or video previews, computed based on 1280:720.
     private static final float FEED_IMAGE_OR_VIDEO_ASPECT_RATIO = 1.778f;
@@ -134,7 +136,7 @@ public class FeedStreamViewResizer extends ViewResizer {
     private float getScreenWidth() {
         Resources resources = mUiConfig.getContext().getResources();
         float screenWidth;
-        if (BuildInfo.getInstance().isAutomotive && mView != null) {
+        if (DisplayUtil.isUiScaled() && mView != null) {
             screenWidth = mView.getMeasuredWidth();
         } else {
             float dpToPx = resources.getDisplayMetrics().density;

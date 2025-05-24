@@ -251,8 +251,6 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
                             storage::AsyncFileUtil::StatusCallback callback,
                             base::File::Error result);
 
-  void OnLacrosOperationForwarded(int request_id, base::File::Error error);
-
   // Creates `request_manager_`, or replaces it if it exists (in tests).
   void ConstructRequestManager();
 

@@ -42,15 +42,9 @@ class FakeFastPairDelegate : public FastPairDelegate {
     return it->second;
   }
 
-  void SetFastPairableDeviceProperties(
-      std::vector<mojom::PairedBluetoothDevicePropertiesPtr>&
-          fast_pairable_device_properties);
-
   // FastPairDelegate:
   std::optional<DeviceImageInfo> GetDeviceImageInfo(
       const std::string& mac_address) override;
-  std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
-  GetFastPairableDeviceProperties() override;
   void ForgetDevice(const std::string& mac_address) override;
   void SetAdapterStateController(
       AdapterStateController* adapter_state_controller) override;
@@ -64,8 +58,6 @@ class FakeFastPairDelegate : public FastPairDelegate {
   std::vector<std::string> forgotten_device_addresses_;
   raw_ptr<AdapterStateController> adapter_state_controller_ = nullptr;
   raw_ptr<DeviceNameManager> device_name_manager_ = nullptr;
-  std::vector<bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>
-      fast_pairable_device_properties_;
 };
 
 }  // namespace ash::bluetooth_config

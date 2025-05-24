@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 mojom("mojo_bindings") {
   sources = [ "borealis_installer.mojom" ]
@@ -47,11 +47,11 @@ static_library("borealis_installer") {
     "//chrome/browser/resources/chromeos/borealis_installer:resources",
     "//chrome/browser/ui",
     "//chrome/browser/ui/views/borealis",
-    "//chrome/browser/ui/webui:webui_util",
     "//components/strings:components_strings",
     "//ui/aura",
     "//ui/base",
     "//ui/strings:ui_strings",
+    "//ui/webui",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/borealis" ]

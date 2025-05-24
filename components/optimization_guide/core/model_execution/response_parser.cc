@@ -6,7 +6,7 @@
 
 namespace optimization_guide {
 
+ResponseParser::ResponseParser() = default;
 ResponseParser::~ResponseParser() = default;
-ResponseParserFactory::~ResponseParserFactory() = default;
 
 }  // namespace optimization_guide

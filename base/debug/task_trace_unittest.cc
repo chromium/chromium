@@ -14,8 +14,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 TEST(TaskTraceTest, NoTask) {
   TaskTrace task_trace;
@@ -26,7 +25,7 @@ TEST(TaskTraceTest, NoTask) {
 
 class ThreeTasksTest {
  public:
-  ThreeTasksTest() {}
+  ThreeTasksTest() = default;
 
   void Run() {
     task_runner->PostTask(FROM_HERE, base::BindOnce(&ThreeTasksTest::TaskA,
@@ -77,5 +76,4 @@ TEST(TaskTraceTest, ThreeTasks) {
   ThreeTasksTest().Run();
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

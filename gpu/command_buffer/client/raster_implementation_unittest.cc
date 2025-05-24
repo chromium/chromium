@@ -16,6 +16,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -380,16 +381,15 @@ TEST_F(RasterImplementationTest, BeginEndQueryEXT) {
   //  GL_COMMANDS_COMPLETED_CHROMIUM,
   //  GL_CURRENT_QUERY_EXT
 
-  GLuint expected_ids[2] = {1, 2};  // These must match what's actually genned.
+  std::array<GLuint, 2> expected_ids = {
+      1, 2};  // These must match what's actually genned.
   struct GenCmds {
     cmds::GenQueriesEXTImmediate gen;
     GLuint data[2];
   };
   GenCmds expected_gen_cmds;
   expected_gen_cmds.gen.Init(std::size(expected_ids), &expected_ids[0]);
-  GLuint ids[std::size(expected_ids)] = {
-      0,
-  };
+  std::array<GLuint, std::size(expected_ids)> ids = {};
   gl_->GenQueriesEXT(std::size(expected_ids), &ids[0]);
   EXPECT_EQ(0,
             memcmp(&expected_gen_cmds, commands_, sizeof(expected_gen_cmds)));

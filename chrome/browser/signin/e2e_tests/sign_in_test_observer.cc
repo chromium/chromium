@@ -109,10 +109,11 @@ int SignInTestObserver::CountAccountsWithValidRefreshToken() const {
 int SignInTestObserver::CountSignedInAccountsInCookie() const {
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
       identity_manager_->GetAccountsInCookieJar();
-  if (!accounts_in_cookie_jar.accounts_are_fresh)
+  if (!accounts_in_cookie_jar.AreAccountsFresh()) {
     return -1;
+  }
 
-  return accounts_in_cookie_jar.signed_in_accounts.size();
+  return accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts().size();
 }
 
 bool SignInTestObserver::HasValidPrimarySyncAccount() const {

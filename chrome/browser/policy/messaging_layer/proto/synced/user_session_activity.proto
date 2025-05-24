@@ -1,0 +1,103 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+import "components/reporting/proto/synced/session_affiliated_user.proto";
+// ${COPYBARA_DATAPOL_IMPORT}
+
+package reporting;
+
+// Represents the start of a user session. Recorded when a user logs in or
+// unlocks the device.
+message SessionStartEvent {
+  enum Reason {
+    UNSPECIFIED = 0;
+    LOGIN = 1;
+    UNLOCK = 2;
+    MULTI_USER_SWITCH = 3;
+  }
+
+  // The reason the session ended.
+  optional Reason reason = 1;
+
+  // Time that the session ended.
+  // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds.
+  optional int64 timestamp_micro = 2
+  // copybara:datapol_begin
+  // [(datapol.semantic_type) = ST_SENSITIVE_TIMESTAMP]
+  // copybara:datapol_end
+  ;
+}
+
+// Represents the end of a user session. Recorded when a user logs out or locks
+// the device.
+message SessionEndEvent {
+  enum Reason {
+    UNSPECIFIED = 0;
+    LOGOUT = 1;
+    LOCK = 2;
+    MULTI_USER_SWITCH = 3;
+  }
+
+  // Reason the session ended.
+  optional Reason reason = 1;
+
+  // Time that the session ended.
+  // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds.
+  optional int64 timestamp_micro = 2
+  // copybara:datapol_begin
+  // [(datapol.semantic_type) = ST_SENSITIVE_TIMESTAMP]
+  // copybara:datapol_end
+  ;
+}
+
+// Captures whether the user is active or idle on the device during a session.
+// Recorded periodically during a session.
+message ActiveIdleState {
+  enum State {
+    UNSPECIFIED = 0;
+    ACTIVE = 1;
+    IDLE = 2;
+  }
+
+  // The active/idle state of the user in the current session.
+  optional State state = 1;
+
+  // Time that the state was recorded.
+  // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds
+  optional int64 timestamp_micro = 2
+  // copybara:datapol_begin
+  // [(datapol.semantic_type) = ST_SENSITIVE_TIMESTAMP]
+  // copybara:datapol_end
+  ;
+}
+
+// Captures session start/end events and active/idle states during a user
+// session. May contain only part of the session (e.g session start + some
+// active/idle states, or active/idle states + session end) since we
+// periodically upload if the session exceeds a certain length of time.
+message UserSessionActivityRecord {
+  // Indicates the start of a session
+  optional SessionStartEvent session_start = 1;
+
+  // Indicates the end of a session
+  optional SessionEndEvent session_end = 2;
+
+  // Moments when the user is considered active or idle on the device.
+  // Collected on a regular interval during a session.
+  repeated ActiveIdleState active_idle_states = 3;
+
+  // The session user. Always present for users with a GAIA
+  // account. Never present for guest/public sessions.
+  oneof user {
+    .reporting.SessionAffiliatedUser affiliated_user = 4;
+    .reporting.SessionUnaffiliatedUser unaffiliated_user = 5;
+  }
+
+  // Globally unique id used to associate the record with a session.
+  optional string session_id = 7;
+}

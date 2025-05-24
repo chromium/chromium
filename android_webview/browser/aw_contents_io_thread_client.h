@@ -14,8 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
+#include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 
@@ -31,6 +30,11 @@ namespace android_webview {
 
 class AwWebResourceInterceptResponse;
 struct AwWebResourceRequest;
+
+// TODO(crbug.com/373474043): Move safe_browsing::WebContentsKey to a common
+// place instead of aliasing.
+using WebContentsKey = safe_browsing::WebContentsKey;
+WebContentsKey GetWebContentsKey(content::WebContents& web_contents);
 
 // This class provides a means of calling Java methods on an instance that has
 // a 1:1 relationship with a WebContents instance directly from the IO thread.
@@ -91,6 +95,11 @@ class AwContentsIoThreadClient {
   static std::unique_ptr<AwContentsIoThreadClient> FromID(
       content::FrameTreeNodeId frame_tree_node_id);
 
+  // This will attempt to fetch the AwContentsIoThreadClient for the given key.
+  // This method can be called from any thread.
+  // A null std::unique_ptr is a valid return value.
+  static std::unique_ptr<AwContentsIoThreadClient> FromKey(WebContentsKey key);
+
   // Called on the IO thread when a subframe is created.
   static void SubFrameCreated(int child_id,
                               const blink::LocalFrameToken& parent_frame_token,
@@ -114,39 +123,36 @@ class AwContentsIoThreadClient {
       AwWebResourceRequest request,
       ShouldInterceptRequestResponseCallback callback);
 
-  // Check if the request should be blocked based on web content ownership.
-  bool ShouldBlockRequest(AwWebResourceRequest request);
-
   // Retrieve the AllowContentAccess setting value of this AwContents.
   // This method is called on the IO thread only.
-  bool ShouldBlockContentUrls() const;
+  bool ShouldBlockContentUrls(base::TimeDelta& counter) const;
 
   // Retrieve the AllowFileAccess setting value of this AwContents.
   // This method is called on the IO thread only.
-  bool ShouldBlockFileUrls() const;
+  bool ShouldBlockFileUrls(base::TimeDelta& counter) const;
 
   // Retrieves if special android file urls (android_{asset/res}) should be
   // allowed.
-  bool ShouldBlockSpecialFileUrls() const;
+  bool ShouldBlockSpecialFileUrls(base::TimeDelta& counter) const;
 
   // Retrieve the BlockNetworkLoads setting value of this AwContents.
   // This method is called on the IO thread only.
-  bool ShouldBlockNetworkLoads() const;
+  bool ShouldBlockNetworkLoads(base::TimeDelta& counter) const;
 
   // Retrieve the AcceptCookies setting value of this AwContents.
-  bool ShouldAcceptCookies() const;
+  bool ShouldAcceptCookies(base::TimeDelta& counter) const;
 
   // Retrieve the AcceptThirdPartyCookies setting value of this AwContents.
-  bool ShouldAcceptThirdPartyCookies() const;
+  bool ShouldAcceptThirdPartyCookies(base::TimeDelta& counter) const;
 
   // Retrieve the SafeBrowsingEnabled setting value of this AwContents.
   bool GetSafeBrowsingEnabled() const;
 
+  // Enables getting and setting cookies as part of shouldInterceptRequest.
+  bool ShouldIncludeCookiesOnIntercept(base::TimeDelta& counter) const;
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-  base::android::ScopedJavaGlobalRef<jobject> bg_thread_client_object_;
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 };
 
 }  // namespace android_webview

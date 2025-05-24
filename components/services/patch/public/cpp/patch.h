@@ -7,17 +7,31 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
+#include "components/zucchini/zucchini.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+
+namespace base {
+class File;
+}
 
 namespace patch {
 
-// Patches |input_abs_path| with |patch_abs_path| using the |operation|
-// algorithm and place the output in |output_abs_path|.
+// Patches `in` with `patch` using Puffin and writes the output to `out`.
+// `callback` will be run on the same sequence.
 void PuffPatch(mojo::PendingRemote<mojom::FilePatcher> file_patcher,
-               base::File input_abs_path,
-               base::File patch_abs_path,
-               base::File output_abs_path,
+               base::File in,
+               base::File patch,
+               base::File out,
                base::OnceCallback<void(int result)> callback);
+
+// Patches `in` with `patch` using Zucchini and writes the output to `out`.
+// `callback` will be run on the same sequence.
+void ZucchiniPatch(
+    mojo::PendingRemote<mojom::FilePatcher> file_patcher,
+    base::File input_abs_path,
+    base::File patch_abs_path,
+    base::File output_abs_path,
+    base::OnceCallback<void(zucchini::status::Code result)> callback);
 
 }  // namespace patch
 

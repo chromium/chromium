@@ -1,0 +1,109 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "icu_calendar"
+  epoch = "2"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/any_calendar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/buddhist.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/chinese.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/chinese_based.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/coptic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/dangi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/ethiopian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/gregorian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hebrew.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri/ummalqura_data.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/indian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/iso.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/japanese.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/julian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/persian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/roc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar_arithmetic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/date.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/duration.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/ixdtf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/provider/chinese_based.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/provider/hijri.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/continuity_test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/week.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_authors = "The ICU4X Project Developers"
+  cargo_pkg_name = "icu_calendar"
+  cargo_pkg_description = "Date APIs for Gregorian and non-Gregorian calendars"
+  cargo_pkg_version = "2.0.2"
+
+  allow_unsafe = false
+
+  deps = [
+    "//third_party/rust/calendrical_calculations/v0_2:lib",
+    "//third_party/rust/displaydoc/v0_2:lib",
+    "//third_party/rust/icu_calendar_data/v2:lib",
+    "//third_party/rust/icu_locale/v2:lib",
+    "//third_party/rust/icu_locale_core/v2:lib",
+    "//third_party/rust/icu_provider/v2:lib",
+    "//third_party/rust/tinystr/v0_8:lib",
+    "//third_party/rust/writeable/v0_6:lib",
+    "//third_party/rust/zerovec/v0_11:lib",
+  ]
+  features = [ "compiled_data" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

@@ -14,10 +14,11 @@ namespace mojo {
 using FileHandleSecurityErrorCallback = base::RepeatingCallback<bool()>;
 
 // This function DCHECKs if `handle` is to a writeable file that can be mapped
-// executable. If so, this is a security risk. Does nothing in non-DCHECK
-// builds.
+// executable. If so, this is a security risk. In non-DCHECK builds only basic
+// validation is done to verify that the handle is of a valid type to be
+// transferred across processes.
 COMPONENT_EXPORT(MOJO_CPP_PLATFORM)
-void DcheckIfFileHandleIsUnsafe(HANDLE handle);
+void MaybeCheckIfHandleIsUnsafe(HANDLE handle);
 
 // Sets a callback for testing that will be called before DCHECKing inside
 // DcheckIfFileHandleIsUnsafe because of an insecure handle. If the callback has

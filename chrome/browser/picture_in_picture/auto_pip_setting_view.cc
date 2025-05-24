@@ -4,6 +4,7 @@
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -62,6 +63,7 @@ AutoPipSettingView::AutoPipSettingView(
     views::BubbleBorder::Arrow arrow)
     : views::BubbleDialogDelegate(anchor_view, arrow),
       result_cb_(std::move(result_cb)) {
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   CHECK(result_cb_);
   SetAnchorView(anchor_view);
@@ -248,7 +250,8 @@ AutoPipSettingView::CreateNonClientFrameView(views::Widget* widget) {
   std::unique_ptr<views::BubbleBorder> bubble_border =
       std::make_unique<views::BubbleBorder>(
           arrow(), views::BubbleBorder::STANDARD_SHADOW);
-  bubble_border->SetCornerRadius(kBubbleBorderCornerRadius);
+  bubble_border->set_rounded_corners(
+      gfx::RoundedCornersF(kBubbleBorderCornerRadius));
   bubble_border->set_md_shadow_elevation(kBubbleBorderMdShadowElevation);
   bubble_border->set_draw_border_stroke(true);
 

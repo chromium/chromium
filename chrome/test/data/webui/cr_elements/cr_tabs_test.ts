@@ -23,7 +23,7 @@ suite('cr_tabs_test', function() {
   });
 
   function getTabElement(index: number): HTMLElement {
-    return tabs.shadowRoot!.querySelector(`.tab:nth-of-type(${index + 1})`)!;
+    return tabs.shadowRoot.querySelector(`.tab:nth-of-type(${index + 1})`)!;
   }
 
   async function checkUiChange(
@@ -46,8 +46,7 @@ suite('cr_tabs_test', function() {
     assertTrue(!!tabElement);
     assertTrue(tabElement.classList.contains('selected'));
     assertEquals('0', tabElement.getAttribute('tabindex'));
-    const notSelected =
-        tabs.shadowRoot!.querySelectorAll('.tab:not(.selected)');
+    const notSelected = tabs.shadowRoot.querySelectorAll('.tab:not(.selected)');
     assertEquals(2, notSelected.length);
     notSelected.forEach(tab => {
       assertEquals('-1', tab.getAttribute('tabindex'));

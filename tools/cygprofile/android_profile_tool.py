@@ -14,7 +14,7 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import List
+from typing import List, Optional
 
 _SRC_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
@@ -82,11 +82,15 @@ class AndroidProfileTool:
     logging.info('Using pregenerated profiles')
     self._pregenerated_profiles = files
 
-  def CollectSystemHealthProfile(self, apk: str):
+  def CollectSystemHealthProfile(self,
+                                 apk_or_browser: str,
+                                 out_dir: Optional[str] = None):
     """Run the orderfile system health benchmarks and collect log files.
 
     Args:
-      apk: The location of the chrome apk file to profile.
+      apk_or_browser: The location of the chrome apk to profile, or a browser
+          string to pass to run_benchmark.
+      out_dir: The output directory, if not passed, run_benchmark will guess.
 
     Returns:
       A list of cygprofile data files.
@@ -105,21 +109,29 @@ class AndroidProfileTool:
       logging.info('Using reduced debugging profile')
       profile_benchmark = 'orderfile_generation.debugging'
     self._SetUpDeviceFolders()
-    cmd = [
-        'tools/perf/run_benchmark', '--device', self._device.serial,
-        '--browser=exact', '--browser-executable', apk, profile_benchmark
-    ] + ['-v'] * self._verbosity
+    cmd = ['tools/perf/run_benchmark', '--device', self._device.serial]
+    if apk_or_browser.endswith('.apk'):
+      cmd += ['--browser=exact', '--browser-executable', apk_or_browser]
+    else:
+      cmd += ['--browser', apk_or_browser]
+    if out_dir:
+      cmd += ['--chromium-output-directory', out_dir]
+    cmd += [profile_benchmark] + ['-v'] * self._verbosity
     logging.debug('Running telemetry command: %s', cmd)
     self._RunCommand(cmd)
     data = self._PullProfileData(profile_benchmark)
     self._DeleteDeviceData()
     return data
 
-  def CollectSpeedometerProfile(self, apk: str):
+  def CollectSpeedometerProfile(self,
+                                apk_or_browser: str,
+                                out_dir: Optional[str] = None):
     """Run Speedometer 3 and collect log files
 
     Args:
-      apk: The location of the chrome apk to profile.
+      apk_or_browser: The location of the chrome apk to profile, or a browser
+          string to pass to run_benchmark.
+      out_dir: The output directory, if not passed, run_benchmark will guess.
 
     Returns:
       A list of cygprofile data files
@@ -130,10 +142,14 @@ class AndroidProfileTool:
       logging.info('Using reduced debugging profile')
       profile_benchmark = 'orderfile_generation.speedometer3_debugging'
     self._SetUpDeviceFolders()
-    cmd = [
-        'tools/perf/run_benchmark', '--device', self._device.serial,
-        '--browser=exact', '--browser-executable', apk, profile_benchmark
-    ] + ['-v'] * self._verbosity
+    cmd = ['tools/perf/run_benchmark', '--device', self._device.serial]
+    if apk_or_browser.endswith('.apk'):
+      cmd += ['--browser=exact', '--browser-executable', apk_or_browser]
+    else:
+      cmd += ['--browser', apk_or_browser]
+    if out_dir:
+      cmd += ['--chromium-output-directory', out_dir]
+    cmd += [profile_benchmark] + ['-v'] * self._verbosity
     logging.debug('Running telemetry command: %s', cmd)
     self._RunCommand(cmd)
     data = self._PullProfileData(profile_benchmark)

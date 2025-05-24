@@ -76,10 +76,6 @@ struct RenderFrameMediaPlaybackOptions;
 // Assist to RenderFrameImpl in creating various media clients.
 class MediaFactory {
  public:
-  // Helper function returning whether VideoSurfaceLayer should be enabled for
-  // MediaStreams.
-  static bool VideoSurfaceLayerEnabledForMS();
-
   // Create a MediaFactory to assist the |render_frame| with media tasks.
   // |request_routing_token_cb| bound to |render_frame| IPC functions for
   // obtaining overlay tokens.
@@ -133,7 +129,7 @@ class MediaFactory {
       blink::WebURL url,
       const RenderFrameMediaPlaybackOptions& renderer_media_playback_options,
       media::DecoderFactory* decoder_factory,
-      std::unique_ptr<media::RemotePlaybackClientWrapper> client_wrapper,
+      media::RemotePlaybackClientWrapper* client_wrapper,
       base::WeakPtr<media::MediaObserver>* out_media_observer,
       int element_id);
 

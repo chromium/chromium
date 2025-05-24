@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -85,22 +85,18 @@
 
 class RepList {
  private:
-  RepList(const RepList&);
-  RepList& operator=(const RepList&);
-
- protected:
-  replentry** dat;
-  int size;
-  int pos;
-
+  std::vector<replentry*> dat;
  public:
   explicit RepList(int n);
+  RepList(const RepList&) = delete;
+  RepList& operator=(const RepList&) = delete;
   ~RepList();
 
+  bool check_against_breaktable(const std::vector<std::string>& breaktable) const;
+
   int add(const std::string& pat1, const std::string& pat2);
-  replentry* item(int n);
   int find(const char* word);
-  std::string replace(const char* word, int n, bool atstart);
+  std::string replace(const size_t wordlen, int n, bool atstart);
   bool conv(const std::string& word, std::string& dest);
 };
 #endif

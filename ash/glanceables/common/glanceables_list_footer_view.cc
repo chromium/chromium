@@ -68,7 +68,7 @@ class SeeAllButton : public views::LabelButton {
         ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
                                        cros_tokens::kCrosSysOnSurface));
     SetImageLabelSpacing(kSeeAllIconLabelSpacing);
-    SetTextColorId(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
+    SetTextColor(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -92,7 +92,7 @@ GlanceablesListFooterView::GlanceablesListFooterView(
   title_label_ = AddChildView(
       views::Builder<views::Label>()
           .SetID(base::to_underlying(GlanceablesViewId::kListFooterTitleLabel))
-          .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
+          .SetEnabledColor(cros_tokens::kCrosSysSecondary)
           .SetFontList(typography_provider->ResolveTypographyToken(
               TypographyToken::kCrosBody2))
           .SetLineHeight(typography_provider->ResolveLineHeight(

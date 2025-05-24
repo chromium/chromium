@@ -5,6 +5,7 @@
 #ifndef UI_GFX_MOJOM_HDR_METADATA_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_HDR_METADATA_MOJOM_TRAITS_H_
 
+#include "third_party/skia/include/core/SkData.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
 
@@ -66,6 +67,21 @@ struct StructTraits<gfx::mojom::HdrMetadataExtendedRangeDataView,
 };
 
 template <>
+struct StructTraits<gfx::mojom::HdrMetadataAgtmDataView, gfx::HdrMetadataAgtm> {
+  static std::vector<uint8_t> payload(const gfx::HdrMetadataAgtm& input) {
+    std::vector<uint8_t> result;
+    if (input.payload) {
+      result.assign(input.payload->bytes(),
+                    std::next(input.payload->bytes(), input.payload->size()));
+    }
+    return result;
+  }
+
+  static bool Read(gfx::mojom::HdrMetadataAgtmDataView data,
+                   gfx::HdrMetadataAgtm* output);
+};
+
+template <>
 struct StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata> {
   static const std::optional<gfx::HdrMetadataCta861_3>& cta_861_3(
       const gfx::HDRMetadata& input) {
@@ -82,6 +98,10 @@ struct StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata> {
   static const std::optional<gfx::HdrMetadataExtendedRange>& extended_range(
       const gfx::HDRMetadata& input) {
     return input.extended_range;
+  }
+  static const std::optional<gfx::HdrMetadataAgtm>& agtm(
+      const gfx::HDRMetadata& input) {
+    return input.agtm;
   }
 
   static bool Read(gfx::mojom::HDRMetadataDataView data,

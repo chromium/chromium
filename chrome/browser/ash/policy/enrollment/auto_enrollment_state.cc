@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 
+#include <variant>
+
 #include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace policy {
 
@@ -27,13 +28,10 @@ std::string_view AutoEnrollmentResultToString(AutoEnrollmentResult result) {
 }
 
 std::string AutoEnrollmentErrorToString(AutoEnrollmentError error) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](AutoEnrollmentSafeguardTimeoutError) {
             return std::string("Safeguard timeout");
-          },
-          [](AutoEnrollmentSystemClockSyncError) {
-            return std::string("System clock sync error");
           },
           [](AutoEnrollmentStateKeysRetrievalError) {
             return std::string("State keys retrieval error");

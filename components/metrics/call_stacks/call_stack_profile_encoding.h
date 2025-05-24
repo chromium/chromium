@@ -5,24 +5,25 @@
 #ifndef COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_ENCODING_H_
 #define COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_ENCODING_H_
 
-#include "base/profiler/call_stack_profile_params.h"
-#include "base/profiler/process_type.h"
+#include "components/sampling_profiler/call_stack_profile_params.h"
+#include "components/sampling_profiler/process_type.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
 namespace metrics {
 
 // Translates CallStackProfileParams's process to the corresponding execution
 // context Process.
-Process ToExecutionContextProcess(base::ProfilerProcessType process);
+Process ToExecutionContextProcess(
+    sampling_profiler::ProfilerProcessType process);
 
 // Translates CallStackProfileParams's thread to the corresponding
 // SampledProfile Thread.
-Thread ToExecutionContextThread(base::ProfilerThreadType thread);
+Thread ToExecutionContextThread(sampling_profiler::ProfilerThreadType thread);
 
 // Translates CallStackProfileParams's trigger to the corresponding
 // SampledProfile TriggerEvent.
 SampledProfile::TriggerEvent ToSampledProfileTriggerEvent(
-    base::CallStackProfileParams::Trigger trigger);
+    sampling_profiler::CallStackProfileParams::Trigger trigger);
 
 }  // namespace metrics
 

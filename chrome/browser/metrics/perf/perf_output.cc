@@ -47,7 +47,7 @@ PerfOutputCall::PerfOutputCall()
       pending_stop_(false),
       weak_factory_(this) {}
 
-PerfOutputCall::~PerfOutputCall() {}
+PerfOutputCall::~PerfOutputCall() = default;
 
 void PerfOutputCall::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

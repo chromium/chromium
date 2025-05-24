@@ -1,8 +1,6 @@
 This test checks HeapSnapshots module.
 
 
-Running: postOrderIndexBug
-
 Running: heapSnapshotNodeSimpleTest
 
 Running: heapSnapshotNodeIteratorTest
@@ -16,8 +14,6 @@ Running: heapSnapshotNodeAndEdgeTest
 Running: heapSnapshotSimpleTest
 
 Running: heapSnapshotContainmentEdgeIndexesTest
-
-Running: heapSnapshotPostOrderIndexTest
 
 Running: heapSnapshotDominatorsTreeTest
 

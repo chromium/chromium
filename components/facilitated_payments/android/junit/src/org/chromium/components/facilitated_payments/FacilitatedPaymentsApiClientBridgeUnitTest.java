@@ -16,13 +16,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 
 /** Tests for the native bridge of the facilitated payment API client. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -30,16 +28,16 @@ import org.chromium.base.test.util.JniMocker;
 @SmallTest
 public class FacilitatedPaymentsApiClientBridgeUnitTest {
     private static final long NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID = 0x12345678;
+    private static final byte[] ACTION_TOKEN = new byte[] {'A', 'c', 't', 'i', 'o', 'n'};
+    private static final SecureData[] SECURE_DATA = new SecureData[] {new SecureData(1, "value_1")};
 
     @Mock private FacilitatedPaymentsApiClientBridge.Natives mBridgeNatives;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(FacilitatedPaymentsApiClientBridgeJni.TEST_HOOKS, mBridgeNatives);
+        FacilitatedPaymentsApiClientBridgeJni.setInstanceForTesting(mBridgeNatives);
     }
 
     @After
@@ -81,10 +79,11 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
                         /* renderFrameHost= */ null);
 
         bridge.invokePurchaseAction(
-                /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
+                /* primaryAccount= */ null, SecurePayload.create(ACTION_TOKEN, SECURE_DATA));
 
         verify(mBridgeNatives)
-                .onPurchaseActionResultEnum(eq(NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID),
+                .onPurchaseActionResultEnum(
+                        eq(NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID),
                         eq(PurchaseActionResult.COULD_NOT_INVOKE));
     }
 
@@ -123,7 +122,7 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
         bridge.resetNativePointer();
 
         bridge.invokePurchaseAction(
-                /* primaryAccount= */ null, new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
+                /* primaryAccount= */ null, SecurePayload.create(ACTION_TOKEN, SECURE_DATA));
 
         verifyNoInteractions(mBridgeNatives);
     }

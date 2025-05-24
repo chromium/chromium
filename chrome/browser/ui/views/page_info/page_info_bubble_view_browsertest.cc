@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_ad_personalization_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -66,11 +67,15 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/permissions/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -107,8 +112,11 @@ using AboutThisSiteInteraction =
 namespace {
 using ::testing::IsFalse;
 using ::testing::IsTrue;
+using ::testing::NotNull;
+using ::testing::SizeIs;
 
 constexpr char kExpiredCertificateFile[] = "expired_cert.pem";
+constexpr char kUrl[] = "http://example/other/stuff.html";
 
 void PerformMouseClickOnView(views::View* view) {
   ui::AXActionData data;
@@ -183,26 +191,34 @@ void AddHintForTesting(Browser* browser,
       url, optimization_guide::proto::ABOUT_THIS_SITE, optimization_metadata);
 }
 
+// A WebContentsObserver to allow waiting on a change in visible security state.
+class SecurityStyleTestObserver : public content::WebContentsObserver {
+ public:
+  explicit SecurityStyleTestObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  SecurityStyleTestObserver(const SecurityStyleTestObserver&) = delete;
+  SecurityStyleTestObserver& operator=(const SecurityStyleTestObserver&) =
+      delete;
+
+  ~SecurityStyleTestObserver() override = default;
+
+  void DidChangeVisibleSecurityState() override { run_loop_.Quit(); }
+
+  void WaitForDidChangeVisibleSecurityState() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
+// TODO(crbug.com/40231917): Clean up when PageSpecificSiteDataDialog is
+// launched. Disable features for the new version of "Cookies in use"
+// dialog. The new UI is covered by
+// PageInfoBubbleViewBrowserTestCookiesSubpage.
 class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
-  PageInfoBubbleViewBrowserTest() {
-    // TODO(crbug.com/40231917): Clean up when PageSpecificSiteDataDialog is
-    // launched. Disable features for the new version of "Cookies in use"
-    // dialog. The new UI is covered by
-    // PageInfoBubbleViewBrowserTestCookiesSubpage.
-    feature_list_.InitWithFeatures(
-        {features::kFileSystemAccessPersistentPermissions,
-         permissions::features::kOneTimePermission},
-        {});
-  }
-
-  PageInfoBubbleViewBrowserTest(const PageInfoBubbleViewBrowserTest& test) =
-      delete;
-  PageInfoBubbleViewBrowserTest& operator=(
-      const PageInfoBubbleViewBrowserTest& test) = delete;
-
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     InProcessBrowserTest::SetUp();
@@ -255,6 +271,13 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     return presenter;
   }
 
+  void SetAdPersonalizationInfo(
+      const PageInfoUI::AdPersonalizationInfo& identity_info) {
+    auto* presenter = GetPresenter();
+    EXPECT_TRUE(presenter->ui_for_testing());
+    presenter->ui_for_testing()->SetAdPersonalizationInfo(identity_info);
+  }
+
   void SetPageInfoBubbleIdentityInfo(
       const PageInfoUI::IdentityInfo& identity_info) {
     auto* presenter = GetPresenter();
@@ -262,22 +285,22 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     presenter->ui_for_testing()->SetIdentityInfo(identity_info);
   }
 
-  std::u16string GetCertificateButtonTitle() const {
+  std::u16string_view GetCertificateButtonTitle() const {
     // Only PageInfoBubbleViewBrowserTest can access certificate_button_ in
     // PageInfoBubbleView, or title() in HoverButton.
     auto* certificate_button = static_cast<RichHoverButton*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER));
-    return certificate_button->GetTitleViewForTesting()->GetText();
+    return certificate_button->GetTitleText();
   }
 
-  std::u16string GetCertificateButtonSubtitle() const {
+  std::u16string_view GetCertificateButtonSubtitle() const {
     auto* certificate_button = static_cast<RichHoverButton*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER));
-    return certificate_button->GetSubTitleViewForTesting()->GetText();
+    return certificate_button->GetSubtitleText();
   }
 
   const std::u16string GetPageInfoBubbleViewDetailText() {
@@ -294,14 +317,12 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     return static_cast<views::StyledLabel*>(label)->GetText();
   }
 
-  const std::u16string GetSecurityInformationButtonText() {
+  std::u16string_view GetSecurityInformationButtonText() {
     auto* button =
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION);
-    return static_cast<RichHoverButton*>(button)
-        ->GetTitleViewForTesting()
-        ->GetText();
+    return static_cast<RichHoverButton*>(button)->GetTitleText();
   }
 
   void SetupSentimentServiceExpectations(bool interacted) {
@@ -317,7 +338,9 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 
  private:
   std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;
-  base::test::ScopedFeatureList feature_list_;
+
+  base::test::ScopedFeatureList feature_list_{
+      features::kFileSystemAccessPersistentPermissions};
 };
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ShowBubble) {
@@ -392,10 +415,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, SiteSettingsLink) {
 // an origin and does punycode conversion as well as URL canonicalization.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        SiteSettingsLinkWithNonAsciiUrl) {
-  GURL url = GURL("http://🥄.ws/other/stuff.htm");
+  GURL url = GURL("https://🥄.ws/other/stuff.htm");
   std::string expected_url =
       base::StrCat({chrome::kChromeUISettingsURL, chrome::kSiteDetailsSubpage});
-  std::string expected_query = "?site=http%3A%2F%2Fxn--9q9h.ws";
+  std::string expected_query = "?site=https%3A%2F%2Fxn--9q9h.ws";
   EXPECT_EQ(GURL(expected_url + expected_query),
             OpenSiteSettingsForUrl(browser(), url));
 }
@@ -711,7 +734,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   views::Label* label = static_cast<views::Label*>(
       scroll_panel->contents()->children()[0]->children()[1]);
   const std::u16string expected_file_path =
-      file_system_access_ui_helper::GetPathForDisplayAsParagraph(test_file);
+      file_system_access_ui_helper::GetPathForDisplayAsParagraph(
+          content::PathInfo(test_file));
   EXPECT_EQ(label->GetText(), expected_file_path);
 
   // Simulate clicking the subpage manage button for File System.
@@ -873,6 +897,46 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
       GetPageInfoBubbleViewDetailText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS) +
           u" " + l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, AdPrivacyStrings) {
+  base::UserActionTester user_actions_stats;
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/simple.html")));
+
+  // Setup the bogus ad personalization info.
+  PageInfoUI::AdPersonalizationInfo info;
+  info.has_joined_user_to_interest_group = true;
+
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame());
+  pscs->OnTopicAccessed(
+      url::Origin::Create(GURL("https://a.test")), false,
+      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(1), 1));
+
+  OpenPageInfoBubble(browser());
+
+  SetAdPersonalizationInfo(info);
+
+  views::View* button =
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON);
+  PerformMouseClickOnView(button);
+
+  auto* label = PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_LABEL);
+  ASSERT_TRUE(label);
+
+  EXPECT_EQ(user_actions_stats.GetActionCount(
+                "PageInfo.AdPersonalization.OpenedWithTopics"),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, UnwantedSoftwareStrings) {
@@ -1129,6 +1193,28 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
     return site_info;
   }
 
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void TriggerSafeBrowsingWarning() {
+    safe_browsing::ChromePasswordProtectionService* service =
+        safe_browsing::ChromePasswordProtectionService::
+            GetPasswordProtectionService(browser()->profile());
+    safe_browsing::ReusedPasswordAccountType reused_password_account_type;
+    reused_password_account_type.set_account_type(
+        safe_browsing::ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
+    service->set_reused_password_account_type_for_last_shown_warning(
+        reused_password_account_type);
+
+    scoped_refptr<safe_browsing::PasswordProtectionRequest> request =
+        safe_browsing::CreateDummyRequest(web_contents());
+    service->ShowModalWarning(
+        request.get(),
+        safe_browsing::LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+        "unused_token", reused_password_account_type);
+  }
+
  protected:
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   base::test::ScopedFeatureList feature_list_;
@@ -1288,6 +1374,38 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   base::RunLoop().RunUntilIdle();
 }
 
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
+                       AboutThisSiteNotSecureAsync) {
+  auto url = https_server_.GetURL("a.test", "/title1.html");
+  AddHintForTesting(browser(), url, CreateValidSiteInfo());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  OpenPageInfoBubble(browser());
+  auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+  // The button is shown because connection is secure.
+  EXPECT_TRUE(
+      page_info
+          ->GetViewByID(
+              PageInfoViewFactory::VIEW_ID_PAGE_INFO_EXTENDED_SITE_INFO_SECTION)
+          ->GetVisible());
+
+  // Connection state changed to insecure.
+  SecurityStyleTestObserver observer(web_contents());
+  TriggerSafeBrowsingWarning();
+  observer.WaitForDidChangeVisibleSecurityState();
+
+  // The button isn't shown because connection now isn't secure.
+  EXPECT_FALSE(
+      page_info
+          ->GetViewByID(
+              PageInfoViewFactory::VIEW_ID_PAGE_INFO_EXTENDED_SITE_INFO_SECTION)
+          ->GetVisible());
+
+  page_info->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  base::RunLoop().RunUntilIdle();
+}
+
 // Test that no info is shown and "kNotShownOptimizationGuideNotAllowed" is
 // logged when hints fetching is disabled.
 class PageInfoBubbleViewAboutThisSiteDisabledBrowserTest
@@ -1349,12 +1467,14 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
  public:
   PageInfoBubbleViewBrowserTestCookiesSubpage() {
     std::vector<base::test::FeatureRef>
-        enabled_features = {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-        disabled_features = {};
+        enabled_features =
+            {privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi},
+        disabled_features = {privacy_sandbox::kActUserBypassUx,
+                             privacy_sandbox::kFingerprintingProtectionUx,
+                             privacy_sandbox::kIpProtectionUx};
     if (GetParam()) {
       enabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);
-      disabled_features.push_back(privacy_sandbox::kTrackingProtection3pcdUx);
     } else {
       disabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);
@@ -1383,10 +1503,22 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
     prefs_->SetInteger(prefs::kCookieControlsMode, static_cast<int>(mode));
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void EnableCookieSync() {
+    prefs_->SetBoolean(::prefs::kFloatingSsoEnabled, true);
+  }
+
+  void SetBlockedDomainsForCookieSync(base::Value::List domains) {
+    prefs_->SetList(::prefs::kFloatingSsoDomainBlocklist, std::move(domains));
+  }
+#endif
+
   void OpenPageInfoAndGoToCookiesSubpage(
       std::optional<std::u16string> rws_owner) {
-    EXPECT_FALSE(prefs_->GetBoolean(prefs::kInContextCookieControlsOpened));
-    EXPECT_CALL(*mock_service(), GetFirstPartySetOwnerForDisplay(testing::_))
+    EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+        prefs::kInContextCookieControlsOpened));
+    EXPECT_CALL(*mock_service(),
+                GetRelatedWebsiteSetOwnerForDisplay(testing::_))
         .WillRepeatedly(testing::Return(rws_owner));
     base::RunLoop run_loop;
     GetPageInfoDialogCreatedCallbackForTesting() = run_loop.QuitClosure();
@@ -1415,8 +1547,10 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
             content_settings::features::kTrackingProtection3pcd) ||
         prefs_->GetInteger(prefs::kCookieControlsMode) ==
             static_cast<int>(
-                content_settings::CookieControlsMode::kBlockThirdParty);
-    EXPECT_EQ(prefs_->GetBoolean(prefs::kInContextCookieControlsOpened),
+                content_settings::CookieControlsMode::kBlockThirdParty) ||
+        browser()->profile()->IsIncognitoProfile();
+    EXPECT_EQ(browser()->profile()->GetPrefs()->GetBoolean(
+                  prefs::kInContextCookieControlsOpened),
               block_third_party);
   }
 
@@ -1459,8 +1593,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 // click on the rws button (result and user action).
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        ClickingRwsButton) {
-  GURL url_example = GURL("http://example/other/stuff.htm");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrl)));
 
   const std::u16string rws_owner = u"example";
   SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
@@ -1473,8 +1606,14 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
   EXPECT_TRUE(GetView(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
-  auto* rws_button = GetView(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
+  auto* rws_button = static_cast<RichHoverButton*>(GetView(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS));
+
+  EXPECT_EQ(rws_button->GetTitleText(),
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_V2_BUTTON_TITLE));
+  EXPECT_EQ(rws_button->GetSubtitleText(),
+            l10n_util::GetStringFUTF16(IDS_PAGE_INFO_RWS_V2_BUTTON_SUBTITLE,
+                                       rws_owner));
 
   // Checking if rws button opens correct page and records correctly user
   // actions.
@@ -1502,8 +1641,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 // toggle on blocking third party button.
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        ToggleForBlockingThirdPartyCookies) {
-  GURL url_example = GURL("http://example/other/stuff.htm");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrl)));
 
   SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
 
@@ -1541,8 +1679,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 // click on link in description of cookies subapge.
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        LinkInDescriptionForCookiesSettings) {
-  GURL url_example = GURL("http://example/other/stuff.htm");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrl)));
 
   std::u16string rws_owner = u"example";
 
@@ -1574,23 +1711,108 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
   EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(), url);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Checks that cookie sync disclaimer is displayed when cookies are synced, and
+// verifies that Chrome Sync settings link works.
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
+                       LinkInCookieSyncDisclaimer) {
+  EnableCookieSync();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrl)));
+
+  OpenPageInfoAndGoToCookiesSubpage(/*rws_owner =*/{});
+
+  auto* cookie_sync_disclaimer = static_cast<views::StyledLabel*>(
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_SYNC));
+  EXPECT_TRUE(cookie_sync_disclaimer);
+  base::UserActionTester user_actions_stats;
+  content::WebContentsAddedObserver new_tab_observer;
+  GURL url = chrome::GetSettingsUrl(chrome::kSyncSetupSubPage);
+
+  cookie_sync_disclaimer->ClickFirstLinkForTesting();
+
+  EXPECT_EQ(user_actions_stats.GetActionCount(
+                "PageInfo.CookiesSubpage.SyncSettingsLinkClicked"),
+            1);
+
+  EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(), url);
+}
+
+// Checks that cookie sync disclaimer is hidden when cookies are not synced for
+// the specific domain, even if in general cookie sync is enabled.
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
+                       CookieSyncDisclaimerRespectsDomainBlocklist) {
+  // Enable cookie sync, but configure domain blocklist to exclude the site we
+  // are visiting in this test from sync.
+  EnableCookieSync();
+  base::Value::List domain_blocklist;
+  domain_blocklist.Append("example");
+  SetBlockedDomainsForCookieSync(std::move(domain_blocklist));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrl)));
+
+  OpenPageInfoAndGoToCookiesSubpage(/*rws_owner =*/{});
+  views::Widget* page_info_bubble =
+      PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetWidget();
+  ASSERT_TRUE(page_info_bubble);
+  views::View* cookie_sync_disclaimer =
+      page_info_bubble->GetRootView()->GetViewByID(
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_SYNC);
+  EXPECT_FALSE(cookie_sync_disclaimer);
+}
+#endif
+
 class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
     : public PageInfoBubbleViewBrowserTestCookiesSubpage {
  public:
   PageInfoBubbleViewBrowserTestTrackingProtectionSubpage() {
     std::vector<base::test::FeatureRef>
-        enabled_features =
-            {privacy_sandbox::kFingerprintingProtectionUserBypass},
-        disabled_features = {};
+        enabled_features = {privacy_sandbox::kActUserBypassUx,
+                            privacy_sandbox::kFingerprintingProtectionUx},
+        disabled_features = {
+#if BUILDFLAG(ENABLE_GLIC)
+            // GlicBorderView doesn't like it when the profile type is changed
+            // (kIncognito vs kRegular), which is something that can't normally
+            // happen.
+            features::kGlic
+#endif
+        };
     if (GetParam()) {
       enabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);
-      disabled_features.push_back(privacy_sandbox::kTrackingProtection3pcdUx);
     } else {
       disabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  HostContentSettingsMap* host_content_settings_map() {
+    return HostContentSettingsMapFactory::GetForProfile(
+        CreateIncognitoBrowser(browser()->profile())->profile());
+  }
+
+  void OpenPageInfoAndGoToPrivacyAndSiteDataSubpage(
+      std::optional<std::u16string> rws_owner,
+      Browser* browser) {
+    base::RunLoop run_loop;
+    GetPageInfoDialogCreatedCallbackForTesting() = run_loop.QuitClosure();
+    OpenPageInfoBubble(browser);
+    run_loop.Run();
+
+    views::View* privacy_button =
+        GetView(PageInfoViewFactory::
+                    VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_PRIVACY_SITE_DATA_SUBPAGE);
+
+    base::RunLoop run_loop2;
+    base::UserActionTester user_actions_stats;
+    PerformMouseClickOnView(privacy_button);
+    auto* privacy_subpage_content = static_cast<PageInfoCookiesContentView*>(
+        PageInfoBubbleView::GetPageInfoBubbleForTesting()
+            ->GetViewByID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW)
+            ->children()[1]);
+    privacy_subpage_content->SetInitializedCallbackForTesting(
+        run_loop2.QuitClosure());
+    run_loop2.Run();
   }
 
  private:
@@ -1599,32 +1821,81 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
 
 IN_PROC_BROWSER_TEST_P(
     PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
-    ToggleForBlockingThirdPartyCookiesUpdatesTrackingProtectionException) {
-  GURL url_example = GURL("http://example/other/stuff.htm");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
+    ButtonForPausingAndResumingProtectionsUpdatesTrackingProtectionException) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
 
-  SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, GURL(kUrl)));
 
-  OpenPageInfoAndGoToCookiesSubpage(/*rws_owner =*/{});
+  OpenPageInfoAndGoToPrivacyAndSiteDataSubpage(/*rws_owner =*/{},
+                                               incognito_browser);
 
-  auto* third_party_cookies_toggle = static_cast<views::ToggleButton*>(GetView(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE));
-  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
+  auto* tracking_protections_button = static_cast<views::LabelButton*>(
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_ACT_PROTECTIONS_BUTTON));
 
-  PerformMouseClickOnView(third_party_cookies_toggle);
-  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
+  ASSERT_THAT(tracking_protections_button, NotNull());
+  EXPECT_TRUE(tracking_protections_button->GetVisible());
+
+  PerformMouseClickOnView(tracking_protections_button);
+  // Flushes pending tasks to prevent asynchronous UI updates (e.g. tooltips)
+  // from interfering with this test.
+  base::RunLoop().RunUntilIdle();
+
   content_settings::SettingInfo info;
+
+  EXPECT_THAT(tracking_protections_button->GetText(),
+              l10n_util::GetStringUTF16(
+                  IDS_TRACKING_PROTECTIONS_BUBBLE_RESUME_PROTECTIONS_LABEL));
   EXPECT_EQ(
       host_content_settings_map()->GetContentSetting(
-          GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
+          GURL(), GURL(kUrl), ContentSettingsType::TRACKING_PROTECTION, &info),
       CONTENT_SETTING_ALLOW);
 
-  PerformMouseClickOnView(third_party_cookies_toggle);
-  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
+  PerformMouseClickOnView(tracking_protections_button);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(tracking_protections_button->GetText(),
+              l10n_util::GetStringUTF16(
+                  IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL));
   EXPECT_EQ(
       host_content_settings_map()->GetContentSetting(
-          GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
+          GURL(), GURL(kUrl), ContentSettingsType::TRACKING_PROTECTION, &info),
       CONTENT_SETTING_BLOCK);
+}
+
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
+                       ClickingSettingsButtonOpensIncognitoSettingsPage) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, GURL(kUrl)));
+
+  OpenPageInfoAndGoToPrivacyAndSiteDataSubpage(/*rws_owner =*/{},
+                                               incognito_browser);
+
+  auto* cookies_buttons_container =
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
+  ASSERT_THAT(cookies_buttons_container, NotNull());
+  ASSERT_THAT(cookies_buttons_container->children(), SizeIs(3));
+
+  auto* settings_button_view = GetView(
+      PageInfoViewFactory::
+          VIEW_ID_PAGE_INFO_BUTTON_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS);
+  ASSERT_THAT(settings_button_view, NotNull());
+  auto* settings_button = static_cast<RichHoverButton*>(settings_button_view);
+
+  EXPECT_EQ(
+      settings_button->GetTitleText(),
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTION_SETTINGS_BUTTON_TITLE));
+  EXPECT_EQ(
+      settings_button->GetSubtitleText(),
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTION_SETTINGS_BUTTON_SUBTITLE));
+
+  content::WebContentsAddedObserver new_tab_observer;
+  PerformMouseClickOnView(settings_button);
+
+  EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(),
+            chrome::GetSettingsUrl(chrome::kIncognitoSettingsSubPage));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

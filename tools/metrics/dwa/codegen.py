@@ -19,8 +19,13 @@ class MetricInfo(codegen_shared.ModelTypeInfo):
   pass
 
 
-class StudyInfo(codegen_shared.ModelTypeInfo):
-  pass
+class StudyInfo:
+  """A class to hold codegen information about study type."""
+
+  def __init__(self, json_obj: dict) -> None:
+    self.raw_name = json_obj['name']
+    self.name = codegen_shared._SanitizeName(json_obj['name'])
+    self.hash = codegen_shared.HashFieldTrialName(json_obj['name'])
 
 
 class Template(object):

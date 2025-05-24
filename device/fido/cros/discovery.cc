@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -46,7 +45,7 @@ void FidoChromeOSDiscovery::OnU2FServiceAvailable(bool u2f_service_available) {
     return;
   }
 
-  pending_requests_ = 3;
+  pending_requests_ = 2;
 
   // Need to check whether power button is enabled. For GetAssertion requests
   // this is by checking legacy u2f credentials.
@@ -65,29 +64,15 @@ void FidoChromeOSDiscovery::OnU2FServiceAvailable(bool u2f_service_available) {
   // user has local user authentication method that can be used for WebAuthn).
   ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(base::BindOnce(
       &FidoChromeOSDiscovery::OnUvAvailable, weak_factory_.GetWeakPtr()));
-
-// Need to check whether WebAuthn is supported in lacros browser. We can save
-// this call and always assume it's false on ash browser as it's not important
-// whether lacros is supported.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  ChromeOSAuthenticator::IsLacrosSupported(base::BindOnce(
-      &FidoChromeOSDiscovery::OnLacrosSupported, weak_factory_.GetWeakPtr()));
-#else
-  OnLacrosSupported(/*supported=*/false);
-#endif
 }
 
 void FidoChromeOSDiscovery::OnPowerButtonEnabled(bool enabled) {
   power_button_enabled_ = enabled;
   OnRequestComplete();
 }
+
 void FidoChromeOSDiscovery::OnUvAvailable(bool available) {
   uv_available_ = available;
-  OnRequestComplete();
-}
-
-void FidoChromeOSDiscovery::OnLacrosSupported(bool supported) {
-  lacros_supported_ = supported;
   OnRequestComplete();
 }
 
@@ -100,13 +85,6 @@ void FidoChromeOSDiscovery::OnRequestComplete() {
 
 void FidoChromeOSDiscovery::MaybeAddAuthenticator() {
   bool uv_available = uv_available_;
-
-// If u2fd doesn't support Lacros WebAuthn, user verification won't work.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!lacros_supported_) {
-    uv_available = false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   if (require_power_button_mode_) {
     uv_available = false;

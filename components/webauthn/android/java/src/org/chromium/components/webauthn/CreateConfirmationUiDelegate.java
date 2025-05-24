@@ -4,8 +4,8 @@
 
 package org.chromium.components.webauthn;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -13,6 +13,7 @@ import org.chromium.content_public.browser.WebContents;
  *
  * <p>This is intended for use in Incognito mode.
  */
+@NullMarked
 public interface CreateConfirmationUiDelegate {
     interface Factory {
         /**
@@ -22,8 +23,7 @@ public interface CreateConfirmationUiDelegate {
          * @param webContents {@link WebContents} to create the UI delegate for.
          * @return Returns null if CreateConfirmationUiDelegate is not required for the webContents
          */
-        @Nullable
-        CreateConfirmationUiDelegate create(WebContents webContents);
+        @Nullable CreateConfirmationUiDelegate create(WebContents webContents);
     }
 
     /**

@@ -21,33 +21,15 @@
 
 namespace crashpad {
 
-namespace {
-
-class FileReaderReadExactly final : public internal::ReadExactlyInternal {
- public:
-  explicit FileReaderReadExactly(FileReaderInterface* file_reader)
-      : ReadExactlyInternal(), file_reader_(file_reader) {}
-
-  FileReaderReadExactly(const FileReaderReadExactly&) = delete;
-  FileReaderReadExactly& operator=(const FileReaderReadExactly&) = delete;
-
-  ~FileReaderReadExactly() {}
-
- private:
-  // ReadExactlyInternal:
-  FileOperationResult Read(void* buffer, size_t size, bool can_log) override {
-    DCHECK(can_log);
-    return file_reader_->Read(buffer, size);
-  }
-
-  FileReaderInterface* file_reader_;  // weak
-};
-
-}  // namespace
-
 bool FileReaderInterface::ReadExactly(void* data, size_t size) {
-  FileReaderReadExactly read_exactly(this);
-  return read_exactly.ReadExactly(data, size, true);
+  return internal::ReadExactly(
+      [this](bool can_log, void* buffer, size_t size) {
+        DCHECK(can_log);
+        return Read(buffer, size);
+      },
+      true,
+      data,
+      size);
 }
 
 WeakFileHandleFileReader::WeakFileHandleFileReader(FileHandle file_handle)

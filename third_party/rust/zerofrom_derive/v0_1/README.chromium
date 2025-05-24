@@ -1,0 +1,10 @@
+Name: zerofrom-derive
+URL: https://crates.io/crates/zerofrom-derive
+Version: 0.1.6
+Revision: f4290a877dfcb0f87cad6de4abdd65f0cbb33c9c
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/zerofrom-derive-v0_1/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Custom derive for the zerofrom crate

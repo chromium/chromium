@@ -48,16 +48,16 @@ class CORE_EXPORT DOMURLUtilsReadOnly {
   static String protocol(const KURL& url) { return url.Protocol() + ":"; }
   String protocol() { return protocol(Url()); }
 
-  static String username(const KURL& url) { return url.User(); }
+  static String username(const KURL& url) { return url.User().ToString(); }
   String username() { return username(Url()); }
 
-  static String password(const KURL& url) { return url.Pass(); }
+  static String password(const KURL& url) { return url.Pass().ToString(); }
   String password() { return password(Url()); }
 
   static String host(const KURL&);
   String host() { return host(Url()); }
 
-  static String hostname(const KURL& url) { return url.Host(); }
+  static String hostname(const KURL& url) { return url.Host().ToString(); }
   String hostname() { return hostname(Url()); }
 
   static String port(const KURL&);

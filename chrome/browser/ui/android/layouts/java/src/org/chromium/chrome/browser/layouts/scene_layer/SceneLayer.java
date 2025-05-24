@@ -10,8 +10,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Java representation of a scene layer. */
 @JNINamespace("android")
+@NullMarked
 public class SceneLayer {
     public static final int INVALID_RESOURCE_ID = -1;
     private long mNativePtr;

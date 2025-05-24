@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ScreensFactory, ScreensFactoryRemote} from './mojom-webui/screens_factory.mojom-webui.js';
+import type {ScreensFactoryRemote} from './mojom-webui/screens_factory.mojom-webui.js';
+import {ScreensFactory} from './mojom-webui/screens_factory.mojom-webui.js';
 
 // Communicates with the OobeScreensHandlerFactory in the browser process.
 class OobeScreensFactoryBrowserProxy {

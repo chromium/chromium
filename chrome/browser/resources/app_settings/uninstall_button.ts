@@ -4,7 +4,7 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
@@ -37,9 +37,9 @@ export class UninstallButtonElement extends CrLitElement {
     };
   }
 
-  app: App = createDummyApp();
-  uninstallLabel: string = '';
-  policyLabel: string = '';
+  accessor app: App = createDummyApp();
+  accessor uninstallLabel: string = '';
+  accessor policyLabel: string = '';
 
   /**
    * Returns true if the button should be disabled due to app install type.

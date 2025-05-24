@@ -19,12 +19,14 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 
 /** Unit tests for {@link AppHeaderUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AppHeaderUtilsUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
 
     @Before
     public void setup() {
@@ -35,7 +37,7 @@ public class AppHeaderUtilsUnitTest {
     public void isActivityFocused_nullLifecycleDispatcher() {
         assertTrue(
                 "Activity should be assumed to be focused if the lifecycle dispatcher is null.",
-                AppHeaderUtils.isActivityFocusedAtStartup(/* activityLifecycleDispatcher= */ null));
+                AppHeaderUtils.isActivityFocusedAtStartup(/* lifecycleDispatcher= */ null));
     }
 
     @Test
@@ -75,26 +77,26 @@ public class AppHeaderUtilsUnitTest {
         // Assume that the supplier is not initialized.
         assertFalse(
                 "Desktop windowing mode status is incorrect.",
-                AppHeaderUtils.isAppInDesktopWindow(/* appHeaderStateProvider= */ null));
+                AppHeaderUtils.isAppInDesktopWindow(/* desktopWindowStateManager= */ null));
 
         // Assume that the provider does not has a valid AppHeaderState.
         assertFalse(
                 "Desktop windowing mode status is incorrect.",
-                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider));
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
 
         AppHeaderState state = Mockito.mock(AppHeaderState.class);
-        doReturn(state).when(mDesktopWindowStateProvider).getAppHeaderState();
+        doReturn(state).when(mDesktopWindowStateManager).getAppHeaderState();
 
         // Assume state not in desktop windowing mode.
         doReturn(false).when(state).isInDesktopWindow();
         assertFalse(
                 "Desktop windowing mode status is incorrect.",
-                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider));
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
 
         // Assume state is in desktop windowing mode.
         doReturn(true).when(state).isInDesktopWindow();
         assertTrue(
                 "Desktop windowing mode status is incorrect.",
-                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider));
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
     }
 }

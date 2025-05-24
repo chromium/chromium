@@ -59,19 +59,17 @@ bool CommerceHeuristicsData::PopulateDataFromComponent(
     const std::string& global_json_data,
     const std::string& product_id_json_data,
     const std::string& cart_extraction_script) {
-  auto hint_json_value = base::JSONReader::Read(hint_json_data);
-  auto global_json_value = base::JSONReader::Read(global_json_data);
-  if (!hint_json_value || !hint_json_value.has_value() ||
-      !hint_json_value->is_dict()) {
+  auto hint_json_value = base::JSONReader::ReadDict(hint_json_data);
+  auto global_json_value = base::JSONReader::ReadDict(global_json_data);
+  if (!hint_json_value) {
     return false;
   }
-  if (!global_json_value || !global_json_value.has_value() ||
-      !global_json_value->is_dict()) {
+  if (!global_json_value) {
     return false;
   }
-  hint_heuristics_ = std::move(*hint_json_value->GetIfDict());
+  hint_heuristics_ = std::move(*hint_json_value);
   global_heuristics_string_ = global_json_data;
-  global_heuristics_ = std::move(*global_json_value->GetIfDict());
+  global_heuristics_ = std::move(*global_json_value);
   // Global regex patterns.
   product_skip_pattern_ = ConstructGlobalRegex(kSkipProductPatternType);
   rule_discount_partner_merchant_pattern_ =

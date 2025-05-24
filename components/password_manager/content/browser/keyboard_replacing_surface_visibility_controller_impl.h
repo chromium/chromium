@@ -21,7 +21,7 @@ class KeyboardReplacingSurfaceVisibilityControllerImpl final
     : public KeyboardReplacingSurfaceVisibilityController {
  public:
   enum class State {
-    kNotShownYet,
+    kCanBeShown,
     kVisible,
     kShownBefore,
   };
@@ -34,7 +34,7 @@ class KeyboardReplacingSurfaceVisibilityControllerImpl final
   ~KeyboardReplacingSurfaceVisibilityControllerImpl() override;
 
   // Returns `true` iff the state is not shown yet.
-  // (i.e. `state` == `kNotShownYet`)
+  // (i.e. `state` == `kCanBeShown`)
   bool CanBeShown() const override;
 
   // Returns `true` iff the state is visible.
@@ -49,7 +49,10 @@ class KeyboardReplacingSurfaceVisibilityControllerImpl final
   // Sets the state to `kShownBefore`.
   void SetShown() override;
 
-  // Resets the state to the initial (`kNotShownYet`) and removes the added IME
+  // Sets the state to `kCanBeShown`.
+  void SetCanBeShown() override;
+
+  // Resets the state to the initial (`kCanBeShown`) and removes the added IME
   // suppression if there's one.
   void Reset() override;
 
@@ -58,7 +61,7 @@ class KeyboardReplacingSurfaceVisibilityControllerImpl final
       override;
 
  private:
-  State state_ = State::kNotShownYet;
+  State state_ = State::kCanBeShown;
   // Password manager driver for the frame on which the Touch-To-Fill was
   // triggered.
   base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver_;

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.view.HapticFeedbackConstants;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
@@ -30,13 +31,13 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabWebContentsUserData;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.OverscrollAction;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -48,6 +49,21 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class SwipeRefreshHandler extends TabWebContentsUserData
         implements OverscrollRefreshHandler {
+
+    /** Creates a {@link SwipeRefreshLayout} given a {@link Context}. */
+    public interface SwipeRefreshLayoutCreator {
+        /**
+         * Returns a {@link SwipeRefreshLayout} given a {@link Context}.
+         *
+         * @param context The {@link Context} to use.
+         * @return A {@link SwipeRefreshLayout} for the context.
+         */
+        SwipeRefreshLayout create(Context context);
+    }
+
+    private static final SwipeRefreshLayoutCreator DEFAULT_SWIPE_REFRESH_LAYOUT_CREATOR =
+            SwipeRefreshLayout::new;
+
     private static final Class<SwipeRefreshHandler> USER_DATA_KEY = SwipeRefreshHandler.class;
 
     // Synthetic delay between the {@link #didStopRefreshing()} signal and the
@@ -89,14 +105,19 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
 
     private @OverscrollAction int mSwipeType;
 
+    // Creates new values for mSwipeRefreshLayout when mSwipeRefreshLayout needs to be non-null.
+    // We allow this to be customized (instead of mSwipeRefreshLayout = new SwipeRefreshLayout()
+    // directly) so that we can pass in mock values for tests.
+    private final @NonNull SwipeRefreshLayoutCreator mSwipeRefreshLayoutCreator;
+
     // The modified AppCompat version of the refresh effect, handling all core
     // logic, rendering and animation.
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     // The Tab where the swipe occurs.
-    private Tab mTab;
+    private final Tab mTab;
 
-    private EmptyTabObserver mTabObserver;
+    private final EmptyTabObserver mTabObserver;
 
     // The container view the SwipeRefreshHandler instance is currently
     // associated with.
@@ -123,10 +144,18 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     private BrowserControlsStateProvider mBrowserControls;
 
     public static SwipeRefreshHandler from(Tab tab) {
+        return SwipeRefreshHandler.from(tab, DEFAULT_SWIPE_REFRESH_LAYOUT_CREATOR);
+    }
+
+    public static SwipeRefreshHandler from(
+            Tab tab, @NonNull SwipeRefreshLayoutCreator swipeRefreshLayoutCreator) {
         SwipeRefreshHandler handler = get(tab);
         if (handler == null) {
             handler =
-                    tab.getUserDataHost().setUserData(USER_DATA_KEY, new SwipeRefreshHandler(tab));
+                    tab.getUserDataHost()
+                            .setUserData(
+                                    USER_DATA_KEY,
+                                    new SwipeRefreshHandler(tab, swipeRefreshLayoutCreator));
         }
         return handler;
     }
@@ -139,8 +168,10 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
      * Simple constructor to use when creating an OverscrollRefresh instance from code.
      *
      * @param tab The Tab where the swipe occurs.
+     * @param swipeRefreshLayoutCreator Creates {@link SwipeRefreshLayout}.
      */
-    private SwipeRefreshHandler(Tab tab) {
+    private SwipeRefreshHandler(
+            Tab tab, @NonNull SwipeRefreshLayoutCreator swipeRefreshLayoutCreator) {
         super(tab);
         mTab = tab;
         mTabObserver =
@@ -158,17 +189,18 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                     }
                 };
         mTab.addObserver(mTabObserver);
+        mSwipeRefreshLayoutCreator = swipeRefreshLayoutCreator;
     }
 
     private void initSwipeRefreshLayout(final Context context) {
-        mSwipeRefreshLayout = new SwipeRefreshLayout(context);
+        mSwipeRefreshLayout = mSwipeRefreshLayoutCreator.create(context);
         mSwipeRefreshLayout.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         final boolean incognitoBranded = mTab.isIncognitoBranded();
         final @ColorInt int backgroundColor =
                 incognitoBranded
-                        ? context.getColor(R.color.default_bg_color_dark_elev_2_baseline)
-                        : ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
+                        ? context.getColor(R.color.incognito_swipe_refresh_layout_bg)
+                        : SemanticColorUtils.getColorSurfaceContainer(context);
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(backgroundColor);
         final @ColorInt int iconColor =
                 incognitoBranded
@@ -176,6 +208,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                         : SemanticColorUtils.getDefaultIconColorAccent1(context);
         mSwipeRefreshLayout.setColorSchemeColors(iconColor);
         if (mContainerView != null) mSwipeRefreshLayout.setEnabled(true);
+        mSwipeRefreshLayout.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
 
         mSwipeRefreshLayout.setOnRefreshListener(
                 () -> {
@@ -186,9 +219,9 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                             MAX_REFRESH_ANIMATION_DURATION_MS);
                     if (mAccessibilityRefreshString == null) {
                         int resId = R.string.accessibility_swipe_refresh;
-                        mAccessibilityRefreshString = context.getResources().getString(resId);
+                        mAccessibilityRefreshString = context.getString(resId);
                     }
-                    mSwipeRefreshLayout.announceForAccessibility(mAccessibilityRefreshString);
+                    mSwipeRefreshLayout.setContentDescription(mAccessibilityRefreshString);
                     if (VERSION.SDK_INT >= VERSION_CODES.R) {
                         mSwipeRefreshLayout.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
                     }
@@ -249,31 +282,31 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     public boolean start(
             @OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge) {
         mSwipeType = type;
-        if (type == OverscrollAction.PULL_TO_REFRESH) {
-            if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
-            attachSwipeRefreshLayoutIfNecessary();
-            return mSwipeRefreshLayout.start();
-        } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
-            if (mNavigationCoordinator != null) {
-                mNavigationCoordinator.startGesture();
-                // Note: triggerUi returns true as long as the handler is in a valid state, i.e.
-                // even if the navigation direction doesn't have further history entries.
-                boolean navigable = mNavigationCoordinator.triggerUi(initiatingEdge);
-                return navigable;
-            }
-        } else if (type == OverscrollAction.PULL_FROM_BOTTOM_EDGE) {
-            if (mBrowserControls != null) {
-                recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
+        if (isRefreshOnOverscrollSupported()) {
+            if (type == OverscrollAction.PULL_TO_REFRESH) {
+                if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
+                attachSwipeRefreshLayoutIfNecessary();
+                return mSwipeRefreshLayout.start();
+            } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
+                if (mNavigationCoordinator != null) {
+                    mNavigationCoordinator.startGesture();
+                    // Note: triggerUi returns true as long as the handler is in a valid state, i.e.
+                    // even if the navigation direction doesn't have further history entries.
+                    boolean navigable = mNavigationCoordinator.triggerUi(initiatingEdge);
+                    return navigable;
+                }
+            } else if (type == OverscrollAction.PULL_FROM_BOTTOM_EDGE) {
+                if (mBrowserControls != null) {
+                    recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
+                }
             }
         }
+
         mSwipeType = OverscrollAction.NONE;
         return false;
     }
 
-    /**
-     * Sets {@link HistoryNavigationCoordinator} object.
-     * @param layout {@link HistoryNavigationCoordinator} object.
-     */
+    /** Sets {@link HistoryNavigationCoordinator} object. */
     public void setNavigationCoordinator(HistoryNavigationCoordinator navigationHandler) {
         mNavigationCoordinator = navigationHandler;
     }
@@ -325,6 +358,9 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         if (mStopRefreshingRunnable != null) {
             ThreadUtils.getUiThreadHandler().removeCallbacks(mStopRefreshingRunnable);
         }
+        // Reset the content description, so that if the refresh is canceled, we can set it to
+        // mAccessibilityRefreshString and get an announcement.
+        if (mSwipeRefreshLayout != null) mSwipeRefreshLayout.setContentDescription(null);
     }
 
     private void cancelDetachLayoutRunnable() {
@@ -386,5 +422,23 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                 "Android.OverscrollFromBottom.BottomControlsStatus",
                 sample,
                 BottomControlsStatus.NUM_TOTAL);
+    }
+
+    /**
+     * Checks to see if page refresh on overscroll is supported Wrapped so we can stub behavior in
+     * tests.
+     *
+     * <p>Currently, overscroll to refresh is disabled if a precision pointer device is attached.
+     * For example, this will disable it for touch screen when a mouse is attaached. However
+     * long-term, the plan is to selectively enable for things such as touchscreen only.
+     *
+     * <p>TODO(crbug.com/412465463): enable overscroll refresh for touch even when precision pointer
+     * is attached
+     *
+     * @return true if page refresh on overscroll is supported.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    boolean isRefreshOnOverscrollSupported() {
+        return !DeviceInput.supportsPrecisionPointer();
     }
 }

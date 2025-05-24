@@ -32,6 +32,11 @@ constexpr LazyRE2 kFullLogLineRegex = {
 // Number of characters to ingest per log line to create unique hash.
 constexpr size_t kLogMsgHashSize = 50;
 
+// Dangerous internal buffer size in bytes. In practice, we should never hit
+// this limit due to previous memory-related mitigations, but let's add safety
+// tracking just in case.
+constexpr size_t kDangerousBufferSize = 2 * 1000 * 1000;  // 2Mb
+
 }  // namespace
 
 LocalDataSource::LocalDataSource(base::TimeDelta poll_rate,
@@ -55,6 +60,7 @@ void LocalDataSource::Fetch(FetchCallback callback) {
   std::move(data_buffer_.begin(), data_buffer_.end(),
             std::back_inserter(return_data));
   data_buffer_.clear();
+  data_buffer_size_ = 0;
 
   std::move(callback).Run(std::move(return_data));
 }
@@ -90,7 +96,7 @@ void LocalDataSource::AddWatchDog(
     watchdog_name = pattern;
   }
 
-  VLOG(4) << "Watchdog added to '" << GetDisplayName() << "'; will match on "
+  VLOG(1) << "Watchdog added to '" << GetDisplayName() << "'; will match on "
           << watchdog_name;
   std::move(callback).Run(true /* success */);
 }
@@ -112,6 +118,18 @@ void LocalDataSource::AssignDeviceID(const std::string& id) {
 }
 
 void LocalDataSource::FillDataBuffer() {
+  // If we've reached our max limit, halt buffer fills temporarily.
+  // This indicates that data is not being consumed by the aggregator,
+  // so there must be some kind of mojom hang-up. We'll resume when
+  // the problem is corrected.
+  if (IsDataBufferOverMaxLimit()) {
+    if (data_buffer_size_ >= kDangerousBufferSize) {
+      LOG(WARNING) << GetDisplayName() << " has reached a dangerously high "
+                   << "buffer allocation of " << data_buffer_size_ << " bytes.";
+    }
+    return;
+  }
+
   std::vector<std::string> next_data = GetNextData();
   if (next_data.empty()) {
     return;
@@ -151,26 +169,23 @@ void LocalDataSource::FillDataBuffer() {
 
   SerializeDataBuffer(next_data);
 
+  // Calculate the size of our serialized data so we can
+  // update our internal metrics.
+  size_t next_data_size = 0;
+  for (const auto& line : next_data) {
+    next_data_size += line.size();
+  }
+
   std::move(next_data.begin(), next_data.end(),
             std::back_inserter(data_buffer_));
 
-  // We're over our limit, so purge old logs until we're not.
-  if (IsDataBufferOverMaxLimit()) {
-    LOG(WARNING) << "Data buffer full for '" << GetDisplayName()
-                 << "'. Purging older records.";
-    int dropped_records = 0;
-
-    while (IsDataBufferOverMaxLimit()) {
-      data_buffer_.pop_front();
-      dropped_records++;
-    }
-
-    LOG(WARNING) << "Dropped " << dropped_records << " records.";
-  }
+  data_buffer_size_ += next_data_size;
+  VLOG(3) << GetDisplayName() << " has a current buffer allocation of "
+          << data_buffer_size_ << " bytes.";
 }
 
 bool LocalDataSource::IsDataBufferOverMaxLimit() {
-  return data_buffer_.size() > kMaxInternalBufferSize;
+  return data_buffer_size_ > kMaxInternalBufferSize;
 }
 
 void LocalDataSource::RedactDataBuffer(std::vector<std::string>& buffer) {
@@ -360,7 +375,7 @@ bool LocalDataSource::IsWatchDogFilterValid(mojom::DataFilterPtr& filter) {
 }
 
 void LocalDataSource::FireChangeWatchdogCallbacks(const std::string& data) {
-  VLOG(4) << "'" << GetDisplayName()
+  VLOG(2) << "'" << GetDisplayName()
           << "' matched on 'CHANGE' watchdog. Notifying observers.";
   for (const auto& remote : change_based_watchdogs_) {
     remote->OnNotify(data);
@@ -377,7 +392,7 @@ void LocalDataSource::CheckRegexWatchdogsAndFireCallbacks(
       continue;
     }
 
-    VLOG(4) << "'" << GetDisplayName() << "' matched on '" << pattern
+    VLOG(2) << "'" << GetDisplayName() << "' matched on '" << pattern
             << "' watchdog. Notifying observers.";
 
     for (auto& remote : remotes) {

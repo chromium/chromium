@@ -28,8 +28,6 @@ class BookmarksApiWatcherFactory : public ProfileKeyedServiceFactory {
             "BookmarksApiWatcher",
             ProfileSelections::Builder()
                 .WithRegular(ProfileSelection::kOwnInstance)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
                 .WithGuest(ProfileSelection::kOwnInstance)
                 // TODO(crbug.com/41488885): Check if this service is needed for
                 // Ash Internals.
@@ -38,9 +36,9 @@ class BookmarksApiWatcherFactory : public ProfileKeyedServiceFactory {
 
  private:
   // BrowserContextKeyedServiceFactory overrides
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override {
-    return new BookmarksApiWatcher();
+    return std::make_unique<BookmarksApiWatcher>();
   }
 };
 

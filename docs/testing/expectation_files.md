@@ -140,6 +140,10 @@ is expected to fail on Windows machines with Debug browsers.
 crbug.com/1234 [ win debug ] foo* [ Failure ]
 ```
 
+The restriction of only having one wildcard at the end can be lifted via the
+`full_wildcard_support` annotation found under
+[the annotations section](#Annotations).
+
 #### Priority
 
 When using wildcards, it is possible for multiple expectations to apply to a
@@ -250,3 +254,12 @@ a Windows machine with a Debug browser.
 `override` uses whatever expectation was parsed last. Using the above example,
 A Windows machine with a Debug browser would end up using the
 `[ debug ] foo.html [ Slow ]` expectation.
+
+Additionally, by default, only a single wildcard is allowed at the end of a test
+name. This behavior is preferred for tests whose names are hierarchical in
+nature, e.g. for filepaths. However, if this behavior is not suitable for a
+test suite, full wildcard support can be enabled via the
+`# full_wildcard_support: true` annotation. This allows an arbitrary number of
+wildcards to be used anywhere in the test name. While this is more flexible and
+can make sense for certain test suites, it does make it harder for humans to
+determine which expectations apply to which tests.

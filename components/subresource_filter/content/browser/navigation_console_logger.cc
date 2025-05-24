@@ -8,7 +8,7 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -48,8 +48,9 @@ NavigationConsoleLogger::NavigationConsoleLogger(
 
 void NavigationConsoleLogger::DidFinishNavigation(
     content::NavigationHandle* handle) {
-  if (handle != handle_)
+  if (handle != handle_) {
     return;
+  }
 
   // The root frame navigation has finished.
   if (handle->HasCommitted() && !handle->IsErrorPage()) {

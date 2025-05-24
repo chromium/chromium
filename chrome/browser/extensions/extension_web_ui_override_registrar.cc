@@ -24,8 +24,7 @@ ExtensionWebUIOverrideRegistrar::ExtensionWebUIOverrideRegistrar(
                      weak_factory_.GetWeakPtr(), context));
 }
 
-ExtensionWebUIOverrideRegistrar::~ExtensionWebUIOverrideRegistrar() {
-}
+ExtensionWebUIOverrideRegistrar::~ExtensionWebUIOverrideRegistrar() = default;
 
 void ExtensionWebUIOverrideRegistrar::OnExtensionLoaded(
     content::BrowserContext* browser_context,

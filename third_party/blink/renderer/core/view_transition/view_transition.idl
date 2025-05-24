@@ -32,5 +32,12 @@
   // This will return a ViewTransitionTypeSet that represents the active list of types
   // for this transition. These types are selectable using the
   // :active-view-transition-type pseudo-class.
-  [RuntimeEnabled=ViewTransitionTypes] readonly attribute ViewTransitionTypeSet types;
+  readonly attribute ViewTransitionTypeSet types;
+
+  // This will return an Element that generated this transition.
+  // TODO(vmpstr): Note that for document transitions, this is the document
+  // element. We need to figure out if we need to distinguish between
+  // document.startViewTransition() and
+  // document.documentElement.startViewTransition().
+  [RuntimeEnabled=ScopedViewTransitions] readonly attribute Element transitionRoot;
 };

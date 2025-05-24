@@ -23,3 +23,9 @@ features:
   files:
   - oklab-*
   - oklch-*
+- name: hwb
+  files:
+  - hwb-*
+- name: relative-color
+  files:
+  - relative-*

@@ -1,0 +1,114 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tabs_api.mojom;
+
+import "chrome/browser/ui/webui/tabs/tabs.mojom";
+import "mojo/public/mojom/base/empty.mojom";
+import "mojo/public/mojom/base/error.mojom";
+import "url/mojom/url.mojom";
+
+// References a tab object. The id can refer to different types of underlying
+// resource. The |type| field can be used to differentiate between the type
+// of underlying resources.
+struct TabId {
+  // The type of object referenced by the id.
+  enum Type {
+    // An unknown type. This will never be returned by the service and usually
+    // indicates an invalid argument from the client.
+    kUnknown,
+    // A content tab.
+    kContent,
+    // A collection of tabs.
+    kCollection,
+  };
+
+  // An opaque string that uniquely identifies the underlying resource. This
+  // id will be unique across all resource types. Users should not try to
+  // extrapolate any sort of pattern from this string.
+  string id;
+
+  // The type of resource referenced by this id.
+  Type type;
+};
+
+struct Tab {
+  TabId id;
+  string title;
+  url.mojom.Url url;
+
+  // TODO(crbug.com/414630734). The favicon should be typemapped to ImageModel
+  // in c++. Leave this as a data uri for now.
+  url.mojom.Url favicon_url;
+
+  array<tabs.mojom.TabAlertState> alert_states;
+  tabs.mojom.TabNetworkState network_state;
+};
+
+// Position is an ephemeral object that should not be saved nor act as an
+// identifier. It is purely used in this API to determine the position within
+// the TabstripModel.
+struct Position {
+  // TODO (crbug.com/412935316). Create a generic id that represents the parent
+  // collection id.
+  uint32 index;
+};
+
+// A snapshot of the current tabs in the tab strip.
+struct TabsSnapshot {
+  array<Tab> tabs;
+  // Updates to tabs would be sent through this update stream. Clients may
+  // subscribe to this stream to receive update events.
+  pending_receiver<TabsObserver> stream;
+};
+
+// The TabStripService is an object that lives alongside the
+// TabstripModel. It acts as the bridge between the model and any UI Dialog
+// or client.
+interface TabStripService {
+  // Gets the current state of the tab tree. This also returns a stream of
+  // future update events. Clients can implement the |TabsObserver| interface
+  // and receive all future updates from the snapshot. Note that all messages
+  // since the snapshot will be present in the stream, even if the client
+  // does not immediately register to the update stream.
+  [Sync]
+  GetTabs() => result<TabsSnapshot, mojo_base.mojom.Error>;
+
+  // Get a single tab.
+  [Sync]
+  GetTab(TabId id) => result<Tab, mojo_base.mojom.Error>;
+
+  // Creates a new tab.
+  // Position specifies the location of the Tab after creation. If position is
+  // empty, the new tab will be appended to the end of the Tabstrip.
+  // Url specifies what is loaded in the Tab. If url is empty, then the new
+  // tab-page is loaded instead.
+  // The newly created tab is immediately activated.
+  [Sync]
+  CreateTabAt(Position? pos, url.mojom.Url? url)
+      => result<Tab, mojo_base.mojom.Error>;
+
+  // Closes a list of tabs. The accepted tab types are content and collection
+  // types. All the provided IDs must exist. If an ID could not be found, the
+  // invocation will be rejected with a |Code.kNotFound| error.
+  // If the method call succeeds, all of the tabs will have been closed.
+  [Sync]
+  CloseTabs(array<TabId> id)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Activates a tab. The only accepted id type for this method are |kContent|
+  // ids.
+  [Sync]
+  ActivateTab(TabId id)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+};
+
+// TODO (crbug.com/412955607)
+// TabsObserver is not a CheckedObserver. There is a potential UaF if the
+// observer list attempts to call a destroyed TabsObserver that hasn't removed
+// itself from the list.
+interface TabsObserver {
+  // TODO (crbug.com/411134070). Add in missing TabData.
+  OnTabsCreated(array<Position> pos);
+};

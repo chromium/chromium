@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <stdint.h>
 
@@ -41,13 +37,14 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -213,8 +210,6 @@ class ReadWriteWaiter {
 
 class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
  public:
-  ~DirectSocketsTcpBrowserTest() override = default;
-
   GURL GetTestOpenPageURL() {
     return embedded_test_server()->GetURL("/direct_sockets/open.html");
   }
@@ -292,7 +287,6 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{blink::features::kDirectSockets};
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;
 
   std::unique_ptr<ContentBrowserClient> client_;
@@ -459,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnReadError) {
 
   const std::string async_script =
       "readTcpOnError(socket, /*expected_read_success=*/false);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   {
     // Simulate pipe shutdown on read error. Read requests must reject.
@@ -467,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnReadError) {
     mock_network_context.get_consumer_complement().reset();
   }
 
-  EXPECT_THAT(future->Get(), ::testing::HasSubstr("readTcpOnError succeeded."));
+  EXPECT_THAT(future.Get(), ::testing::HasSubstr("readTcpOnError succeeded."));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnPeerClosed) {
@@ -478,7 +473,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnPeerClosed) {
 
   const std::string async_script =
       "readTcpOnError(socket, /*expected_read_success=*/true);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   {
     // Simulate pipe shutdown on peer closed. Read requests must resolve with
@@ -487,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnPeerClosed) {
     mock_network_context.get_consumer_complement().reset();
   }
 
-  EXPECT_THAT(future->Get(), ::testing::HasSubstr("readTcpOnError succeeded."));
+  EXPECT_THAT(future.Get(), ::testing::HasSubstr("readTcpOnError succeeded."));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnWriteError) {
@@ -497,7 +493,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnWriteError) {
   ConnectJsSocket();
 
   const std::string async_script = "writeTcpOnError(socket);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   {
     // Simulate pipe shutdown on write error.
@@ -505,8 +502,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnWriteError) {
     mock_network_context.get_producer_complement().reset();
   }
 
-  EXPECT_THAT(future->Get(),
-              ::testing::HasSubstr("writeTcpOnError succeeded."));
+  EXPECT_THAT(future.Get(), ::testing::HasSubstr("writeTcpOnError succeeded."));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
@@ -517,13 +513,14 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
   ConnectJsSocket();
 
   const std::string async_script = "readWriteTcpOnError(socket);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   mock_network_context.get_observer().reset();
   mock_network_context.get_consumer_complement().reset();
   mock_network_context.get_producer_complement().reset();
 
-  EXPECT_THAT(future->Get(),
+  EXPECT_THAT(future.Get(),
               ::testing::HasSubstr("readWriteTcpOnError succeeded."));
 }
 
@@ -536,7 +533,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
 
   const std::string async_script =
       "waitForClosedPromise(socket, /*expected_closed_result=*/false);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   {
     mock_network_context.get_observer()->OnReadError(net::ERR_UNEXPECTED);
@@ -545,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
     mock_network_context.get_observer()->OnWriteError(net::ERR_UNEXPECTED);
   }
 
-  EXPECT_THAT(future->Get(),
+  EXPECT_THAT(future.Get(),
               ::testing::HasSubstr("waitForClosedPromise succeeded."));
 }
 
@@ -559,9 +557,10 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
   const std::string async_script =
       "waitForClosedPromise(socket, /*expected_closed_result=*/true, "
       "/*cancel_reader=*/true, /*close_writer=*/true);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
-  EXPECT_THAT(future->Get(),
+  EXPECT_THAT(future.Get(),
               ::testing::HasSubstr("waitForClosedPromise succeeded."));
 }
 
@@ -575,13 +574,14 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
   const std::string async_script =
       "waitForClosedPromise(socket, /*expected_closed_result=*/true, "
       "/*cancel_reader=*/false, /*close_writer=*/true);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   // Simulate peer closed event.
   mock_network_context.get_observer()->OnReadError(net::OK);
   mock_network_context.get_consumer_complement().reset();
 
-  EXPECT_THAT(future->Get(),
+  EXPECT_THAT(future.Get(),
               ::testing::HasSubstr("waitForClosedPromise succeeded."));
 }
 
@@ -709,11 +709,11 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, ErrorOnRemoteReset) {
     })();
   )"));
 
-  auto future = GetAsyncJsRunner()->RunScript(
+  base::test::TestFuture<std::string> future = GetAsyncJsRunner()->RunScript(
       test::WrapAsync("return socket.closed.catch(() => 'ok')"));
   mock_network_context.ResetSocketReceiver();
 
-  ASSERT_EQ("ok", future->Get());
+  ASSERT_EQ("ok", future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, Ipv6Only) {
@@ -745,12 +745,12 @@ class NoCoiPermissionIsolatedWebAppContentBrowserClient
       const url::Origin& isolated_app_origin)
       : IsolatedWebAppContentBrowserClient(isolated_app_origin) {}
 
-  std::optional<blink::ParsedPermissionsPolicy>
+  std::optional<network::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
       WebContents* web_contents,
       const url::Origin& app_origin) override {
-    return {{blink::ParsedPermissionsPolicyDeclaration(
-        blink::mojom::PermissionsPolicyFeature::kDirectSockets,
+    return {{network::ParsedPermissionsPolicyDeclaration(
+        network::mojom::PermissionsPolicyFeature::kDirectSockets,
         /*allowed_origins=*/{},
         /*self_if_matches=*/app_origin,
         /*matches_all_origins=*/false, /*matches_opaque_src=*/false)}};

@@ -76,7 +76,20 @@ int WebSocketHttp3HandshakeStream::InitializeStream(
   priority_ = priority;
   net_log_ = net_log;
   request_time_ = base::Time::Now();
-  return OK;
+
+  int ret = OK;
+  if (!can_send_early) {
+    ret = session_->WaitForHandshakeConfirmation(
+        base::BindOnce(&WebSocketHttp3HandshakeStream::OnHandshakeConfirmed,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+  return ret;
+}
+
+void WebSocketHttp3HandshakeStream::OnHandshakeConfirmed(
+    CompletionOnceCallback callback,
+    int rv) {
+  std::move(callback).Run(rv);
 }
 
 int WebSocketHttp3HandshakeStream::SendRequest(
@@ -288,7 +301,8 @@ void WebSocketHttp3HandshakeStream::OnHeadersReceived(
   // Do not store SSLInfo in the response here, HttpNetworkTransaction will take
   // care of that part.
   http_response_info_->was_alpn_negotiated = true;
-  http_response_info_->response_time = base::Time::Now();
+  http_response_info_->response_time =
+      http_response_info_->original_response_time = base::Time::Now();
   http_response_info_->request_time = request_time_;
   http_response_info_->connection_info = HttpConnectionInfo::kHTTP2;
   http_response_info_->alpn_negotiated_protocol =

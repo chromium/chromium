@@ -11,46 +11,47 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
-#include "chrome/browser/webauthn/unexportable_key_utils.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "chrome/browser/webauthn/local_authentication_token.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/global_routing_id.h"
 #include "crypto/user_verifying_key.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/network_context_factory.h"
-#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/common/chrome_version.h"
-#include "crypto/scoped_lacontext.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+class GaiaId;
+
+namespace base {
+class ElapsedTimer;
+}
 
 namespace crypto {
 class RefCountedUserVerifyingSigningKey;
 }  // namespace crypto
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class WebAuthNDialogController;
-}
+class ActiveSessionAuthController;
+}  // namespace ash
 #endif
-
-#if BUILDFLAG(IS_MAC)
-namespace device::enclave {
-class ICloudRecoveryKey;
-}  // namespace device::enclave
-#endif  // BUILDFLAG(IS_MAC)
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -75,6 +76,10 @@ namespace trusted_vault {
 struct GpmPinMetadata;
 class RecoveryKeyStoreConnection;
 class TrustedVaultAccessTokenFetcherFrontend;
+
+#if BUILDFLAG(IS_MAC)
+class ICloudRecoveryKey;
+#endif  // BUILDFLAG(IS_MAC)
 }  // namespace trusted_vault
 
 // EnclaveManager stores and manages the passkey enclave state. One instance
@@ -119,17 +124,38 @@ class EnclaveManager : public EnclaveManagerInterface {
     // The RenderFrameHost from which the request originates.
     content::GlobalRenderFrameHostId render_frame_host_id;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     std::variant<raw_ptr<ash::WebAuthNDialogController>,
                  raw_ptr<ash::ActiveSessionAuthController>>
         dialog_controller;
 #endif
 
-#if BUILDFLAG(IS_MAC)
-    // An optional LAcontext to pass to apple keychain operations.
-    std::optional<crypto::ScopedLAContext> lacontext;
-#endif  // BUILDFLAG(IS_MAC)
+    // An optional auth context. Currently only used to pass LAcontext to Apple
+    // Keychain operations.
+    std::optional<webauthn::LocalAuthenticationToken> local_auth_token;
   };
+
+  // These values are detailed failure reasons. They are emitted whenever PIN
+  // renewal fails and give detailed information about why the attempt failed.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(PinRenewalFailureCause)
+  enum class PinRenewalFailureCause {
+    kDuringDownload = 1,
+    kGettingAccessToken = 2,
+    kEnclaveRequest1 = 3,
+    kEnclaveRequest2 = 4,
+    kEnclaveResponse1 = 5,
+    kEnclaveResponse2 = 6,
+    kRKSUpload = 7,
+    kJoiningToDomain = 8,
+    kSecurityDomainReportsNoPin = 9,
+    kSecurityDomainReset = 10,
+
+    kMaxValue = kSecurityDomainReset,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:PinRenewalFailureCauseEnum)
 
   EnclaveManager(
       const base::FilePath& base_dir,
@@ -180,7 +206,14 @@ class EnclaveManager : public EnclaveManagerInterface {
   // Adds the current device, and a GPM PIN, to the security domain. Only valid
   // to call after `StoreKeys` has been called and thus `has_pending_keys`
   // returns true.
-  void AddDeviceAndPINToAccount(std::string pin, Callback callback);
+  // `previous_pin_public_key` must be set if the PIN is replacing an existing
+  // GPM PIN.
+  void AddDeviceAndPINToAccount(
+      std::string pin,
+      std::optional<std::string> previous_pin_public_key,
+      Callback callback);
+  // Set a PIN on an account that doesn't currently have one.
+  void SetPIN(std::string pin, std::string rapt, Callback callback);
   // Change the GPM PIN on the account. If a RAPT (Reauthentication Proof Token)
   // is given then it will be used, otherwise the UV key will be used, causing
   // system UI to appear to verify the user.
@@ -192,7 +225,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   // immediately after enrollment while we still have the security domain secret
   // around.
   void AddICloudRecoveryKey(
-      std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key,
+      std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_recovery_key,
       Callback callback);
 #endif  // BUILDFLAG(IS_MAC)
   // Send a request to the enclave to delete the registration for the current
@@ -275,7 +308,7 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   // This function is called by the MagicArch integration when the user
   // successfully completes recovery.
-  void StoreKeys(const std::string& gaia_id,
+  void StoreKeys(const GaiaId& gaia_id,
                  std::vector<std::vector<uint8_t>> keys,
                  int last_key_version);
 
@@ -288,7 +321,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   // `on_stop` when stopped. Otherwise return false.
   bool RunWhenStoppedForTesting(base::OnceClosure on_stop);
 
-  webauthn_pb::EnclaveLocalState& local_state_for_testing() const;
+  webauthn_pb::EnclaveLocalState& local_state_for_testing();
 
   // Release the cached HW and UV key references.
   void ClearCachedKeysForTesting();
@@ -302,6 +335,9 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   // Toggle invariant checks.
   static void EnableInvariantChecksForTesting(bool enable);
+
+  // Check whether the GPM PIN Vault should be renewed, and do so if needed.
+  void ConsiderPinRenewalForTesting();
 
   unsigned renewal_checks_for_testing() const;
   unsigned renewal_attempts_for_testing() const;
@@ -319,6 +355,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   class IdentityObserver;
   struct PendingAction;
   friend class StateMachine;
+  FRIEND_TEST_ALL_PREFIXES(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey);
 
   // Starts a `StateMachine` to process the current request.
   void Act();
@@ -375,6 +412,16 @@ class EnclaveManager : public EnclaveManagerInterface {
   void ConsiderPinRenewal();
   void OnRenewalComplete(bool success);
 
+  // Returns true if |state| indicates that the security domain has been reset,
+  // i.e. that the local Chrome state no longer matches what's on the security
+  // domain.
+  bool IsSecurityDomainReset(
+      const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
+          state);
+
+  // Called when the OSCrypt encryptor is available.
+  void OnOsCryptReady(os_crypt_async::Encryptor encryptor, bool result);
+
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   device::NetworkContextFactory network_context_factory_;
@@ -400,6 +447,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   std::unique_ptr<StateMachine> state_machine_;
   std::vector<base::OnceClosure> load_callbacks_;
   std::deque<std::unique_ptr<PendingAction>> pending_actions_;
+  base::OneShotTimer load_timer_;
   base::RepeatingTimer renewal_timer_;
   unsigned renewal_checks_ = 0;
   unsigned renewal_attempts_ = 0;
@@ -417,9 +465,19 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   unsigned store_keys_count_ = 0;
 
+  // Timer for recording a metric measuring the delay to load the Enclave
+  // state.
+  std::unique_ptr<base::ElapsedTimer> load_duration_timer_;
+
   base::ObserverList<Observer> observer_list_;
 
+  std::optional<os_crypt_async::Encryptor> encryptor_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::CallbackListSubscription os_crypt_subscription_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   base::WeakPtrFactory<EnclaveManager> weak_ptr_factory_{this};
 };
 

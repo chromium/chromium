@@ -7,6 +7,12 @@
 
 class PrefService;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. If entries are added, kMaxValue should
+// be updated. Keep in sync with the NearbyShareError UMA enum defined in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyShareEnabledState)
 enum class NearbyShareEnabledState {
   kEnabledAndOnboarded = 0,
   kEnabledAndNotOnboarded = 1,
@@ -15,6 +21,7 @@ enum class NearbyShareEnabledState {
   kDisallowedByPolicy = 4,
   kMaxValue = kDisallowedByPolicy
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyShareEnabledState)
 
 NearbyShareEnabledState GetNearbyShareEnabledState(PrefService* pref_service);
 

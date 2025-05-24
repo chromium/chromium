@@ -11,11 +11,11 @@
 #include "base/functional/callback_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-ExtensionInstallPromptTestHelper::ExtensionInstallPromptTestHelper() {}
+ExtensionInstallPromptTestHelper::ExtensionInstallPromptTestHelper() = default;
 ExtensionInstallPromptTestHelper::ExtensionInstallPromptTestHelper(
     base::OnceClosure quit_closure)
     : quit_closure_(std::move(quit_closure)) {}
-ExtensionInstallPromptTestHelper::~ExtensionInstallPromptTestHelper() {}
+ExtensionInstallPromptTestHelper::~ExtensionInstallPromptTestHelper() = default;
 
 ExtensionInstallPrompt::DoneCallback
 ExtensionInstallPromptTestHelper::GetCallback() {

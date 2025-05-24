@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/overloaded.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -30,7 +29,7 @@ using ::attribution_reporting::mojom::SourceRegistrationError;
 
 bool DestinationsValid(const DestinationSet::Destinations& destinations) {
   return !destinations.empty() && destinations.size() <= kMaxDestinations &&
-         base::ranges::all_of(destinations, &IsSitePotentiallySuitable);
+         std::ranges::all_of(destinations, &IsSitePotentiallySuitable);
 }
 
 }  // namespace

@@ -313,7 +313,7 @@ public class AwImeTest extends AwParameterizedTest {
         DOMUtils.clickNode(
                 webContents,
                 "input_text",
-                /* goThroughAndroidRootView= */ true,
+                /* goThroughRootAndroidView= */ true,
                 /* shouldScrollIntoView= */ false);
 
         CriteriaHelper.pollInstrumentationThread(

@@ -35,7 +35,7 @@ void MockDataTypeProcessor::GetLocalChanges(size_t max_entries,
                                             GetLocalChangesCallback callback) {
   get_local_changes_call_count_++;
 
-  // Truncation may be needed due to |max_entries|.
+  // Truncation may be needed due to `max_entries`.
   CommitRequestDataList remaining_changes;
   if (commit_request_.size() > max_entries) {
     for (size_t i = max_entries; i < commit_request_.size(); ++i) {

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 class Profile;
 
@@ -19,7 +18,7 @@ class Profile;
 //     signin::GetSigninScopedDeviceId(profile->GetPrefs());
 std::string GetSigninScopedDeviceIdForProfile(Profile* profile);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Helper method. The device ID should generally be obtained through
 // GetSigninScopedDeviceIdForProfile().

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,28 +22,38 @@ import android.os.Build.VERSION_CODES;
 import android.util.SparseIntArray;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -87,6 +98,8 @@ public class MultiWindowUtilsUnitTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
             new AutomotiveContextWrapperTestRule();
@@ -112,15 +125,19 @@ public class MultiWindowUtilsUnitTest {
     private Boolean mOverrideOpenInNewWindowSupported;
 
     @Mock TabModelSelector mTabModelSelector;
+    @Mock TabGroupModelFilter mTabGroupModelFilter;
+    @Mock ObservableSupplier<TabModel> mTabModelSupplier;
     @Mock TabModel mNormalTabModel;
     @Mock TabModel mIncognitoTabModel;
     @Mock HomepageManager mHomepageManager;
-    @Mock DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock AppHeaderState mAppHeaderState;
+    @Mock Tab mTab1;
+    @Mock Tab mTab2;
+    @Mock Tab mTab3;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mUtils =
                 new MultiWindowUtils() {
                     @Override
@@ -167,8 +184,10 @@ public class MultiWindowUtilsUnitTest {
         when(mHomepageManager.getHomepageGurl()).thenReturn(NTP_GURL);
         HomepageManager.setInstanceForTesting(mHomepageManager);
 
-        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(mAppHeaderState);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
+        when(mTabModelSupplier.get()).thenReturn(mNormalTabModel);
     }
 
     @After
@@ -325,6 +344,57 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
+    public void
+            testHasAtMostOneTabGroupWithHomepageEnabled_OneTabGroupAndNoOtherTabs_HasCustomHomepage() {
+        when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(true);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(3);
+        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(3);
+        when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
+        assertTrue(
+                "Should return true with one tab group and custom homepage.",
+                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(
+                        mTabModelSelector, mTabGroupModelFilter));
+    }
+
+    @Test
+    public void
+            testHasAtMostOneTabWithHomepageEnabled_OneTabGroupAndNoOtherTabs_NoCustomHomepage() {
+        when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(false);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(3);
+        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(3);
+        when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
+        assertFalse(
+                "Should return true with one tab group and custom homepage.",
+                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(
+                        mTabModelSelector, mTabGroupModelFilter));
+    }
+
+    @Test
+    public void testHasAtMostOneTabWithHomepageEnabled_WithMoreThanOneTabGroup_HasCustomHomepage() {
+        when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(true);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(4);
+        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(3);
+        when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
+        assertFalse(
+                "Should return false for multiple tabs.",
+                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(
+                        mTabModelSelector, mTabGroupModelFilter));
+    }
+
+    @Test
+    public void testHasAtMostOneTabWithHomepageEnabled_WithMoreThanOneTabGroup_NoCustomHomepage() {
+        when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(false);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(4);
+        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(3);
+        when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
+        assertFalse(
+                "Should return false for multiple tabs.",
+                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(
+                        mTabModelSelector, mTabGroupModelFilter));
+    }
+    ;
+
+    @Test
     public void testGetInstanceCount() {
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
@@ -368,7 +438,7 @@ public class MultiWindowUtilsUnitTest {
         int instanceId = MultiWindowUtils.getInstanceIdForViewIntent(true);
         assertEquals(
                 "The default instance ID should be returned when a new instance is preferred.",
-                MultiWindowUtils.INVALID_INSTANCE_ID,
+                TabWindowManager.INVALID_WINDOW_ID,
                 instanceId);
 
         // Existing instance preferred.
@@ -446,9 +516,9 @@ public class MultiWindowUtilsUnitTest {
 
         int instanceId = MultiWindowUtils.getInstanceIdForLinkIntent(mock(Activity.class));
         assertEquals(
-                "Instance ID for link intent should be INVALID_INSTANCE_ID when fewer than the max"
+                "Instance ID for link intent should be INVALID_WINDOW_ID when fewer than the max"
                         + " number of instances are open.",
-                MultiWindowUtils.INVALID_INSTANCE_ID,
+                TabWindowManager.INVALID_WINDOW_ID,
                 instanceId);
     }
 
@@ -474,13 +544,13 @@ public class MultiWindowUtilsUnitTest {
 
         // Assume that the histograms are attempted to be recorded on a cold start of the app.
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mDesktopWindowStateProvider,
+                mDesktopWindowStateManager,
                 InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
                 /* isColdStart= */ true);
 
         // Assume that the histograms are attempted to be recorded on a subsequent warm start.
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mDesktopWindowStateProvider,
+                mDesktopWindowStateManager,
                 InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
                 /* isColdStart= */ false);
 
@@ -533,7 +603,7 @@ public class MultiWindowUtilsUnitTest {
                                             + HISTOGRAM_DESKTOP_WINDOW_COUNT_NEW_INSTANCE_SUFFIX)
                             .build();
             MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                    mDesktopWindowStateProvider, type, /* isColdStart= */ true);
+                    mDesktopWindowStateManager, type, /* isColdStart= */ true);
             watcher.assertExpected();
         }
     }
@@ -581,7 +651,7 @@ public class MultiWindowUtilsUnitTest {
                                             + HISTOGRAM_DESKTOP_WINDOW_COUNT_EXISTING_INSTANCE_SUFFIX)
                             .build();
             MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                    mDesktopWindowStateProvider, type, /* isColdStart= */ true);
+                    mDesktopWindowStateManager, type, /* isColdStart= */ true);
             watcher.assertExpected();
         }
     }
@@ -610,12 +680,76 @@ public class MultiWindowUtilsUnitTest {
         // Assume that the histograms are attempted to be recorded on a cold start of the app, not
         // in a desktop window.
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mDesktopWindowStateProvider,
+                mDesktopWindowStateManager,
                 InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
                 /* isColdStart= */ true);
 
         // Histograms should not be emitted.
         watcher.assertExpected();
+    }
+
+    @Test
+    public void testGetTabCountForRelaunchFromSharedPrefs() {
+        int windowId1 = 0;
+        int windowId2 = 1;
+        ChromeSharedPreferences.getInstance()
+                .writeInt(MultiWindowUtils.getTabCountForRelaunchKey(windowId1), 10);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(MultiWindowUtils.getTabCountForRelaunchKey(windowId2), 15);
+        assertEquals(10, MultiWindowUtils.getTabCountForRelaunchFromSharedPrefs(windowId1), 0.01);
+        assertEquals(15, MultiWindowUtils.getTabCountForRelaunchFromSharedPrefs(windowId2), 0.01);
+    }
+
+    @Test
+    public void testRecordTabCountForRelaunchWhenActivityPaused_MultiInstanceApi31Enabled() {
+        MultiWindowTestUtils.enableMultiInstance();
+        int windowId = 1;
+        testRecordTabCountForRelaunchWhenActivityPausedImpl(windowId);
+    }
+
+    @Test
+    public void testRecordTabCountForRelaunchWhenActivityPaused_MultiInstanceApi31Disabled() {
+        testRecordTabCountForRelaunchWhenActivityPausedImpl(/* windowId= */ 0);
+    }
+
+    private void testRecordTabCountForRelaunchWhenActivityPausedImpl(int windowId) {
+        String tabCountForRelaunchKey = MultiWindowUtils.getTabCountForRelaunchKey(windowId);
+
+        List<TabModel> models = Arrays.asList(mNormalTabModel, mIncognitoTabModel);
+        when(mTabModelSelector.getModels()).thenReturn(models);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+
+        // Test if recordTabCountForRelaunchWhenActivityPaused() returns the correct value for
+        // standard tabs.
+        when(mNormalTabModel.getCount()).thenReturn(2);
+        when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
+        when(mNormalTabModel.getTabAt(1)).thenReturn(mTab2);
+        when(mTab1.isNativePage()).thenReturn(false);
+        when(mTab1.getUrl()).thenReturn(TEST_GURL);
+        when(mTab2.isNativePage()).thenReturn(false);
+        when(mTab2.getUrl()).thenReturn(TEST_GURL);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
+        Assert.assertEquals(
+                /* expected= */ 2,
+                ChromeSharedPreferences.getInstance().readInt(tabCountForRelaunchKey));
+
+        // Test the case of adding a non-NTP tab to the tab model.
+        when(mNormalTabModel.getCount()).thenReturn(3);
+        when(mNormalTabModel.getTabAt(2)).thenReturn(mTab3);
+        when(mTab3.isNativePage()).thenReturn(false);
+        when(mTab3.getUrl()).thenReturn(TEST_GURL);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
+        Assert.assertEquals(
+                /* expected= */ 3,
+                ChromeSharedPreferences.getInstance().readInt(tabCountForRelaunchKey));
+
+        // Test the case of adding a NTP tab to the tab model.
+        when(mTab3.isNativePage()).thenReturn(true);
+        when(mTab3.getUrl()).thenReturn(NTP_GURL);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
+        Assert.assertEquals(
+                /* expected= */ 2,
+                ChromeSharedPreferences.getInstance().readInt(tabCountForRelaunchKey));
     }
 
     private void writeInstanceInfo(

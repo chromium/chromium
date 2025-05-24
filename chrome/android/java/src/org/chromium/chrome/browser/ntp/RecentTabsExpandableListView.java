@@ -9,12 +9,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ExpandableListView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
- * Customized ExpandableListView for the recent tabs page. This class handles tablet-specific
- * layout implementation.
+ * Customized ExpandableListView for the recent tabs page. This class handles tablet-specific layout
+ * implementation.
  */
+@NullMarked
 public class RecentTabsExpandableListView extends ExpandableListView {
     private static final int MAX_LIST_VIEW_WIDTH_DP = 550;
 

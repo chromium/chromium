@@ -34,8 +34,7 @@ NTSTATUS ServiceResolverThunk::ResolveTarget(const void* module,
       reinterpret_cast<void*>(module_image.GetProcAddress(function_name));
 
   if (!*address) {
-    NOTREACHED_IN_MIGRATION();
-    return STATUS_UNSUCCESSFUL;
+    NOTREACHED();
   }
 
   return STATUS_SUCCESS;

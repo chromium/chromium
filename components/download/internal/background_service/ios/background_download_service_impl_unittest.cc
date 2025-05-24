@@ -69,7 +69,7 @@ class MockBackgroundDownloadTaskHelper : public BackgroundDownloadTaskHelper {
 // Test fixture for BackgroundDownloadServiceImpl.
 class BackgroundDownloadServiceImplTest : public PlatformTest {
  protected:
-  BackgroundDownloadServiceImplTest() {}
+  BackgroundDownloadServiceImplTest() = default;
   ~BackgroundDownloadServiceImplTest() override = default;
 
   void SetUp() override {

@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 
 /** Class for a CompositorButton that uses tint instead of multiple drawable resources. */
 public class TintedCompositorButton extends CompositorButton {
-    private Context mContext;
+    private final Context mContext;
 
     private @ColorInt int mBackgroundDefaultTint;
     private @ColorInt int mBackgroundPressedTint;
@@ -39,8 +39,18 @@ public class TintedCompositorButton extends CompositorButton {
             float width,
             float height,
             StripLayoutViewOnClickHandler clickHandler,
-            @DrawableRes int resource) {
-        super(context, type, parentView, width, height, clickHandler);
+            StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
+            @DrawableRes int resource,
+            float clickSlopDp) {
+        super(
+                context,
+                type,
+                parentView,
+                width,
+                height,
+                clickHandler,
+                keyboardFocusHandler,
+                clickSlopDp);
         mContext = context;
         mResource = resource;
     }
@@ -107,13 +117,10 @@ public class TintedCompositorButton extends CompositorButton {
     }
 
     /**
-     * @return The tint (color value, NOT the resource Id) depending on the state of the button and
-     *         the tab (incognito or not).
-     * A set of Android resources to supply to the compositor.
-     * @param defaultTint           The default tint.
-     * @param pressedTint           The pressed tint.
-     * @param incognitoTint         The incognito tint.
-     * @param incognitoPressedTint  The incognito pressed tint.
+     * @param defaultTint The default tint.
+     * @param pressedTint The pressed tint.
+     * @param incognitoTint The incognito tint.
+     * @param incognitoPressedTint The incognito pressed tint.
      */
     public void setTint(
             @ColorInt int defaultTint,

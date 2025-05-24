@@ -7,7 +7,7 @@ package org.chromium.bytecode;
 import static org.objectweb.asm.ClassReader.EXPAND_FRAMES;
 import static org.objectweb.asm.Opcodes.ACC_ABSTRACT;
 import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
-import static org.objectweb.asm.Opcodes.ASM7;
+import static org.objectweb.asm.Opcodes.ASM9;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -45,7 +45,7 @@ class MethodCheckerClassAdapter extends ClassVisitor {
 
     public MethodCheckerClassAdapter(
             ArrayList<MethodDescription> methodsToCheck, ClassLoader jarClassLoader) {
-        super(ASM7);
+        super(ASM9);
         mMethodsToCheck = methodsToCheck;
         mJarClassLoader = jarClassLoader;
     }

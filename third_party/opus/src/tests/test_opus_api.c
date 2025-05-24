@@ -103,7 +103,7 @@ opus_int32 test_dec_api(void)
    for(c=0;c<4;c++)
    {
       i=opus_decoder_get_size(c);
-      if(((c==1||c==2)&&(i<=2048||i>1<<16))||((c!=1&&c!=2)&&i!=0))test_failed();
+      if(((c==1||c==2)&&(i<=2048||i>1<<18))||((c!=1&&c!=2)&&i!=0))test_failed();
       fprintf(stdout,"    opus_decoder_get_size(%d)=%d ...............%s OK.\n",c,i,i>0?"":"....");
       cfgs++;
    }
@@ -367,7 +367,7 @@ opus_int32 test_msdec_api(void)
       for(b=-1;b<4;b++)
       {
          i=opus_multistream_decoder_get_size(a,b);
-         if(((a>0&&b<=a&&b>=0)&&(i<=2048||i>((1<<16)*a)))||((a<1||b>a||b<0)&&i!=0))test_failed();
+         if(((a>0&&b<=a&&b>=0)&&(i<=2048||i>((1<<18)*a)))||((a<1||b>a||b<0)&&i!=0))test_failed();
          fprintf(stdout,"    opus_multistream_decoder_get_size(%2d,%2d)=%d %sOK.\n",a,b,i,i>0?"":"... ");
          cfgs++;
       }
@@ -1081,7 +1081,7 @@ opus_int32 test_enc_api(void)
    for(c=0;c<4;c++)
    {
       i=opus_encoder_get_size(c);
-      if(((c==1||c==2)&&(i<=2048||i>1<<17))||((c!=1&&c!=2)&&i!=0))test_failed();
+      if(((c==1||c==2)&&(i<=2048||i>1<<18))||((c!=1&&c!=2)&&i!=0))test_failed();
       fprintf(stdout,"    opus_encoder_get_size(%d)=%d ...............%s OK.\n",c,i,i>0?"":"....");
       cfgs++;
    }

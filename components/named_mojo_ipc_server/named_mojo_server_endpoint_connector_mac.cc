@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
+
 #include <bsm/libbsm.h>
 #include <mach/kern_return.h>
 #include <mach/message.h>
@@ -9,7 +11,7 @@
 
 #include <memory>
 
-#include "base/apple/dispatch_source_mach.h"
+#include "base/apple/dispatch_source.h"
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/functional/bind.h"
@@ -20,7 +22,6 @@
 #include "base/threading/sequence_bound.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
-#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
@@ -52,7 +53,7 @@ class NamedMojoServerEndpointConnectorMac final
 
   // Note: |server_endpoint_| must outlive |dispatch_source_|.
   mojo::PlatformChannelServerEndpoint server_endpoint_;
-  std::unique_ptr<base::apple::DispatchSourceMach> dispatch_source_;
+  std::unique_ptr<base::apple::DispatchSource> dispatch_source_;
 };
 
 NamedMojoServerEndpointConnectorMac::NamedMojoServerEndpointConnectorMac(
@@ -120,7 +121,7 @@ bool NamedMojoServerEndpointConnectorMac::TryStart() {
   }
 
   server_endpoint_ = std::move(server_endpoint);
-  dispatch_source_ = std::make_unique<base::apple::DispatchSourceMach>(
+  dispatch_source_ = std::make_unique<base::apple::DispatchSource>(
       options_.server_name.c_str(), port(), ^{
         HandleRequest();
       });

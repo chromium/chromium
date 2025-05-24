@@ -29,6 +29,10 @@ BASE_DECLARE_FEATURE(kCctAutoTranslate);
 // clicks "Open language settings" in the Translate bubble menu.
 BASE_DECLARE_FEATURE(kTranslateOpenSettings);
 
+// When enabled this feature will disable the GeoLanguage model and default the
+// user to the fluent language model.
+BASE_DECLARE_FEATURE(kDisableGeoLanguageModel);
+
 }  // namespace language
 
 #endif  // COMPONENTS_LANGUAGE_CORE_COMMON_LANGUAGE_EXPERIMENTS_H_

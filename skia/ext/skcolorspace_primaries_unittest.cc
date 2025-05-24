@@ -38,7 +38,7 @@ TEST(SkiaUtils, PrimariesD65) {
 
 TEST(SkiaUtils, PrimariesD50) {
   // ProPhoto (which has a D50 white point)
-  const auto pro_photo = SkNamedPrimariesExt::kProPhotoRGB;
+  const auto pro_photo = SkNamedPrimaries::kProPhotoRGB;
 
   // Convert primaries to a matrix.
   skcms_Matrix3x3 pro_photo_matrix;

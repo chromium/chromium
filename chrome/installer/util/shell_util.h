@@ -9,8 +9,6 @@
 #ifndef CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
 #define CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
 
-#include <windows.h>
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -26,6 +24,8 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/cstring_view.h"
+#include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
 
 class RegistryEntry;
@@ -504,7 +504,12 @@ class ShellUtil {
 
   // Returns the DefaultState of Chrome for |protocol|.
   static DefaultState GetChromeDefaultProtocolClientState(
-      const std::wstring& protocol);
+      base::wcstring_view protocol);
+
+  // Returns the DefaultState of Chrome for `file_extension`. `file_extension`
+  // must include a leading `.`, e.g., ".pdf".
+  static DefaultState GetChromeDefaultFileHandlerState(
+      base::wcstring_view file_extension);
 
   // Make Chrome the default browser. This function works by going through
   // the url protocols and file associations that are related to general
@@ -542,6 +547,22 @@ class ShellUtil {
   //
   // `chrome_exe` The chrome.exe path to register as default browser.
   static bool ShowMakeChromeDefaultSystemUI(const base::FilePath& chrome_exe);
+
+  // Opens the Windows settings dialog allowing the user to choose the default
+  // app for the given `file_extension`. It must be one of the extensions in
+  // `kPotentialFileAssociations`. The dialog will be parented to `parent_hwnd`.
+  // It reads:
+  //   * Windows 10: "How do you want to open `file_extension` files from now
+  //     on?"
+  //   * Windows 11: "Select a default app for `file_extension` files"
+  // If opening the dialog fails, falls back to opening:
+  //   * Windows 10: The main "Choose default apps by file type" page
+  //   * Windows 11: The "Default apps" settings page for `chrome_exe`
+  // Returns true if any dialog was launched, false otherwise.
+  static bool ShowSetDefaultForFileExtensionSystemUI(
+      const base::FilePath& chrome_exe,
+      base::wcstring_view file_extension,
+      HWND parent_hwnd);
 
   // Make Chrome the default application for a protocol.
   // chrome_exe: The chrome.exe path to register as default browser.

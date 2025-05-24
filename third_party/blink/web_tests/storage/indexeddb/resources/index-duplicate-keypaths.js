@@ -22,7 +22,7 @@ function resultShouldBe(v) {
 };
 
 function storeCollidedStoreIndexData() {
-    var trans = db.transaction('collideWithIndex', 'readwrite', {durability: 'relaxed'});
+    var trans = db.transaction('collideWithIndex', 'readwrite');
 
     objectStore = trans.objectStore('collideWithIndex');
     index = objectStore.index('foo');
@@ -59,7 +59,7 @@ function testCollideAutoIncrement()
 
 function storeCollidedAutoIncrementData()
 {
-    var trans = db.transaction('collideWithAutoIncrement', 'readwrite', {durability: 'relaxed'});
+    var trans = db.transaction('collideWithAutoIncrement', 'readwrite');
 
     objectStore = trans.objectStore('collideWithAutoIncrement');
     index = objectStore.index('foo');

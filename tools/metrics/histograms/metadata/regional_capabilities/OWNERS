@@ -1,0 +1,4 @@
+# Prefer sending CLs to the owners listed below.
+# Use chromium-metrics-reviews@google.com as a backup.
+ender@google.com
+alexilin@chromium.org

@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
@@ -25,8 +26,8 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/garbage_collect_storage_partitions_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/garbage_collect_storage_partitions_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
@@ -42,7 +43,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -103,8 +103,8 @@ void GetBundlePathFromCommandLine(
             }
 
             return IsolatedWebAppInstallSource::FromDevCommandLine(
-                IwaSourceBundleDevModeWithFileOp(absolute_path,
-                                                 kDefaultBundleDevFileOp));
+                IwaSourceBundleDevModeWithFileOp(
+                    absolute_path, IwaSourceBundleDevFileOp::kCopy));
           },
           std::move(switch_value)),
       std::move(callback));
@@ -165,15 +165,6 @@ void IsolatedWebAppInstallationManager::Start() {
   if (!HasIwaInstallSwitch(command_line)) {
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsWebAppsCrosapiEnabled()) {
-    // If Lacros manages Web Apps, then Ash only manages System Web Apps. Thus,
-    // do not attempt to install IWAs in Ash, because Lacros will take care of
-    // that.
-    return;
-  }
-#endif
 
   if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
     ReportInstallationResult(base::unexpected(
@@ -318,16 +309,16 @@ void IsolatedWebAppInstallationManager::
 // static
 IsolatedWebAppInstallSource
 IsolatedWebAppInstallationManager::CreateInstallSource(
-    absl::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
+    std::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
         source,
     InstallSurface surface) {
   switch (surface) {
     case InstallSurface::kDevUi:
-      return IsolatedWebAppInstallSource::FromDevUi(absl::visit(
+      return IsolatedWebAppInstallSource::FromDevUi(std::visit(
           base::Overloaded{
               [](base::FilePath path) -> IwaSourceDevModeWithFileOp {
                 return IwaSourceBundleDevModeWithFileOp(
-                    std::move(path), kDefaultBundleDevFileOp);
+                    std::move(path), IwaSourceBundleDevFileOp::kCopy);
               },
               [](const base::ScopedTempFile* temp_file)
                   -> IwaSourceDevModeWithFileOp {

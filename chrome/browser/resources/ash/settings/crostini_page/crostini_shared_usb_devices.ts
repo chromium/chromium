@@ -9,7 +9,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {ContainerInfo} from '../guest_os/guest_os_browser_proxy.js';
+import type {ContainerInfo} from '../guest_os/guest_os_browser_proxy.js';
 import {SettingsGuestOsSharedUsbDevicesElement} from '../guest_os/guest_os_shared_usb_devices.js';
 
 import {CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_GUEST_ID} from './crostini_browser_proxy.js';

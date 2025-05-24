@@ -10,9 +10,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -139,10 +139,14 @@ class CORE_EXPORT AnchorScope {
       case CSSPropertyID::kWidth:
       case CSSPropertyID::kMinWidth:
       case CSSPropertyID::kMaxWidth:
+      case CSSPropertyID::kMarginLeft:
+      case CSSPropertyID::kMarginRight:
         return Mode::kWidth;
       case CSSPropertyID::kHeight:
       case CSSPropertyID::kMinHeight:
       case CSSPropertyID::kMaxHeight:
+      case CSSPropertyID::kMarginTop:
+      case CSSPropertyID::kMarginBottom:
         return Mode::kHeight;
       default:
         return Mode::kNone;

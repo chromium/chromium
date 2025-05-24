@@ -597,13 +597,13 @@ suite('CrComponentsHelpBubbleTest', () => {
     const elements = getProgressIndicators();
     assertEquals(3, elements.length, 'there should be three elements');
     assertTrue(
-        elements.item(0)!.classList.contains('current-progress'),
+        elements.item(0).classList.contains('current-progress'),
         'element 0 should have current-progress class');
     assertTrue(
-        elements.item(1)!.classList.contains('total-progress'),
+        elements.item(1).classList.contains('total-progress'),
         'element 1 should have total-progress class');
     assertTrue(
-        elements.item(2)!.classList.contains('total-progress'),
+        elements.item(2).classList.contains('total-progress'),
         'element 2 should have total-progress class');
     assertBodyInMain();
 
@@ -632,10 +632,10 @@ suite('CrComponentsHelpBubbleTest', () => {
     const elements = getProgressIndicators();
     assertEquals(2, elements.length, 'there should be two elements');
     assertTrue(
-        elements.item(0)!.classList.contains('current-progress'),
+        elements.item(0).classList.contains('current-progress'),
         'element 0 should have current-progress class');
     assertTrue(
-        elements.item(1)!.classList.contains('total-progress'),
+        elements.item(1).classList.contains('total-progress'),
         'element 1 should have total-progress class');
 
     const titleElement = helpBubble.$.title;
@@ -656,10 +656,10 @@ suite('CrComponentsHelpBubbleTest', () => {
     const elements = getProgressIndicators();
     assertEquals(2, elements.length, 'there should be two elements');
     assertTrue(
-        elements.item(0)!.classList.contains('current-progress'),
+        elements.item(0).classList.contains('current-progress'),
         'element 0 should have current-progress class');
     assertTrue(
-        elements.item(1)!.classList.contains('current-progress'),
+        elements.item(1).classList.contains('current-progress'),
         'element 1 should have current-progress class');
   });
 
@@ -675,10 +675,10 @@ suite('CrComponentsHelpBubbleTest', () => {
     const elements = getProgressIndicators();
     assertEquals(2, elements.length, 'there should be two elements');
     assertTrue(
-        elements.item(0)!.classList.contains('total-progress'),
+        elements.item(0).classList.contains('total-progress'),
         'element 0 should have total-progress class');
     assertTrue(
-        elements.item(1)!.classList.contains('total-progress'),
+        elements.item(1).classList.contains('total-progress'),
         'element 1 should have total-progress class');
   });
 

@@ -9,7 +9,7 @@
 load("//lib/branches.star", "branches")
 
 lucicfg.check_version(
-    min = "1.43.13",
+    min = "1.44.1",
     message = "Update depot_tools",
 )
 
@@ -21,6 +21,7 @@ lucicfg.config(
     config_dir = "generated",
     tracked_files = [
         "builders-dev/*/*/*",
+        "builders-dev/*/*/*/*",
         "builders-dev/gn_args_locations.json",
         "luci/cr-buildbucket-dev.cfg",
         "luci/luci-analysis-dev.cfg",

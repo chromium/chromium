@@ -6,24 +6,33 @@ package org.chromium.android_webview;
 
 import android.graphics.Rect;
 import android.os.Build;
-import android.view.DisplayCutout;
 import android.view.View;
 import android.view.WindowInsets;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
 
 /**
  * Display cutout controller for WebView.
  *
- * This object should be constructed in WebView's constructor to support set listener logic for
+ * <p>This object should be constructed in WebView's constructor to support set listener logic for
  * Android P and above.
+ *
+ * <p>This controller is responsible for providing the values for the safe-area-insets CSS
+ * properties for WebViews that occupy the entire screen height and width. The safe-area-insets
+ * include the space for the display cutout as well as system bars.
+ *
+ * <p>To test the proper application of insets to web content, you can load a page such as
+ * https://dpogue.ca/safe-area-inset-test/ that uses safe-area-inset CSS properties in the WebView
+ * Shell app and toggle it to display in fullscreen.
  */
 @Lifetime.WebView
-@RequiresApi(Build.VERSION_CODES.P)
 public class AwDisplayCutoutController {
     private static final boolean DEBUG = false;
     private static final String TAG = "DisplayCutout";
@@ -56,10 +65,12 @@ public class AwDisplayCutoutController {
         public int right;
         public int bottom;
 
-        public Insets() {}
-
         public Insets(int left, int top, int right, int bottom) {
             set(left, top, right, bottom);
+        }
+
+        public Insets(androidx.core.graphics.Insets insets) {
+            set(insets.left, insets.top, insets.right, insets.bottom);
         }
 
         public Rect toRect(Rect rect) {
@@ -82,25 +93,40 @@ public class AwDisplayCutoutController {
         }
 
         @Override
-        public final boolean equals(Object o) {
+        public boolean equals(Object o) {
             if (!(o instanceof Insets)) return false;
             Insets i = (Insets) o;
             return left == i.left && top == i.top && right == i.right && bottom == i.bottom;
         }
 
         @Override
-        public final String toString() {
+        public String toString() {
             return "Insets: (" + left + ", " + top + ")-(" + right + ", " + bottom + ")";
         }
 
         @Override
-        public final int hashCode() {
+        public int hashCode() {
             return 3 * left + 5 * top + 7 * right + 11 * bottom;
         }
     }
 
-    private Delegate mDelegate;
+    private final Delegate mDelegate;
     private View mContainerView;
+    private final boolean mIncludeSystemBars;
+
+    /**
+     * Creates the {@link AwDisplayCutoutController} if required.
+     *
+     * <p>Display cutouts were added in Android P, this method returns null before that.
+     */
+    @Nullable
+    public static AwDisplayCutoutController maybeCreate(Delegate delegate, View containerView) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return new AwDisplayCutoutController(delegate, containerView);
+        } else {
+            return null;
+        }
+    }
 
     /**
      * Constructor for AwDisplayCutoutController.
@@ -108,19 +134,23 @@ public class AwDisplayCutoutController {
      * @param delegate The delegate.
      * @param containerView The container view (WebView).
      */
+    @RequiresApi(Build.VERSION_CODES.P)
     public AwDisplayCutoutController(Delegate delegate, View containerView) {
         mDelegate = delegate;
         mContainerView = containerView;
+        mIncludeSystemBars =
+                AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS);
         registerContainerView(containerView);
     }
 
     /**
      * Register a container view to listen to window insets.
      *
-     * Note that you do not need to register the containerView.
+     * <p>Note that you do not need to register the containerView.
      *
      * @param containerView A container View, such as fullscreen view.
      */
+    @RequiresApi(Build.VERSION_CODES.P)
     public void registerContainerView(View containerView) {
         if (DEBUG) Log.i(TAG, "registerContainerView");
         // For Android P~R, we set the listener in WebView's constructor.
@@ -129,19 +159,16 @@ public class AwDisplayCutoutController {
         // our logic, which seems like a natural behavior.
         // For Android S, WebViewChromium can get onApplyWindowInsets(WindowInsets) call, so we do
         // not need to set the listener.
-        // TODO(crbug.com/40699457): do not set listener and plumb WebViewChromium to handle
-        // onApplyWindowInsets in S and above.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) return;
+
         containerView.setOnApplyWindowInsetsListener(
-                new View.OnApplyWindowInsetsListener() {
-                    @Override
-                    public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                        // Ignore if this is not the current container view.
-                        if (view == mContainerView) {
-                            return AwDisplayCutoutController.this.onApplyWindowInsets(insets);
-                        } else {
-                            if (DEBUG) Log.i(TAG, "Ignoring onApplyWindowInsets on View: " + view);
-                            return insets;
-                        }
+                (view, insets) -> {
+                    // Ignore if this is not the current container view.
+                    if (view == mContainerView) {
+                        return AwDisplayCutoutController.this.onApplyWindowInsets(insets);
+                    } else {
+                        if (DEBUG) Log.i(TAG, "Ignoring onApplyWindowInsets on View: " + view);
+                        return insets;
                     }
                 });
     }
@@ -167,27 +194,24 @@ public class AwDisplayCutoutController {
     @VisibleForTesting
     public WindowInsets onApplyWindowInsets(final WindowInsets insets) {
         if (DEBUG) Log.i(TAG, "onApplyWindowInsets: " + insets.toString());
-        // TODO(crbug.com/40699457): add a throttling logic.
-        DisplayCutout cutout = insets.getDisplayCutout();
-        // DisplayCutout can be null if there is no notch, or layoutInDisplayCutoutMode is DEFAULT
-        // (before R) or consumed in the parent view.
-        if (cutout != null) {
-            Insets displayCutoutInsets =
-                    new Insets(
-                            cutout.getSafeInsetLeft(),
-                            cutout.getSafeInsetTop(),
-                            cutout.getSafeInsetRight(),
-                            cutout.getSafeInsetBottom());
-            onApplyWindowInsetsInternal(displayCutoutInsets);
+
+        int insetTypes = WindowInsetsCompat.Type.displayCutout();
+        if (mIncludeSystemBars) {
+            insetTypes |= WindowInsetsCompat.Type.systemBars();
         }
+
+        // TODO(crbug.com/40699457): add a throttling logic.
+        Insets safeArea =
+                new Insets(WindowInsetsCompat.toWindowInsetsCompat(insets).getInsets(insetTypes));
+        onApplyWindowInsetsInternal(safeArea);
+
         return insets;
     }
 
     /**
      * Call this when window insets are first applied or changed.
      *
-     * Similar to {@link onApplyWindowInsets(WindowInsets)}, but accepts
-     * Rect as input.
+     * <p>Similar to {@link #onApplyWindowInsets(WindowInsets)}, but accepts Rect as input.
      *
      * @param displayCutoutInsets Insets to store left, top, right, bottom insets.
      */

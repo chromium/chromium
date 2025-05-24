@@ -17,17 +17,10 @@ declare_args() {
     # of the Chromium version when is_chrome_branded is false.
     # devtools_grd_location is the location of the GRD file listing all DevTools
     # resources.
-    if (is_chrome_branded) {
-      devtools_root_location = "third_party/devtools-frontend-internal"
-      devtools_location = "$devtools_root_location/devtools-frontend/"
-      devtools_grd_location =
-          "$devtools_root_location/chrome_devtools_resources.grd"
-    } else {
-      devtools_root_location = "third_party/devtools-frontend/src"
-      devtools_location = "third_party/devtools-frontend/src/"
-      devtools_grd_location =
-          "$devtools_root_location/front_end/devtools_resources.grd"
-    }
+    devtools_root_location = "third_party/devtools-frontend/src"
+    devtools_location = "third_party/devtools-frontend/src/"
+    devtools_grd_location =
+        "$devtools_root_location/front_end/devtools_resources.grd"
   } else {
     # DevTools is building a standalone version
     devtools_location = ""

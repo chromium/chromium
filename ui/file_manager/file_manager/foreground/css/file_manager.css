@@ -2201,4 +2201,5 @@ files-tooltip:not(:defined) {
 
 #path-display-container {
   background-color: var(--cros-sys-app_base);
+  border-top: 1px solid var(--cros-sys-separator);
 }

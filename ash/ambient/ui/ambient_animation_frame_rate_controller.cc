@@ -211,7 +211,7 @@ void AmbientAnimationFrameRateController::TrySetNewTrackingAnimation() {
     return;
   }
 
-  tracking_animation_ = windows_to_throttle_.begin()->second;
+  tracking_animation_ = windows_to_throttle_.begin()->second.get();
   schedule_ = BuildSchedule(tracking_animation_.get());
   // Set |current_section_| to be |schedule_.end()| temporarily so that
   // FindCurrentSection() knows to start searching the new schedule from

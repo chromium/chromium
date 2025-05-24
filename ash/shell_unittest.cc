@@ -4,6 +4,7 @@
 
 #include "ash/shell.h"
 
+#include <algorithm>
 #include <memory>
 #include <queue>
 #include <vector>
@@ -40,26 +41,29 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/aura/window_observer.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/events_test_utils.h"
 #include "ui/events/test/test_event_handler.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/core/accelerator_filter.h"
+#include "ui/wm/core/focus_controller.h"
+#include "ui/wm/core/window_util.h"
 
 using aura::RootWindow;
 
@@ -120,6 +124,8 @@ void ExpectAllContainers() {
   EXPECT_TRUE(Shell::GetContainer(root_window,
                                   kShellWindowId_LockSystemModalContainer));
   EXPECT_TRUE(Shell::GetContainer(root_window, kShellWindowId_MenuContainer));
+  EXPECT_TRUE(Shell::GetContainer(
+      root_window, kShellWindowId_CaptureModeSearchResultsPanel));
   EXPECT_TRUE(Shell::GetContainer(root_window,
                                   kShellWindowId_DragImageAndTooltipContainer));
   EXPECT_TRUE(
@@ -136,15 +142,6 @@ void ExpectAllContainers() {
   // Phantom window is not a container.
   EXPECT_EQ(0u, container_ids.count(kShellWindowId_PhantomWindow));
   EXPECT_FALSE(Shell::GetContainer(root_window, kShellWindowId_PhantomWindow));
-}
-
-std::unique_ptr<views::WidgetDelegateView> CreateModalWidgetDelegate() {
-  auto delegate = std::make_unique<views::WidgetDelegateView>();
-  delegate->SetCanResize(true);
-  delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  delegate->SetOwnedByWidget(true);
-  delegate->SetTitle(u"Modal Window");
-  return delegate;
 }
 
 class SimpleMenuDelegate : public ui::SimpleMenuModel::Delegate {
@@ -167,6 +164,17 @@ class SimpleMenuDelegate : public ui::SimpleMenuModel::Delegate {
 
 class ShellTest : public AshTestBase {
  public:
+  static std::unique_ptr<views::WidgetDelegateView>
+  CreateModalWidgetDelegate() {
+    auto delegate = std::make_unique<views::WidgetDelegateView>(
+        views::WidgetDelegateView::CreatePassKey());
+    delegate->SetCanResize(true);
+    delegate->SetModalType(ui::mojom::ModalType::kSystem);
+    delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
+    delegate->SetTitle(u"Modal Window");
+    return delegate;
+  }
+
   void TestCreateWindow(views::Widget::InitParams::Type type,
                         bool always_on_top,
                         aura::Window* expected_container) {
@@ -248,7 +256,8 @@ TEST_F(ShellTest, CreateWindowWithPreferredSize) {
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   // Don't specify bounds, parent or context.
   {
-    auto delegate = std::make_unique<views::WidgetDelegateView>();
+    auto delegate = std::make_unique<views::WidgetDelegateView>(
+        views::WidgetDelegateView::CreatePassKey());
     delegate->SetPreferredSize(gfx::Size(400, 300));
     params.delegate = delegate.release();
   }
@@ -399,7 +408,7 @@ TEST_F(ShellTest, LockScreenClosesActiveMenu) {
 
   menu_runner->RunMenuAt(widget, nullptr, gfx::Rect(),
                          views::MenuAnchorPosition::kTopLeft,
-                         ui::MENU_SOURCE_MOUSE);
+                         ui::mojom::MenuSourceType::kMouse);
   LockScreenAndVerifyMenuClosed();
 }
 
@@ -442,9 +451,9 @@ TEST_F(ShellTest, TestPreTargetHandlerOrder) {
 
   ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
   ui::EventHandlerList::const_iterator cursor_filter =
-      base::ranges::find(handlers, shell->mouse_cursor_filter());
+      std::ranges::find(handlers, shell->mouse_cursor_filter());
   ui::EventHandlerList::const_iterator drag_drop =
-      base::ranges::find(handlers, shell_test_api.drag_drop_controller());
+      std::ranges::find(handlers, shell_test_api.drag_drop_controller());
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), drag_drop);
   EXPECT_GT(drag_drop, cursor_filter);
@@ -459,9 +468,9 @@ TEST_F(ShellTest, AcceleratorPreTargetHandlerOrder) {
 
   ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
   ui::EventHandlerList::const_iterator accelerator_tracker =
-      base::ranges::find(handlers, shell->accelerator_tracker());
+      std::ranges::find(handlers, shell->accelerator_tracker());
   ui::EventHandlerList::const_iterator accelerator_filter =
-      base::ranges::find(handlers, shell->accelerator_filter());
+      std::ranges::find(handlers, shell->accelerator_filter());
   EXPECT_NE(handlers.end(), accelerator_tracker);
   EXPECT_NE(handlers.end(), accelerator_filter);
   EXPECT_GT(accelerator_filter, accelerator_tracker);
@@ -481,13 +490,13 @@ TEST_F(ShellTest, TestAccessibilityHandlerOrder) {
   ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
 
   ui::EventHandlerList::const_iterator cursor_filter =
-      base::ranges::find(handlers, shell->mouse_cursor_filter());
+      std::ranges::find(handlers, shell->mouse_cursor_filter());
   ui::EventHandlerList::const_iterator fullscreen_magnifier_filter =
-      base::ranges::find(handlers, shell->fullscreen_magnifier_controller());
+      std::ranges::find(handlers, shell->fullscreen_magnifier_controller());
   ui::EventHandlerList::const_iterator chromevox_filter =
-      base::ranges::find(handlers, shell->key_accessibility_enabler());
+      std::ranges::find(handlers, shell->key_accessibility_enabler());
   ui::EventHandlerList::const_iterator select_to_speak_filter =
-      base::ranges::find(handlers, &select_to_speak);
+      std::ranges::find(handlers, &select_to_speak);
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), fullscreen_magnifier_filter);
   EXPECT_NE(handlers.end(), chromevox_filter);
@@ -501,12 +510,12 @@ TEST_F(ShellTest, TestAccessibilityHandlerOrder) {
   shell->RemoveAccessibilityEventHandler(&select_to_speak);
 
   handlers = test_api.GetPreTargetHandlers();
-  cursor_filter = base::ranges::find(handlers, shell->mouse_cursor_filter());
+  cursor_filter = std::ranges::find(handlers, shell->mouse_cursor_filter());
   fullscreen_magnifier_filter =
-      base::ranges::find(handlers, shell->fullscreen_magnifier_controller());
+      std::ranges::find(handlers, shell->fullscreen_magnifier_controller());
   chromevox_filter =
-      base::ranges::find(handlers, shell->key_accessibility_enabler());
-  select_to_speak_filter = base::ranges::find(handlers, &select_to_speak);
+      std::ranges::find(handlers, shell->key_accessibility_enabler());
+  select_to_speak_filter = std::ranges::find(handlers, &select_to_speak);
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), fullscreen_magnifier_filter);
   EXPECT_NE(handlers.end(), chromevox_filter);
@@ -523,13 +532,13 @@ TEST_F(ShellTest, TestAccessibilityHandlerOrder) {
       AccessibilityEventHandlerManager::HandlerType::kDockedMagnifier);
 
   handlers = test_api.GetPreTargetHandlers();
-  cursor_filter = base::ranges::find(handlers, shell->mouse_cursor_filter());
+  cursor_filter = std::ranges::find(handlers, shell->mouse_cursor_filter());
   fullscreen_magnifier_filter =
-      base::ranges::find(handlers, shell->fullscreen_magnifier_controller());
+      std::ranges::find(handlers, shell->fullscreen_magnifier_controller());
   chromevox_filter =
-      base::ranges::find(handlers, shell->key_accessibility_enabler());
+      std::ranges::find(handlers, shell->key_accessibility_enabler());
   ui::EventHandlerList::const_iterator docked_magnifier_filter =
-      base::ranges::find(handlers, &docked_magnifier);
+      std::ranges::find(handlers, &docked_magnifier);
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), fullscreen_magnifier_filter);
   EXPECT_NE(handlers.end(), docked_magnifier_filter);
@@ -630,7 +639,7 @@ TEST_F(ShellLoginTest, DragAndDropDisabledBeforeLogin) {
   DragDropControllerTestApi drag_drop_controller_test_api(drag_drop_controller);
   EXPECT_FALSE(drag_drop_controller_test_api.enabled());
 
-  SimulateUserLogin("user1@test.com");
+  SimulateUserLogin({"user1@test.com"});
   EXPECT_TRUE(drag_drop_controller_test_api.enabled());
 }
 
@@ -638,6 +647,67 @@ using NoDuplicateShellContainerIdsTest = AshTestBase;
 
 TEST_F(NoDuplicateShellContainerIdsTest, ValidateContainersIds) {
   ExpectAllContainers();
+}
+
+// A test fixture that host `ActivationChanger` to simulate window activation
+// change during Shell shutdown and verifies no crash will happen.
+class ShellShutdownTest : public AshTestBase {
+ protected:
+  // Helper to activate `to_activate` when `to_observe` is destroyed. The
+  // intention is to simulate active window change during Shell destruction.
+  // The activation change needs to affect `CloseAllRootWindowChildWindows()`
+  // in Shell destructor.
+  class ActivationChanger : public aura::WindowObserver {
+   public:
+    ActivationChanger(aura::Window* to_observe, aura::Window* to_activate)
+        : to_observe_(to_observe), to_activate_(to_activate) {
+      // No `RemoveObsever` because `this` outlives `Shell` and all windows.
+      to_observe_->AddObserver(this);
+    }
+
+    // aura::WindowObserver:
+    void OnWindowDestroying(aura::Window* window) override {
+      Shell::Get()->focus_controller()->ActivateWindow(to_activate_);
+
+      // Clear out references to avoid `raw_ptr` dangling pointer warnings.
+      to_observe_ = nullptr;
+      to_activate_ = nullptr;
+    }
+
+   private:
+    raw_ptr<aura::Window> to_observe_;
+    raw_ptr<aura::Window> to_activate_;
+  };
+
+  void CreateActivationChanger(aura::Window* to_observe,
+                               aura::Window* to_activate) {
+    activation_changer_ =
+        std::make_unique<ActivationChanger>(to_observe, to_activate);
+  }
+
+ private:
+  std::unique_ptr<ActivationChanger> activation_changer_;
+};
+
+TEST_F(ShellShutdownTest, ActivateWindow) {
+  aura::Window* to_observe =
+      CreateTestWindowInShellWithBounds(gfx::Rect(40, 0, 60, 40));
+  to_observe->Show();
+
+  aura::Window* to_activate =
+      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 30, 20));
+  // Put `to_activate` in a container after desks containers so that its
+  // destruction (and activations of `to_activate`) comes after desk containers
+  // destruction.
+  Shell::GetPrimaryRootWindow()
+      ->GetChildById(kShellWindowId_FloatContainer)
+      ->AddChild(to_activate);
+  to_activate->Show();
+
+  wm::ActivateWindow(to_observe);
+
+  // Creates an ActivationChanger to activate `to_activate` during shutdown.
+  CreateActivationChanger(to_observe, to_activate);
 }
 
 }  // namespace ash

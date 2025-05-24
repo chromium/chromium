@@ -98,11 +98,8 @@ void CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
           GetClassHash(simple_selector->Value()));
       break;
     case CSSSelector::kTag:
-      if (simple_selector->TagQName().LocalName() !=
-          CSSSelector::UniversalSelectorAtom()) {
-        pseudo_has_argument_hashes.push_back(
-            GetTagHash(simple_selector->TagQName().LocalName()));
-      }
+      pseudo_has_argument_hashes.push_back(
+          GetTagHash(simple_selector->TagQName().LocalName()));
       break;
     case CSSSelector::kAttributeExact:
     case CSSSelector::kAttributeSet:

@@ -1,9 +1,9 @@
 Name: Fuchsia GN SDK
-URL: https://fuchsia.googlesource.com/fuchsia/
+URL: This is the canonical public repository.
 Version: N/A
 Security Critical: no
 Shipped: yes
-License: BSD 2-Clause
+License: BSD-2-Clause
 License File: LICENSE
 Date: 2024-02-26
 

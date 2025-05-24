@@ -293,6 +293,16 @@ Fragment NodeLinkMemory::GetFragment(const FragmentDescriptor& descriptor) {
 bool NodeLinkMemory::AddBlockBuffer(BufferId id,
                                     size_t block_size,
                                     DriverMemoryMapping mapping) {
+  if (id == kInvalidBufferId) {
+    return false;
+  }
+  if (block_size < kMinFragmentSize || (block_size & 7) != 0) {
+    return false;
+  }
+  const size_t block_capacity = mapping.bytes().size() / block_size;
+  if (block_capacity < kMinBlockAllocatorCapacity) {
+    return false;
+  }
   const BlockAllocator allocator(mapping.bytes(), block_size);
   return buffer_pool_.AddBlockBuffer(id, std::move(mapping), {&allocator, 1});
 }
@@ -385,6 +395,10 @@ void NodeLinkMemory::WaitForBufferAsync(
     BufferId id,
     BufferPool::WaitForBufferCallback callback) {
   buffer_pool_.WaitForBufferAsync(id, std::move(callback));
+}
+
+void NodeLinkMemory::NotifyLinkDisconnected() {
+  buffer_pool_.DropPendingBufferCallbacks();
 }
 
 bool NodeLinkMemory::CanExpandBlockCapacity(size_t block_size) {

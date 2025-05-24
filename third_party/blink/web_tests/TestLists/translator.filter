@@ -1,0 +1,2 @@
+# The subset of tests from blink_wpt_tests suite to run on translator builders.
+external/wpt/ai/translator/*

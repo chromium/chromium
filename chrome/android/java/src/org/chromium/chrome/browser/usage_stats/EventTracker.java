@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.usage_stats.WebsiteEventProtos.Timestamp;
 
@@ -20,7 +21,7 @@ import java.util.function.Function;
  */
 public class EventTracker {
     private final UsageStatsBridge mBridge;
-    private Promise<List<WebsiteEvent>> mRootPromise;
+    private final Promise<List<WebsiteEvent>> mRootPromise;
 
     public EventTracker(UsageStatsBridge bridge) {
         mBridge = bridge;
@@ -29,7 +30,7 @@ public class EventTracker {
         // call variants of then() that don't take a single callback. These variants set an
         // exception handler on the returned promise, so they expect there to be one on the root
         // promise.
-        mRootPromise.except((e) -> {});
+        mRootPromise.except(CallbackUtils.emptyCallback());
         mBridge.getAllEvents(
                 (result) -> {
                     List<WebsiteEvent> events = new ArrayList<>(result.size());
@@ -81,7 +82,7 @@ public class EventTracker {
                                 }
                             });
                 },
-                (e) -> {});
+                CallbackUtils.emptyCallback());
 
         return writePromise;
     }
@@ -101,7 +102,7 @@ public class EventTracker {
                                 }
                             });
                 },
-                (e) -> {});
+                CallbackUtils.emptyCallback());
         return writePromise;
     }
 
@@ -122,7 +123,7 @@ public class EventTracker {
                                 }
                             });
                 },
-                (e) -> {});
+                CallbackUtils.emptyCallback());
         return writePromise;
     }
 
@@ -142,7 +143,7 @@ public class EventTracker {
                                 }
                             });
                 },
-                (e) -> {});
+                CallbackUtils.emptyCallback());
         return writePromise;
     }
 

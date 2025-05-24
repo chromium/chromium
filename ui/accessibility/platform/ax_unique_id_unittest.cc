@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/ax_unique_id.h"
 
+#include <array>
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,7 +44,7 @@ TEST(AXPlatformUniqueIdTest, UnassignedIdsAreReused) {
   // Then remove an id and replace with a new one. Since it's the only
   // slot available, the id will end up having the same value, rather than
   // starting over at 1.
-  std::unique_ptr<AXUniqueId> ids[kMaxId];
+  std::array<std::unique_ptr<AXUniqueId>, kMaxId> ids;
 
   for (auto& id : ids) {
     id = std::make_unique<AXUniqueId>(CreateSmallBankUniqueId());
@@ -67,7 +63,7 @@ TEST(AXPlatformUniqueIdTest, UnassignedIdsAreReused) {
 
 TEST(AXPlatformUniqueIdTest, DoesCreateCorrectId) {
   constexpr int kLargerThanMaxId = kMaxId * 2;
-  std::unique_ptr<AXUniqueId> ids[kLargerThanMaxId];
+  std::array<std::unique_ptr<AXUniqueId>, kLargerThanMaxId> ids;
   // Creates and releases to fill up the internal static counter.
   for (int i = 0; i < kLargerThanMaxId; i++) {
     ids[i] = std::make_unique<AXUniqueId>(AXUniqueId::Create());

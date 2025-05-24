@@ -55,6 +55,10 @@ CWV_EXPORT
 @property(nonatomic, assign, getter=isSafeBrowsingEnabled)
     BOOL safeBrowsingEnabled;
 
+// Whether or not address sync is enabled.
+@property(nonatomic, assign, getter=isAutofillAddressSyncEnabled)
+    BOOL autofillAddressSyncEnabled;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Resets all translation settings back to default. In particular, this will

@@ -5,17 +5,17 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_TRANSLATE_CWV_TRANSLATION_CONTROLLER_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_TRANSLATE_CWV_TRANSLATION_CONTROLLER_INTERNAL_H_
 
-#import "ios/web_view/public/cwv_translation_controller.h"
-
 #include <memory>
 #include <string>
 
 #include "components/translate/core/browser/translate_step.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_errors.h"
+#import "ios/web_view/public/cwv_translation_controller.h"
 
 namespace ios_web_view {
 class WebViewTranslateClient;
-}  // namespace is_web_view
+}  // namespace ios_web_view
 
 namespace web {
 class WebState;
@@ -42,6 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
              targetLanguage:(const std::string&)targetLanguage
                   errorType:(translate::TranslateErrors)errorType
           triggeredFromMenu:(bool)triggeredFromMenu;
+
+// Called when the current page's language detection details have been
+// determined.
+- (void)onLanguageDetermined:
+    (const translate::LanguageDetectionDetails&)details;
 
 @end
 

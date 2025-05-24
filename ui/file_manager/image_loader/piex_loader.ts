@@ -40,7 +40,7 @@ declare global {
  */
 const initPiexModule = globalThis.createPiexModule;
 
-console.log(`[PiexLoader] available [init=${typeof initPiexModule}]`);
+console.info(`[PiexLoader] available [init=${typeof initPiexModule}]`);
 
 /**
  * Set true if the Module.onAbort() handler is called.
@@ -71,7 +71,7 @@ function piexModuleInitialized(): Promise<void> {
     initPiexModulePromise = new Promise(resolve => {
       initPiexModule(MODULE_SETTINGS).then(module => {
         PiexModule = module;
-        console.log(`[PiexLoader] loaded [module=${typeof module}]`);
+        console.info(`[PiexLoader] loaded [module=${typeof module}]`);
         resolve();
       });
     });
@@ -563,7 +563,8 @@ class ImageBuffer {
    *
    */
   private createImageDataArray_(
-      view: Uint8Array, preview: PiexWasmPreviewImageMetadata): Uint8Array {
+      view: Uint8Array,
+      preview: PiexWasmPreviewImageMetadata): Uint8Array<ArrayBuffer> {
     const jpeg = view.byteLength > 2 && view[0] === 0xff && view[1] === 0xd8;
 
     if (jpeg && preview.colorSpace === 'adobeRgb') {

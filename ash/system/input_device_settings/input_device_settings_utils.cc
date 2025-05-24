@@ -31,6 +31,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
 #include "ui/events/types/event_type.h"
 
@@ -378,6 +379,12 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
   } else if (key_code &&
              customization_restriction !=
                  mojom::CustomizationRestriction::kDisableKeyEventRewrites) {
+    // Do not allow the keycode to be an unknown key. This indicates an internal
+    // error in the implementation and should not be allowed.
+    if (*key_code == ui::VKEY_UNKNOWN) {
+      return nullptr;
+    }
+
     button = mojom::Button::NewVkey(static_cast<::ui::KeyboardCode>(*key_code));
   } else {
     return nullptr;
@@ -438,7 +445,7 @@ bool IsSplitModifierKeyboard(const mojom::Keyboard& keyboard) {
 
 bool IsSplitModifierKeyboard(int device_id) {
   return Shell::Get()->keyboard_capability()->HasFunctionKey(device_id) &&
-         Shell::Get()->keyboard_capability()->HasRightAltKey(device_id);
+         Shell::Get()->keyboard_capability()->HasQuickInsertKey(device_id);
 }
 
 std::string GetDeviceKeyForMetadataRequest(const std::string& device_key) {

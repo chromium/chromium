@@ -16,7 +16,6 @@
 #include "components/safe_browsing/core/browser/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_service_base.h"
-#include "components/safe_browsing/core/browser/user_population.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -52,7 +51,7 @@ std::vector<std::string> GetMatchingDomains(
     // to be special handing and should use affiliation information instead of
     // the signon_realm.
     std::string domain = base::UTF16ToUTF8(url_formatter::FormatUrl(
-        GURL(credential.signon_realm),
+        credential.url,
         url_formatter::kFormatUrlOmitDefaults |
             url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |
@@ -209,20 +208,6 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
 
   password_protection_service_->FillUserPopulation(main_frame_url_,
                                                    request_proto_.get());
-  // TODO(crbug.com/40918301): [Also TODO(thefrog)] Remove the
-  // finch_active_groups modification below once kHashPrefixRealTimeLookups is
-  // launched.
-  const std::vector<const base::Feature*> kHashRealTimeLookupsFeature = {
-      &kHashPrefixRealTimeLookups};
-  GetExperimentStatus(kHashRealTimeLookupsFeature,
-                      request_proto_->mutable_population());
-  if (password_protection_service_->IsExtendedReporting() &&
-      !password_protection_service_->IsIncognito()) {
-    const std::vector<const base::Feature*> kAsyncChecksFeature = {
-        &kSafeBrowsingAsyncRealTimeCheck};
-    GetExperimentStatus(kAsyncChecksFeature,
-                        request_proto_->mutable_population());
-  }
 
   request_proto_->set_stored_verdict_cnt(
       password_protection_service_->GetStoredVerdictCount(trigger_type_));
@@ -267,16 +252,9 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
       main_frame->set_has_password_field(password_field_exists_);
       LoginReputationClientRequest::PasswordReuseEvent* reuse_event =
           request_proto_->mutable_password_reuse_event();
-      bool matches_signin_password =
-          password_type_ == PasswordType::PRIMARY_ACCOUNT_PASSWORD;
       reuse_event->set_reused_password_type(
           password_protection_service_->GetPasswordProtectionReusedPasswordType(
               password_type_));
-      if (matches_signin_password) {
-        reuse_event->set_sync_account_type(
-            password_protection_service_->GetSyncAccountType());
-        LogSyncAccountType(reuse_event->sync_account_type());
-      }
 
       if (password_protection_service_->IsExtendedReporting() &&
           !password_protection_service_->IsIncognito()) {
@@ -293,10 +271,11 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
                                                                username_);
       *reuse_event->mutable_reused_password_account_type() =
           password_account_type_to_add;
+      LogReusedPasswordAccountType(password_account_type_to_add);
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

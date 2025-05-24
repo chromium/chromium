@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "remoting/host/base/process_util.h"
 
 #include <string.h>
@@ -69,7 +74,7 @@ base::FilePath GetProcessImagePath(base::ProcessId pid) {
   }
   DCHECK_GT(size, 0u);
   DCHECK_LT(size, buffer.size());
-  return base::FilePath(base::FilePath::StringPieceType(buffer.data(), size));
+  return base::FilePath(base::FilePath::StringViewType(buffer.data(), size));
 #else
   NOTIMPLEMENTED();
   return base::FilePath();

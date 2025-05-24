@@ -12,6 +12,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/numerics/safe_math.h"
@@ -698,9 +699,11 @@ void EntryImpl::OnEntryCreated(BackendImpl* backend) {
   background_queue_ = backend->GetBackgroundQueue();
 }
 
-void EntryImpl::SetTimes(base::Time last_used, base::Time last_modified) {
-  node_.Data()->last_used = last_used.ToInternalValue();
-  node_.Data()->last_modified = last_modified.ToInternalValue();
+void EntryImpl::SetTimes(base::Time last_used) {
+  auto timestamp = last_used.ToInternalValue();
+  auto* node_data = node_.Data();
+  node_data->last_used = timestamp;
+  node_data->no_longer_used_last_modified = timestamp;
   node_.set_modified();
 }
 
@@ -783,11 +786,6 @@ std::string EntryImpl::GetKey() const {
 Time EntryImpl::GetLastUsed() const {
   CacheRankingsBlock* node = const_cast<CacheRankingsBlock*>(&node_);
   return Time::FromInternalValue(node->Data()->last_used);
-}
-
-Time EntryImpl::GetLastModified() const {
-  CacheRankingsBlock* node = const_cast<CacheRankingsBlock*>(&node_);
-  return Time::FromInternalValue(node->Data()->last_modified);
 }
 
 int32_t EntryImpl::GetDataSize(int index) const {
@@ -916,7 +914,7 @@ net::Error EntryImpl::ReadyForSparseIO(CompletionOnceCallback callback) {
 }
 
 void EntryImpl::SetLastUsedTimeForTest(base::Time time) {
-  SetTimes(time, time);
+  SetTimes(time);
 }
 
 // When an entry is deleted from the cache, we clean up all the data associated
@@ -1223,10 +1221,10 @@ void EntryImpl::UpdateRank(bool modified) {
   }
 
   Time current = Time::Now();
-  node_.Data()->last_used = current.ToInternalValue();
-
-  if (modified)
-    node_.Data()->last_modified = current.ToInternalValue();
+  auto timestamp = current.ToInternalValue();
+  auto* node_data = node_.Data();
+  node_data->last_used = timestamp;
+  node_data->no_longer_used_last_modified = timestamp;
 }
 
 File* EntryImpl::GetBackingFile(Addr address, int index) {
@@ -1519,7 +1517,7 @@ uint32_t EntryImpl::GetEntryFlags() {
 }
 
 void EntryImpl::GetData(int index,
-                        std::unique_ptr<char[]>* buffer,
+                        base::HeapArray<char>* buffer,
                         Addr* address) {
   DCHECK(backend_.get());
   if (user_buffers_[index].get() && user_buffers_[index]->Size() &&
@@ -1528,15 +1526,15 @@ void EntryImpl::GetData(int index,
     int data_len = entry_.Data()->data_size[index];
     if (data_len <= user_buffers_[index]->Size()) {
       DCHECK(!user_buffers_[index]->Start());
-      *buffer = std::make_unique<char[]>(data_len);
-      memcpy(buffer->get(), user_buffers_[index]->Data(), data_len);
+      *buffer = base::HeapArray<char>::Uninit(data_len);
+      memcpy(buffer->data(), user_buffers_[index]->Data(), data_len);
       return;
     }
   }
 
   // Bad news: we'd have to read the info from disk so instead we'll just tell
   // the caller where to read from.
-  *buffer = nullptr;
+  *buffer = {};
   address->set_value(entry_.Data()->data_addr[index]);
   if (address->is_initialized()) {
     // Prevent us from deleting the block from the backing store.

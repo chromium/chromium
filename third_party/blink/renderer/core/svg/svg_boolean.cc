@@ -35,7 +35,7 @@
 namespace blink {
 
 String SVGBoolean::ValueAsString() const {
-  return value_ ? "true" : "false";
+  return String::Boolean(value_);
 }
 
 SVGParsingError SVGBoolean::SetValueAsString(const String& value) {
@@ -51,7 +51,7 @@ SVGParsingError SVGBoolean::SetValueAsString(const String& value) {
 }
 
 void SVGBoolean::Add(const SVGPropertyBase*, const SVGElement*) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SVGBoolean::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
@@ -61,7 +61,7 @@ void SVGBoolean::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
                                         const SVGPropertyBase* to,
                                         const SVGPropertyBase*,
                                         const SVGElement*) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 float SVGBoolean::CalculateDistance(const SVGPropertyBase*,

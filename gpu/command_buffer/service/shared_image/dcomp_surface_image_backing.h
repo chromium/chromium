@@ -144,6 +144,8 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
   // |BeginDrawGraphite| and |EndDrawGraphite|. This |shared_texture_memory_|
   // wraps the ComPtr<ID3D11Texture> instead of creating from a share HANDLE.
   wgpu::SharedTextureMemory shared_texture_memory_;
+  wgpu::Texture cached_wgpu_texture_;
+  wgpu::TextureUsage cached_wgpu_texture_usage_ = wgpu::TextureUsage::None;
 
   // This is a number that increments once for every EndDraw on a surface, and
   // is used to determine when the contents have changed so Commit() needs to

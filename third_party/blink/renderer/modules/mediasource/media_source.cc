@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "build/chromeos_buildflags.h"
+#include "base/strings/to_string.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_switches.h"
@@ -26,6 +26,7 @@
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_end_of_stream_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -181,6 +182,12 @@ void MediaSource::LogAndThrowDOMException(ExceptionState& exception_state,
   DVLOG(1) << __func__ << " (error=" << ToExceptionCode(error)
            << ", message=" << message << ")";
   exception_state.ThrowDOMException(error, message);
+}
+
+void MediaSource::LogAndThrowQuotaExceededError(ExceptionState& exception_state,
+                                                const String& message) {
+  DVLOG(1) << __func__ << " (message=" << message << ")";
+  QuotaExceededError::Throw(exception_state, message);
 }
 
 void MediaSource::LogAndThrowTypeError(ExceptionState& exception_state,
@@ -387,10 +394,6 @@ void MediaSource::AddSourceBuffer_Locked(
       std::move(video_config), *exception_state);
 
   if (!web_source_buffer) {
-    DCHECK(exception_state->CodeAs<DOMExceptionCode>() ==
-               DOMExceptionCode::kNotSupportedError ||
-           exception_state->CodeAs<DOMExceptionCode>() ==
-               DOMExceptionCode::kQuotaExceededError);
     // 2. If type contains a MIME type that is not supported ..., then throw a
     //    NotSupportedError exception and abort these steps.
     // 3. If the user agent can't handle any more SourceBuffer objects then
@@ -414,10 +417,10 @@ void MediaSource::AddSourceBuffer_Locked(
   // here, which depends on |buffer| being in |source_buffers_| in our
   // implementation.
   if (generate_timestamps_flag) {
-    buffer->SetMode_Locked(SourceBuffer::SequenceKeyword(), exception_state,
+    buffer->SetMode_Locked(V8AppendMode::Enum::kSequence, exception_state,
                            pass_key);
   } else {
-    buffer->SetMode_Locked(SourceBuffer::SegmentsKeyword(), exception_state,
+    buffer->SetMode_Locked(V8AppendMode::Enum::kSegments, exception_state,
                            pass_key);
   }
 
@@ -527,7 +530,7 @@ bool MediaSource::isTypeSupported(ExecutionContext* context,
                                   const String& type) {
   bool result = IsTypeSupportedInternal(
       context, type, true /* Require fully specified mime and codecs */);
-  DVLOG(2) << __func__ << "(" << type << ") -> " << (result ? "true" : "false");
+  DVLOG(2) << __func__ << "(" << type << ") -> " << base::ToString(result);
   return result;
 }
 
@@ -541,7 +544,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // lack of support immediately without proceeding.
   if (!context) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (context is null)";
     return false;
   }
@@ -551,7 +554,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // 1. If type is an empty string, then return false.
   if (type.empty()) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (empty input)";
     return false;
   }
@@ -561,7 +564,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   String mime_type = content_type.GetType();
   if (mime_type.empty()) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (invalid mime type)";
     return false;
   }
@@ -640,7 +643,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
       HTMLMediaElement::GetSupportsType(filtered_content_type);
   if (get_supports_type_result == MIMETypeRegistry::kNotSupported) {
     DVLOG(1) << __func__ << "(" << type << ", "
-             << (enforce_codec_specificity ? "true" : "false")
+             << base::ToString(enforce_codec_specificity)
              << ") -> false (not supported by HTMLMediaElement)";
     RecordIdentifiabilityMetric(context, type, false);
     return false;
@@ -668,8 +671,8 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   bool result = supported == MIMETypeRegistry::kSupported;
 
   DVLOG(2) << __func__ << "(" << type << ", "
-           << (enforce_codec_specificity ? "true" : "false") << ") -> "
-           << (result ? "true" : "false");
+           << base::ToString(enforce_codec_specificity) << ") -> "
+           << base::ToString(result);
   RecordIdentifiabilityMetric(context, type, result);
   return result;
 }
@@ -814,12 +817,11 @@ WebTimeRanges MediaSource::BufferedInternal(
     active_source_buffers_->item(i)->GetBuffered_Locked(&ranges[i], pass_key);
   }
 
-  WebTimeRanges intersection_ranges;
-
   // 1. If activeSourceBuffers.length equals 0 then return an empty TimeRanges
   //    object and abort these steps.
-  if (ranges.empty())
-    return intersection_ranges;
+  if (ranges.empty()) {
+    return WebTimeRanges();
+  }
 
   // 2. Let active ranges be the ranges returned by buffered for each
   //    SourceBuffer object in activeSourceBuffers.
@@ -831,12 +833,13 @@ WebTimeRanges MediaSource::BufferedInternal(
   }
 
   // Return an empty range if all ranges are empty.
-  if (highest_end_time < 0)
-    return intersection_ranges;
+  if (highest_end_time < 0) {
+    return WebTimeRanges();
+  }
 
   // 4. Let intersection ranges equal a TimeRange object containing a single
   //    range from 0 to highest end time.
-  intersection_ranges.emplace_back(0, highest_end_time);
+  WebTimeRanges intersection_ranges(0, highest_end_time);
 
   // 5. For each SourceBuffer object in activeSourceBuffers run the following
   //    steps:
@@ -870,13 +873,13 @@ WebTimeRanges MediaSource::SeekableInternal(
 
   // Implements MediaSource algorithm for HTMLMediaElement.seekable.
   // http://w3c.github.io/media-source/#htmlmediaelement-extensions
-  WebTimeRanges ranges;
 
   double source_duration = GetDuration_Locked(pass_key);
 
   // If duration equals NaN: Return an empty TimeRanges object.
-  if (std::isnan(source_duration))
-    return ranges;
+  if (std::isnan(source_duration)) {
+    return WebTimeRanges();
+  }
 
   // If duration equals positive Infinity:
   if (source_duration == std::numeric_limits<double>::infinity()) {
@@ -890,33 +893,30 @@ WebTimeRanges MediaSource::SeekableInternal(
       //      earliest start time in union ranges and an end time equal to
       //      the highest end time in union ranges and abort these steps.
       if (buffered.empty()) {
-        ranges.emplace_back(live_seekable_range_start_,
-                            live_seekable_range_end_);
-        return ranges;
+        return WebTimeRanges(live_seekable_range_start_,
+                             live_seekable_range_end_);
       }
 
-      ranges.emplace_back(
+      return WebTimeRanges(
           std::min(live_seekable_range_start_, buffered.front().start),
           std::max(live_seekable_range_end_, buffered.back().end));
-      return ranges;
     }
 
     // 2. If the HTMLMediaElement.buffered attribute returns an empty TimeRanges
     //    object, then return an empty TimeRanges object and abort these steps.
-    if (buffered.empty())
-      return ranges;
+    if (buffered.empty()) {
+      return WebTimeRanges();
+    }
 
     // 3. Return a single range with a start time of 0 and an end time equal to
     //    the highest end time reported by the HTMLMediaElement.buffered
     //    attribute.
-    ranges.emplace_back(0, buffered.back().end);
-    return ranges;
+    return WebTimeRanges(0, buffered.back().end);
   }
 
   // 3. Otherwise: Return a single range with a start time of 0 and an end time
   //    equal to duration.
-  ranges.emplace_back(0, source_duration);
-  return ranges;
+  return WebTimeRanges(0, source_duration);
 }
 
 void MediaSource::OnTrackChanged(TrackBase* track) {
@@ -1111,9 +1111,14 @@ AtomicString MediaSource::readyState() const {
   return ReadyStateToString(ready_state_);
 }
 
-void MediaSource::endOfStream(const AtomicString& error,
+void MediaSource::endOfStream(ExceptionState& exception_state) {
+  endOfStream(std::nullopt, exception_state);
+}
+
+void MediaSource::endOfStream(std::optional<V8EndOfStreamError> error,
                               ExceptionState& exception_state) {
-  DVLOG(3) << __func__ << " this=" << this << " : error=" << error;
+  DVLOG(3) << __func__ << " this=" << this
+           << " : error=" << (error.has_value() ? error->AsCStr() : "");
 
   // https://www.w3.org/TR/media-source/#dom-mediasource-endofstream
   // 1. If the readyState attribute is not in the "open" state then throw an
@@ -1125,13 +1130,20 @@ void MediaSource::endOfStream(const AtomicString& error,
     return;
 
   // 3. Run the end of stream algorithm with the error parameter set to error.
-  WebMediaSource::EndOfStreamStatus status;
-  if (error == "network")
-    status = WebMediaSource::kEndOfStreamStatusNetworkError;
-  else if (error == "decode")
-    status = WebMediaSource::kEndOfStreamStatusDecodeError;
-  else  // "" is allowed internally but not by IDL bindings.
-    status = WebMediaSource::kEndOfStreamStatusNoError;
+  WebMediaSource::EndOfStreamStatus status =
+      WebMediaSource::kEndOfStreamStatusNoError;
+  if (error.has_value()) {
+    switch (error->AsEnum()) {
+      case V8EndOfStreamError::Enum::kNetwork:
+        status = WebMediaSource::kEndOfStreamStatusNetworkError;
+        break;
+      case V8EndOfStreamError::Enum::kDecode:
+        status = WebMediaSource::kEndOfStreamStatusDecodeError;
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
 
   // Do remainder of steps only if attachment is usable and underlying demuxer
   // is protected from destruction (applicable especially for MSE-in-Worker
@@ -1144,10 +1156,6 @@ void MediaSource::endOfStream(const AtomicString& error,
                             DOMExceptionCode::kInvalidStateError,
                             "Worker MediaSource attachment is closing");
   }
-}
-
-void MediaSource::endOfStream(ExceptionState& exception_state) {
-  endOfStream(g_empty_atom, exception_state);
 }
 
 void MediaSource::setLiveSeekableRange(double start,
@@ -1674,16 +1682,15 @@ std::unique_ptr<WebSourceBuffer> MediaSource::CreateWebSourceBuffer(
       // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-MediaSource-addSourceBuffer-SourceBuffer-DOMString-type
       // Step 3: If the user agent can't handle any more SourceBuffer objects
       // then throw a QuotaExceededError exception and abort these steps.
-      LogAndThrowDOMException(exception_state,
-                              DOMExceptionCode::kQuotaExceededError,
-                              "This MediaSource has reached the limit of "
-                              "SourceBuffer objects it can handle. No "
-                              "additional SourceBuffer objects may be added.");
+      LogAndThrowQuotaExceededError(
+          exception_state,
+          "This MediaSource has reached the limit of "
+          "SourceBuffer objects it can handle. No "
+          "additional SourceBuffer objects may be added.");
       return nullptr;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void MediaSource::ScheduleEvent(const AtomicString& event_name) {

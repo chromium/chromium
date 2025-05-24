@@ -15,11 +15,7 @@
 #endif  // defined(VIZ_CLIENT_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(VIZ_CLIENT_IMPLEMENTATION)
 #define VIZ_CLIENT_EXPORT __attribute__((visibility("default")))
-#else
-#define VIZ_CLIENT_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

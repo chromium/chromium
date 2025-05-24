@@ -119,8 +119,8 @@ StringOrdinal StringOrdinal::CreateBefore() const {
     start += kOneDigit;
   }
 
-  // Even though |start| is already a valid StringOrdinal that is less
-  // than |*this|, we don't return it because we wouldn't have much space in
+  // Even though `start` is already a valid StringOrdinal that is less
+  // than `*this`, we don't return it because we wouldn't have much space in
   // front of it to insert potential future values.
   return CreateBetween(StringOrdinal(start));
 }
@@ -134,8 +134,8 @@ StringOrdinal StringOrdinal::CreateAfter() const {
     end += kMaxDigit;
   }
 
-  // Even though |end| is already a valid StringOrdinal that is greater than
-  // |*this|, we don't return it because we wouldn't have much space after
+  // Even though `end` is already a valid StringOrdinal that is greater than
+  // `*this`, we don't return it because we wouldn't have much space after
   // it to insert potential future values.
   return CreateBetween(StringOrdinal(end));
 }
@@ -222,7 +222,7 @@ size_t StringOrdinal::GetProperLength(const std::string& lower_bound,
 
   size_t drop_length =
       GetLengthWithoutTrailingZeroDigits(bytes, bytes.length());
-  // See if the |ordinal| can be truncated after its last non-zero
+  // See if the `ordinal` can be truncated after its last non-zero
   // digit without affecting the ordering.
   if (drop_length > kMinLength) {
     size_t truncated_length =

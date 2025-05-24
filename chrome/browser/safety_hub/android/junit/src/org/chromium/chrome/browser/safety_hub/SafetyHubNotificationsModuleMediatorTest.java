@@ -1,0 +1,150 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.safety_hub;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
+
+import android.app.Activity;
+
+import androidx.annotation.DrawableRes;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
+import org.chromium.ui.base.TestActivity;
+
+import java.util.List;
+
+/** Robolectric tests for {@link SafetyHubNotificationsModuleMediator}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
+public class SafetyHubNotificationsModuleMediatorTest {
+    private static final @DrawableRes int SAFE_ICON = R.drawable.material_ic_check_24dp;
+    private static final @DrawableRes int INFO_ICON = R.drawable.btn_info;
+
+    private static final String EXAMPLE_URL = "http://example1.com";
+    private static final NotificationPermissions NOTIFICATION_PERMISSIONS =
+            NotificationPermissions.create(EXAMPLE_URL, "*", 3);
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private Activity mActivity;
+    private SafetyHubExpandablePreference mPreference;
+    private SafetyHubNotificationsModuleMediator mModuleMediator;
+
+    @Mock private NotificationPermissionReviewBridge mNotificationPermissionReviewBridgeMock;
+    @Mock private SafetyHubModuleMediatorDelegate mDelegate;
+
+    @Before
+    public void setUp() {
+        mActivity = Robolectric.buildActivity(TestActivity.class).get();
+
+        mPreference = new SafetyHubExpandablePreference(mActivity, null);
+
+        mModuleMediator =
+                new SafetyHubNotificationsModuleMediator(
+                        mPreference, mDelegate, mNotificationPermissionReviewBridgeMock);
+        mockNotificationPermissions(/* hasNotificationPermissions= */ false);
+        mModuleMediator.setUpModule();
+    }
+
+    private void mockNotificationPermissions(boolean hasNotificationPermissions) {
+        if (hasNotificationPermissions) {
+            doReturn(List.of(NOTIFICATION_PERMISSIONS))
+                    .when(mNotificationPermissionReviewBridgeMock)
+                    .getNotificationPermissions();
+        } else {
+            doReturn(List.of())
+                    .when(mNotificationPermissionReviewBridgeMock)
+                    .getNotificationPermissions();
+        }
+    }
+
+    @Test
+    public void noSitesWithNotificationPermissions() {
+        mockNotificationPermissions(/* hasNotificationPermissions= */ false);
+        mModuleMediator.updateModule();
+
+        String expectedTitle =
+                mActivity.getString(R.string.safety_hub_notifications_review_ok_title);
+        String expectedSummary =
+                mActivity.getString(R.string.safety_hub_notifications_review_ok_summary);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_go_to_notification_settings_button);
+
+        assertEquals(expectedTitle, mPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPreference.getSummary().toString());
+        assertEquals(SAFE_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+    }
+
+    @Test
+    public void hasSiteWithNotificationPermissions_onInitialSetup() {
+        mockNotificationPermissions(/* hasNotificationPermissions= */ true);
+        mModuleMediator.updateModule();
+
+        String expectedTitle =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_title,
+                                /* numSites= */ 1,
+                                /* numSites= */ 1);
+        String expectedSummary =
+                mActivity.getString(R.string.safety_hub_notifications_review_warning_summary);
+        String expectedPrimaryButtonText =
+                mActivity.getString(R.string.safety_hub_notifications_reset_all_button);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_view_sites_button);
+
+        assertEquals(expectedTitle, mPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+    }
+
+    @Test
+    public void hasSiteWithNotificationPermissions_permissionsChanged() {
+        mockNotificationPermissions(/* hasNotificationPermissions= */ true);
+        mModuleMediator.notificationPermissionsChanged();
+
+        String expectedTitle =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_title,
+                                /* numSites= */ 1,
+                                /* numSites= */ 1);
+        String expectedSummary =
+                mActivity.getString(R.string.safety_hub_notifications_review_warning_summary);
+        String expectedPrimaryButtonText =
+                mActivity.getString(R.string.safety_hub_notifications_reset_all_button);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_view_sites_button);
+
+        assertEquals(expectedTitle, mPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+
+        verify(mDelegate, times(1)).onUpdateNeeded();
+    }
+}

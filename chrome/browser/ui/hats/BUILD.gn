@@ -56,7 +56,11 @@ source_set("impl") {
   deps = [
     ":hats",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ui",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/prefs",
+    "//chrome/browser/privacy_sandbox/incognito:incognito_features",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/safety_hub",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
@@ -66,10 +70,14 @@ source_set("impl") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
+    "//components/lens:features",
     "//components/metrics_services_manager",
     "//components/password_manager/core/common",
     "//components/permissions",
     "//components/permissions:permissions_common",
+    "//components/plus_addresses:features",
+    "//components/plus_addresses:features",
+    "//components/plus_addresses:hats_utils",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/privacy_sandbox:features",
@@ -79,10 +87,19 @@ source_set("impl") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/base",
     "//components/unified_consent",
+    "//components/variations/service",
     "//components/version_info",
     "//components/version_info:channel",
     "//net",
+
+    # `hats` includes some headers not componentized from //c/b/ui:ui, including
+    # performance_controls_hats_service.h, performance_controls_hats_service_factory.h,
+    # and site_settings_helper.h ... but without a circular dependency.
+    "//chrome/browser/ui",
   ]
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/hats:hats" ]
+  }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
@@ -100,6 +117,7 @@ if (!is_android) {
       ":hats",
       ":test_support",
       "//base/test:test_support",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/extensions",
       "//chrome/common",
       "//chrome/common:chrome_features",
@@ -142,15 +160,22 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser:browser_process",
       "//chrome/browser/policy:test_support",
+      "//chrome/browser/prefs",
+      "//chrome/browser/ui/page_info",
       "//chrome/common",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//components/autofill/core/common:features",
       "//components/content_settings/core/common",
       "//components/metrics_services_manager",
+      "//components/plus_addresses:features",
+      "//components/plus_addresses:hats_utils",
       "//components/policy:generated",
       "//components/policy:policy_code_generate",
       "//components/policy/core/common:common_constants",
+      "//components/variations",
+      "//components/variations/service",
       "//components/version_info",
       "//content/public/browser",
       "//content/public/common",

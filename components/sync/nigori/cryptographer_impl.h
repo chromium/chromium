@@ -59,24 +59,24 @@ class CryptographerImpl : public Cryptographer {
   std::string EmplaceKey(const std::string& passphrase,
                          const KeyDerivationParams& derivation_params);
 
-  // Adds all keys from |key_bag| that weren't previously known.
+  // Adds all keys from `key_bag` that weren't previously known.
   //
   // Does NOT set or change the default encryption key.
   void EmplaceKeysFrom(const NigoriKeyBag& key_bag);
 
-  // Drops any pre-existing key pairs and adds all keys from |keys|.
+  // Drops any pre-existing key pairs and adds all keys from `keys`.
   void ReplaceCrossUserSharingKeys(CrossUserSharingKeys keys);
 
-  // Adds the given Public-private key-pair associated with |version|. Replaces
+  // Adds the given Public-private key-pair associated with `version`. Replaces
   // any pre-existing key pair for the given version if exists.
   void SetKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
                   uint32_t version);
 
   // Sets or changes the default encryption key, which causes CanEncrypt() to
-  // return true. |key_name| must not be empty and must represent a known key.
+  // return true. `key_name` must not be empty and must represent a known key.
   void SelectDefaultEncryptionKey(const std::string& key_name);
 
-  // Adds all Nigori keys in |other| that weren't previously known.
+  // Adds all Nigori keys in `other` that weren't previously known.
   void EmplaceAllNigoriKeysFrom(const CryptographerImpl& other);
 
   // Clears the default encryption key, which causes CanEncrypt() to return
@@ -91,10 +91,10 @@ class CryptographerImpl : public Cryptographer {
   // resetting the encryption state.
   void ClearAllKeys();
 
-  // Determines whether |key_name| represents a known key.
+  // Determines whether `key_name` represents a known key.
   bool HasKey(const std::string& key_name) const;
 
-  // Determines whether |key_pair_version| represents a known Public-private
+  // Determines whether `key_pair_version` represents a known Public-private
   // key-pair.
   bool HasKeyPair(uint32_t key_pair_version) const;
 
@@ -109,7 +109,7 @@ class CryptographerImpl : public Cryptographer {
   // Sets or changes the version of the default cross user sharing key.
   void SelectDefaultCrossUserSharingKey(const uint32_t version);
 
-  // Returns a proto representation of the default encryption key. |*this| must
+  // Returns a proto representation of the default encryption key. `*this` must
   // have a default encryption key set, as reflected by CanEncrypt().
   sync_pb::NigoriKey ExportDefaultKey() const;
 
@@ -142,7 +142,7 @@ class CryptographerImpl : public Cryptographer {
   NigoriKeyBag key_bag_;
 
   // The key name associated with the default encryption key. If non-empty, it
-  // must correspond to a key within |key_bag_|. May be empty even if |key_bag_|
+  // must correspond to a key within `key_bag_`. May be empty even if `key_bag_`
   // is not.
   std::string default_encryption_key_name_;
 

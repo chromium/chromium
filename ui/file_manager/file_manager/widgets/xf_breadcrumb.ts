@@ -24,6 +24,10 @@ export class XfBreadcrumb extends XfBase {
   /** The maximum number of path elements shown. */
   @property({type: Number, reflect: true}) maxPathParts = 4;
 
+  /* Should breadcrumb be rendered in small size (for file path display bar in
+   * search) */
+  @property({type: Boolean, reflect: true}) small = false;
+
   static get events() {
     return {
       /** emits when any part of the breadcrumb is changed. */
@@ -204,7 +208,7 @@ export class XfBreadcrumb extends XfBase {
   private onTabkeyClose_(event: Event) {
     const detail = (event as CustomEvent).detail;
     if (!detail.shiftKey) {
-      (this.renderRoot.querySelector(':focus ~ button') as HTMLElement).focus();
+      (this.renderRoot.querySelector<HTMLElement>(':focus ~ button')!).focus();
     } else {  // button#first is left of the button[elider].
       this.$firstButton_.focus();
     }
@@ -290,6 +294,12 @@ function getCSS() {
       width: 20px;
     }
 
+    :host([small]) span[caret] {
+      height: 16px;
+      min-width: 16px;
+      width: 16px;
+    }
+
     :host-context(html[dir='rtl']) span[caret] {
       transform: scaleX(-1);
     }
@@ -318,6 +328,15 @@ function getCSS() {
       text-overflow: ellipsis;
     }
 
+    /* no eliding text in small layout */
+    :host([small]) button {
+      max-width: none;
+    }
+
+    :host([small]) button {
+      font: var(--cros-button-1-font);
+    }
+
     button[disabled] {
       cursor: default;
       margin-inline-end: 4px;
@@ -329,6 +348,7 @@ function getCSS() {
       -webkit-mask-image: url(/foreground/images/files/ui/menu_ng.svg);
       -webkit-mask-position: center;
       -webkit-mask-repeat: no-repeat;
+      -webkit-mask-size: 20px;
       background-color: currentColor;
       height: 48px;
       margin-inline-start: var(--tap-target-shift);
@@ -337,6 +357,14 @@ function getCSS() {
       position: relative;
       transform: rotate(90deg);
       width: 48px;
+    }
+
+    :host([small]) span[elider] {
+      --tap-target-shift: 0;
+      -webkit-mask-size: 16px;
+      height: 32px;
+      min-width: 32px;
+      width: 32px;
     }
 
     button[elider] {
@@ -348,11 +376,24 @@ function getCSS() {
       width: 36px;
     }
 
+    :host([small]) button[elider] {
+      height: 32px;
+      min-width: 32px;
+      width: 32px;
+    }
+
     :host > button:not([elider]) {
       border-radius: 18px;
       height: 36px;
       margin: 6px 2px;
       padding: 0 12px;
+    }
+
+    :host([small]) > button:not([elider]) {
+      border-radius: 16px;
+      height: 32px;
+      margin: 8px 0;
+      padding: 0 8px;
     }
 
     :host > button:first-child {

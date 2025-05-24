@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
@@ -62,6 +63,7 @@ class LoginPolicyTestBase : public ash::OobeBaseTest {
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   ash::LoginManagerMixin login_manager_{&mixin_host_};
+  ash::CryptohomeMixin cryptohome_mixin_{&mixin_host_};
 
  private:
   void SetConfiguration();

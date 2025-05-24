@@ -25,7 +25,7 @@ class DesktopMediaPickerFactory;
 // available as a video stream.
 //
 // TODO(crbug.com/40637301): Rename this class.  Consider merging with
-// DesktopMediaPickerViews and naming the merged class just DesktopMediaPicker.
+// DesktopMediaPickerImpl and naming the merged class just DesktopMediaPicker.
 class DesktopMediaPickerController : private content::WebContentsObserver {
  public:
   using Params = DesktopMediaPicker::Params;

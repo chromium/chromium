@@ -53,6 +53,7 @@ namespace ash {
 
 namespace {
 
+constexpr int kVideoConferenceTrayBubbleCornerRadius = 24;
 constexpr float kTrayButtonsSpacing = 4;
 constexpr float kPrivacyIndicatorRadius = 3;
 
@@ -314,6 +315,9 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
             tray_container()->children().size())
       << "Icons must be updated here in case a media session begins prior to "
          "connecting a secondary display.";
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_ACCESSIBLE_NAME));
 }
 
 VideoConferenceTray::~VideoConferenceTray() {
@@ -338,12 +342,8 @@ views::Widget* VideoConferenceTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->bubble_widget() : nullptr;
 }
 
-std::u16string VideoConferenceTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_ACCESSIBLE_NAME);
-}
-
 std::u16string VideoConferenceTray::GetAccessibleNameForBubble() {
-  return GetAccessibleNameForTray();
+  return l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_ACCESSIBLE_NAME);
 }
 
 void VideoConferenceTray::HideBubbleWithView(
@@ -542,7 +542,7 @@ void VideoConferenceTray::ConstructBubbleWithMediaApps(MediaApps apps) {
   std::unique_ptr<TrayBubbleView> bubble_view;
   auto init_params = CreateInitParamsForTrayBubble(/*tray=*/this);
   init_params.preferred_width = kWideTrayMenuWidth;
-  init_params.corner_radius = kUpdatedBubbleCornerRadius;
+  init_params.corner_radius = kVideoConferenceTrayBubbleCornerRadius;
 
   // If all of the apps are Linux apps, we will just use `LinuxAppsBubbleView`
   // specifically for this situation.

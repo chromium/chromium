@@ -45,7 +45,9 @@ class ContentUiEventHandler {
                            jfloat x,
                            jfloat y,
                            jfloat ticks_x,
-                           jfloat ticks_y);
+                           jfloat ticks_y,
+                           jint meta_state,
+                           jint source);
   void SendMouseEvent(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& obj,
                       jlong time_ns,
@@ -53,8 +55,8 @@ class ContentUiEventHandler {
                       jfloat x,
                       jfloat y,
                       jint pointer_id,
-                      jfloat orientation,
                       jfloat pressure,
+                      jfloat orientation,
                       jfloat tilt,
                       jint android_action_button,
                       jint android_button_state,

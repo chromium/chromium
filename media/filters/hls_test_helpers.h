@@ -46,10 +46,7 @@ class MockDataSource : public CrossOriginDataSource {
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (override));
   MOCK_METHOD(void, SetPreload, (DataSource::Preload preload), (override));
   MOCK_METHOD(GURL, GetUrlAfterRedirects, (), (const, override));
-  MOCK_METHOD(void,
-              OnBufferingHaveEnough,
-              (bool must_cancel_netops),
-              (override));
+  MOCK_METHOD(void, StopPreloading, (), (override));
   MOCK_METHOD(void,
               OnMediaPlaybackRateChanged,
               (double playback_rate),
@@ -151,8 +148,10 @@ class MockHlsRenditionHost : public HlsRenditionHost {
 
   MOCK_METHOD(void,
               UpdateRenditionManifestUri,
-              (std::string, GURL, base::OnceCallback<void(bool)>),
+              (std::string, GURL, HlsDemuxerStatusCallback),
               (override));
+
+  MOCK_METHOD(void, Quit, (HlsDemuxerStatus), (override));
 
   MOCK_METHOD(void,
               ReadStream,
@@ -169,7 +168,7 @@ class MockHlsRenditionHost : public HlsRenditionHost {
 
 class MockHlsRendition : public HlsRendition {
  public:
-  MockHlsRendition();
+  explicit MockHlsRendition(GURL uri = GURL("https://hls.io/manifest.m3u8"));
   ~MockHlsRendition() override;
 
   MOCK_METHOD(void,
@@ -187,8 +186,14 @@ class MockHlsRendition : public HlsRendition {
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void,
               UpdatePlaylist,
-              (scoped_refptr<hls::MediaPlaylist>, std::optional<GURL>),
+              (scoped_refptr<hls::MediaPlaylist>),
               (override));
+  MOCK_METHOD(void, MockUpdatePlaylistURI, (const GURL&), ());
+  void UpdatePlaylistURI(const GURL& playlist_uri) override;
+  const GURL& MediaPlaylistUri() const override;
+
+ private:
+  GURL uri_;
 };
 
 class StringHlsDataSourceStreamFactory {

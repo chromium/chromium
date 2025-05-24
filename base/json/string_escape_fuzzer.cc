@@ -13,8 +13,9 @@
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size < 2)
+  if (size < 2) {
     return 0;
+  }
 
   // SAFETY: required from fuzzer.
   auto all_input = UNSAFE_BUFFERS(base::span<const uint8_t>(data, size));

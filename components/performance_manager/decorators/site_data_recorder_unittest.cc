@@ -119,13 +119,6 @@ void NavigatePageNodeOnUIThread(content::WebContents* contents,
   web_contents_tester->NavigateAndCommit(url);
 }
 
-void RunTaskOnPMSequence(base::OnceClosure task) {
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(FROM_HERE, std::move(task));
-  PerformanceManager::CallOnGraph(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-}
-
 MockDataWriter* GetMockWriterForPageNode(const PageNode* page_node) {
   return static_cast<MockDataWriter*>(
       SiteDataRecorder::Data::GetForTesting(page_node).writer());
@@ -142,35 +135,29 @@ class SiteDataRecorderTest : public PerformanceManagerTestHarness {
 
   void SetUp() override {
     PerformanceManagerTestHarness::SetUp();
-    cache_factory_ = base::SequenceBound<SiteDataCacheFactory>(
-        PerformanceManager::GetTaskRunner());
-    auto recorder = std::make_unique<SiteDataRecorder>();
-    recorder_ = recorder.get();
-    PerformanceManager::PassToGraph(FROM_HERE, std::move(recorder));
+    cache_factory_ = std::make_unique<SiteDataCacheFactory>();
+    recorder_ = PerformanceManager::GetGraph()->PassToGraph(
+        std::make_unique<SiteDataRecorder>());
 
     auto browser_context_id = GetBrowserContext()->UniqueId();
-    RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-      auto* factory = SiteDataCacheFactory::GetInstance();
-      ASSERT_TRUE(factory);
-      factory->SetCacheForTesting(browser_context_id,
-                                  std::make_unique<MockDataCache>());
-    }));
+    auto* factory = SiteDataCacheFactory::GetInstance();
+    ASSERT_TRUE(factory);
+    factory->SetCacheForTesting(browser_context_id,
+                                std::make_unique<MockDataCache>());
 
     SetContents(CreateTestWebContents());
     base::WeakPtr<PageNode> page_node =
         PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
-    RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-      auto* page_node_impl = PageNodeImpl::FromNode(page_node.get());
-      page_node_impl->SetIsAudible(false);
-      page_node_impl->SetIsVisible(false);
-      page_node_impl->SetLoadingState(PageNode::LoadingState::kLoading);
-    }));
+    auto* page_node_impl = PageNodeImpl::FromNode(page_node.get());
+    page_node_impl->SetIsAudible(false);
+    page_node_impl->SetIsVisible(false);
+    page_node_impl->SetLoadingState(PageNode::LoadingState::kLoading);
   }
 
   void TearDown() override {
     DeleteContents();
     recorder_ = nullptr;
-    cache_factory_.SynchronouslyResetForTest();
+    cache_factory_ = nullptr;
     PerformanceManagerTestHarness::TearDown();
   }
 
@@ -179,53 +166,42 @@ class SiteDataRecorderTest : public PerformanceManagerTestHarness {
 
  private:
   raw_ptr<SiteDataRecorder> recorder_ = nullptr;
-  base::SequenceBound<SiteDataCacheFactory> cache_factory_;
+  std::unique_ptr<SiteDataCacheFactory> cache_factory_;
 };
 
 TEST_F(SiteDataRecorderTest, NavigationEventsBasicTests) {
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
 
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    EXPECT_TRUE(page_node);
-    EXPECT_FALSE(
-        SiteDataRecorder::Data::GetForTesting(page_node.get()).writer());
-  }));
+  EXPECT_TRUE(page_node);
+  EXPECT_FALSE(SiteDataRecorder::Data::GetForTesting(page_node.get()).writer());
 
   // Send a navigation event with the |committed| bit set and make sure that a
   // writer has been created for this origin.
   NavigatePageNodeOnUIThread(web_contents(), kTestUrl1);
 
-  MockDataWriter* mock_writer = nullptr;
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    mock_writer = GetMockWriterForPageNode(page_node.get());
-    ASSERT_TRUE(mock_writer);
-    EXPECT_EQ(url::Origin::Create(kTestUrl1), mock_writer->Origin());
-  }));
+  MockDataWriter* mock_writer = GetMockWriterForPageNode(page_node.get());
+  ASSERT_TRUE(mock_writer);
+  EXPECT_EQ(url::Origin::Create(kTestUrl1), mock_writer->Origin());
 
   {
     // A navigation to the same origin shouldn't cause caused this writer to get
     // destroyed.
     bool writer_has_been_destroyed = false;
 
-    RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-      mock_writer->SetOnDestroyIndicator(&writer_has_been_destroyed);
-    }));
+    mock_writer->SetOnDestroyIndicator(&writer_has_been_destroyed);
 
     NavigatePageNodeOnUIThread(web_contents(), kTestUrl1);
-    RunTaskOnPMSequence(base::BindLambdaForTesting(
-        [&]() { EXPECT_FALSE(writer_has_been_destroyed); }));
+    EXPECT_FALSE(writer_has_been_destroyed);
 
     // Navigate to a different origin and make sure that this causes the
     // destruction of the writer.
     NavigatePageNodeOnUIThread(web_contents(), kTestUrl2);
 
-    RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-      EXPECT_TRUE(writer_has_been_destroyed);
-      mock_writer = GetMockWriterForPageNode(page_node.get());
-      EXPECT_EQ(url::Origin::Create(kTestUrl2), mock_writer->Origin());
-      mock_writer->SetOnDestroyIndicator(nullptr);
-    }));
+    EXPECT_TRUE(writer_has_been_destroyed);
+    mock_writer = GetMockWriterForPageNode(page_node.get());
+    EXPECT_EQ(url::Origin::Create(kTestUrl2), mock_writer->Origin());
+    mock_writer->SetOnDestroyIndicator(nullptr);
   }
 }
 
@@ -239,86 +215,75 @@ TEST_F(SiteDataRecorderTest, FeatureEventsGetForwardedWhenInBackground) {
 
   MockDataWriter* mock_writer = nullptr;
   PageNodeImpl* node_impl = nullptr;
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    mock_writer = GetMockWriterForPageNode(page_node.get());
-    ASSERT_TRUE(mock_writer);
-    EXPECT_EQ(url::Origin::Create(kTestUrl1), mock_writer->Origin());
+  mock_writer = GetMockWriterForPageNode(page_node.get());
+  ASSERT_TRUE(mock_writer);
+  EXPECT_EQ(url::Origin::Create(kTestUrl1), mock_writer->Origin());
 
-    node_impl = PageNodeImpl::FromNode(page_node.get());
-    EXPECT_CALL(*mock_writer, NotifySiteLoaded(TabVisibility::kBackground));
-    node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-    ::testing::Mock::VerifyAndClear(mock_writer);
+  node_impl = PageNodeImpl::FromNode(page_node.get());
+  EXPECT_CALL(*mock_writer, NotifySiteLoaded(TabVisibility::kBackground));
+  node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
-    EXPECT_CALL(*mock_writer, NotifySiteForegrounded(true));
-  }));
+  EXPECT_CALL(*mock_writer, NotifySiteForegrounded(true));
 
   web_contents()->WasShown();
 
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    ::testing::Mock::VerifyAndClear(mock_writer);
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
-    // Ensure that no event gets forwarded if the tab is not in background.
-    node_impl->OnFaviconUpdated();
-    ::testing::Mock::VerifyAndClear(mock_writer);
-    node_impl->OnTitleUpdated();
-    ::testing::Mock::VerifyAndClear(mock_writer);
-    node_impl->SetIsAudible(true);
-    ::testing::Mock::VerifyAndClear(mock_writer);
+  // Ensure that no event gets forwarded if the tab is not in background.
+  node_impl->OnFaviconUpdated();
+  ::testing::Mock::VerifyAndClear(mock_writer);
+  node_impl->OnTitleUpdated();
+  ::testing::Mock::VerifyAndClear(mock_writer);
+  node_impl->SetIsAudible(true);
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
-    EXPECT_CALL(*mock_writer, NotifySiteBackgrounded(true));
-  }));
+  EXPECT_CALL(*mock_writer, NotifySiteBackgrounded(true));
   web_contents()->WasHidden();
 
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    ::testing::Mock::VerifyAndClear(mock_writer);
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
-    // Title and Favicon should be ignored during the post-loading grace period.
-    node_impl->OnFaviconUpdated();
-    node_impl->OnTitleUpdated();
-    ::testing::Mock::VerifyAndClear(mock_writer);
-  }));
+  // Title and Favicon should be ignored during the post-loading grace period.
+  node_impl->OnFaviconUpdated();
+  node_impl->OnTitleUpdated();
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
   task_environment()->FastForwardBy(kTitleOrFaviconChangePostLoadGracePeriod);
 
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    EXPECT_CALL(*mock_writer, NotifyUpdatesFaviconInBackground());
-    node_impl->OnFaviconUpdated();
-    ::testing::Mock::VerifyAndClear(mock_writer);
-    EXPECT_CALL(*mock_writer, NotifyUpdatesTitleInBackground());
-    node_impl->OnTitleUpdated();
-    ::testing::Mock::VerifyAndClear(mock_writer);
+  EXPECT_CALL(*mock_writer, NotifyUpdatesFaviconInBackground());
+  node_impl->OnFaviconUpdated();
+  ::testing::Mock::VerifyAndClear(mock_writer);
+  EXPECT_CALL(*mock_writer, NotifyUpdatesTitleInBackground());
+  node_impl->OnTitleUpdated();
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
-    // Brievly switch the tab to foreground to reset the last backgrounded time.
-    EXPECT_CALL(*mock_writer, NotifySiteForegrounded(true));
-    EXPECT_CALL(*mock_writer, NotifySiteBackgrounded(true));
-  }));
+  // Brievly switch the tab to foreground to reset the last backgrounded time.
+  EXPECT_CALL(*mock_writer, NotifySiteForegrounded(true));
+  EXPECT_CALL(*mock_writer, NotifySiteBackgrounded(true));
+
   web_contents()->WasShown();
   web_contents()->WasHidden();
 
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    ::testing::Mock::VerifyAndClear(mock_writer);
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
-    // These events should be ignored during the post-background grace period.
-    node_impl->SetIsAudible(true);
-    node_impl->SetIsAudible(false);
-    node_impl->OnFaviconUpdated();
-    node_impl->OnTitleUpdated();
-    ::testing::Mock::VerifyAndClear(mock_writer);
-  }));
+  // These events should be ignored during the post-background grace period.
+  node_impl->SetIsAudible(true);
+  node_impl->SetIsAudible(false);
+  node_impl->OnFaviconUpdated();
+  node_impl->OnTitleUpdated();
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
   task_environment()->FastForwardBy(kFeatureUsagePostBackgroundGracePeriod);
 
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    EXPECT_CALL(*mock_writer, NotifyUsesAudioInBackground());
-    EXPECT_CALL(*mock_writer, NotifyUpdatesFaviconInBackground());
-    EXPECT_CALL(*mock_writer, NotifyUpdatesTitleInBackground());
-    node_impl->SetIsAudible(true);
-    node_impl->OnFaviconUpdated();
-    node_impl->OnTitleUpdated();
-    ::testing::Mock::VerifyAndClear(mock_writer);
+  EXPECT_CALL(*mock_writer, NotifyUsesAudioInBackground());
+  EXPECT_CALL(*mock_writer, NotifyUpdatesFaviconInBackground());
+  EXPECT_CALL(*mock_writer, NotifyUpdatesTitleInBackground());
+  node_impl->SetIsAudible(true);
+  node_impl->OnFaviconUpdated();
+  node_impl->OnTitleUpdated();
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
-    EXPECT_CALL(*mock_writer, NotifySiteUnloaded(TabVisibility::kBackground));
-  }));
+  EXPECT_CALL(*mock_writer, NotifySiteUnloaded(TabVisibility::kBackground));
 
   NavigatePageNodeOnUIThread(web_contents(), GURL("about:blank"));
 }
@@ -328,20 +293,18 @@ TEST_F(SiteDataRecorderTest, FeatureEventsIgnoredWhenLoadingInBackground) {
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   NavigatePageNodeOnUIThread(web_contents(), kTestUrl1);
 
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    MockDataWriter* mock_writer = GetMockWriterForPageNode(page_node.get());
-    ASSERT_TRUE(mock_writer);
-    EXPECT_EQ(url::Origin::Create(kTestUrl1), mock_writer->Origin());
+  MockDataWriter* mock_writer = GetMockWriterForPageNode(page_node.get());
+  ASSERT_TRUE(mock_writer);
+  EXPECT_EQ(url::Origin::Create(kTestUrl1), mock_writer->Origin());
 
-    PageNodeImpl* node_impl = PageNodeImpl::FromNode(page_node.get());
-    ::testing::Mock::VerifyAndClear(mock_writer);
-    node_impl->OnFaviconUpdated();
-    ::testing::Mock::VerifyAndClear(mock_writer);
-    node_impl->OnTitleUpdated();
-    ::testing::Mock::VerifyAndClear(mock_writer);
-    node_impl->SetIsAudible(true);
-    ::testing::Mock::VerifyAndClear(mock_writer);
-  }));
+  PageNodeImpl* node_impl = PageNodeImpl::FromNode(page_node.get());
+  ::testing::Mock::VerifyAndClear(mock_writer);
+  node_impl->OnFaviconUpdated();
+  ::testing::Mock::VerifyAndClear(mock_writer);
+  node_impl->OnTitleUpdated();
+  ::testing::Mock::VerifyAndClear(mock_writer);
+  node_impl->SetIsAudible(true);
+  ::testing::Mock::VerifyAndClear(mock_writer);
 }
 
 TEST_F(SiteDataRecorderTest, VisibilityEvent) {
@@ -349,20 +312,18 @@ TEST_F(SiteDataRecorderTest, VisibilityEvent) {
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   NavigatePageNodeOnUIThread(web_contents(), kTestUrl1);
 
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    MockDataWriter* mock_writer = GetMockWriterForPageNode(page_node.get());
-    PageNodeImpl* node_impl = PageNodeImpl::FromNode(page_node.get());
+  MockDataWriter* mock_writer = GetMockWriterForPageNode(page_node.get());
+  PageNodeImpl* node_impl = PageNodeImpl::FromNode(page_node.get());
 
-    // Test that the visibility events get forwarded to the writer.
+  // Test that the visibility events get forwarded to the writer.
 
-    EXPECT_CALL(*mock_writer, NotifySiteForegrounded(false));
-    node_impl->SetIsVisible(true);
-    ::testing::Mock::VerifyAndClear(mock_writer);
+  EXPECT_CALL(*mock_writer, NotifySiteForegrounded(false));
+  node_impl->SetIsVisible(true);
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
-    EXPECT_CALL(*mock_writer, NotifySiteBackgrounded(false));
-    node_impl->SetIsVisible(false);
-    ::testing::Mock::VerifyAndClear(mock_writer);
-  }));
+  EXPECT_CALL(*mock_writer, NotifySiteBackgrounded(false));
+  node_impl->SetIsVisible(false);
+  ::testing::Mock::VerifyAndClear(mock_writer);
 }
 
 TEST_F(SiteDataRecorderTest, LoadEvent) {
@@ -370,20 +331,18 @@ TEST_F(SiteDataRecorderTest, LoadEvent) {
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   NavigatePageNodeOnUIThread(web_contents(), kTestUrl1);
 
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    MockDataWriter* mock_writer = GetMockWriterForPageNode(page_node.get());
-    PageNodeImpl* node_impl = PageNodeImpl::FromNode(page_node.get());
+  MockDataWriter* mock_writer = GetMockWriterForPageNode(page_node.get());
+  PageNodeImpl* node_impl = PageNodeImpl::FromNode(page_node.get());
 
-    // Test that the load/unload events get forwarded to the writer.
+  // Test that the load/unload events get forwarded to the writer.
 
-    EXPECT_CALL(*mock_writer, NotifySiteLoaded(TabVisibility::kBackground));
-    node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-    ::testing::Mock::VerifyAndClear(mock_writer);
+  EXPECT_CALL(*mock_writer, NotifySiteLoaded(TabVisibility::kBackground));
+  node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ::testing::Mock::VerifyAndClear(mock_writer);
 
-    EXPECT_CALL(*mock_writer, NotifySiteUnloaded(TabVisibility::kBackground));
-    node_impl->SetLoadingState(PageNode::LoadingState::kLoading);
-    ::testing::Mock::VerifyAndClear(mock_writer);
-  }));
+  EXPECT_CALL(*mock_writer, NotifySiteUnloaded(TabVisibility::kBackground));
+  node_impl->SetLoadingState(PageNode::LoadingState::kLoading);
+  ::testing::Mock::VerifyAndClear(mock_writer);
 }
 
 TEST_F(SiteDataRecorderTest, NodeDataAccessors) {
@@ -392,24 +351,19 @@ TEST_F(SiteDataRecorderTest, NodeDataAccessors) {
   // origin.
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    ASSERT_TRUE(page_node);
-    auto& data = SiteDataRecorder::Data::FromPageNode(page_node.get());
-    EXPECT_FALSE(data.reader());
-    EXPECT_FALSE(data.writer());
-    EXPECT_FALSE(SiteDataRecorder::Data::GetReaderForPageNode(page_node.get()));
-  }));
+  ASSERT_TRUE(page_node);
+  auto& data = SiteDataRecorder::Data::FromPageNode(page_node.get());
+  EXPECT_FALSE(data.reader());
+  EXPECT_FALSE(data.writer());
+  EXPECT_FALSE(SiteDataRecorder::Data::GetReaderForPageNode(page_node.get()));
 
   NavigatePageNodeOnUIThread(web_contents(), kTestUrl1);
 
-  RunTaskOnPMSequence(base::BindLambdaForTesting([&]() {
-    ASSERT_TRUE(page_node);
-    auto& data = SiteDataRecorder::Data::FromPageNode(page_node.get());
-    EXPECT_TRUE(data.reader());
-    EXPECT_TRUE(data.writer());
-    EXPECT_EQ(SiteDataRecorder::Data::GetReaderForPageNode(page_node.get()),
-              data.reader());
-  }));
+  ASSERT_TRUE(page_node);
+  EXPECT_TRUE(data.reader());
+  EXPECT_TRUE(data.writer());
+  EXPECT_EQ(SiteDataRecorder::Data::GetReaderForPageNode(page_node.get()),
+            data.reader());
 }
 
 }  // namespace performance_manager

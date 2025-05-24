@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_TEST_FAKE_OVERLAY_REQUEST_COORDINATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_TEST_FAKE_OVERLAY_REQUEST_COORDINATOR_DELEGATE_H_
 
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator_delegate.h"
-
 #include <map>
+
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator_delegate.h"
 
 // Fake implementation of OverlayRequestCoordinatorDelegate.
 class FakeOverlayRequestCoordinatorDelegate

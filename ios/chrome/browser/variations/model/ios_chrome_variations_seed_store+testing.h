@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_VARIATIONS_MODEL_IOS_CHROME_VARIATIONS_SEED_STORE_TESTING_H_
 #define IOS_CHROME_BROWSER_VARIATIONS_MODEL_IOS_CHROME_VARIATIONS_SEED_STORE_TESTING_H_
 
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
+
 // Unit test interface for IOSChromeVariationsSeedStore.
 @interface IOSChromeVariationsSeedStore (Testing)
 

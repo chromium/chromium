@@ -62,7 +62,7 @@ export const CrContainerShadowMixinLit = <T extends Constructor<CrLitElement>>(
     override connectedCallback() {
       super.connectedCallback();
 
-      const container = this.shadowRoot!.querySelector('#container');
+      const container = this.shadowRoot.querySelector('#container');
       assert(container);
       const hasBottomShadow = container.hasAttribute('show-bottom-shadow');
       this.sides_ = hasBottomShadow ?

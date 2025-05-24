@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>CSS Overflow Test: scroll-state() and ::scroll-marker-group crash test</title>
+<link rel="help" href="https://crbug.com/379612194">
+<style>
+  #scroller {
+    container-type: scroll-state;
+    scroll-marker-group: before;
+    overflow-x: auto;
+    overflow-y: clip;
+    width: 200px;
+    height: 200px;
+  }
+  #filler {
+    width: 400px;
+    height: 100px;
+    background: lime;
+  }
+  #filler::scroll-marker { content: "X" }
+  @container not scroll-state(scrollable: right) {
+    ::scroll-marker-group {
+      background: pink;
+      display: block;
+      height: 200px;
+    }
+  }
+</style>
+<div id="scroller">
+  <div id="filler"></div>
+</div>

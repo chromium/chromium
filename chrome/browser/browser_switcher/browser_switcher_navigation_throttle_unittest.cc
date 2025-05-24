@@ -20,6 +20,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,9 +81,8 @@ class BrowserSwitcherNavigationThrottleTest
     return std::make_unique<NiceMock<MockNavigationHandle>>(url, main_rfh());
   }
 
-  std::unique_ptr<NavigationThrottle> CreateNavigationThrottle(
-      content::NavigationHandle* handle) {
-    return BrowserSwitcherNavigationThrottle::MaybeCreateThrottleFor(handle);
+  void CreateNavigationThrottle(content::NavigationThrottleRegistry& registry) {
+    BrowserSwitcherNavigationThrottle::MaybeCreateAndAdd(registry);
   }
 
   MockBrowserSwitcherSitelist* sitelist() { return sitelist_; }
@@ -102,19 +102,26 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, ShouldIgnoreNavigation) {
   EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(stay()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://example.com/"));
-  std::unique_ptr<NavigationThrottle> throttle =
-      CreateNavigationThrottle(handle.get());
-  EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest());
+  content::MockNavigationThrottleRegistry registry(
+      handle.get(),
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  CreateNavigationThrottle(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            registry.throttles()[0]->WillStartRequest());
 }
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnStartRequest) {
   EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(go()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://example.com/"));
-  std::unique_ptr<NavigationThrottle> throttle =
-      CreateNavigationThrottle(handle.get());
+  content::MockNavigationThrottleRegistry registry(
+      handle.get(),
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  CreateNavigationThrottle(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
   EXPECT_EQ(NavigationThrottle::CANCEL_AND_IGNORE,
-            throttle->WillStartRequest());
+            registry.throttles()[0]->WillStartRequest());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -126,15 +133,19 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnRedirectRequest) {
       CreateMockNavigationHandle(GURL("https://yahoo.com/"));
   ON_CALL(*handle, WasServerRedirect()).WillByDefault(Return(false));
 
-  std::unique_ptr<NavigationThrottle> throttle =
-      CreateNavigationThrottle(handle.get());
-  EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest());
+  content::MockNavigationThrottleRegistry registry(
+      handle.get(),
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  CreateNavigationThrottle(registry);
+  EXPECT_EQ(1u, registry.throttles().size());
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            registry.throttles()[0]->WillStartRequest());
 
   ON_CALL(*handle, WasServerRedirect()).WillByDefault(Return(true));
 
   handle->set_url(GURL("https://bing.com/"));
   EXPECT_EQ(NavigationThrottle::CANCEL_AND_IGNORE,
-            throttle->WillRedirectRequest());
+            registry.throttles()[0]->WillRedirectRequest());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -145,14 +156,15 @@ TEST_F(BrowserSwitcherNavigationThrottleTest,
   handle->set_has_committed(true);
   handle->set_is_in_primary_main_frame(false);
 
-  std::unique_ptr<NavigationThrottle> throttle_non_primary_main_frame =
-      CreateNavigationThrottle(handle.get());
-  EXPECT_EQ(nullptr, throttle_non_primary_main_frame.get());
+  content::MockNavigationThrottleRegistry registry(
+      handle.get(),
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  CreateNavigationThrottle(registry);
+  EXPECT_EQ(0u, registry.throttles().size());
 
   handle->set_is_in_primary_main_frame(true);
-  std::unique_ptr<NavigationThrottle> throttle_in_primary_main_frame =
-      CreateNavigationThrottle(handle.get());
-  EXPECT_NE(nullptr, throttle_in_primary_main_frame.get());
+  CreateNavigationThrottle(registry);
+  EXPECT_EQ(1u, registry.throttles().size());
 }
 
 }  // namespace browser_switcher

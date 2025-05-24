@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -38,7 +39,7 @@ class ThemeTrackingImageViewTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  SkColor GetSimulatedBackgroundColor() const {
+  ui::ColorVariant GetSimulatedBackgroundColor() const {
     return is_dark_ ? SK_ColorBLACK : SK_ColorWHITE;
   }
 

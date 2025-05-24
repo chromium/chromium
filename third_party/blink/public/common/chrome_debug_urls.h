@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/common_export.h"
 
 class GURL;
@@ -52,9 +51,7 @@ inline constexpr char kChromeUIProcessInternalsURL[] =
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr char kChromeUIGpuJavaCrashURL[] = "chrome://gpu-java-crash/";
 #endif
-#if BUILDFLAG(ENABLE_RUST_CRASH)
 inline constexpr char kChromeUICrashRustURL[] = "chrome://crash/rust";
-#endif
 #if BUILDFLAG(IS_WIN)
 inline constexpr char kChromeUIBrowserHeapCorruptionURL[] =
     "chrome://inducebrowserheapcorruption/";
@@ -76,10 +73,8 @@ inline constexpr char kChromeUICrashCorruptHeapBlockURL[] =
 inline constexpr char kChromeUICrashCorruptHeapURL[] =
     "chrome://crash/corrupt-heap";
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(ENABLE_RUST_CRASH)
 inline constexpr char kChromeUICrashRustOverflowURL[] =
     "chrome://crash/rust-overflow";
-#endif  // BUILDFLAG(ENABLE_RUST_CRASH)
 #endif  // ADDRESS_SANITIZER
 
 #if DCHECK_IS_ON()

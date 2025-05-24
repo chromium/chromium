@@ -12,7 +12,6 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -51,11 +50,13 @@ bool DetailsEquals(const std::unique_ptr<ChromeSearchResult>& result,
                    const std::u16string& details) {
   const auto& details_vector = result->details_text_vector();
 
-  if (details_vector.size() != 1u)
+  if (details_vector.size() != 1u) {
     return false;
+  }
 
-  if (details_vector[0].GetType() != ash::SearchResultTextItemType::kString)
+  if (details_vector[0].GetType() != ash::SearchResultTextItemType::kString) {
     return false;
+  }
 
   return details_vector[0].GetText() == details;
 }
@@ -65,16 +66,6 @@ bool DetailsEquals(const std::unique_ptr<ChromeSearchResult>& result,
 // Parameterized by the ItemSuggest "enabled_override" parameter.
 class GameProviderTest : public testing::Test,
                          public testing::WithParamInterface<bool> {
- public:
-  GameProviderTest() {
-    bool enabled_override = GetParam();
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {search_features::kLauncherGameSearch,
-         {{"enabled_override", enabled_override ? "true" : "false"}}}};
-    feature_list_.InitWithFeaturesAndParameters(
-        enabled_features, std::vector<base::test::FeatureRef>());
-  }
-
  protected:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
@@ -159,15 +150,10 @@ TEST_P(GameProviderTest, Policy) {
   StartSearch(u"first");
   EXPECT_THAT(LastResults(), ElementsAre(Title(u"First Title")));
 
-  // If Suggested Content is disabled, only show results if the override is on.
+  // If Suggested Content is disabled no result should be displayed.
   profile_->GetPrefs()->SetBoolean(ash::prefs::kSuggestedContentEnabled, false);
   StartSearch(u"first");
-  bool enabled_override = GetParam();
-  if (enabled_override) {
-    EXPECT_THAT(LastResults(), ElementsAre(Title(u"First Title")));
-  } else {
-    EXPECT_TRUE(LastResults().empty());
-  }
+  EXPECT_TRUE(LastResults().empty());
 }
 
 // Tests that games with the same title but different sources appear in a random

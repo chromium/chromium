@@ -7,9 +7,9 @@
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
-#import "components/autofill/core/browser/profile_requirement_utils.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#import "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_list_delegate.h"
@@ -19,13 +19,13 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -46,7 +46,7 @@ std::vector<AutofillProfile> FetchAddresses(
   // Make copies of the received `fetched_addresses` to not make any assumption
   // over their lifetime and make sure that the AutofillProfile objects stay
   // valid throughout the lifetime of this class.
-  base::ranges::transform(
+  std::ranges::transform(
       fetched_addresses, std::back_inserter(addresses),
       [](const AutofillProfile* address) { return *address; });
 
@@ -213,8 +213,6 @@ std::vector<AutofillProfile> FetchAddresses(
 // Evaluates whether or not the option to move the address to the account should
 // be available when navigating to the details page of the given address.
 - (BOOL)offerMigrateToAccountForAddress:(const AutofillProfile&)address {
-  BOOL syncIsEnabled = _personalDataManager->address_data_manager()
-                           .IsSyncFeatureEnabledForAutofill();
   BOOL addressIsLocalOrSyncable = !address.IsAccountProfile();
   BOOL addressIsEligibleForAccountMigration =
       addressIsLocalOrSyncable &&
@@ -222,8 +220,7 @@ std::vector<AutofillProfile> FetchAddresses(
           _personalDataManager->address_data_manager(), address);
   BOOL userEmailIsValid = [self userEmail] != nil;
 
-  return !syncIsEnabled && addressIsEligibleForAccountMigration &&
-         userEmailIsValid;
+  return addressIsEligibleForAccountMigration && userEmailIsValid;
 }
 
 // Returns the user's identity email address.

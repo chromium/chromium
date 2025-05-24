@@ -32,6 +32,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -43,6 +44,8 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const std::string& metadata,
       const base::FilePath& path,
       uint64_t file_size,
+      bool is_obfuscated,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -53,6 +56,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -74,6 +78,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
@@ -83,6 +88,8 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const std::string& metadata,
       const base::FilePath& file,
       uint64_t file_size,
+      bool is_obfuscated,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
@@ -91,6 +98,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
@@ -156,6 +164,8 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
   base::Time start_time_;
 
   bool scan_complete_ = false;
+
+  bool is_obfuscated_ = false;
 
   base::WeakPtrFactory<MultipartUploadRequest> weak_factory_{this};
 };

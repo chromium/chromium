@@ -10,6 +10,7 @@
 #include "content/browser/attribution_reporting/aggregatable_result.mojom.h"
 #include "content/browser/attribution_reporting/event_level_result.mojom.h"
 #include "content/common/content_export.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 
@@ -23,7 +24,8 @@ class CONTENT_EXPORT AttributionTrigger {
   AttributionTrigger(attribution_reporting::SuitableOrigin reporting_origin,
                      attribution_reporting::TriggerRegistration registration,
                      attribution_reporting::SuitableOrigin destination_origin,
-                     bool is_within_fenced_frame);
+                     bool is_within_fenced_frame,
+                     ukm::SourceId);
 
   AttributionTrigger(const AttributionTrigger&);
   AttributionTrigger& operator=(const AttributionTrigger&);
@@ -49,6 +51,8 @@ class CONTENT_EXPORT AttributionTrigger {
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
+  ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
+
   bool HasAggregatableData() const;
 
   friend bool operator==(const AttributionTrigger&,
@@ -64,6 +68,9 @@ class CONTENT_EXPORT AttributionTrigger {
 
   // Whether the trigger is registered within a fenced frame tree.
   bool is_within_fenced_frame_;
+
+  // The source ID used to record UKM.
+  ukm::SourceId ukm_source_id_;
 };
 
 }  // namespace content

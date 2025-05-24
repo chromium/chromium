@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/features/simple_feature.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -24,7 +20,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/complex_feature.h"
 #include "extensions/common/features/feature.h"
@@ -104,7 +99,7 @@ class SimpleFeatureTest : public testing::Test {
 };
 
 TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
-  const IsAvailableTestData tests[] = {
+  const auto tests = std::to_array<IsAvailableTestData>({
       {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, -1, kUnspecifiedContextId,
        Feature::IS_AVAILABLE},
@@ -125,11 +120,11 @@ TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
        Feature::IS_AVAILABLE},
       {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, 25, kUnspecifiedContextId,
-       Feature::IS_AVAILABLE}};
+       Feature::IS_AVAILABLE},
+  });
 
   SimpleFeature feature;
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    const IsAvailableTestData& test = tests[i];
+  for (const auto& test : tests) {
     EXPECT_EQ(test.expected_result,
               feature
                   .IsAvailableToManifest(HashedExtensionId(test.extension_id),
@@ -429,27 +424,6 @@ TEST_F(SimpleFeatureTest, Context) {
                                       kUnspecifiedContextId, TestContextData())
                 .result());
 
-  {
-    Feature::Availability availability = feature.IsAvailableToContext(
-        extension.get(), mojom::ContextType::kLockscreenExtension,
-        Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId, TestContextData());
-    EXPECT_EQ(Feature::INVALID_CONTEXT, availability.result());
-    EXPECT_EQ(
-        "'somefeature' is only allowed to run in privileged pages, "
-        "but this is a lock screen app",
-        availability.message());
-  }
-
-  feature.set_contexts({mojom::ContextType::kLockscreenExtension});
-
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature
-                .IsAvailableToContext(extension.get(),
-                                      mojom::ContextType::kLockscreenExtension,
-                                      Feature::CHROMEOS_PLATFORM,
-                                      kUnspecifiedContextId, TestContextData())
-                .result());
-
   feature.set_min_manifest_version(22);
   EXPECT_EQ(Feature::INVALID_MIN_MANIFEST_VERSION,
             feature
@@ -485,7 +459,7 @@ TEST_F(SimpleFeatureTest, SessionType) {
   EXPECT_EQ("", error);
   ASSERT_TRUE(extension.get());
 
-  const FeatureSessionTypeTestData kTestData[] = {
+  const auto kTestData = std::to_array<FeatureSessionTypeTestData>({
       {"kiosk_feature in kiosk session",
        Feature::IS_AVAILABLE,
        mojom::FeatureSessionType::kKiosk,
@@ -560,32 +534,33 @@ TEST_F(SimpleFeatureTest, SessionType) {
       {"feature with kiosk session type in auto-launched kiosk session",
        Feature::IS_AVAILABLE,
        mojom::FeatureSessionType::kAutolaunchedKiosk,
-       {mojom::FeatureSessionType::kKiosk}}};
+       {mojom::FeatureSessionType::kKiosk}},
+  });
 
-  for (size_t i = 0; i < std::size(kTestData); ++i) {
+  for (const auto& entry : kTestData) {
     std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> current_session(
-        ScopedCurrentFeatureSessionType(kTestData[i].current_session_type));
+        ScopedCurrentFeatureSessionType(entry.current_session_type));
 
     SimpleFeature feature;
-    feature.set_session_types(kTestData[i].feature_session_types);
+    feature.set_session_types(entry.feature_session_types);
 
-    EXPECT_EQ(kTestData[i].expected_availability,
+    EXPECT_EQ(entry.expected_availability,
               feature
                   .IsAvailableToContext(
                       extension.get(), mojom::ContextType::kPrivilegedExtension,
                       Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
                       TestContextData())
                   .result())
-        << "Failed test '" << kTestData[i].desc << "'.";
+        << "Failed test '" << entry.desc << "'.";
 
-    EXPECT_EQ(kTestData[i].expected_availability,
+    EXPECT_EQ(entry.expected_availability,
               feature
                   .IsAvailableToManifest(
                       extension->hashed_id(), Manifest::TYPE_UNKNOWN,
                       ManifestLocation::kInvalidLocation, -1,
                       Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
                   .result())
-        << "Failed test '" << kTestData[i].desc << "'.";
+        << "Failed test '" << entry.desc << "'.";
   }
 }
 
@@ -795,25 +770,6 @@ TEST_F(SimpleFeatureTest, FeatureFlags) {
   EXPECT_EQ(Feature::IS_AVAILABLE,
             simple_feature_2.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
-}
-
-TEST_F(SimpleFeatureTest, IsIdInArray) {
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("", {}, 0));
-  EXPECT_FALSE(SimpleFeature::IsIdInArray(
-      "bbbbccccdddddddddeeeeeeffffgghhh", {}, 0));
-
-  const char* const kIdArray[] = {
-    "bbbbccccdddddddddeeeeeeffffgghhh",
-    // aaaabbbbccccddddeeeeffffgggghhhh
-    "9A0417016F345C934A1A88F55CA17C05014EEEBA"
-  };
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("", kIdArray, std::size(kIdArray)));
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                          kIdArray, std::size(kIdArray)));
-  EXPECT_TRUE(SimpleFeature::IsIdInArray("bbbbccccdddddddddeeeeeeffffgghhh",
-                                         kIdArray, std::size(kIdArray)));
-  EXPECT_TRUE(SimpleFeature::IsIdInArray("aaaabbbbccccddddeeeeffffgggghhhh",
-                                         kIdArray, std::size(kIdArray)));
 }
 
 // Tests that all combinations of feature channel and Chrome channel correctly
@@ -1200,11 +1156,7 @@ TEST(SimpleFeatureUnitTest, TestExperimentalExtensionApisSwitch) {
   }
 }
 
-TEST_F(SimpleFeatureTest, EnableRestrictDeveloperModeAPIs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      extensions_features::kRestrictDeveloperModeAPIs);
-
+TEST_F(SimpleFeatureTest, RestrictDeveloperModeAPIs) {
   constexpr int kContextId1 = 1;
   constexpr int kContextId2 = 2;
   SimpleFeature dev_mode_only_feature;
@@ -1237,46 +1189,6 @@ TEST_F(SimpleFeatureTest, EnableRestrictDeveloperModeAPIs) {
   SetCurrentDeveloperMode(kContextId2, false);
   EXPECT_EQ(
       Feature::REQUIRES_DEVELOPER_MODE,
-      dev_mode_only_feature.IsAvailableToEnvironment(kContextId2).result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            other_feature.IsAvailableToEnvironment(kContextId2).result());
-}
-
-TEST_F(SimpleFeatureTest, DisableRestrictDeveloperModeAPIs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      extensions_features::kRestrictDeveloperModeAPIs);
-
-  constexpr int kContextId1 = 1;
-  constexpr int kContextId2 = 2;
-  SimpleFeature dev_mode_only_feature;
-  dev_mode_only_feature.set_developer_mode_only(true);
-  SimpleFeature other_feature;
-
-  SetCurrentDeveloperMode(kContextId1, true);
-  EXPECT_EQ(
-      Feature::IS_AVAILABLE,
-      dev_mode_only_feature.IsAvailableToEnvironment(kContextId1).result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            other_feature.IsAvailableToEnvironment(kContextId1).result());
-
-  SetCurrentDeveloperMode(kContextId1, false);
-  EXPECT_EQ(
-      Feature::IS_AVAILABLE,
-      dev_mode_only_feature.IsAvailableToEnvironment(kContextId1).result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            other_feature.IsAvailableToEnvironment(kContextId1).result());
-
-  SetCurrentDeveloperMode(kContextId2, true);
-  EXPECT_EQ(
-      Feature::IS_AVAILABLE,
-      dev_mode_only_feature.IsAvailableToEnvironment(kContextId2).result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            other_feature.IsAvailableToEnvironment(kContextId2).result());
-
-  SetCurrentDeveloperMode(kContextId2, false);
-  EXPECT_EQ(
-      Feature::IS_AVAILABLE,
       dev_mode_only_feature.IsAvailableToEnvironment(kContextId2).result());
   EXPECT_EQ(Feature::IS_AVAILABLE,
             other_feature.IsAvailableToEnvironment(kContextId2).result());

@@ -94,8 +94,7 @@ protocol::Preload::SpeculationAction GetProtocolSpeculationAction(
     case mojom::blink::SpeculationAction::kPrefetch:
       return protocol::Preload::SpeculationActionEnum::Prefetch;
     case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
   }
 }
 
@@ -138,14 +137,14 @@ BuildProtocolPreloadingAttemptSource(
       BuildProtocolPreloadingAttemptKey(key, document);
 
   HeapHashSet<Member<SpeculationRuleSet>> unique_rule_sets;
-  HeapHashSet<Member<HTMLAnchorElement>> unique_anchors;
+  HeapHashSet<Member<HTMLAnchorElementBase>> unique_anchors;
   auto rule_set_ids = std::make_unique<protocol::Array<String>>();
   auto node_ids = std::make_unique<protocol::Array<int>>();
   for (SpeculationCandidate* candidate : candidates) {
     if (unique_rule_sets.insert(candidate->rule_set()).is_new_entry) {
       rule_set_ids->push_back(candidate->rule_set()->InspectorId());
     }
-    if (HTMLAnchorElement* anchor = candidate->anchor();
+    if (HTMLAnchorElementBase* anchor = candidate->anchor();
         anchor && unique_anchors.insert(anchor).is_new_entry) {
       node_ids->push_back(anchor->GetDomNodeId());
     }
@@ -239,8 +238,7 @@ void InspectorPreloadAgent::SpeculationCandidatesUpdated(
     return;
   }
 
-  HeapHashMap<PreloadingAttemptKey,
-              Member<HeapVector<Member<SpeculationCandidate>>>,
+  HeapHashMap<PreloadingAttemptKey, HeapVector<Member<SpeculationCandidate>>,
               PreloadingAttemptKeyHashTraits>
       preloading_attempts;
   for (SpeculationCandidate* candidate : candidates) {
@@ -253,18 +251,17 @@ void InspectorPreloadAgent::SpeculationCandidatesUpdated(
     }
     PreloadingAttemptKey key = {candidate->action(), candidate->url(),
                                 candidate->target_hint()};
-    auto& value = preloading_attempts.insert(key, nullptr).stored_value->value;
-    if (!value) {
-      value = MakeGarbageCollected<HeapVector<Member<SpeculationCandidate>>>();
-    }
-    value->push_back(candidate);
+    auto& value = preloading_attempts
+                      .insert(key, HeapVector<Member<SpeculationCandidate>>())
+                      .stored_value->value;
+    value.push_back(candidate);
   }
 
   auto preloading_attempt_sources = std::make_unique<
       protocol::Array<protocol::Preload::PreloadingAttemptSource>>();
   for (auto it : preloading_attempts) {
     preloading_attempt_sources->push_back(
-        BuildProtocolPreloadingAttemptSource(it.key, *(it.value), document));
+        BuildProtocolPreloadingAttemptSource(it.key, it.value, document));
   }
 
   GetFrontend()->preloadingAttemptSourcesUpdated(

@@ -4,6 +4,7 @@
 
 #include "ash/wm/system_modal_container_layout_manager.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -14,7 +15,6 @@
 #include "ash/wm/window_dimmer.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -243,7 +243,7 @@ void SystemModalContainerLayoutManager::AddModalWindow(aura::Window* window) {
 
 bool SystemModalContainerLayoutManager::RemoveModalWindow(
     aura::Window* window) {
-  auto it = base::ranges::find(modal_windows_, window);
+  auto it = std::ranges::find(modal_windows_, window);
   if (it == modal_windows_.end())
     return false;
   modal_windows_.erase(it);

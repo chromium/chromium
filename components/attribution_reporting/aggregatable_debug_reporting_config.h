@@ -12,10 +12,13 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/debug_types.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -73,7 +76,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
   // Parses the config for trigger registrations.
   static base::expected<AggregatableDebugReportingConfig,
                         AggregatableDebugReportingConfigError>
-  Parse(base::Value::Dict&);
+  Parse(base::DictValue&);
 
   AggregatableDebugReportingConfig(
       absl::uint128 key_piece,
@@ -92,7 +95,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
   AggregatableDebugReportingConfig& operator=(
       AggregatableDebugReportingConfig&&);
 
-  void Serialize(base::Value::Dict&) const;
+  void Serialize(base::DictValue&) const;
 
   friend bool operator==(const AggregatableDebugReportingConfig&,
                          const AggregatableDebugReportingConfig&) = default;
@@ -108,7 +111,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
  public:
   static base::expected<SourceAggregatableDebugReportingConfig,
                         AggregatableDebugReportingConfigError>
-  Parse(base::Value::Dict&);
+  Parse(base::DictValue&);
 
   static std::optional<SourceAggregatableDebugReportingConfig> Create(
       int budget,
@@ -131,7 +134,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 
   const AggregatableDebugReportingConfig& config() const { return config_; }
 
-  void Serialize(base::Value::Dict&) const;
+  void Serialize(base::DictValue&) const;
 
   friend bool operator==(const SourceAggregatableDebugReportingConfig&,
                          const SourceAggregatableDebugReportingConfig&) =

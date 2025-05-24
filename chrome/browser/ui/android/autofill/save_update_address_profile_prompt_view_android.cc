@@ -53,8 +53,9 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
 
   base::android::ScopedJavaLocalRef<jobject> java_controller =
       controller->GetJavaObject();
-  if (!java_controller)
+  if (!java_controller) {
     return false;
+  }
 
   Profile* browser_profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
@@ -68,8 +69,9 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
       java_controller, browser_profile->GetJavaObject(), java_autofill_profile,
       static_cast<jboolean>(is_update),
       static_cast<jboolean>(is_migration_to_account)));
-  if (!java_object_)
+  if (!java_object_) {
     return false;
+  }
 
   SetContent(controller, IdentityManagerFactory::GetForProfile(browser_profile),
              is_update);

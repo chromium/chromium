@@ -436,7 +436,7 @@ TEST_F(BindTest, OnceCallbackBasicTest) {
   // After running via the rvalue-reference, the value of the OnceCallback
   // is undefined. The implementation simply clears the instance after the
   // invocation.
-  EXPECT_TRUE(c0.is_null());
+  EXPECT_TRUE(c0.is_null());  // NOLINT(bugprone-use-after-move)
 
   c0 = BindOnce(&Sum, 2, 3, 5, 7, 11);
 
@@ -1639,7 +1639,7 @@ TEST_F(BindTest, OnceCallback) {
   cb = cb3;
   std::move(cb).Run();
 
-  cb = std::move(cb2);
+  cb = std::move(cb2);  // NOLINT(bugprone-use-after-move)
 
   OnceCallback<void(int)> cb4 =
       BindOnce(&VoidPolymorphic<std::unique_ptr<int>, int>::Run,
@@ -1908,7 +1908,7 @@ void HandleOOM(size_t unused_size) {
 // Basic set of options to mostly only enable `BackupRefPtr::kEnabled`.
 // This avoids the boilerplate of having too much options enabled for simple
 // testing purpose.
-static constexpr auto kOnlyEnableBackupRefPtrOptions = []() {
+static constexpr auto kOnlyEnableBackupRefPtrOptions = [] {
   partition_alloc::PartitionOptions opts;
   opts.backup_ref_ptr = partition_alloc::PartitionOptions::kEnabled;
   return opts;

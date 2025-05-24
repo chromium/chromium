@@ -52,7 +52,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
 
     // The executor thread will block on this after reaching a terminal method.
     // Terminal methods are (onSucceeded, onFailed or onCancelled)
-    private ConditionVariable mBlockOnTerminalState = new ConditionVariable(true);
+    private final ConditionVariable mBlockOnTerminalState = new ConditionVariable(true);
 
     // Conditionally fail on certain steps.
     private FailureType mFailureType = FailureType.NONE;
@@ -198,7 +198,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
             // Termination shouldn't take long. Use 1 min which should be more than enough.
             mExecutorService.awaitTermination(1, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
-            fail("ExecutorService is interrupted while waiting for termination");
+            throw new RuntimeException(e);
         }
         assertThat(mExecutorService.isTerminated()).isTrue();
     }

@@ -126,7 +126,7 @@ public class BarcodeDetectionImplTest {
     }
 
     public static class BarcodeExampleParams implements ParameterProvider {
-        private static List<ParameterSet> sBarcodeExampleParams =
+        private static final List<ParameterSet> sBarcodeExampleParams =
                 Arrays.asList(
                         // TODO(crbug.com/40159200): AZTEC format is failing.
                         // new ParameterSet()

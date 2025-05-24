@@ -37,6 +37,26 @@ void DisallowValueConstructionFromPointers() {
   }
 }
 
+void DisallowComparisonWithPointers() {
+  int* ptr = nullptr;
+
+  {
+    Value v(0);
+    v == ptr;  // expected-error {{overload resolution selected deleted operator}}
+    v != ptr;  // expected-error {{overload resolution selected deleted operator}}
+    v < ptr;   // expected-error {{invalid operands to binary expression ('Value' and 'int *')}}
+    v <= ptr;  // expected-error {{invalid operands to binary expression ('Value' and 'int *')}}
+    v > ptr;   // expected-error {{invalid operands to binary expression ('Value' and 'int *')}}
+    v >= ptr;  // expected-error {{invalid operands to binary expression ('Value' and 'int *')}}
+    ptr == v;  // expected-error {{overload resolution selected deleted operator}}
+    ptr != v;  // expected-error {{overload resolution selected deleted operator}}
+    ptr < v;   // expected-error {{invalid operands to binary expression ('int *' and 'Value')}}
+    ptr <= v;  // expected-error {{invalid operands to binary expression ('int *' and 'Value')}}
+    ptr > v;   // expected-error {{invalid operands to binary expression ('int *' and 'Value')}}
+    ptr >= v;  // expected-error {{invalid operands to binary expression ('int *' and 'Value')}}
+  }
+}
+
 // Value (largely) follows the semantics of JSON, which does not support 64-bit
 // integers. Constructing a Value from a 64-bit integer should not work.
 

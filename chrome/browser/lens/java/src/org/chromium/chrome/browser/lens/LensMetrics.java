@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.lens;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Static utility methods to support user action logging for Lens entry points. */
+@NullMarked
 public class LensMetrics {
     public static final String AMBIENT_SEARCH_QUERY_HISTOGRAM = "Search.Ambient.Query";
     public static final String SEARCH_CAMERA_OPEN_HISTOGRAM = "Search.Image.Camera.Open";
@@ -182,7 +186,7 @@ public class LensMetrics {
             default:
                 assert false : "Method not implemented.";
         }
-        return null;
+        return assumeNonNull(null);
     }
 
     /** Record the time spent between Lens started and Lens dismissed. */
@@ -232,7 +236,7 @@ public class LensMetrics {
             default:
                 assert false : "Method not implemented.";
         }
-        return null;
+        return assumeNonNull(null);
     }
 
     private static String getClickedActionName(@LensEntryPoint int lensEntryPoint) {
@@ -250,6 +254,6 @@ public class LensMetrics {
             default:
                 assert false : "Method not implemented.";
         }
-        return null;
+        return assumeNonNull(null);
     }
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <cstdint>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "build/build_config.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
@@ -46,10 +42,21 @@ int LLVMFuzzerInitialize(int* argc, char*** argv) {
   v8::V8::SetFlagsFromString(kExposeGC, sizeof(kExposeGC));
   static BlinkFuzzerTestSupport fuzzer_support =
       BlinkFuzzerTestSupport(*argc, *argv);
+  base::test::AllowCheckIsTestForTesting();
   return 0;
 }
 
-int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
+int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  // Truncate the input.
+  // SAFETY: Wrapping arguments from libFuzzer in a span.
+  auto data_span =
+      UNSAFE_BUFFERS(base::span(data, base::saturated_cast<wtf_size_t>(size)));
+  // Odd sizes are handled in various ways, depending how they arrive.
+  // Let's not worry about that case here.
+  if (data_span.size() % sizeof(UChar)) {
+    return 0;
+  }
+
   test::TaskEnvironment task_environment;
   auto page_holder = std::make_unique<DummyPageHolder>();
   page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
@@ -59,23 +66,16 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
   blob_info_array->emplace_back(WebBlobInfo::FileForTesting(
       "d875dfc2-4505-461b-98fe-0cf6cc5eaf44", "path", "text/plain"));
 
-  // Odd sizes are handled in various ways, depending how they arrive.
-  // Let's not worry about that case here.
-  if (data_size % sizeof(UChar))
-    return 0;
-
-  // Truncate the input.
-  wtf_size_t size = base::saturated_cast<wtf_size_t>(data_size);
-
   // Used to control what kind of extra data is provided to the deserializer.
-  unsigned hash = StringHasher::HashMemory(data, size);
+  unsigned hash = StringHasher::HashMemory(data_span);
 
   SerializedScriptValue::DeserializeOptions options;
+  MessagePortArray message_ports;
 
   // If message ports are requested, make some.
   if (hash & kFuzzMessagePorts) {
-    MessagePortArray* message_ports = MakeGarbageCollected<MessagePortArray>(3);
-    std::generate(message_ports->begin(), message_ports->end(), [&]() {
+    message_ports = MessagePortArray(3);
+    std::generate(message_ports.begin(), message_ports.end(), [&]() {
       auto* port = MakeGarbageCollected<MessagePort>(
           *page_holder->GetFrame().DomWindow());
       // Let the other end of the pipe close itself.
@@ -83,7 +83,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
       port->Entangle(pipe.TakePort0(), nullptr);
       return port;
     });
-    options.message_ports = message_ports;
+    options.message_ports = &message_ports;
   }
 
   // If blobs are requested, supply blob info.
@@ -98,7 +98,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
 
   // Deserialize.
   scoped_refptr<SerializedScriptValue> serialized_script_value =
-      SerializedScriptValue::Create(base::make_span(data, size));
+      SerializedScriptValue::Create(data_span);
   serialized_script_value->Deserialize(isolate, options);
   CHECK(!try_catch.HasCaught())
       << "deserialize() should return null rather than throwing an exception.";

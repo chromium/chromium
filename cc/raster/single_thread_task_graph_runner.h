@@ -31,9 +31,12 @@ class CC_EXPORT SingleThreadTaskGraphRunner
   // Overridden from TaskGraphRunner:
   NamespaceToken GenerateNamespaceToken() override;
   void ScheduleTasks(NamespaceToken token, TaskGraph* graph) override;
+  void ExternalDependencyCompletedForTask(NamespaceToken token,
+                                          scoped_refptr<Task> task) override;
   void WaitForTasksToFinishRunning(NamespaceToken token) override;
   void CollectCompletedTasks(NamespaceToken token,
                              Task::Vector* completed_tasks) override;
+  void RunTasksUntilIdleForTest() override;
 
   // Overridden from base::DelegateSimpleThread::Delegate:
   void Run() override;
@@ -62,6 +65,10 @@ class CC_EXPORT SingleThreadTaskGraphRunner
   // Condition variable that is waited on by origin threads until a namespace
   // has finished running all associated tasks.
   base::ConditionVariable has_namespaces_with_finished_running_tasks_cv_;
+
+  // Condition variable that is waited on by origin threads until there are no
+  // more tasks ready to run in the queue.
+  base::ConditionVariable is_idle_cv_;
 
   // Set during shutdown. Tells Run() to return when no more tasks are pending.
   bool shutdown_ GUARDED_BY(lock_) = false;

@@ -96,12 +96,6 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
     raw_ptr<aura::Window, LeakedDanglingUntriaged> window = nullptr;
     // Android task ID if the owner window is an Android app.
     std::optional<int> android_task_id;
-    // Lacros window ID if the owner window is a Lacros browser. This field
-    // can be nullopt even when is_lacros is true, for dialogs that are not
-    // owned by a particular window, aka "modeless" dialog.
-    std::optional<std::string> lacros_window_id;
-    // Set to true only if SelectFileAsh opened the dialog.
-    bool is_lacros = false;
     // The URL or Component type of the caller that opened the dialog (Save
     // As/File Picker).
     std::optional<policy::DlpFileDestination> dialog_caller;
@@ -191,11 +185,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   // We defer the callback into SelectFileDialog::Listener until the window
   // closes, to match the semantics of file selection on Windows and Mac.
   // These are the data passed to the listener.
-  enum SelectionType {
-    CANCEL = 0,
-    SINGLE_FILE,
-    MULTIPLE_FILES
-  };
+  enum SelectionType { CANCEL = 0, SINGLE_FILE, MULTIPLE_FILES };
   SelectionType selection_type_ = CANCEL;
   std::vector<ui::SelectedFileInfo> selection_files_;
   int selection_index_ = 0;

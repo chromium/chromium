@@ -31,7 +31,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -82,7 +82,7 @@ public class MediaCaptureOverlayControllerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSimpleCapture() {
         Tab tab = mActivity.getActivityTab();
 
@@ -100,7 +100,7 @@ public class MediaCaptureOverlayControllerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testShowHideWithOverview() throws TimeoutException {
         Tab tab = mActivity.getActivityTab();
 
@@ -120,7 +120,7 @@ public class MediaCaptureOverlayControllerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testCloseTabStopsOverlay() {
         Tab tab = mActivity.getActivityTab();
 
@@ -135,7 +135,7 @@ public class MediaCaptureOverlayControllerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSwitchToNonCapturedTab() throws TimeoutException {
         Tab firstTab = mActivity.getActivityTab();
 
@@ -150,7 +150,7 @@ public class MediaCaptureOverlayControllerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testStopOtherCapturedTab() throws TimeoutException {
         Tab firstTab = mActivity.getActivityTab();
 

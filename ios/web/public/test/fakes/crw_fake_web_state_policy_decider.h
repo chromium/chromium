@@ -35,7 +35,7 @@ struct FakeDecidePolicyForNavigationResponseInfo {
 }  // namespace web
 
 // Test implementation of CRWWebStatePolicyDecider protocol.
-@interface CRWFakeWebStatePolicyDecider : NSObject<CRWWebStatePolicyDecider>
+@interface CRWFakeWebStatePolicyDecider : NSObject <CRWWebStatePolicyDecider>
 // Arguments passed to `shouldAllowRequest:requestInfo:`.
 @property(nonatomic, readonly)
     const web::FakeShouldAllowRequestInfo* shouldAllowRequestInfo;

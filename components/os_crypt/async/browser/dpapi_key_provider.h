@@ -32,6 +32,7 @@ class DPAPIKeyProvider : public KeyProvider {
 
  private:
   friend class DPAPIKeyProviderTestBase;
+  FRIEND_TEST_ALL_PREFIXES(DPAPIKeyProviderTest, DPAPIFailing);
   FRIEND_TEST_ALL_PREFIXES(DPAPIKeyProviderTest, OSCryptNotInit);
   FRIEND_TEST_ALL_PREFIXES(DPAPIKeyProviderTest, OSCryptBadKeyHeader);
   FRIEND_TEST_ALL_PREFIXES(DPAPIKeyProviderTestBase, NoOSCrypt);

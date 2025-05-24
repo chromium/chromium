@@ -52,7 +52,7 @@ const DWORD kProcessKilledExitCode = 1;
 // Do not repurpose previously used indexes.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
 // GENERATED_JAVA_PREFIX_TO_STRIP: TERMINATION_STATUS_
-enum TerminationStatus {
+enum TerminationStatus : int {
   // Zero exit status.
   TERMINATION_STATUS_NORMAL_TERMINATION = 0,
   // Other abnormal termination reason.
@@ -120,8 +120,8 @@ BASE_EXPORT TerminationStatus GetTerminationStatus(ProcessHandle handle,
 // GetTerminationStatus as the child will be reaped when WaitForExitCode
 // returns, and this information will be lost.
 //
-BASE_EXPORT TerminationStatus GetKnownDeadTerminationStatus(
-    ProcessHandle handle, int* exit_code);
+BASE_EXPORT TerminationStatus
+GetKnownDeadTerminationStatus(ProcessHandle handle, int* exit_code);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Spawns a thread to wait asynchronously for the child |process| to exit

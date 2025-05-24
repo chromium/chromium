@@ -4,7 +4,6 @@
 
 #include "components/viz/service/display/display_damage_tracker.h"
 
-#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/service/display/surface_aggregator.h"
@@ -13,12 +12,6 @@
 
 namespace viz {
 namespace {
-
-// Kill switch for optimization to skip updating pending surfaces on begin
-// frames from other displays.
-BASE_FEATURE(kSkipBeginFramesFromOtherDisplays,
-             "SkipBeginFramesFromOtherDisplays",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool ShouldAccumulateInteraction(
     SurfaceObserver::HandleInteraction handle_interaction) {
@@ -48,9 +41,7 @@ DisplayDamageTracker::~DisplayDamageTracker() {
 
 void DisplayDamageTracker::SetDisplayBeginFrameSourceId(
     uint64_t begin_frame_source_id) {
-  if (base::FeatureList::IsEnabled(kSkipBeginFramesFromOtherDisplays)) {
-    begin_frame_source_id_ = begin_frame_source_id;
-  }
+  begin_frame_source_id_ = begin_frame_source_id;
 }
 
 void DisplayDamageTracker::SetDelegate(Delegate* delegate) {

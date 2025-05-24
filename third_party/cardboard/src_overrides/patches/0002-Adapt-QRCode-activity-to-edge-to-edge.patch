@@ -1,0 +1,67 @@
+From 9a23096f9364d9a423323238e3f4548c4d3b6d68 Mon Sep 17 00:00:00 2001
+From: Alexander Cooper <alcooper@chromium.org>
+Date: Thu, 27 Feb 2025 13:01:46 -0800
+Subject: [PATCH 2/2] Adapt QRCode activity to edge-to-edge
+
+---
+ .../cardboard/sdk/QrCodeCaptureActivity.java  | 20 +++++++++++++++++++
+ .../android/res/layout/qr_code_capture.xml    |  1 +
+ 2 files changed, 21 insertions(+)
+
+diff --git a/third_party/cardboard/src_overrides/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java b/third_party/cardboard/src_overrides/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java
+index 0e51134060e28..e461e72eec5d1 100644
+--- a/third_party/cardboard/src_overrides/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java
++++ b/third_party/cardboard/src_overrides/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java
+@@ -27,11 +27,15 @@ import android.os.Bundle;
+ import android.provider.Settings;
+ import android.util.Log;
+ import android.view.View;
++import android.view.ViewGroup;
+ import android.widget.Toast;
+ 
+ import androidx.annotation.NonNull;
+ import androidx.appcompat.app.AppCompatActivity;
+ import androidx.core.app.ActivityCompat;
++import androidx.core.graphics.Insets;
++import androidx.core.view.ViewCompat;
++import androidx.core.view.WindowInsetsCompat;
+ 
+ import com.google.android.gms.common.ConnectionResult;
+ import com.google.android.gms.common.GoogleApiAvailability;
+@@ -76,6 +80,22 @@ public class QrCodeCaptureActivity extends AppCompatActivity
+         super.onCreate(icicle);
+         setContentView(R.layout.qr_code_capture);
+ 
++        // Adds margins to the container to account for edge to edge:
++        // https://developer.android.com/develop/ui/views/layout/edge-to-edge
++        View container = findViewById(R.id.container);
++        ViewCompat.setOnApplyWindowInsetsListener(
++                container,
++                (v, windowInsets) -> {
++                    Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
++                    ViewGroup.MarginLayoutParams mlp =
++                            (ViewGroup.MarginLayoutParams) v.getLayoutParams();
++                    mlp.leftMargin = insets.left;
++                    mlp.bottomMargin = insets.bottom;
++                    mlp.rightMargin = insets.right;
++                    v.setLayoutParams(mlp);
++                    return WindowInsetsCompat.CONSUMED;
++                });
++
+         cameraSourcePreview = findViewById(R.id.preview);
+     }
+ 
+diff --git a/third_party/cardboard/src_overrides/sdk/qrcode/android/res/layout/qr_code_capture.xml b/third_party/cardboard/src_overrides/sdk/qrcode/android/res/layout/qr_code_capture.xml
+index 8aac5fc960446..0fbe9dac77af1 100644
+--- a/third_party/cardboard/src_overrides/sdk/qrcode/android/res/layout/qr_code_capture.xml
++++ b/third_party/cardboard/src_overrides/sdk/qrcode/android/res/layout/qr_code_capture.xml
+@@ -1,5 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:id="@+id/container"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:orientation="vertical">
+-- 
+2.48.1.711.g2feabab25a-goog
+

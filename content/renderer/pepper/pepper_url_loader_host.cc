@@ -129,21 +129,18 @@ bool PepperURLLoaderHost::WillFollowRedirect(
     const WebURL& new_url,
     const WebURLResponse& redirect_response) {
   DCHECK(out_of_order_replies_.empty());
-  if (base::FeatureList::IsEnabled(
-          features::kPepperCrossOriginRedirectRestriction)) {
-    // Follows the Firefox approach
-    // (https://bugzilla.mozilla.org/show_bug.cgi?id=1436241) to disallow
-    // cross-origin 307/308 POST redirects for requests from plugins. But we try
-    // allowing only GET and HEAD methods rather than disallowing POST.
-    // See http://crbug.com/332023 for details.
-    int status = redirect_response.HttpStatusCode();
-    if ((status == 307 || status == 308)) {
-      std::string method = base::ToUpperASCII(request_data_.method);
-      // method can be an empty string for default behavior, GET.
-      if (!method.empty() && method != net::HttpRequestHeaders::kGetMethod &&
-          method != net::HttpRequestHeaders::kHeadMethod) {
-        return false;
-      }
+  // Follows the Firefox approach
+  // (https://bugzilla.mozilla.org/show_bug.cgi?id=1436241) to disallow
+  // cross-origin 307/308 POST redirects for requests from plugins. But we try
+  // allowing only GET and HEAD methods rather than disallowing POST.
+  // See http://crbug.com/332023 for details.
+  int status = redirect_response.HttpStatusCode();
+  if ((status == 307 || status == 308)) {
+    std::string method = base::ToUpperASCII(request_data_.method);
+    // method can be an empty string for default behavior, GET.
+    if (!method.empty() && method != net::HttpRequestHeaders::kGetMethod &&
+        method != net::HttpRequestHeaders::kHeadMethod) {
+      return false;
     }
   }
 

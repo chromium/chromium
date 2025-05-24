@@ -5,12 +5,15 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/time/time.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
-#import "components/autofill/core/browser/test_personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -33,12 +36,16 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
   PaymentsSuggestionBottomSheetMediatorTest()
       : test_web_state_(std::make_unique<web::FakeWebState>()) {
+    scoped_feature_list_.InitAndDisableFeature(kAutofillPaymentsSheetV2Ios);
+
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
 
     test_web_state_->SetCurrentURL(GURL("http://foo.com"));
 
     consumer_ =
         OCMStrictProtocolMock(@protocol(PaymentsSuggestionBottomSheetConsumer));
+
+    FormSuggestionTabHelper::CreateForWebState(test_web_state_.get(), @[]);
   }
 
   void SetUp() override {
@@ -105,6 +112,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   id consumer_;
   autofill::TestPersonalDataManager personal_data_manager_;
   PaymentsSuggestionBottomSheetMediator* mediator_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests PaymentsSuggestionBottomSheetMediator can be initialized.
@@ -211,4 +219,27 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest, FillingDelay) {
       "IOS.PaymentsBottomSheet.AcceptAttempts.Dismiss",
       /*sample=*/4,
       /*expected_bucket_count=*/1);
+}
+
+// Tests that the time to selection is correctly recorded.
+TEST_F(PaymentsSuggestionBottomSheetMediatorTest, TimeToSelection) {
+  base::ScopedMockClockOverride mock_clock;
+  base::HistogramTester histogram_tester;
+
+  CreateMediator();
+
+  OCMExpect([consumer_ activatePrimaryButton]);
+
+  // Use a time to selection that is enough to go past the minimal safety
+  // delay.
+  const auto time_to_selection = base::Milliseconds(500);
+
+  // Select the credit card by following the usual flow.
+  [mediator_ paymentsBottomSheetViewDidAppear];
+  mock_clock.Advance(time_to_selection);
+  [mediator_ didTapOnPrimaryButton];
+  [mediator_ didSelectCreditCard:nil atIndex:0];
+
+  histogram_tester.ExpectTimeBucketCount(
+      "IOS.PaymentsBottomSheet.TimeToSelection", time_to_selection, 1);
 }

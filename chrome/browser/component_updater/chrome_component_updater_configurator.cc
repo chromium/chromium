@@ -35,6 +35,7 @@
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
@@ -79,7 +80,6 @@ class ChromeConfigurator : public update_client::Configurator {
       override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
-  bool EnabledDeltas() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -89,11 +89,13 @@ class ChromeConfigurator : public update_client::Configurator {
   GetProtocolHandlerFactory() const override;
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  std::optional<base::FilePath> GetCrxCachePath() const override;
+  scoped_refptr<update_client::CrxCache> GetCrxCache() const override;
   bool IsConnectionMetered() const override;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
+
+  ~ChromeConfigurator() override = default;
 
   std::optional<base::FilePath> GetBackgroundDownloaderCache() const;
 
@@ -105,8 +107,7 @@ class ChromeConfigurator : public update_client::Configurator {
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
-
-  ~ChromeConfigurator() override = default;
+  scoped_refptr<update_client::CrxCache> crx_cache_;
 };
 
 // Allows the component updater to use non-encrypted communication with the
@@ -117,9 +118,18 @@ ChromeConfigurator::ChromeConfigurator(const base::CommandLine* cmdline,
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
                          /*require_encryption=*/false),
       pref_service_(pref_service),
-      persisted_data_(
-          update_client::CreatePersistedData(pref_service, nullptr)) {
+      persisted_data_(update_client::CreatePersistedData(
+          base::BindRepeating(
+              [](PrefService* pref_service) { return pref_service; },
+              pref_service),
+          nullptr)) {
   CHECK(pref_service_);
+  base::FilePath path;
+  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
+  crx_cache_ = base::MakeRefCounted<update_client::CrxCache>(
+      result ? std::optional<base::FilePath>(
+                   path.AppendASCII("component_crx_cache"))
+             : std::nullopt);
 }
 
 base::TimeDelta ChromeConfigurator::InitialDelay() const {
@@ -243,11 +253,6 @@ ChromeConfigurator::GetPatcherFactory() {
   return patch_factory_;
 }
 
-bool ChromeConfigurator::EnabledDeltas() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return configurator_impl_.EnabledDeltas();
-}
-
 bool ChromeConfigurator::EnabledBackgroundDownloader() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.EnabledBackgroundDownloader();
@@ -294,13 +299,9 @@ ChromeConfigurator::GetUpdaterStateProvider() const {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
-std::optional<base::FilePath> ChromeConfigurator::GetCrxCachePath() const {
+scoped_refptr<update_client::CrxCache> ChromeConfigurator::GetCrxCache() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::FilePath path;
-  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
-  return result ? std::optional<base::FilePath>(
-                      path.AppendASCII("component_crx_cache"))
-                : std::nullopt;
+  return crx_cache_;
 }
 
 std::optional<base::FilePath> ChromeConfigurator::GetBackgroundDownloaderCache()

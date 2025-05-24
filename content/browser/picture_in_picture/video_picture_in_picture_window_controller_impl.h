@@ -72,6 +72,8 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   WebContents* GetWebContents() override;
   WebContents* GetChildWebContents() override;
   bool TogglePlayPause() override;
+  void Play() override;
+  void Pause() override;
   void SkipAd() override;
   void NextTrack() override;
   void PreviousTrack() override;
@@ -80,10 +82,16 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   void HangUp() override;
   void PreviousSlide() override;
   void NextSlide() override;
+  void SeekTo(base::TimeDelta time) override;
   void SetOnWindowCreatedNotifyObserversCallback(
       base::OnceClosure on_window_created_notify_observers_callback) override;
 
   const gfx::Rect& GetSourceBounds() const override;
+  void GetMediaImage(
+      const media_session::MediaImage& image,
+      int minimum_size_px,
+      int desired_size_px,
+      MediaSession::GetMediaImageBitmapCallback callback) override;
   std::optional<gfx::Rect> GetWindowBounds() override;
 
   std::optional<url::Origin> GetOrigin() override;
@@ -98,6 +106,13 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
 
   void MediaSessionPositionChanged(
       const std::optional<media_session::MediaPosition>& media_position);
+
+  void MediaSessionImagesChanged(
+      const base::flat_map<media_session::mojom::MediaSessionImageType,
+                           std::vector<media_session::MediaImage>>& images);
+
+  void MediaSessionMetadataChanged(
+      const std::optional<media_session::MediaMetadata>& metadata);
 
   gfx::Size GetSize();
 
@@ -114,6 +129,8 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
                     const gfx::Size& natural_size);
 
   void SetShowPlayPauseButton(bool show_play_pause_button);
+
+  void SetMediaPosition(const media_session::MediaPosition& media_position);
 
   // Called by PictureInPictureServiceImpl when a session request is received.
   // The call should return the |session_remote| and |window_size| as out
@@ -153,6 +170,8 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   // Recompute the playback state and update the window accordingly.
   void UpdatePlaybackState();
 
+  void UpdateMediaPosition();
+
   // Signal to the media player that |this| is leaving Picture-in-Picture mode.
   void OnLeavingPictureInPicture(bool should_pause_video);
 
@@ -167,6 +186,15 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
 
   // Returns the web_contents() as a WebContentsImpl*.
   WebContentsImpl* GetWebContentsImpl();
+
+  // Returns true if the player is active after this call.
+  bool PlayInternal();
+
+  // Returns true if the player is active after this call.
+  bool PauseInternal();
+
+  const std::optional<media_session::MediaPosition>& GetEffectiveMediaPosition()
+      const;
 
   std::unique_ptr<VideoOverlayWindow> window_;
 
@@ -184,6 +212,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   bool media_session_action_hang_up_handled_ = false;
   bool media_session_action_previous_slide_handled_ = false;
   bool media_session_action_next_slide_handled_ = false;
+  bool media_session_action_seek_to_handled_ = false;
 
   // Tracks the current microphone state.
   bool microphone_muted_ = false;
@@ -203,7 +232,22 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   std::unique_ptr<PictureInPictureSession> active_session_;
 
   // The media position info as last reported to us by MediaSessionImpl.
-  std::optional<media_session::MediaPosition> media_position_;
+  std::optional<media_session::MediaPosition> media_session_media_position_;
+
+  // The media position info as last reported to us by the
+  // PictureInPictureSession.
+  std::optional<media_session::MediaPosition> pip_session_media_position_;
+
+  // The media metadata's source title as last reported to us by
+  // MediaSessionImpl.
+  std::u16string source_title_;
+
+  // True if the last media_session::MediaPosition we received in
+  // |MediaSessionPositionChanged()| was sent to |window_|. Used to track
+  // whether we should send it again.
+  bool window_received_media_position_ = false;
+
+  std::vector<media_session::MediaImage> favicon_images_;
 
   // Coordinates of the video element in WebContents coordinates.
   gfx::Rect source_bounds_;

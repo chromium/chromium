@@ -67,8 +67,8 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
     AdvanceClock(base::Milliseconds(1));
     viz::FrameTimingDetails presentation_details;
     presentation_details.presentation_feedback.timestamp = Now();
-    GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstPaint,
-                                            presentation_details);
+    GetPaintTiming().ReportPresentationTime(
+        PaintEvent::kFirstPaint, base::TimeTicks(), presentation_details);
   }
 
   void ClearFirstContentfulPaintPresentationPromise() {
@@ -76,6 +76,7 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
     viz::FrameTimingDetails presentation_details;
     presentation_details.presentation_feedback.timestamp = Now();
     GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstContentfulPaint,
+                                            base::TimeTicks(),
                                             presentation_details);
   }
 

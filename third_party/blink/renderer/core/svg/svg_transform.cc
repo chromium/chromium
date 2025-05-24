@@ -45,12 +45,6 @@ SVGTransform* SVGTransform::Clone() const {
                                             matrix_);
 }
 
-SVGPropertyBase* SVGTransform::CloneForAnimation(const String&) const {
-  // SVGTransform is never animated.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
-}
-
 void SVGTransform::SetMatrix(const AffineTransform& matrix) {
   OnMatrixChange();
   matrix_ = matrix;
@@ -135,8 +129,7 @@ const char* TransformTypePrefixForParsing(SVGTransformType type) {
     case SVGTransformType::kSkewy:
       return "skewY(";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 gfx::PointF DecomposeRotationCenter(const AffineTransform& matrix,
@@ -220,7 +213,7 @@ String SVGTransform::ValueAsString() const {
 
 void SVGTransform::Add(const SVGPropertyBase*, const SVGElement*) {
   // SVGTransform is not animated by itself.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SVGTransform::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
@@ -231,15 +224,13 @@ void SVGTransform::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
                                           const SVGPropertyBase*,
                                           const SVGElement*) {
   // SVGTransform is not animated by itself.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 float SVGTransform::CalculateDistance(const SVGPropertyBase*,
                                       const SVGElement*) const {
   // SVGTransform is not animated by itself.
-  NOTREACHED_IN_MIGRATION();
-
-  return -1;
+  NOTREACHED();
 }
 
 }  // namespace blink

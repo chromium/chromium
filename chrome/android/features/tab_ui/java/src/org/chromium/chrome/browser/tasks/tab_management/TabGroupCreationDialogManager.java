@@ -10,13 +10,12 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.base.Token;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationFinalSelections;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -27,13 +26,26 @@ import java.util.Objects;
 
 /** Manager of the observers that trigger a modal dialog on new tab group creation. */
 public class TabGroupCreationDialogManager {
+    /** Represents a factory for creating an instance of {@link TabGroupCreationDialogManager}. */
+    @FunctionalInterface
+    public interface TabGroupCreationDialogManagerFactory {
+        TabGroupCreationDialogManager create(
+                @NonNull Context context,
+                @NonNull ModalDialogManager modalDialogManager,
+                @Nullable Runnable onTabGroupCreation);
+    }
+
     private class TabGroupCreationDialogController implements ModalDialogProperties.Controller {
-        private int mRootId;
-        private TabGroupModelFilter mTabGroupModelFilter;
+        private final int mRootId;
+        private final TabGroupModelFilter mTabGroupModelFilter;
 
         private TabGroupCreationDialogController(
-                int rootId, TabGroupModelFilter tabGroupModelFilter) {
-            mRootId = rootId;
+                Token tabGroupId, TabGroupModelFilter tabGroupModelFilter) {
+            assert tabGroupId != null;
+
+            mRootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
+            assert mRootId != Tab.INVALID_TAB_ID;
+
             mTabGroupModelFilter = tabGroupModelFilter;
         }
 
@@ -61,10 +73,10 @@ public class TabGroupCreationDialogManager {
             mTabGroupModelFilter.setTabGroupColor(mRootId, currentColorId);
 
             // Only save the group title input text if it has been changed from the suggested
-            // default title and if it is not empty.
-            String defaultGroupTitle = mTabGroupVisualDataDialogManager.getDefaultGroupTitle();
+            // initial title and if it is not empty.
+            String initialGroupTitle = mTabGroupVisualDataDialogManager.getInitialGroupTitle();
             String inputGroupTitle = mTabGroupVisualDataDialogManager.getCurrentGroupTitle();
-            boolean didChangeTitle = !Objects.equals(defaultGroupTitle, inputGroupTitle);
+            boolean didChangeTitle = !Objects.equals(initialGroupTitle, inputGroupTitle);
             if (didChangeTitle && !TextUtils.isEmpty(inputGroupTitle)) {
                 mTabGroupModelFilter.setTabGroupTitle(mRootId, inputGroupTitle);
             }
@@ -81,9 +93,6 @@ public class TabGroupCreationDialogManager {
                 TabUiMetricsHelper.recordTabGroupCreationDialogResultActionMetrics(
                         TabGroupCreationDialogResultAction.DISMISSED_OTHER);
             }
-
-            TrackerFactory.getTrackerForProfile(mTabGroupModelFilter.getTabModel().getProfile())
-                    .dismissed(FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
 
             mTabGroupVisualDataDialogManager.hideDialog();
             if (mOnTabGroupCreation != null) {
@@ -115,13 +124,14 @@ public class TabGroupCreationDialogManager {
      * Attempt to show the tab group creation dialog to the user. The current use case for this
      * dialog means that it is shown after the group has already been merged.
      *
-     * @param rootId The destination root id of the new tab group that has been created.
+     * @param tabGroupId The destination tab group id of the new tab group that has been created.
      * @param filter The current TabGroupModelFilter that this group is created on.
      */
-    public void showDialog(int rootId, TabGroupModelFilter filter) {
-        mTabGroupCreationDialogController = new TabGroupCreationDialogController(rootId, filter);
+    public void showDialog(Token tabGroupId, TabGroupModelFilter filter) {
+        mTabGroupCreationDialogController =
+                new TabGroupCreationDialogController(tabGroupId, filter);
         mTabGroupVisualDataDialogManager.showDialog(
-                rootId, filter, mTabGroupCreationDialogController);
+                tabGroupId, filter, mTabGroupCreationDialogController);
     }
 
     private void recordDialogSelectionHistogram(boolean didChangeColor, boolean didChangeTitle) {
@@ -148,29 +158,5 @@ public class TabGroupCreationDialogManager {
 
     ModalDialogProperties.Controller getDialogControllerForTesting() {
         return mTabGroupCreationDialogController;
-    }
-
-    /**
-     * Returns whether the group creation dialog will be skipped based on current flags.
-     *
-     * @param shouldShow Whether the creation dialog should show if TabGroupCreationDialogAndroid is
-     *     enabled. Currently it should only show for drag and drop merge and bulk selection editor
-     *     merge. It should not show for context menu group creations.
-     */
-    public static boolean shouldSkipGroupCreationDialog(boolean shouldShow) {
-        if (ChromeFeatureList.sTabGroupCreationDialogAndroid.isEnabled()) {
-            return !shouldShow;
-        } else {
-            return TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
-        }
-    }
-
-    /**
-     * Returns whether the group creation dialog should be shown based on the setting switch for
-     * auto showing under tab settings. If it is not enabled, return true since that is the default
-     * case for all callsites.
-     */
-    public static boolean shouldShowGroupCreationDialogViaSettingsSwitch() {
-        return TabGroupModelFilter.shouldShowGroupCreationDialogViaSettingsSwitch();
     }
 }

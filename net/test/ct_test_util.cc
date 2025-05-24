@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/test/ct_test_util.h"
 
 #include <stdint.h>
@@ -182,8 +187,8 @@ std::string GetDerEncodedX509Cert() {
 
 void GetPrecertSignedEntry(SignedEntryData* entry) {
   entry->type = ct::SignedEntryData::LOG_ENTRY_TYPE_PRECERT;
-  std::string issuer_hash(HexDecode(kDefaultIssuerKeyHash));
-  memcpy(entry->issuer_key_hash.data, issuer_hash.data(), issuer_hash.size());
+  base::span(entry->issuer_key_hash)
+      .copy_from(base::as_byte_span(HexDecode(kDefaultIssuerKeyHash)));
   entry->tbs_certificate = HexDecode(kDefaultDerTbsCert);
 }
 

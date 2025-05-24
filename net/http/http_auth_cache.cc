@@ -304,14 +304,14 @@ bool HttpAuthCache::Remove(
   return false;
 }
 
-void HttpAuthCache::ClearEntriesAddedBetween(
+bool HttpAuthCache::ClearEntriesAddedBetween(
     base::Time begin_time,
     base::Time end_time,
     base::RepeatingCallback<bool(const GURL&)> url_matcher) {
   if (begin_time.is_min() && end_time.is_max() && !url_matcher) {
-    ClearAllEntries();
-    return;
+    return ClearAllEntries();
   }
+  const size_t num_entries_before = entries_.size();
   std::erase_if(entries_, [begin_time, end_time, url_matcher](
                               const EntryMap::value_type& entry_map_pair) {
     const Entry& entry = entry_map_pair.second;
@@ -320,10 +320,15 @@ void HttpAuthCache::ClearEntriesAddedBetween(
            (url_matcher ? url_matcher.Run(entry.scheme_host_port().GetURL())
                         : true);
   });
+  return entries_.size() != num_entries_before;
 }
 
-void HttpAuthCache::ClearAllEntries() {
+bool HttpAuthCache::ClearAllEntries() {
+  if (entries_.empty()) {
+    return false;
+  }
   entries_.clear();
+  return true;
 }
 
 bool HttpAuthCache::UpdateStaleChallenge(

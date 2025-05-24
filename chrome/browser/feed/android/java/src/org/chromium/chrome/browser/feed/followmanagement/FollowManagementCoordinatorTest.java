@@ -15,10 +15,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,7 +33,7 @@ public class FollowManagementCoordinatorTest {
     private TestActivity mActivity;
     private FollowManagementCoordinator mFollowManagementCoordinator;
 
-    @Rule public JniMocker mocker = new JniMocker();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -49,10 +49,9 @@ public class FollowManagementCoordinatorTest {
     public void setUpTest() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
-        MockitoAnnotations.initMocks(this);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
-        mocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
+        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJni);
+        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
 
         mFollowManagementCoordinator = new FollowManagementCoordinator(mActivity);
 

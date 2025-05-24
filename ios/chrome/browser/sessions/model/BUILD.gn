@@ -21,10 +21,10 @@ source_set("model") {
     ":serialisation",
     ":session_util",
     "//base",
-    "//components/keyed_service/ios",
     "//components/tab_groups",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/tabs/model",
@@ -111,8 +111,10 @@ source_set("serialisation") {
     "//components/sessions:session_id",
     "//components/tab_groups",
     "//ios/chrome/browser/sessions/model/proto",
+    "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//ios/web/public/session",
@@ -143,11 +145,9 @@ source_set("session_saving") {
   deps = [
     ":session_restoration_service",
     ":session_restoration_service_factory",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
-    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
   ]
 }
 
@@ -260,19 +260,17 @@ source_set("session_restoration_service_factory") {
     ":session_service",
     ":session_state",
     "//base",
-    "//components/keyed_service/ios",
     "//components/pref_registry",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
   ]
 }
 
 source_set("session_constants") {
-  visibility = [ ":*" ]
   sources = [
     "session_constants.h",
     "session_constants.mm",
@@ -328,7 +326,7 @@ source_set("test_support") {
     ":session_restoration_service",
     ":session_service",
     "//base",
-    "//components/keyed_service/ios",
+    "//components/keyed_service/core",
     "//ios/chrome/browser/sessions/model/proto",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
@@ -366,11 +364,10 @@ source_set("session_state") {
     ":session_constants",
     "//build:branding_buildflags",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/strings",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/navigation:wk_navigation_util",
@@ -438,8 +435,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+    "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/test:test_support",
     "//ios/web/common:user_agent",
@@ -455,7 +454,7 @@ source_set("unit_tests") {
     "//ios/web/public/ui",
     "//testing/gtest",
     "//third_party/ocmock",
-    "//url:url",
+    "//url",
   ]
   frameworks = [ "Foundation.framework" ]
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -23,7 +25,11 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.security.MessageDigest;
@@ -38,6 +44,7 @@ import java.util.Collection;
 import java.util.List;
 
 /** UI component for displaying certificate information. */
+@NullMarked
 public class CertificateViewer implements OnItemSelectedListener {
     private static final String X_509 = "X.509";
     private static final int SUBJECTALTERNATIVENAME_DNSNAME_ID = 2;
@@ -45,40 +52,40 @@ public class CertificateViewer implements OnItemSelectedListener {
 
     private final Context mContext;
     private final int mPadding;
-    private ArrayList<String> mTitles;
     private ArrayList<LinearLayout> mViews;
-    private CertificateFactory mCertificateFactory;
-    private Dialog mDialog;
+    private @Nullable CertificateFactory mCertificateFactory;
+    private @Nullable Dialog mDialog;
 
     public CertificateViewer(Context context) {
         mContext = context;
         mPadding =
                 (int) context.getResources().getDimension(R.dimen.page_info_popup_padding_vertical);
-        mDialog = null;
     }
 
     /**
-     * Show a dialog with the provided certificate information.
-     * Dialog will contain spinner allowing the user to select
-     * which certificate to display.
+     * Show a dialog with the provided certificate information. Dialog will contain spinner allowing
+     * the user to select which certificate to display.
      *
      * @param derData DER-encoded data representing a X509 certificate chain.
      */
+    @Initializer
     public void showCertificateChain(byte[][] derData) {
         if (mDialog != null && mDialog.isShowing()) {
+            assumeNonNull(mViews);
             return;
         }
 
-        mTitles = new ArrayList<String>();
+        ArrayList<String> titles = new ArrayList<String>();
         mViews = new ArrayList<LinearLayout>();
-        for (int i = 0; i < derData.length; i++) {
-            addCertificate(derData[i]);
+        for (byte[] curDerData : derData) {
+            addCertificate(curDerData, titles);
         }
 
         ArrayAdapter<String> arrayAdapter =
-                new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, mTitles) {
+                new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, titles) {
                     @Override
-                    public View getView(int position, View convertView, ViewGroup parent) {
+                    public View getView(
+                            int position, @Nullable View convertView, ViewGroup parent) {
                         TextView view = (TextView) super.getView(position, convertView, parent);
                         // Add extra padding on the end side to avoid overlapping the dropdown
                         // arrow.
@@ -131,20 +138,20 @@ public class CertificateViewer implements OnItemSelectedListener {
         mDialog.show();
     }
 
-    private void addCertificate(byte[] derData) {
+    private void addCertificate(byte[] derData, List<String> titles) {
         try {
             if (mCertificateFactory == null) {
                 mCertificateFactory = CertificateFactory.getInstance(X_509);
             }
             Certificate cert =
                     mCertificateFactory.generateCertificate(new ByteArrayInputStream(derData));
-            addCertificateDetails(cert, getDigest(derData, "SHA-256"));
+            addCertificateDetails(cert, getDigest(derData, "SHA-256"), titles);
         } catch (CertificateException e) {
-            Log.e("CertViewer", "Error parsing certificate" + e.toString());
+            Log.e("CertViewer", "Error parsing certificate", e);
         }
     }
 
-    private void addCertificateDetails(Certificate cert, byte[] sha256Digest) {
+    private void addCertificateDetails(Certificate cert, byte[] sha256Digest, List<String> titles) {
         LinearLayout certificateView = new LinearLayout(mContext);
         mViews.add(certificateView);
         certificateView.setOrientation(LinearLayout.VERTICAL);
@@ -152,7 +159,7 @@ public class CertificateViewer implements OnItemSelectedListener {
         X509Certificate x509 = (X509Certificate) cert;
         SslCertificate sslCert = new SslCertificate(x509);
 
-        mTitles.add(sslCert.getIssuedTo().getCName());
+        titles.add(sslCert.getIssuedTo().getCName());
 
         addSectionTitle(certificateView, CertificateViewerJni.get().getCertIssuedToText());
         addItem(
@@ -265,7 +272,7 @@ public class CertificateViewer implements OnItemSelectedListener {
             md.update(bytes);
             return md.digest();
         } catch (java.security.NoSuchAlgorithmException e) {
-            return null;
+            throw JavaUtils.throwUnchecked(e);
         }
     }
 

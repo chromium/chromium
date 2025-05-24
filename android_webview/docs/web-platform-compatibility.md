@@ -264,9 +264,13 @@ compatibility is _definitely_ affected, and means you should definitely
 [reach out to the WebView team](https://groups.google.com/a/chromium.org/forum/#!forum/android-webview-dev)
 to discuss it.
 
-CTS is run as part of the `android-pie-arm64-rel` trybot, and on the main
-waterfall. If your change causes CTS failures, you may need to
-[run CTS locally](./test-instructions.md#cts) to investigate.
+CTS is run as part of the [required CQ trybots](https://chromium.googlesource.com/chromium/src/+/HEAD/infra/config/generated/cq-builders.md#required-builders-chromium):
+- [`android-arm64-rel`](https://ci.chromium.org/ui/p/chromium/builders/try/android-arm64-rel)
+(for device-side CTS)
+- [`android-x64-rel`](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) (for host-driven CTS)
+
+and on the main waterfall. If your change causes CTS failures,
+you may need to [run CTS locally](./test-instructions.md#cts) to investigate.
 
 ### UMA, Finch, and other data collection from the field
 

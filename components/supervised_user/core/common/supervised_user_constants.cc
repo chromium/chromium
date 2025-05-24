@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/supervised_user/core/common/pref_names.h"
 
 namespace supervised_user {
@@ -13,12 +14,10 @@ const int kHistogramFilteringBehaviorSpacing = 100;
 const int kSupervisedUserURLFilteringResultHistogramMax = 800;
 
 namespace {
-
 const int kHistogramPageTransitionMaxKnownValue =
     static_cast<int>(ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 const int kHistogramPageTransitionFallbackValue =
     kHistogramFilteringBehaviorSpacing - 1;
-
 }  // namespace
 
 static_assert(kHistogramPageTransitionMaxKnownValue <
@@ -37,6 +36,8 @@ std::string WebFilterTypeToDisplayString(WebFilterType web_filter_type) {
       return "allow_certain_sites";
     case WebFilterType::kTryToBlockMatureSites:
       return "block_mature_sites";
+    case WebFilterType::kDisabled:
+      return "disabled";
     case WebFilterType::kMixed:
       NOTREACHED();
   }
@@ -48,8 +49,7 @@ int GetHistogramValueForTransitionType(ui::PageTransition transition_type) {
   if (0 <= value && value <= kHistogramPageTransitionMaxKnownValue) {
     return value;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kHistogramPageTransitionFallbackValue;
+  NOTREACHED();
 }
 
 const char kAuthorizationHeader[] = "Bearer";
@@ -109,9 +109,17 @@ const char kSupervisedUserURLFilteringResultHistogramName[] =
 
 const char kSupervisedUserTopLevelURLFilteringResultHistogramName[] =
     "ManagedUsers.TopLevelFilteringResult";
+const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[] =
+    "ManagedUsers.TopLevelFilteringResult2";
+
+const char kLocalWebApprovalResultHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalResult";
 
 const char kManagedByParentUiMoreInfoUrl[] =
     "https://familylink.google.com/setting/resource/94";
+
+const char kFamilyManagementUrl[] =
+    "https://myaccount.google.com/family/details";
 
 const char kDefaultEmptyFamilyMemberRole[] = "not_in_family";
 
@@ -125,5 +133,13 @@ const char kClassifiedLaterThanContentResponseHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse";
 extern const char kClassifyUrlThrottleStatusHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.Status";
+extern const char kClassifyUrlThrottleFinalStatusHistogramName[] =
+    "SupervisedUsers.ClassifyUrlThrottle.FinalStatus";
+extern const char kClassifyUrlThrottleUseCaseHistogramName[] =
+    "SupervisedUsers.ClassifyUrlThrottle.UseCase";
 
+const char kLocalWebApprovalDurationMillisecondsHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
+const char kLocalWebApprovalErrorTypeHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalErrorType";
 }  // namespace supervised_user

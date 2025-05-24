@@ -48,6 +48,7 @@ class TabModel;
 // https://chromium.googlesource.com/chromium/src/+/main/docs/tab_helpers.md
 //
 // WARNING: Do not use this class for desktop chrome. Use TabFeatures instead.
+// WARNING: For Android, consider using TabFeatures instead of this class.
 // See
 // https://chromium.googlesource.com/chromium/src/+/main/docs/chrome_browser_design_principles.md
 

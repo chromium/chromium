@@ -4,6 +4,7 @@
 
 #include "ash/wm/screen_pinning_controller.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -14,7 +15,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -23,7 +23,7 @@ namespace {
 int FindIndex(
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
     const aura::Window* target) {
-  auto iter = base::ranges::find(windows, target);
+  auto iter = std::ranges::find(windows, target);
   return iter != windows.end() ? iter - windows.begin() : -1;
 }
 

@@ -6,27 +6,18 @@
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_TAILORED_SECURITY_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class KeyedService;
+class ProfileIOS;
 
 namespace safe_browsing {
 class TailoredSecurityService;
 }
 
-namespace web {
-class BrowserState;
-}
-
 // Singleton that owns TailoredSecurityService objects, one for each active
 // profile. It returns nullptr for Incognito profiles.
-class TailoredSecurityServiceFactory : public BrowserStateKeyedServiceFactory {
+class TailoredSecurityServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static safe_browsing::TailoredSecurityService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static safe_browsing::TailoredSecurityService* GetForProfile(
       ProfileIOS* profile);
 

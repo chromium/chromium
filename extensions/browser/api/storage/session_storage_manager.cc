@@ -33,7 +33,7 @@ class SessionStorageManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* browser_context) const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* browser_context) const override;
 };
 
@@ -55,13 +55,14 @@ content::BrowserContext* SessionStorageManagerFactory::GetBrowserContextToUse(
   // Share storage between incognito and on-the-record profiles by using the
   // original context of an incognito window.
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      browser_context, /*force_guest_profile=*/true);
+      browser_context);
 }
 
-KeyedService* SessionStorageManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SessionStorageManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new SessionStorageManager(api::storage::session::QUOTA_BYTES,
-                                   browser_context);
+  return std::make_unique<SessionStorageManager>(
+      api::storage::session::QUOTA_BYTES, browser_context);
 }
 
 }  // namespace
@@ -120,6 +121,15 @@ size_t SessionStorageManager::ExtensionStorage::CalculateUsage(
   }
 
   return updated_used_total;
+}
+
+std::vector<std::string> SessionStorageManager::ExtensionStorage::GetKeys()
+    const {
+  std::vector<std::string> keys;
+  for (auto& value : values_) {
+    keys.push_back(value.first);
+  }
+  return keys;
 }
 
 std::map<std::string, const base::Value*>
@@ -248,6 +258,16 @@ SessionStorageManager* SessionStorageManager::GetForBrowserContext(
 BrowserContextKeyedServiceFactory* SessionStorageManager::GetFactory() {
   static base::NoDestructor<SessionStorageManagerFactory> g_factory;
   return g_factory.get();
+}
+
+std::vector<std::string> SessionStorageManager::GetKeys(
+    const ExtensionId& extension_id) const {
+  auto storage_it = extensions_storage_.find(extension_id);
+  if (storage_it == extensions_storage_.end()) {
+    return std::vector<std::string>();
+  }
+
+  return storage_it->second->GetKeys();
 }
 
 const base::Value* SessionStorageManager::Get(const ExtensionId& extension_id,

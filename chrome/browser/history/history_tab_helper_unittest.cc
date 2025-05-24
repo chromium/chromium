@@ -332,6 +332,60 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsReferringURLNotMainFrame) {
   EXPECT_NE(args.referrer, GURL("http://previousurl.com"));
 }
 
+TEST_F(HistoryTabHelperTest, CreateAddPageArgsFrameUrlWithValidInitiator) {
+  // Create our initiator RenderFrameHost.
+  content::RenderFrameHostTester* main_rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  main_rfh_tester->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* subframe = main_rfh_tester->AppendChild("subframe");
+  const GURL initiator_url = GURL("http://previousurl.com");
+
+  // Prepare a mock navigation from that initiator frame.
+  const GURL test_url = GURL("http://testurl.com");
+  NiceMock<content::MockNavigationHandle> navigation_handle(test_url, subframe);
+  navigation_handle.set_initiator_origin(url::Origin::Create(initiator_url));
+  // Simulate a navigation that is marked no-referrer (the value of which we
+  // should ignore in favor of initiator origin).
+  auto referrer = blink::mojom::Referrer::New();
+  referrer->url = GURL();
+  referrer->policy = network::mojom::ReferrerPolicy::kNever;
+  navigation_handle.SetReferrer(std::move(referrer));
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(test_url, base::Time(), 1,
+                                                     &navigation_handle);
+
+  // `frame_url` should default to the last committed URL of the initiator
+  // RenderFrameHost.
+  ASSERT_TRUE(args.frame_url.has_value());
+  EXPECT_EQ(args.frame_url.value(), initiator_url);
+}
+
+TEST_F(HistoryTabHelperTest, CreateAddPageArgsFrameUrlWithInvalidInitiator) {
+  // Create our initiator RenderFrameHost but do not set the initiator origin.
+  // This simulates an invalid or missing initiator frame.
+  content::RenderFrameHostTester* main_rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  main_rfh_tester->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* subframe = main_rfh_tester->AppendChild("subframe");
+
+  // Prepare a mock navigation from that initiator frame.
+  const GURL test_url = GURL("http://testurl.com");
+  NiceMock<content::MockNavigationHandle> navigation_handle(test_url, subframe);
+  // Set a valid referrer with a default referrer policy.
+  auto referrer = blink::mojom::Referrer::New();
+  referrer->url = test_url;
+  referrer->policy = network::mojom::ReferrerPolicy::kDefault;
+  navigation_handle.SetReferrer(std::move(referrer));
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(test_url, base::Time(), 1,
+                                                     &navigation_handle);
+
+  // `frame_url` should fall back on referrer when we have an invalid initiator
+  // origin.
+  ASSERT_TRUE(args.frame_url.has_value());
+  EXPECT_EQ(args.frame_url.value(), test_url);
+}
+
 TEST_F(HistoryTabHelperTest, CreateAddPageArgsHasOpenerWebContentsFirstPage) {
   std::unique_ptr<content::WebContents> opener_web_contents =
       CreateTestWebContents();
@@ -359,6 +413,58 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsHasOpenerWebContentsFirstPage) {
 
   ASSERT_TRUE(args.opener.has_value());
   EXPECT_EQ(args.opener->url, GURL("https://opensnewtab.com/"));
+
+  // When previous primary main frame is empty and our navigation type is LINK,
+  // the top_level_url should be replaced by a valid opener URL.
+  ASSERT_TRUE(args.top_level_url.has_value());
+  EXPECT_EQ(args.top_level_url.value(), args.opener->url);
+}
+
+TEST_F(HistoryTabHelperTest, CreateAddPageArgsHasLiveOriginalOpenerChain) {
+  // Prepare the original opener WebContents that will serve as the root of the
+  // live original opener chain.
+  std::unique_ptr<content::WebContents> live_original_opener =
+      CreateTestWebContents();
+  content::WebContentsTester* live_original_tester =
+      content::WebContentsTester::For(live_original_opener.get());
+  live_original_tester->NavigateAndCommit(GURL("https://opensnewtab.com/"));
+
+  // The web_contents() for this test will have an empty opener property
+  // but a valid live original opener chain. This mimics behavior such as
+  // clicking on a link which opens in a new tab.
+  content::WebContentsTester::For(web_contents())
+      ->SetOriginalOpener(live_original_opener.get());
+
+  // We want to create a HistoryTabHelper for the WebContents with an empty
+  // opener, so the `top_level_url` is forced to be constructed with the live
+  // original opener chain instead.
+  HistoryTabHelper::CreateForWebContents(web_contents());
+  HistoryTabHelper::FromWebContents(web_contents())
+      ->DidOpenRequestedURL(web_contents(), nullptr,
+                            GURL("http://someurl.com/"), content::Referrer(),
+                            WindowOpenDisposition::NEW_WINDOW,
+                            ui::PAGE_TRANSITION_LINK, false, true);
+
+  // Preparing the NavigationHandle that HistoryTabHelper will use to construct
+  // the HistoryAddPageArgs.
+  content::RenderFrameHostTester* main_rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  main_rfh_tester->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* subframe = main_rfh_tester->AppendChild("subframe");
+  NiceMock<content::MockNavigationHandle> navigation_handle(
+      GURL("http://someurl.com"), subframe);
+  navigation_handle.set_redirect_chain({GURL("http://someurl.com")});
+
+  // Construct the HistoryAddPageArgs taking into consideration the WebContents
+  // environment and NavigationHandle.
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("http://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  // When previous primary main frame and opener URLs are invalid, the
+  // `top_level_url` should be populated with the live original opener URL.
+  ASSERT_TRUE(args.top_level_url.has_value());
+  EXPECT_EQ(args.top_level_url.value(), GURL("https://opensnewtab.com/"));
 }
 
 TEST_F(HistoryTabHelperTest, CreateAddPageArgsSameDocNavigationUsesOpener) {
@@ -381,7 +487,7 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsSameDocNavigationUsesOpener) {
 }
 
 TEST_F(HistoryTabHelperTest,
-       CreateAddPageArgsHasOpenerWebContentseNotFirstPage) {
+       CreateAddPageArgsHasOpenerWebContentsNotFirstPage) {
   std::unique_ptr<content::WebContents> opener_web_contents =
       CreateTestWebContents();
   content::WebContentsTester* opener_web_contents_tester =
@@ -410,6 +516,11 @@ TEST_F(HistoryTabHelperTest,
           GURL("http://someurl.com"), base::Time(), 1, &navigation_handle);
 
   EXPECT_FALSE(args.opener.has_value());
+
+  // When there is a valid previous primary main frame, top-level url should
+  // not be overwritten by an opener or live opener chain URL.
+  ASSERT_TRUE(args.top_level_url.has_value());
+  ASSERT_EQ(args.top_level_url.value(), GURL("http://someurl.com"));
 }
 
 TEST_F(HistoryTabHelperTest,

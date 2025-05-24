@@ -7,12 +7,15 @@
 
 #import <CryptoTokenKit/CryptoTokenKit.h>
 #import <Foundation/Foundation.h>
-#import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
 
 #include "crypto/crypto_export.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/no_destructor.h"
+
+#if !BUILDFLAG(IS_IOS_TVOS)
+#import <LocalAuthentication/LocalAuthentication.h>
+#endif
 
 namespace crypto {
 
@@ -70,8 +73,10 @@ class CRYPTO_EXPORT AppleKeychainV2 {
       CFErrorRef* error);
 #endif  // !BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_IOS_TVOS)
   // LAContextCanEvaluatePolicy wraps LAContext's canEvaluatePolicy method.
   virtual BOOL LAContextCanEvaluatePolicy(LAPolicy policy, NSError** error);
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
 
  protected:
   AppleKeychainV2();

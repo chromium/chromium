@@ -21,8 +21,7 @@ std::string AnchorToString(url_pattern_index::flat::AnchorType anchor_type) {
     case url_pattern_index::flat::AnchorType_BOUNDARY:
       return "|";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Class that aids in appending options to a pretty-printed rule.

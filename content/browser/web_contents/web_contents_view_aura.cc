@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -242,7 +241,8 @@ void PrepareDragForDownload(const DropData& drop_data,
 // Returns the ClipboardFormatType to store file system files.
 const ui::ClipboardFormatType& GetFileSystemFileFormatType() {
   static base::NoDestructor<ui::ClipboardFormatType> format(
-      ui::ClipboardFormatType::GetType("chromium/x-file-system-files"));
+      ui::ClipboardFormatType::CustomPlatformType(
+          "chromium/x-file-system-files"));
   return *format;
 }
 
@@ -349,7 +349,8 @@ blink::DragOperationsMask ConvertToDragOperationsMask(int drag_op) {
 }
 
 GlobalRoutingID GetRenderViewHostID(RenderViewHost* rvh) {
-  return GlobalRoutingID(rvh->GetProcess()->GetID(), rvh->GetRoutingID());
+  return GlobalRoutingID(rvh->GetProcess()->GetDeprecatedID(),
+                         rvh->GetRoutingID());
 }
 
 // Returns the host window for |window|, or nullpr if it has no host window.
@@ -375,14 +376,14 @@ WebContentsViewAura::OnPerformingDropContext::OnPerformingDropContext(
     std::unique_ptr<DropData> drop_data,
     DropMetadata drop_metadata,
     std::unique_ptr<ui::OSExchangeData> data,
-    base::ScopedClosureRunner end_drag_runner,
+    base::ScopedClosureRunner drop_exit_cleanup,
     std::optional<gfx::PointF> transformed_pt,
     gfx::PointF screen_pt)
     : target_rwh(target_rwh->GetWeakPtr()),
       drop_data(std::move(drop_data)),
       drop_metadata(drop_metadata),
       data(std::move(data)),
-      end_drag_runner(std::move(end_drag_runner)),
+      drop_exit_cleanup(std::move(drop_exit_cleanup)),
       transformed_pt(std::move(transformed_pt)),
       screen_pt(screen_pt) {}
 
@@ -696,7 +697,7 @@ void WebContentsViewAura::SetDelegateForTesting(
 void WebContentsViewAura::PrepareDropData(
     DropData* drop_data,
     const ui::OSExchangeData& data) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/256022714): Using `IsRendererTainted()` breaks the Files app. Always
   // setting this to false is currently believed to be safe-ish because ChromeOS
   // separates URL and filename metadata and does not implement the DownloadURL
@@ -765,8 +766,8 @@ void WebContentsViewAura::PrepareDropData(
     if (std::optional<std::vector<ui::FileInfo>> virtual_filenames =
             data.GetVirtualFilenames();
         virtual_filenames.has_value()) {
-      base::ranges::move(virtual_filenames.value(),
-                         std::back_inserter(drop_data->filenames));
+      std::ranges::move(virtual_filenames.value(),
+                        std::back_inserter(drop_data->filenames));
     }
   }
 #endif
@@ -1085,6 +1086,8 @@ WebContentsViewAura::GetBackForwardTransitionAnimationManager() {
   return nullptr;
 }
 
+void WebContentsViewAura::DestroyBackForwardTransitionAnimationManager() {}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewAura, RenderViewHostDelegateView implementation:
 
@@ -1226,8 +1229,8 @@ gfx::Size WebContentsViewAura::GetMinimumSize() const {
   return gfx::Size();
 }
 
-gfx::Size WebContentsViewAura::GetMaximumSize() const {
-  return gfx::Size();
+std::optional<gfx::Size> WebContentsViewAura::GetMaximumSize() const {
+  return std::nullopt;
 }
 
 void WebContentsViewAura::OnBoundsChanged(const gfx::Rect& old_bounds,
@@ -1444,6 +1447,11 @@ void WebContentsViewAura::DragUpdatedCallback(
   if (!target) {
     return;
   }
+
+  if (transformed_pt.has_value()) {
+    web_contents_->PreHandleDragUpdate(*drop_data, transformed_pt.value());
+  }
+
   RenderWidgetHostImpl* target_rwh =
       RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
   if (!drag_security_info_.IsValidDragTarget(target_rwh)) {
@@ -1531,6 +1539,8 @@ void WebContentsViewAura::OnDragExited() {
 void WebContentsViewAura::CompleteDragExit() {
   drag_in_progress_ = false;
 
+  web_contents_->PreHandleDragExit();
+
   if (current_rwh_for_drag_ && !web_contents_->IsBeingDestroyed() &&
       current_rvh_for_drag_ ==
           GetRenderViewHostID(web_contents_->GetRenderViewHost())) {
@@ -1546,6 +1556,11 @@ void WebContentsViewAura::CompleteDragExit() {
   }
 
   current_drag_data_.reset();
+}
+
+void WebContentsViewAura::OnDropExit(
+    base::ScopedClosureRunner end_drag_runner) {
+  drag_in_progress_ = false;
 }
 
 // PerformDropCallback() is called once the user releases the mouse button
@@ -1600,8 +1615,11 @@ void WebContentsViewAura::PerformDropCallback(
     std::unique_ptr<ui::OSExchangeData> data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
     std::optional<gfx::PointF> transformed_pt) {
-  drag_in_progress_ = false;
-  base::ScopedClosureRunner end_drag_runner(std::move(end_drag_runner_));
+  // Exit callback to make sure |drag_in_pregress_| is flipped on exit and
+  // |end_drag_runner_| is run after OnGotVirtualFilesAsTempFiles finishes.
+  base::ScopedClosureRunner drop_exit_cleanup(base::BindOnce(
+      &WebContentsViewAura::OnDropExit, weak_ptr_factory_.GetWeakPtr(),
+      std::move(end_drag_runner_)));
 
   if (!target) {
     return;
@@ -1636,7 +1654,7 @@ void WebContentsViewAura::PerformDropCallback(
 
   OnPerformingDropContext drop_context(
       target_rwh, std::move(current_drag_data_), drop_metadata, std::move(data),
-      std::move(end_drag_runner), transformed_pt, screen_pt);
+      std::move(drop_exit_cleanup), transformed_pt, screen_pt);
 
 #if BUILDFLAG(IS_WIN)
   if (ShouldIncludeVirtualFiles(*drop_context.drop_data) &&
@@ -1852,7 +1870,6 @@ void WebContentsViewAura::ShowPopupMenu(
     RenderFrameHost* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,
-    int item_height,
     double item_font_size,
     int selected_item,
     std::vector<blink::mojom::MenuItemPtr> menu_items,

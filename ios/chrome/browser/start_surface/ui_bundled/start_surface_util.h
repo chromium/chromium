@@ -5,11 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_START_SURFACE_UI_BUNDLED_START_SURFACE_UTIL_H_
 #define IOS_CHROME_BROWSER_START_SURFACE_UI_BUNDLED_START_SURFACE_UTIL_H_
 
+#import <optional>
+
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
-// Returns the time since the most recent tab was opened.
-base::TimeDelta GetTimeSinceMostRecentTabWasOpenForSceneState(
+// Returns the time the most recent tab was opened for `scene_state`.
+std::optional<base::Time> GetTimeMostRecentTabWasOpenForSceneState(
+    SceneState* scene_state);
+
+// Returns how much time has elapsed since the most recent tab was opened for
+// `scene_state`.
+std::optional<base::TimeDelta> GetTimeSinceMostRecentTabWasOpenForSceneState(
     SceneState* sceneState);
 
 // Checks whether the Start Surface should be shown for the given scene state.

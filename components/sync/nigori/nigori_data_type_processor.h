@@ -52,7 +52,7 @@ class NigoriDataTypeProcessor : public DataTypeProcessor,
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
-  void HasUnsyncedData(base::OnceCallback<void(bool)> callback) override;
+  void GetUnsyncedDataCount(base::OnceCallback<void(size_t)> callback) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
@@ -86,7 +86,7 @@ class NigoriDataTypeProcessor : public DataTypeProcessor,
 
   // Clears all metadata and directs the bridge to clear the persisted metadata
   // as well. In addition, it resets the state of the processor and clears
-  // tracking |entity_|.
+  // tracking `entity_`.
   void ClearMetadataAndReset();
 
   // The bridge owns this processor instance so the pointer should never become

@@ -16,6 +16,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
@@ -24,7 +25,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_arguments.h"
-#include "base/trace_event/trace_event_memory_overhead.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -42,19 +42,11 @@ typedef base::RepeatingCallback<bool(const std::string& metadata_name)>
     MetadataFilterPredicate;
 
 struct TraceEventHandle {
-  uint32_t chunk_seq;
-  // These numbers of bits must be kept consistent with
-  // TraceBufferChunk::kMaxTrunkIndex and
-  // TraceBufferChunk::kTraceBufferChunkSize (in trace_buffer.h).
-  unsigned chunk_index : 26;
-  unsigned event_index : 6;
+  uint64_t dummy;
 };
 
 class BASE_EXPORT TraceEvent {
  public:
-  // TODO(crbug.com/40599662): Remove once all users have been updated.
-  using TraceValue = base::trace_event::TraceValue;
-
   TraceEvent();
 
   TraceEvent(PlatformThreadId thread_id,
@@ -65,7 +57,6 @@ class BASE_EXPORT TraceEvent {
              const char* name,
              const char* scope,
              unsigned long long id,
-             unsigned long long bind_id,
              TraceArguments* args,
              unsigned int flags);
 
@@ -95,13 +86,10 @@ class BASE_EXPORT TraceEvent {
              const char* name,
              const char* scope,
              unsigned long long id,
-             unsigned long long bind_id,
              TraceArguments* args,
              unsigned int flags);
 
   void UpdateDuration(const TimeTicks& now, const ThreadTicks& thread_now);
-
-  void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead);
 
   // Serialize event data to JSON
   void AppendAsJSON(
@@ -119,10 +107,9 @@ class BASE_EXPORT TraceEvent {
   const char* scope() const { return scope_; }
   unsigned long long id() const { return id_; }
   unsigned int flags() const { return flags_; }
-  unsigned long long bind_id() const { return bind_id_; }
   // Exposed for unittesting:
 
-  const StringStorage& parameter_copy_storage() const {
+  const StringStorage& parameter_copy_storage() const LIFETIME_BOUND {
     return parameter_copy_storage_;
   }
 
@@ -168,11 +155,10 @@ class BASE_EXPORT TraceEvent {
   //  tid: thread_id_, pid: current_process_id (default case).
   //  tid: -1, pid: process_id_ (when flags_ & TRACE_EVENT_FLAG_HAS_PROCESS_ID).
   union {
-    PlatformThreadId thread_id_ = 0;
+    PlatformThreadId thread_id_ = kInvalidThreadId;
     ProcessId process_id_;
   };
   unsigned int flags_ = 0;
-  unsigned long long bind_id_ = 0;
   char phase_ = TRACE_EVENT_PHASE_BEGIN;
 };
 

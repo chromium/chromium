@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "reference_drivers/sync_reference_driver.h"
 
 #include <cstddef>
@@ -43,13 +48,14 @@ class TransportReceiver
 
   IpczHandle handle() const { return reinterpret_cast<IpczHandle>(this); }
 
-  static IpczResult Receive(IpczHandle transport,
-                            const void* data,
-                            size_t num_bytes,
-                            const IpczDriverHandle* driver_handles,
-                            size_t num_driver_handles,
-                            IpczTransportActivityFlags flags,
-                            const void* options) {
+  static IpczResult Receive(
+      IpczHandle transport,
+      const void* data,
+      size_t num_bytes,
+      const IpczDriverHandle* driver_handles,
+      size_t num_driver_handles,
+      IpczTransportActivityFlags flags,
+      const struct IpczTransportActivityOptions* options) {
     const TransportHandlers& handlers =
         TransportReceiver::FromHandle(transport)->handlers_;
     if (flags & IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED) {

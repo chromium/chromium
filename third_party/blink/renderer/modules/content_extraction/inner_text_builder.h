@@ -91,8 +91,6 @@ class MODULES_EXPORT InnerTextPassagesBuilder final {
  private:
   explicit InnerTextPassagesBuilder(
       const mojom::blink::InnerTextParams& params);
-
-  const mojom::blink::InnerTextParams& params_;
 };
 
 }  // namespace blink

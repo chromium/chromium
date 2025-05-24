@@ -36,7 +36,8 @@ enum class DesksMoveWindowFromActiveDeskSource {
   kShortcut = 1,
   kSendToDesk = 2,
   kVisibleOnAllDesks = 3,
-  kMaxValue = kVisibleOnAllDesks,
+  kCoral = 4,
+  kMaxValue = kCoral,
 };
 
 // Please keep in sync with the matching enum in
@@ -63,33 +64,6 @@ enum class DesksSwitchSource {
   kDeskRestored = 16,
   kCoral = 17,
   kMaxValue = kCoral,
-};
-
-// Please keep in sync with the matching enum in
-// tools/metrics/histograms/metadata/ash/enums.xml
-enum class DeskProfilesUsageStatus {
-  // The conditions for letting the user select a profile for a desk have not
-  // been met. For example: lacros is not enabled or the user only has a single
-  // profile.
-  kConditionsNotMet = 0,
-  // The conditions for letting the user select a profile for a desk have been
-  // met, but the user has not assigned a user to any desk.
-  kConditionsMet = 1,
-  // The user is actively using desk profiles.
-  kEnabled = 2,
-  kMaxValue = kEnabled,
-};
-
-// Please keep in sync with the matching enum in
-// tools/metrics/histograms/metadata/ash/enums.xml
-enum class DeskProfilesSelectProfileSource {
-  // The user has selected a profile from the profile button menu.
-  kDeskProfileButton = 0,
-  // The user has selected a profile from the mini view context menu.
-  kDeskActionContextMenu = 1,
-  // The user has dropped a browser window on the new desk button.
-  kNewDeskButtonDrop = 2,
-  kMaxValue = kNewDeskButtonDrop,
 };
 
 inline constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";
@@ -122,15 +96,6 @@ inline constexpr char kDeskButtonDeskBarRenameDeskHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.RenameDesk";
 inline constexpr char kDeskButtonDeskBarReorderDeskHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.ReorderDesk";
-
-inline constexpr char kDeskProfilesPressesHistogramName[] =
-    "Ash.Desks.DeskProfiles.AvatarView.ButtonPressed";
-inline constexpr char kDeskProfilesOpenProfileManagerHistogramName[] =
-    "Ash.Desks.DeskProfiles.ContextMenu.OpenProfileManager";
-inline constexpr char kDeskProfilesUsageStatusHistogramName[] =
-    "Ash.Desks.DeskProfiles.UsageStatus";
-inline constexpr char kDeskProfilesSelectProfileHistogramName[] =
-    "Ash.Desks.DeskProfiles.SelectProfile";
 
 inline constexpr char kOverviewDeskBarActivateDeskHistogramName[] =
     "Ash.Desks.Overview.BarAction.ActivateDesk";

@@ -21,7 +21,7 @@ namespace value_store {
 
 class ValueStoreFrontendTest : public testing::Test {
  public:
-  ValueStoreFrontendTest() {}
+  ValueStoreFrontendTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

@@ -15,7 +15,7 @@ ExtensionTokenKey::ExtensionTokenKey(const std::string& extension_id,
 
 ExtensionTokenKey::ExtensionTokenKey(const ExtensionTokenKey& other) = default;
 
-ExtensionTokenKey::~ExtensionTokenKey() {}
+ExtensionTokenKey::~ExtensionTokenKey() = default;
 
 bool ExtensionTokenKey::operator<(const ExtensionTokenKey& rhs) const {
   return std::tie(extension_id, account_info.account_id, scopes) <

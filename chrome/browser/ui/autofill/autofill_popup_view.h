@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/input/native_web_keyboard_event.h"
 
@@ -80,7 +80,7 @@ class AutofillPopupView {
   virtual base::WeakPtr<AutofillPopupView> GetWeakPtr() = 0;
 
  protected:
-  virtual ~AutofillPopupView() {}
+  virtual ~AutofillPopupView() = default;
 };
 
 }  // namespace autofill

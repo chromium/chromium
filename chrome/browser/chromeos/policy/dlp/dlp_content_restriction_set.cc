@@ -8,7 +8,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "url/gurl.h"
@@ -38,16 +37,6 @@ DlpContentRestrictionSet& DlpContentRestrictionSet::operator=(
     const DlpContentRestrictionSet& other) = default;
 
 DlpContentRestrictionSet::~DlpContentRestrictionSet() = default;
-
-bool DlpContentRestrictionSet::operator==(
-    const DlpContentRestrictionSet& other) const {
-  return restrictions_ == other.restrictions_;
-}
-
-bool DlpContentRestrictionSet::operator!=(
-    const DlpContentRestrictionSet& other) const {
-  return !(*this == other);
-}
 
 void DlpContentRestrictionSet::SetRestriction(DlpContentRestriction restriction,
                                               DlpRulesManager::Level level,

@@ -4,7 +4,6 @@
 
 package org.chromium.content_public.browser.test.util;
 
-import android.content.Intent;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.NonNull;
@@ -71,7 +70,7 @@ public class TestSelectionPopupController implements SelectionPopupController {
     public void clearSelection() {}
 
     @Override
-    public void onReceivedProcessTextResult(int resultCode, Intent data) {}
+    public void handleTextReplacementAction(String text) {}
 
     @Override
     public void setSelectionClient(SelectionClient selectionClient) {}
@@ -106,4 +105,9 @@ public class TestSelectionPopupController implements SelectionPopupController {
 
     @Override
     public void setSelectionActionMenuDelegate(@Nullable SelectionActionMenuDelegate delegate) {}
+
+    @Override
+    public SelectionActionMenuDelegate getSelectionActionMenuDelegate() {
+        return null;
+    }
 }

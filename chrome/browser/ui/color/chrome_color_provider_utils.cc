@@ -10,12 +10,10 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_features.h"
-
 #include "ui/color/color_id_map_macros.inc"
 
 std::string ChromeColorIdName(ui::ColorId color_id) {
@@ -29,8 +27,9 @@ std::string ChromeColorIdName(ui::ColorId color_id) {
 color_utils::HSL GetThemeTint(int id, const ui::ColorProviderKey& key) {
 #if !BUILDFLAG(IS_ANDROID)
   color_utils::HSL hsl;
-  if (key.custom_theme && key.custom_theme->GetTint(id, &hsl))
+  if (key.custom_theme && key.custom_theme->GetTint(id, &hsl)) {
     return hsl;
+  }
   using ThemeType = ui::ColorProviderKey::ThemeInitializerSupplier::ThemeType;
   const bool is_custom_theme =
       key.custom_theme &&
@@ -116,7 +115,7 @@ ui::ColorTransform AdjustHighlightColorForContrast(ui::ColorTransform fg,
 bool ShouldApplyHighContrastColors(const ui::ColorProviderKey& key) {
   // Only apply custom high contrast handling on platforms where we are not
   // using the system theme for high contrast.
-#if BUILDFLAG(USE_GTK) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(USE_GTK) || BUILDFLAG(IS_WIN)
   return false;
 #else
   return key.contrast_mode == ui::ColorProviderKey::ContrastMode::kHigh;

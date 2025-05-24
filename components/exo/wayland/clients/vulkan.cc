@@ -35,7 +35,7 @@ void FrameCallback(void* data, wl_callback* callback, uint32_t time) {
 
 class VulkanClient : ClientBase {
  public:
-  VulkanClient() {}
+  VulkanClient() = default;
 
   VulkanClient(const VulkanClient&) = delete;
   VulkanClient& operator=(const VulkanClient&) = delete;

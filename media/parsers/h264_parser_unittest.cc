@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/parsers/h264_parser.h"
 
 #include <limits>
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/subsample_entry.h"
@@ -25,6 +23,9 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
+
+constexpr char kTestFile[] = "test-25fps.h264";
+constexpr size_t kTestFileNALUnits = 1009;
 
 class H264SPSTest : public ::testing::Test {
  public:
@@ -105,9 +106,7 @@ TEST_F(H264SPSTest, GetVisibleRect) {
 }
 
 TEST(H264ParserTest, StreamFileParsing) {
-  base::FilePath file_path = GetTestDataFilePath("test-25fps.h264");
-  // Number of NALUs in the test stream to be parsed.
-  int num_nalus = 759;
+  base::FilePath file_path = GetTestDataFilePath(kTestFile);
 
   base::MemoryMappedFile stream;
   ASSERT_TRUE(stream.Initialize(file_path))
@@ -117,7 +116,7 @@ TEST(H264ParserTest, StreamFileParsing) {
   parser.SetStream(stream.data(), stream.length());
 
   // Parse until the end of stream/unsupported stream/error in stream is found.
-  int num_parsed_nalus = 0;
+  size_t num_parsed_nalus = 0;
   while (true) {
     media::H264SliceHeader shdr;
     media::H264SEI sei;
@@ -126,7 +125,7 @@ TEST(H264ParserTest, StreamFileParsing) {
     if (res == H264Parser::kEOStream) {
       DVLOG(1) << "Number of successfully parsed NALUs before EOS: "
                << num_parsed_nalus;
-      ASSERT_EQ(num_nalus, num_parsed_nalus);
+      ASSERT_EQ(kTestFileNALUnits, num_parsed_nalus);
       return;
     }
     ASSERT_EQ(res, H264Parser::kOk);
@@ -161,9 +160,7 @@ TEST(H264ParserTest, StreamFileParsing) {
 }
 
 TEST(H264ParserTest, ParseNALUsFromStreamFile) {
-  base::FilePath file_path = GetTestDataFilePath("test-25fps.h264");
-  // Number of NALUs in the test stream to be parsed.
-  const size_t num_nalus = 759;
+  base::FilePath file_path = GetTestDataFilePath(kTestFile);
 
   base::MemoryMappedFile stream;
   ASSERT_TRUE(stream.Initialize(file_path))
@@ -171,7 +168,7 @@ TEST(H264ParserTest, ParseNALUsFromStreamFile) {
 
   std::vector<H264NALU> nalus;
   ASSERT_TRUE(H264Parser::ParseNALUs(stream.data(), stream.length(), &nalus));
-  ASSERT_EQ(num_nalus, nalus.size());
+  ASSERT_EQ(kTestFileNALUnits, nalus.size());
 }
 
 // Verify that GetCurrentSubsamples works.
@@ -327,12 +324,13 @@ TEST(H264ParserTest, RecoveryPointSEIParsing) {
 
   // Recovery point present.
   EXPECT_EQ(recovery_point_sei.msgs.size(), 1u);
-  for (auto& sei_msg : recovery_point_sei.msgs) {
-    EXPECT_EQ(sei_msg.type, H264SEIMessage::kSEIRecoveryPoint);
-    EXPECT_EQ(sei_msg.recovery_point.recovery_frame_cnt, 0);
-    EXPECT_EQ(sei_msg.recovery_point.exact_match_flag, false);
-    EXPECT_EQ(sei_msg.recovery_point.broken_link_flag, false);
-    EXPECT_EQ(sei_msg.recovery_point.changing_slice_group_idc, 0);
+  for (const auto& sei_msg : recovery_point_sei.msgs) {
+    const auto* recovery_point = std::get_if<H264SEIRecoveryPoint>(&sei_msg);
+    ASSERT_TRUE(recovery_point);
+    EXPECT_EQ(recovery_point->recovery_frame_cnt, 0);
+    EXPECT_EQ(recovery_point->exact_match_flag, false);
+    EXPECT_EQ(recovery_point->broken_link_flag, false);
+    EXPECT_EQ(recovery_point->changing_slice_group_idc, 0);
   }
 
   ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&target_nalu));
@@ -410,39 +408,28 @@ TEST(H264ParserTest, RecursiveSEIParsing) {
   EXPECT_EQ(H264Parser::kOk, parser.ParseSEI(&clli_mdcv_sei));
   EXPECT_EQ(clli_mdcv_sei.msgs.size(), 2u);
 
-  for (auto& sei_msg : clli_mdcv_sei.msgs) {
-    EXPECT_TRUE(sei_msg.type == H264SEIMessage::kSEIContentLightLevelInfo ||
-                sei_msg.type == H264SEIMessage::kSEIMasteringDisplayInfo);
-    switch (sei_msg.type) {
-      case H264SEIMessage::kSEIContentLightLevelInfo:
-        // Content light level info present.
-        EXPECT_EQ(sei_msg.content_light_level_info.max_content_light_level,
-                  1000u);
-        EXPECT_EQ(
-            sei_msg.content_light_level_info.max_picture_average_light_level,
-            200u);
-        break;
-      case H264SEIMessage::kSEIMasteringDisplayInfo:
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[0][0],
-                  13249u);
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[0][1],
-                  34499u);
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[1][0],
-                  7500u);
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[1][1],
-                  2999u);
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[2][0],
-                  34000u);
-        EXPECT_EQ(sei_msg.mastering_display_info.display_primaries[2][1],
-                  15999u);
-        EXPECT_EQ(sei_msg.mastering_display_info.white_points[0], 15635u);
-        EXPECT_EQ(sei_msg.mastering_display_info.white_points[1], 16449u);
-        EXPECT_EQ(sei_msg.mastering_display_info.max_luminance, 10000000u);
-        EXPECT_EQ(sei_msg.mastering_display_info.min_luminance, 50u);
-        break;
-      default:
-        break;
-    }
+  for (const auto& sei_msg : clli_mdcv_sei.msgs) {
+    std::visit(base::Overloaded{
+                   [](const H264SEIContentLightLevelInfo& info) {
+                     EXPECT_EQ(info.max_content_light_level, 1000u);
+                     EXPECT_EQ(info.max_picture_average_light_level, 200u);
+                   },
+                   [](const H264SEIMasteringDisplayInfo& info) {
+                     EXPECT_EQ(info.display_primaries[0][0], 13249u);
+                     EXPECT_EQ(info.display_primaries[0][1], 34499u);
+                     EXPECT_EQ(info.display_primaries[1][0], 7500u);
+                     EXPECT_EQ(info.display_primaries[1][1], 2999u);
+                     EXPECT_EQ(info.display_primaries[2][0], 34000u);
+                     EXPECT_EQ(info.display_primaries[2][1], 15999u);
+                     EXPECT_EQ(info.white_points[0], 15635u);
+                     EXPECT_EQ(info.white_points[1], 16449u);
+                     EXPECT_EQ(info.max_luminance, 10000000u);
+                     EXPECT_EQ(info.min_luminance, 50u);
+                   },
+                   [](const auto&) {
+                     EXPECT_TRUE(false) << "Unexpected message type";
+                   }},
+               sei_msg);
   }
 }
 }  // namespace media

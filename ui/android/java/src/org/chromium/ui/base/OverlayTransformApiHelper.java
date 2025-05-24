@@ -4,6 +4,8 @@
 
 package org.chromium.ui.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,21 +16,27 @@ import android.view.Window;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.gfx.OverlayTransform;
 
 import java.lang.ref.WeakReference;
 
 /** Helper class to avoid fail of ART's class verification for S_V2 APIs in old device. */
 @RequiresApi(Build.VERSION_CODES.S_V2)
+@NullMarked
 final class OverlayTransformApiHelper
         implements AttachedSurfaceControl.OnBufferTransformHintChangedListener,
                 Window.OnFrameMetricsAvailableListener {
+    private static final String TAG = "OverlayTransformAH";
+
     private final WindowAndroid mWindowAndroid;
     private final WeakReference<Window> mWindow;
     private boolean mBufferTransformListenerAdded;
     private boolean mFrameMetricsListenerAdded;
 
-    static OverlayTransformApiHelper create(WindowAndroid windowAndroid) {
+    static @Nullable OverlayTransformApiHelper create(WindowAndroid windowAndroid) {
         if (windowAndroid.getWindow() == null) return null;
         return new OverlayTransformApiHelper(windowAndroid);
     }
@@ -99,7 +107,8 @@ final class OverlayTransformApiHelper
         if (mFrameMetricsListenerAdded) return;
         Window window = mWindow.get();
         if (window == null) return;
-        window.addOnFrameMetricsAvailableListener(this, new Handler(Looper.myLooper()));
+        window.addOnFrameMetricsAvailableListener(
+                this, new Handler(assumeNonNull(Looper.myLooper())));
         mFrameMetricsListenerAdded = true;
     }
 
@@ -107,7 +116,15 @@ final class OverlayTransformApiHelper
         if (!mFrameMetricsListenerAdded) return;
         Window window = mWindow.get();
         if (window == null) return;
-        window.removeOnFrameMetricsAvailableListener(this);
+        try {
+            window.removeOnFrameMetricsAvailableListener(this);
+        } catch (IllegalArgumentException e) {
+            // Ignoring this unexplained exception. See crbug.com/367818761.
+            Log.w(
+                    TAG,
+                    "Ignoring IllegalArgumentException from removeOnFrameMetricsAvailableListener",
+                    e);
+        }
         mFrameMetricsListenerAdded = false;
     }
 

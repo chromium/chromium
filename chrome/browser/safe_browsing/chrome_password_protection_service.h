@@ -189,12 +189,12 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   std::string GetOrganizationName(
       ReusedPasswordAccountType password_type) const;
 
-// The following functions are disabled on Android, because enterprise reporting
-// extension is not supported.
-#if !BUILDFLAG(IS_ANDROID)
   // If the browser is not incognito and the user is reusing their enterprise
   // password or is a GSuite user, triggers
-  // safeBrowsingPrivate.OnPolicySpecifiedPasswordReuseDetected.
+  // safeBrowsingPrivate.OnPolicySpecifiedPasswordReuseDetected (on desktop
+  // platforms) and a password reuse enterprise event report (on both desktop
+  // and Android platform).
+  //
   // |username| can be an email address or a username for a non-GAIA or
   // saved-password reuse. No validation has been done on it.
   void MaybeReportPasswordReuseDetected(const GURL& main_frame_url,
@@ -203,9 +203,10 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
                                         bool is_phishing_url,
                                         bool warning_shown) override;
 
-  // Triggers "safeBrowsingPrivate.OnPolicySpecifiedPasswordChanged" API.
+  // Triggers "safeBrowsingPrivate.OnPolicySpecifiedPasswordChanged" (on desktop
+  // platforms) and a password changed enterprise event report (on both desktop
+  // and Android platform).
   void ReportPasswordChanged() override;
-#endif
 
   // Returns true if there's any enterprise password reuses unhandled in
   // |web_contents|. "Unhandled" is defined as user hasn't clicked on
@@ -246,7 +247,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
           matching_reused_credentials) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
+  ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;
 #endif
   // Returns the PasswordReuseManager associated with this instance.
@@ -260,10 +261,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // account and is accessible only when the user is signed in and non syncing.
   password_manager::PasswordStoreInterface* GetAccountPasswordStore() const;
 
-  // Gets the type of sync account associated with current profile or
-  // |NOT_SIGNED_IN|.
-  LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType
-  GetSyncAccountType() const override;
   safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment
   GetUrlDisplayExperiment() const override;
 
@@ -299,9 +296,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // Gets |account_info_| based on |profile_|.
   AccountInfo GetAccountInfo() const override;
 
-  // Gets the UserPopulation value for this profile.
-  ChromeUserPopulation::UserPopulation GetUserPopulationPref() const override;
-
   // KeyedService:
   // Called before the actual deletion of the object.
   void Shutdown() override;
@@ -336,8 +330,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // If primary account is signed in.
   bool IsPrimaryAccountSignedIn() const override;
 
-  // Checks whether the account associated with |username| is a Gmail account.
-  bool IsAccountGmail(const std::string& username) const override;
+  // Checks whether |username| maps to a consumer account.
+  bool IsAccountConsumer(const std::string& username) const override;
 
   // Gets the AccountInfo for the account corresponding to |username| from the
   // list of signed-in users.
@@ -420,8 +414,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyPasswordReuseLookupUserEventRecorded);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
-                           VerifyGetSyncAccountType);
-  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyUpdateSecurityState);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyGetChangePasswordURL);
@@ -471,7 +463,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
                            VerifyGetWarningDetailTextSavedDomains);
 
   // Gets prefs associated with |profile_|.
-  PrefService* GetPrefs();
+  PrefService* GetPrefs() const;
 
   // Returns whether the profile is valid and has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();

@@ -20,8 +20,8 @@ import java.lang.reflect.InvocationHandler;
  * WebMessage back across the boundary).
  */
 public class SupportLibWebMessageAdapter implements WebMessageBoundaryInterface {
-    private MessagePayload mMessagePayload;
-    private MessagePort[] mPorts;
+    private final MessagePayload mMessagePayload;
+    private final MessagePort[] mPorts;
 
     /* package */ SupportLibWebMessageAdapter(MessagePayload messagePayload, MessagePort[] ports) {
         mMessagePayload = messagePayload;

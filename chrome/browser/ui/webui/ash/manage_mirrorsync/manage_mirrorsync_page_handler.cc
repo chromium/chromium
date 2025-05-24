@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_page_handler.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -52,7 +52,7 @@ std::vector<base::FilePath> GetChildFoldersBlocking(
     }
     child_folders.push_back(std::move(stripped_path));
   }
-  base::ranges::sort(child_folders);
+  std::ranges::sort(child_folders);
   return child_folders;
 }
 

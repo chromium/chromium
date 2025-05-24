@@ -38,7 +38,7 @@ class DeviceMotionData;
 class DeviceMotionEventInit;
 class DeviceMotionEventRotationRate;
 class ScriptState;
-class V8DeviceOrientationPermissionState;
+class V8PermissionState;
 
 class DeviceMotionEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -71,8 +71,7 @@ class DeviceMotionEvent final : public Event {
   DeviceMotionEventRotationRate* rotationRate();
   double interval() const;
 
-  static ScriptPromise<V8DeviceOrientationPermissionState> requestPermission(
-      ScriptState*);
+  static ScriptPromise<V8PermissionState> requestPermission(ScriptState*);
 
   const AtomicString& InterfaceName() const override;
 

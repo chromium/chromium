@@ -1,0 +1,26 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+
+  # See content_unittests for justification.
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  sources = [
+    "opener_heuristic_metrics_unittest.cc",
+    "opener_heuristic_utils_unittest.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//content/browser:for_content_tests",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}

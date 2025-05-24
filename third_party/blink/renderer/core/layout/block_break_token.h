@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_BREAK_TOKEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_BREAK_TOKEN_H_
 
@@ -16,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/block_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -92,6 +88,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // size when used for legacy. This difference is represented by
   // |consumed_block_size_legacy_adjustment_|.
   LayoutUnit ConsumedBlockSizeForLegacy() const {
+    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
 #if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
 #endif
@@ -259,7 +256,9 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
  private:
   const base::span<const Member<const BreakToken>> ChildBreakTokensInternal()
       const {
-    return base::make_span(child_break_tokens_, const_num_children_);
+    // SAFETY: `const_num_children_` ensures buffer access never goes out of
+    // range.
+    return UNSAFE_BUFFERS(base::span(child_break_tokens_, const_num_children_));
   }
 
   Member<BlockBreakTokenData> data_;

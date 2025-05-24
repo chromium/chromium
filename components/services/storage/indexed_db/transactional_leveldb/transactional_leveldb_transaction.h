@@ -70,8 +70,6 @@ class TransactionalLevelDBTransaction
   std::unique_ptr<TransactionalLevelDBIterator> CreateIterator(
       leveldb::Status& status);
 
-  uint64_t GetTransactionSize() const;
-
   // Sets a callback that will be called after the undo log for this transaction
   // is cleaned up and any deferred deletions (from RemoveRange) are complete.
   // The callback will be called after this transaction is committed, or dropped

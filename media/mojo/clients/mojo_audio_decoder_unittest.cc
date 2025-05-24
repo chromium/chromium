@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/clients/mojo_audio_decoder.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -20,7 +23,6 @@
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
 #include "media/base/waiting.h"
-#include "media/mojo/clients/mojo_audio_decoder.h"
 #include "media/mojo/mojom/audio_decoder.mojom.h"
 #include "media/mojo/services/mojo_audio_decoder_service.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
@@ -194,7 +196,7 @@ class MojoAudioDecoderTest : public ::testing::Test {
   void Initialize() { InitializeAndExpect(DecoderStatus::Codes::kOk); }
 
   void Decode() {
-    scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(100));
+    auto buffer = base::MakeRefCounted<DecoderBuffer>(100);
     mojo_audio_decoder_->Decode(
         buffer, base::BindRepeating(&MojoAudioDecoderTest::OnDecoded,
                                     base::Unretained(this)));

@@ -10,40 +10,22 @@
 #include "content/public/test/browser_test.h"
 #include "crypto/crypto_buildflags.h"
 
-typedef WebUIMochaBrowserTest CrComponentsTest;
+class CrComponentsCertManagerV2Test : public WebUIMochaBrowserTest {
+ protected:
+  CrComponentsCertManagerV2Test() {
+    set_test_loader_host(chrome::kChromeUICertificateManagerHost);
+  }
+};
 
-#if BUILDFLAG(USE_NSS_CERTS)
-IN_PROC_BROWSER_TEST_F(CrComponentsTest, CertificateManager) {
-  // Loaded from a settings URL so that localized strings are present.
-  set_test_loader_host(chrome::kChromeUISettingsHost);
-  RunTest("cr_components/certificate_manager/certificate_manager_test.js",
-          "mocha.run()");
-}
-#endif  // BUILDFLAG(USE_NSS_CERTS)
-
-#if BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(CrComponentsTest, CertificateManagerProvisioning) {
-  // Loaded from a settings URL so that localized strings are present.
-  set_test_loader_host(chrome::kChromeUISettingsHost);
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test,
+                       CertificateManagerProvisioning) {
   RunTest(
       "cr_components/certificate_manager/"
       "certificate_manager_provisioning_test.js",
       "mocha.run()");
 }
-#endif  // BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-class CrComponentsCertManagerV2Test : public WebUIMochaBrowserTest {
- protected:
-  CrComponentsCertManagerV2Test() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableCertManagementUIV2);
-    set_test_loader_host(chrome::kChromeUICertificateManagerHost);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, CertificateManagerV2) {
   RunTest("cr_components/certificate_manager/certificate_manager_v2_test.js",
@@ -82,4 +64,3 @@ IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, NavigationV2) {
           "mocha.run()");
 }
 
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

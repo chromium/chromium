@@ -1,0 +1,29 @@
+This is a wdspec test.
+[FAIL] test_state_invalid_type[None]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_state_invalid_type[False]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_state_invalid_type[42]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_state_invalid_type[state3]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_state_invalid_type[state4]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_state_invalid_value[]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_state_invalid_value[invalid]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_context_invalid_type[None]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_context_invalid_type[False]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_context_invalid_type[42]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_context_invalid_type[context3]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_context_invalid_type[context4]
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+[FAIL] test_context_unknown_value
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+Harness: the test ran to completion.
+

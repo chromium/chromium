@@ -26,11 +26,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_markup.h"
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
@@ -38,6 +33,7 @@
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -52,27 +48,25 @@ static bool IsCSSTokenizerIdentifier(const StringView& string) {
   }
 
   return WTF::VisitCharacters(string, [](auto chars) {
-    const auto* p = chars.data();
-    const auto* end = p + chars.size();
+    size_t index{0};
 
     // -?
-    if (p != end && p[0] == '-') {
-      ++p;
+    if (chars[index] == '-') {
+      ++index;
     }
 
     // {nmstart}
-    if (p == end || !IsNameStartCodePoint(p[0])) {
+    if (index == chars.size() || !IsNameStartCodePoint(chars[index])) {
       return false;
     }
-    ++p;
+    ++index;
 
     // {nmchar}*
-    for (; p != end; ++p) {
-      if (!IsNameCodePoint(p[0])) {
+    for (; index < chars.size(); ++index) {
+      if (!IsNameCodePoint(chars[index])) {
         return false;
       }
     }
-
     return true;
   });
 }
@@ -155,7 +149,7 @@ String SerializeString(const String& string) {
 }
 
 String SerializeURI(const String& string) {
-  return "url(" + SerializeString(string) + ")";
+  return WTF::StrCat({"url(", SerializeString(string), ")"});
 }
 
 String SerializeFontFamily(const AtomicString& string) {

@@ -15,7 +15,6 @@
 #include "base/observer_list.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
-#include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
@@ -66,8 +65,7 @@ extern bool g_disable_banner_triggering_for_testing;
 // that sub-classes implement must be as stateless as possible, and all state
 // should be tracked in this class instead.
 class AppBannerManager : public content::WebContentsObserver,
-                         public blink::mojom::AppBannerService,
-                         public site_engagement::SiteEngagementObserver {
+                         public blink::mojom::AppBannerService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -98,10 +96,6 @@ class AppBannerManager : public content::WebContentsObserver,
     // In this state, the pipeline could be paused while waiting for a service
     // worker to be registered..
     PENDING_INSTALLABLE_CHECK,
-
-    // The pipeline has finished running, but is waiting for sufficient
-    // engagement to trigger the banner.
-    PENDING_ENGAGEMENT,
 
     // The beforeinstallprompt event has been sent and the pipeline is waiting
     // for the response.
@@ -306,6 +300,8 @@ class AppBannerManager : public content::WebContentsObserver,
   // TODO(http://crbug.com/322342499): Remove virtual and make private.
   virtual void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
 
+  void PostInstallableWebAppCheckValidation(const bool does_conflict);
+
   // TODO(http://crbug.com/322342499): Make this private.
   enum class UrlType {
     // This url & page should be considered for installability & promotability.
@@ -369,13 +365,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // alerting websites that a banner is about to be created.
   std::string GetBannerType() const;
 
-  // Returns true if |has_sufficient_engagement_| is true or
-  // ShouldBypassEngagementChecks() returns true.
-  bool HasSufficientEngagement() const;
-
-  // Returns true if the kBypassAppBannerEngagementChecks flag is set.
-  bool ShouldBypassEngagementChecks() const;
-
   // Run at the conclusion of OnDidGetManifest. For web app banners, this calls
   // back to the InstallableManager to continue checking criteria. For native
   // app banners, this checks whether native apps are preferred in the manifest,
@@ -416,14 +405,6 @@ class AppBannerManager : public content::WebContentsObserver,
       WebContentsObserver::MediaStoppedReason reason) override;
   void WebContentsDestroyed() override;
 
-  // SiteEngagementObserver overrides.
-  void OnEngagementEvent(content::WebContents* web_contents,
-                         const GURL& url,
-                         double score,
-                         double old_score,
-                         site_engagement::EngagementType type,
-                         const std::optional<webapps::AppId>& app_id) override;
-
   // Subclass accessors for private fields which should not be changed outside
   // this class.
   InstallableManager* manager() const { return manager_; }
@@ -431,10 +412,6 @@ class AppBannerManager : public content::WebContentsObserver,
   void SetInstallableWebAppCheckResult(InstallableWebAppCheckResult result);
 
   friend class AppBannerManagerTest;
-
-  // Checks whether the web page has sufficient engagement and continue with
-  // the pipeline.
-  void CheckSufficientEngagement();
 
   // Called after the manager sends a message to the renderer regarding its
   // intention to show a prompt. The renderer will send a message back with the
@@ -477,7 +454,6 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // If a banner is requested before the page has finished loading, defer
   // triggering the pipeline until the load is complete.
-  bool has_sufficient_engagement_ = false;
   bool load_finished_ = false;
 
   // beforeinstallprompt

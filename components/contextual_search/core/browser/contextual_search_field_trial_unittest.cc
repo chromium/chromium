@@ -11,7 +11,7 @@
 // Tests ContextualSearchFieldTrial class.
 class ContextualSearchFieldTrialTest : public testing::Test {
  public:
-  ContextualSearchFieldTrialTest() {}
+  ContextualSearchFieldTrialTest() = default;
 
   ContextualSearchFieldTrialTest(const ContextualSearchFieldTrialTest&) =
       delete;

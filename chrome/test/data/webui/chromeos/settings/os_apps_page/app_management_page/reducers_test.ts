@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {addApp, AppManagementPageState, changeApp, reduceAction, removeApp, updateApps, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppManagementPageState} from 'chrome://os-settings/os_settings.js';
+import {addApp, changeApp, reduceAction, removeApp, updateApps, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createInitialState} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

@@ -52,8 +52,7 @@ class SingleClientOsPreferencesSyncTest : public SyncTest {
       case syncer::DataType::OS_PRIORITY_PREFERENCES:
         return specifics.mutable_os_priority_preference()->mutable_preference();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return specifics.mutable_preference();
+        NOTREACHED();
     }
   }
   void InjectPreferenceToFakeServer(syncer::DataType data_type,

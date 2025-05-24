@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.common;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Type safe wrapper to capture error codes returned by the media integrity API.
  *
@@ -11,6 +13,7 @@ package org.chromium.android_webview.common;
  * as the error value of an {@link ValueOrErrorCallback} without losing the enum annotation
  * information.
  */
+@NullMarked
 public class MediaIntegrityErrorWrapper {
 
     public final @MediaIntegrityErrorCode int value;

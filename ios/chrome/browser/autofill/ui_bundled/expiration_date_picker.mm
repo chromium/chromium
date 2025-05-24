@@ -9,7 +9,7 @@ int const kNumberOfSections = 2;
 int const kMonthSection = 0;
 int const kYearSection = 1;
 int const kNumberOfYearsToShow = 20;
-}
+}  // namespace
 
 @interface ExpirationDatePicker () <UIPickerViewDelegate,
                                     UIPickerViewDataSource>

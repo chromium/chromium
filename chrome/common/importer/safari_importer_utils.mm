@@ -6,12 +6,12 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "chrome/common/importer/importer_data_types.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 
 bool SafariImporterCanImport(const base::FilePath& library_dir,
                              uint16_t* services_supported) {
   DCHECK(services_supported);
-  *services_supported = importer::NONE;
+  *services_supported = user_data_importer::NONE;
 
   // Only support the importing of bookmarks from Safari, if there is access to
   // the bookmarks storage file.
@@ -27,7 +27,7 @@ bool SafariImporterCanImport(const base::FilePath& library_dir,
   base::FilePath bookmarks_path = safari_dir.Append("Bookmarks.plist");
 
   if (base::PathIsReadable(bookmarks_path))
-    *services_supported |= importer::FAVORITES;
+    *services_supported |= user_data_importer::FAVORITES;
 
-  return *services_supported != importer::NONE;
+  return *services_supported != user_data_importer::NONE;
 }

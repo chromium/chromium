@@ -1,0 +1,48 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "browser_view_visibility_notifier_browser_agent.h",
+    "browser_view_visibility_notifier_browser_agent.mm",
+    "browser_view_visibility_observer.h",
+    "browser_view_visibility_observer.mm",
+    "browser_view_visibility_observer_bridge.h",
+    "browser_view_visibility_observer_bridge.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/browser_view/public" ]
+  deps = [
+    ":handler",
+    "//base",
+    "//ios/chrome/browser/shared/model/browser",
+  ]
+}
+
+source_set("audience") {
+  sources = [ "browser_view_visibility_audience.h" ]
+}
+
+source_set("handler") {
+  sources = [
+    "browser_view_visibility_handler.h",
+    "browser_view_visibility_handler.mm",
+  ]
+  public_deps = [ ":audience" ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "browser_view_visibility_observer_unittest.mm" ]
+  deps = [
+    ":audience",
+    ":model",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_view/public",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

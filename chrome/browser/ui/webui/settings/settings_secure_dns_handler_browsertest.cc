@@ -31,7 +31,7 @@
 #include "base/win/win_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
@@ -111,9 +111,9 @@ net::DohProviderEntry::List GetDohProviderListForTesting() {
 }
 
 bool FindDropdownItem(const base::Value::List& resolvers,
-                      const std::string& name,
-                      const std::string& value,
-                      const std::string& policy) {
+                      std::string_view name,
+                      std::string_view value,
+                      std::string_view policy) {
   base::Value::Dict dict;
   dict.Set("name", name);
   dict.Set("value", value);
@@ -180,25 +180,29 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
       }
 
       const base::Value::Dict* dict = data->arg2()->GetIfDict();
-      if (!dict)
+      if (!dict) {
         return false;
+      }
 
       // Get the secure DNS mode.
       const std::string* secure_dns_mode = dict->FindString("mode");
-      if (!secure_dns_mode)
+      if (!secure_dns_mode) {
         return false;
+      }
       *out_secure_dns_mode = *secure_dns_mode;
 
       // Get the DoH config string.
       const std::string* doh_config = dict->FindString("config");
-      if (!doh_config)
+      if (!doh_config) {
         return false;
+      }
       *out_doh_config = *doh_config;
 
       // Get the forced management description.
       std::optional<int> management_mode = dict->FindInt("managementMode");
-      if (!management_mode.has_value())
+      if (!management_mode.has_value()) {
         return false;
+      }
       *out_management_mode = *management_mode;
 
       return true;
@@ -206,7 +210,7 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Similar to `GetLastSettingsChangedMessage`, but only reads data related to
   // template URIs with identifiers.  Returns false if the message was invalid
   // or not found; in this case the out params may be not set.
@@ -221,25 +225,28 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
         continue;
       }
       const base::Value::Dict* dict = data->arg2()->GetIfDict();
-      if (!dict)
+      if (!dict) {
         return false;
+      }
       std::optional<bool> doh_with_identifiers_active =
           dict->FindBool("dohWithIdentifiersActive");
-      if (!doh_with_identifiers_active)
+      if (!doh_with_identifiers_active) {
         return false;
+      }
       *out_doh_with_identifiers_active = *doh_with_identifiers_active;
 
       const std::string* doh_config_for_display =
           dict->FindString("configForDisplay");
-      if (!doh_config_for_display)
+      if (!doh_config_for_display) {
         return false;
+      }
       *out_doh_config_for_display = *doh_config_for_display;
 
       return true;
     }
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Sets a policy update which will cause power pref managed change.
   void SetPolicyForPolicyKey(policy::PolicyMap* policy_map,
@@ -270,11 +277,11 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsModes) {
 
   PrefService* pref_service_for_user_settings = local_state;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
   pref_service_for_user_settings = browser()->profile()->GetPrefs();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   pref_service_for_user_settings->SetString(prefs::kDnsOverHttpsMode,
                                             SecureDnsConfig::kModeOff);
@@ -302,6 +309,14 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsModes) {
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsPolicy) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On Chrome OS, the local_state is only used on managed profiles.
+  g_browser_process->platform_part()
+      ->secure_dns_manager()
+      ->SetPrimaryProfilePropertiesForTesting(browser()->profile()->GetPrefs(),
+                                              /*is_profile_managed=*/true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   policy::PolicyMap policy_map;
   SetPolicyForPolicyKey(&policy_map, policy::key::kDnsOverHttpsMode,
                         base::Value(SecureDnsConfig::kModeAutomatic));
@@ -321,6 +336,14 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsPolicy) {
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsPolicyChange) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On Chrome OS, the local_state is only used on managed profiles.
+  g_browser_process->platform_part()
+      ->secure_dns_manager()
+      ->SetPrimaryProfilePropertiesForTesting(browser()->profile()->GetPrefs(),
+                                              /*is_profile_managed=*/true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   policy::PolicyMap policy_map;
   SetPolicyForPolicyKey(&policy_map, policy::key::kDnsOverHttpsMode,
                         base::Value(SecureDnsConfig::kModeAutomatic));
@@ -396,13 +419,8 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const std::string kDnsOverHttpsTemplatesPrefName =
-      prefs::kDnsOverHttpsEffectiveTemplatesChromeOS;
-#else
   const std::string kDnsOverHttpsTemplatesPrefName =
       prefs::kDnsOverHttpsTemplates;
-#endif
 
   std::string good_post_template = "https://foo.test/";
   std::string good_get_template = "https://bar.test/dns-query{?dns}";
@@ -414,11 +432,11 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
   PrefService* pref_service_for_user_settings =
       g_browser_process->local_state();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
   pref_service_for_user_settings = browser()->profile()->GetPrefs();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   pref_service_for_user_settings->SetString(prefs::kDnsOverHttpsMode,
                                             SecureDnsConfig::kModeAutomatic);
@@ -447,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
   EXPECT_EQ(good_post_template, doh_config);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest,
                        SecureDnsTemplatesWithIdentifiers) {
   std::string templatesWithIdentifier =
@@ -537,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest,
   EXPECT_EQ(doh_config, kTemplatesAlt);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, TemplateValid) {
   base::Value::List args;

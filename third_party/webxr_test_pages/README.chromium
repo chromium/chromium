@@ -1,7 +1,7 @@
 Name: Immersive Web - WebXR Samples
 Short Name: webxr-samples
 URL: https://github.com/immersive-web/webxr-samples/
-Version: 0
+Version: N/A
 Revision: ddcb40e3b86f01d481461b4c856808988fab9610
 Date: 2019-01-15
 License: MIT
@@ -24,6 +24,8 @@ Local Modifications:
   to js/third-party/gl-matrix, including license file and README.chromium.
 
 - Added missing license file and README.chromium for dat.gui
+
+- Rolled dat.gui to 0.7.9
 
 - Removed the version shim, the samples are intended to work specifically
   with the ToT Chrome version.

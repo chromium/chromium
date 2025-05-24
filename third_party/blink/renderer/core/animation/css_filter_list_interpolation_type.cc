@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/interpolable_filter.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -24,13 +25,12 @@ namespace {
 const FilterOperations& GetFilterList(const CSSProperty& property,
                                       const ComputedStyle& style) {
   switch (property.PropertyID()) {
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case CSSPropertyID::kBackdropFilter:
       return style.BackdropFilter();
     case CSSPropertyID::kFilter:
       return style.Filter();
+    default:
+      NOTREACHED();
   }
 }
 
@@ -45,8 +45,7 @@ void SetFilterList(const CSSProperty& property,
       builder.SetFilter(filter_operations);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -183,7 +182,7 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFilterListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {
@@ -198,14 +197,8 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertValue(
   wtf_size_t length = list.length();
   auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
   for (wtf_size_t i = 0; i < length; i++) {
-    mojom::blink::ColorScheme color_scheme =
-        state ? state->StyleBuilder().UsedColorScheme()
-              : mojom::blink::ColorScheme::kLight;
-    const ui::ColorProvider* color_provider =
-        state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
-              : nullptr;
-    InterpolableFilter* result = InterpolableFilter::MaybeConvertCSSValue(
-        list.Item(i), color_scheme, color_provider);
+    InterpolableFilter* result =
+        InterpolableFilter::MaybeConvertCSSValue(list.Item(i), state);
     if (!result) {
       return nullptr;
     }
@@ -281,7 +274,7 @@ void CSSFilterListInterpolationType::Composite(
     double interpolation_fraction) const {
   // We do our compositing behavior in |PreInterpolationCompositeIfNeeded|; see
   // the documentation on that method.
-  underlying_value_owner.Set(*this, value);
+  underlying_value_owner.Set(this, value);
 }
 
 void CSSFilterListInterpolationType::ApplyStandardPropertyValue(

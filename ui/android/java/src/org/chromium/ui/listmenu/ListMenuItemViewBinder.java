@@ -11,30 +11,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 
 /**
- * Class responsible for binding the model of the ListMenuItem and the view.
- * Each item is expected to have at the bare minimum a title (TITLE_ID, or TITLE)
- * or an icon (START_ICON_ID, START_ICON_DRAWABLE). All other properties while recommended,
- * are optional.
+ * Class responsible for binding the model of the ListMenuItem and the view. Each item is expected
+ * to have at the bare minimum a title (TITLE_ID, or TITLE) or an icon (START_ICON_ID,
+ * START_ICON_DRAWABLE). All other properties while recommended, are optional.
  *
- * As for when a list item contains an icon, it is expected that it either has a start icon
- * OR an end icon, not both.
+ * <p>As for when a list item contains an icon, it is expected that it either has a start icon OR an
+ * end icon, not both.
  */
+@NullMarked
 public class ListMenuItemViewBinder {
     public static void binder(PropertyModel model, View view, PropertyKey propertyKey) {
-        TextView textView = view.findViewById(R.id.menu_item_text);
-        ImageView startIcon = view.findViewById(R.id.menu_item_icon);
-        ImageView endIcon = view.findViewById(R.id.menu_item_end_icon);
+        TextView textView =
+                (view instanceof TextView text) ? text : view.findViewById(R.id.menu_item_text);
+        @Nullable ImageView startIcon = view.findViewById(R.id.menu_item_icon);
+        @Nullable ImageView endIcon = view.findViewById(R.id.menu_item_end_icon);
         if (propertyKey == ListMenuItemProperties.TITLE_ID) {
             @StringRes int titleId = model.get(ListMenuItemProperties.TITLE_ID);
             if (titleId != 0) {
@@ -87,8 +89,8 @@ public class ListMenuItemViewBinder {
             }
         } else if (propertyKey == ListMenuItemProperties.ENABLED) {
             textView.setEnabled(model.get(ListMenuItemProperties.ENABLED));
-            startIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
-            endIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
+            if (startIcon != null) startIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
+            if (endIcon != null) endIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
         } else if (propertyKey == ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID) {
             @ColorRes
             int tintColorId = model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);

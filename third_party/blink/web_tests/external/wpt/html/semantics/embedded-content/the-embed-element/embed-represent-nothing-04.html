@@ -1,20 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <meta charset="utf-8">
-<title>HTML Test: The embed element represents nothing when it has an object ancestor</title>
-<link rel="author" title="Intel" href="http://www.intel.com">
+<title>HTML Test: The embed element represents nothing when it is never being rendered</title>
+<link rel="author" title="Peng Zhou" href="mailto:zhoupeng.1996@bytedance.com">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#the-embed-element">
-<link rel="match" href="embed-represent-nothing-ref.html">
-<meta name="assert" content="Check if the embed element represents nothing when it has a object ancestor that is not showing its fallback content">
+<meta name="assert" content="Check if the embed element represents nothing when it is never being rendered">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <style>
-  embed {
-    background-color: red;
-    height: 100px;
-    width: 100px;
+  #target {
+    display: none;
   }
 </style>
 <body>
-  <p>Test passes if there is <strong>no red</strong>.</p>
-  <object type="application/x-shockwave-flash">
-    <embed src="/images/red-16x16.png">
-  </object>
+  <script>
+  async_test(t => {
+    window.childLoaded = false;
+    addEventListener('load', t.step_func_done(() => {
+      assert_true(!!document.querySelector('embed'));
+      assert_false(window.childLoaded);
+    }));
+  }, 'ensure the element represents nothing');
+  </script>
+  <embed id="target" src="embed-iframe.html"></embed>
 </body>

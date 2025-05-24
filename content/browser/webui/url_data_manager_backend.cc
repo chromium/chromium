@@ -31,7 +31,6 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "net/filter/source_stream.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/log/net_log_util.h"
@@ -136,8 +135,7 @@ void URLDataManagerBackend::UpdateWebUIDataSource(
     const base::Value::Dict& update) {
   auto it = data_sources_.find(source_name);
   if (it == data_sources_.end() || !it->second->IsWebUIDataSourceImpl()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   static_cast<WebUIDataSourceImpl*>(it->second.get())
       ->AddLocalizedStrings(update);
@@ -269,8 +267,7 @@ bool URLDataManagerBackend::CheckURLIsValid(const GURL& url) {
           SchemeIsInSchemes(url.scheme(), additional_schemes)));
 
   if (!url.is_valid()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   return true;

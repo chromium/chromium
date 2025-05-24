@@ -23,7 +23,8 @@ ExtensionGarbageCollectorChromeOS::ExtensionGarbageCollectorChromeOS(
       disable_garbage_collection_(false) {
 }
 
-ExtensionGarbageCollectorChromeOS::~ExtensionGarbageCollectorChromeOS() {}
+ExtensionGarbageCollectorChromeOS::~ExtensionGarbageCollectorChromeOS() =
+    default;
 
 // static
 ExtensionGarbageCollectorChromeOS* ExtensionGarbageCollectorChromeOS::Get(
@@ -54,8 +55,7 @@ void ExtensionGarbageCollectorChromeOS::GarbageCollectExtensions() {
 bool ExtensionGarbageCollectorChromeOS::CanGarbageCollectSharedExtensions() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (!user_manager) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   const user_manager::UserList& active_users = user_manager->GetLoggedInUsers();
@@ -86,7 +86,7 @@ void ExtensionGarbageCollectorChromeOS::GarbageCollectSharedExtensions() {
                 // No need to process unpacked because shared extensions can't
                 // be unpacked.
                 /*unpacked=*/false))) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }

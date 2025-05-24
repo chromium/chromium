@@ -64,25 +64,25 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
 #endif
   };
 
-  enum class ProcessBehavior {
+  enum class OutOfProcessBehavior {
     // Out-of-process support is disabled.  All platform printing calls are
     // performed in the browser process.
-    kOopDisabled,
+    kDisabled,
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     // Out-of-process support is enabled.  This is for `PrintingContext`
     // objects which exist in the PrintBackend service.  These objects make
     // platform printing calls.
-    kOopEnabledPerformSystemCalls,
+    kEnabledPerformSystemCalls,
     // Out-of-process support is enabled.  This is for `PrintingContext`
     // objects which exist in the browser process.  These objects normally skip
     // doing platform printing calls, deferring to an associated
     // `PrintingContext` that is running in a PrintBackend service (i.e.,
-    // deferring to a `PrintingContext` with `kOopEnabledPerformSystemCalls`).
+    // deferring to a `PrintingContext` with `kEnabledPerformSystemCalls`).
     // An exception to deferring platform calls in this case is for platforms
     // that cannot display a system print dialog from a PrintBackend service.
     // On such platforms the relevant calls to invoke a system print dialog
     // are still made from the browser process.
-    kOopEnabledSkipSystemCalls,
+    kEnabledSkipSystemCalls,
 #endif
   };
 
@@ -185,17 +185,19 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   // Creates an instance of this object.
   static std::unique_ptr<PrintingContext> Create(
       Delegate* delegate,
-      ProcessBehavior process_behavior);
+      OutOfProcessBehavior out_of_process_behavior);
 
   // Test method for generating printing contexts for testing.  This overrides
   // the platform-specific implementations of CreateImpl().
   static void SetPrintingContextFactoryForTest(
       PrintingContextFactoryForTest* factory);
 
-  // Determine process behavior, which can determine if system calls should be
-  // made and if certain extra code paths should be followed to support
-  // out-of-process printing.
-  ProcessBehavior process_behavior() const { return process_behavior_; }
+  // Determine out of process behavior, which can determine if system calls
+  // should be made and if certain extra code paths should be followed to
+  // support out-of-process printing.
+  OutOfProcessBehavior out_of_process_behavior() const {
+    return out_of_process_behavior_;
+  }
 
   void set_margin_type(mojom::MarginType type);
   void set_is_modifiable(bool is_modifiable);
@@ -216,13 +218,14 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
 #endif
 
  protected:
-  PrintingContext(Delegate* delegate, ProcessBehavior process_behavior);
+  PrintingContext(Delegate* delegate,
+                  OutOfProcessBehavior out_of_process_behavior);
 
   // Creates an instance of this object. Implementers of this interface should
   // implement this method to create an object of their implementation.
   static std::unique_ptr<PrintingContext> CreateImpl(
       Delegate* delegate,
-      ProcessBehavior process_behavior);
+      OutOfProcessBehavior out_of_process_behavior);
 
   // Reinitializes the settings for object reuse.
   void ResetSettings();
@@ -249,7 +252,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   int job_id_ = kNoPrintJobId;
 
  private:
-  const ProcessBehavior process_behavior_;
+  const OutOfProcessBehavior out_of_process_behavior_;
 };
 
 }  // namespace printing

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] eval(string) with default policy mutation in shared worker
+  assert_throws_js: function "_ => eval("2")" did not throw
+[FAIL] indirect eval(string) with default policy mutation in shared worker
+  assert_throws_js: function "_ => eval?.("2")" did not throw
+Harness: the test ran to completion.
+

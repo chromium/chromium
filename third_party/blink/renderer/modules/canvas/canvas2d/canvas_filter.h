@@ -38,7 +38,7 @@ class MODULES_EXPORT CanvasFilter final : public ScriptWrappable {
   // computed without using style resolution.
   static FilterOperations CreateFilterOperations(
       const V8CanvasFilterInput& filter_input,
-      const Font& font,
+      const Font* font,
       Element* style_resolution_host,
       ExecutionContext& execution_context,
       ExceptionState& exception_state);

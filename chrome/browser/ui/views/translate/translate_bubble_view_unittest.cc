@@ -34,22 +34,8 @@ namespace {
 
 class MockTranslateBubbleModel : public TranslateBubbleModel {
  public:
-  explicit MockTranslateBubbleModel(TranslateBubbleModel::ViewState view_state)
-      : error_type_(translate::TranslateErrors::NONE),
-        source_language_index_(1),
-        target_language_index_(2),
-        never_translate_language_(false),
-        never_translate_site_(false),
-        should_show_always_translate_sortcut_(false),
-        should_always_translate_(false),
-        always_translate_checked_(false),
-        set_always_translate_called_count_(0),
-        translate_called_(false),
-        revert_translation_called_(false),
-        translation_declined_(false),
-        source_language_index_on_translation_(-1),
-        target_language_index_on_translation_(-1),
-        can_add_site_to_never_prompt_list(true) {
+  explicit MockTranslateBubbleModel(
+      TranslateBubbleModel::ViewState view_state) {
     DCHECK_NE(VIEW_STATE_SOURCE_LANGUAGE, view_state);
     DCHECK_NE(VIEW_STATE_TARGET_LANGUAGE, view_state);
     current_view_state_ = view_state;
@@ -80,8 +66,9 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
   }
 
   std::string GetSourceLanguageCode() const override {
-    if (source_language_index_ == 0)
+    if (source_language_index_ == 0) {
       return "und";
+    }
     return "eng-US";
   }
 
@@ -162,21 +149,21 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
   void ReportUIChange(bool is_ui_shown) override {}
 
   ViewState current_view_state_;
-  translate::TranslateErrors error_type_;
-  int source_language_index_;
-  int target_language_index_;
-  bool never_translate_language_;
-  bool never_translate_site_;
-  bool should_show_always_translate_sortcut_;
-  bool should_always_translate_;
-  bool always_translate_checked_;
-  int set_always_translate_called_count_;
-  bool translate_called_;
-  bool revert_translation_called_;
-  bool translation_declined_;
-  int source_language_index_on_translation_;
-  int target_language_index_on_translation_;
-  bool can_add_site_to_never_prompt_list;
+  translate::TranslateErrors error_type_ = translate::TranslateErrors::NONE;
+  int source_language_index_ = 1;
+  int target_language_index_ = 2;
+  bool never_translate_language_ = false;
+  bool never_translate_site_ = false;
+  bool should_show_always_translate_sortcut_ = false;
+  bool should_always_translate_ = false;
+  bool always_translate_checked_ = false;
+  int set_always_translate_called_count_ = 0;
+  bool translate_called_ = false;
+  bool revert_translation_called_ = false;
+  bool translation_declined_ = false;
+  int source_language_index_on_translation_ = -1;
+  int target_language_index_on_translation_ = -1;
+  bool can_add_site_to_never_prompt_list = true;
 };
 
 }  // namespace
@@ -197,13 +184,16 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
 
     mock_model_ = new MockTranslateBubbleModel(
         TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
+
+    action_item_ = actions::ActionItem::Builder().SetActionId(0).Build();
   }
 
   void CreateAndShowBubble() {
     std::unique_ptr<TranslateBubbleModel> model(mock_model_);
     bubble_ = new TranslateBubbleView(
-        anchor_widget_->GetContentsView(), std::move(model),
-        translate::TranslateErrors::NONE, nullptr, base::DoNothing());
+        action_item_->GetAsWeakPtr(), anchor_widget_->GetContentsView(),
+        std::move(model), translate::TranslateErrors::NONE, nullptr,
+        base::DoNothing());
     views::BubbleDialogDelegateView::CreateBubble(bubble_)->Show();
   }
 
@@ -216,7 +206,10 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
-    bubble_->GetWidget()->CloseNow();
+    mock_model_ = nullptr;
+    if (bubble_) {
+      bubble_.ExtractAsDangling()->GetWidget()->CloseNow();
+    }
     anchor_widget_.reset();
 
     ChromeViewsTestBase::TearDown();
@@ -233,9 +226,10 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<MockTranslateBubbleModel, DanglingUntriaged> mock_model_;
-  raw_ptr<TranslateBubbleView, DanglingUntriaged> bubble_;
+  raw_ptr<MockTranslateBubbleModel> mock_model_ = nullptr;
+  raw_ptr<TranslateBubbleView> bubble_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<actions::ActionItem> action_item_;
 };
 
 TEST_F(TranslateBubbleViewTest, TargetLanguageTabTriggersTranslate) {
@@ -600,4 +594,15 @@ TEST_F(TranslateBubbleViewTest, SourceLanguageTabUpdatesViewState) {
   bubble_->TabSelectedAt(0);
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE,
             bubble_->GetViewState());
+}
+
+TEST_F(TranslateBubbleViewTest, ActionItemUpdatesWithBubbleLifetime) {
+  EXPECT_FALSE(action_item_->GetIsShowingBubble());
+  CreateAndShowBubble();
+  EXPECT_TRUE(action_item_->GetIsShowingBubble());
+  auto* const bubble = bubble_.get();
+  bubble_ = nullptr;
+  mock_model_ = nullptr;
+  bubble->GetWidget()->CloseNow();
+  EXPECT_FALSE(action_item_->GetIsShowingBubble());
 }

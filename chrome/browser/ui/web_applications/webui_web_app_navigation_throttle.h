@@ -15,10 +15,11 @@ class WebUIWebAppNavigationThrottle : public content::NavigationThrottle {
  public:
   // Returns a navigation throttle when the navigation is happening inside
   // a web app with a WebUI start url.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(
+      content::NavigationThrottleRegistry& registry);
 
-  explicit WebUIWebAppNavigationThrottle(content::NavigationHandle* handle);
+  explicit WebUIWebAppNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
   ~WebUIWebAppNavigationThrottle() override;
 
   // content::NavigationThrottle:

@@ -8,7 +8,7 @@ dictionary GPUDeviceDescriptor : GPUObjectDescriptorBase {
     sequence<GPUFeatureName> requiredFeatures = [];
 
     // Should have a default of {}, but Blink doesn't seem to support that yet.
-    record<DOMString, GPUSize64> requiredLimits;
+    record<DOMString, (GPUSize64 or undefined)> requiredLimits;
 
     GPUQueueDescriptor defaultQueue = {};
 };

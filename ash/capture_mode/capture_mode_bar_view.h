@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -55,7 +56,7 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
 
   // Adds the common elements of different capture bars to the bar view.
   void AppendSettingsButton();
-  void AppendCloseButton();
+  void AppendCloseButton(int accessible_name_id = IDS_APP_ACCNAME_CLOSE);
 
  private:
   void OnSettingsButtonPressed(const ui::Event& event);

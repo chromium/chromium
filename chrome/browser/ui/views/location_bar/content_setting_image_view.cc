@@ -14,14 +14,26 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/token.h"
 #include "build/build_config.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/user_education/common/feature_promo_specification.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -66,6 +78,9 @@ std::optional<ViewID> GetViewID(
     case ImageType::SENSORS:
     case ImageType::NOTIFICATIONS:
     case ImageType::STORAGE_ACCESS:
+#if BUILDFLAG(IS_CHROMEOS)
+    case ImageType::SMART_CARD:
+#endif
       return std::nullopt;
 
     case ImageType::NUM_IMAGE_TYPES:
@@ -85,19 +100,24 @@ ContentSettingImageView::ContentSettingImageView(
     std::unique_ptr<ContentSettingImageModel> image_model,
     IconLabelBubbleView::Delegate* parent_delegate,
     Delegate* delegate,
+    Browser* browser,
     const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, parent_delegate),
       delegate_(delegate),
       content_setting_image_model_(std::move(image_model)),
-      bubble_view_(nullptr) {
+      bubble_view_(nullptr),
+      browser_(browser) {
   DCHECK(delegate_);
   SetUpForInOutAnimation();
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
 
+  UpdateElementIdentifier();
+
   std::optional<ViewID> view_id =
       GetViewID(content_setting_image_model_->image_type());
-  if (view_id)
+  if (view_id) {
     SetID(*view_id);
+  }
 
   // Because this view is focusable, it should always have an accessible name,
   // even if an announcement is not to be made.
@@ -138,7 +158,6 @@ void ContentSettingImageView::Update() {
   if (!content_setting_image_model_->is_visible()) {
     SetVisible(false);
     GetViewAccessibility().SetIsIgnored(true);
-    critical_promo_bubble_.reset();
     return;
   }
   DCHECK(web_contents);
@@ -183,8 +202,15 @@ void ContentSettingImageView::Update() {
 
   content_setting_image_model_->SetAnimationHasRun(web_contents);
 
+  UpdateElementIdentifier();
+}
+
+void ContentSettingImageView::UpdateElementIdentifier() {
   std::optional<ui::ElementIdentifier> element_identifier;
   switch (content_setting_image_model_->image_type()) {
+    case ContentSettingImageModel::ImageType::NOTIFICATIONS:
+      element_identifier = kNotificationContentSettingImageView;
+      break;
     case ContentSettingImageModel::ImageType::MEDIASTREAM:
       element_identifier = kMediaActivityIndicatorElementId;
       break;
@@ -196,15 +222,19 @@ void ContentSettingImageView::Update() {
   }
   if (element_identifier) {
     SetProperty(views::kElementIdentifierKey, *element_identifier);
+  } else {
+    ClearProperty(views::kElementIdentifierKey);
   }
 }
 
 void ContentSettingImageView::SetIconColor(std::optional<SkColor> color) {
-  if (icon_color_ == color)
+  if (icon_color_ == color) {
     return;
+  }
   icon_color_ = color;
-  if (content_setting_image_model_->is_visible())
+  if (content_setting_image_model_->is_visible()) {
     UpdateImage();
+  }
   OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
 }
 
@@ -255,6 +285,16 @@ bool ContentSettingImageView::ShowBubbleImpl() {
     views::Widget* bubble_widget =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
     observation_.Observe(bubble_widget);
+
+    // Update popup bubble's title style.
+    if (views::BubbleFrameView* const frame_view =
+            bubble_view_->GetBubbleFrameView()) {
+      if (views::Label* title_label = frame_view->default_title()) {
+        title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
+        title_label->SetEnabledColor(kColorActivityIndicatorForeground);
+      }
+    }
+
     bubble_widget->Show();
     delegate_->OnContentSettingImageBubbleShown(
         content_setting_image_model_->image_type());
@@ -272,15 +312,17 @@ ContentSettingImageModel::ImageType ContentSettingImageView::GetType() const {
 }
 
 views::Widget* ContentSettingImageView::GetBubbleWidgetForTesting() const {
-  if (!bubble_view_)
+  if (!bubble_view_) {
     return nullptr;
+  }
 
   return bubble_view_->GetWidget();
 }
 
 void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
-  if (!bubble_view_ || bubble_view_->GetWidget() != widget)
+  if (!bubble_view_ || bubble_view_->GetWidget() != widget) {
     return;
+  }
 
 #if BUILDFLAG(IS_MAC)
   if (content_setting_image_model_->image_type() ==
@@ -301,8 +343,9 @@ void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
 void ContentSettingImageView::UpdateImage() {
   gfx::Image icon = content_setting_image_model_->GetIcon(icon_color_.value_or(
       color_utils::DeriveDefaultIconColor(GetForegroundColor())));
-  if (!icon.IsEmpty())
+  if (!icon.IsEmpty()) {
     SetImageModel(ui::ImageModel::FromImage(icon));
+  }
 }
 
 void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
@@ -313,16 +356,14 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
 
   // The promo currently is only used for Notifications, and it is only shown
   // directly after the animation is shown.
-  if (web_contents &&
-      content_setting_image_model_->ShouldShowPromo(web_contents)) {
-    critical_promo_bubble_ =
-        BrowserFeaturePromoController::GetForView(this)->ShowCriticalPromo(
-            user_education::FeaturePromoSpecification::CreateForLegacyPromo(
-                /* feature =*/nullptr, ui::ElementIdentifier(),
-                IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO),
-            views::ElementTrackerViews::GetInstance()->GetElementForView(this,
-                                                                         true));
-    content_setting_image_model_->SetPromoWasShown(web_contents);
+  if (web_contents) {
+    const webapps::AppId* app_id =
+        web_app::WebAppTabHelper::GetAppId(web_contents);
+    if (app_id) {
+      user_education::FeaturePromoParams params(
+          feature_engagement::kIPHPwaQuietNotificationFeature, *app_id);
+      browser_->window()->MaybeShowFeaturePromo(std::move(params));
+    }
   }
 }
 

@@ -1,8 +1,38 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "enterprise_companion.mojom" ]
+
   visibility = [
     "//chrome/enterprise_companion:*",
     "//chrome/updater:*",
+  ]
+
+  deps = [ ":policy_fetch_reason_mojom" ]
+}
+
+mojom("policy_fetch_reason_mojom") {
+  sources = [ "policy_fetch_reason.mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "enterprise_companion.mojom.PolicyFetchReason"
+          cpp = "::policy::PolicyFetchReason"
+        },
+      ]
+      traits_headers = [
+        "//components/policy/core/common/policy_types.h",
+        "policy_fetch_reason_traits.h",
+      ]
+      traits_sources = [ "policy_fetch_reason_traits.cc" ]
+      traits_public_deps =
+          [ "//components/policy/core/common:common_constants" ]
+    },
+  ]
+
+  visibility = [
+    "//chrome/enterprise_companion/mojom:mojom",
+    "//chrome/updater/mojom:*",
   ]
 }

@@ -102,6 +102,8 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
  private:
   bool InitializeDawn();
   bool InitializeVulkan();
+  void SetSkiaBackendType();
+  void RecordUMA();
 
   raw_ptr<GpuSandboxHelper> sandbox_helper_ = nullptr;
   bool gl_use_swiftshader_ = false;

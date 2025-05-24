@@ -25,7 +25,7 @@ class CommandObserver;
 //
 class CommandUpdater {
  public:
-  virtual ~CommandUpdater() {}
+  virtual ~CommandUpdater() = default;
 
   // Returns true if the specified command ID is supported.
   virtual bool SupportsCommand(int id) const = 0;
@@ -38,18 +38,23 @@ class CommandUpdater {
   // disposition.
   // Returns true if the command was executed (i.e. it is supported and is
   // enabled).
-  virtual bool ExecuteCommand(
-      int id,
-      base::TimeTicks time_stamp = base::TimeTicks::Now()) = 0;
+  virtual bool ExecuteCommand(int id, base::TimeTicks time_stamp) = 0;
+  bool ExecuteCommand(int id) {
+    return ExecuteCommand(id, base::TimeTicks::Now());
+  }
 
   // Performs the action associated with this command ID using the given
   // disposition.
   // Returns true if the command was executed (i.e. it is supported and is
   // enabled).
-  virtual bool ExecuteCommandWithDisposition(
-      int id,
-      WindowOpenDisposition disposition,
-      base::TimeTicks time_stamp = base::TimeTicks::Now()) = 0;
+  virtual bool ExecuteCommandWithDisposition(int id,
+                                             WindowOpenDisposition disposition,
+                                             base::TimeTicks time_stamp) = 0;
+  bool ExecuteCommandWithDisposition(int id,
+                                     WindowOpenDisposition disposition) {
+    return ExecuteCommandWithDisposition(id, disposition,
+                                         base::TimeTicks::Now());
+  }
 
   // Adds an observer to the state of a particular command. If the command does
   // not exist, it is created, initialized to false.

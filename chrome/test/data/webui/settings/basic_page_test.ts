@@ -8,7 +8,7 @@
 import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
-import {isChromeOS, isLacros} from 'chrome://resources/js/platform.js';
+import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -78,7 +78,7 @@ suite('BasicPage', () => {
       'autofill',
       'privacy',
     ];
-    if (!isChromeOS && !isLacros) {
+    if (!isChromeOS) {
       sections.push('defaultBrowser');
     }
 
@@ -89,22 +89,6 @@ suite('BasicPage', () => {
           `settings-section[section=${section}]`);
       assertTrue(!!sectionElement, 'No sectionElement for section: ' + section);
     }
-  });
-
-  // TODO(crbug.com/40277421): Remove after SafetyHub launched.
-  test('safetyCheckVisibilityTest', function() {
-    function querySafetyCheckSection() {
-      return page.shadowRoot!.querySelector('#safetyCheckSettingsSection');
-    }
-
-    // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility || {};
-    flush();
-
-    // When enabled, SafetyHub replaces SafetyCheck by default.
-    assertFalse(
-        !!querySafetyCheckSection(),
-        'SafetyCheck should not be visible with default page visibility');
   });
 
   function assertActiveSection(section: string) {
@@ -221,6 +205,14 @@ suite('BasicPage', () => {
     await whenDone;
     await flushTasks();
     assertActiveSubpage(routes.SYNC.section);
+
+    // RouteState.SUBPAGE -> RoutState.SUBPAGE when they reside under different
+    // sections.
+    whenDone = eventToPromise('show-container', page);
+    Router.getInstance().navigateTo(routes.FONTS);
+    await whenDone;
+    await flushTasks();
+    assertActiveSubpage(routes.APPEARANCE.section);
 
     // RouteState.SUBPAGE -> RoutState.DIALOG when they reside under different
     // sections.
@@ -533,67 +525,7 @@ suite('Performance', () => {
   });
 });
 
-// TODO(crbug.com/40277421): Remove after SafetyHub launched.
-suite('SafetyHubDisabled', () => {
-  let page: SettingsBasicPageElement;
-
-  setup(async function() {
-    loadTimeData.overrideValues({enableSafetyHub: false});
-    resetRouterForTesting();
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-basic-page');
-    document.body.appendChild(page);
-    flush();
-    await page.shadowRoot!
-        .querySelector<SettingsIdleLoadElement>('#advancedPageTemplate')!.get();
-    const sections = page.shadowRoot!.querySelectorAll('settings-section');
-    assertTrue(sections.length > 1);
-  });
-
-  test('load page', function() {
-    // This will fail if there are any asserts or errors in the Settings page.
-  });
-
-
-  test('safety check visible', function() {
-    function querySafetyCheckSection() {
-      return page.shadowRoot!.querySelector('#safetyCheckSettingsSection');
-    }
-
-    // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility || {};
-    flush();
-
-    assertTrue(
-        !!querySafetyCheckSection(),
-        'Safety check section should be visible with default page visibility');
-
-    // Set the visibility of the pages under test to "false".
-    page.pageVisibility = Object.assign(pageVisibility || {}, {
-      safetyCheck: false,
-    });
-    flush();
-
-    assertFalse(!!querySafetyCheckSection());
-  });
-
-  test('safety hub not visible', function() {
-    function querySafetyHubSection() {
-      return page.shadowRoot!.querySelector('#safetyHubEntryPointSection');
-    }
-
-    // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility || {};
-    flush();
-
-    assertFalse(
-        !!querySafetyHubSection(),
-        'Safety Hub section should not be visible with default visibility');
-  });
-});
-
-suite('ExperimentalAdvanced', () => {
+suite('AiSections', () => {
   let page: SettingsBasicPageElement;
 
   function createBasicPage() {
@@ -603,52 +535,95 @@ suite('ExperimentalAdvanced', () => {
     flush();
   }
 
-  test('sectionNotVisible', function() {
-    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: false});
-    resetRouterForTesting();
-
-    createBasicPage();
-    const sectionElement =
-        page.shadowRoot!.querySelector('settings-section[section=ai]');
-    assertFalse(!!sectionElement);
-  });
-
-  test('sectionVisible', function() {
-    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
-    resetRouterForTesting();
-
-    createBasicPage();
-    const sectionElement =
-        page.shadowRoot!.querySelector('settings-section[section=ai]');
-    assertTrue(!!sectionElement);
-  });
-
-  test('infoCardNotVisible', function() {
+  test('showAiPageHidesAiFeaturesSection', function() {
     loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: true,
-      enableAiSettingsPageRefresh: false,
+      showAiPage: false,
+      showAiPageAiFeatureSection: true,
     });
     resetRouterForTesting();
 
     createBasicPage();
-    const sectionElement =
-        page.shadowRoot!.querySelector('settings-section[section=aiInfoCard]');
-    assertFalse(!!sectionElement);
+    const infoCardSectionElement =
+        page.shadowRoot!.querySelector<SettingsSectionElement>(
+            'settings-section[section=aiInfoCard]');
+    assertFalse(!!infoCardSectionElement);
+
+    const aiFeaturesSectionElement =
+        page.shadowRoot!.querySelector('settings-section[section=ai]');
+    assertFalse(!!aiFeaturesSectionElement);
   });
 
-  test('infoCardVisible', function() {
+  test('aiFeaturesSectionNotVisible', function() {
     loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: true,
-      enableAiSettingsPageRefresh: true,
+      showAiPage: true,
+      showAiPageAiFeatureSection: false,
+    });
+    resetRouterForTesting();
+
+    createBasicPage();
+    const aiFeaturesSectionElement =
+        page.shadowRoot!.querySelector('settings-section[section=ai]');
+    assertFalse(!!aiFeaturesSectionElement);
+  });
+
+  test('aiFeaturesSectionVisible', function() {
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      showAiPageAiFeatureSection: true,
+    });
+    resetRouterForTesting();
+
+    createBasicPage();
+    const aiFeaturesSectionElement =
+        page.shadowRoot!.querySelector('settings-section[section=ai]');
+    assertTrue(!!aiFeaturesSectionElement);
+
+    const infoCardSectionElement =
+        page.shadowRoot!.querySelector<SettingsSectionElement>(
+            'settings-section[section=aiInfoCard]');
+    assertTrue(!!infoCardSectionElement);
+    assertEquals(
+        routes.AI.section,
+        infoCardSectionElement.getAttribute('nest-under-section'));
+  });
+
+  // <if expr="enable_glic">
+  test('AIPageGlicSectionVisible', function() {
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      showGlicSettings: true,
     });
     resetRouterForTesting();
 
     createBasicPage();
     const sectionElement =
         page.shadowRoot!.querySelector<SettingsSectionElement>(
-            'settings-section[section=aiInfoCard]');
+            'settings-section[section=glicSection]');
     assertTrue(!!sectionElement);
     assertEquals(
-        routes.AI.section, sectionElement!.getAttribute('nest-under-section'));
+        routes.AI.section, sectionElement.getAttribute('nest-under-section'));
+
+    const infoCardSectionElement =
+        page.shadowRoot!.querySelector<SettingsSectionElement>(
+            'settings-section[section=aiInfoCard]');
+    assertTrue(!!infoCardSectionElement);
+    assertEquals(
+        routes.AI.section,
+        infoCardSectionElement.getAttribute('nest-under-section'));
   });
+
+  test('AIPageGlicSectionNotVisible', function() {
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      showGlicSettings: false,
+    });
+    resetRouterForTesting();
+
+    createBasicPage();
+    const sectionElement =
+        page.shadowRoot!.querySelector<SettingsSectionElement>(
+            'settings-section[section=glicSection]');
+    assertFalse(!!sectionElement);
+  });
+  // </if>
 });

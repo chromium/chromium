@@ -21,6 +21,8 @@ blink_core_sources_scheduler = [
   "idle_deadline.h",
   "scheduled_action.cc",
   "scheduled_action.h",
+  "scheduler_task_context.cc",
+  "scheduler_task_context.h",
   "script_wrappable_task_state.cc",
   "script_wrappable_task_state.h",
   "scripted_idle_task_controller.cc",
@@ -41,5 +43,6 @@ blink_core_tests_scheduler = [
   "dom_scheduler_test.cc",
   "dom_timer_test.cc",
   "idle_deadline_test.cc",
+  "script_wrappable_task_state_test.cc",
   "scripted_idle_task_controller_test.cc",
 ]

@@ -10,7 +10,7 @@
 
 namespace {
 
-constexpr base::FilePath::StringPieceType kChromePwaLauncherExecutable =
+constexpr base::FilePath::StringViewType kChromePwaLauncherExecutable =
     L"chrome_pwa_launcher.exe";
 
 }  // namespace

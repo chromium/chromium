@@ -37,7 +37,7 @@ class TestWindowDelegate : public WindowDelegate {
     minimum_size_ = minimum_size;
   }
 
-  void set_maximum_size(const gfx::Size& maximum_size) {
+  void set_maximum_size(const std::optional<gfx::Size>& maximum_size) {
     maximum_size_ = maximum_size;
   }
 
@@ -50,7 +50,7 @@ class TestWindowDelegate : public WindowDelegate {
 
   // Overridden from WindowDelegate:
   gfx::Size GetMinimumSize() const override;
-  gfx::Size GetMaximumSize() const override;
+  std::optional<gfx::Size> GetMaximumSize() const override;
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override;
   gfx::NativeCursor GetCursor(const gfx::Point& point) override;
@@ -76,7 +76,7 @@ class TestWindowDelegate : public WindowDelegate {
   int window_component_;
   bool delete_on_destroyed_;
   gfx::Size minimum_size_;
-  gfx::Size maximum_size_;
+  std::optional<gfx::Size> maximum_size_;
   bool can_focus_;
 
   base::RepeatingClosure on_occlusion_changed_;

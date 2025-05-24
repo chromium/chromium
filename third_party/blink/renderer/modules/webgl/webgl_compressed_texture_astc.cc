@@ -2,33 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgl/webgl_compressed_texture_astc.h"
 
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
 
-const WebGLCompressedTextureASTC::BlockSizeCompressASTC
-    WebGLCompressedTextureASTC::kBlockSizeCompressASTC[] = {
-        {GL_COMPRESSED_RGBA_ASTC_4x4_KHR, 4, 4},
-        {GL_COMPRESSED_RGBA_ASTC_5x4_KHR, 5, 4},
-        {GL_COMPRESSED_RGBA_ASTC_5x5_KHR, 5, 5},
-        {GL_COMPRESSED_RGBA_ASTC_6x5_KHR, 6, 5},
-        {GL_COMPRESSED_RGBA_ASTC_6x6_KHR, 6, 6},
-        {GL_COMPRESSED_RGBA_ASTC_8x5_KHR, 8, 5},
-        {GL_COMPRESSED_RGBA_ASTC_8x6_KHR, 8, 6},
-        {GL_COMPRESSED_RGBA_ASTC_8x8_KHR, 8, 8},
-        {GL_COMPRESSED_RGBA_ASTC_10x5_KHR, 10, 5},
-        {GL_COMPRESSED_RGBA_ASTC_10x6_KHR, 10, 6},
-        {GL_COMPRESSED_RGBA_ASTC_10x8_KHR, 10, 8},
-        {GL_COMPRESSED_RGBA_ASTC_10x10_KHR, 10, 10},
-        {GL_COMPRESSED_RGBA_ASTC_12x10_KHR, 12, 10},
-        {GL_COMPRESSED_RGBA_ASTC_12x12_KHR, 12, 12}};
+const std::array<WebGLCompressedTextureASTC::BlockSizeCompressASTC, 14>
+    WebGLCompressedTextureASTC::kBlockSizeCompressASTC = {
+        {{GL_COMPRESSED_RGBA_ASTC_4x4_KHR, 4, 4},
+         {GL_COMPRESSED_RGBA_ASTC_5x4_KHR, 5, 4},
+         {GL_COMPRESSED_RGBA_ASTC_5x5_KHR, 5, 5},
+         {GL_COMPRESSED_RGBA_ASTC_6x5_KHR, 6, 5},
+         {GL_COMPRESSED_RGBA_ASTC_6x6_KHR, 6, 6},
+         {GL_COMPRESSED_RGBA_ASTC_8x5_KHR, 8, 5},
+         {GL_COMPRESSED_RGBA_ASTC_8x6_KHR, 8, 6},
+         {GL_COMPRESSED_RGBA_ASTC_8x8_KHR, 8, 8},
+         {GL_COMPRESSED_RGBA_ASTC_10x5_KHR, 10, 5},
+         {GL_COMPRESSED_RGBA_ASTC_10x6_KHR, 10, 6},
+         {GL_COMPRESSED_RGBA_ASTC_10x8_KHR, 10, 8},
+         {GL_COMPRESSED_RGBA_ASTC_10x10_KHR, 10, 10},
+         {GL_COMPRESSED_RGBA_ASTC_12x10_KHR, 12, 10},
+         {GL_COMPRESSED_RGBA_ASTC_12x12_KHR, 12, 12}}};
 
 WebGLCompressedTextureASTC::WebGLCompressedTextureASTC(
     WebGLRenderingContextBase* context)
@@ -42,15 +37,11 @@ WebGLCompressedTextureASTC::WebGLCompressedTextureASTC(
   const int kAlphaFormatGap =
       GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR - GL_COMPRESSED_RGBA_ASTC_4x4_KHR;
 
-  for (size_t i = 0;
-       i < std::size(WebGLCompressedTextureASTC::kBlockSizeCompressASTC); i++) {
+  for (const auto& astc : WebGLCompressedTextureASTC::kBlockSizeCompressASTC) {
     /* GL_COMPRESSED_RGBA_ASTC(0x93B0 ~ 0x93BD) */
-    context->AddCompressedTextureFormat(
-        WebGLCompressedTextureASTC::kBlockSizeCompressASTC[i].compress_type);
+    context->AddCompressedTextureFormat(astc.compress_type);
     /* GL_COMPRESSED_SRGB8_ALPHA8_ASTC(0x93D0 ~ 0x93DD) */
-    context->AddCompressedTextureFormat(
-        WebGLCompressedTextureASTC::kBlockSizeCompressASTC[i].compress_type +
-        kAlphaFormatGap);
+    context->AddCompressedTextureFormat(astc.compress_type + kAlphaFormatGap);
   }
 }
 

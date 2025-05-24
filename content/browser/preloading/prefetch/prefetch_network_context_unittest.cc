@@ -8,16 +8,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/base/isolation_info.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 namespace {
@@ -33,48 +30,13 @@ MATCHER(IsEmptyIsolationInfo, "") {
   return arg.IsEmpty();
 }
 
-class ScopedMockContentBrowserClient : public TestContentBrowserClient {
- public:
-  ScopedMockContentBrowserClient() {
-    old_browser_client_ = SetBrowserClientForTesting(this);
-  }
-
-  ~ScopedMockContentBrowserClient() override {
-    EXPECT_EQ(this, SetBrowserClientForTesting(old_browser_client_));
-  }
-
-  MOCK_METHOD(
-      void,
-      WillCreateURLLoaderFactory,
-      (BrowserContext * browser_context,
-       RenderFrameHost* frame,
-       int render_process_id,
-       URLLoaderFactoryType type,
-       const url::Origin& request_initiator,
-       const net::IsolationInfo& isolation_info,
-       std::optional<int64_t> navigation_id,
-       ukm::SourceIdObj ukm_source_id,
-       network::URLLoaderFactoryBuilder& factory_builder,
-       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
-           header_client,
-       bool* bypass_redirect_checks,
-       bool* disable_secure_dns,
-       network::mojom::URLLoaderFactoryOverridePtr* factory_override,
-       scoped_refptr<base::SequencedTaskRunner>
-           navigation_response_task_runner),
-      (override));
-
- private:
-  raw_ptr<ContentBrowserClient> old_browser_client_;
-};
-
 class PrefetchNetworkContextTest : public RenderViewHostTestHarness {
  public:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
-    test_content_browser_client_ =
-        std::make_unique<ScopedMockContentBrowserClient>();
+    test_content_browser_client_ = std::make_unique<
+        ::testing::StrictMock<ScopedMockContentBrowserClient>>();
 
     prefetch_service_ = std::make_unique<PrefetchService>(browser_context());
   }
@@ -102,16 +64,16 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                     kReferringUrl);
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
-          IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
-          testing::Eq(std::nullopt),
-          ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
-          testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()));
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
+                  IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
+                  testing::Eq(std::nullopt),
+                  ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
+                  testing::_, testing::NotNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()));
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
@@ -130,16 +92,16 @@ TEST_F(PrefetchNetworkContextTest,
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                     kReferringUrl);
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
-          IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
-          testing::Eq(std::nullopt),
-          ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
-          testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()));
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
+                  IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
+                  testing::Eq(std::nullopt),
+                  ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
+                  testing::_, testing::NotNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()));
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(

@@ -117,8 +117,6 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
   id background_notification_observer_;
 
   base::WeakPtrFactory<SadTabTabHelper> weak_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_SAD_TAB_TAB_HELPER_H_

@@ -8,7 +8,6 @@
 
 #include "base/test/mock_callback.h"
 #include "base/types/optional_util.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -132,13 +131,11 @@ TEST_P(DragDropBubbleTestWithParam, CancelWarnOnDrop) {
 INSTANTIATE_TEST_SUITE_P(DlpDragDropNotifierTest,
                          DragDropBubbleTestWithParam,
                          ::testing::Values(std::nullopt,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
                                            ui::EndpointType::kUnknownVm,
                                            ui::EndpointType::kBorealis,
                                            ui::EndpointType::kCrostini,
                                            ui::EndpointType::kPluginVm,
                                            ui::EndpointType::kArc,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
                                            ui::EndpointType::kDefault,
                                            ui::EndpointType::kUrl));
 

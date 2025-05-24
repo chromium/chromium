@@ -24,13 +24,15 @@ bool IsUpdateOverCellularAllowed(bool interactive) {
 
   // Device Policy overrides the defaults.
   ash::CrosSettings* settings = ash::CrosSettings::Get();
-  if (!settings)
+  if (!settings) {
     return default_update_over_cellular_allowed;
+  }
 
   const base::Value* types_value =
       settings->GetPref(ash::kAllowedConnectionTypesForUpdate);
-  if (!types_value)
+  if (!types_value) {
     return default_update_over_cellular_allowed;
+  }
   CHECK(types_value->is_list());
   const auto& list = types_value->GetList();
   for (size_t i = 0; i < list.size(); ++i) {
@@ -39,8 +41,9 @@ bool IsUpdateOverCellularAllowed(bool interactive) {
       continue;
     }
 
-    if (list[i].GetInt() == 4)
+    if (list[i].GetInt() == 4) {
       return true;
+    }
   }
   // Device policy does not allow updates over cellular, as cellular is not
   // included in allowed connection types for updates.

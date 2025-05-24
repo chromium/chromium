@@ -91,6 +91,11 @@ void ChooserDialogView::OnSelectionChanged() {
   DialogModelChanged();
 }
 
+DeviceChooserContentView*
+ChooserDialogView::device_chooser_content_view_for_test() const {
+  return device_chooser_content_view_;
+}
+
 BEGIN_METADATA(ChooserDialogView)
 END_METADATA
 

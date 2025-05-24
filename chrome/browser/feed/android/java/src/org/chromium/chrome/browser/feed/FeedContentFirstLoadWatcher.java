@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.feed;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface to listen events about feed loading from FeedStream. */
+@NullMarked
 public interface FeedContentFirstLoadWatcher {
     /** Called when some actual (non-native) content has loaded for the first time. */
     void nonNativeContentLoaded(@StreamKind int kind);

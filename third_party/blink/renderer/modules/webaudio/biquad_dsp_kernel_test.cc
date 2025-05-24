@@ -12,7 +12,7 @@ namespace blink {
 TEST(HasConstantValuesTest, RegressionTest) {
   test::TaskEnvironment task_environment;
   const int frames_to_process = 7;
-  float values[frames_to_process] = {0};
+  float values[frames_to_process] = {};
 
   // Test with all same elements
   EXPECT_TRUE(blink::BiquadDSPKernel::HasConstantValuesForTesting(

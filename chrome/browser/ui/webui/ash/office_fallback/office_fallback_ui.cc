@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 
 #include <utility>
@@ -14,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/office_fallback_resources.h"
@@ -23,6 +17,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::office_fallback {
 
@@ -46,10 +41,8 @@ OfficeFallbackUI::OfficeFallbackUI(content::WebUI* web_ui)
        IDS_OFFICE_FALLBACK_OPEN_IN_BASIC_EDITOR},
   };
   source->AddLocalizedStrings(kStrings);
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kOfficeFallbackResources, kOfficeFallbackResourcesSize),
-      IDR_OFFICE_FALLBACK_MAIN_HTML);
+  webui::SetupWebUIDataSource(source, kOfficeFallbackResources,
+                              IDR_OFFICE_FALLBACK_MAIN_HTML);
 }
 
 OfficeFallbackUI::~OfficeFallbackUI() = default;

@@ -43,8 +43,8 @@ class AX_BASE_EXPORT AXActionHandlerBase {
   // pass AXTreeIDUnknown() and then call SetAXTreeID() at a later point.
   explicit AXActionHandlerBase(const AXTreeID& ax_tree_id);
 
-  // Change the AXTreeID.
   void SetAXTreeID(AXTreeID new_ax_tree_id);
+  void RemoveAXTreeID();
 
  private:
   // Register or unregister this class with |AXActionHandlerRegistry|.

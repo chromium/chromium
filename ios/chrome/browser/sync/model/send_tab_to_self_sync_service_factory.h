@@ -8,33 +8,25 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 namespace send_tab_to_self {
 class SendTabToSelfSyncService;
 }  // namespace send_tab_to_self
 
 // Singleton that owns all SendTabToSelfSyncService and associates them with
-// ChromeBrowserState.
-class SendTabToSelfSyncServiceFactory : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class SendTabToSelfSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static send_tab_to_self::SendTabToSelfSyncService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static send_tab_to_self::SendTabToSelfSyncService* GetForProfile(
       ProfileIOS* profile);
   static SendTabToSelfSyncServiceFactory* GetInstance();
 
   // Returns the default factory used to build SendTabToSelfSyncService. Can be
-  // registered with SetTestingFactory to use real instances during testing.
+  // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
-
-  SendTabToSelfSyncServiceFactory(const SendTabToSelfSyncServiceFactory&) =
-      delete;
-  SendTabToSelfSyncServiceFactory& operator=(
-      const SendTabToSelfSyncServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<SendTabToSelfSyncServiceFactory>;

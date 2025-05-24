@@ -6,12 +6,12 @@ import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../../common/app_language_selection_dialog/app_language_selection_dialog.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppLanguageSelectionDialogEntryPoint} from '../../common/app_language_selection_dialog/app_language_selection_dialog.js';
-import {PrefsState} from '../../common/types.js';
+import type {PrefsState} from '../../common/types.js';
 
 import {getTemplate} from './app_language_item.html.js';
 

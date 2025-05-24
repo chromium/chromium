@@ -10,9 +10,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.SparseArray;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /** The interface that embedders should implement to specialize child service creation. */
+@NullMarked
 public interface ChildProcessServiceDelegate {
     /** Invoked when the service was created. This is the first method invoked on the delegate. */
     void onServiceCreated();
@@ -31,7 +34,7 @@ public interface ChildProcessServiceDelegate {
      * @param binderBox an optional binder box which may contain other binders to be unpacked
      */
     void onConnectionSetup(
-            Bundle connectionBundle, List<IBinder> clientInterfaces, IBinder binderBox);
+            IChildProcessArgs connectionArgs, List<IBinder> clientInterfaces, IBinder binderBox);
 
     /**
      * Called when the delegate should load the native library.

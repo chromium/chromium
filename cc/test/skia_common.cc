@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "cc/test/skia_common.h"
 
 #include <stddef.h>
@@ -123,8 +128,7 @@ SkYUVAPixmapInfo GetYUVAPixmapInfo(const gfx::Size& image_size,
                                    bool has_alpha) {
   // TODO(skbug.com/10632): Update this when we have planar configs with alpha.
   if (has_alpha) {
-    NOTREACHED_IN_MIGRATION();
-    return SkYUVAPixmapInfo();
+    NOTREACHED();
   }
   SkYUVAInfo::Subsampling subsampling;
   switch (format) {
@@ -147,8 +151,7 @@ SkYUVAPixmapInfo GetYUVAPixmapInfo(const gfx::Size& image_size,
       subsampling = SkYUVAInfo::Subsampling::k444;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return SkYUVAPixmapInfo();
+      NOTREACHED();
   }
   SkYUVAInfo yuva_info({image_size.width(), image_size.height()},
                        SkYUVAInfo::PlaneConfig::kY_U_V, subsampling,
@@ -260,13 +263,13 @@ scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
 }
 
 scoped_refptr<SkottieWrapper> CreateSkottieFromString(std::string_view json) {
-  base::span<const uint8_t> json_span = base::as_bytes(base::make_span(json));
+  base::span<const uint8_t> json_span = base::as_byte_span(json);
   return SkottieWrapper::UnsafeCreateSerializable(
       std::vector<uint8_t>(json_span.begin(), json_span.end()));
 }
 
 std::string LoadSkottieFileFromTestData(
-    base::FilePath::StringPieceType animation_file_name) {
+    base::FilePath::StringViewType animation_file_name) {
   base::FilePath animation_path;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &animation_path));
   animation_path = animation_path.AppendASCII("cc/test/data/lottie")
@@ -278,7 +281,7 @@ std::string LoadSkottieFileFromTestData(
 }
 
 scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(
-    base::FilePath::StringPieceType animation_file_name) {
+    base::FilePath::StringViewType animation_file_name) {
   return CreateSkottieFromString(
       LoadSkottieFileFromTestData(animation_file_name));
 }

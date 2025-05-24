@@ -93,6 +93,10 @@ BEGIN
       VALUE "FileDescription", "{% trans %}REMOTING_REMOTE_WEBAUTHN_DESCRIPTION{% endtrans %}"
       VALUE "InternalName", "remote_webauthn.exe"
       VALUE "OriginalFilename", "remote_webauthn.exe"
+#elif (REMOTING_HOST_BINARY == BINARY_REMOTING_CRASHPAD_HANDLER)
+      VALUE "FileDescription", "{% trans %}REMOTING_CRASHPAD_HANDLER_DESCRIPTION{% endtrans %}"
+      VALUE "InternalName", "remoting_crashpad_handler.exe"
+      VALUE "OriginalFilename", "remoting_crashpad_handler.exe"
 #else
 #error REMOTING_HOST_BINARY must be set to one of BINARY_XXX values.
 #endif

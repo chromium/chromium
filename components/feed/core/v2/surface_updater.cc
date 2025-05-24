@@ -213,6 +213,7 @@ feedui::ZeroStateSlice::Type GetZeroStateType(LoadStreamStatus status) {
     case LoadStreamStatus::kAlreadyHaveUnreadContent:
     case LoadStreamStatus::kLoadNotAllowedDisabled:
     case LoadStreamStatus::kLoadNotAllowedDisabledByDse:
+    case LoadStreamStatus::kNoCardReceived:
       break;
   }
   return feedui::ZeroStateSlice::NO_CARDS_AVAILABLE;

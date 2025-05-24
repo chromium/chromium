@@ -22,6 +22,7 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/common_theme.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme_utils.h"
 
 namespace ui {
@@ -61,14 +62,16 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
       return ColorProviderKey::ForcedColors::kNone;
     }
     static constexpr auto kForcedColorsMap =
-        base::MakeFixedFlatMap<PageColors, ColorProviderKey::ForcedColors>(
-            {{PageColors::kOff, ColorProviderKey::ForcedColors::kNone},
-             {PageColors::kDusk, ColorProviderKey::ForcedColors::kDusk},
-             {PageColors::kDesert, ColorProviderKey::ForcedColors::kDesert},
-             {PageColors::kBlack, ColorProviderKey::ForcedColors::kBlack},
-             {PageColors::kWhite, ColorProviderKey::ForcedColors::kWhite},
-             {PageColors::kHighContrast,
-              ColorProviderKey::ForcedColors::kActive}});
+        base::MakeFixedFlatMap<PageColors, ColorProviderKey::ForcedColors>({
+            {PageColors::kOff, ColorProviderKey::ForcedColors::kNone},
+            {PageColors::kDusk, ColorProviderKey::ForcedColors::kDusk},
+            {PageColors::kDesert, ColorProviderKey::ForcedColors::kDesert},
+            {PageColors::kNightSky, ColorProviderKey::ForcedColors::kNightSky},
+            {PageColors::kWhite, ColorProviderKey::ForcedColors::kWhite},
+            {PageColors::kHighContrast,
+             ColorProviderKey::ForcedColors::kActive},
+            {PageColors::kAquatic, ColorProviderKey::ForcedColors::kAquatic},
+        });
 
     return kForcedColorsMap.at(page_colors);
   };
@@ -141,8 +144,8 @@ void NativeTheme::NotifyOnNativeThemeUpdated() {
   // Reset the ColorProviderManager's cache so that ColorProviders requested
   // from this point onwards incorporate the changes to the system theme.
   color_provider_manager.ResetColorProviderCache();
-  for (NativeThemeObserver& observer : native_theme_observers_)
-    observer.OnNativeThemeUpdated(this);
+  native_theme_observers_.Notify(&NativeThemeObserver::OnNativeThemeUpdated,
+                                 this);
 
   RecordNumColorProvidersInitializedDuringOnNativeThemeUpdated(
       color_provider_manager.num_providers_initialized() -
@@ -155,8 +158,7 @@ void NativeTheme::NotifyOnCaptionStyleUpdated() {
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (NativeThemeObserver& observer : native_theme_observers_)
-    observer.OnCaptionStyleUpdated();
+  native_theme_observers_.Notify(&NativeThemeObserver::OnCaptionStyleUpdated);
 }
 
 void NativeTheme::NotifyOnPreferredContrastUpdated() {
@@ -164,8 +166,8 @@ void NativeTheme::NotifyOnPreferredContrastUpdated() {
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (NativeThemeObserver& observer : native_theme_observers_)
-    observer.OnPreferredContrastChanged();
+  native_theme_observers_.Notify(
+      &NativeThemeObserver::OnPreferredContrastChanged);
 }
 
 float NativeTheme::AdjustBorderWidthByZoom(float border_width,
@@ -201,8 +203,7 @@ NativeTheme::NativeTheme(bool should_use_dark_colors,
     : should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
       system_theme_(system_theme),
       forced_colors_(IsForcedHighContrast()),
-      prefers_reduced_transparency_(false),
-      inverted_colors_(false),
+
       preferred_color_scheme_(CalculatePreferredColorScheme()),
       preferred_contrast_(CalculatePreferredContrast()) {}
 
@@ -210,6 +211,11 @@ NativeTheme::~NativeTheme() = default;
 
 bool NativeTheme::ShouldUseDarkColors() const {
   return should_use_dark_colors_;
+}
+
+bool NativeTheme::ShouldUseDarkColorsForSystemIntegratedUI() const {
+  return should_use_dark_colors_for_system_integrated_ui_.value_or(
+      ShouldUseDarkColors());
 }
 
 bool NativeTheme::UserHasContrastPreference() const {
@@ -223,8 +229,9 @@ bool NativeTheme::InForcedColorsMode() const {
 
 NativeTheme::PlatformHighContrastColorScheme
 NativeTheme::GetPlatformHighContrastColorScheme() const {
-  if (GetDefaultSystemColorScheme() != ColorScheme::kPlatformHighContrast)
+  if (GetDefaultSystemColorScheme() != ColorScheme::kPlatformHighContrast) {
     return PlatformHighContrastColorScheme::kNone;
+  }
   return (GetPreferredColorScheme() == PreferredColorScheme::kDark)
              ? PlatformHighContrastColorScheme::kDark
              : PlatformHighContrastColorScheme::kLight;
@@ -238,6 +245,15 @@ NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
     const {
   return ShouldUseDarkColors() ? NativeTheme::PreferredColorScheme::kDark
                                : NativeTheme::PreferredColorScheme::kLight;
+}
+
+// static
+bool NativeTheme::CalculateUseOverlayScrollbar() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return true;
+#else
+  return IsOverlayScrollbarEnabledByFeatureFlag();
+#endif
 }
 
 std::optional<base::TimeDelta> NativeTheme::GetPlatformCaretBlinkInterval()
@@ -263,8 +279,9 @@ NativeTheme::PreferredContrast NativeTheme::GetPreferredContrast() const {
 
 void NativeTheme::SetPreferredContrast(
     NativeTheme::PreferredContrast preferred_contrast) {
-  if (preferred_contrast_ == preferred_contrast)
+  if (preferred_contrast_ == preferred_contrast) {
     return;
+  }
   preferred_contrast_ = preferred_contrast;
   NotifyOnPreferredContrastUpdated();
 }
@@ -300,8 +317,9 @@ NativeTheme::GetSystemColors() const {
 std::optional<SkColor> NativeTheme::GetSystemThemeColor(
     SystemThemeColor theme_color) const {
   auto color = system_colors_.find(theme_color);
-  if (color != system_colors_.end())
+  if (color != system_colors_.end()) {
     return color->second;
+  }
 
   return std::nullopt;
 }
@@ -325,11 +343,11 @@ NativeTheme::ColorSchemeNativeThemeObserver::~ColorSchemeNativeThemeObserver() =
 
 void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
-  bool should_use_dark_colors = observed_theme->ShouldUseDarkColors();
-  PreferredColorScheme preferred_color_scheme =
+  const bool should_use_dark_colors = observed_theme->ShouldUseDarkColors();
+  const PreferredColorScheme preferred_color_scheme =
       observed_theme->GetPreferredColorScheme();
-  bool inverted_colors = observed_theme->GetInvertedColors();
-  base::TimeDelta caret_blink_interval =
+  const bool inverted_colors = observed_theme->GetInvertedColors();
+  const base::TimeDelta caret_blink_interval =
       observed_theme->GetCaretBlinkInterval();
   bool notify_observers = false;
 
@@ -381,11 +399,11 @@ bool NativeTheme::UpdateContrastRelatedStates(
       preferred_contrast = PreferredContrast::kNoPreference;
     } else if (page_colors != PageColors::kHighContrast) {
       // Set other states based on the selected theme (i.e. `kDusk`, `kDesert`,
-      // `kBlack`, or `kWhite`). This block is only executed when one of these
-      // themes is chosen. `kHighContrast` is not a valid theme here, as it is
-      // only available in forced colors mode.
-      CHECK_GE(page_colors, ui::NativeTheme::PageColors::kDusk);
-      CHECK_LE(page_colors, ui::NativeTheme::PageColors::kWhite);
+      // `kNightSky`, `kWhite`, or `kAquatic`). This block is only executed when
+      // one of these themes is chosen. `kHighContrast` is not a valid theme
+      // here, as it is only available in forced colors mode.
+      CHECK_NE(page_colors, ui::NativeTheme::PageColors::kOff);
+      CHECK_NE(page_colors, ui::NativeTheme::PageColors::kHighContrast);
       forced_colors = true;
       preferred_contrast = PreferredContrast::kMore;
     }
@@ -400,8 +418,9 @@ bool NativeTheme::UpdateContrastRelatedStates(
     // Only update the color scheme if page colors is a selected theme.
     if (page_colors != PageColors::kOff &&
         page_colors != PageColors::kHighContrast) {
-      bool is_dark_color =
-          page_colors == PageColors::kBlack || page_colors == PageColors::kDusk;
+      bool is_dark_color = page_colors == PageColors::kNightSky ||
+                           page_colors == PageColors::kDusk ||
+                           page_colors == PageColors::kAquatic;
       PreferredColorScheme page_colors_theme_scheme =
           is_dark_color ? PreferredColorScheme::kDark
                         : PreferredColorScheme::kLight;
@@ -434,7 +453,8 @@ SkColor4f NativeTheme::GetScrollbarThumbColor(
     const ui::ColorProvider& color_provider,
     State state,
     const ScrollbarThumbExtraParams& extra_params) const {
-  // A native theme using solid color scrollbar thumb must override this method.
+  // A native theme using solid color scrollbar thumb must override this
+  // method.
   NOTREACHED();
 }
 

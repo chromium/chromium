@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 
@@ -24,6 +25,7 @@ PrefBasedQuietPermissionUiSelector::~PrefBasedQuietPermissionUiSelector() =
     default;
 
 void PrefBasedQuietPermissionUiSelector::SelectUiToUse(
+    content::WebContents* web_contents,
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
   const ContentSettingsType content_settings_type =
@@ -52,8 +54,7 @@ bool PrefBasedQuietPermissionUiSelector::IsPermissionRequestSupported(
   if (request_type == permissions::RequestType::kNotifications) {
     return true;
   } else if (request_type == permissions::RequestType::kGeolocation) {
-    return base::FeatureList::IsEnabled(
-        permissions::features::kPermissionDedicatedCpssSetting);
+    return true;
   } else {
     return false;
   }

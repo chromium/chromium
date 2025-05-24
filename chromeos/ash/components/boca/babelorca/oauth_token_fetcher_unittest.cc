@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -27,6 +28,8 @@ constexpr base::Time kExpirationTime =
     base::Time::FromDeltaSinceWindowsEpoch(base::Days(50000));
 constexpr char kIdToken[] = "id-test-token";
 constexpr base::TimeDelta kRetryInitialBackoff = base::Milliseconds(500);
+constexpr char kErrorUmaPathTemplate[] =
+    "Ash.Boca.Babelorca.Tachyon.OAuthFetchError";
 
 class OAuthTokenFetcherTest : public testing::Test {
  protected:
@@ -41,6 +44,7 @@ class OAuthTokenFetcherTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   AccountInfo account_info_;
+  base::HistogramTester uma_recorder_;
 };
 
 TEST_F(OAuthTokenFetcherTest, SuccessfulOAuthTokenFetch) {
@@ -57,6 +61,9 @@ TEST_F(OAuthTokenFetcherTest, SuccessfulOAuthTokenFetch) {
   ASSERT_TRUE(token_data.has_value());
   EXPECT_THAT(token_data->token, testing::StrEq(kOAuthToken));
   EXPECT_EQ(token_data->expiration_time, kExpirationTime);
+  EXPECT_EQ(uma_recorder_.GetBucketCount(kErrorUmaPathTemplate,
+                                         GoogleServiceAuthError::NONE),
+            1);
 }
 
 TEST_F(OAuthTokenFetcherTest, FailedOAuthTokenFetch) {
@@ -70,6 +77,9 @@ TEST_F(OAuthTokenFetcherTest, FailedOAuthTokenFetch) {
 
   auto token_data = fetch_future.Get();
   EXPECT_FALSE(token_data.has_value());
+  EXPECT_EQ(uma_recorder_.GetBucketCount(kErrorUmaPathTemplate,
+                                         GoogleServiceAuthError::SERVICE_ERROR),
+            1);
 }
 
 TEST_F(OAuthTokenFetcherTest, OverlappingTokenFetchShouldFail) {
@@ -173,6 +183,14 @@ TEST_F(OAuthTokenFetcherTest, RespondAfterMaxRetries) {
       GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
 
   EXPECT_FALSE(fetch_future.Get().has_value());
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(kErrorUmaPathTemplate,
+                                   GoogleServiceAuthError::SERVICE_UNAVAILABLE),
+      2);
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(kErrorUmaPathTemplate,
+                                   GoogleServiceAuthError::CONNECTION_FAILED),
+      1);
 }
 
 }  // namespace

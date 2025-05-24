@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "base/test/task_environment.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/service/test_variations_service.h"
@@ -19,10 +22,16 @@ using variations::TestVariationsService;
 
 class ChromeModelQualityLogsUploaderServiceTest : public testing::Test {
  public:
-  ChromeModelQualityLogsUploaderServiceTest() {
+  ChromeModelQualityLogsUploaderServiceTest()
+      : enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
     TestVariationsService::RegisterPrefs(pref_service_.registry());
-    variations_service_ =
-        std::make_unique<TestVariationsService>(&pref_service_);
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        &pref_service_, &enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    variations_service_ = std::make_unique<TestVariationsService>(
+        &pref_service_, metrics_state_manager_.get());
   }
   ~ChromeModelQualityLogsUploaderServiceTest() override {
     // Clear out any previous references to avoid complaints from the memory
@@ -37,6 +46,9 @@ class ChromeModelQualityLogsUploaderServiceTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
+  metrics::TestEnabledStateProvider enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestVariationsService> variations_service_;
 };

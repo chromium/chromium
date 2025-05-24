@@ -17,10 +17,14 @@ import android.view.inputmethod.InputContentInfo;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
+@NullMarked
 class AutocompleteInputConnection extends InputConnectionWrapper {
     private static final String TAG = "AutocompleteInput";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = OmniboxFeatures.sDiagInputConnection.getValue();
 
     /** Interface defining the delegate for handling input-related actions. */
     public interface InputDelegate {
@@ -254,7 +258,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
      * @return {@code true} if the batch edit is still in progress. {@code false} otherwise.
      */
     public boolean onEndImeCommand() {
-        if (DEBUG) Log.i(TAG, "onEndImeCommand: " + (mInputDelegate.isInBatchEdit()));
+        if (DEBUG) Log.i(TAG, "onEndImeCommand: " + mInputDelegate.isInBatchEdit());
         AutocompleteState currentState = mInputDelegate.getCurrentState();
         String diff = currentState.getBackwardDeletedTextFrom(mPreBatchEditState);
         if (diff != null) {
@@ -368,7 +372,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
     }
 
     @Override
-    public CharSequence getTextAfterCursor(final int n, final int flags) {
+    public @Nullable CharSequence getTextAfterCursor(final int n, final int flags) {
         if (DEBUG) Log.i(TAG, "getTextAfterCursor");
         onBeginImeCommand();
         CharSequence retVal = super.getTextAfterCursor(n, flags);
@@ -377,7 +381,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
     }
 
     @Override
-    public CharSequence getTextBeforeCursor(final int n, final int flags) {
+    public @Nullable CharSequence getTextBeforeCursor(final int n, final int flags) {
         if (DEBUG) Log.i(TAG, "getTextBeforeCursor");
         onBeginImeCommand();
         CharSequence retVal = super.getTextBeforeCursor(n, flags);
@@ -455,5 +459,11 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
         boolean retVal = super.clearMetaKeyStates(states);
         onEndImeCommand();
         return retVal;
+    }
+
+    @Override
+    public void closeConnection() {
+        if (DEBUG) Log.i(TAG, "closeConnection");
+        super.closeConnection();
     }
 }

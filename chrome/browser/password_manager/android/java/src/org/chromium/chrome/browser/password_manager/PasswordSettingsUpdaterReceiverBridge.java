@@ -10,6 +10,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Optional;
 
 /**
@@ -17,6 +19,7 @@ import java.util.Optional;
  * passwords settings update callbacks from the downstream java implementation to native.
  */
 @JNINamespace("password_manager")
+@NullMarked
 public class PasswordSettingsUpdaterReceiverBridge {
     private long mNativeReceiverBridge;
 

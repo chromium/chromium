@@ -162,21 +162,21 @@ TEST_F(DataControlsReportingServiceTest, NoReportInUnmanagedProfile) {
           .size = 1234,
           .format_type = ui::ClipboardFormatType::PlainTextType(),
       },
-      Verdict::Warn({{0, {"rule_1_id", "rule_1_name"}}}));
+      Verdict::Warn({{0, {"1", "rule_1_name"}}}));
   service->ReportPasteWarningBypassed(
       managed_endpoint(GURL(kGoogleUrl)),
       unmanaged_endpoint(GURL(kChromiumUrl)), {},
-      Verdict::Warn({{0, {"rule_1_id", "rule_1_name"}}}));
+      Verdict::Warn({{0, {"1", "rule_1_name"}}}));
   service->ReportCopy(
       unmanaged_endpoint(GURL(kChromiumUrl)),
       {
           .size = 1234,
           .format_type = ui::ClipboardFormatType::PlainTextType(),
       },
-      Verdict::Warn({{0, {"rule_1_id", "rule_1_name"}}}));
+      Verdict::Warn({{0, {"1", "rule_1_name"}}}));
   service->ReportCopyWarningBypassed(
       unmanaged_endpoint(GURL(kChromiumUrl)), {},
-      Verdict::Warn({{0, {"rule_1_id", "rule_1_name"}}}));
+      Verdict::Warn({{0, {"1", "rule_1_name"}}}));
 }
 
 TEST_F(DataControlsReportingServiceTest, NoReportWithoutTriggeredRules) {
@@ -253,7 +253,7 @@ TEST_F(DataControlsReportingServiceTest, NoReportWithoutTriggeredRules) {
 
 TEST_F(DataControlsReportingServiceTest,
        PasteInManagedProfile_ManagedSourceProfile) {
-  Verdict::TriggeredRules triggered_rules = {{0, {"rule_1_id", "rule_1_name"}}};
+  Verdict::TriggeredRules triggered_rules = {{0, {"1", "rule_1_name"}}};
   auto validator = helper_->CreateValidator();
   validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
@@ -287,8 +287,8 @@ TEST_F(DataControlsReportingServiceTest,
 TEST_F(DataControlsReportingServiceTest,
        PasteInManagedProfile_IncognitoManagedSourceProfile) {
   Verdict::TriggeredRules triggered_rules = {
-      {0, {"rule_1_id", "rule_1_name"}},
-      {1, {"rule_2_id", "rule_2_name"}},
+      {0, {"1", "rule_1_name"}},
+      {1, {"2", "rule_2_name"}},
   };
   auto validator = helper_->CreateValidator();
   validator.ExpectDataControlsSensitiveDataEvent(
@@ -323,7 +323,7 @@ TEST_F(DataControlsReportingServiceTest,
 
 TEST_F(DataControlsReportingServiceTest,
        PasteInManagedProfile_UnmanagedSourceProfile) {
-  Verdict::TriggeredRules triggered_rules = {{0, {"rule_1_id", "rule_1_name"}}};
+  Verdict::TriggeredRules triggered_rules = {{0, {"1", "rule_1_name"}}};
   auto validator = helper_->CreateValidator();
   validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
@@ -362,7 +362,7 @@ TEST_F(DataControlsReportingServiceTest,
   managed_profile_->GetPrefs()->SetInteger(kDataControlsRulesScopePref,
                                            policy::POLICY_SCOPE_MACHINE);
 
-  Verdict::TriggeredRules triggered_rules = {{0, {"rule_1_id", "rule_1_name"}}};
+  Verdict::TriggeredRules triggered_rules = {{0, {"1", "rule_1_name"}}};
   auto validator = helper_->CreateValidator();
   validator.ExpectDataControlsSensitiveDataEvent(
       /*expected_url=*/
@@ -394,7 +394,7 @@ TEST_F(DataControlsReportingServiceTest,
 }
 
 TEST_F(DataControlsReportingServiceTest, CopyInManagedProfile) {
-  Verdict::TriggeredRules triggered_rules = {{0, {"rule_1_id", "rule_1_name"}}};
+  Verdict::TriggeredRules triggered_rules = {{0, {"1", "rule_1_name"}}};
   auto* service = ReportingServiceFactory::GetInstance()->GetForBrowserContext(
       managed_profile_);
 
@@ -510,37 +510,112 @@ TEST_F(DataControlsReportingServiceTest, CopyInManagedProfile) {
   }
 }
 
-TEST_F(DataControlsReportingServiceTest, GetClipboardSourceString) {
+TEST_F(DataControlsReportingServiceTest, GetClipboardSource_SameProfile) {
+  auto same_copy_source = ReportingService::GetClipboardSource(
+      /*source=*/managed_endpoint(GURL(kGoogleUrl)),
+      /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+      kDataControlsRulesScopePref);
+  ASSERT_EQ(
+      same_copy_source.context(),
+      enterprise_connectors::ContentMetaData::CopiedTextSource::SAME_PROFILE);
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(same_copy_source),
+            "https://google.com/");
   ASSERT_EQ(ReportingService::GetClipboardSourceString(
                 /*source=*/managed_endpoint(GURL(kGoogleUrl)),
                 /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
                 kDataControlsRulesScopePref),
             "https://google.com/");
+}
+
+TEST_F(DataControlsReportingServiceTest, GetClipboardSource_Incognito) {
+  auto incognito_copy_source = ReportingService::GetClipboardSource(
+      /*source=*/incognito_managed_endpoint(GURL(kGoogleUrl)),
+      /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+      kDataControlsRulesScopePref);
+  ASSERT_EQ(
+      incognito_copy_source.context(),
+      enterprise_connectors::ContentMetaData::CopiedTextSource::INCOGNITO);
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(incognito_copy_source),
+            "INCOGNITO");
   ASSERT_EQ(ReportingService::GetClipboardSourceString(
                 /*source=*/incognito_managed_endpoint(GURL(kGoogleUrl)),
                 /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
                 kDataControlsRulesScopePref),
             "INCOGNITO");
+}
 
+TEST_F(DataControlsReportingServiceTest,
+       GetClipboardSource_UnmanagedProfileOnManagedBrowser) {
   managed_profile_->GetPrefs()->SetInteger(kDataControlsRulesScopePref,
                                            policy::POLICY_SCOPE_MACHINE);
+  auto unmanaged_copy_source = ReportingService::GetClipboardSource(
+      /*source=*/unmanaged_endpoint(GURL(kGoogleUrl)),
+      /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+      kDataControlsRulesScopePref);
+  ASSERT_EQ(
+      unmanaged_copy_source.context(),
+      enterprise_connectors::ContentMetaData::CopiedTextSource::OTHER_PROFILE);
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(unmanaged_copy_source),
+            "https://google.com/");
   ASSERT_EQ(ReportingService::GetClipboardSourceString(
                 /*source=*/unmanaged_endpoint(GURL(kGoogleUrl)),
                 /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
                 kDataControlsRulesScopePref),
+            "https://google.com/");
+}
+
+TEST_F(DataControlsReportingServiceTest,
+       GetClipboardSource_GuestProfileOnManagedBrowser) {
+  managed_profile_->GetPrefs()->SetInteger(kDataControlsRulesScopePref,
+                                           policy::POLICY_SCOPE_MACHINE);
+  auto guest_copy_source = ReportingService::GetClipboardSource(
+      /*source=*/guest_endpoint(GURL(kGoogleUrl)),
+      /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+      kDataControlsRulesScopePref);
+  ASSERT_EQ(
+      guest_copy_source.context(),
+      enterprise_connectors::ContentMetaData::CopiedTextSource::OTHER_PROFILE);
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(guest_copy_source),
             "https://google.com/");
   ASSERT_EQ(ReportingService::GetClipboardSourceString(
                 /*source=*/guest_endpoint(GURL(kGoogleUrl)),
                 /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
                 kDataControlsRulesScopePref),
             "https://google.com/");
+}
 
+TEST_F(DataControlsReportingServiceTest,
+       GetClipboardSource_UnmanagedProfileOnUnmanagedBrowser) {
   managed_profile_->GetPrefs()->SetInteger(kDataControlsRulesScopePref,
                                            policy::POLICY_SCOPE_USER);
+  auto unmanaged_copy_source = ReportingService::GetClipboardSource(
+      /*source=*/unmanaged_endpoint(GURL(kGoogleUrl)),
+      /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+      kDataControlsRulesScopePref);
+  ASSERT_EQ(
+      unmanaged_copy_source.context(),
+      enterprise_connectors::ContentMetaData::CopiedTextSource::OTHER_PROFILE);
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(unmanaged_copy_source),
+            "OTHER_PROFILE");
   ASSERT_EQ(ReportingService::GetClipboardSourceString(
                 /*source=*/unmanaged_endpoint(GURL(kGoogleUrl)),
                 /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
                 kDataControlsRulesScopePref),
+            "OTHER_PROFILE");
+}
+
+TEST_F(DataControlsReportingServiceTest,
+       GetClipboardSource_GuestProfileOnUnmanagedBrowser) {
+  managed_profile_->GetPrefs()->SetInteger(kDataControlsRulesScopePref,
+                                           policy::POLICY_SCOPE_USER);
+  auto guest_copy_source = ReportingService::GetClipboardSource(
+      /*source=*/guest_endpoint(GURL(kGoogleUrl)),
+      /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+      kDataControlsRulesScopePref);
+  ASSERT_EQ(
+      guest_copy_source.context(),
+      enterprise_connectors::ContentMetaData::CopiedTextSource::OTHER_PROFILE);
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(guest_copy_source),
             "OTHER_PROFILE");
   ASSERT_EQ(ReportingService::GetClipboardSourceString(
                 /*source=*/guest_endpoint(GURL(kGoogleUrl)),

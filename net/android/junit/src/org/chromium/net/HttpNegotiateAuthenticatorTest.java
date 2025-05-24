@@ -8,7 +8,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,7 +34,6 @@ import android.os.Handler;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -52,7 +50,6 @@ import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.net.HttpNegotiateAuthenticator.GetAccountsCallback;
 import org.chromium.net.HttpNegotiateAuthenticator.RequestData;
 
@@ -65,9 +62,12 @@ import java.util.List;
         manifest = Config.NONE,
         shadows = {HttpNegotiateAuthenticatorTest.ExtendedShadowAccountManager.class})
 public class HttpNegotiateAuthenticatorTest {
+    private static final long MOCK_NATIVE_POINTER = 42;
+    private static final String MOCK_TOKEN_TYPE = "foo";
+
     /**
-     * User the AccountManager to inject a mock instance.
-     * Note: Shadow classes need to be public and static.
+     * User the AccountManager to inject a mock instance. Note: Shadow classes need to be public and
+     * static.
      */
     @Implements(AccountManager.class)
     public static class ExtendedShadowAccountManager extends ShadowAccountManager {
@@ -77,7 +77,6 @@ public class HttpNegotiateAuthenticatorTest {
         }
     }
 
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock private static AccountManager sMockAccountManager;
     @Mock private HttpNegotiateAuthenticator.Natives mAuthenticatorJniMock;
     @Captor private ArgumentCaptor<AccountManagerCallback<Bundle>> mBundleCallbackCaptor;
@@ -87,7 +86,7 @@ public class HttpNegotiateAuthenticatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(HttpNegotiateAuthenticatorJni.TEST_HOOKS, mAuthenticatorJniMock);
+        HttpNegotiateAuthenticatorJni.setInstanceForTesting(mAuthenticatorJniMock);
     }
 
     /** Test of {@link HttpNegotiateAuthenticator#getNextAuthToken} */
@@ -180,9 +179,9 @@ public class HttpNegotiateAuthenticatorTest {
     public void testGetAccountCallback() {
         String type = "Dummy_Account";
         HttpNegotiateAuthenticator authenticator = createAuthenticator(type);
-        RequestData requestData = new RequestData();
-        requestData.nativeResultObject = 42;
-        requestData.accountManager = sMockAccountManager;
+        Bundle options = new Bundle();
+        RequestData requestData =
+                new RequestData(MOCK_NATIVE_POINTER, sMockAccountManager, options, MOCK_TOKEN_TYPE);
         GetAccountsCallback callback = authenticator.new GetAccountsCallback(requestData);
 
         // Should fail because there are no accounts
@@ -200,8 +199,8 @@ public class HttpNegotiateAuthenticatorTest {
         verify(sMockAccountManager)
                 .getAuthToken(
                         eq(testAccount),
-                        (String) isNull(),
-                        (Bundle) isNull(),
+                        eq(MOCK_TOKEN_TYPE),
+                        eq(options),
                         eq(true),
                         any(HttpNegotiateAuthenticator.GetTokenCallback.class),
                         any(Handler.class));
@@ -224,15 +223,13 @@ public class HttpNegotiateAuthenticatorTest {
     public void testGetTokenCallbackWithIntent() {
         String type = "Dummy_Account";
         HttpNegotiateAuthenticator authenticator = createAuthenticator(type);
-        RequestData requestData = new RequestData();
-        requestData.nativeResultObject = 42;
-        requestData.authTokenType = "foo";
+        Bundle options = new Bundle();
+        options.putParcelable(AccountManager.KEY_INTENT, new Intent());
+        RequestData requestData =
+                new RequestData(MOCK_NATIVE_POINTER, sMockAccountManager, options, MOCK_TOKEN_TYPE);
         requestData.account = new Account("a", type);
-        requestData.accountManager = sMockAccountManager;
-        Bundle b = new Bundle();
-        b.putParcelable(AccountManager.KEY_INTENT, new Intent());
 
-        authenticator.new GetTokenCallback(requestData).run(makeFuture(b));
+        authenticator.new GetTokenCallback(requestData).run(makeFuture(options));
         verifyNoMoreInteractions(sMockAccountManager);
 
         // Verify that the broadcast receiver is registered
@@ -249,8 +246,8 @@ public class HttpNegotiateAuthenticatorTest {
         verify(sMockAccountManager)
                 .getAuthToken(
                         eq(new Account("a", type)),
-                        eq("foo"),
-                        (Bundle) isNull(),
+                        eq(MOCK_TOKEN_TYPE),
+                        eq(options),
                         eq(true),
                         any(HttpNegotiateAuthenticator.GetTokenCallback.class),
                         (Handler) isNull());
@@ -441,7 +438,7 @@ public class HttpNegotiateAuthenticatorTest {
             when(accountManagerFuture.getResult()).thenReturn(result);
         } catch (OperationCanceledException | AuthenticatorException | IOException e) {
             // Can never happen - artifact of Mockito.
-            fail();
+            throw new RuntimeException(e);
         }
         return accountManagerFuture;
     }
@@ -459,7 +456,7 @@ public class HttpNegotiateAuthenticatorTest {
             when(accountManagerFuture.getResult()).thenThrow(ex);
         } catch (OperationCanceledException | AuthenticatorException | IOException e) {
             // Can never happen - artifact of Mockito.
-            fail();
+            throw new RuntimeException(e);
         }
         return accountManagerFuture;
     }

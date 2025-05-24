@@ -87,12 +87,12 @@ void WaitForInsecureFormDialog() {
                portTreatedAsInsecure:self.testServer->port()];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [InsecureFormWarningAppInterface setInsecureFormPortsForTesting:0
                                             portTreatedAsInsecure:0];
   policy_test_utils::ClearPolicies();
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

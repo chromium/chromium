@@ -16,6 +16,7 @@ class GURL;
 
 namespace content {
 class NavigationHandle;
+class NavigationThrottleRegistry;
 class WebContents;
 }  // namespace content
 
@@ -54,7 +55,7 @@ class SSLErrorNavigationThrottle : public content::NavigationThrottle {
       ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttpsCallback;
 
   SSLErrorNavigationThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       HandleSSLErrorCallback handle_ssl_error_callback,
       IsInHostedAppCallback is_in_hosted_app_callback,
       ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttpsCallback

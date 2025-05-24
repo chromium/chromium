@@ -23,15 +23,13 @@ void MetadataDataSource::Register() {
   perfetto::DataSource<MetadataDataSource>::Register(desc);
 }
 
-void MetadataDataSource::OnStart(const StartArgs&) {}
-
-void MetadataDataSource::OnFlush(const FlushArgs&) {
+void MetadataDataSource::OnStart(const StartArgs&) {
   WriteMetadata();
 }
 
-void MetadataDataSource::OnStop(const StopArgs&) {
-  WriteMetadata();
-}
+void MetadataDataSource::OnFlush(const FlushArgs&) {}
+
+void MetadataDataSource::OnStop(const StopArgs&) {}
 
 void MetadataDataSource::WriteMetadata() {
   Trace([&](TraceContext ctx) {
@@ -44,9 +42,9 @@ void MetadataDataSource::WriteMetadata() {
 
 #if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
     // Version code is only set for official builds on Android.
-    const char* version_code_str =
+    const std::string& version_code_str =
         base::android::BuildInfo::GetInstance()->package_version_code();
-    if (version_code_str) {
+    if (!version_code_str.empty()) {
       int version_code = 0;
       bool res = base::StringToInt(version_code_str, &version_code);
       DCHECK(res);

@@ -10,6 +10,7 @@
 #include "ash/detachable_base/detachable_base_observer.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/session/session_controller_impl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -18,6 +19,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -33,7 +35,7 @@ UserInfo CreateUser(const std::string& email,
                     const std::string& gaia_id,
                     UserType user_type) {
   UserInfo user;
-  user.account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
+  user.account_id = AccountId::FromUserEmailGaiaId(email, GaiaId(gaia_id));
   user.is_ephemeral = user_type == UserType::kEphemeral;
   return user;
 }
@@ -134,6 +136,7 @@ class DetachableBaseHandlerTest : public testing::Test {
 
   raw_ptr<FakeHammerdClient> hammerd_client_ = nullptr;
 
+  SessionControllerImpl session_controller_;
   TestBaseObserver detachable_base_observer_;
 
   std::unique_ptr<DetachableBaseHandler> handler_;
@@ -522,7 +525,8 @@ TEST_F(DetachableBaseHandlerTest, RemoveUserData) {
 
   // Remove the data for user_2, and verify that the paired base is reported
   // as authenticated when the paired base changes again.
-  handler_->RemoveUserData(second_user);
+  // This is triggered when the user is removed from the device.
+  session_controller_.NotifyUserToBeRemoved(second_user.account_id);
   ChangePairedBase({0x07, 0x08, 0x09});
 
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,

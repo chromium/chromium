@@ -6,10 +6,14 @@ package org.chromium.mojo.system;
 
 import android.os.ParcelFileDescriptor;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Core mojo interface giving access to the base operations. See |src/mojo/public/c/system/core.h|
  * for the underlying api.
  */
+@NullMarked
 public interface Core {
 
     /** Used to indicate an infinite deadline (timeout). */
@@ -117,7 +121,7 @@ public interface Core {
      * @return the set of handles for the two endpoints (ports) of the message pipe.
      */
     public Pair<MessagePipeHandle, MessagePipeHandle> createMessagePipe(
-            MessagePipeHandle.CreateOptions options);
+            MessagePipeHandle.@Nullable CreateOptions options);
 
     /**
      * Creates a data pipe, which is a unidirectional communication channel for unframed data, with

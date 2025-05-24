@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/observer_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -37,23 +36,23 @@ class PinnedToolbarActionsModel : public KeyedService {
     // Signals that `id` has been added to the model. This will
     // *only* be called after the model has been initialized. N.B. Direct pref
     // updates which happen to add an action WILL NOT call this method.
-    virtual void OnActionAddedLocally(const actions::ActionId& id) = 0;
+    virtual void OnActionAddedLocally(actions::ActionId id) {}
 
     // Signals that the given action with `id` has been removed from the
     // model. N.B. Direct pref updates which happen to remove an action WILL NOT
     // call this method.
-    virtual void OnActionRemovedLocally(const actions::ActionId& id) = 0;
+    virtual void OnActionRemovedLocally(actions::ActionId id) {}
 
     // Signals that the given action with `id` has been moved in the model.
     // N.B. Direct pref updates which happen to move an action WILL NOT call
     // this method.
-    virtual void OnActionMovedLocally(const actions::ActionId& id,
+    virtual void OnActionMovedLocally(actions::ActionId id,
                                       int from_index,
-                                      int to_index) = 0;
+                                      int to_index) {}
 
     // Called when the pinned actions change, in any way for any reason. Unlike
     // the above methods, this does include pref updates.
-    virtual void OnActionsChanged() = 0;
+    virtual void OnActionsChanged() {}
 
    protected:
     virtual ~Observer() = default;
@@ -70,25 +69,18 @@ class PinnedToolbarActionsModel : public KeyedService {
   bool CanUpdate();
 
   // Returns true if `action_id` is in the toolbar model.
-  bool Contains(const actions::ActionId& action_id) const;
+  bool Contains(actions::ActionId action_id) const;
 
   // Move the pinned action for |action_id| to |target_index|.
-  void MovePinnedAction(const actions::ActionId& action_id, int target_index);
+  void MovePinnedAction(actions::ActionId action_id, int target_index);
 
   // Updates the Action state of `action_id`.
   // 1) Adds `action_id` to the model if `should_pin` is true and the id does
   // not exist in the model.
   // 2) Removes `action_id` from the model if
   // `should_pin` is false and the id exists in the model.
-  virtual void UpdatePinnedState(const actions::ActionId& action_id,
+  virtual void UpdatePinnedState(actions::ActionId action_id,
                                  const bool should_pin);
-
-  // TODO(b/307350981): Remove MaybeUpdateSearchCompanionPinnedState() and
-  // UpdateSearchCompanionDefaultState() after migration is complete.
-  // Migrate the search companion pin state
-  // `kSidePanelCompanionEntryPinnedToToolbar` into kPinnedActions.
-  void MaybeUpdateSearchCompanionPinnedState(
-      bool companion_should_be_default_pinned);
 
   // Resets the pinned actions to default. NOTE: This also affects the home and
   // forward buttons, even though those are not otherwise managed by this model.
@@ -99,29 +91,25 @@ class PinnedToolbarActionsModel : public KeyedService {
   // otherwise managed by this model.
   bool IsDefault() const;
 
-  // TODO(b/353323253): Remove after Pinned Chrome Labs migration is complete.
-  void MaybeMigrateChromeLabsPinnedState();
+  // TODO(crbug.com/353323253): Remove after Pinned Chrome Labs, Cast and Tab
+  // Search migrations are complete.
+  void MaybeMigrateExistingPinnedStates();
 
   // Returns the ordered list of pinned ActionIds.
   virtual const std::vector<actions::ActionId>& PinnedActionIds() const;
 
  private:
   // Adds the `action_id` to the kPinnedActions pref.
-  void PinAction(const actions::ActionId& action_id);
+  void PinAction(actions::ActionId action_id);
 
   // Removes the `action_id` from the kPinnedActions pref.
-  void UnpinAction(const actions::ActionId& action_id);
+  void UnpinAction(actions::ActionId action_id);
 
   // Called when the kPinnedActions pref is changed. |pinned_action_ids_| is
   // replaced with the entries in the kPinnedActions pref object. Should
   // maintain insertion order. Notify observers the model has been updated with
   // the latest data from the pref.
   void UpdatePinnedActionIds();
-
-  // Calculates and updates `kPinnedActions` with current default pinned state
-  // of the search companion feature.
-  void UpdateSearchCompanionDefaultState(
-      bool companion_should_be_default_pinned);
 
   void UpdatePref(const std::vector<actions::ActionId>& updated_list);
 

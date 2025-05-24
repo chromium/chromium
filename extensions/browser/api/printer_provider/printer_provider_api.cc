@@ -806,9 +806,9 @@ bool PrinterProviderAPIImpl::WillRequestPrinters(
 }  // namespace
 
 // static
-PrinterProviderAPI* PrinterProviderAPI::Create(
+std::unique_ptr<PrinterProviderAPI> PrinterProviderAPI::Create(
     content::BrowserContext* context) {
-  return new PrinterProviderAPIImpl(context);
+  return std::make_unique<PrinterProviderAPIImpl>(context);
 }
 
 // static

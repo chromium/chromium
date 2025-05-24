@@ -12,9 +12,9 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
@@ -31,7 +31,9 @@ namespace {
 
 using testing::_;
 using testing::ElementsAre;
+using testing::Return;
 using testing::UnorderedElementsAre;
+using testing::ExplainMatchResult;
 
 constexpr char kGUID1[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kGUID2[] = "00000000-0000-0000-0000-000000000002";
@@ -50,6 +52,14 @@ MATCHER_P(ContactInfoSpecificsEqualsProfile, expected_profile, "") {
   return true;
 }
 
+MATCHER_P(HiddenContactInfoSpecificsEqualsProfile, expected_profile, "") {
+  if (!arg->specifics.contact_info().invisible_in_autofill()) {
+    return false;
+  }
+  return ExplainMatchResult(ContactInfoSpecificsEqualsProfile(expected_profile),
+                            arg, result_listener);
+}
+
 // Extracts all `ContactInfoSpecifics` from `batch`, converts them into
 // `AutofillProfile`s and returns the result.
 // Note that for consistency with the `AUTOFILL_PROFILE` sync type,
@@ -65,9 +75,10 @@ std::vector<AutofillProfile> ExtractAutofillProfilesFromDataBatch(
   return profiles;
 }
 
-AutofillProfile TestProfile(std::string_view guid) {
-  return AutofillProfile(std::string(guid),
-                         AutofillProfile::RecordType::kAccount,
+AutofillProfile TestProfile(std::string_view guid,
+                            AutofillProfile::RecordType record_type =
+                                AutofillProfile::RecordType::kAccount) {
+  return AutofillProfile(std::string(guid), record_type,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
 }
 
@@ -79,13 +90,10 @@ class ContactInfoSyncBridgeTest : public testing::Test {
     db_.AddTable(&table_);
     db_.AddTable(&sync_metadata_table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
-    ON_CALL(backend_, GetDatabase()).WillByDefault(testing::Return(&db_));
+    ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
 
     bridge_ = std::make_unique<ContactInfoSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
-    ON_CALL(mock_processor(), IsTrackingMetadata)
-        .WillByDefault(testing::Return(true));
-
     ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
         .WillByDefault(
             testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
@@ -95,6 +103,7 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   // Triggers the `bridge()`'s `MergeFullSyncData()`.
   // Returns true if syncing started successfully.
   bool StartSyncing(const std::vector<AutofillProfile>& remote_profiles) {
+    ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
     syncer::EntityChangeList entity_data;
     for (const AutofillProfile& profile : remote_profiles) {
       entity_data.push_back(syncer::EntityChange::CreateAdd(
@@ -118,8 +127,11 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   // how the PersonalDataManager will access the profiles.
   std::vector<AutofillProfile> GetAllDataFromTable() {
     std::vector<AutofillProfile> profiles;
-    EXPECT_TRUE(table_.GetAutofillProfiles(
-        {AutofillProfile::RecordType::kAccount}, profiles));
+    EXPECT_TRUE(
+        table_.GetAutofillProfiles({AutofillProfile::RecordType::kAccount,
+                                    AutofillProfile::RecordType::kAccountHome,
+                                    AutofillProfile::RecordType::kAccountWork},
+                                   profiles));
     return profiles;
   }
 
@@ -152,7 +164,7 @@ class ContactInfoSyncBridgeTest : public testing::Test {
 // Regression test for crbug.com/1421663.
 TEST_F(ContactInfoSyncBridgeTest, InitializationFailure) {
   // The database will be null if it failed to initialize.
-  ON_CALL(backend(), GetDatabase()).WillByDefault(testing::Return(nullptr));
+  ON_CALL(backend(), GetDatabase()).WillByDefault(Return(nullptr));
   EXPECT_CALL(mock_processor(), ReportError);
   // The `bridge()` was already initialized during `SetUp()`. Recreate it.
   ContactInfoSyncBridge(mock_processor().CreateForwardingProcessor(),
@@ -205,7 +217,8 @@ TEST_F(ContactInfoSyncBridgeTest, ApplyIncrementalSyncChanges) {
 
   // Delete the existing local profile and add + update `remote`.
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(syncer::EntityChange::CreateDelete(kGUID1));
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateDelete(kGUID1, syncer::EntityData()));
   entity_change_list.push_back(
       syncer::EntityChange::CreateAdd(kGUID2, ProfileToEntity(remote)));
   remote.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
@@ -247,7 +260,8 @@ TEST_F(ContactInfoSyncBridgeTest,
       bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
   std::vector<AutofillProfile> profiles = GetAllDataFromTable();
   ASSERT_EQ(profiles.size(), 1u);
-  EXPECT_EQ(profiles[0].modification_date(), profile.modification_date());
+  EXPECT_EQ(profiles[0].usage_history().modification_date(),
+            profile.usage_history().modification_date());
 }
 
 // Tests that `GetDataForCommit()` returns all local profiles of matching GUID.
@@ -273,6 +287,15 @@ TEST_F(ContactInfoSyncBridgeTest, GetAllDataForDebugging) {
       ExtractAutofillProfilesFromDataBatch(bridge().GetAllDataForDebugging());
 
   EXPECT_THAT(profiles, UnorderedElementsAre(profile1, profile2));
+}
+
+// Tests that the bridges ignores changes to local profiles.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_IgnoresLocalProfiles) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  bridge().AutofillProfileChanged(
+      {AutofillProfileChange::ADD, kGUID1,
+       TestProfile(kGUID1, AutofillProfile::RecordType::kLocalOrSyncable)});
 }
 
 // Tests that new local profiles are pushed to Sync.
@@ -315,6 +338,39 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Remove) {
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
 
   bridge().AutofillProfileChanged(change);
+}
+
+// Tests that the deduplication of account profiles is communicated to Sync.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_HideInAutofill) {
+  const AutofillProfile profile = TestProfile(kGUID1);
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{profile}));
+  ASSERT_THAT(GetAllDataFromTable(), ElementsAre(profile));
+
+  const AutofillProfileChange change(AutofillProfileChange::HIDE_IN_AUTOFILL,
+                                     kGUID1, profile);
+  EXPECT_CALL(mock_processor(),
+              Put(kGUID1, HiddenContactInfoSpecificsEqualsProfile(profile), _));
+
+  bridge().AutofillProfileChanged(change);
+}
+
+// Tests that no changes for Home and Work addresses are uploaded.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_HomeAndWork) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+
+  // None of these changes should trigger a write.
+  bridge().AutofillProfileChanged(AutofillProfileChange(
+      AutofillProfileChange::ADD, kGUID1,
+      TestProfile(kGUID1, AutofillProfile::RecordType::kAccountHome)));
+  bridge().AutofillProfileChanged(AutofillProfileChange(
+      AutofillProfileChange::REMOVE, kGUID1,
+      TestProfile(kGUID1, AutofillProfile::RecordType::kAccountHome)));
+  bridge().AutofillProfileChanged(AutofillProfileChange(
+      AutofillProfileChange::UPDATE, kGUID2,
+      TestProfile(kGUID2, AutofillProfile::RecordType::kAccountWork)));
 }
 
 // Tests that `ApplyDisableSyncChanges()` clears all data in AutofillTable when
@@ -367,6 +423,22 @@ TEST_F(ContactInfoSyncBridgeTest,
                     specifics_with_known_and_unknown_fields)
                 .SerializeAsString(),
             specifics_with_only_unknown_fields.SerializePartialAsString());
+}
+
+// Tests that any `AutofillProfileChanged()` events are queued until sync is
+// ready to process them, at which point the bridge flushes them.
+TEST_F(ContactInfoSyncBridgeTest, PendingChanges) {
+  const AutofillProfile profile = TestProfile(kGUID1);
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(false));
+  EXPECT_CALL(mock_processor(),
+              Put(kGUID1, ContactInfoSpecificsEqualsProfile(profile), _))
+      .Times(0);
+  bridge().AutofillProfileChanged(
+      {AutofillProfileChange::ADD, kGUID1, profile});
+
+  EXPECT_CALL(mock_processor(),
+              Put(kGUID1, ContactInfoSpecificsEqualsProfile(profile), _));
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
 }
 
 }  // namespace

@@ -9,7 +9,7 @@ import * as state from './state.js';
 import {Mode} from './type.js';
 import {measureUntrustedScriptsMemory} from './untrusted_scripts.js';
 
-export interface CCAMemoryMeasurement {
+export interface CcaMemoryMeasurement {
   main: MemoryMeasurement;
   untrusted: MemoryMeasurement;
 }
@@ -17,7 +17,7 @@ export interface CCAMemoryMeasurement {
 /**
  * Measures memory usage from trusted and untrusted frames.
  */
-export async function measureAppMemoryUsage(): Promise<CCAMemoryMeasurement> {
+export async function measureAppMemoryUsage(): Promise<CcaMemoryMeasurement> {
   assert(self.crossOriginIsolated);
   const usages = await Promise.all([
     performance.measureUserAgentSpecificMemory(),

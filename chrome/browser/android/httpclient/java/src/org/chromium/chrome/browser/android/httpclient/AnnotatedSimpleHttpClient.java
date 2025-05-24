@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.android.httpclient;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.android.httpclient.SimpleHttpClient.HttpResponse;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.net.NetError;
@@ -21,6 +22,7 @@ import java.util.Map;
  * that does not know about chrome's network stack.
  *
  */
+@NullMarked
 public class AnnotatedSimpleHttpClient implements ChromeHttpClient {
     private final Profile mProfile;
     private final NetworkTrafficAnnotationTag mAnnotation;

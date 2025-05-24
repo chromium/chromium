@@ -159,7 +159,7 @@ class ListPicker extends Picker {
     if (event.target.tagName !== 'OPTION')
       return;
     window.pagePopupController.setValueAndClosePopup(
-        0, this.selectElement_.value);
+        0, this.selectElement_.value, /* is_keyboard_event= */ false);
   }
 
   handleTouchStart_(event) {
@@ -210,7 +210,7 @@ class ListPicker extends Picker {
     const target = document.elementFromPoint(touch.clientX, touch.clientY);
     if (target.tagName === 'OPTION' && !target.disabled)
       window.pagePopupController.setValueAndClosePopup(
-          0, this.selectElement_.value);
+          0, this.selectElement_.value, /* is_keyboard_event= */ false);
     this.exitTouchSelectMode_();
   }
 
@@ -244,7 +244,7 @@ class ListPicker extends Picker {
       event.preventDefault();
     } else if (key === 'Tab' || key === 'Enter') {
       window.pagePopupController.setValueAndClosePopup(
-          0, this.selectElement_.value);
+          0, this.selectElement_.value, /* is_keyboard_event= */ true);
       event.preventDefault();
     } else if (event.altKey && (key === 'ArrowDown' || key === 'ArrowUp')) {
       // We need to add a delay here because, if we do it immediately the key
@@ -334,6 +334,13 @@ class ListPicker extends Picker {
     this.selectElement_.style.fontVariant = this.config_.baseStyle.fontVariant;
     if (this.config_.baseStyle.textAlign)
       this.selectElement_.style.textAlign = this.config_.baseStyle.textAlign;
+
+    // updateChildren_ takes longer when there are existing elements, so remove
+    // them to make it faster.
+    // TODO(crbug.com/388557894): Remove this after improving the performance
+    // of updateChildren_.
+    this.selectElement_.innerHTML = '';
+
     this.updateChildren_(this.selectElement_, this.config_);
     this.setMenuListOptionsBoundsInAXTree_();
   }
@@ -360,6 +367,8 @@ class ListPicker extends Picker {
   }
 
   /**
+   * TODO(crbug.com/388557894): Make this faster in the case that `parent` has
+   * a large number of children.
    * @param {!Element} parent Select element or optgroup element.
    * @param {!Object} config
    */

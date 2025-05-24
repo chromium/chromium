@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/timeline_range.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -36,6 +37,16 @@ Interpolation* Keyframe::PropertySpecificKeyframe::CreateInterpolation(
       const_cast<PropertySpecificKeyframe*>(&end));
 }
 
+Vector<PropertyHandle> Keyframe::PropertiesVector() const {
+  Vector<PropertyHandle> result;
+  const auto& properties = Properties();
+  result.ReserveInitialCapacity(properties.size());
+  for (const auto& property : properties) {
+    result.push_back(property);
+  }
+  return result;
+}
+
 void Keyframe::AddKeyframePropertiesToV8Object(V8ObjectBuilder& object_builder,
                                                Element* element) const {
   // If the keyframe has a timeline offset add it instead of offset.
@@ -44,7 +55,7 @@ void Keyframe::AddKeyframePropertiesToV8Object(V8ObjectBuilder& object_builder,
     timeline_range_offset->setRangeName(timeline_offset_->name);
     DCHECK(timeline_offset_->offset.IsPercent());
     timeline_range_offset->setOffset(
-        CSSUnitValue::Create(timeline_offset_->offset.Value(),
+        CSSUnitValue::Create(timeline_offset_->offset.Percent(),
                              CSSPrimitiveValue::UnitType::kPercentage));
     object_builder.Add("offset", timeline_range_offset);
   } else if (offset_) {
@@ -53,8 +64,14 @@ void Keyframe::AddKeyframePropertiesToV8Object(V8ObjectBuilder& object_builder,
     object_builder.AddNull("offset");
   }
   object_builder.AddString("easing", easing_->ToString());
-  object_builder.AddString("composite",
-                           EffectModel::CompositeOperationToString(composite_));
+  if (composite_) {
+    object_builder.AddString(
+        "composite", V8CompositeOperation(EffectModel::CompositeOperationToEnum(
+                                              composite_.value()))
+                         .AsCStr());
+  } else {
+    object_builder.AddString("composite", "auto");
+  }
 }
 
 bool Keyframe::ResolveTimelineOffset(const TimelineRange& timeline_range,

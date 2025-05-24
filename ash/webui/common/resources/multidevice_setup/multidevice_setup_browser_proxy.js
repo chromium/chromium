@@ -9,7 +9,8 @@ export class BrowserProxy {
   /**
    * Requests profile information; namely, a dictionary containing the user's
    * e-mail address and profile photo.
-   * @return {!Promise<{profilePhotoUrl: string, email: string}>}
+   * @return {!Promise<{profilePhotoUrl: string, email: string,
+   *     authenticateByPin: boolean}>}
    */
   getProfileInfo() {}
 
@@ -22,12 +23,10 @@ export class BrowserProxy {
 
 /** @implements {BrowserProxy} */
 export class BrowserProxyImpl {
-  /** @override */
   getProfileInfo() {
     return sendWithPromise('getProfileInfo');
   }
 
-  /** @override */
   openMultiDeviceSettings() {
     chrome.send('openMultiDeviceSettings');
   }

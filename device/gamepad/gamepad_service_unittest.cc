@@ -47,7 +47,6 @@ class MockGamepadConsumer : public GamepadConsumer {
 
   MOCK_METHOD2(OnGamepadConnected, void(uint32_t, const Gamepad&));
   MOCK_METHOD2(OnGamepadDisconnected, void(uint32_t, const Gamepad&));
-  MOCK_METHOD1(OnGamepadChanged, void(const mojom::GamepadChanges&));
 };
 
 class GamepadServiceTest : public testing::Test {

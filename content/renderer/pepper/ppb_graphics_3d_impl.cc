@@ -234,7 +234,8 @@ PP_Bool PPB_Graphics3D_Impl::DestroyTransferBuffer(int32_t id) {
   return PP_TRUE;
 }
 
-PP_Bool PPB_Graphics3D_Impl::Flush(int32_t put_offset) {
+PP_Bool PPB_Graphics3D_Impl::Flush(int32_t put_offset, uint64_t release_count) {
+  command_buffer_->UpdateLastFenceSyncRelease(release_count);
   GetCommandBuffer()->Flush(put_offset);
   return PP_TRUE;
 }
@@ -369,8 +370,7 @@ bool PPB_Graphics3D_Impl::InitRaw(
       std::move(channel), kGpuStreamIdDefault,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   auto result = command_buffer_->Initialize(
-      gpu::kNullSurfaceHandle, share_buffer, kGpuStreamPriorityDefault,
-      attrib_helper, GURL());
+      share_buffer, kGpuStreamPriorityDefault, attrib_helper, GURL(), "Pepper");
   if (result != gpu::ContextResult::kSuccess)
     return false;
 

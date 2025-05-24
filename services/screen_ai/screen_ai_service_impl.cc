@@ -4,6 +4,7 @@
 
 #include "services/screen_ai/screen_ai_service_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -12,20 +13,24 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
+#include "base/cpu.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "components/crash/core/common/crash_key.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/screen_ai/buildflags/buildflags.h"
+#include "services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 #include "services/screen_ai/proto/visual_annotator_proto_convertor.h"
+#include "services/screen_ai/public/cpp/metrics.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
@@ -44,23 +49,42 @@ namespace screen_ai {
 namespace {
 
 // How often it would be checked that the service is idle and can be shutdown.
-constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(5);
+// LINT.IfChange(kIdleCheckingDelay)
+constexpr base::TimeDelta kIdleCheckingDelay = base::Seconds(3);
+// LINT.ThenChange(//chrome/browser/screen_ai/optical_character_recognizer_browsertest.cc:kServiceIdleCheckingDelay)
 
-// How long after all clients are disconnected, it is checked if service is
-// idle.
-constexpr base::TimeDelta kCoolDownTime = base::Seconds(10);
+// How long to wait for a request to the library be responded, before assuming
+// that the library is not responsive.
+constexpr base::TimeDelta kMaxWaitForResponseTime = base::Seconds(10);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// See `screen_ai_service.mojom` for more info.
+// LINT.IfChange(OcrClientType)
 enum class OcrClientTypeForMetrics {
   kTest = 0,
   kPdfViewer = 1,
   kLocalSearch = 2,
   kCameraApp = 3,
-  kPdfSearchify = 4,
+  kNotUsed = 4,  // Can be used for a new client.
   kMediaApp = 5,
-  kMaxValue = kMediaApp
+  kScreenshotTextDetection,
+  kMaxValue = kScreenshotTextDetection
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:OcrClientType)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// See `screen_ai_service.mojom` for more info.
+// LINT.IfChange(MainContentExtractionClientType)
+enum class MainContentExtractionClientTypeForMetrics {
+  kTest = 0,
+  kReadingMode = 1,
+  kMainNode = 2,
+  kMahi = 3,
+  kMaxValue = kMahi
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:MainContentExtractionClientType)
 
 OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
   switch (client_type) {
@@ -73,10 +97,25 @@ OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
       return OcrClientTypeForMetrics::kLocalSearch;
     case mojom::OcrClientType::kCameraApp:
       return OcrClientTypeForMetrics::kCameraApp;
-    case mojom::OcrClientType::kPdfSearchify:
-      return OcrClientTypeForMetrics::kPdfSearchify;
     case mojom::OcrClientType::kMediaApp:
       return OcrClientTypeForMetrics::kMediaApp;
+    case mojom::OcrClientType::kScreenshotTextDetection:
+      return OcrClientTypeForMetrics::kScreenshotTextDetection;
+  }
+}
+
+MainContentExtractionClientTypeForMetrics GetClientType(
+    mojom::MceClientType client_type) {
+  switch (client_type) {
+    case mojom::MceClientType::kTest:
+      CHECK_IS_TEST();
+      return MainContentExtractionClientTypeForMetrics::kTest;
+    case mojom::MceClientType::kReadingMode:
+      return MainContentExtractionClientTypeForMetrics::kReadingMode;
+    case mojom::MceClientType::kMainNode:
+      return MainContentExtractionClientTypeForMetrics::kMainNode;
+    case mojom::MceClientType::kMahi:
+      return MainContentExtractionClientTypeForMetrics::kMahi;
   }
 }
 
@@ -99,6 +138,51 @@ ui::AXNodeID ComputeMainNode(
   ui::AXNode* main = front->GetLowestCommonAncestor(*back);
   return main->id();
 }
+
+#if !BUILDFLAG(USE_FAKE_SCREEN_AI)
+void SetCPUInstructionSetCrashKey() {
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU();
+  // Report cpu micro architecture in case of crash.
+  static crash_reporter::CrashKeyString<3> cpu_info("intel_micro_architecture");
+  cpu_info.Set(
+      base::StringPrintf("%i", base::CPU().GetIntelMicroArchitecture()));
+#endif
+}
+#endif
+
+// Return a maximum 11 character string with the signature of available and
+// total memory, both in MB and capped to 99999.
+std::string GetMemoryStatusForCrashKey() {
+  int total_memory = base::SysInfo::AmountOfPhysicalMemoryMB();
+  int available_memory = static_cast<int>(
+      base::SysInfo::AmountOfAvailablePhysicalMemory() / (1024 * 1024));
+
+  // Cap the number of digits for crash report.
+  total_memory = std::min(total_memory, 99999);
+  available_memory = std::min(available_memory, 99999);
+  return base::StringPrintf("%i,%i", available_memory, total_memory);
+}
+
+class HangTimer : public base::OneShotTimer {
+ public:
+  explicit HangTimer(bool is_ocr) : is_ocr_(is_ocr) {}
+
+  void StartTimer() {
+    Start(FROM_HERE, kMaxWaitForResponseTime,
+          base::BindOnce(
+              [](bool request_is_ocr) {
+                base::UmaHistogramBoolean(
+                    "Accessibility.ScreenAI.Service.NotResponsive.IsOCR",
+                    request_is_ocr);
+                base::Process::TerminateCurrentProcessImmediately(0);
+              },
+              is_ocr_));
+  }
+
+ private:
+  bool is_ocr_;
+};
 
 }  // namespace
 
@@ -145,13 +229,6 @@ class ModelDataHolder {
     int64_t length = model_file->GetLength();
     CHECK_GE(buffer_size, length);
     CHECK_EQ(UNSAFE_TODO(model_file->Read(0, buffer, length)), length);
-
-    // TODO(crbug.com/361733242): Remove after the crash is fixed.
-    // `relative_file_path` is from `files_list_main_content_extraction.txt`
-    // or `files_list_ocr.txt` and under 100 characters long.
-    static crash_reporter::CrashKeyString<100> crash_info(
-        "last_loaded_screen_ai_file");
-    crash_info.Set(relative_file_path);
   }
 
   void AddModelFiles(base::flat_map<base::FilePath, base::File> model_files) {
@@ -179,15 +256,16 @@ ScreenAIService::ScreenAIService(
       ocr_receiver_(this),
       main_content_extraction_receiver_(this) {
   screen2x_main_content_extractors_.set_disconnect_handler(
-      base::BindRepeating(&ScreenAIService::CheckIdleStateAfterDelay,
+      base::BindRepeating(&ScreenAIService::MceReceiverDisconnected,
                           weak_ptr_factory_.GetWeakPtr()));
   screen_ai_annotators_.set_disconnect_handler(
       base::BindRepeating(&ScreenAIService::OcrReceiverDisconnected,
                           weak_ptr_factory_.GetWeakPtr()));
   model_data_holder_ = std::make_unique<ModelDataHolder>();
-  idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
-  idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
-                              &ScreenAIService::ShutDownIfNoClients);
+
+  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
 ScreenAIService::~ScreenAIService() = default;
@@ -199,6 +277,9 @@ void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
   library_ = std::make_unique<ScreenAILibraryWrapperFake>();
 #else
   library_ = std::make_unique<ScreenAILibraryWrapperImpl>();
+
+  // TODO(crbug.com/381256355): Remove when the library is SSE3 compatible.
+  SetCPUInstructionSetCrashKey();
 #endif
 
   bool load_sucessful = library_->Load(library_path);
@@ -216,7 +297,7 @@ void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
   VLOG(2) << "Screen AI library version: " << version_major << "."
           << version_minor;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   library_->SetLogger();
 #endif
 
@@ -261,7 +342,8 @@ void ScreenAIService::InitializeMainContentExtraction(
       std::move(main_content_extractor_service_receiver));
 
   std::move(callback).Run(true);
-  main_content_extraction_last_used_ = base::TimeTicks::Now();
+  mce_last_used_ = base::TimeTicks::Now();
+  StartShutDownOnIdleTimer();
 }
 
 void ScreenAIService::InitializeOCR(
@@ -269,6 +351,9 @@ void ScreenAIService::InitializeOCR(
     base::flat_map<base::FilePath, base::File> model_files,
     mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
     InitializeOCRCallback callback) {
+  static crash_reporter::CrashKeyString<12> memory_ocr_init(
+      "screen_ai_mem_ocr_init");
+  memory_ocr_init.Set(GetMemoryStatusForCrashKey());
   if (!library_) {
     LoadLibrary(library_path);
   }
@@ -289,6 +374,9 @@ void ScreenAIService::InitializeOCR(
     return;
   }
 
+  max_ocr_dimension_ = library_->GetMaxImageDimension();
+  CHECK(max_ocr_dimension_);
+
   // This interface should be created only once.
   CHECK(!ocr_receiver_.is_bound());
 
@@ -296,6 +384,14 @@ void ScreenAIService::InitializeOCR(
 
   std::move(callback).Run(true);
   ocr_last_used_ = base::TimeTicks::Now();
+  StartShutDownOnIdleTimer();
+}
+
+void ScreenAIService::BindShutdownHandler(
+    mojo::PendingRemote<mojom::ScreenAIServiceShutdownHandler>
+        shutdown_handler) {
+  DCHECK(!screen_ai_shutdown_handler_.is_bound());
+  screen_ai_shutdown_handler_.Bind(std::move(shutdown_handler));
 }
 
 void ScreenAIService::BindAnnotator(
@@ -312,61 +408,112 @@ void ScreenAIService::BindMainContentExtractor(
 
 std::optional<chrome_screen_ai::VisualAnnotation>
 ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
+  static crash_reporter::CrashKeyString<12> memory_perform_ocr(
+      "screen_ai_mem_ocr_perform");
+  memory_perform_ocr.Set(GetMemoryStatusForCrashKey());
+
   CHECK(base::Contains(ocr_client_types_,
                        screen_ai_annotators_.current_receiver()));
-  mojom::OcrClientType client_type =
-      ocr_client_types_.find(screen_ai_annotators_.current_receiver())->second;
+  OcrClientTypeForMetrics client_type = GetClientType(
+      ocr_client_types_.find(screen_ai_annotators_.current_receiver())->second);
   base::UmaHistogramEnumeration("Accessibility.ScreenAI.OCR.ClientType",
-                                GetClientType(client_type));
+                                client_type);
 
-  ocr_last_used_ = base::TimeTicks::Now();
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  base::SequenceBound<HangTimer> hang_timer(background_task_runner_,
+                                            /*is_ocr=*/true);
+  hang_timer.AsyncCall(&HangTimer::StartTimer);
   auto result = library_->PerformOcr(image);
-  base::TimeDelta elapsed_time = base::TimeTicks::Now() - ocr_last_used_;
+  hang_timer.AsyncCall(&base::OneShotTimer::Stop);
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+
   int lines_count = result ? result->lines_size() : 0;
-  unsigned image_size = image.width() * image.height();
   VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
 
   if (!result) {
     base::UmaHistogramEnumeration(
-        "Accessibility.ScreenAI.OCR.Failed.ClientType",
-        GetClientType(client_type));
+        "Accessibility.ScreenAI.OCR.Failed.ClientType", client_type);
   }
+
+  int max_dimension = base::checked_cast<int>(max_ocr_dimension_);
+  if (image.width() > max_dimension || image.height() > max_dimension) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.OCR.Downsampled.ClientType", client_type);
+  }
+
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Successful",
                             result.has_value());
   base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",
                               lines_count);
-  base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize10M",
-                              image_size);
-  if (image_size < 500 * 500) {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Small",
-                            elapsed_time);
-  } else if (image_size < 1000 * 1000) {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Medium",
-                            elapsed_time);
-  } else if (image_size < 2000 * 2000) {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Large",
+  if (image.width() < max_dimension && image.height() < max_dimension) {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.NotDownsampled",
                             elapsed_time);
   } else {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.XLarge",
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Downsampled",
                             elapsed_time);
   }
 
   // MediaApp provides OCR for ChromeOS PDF viewer.
-  if (client_type == mojom::OcrClientType::kPdfViewer ||
-      client_type == mojom::OcrClientType::kMediaApp) {
+  if (client_type == OcrClientTypeForMetrics::kPdfViewer ||
+      client_type == OcrClientTypeForMetrics::kMediaApp) {
     base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount.PDF",
                                 lines_count);
     base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Time.PDF",
                             elapsed_time);
-    base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize.PDF",
-                                image.width() * image.height());
+    base::UmaHistogramCounts10M(
+        lines_count ? "Accessibility.ScreenAI.OCR.ImageSize.PDF.WithText"
+                    : "Accessibility.ScreenAI.OCR.ImageSize.PDF.NoText",
+        image.width() * image.height());
+
+    if (result.has_value()) {
+      std::optional<uint64_t> most_detected_language =
+          GetMostDetectedLanguageInOcrData(*result);
+      if (most_detected_language.has_value()) {
+        base::UmaHistogramSparse(
+            "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF",
+            most_detected_language.value());
+      }
+    }
   }
 
+  ocr_last_used_ = base::TimeTicks::Now();
   return result;
 }
 
 void ScreenAIService::SetClientType(mojom::OcrClientType client_type) {
   ocr_client_types_[screen_ai_annotators_.current_receiver()] = client_type;
+}
+
+void ScreenAIService::SetClientType(mojom::MceClientType client_type) {
+  mce_client_types_[screen2x_main_content_extractors_.current_receiver()] =
+      client_type;
+}
+
+void ScreenAIService::OcrReceiverDisconnected() {
+  auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
+  if (entry != ocr_client_types_.end()) {
+    ocr_client_types_.erase(entry);
+  }
+  // Modify last used time to ensure the service does not shutdown while a
+  // client is disconnecting.
+  ocr_last_used_ = base::TimeTicks::Now();
+}
+
+void ScreenAIService::MceReceiverDisconnected() {
+  auto entry = mce_client_types_.find(
+      screen2x_main_content_extractors_.current_receiver());
+  if (entry != mce_client_types_.end()) {
+    mce_client_types_.erase(entry);
+  }
+  // Modify last used time to ensure the service does not shutdown while a
+  // client is disconnecting.
+  mce_last_used_ = base::TimeTicks::Now();
+}
+
+void ScreenAIService::GetMaxImageDimension(
+    GetMaxImageDimensionCallback callback) {
+  CHECK(max_ocr_dimension_);
+  std::move(callback).Run(max_ocr_dimension_);
 }
 
 void ScreenAIService::PerformOcrAndReturnAnnotation(
@@ -397,15 +544,11 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
-                                         ukm::SourceId ukm_source_id,
                                          ExtractMainContentCallback callback) {
-  main_content_extraction_last_used_ = base::TimeTicks::Now();
   ui::AXTree tree;
   std::optional<std::vector<int32_t>> content_node_ids;
-  bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
-  base::TimeDelta elapsed_time =
-      base::TimeTicks::Now() - main_content_extraction_last_used_;
-  RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time, success);
+  bool success = ExtractMainContentInternalAndRecordMetrics(snapshot, tree,
+                                                            content_node_ids);
 
   if (success) {
     std::move(callback).Run(*content_node_ids);
@@ -418,7 +561,8 @@ void ScreenAIService::ExtractMainNode(const ui::AXTreeUpdate& snapshot,
                                       ExtractMainNodeCallback callback) {
   ui::AXTree tree;
   std::optional<std::vector<int32_t>> content_node_ids;
-  bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
+  bool success = ExtractMainContentInternalAndRecordMetrics(snapshot, tree,
+                                                            content_node_ids);
 
   if (success) {
     ui::AXNodeID main_node_id = ComputeMainNode(&tree, *content_node_ids);
@@ -428,44 +572,96 @@ void ScreenAIService::ExtractMainNode(const ui::AXTreeUpdate& snapshot,
   }
 }
 
-bool ScreenAIService::ExtractMainContentInternal(
+void ScreenAIService::IdentifyMainNode(const ui::AXTreeUpdate& snapshot,
+                                       IdentifyMainNodeCallback callback) {
+  ui::AXTree tree;
+  std::optional<std::vector<int32_t>> content_node_ids;
+  bool success = ExtractMainContentInternalAndRecordMetrics(snapshot, tree,
+                                                            content_node_ids);
+
+  if (success) {
+    ui::AXNodeID main_node_id = ComputeMainNode(&tree, *content_node_ids);
+    std::move(callback).Run(tree.GetAXTreeID(), main_node_id);
+  } else {
+    std::move(callback).Run(ui::AXTreeIDUnknown(), ui::kInvalidAXNodeID);
+  }
+}
+
+bool ScreenAIService::ExtractMainContentInternalAndRecordMetrics(
     const ui::AXTreeUpdate& snapshot,
     ui::AXTree& tree,
     std::optional<std::vector<int32_t>>& content_node_ids) {
+  CHECK(base::Contains(mce_client_types_,
+                       screen2x_main_content_extractors_.current_receiver()));
+  mce_last_used_ = base::TimeTicks::Now();
+  MainContentExtractionClientTypeForMetrics client_type = GetClientType(
+      mce_client_types_[screen2x_main_content_extractors_.current_receiver()]);
+
+  static crash_reporter::CrashKeyString<2> cpu_info(
+      "main_content_extraction_client");
+  cpu_info.Set(base::StringPrintf("%i", static_cast<int>(client_type)));
+
   // Early return if input is empty.
   if (snapshot.nodes.empty()) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.MainContentExtraction.Error.SnapshotEmpty",
+        client_type);
     return false;
   }
 
   // Deserialize the snapshot and reserialize it to a view hierarchy proto.
-  CHECK(tree.Unserialize(snapshot));
-  std::optional<ViewHierarchyAndTreeSize> converted_snapshot =
-      SnapshotToViewHierarchy(tree);
-  if (!converted_snapshot) {
-    VLOG(0) << "Proto not generated.";
+  if (!tree.Unserialize(snapshot)) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.MainContentExtraction.Error."
+        "SnapshotUnserialize",
+        client_type);
     return false;
   }
 
-  // Report request specifications in case the call crashes.
-  static crash_reporter::CrashKeyString<95> crash_info(
-      "main_content_extraction_info");
-  crash_info.Set(base::StringPrintf(
-      "TD:%i, TR:%i, SNC:%10zu, SBS:%10zu, TS:%10i, TW:%6i, TH:%6i, SS:%10zu",
-      snapshot.has_tree_data, snapshot.root_id != ui::kInvalidAXNodeID,
-      snapshot.nodes.size(), snapshot.ByteSize(), tree.size(),
-      static_cast<int>(converted_snapshot->tree_dimensions.width()),
-      static_cast<int>(converted_snapshot->tree_dimensions.height()),
-      converted_snapshot->serialized_proto.size()));
+  std::optional<ViewHierarchyAndTreeSize> converted_snapshot =
+      SnapshotToViewHierarchy(tree);
+  if (!converted_snapshot) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.MainContentExtraction.Error.SnapshotProto",
+        client_type);
+    return false;
+  }
 
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  base::SequenceBound<HangTimer> hang_timer(background_task_runner_,
+                                            /*is_ocr=*/false);
+  hang_timer.AsyncCall(&HangTimer::StartTimer);
   content_node_ids =
       library_->ExtractMainContent(converted_snapshot->serialized_proto);
+  hang_timer.AsyncCall(&HangTimer::Stop);
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+
+  bool successful =
+      content_node_ids.has_value() && content_node_ids->size() > 0;
   base::UmaHistogramBoolean(
-      "Accessibility.ScreenAI.MainContentExtraction.Successful",
-      content_node_ids.has_value());
-  if (content_node_ids.has_value() && content_node_ids->size() > 0) {
+      "Accessibility.ScreenAI.MainContentExtraction.Successful2", successful);
+
+  if (!content_node_ids.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.MainContentExtraction.Error.ResultNull",
+        client_type);
+  } else if (content_node_ids->empty()) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.MainContentExtraction.Error.ResultEmpty",
+        client_type);
+  }
+
+  mce_last_used_ = base::TimeTicks::Now();
+  if (successful) {
+    base::UmaHistogramTimes(
+        "Accessibility.ScreenAI.MainContentExtraction.Latency.Success",
+        elapsed_time);
     VLOG(2) << "Screen2x returned " << content_node_ids->size() << " node ids.";
     return true;
   } else {
+    base::UmaHistogramTimes(
+        "Accessibility.ScreenAI.MainContentExtraction.Latency.Failure",
+        elapsed_time);
     VLOG(0) << "Screen2x returned no results.";
     return false;
   }
@@ -477,61 +673,20 @@ ui::AXNodeID ScreenAIService::ComputeMainNodeForTesting(
   return ComputeMainNode(tree, content_node_ids);
 }
 
-// static
-void ScreenAIService::RecordMetrics(ukm::SourceId ukm_source_id,
-                                    ukm::UkmRecorder* ukm_recorder,
-                                    base::TimeDelta elapsed_time,
-                                    bool success) {
-  if (success) {
-    base::UmaHistogramTimes(
-        "Accessibility.ScreenAI.Screen2xDistillationTime.Success",
-        elapsed_time);
-    if (ukm_source_id != ukm::kInvalidSourceId) {
-      ukm::builders::Accessibility_ScreenAI(ukm_source_id)
-          .SetScreen2xDistillationTime_Success(elapsed_time.InMilliseconds())
-          .Record(ukm_recorder);
-    }
-  } else {
-    base::UmaHistogramTimes(
-        "Accessibility.ScreenAI.Screen2xDistillationTime.Failure",
-        elapsed_time);
-    if (ukm_source_id != ukm::kInvalidSourceId) {
-      ukm::builders::Accessibility_ScreenAI(ukm_source_id)
-          .SetScreen2xDistillationTime_Failure(elapsed_time.InMilliseconds())
-          .Record(ukm_recorder);
-    }
+void ScreenAIService::StartShutDownOnIdleTimer() {
+  if (!idle_checking_timer_) {
+    idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
+    idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
+                                &ScreenAIService::ShutDownOnIdle);
   }
 }
 
-void ScreenAIService::OcrReceiverDisconnected() {
-  auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
-  if (entry != ocr_client_types_.end()) {
-    ocr_client_types_.erase(entry);
-  }
-
-  CheckIdleStateAfterDelay();
-}
-
-void ScreenAIService::CheckIdleStateAfterDelay() {
-  // Check if service is idle, a little after the client disconnects.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ScreenAIService::ShutDownIfNoClients,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kCoolDownTime);
-}
-
-void ScreenAIService::ShutDownIfNoClients() {
+void ScreenAIService::ShutDownOnIdle() {
   const base::TimeTicks kIdlenessThreshold =
       base::TimeTicks::Now() - kIdleCheckingDelay;
-  bool ocr_not_needed =
-      !screen_ai_annotators_.size() || ocr_last_used_ < kIdlenessThreshold;
-  bool main_content_extractioncan_not_needed =
-      !screen2x_main_content_extractors_.size() ||
-      main_content_extraction_last_used_ < kIdlenessThreshold;
-
-  if (ocr_not_needed && main_content_extractioncan_not_needed) {
-    VLOG(2) << "Shutting down since no client or idle.";
+  if (ocr_last_used_ < kIdlenessThreshold &&
+      mce_last_used_ < kIdlenessThreshold) {
+    screen_ai_shutdown_handler_->ShuttingDownOnIdle();
     base::Process::TerminateCurrentProcessImmediately(0);
   }
 }

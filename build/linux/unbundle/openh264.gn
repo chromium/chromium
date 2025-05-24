@@ -40,6 +40,11 @@ source_set("processing") {
   public_configs = [ ":config" ]
 }
 
+source_set("decoder") {
+  deps = [ ":openh264_shim" ]
+  public_configs = [ ":config" ]
+}
+
 source_set("encoder") {
   deps = [ ":openh264_shim" ]
   public_configs = [

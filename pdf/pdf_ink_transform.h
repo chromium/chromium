@@ -9,15 +9,24 @@
 #include "pdf/page_orientation.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
 namespace gfx {
-class Rect;
+class Size;
+class SizeF;
 class Vector2dF;
 }  // namespace gfx
 
+namespace ink {
+class Envelope;
+}  // namespace ink
+
 namespace chrome_pdf {
+
+enum class PageRotation;
 
 // Converts a screen-based event input position into a page-based CSS pixels
 // position.  This canonical format is relative to the upper-left corner of a
@@ -41,10 +50,8 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
                                              const gfx::Rect& page_content_rect,
                                              float scale_factor);
 
-// Generate the affine transformation for rendering a page's strokes to the
-// screen, based on the page and its position within the viewport.  Parameters
-// are the same as for `EventPositionToCanonicalPosition()`, with the addition
-// of:
+// Generates the affine transformation for rendering a page's strokes to the
+// screen, based on the page and its position within the viewport.
 // - `viewport_origin_offset`:
 //     The offset within the rendering viewport to where the page images will
 //     be drawn.  Since the offset is a location within the viewport, it must
@@ -89,11 +96,54 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
 //                       |             | |            +
 //                       +-------------+ +------------+
 //
+// - `orientation`:
+//     Same as for `EventPositionToCanonicalPosition()`.
+// - `page_content_rect`:
+//     Same as for `EventPositionToCanonicalPosition()`.
+// - `page_size_in_points`:
+//     The size of the page in points for the PDF document.  I.e., no scaling
+//     or orientation changes are applied to this size.
+//
 ink::AffineTransform GetInkRenderTransform(
     const gfx::Vector2dF& viewport_origin_offset,
     PageOrientation orientation,
     const gfx::Rect& page_content_rect,
+    const gfx::SizeF& page_size_in_points);
+
+// Returns the transform used when rendering a thumbnail on a canvas of
+// `canvas_size`, given the other parameters. Compared to
+// GetInkRenderTransform(), the transformation is simpler because there is no
+// origin offset, and the thumbnail canvas is never rotated. Note that the
+// thumbnail content may be rotated.
+ink::AffineTransform GetInkThumbnailTransform(
+    const gfx::Size& canvas_size,
+    PageOrientation orientation,
+    const gfx::Rect& page_content_rect,
     float scale_factor);
+
+// Converts `ink::Envelope` to screen coordinates as needed for invalidation.
+// Uses the same `orientation`, `page_content_rect`, and `scale_factor`
+// parameters as used in `EventPositionToCanonicalPosition()`.  This function
+// uses them in reverse, to convert canonical coordinates back to screen
+// coordinates.  The caller must provide a non-empty `envelope`.
+gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
+    const ink::Envelope& envelope,
+    PageOrientation orientation,
+    const gfx::Rect& page_content_rect,
+    float scale_factor);
+
+// Returns a transform that converts from canonical coordinates (which has a
+// top-left origin and a different DPI), to PDF coordinates (which has a
+// bottom-left origin).  The translation accounts for any difference from the
+// defined physical page size to the cropped, visible portion of the PDF page.
+//
+// - `page_size` is in points. It must not contain negative values.
+// - `page_rotation` is the rotation of the page, as specified in the PDF.
+//   Note that this is different from the user-chosen orientation in the viewer.
+// - `translate` is in points.
+gfx::Transform GetCanonicalToPdfTransform(const gfx::SizeF& page_size,
+                                          PageRotation page_rotation,
+                                          const gfx::Vector2dF& translate);
 
 }  // namespace chrome_pdf
 

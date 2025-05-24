@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -42,6 +43,7 @@ constexpr int kSaltByteSize = 16;
 
 // PIN auto submit backfill only for 6 digits PINs.
 constexpr int kPinAutosubmitBackfillLength = 6;
+constexpr int kPinAutosubmitMinPinLength = 6;
 constexpr int kPinAutosubmitMaxPinLength = 12;
 
 QuickUnlockStorage* GetPrefsBackend(const AccountId& account_id) {
@@ -185,9 +187,7 @@ void PinBackend::IsSet(const AccountId& account_id, BoolCallback result) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
-      NOTREACHED_IN_MIGRATION() << "IsSet called with invalid user";
-      std::move(result).Run(false);
-      return;
+      NOTREACHED() << "IsSet called with invalid user";
     }
     auto user_context = std::make_unique<UserContext>(*user);
     cryptohome_backend_->IsPinSetInCryptohome(std::move(user_context),
@@ -210,9 +210,6 @@ void PinBackend::Set(const AccountId& account_id,
     return;
   }
 
-  QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-  DCHECK(storage);
-
   if (cryptohome_backend_) {
     if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
       PostResponse(std::move(did_set), false);
@@ -223,10 +220,69 @@ void PinBackend::Set(const AccountId& account_id,
         base::BindOnce(&PinBackend::SetWithContext, base::Unretained(this),
                        account_id, token, pin, std::move(did_set)));
   } else {
+    QuickUnlockStorage* storage = GetPrefsBackend(account_id);
+    DCHECK(storage);
+
     storage->pin_storage_prefs()->SetPin(pin);
     storage->MarkStrongAuth();
     UpdatePinAutosubmitOnSet(account_id, pin.length());
     PostResponse(std::move(did_set), true);
+  }
+}
+
+void PinBackend::UpdateCryptohomePin(const AccountId& account_id,
+                                     const std::string& token,
+                                     const std::string& pin,
+                                     BoolCallback did_update) {
+  if (resolving_backend_) {
+    on_cryptohome_support_received_.push_back(
+        base::BindOnce(&PinBackend::UpdateCryptohomePin, base::Unretained(this),
+                       account_id, token, pin, std::move(did_update)));
+    return;
+  }
+
+  if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
+    PostResponse(std::move(did_update), false);
+    return;
+  }
+  ash::AuthSessionStorage::Get()->BorrowAsync(
+      FROM_HERE, token,
+      base::BindOnce(&PinBackend::UpdateCryptohomePinWithContext,
+                     base::Unretained(this), account_id, token, pin,
+                     std::move(did_update)));
+}
+
+// This method is used by the recovery path and therefore can only rely on
+// data that is available before the profile is loaded.
+void PinBackend::UpdateCryptohomePinWithContext(
+    const AccountId& account_id,
+    const std::string& token,
+    const std::string& pin,
+    BoolCallback did_set,
+    std::unique_ptr<UserContext> user_context) {
+  if (!user_context) {
+    PostResponse(std::move(did_set), false);
+    return;
+  }
+
+  cryptohome_backend_->SetPin(
+      std::move(user_context), pin, std::nullopt,
+      base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
+
+  // Update autosubmit length if it exists. PIN autosubmit is only intended for
+  // PINs that are 6-12 digits long. When the user has autosubmit enabled, the
+  // stored value in local state is != 0.
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const int previous_pin_length = known_user.GetUserPinLength(account_id);
+  const int new_pin_length = pin.length();
+  if (previous_pin_length != 0) {
+    // User had autosubmit enabled before.
+    if (new_pin_length >= kPinAutosubmitMinPinLength &&
+        new_pin_length <= kPinAutosubmitMaxPinLength) {
+      known_user.SetUserPinLength(account_id, new_pin_length);
+    } else {
+      known_user.SetUserPinLength(account_id, 0);
+    }
   }
 }
 
@@ -240,10 +296,11 @@ void PinBackend::SetWithContext(const AccountId& account_id,
     return;
   }
   QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-  CHECK(storage);
-  // There may be a pref value if resetting PIN and the device now supports
-  // cryptohome-based PIN.
-  storage->pin_storage_prefs()->RemovePin();
+  if (!storage) {
+    // There may be a pref value if resetting PIN and the device now supports
+    // cryptohome-based PIN.
+    storage->pin_storage_prefs()->RemovePin();
+  }
   cryptohome_backend_->SetPin(
       std::move(user_context), pin, std::nullopt,
       base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
@@ -281,9 +338,7 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   if (!user) {
-    NOTREACHED_IN_MIGRATION() << "IsSet called with invalid user";
-    std::move(did_set).Run(false);
-    return;
+    NOTREACHED() << "IsSet called with invalid user";
   }
   auto user_context = std::make_unique<UserContext>(*user);
   user_context->SetIsUsingPin(true);
@@ -350,9 +405,7 @@ void PinBackend::CanAuthenticate(const AccountId& account_id,
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
-      NOTREACHED_IN_MIGRATION() << "CanAuthenticate called with invalid user";
-      std::move(result_callback).Run(false, std::nullopt);
-      return;
+      NOTREACHED() << "CanAuthenticate called with invalid user";
     }
     auto user_context = std::make_unique<UserContext>(*user);
     cryptohome_backend_->CanAuthenticate(std::move(user_context), purpose,
@@ -562,6 +615,9 @@ void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
   if (PrefService(account_id)
           ->GetUserPrefValue(::prefs::kPinUnlockAutosubmitEnabled) != nullptr)
     return;
+
+  // Track when this operation is being performed.
+  base::debug::DumpWithoutCrashing();
 
   // Disabled if not allowed by policy. Since 'kPinUnlockAutosubmitEnabled'
   // is enabled by default, it is only false when recommended/mandatory by

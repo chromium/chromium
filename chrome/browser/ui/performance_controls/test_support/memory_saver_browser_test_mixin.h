@@ -26,7 +26,7 @@
 #include "net/dns/mock_host_resolver.h"
 
 namespace {
-constexpr base::TimeDelta kShortDelay = base::Seconds(1);
+inline constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 }  // namespace
 
 // Template to be used as a mixin class for memory saver tests extending

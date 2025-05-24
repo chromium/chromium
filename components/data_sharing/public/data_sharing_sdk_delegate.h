@@ -32,12 +32,23 @@ class DataSharingSDKDelegate {
   virtual ~DataSharingSDKDelegate() = default;
 
 #if BUILDFLAG(IS_ANDROID)
+  using CreateJavaDelegateCallback =
+      base::OnceCallback<base::android::ScopedJavaLocalRef<jobject>()>;
+
+  // Callback to create the java object. The java object is created only when
+  // the sdk is used to avoid overhead of library loading.
   static std::unique_ptr<DataSharingSDKDelegate> CreateDelegate(
-      ScopedJavaLocalRef<jobject> sdk_delegate);
+      CreateJavaDelegateCallback sdk_delegate);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   virtual void Initialize(
       DataSharingNetworkLoader* data_sharing_network_loader) = 0;
+
+  // Implemented only for android. Normally initialize method will lazily
+  // initialize the SDK to avoid overhead. This will force the loading of
+  // delegate.
+  virtual void ForceInitialize(
+      DataSharingNetworkLoader* data_sharing_network_loader) {}
 
   virtual void CreateGroup(
       const data_sharing_pb::CreateGroupParams& params,
@@ -45,8 +56,19 @@ class DataSharingSDKDelegate {
           void(const base::expected<data_sharing_pb::CreateGroupResult,
                                     absl::Status>&)> callback) = 0;
 
+  // Read group data for groups that the user is already part of. Use
+  // ReadGroupWithToken() to read group that the user may not be part of.
   virtual void ReadGroups(
       const data_sharing_pb::ReadGroupsParams& params,
+      base::OnceCallback<
+          void(const base::expected<data_sharing_pb::ReadGroupsResult,
+                                    absl::Status>&)> callback) = 0;
+
+  // Read group where the user may or may not be a member of, using token
+  // secret. Returns the group if the user is already a member, or has access
+  // using the token.
+  virtual void ReadGroupWithToken(
+      const data_sharing_pb::ReadGroupWithTokenParams& params,
       base::OnceCallback<
           void(const base::expected<data_sharing_pb::ReadGroupsResult,
                                     absl::Status>&)> callback) = 0;
@@ -57,6 +79,10 @@ class DataSharingSDKDelegate {
 
   virtual void RemoveMember(
       const data_sharing_pb::RemoveMemberParams& params,
+      base::OnceCallback<void(const absl::Status&)> callback) = 0;
+
+  virtual void LeaveGroup(
+      const data_sharing_pb::LeaveGroupParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) = 0;
 
   virtual void DeleteGroup(

@@ -30,9 +30,7 @@ namespace base {
 namespace android {
 
 void ConvertJavaStringToUTF8(JNIEnv* env, jstring str, std::string* result) {
-  DCHECK(str);
   if (!str) {
-    LOG(WARNING) << "ConvertJavaStringToUTF8 called with null string.";
     result->clear();
     return;
   }
@@ -84,6 +82,10 @@ std::string ConvertJavaStringToUTF8(JNIEnv* env, const JavaRef<jstring>& str) {
 
 ScopedJavaLocalRef<jstring> ConvertUTF8ToJavaString(JNIEnv* env,
                                                     std::string_view str) {
+  // ART allocates new empty strings, so use a singleton when applicable.
+  if (str.empty()) {
+    return jni_zero::g_empty_string.AsLocalRef(env);
+  }
   // JNI's NewStringUTF expects "modified" UTF8 so instead create the string
   // via our own UTF16 conversion utility.
   // Further, Dalvik requires the string passed into NewStringUTF() to come from
@@ -91,16 +93,14 @@ ScopedJavaLocalRef<jstring> ConvertUTF8ToJavaString(JNIEnv* env,
   // it gets here, so constructing via UTF16 side-steps this issue.
   // (Dalvik stores strings internally as UTF16 anyway, so there shouldn't be
   // a significant performance hit by doing it this way).
-  return ScopedJavaLocalRef<jstring>(env, ConvertUTF16ToJavaStringImpl(
-      env, UTF8ToUTF16(str)));
+  return ScopedJavaLocalRef<jstring>(
+      env, ConvertUTF16ToJavaStringImpl(env, UTF8ToUTF16(str)));
 }
 
 void ConvertJavaStringToUTF16(JNIEnv* env,
                               jstring str,
                               std::u16string* result) {
-  DCHECK(str);
   if (!str) {
-    LOG(WARNING) << "ConvertJavaStringToUTF16 called with null string.";
     result->clear();
     return;
   }
@@ -150,6 +150,10 @@ std::u16string ConvertJavaStringToUTF16(JNIEnv* env,
 
 ScopedJavaLocalRef<jstring> ConvertUTF16ToJavaString(JNIEnv* env,
                                                      std::u16string_view str) {
+  // ART allocates new empty strings, so use a singleton when applicable.
+  if (str.empty()) {
+    return jni_zero::g_empty_string.AsLocalRef(env);
+  }
   return ScopedJavaLocalRef<jstring>(env,
                                      ConvertUTF16ToJavaStringImpl(env, str));
 }

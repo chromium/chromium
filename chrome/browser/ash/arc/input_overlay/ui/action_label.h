@@ -42,10 +42,6 @@ class ActionLabel : public views::LabelButton {
   void SetImageActionLabel(MouseAction mouse_action);
   void SetDisplayMode(DisplayMode mode);
   void RemoveNewState();
-  void ClearFocus();
-  // It is possible that multiple labels are in one ActionView and these labels
-  // are called sibling labels. This label reacts to sibling's focus change.
-  void OnSiblingUpdateFocus(bool sibling_focused);
 
   ActionView* GetParent();
 
@@ -56,11 +52,6 @@ class ActionLabel : public views::LabelButton {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void ChildPreferredSizeChanged(View* child) override;
-  bool OnKeyPressed(const ui::KeyEvent& event) override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
-  void OnFocus() override;
-  void OnBlur() override;
 
   void set_mouse_action(MouseAction mouse_action) {
     mouse_action_ = mouse_action;
@@ -83,20 +74,12 @@ class ActionLabel : public views::LabelButton {
   void OnButtonPressed();
 
   void SetToViewMode();
-  void SetToEditMode();
   // In edit mode without mouse hover or focus.
   void SetToEditDefault();
-  // In edit mode when mouse hovers or not.
-  void SetToEditHover(bool hovered);
-  // In edit mode when this view is focused.
-  void SetToEditFocus();
   // In edit mode when there is edit error.
   void SetToEditError();
   // In edit mode when the input is unbound.
   void SetToEditUnbindInput();
-  // In edit mode of ActionMoveView with four keys, when one label is focused,
-  // the other labels turn to edit inactive visually.
-  void SetToEditInactive();
 
   void SetBackgroundForEdit();
 

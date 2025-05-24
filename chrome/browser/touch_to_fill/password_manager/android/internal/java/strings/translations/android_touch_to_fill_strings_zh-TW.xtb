@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">輕觸即可填入的憑證清單已開啟，顯示於整個畫面。</translation>
 <translation id="5591247451101092906">要使用已儲存的密碼或密碼金鑰嗎？</translation>
 <translation id="5624120631404540903">管理密碼</translation>
+<translation id="592182999816790476">為「<ph name="WEBSITE" />」儲存的「<ph name="USERNAME" />」密碼</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> 的密碼金鑰，使用螢幕鎖定</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{這個網站的新密碼}other{這個網站的新密碼}}</translation>
 <translation id="7286867818472074330">選取密碼金鑰</translation>

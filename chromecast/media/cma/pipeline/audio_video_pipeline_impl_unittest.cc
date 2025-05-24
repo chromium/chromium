@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -252,9 +257,8 @@ class PipelineHelper {
     bool provider_delayed_pattern[] = {false, true};
     std::unique_ptr<MockFrameProvider> frame_provider(new MockFrameProvider());
     frame_provider->Configure(
-        std::vector<bool>(
-            provider_delayed_pattern,
-            provider_delayed_pattern + std::size(provider_delayed_pattern)),
+        std::vector<bool>(std::begin(provider_delayed_pattern),
+                          std::end(provider_delayed_pattern)),
         std::move(frame_generator));
     frame_provider->SetDelayFlush(true);
     return std::move(frame_provider);

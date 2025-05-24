@@ -27,6 +27,7 @@
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "url/origin.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
 
@@ -89,16 +90,7 @@ ScriptContext* ScriptContextSet::Register(
   } else if (effective_context_type == mojom::ContextType::kWebPage &&
              !is_webview && context_data.HasControlledFrameCapability()) {
     host_id.type = mojom::HostID::HostType::kControlledFrameEmbedder;
-    // TODO(crbug.com/41490370): Improve how we derive origin for controlled
-    // frame embedders in renderer.
-    host_id.id = "";
-    if (frame_url.has_scheme()) {
-      host_id.id += frame_url.scheme() + "://";
-    }
-    host_id.id += frame_url.host();
-    if (frame_url.has_port()) {
-      host_id.id += ":" + frame_url.port();
-    }
+    host_id.id = url::Origin::Create(frame_url).Serialize();
   }
 
   std::optional<int> blink_isolated_world_id;
@@ -315,10 +307,6 @@ mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
     if (extension->is_hosted_app() &&
         extension->location() != mojom::ManifestLocation::kComponent) {
       return mojom::ContextType::kPrivilegedWebPage;
-    }
-
-    if (is_lock_screen_context_) {
-      return mojom::ContextType::kLockscreenExtension;
     }
 
     if (is_webview) {

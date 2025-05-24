@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_TOKEN_REVOKER_TEST_UTILS_H_
 #define CHROME_BROWSER_SIGNIN_TOKEN_REVOKER_TEST_UTILS_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
 namespace content {

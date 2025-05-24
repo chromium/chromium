@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_alloc_support.h"
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -161,21 +161,13 @@ void BrowserMainRunnerImpl::Shutdown() {
   DCHECK(initialization_started_);
   DCHECK(!is_shutdown_);
 
-  // Here and thereafter, `MakeFreeNoOp()` will make `free()` a no-op if
-  // 1. The pertinent experiment is enabled and
-  // 2. The feature param's value equals the arg fed to
-  //    `MakeFreeNoOp()`.
-  //
-  // For example, clients with the feature param set to
-  // `before-preshutdown`, which maps to `kBeforePreShutdown`, will
-  // have `free()` become a no-op after this call.
-  base::features::MakeFreeNoOp(
-      base::features::WhenFreeBecomesNoOp::kBeforePreShutdown);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Reduces shutdown hangs on CrOS.
+  // Googlers: see go/cros-no-op-free-2024 for the experiment write-up.
+  base::allocator::MakeFreeNoOp();
+#endif
 
   main_loop_->PreShutdown();
-
-  base::features::MakeFreeNoOp(base::features::WhenFreeBecomesNoOp::
-                                   kBeforeHaltingStartupTracingController);
 
   // Finalize the startup tracing session if it is still active.
   StartupTracingController::GetInstance().ShutdownAndWaitForStopIfNeeded();
@@ -185,13 +177,7 @@ void BrowserMainRunnerImpl::Shutdown() {
     TRACE_EVENT0("shutdown", "BrowserMainRunner");
     GetExitedMainMessageLoopFlag().Set();
 
-    base::features::MakeFreeNoOp(
-        base::features::WhenFreeBecomesNoOp::kBeforeShutDownThreads);
-
     main_loop_->ShutdownThreadsAndCleanUp();
-
-    base::features::MakeFreeNoOp(
-        base::features::WhenFreeBecomesNoOp::kAfterShutDownThreads);
 
     ui::ShutdownInputMethod();
 #if BUILDFLAG(IS_WIN)

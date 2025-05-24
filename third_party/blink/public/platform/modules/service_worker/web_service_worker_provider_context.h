@@ -11,14 +11,19 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
 class WebString;
 
+struct WebServiceWorkerProviderContextDeleter;
+
 // WebServiceWorkerProviderContext is an abstract class implemented by
 // content::ServiceWorkerProviderContext.
-class WebServiceWorkerProviderContext {
+class WebServiceWorkerProviderContext
+    : public WTF::ThreadSafeRefCounted<WebServiceWorkerProviderContext,
+                                       WebServiceWorkerProviderContextDeleter> {
  public:
   // Binds a new ServiceWorkerWorkerClient endpoint.
   virtual void BindServiceWorkerWorkerClientRemote(
@@ -44,6 +49,20 @@ class WebServiceWorkerProviderContext {
 
   // The Client#id value of this context.
   virtual const WebString client_id() const = 0;
+
+  // TODO(crbug.com/324939068): remove the code when the feature launched.
+  virtual bool container_is_blob_url_shared_worker() const = 0;
+
+  // Implementations of this interface use this method to provide special
+  // destruction behavior. It is called when the
+  // WebServiceWorkerProviderContext ref count reaches zero.
+  virtual void Destroy() const = 0;
+};
+
+struct WebServiceWorkerProviderContextDeleter {
+  static void Destruct(const WebServiceWorkerProviderContext* context) {
+    context->Destroy();
+  }
 };
 
 }  // namespace blink

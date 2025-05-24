@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.resources.ResourceManager;
 
 /**
  * {@link LayoutRenderHost} is the minimal interface the layouts need to know about its host to
  * render.
  */
+@NullMarked
 public interface LayoutRenderHost {
     /** Request layout and draw. */
     void requestRender();

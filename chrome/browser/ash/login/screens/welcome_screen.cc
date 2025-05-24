@@ -152,13 +152,13 @@ void RecordA11yUserAction(const std::string& action_id) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected action id: " << action_id;
+  NOTREACHED() << "Unexpected action id: " << action_id;
 }
 
 // Returns true if is a Meet Device or the remora requisition bit has been set
 // for testing. Note: Can be overridden with the command line switch
 // --enable-requisition-edits.
-bool IsRemoraRequisitionConfigurable() {
+bool IsMeetDeviceConfigurable() {
   return policy::EnrollmentRequisitionManager::IsMeetDevice() ||
          switches::IsDeviceRequisitionConfigurable();
 }
@@ -244,9 +244,8 @@ void WelcomeScreen::SetApplicationLocaleAndInputMethod(
       base::BindOnce(&WelcomeScreen::OnLanguageChangedCallback,
                      language_weak_ptr_factory_.GetWeakPtr(),
                      base::Owned(new InputEventsBlocker), input_method));
-  locale_util::SwitchLanguage(locale, true /* enableLocaleKeyboardLayouts */,
-                              true /* login_layouts_only */,
-                              std::move(callback),
+  locale_util::SwitchLanguage(locale, /*enable_locale_keyboard_layouts=*/true,
+                              /*login_layouts_only=*/false, std::move(callback),
                               ProfileManager::GetActiveUserProfile());
 }
 
@@ -272,9 +271,8 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale,
       base::BindOnce(&WelcomeScreen::OnLanguageChangedCallback,
                      language_weak_ptr_factory_.GetWeakPtr(),
                      base::Owned(new InputEventsBlocker), std::string()));
-  locale_util::SwitchLanguage(locale, true /* enableLocaleKeyboardLayouts */,
-                              true /* login_layouts_only */,
-                              std::move(callback),
+  locale_util::SwitchLanguage(locale, /*enable_locale_keyboard_layouts=*/true,
+                              /*login_layouts_only=*/false, std::move(callback),
                               ProfileManager::GetActiveUserProfile());
   if (is_from_ui) {
     // Write into the local state to save data about locale changes in case of
@@ -317,7 +315,7 @@ std::string WelcomeScreen::GetTimezone() const {
 
 void WelcomeScreen::SetDeviceRequisition(const std::string& requisition) {
   if (requisition == kRemoraRequisitionIdentifier) {
-    if (!IsRemoraRequisitionConfigurable())
+    if (!IsMeetDeviceConfigurable())
       return;
   } else {
     if (!switches::IsDeviceRequisitionConfigurable())
@@ -328,7 +326,7 @@ void WelcomeScreen::SetDeviceRequisition(const std::string& requisition) {
       policy::EnrollmentRequisitionManager::GetDeviceRequisition();
   policy::EnrollmentRequisitionManager::SetDeviceRequisition(requisition);
 
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     // CfM devices default to static timezone.
     g_browser_process->local_state()->SetInteger(
         ::prefs::kResolveDeviceTimezoneByGeolocationMethod,
@@ -543,7 +541,7 @@ bool WelcomeScreen::HandleAccelerator(LoginAcceleratorAction action) {
           policy::EnrollmentRequisitionManager::GetDeviceRequisition());
     return true;
   } else if (action == LoginAcceleratorAction::kDeviceRequisitionRemora &&
-             IsRemoraRequisitionConfigurable()) {
+             IsMeetDeviceConfigurable()) {
     if (view_)
       view_->ShowRemoraRequisitionDialog();
     return true;

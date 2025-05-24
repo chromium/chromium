@@ -45,15 +45,15 @@ void ExpectBuilderContent(const String& expected,
                           const StringBuilder& builder) {
   // Not using builder.toString() because it changes internal state of builder.
   if (builder.Is8Bit())
-    EXPECT_EQ(expected, String(builder.Characters8(), builder.length()));
+    EXPECT_EQ(expected, String(builder.Span8()));
   else
-    EXPECT_EQ(expected, String(builder.Characters16(), builder.length()));
+    EXPECT_EQ(expected, String(builder.Span16()));
 }
 
 void ExpectEmpty(const StringBuilder& builder) {
   EXPECT_EQ(0U, builder.length());
   EXPECT_TRUE(builder.empty());
-  EXPECT_EQ(nullptr, builder.Characters8());
+  EXPECT_EQ(nullptr, builder.Span8().data());
 }
 
 }  // namespace
@@ -69,7 +69,7 @@ TEST(StringBuilderTest, Append) {
   ExpectBuilderContent("0123456789", builder);
   builder.Append("abcd");
   ExpectBuilderContent("0123456789abcd", builder);
-  builder.Append("efgh", 3);
+  builder.Append(base::byte_span_from_cstring("efgh").first(3u));
   ExpectBuilderContent("0123456789abcdefg", builder);
   builder.Append("");
   ExpectBuilderContent("0123456789abcdefg", builder);
@@ -78,19 +78,19 @@ TEST(StringBuilderTest, Append) {
 
   builder.ToString();  // Test after reifyString().
   StringBuilder builder1;
-  builder.Append("", 0);
+  builder.Append("");
   ExpectBuilderContent("0123456789abcdefg#", builder);
-  builder1.Append(builder.Characters8(), builder.length());
+  builder1.Append(builder.Span8());
   builder1.Append("XYZ");
-  builder.Append(builder1.Characters8(), builder1.length());
+  builder.Append(builder1.Span8());
   ExpectBuilderContent("0123456789abcdefg#0123456789abcdefg#XYZ", builder);
 
   StringBuilder builder2;
   builder2.ReserveCapacity(100);
   builder2.Append("xyz");
-  const LChar* characters = builder2.Characters8();
+  base::span<const LChar> characters = builder2.Span8();
   builder2.Append("0123456789");
-  EXPECT_EQ(characters, builder2.Characters8());
+  EXPECT_EQ(characters.data(), builder2.Span8().data());
 
   StringBuilder builder3;
   builder3.Append("xyz", 1, 2);
@@ -121,8 +121,38 @@ TEST(StringBuilderTest, Append) {
   EXPECT_EQ(3U, builder_for_u_char32_append.length());
   const UChar result_array[] = {U16_LEAD(fraktur_a_char),
                                 U16_TRAIL(fraktur_a_char), 'A'};
-  ExpectBuilderContent(String(result_array, std::size(result_array)),
+  ExpectBuilderContent(String(base::span(result_array)),
                        builder_for_u_char32_append);
+}
+
+TEST(StringBuilderTest, AppendSpan) {
+  StringBuilder builder;
+
+  // Append an empty span
+  builder.Append(base::as_byte_span(base::span_from_cstring("")));
+  EXPECT_EQ(0u, builder.length());
+  builder.Append(base::span_from_cstring(u""));
+  EXPECT_EQ(0u, builder.length());
+
+  // Append to an 8-bit builder.
+  builder.Append("a");
+  builder.Append(base::as_byte_span(base::span_from_cstring("b")));
+  EXPECT_TRUE(builder.Is8Bit());
+  EXPECT_EQ(2u, builder.length());
+  builder.Append(base::span_from_cstring(u"U"));
+  EXPECT_TRUE(builder.Is8Bit());
+  EXPECT_EQ(3u, builder.length());
+  builder.Append(base::span_from_cstring(u"VV"));
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(5u, builder.length());
+
+  // Append to a 16-bit builder.
+  builder.Append(base::as_byte_span(base::span_from_cstring("c")));
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(6u, builder.length());
+  builder.Append(base::span_from_cstring(u"W"));
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(7u, builder.length());
 }
 
 TEST(StringBuilderTest, AppendSharingImpl) {
@@ -274,7 +304,6 @@ TEST(StringBuilderTest, Equal) {
   StringBuilder builder1;
   StringBuilder builder2;
   EXPECT_TRUE(builder1 == builder2);
-  EXPECT_TRUE(Equal(builder1, static_cast<LChar*>(nullptr), 0));
   EXPECT_TRUE(builder1 == String());
   EXPECT_TRUE(String() == builder1);
   EXPECT_TRUE(builder1 != String("abc"));
@@ -359,7 +388,7 @@ TEST(StringBuilderTest, ToAtomicStringOnEmpty) {
   }
   {  // AtomicString constructed from an empty char* string.
     StringBuilder builder;
-    builder.Append("", 0);
+    builder.Append("");
     AtomicString atomic_string = builder.ToAtomicString();
     EXPECT_EQ(g_empty_atom, atomic_string);
   }

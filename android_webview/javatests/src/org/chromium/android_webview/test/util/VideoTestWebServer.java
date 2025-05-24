@@ -19,8 +19,8 @@ public class VideoTestWebServer {
                     + "dW5khkAFVl9WUDglhohAA1ZQOIOBAeBABrCBlrqBlh9DtnVAdOeBAKNAboEAAIDyCACdASqWAJYA"
                     + "Pk0ci0WD+IBAAJiWlu4XdQTSq2H4MW0+sMO0gz8HMRe+0jRo0aNGjRo0aNGjRo0aNGjRo0aNGjRo"
                     + "0aNGjRo0aNGjRo0VAAD+/729RWRzH4mOZ9/O8Dl319afX4gsgAAA";
-    private String mOnePixelOneFrameWebmURL;
-    private TestWebServer mTestWebServer;
+    private final String mOnePixelOneFrameWebmURL;
+    private final TestWebServer mTestWebServer;
 
     public VideoTestWebServer() throws Exception {
         mTestWebServer = TestWebServer.start();

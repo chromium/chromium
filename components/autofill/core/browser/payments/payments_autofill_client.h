@@ -11,11 +11,12 @@
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 #if !BUILDFLAG(IS_IOS)
 namespace webauthn {
@@ -31,6 +32,8 @@ class AutofillOfferData;
 class AutofillOfferManager;
 enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
+class BnplIssuer;
+struct BnplTosModel;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 struct CardUnmaskPromptOptions;
@@ -42,21 +45,24 @@ class Iban;
 class IbanAccessManager;
 class IbanManager;
 class MerchantPromoCodeManager;
-class MigratableCreditCard;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
+class PaymentsDataManager;
 enum class OtpUnmaskResult;
 class TouchToFillDelegate;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
-struct VirtualCardManualFallbackBubbleOptions;
+struct FilledCardInformationBubbleOptions;
 enum class WebauthnDialogCallbackType;
 
 namespace payments {
 
+struct BnplIssuerContext;
 class MandatoryReauthManager;
+class MultipleRequestPaymentsNetworkInterface;
 class PaymentsNetworkInterface;
 class PaymentsWindowManager;
+class SaveAndFillManager;
 
 // A payments-specific client interface that handles dependency injection, and
 // its implementations serve as the integration for platform-specific code. One
@@ -171,6 +177,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
       return *this;
     }
 
+    SaveCreditCardOptions& with_num_strikes(const int strikes) {
+      num_strikes = strikes;
+      return *this;
+    }
+
     SaveCreditCardOptions& with_card_save_type(CardSaveType b) {
       card_save_type = b;
       return *this;
@@ -182,6 +193,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
     bool has_multiple_legal_lines = false;
     bool has_same_last_four_as_server_card_but_different_expiration_date =
         false;
+    std::optional<int> num_strikes;
     CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
   };
 
@@ -204,18 +216,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
     std::u16string expiration_date_year;
   };
 
-  // Callback to run if user presses the Save button in the migration dialog.
-  // Will pass a vector of GUIDs of cards that the user selected to upload to
-  // LocalCardMigrationManager.
-  using LocalCardMigrationCallback =
-      base::OnceCallback<void(const std::vector<std::string>&)>;
-
-  // Callback to run if the user presses the trash can button in the
-  // action-required dialog. Will pass to LocalCardMigrationManager a
-  // string of GUID of the card that the user selected to delete from local
-  // storage.
-  using MigrationDeleteCardCallback =
-      base::RepeatingCallback<void(const std::string&)>;
   // Callback to run after local/upload IBAN save is offered. The callback runs
   // with `user_decision` indicating whether the prompt was accepted, declined,
   // or ignored. `nickname` is optionally provided by the user when IBAN local
@@ -256,33 +256,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual AutofillSaveCardBottomSheetBridge*
   GetOrCreateAutofillSaveCardBottomSheetBridge();
 #elif !BUILDFLAG(IS_IOS)
-  // Runs `show_migration_dialog_closure` if the user accepts the card
-  // migration offer. This causes the card migration dialog to be shown.
-  virtual void ShowLocalCardMigrationDialog(
-      base::OnceClosure show_migration_dialog_closure);
-
-  // Shows a dialog with the given `legal_message_lines` and the `user_email`.
-  // Runs `start_migrating_cards_callback` if the user would like the selected
-  // cards in the `migratable_credit_cards` to be uploaded to cloud.
-  virtual void ConfirmMigrateLocalCardToCloud(
-      const LegalMessageLines& legal_message_lines,
-      const std::string& user_email,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      LocalCardMigrationCallback start_migrating_cards_callback);
-
-  // Will show a dialog containing a error message if `has_server_error`
-  // is true, or the migration results for cards in
-  // `migratable_credit_cards` otherwise. If migration succeeds the dialog will
-  // contain a `tip_message`. `migratable_credit_cards` will be used when
-  // constructing the dialog. The dialog is invoked when the migration process
-  // is finished. Runs `delete_local_card_callback` if the user chose to delete
-  // one invalid card from local storage.
-  virtual void ShowLocalCardMigrationResults(
-      bool has_server_error,
-      const std::u16string& tip_message,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      MigrationDeleteCardCallback delete_local_card_callback);
-
   // TODO(crbug.com/40639086): Find a way to merge these two functions.
   // Shouldn't use WebauthnDialogState as that state is a purely UI state
   // (should not be accessible for managers?), and some of the states
@@ -342,10 +315,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // bubble if `options.show_prompt` is true; otherwise only shows the omnibox
   // icon. On mobile, shows the offer-to-save infobar if `options.show_prompt`
   // is true; otherwise does not offer to save at all.
-  virtual void ConfirmSaveCreditCardLocally(
-      const CreditCard& card,
-      SaveCreditCardOptions options,
-      LocalSaveCardPromptCallback callback);
+  virtual void ShowSaveCreditCardLocally(const CreditCard& card,
+                                         SaveCreditCardOptions options,
+                                         LocalSaveCardPromptCallback callback);
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. This includes both the save server card prompt and
@@ -360,7 +332,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // not offer to save at all.
   // TODO (crbug.com/1462821): Make `legal_message_lines` optional, as CVC
   // upload has no legal message.
-  virtual void ConfirmSaveCreditCardToCloud(
+  virtual void ShowSaveCreditCardToCloud(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
@@ -391,10 +363,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // result to users. `result` holds the outcome of virtual card enrollment.
   virtual void VirtualCardEnrollCompleted(PaymentsRpcResult result);
 
-  // Called when the virtual card has been fetched successfully. Uses the
-  // necessary information in `options` to show the manual fallback bubble.
-  virtual void OnVirtualCardDataAvailable(
-      const VirtualCardManualFallbackBubbleOptions& options);
+  // Called when the card has been fetched successfully. Uses the necessary
+  // information in `options` to show the FilledCardInformationBubble.
+  virtual void OnCardDataAvailable(
+      const FilledCardInformationBubbleOptions& options);
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
@@ -428,6 +400,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Show the OTP unmask dialog to accept user-input OTP value.
   virtual void ShowCardUnmaskOtpInputDialog(
+      CreditCard::RecordType card_type,
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate);
 
@@ -455,6 +428,18 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Gets the payments::PaymentsNetworkInterface instance owned by the client.
   virtual PaymentsNetworkInterface* GetPaymentsNetworkInterface();
 
+  // Same as above. However this network interface can support multiple active
+  // requests at a time. Sending a request will not affect other ongoing
+  // requests. This is a complete upgrade of the
+  // `PaymentsNetworkInterface` so all new flows should use this
+  // function. All existing flows should be migrated to this. Note that since
+  // each flow should migrate in its own effort, we would need to keep these
+  // functions separate, instead of updating the logic inside
+  // GetPaymentsNetworkInterface. When all migrations are finished, above
+  // function and the PaymentsNetworkInterface class should be cleaned up.
+  virtual MultipleRequestPaymentsNetworkInterface*
+  GetMultipleRequestPaymentsNetworkInterface();
+
   // Shows an error dialog when card retrieval errors happen. The type of error
   // dialog that is shown will match the `type` in `context`. If the
   // `server_returned_title` and `server_returned_description` in `context` are
@@ -472,6 +457,16 @@ class PaymentsAutofillClient : public RiskDataLoader {
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
       base::WeakPtr<CardUnmaskDelegate> delegate);
   virtual void OnUnmaskVerificationResult(PaymentsRpcResult result);
+
+  // Shows a view that presents the Buy-Now-Pay-Later Terms of Service to the
+  // user to accept or decline.
+  virtual void ShowBnplTos(BnplTosModel bnpl_tos_model,
+                           base::OnceClosure accept_callback,
+                           base::OnceClosure cancel_callback);
+
+  // Closes the Buy-Now-Pay-Later Terms of Service dialog that was displayed in
+  // `ShowBnplTos()`.
+  virtual void CloseBnplTos();
 
   // Returns a pointer to a VirtualCardEnrollmentManager that is owned by
   // PaymentsAutofillClient. VirtualCardEnrollmentManager is used for virtual
@@ -539,27 +534,42 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // possible, and returns `true` on success. `delegate` will be notified of
   // events. `suggestions` are generated using the `cards_to_suggest` data and
   // include fields such as `main_text`, `minor_text`, and
-  // `apply_deactivated_style`. Should be called only if the feature is
-  // supported by the platform. This function is implemented on all platforms,
-  // so this should be a pure virtual function to enforce the override
+  // `HasDeactivatedStyle` member function. Should be called only if the feature
+  // is supported by the platform. This function is implemented on all
+  // platforms so this should be a pure virtual function to enforce the override
   // implementation.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions);
 
   // Shows the Touch To Fill surface for filling IBAN information, if
   // possible, returning `true` on success. `delegate` will be notified of
   // events. This function is not implemented on iOS and iOS WebView, and
   // should not be used on those platforms.
-  virtual bool ShowTouchToFillIban(
+  virtual bool ShowTouchToFillIban(base::WeakPtr<TouchToFillDelegate> delegate,
+                                   base::span<const Iban> ibans_to_suggest);
+
+  // Shows the Touch To Fill surface for filling Wallet loyalty card
+  // information, if possible, returning `true` on success. `delegate` will be
+  // notified of events. This function is not implemented on iOS and iOS
+  // WebView, and should not be used on those platforms.
+  virtual bool ShowTouchToFillLoyaltyCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::Iban> ibans_to_suggest);
+      base::span<const LoyaltyCard> loyalty_cards_to_suggest);
 
   // Hides the Touch To Fill surface for filling payment information if one is
   // currently shown. Should be called only if the feature is supported by the
   // platform.
   virtual void HideTouchToFillPaymentMethod();
+
+  // Return the `PaymentsDataManager` which is payments-specific version of
+  // PersonalDataManager. It has two main responsibilities:
+  // - Caching the payments related data stored in `AutofillTable` for
+  // synchronous retrieval.
+  // - Posting changes to `AutofillTable` via the `AutofillWebDataService`
+  //   and updating its state accordingly.
+  virtual PaymentsDataManager& GetPaymentsDataManager() = 0;
+  const PaymentsDataManager& GetPaymentsDataManager() const;
 
 #if !BUILDFLAG(IS_IOS)
   // Creates the appropriate implementation of InternalAuthenticator. May be
@@ -573,6 +583,27 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // used to handle payments mandatory re-auth related flows.
   virtual payments::MandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager();
+
+  // Shows the `Save and Fill` modal dialog.
+  virtual void ShowCreditCardSaveAndFillDialog();
+
+  // Gets the payments Save and Fill manager owned by the client. This will be
+  // used to handle the Save and Fill dialog.
+  virtual payments::SaveAndFillManager* GetSaveAndFillManager();
+
+  // Shows the issuer selection dialog for BNPL when the BNPL suggestion is
+  // selected to let users choose a BNPL issuer.
+  virtual void ShowSelectBnplIssuerDialog(
+      std::vector<BnplIssuerContext> bnpl_issuer_context,
+      std::string app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback);
+
+  // Dismiss the issuer selection dialog for BNPL.
+  virtual void DismissSelectBnplIssuerDialog();
+
+  // Checks if the browser popup is a tab modal popup.
+  virtual bool IsTabModalPopupDeprecated() const;
 };
 
 }  // namespace payments

@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -741,7 +742,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, KeepAliveRendererProcess) {
       base::BindRepeating(HandleBeacon));
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (!AreAllSitesIsolatedForTesting()) {
     // Isolate "foo.com" so we are guaranteed that navigations to this site
     // will be in a different process.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -1063,21 +1064,38 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, PriorityOverride) {
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
   EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  // Add a pending view, and expect the process to *stay* backgrounded.
-  process->AddPendingView();
+  // Add a media stream, and expect the process to *stay* backgrounded.
+  process->OnMediaStreamAdded();
   EXPECT_TRUE(process->HasPriorityOverride());
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
   EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  // Clear the override. The pending view should cause the process to go back to
+  // TODO(pmonette): Pending views will be taken into account if
+  // kPriorityOverridePendingViews is enabled.
+  base::Process::Priority kExpectedPriorityPendingViews =
+      base::FeatureList::IsEnabled(features::kPriorityOverridePendingViews)
+          ? base::Process::Priority::kUserBlocking
+          : base::Process::Priority::kBestEffort;
+
+  process->AddPendingView();
+  EXPECT_TRUE(process->HasPriorityOverride());
+  EXPECT_EQ(process->GetPriority(), kExpectedPriorityPendingViews);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
+
+  process->RemovePendingView();
+  EXPECT_TRUE(process->HasPriorityOverride());
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
+
+  // Clear the override. The media stream should cause the process to go back to
   // being foregrounded.
   process->ClearPriorityOverride();
   EXPECT_FALSE(process->HasPriorityOverride());
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kUserBlocking);
   EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  // Clear the pending view so the test doesn't explode.
-  process->RemovePendingView();
+  // Clear the media stream so the test doesn't explode.
+  process->OnMediaStreamRemoved();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1086,13 +1104,15 @@ struct BoostRenderProcessForLoadingBrowserTestParam {
   std::string target_urls;
   bool renderer_initiated_navigation;
   bool expect_render_process_backgrounded;
+  bool prioritize_restore;
+  bool expect_render_process_backgrounded_on_restore;
 };
 
 // This test verifies `kBoostRenderProcessForLoading` feature can keep the
 // RenderProcessHost foregrounded until `DOMContentLoaded` comes.
 class BoostRenderProcessForLoadingBrowserTest
     : public RenderProcessHostTestBase,
-      public content::WebContentsObserver,
+      public WebContentsObserver,
       public ::testing::WithParamInterface<
           BoostRenderProcessForLoadingBrowserTestParam> {
  public:
@@ -1102,7 +1122,10 @@ class BoostRenderProcessForLoadingBrowserTest
           {{blink::features::kBoostRenderProcessForLoading,
             {{blink::features::kBoostRenderProcessForLoadingTargetUrls.name,
               GetParam().target_urls},
-             {"prioritize_renderer_initiated", "false"}}}},
+             {"prioritize_renderer_initiated", "false"},
+             {blink::features::kBoostRenderProcessForLoadingPrioritizeRestore
+                  .name,
+              base::ToString(GetParam().prioritize_restore)}}}},
           {});
     } else {
       feature_list_.InitAndDisableFeature(
@@ -1110,29 +1133,25 @@ class BoostRenderProcessForLoadingBrowserTest
     }
   }
 
-  void SetUpOnMainThread() override {
-    content::WebContentsObserver::Observe(&web_contents());
-    RenderProcessHostTestBase::SetUpOnMainThread();
+  WebContents& web_contents() { return *shell()->web_contents(); }
+
+  void StartObservingDOMContentLoaded(WebContents& web_contents) {
+    WebContentsObserver::Observe(&web_contents);
   }
 
-  content::WebContents& web_contents() { return *shell()->web_contents(); }
-
  private:
-  // content::WebContentsObserver:
-  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
-    if (!check_if_render_process_backgrounded_on_dom_content_loaded_) {
-      return;
-    }
+  // Override WebContentsObserver.
+  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
     RenderProcessHost* render_process_host = render_frame_host->GetProcess();
     // Emulate render_process_host is not visible to users.
     SetVisibleClients(render_process_host, 0);
-    EXPECT_EQ(render_process_host->GetPriority() ==
-                  base::Process::Priority::kBestEffort,
-              GetParam().expect_render_process_backgrounded);
+    last_process_priority_on_domcontentloaded_ =
+        render_process_host->GetPriority();
   }
 
  protected:
-  bool check_if_render_process_backgrounded_on_dom_content_loaded_ = false;
+  std::optional<base::Process::Priority>
+      last_process_priority_on_domcontentloaded_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -1143,18 +1162,32 @@ const BoostRenderProcessForLoadingBrowserTestParam
             .target_urls = "[]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = true,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
             .target_urls = "[]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = false,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
+        },
+        {
+            .enable_boost_render_process_for_loading = true,
+            .target_urls = "[]",
+            .renderer_initiated_navigation = false,
+            .expect_render_process_backgrounded = false,
+            .prioritize_restore = true,
+            .expect_render_process_backgrounded_on_restore = false,
         },
         {
             .enable_boost_render_process_for_loading = true,
             .target_urls = "[]",
             .renderer_initiated_navigation = true,
             .expect_render_process_backgrounded = true,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
@@ -1162,6 +1195,8 @@ const BoostRenderProcessForLoadingBrowserTestParam
                            "\"http://b.com/simple_page.html\"]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = false,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
@@ -1169,12 +1204,16 @@ const BoostRenderProcessForLoadingBrowserTestParam
                            "\"http://c.com/simple_page.html\"]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = true,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
             .target_urls = "[\"http://a.co.jp/simple_page.html\"]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = false,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
 };
 
@@ -1191,22 +1230,43 @@ IN_PROC_BROWSER_TEST_P(BoostRenderProcessForLoadingBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), empty_url));
 
-  // `BoostRenderProcessForLoadingBrowserTest::DOMContentLoaded()` will be
-  // called during `NavigateToURL()` to check the renderer process priority.
-  check_if_render_process_backgrounded_on_dom_content_loaded_ = true;
-  if (GetParam().renderer_initiated_navigation) {
-    EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", test_url)));
-    EXPECT_TRUE(WaitForLoadStop(&web_contents()));
-  } else {
-    EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  {
+    StartObservingDOMContentLoaded(web_contents());
+    if (GetParam().renderer_initiated_navigation) {
+      EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", test_url)));
+      EXPECT_TRUE(WaitForLoadStop(&web_contents()));
+    } else {
+      EXPECT_TRUE(NavigateToURL(shell(), test_url));
+    }
+    EXPECT_EQ(*last_process_priority_on_domcontentloaded_,
+              GetParam().expect_render_process_backgrounded
+                  ? base::Process::Priority::kBestEffort
+                  : base::Process::Priority::kUserBlocking);
+
+    // After DOMContentLoaded, the process priority becomes kBestEffort.
+    EXPECT_EQ(web_contents().GetPrimaryMainFrame()->GetProcess()->GetPriority(),
+              base::Process::Priority::kBestEffort);
   }
 
-  // Emulate render_process_host is not visible to users.
-  RenderProcessHost* render_process_host =
-      web_contents().GetPrimaryMainFrame()->GetProcess();
-  SetVisibleClients(render_process_host, 0);
-  EXPECT_EQ(render_process_host->GetPriority(),
-            base::Process::Priority::kBestEffort);
+  {
+    // Clone the tab and restore the page.
+    std::unique_ptr<WebContents> new_tab = web_contents().Clone();
+    StartObservingDOMContentLoaded(*new_tab);
+    TestNavigationObserver clone_observer(new_tab.get());
+    NavigationHandleCommitObserver observer(new_tab.get(), test_url);
+    new_tab->GetController().LoadIfNecessary();
+    clone_observer.Wait();
+    EXPECT_EQ(observer.navigation_type(),
+              blink::mojom::NavigationType::RESTORE);
+    EXPECT_EQ(*last_process_priority_on_domcontentloaded_,
+              GetParam().expect_render_process_backgrounded_on_restore
+                  ? base::Process::Priority::kBestEffort
+                  : base::Process::Priority::kUserBlocking);
+
+    // After DOMContentLoaded, the process priority becomes kBestEffort.
+    EXPECT_EQ(new_tab->GetPrimaryMainFrame()->GetProcess()->GetPriority(),
+              base::Process::Priority::kBestEffort);
+  }
 }
 
 // This test verifies properties of RenderProcessHostImpl *before* Init method
@@ -1455,7 +1515,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, AllowUnusedProcessToExit) {
                             .root();
   RenderFrameHostImpl* original_rfh = root->current_frame_host();
   RenderProcessHost* original_process = original_rfh->GetProcess();
-  int original_process_id = original_process->GetID();
+  int original_process_id = original_process->GetDeprecatedID();
   EXPECT_FALSE(original_process->IsInitializedAndNotDead());
   EXPECT_FALSE(original_rfh->IsRenderFrameLive());
 
@@ -1526,7 +1586,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, AllowUnusedProcessToExit) {
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* replaced_rfh = root->current_frame_host();
   ASSERT_EQ(original_process, replaced_rfh->GetProcess());
-  EXPECT_EQ(original_process_id, replaced_rfh->GetProcess()->GetID());
+  EXPECT_EQ(original_process_id, replaced_rfh->GetProcess()->GetDeprecatedID());
   EXPECT_TRUE(replaced_rfh->GetProcess()->IsInitializedAndNotDead());
   EXPECT_TRUE(replaced_rfh->IsRenderFrameLive());
   EXPECT_FALSE(original_process->FastShutdownStarted());
@@ -1544,7 +1604,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, AllowUnusedProcessToExit) {
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   cleanup_observer.Wait();
   RenderFrameHostImpl* rfh_b = root->current_frame_host();
-  EXPECT_NE(original_process_id, rfh_b->GetProcess()->GetID());
+  EXPECT_NE(original_process_id, rfh_b->GetProcess()->GetDeprecatedID());
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(1, host_destructions_);
 
@@ -1573,7 +1633,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
   RenderFrameHostImpl* child_rfh0 = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* child_rfh1 = root->child_at(1)->current_frame_host();
   RenderViewHostImpl* rvh_b = child_rfh0->render_view_host();
-  int process_b_id = child_rfh0->GetProcess()->GetID();
+  int process_b_id = child_rfh0->GetProcess()->GetDeprecatedID();
   EXPECT_EQ(child_rfh0->GetProcess(), child_rfh1->GetProcess());
   EXPECT_TRUE(child_rfh0->GetProcess()->IsInitializedAndNotDead());
   EXPECT_TRUE(child_rfh0->IsRenderFrameLive());
@@ -1663,7 +1723,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     reload_observer.Wait();
   }
   RenderFrameHostImpl* new_child_rfh1 = root->child_at(1)->current_frame_host();
-  EXPECT_EQ(process_b_id, new_child_rfh1->GetProcess()->GetID());
+  EXPECT_EQ(process_b_id, new_child_rfh1->GetProcess()->GetDeprecatedID());
   EXPECT_TRUE(new_child_rfh1->GetProcess()->IsInitializedAndNotDead());
   EXPECT_TRUE(new_child_rfh1->IsRenderFrameLive());
   EXPECT_EQ(0, process_exits_);
@@ -1689,7 +1749,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, HandleNestedFrameDeletion) {
                             .root();
   RenderFrameHostImpl* rfh_a = root->current_frame_host();
   RenderProcessHost* process_a = rfh_a->GetProcess();
-  int process_a_id = process_a->GetID();
+  int process_a_id = process_a->GetDeprecatedID();
   Observe(process_a);
 
   // Navigate cross-process and evict process A from the back-forward cache.
@@ -1701,7 +1761,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, HandleNestedFrameDeletion) {
   shell()->web_contents()->GetController().GetBackForwardCache().Flush();
   cleanup_observer.Wait();
   RenderFrameHostImpl* rfh_b = root->current_frame_host();
-  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetID());
+  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetDeprecatedID());
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(1, host_destructions_);
 }
@@ -1771,7 +1831,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForEachFrameNestedFrameDeletion) {
                             .root();
   RenderFrameHostImpl* rfh_a = root->current_frame_host();
   RenderProcessHost* process_a = rfh_a->GetProcess();
-  int process_a_id = process_a->GetID();
+  int process_a_id = process_a->GetDeprecatedID();
 
   // Listen for RenderFrameDeleted and count the other RenderFrameHosts in the
   // process at the time.
@@ -1786,7 +1846,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForEachFrameNestedFrameDeletion) {
   shell()->web_contents()->GetController().GetBackForwardCache().Flush();
   cleanup_observer.Wait();
   RenderFrameHostImpl* rfh_b = root->current_frame_host();
-  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetID());
+  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetDeprecatedID());
 
   // RenderFrameDeleted should have been called for both the main frame and
   // subframe in process A.
@@ -1827,23 +1887,9 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ZeroExecutionTimes) {
 
 class RenderProcessHostWriteableFileTest
     : public RenderProcessHostTestBase,
-      public ::testing::WithParamInterface<
-          std::tuple</*enforcement_enabled=*/bool,
-                     /*add_no_execute_flags=*/bool>> {
- public:
-  void SetUp() override {
-    enforcement_feature_.InitWithFeatureState(
-        base::features::kEnforceNoExecutableFileHandles,
-        IsEnforcementEnabled());
-    RenderProcessHostTestBase::SetUp();
-  }
-
+      public ::testing::WithParamInterface</*add_no_execute_flags=*/bool> {
  protected:
-  bool IsEnforcementEnabled() { return std::get<0>(GetParam()); }
-  bool ShouldMarkNoExecute() { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList enforcement_feature_;
+  bool ShouldMarkNoExecute() { return GetParam(); }
 };
 
 // This test verifies that the renderer process is wired up correctly with the
@@ -1897,19 +1943,14 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostWriteableFileTest,
                                   run_loop.QuitClosure());
   run_loop.Run();
 
-  // This test should only detect a violation if enforcement is enabled and the
-  // file has not been marked no-execute correctly.
-  bool should_violation_occur =
-      IsEnforcementEnabled() && !ShouldMarkNoExecute();
+  bool should_violation_occur = !ShouldMarkNoExecute();
   EXPECT_EQ(should_violation_occur, error_was_called);
 #endif  // DCHECK_IS_ON()
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    RenderProcessHostWriteableFileTest,
-    testing::Combine(/*enforcement_enabled=*/testing::Bool(),
-                     /*add_no_execute_flags=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderProcessHostWriteableFileTest,
+                         /*add_no_execute_flags=*/testing::Bool());
 
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -2185,76 +2226,84 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
 }
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-class FakeStableVideoDecoderFactoryService
-    : public media::stable::mojom::StableVideoDecoderFactory {
+class FakeOOPVideoDecoderFactoryService
+    : public media::mojom::InterfaceFactory {
  public:
-  FakeStableVideoDecoderFactoryService() = default;
-  FakeStableVideoDecoderFactoryService(
-      const FakeStableVideoDecoderFactoryService&) = delete;
-  FakeStableVideoDecoderFactoryService& operator=(
-      const FakeStableVideoDecoderFactoryService&) = delete;
-  ~FakeStableVideoDecoderFactoryService() override = default;
+  FakeOOPVideoDecoderFactoryService() = default;
+  FakeOOPVideoDecoderFactoryService(const FakeOOPVideoDecoderFactoryService&) =
+      delete;
+  FakeOOPVideoDecoderFactoryService& operator=(
+      const FakeOOPVideoDecoderFactoryService&) = delete;
+  ~FakeOOPVideoDecoderFactoryService() override = default;
 
-  // media::stable::mojom::StableVideoDecoderFactory implementation.
-  void CreateStableVideoDecoder(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver,
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoderTracker>
-          tracker) final {
+  // media::mojom::InterfaceFactory implementation.
+  void CreateVideoDecoderWithTracker(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) final {
     video_decoders_.Add(
-        std::make_unique<FakeStableVideoDecoderService>(std::move(tracker)),
+        std::make_unique<FakeOOPVideoDecoderService>(std::move(tracker)),
         std::move(receiver));
   }
 
- private:
-  class FakeStableVideoDecoderService
-      : public media::stable::mojom::StableVideoDecoder {
-   public:
-    explicit FakeStableVideoDecoderService(
-        mojo::PendingRemote<media::stable::mojom::StableVideoDecoderTracker>
-            tracker)
-        : tracker_(std::move(tracker)) {}
-    FakeStableVideoDecoderService(const FakeStableVideoDecoderService&) =
-        delete;
-    FakeStableVideoDecoderService& operator=(
-        const FakeStableVideoDecoderService&) = delete;
-    ~FakeStableVideoDecoderService() override = default;
+  void CreateAudioDecoder(
+      mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) final {}
+  void CreateVideoDecoder(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder) final {
+  }
+  void CreateAudioEncoder(
+      mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) final {}
+  void CreateDefaultRenderer(
+      const std::string& audio_device_id,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver) final {}
+  void CreateCdm(const media::CdmConfig& cdm_config,
+                 CreateCdmCallback callback) final {}
 
-    // media::stable::mojom::StableVideoDecoder implementation.
+ private:
+  class FakeOOPVideoDecoderService : public media::mojom::VideoDecoder {
+   public:
+    explicit FakeOOPVideoDecoderService(
+        mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker)
+        : tracker_(std::move(tracker)) {}
+    FakeOOPVideoDecoderService(const FakeOOPVideoDecoderService&) = delete;
+    FakeOOPVideoDecoderService& operator=(const FakeOOPVideoDecoderService&) =
+        delete;
+    ~FakeOOPVideoDecoderService() override = default;
+
+    // media::mojom::VideoDecoder implementation.
     void GetSupportedConfigs(GetSupportedConfigsCallback callback) final {
       std::move(callback).Run({}, media::VideoDecoderType::kTesting);
     }
     void Construct(
-        mojo::PendingAssociatedRemote<media::stable::mojom::VideoDecoderClient>
-            stable_video_decoder_client_remote,
-        mojo::PendingRemote<media::stable::mojom::MediaLog>
-            stable_media_log_remote,
-        mojo::PendingReceiver<media::stable::mojom::VideoFrameHandleReleaser>
-            stable_video_frame_handle_releaser_receiver,
+        mojo::PendingAssociatedRemote<media::mojom::VideoDecoderClient>
+            video_decoder_client_remote,
+        mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
+        mojo::PendingReceiver<media::mojom::VideoFrameHandleReleaser>
+            video_frame_handle_releaser_receiver,
         mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
+        media::mojom::CommandBufferIdPtr command_buffer_id,
         const gfx::ColorSpace& target_color_space) final {}
-    void Initialize(
-        const media::VideoDecoderConfig& config,
-        bool low_delay,
-        mojo::PendingRemote<media::stable::mojom::StableCdmContext> cdm_context,
-        InitializeCallback callback) final {}
-    void Decode(const scoped_refptr<media::DecoderBuffer>& buffer,
+    void Initialize(const media::VideoDecoderConfig& config,
+                    bool low_delay,
+                    media::mojom::CdmPtr cdm,
+                    InitializeCallback callback) final {}
+    void Decode(media::mojom::DecoderBufferPtr buffer,
                 DecodeCallback callback) final {}
     void Reset(ResetCallback callback) final {}
+    void OnOverlayInfoChanged(const media::OverlayInfo& overlay_info) final {}
 
    private:
-    mojo::Remote<media::stable::mojom::StableVideoDecoderTracker> tracker_;
+    mojo::Remote<media::mojom::VideoDecoderTracker> tracker_;
   };
 
-  mojo::UniqueReceiverSet<media::stable::mojom::StableVideoDecoder>
-      video_decoders_;
+  mojo::UniqueReceiverSet<media::mojom::VideoDecoder> video_decoders_;
 };
 
-class RenderProcessHostTestStableVideoDecoderTest
+class RenderProcessHostTestOOPVideoDecoderTest
     : public RenderProcessHostTestBase {
  public:
-  RenderProcessHostTestStableVideoDecoderTest()
-      : stable_video_decoder_factory_receiver_(
-            &stable_video_decoder_factory_service_) {}
+  RenderProcessHostTestOOPVideoDecoderTest()
+      : video_decoder_factory_receiver_(&oop_video_decoder_factory_service_) {}
 
   void SetUp() override {
     feature_list_.InitAndEnableFeature(media::kUseOutOfProcessVideoDecoding);
@@ -2262,62 +2311,59 @@ class RenderProcessHostTestStableVideoDecoderTest
   }
 
   void SetUpOnMainThread() override {
-    RenderProcessHostImpl::SetStableVideoDecoderFactoryCreationCBForTesting(
-        stable_video_decoder_factory_creation_cb_.Get());
-    RenderProcessHostImpl::SetStableVideoDecoderEventCBForTesting(
-        stable_video_decoder_event_cb_.Get());
+    RenderProcessHostImpl::SetVideoDecoderFactoryCreationCBForTesting(
+        video_decoder_factory_creation_cb_.Get());
+    RenderProcessHostImpl::SetVideoDecoderEventCBForTesting(
+        video_decoder_event_cb_.Get());
 
-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
     // When Chrome is compiled with
-    // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT), renderer processes need a
-    // media::mojom::VideoDecoder during startup in order to query for supported
-    // configurations (see content::RenderMediaClient::Initialize()). With
-    // OOP-VD, this should cause the creation of a
-    // media::stable::mojom::StableVideoDecoderFactory in order to create the
-    // corresponding media::stable::mojom::StableVideoDecoder. When the
-    // supported configurations are obtained, the media::mojom::VideoDecoder and
-    // media::stable::mojom::StableVideoDecoder connections should be torn down
-    // thus causing the termination of the
-    // media::stable::mojom::StableVideoDecoderFactory connection. Here, we set
-    // up expectations for that.
+    // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT), renderer processes
+    // need a media::mojom::VideoDecoder during startup in order to query for
+    // supported configurations (see content::RenderMediaClient::Initialize()).
+    // With OOP-VD, this should cause the creation of a media::InterfaceFactory
+    // in order to create the corresponding media::mojom::VideoDecoder. When the
+    // supported configurations are obtained, the
+    // renderer-process-to-GPU-process media::mojom::VideoDecoder connection and
+    // the GPU-process-to-utility-process media::mojom::VideoDecoder connection
+    // should be torn down thus causing the termination of the
+    // media::mojom::InterfaceFactory connection. Here, we set up expectations
+    // for that.
     base::RunLoop run_loop;
     {
       InSequence seq;
-      EXPECT_CALL(stable_video_decoder_factory_creation_cb_, Run(_))
-          .WillOnce(
-              [&](mojo::PendingReceiver<
-                  media::stable::mojom::StableVideoDecoderFactory> receiver) {
-                stable_video_decoder_factory_receiver_.Bind(
-                    std::move(receiver));
-                stable_video_decoder_factory_receiver_.set_disconnect_handler(
-                    stable_video_decoder_factory_disconnect_cb_.Get());
-              });
-      EXPECT_CALL(stable_video_decoder_event_cb_,
-                  Run(RenderProcessHostImpl::StableVideoDecoderEvent::
-                          kAllDecodersDisconnected));
-      EXPECT_CALL(stable_video_decoder_factory_disconnect_cb_, Run())
-          .WillOnce([&]() {
-            stable_video_decoder_factory_receiver_.reset();
-            run_loop.Quit();
+      EXPECT_CALL(video_decoder_factory_creation_cb_, Run(_))
+          .WillOnce([&](mojo::PendingReceiver<media::mojom::InterfaceFactory>
+                            receiver) {
+            video_decoder_factory_receiver_.Bind(std::move(receiver));
+            video_decoder_factory_receiver_.set_disconnect_handler(
+                video_decoder_factory_disconnect_cb_.Get());
           });
+      EXPECT_CALL(video_decoder_event_cb_,
+                  Run(RenderProcessHostImpl::VideoDecoderEvent::
+                          kAllDecodersDisconnected));
+      EXPECT_CALL(video_decoder_factory_disconnect_cb_, Run()).WillOnce([&]() {
+        video_decoder_factory_receiver_.reset();
+        run_loop.Quit();
+      });
     }
-#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
 
     rph_ = RenderProcessHostImpl::CreateRenderProcessHost(
         ShellContentBrowserClient::Get()->browser_context(), nullptr);
     ASSERT_TRUE(rph_->Init());
     rph_initialized_ = true;
 
-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
     run_loop.Run();
     ASSERT_TRUE(VerifyAndClearExpectations());
-#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
   }
 
   void TearDownOnMainThread() override {
-    // Reset the |stable_video_decoder_factory_receiver_| so that the
+    // Reset the |video_decoder_factory_receiver_| so that the
     // disconnection callback is not called on tear down.
-    stable_video_decoder_factory_receiver_.reset();
+    video_decoder_factory_receiver_.reset();
     if (rph_initialized_) {
       rph_->Cleanup();
     }
@@ -2328,123 +2374,120 @@ class RenderProcessHostTestStableVideoDecoderTest
   bool VerifyAndClearExpectations() {
     // Note: we verify and clear the expectations for all the mocks. We
     // intentionally don't early out if verifying one mock fails.
-    bool result = Mock::VerifyAndClearExpectations(
-        &stable_video_decoder_factory_creation_cb_);
+    bool result =
+        Mock::VerifyAndClearExpectations(&video_decoder_factory_creation_cb_);
     result = Mock::VerifyAndClearExpectations(
-                 &stable_video_decoder_factory_disconnect_cb_) &&
+                 &video_decoder_factory_disconnect_cb_) &&
              result;
     result =
-        Mock::VerifyAndClearExpectations(&stable_video_decoder_event_cb_) &&
-        result;
+        Mock::VerifyAndClearExpectations(&video_decoder_event_cb_) && result;
     return result;
   }
 
   base::test::ScopedFeatureList feature_list_;
 
   StrictMock<base::MockRepeatingCallback<
-      RenderProcessHostImpl::StableVideoDecoderFactoryCreationCB::RunType>>
-      stable_video_decoder_factory_creation_cb_;
+      RenderProcessHostImpl::VideoDecoderFactoryCreationCB::RunType>>
+      video_decoder_factory_creation_cb_;
   StrictMock<base::MockOnceCallback<void()>>
-      stable_video_decoder_factory_disconnect_cb_;
+      video_decoder_factory_disconnect_cb_;
   StrictMock<base::MockRepeatingCallback<
-      RenderProcessHostImpl::StableVideoDecoderEventCB::RunType>>
-      stable_video_decoder_event_cb_;
+      RenderProcessHostImpl::VideoDecoderEventCB::RunType>>
+      video_decoder_event_cb_;
 
-  FakeStableVideoDecoderFactoryService stable_video_decoder_factory_service_;
-  mojo::Receiver<media::stable::mojom::StableVideoDecoderFactory>
-      stable_video_decoder_factory_receiver_;
+  FakeOOPVideoDecoderFactoryService oop_video_decoder_factory_service_;
+  mojo::Receiver<media::mojom::InterfaceFactory>
+      video_decoder_factory_receiver_;
 
   raw_ptr<RenderProcessHost> rph_ = nullptr;
   bool rph_initialized_ = false;
 };
 
-// Ensures that the StableVideoDecoderFactory connection is terminated after a
-// delay once all the StableVideoDecoders created with it have disconnected.
-IN_PROC_BROWSER_TEST_F(RenderProcessHostTestStableVideoDecoderTest,
+// Ensures that the InterfaceFactory connection is terminated after a
+// delay once all the VideoDecoders created with it have disconnected.
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTestOOPVideoDecoderTest,
                        FactoryIsResetAfterDelay) {
   ASSERT_FALSE(Test::HasFailure());
 
-  // First, let's ask the RPH to establish a StableVideoDecoder connection. This
-  // should cause the RPH's StableVideoDecoderFactory to be bound.
-  EXPECT_CALL(stable_video_decoder_factory_creation_cb_, Run(_))
-      .WillOnce([&](mojo::PendingReceiver<
-                    media::stable::mojom::StableVideoDecoderFactory> receiver) {
-        stable_video_decoder_factory_receiver_.Bind(std::move(receiver));
-        stable_video_decoder_factory_receiver_.set_disconnect_handler(
-            stable_video_decoder_factory_disconnect_cb_.Get());
-      });
-  mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-      stable_video_decoder_remote;
-  rph_->CreateStableVideoDecoder(
-      stable_video_decoder_remote.InitWithNewPipeAndPassReceiver());
+  // First, let's ask the RPH to establish a VideoDecoder connection. This
+  // should cause the RPH's InterfaceFactory to be bound.
+  EXPECT_CALL(video_decoder_factory_creation_cb_, Run(_))
+      .WillOnce(
+          [&](mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
+            video_decoder_factory_receiver_.Bind(std::move(receiver));
+            video_decoder_factory_receiver_.set_disconnect_handler(
+                video_decoder_factory_disconnect_cb_.Get());
+          });
+  mojo::PendingRemote<media::mojom::VideoDecoder> video_decoder_remote;
+  rph_->CreateOOPVideoDecoder(
+      video_decoder_remote.InitWithNewPipeAndPassReceiver());
   ASSERT_TRUE(VerifyAndClearExpectations());
 
-  // Now, let's destroy the StableVideoDecoder connection. Since this was the
-  // only StableVideoDecoder connection, destroying it should cause the RPH's
-  // StableVideoDecoderFactory connection to die after a delay.
+  // Now, let's destroy the VideoDecoder connection. Since this was the
+  // only VideoDecoder connection, destroying it should cause the RPH's
+  // InterfaceFactory connection to die after a delay.
   base::RunLoop run_loop;
-  base::ElapsedTimer reset_stable_video_decoder_factory_timer;
+  base::ElapsedTimer reset_video_decoder_factory_timer;
   {
     InSequence seq;
-    EXPECT_CALL(stable_video_decoder_event_cb_,
-                Run(RenderProcessHostImpl::StableVideoDecoderEvent::
+    EXPECT_CALL(video_decoder_event_cb_,
+                Run(RenderProcessHostImpl::VideoDecoderEvent::
                         kAllDecodersDisconnected));
-    EXPECT_CALL(stable_video_decoder_factory_disconnect_cb_, Run())
-        .WillOnce([&]() { run_loop.Quit(); });
+    EXPECT_CALL(video_decoder_factory_disconnect_cb_, Run()).WillOnce([&]() {
+      run_loop.Quit();
+    });
   }
-  stable_video_decoder_remote.reset();
+  video_decoder_remote.reset();
   run_loop.Run();
-  EXPECT_GE(reset_stable_video_decoder_factory_timer.Elapsed(),
-            base::Seconds(3));
+  EXPECT_GE(reset_video_decoder_factory_timer.Elapsed(), base::Seconds(3));
 }
 
-// Ensures that the timer that destroys the StableVideoDecoderFactory connection
-// when all StableVideoDecoder connections die is stopped if a request to
-// connect another StableVideoDecoder is received soon enough.
-IN_PROC_BROWSER_TEST_F(RenderProcessHostTestStableVideoDecoderTest,
+// Ensures that the timer that destroys the InterfaceFactory connection
+// when all VideoDecoder connections die is stopped if a request to
+// connect another VideoDecoder is received soon enough.
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTestOOPVideoDecoderTest,
                        FactoryResetTimerIsStoppedOnRequestBeforeResetDelay) {
   ASSERT_FALSE(Test::HasFailure());
 
-  // First, let's ask the RPH to establish a StableVideoDecoder connection. This
-  // should cause the RPH's StableVideoDecoderFactory to be bound.
-  EXPECT_CALL(stable_video_decoder_factory_creation_cb_, Run(_))
-      .WillOnce([&](mojo::PendingReceiver<
-                    media::stable::mojom::StableVideoDecoderFactory> receiver) {
-        stable_video_decoder_factory_receiver_.Bind(std::move(receiver));
-        stable_video_decoder_factory_receiver_.set_disconnect_handler(
-            stable_video_decoder_factory_disconnect_cb_.Get());
-      });
-  mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-      stable_video_decoder_remote;
-  rph_->CreateStableVideoDecoder(
-      stable_video_decoder_remote.InitWithNewPipeAndPassReceiver());
+  // First, let's ask the RPH to establish a VideoDecoder connection. This
+  // should cause the RPH's InterfaceFactory to be bound.
+  EXPECT_CALL(video_decoder_factory_creation_cb_, Run(_))
+      .WillOnce(
+          [&](mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
+            video_decoder_factory_receiver_.Bind(std::move(receiver));
+            video_decoder_factory_receiver_.set_disconnect_handler(
+                video_decoder_factory_disconnect_cb_.Get());
+          });
+  mojo::PendingRemote<media::mojom::VideoDecoder> video_decoder_remote;
+  rph_->CreateOOPVideoDecoder(
+      video_decoder_remote.InitWithNewPipeAndPassReceiver());
   ASSERT_TRUE(VerifyAndClearExpectations());
 
-  // Now, let's destroy the StableVideoDecoder connection. Since this was the
-  // only StableVideoDecoder connection, destroying it should trigger a
+  // Now, let's destroy the VideoDecoder connection. Since this was the
+  // only VideoDecoder connection, destroying it should trigger a
   // kAllDecodersDisconnected event.
   base::RunLoop run_loop_1;
-  EXPECT_CALL(stable_video_decoder_event_cb_,
-              Run(RenderProcessHostImpl::StableVideoDecoderEvent::
-                      kAllDecodersDisconnected))
+  EXPECT_CALL(
+      video_decoder_event_cb_,
+      Run(RenderProcessHostImpl::VideoDecoderEvent::kAllDecodersDisconnected))
       .WillOnce([&]() { run_loop_1.Quit(); });
-  stable_video_decoder_remote.reset();
+  video_decoder_remote.reset();
   run_loop_1.Run();
   ASSERT_TRUE(VerifyAndClearExpectations());
 
-  // Now, let's request another StableVideoDecoder connection immediately. This
+  // Now, let's request another VideoDecoder connection immediately. This
   // should stop the timer that resets the factory.
-  EXPECT_CALL(stable_video_decoder_event_cb_,
-              Run(RenderProcessHostImpl::StableVideoDecoderEvent::
-                      kFactoryResetTimerStopped));
-  rph_->CreateStableVideoDecoder(
-      stable_video_decoder_remote.InitWithNewPipeAndPassReceiver());
+  EXPECT_CALL(
+      video_decoder_event_cb_,
+      Run(RenderProcessHostImpl::VideoDecoderEvent::kFactoryResetTimerStopped));
+  rph_->CreateOOPVideoDecoder(
+      video_decoder_remote.InitWithNewPipeAndPassReceiver());
   ASSERT_TRUE(VerifyAndClearExpectations());
 
   // Finally, let's wait a few seconds (longer than the delay configured for the
-  // timer that kills the StableVideoDecoderFactory connection). Because the
-  // |stable_video_decoder_factory_disconnect_cb_| is a StrictMock, this should
-  // detect that the StableVideoDecoderFactory connection doesn't die.
+  // timer that kills the InterfaceFactory connection). Because the
+  // |video_decoder_factory_disconnect_cb_| is a StrictMock, this should
+  // detect that the InterfaceFactory connection doesn't die.
   base::RunLoop run_loop_2;
   GetUIThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
@@ -2454,6 +2497,45 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTestStableVideoDecoderTest,
       base::Seconds(5));
   run_loop_2.Run();
   ASSERT_TRUE(VerifyAndClearExpectations());
+}
+
+// Asserts RenderProcessHosts are configured to reflect the embedder's policy
+// defined by `ContentBrowserClient::DisallowV8FeatureFlagOverridesForSite()`.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
+                       DisallowV8FeatureFlagOverridesAppliedToHosts) {
+  class DisallowV8FeatureOverridesContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    // ContentBrowserTestContentBrowserClient:
+    bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url) override {
+      return site_url.host() == "a.com";
+    }
+  };
+  DisallowV8FeatureOverridesContentBrowserClient content_browser_client;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  BrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  scoped_refptr<SiteInstanceImpl> site_instance_a =
+      SiteInstanceImpl::CreateForTesting(browser_context, url_a);
+  scoped_refptr<SiteInstanceImpl> site_instance_b =
+      SiteInstanceImpl::CreateForTesting(browser_context, url_b);
+
+  RenderProcessHost* process_a = RenderProcessHostImpl::CreateRenderProcessHost(
+      browser_context, site_instance_a.get());
+  RenderProcessHost* process_b = RenderProcessHostImpl::CreateRenderProcessHost(
+      browser_context, site_instance_b.get());
+  process_a->Init();
+  process_b->Init();
+
+  EXPECT_TRUE(process_a->DisallowV8FeatureFlagOverrides());
+  EXPECT_FALSE(process_b->DisallowV8FeatureFlagOverrides());
+
+  process_a->Cleanup();
+  process_b->Cleanup();
 }
 
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)

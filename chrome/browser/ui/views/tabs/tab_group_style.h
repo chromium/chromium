@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_H_
 
 #include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "tab_group_header.h"
 #include "ui/gfx/geometry/rect.h"
@@ -47,7 +48,7 @@ class TabGroupStyle {
       const views::View* title) const;
 
   // Returns the insets for a header chip that has text.
-  virtual gfx::Insets GetInsetsForHeaderChip(bool should_show_sync_icon) const;
+  virtual gfx::Insets GetInsetsForHeaderChip() const;
 
   // While calculating desired width of a tab group an adjustment value is added
   // for the distance between the tab group header and the right tab.
@@ -59,6 +60,9 @@ class TabGroupStyle {
 
   // Returns the sync icon width.
   virtual float GetSyncIconWidth() const;
+
+  // Returns the attention indicator icon width.
+  virtual float GetAttentionIndicatorWidth() const;
 
   // The radius of the tab group header chip
   virtual int GetChipCornerRadius() const;

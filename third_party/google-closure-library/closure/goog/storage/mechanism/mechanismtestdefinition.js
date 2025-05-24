@@ -12,10 +12,22 @@
  * to work correctly for these legacy tests.
  */
 
-goog.provide('goog.storage.mechanism.mechanismTestDefinition');
-goog.setTestOnly('goog.storage.mechanism.mechanismTestDefinition');
+goog.module('goog.storage.mechanism.testhelpers');
+goog.setTestOnly('goog.storage.mechanism.testhelpers');
 
-var mechanism;
-var mechanism_shared;
-var mechanism_separate;
-var minimumQuota;
+const {getFunctionName} = goog.require('goog.debug');
+
+/**
+ * @param {!Array<!Function>} tests
+ * @param {!Function} bindFnCallback
+ * @return {!Object}
+ */
+exports.bindTests = function(tests, bindFnCallback) {
+  const boundTests = {};
+  for (const test of tests) {
+    const name = getFunctionName(test);
+    if (!name.startsWith('test')) continue;
+    boundTests[name] = () => void bindFnCallback(test);
+  }
+  return boundTests;
+};

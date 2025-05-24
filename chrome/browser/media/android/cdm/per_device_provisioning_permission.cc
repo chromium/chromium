@@ -11,9 +11,12 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_thread.h"
@@ -77,14 +80,16 @@ class PerDeviceProvisioningPermissionRequest final
       const url::Origin& origin,
       base::OnceCallback<void(bool)> callback)
       : PermissionRequest(
-            origin.GetURL(),
-            permissions::RequestType::kProtectedMediaIdentifier,
-            /*has_gesture=*/false,
+            std::make_unique<permissions::PermissionRequestData>(
+                std::make_unique<permissions::ContentSettingPermissionResolver>(
+                    ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER),
+                /*user_gesture=*/false,
+                origin.GetURL()),
             base::BindRepeating(
                 &PerDeviceProvisioningPermissionRequest::PermissionDecided,
                 base::Unretained(this)),
             base::BindOnce(
-                &PerDeviceProvisioningPermissionRequest::DeleteRequest,
+                &PerDeviceProvisioningPermissionRequest::RequestFinished,
                 base::Unretained(this))),
         origin_(origin),
         callback_(std::move(callback)) {}
@@ -94,9 +99,11 @@ class PerDeviceProvisioningPermissionRequest final
   PerDeviceProvisioningPermissionRequest& operator=(
       const PerDeviceProvisioningPermissionRequest&) = delete;
 
-  void PermissionDecided(ContentSetting result,
-                         bool is_one_time,
-                         bool is_final_decision) {
+  void PermissionDecided(
+      ContentSetting result,
+      bool is_one_time,
+      bool is_final_decision,
+      const permissions::PermissionRequestData& request_data) {
     DCHECK(!is_one_time);
     DCHECK(!is_final_decision);
     const bool granted = result == ContentSetting::CONTENT_SETTING_ALLOW;
@@ -104,20 +111,15 @@ class PerDeviceProvisioningPermissionRequest final
     std::move(callback_).Run(granted);
   }
 
-  void DeleteRequest() {
+  void RequestFinished() {
     // The |callback_| may not have run if the prompt was ignored, e.g. the tab
     // was closed while the prompt was displayed. Don't save this result as the
     // last response since it wasn't really a user action.
     if (callback_)
       std::move(callback_).Run(false);
-
-    delete this;
   }
 
  private:
-  // Can only be self-destructed. See DeleteRequest().
-  ~PerDeviceProvisioningPermissionRequest() override = default;
-
   void UpdateLastResponse(bool allowed) {
     GetLastResponse().Update(origin_, allowed);
   }
@@ -160,6 +162,6 @@ void RequestPerDeviceProvisioningPermission(
   // complete. See PerDeviceProvisioningPermissionRequest::DeleteRequest().
   permission_request_manager->AddRequest(
       render_frame_host,
-      new PerDeviceProvisioningPermissionRequest(
+      std::make_unique<PerDeviceProvisioningPermissionRequest>(
           render_frame_host->GetLastCommittedOrigin(), std::move(callback)));
 }

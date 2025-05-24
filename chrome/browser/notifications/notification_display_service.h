@@ -65,9 +65,6 @@ class NotificationDisplayService : public KeyedService {
       base::OnceCallback<void(std::set<std::string>,
                               bool /* supports_synchronization */)>;
 
-  // Returns an instance of the display service for the given |profile|.
-  static NotificationDisplayService* GetForProfile(Profile* profile);
-
   // Displays the |notification| of type |notification_type|. The |metadata|
   // may be provided for certain notification types that require additional
   // information for the notification to be displayed.

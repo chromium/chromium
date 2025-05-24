@@ -22,16 +22,18 @@ BackGestureContextualNudgeDelegate::~BackGestureContextualNudgeDelegate() {
 
 void BackGestureContextualNudgeDelegate::MaybeStartTrackingNavigation(
     aura::Window* window) {
-  if (window == window_)
+  if (window == window_) {
     return;
+  }
 
   // Stop tracking the previous window before tracking a new window.
   StopTrackingNavigation();
 
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
-  if (!browser_view)
+  if (!browser_view) {
     return;
+  }
 
   window_ = window;
   window_->AddObserver(this);

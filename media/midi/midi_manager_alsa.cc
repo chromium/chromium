@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/midi/midi_manager_alsa.h"
 
 #include <errno.h>
@@ -9,21 +14,23 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/safe_strerror.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/midi_service.mojom.h"
 #include "media/midi/task_service.h"
@@ -150,11 +157,11 @@ std::string GetVendor(udev_device* dev) {
   return vendor;
 }
 
-void SetStringIfNonEmpty(base::Value::Dict* value,
-                         const std::string& path,
-                         const std::string& in_value) {
+void SetStringIfNonEmpty(base::Value::Dict& value,
+                         std::string_view path,
+                         std::string in_value) {
   if (!in_value.empty())
-    value->Set(path, in_value);
+    value.Set(path, std::move(in_value));
 }
 
 }  // namespace
@@ -351,8 +358,8 @@ MidiManagerAlsa::MidiPort::MidiPort(const std::string& path,
 MidiManagerAlsa::MidiPort::~MidiPort() = default;
 
 // Note: keep synchronized with the MidiPort::Match* methods.
-std::unique_ptr<base::Value::Dict> MidiManagerAlsa::MidiPort::Value() const {
-  std::unique_ptr<base::Value::Dict> value(new base::Value::Dict);
+base::Value::Dict MidiManagerAlsa::MidiPort::Value() const {
+  base::Value::Dict value;
 
   std::string type;
   switch (type_) {
@@ -363,38 +370,33 @@ std::unique_ptr<base::Value::Dict> MidiManagerAlsa::MidiPort::Value() const {
       type = "output";
       break;
   }
-  value->Set("type", type);
-  SetStringIfNonEmpty(value.get(), "path", path_);
-  SetStringIfNonEmpty(value.get(), "clientName", client_name_);
-  SetStringIfNonEmpty(value.get(), "portName", port_name_);
-  value->Set("clientId", client_id_);
-  value->Set("portId", port_id_);
-  value->Set("midiDevice", midi_device_);
+  value.Set("type", std::move(type));
+  SetStringIfNonEmpty(value, "path", path_);
+  SetStringIfNonEmpty(value, "clientName", client_name_);
+  SetStringIfNonEmpty(value, "portName", port_name_);
+  value.Set("clientId", client_id_);
+  value.Set("portId", port_id_);
+  value.Set("midiDevice", midi_device_);
 
   // Flatten id fields.
-  SetStringIfNonEmpty(value.get(), "bus", id_.bus());
-  SetStringIfNonEmpty(value.get(), "vendorId", id_.vendor_id());
-  SetStringIfNonEmpty(value.get(), "modelId", id_.model_id());
-  SetStringIfNonEmpty(value.get(), "usbInterfaceNum", id_.usb_interface_num());
-  SetStringIfNonEmpty(value.get(), "serial", id_.serial());
+  SetStringIfNonEmpty(value, "bus", id_.bus());
+  SetStringIfNonEmpty(value, "vendorId", id_.vendor_id());
+  SetStringIfNonEmpty(value, "modelId", id_.model_id());
+  SetStringIfNonEmpty(value, "usbInterfaceNum", id_.usb_interface_num());
+  SetStringIfNonEmpty(value, "serial", id_.serial());
 
   return value;
 }
 
 std::string MidiManagerAlsa::MidiPort::JSONValue() const {
-  std::string json;
-  JSONStringValueSerializer serializer(&json);
-  serializer.Serialize(*Value().get());
-  return json;
+  return base::WriteJson(Value()).value_or(std::string());
 }
 
 // TODO(agoode): Do not use SHA256 here. Instead store a persistent
 //               mapping and just use a UUID or other random string.
 //               http://crbug.com/465320
 std::string MidiManagerAlsa::MidiPort::OpaqueKey() const {
-  uint8_t hash[crypto::kSHA256Length];
-  crypto::SHA256HashString(JSONValue(), hash, sizeof(hash));
-  return base::HexEncode(hash);
+  return base::HexEncode(crypto::hash::Sha256(JSONValue()));
 }
 
 bool MidiManagerAlsa::MidiPort::MatchConnected(const MidiPort& query) const {
@@ -486,7 +488,7 @@ MidiManagerAlsa::MidiPortStateBase::iterator
 MidiManagerAlsa::MidiPortStateBase::FindConnected(
     const MidiManagerAlsa::MidiPort& port) {
   // Exact match required for connected ports.
-  return base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+  return std::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
     return p->MatchConnected(port);
   });
 }
@@ -512,7 +514,7 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
     // This is the best possible match for hardware card-based clients.
     // This will also match the empty id correctly for devices without an id.
     auto it =
-        base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+        std::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
           return p->MatchCardPass1(port);
         });
     if (it != ports_.end())
@@ -523,7 +525,7 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
       // This will give us a high-confidence match when a user moves a device to
       // another USB/Firewire/Thunderbolt/etc port, but only works if the device
       // has a hardware id.
-      it = base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+      it = std::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
         return p->MatchCardPass2(port);
       });
       if (it != ports_.end())
@@ -534,7 +536,7 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
     // Pass 1. Match on client_id, port_id, client_name, port_name.
     // This will give us a reasonably good match.
     auto it =
-        base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+        std::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
           return p->MatchNoCardPass1(port);
         });
     if (it != ports_.end())
@@ -543,7 +545,7 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
     // Pass 2. Match on port_id, client_name, port_name.
     // This is weaker but similar to pass 2 in the hardware card-based clients
     // match.
-    it = base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+    it = std::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
       return p->MatchNoCardPass2(port);
     });
     if (it != ports_.end())

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/compiler_specific.h"
-#include "content/public/common/user_agent.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/pepper/url_request_info_util.h"
 #include "ppapi/proxy/connection.h"

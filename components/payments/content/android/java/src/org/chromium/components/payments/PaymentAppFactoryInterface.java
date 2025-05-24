@@ -4,7 +4,10 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface for factories that create payment apps. */
+@NullMarked
 public interface PaymentAppFactoryInterface {
     /**
      * Creates payment apps for the |delegate|. When this method is invoked, each factory must:

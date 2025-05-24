@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "services/device/public/cpp/test/fake_sensor_and_provider.h"
 
@@ -371,11 +367,12 @@ FakeSensorProvider::GetSensorReadingSharedBufferForType(
   }
 
   size_t offset = GetSensorReadingSharedBufferOffset(type);
-  CHECK(offset % sizeof(SensorReadingSharedBuffer) == 0u);
+  CHECK(offset % sizeof(SensorReadingSharedBuffer) == 0);
 
   SensorReadingSharedBuffer& buffer =
       buffers[offset / sizeof(SensorReadingSharedBuffer)];
-  std::ranges::fill(base::byte_span_from_ref(buffer), 0u);
+  std::ranges::fill(base::byte_span_from_ref(base::allow_nonunique_obj, buffer),
+                    0);
   return &buffer;
 }
 

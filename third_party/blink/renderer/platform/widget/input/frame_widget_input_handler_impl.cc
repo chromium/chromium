@@ -51,8 +51,9 @@ void FrameWidgetInputHandlerImpl::AddImeTextSpansToExistingText(
          uint32_t start, uint32_t end,
          const Vector<ui::ImeTextSpan>& ui_ime_text_spans) {
         DCHECK_EQ(!!widget, !!handler);
-        if (!widget)
+        if (!widget) {
           return;
+        }
         ImeEventGuard guard(widget);
         handler->AddImeTextSpansToExistingText(start, end, ui_ime_text_spans);
       },
@@ -445,6 +446,58 @@ void FrameWidgetInputHandlerImpl::MoveCaret(const gfx::Point& point) {
       },
       main_thread_frame_widget_input_handler_, point));
 }
+
+#if BUILDFLAG(IS_IOS)
+void FrameWidgetInputHandlerImpl::StartAutoscrollForSelectionToPoint(
+    const gfx::PointF& point) {
+  RunOnMainThread(base::BindOnce(
+      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
+         const gfx::PointF& point) {
+        if (handler) {
+          handler->StartAutoscrollForSelectionToPoint(point);
+        }
+      },
+      main_thread_frame_widget_input_handler_, point));
+}
+
+void FrameWidgetInputHandlerImpl::StopAutoscroll() {
+  RunOnMainThread(base::BindOnce(
+      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler) {
+        if (handler) {
+          handler->StopAutoscroll();
+        }
+      },
+      main_thread_frame_widget_input_handler_));
+}
+
+void FrameWidgetInputHandlerImpl::RectForEditFieldChars(
+    const gfx::Range& range,
+    RectForEditFieldCharsCallback callback) {
+  // If the mojom channel is registered with compositor thread, we have to run
+  // the callback on compositor thread. Otherwise run it on main thread. Mojom
+  // requires the callback runs on the same thread.
+  if (ThreadedCompositingEnabled()) {
+    callback = base::BindOnce(
+        [](scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
+           RectForEditFieldCharsCallback callback, const gfx::Rect& rect) {
+          callback_task_runner->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback), rect));
+        },
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
+  }
+
+  RunOnMainThread(base::BindOnce(
+      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
+         const gfx::Range& range, RectForEditFieldCharsCallback callback) {
+        if (!handler) {
+          std::move(callback).Run(gfx::Rect());
+          return;
+        }
+        handler->RectForEditFieldChars(range, std::move(callback));
+      },
+      main_thread_frame_widget_input_handler_, range, std::move(callback)));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 void FrameWidgetInputHandlerImpl::ExecuteCommandOnMainThread(
     base::WeakPtr<WidgetBase> widget,

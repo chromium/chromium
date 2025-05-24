@@ -100,45 +100,18 @@ class DeviceSwitcherResultDispatcher;
 // and the display history of the bubble, etc.
 - (void)presentLensKeyboardTipBubble;
 
-// Optionally presents a help bubble to inform the user that their tracked
-// packages will appear in the Magic Stack. The eligibility can depend on the UI
-// hierarchy at the moment, the configuration and the display history of the
-// bubble, etc.
-- (void)presentParcelTrackingTipBubble;
-
-// Optionally presents a help bubble for the share button.
-// The eligibility can depend on the UI hierarchy at the moment, the
-// configuration and the display history of the bubble, etc.
-- (void)presentShareButtonHelpBubbleWithDeviceSwitcherResultDispatcher:
-    (raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>)
-        deviceSwitcherResultDispatcher;
-
-// Optionally presents a bubble associated with the tab grid iph.
-// The eligibility can depend on the UI hierarchy at the moment, the
-// configuration and the display history of the bubble, etc.
-- (void)presentTabGridToolbarItemTipWithToolbarHandler:
-            (id<ToolbarCommands>)toolbarHandler
-                        deviceSwitcherResultDispatcher:
-                            (raw_ptr<segmentation_platform::
-                                         DeviceSwitcherResultDispatcher>)
-                                deviceSwitcherResultDispatcher;
-
-// Optionally presents a bubble associated with the new tab iph.
-// The eligibility can depend on the UI hierarchy at the moment, the
-// configuration and the display history of the bubble, etc.
-- (void)presentNewTabToolbarItemTipWithHandlerForToolbar:
-            (id<ToolbarCommands>)toolbarHandler
-                                             forTabStrip:(id<TabStripCommands>)
-                                                             tabStripHandler
-                          deviceSwitcherResultDispatcher:
-                              (raw_ptr<segmentation_platform::
-                                           DeviceSwitcherResultDispatcher>)
-                                  deviceSwitcherResultDispatcher;
-
 // Optionally present a bubble associated with the lens overlay.
 // The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble.
 - (void)presentLensOverlayTipBubble;
+
+// Optionally presents a bubble informing the user that they can find Chrome
+// settings in the overflow menu.
+- (void)presentOverflowMenuSettingsBubble;
+
+// Optionally presents a bubble informing the user that they can use the
+// identity disc on the New Tab page to switch accounts.
+- (void)presentSwitchAccountsWithNTPAccountParticleDiscBubble;
 
 // Optionally presents a gesture IPH associated with the pull-to-refresh
 // feature. The eligibility can depend on the UI hierarchy at the moment, the
@@ -160,6 +133,16 @@ class DeviceSwitcherResultDispatcher;
 // configuration and the display history of the bubble, etc.
 - (void)presentToolbarSwipeGestureInProductHelp;
 
+// Optionally presents a full screen IPH associated with the swipe to scroll on
+// the Feed. The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
+- (void)presentFeedSwipeGestureInProductHelp;
+
+// Optionally present a bubble associated with scrolling on the Feed.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble.
+- (void)presentFeedSwipeBubble;
+
 // Delegate method to be invoked when the user has performed a swipe on the
 // toolbar to switch tabs. Remove `toolbarSwipeGestureIPH` if visible.
 - (void)handleToolbarSwipeGesture;
@@ -171,6 +154,9 @@ class DeviceSwitcherResultDispatcher;
 
 // Dismisses all bubbles.
 - (void)hideAllHelpBubbles;
+
+// Dismisses Omnibox relative bubbles.
+- (void)hideBubblesPointingToOmnibox;
 
 // Stops observing all objects.
 - (void)disconnect;

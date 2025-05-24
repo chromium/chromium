@@ -80,7 +80,7 @@ void AppModalDialogViewAndroid::ShowAppModalDialog() {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Keep a ref to the java side object until we get a confirm or cancel.
@@ -95,7 +95,7 @@ void AppModalDialogViewAndroid::ActivateAppModalDialog() {
   // that does not host the currently active app modal dialog, as a way to
   // redirect activation to the app modal dialog host. It's not relevant on
   // Android.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AppModalDialogViewAndroid::CloseAppModalDialog() {

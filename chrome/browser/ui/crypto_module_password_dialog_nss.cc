@@ -37,13 +37,13 @@ class SlotUnlocker {
   void GotPassword(const std::string& password);
   void Done();
 
-  size_t current_;
+  size_t current_ = 0;
   std::vector<crypto::ScopedPK11Slot> modules_;
   CryptoModulePasswordReason reason_;
   net::HostPortPair server_;
   gfx::NativeWindow parent_;
   base::OnceClosure callback_;
-  PRBool retry_;
+  PRBool retry_ = PR_FALSE;
 };
 
 SlotUnlocker::SlotUnlocker(std::vector<crypto::ScopedPK11Slot> modules,
@@ -51,13 +51,11 @@ SlotUnlocker::SlotUnlocker(std::vector<crypto::ScopedPK11Slot> modules,
                            const net::HostPortPair& server,
                            gfx::NativeWindow parent,
                            base::OnceClosure callback)
-    : current_(0),
-      modules_(std::move(modules)),
+    : modules_(std::move(modules)),
       reason_(reason),
       server_(server),
       parent_(parent),
-      callback_(std::move(callback)),
-      retry_(PR_FALSE) {
+      callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 

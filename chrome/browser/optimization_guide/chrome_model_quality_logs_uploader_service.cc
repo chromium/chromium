@@ -87,20 +87,6 @@ bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
   }
 
   if (model_execution_feature_controller_) {
-    // Don't upload logs if the feature uses the chrome://settings/ai page
-    // (i.e. has a registered UserVisibleFeatureKey) but is not enabled for the
-    // user. If the feature don't use the chrome://settings/ai page, we assume
-    // the feature is enabled given we have a log entry.
-    std::optional<UserVisibleFeatureKey> feature_key =
-        metadata->user_visible_feature_key();
-    if (feature_key &&
-        !model_execution_feature_controller_
-             ->ShouldFeatureBeCurrentlyEnabledForUser(*feature_key)) {
-      RecordUploadStatusHistogram(
-          metadata, ModelQualityLogsUploadStatus::kFeatureNotEnabledForUser);
-      return false;
-    }
-
     // Don't upload logs if logging is disabled by enterprise policy.
     if (!model_execution_feature_controller_
              ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata)) {

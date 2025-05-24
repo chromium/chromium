@@ -11,10 +11,10 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/types/fixed_array.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/fixed_array.h"
 #include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "third_party/icu/source/common/unicode/ucnv_cb.h"
@@ -64,11 +64,11 @@ namespace {
 // of their respective owners.
 
 void ToUnicodeCallbackSubstitute(const void* context,
-                                 UConverterToUnicodeArgs *to_args,
+                                 UConverterToUnicodeArgs* to_args,
                                  const char* code_units,
                                  int32_t length,
                                  UConverterCallbackReason reason,
-                                 UErrorCode * err) {
+                                 UErrorCode* err) {
   static const UChar kReplacementChar = 0xFFFD;
   if (reason <= UCNV_IRREGULAR) {
     if (context == nullptr ||
@@ -76,8 +76,8 @@ void ToUnicodeCallbackSubstitute(const void* context,
          reason == UCNV_UNASSIGNED)) {
       *err = U_ZERO_ERROR;
       ucnv_cbToUWriteUChars(to_args, &kReplacementChar, 1, 0, err);
-      }
-      // else the caller must have set the error code accordingly.
+    }
+    // else the caller must have set the error code accordingly.
   }
   // else ignore the reset, close and clone calls.
 }
@@ -111,15 +111,17 @@ bool ConvertFromUTF16(UConverter* converter,
                       src.length(), &status);
   encoded->resize(actual_size);
   ucnv_close(converter);
-  if (U_SUCCESS(status))
+  if (U_SUCCESS(status)) {
     return true;
+  }
   encoded->clear();  // Make sure the output is empty on error.
   return false;
 }
 
 // Set up our error handler for ToUTF-16 converters
 void SetUpErrorHandlerForToUChars(OnStringConversionError::Type on_error,
-                                  UConverter* converter, UErrorCode* status) {
+                                  UConverter* converter,
+                                  UErrorCode* status) {
   switch (on_error) {
     case OnStringConversionError::FAIL:
       ucnv_setToUCallBack(converter, UCNV_TO_U_CALLBACK_STOP, nullptr, nullptr,
@@ -148,8 +150,9 @@ bool UTF16ToCodepage(std::u16string_view utf16,
 
   UErrorCode status = U_ZERO_ERROR;
   UConverter* converter = ucnv_open(codepage_name, &status);
-  if (!U_SUCCESS(status))
+  if (!U_SUCCESS(status)) {
     return false;
+  }
 
   return ConvertFromUTF16(converter, utf16, on_error, encoded);
 }
@@ -162,8 +165,9 @@ bool CodepageToUTF16(std::string_view encoded,
 
   UErrorCode status = U_ZERO_ERROR;
   UConverter* converter = ucnv_open(codepage_name, &status);
-  if (!U_SUCCESS(status))
+  if (!U_SUCCESS(status)) {
     return false;
+  }
 
   // Even in the worst case, the maximum length in 2-byte units of UTF-16
   // output would be at most the same as the number of bytes in input. There
@@ -196,14 +200,16 @@ bool ConvertToUtf8AndNormalize(std::string_view text,
   result->clear();
   std::u16string utf16;
   if (!CodepageToUTF16(text, charset.c_str(), OnStringConversionError::FAIL,
-                       &utf16))
+                       &utf16)) {
     return false;
+  }
 
   UErrorCode status = U_ZERO_ERROR;
   const icu::Normalizer2* normalizer = icu::Normalizer2::getNFCInstance(status);
   DCHECK(U_SUCCESS(status));
-  if (U_FAILURE(status))
+  if (U_FAILURE(status)) {
     return false;
+  }
   int32_t utf16_length = static_cast<int32_t>(utf16.length());
   icu::UnicodeString normalized(utf16.data(), utf16_length);
   int32_t normalized_prefix_length =
@@ -213,8 +219,9 @@ bool ConvertToUtf8AndNormalize(std::string_view text,
     normalized.truncate(normalized_prefix_length);
     normalizer->normalizeSecondAndAppend(normalized, un_normalized, status);
   }
-  if (U_FAILURE(status))
+  if (U_FAILURE(status)) {
     return false;
+  }
   normalized.toUTF8String(*result);
   return true;
 }

@@ -1,0 +1,2 @@
+# HTML files are often required to test Autofill and PWM features.
+per-file *.html=file://ios/chrome/browser/autofill/model/OWNERS

@@ -28,8 +28,7 @@ class StubClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 };
 

@@ -185,12 +185,6 @@ base::RepeatingCallback<bool(const GURL&)> IsJavaScriptAllowedCallback() {
   return base::BindRepeating([](const GURL&) { return true; });
 }
 
-base::RepeatingCallback<bool(const GURL&)>
-AreThirdPartyCookiesBlockedCallback() {
-  // WebEngine does not provide a way to block third-party cookies.
-  return base::BindRepeating([](const GURL&) { return false; });
-}
-
 WebEngineBrowserContext::WebEngineBrowserContext(
     base::FilePath data_directory,
     network::NetworkQualityTracker* network_quality_tracker)
@@ -199,7 +193,6 @@ WebEngineBrowserContext::WebEngineBrowserContext(
       simple_factory_key_(GetPath(), IsOffTheRecord()),
       client_hints_delegate_(network_quality_tracker,
                              IsJavaScriptAllowedCallback(),
-                             AreThirdPartyCookiesBlockedCallback(),
                              embedder_support::GetUserAgentMetadata()),
       reduce_accept_language_delegate_(GetAcceptLanguages()) {
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);

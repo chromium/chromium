@@ -57,10 +57,9 @@ bool IsSyncable(const Extension* extension) {
       return false;
 
     case Manifest::NUM_LOAD_TYPES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsSyncableComponentExtension(const Extension* extension) {

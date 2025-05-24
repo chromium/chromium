@@ -23,12 +23,9 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/geometry/length.h"
+
+#include <array>
 
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
@@ -40,18 +37,20 @@
 
 namespace blink {
 
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_auto_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fill_available_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fit_content_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_max_content_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_min_content_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_min_intrinsic_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_auto_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_fill_available_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_stretch_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_fit_content_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_max_content_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_min_content_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_min_intrinsic_length);
 
 // static
 void Length::Initialize() {
   new (WTF::NotNullTag::kNotNull, (void*)&g_auto_length) Length(kAuto);
   new (WTF::NotNullTag::kNotNull, (void*)&g_fill_available_length)
       Length(kFillAvailable);
+  new (WTF::NotNullTag::kNotNull, (void*)&g_stretch_length) Length(kStretch);
   new (WTF::NotNullTag::kNotNull, (void*)&g_fit_content_length)
       Length(kFitContent);
   new (WTF::NotNullTag::kNotNull, (void*)&g_max_content_length)
@@ -126,8 +125,8 @@ Length::Length(scoped_refptr<const CalculationValue> calc)
 Length Length::BlendMixedTypes(const Length& from,
                                double progress,
                                ValueRange range) const {
-  DCHECK(from.IsSpecified());
-  DCHECK(IsSpecified());
+  DCHECK(from.CanConvertToCalculation());
+  DCHECK(CanConvertToCalculation());
   return Length(
       AsCalculationValue()->Blend(*from.AsCalculationValue(), progress, range));
 }
@@ -139,7 +138,8 @@ Length Length::BlendSameTypes(const Length& from,
   if (IsZero())
     result_type = from.GetType();
 
-  float blended_value = blink::Blend(from.Value(), Value(), progress);
+  float blended_value =
+      blink::Blend(from.GetFloatValue(), GetFloatValue(), progress);
   if (range == ValueRange::kNonNegative)
     blended_value = ClampTo<float>(blended_value, 0);
   return Length(blended_value, result_type);
@@ -148,15 +148,14 @@ Length Length::BlendSameTypes(const Length& from,
 PixelsAndPercent Length::GetPixelsAndPercent() const {
   switch (GetType()) {
     case kFixed:
-      return PixelsAndPercent(Value());
+      return PixelsAndPercent(Pixels());
     case kPercent:
-      return PixelsAndPercent(0.0f, Value(), /*has_explicit_pixels=*/false,
+      return PixelsAndPercent(0.0f, Percent(), /*has_explicit_pixels=*/false,
                               /*has_explicit_percent=*/true);
     case kCalculated:
       return GetCalculationValue().GetPixelsAndPercent();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return PixelsAndPercent(0.0f, 0.0f, false, false);
+      NOTREACHED();
   }
 }
 
@@ -168,13 +167,13 @@ scoped_refptr<const CalculationValue> Length::AsCalculationValue() const {
 
 Length Length::SubtractFromOneHundredPercent() const {
   if (IsPercent())
-    return Length::Percent(100 - Value());
-  DCHECK(IsSpecified());
+    return Length::Percent(100 - Percent());
+  DCHECK(CanConvertToCalculation());
   return Length(AsCalculationValue()->SubtractFromOneHundredPercent());
 }
 
 Length Length::Add(const Length& other) const {
-  CHECK(IsSpecified());
+  CHECK(CanConvertToCalculation());
   if (IsFixed() && other.IsFixed()) {
     return Length::Fixed(Pixels() + other.Pixels());
   }
@@ -219,6 +218,16 @@ float Length::NonNanCalculatedValue(float max_value,
   return result;
 }
 
+bool Length::HasOnlyFixedAndPercent() const {
+  if (GetType() == kFixed || GetType() == kPercent) {
+    return true;
+  }
+  if (GetType() == kCalculated) {
+    return GetCalculationValue().HasOnlyFixedAndPercent();
+  }
+  return false;
+}
+
 bool Length::HasAuto() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasAuto();
@@ -253,14 +262,15 @@ bool Length::HasPercentOrStretch() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasPercentOrStretch();
   }
-  return GetType() == kPercent || GetType() == kFillAvailable;
+  return GetType() == kPercent || GetType() == kStretch ||
+         GetType() == kFillAvailable;
 }
 
 bool Length::HasStretch() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasStretch();
   }
-  return GetType() == kFillAvailable;
+  return GetType() == kStretch || GetType() == kFillAvailable;
 }
 
 bool Length::HasMinContent() const {
@@ -293,11 +303,10 @@ bool Length::IsCalculatedEqual(const Length& o) const {
 String Length::ToString() const {
   StringBuilder builder;
   builder.Append("Length(");
-  static const char* const kTypeNames[] = {
-      "Auto",         "Percent",      "Fixed",         "MinContent",
-      "MaxContent",   "MinIntrinsic", "FillAvailable", "FitContent",
-      "Calculated",   "Flex",         "ExtendToZoom",  "DeviceWidth",
-      "DeviceHeight", "None",         "Content"};
+  static const auto kTypeNames = std::to_array<const char* const>(
+      {"Auto", "Percent", "Fixed", "MinContent", "MaxContent", "MinIntrinsic",
+       "FillAvailable", "Stretch", "FitContent", "Calculated", "Flex",
+       "ExtendToZoom", "DeviceWidth", "DeviceHeight", "None", "Content"});
   if (type_ < std::size(kTypeNames))
     builder.Append(kTypeNames[type_]);
   else

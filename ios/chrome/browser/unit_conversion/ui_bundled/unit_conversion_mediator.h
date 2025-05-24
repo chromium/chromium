@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/unit_conversion/model/unit_conversion_service.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_mutator.h"
-#import "ios/chrome/browser/unit_conversion/unit_conversion_service.h"
 
 @protocol UnitConversionConsumer;
 

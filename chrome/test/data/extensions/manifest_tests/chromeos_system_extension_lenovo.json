@@ -1,0 +1,27 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv5yePPwcmo7Py30IQ6zPASMqGUAvU+hoxdAVMDoxYPjSNoaqfnuXlbJ4C2vgA6Qdt0hVC65HFpYpeKG4/6SSu0gaCUtnKeb6i+5ivs1FTgjpmj4/WcGsDbETj3XYQ6klWbjYnNVTHYhIMUmR/rpomjNHfA3/r0pnaU9fF8MSPlTcEfMo/Zm+i4KUxSirz1q8XPWwMU0O2y1UgHSOyWyefXeyGFF4b2irpGDYOEYZAQZ/MPS3G5kNXRY7oSHbo+COX2zGCIj6jQzFEvzXGK6l+eiMX8vwTroBVyqb6497Vf1Ektvu4MJSkIna6iY3fOjlDi/rp3fH9bmuu1HRBDdnuQIDAQAB",
+  "name": "Test chromeos extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "os.attached_device_info",
+    "os.diagnostics",
+    "os.events",
+    "os.telemetry",
+    "os.telemetry.serial_number",
+    "os.telemetry.network_info"
+  ],
+  "optional_permissions": [
+    "os.bluetooth_peripherals_info",
+    "os.diagnostics.network_info_mlab",
+    "os.management.audio"
+  ],
+  "chromeos_system_extension": {},
+  "externally_connectable": {
+    "matches": [
+      "https://chromebookdiags.lenovo.com/*",
+      "isolated-app://huhncggoe22ofjan6nylwijltmewmbevapiotudwgbyjbhrlphrqaaic/*"
+    ]
+  },
+  "options_page": "options.html"
+}

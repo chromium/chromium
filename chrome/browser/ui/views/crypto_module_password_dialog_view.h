@@ -17,7 +17,7 @@
 namespace views {
 class Label;
 class Textfield;
-}
+}  // namespace views
 
 class CryptoModulePasswordDialogView : public views::DialogDelegateView,
                                        public views::TextfieldController {

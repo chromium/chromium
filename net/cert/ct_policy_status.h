@@ -12,6 +12,7 @@ namespace net::ct {
 // Information about the connection's compliance with the CT policy. This value
 // is histogrammed, so do not re-order or change values, and add new values at
 // the end.
+// LINT.IfChange(CTPolicyCompliance)
 enum class CTPolicyCompliance {
   // The connection complied with the certificate policy by
   // including SCTs that satisfy the policy.
@@ -27,10 +28,26 @@ enum class CTPolicyCompliance {
   // Compliance details for the connection are not available, e.g. because a
   // resource was loaded from disk cache.
   CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE = 4,
+  // TODO(crbug.com/41392053): remove CT_POLICY_COUNT, use kMaxValue instead.
   CT_POLICY_COUNT
 };
+// LINT.ThenChange(/services/network/public/cpp/net_ipc_param_traits.h:CTPolicyCompliance)
 
 NET_EXPORT const char* CTPolicyComplianceToString(CTPolicyCompliance status);
+
+// Indicates whether a path met CT requirements.
+enum class CTRequirementsStatus {
+  // CT was not required for the path.
+  CT_NOT_REQUIRED,
+  // CT was required for the path and valid Certificate Transparency
+  // information was provided.
+  CT_REQUIREMENTS_MET,
+  // CT was required for the path but valid CT info was not provided.
+  CT_REQUIREMENTS_NOT_MET,
+  kMaxValue = CT_REQUIREMENTS_NOT_MET
+};
+
+NET_EXPORT const char* CTRequirementStatusToString(CTRequirementsStatus status);
 
 }  // namespace net::ct
 

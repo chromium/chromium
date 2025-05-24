@@ -24,11 +24,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -45,8 +45,8 @@ import org.chromium.url.JUnitTestGURLs;
 /** Tests for {@link LinkToTextCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LinkToTextCoordinatorTest {
-    @Rule public JniMocker jniMocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ChromeOptionShareCallback mShareCallback;
     @Mock private WindowAndroid mWindow;
     @Mock private Tab mTab;
@@ -102,8 +102,7 @@ public class LinkToTextCoordinatorTest {
     @Before
     public void setUpTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
-        MockitoAnnotations.initMocks(this);
-        jniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(any(String.class)))
                 .thenAnswer(
                         (invocation) -> {
@@ -114,7 +113,7 @@ public class LinkToTextCoordinatorTest {
         when(mTab.getWindowAndroid()).thenReturn(mWindow);
         when(mTab.getContext()).thenReturn(mActivity);
 
-        jniMocker.mock(LinkToTextBridgeJni.TEST_HOOKS, mLinkToTextBridge);
+        LinkToTextBridgeJni.setInstanceForTesting(mLinkToTextBridge);
         when(mLinkToTextBridge.shouldOfferLinkToText(any(GURL.class)))
                 .thenAnswer(
                         (invocation) -> {

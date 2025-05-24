@@ -32,7 +32,7 @@ void TestCrypto::RunTests(const std::string& filter) {
 
 std::string TestCrypto::TestGetRandomBytes() {
   const int kBufSize = 16;
-  char buf[kBufSize] = {0};
+  char buf[kBufSize] = {};
 
   crypto_interface_->GetRandomBytes(buf, kBufSize);
 

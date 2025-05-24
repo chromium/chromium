@@ -15,7 +15,6 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/label.h"
@@ -269,8 +268,7 @@ class TypographyProviderImpl : public TypographyProvider {
   // Returns the equivalient cros.sys token for a legacy token if styles should
   // be converted.
   TypographyToken ConvertToken(TypographyToken token) const {
-    if (!chromeos::features::IsJellyEnabled() ||
-        token > TypographyToken::kLastLegacyToken) {
+    if (token > TypographyToken::kLastLegacyToken) {
       return token;
     }
 

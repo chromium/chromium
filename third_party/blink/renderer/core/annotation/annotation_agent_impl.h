@@ -7,8 +7,11 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -21,6 +24,7 @@ class AnnotationAgentContainerImpl;
 class AnnotationAgentImplTest;
 class AnnotationSelector;
 class Document;
+class HitTestResult;
 class RangeInFlatTree;
 
 // This class represents an instantiation of an annotation in a Document. It is
@@ -54,6 +58,7 @@ class CORE_EXPORT AnnotationAgentImpl final
   AnnotationAgentImpl(AnnotationAgentContainerImpl& owning_container,
                       mojom::blink::AnnotationType annotation_type,
                       AnnotationSelector& selector,
+                      std::optional<DOMNodeId> search_range_start_node_id,
                       base::PassKey<AnnotationAgentContainerImpl>);
   ~AnnotationAgentImpl() override = default;
 
@@ -103,10 +108,10 @@ class CORE_EXPORT AnnotationAgentImpl final
   void Remove();
 
   // mojom::blink::AnnotationAgent
-  void ScrollIntoView() override {
-    const_cast<const AnnotationAgentImpl*>(this)->ScrollIntoView();
+  void ScrollIntoView(bool applies_focus) override {
+    const_cast<const AnnotationAgentImpl*>(this)->ScrollIntoView(applies_focus);
   }
-  void ScrollIntoView() const;
+  void ScrollIntoView(bool applies_focus) const;
 
   const RangeInFlatTree& GetAttachedRange() const {
     CHECK(attached_range_.Get());
@@ -116,6 +121,14 @@ class CORE_EXPORT AnnotationAgentImpl final
   const AnnotationSelector* GetSelector() const { return selector_.Get(); }
 
   mojom::blink::AnnotationType GetType() const { return type_; }
+
+  // Determine if `result` represents a click on an existing annotation, and
+  // returns the type of the annotation if so (or std::nullopt if not).
+  // Note: It is possible for the click to be above multiple annotations, in
+  // which case we only return the type of what we consider to be the "topmost"
+  // (see implementation).
+  static std::optional<mojom::blink::AnnotationType> IsOverAnnotation(
+      const HitTestResult& result);
 
  private:
   friend AnnotationAgentImplTest;
@@ -134,6 +147,10 @@ class CORE_EXPORT AnnotationAgentImpl final
   void ProcessAttachmentFinished();
 
   bool IsRemoved() const;
+
+  mojom::blink::ScrollBehavior ComputeScrollIntoViewBehavior(
+      const PhysicalRect& bounding_box,
+      const mojom::blink::ScrollIntoViewParams& params) const;
 
   // Mojo bindings to the remote host and this' remote. These are always
   // connected as a pair and disconnecting one will cause the other to be
@@ -158,6 +175,10 @@ class CORE_EXPORT AnnotationAgentImpl final
   // TODO(bokan): This doesn't need to be const but is due to the
   // TextFragmentFinder::Client interface.
   Member<const RangeInFlatTree> pending_range_;
+
+  // The start node id of the search range within which the agent will attempt
+  // to match the selector in.
+  std::optional<DOMNodeId> search_range_start_node_id_;
 
   // TODO(bokan): Once we have more of this implemented we'll use the type to
   // determine styling and context menu behavior.

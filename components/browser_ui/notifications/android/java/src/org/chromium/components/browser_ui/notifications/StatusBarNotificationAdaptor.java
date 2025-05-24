@@ -7,7 +7,10 @@ package org.chromium.components.browser_ui.notifications;
 import android.app.Notification;
 import android.service.notification.StatusBarNotification;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Implementation of the StatusBarNotificationProxy using StatusBarNotification. */
+@NullMarked
 class StatusBarNotificationAdaptor
         implements BaseNotificationManagerProxy.StatusBarNotificationProxy {
     private final StatusBarNotification mStatusBarNotification;

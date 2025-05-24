@@ -36,8 +36,9 @@ bool EditSearchEngineController::IsTitleValid(
 bool EditSearchEngineController::IsURLValid(
     const std::string& url_input) const {
   std::string url = GetFixedUpURL(url_input);
-  if (url.empty())
+  if (url.empty()) {
     return false;
+  }
 
   // Convert |url| to a TemplateURLRef so we can check its validity even if it
   // contains replacement strings.  We do this by constructing a dummy
@@ -49,15 +50,16 @@ bool EditSearchEngineController::IsURLValid(
   const TemplateURLRef& template_ref = t_url.url_ref();
   TemplateURLService* service =
       TemplateURLServiceFactory::GetForProfile(profile_);
-  if (!template_ref.IsValid(service->search_terms_data()))
+  if (!template_ref.IsValid(service->search_terms_data())) {
     return false;
+  }
 
   // If this is going to be the default search engine, it must support
   // replacement.
   if (!template_ref.SupportsReplacement(service->search_terms_data()) &&
-      template_url_ &&
-      template_url_ == service->GetDefaultSearchProvider())
+      template_url_ && template_url_ == service->GetDefaultSearchProvider()) {
     return false;
+  }
 
   // Replace any search term with a placeholder string and make sure the
   // resulting URL is valid.
@@ -71,18 +73,20 @@ bool EditSearchEngineController::IsKeywordValid(
     const std::u16string& keyword_input) const {
   std::u16string keyword_input_trimmed(
       base::CollapseWhitespace(keyword_input, true));
-  if (keyword_input_trimmed.empty())
+  if (keyword_input_trimmed.empty()) {
     return false;  // Do not allow empty keyword.
+  }
 
   // The omnibox doesn't properly handle search keywords with whitespace,
   // so do not allow such keywords.
   if (keyword_input_trimmed.find_first_of(base::kWhitespaceUTF16) !=
-      std::u16string::npos)
+      std::u16string::npos) {
     return false;
+  }
 
   const TemplateURL* turl_with_keyword =
-      TemplateURLServiceFactory::GetForProfile(profile_)->
-      GetTemplateURLForKeyword(keyword_input_trimmed);
+      TemplateURLServiceFactory::GetForProfile(profile_)
+          ->GetTemplateURLForKeyword(keyword_input_trimmed);
   return (!turl_with_keyword || turl_with_keyword == template_url_);
 }
 
@@ -137,8 +141,9 @@ std::string EditSearchEngineController::GetFixedUpURL(
     const std::string& url_input) const {
   std::u16string url16;
   base::TrimWhitespace(base::UTF8ToUTF16(url_input), base::TRIM_ALL, &url16);
-  if (url16.empty())
+  if (url16.empty()) {
     return std::string();
+  }
   std::string url = TemplateURLRef::DisplayURLToURLRef(url16);
 
   // Parse the string as a URL to determine the scheme. If we need to, add the
@@ -152,8 +157,9 @@ std::string EditSearchEngineController::GetFixedUpURL(
       TemplateURLServiceFactory::GetForProfile(profile_)->search_terms_data()));
   url::Parsed parts;
   std::string scheme(url_formatter::SegmentURL(expanded_url, &parts));
-  if (!parts.scheme.is_valid())
+  if (!parts.scheme.is_valid()) {
     url.insert(0, scheme + "://");
+  }
 
   return url;
 }

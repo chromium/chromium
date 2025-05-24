@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_observer.h"
@@ -105,7 +106,9 @@ class LightProviderMojoTest : public testing::Test {
   std::unique_ptr<AlsReader> als_reader_;
   std::unique_ptr<LightProviderMojo> provider_;
 
-  std::map<int32_t, chromeos::sensors::FakeSensorDevice*> sensor_devices_;
+  std::map<int32_t,
+           raw_ptr<chromeos::sensors::FakeSensorDevice, CtnExperimental>>
+      sensor_devices_;
 
   int num_samples_ = 0;
 

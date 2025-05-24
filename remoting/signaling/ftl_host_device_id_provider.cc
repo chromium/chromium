@@ -5,7 +5,6 @@
 #include "remoting/signaling/ftl_host_device_id_provider.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace remoting {
 
@@ -15,9 +14,9 @@ namespace {
 constexpr char kDeviceIdPrefix[] = "crd-win-host-";
 #elif BUILDFLAG(IS_APPLE)
 constexpr char kDeviceIdPrefix[] = "crd-mac-host-";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 constexpr char kDeviceIdPrefix[] = "crd-cros-host-";
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
 constexpr char kDeviceIdPrefix[] = "crd-linux-host-";
 #else
 constexpr char kDeviceIdPrefix[] = "crd-unknown-host-";

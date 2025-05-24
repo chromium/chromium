@@ -14,8 +14,10 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /** A ServiceConnection that records a histogram for service connection delay. */
+@NullMarked
 public abstract class ServiceConnectionDelayRecorder implements ServiceConnection {
     private static final String SERVICE_CONNECTION_DELAY_HISTOGRAM_PREFIX =
             "Android.WebView.Startup.NonblockingServiceConnectionDelay.";

@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +60,7 @@ TEST(SandboxTypeTest, Utility) {
   SetCommandLineFlagsForSandboxType(&command_line4, Sandbox::kNoSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line4));
 
-#if BUILDFLAG(ENABLE_PPAPI)
+#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
   base::CommandLine command_line5(command_line);
   SetCommandLineFlagsForSandboxType(&command_line5, Sandbox::kPpapi);
   EXPECT_EQ(Sandbox::kPpapi, SandboxTypeFromCommandLine(command_line5));
@@ -104,15 +103,17 @@ TEST(SandboxTypeTest, Utility) {
             SandboxTypeFromCommandLine(command_line12));
 #endif
 
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
   base::CommandLine command_line13(command_line);
   SetCommandLineFlagsForSandboxType(&command_line13, Sandbox::kPrintBackend);
   EXPECT_EQ(Sandbox::kPrintBackend, SandboxTypeFromCommandLine(command_line13));
 #endif
 
   base::CommandLine command_line14(command_line);
-  command_line14.AppendSwitchASCII(switches::kServiceSandboxType,
-                                   switches::kNoneSandbox);
+  command_line14.AppendSwitchASCII(
+      switches::kServiceSandboxType,
+      StringFromUtilitySandboxType(Sandbox::kNoSandbox));
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line14));
 
   base::CommandLine command_line15(command_line);
@@ -154,7 +155,7 @@ TEST(SandboxTypeTest, GPU) {
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
 }
 
-#if BUILDFLAG(ENABLE_PPAPI)
+#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
 TEST(SandboxTypeTest, PPAPIPlugin) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kProcessType,
@@ -183,17 +184,15 @@ TEST(SandboxTypeTest, Nonesuch) {
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
 }
 
-TEST(SandboxTypeTest, ElevatedPrivileges) {
-  // Tests that the "no sandbox and elevated privileges" which is Windows
-  // specific default to no sandbox on non Windows platforms.
-  Sandbox elevated_type =
-      UtilitySandboxTypeFromString(switches::kNoneSandboxAndElevatedPrivileges);
+// This flag is impossible on non-Windows platforms where it crashes in
+// a NOTREACHED(), but validate that it does exist on Windows.
 #if BUILDFLAG(IS_WIN)
+TEST(SandboxTypeTest, ElevatedPrivileges) {
+  Sandbox elevated_type = UtilitySandboxTypeFromString(
+      StringFromUtilitySandboxType(Sandbox::kNoSandboxAndElevatedPrivileges));
   EXPECT_EQ(Sandbox::kNoSandboxAndElevatedPrivileges, elevated_type);
-#else
-  EXPECT_EQ(Sandbox::kNoSandbox, elevated_type);
-#endif
 }
+#endif
 
 }  // namespace policy
 }  // namespace sandbox

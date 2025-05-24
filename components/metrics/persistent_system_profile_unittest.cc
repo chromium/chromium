@@ -18,13 +18,13 @@ class PersistentSystemProfileTest : public testing::Test {
  public:
   const int32_t kAllocatorMemorySize = 1 << 20;  // 1 MiB
 
-  PersistentSystemProfileTest() {}
+  PersistentSystemProfileTest() = default;
 
   PersistentSystemProfileTest(const PersistentSystemProfileTest&) = delete;
   PersistentSystemProfileTest& operator=(const PersistentSystemProfileTest&) =
       delete;
 
-  ~PersistentSystemProfileTest() override {}
+  ~PersistentSystemProfileTest() override = default;
 
   void SetUp() override {
     memory_allocator_ = std::make_unique<base::LocalPersistentMemoryAllocator>(

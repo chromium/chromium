@@ -4,13 +4,15 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.HostZoomMapImpl;
 
 import java.util.Map;
 
 /** Implementations of various static methods related to page zoom. */
+@NullMarked
 public class HostZoomMap {
     // Preset zoom factors that the +/- buttons can "snap" the zoom level to if user chooses to
     // not use the slider. These zoom factors correspond to the zoom levels that are used on
@@ -40,7 +42,7 @@ public class HostZoomMap {
      * @param webContents   WebContents to update
      * @param newZoomLevel  double - new zoom level
      */
-    public static void setZoomLevel(@NonNull WebContents webContents, double newZoomLevel) {
+    public static void setZoomLevel(WebContents webContents, double newZoomLevel) {
         assert !webContents.isDestroyed();
 
         // Just before sending the zoom level to the backend, we will take into account the system
@@ -74,14 +76,14 @@ public class HostZoomMap {
      * @param webContents   WebContents to get zoom level for
      * @return double       current zoom level
      */
-    public static double getZoomLevel(@NonNull WebContents webContents) {
+    public static double getZoomLevel(WebContents webContents) {
         assert !webContents.isDestroyed();
 
         // Just before returning a zoom level from the backend, we must again take into account the
         // system level setting. Here we need to do the reverse operation of the above, effectively
         // divide rather than multiply, so we will pass the reciprocal of |sSystemFontScale|.
         return HostZoomMapImpl.adjustZoomLevel(
-                HostZoomMapImpl.getZoomLevel(webContents), (float) 1 / sSystemFontScale);
+                HostZoomMapImpl.getZoomLevel(webContents), 1.0f / sSystemFontScale);
     }
 
     /**
@@ -132,5 +134,15 @@ public class HostZoomMap {
      */
     public static double getDefaultZoomLevel(BrowserContextHandle context) {
         return HostZoomMapImpl.getDefaultZoomLevel(context);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void setSystemFontScaleForTesting(float systemFontScale) {
+        HostZoomMapImpl.setSystemFontScaleForTesting(systemFontScale);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void setShouldAdjustForOSLevelForTesting(boolean shouldAdjustForOSLevel) {
+        HostZoomMapImpl.setShouldAdjustForOSLevelForTesting(shouldAdjustForOSLevel);
     }
 }

@@ -7,9 +7,9 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "ui/gfx/font_render_params.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -23,36 +23,37 @@ using ScopedFcPattern = std::unique_ptr<FcPattern, FcPatternDeleter>;
 // calling thread.  If this function is not called, the first call to
 // GetGlobalFontConfig() will implicitly initialize FontConfig.  Can be called
 // on any thread.
-GFX_EXPORT void InitializeGlobalFontConfigAsync();
+COMPONENT_EXPORT(GFX) void InitializeGlobalFontConfigAsync();
 
 // Retrieve the global font config. Must be called on the main thread.
-GFX_EXPORT FcConfig* GetGlobalFontConfig();
-GFX_EXPORT void OverrideGlobalFontConfigForTesting(FcConfig* config);
+COMPONENT_EXPORT(GFX) FcConfig* GetGlobalFontConfig();
+COMPONENT_EXPORT(GFX) void OverrideGlobalFontConfigForTesting(FcConfig* config);
 
 // FcPattern accessor wrappers.
-GFX_EXPORT std::string GetFontName(FcPattern* pattern);
-GFX_EXPORT std::string GetFilename(FcPattern* pattern);
-GFX_EXPORT int GetFontTtcIndex(FcPattern* pattern);
-GFX_EXPORT bool IsFontBold(FcPattern* pattern);
-GFX_EXPORT bool IsFontItalic(FcPattern* pattern);
-GFX_EXPORT bool IsFontScalable(FcPattern* pattern);
-GFX_EXPORT std::string GetFontFormat(FcPattern* pattern);
+COMPONENT_EXPORT(GFX) std::string GetFontName(FcPattern* pattern);
+COMPONENT_EXPORT(GFX) std::string GetFilename(FcPattern* pattern);
+COMPONENT_EXPORT(GFX) int GetFontTtcIndex(FcPattern* pattern);
+COMPONENT_EXPORT(GFX) bool IsFontBold(FcPattern* pattern);
+COMPONENT_EXPORT(GFX) bool IsFontItalic(FcPattern* pattern);
+COMPONENT_EXPORT(GFX) bool IsFontScalable(FcPattern* pattern);
+COMPONENT_EXPORT(GFX) std::string GetFontFormat(FcPattern* pattern);
 
 // Return the path of the font. Relative to the sysroot config specified in the
 // font config (see: FcConfigGetSysRoot(...)).
-GFX_EXPORT base::FilePath GetFontPath(FcPattern* pattern);
+COMPONENT_EXPORT(GFX) base::FilePath GetFontPath(FcPattern* pattern);
 
 // Returns the appropriate parameters for rendering the font represented by the
 // font config pattern.
-GFX_EXPORT void GetFontRenderParamsFromFcPattern(FcPattern* pattern,
-                                                 FontRenderParams* param_out);
+COMPONENT_EXPORT(GFX)
+void GetFontRenderParamsFromFcPattern(FcPattern* pattern,
+                                      FontRenderParams* param_out);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Adds a given directory to the available fonts in the application.
 // Directory must start with `/run/imageloader/` (guaranteed by DLC).
 // Returns whether the fonts were added or not. Will not add the same directory
 // more than once.
-GFX_EXPORT bool AddAppFontDir(const base::FilePath& dir);
+COMPONENT_EXPORT(GFX) bool AddAppFontDir(const base::FilePath& dir);
 #endif
 
 }  // namespace gfx

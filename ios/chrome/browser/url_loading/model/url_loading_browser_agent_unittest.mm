@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/fake_url_loading_delegate.h"
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/test_scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
@@ -31,21 +32,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "third_party/ocmock/gtest_support.h"
 
-@interface URLLoadingTestDelegate : NSObject <URLLoadingDelegate>
-@end
-
-@implementation URLLoadingTestDelegate
-
-#pragma mark - URLLoadingDelegate
-
-- (void)animateOpenBackgroundTabFromParams:(const UrlLoadParams&)params
-                                completion:(void (^)())completion {
-}
-
-@end
-
-#pragma mark -
-
 namespace {
 class URLLoadingBrowserAgentTest : public BlockCleanupTest {
  public:
@@ -53,12 +39,14 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     otr_profile_ = profile_->GetOffTheRecordProfile();
-    url_loading_delegate_ = [[URLLoadingTestDelegate alloc] init];
+    url_loading_delegate_ = [[FakeURLLoadingDelegate alloc] init];
     scene_loader_ = std::make_unique<TestSceneUrlLoadingService>();
     otr_browser_ = std::make_unique<TestBrowser>(otr_profile_);
 
     // Configure app service.
     scene_loader_->current_browser_ = browser_.get();
+    scene_loader_->original_browser_ = browser_.get();
+    scene_loader_->otr_browser_ = otr_browser_.get();
 
     // Disable web usage on both browsers
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
@@ -114,7 +102,7 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<ProfileIOS> otr_profile_;
-  URLLoadingTestDelegate* url_loading_delegate_;
+  FakeURLLoadingDelegate* url_loading_delegate_;
   std::unique_ptr<TestSceneUrlLoadingService> scene_loader_;
   raw_ptr<UrlLoadingBrowserAgent> loader_;
   std::unique_ptr<Browser> otr_browser_;

@@ -75,17 +75,18 @@ class BlobURLStoreImplTestP
   bool BlockCrossPartitionBlobUrlFetchingEnabled() {
     switch (test_case_) {
       case PartitionedBlobUrlTestCase::
-          kBlockCrossPartitionBlobUrlFetchingDisabled:
-      case PartitionedBlobUrlTestCase::
           kBlockCrossPartitionBlobUrlFetchingEnabled:
         return true;
+      case PartitionedBlobUrlTestCase::
+          kBlockCrossPartitionBlobUrlFetchingDisabled:
       default:
         return false;
     }
   }
 
   bool StoragePartitioningEnabled() {
-    return test_case_ != PartitionedBlobUrlTestCase::kPartitioningDisabled;
+    return test_case_ == PartitionedBlobUrlTestCase::
+                             kBlockCrossPartitionBlobUrlFetchingEnabled;
   }
 
   void TearDown() override {
@@ -513,8 +514,9 @@ TEST_P(BlobURLStoreImplTestP, ResolveForNavigation) {
 
   base::RunLoop loop0;
   mojo::Remote<blink::mojom::BlobURLToken> token_remote;
-  url_store.ResolveForNavigation(
+  url_store.ResolveAsBlobURLToken(
       kValidUrl, token_remote.BindNewPipeAndPassReceiver(),
+      /*is_top_level_navigation=*/false,
       base::BindOnce(
           [](base::OnceClosure done,
              const base::UnguessableToken& agent_registered,

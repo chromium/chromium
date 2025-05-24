@@ -32,6 +32,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace {
@@ -50,8 +51,9 @@ class TestTitleObserver : public TabStripModelObserver {
 
   // Run a loop, blocking until a tab has the title |target_title|.
   void Wait() {
-    if (seen_target_title_)
+    if (seen_target_title_) {
       return;
+    }
 
     awaiter_.Run();
   }
@@ -64,8 +66,9 @@ class TestTitleObserver : public TabStripModelObserver {
         contents->GetController().GetVisibleEntry();
     std::u16string title = entry ? entry->GetTitle() : std::u16string();
 
-    if (title != target_title_)
+    if (title != target_title_) {
       return;
+    }
 
     seen_target_title_ = true;
     awaiter_.Quit();
@@ -153,11 +156,12 @@ class UrlHidingInterstitialPage
 class UrlHidingWebContentsObserver : public content::WebContentsObserver {
  public:
   explicit UrlHidingWebContentsObserver(content::WebContents* contents)
-      : content::WebContentsObserver(contents), install_interstitial_(true) {}
+      : content::WebContentsObserver(contents) {}
 
   void DidFinishNavigation(content::NavigationHandle* handle) override {
-    if (!install_interstitial_)
+    if (!install_interstitial_) {
       return;
+    }
 
     security_interstitials::SecurityInterstitialTabHelper::
         AssociateBlockingPage(handle,
@@ -168,7 +172,7 @@ class UrlHidingWebContentsObserver : public content::WebContentsObserver {
   void StopBlocking() { install_interstitial_ = false; }
 
  private:
-  bool install_interstitial_;
+  bool install_interstitial_ = true;
 };
 
 }  // namespace
@@ -184,7 +188,6 @@ class CustomTabBarViewBrowserTest : public web_app::WebAppBrowserTestBase {
   ~CustomTabBarViewBrowserTest() override = default;
 
  protected:
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     web_app::WebAppBrowserTestBase::SetUpCommandLine(command_line);
     // Browser will both run and display insecure content.
@@ -447,8 +450,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   EXPECT_TRUE(app_controller_->ShouldShowCustomTabBar());
 
   // Show the right-click context menu.
-  app_view->toolbar()->custom_tab_bar()->ShowContextMenu(gfx::Point(),
-                                                         ui::MENU_SOURCE_MOUSE);
+  app_view->toolbar()->custom_tab_bar()->ShowContextMenu(
+      gfx::Point(), ui::mojom::MenuSourceType::kMouse);
 
   content::BrowserTestClipboardScope test_clipboard_scope;
   // Activate the first and only context menu item: IDC_COPY_URL.
@@ -706,8 +709,9 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, BlobUrlLocation) {
   content::WebContents* web_contents =
       app_browser_->tab_strip_model()->GetActiveWebContents();
 
-  content::TestNavigationObserver nav_observer(web_contents,
-                                               /*number_of_navigations=*/1);
+  content::TestNavigationObserver nav_observer(
+      web_contents,
+      /*expected_number_of_navigations=*/1);
   std::string script =
       "window.open("
       "    URL.createObjectURL("

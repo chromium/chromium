@@ -35,18 +35,46 @@
             [[getSummaryAriaLabel_(creditCard)]],
             [[getSummaryAriaSublabel_(creditCard)]]
           </div>
-          <div id="summaryLabel" class="ellipses" aria-hidden="true">
-            [[creditCard.metadata.summaryLabel]]
-          </div>
+          <template is="dom-if" if="[[!shouldShowNewFopDisplay_()]]">
+            <div id="summaryLabel" class="ellipses" aria-hidden="true">
+              [[creditCard.metadata.summaryLabel]]
+            </div>
+          </template>
+          <template is="dom-if" if="[[shouldShowNewFopDisplay_()]]">
+            <div>
+              <span id="label" class="ellipses" aria-hidden="true">
+                [[creditCard.metadata.summaryLabel]]
+              </span>
+              <template is="dom-if" if="[[hasCardIdentifier_(creditCard)]]">
+                <div class="sub-label" aria-hidden="true">
+                  <span id="summaryLabel_1">
+                    [[creditCard.metadata.summarySublabel]]
+                  </span>
+                  <span id="summaryLabel_2">
+                    [[getExpirationlabel_(creditCard)]]
+                  </span>
+                </div>
+              </template>
+              <template is="dom-if" if="[[!hasCardIdentifier_(creditCard)]]">
+                <span id="expirationLabel" class="sub-label">
+                  [[getExpirationlabel_(creditCard)]]
+                </span>
+              </template>
+            </div>
+          </template>
           <div id="summarySublabel" class="sub-label">
             <span aria-hidden="true">[[getSummarySublabel_(creditCard)]]</span>
+            <template is="dom-if"
+                if="[[hasSummaryAndBenefitSublabel_(creditCard)]]">
+              |
+            </template>
             <template is="dom-if" if="[[isCardBenefitsProductUrlAvailable_(creditCard)]]">
-              | <a id="summaryTermsLink"
-                  aria-label="[[getBenefitsTermsAriaLabel_(creditCard)]]"
-                  aria-description="$i18n{opensInNewTab}"
-                  on-click="onSummarySublabelTermsLinkClick_"
-                  href="[[getCardBenefitsProductUrl_(creditCard)]]"
-                  target="_blank">$i18n{benefitsTermsTagForCreditCardListEntry}</a>
+              <a id="summaryTermsLink"
+                aria-label="[[getBenefitsTermsAriaLabel_(creditCard)]]"
+                aria-description="$i18n{opensInNewTab}"
+                on-click="onSummarySublabelTermsLinkClick_"
+                href="[[getCardBenefitsProductUrl_(creditCard)]]"
+                target="_blank">$i18n{benefitsTermsTagForCreditCardListEntry}</a>
             </template>
           </div>
         </div>
@@ -78,7 +106,8 @@
           <template is="dom-if" if="[[!showDots_(creditCard.metadata)]]">
             <cr-icon-button class="icon-external" id="remoteCreditCardLink"
                 title="$i18n{remotePaymentMethodsLinkLabel}" role="link"
-                on-click="onRemoteEditClick_"></cr-icon-button>
+                on-click="onRemoteEditClick_"
+                aria-description="$i18n{opensInNewTab}"></cr-icon-button>
           </template>
         </div>
       </div>

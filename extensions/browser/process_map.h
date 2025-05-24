@@ -87,7 +87,7 @@ class ProcessMap : public KeyedService {
 
   void Shutdown() override;
 
-  // Returns the instance for |browser_context|. An instance is shared between
+  // Returns the instance for `browser_context`. An instance is shared between
   // an incognito and a regular context.
   static ProcessMap* Get(content::BrowserContext* browser_context);
 
@@ -99,6 +99,10 @@ class ProcessMap : public KeyedService {
 
   bool Contains(const ExtensionId& extension_id, int process_id) const;
   bool Contains(int process_id) const;
+
+  // Returns true if an extension with the given `extension_id` has any
+  // associated tracked process.
+  bool ExtensionHasProcess(const ExtensionId& extension_id) const;
 
   // Returns a pointer to an enabled extension running in `process_id` or
   // nullptr.
@@ -154,22 +158,22 @@ class ProcessMap : public KeyedService {
                                  const content::RenderProcessHost& process,
                                  mojom::ContextType context_type);
 
-  // Gets the most likely context type for the process with ID |process_id|
-  // which hosts Extension |extension|, if any (may be nullptr). Context types
+  // Gets the most likely context type for the process with ID `process_id`
+  // which hosts Extension `extension`, if any (may be nullptr). Context types
   // are renderer (JavaScript) concepts but the browser can do a decent job in
   // guessing what the process hosts.
   //
-  // For Context types with no |extension| e.g. untrusted WebUIs, we use |url|
-  // which should correspond to the URL where the API is running.|url| could be
+  // For Context types with no `extension` e.g. untrusted WebUIs, we use `url`
+  // which should correspond to the URL where the API is running.`url` could be
   // the frame's URL, the Content Script's URL, or the URL where a Content
-  // Script is running. So |url| should only be used when there is no
-  // |extension|. |url| may be also be nullptr when running in Service Workers.
-  // Currently, the |url| provided by event_router.cc is passed from the
+  // Script is running. So `url` should only be used when there is no
+  // `extension`. `url` may be also be nullptr when running in Service Workers.
+  // Currently, the `url` provided by event_router.cc is passed from the
   // renderer process and therefore can't be fully trusted.
-  // TODO(ortuno): Change call sites to only pass in a URL when |extension| is
+  // TODO(ortuno): Change call sites to only pass in a URL when `extension` is
   // nullptr and only use a URL retrieved from the browser process.
   //
-  // |extension| is the funky part - unfortunately we need to trust the
+  // `extension` is the funky part - unfortunately we need to trust the
   // caller of this method to be correct that indeed the context does feature
   // an extension. This matters for iframes, where an extension could be
   // hosted in another extension's process (privilege level needs to be
@@ -183,8 +187,6 @@ class ProcessMap : public KeyedService {
   //
   // Anyhow, the expected behaviour is:
   //   - For hosted app processes, this will be `kPrivilegedWebPage`.
-  //   - For processes of platform apps running on lock screen, this will be
-  //     `kLockscreenExtension`.
   //   - For other extension processes, this will be `kPrivilegedExtension`.
   //   - For WebUI processes, this will be `kWebUi`.
   //   - For chrome-untrusted:// URLs, this will be a `kUntrustedWebUi`.
@@ -200,18 +202,10 @@ class ProcessMap : public KeyedService {
       int process_id,
       const GURL* url) const;
 
-  void set_is_lock_screen_context(bool is_lock_screen_context) {
-    is_lock_screen_context_ = is_lock_screen_context;
-  }
-
  private:
   using ProcessId = int;
 
   base::flat_map<ProcessId, ExtensionId> items_;
-
-  // Whether the process map belongs to the browser context used on Chrome OS
-  // lock screen.
-  bool is_lock_screen_context_ = false;
 
   raw_ptr<content::BrowserContext> browser_context_;
 };

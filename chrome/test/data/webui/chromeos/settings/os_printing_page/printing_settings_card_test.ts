@@ -4,10 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {PrintingSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
+import type {PrintingSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -15,10 +14,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('<printing-settings-card>', () => {
   let printingSettingsCard: PrintingSettingsCardElement;
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
-  const defaultRoute =
-      isRevampWayfindingEnabled ? routes.DEVICE : routes.OS_PRINTING;
+  const defaultRoute = routes.DEVICE;
 
 
   setup(async () => {
@@ -34,29 +30,6 @@ suite('<printing-settings-card>', () => {
     printingSettingsCard.remove();
     Router.getInstance().resetRouteForTesting();
   });
-
-  // When the revamp wayfinding is enabled, the print jobs is in the cups
-  // printer page.
-  if (!isRevampWayfindingEnabled) {
-    test('Deep link to print jobs', async () => {
-      const params = new URLSearchParams();
-      const printJobsSettingId = settingMojom.Setting.kPrintJobs.toString();
-      params.append('settingId', printJobsSettingId);
-      Router.getInstance().navigateTo(defaultRoute, params);
-
-      flush();
-
-      const deepLinkElement =
-          printingSettingsCard.shadowRoot!.querySelector<HTMLElement>(
-              '#printManagement');
-      assert(deepLinkElement);
-      await waitAfterNextRender(deepLinkElement);
-      assertEquals(
-          deepLinkElement, printingSettingsCard.shadowRoot!.activeElement,
-          `Print jobs button should be focused for settingId=${
-              printJobsSettingId}.`);
-    });
-  }
 
   test('Printers row is focused after returning from subpage', async () => {
     const triggerSelector = '#cupsPrintersRow';

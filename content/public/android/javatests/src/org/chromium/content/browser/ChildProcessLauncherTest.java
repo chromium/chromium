@@ -20,7 +20,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
-import org.chromium.base.process_launcher.FileDescriptorInfo;
+import org.chromium.base.process_launcher.IChildProcessArgs;
+import org.chromium.base.process_launcher.IFileDescriptorInfo;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -46,10 +47,6 @@ public class ChildProcessLauncherTest {
 
     private static final String EXTRA_SERVICE_PARAM = "org.chromium.content.browser.SERVICE_EXTRA";
     private static final String EXTRA_SERVICE_PARAM_VALUE = "SERVICE_EXTRA";
-
-    private static final String EXTRA_CONNECTION_PARAM =
-            "org.chromium.content.browser.CONNECTION_EXTRA";
-    private static final String EXTRA_CONNECTION_PARAM_VALUE = "CONNECTION_EXTRA";
 
     private static final int CONNECTION_BLOCK_UNTIL_CONNECTED = 1;
     private static final int CONNECTION_BLOCK_UNTIL_SETUP = 2;
@@ -116,7 +113,9 @@ public class ChildProcessLauncherTest {
                                         SERVICE_COUNT_META_DATA_KEY,
                                         /* bindToCaller= */ false,
                                         /* bindAsExternalService= */ false,
-                                        /* useStrongBinding= */ false);
+                                        /* useStrongBinding= */ false,
+                                        /* fallbackToNextSlot= */ false,
+                                        /* isSandboxedForHistograms= */ false);
                             }
                         });
     }
@@ -131,7 +130,6 @@ public class ChildProcessLauncherTest {
         // Can be accessed after mOnConnectionSetupCalled is signaled.
         private boolean mServiceCreated;
         private Bundle mServiceBundle;
-        private Bundle mConnectionBundle;
 
         // Can be accessed after mOnLoadNativeCalled is signaled.
         private boolean mNativeLibraryLoaded;
@@ -140,11 +138,9 @@ public class ChildProcessLauncherTest {
         private String[] mCommandLine;
 
         @Override
-        public void onConnectionSetup(
-                boolean serviceCreatedCalled, Bundle serviceBundle, Bundle connectionBundle) {
+        public void onConnectionSetup(boolean serviceCreatedCalled, Bundle serviceBundle) {
             mServiceCreated = serviceCreatedCalled;
             mServiceBundle = serviceBundle;
-            mConnectionBundle = connectionBundle;
             Assert.assertEquals(0, mOnConnectionSetupHelper.getCallCount());
             mOnConnectionSetupHelper.notifyCalled();
         }
@@ -226,9 +222,7 @@ public class ChildProcessLauncherTest {
                     }
 
                     @Override
-                    public void onBeforeConnectionSetup(Bundle connectionBundle) {
-                        connectionBundle.putString(
-                                EXTRA_CONNECTION_PARAM, EXTRA_CONNECTION_PARAM_VALUE);
+                    public void onBeforeConnectionSetup(IChildProcessArgs childProcessArgs) {
                         Assert.assertEquals(0, onBeforeConnectionSetupHelper.getCallCount());
                         onBeforeConnectionSetupHelper.notifyCalled();
                     }
@@ -247,7 +241,7 @@ public class ChildProcessLauncherTest {
                 };
 
         final String[] commandLine = new String[] {"--test-param1", "--test-param2"};
-        final FileDescriptorInfo[] filesToBeMapped = new FileDescriptorInfo[0];
+        final IFileDescriptorInfo[] filesToBeMapped = new IFileDescriptorInfo[0];
 
         final IChildProcessBinder childProcessBinder = new IChildProcessBinder();
 
@@ -276,27 +270,23 @@ public class ChildProcessLauncherTest {
 
         boolean allocatedConnection = boundConnectionToUse == null;
         if (allocatedConnection) {
-            onBeforeConnectionAllocatedHelper.waitForCallback(/* currentCallback= */ 0);
+            onBeforeConnectionAllocatedHelper.waitForCallback(/* currentCallCount= */ 0);
         }
 
-        onBeforeConnectionSetupHelper.waitForCallback(/* currentCallback= */ 0);
+        onBeforeConnectionSetupHelper.waitForCallback(/* currentCallCount= */ 0);
 
         // Wait for the service to notify its onConnectionSetup was called.
         childProcessBinder.waitForOnConnectionSetupCalled();
         Assert.assertTrue(childProcessBinder.mServiceCreated);
         Assert.assertNotNull(childProcessBinder.mServiceBundle);
-        Assert.assertNotNull(childProcessBinder.mConnectionBundle);
         if (allocatedConnection) {
             Assert.assertEquals(
                     EXTRA_SERVICE_PARAM_VALUE,
                     childProcessBinder.mServiceBundle.getString(EXTRA_SERVICE_PARAM));
         }
-        Assert.assertEquals(
-                EXTRA_CONNECTION_PARAM_VALUE,
-                childProcessBinder.mConnectionBundle.getString(EXTRA_CONNECTION_PARAM));
 
         // Wait for the client onConnectionEstablished call.
-        onConnectionEstablishedHelper.waitForCallback(/* currentCallback= */ 0);
+        onConnectionEstablishedHelper.waitForCallback(/* currentCallCount= */ 0);
 
         // Wait for the service to notify its library got loaded.
         childProcessBinder.waitForOnNativeLibraryCalled();
@@ -322,7 +312,7 @@ public class ChildProcessLauncherTest {
         // always be called.
 
         // The client should also get a notification that the connection was lost.
-        onConnectionLostHelper.waitForCallback(/* currentCallback= */ 0);
+        onConnectionLostHelper.waitForCallback(/* currentCallCount= */ 0);
     }
 
     @Test
@@ -376,7 +366,9 @@ public class ChildProcessLauncherTest {
                                         /* serviceCount= */ 2,
                                         /* bindToCaller= */ false,
                                         /* bindAsExternalService= */ false,
-                                        /* useStrongBinding= */ false);
+                                        /* useStrongBinding= */ false,
+                                        /* fallbackToNextSlot= */ false,
+                                        /* isSandboxedForHistograms= */ false);
                             }
                         });
         Assert.assertFalse(badConnectionAllocator.anyConnectionAllocated());
@@ -515,9 +507,9 @@ public class ChildProcessLauncherTest {
                                         LauncherThread.getHandler(),
                                         new ChildProcessLauncher.Delegate() {},
                                         new String[0],
-                                        new FileDescriptorInfo[0],
+                                        new IFileDescriptorInfo[0],
                                         connectionAllocator,
-                                        /* binderCallback= */ null,
+                                        /* clientInterfaces= */ null,
                                         /* binderBox= */ null);
                         if (!processLauncher.start(setupConnection, queueIfNoFreeConnection)) {
                             return null;

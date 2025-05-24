@@ -104,19 +104,23 @@ SSLClientCertificateSelector::SSLClientCertificateSelector(
           std::make_unique<SSLClientAuthObserverImpl>(web_contents,
                                                       cert_request_info,
                                                       std::move(delegate))) {
-  RegisterDeleteDelegateCallback(base::BindOnce(
-      [](SSLClientCertificateSelector* dialog) {
-        // This is here and not in Cancel() to give WebContentsDestroyed a
-        // chance to abort instead of proceeding with a null certificate. (This
-        // will be ignored if there was a previous call to CertificateSelected
-        // or CancelCertificateSelection.)
-        if (dialog->auth_observer_impl_)
-          dialog->auth_observer_impl_->CertificateSelected(nullptr, nullptr);
-      },
-      this));
+  RegisterDeleteDelegateCallback(
+      RegisterDeleteCallbackPassKey(),
+      base::BindOnce(
+          [](SSLClientCertificateSelector* dialog) {
+            // This is here and not in Cancel() to give WebContentsDestroyed a
+            // chance to abort instead of proceeding with a null certificate.
+            // (This will be ignored if there was a previous call to
+            // CertificateSelected or CancelCertificateSelection.)
+            if (dialog->auth_observer_impl_) {
+              dialog->auth_observer_impl_->CertificateSelected(nullptr,
+                                                               nullptr);
+            }
+          },
+          this));
 }
 
-SSLClientCertificateSelector::~SSLClientCertificateSelector() {}
+SSLClientCertificateSelector::~SSLClientCertificateSelector() = default;
 
 void SSLClientCertificateSelector::Init() {
   auth_observer_impl_->Init(base::BindOnce(
@@ -148,8 +152,9 @@ void SSLClientCertificateSelector::AcceptCertificate(
 
 void SSLClientCertificateSelector::OnCancel() {
   // Close the dialog if it is not currently being displayed
-  if (!GetWidget()->IsVisible())
+  if (!GetWidget()->IsVisible()) {
     CloseDialog();
+  }
 }
 
 base::OnceClosure SSLClientCertificateSelector::GetCancellationCallback() {
@@ -182,8 +187,9 @@ base::OnceClosure ShowSSLClientCertificateSelector(
   //
   // TODO(davidben): Move this hook to the WebContentsDelegate and only try to
   // show a dialog in Browser's implementation. https://crbug.com/456255
-  if (!SSLClientCertificateSelector::CanShow(contents))
+  if (!SSLClientCertificateSelector::CanShow(contents)) {
     return base::OnceClosure();
+  }
 
   SSLClientCertificateSelector* selector = new SSLClientCertificateSelector(
       contents, cert_request_info, std::move(client_certs),

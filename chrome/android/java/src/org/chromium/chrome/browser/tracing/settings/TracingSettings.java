@@ -14,12 +14,13 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tracing.TracingController;
 import org.chromium.chrome.browser.tracing.TracingNotificationManager;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.lang.annotation.Retention;
@@ -31,7 +32,7 @@ import java.util.Set;
 
 /** Settings fragment that shows options for recording a performance trace. */
 public class TracingSettings extends PreferenceFragmentCompat
-        implements SettingsPage, TracingController.Observer {
+        implements EmbeddableSettingsPage, TracingController.Observer {
     static final String NON_DEFAULT_CATEGORY_PREFIX = "disabled-by-default-";
 
     @VisibleForTesting static final String UI_PREF_DEFAULT_CATEGORIES = "default_categories";
@@ -60,7 +61,7 @@ public class TracingSettings extends PreferenceFragmentCompat
     private static final String MSG_MODE_RECORD_CONTINUOUSLY = "Record continuously";
     private static final String MSG_SHARE_TRACE = "Share trace";
 
-    private static final ObservableSupplier<String> sPageTitle =
+    private final ObservableSupplier<String> mPageTitle =
             new ObservableSupplierImpl<>(MSG_TRACING_TITLE);
 
     @VisibleForTesting
@@ -181,7 +182,7 @@ public class TracingSettings extends PreferenceFragmentCompat
     }
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tracing_preferences);
 
         mPrefDefaultCategories = findPreference(UI_PREF_DEFAULT_CATEGORIES);
@@ -228,13 +229,18 @@ public class TracingSettings extends PreferenceFragmentCompat
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
-        return sPageTitle;
+        return mPageTitle;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updatePreferences();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        updatePreferences();
         TracingController.getInstance().addObserver(this);
     }
 
@@ -250,11 +256,17 @@ public class TracingSettings extends PreferenceFragmentCompat
     }
 
     private void updatePreferences() {
+        TracingNotificationManager.browserNotificationsEnabled(
+                (notificationsEnabled) -> {
+                    updatePreferences(notificationsEnabled);
+                });
+    }
+
+    private void updatePreferences(boolean notificationsEnabled) {
         @TracingController.State int state = TracingController.getInstance().getState();
         boolean initialized = state != TracingController.State.INITIALIZING;
         boolean idle = state == TracingController.State.IDLE || !initialized;
         boolean hasTrace = state == TracingController.State.STOPPED;
-        boolean notificationsEnabled = TracingNotificationManager.browserNotificationsEnabled();
 
         mPrefDefaultCategories.setEnabled(initialized);
         mPrefNondefaultCategories.setEnabled(initialized);
@@ -295,5 +307,10 @@ public class TracingSettings extends PreferenceFragmentCompat
             mPrefStartRecording.setTitle(MSG_ACTIVE);
             mPrefTracingStatus.setTitle(MSG_ACTIVE_SUMMARY);
         }
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

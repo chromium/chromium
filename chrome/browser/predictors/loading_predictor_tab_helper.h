@@ -70,6 +70,10 @@ class LoadingPredictorTabHelper
     predictor_ = predictor;
   }
 
+  bool IsPrepareForPageloadCalledForTesting() const {
+    return is_prepare_for_pageload_called_for_testing_;
+  }
+
  private:
   // The PageData stores the state needed for each page. It is primarily owned
   // by the DocumentPageDataHolder or NavigationPageDataHolder, depending on
@@ -157,6 +161,16 @@ class LoadingPredictorTabHelper
       bool should_add_preconnects_to_prediction,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
+
+  // Calls LoadingPredictor::PrepareForPageLoad doing prefetch and/or
+  // preconnect. This is called asynchronously after main resource fetching if
+  // kLCPPPrefetchSubresourceAsync is enabled.
+  void PrepareForPageLoad(scoped_refptr<PageData> page_data,
+                          const std::optional<url::Origin> initiator_origin,
+                          const GURL main_frame_url,
+                          bool should_consult_optimization_guide);
+
+  bool is_prepare_for_pageload_called_for_testing_ = false;
 
   // Owned by profile.
   base::WeakPtr<LoadingPredictor> predictor_;

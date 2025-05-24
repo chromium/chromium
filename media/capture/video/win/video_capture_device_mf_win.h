@@ -126,6 +126,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
 
   std::optional<int> camera_rotation() const { return camera_rotation_; }
 
+  std::optional<EffectInfo> GetBackgroundBlurState();
+
  private:
   class MFVideoCallback;
   class MFActivitiesReportCallback;

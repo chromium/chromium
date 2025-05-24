@@ -8,24 +8,26 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
 /** Fragment to display all the allowed Fledge sites. */
+@NullMarked
 public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceClickListener {
     private PreferenceScreen mPreferenceScreen;
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable LargeIconBridge mLargeIconBridge;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
@@ -42,7 +44,7 @@ public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Disable animations of preference changes.
@@ -50,8 +52,8 @@ public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         getPrivacySandboxBridge().getFledgeJoiningEtldPlusOneForDisplay(this::populateSites);
     }
 
@@ -65,7 +67,7 @@ public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public boolean onPreferenceClick(@NonNull Preference preference) {
+    public boolean onPreferenceClick(Preference preference) {
         if (preference instanceof FledgePreference) {
             getPrivacySandboxBridge()
                     .setFledgeJoiningAllowed(((FledgePreference) preference).getSite(), false);
@@ -106,5 +108,10 @@ public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
 
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

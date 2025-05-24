@@ -4,9 +4,8 @@
 
 package org.chromium.components.media_router;
 
-import android.annotation.SuppressLint;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.mediarouter.media.MediaRouter;
 
@@ -22,6 +21,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.caf.CafMediaRouteProvider;
 import org.chromium.components.media_router.caf.remoting.CafRemotingMediaRouteProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -36,6 +37,7 @@ import java.util.Map;
  * Owns a list of {@link MediaRouteProvider} implementations and dispatches native calls to them.
  */
 @JNINamespace("media_router")
+@NullMarked
 public class BrowserMediaRouter implements MediaRouteManager {
     private static final String TAG = "MediaRouter";
     private static final int MIN_GOOGLE_PLAY_SERVICES_APK_VERSION = 12600000;
@@ -74,20 +76,6 @@ public class BrowserMediaRouter implements MediaRouteManager {
             new HashMap<String, Map<MediaRouteProvider, List<MediaSink>>>();
     private final Map<String, List<MediaSink>> mSinksPerSource =
             new HashMap<String, List<MediaSink>>();
-    private static boolean sAndroidMediaRouterSetForTest;
-
-    @SuppressLint("StaticFieldLeak") // This is for test only.
-    private static MediaRouter sAndroidMediaRouterForTest;
-
-    public static void setAndroidMediaRouterForTest(MediaRouter router) {
-        sAndroidMediaRouterSetForTest = true;
-        sAndroidMediaRouterForTest = router;
-        ResettersForTesting.register(
-                () -> {
-                    sAndroidMediaRouterSetForTest = false;
-                    sAndroidMediaRouterForTest = null;
-                });
-    }
 
     public static void setRouteProviderFactoryForTest(MediaRouteProvider.Factory factory) {
         var oldValue = sRouteProviderFactory;
@@ -112,25 +100,12 @@ public class BrowserMediaRouter implements MediaRouteManager {
         return mSinksPerSource;
     }
 
-    /**
-     * Obtains the {@link MediaRouter} instance given the application context.
-     * @return Null if the media router API is not supported, the service instance otherwise.
-     */
-    @Nullable
+    /** Obtains the {@link MediaRouter} instance. */
     public static MediaRouter getAndroidMediaRouter() {
-        if (sAndroidMediaRouterSetForTest) return sAndroidMediaRouterForTest;
-
         // Some manufacturers have an implementation that causes StrictMode
         // violations. See https://crbug.com/818325.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            // Pre-MR1 versions of JB do not have the complete MediaRouter APIs,
-            // so getting the MediaRouter instance will throw an exception.
             return MediaRouter.getInstance(ContextUtils.getApplicationContext());
-        } catch (NoSuchMethodError e) {
-            return null;
-        } catch (NoClassDefFoundError e) {
-            // TODO(mlamouri): happens with Robolectric.
-            return null;
         }
     }
 
@@ -221,7 +196,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
     }
 
     @Override
-    public void onRouteClosed(String mediaRouteId, String error) {
+    public void onRouteClosed(String mediaRouteId, @Nullable String error) {
         if (mNativeMediaRouterAndroidBridge != 0) {
             BrowserMediaRouterJni.get()
                     .onRouteClosed(
@@ -357,6 +332,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
             return;
         }
 
+        assumeNonNull(MediaRouterClient.getInstance());
         provider.createRoute(
                 sourceId,
                 sinkId,
@@ -390,6 +366,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
             return;
         }
 
+        assumeNonNull(MediaRouterClient.getInstance());
         provider.joinRoute(
                 sourceId,
                 presentationId,
@@ -443,9 +420,8 @@ public class BrowserMediaRouter implements MediaRouteManager {
      * @param routeId The route ID tied to the CastSession for which we want a media controller.
      * @return A MediaControllerBridge if it can be obtained from |routeId|, null otherwise.
      */
-    @Nullable
     @CalledByNative
-    public FlingingControllerBridge getFlingingControllerBridge(String routeId) {
+    public @Nullable FlingingControllerBridge getFlingingControllerBridge(String routeId) {
         MediaRouteProvider provider = mRouteIdsToProviders.get(routeId);
         if (provider == null) return null;
 
@@ -472,7 +448,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
         return mSinksPerSource.get(sourceId).get(index);
     }
 
-    private MediaRouteProvider getProviderForSource(String sourceId) {
+    private @Nullable MediaRouteProvider getProviderForSource(String sourceId) {
         for (MediaRouteProvider provider : mRouteProviders) {
             if (provider.supportsSource(sourceId)) return provider;
         }
@@ -516,7 +492,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
                 long nativeMediaRouterAndroidBridge,
                 BrowserMediaRouter caller,
                 String mediaRouteId,
-                String message);
+                @Nullable String message);
 
         void onMessage(
                 long nativeMediaRouterAndroidBridge,

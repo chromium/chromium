@@ -51,10 +51,8 @@ BluetoothDetailedViewController::BluetoothDetailedViewController(
   remote_cros_bluetooth_config_->ObserveSystemProperties(
       cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
 
-  if (features::IsBluetoothDisconnectWarningEnabled()) {
-    GetHidPreservingBluetoothStateControllerService(
-        remote_hid_preserving_bluetooth_.BindNewPipeAndPassReceiver());
-  }
+  GetHidPreservingBluetoothStateControllerService(
+      remote_hid_preserving_bluetooth_.BindNewPipeAndPassReceiver());
 }
 
 BluetoothDetailedViewController::~BluetoothDetailedViewController() = default;
@@ -126,12 +124,8 @@ void BluetoothDetailedViewController::OnPropertiesUpdated(
 }
 
 void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {
-  if (features::IsBluetoothDisconnectWarningEnabled()) {
-    remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
-        new_state, mojom::HidWarningDialogSource::kQuickSettings);
-  } else {
-    remote_cros_bluetooth_config_->SetBluetoothEnabledState(new_state);
-  }
+  remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
+      new_state, mojom::HidWarningDialogSource::kQuickSettings);
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
     hats_bluetooth_revamp_trigger->TryToShowSurvey();

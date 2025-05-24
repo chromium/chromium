@@ -22,7 +22,7 @@ class CrossUserSharingPublicPrivateKeyPair {
  public:
   // Generate a X25519 key pair.
   static CrossUserSharingPublicPrivateKeyPair GenerateNewKeyPair();
-  // Initialize the Public-private key-pair using |private_key|.
+  // Initialize the Public-private key-pair using `private_key`.
   static std::optional<CrossUserSharingPublicPrivateKeyPair> CreateByImport(
       base::span<const uint8_t> private_key);
 
@@ -42,19 +42,19 @@ class CrossUserSharingPublicPrivateKeyPair {
   // Returns the raw public key.
   std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> GetRawPublicKey() const;
 
-  // Encrypts the `plaintext` with Auth HPKE using |sender_public_key|
+  // Encrypts the `plaintext` with Auth HPKE using `sender_public_key`
   // authenticated with own private/public key-pair.
   // Returns decrypted bytes as a vector if the decryption succeeds.
-  // |authenticated_info| is optional.
+  // `authenticated_info` is optional.
   std::optional<std::vector<uint8_t>> HpkeAuthDecrypt(
       base::span<const uint8_t> encrypted_data,
       base::span<const uint8_t> sender_public_key,
       base::span<const uint8_t> authenticated_info) const;
 
-  // Decrypt |encrypted_data| with Auth HPKE using own public/private key-pair
-  // and authenticated with |sender_public_key|.
+  // Decrypt `encrypted_data` with Auth HPKE using own public/private key-pair
+  // and authenticated with `sender_public_key`.
   // Returns encrypted bytes as a vector if the encryption succeeds.
-  // |authenticated_info| is optional and should match the one used during
+  // `authenticated_info` is optional and should match the one used during
   // encryption.
   std::optional<std::vector<uint8_t>> HpkeAuthEncrypt(
       base::span<const uint8_t> plaintext,

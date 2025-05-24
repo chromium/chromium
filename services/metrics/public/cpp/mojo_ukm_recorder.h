@@ -49,6 +49,8 @@ class METRICS_EXPORT MojoUkmRecorder
 
   ~MojoUkmRecorder() override;
 
+  void UpdateSourceURL(SourceId source_id, const GURL& url) override;
+
   base::WeakPtr<MojoUkmRecorder> GetWeakPtr();
 
  protected:
@@ -59,7 +61,6 @@ class METRICS_EXPORT MojoUkmRecorder
   void ClientDisconnected();
 
   // UkmRecorder:
-  void UpdateSourceURL(SourceId source_id, const GURL& url) override;
   void UpdateAppURL(SourceId source_id,
                     const GURL& url,
                     const AppType app_type) override;

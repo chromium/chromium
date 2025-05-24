@@ -83,8 +83,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
 
   // The saved state of the associated NTP.
   NewTabPageState* ntp_state_ = nil;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_TAB_HELPER_H_

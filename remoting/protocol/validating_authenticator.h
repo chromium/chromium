@@ -50,6 +50,7 @@ class ValidatingAuthenticator : public Authenticator {
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
+  RejectionDetails rejection_details() const override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
@@ -81,6 +82,7 @@ class ValidatingAuthenticator : public Authenticator {
   // Returns the rejection reason. Can be called only when in REJECTED state.
   RejectionReason rejection_reason_ =
       Authenticator::RejectionReason::INVALID_CREDENTIALS;
+  RejectionDetails rejection_details_;
 
   std::unique_ptr<Authenticator> current_authenticator_;
 

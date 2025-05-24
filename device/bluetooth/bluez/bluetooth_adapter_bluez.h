@@ -16,10 +16,11 @@
 
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -203,13 +204,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       override;
 
   std::vector<BluetoothRole> GetSupportedRoles() override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set the adapter name to one chosen from the system information. Only Ash
-  // needs to do this.
+  // Set the adapter name to one chosen from the system information.
   void SetStandardChromeOSAdapterName() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // These functions are specifically for use with ARC. They have no need to
   // exist for other platforms, hence we're putting them directly in the BlueZ
@@ -598,14 +596,18 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   scoped_refptr<device::BluetoothSocketThread> socket_thread_;
 
   // The profiles we have registered with the bluetooth daemon.
-  std::map<device::BluetoothUUID, BluetoothAdapterProfileBlueZ*> profiles_;
+  std::map<device::BluetoothUUID,
+           raw_ptr<BluetoothAdapterProfileBlueZ, CtnExperimental>>
+      profiles_;
 
   // Profiles that have been released and are pending removal.
-  std::map<device::BluetoothUUID, BluetoothAdapterProfileBlueZ*>
+  std::map<device::BluetoothUUID,
+           raw_ptr<BluetoothAdapterProfileBlueZ, CtnExperimental>>
       released_profiles_;
 
   // Queue of delegates waiting for a profile to register.
-  std::map<device::BluetoothUUID, std::vector<RegisterProfileCompletionPair>*>
+  std::map<device::BluetoothUUID,
+           raw_ptr<std::vector<RegisterProfileCompletionPair>, CtnExperimental>>
       profile_queues_;
 
   // List of GATT services that are owned by this adapter.
@@ -613,7 +615,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       owned_gatt_services_;
 
   // GATT services that are currently available on the GATT server.
-  std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>
+  std::map<dbus::ObjectPath,
+           raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>
       registered_gatt_services_;
 
   // DBus Object Manager that acts as a service provider for all the services

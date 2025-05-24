@@ -12,8 +12,7 @@ BrowserProcessPlatformPart::BrowserProcessPlatformPart() {
       base::android::AttachCurrentThread());
 }
 
-BrowserProcessPlatformPart::~BrowserProcessPlatformPart() {
-}
+BrowserProcessPlatformPart::~BrowserProcessPlatformPart() = default;
 
 void BrowserProcessPlatformPart::AttemptExit(bool try_to_quit_application) {
   // Tell the Java code to finish() the Activity.

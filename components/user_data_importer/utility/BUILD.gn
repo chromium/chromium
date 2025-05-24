@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+source_set("safari_data_importer") {
+  sources = [
+    "safari_data_importer.cc",
+    "safari_data_importer.h",
+  ]
+
+  deps = [ "//components/password_manager/core/browser/import:importer" ]
+}

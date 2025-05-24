@@ -15,19 +15,25 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
+#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/install_index_helper.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/install_prefs_helper.h"
@@ -64,39 +70,30 @@ const char kImportMinVersionNewer[] =
 const char kImportMissing[] = "'import' extension is not installed.";
 const char kImportNotSharedModule[] = "'import' is not a shared module.";
 
-// Deletes files reserved for use by the Extension system in the kMetadataFolder
-// and the kMetadataFolder itself if it is empty.
-void MaybeCleanupMetadataFolder(const base::FilePath& extension_path) {
-  const std::vector<base::FilePath> reserved_filepaths =
-      file_util::GetReservedMetadataFilePaths(extension_path);
-  for (const auto& file : reserved_filepaths)
-    base::DeletePathRecursively(file);
-
-  const base::FilePath& metadata_dir = extension_path.Append(kMetadataFolder);
-  if (base::IsDirectoryEmpty(metadata_dir))
-    base::DeletePathRecursively(metadata_dir);
-}
-
 }  // namespace
 
 // static
 scoped_refptr<UnpackedInstaller> UnpackedInstaller::Create(
-    ExtensionService* extension_service) {
-  DCHECK(extension_service);
-  return scoped_refptr<UnpackedInstaller>(
-      new UnpackedInstaller(extension_service));
+    content::BrowserContext* context) {
+  CHECK(context);
+  return scoped_refptr<UnpackedInstaller>(new UnpackedInstaller(context));
 }
 
-UnpackedInstaller::UnpackedInstaller(ExtensionService* extension_service)
-    : service_weak_(extension_service->AsExtensionServiceWeakPtr()),
-      profile_(extension_service->profile()),
+UnpackedInstaller::UnpackedInstaller(content::BrowserContext* context)
+    : profile_(Profile::FromBrowserContext(context)),
       require_modern_manifest_version_(true),
       be_noisy_on_failure_(true) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  profile_observation_.Observe(profile_);
+
+  // Observe for browser shutdown. Unretained is safe because the callback
+  // subscription is owned by this object.
+  on_browser_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &UnpackedInstaller::OnBrowserTerminating, base::Unretained(this)));
 }
 
-UnpackedInstaller::~UnpackedInstaller() {
-}
+UnpackedInstaller::~UnpackedInstaller() = default;
 
 void UnpackedInstaller::Load(const base::FilePath& path_in) {
   DCHECK(extension_path_.empty());
@@ -111,8 +108,9 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(extension_path_.empty());
 
-  if (!service_weak_.get())
+  if (!profile_) {
     return false;
+  }
   // Load extensions from the command line synchronously to avoid a race
   // between extension loading and loading an URL from the command line.
   base::ScopedAllowBlocking allow_blocking;
@@ -147,8 +145,7 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
   }
 
   extension()->permissions_data()->BindToCurrentThread();
-  PermissionsUpdater(
-      service_weak_->profile(), PermissionsUpdater::INIT_FLAG_TRANSIENT)
+  PermissionsUpdater(profile_, PermissionsUpdater::INIT_FLAG_TRANSIENT)
       .InitializePermissions(extension());
   StartInstallChecks();
 
@@ -158,9 +155,9 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
 
 void UnpackedInstaller::StartInstallChecks() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ExtensionService* service = service_weak_.get();
-  if (!service)
+  if (!profile_) {
     return;
+  }
 
   // TODO(crbug.com/40388034): Enable these checks all the time.  The reason
   // they are disabled for extensions loaded from the command-line is that
@@ -168,8 +165,9 @@ void UnpackedInstaller::StartInstallChecks() {
   // dependencies between the extensions loaded by the command line.
   if (extension()->manifest()->location() !=
       mojom::ManifestLocation::kCommandLine) {
-    if (service->browser_terminating())
+    if (browser_terminating_) {
       return;
+    }
 
     // TODO(crbug.com/40387578): Move this code to a utility class to avoid
     // duplication of SharedModuleService::CheckImports code.
@@ -177,7 +175,7 @@ void UnpackedInstaller::StartInstallChecks() {
       const std::vector<SharedModuleInfo::ImportInfo>& imports =
           SharedModuleInfo::GetImports(extension());
       std::vector<SharedModuleInfo::ImportInfo>::const_iterator i;
-      ExtensionRegistry* registry = ExtensionRegistry::Get(service->profile());
+      ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
       for (i = imports.begin(); i != imports.end(); ++i) {
         base::Version version_required(i->minimum_version);
         const Extension* imported_module = registry->GetExtensionById(
@@ -234,7 +232,7 @@ int UnpackedInstaller::GetFlags() {
   std::string id = crx_file::id_util::GenerateIdForPath(extension_path_);
   bool allow_file_access =
       Manifest::ShouldAlwaysAllowFileAccess(mojom::ManifestLocation::kUnpacked);
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   if (allow_file_access_.has_value()) {
     allow_file_access = *allow_file_access_;
   } else if (prefs->HasAllowFileAccessSetting(id)) {
@@ -262,7 +260,7 @@ bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
   // Clean up the kMetadataFolder if necessary. This prevents spurious
   // warnings/errors and ensures we don't treat a user provided file as one by
   // the Extension system.
-  MaybeCleanupMetadataFolder(extension_path_);
+  file_util::MaybeCleanupMetadataFolder(extension_path_);
 
   // Treat presence of illegal filenames as a hard error for unpacked
   // extensions. Don't do so for command line extensions since this breaks
@@ -298,12 +296,12 @@ bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
 }
 
 bool UnpackedInstaller::IsLoadingUnpackedAllowed() const {
-  if (!service_weak_.get())
+  if (!profile_) {
     return true;
+  }
   // If there is a "*" in the extension blocklist, then no extensions should be
   // allowed at all (except explicitly allowlisted extensions).
-  return !ExtensionManagementFactory::GetForBrowserContext(
-              service_weak_->profile())
+  return !ExtensionManagementFactory::GetForBrowserContext(profile_)
               ->BlocklistedByDefault();
 }
 
@@ -319,8 +317,9 @@ void UnpackedInstaller::GetAbsolutePath() {
 
 void UnpackedInstaller::CheckExtensionFileAccess() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!service_weak_.get())
+  if (!profile_) {
     return;
+  }
 
   if (!IsLoadingUnpackedAllowed()) {
     ReportExtensionLoadError(kUnpackedExtensionsBlocklistedError);
@@ -352,9 +351,9 @@ void UnpackedInstaller::LoadWithFileAccess(int flags) {
 void UnpackedInstaller::ReportExtensionLoadError(const std::string &error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (service_weak_.get()) {
+  if (profile_) {
     LoadErrorReporter::GetInstance()->ReportLoadError(
-        extension_path_, error, service_weak_->profile(), be_noisy_on_failure_);
+        extension_path_, error, profile_, be_noisy_on_failure_);
   }
 
   if (!callback_.is_null())
@@ -364,14 +363,14 @@ void UnpackedInstaller::ReportExtensionLoadError(const std::string &error) {
 void UnpackedInstaller::InstallExtension() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!service_weak_.get()) {
+  if (!profile_) {
     callback_.Reset();
     return;
   }
 
   // Force file access and/or incognito state and set install param if
   // requested.
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   if (allow_file_access_.has_value()) {
     prefs->SetAllowFileAccess(extension()->id(), *allow_file_access_);
   }
@@ -382,31 +381,64 @@ void UnpackedInstaller::InstallExtension() {
     SetInstallParam(prefs, extension()->id(), *install_param_);
   }
 
-  PermissionsUpdater perms_updater(service_weak_->profile());
+  PermissionsUpdater perms_updater(profile_);
   perms_updater.InitializePermissions(extension());
   perms_updater.GrantActivePermissions(extension());
 
-  service_weak_->OnExtensionInstalled(extension(), syncer::StringOrdinal(),
-                                      kInstallFlagInstallImmediately,
-                                      std::move(ruleset_install_prefs_));
+  ExtensionRegistrar::Get(profile_)->OnExtensionInstalled(
+      extension(), syncer::StringOrdinal(), kInstallFlagInstallImmediately,
+      std::move(ruleset_install_prefs_));
 
   // Record metrics here since the registry would contain the extension by now.
-  RecordCommandLineDeveloperModeMetrics();
+  RecordCommandLineMetrics();
 
   if (!callback_.is_null())
     std::move(callback_).Run(extension(), extension_path_, std::string());
 }
 
-void UnpackedInstaller::RecordCommandLineDeveloperModeMetrics() {
+void UnpackedInstaller::RecordCommandLineMetrics() {
   if (!extension()->is_extension() ||
       extension()->location() != mojom::ManifestLocation::kCommandLine) {
     return;
   }
 
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
+  if (!extension_registry->GetInstalledExtension(extension()->id())) {
+    return;
+  }
+
+  // Manifest settings override metrics.
+  base::UmaHistogramCounts100("Extensions.CommandLineInstalled", 1);
+
+  bool new_tab_page_set =
+      URLOverrides::GetChromeURLOverrides(extension()).count("newtab");
+  bool default_search_engine_set = false;
+  // SettingsOverrides are only available on Windows and macOS.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  const SettingsOverrides* settings = SettingsOverrides::Get(extension());
+  default_search_engine_set = settings && settings->search_engine &&
+                              settings->search_engine->is_default;
+#endif
+
+  if (new_tab_page_set && default_search_engine_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride",
+        kSearchEngineAndNewTabPage);
+  } else if (new_tab_page_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kNewTabPage);
+  } else if (default_search_engine_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kSearchEngine);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kNoOverride);
+  }
+
+  // Developer mode metrics.
   bool dev_mode_enabled =
       GetCurrentDeveloperMode(util::GetBrowserContextId(profile_));
 
-  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
   if (extension_registry->enabled_extensions().Contains(extension()->id())) {
     if (dev_mode_enabled) {
       base::UmaHistogramCounts100(
@@ -426,6 +458,15 @@ void UnpackedInstaller::RecordCommandLineDeveloperModeMetrics() {
           "Extensions.CommandLineWithDeveloperModeOff.Disabled", 1);
     }
   }
+}
+
+void UnpackedInstaller::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observation_.Reset();
+  profile_ = nullptr;
+}
+
+void UnpackedInstaller::OnBrowserTerminating() {
+  browser_terminating_ = true;
 }
 
 }  // namespace extensions

@@ -13,16 +13,14 @@
 
 namespace importer {
 
-bool ReencodeFavicon(const unsigned char* src_data,
-                     size_t src_len,
-                     std::vector<unsigned char>* png_data) {
+std::optional<std::vector<uint8_t>> ReencodeFavicon(
+    base::span<const uint8_t> src) {
   // Decode the favicon using WebKit's image decoder.
   SkBitmap decoded = content::DecodeImage(
-      src_data,
-      gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize),
-      src_len);
-  if (decoded.empty())
-    return false;  // Unable to decode.
+      src, gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize));
+  if (decoded.empty()) {
+    return std::nullopt;  // Unable to decode.
+  }
 
   if (decoded.width() != gfx::kFaviconSize ||
       decoded.height() != gfx::kFaviconSize) {
@@ -35,8 +33,8 @@ bool ReencodeFavicon(const unsigned char* src_data,
   }
 
   // Encode our bitmap as a PNG.
-  gfx::PNGCodec::EncodeBGRASkBitmap(decoded, false, png_data);
-  return true;
+  return gfx::PNGCodec::EncodeBGRASkBitmap(decoded,
+                                           /*discard_transparency=*/false);
 }
 
 }  // namespace importer

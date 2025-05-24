@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/chrome/browser/bookmarks/model",
+  "+ios/chrome/browser/browser_view/model",
+  "+ios/chrome/browser/first_run/model",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/reading_list/model",
+  "+ios/chrome/browser/url_loading/model",
+]

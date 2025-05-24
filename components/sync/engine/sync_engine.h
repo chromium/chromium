@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/extensions_activity.h"
@@ -39,8 +38,6 @@ struct SyncStatus;
 // Lives on the UI thread.
 class SyncEngine : public DataTypeConfigurer {
  public:
-  using AllNodesCallback =
-      base::OnceCallback<void(DataType, base::Value::List)>;
   using HttpPostProviderFactoryGetter =
       base::OnceCallback<std::unique_ptr<HttpPostProviderFactory>()>;
 
@@ -77,14 +74,14 @@ class SyncEngine : public DataTypeConfigurer {
   // Kicks off asynchronous initialization. Optionally deletes sync data during
   // init in order to make sure we're starting fresh.
   //
-  // |saved_nigori_state| is optional nigori state to restore from a previous
+  // `saved_nigori_state` is optional nigori state to restore from a previous
   // engine instance. May be null.
   virtual void Initialize(InitParams params) = 0;
 
   // Returns whether the asynchronous initialization process has finished.
   virtual bool IsInitialized() const = 0;
 
-  // Inform the engine to trigger a sync cycle for |types|.
+  // Inform the engine to trigger a sync cycle for `types`.
   virtual void TriggerRefresh(const DataTypeSet& types) = 0;
 
   // Updates the engine's SyncCredentials. The credentials must be fully
@@ -133,7 +130,7 @@ class SyncEngine : public DataTypeConfigurer {
   // TRUSTED_VAULT_PASSPHRASE: it provides new decryption keys that could
   // allow decrypting pending Nigori keys. Notifies observers of the result of
   // the operation via OnTrustedVaultKeyAccepted if the provided keys
-  // successfully decrypted pending keys. |done_cb| is invoked at the very end.
+  // successfully decrypted pending keys. `done_cb` is invoked at the very end.
   virtual void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys,
       base::OnceClosure done_cb) = 0;
@@ -180,12 +177,6 @@ class SyncEngine : public DataTypeConfigurer {
   // diverge from a real scheduled poll time because this method uses base::Time
   // while scheduler uses base::TimeTicks (which may be paused in sleep mode).
   virtual bool IsNextPollTimeInThePast() const = 0;
-
-  // Returns a Value::List representing Nigori node.
-  virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
-
-  // Record histograms related to Nigori type.
-  virtual void RecordNigoriMemoryUsageAndCountsHistograms() = 0;
 };
 
 }  // namespace syncer

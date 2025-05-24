@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakeMouseButtonActions, fakePointingSticks, fakeStyluses, fakeTouchpads, Keyboard, MetaKey, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from 'chrome://os-settings/os_settings.js';
+import type {Keyboard, SixPackKeyInfo} from 'chrome://os-settings/os_settings.js';
+import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakeMouseButtonActions, fakePointingSticks, fakeStyluses, fakeTouchpads, MetaKey, ModifierKey, SixPackShortcutModifier} from 'chrome://os-settings/os_settings.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('FakeInputDeviceSettings', () => {
@@ -109,7 +110,7 @@ suite('FakeInputDeviceSettings', () => {
     provider.setFakeGraphicsTablets(fakeGraphicsTablets);
     // Update the first graphics tablet settings with a new button remapping.
     const updatedButtonRemappings = [
-      ...fakeGraphicsTablets[0]!.settings!.tabletButtonRemappings,
+      ...fakeGraphicsTablets[0]!.settings.tabletButtonRemappings,
       {
         name: 'new button',
         button: {
@@ -138,7 +139,7 @@ suite('FakeInputDeviceSettings', () => {
   test('restoreDefaultKeyboardRemappings', async () => {
     provider.setFakeKeyboards(fakeKeyboards);
     // Restore the default remappings for the first keyboard settings.
-    provider.restoreDefaultKeyboardRemappings(fakeKeyboards[0]!.id!);
+    provider.restoreDefaultKeyboardRemappings(fakeKeyboards[0]!.id);
     // Verify if the first keyboard settings are updated.
     const keyboards: Keyboard[] = await provider.getConnectedKeyboardSettings();
     const keyboard = keyboards[0] as Keyboard;

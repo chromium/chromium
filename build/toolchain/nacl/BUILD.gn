@@ -248,7 +248,7 @@ template("nacl_irt_toolchain") {
     ld = "${python_path} ${link_irt} --tls-edit=${tls_edit} --link-cmd=${cxx} --readelf-cmd=${readelf}"
 
     # reclient requires explicit upload of toolchain lib
-    if (is_chromeos_ash && use_remoteexec) {
+    if (is_chromeos && use_remoteexec) {
       if (defined(invoker.extra_cppflags) && invoker.extra_cppflags != "") {
         extra_cppflags = " " + invoker.extra_cppflags
       } else {
@@ -265,6 +265,8 @@ template("nacl_irt_toolchain") {
       is_clang = true
       use_lld = false
       is_nacl_saigo = true
+      host_toolchain_is_msan = is_msan
+      host_toolchain_msan_track_origins = msan_track_origins
     }
 
     # TODO(ncbray): depend on link script

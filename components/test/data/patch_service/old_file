@@ -1,0 +1,1 @@
+I am an old file, oh such an old file, to become a new file, someone needs to apply a patch to me. You could generate a patch by using `zucchini -gen old_file pnew_file patch_file`.

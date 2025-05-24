@@ -133,69 +133,48 @@ found in the LICENSE file.
         on-click="onBackButtonClicked">
     </oobe-back-button>
   </div>
-  <div slot="bottom-buttons" hidden$="[[navigationHidden]]">
-    <div hidden="[[!isDefaultNavigationShown(canGoBack,
-        gaiaDialogButtonsType)]]" class="flex layout horizontal">
-      <quick-start-entry-point
-        id="quick-start-signin-button"
-        on-click="onQuickStartClicked"
-        hidden="[[!isQuickStartEnabled]]"
-        quick-start-text-key="signinScreenQuickStart">
-      </quick-start-entry-point>
-      <oobe-text-button id="secondary-action-button"
-          label-for-aria="[[secondaryActionButtonLabel]]"
-          on-click="onSecondaryActionButtonClicked"
-          hidden$="[[!secondaryActionButtonLabel]]"
-          disabled="[[!isButtonEnabled(navigationEnabled,
-                                        secondaryActionButtonEnabled)]]">
-        <div slot="text">[[secondaryActionButtonLabel]]</div>
-      </oobe-text-button>
-      <oobe-text-button id="primary-action-button"
-          label-for-aria="[[primaryActionButtonLabel]]"
-          on-click="onPrimaryActionButtonClicked"
-          hidden$="[[!primaryActionButtonLabel]]"
-          disabled="[[!isButtonEnabled(navigationEnabled,
-                                        primaryActionButtonEnabled)]]"
-          inverse>
-        <div slot="text">[[primaryActionButtonLabel]]</div>
-      </oobe-text-button>
-    </div>
-    <div hidden="[[!isEnterpriseNavigationShown(canGoBack,
-        gaiaDialogButtonsType)]]">
-      <oobe-text-button id="enterprise-navigation-kiosk"
-          text-key="kioskEnrollmentButton"
-          on-click="onKioskButtonClicked"
-          hidden$="[[!primaryActionButtonLabel]]"
-          disabled="[[!isButtonEnabled(navigationEnabled,
-                                        primaryActionButtonEnabled)]]">
-      </oobe-text-button>
-      <oobe-text-button id="enterprise-navigation-enterprise"
-          text-key="enterpriseEnrollmentButton"
-          on-click="onEnterpriseButtonClicked"
-          hidden$="[[!primaryActionButtonLabel]]"
-          disabled="[[!isButtonEnabled(navigationEnabled,
-                                        primaryActionButtonEnabled)]]"
-          inverse>
-      </oobe-text-button>
-    </div>
-    <div hidden="[[!isKioskNavigationShown(canGoBack,
-        gaiaDialogButtonsType)]]">
-      <oobe-text-button id="kiosk-navigation-enterprise"
-          text-key="enterpriseEnrollmentButton"
-          on-click="onEnterpriseButtonClicked"
-          hidden$="[[!primaryActionButtonLabel]]"
-          disabled="[[!isButtonEnabled(navigationEnabled,
-                                        primaryActionButtonEnabled)]]">
-      </oobe-text-button>
-      <oobe-text-button id="kiosk-navigation-kiosk"
-          text-key="kioskEnrollmentButton"
-          on-click="onKioskButtonClicked"
-          hidden$="[[!primaryActionButtonLabel]]"
-          disabled="[[!isButtonEnabled(navigationEnabled,
-                                        primaryActionButtonEnabled)]]"
-          inverse>
-      </oobe-text-button>
-    </div>
+  <div slot="bottom-buttons" hidden$="[[navigationHidden]]"
+      class="layout horizontal end-justified">
+    <!-- Quick start button visibility is controlled by the corresponding
+      feature flag -->
+    <quick-start-entry-point
+      id="quick-start-signin-button"
+      on-click="onQuickStartClicked"
+      hidden="[[!isQuickStartEnabled]]"
+      quick-start-text-key="signinScreenQuickStart">
+    </quick-start-entry-point>
+    <!-- Secondary action button appearance is controlled by the corresponding
+      info provided by GAIA -->
+    <oobe-text-button id="secondary-action-button"
+        label-for-aria="[[secondaryActionButtonLabel]]"
+        on-click="onSecondaryActionButtonClicked"
+        hidden$="[[!secondaryActionButtonLabel]]"
+        disabled="[[!isButtonEnabled(navigationEnabled,
+                                     secondaryActionButtonEnabled)]]">
+      <div slot="text">[[secondaryActionButtonLabel]]</div>
+    </oobe-text-button>
+    <!-- Primary action button appearance is controlled by the corresponding
+      info provided by GAIA. During the enrollment flow users on the client are
+      able to choose between kiosk and enterprise enrollment. To address this
+      case primary button text is updated locally and additional
+      additional-primary-action-button button is shown. -->
+    <oobe-text-button id="additional-primary-action-button"
+        label-for-aria="[[clientAdditionalPrimaryActionButtonLabel]]"
+        on-click="onAdditionalPrimaryActionButtonClicked"
+        hidden$="[[!clientAdditionalPrimaryActionButtonLabel]]"
+        disabled="[[!isButtonEnabled(navigationEnabled,
+                                     primaryActionButtonEnabled)]]">
+      <div slot="text">[[clientAdditionalPrimaryActionButtonLabel]]</div>
+    </oobe-text-button>
+    <oobe-text-button id="primary-action-button"
+        label-for-aria="[[clientPrimaryActionButtonLabel]]"
+        on-click="onPrimaryActionButtonClicked"
+        hidden$="[[!clientPrimaryActionButtonLabel]]"
+        disabled="[[!isButtonEnabled(navigationEnabled,
+                                     primaryActionButtonEnabled)]]"
+        inverse>
+      <div slot="text">[[clientPrimaryActionButtonLabel]]</div>
+    </oobe-text-button>
   </div>
 </oobe-content-dialog>
 <div class="popup-overlay"

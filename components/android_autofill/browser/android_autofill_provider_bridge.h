@@ -41,6 +41,14 @@ class AndroidAutofillProviderBridge {
                                    const gfx::RectF& bounds) = 0;
     virtual void OnShowBottomSheetResult(bool is_shown,
                                          bool provided_autofill_structure) = 0;
+
+    // Asks whether passkeys options are available that should be triggered when
+    // `OnTriggerPasskeyRequest` is called.
+    virtual bool HasPasskeyRequest() = 0;
+
+    // The user explicitly requested passkeys to be shown. Even if no passkeys
+    // are available, call the framework to allow using fallback entry points.
+    virtual void OnTriggerPasskeyRequest() = 0;
   };
 
   // A helper struct to reference a field in a form.

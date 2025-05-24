@@ -2,124 +2,106 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Copies files from argv[1] to argv[2]
+// Installs the native app shim for a web app to its final location.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#import <Foundation/Foundation.h>
 
-#include <CoreFoundation/CoreFoundation.h>
-#include <Security/Security.h>
-#include <unistd.h>
+#include <memory>
 
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
-#include "base/apple/scoped_cftyperef.h"
+#include "base/apple/mach_port_rendezvous_mac.h"
+#include "base/at_exit.h"
 #include "base/base_paths.h"
+#include "base/command_line.h"
+#include "base/debug/leak_annotations.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/mac/process_requirement.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_shared_memory.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
-#include "base/types/expected_macros.h"
-#include "chrome/browser/apps/app_shim/code_signature_mac.h"
+#include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_executor.h"
+#include "build/branding_buildflags.h"
+#include "chrome/browser/web_applications/mojom/web_app_shortcut_copier.mojom.h"
+#include "chrome/common/chrome_paths_internal.h"
+#include "chrome/common/chrome_version.h"
+#include "mojo/core/embedder/configuration.h"
+#include "mojo/core/embedder/embedder.h"
+#include "mojo/core/embedder/scoped_ipc_support.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
+#include "mojo/public/cpp/system/invitation.h"
 
 namespace {
 
-base::apple::ScopedCFTypeRef<CFStringRef>
-BuildParentAppRequirementFromFrameworkRequirementString(
-    CFStringRef framwork_requirement) {
-  // Make sure the framework bundle requirement is in the expected format.
-  // It should start with 'identifier "' and have at least 2 quotes. This allows
-  // us to easily find the end of the "identifier" portion of the requirement so
-  // we can remove it.
-  CFIndex len = CFStringGetLength(framwork_requirement);
-  base::apple::ScopedCFTypeRef<CFArrayRef> quote_ranges(
-      CFStringCreateArrayWithFindResults(nullptr, framwork_requirement,
-                                         CFSTR("\""), CFRangeMake(0, len), 0));
-  if (!CFStringHasPrefix(framwork_requirement, CFSTR("identifier \"")) ||
-      !quote_ranges || CFArrayGetCount(quote_ranges.get()) < 2) {
-    LOG(ERROR) << "Framework bundle requirement is malformed.";
-    return base::apple::ScopedCFTypeRef<CFStringRef>(nullptr);
-  }
+class WebAppShortcutCopierImpl : public web_app::mojom::WebAppShortcutCopier {
+ public:
+  explicit WebAppShortcutCopierImpl(
+      mojo::PendingReceiver<web_app::mojom::WebAppShortcutCopier>
+          pending_receiver,
+      base::OnceClosure quit_callback)
+      : receiver_(this, std::move(pending_receiver)),
+        quit_callback_(std::move(quit_callback)) {}
 
-  // Get the index of the second quote.
-  CFIndex second_quote_index =
-      static_cast<const CFRange*>(CFArrayGetValueAtIndex(quote_ranges.get(), 1))
-          ->location;
-
-  // Make sure there is something to read after the second quote.
-  if (second_quote_index + 1 >= len) {
-    LOG(ERROR) << "Framework bundle requirement is too short";
-    return base::apple::ScopedCFTypeRef<CFStringRef>(nullptr);
-  }
-
-  // Build the app shim requirement. Keep the data from the framework bundle
-  // requirement starting after second quote.
-  base::apple::ScopedCFTypeRef<CFStringRef> parent_app_requirement_string(
-      CFStringCreateWithSubstring(
-          nullptr, framwork_requirement,
-          CFRangeMake(second_quote_index + 5, len - second_quote_index - 5)));
-  return parent_app_requirement_string;
-}
-
-// Creates a requirement for the parent app based on the framework bundle's
-// designated requirement.
-//
-// Returns a non-null requirement or the reason why the requirement could not
-// be created.
-base::expected<base::apple::ScopedCFTypeRef<SecRequirementRef>,
-               apps::MissingRequirementReason>
-CreateParentAppRequirement() {
-  ASSIGN_OR_RETURN(auto framework_requirement_string,
-                   apps::FrameworkBundleDesignatedRequirementString());
-
-  base::apple::ScopedCFTypeRef<CFStringRef> parent_requirement_string =
-      BuildParentAppRequirementFromFrameworkRequirementString(
-          framework_requirement_string.get());
-  if (!parent_requirement_string) {
-    return base::unexpected(apps::MissingRequirementReason::Error);
-  }
-
-  return apps::RequirementFromString(parent_requirement_string.get());
-}
-
-// Ensure that the parent process is Chromium.
-// This prevents this tool from being used to bypass binary authorization tools
-// such as Santa.
-//
-// Returns whether the parent process's code signature is trusted:
-// - True if the framework bundle is unsigned (there's nothing to verify).
-// - True if the parent process satisfies the constructed designated requirement
-// tailored for the parent app based on the framework bundle's requirement.
-// - False otherwise.
-bool ValidateParentProcess(std::string_view info_plist_xml) {
-  base::expected<base::apple::ScopedCFTypeRef<SecRequirementRef>,
-                 apps::MissingRequirementReason>
-      parent_app_requirement = CreateParentAppRequirement();
-  if (!parent_app_requirement.has_value()) {
-    switch (parent_app_requirement.error()) {
-      case apps::MissingRequirementReason::NoOrAdHocSignature:
-        // Parent validation is not required because framework bundle is not
-        // code-signed or is ad-hoc code-signed.
-        return true;
-      case apps::MissingRequirementReason::Error:
-        // Framework bundle is code-signed however we were unable to create the
-        // parent app requirement. Deny.
-        // CreateParentAppRequirement already did the
-        // base::debug::DumpWithoutCrashing, possibly on a previous call. We can
-        // return false here without any additional explanation.
-        return false;
+  void CopyWebAppShortcut(const base::FilePath& source_path,
+                          const base::FilePath& destination_path,
+                          CopyWebAppShortcutCallback callback) override {
+    if (base::CopyDirectory(source_path, destination_path, true)) {
+      std::move(callback).Run(true);
+    } else {
+      LOG(ERROR) << "Copying app from " << source_path << " to "
+                 << destination_path << " failed.";
+      std::move(callback).Run(false);
     }
+
+    std::move(quit_callback_).Run();
   }
 
-  // Perform dynamic validation only as Chrome.app's dynamic signature may not
-  // match its on-disk signature if there is an update pending.
-  OSStatus status = apps::ProcessIsSignedAndFulfillsRequirement(
-      getppid(), parent_app_requirement.value().get(),
-      apps::SignatureValidationType::DynamicOnly, info_plist_xml);
-  return status == errSecSuccess;
+ private:
+  mojo::Receiver<web_app::mojom::WebAppShortcutCopier> receiver_;
+  base::OnceClosure quit_callback_;
+};
+
+std::optional<base::mac::ProcessRequirement> CallerProcessRequirement() {
+  return base::mac::ProcessRequirement::Builder()
+      .SignedWithSameIdentity()
+      .IdentifierIsOneOf({
+          MAC_BUNDLE_IDENTIFIER_STRING,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          MAC_BUNDLE_IDENTIFIER_STRING ".beta",
+          MAC_BUNDLE_IDENTIFIER_STRING ".canary",
+          MAC_BUNDLE_IDENTIFIER_STRING ".dev",
+#endif
+      })
+      // Chrome can be dynamically valid but not match its signature on disk
+      // if an update is staged and waiting for the browser to be relaunched.
+      .CheckDynamicValidityOnly()
+      .Build();
+}
+
+void InitializeFeatureState() {
+  const auto& command_line = *base::CommandLine::ForCurrentProcess();
+  base::HistogramSharedMemory::InitFromLaunchParameters(command_line);
+
+  // This is intentionally leaked since it needs to live for the duration of
+  // the process and there's no benefit in cleaning it up at exit.
+  base::FieldTrialList* leaked_field_trial_list = new base::FieldTrialList();
+  ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
+  std::ignore = leaked_field_trial_list;
+
+  base::FieldTrialList::CreateTrialsInChildProcess(command_line);
+  auto feature_list = std::make_unique<base::FeatureList>();
+  base::FieldTrialList::ApplyFeatureOverridesInChildProcess(feature_list.get());
+  base::FeatureList::SetInstance(std::move(feature_list));
 }
 
 }  // namespace
@@ -132,7 +114,7 @@ __attribute__((visibility("default"))) int ChromeWebAppShortcutCopierMain(
     char** argv);
 }
 
-// Copies files from argv[1] to argv[2]
+// Installs the native app shim for a web app to its final location.
 //
 // When using ad-hoc signing for web app shims, the final app shim must be
 // written to disk by this helper tool. This separate helper tool exists so that
@@ -140,37 +122,72 @@ __attribute__((visibility("default"))) int ChromeWebAppShortcutCopierMain(
 // that it creates without trusting all files written by Chrome. This allows app
 // shims to be trusted by the binary authorization tool despite having only
 // ad-hoc code signatures.
-//
-// argv[3] is the Info.plist contents of Chrome. This is needed to validate the
-// dynamic code signature of the running application as the Info.plist file on
-// disk may have changed if there is an update pending. The passed-in data is
-// validated against a hash recorded in the code signature before being used
-// during requirement validation.
 int ChromeWebAppShortcutCopierMain(int argc, char** argv) {
-  if (argc != 4) {
-    return 1;
-  }
+  base::CommandLine::Init(argc, argv);
+  base::AtExitManager exit_manager;
 
-  // Override the path to the framework value so that it has a sensible value.
+  // Override the path to the framework bundle so that it has a sensible value.
   // This tool lives within the Helpers subdirectory of the framework, so the
   // versioned path is two levels upwards.
   base::FilePath executable_path =
       base::PathService::CheckedGet(base::FILE_EXE);
-  base::apple::SetOverrideFrameworkBundlePath(
-      executable_path.DirName().DirName());
+  base::FilePath framework_path = executable_path.DirName().DirName();
+  base::apple::SetOverrideFrameworkBundlePath(framework_path);
 
-  if (!ValidateParentProcess(argv[3])) {
+  // Matching what chrome::OuterAppBundle does, go up five steps from
+  // C.app/Contents/Frameworks/C.framework/Versions/1.2.3.4 to C.app.
+  base::FilePath outer_app_dir =
+      framework_path.DirName().DirName().DirName().DirName().DirName();
+  NSString* outer_app_dir_ns = base::SysUTF8ToNSString(outer_app_dir.value());
+  NSBundle* base_bundle = [NSBundle bundleWithPath:outer_app_dir_ns];
+  // In tests we might not be running from inside an app bundle, in that case
+  // there is also no need to override the bundle ID, as the default value
+  // should already match that of the caller process.
+  if (base_bundle && base_bundle.bundleIdentifier) {
+    base::apple::SetBaseBundleIDOverride(
+        base::SysNSStringToUTF8(base_bundle.bundleIdentifier));
+  }
+
+  auto requirement = CallerProcessRequirement();
+  if (!requirement) {
+    LOG(ERROR) << "Unable to construct requirement to validate caller";
+    return 1;
+  }
+  base::MachPortRendezvousClientMac::SetServerProcessRequirement(
+      std::move(*requirement));
+
+  // Ensure that field trials and feature state matches that of Chrome.
+  InitializeFeatureState();
+
+  base::SingleThreadTaskExecutor main_task_executor{base::MessagePumpType::IO};
+
+  mojo::core::InitFeatures();
+  mojo::core::Init({.is_broker_process = true});
+  mojo::core::ScopedIPCSupport ipc_support(
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
+
+  mojo::PlatformChannelEndpoint endpoint =
+      mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
+          *base::CommandLine::ForCurrentProcess());
+  if (!endpoint.is_valid()) {
+    LOG(ERROR) << "Unable to recover Mojo endpoint from command line.";
     return 1;
   }
 
-  base::FilePath staging_path = base::FilePath::FromUTF8Unsafe(argv[1]);
-  base::FilePath dst_app_path = base::FilePath::FromUTF8Unsafe(argv[2]);
-
-  if (!base::CopyDirectory(staging_path, dst_app_path, true)) {
-    LOG(ERROR) << "Copying app from " << staging_path << " to " << dst_app_path
-               << " failed.";
-    return 2;
+  mojo::ScopedMessagePipeHandle pipe =
+      mojo::IncomingInvitation::AcceptIsolated(std::move(endpoint));
+  if (!pipe->is_valid()) {
+    LOG(ERROR) << "Unable to accept Mojo invitation";
+    return 1;
   }
+
+  base::RunLoop run_loop;
+  WebAppShortcutCopierImpl copier(
+      mojo::PendingReceiver<web_app::mojom::WebAppShortcutCopier>(
+          std::move(pipe)),
+      run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
 
   return 0;
 }

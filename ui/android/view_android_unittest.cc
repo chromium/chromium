@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 #include "ui/android/view_android.h"
+
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/event_forwarder.h"
+#include "ui/android/test_view_android_delegate.h"
 #include "ui/android/view_android.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
-#include "ui/events/android/motion_event_android.h"
+#include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
 
 namespace ui {
@@ -53,11 +55,11 @@ class TestEventHandler : public EventHandlerAndroid {
 class ViewAndroidBoundsTest : public testing::Test {
  public:
   ViewAndroidBoundsTest()
-      : root_(ViewAndroid::LayoutType::MATCH_PARENT),
-        view1_(ViewAndroid::LayoutType::NORMAL),
-        view2_(ViewAndroid::LayoutType::NORMAL),
-        view3_(ViewAndroid::LayoutType::NORMAL),
-        viewm_(ViewAndroid::LayoutType::MATCH_PARENT) {
+      : root_(ViewAndroid::LayoutType::kMatchParent),
+        view1_(ViewAndroid::LayoutType::kNormal),
+        view2_(ViewAndroid::LayoutType::kNormal),
+        view3_(ViewAndroid::LayoutType::kNormal),
+        viewm_(ViewAndroid::LayoutType::kMatchParent) {
     root_.GetEventForwarder();
     view1_.set_event_handler(&handler1_);
     view2_.set_event_handler(&handler2_);
@@ -74,11 +76,11 @@ class ViewAndroidBoundsTest : public testing::Test {
   }
 
   void GenerateTouchEventAt(float x, float y) {
-    ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
-    ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
-    ui::MotionEventAndroid event(nullptr, JavaParamRef<jobject>(nullptr), 1.f,
-                                 0, 0, 0, base::TimeTicks(), 0, 1, 0, 0, 0, 0,
-                                 0, 0, 0, 0, false, &pointer0, &pointer1);
+    ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0, 0);
+    ui::MotionEventAndroidJava event(nullptr, JavaParamRef<jobject>(nullptr),
+                                     1.f, 0, 0, 0, base::TimeTicks(), 0, 1, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, false, &pointer0,
+                                     nullptr);
     root_.OnTouchEvent(event);
   }
 
@@ -211,7 +213,7 @@ TEST_F(ViewAndroidBoundsTest, OnSizeChanged) {
 
   Reset();
 
-  // Match-parent view should not receivee size events in the first place.
+  // Match-parent view should not receive size events in the first place.
   EXPECT_DCHECK_DEATH(viewm_.OnSizeChanged(100, 200));
   EXPECT_FALSE(handlerm_.OnSizeCalled());
   EXPECT_FALSE(handler3_.OnSizeCalled());
@@ -276,7 +278,7 @@ TEST(ViewAndroidTest, ChecksMultipleEventForwarders) {
 
 class Observer : public ViewAndroidObserver {
  public:
-  Observer() : attached_(false), destroyed_(false) {}
+  Observer() = default;
 
   void OnAttachedToWindow() override { attached_ = true; }
 
@@ -284,8 +286,11 @@ class Observer : public ViewAndroidObserver {
 
   void OnViewAndroidDestroyed() override { destroyed_ = true; }
 
-  bool attached_;
-  bool destroyed_;
+  void OnDelegateSet() override { delegate_set_ = true; }
+
+  bool attached_ = false;
+  bool destroyed_ = false;
+  bool delegate_set_ = false;
 };
 
 TEST(ViewAndroidTest, Observer) {
@@ -329,6 +334,12 @@ TEST(ViewAndroidTest, Observer) {
     // View, upon addition to a tree in the attached state, should be notified.
     top.AddChild(&bottom);
     EXPECT_TRUE(bottom_observer.attached_);
+
+    // Observer is notified about the new delegate.
+    TestViewAndroidDelegate view_android_delegate;
+    EXPECT_FALSE(top_observer.delegate_set_);
+    view_android_delegate.SetupTestDelegate(&top);
+    EXPECT_TRUE(top_observer.delegate_set_);
 
     // Views in a tree all get notified of 'detached' event.
     top.RemoveFromParent();

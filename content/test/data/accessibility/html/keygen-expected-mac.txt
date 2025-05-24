@@ -1,7 +1,0 @@
-AXWebArea
-++AXGroup
-++++AXGroup
-++++++AXPopUpButton AXValue='2048 (High Grade)'
-++++++++AXUnknown
-++++++++++AXMenuItem AXValue='2048 (High Grade)'
-++++++++++AXMenuItem AXValue='1024 (Medium Grade)'

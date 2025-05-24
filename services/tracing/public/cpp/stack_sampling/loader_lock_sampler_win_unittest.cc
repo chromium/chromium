@@ -4,6 +4,8 @@
 
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampler_win.h"
 
+#include <windows.h>
+
 #include <string>
 #include <utility>
 

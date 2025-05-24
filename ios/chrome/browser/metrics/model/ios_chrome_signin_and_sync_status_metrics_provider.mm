@@ -27,11 +27,10 @@ void IOSChromeSigninAndSyncStatusMetricsProvider::ProvideCurrentSessionData(
 signin_metrics::ProfilesStatus
 IOSChromeSigninAndSyncStatusMetricsProvider::GetStatusOfAllProfiles() const {
   signin_metrics::ProfilesStatus profiles_status;
-  for (ChromeBrowserState* browser_state :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     auto* session_duration =
-        IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
-            browser_state);
+        IOSProfileSessionDurationsServiceFactory::GetForProfile(profile);
     signin_metrics::UpdateProfilesStatusBasedOnSignInAndSyncStatus(
         profiles_status, session_duration->GetSigninStatus(),
         session_duration->IsSyncing());

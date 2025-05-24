@@ -39,6 +39,8 @@ class DocumentPictureInPictureMixinTestBase : public InProcessBrowserTestMixin {
       Browser* browser,
       const gfx::Size& window_size = gfx::Size(500, 500));
 
+  void NavigateToUrl(Browser* browser, const GURL& test_page_url) const;
+
   void WaitForPageLoad(content::WebContents* contents);
 
   GURL GetPictureInPictureURL() const;

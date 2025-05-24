@@ -107,8 +107,6 @@ class MockURLLoader final : public network::mojom::URLLoader {
   MOCK_METHOD2(SetPriority,
                void(net::RequestPriority priority,
                     int32_t intra_priority_value));
-  MOCK_METHOD0(PauseReadingBodyFromNet, void());
-  MOCK_METHOD0(ResumeReadingBodyFromNet, void());
 
  private:
   mojo::Receiver<network::mojom::URLLoader> receiver_;
@@ -141,7 +139,7 @@ class URLLoaderFactoryForMockLoader final
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory)
       override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   mojo::Remote<network::mojom::URLLoaderClient>& client_remote() {

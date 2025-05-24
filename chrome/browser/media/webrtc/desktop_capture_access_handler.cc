@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
@@ -55,13 +54,11 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/shell.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/shell.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "ui/base/ui_base_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -120,7 +117,7 @@ gfx::NativeWindow FindParentWindowForWebContents(
       return app_window->GetNativeWindow();
   }
 
-  return nullptr;
+  return gfx::NativeWindow();
 }
 #endif
 
@@ -280,17 +277,12 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
           DesktopMediaPicker::Params::RequestSource::kExtension);
 
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const content::DesktopMediaID screen_id =
       content::DesktopMediaID::RegisterNativeWindow(
           content::DesktopMediaID::TYPE_SCREEN,
           primary_root_window_for_testing_
               ? primary_root_window_for_testing_.get()
               : ash::Shell::Get()->GetPrimaryRootWindow());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const content::DesktopMediaID screen_id = content::DesktopMediaID(
-      content::DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // base::Unretained(this) is safe because DesktopCaptureAccessHandler is owned
   // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
@@ -310,7 +302,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 }
 
 bool DesktopCaptureAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return type == blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
@@ -386,7 +378,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
             system_permission_settings::SystemPermission::kAllowed) {
       std::move(pending_request->callback)
           .Run(blink::mojom::StreamDevicesSet(),
-               blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED,
+               blink::mojom::MediaStreamRequestResult::
+                   PERMISSION_DENIED_BY_SYSTEM,
                /*ui=*/nullptr);
       return;
     }
@@ -414,7 +407,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
     media_id =
         content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
             request.requested_video_device_ids.front(),
-            main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),
+            main_frame->GetProcess()->GetDeprecatedID(),
+            main_frame->GetRoutingID(),
             url::Origin::Create(request.security_origin),
             content::kRegistryStreamTypeDesktop);
   }
@@ -440,9 +434,10 @@ void DesktopCaptureAccessHandler::HandleRequest(
       system_media_permissions::CheckSystemScreenCapturePermission() !=
           system_permission_settings::SystemPermission::kAllowed) {
     std::move(pending_request->callback)
-        .Run(blink::mojom::StreamDevicesSet(),
-             blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED,
-             /*ui=*/nullptr);
+        .Run(
+            blink::mojom::StreamDevicesSet(),
+            blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
+            /*ui=*/nullptr);
     return;
   }
 #endif
@@ -486,7 +481,7 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
 
   if (pending_request->request.requested_video_device_ids.empty() ||
       pending_request->request.requested_video_device_ids.front().empty()) {
-    // Passing nullptr selects the default picker (DesktopMediaPickerViews).
+    // Passing nullptr selects the default picker (DesktopMediaPickerImpl).
     pending_request->picker = picker_factory_->CreatePicker(nullptr);
     if (!pending_request->picker) {
       std::move(pending_request->callback)
@@ -690,10 +685,7 @@ void DesktopCaptureAccessHandler::AcceptRequest(
   std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
       pending_request->request, web_contents, media_id, capture_audio,
       pending_request->request.disable_local_echo,
-      // TODO(crbug.com/40244027): Support suppressLocalAudioPlayback for the
-      // extension API as well. If this happens as a result of merging
-      // DesktopCaptureAccessHandler and DisplayMediaAccessHandler, that's fine.
-      /*suppress_local_audio_playback=*/false,
+      /*suppress_local_audio_playback=*/false, /*restrict_own_audio=*/false,
       pending_request->should_display_notification,
       pending_request->application_title,
       pending_request->request.captured_surface_control_active, stream_devices);

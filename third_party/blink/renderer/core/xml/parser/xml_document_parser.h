@@ -55,6 +55,9 @@ class Element;
 class LocalFrameView;
 class Text;
 
+struct xmlSAX2Attributes;
+struct xmlSAX2Namespace;
+
 class XMLParserContext : public RefCounted<XMLParserContext> {
   USING_FAST_MALLOC(XMLParserContext);
 
@@ -92,12 +95,11 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
     return is_currently_parsing8_bit_chunk_;
   }
 
-  static bool ParseDocumentFragment(
-      const String&,
-      DocumentFragment*,
-      Element* parent = nullptr,
-      ParserContentPolicy = kAllowScriptingContent,
-      ExceptionState* exeption_state = nullptr);
+  static bool ParseDocumentFragment(const String&,
+                                    DocumentFragment*,
+                                    Element* parent,
+                                    ParserContentPolicy,
+                                    ExceptionState&);
 
   // Used by the XMLHttpRequest to check if the responseXML was well formed.
   bool WellFormed() const override { return !saw_error_; }
@@ -129,7 +131,7 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
 
  private:
   // From DocumentParser
-  void insert(const String&) override { NOTREACHED_IN_MIGRATION(); }
+  void insert(const String&) override { NOTREACHED(); }
   void Append(const String&) override;
   void Finish() override;
   void ExecuteScriptsWaitingForResources() final;
@@ -158,13 +160,11 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   void StartElementNs(const AtomicString& local_name,
                       const AtomicString& prefix,
                       const AtomicString& uri,
-                      int namespace_count,
-                      const xmlChar** namespaces,
-                      int attribute_count,
-                      int defaulted_count,
-                      const xmlChar** libxml_attributes);
+                      base::span<const xmlSAX2Namespace> namespaces,
+                      base::span<const xmlSAX2Attributes> attributes,
+                      int defaulted_count);
   void EndElementNs();
-  void Characters(const xmlChar* chars, int length);
+  void Characters(base::span<const xmlChar> chars);
   void GetProcessingInstruction(const String& target, const String& data);
   void CdataBlock(const String&);
   void Comment(const String&);
@@ -208,12 +208,6 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
 
   Member<Text> leaf_text_node_;
 
-  // Tracks whether we're processing a new input chunk. This is set right before
-  // submitting a new chunk to libxml and is reset by most emitted parse events.
-  // We use this as a signal to merge CDATA sections when they span a chunk
-  // boundary.
-  bool is_start_of_new_chunk_ = false;
-
   bool is_currently_parsing8_bit_chunk_;
   bool saw_error_;
   bool saw_css_;
@@ -238,30 +232,6 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   typedef HashMap<AtomicString, AtomicString> PrefixForNamespaceMap;
   PrefixForNamespaceMap prefix_to_namespace_map_;
   SegmentedString pending_src_;
-
-  // exception_copy_ is used in some cases where we need to pass exceptions
-  // back to callers of XMLDocumentParser methods, but we lose the
-  // ExceptionContext passed in on the stack because we are calling libxml
-  // methods which call back into XMLDocumentParser.
-  class ExceptionCopy {
-   public:
-    void CopyFrom(ExceptionState& state) {
-      had_exception_ = true;
-      message_ = state.Message();
-      code_ = state.Code();
-    }
-    void ApplyTo(ExceptionState& state) {
-      CHECK(had_exception_);
-      state.ThrowException(code_, message_);
-    }
-    bool HadException() { return had_exception_; }
-
-   private:
-    String message_;
-    ExceptionCode code_;
-    bool had_exception_ = false;
-  };
-  std::optional<ExceptionCopy> exception_copy_;
 };
 
 xmlDocPtr XmlDocPtrForString(Document*,

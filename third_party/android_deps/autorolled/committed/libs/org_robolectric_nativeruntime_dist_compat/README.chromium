@@ -1,0 +1,15 @@
+Name: Robolectric Nativeruntime Distribution Compat
+Short Name: nativeruntime-dist-compat
+URL: https://source.android.com/
+Version: 1.0.16
+License: Apache-2.0, MIT
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+Robolectric Nativeruntime Distribution Compat
+
+Local Modifications:
+No modifications.

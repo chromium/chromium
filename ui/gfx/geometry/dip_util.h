@@ -5,7 +5,7 @@
 #ifndef UI_GFX_GEOMETRY_DIP_UTIL_H_
 #define UI_GFX_GEOMETRY_DIP_UTIL_H_
 
-#include "ui/gfx/geometry/geometry_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
@@ -30,53 +30,61 @@ class SizeF;
 // intention of these methods is to be used for UI values which are relatively
 // small.
 
-GEOMETRY_EXPORT gfx::PointF ConvertPointToDips(
-    const gfx::Point& point_in_pixels,
-    float device_scale_factor);
-GEOMETRY_EXPORT gfx::PointF ConvertPointToDips(
-    const gfx::PointF& point_in_pixels,
-    float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::PointF ConvertPointToDips(const gfx::Point& point_in_pixels,
+                               float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::PointF ConvertPointToDips(const gfx::PointF& point_in_pixels,
+                               float device_scale_factor);
 
-GEOMETRY_EXPORT gfx::PointF ConvertPointToPixels(
-    const gfx::Point& point_in_dips,
-    float device_scale_factor);
-GEOMETRY_EXPORT gfx::PointF ConvertPointToPixels(
-    const gfx::PointF& point_in_dips,
-    float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::PointF ConvertPointToPixels(const gfx::Point& point_in_dips,
+                                 float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::PointF ConvertPointToPixels(const gfx::PointF& point_in_dips,
+                                 float device_scale_factor);
 
-GEOMETRY_EXPORT gfx::SizeF ConvertSizeToDips(const gfx::Size& size_in_pixels,
-                                             float device_scale_factor);
-GEOMETRY_EXPORT gfx::SizeF ConvertSizeToDips(const gfx::SizeF& size_in_pixels,
-                                             float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::SizeF ConvertSizeToDips(const gfx::Size& size_in_pixels,
+                             float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::SizeF ConvertSizeToDips(const gfx::SizeF& size_in_pixels,
+                             float device_scale_factor);
 
-GEOMETRY_EXPORT gfx::SizeF ConvertSizeToPixels(const gfx::Size& size_in_dips,
-                                               float device_scale_factor);
-GEOMETRY_EXPORT gfx::SizeF ConvertSizeToPixels(const gfx::SizeF& size_in_dips,
-                                               float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::SizeF ConvertSizeToPixels(const gfx::Size& size_in_dips,
+                               float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::SizeF ConvertSizeToPixels(const gfx::SizeF& size_in_dips,
+                               float device_scale_factor);
 
-GEOMETRY_EXPORT gfx::RectF ConvertRectToDips(const gfx::Rect& rect_in_pixels,
-                                             float device_scale_factor);
-GEOMETRY_EXPORT gfx::RectF ConvertRectToDips(const gfx::RectF& rect_in_pixels,
-                                             float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::RectF ConvertRectToDips(const gfx::Rect& rect_in_pixels,
+                             float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::RectF ConvertRectToDips(const gfx::RectF& rect_in_pixels,
+                             float device_scale_factor);
 
-GEOMETRY_EXPORT gfx::RectF ConvertRectToPixels(const gfx::Rect& rect_in_dips,
-                                               float device_scale_factor);
-GEOMETRY_EXPORT gfx::RectF ConvertRectToPixels(const gfx::RectF& rect_in_dips,
-                                               float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::RectF ConvertRectToPixels(const gfx::Rect& rect_in_dips,
+                               float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::RectF ConvertRectToPixels(const gfx::RectF& rect_in_dips,
+                               float device_scale_factor);
 
-GEOMETRY_EXPORT gfx::InsetsF ConvertInsetsToDips(
-    const gfx::Insets& insets_in_pixels,
-    float device_scale_factor);
-GEOMETRY_EXPORT gfx::InsetsF ConvertInsetsToDips(
-    const gfx::InsetsF& insets_in_pixels,
-    float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::InsetsF ConvertInsetsToDips(const gfx::Insets& insets_in_pixels,
+                                 float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::InsetsF ConvertInsetsToDips(const gfx::InsetsF& insets_in_pixels,
+                                 float device_scale_factor);
 
-GEOMETRY_EXPORT gfx::InsetsF ConvertInsetsToPixels(
-    const gfx::Insets& insets_in_dips,
-    float device_scale_factor);
-GEOMETRY_EXPORT gfx::InsetsF ConvertInsetsToPixels(
-    const gfx::InsetsF& insets_in_dips,
-    float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::InsetsF ConvertInsetsToPixels(const gfx::Insets& insets_in_dips,
+                                   float device_scale_factor);
+COMPONENT_EXPORT(GEOMETRY)
+gfx::InsetsF ConvertInsetsToPixels(const gfx::InsetsF& insets_in_dips,
+                                   float device_scale_factor);
 
 }  // namespace gfx
 

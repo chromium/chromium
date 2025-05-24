@@ -2,15 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_chromeos || is_linux) {
-  import("//build/config/chromeos/ui_mode.gni")
-}
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 
 # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
-if (enable_av1_decoder && (use_v4l2_codec || use_vaapi || is_win)) {
+if (enable_av1_decoder &&
+    (use_v4l2_codec || use_vaapi || is_win || is_android)) {
   test("video_decode_accelerator_tests") {
     testonly = true
     sources = [
@@ -77,8 +75,17 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi || is_win)) {
       ":video_encoder_test_environment",
       "//media:test_support",
       "//media/gpu:buildflags",
+      "//testing/gmock",
       "//testing/gtest",
     ]
+
+    if (is_android) {
+      deps += [
+        # The test needs the java dependencies to add the java classes for their
+        # native counterparts to the test apk.
+        "//media/base/android:media_java",
+      ]
+    }
   }
 
   test("video_encode_accelerator_perf_tests") {
@@ -91,6 +98,7 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi || is_win)) {
       ":test_helpers",
       ":video_encoder",
       ":video_encoder_test_environment",
+      "//base/test:test_support",
       "//media:test_support",
       "//media/gpu:buildflags",
       "//testing/gtest",
@@ -116,6 +124,7 @@ source_set("helpers") {
     "//base:base",
     "//base/test:test_config",
     "//base/test:test_support",
+    "//gpu:test_support",
     "//gpu/ipc/common",
     "//media:test_support",
     "//media/gpu",
@@ -134,12 +143,10 @@ source_set("frame_validator") {
   deps = [
     ":helpers",
     ":test_helpers",
+    "//gpu:test_support",
     "//media/gpu",
+    "//testing/gmock",
   ]
-
-  if (is_chromeos || is_linux) {
-    deps += [ "//build:chromeos_buildflags" ]
-  }
 }
 
 source_set("frame_file_writer") {
@@ -153,10 +160,6 @@ source_set("frame_file_writer") {
     "//media/gpu",
     "//ui/gfx/codec:codec",
   ]
-
-  if (is_chromeos || is_linux) {
-    deps += [ "//build:chromeos_buildflags" ]
-  }
 }
 
 source_set("test_helpers") {
@@ -170,8 +173,10 @@ source_set("test_helpers") {
     "//media:test_support",
   ]
   deps = [
+    "//gpu:test_support",
     "//media/gpu",
     "//mojo/public/cpp/system",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv",
   ]
@@ -191,9 +196,19 @@ static_library("video_player") {
   ]
   deps = [
     ":test_helpers",
+    "//gpu:test_support",
     "//media/gpu",
+    "//testing/gmock",
     "//testing/gtest:gtest",
   ]
+
+  if (use_vaapi || use_v4l2_codec) {
+    sources += [
+      "video_player/mappable_video_frame_converter.cc",
+      "video_player/mappable_video_frame_converter.h",
+    ]
+    deps += [ "//media/gpu/chromeos:common" ]
+  }
 }
 
 static_library("video_test_environment") {
@@ -232,10 +247,6 @@ static_library("video_player_test_environment") {
     ":video_test_environment",
     "//media/gpu",
   ]
-
-  if (is_chromeos || is_linux) {
-    deps += [ "//build:chromeos_buildflags" ]
-  }
 }
 
 static_library("video_encoder") {
@@ -257,7 +268,9 @@ static_library("video_encoder") {
   public_deps = [ "//third_party/libgav1:libgav1_parser" ]
   deps = [
     ":test_helpers",
+    "//gpu:test_support",
     "//media/gpu",
+    "//testing/gmock",
     "//testing/gtest:gtest",
   ]
 }
@@ -274,14 +287,10 @@ static_library("video_encoder_test_environment") {
     ":video_test_environment",
     "//media/gpu",
   ]
-  deps = [ "//base:base" ]
-
-  if (is_chromeos || is_linux) {
-    deps += [ "//build:chromeos_buildflags" ]
-  }
+  deps = [ "//base" ]
 }
 
-if (use_vaapi || use_v4l2_codec) {
+if (use_linux_video_acceleration) {
   static_library("image_processor") {
     testonly = true
     sources = [
@@ -290,22 +299,19 @@ if (use_vaapi || use_v4l2_codec) {
     ]
     deps = [
       ":helpers",
+      "//gpu:test_support",
       "//media:test_support",
       "//media/gpu",
       "//media/gpu/chromeos",
+      "//testing/gmock",
       "//testing/gtest",
       "//third_party/libyuv",
     ]
-
-    if (is_chromeos || is_linux) {
-      deps += [ "//build:chromeos_buildflags" ]
-    }
-
     data = [ "//media/test/data/" ]
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   static_library("local_gpu_memory_buffer_manager") {
     testonly = true
     sources = [

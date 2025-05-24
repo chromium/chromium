@@ -23,7 +23,7 @@ export const ShowPasswordMixin = dedupingMixin(
             },
           };
         }
-        isPasswordVisible: boolean;
+        declare isPasswordVisible: boolean;
 
         getPasswordInputType() {
           return this.isPasswordVisible ? 'text' : 'password';

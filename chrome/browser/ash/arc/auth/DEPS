@@ -37,3 +37,9 @@ include_rules = [
   "+chrome/common/webui_url_constants.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "arc_robot_auth_code_fetcher_browsertest\.cc": [
+    "+chrome/browser/ash/test",
+  ]
+}

@@ -11,8 +11,7 @@ namespace blink {
 
 unsigned FontSizeAdjust::GetHash() const {
   unsigned computed_hash = 0;
-  // Normalize negative zero.
-  WTF::AddFloatToHash(computed_hash, value_ == 0.0 ? 0.0 : value_);
+  WTF::AddFloatToHash(computed_hash, value_);
   WTF::AddIntToHash(computed_hash, static_cast<const unsigned>(metric_));
   WTF::AddIntToHash(computed_hash, static_cast<const unsigned>(type_));
   return computed_hash;
@@ -31,7 +30,7 @@ String FontSizeAdjust::ToString(Metric metric) const {
     case Metric::kExHeight:
       return "ex-height";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 String FontSizeAdjust::ToString() const {

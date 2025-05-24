@@ -23,6 +23,7 @@ class COMPONENT_EXPORT(CC_SLIM) SurfaceLayer : public Layer {
   static scoped_refptr<SurfaceLayer> Create();
 
   const viz::SurfaceId& surface_id() const { return surface_range_.end(); }
+  const viz::SurfaceRange& surface_range() const { return surface_range_; }
 
   // Set the surface id that this layer is embedding. `deadline_policy`
   // specifies behavior and timeout for how long to wait for the surface to be

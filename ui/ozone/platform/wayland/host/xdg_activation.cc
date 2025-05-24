@@ -7,14 +7,13 @@
 #include <xdg-activation-v1-client-protocol.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/nix/xdg_util.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -44,6 +43,8 @@ class XdgActivation::TokenRequest {
   void InitiateRequest();
 
  private:
+  wl_surface* DetermineSurface(const std::optional<wl::Serial>& serial) const;
+
   // xdg_activation_token_v1_listener callbacks:
   static void OnTokenReceived(void* data,
                               xdg_activation_token_v1* activation_token,
@@ -105,17 +106,6 @@ void XdgActivation::Activate(wl_surface* surface,
 
 void XdgActivation::RequestNewToken(
     base::nix::XdgActivationTokenCallback callback) const {
-  if (!task_runner_->RunsTasksInCurrentSequence()) {
-    // This is not guaranteed to be called from the UI thread always.
-    // So post a task to avoid race conditions if the request queue is accessed
-    // simultaneously from requests and completion callbacks and handle the case
-    // where the call may be from a non-sequenced task.
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(&XdgActivation::RequestNewToken,
-                                          weak_ptr_factory_.GetMutableWeakPtr(),
-                                          std::move(callback)));
-    return;
-  }
   constexpr size_t kMaxQueueSize = 100;
   if (token_request_queue_.size() >= kMaxQueueSize) {
     LOG(WARNING) << "Max token request limit reached. "
@@ -153,14 +143,13 @@ XdgActivation::TokenRequest::TokenRequest(
     base::nix::XdgActivationTokenCallback callback)
     : xdg_activation_(xdg_activation),
       connection_(connection),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)) {}
+
+void XdgActivation::TokenRequest::InitiateRequest() {
   constexpr auto kMaxTokenRequestDelay = base::Milliseconds(500);
   timer_.Start(FROM_HERE, kMaxTokenRequestDelay,
                base::BindOnce(&XdgActivation::TokenRequest::OnTimeout,
                               base::Unretained(this)));
-}
-
-void XdgActivation::TokenRequest::InitiateRequest() {
   auto* const token = xdg_activation_v1_get_activation_token(xdg_activation_);
   if (!token) {
     LOG(WARNING) << "Could not get an XDG activation token!";
@@ -172,28 +161,47 @@ void XdgActivation::TokenRequest::InitiateRequest() {
       .done = &OnTokenReceived};
   xdg_activation_token_v1_add_listener(token_.get(), &kXdgActivationListener,
                                        this);
+
+  auto serial = connection_->serial_tracker().GetSerial(
+      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
+       wl::SerialType::kMouseEnter, wl::SerialType::kKeyPress});
+  if (serial.has_value()) {
+    xdg_activation_token_v1_set_serial(token_.get(), serial->value,
+                                       connection_->seat()->wl_object());
+  }
+  if (auto* surface = DetermineSurface(serial)) {
+    xdg_activation_token_v1_set_surface(token_.get(), surface);
+  }
+  xdg_activation_token_v1_commit(token_.get());
+}
+
+wl_surface* XdgActivation::TokenRequest::DetermineSurface(
+    const std::optional<wl::Serial>& serial) const {
+  WaylandWindow const* window = nullptr;
+  auto* const window_manager = connection_->window_manager();
+
   // The spec isn't clear about what types of surfaces should be used as
   // the requestor surface, but all implementations of xdg_activation_v1
   // known to date accept the currently keyboard focused surface for
   // activation. Update if needed once the upstream issue gets fixed:
   // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/issues/129
-  const WaylandWindow* const keyboard_focused_window =
-      connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
-  wl_surface* const keyboard_focused_surface =
-      keyboard_focused_window
-          ? keyboard_focused_window->root_surface()->surface()
-          : nullptr;
-  if (keyboard_focused_surface) {
-    xdg_activation_token_v1_set_surface(token_.get(), keyboard_focused_surface);
+  if (!serial.has_value()) {
+    window = window_manager->GetCurrentActiveWindow();
+  } else {
+    switch (serial->type) {
+      case wl::SerialType::kMouseEnter:
+      case wl::SerialType::kMousePress:
+        window = window_manager->GetCurrentPointerFocusedWindow();
+        break;
+      case wl::SerialType::kTouchPress:
+        window = window_manager->GetCurrentTouchFocusedWindow();
+        break;
+      case wl::SerialType::kKeyPress:
+        window = window_manager->GetCurrentKeyboardFocusedWindow();
+        break;
+    }
   }
-  if (auto serial = connection_->serial_tracker().GetSerial(
-          {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
-           wl::SerialType::kMouseEnter, wl::SerialType::kKeyPress});
-      serial.has_value()) {
-    xdg_activation_token_v1_set_serial(token_.get(), serial->value,
-                                       connection_->seat()->wl_object());
-  }
-  xdg_activation_token_v1_commit(token_.get());
+  return window ? window->root_surface()->surface() : nullptr;
 }
 
 void XdgActivation::TokenRequest::OnTimeout() {

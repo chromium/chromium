@@ -2,23 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/content_verifier/content_verify_job.h"
 
 #include <algorithm>
 
+#include "base/containers/span.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
-#include "build/buildflag.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -26,10 +23,6 @@
 #include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/common/constants.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "extensions/common/extension_features.h"
-#endif
 
 namespace extensions {
 
@@ -70,7 +63,85 @@ bool IsIgnorableReadError(MojoResult read_result) {
   return read_result == MOJO_RESULT_ABORTED;
 }
 
+base::debug::CrashKeyString* GetContentHashExtensionVersionCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_content_hash_version", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentVerifyJobExtensionVersionCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_verify_job_version", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentHashExtensionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_content_hash_id", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetContentVerifyJobExtensionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_verify_job_id", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+// Returns the last path component of the extension root filepath, which should
+// be the extension version.
+std::string GetExtensionVersionFromExtensionRoot(
+    const base::FilePath& extension_root) {
+  return extension_root.BaseName().MaybeAsASCII();
+}
+
 }  // namespace
+
+namespace debug {
+
+// Helper for adding a crash keys when extension roots don't match during
+// content verification.
+//
+// It is only created at the start of the verification process when the process
+// is provided content verification hashes *and* the extension roots for the
+// content verification hash and the verification job don't match.
+//
+// All keys are logged every time this class is instantiated.
+class ScopedContentVerifyJobCrashKey {
+ public:
+  explicit ScopedContentVerifyJobCrashKey(
+      const base::FilePath& content_hash_extension_root,
+      const base::FilePath& verify_job_extension_root,
+      const ExtensionId& content_hash_extension_id,
+      const ExtensionId& verify_job_extension_id)
+      : content_hash_ext_version_crash_key_(
+            GetContentHashExtensionVersionCrashKey(),
+            GetExtensionVersionFromExtensionRoot(content_hash_extension_root)),
+        verify_job_ext_version_crash_key_(
+            GetContentVerifyJobExtensionVersionCrashKey(),
+            GetExtensionVersionFromExtensionRoot(verify_job_extension_root)),
+        content_hash_ext_id_crash_key_(GetContentHashExtensionIdCrashKey(),
+                                       content_hash_extension_id),
+        verify_job_ext_id_crash_key_(GetContentVerifyJobExtensionIdCrashKey(),
+                                     verify_job_extension_id)
+
+  {}
+  ~ScopedContentVerifyJobCrashKey() = default;
+
+ private:
+  // These record the extension's version from the extension root of ContentHash
+  // and ContentVerify Job. E.g. from:
+  //   "/path/to/chromium/<profile_name>/Extensions/<ext_id>/<ext_version>/""
+  //
+  // We record <ext_version>.
+  base::debug::ScopedCrashKeyString content_hash_ext_version_crash_key_;
+  base::debug::ScopedCrashKeyString verify_job_ext_version_crash_key_;
+
+  // The ExtensionId for ContentHash and ContentVerify Job.
+  base::debug::ScopedCrashKeyString content_hash_ext_id_crash_key_;
+  base::debug::ScopedCrashKeyString verify_job_ext_id_crash_key_;
+};
+
+}  // namespace debug
 
 ContentVerifyJob::ContentVerifyJob(const ExtensionId& extension_id,
                                    const base::FilePath& extension_root,
@@ -115,6 +186,15 @@ void ContentVerifyJob::DidCreateContentHashOnIO(
 void ContentVerifyJob::StartWithContentHash(
     scoped_refptr<const ContentHash> content_hash) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  // If the hash and the verify jobs' roots don't match then the hash comparison
+  // done later will match against the wrong files.
+  if (content_hash->extension_root() != extension_root_) {
+    debug::ScopedContentVerifyJobCrashKey crash_keys(
+        content_hash->extension_root(), extension_root_,
+        content_hash->extension_id(), extension_id_);
+    base::debug::DumpWithoutCrashing();
+  }
+
   scoped_refptr<TestObserver> test_observer = GetTestObserver();
   if (test_observer)
     test_observer->JobStarted(extension_id_, relative_path_);
@@ -138,19 +218,6 @@ void ContentVerifyJob::StartWithContentHash(
       return;
     }
     case ContentHashReader::InitStatus::NO_HASHES_FOR_RESOURCE: {
-#if BUILDFLAG(IS_MAC)
-      // Skip verification for file paths ending with a separator. Unlike other
-      // platforms, macOS strips the trailing separator when `realpath` is used,
-      // which causes inconsistencies. See https://crbug.com/356878412.
-      // TODO(crbug.com/357636604): Remove after the flag is removed in M132.
-      if (!base::FeatureList::IsEnabled(
-              extensions_features::kMacRejectFilePathsEndingWithSeparator) &&
-          relative_path_.EndsWithSeparator()) {
-        ReportJobFinished(NONE);
-        return;
-      }
-#endif
-
       // Proceed and dispatch failure only if the file exists.
       break;
     }
@@ -167,7 +234,7 @@ void ContentVerifyJob::StartWithContentHash(
     DCHECK_EQ(read_error_, MOJO_RESULT_OK);
     std::string tmp;
     queue_.swap(tmp);
-    BytesReadImpl(std::data(tmp), tmp.size(), MOJO_RESULT_OK);
+    BytesReadImpl(tmp, MOJO_RESULT_OK);
     if (failed_) {
       return;
     }
@@ -178,12 +245,11 @@ void ContentVerifyJob::StartWithContentHash(
   }
 }
 
-void ContentVerifyJob::BytesRead(const char* data,
-                                 int count,
+void ContentVerifyJob::BytesRead(base::span<const char> data,
                                  MojoResult read_result) {
   base::AutoLock auto_lock(lock_);
   DCHECK(!done_reading_);
-  BytesReadImpl(data, count, read_result);
+  BytesReadImpl(data, read_result);
 }
 
 void ContentVerifyJob::DoneReading() {
@@ -249,8 +315,7 @@ void ContentVerifyJob::OnHashMismatch() {
   }
 }
 
-void ContentVerifyJob::BytesReadImpl(const char* data,
-                                     int count,
+void ContentVerifyJob::BytesReadImpl(base::span<const char> data,
                                      MojoResult read_result) {
   ScopedElapsedTimer timer(&time_spent_);
   if (failed_)
@@ -268,13 +333,13 @@ void ContentVerifyJob::BytesReadImpl(const char* data,
   }
 
   if (!hashes_ready_) {
-    queue_.append(data, count);
+    queue_.append(data.begin(), data.end());
     return;
   }
   if (hash_reader_->status() != ContentHashReader::InitStatus::SUCCESS) {
     return;
   }
-  DCHECK_GE(count, 0);
+  const int count = data.size();
   int bytes_added = 0;
 
   while (bytes_added < count) {
@@ -290,7 +355,7 @@ void ContentVerifyJob::BytesReadImpl(const char* data,
         std::min(hash_reader_->block_size() - current_hash_byte_count_,
                  count - bytes_added);
     DCHECK_GT(bytes_to_hash, 0);
-    current_hash_->Update(data + bytes_added, bytes_to_hash);
+    current_hash_->Update(&data[bytes_added], bytes_to_hash);
     bytes_added += bytes_to_hash;
     current_hash_byte_count_ += bytes_to_hash;
     total_bytes_read_ += bytes_to_hash;
@@ -355,8 +420,11 @@ void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {
   DCHECK(!failed_);
   failed_ = true;
   if (!failure_callback_.is_null()) {
-    VLOG(1) << "job failed for " << extension_id_ << " "
-            << relative_path_.MaybeAsASCII() << " reason:" << reason;
+    // TODO(crbug.com/416484593): Reduce back to VLOG once the cause and fix has
+    // been determined.
+    LOG(ERROR) << "Content verify job failed for extension: " << extension_id_
+               << " at path: " << relative_path_.MaybeAsASCII()
+               << " and for reason:" << reason;
     std::move(failure_callback_).Run(reason);
   }
 
@@ -366,7 +434,7 @@ void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {
 void ContentVerifyJob::ReportJobFinished(FailureReason reason) {
   auto record_job_finished = [this, &reason](const char* mv2_histogram,
                                              const char* mv3_histogram) {
-    if (manifest_version_ == 2) {
+    if (mv2_histogram && manifest_version_ == 2) {
       base::UmaHistogramEnumeration(mv2_histogram, reason, FAILURE_REASON_MAX);
     } else if (manifest_version_ == 3) {
       base::UmaHistogramEnumeration(mv3_histogram, reason, FAILURE_REASON_MAX);
@@ -380,7 +448,7 @@ void ContentVerifyJob::ReportJobFinished(FailureReason reason) {
   // milestones.
   if (extension_id_ == extension_misc::kDocsOfflineExtensionId) {
     record_job_finished(
-        "Extensions.ContentVerification.VerifyJobResultMV2.GoogleDocsOffline",
+        nullptr,  // No MV2 Google Docs Offline version.
         "Extensions.ContentVerification.VerifyJobResultMV3.GoogleDocsOffline");
   }
 

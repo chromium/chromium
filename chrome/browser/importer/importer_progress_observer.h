@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_IMPORTER_IMPORTER_PROGRESS_OBSERVER_H_
 #define CHROME_BROWSER_IMPORTER_IMPORTER_PROGRESS_OBSERVER_H_
 
-#include "chrome/common/importer/importer_data_types.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 
 namespace importer {
 
@@ -17,17 +17,17 @@ class ImporterProgressObserver {
   virtual void ImportStarted() = 0;
 
   // Invoked when data for the specified item is about to be collected.
-  virtual void ImportItemStarted(ImportItem item) = 0;
+  virtual void ImportItemStarted(user_data_importer::ImportItem item) = 0;
 
   // Invoked when data for the specified item has been collected from the
   // source profile and is now ready for further processing.
-  virtual void ImportItemEnded(ImportItem item) = 0;
+  virtual void ImportItemEnded(user_data_importer::ImportItem item) = 0;
 
   // Invoked when the source profile has been imported.
   virtual void ImportEnded() = 0;
 
  protected:
-  virtual ~ImporterProgressObserver() {}
+  virtual ~ImporterProgressObserver() = default;
 };
 
 }  // namespace importer

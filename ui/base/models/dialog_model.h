@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
@@ -151,7 +151,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
   // A variant for button callbacks that allows different behavior to be
   // specified when a button is pressed.
-  using ButtonCallbackVariant = absl::variant<
+  using ButtonCallbackVariant = std::variant<
       // This is the default -- no callback action is taken when the button is
       // pressed and the dialog is closed.
       decltype(base::DoNothing()),

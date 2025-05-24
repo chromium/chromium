@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/graph/graph_impl.h"
 
@@ -86,7 +87,7 @@ class PerformanceManagerTestHarnessHelper {
 
   // Allows configuring which Graph features are initialized during "SetUp".
   // This defaults to initializing no features.
-  GraphFeatures& GetGraphFeatures() { return graph_features_; }
+  GraphFeatures& GetGraphFeatures();
 
   // Allows configuring a Graph callback that will be invoked when the Graph
   // is initialized in "SetUp".

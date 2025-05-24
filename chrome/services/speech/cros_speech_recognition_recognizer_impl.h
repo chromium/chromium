@@ -62,7 +62,7 @@ class CrosSpeechRecognitionRecognizerImpl
       const std::vector<std::string>& live_caption_languages);
 
  private:
-  std::unique_ptr<soda::CrosSodaClient> cros_soda_client_;
+  std::unique_ptr<::soda::CrosSodaClient> cros_soda_client_;
 
   const base::FilePath binary_path_;
   base::WeakPtrFactory<CrosSpeechRecognitionRecognizerImpl> weak_factory_{this};

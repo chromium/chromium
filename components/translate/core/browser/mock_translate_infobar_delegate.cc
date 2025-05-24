@@ -41,7 +41,7 @@ MockTranslateInfoBarDelegate::MockTranslateInfoBarDelegate(
                                           error_type,
                                           triggered_from_menu) {}
 
-MockTranslateInfoBarDelegate::~MockTranslateInfoBarDelegate() {}
+MockTranslateInfoBarDelegate::~MockTranslateInfoBarDelegate() = default;
 
 MockTranslateInfoBarDelegateFactory::MockTranslateInfoBarDelegateFactory(
     const std::string& source_language,
@@ -65,7 +65,8 @@ MockTranslateInfoBarDelegateFactory::MockTranslateInfoBarDelegateFactory(
       false);
 }
 
-MockTranslateInfoBarDelegateFactory::~MockTranslateInfoBarDelegateFactory() {}
+MockTranslateInfoBarDelegateFactory::~MockTranslateInfoBarDelegateFactory() =
+    default;
 
 // static
 std::unique_ptr<MockTranslateInfoBarDelegate>

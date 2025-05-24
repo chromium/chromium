@@ -38,6 +38,7 @@ goog.provide('goog.testing.recordConstructor');
 goog.provide('goog.testing.recordFunction');
 
 goog.require('goog.Promise');
+goog.require('goog.functions');
 goog.require('goog.promise.Resolver');
 goog.require('goog.testing.asserts');
 
@@ -103,12 +104,12 @@ goog.testing.recordedFunction_.reset = function() {};
  * inherit the original function's prototype and static fields.
  *
  * @param {!Function=} opt_f The function to wrap and record. Defaults to
- *     {@link goog.nullFunction}.
+ *     goog.functions.UNDEFINED.
  * @return {!goog.testing.recordFunction.Type} The wrapped function.
  */
 goog.testing.recordFunction = function(opt_f) {
   'use strict';
-  var f = opt_f || goog.nullFunction;
+  var f = opt_f || goog.functions.UNDEFINED;
   var calls = [];
   /** @type {?goog.promise.Resolver} */
   var waitForCallsResolver = null;

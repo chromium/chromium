@@ -10,6 +10,8 @@ from . import get_shadow_root_from_test_page
 
 pytestmark = pytest.mark.asyncio
 
+CONTEXT_LOAD_EVENT = "browsingContext.load"
+
 
 async def test_invalid_browsing_context(bidi_session):
     actions = Actions()
@@ -17,6 +19,42 @@ async def test_invalid_browsing_context(bidi_session):
 
     with pytest.raises(NoSuchFrameException):
         await bidi_session.input.perform_actions(actions=actions, context="foo")
+
+
+async def test_key_down_closes_browsing_context(
+    bidi_session, configuration, new_tab, inline, subscribe_events,
+    wait_for_event
+):
+    url = inline("""
+        <input onkeydown="window.close()">close</input>
+        <script>document.querySelector("input").focus();</script>
+        """)
+
+    # Opening a new context via `window.open` is required for script to be able
+    # to close it.
+    await subscribe_events(events=[CONTEXT_LOAD_EVENT])
+    on_load = wait_for_event(CONTEXT_LOAD_EVENT)
+
+    await bidi_session.script.evaluate(
+        expression=f"window.open('{url}')",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=True
+    )
+    # Wait for the new context to be created and get it.
+    new_context = await on_load
+
+    actions = Actions()
+    (
+        actions.add_key()
+        .key_down("w")
+        .pause(250 * configuration["timeout_multiplier"])
+        .key_up("w")
+    )
+
+    with pytest.raises(NoSuchFrameException):
+        await bidi_session.input.perform_actions(
+            actions=actions, context=new_context["context"]
+        )
 
 
 async def test_key_backspace(bidi_session, top_context, setup_key_test):
@@ -33,13 +71,13 @@ async def test_key_backspace(bidi_session, top_context, setup_key_test):
 @pytest.mark.parametrize(
     "value",
     [
-        ("\U0001F604"),
-        ("\U0001F60D"),
-        ("\u0BA8\u0BBF"),
-        ("\u1100\u1161\u11A8"),
+        "\U0001F604",  # "😄" (\ud83d\ude04), a single surrogate codepoint.
+        "\u0BA8\u0BBF",  # "நி" (\u0BA8\u0BBF), a grapheme containing several chars.
+        "\u1100\u1161\u11A8",  # "각" (\u1100\u1161\u11A8), a grapheme containing several chars.
+        "\u2764\ufe0f",  # "❤️" (\u2764\ufe0f), a grapheme containing several codepoints.
     ],
 )
-async def test_key_codepoint(
+async def test_key_grapheme(
     bidi_session, top_context, setup_key_test, value
 ):
     # Not using send_keys() because we always want to treat value as

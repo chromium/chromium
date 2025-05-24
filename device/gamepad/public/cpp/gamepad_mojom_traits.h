@@ -162,11 +162,11 @@ struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
   static bool connected(const device::Gamepad& r) { return r.connected; }
   static int64_t timestamp(const device::Gamepad& r) { return r.timestamp; }
   static base::span<const double> axes(const device::Gamepad& r) {
-    return base::make_span(r.axes, r.axes_length);
+    return base::span(r.axes, r.axes_length);
   }
   static base::span<const device::GamepadButton> buttons(
       const device::Gamepad& r) {
-    return base::make_span(r.buttons, r.buttons_length);
+    return base::span(r.buttons, r.buttons_length);
   }
   static const device::GamepadHapticActuator& vibration_actuator(
       const device::Gamepad& r) {
@@ -177,7 +177,7 @@ struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
   }
   static base::span<const device::GamepadTouch> touch_events(
       const device::Gamepad& r) {
-    return base::make_span(r.touch_events, r.touch_events_length);
+    return base::span(r.touch_events, r.touch_events_length);
   }
   static const device::GamepadHand& hand(const device::Gamepad& r) {
     return r.hand;

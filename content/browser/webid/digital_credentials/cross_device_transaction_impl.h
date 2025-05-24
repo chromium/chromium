@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "content/browser/webid/digital_credentials/cross_device_request_dispatcher.h"
+#include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/fido/cable/fido_cable_discovery.h"
@@ -24,7 +25,6 @@
 
 namespace device {
 class BluetoothAdapter;
-class FidoCableDiscovery;
 }  // namespace device
 
 namespace content::digital_credentials::cross_device {
@@ -37,11 +37,7 @@ class CONTENT_EXPORT TransactionImpl : public Transaction,
                                        device::BluetoothAdapter::Observer {
  public:
   TransactionImpl(
-      // The origin of the requesting page.
-      url::Origin origin,
-      // The request, as would be found in place of "$1" in the following
-      // Javascript:  `navigator.identity.get({digital: $1});`
-      base::Value request,
+      RequestInfo request_info,
       // A secret key that was used to generate the QR code. Any mobile devices
       // will have to prove that they know this secret because they scanned the
       // QR code.
@@ -74,12 +70,10 @@ class CONTENT_EXPORT TransactionImpl : public Transaction,
   void MaybeSignalReady();
   void OnHaveResponse(base::expected<Response, RequestDispatcher::Error>);
 
-  const url::Origin origin_;
-  base::Value request_;
+  RequestInfo request_info_;
   const Transaction::EventCallback event_callback_;
   Transaction::CompletionCallback callback_;
 
-  std::unique_ptr<device::FidoCableDiscovery> v1_discovery_;
   std::unique_ptr<RequestDispatcher> dispatcher_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
 

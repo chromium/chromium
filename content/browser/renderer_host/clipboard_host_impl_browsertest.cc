@@ -95,7 +95,7 @@ class ClipboardHostImplBrowserTest : public ContentBrowserTest {
                 .AppendASCII(f.name);
         std::string buf;
         EXPECT_TRUE(base::ReadFileToString(file, &buf));
-        auto b64 = base::Base64Encode(base::as_bytes(base::make_span(buf)));
+        auto b64 = base::Base64Encode(base::as_byte_span(buf));
         expected.push_back(base::JoinString({f.name, f.type, b64}, ":"));
         file_infos.push_back(ui::FileInfo(file, base::FilePath()));
         file_paths.push_back(file.AsUTF16Unsafe());

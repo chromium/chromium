@@ -18,6 +18,8 @@ extern const char kDisableFieldTrialTestingConfig[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kDisableVariationsSafeMode[];
 COMPONENT_EXPORT(VARIATIONS)
+extern const char kDisableVariationsSeedFetch[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kDisableVariationsSeedFetchThrottling[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kEnableBenchmarking[];
@@ -47,6 +49,8 @@ COMPONENT_EXPORT(VARIATIONS)
 extern const char kEnableFinchSeedDeltaCompression[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kAcceptEmptySeedSignatureForTesting[];
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kVariationsStateFile[];
 
 }  // namespace switches
 }  // namespace variations

@@ -104,8 +104,8 @@ void PwgRasterConverterHelper::Convert(
   }
 
   // TODO(thestig): Write `data` into shared memory in the first place, to avoid
-  // this memcpy().
-  memcpy(memory.mapping.memory(), data->data(), data->size());
+  // this copy.
+  memory.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(*data);
   pdf_to_pwg_raster_converter_remote_->Convert(
       std::move(memory.region), settings_, bitmap_settings_,
       base::BindOnce(&PwgRasterConverterHelper::RunCallback, this));
@@ -243,9 +243,7 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      use_color = true;  // Still need to initialize `color` or MSVC will warn.
-      break;
+      NOTREACHED();
   }
 
   cloud_devices::printer::PwgRasterConfigCapability raster_capability;

@@ -11,8 +11,10 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 
+@NullMarked
 public class SafetyHubExpandablePreferenceCategory extends ExpandablePreferenceGroup {
     public SafetyHubExpandablePreferenceCategory(Context context, AttributeSet attrs) {
         super(context, attrs);

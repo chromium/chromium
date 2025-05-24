@@ -35,7 +35,18 @@ class ExtensionTestNotificationObserver {
   ExtensionTestNotificationObserver& operator=(
       const ExtensionTestNotificationObserver&) = delete;
 
-  ~ExtensionTestNotificationObserver();
+  virtual ~ExtensionTestNotificationObserver();
+
+  // Waits for all extension views to load.
+  bool WaitForExtensionViewsToLoad();
+
+  // Waits for the extension associated with the given `extension_id` to be
+  // idle.
+  bool WaitForExtensionIdle(const ExtensionId& extension_id);
+
+  // Waits for the extension associated with the given `extension_id` to not
+  // be considered idle.
+  bool WaitForExtensionNotIdle(const ExtensionId& extension_id);
 
  protected:
   class NotificationSet : public extensions::ProcessManagerObserver {
@@ -85,14 +96,14 @@ class ExtensionTestNotificationObserver {
   // arguments.
   using ConditionCallback = base::RepeatingCallback<bool(void)>;
 
-  // Wait for |condition_| to be met. |notification_set| is the set of
-  // notifications to wait for and to check |condition| when observing. This
+  // Wait for `condition_` to be met. `notification_set` is the set of
+  // notifications to wait for and to check `condition` when observing. This
   // can be NULL if we are instead waiting for a different observer method, like
   // OnPageActionsUpdated().
   void WaitForCondition(const ConditionCallback& condition,
                         NotificationSet* notification_set);
 
-  // Quits the message loop if |condition_| is met.
+  // Quits the message loop if `condition_` is met.
   void MaybeQuit();
 
   raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged> context_;

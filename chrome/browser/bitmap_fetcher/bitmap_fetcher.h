@@ -41,16 +41,19 @@ class BitmapFetcher : public ImageDecoder::ImageRequest {
 
   const GURL& url() const { return url_; }
 
-  // |credentials_mode| determines whether credentials such as cookies should be
+  // `credentials_mode` determines whether credentials such as cookies should be
   // sent.  Init may be called more than once in some cases.  If so, subsequent
   // calls will be ignored.
-  // |additional_headers| will be merged with default HTTP headers provided by
-  // |BitmapFetcher| when fetching the image.
+  // `additional_headers` will be merged with default HTTP headers provided by
+  // `BitmapFetcher` when fetching the image.
+  // If `is_same_site_request` is true, the request is initiated as same-site:
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis#name-same-site-and-cross-site-re.
   // TODO(tommycli): Init and Start should likely be combined.
   virtual void Init(net::ReferrerPolicy referrer_policy,
                     network::mojom::CredentialsMode credentials_mode,
                     const net::HttpRequestHeaders& additional_headers = {},
-                    const url::Origin& initiator = url::Origin());
+                    const url::Origin& initiator = url::Origin(),
+                    bool is_same_site_request = false);
 
   // Start fetching the URL with the fetcher. The delegate is notified
   // asynchronously when done.  Start may be called more than once in some

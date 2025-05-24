@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace chromecast {
@@ -157,7 +158,7 @@ class DependencyCount : public base::RefCountedThreadSafe<DependencyCount> {
     component_->DependencyCountDisableComplete();
   }
 
-  ComponentBase* component_;
+  raw_ptr<ComponentBase> component_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   AtomicWord dep_count_;
   bool disabling_;

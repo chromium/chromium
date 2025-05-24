@@ -20,6 +20,9 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.GaiaId;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -36,8 +39,8 @@ import java.util.Set;
  */
 public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     /** Converts an email to a fake gaia Id. */
-    public static String toGaiaId(String email) {
-        return "gaia-id-" + email.replace("@", "_at_");
+    public static GaiaId toGaiaId(String email) {
+        return new GaiaId("gaia-id-" + email.replace("@", "_at_"));
     }
 
     private final Set<AccountHolder> mAccounts = Collections.synchronizedSet(new LinkedHashSet<>());
@@ -50,7 +53,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
 
     @Nullable
     @Override
-    public String getAccountGaiaId(String accountEmail) {
+    public GaiaId getAccountGaiaId(String accountEmail) {
         @Nullable AccountHolder accountHolder = tryGetAccountHolder(accountEmail);
         return accountHolder != null ? accountHolder.getAccountInfo().getGaiaId() : null;
     }
@@ -93,18 +96,20 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public AccessTokenData getAuthToken(Account account, String scope) throws AuthException {
+    public AccessTokenData getAccessToken(Account account, String scope) throws AuthException {
         AccountHolder accountHolder = tryGetAccountHolder(account.name);
         if (accountHolder == null) {
             throw new AuthException(
-                    AuthException.NONTRANSIENT,
-                    "Cannot get auth token for unknown account '" + account + "'");
+                    "Error while getting token for scope '" + scope + "'",
+                    new IllegalStateException(
+                            "Cannot get auth token for unknown account '" + account + "'"),
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP));
         }
         return accountHolder.getAccessTokenOrGenerateNew(scope);
     }
 
     @Override
-    public void invalidateAuthToken(String authToken) {
+    public void invalidateAccessToken(String authToken) {
         if (authToken == null) {
             throw new IllegalArgumentException("AuthToken can not be null");
         }

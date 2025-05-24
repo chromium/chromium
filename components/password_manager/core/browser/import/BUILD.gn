@@ -9,43 +9,48 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-if (use_blink) {
-  source_set("importer") {
-    sources = [
-      "import_results.cc",
-      "import_results.h",
-      "password_importer.cc",
-      "password_importer.h",
-    ]
-    public_deps = [
-      ":csv",
-      "//base",
-      "//components/password_manager/core/browser:password_form",
-    ]
+source_set("importer") {
+  sources = [
+    "import_results.cc",
+    "import_results.h",
+    "password_importer.cc",
+    "password_importer.h",
+  ]
+  public_deps = [
+    ":csv",
+    "//base",
+    "//components/password_manager/core/browser:password_form",
+  ]
 
-    deps = [
-      "//components/password_manager/core/browser/ui",
-      "//components/password_manager/core/common:constants",
-      "//components/password_manager/core/common:features",
-      "//components/password_manager/services/csv_password:service",
-      "//components/sync/base:base",
-    ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  }
+  deps = [
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/common:constants",
+    "//components/password_manager/core/common:features",
+    "//components/password_manager/services/csv_password:service",
+    "//components/sync/base:base",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
 
-  source_set("importer_unit_tests") {
-    testonly = true
-    sources = [ "password_importer_unittest.cc" ]
-    deps = [
-      ":importer",
-      "//base/test:test_support",
-      "//components/affiliations/core/browser:test_support",
-      "//components/password_manager/core/browser:test_support",
-      "//components/password_manager/core/browser/affiliation:test_support",
-      "//mojo/public/cpp/bindings:bindings",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
+source_set("importer_unit_tests") {
+  testonly = true
+  sources = [ "password_importer_unittest.cc" ]
+  deps = [
+    ":importer",
+    "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/affiliation:test_support",
+    "//components/password_manager/core/common:constants",
+    "//mojo/public/cpp/bindings:bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_ios) {
+    deps += [ "//components/password_manager/services/csv_password/ios:fake_password_parser_service" ]
+  } else {
+    deps += [ "//components/password_manager/services/csv_password:fake_password_parser_service" ]
   }
 }
 

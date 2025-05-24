@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -84,13 +85,23 @@ class WebViewPermissionHelperDelegate {
   // - Determined by the guest's content settings if the embedder does not
   // perform an explicit action.
   // If access was blocked due to the page's content settings,
-  // |blocked_by_policy| should be true, and this function should invoke
+  // `blocked_by_policy` should be true, and this function should invoke
   // OnContentBlocked.
   virtual void FileSystemAccessedAsync(int render_process_id,
                                        int render_frame_id,
                                        int request_id,
                                        const GURL& url,
                                        bool blocked_by_policy) {}
+
+  // Whether media requests approved by the webview embedder are forwarded as
+  // the embedder. When false, media requests retain the embedded origin.
+  virtual bool ForwardEmbeddedMediaPermissionChecksAsEmbedder(
+      const url::Origin& embedder_origin);
+
+  // Allows the delegate to override the results of permission requests; useful
+  // when custom handling is needed for specific webviews.
+  virtual std::optional<content::PermissionResult> OverridePermissionResult(
+      ContentSettingsType type);
 
   WebViewPermissionHelper* web_view_permission_helper() const {
     return web_view_permission_helper_;

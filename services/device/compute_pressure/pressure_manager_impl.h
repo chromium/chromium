@@ -13,6 +13,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -55,6 +56,7 @@ class PressureManagerImpl : public mojom::PressureManager {
   // device::mojom::PressureManager implementation.
   void AddClient(mojom::PressureSource source,
                  const std::optional<base::UnguessableToken>& token,
+                 mojo::PendingAssociatedRemote<mojom::PressureClient> client,
                  AddClientCallback callback) override;
 
   ProbesManager* GetProbesManagerForTesting() const;
@@ -73,17 +75,18 @@ class PressureManagerImpl : public mojom::PressureManager {
       const base::UnguessableToken& token,
       mojom::PressureSource source,
       RemoveVirtualPressureSourceCallback callback) override;
-  void UpdateVirtualPressureSourceState(
+  void UpdateVirtualPressureSourceData(
       const ::base::UnguessableToken& token,
       mojom::PressureSource source,
       mojom::PressureState state,
-      UpdateVirtualPressureSourceStateCallback callback) override;
+      double own_contribution_estimate,
+      UpdateVirtualPressureSourceDataCallback callback) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::TimeDelta sampling_interval_;
 
-  mojo::ReceiverSet<mojom::PressureManager> receivers_
+  mojo::ReceiverSet<mojom::PressureManager> manager_receivers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<ProbesManager> probes_manager_

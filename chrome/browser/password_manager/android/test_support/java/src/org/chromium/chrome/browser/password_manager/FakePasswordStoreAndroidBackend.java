@@ -33,7 +33,7 @@ import java.util.function.Predicate;
 /** Fake {@link PasswordStoreAndroidBackend} to be used in integration tests. */
 public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBackend {
     private final Map<Account, List<PasswordWithLocalData>> mSavedPasswords = new HashMap<>();
-    private SequencedTaskRunner mTaskRunner =
+    private final SequencedTaskRunner mTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.UI_USER_BLOCKING);
 
     public static final Account sLocalDefaultAccount = new Account("Test user", "Local");

@@ -8,10 +8,16 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace permissions {
+
+class PermissionRequest;
 
 // The interface for implementations that decide if the quiet prompt UI should
 // be used to display a permission |request|, whether a warning should be
@@ -66,7 +72,7 @@ class PermissionUiSelector {
 
   using DecisionMadeCallback = base::OnceCallback<void(const Decision&)>;
 
-  virtual ~PermissionUiSelector() {}
+  virtual ~PermissionUiSelector() = default;
 
   // Determines whether animations should be suppressed because we're very
   // confident the user does not want notifications (e.g. they're abusive).
@@ -76,7 +82,8 @@ class PermissionUiSelector {
   // when done, either synchronously or asynchronously. The |callback| is
   // guaranteed never to be invoked after |this| goes out of scope. Only one
   // request is supported at a time.
-  virtual void SelectUiToUse(PermissionRequest* request,
+  virtual void SelectUiToUse(content::WebContents* web_contents,
+                             PermissionRequest* request,
                              DecisionMadeCallback callback) = 0;
 
   // Cancel the pending request, if any. After this, the |callback| is
@@ -89,9 +96,15 @@ class PermissionUiSelector {
 
   // Will return the selector's discretized prediction value, if any is
   // applicable to be recorded in UKMs. This is specific only to a selector that
-  // makes use of the Web Permission Predictions Service to make decisions.
+  // uses of the Web Permission Predictions Service to make decisions.
   virtual std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
   PredictedGrantLikelihoodForUKM();
+
+  // Will return the selector's discretized permission request relevance, if any
+  // is applicable to be recorded in UKMs. This is specific only to a selector
+  // that uses Gemini Nano on-device model to make decisions.
+  virtual std::optional<PermissionRequestRelevance>
+  PermissionRequestRelevanceForUKM();
 
   // Will return if the selector's decision was heldback. Currently only the
   // Web Prediction Service selector supports holdbacks.

@@ -31,8 +31,7 @@ class QuotaManagerProxySync {
   QuotaManagerProxySync& operator=(const QuotaManagerProxySync&) = delete;
 
   QuotaErrorOr<BucketInfo> GetBucket(const blink::StorageKey& storage_key,
-                                     const std::string& bucket_name,
-                                     blink::mojom::StorageType storage_type);
+                                     const std::string& bucket_name);
 
  private:
   const raw_ptr<QuotaManagerProxy> proxy_;

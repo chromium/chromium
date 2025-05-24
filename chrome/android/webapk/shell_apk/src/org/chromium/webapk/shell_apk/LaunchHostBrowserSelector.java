@@ -13,25 +13,31 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
+import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 
 /** Selects host browser to launch. */
+@NullMarked
 public class LaunchHostBrowserSelector {
     private static final String LAST_RESORT_HOST_BROWSER = "com.android.chrome";
     private static final String LAST_RESORT_HOST_BROWSER_APPLICATION_NAME = "Google Chrome";
     private static final String TAG = "cr_LaunchHostBrowserSelector";
 
-    private Context mContext;
+    private final Context mContext;
 
     /** Parent activity for any dialogs. */
-    private Activity mParentActivity;
+    private final Activity mParentActivity;
 
     /**
      * Called once {@link #selectHostBrowser()} has selected the host browser either via a shared
      * preferences/<meta-data> lookup or via the user selecting the host browser from a dialog.
      */
     public static interface Callback {
-        void onBrowserSelected(String hostBrowserPackageName, boolean dialogShown);
+        void onBrowserSelected(
+                @Nullable PackageNameAndComponentName hostBrowserPackageNameAndComponentName,
+                boolean dialogShown);
     }
 
     public LaunchHostBrowserSelector(Activity parentActivity) {
@@ -66,8 +72,9 @@ public class LaunchHostBrowserSelector {
         String packageName = mContext.getPackageName();
         Log.v(TAG, "Package name of the WebAPK:" + packageName);
 
-        String runtimeHost = HostBrowserUtils.computeHostBrowserPackageName(mContext);
-        if (!TextUtils.isEmpty(runtimeHost)) {
+        PackageNameAndComponentName runtimeHost =
+                HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext);
+        if (runtimeHost != null && !TextUtils.isEmpty(runtimeHost.getPackageName())) {
             selectCallback.onBrowserSelected(runtimeHost, /* dialogShown= */ false);
             return;
         }

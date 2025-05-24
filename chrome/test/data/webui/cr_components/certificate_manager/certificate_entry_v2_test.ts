@@ -47,6 +47,20 @@ suite('CertificateEntryV2Test', () => {
         CertificateSource.kChromeRootStore, source,
         'click provided wrong source');
     assertEquals('deadbeef', hash, 'click provided wrong hash');
+    assertEquals('icon-visibility', certEntry.$.view.className);
+  });
+
+  test('edit icon', () => {
+    certEntry = document.createElement('certificate-entry-v2');
+    certEntry.displayName = 'certname';
+    certEntry.sha256hashHex = 'deadbeef';
+    certEntry.certSource = CertificateSource.kChromeRootStore;
+    certEntry.showEditIcon = true;
+    document.body.appendChild(certEntry);
+
+    assertEquals(
+        'deadbeef', certEntry.$.certhash.value, 'wrong hash in input box');
+    assertEquals('icon-edit', certEntry.$.view.className);
   });
 
   test('delete click', async () => {
@@ -72,12 +86,13 @@ suite('CertificateEntryV2Test', () => {
 
     assertTrue(isVisible(certEntry.$.delete));
     certEntry.$.delete.click();
-    const [source, hash] =
+    const [source, name, hash] =
         await testProxy.handler.whenCalled('deleteCertificate');
     assertEquals(
         CertificateSource.kChromeRootStore, source,
         'click provided wrong source');
     assertEquals('deadbeef', hash, 'click provided wrong hash');
+    assertEquals('certname', name, 'click provided wrong name');
 
     assertDeepEquals(deleteResult, kExpectedDeleteResult);
   });

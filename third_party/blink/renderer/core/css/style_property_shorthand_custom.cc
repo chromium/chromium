@@ -47,8 +47,7 @@ unsigned indexOfShorthandForLonghand(
       return i;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace blink

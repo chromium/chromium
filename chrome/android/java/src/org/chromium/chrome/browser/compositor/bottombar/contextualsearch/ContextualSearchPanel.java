@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -36,7 +37,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -108,17 +111,17 @@ public class ContextualSearchPanel extends OverlayPanel {
     private boolean mHasContentBeenTouched;
 
     /** The compositor layer used for drawing the panel. */
-    private ContextualSearchSceneLayer mSceneLayer;
+    private final ContextualSearchSceneLayer mSceneLayer;
 
     /**
-     * A ScrimCoordinator for adjusting the Status Bar's brightness when a scrim is present (when
-     * the panel is open).
+     * A ScrimManager for adjusting the Status Bar's brightness when a scrim is present (when the
+     * panel is open).
      */
-    private ScrimCoordinator mScrimCoordinator;
+    private ScrimManager mScrimManager;
 
     /**
-     * Params that configure our use of the ScrimCoordinator for adjusting the Status Bar's
-     * brightness when a scrim is present (when the panel is open).
+     * Params that configure our use of the ScrimManager for adjusting the Status Bar's brightness
+     * when a scrim is present (when the panel is open).
      */
     private PropertyModel mScrimProperties;
 
@@ -142,6 +145,9 @@ public class ContextualSearchPanel extends OverlayPanel {
      * @param canPromoteToNewTab Whether the panel can be promoted to a new tab.
      * @param currentTabSupplier Supplies the current activity tab.
      * @param edgeToEdgeControllerSupplier Controller for edge-to-edge drawing.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
+     *     browser controls heights.
      */
     public ContextualSearchPanel(
             @NonNull Context context,
@@ -155,7 +161,9 @@ public class ContextualSearchPanel extends OverlayPanel {
             @NonNull ToolbarManager toolbarManager,
             boolean canPromoteToNewTab,
             @NonNull Supplier<Tab> currentTabSupplier,
-            @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull BottomControlsStacker bottomControlsStacker) {
         super(
                 context,
                 layoutManager,
@@ -165,7 +173,9 @@ public class ContextualSearchPanel extends OverlayPanel {
                 profile,
                 compositorViewHolder,
                 toolbarHeightDp,
-                currentTabSupplier);
+                currentTabSupplier,
+                desktopWindowStateManager,
+                bottomControlsStacker);
         mSceneLayer = createNewContextualSearchSceneLayer();
         mPanelMetrics = new ContextualSearchPanelMetrics();
         mToolbarManager = toolbarManager;
@@ -215,6 +225,11 @@ public class ContextualSearchPanel extends OverlayPanel {
                 getImageControl());
 
         return mSceneLayer;
+    }
+
+    @Override
+    public void removeFromParent() {
+        mSceneLayer.removeFromParent();
     }
 
     // ============================================================================================
@@ -310,7 +325,9 @@ public class ContextualSearchPanel extends OverlayPanel {
         super.onClosed(reason);
 
         if (mSceneLayer != null) mSceneLayer.hideTree();
-        if (mScrimCoordinator != null) mScrimCoordinator.hideScrim(false);
+        if (mScrimManager != null) {
+            mScrimManager.hideScrim(mScrimProperties, /* animate= */ false);
+        }
 
         mDidStartCollapsing = false;
     }
@@ -453,7 +470,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     @Override
     protected float getMaximizedHeight() {
         // Max height does not cover the entire content screen.
-        return getTabHeight() * MAXIMIZED_HEIGHT_FRACTION;
+        return super.getMaximizedHeight() * MAXIMIZED_HEIGHT_FRACTION;
     }
 
     @Override
@@ -584,11 +601,6 @@ public class ContextualSearchPanel extends OverlayPanel {
         if (getPanelState() == PanelState.CLOSED || getPanelState() == PanelState.PEEKED) {
             mHasContentBeenTouched = false;
         }
-
-        if ((getPanelState() == PanelState.UNDEFINED || getPanelState() == PanelState.CLOSED)
-                && reason == StateChangeReason.TEXT_SELECT_TAP) {
-            mPanelMetrics.onPanelTriggeredFromTap();
-        }
     }
 
     @Override
@@ -641,7 +653,6 @@ public class ContextualSearchPanel extends OverlayPanel {
     public void setSearchTerm(String searchTerm, @Nullable String pronunciation) {
         getImageControl().hideCustomImage(true);
         getSearchBarControl().setSearchTerm(searchTerm, pronunciation);
-        mPanelMetrics.onSearchRequestStarted();
         // Make sure the new Search Term draws.
         requestUpdate();
     }
@@ -655,7 +666,6 @@ public class ContextualSearchPanel extends OverlayPanel {
     public void setContextDetails(String selection, String end) {
         getImageControl().hideCustomImage(true);
         getSearchBarControl().setContextDetails(selection, end);
-        mPanelMetrics.onSearchRequestStarted();
         // Make sure the new Context draws.
         requestUpdate();
     }
@@ -674,9 +684,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     public void ensureCaption() {
         if (getSearchBarControl().hasCaption()) return;
         getSearchBarControl()
-                .setCaption(
-                        mContext.getResources()
-                                .getString(R.string.contextual_search_default_caption));
+                .setCaption(mContext.getString(R.string.contextual_search_default_caption));
     }
 
     /** Hides the caption. */
@@ -776,11 +784,6 @@ public class ContextualSearchPanel extends OverlayPanel {
         return mPanelMetrics;
     }
 
-    /** Sets that the contextual search involved the promo. */
-    public void setDidSearchInvolvePromo() {
-        mPanelMetrics.setDidSearchInvolvePromo();
-    }
-
     // ============================================================================================
     // Panel Rendering
     // ============================================================================================
@@ -853,26 +856,22 @@ public class ContextualSearchPanel extends OverlayPanel {
                 (maxBrightness - basePageBrightness) / (maxBrightness - minBrightness);
         if (!getCanHideAndroidBrowserControls()) scrimAndroidToolbar(statusBarAlpha);
         if (statusBarAlpha == 0.0) {
-            if (mScrimCoordinator != null) mScrimCoordinator.hideScrim(false);
+            if (mScrimManager != null) {
+                mScrimManager.hideScrim(mScrimProperties, /* animate= */ false);
+            }
             mScrimProperties = null;
-            mScrimCoordinator = null;
-            return;
-
+            mScrimManager = null;
         } else {
-            mScrimCoordinator = mManagementDelegate.getScrimCoordinator();
+            mScrimManager = mManagementDelegate.getScrimManager();
             if (mScrimProperties == null) {
                 mScrimProperties =
-                        new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
-                                .with(ScrimProperties.TOP_MARGIN, 0)
+                        new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                 .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                                 .with(ScrimProperties.ANCHOR_VIEW, getCompositorViewHolder())
-                                .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                                .with(ScrimProperties.VISIBILITY_CALLBACK, null)
-                                .with(ScrimProperties.CLICK_DELEGATE, null)
                                 .build();
-                mScrimCoordinator.showScrim(mScrimProperties);
+                mScrimManager.showScrim(mScrimProperties);
             }
-            mScrimCoordinator.setAlpha(statusBarAlpha);
+            mScrimManager.setAlpha(statusBarAlpha, mScrimProperties);
         }
     }
 
@@ -885,7 +884,10 @@ public class ContextualSearchPanel extends OverlayPanel {
         ColorDrawable toolbarBackground = (ColorDrawable) toolbarLayout.getBackground();
         toolbarBackground.setColor(toolbarColor);
 
-        scrimImage(R.id.drag_handlebar, R.color.drag_handlebar_color_baseline, scrimFraction);
+        scrimImage(
+                R.id.drag_handlebar,
+                ChromeColors.getDragHandleBarColor(getContext()),
+                scrimFraction);
         scrimImage(R.id.toolbar_hairline, R.color.divider_line_bg_color_baseline, scrimFraction);
     }
 

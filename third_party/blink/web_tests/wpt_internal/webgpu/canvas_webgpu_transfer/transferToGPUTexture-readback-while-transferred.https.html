@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script src="./webgpu-helpers.js"></script>
+
+<h1>
+  Canvas2D WebGPU Transfer: transferToGPUTexture-readback-while-transferred
+</h1>
+<p>Canvas becomes blank after a call to transferToGPUTexture().</p>
+
+<script>
+
+runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
+
+/**
+ * Validates that the canvas becomes blank when it's transferred to WebGPU.
+ */
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FF0000FF';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  checkCanvasColor(ctx, [0xFF, 0x00, 0x00, 0xFF]);
+
+  // Canvas should be blank while the texture is owned by WebGPU.
+  const device = await getWebGPUDevice();
+  ctx.transferToGPUTexture({device: device});
+  checkCanvasColor(ctx, [0x00, 0x00, 0x00, 0x00]);
+}, 'Canvas should be blank after it\'s transferred to WebGPU');
+
+</script>

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] cookieStore.delete does not append / at the end of path
+  assert_equals: expected null but got object "[object Object]"
+Harness: the test ran to completion.
+

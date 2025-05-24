@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
@@ -70,7 +71,7 @@ AmbientUiSettings AmbientUiSettings::ReadFromPrefService(
           << "Loaded invalid AmbientUiSettings from pref. Using default.";
       pref_service.ClearPref(ambient::prefs::kAmbientUiSettings);
     } else if (features::IsTimeOfDayScreenSaverEnabled()) {
-      return AmbientUiSettings(AmbientTheme::kVideo, kDefaultAmbientVideo);
+      return AmbientUiSettings(AmbientTheme::kVideo, GetDefaultAmbientVideo());
     }
     return AmbientUiSettings();
   }

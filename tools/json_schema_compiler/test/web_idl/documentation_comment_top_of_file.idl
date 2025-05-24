@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+// Example WebIDL schema which will produce an error when trying to parse this
+// comment, due to it not having a blank line between it and the top copyright
+// comment for the file.
+interface TestWebIdl {
+  // Intentionally blank.
+};
+
+partial interface Browser {
+  static attribute TestWebIdl testWebIdl;
+};

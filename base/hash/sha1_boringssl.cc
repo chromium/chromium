@@ -36,7 +36,7 @@ void SHA1Init(SHA1Context& context) {
   SHA1_Init(&context);
 }
 
-void SHA1Update(const std::string_view data, SHA1Context& context) {
+void SHA1Update(std::string_view data, SHA1Context& context) {
   SHA1_Update(&context, data.data(), data.size());
 }
 

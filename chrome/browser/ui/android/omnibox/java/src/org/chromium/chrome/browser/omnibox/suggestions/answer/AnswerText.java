@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.text.SpannableStringBuilder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * AnswerText specifies details to be presented in a single line of an omnibox suggestion with an
  * associated answer.
  */
+@NullMarked
 public interface AnswerText {
 
     /** Content of the line of text in omnibox suggestion. */
@@ -28,7 +32,7 @@ public interface AnswerText {
      * This frequently means we are presenting answers in different order than we're announcing
      * them.
      */
-    String getAccessibilityDescription();
+    @Nullable String getAccessibilityDescription();
 
     /** How many additional lines content can wrap around to present more details. */
     int getMaxLines();

@@ -12,10 +12,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/boca_ui/boca_app_page_handler.h"
 #include "ash/webui/boca_ui/url_constants.h"
+#include "ash/webui/boca_ui/webview_auth_delegate.h"
+#include "ash/webui/boca_ui/webview_auth_handler.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "ash/webui/grit/ash_boca_ui_resources_map.h"
-#include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chrome/browser/ash/boca/boca_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -30,33 +34,29 @@ namespace ash::boca {
 
 namespace {
 content::WebUIDataSource* CreateAndAddHostDataSource(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    BocaUIDelegate* delegate) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeBocaAppUntrustedURL);
 
   source->AddResourcePath("", IDR_ASH_BOCA_UI_INDEX_HTML);
-  source->AddResourcePaths(
-      base::make_span(kAshBocaUiResources, kAshBocaUiResourcesSize));
+  source->AddResourcePaths(kAshBocaUiResources);
 
   // Resources obtained from CIPD.
-  source->AddResourcePaths(base::make_span(
-      kChromeosBocaAppBundleResources, kChromeosBocaAppBundleResourcesSize));
+  source->AddResourcePaths(kChromeosBocaAppBundleResources);
   return source;
-}
-
-void PopulateLoadTimeData(content::WebUIDataSource* source) {
-  source->AddBoolean("isProducer", ash::boca_util::IsProducer());
-  source->AddBoolean("isConsumer", ash::boca_util::IsConsumer());
 }
 
 }  // namespace
 
-BocaUI::BocaUI(content::WebUI* web_ui)
-    : UntrustedWebUIController(web_ui), web_ui_(web_ui) {
+BocaUI::BocaUI(content::WebUI* web_ui,
+               std::unique_ptr<BocaUIDelegate> delegate,
+               bool is_producer)
+    : UntrustedWebUIController(web_ui), is_producer_(is_producer) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* host_source =
-      CreateAndAddHostDataSource(browser_context);
+      CreateAndAddHostDataSource(browser_context, delegate.get());
 
   // Allow styles to include inline styling needed for Polymer elements and
   // the material 3 dynamic palette.
@@ -64,15 +64,19 @@ BocaUI::BocaUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' 'unsafe-inline' chrome-untrusted://theme;");
 
+  // Need to explicitly set |worker-src| because CSP falls back to |child-src|
+  // which is none.
+  host_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self';");
+
   host_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types polymer_resin lit-html goog#html polymer-html-literal "
       "polymer-template-event-attribute-policy;");
 
-  // Enables the page to load images. The page is restricted to only loading
-  // images from data URLs passed to the page.
+  // For loading favicon and profile photo.
   host_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ImgSrc, "img-src data:;");
+      network::mojom::CSPDirectiveName::ImgSrc, "img-src 'self' https: data:;");
 
   // For testing
   host_source->OverrideContentSecurityPolicy(
@@ -92,7 +96,7 @@ BocaUI::BocaUI(content::WebUI* web_ui)
                             ContentSettingsType::JAVASCRIPT,
                             ContentSettingsType::SOUND,
                         });
-  PopulateLoadTimeData(host_source);
+  delegate->PopulateLoadTimeData(host_source);
   host_source->UseStringsJs();
 
 #if !DCHECK_IS_ON()
@@ -121,10 +125,31 @@ void BocaUI::BindInterface(
 void BocaUI::Create(
     mojo::PendingReceiver<boca::mojom::PageHandler> page_handler,
     mojo::PendingRemote<boca::mojom::Page> page) {
+  content::BrowserContext* context =
+      web_ui()->GetWebContents()->GetBrowserContext();
+  CHECK(context);
+  const std::string host_name =
+      web_ui()->GetWebContents()->GetVisibleURL().host();
+  auto auth_handler = std::make_unique<WebviewAuthHandler>(
+      std::make_unique<WebviewAuthDelegate>(), context, host_name);
+  auto* const profile = Profile::FromWebUI(web_ui());
+  auto content_settings_handler =
+      std::make_unique<ContentSettingsHandler>(profile);
+  auto* const boca_manager =
+      ash::BocaManagerFactory::GetInstance()->GetForProfile(profile);
+  auto* const on_task_session_manager = boca_manager->GetOnTaskSessionManager();
+  auto* const system_web_app_manager =
+      on_task_session_manager
+          ? on_task_session_manager->GetOnTaskSystemWebAppManager()
+          : nullptr;
+  BocaAppClient::Get()->GetSessionManager()->OnAppWindowOpened();
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
-      this, std::move(page_handler), std::move(page), web_ui_,
-      std::make_unique<ClassroomPageHandlerImpl>(),
-      std::make_unique<SessionClientImpl>());
+      std::move(page_handler), std::move(page), web_ui(),
+      std::move(auth_handler), std::make_unique<ClassroomPageHandlerImpl>(),
+      std::move(content_settings_handler), system_web_app_manager,
+      BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
+      is_producer_);
+  page_handler_impl_->SetSpotlightService(&spotlight_service_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)

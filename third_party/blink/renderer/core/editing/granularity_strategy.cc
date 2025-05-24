@@ -195,10 +195,9 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
         new_offset_focus_position, old_offset_focus_position,
         old_focus_anchor_order);
     bool extent_base_order_switched =
-        selection_expanded
-            ? false
-            : !ArePositionsInSpecifiedOrder(new_offset_focus_position, anchor,
-                                            old_focus_anchor_order);
+        !selection_expanded &&
+        !ArePositionsInSpecifiedOrder(new_offset_focus_position, anchor,
+                                      old_focus_anchor_order);
     new_focus_anchor_order = extent_base_order_switched
                                  ? -old_focus_anchor_order
                                  : old_focus_anchor_order;

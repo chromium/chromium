@@ -7,7 +7,6 @@
 goog.module('goog.soy.RendererTest');
 goog.setTestOnly();
 
-const Dir = goog.require('goog.i18n.bidi.Dir');
 const NodeType = goog.require('goog.dom.NodeType');
 const Renderer = goog.require('goog.soy.Renderer');
 const SafeHtml = goog.require('goog.html.SafeHtml');
@@ -236,6 +235,5 @@ testSuite({
     /** @suppress {checkTypes} suppression added to enable type checking */
     const result = renderer.renderSafeHtml(example.sanitizedHtmlTemplate);
     assertEquals('Hello <b>World</b>', SafeHtml.unwrap(result));
-    assertEquals(Dir.LTR, result.getDirection());
   },
 });

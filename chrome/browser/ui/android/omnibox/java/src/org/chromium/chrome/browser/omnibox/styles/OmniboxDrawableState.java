@@ -12,10 +12,12 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Represents graphical decoration for the suggestion components. */
+@NullMarked
 public class OmniboxDrawableState {
     /** Embedded drawable object. */
     public final Drawable drawable;
@@ -35,7 +37,7 @@ public class OmniboxDrawableState {
      * @param color the color to apply
      * @return newly created OmniboxDrawableState
      */
-    public static @NonNull OmniboxDrawableState forColor(@ColorInt int color) {
+    public static OmniboxDrawableState forColor(@ColorInt int color) {
         return new OmniboxDrawableState(
                 new ColorDrawable(color),
                 /* useRoundedCorners= */ true,
@@ -51,8 +53,8 @@ public class OmniboxDrawableState {
      * @param allowTint whether the icon should be tinted with text color
      * @return newly created OmniboxDrawableState
      */
-    public static @NonNull OmniboxDrawableState forSmallIcon(
-            @NonNull Context context, @DrawableRes int resourceId, boolean allowTint) {
+    public static OmniboxDrawableState forSmallIcon(
+            Context context, @DrawableRes int resourceId, boolean allowTint) {
         return new OmniboxDrawableState(
                 OmniboxResourceProvider.getDrawable(context, resourceId),
                 /* useRoundedCorners= */ false,
@@ -68,8 +70,8 @@ public class OmniboxDrawableState {
      * @param allowTint whether the icon should be tinted with text color
      * @return newly created OmniboxDrawableState
      */
-    public static @NonNull OmniboxDrawableState forLargeIcon(
-            @NonNull Context context, @DrawableRes int resourceId, boolean allowTint) {
+    public static OmniboxDrawableState forLargeIcon(
+            Context context, @DrawableRes int resourceId, boolean allowTint) {
         return new OmniboxDrawableState(
                 OmniboxResourceProvider.getDrawable(context, resourceId),
                 /* useRoundedCorners= */ false,
@@ -84,8 +86,7 @@ public class OmniboxDrawableState {
      * @param bitmap bitmap with decoded site favicon
      * @return newly created OmniboxDrawableState
      */
-    public static @NonNull OmniboxDrawableState forFavIcon(
-            @NonNull Context context, @NonNull Bitmap bitmap) {
+    public static OmniboxDrawableState forFavIcon(Context context, Bitmap bitmap) {
         return new OmniboxDrawableState(
                 new BitmapDrawable(context.getResources(), bitmap),
                 /* useRoundedCorners= */ true,
@@ -100,8 +101,7 @@ public class OmniboxDrawableState {
      * @param bitmap dedicated bitmap
      * @return newly created OmniboxDrawableState
      */
-    public static @NonNull OmniboxDrawableState forImage(
-            @NonNull Context context, @NonNull Bitmap bitmap) {
+    public static OmniboxDrawableState forImage(Context context, Bitmap bitmap) {
         return new OmniboxDrawableState(
                 new BitmapDrawable(context.getResources(), bitmap),
                 /* useRoundedCorners= */ true,

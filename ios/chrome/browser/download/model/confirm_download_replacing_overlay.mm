@@ -15,8 +15,6 @@ const char kDownloadDoNotReplaceActionName[] = "IOSDownloadDoNotReplace";
 
 using l10n_util::GetNSString;
 
-OVERLAY_USER_DATA_SETUP_IMPL(ConfirmDownloadReplacingRequest);
-
 void ConfirmDownloadReplacingRequest::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   const std::vector<std::vector<alert_overlays::ButtonConfig>> buttons{

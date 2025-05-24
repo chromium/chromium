@@ -39,7 +39,7 @@ namespace blink {
 // offsets from the read position.  The read operation will zero the memory
 // just read from the buffer, so it will be ready for accumulation the next
 // time around.
-class ReverbAccumulationBuffer {
+class ReverbAccumulationBuffer final {
   DISALLOW_NEW();
 
  public:

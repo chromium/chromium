@@ -410,7 +410,7 @@ runTests([function simpleLoad() {
             type: 'xmlhttprequest',
             documentLifecycle: 'active',
             responseHeadersExist: true,
-            fromCache: false,
+            fromCache: true,
             statusCode: 200,
             statusLine: 'HTTP/1.1 200 OK',
             ip: '127.0.0.1',
@@ -434,7 +434,7 @@ runTests([function simpleLoad() {
             statusLine: 'HTTP/1.1 200 OK',
             ip: '127.0.0.1',
             responseHeadersExist: true,
-            fromCache: false,
+            fromCache: true,
             tabId: 1
           },
         }

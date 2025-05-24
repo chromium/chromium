@@ -62,8 +62,9 @@ void* GetPermissionInfo(const FilePath& path, size_t* length) {
 // |length| is the length of the blob.
 // Either |info| or |length| may be NULL/0, in which case nothing happens.
 bool RestorePermissionInfo(const FilePath& path, void* info, size_t length) {
-  if (!info || (length == 0))
+  if (!info || (length == 0)) {
     return false;
+  }
 
   DCHECK_EQ(sizeof(mode_t), length);
   mode_t* mode = reinterpret_cast<mode_t*>(info);
@@ -80,8 +81,9 @@ bool RestorePermissionInfo(const FilePath& path, void* info, size_t length) {
 bool DieFileDie(const FilePath& file, bool recurse) {
   // There is no need to workaround Windows problems on POSIX.
   // Just pass-through.
-  if (recurse)
+  if (recurse) {
     return DeletePathRecursively(file);
+  }
   return DeleteFile(file);
 }
 

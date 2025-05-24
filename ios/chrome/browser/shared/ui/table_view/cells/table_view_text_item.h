@@ -22,7 +22,7 @@
 // `textColor`.
 @property(nonatomic, strong) UIColor* textColor;
 
-@property(nonatomic, strong) NSString* text;
+@property(nonatomic, copy) NSString* text;
 
 // Sets the font for the `text`. Default preferredFontForTextStyle is
 // `UIFontTextStyleBody`.

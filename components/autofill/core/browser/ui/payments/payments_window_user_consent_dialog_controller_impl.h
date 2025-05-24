@@ -46,6 +46,7 @@ class PaymentsWindowUserConsentDialogControllerImpl
   std::u16string GetWindowTitle() const override;
   std::u16string GetDialogDescription() const override;
   std::u16string GetOkButtonLabel() const override;
+  std::u16string GetAcceptanceAccessibilityAnnouncement() const override;
 
   base::WeakPtr<PaymentsWindowUserConsentDialogControllerImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

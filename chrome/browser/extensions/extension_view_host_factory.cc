@@ -6,12 +6,13 @@
 
 #include <string>
 
-#include "chrome/browser/extensions/extension_side_panel_view_host.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/url_constants.h"
+#include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -23,6 +24,105 @@ namespace extensions {
 
 namespace {
 
+// Delegate for ExtensionViewHost attached to a specific browser window.
+class ExtensionViewHostBrowserDelegate : public ExtensionViewHost::Delegate {
+ public:
+  explicit ExtensionViewHostBrowserDelegate(Browser* browser)
+      : browser_(browser) {
+    DCHECK(browser_);
+  }
+  ExtensionViewHostBrowserDelegate(const ExtensionViewHostBrowserDelegate&) =
+      delete;
+  ExtensionViewHostBrowserDelegate& operator=(
+      const ExtensionViewHostBrowserDelegate&) = delete;
+  ~ExtensionViewHostBrowserDelegate() override = default;
+
+  content::WebContents* OpenURL(
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
+    return browser_->OpenURL(params, std::move(navigation_handle_callback));
+  }
+
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override {
+    return browser_->PreHandleKeyboardEvent(source, event);
+  }
+
+  std::unique_ptr<content::EyeDropper> OpenEyeDropper(
+      content::RenderFrameHost* frame,
+      content::EyeDropperListener* listener) override {
+    return browser_->OpenEyeDropper(frame, listener);
+  }
+
+  WindowController* GetExtensionWindowController() const override {
+    return browser_->extension_window_controller();
+  }
+
+ private:
+  raw_ptr<Browser> browser_;
+};
+
+// Delegate for ExtensionViewHost attached to a specific tab.
+class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
+ public:
+  explicit ExtensionViewHostTabDelegate(content::WebContents* web_contents)
+      : web_contents_(web_contents) {
+    DCHECK(web_contents_);
+  }
+  ExtensionViewHostTabDelegate(const ExtensionViewHostTabDelegate&) = delete;
+  ExtensionViewHostTabDelegate& operator=(const ExtensionViewHostTabDelegate&) =
+      delete;
+  ~ExtensionViewHostTabDelegate() override = default;
+
+  content::WebContents* OpenURL(
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
+    Browser* browser = FindBrowser();
+    if (browser == nullptr) {
+      return nullptr;
+    }
+    return browser->OpenURL(params, std::move(navigation_handle_callback));
+  }
+
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override {
+    Browser* browser = FindBrowser();
+    if (browser == nullptr) {
+      return content::KeyboardEventProcessingResult::NOT_HANDLED;
+    }
+    return browser->PreHandleKeyboardEvent(source, event);
+  }
+
+  std::unique_ptr<content::EyeDropper> OpenEyeDropper(
+      content::RenderFrameHost* frame,
+      content::EyeDropperListener* listener) override {
+    Browser* browser = FindBrowser();
+    if (browser == nullptr) {
+      return nullptr;
+    }
+    return browser->OpenEyeDropper(frame, listener);
+  }
+
+  WindowController* GetExtensionWindowController() const override {
+    Browser* browser = FindBrowser();
+    if (browser == nullptr) {
+      return nullptr;
+    }
+    return browser->extension_window_controller();
+  }
+
+ private:
+  Browser* FindBrowser() const {
+    return chrome::FindBrowserWithTab(web_contents_);
+  }
+
+  raw_ptr<content::WebContents> web_contents_;
+};
+
 // Creates a new ExtensionHost with its associated view, grouping it in the
 // appropriate SiteInstance (and therefore process) based on the URL and
 // profile.
@@ -31,18 +131,13 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForExtension(
     const GURL& url,
     Profile* profile,
     mojom::ViewType view_type,
-    Browser* browser,
-    content::WebContents* web_contents) {
+    std::unique_ptr<ExtensionViewHost::Delegate> delegate) {
   DCHECK(profile);
-  // A NULL browser may only be given for side panels.
-  DCHECK(browser || view_type == mojom::ViewType::kExtensionSidePanel);
   scoped_refptr<content::SiteInstance> site_instance =
       ProcessManager::Get(profile)->GetSiteInstanceForURL(url);
-  return view_type == mojom::ViewType::kExtensionSidePanel
-             ? std::make_unique<ExtensionSidePanelViewHost>(
-                   extension, site_instance.get(), url, browser, web_contents)
-             : std::make_unique<ExtensionViewHost>(
-                   extension, site_instance.get(), url, view_type, browser);
+  return std::make_unique<ExtensionViewHost>(extension, site_instance.get(),
+                                             profile, url, view_type,
+                                             std::move(delegate));
 }
 
 // Creates a view host for an extension in an incognito window. Returns NULL
@@ -51,9 +146,8 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
     const Extension* extension,
     const GURL& url,
     Profile* profile,
-    Browser* browser,
-    content::WebContents* web_contents,
-    mojom::ViewType view_type) {
+    mojom::ViewType view_type,
+    std::unique_ptr<ExtensionViewHost::Delegate> delegate) {
   DCHECK(extension);
   DCHECK(profile->IsOffTheRecord());
 
@@ -61,18 +155,16 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
     // If it's not split-mode the host is associated with the original profile.
     Profile* original_profile = profile->GetOriginalProfile();
     return CreateViewHostForExtension(extension, url, original_profile,
-                                      view_type, browser, web_contents);
+                                      view_type, std::move(delegate));
   }
 
   // Create the host if the extension can run in incognito.
   if (util::IsIncognitoEnabled(extension->id(), profile)) {
     return CreateViewHostForExtension(extension, url, profile, view_type,
-                                      browser, web_contents);
+                                      std::move(delegate));
   }
-  NOTREACHED_IN_MIGRATION()
-      << "We shouldn't be trying to create an incognito extension view unless "
-         "it has been enabled for incognito.";
-  return nullptr;
+  NOTREACHED() << "We shouldn't be trying to create an incognito extension "
+                  "view unless it has been enabled for incognito.";
 }
 
 // Returns the extension associated with |url| in |profile|. Returns NULL if
@@ -89,23 +181,20 @@ const Extension* GetExtensionForUrl(Profile* profile, const GURL& url) {
 std::unique_ptr<ExtensionViewHost> CreateViewHost(
     const GURL& url,
     Profile* profile,
-    Browser* browser,
-    content::WebContents* web_contents,
-    extensions::mojom::ViewType view_type) {
+    extensions::mojom::ViewType view_type,
+    std::unique_ptr<ExtensionViewHost::Delegate> delegate) {
   DCHECK(profile);
-  // A NULL browser may only be given for side panels.
-  DCHECK(browser || view_type == mojom::ViewType::kExtensionSidePanel);
 
   const Extension* extension = GetExtensionForUrl(profile, url);
   if (!extension)
     return nullptr;
   if (profile->IsOffTheRecord()) {
-    return CreateViewHostForIncognito(extension, url, profile, browser,
-                                      web_contents, view_type);
+    return CreateViewHostForIncognito(extension, url, profile, view_type,
+                                      std::move(delegate));
   }
 
-  return CreateViewHostForExtension(extension, url, profile, view_type, browser,
-                                    web_contents);
+  return CreateViewHostForExtension(extension, url, profile, view_type,
+                                    std::move(delegate));
 }
 
 }  // namespace
@@ -115,24 +204,32 @@ std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreatePopupHost(
     const GURL& url,
     Browser* browser) {
   DCHECK(browser);
-  return CreateViewHost(url, browser->profile(), browser,
-                        /*web_contents=*/nullptr,
-                        mojom::ViewType::kExtensionPopup);
+  return CreateViewHost(
+      url, browser->profile(), mojom::ViewType::kExtensionPopup,
+      std::make_unique<ExtensionViewHostBrowserDelegate>(browser));
 }
 
 // static
 std::unique_ptr<ExtensionViewHost>
 ExtensionViewHostFactory::CreateSidePanelHost(
     const GURL& url,
-    Browser* browser,
-    content::WebContents* web_contents) {
-  DCHECK(browser == nullptr ^ web_contents == nullptr);
+    BrowserWindowInterface* browser,
+    tabs::TabInterface* tab_interface) {
+  DCHECK(browser == nullptr ^ tab_interface == nullptr);
 
-  Profile* profile = browser
-                         ? browser->profile()
-                         : chrome::FindBrowserWithTab(web_contents)->profile();
-  return CreateViewHost(url, profile, browser, web_contents,
-                        mojom::ViewType::kExtensionSidePanel);
+  Profile* profile =
+      browser ? browser->GetProfile()
+              : tab_interface->GetBrowserWindowInterface()->GetProfile();
+
+  std::unique_ptr<ExtensionViewHost::Delegate> delegate =
+      browser ? static_cast<std::unique_ptr<ExtensionViewHost::Delegate>>(
+                    std::make_unique<ExtensionViewHostBrowserDelegate>(
+                        browser->GetBrowserForMigrationOnly()))
+              : std::make_unique<ExtensionViewHostTabDelegate>(
+                    tab_interface->GetContents());
+
+  return CreateViewHost(url, profile, mojom::ViewType::kExtensionSidePanel,
+                        std::move(delegate));
 }
 
 }  // namespace extensions

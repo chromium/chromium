@@ -4,8 +4,9 @@
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './managed_user_profile_notice_value_prop.css.js';
@@ -31,14 +32,22 @@ export class ManagedUserProfileNoticeValuePropElement extends CrLitElement {
       subtitle: {type: String},
       email: {type: String},
       accountName: {type: String},
+      showEnterpriseBadge: {type: Boolean},
     };
   }
 
-  pictureUrl: string;
-  override title: string;
-  subtitle: string;
-  email: string;
-  accountName: string;
+  accessor pictureUrl: string = '';
+  override accessor title: string = '';
+  accessor subtitle: string = '';
+  accessor email: string = '';
+  accessor accountName: string = '';
+  accessor showEnterpriseBadge: boolean = false;
+
+  override firstUpdated() {
+    const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');
+    assert(titleElement);
+    titleElement.focus();
+  }
 }
 
 declare global {

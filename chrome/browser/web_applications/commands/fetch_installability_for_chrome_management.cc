@@ -136,15 +136,16 @@ void FetchInstallabilityForChromeManagement::OnWebAppInstallabilityChecked(
   DCHECK(opt_manifest);
   app_id_ = GenerateAppIdFromManifest(*opt_manifest);
   GetMutableDebugValue().Set("app_id", app_id_);
+  app_lock_ = std::make_unique<AppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(noop_lock_), {app_id_},
+      std::move(noop_lock_), *app_lock_, {app_id_},
       base::BindOnce(&FetchInstallabilityForChromeManagement::OnAppLockGranted,
                      weak_factory_.GetWeakPtr()));
 }
 
-void FetchInstallabilityForChromeManagement::OnAppLockGranted(
-    std::unique_ptr<AppLock> app_lock) {
-  app_lock_ = std::move(app_lock);
+void FetchInstallabilityForChromeManagement::OnAppLockGranted() {
+  CHECK(app_lock_);
+  CHECK(app_lock_->IsGranted());
 
   if (IsWebContentsDestroyed()) {
     GetMutableDebugValue().Set("web_contents_destroyed", true);
@@ -154,12 +155,22 @@ void FetchInstallabilityForChromeManagement::OnAppLockGranted(
     return;
   }
   DCHECK(!app_id_.empty());
+
   InstallableCheckResult result;
-  if (app_lock_->registrar().IsInstalled(app_id_)) {
-    result = InstallableCheckResult::kAlreadyInstalled;
-  } else {
+  if (app_lock_->registrar().GetInstallState(app_id_) == std::nullopt) {
     result = InstallableCheckResult::kInstallable;
+  } else {
+    switch (app_lock_->registrar().GetInstallState(app_id_).value()) {
+      case web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE:
+        result = InstallableCheckResult::kInstallable;
+        break;
+      case web_app::proto::INSTALLED_WITH_OS_INTEGRATION:
+      case web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION:
+        result = InstallableCheckResult::kAlreadyInstalled;
+        break;
+    }
   }
+
   CompleteAndSelfDestruct(CommandResult::kSuccess, result, app_id_);
 }
 

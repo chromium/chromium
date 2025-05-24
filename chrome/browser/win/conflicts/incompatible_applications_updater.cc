@@ -267,8 +267,7 @@ bool IncompatibleApplicationsUpdater::IsWarningEnabled() {
 bool IncompatibleApplicationsUpdater::HasCachedApplications() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!ModuleDatabase::IsThirdPartyBlockingPolicyEnabled() ||
-      !IsWarningEnabled()) {
+  if (!IsWarningEnabled()) {
     return false;
   }
 
@@ -290,7 +289,6 @@ bool IncompatibleApplicationsUpdater::HasCachedApplications() {
 std::vector<IncompatibleApplicationsUpdater::IncompatibleApplication>
 IncompatibleApplicationsUpdater::GetCachedApplications() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(ModuleDatabase::IsThirdPartyBlockingPolicyEnabled());
   DCHECK(IsWarningEnabled());
 
   std::vector<IncompatibleApplication> valid_applications;

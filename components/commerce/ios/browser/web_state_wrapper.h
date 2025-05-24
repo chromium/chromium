@@ -28,7 +28,7 @@ class WebStateWrapper : public WebWrapper {
   WebStateWrapper operator=(const WebStateWrapper&) = delete;
   ~WebStateWrapper() override;
 
-  const GURL& GetLastCommittedURL() override;
+  const GURL& GetLastCommittedURL() const override;
 
   const std::u16string& GetTitle() override;
 

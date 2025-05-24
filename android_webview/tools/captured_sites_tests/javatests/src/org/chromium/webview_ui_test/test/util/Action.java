@@ -12,7 +12,7 @@ public abstract class Action {
 
     // Creates an action that loads the desired url in the webview upon execution.
     private static class StartingPageAction extends Action {
-        private String mUrl;
+        private final String mUrl;
 
         public StartingPageAction(String url) {
             mUrl = url;
@@ -32,8 +32,8 @@ public abstract class Action {
 
     // Creates an action that loads the desired url in the webview upon execution.
     private static class LoadPageAction extends Action {
-        private String mUrl;
-        private boolean mForce;
+        private final String mUrl;
+        private final boolean mForce;
 
         public LoadPageAction(String url, boolean force) {
             mUrl = url;
@@ -56,7 +56,7 @@ public abstract class Action {
 
     // Creates an action that clicks the given xPath upon execution.
     public static class ClickAction extends Action {
-        private String mXPath;
+        private final String mXPath;
 
         public ClickAction(String xPath) {
             mXPath = xPath;
@@ -75,7 +75,7 @@ public abstract class Action {
 
     // Creates an Action that prompts and selects autofill on the given Xpath upon execution.
     public static class AutofillAction extends Action {
-        private String mXPath;
+        private final String mXPath;
 
         public AutofillAction(String xPath) {
             mXPath = xPath;
@@ -94,8 +94,8 @@ public abstract class Action {
 
     // Creates an Action that checks the given XPath has the given expectedValue upon execution.
     public static class ValidateFieldAction extends Action {
-        private String mXPath;
-        private String mExpectedValue;
+        private final String mXPath;
+        private final String mExpectedValue;
 
         public ValidateFieldAction(String xPath, String expectedValue) {
             mXPath = xPath;

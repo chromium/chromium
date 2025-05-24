@@ -75,6 +75,9 @@ discretion of the Chromium community managers:
 Participants warned to stop any harassing behavior are expected to comply
 immediately; failure to do so will result in an escalation of consequences.
 
+Bans or other consequences under this policy can be appealed by email to
+community@chromium.org.
+
 ## Acknowledgements
 
 This Code of Conduct is based on the Geek Feminism Code of Conduct, the Django

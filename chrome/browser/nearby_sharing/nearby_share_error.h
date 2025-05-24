@@ -7,7 +7,10 @@
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. Keep in sync with the NearbyShareError UMA enum defined in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyShareError)
 enum class NearbyShareError {
   kPublicCertificateHasNoBluetoothMacAddress = 0,
   kPublicCertificateHasInvalidBluetoothMacAddress = 1,
@@ -109,5 +112,6 @@ enum class NearbyShareError {
   kStartDiscoveryFailed = 97,
   kMaxValue = kStartDiscoveryFailed
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyShareError)
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_ERROR_H_

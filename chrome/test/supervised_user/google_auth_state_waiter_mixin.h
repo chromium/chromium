@@ -31,10 +31,6 @@ class GoogleAuthStateWaiterMixin : public InProcessBrowserTestMixin {
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
 
-  static void WaitForGoogleAuthState(
-    ChildAccountService* child_account_service,
-    ChildAccountService::AuthState expected_auth_state);
-
  private:
   raw_ptr<InProcessBrowserTest> test_base_;
   ChildAccountService::AuthState expected_auth_state_;

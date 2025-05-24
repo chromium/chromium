@@ -21,8 +21,6 @@
 #include "ui/views/style/typography.h"
 
 DEFINE_ENUM_CONVERTERS(OmniboxPopupSelection::LineState,
-                       {OmniboxPopupSelection::FOCUSED_BUTTON_HEADER,
-                        u"FOCUSED_BUTTON_HEADER"},
                        {OmniboxPopupSelection::NORMAL, u"NORMAL"},
                        {OmniboxPopupSelection::KEYWORD_MODE, u"KEYWORD_MODE"},
                        {OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
@@ -74,22 +72,21 @@ std::optional<OmniboxPopupSelection> ui::metadata::TypeConverter<
 }
 
 OmniboxRowView::OmniboxRowView(size_t line, OmniboxPopupViewViews* popup_view)
-    : line_(line), popup_view_(popup_view) {
+    : popup_view_(popup_view) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   result_view_ =
       AddChildView(std::make_unique<OmniboxResultView>(popup_view, line));
 }
 
-void OmniboxRowView::ShowHeader(const std::u16string& header_text,
-                                bool suggestion_group_hidden) {
+void OmniboxRowView::ShowHeader(const std::u16string& header_text) {
   // Create the header (at index 0) if it doesn't exist.
   if (header_view_ == nullptr) {
-    header_view_ = AddChildViewAt(
-        std::make_unique<OmniboxHeaderView>(popup_view_, line_), 0);
+    header_view_ =
+        AddChildViewAt(std::make_unique<OmniboxHeaderView>(popup_view_), 0);
   }
 
-  header_view_->SetHeader(header_text, suggestion_group_hidden);
+  header_view_->SetHeader(header_text);
   header_view_->SetVisible(true);
 }
 
@@ -101,18 +98,9 @@ void OmniboxRowView::HideHeader() {
 
 void OmniboxRowView::OnSelectionStateChanged() {
   result_view_->OnSelectionStateChanged();
-  if (header_view_ && header_view_->GetVisible()) {
-    header_view_->UpdateUI();
-  }
 }
 
 views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
-  DCHECK(popup_view_->model()->GetPopupSelection().IsButtonFocused());
-  if (popup_view_->model()->GetPopupSelection().state ==
-      OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
-    return header_view_->header_toggle_button();
-  }
-
   return result_view_->GetActiveAuxiliaryButtonForAccessibility();
 }
 

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import android.content.Context;
-
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
@@ -31,7 +29,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private long mNativeAutofillKeyboardAccessory;
     private @Nullable ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
     private @Nullable ManualFillingComponent mManualFillingComponent;
-    private @Nullable Context mContext;
     private final PropertyProvider<List<AutofillSuggestion>> mChipProvider =
             new PropertyProvider<>(AccessoryAction.AUTOFILL_SUGGESTION);
     private final Callback<ManualFillingComponent> mFillingComponentObserver =
@@ -93,9 +90,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      */
     @CalledByNative
     private void init(long nativeAutofillKeyboardAccessory, WindowAndroid windowAndroid) {
-        mContext = windowAndroid.getActivity().get();
-        assert mContext != null;
-
         mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(windowAndroid);
         if (mManualFillingComponentSupplier != null) {
             ManualFillingComponent currentFillingComponent =
@@ -120,7 +114,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             mManualFillingComponentSupplier.removeObserver(mFillingComponentObserver);
         }
         dismissed();
-        mContext = null;
     }
 
     /**
@@ -161,8 +154,9 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param suggestionType Determines the type of the suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
-     * @param featureForIPH The In-Product-Help feature used for displaying the bubble for the
+     * @param featureForIph The In-Product-Help feature used for displaying the bubble for the
      *     suggestion.
+     * @param iphDescriptionText If set, it will be used as the help text for the IPH bubble.
      * @param customIconUrl The url used to fetch the custom icon to be displayed in the autofill
      *     suggestion chip.
      * @return an AutofillSuggestion containing the above information.
@@ -174,7 +168,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             int iconId,
             @SuggestionType int suggestionType,
             boolean isDeletable,
-            @JniType("std::string") String featureForIPH,
+            @JniType("std::string") String featureForIph,
             @JniType("std::u16string") String iphDescriptionText,
             GURL customIconUrl,
             boolean applyDeactivatedStyle) {
@@ -183,13 +177,10 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 .setLabel(label)
                 .setSubLabel(sublabel)
                 .setIconId(drawableId)
-                .setIsIconAtStart(false)
                 .setSuggestionType(suggestionType)
                 .setIsDeletable(isDeletable)
-                .setIsMultiLineLabel(false)
-                .setIsBoldLabel(false)
-                .setFeatureForIPH(featureForIPH)
-                .setIPHDescriptionText(iphDescriptionText)
+                .setFeatureForIph(featureForIph)
+                .setIphDescriptionText(iphDescriptionText)
                 .setCustomIconUrl(customIconUrl)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
                 .build();

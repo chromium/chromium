@@ -15,7 +15,8 @@ class Browser;
 
 namespace login_ui_test_utils {
 
-constexpr base::TimeDelta kSyncConfirmationDialogTimeout = base::Seconds(30);
+inline constexpr base::TimeDelta kSyncConfirmationDialogTimeout =
+    base::Seconds(30);
 
 // Blocks until the login UI is available and ready for authorization.
 void WaitUntilUIReady(Browser* browser);
@@ -72,16 +73,6 @@ bool CompleteSigninEmailConfirmationDialog(
     Browser* browser,
     base::TimeDelta timeout,
     SigninEmailConfirmationDialog::Action action);
-
-// Waits for the reauth confirmation dialog to get displayed, then executes
-// javascript to click on confirm button. Returns false if dialog wasn't
-// dismissed before |timeout|.
-bool ConfirmReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout);
-
-// Waits for the reauth confirmation dialog to get displayed, then executes
-// javascript to click on cancel button. Returns false if dialog wasn't
-// dismissed before |timeout|.
-bool CancelReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout);
 
 // Waits for profile customization dialog to get displayed, then executes
 // javascript to click on done button. Returns false if dialog wasn't

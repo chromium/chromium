@@ -24,7 +24,7 @@ namespace {
 
 void OnNameCreatedForAddress(
     webrtc::MdnsResponderInterface::NameCreatedCallback callback,
-    const rtc::IPAddress& addr,
+    const webrtc::IPAddress& addr,
     const String& name,
     bool announcement_scheduled) {
   // We currently ignore whether there is an announcement sent for the name.
@@ -52,14 +52,14 @@ MdnsResponderAdapter::MdnsResponderAdapter(MojoBindingContext& context) {
 
 MdnsResponderAdapter::~MdnsResponderAdapter() = default;
 
-void MdnsResponderAdapter::CreateNameForAddress(const rtc::IPAddress& addr,
+void MdnsResponderAdapter::CreateNameForAddress(const webrtc::IPAddress& addr,
                                                 NameCreatedCallback callback) {
   shared_remote_client_->CreateNameForAddress(
       webrtc::RtcIPAddressToNetIPAddress(addr),
       WTF::BindOnce(&OnNameCreatedForAddress, callback, addr));
 }
 
-void MdnsResponderAdapter::RemoveNameForAddress(const rtc::IPAddress& addr,
+void MdnsResponderAdapter::RemoveNameForAddress(const webrtc::IPAddress& addr,
                                                 NameRemovedCallback callback) {
   shared_remote_client_->RemoveNameForAddress(
       webrtc::RtcIPAddressToNetIPAddress(addr),

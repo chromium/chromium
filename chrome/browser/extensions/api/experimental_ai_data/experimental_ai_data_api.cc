@@ -8,8 +8,9 @@
 #include <optional>
 #include <vector>
 
-#include "base/metrics/field_trial_params.h"
+#include "base/check.h"
 #include "base/strings/string_split.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -18,66 +19,39 @@
 #include "chrome/common/extensions/api/experimental_ai_data.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/features/feature_channel.h"
 
 namespace extensions {
 
-// Feature to add allow listed extensions remotely.
-BASE_FEATURE(kAllowlistedAiDataExtensions,
-             "AllowlistedAiDataExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+ExperimentalAiDataApiFunction::ExperimentalAiDataApiFunction() = default;
 
-namespace {
+ExperimentalAiDataApiFunction::~ExperimentalAiDataApiFunction() = default;
 
-const base::FeatureParam<std::string> kAllowlistedExtensions{
-    &kAllowlistedAiDataExtensions, "allowlisted_extension_ids",
-    /*default_value=*/""};
-
-}  // namespace
-
-ExperimentalAiDataGetAiDataFunction::ExperimentalAiDataGetAiDataFunction() =
-    default;
-
-ExperimentalAiDataGetAiDataFunction::~ExperimentalAiDataGetAiDataFunction() =
-    default;
-
-ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
+bool ExperimentalAiDataApiFunction::PreRunValidation(std::string* error) {
   // Check the allowlist and return an error if extension is not allow listed.
-  std::string allowlisted_extension_string = kAllowlistedExtensions.Get();
-  std::vector<std::string_view> allowlisted_extensions =
-      base::SplitStringPiece(allowlisted_extension_string, ",",
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  if (std::find(allowlisted_extensions.begin(), allowlisted_extensions.end(),
-                extension_id()) == allowlisted_extensions.end()) {
-    return RespondNow(Error("API access restricted for this extension."));
+  if (!AiDataKeyedService::IsExtensionAllowlistedForData(extension_id())) {
+    *error = "API access restricted for this extension.";
+    return false;
   }
 
-  auto params = api::experimental_ai_data::GetAiData::Params::Create(args());
-
-  content::WebContents* web_contents = nullptr;
-  if (!ExtensionTabUtil::GetTabById(params->tab_id, browser_context(), true,
-                                    &web_contents)) {
-    return RespondNow(Error("Invalid target tab passed in."));
+  if (GetCurrentChannel() == version_info::Channel::STABLE &&
+      !AiDataKeyedService::IsExtensionAllowlistedForStable(extension_id())) {
+    *error = "API access not allowed on this channel.";
+    return false;
   }
 
   auto* ai_data_service =
       AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
   if (!ai_data_service) {
-    return RespondNow(Error("Incognito profile not supported."));
+    *error = "Incognito profile not supported.";
+    return false;
   }
+  DCHECK(ai_data_service);
 
-  const std::string& user_input = params->user_input;
-  int dom_node_id = params->dom_node_id;
-
-  ai_data_service->GetAiData(
-      dom_node_id, web_contents, user_input,
-      base::BindOnce(&ExperimentalAiDataGetAiDataFunction::OnDataCollected,
-                     this));
-
-  return RespondLater();
+  return true;
 }
 
-void ExperimentalAiDataGetAiDataFunction::OnDataCollected(
+void ExperimentalAiDataApiFunction::OnDataCollected(
     AiDataKeyedService::AiData browser_collected_data) {
   if (!browser_collected_data) {
     return Respond(
@@ -90,6 +64,71 @@ void ExperimentalAiDataGetAiDataFunction::OnDataCollected(
   browser_collected_data->SerializeToArray(&data_buffer[0], size);
   Respond(ArgumentList(api::experimental_ai_data::GetAiData::Results::Create(
       std::move(data_buffer))));
+}
+
+ExperimentalAiDataGetAiDataFunction::ExperimentalAiDataGetAiDataFunction() =
+    default;
+
+ExperimentalAiDataGetAiDataFunction::~ExperimentalAiDataGetAiDataFunction() =
+    default;
+
+ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
+  auto params = api::experimental_ai_data::GetAiData::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  content::WebContents* web_contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(params->tab_id, browser_context(), true,
+                                    &web_contents)) {
+    return RespondNow(Error("Invalid target tab passed in."));
+  }
+  DCHECK(web_contents);
+
+  auto* ai_data_service =
+      AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
+  DCHECK(ai_data_service);
+
+  ai_data_service->GetAiData(
+      params->dom_node_id, web_contents, params->user_input,
+      base::BindOnce(&ExperimentalAiDataGetAiDataFunction::OnDataCollected,
+                     this));
+  return RespondLater();
+}
+
+ExperimentalAiDataGetAiDataWithSpecifierFunction::
+    ExperimentalAiDataGetAiDataWithSpecifierFunction() = default;
+
+ExperimentalAiDataGetAiDataWithSpecifierFunction::
+    ~ExperimentalAiDataGetAiDataWithSpecifierFunction() = default;
+
+ExtensionFunction::ResponseAction
+ExperimentalAiDataGetAiDataWithSpecifierFunction::Run() {
+  auto params =
+      api::experimental_ai_data::GetAiDataWithSpecifier::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  content::WebContents* web_contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(params->tab_id, browser_context(), true,
+                                    &web_contents)) {
+    return RespondNow(Error("Invalid target tab passed in."));
+  }
+  DCHECK(web_contents);
+
+  auto* ai_data_service =
+      AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
+  DCHECK(ai_data_service);
+
+  // De-serailizing protos is safe per
+  // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/rule-of-2.md
+  optimization_guide::proto::ModelPrototypingCollectionSpecifier specifier;
+  if (!specifier.ParseFromArray(params->ai_data_specifier.data(),
+                                params->ai_data_specifier.size())) {
+    return RespondNow(Error("Parsing ai data specifier failed."));
+  }
+
+  ai_data_service->GetAiDataWithSpecifier(
+      web_contents, specifier,
+      base::BindOnce(
+          &ExperimentalAiDataGetAiDataWithSpecifierFunction::OnDataCollected,
+          this));
+  return RespondLater();
 }
 
 }  // namespace extensions

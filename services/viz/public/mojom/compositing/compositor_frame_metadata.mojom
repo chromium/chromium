@@ -30,10 +30,12 @@ struct CompositorFrameMetadata {
   gfx.mojom.PointF root_scroll_offset;
   float page_scale_factor;
   gfx.mojom.SizeF scrollable_viewport_size;
+  gfx.mojom.Size visible_viewport_size;
   gfx.mojom.ContentColorUsage content_color_usage;
   bool may_contain_video;
   bool may_throttle_if_undrawn_frames;
   bool is_handling_interaction;
+  bool is_handling_animation;
   skia.mojom.SkColor4f root_background_color;
   array<ui.mojom.LatencyInfo> latency_info;
   array<SurfaceRange> referenced_surfaces;
@@ -48,7 +50,15 @@ struct CompositorFrameMetadata {
 
   float min_page_scale_factor;
 
+  // Specifies the interval at which the client's content is updated. This can
+  // be used to configure the display to the optimal vsync interval available.
+  // If unspecified, or set to BeginFrameArgs::MinInterval, it is assumed that
+  // the client can animate at the maximum frame rate supported by the Display.
+  mojo_base.mojom.TimeDelta? preferred_frame_interval;
+
   gfx.mojom.OverlayTransform display_transform_hint;
+
+  bool is_mobile_optimized;
 
   // Contains the metadata required for drawing a delegated ink trail onto the
   // end of a rendered ink stroke. This should only be present when two

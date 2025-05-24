@@ -1,148 +1,76 @@
 // META: title=IndexedDB: Test IDBObjectStore.getAllKeys
+// META: global=window,worker
+// META: script=resources/nested-cloning-common.js
 // META: script=resources/support.js
+// META: script=resources/support-get-all.js
+// META: script=resources/support-promises.js
+// META: timeout=long
 
 'use strict';
 
-const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: 'c'}, 'Single item get');
 
-function getall_test(func, name) {
-  indexeddb_test(
-    (t, connection, tx) => {
-      let store = connection.createObjectStore('generated',
-        { autoIncrement: true, keyPath: 'id' });
-      alphabet.forEach(letter => {
-        store.put({ ch: letter });
-      });
+object_store_get_all_keys_test(
+    /*storeName=*/ 'generated', /*options=*/ {query: 3},
+    'Single item get (generated key)');
 
-      store = connection.createObjectStore('out-of-line', null);
-      alphabet.forEach(letter => {
-        store.put(`value-${letter}`, letter);
-      });
+object_store_get_all_keys_test(
+    /*storeName=*/ 'empty', /*options=*/ undefined,
+    'getAllKeys on empty object store');
 
-      store = connection.createObjectStore('empty', null);
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ undefined, 'Get all keys');
+
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {count: 10}, 'Test maxCount');
+
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {query: IDBKeyRange.bound('g', 'm')}, 'Get bound range');
+
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {query: IDBKeyRange.bound('g', 'm'), count: 3},
+    'Get bound range with maxCount');
+
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {
+      query:
+          IDBKeyRange.bound('g', 'k', /*lowerOpen=*/ false, /*upperOpen=*/ true)
     },
-    func,
-    name
-  );
-}
+    'Get upper excluded');
 
-function createGetAllKeysRequest(t, storeName, connection, keyRange, maxCount) {
-  const transaction = connection.transaction(storeName, 'readonly');
-  const store = transaction.objectStore(storeName);
-  const req = store.getAllKeys(keyRange, maxCount);
-  req.onerror = t.unreached_func('getAllKeys request should succeed');
-  return req;
-}
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {
+      query:
+          IDBKeyRange.bound('g', 'k', /*lowerOpen=*/ true, /*upperOpen=*/ false)
+    },
+    'Get lower excluded');
 
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'out-of-line', connection, 'c');
-  req.onsuccess = t.step_func(evt => {
-    assert_array_equals(evt.target.result, ['c']);
-    t.done();
-  });
-}, 'Single item get');
+object_store_get_all_keys_test(
+    /*storeName=*/ 'generated',
+    /*options=*/ {query: IDBKeyRange.bound(4, 15), count: 3},
+    'Get bound range (generated) with maxCount');
 
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'generated', connection, 3);
-  req.onsuccess = t.step_func(evt => {
-    const data = evt.target.result;
-    assert_true(Array.isArray(data));
-    assert_array_equals(data, [3]);
-    t.done();
-  });
-}, 'Single item get (generated key)');
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {query: 'Doesn\'t exist'}, 'Non existent key');
 
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'empty', connection);
-  req.onsuccess = t.step_func(evt => {
-    assert_array_equals(evt.target.result, [],
-      'getAllKeys() on empty object store should return an empty ' +
-      'array');
-    t.done();
-  });
-}, 'getAllKeys on empty object store');
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {count: 0}, 'zero maxCount');
 
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'out-of-line', connection);
-  req.onsuccess = t.step_func(evt => {
-    assert_array_equals(evt.target.result, alphabet);
-    t.done();
-  });
-}, 'Get all values');
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {count: 4294967295}, 'Max value count');
 
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'out-of-line', connection, undefined,
-    10);
-  req.onsuccess = t.step_func(evt => {
-    assert_array_equals(evt.target.result, 'abcdefghij'.split(''));
-    t.done();
-  });
-}, 'Test maxCount');
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {query: IDBKeyRange.upperBound('0')},
+    'Query with empty range where  first key < upperBound');
 
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'out-of-line', connection,
-    IDBKeyRange.bound('g', 'm'));
-  req.onsuccess = t.step_func(evt => {
-    assert_array_equals(evt.target.result, 'ghijklm'.split(''));
-    t.done();
-  });
-}, 'Get bound range');
-
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'out-of-line', connection,
-    IDBKeyRange.bound('g', 'm'), 3);
-  req.onsuccess = t.step_func(evt => {
-    assert_array_equals(evt.target.result, ['g', 'h', 'i']);
-    t.done();
-  });
-}, 'Get bound range with maxCount');
-
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'out-of-line', connection,
-    IDBKeyRange.bound('g', 'k', false, true));
-  req.onsuccess = t.step_func(evt => {
-    assert_array_equals(evt.target.result, ['g', 'h', 'i', 'j']);
-    t.done();
-  });
-}, 'Get upper excluded');
-
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'out-of-line', connection,
-    IDBKeyRange.bound('g', 'k', true, false));
-  req.onsuccess = t.step_func(evt => {
-    assert_array_equals(evt.target.result, ['h', 'i', 'j', 'k']);
-    t.done();
-  });
-}, 'Get lower excluded');
-
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'generated', connection,
-    IDBKeyRange.bound(4, 15), 3);
-  req.onsuccess = t.step_func(evt => {
-    const data = evt.target.result;
-    assert_true(Array.isArray(data));
-    assert_array_equals(data, [4, 5, 6]);
-    t.done();
-  });
-}, 'Get bound range (generated) with maxCount');
-
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'out-of-line', connection,
-    "Doesn't exist");
-  req.onsuccess = t.step_func(evt => {
-    assert_array_equals(evt.target.result, [],
-      'getAllKeys() using a nonexistent key should return an ' +
-      'empty array');
-    t.done();
-  });
-  req.onerror = t.unreached_func('getAllKeys request should succeed');
-}, 'Non existent key');
-
-getall_test((t, connection) => {
-  const req = createGetAllKeysRequest(t, 'out-of-line', connection, undefined,
-    0);
-  req.onsuccess = t.step_func(evt => {
-    assert_array_equals(evt.target.result, alphabet);
-    t.done();
-  });
-}, 'zero maxCount');
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {query: IDBKeyRange.lowerBound('zz')},
+    'Query with empty range where lowerBound < last key');

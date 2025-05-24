@@ -179,6 +179,10 @@ BrightnessControllerChromeos::BrightnessControllerChromeos(
   power_manager_client->HasAmbientLightSensor(
       base::BindOnce(&BrightnessControllerChromeos::OnGetHasAmbientLightSensor,
                      weak_ptr_factory_.GetWeakPtr()));
+  // Get the initial lid state.
+  power_manager_client->GetSwitchStates(
+      base::BindOnce(&BrightnessControllerChromeos::OnGetSwitchStates,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   DCHECK(session_controller_);
   session_controller_->AddObserver(this);
@@ -437,6 +441,11 @@ void BrightnessControllerChromeos::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
 
+  // Do not save current brightness to pref if lid is closed.
+  if (lid_state_ == chromeos::PowerManagerClient::LidState::CLOSED) {
+    return;
+  }
+
   // On login, retrieve the current brightness and save it to prefs.
   GetBrightnessPercent(
       base::BindOnce(&BrightnessControllerChromeos::OnGetBrightnessAfterLogin,
@@ -470,6 +479,13 @@ void BrightnessControllerChromeos::OnGetHasAmbientLightSensor(
   }
   has_sensor_ = has_sensor;
   MaybeRestoreBrightnessSettings();
+}
+
+void BrightnessControllerChromeos::OnGetSwitchStates(
+    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+  if (switch_states.has_value()) {
+    lid_state_ = switch_states->lid_state;
+  }
 }
 
 void BrightnessControllerChromeos::ScreenBrightnessChanged(
@@ -528,6 +544,12 @@ void BrightnessControllerChromeos::AmbientLightSensorEnabledChanged(
           change.sensor_enabled());
     }
   }
+}
+
+void BrightnessControllerChromeos::LidEventReceived(
+    chromeos::PowerManagerClient::LidState state,
+    base::TimeTicks timestamp) {
+  lid_state_ = state;
 }
 
 void BrightnessControllerChromeos::RecordHistogramForBrightnessAction(

@@ -12,7 +12,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
-#import "ios/chrome/browser/download/model/mime_type_util.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/test/fakes/fake_ar_quick_look_tab_helper_delegate.h"
 #import "ios/web/public/test/download_task_test_util.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -92,17 +92,17 @@ TEST_F(ARQuickLookTabHelperTest, SuccessFileExtention) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kSuccessful),
       1);
 }
@@ -133,17 +133,17 @@ TEST_P(ARQuickLookTabHelperTest, SuccessContentType) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kSuccessful),
       1);
 }
@@ -176,17 +176,17 @@ TEST_P(ARQuickLookTabHelperTest, DisallowsContentScaling) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kSuccessful),
       1);
 }
@@ -238,17 +238,17 @@ TEST_P(ARQuickLookTabHelperTest, AllowsContentScaling) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kSuccessful),
       1);
 }
@@ -318,17 +318,17 @@ TEST_P(ARQuickLookTabHelperTest, CanonicalWebPageURL) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kSuccessful),
       1);
 }
@@ -355,17 +355,17 @@ TEST_P(ARQuickLookTabHelperTest, ReplaceStartedNoProgressDownload) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       2);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       2);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kSuccessful),
       1);
 }
@@ -398,17 +398,17 @@ TEST_P(ARQuickLookTabHelperTest, ReplaceInProgressDownload) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       2);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       2);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kSuccessful),
       1);
 }
@@ -432,17 +432,17 @@ TEST_P(ARQuickLookTabHelperTest, MimeTypeChange) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kWrongMimeTypeFailure),
       1);
 }
@@ -465,17 +465,17 @@ TEST_P(ARQuickLookTabHelperTest, DownloadError) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kOtherFailure),
       1);
 }
@@ -498,17 +498,17 @@ TEST_P(ARQuickLookTabHelperTest, UnauthorizedHttpResponse) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kUnauthorizedFailure),
       1);
 }
@@ -531,17 +531,17 @@ TEST_P(ARQuickLookTabHelperTest, ForbiddenHttpResponse) {
 
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kCreated),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kStarted),
       1);
   histogram_tester()->ExpectBucketCount(
       kHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSDownloadARModelState::kUnauthorizedFailure),
       1);
 }

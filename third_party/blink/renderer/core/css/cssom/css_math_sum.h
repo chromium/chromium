@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_math_operator.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_variadic.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -31,7 +32,9 @@ class CORE_EXPORT CSSMathSum final : public CSSMathVariadic {
   CSSMathSum(const CSSMathSum&) = delete;
   CSSMathSum& operator=(const CSSMathSum&) = delete;
 
-  String getOperator() const final { return "sum"; }
+  V8CSSMathOperator getOperator() const final {
+    return V8CSSMathOperator(V8CSSMathOperator::Enum::kSum);
+  }
 
   // From CSSStyleValue.
   StyleValueType GetType() const final { return CSSStyleValue::kSumType; }

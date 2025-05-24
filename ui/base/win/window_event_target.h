@@ -97,9 +97,6 @@ class COMPONENT_EXPORT(UI_BASE) WindowEventTarget {
                                          LPARAM l_param,
                                          bool* handled) = 0;
 
-  // Notification from the forwarder window that its parent changed.
-  virtual void HandleParentChanged() = 0;
-
   // Apply the transform from Direct Manipulation API.
 
   // Calls ApplyPinchZoomScale() for pinch-zoom gesture. scale is the scale

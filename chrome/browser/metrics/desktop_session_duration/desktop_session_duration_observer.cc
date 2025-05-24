@@ -6,9 +6,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/render_view_host.h"
 
 namespace metrics {
@@ -23,7 +20,7 @@ DesktopSessionDurationObserver::DesktopSessionDurationObserver(
   RegisterInputEventObserver(web_contents->GetPrimaryMainFrame());
 }
 
-DesktopSessionDurationObserver::~DesktopSessionDurationObserver() {}
+DesktopSessionDurationObserver::~DesktopSessionDurationObserver() = default;
 
 // static
 DesktopSessionDurationObserver*
@@ -56,6 +53,7 @@ void DesktopSessionDurationObserver::UnregisterInputEventObserver(
 }
 
 void DesktopSessionDurationObserver::OnInputEvent(
+    const content::RenderWidgetHost& widget,
     const blink::WebInputEvent& event) {
   service_->OnUserEvent();
 }
@@ -68,25 +66,6 @@ void DesktopSessionDurationObserver::RenderFrameHostChanged(
 
   UnregisterInputEventObserver(old_host);
   RegisterInputEventObserver(new_host);
-
-  if (new_host->GetSiteInstance()->GetSiteURL().host() ==
-      old_host->GetSiteInstance()->GetSiteURL().host()) {
-    return;
-  }
-
-  auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(Profile::FromBrowserContext(
-          new_host->GetSiteInstance()->GetBrowserContext()));
-  CHECK(template_url_service);
-
-  const TemplateURL* default_search_engine =
-      template_url_service->GetDefaultSearchProvider();
-
-  if (default_search_engine &&
-      new_host->GetSiteInstance()->GetSiteURL().host() ==
-          GURL(default_search_engine->url()).host()) {
-    service_->IncrementDefaultSearchCounter();
-  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DesktopSessionDurationObserver);

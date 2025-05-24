@@ -42,7 +42,7 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
                     .withAcceptText("Save")
                     .withCancelText("No thanks")
                     .withDescriptionText("")
-                    .withIbanLabel("FR **0189")
+                    .withIbanValue("CH5604835012345678009")
                     .withTitleText("Save IBAN?")
                     .withLegalMessageLines(Collections.EMPTY_LIST)
                     .withLogoIcon(0)
@@ -88,7 +88,7 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
     @Test
     public void testDestroy() {
         mCoordinator.requestShowContent();
-        mCoordinator.destroy();
+        mCoordinator.destroy(BottomSheetController.StateChangeReason.NONE);
 
         verify(mBottomSheetController)
                 .hideContent(
@@ -105,10 +105,10 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
                         .getPropertyModelForTesting()
                         .get(AutofillSaveIbanBottomSheetProperties.LOGO_ICON));
         assertEquals(
-                TEST_IBAN_UI_INFO.getIbanLabel(),
+                TEST_IBAN_UI_INFO.getIbanValue(),
                 mCoordinator
                         .getPropertyModelForTesting()
-                        .get(AutofillSaveIbanBottomSheetProperties.IBAN_LABEL));
+                        .get(AutofillSaveIbanBottomSheetProperties.IBAN_VALUE));
         assertEquals(
                 TEST_IBAN_UI_INFO.getTitleText(),
                 mCoordinator

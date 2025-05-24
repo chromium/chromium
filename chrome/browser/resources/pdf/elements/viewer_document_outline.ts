@@ -30,7 +30,7 @@ export class ViewerDocumentOutlineElement extends CrLitElement {
     };
   }
 
-  bookmarks: Bookmark[] = [];
+  accessor bookmarks: Bookmark[] = [];
 }
 
 declare global {

@@ -1,0 +1,6 @@
+monorail: {
+  component: "Chromium > Blink > Storage > SharedStorage"
+}
+buganizer_public: {
+  component_id: 1456384
+}

@@ -11,56 +11,47 @@ import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVeri
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
-import javax.inject.Inject;
-
 /**
  * Controls when Trusted Web Activity disclosure should be shown and hidden, reacts to interaction
  * with it.
  */
 public class TrustedWebActivityDisclosureController extends DisclosureController {
-    private final BrowserServicesStore mBrowserServicesStore;
-    private final TrustedWebActivityUmaRecorder mRecorder;
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
-    @Inject
-    TrustedWebActivityDisclosureController(
-            BrowserServicesStore browserServicesStore,
+    public TrustedWebActivityDisclosureController(
             TrustedWebActivityModel model,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CurrentPageVerifier currentPageVerifier,
-            TrustedWebActivityUmaRecorder recorder,
             ClientPackageNameProvider clientPackageNameProvider) {
         super(model, lifecycleDispatcher, currentPageVerifier, clientPackageNameProvider.get());
-        mBrowserServicesStore = browserServicesStore;
-        mRecorder = recorder;
         mClientPackageNameProvider = clientPackageNameProvider;
     }
 
     @Override
     public void onDisclosureAccepted() {
-        mRecorder.recordDisclosureAccepted();
-        mBrowserServicesStore.setUserAcceptedTwaDisclosureForPackage(
+        TrustedWebActivityUmaRecorder.recordDisclosureAccepted();
+        BrowserServicesStore.setUserAcceptedTwaDisclosureForPackage(
                 mClientPackageNameProvider.get());
         super.onDisclosureAccepted();
     }
 
     @Override
     public void onDisclosureShown() {
-        mRecorder.recordDisclosureShown();
-        mBrowserServicesStore.setUserSeenTwaDisclosureForPackage(mClientPackageNameProvider.get());
+        TrustedWebActivityUmaRecorder.recordDisclosureShown();
+        BrowserServicesStore.setUserSeenTwaDisclosureForPackage(mClientPackageNameProvider.get());
         super.onDisclosureShown();
     }
 
     @Override
     protected boolean shouldShowDisclosure() {
-        /** Has a disclosure been dismissed for this client package before? */
-        return !mBrowserServicesStore.hasUserAcceptedTwaDisclosureForPackage(
+        /* Has a disclosure been dismissed for this client package before? */
+        return !BrowserServicesStore.hasUserAcceptedTwaDisclosureForPackage(
                 mClientPackageNameProvider.get());
     }
 
     @Override
     protected boolean isFirstTime() {
-        return !mBrowserServicesStore.hasUserSeenTwaDisclosureForPackage(
+        return !BrowserServicesStore.hasUserSeenTwaDisclosureForPackage(
                 mClientPackageNameProvider.get());
     }
 }

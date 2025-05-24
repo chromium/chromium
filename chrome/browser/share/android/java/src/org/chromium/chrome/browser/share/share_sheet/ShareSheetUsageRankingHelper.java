@@ -68,10 +68,10 @@ public class ShareSheetUsageRankingHelper {
     private final ShareSheetPropertyModelBuilder mPropertyModelBuilder;
     private final Profile mProfile;
 
-    private ShareSheetBottomSheetContent mBottomSheet;
-    private long mShareStartTime;
-    private @LinkGeneration int mLinkGenerationStatusForMetrics;
-    private LinkToggleMetricsDetails mLinkToggleMetricsDetails;
+    private final ShareSheetBottomSheetContent mBottomSheet;
+    private final long mShareStartTime;
+    private final @LinkGeneration int mLinkGenerationStatusForMetrics;
+    private final LinkToggleMetricsDetails mLinkToggleMetricsDetails;
 
     // Variables used for testing
     private boolean mDisableBridgeForTesting;

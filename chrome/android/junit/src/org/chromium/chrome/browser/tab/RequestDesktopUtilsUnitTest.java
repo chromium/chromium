@@ -35,7 +35,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -43,14 +44,11 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -85,7 +83,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /** Unit tests for {@link RequestDesktopUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -99,7 +96,6 @@ import java.util.Map.Entry;
             ShadowDisplayUtil.class
         })
 public class RequestDesktopUtilsUnitTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     /** Shadows {@link SysUtils} class for testing. */
     @Implements(SysUtils.class)
@@ -172,6 +168,7 @@ public class RequestDesktopUtilsUnitTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private MessageDispatcher mMessageDispatcher;
     @Mock private Activity mActivity;
@@ -197,8 +194,6 @@ public class RequestDesktopUtilsUnitTest {
 
     private Resources mResources;
 
-    private final TestValues mTestValues = new TestValues();
-
     private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
     private static final String GOOGLE_COM = "[*.]google.com/";
     private ShadowPackageManager mShadowPackageManager;
@@ -206,9 +201,8 @@ public class RequestDesktopUtilsUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
 
         mTab = createTab();
 
@@ -252,7 +246,6 @@ public class RequestDesktopUtilsUnitTest {
         when(mActivity.getResources()).thenReturn(mResources);
 
         TrackerFactory.setTrackerForTests(mTracker);
-        disableGlobalDefaultsExperimentFeatures();
 
         ShadowSysUtils.setMemoryInMB(7000);
         ShadowDisplayAndroid.setDisplayAndroid(mDisplayAndroid);
@@ -294,7 +287,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @After
     public void tearDown() {
-        FeatureList.setTestValues(null);
         ShadowDisplayAndroid.setDisplayAndroid(null);
         if (mSharedPreferencesManager != null) {
             mSharedPreferencesManager.removeKey(
@@ -309,7 +301,7 @@ public class RequestDesktopUtilsUnitTest {
     public void testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_Incognito() {
         // Incognito profile type.
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        when(mProfile.isPrimaryOTRProfile()).thenReturn(true);
+        when(mProfile.isPrimaryOtrProfile()).thenReturn(true);
         mRdsDefaultValue = ContentSettingValues.BLOCK;
 
         RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, true);
@@ -329,7 +321,7 @@ public class RequestDesktopUtilsUnitTest {
     public void testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_Incognito() {
         // Incognito profile type.
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        when(mProfile.isPrimaryOTRProfile()).thenReturn(true);
+        when(mProfile.isPrimaryOtrProfile()).thenReturn(true);
         mRdsDefaultValue = ContentSettingValues.ALLOW;
 
         RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, false);
@@ -692,7 +684,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeShowDefaultEnableGlobalSettingMessage() {
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
                 .thenReturn(true);
 
         // Default-enable the global setting before the message is shown.
@@ -729,7 +721,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeShowDefaultEnableGlobalSettingMessage_DoNotShowIfSettingIsDisabled() {
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
                 .thenReturn(true);
 
         // Preference is set when the setting is default-enabled.
@@ -907,30 +899,5 @@ public class RequestDesktopUtilsUnitTest {
 
     private Tab createTab() {
         return mock(Tab.class);
-    }
-
-    private void enableFeature(String featureName, boolean enable) {
-        enableFeatureWithParams(featureName, null, enable);
-    }
-
-    private void enableFeatureWithParams(
-            String featureName, Map<String, String> params, boolean enable) {
-        mTestValues.addFeatureFlagOverride(featureName, enable);
-        if (params != null) {
-            for (Entry<String, String> param : params.entrySet()) {
-                mTestValues.addFieldTrialParamOverride(
-                        featureName, param.getKey(), param.getValue());
-            }
-        }
-        FeatureList.setTestValues(mTestValues);
-    }
-
-    private void disableGlobalDefaultsExperimentFeatures() {
-        enableFeatureWithParams("RequestDesktopSiteDefaults", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControl", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControlCohort1", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsEnabledCohort1", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControlCohort2", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsEnabledCohort2", null, false);
     }
 }

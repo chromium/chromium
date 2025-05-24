@@ -54,7 +54,7 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
       : main_task_runner_(
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
         webrtc_callback_(
-            new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
+            new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
         transformer_(main_task_runner_) {}
 
   void SetUp() override {
@@ -89,7 +89,7 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
     if (expect_data_read) {
       EXPECT_CALL(*mock_frame.get(), GetData)
           .WillOnce(
-              Return(rtc::ArrayView<const uint8_t>(buffer, payload_length)));
+              Return(webrtc::ArrayView<const uint8_t>(buffer, payload_length)));
     } else {
       EXPECT_CALL(*mock_frame.get(), GetData).Times(0);
     }
@@ -113,7 +113,7 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
+  webrtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
   RTCEncodedAudioStreamTransformer transformer_;
   uint8_t buffer[1500];
 };

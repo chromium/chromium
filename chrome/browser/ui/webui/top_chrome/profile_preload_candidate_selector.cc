@@ -8,6 +8,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "url/gurl.h"
 
@@ -51,11 +52,22 @@ std::optional<GURL> ProfilePreloadCandidateSelector::GetURLToPreload(
       continue;
     }
 
+    // Skip if this URL is disabled. This is seen in History Clusters side panel
+    // where some locales are not supported.
+    auto* config = TopChromeWebUIConfig::From(profile, url);
+    if (!config || !config->IsWebUIEnabled(profile)) {
+      continue;
+    }
+
     // Skip URLs that have low engagement score.
     blink::mojom::EngagementLevel engagement_level =
         engagement_service->GetEngagementLevel(url);
     if (engagement_level == blink::mojom::EngagementLevel::NONE ||
         engagement_level == blink::mojom::EngagementLevel::MINIMAL) {
+      continue;
+    }
+
+    if (IsUrlExcludedByFlag(url)) {
       continue;
     }
 

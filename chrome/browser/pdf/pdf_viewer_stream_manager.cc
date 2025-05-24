@@ -14,9 +14,13 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/pdf/common/pdf_util.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,6 +28,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler.mojom.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -74,6 +79,60 @@ GetMimeHandlerViewContainerManager(content::RenderFrameHost* container_host) {
   return container_manager;
 }
 
+// Debugging data for crbug.com/391459596.
+// TODO(crbug.com/391459596): Remove once fixed.
+struct PdfNavigationDebugData : public base::SupportsUserData::Data {
+  bool did_start_navigation = false;
+  bool did_start_navigation_with_parent = false;
+};
+
+static int g_debug_manager_instances = 0;
+static int g_debug_ongoing_content_navigations = 0;
+
+// Manager crash keys.
+static crash_reporter::CrashKeyString<32> crash_key_manager_instances(
+    "pdf-manager-instances");
+static crash_reporter::CrashKeyString<32> crash_key_stream_count(
+    "pdf-stream-count");
+static crash_reporter::CrashKeyString<32> crash_key_ongoing_content_navigations(
+    "pdf-ongoing-content-navigations");
+
+// PDF content navigation-specific crash keys.
+static crash_reporter::CrashKeyString<6> crash_key_did_start_navigation(
+    "pdf-did-start-navigation");
+static crash_reporter::CrashKeyString<6>
+    crash_key_did_start_navigation_with_parent(
+        "pdf-did-start-navigation-with-parent");
+
+void SetManagerCrashKeys(size_t stream_count) {
+  crash_key_manager_instances.Set(base::ToString(g_debug_manager_instances));
+  crash_key_stream_count.Set(base::ToString(stream_count));
+  crash_key_ongoing_content_navigations.Set(
+      base::ToString(g_debug_ongoing_content_navigations));
+}
+
+void SetContentNavigationCrashKeys(
+    const content::NavigationHandle* navigation_handle,
+    const void* key) {
+  auto* data = navigation_handle->GetUserData(key);
+  if (!data) {
+    // Can be nullptr in tests.
+    return;
+  }
+
+  auto* debug_data = static_cast<PdfNavigationDebugData*>(data);
+
+  crash_key_did_start_navigation.Set(
+      base::ToString(debug_data->did_start_navigation));
+  crash_key_did_start_navigation_with_parent.Set(
+      base::ToString(debug_data->did_start_navigation_with_parent));
+}
+
+void ClearContentNavigationCrashKeys() {
+  crash_key_did_start_navigation.Clear();
+  crash_key_did_start_navigation_with_parent.Clear();
+}
+
 }  // namespace
 
 bool PdfViewerStreamManager::EmbedderHostInfo::operator<(
@@ -110,9 +169,13 @@ bool PdfViewerStreamManager::StreamInfo::DidPdfContentNavigate() const {
 
 PdfViewerStreamManager::PdfViewerStreamManager(content::WebContents* contents)
     : content::WebContentsObserver(contents),
-      content::WebContentsUserData<PdfViewerStreamManager>(*contents) {}
+      content::WebContentsUserData<PdfViewerStreamManager>(*contents) {
+  ++g_debug_manager_instances;
+}
 
-PdfViewerStreamManager::~PdfViewerStreamManager() = default;
+PdfViewerStreamManager::~PdfViewerStreamManager() {
+  --g_debug_manager_instances;
+}
 
 // static
 void PdfViewerStreamManager::Create(content::WebContents* contents) {
@@ -373,12 +436,26 @@ void PdfViewerStreamManager::DidStartNavigation(
   // `ChromePdfStreamDelegate::ShouldAllowPdfFrameNavigation()` can properly
   // check that the navigation is allowed.
   if (navigation_handle->IsPdf()) {
+    ++g_debug_ongoing_content_navigations;
+    auto debug_data = std::make_unique<PdfNavigationDebugData>();
+    debug_data->did_start_navigation = true;
+    debug_data->did_start_navigation_with_parent =
+        navigation_handle->GetParentFrame();
+    navigation_handle->SetUserData(UserDataKey(), std::move(debug_data));
+    SetManagerCrashKeys(stream_infos_.size());
+    SetContentNavigationCrashKeys(navigation_handle, UserDataKey());
+
     SetStreamContentHostFrameTreeNodeId(navigation_handle);
   }
 }
 
 void PdfViewerStreamManager::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsPdf()) {
+    SetManagerCrashKeys(stream_infos_.size());
+    SetContentNavigationCrashKeys(navigation_handle, UserDataKey());
+  }
+
   // Maybe register a PDF subresource override in the PDF content host.
   if (MaybeRegisterPdfSubresourceOverride(navigation_handle)) {
     return;
@@ -406,6 +483,12 @@ void PdfViewerStreamManager::ReadyToCommitNavigation(
 
 void PdfViewerStreamManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsPdf()) {
+    --g_debug_ongoing_content_navigations;
+    SetManagerCrashKeys(stream_infos_.size());
+    ClearContentNavigationCrashKeys();
+  }
+
   // Maybe set up postMessage support after the PDF content host finishes
   // navigating.
   if (MaybeSetUpPostMessage(navigation_handle)) {
@@ -433,6 +516,24 @@ void PdfViewerStreamManager::DidFinishNavigation(
     if (stream_info->extension_host_frame_tree_node_id() ==
         navigation_handle->GetFrameTreeNodeId()) {
       stream_info->SetDidExtensionFinishNavigation();
+      if (navigation_handle->HasCommitted() &&
+          !navigation_handle->IsErrorPage()) {
+        // Setup zoom level for the PDF extension. Zoom level 0 corresponds
+        // to zoom factor of 1, or 100%. This is done so the PDF viewer UI
+        // does not change if the page zoom does. This is analogous to page
+        // zoom not affecting the browser UI.
+        const GURL pdf_extension_url = stream_info->stream()->handler_url();
+        CHECK_EQ(pdf_extension_url, navigation_handle->GetURL());
+        CHECK_EQ(extensions::kExtensionScheme, pdf_extension_url.scheme());
+        content::HostZoomMap::Get(
+            navigation_handle->GetRenderFrameHost()->GetSiteInstance())
+            ->SetZoomLevelForHostAndScheme(pdf_extension_url.scheme(),
+                                           pdf_extension_url.host(), 0);
+        // Set ZoomController on the extension host.
+        zoom::ZoomController::CreateForWebContentsAndRenderFrameHost(
+            web_contents(),
+            navigation_handle->GetRenderFrameHost()->GetGlobalId());
+      }
     }
     return;
   }
@@ -643,11 +744,20 @@ bool PdfViewerStreamManager::MaybeRegisterPdfSubresourceOverride(
 
 bool PdfViewerStreamManager::MaybeSetUpPostMessage(
     content::NavigationHandle* navigation_handle) {
-  // Only set up postMessage if `navigation_handle` is for the PDF content
-  // frame.
+  // Only set up postMessage if `navigation_handle` is for a PDF content frame.
   auto* claimed_stream_info =
       GetClaimedStreamInfoFromPdfContentNavigation(navigation_handle);
   if (!claimed_stream_info) {
+    return false;
+  }
+
+  // If the user reloads the PDF URL before the PDF content frame finishes
+  // loading, the initial PDF content frame navigation might reach
+  // `MaybeSetUpPostMessage()` during the new PDF load and incorrectly set up
+  // the stream info. Only continue PDF setup if the PDF content navigation is
+  // for the new PDF load.
+  if (navigation_handle->GetFrameTreeNodeId() !=
+      claimed_stream_info->content_host_frame_tree_node_id()) {
     return false;
   }
 

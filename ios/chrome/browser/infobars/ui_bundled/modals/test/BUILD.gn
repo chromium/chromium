@@ -1,0 +1,20 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  sources = [
+    "fake_infobar_password_modal_consumer.h",
+    "fake_infobar_password_modal_consumer.mm",
+    "fake_infobar_save_address_profile_modal_consumer.h",
+    "fake_infobar_save_address_profile_modal_consumer.mm",
+    "fake_infobar_translate_modal_consumer.h",
+    "fake_infobar_translate_modal_consumer.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/infobars/ui_bundled/coordinators:translate_public",
+    "//ios/chrome/browser/infobars/ui_bundled/modals",
+    "//ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile:modals",
+  ]
+}

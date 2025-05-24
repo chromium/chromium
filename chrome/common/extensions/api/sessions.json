@@ -24,7 +24,7 @@
         "id": "Session",
         "type": "object",
         "properties": {
-          "lastModified": {"type": "integer", "description": "The time when the window or tab was closed or modified, represented in milliseconds since the epoch."},
+          "lastModified": {"type": "integer", "description": "The time when the window or tab was closed or modified, represented in seconds since the epoch."},
           "tab": {"$ref": "tabs.Tab", "optional": true, "description": "The $(ref:tabs.Tab), if this entry describes a tab. Either this or $(ref:sessions.Session.window) will be set."},
           "window": {"$ref": "windows.Window", "optional": true, "description": "The $(ref:windows.Window), if this entry describes a window. Either this or $(ref:sessions.Session.tab) will be set."}
         }

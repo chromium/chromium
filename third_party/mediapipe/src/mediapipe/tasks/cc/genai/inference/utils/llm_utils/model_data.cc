@@ -39,14 +39,19 @@
 #include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/tasks/cc/genai/inference/proto/llm_file_metadata.pb.h"
 #include "mediapipe/tasks/cc/genai/inference/proto/llm_params.pb.h"
-#include "mediapipe/tasks/cc/genai/inference/utils/llm_utils/memory_mapped_file.h"
 #include "mediapipe/tasks/cc/genai/inference/utils/llm_utils/metadata_utils.h"
+// clang-format off
+#include "mediapipe/tasks/cc/genai/inference/utils/llm_utils/memory_mapped_file.h"
 #include "mediapipe/tasks/cc/genai/inference/utils/llm_utils/scoped_file.h"
+// clang-format on
 #include "tensorflow/lite/model_builder.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
 namespace mediapipe::tasks::genai::llm_utils {
 namespace {
+
+using ::mediapipe::tasks::genai::llm_utils::MemoryMappedFile;
+using ::mediapipe::tasks::genai::llm_utils::ScopedFile;
 
 // The maximum size of the tflite::Model (excluding buffers).
 constexpr uint64_t kTfliteBaseSize = 1024 * 1024;
@@ -143,6 +148,20 @@ class TfliteModelData : public ModelData {
       return ReadData(buffer->offset(), buffer->size());
     }
     return nullptr;
+  }
+
+  absl::StatusOr<ModelWithData> ReadModel(absl::string_view name) override {
+    MP_ASSIGN_OR_RETURN(auto data, ReadTensor(name));
+    if (!data) {
+      return ModelWithData{};
+    }
+    auto model = tflite::FlatBufferModel::BuildFromBuffer(
+        reinterpret_cast<const char*>(data->GetData().data()),
+        data->GetData().size());
+    return ModelWithData{
+        .model = std::move(model),
+        .data = std::move(data),
+    };
   }
 
   absl::Status InitLlmParameters() {
@@ -309,7 +328,7 @@ absl::StatusOr<std::shared_ptr<ModelData>> ModelData::Create(
   MP_ASSIGN_OR_RETURN(
       auto data, CreateMemoryMappedDataHolder<const uint8_t>(
                      file->file(), /*offset=*/0, /*size=*/kTfliteBaseSize));
-  auto model = tflite::FlatBufferModel::BuildFromBuffer(
+  auto model = tflite::FlatBufferModel::VerifyAndBuildFromBuffer(
       reinterpret_cast<const char*>(data->GetData().data()),
       data->GetData().size());
   RET_CHECK(model) << "Error building tflite model.";

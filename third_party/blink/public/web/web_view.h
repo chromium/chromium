@@ -35,7 +35,6 @@
 
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
@@ -153,7 +152,7 @@ class BLINK_EXPORT WebView {
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       std::optional<SkColor> page_base_background_color,
-      const BrowsingContextGroupInfo& browsing_context_group_info,
+      const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
       blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
 
@@ -319,6 +318,9 @@ class BLINK_EXPORT WebView {
 
   // Do a hit test equivalent to what would be done for a GestureTap event
   // that has width/height corresponding to the supplied |tapArea|.
+  //
+  // TODO(crbug.com/376493204): This method is only called by Blink unit tests,
+  // so it should be removed from this API.
   virtual WebHitTestResult HitTestResultForTap(const gfx::Point& tap_point,
                                                const gfx::Size& tap_area) = 0;
 
@@ -455,7 +457,7 @@ class BLINK_EXPORT WebView {
 
   // History list ---------------------------------------------------------
   virtual void SetHistoryListFromNavigation(
-      int32_t history_offset,
+      int32_t history_index,
       std::optional<int32_t> history_length) = 0;
   virtual void IncreaseHistoryListFromNavigation() = 0;
 

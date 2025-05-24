@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "The office fallback dialog is ash-chrome only")
+assert(is_chromeos, "The office fallback dialog is ChromeOS only")
 
 mojom("mojo_bindings") {
   sources = [ "office_fallback.mojom" ]
@@ -44,7 +43,6 @@ static_library("office_fallback") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chromeos/constants",
     "//ui/base",

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_common.h"
@@ -67,7 +68,7 @@ namespace ash {
 PinStatusView::TestApi::TestApi(PinStatusView* view) : view_(view) {}
 PinStatusView::TestApi::~TestApi() = default;
 
-const std::u16string& PinStatusView::TestApi::GetCurrentText() const {
+std::u16string_view PinStatusView::TestApi::GetCurrentText() const {
   return view_->GetCurrentText();
 }
 
@@ -101,11 +102,11 @@ PinStatusView::PinStatusView() {
                                  views::style::STYLE_PRIMARY);
   text_label_->SetMultiLine(true);
   text_label_->SizeToFit(kTextLineWidthDp);
-  text_label_->SetEnabledColorId(kTextColorId);
+  text_label_->SetEnabledColor(kTextColorId);
   text_label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kTextFont));
   decorate_label(text_label_);
-  AddChildView(text_label_.get());
+  AddChildViewRaw(text_label_.get());
 }
 
 PinStatusView::~PinStatusView() {
@@ -124,7 +125,7 @@ void PinStatusView::SetText(const std::u16string& text_str) {
   text_label_->SetText(text_str);
 }
 
-const std::u16string& PinStatusView::GetCurrentText() const {
+std::u16string_view PinStatusView::GetCurrentText() const {
   return text_label_->GetText();
 }
 
@@ -146,8 +147,8 @@ void PinStatusView::SetPinStatus(
     return;
   }
 
-  text_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                        /*send_native_event=*/true);
+  text_label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                  /*send_native_event=*/true);
 
   if (pin_status_->AvailableAt().is_max()) {
     return;

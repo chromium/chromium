@@ -73,7 +73,7 @@ static OPUS_INLINE void silk_short_prediction_create_arch_coef_neon(opus_int32 *
 #elif defined(OPUS_HAVE_RTCD) && defined(OPUS_ARM_MAY_HAVE_NEON_INTR)
 
 #define silk_short_prediction_create_arch_coef(out, in, order) \
-    do { if (arch == OPUS_ARCH_ARM_NEON) { silk_short_prediction_create_arch_coef_neon(out, in, order); } } while (0)
+    do { if (arch >= OPUS_ARCH_ARM_NEON) { silk_short_prediction_create_arch_coef_neon(out, in, order); } } while (0)
 
 #endif
 
@@ -95,7 +95,7 @@ opus_int32 silk_NSQ_noise_shape_feedback_loop_neon(const opus_int32 *data0, opus
    (coef vs. coefRev) so can't use the usual IMPL table implementation */
 #undef silk_noise_shape_quantizer_short_prediction
 #define silk_noise_shape_quantizer_short_prediction(in, coef, coefRev, order, arch)  \
-    (arch == OPUS_ARCH_ARM_NEON ? \
+    (arch >= OPUS_ARCH_ARM_NEON ? \
         silk_noise_shape_quantizer_short_prediction_neon(in, coefRev, order) : \
         silk_noise_shape_quantizer_short_prediction_c(in, coef, order))
 

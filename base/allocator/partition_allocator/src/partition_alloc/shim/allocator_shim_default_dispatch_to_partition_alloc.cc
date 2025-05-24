@@ -17,6 +17,7 @@
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
@@ -25,6 +26,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_internal.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
 
@@ -100,7 +102,7 @@ class LeakySingleton {
     __cpp_lib_atomic_value_initialization < 201911L
   alignas(T) uint8_t instance_buffer_[sizeof(T)];
 #else
-  alignas(T) uint8_t instance_buffer_[sizeof(T)] = {0};
+  alignas(T) uint8_t instance_buffer_[sizeof(T)] = {};
 #endif
   std::atomic<bool> initialization_lock_;
 };
@@ -147,7 +149,6 @@ class MainPartitionConstructor {
     // the decision to turn the thread cache on until then.
     // Also tests, such as the ThreadCache tests create a thread cache.
     opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
-    opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
     opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
     auto* new_root = new (buffer) partition_alloc::PartitionRoot(opts);
 
@@ -199,44 +200,67 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
 
 namespace allocator_shim::internal {
 
-void* PartitionMalloc(size_t size, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags,
+                                      base_free_flags>::Malloc(size_t size,
+                                                               void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
-  return Allocator()->AllocInline<partition_alloc::AllocFlags::kNoHooks>(size);
+  return Allocator()->AllocInline<base_alloc_flags>(size);
 }
 
-void* PartitionMallocUnchecked(size_t size, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    MallocUnchecked(size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   return Allocator()
-      ->AllocInline<partition_alloc::AllocFlags::kReturnNull |
-                    partition_alloc::AllocFlags::kNoHooks>(size);
+      ->AllocInline<base_alloc_flags |
+                    partition_alloc::AllocFlags::kReturnNull>(size);
 }
 
-void* PartitionCalloc(size_t n, size_t size, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags,
+                                      base_free_flags>::Calloc(size_t n,
+                                                               size_t size,
+                                                               void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   const size_t total =
       partition_alloc::internal::base::CheckMul(n, size).ValueOrDie();
   return Allocator()
-      ->AllocInline<partition_alloc::AllocFlags::kZeroFill |
-                    partition_alloc::AllocFlags::kNoHooks>(total);
+      ->AllocInline<base_alloc_flags | partition_alloc::AllocFlags::kZeroFill>(
+          total);
 }
 
-void* PartitionMemalign(size_t alignment, size_t size, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    Memalign(size_t alignment, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
-  return AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks>(alignment,
-                                                                      size);
+  return AllocateAlignedMemory<base_alloc_flags>(alignment, size);
 }
 
-void* PartitionAlignedAlloc(size_t size, size_t alignment, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    AlignedAlloc(size_t size, size_t alignment, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
-  return AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks>(alignment,
-                                                                      size);
+  return AllocateAlignedMemory<base_alloc_flags>(alignment, size);
 }
 
-void* PartitionAlignedAllocUnchecked(size_t size,
-                                     size_t alignment,
-                                     void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    AlignedAllocUnchecked(size_t size, size_t alignment, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
-  return AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks |
+  return AllocateAlignedMemory<base_alloc_flags |
                                partition_alloc::AllocFlags::kReturnNull>(
       alignment, size);
 }
@@ -247,20 +271,23 @@ void* PartitionAlignedAllocUnchecked(size_t size,
 // This realloc always free the original memory block and allocates a new memory
 // block.
 // TODO(tasak): Implement PartitionRoot::AlignedRealloc and use it.
-void* PartitionAlignedRealloc(void* address,
-                              size_t size,
-                              size_t alignment,
-                              void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    AlignedRealloc(void* address,
+                   size_t size,
+                   size_t alignment,
+                   void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   void* new_ptr = nullptr;
   if (size > 0) {
-    new_ptr = AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks>(
-        alignment, size);
+    new_ptr = AllocateAlignedMemory<base_alloc_flags>(alignment, size);
   } else {
     // size == 0 and address != null means just "free(address)".
     if (address) {
-      partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-          partition_alloc::FreeFlags::kNoHooks>(address);
+      partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+          address);
     }
   }
   // The original memory block (specified by address) is unchanged if ENOMEM.
@@ -274,27 +301,31 @@ void* PartitionAlignedRealloc(void* address,
     size_t copy_size = usage > size ? size : usage;
     memcpy(new_ptr, address, copy_size);
 
-    partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-        partition_alloc::FreeFlags::kNoHooks>(address);
+    partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+        address);
   }
   return new_ptr;
 }
 
-void* PartitionAlignedReallocUnchecked(void* address,
-                                       size_t size,
-                                       size_t alignment,
-                                       void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    AlignedReallocUnchecked(void* address,
+                            size_t size,
+                            size_t alignment,
+                            void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   void* new_ptr = nullptr;
   if (size > 0) {
-    new_ptr = AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks |
+    new_ptr = AllocateAlignedMemory<base_alloc_flags |
                                     partition_alloc::AllocFlags::kReturnNull>(
         alignment, size);
   } else {
     // size == 0 and address != null means just "free(address)".
     if (address) {
-      partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-          partition_alloc::FreeFlags::kNoHooks>(address);
+      partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+          address);
     }
   }
   // The original memory block (specified by address) is unchanged if ENOMEM.
@@ -308,17 +339,19 @@ void* PartitionAlignedReallocUnchecked(void* address,
     size_t copy_size = usage > size ? size : usage;
     memcpy(new_ptr, address, copy_size);
 
-    partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-        partition_alloc::FreeFlags::kNoHooks>(address);
+    partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+        address);
   }
   return new_ptr;
 }
 
-template <partition_alloc::AllocFlags alloc_flags,
-          partition_alloc::FreeFlags free_flags>
-PA_ALWAYS_INLINE void* PartitionReallocInternal(void* address,
-                                                size_t size,
-                                                void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags,
+                                      base_free_flags>::Realloc(void* address,
+                                                                size_t size,
+                                                                void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
   if (!partition_alloc::IsManagedByPartitionAlloc(
@@ -331,26 +364,15 @@ PA_ALWAYS_INLINE void* PartitionReallocInternal(void* address,
   }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
-  return Allocator()->Realloc<alloc_flags, free_flags>(address, size, "");
+  return Allocator()->Realloc<base_alloc_flags, base_free_flags>(address, size,
+                                                                 "");
 }
 
-void* PartitionRealloc(void* address, size_t size, void* context) {
-  return PartitionReallocInternal<partition_alloc::AllocFlags::kNoHooks,
-                                  partition_alloc::FreeFlags::kNone>(
-      address, size, context);
-}
-
-void* PartitionReallocWithAdvancedChecks(void* address,
-                                         size_t size,
-                                         void* context) {
-  return PartitionReallocInternal<
-      partition_alloc::AllocFlags::kNoHooks,
-      partition_alloc::FreeFlags::kNoHooks |
-          partition_alloc::FreeFlags::kSchedulerLoopQuarantine |
-          partition_alloc::FreeFlags::kZap>(address, size, context);
-}
-
-void* PartitionReallocUnchecked(void* address, size_t size, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    ReallocUnchecked(void* address, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
   if (!partition_alloc::IsManagedByPartitionAlloc(
@@ -364,8 +386,8 @@ void* PartitionReallocUnchecked(void* address, size_t size, void* context) {
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
   return Allocator()
-      ->Realloc<partition_alloc::AllocFlags::kNoHooks |
-                partition_alloc::AllocFlags::kReturnNull>(address, size, "");
+      ->Realloc<base_alloc_flags | partition_alloc::AllocFlags::kReturnNull>(
+          address, size, "");
 }
 
 #if PA_BUILDFLAG(IS_CAST_ANDROID)
@@ -374,8 +396,13 @@ void __real_free(void*);
 }       // extern "C"
 #endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
 
-template <partition_alloc::FreeFlags flags>
-PA_ALWAYS_INLINE void PartitionFreeInternal(void* object, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+PA_ALWAYS_INLINE void
+PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
+    void* object,
+    void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
   // TODO(bartekn): Add MTE unmasking here (and below).
@@ -404,36 +431,56 @@ PA_ALWAYS_INLINE void PartitionFreeInternal(void* object, void* context) {
   }
 #endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
 
-  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<flags>(object);
+  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+      object);
 }
 
-void PartitionFree(void* object, void* context) {
-  PartitionFreeInternal<partition_alloc::FreeFlags::kNoHooks>(object, context);
-}
-
-void PartitionFreeWithAdvancedChecks(void* object, void* context) {
-  PartitionFreeInternal<partition_alloc::FreeFlags::kNoHooks |
-                        partition_alloc::FreeFlags::kSchedulerLoopQuarantine |
-                        partition_alloc::FreeFlags::kZap>(object, context);
-}
-
-#if PA_BUILDFLAG(IS_APPLE)
-// Normal free() path on Apple OSes:
-// 1. size = GetSizeEstimate(ptr);
-// 2. if (size) FreeDefiniteSize(ptr, size)
-//
-// So we don't need to re-check that the pointer is owned in Free(), and we
-// can use the size.
-void PartitionFreeDefiniteSize(void* address, size_t size, void* context) {
-  partition_alloc::ScopedDisallowAllocations guard{};
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+PA_ALWAYS_INLINE void
+PartitionAllocFunctionsInternal<base_alloc_flags,
+                                base_free_flags>::FreeWithSize(void* object,
+                                                               size_t size,
+                                                               void* context) {
   // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
   // still useful though, as we avoid double-checking that the address is owned.
-  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-      partition_alloc::FreeFlags::kNoHooks>(address);
+  PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
+      object, context);
 }
-#endif  // PA_BUILDFLAG(IS_APPLE)
 
-size_t PartitionGetSizeEstimate(void* address, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+PA_ALWAYS_INLINE void
+PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    FreeWithAlignment(void* object, size_t alignment, void* context) {
+  // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
+  // still useful though, as we avoid double-checking that the address is owned.
+  PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
+      object, context);
+}
+
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+PA_ALWAYS_INLINE void PartitionAllocFunctionsInternal<
+    base_alloc_flags,
+    base_free_flags>::FreeWithSizeAndAlignment(void* object,
+                                               size_t size,
+                                               size_t alignment,
+                                               void* context) {
+  // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
+  // still useful though, as we avoid double-checking that the address is owned.
+  PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
+      object, context);
+}
+
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+size_t PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    GetSizeEstimate(void* address, void* context) {
   // This is used to implement malloc_usable_size(3). Per its man page, "if ptr
   // is NULL, 0 is returned".
   if (!address) {
@@ -464,43 +511,64 @@ size_t PartitionGetSizeEstimate(void* address, void* context) {
 }
 
 #if PA_BUILDFLAG(IS_APPLE)
-size_t PartitionGoodSize(size_t size, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+size_t
+PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::GoodSize(
+    size_t size,
+    void* context) {
   return Allocator()->AllocationCapacityFromRequestedSize(size);
 }
 
-bool PartitionClaimedAddress(void* address, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+bool PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    ClaimedAddress(void* address, void* context) {
   return partition_alloc::IsManagedByPartitionAlloc(
       reinterpret_cast<uintptr_t>(address));
 }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
-unsigned PartitionBatchMalloc(size_t size,
-                              void** results,
-                              unsigned num_requested,
-                              void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+unsigned
+PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::BatchMalloc(
+    size_t size,
+    void** results,
+    unsigned num_requested,
+    void* context) {
   // No real batching: we could only acquire the lock once for instance, keep it
   // simple for now.
   for (unsigned i = 0; i < num_requested; i++) {
     // No need to check the results, we crash if it fails.
-    results[i] = PartitionMalloc(size, nullptr);
+    results[i] = Malloc(size, nullptr);
   }
 
   // Either all succeeded, or we crashed.
   return num_requested;
 }
 
-void PartitionBatchFree(void** to_be_freed,
-                        unsigned num_to_be_freed,
-                        void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    BatchFree(void** to_be_freed, unsigned num_to_be_freed, void* context) {
   // No real batching: we could only acquire the lock once for instance, keep it
   // simple for now.
   for (unsigned i = 0; i < num_to_be_freed; i++) {
-    PartitionFree(to_be_freed[i], nullptr);
+    Free(to_be_freed[i], nullptr);
   }
 }
 
 #if PA_BUILDFLAG(IS_APPLE)
-void PartitionTryFreeDefault(void* address, void* context) {
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    TryFreeDefault(void* address, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 
   if (!partition_alloc::IsManagedByPartitionAlloc(
@@ -510,10 +578,21 @@ void PartitionTryFreeDefault(void* address, void* context) {
     return allocator_shim::TryFreeDefaultFallbackToFindZoneAndFree(address);
   }
 
-  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-      partition_alloc::FreeFlags::kNoHooks>(address);
+  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+      address);
 }
 #endif  // PA_BUILDFLAG(IS_APPLE)
+
+// Explicitly instantiate `PartitionAllocFunctions`.
+template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
+    PartitionAllocFunctionsInternal<partition_alloc::AllocFlags::kNoHooks,
+                                    partition_alloc::FreeFlags::kNoHooks>;
+// Explicitly instantiate `PartitionAllocWithAdvancedChecksFunctions`.
+template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
+    PartitionAllocFunctionsInternal<
+        partition_alloc::AllocFlags::kNoHooks,
+        partition_alloc::FreeFlags::kNoHooks |
+            partition_alloc::FreeFlags::kSchedulerLoopQuarantine>;
 
 // static
 bool PartitionAllocMalloc::AllocatorConfigurationFinalized() {
@@ -553,13 +632,16 @@ void EnablePartitionAllocMemoryReclaimer() {
 
 void ConfigurePartitions(
     EnableBrp enable_brp,
+    size_t brp_extra_extras_size,
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
     BucketDistribution distribution,
-    SchedulerLoopQuarantine scheduler_loop_quarantine,
-    size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
-    ZappingByFreeFlags zapping_by_free_flags,
-    UsePoolOffsetFreelists use_pool_offset_freelists,
+    partition_alloc::internal::SchedulerLoopQuarantineConfig
+        scheduler_loop_quarantine_global_config,
+    partition_alloc::internal::SchedulerLoopQuarantineConfig
+        scheduler_loop_quarantine_thread_local_config,
+    EventuallyZeroFreedMemory eventually_zero_freed_memory,
+    FewerMemoryRegions fewer_memory_regions,
     UseSmallSingleSlotSpans use_small_single_slot_spans) {
   // Calling Get() is actually important, even if the return value isn't
   // used, because it has a side effect of initializing the variable, if it
@@ -574,35 +656,32 @@ void ConfigurePartitions(
   // shouldn't bite us here. Mentioning just in case we move this code earlier.
   static partition_alloc::internal::base::NoDestructor<
       partition_alloc::PartitionAllocator>
-      new_main_allocator([&]() {
+      new_main_allocator([&] {
         partition_alloc::PartitionOptions opts;
         // The caller of ConfigurePartitions() will decide whether this or
         // another partition will have the thread cache enabled, by calling
         // EnableThreadCacheIfSupported().
         opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
-        opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
         opts.backup_ref_ptr =
             enable_brp ? partition_alloc::PartitionOptions::kEnabled
                        : partition_alloc::PartitionOptions::kDisabled;
-        opts.zapping_by_free_flags =
-            zapping_by_free_flags
+        opts.backup_ref_ptr_extra_extras_size = brp_extra_extras_size;
+        opts.eventually_zero_freed_memory =
+            eventually_zero_freed_memory
                 ? partition_alloc::PartitionOptions::kEnabled
                 : partition_alloc::PartitionOptions::kDisabled;
-        opts.scheduler_loop_quarantine =
-            scheduler_loop_quarantine
-                ? partition_alloc::PartitionOptions::kEnabled
-                : partition_alloc::PartitionOptions::kDisabled;
-        opts.scheduler_loop_quarantine_branch_capacity_in_bytes =
-            scheduler_loop_quarantine_branch_capacity_in_bytes;
+        opts.fewer_memory_regions =
+            fewer_memory_regions ? partition_alloc::PartitionOptions::kEnabled
+                                 : partition_alloc::PartitionOptions::kDisabled;
+        opts.scheduler_loop_quarantine_global_config =
+            scheduler_loop_quarantine_global_config;
+        opts.scheduler_loop_quarantine_thread_local_config =
+            scheduler_loop_quarantine_thread_local_config;
         opts.memory_tagging = {
             .enabled = enable_memory_tagging
                            ? partition_alloc::PartitionOptions::kEnabled
                            : partition_alloc::PartitionOptions::kDisabled,
             .reporting_mode = memory_tagging_reporting_mode};
-        opts.use_pool_offset_freelists =
-            use_pool_offset_freelists
-                ? partition_alloc::PartitionOptions::kEnabled
-                : partition_alloc::PartitionOptions::kDisabled;
         opts.use_small_single_slot_spans =
             use_small_single_slot_spans
                 ? partition_alloc::PartitionOptions::kEnabled

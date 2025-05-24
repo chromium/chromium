@@ -1,0 +1,85 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+[EnableIf=is_mac]
+import "mojo/public/mojom/base/shared_memory.mojom";
+[EnableIf=is_win]
+import "mojo/public/mojom/base/string16.mojom";
+
+[EnableIf=is_win]
+feature kWinSboxProxyLocale {
+  const string name = "WinSboxProxyLocale";
+  const bool enabled_state = false;
+};
+
+// Interface for a sandboxed child process to request services of
+// the browser.
+interface SandboxSupport {
+  // Mac:
+
+  // Returns the shared memory region containing system theme color
+  // information.
+  [EnableIf=is_mac]
+  GetSystemColors() => (mojo_base.mojom.ReadOnlySharedMemoryRegion region);
+
+  // Windows: Various GetLocale*() proxies. These replace wrapped syscalls
+  // so have to be [Sync].
+
+  // Returns the LCID and first day of week corresponding to `locale` with a
+  // fallback to `default_language`. If `force_defaults` is true then user
+  // customization is ignored. Both string arguments have a max length of
+  // LOCALE_NAME_MAX_LENGTH.
+  [Sync, EnableIf=is_win, RuntimeFeature=kWinSboxProxyLocale]
+  LcidAndFirstDayOfWeek(mojo_base.mojom.String16 locale,
+                        mojo_base.mojom.String16 default_language,
+                        bool defaults)
+      => (uint32 lcid, uint32 first_day_of_week);
+
+  // Returns digit substitutions and negative sign prefix and suffix for `lcid`.
+  // Ignores user customization if `defaults` is true. Backs
+  // InitializeLocaleData(). `digits` are not fetched if `digit_substitution` is
+  // 0to9.
+  [Sync, EnableIf=is_win, RuntimeFeature=kWinSboxProxyLocale]
+  DigitsAndSigns(uint32 lcid, bool defaults)
+      => (uint32 digit_substitution,
+          mojo_base.mojom.String16 digits,
+          mojo_base.mojom.String16 decimal,
+          mojo_base.mojom.String16 thousand,
+          mojo_base.mojom.String16 negative_sign,
+          uint32 negnumber);
+
+  // Single strings that can be directly requested.
+  [EnableIf=is_win]
+  enum LcTypeString {
+    kShortDate,
+    kYearMonth,
+    kTimeFormat,
+    kShortTime,
+  };
+
+  // Returns a single string, selected by `type`.
+  [Sync, EnableIf=is_win, RuntimeFeature=kWinSboxProxyLocale]
+  LocaleString(uint32 lcid, bool defaults, LcTypeString type)
+      => (mojo_base.mojom.String16 str);
+
+  // Collections of locale strings.
+  [EnableIf=is_win]
+  enum LcTypeStrings {
+    // MONTHNAME*
+    kMonths,
+    // ABBREVMONTHNAME*
+    kShortMonths,
+    // SHORTESTDAYNAME* - in blink order Sunday - Monday.
+    kShortWeekDays,
+    // 1159,2359
+    kAmPm,
+  };
+
+  // Returns a collection of strings, selected by `collection`.
+  [Sync, EnableIf=is_win, RuntimeFeature=kWinSboxProxyLocale]
+  LocaleStrings(uint32 lcid, bool defaults, LcTypeStrings collection)
+      => (array<mojo_base.mojom.String16> strings);
+};

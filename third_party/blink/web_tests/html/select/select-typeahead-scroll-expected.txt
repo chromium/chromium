@@ -1,0 +1,14 @@
+PASS select.open is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+
+Test that selection box scrolls to where the focus jumps when pressing an alphanumeric key.
+
+aardvark
+blue
+navy
+indigo
+azure
+SUCCESS

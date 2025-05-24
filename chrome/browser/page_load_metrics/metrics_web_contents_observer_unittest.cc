@@ -18,13 +18,13 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -95,10 +95,9 @@ TEST_F(MetricsWebContentsObserverTest,
   extensions::TestExtensionSystem* extension_system =
       static_cast<extensions::TestExtensionSystem*>(
           extensions::ExtensionSystem::Get(profile()));
-  extensions::ExtensionService* extension_service =
-      extension_system->CreateExtensionService(
-          base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-  extension_service->AddExtension(extension.get());
+  extension_system->CreateExtensionService(
+      base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+  extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension);
 
   content::WebContentsTester* web_contents_tester =
       content::WebContentsTester::For(web_contents());

@@ -3,6 +3,12 @@
  * found in the LICENSE file.
  */
 
+import {EventTypeForDebugging, MultiDeviceSetup} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
+
+import {Logs} from './logs.js';
+import {WebUI} from './webui.js';
+
+
 /**
  * An object containing information about the Chromebook's latest Enrollment or
  * DeviceSync call to the CryptAuth server.
@@ -91,8 +97,7 @@ class CryptAuthController {
     this.elements_.existingUserNewChromebookNotifButton.onclick =
         this.showExistingUserNewChromebookNotification_.bind(this);
 
-    this.multiDeviceSetup =
-        ash.multideviceSetup.mojom.MultiDeviceSetup.getRemote();
+    this.multiDeviceSetup = MultiDeviceSetup.getRemote();
   }
 
   /**
@@ -207,8 +212,7 @@ class CryptAuthController {
    */
   showNewUserNotification_() {
     this.showMultiDeviceSetupPromoNotification_(
-        ash.multideviceSetup.mojom.EventTypeForDebugging
-            .kNewUserPotentialHostExists);
+        EventTypeForDebugging.kNewUserPotentialHostExists);
   }
 
   /**
@@ -216,8 +220,7 @@ class CryptAuthController {
    */
   showExistingUserNewHostNotification_() {
     this.showMultiDeviceSetupPromoNotification_(
-        ash.multideviceSetup.mojom.EventTypeForDebugging
-            .kExistingUserConnectedHostSwitched);
+        EventTypeForDebugging.kExistingUserConnectedHostSwitched);
   }
 
   /**
@@ -225,13 +228,12 @@ class CryptAuthController {
    */
   showExistingUserNewChromebookNotification_() {
     this.showMultiDeviceSetupPromoNotification_(
-        ash.multideviceSetup.mojom.EventTypeForDebugging
-            .kExistingUserNewChromebookAdded);
+        EventTypeForDebugging.kExistingUserNewChromebookAdded);
   }
 
   /**
    * Shows a "MultiDevice Setup" notification of the given type.
-   * @param {!ash.multideviceSetup.mojom.EventTypeForDebugging} type
+   * @param {!EventTypeForDebugging} type
    */
   showMultiDeviceSetupPromoNotification_(type) {
     this.multiDeviceSetup.triggerEventForDebugging(type)
@@ -353,6 +355,7 @@ const LocalStateInterface = {
     ProximityAuth.remoteDevicesController_.updateRemoteDevices(remoteDevices);
   },
 };
+Object.assign(window, {LocalStateInterface});
 
 document.addEventListener('DOMContentLoaded', function() {
   WebUI.onWebContentsInitialized();

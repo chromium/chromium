@@ -169,8 +169,9 @@ void BidirectionalStream::SendvData(
 }
 
 NextProto BidirectionalStream::GetProtocol() const {
-  if (!stream_impl_)
-    return kProtoUnknown;
+  if (!stream_impl_) {
+    return NextProto::kProtoUnknown;
+  }
 
   return stream_impl_->GetProtocol();
 }
@@ -326,7 +327,7 @@ void BidirectionalStream::OnFailed(int status) {
 
 void BidirectionalStream::OnStreamReady(const ProxyInfo& used_proxy_info,
                                         std::unique_ptr<HttpStream> stream) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BidirectionalStream::OnBidirectionalStreamImplReady(
@@ -367,7 +368,7 @@ void BidirectionalStream::OnBidirectionalStreamImplReady(
 void BidirectionalStream::OnWebSocketHandshakeStreamReady(
     const ProxyInfo& used_proxy_info,
     std::unique_ptr<WebSocketHandshakeStreamBase> stream) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BidirectionalStream::OnStreamFailed(
@@ -414,7 +415,7 @@ void BidirectionalStream::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
 void BidirectionalStream::OnQuicBroken() {}
 
 void BidirectionalStream::OnSwitchesToHttpStreamPool(
-    HttpStreamPoolSwitchingInfo switching_info) {
+    HttpStreamPoolRequestInfo request_info) {
   NOTREACHED();
 }
 

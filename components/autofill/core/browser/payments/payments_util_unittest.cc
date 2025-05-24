@@ -7,9 +7,9 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/test_payments_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -32,32 +32,32 @@ TEST_F(PaymentsUtilTest, GetBillingCustomerId_PaymentsCustomerData_Normal) {
   payments_data_manager_.SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
-  EXPECT_EQ(123456, GetBillingCustomerId(&payments_data_manager_));
+  EXPECT_EQ(123456, GetBillingCustomerId(payments_data_manager_));
 }
 
 TEST_F(PaymentsUtilTest, GetBillingCustomerId_PaymentsCustomerData_Garbage) {
   payments_data_manager_.SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"garbage"));
 
-  EXPECT_EQ(0, GetBillingCustomerId(&payments_data_manager_));
+  EXPECT_EQ(0, GetBillingCustomerId(payments_data_manager_));
 }
 
 TEST_F(PaymentsUtilTest, GetBillingCustomerId_PaymentsCustomerData_NoData) {
   // Explictly do not set PaymentsCustomerData. Nothing crashes and the returned
   // customer ID is 0.
-  EXPECT_EQ(0, GetBillingCustomerId(&payments_data_manager_));
+  EXPECT_EQ(0, GetBillingCustomerId(payments_data_manager_));
 }
 
 TEST_F(PaymentsUtilTest, HasGooglePaymentsAccount_Normal) {
   payments_data_manager_.SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
-  EXPECT_TRUE(HasGooglePaymentsAccount(&payments_data_manager_));
+  EXPECT_TRUE(HasGooglePaymentsAccount(payments_data_manager_));
 }
 
 TEST_F(PaymentsUtilTest, HasGooglePaymentsAccount_NoData) {
   // Explicitly do not set Prefs data. Nothing crashes and returns false.
-  EXPECT_FALSE(HasGooglePaymentsAccount(&payments_data_manager_));
+  EXPECT_FALSE(HasGooglePaymentsAccount(payments_data_manager_));
 }
 
 TEST_F(PaymentsUtilTest, IsCreditCardNumberSupported_EmptyBin) {

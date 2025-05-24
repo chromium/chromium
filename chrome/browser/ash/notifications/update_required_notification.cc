@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -131,8 +130,7 @@ void UpdateRequiredNotification::Show(NotificationType type,
   std::u16string body = GetMessage(type, manager, days_remaining, device_type);
   std::u16string button = GetButtonText(type);
   if (title.empty() || body.empty() || button.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   DisplayNotification(title, body, button,

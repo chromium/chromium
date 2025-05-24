@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/host_zoom_map_impl.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/memory/ref_counted.h"
 #include "base/test/simple_test_clock.h"
@@ -70,12 +68,13 @@ TEST_F(HostZoomMapTest, GetAllZoomLevels) {
   host_zoom_map.SetZoomLevelForHostAndScheme("chrome", "login", zoomed);
 
   HostZoomMap::ZoomLevelVector levels = host_zoom_map.GetAllZoomLevels();
-  HostZoomMap::ZoomLevelChange expected[] = {
+  auto expected = std::to_array<HostZoomMap::ZoomLevelChange>({
       {HostZoomMap::ZOOM_CHANGED_FOR_HOST, "zoomed.com", std::string(), zoomed},
       {HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST, "login", "chrome",
        zoomed},
       {HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST, "zoomed.com", "https",
-       zoomed}, };
+       zoomed},
+  });
   ASSERT_EQ(std::size(expected), levels.size());
   for (size_t i = 0; i < std::size(expected); ++i) {
     SCOPED_TRACE(testing::Message() << "levels[" << i << "]");
@@ -105,13 +104,13 @@ TEST_F(HostZoomMapTest, LastModifiedTimestamp) {
 
   HostZoomMap::ZoomLevelVector levels = host_zoom_map.GetAllZoomLevels();
   std::string scheme;
-  HostZoomMap::ZoomLevelChange expected[] = {
+  auto expected = std::to_array<HostZoomMap::ZoomLevelChange>({
       {HostZoomMap::ZOOM_CHANGED_FOR_HOST, "zoomed.com", scheme, 1.5, now},
       {HostZoomMap::ZOOM_CHANGED_FOR_HOST, "zoomed2.com", scheme, 2.5, later},
       {HostZoomMap::ZOOM_CHANGED_FOR_HOST, "zoomzoom.com", scheme, 3.0, later},
       {HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST, "login", "chrome", 3.0,
        base::Time()},
-  };
+  });
   ASSERT_EQ(std::size(expected), levels.size());
   for (size_t i = 0; i < std::size(expected); ++i) {
     SCOPED_TRACE(testing::Message() << "levels[" << i << "]");

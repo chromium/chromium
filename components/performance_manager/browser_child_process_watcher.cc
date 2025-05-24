@@ -140,10 +140,7 @@ void BrowserChildProcessWatcher::TrackedProcessExited(
   // specifically on crash.
   ProcessNodeImpl* process_node = GetChildProcessNode(id);
   if (process_node) {
-    DCHECK(PerformanceManagerImpl::IsAvailable());
-    PerformanceManagerImpl::CallOnGraphImpl(
-        FROM_HERE, base::BindOnce(&ProcessNodeImpl::SetProcessExitStatus,
-                                  base::Unretained(process_node), exit_code));
+    process_node->SetProcessExitStatus(exit_code);
   }
 }
 
@@ -154,16 +151,8 @@ void BrowserChildProcessWatcher::OnProcessLaunched(
     ProcessNodeImpl* process_node) {
   DCHECK(PerformanceManagerImpl::IsAvailable());
 
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(
-          [](ProcessNodeImpl* process_node, base::Process process,
-             base::TimeTicks launch_time, const std::string& metrics_name) {
-            process_node->SetProcessMetricsName(metrics_name);
-            process_node->SetProcess(std::move(process), launch_time);
-          },
-          base::Unretained(process_node), process.Duplicate(),
-          base::TimeTicks::Now(), metrics_name));
+  process_node->SetProcessMetricsName(metrics_name);
+  process_node->SetProcess(process.Duplicate(), base::TimeTicks::Now());
 }
 
 }  // namespace performance_manager

@@ -57,28 +57,18 @@ class FakeDataWriter final
   }
 
   // IDataWriter
-  IFACEMETHODIMP get_UnstoredBufferLength(UINT32* value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  IFACEMETHODIMP get_UnstoredBufferLength(UINT32* value) final { NOTREACHED(); }
   IFACEMETHODIMP get_UnicodeEncoding(UnicodeEncoding* value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
   IFACEMETHODIMP put_UnicodeEncoding(UnicodeEncoding value) final {
     return S_OK;
   }
   IFACEMETHODIMP
-  get_ByteOrder(ByteOrder* value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  get_ByteOrder(ByteOrder* value) final { NOTREACHED(); }
   IFACEMETHODIMP
   put_ByteOrder(ByteOrder value) final { return S_OK; }
-  IFACEMETHODIMP WriteByte(BYTE value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  IFACEMETHODIMP WriteByte(BYTE value) final { NOTREACHED(); }
   IFACEMETHODIMP WriteBytes(UINT32 value_length, BYTE* value) final {
     if (store_async_in_progress_) {
       ADD_FAILURE()
@@ -128,72 +118,30 @@ class FakeDataWriter final
     return S_OK;
   }
   IFACEMETHODIMP
-  WriteBuffer(IBuffer* buffer) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  WriteBuffer(IBuffer* buffer) final { NOTREACHED(); }
   IFACEMETHODIMP
   WriteBufferRange(IBuffer* buffer, UINT32 start, UINT32 count) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
-  IFACEMETHODIMP WriteBoolean(boolean value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP WriteGuid(GUID value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP WriteInt16(INT16 value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP WriteInt32(INT32 value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP WriteInt64(INT64 value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP WriteUInt16(UINT16 value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP WriteUInt32(UINT32 value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP WriteUInt64(UINT64 value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP WriteSingle(FLOAT value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP WriteDouble(DOUBLE value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  IFACEMETHODIMP WriteBoolean(boolean value) final { NOTREACHED(); }
+  IFACEMETHODIMP WriteGuid(GUID value) final { NOTREACHED(); }
+  IFACEMETHODIMP WriteInt16(INT16 value) final { NOTREACHED(); }
+  IFACEMETHODIMP WriteInt32(INT32 value) final { NOTREACHED(); }
+  IFACEMETHODIMP WriteInt64(INT64 value) final { NOTREACHED(); }
+  IFACEMETHODIMP WriteUInt16(UINT16 value) final { NOTREACHED(); }
+  IFACEMETHODIMP WriteUInt32(UINT32 value) final { NOTREACHED(); }
+  IFACEMETHODIMP WriteUInt64(UINT64 value) final { NOTREACHED(); }
+  IFACEMETHODIMP WriteSingle(FLOAT value) final { NOTREACHED(); }
+  IFACEMETHODIMP WriteDouble(DOUBLE value) final { NOTREACHED(); }
   IFACEMETHODIMP
-  WriteDateTime(DateTime value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  WriteDateTime(DateTime value) final { NOTREACHED(); }
   IFACEMETHODIMP
-  WriteTimeSpan(TimeSpan value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  WriteTimeSpan(TimeSpan value) final { NOTREACHED(); }
   IFACEMETHODIMP WriteString(HSTRING value, UINT32* code_unit_count) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
   IFACEMETHODIMP MeasureString(HSTRING value, UINT32* code_unit_count) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
   IFACEMETHODIMP
   StoreAsync(IAsyncOperation<UINT32>** operation) final {
@@ -282,13 +230,9 @@ class FakeDataWriter final
     return hr;
   }
   IFACEMETHODIMP
-  DetachBuffer(IBuffer** buffer) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  DetachBuffer(IBuffer** buffer) final { NOTREACHED(); }
   IFACEMETHODIMP DetachStream(IOutputStream** output_stream) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
 
  private:

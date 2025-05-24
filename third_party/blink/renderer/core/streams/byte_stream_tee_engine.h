@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_BYTE_STREAM_TEE_ENGINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_BYTE_STREAM_TEE_ENGINE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -18,7 +19,6 @@ class ReadableByteStreamController;
 class ReadableStream;
 class ReadableStreamGenericReader;
 class ScriptState;
-class StreamPromiseResolver;
 
 // Implementation of "ReadableByteStreamTee()" from the standard.
 // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamtee
@@ -69,7 +69,7 @@ class ByteStreamTeeEngine final : public GarbageCollected<ByteStreamTeeEngine> {
 
   Member<ReadableStream> stream_;
   Member<ReadableStreamGenericReader> reader_;
-  Member<StreamPromiseResolver> cancel_promise_;
+  Member<ScriptPromiseResolver<IDLUndefined>> cancel_promise_;
   bool reading_ = false;
 
   // The standard contains a number of pairs of variables with one for each

@@ -22,7 +22,7 @@ class WinNetworkFetcherFactoryImpl : public WinNetworkFetcherFactory {
       base::flat_map<std::string, std::string> headers) override;
 };
 
-WinNetworkFetcherFactoryImpl::WinNetworkFetcherFactoryImpl() {}
+WinNetworkFetcherFactoryImpl::WinNetworkFetcherFactoryImpl() = default;
 WinNetworkFetcherFactoryImpl::~WinNetworkFetcherFactoryImpl() = default;
 
 std::unique_ptr<WinNetworkFetcher>

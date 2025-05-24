@@ -10,13 +10,15 @@ import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
 
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Manage all types of default browser promo dialogs and listen to the activity state change to
  * trigger dialogs.
  */
+@NullMarked
 public class DefaultBrowserPromoManager {
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;

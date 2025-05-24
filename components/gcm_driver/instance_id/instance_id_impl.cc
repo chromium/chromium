@@ -40,8 +40,7 @@ InstanceID::Result GCMClientResultToInstanceIDResult(
     case gcm::GCMClient::UNKNOWN_ERROR:
       return InstanceID::UNKNOWN_ERROR;
     case gcm::GCMClient::TTL_EXCEEDED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return InstanceID::UNKNOWN_ERROR;
 }

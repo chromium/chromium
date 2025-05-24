@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "url/mojom/origin.mojom";
+import "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom";
 
 // A collection of URLLoaderFactory interfaces.
 //
@@ -33,4 +34,8 @@ struct URLLoaderFactoryBundle {
   // Whether redirect checks should be bypassed, since they are happening in the
   // browser.
   bool bypass_redirect_checks = false;
+
+  // Resource metadata which enables a WebUI renderer process to retrieve a
+  // resource entirely in-process given a URL.
+  LocalResourceLoaderConfig? local_resource_loader_config;
 };

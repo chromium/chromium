@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_handler.h"
 
+#include <inttypes.h>
+
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -23,7 +25,7 @@ constexpr unsigned kDefaultNumberOfOutputChannels = 2;
 MediaStreamAudioSourceHandler::MediaStreamAudioSourceHandler(
     AudioNode& node,
     std::unique_ptr<AudioSourceProvider> audio_source_provider)
-    : AudioHandler(kNodeTypeMediaStreamAudioSource,
+    : AudioHandler(NodeType::kNodeTypeMediaStreamAudioSource,
                    node,
                    node.context()->sampleRate()),
       audio_source_provider_(std::move(audio_source_provider)) {

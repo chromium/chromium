@@ -6,6 +6,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -89,7 +90,8 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   void ReceiveTraceChunkOnBlockingThread(std::unique_ptr<std::string> chunk) {
     if (!OpenFileIfNeededOnBlockingThread())
       return;
-    std::ignore = fwrite(chunk->c_str(), chunk->size(), 1, file_.get());
+    std::ignore =
+        UNSAFE_TODO(fwrite(chunk->c_str(), chunk->size(), 1, file_.get()));
   }
 
   bool OpenFileIfNeededOnBlockingThread() {

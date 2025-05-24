@@ -9,14 +9,14 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -30,6 +30,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabModelSelectorTabModelObserverUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabModelSelector mSelector;
 
     @Mock private TabModel mTabModel;
@@ -38,14 +39,11 @@ public class TabModelSelectorTabModelObserverUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mTabModels = new ArrayList<>();
         doReturn(mTabModels).when(mSelector).getModels();
     }
 
     @Test
-    @SmallTest
     public void testAlreadyInitializedSelector() throws TimeoutException {
         // ARRANGE
         mTabModels.add(mTabModel);
@@ -70,7 +68,6 @@ public class TabModelSelectorTabModelObserverUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUninitializedSelector() throws TimeoutException {
         // ARRANGE
         ArgumentCaptor<TabModelSelectorObserver> arg1 =
@@ -99,7 +96,6 @@ public class TabModelSelectorTabModelObserverUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroySelector() {
         // ARRANGE
         ArgumentCaptor<TabModelSelectorObserver> arg1 =

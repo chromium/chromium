@@ -20,7 +20,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -173,8 +172,7 @@ api::passwords_private::PasswordCheckState ConvertPasswordCheckState(
       return api::passwords_private::PasswordCheckState::kOtherError;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return api::passwords_private::PasswordCheckState::kNone;
+  NOTREACHED();
 }
 
 std::string FormatElapsedTime(base::Time time) {

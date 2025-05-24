@@ -82,8 +82,9 @@ class ScopedTimerImpl {
   ScopedTimerImpl& operator=(const ScopedTimerImpl&) = delete;
 
   ~ScopedTimerImpl() {
-    if (activated_)
+    if (activated_) {
       export_functor_(TimeProvider::Now() - construction_time_);
+    }
   }
 
  private:

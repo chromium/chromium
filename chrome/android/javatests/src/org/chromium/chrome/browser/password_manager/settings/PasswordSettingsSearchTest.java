@@ -62,7 +62,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -92,6 +93,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PasswordSettingsSearchTest {
     private static final long UI_UPDATING_TIMEOUT_MS = 3000;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BaseActivityTestRule<HistoryActivity> mHistoryActivityTestRule =
             new BaseActivityTestRule<>(HistoryActivity.class);
@@ -106,7 +109,6 @@ public class PasswordSettingsSearchTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
     }
 

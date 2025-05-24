@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -32,13 +33,6 @@
 #include "third_party/blink/public/web/web_embedded_worker_start_data.h"
 
 namespace content {
-
-// A kill switch for the DumpWithoutCrashing code in the ServiceWorker startup.
-// This is introduced to investigate if `cors_exempt_header_list` is
-// successfully initialized.
-BASE_FEATURE(kServiceWorkerDebugCorsExemptHeaderList,
-             "ServiceWorkerDebugCorsExemptHeaderList",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 void EmbeddedWorkerInstanceClientImpl::Create(
@@ -78,31 +72,6 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
     // fake empty list is set to `cors_exempt_header_list_` here, so override it
     // with the actual list which is from mojom::EmbeddedWorkerStartParams.
     cors_exempt_header_list_ = std::move(params->cors_exempt_header_list);
-  } else {
-    // When the feature is not enabled, `cors_exempt_header_list_` and
-    // `params->cors_exempt_header_list` should have same list of headers.
-    //
-    // TODO(crbug.com/40753993): The length of `cors_exempt_header_list_` is
-    // often zero. We expect the header list is successfully passed from the
-    // storage partition. After investigating when the empty list is passed and
-    // what the intended behavior is, add CHECK(cors_exempt_header_list_ ==
-    // params->cors_exempt_header_list) here if it's suitable.
-    //
-    // In other words, if the header length is different but
-    // `cors_exempt_header_list_` is not empty, that is an unexpected case.
-    if (cors_exempt_header_list_ != params->cors_exempt_header_list &&
-        cors_exempt_header_list_.size() > 0 &&
-        base::FeatureList::IsEnabled(kServiceWorkerDebugCorsExemptHeaderList)) {
-      static bool has_dumped_without_crashing = false;
-      if (!has_dumped_without_crashing) {
-        has_dumped_without_crashing = true;
-        SCOPED_CRASH_KEY_NUMBER("SWInit", "header_list_size",
-                                cors_exempt_header_list_.size());
-        SCOPED_CRASH_KEY_NUMBER("SWInit", "header_list_size_via_mojo",
-                                params->cors_exempt_header_list.size());
-        base::debug::DumpWithoutCrashing();
-      }
-    }
   }
 
   std::unique_ptr<blink::WebEmbeddedWorkerStartData> start_data =
@@ -161,7 +130,9 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
   if (params->installed_scripts_info) {
     installed_scripts_manager_params =
         std::make_unique<blink::WebServiceWorkerInstalledScriptsManagerParams>(
-            std::move(params->installed_scripts_info->installed_urls),
+            base::ToVector(
+                std::move(params->installed_scripts_info->installed_urls),
+                blink::ToWebURL),
             std::move(params->installed_scripts_info->manager_receiver),
             std::move(params->installed_scripts_info->manager_host_remote));
   }
@@ -172,7 +143,9 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
       std::move(worker), std::move(start_data),
       std::move(installed_scripts_manager_params),
       std::move(params->content_settings_proxy), std::move(cache_storage),
-      std::move(browser_interface_broker));
+      std::move(browser_interface_broker),
+      std::move(params->coep_reporting_observer),
+      std::move(params->dip_reporting_observer));
 }
 
 void EmbeddedWorkerInstanceClientImpl::StopWorker() {

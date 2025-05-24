@@ -28,10 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+
+#include <array>
 
 // Basic tests that verify our KURL's interface behaves the same as the
 // original KURL's.
@@ -68,34 +66,36 @@ TEST(KURLTest, Getters) {
     const char* query;
     const char* fragment_identifier;
     bool has_fragment_identifier;
-  } cases[] = {
+  };
+  auto cases = std::to_array<GetterCase>({
       {"http://www.google.com/foo/blah?bar=baz#ref", "http", "www.google.com",
-       0, "", nullptr, "/foo/blah", "blah", "bar=baz", "ref", true},
+       0, nullptr, nullptr, "/foo/blah", "blah", "bar=baz", "ref", true},
       {// Non-ASCII code points in the fragment part. fragmentIdentifier()
        // should return it in percent-encoded form.
        "http://www.google.com/foo/blah?bar=baz#\xce\xb1\xce\xb2", "http",
-       "www.google.com", 0, "", nullptr, "/foo/blah", "blah", "bar=baz",
+       "www.google.com", 0, nullptr, nullptr, "/foo/blah", "blah", "bar=baz",
        "%CE%B1%CE%B2", true},
-      {"http://foo.com:1234/foo/bar/", "http", "foo.com", 1234, "", nullptr,
-       "/foo/bar/", "bar", nullptr, nullptr, false},
-      {"http://www.google.com?#", "http", "www.google.com", 0, "", nullptr, "/",
-       nullptr, "", "", true},
+      {"http://foo.com:1234/foo/bar/", "http", "foo.com", 1234, nullptr,
+       nullptr, "/foo/bar/", "bar", nullptr, nullptr, false},
+      {"http://www.google.com?#", "http", "www.google.com", 0, nullptr, nullptr,
+       "/", nullptr, "", "", true},
       {"https://me:pass@google.com:23#foo", "https", "google.com", 23, "me",
        "pass", "/", nullptr, nullptr, "foo", true},
-      {"javascript:hello!//world", "javascript", "", 0, "", nullptr,
+      {"javascript:hello!//world", "javascript", "", 0, nullptr, nullptr,
        "hello!//world", "world", nullptr, nullptr, false},
       {// Recognize a query and a fragment in the path portion of a path
        // URL.
-       "javascript:hello!?#/\\world", "javascript", "", 0, "", nullptr,
+       "javascript:hello!?#/\\world", "javascript", "", 0, nullptr, nullptr,
        "hello!", "hello!", "", "/\\world", true},
       {// lastPathComponent() method handles "parameters" in a path. path()
        // method doesn't.
-       "http://a.com/hello;world", "http", "a.com", 0, "", nullptr,
+       "http://a.com/hello;world", "http", "a.com", 0, nullptr, nullptr,
        "/hello;world", "hello", nullptr, nullptr, false},
       {// IDNA
        "http://\xe4\xbd\xa0\xe5\xa5\xbd\xe4\xbd\xa0\xe5\xa5\xbd/", "http",
-       "xn--6qqa088eba", 0, "", nullptr, "/", nullptr, nullptr, nullptr, false},
-  };
+       "xn--6qqa088eba", 0, nullptr, nullptr, "/", nullptr, nullptr, nullptr,
+       false},
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     const GetterCase& c = cases[i];
@@ -109,19 +109,33 @@ TEST(KURLTest, Getters) {
     // contents are printed on failure.
     EXPECT_EQ(String(c.protocol), kurl.Protocol()) << url;
     EXPECT_EQ(String(c.host), kurl.Host()) << url;
-    EXPECT_EQ(String(c.host), kurl.HostView()) << url;
     EXPECT_EQ(c.port, kurl.Port()) << url;
     EXPECT_EQ(String(c.user), kurl.User()) << url;
     EXPECT_EQ(String(c.pass), kurl.Pass()) << url;
     EXPECT_EQ(String(c.path), kurl.GetPath()) << url;
     EXPECT_EQ(String(c.last_path_component), kurl.LastPathComponent()) << url;
     EXPECT_EQ(String(c.query), kurl.Query()) << url;
-    if (c.has_fragment_identifier)
+    if (c.query && strlen(c.query) > 0) {
+      EXPECT_EQ(String(StringView("?") + c.query),
+                kurl.QueryWithLeadingQuestionMark())
+          << url;
+    }
+    if (c.has_fragment_identifier) {
       EXPECT_EQ(String::FromUTF8(c.fragment_identifier),
                 kurl.FragmentIdentifier())
           << url;
-    else
+      if (strlen(c.fragment_identifier) > 0) {
+        EXPECT_EQ(String(StringView("#") + c.fragment_identifier),
+                  kurl.FragmentIdentifierWithLeadingNumberSign())
+            << url;
+      } else {
+        EXPECT_EQ(g_empty_string,
+                  kurl.FragmentIdentifierWithLeadingNumberSign())
+            << url;
+      }
+    } else {
       EXPECT_TRUE(kurl.FragmentIdentifier().IsNull()) << url;
+    }
   }
 }
 
@@ -156,7 +170,8 @@ TEST(KURLTest, Setters) {
 
     const char* query;
     const char* expected_query;
-  } cases[] = {
+  };
+  auto cases = std::to_array<ExpectedComponentCase>({
       {"http://www.google.com/",
        // protocol
        "https", "https://www.google.com/",
@@ -187,7 +202,7 @@ TEST(KURLTest, Setters) {
        "/", "http://goo.com:92/?f#b",
        // query
        nullptr, "http://goo.com:92/#b"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     KURL kurl(cases[i].url);
@@ -223,7 +238,8 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
   struct DecodeCase {
     const char* input;
     const char* output;
-  } decode_cases[] = {
+  };
+  auto decode_cases = std::to_array<DecodeCase>({
       {"hello, world", "hello, world"},
       {"%01%02%03%04%05%06%07%08%09%0a%0B%0C%0D%0e%0f/",
        "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0B\x0C\x0D\x0e\x0f/"},
@@ -243,7 +259,7 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
        "pqrstuvwxyz{|}~\x7f/"},
       // Test un-UTF-8-ization.
       {"%e4%bd%a0%e5%a5%bd", "\xe4\xbd\xa0\xe5\xa5\xbd"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(decode_cases); i++) {
     String input(decode_cases[i].input);
@@ -261,16 +277,14 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
   String decoded = DecodeURLEscapeSequences("%e6%bc%a2%e5%ad%97",
                                             DecodeURLMode::kUTF8OrIsomorphic);
   const UChar kDecodedExpected[] = {0x6F22, 0x5b57};
-  EXPECT_EQ(String(kDecodedExpected, std::size(kDecodedExpected)), decoded);
+  EXPECT_EQ(String(base::span(kDecodedExpected)), decoded);
 
   // Test the error behavior for invalid UTF-8 (we differ from WebKit here).
   // %e4 %a0 are invalid for UTF-8, but %e5%a5%bd is valid.
   String invalid = DecodeURLEscapeSequences("%e4%a0%e5%a5%bd",
                                             DecodeURLMode::kUTF8OrIsomorphic);
-  UChar invalid_expected_helper[6] = {0x00e4, 0x00a0, 0x00e5,
-                                      0x00a5, 0x00bd, 0};
-  String invalid_expected(
-      reinterpret_cast<const ::UChar*>(invalid_expected_helper), 5u);
+  UChar invalid_expected_helper[] = {0x00e4, 0x00a0, 0x00e5, 0x00a5, 0x00bd};
+  String invalid_expected{base::span(invalid_expected_helper)};
   EXPECT_EQ(invalid_expected, invalid);
 }
 
@@ -278,7 +292,8 @@ TEST(KURLTest, EncodeWithURLEscapeSequences) {
   struct EncodeCase {
     const char* input;
     const char* output;
-  } encode_cases[] = {
+  };
+  auto encode_cases = std::to_array<EncodeCase>({
       {"hello, world", "hello%2C%20world"},
       {"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F",
        "%01%02%03%04%05%06%07%08%09%0A%0B%0C%0D%0E%0F"},
@@ -290,7 +305,7 @@ TEST(KURLTest, EncodeWithURLEscapeSequences) {
       {"PQRSTUVWXYZ[\\]^_", "PQRSTUVWXYZ%5B%5C%5D%5E_"},
       {"`abcdefghijklmno", "%60abcdefghijklmno"},
       {"pqrstuvwxyz{|}~\x7f", "pqrstuvwxyz%7B%7C%7D~%7F"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(encode_cases); i++) {
     String input(encode_cases[i].input);
@@ -300,15 +315,15 @@ TEST(KURLTest, EncodeWithURLEscapeSequences) {
   }
 
   // Our encode escapes NULLs for safety, so we need to check that too.
-  String input("\x00\x01", 2u);
+  String input(base::span_from_cstring("\x00\x01"));
   String reference("%00%01");
 
   String output = EncodeWithURLEscapeSequences(input);
   EXPECT_EQ(reference, output);
 
   // Also test that it gets converted to UTF-8 properly.
-  UChar wide_input_helper[3] = {0x4f60, 0x597d, 0};
-  String wide_input(reinterpret_cast<const ::UChar*>(wide_input_helper), 2u);
+  UChar wide_input_helper[] = {0x4f60, 0x597d};
+  String wide_input{base::span(wide_input_helper)};
   String wide_reference("%E4%BD%A0%E5%A5%BD");
   String wide_output = EncodeWithURLEscapeSequences(wide_input);
   EXPECT_EQ(wide_reference, wide_output);
@@ -1055,7 +1070,7 @@ TEST(KURLTest, SetFileProtocolFromNonSpecial) {
   // The URL is now invalid, so the protocol is empty. This is different from
   // what happens in the case with special schemes.
   EXPECT_EQ(url.Protocol(), "");
-  EXPECT_EQ(url.User(), "");
+  EXPECT_TRUE(url.User().IsNull());
   EXPECT_TRUE(url.Pass().IsNull());
   EXPECT_EQ(url.Host(), "");
   EXPECT_EQ(url.Port(), 0);
@@ -1091,30 +1106,6 @@ TEST(KURLTest, InvalidKURLToGURL) {
   // becomes an escaped percent sign (%25), and the invalid UTF-8
   // character becomes REPLACEMENT CHARACTER' (U+FFFD) encoded as UTF-8.
   EXPECT_EQ(gurl.host_piece(), "%25t%EF%BF%BD");
-}
-
-TEST(KURLTest, HasIDNA2008DeviationCharacters) {
-  // èxample.com:
-  EXPECT_FALSE(
-      KURL("http://\xE8xample.com/path").HasIDNA2008DeviationCharacter());
-  // faß.de (contains Sharp-S):
-  EXPECT_TRUE(KURL(u"http://fa\u00df.de/path").HasIDNA2008DeviationCharacter());
-  // βόλος.com (contains Greek Final Sigma):
-  EXPECT_TRUE(KURL(u"http://\u03b2\u03cc\u03bb\u03bf\u03c2.com/path")
-                  .HasIDNA2008DeviationCharacter());
-  // ශ්‍රී.com (contains Zero Width Joiner):
-  EXPECT_TRUE(KURL(u"http://\u0DC1\u0DCA\u200D\u0DBB\u0DD3.com")
-                  .HasIDNA2008DeviationCharacter());
-  // http://نامه\u200cای.com (contains Zero Width Non-Joiner):
-  EXPECT_TRUE(KURL(u"http://\u0646\u0627\u0645\u0647\u200C\u0627\u06CC.com")
-                  .HasIDNA2008DeviationCharacter());
-
-  // Copying the URL from a canonical string presently doesn't copy the boolean.
-  KURL url1(u"http://\u03b2\u03cc\u03bb\u03bf\u03c2.com/path");
-  std::string url_string = url1.GetString().Utf8();
-  KURL url2(AtomicString::FromUTF8(url_string.data(), url_string.length()),
-            url1.GetParsed(), url1.IsValid());
-  EXPECT_FALSE(url2.HasIDNA2008DeviationCharacter());
 }
 
 TEST(KURLTest, IPv4EmbeddedIPv6Address) {

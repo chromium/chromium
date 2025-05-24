@@ -17,7 +17,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
@@ -34,6 +33,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -316,7 +316,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
 // These tests need ClearPrimaryAccount() which isn't supported by ChromeOS.
 // RevokeSyncConsent() sometimes clears the account rather than just changing
 // the consent level so we may as well sign out and sign back in ourselves.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin) {
   // Request should be signed in if account consent level is kSignin.
   identity_env()->ClearPrimaryAccount();
@@ -346,7 +346,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin) {
       "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSync) {
   // Request should be signed in if account consent level is kSync.
@@ -442,7 +442,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestFailsForWrongUser) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(
       NetworkRequestType::kFeedQuery, GetTestFeedRequest(),
-      {"other-gaia", "other@foo.com"}, receiver.Bind());
+      {GaiaId("other-gaia"), "other@foo.com"}, receiver.Bind());
   task_environment_.RunUntilIdle();
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_factory()->GetPendingRequest(0);
@@ -633,7 +633,7 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForAuthError) {
 
 // Disabled for chromeos, which doesn't allow for there not to be a signed in
 // user.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForNoSignedInUser) {
   identity_env()->ClearPrimaryAccount();
   CallbackReceiver<QueryRequestResult> receiver;
@@ -647,7 +647,7 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForNoSignedInUser) {
   EXPECT_THAT(resource_request.url.spec(),
               testing::HasSubstr("key=dummy_api_key"));
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(FeedNetworkTest, TestDurationHistogram) {
   base::HistogramTester histogram_tester;
@@ -777,7 +777,7 @@ TEST_F(FeedNetworkTest, SendApiRequest_UploadActionsFailsForWrongUser) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;
   AccountInfo other_account;
-  other_account.gaia = "some_other_gaia";
+  other_account.gaia = GaiaId("some_other_gaia");
   other_account.email = "some@other.com";
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
       GetTestActionRequest(), other_account, request_metadata(),

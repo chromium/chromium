@@ -33,11 +33,8 @@
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "ui/base/l10n/l10n_util.h"
 
-BROWSER_USER_DATA_KEY_IMPL(ReadingListBrowserAgent)
-
-ReadingListBrowserAgent::ReadingListBrowserAgent(Browser* browser) {
-  browser_ = browser;
-}
+ReadingListBrowserAgent::ReadingListBrowserAgent(Browser* browser)
+    : BrowserUserData(browser) {}
 
 ReadingListBrowserAgent::~ReadingListBrowserAgent() {}
 
@@ -89,8 +86,7 @@ void ReadingListBrowserAgent::BulkAddURLsToReadingListWithViewSnackbar(
   base::RecordAction(base::UserMetricsAction("IOSReadingListItemsAddedInBulk"));
 
   ReadingListModel* reading_list_model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(
-          browser_->GetBrowserState());
+      ReadingListModelFactory::GetForProfile(browser_->GetProfile());
   if (!reading_list_model->loaded()) {
     return;
   }
@@ -159,14 +155,13 @@ void ReadingListBrowserAgent::BulkAddURLsToReadingListWithViewSnackbar(
 AccountInfo ReadingListBrowserAgent::GetAccountInfoFromLastAddedURL(
     const GURL& url) {
   ReadingListModel* reading_model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(
-          browser_->GetBrowserState());
-  CoreAccountId account_id = reading_model->GetAccountWhereEntryIsSavedTo(url);
+      ReadingListModelFactory::GetForProfile(browser_->GetProfile());
+  GaiaId gaia_id = reading_model->GetAccountWhereEntryIsSavedTo(url);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(
-          browser_->GetBrowserState()->GetOriginalChromeBrowserState());
+          browser_->GetProfile()->GetOriginalProfile());
   AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   return account_info;
 }
 
@@ -186,11 +181,11 @@ void ReadingListBrowserAgent::AddURLToReadingListwithTitle(const GURL& url,
     }
   }
 
-  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
+  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts,
+                              browser_->GetProfile()->GetPrefs());
   base::RecordAction(base::UserMetricsAction("MobileReadingListAdd"));
   ReadingListModel* reading_model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(
-          browser_->GetBrowserState());
+      ReadingListModelFactory::GetForProfile(browser_->GetProfile());
   reading_model->AddOrReplaceEntry(url, base::SysNSStringToUTF8(title),
                                    reading_list::ADDED_VIA_CURRENT_APP,
                                    /*estimated_read_time=*/base::TimeDelta());
@@ -221,8 +216,7 @@ ReadingListBrowserAgent::CreateUndoActionWithReadingListURLs(
 void ReadingListBrowserAgent::RemoveURLsFromReadingList(
     NSArray<URLWithTitle*>* urls) {
   ReadingListModel* reading_model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(
-          browser_->GetBrowserState());
+      ReadingListModelFactory::GetForProfile(browser_->GetProfile());
 
   for (URLWithTitle* url_with_title in urls) {
     reading_model->RemoveEntryByURL(url_with_title.URL, FROM_HERE);

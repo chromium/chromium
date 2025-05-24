@@ -19,10 +19,6 @@ CanMakePaymentPreferenceSetter GetCanMakePaymentPreferenceSetter(
     const PrefService::Preference* pref) {
   if (pref->IsUserControlled()) {
     return CanMakePaymentPreferenceSetter::kUserSetting;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (pref->IsStandaloneBrowserControlled()) {
-    return CanMakePaymentPreferenceSetter::kStandaloneBrowser;
-#endif
   } else if (pref->IsExtensionControlled()) {
     return CanMakePaymentPreferenceSetter::kExtension;
   } else if (pref->IsManagedByCustodian()) {

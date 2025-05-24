@@ -19,6 +19,12 @@ bool GetUserDataDirectoryThunk(wchar_t* user_data_dir,
                                size_t user_data_dir_length,
                                wchar_t* invalid_user_data_dir,
                                size_t invalid_user_data_dir_length);
+
+// Returns true if GetUserDataDirectoryThunk() returns a temporary user
+// data directory created when running in headless mode with no explicit user
+// data directory specification.
+bool IsTemporaryUserDataDirectoryCreatedForHeadless();
+
 // This function is a temporary workaround for https://crbug.com/655788. We
 // need to come up with a better way to initialize crash reporting that can
 // happen inside DllMain().

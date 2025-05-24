@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/mojom/messaging/static_bitmap_image.mojom-blink.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace mojo {
@@ -39,20 +41,25 @@ std::optional<SkBitmap> ToSkBitmapN32(
 blink::mojom::blink::SerializedStaticBitmapImagePtr
 ToSerializedAcceleratedImage(
     scoped_refptr<blink::StaticBitmapImage> static_bitmap_image) {
-  static_bitmap_image->EnsureSyncTokenVerified();
+  // TODO(crbug.com/374812177): Remove this clone once the lifetime issues
+  // around sending accelerated StaticBitmapImage are resolved.
+  auto cloned_image = blink::StaticBitmapImageTransform::Clone(
+      blink::FlushReason::kCreateImageBitmap, static_bitmap_image);
+  cloned_image->EnsureSyncTokenVerified();
 
-  auto image_info = static_bitmap_image->GetSkImageInfo();
+  auto shared_image = cloned_image->GetSharedImage();
+  if (!shared_image) {
+    return nullptr;
+  }
 
   auto result =
       blink::mojom::blink::SerializedStaticBitmapImage::NewAcceleratedImage(
           blink::AcceleratedImageInfo{
-              static_bitmap_image->GetMailboxHolder(),
-              static_bitmap_image->GetUsage(), image_info,
-              static_bitmap_image->IsOriginTopLeft(),
-              static_bitmap_image->SupportsDisplayCompositing(),
-              static_bitmap_image->IsOverlayCandidate(),
+              shared_image->Export(), cloned_image->GetSyncToken(),
+              cloned_image->GetSize(), cloned_image->GetSharedImageFormat(),
+              cloned_image->GetAlphaType(), cloned_image->GetColorSpace(),
               WTF::BindOnce(&blink::StaticBitmapImage::UpdateSyncToken,
-                            static_bitmap_image)});
+                            std::move(cloned_image))});
   return result;
 }
 
@@ -143,7 +150,8 @@ bool StructTraits<blink::mojom::blink::TransferableMessage::DataView,
       return false;
     }
   }
-  out->message->SetImageBitmapContentsArray(image_bitmap_contents_array);
+  out->message->SetImageBitmapContentsArray(
+      std::move(image_bitmap_contents_array));
   return true;
 }
 
@@ -167,8 +175,8 @@ bool StructTraits<blink::mojom::blink::SerializedArrayBufferContents::DataView,
   if (contents_data.size() != array_buffer_contents.DataLength()) {
     return false;
   }
-  memcpy(array_buffer_contents.Data(), contents_data.data(),
-         contents_data.size());
+  UNSAFE_TODO(memcpy(array_buffer_contents.Data(), contents_data.data(),
+                     contents_data.size()));
   *out = std::move(array_buffer_contents);
   return true;
 }

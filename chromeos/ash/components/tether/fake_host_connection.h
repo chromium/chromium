@@ -7,6 +7,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/tether/host_connection.h"
 
@@ -46,7 +47,8 @@ class FakeHostConnection : public HostConnection {
 
     base::flat_map<std::string, std::unique_ptr<FakeHostConnection>>
         pending_connection_attempts_;
-    base::flat_map<std::string, FakeHostConnection*> active_connections_;
+    base::flat_map<std::string, raw_ptr<FakeHostConnection, CtnExperimental>>
+        active_connections_;
 
     base::WeakPtrFactory<Factory> weak_ptr_factory_{this};
   };

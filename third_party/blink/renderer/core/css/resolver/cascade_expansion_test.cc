@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/resolver/cascade_expansion.h"
-#include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
-#include "third_party/blink/renderer/core/css/resolver/cascade_expansion-inl.h"
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
+#include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_expansion-inl.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -49,31 +49,29 @@ const CSSPropertyID kVisitedPropertySamples[] = {
 
 class CascadeExpansionTest : public PageTestBase {
  public:
-  struct ExpansionResult : public GarbageCollected<ExpansionResult> {
+  struct ExpansionResult {
+    DISALLOW_NEW();
+
     CascadePriority priority;
-    CSSPropertyRef ref;
+    CSSPropertyName name;
 
-    explicit ExpansionResult(const CSSProperty& property) : ref(property) {}
-
-    void Trace(Visitor* visitor) const { visitor->Trace(ref); }
+    explicit ExpansionResult(const CSSProperty& property)
+        : name(property.GetCSSPropertyName()) {}
   };
 
-  HeapVector<Member<ExpansionResult>> ExpansionAt(const MatchResult& result,
-                                                  wtf_size_t i) {
-    HeapVector<Member<ExpansionResult>> ret;
+  Vector<ExpansionResult> ExpansionAt(const MatchResult& result, wtf_size_t i) {
+    Vector<ExpansionResult> ret;
     ExpandCascade(
         result.GetMatchedProperties()[i], GetDocument(), i,
         [this, &ret](CascadePriority cascade_priority,
                      const AtomicString& name) {
-          ExpansionResult* er = MakeGarbageCollected<ExpansionResult>(
-              CustomProperty(name, GetDocument()));
-          er->priority = cascade_priority;
+          ExpansionResult er(CustomProperty(name, GetDocument()));
+          er.priority = cascade_priority;
           ret.push_back(er);
         },
         [&ret](CascadePriority cascade_priority, CSSPropertyID id) {
-          ExpansionResult* er =
-              MakeGarbageCollected<ExpansionResult>(CSSProperty::Get(id));
-          er->priority = cascade_priority;
+          ExpansionResult er(CSSProperty::Get(id));
+          er.priority = cascade_priority;
           ret.push_back(er);
         });
     return ret;
@@ -83,13 +81,9 @@ class CascadeExpansionTest : public PageTestBase {
     Vector<CSSPropertyID> all;
     for (CSSPropertyID id : CSSPropertyIDList()) {
       const CSSProperty& property = CSSProperty::Get(id);
-      if (!IsInAllExpansion(id)) {
-        continue;
+      if (IsInAllExpansion(id) && filter.Accepts(property)) {
+        all.push_back(id);
       }
-      if (filter.Rejects(property)) {
-        continue;
-      }
-      all.push_back(id);
     }
     return all;
   }
@@ -126,10 +120,10 @@ TEST_F(CascadeExpansionTest, UARules) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(2u, e.size());
-  EXPECT_EQ(CSSPropertyID::kCursor, e[0]->ref.GetProperty().PropertyID());
-  EXPECT_EQ(CascadeOrigin::kUserAgent, e[0]->priority.GetOrigin());
-  EXPECT_EQ(CSSPropertyID::kTop, e[1]->ref.GetProperty().PropertyID());
-  EXPECT_EQ(CascadeOrigin::kUserAgent, e[1]->priority.GetOrigin());
+  EXPECT_EQ(CSSPropertyID::kCursor, e[0].name.Id());
+  EXPECT_EQ(CascadeOrigin::kUserAgent, e[0].priority.GetOrigin());
+  EXPECT_EQ(CSSPropertyID::kTop, e[1].name.Id());
+  EXPECT_EQ(CascadeOrigin::kUserAgent, e[1].priority.GetOrigin());
 }
 
 TEST_F(CascadeExpansionTest, UserRules) {
@@ -144,15 +138,15 @@ TEST_F(CascadeExpansionTest, UserRules) {
   {
     auto e = ExpansionAt(result, 0);
     ASSERT_EQ(1u, e.size());
-    EXPECT_EQ(CSSPropertyID::kCursor, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kUser, e[0]->priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kCursor, e[0].name.Id());
+    EXPECT_EQ(CascadeOrigin::kUser, e[0].priority.GetOrigin());
   }
 
   {
     auto e = ExpansionAt(result, 1);
     ASSERT_EQ(1u, e.size());
-    EXPECT_EQ(CSSPropertyID::kFloat, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kUser, e[0]->priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kFloat, e[0].name.Id());
+    EXPECT_EQ(CascadeOrigin::kUser, e[0].priority.GetOrigin());
   }
 }
 
@@ -169,17 +163,17 @@ TEST_F(CascadeExpansionTest, AuthorRules) {
   {
     auto e = ExpansionAt(result, 0);
     ASSERT_EQ(2u, e.size());
-    EXPECT_EQ(CSSPropertyID::kCursor, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kAuthor, e[0]->priority.GetOrigin());
-    EXPECT_EQ(CSSPropertyID::kTop, e[1]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kAuthor, e[1]->priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kCursor, e[0].name.Id());
+    EXPECT_EQ(CascadeOrigin::kAuthor, e[0].priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kTop, e[1].name.Id());
+    EXPECT_EQ(CascadeOrigin::kAuthor, e[1].priority.GetOrigin());
   }
 
   {
     auto e = ExpansionAt(result, 1);
     ASSERT_EQ(1u, e.size());
-    EXPECT_EQ(CSSPropertyID::kFloat, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kAuthor, e[0]->priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kFloat, e[0].name.Id());
+    EXPECT_EQ(CascadeOrigin::kAuthor, e[0].priority.GetOrigin());
   }
 }
 
@@ -203,38 +197,38 @@ TEST_F(CascadeExpansionTest, AllOriginRules) {
   {
     auto e = ExpansionAt(result, 0);
     ASSERT_EQ(1u, e.size());
-    EXPECT_EQ(CSSPropertyID::kFontSize, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kUserAgent, e[0]->priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kFontSize, e[0].name.Id());
+    EXPECT_EQ(CascadeOrigin::kUserAgent, e[0].priority.GetOrigin());
   }
 
   {
     auto e = ExpansionAt(result, 1);
     ASSERT_EQ(2u, e.size());
-    EXPECT_EQ(CSSPropertyID::kCursor, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kUser, e[0]->priority.GetOrigin());
-    EXPECT_EQ(CSSPropertyID::kTop, e[1]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kUser, e[1]->priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kCursor, e[0].name.Id());
+    EXPECT_EQ(CascadeOrigin::kUser, e[0].priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kTop, e[1].name.Id());
+    EXPECT_EQ(CascadeOrigin::kUser, e[1].priority.GetOrigin());
   }
 
   {
     auto e = ExpansionAt(result, 2);
     ASSERT_EQ(1u, e.size());
-    EXPECT_EQ(CSSPropertyID::kLeft, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kAuthor, e[0]->priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kLeft, e[0].name.Id());
+    EXPECT_EQ(CascadeOrigin::kAuthor, e[0].priority.GetOrigin());
   }
 
   {
     auto e = ExpansionAt(result, 3);
     ASSERT_EQ(1u, e.size());
-    EXPECT_EQ(CSSPropertyID::kFloat, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kAuthor, e[0]->priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kFloat, e[0].name.Id());
+    EXPECT_EQ(CascadeOrigin::kAuthor, e[0].priority.GetOrigin());
   }
 
   {
     auto e = ExpansionAt(result, 4);
     ASSERT_EQ(1u, e.size());
-    EXPECT_EQ(CSSPropertyID::kBottom, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CascadeOrigin::kAuthor, e[0]->priority.GetOrigin());
+    EXPECT_EQ(CSSPropertyID::kBottom, e[0].name.Id());
+    EXPECT_EQ(CascadeOrigin::kAuthor, e[0].priority.GetOrigin());
   }
 }
 
@@ -251,20 +245,17 @@ TEST_F(CascadeExpansionTest, Name) {
   {
     auto e = ExpansionAt(result, 0);
     ASSERT_EQ(2u, e.size());
-    EXPECT_EQ(CSSPropertyName(AtomicString("--x")),
-              e[0]->ref.GetProperty().GetCSSPropertyName());
-    EXPECT_EQ(CSSPropertyID::kVariable, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(CSSPropertyName(AtomicString("--y")),
-              e[1]->ref.GetProperty().GetCSSPropertyName());
-    EXPECT_EQ(CSSPropertyID::kVariable, e[1]->ref.GetProperty().PropertyID());
+    EXPECT_EQ(CSSPropertyName(AtomicString("--x")), e[0].name);
+    EXPECT_EQ(CSSPropertyID::kVariable, e[0].name.Id());
+    EXPECT_EQ(CSSPropertyName(AtomicString("--y")), e[1].name);
+    EXPECT_EQ(CSSPropertyID::kVariable, e[1].name.Id());
   }
 
   {
     auto e = ExpansionAt(result, 1);
     ASSERT_EQ(1u, e.size());
-    EXPECT_EQ(CSSPropertyName(CSSPropertyID::kFloat),
-              e[0]->ref.GetProperty().GetCSSPropertyName());
-    EXPECT_EQ(CSSPropertyID::kFloat, e[0]->ref.GetProperty().PropertyID());
+    EXPECT_EQ(CSSPropertyName(CSSPropertyID::kFloat), e[0].name);
+    EXPECT_EQ(CSSPropertyID::kFloat, e[0].name.Id());
   }
 }
 
@@ -281,8 +272,7 @@ TEST_F(CascadeExpansionTest, LinkOmitted) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
-  EXPECT_EQ(CSSPropertyID::kInternalVisitedColor,
-            e[0]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kInternalVisitedColor, e[0].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, InternalVisited) {
@@ -295,9 +285,8 @@ TEST_F(CascadeExpansionTest, InternalVisited) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(2u, e.size());
-  EXPECT_EQ(CSSPropertyID::kColor, e[0]->ref.GetProperty().PropertyID());
-  EXPECT_EQ(CSSPropertyID::kInternalVisitedColor,
-            e[1]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kColor, e[0].name.Id());
+  EXPECT_EQ(CSSPropertyID::kInternalVisitedColor, e[1].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, InternalVisitedOmitted) {
@@ -313,7 +302,7 @@ TEST_F(CascadeExpansionTest, InternalVisitedOmitted) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
-  EXPECT_EQ(CSSPropertyID::kColor, e[0]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kColor, e[0].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, InternalVisitedWithTrailer) {
@@ -326,10 +315,9 @@ TEST_F(CascadeExpansionTest, InternalVisitedWithTrailer) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(3u, e.size());
-  EXPECT_EQ(CSSPropertyID::kColor, e[0]->ref.GetProperty().PropertyID());
-  EXPECT_EQ(CSSPropertyID::kInternalVisitedColor,
-            e[1]->ref.GetProperty().PropertyID());
-  EXPECT_EQ(CSSPropertyID::kLeft, e[2]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kColor, e[0].name.Id());
+  EXPECT_EQ(CSSPropertyID::kInternalVisitedColor, e[1].name.Id());
+  EXPECT_EQ(CSSPropertyID::kLeft, e[2].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, All) {
@@ -347,7 +335,7 @@ TEST_F(CascadeExpansionTest, All) {
 
   int index = 0;
   for (CSSPropertyID expected : all) {
-    EXPECT_EQ(expected, e[index++]->ref.GetProperty().PropertyID());
+    EXPECT_EQ(expected, e[index++].name.Id());
   }
 }
 
@@ -365,14 +353,14 @@ TEST_F(CascadeExpansionTest, InlineAll) {
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(all.size() + 2, e.size());
 
-  EXPECT_EQ(CSSPropertyID::kLeft, e[0]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kLeft, e[0].name.Id());
 
   int index = 1;
   for (CSSPropertyID expected : all) {
-    EXPECT_EQ(expected, e[index++]->ref.GetProperty().PropertyID());
+    EXPECT_EQ(expected, e[index++].name.Id());
   }
 
-  EXPECT_EQ(CSSPropertyID::kRight, e[index++]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kRight, e[index++].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, FilterFirstLetter) {
@@ -388,7 +376,7 @@ TEST_F(CascadeExpansionTest, FilterFirstLetter) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
-  EXPECT_EQ(CSSPropertyID::kFontSize, e[0]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kFontSize, e[0].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, FilterFirstLine) {
@@ -404,7 +392,7 @@ TEST_F(CascadeExpansionTest, FilterFirstLine) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
-  EXPECT_EQ(CSSPropertyID::kFontSize, e[0]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kFontSize, e[0].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, FilterCue) {
@@ -420,7 +408,7 @@ TEST_F(CascadeExpansionTest, FilterCue) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
-  EXPECT_EQ(CSSPropertyID::kFontSize, e[0]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kFontSize, e[0].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, FilterMarker) {
@@ -436,7 +424,7 @@ TEST_F(CascadeExpansionTest, FilterMarker) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
-  EXPECT_EQ(CSSPropertyID::kFontSize, e[0]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kFontSize, e[0].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, FilterHighlightLegacy) {
@@ -453,12 +441,9 @@ TEST_F(CascadeExpansionTest, FilterHighlightLegacy) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(3u, e.size());
-  EXPECT_EQ(CSSPropertyID::kBackgroundColor,
-            e[0]->ref.GetProperty().PropertyID());
-  EXPECT_EQ(CSSPropertyID::kInternalVisitedBackgroundColor,
-            e[1]->ref.GetProperty().PropertyID());
-  EXPECT_EQ(CSSPropertyID::kForcedColorAdjust,
-            e[2]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kBackgroundColor, e[0].name.Id());
+  EXPECT_EQ(CSSPropertyID::kInternalVisitedBackgroundColor, e[1].name.Id());
+  EXPECT_EQ(CSSPropertyID::kForcedColorAdjust, e[2].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, FilterHighlight) {
@@ -475,10 +460,8 @@ TEST_F(CascadeExpansionTest, FilterHighlight) {
 
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(2u, e.size());
-  EXPECT_EQ(CSSPropertyID::kBackgroundColor,
-            e[0]->ref.GetProperty().PropertyID());
-  EXPECT_EQ(CSSPropertyID::kInternalVisitedBackgroundColor,
-            e[1]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kBackgroundColor, e[0].name.Id());
+  EXPECT_EQ(CSSPropertyID::kInternalVisitedBackgroundColor, e[1].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, FilterPositionFallback) {
@@ -493,7 +476,7 @@ TEST_F(CascadeExpansionTest, FilterPositionFallback) {
       });
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(1u, e.size());
-  EXPECT_EQ(CSSPropertyID::kLeft, e[0]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kLeft, e[0].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, Importance) {
@@ -508,10 +491,10 @@ TEST_F(CascadeExpansionTest, Importance) {
   auto e = ExpansionAt(result, 0);
   ASSERT_EQ(2u, e.size());
 
-  EXPECT_EQ(CSSPropertyID::kCursor, e[0]->ref.GetProperty().PropertyID());
-  EXPECT_FALSE(e[0]->priority.IsImportant());
-  EXPECT_EQ(CSSPropertyID::kDisplay, e[1]->ref.GetProperty().PropertyID());
-  EXPECT_TRUE(e[1]->priority.IsImportant());
+  EXPECT_EQ(CSSPropertyID::kCursor, e[0].name.Id());
+  EXPECT_FALSE(e[0].priority.IsImportant());
+  EXPECT_EQ(CSSPropertyID::kDisplay, e[1].name.Id());
+  EXPECT_TRUE(e[1].priority.IsImportant());
 }
 
 TEST_F(CascadeExpansionTest, AllImportance) {
@@ -528,8 +511,8 @@ TEST_F(CascadeExpansionTest, AllImportance) {
 
   int index = 0;
   for (CSSPropertyID expected : AllProperties()) {
-    EXPECT_EQ(expected, e[index]->ref.GetProperty().PropertyID());
-    EXPECT_TRUE(e[index]->priority.IsImportant());
+    EXPECT_EQ(expected, e[index].name.Id());
+    EXPECT_TRUE(e[index].priority.IsImportant());
     ++index;
   }
 }
@@ -548,8 +531,8 @@ TEST_F(CascadeExpansionTest, AllNonImportance) {
 
   int index = 0;
   for (CSSPropertyID expected : AllProperties()) {
-    EXPECT_EQ(expected, e[index]->ref.GetProperty().PropertyID());
-    EXPECT_FALSE(e[index]->priority.IsImportant());
+    EXPECT_EQ(expected, e[index].name.Id());
+    EXPECT_FALSE(e[index].priority.IsImportant());
     ++index;
   }
 }
@@ -632,24 +615,24 @@ TEST_F(CascadeExpansionTest, Position) {
     auto e = ExpansionAt(result, 0);
     ASSERT_EQ(2u, e.size());
 
-    EXPECT_EQ(CSSPropertyID::kLeft, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(0u, DecodeMatchedPropertiesIndex(e[0]->priority.GetPosition()));
-    EXPECT_EQ(0u, DecodeDeclarationIndex(e[0]->priority.GetPosition()));
-    EXPECT_EQ(CSSPropertyID::kTop, e[1]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(0u, DecodeMatchedPropertiesIndex(e[1]->priority.GetPosition()));
-    EXPECT_EQ(1u, DecodeDeclarationIndex(e[1]->priority.GetPosition()));
+    EXPECT_EQ(CSSPropertyID::kLeft, e[0].name.Id());
+    EXPECT_EQ(0u, DecodeMatchedPropertiesIndex(e[0].priority.GetPosition()));
+    EXPECT_EQ(0u, DecodeDeclarationIndex(e[0].priority.GetPosition()));
+    EXPECT_EQ(CSSPropertyID::kTop, e[1].name.Id());
+    EXPECT_EQ(0u, DecodeMatchedPropertiesIndex(e[1].priority.GetPosition()));
+    EXPECT_EQ(1u, DecodeDeclarationIndex(e[1].priority.GetPosition()));
   }
 
   {
     auto e = ExpansionAt(result, 1);
     ASSERT_EQ(2u, e.size());
 
-    EXPECT_EQ(CSSPropertyID::kBottom, e[0]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(1u, DecodeMatchedPropertiesIndex(e[0]->priority.GetPosition()));
-    EXPECT_EQ(0u, DecodeDeclarationIndex(e[0]->priority.GetPosition()));
-    EXPECT_EQ(CSSPropertyID::kRight, e[1]->ref.GetProperty().PropertyID());
-    EXPECT_EQ(1u, DecodeMatchedPropertiesIndex(e[1]->priority.GetPosition()));
-    EXPECT_EQ(1u, DecodeDeclarationIndex(e[1]->priority.GetPosition()));
+    EXPECT_EQ(CSSPropertyID::kBottom, e[0].name.Id());
+    EXPECT_EQ(1u, DecodeMatchedPropertiesIndex(e[0].priority.GetPosition()));
+    EXPECT_EQ(0u, DecodeDeclarationIndex(e[0].priority.GetPosition()));
+    EXPECT_EQ(CSSPropertyID::kRight, e[1].name.Id());
+    EXPECT_EQ(1u, DecodeMatchedPropertiesIndex(e[1].priority.GetPosition()));
+    EXPECT_EQ(1u, DecodeDeclarationIndex(e[1].priority.GetPosition()));
   }
 }
 
@@ -690,7 +673,7 @@ TEST_F(CascadeExpansionTest, MatchedDeclarationsLimit) {
 
   // Actually give the indexes a value, such that the calls to
   // ExpansionAt() does not crash.
-  for (wtf_size_t i = 0; i < max + 1; ++i) {
+  for (wtf_size_t i = 0; i < max + 2; ++i) {
     declarations[i] = CSSPropertyValue(CSSPropertyName(CSSPropertyID::kColor),
                                        *cssvalue::CSSUnsetValue::Create());
   }
@@ -698,12 +681,12 @@ TEST_F(CascadeExpansionTest, MatchedDeclarationsLimit) {
   MatchResult result;
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(
-      ImmutableCSSPropertyValueSet::Create(declarations.data(), max + 1,
-                                           kHTMLStandardMode),
+      ImmutableCSSPropertyValueSet::Create(
+          base::span(declarations).first(max + 1), kHTMLStandardMode),
       {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(
-      ImmutableCSSPropertyValueSet::Create(declarations.data(), max + 2,
-                                           kHTMLStandardMode),
+      ImmutableCSSPropertyValueSet::Create(
+          base::span(declarations).first(max + 2), kHTMLStandardMode),
       {.origin = CascadeOrigin::kAuthor});
 
   EXPECT_GT(ExpansionAt(result, 0).size(), 0u);

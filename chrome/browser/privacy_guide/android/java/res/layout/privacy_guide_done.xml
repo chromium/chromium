@@ -28,6 +28,7 @@ found in the LICENSE file.
             app:srcCompat="@drawable/privacy_guide_done_image" />
 
         <TextView
+            android:id="@+id/done_step_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/privacy_guide_done_title"
@@ -48,6 +49,7 @@ found in the LICENSE file.
             android:layout_marginBottom="@dimen/done_step_header_marginBottom"
             android:text="@string/privacy_guide_privacy_sandbox_heading"
             android:labelFor="@+id/ps_button"
+            android:accessibilityHeading="true"
             style="@style/TextAppearance.TextMediumThick.Accent1" />
 
         <LinearLayout
@@ -86,6 +88,7 @@ found in the LICENSE file.
             android:layout_marginBottom="@dimen/done_step_header_marginBottom"
             android:text="@string/privacy_guide_web_app_activity_heading"
             android:labelFor="@+id/waa_button"
+            android:accessibilityHeading="true"
             style="@style/TextAppearance.TextMediumThick.Accent1" />
 
         <LinearLayout

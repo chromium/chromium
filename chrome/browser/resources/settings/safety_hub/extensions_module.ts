@@ -48,7 +48,7 @@ export class SettingsSafetyHubExtensionsModuleElement extends
     };
   }
 
-  private headerString_: string;
+  declare private headerString_: string;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -65,7 +65,7 @@ export class SettingsSafetyHubExtensionsModuleElement extends
   private async onSafetyCheckExtensionsChanged_(numExtensions: number) {
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckExtensionsReviewLabel', numExtensions);
+            'safetyHubExtensionsReviewLabel', numExtensions);
   }
 
   private onButtonClick_() {

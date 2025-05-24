@@ -12,7 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "content/browser/webid/federated_provider_fetcher.h"
+#include "content/browser/webid/fedcm_config_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -22,7 +22,7 @@ namespace content {
 
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
-class FederatedProviderFetcher;
+class FedCmConfigFetcher;
 class RenderFrameHost;
 
 using FederatedAuthUserInfoRequestResult =
@@ -59,7 +59,7 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
       blink::mojom::IdentityProviderConfigPtr provider);
 
   void OnAllConfigAndWellKnownFetched(
-      std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
+      std::vector<FedCmConfigFetcher::FetchResult> fetch_results);
 
   void OnAccountsResponseReceived(
       IdpNetworkRequestManager::FetchStatus fetch_status,
@@ -87,7 +87,7 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
       api_permission_delegate_ = nullptr;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
-  std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
+  std::unique_ptr<FedCmConfigFetcher> config_fetcher_;
   bool does_idp_have_failing_signin_status_{false};
   std::string client_id_;
   GURL idp_config_url_;

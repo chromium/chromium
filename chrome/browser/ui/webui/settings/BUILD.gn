@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+# TODO(crbug.com/369369575): complete modularization of this component.
+# At the moment, there are a lot of dependencies from headers to //c/b and
+# //c/b/ui, which have to be addressed first. Though, doing partial
+# modularization unblocks other components.
+source_set("settings") {
+  sources = [
+    "safety_hub_handler.h",
+    "settings_page_ui_handler.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/safety_hub",
+    "//components/content_settings/core/common",
+    "//extensions/browser",
+    "//extensions/common",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ui/safety_hub" ]
+}
+
+source_set("impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [
+    "safety_hub_handler.cc",
+    "settings_page_ui_handler.cc",
+  ]
+
+  deps = [
+    ":settings",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/browser",
+    "//components/permissions:permissions_common",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/site_engagement/content",
+    "//extensions/browser",
+  ]
+}

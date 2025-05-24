@@ -80,7 +80,7 @@ export async function processFile(
   const lastDot = file.name.lastIndexOf('.');
 
   const fileName = `${lastDot > 0 ? file.name.slice(0, lastDot) : file.name}${
-      MIME_TYPE_TO_EXTENSION_MAP.get(processedImage.type as MimeType)}`;
+      MIME_TYPE_TO_EXTENSION_MAP.get(processedImage.type)}`;
 
   let processedFile = new File(
       [processedImage], fileName,

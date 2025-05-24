@@ -27,14 +27,14 @@ function testPixels(actualPixels, expectedPixels, testScenario)
     // pixels). For a thorough investigation, please see:
     // https://fiddle.skia.org/c/584fbc0b778a32a6cc2ea3ecbf2c6e8e
     if (testScenario.colorSpace == "srgb" &&
-        testScenario.pixelFormat == "uint8" &&
+        testScenario.colorType == "unorm8" &&
         ['rec2020', 'display-p3'].indexOf(
             testScenario.colorSpaceConversion) > -1)
         tolerance = 8;
 
     // Otherwise, if the source color space is wide gamut, we set the tolerance
     // to 0.01.
-    else if (testScenario.pixelFormat == "float16")
+    else if (testScenario.colorType == "float16")
         tolerance = 0.01;
 
     assert_array_approx_equals(actualPixels, expectedPixels, tolerance);
@@ -47,7 +47,7 @@ function generateFillStyle(red, green, blue, alpha) {
 function generateExpectedResult(testScenario, canvas)
 {
     var ctx = canvas.getContext('2d', {colorSpace: testScenario.colorSpace,
-                                       pixelFormat: testScenario.pixelFormat});
+                                       colorType: testScenario.colorType});
     ctx.fillStyle = generateFillStyle(155, 27, 27, testScenario.alpha);
     ctx.fillRect(0, 0, 1, 1);
     ctx.fillStyle = generateFillStyle(27, 155, 27, testScenario.alpha);
@@ -56,13 +56,13 @@ function generateExpectedResult(testScenario, canvas)
     ctx.fillRect(0, 1, 1, 1);
     ctx.fillStyle = generateFillStyle(27, 27, 27, testScenario.alpha);
     ctx.fillRect(1, 1, 1, 1);
-    return ctx.getImageData(0, 0, 2, 2, testScenario.colorSetting).data;
+    return ctx.getImageData(0, 0, 2, 2, testScenario.imageDataSettings).data;
 }
 
 function generateTestName(testScenario) {
     var str = "Testing ImageBitmapRenderingContext:" +
               " Source color space: " + testScenario.colorSpace +
-              ", pixel format: " + testScenario.pixelFormat +
+              ", pixel format: " + testScenario.colorType +
               ", alpha: " + testScenario.alpha +
               ", intermediate color space: " +
               testScenario.colorSpaceConversion;
@@ -92,10 +92,10 @@ function runTransferFromImageBitmapTest(testScenario) {
             finalCanvas.height = 2;
             var ctx = finalCanvas.getContext('2d',
                 {colorSpace: testScenario.colorSpace,
-                 pixelFormat: testScenario.pixelFormat});
+                 colorType: testScenario.colorType});
             ctx.drawImage(dstCanvas, 0, 0);
             var actualPixels = ctx.getImageData(0, 0, 2, 2,
-                testScenario.colorSetting).data;
+                testScenario.imageDataSettings).data;
             testPixels(actualPixels, expectedPixels, testScenario);
         });
        }, generateTestName(testScenario));
@@ -104,19 +104,19 @@ function runTransferFromImageBitmapTest(testScenario) {
 
 function runAllTests() {
     var colorSpaces = [
-        {colorSpace: 'srgb', pixelFormat: 'uint8'},
-        {colorSpace: 'srgb', pixelFormat: 'float16'},
-        {colorSpace: 'rec2020', pixelFormat: 'float16'},
-        {colorSpace: 'display-p3', pixelFormat: 'float16'}
+        {colorSpace: 'srgb', colorType: 'unorm8'},
+        {colorSpace: 'srgb', colorType: 'float16'},
+        {colorSpace: 'rec2020', colorType: 'float16'},
+        {colorSpace: 'display-p3', colorType: 'float16'}
         ];
     var alphaValues = [0.5, 1];
     var colorSpaceConversions = [
         'none', 'default'];
-    var colorSettings = [
-        {colorSpace: 'srgb', storageFormat: 'uint8'},
-        {colorSpace: 'srgb', storageFormat: 'float32'},
-        {colorSpace: 'rec2020', storageFormat: 'float32'},
-        {colorSpace: 'display-p3', storageFormat: 'float32'}
+    var imageDataSettings = [
+        {colorSpace: 'srgb', pixelFormat: 'rgba-unorm8'},
+        {colorSpace: 'srgb', pixelFormat: 'rgba-float16'},
+        {colorSpace: 'rec2020', pixelFormat: 'rgba-float16'},
+        {colorSpace: 'display-p3', pixelFormat: 'rgba-float16'}
         ];
 
     var testScenarios = [];
@@ -125,10 +125,10 @@ function runAllTests() {
             for (var k = 0; k < colorSpaceConversions.length; k++) {
                 var testScenario = {};
                 testScenario.colorSpace = colorSpaces[i].colorSpace;
-                testScenario.pixelFormat = colorSpaces[i].pixelFormat;
+                testScenario.colorType = colorSpaces[i].colorType;
                 testScenario.alpha = alphaValues[j];
                 testScenario.colorSpaceConversion = colorSpaceConversions[k];
-                testScenario.colorSetting = colorSettings[i];
+                testScenario.imageDataSettings = imageDataSettings[i];
                 testScenarios.push(testScenario);
             }
 

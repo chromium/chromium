@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("app_shortcuts") {
   sources = [
@@ -17,8 +17,6 @@ static_library("app_shortcuts") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/app_list",
@@ -26,6 +24,8 @@ static_library("app_shortcuts") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
     "//ui/base",
   ]
 }

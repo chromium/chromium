@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTHENTICATION_OTP_INPUT_DIALOG_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTHENTICATION_OTP_INPUT_DIALOG_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_consumer.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
 @protocol OtpInputDialogMutator;
 
@@ -19,6 +19,8 @@
 @property(nonatomic, weak) id<OtpInputDialogMutator> mutator;
 
 - (instancetype)init;
+
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end
 

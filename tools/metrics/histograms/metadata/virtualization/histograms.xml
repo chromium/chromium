@@ -37,9 +37,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Virtualization.{Name}.Disk.{Duration}.IoCount" units="count"
-    expires_after="2025-01-05">
+    expires_after="2025-11-26">
   <owner>uekawa@google.com</owner>
   <owner>takayas@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
   <summary>
     The total count of read, write, flush, and discard operations that
     virtio-blk devices during {Duration} in {Name}.
@@ -49,9 +50,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.Disk.{Duration}.IoSize" units="MiB"
-    expires_after="2025-01-05">
+    expires_after="2025-11-26">
   <owner>uekawa@google.com</owner>
   <owner>takayas@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
   <summary>
     The total size of read and write IO that virtio-blk devices performed during
     {Duration} in {Name}.
@@ -61,9 +63,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.Disk.{Duration}.IoTicks"
-    units="Milliseconds" expires_after="2025-03-09">
+    units="Milliseconds" expires_after="2025-11-26">
   <owner>uekawa@google.com</owner>
   <owner>takayas@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
   <summary>
     The total time that virtio-blk devices performed read, write, flush, and
     discard operations during {Duration} in {Name}.
@@ -73,9 +76,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.Disk.{Duration}.KbPerTicks"
-    units="KiBPerMilliSecond" expires_after="2025-01-05">
+    units="KiBPerMilliSecond" expires_after="2025-11-26">
   <owner>uekawa@google.com</owner>
   <owner>takayas@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
   <summary>
     The average throughput of read and write operations that virio-blk devices
     performed during {Duration} in {Name}.
@@ -85,9 +89,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.SecurityKeyAttach" enum="BooleanSuccess"
-    expires_after="2025-02-01">
+    expires_after="2026-02-01">
   <owner>morg@google.com</owner>
   <owner>uekawa@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
   <summary>
     True when the vmc key-attach command to attach a security key to a VM is
     successful. False when the command has failed.
@@ -96,9 +101,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.StartDuration" units="Milliseconds"
-    expires_after="2025-03-09">
-  <owner>abhishekbh@google.com</owner>
+    expires_after="2025-11-26">
   <owner>uekawa@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
   <summary>
     The time taken to start a {Name} VM in milliseconds. This metric is emitted
     at the end of a StartVmRequest for {Name} VM by the Concierge daemon in
@@ -108,9 +113,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.StopDuration" units="Milliseconds"
-    expires_after="2025-03-09">
-  <owner>abhishekbh@google.com</owner>
+    expires_after="2025-11-26">
   <owner>uekawa@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
   <summary>
     The time taken to stop a {Name} VM in milliseconds. This metric is emitted
     at the end of a StopVmRequest for {Name} VM by the Concierge daemon in

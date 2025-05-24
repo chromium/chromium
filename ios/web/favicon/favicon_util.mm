@@ -21,8 +21,9 @@ bool ExtractFaviconURL(const base::Value::List& favicons,
                        std::vector<web::FaviconURL>* urls) {
   BOOL has_favicon = NO;
   for (const base::Value& favicon : favicons) {
-    if (!favicon.is_dict())
+    if (!favicon.is_dict()) {
       return false;
+    }
 
     const base::Value::Dict& favicon_dict = favicon.GetDict();
     const std::string* href_value = favicon_dict.FindString("href");
@@ -58,19 +59,21 @@ bool ExtractFaviconURL(const base::Value::List& favicons,
           continue;
         }
 
-        if (width > 0 && height > 0)
+        if (width > 0 && height > 0) {
           sizes.push_back(gfx::Size(width, height));
+        }
       }
     }
 
     BOOL is_apple_touch = YES;
     web::FaviconURL::IconType icon_type = web::FaviconURL::IconType::kFavicon;
-    if (rel == "apple-touch-icon")
+    if (rel == "apple-touch-icon") {
       icon_type = web::FaviconURL::IconType::kTouchIcon;
-    else if (rel == "apple-touch-icon-precomposed")
+    } else if (rel == "apple-touch-icon-precomposed") {
       icon_type = web::FaviconURL::IconType::kTouchPrecomposedIcon;
-    else
+    } else {
       is_apple_touch = NO;
+    }
     GURL url(href);
     if (url.is_valid()) {
       urls->push_back(web::FaviconURL(url, icon_type, sizes));

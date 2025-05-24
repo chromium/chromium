@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_EVENT_MODIFIERS_H_
 #define UI_EVENTS_EVENT_MODIFIERS_H_
 
+#include <array>
+
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -74,7 +76,7 @@ class EVENTS_EXPORT EventModifiers {
 
  private:
   // Count of keys pressed for each modifier.
-  int modifiers_down_[MODIFIER_NUM_MODIFIERS];
+  std::array<int, MODIFIER_NUM_MODIFIERS> modifiers_down_;
 
   // Mask of modifier flags currently "locked".
   int modifier_flags_locked_ = 0;

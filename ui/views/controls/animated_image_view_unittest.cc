@@ -31,14 +31,16 @@ template <typename T>
 const T* FindPaintOp(const cc::PaintRecord& paint_record,
                      cc::PaintOpType paint_op_type) {
   for (const cc::PaintOp& op : paint_record) {
-    if (op.GetType() == paint_op_type)
+    if (op.GetType() == paint_op_type) {
       return static_cast<const T*>(&op);
+    }
 
     if (op.GetType() == cc::PaintOpType::kDrawRecord) {
       const T* record_op_result = FindPaintOp<T>(
           static_cast<const cc::DrawRecordOp&>(op).record, paint_op_type);
-      if (record_op_result)
+      if (record_op_result) {
         return static_cast<const T*>(record_op_result);
+      }
     }
   }
   return nullptr;

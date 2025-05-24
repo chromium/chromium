@@ -34,12 +34,18 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/version_info/channel.h"
 #include "google_apis/common/api_error_codes.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
+
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointResponse;
+using endpoint_fetcher::FetchErrorType;
+using endpoint_fetcher::HttpMethod;
 
 namespace ash::quick_start {
 
@@ -82,7 +88,7 @@ constexpr char kOauthTokenKey[] = "oauthToken";
 
 constexpr base::TimeDelta kGetChallengeDataTimeout = base::Minutes(3);
 constexpr base::TimeDelta kStartSessionTimeout = base::Minutes(3);
-constexpr char kHttpMethod[] = "POST";
+constexpr HttpMethod kHttpPost = HttpMethod::kPost;
 constexpr char kHttpContentType[] = "application/json";
 
 constexpr char kGetChallengeDataRequest[] = R"({
@@ -326,7 +332,7 @@ std::string CreateStartSessionRequestData(
   // bytes.
   chrome_os_device_info.Set(
       kDeviceAttestationCertificateKey,
-      base::Base64Encode(base::as_bytes(base::make_span((*certificate)))));
+      base::Base64Encode(base::as_byte_span(*certificate)));
   chrome_os_device_info.Set(
       kClientIdKey,
       google_apis::GetOAuth2ClientID(google_apis::OAuth2Client::CLIENT_MAIN));
@@ -450,7 +456,7 @@ void RunAuthCodeCallback(
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     const std::string& email,
     const std::string& auth_code,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   metrics.RecordGaiaAuthenticationRequestEnded(
       QuickStartMetrics::GaiaAuthenticationResult::kSuccess);
   SecondDeviceAuthBroker::AuthCodeSuccessResponse response;
@@ -486,7 +492,7 @@ void ParseAuthCodeAndRunCallback(
 
   std::string* gaia_id_ptr = response->FindString(kObfuscatedGaiaIdKey);
   // Gaia id may be empty. We need to handle this gracefully.
-  std::string gaia_id = gaia_id_ptr ? *gaia_id_ptr : std::string();
+  GaiaId gaia_id = gaia_id_ptr ? GaiaId(*gaia_id_ptr) : GaiaId();
 
   RunAuthCodeCallback(metrics, std::move(auth_code_callback),
                       /*email=*/*response->FindString(kEmailKey), *auth_code,
@@ -525,13 +531,14 @@ void SecondDeviceAuthBroker::FetchChallengeBytes(
   endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
       /*url=*/GURL(kDeviceSigninBaseUrl).Resolve(kGetChallengeDataApi),
-      /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
       /*timeout=*/kGetChallengeDataTimeout,
       /*post_data=*/kGetChallengeDataRequest,
       /*headers=*/std::vector<std::string>(),
-      /*cors_exempt_headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/kChallengeDataAnnotation, chrome::GetChannel());
+      /*cors_exempt_headers=*/std::vector<std::string>(), chrome::GetChannel(),
+      EndpointFetcher::RequestParams::Builder(kHttpPost,
+                                              kChallengeDataAnnotation)
+          .Build());
 
   metrics_.RecordChallengeBytesRequested();
   endpoint_fetcher_->PerformRequest(
@@ -583,14 +590,15 @@ void SecondDeviceAuthBroker::FetchAuthCode(
   endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
       /*url=*/GURL(kDeviceSigninBaseUrl).Resolve(kStartSessionApi),
-      /*http_method=*/kHttpMethod,
       /*content_type=*/kHttpContentType,
       /*timeout=*/kStartSessionTimeout,
       /*post_data=*/
       CreateStartSessionRequestData(fido_assertion_info, certificate),
       /*headers=*/std::vector<std::string>(),
-      /*cors_exempt_headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/kStartSessionAnnotation, chrome::GetChannel());
+      /*cors_exempt_headers=*/std::vector<std::string>(), chrome::GetChannel(),
+      EndpointFetcher::RequestParams::Builder(kHttpPost,
+                                              kStartSessionAnnotation)
+          .Build());
 
   metrics_.RecordGaiaAuthenticationStarted();
   endpoint_fetcher_->PerformRequest(

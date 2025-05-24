@@ -13,7 +13,10 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
+#include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -21,6 +24,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/accessibility/spoken_feedback_browsertest.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/web_view/ash_web_view_impl.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -72,6 +76,33 @@ void SimulatePlaybackState(bool is_playing) {
       ->MediaSessionInfoChanged(std::move(session_info));
 }
 
+// Dependent on `focus_gained`, the media with `id_observed` will either gain or
+// lose audio focus.
+void SimulateAudioFocusChange(bool focus_gained,
+                              const base::UnguessableToken& id_observed) {
+  media_session::mojom::AudioFocusRequestStatePtr focus(
+      media_session::mojom::AudioFocusRequestState::New());
+  auto* controller = FocusModeController::Get();
+  focus->request_id = id_observed;
+
+  auto* sounds_controller = controller->focus_mode_sounds_controller();
+  if (focus_gained) {
+    sounds_controller->OnFocusGained(std::move(focus));
+    SimulatePlaybackState(/*is_playing=*/true);
+  } else {
+    sounds_controller->OnFocusLost(std::move(focus));
+  }
+}
+
+// Simulate playing a newly selected playlist during an active session.
+void SimulateStartPlaying() {
+  auto* controller = FocusModeController::Get();
+  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
+  SimulateAudioFocusChange(
+      /*focus_gained=*/true,
+      /*id_observed=*/controller->GetMediaSessionRequestId());
+}
+
 QuickSettingsView* OpenQuickSettings() {
   UnifiedSystemTray* system_tray = Shell::GetPrimaryRootWindowController()
                                        ->shelf()
@@ -108,10 +139,7 @@ PillButton* GetToggleFocusButton(QuickSettingsView* quick_settings) {
 
 class FocusModeBrowserTest : public InProcessBrowserTest {
  public:
-  FocusModeBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kFocusMode, features::kFocusModeYTM}, {});
-  }
+  FocusModeBrowserTest() = default;
   ~FocusModeBrowserTest() override = default;
   FocusModeBrowserTest(const FocusModeBrowserTest&) = delete;
   FocusModeBrowserTest& operator=(const FocusModeBrowserTest&) = delete;
@@ -122,9 +150,6 @@ class FocusModeBrowserTest : public InProcessBrowserTest {
         ->focus_mode_sounds_controller()
         ->SetIsMinorUserForTesting(false);
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests basic create/close media widget functionality.
@@ -252,6 +277,60 @@ IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, PauseMusicDuringEndingMoment) {
   EXPECT_TRUE(controller->in_focus_session());
   EXPECT_TRUE(FindMediaWidget());
   EXPECT_NE(old_playlist_id, sounds_controller->selected_playlist().id);
+}
+
+// Tests that the ending moment will pause the playlist even if it is not the
+// initial track. This is because when the next track is played, it loses and
+// regains focus, which means that the media controller is reset.
+// Regression test for crbug.com/380173752
+IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, PauseNextTrackDuringEndingMoment) {
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // Toggle on focus mode.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  auto* sounds_controller = controller->focus_mode_sounds_controller();
+  sounds_controller->set_simulate_playback_for_testing();
+
+  // Select a playlist with a type and verify that a media widget is created.
+  focus_mode_util::SelectedPlaylist selected_playlist;
+  selected_playlist.id = "id0";
+  selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  EXPECT_TRUE(FindMediaWidget());
+
+  // Simulate the playlist is playing.
+  SimulateStartPlaying();
+  EXPECT_EQ(focus_mode_util::SoundState::kPlaying,
+            sounds_controller->selected_playlist().state);
+
+  // Simulate going to the next track, which includes audio focus changes.
+  SimulateAudioFocusChange(
+      /*focus_gained=*/false,
+      /*id_observed=*/controller->GetMediaSessionRequestId());
+  // Verify that we have lost audio focus.
+  EXPECT_FALSE(sounds_controller->has_audio_focus_for_testing());
+  SimulateAudioFocusChange(
+      /*focus_gained=*/true,
+      /*id_observed=*/controller->GetMediaSessionRequestId());
+  // Verify that we have gained audio focus.
+  EXPECT_TRUE(sounds_controller->has_audio_focus_for_testing());
+
+  // Triggering the ending moment should pause the playlist.
+  controller->TriggerEndingMomentImmediately();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(FindMediaWidget());
+  EXPECT_EQ(focus_mode_util::SoundState::kPaused,
+            sounds_controller->selected_playlist().state);
+
+  // Extending the session will resume the playlist.
+  controller->ExtendSessionDuration();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_EQ(focus_mode_util::SoundState::kPlaying,
+            sounds_controller->selected_playlist().state);
 }
 
 IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest,
@@ -436,6 +515,46 @@ IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, ClickOnFocusPanelInOverviewMode) {
   EXPECT_TRUE(ash::OverviewController::Get()->InOverviewSession());
 }
 
+// Tests that clicking the ending moment nudge will show the focus tray bubble.
+// Regression test for crbug.com/384586824
+IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, EndingMomentNudgeClick) {
+  FocusModeTray* focus_mode_tray =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->focus_mode_tray();
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // Open a browser window.
+  CreateBrowser(ProfileManager::GetActiveUserProfile());
+
+  // Start a focus session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(focus_mode_tray->GetVisible());
+
+  // Trigger the ending moment and verify that the tray icon is still visible,
+  // even though the focus session has ended.
+  controller->TriggerEndingMomentImmediately();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(focus_mode_tray->GetVisible());
+  EXPECT_FALSE(focus_mode_tray->GetBubbleView());
+
+  // Force the ending moment nudge to show immediately since normally there is a
+  // delay. Verify that it is showing.
+  controller->MaybeShowEndingMomentNudge();
+  EXPECT_TRUE(AnchoredNudgeManager::Get()->IsNudgeShown(
+      focus_mode_util::kFocusModeEndingMomentNudgeId));
+
+  // Simulate a "click" on the nudge.
+  focus_mode_tray->ShowBubble();
+
+  // Verify that the focus mode tray bubble is showing and we are still in the
+  // focus session ending moment.
+  EXPECT_TRUE(focus_mode_tray->GetBubbleView());
+  EXPECT_TRUE(focus_mode_tray->GetVisible());
+  EXPECT_TRUE(controller->in_ending_moment());
+}
+
 class FocusModeSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  public:
   FocusModeSpokenFeedbackTest() = default;
@@ -443,9 +562,6 @@ class FocusModeSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
   FocusModeSpokenFeedbackTest& operator=(const FocusModeSpokenFeedbackTest&) =
       delete;
   ~FocusModeSpokenFeedbackTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kFocusMode};
 };
 
 // Tests that when using `Search + Left/Right Arrow` key to navigate on the

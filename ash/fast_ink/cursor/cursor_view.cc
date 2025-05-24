@@ -122,11 +122,10 @@ void CursorView::Draw() {
     }
   }
 
-  // Update content and damage rectangles for surface. When cursor is moving,
-  // enable `auto_refresh` to send frames asynchronously to minimize latency.
-  const bool is_cursor_moving = stationary_timer_->IsRunning();
+  // TODO(b/360768376): Disable overlay until we know why
+  // fast ink cursor glitches.
   UpdateSurface(cursor_rect_, damage_rect_,
-                /*auto_refresh=*/is_cursor_moving);
+                /*auto_refresh=*/false);
 }
 
 void CursorView::OnStationary() {

@@ -8,8 +8,10 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 
 /** Preloads expensive classes that will be used by WebView.. */
+@NullMarked
 public final class AwClassPreloader {
     private static final String TAG = "AwClassPreloader";
 

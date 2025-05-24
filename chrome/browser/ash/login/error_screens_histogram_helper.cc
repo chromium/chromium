@@ -50,8 +50,7 @@ std::string GetErrorStateString(NetworkError::ErrorState state) {
     case NetworkError::ERROR_STATE_NONE:
       return ".None";
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid ErrorState " << state;
-      return std::string();
+      NOTREACHED() << "Invalid ErrorState " << state;
   }
 }
 

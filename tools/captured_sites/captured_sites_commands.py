@@ -399,10 +399,19 @@ class TestCommand(Command):
         'out/%s/captured_sites_interactive_tests' % self.options.target,
         '--gtest_filter="%s.Recipe/%s"' %
         (self.gtest_filter, self.gtest_parameter),
-        '--test-launcher-interactive', '--enable-pixel-output-in-tests',
-        '--vmodule=captured_sites_test_utils=2,%s,%s=1' %
-        (self.options.verbose_logging, self.vmodule_name)
+        '--enable-pixel-output-in-tests',
     ]
+
+    if self.options.use_bot_timeout:
+      self.command_args.extend([
+          '--ui-test-action-max-timeout=180000',
+          '--test-launcher-timeout=180000'
+      ])
+    else:
+      self.command_args.append('--test-launcher-interactive')
+
+    self.command_args.append('--vmodule=captured_sites_test_utils=2,%s,%s=1' %
+                             (self.options.verbose_logging, self.vmodule_name))
 
     if self.options.background:
       self.command_args.insert(0, _RUN_BACKGROUND)
@@ -469,6 +478,14 @@ class TestCommand(Command):
                         dest='add_disabled',
                         action='store_true',
                         help='Also run disabled tests that match the filter.')
+    parser.add_argument(
+        '-u',
+        '--use_bot_timeout',
+        dest='use_bot_timeout',
+        action='store_true',
+        help=('Use the same timeout settings as exists on the bot (3 minutes) '
+              'instead of the `test-launcher-interactive` setting. This is '
+              'particularly useful when bisecting.'))
     parser.add_argument('-f',
                         '--break_on_failure',
                         dest='add_break_on_failure',

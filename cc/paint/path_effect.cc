@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -31,7 +32,7 @@ class DashPathEffect final : public PathEffect {
  public:
   explicit DashPathEffect(const float intervals[], int count, float phase)
       : PathEffect(Type::kDash),
-        intervals_(intervals, intervals + count),
+        intervals_(intervals, UNSAFE_TODO(intervals + count)),
         phase_(phase) {}
 
   bool EqualsForTesting(const DashPathEffect& other) const {
@@ -47,11 +48,7 @@ class DashPathEffect final : public PathEffect {
         .ValueOrDie();
   }
   void SerializeData(PaintOpWriter& writer) const override {
-    // This serialization is identical to the behavior of
-    // PaintOpWriter::Write(std::vector), which lets us use
-    // PaintOpReader::Read(std::vector) below.
-    writer.WriteSize(intervals_.size());
-    writer.WriteData(intervals_.size() * sizeof(float), intervals_.data());
+    writer.Write(intervals_);
     writer.Write(phase_);
   }
 
@@ -122,8 +119,7 @@ bool PathEffect::EqualsForTesting(const PathEffect& other) const {
     case Type::kCorner:
       return AreEqualForTesting<CornerPathEffect>(*this, other);
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 sk_sp<PathEffect> PathEffect::Deserialize(PaintOpReader& reader, Type type) {
@@ -131,7 +127,7 @@ sk_sp<PathEffect> PathEffect::Deserialize(PaintOpReader& reader, Type type) {
     case Type::kDash: {
       std::vector<float> intervals;
       float phase;
-      reader.Read(&intervals);
+      reader.Read(intervals);
       reader.Read(&phase);
       return reader.valid()
                  ? MakeDash(intervals.data(),
@@ -144,8 +140,7 @@ sk_sp<PathEffect> PathEffect::Deserialize(PaintOpReader& reader, Type type) {
       return reader.valid() ? MakeCorner(radius) : nullptr;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

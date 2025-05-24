@@ -12,6 +12,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/mac/icloud_keychain_sys.h"
@@ -38,6 +39,10 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   // cancel_count returns the number of times that `Cancel` has been called.
   unsigned cancel_count() const { return cancel_count_; }
 
+  // Configure a callback that will be called during each create request.
+  void SetMakeCredentialCallback(
+      base::RepeatingCallback<void(const CtapMakeCredentialRequest&)> callback);
+
   // SetMakeCredentialResult sets the values that will be returned from the next
   // call to `MakeCredential`. If not set, `MakeCredential` will return an
   // error.
@@ -47,6 +52,10 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   // SetMakeCredentialError sets the code of the `NSError` that will be returned
   // from the next `MakeCredential` call.
   void SetMakeCredentialError(int code);
+
+  // Configure a callback that will be called during each get request.
+  void SetGetAssertionCallback(
+      base::RepeatingCallback<void(const CtapGetAssertionRequest&)> callback);
 
   // SetGetAssertionResult sets the values that will be returned from the next
   // call to `GetAssertion`. If not set, `GetAssertion` will return an error.
@@ -95,6 +104,10 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
 
   AuthState auth_state_ = kAuthAuthorized;
   std::optional<AuthState> next_auth_state_;
+
+  base::RepeatingCallback<void(const CtapMakeCredentialRequest&)>
+      create_callback_;
+  base::RepeatingCallback<void(const CtapGetAssertionRequest&)> get_callback_;
 
   std::optional<int> make_credential_error_code_;
   std::optional<std::vector<uint8_t>> make_credential_attestation_object_bytes_;

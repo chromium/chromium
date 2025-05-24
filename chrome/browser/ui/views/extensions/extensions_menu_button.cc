@@ -36,7 +36,15 @@ ExtensionsMenuButton::ExtensionsMenuButton(
 ExtensionsMenuButton::~ExtensionsMenuButton() = default;
 
 void ExtensionsMenuButton::AddedToWidget() {
-  ConfigureBubbleMenuItem(this, 0);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    SetFocusRingCornerRadius(
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::ShapeContextTokens::kExtensionsMenuButtonRadius));
+    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  } else {
+    ConfigureBubbleMenuItem(this, 0);
+  }
   UpdateState();
 }
 

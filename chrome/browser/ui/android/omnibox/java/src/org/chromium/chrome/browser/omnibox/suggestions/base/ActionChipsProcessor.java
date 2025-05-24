@@ -6,9 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.util.ArrayMap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
@@ -19,18 +18,18 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A class that handles model creation for the Action Chips. */
+@NullMarked
 public class ActionChipsProcessor {
-    private final @NonNull SuggestionHost mSuggestionHost;
-    private final @NonNull ArrayMap<OmniboxAction, Integer> mVisibleActions;
+    private final SuggestionHost mSuggestionHost;
+    private final ArrayMap<OmniboxAction, Integer> mVisibleActions;
 
     /** The action that was executed, or null if no action was executed by the user. */
     private @Nullable OmniboxAction mExecutedAction;
 
     /**
-     * @param context An Android context.
      * @param suggestionHost Component receiving suggestion events.
      */
-    public ActionChipsProcessor(@NonNull SuggestionHost suggestionHost) {
+    public ActionChipsProcessor(SuggestionHost suggestionHost) {
         mSuggestionHost = suggestionHost;
         mVisibleActions = new ArrayMap<>();
     }
@@ -93,7 +92,7 @@ public class ActionChipsProcessor {
     }
 
     /** Invoke action associated with the ActionChip. */
-    private void executeAction(@NonNull OmniboxAction action, int position) {
+    private void executeAction(OmniboxAction action, int position) {
         mExecutedAction = action;
         mSuggestionHost.onOmniboxActionClicked(action, position);
     }

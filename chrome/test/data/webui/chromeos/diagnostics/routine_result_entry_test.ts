@@ -8,8 +8,10 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
-import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
-import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
+import type {RoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import type {TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
+import {BadgeType} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -81,10 +83,10 @@ suite('routineResultEntryTestSuite', function() {
   function getNameText(): string {
     assert(routineResultEntryElement);
     const name =
-        routineResultEntryElement.shadowRoot!.querySelector<HTMLDivElement>(
+        routineResultEntryElement.shadowRoot!.querySelector<HTMLElement>(
             '#routine');
     assert(name);
-    return name!.textContent!.trim();
+    return name.textContent!.trim();
   }
 
   /**

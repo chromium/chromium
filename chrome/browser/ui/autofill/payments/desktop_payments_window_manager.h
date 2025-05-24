@@ -10,15 +10,15 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
 class GURL;
 
@@ -39,9 +39,9 @@ class PaymentsWindowUserConsentDialogControllerImpl;
 // WebContents of the original tab that the pop-up is created in. If there is a
 // pop-up currently present, `this` will observe the WebContents of that pop-up.
 class DesktopPaymentsWindowManager : public PaymentsWindowManager,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
                                      public BrowserListObserver,
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
                                      public content::WebContentsObserver {
  public:
   explicit DesktopPaymentsWindowManager(ContentAutofillClient* client);
@@ -52,16 +52,17 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
 
   // PaymentsWindowManager:
   void InitVcn3dsAuthentication(Vcn3dsContext context) override;
+  void InitBnplFlow(BnplContext context) override;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
  private:
   friend class DesktopPaymentsWindowManagerTestApi;
@@ -70,7 +71,8 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   enum class FlowType {
     kNoFlow = 0,
     kVcn3ds = 1,
-    kMaxValue = kVcn3ds,
+    kBnpl = 2,
+    kMaxValue = kBnpl,
   };
 
   // Creates a pop-up for `flow_type_`, with an initial URL of `url` and size of
@@ -82,8 +84,15 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // kVcn3ds.
   void OnDidFinishNavigationForVcn3ds();
 
+  // Triggered when a pop-up navigation has finished, and the `flow_type_` is
+  // kBnpl.
+  void OnDidFinishNavigationForBnpl();
+
   // Triggered when a pop-up is destroyed, and the `flow_type_` is kVcn3ds.
   void OnWebContentsDestroyedForVcn3ds();
+
+  // Triggered when a pop-up is destroyed, and the `flow_type_` is kVcn3ds.
+  void OnWebContentsDestroyedForBnpl();
 
   // Initiates the second UnmaskCardRequest in the VCN 3DS flow to attempt to
   // retrieve the virtual card. This method is run once risk data is loaded for
@@ -97,7 +106,7 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // UnmaskCardRequest, triggered after the authentication has completed.
   void OnVcn3dsAuthenticationResponseReceived(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const PaymentsNetworkInterface::UnmaskResponseDetails& response_details);
+      const UnmaskResponseDetails& response_details);
 
   // Resets the state of `this` in relation to the ongoing UnmaskCardRequest.
   // Called if the user clicks cancel on the progress dialog, which is shown
@@ -121,9 +130,26 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // Only present if `flow_type_` is `kVcn3ds`.
   std::optional<Vcn3dsContext> vcn_3ds_context_;
 
+  // Only present if `flow_type_` is `kBnpl`.
+  std::optional<BnplContext> bnpl_context_;
+
   // The timestamp for when the VCN 3DS pop-up was shown to the user. Used for
   // logging purposes.
   std::optional<base::TimeTicks> vcn_3ds_popup_shown_timestamp_;
+
+  // The timestamp for when the BNPL payments window pop-up was shown to the
+  // user. Used for logging purposes.
+  std::optional<base::TimeTicks> bnpl_popup_shown_timestamp_;
+
+  // Set on every navigation inside of the observed pop-up. Used on pop-up
+  // destruction to understand the reason for destruction, and to notify the
+  // caller. This class variable is required because at the point where the most
+  // recent URL navigation needs to be known, accessing the observed web
+  // contents is unsafe. Thus it is preferred to cache this earlier and read
+  // from it when needed.
+  // TODO(crbug.com/388088113): Currently, only the BNPL flow uses this.
+  // Refactor the VCN 3DS flow to also use this.
+  GURL most_recent_url_navigation_;
 
   // The type of flow that is currently ongoing. Set when a flow is initiated.
   FlowType flow_type_ = FlowType::kNoFlow;
@@ -136,10 +162,13 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   std::unique_ptr<PaymentsWindowUserConsentDialogControllerImpl>
       payments_window_user_consent_dialog_controller_;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Used in tests to notify the test infrastructure that the pop-up has closed.
+  base::RepeatingClosure popup_closed_closure_for_testing_;
+
+#if BUILDFLAG(IS_LINUX)
   base::ScopedObservation<BrowserList, BrowserListObserver> scoped_observation_{
       this};
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
   base::WeakPtrFactory<DesktopPaymentsWindowManager> weak_ptr_factory_{this};
 };

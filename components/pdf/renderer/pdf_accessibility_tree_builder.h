@@ -30,7 +30,7 @@ namespace pdf {
 class PdfAccessibilityTreeBuilder {
  public:
   PdfAccessibilityTreeBuilder(
-      base::WeakPtr<PdfAccessibilityTree> pdf_accessibility_tree,
+      bool mark_headings_using_heuristic,
       const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
       const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
       const chrome_pdf::AccessibilityPageObjects& page_objects,
@@ -61,7 +61,9 @@ class PdfAccessibilityTreeBuilder {
   void AddWordStartsAndEnds(ui::AXNodeData* inline_text_box);
   ui::AXNodeData* CreateAndAppendNode(ax::mojom::Role role,
                                       ax::mojom::Restriction restriction);
-  ui::AXNodeData* CreateParagraphNode(float font_size);
+  ui::AXNodeData* CreateBlockLevelNode(const std::string& text_run_type,
+                                       float font_size);
+  ui::AXNodeData* CreateStaticTextNode();
   ui::AXNodeData* CreateStaticTextNode(
       const chrome_pdf::PageCharacterIndex& page_char_index);
   ui::AXNodeData* CreateInlineTextBoxNode(
@@ -91,6 +93,7 @@ class PdfAccessibilityTreeBuilder {
       const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field);
   ui::AXNodeData* CreateChoiceFieldNode(
       const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field);
+  ui::AXNodeData* CreateOcrWrapperNode(const gfx::PointF& position, bool start);
   void AddTextToAXNode(size_t start_text_run_index,
                        uint32_t end_text_run_index,
                        ui::AXNodeData* ax_node,
@@ -124,9 +127,9 @@ class PdfAccessibilityTreeBuilder {
       const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field,
       ui::AXNodeData* para_node,
       size_t* text_run_index);
-  void AddRemainingAnnotations(ui::AXNodeData* para_node);
+  void AddRemainingAnnotations(ui::AXNodeData* para_node, bool ocr_applied);
 
-  base::WeakPtr<PdfAccessibilityTree> pdf_accessibility_tree_;
+  const bool mark_headings_using_heuristic_;
   std::vector<uint32_t> text_run_start_indices_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityTextRunInfo>>
       text_runs_;

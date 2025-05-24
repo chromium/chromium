@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.feed;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -16,7 +19,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
@@ -32,6 +34,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedAvailabilityStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -81,6 +86,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * A implementation of a Feed {@link Stream} that is just able to render a vertical stream of cards
  * for Feed v2.
  */
+@NullMarked
 public class FeedStream implements Stream {
     private static final String TAG = "FeedStream";
     private static final String SPACER_KEY = "Spacer";
@@ -212,7 +218,7 @@ public class FeedStream implements Stream {
         }
 
         /** Search the view hierarchy to find the accessibility focused view. */
-        private View findAccessibilityFocus(View view) {
+        private @Nullable View findAccessibilityFocus(View view) {
             if (view == null || view.isAccessibilityFocused()) return view;
             if (!(view instanceof ViewGroup)) return null;
             ViewGroup viewGroup = (ViewGroup) view;
@@ -341,12 +347,7 @@ public class FeedStream implements Stream {
 
         @Override
         public void showSyncConsentPrompt() {
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                startSigninFlow();
-            } else {
-                mActionDelegate.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
-            }
+            startSigninFlow();
         }
 
         @Override
@@ -357,9 +358,7 @@ public class FeedStream implements Stream {
         @Override
         public void showSignInInterstitial() {
             mActionDelegate.showSignInInterstitial(
-                    SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO,
-                    mBottomSheetController,
-                    mWindowAndroid);
+                    SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, mBottomSheetController);
         }
 
         @Override
@@ -416,7 +415,9 @@ public class FeedStream implements Stream {
 
         /** postTask to call runnable after all in-progress work is complete. */
         void postTaskAfterWorkComplete(Runnable runnable) {
-            if (!mWorkPending.get()) {
+            Boolean workPendingValue = mWorkPending.get();
+            assert workPendingValue != null;
+            if (!workPendingValue) {
                 PostTask.postTask(TaskTraits.UI_DEFAULT, runnable);
             } else {
                 new DoneWatcher(runnable);
@@ -532,12 +533,12 @@ public class FeedStream implements Stream {
             SnackbarManager.SnackbarController controller =
                     new SnackbarManager.SnackbarController() {
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
                             delegateController.onAction(mInProgressWorkTracker.addWork());
                         }
 
                         @Override
-                        public void onDismissNoAction(Object actionData) {
+                        public void onDismissNoAction(@Nullable Object actionData) {
                             delegateController.onDismissNoAction(mInProgressWorkTracker.addWork());
                         }
                     };
@@ -564,7 +565,7 @@ public class FeedStream implements Stream {
         @Override
         public void watchForViewFirstVisible(View view, float viewedThreshold, Runnable runnable) {
             assert ThreadUtils.runningOnUiThread();
-            if (mSliceViewTracker != null) {
+            if (isBound()) {
                 mSliceViewTracker.watchForFirstVisible(
                         getSliceIdFromView(view), viewedThreshold, runnable);
             }
@@ -644,7 +645,7 @@ public class FeedStream implements Stream {
         }
     }
 
-    private FeedSurfaceRendererBridge mBridge;
+    private final FeedSurfaceRendererBridge mBridge;
 
     // How far the user has to scroll down in DP before attempting to load more content.
     private final int mLoadMoreTriggerScrollDistanceDp;
@@ -657,11 +658,11 @@ public class FeedStream implements Stream {
     private @ClosedReason int mClosedReason = ClosedReason.LEAVE_FEED;
     // Various helpers/controllers.
     private ShareHelperWrapper mShareHelper;
-    private SnackbarManager mSnackManager;
-    private WindowAndroid mWindowAndroid;
-    private UnreadContentObserver mUnreadContentObserver;
-    FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
-    private Stream.StreamsMediator mStreamsMediator;
+    private final SnackbarManager mSnackManager;
+    private final WindowAndroid mWindowAndroid;
+    private @Nullable UnreadContentObserver mUnreadContentObserver;
+    @Nullable FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
+    private final Stream.StreamsMediator mStreamsMediator;
     // Snackbar (and post-Follow dialog) controller used exclusively for handling in-feed
     // post-Follow and post-Unfollow UX.
     WebFeedSnackbarController mWebFeedSnackbarController;
@@ -669,17 +670,17 @@ public class FeedStream implements Stream {
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
-    private int mLoadMoreTriggerLookahead;
+    private final int mLoadMoreTriggerLookahead;
     private boolean mIsLoadingMoreContent;
 
     // Things attached on bind.
-    private RestoreScrollObserver mRestoreScrollObserver = new RestoreScrollObserver();
-    private RecyclerView.OnScrollListener mMainScrollListener;
-    private FeedSliceViewTracker mSliceViewTracker;
-    private ScrollReporter mScrollReporter;
+    private final RestoreScrollObserver mRestoreScrollObserver = new RestoreScrollObserver();
+    private final RecyclerView.OnScrollListener mMainScrollListener;
+    private @Nullable FeedSliceViewTracker mSliceViewTracker;
+    private final ScrollReporter mScrollReporter;
     private final Map<String, Object> mHandlersMap;
-    private RotationObserver mRotationObserver;
-    private FeedReliabilityLoggingBridge mReliabilityLoggingBridge;
+    private final RotationObserver mRotationObserver;
+    private final FeedReliabilityLoggingBridge mReliabilityLoggingBridge;
     private @Nullable FeedReliabilityLogger mReliabilityLogger;
 
     // Things valid only when bound.
@@ -687,20 +688,21 @@ public class FeedStream implements Stream {
     private @Nullable FeedListContentManager mContentManager;
     private @Nullable FeedSurfaceScope mSurfaceScope;
     private @Nullable HybridListRenderer mRenderer;
-    private FeedScrollState mScrollStateToRestore;
+    private @Nullable FeedScrollState mScrollStateToRestore;
     private int mHeaderCount;
     private long mLastFetchTimeMs;
-    private ArrayList<SnackbarManager.SnackbarController> mSnackbarControllers = new ArrayList<>();
+    private final ArrayList<SnackbarManager.SnackbarController> mSnackbarControllers =
+            new ArrayList<>();
 
     // Placeholder view that simply takes up space.
-    private FeedListContentManager.NativeViewContent mSpacerViewContent;
+    private FeedListContentManager.@Nullable NativeViewContent mSpacerViewContent;
 
     // Bottomsheet.
     private final BottomSheetController mBottomSheetController;
-    private BottomSheetContent mBottomSheetContent;
-    private String mBottomSheetOriginatingSliceId;
-    private View mLastFocusedView;
-    private View mLastAccessibilityFocusedView;
+    private @Nullable BottomSheetContent mBottomSheetContent;
+    private @Nullable String mBottomSheetOriginatingSliceId;
+    private @Nullable View mLastFocusedView;
+    private @Nullable View mLastAccessibilityFocusedView;
 
     /**
      * Creates a new Feed Stream.
@@ -733,6 +735,7 @@ public class FeedStream implements Stream {
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
         mBridge =
                 feedSurfaceRendererBridgeFactory.create(
+                        profile,
                         new Renderer(),
                         mReliabilityLoggingBridge,
                         streamKind,
@@ -763,7 +766,7 @@ public class FeedStream implements Stream {
                 new WebFeedSnackbarController(
                         activity,
                         snackbarAction,
-                        windowAndroid.getModalDialogManager(),
+                        assertNonNull(windowAndroid.getModalDialogManager()),
                         snackbarManager);
 
         mHandlersMap = new HashMap<>();
@@ -806,6 +809,9 @@ public class FeedStream implements Stream {
         if (mUnreadContentObserver != null) {
             mUnreadContentObserver.destroy();
         }
+        if (isBound()) {
+            unbind(false, false);
+        }
         mBridge.destroy();
     }
 
@@ -820,11 +826,16 @@ public class FeedStream implements Stream {
     }
 
     @Override
+    public @ClosedReason int getClosedReason() {
+        return mClosedReason;
+    }
+
+    @Override
     public void bind(
             RecyclerView rootView,
             FeedListContentManager manager,
-            FeedScrollState savedInstanceState,
-            FeedSurfaceScope surfaceScope,
+            @Nullable FeedScrollState savedInstanceState,
+            @Nullable FeedSurfaceScope surfaceScope,
             HybridListRenderer renderer,
             @Nullable FeedReliabilityLogger reliabilityLogger,
             int headerCount) {
@@ -848,7 +859,7 @@ public class FeedStream implements Stream {
         mSliceViewTracker.bind();
 
         rootView.addOnScrollListener(mMainScrollListener);
-        rootView.getAdapter().registerAdapterDataObserver(mRestoreScrollObserver);
+        assumeNonNull(renderer.getAdapter()).registerAdapterDataObserver(mRestoreScrollObserver);
         mRecyclerView = rootView;
         mContentManager = manager;
         mSurfaceScope = surfaceScope;
@@ -877,8 +888,25 @@ public class FeedStream implements Stream {
         }
     }
 
+    @EnsuresNonNullIf({
+        "mRecyclerView",
+        "mSliceViewTracker",
+        "mContentManager",
+    })
+    @VisibleForTesting
+    boolean isBound() {
+        if (mRecyclerView != null) {
+            assert mSliceViewTracker != null;
+            assert mContentManager != null;
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void unbind(boolean shouldPlaceSpacer, boolean switchingStream) {
+        if (!isBound()) return;
+
         // Find out the specific reason for unbinding the stream.
         if (switchingStream) {
             mClosedReason = ClosedReason.SWITCH_STREAM;
@@ -918,7 +946,8 @@ public class FeedStream implements Stream {
         mContentManager = null;
 
         mRecyclerView.removeOnScrollListener(mMainScrollListener);
-        mRecyclerView.getAdapter().unregisterAdapterDataObserver(mRestoreScrollObserver);
+        assert mRenderer != null && mRenderer.getAdapter() != null;
+        mRenderer.getAdapter().unregisterAdapterDataObserver(mRestoreScrollObserver);
         mRecyclerView = null;
 
         if (mWindowAndroid.getDisplay() != null) {
@@ -966,7 +995,7 @@ public class FeedStream implements Stream {
 
     @VisibleForTesting
     void checkScrollingForLoadMore(int dy) {
-        if (mContentManager == null) return;
+        if (!isBound()) return;
 
         mAccumulatedDySinceLastLoadMore += dy;
         if (mAccumulatedDySinceLastLoadMore < 0) {
@@ -1011,14 +1040,15 @@ public class FeedStream implements Stream {
 
     /**
      * Attempts to load more content if it can be triggered.
+     *
      * @param lookaheadTrigger The threshold of off-screen cards below which the feed should attempt
-     *         to load more content. I.e., if there are less than or equal to |lookaheadTrigger|
-     *         cards left to show the user, then the feed should load more cards.
+     *     to load more content. I.e., if there are less than or equal to |lookaheadTrigger| cards
+     *     left to show the user, then the feed should load more cards.
      * @return true if loading more content can be triggered.
      */
     private boolean maybeLoadMore(int lookaheadTrigger) {
         // Checks if we've been unbinded.
-        if (mRecyclerView == null) {
+        if (!isBound()) {
             return false;
         }
         // Checks if loading more can be triggered.
@@ -1038,6 +1068,7 @@ public class FeedStream implements Stream {
         // beyond the end of the feed. This can occur if maybeLoadMore() is called during a feed
         // swap, after the feed items have been cleared, but before the view has finished updating
         // (which happens asynchronously).
+        assert mRenderer != null && mRenderer.getListLayoutHelper() != null;
         int lastVisibleItem = mRenderer.getListLayoutHelper().findLastVisibleItemPosition();
         if (totalItemCount < lastVisibleItem) {
             return false;
@@ -1103,7 +1134,7 @@ public class FeedStream implements Stream {
         public void onStreamUpdated(byte[] data) {
             // There should be no updates while the surface is closed. If the surface was recently
             // closed, just ignore these.
-            if (mContentManager == null) return;
+            if (!isBound()) return;
             FeedUiProto.StreamUpdate streamUpdate;
             try {
                 streamUpdate = FeedUiProto.StreamUpdate.parseFrom(data);
@@ -1128,7 +1159,7 @@ public class FeedStream implements Stream {
 
             // Update using shared states.
             for (FeedUiProto.SharedState state : streamUpdate.getNewSharedStatesList()) {
-                mRenderer.update(state.getXsurfaceSharedState().toByteArray());
+                assumeNonNull(mRenderer).update(state.getXsurfaceSharedState().toByteArray());
             }
 
             boolean foundNewContent = false;
@@ -1189,6 +1220,7 @@ public class FeedStream implements Stream {
             }
 
             updateContentsInPlace(newContentList);
+            assert isBound();
             mRecyclerView.post(mReliabilityLoggingBridge::onStreamUpdateFinished);
 
             // If we have new content, and the new content callback is set, then call it, and clear
@@ -1277,7 +1309,7 @@ public class FeedStream implements Stream {
 
     private void updateContentsInPlace(
             ArrayList<FeedListContentManager.FeedContent> newContentList) {
-        assert mHeaderCount <= mContentManager.getItemCount();
+        assert mContentManager != null && mHeaderCount <= mContentManager.getItemCount();
         if (mContentManager.replaceRange(
                 mHeaderCount, mContentManager.getItemCount() - mHeaderCount, newContentList)) {
             notifyContentChange();
@@ -1292,8 +1324,6 @@ public class FeedStream implements Stream {
                 return StreamType.WEB_FEED;
             case StreamKind.SINGLE_WEB_FEED:
                 return StreamType.SINGLE_WEB_FEED;
-            case StreamKind.SUPERVISED_USER:
-                return StreamType.SUPERVISED_USER_FEED;
             default:
                 return StreamType.UNSPECIFIED;
         }
@@ -1301,12 +1331,12 @@ public class FeedStream implements Stream {
 
     /**
      * Restores the scroll state serialized to |savedInstanceState|.
-     * @return true if the scroll state was restored, or if the state could never be restored.
-     * false if we need to wait until more items are added to the recycler view to make it
-     * scrollable.
+     *
+     * @return true if the scroll state was restored, or if the state could never be restored. false
+     *     if we need to wait until more items are added to the recycler view to make it scrollable.
      */
     private boolean restoreScrollState(FeedScrollState state) {
-        assert (mRecyclerView != null);
+        assert isBound();
         if (state == null || state.lastPosition < 0 || state.position < 0) return true;
 
         // If too few items exist, defer scrolling until later.
@@ -1316,7 +1346,7 @@ public class FeedStream implements Stream {
             return false;
         }
 
-        ListLayoutHelper layoutHelper = mRenderer.getListLayoutHelper();
+        ListLayoutHelper layoutHelper = assumeNonNull(mRenderer).getListLayoutHelper();
         if (layoutHelper != null) {
             layoutHelper.scrollToPositionWithOffset(state.position, state.offset);
         }
@@ -1331,10 +1361,11 @@ public class FeedStream implements Stream {
     }
 
     @VisibleForTesting
-    String getSliceIdFromView(View view) {
+    @Nullable String getSliceIdFromView(@Nullable View view) {
         View childOfRoot = findChildViewContainingDescendant(mRecyclerView, view);
 
         if (childOfRoot != null) {
+            assert isBound();
             // View is a child of the recycler view, find slice using the index.
             int position = mRecyclerView.getChildAdapterPosition(childOfRoot);
             if (position >= 0 && position < mContentManager.getItemCount()) {
@@ -1356,7 +1387,8 @@ public class FeedStream implements Stream {
      * Note that the returned view may be descendantView, or descendantView.getParent(),
      * or descendantView.getParent().getParent(), etc...
      */
-    private View findChildViewContainingDescendant(View parentView, View descendantView) {
+    private @Nullable View findChildViewContainingDescendant(
+            @Nullable View parentView, @Nullable View descendantView) {
         if (parentView == null || descendantView == null) return null;
         // Find the direct child of parentView which owns view.
         if (parentView == descendantView.getParent()) {
@@ -1381,16 +1413,11 @@ public class FeedStream implements Stream {
         mShareHelper = shareWrapper;
     }
 
-    /** @returns True if this feed has been bound. */
-    public boolean getBoundStatusForTest() {
-        return mContentManager != null;
-    }
-
     RecyclerView.OnScrollListener getScrollListenerForTest() {
         return mMainScrollListener;
     }
 
-    UnreadContentObserver getUnreadContentObserverForTest() {
+    @Nullable UnreadContentObserver getUnreadContentObserverForTest() {
         return mUnreadContentObserver;
     }
 
@@ -1463,8 +1490,8 @@ public class FeedStream implements Stream {
      */
     @VisibleForTesting
     static class ShareHelperWrapper {
-        private WindowAndroid mWindowAndroid;
-        private Supplier<ShareDelegate> mShareDelegateSupplier;
+        private final WindowAndroid mWindowAndroid;
+        private final Supplier<ShareDelegate> mShareDelegateSupplier;
 
         public ShareHelperWrapper(
                 WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier) {
@@ -1496,7 +1523,7 @@ public class FeedStream implements Stream {
     }
 
     @VisibleForTesting
-    class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
+    static class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
         ObservableSupplierImpl<Boolean> mHasUnreadContent = new ObservableSupplierImpl<>();
 
         UnreadContentObserver(boolean isWebFeed) {

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src=../../resources/testharness.js></script>
+<script src=../../resources/testharnessreport.js></script>
+<video></video>
+<script>
+
+async_test(t => {
+  var video = document.querySelector('video');
+  video.requestVideoFrameCallback(t.step_func_done(_ => {
+    let stream = video.captureStream();
+    let video_tracks = stream.getVideoTracks();
+    assert_greater_than(video_tracks.length, 0);
+    let video_stream = video_tracks[0];
+    let capabilities = video_stream.getCapabilities();
+    assert_approx_equals(capabilities.frameRate.max, 25, 0.01);
+  }));
+  video.onerror = t.unreached_func();
+  video.src = '../../media/content/test-25fps.ogv';
+}, 'Run captureStream() on a <video> source with non 30fps frame rate.');
+
+</script>

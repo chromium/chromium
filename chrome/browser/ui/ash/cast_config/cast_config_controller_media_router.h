@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/cast_config_controller.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/media_router/browser/mirroring_media_controller_host.h"
@@ -19,6 +20,7 @@ class MediaRouter;
 }
 
 class AccountId;
+class ApplicationLocaleStorage;
 class CastDeviceCache;
 
 // A class which allows the ash tray to communicate with the media router.
@@ -27,7 +29,9 @@ class CastConfigControllerMediaRouter
       public session_manager::SessionManagerObserver,
       public media_router::MirroringMediaControllerHost::Observer {
  public:
-  CastConfigControllerMediaRouter();
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  explicit CastConfigControllerMediaRouter(
+      const ApplicationLocaleStorage* application_locale_storage);
 
   CastConfigControllerMediaRouter(const CastConfigControllerMediaRouter&) =
       delete;
@@ -75,6 +79,8 @@ class CastConfigControllerMediaRouter
   // This will return null until the media router is initialized.
   CastDeviceCache* device_cache();
   std::unique_ptr<CastDeviceCache> device_cache_;
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   // The list of available devices in a format more palatable for consumption by
   // Ash UI.

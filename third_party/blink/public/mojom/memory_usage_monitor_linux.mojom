@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
 
 // The interface to provide status and statm files to the renderer's memory
 // usage monitor. The interface is required only for Linux.

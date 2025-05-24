@@ -8,6 +8,8 @@ import android.app.Activity;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -17,8 +19,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import java.util.List;
 
 /** Interface for working with TinkerTank. */
+@NullMarked
 public interface TinkerTankDelegate {
-    private static TinkerTankDelegate maybeCreate() {
+    private static @Nullable TinkerTankDelegate maybeCreate() {
         return ServiceLoaderUtil.maybeCreate(TinkerTankDelegate.class);
     }
 

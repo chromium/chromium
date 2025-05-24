@@ -30,7 +30,7 @@ public class NativeTest {
     private static final String TAG = "NativeTest";
 
     private String mCommandLineFilePath;
-    private StringBuilder mCommandLineFlags = new StringBuilder();
+    private final StringBuilder mCommandLineFlags = new StringBuilder();
     private TestStatusReporter mReporter;
     private boolean mRunInSubThread;
     private String mStdoutFilePath;
@@ -38,8 +38,8 @@ public class NativeTest {
     private static class ReportingUncaughtExceptionHandler
             implements Thread.UncaughtExceptionHandler {
 
-        private TestStatusReporter mReporter;
-        private Thread.UncaughtExceptionHandler mWrappedHandler;
+        private final TestStatusReporter mReporter;
+        private final Thread.UncaughtExceptionHandler mWrappedHandler;
 
         public ReportingUncaughtExceptionHandler(
                 TestStatusReporter reporter, Thread.UncaughtExceptionHandler wrappedHandler) {
@@ -170,13 +170,6 @@ public class NativeTest {
                         UrlUtils.getIsolatedTestRoot());
         activity.finish();
         mReporter.testRunFinished(Process.myPid());
-    }
-
-    // Signal a failure of the native test loader to python scripts
-    // which run tests.  For example, we look for
-    // RUNNER_FAILED build/android/test_package.py.
-    private void nativeTestFailed() {
-        Log.e(TAG, "[ RUNNER_FAILED ] could not load native library");
     }
 
     @NativeMethods

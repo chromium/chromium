@@ -8,23 +8,29 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+class V8UnionUndefinedOrUnsignedLongLongEnforceRange;
 
 class GPUSupportedLimits final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit GPUSupportedLimits(const wgpu::SupportedLimits& limits);
+  explicit GPUSupportedLimits(const wgpu::Limits& limits);
 
-  static void MakeUndefined(wgpu::RequiredLimits* out);
+  static void MakeUndefined(wgpu::Limits* out);
   // Returns true if populated, false if not and the ScriptPromiseResolverBase
   // has been rejected.
-  static bool Populate(wgpu::RequiredLimits* out,
-                       const Vector<std::pair<String, uint64_t>>& in,
-                       ScriptPromiseResolverBase*);
+  static bool Populate(
+      wgpu::Limits* out,
+      const HeapVector<
+          std::pair<String,
+                    Member<V8UnionUndefinedOrUnsignedLongLongEnforceRange>>>&
+          in,
+      ScriptPromiseResolverBase*);
 
   GPUSupportedLimits(const GPUSupportedLimits&) = delete;
   GPUSupportedLimits& operator=(const GPUSupportedLimits&) = delete;
@@ -51,7 +57,6 @@ class GPUSupportedLimits final : public ScriptWrappable {
   uint64_t maxBufferSize() const;
   unsigned maxVertexAttributes() const;
   unsigned maxVertexBufferArrayStride() const;
-  unsigned maxInterStageShaderComponents() const;
   unsigned maxInterStageShaderVariables() const;
   unsigned maxColorAttachments() const;
   unsigned maxColorAttachmentBytesPerSample() const;
@@ -61,14 +66,13 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxComputeWorkgroupSizeY() const;
   unsigned maxComputeWorkgroupSizeZ() const;
   unsigned maxComputeWorkgroupsPerDimension() const;
-  unsigned minSubgroupSize() const;
-  unsigned maxSubgroupSize() const;
+  unsigned maxStorageBuffersInFragmentStage() const;
+  unsigned maxStorageTexturesInFragmentStage() const;
+  unsigned maxStorageBuffersInVertexStage() const;
+  unsigned maxStorageTexturesInVertexStage() const;
 
  private:
   wgpu::Limits limits_;
-
-  bool subgroup_limits_initialized_;
-  wgpu::DawnExperimentalSubgroupLimits subgroup_limits_;
 };
 
 }  // namespace blink

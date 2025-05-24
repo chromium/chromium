@@ -24,8 +24,7 @@ namespace browser_sync {
 class AutofillWalletDataTypeController : public syncer::DataTypeController,
                                           public syncer::SyncServiceObserver {
  public:
-  // The delegates and |sync_client| must not be null. Furthermore,
-  // |sync_client| must outlive this object.
+  // The delegates and `sync_client` must not be null and must oulive `this`.
   AutofillWalletDataTypeController(
       syncer::DataType type,
       std::unique_ptr<syncer::DataTypeControllerDelegate>

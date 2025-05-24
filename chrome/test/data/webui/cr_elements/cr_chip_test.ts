@@ -62,9 +62,9 @@ suite('cr-chip', function() {
   });
 
   test('Ripple', function() {
-    assertFalse(!!crChip.shadowRoot!.querySelector('#ink'));
+    assertFalse(!!crChip.shadowRoot.querySelector('#ink'));
     crChip.dispatchEvent(
         new CustomEvent('pointerdown', {bubbles: true, composed: true}));
-    assertTrue(!!crChip.shadowRoot!.querySelector('#ink'));
+    assertTrue(!!crChip.shadowRoot.querySelector('#ink'));
   });
 });

@@ -12,7 +12,7 @@
 namespace extensions {
 namespace guest_view_events {
 
-// Returns the events::HistogramValue for the |event_name| guest view event.
+// Returns the events::HistogramValue for the `event_name` guest view event.
 // This knows about all events for all guest view types, whether web view,
 // extension options, the guest view base class, etc.
 events::HistogramValue GetEventHistogramValue(const std::string& event_name);

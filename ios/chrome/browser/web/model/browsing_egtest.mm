@@ -26,8 +26,8 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-using chrome_test_util::OmniboxText;
 using chrome_test_util::OmniboxContainingText;
+using chrome_test_util::OmniboxText;
 
 namespace {
 
@@ -76,7 +76,6 @@ class ReloadResponseProvider : public web::DataResponseProvider {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kModernTabStrip);
   return config;
 }
 
@@ -318,8 +317,9 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 - (void)DISABLED_testBrowsingUserJavaScriptNavigation {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad.
-  if ([ChromeEarlGrey isIPadIdiom])
+  if ([ChromeEarlGrey isIPadIdiom]) {
     return;
+  }
 
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
@@ -339,14 +339,9 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:script];
 
-  if (@available(iOS 16, *)) {
-    // TODO(crbug.com/40227513): Move this logic into EG.
-    XCUIApplication* app = [[XCUIApplication alloc] init];
-    [[[app keyboards] buttons][@"go"] tap];
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Go")]
-        performAction:grey_tap()];
-  }
+  // TODO(crbug.com/40227513): Move this logic into EG.
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  [[[app keyboards] buttons][@"go"] tap];
 
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -363,8 +358,9 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 - (void)DISABLED_testBrowsingUserJavaScriptWithoutNavigation {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad.
-  if ([ChromeEarlGrey isIPadIdiom])
+  if ([ChromeEarlGrey isIPadIdiom]) {
     return;
+  }
 
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;

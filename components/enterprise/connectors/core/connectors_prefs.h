@@ -6,7 +6,6 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTORS_PREFS_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 class PrefRegistrySimple;
 
@@ -52,6 +51,7 @@ inline constexpr char kEnterpriseRealTimeUrlCheckScope[] =
     "safebrowsing.enterprise_real_time_url_check_scope";
 
 extern const char kLatestCrashReportCreationTime[];
+extern const char kLatestTelomereReportCreationTime[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

@@ -189,7 +189,7 @@ std::string InferGuidForLegacyBookmark(
 
   static_assert(base::kSHA1Length >= 16, "16 bytes needed to infer UUID");
 
-  const std::string guid = ComputeGuidFromBytes(base::make_span(hash));
+  const std::string guid = ComputeGuidFromBytes(base::span(hash));
   DCHECK(base::Uuid::ParseLowercase(guid).is_valid());
   return guid;
 }
@@ -198,22 +198,6 @@ bool IsForbiddenTitleWithMaybeTrailingSpaces(const std::string& title) {
   return base::Contains(
       kForbiddenTitles,
       base::TrimWhitespaceASCII(title, base::TrimPositions::TRIM_TRAILING));
-}
-
-std::u16string NodeTitleFromSpecifics(
-    const sync_pb::BookmarkSpecifics& specifics) {
-  if (specifics.has_full_title()) {
-    return base::UTF8ToUTF16(specifics.full_title());
-  }
-
-  std::string node_title = specifics.legacy_canonicalized_title();
-  if (base::EndsWith(node_title, " ") &&
-      IsForbiddenTitleWithMaybeTrailingSpaces(node_title)) {
-    // Legacy clients added an extra space to the real title, so remove it here.
-    // See also FullTitleToLegacyCanonicalizedTitle().
-    node_title.pop_back();
-  }
-  return base::UTF8ToUTF16(node_title);
 }
 
 void MoveAllChildren(BookmarkModelView* model,
@@ -256,6 +240,22 @@ std::string FullTitleToLegacyCanonicalizedTitle(const std::string& node_title) {
   base::TruncateUTF8ToByteSize(
       specifics_title, kLegacyCanonicalizedTitleLimitBytes, &specifics_title);
   return specifics_title;
+}
+
+std::u16string NodeTitleFromSpecifics(
+    const sync_pb::BookmarkSpecifics& specifics) {
+  if (specifics.has_full_title()) {
+    return base::UTF8ToUTF16(specifics.full_title());
+  }
+
+  std::string node_title = specifics.legacy_canonicalized_title();
+  if (base::EndsWith(node_title, " ") &&
+      IsForbiddenTitleWithMaybeTrailingSpaces(node_title)) {
+    // Legacy clients added an extra space to the real title, so remove it here.
+    // See also FullTitleToLegacyCanonicalizedTitle().
+    node_title.pop_back();
+  }
+  return base::UTF8ToUTF16(node_title);
 }
 
 bool IsBookmarkEntityReuploadNeeded(
@@ -373,8 +373,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
 
   switch (specifics.type()) {
     case sync_pb::BookmarkSpecifics::UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case sync_pb::BookmarkSpecifics::URL: {
       const bookmarks::BookmarkNode* node =
           model->AddURL(parent, index, NodeTitleFromSpecifics(specifics),
@@ -396,8 +395,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
                               &metainfo, creation_time, guid);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void UpdateBookmarkNodeFromSpecifics(
@@ -480,7 +478,7 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeUuid(
 
 bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
   bool is_valid = true;
-  if (specifics.ByteSize() == 0) {
+  if (specifics.ByteSizeLong() == 0) {
     DLOG(ERROR) << "Invalid bookmark: empty specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kEmptySpecifics);
     is_valid = false;

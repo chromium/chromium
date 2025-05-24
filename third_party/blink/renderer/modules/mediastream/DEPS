@@ -19,6 +19,8 @@ include_rules = [
     "+cc/layers/video_frame_provider.h",
     "+cc/layers/video_layer.h",
     "+cc/paint/skia_paint_canvas.h",
+    "+gpu/command_buffer/client/client_shared_image.h",
+    "+gpu/command_buffer/client/test_shared_image_interface.h",
     "+media/media_buildflags.h",
     "+media/filters/video_renderer_algorithm.h",
     "+media/renderers/paint_canvas_video_renderer.h",
@@ -60,7 +62,6 @@ specific_include_rules = {
         "+base/numerics/ranges.h",
         "+base/run_loop.h",
         "+cc/layers/layer.h",
-        "+media/video/fake_gpu_memory_buffer.h",
         "+media/video/mock_gpu_memory_buffer_video_frame_pool.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
 

@@ -4,10 +4,12 @@
 
 #include "content/browser/picture_in_picture/document_picture_in_picture_navigation_throttle.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "media/base/media_switches.h"
 
 namespace content {
 
@@ -20,6 +22,11 @@ DocumentPictureInPictureNavigationThrottle::MaybeCreateThrottleFor(
   if (!handle->IsInMainFrame() || handle->IsSameDocument() ||
       !handle->GetWebContents() ||
       !handle->GetWebContents()->GetPictureInPictureOptions().has_value()) {
+    return nullptr;
+  }
+  // Allow a command-line flag to opt-out of navigation throttling.
+  if (base::FeatureList::IsEnabled(
+          media::kDocumentPictureInPictureNavigation)) {
     return nullptr;
   }
   return std::make_unique<DocumentPictureInPictureNavigationThrottle>(

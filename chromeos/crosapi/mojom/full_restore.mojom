@@ -8,7 +8,6 @@ import "url/mojom/url.mojom";
 
 // The data retrieved from session restore for a single Lacros window that we
 // need to display browser information to users.
-[Stable]
 struct SessionWindow {
   // The ID of the window that uniquely identifies it for the duration of a
   // session. The ID is also saved in the full restore file in ash, and we want
@@ -38,7 +37,6 @@ struct SessionWindow {
 // Interface for full restore clients. Implemented by lacros-chrome.
 // Next version: 1
 // Next method id: 1
-[Stable]
 interface FullRestoreClient {
   // Gets the session restore information for the current active user. Note that
   // current active user is temporary and the support for multi profile is
@@ -49,7 +47,7 @@ interface FullRestoreClient {
 // Implemented by ash-chrome.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="eadbb2f2-ef64-4403-90ad-45d037f6c73b"]
+[Uuid="eadbb2f2-ef64-4403-90ad-45d037f6c73b"]
 interface FullRestore {
   // Registers the client that lives in lacros-chrome.
   AddFullRestoreClient@0(pending_remote<FullRestoreClient> client);

@@ -8,16 +8,20 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/element_selector.h"
 #import "ui/base/l10n/l10n_util.h"
 
 // Redefine EarlGrey macro to use line number and file name taken from the place
@@ -68,8 +72,9 @@ id<GREYAction> PageSheetScrollDown() {
 
   // But for very small devices (like the SE), this is too big.
   UIWindow* currentWindow = chrome_test_util::GetAnyKeyWindow();
-  if (currentWindow.rootViewController.view.frame.size.height < 600)
+  if (currentWindow.rootViewController.view.frame.size.height < 600) {
     menu_scroll_displacement = 250;
+  }
   return grey_scrollInDirection(kGREYDirectionDown, menu_scroll_displacement);
 }
 
@@ -200,10 +205,6 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   [[[EarlGrey selectElementWithMatcher:interactableSettingsButton]
          usingSearchAction:scrollAction
       onElementWithMatcher:ToolsMenuView()] performAction:grey_tap()];
-
-  // TODO(crbug.com/347267212): On iOS18 tools menu taps will fail due to an
-  // apparent EG2 SwiftUI bug. Use XCUIapplication APIs instead here.
-  [self tapButtonUsingXCUIApplication:buttonMatcher];
 }
 
 - (void)tapToolsMenuAction:(id<GREYMatcher>)buttonMatcher {
@@ -219,10 +220,6 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       onElementWithMatcher:grey_accessibilityID(
                                kPopupMenuToolsMenuActionListId)]
       performAction:grey_tap()];
-
-  // TODO(crbug.com/347647806): On iOS18 tools menu taps will fail due to an
-  // apparent EG2 SwiftUI bug. Use XCUIapplication APIs instead here.
-  [self tapButtonUsingXCUIApplication:buttonMatcher];
 }
 
 - (void)tapSettingsMenuButton:(id<GREYMatcher>)buttonMatcher {
@@ -468,8 +465,42 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 
   // Verify the window is not visible.
-  [[EarlGrey selectElementWithMatcher:windowMatcher]
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:windowMatcher]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+    return !error;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kWaitForUIElementTimeout, condition),
+             @"Popover was not dismissed.");
+}
+
+- (void)longPressElementOnWebView:(ElementSelector*)selector {
+  // Use triggers_context_menu = true as this is really "triggers_browser_menu".
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::LongPressElementForContextMenu(
+                        selector, true /* menu should appear */)];
+}
+
+- (void)triggerEditMenu:(ElementSelector*)selector {
+  [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface editMenuMatcher]]
       assertWithMatcher:grey_notVisible()];
+  [self longPressElementOnWebView:selector];
+
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface editMenuMatcher]]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (error) {
+    // If edit is not visible, try to tap the element again.
+    // This is possible on inputs when the first long press just selects the
+    // input.
+    [self longPressElementOnWebView:selector];
+    [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface editMenuMatcher]]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 }
 
 #pragma mark - Private
@@ -591,67 +622,6 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   GREYAssert(textHasBeenTypedProperly,
              @"Failed to type '%s' in the Omnibox after %d attempts.",
              text.c_str(), numberOfAttemptsPerformed);
-}
-
-// This is a temporary workarond to fix broken tests in iO18.
-- (void)tapButtonUsingXCUIApplication:(id<GREYMatcher>)buttonMatcher {
-  if (@available(iOS 18, *)) {
-    NSError* error;
-    [[EarlGrey selectElementWithMatcher:buttonMatcher]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-
-    if ([error.domain isEqual:kGREYInteractionErrorDomain] &&
-        error.code == kGREYInteractionElementNotFoundErrorCode) {
-      // If buttonMatcher is gone, that means it wasn't a SwiftUI element (or
-      // EG2 is fixed).
-      return;
-    }
-
-    // GREYMatcher's that match: accessibilityID('kToolsMenuBookmarksId'))
-    NSString* description = [buttonMatcher description];
-    NSRegularExpression* regex = [NSRegularExpression
-        regularExpressionWithPattern:@"accessibilityID\\('(.*?)'\\)"
-                             options:NSRegularExpressionCaseInsensitive
-                               error:nil];
-    NSTextCheckingResult* match =
-        [regex firstMatchInString:description
-                          options:0
-                            range:NSMakeRange(0, description.length)];
-    if (match) {
-      XCUIApplication* app = [[XCUIApplication alloc] init];
-      NSString* accessibilityID =
-          [description substringWithRange:[match rangeAtIndex:1]];
-      [app.buttons[accessibilityID] tap];
-      return;
-    }
-
-    // GREYMatcher's that match "starts with('kToolsMenuSettingsId')"
-    regex = [NSRegularExpression
-        regularExpressionWithPattern:@"starts with\\('(.*?)'\\)"
-                             options:NSRegularExpressionCaseInsensitive
-                               error:nil];
-    match = [regex firstMatchInString:description
-                              options:0
-                                range:NSMakeRange(0, description.length)];
-    if (match) {
-      NSString* prefix =
-          [description substringWithRange:[match rangeAtIndex:1]];
-      NSPredicate* predicate =
-          [NSPredicate predicateWithFormat:@"identifier BEGINSWITH %@", prefix];
-      XCUIApplication* app = [[XCUIApplication alloc] init];
-      XCUIElement* button = [app.buttons elementMatchingPredicate:predicate];
-      XCTAssertTrue(
-          button.exists,
-          @"Button with accessibility label starting with '%@' should exist",
-          prefix);
-      [button tap];
-      return;
-    }
-
-    XCTFail("SwiftUI/EG2 workaround missing GREYMatcher equivalent "
-            "NSRegularExpression.");
-  }
 }
 
 @end

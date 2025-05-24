@@ -48,6 +48,10 @@ void ApplyAshFontStyles(int context,
       break;
     case CONTEXT_SEARCH_RESULT_BIG_TITLE_SUPERSCRIPT:
       details.size_delta = 6;
+      break;
+    case CONTEXT_HEADLINE:
+      details.size_delta = 8;
+      break;
   }
 
   switch (style) {
@@ -66,6 +70,32 @@ void ApplyAshFontStyles(int context,
       // available on Chrome OS. For now, use the default font for consistency.
       break;
   }
+}
+
+std::optional<int> GetLineHeight(int context) {
+  // The style of the system font used to determine line heights.
+  constexpr int kTemplateStyle = views::style::STYLE_PRIMARY;
+
+  switch (context) {
+    case CONTEXT_HEADLINE:
+      ui::ResourceBundle::FontDetails details;
+      ApplyAshFontStyles(CONTEXT_HEADLINE, kTemplateStyle, details);
+      return ui::ResourceBundle::GetSharedInstance()
+                 .GetFontListForDetails(details)
+                 .GetHeight() +
+             8;
+  }
+
+  return std::nullopt;
+}
+
+std::optional<ui::ColorId> GetColorId(int style) {
+  switch (style) {
+    case STYLE_ALERT:
+      return ui::kColorAlertHighSeverity;
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace ash

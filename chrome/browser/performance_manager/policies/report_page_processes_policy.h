@@ -11,7 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 
@@ -23,8 +23,7 @@ namespace performance_manager::policies {
 // when to release memory from browser or VMs or container. When there are a lot
 // of background processes in browser, resourced would avoid killing perceptible
 // apps in VMs or container.
-class ReportPageProcessesPolicy : public GraphOwned,
-                                  public PageNode::ObserverDefaultImpl {
+class ReportPageProcessesPolicy : public GraphOwned, public PageNodeObserver {
  public:
   struct PageState {
     bool host_protected_page;
@@ -45,7 +44,7 @@ class ReportPageProcessesPolicy : public GraphOwned,
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnIsVisibleChanged(const PageNode* page_node) override;

@@ -8,8 +8,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
@@ -17,6 +15,8 @@
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_gesture_recognizer.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view+subclassing.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_delegate.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -345,8 +345,9 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
 
     if (@available(iOS 17, *)) {
       __weak __typeof(self) weakSelf = self;
-      NSArray<UITrait>* traits =
-          (@[ UITraitHorizontalSizeClass.self, UITraitVerticalSizeClass.self ]);
+      NSArray<UITrait>* traits = (@[
+        UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
+      ]);
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                        UITraitCollection* previousCollection) {
         [weakSelf pauseAnimationOnTraitChange:previousCollection];

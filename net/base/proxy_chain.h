@@ -173,6 +173,9 @@ class NET_EXPORT ProxyChain {
   static constexpr int kDefaultIpProtectionChainId = 0;
 
   // The largest allowed ip_protection_chain_id.
+  // NOTE: Make sure to update the
+  // `Net.IpProtection.CanFalloverToNextProxy.Error.{Chain}` histogram when
+  // modifying this value.
   static constexpr int kMaxIpProtectionChainId = 3;
 
   bool is_for_ip_protection() const {

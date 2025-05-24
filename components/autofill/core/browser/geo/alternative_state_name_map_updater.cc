@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,13 +15,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
@@ -37,12 +37,12 @@ std::string LoadDataFromFile(const base::FilePath& file) {
 
   std::string data;
   if (!base::PathExists(file)) {
-    VLOG(1) << "File does not exist: " << file;
+    DVLOG(1) << "File does not exist: " << file;
     return std::string();
   }
 
   if (!base::ReadFileToString(file, &data)) {
-    VLOG(1) << "Failed reading from file: " << file;
+    DVLOG(1) << "Failed reading from file: " << file;
     return std::string();
   }
 

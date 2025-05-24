@@ -36,8 +36,6 @@ using PasswordReuseEvent =
     safe_browsing::LoginReputationClientRequest::PasswordReuseEvent;
 using ReusedPasswordType = safe_browsing::LoginReputationClientRequest::
     PasswordReuseEvent::ReusedPasswordType;
-using SyncAccountType =
-    LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType;
 
 struct PasswordReuseInfo {
   PasswordReuseInfo();
@@ -123,7 +121,7 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the referring app info that starts the activity.
-  virtual LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
+  virtual ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) = 0;
 #endif
 

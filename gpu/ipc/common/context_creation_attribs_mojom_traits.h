@@ -32,7 +32,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::ContextType, gpu::ContextType> {
       case gpu::CONTEXT_TYPE_WEBGPU:
         return gpu::mojom::ContextType::kWebGPU;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -99,9 +99,9 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
     return attribs.enable_raster_interface;
   }
 
-  static bool enable_oop_rasterization(
+  static bool enable_gpu_rasterization(
       const gpu::ContextCreationAttribs& attribs) {
-    return attribs.enable_oop_rasterization;
+    return attribs.enable_gpu_rasterization;
   }
 
   static gpu::ContextType context_type(

@@ -34,10 +34,9 @@ class TopChromeWebUIController : public ui::MojoWebUIController {
   // By default TopChromeWebUIController do not have normal WebUI bindings.
   // Pass |enable_chrome_send| as true if these are needed.
   explicit TopChromeWebUIController(content::WebUI* contents,
-                                     bool enable_chrome_send = false);
+                                    bool enable_chrome_send = false);
   TopChromeWebUIController(const TopChromeWebUIController&) = delete;
-  TopChromeWebUIController& operator=(const TopChromeWebUIController&) =
-      delete;
+  TopChromeWebUIController& operator=(const TopChromeWebUIController&) = delete;
   ~TopChromeWebUIController() override;
 
   void set_embedder(base::WeakPtr<Embedder> embedder) { embedder_ = embedder; }

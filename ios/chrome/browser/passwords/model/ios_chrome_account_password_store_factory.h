@@ -7,8 +7,7 @@
 
 #import "base/memory/scoped_refptr.h"
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
 enum class ServiceAccessType;
 
@@ -19,21 +18,12 @@ class PasswordStoreInterface;
 // Singleton that owns all Gaia-account-scoped PasswordStores and associates
 // them with ProfileIOS.
 class IOSChromeAccountPasswordStoreFactory
-    : public RefcountedBrowserStateKeyedServiceFactory {
+    : public RefcountedProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358299863): Remove when fully migrated.
-  static scoped_refptr<password_manager::PasswordStoreInterface>
-  GetForBrowserState(ProfileIOS* profile, ServiceAccessType access_type);
-
   static scoped_refptr<password_manager::PasswordStoreInterface> GetForProfile(
       ProfileIOS* profile,
       ServiceAccessType access_type);
   static IOSChromeAccountPasswordStoreFactory* GetInstance();
-
-  IOSChromeAccountPasswordStoreFactory(
-      const IOSChromeAccountPasswordStoreFactory&) = delete;
-  IOSChromeAccountPasswordStoreFactory& operator=(
-      const IOSChromeAccountPasswordStoreFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSChromeAccountPasswordStoreFactory>;
@@ -44,9 +34,6 @@ class IOSChromeAccountPasswordStoreFactory
   // BrowserStateKeyedServiceFactory:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_ACCOUNT_PASSWORD_STORE_FACTORY_H_

@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,9 +39,9 @@ static_assert(std::is_move_constructible_v<NonCopyable>, "");
 static_assert(!std::is_copy_constructible_v<NonCopyable>, "");
 
 struct CopyableMovable {
-  bool copied_;
+  bool copied_ = false;
   char c_;
-  explicit CopyableMovable(char c) : copied_(false), c_(c) {}
+  explicit CopyableMovable(char c) : c_(c) {}
   CopyableMovable(const CopyableMovable& other) : copied_(true), c_(other.c_) {}
 
   CopyableMovable& operator=(const CopyableMovable&) = default;
@@ -55,46 +57,55 @@ bool operator==(const CopyableMovable& a, const CopyableMovable& b) {
 
 TEST(ExtendTest, ExtendWithMove) {
   std::vector<NonCopyable> dst;
-  for (char c : {'a', 'b', 'c', 'd'})
+  for (char c : {'a', 'b', 'c', 'd'}) {
     dst.emplace_back(c);
+  }
   std::vector<NonCopyable> src;
-  for (char c : {'e', 'f', 'g'})
+  for (char c : {'e', 'f', 'g'}) {
     src.emplace_back(c);
+  }
   std::vector<NonCopyable> expected;
-  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'})
+  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'}) {
     expected.emplace_back(c);
+  }
 
   Extend(dst, std::move(src));
   EXPECT_EQ(dst, expected);
-  EXPECT_TRUE(src.empty());
+  EXPECT_TRUE(src.empty());  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(ExtendTest, ExtendCopyableWithMove) {
   std::vector<CopyableMovable> dst;
-  for (char c : {'a', 'b', 'c', 'd'})
+  for (char c : {'a', 'b', 'c', 'd'}) {
     dst.emplace_back(c);
+  }
   std::vector<CopyableMovable> src;
-  for (char c : {'e', 'f', 'g'})
+  for (char c : {'e', 'f', 'g'}) {
     src.emplace_back(c);
+  }
   std::vector<CopyableMovable> expected;
-  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'})
+  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'}) {
     expected.emplace_back(c);
+  }
 
   Extend(dst, std::move(src));
   EXPECT_EQ(dst, expected);
-  EXPECT_TRUE(src.empty());
+  EXPECT_TRUE(src.empty());  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(ExtendTest, ExtendWithCopy) {
   std::vector<CopyableMovable> dst;
-  for (char c : {'a', 'b', 'c', 'd'})
+  for (char c : {'a', 'b', 'c', 'd'}) {
     dst.emplace_back(c);
+  }
   std::vector<CopyableMovable> src;
-  for (char c : {'e', 'f', 'g'})
+  for (char c : {'e', 'f', 'g'}) {
     src.emplace_back(c);
+  }
   std::vector<CopyableMovable> expected;
-  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'})
+  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'}) {
     expected.emplace_back(c);
+  }
 
   EXPECT_FALSE(dst[0].copied_);
   Extend(dst, src);
@@ -136,6 +147,34 @@ TEST(ExtendTest, ExtendWithSpan) {
   Extend(dst, kRawArray);
   EXPECT_THAT(dst,
               ElementsAre(3, 4, 5, 6, 7, 8, 9, 10, 11, 9, 10, 11, 3, 4, 5));
+}
+
+TEST(ExtendTest, ExtendWithRanges) {
+  std::set<int> set = {1, 2, 3};
+  circular_deque<int> deque = {4, 5, 6};
+  {
+    std::vector<int> dst;
+    Extend(dst, Reversed(set));
+    EXPECT_THAT(dst, ElementsAre(3, 2, 1));
+    Extend(dst, Reversed(deque));
+    EXPECT_THAT(dst, ElementsAre(3, 2, 1, 6, 5, 4));
+  }
+
+  {
+    std::vector<int> dst;
+    Extend(dst, set, [](int val) { return -val; });
+    EXPECT_THAT(dst, ElementsAre(-1, -2, -3));
+    Extend(dst, deque, [](int val) { return val + 1; });
+    EXPECT_THAT(dst, ElementsAre(-1, -2, -3, 5, 6, 7));
+  }
+
+  {
+    std::vector<int> dst;
+    Extend(dst, Reversed(set), [](int val) { return val * val; });
+    EXPECT_THAT(dst, ElementsAre(9, 4, 1));
+    Extend(dst, Reversed(deque), [](int val) { return val - 1; });
+    EXPECT_THAT(dst, ElementsAre(9, 4, 1, 5, 4, 3));
+  }
 }
 
 }  // namespace base

@@ -100,6 +100,6 @@ base::FilePath GetInfoPlistPath() {
 
 void OverrideBundleID() {
   NSBundle* bundle = base::apple::OuterBundle();
-  base::apple::SetBaseBundleID(
-      base::SysNSStringToUTF8([bundle bundleIdentifier]).c_str());
+  base::apple::SetBaseBundleIDOverride(
+      base::SysNSStringToUTF8(bundle.bundleIdentifier));
 }

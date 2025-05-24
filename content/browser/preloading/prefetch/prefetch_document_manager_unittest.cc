@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "content/browser/preloading/prefetch/prefetch_features.h"
-#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -30,20 +29,6 @@ using testing::FieldsAre;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::UnorderedElementsAreArray;
-
-class TestPrefetchService : public PrefetchService {
- public:
-  explicit TestPrefetchService(BrowserContext* browser_context)
-      : PrefetchService(browser_context) {}
-
-  void PrefetchUrl(
-      base::WeakPtr<PrefetchContainer> prefetch_container) override {
-    prefetch_container->DisablePrecogLoggingForTest();
-    prefetches_.push_back(prefetch_container);
-  }
-
-  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
-};
 
 class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
  public:
@@ -129,8 +114,7 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
 
     candidates.push_back(std::move(candidate1));
 
-    prefetch_document_manager->ProcessCandidates(candidates,
-                                                 /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates);
     // Now call TakePrefetchedResponse
     network::mojom::URLResponseHeadPtr head =
         network::mojom::URLResponseHead::New();
@@ -138,6 +122,7 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     head->parsed_headers->no_vary_search_with_parse_error =
         network::mojom::NoVarySearchWithParseError::NewParseError(parse_error);
 
+    GetPrefetches()[0]->SimulatePrefetchEligibleForTest();
     MakeServableStreamingURLLoaderForTest(GetPrefetches()[0].get(),
                                           std::move(head), "empty");
 
@@ -194,8 +179,7 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   candidates.push_back(std::move(candidate2));
   candidates.push_back(std::move(candidate3));
 
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
 
   ASSERT_EQ(GetPrefetches().size(), 3u);
   {
@@ -372,8 +356,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &GetPrimaryMainFrame());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
 
   // Check that the candidates that should be prefetched were sent to
   // |PrefetchService|.
@@ -481,8 +464,7 @@ TEST_F(PrefetchDocumentManagerTest, FencedFrameDoesNotStartPrefetch) {
           .AppendFencedFrame();
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(fenced_frame_rfh);
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
 
   // Check that the candidate was sent to |PrefetchService|.
   const auto& prefetch_urls = GetPrefetches();

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -102,7 +103,7 @@ class CORE_EXPORT MediaQueryExpValue {
 
   double GetDoubleValue() const {
     DCHECK(IsNumericLiteralValue());
-    return To<CSSNumericLiteralValue>(*value_).GetDoubleValue();
+    return To<CSSNumericLiteralValue>(*value_).ClampedDoubleValue();
   }
 
   CSSPrimitiveValue::UnitType GetUnitType() const {
@@ -181,7 +182,8 @@ class CORE_EXPORT MediaQueryExpValue {
   static std::optional<MediaQueryExpValue> Consume(
       const String& lower_media_feature,
       CSSParserTokenStream&,
-      const CSSParserContext&);
+      const CSSParserContext&,
+      bool supports_element_dependent);
 
  private:
   enum class Type { kInvalid, kId, kValue, kRatio };
@@ -283,24 +285,35 @@ class CORE_EXPORT MediaQueryExp {
 
  public:
   // Returns an invalid MediaQueryExp if the arguments are invalid.
-  static MediaQueryExp Create(const String& media_feature,
+  static MediaQueryExp Create(const AtomicString& media_feature,
                               CSSParserTokenStream&,
-                              const CSSParserContext&);
-  static MediaQueryExp Create(const String& media_feature,
+                              const CSSParserContext&,
+                              bool supports_element_dependent);
+  static MediaQueryExp Create(const AtomicString& media_feature,
                               const MediaQueryExpBounds&);
-  static MediaQueryExp Invalid() {
-    return MediaQueryExp(String(), MediaQueryExpValue());
-  }
+  static MediaQueryExp Create(const MediaQueryExpValue& reference_value,
+                              const MediaQueryExpBounds&);
+  static MediaQueryExp Invalid() { return MediaQueryExp(); }
 
   MediaQueryExp(const MediaQueryExp& other);
   ~MediaQueryExp();
   void Trace(Visitor*) const;
 
-  const String& MediaFeature() const { return media_feature_; }
+  bool IsValid() const { return type_ != Type::kInvalid; }
+  bool HasMediaFeature() const { return type_ == Type::kMediaFeature; }
+  bool HasStyleRange() const { return type_ == Type::kStyleRange; }
+
+  const AtomicString& MediaFeature() const {
+    DCHECK(HasMediaFeature());
+    return media_feature_;
+  }
+
+  const CSSUnparsedDeclarationValue& ReferenceValue() const {
+    DCHECK(HasStyleRange());
+    return *reference_value_;
+  }
 
   const MediaQueryExpBounds& Bounds() const { return bounds_; }
-
-  bool IsValid() const { return !media_feature_.IsNull(); }
 
   bool operator==(const MediaQueryExp& other) const;
   bool operator!=(const MediaQueryExp& other) const {
@@ -322,10 +335,21 @@ class CORE_EXPORT MediaQueryExp {
   unsigned GetUnitFlags() const;
 
  private:
-  MediaQueryExp(const String&, const MediaQueryExpValue&);
-  MediaQueryExp(const String&, const MediaQueryExpBounds&);
+  enum class Type { kMediaFeature, kStyleRange, kInvalid };
 
-  String media_feature_;
+  MediaQueryExp() = default;
+  MediaQueryExp(const String& media_feature, const MediaQueryExpValue&);
+  MediaQueryExp(const String& media_feature, const MediaQueryExpBounds&);
+  MediaQueryExp(const CSSUnparsedDeclarationValue& reference_value,
+                const MediaQueryExpBounds&);
+
+  Type type_ = Type::kInvalid;
+  // The `bounds_` member represents the values that `media_feature_` is
+  // compared to, either of the left side, or right side, or both (see
+  // `MediaQueryExpBounds`). If `reference_value_` is set, the `bounds_` are
+  // compared to that instead.
+  AtomicString media_feature_;
+  Member<const CSSUnparsedDeclarationValue> reference_value_;
   MediaQueryExpBounds bounds_;
 };
 
@@ -348,6 +372,9 @@ class CORE_EXPORT MediaQueryExpNode
     kFeatureStyle = 1 << 6,
     kFeatureSticky = 1 << 7,
     kFeatureSnap = 1 << 8,
+    kFeatureScrollable = 1 << 9,
+    kFeatureScrollDirection = 1 << 10,
+    kFeatureAnchored = 1 << 11,
   };
 
   using FeatureFlags = unsigned;
@@ -377,7 +404,14 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
   explicit MediaQueryFeatureExpNode(const MediaQueryExp& exp) : exp_(exp) {}
   void Trace(Visitor*) const override;
 
-  const String& Name() const { return exp_.MediaFeature(); }
+  const String& Name() const {
+    DCHECK(HasMediaFeature());
+    return exp_.MediaFeature();
+  }
+
+  bool HasMediaFeature() const { return exp_.HasMediaFeature(); }
+  bool HasStyleRange() const { return exp_.HasStyleRange(); }
+
   const MediaQueryExpBounds& Bounds() const { return exp_.Bounds(); }
 
   unsigned GetUnitFlags() const;
@@ -490,6 +524,7 @@ class CORE_EXPORT MediaQueryUnknownExpNode : public MediaQueryExpNode {
   explicit MediaQueryUnknownExpNode(String string) : string_(string) {}
 
   Type GetType() const override { return Type::kUnknown; }
+  String ToString() const { return string_; }
   void SerializeTo(WTF::StringBuilder&) const override;
   void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
   FeatureFlags CollectFeatureFlags() const override;

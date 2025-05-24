@@ -29,7 +29,6 @@ class FacetManagerHost;
 // interface to provide shared functionality needed by all FacetManagers.
 class FacetManager {
  public:
-  using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
 
   // Both the |backend| and |clock| must outlive this object.
   FacetManager(const FacetURI& facet_uri,
@@ -45,7 +44,6 @@ class FacetManager {
   // the same name. See documentation in affiliation_service.h for
   // details:
   void GetAffiliationsAndBranding(
-      StrategyOnCacheMiss cache_miss_strategy,
       AffiliationService::ResultCallback callback,
       const scoped_refptr<base::TaskRunner>& callback_task_runner);
   void Prefetch(const base::Time& keep_fresh_until);
@@ -53,10 +51,7 @@ class FacetManager {
 
   // Called when |affiliation| information regarding this facet has just been
   // fetched from the Affiliation API.
-  void OnFetchSucceeded(const AffiliatedFacetsWithUpdateTime& affiliation);
-
-  // Called when the network request failed.
-  void OnFetchFailed();
+  void UpdateLastFetchTime(base::Time last_update_time);
 
   // Called by the backend when the time specified in RequestNotificationAtTime
   // has come to pass, so that |this| can perform delayed administrative tasks.
@@ -123,14 +118,6 @@ class FacetManager {
   // the database, this will contain the NULL time. Otherwise, the update time
   // in the database should match this value; it is stored to reduce disk I/O.
   base::Time last_update_time_;
-
-  // Contains information about the GetAffiliationsAndBranding() requests that
-  // are waiting for the result of looking up this facet.
-  std::vector<RequestInfo> pending_requests_;
-
-  // Same as |pending_requests_| but after first failure FacetManager will
-  // mark those request as failed.
-  std::vector<RequestInfo> pending_one_time_requests_;
 
   // Keeps track of |keep_fresh_until| thresholds corresponding to Prefetch()
   // requests for this facet. Affiliation information for this facet must be

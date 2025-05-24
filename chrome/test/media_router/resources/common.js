@@ -58,6 +58,19 @@ function waitUntilDeviceAvailable() {
 }
 
 /**
+ * Plays the video on the page.
+ */
+function playVideo() {
+  let video_element = document.getElementById("video");
+  if (!video_element) {
+    return stringifyAndSaveResult(false, 'video element not found');
+  }
+  video_element.play();
+  console.log('play video');
+  return stringifyAndSaveResult(true, '');
+}
+
+/**
  * Starts session.
  */
 function startSession() {

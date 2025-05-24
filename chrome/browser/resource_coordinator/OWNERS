@@ -2,6 +2,7 @@ file://services/resource_coordinator/OWNERS
 
 fdoray@chromium.org
 pmonette@chromium.org
+joenotcharles@google.com
 
 # ChromeOS tab manager related implementation.
 per-file *chromeos*=vovoy@chromium.org

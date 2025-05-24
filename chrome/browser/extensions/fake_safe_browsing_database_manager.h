@@ -14,7 +14,7 @@ namespace extensions {
 
 // A fake safe browsing database manager for use with extensions tests.
 //
-// By default it is disabled (returning true and ignoring |unsafe_ids_|);
+// By default it is disabled (returning true and ignoring `unsafe_ids_`);
 // call set_enabled to enable it.
 class FakeSafeBrowsingDatabaseManager
     : public safe_browsing::TestSafeBrowsingDatabaseManager {
@@ -22,12 +22,12 @@ class FakeSafeBrowsingDatabaseManager
   explicit FakeSafeBrowsingDatabaseManager(bool enabled);
 
   // Returns true if synchronously safe, false if not in which case the unsafe
-  // IDs taken from |unsafe_ids_| are passed to to |client| on the current
+  // IDs taken from `unsafe_ids_` are passed to to `client` on the current
   // message loop.
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
 
-  // Return |this| to chain together SetUnsafe(...).NotifyUpdate() conveniently.
+  // Return `this` to chain together SetUnsafe(...).NotifyUpdate() conveniently.
   FakeSafeBrowsingDatabaseManager& Enable();
   FakeSafeBrowsingDatabaseManager& Disable();
   FakeSafeBrowsingDatabaseManager& ClearUnsafe();

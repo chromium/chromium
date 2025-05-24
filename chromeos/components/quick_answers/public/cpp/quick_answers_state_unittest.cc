@@ -4,6 +4,7 @@
 
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
@@ -15,6 +16,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +26,9 @@ namespace {
 
 class FakeObserver : public QuickAnswersStateObserver {
  public:
+  void OnFeatureTypeChanged() override {
+    feature_type_ = QuickAnswersState::GetFeatureType();
+  }
   void OnEligibilityChanged(bool eligible) override { is_eligible_ = eligible; }
   void OnSettingsEnabled(bool enabled) override { is_enabled_ = enabled; }
   void OnConsentStatusUpdated(
@@ -31,6 +36,9 @@ class FakeObserver : public QuickAnswersStateObserver {
     consent_status_ = consent_status;
   }
 
+  std::optional<QuickAnswersState::FeatureType> feature_type() const {
+    return feature_type_;
+  }
   bool is_eligible() const { return is_eligible_; }
   bool is_enabled() const { return is_enabled_; }
   quick_answers::prefs::ConsentStatus consent_status() const {
@@ -38,28 +46,24 @@ class FakeObserver : public QuickAnswersStateObserver {
   }
 
  private:
+  std::optional<QuickAnswersState::FeatureType> feature_type_;
   bool is_eligible_ = false;
   bool is_enabled_ = false;
   quick_answers::prefs::ConsentStatus consent_status_ =
       quick_answers::prefs::ConsentStatus::kUnknown;
 };
 
-std::unique_ptr<base::test::ScopedFeatureList> MaybeEnableMagicBoost() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Note that `kMahi` is associated with the Magic Boost feature.
-  auto feature_list = std::make_unique<base::test::ScopedFeatureList>();
-  feature_list->InitWithFeatures(
-      {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
-      {});
-  return feature_list;
-#else
-  // chromeos_components_unittests is expected to run only in Ash build for now.
-  //
-  // Build config:
-  // https://source.chromium.org/chromium/chromium/src/+/main:BUILD.gn;l=454;drc=bfcb02f1ceb574659c9f0d9b5eb1cbf85040696b
-  return nullptr;
-#endif
-}
+class QuickAnswersStateWithMagicBoostTest : public testing::Test {
+ protected:
+  QuickAnswersStateWithMagicBoostTest() {
+    // Note that `kMahi` is associated with the Magic Boost feature.
+    feature_list_.InitWithFeatures(
+        {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
+        {});
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
 
 }  // namespace
 
@@ -91,13 +95,9 @@ TEST(QuickAnswersStateTest, IsEligibleObserverInit) {
   EXPECT_TRUE(observer.is_eligible());
 }
 
-TEST(QuickAnswersStateTest, IsEligibleFeatureType) {
-  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
-      MaybeEnableMagicBoost();
-  ASSERT_TRUE(magic_boost_enabled)
-      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
-
+TEST_F(QuickAnswersStateWithMagicBoostTest, IsEligibleFeatureType) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
 
@@ -135,9 +135,38 @@ TEST(QuickAnswersStateTest, EnabledButNotEligible) {
   EXPECT_FALSE(QuickAnswersState::IsEnabled());
 }
 
+// MagicBoost availability check requires an async operation. There is a short
+// period where `MagicBoostState` returns false for its availability even if a
+// user/device is eligible.
+TEST_F(QuickAnswersStateWithMagicBoostTest, MagicBoostStateEligibilityChanged) {
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(false);
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.SetApplicationLocale("en");
+
+  FakeObserver observer;
+  quick_answers_state.AddObserver(&observer);
+
+  EXPECT_EQ(QuickAnswersState::FeatureType::kQuickAnswers,
+            QuickAnswersState::GetFeatureType());
+  EXPECT_EQ(QuickAnswersState::FeatureType::kQuickAnswers,
+            observer.feature_type());
+
+  // Simulate that MagicBoost availability check async operation is compalted
+  // and a user has went through MagicBoost consent flow.
+  magic_boost_state.SetAvailability(true);
+  magic_boost_state.SetMagicBoostEnabled(true);
+
+  EXPECT_EQ(QuickAnswersState::FeatureType::kHmr,
+            QuickAnswersState::GetFeatureType());
+  EXPECT_EQ(QuickAnswersState::FeatureType::kHmr, observer.feature_type());
+}
+
 TEST(QuickAnswersStateTest, EnabledButKiosk) {
+  TestingPrefServiceSimple local_state;
+  user_manager::UserManager::RegisterPrefs(local_state.registry());
   user_manager::ScopedUserManager scoped_user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
+      std::make_unique<user_manager::FakeUserManager>(&local_state));
   chromeos::SetUpFakeKioskSession();
 
   FakeQuickAnswersState quick_answers_state;
@@ -161,13 +190,9 @@ TEST(QuickAnswersStateTest, IsEnabledObserverInit) {
   EXPECT_TRUE(observer.is_enabled());
 }
 
-TEST(QuickAnswersStateTest, IsEnabledUnderMagicBoost) {
-  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
-      MaybeEnableMagicBoost();
-  ASSERT_TRUE(magic_boost_enabled)
-      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
-
+TEST_F(QuickAnswersStateWithMagicBoostTest, IsEnabledUnderMagicBoost) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
   quick_answers_state.SetSettingsEnabled(true);
@@ -246,13 +271,9 @@ TEST(QuickAnswersStateTest, GetConsentStatus) {
             observer.consent_status());
 }
 
-TEST(QuickAnswersStateTest, GetConsentStatusUnderMagicBoost) {
-  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
-      MaybeEnableMagicBoost();
-  ASSERT_TRUE(magic_boost_enabled)
-      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
-
+TEST_F(QuickAnswersStateWithMagicBoostTest, GetConsentStatusUnderMagicBoost) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
   FakeObserver observer;
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.AddObserver(&observer);
@@ -275,16 +296,12 @@ TEST(QuickAnswersStateTest, GetConsentStatusUnderMagicBoost) {
             observer.consent_status());
 }
 
-TEST(QuickAnswersStateTest, PendingUnderMagicBoost) {
-  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
-      MaybeEnableMagicBoost();
-  ASSERT_TRUE(magic_boost_enabled)
-      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
-
+TEST_F(QuickAnswersStateWithMagicBoostTest, PendingUnderMagicBoost) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
 
+  magic_boost_state.SetAvailability(true);
   magic_boost_state.AsyncWriteHMREnabled(true);
   magic_boost_state.AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kPendingDisclaimer);
@@ -299,16 +316,12 @@ TEST(QuickAnswersStateTest, PendingUnderMagicBoost) {
          "via MagicBoost.";
 }
 
-TEST(QuickAnswersStateTest, PendingNotEnabledUnderMagicBoost) {
-  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
-      MaybeEnableMagicBoost();
-  ASSERT_TRUE(magic_boost_enabled)
-      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
-
+TEST_F(QuickAnswersStateWithMagicBoostTest, PendingNotEnabledUnderMagicBoost) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
 
+  magic_boost_state.SetAvailability(true);
   magic_boost_state.AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kPendingDisclaimer);
 
@@ -387,13 +400,9 @@ TEST(QuickAnswersStateTest, IsIntentEligibleGatedByGlobalEligible) {
       << "Intent is ineligible if a feature itself is ineligible";
 }
 
-TEST(QuickAnswersStateTest, IsIntentEligibleUnderMagicBoost) {
-  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
-      MaybeEnableMagicBoost();
-  ASSERT_TRUE(magic_boost_enabled)
-      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
-
+TEST_F(QuickAnswersStateWithMagicBoostTest, IsIntentEligibleUnderMagicBoost) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
 
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");

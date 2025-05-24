@@ -17,7 +17,7 @@ found in the LICENSE file.
         android:id="@+id/branding_icon"
         android:layout_width="@dimen/custom_tabs_toolbar_branding_icon_width"
         android:layout_height="wrap_content"
-        android:src="@drawable/chromelogo16"
+        android:src="@drawable/branding_icon"
         app:tint="@color/default_icon_color_tint_list"
         android:layout_gravity="center_vertical"
         android:paddingStart="@dimen/custom_tabs_toolbar_branding_icon_start_padding"
@@ -25,9 +25,10 @@ found in the LICENSE file.
         android:importantForAccessibility="no"/>
     <TextView
         android:id="@+id/branding_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="start|center_vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="start|center_vertical"
         android:ellipsize="middle"
-        android:text="@string/twa_running_in_chrome" />
+        android:text="@string/twa_running_in_chrome"/>
 </LinearLayout>

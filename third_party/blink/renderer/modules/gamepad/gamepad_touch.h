@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_TOUCH_H_
 
 #include "device/gamepad/public/cpp/gamepad.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -27,11 +28,11 @@ class GamepadTouch : public ScriptWrappable {
   uint8_t surfaceId() const { return surface_id_; }
   void SetSurfaceId(uint8_t id) { surface_id_ = id; }
 
-  DOMFloat32Array* position() const { return position_.Get(); }
+  NotShared<DOMFloat32Array> position() const { return position_; }
   void SetPosition(float x, float y);
 
-  DOMUint32Array* surfaceDimensions() const {
-    return surface_dimensions_.Get();
+  NotShared<DOMUint32Array> surfaceDimensions() const {
+    return surface_dimensions_;
   }
   bool HasSurfaceDimensions() { return has_surface_dimensions_; }
   void SetSurfaceDimensions(uint32_t x, uint32_t y);
@@ -46,8 +47,8 @@ class GamepadTouch : public ScriptWrappable {
   uint8_t surface_id_ = 0;
   bool has_surface_dimensions_ = false;
 
-  Member<DOMFloat32Array> position_;
-  Member<DOMUint32Array> surface_dimensions_;
+  NotShared<DOMFloat32Array> position_;
+  NotShared<DOMUint32Array> surface_dimensions_;
 };
 
 using GamepadTouchVector = HeapVector<Member<GamepadTouch>>;

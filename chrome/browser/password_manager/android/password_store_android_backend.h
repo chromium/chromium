@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
+#include <variant>
 
 #include "base/containers/small_map.h"
 #include "base/functional/callback_forward.h"
@@ -68,7 +69,10 @@ enum class PasswordStoreOperation {
   // kRemoveLoginForAccount = 6,
 
   kRemoveLoginAsync = 7,
-  kRemoveLoginsByURLAndTimeAsync = 8,
+
+  // Obsolete
+  // kRemoveLoginsByURLAndTimeAsync = 8,
+
   kRemoveLoginsCreatedBetweenAsync = 9,
   kDisableAutoSignInForOriginsAsync = 10,
   // Deprecated
@@ -138,12 +142,6 @@ class PasswordStoreAndroidBackend
   void GetGroupedMatchingLoginsInternal(std::string account,
                                         const PasswordFormDigest& form_digest,
                                         LoginsOrErrorReply callback);
-  void RemoveLoginsByURLAndTimeInternal(
-      std::string account,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      PasswordChangesOrErrorReply callback);
   void RemoveLoginsCreatedBetweenInternal(std::string account,
                                           base::Time delete_begin,
                                           base::Time delete_end,
@@ -209,12 +207,12 @@ class PasswordStoreAndroidBackend
 
     template <typename T>
     bool Holds() const {
-      return absl::holds_alternative<T>(success_callback_);
+      return std::holds_alternative<T>(success_callback_);
     }
 
     template <typename T>
     T&& Get() && {
-      return std::move(absl::get<T>(success_callback_));
+      return std::move(std::get<T>(success_callback_));
     }
 
     void RecordMetrics(std::optional<AndroidBackendError> error) const;
@@ -224,7 +222,7 @@ class PasswordStoreAndroidBackend
     PasswordStoreOperation GetOperation();
 
    private:
-    absl::variant<LoginsOrErrorReply, PasswordChangesOrErrorReply>
+    std::variant<LoginsOrErrorReply, PasswordChangesOrErrorReply>
         success_callback_;
     PasswordStoreBackendMetricsRecorder metrics_recorder_;
     base::TimeDelta delay_;
@@ -267,8 +265,7 @@ class PasswordStoreAndroidBackend
   using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
   // Using a small_map should ensure that we handle rare cases with many jobs
   // like a bulk deletion just as well as the normal, rather small job load.
-  using JobMap = base::small_map<
-      std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
+  using JobMap = base::small_map<std::unordered_map<JobId, JobReturnHandler>>;
 
   using DelayedRetryId = base::IdType32<CancellableRetryCallback>;
 

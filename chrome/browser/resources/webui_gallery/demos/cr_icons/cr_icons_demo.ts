@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon/cr_iconset.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
+import './icons.html.js';
 
 import type {CrIconsetElement} from '//resources/cr_elements/cr_icon/cr_iconset.js';
 import {assert} from '//resources/js/assert.js';
@@ -37,7 +37,7 @@ export class CrIconsDemoElement extends CrLitElement {
     };
   }
 
-  protected crIcons_: string[] = [
+  protected accessor crIcons_: string[] = [
     'icon-arrow-back',  'icon-arrow-dropdown', 'icon-cancel',
     'icon-clear',       'icon-copy-content',   'icon-delete-gray',
     'icon-edit',        'icon-folder-open',    'icon-picture-delete',
@@ -46,9 +46,9 @@ export class CrIconsDemoElement extends CrLitElement {
     'icon-settings',    'icon-visibility',     'icon-visibility-off',
     'subpage-arrow',
   ];
-  protected iconColor_: string = '#000000';
-  protected iconSize_: string = '24';
-  protected icons_: string[] = [];
+  protected accessor iconColor_: string = '#000000';
+  protected accessor iconSize_: string = '24';
+  protected accessor icons_: string[] = [];
 
   override firstUpdated() {
     function getIconNames(iconset: CrIconsetElement) {

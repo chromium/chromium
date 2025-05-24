@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.touch_to_fill;
 
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
@@ -65,9 +64,9 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Contains the logic for the TouchToFill component. It sets the state of the model and reacts to
@@ -139,11 +138,13 @@ class TouchToFillMediator {
                         .build();
         sheetItems.add(new ListItem(TouchToFillProperties.ItemType.HEADER, headerModel));
 
-        Set<GURL> avatarUrls =
-                getSharedPasswordsThatRequireNotification(credentials).stream()
-                        .map(Credential::getSenderProfileImageUrl)
-                        .collect(Collectors.toSet());
-        if (!avatarUrls.isEmpty()) {
+        List<Credential> passwordsThatRequireNotification =
+                getSharedPasswordsThatRequireNotification(credentials);
+        if (!passwordsThatRequireNotification.isEmpty()) {
+            Set<GURL> avatarUrls = new HashSet<>();
+            for (Credential credential : passwordsThatRequireNotification) {
+                avatarUrls.add(credential.getSenderProfileImageUrl());
+            }
             // Set a placeholder until the avatar images are loaded.
             headerModel.set(
                     AVATAR,
@@ -351,7 +352,7 @@ class TouchToFillMediator {
         return o != null && !o.uri().isOpaque() ? credentialOrigin : siteUrl.getSpec();
     }
 
-    private void reportCredentialSelection(int userAction, int index) {
+    private void reportCredentialSelection(int index) {
         if (mCredentials.size() + mWebAuthnCredentials.size() > 1) {
             // We only record this histogram in case multiple credentials were shown to the user.
             // Otherwise the single credential case where position should always be 0 will dominate
@@ -362,16 +363,14 @@ class TouchToFillMediator {
 
     private void onSelectedCredential(Credential credential) {
         mModel.set(VISIBLE, false);
-        reportCredentialSelection(UserAction.SELECTED_CREDENTIAL, mCredentials.indexOf(credential));
+        reportCredentialSelection(mCredentials.indexOf(credential));
         mDelegate.onCredentialSelected(credential);
     }
 
     private void onSelectedWebAuthnCredential(WebauthnCredential credential) {
         mModel.set(VISIBLE, false);
         // The index assumes WebAuthn credentials are listed after password credentials.
-        reportCredentialSelection(
-                UserAction.SELECTED_PASSKEY_CREDENTIAL,
-                mCredentials.size() + mWebAuthnCredentials.indexOf(credential));
+        reportCredentialSelection(mCredentials.size() + mWebAuthnCredentials.indexOf(credential));
         mDelegate.onWebAuthnCredentialSelected(credential);
     }
 
@@ -387,7 +386,7 @@ class TouchToFillMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 UMA_TOUCH_TO_FILL_DISMISSAL_REASON,
                 reason,
-                BottomSheetController.StateChangeReason.MAX_VALUE + 1);
+                BottomSheetController.StateChangeReason.MAX_VALUE);
         mDelegate.onDismissed();
     }
 
@@ -421,7 +420,6 @@ class TouchToFillMediator {
         return new PropertyModel.Builder(CredentialProperties.ALL_KEYS)
                 .with(CREDENTIAL, credential)
                 .with(ON_CLICK_LISTENER, this::onSelectedCredential)
-                .with(FORMATTED_ORIGIN, credential.getDisplayName())
                 .with(SHOW_SUBMIT_BUTTON, triggerSubmission)
                 .with(ITEM_COLLECTION_INFO, itemCollectionInfo)
                 .build();

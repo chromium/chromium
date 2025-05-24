@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/sockets_tcp/sockets_tcp_api.h"
@@ -68,7 +68,7 @@ class TCPServerSocketEventDispatcher : public BrowserContextKeyedAPI {
     ~AcceptParams();
 
     content::BrowserThread::ID thread_id;
-    raw_ptr<void, LeakedDanglingUntriaged> browser_context_id;
+    base::WeakPtr<content::BrowserContext> browser_context;
     ExtensionId extension_id;
     scoped_refptr<ServerSocketData> server_sockets;
     scoped_refptr<ClientSocketData> client_sockets;
@@ -90,18 +90,19 @@ class TCPServerSocketEventDispatcher : public BrowserContextKeyedAPI {
       mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 
-  // Post an extension event from |thread_id| to UI thread
+  // Post an extension event from `thread_id` to UI thread
   static void PostEvent(const AcceptParams& params,
                         std::unique_ptr<Event> event);
 
   // Dispatch an extension event on to EventRouter instance on UI thread.
-  static void DispatchEvent(void* browser_context_id,
-                            const ExtensionId& extension_id,
-                            std::unique_ptr<Event> event);
+  static void DispatchEvent(
+      base::WeakPtr<content::BrowserContext> browser_context,
+      const ExtensionId& extension_id,
+      std::unique_ptr<Event> event);
 
   // Usually IO thread (except for unit testing).
   content::BrowserThread::ID thread_id_;
-  raw_ptr<content::BrowserContext> browser_context_;
+  base::WeakPtr<content::BrowserContext> browser_context_;
   scoped_refptr<ServerSocketData> server_sockets_;
   scoped_refptr<ClientSocketData> client_sockets_;
 };

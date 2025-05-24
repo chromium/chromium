@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/renderer/script_context.h"
+
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/frame_load_waiter.h"
-#include "extensions/common/script_constants.h"
-#include "extensions/renderer/script_context.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/shell/test/extensions_render_view_test.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -26,8 +27,8 @@ class ScriptContextTest : public ExtensionsRenderViewTest {
   }
   GURL GetEffectiveDocumentURLForInjection(
       WebLocalFrame* frame,
-      MatchOriginAsFallbackBehavior match_origin_as_fallback =
-          MatchOriginAsFallbackBehavior::kAlways) {
+      mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback =
+          mojom::MatchOriginAsFallbackBehavior::kAlways) {
     return ScriptContext::GetEffectiveDocumentURLForInjection(
         frame, frame->GetDocument().Url(), match_origin_as_fallback);
   }
@@ -137,11 +138,9 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
   EXPECT_EQ(top_url, GetEffectiveDocumentURLForInjection(frame4));
   // Sanity-check: if we only match about: schemes, the original URL should be
   // returned.
-  EXPECT_EQ(
-      data_url,
-      GetEffectiveDocumentURLForInjection(
-          frame4,
-          MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree));
+  EXPECT_EQ(data_url, GetEffectiveDocumentURLForInjection(
+                          frame4, mojom::MatchOriginAsFallbackBehavior::
+                                      kMatchForAboutSchemeAndClimbTree));
 
   // top -> sandboxed data URL = same URL when classifying contexts, but
   // inherited when injecting scripts.
@@ -149,11 +148,9 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
   EXPECT_EQ(top_url, GetEffectiveDocumentURLForInjection(frame5));
   // Sanity-check: if we only match about: schemes, the original URL should be
   // returned.
-  EXPECT_EQ(
-      data_url,
-      GetEffectiveDocumentURLForInjection(
-          frame5,
-          MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree));
+  EXPECT_EQ(data_url, GetEffectiveDocumentURLForInjection(
+                          frame5, mojom::MatchOriginAsFallbackBehavior::
+                                      kMatchForAboutSchemeAndClimbTree));
 
   // top -> different origin = different origin
   EXPECT_EQ(different_url, GetEffectiveDocumentURLForContext(frame3));

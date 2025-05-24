@@ -10,7 +10,8 @@ StubPasswordReuseDetectionManagerClient::
 StubPasswordReuseDetectionManagerClient::
     ~StubPasswordReuseDetectionManagerClient() = default;
 
-autofill::LogManager* StubPasswordReuseDetectionManagerClient::GetLogManager() {
+autofill::LogManager*
+StubPasswordReuseDetectionManagerClient::GetCurrentLogManager() {
   return &log_manager_;
 }
 

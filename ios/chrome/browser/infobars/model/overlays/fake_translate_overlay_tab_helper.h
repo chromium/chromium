@@ -20,7 +20,6 @@ class FakeTranslateOverlayTabHelper : public TranslateOverlayTabHelper {
  private:
   explicit FakeTranslateOverlayTabHelper(web::WebState* web_state);
   friend class web::WebStateUserData<FakeTranslateOverlayTabHelper>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_FAKE_TRANSLATE_OVERLAY_TAB_HELPER_H_

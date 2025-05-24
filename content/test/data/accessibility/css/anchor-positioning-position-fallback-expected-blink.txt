@@ -1,0 +1,25 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++genericContainer
+++++++++staticText name='target'
+++++++++++inlineTextBox name='target'
+++++++button name='anchor1' detailsFrom=cssAnchor detailsIds=genericContainer
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++button name='anchor2'
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'
+=== Start Continuation ===
+rootWebArea name='scroll() done'
+++genericContainer ignored
+++++genericContainer
+++++++genericContainer
+++++++++staticText name='target'
+++++++++++inlineTextBox name='target'
+++++++button name='anchor1'
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++button name='anchor2' detailsFrom=cssAnchor detailsIds=genericContainer
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'

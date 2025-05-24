@@ -88,7 +88,7 @@ base::FilePath MapDevPathToSysPath(const base::FilePath& device_path) {
     // corresponding USB touch device. If the symlink doesn't exist, use the
     // normal sysfs path. In order to ensure that the sysfs path remains unique,
     // append the card name to it.
-    if (base::StartsWith(component, "evdi", base::CompareCase::SENSITIVE)) {
+    if (component.starts_with("evdi")) {
       base::FilePath usb_device_path;
       if (base::ReadSymbolicLink(path_thus_far.Append("device"),
                                  &usb_device_path)) {
@@ -338,10 +338,10 @@ DrmDisplayHostManager::DisplayEvent::~DisplayEvent() = default;
 
 DrmDisplayHost* DrmDisplayHostManager::GetDisplay(int64_t display_id) {
   auto it =
-      base::ranges::find(displays_, display_id,
-                         [](const std::unique_ptr<DrmDisplayHost>& display) {
-                           return display->snapshot()->display_id();
-                         });
+      std::ranges::find(displays_, display_id,
+                        [](const std::unique_ptr<DrmDisplayHost>& display) {
+                          return display->snapshot()->display_id();
+                        });
   if (it == displays_.end())
     return nullptr;
 
@@ -578,10 +578,10 @@ void DrmDisplayHostManager::GpuHasUpdatedNativeDisplays(
   displays_.swap(old_displays);
   for (auto& display : displays) {
     auto it =
-        base::ranges::find(old_displays, display->display_id(),
-                           [](const std::unique_ptr<DrmDisplayHost>& display) {
-                             return display->snapshot()->display_id();
-                           });
+        std::ranges::find(old_displays, display->display_id(),
+                          [](const std::unique_ptr<DrmDisplayHost>& display) {
+                            return display->snapshot()->display_id();
+                          });
     if (it == old_displays.end()) {
       displays_.push_back(std::make_unique<DrmDisplayHost>(
           proxy_, std::move(display), false /* is_dummy */));

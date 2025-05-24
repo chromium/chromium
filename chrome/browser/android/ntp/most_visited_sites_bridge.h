@@ -8,9 +8,11 @@
 #include <jni.h>
 
 #include <memory>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -21,7 +23,7 @@ class MostVisitedSites;
 // Provides the list of most visited sites and their thumbnails to Java.
 class MostVisitedSitesBridge {
  public:
-  explicit MostVisitedSitesBridge(Profile* profile);
+  MostVisitedSitesBridge(Profile* profile, bool enable_custom_links);
 
   MostVisitedSitesBridge(const MostVisitedSitesBridge&) = delete;
   MostVisitedSitesBridge& operator=(const MostVisitedSitesBridge&) = delete;
@@ -39,6 +41,26 @@ class MostVisitedSitesBridge {
   void SetHomepageClient(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj,
                          const base::android::JavaParamRef<jobject>& j_client);
+
+  jboolean AddCustomLinkTo(JNIEnv* env,
+                           const std::u16string& name,
+                           const GURL& url,
+                           jint pos);
+
+  jboolean AddCustomLink(JNIEnv* env,
+                         const std::u16string& name,
+                         const GURL& url);
+
+  jboolean AssignCustomLink(JNIEnv* env,
+                            const GURL& key_url,
+                            const std::u16string& j_name,
+                            const GURL& url);
+
+  jboolean DeleteCustomLink(JNIEnv* env, const GURL& key_url);
+
+  jboolean HasCustomLink(JNIEnv* env, const GURL& key_url);
+
+  jboolean ReorderCustomLink(JNIEnv* env, const GURL& key_url, jint new_pos);
 
   void AddOrRemoveBlockedUrl(JNIEnv* env,
                              const base::android::JavaParamRef<jobject>& obj,

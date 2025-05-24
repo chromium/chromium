@@ -87,7 +87,7 @@ bool FirstPartySetsOverridesPolicyHandler::CheckPolicySettings(
           policy_value->GetDict());
 
   // Output warnings that occur when parsing the policy.
-  for (ParseWarning parse_warning : warnings) {
+  for (const ParseWarning& parse_warning : warnings) {
     errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR,
                      ParseWarningTypeToString(parse_warning.type()),
                      parse_warning.path(),

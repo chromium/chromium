@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.provider.Browser;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.webapk.lib.common.WebApkConstants;
@@ -16,6 +18,7 @@ import org.chromium.webapk.lib.common.WebApkConstants;
 import java.util.HashSet;
 
 /** Utility methods for extracting data from Homescreen-shortcut/WebAPK launch intent. */
+@NullMarked
 public class WebappIntentUtils {
     /**
      * PWA homescreen shortcut intent extras. Used for copying intent extras for
@@ -88,12 +91,12 @@ public class WebappIntentUtils {
      * {@link ColorUtils.INVALID_COLOR} to a signed Integer where an
      * unspecified color is represented as null.
      */
-    public static Integer colorFromLongColor(long longColor) {
+    public static @Nullable Integer colorFromLongColor(long longColor) {
         return isLongColorValid(longColor) ? Integer.valueOf((int) longColor) : null;
     }
 
     /** Extracts id from homescreen shortcut intent. */
-    public static String getIdForHomescreenShortcut(Intent intent) {
+    public static @Nullable String getIdForHomescreenShortcut(Intent intent) {
         return IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_ID);
     }
 
@@ -102,11 +105,11 @@ public class WebappIntentUtils {
         return WebApkConstants.WEBAPK_ID_PREFIX + packageName;
     }
 
-    public static String getUrl(Intent intent) {
+    public static @Nullable String getUrl(Intent intent) {
         return IntentUtils.safeGetStringExtra(intent, WebApkConstants.EXTRA_URL);
     }
 
-    public static String getWebApkPackageName(Intent intent) {
+    public static @Nullable String getWebApkPackageName(Intent intent) {
         return IntentUtils.safeGetStringExtra(intent, WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME);
     }
 

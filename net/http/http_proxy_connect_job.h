@@ -7,12 +7,14 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
@@ -23,6 +25,7 @@
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_params.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -190,6 +193,8 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
                         HttpAuthController* auth_controller,
                         base::OnceClosure restart_with_auth_callback,
                         ConnectJob* job) override;
+  Error OnDestinationDnsAliasesResolved(const std::set<std::string>& aliases,
+                                        ConnectJob* job) override;
 
   // In some cases, a timeout that's stricter than the TCP (+SSL, if applicable)
   // is used for HTTP proxies during connection establishment and SSL
@@ -207,6 +212,20 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
 
   // Updates the field trial parameters used in calculating timeouts.
   static void UpdateFieldTrialParametersForTesting();
+
+  enum class HttpConnectResult {
+    kSuccess,
+    kError,
+    kTimedOut,
+  };
+
+  // Emit a Net.HttpProxy.ConnectLatency.* metric. This is used both by this
+  // class and by QuicSessionPool, which handles QUIC tunnels which will carry
+  // QUIC.
+  static void EmitConnectLatency(NextProto http_version,
+                                 ProxyServer::Scheme scheme,
+                                 HttpConnectResult result,
+                                 base::TimeDelta latency);
 
  private:
   enum State {

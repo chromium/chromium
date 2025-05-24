@@ -14,7 +14,7 @@ UnhandledTapNotifierImpl::UnhandledTapNotifierImpl(
     UnhandledTapCallback callback)
     : unhandled_tap_callback_(std::move(callback)) {}
 
-UnhandledTapNotifierImpl::~UnhandledTapNotifierImpl() {}
+UnhandledTapNotifierImpl::~UnhandledTapNotifierImpl() = default;
 
 void UnhandledTapNotifierImpl::ShowUnhandledTapUIIfNeeded(
     blink::mojom::UnhandledTapInfoPtr unhandled_tap_info) {

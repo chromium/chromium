@@ -8,35 +8,51 @@
 #include <memory>
 #import <optional>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
-
 class PrefService;
+class ProfileIOS;
 class ProfileOAuth2TokenServiceDelegate;
 class ProfileOAuth2TokenService;
+class ShareKitService;
 class SystemIdentityManager;
+class TabGroupService;
 class TrustedVaultClientBackend;
-namespace drive {
-class DriveService;
-}
-namespace policy {
-class ConfigurationPolicyProvider;
-}
-namespace password_manager {
-class BulkLeakCheckServiceInterface;
-class RecipientsFetcher;
-}
-
-namespace plus_addresses {
-class PlusAddressService;
-}
-
-namespace tab_groups {
-class TabGroupSyncService;
-}
 
 namespace base {
 class TimeDelta;
-}
+}  // namespace base
+
+namespace collaboration {
+class CollaborationService;
+}  // namespace collaboration
+
+namespace data_sharing {
+class DataSharingService;
+}  // namespace data_sharing
+
+namespace drive {
+class DriveService;
+}  // namespace drive
+
+namespace feature_engagement {
+class FeatureActivation;
+}  // namespace feature_engagement
+
+namespace policy {
+class ConfigurationPolicyProvider;
+}  // namespace policy
+
+namespace password_manager {
+class BulkLeakCheckServiceInterface;
+class RecipientsFetcher;
+}  // namespace password_manager
+
+namespace plus_addresses {
+class PlusAddressService;
+}  // namespace plus_addresses
+
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
 
 namespace tests_hook {
 
@@ -68,9 +84,9 @@ bool DisableDefaultFirstRun();
 // prompt displaying for the omnibox.
 bool DisableGeolocation();
 
-// Returns true if the Promo Manager should avoid displaying full-screen promos
+// Returns true if the Promo Manager should avoid displaying promos
 // on app startup to allow tests to run unimpeded.
-bool DisablePromoManagerFullScreenPromos();
+bool DisablePromoManagerDisplayingPromo();
 
 // Returns true if the search engine choice view, which would interfere with
 // many tests, should by default be skipped. Note that even in a target where
@@ -97,9 +113,20 @@ bool DisableUpdateService();
 // can start before checking if the promo appears.
 bool DelayAppLaunchPromos();
 
+// Returns true if the data for discarded session should never be deleted.
+// This is a workaround because during EG tests, the application delegate
+// method -application:didDiscardSceneSessions: may be called with a list
+// of identifiers that contains identifiers of UIScene that are active.
+bool NeverPurgeDiscardedSessionsData();
+
 // Returns a policy provider that should be installed as the platform policy
 // provider when testing. May return nullptr.
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider();
+
+// Whether a phone backup/restore state should be simulated for testing purpose.
+// Uses`experimental_flags::SimulatePostDeviceRestore()` to check whether this
+// feature should be enabled due to experimental feature.
+bool SimulatePostDeviceRestore();
 
 // Allows overriding the SystemIdentityManager factory. The real factory will
 // be used if this hook returns null.
@@ -112,7 +139,19 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend();
 // Allows overriding the TabGroupSyncService factory. The real factory will be
 // used if this hook returns null.
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
-    ChromeBrowserState* browser_state);
+    ProfileIOS* profile);
+
+// Allows additional test setup for the DataSharingService.
+void DataSharingServiceHooks(
+    data_sharing::DataSharingService* data_sharing_service);
+
+// Allows overriding the ShareKitService factory. The real factory will be
+// used if this hook returns null.
+std::unique_ptr<ShareKitService> CreateShareKitService(
+    data_sharing::DataSharingService* data_sharing_service,
+    collaboration::CollaborationService* collaboration_service,
+    tab_groups::TabGroupSyncService* sync_service,
+    TabGroupService* tab_group_service);
 
 // Returns a bulk leak check service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.
@@ -122,7 +161,7 @@ GetOverriddenBulkLeakCheckService();
 // Returns a plus address service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.
 std::unique_ptr<plus_addresses::PlusAddressService>
-GetOverriddenPlusAddressService(ProfileIOS* profile);
+GetOverriddenPlusAddressService();
 
 // Returns a recipients fetcher instance that should be used in EG tests. The
 // real instance will be used if this hook returns a nullptr.
@@ -155,10 +194,18 @@ base::TimeDelta GetOverriddenSnackbarDuration();
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService();
 
 // Override the Feature Engagement Tracker used in tests with a demo version.
-// Returning std::nullopt will not do any override. Returning any string will
-// override with a demo tracker that only enables that feature (use empty string
-// for a demo tracker that enables all features).
-std::optional<std::string> FETDemoModeOverride();
+feature_engagement::FeatureActivation FETDemoModeOverride();
+
+// If the given argv contains `-EGTestWipeProfile`, deletes the
+// contents of the `Library` directory at the start of `main()`. This
+// simulates launching the application with a fresh profile.
+void WipeProfileIfRequested(int argc, char* argv[]);
+
+// Delay before which the "Turn on AutoFill" button shown in Password Settings
+// can be re-enabled. If the value is 0, the default value from Password
+// Settings should not be updated.
+base::TimeDelta
+GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension();
 
 }  // namespace tests_hook
 

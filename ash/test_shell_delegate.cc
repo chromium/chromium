@@ -5,7 +5,9 @@
 #include "ash/test_shell_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/accelerators/test_accelerator_prefs_delegate.h"
 #include "ash/accessibility/default_accessibility_delegate.h"
@@ -14,12 +16,12 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/clipboard/test_support/test_clipboard_history_controller_delegate_impl.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
-#include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/public/cpp/tab_strip_delegate.h"
-#include "ash/public/cpp/test/test_desk_profiles_delegate.h"
+#include "ash/public/cpp/test/test_coral_delegate.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/public/cpp/test/test_tab_strip_delegate.h"
+#include "ash/scanner/fake_scanner_delegate.h"
 #include "ash/system/focus_mode/test/test_focus_mode_delegate.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/test_system_sounds_delegate.h"
@@ -44,7 +46,7 @@ bool TestShellDelegate::CanShowWindowForUser(const aura::Window* window) const {
 }
 
 std::unique_ptr<CaptureModeDelegate>
-TestShellDelegate::CreateCaptureModeDelegate() const {
+TestShellDelegate::CreateCaptureModeDelegate(PrefService* local_state) const {
   return std::make_unique<TestCaptureModeDelegate>();
 }
 
@@ -54,7 +56,7 @@ TestShellDelegate::CreateClipboardHistoryControllerDelegate() const {
 }
 
 std::unique_ptr<CoralDelegate> TestShellDelegate::CreateCoralDelegate() const {
-  return nullptr;
+  return std::make_unique<TestCoralDelegate>();
 }
 
 std::unique_ptr<GameDashboardDelegate>
@@ -120,9 +122,9 @@ TestShellDelegate::CreateUserEducationDelegate() const {
              : std::make_unique<testing::NiceMock<MockUserEducationDelegate>>();
 }
 
-std::unique_ptr<ash::ScannerDelegate> TestShellDelegate::CreateScannerDelegate()
+std::unique_ptr<ScannerDelegate> TestShellDelegate::CreateScannerDelegate()
     const {
-  return nullptr;
+  return std::make_unique<FakeScannerDelegate>();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -134,7 +136,7 @@ bool TestShellDelegate::CanGoBack(gfx::NativeWindow window) const {
   return can_go_back_;
 }
 
-void TestShellDelegate::SetTabScrubberChromeOSEnabled(bool enabled) {
+void TestShellDelegate::SetTabScrubberEnabled(bool enabled) {
   tab_scrubber_enabled_ = enabled;
 }
 
@@ -151,13 +153,6 @@ int TestShellDelegate::GetBrowserWebUITabStripHeight() {
   return 0;
 }
 
-DeskProfilesDelegate* TestShellDelegate::GetDeskProfilesDelegate() {
-  if (!test_desk_profiles_delegate_) {
-    test_desk_profiles_delegate_ = std::make_unique<TestDeskProfilesDelegate>();
-  }
-  return test_desk_profiles_delegate_.get();
-}
-
 void TestShellDelegate::OpenMultitaskingSettings() {
   // Opening the settings page will cause a window activation and end overview.
   // Call `EndOverview()` to simulate opening the settings page.
@@ -169,10 +164,6 @@ void TestShellDelegate::BindMultiDeviceSetup(
         receiver) {
   if (multidevice_setup_binder_)
     multidevice_setup_binder_.Run(std::move(receiver));
-}
-
-void TestShellDelegate::BindMultiCaptureService(
-    mojo::PendingReceiver<video_capture::mojom::MultiCaptureService> receiver) {
 }
 
 void TestShellDelegate::SetCanGoBack(bool can_go_back) {
@@ -210,6 +201,19 @@ void TestShellDelegate::OpenFeedbackDialog(
     const std::string& description_template,
     const std::string& category_tag) {
   ++open_feedback_dialog_call_count_;
+}
+
+bool TestShellDelegate::SendSpecializedFeatureFeedback(
+    const AccountId& account_id,
+    int product_id,
+    std::string description,
+    std::optional<std::string> image,
+    std::optional<std::string> image_mime_type) {
+  return send_specialized_feature_feedback_callback_
+             ? send_specialized_feature_feedback_callback_.Run(
+                   account_id, product_id, std::move(description),
+                   std::move(image), std::move(image_mime_type))
+             : true;
 }
 
 const GURL& TestShellDelegate::GetLastCommittedURLForWindowIfAny(

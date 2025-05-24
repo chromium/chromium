@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-_non_web_component_files = [ "browser_proxy.ts" ]
+_ts_files = [ "browser_proxy.ts" ]
 
 # Files holding a Polymer element definition and have an equivalent .html file.
 _web_component_files = [
@@ -22,4 +22,4 @@ foreach(f, html_files) {
   html_wrapper_files += [ f + ".ts" ]
 }
 
-ts_files = _non_web_component_files + _web_component_files
+ts_files = _ts_files + _web_component_files

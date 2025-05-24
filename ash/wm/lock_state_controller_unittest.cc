@@ -5,6 +5,7 @@
 #include "ash/wm/lock_state_controller.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -40,7 +41,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -1076,9 +1076,9 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
   // on disk successfully.
   void VerifyInformedRestoreImageOnDisk() {
     EXPECT_TRUE(base::PathExists(file_path()));
-    int64_t file_size = 0;
-    ASSERT_TRUE(base::GetFileSize(file_path(), &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(file_path());
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   const base::FilePath& file_path() const { return file_path_; }
@@ -1087,7 +1087,6 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
   base::ScopedAllowBlockingForTesting allow_blocking_;
   base::ScopedTempDir temp_dir_;
   base::FilePath file_path_;
-  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
 };
 
 // Tests that a informed restore image is taken when there are windows open.
@@ -1151,7 +1150,7 @@ TEST_F(LockStateControllerInformedRestoreTest, ShutdownInOverview) {
 }
 
 TEST_F(LockStateControllerInformedRestoreTest, ShutdownInGuest) {
-  SimulateUserLogin("foo@example.com", user_manager::UserType::kGuest);
+  SimulateUserLogin({"foo@example.com", user_manager::UserType::kGuest});
 
   // Create an empty file to simulate an old informed restore image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));

@@ -11,20 +11,17 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_result.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
@@ -113,21 +110,19 @@ void KeyboardShortcutProvider::Start(const std::u16string& query) {
     return;
   }
 
-  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
-    if (!search_handler_) {
-      // If user has started to user launcher search before the user session
-      // startup tasks completed, we should honor this user action and
-      // initialize the provider. It makes the key shortcut search available
-      // earlier.
-      MaybeInitialize();
-      return;
-    }
-
-    search_handler_->Search(
-        query, UINT32_MAX,
-        base::BindOnce(&KeyboardShortcutProvider::OnShortcutsSearchComplete,
-                       weak_factory_.GetWeakPtr(), query));
+  if (!search_handler_) {
+    // If user has started to user launcher search before the user session
+    // startup tasks completed, we should honor this user action and
+    // initialize the provider. It makes the key shortcut search available
+    // earlier.
+    MaybeInitialize();
+    return;
   }
+
+  search_handler_->Search(
+      query, UINT32_MAX,
+      base::BindOnce(&KeyboardShortcutProvider::OnShortcutsSearchComplete,
+                     weak_factory_.GetWeakPtr(), query));
 }
 
 void KeyboardShortcutProvider::StopQuery() {
@@ -147,8 +142,6 @@ void KeyboardShortcutProvider::OnShortcutsSearchComplete(
     const std::u16string& query,
     std::vector<ash::shortcut_customization::mojom::SearchResultPtr>
         search_results) {
-  CHECK(ash::features::IsSearchCustomizableShortcutsInLauncherEnabled());
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   TokenizedString tokenized_query(query, TokenizedString::Mode::kWords);

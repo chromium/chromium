@@ -6,6 +6,7 @@
 #define COMPONENTS_LANGUAGE_DETECTION_CORE_LANGUAGE_DETECTION_PROVIDER_H_
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "components/language_detection//core/language_detection_model.h"
 
 namespace language_detection {

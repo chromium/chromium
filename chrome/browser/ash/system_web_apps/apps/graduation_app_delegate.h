@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 
 namespace web_app {
 struct WebAppInstallInfo;
@@ -22,6 +22,7 @@ class GraduationAppDelegate : public ash::SystemWebAppDelegate {
 
   // ash::SystemWebAppDelegate:
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
+  gfx::Size GetMinimumWindowSize() const override;
   bool ShouldShowInLauncher() const override;
   bool IsAppEnabled() const override;
   bool ShouldCaptureNavigations() const override;

@@ -4,6 +4,7 @@
 
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -119,7 +120,7 @@ void WebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
     webapps::WebAppOriginAssociationMetrics::RecordFetchResult(
         webapps::WebAppOriginAssociationMetrics::FetchResult::
             kFetchFailedInvalidUrl);
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -141,7 +142,7 @@ void WebAppOriginAssociationFetcher::SendRequest(
 
 void WebAppOriginAssociationFetcher::OnResponse(
     FetchFileCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!response_body) {
     webapps::WebAppOriginAssociationMetrics::RecordFetchResult(
         webapps::WebAppOriginAssociationMetrics::FetchResult::

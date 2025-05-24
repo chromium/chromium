@@ -15,8 +15,9 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
         android:key="cookie_in_use" />
 
-    <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="rws_in_use"
+        app:allowDividerAbove="true"
         app:allowDividerBelow="true" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference

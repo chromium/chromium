@@ -1,0 +1,201 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+.experiment {
+  color: var(--secondary-color);
+  line-height: 1.45;
+  width: 100%;
+}
+
+.experiment .flex-container {
+  display: flex;
+  gap: 8px;
+  padding: 0.8em 4px 16px 0;
+}
+
+.experiment .flex-container .flex:first-child {
+  max-width: 540px;
+}
+
+.experiment p {
+  margin: .2em 0;
+}
+
+.experiment-name {
+  color: var(--primary-color);
+  display: inline-block;
+  font-size: .8125rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+:host(:not([is-default_])) .experiment-name::before {
+  --end-margin: 4px;
+  --diameter: 10px;
+  background-color: var(--interactive-color);
+  border-radius: 50%;
+  content: '';
+  display: inline-block;
+  height: var(--diameter);
+  margin-inline-end: var(--end-margin);
+  margin-inline-start: calc(-1 * var(--end-margin) - var(--diameter));
+  width: var(--diameter);
+}
+
+
+.match,
+:host(.referenced) .experiment-name {
+  /* This UI is intentionally the same in light and dark mode. */
+  background: yellow;
+  color: var(--google-grey-900);
+}
+
+.flex {
+  align-self: center;
+  flex: 1 1 auto;
+}
+
+.experiment-actions {
+  align-self: center;
+  flex: 0 0 auto;
+  padding-inline-start: 5px;
+  text-align: right; /* csschecker-disable-line left-right */
+  width: 150px;
+}
+
+.experiment-origin-list-value {
+  resize: none;
+}
+
+select {
+  background: white;
+  border: 1px solid var(--link-color);
+  color: var(--link-color);
+  font-size: .8125rem;
+  height: 1.625rem;
+  letter-spacing: .01em;
+  max-width: 150px;
+  text-align-last: center;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  select {
+    background: var(--input-background);
+    border: none;
+    color: var(--primary-color);
+  }
+
+  option {
+    background: var(--toolbar-color);
+  }
+}
+
+textarea,
+input {
+  background: var(--input-background);
+  border-radius: 3px;
+  box-sizing: border-box;
+  color: inherit;
+  font-size: .8125rem;
+  margin: 0;
+  min-height: 3em;
+  padding: 8px;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  textarea {
+    border: 1px solid var(--secondary-color);
+  }
+}
+
+:host(:not([is-default_])) select {
+  background: var(--link-color);
+  color: white;
+}
+
+:host(:not([is-default_])) option {
+  background: white;
+  color: var(--link-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host(:not([is-default_])) select {
+    color: var(--google-grey-900);
+  }
+
+  :host(:not([is-default_])) option {
+    background: var(--toolbar-color);
+    color: var(--primary-color);
+  }
+}
+
+.experiment-no-match {
+  display: none;
+  position: absolute;
+}
+
+.permalink {
+  color: var(--secondary-color);
+}
+
+@media (max-width: 480px) {
+  .experiment {
+    border-bottom: 1px solid var(--separator-color);
+  }
+
+  .experiment-name {
+    cursor: pointer;
+  }
+
+  .experiment .flex-container {
+    flex-flow: column;
+  }
+
+  .experiment .flex {
+    width: 100%;
+  }
+
+  .experiment .experiment-actions {
+    max-width: 100%;
+    padding-top: 12px;
+    text-align: left; /* csschecker-disable-line left-right */
+    width: 100%;
+  }
+
+  /* Hide the overflow description text */
+  .body {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  :host([expanded_]) .body {
+    overflow: visible;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 732px) {
+  :host(:not([is-default_])) .experiment-name::before {
+    margin-inline-start: 0;
+  }
+}
+
+.links-container a {
+  display: block;
+}

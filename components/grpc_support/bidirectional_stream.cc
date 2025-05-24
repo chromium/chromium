@@ -39,9 +39,9 @@
 
 namespace grpc_support {
 
-BidirectionalStream::WriteBuffers::WriteBuffers() {}
+BidirectionalStream::WriteBuffers::WriteBuffers() = default;
 
-BidirectionalStream::WriteBuffers::~WriteBuffers() {}
+BidirectionalStream::WriteBuffers::~WriteBuffers() = default;
 
 void BidirectionalStream::WriteBuffers::Clear() {
   write_buffer_list.clear();
@@ -116,7 +116,7 @@ bool BidirectionalStream::ReadData(char* buffer, int capacity) {
     return false;
   scoped_refptr<net::WrappedIOBuffer> read_buffer =
       base::MakeRefCounted<net::WrappedIOBuffer>(
-          base::make_span(buffer, static_cast<size_t>(capacity)));
+          base::span(buffer, static_cast<size_t>(capacity)));
 
   PostToNetworkThread(
       FROM_HERE, base::BindOnce(&BidirectionalStream::ReadDataOnNetworkThread,
@@ -132,7 +132,7 @@ bool BidirectionalStream::WriteData(const char* buffer,
 
   scoped_refptr<net::WrappedIOBuffer> write_buffer =
       base::MakeRefCounted<net::WrappedIOBuffer>(
-          base::make_span(buffer, static_cast<size_t>(count)));
+          base::span(buffer, static_cast<size_t>(count)));
 
   PostToNetworkThread(
       FROM_HERE,
@@ -152,15 +152,6 @@ void BidirectionalStream::Cancel() {
   PostToNetworkThread(
       FROM_HERE,
       base::BindOnce(&BidirectionalStream::CancelOnNetworkThread, weak_this_));
-}
-
-void BidirectionalStream::Destroy() {
-  // Destroy could be called from any thread, including network thread (if
-  // posting task to executor throws an exception), but is posted, so |this|
-  // is valid until calling task is complete.
-  PostToNetworkThread(
-      FROM_HERE, base::BindOnce(&BidirectionalStream::DestroyOnNetworkThread,
-                                base::Unretained(this)));
 }
 
 void BidirectionalStream::OnStreamReady(bool request_headers_sent) {
@@ -196,10 +187,10 @@ void BidirectionalStream::OnHeadersReceived(
   }
   const char* protocol = "unknown";
   switch (bidi_stream_->GetProtocol()) {
-    case net::kProtoHTTP2:
+    case net::NextProto::kProtoHTTP2:
       protocol = "h2";
       break;
-    case net::kProtoQUIC:
+    case net::NextProto::kProtoQUIC:
       protocol = "quic/1+spdy/3";
       break;
     default:
@@ -387,11 +378,6 @@ void BidirectionalStream::CancelOnNetworkThread() {
   bidi_stream_.reset();
   weak_factory_.InvalidateWeakPtrs();
   delegate_->OnCanceled();
-}
-
-void BidirectionalStream::DestroyOnNetworkThread() {
-  DCHECK(IsOnNetworkThread());
-  delete this;
 }
 
 void BidirectionalStream::MaybeOnSucceded() {

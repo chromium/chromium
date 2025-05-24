@@ -5,11 +5,11 @@
 #ifndef UI_GFX_IMAGE_IMAGE_SKIA_OPERATIONS_H_
 #define UI_GFX_IMAGE_IMAGE_SKIA_OPERATIONS_H_
 
+#include "base/component_export.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skbitmap_operations.h"
 
@@ -19,7 +19,7 @@ class Rect;
 class Size;
 class SizeF;
 
-class GFX_EXPORT ImageSkiaOperations {
+class COMPONENT_EXPORT(GFX) ImageSkiaOperations {
  public:
   // Create an image that is a blend of two others. The alpha argument
   // specifies the opacity of the second imag. The provided image must

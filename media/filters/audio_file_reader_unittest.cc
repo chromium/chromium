@@ -33,8 +33,7 @@ class AudioFileReaderTest : public testing::Test {
 
   void Initialize(const char* filename) {
     data_ = ReadTestDataFile(filename);
-    protocol_ = std::make_unique<InMemoryUrlProtocol>(data_->data(),
-                                                      data_->size(), false);
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(*data_, false);
     reader_ = std::make_unique<AudioFileReader>(protocol_.get());
   }
 
@@ -193,7 +192,7 @@ TEST_F(AudioFileReaderTest, WaveF32LE) {
 
 TEST_F(AudioFileReaderTest, MP3) {
   RunTest("sfx.mp3", "1.30,2.72,4.56,5.08,3.74,2.03,", 1, 44100,
-          base::Microseconds(313470), 13825, 11025);
+          base::Microseconds(250001), 11026, 11025);
 }
 
 TEST_F(AudioFileReaderTest, CorruptMP3) {
@@ -206,13 +205,13 @@ TEST_F(AudioFileReaderTest, CorruptMP3) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_F(AudioFileReaderTest, AAC) {
-  RunTest("sfx.m4a", "0.79,2.31,4.15,4.92,4.04,1.44,", 1, 44100,
-          base::Microseconds(347665), 15333, 12701);
+  RunTest("sfx.m4a", "2.47,2.30,2.45,2.80,3.06,3.56,", 1, 44100,
+          base::Microseconds(347665), 15333, 12719);
 }
 
 TEST_F(AudioFileReaderTest, AAC_SinglePacket) {
-  RunTest("440hz-10ms.m4a", "3.77,4.53,4.75,3.48,3.67,3.76,", 1, 44100,
-          base::Microseconds(69660), 3073, 441);
+  RunTest("440hz-10ms.m4a", "3.84,4.25,4.33,3.58,3.27,3.16,", 1, 44100,
+          base::Microseconds(69660), 3073, 960);
 }
 
 TEST_F(AudioFileReaderTest, AAC_ADTS) {

@@ -21,12 +21,15 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
+#include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/browser_process.h"
@@ -124,20 +127,20 @@ void LaunchTerminalImpl(Profile* profile,
   // If opening a new tab, first pin home tab.
   full_restore::FullRestoreSaveHandler::GetInstance();
   GURL home(GetTerminalHomeUrl());
-  Browser* browser = ash::LaunchSystemWebAppImpl(
+  ash::BrowserDelegate* browser = ash::LaunchSystemWebAppImpl(
       profile, ash::SystemWebAppType::TERMINAL, home, params);
   if (!browser) {
     return;
   }
   if (url != home) {
-    chrome::AddTabAt(browser, url, /*index=*/1, /*foreground=*/true);
+    browser->AddTab(url, /*index=*/1,
+                    ash::BrowserDelegate::TabDisposition::kForeground);
   }
   auto info = std::make_unique<app_restore::AppLaunchInfo>(
-      kTerminalSystemAppId, browser->session_id().id(), params.container,
+      kTerminalSystemAppId, browser->GetSessionID().id(), params.container,
       params.disposition, params.display_id, std::vector<base::FilePath>{},
       nullptr);
-  full_restore::SaveAppLaunchInfo(browser->profile()->GetPath(),
-                                  std::move(info));
+  full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(info));
 }
 
 }  // namespace
@@ -258,7 +261,7 @@ void LaunchTerminalWithIntent(
     }
   }
 
-  auto* registry = guest_os::GuestOsService::GetForProfile(profile)
+  auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile)
                        ->TerminalProviderRegistry();
   auto* provider = registry->Get(guest_id);
 
@@ -269,7 +272,8 @@ void LaunchTerminalWithIntent(
       // would bring up the installer, so keep that behaviour. Only applies to
       // the default Crostini VM, anything else is only accessible if the target
       // VM is installed.
-      auto* installer = crostini::CrostiniInstaller::GetForProfile(profile);
+      auto* installer =
+          crostini::CrostiniInstallerFactory::GetForProfile(profile);
       if (installer) {
         installer->ShowDialog(crostini::CrostiniUISurface::kAppList);
       }
@@ -572,7 +576,7 @@ void AddTerminalMenuShortcuts(
   gfx::ImageSkia crostini_mascot_icon = icon(kCrostiniMascotIcon);
   std::vector<std::pair<std::string, std::string>> connections =
       GetSSHConnections(profile);
-  auto* registry = guest_os::GuestOsService::GetForProfile(profile)
+  auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile)
                        ->TerminalProviderRegistry();
   if (connections.size() > 0 || registry->List().size() > 0) {
     apps::AddSeparator(ui::DOUBLE_SEPARATOR, menu_items);

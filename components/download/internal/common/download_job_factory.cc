@@ -37,8 +37,7 @@ ConnectionType GetConnectionType(net::HttpConnectionInfo connection_info) {
     case net::HttpConnectionInfoCoarse::kOTHER:
       return ConnectionType::kUnknown;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ConnectionType::kUnknown;
+  NOTREACHED();
 }
 
 // Returns if the download can be parallelized.

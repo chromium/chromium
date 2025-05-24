@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 
 import org.junit.Before;
@@ -22,13 +23,13 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -40,46 +41,24 @@ import java.util.List;
 public class AccountSelectionIntegrationTestBase {
     protected static final String EXAMPLE_ETLD_PLUS_ONE = "example.com";
     protected static final String TEST_ETLD_PLUS_ONE_2 = "two.com";
-    protected static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.URL_1_WITH_PATH;
     protected static final GURL TEST_URL = JUnitTestGURLs.URL_1;
-
-    protected static final Account RETURNING_ANA =
-            new Account(
-                    "Ana",
-                    "ana@one.test",
-                    "Ana Doe",
-                    "Ana",
-                    TEST_PROFILE_PIC,
-                    null,
-                    /* isSignIn= */ true,
-                    /* isBrowserTrustedSignIn= */ true);
-    protected static final Account NEW_BOB =
-            new Account(
-                    "Bob",
-                    "",
-                    "Bob",
-                    "",
-                    TEST_PROFILE_PIC,
-                    null,
-                    /* isSignIn= */ false,
-                    /* isBrowserTrustedSignIn= */ false);
 
     protected static final IdentityProviderMetadata IDP_METADATA =
             new IdentityProviderMetadata(
                     /* brandTextColor= */ Color.WHITE,
                     /* brandBackgroundColor= */ Color.BLACK,
-                    /* brandIconUrl= */ EXAMPLE_ETLD_PLUS_ONE,
+                    /* brandIconBitmap= */ Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_4444),
                     /* configUrl= */ null,
                     /* loginUrl= */ null,
-                    /* supportsAddAccount= */ false);
+                    /* showUseDifferentAccountButton= */ false);
     protected static final IdentityProviderMetadata IDP_METADATA_WITH_ADD_ACCOUNT =
             new IdentityProviderMetadata(
                     /* brandTextColor= */ Color.WHITE,
                     /* brandBackgroundColor= */ Color.BLACK,
-                    /* brandIconUrl= */ EXAMPLE_ETLD_PLUS_ONE,
+                    /* brandIconBitmap= */ Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_4444),
                     /* configUrl= */ null,
                     /* loginUrl= */ null,
-                    /* supportsAddAccount= */ true);
+                    /* showUseDifferentAccountButton= */ true);
 
     protected static final @IdentityRequestDialogDisclosureField int[] DEFAULT_DISCLOSURE_FIELDS =
             new int[] {
@@ -88,10 +67,13 @@ public class AccountSelectionIntegrationTestBase {
                 IdentityRequestDialogDisclosureField.PICTURE
             };
 
+    protected static final String TEST_ERROR_CODE = "invalid_request";
+    protected static final IdentityCredentialTokenError TOKEN_ERROR =
+            new IdentityCredentialTokenError(TEST_ERROR_CODE, TEST_URL);
+
     AccountSelectionCoordinator mAccountSelection;
 
     @Mock AccountSelectionComponent.Delegate mMockBridge;
-    @Mock ImageFetcher mMockImageFetcher;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -106,6 +88,10 @@ public class AccountSelectionIntegrationTestBase {
     @RpMode.EnumType int mRpMode;
     IdentityProviderData mIdpData;
     IdentityProviderData mIdpDataWithAddAccount;
+    Account mReturningAna;
+    Account mNewBob;
+    Account mReturningAnaWithAddAccount;
+    Account mNewBobWithAddAccount;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -120,10 +106,7 @@ public class AccountSelectionIntegrationTestBase {
                 new ClientIdMetadata(
                         new GURL(mTestUrlTermsOfService),
                         new GURL(mTestUrlPrivacyPolicy),
-                        EXAMPLE_ETLD_PLUS_ONE);
-        mNewAccountsReturningAna = Arrays.asList(RETURNING_ANA);
-        mNewAccountsNewBob = Arrays.asList(NEW_BOB);
-
+                        Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888));
         mIdpData =
                 new IdentityProviderData(
                         TEST_ETLD_PLUS_ONE_2,
@@ -141,6 +124,63 @@ public class AccountSelectionIntegrationTestBase {
                         DEFAULT_DISCLOSURE_FIELDS,
                         /* hasLoginStatusMismatch= */ false);
 
+        mReturningAna =
+                new Account(
+                        "Ana",
+                        "ana@one.test",
+                        "Ana Doe",
+                        "Ana",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpData);
+        mNewBob =
+                new Account(
+                        "Bob",
+                        "",
+                        "Bob",
+                        "",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
+                        /* isSignIn= */ false,
+                        /* isBrowserTrustedSignIn= */ false,
+                        /* isFilteredOut= */ false,
+                        mIdpData);
+
+        mReturningAnaWithAddAccount =
+                new Account(
+                        "Ana",
+                        "ana@one.test",
+                        "Ana Doe",
+                        "Ana",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpDataWithAddAccount);
+        mNewBobWithAddAccount =
+                new Account(
+                        "Bob",
+                        "",
+                        "Bob",
+                        "",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
+                        /* isSignIn= */ false,
+                        /* isBrowserTrustedSignIn= */ false,
+                        /* isFilteredOut= */ false,
+                        mIdpDataWithAddAccount);
+
+        mNewAccountsReturningAna = Arrays.asList(mReturningAna);
+        mNewAccountsNewBob = Arrays.asList(mNewBob);
+
         runOnUiThreadBlocking(
                 () -> {
                     mBottomSheetController =
@@ -153,7 +193,6 @@ public class AccountSelectionIntegrationTestBase {
                                     mBottomSheetController,
                                     mRpMode,
                                     mMockBridge);
-                    mAccountSelection.getMediator().setImageFetcher(mMockImageFetcher);
                 });
     }
 

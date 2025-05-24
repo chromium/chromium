@@ -15,7 +15,7 @@ ShortcutsExtensionsManager::ShortcutsExtensionsManager(Profile* profile)
   registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
 }
 
-ShortcutsExtensionsManager::~ShortcutsExtensionsManager() {}
+ShortcutsExtensionsManager::~ShortcutsExtensionsManager() = default;
 
 void ShortcutsExtensionsManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,

@@ -26,7 +26,7 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/display/screen_infos.h"
 #include "ui/surface/transport_dib.h"
 
@@ -192,6 +192,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   // never cache this pointer since it can become nullptr if the renderer
   // crashes, instead you should always ask for it using the accessor.
   virtual RenderWidgetHostView* GetView() = 0;
+  virtual const RenderWidgetHostView* GetView() const = 0;
 
   // Returns true if the renderer is considered unresponsive.
   virtual bool IsCurrentlyUnresponsive() = 0;
@@ -233,8 +234,10 @@ class CONTENT_EXPORT RenderWidgetHost {
    public:
     virtual ~InputEventObserver() {}
 
-    virtual void OnInputEvent(const blink::WebInputEvent&) {}
-    virtual void OnInputEventAck(blink::mojom::InputEventResultSource source,
+    virtual void OnInputEvent(const RenderWidgetHost&,
+                              const blink::WebInputEvent&) {}
+    virtual void OnInputEventAck(const RenderWidgetHost&,
+                                 blink::mojom::InputEventResultSource source,
                                  blink::mojom::InputEventResultState state,
                                  const blink::WebInputEvent&) {}
 
@@ -333,8 +336,9 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void SetCursor(const ui::Cursor& cursor) {}
 
   // Shows the context menu using the specified point as anchor point.
-  virtual void ShowContextMenuAtPoint(const gfx::Point& point,
-                                      const ui::MenuSourceType source_type) {}
+  virtual void ShowContextMenuAtPoint(
+      const gfx::Point& point,
+      const ui::mojom::MenuSourceType source_type) {}
 
   // Roundtrips through the renderer and compositor pipeline to ensure that any
   // changes to the contents resulting from operations executed prior to this

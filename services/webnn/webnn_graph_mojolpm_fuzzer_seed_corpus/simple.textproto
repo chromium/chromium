@@ -1,0 +1,97 @@
+seed_for_input_data: 883947058
+actions {
+  device: 1
+  create_graph {
+    graph_info {
+      new {
+        id: 1
+        m_operands: {
+          values: {
+            value: {
+              new: {
+                id: 1
+                m_kind: 0
+                m_name: "input"
+                m_descriptor: {
+                  new: {
+                    id: 1
+                    m_data_type:0
+                    m_shape: {
+                      values: {
+                        value: 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          values: {
+            value: {
+              new: {
+                id: 2
+                m_kind: 2
+                m_name: "output"
+                m_descriptor: {
+                  new: {
+                    id: 2
+                    m_data_type:0
+                    m_shape: {
+                      values: {
+                        value: 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        m_input_operands: {
+          values: {
+            value:  {
+              new {
+                m_id: 0
+              }
+            }
+          }
+        }
+        m_output_operands: {
+          values: {
+            value: {
+              new {
+                m_id: 1
+              }
+            }
+          }
+        }
+        m_operations: {
+          values: {
+            value: {
+              new: {
+                id: 1
+                m_gelu: {
+                  new: {
+                    id: 1
+                    m_input_operand_id: {
+                      new {
+                        m_id: 0
+                      }
+                    }
+                    m_output_operand_id: {
+                      new {
+                        m_id: 1
+                      }
+                    }
+                    m_label: "test"
+                  }
+                }
+              }
+            }
+          }
+        }
+        m_constant_operand_ids_to_handles: {}
+      }
+    }
+  }
+}

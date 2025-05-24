@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
+#include "third_party/blink/renderer/core/frame/universal_global_scope.h"
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
@@ -72,7 +73,7 @@ class InstalledScriptsManager;
 class OffscreenFontSelector;
 class WorkerResourceTimingNotifier;
 class TrustedTypePolicyFactory;
-class V8VoidFunction;
+class V8UnionTrustedScriptURLOrUSVString;
 class WorkerLocation;
 class WorkerNavigator;
 class WorkerThread;
@@ -80,6 +81,7 @@ class WorkerThread;
 class CORE_EXPORT WorkerGlobalScope
     : public WorkerOrWorkletGlobalScope,
       public WindowOrWorkerGlobalScope,
+      public UniversalGlobalScope,
       public ActiveScriptWrappable<WorkerGlobalScope>,
       public Supplementable<WorkerGlobalScope> {
   DEFINE_WRAPPERTYPEINFO();
@@ -103,7 +105,6 @@ class CORE_EXPORT WorkerGlobalScope
   void Dispose() override;
   WorkerThread* GetThread() const final { return thread_; }
   const base::UnguessableToken& GetDevToolsToken() const override;
-  bool IsInitialized() const final { return !url_.IsNull(); }
   CodeCacheHost* GetCodeCacheHost() override;
   std::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
   FindRaceNetworkRequestURLLoaderFactory(
@@ -118,7 +119,6 @@ class CORE_EXPORT WorkerGlobalScope
   WorkerLocation* location() const;
   WorkerNavigator* navigator() const override;
   void close();
-  bool isSecureContextForBindings() const { return IsSecureContext(); }
 
   String origin() const;
 
@@ -128,9 +128,9 @@ class CORE_EXPORT WorkerGlobalScope
   DEFINE_ATTRIBUTE_EVENT_LISTENER(timezonechange, kTimezonechange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unhandledrejection, kUnhandledrejection)
 
-  // This doesn't take an ExceptionState argument, but actually can throw
-  // exceptions directly to V8 (crbug/1114610).
-  virtual void importScripts(const Vector<String>& urls);
+  virtual void importScripts(
+      const HeapVector<Member<V8UnionTrustedScriptURLOrUSVString>>& urls,
+      ExceptionState&);
 
   // ExecutionContext
   const KURL& Url() const final;
@@ -213,8 +213,7 @@ class CORE_EXPORT WorkerGlobalScope
       std::unique_ptr<PolicyContainer> policy_container,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
-      network::mojom::CredentialsMode,
-      RejectCoepUnsafeNone reject_coep_unsafe_none) = 0;
+      network::mojom::CredentialsMode) = 0;
 
   void ReceiveMessage(BlinkTransferableMessage);
   Event* ReceiveCustomEventInternal(
@@ -239,9 +238,6 @@ class CORE_EXPORT WorkerGlobalScope
   }
 
   FontFaceSet* fonts();
-
-  // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
-  void queueMicrotask(V8VoidFunction*);
 
   TrustedTypePolicyFactory* GetTrustedTypes() const override;
   TrustedTypePolicyFactory* trustedTypes() const { return GetTrustedTypes(); }
@@ -311,14 +307,15 @@ class CORE_EXPORT WorkerGlobalScope
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params_for_modules);
 
+  // Used for importScripts().
+  // Also called by ServiceWorkerGlobalScope::importScripts.
+  void ImportScriptsInternal(const Vector<String>& urls, ExceptionState&);
+
  private:
   void SetWorkerSettings(std::unique_ptr<WorkerSettings>);
 
   // https://html.spec.whatwg.org/C/#run-a-worker Step 24.
   void RunWorkerScript();
-
-  // Used for importScripts().
-  void ImportScriptsInternal(const Vector<String>& urls);
   // ExecutionContext
   void AddInspectorIssue(AuditsIssue) final;
   EventTarget* ErrorEventTarget() final { return this; }
@@ -379,9 +376,8 @@ class CORE_EXPORT WorkerGlobalScope
 
   std::unique_ptr<ukm::UkmRecorder> ukm_recorder_;
 
-  // |worker_main_script_load_params_for_modules_| is used to load a root module
-  // script for dedicated workers (when PlzDedicatedWorker is enabled) and
-  // shared workers.
+  // `worker_main_script_load_params_for_modules_` is used to load a root module
+  // script for dedicated workers and shared workers.
   std::unique_ptr<WorkerMainScriptLoadParameters>
       worker_main_script_load_params_for_modules_;
 

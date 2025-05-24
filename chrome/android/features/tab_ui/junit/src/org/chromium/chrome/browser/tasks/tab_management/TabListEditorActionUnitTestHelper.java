@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -82,8 +82,8 @@ public class TabListEditorActionUnitTestHelper {
      * {@link TabListEditorAction}.
      */
     public static class TabListHolder {
-        private List<Tab> mSelectedTabs;
-        private List<Tab> mSelectedAndRelatedTabs;
+        private final List<Tab> mSelectedTabs;
+        private final List<Tab> mSelectedAndRelatedTabs;
 
         /**
          * @param selectedTabs the selected tabs in the TabListEditor.
@@ -102,12 +102,12 @@ public class TabListEditorActionUnitTestHelper {
             return mSelectedAndRelatedTabs;
         }
 
-        List<Integer> getSelectedTabIds() {
-            List<Integer> tabIds = new ArrayList<>();
+        List<TabListEditorItemSelectionId> getSelectedItemIds() {
+            List<TabListEditorItemSelectionId> itemIds = new ArrayList<>();
             for (Tab tab : mSelectedTabs) {
-                tabIds.add(tab.getId());
+                itemIds.add(TabListEditorItemSelectionId.createTabId(tab.getId()));
             }
-            return tabIds;
+            return itemIds;
         }
     }
 
@@ -125,13 +125,15 @@ public class TabListEditorActionUnitTestHelper {
             MockTabModel tabModel,
             TabGroupModelFilter filter,
             TabGroupSyncService tabGroupSyncService,
-            SelectionDelegate<Integer> selectionDelegate,
+            SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
             List<TabIdGroup> tabIdGroups,
             boolean deterministicSetOrder) {
         List<Tab> selectedTabs = new ArrayList<>();
         List<Tab> selectedAndRelatedTabs = new ArrayList<>();
-        Set<Integer> selectedTabIds =
-                deterministicSetOrder ? new LinkedHashSet<Integer>() : new HashSet<Integer>();
+        Set<TabListEditorItemSelectionId> selectedItemIds =
+                deterministicSetOrder
+                        ? new LinkedHashSet<TabListEditorItemSelectionId>()
+                        : new HashSet<TabListEditorItemSelectionId>();
 
         for (TabIdGroup group : tabIdGroups) {
             List<Tab> groupTabs = new ArrayList<>();
@@ -151,13 +153,12 @@ public class TabListEditorActionUnitTestHelper {
                 savedTabs.add(savedTab);
             }
             if (group.isSelected()) {
-                selectedTabIds.add(group.getTabIdAt(0));
+                selectedItemIds.add(TabListEditorItemSelectionId.createTabId(group.getTabIdAt(0)));
                 selectedAndRelatedTabs.addAll(groupTabs);
             }
             groupTabs.get(0).setRootId(group.getTabIdAt(0));
             when(filter.getRelatedTabList(group.getTabIdAt(0))).thenReturn(groupTabs);
-            when(filter.getRelatedTabCountForRootId(group.getTabIdAt(0)))
-                    .thenReturn(groupTabs.size());
+            when(filter.getTabCountForGroup(group.getTabGroupId())).thenReturn(groupTabs.size());
 
             if (!group.isGroup() || tabGroupSyncService == null) continue;
 
@@ -169,7 +170,7 @@ public class TabListEditorActionUnitTestHelper {
 
             when(tabGroupSyncService.getGroup(localTabGroupId)).thenReturn(savedGroup);
         }
-        when(selectionDelegate.getSelectedItems()).thenReturn(selectedTabIds);
+        when(selectionDelegate.getSelectedItems()).thenReturn(selectedItemIds);
         return new TabListHolder(selectedTabs, selectedAndRelatedTabs);
     }
 }

@@ -37,7 +37,8 @@ class AccessorySheetTabItemsModel
             Type.PROMO_CODE_INFO,
             Type.IBAN_INFO,
             Type.PASSKEY_SECTION,
-            Type.PLUS_ADDRESS_SECTION
+            Type.PLUS_ADDRESS_SECTION,
+            Type.LOYALTY_CARD_INFO
         })
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
@@ -80,10 +81,13 @@ class AccessorySheetTabItemsModel
 
             /** A section containing a plus address info. */
             int PLUS_ADDRESS_SECTION = 12;
+
+            /** A section containing a Google Wallet loyalty card info. */
+            int LOYALTY_CARD_INFO = 13;
         }
 
-        private Object mDataPiece;
-        private @Type int mType;
+        private final Object mDataPiece;
+        private final @Type int mType;
 
         AccessorySheetDataPiece(Object dataPiece, @Type int type) {
             mDataPiece = dataPiece;

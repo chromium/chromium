@@ -227,7 +227,7 @@ goog.i18n.MessageFormat.getNumberFormatter_ = function() {
           currentCompactSymbols) {
     goog.i18n.MessageFormat.numberFormatterSymbols_ = currentSymbols;
     goog.i18n.MessageFormat.compactNumberFormatterSymbols_ =
-        currentCompactSymbols;
+        /** @type {?} */ (currentCompactSymbols);
     goog.i18n.MessageFormat.numberFormatter_ =
         new goog.i18n.NumberFormat(goog.i18n.NumberFormat.Format.DECIMAL);
   }

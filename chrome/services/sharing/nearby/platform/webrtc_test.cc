@@ -13,8 +13,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "unicode/locid.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
+
 namespace {
 
 class MockPeerConnectionObserver : public webrtc::PeerConnectionObserver {
@@ -26,7 +26,7 @@ class MockPeerConnectionObserver : public webrtc::PeerConnectionObserver {
               (override));
   MOCK_METHOD(void,
               OnDataChannel,
-              (rtc::scoped_refptr<webrtc::DataChannelInterface>),
+              (webrtc::scoped_refptr<webrtc::DataChannelInterface>),
               (override));
   MOCK_METHOD(void,
               OnIceGatheringChange,
@@ -132,7 +132,8 @@ TEST_F(WebRtcMediumTest, CreatePeerConnection) {
 
   base::RunLoop loop;
   GetMedium().CreatePeerConnection(
-      &observer, [&](rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc) {
+      &observer,
+      [&](webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc) {
         ASSERT_TRUE(pc);
         pc->Close();
         loop.Quit();
@@ -377,5 +378,5 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
 }
 
 }  // namespace
-}  // namespace chrome
-}  // namespace nearby
+
+}  // namespace nearby::chrome

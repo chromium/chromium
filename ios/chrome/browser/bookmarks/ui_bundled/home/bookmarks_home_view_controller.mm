@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_view_controller.h"
 
+#import <algorithm>
 #import <set>
 
 #import "base/apple/foundation_util.h"
@@ -16,7 +17,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/numerics/safe_conversions.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -28,6 +28,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
@@ -51,8 +53,10 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
-#import "ios/chrome/browser/intents/intents_donation_helper.h"
+#import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
+#import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -75,15 +79,11 @@
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
-#import "ios/chrome/browser/ui/menu/menu_histograms.h"
-#import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
-#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
@@ -294,6 +294,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }
 
 - (BOOL)canDismiss {
+  if (self.mediator && ![self.mediator canDismiss]) {
+    return NO;
+  }
   if (self.folderChooserCoordinator &&
       ![self.folderChooserCoordinator canDismiss]) {
     return NO;
@@ -423,6 +426,11 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   } else {
     [self showLoadingSpinnerBackground];
   }
+
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:TraitCollectionSetForTraits(nil)
+                       withAction:@selector(stopEdittingBookmarkOnTraitChange)];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -489,11 +497,16 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   return NO;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  // Stop edit of current bookmark folder name, if any.
-  [self.editingFolderCell stopEdit];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  [self stopEdittingBookmarkOnTraitChange];
 }
+#endif
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
   return UIStatusBarStyleDefault;
@@ -1182,7 +1195,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)handleMoveNode:(const BookmarkNode*)node toPosition:(size_t)position {
@@ -1203,6 +1216,11 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (BOOL)isAtTopOfNavigation {
   return (self.navigationController.topViewController == self);
+}
+
+// Stop edit of current bookmark folder name, if any.
+- (void)stopEdittingBookmarkOnTraitChange {
+  [self.editingFolderCell stopEdit];
 }
 
 #pragma mark - BookmarkTableCellTitleEditDelegate
@@ -1600,14 +1618,30 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     return 0;
   }
 
+  UITableView* tableView = self.tableView;
+
   // If no rows in table, return 0.
-  NSArray* visibleIndexPaths = [self.tableView indexPathsForVisibleRows];
+  NSArray* visibleIndexPaths = [tableView indexPathsForVisibleRows];
   if (!visibleIndexPaths.count) {
     return 0;
   }
 
-  // Return the first visible row.
-  NSIndexPath* topMostIndexPath = [visibleIndexPaths objectAtIndex:0];
+  NSIndexPath* topMostIndexPath;
+  UIView* navigationBar = self.navigationController.navigationBar;
+  CGRect navigationBarFrame = [navigationBar.superview
+      convertRect:self.navigationController.navigationBar.frame
+           toView:nil];
+  // Take the first row that has its center visible below the navigation bar.
+  for (NSIndexPath* indexPath in visibleIndexPaths) {
+    CGRect rowFrame =
+        [tableView convertRect:[tableView rectForRowAtIndexPath:indexPath]
+                        toView:nil];
+    if (CGRectGetMidY(rowFrame) > CGRectGetMaxY(navigationBarFrame)) {
+      topMostIndexPath = indexPath;
+      break;
+    }
+  }
+
   return topMostIndexPath.row;
 }
 
@@ -1690,8 +1724,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   std::vector<const BookmarkNode*> nodes;
   if (self.mediator.currentlyShowingSearchResults) {
     // Create a vector of edit nodes in the same order as the selected nodes.
-    base::ranges::copy(self.mediator.selectedNodesForEditMode,
-                       std::back_inserter(nodes));
+    std::ranges::copy(self.mediator.selectedNodesForEditMode,
+                      std::back_inserter(nodes));
   } else {
     // Create a vector of edit nodes in the same order as the nodes in folder.
     for (const auto& child : self.mediator.displayedNode->children()) {
@@ -1713,22 +1747,28 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 // Show scrim overlay and hide toolbar.
 - (void)showScrim {
   self.navigationController.toolbarHidden = YES;
-  self.scrimView.alpha = 0.0f;
-  [self.tableView addSubview:self.scrimView];
+  UIView* scrimView = self.scrimView;
+  UITableView* tableView = self.tableView;
+  UIView* superview = tableView.superview;
+  scrimView.alpha = 0.0f;
+  [tableView addSubview:scrimView];
   // We attach our constraints to the superview because the tableView is
   // a scrollView and it seems that we get an empty frame when attaching to it.
-  AddSameConstraints(self.scrimView, self.view.superview);
-  self.tableView.accessibilityElementsHidden = YES;
-  self.tableView.scrollEnabled = NO;
-  __weak BookmarksHomeViewController* weakSelf = self;
+  [NSLayoutConstraint activateConstraints:@[
+    [scrimView.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor],
+    [scrimView.trailingAnchor constraintEqualToAnchor:superview.trailingAnchor],
+    [scrimView.bottomAnchor constraintEqualToAnchor:superview.bottomAnchor],
+    [scrimView.topAnchor
+        constraintEqualToAnchor:self.navigationController.navigationBar
+                                    .bottomAnchor],
+
+  ]];
+  tableView.accessibilityElementsHidden = YES;
+  tableView.scrollEnabled = NO;
   [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
                    animations:^{
-                     BookmarksHomeViewController* strongSelf = weakSelf;
-                     if (!strongSelf) {
-                       return;
-                     }
-                     strongSelf.scrimView.alpha = 1.0f;
-                     [strongSelf.view layoutIfNeeded];
+                     scrimView.alpha = 1.0f;
+                     [superview layoutIfNeeded];
                    }];
 }
 
@@ -1899,8 +1939,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     case BookmarksContextBarBeginSelection:
       // This must never happen, as the leading button is disabled at this
       // point.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case BookmarksContextBarSingleURLSelection:
     case BookmarksContextBarMultipleURLSelection:
     case BookmarksContextBarSingleFolderSelection:
@@ -1912,7 +1951,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       break;
     case BookmarksContextBarNone:
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1957,8 +1996,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     case BookmarksContextBarBeginSelection:
     case BookmarksContextBarNone:
       // Center button is disabled in these states.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   [self addCancelActionToCoordinator:self.actionSheetCoordinator];
@@ -2380,8 +2418,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     [self configureCoordinator:self.actionSheetCoordinator
         forSingleBookmarkFolder:node];
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   [self addCancelActionToCoordinator:self.actionSheetCoordinator];
@@ -2463,6 +2500,10 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  UIView* selectedBackgroundView = [[UIView alloc] init];
+  selectedBackgroundView.backgroundColor =
+      [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+  cell.selectedBackgroundView = selectedBackgroundView;
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
 
   cell.userInteractionEnabled =

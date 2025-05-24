@@ -23,6 +23,6 @@ void WaylandWindowObserver::OnSubsurfaceRemoved(WaylandWindow* window,
                                                 WaylandSubsurface* subsurface) {
 }
 
-void WaylandWindowObserver::OnKeyboardFocusedWindowChanged() {}
+void WaylandWindowObserver::OnWindowRemovedFromSession(WaylandWindow* window) {}
 
 }  // namespace ui

@@ -18,10 +18,10 @@ namespace extensions {
 // rename and move it to make that clear. https://crbug.com/890401.
 class StreamsPrivateAPI {
  public:
-  // Send the onExecuteMimeTypeHandler event to |extension_id|. A non-empty
-  // |stream_id| will be used to identify the created stream during
-  // MimeHandlerViewGuest creation. |embedded| should be set to whether the
-  // document is embedded within another document. The |frame_tree_node_id|
+  // Send the onExecuteMimeTypeHandler event to `extension_id`. A non-empty
+  // `stream_id` will be used to identify the created stream during
+  // MimeHandlerViewGuest creation. `embedded` should be set to whether the
+  // document is embedded within another document. The `frame_tree_node_id`
   // parameter is used for the top level plugins case. (PDF, etc).
   static void SendExecuteMimeTypeHandlerEvent(
       const ExtensionId& extension_id,

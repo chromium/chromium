@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -36,7 +37,6 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -120,12 +120,13 @@ Element* TreeScope::getElementById(const AtomicString& element_id) const {
 
 const HeapVector<Member<Element>>& TreeScope::GetAllElementsById(
     const AtomicString& element_id) const {
-  DEFINE_STATIC_LOCAL(Persistent<HeapVector<Member<Element>>>, empty_vector,
-                      (MakeGarbageCollected<HeapVector<Member<Element>>>()));
+  using Holder = DisallowNewWrapper<HeapVector<Member<Element>>>;
+  DEFINE_STATIC_LOCAL(Persistent<Holder>, empty_holder,
+                      (MakeGarbageCollected<Holder>()));
   if (element_id.empty())
-    return *empty_vector;
+    return empty_holder->Value();
   if (!elements_by_id_)
-    return *empty_vector;
+    return empty_holder->Value();
   return elements_by_id_->GetAllElementsById(element_id, *this);
 }
 
@@ -258,15 +259,12 @@ Element* TreeScope::HitTestPoint(double x,
   HitTestResult result =
       HitTestInDocument(&RootNode().GetDocument(), x, y, request);
   if (request.AllowsChildFrameContent()) {
-    return HitTestPointInternal(result.InnerNode(),
-                                HitTestPointType::kInternal);
+    return ElementForHitTest(result.InnerNode(), HitTestPointType::kInternal);
   }
-  return HitTestPointInternal(result.InnerNode(),
-                              HitTestPointType::kWebExposed);
+  return ElementForHitTest(result.InnerNode(), HitTestPointType::kWebExposed);
 }
 
-Element* TreeScope::HitTestPointInternal(Node* node,
-                                         HitTestPointType type) const {
+Element* TreeScope::ElementForHitTest(Node* node, HitTestPointType type) const {
   if (!node || node->IsDocumentNode())
     return nullptr;
   Element* element;
@@ -305,7 +303,7 @@ HeapVector<Member<Element>> TreeScope::ElementsFromHitTestResult(
     Node* node = rect_based_node.Get();
     if (!node->IsElementNode() && !ShouldAcceptNonElementNode(*node))
       continue;
-    node = HitTestPointInternal(node, HitTestPointType::kWebExposed);
+    node = ElementForHitTest(node, HitTestPointType::kWebExposed);
     // Prune duplicate entries. A pseduo ::before content above its parent
     // node should only result in a single entry.
     if (node == last_node)
@@ -383,20 +381,19 @@ void TreeScope::OnAdoptedStyleSheetSet(
     ScriptState* script_state,
     V8ObservableArrayCSSStyleSheet& observable_array,
     uint32_t index,
-    Member<CSSStyleSheet>& sheet,
-    ExceptionState& exception_state) {
+    Member<CSSStyleSheet>& sheet) {
   if (!sheet->IsConstructed()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Can't adopt non-constructed stylesheets.");
+    V8ThrowDOMException::Throw(script_state->GetIsolate(),
+                               DOMExceptionCode::kNotAllowedError,
+                               "Can't adopt non-constructed stylesheets.");
     return;
   }
   TreeScope* self = reinterpret_cast<TreeScope*>(tree_scope);
   Document* document = sheet->ConstructorDocument();
   if (document && *document != self->GetDocument()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
-                                      "Sharing constructed stylesheets in "
-                                      "multiple documents is not allowed");
+    V8ThrowDOMException::Throw(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "Sharing constructed stylesheets in multiple documents is not allowed");
     return;
   }
   self->StyleSheetWasAdded(sheet.Get());
@@ -409,8 +406,7 @@ void TreeScope::OnAdoptedStyleSheetDelete(
     GarbageCollectedMixin* tree_scope,
     ScriptState* script_state,
     V8ObservableArrayCSSStyleSheet& observable_array,
-    uint32_t index,
-    ExceptionState& exception_state) {
+    uint32_t index) {
   TreeScope* self = reinterpret_cast<TreeScope*>(tree_scope);
   self->StyleSheetWasRemoved(self->adopted_style_sheets_->at(index));
 }
@@ -459,6 +455,7 @@ Element* TreeScope::FindAnchorWithName(const String& name) {
     return nullptr;
   if (Element* element = getElementById(AtomicString(name)))
     return element;
+  // TODO(crbug.com/369219144): Should this be Traversal<HTMLAnchorElementBase>?
   for (HTMLAnchorElement& anchor :
        Traversal<HTMLAnchorElement>::StartsAfter(RootNode())) {
     if (RootNode().GetDocument().InQuirksMode()) {
@@ -578,9 +575,9 @@ Element* TreeScope::AdjustedFocusedElement() const {
   // https://github.com/flackr/carousel/tree/main/scroll-marker#what-is-the-documentactiveelement-of-a-focused-pseudo-element
   if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(element)) {
     CHECK(scroll_marker->ScrollMarkerGroup());
-    element = scroll_marker->ScrollMarkerGroup()->OriginatingElement();
+    element = &scroll_marker->ScrollMarkerGroup()->UltimateOriginatingElement();
   } else if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
-    element = pseudo_element->OriginatingElement();
+    element = &pseudo_element->UltimateOriginatingElement();
   }
 
   CHECK(!element->IsPseudoElement());

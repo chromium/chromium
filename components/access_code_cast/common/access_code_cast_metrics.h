@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ACCESS_CODE_CAST_COMMON_ACCESS_CODE_CAST_METRICS_H_
 #define COMPONENTS_ACCESS_CODE_CAST_COMMON_ACCESS_CODE_CAST_METRICS_H_
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 
 // NOTE: Do not renumber enums as that would confuse interpretation of
@@ -101,7 +102,8 @@ enum class AccessCodeCastUiTabSwitcherUsage {
   kMaxValue = kTabSwitcherUiShownAndUsedToSwitchTabs,
 };
 
-class AccessCodeCastMetrics {
+class COMPONENT_EXPORT(COMPONENTS_ACCESS_CODE_CAST_COMMON)
+    AccessCodeCastMetrics {
  public:
   AccessCodeCastMetrics();
   ~AccessCodeCastMetrics();

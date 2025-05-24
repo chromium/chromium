@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
@@ -48,9 +47,9 @@ const char kPrecedencePoliciesId[] = "precedence";
 const char kPrecedencePoliciesName[] = "Policy Precedence";
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kDeviceLocalAccountPoliciesId[] = "deviceLocalAccountPolicies";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 PolicyConversions::Delegate::Delegate(PolicyConversionsClient* client)
     : client_(client) {}
@@ -139,17 +138,17 @@ Value::Dict DefaultPolicyConversions::ToValueDict() {
   all_policies.Merge(GetExtensionPolicies());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   all_policies.Set(kDeviceLocalAccountPoliciesId,
                    GetDeviceLocalAccountPolicies());
   Value::Dict identity_fields = client()->GetIdentityFields();
   if (!identity_fields.empty())
     all_policies.Merge(std::move(identity_fields));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return all_policies;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 Value::Dict DefaultPolicyConversions::GetDeviceLocalAccountPolicies() {
   Value::List policies = client()->GetDeviceLocalAccountPolicies();
   Value::Dict device_values;
@@ -171,10 +170,10 @@ base::Value::Dict DefaultPolicyConversions::GetExtensionPolicies() {
     extension_policies.Set("extensionPolicies",
                            GetExtensionPolicies(POLICY_DOMAIN_EXTENSIONS));
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   extension_policies.Set("loginScreenExtensionPolicies",
                          GetExtensionPolicies(POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return extension_policies;
 }
 

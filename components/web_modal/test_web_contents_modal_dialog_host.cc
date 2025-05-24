@@ -12,7 +12,7 @@ TestWebContentsModalDialogHost::TestWebContentsModalDialogHost(
     gfx::NativeView host_view)
     : host_view_(host_view) {}
 
-TestWebContentsModalDialogHost::~TestWebContentsModalDialogHost() {}
+TestWebContentsModalDialogHost::~TestWebContentsModalDialogHost() = default;
 
 gfx::Size TestWebContentsModalDialogHost::GetMaximumDialogSize() {
   return max_dialog_size_;

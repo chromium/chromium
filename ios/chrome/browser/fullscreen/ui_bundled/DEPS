@@ -1,0 +1,13 @@
+include_rules = [
+  "+ios/chrome/browser/broadcaster/ui_bundled",
+  "+ios/chrome/browser/find_in_page/model",
+  "+ios/chrome/browser/toolbar/ui_bundled/fullscreen"
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "fullscreen_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

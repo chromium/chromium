@@ -82,7 +82,7 @@ void InkDropExample::CreateExampleView(View* container) {
               .AddChildren(
                   Builder<InkDropView>()
                       .CopyAddressTo(&ink_drop_view_)
-                      .SetBorder(CreateThemedRoundedRectBorder(
+                      .SetBorder(CreateRoundedRectBorder(
                           1, 4, ExamplesColorIds::kColorInkDropExampleBorder))
                       .SetProperty(kMarginsKey, gfx::Insets(10)),
                   Builder<BoxLayoutView>()

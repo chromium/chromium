@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] new RTCIceCandidate({ ... }) with nondefault values for all fields
+  assert_equals: relayProtocol expected (string) "udp" but got (object) null
+[FAIL] new RTCIceCandidate({ ... }) with nondefault values for all fields, tcp candidate
+  assert_equals: url expected (string) "turn:turn.example.net" but got (object) null
+[FAIL] new RTCIceCandidate({ relayProtocol, url }) cloned vs signaled
+  assert_equals: relayProtocol cloned expected (string) "tls" but got (object) null
+Harness: the test ran to completion.
+

@@ -10,7 +10,10 @@
 
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
-// Class Accessors.
+// Macro for transition to enable_definition_macros=true.
+#define DEFINE_JNI_FOR_SampleForAnnotationProcessor()
+
+// Class Accessors
 #ifndef org_jni_1zero_SampleForAnnotationProcessor_clazz_defined
 #define org_jni_1zero_SampleForAnnotationProcessor_clazz_defined
 inline jclass org_jni_1zero_SampleForAnnotationProcessor_clazz(JNIEnv* env) {
@@ -20,13 +23,14 @@ inline jclass org_jni_1zero_SampleForAnnotationProcessor_clazz(JNIEnv* env) {
 }
 #endif
 
+
 // Java to native functions
 // Forward declaration. To be implemented by the including .cc file.
 static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_Bar(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& sample);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeBar(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeBar(
     JNIEnv* env,
     jclass jcaller,
     jobject sample) {
@@ -39,7 +43,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleForAnnotationProcessor_Foo(JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeFoo(
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeFoo(
     JNIEnv* env,
     jclass jcaller) {
   JNI_SampleForAnnotationProcessor_Foo(env);
@@ -48,7 +52,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcesso
 // Forward declaration. To be implemented by the including .cc file.
 static jboolean JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeHasPhalange(
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeHasPhalange(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_HasPhalange(env);
@@ -59,7 +63,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_SampleForAnnotationProc
 static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForAnnotationProcessor_ReturnClass(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnClass(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnClass(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnClass(env);
@@ -70,7 +74,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnClasses(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnClasses(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnClasses(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnClasses(env);
@@ -81,36 +85,34 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedAppObjects(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedAppObjects(
     JNIEnv* env,
     jclass jcaller,
-    jclass __arrayClazz) {
+    jobject __arrayClazz) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(env);
-  jobject converted_ret = jni_zero::ToJniArray(env, _ret, __arrayClazz).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, _ret, static_cast<jclass>(__arrayClazz)).Release();
   return converted_ret;
 }
 
 // Forward declaration. To be implemented by the including .cc file.
-static std::vector<jint> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(
-    JNIEnv* env);
+static std::vector<jint> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedInts(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedInts(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedInts(env);
-  jobject converted_ret = jni_zero::ToJniArray(env, _ret).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, _ret).Release();
   return converted_ret;
 }
 
 // Forward declaration. To be implemented by the including .cc file.
-static std::string JNI_SampleForAnnotationProcessor_ReturnConvertedString(
-    JNIEnv* env);
+static std::string JNI_SampleForAnnotationProcessor_ReturnConvertedString(JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedString(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedString(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedString(env);
-  jobject converted_ret = jni_zero::ToJniType(env, _ret).Release();
+  auto converted_ret = jni_zero::ToJniType(env, _ret).Release();
   return converted_ret;
 }
 
@@ -118,14 +120,11 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static std::vector<std::string> JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedStrings(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnConvertedStrings(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(env);
-  jobject converted_ret = jni_zero::ToJniArray(
-      env,
-      _ret,
-      jni_zero::g_string_class).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, _ret, jni_zero::g_string_class).Release();
   return converted_ret;
 }
 
@@ -133,7 +132,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_ReturnObject(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnObject(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnObject(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnObject(env);
@@ -144,7 +143,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnObjects(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnObjects(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnObjects(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnObjects(env);
@@ -155,7 +154,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleForAnnotationProcessor_ReturnString(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnString(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnString(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnString(env);
@@ -166,7 +165,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnStrings(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStrings(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStrings(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnStrings(env);
@@ -177,7 +176,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_ReturnStruct(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStruct(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStruct(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnStruct(env);
@@ -188,7 +187,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnStructs(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStructs(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnStructs(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnStructs(env);
@@ -199,7 +198,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleForAnnotationProcessor_ReturnThrowable(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnThrowable(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnThrowable(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnThrowable(env);
@@ -210,7 +209,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
 static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnThrowables(
     JNIEnv* env);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnThrowables(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeReturnThrowables(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForAnnotationProcessor_ReturnThrowables(env);
@@ -222,7 +221,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleForAnnotationProcessor_Re
     JNIEnv* env,
     const jni_zero::JavaParamRef<jstring>& stringToReverse);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeRevString(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeRevString(
     JNIEnv* env,
     jclass jcaller,
     jobject stringToReverse) {
@@ -237,7 +236,7 @@ static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcess
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobjectArray>& strs);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeSendSamplesToNative(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeSendSamplesToNative(
     JNIEnv* env,
     jclass jcaller,
     jobject strs) {
@@ -252,7 +251,7 @@ static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcess
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobjectArray>& strs);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeSendToNative(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeSendToNative(
     JNIEnv* env,
     jclass jcaller,
     jobject strs) {
@@ -282,7 +281,7 @@ static std::vector<int32_t> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
     jboolean zbool,
     const jni_zero::JavaParamRef<jbooleanArray>& bools);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeTestAllPrimitives(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeTestAllPrimitives(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
@@ -301,11 +300,11 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
     jobject floats,
     jboolean zbool,
     jobject bools) {
-  int zint_converted = static_cast<int>(zint);
+  int zint_converted = jni_zero::internal::PrimitiveConvert<int, jint>::FromJniType(env, zint);
   std::vector<int32_t> ints_converted = jni_zero::FromJniArray<std::vector<int32_t>>(
       env,
       jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(ints)));
-  int zchar_converted = static_cast<int>(zchar);
+  int zchar_converted = jni_zero::internal::PrimitiveConvert<int, jchar>::FromJniType(env, zchar);
   auto _ret = JNI_SampleForAnnotationProcessor_TestAllPrimitives(
       env,
       zint_converted,
@@ -324,7 +323,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProce
       jni_zero::JavaParamRef<jfloatArray>(env, static_cast<jfloatArray>(floats)),
       zbool,
       jni_zero::JavaParamRef<jbooleanArray>(env, static_cast<jbooleanArray>(bools)));
-  jobject converted_ret = jni_zero::ToJniArray(env, _ret).Release();
+  auto converted_ret = jni_zero::ToJniArray(env, _ret).Release();
   return converted_ret;
 }
 
@@ -350,7 +349,7 @@ static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
     const jni_zero::JavaParamRef<jobject>& context,
     std::vector<jni_zero::tests::CPPClass>& convertedObjects);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeTestSpecialTypes(
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni_nativeTestSpecialTypes(
     JNIEnv* env,
     jclass jcaller,
     jobject clazz,
@@ -407,6 +406,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcesso
       jni_zero::JavaParamRef<jobject>(env, context),
       convertedObjects_converted);
 }
+
 
 
 #endif  // org_jni_1zero_SampleForAnnotationProcessor_JNI

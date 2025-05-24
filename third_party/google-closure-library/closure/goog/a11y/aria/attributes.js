@@ -64,6 +64,11 @@ goog.a11y.aria.State = {
   // Value: space-separated IDs of other elements.
   CONTROLS: 'controls',
 
+  // ARIA property that identifies the element that represents the current
+  // item within a container or set of related elements.
+  // Value: one of {'page', 'step', 'location', 'date', 'time', true, false}.
+  CURRENT: 'current',
+
   // ARIA property that identifies the element or elements that describe
   // this element. Value: space-separated IDs of other elements.
   DESCRIBEDBY: 'describedby',

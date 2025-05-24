@@ -4,6 +4,8 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -11,6 +13,7 @@ import java.nio.ByteBuffer;
  * data. Data is unframed, but must come as (multiples of) discrete elements, of the size given at
  * creation time.
  */
+@NullMarked
 public interface DataPipe {
 
     /** Flags for the data pipe creation operation. */
@@ -41,7 +44,7 @@ public interface DataPipe {
     public static class CreateOptions {
 
         /** Used to specify different modes of operation, see |DataPipe.CreateFlags|. */
-        private CreateFlags mFlags = CreateFlags.none();
+        private final CreateFlags mFlags = CreateFlags.none();
 
         /**
          * The size of an element, in bytes. All transactions and buffers will consist of an

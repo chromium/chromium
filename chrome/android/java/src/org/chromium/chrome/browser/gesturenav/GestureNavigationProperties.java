@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 /** Properties used for gesture navigation view model. */
+@NullMarked
 class GestureNavigationProperties {
     /** Gesture navigation action as defined in {@link NavigationHandler.GestureAction}. */
     static final WritableIntPropertyKey ACTION = new WritableIntPropertyKey();

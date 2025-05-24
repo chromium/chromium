@@ -7,7 +7,6 @@
 
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -42,10 +41,6 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
     // was successful.
     virtual void OnPolicyRefreshed(bool success) {}
 
-    // Name of the observer for logging purposes.
-    // TODO(b/40915114): Remove once solved.
-    virtual std::string_view name() const = 0;
-
     virtual ~Observer() = default;
   };
 
@@ -72,7 +67,6 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
 
   // CloudPolicyClient::Observer:
   void OnPolicyFetched(CloudPolicyClient* client) override;
-  void OnRegistrationStateChanged(CloudPolicyClient* client) override;
   void OnClientError(CloudPolicyClient* client) override;
 
   // CloudPolicyStore::Observer:

@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("media_client") {
   sources = [
@@ -33,6 +31,8 @@ static_library("media_client") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/picture_in_picture",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//components/account_id",
     "//components/services/app_service",
     "//components/user_manager",

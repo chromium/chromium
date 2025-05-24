@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    style="@style/ListItemContainer">
+
+    <FrameLayout
+        android:layout_width="@dimen/recent_activity_avatar_container_size"
+        android:layout_height="@dimen/recent_activity_avatar_container_size"
+        android:layout_marginEnd="@dimen/recent_activity_avatar_margin_end" >
+
+        <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+            android:id="@+id/avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:cornerRadiusTopStart="@dimen/recent_activity_avatar_radius"
+            app:cornerRadiusTopEnd="@dimen/recent_activity_avatar_radius"
+            app:cornerRadiusBottomStart="@dimen/recent_activity_avatar_radius"
+            app:cornerRadiusBottomEnd="@dimen/recent_activity_avatar_radius"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+    </LinearLayout>
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/favicon"
+        android:layout_width="@dimen/recent_activity_favicon_bg_size"
+        android:layout_height="@dimen/recent_activity_favicon_bg_size"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/oval_shape"
+        android:backgroundTint="?attr/colorSurfaceContainer"
+        style="@style/ListItemEndIcon" />
+
+</LinearLayout>

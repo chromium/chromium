@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_CORE_UNIT_TEST_HELPER_H_
 
 #include <gtest/gtest.h>
+
 #include <memory>
 
 #include "cc/layers/layer.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/geometry_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -96,7 +98,9 @@ class RenderingTestChromeClient : public EmptyChromeClient {
       CompositorElementId scrollable_area_element_id,
       WebInputEvent::Type injected_type) override;
 
-  void ScheduleAnimation(const LocalFrameView*, base::TimeDelta) override {
+  void ScheduleAnimation(const LocalFrameView*,
+                         base::TimeDelta,
+                         bool) override {
     animation_scheduled_ = true;
   }
   bool AnimationScheduled() const { return animation_scheduled_; }
@@ -121,7 +125,7 @@ class RenderingTest : public PageTestBase {
   explicit RenderingTest(LocalFrameClient* = nullptr);
 
   const Node* HitTest(int x, int y);
-  HitTestResult::NodeSet RectBasedHitTest(const PhysicalRect& rect);
+  const HitTestResult::NodeSet& RectBasedHitTest(const PhysicalRect& rect);
 
  protected:
   void SetUp() override;
@@ -194,12 +198,21 @@ constexpr LogicalRect::LogicalRect(int inline_offset,
                                    int inline_size,
                                    int block_size)
     : offset(inline_offset, block_offset), size(inline_size, block_size) {}
-constexpr PhysicalOffset::PhysicalOffset(int left, int top)
-    : left(left), top(top) {}
-constexpr PhysicalSize::PhysicalSize(int width, int height)
-    : width(width), height(height) {}
 constexpr PhysicalRect::PhysicalRect(int left, int top, int width, int height)
     : offset(left, top), size(width, height) {}
+
+// Returns the rect that should have raster invalidated whenever this object
+// changes. The rect is in the coordinate space of the document's scrolling
+// contents. This method deals with outlines and overflow.
+PhysicalRect VisualRectInDocument(const LayoutObject& object,
+                                  VisualRectFlags = kDefaultVisualRectFlags);
+
+// Returns the rect that should have raster invalidated whenever the specified
+// object changes. The rect is in the object's local physical coordinate space.
+// This is for non-SVG objects and LayoutSVGRoot only. SVG objects (except
+// LayoutSVGRoot) should use VisualRectInLocalSVGCoordinates() and map with
+// SVG transforms instead.
+PhysicalRect LocalVisualRect(const LayoutObject& object);
 
 }  // namespace blink
 

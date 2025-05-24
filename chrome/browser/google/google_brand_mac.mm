@@ -8,11 +8,14 @@
 
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/types/expected.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/updater/tag.h"
 
 namespace google_brand {
 
@@ -43,6 +46,15 @@ std::string GetBrandInternal() {
   // Otherwise, use the brand code from within the app, if present.
   // If this mismatches a user brand code file, the updater will fix it on the
   // next update.
+
+  // Extended attribute brand codes, if present, have priority over Info.plist
+  // brand codes.
+  base::expected<updater::tagging::TagArgs, updater::tagging::ErrorCode>
+      xattr_tag = updater::tagging::ReadTagFromApplicationInstanceXattr(
+          base::apple::OuterBundlePath());
+  if (xattr_tag.has_value()) {
+    return xattr_tag->brand_code;
+  }
   NSString* app_bundle_brand_id = base::apple::ObjCCast<NSString>(
       base::apple::OuterBundle().infoDictionary[@"KSBrandID"]);
   if (app_bundle_brand_id) {

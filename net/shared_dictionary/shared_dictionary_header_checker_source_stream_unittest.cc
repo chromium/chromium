@@ -41,7 +41,7 @@ static constexpr unsigned char kBrotliSignatureAndHash[] = {
     0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,
     0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20};
 static constexpr base::span<const unsigned char> kTooSmallBrotliHeader =
-    base::make_span(kBrotliSignatureAndHash)
+    base::span(kBrotliSignatureAndHash)
         .subspan(sizeof(kBrotliSignatureAndHash) / 2);
 
 static constexpr unsigned char kZstdSignature[] = {0x5e, 0x2a, 0x4d, 0x18,
@@ -260,7 +260,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSync) {
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedSync) {
   AddReadResult(GetSignature(), Mode::SYNC);
-  AddReadResult(kTestHash.data, Mode::SYNC);
+  AddReadResult(kTestHash, Mode::SYNC);
   AddReadResult(kTestBodyData, Mode::SYNC);
   AddReadResult(OK, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
@@ -283,7 +283,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderAsync) {
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedAsync) {
   AddReadResult(GetSignature(), Mode::ASYNC);
-  AddReadResult(kTestHash.data, Mode::ASYNC);
+  AddReadResult(kTestHash, Mode::ASYNC);
   AddReadResult(kTestBodyData, Mode::ASYNC);
   AddReadResult(OK, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
@@ -295,14 +295,14 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedAsync) {
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongSinatureSync) {
   AddReadResult(GetWrongSignature(), Mode::SYNC);
-  AddReadResult(kTestHash.data, Mode::SYNC);
+  AddReadResult(kTestHash, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
   CheckSyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongSinatureAsync) {
   AddReadResult(GetWrongSignature(), Mode::ASYNC);
-  AddReadResult(kTestHash.data, Mode::ASYNC);
+  AddReadResult(kTestHash, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
   CheckAsyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER, 2);
 }
@@ -310,7 +310,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongSinatureAsync) {
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongHashSync) {
   const SHA256HashValue kWrongHash = {{0x01}};
   AddReadResult(GetSignature(), Mode::SYNC);
-  AddReadResult(kWrongHash.data, Mode::SYNC);
+  AddReadResult(kWrongHash, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
   CheckSyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
 }
@@ -318,7 +318,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongHashSync) {
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongHashAsync) {
   const SHA256HashValue kWrongHash = {{0x01}};
   AddReadResult(GetSignature(), Mode::ASYNC);
-  AddReadResult(kWrongHash.data, Mode::ASYNC);
+  AddReadResult(kWrongHash, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
   CheckAsyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER, 2);
 }

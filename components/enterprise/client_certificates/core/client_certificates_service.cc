@@ -50,7 +50,8 @@ void ConvertIdentityToList(
 class ClientCertificatesServiceImpl : public ClientCertificatesService {
  public:
   ClientCertificatesServiceImpl(
-      CertificateProvisioningService* certificate_provisioning_service,
+      CertificateProvisioningService* profile_certificate_provisioning_service,
+      CertificateProvisioningService* browser_certificate_provisioning_service,
       std::unique_ptr<net::ClientCertStore> platform_certificate_store);
 
   ~ClientCertificatesServiceImpl() override;
@@ -66,26 +67,36 @@ class ClientCertificatesServiceImpl : public ClientCertificatesService {
       std::vector<net::ClientCertIdentityList> client_certs_lists);
 
   const raw_ptr<CertificateProvisioningService>
-      certificate_provisioning_service_;
+      profile_certificate_provisioning_service_;
+  const raw_ptr<CertificateProvisioningService>
+      browser_certificate_provisioning_service_;
   std::unique_ptr<net::ClientCertStore> platform_certificate_store_;
 
   base::WeakPtrFactory<ClientCertificatesServiceImpl> weak_factory_{this};
 };
 
 std::unique_ptr<ClientCertificatesService> ClientCertificatesService::Create(
-    CertificateProvisioningService* certificate_provisioning_service,
+    CertificateProvisioningService* profile_certificate_provisioning_service,
+    CertificateProvisioningService* browser_certificate_provisioning_service,
     std::unique_ptr<net::ClientCertStore> platform_certificate_store) {
   return std::make_unique<ClientCertificatesServiceImpl>(
-      certificate_provisioning_service, std::move(platform_certificate_store));
+      profile_certificate_provisioning_service,
+      browser_certificate_provisioning_service,
+      std::move(platform_certificate_store));
 }
 
 ClientCertificatesServiceImpl::ClientCertificatesServiceImpl(
-    CertificateProvisioningService* certificate_provisioning_service,
+    CertificateProvisioningService* profile_certificate_provisioning_service,
+    CertificateProvisioningService* browser_certificate_provisioning_service,
     std::unique_ptr<net::ClientCertStore> platform_certificate_store)
-    : certificate_provisioning_service_(certificate_provisioning_service),
+    : profile_certificate_provisioning_service_(
+          profile_certificate_provisioning_service),
+      browser_certificate_provisioning_service_(
+          browser_certificate_provisioning_service),
       platform_certificate_store_(std::move(platform_certificate_store)) {
-  CHECK(certificate_provisioning_service_);
   CHECK(platform_certificate_store_);
+  CHECK(profile_certificate_provisioning_service_ ||
+        browser_certificate_provisioning_service_);
 }
 
 ClientCertificatesServiceImpl::~ClientCertificatesServiceImpl() = default;
@@ -94,14 +105,25 @@ void ClientCertificatesServiceImpl::GetClientCerts(
     scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
     ClientCertListCallback callback) {
   auto barrier_callback = base::BarrierCallback<net::ClientCertIdentityList>(
-      2U, base::BindOnce(&ClientCertificatesServiceImpl::FlattenLists,
+      3U, base::BindOnce(&ClientCertificatesServiceImpl::FlattenLists,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 
   platform_certificate_store_->GetClientCerts(cert_request_info,
                                               barrier_callback);
 
-  certificate_provisioning_service_->GetManagedIdentity(
-      base::BindOnce(ConvertIdentityToList, barrier_callback));
+  if (browser_certificate_provisioning_service_) {
+    browser_certificate_provisioning_service_->GetManagedIdentity(
+        base::BindOnce(ConvertIdentityToList, barrier_callback));
+  } else {
+    barrier_callback.Run(net::ClientCertIdentityList());
+  }
+
+  if (profile_certificate_provisioning_service_) {
+    profile_certificate_provisioning_service_->GetManagedIdentity(
+        base::BindOnce(ConvertIdentityToList, barrier_callback));
+  } else {
+    barrier_callback.Run(net::ClientCertIdentityList());
+  }
 }
 
 void ClientCertificatesServiceImpl::FlattenLists(

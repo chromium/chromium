@@ -169,7 +169,7 @@ def analyze_aggregated_results(
                 f'\nTest name: {test_name}'
                 f'\nTest Result: {test_analysis_result.analysis_result}'
                 f'\nTest is slow, suggested to make the test smaller or add'
-                f' this test to SlowTestExpectation.'
+                f' this test to SlowTests.'
                 f'\nDashboard link: {dashboard_link}\n')
             if not attach_analysis_result:
                 print(result_string)

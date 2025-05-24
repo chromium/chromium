@@ -41,7 +41,7 @@ class FileBackedBlobFactoryFrameImplTest
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
 
-    process_id_ = main_test_rfh()->GetProcess()->GetID();
+    process_id_ = main_test_rfh()->GetProcess()->GetDeprecatedID();
     FileBackedBlobFactoryFrameImpl::CreateForCurrentDocument(
         main_test_rfh(), factory_.BindNewEndpointAndPassDedicatedReceiver());
 

@@ -7,5 +7,5 @@
 ] partial interface Internals {
   [CallWith=ScriptState] Promise<undefined> createVirtualPressureSource(PressureSource source, CreateVirtualPressureSourceOptions options);
   [CallWith=ScriptState] Promise<undefined> removeVirtualPressureSource(PressureSource source);
-  [CallWith=ScriptState] Promise<undefined> updateVirtualPressureSource(PressureSource source, PressureState state);
+  [CallWith=ScriptState] Promise<undefined> updateVirtualPressureSource(PressureSource source, PressureState state, double own_contribution_estimate);
 };

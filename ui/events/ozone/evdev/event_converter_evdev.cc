@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include <errno.h>
 #include <linux/input.h>
 #include <stddef.h>
@@ -116,7 +121,7 @@ void EventConverterEvdev::OnDisabled() {}
 void EventConverterEvdev::DumpTouchEventLog(const char* filename) {}
 
 void EventConverterEvdev::OnFileCanWriteWithoutBlocking(int fd) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 KeyboardType EventConverterEvdev::GetKeyboardType() const {
@@ -176,60 +181,54 @@ bool EventConverterEvdev::HasStylusSwitch() const {
 }
 
 ui::StylusState EventConverterEvdev::GetStylusSwitchState() {
-  NOTREACHED_IN_MIGRATION();
-  return ui::StylusState::REMOVED;
+  NOTREACHED();
 }
 
 gfx::Size EventConverterEvdev::GetTouchscreenSize() const {
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Size();
+  NOTREACHED();
 }
 
 std::vector<ui::GamepadDevice::Axis> EventConverterEvdev::GetGamepadAxes()
     const {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<ui::GamepadDevice::Axis>();
+  NOTREACHED();
 }
 
 bool EventConverterEvdev::GetGamepadRumbleCapability() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::vector<uint64_t> EventConverterEvdev::GetGamepadKeyBits() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<uint64_t>();
+  NOTREACHED();
 }
 
 void EventConverterEvdev::PlayVibrationEffect(uint8_t amplitude,
                                               uint16_t duration_millis) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void EventConverterEvdev::StopVibration() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void EventConverterEvdev::PlayHapticTouchpadEffect(
     HapticTouchpadEffect effect,
     HapticTouchpadEffectStrength strength) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void EventConverterEvdev::SetHapticTouchpadEffectForNextButtonRelease(
     HapticTouchpadEffect effect,
     HapticTouchpadEffectStrength strength) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 int EventConverterEvdev::GetTouchPoints() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void EventConverterEvdev::SetKeyFilter(bool enable_filter,
                                        std::vector<DomCode> allowed_keys) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void EventConverterEvdev::SetBlockModifiers(bool block_modifiers) {

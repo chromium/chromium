@@ -99,8 +99,9 @@ class LocationIconViewTest : public ChromeViewsTestBase {
 
     std::u16string secure_display_text = std::u16string();
     if (level == security_state::SecurityLevel::DANGEROUS ||
-        level == security_state::SecurityLevel::WARNING)
+        level == security_state::SecurityLevel::WARNING) {
       secure_display_text = u"Insecure";
+    }
 
     location_bar_model()->set_secure_display_text(secure_display_text);
   }

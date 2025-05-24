@@ -7,19 +7,25 @@
 load("../common.star", _targets_common = "common")
 
 def _script_test_spec_init(node, settings):
-    settings = settings  # Shut linter up
+    if not settings.allow_script_tests:
+        fail("script test being included by builder with allow_script_tests=False")
     return dict(
         name = node.key.id,
         script = node.props.details.script,
         args = list(node.props.details.args or []),
         precommit_args = list(node.props.details.precommit_args or []),
         non_precommit_args = list(node.props.details.non_precommit_args or []),
+        resultdb = None,
     )
+
+def _script_test_spec_finalize(_builder_name, test_name, _settings, spec_value):
+    spec_value["resultdb"] = _targets_common.finalize_resultdb(spec_value["resultdb"])
+    return "scripts", test_name, spec_value
 
 _script_test_spec_handler = _targets_common.spec_handler(
     type_name = "script test",
     init = _script_test_spec_init,
-    finalize = (lambda name, settings, spec_value: ("scripts", name, spec_value)),
+    finalize = _script_test_spec_finalize,
 )
 
 def script_test(*, name, script, args = None, precommit_args = None, non_precommit_args = None):

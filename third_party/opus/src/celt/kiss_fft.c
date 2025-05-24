@@ -41,6 +41,10 @@
 #include "mathops.h"
 #include "stack_alloc.h"
 
+#ifndef M_PI
+#define M_PI 3.141592653
+#endif
+
 /* The guts header contains all the multiplication and addition macros that are defined for
    complex numbers.  It also delares the kf_ internal functions.
 */
@@ -70,8 +74,8 @@ static void kf_bfly2(
    } else
 #endif
    {
-      opus_val16 tw;
-      tw = QCONST16(0.7071067812f, 15);
+      celt_coef tw;
+      tw = QCONST32(0.7071067812f, COEF_SHIFT-1);
       /* We know that m==4 here because the radix-2 is just after a radix-4 */
       celt_assert(m==4);
       for (i=0;i<N;i++)
@@ -192,7 +196,7 @@ static void kf_bfly3(
    kiss_fft_cpx * Fout_beg = Fout;
 #ifdef FIXED_POINT
    /*epi3.r = -16384;*/ /* Unused */
-   epi3.i = -28378;
+   epi3.i = -QCONST32(0.86602540f, COEF_SHIFT-1);
 #else
    epi3 = st->twiddles[fstride*m];
 #endif
@@ -249,10 +253,10 @@ static void kf_bfly5(
    kiss_fft_cpx * Fout_beg = Fout;
 
 #ifdef FIXED_POINT
-   ya.r = 10126;
-   ya.i = -31164;
-   yb.r = -26510;
-   yb.i = -19261;
+   ya.r = QCONST32(0.30901699f, COEF_SHIFT-1);
+   ya.i = -QCONST32(0.95105652f, COEF_SHIFT-1);
+   yb.r = -QCONST32(0.80901699f, COEF_SHIFT-1);
+   yb.i = -QCONST32(0.58778525f, COEF_SHIFT-1);
 #else
    ya = st->twiddles[fstride*m];
    yb = st->twiddles[fstride*2*m];
@@ -412,7 +416,12 @@ static void compute_twiddles(kiss_twiddle_cpx *twiddles, int nfft)
 #ifdef FIXED_POINT
    for (i=0;i<nfft;++i) {
       opus_val32 phase = -i;
+#ifdef ENABLE_QEXT
+      twiddles[i].r = (int)MIN32(2147483647, floor(.5+2147483648*cos((2*M_PI/nfft)*phase)));
+      twiddles[i].i = (int)MIN32(2147483647, floor(.5+2147483648*sin((2*M_PI/nfft)*phase)));
+#else
       kf_cexp2(twiddles+i, DIV32(SHL32(phase,17),nfft));
+#endif
    }
 #else
    for (i=0;i<nfft;++i) {
@@ -454,10 +463,17 @@ kiss_fft_state *opus_fft_alloc_twiddles(int nfft,void * mem,size_t * lenmem,
         st->nfft=nfft;
 #ifdef FIXED_POINT
         st->scale_shift = celt_ilog2(st->nfft);
+# ifdef ENABLE_QEXT
+        if (st->nfft == 1<<st->scale_shift)
+           st->scale = QCONST32(1.0f, 30);
+        else
+           st->scale = (((opus_int64)1073741824<<st->scale_shift)+st->nfft/2)/st->nfft;
+# else
         if (st->nfft == 1<<st->scale_shift)
            st->scale = Q15ONE;
         else
            st->scale = (1073741824+st->nfft/2)/st->nfft>>(15-st->scale_shift);
+# endif
 #else
         st->scale = 1.f/nfft;
 #endif
@@ -518,7 +534,30 @@ void opus_fft_free(const kiss_fft_state *cfg, int arch)
 
 #endif /* CUSTOM_MODES */
 
-void opus_fft_impl(const kiss_fft_state *st,kiss_fft_cpx *fout)
+#ifdef FIXED_POINT
+static void fft_downshift(kiss_fft_cpx *x, int N, int *total, int step) {
+   int shift;
+   shift = IMIN(step, *total);
+   *total -= shift;
+   if (shift == 1) {
+      int i;
+      for (i=0;i<N;i++) {
+         x[i].r = SHR32(x[i].r, 1);
+         x[i].i = SHR32(x[i].i, 1);
+      }
+   } else if (shift>0) {
+      int i;
+      for (i=0;i<N;i++) {
+         x[i].r = PSHR32(x[i].r, shift);
+         x[i].i = PSHR32(x[i].i, shift);
+      }
+   }
+}
+#else
+#define fft_downshift(x, N, total, step)
+#endif
+
+void opus_fft_impl(const kiss_fft_state *st,kiss_fft_cpx *fout ARG_FIXED(int downshift))
 {
     int m2, m;
     int p;
@@ -548,28 +587,33 @@ void opus_fft_impl(const kiss_fft_state *st,kiss_fft_cpx *fout)
        switch (st->factors[2*i])
        {
        case 2:
+          fft_downshift(fout, st->nfft, &downshift, 1);
           kf_bfly2(fout, m, fstride[i]);
           break;
        case 4:
+          fft_downshift(fout, st->nfft, &downshift, 2);
           kf_bfly4(fout,fstride[i]<<shift,st,m, fstride[i], m2);
           break;
  #ifndef RADIX_TWO_ONLY
        case 3:
+          fft_downshift(fout, st->nfft, &downshift, 2);
           kf_bfly3(fout,fstride[i]<<shift,st,m, fstride[i], m2);
           break;
        case 5:
+          fft_downshift(fout, st->nfft, &downshift, 3);
           kf_bfly5(fout,fstride[i]<<shift,st,m, fstride[i], m2);
           break;
  #endif
        }
        m = m2;
     }
+    fft_downshift(fout, st->nfft, &downshift, downshift);
 }
 
 void opus_fft_c(const kiss_fft_state *st,const kiss_fft_cpx *fin,kiss_fft_cpx *fout)
 {
    int i;
-   opus_val16 scale;
+   celt_coef scale;
 #ifdef FIXED_POINT
    /* Allows us to scale with MULT16_32_Q16(), which is faster than
       MULT16_32_Q15() on ARM. */
@@ -582,10 +626,10 @@ void opus_fft_c(const kiss_fft_state *st,const kiss_fft_cpx *fin,kiss_fft_cpx *f
    for (i=0;i<st->nfft;i++)
    {
       kiss_fft_cpx x = fin[i];
-      fout[st->bitrev[i]].r = SHR32(MULT16_32_Q16(scale, x.r), scale_shift);
-      fout[st->bitrev[i]].i = SHR32(MULT16_32_Q16(scale, x.i), scale_shift);
+      fout[st->bitrev[i]].r = S_MUL2(x.r, scale);
+      fout[st->bitrev[i]].i = S_MUL2(x.i, scale);
    }
-   opus_fft_impl(st, fout);
+   opus_fft_impl(st, fout ARG_FIXED(scale_shift));
 }
 
 
@@ -598,7 +642,7 @@ void opus_ifft_c(const kiss_fft_state *st,const kiss_fft_cpx *fin,kiss_fft_cpx *
       fout[st->bitrev[i]] = fin[i];
    for (i=0;i<st->nfft;i++)
       fout[i].i = -fout[i].i;
-   opus_fft_impl(st, fout);
+   opus_fft_impl(st, fout ARG_FIXED(0));
    for (i=0;i<st->nfft;i++)
       fout[i].i = -fout[i].i;
 }

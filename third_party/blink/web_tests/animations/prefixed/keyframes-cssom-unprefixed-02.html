@@ -49,7 +49,7 @@ async_test(t => {
     try {
       new CSSKeyframesRule().name;
     } catch (e) {
-      assert_equals(e.message, "Illegal constructor");
+      assert_equals(e.message, "Failed to construct 'CSSKeyframesRule': Illegal constructor");
     }
 
     document.body.removeChild(testContainer);

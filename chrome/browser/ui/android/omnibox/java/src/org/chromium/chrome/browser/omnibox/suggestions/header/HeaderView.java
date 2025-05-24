@@ -9,11 +9,13 @@ import android.text.TextUtils.TruncateAt;
 import android.view.Gravity;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** View for Group Headers. */
+@NullMarked
 public class HeaderView extends TextView {
     public HeaderView(Context context) {
         super(context);

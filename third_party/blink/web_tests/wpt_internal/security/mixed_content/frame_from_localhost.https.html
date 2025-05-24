@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/urls.sub.js"></script>
+<body>
+<script>
+async_test(function (t) {
+    window.addEventListener("message", t.step_func(function (e) {
+        if (e.data.hasOwnProperty("useCounted")) {
+            assert_true(e.data.useCounted);
+            t.done();
+        }
+    }));
+    var url = HTTP_ORIGIN + "/wpt_internal/security/mixed_content/resources/blank.html";
+    window.open(LOCALHOST_HTTP_ORIGIN + "/wpt_internal/security/mixed_content/resources/mixed_frame.html?url=" + encodeURIComponent(url), "_blank");
+}, "A UseCounter should be recorded if a localhost page loads a mixed frame");
+</script>
+</body>
+</html>

@@ -2,8 +2,8 @@
 Partial workspace defintion for the TFLite Support Library. See WORKSPACE for usage.
 """
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@android_test_support//:repo.bzl", "android_test_repositories")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 def tflite_support_workspace1():
     """Partial workspace definition for the TFLite Support Library. See WORKSPACE for usage."""

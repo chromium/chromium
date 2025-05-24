@@ -19,7 +19,8 @@ namespace base {
 ConditionVariable::ConditionVariable(Lock* user_lock)
     : srwlock_(user_lock->lock_.native_handle())
 #if DCHECK_IS_ON()
-    , user_lock_(user_lock)
+      ,
+      user_lock_(user_lock)
 #endif
 {
   DCHECK(user_lock);
@@ -35,8 +36,9 @@ void ConditionVariable::Wait() {
 void ConditionVariable::TimedWait(const TimeDelta& max_time) {
   std::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
-  if (waiting_is_blocking_)
+  if (waiting_is_blocking_) {
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
+  }
 
   // Limit timeout to INFINITE.
   DWORD timeout = saturated_cast<DWORD>(max_time.InMilliseconds());

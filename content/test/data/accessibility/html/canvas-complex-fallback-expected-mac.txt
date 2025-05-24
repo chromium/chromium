@@ -1,0 +1,46 @@
+AXWebArea
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='Static fallback'
+++++AXGroup
+++++++AXStaticText AXValue='<newline>    '
+++++++AXGroup
+++++++++AXStaticText AXValue='<newline>      '
+++++++++AXStaticText AXValue='Here we list the contents:'
+++++++++AXStaticText AXValue='<newline>      '
+++++++++AXList AXSubrole=AXContentList
+++++++++++AXStaticText AXValue='<newline>        '
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='A red circle.<newline>        '
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='A blue line.<newline>        '
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='Text saying '
+++++++++++++AXGroup
+++++++++++++++AXStaticText AXValue='Welcome to canvas'
+++++++++++++AXStaticText AXValue='<newline>      '
+++++++++AXStaticText AXValue='<newline>    '
+++++++AXStaticText AXValue='<newline>  '
+++++AXGroup
+++++++AXStaticText AXValue='<newline>    '
+++++++AXGroup
+++++++++AXStaticText AXValue='<newline>      '
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Here we list the contents:'
+++++++++AXStaticText AXValue='<newline>      '
+++++++++AXList AXSubrole=AXContentList
+++++++++++AXStaticText AXValue='<newline>        '
+++++++++++AXGroup
+++++++++++++AXListMarker AXValue='1. '
+++++++++++++AXStaticText AXValue='A red circle.'
+++++++++++AXGroup
+++++++++++++AXListMarker AXValue='2. '
+++++++++++++AXStaticText AXValue='A blue line.'
+++++++++++AXGroup
+++++++++++++AXListMarker AXValue='3. '
+++++++++++++AXStaticText AXValue='Text saying'
+++++++++++++AXGroup
+++++++++++++++AXStaticText AXValue='Welcome to canvas'
+++++++++++++AXStaticText AXValue='<newline>      '
+++++++++AXStaticText AXValue='<newline>    '
+++++++AXStaticText AXValue='<newline>  '

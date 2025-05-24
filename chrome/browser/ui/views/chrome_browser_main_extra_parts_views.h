@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -21,7 +20,7 @@ class UiDevToolsServer;
 }
 
 #if defined(USE_AURA)
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 namespace display {
 class Screen;
 }
@@ -50,6 +49,7 @@ class ChromeBrowserMainExtraPartsViews : public ChromeBrowserMainExtraParts {
 
   // Overridden from ChromeBrowserMainExtraParts:
   void ToolkitInitialized() override;
+  void PostCreateMainMessageLoop() override;
   void PreCreateThreads() override;
   void PreProfileInit() override;
   void PostBrowserStart() override;
@@ -61,7 +61,14 @@ class ChromeBrowserMainExtraPartsViews : public ChromeBrowserMainExtraParts {
   void DestroyUiDevTools();
 
  private:
+  // An owning pointer to the views delegate. This may be nullptr if another
+  // class creates the global ViewsDelegate instance before us (test only).
   std::unique_ptr<views::ViewsDelegate> views_delegate_;
+  // A non-owning pointer to the views delegate. All dereferencing should be
+  // done through this `views_delegate_ptr_`. This should never be nullptr
+  // after `ToolkitInitialized()`.
+  raw_ptr<views::ViewsDelegate> views_delegate_ptr_ = nullptr;
+
   std::unique_ptr<views::LayoutProvider> layout_provider_;
 
   // Only used when running in --enable-ui-devtools.
@@ -69,7 +76,7 @@ class ChromeBrowserMainExtraPartsViews : public ChromeBrowserMainExtraParts {
   std::unique_ptr<DevtoolsProcessObserver> devtools_process_observer_;
 
 #if defined(USE_AURA)
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<display::Screen> screen_;
 #endif
   std::unique_ptr<wm::WMState> wm_state_;

@@ -67,7 +67,6 @@ constexpr char kExtensionName[] = "DocumentScan API extension";
 constexpr char kExtensionPermissionName[] = "documentScan";
 
 // Scanner name used for tests.
-constexpr char kTestScannerName[] = "Test Scanner";
 constexpr char kVirtualUSBPrinterName[] = "DavieV Virtual USB Printer (USB)";
 
 // Fake scan data.
@@ -225,9 +224,9 @@ class DocumentScanAPIHandlerTest : public testing::Test {
 };
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_NoScannersAvailableError) {
-  GetDocumentScan().SetGetScannerNamesResponse({});
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"image/png"}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
+                                         future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(scan_results.has_value());
   EXPECT_EQ("No scanners available", error);
@@ -235,7 +234,7 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_NoScannersAvailableError) {
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_MissingMimeTypesError) {
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {}, future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(scan_results.has_value());
   EXPECT_EQ("Unsupported MIME types", error);
@@ -243,28 +242,71 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_MissingMimeTypesError) {
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_UnsupportedMimeTypesError) {
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"image/tiff"}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {"image/tiff"},
+                                         future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(scan_results.has_value());
   EXPECT_EQ("Unsupported MIME types", error);
 }
 
-TEST_F(DocumentScanAPIHandlerTest, SimpleScan_ScanImageError) {
-  GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
-  GetDocumentScan().SetScanResponse(std::nullopt);
+TEST_F(DocumentScanAPIHandlerTest, SimpleScan_OpenFails) {
+  auto scanner_info = CreateTestScannerInfo();
+  auto open_response = crosapi::mojom::OpenScannerResponse::New();
+  open_response->scanner_id = scanner_info->id;
+  open_response->result = crosapi::mojom::ScannerOperationResult::kDeviceBusy;
+
+  // A scanner is returned in the list, but it can't be opened.
+  GetDocumentScan().AddScanner(std::move(scanner_info));
+  GetDocumentScan().SetOpenScannerResponse(open_response->scanner_id,
+                                           std::move(open_response));
+
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"image/png"}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
+                                         future.GetCallback());
+  const auto& [scan_results, error] = future.Get();
+  EXPECT_FALSE(scan_results.has_value());
+  EXPECT_EQ("No scanners available", error);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, SimpleScan_StartScanFails) {
+  auto scanner_info = CreateTestScannerInfo();
+  auto scan_response = crosapi::mojom::StartPreparedScanResponse::New();
+  scan_response->result = crosapi::mojom::ScannerOperationResult::kIoError;
+
+  GetDocumentScan().SetStartPreparedScanResponse(scanner_info->id,
+                                                 std::move(scan_response));
+  GetDocumentScan().AddScanner(std::move(scanner_info));
+
+  SimpleScanFuture future;
+  document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
+                                         future.GetCallback());
+  const auto& [scan_results, error] = future.Get();
+  EXPECT_FALSE(scan_results.has_value());
+  EXPECT_EQ("Failed to scan image", error);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, SimpleScan_ScanImageError) {
+  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  GetDocumentScan().SetReadScanDataResponses(
+      std::nullopt, crosapi::mojom::ScannerOperationResult::kIoError);
+  SimpleScanFuture future;
+  document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
+                                         future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(scan_results.has_value());
   EXPECT_EQ("Failed to scan image", error);
 }
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_Success) {
-  GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
-  const std::vector<std::string> scan_data = {kScanDataItem};
-  GetDocumentScan().SetScanResponse(scan_data);
+  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  const std::string data = kScanDataItem;
+  const std::vector<std::string> scan_data = {"", data.substr(0, 5),
+                                              data.substr(5)};
+  GetDocumentScan().SetReadScanDataResponses(
+      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"image/png"}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
+                                         future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(error.has_value());
   ASSERT_TRUE(scan_results.has_value());
@@ -277,21 +319,26 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_Success) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeError) {
-  GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
+  GetDocumentScan().AddScanner(CreateTestScannerInfo());
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"testing"}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {"testing"},
+                                         future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(scan_results.has_value());
   EXPECT_EQ("Virtual USB printer unavailable", error);
 }
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeSuccess) {
-  GetDocumentScan().SetGetScannerNamesResponse(
-      {kTestScannerName, kVirtualUSBPrinterName});
+  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  auto test_scanner = CreateTestScannerInfo();
+  test_scanner->id = kVirtualUSBPrinterName;
+  test_scanner->display_name = kVirtualUSBPrinterName;
+  GetDocumentScan().AddScanner(std::move(test_scanner));
   const std::vector<std::string> scan_data = {kScanDataItem};
-  GetDocumentScan().SetScanResponse(scan_data);
+  GetDocumentScan().SetReadScanDataResponses(
+      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"image/png", "testing"},
+  document_scan_api_handler_->SimpleScan(extension_, {"image/png", "testing"},
                                          future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(error.has_value());
@@ -1394,6 +1441,10 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromOpenHandleSucceeds) {
       extension_, /*user_gesture=*/false, scanner_handle);
   EXPECT_FALSE(job_handle.empty());
 
+  const std::vector<std::string> scan_data = {kScanDataItem, kScanDataItem, ""};
+  GetDocumentScan().SetReadScanDataResponses(
+      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
+
   // First read succeeds because the job is open.
   ReadScanDataFuture read_future1;
   document_scan_api_handler_->ReadScanData(extension_, job_handle,
@@ -1448,6 +1499,10 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromClosedScannerFails) {
       extension_, /*user_gesture=*/false, scanner_handle);
   EXPECT_FALSE(job_handle.empty());
 
+  const std::vector<std::string> scan_data = {kScanDataItem, kScanDataItem, ""};
+  GetDocumentScan().SetReadScanDataResponses(
+      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
+
   // First read succeeds because the job is open.
   ReadScanDataFuture read_future1;
   document_scan_api_handler_->ReadScanData(extension_, job_handle,
@@ -1482,6 +1537,10 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromReopenedScannerFails) {
 
   const std::string scanner_id = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id.empty());
+
+  const std::vector<std::string> scan_data = {kScanDataItem, kScanDataItem, ""};
+  GetDocumentScan().SetReadScanDataResponses(
+      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
 
   // The first open succeeds because the scanner is not open.
   OpenScannerFuture open_future1;

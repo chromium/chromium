@@ -14,10 +14,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
-#include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_delegate.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -58,7 +58,7 @@ class BrowserAutofillManagerTestDelegateImpl
 
   ~BrowserAutofillManagerTestDelegateImpl() override;
 
-  // Controls whether back-to-back events of |type|, except for the first one,
+  // Controls whether back-to-back events of `type`, except for the first one,
   // are ignored. This is useful for cross-iframe forms, where events such as
   // ObservedUiEvents::kFormDataFilled are triggered by each filled renderer
   // form.
@@ -114,7 +114,7 @@ class AutofillUiTest : public InProcessBrowserTest,
 
   void SendKeyToPopup(content::RenderFrameHost* render_frame_host,
                       const ui::DomKey key);
-  // Send key to the render host view's widget if |widget| is null.
+  // Send key to the render host view's widget if `widget` is null.
   [[nodiscard]] testing::AssertionResult SendKeyToPopupAndWait(
       ui::DomKey key,
       std::list<ObservedUiEvents> expected_events,
@@ -176,7 +176,7 @@ class AutofillUiTest : public InProcessBrowserTest,
   // event the tests create and have the WebContents forward is handled by some
   // key press event callback. It is necessary to have this sink because if no
   // key press event callback handles the event (at least on Mac), a DCHECK
-  // ends up going off that the |event| doesn't have an |os_event| associated
+  // ends up going off that the `event` doesn't have an `os_event` associated
   // with it.
   content::RenderWidgetHost::KeyPressEventCallback key_press_event_sink_{
       base::BindRepeating(&AutofillUiTest::HandleKeyPressEvent,

@@ -47,9 +47,7 @@ File::File(ScopedPlatformFile platform_file, bool async)
 }
 
 File::File(PlatformFile platform_file, bool async)
-    : file_(platform_file),
-      error_details_(FILE_OK),
-      async_(async) {
+    : file_(platform_file), error_details_(FILE_OK), async_(async) {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   DCHECK_GE(platform_file, -1);
 #endif
@@ -59,10 +57,15 @@ File::File(Error error_details) : error_details_(error_details) {}
 
 File::File(File&& other)
     : file_(other.TakePlatformFile()),
-      tracing_path_(other.tracing_path_),
+#if BUILDFLAG(IS_ANDROID)
+      java_parcel_file_descriptor_(
+          std::move(other.java_parcel_file_descriptor_)),
+#endif
+      path_(other.path_),
       error_details_(other.error_details()),
       created_(other.created()),
-      async_(other.async_) {}
+      async_(other.async_) {
+}
 
 File::~File() {
   // Go through the AssertIOAllowed logic.
@@ -72,7 +75,10 @@ File::~File() {
 File& File::operator=(File&& other) {
   Close();
   SetPlatformFile(other.TakePlatformFile());
-  tracing_path_ = other.tracing_path_;
+#if BUILDFLAG(IS_ANDROID)
+  java_parcel_file_descriptor_ = std::move(other.java_parcel_file_descriptor_);
+#endif
+  path_ = other.path_;
   error_details_ = other.error_details();
   created_ = other.created();
   async_ = other.async_;
@@ -92,8 +98,13 @@ void File::Initialize(const FilePath& path, uint32_t flags) {
     error_details_ = FILE_ERROR_ACCESS_DENIED;
     return;
   }
-  if (FileTracing::IsCategoryEnabled())
-    tracing_path_ = path;
+  if (FileTracing::IsCategoryEnabled()
+#if BUILDFLAG(IS_ANDROID)
+      || path.IsContentUri()
+#endif
+  ) {
+    path_ = path;
+  }
   SCOPED_FILE_TRACE("Initialize");
   DoInitialize(path, flags);
 }

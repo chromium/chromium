@@ -11,12 +11,12 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
@@ -65,7 +65,8 @@ void AppendNodeToString(const LayoutInputNode& node,
   } else if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     const auto& items = inline_node->ItemsData(false).items;
     indent += 2;
-    for (const InlineItem& inline_item : items) {
+    for (const Member<InlineItem>& inline_item_ptr : items) {
+      const InlineItem& inline_item = *inline_item_ptr;
       BlockNode child_node(nullptr);
       if (auto* box = DynamicTo<LayoutBox>(inline_item.GetLayoutObject())) {
         child_node = BlockNode(box);
@@ -157,19 +158,16 @@ void LayoutInputNode::IntrinsicSize(
   if (*computed_inline_size && *computed_block_size)
     return;
 
-  IntrinsicSizingInfo legacy_sizing_info;
-  To<LayoutReplaced>(box_.Get())
-      ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
+  const PhysicalNaturalSizingInfo legacy_sizing_info =
+      To<LayoutReplaced>(*box_).ComputeNaturalSizingInfo();
 
   std::optional<LayoutUnit> intrinsic_inline_size =
       legacy_sizing_info.has_width
-          ? std::make_optional(
-                LayoutUnit::FromFloatRound(legacy_sizing_info.size.width()))
+          ? std::make_optional(legacy_sizing_info.size.width)
           : std::nullopt;
   std::optional<LayoutUnit> intrinsic_block_size =
       legacy_sizing_info.has_height
-          ? std::make_optional(
-                LayoutUnit::FromFloatRound(legacy_sizing_info.size.height()))
+          ? std::make_optional(legacy_sizing_info.size.height)
           : std::nullopt;
   if (!IsHorizontalWritingMode()) {
     std::swap(intrinsic_inline_size, intrinsic_block_size);

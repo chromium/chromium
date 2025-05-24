@@ -87,13 +87,15 @@ void LineBoxFragmentBuilder::PropagateChildrenDataFromLineItems(
     if (child.out_of_flow_positioned_box) {
       AddOutOfFlowInlineChildCandidate(
           BlockNode(To<LayoutBox>(child.out_of_flow_positioned_box.Get())),
-          child.Offset(), child.container_direction, child.is_hidden_for_paint);
+          child.Offset(), child.container_writing_direction, LineHeight());
       child.out_of_flow_positioned_box = nullptr;
     }
   }
 }
 
 const LayoutResult* LineBoxFragmentBuilder::ToLineBoxFragment() {
+  Finalize();
+
   writing_direction_.SetWritingMode(ToLineWritingMode(GetWritingMode()));
 
   const auto* fragment = PhysicalLineBoxFragment::Create(this);

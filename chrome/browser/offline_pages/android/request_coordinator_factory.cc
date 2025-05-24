@@ -39,7 +39,7 @@ namespace {
 class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
  public:
   explicit ActiveTabInfo(Profile* profile) : profile_(profile) {}
-  ~ActiveTabInfo() override {}
+  ~ActiveTabInfo() override = default;
   bool DoesActiveTabMatch(const GURL& url) override {
     // Loop through to find the active tab and report whether the URL matches.
     for (const TabModel* model : TabModelList::models()) {

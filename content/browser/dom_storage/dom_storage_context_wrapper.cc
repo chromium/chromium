@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 #include "components/services/storage/dom_storage/session_storage_impl.h"
-#include "components/services/storage/public/mojom/partition.mojom.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
@@ -44,6 +43,9 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
+#if BUILDFLAG(IS_MAC)
+using LocalStorageLifecycle = storage::mojom::LocalStorageLifecycle;
+#endif  // BUILDFLAG(IS_MAC)
 namespace {
 
 void AdaptSessionStorageUsageInfo(
@@ -71,6 +73,22 @@ void AdaptStorageUsageInfo(
   }
   std::move(callback).Run(result);
 }
+
+#if BUILDFLAG(IS_MAC)
+LocalStorageLifecycle GetLocalStorageLifecycle(
+    bool recovering,
+    bool storage_service_remote_was_bound) {
+  if (recovering) {
+    return storage_service_remote_was_bound
+               ? LocalStorageLifecycle::kRecovering
+               : LocalStorageLifecycle::kRecoveringWithUnboundStorageService;
+  } else {
+    return storage_service_remote_was_bound
+               ? LocalStorageLifecycle::kInitializing
+               : LocalStorageLifecycle::kInitializingWithUnboundStorageService;
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -100,8 +118,18 @@ DOMStorageContextWrapper::DOMStorageContextWrapper(
       base::BindRepeating(&DOMStorageContextWrapper::OnMemoryPressure,
                           base::Unretained(this)));
 
+#if BUILDFLAG(IS_MAC)
+  // Binding Session or Local storage will result in the storage service getting
+  // bound. So, we capture this state before those calls.
+  LocalStorageLifecycle lifecycle = GetLocalStorageLifecycle(
+      /*recovering=*/false, partition_->IsStorageServiceRemoteValid());
+#endif  // BUILDFLAG(IS_MAC)
   MaybeBindSessionStorageControl();
+#if BUILDFLAG(IS_MAC)
+  MaybeBindLocalStorageControlAndReportLifecycle(lifecycle);
+#else
   MaybeBindLocalStorageControl();
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 DOMStorageContextWrapper::~DOMStorageContextWrapper() {
@@ -292,7 +320,7 @@ bool DOMStorageContextWrapper::IsRequestValid(
     std::optional<blink::LocalFrameToken> local_frame_token,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     mojo::ReportBadMessageCallback bad_message_callback) {
-  bool host_storage_key_did_not_match = false;
+  bool host_storage_key_matched_or_missing = true;
   if (local_frame_token) {
     RenderFrameHostImpl* host = RenderFrameHostImpl::FromFrameToken(
         security_policy_handle.child_id(), *local_frame_token,
@@ -300,23 +328,15 @@ bool DOMStorageContextWrapper::IsRequestValid(
     if (!host) {
       return false;
     }
-    host_storage_key_did_not_match = host->GetStorageKey() != storage_key;
     // If the storage keys did not match, but storage access has been granted
     // and the request was for a first-party storage key on the same origin as
     // the frame's storage key, we can allow the request to proceed. See:
     // third_party/blink/renderer/modules/storage_access/README.md
-    if (host_storage_key_did_not_match) {
-      auto* permission_controller =
-          host->GetBrowserContext()->GetPermissionController();
-      blink::mojom::PermissionStatus status =
-          permission_controller->GetPermissionStatusForCurrentDocument(
-              blink::PermissionType::STORAGE_ACCESS_GRANT, host);
-      if (status == blink::mojom::PermissionStatus::GRANTED) {
-        host_storage_key_did_not_match =
-            blink::StorageKey::CreateFirstParty(
-                host->GetStorageKey().origin()) != storage_key;
-      }
-    }
+    host_storage_key_matched_or_missing =
+        host->GetStorageKey() == storage_key ||
+        (host->DoesDocumentHaveStorageAccess() &&
+         blink::StorageKey::CreateFirstParty(host->GetStorageKey().origin()) ==
+             storage_key);
   }
   if (!security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {
     const std::string type_string =
@@ -328,7 +348,7 @@ bool DOMStorageContextWrapper::IsRequestValid(
                            " request due to ChildProcessSecurityPolicy."}));
     return false;
   }
-  if (host_storage_key_did_not_match) {
+  if (!host_storage_key_matched_or_missing) {
     // Ideally we would kill the renderer here, but it's possible this is the
     // result of a race condition between committing the new document and
     // binding the DOM Storage. For now, we'll just fail to bind.
@@ -339,8 +359,18 @@ bool DOMStorageContextWrapper::IsRequestValid(
 
 void DOMStorageContextWrapper::RecoverFromStorageServiceCrash() {
   DCHECK(partition_);
+#if BUILDFLAG(IS_MAC)
+  // Binding Session or Local storage will result in the storage service getting
+  // bound. So, we capture this state before those calls.
+  LocalStorageLifecycle lifecycle = GetLocalStorageLifecycle(
+      /*recovering=*/true, partition_->IsStorageServiceRemoteValid());
+#endif  // BUILDFLAG(IS_MAC)
   MaybeBindSessionStorageControl();
+#if BUILDFLAG(IS_MAC)
+  MaybeBindLocalStorageControlAndReportLifecycle(lifecycle);
+#else
   MaybeBindLocalStorageControl();
+#endif  // BUILDFLAG(IS_MAC)
 
   // Make sure the service is aware of namespaces we asked a previous instance
   // to create, so it can properly service renderers trying to manipulate those
@@ -367,12 +397,25 @@ void DOMStorageContextWrapper::MaybeBindLocalStorageControl() {
       local_storage_control_.BindNewPipeAndPassReceiver());
 }
 
+#if BUILDFLAG(IS_MAC)
+void DOMStorageContextWrapper::MaybeBindLocalStorageControlAndReportLifecycle(
+    LocalStorageLifecycle lifecycle) {
+  if (!partition_) {
+    return;
+  }
+  local_storage_control_.reset();
+  partition_->GetStorageServicePartition()
+      ->BindLocalStorageControlAndReportLifecycle(
+          lifecycle, local_storage_control_.BindNewPipeAndPassReceiver());
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 scoped_refptr<SessionStorageNamespaceImpl>
 DOMStorageContextWrapper::MaybeGetExistingNamespace(
     const std::string& namespace_id) const {
   base::AutoLock lock(alive_namespaces_lock_);
   auto it = alive_namespaces_.find(namespace_id);
-  return (it != alive_namespaces_.end()) ? it->second : nullptr;
+  return (it != alive_namespaces_.end()) ? it->second.get() : nullptr;
 }
 
 void DOMStorageContextWrapper::AddNamespace(

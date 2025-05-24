@@ -1,0 +1,10 @@
+include_rules = [
+  "+printing",
+]
+
+specific_include_rules = {
+  "video.*\.(h|cc)": [
+    "+media/base",
+    "+media/video",
+  ],
+}

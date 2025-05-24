@@ -9,7 +9,6 @@
 #include "base/containers/map_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 #include "chrome/browser/extensions/api/document_scan/fake_document_scan_ash.h"
@@ -21,7 +20,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -110,14 +108,9 @@ class DocumentScanApiTest : public ExtensionApiTest,
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
 
-    // Replace the production DocumentScanAsh with a mock for testing.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    chromeos::LacrosService::Get()->InjectRemoteForTesting(
-        receiver_.BindNewPipeAndPassRemote());
-#else
     DocumentScanAPIHandler::Get(browser()->profile())
         ->SetDocumentScanForTesting(&document_scan_ash_);
-#endif
+
     document_scan()->SetSmallestMaxReadSize(kRealBackendMinimumReadSize);
   }
 
@@ -137,9 +130,6 @@ class DocumentScanApiTest : public ExtensionApiTest,
 
  private:
   FakeDocumentScanAsh document_scan_ash_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  mojo::Receiver<crosapi::mojom::DocumentScan> receiver_{&document_scan_ash_};
-#endif
 };
 
 IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, TestLoadPermissions) {
@@ -170,6 +160,9 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_PermissionAllowed) {
   base::AutoReset<std::optional<bool>> testing_scope =
       StartScanRunner::SetStartScanConfirmationResultForTesting(true);
   document_scan()->AddScanner(CreateTestScannerInfo());
+  const std::vector<std::string> scan_data = {"img", "data", "img", "data", ""};
+  document_scan()->SetReadScanDataResponses(
+      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
   RunTest("perform_scan.html");
   // TODO(b/313494616): Load a second extension to verify (lack of)
   // cross-extension handle sharing.
@@ -183,6 +176,9 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_ExtensionTrusted) {
   base::AutoReset<std::optional<bool>> testing_scope =
       StartScanRunner::SetStartScanConfirmationResultForTesting(false);
   document_scan()->AddScanner(CreateTestScannerInfo());
+  const std::vector<std::string> scan_data = {"img", "data", "img", "data", ""};
+  document_scan()->SetReadScanDataResponses(
+      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
   RunTest("perform_scan.html");
 }
 

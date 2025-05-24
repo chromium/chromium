@@ -15,17 +15,18 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative/test_rules_registry.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace extensions {
+
 namespace {
 const char kExtensionId[] = "foobar";
 const char kRuleId[] = "foo";
-const int key = extensions::RulesRegistryService::kDefaultRulesRegistryID;
+const int key = rules_registry_ids::kDefaultRulesRegistryID;
 }  // namespace
-
-namespace extensions {
 
 TEST(RulesRegistryTest, FillOptionalIdentifiers) {
   content::BrowserTaskEnvironment task_environment;

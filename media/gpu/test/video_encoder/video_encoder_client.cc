@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/test/video_encoder/video_encoder_client.h"
 
 #include <algorithm>
+#include <array>
 #include <numeric>
 #include <string>
 #include <utility>
@@ -20,6 +16,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_log.h"
@@ -29,6 +26,10 @@
 #include "media/gpu/test/raw_video.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "gpu/config/gpu_info_collector.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace media {
 namespace test {
@@ -133,11 +134,11 @@ uint32_t VideoEncoderStats::LayerBitrate(size_t spatial_idx,
   // when the number of temporal layers is three, the ratio of framerate of
   // layers are 1/4, 1/4 and 1/2 for the first, second and third layer,
   // respectively.
-  constexpr size_t kFramerateDenom[][3] = {
+  constexpr auto kFramerateDenom = std::to_array<std::array<size_t, 3>>({
       {1, 0, 0},
       {2, 2, 0},
       {4, 4, 2},
-  };
+  });
 
   const double layer_framerate =
       static_cast<double>(framerate) /
@@ -186,7 +187,8 @@ VideoEncoderClient::VideoEncoderClient(
       encoder_client_state_(VideoEncoderClientState::kUninitialized),
       current_stats_(encoder_client_config_.framerate,
                      config.num_temporal_layers,
-                     config.num_spatial_layers) {
+                     config.num_spatial_layers),
+      test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
   DETACH_FROM_SEQUENCE(encoder_client_sequence_checker_);
 
   weak_this_ = weak_this_factory_.GetWeakPtr();
@@ -423,6 +425,14 @@ void VideoEncoderClient::BitstreamBufferReady(
         current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
         current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
             metadata.payload_size_bytes;
+      } else if (metadata.svc_generic.has_value()) {
+        uint8_t temporal_id = metadata.svc_generic->temporal_idx;
+        uint8_t spatial_id = metadata.svc_generic->spatial_idx;
+        ASSERT_LT(spatial_id, current_stats_.num_spatial_layers);
+        ASSERT_LT(temporal_id, current_stats_.num_temporal_layers);
+        current_stats_.num_encoded_frames_per_layer[spatial_id][temporal_id]++;
+        current_stats_.encoded_frames_size_per_layer[spatial_id][temporal_id] +=
+            metadata.payload_size_bytes;
       }
     }
   }
@@ -515,10 +525,25 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
       encoder_client_config_.drop_frame_thresh;
   config.spatial_layers = encoder_client_config_.spatial_layers;
   config.inter_layer_pred = encoder_client_config_.inter_layer_pred_mode;
+  if (encoder_client_config_.gop_length != 0) {
+    config.gop_length = encoder_client_config_.gop_length;
+  }
 
-  encoder_ = GpuVideoEncodeAcceleratorFactory::CreateVEA(
+  gpu::GPUInfo gpu_info;
+
+#if BUILDFLAG(IS_WIN)
+  gpu::CollectGraphicsInfoForTesting(&gpu_info);
+#endif  // BUILDFLAG(IS_WIN)
+
+  auto encoder_or_error = GpuVideoEncodeAcceleratorFactory::CreateVEA(
       config, this, gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
-      gpu::GPUInfo::GPUDevice());
+      gpu_info.active_gpu());
+  encoder_ = encoder_or_error.has_value() ? std::move(encoder_or_error).value()
+                                          : nullptr;
+  if (encoder_) {
+    encoder_->SetSharedImageInterfaceForTesting(test_sii_);
+  }
+
   *success = (encoder_ != nullptr);
 
   // Initialization is continued once the encoder notifies us of the coded size

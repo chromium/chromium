@@ -258,10 +258,10 @@ TEST(ChromeBrowsingDataLifetimeManager,
                             /*is_type_on=*/false);
   settings->SetSelectedType(syncer::UserSelectableType::kCookies,
                             /*is_type_on=*/false);
-  settings->SetTypeIsManaged(syncer::UserSelectableType::kPreferences,
-                             /*is_managed=*/true);
-  settings->SetTypeIsManaged(syncer::UserSelectableType::kCookies,
-                             /*is_managed=*/true);
+  settings->SetTypeIsManagedByPolicy(syncer::UserSelectableType::kPreferences,
+                                     /*is_managed=*/true);
+  settings->SetTypeIsManagedByPolicy(syncer::UserSelectableType::kCookies,
+                                     /*is_managed=*/true);
 
   base::Time current_time = base::Time::Now();
   base::Time delete_start_time = base::Time::Min();

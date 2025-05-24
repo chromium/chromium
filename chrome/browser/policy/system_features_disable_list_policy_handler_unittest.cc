@@ -6,9 +6,10 @@
 
 #include <asm-generic/errno-base.h>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
@@ -16,9 +17,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_pref_names.h"
-#endif
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace policy {
 class SystemFeaturesDisableListPolicyHandlerTest : public testing::Test {
@@ -71,17 +70,29 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleSomeSettings) {
 }
 
 TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
-  ApplyPolicySettings({"camera", "os_settings", "browser_settings", "scanning",
-                       "web_store", "canvas", "explore", "crosh", "terminal",
-                       "gallery", "print_jobs", "key_shortcuts", "recorder"});
+  ApplyPolicySettings(
+      {"camera",        "os_settings",  "browser_settings", "scanning",
+       "web_store",     "canvas",       "explore",          "crosh",
+       "terminal",      "gallery",      "print_jobs",       "key_shortcuts",
+       "recorder",      "gmail",        "google_docs",      "google_slides",
+       "google_sheets", "google_drive", "google_keep",      "google_calendar",
+       "google_chat",   "youtube",      "google_maps",      "calculator",
+       "text_editor"});
 
-  VerifyPrefList({SystemFeature::kCamera, SystemFeature::kOsSettings,
-                  SystemFeature::kBrowserSettings, SystemFeature::kScanning,
-                  SystemFeature::kWebStore, SystemFeature::kCanvas,
-                  SystemFeature::kExplore, SystemFeature::kCrosh,
-                  SystemFeature::kTerminal, SystemFeature::kGallery,
-                  SystemFeature::kPrintJobs, SystemFeature::kKeyShortcuts,
-                  SystemFeature::kRecorder});
+  VerifyPrefList(
+      {SystemFeature::kCamera,          SystemFeature::kOsSettings,
+       SystemFeature::kBrowserSettings, SystemFeature::kScanning,
+       SystemFeature::kWebStore,        SystemFeature::kCanvas,
+       SystemFeature::kExplore,         SystemFeature::kCrosh,
+       SystemFeature::kTerminal,        SystemFeature::kGallery,
+       SystemFeature::kPrintJobs,       SystemFeature::kKeyShortcuts,
+       SystemFeature::kRecorder,        SystemFeature::kGmail,
+       SystemFeature::kGoogleDocs,      SystemFeature::kGoogleSlides,
+       SystemFeature::kGoogleSheets,    SystemFeature::kGoogleDrive,
+       SystemFeature::kGoogleKeep,      SystemFeature::kGoogleCalendar,
+       SystemFeature::kGoogleChat,      SystemFeature::kYoutube,
+       SystemFeature::kGoogleMaps,      SystemFeature::kCalculator,
+       SystemFeature::kTextEditor});
 
   std::vector<base::Bucket> expected_histogram{
       base::Bucket(static_cast<int>(SystemFeature::kCamera), 1),
@@ -96,7 +107,19 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
       base::Bucket(static_cast<int>(SystemFeature::kGallery), 1),
       base::Bucket(static_cast<int>(SystemFeature::kPrintJobs), 1),
       base::Bucket(static_cast<int>(SystemFeature::kKeyShortcuts), 1),
-      base::Bucket(static_cast<int>(SystemFeature::kRecorder), 1)};
+      base::Bucket(static_cast<int>(SystemFeature::kRecorder), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGmail), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleDocs), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleSlides), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleSheets), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleDrive), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleKeep), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleCalendar), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleChat), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kYoutube), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleMaps), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kCalculator), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kTextEditor), 1)};
 
   EXPECT_EQ(
       histogram_tester_.GetAllSamples(kSystemFeaturesDisableListHistogram),
@@ -142,7 +165,6 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest,
       expected_histogram);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SystemFeaturesDisableListPolicyHandlerTest,
        ShouldDisableOsSettingsWhenSet) {
   ApplyPolicySettings({"os_settings"});
@@ -161,6 +183,5 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest,
   EXPECT_TRUE(prefs_.GetValue(ash::prefs::kOsSettingsEnabled, &value));
   EXPECT_TRUE(value->GetBool());
 }
-#endif
 
 }  // namespace policy

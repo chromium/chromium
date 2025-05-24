@@ -36,7 +36,7 @@ MATCHER(OKStatus, "Equality matcher for type OK leveldb::Status") {
 }
 
 base::span<const uint8_t> MakeBytes(std::string_view str) {
-  return base::as_bytes(base::make_span(str));
+  return base::as_byte_span(str);
 }
 
 mojo::PendingRemote<blink::mojom::StorageAreaObserver> MakeStubObserver() {

@@ -22,10 +22,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
 
-namespace media {
-class UserInputMonitorBase;
-}
-
 namespace content {
 
 // AudioInputStreamBroker is used to broker a connection between a client
@@ -40,7 +36,6 @@ class CONTENT_EXPORT AudioInputStreamBroker final
       const std::string& device_id,
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
-      media::UserInputMonitorBase* user_input_monitor,
       bool enable_agc,
       media::mojom::AudioProcessingConfigPtr processing_config,
       AudioStreamBroker::DeleterCallback deleter,
@@ -60,7 +55,7 @@ class CONTENT_EXPORT AudioInputStreamBroker final
 
  private:
   void StreamCreated(mojo::PendingRemote<media::mojom::AudioInputStream> stream,
-                     media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+                     media::mojom::ReadWriteAudioDataPipePtr data_pipe,
                      bool initially_muted,
                      const std::optional<base::UnguessableToken>& stream_id);
 
@@ -71,7 +66,6 @@ class CONTENT_EXPORT AudioInputStreamBroker final
   const std::string device_id_;
   media::AudioParameters params_;
   const uint32_t shared_memory_count_;
-  const raw_ptr<media::UserInputMonitorBase> user_input_monitor_;
   const bool enable_agc_;
 
   // Indicates that CreateStream has been called, but not StreamCreated.

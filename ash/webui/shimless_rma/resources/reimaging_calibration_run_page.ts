@@ -13,7 +13,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_calibration_run_page.html.js';
-import {CalibrationComponentStatus, CalibrationObserverReceiver, CalibrationOverallStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import type {CalibrationComponentStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import {CalibrationObserverReceiver, CalibrationOverallStatus} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**

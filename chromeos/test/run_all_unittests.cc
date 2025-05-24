@@ -5,31 +5,20 @@
 #include "base/functional/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "mojo/core/embedder/embedder.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/test/ash_test_suite.h"
-#else
-#include "base/test/test_suite.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-#error This test target only builds with linux-chromeos, not for real ChromeOS\
- devices. See comment in build/config/chromeos/args.gni.
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-using TestSuite = ash::AshTestSuite;
-#else
-using TestSuite = base::TestSuite;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+static_assert(
+    !BUILDFLAG(IS_CHROMEOS_DEVICE),
+    "This test target only builds with linux-chromeos, not for real ChromeOS "
+    "devices. See comment in build/config/chromeos/args.gni.");
 
 int main(int argc, char** argv) {
   // Some unit tests make Mojo calls.
   mojo::core::Init();
 
-  TestSuite test_suite(argc, argv);
+  ash::AshTestSuite test_suite(argc, argv);
   return base::LaunchUnitTests(
       argc, argv,
-      base::BindOnce(&TestSuite::Run, base::Unretained(&test_suite)));
+      base::BindOnce(&ash::AshTestSuite::Run, base::Unretained(&test_suite)));
 }

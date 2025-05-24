@@ -1,6 +1,7 @@
 include_rules = [
     "+components/vector_icons",
     "+ui/base",
+    "+ui/menus",
     "+ui/gfx",
     "+ui/strings/grit/ui_strings.h",
 ]

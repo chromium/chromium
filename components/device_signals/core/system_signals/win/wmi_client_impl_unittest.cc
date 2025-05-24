@@ -6,7 +6,6 @@
 
 #include <windows.h>
 
-#include <wbemidl.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
@@ -19,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/win/wbemidl_shim.h"
 #include "base/win/wmi.h"
 #include "components/device_signals/core/common/win/win_types.h"
 #include "components/device_signals/core/system_signals/win/com_fakes.h"

@@ -7,8 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 
-class Browser;
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(ChromeSignoutConfirmationChoice)
@@ -20,6 +18,25 @@ enum class ChromeSignoutConfirmationChoice {
   kMaxValue = kCancelSignoutAndReauth,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ChromeSignoutConfirmationChoice)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AccountExtensionsSignoutChoice)
+enum class AccountExtensionsSignoutChoice {
+  kCancelSignout = 0,
+  kSignoutAccountExtensionsKept = 1,
+  kSignoutAccountExtensionsUninstalled = 2,
+
+  kMaxValue = kSignoutAccountExtensionsUninstalled,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountExtensionsSignoutChoice)
+
+// Represents a callback made when a user accepts or cancels the signout
+// confirmation prompt.
+// Contains a `ChromeSignoutConfirmationChoice` and a boolean indicating if
+// account extensions should be uninstalled on signout.
+using SignoutConfirmationCallback =
+    base::OnceCallback<void(ChromeSignoutConfirmationChoice, bool)>;
 
 enum class ChromeSignoutConfirmationPromptVariant {
   // The user does not have unsynced data.
@@ -33,12 +50,17 @@ enum class ChromeSignoutConfirmationPromptVariant {
   // proceeding anyway. Dismissing the dialog closes it without any action.
   // Available choices: `kReauth`, `kSignout` and `kDismissed`.
   kUnsyncedDataWithReauthButton,
+  // The user is supervised and parental controls apply to their profile.
+  // Available choices: `kSignout` and `kDismissed`.
+  kProfileWithParentalControls,
 };
 
-// Factory function to create and show the Chrome signout confirmation prompt.
-void ShowChromeSignoutConfirmationPrompt(
-    Browser& browser,
+void RecordChromeSignoutConfirmationPromptMetrics(
     ChromeSignoutConfirmationPromptVariant variant,
-    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback);
+    ChromeSignoutConfirmationChoice choice);
+
+void RecordAccountExtensionsSignoutChoice(
+    ChromeSignoutConfirmationChoice choice,
+    bool account_extensions_kept);
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_CHROME_SIGNOUT_CONFIRMATION_PROMPT_H_

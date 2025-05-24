@@ -48,9 +48,6 @@ void InputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
       base::BindOnce(&InputIPC::OnError, base::Unretained(this),
                      media::mojom::InputStreamErrorCode::kUnknown));
 
-  // For now we don't care about key presses, so we pass a invalid buffer.
-  base::ReadOnlySharedMemoryRegion invalid_key_press_count_buffer;
-
   mojo::PendingRemote<media::mojom::AudioLog> log;
   if (log_)
     log = log_.Unbind();
@@ -58,13 +55,13 @@ void InputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
   stream_factory_->CreateInputStream(
       stream_.BindNewPipeAndPassReceiver(), std::move(client), {},
       std::move(log), device_id_, params, total_segments,
-      automatic_gain_control, std::move(invalid_key_press_count_buffer),
+      automatic_gain_control,
       /*processing_config=*/nullptr,
       base::BindOnce(&InputIPC::StreamCreated, weak_factory_.GetWeakPtr()));
 }
 
 void InputIPC::StreamCreated(
-    media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+    media::mojom::ReadWriteAudioDataPipePtr data_pipe,
     bool initially_muted,
     const std::optional<base::UnguessableToken>& stream_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -81,7 +78,7 @@ void InputIPC::StreamCreated(
 
   DCHECK(data_pipe->socket.is_valid_platform_file());
   base::ScopedPlatformFile socket_handle = data_pipe->socket.TakePlatformFile();
-  base::ReadOnlySharedMemoryRegion& shared_memory_region =
+  base::UnsafeSharedMemoryRegion& shared_memory_region =
       data_pipe->shared_memory;
   DCHECK(shared_memory_region.IsValid());
 

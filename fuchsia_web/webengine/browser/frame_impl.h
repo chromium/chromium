@@ -23,6 +23,7 @@
 #include "base/fuchsia/scoped_fx_logger.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/timer/timer.h"
 #include "build/chromecast_buildflags.h"
@@ -303,6 +304,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
                               int32_t line_no,
                               const std::u16string& source_id) override;
   bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,
@@ -364,7 +366,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   void OnThemeManagerError();
 
   const std::unique_ptr<content::WebContents> web_contents_;
-  ContextImpl* const context_;
+  const raw_ptr<ContextImpl> context_;
 
   // Optional tag to apply when emitting web console logs.
   const std::string console_log_tag_;
@@ -384,7 +386,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   std::unique_ptr<wm::FocusController> focus_controller_;
 
   // Owned via |window_tree_host_|.
-  FrameLayoutManager* layout_manager_ = nullptr;
+  raw_ptr<FrameLayoutManager> layout_manager_ = nullptr;
 
   std::unique_ptr<ui::AccessibilityBridgeFuchsiaImpl> accessibility_bridge_;
 

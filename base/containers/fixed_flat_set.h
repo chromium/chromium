@@ -116,7 +116,7 @@ consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
 //
 // Note: Wrapping `Key` in `std::common_type_t` below requires callers to
 // explicitly specify `Key`, which is desired here.
-template <class Key, size_t N, class Compare = std::less<>>
+template <class Key, class Compare = std::less<>, size_t N>
 consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
     std::common_type_t<Key> (&&data)[N],
     const Compare& comp = Compare()) {

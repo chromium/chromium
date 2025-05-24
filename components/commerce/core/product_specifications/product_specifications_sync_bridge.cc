@@ -37,11 +37,6 @@ syncer::EntityData MakeEntityData(
   return entity_data;
 }
 
-bool IsMultiSpecSetsEnabled() {
-  return base::FeatureList::IsEnabled(
-      commerce::kProductSpecificationsMultiSpecifics);
-}
-
 }  // namespace
 
 namespace commerce {
@@ -71,6 +66,12 @@ std::optional<syncer::ModelError>
 ProductSpecificationsSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
+  std::set<std::string> server_uuids;
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    server_uuids.emplace(change->storage_key());
+  }
+
+  SendInitialSyncData(server_uuids, metadata_change_list.get());
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                      std::move(entity_changes));
 }
@@ -83,10 +84,8 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
       store_->CreateWriteBatch();
 
   std::map<std::string, sync_pb::ProductComparisonSpecifics> prev_entries;
-  if (IsMultiSpecSetsEnabled()) {
-    for (const auto& [uuid, specific] : entries_) {
-      prev_entries.emplace(uuid, specific);
-    }
+  for (const auto& [uuid, specific] : entries_) {
+    prev_entries.emplace(uuid, specific);
   }
   std::vector<sync_pb::ProductComparisonSpecifics> multi_specifics_changed;
 
@@ -94,31 +93,26 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
     sync_pb::ProductComparisonSpecifics specifics =
         change->data().specifics.product_comparison();
 
-    if (IsMultiSpecSetsEnabled()) {
-      if (specifics.has_product_comparison() ||
-          specifics.has_product_comparison_item()) {
-        multi_specifics_changed.push_back(specifics);
-      }
+    if (specifics.has_product_comparison() ||
+        specifics.has_product_comparison_item()) {
+      multi_specifics_changed.push_back(specifics);
+    }
 
-      // A delete only passes the Uuid, not the specifics itself which is
-      // required for OnMultiSpecificsChanged to correctly detect deleted
-      // ProductSpecificationsSets. Acquire specifics from local representation
-      // so the specifics can be passed to OnMultiSpecificsChanged.
-      // TODO(crbug.com/353982776) investigate OnMultiSpecificsChanged using
-      // uuids instead to avoid special handling of this case.
-      if (change->type() == syncer::EntityChange::ACTION_DELETE &&
-          entries_.find(change->storage_key()) != entries_.end()) {
-        multi_specifics_changed.push_back(
-            entries_.find(change->storage_key())->second);
-      }
+    // A delete only passes the Uuid, not the specifics itself which is
+    // required for OnMultiSpecificsChanged to correctly detect deleted
+    // ProductSpecificationsSets. Acquire specifics from local representation
+    // so the specifics can be passed to OnMultiSpecificsChanged.
+    // TODO(crbug.com/353982776) investigate OnMultiSpecificsChanged using
+    // uuids instead to avoid special handling of this case.
+    if (change->type() == syncer::EntityChange::ACTION_DELETE &&
+        entries_.find(change->storage_key()) != entries_.end()) {
+      multi_specifics_changed.push_back(
+          entries_.find(change->storage_key())->second);
     }
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
         entries_.emplace(change->storage_key(), specifics);
         batch->WriteData(change->storage_key(), specifics.SerializeAsString());
-        if (!IsMultiSpecSetsEnabled()) {
-          delegate_->OnSpecificsAdded({specifics});
-        }
         break;
       case syncer::EntityChange::ACTION_UPDATE: {
         auto local_specifics = entries_.find(change->storage_key());
@@ -130,9 +124,6 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
             entries_[change->storage_key()] = specifics;
             batch->WriteData(change->storage_key(),
                              specifics.SerializeAsString());
-            if (!IsMultiSpecSetsEnabled()) {
-              delegate_->OnSpecificsUpdated({{before, specifics}});
-            }
           }
         }
         break;
@@ -146,15 +137,10 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
 
         entries_.erase(change->storage_key());
         batch->DeleteData(change->storage_key());
-        if (!IsMultiSpecSetsEnabled()) {
-          delegate_->OnSpecificsRemoved({deleted_specifics});
-        }
         break;
     }
   }
-  if (IsMultiSpecSetsEnabled()) {
-    delegate_->OnMultiSpecificsChanged(multi_specifics_changed, prev_entries);
-  }
+  delegate_->OnMultiSpecificsChanged(multi_specifics_changed, prev_entries);
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
@@ -162,13 +148,19 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
 }
 
 std::string ProductSpecificationsSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return entity_data.specifics.product_comparison().uuid();
 }
 
 std::string ProductSpecificationsSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
+}
+
+bool ProductSpecificationsSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_product_comparison());
+  return !entity_data.specifics.product_comparison().uuid().empty();
 }
 
 std::unique_ptr<syncer::DataBatch>
@@ -212,15 +204,15 @@ bool ProductSpecificationsSyncBridge::IsSyncEnabled() {
 
 void ProductSpecificationsSyncBridge::AddSpecifics(
     const std::vector<sync_pb::ProductComparisonSpecifics> specifics) {
-  // Sync is mandatory for this feature to be usable.
-  CHECK(change_processor()->IsTrackingMetadata());
-
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
   for (const auto& specific : specifics) {
-    change_processor()->Put(specific.uuid(), CreateEntityData(specific),
-                            batch->GetMetadataChangeList());
+    // Only sync new data if first download is complete.
+    if (change_processor()->IsTrackingMetadata()) {
+      change_processor()->Put(specific.uuid(), CreateEntityData(specific),
+                              batch->GetMetadataChangeList());
+    }
     batch->WriteData(specific.uuid(), specific.SerializeAsString());
     entries_.emplace(specific.uuid(), specific);
   }
@@ -387,14 +379,13 @@ ProductSpecificationsSyncBridge::CreateEntityData(
     data->set_url(data_to_copy.url());
   }
 
-  if (IsMultiSpecSetsEnabled() && specifics.has_product_comparison()) {
+  if (specifics.has_product_comparison()) {
     *entity_specifics->mutable_product_comparison() =
         specifics.product_comparison();
     entity_data->name =
         base::StringPrintf("product_comparison_%s_%s", specifics.uuid().c_str(),
                            specifics.product_comparison().name().c_str());
-  } else if (IsMultiSpecSetsEnabled() &&
-             specifics.has_product_comparison_item()) {
+  } else if (specifics.has_product_comparison_item()) {
     *entity_specifics->mutable_product_comparison_item() =
         specifics.product_comparison_item();
     entity_data->name = base::StringPrintf(
@@ -422,10 +413,8 @@ ProductSpecificationsSyncBridge::TrimSpecificsForCaching(
   trimmed_comparison_data.clear_update_time_unix_epoch_millis();
   trimmed_comparison_data.clear_name();
   trimmed_comparison_data.clear_data();
-  if (IsMultiSpecSetsEnabled()) {
-    trimmed_comparison_data.clear_product_comparison();
-    trimmed_comparison_data.clear_product_comparison_item();
-  }
+  trimmed_comparison_data.clear_product_comparison();
+  trimmed_comparison_data.clear_product_comparison_item();
   return trimmed_comparison_data;
 }
 
@@ -445,7 +434,9 @@ void ProductSpecificationsSyncBridge::ApplyIncrementalSyncChangesForTesting(
             specifics.uuid(), MakeEntityData(specifics)));
         break;
       case syncer::EntityChange::ACTION_DELETE:
-        changes.push_back(syncer::EntityChange::CreateDelete(specifics.uuid()));
+        changes.push_back(syncer::EntityChange::CreateDelete(
+            specifics.uuid(),
+            MakeEntityData(sync_pb::ProductComparisonSpecifics())));
         break;
       default:
         DCHECK(0) << "EntityChange " << change_type << "not supported\n";
@@ -456,6 +447,19 @@ void ProductSpecificationsSyncBridge::ApplyIncrementalSyncChangesForTesting(
       std::make_unique<syncer::InMemoryMetadataChangeList>();
   ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                               std::move(changes));
+}
+
+void ProductSpecificationsSyncBridge::SendInitialSyncData(
+    const std::set<std::string>& server_uuids,
+    syncer::MetadataChangeList* metadata_change_list) {
+  CHECK(metadata_change_list);
+  CHECK(change_processor()->IsTrackingMetadata());
+  for (const auto& [uuid, specific] : entries_) {
+    if (!server_uuids.contains(uuid)) {
+      change_processor()->Put(specific.uuid(), CreateEntityData(specific),
+                              metadata_change_list);
+    }
+  }
 }
 
 }  // namespace commerce

@@ -62,8 +62,7 @@ std::optional<std::string> MediaSegment::EncryptionData::GetIVStr(
 }
 
 void MediaSegment::EncryptionData::ImportKey(std::string_view key_content) {
-  key_ = crypto::SymmetricKey::Import(crypto::SymmetricKey::AES,
-                                      std::string(key_content));
+  key_ = std::vector<uint8_t>(key_content.begin(), key_content.end());
 }
 
 MediaSegment::MediaSegment(

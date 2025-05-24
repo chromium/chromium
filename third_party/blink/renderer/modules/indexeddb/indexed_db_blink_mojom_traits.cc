@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 
 #include <utility>
@@ -20,6 +15,7 @@
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/mojo/string16_mojom_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 using blink::mojom::IDBCursorDirection;
 using blink::mojom::IDBDataLoss;
@@ -32,7 +28,6 @@ bool StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
                   blink::IDBDatabaseMetadata>::
     Read(blink::mojom::IDBDatabaseMetadataDataView data,
          blink::IDBDatabaseMetadata* out) {
-  out->id = data.id();
   String name;
   if (!data.ReadName(&name))
     return false;
@@ -110,8 +105,7 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     case blink::mojom::IDBKeyType::Min:      // Only used in the browser.
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::IDBKeyDataView::Tag::kOtherNone;
+  NOTREACHED();
 }
 
 // static
@@ -131,8 +125,7 @@ bool UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
       data.GetBinaryDataView(&bytes);
       *out = blink::IDBKey::CreateBinary(
           base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
-              Vector<char>(base::span(
-                  reinterpret_cast<const char*>(bytes.data()), bytes.size()))));
+              Vector<char>(base::as_chars(base::span(bytes)))));
       return true;
     }
     case blink::mojom::IDBKeyDataView::Tag::kString: {
@@ -174,7 +167,7 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
 base::span<const uint8_t>
 StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     bits(const std::unique_ptr<blink::IDBValue>& input) {
-  return base::as_byte_span(input->Data());
+  return input->Data();
 }
 
 // static
@@ -196,8 +189,6 @@ StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
           info.LastModified().value_or(base::Time());
     }
     blob_info->size = info.size();
-    blob_info->uuid = info.Uuid();
-    DCHECK(!blob_info->uuid.empty());
     String mime_type = info.GetType();
     if (mime_type.IsNull())
       mime_type = g_empty_string;
@@ -226,8 +217,7 @@ bool StructTraits<blink::mojom::IDBValueDataView,
   }
 
   if (value_bits.empty()) {
-    *out = std::make_unique<blink::IDBValue>(std::move(value_bits),
-                                             Vector<blink::WebBlobInfo>());
+    *out = std::make_unique<blink::IDBValue>();
     return true;
   }
 
@@ -244,13 +234,19 @@ bool StructTraits<blink::mojom::IDBValueDataView,
     switch (object->which()) {
       case blink::mojom::blink::IDBExternalObject::Tag::kBlobOrFile: {
         auto& info = object->get_blob_or_file();
+        // The UUID is used as an implementation detail of V8 serialization
+        // code, but it is no longer relevant to or related to the blob storage
+        // context UUID, so we can make one up here.
+        // TODO(crbug.com/40529364): remove the UUID parameter from WebBlobInfo.
         if (info->file) {
           value_blob_info.emplace_back(
-              info->uuid, info->file->name, info->mime_type,
+              WTF::CreateCanonicalUUIDString(), info->file->name,
+              info->mime_type,
               blink::NullableTimeToOptionalTime(info->file->last_modified),
               info->size, std::move(info->blob));
         } else {
-          value_blob_info.emplace_back(info->uuid, info->mime_type, info->size,
+          value_blob_info.emplace_back(WTF::CreateCanonicalUUIDString(),
+                                       info->mime_type, info->size,
                                        std::move(info->blob));
         }
         break;
@@ -262,9 +258,10 @@ bool StructTraits<blink::mojom::IDBValueDataView,
     }
   }
 
-  *out = std::make_unique<blink::IDBValue>(
-      std::move(value_bits), std::move(value_blob_info),
-      std::move(file_system_access_tokens));
+  *out = std::make_unique<blink::IDBValue>();
+  (*out)->SetData(std::move(value_bits));
+  (*out)->SetBlobInfo(std::move(value_blob_info));
+  (*out)->SetFileSystemAccessTokens(std::move(file_system_access_tokens));
   return true;
 }
 
@@ -296,8 +293,7 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IDBKeyPath>::data(
     case blink::mojom::IDBKeyPathType::Null:
       break;  // Not used, NOTREACHED.
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // static

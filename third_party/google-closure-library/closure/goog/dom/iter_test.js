@@ -25,57 +25,65 @@ testSuite({
   },
 
   testNextSibling() {
+    const expectedContent = ['#br', 'def'];
     testingDom.assertNodesMatch(
-        new SiblingIterator(test.firstChild), ['#br', 'def']);
+        new SiblingIterator(test.firstChild), expectedContent);
   },
 
   testNextSiblingInclusive() {
+    const expectedContent = ['abc', '#br', 'def'];
     testingDom.assertNodesMatch(
-        new SiblingIterator(test.firstChild, true), ['abc', '#br', 'def']);
+        new SiblingIterator(test.firstChild, true), expectedContent);
   },
 
   testPreviousSibling() {
+    const expectedContent = ['#br', 'abc'];
     testingDom.assertNodesMatch(
-        new SiblingIterator(test.lastChild, false, true), ['#br', 'abc']);
+        new SiblingIterator(test.lastChild, false, true), expectedContent);
   },
 
   testPreviousSiblingInclusive() {
+    const expectedContent = ['def', '#br', 'abc'];
     testingDom.assertNodesMatch(
-        new SiblingIterator(test.lastChild, true, true), ['def', '#br', 'abc']);
+        new SiblingIterator(test.lastChild, true, true), expectedContent);
   },
 
   testChildIterator() {
-    testingDom.assertNodesMatch(new ChildIterator(test), ['abc', '#br', 'def']);
+    const expectedContent = ['abc', '#br', 'def'];
+    testingDom.assertNodesMatch(new ChildIterator(test), expectedContent);
   },
 
   testChildIteratorIndex() {
+    const expectedContent = ['#br', 'def'];
     testingDom.assertNodesMatch(
-        new ChildIterator(test, false, 1), ['#br', 'def']);
+        new ChildIterator(test, false, 1), expectedContent);
   },
 
   testChildIteratorReverse() {
-    testingDom.assertNodesMatch(
-        new ChildIterator(test, true), ['def', '#br', 'abc']);
+    const expectedContent = ['def', '#br', 'abc'];
+    testingDom.assertNodesMatch(new ChildIterator(test, true), expectedContent);
   },
 
   testEmptyChildIteratorReverse() {
-    testingDom.assertNodesMatch(new ChildIterator(br, true), []);
+    const expectedContent = [];
+    testingDom.assertNodesMatch(new ChildIterator(br, true), expectedContent);
   },
 
   testChildIteratorIndexReverse() {
+    const expectedContent = ['#br', 'abc'];
     testingDom.assertNodesMatch(
-        new ChildIterator(test, true, 1), ['#br', 'abc']);
+        new ChildIterator(test, true, 1), expectedContent);
   },
 
   testAncestorIterator() {
-    testingDom.assertNodesMatch(
-        new AncestorIterator(br),
-        ['#test', '#body', '#html', NodeType.DOCUMENT]);
+    const expectedContent = ['#test', '#body', '#html', NodeType.DOCUMENT];
+    testingDom.assertNodesMatch(new AncestorIterator(br), expectedContent);
   },
 
   testAncestorIteratorInclusive() {
+    const expectedContent =
+        ['#br', '#test', '#body', '#html', NodeType.DOCUMENT];
     testingDom.assertNodesMatch(
-        new AncestorIterator(br, true),
-        ['#br', '#test', '#body', '#html', NodeType.DOCUMENT]);
+        new AncestorIterator(br, true), expectedContent);
   },
 });

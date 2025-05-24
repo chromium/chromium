@@ -11,7 +11,7 @@
 #include "base/at_exit.h"
 #include "chrome/updater/win/installer/installer.h"
 
-// http://blogs.msdn.com/oldnewthing/archive/2004/10/25/247180.aspx
+// https://devblogs.microsoft.com/oldnewthing/20041025-00/?p=37483
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 
 int WINAPI wWinMain(HINSTANCE /* instance */,

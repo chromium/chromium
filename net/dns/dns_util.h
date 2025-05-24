@@ -30,12 +30,13 @@ base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
     base::TimeDelta default_delta,
     NetworkChangeNotifier::ConnectionType connection_type);
 
-// Creates a 2-byte string that represents the name pointer defined in Section
+// Creates a 2-byte array that represents the name pointer defined in Section
 // 4.1.1 of RFC 1035 for the given offset. The first two bits in the first byte
-// of the name pointer are ones, and the rest 14 bits are given to `offset`,
-// which specifies an offset from the start of the message for the pointed name.
-// Note that `offset` must be less than 2^14 - 1 by definition.
-NET_EXPORT std::string CreateNamePointer(uint16_t offset);
+// of the name pointer are set to 1 (indicating a pointer), and the rest 14 bits
+// are given to `offset`, which specifies an offset from the start of the
+// message for the pointed name. Note that `offset` must be less than 2^14 - 1
+// by definition.
+NET_EXPORT std::array<uint8_t, 2> CreateNamePointer(uint16_t offset);
 
 // Convert a DnsQueryType enum to the wire format integer representation.
 NET_EXPORT_PRIVATE uint16_t DnsQueryTypeToQtype(DnsQueryType dns_query_type);

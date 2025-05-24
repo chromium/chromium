@@ -11,13 +11,13 @@
 #include <set>
 #include <string>
 
-#include "ash/components/arc/mojom/policy.mojom-forward.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/policy/reporting/install_event_log_collector_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/mojom/policy.mojom-forward.h"
 
 class Profile;
 

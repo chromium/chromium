@@ -1,4 +1,11 @@
+include_rules = [
+  "+cc/base/features.h",
+]
+
 specific_include_rules = {
+    "canvas_noise_test.cc": [
+        "+components/viz/test/test_context_provider.h",
+    ],
     "html_canvas_element_module_test.cc": [
         "+components/viz/test/test_context_provider.h",
         "+components/viz/test/test_gles2_interface.h",

@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -78,7 +78,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <string.h>
+#include <cassert>
+#include <cstring>
+#include <algorithm>
 #include "w_char.hxx"
 #include "htypes.hxx"
 
@@ -135,13 +137,11 @@ LIBHUNSPELL_DLL_EXPORTED std::string& u16_u8(std::string& dest,
 
 // convert UTF-8 characters to UTF-16
 LIBHUNSPELL_DLL_EXPORTED int u8_u16(std::vector<w_char>& dest,
-                                    const std::string& src);
+                                    const std::string& src,
+                                    bool only_convert_first_letter = false);
 
 // remove end of line char(s)
 LIBHUNSPELL_DLL_EXPORTED void mychomp(std::string& s);
-
-// duplicate string
-LIBHUNSPELL_DLL_EXPORTED char* mystrdup(const char* s);
 
 // parse into tokens with char delimiter
 LIBHUNSPELL_DLL_EXPORTED std::string::const_iterator mystrsep(const std::string &str,
@@ -181,8 +181,6 @@ struct cs_info {
   unsigned char cupper;
 };
 
-LIBHUNSPELL_DLL_EXPORTED void initialize_utf_tbl();
-LIBHUNSPELL_DLL_EXPORTED void free_utf_tbl();
 LIBHUNSPELL_DLL_EXPORTED unsigned short unicodetoupper(unsigned short c,
                                                        int langnum);
 LIBHUNSPELL_DLL_EXPORTED w_char upper_utf(w_char u, int langnum);
@@ -269,10 +267,21 @@ LIBHUNSPELL_DLL_EXPORTED void store_pointer(char* dest, char* source);
 // conversion function for protected memory
 LIBHUNSPELL_DLL_EXPORTED char* get_stored_pointer(const char* s);
 
+
+// to avoid unnecessary string copies and Unicode conversions
+// we simply check the ignored_chars characters in the word
+// (in the case of UTF-8 encoded strings, "false" means
+// "likely false", if ignored_chars characters are not ASCII)
+inline bool has_no_ignored_chars(const std::string& word,
+                            const std::string& ignored_chars) {
+  return std::all_of(ignored_chars.begin(), ignored_chars.end(), 
+    [&word](char ic) { return word.find(ic) == std::string::npos; });
+}
+
 // hash entry macros
-LIBHUNSPELL_DLL_EXPORTED inline char* HENTRY_DATA(struct hentry* h) {
+inline char* HENTRY_DATA(struct hentry* h) {
   char* ret;
-  if (!h->var)
+  if (!(h->var & H_OPT))
     ret = NULL;
   else if (h->var & H_OPT_ALIASM)
     ret = get_stored_pointer(HENTRY_WORD(h) + h->blen + 1);
@@ -281,10 +290,10 @@ LIBHUNSPELL_DLL_EXPORTED inline char* HENTRY_DATA(struct hentry* h) {
   return ret;
 }
 
-LIBHUNSPELL_DLL_EXPORTED inline const char* HENTRY_DATA(
+inline const char* HENTRY_DATA(
     const struct hentry* h) {
   const char* ret;
-  if (!h->var)
+  if (!(h->var & H_OPT))
     ret = NULL;
   else if (h->var & H_OPT_ALIASM)
     ret = get_stored_pointer(HENTRY_WORD(h) + h->blen + 1);
@@ -294,10 +303,10 @@ LIBHUNSPELL_DLL_EXPORTED inline const char* HENTRY_DATA(
 }
 
 // NULL-free version for warning-free OOo build
-LIBHUNSPELL_DLL_EXPORTED inline const char* HENTRY_DATA2(
+inline const char* HENTRY_DATA2(
     const struct hentry* h) {
   const char* ret;
-  if (!h->var)
+  if (!(h->var & H_OPT))
     ret = "";
   else if (h->var & H_OPT_ALIASM)
     ret = get_stored_pointer(HENTRY_WORD(h) + h->blen + 1);
@@ -306,9 +315,9 @@ LIBHUNSPELL_DLL_EXPORTED inline const char* HENTRY_DATA2(
   return ret;
 }
 
-LIBHUNSPELL_DLL_EXPORTED inline char* HENTRY_FIND(struct hentry* h,
-                                                  const char* p) {
-  return (HENTRY_DATA(h) ? strstr(HENTRY_DATA(h), p) : NULL);
+inline char* HENTRY_FIND(struct hentry* h, const char* p) {
+  char* data = HENTRY_DATA(h);
+  return data ? strstr(data, p) : NULL;
 }
 
 #endif

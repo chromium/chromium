@@ -763,7 +763,10 @@ testSuite({
     delete MockXmlHttp.prototype.withCredentials;
   },
 
-  /** @suppress {visibility} suppression added to enable type checking */
+  /**
+     @suppress {visibility,missingProperties} suppression added to enable type
+     checking
+   */
   testSetProgressEventsEnabled() {
     // The default MockXhr object contained by the XhrIo object has no
     // reference to the necessary onprogress field. This is equivalent
@@ -833,7 +836,10 @@ testSuite({
     assertEquals('', x.getResponse());
 
     // Response type of array buffer gets the array buffer.
-    /** @suppress {visibility} suppression added to enable type checking */
+    /**
+     * @suppress {visibility, missingProperties} suppression added to enable
+     * type checking
+     */
     x.xhr_.mozResponseArrayBuffer = 'ab';
     x.setResponseType(XhrIo.ResponseType.ARRAY_BUFFER);
     assertEquals('ab', x.getResponse());

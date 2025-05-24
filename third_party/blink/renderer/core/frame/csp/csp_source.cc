@@ -7,6 +7,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -52,7 +53,7 @@ bool HostMatches(const network::mojom::blink::CSPSource& source,
       // host-part = "*"
       return true;
     }
-    if (host.ToString().EndsWith(String("." + source.host))) {
+    if (host.ToString().EndsWith(WTF::StrCat({".", source.host}))) {
       // host-part = "*." 1*host-char *( "." 1*host-char )
       return true;
     }
@@ -76,7 +77,7 @@ bool HostMatches(const network::mojom::blink::CSPSource& source,
   if (!url.IsStandard()) {
     return HostMatches(source, "");
   }
-  return HostMatches(source, url.HostView());
+  return HostMatches(source, url.Host());
 }
 
 bool PathMatches(const network::mojom::blink::CSPSource& source,

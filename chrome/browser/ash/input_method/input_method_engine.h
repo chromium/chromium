@@ -18,7 +18,6 @@
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/input_method_engine_observer.h"
 #include "chrome/browser/ash/input_method/screen_projection_change_monitor.h"
@@ -34,7 +33,7 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/events/event.h"
 
-static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
+static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
 
 namespace ui {
 struct CompositionText;
@@ -269,7 +268,6 @@ class InputMethodEngine : virtual public TextInputMethod,
   bool AcceptSuggestionCandidate(int context_id,
                                  const std::u16string& candidate,
                                  size_t delete_previous_utf16_len,
-                                 bool use_replace_surrounding_text,
                                  std::string* error) override;
   bool SetAssistiveWindowProperties(
       int context_id,

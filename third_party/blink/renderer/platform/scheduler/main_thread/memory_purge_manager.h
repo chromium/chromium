@@ -57,6 +57,16 @@ class PLATFORM_EXPORT MemoryPurgeManager {
     purge_disabled_for_testing_ = disabled;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Sets a callback called with |false| when transitioning from "all pages
+  // frozen" to "not all pages frozen" or |true| when transitioning from "not
+  // all pages frozen" to "all pages frozen".
+  //
+  // Currently only used on Android.
+  void SetOnAllPagesFrozenCallback(
+      base::RepeatingCallback<void(bool)> callback);
+#endif
+
   // Disabled on Android, as it is not useful there. This is because we freeze
   // tabs, and trigger a critical memory pressure notification at that point.
   // This has been confirmed to not be necessary on Android in a field trial.
@@ -80,6 +90,9 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   static constexpr base::TimeDelta kFreezePurgeDelay =
       base::TimeDelta(base::Seconds(1));
 
+  // Recorded a metric with whether or not all pages are currently frozen.
+  void RecordAreAllPagesFrozenMetric(std::string_view name);
+
  private:
   // Starts |purge_timer_| to trigger a delayed memory purge. If the timer is
   // already running, starts the timer with the smaller of the requested delay
@@ -101,6 +114,11 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   // - All pages are frozen or kFreezePurgeMemoryAllPagesFrozen is disabled.
   bool CanPurge() const;
 
+  // If we transitioned between "all pages frozen" and "not all pages frozen",
+  // run the callback. |were_all_frozen| indicates whether all pages were
+  // previously frozen, before the potential state transition.
+  void MaybeRunAllPagesFrozenCallback(bool were_all_frozen);
+
   // Returns true if |total_page_count_| == |frozen_page_count_|
   bool AreAllPagesFrozen() const;
 
@@ -120,6 +138,10 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   int frozen_page_count_ = 0;
 
   base::OneShotTimer purge_timer_;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::RepeatingCallback<void(bool)> all_pages_frozen_callback_;
+#endif
 };
 
 }  // namespace blink

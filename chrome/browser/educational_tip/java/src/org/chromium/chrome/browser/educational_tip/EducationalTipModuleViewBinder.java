@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.educational_tip;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for the educational tip module. */
+@NullMarked
 public class EducationalTipModuleViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         EducationalTipModuleView moduleView = (EducationalTipModuleView) view;
@@ -26,6 +28,9 @@ public class EducationalTipModuleViewBinder {
         } else if (EducationalTipModuleProperties.MODULE_CONTENT_IMAGE == propertyKey) {
             moduleView.setContentImageResource(
                     model.get(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE));
+        } else if (EducationalTipModuleProperties.MODULE_BUTTON_STRING == propertyKey) {
+            moduleView.setButtonText(
+                    model.get(EducationalTipModuleProperties.MODULE_BUTTON_STRING));
         } else {
             assert false : "Unhandled property detected in EducationalTipModuleViewBinder!";
         }

@@ -48,7 +48,7 @@ void SVGTransformableElement::Trace(Visitor* visitor) const {
 }
 
 void SVGTransformableElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   AddAnimatedPropertyToPresentationAttributeStyle(*transform_, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }
@@ -66,7 +66,6 @@ void SVGTransformableElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kTransformAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     UpdatePresentationAttributeStyle(*transform_);
     return;
   }

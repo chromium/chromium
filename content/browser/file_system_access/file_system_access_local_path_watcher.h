@@ -34,11 +34,19 @@ class FileSystemAccessLocalPathWatcher : public FileSystemAccessChangeSource {
   void Initialize(
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
           on_source_initialized) override;
+  size_t current_usage() const override;
 
  private:
   void OnFilePathChanged(const FilePathWatcher::ChangeInfo& change_info,
                          const base::FilePath& changed_path,
                          bool error);
+  void OnUsageChange(size_t old_usage, size_t new_usage);
+
+  size_t current_usage_ = 0;
+
+  // For directory watches this is `scope().root_url().path()`. However, for
+  // file watches, this is the parent directory's path.
+  base::FilePath watch_path_;
 
   base::SequenceBound<FilePathWatcher> watcher_
       GUARDED_BY_CONTEXT(sequence_checker_);

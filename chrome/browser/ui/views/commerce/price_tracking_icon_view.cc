@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 
+#include <string_view>
+
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -16,7 +18,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -38,6 +39,7 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -86,14 +88,6 @@ PriceTrackingIconView::PriceTrackingIconView(
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
-
-  SetUseTonalColorsWhenExpanded(
-      base::FeatureList::IsEnabled(commerce::kPriceTrackingIconColors));
-
-  if (base::FeatureList::IsEnabled(commerce::kShoppingIconColorVariant)) {
-    SetCustomForegroundColorId(kColorShoppingPageActionIconForegroundVariant);
-    SetCustomBackgroundColorId(kColorShoppingPageActionIconBackgroundVariant);
-  }
 }
 
 PriceTrackingIconView::~PriceTrackingIconView() = default;
@@ -153,8 +147,9 @@ bool PriceTrackingIconView::ShouldShow() {
     return false;
   }
   auto* web_contents = GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return false;
+  }
   auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents)
                          ->GetTabFeatures()
                          ->commerce_ui_tab_helper();
@@ -174,6 +169,7 @@ void PriceTrackingIconView::UpdateImpl() {
     }
     MaybeShowPageActionLabel();
   } else {
+    scoped_window_call_to_action_ptr_.reset();
     HidePageActionLabel();
   }
   SetVisible(should_show);
@@ -208,7 +204,7 @@ void PriceTrackingIconView::ForceVisibleForTesting(bool is_tracking_price) {
   SetVisualState(is_tracking_price);
 }
 
-const std::u16string& PriceTrackingIconView::GetIconLabelForTesting() {
+std::u16string_view PriceTrackingIconView::GetIconLabelForTesting() const {
   return label()->GetText();
 }
 
@@ -218,8 +214,9 @@ void PriceTrackingIconView::SetOneShotTimerForTesting(
 }
 
 void PriceTrackingIconView::EnablePriceTracking(bool enable) {
-  if (IsPriceTracking() == enable)
+  if (IsPriceTracking() == enable) {
     return;
+  }
 
   if (enable && ShouldShowFirstUseExperienceBubble()) {
     profile_->GetPrefs()->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble,
@@ -259,17 +256,17 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
 }
 
 void PriceTrackingIconView::SetVisualState(bool enable) {
-    icon_ = enable ? &omnibox::kPriceTrackingEnabledRefreshIcon
-                   : &omnibox::kPriceTrackingDisabledRefreshIcon;
+  icon_ = enable ? &omnibox::kPriceTrackingEnabledRefreshIcon
+                 : &omnibox::kPriceTrackingDisabledRefreshIcon;
   // TODO(meiliang@): Confirm with UXW on the tooltip string. If this expected,
   // we can return label()->GetText() instead.
-    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-        enable ? IDS_OMNIBOX_TRACKING_PRICE : IDS_OMNIBOX_TRACK_PRICE));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      enable ? IDS_OMNIBOX_TRACKING_PRICE : IDS_OMNIBOX_TRACK_PRICE));
 
-    SetLabel(l10n_util::GetStringUTF16(enable ? IDS_OMNIBOX_TRACKING_PRICE
-                                              : IDS_OMNIBOX_TRACK_PRICE));
-    SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
-    UpdateIconImage();
+  SetLabel(l10n_util::GetStringUTF16(enable ? IDS_OMNIBOX_TRACKING_PRICE
+                                            : IDS_OMNIBOX_TRACK_PRICE));
+  SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
+  UpdateIconImage();
 }
 
 void PriceTrackingIconView::OnPriceTrackingServerStateUpdated(bool success) {
@@ -281,8 +278,9 @@ void PriceTrackingIconView::OnPriceTrackingServerStateUpdated(bool success) {
 }
 
 bool PriceTrackingIconView::IsPriceTracking() const {
-  if (!GetWebContents())
+  if (!GetWebContents()) {
     return false;
+  }
 
   auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
                          ->GetTabFeatures()
@@ -301,10 +299,6 @@ bool PriceTrackingIconView::ShouldShowFirstUseExperienceBubble() const {
 }
 
 void PriceTrackingIconView::MaybeShowPageActionLabel() {
-  if (!base::FeatureList::IsEnabled(commerce::kCommerceAllowChipExpansion)) {
-    return;
-  }
-
   auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
                          ->GetTabFeatures()
                          ->commerce_ui_tab_helper();
@@ -313,6 +307,16 @@ void PriceTrackingIconView::MaybeShowPageActionLabel() {
                          PageActionIconType::kPriceTracking)) {
     return;
   }
+  if (!tabs::TabInterface::GetFromContents(GetWebContents())
+           ->GetBrowserWindowInterface()
+           ->CanShowCallToAction()) {
+    return;
+  }
+
+  scoped_window_call_to_action_ptr_ =
+      tabs::TabInterface::GetFromContents(GetWebContents())
+          ->GetBrowserWindowInterface()
+          ->ShowCallToAction();
 
   should_extend_label_shown_duration_ = true;
   AnimateIn(std::nullopt);

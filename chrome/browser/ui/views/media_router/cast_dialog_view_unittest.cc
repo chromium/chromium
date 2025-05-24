@@ -239,9 +239,7 @@ TEST_F(CastDialogViewTest, StartCasting) {
 }
 
 TEST_F(CastDialogViewTest, FreezeUiStartCasting) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   std::vector<UIMediaSink> media_sinks = {CreateAvailableSink(),
@@ -265,9 +263,7 @@ TEST_F(CastDialogViewTest, StopCasting) {
 }
 
 TEST_F(CastDialogViewTest, FreezeRoute) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   CastDialogModel model = CreateModelWithSinks(
@@ -285,9 +281,7 @@ TEST_F(CastDialogViewTest, FreezeRoute) {
 }
 
 TEST_F(CastDialogViewTest, FreezeNoRoute) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   CastDialogModel model = CreateModelWithSinks({CreateFreezableSink()});
@@ -438,8 +432,6 @@ TEST_F(CastDialogViewTest, ShowPermissionRejectedView) {
 }
 
 TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastUI);
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, false);
 
   CastDialogModel model = CreateModelWithSinks({CreateAvailableSink()});
@@ -448,8 +440,6 @@ TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonDisabled) {
 }
 
 TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastUI);
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   CastDialogModel model = CreateModelWithSinks({CreateAvailableSink()});
@@ -462,8 +452,6 @@ TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonEnabled) {
 // available to the user, that the sources button is available even if no
 // sinks are available.
 TEST_F(CastDialogViewTest, AccessCodeEmptySinksSourcesAvailable) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastUI);
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, false);
 
   CastDialogModel model;

@@ -17,22 +17,40 @@ import stat
 import sys
 import tempfile
 
+# Keys that should not be copied from mobileprovision
+BANNED_KEYS = [
+    "com.apple.developer.cs.allow-jit",
+    "com.apple.developer.memory.transfer-send",
+    "com.apple.developer.web-browser",
+    "com.apple.developer.web-browser-engine.host",
+    "com.apple.developer.web-browser-engine.networking",
+    "com.apple.developer.web-browser-engine.rendering",
+    "com.apple.developer.web-browser-engine.webcontent",
+]
+
 if sys.version_info.major < 3:
   basestring_compat = basestring
 else:
   basestring_compat = str
 
 
-def GetProvisioningProfilesDir():
+def GetProvisioningProfilesDirs():
   """Returns the location of the installed mobile provisioning profiles.
 
   Returns:
-    The path to the directory containing the installed mobile provisioning
+    The paths to the directory containing the installed mobile provisioning
     profiles as a string.
   """
-  return os.path.join(
-      os.environ['HOME'], 'Library', 'MobileDevice', 'Provisioning Profiles')
-
+  paths = []
+  paths.append(
+      os.path.join(os.environ['HOME'], 'Library', 'MobileDevice',
+                   'Provisioning Profiles'))
+  # For Xcode 16 and later, include the new location,
+  # `~/Library/Developer/Xcode/UserData/Provisioning Profiles`.
+  paths.append(
+      os.path.join(os.environ['HOME'], 'Library', 'Developer', 'Xcode',
+                   'UserData', 'Provisioning Profiles'))
+  return paths
 
 def ReadPlistFromString(plist_bytes):
   """Parse property list from given |plist_bytes|.
@@ -89,12 +107,16 @@ class Bundle(object):
 
   @staticmethod
   def Kind(platform, extension):
-    if platform == 'iphonesimulator' or platform == 'iphoneos':
+    if platform in ('iphoneos', 'iphonesimulator'):
       return 'ios'
     if platform == 'macosx':
       if extension == '.framework':
         return 'mac_framework'
       return 'mac'
+    if platform in ('watchos', 'watchsimulator'):
+      return 'watchos'
+    if platform in ('appletvos', 'appletvsimulator'):
+      return 'tvos'
     raise ValueError('unknown bundle type %s for %s' % (extension, platform))
 
   @property
@@ -264,7 +286,7 @@ class Entitlements(object):
 
   def LoadDefaults(self, defaults):
     for key, value in defaults.items():
-      if key not in self._data:
+      if key not in self._data and key not in BANNED_KEYS:
         self._data[key] = value
 
   def WriteTo(self, target_path):
@@ -287,8 +309,9 @@ def FindProvisioningProfile(provisioning_profile_paths, bundle_identifier,
     object or None if no matching provisioning profile was found.
   """
   if not provisioning_profile_paths:
-    provisioning_profile_paths = glob.glob(
-        os.path.join(GetProvisioningProfilesDir(), '*.mobileprovision'))
+    for path in GetProvisioningProfilesDirs():
+      provisioning_profile_paths.extend(
+          glob.glob(os.path.join(path, '*.mobileprovision')))
 
   # Iterate over all installed mobile provisioning profiles and filter those
   # that can be used to sign the bundle, ignoring expired ones.
@@ -568,7 +591,7 @@ class CodeSignBundleAction(Action):
       provisioning_profile = FindProvisioningProfile(
           args.mobileprovision_files, bundle.identifier,
           provisioning_profile_required)
-      if provisioning_profile and args.platform != 'iphonesimulator':
+      if provisioning_profile and not args.platform.endswith('simulator'):
         provisioning_profile.Install(embedded_provisioning_profile)
 
         if args.entitlements_path is not None:
@@ -688,7 +711,7 @@ class FindProvisioningProfileAction(Action):
     provisioning_profile_info = {}
     provisioning_profile = FindProvisioningProfile(args.mobileprovision_files,
                                                    args.bundle_id, False)
-    for key in ('team_identifier', 'name'):
+    for key in ('team_identifier', 'name', 'path'):
       if provisioning_profile:
         provisioning_profile_info[key] = getattr(provisioning_profile, key)
       else:

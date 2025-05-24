@@ -37,7 +37,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
 
   // AXTreeFormatter overrides.
   std::string Format(AXPlatformNodeDelegate* root) const override;
+  std::string Format(const AXTreeSelector&) const override;
   std::string FormatNode(AXPlatformNodeDelegate* node) const override;
+  std::string FormatNode(const AXTreeSelector&) const override;
   std::string FormatTree(const base::Value::Dict& tree_node) const override;
   base::Value::Dict BuildTreeForNode(AXNode* root) const override;
   std::string EvaluateScript(const AXTreeSelector& selector,
@@ -115,6 +117,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
   bool show_ids() const { return show_ids_; }
 
   base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNodeForSelector(const AXTreeSelector&) const override;
 
  private:
   void RecursiveFormatTree(const base::Value::Dict& tree_node,

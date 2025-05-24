@@ -13,9 +13,13 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+
+namespace base {
+class DictValue;
+class Value;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -40,7 +44,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregationKeys {
 
   const Keys& keys() const { return keys_; }
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   friend bool operator==(const AggregationKeys&,
                          const AggregationKeys&) = default;

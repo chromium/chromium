@@ -36,16 +36,6 @@ class RealTimeReportController;
 // completes.
 class ReportScheduler {
  public:
-  // The trigger leading to report generation. Values are bitmasks in the
-  // |pending_triggers_| bitfield.
-  enum ReportTrigger : uint32_t {
-    kTriggerNone = 0,              // No trigger.
-    kTriggerTimer = 1U << 0,       // The periodic timer expired.
-    kTriggerUpdate = 1U << 1,      // An update was detected.
-    kTriggerNewVersion = 1U << 2,  // A new version is running.
-    kTriggerManual = 1U << 3,      // Trigger manually.
-  };
-
   using ReportTriggerCallback = base::RepeatingCallback<void(ReportTrigger)>;
 
   class Delegate {
@@ -60,6 +50,9 @@ class ReportScheduler {
 
     virtual PrefService* GetPrefService() = 0;
 
+    // Run once after initialization of the scheduler is complete.
+    virtual void OnInitializationCompleted() = 0;
+
     // Browser version
     virtual void StartWatchingUpdatesIfNeeded(
         base::Time last_upload,
@@ -69,6 +62,12 @@ class ReportScheduler {
 
     virtual policy::DMToken GetProfileDMToken() = 0;
     virtual std::string GetProfileClientId() = 0;
+
+    // Security signals
+    virtual bool AreSecurityReportsEnabled() = 0;
+    virtual bool UseCookiesInUploads() = 0;
+    // Invoked when security signals was uploaded by a report.
+    virtual void OnSecuritySignalsUploaded() = 0;
 
    protected:
     ReportTriggerCallback trigger_report_callback_;
@@ -98,6 +97,8 @@ class ReportScheduler {
 
   // Returns true if cloud reporting is enabled.
   bool IsReportingEnabled() const;
+  // Returns true if security signals reporting is enabled.
+  bool AreSecurityReportsEnabled() const;
 
   // Returns true if next report has been scheduled. The report will be
   // scheduled only if the previous report is uploaded successfully and the
@@ -105,8 +106,9 @@ class ReportScheduler {
   bool IsNextReportScheduledForTesting() const;
 
   ReportTrigger GetActiveTriggerForTesting() const;
+  ReportGenerationConfig GetActiveGenerationConfigForTesting() const;
 
-  void SetReportUploaderForTesting(std::unique_ptr<ReportUploader> uploader);
+  void QueueReportUploaderForTesting(std::unique_ptr<ReportUploader> uploader);
   Delegate* GetDelegateForTesting();
 
   void OnDMTokenUpdated();
@@ -117,8 +119,9 @@ class ReportScheduler {
   // Observes CloudReportingEnabled policy.
   void RegisterPrefObserver();
 
-  // Handles kCloudReportingEnabled policy value change, including the first
-  // policy value check during startup.
+  // Handles policy value changes for both kCloudReportingEnabled and
+  // kUserSecuritySignalsReporting, including the first policy value check
+  // during startup.
   void OnReportEnabledPrefChanged();
 
   // Stops the periodic timer and the update observer.
@@ -150,8 +153,8 @@ class ReportScheduler {
   // of another report.
   void RunPendingTriggers();
 
-  // Records that |trigger| was responsible for an upload attempt.
-  static void RecordUploadTrigger(ReportTrigger trigger);
+  // Records that `active_trigger_` was responsible for an upload attempt.
+  void RecordUploadTrigger();
 
   ReportType TriggerToReportType(ReportTrigger trigger);
 
@@ -172,8 +175,11 @@ class ReportScheduler {
   std::unique_ptr<ChromeProfileRequestGenerator> profile_request_generator_;
   std::unique_ptr<RealTimeReportController> real_time_report_controller_;
 
-  // The trigger responsible for initiating active report generation.
-  ReportTrigger active_trigger_ = kTriggerNone;
+  // The configuration for  active report generation.
+  // If the configuration has `kTriggerNone` as its trigger, it means there is
+  // no active report generation/upload in progress.
+  ReportGenerationConfig active_report_generation_config_ =
+      ReportGenerationConfig(ReportTrigger::kTriggerNone);
 
   // The set of triggers that have fired while processing a report (a bitfield
   // of ReportTrigger values). They will be handled following completion of the
@@ -182,6 +188,8 @@ class ReportScheduler {
 
   std::string reporting_pref_name_;
   ReportType full_report_type_;
+
+  std::vector<std::unique_ptr<ReportUploader>> report_uploaders_for_test_;
 
   base::OnceClosure on_manual_report_uploaded_;
 

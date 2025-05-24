@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] javascript: URL in iframe src, initial insertion check
+  Uncaught Error: assert_unreached: [object Event] Reached unreachable code
+Harness: the test ran to completion.
+

@@ -79,5 +79,7 @@ void fct() {
   // gg = (condition) ? ctn1 : ctn2;
   gg = (condition) ? ctn1 : ctn2;
 
-  gg += 1;  // Buffer usage, leads gg to be rewritten.
+  gg = gg.subspan(1);  // Buffer usage, leads gg to be rewritten.
+
+  gg = gg.subspan(index * 2);  // Buffer usage
 }

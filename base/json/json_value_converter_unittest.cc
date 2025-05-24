@@ -23,14 +23,14 @@ struct SimpleMessage {
     FOO,
     BAR,
   };
-  int foo;
+  int foo = 0;
   std::string bar;
-  bool baz;
-  bool bstruct;
-  SimpleEnum simple_enum;
+  bool baz = false;
+  bool bstruct = false;
+  SimpleEnum simple_enum = FOO;
   std::vector<std::unique_ptr<int>> ints;
   std::vector<std::unique_ptr<std::string>> string_values;
-  SimpleMessage() : foo(0), baz(false), bstruct(false), simple_enum(FOO) {}
+  SimpleMessage() = default;
 
   static bool ParseSimpleEnum(std::string_view value, SimpleEnum* field) {
     if (value == "foo") {
@@ -51,13 +51,16 @@ struct SimpleMessage {
 
   static bool GetValueString(const base::Value* value, std::string* result) {
     const Value::Dict* dict = value->GetIfDict();
-    if (!dict)
+    if (!dict) {
       return false;
+    }
     const std::string* str = dict->FindString("val");
-    if (!str)
+    if (!str) {
       return false;
-    if (result)
+    }
+    if (result) {
       *result = *str;
+    }
     return true;
   }
 
@@ -78,11 +81,11 @@ struct SimpleMessage {
 
 // For nested messages.
 struct NestedMessage {
-  double foo;
+  double foo = 0;
   SimpleMessage child;
   std::vector<std::unique_ptr<SimpleMessage>> children;
 
-  NestedMessage() : foo(0) {}
+  NestedMessage() = default;
 
   static void RegisterJSONConverter(
       base::JSONValueConverter<NestedMessage>* converter) {

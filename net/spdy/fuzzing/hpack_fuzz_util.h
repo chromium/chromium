@@ -13,8 +13,8 @@
 
 #include "base/containers/span.h"
 #include "net/third_party/quiche/src/quiche/http2/core/recording_headers_handler.h"
+#include "net/third_party/quiche/src/quiche/http2/hpack/hpack_decoder_adapter.h"
 #include "net/third_party/quiche/src/quiche/http2/hpack/hpack_encoder.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_decoder_adapter.h"
 
 namespace quiche {
 class HttpHeaderBlock;

@@ -10,6 +10,7 @@
 #include "chromeos/ash/services/recording/audio_capture_util.h"
 
 #include "base/memory/aligned_memory.h"
+#include "base/numerics/safe_conversions.h"
 #include "chromeos/ash/services/recording/recording_service_constants.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -26,16 +27,17 @@ static_assert(kAudioSampleRate % 100 == 0,
 // Using `media::vector_math::FMAC()` works only if the addresses of `src` and
 // `dest` are `kRequiredAlignment` bit aligned.
 // This returns true if that's the case.
-bool CanUseVectorMath(const float* src, const float* dest) {
-  return base::IsAligned(src, media::vector_math::kRequiredAlignment) &&
-         base::IsAligned(dest, media::vector_math::kRequiredAlignment);
+bool CanUseVectorMath(base::span<const float> src,
+                      base::span<const float> dest) {
+  return base::IsAligned(src.data(), media::vector_math::kRequiredAlignment) &&
+         base::IsAligned(dest.data(), media::vector_math::kRequiredAlignment);
 }
 
 // If `media::vector_math::FMAC()` cannot be used due to lack of required
 // alignment, this version can be used to accumulate the `length` number of
 // items from `src` on top of the values existing in `dest`.
-void Accumulate(const float* src, float* dest, int length) {
-  for (int i = 0; i < length; ++i) {
+void Accumulate(base::span<const float> src, base::span<float> dest) {
+  for (size_t i = 0; i < src.size(); ++i) {
     dest[i] += src[i];
   }
 }
@@ -68,20 +70,23 @@ std::unique_ptr<media::AudioBus> CreateStereoZeroInitializedAudioBusForDuration(
 
 void AccumulateBusTo(const media::AudioBus& source,
                      media::AudioBus* destination,
-                     int source_start_frame,
                      int destination_start_frame,
                      int length) {
   CHECK_EQ(source.channels(), source.channels());
-  CHECK_LE(source_start_frame + length, source.frames());
+  CHECK_LE(length, source.frames());
   CHECK_LE(destination_start_frame + length, destination->frames());
 
+  const size_t dest_offset =
+      base::checked_cast<size_t>(destination_start_frame);
+  const size_t count = base::checked_cast<size_t>(length);
+
   for (int i = 0; i < source.channels(); ++i) {
-    const float* src = &source.channel(i)[source_start_frame];
-    float* dest = &destination->channel(i)[destination_start_frame];
+    auto src = source.channel_span(i).first(count);
+    auto dest = destination->channel_span(i).subspan(dest_offset, count);
     if (CanUseVectorMath(src, dest)) {
-      media::vector_math::FMAC(src, /*scale=*/1, length, dest);
+      media::vector_math::FMAC(src, /*scale=*/1, dest);
     } else {
-      Accumulate(src, dest, length);
+      Accumulate(src, dest);
     }
   }
 }

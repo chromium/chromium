@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
@@ -429,8 +428,8 @@ TEST(TextEliderTest, StringSlicerWhitespace_UseDefault) {
 
   // Eliding the middle of a string should *NOT* result in whitespace being
   // removed around the ellipsis by default.
-  StringSlicer slicer_mid(text, ellipsis, true, false);
   text = u"Hey world!";
+  StringSlicer slicer_mid(text, ellipsis, true, false);
   EXPECT_EQ(u"Hey…ld!", slicer_mid.CutString(6, true));
   EXPECT_EQ(u"Hey …ld!", slicer_mid.CutString(7, true));
   EXPECT_EQ(u"Hey …rld!", slicer_mid.CutString(8, true));
@@ -457,8 +456,8 @@ TEST(TextEliderTest, StringSlicerWhitespace_NoTrim) {
 
   // Eliding the middle of a string should *NOT* result in whitespace being
   // removed around the ellipsis in no-trim mode.
-  StringSlicer slicer_mid(text, ellipsis, true, false, false);
   text = u"Hey world!";
+  StringSlicer slicer_mid(text, ellipsis, true, false, false);
   EXPECT_EQ(u"Hey…ld!", slicer_mid.CutString(6, true));
   EXPECT_EQ(u"Hey …ld!", slicer_mid.CutString(7, true));
   EXPECT_EQ(u"Hey …rld!", slicer_mid.CutString(8, true));
@@ -485,8 +484,8 @@ TEST(TextEliderTest, StringSlicerWhitespace_Trim) {
 
   // Eliding the middle of a string *should* result in whitespace being removed
   // around the ellipsis in trim mode.
-  StringSlicer slicer_mid(text, ellipsis, true, false, true);
   text = u"Hey world!";
+  StringSlicer slicer_mid(text, ellipsis, true, false, true);
   EXPECT_EQ(u"Hey…ld!", slicer_mid.CutString(6, true));
   EXPECT_EQ(u"Hey…ld!", slicer_mid.CutString(7, true));
   EXPECT_EQ(u"Hey…rld!", slicer_mid.CutString(8, true));
@@ -494,13 +493,12 @@ TEST(TextEliderTest, StringSlicerWhitespace_Trim) {
 
 TEST(TextEliderTest, StringSlicer_ElideMiddle_MultipleWhitespace) {
   // Must store strings in variables (StringSlicer retains a reference to them).
-  std::u16string text(u"Hello  world!");
+  std::u16string text(u"Hey  U  man");
   std::u16string ellipsis(u"…");
 
   // Eliding the middle of a string should not result in whitespace being
   // removed around the ellipsis in default whitespace mode.
   StringSlicer slicer_default(text, ellipsis, true, false);
-  text = u"Hey  U  man";
   EXPECT_EQ(u"Hey…man", slicer_default.CutString(6, true));
   EXPECT_EQ(u"Hey …man", slicer_default.CutString(7, true));
   EXPECT_EQ(u"Hey … man", slicer_default.CutString(8, true));
@@ -509,8 +507,8 @@ TEST(TextEliderTest, StringSlicer_ElideMiddle_MultipleWhitespace) {
 
   // Eliding the middle of a string should not result in whitespace being
   // removed around the ellipsis in no-trim mode.
-  StringSlicer slicer_notrim(text, ellipsis, true, false, false);
   text = u"Hey  U  man";
+  StringSlicer slicer_notrim(text, ellipsis, true, false, false);
   EXPECT_EQ(u"Hey…man", slicer_notrim.CutString(6, true));
   EXPECT_EQ(u"Hey …man", slicer_notrim.CutString(7, true));
   EXPECT_EQ(u"Hey … man", slicer_notrim.CutString(8, true));
@@ -519,8 +517,8 @@ TEST(TextEliderTest, StringSlicer_ElideMiddle_MultipleWhitespace) {
 
   // Eliding the middle of a string *should* result in whitespace being removed
   // around the ellipsis in trim mode.
-  StringSlicer slicer_trim(text, ellipsis, true, false, true);
   text = u"Hey  U  man";
+  StringSlicer slicer_trim(text, ellipsis, true, false, true);
   EXPECT_EQ(u"Hey…man", slicer_trim.CutString(6, true));
   EXPECT_EQ(u"Hey…man", slicer_trim.CutString(7, true));
   EXPECT_EQ(u"Hey…man", slicer_trim.CutString(8, true));
@@ -884,7 +882,7 @@ TEST(TextEliderTest, ElideRectangleTextCheckLineWidth) {
   EXPECT_LE(GetStringWidthF(lines[1], font_list), kAvailableWidth);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This test was created specifically to test a message from crbug.com/415213.
 // It tests that width of concatenation of words equals sum of widths of the
 // words.
@@ -899,7 +897,7 @@ TEST(TextEliderTest, ElideRectangleTextCheckConcatWidthEqualsSumOfWidths) {
 #undef WIDTH
   SetFontRenderParamsDeviceScaleFactor(1.0f);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST(TextEliderTest, ElideRectangleString) {
   struct Case {

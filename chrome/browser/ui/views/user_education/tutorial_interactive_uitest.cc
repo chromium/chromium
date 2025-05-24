@@ -23,14 +23,15 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/common/tutorial.h"
-#include "components/user_education/common/tutorial_description.h"
-#include "components/user_education/common/tutorial_registry.h"
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/tutorial/tutorial.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/views/help_bubble_views.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -79,7 +80,7 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
  protected:
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerCommon*>(
-               browser()->window()->GetFeaturePromoController())
+               browser()->window()->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
 
@@ -127,9 +128,11 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
-          static_cast<HelpBubbleViews*>(
-              GetTutorialService()->currently_displayed_bubble_for_testing())
-              ->bubble_view()
+          AsViewClass<user_education::HelpBubbleView>(
+              GetTutorialService()
+                  ->currently_displayed_bubble_for_testing()
+                  ->AsA<HelpBubbleViews>()
+                  ->bubble_view_for_testing())
               ->GetDefaultButtonForTesting(),
           ui::test::InteractionTestUtil::InputType::kKeyboard));
 
@@ -176,7 +179,8 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
   auto StartTutorial(ui::ElementIdentifier page_id) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleShownEvent);
     StateChange help_bubble_shown;
-    help_bubble_shown.where = {"ntp-app", "help-bubble"};
+    help_bubble_shown.where = {"ntp-app", "ntp-customize-buttons",
+                               "help-bubble"};
     help_bubble_shown.type = StateChange::Type::kExists;
     help_bubble_shown.event = kHelpBubbleShownEvent;
 
@@ -187,7 +191,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
                     kTestTutorialId, browser()->window()->GetElementContext());
               }),
               WaitForStateChange(page_id, help_bubble_shown));
-    AddDescription(steps, "StartTutorial( %s )");
+    AddDescriptionPrefix(steps, "StartTutorial()");
     return steps;
   }
 
@@ -195,7 +199,8 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleHiddenEvent);
     StateChange help_bubble_hidden;
     help_bubble_hidden.type = StateChange::Type::kDoesNotExist;
-    help_bubble_hidden.where = {"ntp-app", "help-bubble"};
+    help_bubble_hidden.where = {"ntp-app", "ntp-customize-buttons",
+                                "help-bubble"};
     help_bubble_hidden.event = kHelpBubbleHiddenEvent;
 
     auto steps = Steps(Do([this]() {
@@ -203,14 +208,14 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
                          service->CancelTutorialIfRunning(kTestTutorialId);
                        }),
                        WaitForStateChange(page_id, help_bubble_hidden));
-    AddDescription(steps, "CancelTutorial( %s )");
+    AddDescriptionPrefix(steps, "CancelTutorial()");
     return steps;
   }
 
  protected:
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerCommon*>(
-               browser()->window()->GetFeaturePromoController())
+               browser()->window()->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
 

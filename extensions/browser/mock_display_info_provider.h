@@ -13,13 +13,13 @@
 #include <vector>
 
 #include "base/values.h"
-#include "extensions/browser/api/system_display/display_info_provider.h"
+#include "extensions/browser/display_info_provider_base.h"
 #include "extensions/browser/mock_screen.h"
 #include "extensions/common/api/system_display.h"
 
 namespace extensions {
 
-class MockDisplayInfoProvider : public DisplayInfoProvider {
+class MockDisplayInfoProvider : public DisplayInfoProviderBase {
  public:
   MockDisplayInfoProvider();
   ~MockDisplayInfoProvider() override;

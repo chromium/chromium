@@ -23,6 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RULE_LIST_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -33,7 +34,28 @@ namespace blink {
 class CSSRule;
 class CSSStyleSheet;
 
-using RuleIndexList = HeapVector<std::pair<Member<CSSRule>, int>>;
+// A style rule may have a comma-separated list of selectors,
+// e.g. h1,h2,h3 { ... }. This struct represents a style rule, but focusing
+// on just one of the selectors in the list (see `index`).
+//
+// It's primarily intended to be used by the Inspector.
+struct IndexedRule {
+  DISALLOW_NEW();
+
+ public:
+  const Member<CSSRule> rule;
+  // The TreeScope that has the stylesheet containing `rule`.
+  const Member<const TreeScope> tree_scope;
+  // The index into the selector list of `rule`.
+  const int index = 0;
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(rule);
+    visitor->Trace(tree_scope);
+  }
+};
+
+using RuleIndexList = GCedHeapVector<IndexedRule>;
 
 class CSSRuleList : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -84,5 +106,7 @@ class LiveCSSRuleList final : public CSSRuleList {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::IndexedRule)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RULE_LIST_H_

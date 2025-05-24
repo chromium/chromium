@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_USER_CONTEXT_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_USER_CONTEXT_H_
 
-#include <string>
+#include "google_apis/gaia/gaia_id.h"
 
 namespace device_signals {
 
 struct UserContext {
   // GAIA ID of the user.
-  std::string user_id;
+  GaiaId user_id;
 };
 
 bool operator==(const UserContext& l, const UserContext& r);

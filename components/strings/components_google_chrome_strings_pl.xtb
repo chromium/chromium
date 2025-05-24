@@ -9,8 +9,10 @@
 <translation id="2447485272386224171">Stworzenie przeglądarki Chrome było możliwe dzięki projektowi open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> i innym <ph name="BEGIN_LINK_OSS" />programom o otwartym kodzie źródłowym<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="3444832043240812445">Ta strona zawiera informacje o ostatnich awariach tylko w przypadku <ph name="BEGIN_LINK" />włączenia funkcji zgłaszania awarii<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Te strony są przeznaczone dla programistów Chrome i mogą nie być aktywnie utrzymywane ani testowane. Aby je włączyć, otwórz <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknij przycisk włączania debugowania stron, a potem ponownie otwórz tę stronę.</translation>
 <translation id="3875312571075912821">Zezwalaj Chrome na korzystanie z sieci w ustawieniach zapory sieciowej
         lub oprogramowania antywirusowego.</translation>
+<translation id="4949828774841497663">Otwórz kolejno Aplikacje &gt; Ustawienia systemu &gt; Sieć, wybierz aktywną sieć, kliknij przycisk Szczegóły… i usuń zaznaczenie wszystkich zaznaczonych serwerów proxy.</translation>
 <translation id="5005121315113832363">Ta strona została zablokowana przez Chrome</translation>
 <translation id="6011049234605203654">Wybierz
           menu Chrome &gt;
@@ -39,9 +41,6 @@
           Ustawienia sieci LAN
           i usuń zaznaczenie „Użyj serwera proxy dla sieci LAN”.</translation>
 <translation id="7230956101631259640">Przeglądasz bezpieczną stronę Chrome</translation>
-<translation id="8187289872471304532">Wybierz
-          Aplikacje &gt; Ustawienia systemowe &gt; Sieć &gt; Zaawansowane &gt; Serwery proxy
-          i usuń zaznaczenie wszelkich wybranych serwerów proxy.</translation>
 <translation id="8232971017369963250">Stworzenie przeglądarki Chrome było możliwe dzięki projektowi open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Stworzenie przeglądarki Chrome było też możliwe dzięki innemu <ph name="BEGIN_LINK_OSS" />oprogramowaniu open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome próbuje zmienić ustawienia wypełniania form płatności.</translation>

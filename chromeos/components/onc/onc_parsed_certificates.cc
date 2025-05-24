@@ -217,8 +217,7 @@ bool OncParsedCertificates::ParseCertificate(
     case CertificateType::kClient:
       return ParseClientCertificate(*guid, onc_certificate);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool OncParsedCertificates::ParseServerOrCaCertificate(
@@ -248,7 +247,7 @@ bool OncParsedCertificates::ParseServerOrCaCertificate(
 
   scoped_refptr<net::X509Certificate> certificate =
       net::X509Certificate::CreateFromBytes(
-          base::as_bytes(base::make_span(certificate_der_data)));
+          base::as_byte_span(certificate_der_data));
   if (!certificate) {
     LOG(ERROR) << "Unable to create certificate from PEM encoding.";
     return false;

@@ -7,8 +7,7 @@
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FakeMultideviceFeatureAccessManager::FakeMultideviceFeatureAccessManager(
     AccessStatus notification_access_status,
@@ -146,5 +145,4 @@ void FakeMultideviceFeatureAccessManager::
       new_status);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

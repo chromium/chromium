@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 
 #include "media/base/media_export.h"
@@ -54,7 +55,7 @@ class MEDIA_EXPORT AudioHash {
   // Storage for the audio hash.  The number of buckets controls the importance
   // of position in the hash.  A higher number reduces the chance of false
   // positives related to incorrect sample position.  Value chosen by dice roll.
-  float audio_hash_[6];
+  std::array<float, 6> audio_hash_;
 
   // The total number of samples processed per channel.  Uses a uint32_t instead
   // of size_t so overflows on 64-bit and 32-bit machines are equivalent.

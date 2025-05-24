@@ -78,8 +78,8 @@ class ManifestHighlighter : public FileHighlighter {
   void Parse(const std::string& key, const std::string& specific);
 
   // Find the bounds of any feature, either a full key or a specific item within
-  // the key. |enforce_at_top_level| means that the feature we find must be at
-  // the same level as |start_| (i.e., ignore nested elements).
+  // the key. `enforce_at_top_level` means that the feature we find must be at
+  // the same level as `start_` (i.e., ignore nested elements).
   // Returns true on success.
   bool FindBounds(const std::string& feature, bool enforce_at_top_level);
 

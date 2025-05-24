@@ -6,7 +6,7 @@
 /**
  * @fileoverview Number formatting symbols.
  *
- * File generated from CLDR ver. 39
+ * File generated from CLDR ver. 43
  *
  * To reduce the file size (which may cause issues in some JS
  * developing environments), this file will only contain locales
@@ -208,7 +208,7 @@ goog.i18n.NumberFormatSymbols_ar = {
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '¤ #,##0.00',
+  CURRENCY_PATTERN: '‏#,##0.00 ¤;‏-#,##0.00 ¤',
   DEF_CURRENCY_CODE: 'EGP'
 };
 
@@ -231,7 +231,7 @@ goog.i18n.NumberFormatSymbols_ar_DZ = {
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '¤ #,##0.00',
+  CURRENCY_PATTERN: '‏#,##0.00 ¤;‏-#,##0.00 ¤',
   DEF_CURRENCY_CODE: 'DZD'
 };
 
@@ -254,7 +254,7 @@ goog.i18n.NumberFormatSymbols_ar_EG = {
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '#,##0.00 ¤',
+  CURRENCY_PATTERN: '‏#,##0.00 ¤',
   DEF_CURRENCY_CODE: 'EGP'
 };
 
@@ -277,7 +277,7 @@ goog.i18n.NumberFormatSymbols_ar_EG_u_nu_latn = {
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '¤ #,##0.00',
+  CURRENCY_PATTERN: '‏#,##0.00 ¤;‏-#,##0.00 ¤',
   DEF_CURRENCY_CODE: 'EGP'
 };
 
@@ -346,7 +346,7 @@ goog.i18n.NumberFormatSymbols_bg = {
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '0.00 ¤',
+  CURRENCY_PATTERN: '#,##0.00 ¤',
   DEF_CURRENCY_CODE: 'BGN'
 };
 
@@ -460,7 +460,7 @@ goog.i18n.NumberFormatSymbols_ca = {
   NAN: 'NaN',
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
-  PERCENT_PATTERN: '#,##0%',
+  PERCENT_PATTERN: '#,##0 %',
   CURRENCY_PATTERN: '#,##0.00 ¤',
   DEF_CURRENCY_CODE: 'EUR'
 };
@@ -707,7 +707,7 @@ goog.i18n.NumberFormatSymbols_en_CA = {
   ZERO_DIGIT: '0',
   PLUS_SIGN: '+',
   MINUS_SIGN: '-',
-  EXP_SYMBOL: 'e',
+  EXP_SYMBOL: 'E',
   PERMILL: '‰',
   INFINITY: '∞',
   NAN: 'NaN',
@@ -911,7 +911,7 @@ goog.i18n.NumberFormatSymbols_es_MX = {
   NAN: 'NaN',
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
-  PERCENT_PATTERN: '#,##0 %',
+  PERCENT_PATTERN: '#,##0%',
   CURRENCY_PATTERN: '¤#,##0.00',
   DEF_CURRENCY_CODE: 'MXN'
 };
@@ -1257,7 +1257,7 @@ goog.i18n.NumberFormatSymbols_he = {
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '‏#,##0.00 ¤;‏-#,##0.00 ¤',
+  CURRENCY_PATTERN: '‏#,##0.00 ‏¤;‏-#,##0.00 ‏¤',
   DEF_CURRENCY_CODE: 'ILS'
 };
 
@@ -1304,7 +1304,7 @@ goog.i18n.NumberFormatSymbols_hr = {
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0 %',
   CURRENCY_PATTERN: '#,##0.00 ¤',
-  DEF_CURRENCY_CODE: 'HRK'
+  DEF_CURRENCY_CODE: 'EUR'
 };
 
 
@@ -1464,7 +1464,7 @@ goog.i18n.NumberFormatSymbols_iw = {
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '‏#,##0.00 ¤;‏-#,##0.00 ¤',
+  CURRENCY_PATTERN: '‏#,##0.00 ‏¤;‏-#,##0.00 ‏¤',
   DEF_CURRENCY_CODE: 'ILS'
 };
 
@@ -1970,7 +1970,7 @@ goog.i18n.NumberFormatSymbols_nb = {
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0 %',
-  CURRENCY_PATTERN: '¤ #,##0.00',
+  CURRENCY_PATTERN: '¤ #,##0.00;¤ -#,##0.00',
   DEF_CURRENCY_CODE: 'NOK'
 };
 
@@ -2015,7 +2015,7 @@ goog.i18n.NumberFormatSymbols_ne_u_nu_latn = {
   NAN: 'NaN',
   DECIMAL_PATTERN: '#,##,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
-  PERCENT_PATTERN: '#,##,##0%',
+  PERCENT_PATTERN: '#,##0%',
   CURRENCY_PATTERN: '¤ #,##,##0.00',
   DEF_CURRENCY_CODE: 'NPR'
 };
@@ -2062,7 +2062,7 @@ goog.i18n.NumberFormatSymbols_no = {
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0 %',
-  CURRENCY_PATTERN: '¤ #,##0.00',
+  CURRENCY_PATTERN: '¤ #,##0.00;¤ -#,##0.00',
   DEF_CURRENCY_CODE: 'NOK'
 };
 
@@ -2115,7 +2115,7 @@ goog.i18n.NumberFormatSymbols_pa = {
   DECIMAL_PATTERN: '#,##,##0.###',
   SCIENTIFIC_PATTERN: '[#E0]',
   PERCENT_PATTERN: '#,##,##0%',
-  CURRENCY_PATTERN: '¤ #,##,##0.00',
+  CURRENCY_PATTERN: '¤#,##,##0.00',
   DEF_CURRENCY_CODE: 'INR'
 };
 
@@ -2451,7 +2451,7 @@ goog.i18n.NumberFormatSymbols_ta = {
   DECIMAL_PATTERN: '#,##,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##,##0%',
-  CURRENCY_PATTERN: '¤ #,##,##0.00',
+  CURRENCY_PATTERN: '¤#,##,##0.00',
   DEF_CURRENCY_CODE: 'INR'
 };
 
@@ -2589,7 +2589,7 @@ goog.i18n.NumberFormatSymbols_ur = {
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '¤ #,##0.00',
+  CURRENCY_PATTERN: '¤#,##0.00',
   DEF_CURRENCY_CODE: 'PKR'
 };
 

@@ -61,8 +61,9 @@ const NSTimeInterval kUploadTotalTime = 5;
 }
 
 + (BOOL)hasSuggestions {
-  if ([SafeModeViewController detectedThirdPartyMods])
+  if ([SafeModeViewController detectedThirdPartyMods]) {
     return YES;
+  }
 
   static dispatch_once_t once_token = 0;
   dispatch_once(&once_token, ^{
@@ -95,8 +96,9 @@ const NSTimeInterval kUploadTotalTime = 5;
   for (size_t i = 0; i < modules.size(); i++) {
     NSString* path = base::SysUTF8ToNSString(modules[i]);
     NSString* friendlyName = [config startupCrashModuleFriendlyName:path];
-    if (friendlyName != nil)
+    if (friendlyName != nil) {
       [array addObject:friendlyName];
+    }
   }
   return array;
 }

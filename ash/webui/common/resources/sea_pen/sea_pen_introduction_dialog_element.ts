@@ -9,7 +9,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_auto_img/cr_auto_img.js';
 import './sea_pen_introduction_svg_element.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -22,6 +22,21 @@ export class SeaPenIntroductionCloseEvent extends CustomEvent<null> {
   constructor() {
     super(
         SeaPenIntroductionCloseEvent.EVENT_NAME,
+        {
+          bubbles: true,
+          composed: true,
+          detail: null,
+        },
+    );
+  }
+}
+
+export class SeaPenFreeformIntroductionCloseEvent extends CustomEvent<null> {
+  static readonly EVENT_NAME = 'sea-pen-freeform-introduction-dialog-close';
+
+  constructor() {
+    super(
+        SeaPenFreeformIntroductionCloseEvent.EVENT_NAME,
         {
           bubbles: true,
           composed: true,
@@ -57,15 +72,17 @@ export class SeaPenIntroductionDialogElement extends I18nMixin
 
   private onClickClose_() {
     this.$.dialog.cancel();
-    this.dispatchEvent(new SeaPenIntroductionCloseEvent());
+    if (isSeaPenTextInputEnabled()) {
+      this.dispatchEvent(new SeaPenFreeformIntroductionCloseEvent());
+    } else {
+      this.dispatchEvent(new SeaPenIntroductionCloseEvent());
+    }
   }
 
   private getIntroDialogContent_() {
-    const substitution = isSeaPenTextInputEnabled() ?
-        this.i18n('seaPenFreeformIntroductionDialogFirstParagraph') :
-        this.i18n('seaPenIntroductionDialogFirstParagraph');
-    return this.i18nAdvanced(
-        'seaPenIntroductionContent', {substitutions: [substitution]});
+    return isSeaPenTextInputEnabled() ?
+        this.i18nAdvanced('seaPenFreeformIntroductionDialogContent') :
+        this.i18nAdvanced('seaPenIntroductionDialogContent');
   }
 }
 

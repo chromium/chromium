@@ -15,11 +15,7 @@
 #endif  // defined(CAPTURE_MODE_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(CAPTURE_MODE_IMPLEMENTATION)
 #define CAPTURE_MODE_EXPORT __attribute__((visibility("default")))
-#else
-#define CAPTURE_MODE_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

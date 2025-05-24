@@ -33,7 +33,7 @@ class ColorPickerView : public views::View {
  public:
   using ColorSelectedCallback = base::RepeatingCallback<void()>;
 
-  // |colors| should contain the color values and accessible names. There should
+  // `colors` should contain the color values and accessible names. There should
   // not be duplicate colors.
   explicit ColorPickerView(const views::BubbleDialogDelegateView* bubble_view,
                            const TabGroupEditorBubbleView::Colors& colors,

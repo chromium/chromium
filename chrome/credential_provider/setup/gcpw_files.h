@@ -32,7 +32,7 @@ class GCPWFiles {
   virtual std::vector<base::FilePath::StringType> GetRegistrationFiles();
 
  protected:
-  GCPWFiles() {}
+  GCPWFiles() = default;
 
   // Returns the storage used for the instance pointer.
   static GCPWFiles** GetInstanceStorage();

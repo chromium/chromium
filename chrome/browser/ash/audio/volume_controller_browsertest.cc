@@ -31,7 +31,7 @@ class SoundsManagerTestImpl : public audio::SoundsManager {
   SoundsManagerTestImpl(const SoundsManagerTestImpl&) = delete;
   SoundsManagerTestImpl& operator=(const SoundsManagerTestImpl&) = delete;
 
-  ~SoundsManagerTestImpl() override {}
+  ~SoundsManagerTestImpl() override = default;
 
   bool Initialize(SoundKey key,
                   std::string_view /* data */,
@@ -67,7 +67,7 @@ class VolumeControllerTest : public InProcessBrowserTest {
   VolumeControllerTest(const VolumeControllerTest&) = delete;
   VolumeControllerTest& operator=(const VolumeControllerTest&) = delete;
 
-  ~VolumeControllerTest() override {}
+  ~VolumeControllerTest() override = default;
 
   void SetUpOnMainThread() override {
     audio_handler_ = ash::CrasAudioHandler::Get();
@@ -182,7 +182,7 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
   VolumeControllerSoundsTest& operator=(const VolumeControllerSoundsTest&) =
       delete;
 
-  ~VolumeControllerSoundsTest() override {}
+  ~VolumeControllerSoundsTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     sounds_manager_ = new SoundsManagerTestImpl();
@@ -258,7 +258,7 @@ class VolumeControllerSoundsDisabledTest : public VolumeControllerSoundsTest {
   VolumeControllerSoundsDisabledTest& operator=(
       const VolumeControllerSoundsDisabledTest&) = delete;
 
-  ~VolumeControllerSoundsDisabledTest() override {}
+  ~VolumeControllerSoundsDisabledTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     VolumeControllerSoundsTest::SetUpCommandLine(command_line);

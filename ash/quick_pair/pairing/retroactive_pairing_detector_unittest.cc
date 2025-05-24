@@ -247,7 +247,7 @@ class RetroactivePairingDetectorTest
   }
 
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin(kUserEmail, user_type);
+    SimulateUserLogin({kUserEmail, user_type});
   }
 
   void SetGattServiceClientConnected(bool connected) {
@@ -2153,7 +2153,6 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHID_Success) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn,
-                            features::kFastPairHID,
                             floss::features::kFlossEnabled},
       /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
@@ -2181,7 +2180,6 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHID_GattConnectionOpen_Success) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn,
-                            features::kFastPairHID,
                             floss::features::kFlossEnabled},
       /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
@@ -2209,7 +2207,6 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHID_GattConnectionFailure) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn,
-                            features::kFastPairHID,
                             floss::features::kFlossEnabled},
       /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
@@ -2235,7 +2232,6 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHID_ReadModelIdFailure) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPairSavedDevicesStrictOptIn,
-                            features::kFastPairHID,
                             floss::features::kFlossEnabled},
       /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(

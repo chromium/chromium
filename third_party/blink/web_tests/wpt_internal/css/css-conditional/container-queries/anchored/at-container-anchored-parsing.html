@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>CSS Conditional Test: @container anchored query parsing</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#container-rule">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8171">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
+<div style="container-name:name;container-type:anchored">
+  <main id="cq-main"></main>
+</div>
+<script>
+  test_cq_condition_known('anchored(fallback)');
+  test_cq_condition_known('anchored(fallback: 0)');
+  test_cq_condition_known('anchored(fallback < 19)');
+  test_cq_condition_known('(anchored(fallback: 19))');
+  test_cq_condition_known('anchored((fallback = 1))');
+  test_cq_condition_known('anchored(not ((fallback: 1) or (fallback > 3)))');
+
+  test_cq_condition_unknown('anchored(fallback: none)');
+  test_cq_condition_unknown('anchored(style(fallback: 0))');
+  test_cq_condition_unknown('style(anchored(fallback: 1))');
+  test_cq_condition_unknown('anchored(fallback:)');
+</script>

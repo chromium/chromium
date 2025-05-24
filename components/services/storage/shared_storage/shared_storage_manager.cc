@@ -145,6 +145,29 @@ void SharedStorageManager::Delete(
                     GetOperationResultCallback(std::move(callback)));
 }
 
+void SharedStorageManager::BatchUpdate(
+    url::Origin context_origin,
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options,
+    base::OnceCallback<void(BatchUpdateResult)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_->BatchUpdate(
+      std::move(context_origin), std::move(methods_with_options),
+      base::BindOnce(
+          [](base::WeakPtr<SharedStorageManager> manager,
+             base::OnceCallback<void(BatchUpdateResult)> callback,
+             BatchUpdateResult result) {
+            if (manager) {
+              // Only report the overall result, as we treat the entire batch as
+              // a single atomic unit.
+              manager->OnOperationResult(result.overall_result);
+            }
+            std::move(callback).Run(std::move(result));
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void SharedStorageManager::Length(url::Origin context_origin,
                                   base::OnceCallback<void(int)> callback) {
   DCHECK(callback);
@@ -187,11 +210,12 @@ void SharedStorageManager::Entries(
 
 void SharedStorageManager::Clear(
     url::Origin context_origin,
-    base::OnceCallback<void(OperationResult)> callback) {
+    base::OnceCallback<void(OperationResult)> callback,
+    DataClearSource source) {
   DCHECK(callback);
   DCHECK(database_);
   database_->Clear(std::move(context_origin),
-                   GetOperationResultCallback(std::move(callback)));
+                   GetOperationResultCallback(std::move(callback)), source);
 }
 
 void SharedStorageManager::BytesUsed(url::Origin context_origin,
@@ -497,6 +521,8 @@ void SharedStorageManager::OnStalePurged(OperationResult result) {
 void SharedStorageManager::RecordShutdownMetrics() {
   base::UmaHistogramCounts1000("Storage.SharedStorage.OnShutdown.NumSqlErrors",
                                operation_sql_error_count_);
+  base::UmaHistogramBoolean("Storage.SharedStorage.OnShutdown.HasSqlErrors",
+                            operation_sql_error_count_ > 0);
   base::UmaHistogramBoolean(
       "Storage.SharedStorage.OnShutdown.RecoveryFromInitFailureAttempted",
       tried_to_recover_from_init_failure_);

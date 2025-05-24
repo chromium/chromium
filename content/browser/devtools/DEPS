@@ -6,4 +6,6 @@ include_rules = [
   "+third_party/inspector_protocol/crdtp",
   # For error reporting.
   "+components/crash/content/browser/error_reporting",
+  # For FuzzTest fuzzers.
+  "+third_party/fuzztest",
 ]

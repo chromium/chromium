@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Lista akreditiva za popunjavanje dodirom je otvorena na cijelom ekranu.</translation>
 <translation id="5591247451101092906">Koristiti sačuvanu lozinku ili pristupni ključ?</translation>
 <translation id="5624120631404540903">Upravljajte lozinkama</translation>
+<translation id="592182999816790476">Lozinka za <ph name="USERNAME" /> je sačuvana za <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Pristupni ključ za račun <ph name="USERNAME" />; koristite zaključavanje ekrana</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nova lozinka za ovu web lokaciju}one{Nove lozinke za ovu web lokaciju}few{Nove lozinke za ovu web lokaciju}other{Nove lozinke za ovu web lokaciju}}</translation>
 <translation id="7286867818472074330">Odaberite pristupni ključ</translation>

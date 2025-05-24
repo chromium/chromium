@@ -353,3 +353,7 @@ iron-list,
   font: var(--cros-title-1-font);
 }
 </if>
+
+.flex {
+  flex: 1;
+}

@@ -1,6 +1,10 @@
-# Please use more specific OWNERS when possible.
-antrim@chromium.org  # For Chrome OS changes, CET.
-dpapad@chromium.org
-johntlee@chromium.org
-khorimoto@chromium.org  # For Chrome OS changes.
-rbpotter@chromium.org
+# The find-owners plugin does not support groups, so the actual WebUI reviewers
+# are listed below but tagged with {LAST_RESORT_SUGGESTION} so that Gerrit will
+# preferentially suggest the review alias in //ui/webui/OWNERS.
+dpapad@chromium.org            #{LAST_RESORT_SUGGESTION}
+johntlee@chromium.org          #{LAST_RESORT_SUGGESTION}
+rbpotter@chromium.org          #{LAST_RESORT_SUGGESTION}
+temao@chromium.org             #{LAST_RESORT_SUGGESTION}
+
+# For ChromeOS Changes
+khorimoto@chromium.org         #{LAST_RESORT_SUGGESTION}

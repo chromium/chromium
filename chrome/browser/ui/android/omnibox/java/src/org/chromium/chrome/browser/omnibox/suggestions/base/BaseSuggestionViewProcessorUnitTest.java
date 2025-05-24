@@ -19,11 +19,13 @@ import android.text.Spannable;
 import android.text.style.StyleSpan;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
@@ -37,13 +39,13 @@ import java.util.List;
 public class BaseSuggestionViewProcessorUnitTest {
     private static final int FAKE_STRING_LENGTH = 10;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Spannable mText;
 
     private ArgumentMatcher<StyleSpan> mIsHighlightStyle;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mText.length()).thenReturn(FAKE_STRING_LENGTH);
 
         mIsHighlightStyle = (StyleSpan style) -> style.getStyle() == Typeface.BOLD;

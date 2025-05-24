@@ -1,9 +1,9 @@
 <style
 <if expr="not chromeos_ash">
-  include="cr-shared-style cr-actionable-row-style iron-flex action-link"
+  include="cr-shared-style cr-actionable-row-style action-link"
 </if>
 <if expr="chromeos_ash">
-  include="cr-shared-style cr-actionable-row-style iron-flex action-link cros-color-overrides"
+  include="cr-shared-style cr-actionable-row-style action-link cros-color-overrides"
 </if>
 >
   :host {
@@ -21,6 +21,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  div.flex {
+    flex: 1;
   }
 
   #outerRow {

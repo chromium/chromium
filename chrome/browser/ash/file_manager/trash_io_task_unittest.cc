@@ -10,19 +10,16 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time_override.h"
-#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
-#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,6 +76,9 @@ class TrashIOTaskTest : public TrashBaseTest {
 
   TrashIOTaskTest(const TrashIOTaskTest&) = delete;
   TrashIOTaskTest& operator=(const TrashIOTaskTest&) = delete;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 void AssertTrashSetup(const base::FilePath& parent_path) {

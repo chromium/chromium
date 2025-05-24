@@ -364,9 +364,6 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
     'third_party/hunspell': [  # http://crbug.com/98134
         'UNKNOWN',
     ],
-    'third_party/iccjpeg': [  # http://crbug.com/98137
-        'UNKNOWN',
-    ],
     'third_party/icu': [  # http://crbug.com/98301
         'UNKNOWN',
     ],

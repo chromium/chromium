@@ -9,6 +9,9 @@
 
 namespace content {
 
+using CapturedSurfaceControlResult =
+    ::blink::mojom::CapturedSurfaceControlResult;
+
 MockCapturedSurfaceController::MockCapturedSurfaceController(
     GlobalRenderFrameHostId capturer_rfh_id,
     WebContentsMediaCaptureId captured_wc_id)
@@ -19,54 +22,43 @@ MockCapturedSurfaceController::MockCapturedSurfaceController(
 MockCapturedSurfaceController::~MockCapturedSurfaceController() = default;
 
 void MockCapturedSurfaceController::SetSendWheelResponse(
-    blink::mojom::CapturedSurfaceControlResult send_wheel_result) {
+    CapturedSurfaceControlResult send_wheel_result) {
   send_wheel_result_ = send_wheel_result;
 }
 
 void MockCapturedSurfaceController::SendWheel(
     blink::mojom::CapturedWheelActionPtr action,
-    base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
-        reply_callback) {
-  std::optional<blink::mojom::CapturedSurfaceControlResult> send_wheel_result;
+    base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback) {
+  std::optional<CapturedSurfaceControlResult> send_wheel_result;
   std::swap(send_wheel_result_, send_wheel_result);
 
   CHECK(send_wheel_result);
   std::move(reply_callback).Run(*send_wheel_result);
 }
 
-void MockCapturedSurfaceController::SetGetZoomLevelResponse(
-    std::optional<int> get_zoom_level_value,
-    blink::mojom::CapturedSurfaceControlResult get_zoom_level_result) {
-  get_zoom_level_result_ =
-      std::make_pair(get_zoom_level_value, get_zoom_level_result);
+void MockCapturedSurfaceController::SetUpdateZoomLevelResponse(
+    CapturedSurfaceControlResult update_zoom_level_result) {
+  update_zoom_level_result_ = update_zoom_level_result;
 }
 
-void MockCapturedSurfaceController::SetSetZoomLevelResponse(
-    blink::mojom::CapturedSurfaceControlResult set_zoom_level_result) {
-  set_zoom_level_result_ = set_zoom_level_result;
-}
-
-void MockCapturedSurfaceController::SetZoomLevel(
-    int zoom_level,
-    base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
-        reply_callback) {
-  CHECK(set_zoom_level_result_);
-  const blink::mojom::CapturedSurfaceControlResult set_zoom_level_result =
-      *set_zoom_level_result_;
-  set_zoom_level_result_ = std::nullopt;
-  std::move(reply_callback).Run(set_zoom_level_result);
+void MockCapturedSurfaceController::UpdateZoomLevel(
+    blink::mojom::ZoomLevelAction action,
+    base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback) {
+  CHECK(update_zoom_level_result_);
+  const CapturedSurfaceControlResult update_zoom_level_result =
+      *update_zoom_level_result_;
+  update_zoom_level_result_ = std::nullopt;
+  std::move(reply_callback).Run(update_zoom_level_result);
 }
 
 void MockCapturedSurfaceController::SetRequestPermissionResponse(
-    blink::mojom::CapturedSurfaceControlResult request_permission_result) {
+    CapturedSurfaceControlResult request_permission_result) {
   request_permission_result_ = request_permission_result;
 }
 
 void MockCapturedSurfaceController::RequestPermission(
-    base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
-        reply_callback) {
-  std::optional<blink::mojom::CapturedSurfaceControlResult>
-      request_permission_result;
+    base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback) {
+  std::optional<CapturedSurfaceControlResult> request_permission_result;
   std::swap(request_permission_result_, request_permission_result);
 
   CHECK(request_permission_result);

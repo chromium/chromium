@@ -89,6 +89,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                              cc::PaintHoldingReason reason) override;
   void StopDeferringCommits(LocalFrame& main_frame,
                             cc::PaintHoldingCommitTrigger) override;
+  void SetShouldThrottleFrameRate(bool flag, LocalFrame& main_frame) override;
   std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame&) override;
   std::optional<int> GetMaxRenderBufferBounds(LocalFrame&) const override;
@@ -148,7 +149,9 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                                     String& result) override;
   bool TabsToLinks() override;
   void InvalidateContainer() override;
-  void ScheduleAnimation(const LocalFrameView*, base::TimeDelta delay) override;
+  void ScheduleAnimation(const LocalFrameView*,
+                         base::TimeDelta delay,
+                         bool urgent) override;
   gfx::Rect LocalRootToScreenDIPs(const gfx::Rect&,
                                   const LocalFrameView*) const override;
   float WindowToViewportScalar(LocalFrame*, const float) const override;
@@ -268,7 +271,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void OpenTextDataListChooser(HTMLInputElement&) override;
   void TextFieldDataListChanged(HTMLInputElement&) override;
   void DidChangeSelectionInSelectControl(HTMLFormControlElement&) override;
-  void SelectOrSelectListFieldOptionsChanged(HTMLFormControlElement&) override;
+  void SelectFieldOptionsChanged(HTMLFormControlElement&) override;
   void AjaxSucceeded(LocalFrame*) override;
   void JavaScriptChangedValue(HTMLFormControlElement&,
                               const String& old_value,
@@ -281,6 +284,9 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void OnMouseDown(Node&) override;
   void DidUpdateBrowserControls() const override;
 
+  void DidUpdateMaxSafeAreaInsets(
+      const gfx::InsetsF& max_safe_area_insets) const override;
+
   gfx::Vector2dF ElasticOverscroll() const override;
 
   void RegisterPopupOpeningObserver(PopupOpeningObserver*) override;
@@ -290,8 +296,11 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   viz::FrameSinkId GetFrameSinkId(LocalFrame*) override;
 
   void RequestDecode(LocalFrame*,
-                     const cc::PaintImage&,
-                     base::OnceCallback<void(bool)>) override;
+                     const cc::DrawImage&,
+                     base::OnceCallback<void(bool)>,
+                     bool speculative) override;
+
+  bool SpeculativeDecodeRequestInFlight(LocalFrame*) const override;
 
   void NotifyPresentationTime(LocalFrame& frame,
                               ReportTimeCallback callback) override;
@@ -314,6 +323,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
 
   float ZoomFactorForViewportLayout() override;
 
+  void OnFirstContentfulPaint() override;
+
  private:
   bool IsChromeClientImpl() const override { return true; }
 
@@ -322,12 +333,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   // Returns WebAutofillClient associated with the WebLocalFrame. This takes and
   // returns nullable.
   WebAutofillClient* AutofillClientFromFrame(LocalFrame*);
-
-  // Returns a copy of `pending_rect`, adjusted for the given minimum window
-  // size. Defaulting to `blink::kMinimumWindowSize`.
-  gfx::Rect AdjustWindowRectForMinimum(
-      const gfx::Rect& pending_rect,
-      int minimum_size = blink::kMinimumWindowSize);
 
   // Returns a copy of |pending_rect|, adjusted for available screen area
   // constraints. This is used to synchronously estimate, or preemptively apply,

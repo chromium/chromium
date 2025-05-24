@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_BITSET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_BITSET_H_
 
@@ -17,6 +12,7 @@
 #include <initializer_list>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 
@@ -62,19 +58,20 @@ class CORE_EXPORT CSSBitsetBase {
   inline void Set(CSSPropertyID id) {
     size_t bit = static_cast<size_t>(static_cast<unsigned>(id));
     DCHECK_LT(bit, kBits);
-    chunks_.data()[bit / 64] |= (1ull << (bit % 64));
+    UNSAFE_TODO(chunks_.data()[bit / 64]) |= (1ull << (bit % 64));
   }
 
   inline void Or(CSSPropertyID id, bool v) {
     size_t bit = static_cast<size_t>(static_cast<unsigned>(id));
     DCHECK_LT(bit, kBits);
-    chunks_.data()[bit / 64] |= (static_cast<uint64_t>(v) << (bit % 64));
+    UNSAFE_TODO(chunks_.data()[bit / 64]) |=
+        (static_cast<uint64_t>(v) << (bit % 64));
   }
 
   inline bool Has(CSSPropertyID id) const {
     size_t bit = static_cast<size_t>(static_cast<unsigned>(id));
     DCHECK_LT(bit, kBits);
-    return chunks_.data()[bit / 64] & (1ull << (bit % 64));
+    return UNSAFE_TODO(chunks_.data()[bit / 64]) & (1ull << (bit % 64));
   }
 
   inline bool HasAny() const {
@@ -86,7 +83,9 @@ class CORE_EXPORT CSSBitsetBase {
     return false;
   }
 
-  inline void Reset() { std::memset(chunks_.data(), 0, sizeof(chunks_)); }
+  inline void Reset() {
+    UNSAFE_TODO(std::memset(chunks_.data(), 0, sizeof(chunks_)));
+  }
 
   // Yields the CSSPropertyIDs which are set.
   class Iterator {
@@ -118,7 +117,7 @@ class CORE_EXPORT CSSBitsetBase {
           index_ = kBits;
           return;
         }
-        chunk_ = chunks_[chunk_index_];
+        chunk_ = UNSAFE_TODO(chunks_[chunk_index_]);
       }
       index_ = chunk_index_ * 64 + std::countr_zero(chunk_);
       chunk_ &= chunk_ - 1;  // Clear the lowest bit.

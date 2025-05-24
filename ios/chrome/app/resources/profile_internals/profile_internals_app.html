@@ -1,0 +1,34 @@
+<h2>Profiles</h2>
+${this.profilesList_.map(item => html`
+  <div class="profile-name">
+    ${item.profileState.profileName}
+  </div>
+  <div class="profile-attributes" ?hidden="${item.properties.length === 0}">
+    (${item.properties.join(', ')})
+  </div>
+  <table>
+    <tr>
+      <td>Primary username</td>
+      <td>${item.profileState.attributes.userName}</td>
+    </tr>
+    <tr>
+      <td>Primary Gaia ID</td>
+      <td>${item.profileState.attributes.gaiaId}</td>
+    </tr>
+    <tr>
+      <td>Has auth error</td>
+      <td>${item.profileState.attributes.hasAuthenticationError}</td>
+    </tr>
+    <tr>
+      <td>Attached Gaia IDs</td>
+      <td>
+        ${item.profileState.attributes.attachedGaiaIds.map(
+            gaiaId => html`<div class="attached-gaia-id">${gaiaId}</div>`)}
+      </td>
+    </tr>
+    <tr>
+      <td>Last active time</td>
+      <td>${item.profileState.attributes.lastActiveTime}</td>
+    </tr>
+  </table>
+`)}

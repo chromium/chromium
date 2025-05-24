@@ -113,7 +113,7 @@ class TestGetConfigFunction : public TestExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("test.getConfig", UNKNOWN)
 
   // Set the dictionary returned by chrome.test.getConfig().
-  // Does not take ownership of |value|.
+  // Does not take ownership of `value`.
   static void set_test_config_state(base::Value::Dict* value);
 
  protected:

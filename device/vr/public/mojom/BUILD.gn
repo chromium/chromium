@@ -28,10 +28,6 @@ mojom_component("vr_service") {
   shared_cpp_typemap = {
     types = [
       {
-        mojom = "device.mojom.RgbaTupleF16"
-        cpp = "::device::RgbaTupleF16"
-      },
-      {
         mojom = "device.mojom.RgbTupleF32"
         cpp = "::device::RgbTupleF32"
       },

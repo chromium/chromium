@@ -76,8 +76,7 @@ std::string GetBasicCardNetworkName(const mojom::BasicCardNetwork& network) {
     case mojom::BasicCardNetwork::VISA:
       return "visa";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 PaymentMethodData ConvertPaymentMethodData(

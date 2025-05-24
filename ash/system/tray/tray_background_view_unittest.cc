@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -20,12 +21,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
@@ -46,9 +47,6 @@ class TestTrayBackgroundView : public TrayBackgroundView,
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override {}
   void UpdateTrayItemColor(bool is_active) override {}
-  std::u16string GetAccessibleNameForTray() override {
-    return u"TestTrayBackgroundView";
-  }
 
   void HandleLocaleChange() override {}
 
@@ -280,7 +278,16 @@ TEST_F(TrayBackgroundViewTest, EventsDisabledForHideAnimation) {
   EXPECT_TRUE(test_tray_background_view()->GetCanProcessEventsWithinSubtree());
 }
 
-TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
+namespace {
+
+class NoSessionTrayBackgroundViewTest : public TrayBackgroundViewTest {
+ public:
+  NoSessionTrayBackgroundViewTest() { set_start_session(false); }
+};
+
+}  // namespace
+
+TEST_F(NoSessionTrayBackgroundViewTest, HandleSessionChange) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -299,8 +306,7 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::ACTIVE);
+  SimulateUserLogin(kRegularUserLoginInfo);
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
@@ -316,8 +322,7 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
   // Not showing animation after unlocking screen.
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::LOCKED);
+  GetSessionControllerClient()->LockScreen();
   task_environment()->FastForwardBy(base::Milliseconds(20));
 
   test_tray_background_view()->SetVisiblePreferred(false);
@@ -327,23 +332,20 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::ACTIVE);
+  GetSessionControllerClient()->UnlockScreen();
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
   // Not showing animation when switching users.
-  GetSessionControllerClient()->AddUserSession("a");
   test_tray_background_view()->SetVisiblePreferred(false);
   test_tray_background_view()->SetVisiblePreferred(true);
   EXPECT_TRUE(
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_tray_background_view()->GetVisible());
 
-  // Simulates user switching by changing the order of session_ids.
-  Shell::Get()->session_controller()->SetUserSessionOrder({2u, 1u});
+  SimulateUserLogin({"a@tray"});
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(
       test_tray_background_view()->layer()->GetAnimator()->is_animating());
@@ -758,6 +760,16 @@ TEST_F(TrayBackgroundViewTest, TrayBubbleViewAccessibleProperties) {
   data = ui::AXNodeData();
   bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kIgnored));
+}
+
+TEST_F(TrayBackgroundViewTest, TrayBackgroundViewAccessibleProperties) {
+  EXPECT_EQ(test_tray_background_view()
+                ->GetViewAccessibility()
+                .GetPreviousWindowFocus(),
+            GetPrimaryShelf()->shelf_widget()->hotseat_widget());
+  EXPECT_EQ(
+      test_tray_background_view()->GetViewAccessibility().GetNextWindowFocus(),
+      GetPrimaryShelf()->shelf_widget()->navigation_widget());
 }
 
 }  // namespace ash

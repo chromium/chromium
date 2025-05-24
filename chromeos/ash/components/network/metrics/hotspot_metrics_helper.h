@@ -216,7 +216,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     kAlreadyFulfilled = 11,
     kAborted = 12,
     kInvalid = 13,
-    kMaxValue = kInvalid,
+    kBusy = 14,
+    kConcurrencyNotSupported = 15,
+    kOperationFailure = 16,
+    kMaxValue = kOperationFailure,
   };
 
   // Represents the upstream status when hotspot is enabled. These values are
@@ -245,7 +248,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     kStartTimeout = 11,
     kUpstreamNotAvailable = 12,
     kUnknownError = 13,
-    kMaxValue = kUnknownError,
+    kResourceBusy = 14,
+    kMaxValue = kResourceBusy,
   };
 
   // HotspotCapabilitiesProvider::Observer:

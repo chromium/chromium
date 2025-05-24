@@ -1,0 +1,21 @@
+Tests that GPUAdapter isFallbackAdapter deprecation issues are reported
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 20
+                    lineNumber : 2
+                    scriptId : <string>
+                    url : 
+                }
+                type : WebGPUAdapterIsFallbackAdapter
+            }
+        }
+    }
+}
+

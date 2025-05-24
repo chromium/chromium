@@ -28,14 +28,14 @@ self.addEventListener('paymentrequest', (evt) => {
   const methodName = evt.methodData[0].supportedMethods;
   const gpayData = evt.methodData[0].data;
 
-  if (methodName != 'https://google.com/pay') {
+  if (methodName !== 'https://google.com/pay') {
     const error = `Unexpected payment method. Got: ${methodName}`;
     evt.respondWith(makeErrorResponse(methodName, error));
     return;
   }
 
   const apiVersion = gpayData['apiVersion'];
-  if (apiVersion != 1 && apiVersion != 2) {
+  if (apiVersion !== 1 && apiVersion !== 2) {
     const error = `Unexpected api version. Got: ${apiVersion}`;
     evt.respondWith(makeErrorResponse(methodName, error));
     return;
@@ -62,7 +62,7 @@ self.addEventListener('paymentrequest', (evt) => {
     details['email'] = 'paymentrequest@chromium.org';
   }
 
-  if (apiVersion == 1) {
+  if (apiVersion === 1) {
     const cardRequirements = gpayData['cardRequirements'] || {};
     const billingAddressRequired = cardRequirements['billingAddressRequired'];
     if (billingAddressRequired) {
@@ -77,7 +77,7 @@ self.addEventListener('paymentrequest', (evt) => {
     if (gpayData['phoneNumberRequired'] && billingAddressRequired) {
       details.cardInfo.billingAddress['phoneNumber'] = '+1 234-567-8900';
     }
-  } else if (apiVersion == 2) {
+  } else if (apiVersion === 2) {
     const allowedPaymentMethods = gpayData['allowedPaymentMethods'] || [];
     const cardParameters = allowedPaymentMethods[0]['parameters'] || {};
     const billingAddressRequired = cardParameters['billingAddressRequired'];

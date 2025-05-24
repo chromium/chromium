@@ -17,22 +17,22 @@ SendTabToSelfDataTypeController::SendTabToSelfDataTypeController(
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_transport_mode)
     : DataTypeController(syncer::SEND_TAB_TO_SELF,
-                          std::move(delegate_for_full_sync_mode),
-                          std::move(delegate_for_transport_mode)) {
+                         std::move(delegate_for_full_sync_mode),
+                         std::move(delegate_for_transport_mode)) {
   DCHECK(ShouldRunInTransportOnlyMode());
 }
 
 SendTabToSelfDataTypeController::~SendTabToSelfDataTypeController() = default;
 
 void SendTabToSelfDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
-                                            StopCallback callback) {
+                                           StopCallback callback) {
   DCHECK(CalledOnValidThread());
   // Special case: We want to clear all data even when Sync is stopped
   // temporarily, regardless of incoming fate. This is also needed to make sure
   // the feature stops being offered to the user, because predicates like
   // IsUserSyncTypeActive() should return false upon stop.
   DataTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,
-                            std::move(callback));
+                           std::move(callback));
 }
 
 }  // namespace send_tab_to_self

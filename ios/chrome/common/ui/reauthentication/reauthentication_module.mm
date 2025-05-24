@@ -77,8 +77,9 @@ constexpr char kPasscodeArticleURL[] = "https://support.apple.com/HT204060";
   void (^replyBlock)(BOOL, NSError*) = ^(BOOL success, NSError* error) {
     dispatch_async(dispatch_get_main_queue(), ^{
       ReauthenticationModule* strongSelf = weakSelf;
-      if (!strongSelf)
+      if (!strongSelf) {
         return;
+      }
       if (success) {
         [strongSelf->_successfulReauthTimeAccessor updateSuccessfulReauthTime];
       }

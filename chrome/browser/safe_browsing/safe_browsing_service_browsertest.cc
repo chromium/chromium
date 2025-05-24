@@ -37,7 +37,6 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -99,7 +98,7 @@
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
@@ -138,7 +137,7 @@ class QuasiWebSocketHttpResponse : public net::test_server::HttpResponse {
     accept_hash_ = base::Base64Encode(
         base::SHA1HashString(key + net::websockets::kWebSocketGuid));
   }
-  ~QuasiWebSocketHttpResponse() override {}
+  ~QuasiWebSocketHttpResponse() override = default;
 
   void SendResponse(
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
@@ -193,8 +192,7 @@ std::string ContextTypeToString(ContextType context_type) {
       return "service-worker";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string JsRequestTypeToString(JsRequestType request_type) {
@@ -205,8 +203,7 @@ std::string JsRequestTypeToString(JsRequestType request_type) {
       return "fetch";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Return a new URL with ?contextType=<context_type>&requestType=<request_type>
@@ -237,8 +234,7 @@ GURL ConstructJsRequestURL(const GURL& base_url, JsRequestType request_type) {
     case JsRequestType::kFetch:
       return base_url.Resolve(kMalwarePage);
   }
-  NOTREACHED_IN_MIGRATION();
-  return GURL();
+  NOTREACHED();
 }
 
 // Navigate |browser| to |url| and wait for the title to change to "NOT BLOCKED"
@@ -283,13 +279,13 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   safe_browsing::ClientSafeBrowsingReportRequest warning_shown_report_;
 
  private:
-  ~FakeSafeBrowsingUIManager() override {}
+  ~FakeSafeBrowsingUIManager() override = default;
 };
 
 class MockObserver : public SafeBrowsingUIManager::Observer {
  public:
-  MockObserver() {}
-  ~MockObserver() override {}
+  MockObserver() = default;
+  ~MockObserver() override = default;
   MOCK_METHOD1(OnSafeBrowsingHit,
                void(const security_interstitials::UnsafeResource&));
 };
@@ -314,7 +310,7 @@ class ServiceEnabledHelper : public base::ThreadTestHelper {
   }
 
  private:
-  ~ServiceEnabledHelper() override {}
+  ~ServiceEnabledHelper() override = default;
 
   scoped_refptr<SafeBrowsingService> service_;
   const bool expected_enabled_;
@@ -324,7 +320,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
                      public SafeBrowsingDatabaseManager::Client {
  public:
   TestSBClient()
-      : threat_type_(SB_THREAT_TYPE_SAFE),
+      : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
+        threat_type_(SB_THREAT_TYPE_SAFE),
         safe_browsing_service_(g_browser_process->safe_browsing_service()) {}
 
   TestSBClient(const TestSBClient&) = delete;
@@ -499,7 +496,7 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line->AppendSwitch(
         ash::switches::kIgnoreUserProfileMappingForTests);
 #endif

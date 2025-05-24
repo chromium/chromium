@@ -9,8 +9,18 @@ found in the LICENSE file.
     <!-- Snackbars -->
     <dimen name="snackbar_min_height">48dp</dimen>
     <dimen name="snackbar_width_tablet">450dp</dimen>
+    <dimen name="snackbar_width_max">600dp</dimen>
     <dimen name="snackbar_margin_tablet">24dp</dimen>
+    <dimen name="snackbar_floating_margin">16dp</dimen>
+    <dimen name="snackbar_margin">8dp</dimen>
+    <dimen name="snackbar_rounded_corner_radius">16dp</dimen>
+    <dimen name="snackbar_elevation">2dp</dimen>
     <dimen name="snackbar_shadow_height">8dp</dimen>
     <dimen name="snackbar_text_view_margin">24dp</dimen>
-    <dimen name="snackbar_background_tablet_elev">@dimen/default_elevation_0</dimen>
+    <dimen name="snackbar_profile_image_width">24dp</dimen>
+    <dimen name="snackbar_profile_image_height">24dp</dimen>
+    <dimen name="snackbar_profile_image_margin_start">12dp</dimen>
+    <dimen name="snackbar_profile_image_margin_end">-12dp</dimen>
+    <dimen name="snackbar_message_margin">14dp</dimen>
+    <dimen name="snackbar_button_padding">24dp</dimen>
 </resources>

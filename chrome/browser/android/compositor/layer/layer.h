@@ -7,7 +7,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "cc/slim/layer.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace android {
 
@@ -21,8 +20,8 @@ class Layer : public base::RefCounted<Layer> {
   virtual scoped_refptr<cc::slim::Layer> layer() = 0;
 
  protected:
-  Layer() {}
-  virtual ~Layer() {}
+  Layer() = default;
+  virtual ~Layer() = default;
 
  private:
   friend class base::RefCounted<Layer>;

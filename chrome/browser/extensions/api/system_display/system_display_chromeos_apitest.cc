@@ -10,7 +10,7 @@
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class SystemDisplayChromeOSApiTest
     : public extensions::ExtensionApiTest,

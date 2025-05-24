@@ -207,10 +207,8 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b(a))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(entry);
-  GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
+  GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
+  ASSERT_FALSE(loaded_url.is_empty());
   EXPECT_EQ(top_level_host, loaded_url.host());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
@@ -265,10 +263,8 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, DISABLED_SubframesZoomProperly) {
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b(a))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(entry);
-  GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
+  GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
+  ASSERT_FALSE(loaded_url.is_empty());
   EXPECT_EQ(top_level_host, loaded_url.host());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
@@ -320,10 +316,8 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b(a))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(entry);
-  GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
+  GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
+  ASSERT_FALSE(loaded_url.is_empty());
   EXPECT_EQ(top_level_host, loaded_url.host());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
@@ -373,10 +367,8 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b(a))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(entry);
-  GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
+  GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
+  ASSERT_FALSE(loaded_url.is_empty());
   EXPECT_EQ(top_level_host, loaded_url.host());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
@@ -437,10 +429,8 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, MAYBE_SiblingFramesZoom) {
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b,b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(entry);
-  GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
+  GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
+  ASSERT_FALSE(loaded_url.is_empty());
   EXPECT_EQ(top_level_host, loaded_url.host());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
@@ -491,10 +481,8 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(entry);
-  GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
+  GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
+  ASSERT_FALSE(loaded_url.is_empty());
   EXPECT_EQ(top_level_host, loaded_url.host());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
@@ -593,10 +581,8 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/page_with_iframe_and_link.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(entry);
-  GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
+  GURL loaded_url = HostZoomMap::GetURLForWebContents(web_contents());
+  ASSERT_FALSE(loaded_url.is_empty());
   EXPECT_EQ(top_level_host, loaded_url.host());
 
   // The following calls must be made when the page's scale factor = 1.0.

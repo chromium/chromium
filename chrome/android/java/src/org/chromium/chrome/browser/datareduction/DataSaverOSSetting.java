@@ -11,9 +11,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Wrapper for the datareduction::DataSaverOSSetting. */
 @JNINamespace("datareduction::android")
+@NullMarked
 public class DataSaverOSSetting {
     @CalledByNative
     public static boolean isDataSaverEnabled() {

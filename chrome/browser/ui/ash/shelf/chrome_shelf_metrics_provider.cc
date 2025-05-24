@@ -25,7 +25,7 @@ void ChromeShelfMetricsProvider::ProvideCurrentSessionData(
   // The `ChromeShelfController` is a singleton but it's attached profile may
   // change at runtime in a multi-profile setting. Only record metrics if the
   // `controller` has attached to the active profile and is not in a state of
-  // transition. Note that this will become obsolete with Lacros.
+  // transition.
   const Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile || controller->profile() != profile) {
     return;

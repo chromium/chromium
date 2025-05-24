@@ -9,8 +9,6 @@
 
 #include "mojo/public/cpp/bindings/sync_handle_registry.h"
 
-#include <algorithm>
-#include <map>
 #include <utility>
 
 #include "base/auto_reset.h"

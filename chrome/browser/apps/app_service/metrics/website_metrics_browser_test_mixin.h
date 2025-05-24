@@ -5,20 +5,13 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_BROWSER_TEST_MIXIN_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_BROWSER_TEST_MIXIN_H_
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/apps/app_service/metrics/website_metrics_service_lacros.h"
-#endif
 
 namespace apps {
 
@@ -61,25 +54,15 @@ class WebsiteMetricsBrowserTestMixin : public InProcessBrowserTestMixin {
   ::content::WebContents* InsertBackgroundTab(Browser* browser,
                                               const std::string& url);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns the `WebsiteMetricsServiceLacros` component if initialized.
-  WebsiteMetricsServiceLacros* metrics_service();
-#else
   // Returns the `AppPlatformMetricsService` component if initialized.
   AppPlatformMetricsService* metrics_service();
-#endif
 
   // Returns the `WebsiteMetrics` component if initialized.
   WebsiteMetrics* website_metrics();
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<AppPlatformMetricsService, DanglingUntriaged>
       app_platform_metrics_service_ = nullptr;
-#else
-  raw_ptr<WebsiteMetricsServiceLacros, DanglingUntriaged>
-      website_metrics_service_ = nullptr;
-#endif
 };
 
 }  // namespace apps

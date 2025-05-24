@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
@@ -58,11 +59,19 @@ bool& BatterySaverModeEnabled() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
   return battery_saver_mode_enabled;
 }
 
+bool& MemorySaverModeEnabled() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(bool, memory_saver_mode_enabled, ());
+  return memory_saver_mode_enabled;
+}
+
 void AddWorkerIsolate(v8::Isolate* isolate) {
   base::AutoLock locker(IsolatesLock());
   isolate->SetPriority(IsolateCurrentPriority());
   if (BatterySaverModeEnabled()) {
     isolate->SetBatterySaverMode(true);
+  }
+  if (MemorySaverModeEnabled()) {
+    isolate->SetMemorySaverMode(true);
   }
   Isolates().insert(isolate);
 }
@@ -110,6 +119,8 @@ void SetBatterySaverModeForAllIsolates(bool battery_saver_mode_enabled) {
       battery_saver_mode_enabled);
 }
 
+void SetMemorySaverModeForWorkerThreadIsolates(bool memory_saver_mode_enabled);
+
 WorkerBackingThread::WorkerBackingThread(const ThreadCreationParams& params)
     : backing_thread_(blink::NonMainThread::CreateThread(
           ThreadCreationParams(params).SetSupportsGC(true))) {}
@@ -126,7 +137,7 @@ void WorkerBackingThread::InitializeOnBackingThread(
       scheduler->V8TaskRunner(), scheduler->V8UserVisibleTaskRunner(),
       scheduler->V8BestEffortTaskRunner(),
       V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot, nullptr,
-      nullptr);
+      nullptr, ThreadState::Current()->ReleaseCppHeap());
   scheduler->SetV8Isolate(isolate_);
   AddWorkerIsolate(isolate_);
   V8Initializer::InitializeWorker(isolate_);
@@ -155,12 +166,15 @@ void WorkerBackingThread::ShutdownOnBackingThread() {
   Platform::Current()->WillStopWorkerThread();
 
   V8PerIsolateData::WillBeDestroyed(isolate_);
-  backing_thread_->ShutdownOnThread();
 
   RemoveForegroundedWorkerIsolate(isolate_);
   RemoveWorkerIsolate(isolate_);
   V8PerIsolateData::Destroy(isolate_);
   isolate_ = nullptr;
+
+  // Shutdown scheduler and GCSupport at the very end. This is necessary as
+  // Isolate shutdown invokes all Oilpan pre-finalizers and finalizers.
+  backing_thread_->ShutdownOnThread();
 }
 
 void WorkerBackingThread::SetForegrounded() {
@@ -197,6 +211,17 @@ void WorkerBackingThread::SetBatterySaverModeForWorkerThreadIsolates(
     isolate->SetBatterySaverMode(battery_saver_mode_enabled);
   }
   BatterySaverModeEnabled() = battery_saver_mode_enabled;
+}
+
+// static
+void WorkerBackingThread::SetMemorySaverModeForWorkerThreadIsolates(
+    bool memory_saver_mode_enabled) {
+  base::AutoLock locker(IsolatesLock());
+
+  for (v8::Isolate* isolate : Isolates()) {
+    isolate->SetMemorySaverMode(memory_saver_mode_enabled);
+  }
+  MemorySaverModeEnabled() = memory_saver_mode_enabled;
 }
 
 }  // namespace blink

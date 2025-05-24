@@ -26,6 +26,7 @@ namespace odfsConfigPrivate {
   callback GetAccountRestrictionsCallback = void(
       AccountRestrictionsInfo restrictions);
   callback ShowAutomatedMountErrorCallback = void();
+  callback OpenInOfficeAppCallback = void();
   callback BoolCallback = void(boolean result);
 
   interface Functions {
@@ -50,6 +51,13 @@ namespace odfsConfigPrivate {
     // Returns whether the FileSystemProviderContentCache feature flag is
     // enabled.
     static void isContentCacheEnabled(BoolCallback callback);
+
+    // Opens the tab inside the M365 PWA. This will not cause a new navigation
+    // but instead re-parent the tab to a new instance of the M365 PWA. It does
+    // nothing if the M365 PWA is not installed.
+    //
+    // |tabId| : Specifies the tab which should be opened in Office
+    static void openInOfficeApp(long tabId, OpenInOfficeAppCallback callback);
   };
 
   interface Events {

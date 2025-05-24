@@ -85,6 +85,7 @@
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/page_size.h"
 #include "base/memory/protected_memory_buildflags.h"
@@ -191,8 +192,8 @@ class ProtectedDataHolder {
  public:
   consteval ProtectedDataHolder() = default;
 
-  T& GetReference() { return *GetPointer(); }
-  const T& GetReference() const { return *GetPointer(); }
+  T& GetReference() LIFETIME_BOUND { return *GetPointer(); }
+  const T& GetReference() const LIFETIME_BOUND { return *GetPointer(); }
 
   T* GetPointer() {
     CHECK(constructed_);
@@ -217,7 +218,7 @@ class ProtectedDataHolder {
  private:
   // Initializing with a constant/zero value ensures no global constructor is
   // required when instantiating `ProtectedDataHolder` and `ProtectedMemory`.
-  alignas(T) uint8_t data_[sizeof(T)] = {0};
+  alignas(T) uint8_t data_[sizeof(T)] = {};
   bool constructed_ = false;
 };
 

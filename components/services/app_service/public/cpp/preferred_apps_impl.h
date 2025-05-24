@@ -37,18 +37,6 @@ class PreferredAppsImpl {
     Host& operator=(const Host&) = delete;
     ~Host() = default;
 
-    // Called when the PreferredAppsList has been loaded from disk, and can
-    // be used to initialize subscribers.
-    // Only implemented in Ash, to support initializing the Lacros copy of the
-    // PreferredAppsList.
-    virtual void InitializePreferredAppsForAllSubscribers() {}
-
-    // Called when changes have been made to the PreferredAppsList which should
-    // be propagated to subscribers.
-    // Only implemented in Ash, to support updating the Lacros copy of the
-    // PreferredAppsList.
-    virtual void OnPreferredAppsChanged(PreferredAppChangesPtr changes) {}
-
     // Notifies the host that the supported links preference for a particular
     // `app_id` was enabled/disabled. Used by the host to notify the app
     // publisher (if any) of the change.

@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -114,7 +115,7 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
 
 // When a host resolution completes, OnHostResolutionCallback() is invoked. If
 // it returns |kContinue|, the ConnectJob can continue immediately. If it
-// returns |kMayBeDeletedAsync|, the ConnectJob may be slated for asychronous
+// returns |kMayBeDeletedAsync|, the ConnectJob may be slated for asynchronous
 // destruction, so should post a task before continuing, in case it will be
 // deleted. The purpose of kMayBeDeletedAsync is to avoid needlessly creating
 // and connecting a socket when it might not be needed.
@@ -171,6 +172,19 @@ class NET_EXPORT_PRIVATE ConnectJob {
                                   HttpAuthController* auth_controller,
                                   base::OnceClosure restart_with_auth_callback,
                                   ConnectJob* job) = 0;
+
+    // Invoked when DNS aliases are resolved for the final endpoint during host
+    // resolution. This allows the delegate to associate aliases with the job
+    // and query higher layers to check if further action is needed for the DNS
+    // aliases. If no host is resolved for the endpoint, this will not be
+    // called.
+    //
+    // A return value of OK causes the ConnectJob to continue. An error value
+    // causes the ConnectJob to fail with that error. ERR_IO_PENDING may not be
+    // returned.
+    virtual Error OnDestinationDnsAliasesResolved(
+        const std::set<std::string>& aliases,
+        ConnectJob* job) = 0;
   };
 
   // A |timeout_duration| of 0 corresponds to no timeout.
@@ -304,6 +318,10 @@ class NET_EXPORT_PRIVATE ConnectJob {
   void NotifyDelegateOfProxyAuth(const HttpResponseInfo& response,
                                  HttpAuthController* auth_controller,
                                  base::OnceClosure restart_with_auth_callback);
+
+  // Calls `Delegate::OnDestinationDnsAliasesResolved()` and returns the result.
+  // See documentation of that function for return value meaning.
+  Error HandleDnsAliasesResolved(const std::set<std::string>& aliases);
 
   // If |remaining_time| is base::TimeDelta(), stops the timeout timer, if it's
   // running. Otherwise, Starts / restarts the timeout timer to trigger in the

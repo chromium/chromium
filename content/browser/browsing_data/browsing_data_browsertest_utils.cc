@@ -154,12 +154,13 @@ void SetResponseContent(const GURL& url,
     auto buffer = base::HeapArray<uint8_t>::WithSize(length);
     file.Read(0, buffer);
 
-    if (path.Extension() == FILE_PATH_LITERAL(".js"))
+    if (path.Extension() == FILE_PATH_LITERAL(".js")) {
       response->set_content_type("application/javascript");
-    else if (path.Extension() == FILE_PATH_LITERAL(".html"))
+    } else if (path.Extension() == FILE_PATH_LITERAL(".html")) {
       response->set_content_type("text/html");
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
 
     response->set_content(base::as_string_view(buffer));
   }

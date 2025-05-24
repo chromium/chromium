@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/payments/view_stack.h"
+
 #include <memory>
 
 #include "base/observer_list.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ui/views/payments/view_stack.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/gfx/animation/test_animation_delegate.h"
 
@@ -14,19 +15,17 @@ class TestStackView : public views::View {
  public:
   class Observer {
    public:
-    Observer() : view_deleted_(false) {}
+    Observer() = default;
 
-    void OnViewBeingDeleted() {
-      view_deleted_ = true;
-    }
+    void OnViewBeingDeleted() { view_deleted_ = true; }
 
     bool view_deleted() { return view_deleted_; }
 
    private:
-    bool view_deleted_;
+    bool view_deleted_ = false;
   };
 
-  TestStackView() {}
+  TestStackView() = default;
 
   TestStackView(const TestStackView&) = delete;
   TestStackView& operator=(const TestStackView&) = delete;
@@ -35,9 +34,7 @@ class TestStackView : public views::View {
     observers_.Notify(&Observer::OnViewBeingDeleted);
   }
 
-  void AddObserver(Observer* observer) {
-    observers_.AddObserver(observer);
-  }
+  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;

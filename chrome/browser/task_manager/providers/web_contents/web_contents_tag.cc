@@ -29,6 +29,6 @@ WebContentsTag::~WebContentsTag() {
 }
 
 // static
-void* WebContentsTag::kTagKey = &WebContentsTag::kTagKey;
+const void* WebContentsTag::kTagKey = &WebContentsTag::kTagKey;
 
 }  // namespace task_manager

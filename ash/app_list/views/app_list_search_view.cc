@@ -26,6 +26,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -133,10 +134,9 @@ AppListSearchView::AppListSearchView(
   }
 
   // SearchResultListViews are aware of their relative position in the
-  // Productivity launcher search view. SearchResultListViews with mutable
-  // positions are passed their productivity_launcher_search_view_position to
-  // update their own category type. kAnswerCard and kBestMatch have already
-  // been constructed.
+  // AppListSearchView. SearchResultListViews with mutable positions are passed
+  // their search_view_position to update their own category type. kAnswerCard
+  // and kBestMatch have already been constructed.
   const size_t category_count =
       SearchResultListView::GetAllListTypesForCategoricalSearch().size() -
       result_container_views_.size();

@@ -7,7 +7,6 @@
 goog.module('goog.assertsTest');
 goog.setTestOnly();
 
-const AssertionError = goog.require('goog.asserts.AssertionError');
 const TagName = goog.require('goog.dom.TagName');
 const asserts = goog.require('goog.asserts');
 const dom = goog.require('goog.dom');
@@ -15,6 +14,7 @@ const googString = goog.require('goog.string');
 const reflect = goog.require('goog.reflect');
 const testSuite = goog.require('goog.testing.testSuite');
 const userAgent = goog.require('goog.userAgent');
+const {AssertionError} = goog.require('goog.asserts');
 
 /**
  * Test that the function throws an error with the given message.

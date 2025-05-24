@@ -25,7 +25,7 @@ class SupervisedUserErrorPageControllerDelegate {
   virtual void RequestUrlAccessLocal(UrlAccessRequestInitiated callback) = 0;
 
  protected:
-  virtual ~SupervisedUserErrorPageControllerDelegate() {}
+  virtual ~SupervisedUserErrorPageControllerDelegate() = default;
 };
 
 #endif  // CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_DELEGATE_H_

@@ -1,6 +1,5 @@
 import("//build/shim_headers.gni")
 
-
 config("flatbuffers_config") {
   include_dirs = [ "src/include" ]
 
@@ -31,4 +30,5 @@ copy("flatc") {
   outputs = [ "$root_out_dir/flatc" ]
 }
 
-source_set("flatbuffers_unittests") {}
+source_set("flatbuffers_unittests") {
+}

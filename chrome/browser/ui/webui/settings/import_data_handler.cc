@@ -46,11 +46,13 @@ ImportDataHandler::ImportDataHandler() : importer_host_(nullptr) {
 ImportDataHandler::~ImportDataHandler() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (importer_host_)
+  if (importer_host_) {
     importer_host_->set_observer(nullptr);
+  }
 
-  if (select_file_dialog_.get())
+  if (select_file_dialog_.get()) {
     select_file_dialog_->ListenerDestroyed();
+  }
 }
 
 void ImportDataHandler::RegisterMessages() {
@@ -84,16 +86,18 @@ void ImportDataHandler::OnJavascriptDisallowed() {
 }
 
 void ImportDataHandler::StartImport(
-    const importer::SourceProfile& source_profile,
+    const user_data_importer::SourceProfile& source_profile,
     uint16_t imported_items) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!imported_items)
+  if (!imported_items) {
     return;
+  }
 
   // If another import is already ongoing, let it finish silently.
-  if (importer_host_)
+  if (importer_host_) {
     importer_host_->set_observer(nullptr);
+  }
 
   FireWebUIListener("import-data-status-changed",
                     base::Value(kImportStatusInProgress));
@@ -126,24 +130,24 @@ void ImportDataHandler::HandleImportData(const base::Value::List& args) {
   }
 
   const base::Value::Dict& type_dict = types.GetDict();
-  uint16_t selected_items = importer::NONE;
+  uint16_t selected_items = user_data_importer::NONE;
   if (*type_dict.FindBool(prefs::kImportDialogAutofillFormData)) {
-    selected_items |= importer::AUTOFILL_FORM_DATA;
+    selected_items |= user_data_importer::AUTOFILL_FORM_DATA;
   }
   if (*type_dict.FindBool(prefs::kImportDialogBookmarks)) {
-    selected_items |= importer::FAVORITES;
+    selected_items |= user_data_importer::FAVORITES;
   }
   if (*type_dict.FindBool(prefs::kImportDialogHistory)) {
-    selected_items |= importer::HISTORY;
+    selected_items |= user_data_importer::HISTORY;
   }
   if (*type_dict.FindBool(prefs::kImportDialogSavedPasswords)) {
-    selected_items |= importer::PASSWORDS;
+    selected_items |= user_data_importer::PASSWORDS;
   }
   if (*type_dict.FindBool(prefs::kImportDialogSearchEngine)) {
-    selected_items |= importer::SEARCH_ENGINES;
+    selected_items |= user_data_importer::SEARCH_ENGINES;
   }
 
-  const importer::SourceProfile& source_profile =
+  const user_data_importer::SourceProfile& source_profile =
       importer_list_->GetSourceProfileAt(browser_index);
   uint16_t supported_items = source_profile.services_supported;
 
@@ -175,8 +179,9 @@ void ImportDataHandler::HandleImportFromBookmarksFile(
     const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   DCHECK(args.empty());
   select_file_dialog_ = ui::SelectFileDialog::Create(
@@ -201,7 +206,7 @@ void ImportDataHandler::SendBrowserProfileData(const std::string& callback_id) {
 
   base::Value::List browser_profiles;
   for (size_t i = 0; i < importer_list_->count(); ++i) {
-    const importer::SourceProfile& source_profile =
+    const user_data_importer::SourceProfile& source_profile =
         importer_list_->GetSourceProfileAt(i);
     uint16_t browser_services = source_profile.services_supported;
 
@@ -209,15 +214,17 @@ void ImportDataHandler::SendBrowserProfileData(const std::string& callback_id) {
     browser_profile.Set("name", source_profile.importer_name);
     browser_profile.Set("index", static_cast<int>(i));
     browser_profile.Set("profileName", source_profile.profile);
-    browser_profile.Set("history", (browser_services & importer::HISTORY) != 0);
-    browser_profile.Set("favorites",
-                        (browser_services & importer::FAVORITES) != 0);
-    browser_profile.Set("passwords",
-                        (browser_services & importer::PASSWORDS) != 0);
-    browser_profile.Set("search",
-                        (browser_services & importer::SEARCH_ENGINES) != 0);
-    browser_profile.Set("autofillFormData",
-                        (browser_services & importer::AUTOFILL_FORM_DATA) != 0);
+    browser_profile.Set("history",
+                        (browser_services & user_data_importer::HISTORY) != 0);
+    browser_profile.Set(
+        "favorites", (browser_services & user_data_importer::FAVORITES) != 0);
+    browser_profile.Set(
+        "passwords", (browser_services & user_data_importer::PASSWORDS) != 0);
+    browser_profile.Set(
+        "search", (browser_services & user_data_importer::SEARCH_ENGINES) != 0);
+    browser_profile.Set(
+        "autofillFormData",
+        (browser_services & user_data_importer::AUTOFILL_FORM_DATA) != 0);
 
     browser_profiles.Append(std::move(browser_profile));
   }
@@ -229,13 +236,13 @@ void ImportDataHandler::ImportStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-void ImportDataHandler::ImportItemStarted(importer::ImportItem item) {
+void ImportDataHandler::ImportItemStarted(user_data_importer::ImportItem item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(csilv): show progress detail in the web view.
 }
 
-void ImportDataHandler::ImportItemEnded(importer::ImportItem item) {
+void ImportDataHandler::ImportItemEnded(user_data_importer::ImportItem item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(csilv): show progress detail in the web view.
@@ -259,11 +266,11 @@ void ImportDataHandler::FileSelected(const ui::SelectedFileInfo& file,
 
   select_file_dialog_ = nullptr;
 
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_BOOKMARKS_FILE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_BOOKMARKS_FILE;
   source_profile.source_path = file.path();
 
-  StartImport(source_profile, importer::FAVORITES);
+  StartImport(source_profile, user_data_importer::FAVORITES);
 }
 
 void ImportDataHandler::FileSelectionCanceled() {

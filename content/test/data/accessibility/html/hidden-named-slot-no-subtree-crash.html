@@ -1,0 +1,48 @@
+<!--
+@EXECUTE-AND-WAIT-FOR:defineElement()
+-->
+<template id="template">
+  <div style="display:none">
+    <slot name="slot1"></slot>
+    <!-- Putting the slot inside of a map causes its subtree to be truncated -->
+    <!-- When an element is slotted in here, and previously had an AXObject,
+         it will be missing its parent, which is illegal -->
+    <map><slot name="slot2"></slot></map>
+  </div>
+</template>
+
+<my-element>
+  <b slot="slot1">slot me</b>
+</my-element>
+
+<button></button>
+<script>
+function defineElement() {
+  customElements.define(
+    'my-element',
+    class extends HTMLElement {
+      constructor() {
+        super();
+        let template = document.getElementById('template');
+        let templateContent = template.content;
+
+        const shadowRoot = this.attachShadow({
+            mode: 'open'
+          })
+          .appendChild(templateContent);
+
+        document.querySelector('button').focus(); // Force a serialization.
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const b = document.querySelector('my-element').firstElementChild;
+            b.setAttribute('slot', 'slot2');
+            document.title = 'defineElement';
+          });
+        });
+      }
+    }
+  );
+  return 'defineElement';
+}
+</script>

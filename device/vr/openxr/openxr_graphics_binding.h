@@ -26,7 +26,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "device/vr/android/local_texture.h"
+#include "device/vr/android/local_texture.h"  //nogncheck
 #include "ui/gl/scoped_egl_image.h"
 #endif
 
@@ -43,6 +43,7 @@ class ContextProvider;
 }  // namespace viz
 
 namespace device {
+class OpenXrExtensionEnumeration;
 class OpenXrViewConfiguration;
 
 // TODO(crbug.com/40909689): Refactor this class.
@@ -59,15 +60,19 @@ struct SwapChainInfo {
   SwapChainInfo& operator=(SwapChainInfo&&);
 
   void Clear();
-  gpu::MailboxHolder GetMailboxHolder() const;
 
   scoped_refptr<gpu::ClientSharedImage> shared_image;
   gpu::SyncToken sync_token;
 
 #if BUILDFLAG(IS_WIN)
-  // When shared images are being used, there is a corresponding MailboxHolder
-  // and D3D11Fence for each D3D11 texture in the vector.
+  // When shared images are being used, there is a corresponding
+  // ClientSharedImage and D3D11Fence for each D3D11 texture in the vector.
   raw_ptr<ID3D11Texture2D> d3d11_texture = nullptr;
+  // If a shared handle cannot be created for the swap chain texture, a second
+  // texture which is shareable will be created and passed to the renderer
+  // proceess. When the frame is complete it will be copied to the swap chain
+  // texture prior to submission.
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_shared_texture = nullptr;
   Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
 #elif BUILDFLAG(IS_ANDROID)
   // Ideally this would be a gluint, but there are conflicting headers for GL
@@ -101,6 +106,9 @@ class OpenXrGraphicsBinding {
   // Gets the set of RequiredExtensions that need to be present on the platform.
   static void GetRequiredExtensions(std::vector<const char*>& extensions);
 
+  // Gets any OptionalExtensions that should be enabled if present.
+  static std::vector<std::string> GetOptionalExtensions();
+
   virtual ~OpenXrGraphicsBinding() = default;
 
   // Ensures that the GraphicsBinding is ready for use.
@@ -123,6 +131,9 @@ class OpenXrGraphicsBinding {
   // TODO(crbug.com/40909689): Make SwapChainInfo internal to the child
   // classes.
   virtual base::span<SwapChainInfo> GetSwapChainImages() = 0;
+
+  // Const getter of the above.
+  virtual base::span<const SwapChainInfo> GetSwapChainImages() const = 0;
 
   // Returns whether or not the platform believes it can support using Shared
   // buffers/images.
@@ -160,7 +171,7 @@ class OpenXrGraphicsBinding {
 
   // Returns whether or not the current Swapchain is actually using SharedImages
   // or not.
-  bool IsUsingSharedImages();
+  bool IsUsingSharedImages() const;
 
   // Returns the previously set swapchain image size, or 0,0 if one is not set.
   gfx::Size GetSwapchainImageSize();
@@ -230,14 +241,26 @@ class OpenXrGraphicsBinding {
                                  const gfx::RectF& left,
                                  const gfx::RectF& right) = 0;
 
+  // Called to indicate which graphics API produced the textures submitted to
+  // OpenXR. Does not affect the API used for compositing.
+  void SetWebGPUSession(bool is_webgpu) { webgpu_session_ = is_webgpu; }
+  bool IsWebGPUSession() const { return webgpu_session_; }
+
+  // Append any necessary data to the `layer` object to instruct the runtime to
+  // flip the layer if necessary.
+  void MaybeFlipLayer(XrCompositionLayerProjection& layer) const;
+
  protected:
+  explicit OpenXrGraphicsBinding(
+      const OpenXrExtensionEnumeration* extension_enum);
+
   // Internal helper to clear the list of images allocated during
   // `EnumerateSwapchainImages`, since the child classes own the actual list.
   virtual void ClearSwapchainImages() = 0;
 
   // Indicates whether the graphics binding expects the submitted image to need
   // to be flipped when being submitted to the runtime.
-  virtual bool ShouldFlipSubmittedImage() = 0;
+  virtual bool ShouldFlipSubmittedImage() const = 0;
 
   // Will be called when SetSwapchainImageSize is called, even if a change is
   // not made, to allow child classes/concrete implementations to override any
@@ -268,6 +291,10 @@ class OpenXrGraphicsBinding {
   gfx::Size transfer_size_{0, 0};
   uint32_t active_swapchain_index_;
   bool has_active_swapchain_image_ = false;
+  bool webgpu_session_ = false;
+  bool fb_composition_layer_ext_enabled_ = false;
+  // This will only be valid if `fb_composition_layer_ext_enabled_` is true.
+  XrCompositionLayerImageLayoutFB y_flip_layer_layout_;
 };
 
 }  // namespace device

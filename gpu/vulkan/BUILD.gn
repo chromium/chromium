@@ -37,6 +37,8 @@ if (enable_vulkan) {
     sources = [
       "vulkan_function_pointers.cc",
       "vulkan_function_pointers.h",
+      "vulkan_queue_lock.cc",
+      "vulkan_queue_lock.h",
     ]
 
     public_configs = [ ":vulkan_config" ]
@@ -48,6 +50,7 @@ if (enable_vulkan) {
     deps = [
       "//base",
       "//ui/gfx",
+      "//ui/gl",
     ]
 
     public_deps = [ "//third_party/vulkan-headers/src:vulkan_headers" ]
@@ -83,6 +86,8 @@ if (enable_vulkan) {
     sources = [
       "semaphore_handle.cc",
       "semaphore_handle.h",
+      "skia_vk_memory_allocator_impl.cc",
+      "skia_vk_memory_allocator_impl.h",
       "vulkan_command_buffer.cc",
       "vulkan_command_buffer.h",
       "vulkan_command_pool.cc",
@@ -121,9 +126,10 @@ if (enable_vulkan) {
     deps = [
       ":buildflags",
       "//base",
-      "//build:chromeos_buildflags",
+      "//build:android_buildflags",
       "//components/crash/core/common:crash_key",
       "//gpu/ipc/common:vulkan_ycbcr_info",
+      "//third_party/vulkan_memory_allocator",
       "//ui/base:ozone_buildflags",
       "//ui/gfx",
       "//ui/gl",
@@ -169,7 +175,7 @@ if (enable_vulkan) {
       deps += [ "//ui/ozone:drm_modifiers_filter" ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//ui/gfx/linux:drm" ]
     }
 

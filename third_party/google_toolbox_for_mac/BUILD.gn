@@ -25,14 +25,10 @@ component("google_toolbox_for_mac") {
 
   if (!is_ios) {
     sources += [
-      "src/AppKit/GTMCarbonEvent.h",
-      "src/AppKit/GTMCarbonEvent.m",
       "src/AppKit/GTMUILocalizer.h",
       "src/AppKit/GTMUILocalizer.m",
       "src/AppKit/GTMUILocalizerAndLayoutTweaker.h",
       "src/AppKit/GTMUILocalizerAndLayoutTweaker.m",
-      "src/DebugUtils/GTMDebugSelectorValidation.h",
-      "src/DebugUtils/GTMTypeCasting.h",
     ]
 
     frameworks = [
@@ -73,11 +69,6 @@ component("google_toolbox_for_mac") {
       "src/iPhone/GTMUILocalizer.h",
       "src/iPhone/GTMUILocalizer.m",
     ]
-
-    # TODO(crbug.com/569158): Suppresses warnings that are treated as errors
-    # when minimum iOS version support is increased to iOS 9 and up.
-    # This should be removed once all deprecation violations have been fixed.
-    cflags = [ "-Wno-deprecated-declarations" ]
 
     libs = [
       "sqlite3",

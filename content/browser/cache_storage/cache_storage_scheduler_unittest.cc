@@ -423,5 +423,18 @@ TEST_F(CacheStorageSchedulerTest, ScheduleByPriorityTwoNormalOneHigh) {
   EXPECT_EQ(1, task3_.callback_count());
 }
 
+// Regression test for crbug.com/370069678 --- not crashing under ASAN indicates
+// success.
+TEST_F(CacheStorageSchedulerTest, TaskDeletesScheduler) {
+  auto* scheduler = new CacheStorageScheduler(
+      CacheStorageSchedulerClient::kStorage,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  scheduler->ScheduleOperation(
+      1, CacheStorageSchedulerMode::kExclusive, CacheStorageSchedulerOp::kTest,
+      CacheStorageSchedulerPriority::kNormal,
+      base::BindOnce([](CacheStorageScheduler* scheduler) { delete scheduler; },
+                     scheduler));
+}
+
 }  // namespace cache_storage_scheduler_unittest
 }  // namespace content

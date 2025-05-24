@@ -53,7 +53,7 @@ class DateTimeLocalPicker extends HTMLElement {
         if (!event.target.matches(
                 '.calendar-navigation-button, .month-popup-button, .year-list-view')) {
           window.pagePopupController.setValueAndClosePopup(
-              0, this.selectedValue);
+              0, this.selectedValue, /* is_keyboard_event= */ true);
         } else if (event.target.matches(
                        '.calendar-navigation-button, .year-list-view')) {
           // Navigating with the previous/next arrows may change selection,

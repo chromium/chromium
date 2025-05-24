@@ -45,29 +45,29 @@ public class PaymentRequestInputProtectionTest {
 
         mPaymentRequestTestRule.setAutoAdvanceInputProtectorClock(false);
         mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getShowCalled());
-        Assert.assertFalse(mPaymentRequestTestRule.getPaymentRequestUI().isAcceptingUserInput());
+        Assert.assertFalse(mPaymentRequestTestRule.getPaymentRequestUi().isAcceptingUserInput());
 
         // Interacting with the UI does nothing.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getDialogForTest()
                             .findViewById(R.id.button_primary)
                             .performClick();
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getDialogForTest()
                             .findViewById(R.id.close_button)
                             .performClick();
                 });
         Assert.assertTrue(
-                mPaymentRequestTestRule.getPaymentRequestUI().getDialogForTest().isShowing());
+                mPaymentRequestTestRule.getPaymentRequestUi().getDialogForTest().isShowing());
 
         // Advance the clock and then close the UI.
         mPaymentRequestTestRule.advanceInputProtectorClock();
         mPaymentRequestTestRule.getReadyForInput().waitForOnly();
-        Assert.assertTrue(mPaymentRequestTestRule.getPaymentRequestUI().isAcceptingUserInput());
+        Assert.assertTrue(mPaymentRequestTestRule.getPaymentRequestUi().isAcceptingUserInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
     }

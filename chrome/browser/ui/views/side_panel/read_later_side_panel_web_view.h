@@ -21,7 +21,9 @@ class ReadLaterSidePanelWebView : public SidePanelWebUIViewT<ReadingListUI>,
   METADATA_HEADER(ReadLaterSidePanelWebView, SidePanelWebUIViewT_ReadingListUI)
 
  public:
-  ReadLaterSidePanelWebView(Browser* browser, base::RepeatingClosure close_cb);
+  ReadLaterSidePanelWebView(Browser* browser,
+                            SidePanelEntryScope& scope,
+                            base::RepeatingClosure close_cb);
   ReadLaterSidePanelWebView(const ReadLaterSidePanelWebView&) = delete;
   ReadLaterSidePanelWebView& operator=(const ReadLaterSidePanelWebView&) =
       delete;

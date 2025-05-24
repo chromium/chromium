@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "skia/ext/geometry.h"
+
+#include <array>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -174,11 +171,11 @@ TEST(Geometry, Overflow) {
   EXPECT_EQ(kTilesY, t.GetTileCountY());
 
   // Save the output from all tiles for comparison.
-  SkRect t_dest[kTilesX][kTilesY];
-  SkRect t_base[kTilesX][kTilesY];
-  SkRect t_gain[kTilesX][kTilesY];
-  SkIRect s_base[kTilesX][kTilesY];
-  SkIRect s_gain[kTilesX][kTilesY];
+  std::array<std::array<SkRect, kTilesY>, kTilesX> t_dest;
+  std::array<std::array<SkRect, kTilesY>, kTilesX> t_base;
+  std::array<std::array<SkRect, kTilesY>, kTilesX> t_gain;
+  std::array<std::array<SkIRect, kTilesY>, kTilesX> s_base;
+  std::array<std::array<SkIRect, kTilesY>, kTilesX> s_gain;
 
   for (int x = 0; x < kTilesX; ++x) {
     for (int y = 0; y < kTilesY; ++y) {
@@ -253,9 +250,9 @@ TEST(Geometry, Fractional) {
   EXPECT_EQ(kTilesY, t.GetTileCountY());
 
   // Save the output from all tiles for comparison.
-  SkRect out_dest[kTilesX][kTilesY];
-  SkRect out_source[kTilesX][kTilesY];
-  SkIRect out_subset[kTilesX][kTilesY];
+  std::array<std::array<SkRect, kTilesY>, kTilesX> out_dest;
+  std::array<std::array<SkRect, kTilesY>, kTilesX> out_source;
+  std::array<std::array<SkIRect, kTilesY>, kTilesX> out_subset;
 
   for (int x = 0; x < kTilesX; ++x) {
     for (int y = 0; y < kTilesY; ++y) {

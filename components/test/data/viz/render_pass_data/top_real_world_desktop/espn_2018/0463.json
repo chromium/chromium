@@ -1423,10 +1423,6 @@
             "x": 0,
             "y": 319
          },
-         "resource_size_in_pixels": {
-            "height": 0,
-            "width": 0
-         },
          "resources": [ 566 ],
          "secure_output_only": false,
          "shared_quad_state_index": 2,
@@ -1444,8 +1440,7 @@
             "width": 21,
             "x": 0,
             "y": 319
-         },
-         "y_flipped": false
+         }
       }, {
          "background_color": {
             "alpha": 0.0,
@@ -1464,10 +1459,6 @@
             "x": 0,
             "y": 0
          },
-         "resource_size_in_pixels": {
-            "height": 0,
-            "width": 0
-         },
          "resources": [ 567 ],
          "secure_output_only": false,
          "shared_quad_state_index": 2,
@@ -1485,8 +1476,7 @@
             "width": 21,
             "x": 0,
             "y": 0
-         },
-         "y_flipped": false
+         }
       }, {
          "force_anti_aliasing_off": false,
          "is_premultiplied": true,

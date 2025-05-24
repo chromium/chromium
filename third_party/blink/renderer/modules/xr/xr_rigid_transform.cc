@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 
 #include <cmath>
@@ -113,7 +108,7 @@ XRRigidTransform* XRRigidTransform::Create(DOMPointInit* position,
   return MakeGarbageCollected<XRRigidTransform>(position, orientation);
 }
 
-DOMFloat32Array* XRRigidTransform::matrix() {
+NotShared<DOMFloat32Array> XRRigidTransform::matrix() {
   EnsureMatrix();
   if (!matrix_array_) {
     matrix_array_ = transformationMatrixToDOMFloat32Array(*matrix_);
@@ -121,12 +116,12 @@ DOMFloat32Array* XRRigidTransform::matrix() {
 
   if (!matrix_array_ || !matrix_array_->Data()) {
     // A page may take the matrix_array_ value and detach it so matrix_array_ is
-    // a detached array buffer.  This breaks the inspector, so return null
-    // instead.
-    return nullptr;
+    // a detached array buffer.  This breaks the inspector, so return an empty
+    // array instead.
+    return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(0));
   }
 
-  return matrix_array_.Get();
+  return matrix_array_;
 }
 
 XRRigidTransform* XRRigidTransform::inverse() {

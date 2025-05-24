@@ -102,9 +102,9 @@ void EventDispatcher::DispatchSimulatedClick(
   // before dispatchSimulatedClick() returns. This vector is here just to
   // prevent the code from running into an infinite recursion of
   // dispatchSimulatedClick().
-  DEFINE_STATIC_LOCAL(Persistent<HeapHashSet<Member<Node>>>,
+  DEFINE_STATIC_LOCAL(Persistent<GCedHeapHashSet<Member<Node>>>,
                       nodes_dispatching_simulated_clicks,
-                      (MakeGarbageCollected<HeapHashSet<Member<Node>>>()));
+                      (MakeGarbageCollected<GCedHeapHashSet<Member<Node>>>()));
 
   if (IsDisabledFormControl(&node))
     return;
@@ -193,7 +193,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
     // path.
     return DispatchEventResult::kNotCanceled;
   }
-  std::unique_ptr<EventTiming> eventTiming;
+  std::optional<EventTiming> eventTiming;
   auto& document = node_->GetDocument();
   LocalFrame* frame = document.GetFrame();
   LocalDOMWindow* window = nullptr;
@@ -202,7 +202,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
   }
 
   if (frame && window) {
-    eventTiming = EventTiming::Create(window, *event_, event_->target());
+    eventTiming = EventTiming::TryCreate(window, *event_, event_->target());
   }
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
@@ -216,7 +216,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
 
   std::optional<SoftNavigationHeuristics::EventScope> soft_navigation_scope;
   if (window) {
-    if (auto* heuristics = SoftNavigationHeuristics::From(*window)) {
+    if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
       soft_navigation_scope =
           heuristics->MaybeCreateEventScopeForEvent(*event_);
     }
@@ -432,6 +432,10 @@ inline void EventDispatcher::DispatchEventPostProcess(
     if (event_->type() == event_type_names::kKeypress && view_)
       view_->GetFrame().GetEditor().SyncSelection(SyncCondition::kForced);
 #endif  // BUILDFLAG(IS_MAC)
+  }
+
+  if (event_->IsMouseEvent() && event_->type() == event_type_names::kMouseup) {
+    node_->GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
   }
 
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event_);

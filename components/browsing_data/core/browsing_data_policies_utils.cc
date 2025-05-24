@@ -4,11 +4,11 @@
 
 #include "components/browsing_data/core/browsing_data_policies_utils.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -65,7 +65,7 @@ void AppendSyncTypesIfRequired(const base::Value& browsing_data_type,
   // When a new sync type or browsing data type is introduced in the code,
   // kDataToSyncTypesMap should be updated if needed to ensure that browsing
   // data that can be cleared by policy is not already synced across devices.
-  static_assert(static_cast<int>(syncer::UserSelectableType::kLastType) == 14,
+  static_assert(static_cast<int>(syncer::UserSelectableType::kLastType) == 13,
                 "It looks like a sync type was added or removed. Please update "
                 "`kDataToSyncTypesMap` value maps above if it affects any of "
                 "the browsing data types.");

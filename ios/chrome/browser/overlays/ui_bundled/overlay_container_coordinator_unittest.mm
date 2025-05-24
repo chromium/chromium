@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/test_modality/test_contained_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/test_modality/test_presented_overlay_request_config.h"
@@ -20,15 +21,16 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Test fixture for OverlayContainerCoordinator.
 class OverlayContainerCoordinatorTest : public PlatformTest {
  public:
   OverlayContainerCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
     context_ = std::make_unique<TestOverlayPresentationContext>(browser_.get());
     root_view_controller_ = [[UIViewController alloc] init];
     coordinator_ = [[OverlayContainerCoordinator alloc]
@@ -48,7 +50,7 @@ class OverlayContainerCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestOverlayPresentationContext> context_;
   ScopedKeyWindow scoped_window_;

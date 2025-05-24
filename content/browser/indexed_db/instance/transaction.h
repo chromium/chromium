@@ -22,25 +22,29 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
+#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
-#include "content/browser/indexed_db/instance/connection.h"
+#include "content/browser/indexed_db/instance/bucket_context_handle.h"
+#include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content::indexed_db {
 
+class Connection;
 class Cursor;
-class DatabaseCallbacks;
+class Database;
 
 // Corresponds to the IndexedDB API notion of transaction and has a 1:1
 // relationship with IDBTransaction in Blink.
 class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
  public:
-  using Operation = base::OnceCallback<leveldb::Status(Transaction*)>;
-  using AbortOperation = base::OnceClosure;
+  using Operation = base::OnceCallback<Status(Transaction*)>;
 
   enum State {
     CREATED,     // Created, but not yet started by coordinator.
@@ -52,12 +56,14 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
 
   static void DisableInactivityTimeoutForTesting();
 
-  Transaction(int64_t id,
-              Connection* connection,
-              const std::set<int64_t>& object_store_ids,
-              blink::mojom::IDBTransactionMode mode,
-              BucketContextHandle bucket_context,
-              BackingStore::Transaction* backing_store_transaction);
+  Transaction(
+      int64_t id,
+      Connection* connection,
+      const std::set<int64_t>& object_store_ids,
+      blink::mojom::IDBTransactionMode mode,
+      blink::mojom::IDBTransactionDurability durability,
+      BucketContextHandle bucket_context,
+      std::unique_ptr<BackingStore::Transaction> backing_store_transaction);
   ~Transaction() override;
 
   void BindReceiver(
@@ -85,7 +91,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // transaction rolls back the LevelDBScopes, which (if LevelDBScopes is in
   // single-sequence mode) can fail. This returns the result of that rollback,
   // if applicable.
-  leveldb::Status Abort(const DatabaseError& error);
+  Status Abort(const DatabaseError& error);
 
   // Called by the scopes lock manager when this transaction is unblocked.
   void Start();
@@ -117,7 +123,6 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
     ScheduleTask(blink::mojom::IDBTaskType::Normal, std::move(task));
   }
   void ScheduleTask(blink::mojom::IDBTaskType, Operation task);
-  void ScheduleAbortTask(AbortOperation abort_task);
   void RegisterOpenCursor(Cursor* cursor);
   void UnregisterOpenCursor(Cursor* cursor);
   void AddPreemptiveEvent() { pending_preemptive_events_++; }
@@ -127,7 +132,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   }
 
   enum class RunTasksResult { kError, kNotFinished, kCommitted, kAborted };
-  std::tuple<RunTasksResult, leveldb::Status> RunTasks();
+  std::tuple<RunTasksResult, Status> RunTasks();
 
   // Returns metadata relevant to idb-internals.
   storage::mojom::IdbTransactionMetadataPtr GetIdbInternalsMetadata() const;
@@ -140,7 +145,6 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   }
   int64_t id() const { return id_; }
 
-  DatabaseCallbacks* callbacks() const { return connection()->callbacks(); }
   Connection* connection() const { return connection_.get(); }
   bool is_commit_pending() const { return is_commit_pending_; }
   int64_t num_errors_sent() const { return num_errors_sent_; }
@@ -167,14 +171,13 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   const base::flat_set<PartitionedLockId> lock_ids() const { return lock_ids_; }
   PartitionedLockHolder* mutable_locks_receiver() { return &locks_receiver_; }
 
-  // in_flight_memory() is used to keep track of all memory scheduled to be
-  // written using ScheduleTask. This is reported to memory dumps.
-  base::CheckedNumeric<size_t>& in_flight_memory() { return in_flight_memory_; }
+  size_t in_flight_memory() const { return in_flight_memory_.ValueOrDie(); }
 
  private:
   friend class IndexedDBClassFactory;
   friend class Connection;
   friend class base::RefCounted<Transaction>;
+  friend class DatabaseOperationTest;
 
   FRIEND_TEST_ALL_PREFIXES(TransactionTestMode, AbortPreemptive);
   FRIEND_TEST_ALL_PREFIXES(TransactionTestMode, AbortTasks);
@@ -185,6 +188,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   FRIEND_TEST_ALL_PREFIXES(TransactionTest, Timeout);
   FRIEND_TEST_ALL_PREFIXES(TransactionTest, TimeoutPreemptive);
   FRIEND_TEST_ALL_PREFIXES(TransactionTest, TimeoutWithPriorities);
+  FRIEND_TEST_ALL_PREFIXES(DatabaseOperationTest, CreatePutDelete);
 
   // blink::mojom::IDBTransaction:
   void CreateObjectStore(int64_t object_store_id,
@@ -194,9 +198,9 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   void DeleteObjectStore(int64_t object_store_id) override;
   void Put(int64_t object_store_id,
            blink::mojom::IDBValuePtr value,
-           const blink::IndexedDBKey& key,
+           blink::IndexedDBKey key,
            blink::mojom::IDBPutMode mode,
-           const std::vector<blink::IndexedDBIndexKeys>& index_keys,
+           std::vector<blink::IndexedDBIndexKeys> index_keys,
            blink::mojom::IDBTransaction::PutCallback callback) override;
   void Commit(int64_t num_errors_handled) override;
 
@@ -208,31 +212,44 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
       blink::mojom::IDBValuePtr& value,
       std::vector<IndexedDBExternalObject>* external_objects);
 
-  leveldb::Status DoPendingCommit();
+  Status DoPendingCommit();
+
+  Status DoPut(int64_t object_store_id,
+               IndexedDBValue value,
+               blink::IndexedDBKey key,
+               blink::mojom::IDBPutMode put_mode,
+               std::vector<blink::IndexedDBIndexKeys> index_keys,
+               blink::mojom::IDBTransaction::PutCallback callback,
+               Transaction* transaction);
 
   // Helper for posting a task to call Transaction::CommitPhaseTwo when
   // we know the transaction had no requests and therefore the commit must
   // succeed.
-  static leveldb::Status CommitPhaseTwoProxy(Transaction* transaction);
+  static Status CommitPhaseTwoProxy(Transaction* transaction);
 
   bool IsTaskQueueEmpty() const;
   bool HasPendingTasks() const;
 
-  leveldb::Status BlobWriteComplete(
-      BlobWriteResult result,
-      storage::mojom::WriteBlobToFileResult error);
+  Status BlobWriteComplete(BlobWriteResult result,
+                           storage::mojom::WriteBlobToFileResult error);
   void CloseOpenCursors();
-  leveldb::Status CommitPhaseTwo();
+  Status CommitPhaseTwo();
   void TimeoutFired();
   void ResetTimeoutTimer();
   void SetState(State state);
 
+  // Generates a key for an auto_increment object store, or an invalid key if
+  // the backing store has a problem.
+  blink::IndexedDBKey GenerateAutoIncrementKey(int64_t object_store_id);
+
   const int64_t id_;
   const std::set<int64_t> object_store_ids_;
   const blink::mojom::IDBTransactionMode mode_;
+  const blink::mojom::IDBTransactionDurability durability_;
 
   bool used_ = false;
   State state_ = CREATED;
+  std::optional<int> scheduling_priority_at_last_state_change_;
   base::flat_set<PartitionedLockId> lock_ids_;
   // Holds the locks from when they're acquired until they're handed off to the
   // backing store transaction.
@@ -265,26 +282,8 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
     base::queue<Operation> queue_;
   };
 
-  class TaskStack {
-   public:
-    TaskStack();
-
-    TaskStack(const TaskStack&) = delete;
-    TaskStack& operator=(const TaskStack&) = delete;
-
-    ~TaskStack();
-    bool empty() const { return stack_.empty(); }
-    void push(AbortOperation task) { stack_.push(std::move(task)); }
-    AbortOperation pop();
-    void clear();
-
-   private:
-    base::stack<AbortOperation> stack_;
-  };
-
   TaskQueue task_queue_;
   TaskQueue preemptive_task_queue_;
-  TaskStack abort_task_stack_;
 
   std::unique_ptr<BackingStore::Transaction> backing_store_transaction_;
   bool backing_store_transaction_begun_ = false;

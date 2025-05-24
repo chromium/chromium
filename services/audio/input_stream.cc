@@ -11,18 +11,17 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/user_input_monitor.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/audio/input_sync_writer.h"
-#include "services/audio/user_input_monitor.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
+#include "services/audio/reference_signal_provider.h"
 
 namespace audio {
 
@@ -46,9 +45,8 @@ const char* ErrorCodeToString(InputController::ErrorCode error) {
     case (InputController::STREAM_OPEN_DEVICE_IN_USE_ERROR):
       return "STREAM_OPEN_DEVICE_IN_USE_ERROR";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "UNKNOWN_ERROR";
 }
 
 std::string GetCtorLogString(const std::string& device_id,
@@ -73,8 +71,7 @@ InputStream::InputStream(
     mojo::PendingRemote<media::mojom::AudioLog> log,
     media::AudioManager* audio_manager,
     media::AecdumpRecordingManager* aecdump_recording_manager,
-    std::unique_ptr<UserInputMonitor> user_input_monitor,
-    DeviceOutputListener* device_output_listener,
+    std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const std::string& device_id,
     const media::AudioParameters& params,
@@ -94,8 +91,7 @@ InputStream::InputStream(
                : base::DoNothing(),
           shared_memory_count,
           params,
-          &foreign_socket_)),
-      user_input_monitor_(std::move(user_input_monitor)) {
+          &foreign_socket_)) {
   DCHECK(audio_manager);
   DCHECK(receiver_.is_bound());
   DCHECK(client_);
@@ -134,9 +130,9 @@ InputStream::InputStream(
   }
 
   controller_ = InputController::Create(
-      audio_manager, this, writer_.get(), user_input_monitor_.get(),
-      device_output_listener, aecdump_recording_manager,
-      std::move(processing_config), params, device_id, enable_agc);
+      audio_manager, this, writer_.get(), std::move(reference_signal_provider),
+      aecdump_recording_manager, std::move(processing_config), params,
+      device_id, enable_agc);
 }
 
 InputStream::~InputStream() {
@@ -213,9 +209,9 @@ void InputStream::OnCreated(bool initially_muted) {
                                       "initially muted", initially_muted);
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   SendLogMessage("%s({muted=%s})", __func__,
-                 initially_muted ? "true" : "false");
+                 base::ToString(initially_muted).c_str());
 
-  base::ReadOnlySharedMemoryRegion shared_memory_region =
+  base::UnsafeSharedMemoryRegion shared_memory_region =
       writer_->TakeSharedMemoryRegion();
   if (!shared_memory_region.IsValid()) {
     OnStreamPlatformError();

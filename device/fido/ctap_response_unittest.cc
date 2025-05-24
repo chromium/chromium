@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
+#include <algorithm>
 #include <string_view>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -443,7 +448,7 @@ std::vector<uint8_t> GetTestCredentialRawIdBytes() {
 // assumed to be a CTAP2 status byte.
 std::optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
   CHECK(!in.empty());
-  return cbor::Reader::Read(in.subspan(1));
+  return cbor::Reader::Read(in.subspan<1>());
 }
 
 }  // namespace
@@ -749,9 +754,9 @@ TEST(CTAPResponseTest, TestReadGetInfoResponseWithDuplicateVersion) {
   // Find the first of the duplicate versions and change it to a different
   // value. That should be sufficient to make the data parsable.
   static constexpr std::string_view kU2Fv9 = "U2F_V9";
-  uint8_t* first_version = base::ranges::search(get_info, kU2Fv9);
-  ASSERT_TRUE(first_version);
-  memcpy(first_version, "U2F_V3", 6);
+  auto first_version = std::ranges::search(get_info, kU2Fv9);
+  ASSERT_FALSE(first_version.empty());
+  memcpy(first_version.begin(), "U2F_V3", 6);
   std::optional<AuthenticatorGetInfoResponse> response =
       ReadCTAPGetInfoResponse(get_info);
   ASSERT_TRUE(response);
@@ -811,8 +816,8 @@ TEST(CTAPResponseTest, TestSerializeGetInfoResponse) {
 
   EXPECT_THAT(AuthenticatorGetInfoResponse::EncodeToCBOR(response),
               ::testing::ElementsAreArray(
-                  base::make_span(test_data::kTestGetInfoResponsePlatformDevice)
-                      .subspan(1)));
+                  base::span(test_data::kTestGetInfoResponsePlatformDevice)
+                      .subspan<1>()));
 }
 
 TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
@@ -840,7 +845,7 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
   };
 
   const auto application_parameter =
-      base::make_span(test_data::kApplicationParameter)
+      base::span(test_data::kApplicationParameter)
           .subspan<0, kRpIdHashLength>();
   // Starting signature counter value set by example 4 of the CTAP spec. The
   // signature counter can start at any value but it should never decrease.
@@ -880,7 +885,7 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
   EXPECT_THAT(
       AsCTAPStyleCBORBytes(response),
       ::testing::ElementsAreArray(
-          base::make_span(test_data::kTestMakeCredentialResponse).subspan(1)));
+          base::span(test_data::kTestMakeCredentialResponse).subspan<1>()));
 }
 
 TEST(CTAPResponseTest, AttestationObjectResponseFields) {

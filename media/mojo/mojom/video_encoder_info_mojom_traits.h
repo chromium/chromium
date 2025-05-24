@@ -13,27 +13,35 @@
 namespace mojo {
 
 template <>
-class StructTraits<media::mojom::ResolutionBitrateLimitDataView,
-                   media::ResolutionBitrateLimit> {
+class StructTraits<media::mojom::ResolutionRateLimitDataView,
+                   media::ResolutionRateLimit> {
  public:
   static const gfx::Size& frame_size(
-      const media::ResolutionBitrateLimit& resolution_bitrate_limit) {
-    return resolution_bitrate_limit.frame_size;
+      const media::ResolutionRateLimit& resolution_rate_limit) {
+    return resolution_rate_limit.frame_size;
   }
   static int min_start_bitrate_bps(
-      const media::ResolutionBitrateLimit& resolution_bitrate_limit) {
-    return resolution_bitrate_limit.min_start_bitrate_bps;
+      const media::ResolutionRateLimit& resolution_rate_limit) {
+    return resolution_rate_limit.min_start_bitrate_bps;
   }
   static int min_bitrate_bps(
-      const media::ResolutionBitrateLimit& resolution_bitrate_limit) {
-    return resolution_bitrate_limit.min_bitrate_bps;
+      const media::ResolutionRateLimit& resolution_rate_limit) {
+    return resolution_rate_limit.min_bitrate_bps;
   }
   static int max_bitrate_bps(
-      const media::ResolutionBitrateLimit& resolution_bitrate_limit) {
-    return resolution_bitrate_limit.max_bitrate_bps;
+      const media::ResolutionRateLimit& resolution_rate_limit) {
+    return resolution_rate_limit.max_bitrate_bps;
   }
-  static bool Read(media::mojom::ResolutionBitrateLimitDataView data,
-                   media::ResolutionBitrateLimit* out);
+  static uint32_t max_framerate_numerator(
+      const media::ResolutionRateLimit& resolution_rate_limit) {
+    return resolution_rate_limit.max_framerate_numerator;
+  }
+  static uint32_t max_framerate_denominator(
+      const media::ResolutionRateLimit& resolution_rate_limit) {
+    return resolution_rate_limit.max_framerate_denominator;
+  }
+  static bool Read(media::mojom::ResolutionRateLimitDataView data,
+                   media::ResolutionRateLimit* out);
 };
 
 template <>
@@ -97,9 +105,9 @@ class StructTraits<media::mojom::VideoEncoderInfoDataView,
   fps_allocation(const media::VideoEncoderInfo& video_encoder_info) {
     return video_encoder_info.fps_allocation;
   }
-  static const std::vector<media::ResolutionBitrateLimit>&
-  resolution_bitrate_limits(const media::VideoEncoderInfo& video_encoder_info) {
-    return video_encoder_info.resolution_bitrate_limits;
+  static const std::vector<media::ResolutionRateLimit>& resolution_rate_limits(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.resolution_rate_limits;
   }
 
   static bool Read(media::mojom::VideoEncoderInfoDataView data,

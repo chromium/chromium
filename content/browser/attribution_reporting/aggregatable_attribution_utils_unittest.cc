@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
@@ -22,13 +21,11 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -447,12 +444,6 @@ TEST(AggregatableAttributionUtilsTest, TotalBudgetMetrics) {
 
 TEST(AggregatableAttributionUtilsTest,
      AggregatableReportRequestWithFilteringIds) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kPrivacySandboxAggregationServiceFilteringIds,
-                            attribution_reporting::features::
-                                kAttributionReportingAggregatableFilteringIds},
-      /*disabled_features=*/{});
   std::optional<AggregatableReportRequest> request =
       CreateAggregatableReportRequest(
           ReportBuilder(AttributionInfoBuilder().Build(),
@@ -476,41 +467,7 @@ TEST(AggregatableAttributionUtilsTest,
 
   EXPECT_EQ(request->shared_info().api_version, "1.0");
 
-  auto max_bytes = request->payload_contents().filtering_id_max_bytes;
-  ASSERT_TRUE(max_bytes.has_value());
-  EXPECT_EQ(max_bytes.value(), 2u);
-}
-
-TEST(AggregatableAttributionUtilsTest,
-     AggregatableReportRequestWithFilteringIdsFeatureDisabled_UnsetInRequest) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      attribution_reporting::features::
-          kAttributionReportingAggregatableFilteringIds);
-  std::optional<AggregatableReportRequest> request =
-      CreateAggregatableReportRequest(
-          ReportBuilder(AttributionInfoBuilder().Build(),
-                        SourceBuilder().BuildStored())
-              .SetAggregatableFilteringIdsMaxBytes(
-                  *AggregatableFilteringIdsMaxBytes::Create(2))
-              .SetAggregatableHistogramContributions(
-                  {AggregatableReportHistogramContribution(
-                      /*bucket=*/1,
-                      /*value=*/2,
-                      /*filtering_id=*/120)})
-              .SetSourceRegistrationTimeConfig(
-                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                      kExclude)
-              .BuildAggregatableAttribution());
-  ASSERT_TRUE(request.has_value());
-  std::optional<uint64_t> filtering_id =
-      request->payload_contents().contributions.front().filtering_id;
-  ASSERT_FALSE(filtering_id.has_value());
-
-  EXPECT_EQ(request->shared_info().api_version, "0.1");
-
-  auto max_bytes = request->payload_contents().filtering_id_max_bytes;
-  ASSERT_FALSE(max_bytes.has_value());
+  EXPECT_EQ(request->payload_contents().filtering_id_max_bytes, 2u);
 }
 
 }  // namespace content

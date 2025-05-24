@@ -5,18 +5,25 @@
 #include "chromeos/ash/components/growth/campaigns_utils.h"
 
 #include <algorithm>
+#include <map>
 #include <string>
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "url/gurl.h"
 
 namespace growth {
 
 namespace {
+
+// NOTE: Do not change the number.
+// The number of `campaign_id`s can be stored in the sparse histograms.
+constexpr int kCampaignsCountPerHistogram = 500;
 
 // The mapping of `app_id` or URL `domain` to `app_group_id`.
 const auto& GetAppGroupIdMap() {
@@ -113,6 +120,35 @@ std::string_view GetAppGroupId(const GURL& url) {
   const auto it = std::ranges::find_if(
       map, [&](const auto& elem) { return url.DomainIs(elem.first); });
   return (it == map.end()) ? std::string_view() : it->second;
+}
+
+std::map<std::string, std::string> CreateBasicConditionParams() {
+  std::map<std::string, std::string> conditions_params;
+  // `event_used` and `event_trigger` are required for feature_engagement
+  // config, although they are not used in campaign matching.
+  static constexpr char kTemplate[] =
+      "name:ChromeOSAshGrowthCampaigns_Event%s;comparator:any;window:1;storage:"
+      "1";
+  conditions_params["event_used"] = base::StringPrintf(kTemplate, "Used");
+  conditions_params["event_trigger"] = base::StringPrintf(kTemplate, "Trigger");
+
+  return conditions_params;
+}
+
+std::string CreateConditionParamForCap(base::cstring_view campaign_type,
+                                       int id,
+                                       base::cstring_view event_type,
+                                       int cap) {
+  return base::StringPrintf(
+      "name:ChromeOSAshGrowthCampaigns_%s%d_%s;comparator:<%d;window:3650;"
+      "storage:3650",
+      campaign_type.c_str(), id, event_type.c_str(), cap);
+}
+
+int GetHistogramMaxCampaignId(int campaign_id) {
+  // `campaign_id` starts at 0.
+  return (campaign_id / kCampaignsCountPerHistogram + 1) *
+         kCampaignsCountPerHistogram;
 }
 
 std::string ToString(bool value) {

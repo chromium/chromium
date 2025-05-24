@@ -38,7 +38,7 @@ std::string CreateJsonLine(const std::string& origin,
 
 class FilterToolTest : public ::testing::Test {
  public:
-  FilterToolTest() {}
+  FilterToolTest() = default;
 
   FilterToolTest(const FilterToolTest&) = delete;
   FilterToolTest& operator=(const FilterToolTest&) = delete;

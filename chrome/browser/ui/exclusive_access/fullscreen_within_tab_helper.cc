@@ -8,7 +8,7 @@ FullscreenWithinTabHelper::FullscreenWithinTabHelper(
     content::WebContents* contents)
     : content::WebContentsUserData<FullscreenWithinTabHelper>(*contents) {}
 
-FullscreenWithinTabHelper::~FullscreenWithinTabHelper() {}
+FullscreenWithinTabHelper::~FullscreenWithinTabHelper() = default;
 
 // static
 void FullscreenWithinTabHelper::RemoveForWebContents(

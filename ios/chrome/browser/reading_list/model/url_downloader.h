@@ -12,10 +12,10 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/task/cancelable_task_tracker.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_viewer_interface.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
 
-class PrefService;
 class GURL;
 namespace base {
 class FilePath;
@@ -82,9 +82,8 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   // and a boolean indicating success. For downloads, if distillation was
   // successful, it will also include the distilled url and extracted title.
   URLDownloader(
-      dom_distiller::DistillerFactory* distiller_factory,
+      DistillerService* distiller_service,
       reading_list::ReadingListDistillerPageFactory* distiller_page_factory,
-      PrefService* prefs,
       base::FilePath chrome_profile_path,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const DownloadCompletion& download_completion,
@@ -157,8 +156,7 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   void DistillerCallback(
       const GURL& pageURL,
       const std::string& html,
-      const std::vector<dom_distiller::DistillerViewerInterface::ImageInfo>&
-          images,
+      const std::vector<DistillerViewerInterface::ImageInfo>& images,
       const std::string& title,
       const std::string& csp_nonce);
 
@@ -170,8 +168,7 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
 
   raw_ptr<reading_list::ReadingListDistillerPageFactory>
       distiller_page_factory_;
-  raw_ptr<dom_distiller::DistillerFactory> distiller_factory_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<DistillerService> distiller_service_;
   const DownloadCompletion download_completion_;
   const SuccessCompletion delete_completion_;
 
@@ -186,7 +183,7 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   // URLLoaderFactory needed for the URLLoader.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<dom_distiller::DistillerViewerInterface> distiller_;
+  std::unique_ptr<DistillerViewerInterface> distiller_viewer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::CancelableTaskTracker task_tracker_;
 

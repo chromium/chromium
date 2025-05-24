@@ -11,7 +11,7 @@
 @class SessionTabGroup;
 
 // Encapsulates everything required to save a session "window".
-@interface SessionWindowIOS : NSObject<NSCoding>
+@interface SessionWindowIOS : NSObject <NSCoding>
 
 // Initializes SessionsWindowIOS using the parameters are initial values for
 // the `sessions` and `selectedIndex` properties. `selectedIndex` must be a

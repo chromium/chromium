@@ -85,7 +85,8 @@ TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
   const bool kEnabled = false;
   const bool kMuted = true;
   const String kContentHint = "motion";
-  const String kReadyState = "ended";
+  const V8MediaStreamTrackState::Enum kReadyState =
+      V8MediaStreamTrackState::Enum::kEnded;
   const MediaStreamSource::ReadyState kReadyStateEnum =
       MediaStreamSource::kReadyStateEnded;
   const bool kEnded = true;

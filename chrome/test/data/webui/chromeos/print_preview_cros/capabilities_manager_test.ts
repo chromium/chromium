@@ -6,8 +6,9 @@ import 'chrome://os-print/js/data/capabilities_manager.js';
 
 import {CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_LOADING, CAPABILITIES_MANAGER_ACTIVE_DESTINATION_CAPS_READY, CAPABILITIES_MANAGER_SESSION_INITIALIZED, CapabilitiesManager} from 'chrome://os-print/js/data/capabilities_manager.js';
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
-import {DestinationProviderComposite} from 'chrome://os-print/js/data/destination_provider_composite.js';
-import {FakeDestinationProvider, getFakeCapabilitiesResponse} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
+import type {DestinationProviderComposite} from 'chrome://os-print/js/data/destination_provider_composite.js';
+import type {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
+import {getFakeCapabilitiesResponse} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {getDestinationProvider} from 'chrome://os-print/js/utils/mojo_data_providers.js';

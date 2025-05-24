@@ -85,6 +85,10 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   // content view of the annotations overlay widget.
   std::unique_ptr<AnnotationsOverlayView> CreateAnnotationsOverlayView() const;
 
+  // Updates the accessible name of the |annotation_tray_| in the accessibility
+  // cache.
+  void UpdateAnnotationTrayAccessibleName(bool is_annotator_enabled);
+
   void set_canvas_initialized_callback_for_test(base::OnceClosure callback) {
     on_canvas_initialized_callback_for_test_ = std::move(callback);
   }

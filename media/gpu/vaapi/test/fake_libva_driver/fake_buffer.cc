@@ -2,9 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/numerics/checked_math.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
 
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
+
+#include <string.h>
+
+#include "base/numerics/checked_math.h"
 
 namespace {
 

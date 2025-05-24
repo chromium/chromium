@@ -1,0 +1,46 @@
+owners:
+- hchao@chromium.org
+- cthomp@chromium.org
+- chrome-secure-web-and-net@chromium.org
+
+caption: Specifies whether to apply restrictions to requests to local
+  network endpoints
+
+deprecated: true
+
+desc: |-
+  When this policy is set to Enabled, any time when a warning is supposed to be
+  displayed in the <ph name="DEV_TOOLS_NAME">DevTools</ph> due to <ph
+  name="LOCAL_NETWORK_ACCCESS">Local Network Access</ph> checks failing, the
+  main request will be blocked instead.
+
+  When this policy is set to Disabled or unset, <ph
+  name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> requests will use the
+  default handling of these requests.
+
+  See https://github.com/explainers-by-googlers/local-network-access for <ph
+  name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
+
+supported_on:
+- chrome.*:138-
+- chrome_os:138-
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+type: main
+
+schema:
+  type: boolean
+
+items:
+- caption: Apply restrictions to requests to local network endpoints
+  value: true
+- caption: Use default behavior when determining if websites can make requests
+    to local network endpoints
+  value: false
+
+example_value: true
+
+tags: []

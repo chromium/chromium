@@ -116,13 +116,15 @@ backgroundColorShouldBe('host', 'rgb(0, 128, 0)');
 
 cleanUp();
 
-debug(':host with :host-context in a shadow tree should match its shadow host.');
+debug(':host with :host-context in a shadow tree should not match.');
 
 sandbox.appendChild(
     createDOM('div', {'id': 'host', 'class': 'foobar'},
         createShadowRoot(
             createDOM('style', {},
-               document.createTextNode(':host(:host-context(body.mytheme)) { background-color: green; }')),
+               document.createTextNode(':host { background-color: green; }')),
+            createDOM('style', {},
+               document.createTextNode(':host(:host-context(body.mytheme)) { background-color: red; }')),
             createDOM('div', {},
                 document.createTextNode('Hello')))));
 
@@ -196,13 +198,13 @@ sandbox.appendChild(
     createDOM('div', {'id': 'host'},
         createShadowRoot(
             createDOM('style', {},
-                document.createTextNode(':host(:is(div:host, div#sandbox)) { background-color: green; }')),
+                document.createTextNode(':host(div#host) { background-color: green; }')),
             createDOM('style', {},
-                document.createTextNode(':host(body.mytheme) { background-color: red; }')),
+                document.createTextNode(':host(:is(div:host, div#sandbox)) { background-color: red; }')),
             createDOM('div', {},
                 document.createTextNode('Hello')))));
 
-// :host(:is(div:host, div#sandbox)) wins, because div#sandbox > body.mytheme.
+// :host(:is(div:host, div#sandbox)) does not match anything.
 backgroundColorShouldBe('host', 'rgb(0, 128, 0)');
 
 cleanUp();
@@ -222,14 +224,14 @@ backgroundColorShouldBe('host', 'rgb(255, 0, 0)');
 
 cleanUp();
 
-// Test for specificiy of ":host(...) > ...".
+// Formerly tests for specificiy of ":host(...) > ...".
 sandbox.appendChild(
     createDOM('div', {'id': 'host', 'class': 'foobar' },
         createShadowRoot(
             createDOM('style', {},
-                document.createTextNode(':host(:is(div:host, div#host:host)) > div { background-color: green; }')),
+                document.createTextNode(':host(div.foobar) > div { background-color: green; }')),
             createDOM('style', {},
-                document.createTextNode(':host(div.foobar) > div { background-color: red; }')),
+                document.createTextNode(':host(:is(div:host, div#host:host)) > div { background-color: red; }')),
             createDOM('div', {'id': 'target'},
                 document.createTextNode('Hello')))));
 
@@ -241,9 +243,9 @@ sandbox.appendChild(
     createDOM('div', {'id': 'host', 'class': 'host'},
         createShadowRoot(
             createDOM('style', {},
-                document.createTextNode(':host(:is(div:host, div#host.host:host)) > div { background-color: green; }')),
+                document.createTextNode(':host(div) > div#target { background-color: green; }')),
             createDOM('style', {},
-                document.createTextNode(':host(div) > div#target { background-color: red; }')),
+                document.createTextNode(':host(:is(div:host, div#host.host:host)) > div { background-color: red; }')),
             createDOM('div', {'id': 'target'},
                 document.createTextNode('Hello')))));
 
@@ -255,9 +257,9 @@ sandbox.appendChild(
     createDOM('div', {'id': 'host', 'class': 'host'},
         createShadowRoot(
             createDOM('style', {},
-                document.createTextNode(':host(div:host(div:host(div:host(div:host)))) > div { background-color: green; }')),
+                document.createTextNode(':host(div) > div { background-color: green; }')),
             createDOM('style', {},
-                document.createTextNode(':host(div) > div { background-color: red; }')),
+                document.createTextNode(':host(div:host(div:host(div:host(div:host)))) > div { background-color: red; }')),
             createDOM('div', {'id': 'target'},
                 document.createTextNode('Hello')))));
 

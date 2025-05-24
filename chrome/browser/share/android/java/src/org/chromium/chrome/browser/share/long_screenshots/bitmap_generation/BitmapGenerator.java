@@ -25,13 +25,13 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
     // Compositor delegate responsible for compositing the skia
     private LongScreenshotsCompositor mCompositor;
     private LongScreenshotsTabService mTabService;
-    private Tab mTab;
+    private final Tab mTab;
 
     private static final String DIR_NAME = "long_screenshots_dir";
 
     protected GeneratorCallBack mGeneratorCallBack;
     private CompositorFactory mCompositorFactory;
-    private ScreenshotBoundsManager mBoundsManager;
+    private final ScreenshotBoundsManager mBoundsManager;
     private float mScaleFactor;
 
     /**

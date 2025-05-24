@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Map;
 import java.util.Set;
 
 /** Interface for the notification handler for tab notifications components. */
+@NullMarked
 public interface TabListNotificationHandler {
     /**
      * Update the notification bubble indicating a new status for all tab strip items.

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Links Opening in New Tab</title>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+  </head>
+  <body>
+    <h1>Links Opening in New Tab</h1>
+    <div><a id="anchorTarget" href="blank.html" target="_blank">Open link in new tab</a></div>
+    <div><a id="scriptOpen" href="#">Open link in new tab by script</a></div>
+    <script>
+      document.getElementById('scriptOpen').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.open('blank.html', '_blank');
+      });
+    </script>
+  </body>
+</html>

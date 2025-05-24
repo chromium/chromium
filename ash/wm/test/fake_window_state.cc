@@ -46,11 +46,9 @@ void FakeWindowStateDelegate::ToggleLockedFullscreen(
   ++toggle_locked_fullscreen_count_;
 }
 
-std::unique_ptr<PresentationTimeRecorder>
-FakeWindowStateDelegate::OnDragStarted(int component) {
+void FakeWindowStateDelegate::OnDragStarted(int component) {
   drag_in_progress_ = true;
   drag_start_component_ = component;
-  return nullptr;
 }
 
 void FakeWindowStateDelegate::OnDragFinished(bool cancel,

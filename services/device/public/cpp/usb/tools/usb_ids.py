@@ -64,21 +64,20 @@ def GenerateDeviceDefinitions(table):
   return output
 
 def GenerateVendorDefinitions(table):
-  output = "const size_t UsbIds::vendor_size_ = %d;\n" % len(table.keys())
-  output += "const UsbVendor UsbIds::vendors_[] = {\n"
+  output = "static const UsbVendor vendors[] = {\n"
 
   for vendor_id in sorted(table.keys()):
     vendor = table[vendor_id]
 
-    product_table = "nullptr"
+    product_table = "{}"
     if len(vendor["products"]) != 0:
       product_table = "vendor_%.4x_products" % (vendor["id"])
-    output += "  {\"%s\", %s, 0x%.4x, %d},\n" % (EscapeName(vendor["name"]),
-                                                 product_table,
-                                                 vendor["id"],
-                                                 len(vendor["products"]))
+    output += "  {\"%s\", %s, 0x%.4x},\n" % (EscapeName(vendor["name"]),
+                                             product_table,
+                                             vendor["id"])
 
   output += "};\n"
+  output += "const base::span<const UsbVendor> UsbIds::vendors_ = vendors;\n"
   return output
 
 if __name__ == "__main__":

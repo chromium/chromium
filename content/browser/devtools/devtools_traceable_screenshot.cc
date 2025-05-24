@@ -28,10 +28,10 @@ DevToolsTraceableScreenshot::~DevToolsTraceableScreenshot() {
 void DevToolsTraceableScreenshot::AppendAsTraceFormat(std::string* out) const {
   out->append("\"");
   if (!frame_.drawsNothing()) {
-    std::vector<unsigned char> data;
-    bool encoded = gfx::JPEGCodec::Encode(frame_, 80, &data);
-    if (encoded) {
-      base::Base64EncodeAppend(base::make_span(data), out);
+    std::optional<std::vector<uint8_t>> data =
+        gfx::JPEGCodec::Encode(frame_, /*quality=*/80);
+    if (data) {
+      base::Base64EncodeAppend(data.value(), out);
     }
   }
   out->append("\"");

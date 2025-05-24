@@ -42,14 +42,12 @@ bool IsMediaRequestAllowedForExtension(const extensions::Extension* extension) {
 
 }  // namespace
 
-ExtensionMediaAccessHandler::ExtensionMediaAccessHandler() {
-}
+ExtensionMediaAccessHandler::ExtensionMediaAccessHandler() = default;
 
-ExtensionMediaAccessHandler::~ExtensionMediaAccessHandler() {
-}
+ExtensionMediaAccessHandler::~ExtensionMediaAccessHandler() = default;
 
 bool ExtensionMediaAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return extension &&

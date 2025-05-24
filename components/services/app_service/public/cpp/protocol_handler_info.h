@@ -19,18 +19,15 @@ struct ProtocolHandlerInfo {
   ProtocolHandlerInfo(const ProtocolHandlerInfo& other);
   ~ProtocolHandlerInfo();
 
+  friend bool operator==(const ProtocolHandlerInfo&,
+                         const ProtocolHandlerInfo&) = default;
+
   base::Value AsDebugValue() const;
 
   std::string protocol;
   GURL url;
 };
 using ProtocolHandlers = std::vector<ProtocolHandlerInfo>;
-
-bool operator==(const ProtocolHandlerInfo& handler1,
-                const ProtocolHandlerInfo& handler2);
-
-bool operator!=(const ProtocolHandlerInfo& handler1,
-                const ProtocolHandlerInfo& handler2);
 
 }  // namespace apps
 

@@ -35,8 +35,7 @@ PwaInstallPathTracker::GetInstallPathMetric(
       case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
         return InstallPathMetric::kAmbientBottomSheet;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   } else {
     switch (install_source) {
@@ -50,12 +49,9 @@ PwaInstallPathTracker::GetInstallPathMetric(
       case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
         return InstallPathMetric::kAmbientMessage;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
-
-  return InstallPathMetric::kUnknownMetric;
 }
 
 }  // namespace webapps

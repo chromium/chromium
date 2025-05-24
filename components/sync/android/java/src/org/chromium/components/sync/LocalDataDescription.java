@@ -11,8 +11,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Java version of the native LocalDataDescription struct. */
 @JNINamespace("syncer")
+@NullMarked
 public class LocalDataDescription {
     private final int mItemCount;
     private final String[] mDomains;

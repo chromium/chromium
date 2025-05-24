@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "remoting/host/mojom/remoting_mojom_traits.h"
+
+#include <string_view>
+
+#include "remoting/base/source_location.h"
 
 namespace mojo {
 
@@ -555,6 +564,12 @@ bool mojo::StructTraits<remoting::mojom::VideoTrackLayoutDataView,
   out_track->set_x_dpi(dpi.x());
   out_track->set_y_dpi(dpi.y());
 
+  std::string display_name;
+  if (!data_view.ReadDisplayName(&display_name)) {
+    return false;
+  }
+  out_track->set_display_name(std::move(display_name));
+
   return true;
 }
 
@@ -571,6 +586,25 @@ bool mojo::StructTraits<remoting::mojom::VideoLayoutDataView,
       data_view.supports_full_desktop_capture());
 
   out_layout->set_primary_screen_id(data_view.primary_screen_id());
+
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::SourceLocationDataView,
+                        ::remoting::SourceLocation>::
+    Read(remoting::mojom::SourceLocationDataView data_view,
+         ::remoting::SourceLocation* out_source_info) {
+  std::optional<std::string_view> function_name;
+  std::optional<std::string_view> file_name;
+  if (!data_view.ReadFunctionName(&function_name)) {
+    return false;
+  }
+  if (!data_view.ReadFileName(&file_name)) {
+    return false;
+  }
+  out_source_info->InitializeWithBackingStore(function_name, file_name,
+                                              data_view.line_number());
 
   return true;
 }

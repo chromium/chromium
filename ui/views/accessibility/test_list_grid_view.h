@@ -23,18 +23,10 @@ class TestListGridView : public View {
   TestListGridView();
   ~TestListGridView() override;
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   void SetAriaTableSize(int row_count, int column_count);
   void SetTableSize(int row_count, int column_count);
   void UnsetAriaTableSize();
   void UnsetTableSize();
-
- private:
-  std::optional<int> aria_row_count = std::nullopt;
-  std::optional<int> aria_column_count = std::nullopt;
-  std::optional<int> table_row_count = std::nullopt;
-  std::optional<int> table_column_count = std::nullopt;
 };
 
 }  // namespace test

@@ -1,43 +1,10 @@
-<!doctype html>
+<!DOCTYPE HTML>
 <html lang="en" dir="ltr">
-<!--
-Copyright 2023 The Chromium Authors
-Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file.
--->
-
   <head>
     <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
     <title>Commerce Internals</title>
-    <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="commerce_internals.css">
-<if expr="is_ios">
-    <!-- TODO(crbug.com/41173939): Remove this once injected by web. -->
-    <script src="chrome://resources/js/ios/web_ui.js"></script>
-    <script src="chrome://resources/js/ios/mojo_api.js"></script>
-</if>
   </head>
-
-  <body>
-    <h1>Commerce Internals</h1>
-    <div>Shopping list eligible?: <span id="shopping-list-eligible"></span> <button id="shopping-list-eligible-see-details-btn">See details</button></div>
-    <div id="shopping-list-eligible-details"></div>
-
-    <div>
-    <!-- TODO(b/312262758 Migrate to Polymer/WebUI -->
-    <!-- TODO(b/312262758) Move subscriptions to their own page. -->
-    <h2>Subscriptions</h2>
-    <ul id="subscriptions"></ul>
-    </div>
-
-    <h2>Product Specifications</h2>
-    <ul id="product_specifications"></ul>
-    <button id="reset_product_specifications_button">Reset Product Specifications</button>
-
-    <h2>Utilities:</h2>
-    <button id="reset-price-tracking-email-pref-button">Reset price tracking email preference</button>
-  </body>
-
-  <script type="module" src="commerce_internals.js"></script>
-
+  <commerce-internals-app></commerce-internals-app>
+  <script type="module" src="app.js"></script>
 </html>

@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/download/offline_item_utils.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_utils.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,6 +48,7 @@ class OfflineItemUtilsTest : public testing::Test {
       const base::FilePath& file_path,
       const base::FilePath& file_name,
       const std::string& mime_type,
+      download::DownloadDangerType danger_type,
       DownloadItem::DownloadState state,
       bool is_paused,
       bool is_dangerous,
@@ -77,6 +75,7 @@ OfflineItemUtilsTest::CreateDownloadItem(
     const base::FilePath& file_path,
     const base::FilePath& file_name,
     const std::string& mime_type,
+    download::DownloadDangerType danger_type,
     DownloadItem::DownloadState state,
     bool is_paused,
     bool is_dangerous,
@@ -93,8 +92,7 @@ OfflineItemUtilsTest::CreateDownloadItem(
       .WillByDefault(ReturnRefOfCopy(GURL(kTestOriginalUrl)));
   ON_CALL(*item, GetReferrerUrl())
       .WillByDefault(ReturnRefOfCopy(GURL(kTestReferrerUrl)));
-  ON_CALL(*item, GetDangerType())
-      .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
+  ON_CALL(*item, GetDangerType()).WillByDefault(Return(danger_type));
   ON_CALL(*item, GetId()).WillByDefault(Return(0));
   ON_CALL(*item, GetLastReason()).WillByDefault(Return(interrupt_reason));
   ON_CALL(*item, GetState()).WillByDefault(Return(state));
@@ -123,9 +121,11 @@ OfflineItemUtilsTest::CreateDownloadItem(
   base::FilePath file_path(FILE_PATH_LITERAL("/tmp/example_file_path"));
   base::FilePath file_name(FILE_PATH_LITERAL("example_file_path"));
   std::string mime_type = "text/html";
-  return CreateDownloadItem(guid, file_path, file_name, mime_type, state,
-                            is_paused, false, base::Time(), base::Time(), 10,
-                            100, interrupt_reason);
+  download::DownloadDangerType danger_type =
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT;
+  return CreateDownloadItem(guid, file_path, file_name, mime_type, danger_type,
+                            state, is_paused, false, base::Time(), base::Time(),
+                            10, 100, interrupt_reason);
 }
 
 TEST_F(OfflineItemUtilsTest, BasicConversions) {
@@ -133,6 +133,8 @@ TEST_F(OfflineItemUtilsTest, BasicConversions) {
   base::FilePath file_path(FILE_PATH_LITERAL("/tmp/example_file_path"));
   base::FilePath file_name(FILE_PATH_LITERAL("image.png"));
   std::string mime_type = "image/png";
+  download::DownloadDangerType danger_type =
+      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED;
   base::Time creation_time = base::Time::Now();
   base::Time completion_time = base::Time::Now();
   base::Time last_access_time = base::Time::Now();
@@ -149,8 +151,9 @@ TEST_F(OfflineItemUtilsTest, BasicConversions) {
   int64_t total_bytes = 1000;
   int64_t received_bytes = 10;
   std::unique_ptr<download::MockDownloadItem> download = CreateDownloadItem(
-      guid, file_path, file_name, mime_type, DownloadItem::COMPLETE, false,
-      is_dangerous, creation_time, last_access_time, 0, 0, interrupt_reason);
+      guid, file_path, file_name, mime_type, danger_type,
+      DownloadItem::COMPLETE, false, is_dangerous, creation_time,
+      last_access_time, 0, 0, interrupt_reason);
 
   ON_CALL(*download, IsTransient()).WillByDefault(Return(is_transient));
   ON_CALL(*download, IsParallelDownload())
@@ -191,6 +194,7 @@ TEST_F(OfflineItemUtilsTest, BasicConversions) {
   EXPECT_EQ(is_openable, offline_item.is_openable);
   EXPECT_EQ(file_path, offline_item.file_path);
   EXPECT_EQ(mime_type, offline_item.mime_type);
+  EXPECT_EQ(danger_type, offline_item.danger_type);
 
   EXPECT_EQ(GURL(kTestUrl), offline_item.url);
   EXPECT_EQ(GURL(kTestOriginalUrl), offline_item.original_url);
@@ -305,12 +309,18 @@ TEST_F(OfflineItemUtilsTest, StateConversions) {
 }
 
 TEST_F(OfflineItemUtilsTest, MimeTypeToFilterConversion) {
-  std::string mime_type[5] = {"text/html", "image/png", "video/webm",
-                              "audio/aac", "application/octet-stream"};
-  OfflineItemFilter filter[5] = {
+  std::array<std::string, 5> mime_type = {
+      "text/html",
+      "image/png",
+      "video/webm",
+      "audio/aac",
+      "application/octet-stream",
+  };
+  std::array<OfflineItemFilter, 5> filter = {
       OfflineItemFilter::FILTER_DOCUMENT, OfflineItemFilter::FILTER_IMAGE,
-      OfflineItemFilter::FILTER_VIDEO, OfflineItemFilter::FILTER_AUDIO,
-      OfflineItemFilter::FILTER_OTHER};
+      OfflineItemFilter::FILTER_VIDEO,    OfflineItemFilter::FILTER_AUDIO,
+      OfflineItemFilter::FILTER_OTHER,
+  };
 
   for (int i = 0; i < 5; i++) {
     std::unique_ptr<download::MockDownloadItem> download =

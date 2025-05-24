@@ -61,12 +61,12 @@ class WebUITestPageHandler : public web_ui_test::mojom::TestRunner,
 class MojoWebUIBrowserTest::WebUITestContentBrowserClient
     : public ChromeContentBrowserClient {
  public:
-  WebUITestContentBrowserClient() {}
+  WebUITestContentBrowserClient() = default;
   WebUITestContentBrowserClient(const WebUITestContentBrowserClient&) = delete;
   WebUITestContentBrowserClient& operator=(
       const WebUITestContentBrowserClient&) = delete;
 
-  ~WebUITestContentBrowserClient() override {}
+  ~WebUITestContentBrowserClient() override = default;
 
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,

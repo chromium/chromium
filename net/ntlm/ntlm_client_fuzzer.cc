@@ -46,6 +46,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   client.GenerateAuthenticateMessage(
       domain, username, password, hostname, channel_bindings, spn, client_time,
-      net::ntlm::test::kClientChallenge, base::make_span(challenge_msg_bytes));
+      net::ntlm::test::kClientChallenge, base::span(challenge_msg_bytes));
   return 0;
 }

@@ -44,7 +44,7 @@ struct TrainingLabels {
   ~TrainingLabels();
 
   // Name and sample of the output metric to be collected as training data.
-  std::optional<std::pair<std::string, base::HistogramBase::Sample>>
+  std::optional<std::pair<std::string, base::HistogramBase::Sample32>>
       output_metric;
 
   TrainingLabels(const TrainingLabels& other);
@@ -113,6 +113,11 @@ class SegmentationPlatformService : public KeyedService,
   // result.
   virtual SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) = 0;
+
+  // Get the set of input keys required for the model execution for
+  // `segmentation_key`.
+  virtual void GetInputKeysForModel(const std::string& segmentation_key,
+                                    InputContextKeysCallback callback) = 0;
 
   // Called to trigger training data collection for a given request ID. Request
   // IDs are given when |GetClassificationResult| is called. `param` is used to

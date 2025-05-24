@@ -44,7 +44,6 @@
       {
         "args": [
           "--gtest_filter=UsingRealWebcam*",
-          "--run-manual",
           "--test-launcher-jobs=1",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -105,7 +104,6 @@
       {
         "args": [
           "--gtest_filter=UsingRealWebcam*",
-          "--run-manual",
           "--test-launcher-jobs=1",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -147,7 +145,6 @@
       {
         "args": [
           "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
-          "--run-manual",
           "--ui-test-action-max-timeout=300000",
           "--test-launcher-timeout=350000",
           "--test-launcher-jobs=1",
@@ -171,7 +168,6 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter",
-          "--run-manual",
           "--test-launcher-jobs=1"
         ],
         "merge": {
@@ -209,7 +205,6 @@
       {
         "args": [
           "--gtest_filter=UsingRealWebcam*",
-          "--run-manual",
           "--test-launcher-jobs=1"
         ],
         "merge": {
@@ -228,8 +223,7 @@
       },
       {
         "args": [
-          "--gtest_filter=WebRtc*MANUAL*:-UsingRealWebcam*",
-          "--run-manual",
+          "--gtest_filter=WebRtc*:-UsingRealWebcam*",
           "--ui-test-action-max-timeout=110000",
           "--test-launcher-timeout=120000"
         ],
@@ -299,7 +293,6 @@
       {
         "args": [
           "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
-          "--run-manual",
           "--ui-test-action-max-timeout=300000",
           "--test-launcher-timeout=350000",
           "--test-launcher-jobs=1",
@@ -323,7 +316,6 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter",
-          "--run-manual",
           "--test-launcher-jobs=1"
         ],
         "merge": {
@@ -361,7 +353,6 @@
       {
         "args": [
           "--gtest_filter=UsingRealWebcam*",
-          "--run-manual",
           "--test-launcher-jobs=1"
         ],
         "merge": {
@@ -380,8 +371,7 @@
       },
       {
         "args": [
-          "--gtest_filter=WebRtc*MANUAL*:-UsingRealWebcam*",
-          "--run-manual",
+          "--gtest_filter=WebRtc*:-UsingRealWebcam*",
           "--ui-test-action-max-timeout=110000",
           "--test-launcher-timeout=120000"
         ],
@@ -451,7 +441,6 @@
       {
         "args": [
           "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
-          "--run-manual",
           "--ui-test-action-max-timeout=300000",
           "--test-launcher-timeout=350000",
           "--test-launcher-jobs=1",
@@ -475,7 +464,6 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter",
-          "--run-manual",
           "--test-launcher-jobs=1"
         ],
         "merge": {
@@ -513,7 +501,6 @@
       {
         "args": [
           "--gtest_filter=UsingRealWebcam*",
-          "--run-manual",
           "--test-launcher-jobs=1"
         ],
         "merge": {
@@ -532,8 +519,7 @@
       },
       {
         "args": [
-          "--gtest_filter=WebRtc*MANUAL*:-UsingRealWebcam*",
-          "--run-manual",
+          "--gtest_filter=WebRtc*:-UsingRealWebcam*",
           "--ui-test-action-max-timeout=110000",
           "--test-launcher-timeout=120000"
         ],

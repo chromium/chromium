@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
@@ -13,8 +14,11 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/test_extension_dir.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -126,7 +130,7 @@ TEST_F(SessionStorageApiUnittest,
 
   // Reload the extension and check the session storage is cleared.
   TestExtensionRegistryObserver registry_observer(registry(), extension_id);
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
   scoped_refptr<const Extension> reloaded_extension =
       registry_observer.WaitForExtensionLoaded();
   EXPECT_THAT(*GetStorage(reloaded_extension), base::test::IsJson(R"({})"));

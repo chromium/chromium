@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1149198577555059081">Meklēt vai ievadīt URL</translation>
 <translation id="1324575488877808473">Atveriet pārlūkprogrammu Chrome, lai šeit skatītu visbiežāk apmeklētās vietnes.</translation>
 <translation id="2513892053093488070">Meklēt ar balsi</translation>
 <translation id="2535710892645968259">Atveriet Chrome dinozaura spēli no bloķēšanas ekrāna.</translation>
@@ -15,11 +16,11 @@
 <translation id="405442954313519726">Jaunā cilnē veiciet meklēšanu vai navigāciju, izmantojot inkognito režīmu, balss vadību vai kvadrātkodu.</translation>
 <translation id="4557098988773644458">Atvērt Chrome dinozaura spēli</translation>
 <translation id="4678859075583681103">Meklējiet jaunu saturu vai atveriet visbiežāk apmeklētās vietnes no sava iPhone tālruņa sākumlapas.</translation>
-<translation id="4954445889641385956">Meklēt vai ievadīt URL</translation>
 <translation id="4962772945748414465">Atvērt WEBSITE_PLACEHOLDER</translation>
 <translation id="5234725349196694896">Veiciet meklēšanu pārlūkā Chrome, izmantojot savu iecienīto meklētājprogrammu.</translation>
 <translation id="5277852985315196237">Meklējiet vai ievadiet URL</translation>
 <translation id="529497070985873480">Chrome dinozaurs</translation>
+<translation id="5325847452011598583">Nav konta</translation>
 <translation id="5683557219437283801">Meklēt ar balsi</translation>
 <translation id="6179961764474023795">Ātrās darbības</translation>
 <translation id="6330929932864892436">Meklēt vai ievadīt URL</translation>
@@ -39,7 +40,9 @@ ievadiet URL</translation>
 <translation id="8104498668011127805">Atvērt Chrome dinozaura spēli</translation>
 <translation id="8150601371542319992">Lens</translation>
 <translation id="8171952085734471362">Meklēt inkognito režīmā</translation>
+<translation id="8310150944719146950">Konts</translation>
 <translation id="8564942608461410346">Veiciet meklēšanu pārlūkā Chrome, izmantojot savu iecienīto meklētājprogrammu.</translation>
+<translation id="8858765528951093286">Ar logrīku izmantotais konts tika noņemts. Lai atlasītu citu kontu, pieskarieties vienumam “Rediģēt logrīku”.</translation>
 <translation id="9175676375569833962">Paroļu
 meklēšana</translation>
 </translationbundle>

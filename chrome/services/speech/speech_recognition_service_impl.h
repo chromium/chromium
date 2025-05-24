@@ -55,7 +55,7 @@ class SpeechRecognitionServiceImpl
   void SetSodaPaths(
       const base::FilePath& binary_path,
       const base::flat_map<std::string, base::FilePath>& config_paths,
-      const std::string& primary_language_name) override;
+      const std::string& default_live_caption_language) override;
   void SetSodaParams(const bool mask_offensive_words) override;
   void SetSodaConfigPaths(
       const base::flat_map<std::string, base::FilePath>& config_paths) override;
@@ -114,7 +114,7 @@ class SpeechRecognitionServiceImpl
 
   base::FilePath binary_path_ = base::FilePath();
   base::flat_map<std::string, base::FilePath> config_paths_;
-  std::string primary_language_name_;
+  std::string default_live_caption_language_;
   bool mask_offensive_words_ = false;
 
   base::ObserverList<Observer> observers_;

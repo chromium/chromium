@@ -46,12 +46,12 @@ import java.util.concurrent.Callable;
 })
 public class WebXrVrCardboardTransitionTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             VrCardboardTestRuleUtils.generateDefaultTestRuleParameters();
 
     @Rule public RuleChain mRuleChain;
 
-    private ChromeActivityTestRule mTestRule;
+    private final ChromeActivityTestRule mTestRule;
     private WebXrVrTestFramework mWebXrVrTestFramework;
 
     public WebXrVrCardboardTransitionTest(Callable<ChromeActivityTestRule> callable)

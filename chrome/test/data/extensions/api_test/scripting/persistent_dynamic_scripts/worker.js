@@ -2,17 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {openTab} from '/_test_resources/test_util/tabs_util.js';
-
-async function getInjectedElementIds() {
-  // We use a setTimeout to ensure any other scripts also injected at
-  // `document_idle` have a chance to run.
-  await new Promise(resolve => { setTimeout(resolve, 0); });
-  let childIds = [];
-  for (const child of document.body.children)
-    childIds.push(child.id);
-  return childIds.sort();
-};
+import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
 
 // For the first session, register one persistent script and one session script.
 async function runFirstSession() {
@@ -54,12 +44,9 @@ async function runFirstSession() {
   const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
 
   let tab = await openTab(url);
-  let results = await chrome.scripting.executeScript(
-      {target: {tabId: tab.id}, func: getInjectedElementIds});
-
-  chrome.test.assertEq(1, results.length);
-  chrome.test.assertEq(['injected', 'injected_2', 'injected_3'],
-                       results[0].result);
+  chrome.test.assertEq(
+      ['injected', 'injected_2', 'injected_3'],
+      await getInjectedElementIds(tab.id));
 
   chrome.test.succeed();
 }
@@ -101,11 +88,8 @@ async function runSecondSession() {
   const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
 
   let tab = await openTab(url);
-  let results = await chrome.scripting.executeScript(
-      {target: {tabId: tab.id}, func: getInjectedElementIds});
-
-  chrome.test.assertEq(1, results.length);
-  chrome.test.assertEq(['injected', 'injected_2'], results[0].result);
+  chrome.test.assertEq(
+      ['injected', 'injected_2'], await getInjectedElementIds(tab.id));
 
   await chrome.scripting.unregisterContentScripts();
 
@@ -161,11 +145,7 @@ async function runThirdSession() {
   const config = await chrome.test.getConfig();
   const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
   let tab = await openTab(url);
-  let results = await chrome.scripting.executeScript(
-      {target: {tabId: tab.id}, func: getInjectedElementIds});
-
-  chrome.test.assertEq(1, results.length);
-  chrome.test.assertEq(['injected_3'], results[0].result);
+  chrome.test.assertEq(['injected_3'], await getInjectedElementIds(tab.id));
 
   chrome.test.succeed();
 }

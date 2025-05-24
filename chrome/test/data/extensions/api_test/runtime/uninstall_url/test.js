@@ -6,7 +6,7 @@
 // browser_tests.exe --gtest_filter=ExtensionApiTest.ChromeRuntimeUninstallURL
 
 var pass = chrome.test.callbackPass;
-var uninstall_url = 'http://www.google.com/';
+var uninstall_url = 'https://www.google.com/';
 var sets_uninstall_url = 'Sets Uninstall Url';
 var uninstalled = false;
 chrome.test.runTests([

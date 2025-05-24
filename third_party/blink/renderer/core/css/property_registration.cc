@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/css/property_registration.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_property_definition.h"
-#include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
+#include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -49,10 +49,9 @@ PropertyRegistration::PropertyRegistration(const AtomicString& name,
       initial_(initial),
       property_rule_(property_rule),
       interpolation_types_(
-          CSSInterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
-              name,
-              syntax,
-              *this)),
+          InterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(name,
+                                                                      syntax,
+                                                                      *this)),
       referenced_(false) {}
 
 PropertyRegistration::~PropertyRegistration() = default;
@@ -76,6 +75,7 @@ unsigned PropertyRegistration::GetViewportUnitFlags() const {
 void PropertyRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(initial_);
   visitor->Trace(property_rule_);
+  visitor->Trace(interpolation_types_);
 }
 
 static bool ComputationallyIndependent(const CSSValue& value) {

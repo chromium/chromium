@@ -1,0 +1,48 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome_urls.mojom;
+
+import "url/mojom/url.mojom";
+
+struct WebuiUrlInfo {
+  // The WebUI's scheme + host, e.g. chrome://settings
+  url.mojom.Url url;
+  // Whether the WebUI is enabled.
+  bool enabled;
+  // Whether the WebUI is an internal debugging UI.
+  bool internal;
+};
+
+struct ChromeUrlsData {
+  // Information about URLs for chrome:// WebUI pages. WebUI pages include
+  // chrome://settings, chrome://extensions, chrome://history, etc.
+  array<WebuiUrlInfo> webui_urls;
+  // chrome:// URLs corresponding to commands (not UIs), e.g. chrome://kill
+  array<url.mojom.Url> command_urls;
+  // Whether internal debugging WebUIs are enabled.
+  bool internal_debugging_uis_enabled;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI page's |BrowserProxy| singleton calls this method when the
+  // page is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Called by the WebUI page to get the lists of URLs to display.
+  GetUrls() => (ChromeUrlsData urls_data);
+
+  // Called by the WebUI page to set the kInternalDebugPagesEnabled pref to
+  // `enabled`. The handler invokes a callback to tell the page the pref was
+  // set.
+  SetDebugPagesEnabled(bool enabled) => ();
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {};

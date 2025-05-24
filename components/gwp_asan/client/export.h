@@ -15,11 +15,7 @@
 #endif  // defined(GWP_ASAN_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(GWP_ASAN_IMPLEMENTATION)
 #define GWP_ASAN_EXPORT __attribute__((visibility("default")))
-#else
-#define GWP_ASAN_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

@@ -8,6 +8,8 @@ bundle_data("resources") {
     "enhanced_safe_browsing_promo_darkmode.json",
     "lens_promo.json",
     "lens_promo_darkmode.json",
+    "search_what_you_see_promo.json",
+    "search_what_you_see_promo_darkmode.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

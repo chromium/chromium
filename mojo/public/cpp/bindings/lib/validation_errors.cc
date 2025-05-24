@@ -160,9 +160,12 @@ ValidationErrorObserverForTesting::~ValidationErrorObserverForTesting() {
   g_validation_error_observer = nullptr;
 }
 
-bool ReportSerializationWarning(ValidationError error) {
+bool ReportSerializationWarning(
+    ValidationError error,
+    mojo::internal::SendValidation validation_type) {
   if (g_serialization_warning_observer) {
     g_serialization_warning_observer->set_last_warning(error);
+    g_serialization_warning_observer->set_send_validation_type(validation_type);
     return true;
   }
 
@@ -180,10 +183,5 @@ SerializationWarningObserverForTesting::
   DCHECK(g_serialization_warning_observer == this);
   g_serialization_warning_observer = nullptr;
 }
-
-void RecordInvalidStringDeserialization() {
-  base::UmaHistogramBoolean("Mojo.InvalidUTF8String", false);
-}
-
 }  // namespace internal
 }  // namespace mojo

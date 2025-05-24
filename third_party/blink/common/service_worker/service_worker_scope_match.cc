@@ -46,8 +46,7 @@ bool ServiceWorkerScopeOrScriptUrlContainsDisallowedCharacter(
 
 bool ServiceWorkerScopeMatches(const GURL& scope, const GURL& url) {
   DCHECK(!scope.has_ref());
-  return base::StartsWith(url.spec(), scope.spec(),
-                          base::CompareCase::SENSITIVE);
+  return url.spec().starts_with(scope.spec());
 }
 
 ServiceWorkerLongestScopeMatcher::ServiceWorkerLongestScopeMatcher(

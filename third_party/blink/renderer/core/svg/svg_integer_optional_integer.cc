@@ -51,14 +51,6 @@ SVGIntegerOptionalInteger* SVGIntegerOptionalInteger::Clone() const {
       first_integer_->Clone(), second_integer_->Clone());
 }
 
-SVGPropertyBase* SVGIntegerOptionalInteger::CloneForAnimation(
-    const String& value) const {
-  auto* clone = MakeGarbageCollected<SVGIntegerOptionalInteger>(
-      MakeGarbageCollected<SVGInteger>(0), MakeGarbageCollected<SVGInteger>(0));
-  clone->SetValueAsString(value);
-  return clone;
-}
-
 String SVGIntegerOptionalInteger::ValueAsString() const {
   if (first_integer_->Value() == second_integer_->Value()) {
     return String::Number(first_integer_->Value());

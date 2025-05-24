@@ -22,7 +22,7 @@ namespace resource_coordinator {
 // performance manager.
 class TabManagerResourceCoordinatorSignalObserver
     : public performance_manager::GraphOwned,
-      public performance_manager::PageNode::ObserverDefaultImpl {
+      public performance_manager::PageNodeObserver {
  public:
   using Graph = performance_manager::Graph;
   using PageNode = performance_manager::PageNode;
@@ -35,7 +35,7 @@ class TabManagerResourceCoordinatorSignalObserver
   TabManagerResourceCoordinatorSignalObserver& operator=(
       const TabManagerResourceCoordinatorSignalObserver&) = delete;
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
 

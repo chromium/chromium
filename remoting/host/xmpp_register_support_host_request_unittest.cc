@@ -88,8 +88,9 @@ class XmppRegisterSupportHostRequestTest : public testing::Test {
 
 TEST_F(XmppRegisterSupportHostRequestTest, Timeout) {
   auto request = std::make_unique<XmppRegisterSupportHostRequest>(kTestBotJid);
-  request->StartRequest(&signal_strategy_, key_pair_, authorized_helper_,
-                        std::nullopt, callback_.Get());
+  request->StartRequest(&signal_strategy_, /* client_cert_store= */ nullptr,
+                        key_pair_, authorized_helper_, std::nullopt,
+                        callback_.Get());
   EXPECT_CALL(signal_strategy_, GetNextId()).WillOnce(Return(kStanzaId));
   EXPECT_CALL(signal_strategy_, SendStanzaPtr(NotNull()))
       .WillOnce(DoAll(DeleteArg<0>(), Return(true)));
@@ -109,8 +110,9 @@ TEST_F(XmppRegisterSupportHostRequestTest, Send) {
       static_cast<int64_t>(base::Time::Now().InSecondsFSinceUnixEpoch());
 
   auto request = std::make_unique<XmppRegisterSupportHostRequest>(kTestBotJid);
-  request->StartRequest(&signal_strategy_, key_pair_, authorized_helper_,
-                        std::nullopt, callback_.Get());
+  request->StartRequest(&signal_strategy_, /* client_cert_store= */ nullptr,
+                        key_pair_, authorized_helper_, std::nullopt,
+                        callback_.Get());
 
   XmlElement* sent_iq = nullptr;
   EXPECT_CALL(signal_strategy_, GetNextId()).WillOnce(Return(kStanzaId));
@@ -205,8 +207,9 @@ TEST_F(XmppRegisterSupportHostRequestTest, AuthorizedHelper) {
   authorized_helper_ = kTestAuthorizedHelper;
 
   auto request = std::make_unique<XmppRegisterSupportHostRequest>(kTestBotJid);
-  request->StartRequest(&signal_strategy_, key_pair_, authorized_helper_,
-                        std::nullopt, callback_.Get());
+  request->StartRequest(&signal_strategy_, /* client_cert_store= */ nullptr,
+                        key_pair_, authorized_helper_, std::nullopt,
+                        callback_.Get());
 
   XmlElement* sent_iq = nullptr;
   EXPECT_CALL(signal_strategy_, GetNextId()).WillOnce(Return(kStanzaId));

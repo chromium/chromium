@@ -19,13 +19,14 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace {
 
 const char kRegularUser[] = "regular@example.com";
-const char kRegularGaiaID[] = "111111";
+const GaiaId::Literal kRegularGaiaID("111111");
 const char kSchoolAllowlist[] = "*@edu.com";
 
 }  // namespace

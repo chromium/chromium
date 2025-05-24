@@ -6,13 +6,13 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
@@ -230,8 +230,8 @@ void ManifestVerifier::OnPaymentMethodManifestParsed(
   DCHECK_LT(0U, number_of_manifests_to_download_);
 
   std::vector<std::string> supported_origin_strings(supported_origins.size());
-  base::ranges::transform(supported_origins, supported_origin_strings.begin(),
-                          &url::Origin::Serialize);
+  std::ranges::transform(supported_origins, supported_origin_strings.begin(),
+                         &url::Origin::Serialize);
 
   if (cached_manifest_urls_.find(method_manifest_url) ==
       cached_manifest_urls_.end()) {

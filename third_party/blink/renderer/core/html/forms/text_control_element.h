@@ -80,6 +80,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   HTMLElement* PlaceholderElement() const;
   void UpdatePlaceholderVisibility();
   void UpdatePlaceholderShadowPseudoId(HTMLElement& placeholder);
+  virtual String GetPlaceholderValue() const = 0;
 
   VisiblePosition VisiblePositionForIndex(int) const;
   unsigned selectionStart() const;
@@ -144,8 +145,23 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   bool LastChangeWasUserEdit() const;
 
   virtual void SetInnerEditorValue(const String&);
-  String InnerEditorValue() const;
+  static void AppendTextOrBr(const String& value, ContainerNode& container);
+  // Returns the user-visible editing text.
+  // This cost should be O(1), and may be faster than
+  // SerializeInnerEdtitorValue().
+  virtual String InnerEditorValue() const;
+  // Serialize the user-visible editing text.
+  // This cost might be O(N) where N is the number of InnerEditor children.
+  String SerializeInnerEditorValue() const;
+  // Returns the length of the user-visible editing text, and its is_8bit flag
+  // without serializing the text. `offset_map` can be nullptr.
+  std::pair<wtf_size_t, bool> AnalyzeInnerEditorValue(
+      HeapHashMap<Member<const Text>, unsigned>* offset_map) const;
+
   Node* CreatePlaceholderBreakElement() const;
+  // Returns true if the specified node was created by
+  // CreatePlaceholderBreakElement().
+  static bool IsPlaceholderBreakElement(const Node* node);
 
   String DirectionForFormData() const;
   // https://html.spec.whatwg.org/#auto-directionality-form-associated-elements
@@ -177,7 +193,6 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
  protected:
   TextControlElement(const QualifiedName&, Document&);
   virtual HTMLElement* UpdatePlaceholderText() = 0;
-  virtual String GetPlaceholderValue() const = 0;
 
   // Creates the editor if necessary. Implementations that support an editor
   // should callback to CreateInnerEditorElement().
@@ -191,12 +206,16 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   virtual void SubtreeHasChanged() = 0;
 
   void SetLastChangeWasNotUserEdit() { last_change_was_user_edit_ = false; }
-  void AddPlaceholderBreakElementIfNecessary();
+  void AdjustPlaceholderBreakElement();
   String ValueWithHardLineBreaks() const;
 
   void CloneNonAttributePropertiesFrom(const Element&,
                                        NodeCloningData&) override;
 
+  // Returns the value string. `length` and `is_8bit` must be computed by
+  // AnalyzeInnerEditorValue().
+  String SerializeInnerEditorValueInternal(wtf_size_t length,
+                                           bool is_8bit) const;
   // Returns true if the inner-editor value is empty. This may be cheaper
   // than calling InnerEditorValue(), and InnerEditorValue() returns
   // the wrong thing if the editor hasn't been created yet.

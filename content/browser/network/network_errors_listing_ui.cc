@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/network/network_errors_listing_ui.h"
 
@@ -86,8 +82,7 @@ NetworkErrorsListingUI::NetworkErrorsListingUI(WebUI* web_ui)
 
   // Add required resources.
   html_source->UseStringsJs();
-  html_source->AddResourcePaths(
-      base::make_span(kNetworkErrorsResources, kNetworkErrorsResourcesSize));
+  html_source->AddResourcePaths(kNetworkErrorsResources);
   html_source->SetDefaultResource(
       IDR_NETWORK_ERRORS_NETWORK_ERRORS_LISTING_HTML);
   html_source->SetRequestFilter(

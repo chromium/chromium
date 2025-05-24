@@ -14,7 +14,6 @@
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +33,7 @@ class MockNewWindowDelegate
 };
 
 class ShelfContextMenuModelTest
-    : public AshTestBase,
+    : public NoSessionAshTestBase,
       public ::testing::WithParamInterface<user_manager::UserType> {
  public:
   ShelfContextMenuModelTest() = default;
@@ -46,24 +45,18 @@ class ShelfContextMenuModelTest
   ~ShelfContextMenuModelTest() override = default;
 
   void SetUp() override {
-    delegate_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::make_unique<MockNewWindowDelegate>());
     AshTestBase::SetUp();
-    TestSessionControllerClient* session = GetSessionControllerClient();
-    session->AddUserSession("user1@test.com", GetUserType());
-    session->SetSessionState(session_manager::SessionState::ACTIVE);
-    session->SwitchActiveUser(AccountId::FromUserEmail("user1@test.com"));
+    SimulateUserLogin({"user1@test.com", GetUserType()});
   }
 
   user_manager::UserType GetUserType() const { return GetParam(); }
 
-  MockNewWindowDelegate* GetMockNewWindowDelegate() {
-    return static_cast<MockNewWindowDelegate*>(
-        delegate_provider_->GetPrimary());
+  MockNewWindowDelegate& GetMockNewWindowDelegate() {
+    return new_window_delegate_;
   }
 
  private:
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 // A test shelf item delegate that records the commands sent for execution.
@@ -162,7 +155,7 @@ TEST_P(ShelfContextMenuModelTest, OpensPersonalizationHubOrWallpaper) {
 
   ShelfContextMenuModel menu(nullptr, display_id, /*menu_in_shelf=*/false);
 
-  EXPECT_CALL(*GetMockNewWindowDelegate(), OpenPersonalizationHub).Times(1);
+  EXPECT_CALL(GetMockNewWindowDelegate(), OpenPersonalizationHub).Times(1);
   menu.ActivatedAt(2);
 }
 
@@ -302,9 +295,7 @@ TEST_P(ShelfContextMenuModelTest, NotificationContainerEnabled) {
 
 class DeskButtonContextMenuModelTest : public ShelfContextMenuModelTest {
  public:
-  DeskButtonContextMenuModelTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kDeskButton);
-  }
+  DeskButtonContextMenuModelTest() = default;
 
   DeskButtonContextMenuModelTest(const DeskButtonContextMenuModelTest&) =
       delete;
@@ -312,9 +303,6 @@ class DeskButtonContextMenuModelTest : public ShelfContextMenuModelTest {
       const DeskButtonContextMenuModelTest&) = delete;
 
   ~DeskButtonContextMenuModelTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

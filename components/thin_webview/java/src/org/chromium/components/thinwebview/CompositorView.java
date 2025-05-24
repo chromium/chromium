@@ -6,13 +6,18 @@ package org.chromium.components.thinwebview;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * An android view backed by a {@link Surface} that is able to display a cc::Layer. Either, a {@link
  * TextureView} or {@link SurfaceView} can be used to provide the surface. The cc::Layer should be
  * provided in the native.
  */
+@NullMarked
 public interface CompositorView {
-    /**@return The android {@link View} representing this widget. */
+    /**
+     * @return The android {@link View} representing this widget.
+     */
     View getView();
 
     /** Should be called for cleanup when the CompositorView instance is no longer used. */

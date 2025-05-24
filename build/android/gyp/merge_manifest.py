@@ -53,7 +53,7 @@ def _ProcessOtherManifest(manifest_path, min_sdk_version, target_sdk_version,
   package_name = manifest_utils.GetPackage(manifest)
   # Ignore minSdkVersion from androidx.pdf library. The client code will ensure
   # not to call into the library API on older Android versions.
-  if package_name in ('androidx.pdf', 'androidx.pdf.viewer.fragment'):
+  if package_name.startswith('androidx.pdf'):
     manifest_utils.OverrideMinSdkVersionIfPresent(manifest, min_sdk_version)
     changed_api = True
   package_count = seen_package_names[package_name]

@@ -12,9 +12,11 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** An interface for the implementations of {@link ExportFlow}. */
+@NullMarked
 public interface ExportFlowInterface {
     /** The delegate to provide ExportFlow with essential information from the owning fragment. */
     public interface Delegate {

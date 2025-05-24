@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
+
+#include "ash/constants/web_app_id_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/unguessable_token.h"
@@ -9,7 +12,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_observer.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/ash/system_web_apps/apps/crosh_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -23,7 +25,6 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -499,13 +500,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, PopupBrowserWindow) {
     });
   }
 }
-// Broken on ChromeOS <https://crbug.com/1493240>
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DevtoolsWindow DISABLED_DevtoolsWindow
-#else
-#define MAYBE_DevtoolsWindow DevtoolsWindow
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, MAYBE_DevtoolsWindow) {
+
+// Disabled due to https://crbug.com/1493240.
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, DISABLED_DevtoolsWindow) {
   Browser* browser = CreateBrowser();
   InsertForegroundTab(browser, "https://c.example.org");
   aura::Window* window1 = browser->window()->GetNativeWindow();
@@ -707,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     Recorder recorder(*tracker_);
 
     // Open an app window (crosh) and insert a tab.
-    browser = CreateAppBrowser(web_app::kCroshAppId);
+    browser = CreateAppBrowser(ash::kCroshAppId);
     chrome::NewTab(browser);
     content::WebContents* tab = browser->tab_strip_model()->GetWebContentsAt(0);
     NavigateActiveTab(browser, chrome::kChromeUIUntrustedCroshURL);
@@ -720,9 +717,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     EXPECT_EQ(GetId(tab), 1u);
     window = browser->window()->GetNativeWindow();
     recorder.Verify({
-        {"added", 1, kAppWindow, web_app::kCroshAppId, window, "", kActive},
-        {"updated", 1, kAppWindow, web_app::kCroshAppId, window, "crosh1",
-         kActive},
+        {"added", 1, kAppWindow, ash::kCroshAppId, window, "", kActive},
+        {"updated", 1, kAppWindow, ash::kCroshAppId, window, "crosh1", kActive},
     });
   }
 
@@ -740,9 +736,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     // Only title of the existing app instance should be updated.
     EXPECT_EQ(GetId(tab), 1u);
     recorder.Verify({
-        {"updated", 1, kAppWindow, web_app::kCroshAppId, window, "", kActive},
-        {"updated", 1, kAppWindow, web_app::kCroshAppId, window, "crosh2",
-         kActive},
+        {"updated", 1, kAppWindow, ash::kCroshAppId, window, "", kActive},
+        {"updated", 1, kAppWindow, ash::kCroshAppId, window, "crosh2", kActive},
     });
   }
 
@@ -754,8 +749,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
 
     // The app instance disappars with the window.
     recorder.Verify({
-        {"removed", 1, kAppWindow, web_app::kCroshAppId, window, "crosh2",
-         kActive},
+        {"removed", 1, kAppWindow, ash::kCroshAppId, window, "crosh2", kActive},
     });
   }
 }

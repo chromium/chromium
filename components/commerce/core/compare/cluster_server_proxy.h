@@ -23,6 +23,8 @@ class IdentityManager;
 
 namespace commerce {
 
+class AccountChecker;
+
 // Class for getting product clustering information from the server.
 class ClusterServerProxy {
  public:
@@ -31,7 +33,8 @@ class ClusterServerProxy {
 
   ClusterServerProxy(
       signin::IdentityManager* identity_manager,
-      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory);
+      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+      AccountChecker* account_checker);
   virtual ~ClusterServerProxy();
   ClusterServerProxy(const ClusterServerProxy& other) = delete;
   ClusterServerProxy& operator=(const ClusterServerProxy& other) = delete;
@@ -43,20 +46,21 @@ class ClusterServerProxy {
       GetComparableProductsCallback callback);
 
  protected:
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const GURL& url,
-      const std::string& post_data);
+  virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  CreateEndpointFetcher(const GURL& url, const std::string& post_data);
 
  private:
-  void HandleCompareResponse(GetComparableProductsCallback callback,
-                             std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-                             std::unique_ptr<EndpointResponse> response);
+  void HandleCompareResponse(
+      GetComparableProductsCallback callback,
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   void OnResponseJsonParsed(GetComparableProductsCallback callback,
                             data_decoder::DataDecoder::ValueOrError result);
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  raw_ptr<AccountChecker> account_checker_;
   base::WeakPtrFactory<ClusterServerProxy> weak_ptr_factory_{this};
 };
 

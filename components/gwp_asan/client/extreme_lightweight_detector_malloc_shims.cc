@@ -4,6 +4,8 @@
 
 #include "components/gwp_asan/client/extreme_lightweight_detector_malloc_shims.h"
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 #include <atomic>
 
 #include "base/compiler_specific.h"
@@ -45,9 +47,9 @@ std::atomic<bool> is_quarantine_initialized = false;
 // The PartitionRoot used by the PartitionAlloc-Everywhere (i.e. PartitionAlloc
 // as malloc), which is also the target partition root of the quarantine.
 // Since LightweightQuarantineRoot is designed to be used for a certain
-// PartitionRoot and LightweightQuarantineBranch::Quarantine() cannot handle
-// an object in an unknown root, the Extreme LUD performs only for the objects
-// in this PartitionRoot.
+// PartitionRoot and LightweightQuarantineBranch::QuarantineWithAcquiringLock()
+// cannot handle an object in an unknown root, the Extreme LUD performs only for
+// the objects in this PartitionRoot.
 partition_alloc::PartitionRoot* lightweight_quarantine_partition_root;
 // A raw pointer to the LightweightQuarantineBranch as the fast path to the
 // object. This bypasses the access check and indirect access due to the
@@ -94,7 +96,7 @@ bool TryInitSlow() {
   //
   // This code runs only on the codepaths of deallocations (`free`, `delete`,
   // etc.) and _never_ runs on the codepaths of allocations (`malloc`, `new`,
-  // etc.) because this allocator shim hooks only FreeFn, FreeDefiniteSizeFn,
+  // etc.) because this allocator shim hooks only FreeFn, FreeWithSizeFn,
   // etc. So, it's safe to allocate memory here as it doesn't recurse, however,
   // it's _NOT_ allowed to deallocate memory here as it _does_ recurse.
   //
@@ -180,16 +182,28 @@ inline bool Quarantine(void* object) {
     return false;
   }
 
+  if (lightweight_quarantine_partition_root->IsDirectMapped(slot_span))
+      [[unlikely]] {
+    // Direct-mapped allocations get immediately unmapped when being
+    // deallocated, so the following accesses to the memory will cause crash
+    // unless the address gets re-mapped again. Plus, direct-mapped allocations
+    // tend to be very large, and zapping is more costful. So, we don't
+    // quarantine the direct-mapped allocations.
+    return false;
+  }
+
   size_t usable_size = root->GetSlotUsableSize(slot_span);
   ExtremeLightweightDetectorUtil::Zap(object, usable_size);
 
   uintptr_t slot_start = root->ObjectToSlotStart(object);
   if (usable_size <= init_options.object_size_threshold_in_bytes) [[likely]] {
-    lightweight_quarantine_branch_for_small_objects->Quarantine(
-        object, slot_span, slot_start, usable_size);
+    lightweight_quarantine_branch_for_small_objects
+        ->QuarantineWithAcquiringLock(object, slot_span, slot_start,
+                                      usable_size);
   } else {
-    lightweight_quarantine_branch_for_large_objects->Quarantine(
-        object, slot_span, slot_start, usable_size);
+    lightweight_quarantine_branch_for_large_objects
+        ->QuarantineWithAcquiringLock(object, slot_span, slot_start,
+                                      usable_size);
   }
 
   return true;
@@ -204,14 +218,38 @@ void FreeFn(void* address, void* context) {
   MUSTTAIL return allocator_dispatch.next->free_function(address, context);
 }
 
-void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
+void FreeWithSizeFn(void* address, size_t size, void* context) {
   if (sampling_state.Sample()) [[unlikely]] {
     if (Quarantine(address)) [[likely]] {
       return;
     }
   }
-  MUSTTAIL return allocator_dispatch.next->free_definite_size_function(
+  MUSTTAIL return allocator_dispatch.next->free_with_size_function(
       address, size, context);
+}
+
+void FreeWithAlignmentFn(void* address, size_t alignment, void* context) {
+  if (sampling_state.Sample()) [[unlikely]] {
+    if (Quarantine(address)) [[likely]] {
+      return;
+    }
+  }
+  MUSTTAIL return allocator_dispatch.next->free_with_alignment_function(
+      address, alignment, context);
+}
+
+void FreeWithSizeAndAlignmentFn(void* address,
+                                size_t size,
+                                size_t alignment,
+                                void* context) {
+  if (sampling_state.Sample()) [[unlikely]] {
+    if (Quarantine(address)) [[likely]] {
+      return;
+    }
+  }
+  MUSTTAIL return allocator_dispatch.next
+      ->free_with_size_and_alignment_function(address, size, alignment,
+                                              context);
 }
 
 AllocatorDispatch allocator_dispatch = {
@@ -221,17 +259,19 @@ AllocatorDispatch allocator_dispatch = {
     nullptr,  // alloc_aligned_function
     // realloc doesn't always deallocate memory, so the Extreme LUD doesn't
     // support realloc.
-    nullptr,  // realloc_function
-    nullptr,  // realloc_unchecked_function
-    FreeFn,   // free_function
-    nullptr,  // get_size_estimate_function
-    nullptr,  // good_size_function
-    nullptr,  // claimed_address_function
-    nullptr,  // batch_malloc_function
+    nullptr,                     // realloc_function
+    nullptr,                     // realloc_unchecked_function
+    FreeFn,                      // free_function
+    FreeWithSizeFn,              // free_with_size_function
+    FreeWithAlignmentFn,         // free_with_alignment_function
+    FreeWithSizeAndAlignmentFn,  // free_with_size_and_alignment_function
+    nullptr,                     // get_size_estimate_function
+    nullptr,                     // good_size_function
+    nullptr,                     // claimed_address_function
+    nullptr,                     // batch_malloc_function
     // batch_free is rarely used, so the Extreme LUD doesn't support batch_free
     // (at least for now).
-    nullptr,             // batch_free_function
-    FreeDefiniteSizeFn,  // free_definite_size_function
+    nullptr,  // batch_free_function
     // try_free_default is rarely used, so the Extreme LUD doesn't support
     // try_free_default (at least for now).
     nullptr,  // try_free_default_function
@@ -301,3 +341,5 @@ GetEludQuarantineBranchForLargeObjectsForTesting() {
 }
 
 }  // namespace gwp_asan::internal
+
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

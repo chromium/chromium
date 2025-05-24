@@ -15,14 +15,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -41,6 +39,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,7 +50,7 @@ namespace policy {
 namespace {
 
 constexpr char kEmail[] = "email@gmail.com";
-constexpr char kGaiaId[] = "gaia_id";
+constexpr GaiaId::Literal kGaiaId("gaia_id");
 constexpr char kOAuthToken[] = "oauth_token";
 
 constexpr base::TimeDelta kTokenLifetime = base::Minutes(30);
@@ -117,8 +116,6 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   void SetUp() override {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ASSERT_TRUE(profile_manager_->SetUp());
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDMServerOAuthForChildUser);
   }
 
   void TearDown() override {
@@ -146,7 +143,6 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
         ->MakePrimaryAccountAvailable(kEmail, signin::ConsentLevel::kSignin);
 
     auto* user_manager = GetFakeUserManager();
-    user_manager->AddUser(account_id);
     user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, false /* is_affiliated */, user_type, profile);
     user_manager->SwitchActiveUser(account_id);
@@ -216,8 +212,6 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   std::unique_ptr<MockCloudPolicyStore> store_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(UserCloudPolicyTokenForwarderTest,

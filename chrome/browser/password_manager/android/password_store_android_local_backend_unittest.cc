@@ -19,7 +19,6 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -106,8 +105,7 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
   // Prefer using the already created `backend()` when possible.
   void ResetBackend() {
     backend_ = std::make_unique<PasswordStoreAndroidLocalBackend>(
-        CreateMockBridgeHelper(), CreateFakeLifecycleHelper(), &prefs_,
-        password_affiliation_adapter_);
+        CreateMockBridgeHelper(), CreateFakeLifecycleHelper(), &prefs_);
   }
 
  private:
@@ -126,7 +124,6 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
     return new_helper;
   }
 
-  PasswordAffiliationSourceAdapter password_affiliation_adapter_;
   std::unique_ptr<PasswordStoreAndroidLocalBackend> backend_;
   raw_ptr<NiceMock<MockPasswordStoreAndroidBackendBridgeHelper>> bridge_helper_;
   raw_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper_;
@@ -282,53 +279,6 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForUpdateLogin) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordStoreAndroidLocalBackendTest,
-       CallsBridgeForRemoveLoginsByURLAndTime) {
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_deletion_reply;
-  base::RepeatingCallback<bool(const GURL&)> url_filter = base::BindRepeating(
-      [](const GURL& url) { return url == GURL(kTestUrl); });
-  base::Time delete_begin = base::Time::FromTimeT(1000);
-  base::Time delete_end = base::Time::FromTimeT(2000);
-
-  // Check that calling RemoveLoginsByURLAndTime triggers logins retrieval
-  // first.
-  const JobId kGetLoginsJobId{13387};
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kGetLoginsJobId));
-  backend().RemoveLoginsByURLAndTimeAsync(
-      FROM_HERE, url_filter, delete_begin, delete_end,
-      base::OnceCallback<void(bool)>(), mock_deletion_reply.Get());
-
-  // Imitate login retrieval and check that it triggers the removal of matching
-  // forms.
-  const JobId kRemoveLoginJobId{13388};
-  EXPECT_CALL(*bridge_helper(), RemoveLogin)
-      .WillOnce(Return(kRemoveLoginJobId));
-  PasswordForm form_to_delete = CreateEntry("tod", "qwerty", GURL(kTestUrl));
-  form_to_delete.date_created = base::Time::FromTimeT(1500);
-  PasswordForm form_to_keep =
-      CreateEntry("username", "pass", GURL("https://differentsite.com"));
-  form_to_keep.date_created = base::Time::FromTimeT(1500);
-
-  consumer().OnCompleteWithLogins(kGetLoginsJobId,
-                                  {form_to_delete, form_to_keep});
-  RunUntilIdle();
-  task_environment_.FastForwardBy(kTestLatencyDelta);
-
-  // Verify that the callback is called.
-  PasswordStoreChangeList expected_changes;
-  expected_changes.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::REMOVE, form_to_delete));
-  EXPECT_CALL(mock_deletion_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
-  consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
-  RunUntilIdle();
-}
-
 // Error from GMSCore doesn't cause unenrollment.
 TEST_F(PasswordStoreAndroidLocalBackendTest,
        ExternalErrorDontCauseUnenrollment) {
@@ -355,24 +305,6 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
 
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-}
-
-TEST_F(PasswordStoreAndroidLocalBackendTest, RecordPasswordStoreMetrics) {
-  base::HistogramTester histogram_tester;
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-
-  backend().RecordAddLoginAsyncCalledFromTheStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.LocalBackend.AddLoginCalledOnStore", true,
-      1);
-
-  backend().RecordUpdateLoginAsyncCalledFromTheStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.LocalBackend.UpdateLoginCalledOnStore",
-      true, 1);
 }
 
 TEST_F(PasswordStoreAndroidLocalBackendTest,

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.load_progress;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -13,6 +14,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** List of load progress bar properties. */
+@NullMarked
 class LoadProgressProperties {
     @IntDef({
         CompletionState.UNFINISHED,

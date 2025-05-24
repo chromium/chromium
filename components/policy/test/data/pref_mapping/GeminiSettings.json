@@ -1,0 +1,63 @@
+[
+    {
+      "os": [
+        "android",
+        "win",
+        "linux",
+        "mac"
+      ],
+      "simple_policy_pref_mapping_test": {
+        "pref_name": "browser.gemini_settings",
+        "default_value": 0,
+        "values_to_test": [
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "os": [
+        "chromeos"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "policies": {},
+          "prefs": {
+            "browser.gemini_settings": {
+              "value": 0
+            }
+          }
+        },
+        {
+          "policies": {
+            "GeminiSettings": 0
+          },
+          "prefs": {
+            "browser.gemini_settings": {
+              "value": 0
+            }
+          }
+        },
+        {
+          "policies": {
+            "GeminiSettings": 1
+          },
+          "prefs": {
+            "browser.gemini_settings": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "policies": {
+            "GeminiSettings": 2
+          },
+          "prefs": {
+            "browser.gemini_settings": {
+              "value": 2
+            }
+          }
+        }
+      ]
+    }
+  ]

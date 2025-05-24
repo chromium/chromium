@@ -50,6 +50,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerAuraLinux
   void FireGeneratedEvent(AXEventGenerator::Event event_type,
                           const AXNode* node) override;
 
+  void FireAriaNotificationEvent(
+      BrowserAccessibility* node,
+      const std::string& announcement,
+      ax::mojom::AriaNotificationPriority priority_property,
+      ax::mojom::AriaNotificationInterrupt interrupt_property,
+      const std::string& type) override;
+
   void FireSelectedEvent(BrowserAccessibility* node);
   void FireEnabledChangedEvent(BrowserAccessibility* node);
   void FireExpandedEvent(BrowserAccessibility* node, bool is_expanded);

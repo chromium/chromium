@@ -13,7 +13,7 @@ SpellCheckMockPanelHost::SpellCheckMockPanelHost(
     content::RenderProcessHost* process_host)
     : process_host_(process_host) {}
 
-SpellCheckMockPanelHost::~SpellCheckMockPanelHost() {}
+SpellCheckMockPanelHost::~SpellCheckMockPanelHost() = default;
 
 bool SpellCheckMockPanelHost::SpellingPanelVisible() {
   if (!show_spelling_panel_called_) {

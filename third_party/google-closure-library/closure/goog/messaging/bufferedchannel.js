@@ -252,6 +252,7 @@ goog.messaging.BufferedChannel.prototype.send = function(serviceName, payload) {
  *     indicate whether it knows that we've received its ping and that it's
  *     ready.  Non-empty if true, empty if false.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.messaging.BufferedChannel.prototype.setPeerReady_ = function(
     peerKnowsWeKnowItsReady) {

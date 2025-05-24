@@ -16,10 +16,9 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/blink/public/common/media/display_type.h"
-#include "third_party/blink/public/common/media/watch_time_reporter.h"
 #include "third_party/blink/public/platform/media/web_media_player_delegate.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -36,11 +35,13 @@ class VideoLayer;
 }
 
 namespace blink {
+
 using CreateSurfaceLayerBridgeCB =
     base::OnceCallback<std::unique_ptr<WebSurfaceLayerBridge>(
         WebSurfaceLayerBridgeObserver*,
         cc::UpdateSubmissionStateCB)>;
 
+class MediaPlayerClient;
 class MediaStreamAudioRenderer;
 class MediaStreamInternalFrameWrapper;
 class MediaStreamRendererFactory;
@@ -48,11 +49,12 @@ class MediaStreamVideoRenderer;
 template <typename TimerFiredClass>
 class TaskRunnerTimer;
 class TimerBase;
+class WatchTimeReporter;
 class WebLocalFrame;
-class WebMediaPlayerClient;
 class WebMediaPlayerMSCompositor;
 class WebString;
 class WebVideoFrameSubmitter;
+class WebMediaPlayerClient;
 
 // WebMediaPlayerMS delegates calls from WebCore::MediaPlayerPrivate to
 // Chrome's media player when "src" is from media stream.
@@ -65,7 +67,7 @@ class WebVideoFrameSubmitter;
 // MediaStreamVideoRenderer
 //   provides video frames for rendering.
 //
-// WebMediaPlayerClient
+// MediaPlayerClient
 //   WebKit client of this media player object.
 class BLINK_MODULES_EXPORT WebMediaPlayerMS
     : public WebMediaStreamObserver,
@@ -110,7 +112,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   // Playback controls.
   void Play() override;
-  void Pause() override;
+  void Pause(PauseReason pause_reason) override;
   void Seek(double seconds) override;
   void SetRate(double rate) override;
   void SetVolume(double volume) override;
@@ -201,12 +203,13 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void TrackAdded(const WebString& track_id) override;
   void TrackRemoved(const WebString& track_id) override;
   void ActiveStateChanged(bool is_active) override;
-  int GetDelegateId() override;
+  void EnabledStateChangedForWebRtcAudio(bool is_enabled) override;
+  int GetPlayerId() override { return player_id_; }
   std::optional<viz::SurfaceId> GetSurfaceId() override;
 
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override;
 
-  void OnDisplayTypeChanged(DisplayType) override;
+  void OnDisplayTypeChanged(WebMediaPlayer::DisplayType) override;
 
   void RequestVideoFrameCallback() override;
   std::unique_ptr<WebMediaPlayer::VideoFramePresentationMetadata>
@@ -214,6 +217,10 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   void RegisterFrameSinkHierarchy() override;
   void UnregisterFrameSinkHierarchy() override;
+
+  void RecordAutoPictureInPictureInfo(
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) override {}
 
  private:
   friend class WebMediaPlayerMSTest;
@@ -238,7 +245,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void SetReadyState(WebMediaPlayer::ReadyState state);
 
   // Getter method to |client_|.
-  WebMediaPlayerClient* get_client() { return client_; }
+  MediaPlayerClient* get_client() { return client_; }
 
   // To be run when tracks are added or removed.
   void Reload();
@@ -275,7 +282,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   const WebTimeRanges buffered_;
 
-  const raw_ptr<WebMediaPlayerClient> client_;
+  const raw_ptr<MediaPlayerClient> client_;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using
   // |delegate_id_|; an id provided after registering with the delegate.  The
@@ -292,7 +299,9 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   raw_ptr<WebMediaPlayerDelegate> delegate_;
   int delegate_id_;
 
-  // Inner class used for transfering frames on compositor thread to
+  const int player_id_;
+
+  // Inner class used for transferring frames on compositor thread to
   // |compositor_|.
   class FrameDeliverer;
   std::unique_ptr<FrameDeliverer> frame_deliverer_;
@@ -336,7 +345,9 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // (ducking) for a transient sound.  Playout volume is derived by volume *
   // multiplier.
   double volume_;
+  double volume_before_muted_;
   double volume_multiplier_;
+  bool enabled_ = true;
 
   // True if playback should be started upon the next call to OnShown(). Only
   // used on Android.

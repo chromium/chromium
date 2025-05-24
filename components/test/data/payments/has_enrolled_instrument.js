@@ -60,7 +60,7 @@ async function show(options) {
  * @return {Promise<string>} The error message string, if any.
  */
 async function delayedShow(options) {
-  let request = buildPaymentRequest(options);
+  const request = buildPaymentRequest(options);
 
   try {
     // Block on hasEnrolledInstrument() to make sure when show() is called,

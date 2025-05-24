@@ -6,16 +6,18 @@ package org.chromium.chrome.browser.backup;
 
 import android.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.prefs.PrefService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Base class for translating entries from the PrefService to the format used by Android backups,
  * and vice-versa. Each derived class is responsible for a certain type (bool, dictionary, etc).
  */
+@NullMarked
 abstract class PrefBackupSerializer {
     private final String mUniqueEncodingPrefix;
 
@@ -34,13 +36,14 @@ abstract class PrefBackupSerializer {
      * @return The serialized pref (name, value) pairs.
      */
     public List<Pair<String, byte[]>> serializeAllowlistedPrefs(PrefService prefService) {
-        return getAllowlistedPrefs().stream()
-                .map(
-                        prefName ->
-                                new Pair<>(
-                                        mUniqueEncodingPrefix + prefName,
-                                        serializePrefValueAsBytes(prefService, prefName)))
-                .collect(Collectors.toList());
+        List<Pair<String, byte[]>> ret = new ArrayList<>();
+        for (String prefName : getAllowlistedPrefs()) {
+            ret.add(
+                    new Pair<>(
+                            mUniqueEncodingPrefix + prefName,
+                            serializePrefValueAsBytes(prefService, prefName)));
+        }
+        return ret;
     }
 
     /**

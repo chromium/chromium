@@ -85,12 +85,12 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
         &WellKnownChangePasswordTabHelperTest::HandleRequest,
         base::Unretained(this)));
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(IOSChromeAffiliationServiceFactory::GetInstance(),
                               base::BindRepeating(&MakeMockAffiliationService));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
@@ -102,13 +102,12 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
     test_server_->StartAcceptingConnections();
 
     affiliation_service_ = static_cast<affiliations::MockAffiliationService*>(
-        IOSChromeAffiliationServiceFactory::GetForBrowserState(
-            browser_state_.get()));
+        IOSChromeAffiliationServiceFactory::GetForProfile(profile_.get()));
 
     web_state()->SetDelegate(&delegate_);
     password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
         web_state());
-    browser_state_->SetSharedURLLoaderFactory(
+    profile_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -152,7 +151,7 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 
  private:

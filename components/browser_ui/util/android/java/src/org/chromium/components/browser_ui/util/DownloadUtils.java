@@ -10,10 +10,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 
-import androidx.core.app.NotificationManagerCompat;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -21,6 +22,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
 /** A class containing some utility static methods. */
+@NullMarked
 public class DownloadUtils {
     public static final long INVALID_SYSTEM_DOWNLOAD_ID = -1;
     private static final int[] BYTES_STRINGS = {
@@ -65,13 +67,14 @@ public class DownloadUtils {
             bytesInCorrectUnits = bytes / (float) ConversionUtils.BYTES_PER_GIGABYTE;
         }
 
-        return context.getResources().getString(resourceId, bytesInCorrectUnits);
+        return context.getString(resourceId, bytesInCorrectUnits);
     }
 
     /**
      * Adds a download to the Android DownloadManager.
+     *
      * @see android.app.DownloadManager#addCompletedDownload(String, String, boolean, String,
-     * String, long, boolean)
+     *     String, long, boolean)
      */
     public static long addCompletedDownload(
             String fileName,
@@ -87,8 +90,7 @@ public class DownloadUtils {
         Context context = ContextUtils.getApplicationContext();
         DownloadManager manager =
                 (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        boolean useSystemNotification = !notificationManager.areNotificationsEnabled();
+        boolean useSystemNotification = !NotificationProxyUtils.areNotificationsEnabled();
         try {
             // OriginalUri has to be null or non-empty http(s) scheme.
             Uri originalUri = parseOriginalUrl(originalUrl.getSpec());
@@ -114,7 +116,7 @@ public class DownloadUtils {
      * @param originalUrl String representation of the originating URL.
      * @return A valid Uri that can be accepted by DownloadManager.
      */
-    public static Uri parseOriginalUrl(String originalUrl) {
+    public static @Nullable Uri parseOriginalUrl(String originalUrl) {
         Uri originalUri = TextUtils.isEmpty(originalUrl) ? null : Uri.parse(originalUrl);
         if (originalUri != null) {
             String scheme = originalUri.normalizeScheme().getScheme();
@@ -135,7 +137,8 @@ public class DownloadUtils {
      * @param limit Character limit.
      * @return The text to display, or null if the input was invalid.
      */
-    public static String formatUrlForDisplayInNotification(GURL url, int limit) {
+    public static @Nullable String formatUrlForDisplayInNotification(
+            @Nullable GURL url, int limit) {
         if (GURL.isEmptyOrInvalid(url)) return null;
 
         String formattedUrl =

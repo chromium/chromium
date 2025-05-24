@@ -80,11 +80,6 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
               bool is_image_bitmap_origin_clean,
               ImageOrientationEnum);
 
-  // Type and helper function required by CallbackPromiseAdapter:
-  using IDLType = ImageBitmap;
-  using WebType = sk_sp<SkImage>;
-  static ImageBitmap* Take(ScriptPromiseResolverBase*, sk_sp<SkImage>);
-
   scoped_refptr<StaticBitmapImage> BitmapImage() const { return image_; }
 
   // Retrieve the SkImageInfo that best represents BitmapImage().
@@ -102,7 +97,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   bool OriginClean() const { return image_->OriginClean(); }
   bool IsPremultiplied() const { return image_->IsPremultiplied(); }
   ImageOrientationEnum ImageOrientation() const {
-    return image_->CurrentFrameOrientation().Orientation();
+    return image_->Orientation().Orientation();
   }
   scoped_refptr<StaticBitmapImage> Transfer();
   void close();
@@ -110,13 +105,11 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   ~ImageBitmap() override;
 
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(
-      FlushReason,
-      SourceImageStatus*,
-      const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition) override;
+  scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
+                                               SourceImageStatus*,
+                                               const gfx::SizeF&) override;
   bool WouldTaintOrigin() const override {
-    return image_ ? !image_->OriginClean() : false;
+    return image_ && !image_->OriginClean();
   }
   gfx::SizeF ElementSize(const gfx::SizeF&,
                          const RespectImageOrientationEnum) const override;
@@ -124,24 +117,53 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   bool IsAccelerated() const override;
 
   // ImageBitmapSource implementation
-  gfx::Size BitmapSourceSize() const override { return Size(); }
+  ImageBitmapSourceStatus CheckUsability() const override;
   ScriptPromise<ImageBitmap> CreateImageBitmap(ScriptState*,
                                                std::optional<gfx::Rect>,
                                                const ImageBitmapOptions*,
                                                ExceptionState&) override;
 
   struct ParsedOptions {
+    // If true, then the final result should be flipped vertically. This happens
+    // in the space after `source_orientation` has been applied.
     bool flip_y = false;
     bool premultiply_alpha = true;
+    // TODO(crbug.com/40773069): This is based on the incorrect values and needs
+    // to be removed.
     bool should_scale_input = false;
     bool has_color_space_conversion = false;
     bool source_is_unpremul = false;
     bool orientation_from_image = true;
+    // TODO(crbug.com/40773069): The value of `resize_width`, `resize_height`,
+    // and `crop_rect` are computed incorrectly. Remove this when all code that
+    // uses it is removed.
     unsigned resize_width = 0;
     unsigned resize_height = 0;
     gfx::Rect crop_rect;
     cc::PaintFlags::FilterQuality resize_quality =
         cc::PaintFlags::FilterQuality::kLow;
+
+    // The sampling options to use. This will be set to nearest-neighbor if no
+    // resampling is performed.
+    SkSamplingOptions sampling;
+
+    // The orientation of the source.
+    class ImageOrientation source_orientation;
+
+    // The `source_size`, `source_rect`, and `dest_size` parameters are all in
+    // the space after the `source_orientation` has been applied.
+    gfx::Size source_size;
+    gfx::Rect source_rect;
+    gfx::Size dest_size;
+
+    // Compute the parameters for creating and then resizing a subset of the
+    // source image. In the underlying PaintImage, `source_skrect` corresponds
+    // to `source_rect`, `source_skrect_valid` corresponds to the intersection
+    // of that with the PaintImage size, and `dest_sksize` corresponds to the
+    // output size.
+    void ComputeSubsetParameters(SkIRect& source_skrect,
+                                 SkIRect& source_skrect_valid,
+                                 SkISize& dest_sksize) const;
   };
 
  private:

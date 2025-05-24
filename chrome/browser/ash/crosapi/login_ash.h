@@ -19,6 +19,8 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
+class GaiaId;
+
 namespace crosapi {
 
 // The ash-chrome implementation of the Login crosapi interface.
@@ -52,14 +54,10 @@ class LoginAsh : public mojom::Login {
   void SetDataForNextLoginAttempt(
       const std::string& data_for_next_login_attempt,
       SetDataForNextLoginAttemptCallback callback) override;
-  void AddLacrosCleanupTriggeredObserver(
-      mojo::PendingRemote<mojom::LacrosCleanupTriggeredObserver> observer)
-      override;
   void AddExternalLogoutRequestObserver(
       mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer)
       override;
   void NotifyOnExternalLogoutDone() override;
-  void ShowGuestSessionConfirmationDialog() override;
   // Methods that are removed from mojom::Login interface. The methods cannot be
   // completely removed, only renamed, because the interface is Stable and has
   // to preserve backward-compatibility.
@@ -114,7 +112,7 @@ class LoginAsh : public mojom::Login {
   // Launches a SAML user session with the provided email, gaiaId, password
   // and oauth_code cookie.
   void LaunchSamlUserSession(const std::string& email,
-                             const std::string& gaia_id,
+                             const GaiaId& gaia_id,
                              const std::string& password,
                              const std::string& oauth_code,
                              OptionalErrorCallback callback);
@@ -132,11 +130,8 @@ class LoginAsh : public mojom::Login {
   // Notifies the external logout observers with the
   // `login.onRequestExternalLogout` event. It is called from the login screen
   // extension running on the lock screen (ash-chrome). The in-session extension
-  // (lacros/ash-chrome) listens for the dispatched event.
+  // listens for the dispatched event.
   void NotifyOnRequestExternalLogout();
-
-  mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>&
-  GetCleanupTriggeredObservers();
 
  private:
   void OnScreenLockerAuthenticate(OptionalErrorCallback callback, bool success);
@@ -153,8 +148,6 @@ class LoginAsh : public mojom::Login {
   mojo::ReceiverSet<mojom::Login> receivers_;
 
   // Support any number of observers.
-  mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>
-      lacros_cleanup_triggered_observers_;
   mojo::RemoteSet<mojom::ExternalLogoutRequestObserver>
       external_logout_request_observers_;
   base::ObserverList<ExternalLogoutDoneObserver>

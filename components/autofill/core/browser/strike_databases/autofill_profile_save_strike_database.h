@@ -20,8 +20,8 @@ struct AutofillProfileSaveStrikeDatabaseTraits {
   static constexpr base::TimeDelta kExpiryTimeDelta = base::Days(180);
   static constexpr bool kUniqueIdRequired = true;
 
-  static std::string OriginFromId(const std::string& id) {
-    // In AutofillProfileSaveStrikeDatabase, strikes are keyed only by origin,
+  static std::string HostFromId(const std::string& id) {
+    // In AutofillProfileSaveStrikeDatabase, strikes are keyed only by host,
     // therefore this function is the identity.
     return id;
   }

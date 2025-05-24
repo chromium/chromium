@@ -15,29 +15,25 @@ class Profile;
 
 namespace enterprise {
 
-const void* const kPresetProfileManagementData = &kPresetProfileManagementData;
-
 // This class manages the collection of data needed for profile management,
 // before the new profile is fully initialized. For now this class only contains
 // the preset profile GUID for a newly created profile.
-class PresetProfileManagmentData : public base::SupportsUserData::Data {
+class PresetProfileManagementData : public base::SupportsUserData::Data {
  public:
-  explicit PresetProfileManagmentData(std::string preset_guid);
-  ~PresetProfileManagmentData() override = default;
-
-  PresetProfileManagmentData(const PresetProfileManagmentData&) = delete;
-  PresetProfileManagmentData& operator=(const PresetProfileManagmentData&) =
+  explicit PresetProfileManagementData(std::string preset_guid);
+  PresetProfileManagementData(const PresetProfileManagementData&) = delete;
+  PresetProfileManagementData& operator=(const PresetProfileManagementData&) =
       delete;
+  ~PresetProfileManagementData() override;
 
-  static PresetProfileManagmentData* Get(Profile* profile);
+  static PresetProfileManagementData* Get(Profile* profile);
   void SetGuid(std::string guid);
-  std::string GetGuid();
   void ClearGuid();
 
   // The preset GUID will be used instead of a new random GUID when a profile is
   // first created. This does not overwrite if a GUID has already been set for a
   // profile.
-  std::string guid() { return guid_; }
+  const std::string& guid() const { return guid_; }
 
  private:
   std::string guid_;
@@ -47,6 +43,8 @@ class PresetProfileManagmentData : public base::SupportsUserData::Data {
 class ProfileIdDelegateImpl : public ProfileIdDelegate {
  public:
   explicit ProfileIdDelegateImpl(Profile* profile);
+  ProfileIdDelegateImpl(const ProfileIdDelegateImpl&) = delete;
+  ProfileIdDelegateImpl& operator=(const ProfileIdDelegateImpl&) = delete;
   ~ProfileIdDelegateImpl() override;
 
   // ProfileIdDelegate
@@ -55,7 +53,7 @@ class ProfileIdDelegateImpl : public ProfileIdDelegate {
   static std::string GetId();
 
  private:
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace enterprise

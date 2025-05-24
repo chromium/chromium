@@ -17,9 +17,11 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -109,21 +111,18 @@ absl::StatusOr<std::unique_ptr<Llm>> Llm::CreatePrefixDecodeLlm(
     resource.cache = cache;
     const auto& sa = weights.sas[i];
     const auto& ff = weights.ffs[i];
-    MP_ASSIGN_OR_RETURN(inter_layer, builder->OneStackTransformer(
-                                         i, inter_layer, resource, sa, ff,
-                                         /*is_prefix=*/true));
+    MP_ASSIGN_OR_RETURN(
+        inter_layer, builder->OneStackTransformer(i, inter_layer, resource, sa,
+                                                  ff, /*is_prefix=*/true));
   }
 
-  if (builder->internal_llm_params_.stop_at_last_kv_cache) {
-    logits_output = inter_layer;
-  } else {
-    MP_ASSIGN_OR_RETURN(logits_output,
-                        builder->PostProcess(inter_layer, weights));
-  }
+  logits_output = inter_layer;
+  MP_ASSIGN_OR_RETURN(logits_output,
+                      builder->PostProcess(inter_layer, weights));
   logits_output->MarkOutput();
 
   MP_ASSIGN_OR_RETURN(auto graph, builder->Build());
-  auto llm = std::make_unique<Llm>(std::move(*graph));
+  auto llm = builder->GetLlm(std::move(*graph));
   llm->transformer_input_ = input;
   llm->logits_output_ = logits_output;
   llm->context_ = std::make_shared<Context>(Context{
@@ -134,6 +133,8 @@ absl::StatusOr<std::unique_ptr<Llm>> Llm::CreatePrefixDecodeLlm(
   llm->pos_embedding_ = resource.pos_embedding;
   llm->segment_pos_ = resource.segment_pos;
   llm->atten_masks_ = resource.atten_mask;
+  llm->query_positions_ = resource.query_positions;
+  llm->key_positions_ = resource.key_positions;
 
   llm->weights_ = std::move(weights);
   llm->llm_params_ = llm_params;
@@ -170,6 +171,21 @@ absl::Status Llm::ReshapeInputResource() {
           xnn_reshape_external_value(
               runtime_.get(), segment_pos_->tensor_id(owned_subgraph_.get()),
               segment_pos_->dims.size(), segment_pos_->dims.data()));
+    }
+    if (query_positions_) {
+      RET_CHECK_EQ(
+          xnn_status_success,
+          xnn_reshape_external_value(
+              runtime_.get(),
+              query_positions_->tensor_id(owned_subgraph_.get()),
+              query_positions_->dims.size(), query_positions_->dims.data()));
+    }
+    if (key_positions_) {
+      RET_CHECK_EQ(
+          xnn_status_success,
+          xnn_reshape_external_value(
+              runtime_.get(), key_positions_->tensor_id(owned_subgraph_.get()),
+              key_positions_->dims.size(), key_positions_->dims.data()));
     }
   }
   return absl::OkStatus();
@@ -239,7 +255,7 @@ absl::StatusOr<Llm::Context> Llm::NewContext() const {
 }
 
 absl::Status Llm::LoadContext(
-    absl::Nullable<std::shared_ptr<Context>> context) {
+    /*absl_nullable - not yet supported*/ std::shared_ptr<Context> context) {
   if (!context || (context_ == context)) return absl::OkStatus();
   // There are some metadata we'd like to keep with existing context, also we'd
   // like to use pointer address to distinguish context. So the following logic
@@ -267,6 +283,17 @@ absl::Status Llm::ReduceContextPrevIds(std::shared_ptr<Context> context,
     const auto& num_tokens = batch_num_tokens[batch_size];
     if (num_tokens == 0) continue;
     prev_ids.erase(prev_ids.end() - num_tokens, prev_ids.end());
+  }
+  return absl::OkStatus();
+}
+
+absl::Status Llm::GetInputTokenEmbeddings(
+    absl::Span<const std::vector<int>> batch_input_ids) {
+  for (size_t batch = 0; batch < llm_params_.batch_size_B; ++batch) {
+    auto slice = transformer_input()->Slice(0, batch);
+
+    MP_RETURN_IF_ERROR(
+        GetTokenEmbedding(batch_input_ids[batch], slice->DataAs<float>()));
   }
   return absl::OkStatus();
 }
@@ -302,6 +329,15 @@ absl::Status Llm::AddInputTokens(
     MP_RETURN_IF_ERROR(builder_->InitSegmentPos(current_seq_len, input_seq_len,
                                                 *segment_pos_));
   }
+  // Initialize the positions for FireLite.
+  if (query_positions_) {
+    MP_RETURN_IF_ERROR(
+        builder_->InitQueryPositions(0, input_seq_len, *query_positions_));
+  }
+  if (key_positions_) {
+    MP_RETURN_IF_ERROR(builder_->InitKeyPositions(
+        current_seq_len, input_seq_len, *key_positions_));
+  }
 
   if (llm_params_.enable_dynamic_shape) {
     MP_RETURN_IF_ERROR(ReshapeInputResource());
@@ -314,13 +350,6 @@ absl::Status Llm::AddInputTokens(
                      transformer_input()->tensor_id(owned_subgraph_.get()),
                      transformer_input()->dims.size(),
                      transformer_input()->dims.data()));
-    logits_output()->Resize(Tensor::DimsType{
-        batch_input_ids.size(), input_seq_len, llm_params_.voc_size_V});
-    RET_CHECK_EQ(
-        xnn_status_success,
-        xnn_reshape_external_value(
-            runtime_.get(), logits_output()->tensor_id(owned_subgraph_.get()),
-            logits_output()->dims.size(), logits_output()->dims.data()));
     for (auto& kv_cache : kv_cache()) {
       auto key = kv_cache.k_cache;
       auto value = kv_cache.v_cache;
@@ -338,6 +367,14 @@ absl::Status Llm::AddInputTokens(
                        value->dims.size(), value->dims.data()));
     }
     RET_CHECK_EQ(xnn_status_success, xnn_reshape_runtime(runtime_.get()));
+    size_t num_output_dims = 0;
+    std::vector<size_t> output_dims(3);
+    RET_CHECK_EQ(
+        xnn_status_success,
+        xnn_get_external_value_shape(
+            runtime_.get(), logits_output()->tensor_id(owned_subgraph_.get()),
+            &num_output_dims, output_dims.data()));
+    logits_output()->Resize(output_dims);
   }
 
   for (auto& kv_cache : kv_cache()) {
@@ -349,11 +386,7 @@ absl::Status Llm::AddInputTokens(
         0, /*start=*/current_seq_len, /*end=*/current_seq_len + input_seq_len));
   }
 
-  for (size_t batch = 0; batch < llm_params_.batch_size_B; ++batch) {
-    auto slice = transformer_input()->Slice(0, batch);
-    MP_RETURN_IF_ERROR(
-        GetTokenEmbedding(batch_input_ids[batch], slice->DataAs<float>()));
-  }
+  MP_RETURN_IF_ERROR(GetInputTokenEmbeddings(batch_input_ids));
 
   for (size_t batch = 0; batch < llm_params_.batch_size_B; ++batch) {
     auto& prev_ids = batch_prev_ids()[batch];
@@ -505,11 +538,11 @@ absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::OneStackTransformer(
         (layer_index == llm_params_.num_transformer_M - 1)) {
       return output;
     }
-    MP_ASSIGN_OR_RETURN(output, FeedForwardIncludeResidual(output, ff_weights));
+    MP_ASSIGN_OR_RETURN(output, FeedForward(output, ff_weights));
   } else {
     MP_ASSIGN_OR_RETURN(
         output, SelfAttentionIncludeResidual(input, resource, sa_weights));
-    MP_ASSIGN_OR_RETURN(output, FeedForwardIncludeResidual(output, ff_weights));
+    MP_ASSIGN_OR_RETURN(output, FeedForward(output, ff_weights));
   }
   return output;
 }
@@ -517,13 +550,61 @@ absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::OneStackTransformer(
 absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::SelfAttentionExcludeNorm(
     std::shared_ptr<Tensor> input, InputResource resource,
     const SelfAttentionWeights& sa_weights) {
+  // Dynamically quantize the input if requested.
+  const bool can_dquant_keys_proj =
+      sa_weights.k_weight->datatype == xnn_datatype_qcint8 ||
+      sa_weights.k_weight->datatype == xnn_datatype_qcint4;
+  const bool can_dquant_queries_proj =
+      sa_weights.q_weight->datatype == xnn_datatype_qcint8 ||
+      sa_weights.q_weight->datatype == xnn_datatype_qcint4;
+  const bool can_dquant_values_proj =
+      sa_weights.v_weight->datatype == xnn_datatype_qcint8 ||
+      sa_weights.v_weight->datatype == xnn_datatype_qcint4;
+  std::shared_ptr<Tensor> qd_input;
+  bool use_dynamic_quantization =
+      can_dquant_keys_proj || can_dquant_queries_proj || can_dquant_values_proj;
+  if (runtime_configs_->use_dynamic_quantization.has_value()) {
+    use_dynamic_quantization =
+        use_dynamic_quantization &&
+        runtime_configs_->use_dynamic_quantization.value();
+  }
+  VLOG(3) << "use_dynamic_quantization: " << use_dynamic_quantization;
+  if (use_dynamic_quantization) {
+    MP_ASSIGN_OR_RETURN(
+        qd_input, IntermediateTensor({input->dims.begin(), input->dims.end()},
+                                     xnn_datatype_qdint8));
+    build_steps_.push_back(
+        [input, qd_input](xnn_subgraph_t subgraph) -> absl::Status {
+          RET_CHECK_EQ(
+              xnn_status_success,
+              xnn_define_unary(subgraph, xnn_unary_convert, /*params=*/nullptr,
+                               input->tensor_id(subgraph),
+                               qd_input->tensor_id(subgraph), /*flags=*/0));
+          return absl::OkStatus();
+        });
+  }
+
   // [B, 1|T, N, H]
-  MP_ASSIGN_OR_RETURN(auto k_proj,
-                      SelfAttentionProj(input, sa_weights.k_weight));
-  MP_ASSIGN_OR_RETURN(auto q_proj,
-                      SelfAttentionProj(input, sa_weights.q_weight));
-  MP_ASSIGN_OR_RETURN(auto v_proj,
-                      SelfAttentionProj(input, sa_weights.v_weight));
+  MP_ASSIGN_OR_RETURN(
+      auto k_proj,
+      SelfAttentionProj(qd_input && can_dquant_keys_proj ? qd_input : input,
+                        sa_weights.k_weight));
+  MP_ASSIGN_OR_RETURN(
+      auto q_proj,
+      SelfAttentionProj(qd_input && can_dquant_queries_proj ? qd_input : input,
+                        sa_weights.q_weight));
+  MP_ASSIGN_OR_RETURN(
+      auto v_proj,
+      SelfAttentionProj(qd_input && can_dquant_values_proj ? qd_input : input,
+                        sa_weights.v_weight));
+
+  // Apply QK-Normalization.
+  if (llm_params_.sa_params.qk_norm) {
+    MP_ASSIGN_OR_RETURN(q_proj, ApplyNorm(q_proj, sa_weights.q_norm_weight,
+                                          LlmParams::Norm::RMS_NORM));
+    MP_ASSIGN_OR_RETURN(k_proj, ApplyNorm(k_proj, sa_weights.k_norm_weight,
+                                          LlmParams::Norm::RMS_NORM));
+  }
 
   MP_ASSIGN_OR_RETURN(auto query_proj_after_rope,
                       Rope(q_proj, resource.segment_pos));
@@ -588,6 +669,11 @@ absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::FeedForwardExcludeNorm(
       MP_ASSIGN_OR_RETURN(layer_1_gate, Relu(layer_1_gate_before_activation));
       break;
     }
+    case LlmParams::Activation::RELU1P5: {
+      MP_ASSIGN_OR_RETURN(layer_1_gate,
+                          Relu1p5(layer_1_gate_before_activation));
+      break;
+    }
     default: {
       break;
     }
@@ -609,10 +695,14 @@ absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::FeedForwardIncludeResidual(
   MP_ASSIGN_OR_RETURN(auto pre_norm,
                       FeedForwardExcludeNorm(pre_ff, ff_weights));
 
-  MP_ASSIGN_OR_RETURN(auto post_norm,
-                      ApplyNorm(pre_norm, ff_weights.post_norm_weight,
-                                llm_params_.ff_params.post_norm));
+  return ApplyNorm(pre_norm, ff_weights.post_norm_weight,
+                   llm_params_.ff_params.post_norm);
+}
 
+absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::FeedForward(
+    std::shared_ptr<Tensor> input, const FeedForwardWeights& ff_weights) {
+  MP_ASSIGN_OR_RETURN(auto post_norm,
+                      FeedForwardIncludeResidual(input, ff_weights));
   return ElementAdd(post_norm, input);
 }
 
@@ -622,9 +712,16 @@ absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::PostProcess(
                       ApplyNorm(transformer_out, weights.final_norm_weight,
                                 llm_params_.final_norm));
   RET_CHECK(weights.softmax_linear);
+
+  int64_t slice_size = llm_params_.draft_size_G + 1;
+  // The KV caches have been filled, we only need to compute the tokens which
+  // will be used for computation or output.
+  MP_ASSIGN_OR_RETURN(auto slice,
+                      Slice(transformer_out, /*axis=*/1, /*offset=*/-slice_size,
+                            /*length=*/slice_size));
   MP_ASSIGN_OR_RETURN(
       auto logits_output,
-      FullConn(transformer_out, weights.softmax_linear, weights.softmax_bias));
+      FullConn(slice, weights.softmax_linear, weights.softmax_bias));
   return logits_output;
 }
 
@@ -725,6 +822,26 @@ absl::Status LlmBuilder::InitPosEmbedding(size_t current_seq_len,
   return absl::OkStatus();
 }
 
+absl::Status InitPositions(size_t start, size_t length, Tensor& out_positions) {
+  out_positions.Resize(Tensor::DimsType{1, length});
+  std::vector<float> positions(length);
+  std::iota(positions.begin(), positions.end(), start);
+  MP_RETURN_IF_ERROR(out_positions.LoadFromVec(positions));
+  return absl::OkStatus();
+}
+
+absl::Status LlmBuilder::InitQueryPositions(size_t current_seq_len,
+                                            size_t input_seq_len,
+                                            Tensor& out_positions) {
+  return InitPositions(current_seq_len, input_seq_len, out_positions);
+}
+
+absl::Status LlmBuilder::InitKeyPositions(size_t current_seq_len,
+                                          size_t input_seq_len,
+                                          Tensor& out_positions) {
+  return InitPositions(0, current_seq_len + input_seq_len, out_positions);
+}
+
 absl::Status LlmBuilder::InitSegmentPosValues(size_t rope_size) {
   std::vector<float> values =
       FillXnnRoPEWeights(llm_params_.seq_size_T, rope_size);
@@ -761,9 +878,8 @@ absl::StatusOr<std::vector<std::vector<int>>> LlmBuilder::Sample(
   return sampler_->Sample(logits);
 }
 
-absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::DotAttention(
-    std::shared_ptr<Tensor> query_proj, std::shared_ptr<Tensor> key_proj,
-    std::shared_ptr<Tensor> value_proj, std::shared_ptr<Tensor> atten_mask,
+absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::ScaleQuery(
+    std::shared_ptr<Tensor> query_proj,
     const SelfAttentionWeights& sa_weights) {
   // BTNH
   std::shared_ptr<Tensor> query_after_scale;
@@ -771,6 +887,13 @@ absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::DotAttention(
     case LlmParams::AttentionScaleType::PER_DIM_SCALE: {
       MP_ASSIGN_OR_RETURN(query_after_scale,
                           PerDimScale(query_proj, sa_weights.per_dim_scale));
+      break;
+    }
+    case LlmParams::AttentionScaleType::RESCALE_FACTOR_INV_HEAD_DIM: {
+      // Scale the query values by multiplying query_rescale_factor /
+      // head_dim.
+      float scale = llm_params_.query_rescale_factor / llm_params_.head_dim_H;
+      MP_ASSIGN_OR_RETURN(query_after_scale, ElementMul(query_proj, scale));
       break;
     }
     case LlmParams::AttentionScaleType::INV_SQRT_HEAD_DIM: {
@@ -784,6 +907,15 @@ absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::DotAttention(
           absl::StrCat("Unsupported attention scale type: ",
                        llm_params_.sa_params.attention_scale_type));
   }
+  return query_after_scale;
+}
+
+absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::DotAttention(
+    std::shared_ptr<Tensor> query_proj, std::shared_ptr<Tensor> key_proj,
+    std::shared_ptr<Tensor> value_proj, std::shared_ptr<Tensor> atten_mask,
+    const SelfAttentionWeights& sa_weights) {
+  MP_ASSIGN_OR_RETURN(std::shared_ptr<Tensor> query_after_scale,
+                      ScaleQuery(query_proj, sa_weights));
 
   // Dot similarity
   // BTNH -> BNTH
@@ -791,6 +923,7 @@ absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::DotAttention(
                       Permute(query_after_scale, {0, 2, 1, 3}));
   // BSN'H -> BN'SH
   MP_ASSIGN_OR_RETURN(auto key_permuted, Permute(key_proj, {0, 2, 1, 3}));
+
   // einsum(BNTH.BN'SH -> BNTS)
   MP_ASSIGN_OR_RETURN(auto logits, QKVAttention(query_permuted, key_permuted,
                                                 {0, llm_params_.head_dim_H}));
@@ -821,10 +954,15 @@ absl::StatusOr<std::shared_ptr<Tensor>> LlmBuilder::ApplyNorm(
     case LlmParams::Norm::NO_NORM:
       break;
     case LlmParams::Norm::RMS_NORM: {
-      MP_ASSIGN_OR_RETURN(
-          output,
-          RmsNorm(input,
-                  std::get<RMSNormWeights>(weights.value()).norm_weight));
+      auto weights_val =
+          weights.has_value()
+              ? std::get<RMSNormWeights>(weights.value()).norm_weight
+              : nullptr;
+      MP_ASSIGN_OR_RETURN(output, RmsNorm(input, weights_val));
+      break;
+    }
+    case LlmParams::Norm::RMS_NORM_NO_SCALE: {
+      MP_ASSIGN_OR_RETURN(output, RmsNorm(input, nullptr));
       break;
     }
     case LlmParams::Norm::LAYER_NORM: {

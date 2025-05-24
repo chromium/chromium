@@ -28,7 +28,7 @@ _CORPUS_FOR_BOTS_DIR = os.path.join(_THIS_DIR, os.path.pardir, os.path.pardir,
                                     'fuzzer_corpus_for_bots')
 
 # Dummy corpus in case real corpus doesn't exist.
-_DUMMY_INPUT_CONTENTS = 'dummy input just to have at least one corpus unit'
+_DUMMY_INPUT_CONTENTS = b'dummy input just to have at least one corpus unit'
 _DUMMY_INPUT_FILENAME = 'dummy_corpus_input'
 
 # Used for running fuzzer targets in code coverage config.

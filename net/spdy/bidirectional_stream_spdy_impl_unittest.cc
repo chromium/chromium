@@ -253,7 +253,7 @@ class BidirectionalStreamSpdyImplTest : public testing::TestWithParam<bool>,
              SecureDnsPolicy::kAllow,
              /*disable_cert_verification_network_fetches=*/false),
         ssl_data_(SSLSocketDataProvider(ASYNC, OK)) {
-    ssl_data_.next_proto = kProtoHTTP2;
+    ssl_data_.next_proto = NextProto::kProtoHTTP2;
     ssl_data_.ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
   }
@@ -345,7 +345,7 @@ TEST_F(BidirectionalStreamSpdyImplTest, SimplePostRequest) {
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(1, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
@@ -442,10 +442,10 @@ TEST_F(BidirectionalStreamSpdyImplTest, SendDataAfterStreamFailed) {
   EXPECT_THAT(delegate->error(), IsError(ERR_HTTP2_PROTOCOL_ERROR));
   EXPECT_EQ(0, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   // BidirectionalStreamSpdyStreamJob does not count the bytes sent for |rst|
   // because it is sent after SpdyStream::Delegate::OnClose is called.
-  EXPECT_EQ(CountWriteBytes(base::make_span(writes, 1u)),
+  EXPECT_EQ(CountWriteBytes(base::span(writes, 1u)),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(0, delegate->GetTotalReceivedBytes());
 }
@@ -517,11 +517,11 @@ TEST_P(BidirectionalStreamSpdyImplTest, RstWithNoErrorBeforeSendIsComplete) {
   EXPECT_THAT(delegate->error(), IsError(OK));
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(is_test_sendv ? 2 : 4, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
-  EXPECT_EQ(CountWriteBytes(base::make_span(writes, 1u)),
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(CountWriteBytes(base::span(writes, 1u)),
             delegate->GetTotalSentBytes());
   // Should not count RST stream.
-  EXPECT_EQ(CountReadBytes(base::make_span(reads).first(std::size(reads) - 2)),
+  EXPECT_EQ(CountReadBytes(base::span(reads).first(std::size(reads) - 2)),
             delegate->GetTotalReceivedBytes());
 
   // Now call SendData again should produce an error because end of stream
@@ -592,7 +592,7 @@ TEST_F(BidirectionalStreamSpdyImplTest, RequestDetectBrokenConnection) {
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(1, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 

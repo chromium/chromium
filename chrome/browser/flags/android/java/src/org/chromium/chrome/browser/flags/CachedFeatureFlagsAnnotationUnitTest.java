@@ -9,10 +9,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.cached_flags.CachedFlag;
 
 /** Unit tests to verify @EnableFeatures() and @DisableFeatures() work for {@link CachedFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)

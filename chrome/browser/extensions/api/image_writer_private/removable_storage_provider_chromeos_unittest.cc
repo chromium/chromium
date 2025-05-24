@@ -32,7 +32,7 @@ const char kUnknownUSBDiskModel[] = "USB Drive";
 
 class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
  public:
-  RemovableStorageProviderChromeOsUnitTest() {}
+  RemovableStorageProviderChromeOsUnitTest() = default;
   void SetUp() override {
     disk_mount_manager_mock_ = new ash::disks::MockDiskMountManager();
     ash::disks::DiskMountManager::InitializeForTesting(

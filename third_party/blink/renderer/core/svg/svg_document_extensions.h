@@ -32,7 +32,6 @@
 namespace blink {
 
 class Document;
-class SVGElement;
 class SVGSVGElement;
 
 class CORE_EXPORT SVGDocumentExtensions final
@@ -46,26 +45,16 @@ class CORE_EXPORT SVGDocumentExtensions final
   void AddTimeContainer(SVGSVGElement*);
   void RemoveTimeContainer(SVGSVGElement*);
 
-  // Records the SVG element as having a Web Animation on an SVG attribute that
-  // needs applying.
-  void AddWebAnimationsPendingSVGElement(SVGElement&);
-
   // True if a SMIL animation frame is successfully scheduled.
   static bool ServiceSmilOnAnimationFrame(Document&);
-  static void ServiceWebAnimationsOnAnimationFrame(Document&);
 
   void StartAnimations();
   void PauseAnimations();
   bool HasSmilAnimations() const;
   // True if a SMIL animation frame is successfully scheduled.
   bool ServiceSmilAnimations();
-  void ServiceWebAnimations();
 
   void DispatchSVGLoadEventToOutermostSVGElements();
-
-  void AddSVGRootWithRelativeLengthDescendents(SVGSVGElement*);
-  void RemoveSVGRootWithRelativeLengthDescendents(SVGSVGElement*);
-  void InvalidateSVGRootsWithRelativeLengthDescendents();
 
   bool ZoomAndPanEnabled() const;
 
@@ -79,14 +68,7 @@ class CORE_EXPORT SVGDocumentExtensions final
  private:
   Member<Document> document_;
   HeapHashSet<Member<SVGSVGElement>> time_containers_;
-  using SVGElementSet = HeapHashSet<Member<SVGElement>>;
-  SVGElementSet web_animations_pending_svg_elements_;
-  // Root SVG elements with relative length descendants.
-  HeapHashSet<Member<SVGSVGElement>> relative_length_svg_roots_;
   gfx::Vector2dF translate_;
-#if DCHECK_IS_ON()
-  bool in_relative_length_svg_roots_invalidation_ = false;
-#endif
 };
 
 }  // namespace blink

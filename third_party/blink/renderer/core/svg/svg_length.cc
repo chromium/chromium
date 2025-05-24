@@ -48,7 +48,7 @@ struct InitialLengthData {
   int8_t value;
   uint8_t unit;
 };
-const auto g_initial_lengths_table = std::to_array<InitialLengthData>({
+constexpr auto g_initial_lengths_table = std::to_array<InitialLengthData>({
     {0, CAST_UNIT(kUserUnits)},
     {-10, CAST_UNIT(kPercentage)},
     {0, CAST_UNIT(kPercentage)},
@@ -100,12 +100,6 @@ SVGLength* SVGLength::Clone() const {
   return MakeGarbageCollected<SVGLength>(*value_, UnitMode());
 }
 
-SVGPropertyBase* SVGLength::CloneForAnimation(const String& value) const {
-  auto* length = MakeGarbageCollected<SVGLength>(UnitMode());
-  length->SetValueAsString(value);
-  return length;
-}
-
 bool SVGLength::operator==(const SVGLength& other) const {
   return unit_mode_ == other.unit_mode_ && value_ == other.value_;
 }
@@ -125,8 +119,9 @@ float SVGLength::Value(const SVGLengthContext& context) const {
   if (const auto* math_function = DynamicTo<CSSMathFunctionValue>(*value_)) {
     return context.ResolveValue(*math_function, UnitMode());
   }
-  return context.ConvertValueToUserUnits(value_->GetFloatValue(), UnitMode(),
-                                         NumericLiteralType());
+  return context.ConvertValueToUserUnits(
+      To<CSSNumericLiteralValue>(*value_).DoubleValue(), UnitMode(),
+      NumericLiteralType());
 }
 
 void SVGLength::SetValueAsNumber(float value) {
@@ -230,44 +225,6 @@ void SVGLength::ConvertToSpecifiedUnits(CSSPrimitiveValue::UnitType type,
       type);
 }
 
-SVGLengthMode SVGLength::LengthModeForAnimatedLengthAttribute(
-    const QualifiedName& attr_name) {
-  typedef HashMap<QualifiedName, SVGLengthMode> LengthModeForLengthAttributeMap;
-  DEFINE_STATIC_LOCAL(LengthModeForLengthAttributeMap, length_mode_map, ());
-
-  if (length_mode_map.empty()) {
-    length_mode_map.Set(svg_names::kXAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kYAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kCxAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kCyAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kDxAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kDyAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kFrAttr, SVGLengthMode::kOther);
-    length_mode_map.Set(svg_names::kFxAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kFyAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kRAttr, SVGLengthMode::kOther);
-    length_mode_map.Set(svg_names::kRxAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kRyAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kWidthAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kHeightAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kX1Attr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kX2Attr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kY1Attr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kY2Attr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kRefXAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kRefYAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kMarkerWidthAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kMarkerHeightAttr, SVGLengthMode::kHeight);
-    length_mode_map.Set(svg_names::kTextLengthAttr, SVGLengthMode::kWidth);
-    length_mode_map.Set(svg_names::kStartOffsetAttr, SVGLengthMode::kWidth);
-  }
-
-  if (length_mode_map.Contains(attr_name))
-    return length_mode_map.at(attr_name);
-
-  return SVGLengthMode::kOther;
-}
-
 bool SVGLength::NegativeValuesForbiddenForAnimatedLengthAttribute(
     const QualifiedName& attr_name) {
   DEFINE_STATIC_LOCAL(
@@ -343,9 +300,8 @@ void SVGLength::SetInitial(unsigned initial_value) {
 }
 
 bool SVGLength::IsNegativeNumericLiteral() const {
-  if (!value_->IsNumericLiteralValue())
-    return false;
-  return value_->GetDoubleValue() < 0;
+  std::optional<double> value = value_->GetValueIfKnown();
+  return value && *value < 0.0;
 }
 
 }  // namespace blink

@@ -20,12 +20,12 @@ import java.util.Random;
  */
 @JNINamespace("instance_id")
 public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
-    private String mSubtype;
+    private final String mSubtype;
     private String mId;
     private long mCreationTime;
 
     /** Map from (subtype + ',' + authorizedEntity + ',' + scope) to token. */
-    private Map<String, String> mTokens = new HashMap<>();
+    private final Map<String, String> mTokens = new HashMap<>();
 
     /**
      * Enable this in all InstanceID tests to use this fake instead of hitting the network/disk.

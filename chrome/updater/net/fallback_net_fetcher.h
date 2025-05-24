@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -69,10 +70,11 @@ class FallbackNetFetcher : public update_client::NetworkFetcher {
       update_client::NetworkFetcher::ProgressCallback progress_callback,
       update_client::NetworkFetcher::PostRequestCompleteCallback
           post_request_complete_callback,
-      std::unique_ptr<std::string> response_body,
+      std::optional<std::string> response_body,
       int net_error,
       const std::string& header_etag,
       const std::string& header_x_cup_server_proof,
+      const std::string& header_cookie,
       int64_t xheader_retry_after_sec);
 
   void DownloadToFileDone(

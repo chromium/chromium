@@ -43,7 +43,7 @@ FaviconCache::FaviconCache(favicon::FaviconService* favicon_service,
   }
 }
 
-FaviconCache::~FaviconCache() {}
+FaviconCache::~FaviconCache() = default;
 
 gfx::Image FaviconCache::GetFaviconForPageUrl(
     const GURL& page_url,
@@ -114,7 +114,7 @@ gfx::Image FaviconCache::GetFaviconInternal(
                             weak_factory_.GetWeakPtr(), request),
         &task_tracker_);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   pending_requests_[request].push_back(std::move(on_favicon_fetched));

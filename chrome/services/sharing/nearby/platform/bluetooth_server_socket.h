@@ -13,8 +13,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // Concrete BluetoothServerSocket implementation.
 class BluetoothServerSocket : public api::BluetoothServerSocket {
@@ -42,7 +41,6 @@ class BluetoothServerSocket : public api::BluetoothServerSocket {
   mojo::SharedRemote<bluetooth::mojom::ServerSocket> server_socket_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_SERVER_SOCKET_H_

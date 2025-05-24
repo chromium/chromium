@@ -8,17 +8,18 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {fakeEmptyFeedbackContext, fakeFeedbackContext, fakeFeedbackContextWithExtraDiagnostics, fakeInternalUserFeedbackContext, fakeLoginFlowFeedbackContext} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
-import {FeedbackFlowButtonClickEvent, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
+import type {FeedbackFlowButtonClickEvent} from 'chrome://os-feedback/feedback_flow.js';
+import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {FileAttachmentElement} from 'chrome://os-feedback/file_attachment.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {FeedbackAppPreSubmitAction} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
-import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
+import type {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -243,7 +244,7 @@ suite('shareDataPageTestSuite', () => {
     const secondOption = emailDropdown.options.item(1);
     assertEquals(
         'Don\'t include email address', secondOption!.textContent!.trim());
-    assertEquals('', secondOption!.value!.trim());
+    assertEquals('', secondOption!.value.trim());
 
     // The user email section should be visible.
     const userEmailElement =
@@ -287,7 +288,7 @@ suite('shareDataPageTestSuite', () => {
   // Test that the pageUrl section is hidden when the url is empty string.
   test('pageUrlHidden', async () => {
     await initializePage();
-    fakeFeedbackContext!.pageUrl!.url = '';
+    fakeFeedbackContext.pageUrl!.url = '';
     page.feedbackContext = fakeFeedbackContext;
 
     // The pageUrl section should be hidden
@@ -296,7 +297,7 @@ suite('shareDataPageTestSuite', () => {
     assertFalse(isVisible(pageUrl));
 
     // Change it back otherwise it will effect other tests.
-    fakeFeedbackContext!.pageUrl!.url = 'chrome://tab/';
+    fakeFeedbackContext.pageUrl!.url = 'chrome://tab/';
   });
 
   // Test that the performanceTraceContainer section is hidden when the trace id
@@ -347,9 +348,9 @@ suite('shareDataPageTestSuite', () => {
     strictQuery('#sysInfoCheckbox', page.shadowRoot, CrCheckboxElement)
         .checked = false;
 
-    const report = (await clickSendAndWait(page)).detail!.report;
+    const report = (await clickSendAndWait(page)).detail.report;
 
-    assertEquals('chrome://tab/', report!.feedbackContext!.pageUrl!.url);
+    assertEquals('chrome://tab/', report!.feedbackContext.pageUrl!.url);
     assertFalse(report!.includeSystemLogsAndHistograms);
   });
 
@@ -492,7 +493,7 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertEquals(fakeFeedbackContext.traceId, report!.feedbackContext!.traceId);
+    assertEquals(fakeFeedbackContext.traceId, report!.feedbackContext.traceId);
   });
 
   /**
@@ -508,7 +509,7 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertEquals(0, report!.feedbackContext!.traceId);
+    assertEquals(0, report!.feedbackContext.traceId);
   });
 
   /**
@@ -528,8 +529,8 @@ suite('shareDataPageTestSuite', () => {
                    .checked);
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertFalse(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertFalse(report!.feedbackContext!.fromAssistant);
+    assertFalse(report!.feedbackContext.assistantDebugInfoAllowed);
+    assertFalse(report!.feedbackContext.fromAssistant);
   });
 
   /**
@@ -549,8 +550,8 @@ suite('shareDataPageTestSuite', () => {
         .checked = true;
 
     const report = (await clickSendAndWait(page)).detail.report;
-    assertTrue(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertTrue(report!.feedbackContext!.fromAssistant);
+    assertTrue(report!.feedbackContext.assistantDebugInfoAllowed);
+    assertTrue(report!.feedbackContext.fromAssistant);
   });
 
   /**
@@ -573,8 +574,8 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertFalse(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertTrue(report!.feedbackContext!.fromAssistant);
+    assertFalse(report!.feedbackContext.assistantDebugInfoAllowed);
+    assertTrue(report!.feedbackContext.fromAssistant);
   });
 
   /**
@@ -595,8 +596,8 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertFalse(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertFalse(report!.feedbackContext!.fromAssistant);
+    assertFalse(report!.feedbackContext.assistantDebugInfoAllowed);
+    assertFalse(report!.feedbackContext.fromAssistant);
   });
 
   /**
@@ -778,12 +779,12 @@ suite('shareDataPageTestSuite', () => {
     const fileAttachment =
         strictQuery('file-attachment', page.shadowRoot, FileAttachmentElement);
     const fakeFileData = [11, 22, 99];
-    fileAttachment.getAttachedFile = async () => {
+    fileAttachment.getAttachedFile = () => {
       const data: BigBuffer = {bytes: fakeFileData} as any;
-      return {
+      return Promise.resolve({
         fileName: {path: {path: 'fake.zip'}},
         fileData: data,
-      };
+      });
     };
 
     const request = (await clickSendAndWait(page)).detail.report;
@@ -791,7 +792,7 @@ suite('shareDataPageTestSuite', () => {
     const attachedFile = request!.attachedFile;
     assertTrue(!!attachedFile);
     assertEquals('fake.zip', attachedFile.fileName.path.path);
-    assertArrayEquals(fakeFileData, attachedFile!.fileData!.bytes as number[]);
+    assertArrayEquals(fakeFileData, attachedFile.fileData.bytes as number[]);
   });
 
   /**
@@ -900,7 +901,7 @@ suite('shareDataPageTestSuite', () => {
     const reportWithoutExtraDiagnostics =
         (await clickSendAndWait(page)).detail.report;
     assertFalse(
-        !!reportWithoutExtraDiagnostics!.feedbackContext!.extraDiagnostics);
+        !!reportWithoutExtraDiagnostics!.feedbackContext.extraDiagnostics);
 
     page.reEnableSendReportButton();
     page.feedbackContext = fakeFeedbackContextWithExtraDiagnostics;
@@ -912,13 +913,13 @@ suite('shareDataPageTestSuite', () => {
         (await clickSendAndWait(page)).detail.report;
     assertEquals(
         fakeFeedbackContextWithExtraDiagnostics.extraDiagnostics,
-        reportWithExtraDiagnostics!.feedbackContext!.extraDiagnostics);
+        reportWithExtraDiagnostics!.feedbackContext.extraDiagnostics);
 
     strictQuery('#sysInfoCheckbox', page.shadowRoot, CrCheckboxElement)
         .checked = false;
     page.reEnableSendReportButton();
     const reportNoSysInfo = (await clickSendAndWait(page)).detail.report;
-    assertFalse(!!reportNoSysInfo!.feedbackContext!.extraDiagnostics);
+    assertFalse(!!reportNoSysInfo!.feedbackContext.extraDiagnostics);
   });
 
   test(
@@ -980,7 +981,7 @@ suite('shareDataPageTestSuite', () => {
     const reportWithCategoryTag = (await clickSendAndWait(page)).detail.report;
     assertEquals(
         fakeFeedbackContext.categoryTag,
-        reportWithCategoryTag!.feedbackContext!.categoryTag);
+        reportWithCategoryTag!.feedbackContext.categoryTag);
 
     // Check the bluetooth logs checkbox. The categoryTag
     // should be BluetoothReportWithLogs, not the tag from url.
@@ -994,7 +995,7 @@ suite('shareDataPageTestSuite', () => {
         (await clickSendAndWait(page)).detail.report;
     assertEquals(
         'BluetoothReportWithLogs',
-        reportWithCategoryTagAndBluetoothFlag!.feedbackContext!.categoryTag);
+        reportWithCategoryTagAndBluetoothFlag!.feedbackContext.categoryTag);
   });
 
   /**

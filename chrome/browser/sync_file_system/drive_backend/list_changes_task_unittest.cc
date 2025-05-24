@@ -47,7 +47,7 @@ class ListChangesTaskTest : public testing::Test {
   ListChangesTaskTest(const ListChangesTaskTest&) = delete;
   ListChangesTaskTest& operator=(const ListChangesTaskTest&) = delete;
 
-  ~ListChangesTaskTest() override {}
+  ~ListChangesTaskTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(database_dir_.CreateUniqueTempDir());

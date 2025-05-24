@@ -12,6 +12,7 @@
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/proxy_manager.h"
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
+#include "mojo/core/configuration.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -55,6 +56,9 @@ void CupsProxyService::BindToCupsProxyDaemon(
   // Include an initial Mojo pipe in the invitation.
   mojo::ScopedMessagePipeHandle pipe = invitation.AttachMessagePipe(
       ::printing::kBootstrapMojoConnectionChannelToken);
+  if (!mojo::core::GetConfiguration().is_broker_process) {
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
+  }
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  platform_channel.TakeLocalEndpoint());

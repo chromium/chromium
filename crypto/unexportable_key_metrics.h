@@ -13,10 +13,18 @@
 namespace crypto {
 
 enum class TPMOperation {
+  // An operation to sign data with a TPM key.
   kMessageSigning,
+  // An operation to verify a TPM signature.
   kMessageVerify,
+  // An operation to create a TPM key from a wrapped key or a similar
+  // representation identifying a TPM key.
   kWrappedKeyCreation,
+  // An operation to create a new TPM-protected key.
   kNewKeyCreation,
+  // An operation to export a wrapped key (or a similar representation
+  // identifying a TPM key) from an existing TPM key.
+  kWrappedKeyExport,
 };
 
 // Converts the given `operation` to a string representation.

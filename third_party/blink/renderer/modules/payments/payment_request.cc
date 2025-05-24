@@ -12,8 +12,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_item.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_shipping_option.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_availability.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -44,6 +45,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/scoped_promise_resolver.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_method_change_event.h"
@@ -96,7 +99,6 @@ const char kGooglePlayBillingMethod[] = "https://play.google.com/billing";
 const char kUnknownCurrency[] = "ZZZ";
 const char kAppStoreBillingLabelPlaceHolder[] = "AppStoreBillingPlaceHolder";
 const char kSecurePaymentConfirmationMethod[] = "secure-payment-confirmation";
-
 }  // namespace
 
 namespace mojo {
@@ -517,7 +519,7 @@ void ValidateAndConvertPaymentDetailsModifiers(
         payments::mojom::blink::PaymentMethodData::New();
     output.back()->method_data->supported_method = modifier->supportedMethod();
 
-    if (modifier->hasData() && !modifier->data().IsEmpty()) {
+    if (modifier->hasData()) {
       StringifyAndParseMethodSpecificData(
           execution_context, modifier->supportedMethod(), modifier->data(),
           output.back()->method_data, exception_state);
@@ -760,8 +762,7 @@ void ValidateAndConvertPaymentMethodData(
     output.push_back(payments::mojom::blink::PaymentMethodData::New());
     output.back()->supported_method = payment_method_data->supportedMethod();
 
-    if (payment_method_data->hasData() &&
-        !payment_method_data->data().IsEmpty()) {
+    if (payment_method_data->hasData()) {
       StringifyAndParseMethodSpecificData(
           execution_context, payment_method_data->supportedMethod(),
           payment_method_data->data(), output.back(), exception_state);
@@ -787,7 +788,7 @@ bool AllowedToUsePaymentRequest(ExecutionContext* execution_context) {
   // 2. If Permissions Policy is enabled, return the policy for "payment"
   // feature.
   return execution_context->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kPayment,
+      network::mojom::PermissionsPolicyFeature::kPayment,
       ReportOptions::kReportOnFailure);
 }
 
@@ -818,7 +819,76 @@ void RecordActivationlessShow(ExecutionContext* execution_context,
   }
 }
 
+V8SecurePaymentConfirmationAvailability::Enum
+ToV8SecurePaymentConfirmationAvailabilityEnum(
+    payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum value) {
+  switch (value) {
+    case payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum::
+        kAvailable:
+      return V8SecurePaymentConfirmationAvailability::Enum::kAvailable;
+    case payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum::
+        kUnavailableUnknownReason:
+      return V8SecurePaymentConfirmationAvailability::Enum::
+          kUnavailableUnknownReason;
+    case payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum::
+        kUnavailableFeatureNotEnabled:
+      return V8SecurePaymentConfirmationAvailability::Enum::
+          kUnavailableFeatureNotEnabled;
+    case payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum::
+        kUnavailableNoPermissionPolicy:
+      return V8SecurePaymentConfirmationAvailability::Enum::
+          kUnavailableNoPermissionPolicy;
+    case payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum::
+        kUnavailableNoUserVerifyingPlatformAuthenticator:
+      return V8SecurePaymentConfirmationAvailability::Enum::
+          kUnavailableNoUserVerifyingPlatformAuthenticator;
+  };
+}
+
+void OnSecurePaymentConfirmationAvailabilityResponse(
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum result) {
+  auto* resolver = scoped_resolver->Release()
+                       ->DowncastTo<V8SecurePaymentConfirmationAvailability>();
+  resolver->Resolve(V8SecurePaymentConfirmationAvailability(
+      ToV8SecurePaymentConfirmationAvailabilityEnum(result)));
+}
 }  // namespace
+
+// static
+ScriptPromise<V8SecurePaymentConfirmationAvailability>
+PaymentRequest::securePaymentConfirmationAvailability(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<V8SecurePaymentConfirmationAvailability>>(
+      script_state);
+  auto promise = resolver->Promise();
+
+  if (!RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
+          ExecutionContext::From(script_state))) {
+    resolver->Resolve(V8SecurePaymentConfirmationAvailability(
+        V8SecurePaymentConfirmationAvailability::Enum::
+            kUnavailableFeatureNotEnabled));
+    return promise;
+  }
+
+  if (!ExecutionContext::From(script_state)
+           ->IsFeatureEnabled(
+               network::mojom::PermissionsPolicyFeature::kPayment)) {
+    resolver->Resolve(V8SecurePaymentConfirmationAvailability(
+        V8SecurePaymentConfirmationAvailability::Enum::
+            kUnavailableNoPermissionPolicy));
+    return promise;
+  }
+
+  CredentialManagerProxy::From(script_state)
+      ->SecurePaymentConfirmationService()
+      ->SecurePaymentConfirmationAvailability(
+          WTF::BindOnce(&OnSecurePaymentConfirmationAvailabilityResponse,
+                        std::make_unique<ScopedPromiseResolver>(resolver)));
+
+  return promise;
+}
 
 PaymentRequest* PaymentRequest::Create(
     ExecutionContext* execution_context,
@@ -846,12 +916,13 @@ PaymentRequest::~PaymentRequest() = default;
 ScriptPromise<PaymentResponse> PaymentRequest::show(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  return show(script_state, ScriptPromiseUntyped(), exception_state);
+  return show(script_state, ScriptPromise<PaymentDetailsUpdate>(),
+              exception_state);
 }
 
 ScriptPromise<PaymentResponse> PaymentRequest::show(
     ScriptState* script_state,
-    ScriptPromiseUntyped details_promise,
+    ScriptPromise<PaymentDetailsUpdate> details_promise,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid() || !LocalDOMWindow::From(script_state) ||
       !LocalDOMWindow::From(script_state)->GetFrame()) {
@@ -901,7 +972,9 @@ ScriptPromise<PaymentResponse> PaymentRequest::show(
   DomWindow()->ConsumePaymentRequestToken();
   LocalFrame::ConsumeTransientUserActivation(local_frame);
 
-  VLOG(2) << "Renderer: PaymentRequest (" << id_.Utf8() << "): show()";
+  VLOG(2) << "Renderer: PaymentRequest (" << id_.Utf8() << "): show(); "
+          << "has_transient_user_activation=" << has_transient_user_activation
+          << ", has_delegated_activation: " << has_delegated_activation;
 
   UseCounter::Count(GetExecutionContext(), WebFeature::kPaymentRequestShow);
 
@@ -913,14 +986,8 @@ ScriptPromise<PaymentResponse> PaymentRequest::show(
     // 10 seconds, abort payment.
     update_payment_details_timer_.StartOneShot(base::Seconds(10), FROM_HERE);
     details_promise.Then(
-        MakeGarbageCollected<ScriptFunction>(
-            script_state,
-            MakeGarbageCollected<UpdatePaymentDetailsFunction>(
-                this, UpdatePaymentDetailsFunction::ResolveType::kFulfill)),
-        MakeGarbageCollected<ScriptFunction>(
-            script_state,
-            MakeGarbageCollected<UpdatePaymentDetailsFunction>(
-                this, UpdatePaymentDetailsFunction::ResolveType::kReject)));
+        script_state, MakeGarbageCollected<UpdatePaymentDetailsResolve>(this),
+        MakeGarbageCollected<UpdatePaymentDetailsReject>(this));
   }
 
   accept_resolver_ =
@@ -1163,8 +1230,7 @@ ScriptPromise<IDLUndefined> PaymentRequest::Complete(
   return complete_resolver_->Promise();
 }
 
-void PaymentRequest::OnUpdatePaymentDetails(
-    const ScriptValue& details_script_value) {
+void PaymentRequest::OnUpdatePaymentDetails(PaymentDetailsUpdate* details) {
   ScriptPromiseResolverBase* resolver = GetPendingAcceptPromiseResolver();
   if (!resolver || !payment_provider_.is_bound() ||
       !update_payment_details_timer_.IsActive()) {
@@ -1174,24 +1240,17 @@ void PaymentRequest::OnUpdatePaymentDetails(
   update_payment_details_timer_.Stop();
 
   v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                 "PaymentDetailsUpdate");
-  PaymentDetailsUpdate* details =
-      NativeValueTraits<PaymentDetailsUpdate>::NativeValue(
-          isolate, details_script_value.V8Value(), exception_state);
-  if (exception_state.HadException()) {
-    resolver->Reject(exception_state.GetException());
-    ClearResolversAndCloseMojoConnection();
-    return;
-  }
-
+  v8::TryCatch try_catch(isolate);
   PaymentDetailsPtr validated_details =
       payments::mojom::blink::PaymentDetails::New();
   ValidateAndConvertPaymentDetailsUpdate(
       details, options_, validated_details, shipping_option_, ignore_total_,
-      *GetExecutionContext(), exception_state);
-  if (exception_state.HadException()) {
-    resolver->Reject(exception_state.GetException());
+      *GetExecutionContext(), PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
+    ApplyContextToException(resolver->GetScriptState(), try_catch.Exception(),
+                            ExceptionContext(v8::ExceptionContext::kConstructor,
+                                             "PaymentDetailsUpdate"));
+    resolver->Reject(try_catch.Exception());
     ClearResolversAndCloseMojoConnection();
     return;
   }
@@ -1359,9 +1418,6 @@ PaymentRequest::PaymentRequest(
     validated_details->shipping_options = std::nullopt;
   }
 
-  DCHECK(shipping_type_.IsNull() || shipping_type_ == "shipping" ||
-         shipping_type_ == "delivery" || shipping_type_ == "pickup");
-
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       execution_context->GetTaskRunner(TaskType::kUserInteraction);
 
@@ -1411,21 +1467,17 @@ void PaymentRequest::OnPaymentMethodChange(const String& method_name,
   init->setMethodName(method_name);
 
   if (!stringified_details.empty()) {
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kConstructor,
-                                   "PaymentMethodChangeEvent");
+    v8::TryCatch try_catch(script_state->GetIsolate());
     v8::Local<v8::Value> parsed_value =
-        FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
-                       stringified_details, exception_state);
-    if (exception_state.HadException()) {
-      GetPendingAcceptPromiseResolver()->Reject(
-          MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
-                                             exception_state.Message()));
+        FromJSONString(script_state, stringified_details);
+    if (try_catch.HasCaught()) {
+      GetPendingAcceptPromiseResolver()->Reject(try_catch.Exception());
       ClearResolversAndCloseMojoConnection();
       return;
     }
+    CHECK(parsed_value->IsObject());
     init->setMethodDetails(
-        ScriptValue(script_state->GetIsolate(), parsed_value));
+        ScriptObject(script_state->GetIsolate(), parsed_value));
   }
 
   PaymentRequestUpdateEvent* event = PaymentMethodChangeEvent::Create(

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
@@ -132,9 +131,8 @@ void SubmitHitTestRegionList(
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t num_bytes) {
   FuzzedDataProvider fuzz(data, num_bytes);
-  viz::ServerSharedBitmapManager shared_bitmap_manager;
   viz::FrameSinkManagerImpl frame_sink_manager{
-      viz::FrameSinkManagerImpl::InitParams(&shared_bitmap_manager)};
+      viz::FrameSinkManagerImpl::InitParams()};
   viz::TestLatestLocalSurfaceIdLookupDelegate delegate;
   viz::TestLatestLocalSurfaceIdLookupDelegate* lsi_delegate =
       fuzz.ConsumeBool() ? &delegate : nullptr;

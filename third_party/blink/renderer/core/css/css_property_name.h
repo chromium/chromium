@@ -60,7 +60,7 @@ class CORE_EXPORT CSSPropertyName {
 
   bool IsCustomProperty() const { return Id() == CSSPropertyID::kVariable; }
 
-  AtomicString ToAtomicString() const;
+  const AtomicString& ToAtomicString() const;
 
  private:
   // For HashTraits::EmptyValue().

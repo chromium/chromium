@@ -12,13 +12,14 @@
 #include "chrome/browser/ui/safety_hub/menu_notification_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/common/chrome_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "extensions/browser/extension_prefs.h"          // nogncheck
 #include "extensions/browser/extension_prefs_factory.h"  // nogncheck
 #include "extensions/browser/extension_registry.h"       // nogncheck
@@ -48,10 +49,11 @@ SafetyHubMenuNotificationServiceFactory::
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(UnusedSitePermissionsServiceFactory::GetInstance());
+  DependsOn(RevokedPermissionsServiceFactory::GetInstance());
   DependsOn(NotificationPermissionsReviewServiceFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(PasswordStatusCheckServiceFactory::GetInstance());
+  DependsOn(SafetyHubHatsServiceFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
 #endif  // BUIDFLAG(IS_ANDROID)
 }
@@ -63,19 +65,22 @@ std::unique_ptr<KeyedService>
 SafetyHubMenuNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
-  UnusedSitePermissionsService* unused_site_permissions_service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  RevokedPermissionsService* revoked_permissions_service =
+      RevokedPermissionsServiceFactory::GetForProfile(profile);
   NotificationPermissionsReviewService* notification_permission_review_service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<SafetyHubMenuNotificationService>(
-      profile->GetPrefs(), unused_site_permissions_service,
+      profile->GetPrefs(), revoked_permissions_service,
       notification_permission_review_service, profile);
 #else
   PasswordStatusCheckService* password_check_service =
       PasswordStatusCheckServiceFactory::GetForProfile(profile);
+  SafetyHubHatsService* safety_hub_hats_service =
+      SafetyHubHatsServiceFactory::GetForProfile(profile);
   return std::make_unique<SafetyHubMenuNotificationService>(
-      profile->GetPrefs(), unused_site_permissions_service,
-      notification_permission_review_service, password_check_service, profile);
+      profile->GetPrefs(), revoked_permissions_service,
+      notification_permission_review_service, password_check_service,
+      safety_hub_hats_service, profile);
 #endif  // BUILDFLAG(IS_ANDROID)
 }

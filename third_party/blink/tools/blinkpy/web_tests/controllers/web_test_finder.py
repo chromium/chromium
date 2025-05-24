@@ -32,11 +32,12 @@ import hashlib
 import json
 import logging
 import re
+from collections import OrderedDict, defaultdict
+from typing import Collection, Mapping, NamedTuple, Optional, Sequence, Set, Tuple
 
 from blinkpy.web_tests.layout_package.json_results_generator import convert_times_trie_to_flat_paths
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.base import Port
-from collections import OrderedDict
 
 _log = logging.getLogger(__name__)
 
@@ -369,53 +370,27 @@ def filter_tests(tests, filters):
 
     A test will be run only if it passes every filter.
     """
-
-    def glob_sort_key(k):
-        if k and k[0] == '-':
-            return (len(k[1:]), k[1:])
-        elif k and k[0] == '+':
-            return (len(k[1:]), k[1:])
-        else:
-            return (len(k), k)
-
     for terms in filters:
-        # Validate the filter
-        for term in terms:
-            if (term.startswith('-') and not term[1:]) or not term:
-                raise ValueError('Empty filter entry "%s"' % (term, ))
-            for i, c in enumerate(term):
-                if i == len(term) - 1:
-                    continue
-                if c == '*' and (i == 0 or term[i - 1] != '\\'):
-                    raise ValueError('Bad test filter "%s" specified; '
-                                     'unescaped wildcards are only allowed at '
-                                     'the end' % (term, ))
-            if term.startswith('-') and term[1:] in terms:
-                raise ValueError('Both "%s" and "%s" specified in test '
-                                 'filter' % (term, term[1:]))
-
-        # Separate the negative/positive globless terms and glob terms
-        include_by_default = all(term.startswith('-') for term in terms)
-        exact_neg_terms, exact_pos_terms, glob_terms = _extract_terms(terms)
+        # Although `FilterTrie` also happens to support exact terms, it's
+        # slower than simply checking for membership in a set of test names, so
+        # partition the terms into exact/glob.
+        exact_pos_terms, exact_neg_terms, glob_terms = _extract_terms(terms)
+        include_by_default = not exact_pos_terms and not any(
+            include for _, include in glob_terms)
+        glob_trie = FilterTrie.from_terms(glob_terms)
 
         filtered_tests = []
         for test in tests:
-            # Check for the exact test name
             if test in exact_neg_terms:
                 continue
             if test in exact_pos_terms:
                 filtered_tests.append(test)
                 continue
 
-            # Check globs, this could be done with a trie to avoid this loop
-            # but glob terms should be lower volume than exact terms
-            include = include_by_default
-            for glob in sorted(glob_terms, key=glob_sort_key):
-                if glob.startswith('-'):
-                    include = include and not fnmatch.fnmatch(test, glob[1:])
-                else:
-                    include = include or fnmatch.fnmatch(
-                        test, glob[1:] if glob[0] == '+' else glob)
+            include = glob_trie.should_include(
+                test.split(Port.TEST_PATH_SEPARATOR))
+            if include is None:
+                include = include_by_default
             if include:
                 filtered_tests.append(test)
         tests = filtered_tests
@@ -423,29 +398,114 @@ def filter_tests(tests, filters):
     return tests
 
 
-def _extract_terms(filter):
+ParsedTerm = Tuple[str, bool]
+
+
+class FilterTrie(NamedTuple):
+    children: Mapping[str, 'FilterTrie']
+    # `None` indicates no term terminates at this node.
+    include: Optional[bool] = None
+
+    @classmethod
+    def from_terms(cls, terms: Collection[ParsedTerm]) -> 'FilterTrie':
+        include_for_trie, child_terms_by_next_part = None, defaultdict(list)
+        for test, include in terms:
+            next_part, _, rest = test.partition(Port.TEST_PATH_SEPARATOR)
+            if next_part:
+                child_terms_by_next_part[next_part].append((rest, include))
+            else:
+                assert include_for_trie is None, 'contradictory terms'
+                include_for_trie = include
+
+        # Pre-sort the children so that `should_include()` honors the
+        # longest-glob-wins rule.
+        children = OrderedDict()
+        for next_part in sorted(child_terms_by_next_part,
+                                key=_remove_glob,
+                                reverse=True):
+            children[next_part] = cls.from_terms(
+                child_terms_by_next_part[next_part])
+        return cls(children, include_for_trie)
+
+    def should_include(self, test_parts: Sequence[str]) -> Optional[bool]:
+        """Determine whether a test should run or not.
+
+        Arguments:
+            test_parts: The path components of the test. URL query parameters
+                should be attached to the last component.
+
+        Returns:
+            Whether the test should be included. If `None`, there's no
+            definitive answer because no terms matched.
+        """
+        if not test_parts:
+            # Exact match found when all path parts have been exhausted.
+            return self.include
+        next_part, *rest = test_parts
+        if child := self.children.get(next_part):
+            # Look for the rest of an exact match or more specific glob, which
+            # always beats this node's glob (or that of one of its ancestors).
+            if (include := child.should_include(rest)) is not None:
+                return include
+        # If there's no exact match for a child directory/test, there can
+        # still be a glob match at this directory.
+        for maybe_glob, child in self.children.items():
+            if maybe_glob.endswith('*') and next_part.startswith(
+                    _remove_glob(maybe_glob)):
+                assert child.include is not None, 'glob must terminate term'
+                return child.include
+        return None
+
+
+def _extract_terms(
+        terms: Collection[str]) -> Tuple[Set[str], Set[str], Set[ParsedTerm]]:
     """Extract terms of the filter into exact +/- terms and glob terms.
 
     The +/- prefix char for exact terms will also be stripped as they are no
     longer needed to identify the term as a positive or negative filter. Any
     prefix in globbed terms (terms with a *) will preserve the sign.
     """
-    exact_negative_terms = set()
-    exact_positive_terms = set()
-    glob_terms = set()
-    for term in filter:
-        is_glob = False
-        for i, c in enumerate(term):
-            if c == '*' and (i == 0 or term[i - 1] != '\\'):
-                glob_terms.add(term)
-                is_glob = True
-                break
-        if is_glob:
-            continue
-        elif term[0] == '-':
-            exact_negative_terms.add(term[1:])
-        elif term[0] == '+':
-            exact_positive_terms.add(term[1:])
+    exact_pos_terms, exact_neg_terms, glob_terms = set(), set(), set()
+    for term in terms:
+        test, include = _strip_sign(term)
+        if not test:
+            raise ValueError(f'Empty filter entry {term!r}')
+        if _has_illegal_wildcard(test):
+            raise ValueError(f'Bad test filter {term!r} specified; '
+                             'unescaped wildcards are only allowed at the end')
+
+        if test.endswith('*'):
+            glob_terms.add((test, include))
+        elif include:
+            exact_pos_terms.add(test)
         else:
-            exact_positive_terms.add(term)
-    return exact_negative_terms, exact_positive_terms, list(glob_terms)
+            exact_neg_terms.add(test)
+
+    contradictory_terms = (exact_pos_terms & exact_neg_terms) | {
+        test
+        for test, include in glob_terms if (test, not include) in glob_terms
+    }
+    if test := next(iter(contradictory_terms), None):
+        raise ValueError(
+            f'Both "+{test}" and "-{test}" specified in test filter')
+    return exact_pos_terms, exact_neg_terms, glob_terms
+
+
+def _strip_sign(term: str) -> ParsedTerm:
+    if term.startswith('-'):
+        return term[len('-'):], False
+    elif term.startswith('+'):
+        return term[len('+'):], True
+    return term, True
+
+
+def _remove_glob(test: str) -> str:
+    return test[:-len('*')] if test.endswith('*') else test
+
+
+def _has_illegal_wildcard(term: str) -> bool:
+    # Remove any legal wildcard and add an initial dummy character, which fails
+    # terms starting with `*` that aren't just `*`.
+    term = ' ' + _remove_glob(term)
+    return any(prev != '\\' and char == '*'
+               for prev, char in zip(term[:-1], term[1:]))

@@ -68,8 +68,8 @@ DrawImage::DrawImage(PaintImage image,
       use_dark_mode_(use_dark_mode),
       src_rect_(src_rect),
       filter_quality_(filter_quality),
-      frame_index_(frame_index),
-      target_color_params_(target_color_params) {
+      frame_index_(frame_index) {
+  SetTargetColorParams(target_color_params);
   matrix_is_decomposable_ = ExtractScale(matrix, &scale_);
 }
 
@@ -85,7 +85,9 @@ DrawImage::DrawImage(const DrawImage& other,
                           other.scale_.height() * scale_adjustment)),
       matrix_is_decomposable_(other.matrix_is_decomposable_),
       frame_index_(frame_index),
-      target_color_params_(target_color_params) {}
+      target_color_params_(target_color_params) {
+  SetTargetColorParams(target_color_params);
+}
 
 DrawImage::DrawImage(const DrawImage& other) = default;
 DrawImage::DrawImage(DrawImage&& other) = default;
@@ -101,6 +103,17 @@ bool DrawImage::IsSameForTesting(const DrawImage& other) const {
          filter_quality_ == other.filter_quality_ && scale_ == other.scale_ &&
          matrix_is_decomposable_ == other.matrix_is_decomposable_ &&
          target_color_params_ == other.target_color_params_;
+}
+
+void DrawImage::SetTargetColorParams(
+    const TargetColorParams& target_color_params) {
+  target_color_params_ = target_color_params;
+  if (paint_image_.GetReinterpretAsSRGB()) {
+    // If `paint_image_` is to be reinterpreted as sRGB, then the target color
+    // space (used by decode) is invalid (which indicates that the color profile
+    // is to be ignored).
+    target_color_params_->color_space = gfx::ColorSpace();
+  }
 }
 
 }  // namespace cc

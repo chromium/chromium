@@ -8,6 +8,7 @@
 #include <array>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/resources/release_callback.h"
@@ -165,13 +166,12 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   //            v_out_stride >= CEIL(size().width() / 2)
   //
   // The color space is always Rec.709 (see gfx::ColorSpace::CreateREC709()).
-  virtual bool ReadI420Planes(uint8_t* y_out,
+  virtual bool ReadI420Planes(base::span<uint8_t> y_out,
                               int y_out_stride,
-                              uint8_t* u_out,
+                              base::span<uint8_t> u_out,
                               int u_out_stride,
-                              uint8_t* v_out,
+                              base::span<uint8_t> v_out,
                               int v_out_stride) const;
-
   // Copies the image planes of an NV12 result to the caller-provided memory.
   // Returns true if successful, or false if: 1) this result is empty, or 2) the
   // result format is not NV12 and does not provide a conversion implementation.
@@ -185,15 +185,15 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   //              uv_out_stride >= 2 * CEIL(size().width() / 2)
   //
   // The color space is always Rec.709 (see gfx::ColorSpace::CreateREC709()).
-  virtual bool ReadNV12Planes(uint8_t* y_out,
+  virtual bool ReadNV12Planes(base::span<uint8_t> y_out,
                               int y_out_stride,
-                              uint8_t* uv_out,
+                              base::span<uint8_t> uv_out,
                               int uv_out_stride) const;
 
   // Copies the result into |dest|. The result is in N32Premul form. Returns
   // true if successful, or false if: 1) the result is empty, or 2) the result
   // format is not RGBA and conversion is not implemented.
-  virtual bool ReadRGBAPlane(uint8_t* dest, int stride) const;
+  bool ReadRGBAPlane(base::span<uint8_t> dest, int stride) const;
 
   // Returns the color space of the image data returned by ReadRGBAPlane().
   virtual gfx::ColorSpace GetRGBAColorSpace() const;

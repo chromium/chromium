@@ -45,6 +45,9 @@ class WindowMiniViewBase : public views::View {
   // Shows or hides a focus ring around this.
   void UpdateFocusState(bool focus);
 
+  [[nodiscard]] base::CallbackListSubscription AddFocusedChangedCallback(
+      views::PropertyChangedCallback callback);
+
   // Returns true if a preview of the given `window` is contained in `this`.
   virtual bool Contains(aura::Window* window) const = 0;
 
@@ -130,6 +133,9 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // Resets the preset rounded corners values i.e.
   // `header_view_rounded_corners_` and `preview_view_rounded_corners_`.
   void ResetRoundedCorners();
+
+  // views::View:
+  void OnThemeChanged() override;
 
   // WindowMiniViewBase:
   bool Contains(aura::Window* window) const override;

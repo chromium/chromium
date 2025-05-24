@@ -48,7 +48,6 @@ LocalCaretRect LocalSelectionRectOfPosition(const PositionWithAffinity&);
 // Bounds of (possibly transformed) caret in absolute coords
 CORE_EXPORT gfx::Rect AbsoluteCaretBoundsOf(
     const PositionWithAffinity&,
-    LayoutUnit* extra_width_to_end_of_line = nullptr,
     EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary);
 CORE_EXPORT gfx::Rect AbsoluteCaretBoundsOf(
     const PositionInFlatTreeWithAffinity&);

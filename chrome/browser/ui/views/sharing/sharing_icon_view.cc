@@ -11,8 +11,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -39,16 +39,7 @@ SharingIconView::SharingIconView(
   SetVisible(false);
   SetUpForInOutAnimation();
 
-  auto* controller = GetController();
-  if (controller && !controller->HasAccessibleUi()) {
-    // This should rarely be true. One example where it is true is the
-    // SmsRemoteFetcherUiController: crrev.com/c/2964059 stopped all UI
-    // from being shown and removed the accessible name. Setting the state
-    // to ignored is needed to stop the UI from being shown to assistive
-    // technologies.
-    GetViewAccessibility().SetIsIgnored(true);
-    return;
-  }
+  SetAccessibleIsIgnoredIfNeeded();
 }
 
 SharingIconView::~SharingIconView() = default;
@@ -59,8 +50,9 @@ SharingUiController* SharingIconView::GetController() const {
 }
 
 void SharingIconView::StartLoadingAnimation() {
-  if (loading_animation_)
+  if (loading_animation_) {
     return;
+  }
 
   loading_animation_ = true;
   AnimateIn(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL);
@@ -68,8 +60,9 @@ void SharingIconView::StartLoadingAnimation() {
 }
 
 void SharingIconView::StopLoadingAnimation() {
-  if (!loading_animation_)
+  if (!loading_animation_) {
     return;
+  }
 
   loading_animation_ = false;
   UnpauseAnimation();
@@ -78,8 +71,9 @@ void SharingIconView::StopLoadingAnimation() {
 
 void SharingIconView::UpdateImpl() {
   auto* controller = GetController();
-  if (!controller)
+  if (!controller) {
     return;
+  }
 
   GetViewAccessibility().SetName(
       controller->GetTextForTooltipAndAccessibleName());
@@ -90,10 +84,11 @@ void SharingIconView::UpdateImpl() {
     UpdateIconImage();
   }
 
-  if (controller->is_loading())
+  if (controller->is_loading()) {
     StartLoadingAnimation();
-  else
+  } else {
     StopLoadingAnimation();
+  }
 
   if (last_controller_ != controller) {
     ResetSlideAnimation(/*show=*/false);
@@ -154,8 +149,9 @@ void SharingIconView::UpdateInkDrop(bool activate) {
   auto target_state =
       activate ? views::InkDropState::ACTIVATED : views::InkDropState::HIDDEN;
   if (views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() !=
-      target_state)
+      target_state) {
     views::InkDrop::Get(this)->AnimateToState(target_state, /*event=*/nullptr);
+  }
 }
 
 bool SharingIconView::IsTriggerableEvent(const ui::Event& event) {
@@ -164,7 +160,8 @@ bool SharingIconView::IsTriggerableEvent(const ui::Event& event) {
 }
 
 const gfx::VectorIcon& SharingIconView::GetVectorIconBadge() const {
-  return should_show_error_ ? vector_icons::kBlockedBadgeIcon : gfx::kNoneIcon;
+  return should_show_error_ ? vector_icons::kBlockedBadgeIcon
+                            : gfx::VectorIcon::EmptyIcon();
 }
 
 void SharingIconView::OnExecuting(
@@ -177,15 +174,21 @@ views::BubbleDialogDelegate* SharingIconView::GetBubble() const {
 
 const gfx::VectorIcon& SharingIconView::GetVectorIcon() const {
   auto* controller = GetController();
-  return controller ? controller->GetVectorIcon() : gfx::kNoneIcon;
+  return controller ? controller->GetVectorIcon()
+                    : gfx::VectorIcon::EmptyIcon();
 }
 
-void SharingIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void SharingIconView::SetAccessibleIsIgnoredIfNeeded() {
   auto* controller = GetController();
   if (controller && !controller->HasAccessibleUi()) {
+    // This should rarely be true. One example where it is true is the
+    // SmsRemoteFetcherUiController: crrev.com/c/2964059 stopped all UI
+    // from being shown and removed the accessible name. Setting the state
+    // to ignored is needed to stop the UI from being shown to assistive
+    // technologies.
+    GetViewAccessibility().SetIsIgnored(true);
     return;
   }
-  PageActionIconView::GetAccessibleNodeData(node_data);
 }
 
 BEGIN_METADATA(SharingIconView)

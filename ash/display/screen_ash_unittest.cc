@@ -4,8 +4,11 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/callback_forward.h"
+#include "base/test/test_future.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 
@@ -88,6 +91,33 @@ class TestDisplayRemoveObserver : public display::DisplayObserver {
   int removed_displays_ = 0;
 };
 
+// Invokes the given callback when the code is inside the destructor of the
+// root window.
+class RootWindowDestructorObserver : aura::WindowObserver {
+ public:
+  RootWindowDestructorObserver(aura::Window* child_window,
+                               base::OnceClosure callback)
+      : callback_(std::move(callback)),
+        root_window_(child_window->GetRootWindow()) {
+    root_window_->AddObserver(this);
+  }
+  ~RootWindowDestructorObserver() override {
+    if (root_window_) {
+      root_window_->RemoveObserver(this);
+    }
+  }
+
+ private:
+  void OnWindowDestroying(aura::Window* window) override {
+    CHECK_EQ(window, root_window_);
+    std::move(callback_).Run();
+    root_window_ = nullptr;
+  }
+
+  base::OnceClosure callback_;
+  raw_ptr<aura::Window> root_window_;
+};
+
 }  // namespace
 
 // Switching to Unified Desktop removes all current displays (including primary
@@ -117,6 +147,33 @@ TEST_F(ScreenAshTest, TestNoCrashesOnGettingPrimaryDisplayOnDisplayRemoved) {
   EXPECT_EQ(observer.removed_displays(), 3);
 
   display_manager()->RemoveDisplayObserver(&observer);
+}
+
+TEST_F(ScreenAshTest,
+       GetDisplayNearestWindowShouldNotCrashWhenWindowIsBeingDestroyed) {
+  UpdateDisplay("400x500,300x200");
+
+  std::unique_ptr<aura::Window> window_on_second_display(
+      CreateTestWindow(gfx::Rect(400, 0, 100, 100)));
+
+  base::test::TestFuture<void> root_window_destroyed_waiter;
+  RootWindowDestructorObserver observer(
+      window_on_second_display.get(),
+      base::BindOnce(
+          [](aura::Window* window) {
+            // This callback is invoked from inside the destructor of the root
+            // window. Calling `GetDisplayNearestWindow` from here used to
+            // crash (https://crbug.com/376575664).
+            // This tests it doesn't.
+            display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+          },
+          window_on_second_display.get())
+          .Then(root_window_destroyed_waiter.GetCallback()));
+
+  // Destroy the second display
+  UpdateDisplay("400x500");
+
+  EXPECT_TRUE(root_window_destroyed_waiter.Wait());
 }
 
 }  // namespace ash

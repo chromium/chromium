@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -157,7 +158,6 @@ void GLES2DecoderTestBase::CacheBlob(gpu::GpuDiskCacheType type,
 void GLES2DecoderTestBase::OnFenceSyncRelease(uint64_t release) {}
 void GLES2DecoderTestBase::OnDescheduleUntilFinished() {}
 void GLES2DecoderTestBase::OnRescheduleAfterFinished() {}
-void GLES2DecoderTestBase::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
 bool GLES2DecoderTestBase::ShouldYield() {
   return false;
 }
@@ -211,9 +211,9 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
       new FeatureInfo(workarounds, gpu_feature_info);
 
   group_ = scoped_refptr<ContextGroup>(new ContextGroup(
-      gpu_preferences_, GetParam(), std::move(memory_tracker_),
-      &shader_translator_cache_, &framebuffer_completeness_cache_, feature_info,
-      normalized_init.bind_generates_resource, nullptr /* progress_reporter */,
+      gpu_preferences_, std::move(memory_tracker_), &shader_translator_cache_,
+      &framebuffer_completeness_cache_, feature_info,
+      normalized_init.bind_generates_resource, /*progress_reporter=*/nullptr,
       gpu_feature_info, &discardable_manager_, nullptr,
       &shared_image_manager_));
   bool use_default_textures = normalized_init.bind_generates_resource;
@@ -292,15 +292,17 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
         .RetiresOnSaturation();
   }
 
-  static GLuint attrib_0_id[] = {
-    kServiceAttrib0BufferId,
-  };
-  static GLuint fixed_attrib_buffer_id[] = {
-    kServiceFixedAttribBufferId,
-  };
+  static auto attrib_0_id = std::to_array<GLuint>({
+      kServiceAttrib0BufferId,
+  });
+  static auto fixed_attrib_buffer_id = std::to_array<GLuint>({
+      kServiceFixedAttribBufferId,
+  });
   EXPECT_CALL(*gl_, GenBuffersARB(std::size(attrib_0_id), _))
-      .WillOnce(SetArrayArgument<1>(attrib_0_id,
-                                    attrib_0_id + std::size(attrib_0_id)))
+      .WillOnce(SetArrayArgument<1>(attrib_0_id.data(),
+                                    base::span<GLuint>(attrib_0_id)
+                                        .subspan(std::size(attrib_0_id))
+                                        .data()))
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, BindBuffer(GL_ARRAY_BUFFER, kServiceAttrib0BufferId))
       .Times(1)
@@ -312,9 +314,11 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, GenBuffersARB(std::size(fixed_attrib_buffer_id), _))
-      .WillOnce(SetArrayArgument<1>(
-          fixed_attrib_buffer_id,
-          fixed_attrib_buffer_id + std::size(fixed_attrib_buffer_id)))
+      .WillOnce(
+          SetArrayArgument<1>(fixed_attrib_buffer_id.data(),
+                              base::span<GLuint>(fixed_attrib_buffer_id)
+                                  .subspan(std::size(fixed_attrib_buffer_id))
+                                  .data()))
       .RetiresOnSaturation();
 
   for (GLint tt = 0; tt < TestHelper::kNumTextureUnits; ++tt) {
@@ -380,19 +384,21 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
               GetShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_HIGH_FLOAT, _, _))
       .RetiresOnSaturation();
 
-  static GLint max_viewport_dims[] = {
-    kMaxViewportWidth,
-    kMaxViewportHeight
-  };
+  static auto max_viewport_dims =
+      std::to_array<GLint>({kMaxViewportWidth, kMaxViewportHeight});
   EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_VIEWPORT_DIMS, _))
-      .WillOnce(SetArrayArgument<1>(
-          max_viewport_dims, max_viewport_dims + std::size(max_viewport_dims)))
+      .WillOnce(SetArrayArgument<1>(max_viewport_dims.data(),
+                                    base::span<GLint>(max_viewport_dims)
+                                        .subspan(std::size(max_viewport_dims))
+                                        .data()))
       .RetiresOnSaturation();
 
-  static GLfloat line_width_range[] = { 1.0f, 2.0f };
+  static auto line_width_range = std::to_array<GLfloat>({1.0f, 2.0f});
   EXPECT_CALL(*gl_, GetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, _))
-      .WillOnce(SetArrayArgument<1>(
-          line_width_range, line_width_range + std::size(line_width_range)))
+      .WillOnce(SetArrayArgument<1>(line_width_range.data(),
+                                    base::span<GLfloat>(line_width_range)
+                                        .subspan(std::size(line_width_range))
+                                        .data()))
       .RetiresOnSaturation();
 
   if (group_->feature_info()->feature_flags().ext_window_rectangles) {
@@ -439,6 +445,13 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
     EXPECT_CALL(*gl_, ClearColor(0, 0, 0, 0)).Times(1).RetiresOnSaturation();
   }
 #endif
+
+  if (init.context_type == CONTEXT_TYPE_WEBGL2 &&
+      group_->feature_info()->gl_version_info().is_es3) {
+    EXPECT_CALL(*gl_, Enable(GL_PRIMITIVE_RESTART_FIXED_INDEX))
+        .Times(1)
+        .RetiresOnSaturation();
+  }
 
   if (context_->HasRobustness()) {
     EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
@@ -1153,8 +1166,7 @@ void GLES2DecoderTestBase::SetupExpectationsForEnableDisable(GLenum cap,
       enable_flags_.cached_stencil_test = enable;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   if (enable) {
     EXPECT_CALL(*gl_, Enable(cap)).Times(1).RetiresOnSaturation();
@@ -2057,8 +2069,8 @@ void GLES2DecoderTestBase::SetupShader(
                                       : kProgramOutputsESSL3;
   const size_t kNumProgramOutputs = 1;
   const int kNumUniformBlocks = 2;
-  const int kUniformBlockBinding[] = { 0, 1 };
-  const int kUniformBlockDataSize[] = { 32, 16 };
+  const auto kUniformBlockBinding = std::to_array<int>({0, 1});
+  const auto kUniformBlockDataSize = std::to_array<int>({32, 16});
 
   {
     InSequence s;
@@ -2337,8 +2349,6 @@ void GLES2DecoderPassthroughTestBase::CacheBlob(gpu::GpuDiskCacheType type,
 void GLES2DecoderPassthroughTestBase::OnFenceSyncRelease(uint64_t release) {}
 void GLES2DecoderPassthroughTestBase::OnDescheduleUntilFinished() {}
 void GLES2DecoderPassthroughTestBase::OnRescheduleAfterFinished() {}
-void GLES2DecoderPassthroughTestBase::OnSwapBuffers(uint64_t swap_id,
-                                                    uint32_t flags) {}
 bool GLES2DecoderPassthroughTestBase::ShouldYield() {
   return false;
 }
@@ -2371,10 +2381,10 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
 
   scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
   group_ = new gles2::ContextGroup(
-      gpu_preferences_, true, nullptr /* memory_tracker */,
-      &shader_translator_cache_, &framebuffer_completeness_cache_, feature_info,
+      gpu_preferences_, /*memory_tracker=*/nullptr, &shader_translator_cache_,
+      &framebuffer_completeness_cache_, feature_info,
       context_creation_attribs_.bind_generates_resource,
-      nullptr /* progress_reporter */, GpuFeatureInfo(), &discardable_manager_,
+      /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
       &passthrough_discardable_manager_, &shared_image_manager_);
 
   surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size(4, 4));

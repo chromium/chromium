@@ -76,7 +76,7 @@ class MEDIA_EXPORT AudioRendererImpl
   // |decoders| contains the AudioDecoders to use when initializing.
   AudioRendererImpl(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      AudioRendererSink* sink,
+      scoped_refptr<AudioRendererSink> sink,
       const CreateAudioDecodersCB& create_audio_decoders_cb,
       MediaLog* media_log,
       MediaPlayerLoggingID media_player_id,
@@ -108,6 +108,7 @@ class MEDIA_EXPORT AudioRendererImpl
   void SetVolume(float volume) override;
   void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
+  void SetRenderMutedAudio(bool render_muted_audio) override;
   void SetWasPlayedWithUserActivationAndHighMediaEngagement(
       bool was_played_with_user_activation_and_high_media_engagement) override;
 
@@ -239,6 +240,9 @@ class MEDIA_EXPORT AudioRendererImpl
 
   void EnableSpeechRecognition();
   void TranscribeAudio(scoped_refptr<media::AudioBuffer> buffer);
+
+  void MaybeStartRealSink();
+  void SuspendRealSink();
 
   // Returns the delta between AudioClock::back_timestamp() and
   // AudioRendererAlgorithm::FrontTimestamp().
@@ -405,6 +409,8 @@ class MEDIA_EXPORT AudioRendererImpl
 
   // Ensures we don't issue log spam when absurd delay values are encountered.
   int num_absurd_delay_warnings_ = 0;
+
+  bool render_muted_audio_ = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<AudioRendererImpl> weak_factory_{this};

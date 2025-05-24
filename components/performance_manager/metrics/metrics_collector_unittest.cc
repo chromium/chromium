@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/public/metrics/metrics_collector.h"
 
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,8 +48,10 @@ class MetricsCollectorTest : public GraphTestHarness {
   }
 
   void TearDown() override {
-    graph()->TakeFromGraph(metrics_collector_);  // Destroy the observer.
-    metrics_collector_ = nullptr;
+    // Clear |metrics_collector_| to avoid leaving a dangling pointer.
+    MetricsCollector* collector = std::exchange(metrics_collector_, nullptr);
+    // Destroy the observer.
+    graph()->TakeFromGraph(collector);
     Super::TearDown();
   }
 
@@ -57,7 +61,7 @@ class MetricsCollectorTest : public GraphTestHarness {
   base::HistogramTester histogram_tester_;
 
  private:
-  raw_ptr<MetricsCollector, DanglingUntriaged> metrics_collector_ = nullptr;
+  raw_ptr<MetricsCollector> metrics_collector_ = nullptr;
 };
 
 TEST_F(MetricsCollectorTest, ProcessLifetime_LaunchAndExit) {

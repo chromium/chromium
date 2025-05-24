@@ -51,7 +51,7 @@ public class TestTraceEvent {
      * Enable tracing, and set a specific output file. If tracing was previously enabled and
      * disabled, that data is cleared.
      *
-     * @param file Which file to append the trace data to.
+     * @param outputFile Which file to append the trace data to.
      */
     public static void enable(File outputFile) {
         synchronized (sLock) {

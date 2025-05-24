@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
-#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -47,8 +46,7 @@ SessionDataService::SessionDataService(
 
   SetStatusPref(Status::kInitialized);
   auto* policy = profile_->GetSpecialStoragePolicy();
-  if (policy && policy->HasSessionOnlyOrigins() &&
-      base::FeatureList::IsEnabled(kDeleteSessionOnlyDataOnStartup)) {
+  if (policy && policy->HasSessionOnlyOrigins()) {
     MaybeContinueDeletionFromLastSesssion(last_status);
   }
 
@@ -94,7 +92,7 @@ void SessionDataService::MaybeContinueDeletionFromLastSesssion(
   deleter_->DeleteSessionOnlyData(
       /*skip_session_cookies=*/true,
       base::BindOnce(&SessionDataService::OnCleanupAtStartupFinished,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SessionDataService::OnCleanupAtStartupFinished() {}
@@ -151,12 +149,10 @@ void SessionDataService::StartCleanupInternal(bool skip_session_cookies) {
   cleanup_started_ = true;
   SetStatusPref(Status::kDeletionStarted);
 
-  // Using base::Unretained is safe as DeleteSessionOnlyData() uses a
-  // ScopedProfileKeepAlive.
   deleter_->DeleteSessionOnlyData(
       skip_session_cookies,
       base::BindOnce(&SessionDataService::OnCleanupAtSessionEndFinished,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SessionDataService::OnCleanupAtSessionEndFinished() {

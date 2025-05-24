@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
@@ -71,10 +70,10 @@ void RecordQueryMetric(mdnsQueryType query_type, std::string_view host) {
 
   if (host.ends_with("_googlecast._tcp.local")) {
     base::UmaHistogramEnumeration("Network.Mdns.Googlecast", query_type);
-  } else if (base::ranges::any_of(kPrintScanServices,
-                                  [&host](std::string_view service) {
-                                    return host.ends_with(service);
-                                  })) {
+  } else if (std::ranges::any_of(kPrintScanServices,
+                                 [&host](std::string_view service) {
+                                   return host.ends_with(service);
+                                 })) {
     base::UmaHistogramEnumeration("Network.Mdns.PrintScan", query_type);
   } else {
     base::UmaHistogramEnumeration("Network.Mdns.Other", query_type);
@@ -602,10 +601,7 @@ void MDnsListenerImpl::HandleRecordUpdate(MDnsCache::UpdateType update_type,
         break;
       case MDnsCache::NoChange:
       default:
-        NOTREACHED_IN_MIGRATION();
-        // Dummy assignment to suppress compiler warning.
-        update_external = MDnsListener::RECORD_CHANGED;
-        break;
+        NOTREACHED();
     }
 
     delegate_->OnRecordUpdate(update_external, record);

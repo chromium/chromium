@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/js/store.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Action} from 'chrome://resources/js/store.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientModeAlbum, AmbientTheme, AmbientUiVisibility, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
+import type {AmbientModeAlbum, AmbientTheme, AmbientUiVisibility, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
+
+import {AmbientThemePreviewMap} from './utils.js';
 
 /**
  * @fileoverview Defines the actions to change ambient state.
@@ -16,6 +18,7 @@ export enum AmbientActionName {
   SET_ALBUM_SELECTED = 'set_album_selected',
   SET_AMBIENT_MODE_ENABLED = 'set_ambient_mode_enabled',
   SET_AMBIENT_THEME = 'set_ambient_theme',
+  SET_AMBIENT_THEME_PREVIEWS = 'set_ambient_theme_previews',
   SET_PREVIEWS = 'set_previews',
   SET_SCREEN_SAVER_DURATION = 'set_screen_saver_duration',
   SET_TEMPERATURE_UNIT = 'set_temperature_unit',
@@ -26,8 +29,9 @@ export enum AmbientActionName {
   SET_GEOLOCATION_IS_USER_MODIFIABLE = 'set_geolocation_is_user_modifiable',
 }
 
-export type AmbientActions = SetAlbumsAction|SetAlbumSelectedAction|
-    SetAmbientModeEnabledAction|SetAmbientThemeAction|SetPreviewsAction|
+export type AmbientActions =
+    SetAlbumsAction|SetAlbumSelectedAction|SetAmbientModeEnabledAction|
+    SetAmbientThemeAction|SetAmbientThemePreviewsAction|SetPreviewsAction|
     SetScreenSaverDurationAction|SetTopicSourceAction|SetTemperatureUnitAction|
     SetAmbientUiVisibilityAction|SetShouldShowTimeOfDayBannerAction|
     SetGeolocationPermissionEnabledAction|SetGeolocationIsUserModifiableAction;
@@ -52,6 +56,12 @@ export interface SetAmbientModeEnabledAction extends Action {
 export interface SetAmbientThemeAction extends Action {
   name: AmbientActionName.SET_AMBIENT_THEME;
   ambientTheme: AmbientTheme;
+}
+
+
+export interface SetAmbientThemePreviewsAction extends Action {
+  name: AmbientActionName.SET_AMBIENT_THEME_PREVIEWS;
+  previews: AmbientThemePreviewMap;
 }
 
 
@@ -126,6 +136,11 @@ export function setAmbientModeEnabledAction(enabled: boolean):
 export function setAmbientThemeAction(ambientTheme: AmbientTheme):
     SetAmbientThemeAction {
   return {name: AmbientActionName.SET_AMBIENT_THEME, ambientTheme};
+}
+
+export function setAmbientThemePreviewsAction(previews: AmbientThemePreviewMap):
+    SetAmbientThemePreviewsAction {
+  return {name: AmbientActionName.SET_AMBIENT_THEME_PREVIEWS, previews};
 }
 
 /**

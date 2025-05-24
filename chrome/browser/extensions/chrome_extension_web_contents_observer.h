@@ -11,7 +11,10 @@
 
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/stack_frame.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class RenderFrameHost;
@@ -34,7 +37,7 @@ class ChromeExtensionWebContentsObserver
   ~ChromeExtensionWebContentsObserver() override;
 
   // Creates and initializes an instance of this class for the given
-  // |web_contents|, if it doesn't already exist.
+  // `web_contents`, if it doesn't already exist.
   static void CreateForWebContents(content::WebContents* web_contents);
 
  private:
@@ -48,6 +51,8 @@ class ChromeExtensionWebContentsObserver
       content::RenderFrameHost* render_frame_host) override;
   std::unique_ptr<ExtensionFrameHost> CreateExtensionFrameHost(
       content::WebContents* web_contents) override;
+  void SetUpRenderFrameHost(
+      content::RenderFrameHost* render_frame_host) override;
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;

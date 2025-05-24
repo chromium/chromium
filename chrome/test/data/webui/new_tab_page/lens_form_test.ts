@@ -314,7 +314,7 @@ suite('LensFormTest', () => {
     assertEquals(null, lastSubmit);
   });
 
-  test('submit url should set entrypoint parameter', async () => {
+  test('submit url should set entrypoint parameter', () => {
     // Arrange.
     const input =
         lensForm.$.urlForm.children.namedItem('ep') as HTMLInputElement;
@@ -323,7 +323,7 @@ suite('LensFormTest', () => {
     assertEquals('cntpubu', input.value);
   });
 
-  test('submit url should set rendering environment parameter', async () => {
+  test('submit url should set rendering environment parameter', () => {
     // Arrange.
     const input =
         lensForm.$.urlForm.children.namedItem('re') as HTMLInputElement;
@@ -332,7 +332,7 @@ suite('LensFormTest', () => {
     assertEquals('df', input.value);
   });
 
-  test('submit url should set surface parameter', async () => {
+  test('submit url should set surface parameter', () => {
     // Arrange.
     const input =
         lensForm.$.urlForm.children.namedItem('s') as HTMLInputElement;
@@ -341,7 +341,7 @@ suite('LensFormTest', () => {
     assertEquals('4', input.value);
   });
 
-  test('submit url should set language parameter', async () => {
+  test('submit url should set language parameter', () => {
     // Arrange.
     const input =
         lensForm.$.urlForm.children.namedItem('hl') as HTMLInputElement;
@@ -365,16 +365,14 @@ suite('LensFormTest', () => {
     assertEquals('1001', input.value);
   });
 
-  test(
-      'submit url should set client data param to a non-empty value',
-      async () => {
-        // Arrange.
-        const input =
-            lensForm.$.urlForm.children.namedItem('cd') as HTMLInputElement;
+  test('submit url should set client data param to a non-empty value', () => {
+    // Arrange.
+    const input =
+        lensForm.$.urlForm.children.namedItem('cd') as HTMLInputElement;
 
-        // Assert.
-        assertGT(input.value.length, 0);
-      });
+    // Assert.
+    assertGT(input.value.length, 0);
+  });
 
   function dispatchFileInputChangeWithDataTransfer(dataTransfer: DataTransfer) {
     lensForm.$.fileInput.files = dataTransfer.files;

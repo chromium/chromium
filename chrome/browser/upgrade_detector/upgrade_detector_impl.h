@@ -83,7 +83,7 @@ class UpgradeDetectorImpl : public UpgradeDetector,
       size_t index);
 
   // UpgradeDetector:
-  void OnMonitoredPrefsChanged() override;
+  void RecomputeSchedule() override;
 
   // Starts the upgrade notification timer that will check periodically whether
   // enough time has elapsed to update the severity (which maps to visual

@@ -31,6 +31,10 @@ def GetAndroidDeviceInteractionToPath():
   return os.path.join(GetChromiumSrcDir(), 'third_party', 'catapult', 'devil')
 
 
+def GetBuildUtilDir():
+  return os.path.join(GetChromiumSrcDir(), 'build', 'util')
+
+
 def GetTelemetryDir():
   return os.path.join(
       GetChromiumSrcDir(), 'third_party', 'catapult', 'telemetry')
@@ -80,6 +84,12 @@ def AddAndroidDeviceInteractionToPath():
     sys.path.insert(1, device_interaction_path)
 
 
+def AddBuildUtilToPath():
+  build_util_path = GetBuildUtilDir()
+  if build_util_path not in sys.path:
+    sys.path.insert(1, build_util_path)
+
+
 def AddTelemetryToPath():
   telemetry_path = GetTelemetryDir()
   if telemetry_path not in sys.path:
@@ -102,13 +112,6 @@ def AddAndroidPylibToPath():
   android_pylib_path = GetAndroidPylibDir()
   if android_pylib_path not in sys.path:
     sys.path.insert(1, android_pylib_path)
-
-
-def AddCrossBenchToPath():
-  crossbench_path = GetCrossBenchDir()
-  if crossbench_path not in sys.path:
-    sys.path.insert(1, crossbench_path)
-
 
 def GetExpectationsPath():
   return os.path.join(GetPerfDir(), 'expectations.config')

@@ -12,12 +12,12 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
@@ -29,14 +29,15 @@ import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Handles collecting and pushing state information to the UrlBar model. */
+@NullMarked
 class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
-    private final @NonNull Context mContext;
-    private final @NonNull PropertyModel mModel;
-    private final @NonNull Callback<Boolean> mOnFocusChangeCallback;
+    private final Context mContext;
+    private final PropertyModel mModel;
+    private final Callback<Boolean> mOnFocusChangeCallback;
 
     private boolean mHasFocus;
 
-    private @NonNull UrlBarData mUrlBarData = UrlBarData.EMPTY;
+    private UrlBarData mUrlBarData = UrlBarData.EMPTY;
     private @ScrollType int mScrollType = UrlBar.ScrollType.NO_SCROLL;
     private @SelectionState int mSelectionState = UrlBarCoordinator.SelectionState.SELECT_ALL;
 
@@ -44,6 +45,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     // For NTP, when in un-focus state, the search text hint color is fixed for the real search box
     // and we couldn't change it by the branded color scheme.
     private boolean mIsHintTextFixedForNtp;
+    private boolean mShowOriginOnly;
 
     /**
      * Creates a URLBarMediator.
@@ -54,9 +56,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
      *     UrlBar.
      */
     public UrlBarMediator(
-            @NonNull Context context,
-            @NonNull PropertyModel model,
-            @NonNull Callback<Boolean> focusChangeCallback) {
+            Context context, PropertyModel model, Callback<Boolean> focusChangeCallback) {
         mContext = context;
         mModel = model;
         mOnFocusChangeCallback = focusChangeCallback;
@@ -105,9 +105,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
      * @return Whether this data differs from the previously passed in values.
      */
     public boolean setUrlBarData(
-            @NonNull UrlBarData data,
-            @ScrollType int scrollType,
-            @SelectionState int selectionState) {
+            UrlBarData data, @ScrollType int scrollType, @SelectionState int selectionState) {
         assert data != null;
 
         if (data.originEndIndex == data.originStartIndex) {
@@ -137,14 +135,19 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         return true;
     }
 
-    @NonNull
     UrlBarData getUrlBarData() {
         return mUrlBarData;
     }
 
     private void pushTextToModel() {
-        CharSequence text =
-                !mHasFocus ? mUrlBarData.displayText : mUrlBarData.getEditingOrDisplayText();
+        CharSequence text;
+        if (mShowOriginOnly && mUrlBarData.originStartIndex != mUrlBarData.originEndIndex) {
+            text =
+                    mUrlBarData.displayText.subSequence(
+                            mUrlBarData.originStartIndex, mUrlBarData.originEndIndex);
+        } else {
+            text = !mHasFocus ? mUrlBarData.displayText : mUrlBarData.getEditingOrDisplayText();
+        }
         CharSequence textForAutofillServices = text;
 
         if (!(mHasFocus || TextUtils.isEmpty(text) || mUrlBarData.url == null)) {
@@ -219,9 +222,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
      *     default. Will usually be URL when autocompleting a title, and empty otherwise.
      */
     public void setAutocompleteText(
-            @NonNull String userText,
-            @Nullable String autocompleteText,
-            @Nullable String additionalText) {
+            String userText, @Nullable String autocompleteText, @Nullable String additionalText) {
         if (!mHasFocus) {
             assert false : "Should not update autocomplete text when not focused";
             return;
@@ -297,8 +298,13 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.URL_DIRECTION_LISTENER, listener);
     }
 
+    /** Sets the property indicating the URL bar is used by Custom Tab. */
+    public void setIsInCct(boolean isInCct) {
+        mModel.set(UrlBarProperties.IS_IN_CCT, isInCct);
+    }
+
     @Override
-    public String getReplacementCutCopyText(
+    public @Nullable String getReplacementCutCopyText(
             String currentText, int selectionStart, int selectionEnd) {
         if (mUrlBarData.url == null) return null;
 
@@ -344,7 +350,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     }
 
     @Override
-    public String getTextToPaste() {
+    public @Nullable String getTextToPaste() {
         Context context = ContextUtils.getApplicationContext();
 
         ClipboardManager clipboard =
@@ -406,5 +412,21 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         mIsHintTextFixedForNtp = true;
         final @ColorInt int hintTextColor = SemanticColorUtils.getDefaultTextColor(mContext);
         mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);
+    }
+
+    /** Sets the search box hint text. */
+    void setUrlBarHintText(String hintText) {
+        mModel.set(UrlBarProperties.HINT_TEXT, hintText);
+    }
+
+    void setShowOriginOnly(boolean showOriginOnly) {
+        // TODO(https://crbm/411135455): Reconsider the disparate mechanisms we have for UrlBar
+        // truncation.
+        mShowOriginOnly = showOriginOnly;
+        pushTextToModel();
+    }
+
+    void setUseSmallText(boolean useSmallText) {
+        mModel.set(UrlBarProperties.USE_SMALL_TEXT, useSmallText);
     }
 }

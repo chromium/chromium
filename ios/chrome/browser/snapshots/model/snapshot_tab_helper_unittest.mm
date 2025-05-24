@@ -323,6 +323,39 @@ TEST_F(SnapshotTabHelperTest, UpdateSnapshotWithCallback) {
   EXPECT_EQ(delegate_.snapshotTakenCount, 1u);
 }
 
+// Tests that UpdateSnapshotStorageWithImage overrides a cached image with
+// a new one and updates the cache.
+TEST_F(SnapshotTabHelperTest, UpdateSnapshotStorageWithImage) {
+  SetCachedSnapshot(
+      UIImageWithSizeAndSolidColor(kCachedSnapshotSize, [UIColor greenColor]));
+  UIImage* original_cached_snapshot = GetCachedSnapshot();
+
+  // Updates the storage with a new image.
+  UIImage* blue_image =
+      UIImageWithSizeAndSolidColor(kDefaultSnapshotSize, [UIColor blueColor]);
+  SnapshotTabHelper::FromWebState(&web_state_)
+      ->UpdateSnapshotStorageWithImage(blue_image);
+
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+  __block UIImage* snapshot = nil;
+  SnapshotTabHelper::FromWebState(&web_state_)
+      ->RetrieveColorSnapshot(^(UIImage* image) {
+        snapshot = image;
+        run_loop_ptr->Quit();
+      });
+  run_loop.Run();
+
+  ASSERT_TRUE(snapshot);
+  EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kDefaultSnapshotSize));
+  EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor blueColor]));
+
+  UIImage* cached_snapshot = GetCachedSnapshot();
+  EXPECT_TRUE(UIImagesAreEqual(snapshot, cached_snapshot));
+  EXPECT_FALSE(UIImagesAreEqual(snapshot, original_cached_snapshot));
+  EXPECT_EQ(delegate_.snapshotTakenCount, 0u);
+}
+
 // Tests that GenerateSnapshot ignores any cached snapshots and generate a new
 // snapshot without adding it to the cache.
 TEST_F(SnapshotTabHelperTest, GenerateSnapshot) {
@@ -371,4 +404,31 @@ TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
     // this should not happen, mark the test as failed.
     GTEST_FAIL();
   }
+}
+
+// Tests that UpdateSnapshotStorage doesn't override an old image if taking a
+// new snapshot fails.
+TEST_F(SnapshotTabHelperTest, FailToUpdateSnapshotStorage) {
+  SetCachedSnapshot(
+      UIImageWithSizeAndSolidColor(kDefaultSnapshotSize, [UIColor greenColor]));
+  UIImage* original_cached_snapshot = GetCachedSnapshot();
+
+  // Forcefully make it fail to take a new snapshot.
+  delegate_.canTakeSnapshot = NO;
+
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+
+  SnapshotTabHelper::FromWebState(&web_state_)
+      ->UpdateSnapshotWithCallback(^(UIImage* image) {
+        ASSERT_FALSE(image);
+        run_loop_ptr->Quit();
+      });
+
+  run_loop.Run();
+
+  // Make sure that the cached snapshot isn't updated.
+  UIImage* cached_snapshot = GetCachedSnapshot();
+  EXPECT_TRUE(UIImagesAreEqual(cached_snapshot, original_cached_snapshot));
+  EXPECT_EQ(delegate_.snapshotTakenCount, 0u);
 }

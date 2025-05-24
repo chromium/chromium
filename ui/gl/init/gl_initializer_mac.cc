@@ -15,13 +15,14 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
+#include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/init/gl_display_initializer.h"
-#include "ui/gl/gl_egl_api_implementation.h"
+#include "ui/gl/startup_trace.h"
 
 namespace gl {
 namespace init {
@@ -33,8 +34,8 @@ const char kEGLANGLELibraryName[] = "libEGL.dylib";
 
 bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  NOTREACHED_IN_MIGRATION();
-#endif
+  NOTREACHED();
+#else
 
   // Some unit test targets depend on Angle/SwiftShader but aren't built
   // as app bundles. In that case, the .dylib is next to the executable.
@@ -50,13 +51,21 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   }
 
   base::FilePath glesv2_path = base_dir.Append(kGLESv2ANGLELibraryName);
-  base::NativeLibrary gles_library = LoadLibraryAndPrintError(glesv2_path);
+  base::NativeLibrary gles_library;
+  {
+    GPU_STARTUP_TRACE_EVENT("Load gles_library");
+    gles_library = LoadLibraryAndPrintError(glesv2_path);
+  }
   if (!gles_library) {
     return false;
   }
 
   base::FilePath egl_path = base_dir.Append(kEGLANGLELibraryName);
-  base::NativeLibrary egl_library = LoadLibraryAndPrintError(egl_path);
+  base::NativeLibrary egl_library;
+  {
+    GPU_STARTUP_TRACE_EVENT("Load egl_library");
+    egl_library = LoadLibraryAndPrintError(egl_path);
+  }
   if (!egl_library) {
     base::UnloadNativeLibrary(gles_library);
     return false;
@@ -80,6 +89,7 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   AddGLNativeLibrary(egl_library);
 
   return true;
+#endif
 }
 
 bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
@@ -146,10 +156,8 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
       InitializeStaticGLBindingsGL();
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return false;
 }
 
 void ShutdownGLPlatform(GLDisplay* display) {

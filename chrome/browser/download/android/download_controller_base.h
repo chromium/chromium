@@ -66,9 +66,10 @@ class DownloadControllerBase : public download::DownloadItem::Observer,
 
   // Called when a download is initiated by context menu.
   virtual void StartContextMenuDownload(
+      const GURL& url,
       const content::ContextMenuParams& params,
       content::WebContents* web_contents,
-      bool is_link) = 0;
+      bool is_media) = 0;
 
   // Callback when user permission prompt finishes. Args: whether file access
   // permission is acquired.
@@ -90,7 +91,7 @@ class DownloadControllerBase : public download::DownloadItem::Observer,
       const DownloadInfo& info) = 0;
 
  protected:
-  ~DownloadControllerBase() override {}
+  ~DownloadControllerBase() override = default;
   static DownloadControllerBase* download_controller_;
 };
 

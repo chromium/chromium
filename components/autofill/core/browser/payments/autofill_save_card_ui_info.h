@@ -22,8 +22,11 @@ struct AutofillSaveCardUiInfo {
   bool is_for_upload;
   // The resource ID for the logo displayed for the dialog.
   int logo_icon_id;
+  // Accessibility description for the logo.
+  std::u16string logo_icon_description;
   // The resource ID for the icon that identifies the issuer of the card.
   int issuer_icon_id;
+  std::u16string card_network;
   LegalMessageLines legal_message_lines;
   std::u16string card_label;
   std::u16string card_sub_label;

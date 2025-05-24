@@ -6,14 +6,16 @@
 
 #include <optional>
 
-#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "media/learning/common/learning_task_controller.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
 namespace {
 
 using ::media::learning::FeatureVector;
@@ -41,8 +43,8 @@ class SmoothnessWindowMonitor {
     segment_decoded_frames_ = player_->DecodedFrameCount();
 
     update_timer_.Start(FROM_HERE, kSegmentSize,
-                        base::BindRepeating(&SmoothnessWindowMonitor::OnTimer,
-                                            base::Unretained(this)));
+                        WTF::BindRepeating(&SmoothnessWindowMonitor::OnTimer,
+                                           WTF::Unretained(this)));
   }
 
   ~SmoothnessWindowMonitor() = default;
@@ -90,8 +92,8 @@ class SmoothnessHelperImpl : public SmoothnessHelper {
         consecutive_nnr_(std::move(nnr_controller)),
         player_(player) {
     monitor_ = std::make_unique<SmoothnessWindowMonitor>(
-        player_, base::BindRepeating(&SmoothnessHelperImpl::OnWindow,
-                                     base::Unretained(this)));
+        player_, WTF::BindRepeating(&SmoothnessHelperImpl::OnWindow,
+                                    WTF::Unretained(this)));
   }
 
   // This will ignore the last segment, if any, which is fine since it's not

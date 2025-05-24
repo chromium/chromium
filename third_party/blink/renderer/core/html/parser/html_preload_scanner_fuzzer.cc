@@ -27,10 +27,6 @@ std::unique_ptr<CachedDocumentParameters> CachedDocumentParametersForFuzzing(
   document_parameters->viewport_meta_zero_values_quirk =
       fuzzed_data.ConsumeBool();
   document_parameters->viewport_meta_enabled = fuzzed_data.ConsumeBool();
-  document_parameters->integrity_features =
-      fuzzed_data.ConsumeBool()
-          ? SubresourceIntegrity::IntegrityFeatures::kDefault
-          : SubresourceIntegrity::IntegrityFeatures::kSignatures;
   return document_parameters;
 }
 

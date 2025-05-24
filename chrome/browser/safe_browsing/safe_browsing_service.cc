@@ -38,10 +38,12 @@
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
+#include "chrome/browser/safe_browsing/external_app_redirect_checking.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_pref_change_handler.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -85,15 +87,14 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/hash_realtime_service_factory.h"
-#include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_analyzer.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/hash_realtime_service_factory.h"
+#include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_analyzer.h"
 #endif
 
 using content::BrowserThread;
@@ -107,7 +108,7 @@ namespace {
 // The number of user gestures to trace back for the referrer chain.
 const int kReferrerChainUserGestureLimit = 2;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 void PopulateDownloadWarningActions(download::DownloadItem* download,
                                     ClientSafeBrowsingReportRequest* report) {
   for (auto& event :
@@ -172,13 +173,13 @@ void OnGotCookies(
 }  // namespace
 
 // static
-base::FilePath SafeBrowsingService::GetCookieFilePathForTesting() {
-  return base::FilePath(SafeBrowsingService::GetBaseFilename().value() +
+base::FilePath SafeBrowsingServiceImpl::GetCookieFilePathForTesting() {
+  return base::FilePath(SafeBrowsingServiceImpl::GetBaseFilename().value() +
                         safe_browsing::kCookiesFile);
 }
 
 // static
-base::FilePath SafeBrowsingService::GetBaseFilename() {
+base::FilePath SafeBrowsingServiceImpl::GetBaseFilename() {
   base::FilePath path;
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
   DCHECK(result);
@@ -186,7 +187,7 @@ base::FilePath SafeBrowsingService::GetBaseFilename() {
 }
 
 // static
-bool SafeBrowsingService::IsUserEligibleForESBPromo(Profile* profile) {
+bool SafeBrowsingServiceImpl::IsUserEligibleForESBPromo(Profile* profile) {
   if (IsSafeBrowsingPolicyManaged(*profile->GetPrefs()) ||
       profile->IsOffTheRecord()) {
     return false;
@@ -195,20 +196,20 @@ bool SafeBrowsingService::IsUserEligibleForESBPromo(Profile* profile) {
          SafeBrowsingState::STANDARD_PROTECTION;
 }
 
-SafeBrowsingService::SafeBrowsingService()
+SafeBrowsingServiceImpl::SafeBrowsingServiceImpl()
     : services_delegate_(ServicesDelegate::Create(this)),
       estimated_extended_reporting_by_prefs_(SBER_LEVEL_OFF),
       shutdown_(false),
       enabled_(false),
       enabled_by_prefs_(false) {}
 
-SafeBrowsingService::~SafeBrowsingService() {
+SafeBrowsingServiceImpl::~SafeBrowsingServiceImpl() {
   // We should have already been shut down. If we're still enabled, then the
   // database isn't going to be closed properly, which could lead to corruption.
   DCHECK(!enabled_);
 }
 
-void SafeBrowsingService::Initialize() {
+void SafeBrowsingServiceImpl::Initialize() {
   // Ensure FileTypePolicies's Singleton is instantiated during startup.
   // This guarantees we'll log UMA metrics about its state.
   FileTypePolicies::GetInstance();
@@ -237,7 +238,7 @@ void SafeBrowsingService::Initialize() {
   RegisterAllDelayedAnalysis();
 }
 
-void SafeBrowsingService::ShutDown() {
+void SafeBrowsingServiceImpl::ShutDown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   shutdown_ = true;
@@ -252,6 +253,8 @@ void SafeBrowsingService::ShutDown() {
   // observer of the preferences.
   prefs_map_.clear();
   user_population_prefs_.clear();
+  min_allowed_time_for_referrer_chains_.clear();
+  pref_change_handlers_map_.clear();
 
   Stop(true);
 
@@ -262,7 +265,7 @@ void SafeBrowsingService::ShutDown() {
   proxy_config_monitor_.reset();
 }
 
-network::mojom::NetworkContext* SafeBrowsingService::GetNetworkContext(
+network::mojom::NetworkContext* SafeBrowsingServiceImpl::GetNetworkContext(
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   NetworkContextService* service =
@@ -275,7 +278,7 @@ network::mojom::NetworkContext* SafeBrowsingService::GetNetworkContext(
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-SafeBrowsingService::GetURLLoaderFactory(
+SafeBrowsingServiceImpl::GetURLLoaderFactory(
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (url_loader_factory_for_testing_) {
@@ -291,7 +294,7 @@ SafeBrowsingService::GetURLLoaderFactory(
   return service->GetURLLoaderFactory();
 }
 
-void SafeBrowsingService::FlushNetworkInterfaceForTesting(
+void SafeBrowsingServiceImpl::FlushNetworkInterfaceForTesting(
     content::BrowserContext* browser_context) {
   NetworkContextService* service =
       NetworkContextServiceFactory::GetForBrowserContext(browser_context);
@@ -302,37 +305,40 @@ void SafeBrowsingService::FlushNetworkInterfaceForTesting(
   service->FlushNetworkInterfaceForTesting();
 }
 
-const scoped_refptr<SafeBrowsingUIManager>& SafeBrowsingService::ui_manager()
-    const {
+const scoped_refptr<SafeBrowsingUIManager>&
+SafeBrowsingServiceImpl::ui_manager() const {
   return ui_manager_;
 }
 
 const scoped_refptr<SafeBrowsingDatabaseManager>&
-SafeBrowsingService::database_manager() const {
+SafeBrowsingServiceImpl::database_manager() const {
   return services_delegate_->database_manager();
 }
 
 ReferrerChainProvider*
-SafeBrowsingService::GetReferrerChainProviderFromBrowserContext(
+SafeBrowsingServiceImpl::GetReferrerChainProviderFromBrowserContext(
     content::BrowserContext* browser_context) {
   return SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
       browser_context);
 }
 
 #if BUILDFLAG(IS_ANDROID)
-ReferringAppInfo SafeBrowsingService::GetReferringAppInfo(
+internal::ReferringAppInfo SafeBrowsingServiceImpl::GetReferringAppInfo(
     content::WebContents* web_contents) {
-  return safe_browsing::GetReferringAppInfo(web_contents);
+  // This is currently only used for the chrome://safe-browsing UI, which does
+  // not need WebAPK info.
+  return safe_browsing::GetReferringAppInfo(web_contents,
+                                            /*get_webapk_info=*/false);
 }
 #endif
 
-TriggerManager* SafeBrowsingService::trigger_manager() const {
+TriggerManager* SafeBrowsingServiceImpl::trigger_manager() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return trigger_manager_.get();
 }
 
-PasswordProtectionService* SafeBrowsingService::GetPasswordProtectionService(
-    Profile* profile) const {
+PasswordProtectionService*
+SafeBrowsingServiceImpl::GetPasswordProtectionService(Profile* profile) const {
   if (IsSafeBrowsingEnabled(*profile->GetPrefs())) {
     return ChromePasswordProtectionServiceFactory::GetForProfile(profile);
   }
@@ -340,22 +346,22 @@ PasswordProtectionService* SafeBrowsingService::GetPasswordProtectionService(
 }
 
 std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>
-SafeBrowsingService::CreatePreferenceValidationDelegate(
+SafeBrowsingServiceImpl::CreatePreferenceValidationDelegate(
     Profile* profile) const {
   return services_delegate_->CreatePreferenceValidationDelegate(profile);
 }
 
-void SafeBrowsingService::RegisterDelayedAnalysisCallback(
+void SafeBrowsingServiceImpl::RegisterDelayedAnalysisCallback(
     DelayedAnalysisCallback callback) {
   services_delegate_->RegisterDelayedAnalysisCallback(std::move(callback));
 }
 
-void SafeBrowsingService::AddDownloadManager(
+void SafeBrowsingServiceImpl::AddDownloadManager(
     content::DownloadManager* download_manager) {
   services_delegate_->AddDownloadManager(download_manager);
 }
 
-HashRealTimeService* SafeBrowsingService::GetHashRealTimeService(
+HashRealTimeService* SafeBrowsingServiceImpl::GetHashRealTimeService(
     Profile* profile) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   return safe_browsing::HashRealTimeServiceFactory::GetForProfile(profile);
@@ -364,29 +370,48 @@ HashRealTimeService* SafeBrowsingService::GetHashRealTimeService(
 #endif
 }
 
-SafeBrowsingUIManager* SafeBrowsingService::CreateUIManager() {
+SafeBrowsingUIManager* SafeBrowsingServiceImpl::CreateUIManager() {
   return new SafeBrowsingUIManager(
       std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
       std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
       GURL(chrome::kChromeUINewTabURL));
 }
 
-void SafeBrowsingService::RegisterAllDelayedAnalysis() {
+void SafeBrowsingServiceImpl::RegisterAllDelayedAnalysis() {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   RegisterBinaryIntegrityAnalysis();
 #endif
 }
 
-V4ProtocolConfig SafeBrowsingService::GetV4ProtocolConfig() const {
+V4ProtocolConfig SafeBrowsingServiceImpl::GetV4ProtocolConfig() const {
   return safe_browsing::GetV4ProtocolConfig();
 }
 
-void SafeBrowsingService::SetDatabaseManagerForTest(
+void SafeBrowsingServiceImpl::ReportExternalAppRedirect(
+    content::WebContents* web_contents,
+    std::string_view app_name,
+    std::string_view uri) {
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      MakeExternalAppRedirectReport(web_contents, uri);
+
+  if (!report) {
+    return;
+  }
+
+  ShouldReportExternalAppRedirect(
+      database_manager(), web_contents, app_name, uri,
+      base::BindOnce(
+          &SafeBrowsingServiceImpl::MaybeSendExternalAppRedirectReport, this,
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+          std::string(app_name), std::move(report)));
+}
+
+void SafeBrowsingServiceImpl::SetDatabaseManagerForTest(
     SafeBrowsingDatabaseManager* database_manager) {
   services_delegate_->SetDatabaseManagerForTest(database_manager);
 }
 
-void SafeBrowsingService::Start() {
+void SafeBrowsingServiceImpl::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!enabled_) {
@@ -396,7 +421,7 @@ void SafeBrowsingService::Start() {
   }
 }
 
-void SafeBrowsingService::Stop(bool shutdown) {
+void SafeBrowsingServiceImpl::Stop(bool shutdown) {
   ui_manager_->Stop(shutdown);
 
   services_delegate_->StopOnUIThread(shutdown);
@@ -404,7 +429,7 @@ void SafeBrowsingService::Stop(bool shutdown) {
   enabled_ = false;
 }
 
-void SafeBrowsingService::OnProfileAdded(Profile* profile) {
+void SafeBrowsingServiceImpl::OnProfileAdded(Profile* profile) {
   // Some services are disabled by default based on the profile type, e.g. the
   // System Profile, in which Safe browsing is not needed.
   if (AreKeyedServicesDisabledForProfileByDefault(profile)) {
@@ -418,35 +443,46 @@ void SafeBrowsingService::OnProfileAdded(Profile* profile) {
       std::make_unique<PrefChangeRegistrar>();
   registrar->Init(pref_service);
   registrar->Add(prefs::kSafeBrowsingEnabled,
-                 base::BindRepeating(&SafeBrowsingService::RefreshState,
+                 base::BindRepeating(&SafeBrowsingServiceImpl::RefreshState,
                                      base::Unretained(this)));
   // ClientSideDetectionService will need to be refresh the models
   // renderers have if extended-reporting changes.
   registrar->Add(prefs::kSafeBrowsingScoutReportingEnabled,
-                 base::BindRepeating(&SafeBrowsingService::RefreshState,
+                 base::BindRepeating(&SafeBrowsingServiceImpl::RefreshState,
                                      base::Unretained(this)));
   registrar->Add(prefs::kSafeBrowsingEnhanced,
-                 base::BindRepeating(&SafeBrowsingService::RefreshState,
-                                     base::Unretained(this)));
+                 base::BindRepeating(
+                     &SafeBrowsingServiceImpl::EnhancedProtectionPrefChange,
+                     base::Unretained(this), profile));
+  registrar->Add(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+      base::BindRepeating(
+          &SafeBrowsingServiceImpl::UpdateMinAllowedTimeForReferrerChains,
+          base::Unretained(this), profile));
   prefs_map_[pref_service] = std::move(registrar);
   RefreshState();
+  UpdateMinAllowedTimeForReferrerChains(profile);
 
-  registrar = std::make_unique<PrefChangeRegistrar>();
-  registrar->Init(pref_service);
-  registrar->Add(prefs::kSafeBrowsingEnabled,
-                 base::BindRepeating(&ClearCachedUserPopulation, profile,
-                                     NoCachedPopulationReason::kChangeSbPref));
-  registrar->Add(prefs::kSafeBrowsingScoutReportingEnabled,
-                 base::BindRepeating(&ClearCachedUserPopulation, profile,
-                                     NoCachedPopulationReason::kChangeSbPref));
-  registrar->Add(prefs::kSafeBrowsingEnhanced,
-                 base::BindRepeating(&ClearCachedUserPopulation, profile,
-                                     NoCachedPopulationReason::kChangeSbPref));
-  registrar->Add(
+  std::unique_ptr<PrefChangeRegistrar> user_population_registrar =
+      std::make_unique<PrefChangeRegistrar>();
+  user_population_registrar->Init(pref_service);
+  user_population_registrar->Add(
+      prefs::kSafeBrowsingEnabled,
+      base::BindRepeating(&ClearCachedUserPopulation, profile,
+                          NoCachedPopulationReason::kChangeSbPref));
+  user_population_registrar->Add(
+      prefs::kSafeBrowsingScoutReportingEnabled,
+      base::BindRepeating(&ClearCachedUserPopulation, profile,
+                          NoCachedPopulationReason::kChangeSbPref));
+  user_population_registrar->Add(
+      prefs::kSafeBrowsingEnhanced,
+      base::BindRepeating(&ClearCachedUserPopulation, profile,
+                          NoCachedPopulationReason::kChangeSbPref));
+  user_population_registrar->Add(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
       base::BindRepeating(&ClearCachedUserPopulation, profile,
                           NoCachedPopulationReason::kChangeMbbPref));
-  user_population_prefs_[pref_service] = std::move(registrar);
+  user_population_prefs_[pref_service] = std::move(user_population_registrar);
 
   // Record the current pref state for standard protection.
   UMA_HISTOGRAM_BOOLEAN(kSafeBrowsingEnabledHistogramName,
@@ -481,19 +517,25 @@ void SafeBrowsingService::OnProfileAdded(Profile* profile) {
         prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated, false);
   }
 
+  // Create pref change handler for each profile.
+  pref_change_handlers_map_[profile] =
+      std::make_unique<SafeBrowsingPrefChangeHandler>(profile);
+
   SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)->StartLogging();
 
   CreateServicesForProfile(profile);
 
   RecordStartupCookieMetrics(profile);
+
+  CleanupExternalAppRedirectTimestamps(*pref_service);
 }
 
-void SafeBrowsingService::OnOffTheRecordProfileCreated(
+void SafeBrowsingServiceImpl::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {
   CreateServicesForProfile(off_the_record);
 }
 
-void SafeBrowsingService::OnProfileWillBeDestroyed(Profile* profile) {
+void SafeBrowsingServiceImpl::OnProfileWillBeDestroyed(Profile* profile) {
   observed_profiles_.RemoveObservation(profile);
   services_delegate_->RemoveTelemetryService(profile);
   services_delegate_->OnProfileWillBeDestroyed(profile);
@@ -501,21 +543,62 @@ void SafeBrowsingService::OnProfileWillBeDestroyed(Profile* profile) {
   PrefService* pref_service = profile->GetPrefs();
   DCHECK(pref_service);
   prefs_map_.erase(pref_service);
+  pref_change_handlers_map_.erase(profile);
   user_population_prefs_.erase(pref_service);
+  min_allowed_time_for_referrer_chains_.erase(profile);
 }
 
-void SafeBrowsingService::CreateServicesForProfile(Profile* profile) {
+void SafeBrowsingServiceImpl::CreateServicesForProfile(Profile* profile) {
   services_delegate_->CreateTelemetryService(profile);
   observed_profiles_.AddObservation(profile);
 }
 
-base::CallbackListSubscription SafeBrowsingService::RegisterStateCallback(
+base::CallbackListSubscription SafeBrowsingServiceImpl::RegisterStateCallback(
     const base::RepeatingClosure& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return state_callback_list_.Add(callback);
 }
 
-void SafeBrowsingService::RefreshState() {
+void SafeBrowsingServiceImpl::EnhancedProtectionPrefChange(Profile* profile) {
+  RefreshState();
+  UpdateMinAllowedTimeForReferrerChains(profile);
+  // Get the handler for this profile.
+  auto it = pref_change_handlers_map_.find(profile);
+  if (it != pref_change_handlers_map_.end()) {
+    it->second->MaybeShowEnhancedProtectionSettingChangeNotification();
+  }
+}
+
+void SafeBrowsingServiceImpl::UpdateMinAllowedTimeForReferrerChains(
+    Profile* profile) {
+  bool enabled = RealTimePolicyEngine::HasPrefPermissionsToPerformFullURLLookup(
+      profile->GetPrefs());
+  std::optional<base::Time> url_lookup_enabled_timestamp =
+      min_allowed_time_for_referrer_chains_[profile];
+  bool previously_enabled = url_lookup_enabled_timestamp.has_value();
+  // Only update the timestamp if the prefs are enabling full URL lookups.
+  if (enabled && !previously_enabled) {
+    url_lookup_enabled_timestamp = base::Time::Now();
+  }
+  // Reset the timestamp when full URL lookups are disabled.
+  if (!enabled) {
+    url_lookup_enabled_timestamp = std::nullopt;
+  }
+  min_allowed_time_for_referrer_chains_[profile] = url_lookup_enabled_timestamp;
+}
+
+base::Time SafeBrowsingServiceImpl::GetMinAllowedTimestampForReferrerChains(
+    Profile* profile) {
+  if (!min_allowed_time_for_referrer_chains_.contains(profile) ||
+      min_allowed_time_for_referrer_chains_[profile] == std::nullopt) {
+    // If this method gets called when the map value indicates no referrer
+    // chains are allowed, return the max time.
+    return base::Time::Max();
+  }
+  return min_allowed_time_for_referrer_chains_[profile].value();
+}
+
+void SafeBrowsingServiceImpl::RefreshState() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Check if any profile requires the service to be active.
@@ -544,13 +627,16 @@ void SafeBrowsingService::RefreshState() {
   services_delegate_->RefreshState(enabled_by_prefs_);
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-void SafeBrowsingService::SendDownloadReport(
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+void SafeBrowsingServiceImpl::SendDownloadReport(
     download::DownloadItem* download,
     ClientSafeBrowsingReportRequest::ReportType report_type,
     bool did_proceed,
     std::optional<bool> show_download_in_folder) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!ShouldSendDangerousDownloadReport(download, report_type)) {
+    return;
+  }
   auto report = CreateDownloadReport(download, report_type, did_proceed,
                                      show_download_in_folder);
   Profile* profile = Profile::FromBrowserContext(
@@ -563,12 +649,15 @@ void SafeBrowsingService::SendDownloadReport(
   return;
 }
 
-void SafeBrowsingService::PersistDownloadReportAndSendOnNextStartup(
+void SafeBrowsingServiceImpl::PersistDownloadReportAndSendOnNextStartup(
     download::DownloadItem* download,
     ClientSafeBrowsingReportRequest::ReportType report_type,
     bool did_proceed,
     std::optional<bool> show_download_in_folder) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!ShouldSendDangerousDownloadReport(download, report_type)) {
+    return;
+  }
   auto report = CreateDownloadReport(download, report_type, did_proceed,
                                      show_download_in_folder);
   Profile* profile = Profile::FromBrowserContext(
@@ -581,8 +670,10 @@ void SafeBrowsingService::PersistDownloadReportAndSendOnNextStartup(
       result);
   return;
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
-bool SafeBrowsingService::SendPhishyInteractionsReport(
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+bool SafeBrowsingServiceImpl::SendPhishyInteractionsReport(
     Profile* profile,
     const GURL& url,
     const GURL& page_url,
@@ -618,9 +709,9 @@ bool SafeBrowsingService::SendPhishyInteractionsReport(
   return ping_manager->ReportThreatDetails(std::move(report)) ==
          PingManager::ReportThreatDetailsResult::SUCCESS;
 }
-#endif
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
-bool SafeBrowsingService::MaybeSendNotificationsAcceptedReport(
+bool SafeBrowsingServiceImpl::MaybeSendNotificationsAcceptedReport(
     content::RenderFrameHost* render_frame_host,
     Profile* profile,
     const GURL& url,
@@ -658,14 +749,14 @@ bool SafeBrowsingService::MaybeSendNotificationsAcceptedReport(
          PingManager::ReportThreatDetailsResult::SUCCESS;
 }
 
-void SafeBrowsingService::CreateTriggerManager() {
+void SafeBrowsingServiceImpl::CreateTriggerManager() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   trigger_manager_ = std::make_unique<TriggerManager>(
       ui_manager_.get(), g_browser_process->local_state());
 }
 
 network::mojom::NetworkContextParamsPtr
-SafeBrowsingService::CreateNetworkContextParams() {
+SafeBrowsingServiceImpl::CreateNetworkContextParams() {
   auto params = SystemNetworkContextManager::GetInstance()
                     ->CreateDefaultNetworkContextParams();
   // |proxy_config_monitor_| should be deleted after shutdown, so don't
@@ -681,7 +772,7 @@ SafeBrowsingService::CreateNetworkContextParams() {
   return params;
 }
 
-void SafeBrowsingService::RecordStartupCookieMetrics(Profile* profile) {
+void SafeBrowsingServiceImpl::RecordStartupCookieMetrics(Profile* profile) {
   // Exclude system profiles.
   if (!profile->IsRegularProfile() && !profile->IsIncognitoProfile()) {
     return;
@@ -702,7 +793,7 @@ void SafeBrowsingService::RecordStartupCookieMetrics(Profile* profile) {
           base::BindOnce(&OnGotCookies, std::move(cookie_manager_remote)));
 }
 
-void SafeBrowsingService::FillReferrerChain(
+void SafeBrowsingServiceImpl::FillReferrerChain(
     Profile* profile,
     content::RenderFrameHost* render_frame_host,
     google::protobuf::RepeatedPtrField<ReferrerChainEntry>*
@@ -716,22 +807,37 @@ void SafeBrowsingService::FillReferrerChain(
       render_frame_host, kReferrerChainUserGestureLimit, out_referrer_chain);
 }
 
-bool SafeBrowsingService::IsURLAllowlisted(
+bool SafeBrowsingServiceImpl::IsURLAllowlisted(
     const GURL& url,
     content::RenderFrameHost* primary_main_frame) {
   if (url_is_allowlisted_for_testing_) {
     return true;
   }
 
-  security_interstitials::UnsafeResource resource;
-  resource.url = url;
-  resource.original_url = url;
-  resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   const content::GlobalRenderFrameHostId primary_main_frame_id =
       primary_main_frame->GetGlobalId();
-  resource.render_process_id = primary_main_frame_id.child_id;
-  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
-  return ui_manager_->IsAllowlisted(resource);
+  auto rfh_locator =
+      security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
+          primary_main_frame_id.child_id,
+          primary_main_frame->GetFrameToken().value());
+  return ui_manager_->IsAllowlisted(url, rfh_locator,
+                                    /*navigation_id=*/std::nullopt,
+                                    SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+}
+
+void SafeBrowsingServiceImpl::MaybeSendExternalAppRedirectReport(
+    Profile* profile,
+    const std::string& app_name,
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+    bool should_send) {
+  LogExternalAppRedirectTimestamp(*profile->GetPrefs(), app_name);
+
+  if (!should_send) {
+    return;
+  }
+
+  ChromePingManagerFactory::GetForBrowserContext(profile)->ReportThreatDetails(
+      std::move(report));
 }
 
 // The default SafeBrowsingServiceFactory.  Global, made a singleton so we
@@ -753,7 +859,7 @@ class SafeBrowsingServiceFactoryImpl : public SafeBrowsingServiceFactory {
  private:
   friend class base::NoDestructor<SafeBrowsingServiceFactoryImpl>;
 
-  SafeBrowsingServiceFactoryImpl() {}
+  SafeBrowsingServiceFactoryImpl() = default;
 };
 
 SafeBrowsingServiceFactory* GetSafeBrowsingServiceFactory() {

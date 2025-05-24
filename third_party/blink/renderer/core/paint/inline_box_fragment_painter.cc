@@ -45,7 +45,7 @@ inline bool MayHaveMultipleFragmentItems(const FragmentItem& item,
   // if it's possible that this object participates in a fragmentation context.
   // This will give false positives, but that should be harmless, given the way
   // the return value is used by the caller.
-  if (layout_object.IsInsideFlowThread()) [[unlikely]] {
+  if (layout_object.IsInsideMulticol()) [[unlikely]] {
     return true;
   }
   return false;
@@ -91,7 +91,7 @@ void InlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
 void InlineBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
                                          const PhysicalOffset& paint_offset) {
   DCHECK_EQ(PaintPhase::kMask, paint_info.phase);
-  if (!style_.HasMask() || style_.UsedVisibility() != EVisibility::kVisible) {
+  if (!style_.HasMask() || style_.Visibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -146,7 +146,7 @@ void InlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.phase == PaintPhase::kForeground);
-  if (inline_box_fragment_.Style().UsedVisibility() != EVisibility::kVisible ||
+  if (inline_box_fragment_.Style().Visibility() != EVisibility::kVisible ||
       inline_box_fragment_.IsOpaque()) {
     return;
   }
@@ -212,7 +212,7 @@ void LineBoxFragmentPainter::PaintBackgroundBorderShadow(
   DCHECK_NE(paint_info.context.GetPaintController().CurrentFragment(), 0u);
 
   if (line_style_ == style_ ||
-      line_style_.UsedVisibility() != EVisibility::kVisible) {
+      line_style_.Visibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -533,10 +533,29 @@ void InlineBoxFragmentPainter::PaintAllFragments(
   InlineCursor first_container_cursor(*block_flow);
   first_container_cursor.MoveTo(layout_inline);
 
-  wtf_size_t container_fragment_idx =
-      first_container_cursor.ContainerFragmentIndex() + fragment_data_idx;
-  const PhysicalBoxFragment* container_fragment =
-      block_flow->GetPhysicalFragment(container_fragment_idx);
+  const PhysicalBoxFragment* container_fragment = nullptr;
+  // If the container is marked as potentially non-contiguous, beware of
+  // container fragments with no items. This LayoutInline isn't represented in
+  // such container fragments. We can trust InlineCursor to have taken us to the
+  // correct container fragment where the inline starts, though, so it's only
+  // necessary to do this if the index is larger than 0.
+  if (block_flow->MayBeNonContiguousIfc() && fragment_data_idx > 0) {
+    for (wtf_size_t idx = 0;;
+         first_container_cursor.MoveToNextFragmentainer()) {
+      CHECK(first_container_cursor.Current());
+      const PhysicalBoxFragment& candidate =
+          first_container_cursor.ContainerFragment();
+      if (candidate.HasItems() && idx++ == fragment_data_idx) {
+        container_fragment = &candidate;
+        break;
+      }
+    }
+  } else {
+    wtf_size_t container_fragment_idx =
+        first_container_cursor.ContainerFragmentIndex() + fragment_data_idx;
+    container_fragment =
+        block_flow->GetPhysicalFragment(container_fragment_idx);
+  }
 
   InlineCursor cursor(*container_fragment);
   cursor.MoveTo(layout_inline);

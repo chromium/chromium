@@ -4,6 +4,8 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -23,10 +25,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
@@ -39,6 +42,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>The dialog is shown by the ItemChooserDialog constructor, and always calls
  * ItemSelectedCallback.onItemSelected() as it's closing.
  */
+@NullMarked
 public class ItemChooserDialog implements DeviceItemAdapter.Observer {
     /** An interface to implement to get a callback when something has been selected. */
     public interface ItemSelectedCallback {
@@ -104,28 +108,28 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
         int DISCOVERY_IDLE = 3;
     }
 
-    private Context mContext;
-    private Window mWindow;
+    private final Context mContext;
+    private final Window mWindow;
 
     // The dialog this class encapsulates.
     private Dialog mDialog;
 
     // The callback to notify when the user selected an item.
-    private ItemSelectedCallback mItemSelectedCallback;
+    private final ItemSelectedCallback mItemSelectedCallback;
 
     // Individual UI elements.
-    private TextViewWithClickableSpans mTitle;
-    private TextViewWithClickableSpans mEmptyMessage;
-    private ProgressBar mProgressBar;
-    private ListView mListView;
-    private TextView mStatus;
-    private Button mConfirmButton;
+    private final TextViewWithClickableSpans mTitle;
+    private final TextViewWithClickableSpans mEmptyMessage;
+    private final ProgressBar mProgressBar;
+    private final ListView mListView;
+    private final TextView mStatus;
+    private final Button mConfirmButton;
 
     // The labels to display in the dialog.
-    private ItemChooserLabels mLabels;
+    private final ItemChooserLabels mLabels;
 
     // The adapter containing the items to show in the dialog.
-    private DeviceItemAdapter mItemAdapter;
+    private final DeviceItemAdapter mItemAdapter;
 
     // How much of the height of the screen should be taken up by the listview.
     private static final float LISTVIEW_HEIGHT_PERCENT = 0.30f;
@@ -277,7 +281,7 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
         // such as opening the notification shade.
         mDialog.setOnDismissListener(dialog -> mItemSelectedCallback.onItemSelected(""));
 
-        Window window = mDialog.getWindow();
+        Window window = assumeNonNull(mDialog.getWindow());
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             // On smaller screens, make the dialog fill the width of the screen,
             // and appear at the top.

@@ -28,4 +28,8 @@ WebMain::~WebMain() {
   web_main_runner_->ShutDown();
 }
 
+int WebMain::Startup() {
+  return web_main_runner_->Startup();
+}
+
 }  // namespace web

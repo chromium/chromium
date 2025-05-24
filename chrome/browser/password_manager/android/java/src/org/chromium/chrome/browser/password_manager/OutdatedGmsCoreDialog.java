@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -20,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Dialog that informs user that the GMS Core needs to be updated and confirms whether the user
  * agrees to proceed with the update.
  */
+@NullMarked
 class OutdatedGmsCoreDialog {
     static final String DISMISSAL_REASON_HISTOGRAM =
             "PasswordManager.OutdatedGMSDialogDismissalReason";
@@ -70,22 +72,16 @@ class OutdatedGmsCoreDialog {
                         .with(ModalDialogProperties.CONTROLLER, modalDialogController)
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string
-                                                        .password_manager_outdated_gms_dialog_description))
+                                mContext.getString(
+                                        R.string.password_manager_outdated_gms_dialog_description))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string
-                                                        .password_manager_outdated_gms_positive_button))
+                                mContext.getString(
+                                        R.string.password_manager_outdated_gms_positive_button))
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string
-                                                        .password_manager_outdated_gms_negative_button))
+                                mContext.getString(
+                                        R.string.password_manager_outdated_gms_negative_button))
                         .with(
                                 ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)

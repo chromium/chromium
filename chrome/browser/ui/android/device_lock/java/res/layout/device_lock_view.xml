@@ -54,10 +54,11 @@ found in the LICENSE file.
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:gravity="center"
                 android:text="@string/device_lock_title"
                 android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-            <TextView
+            <org.chromium.ui.widget.TextViewWithLeading
                 android:id="@+id/device_lock_description"
                 android:layout_below="@id/device_lock_title"
                 android:layout_width="match_parent"
@@ -65,7 +66,19 @@ found in the LICENSE file.
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:gravity="center"
                 android:text="@string/device_lock_description"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                app:leading="@dimen/text_size_medium_leading" />
+
+            <TextView
+                android:id="@+id/device_lock_notice"
+                android:layout_below="@id/device_lock_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="16dp"
+                android:gravity="center"
+                android:text="@string/device_lock_notice"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
             <FrameLayout
@@ -79,7 +92,7 @@ found in the LICENSE file.
                 android:background="@drawable/rounded_corner_card">
 
                 <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
-                    android:id="@+id/device_lock_notice"
+                    android:id="@+id/device_lock_notice_legacy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start|center_vertical"

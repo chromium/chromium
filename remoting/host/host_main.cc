@@ -1,7 +1,12 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // This file implements the common entry point shared by all Chromoting Host
 // processes.
 
@@ -19,7 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
-#include "remoting/base/breakpad.h"
+#include "remoting/base/crash/crash_reporting_crashpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
@@ -37,6 +42,8 @@
 
 #include <commctrl.h>
 #include <shellapi.h>
+
+#include "remoting/base/crash/crash_reporting_breakpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
@@ -80,7 +87,7 @@ const char kUsageMessage[] =
     "  --type                   - Specifies process type.\n"
     "  --version                - Prints the host version and exits.\n"
     "  --evaluate-type=<type>   - Evaluates the capability of the host.\n"
-    "  --enable-utempter        - Enables recording to utmp/wtmp on Linux.\n"
+    "  --enable-wtmpdb          - Enables recording to wtmpdb on Linux.\n"
     "  --webrtc-trace-event-file=<path> - Enables logging webrtc trace events "
     "to a file.\n";
 
@@ -217,25 +224,29 @@ int HostMain(int argc, char** argv) {
   // Enable debug logs.
   InitHostLogging();
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
-  // Initialize Breakpad as early as possible. On Mac the command-line needs to
-  // be initialized first, so that the preference for crash-reporting can be
-  // looked up in the config file.
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
+  // Initialize crash reporting as early as possible. On Mac the command-line
+  // needs to be initialized first, so that the preference for crash-reporting
+  // can be looked up in the config file.
+  // Note that we enable crash reporting only if the user has opted in to having
+  // the crash reports uploaded.
   if (IsUsageStatsAllowed()) {
 #if BUILDFLAG(IS_LINUX)
-    InitializeCrashReporting();
+    InitializeCrashpadReporting();
 #elif BUILDFLAG(IS_WIN)
     // TODO: joedow - Enable crash reporting for the RDP process.
-    if (process_type == kProcessTypeDesktop ||
-        process_type == kProcessTypeDaemon) {
-      InitializeCrashReporting();
+    if (process_type == kProcessTypeDaemon) {
+      InitializeBreakpadReporting();
+    } else if (process_type == kProcessTypeDesktop) {
+      // TODO(garykac): Switch to use InitializeCrashpadReporting();
+      InitializeBreakpadReporting();
     } else if (command_line->HasSwitch(kCrashServerPipeHandle)) {
       InitializeOopCrashClient(
           command_line->GetSwitchValueASCII(kCrashServerPipeHandle));
     }
 #endif
   }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
 #if BUILDFLAG(IS_WIN)
   // Register and initialize common controls.
@@ -260,9 +271,12 @@ int HostMain(int argc, char** argv) {
 
   mojo::core::Init({
 #if BUILDFLAG(IS_WIN)
-    .is_broker_process = main_routine == &DaemonProcessMain
+      .is_broker_process = main_routine == &DaemonProcessMain
+#elif BUILDFLAG(IS_MAC)
+      // The broker process on Mac is the agent process broker.
+      .is_broker_process = false
 #else
-    .is_broker_process = main_routine == &HostProcessMain
+      .is_broker_process = main_routine == &HostProcessMain
 #endif
   });
 

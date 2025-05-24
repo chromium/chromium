@@ -6,7 +6,9 @@
 
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -105,9 +107,13 @@ class NoVarySearchHelperTester final {
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager),
             blink::mojom::Referrer(),
-            /*no_vary_search_expected=*/std::nullopt,
-            /*prefetch_document_manager=*/nullptr);
+            std::make_optional(SpeculationRulesTags()),
+            /*no_vary_search_hint=*/std::nullopt,
+            /*prefetch_document_manager=*/nullptr,
+            PreloadPipelineInfo::Create(/*planned_max_preloading_type=*/
+                                        PreloadingType::kPrefetch));
 
+    prefetch_container->SimulatePrefetchEligibleForTest();
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
                                           std::move(head), "test body");
     auto weak_prefetch_container = prefetch_container->GetWeakPtr();

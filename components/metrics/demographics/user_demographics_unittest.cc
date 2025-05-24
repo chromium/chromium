@@ -66,7 +66,7 @@ class UserDemographicsPrefsTest : public testing::Test {
     SetDemographicsImpl(kSyncDemographicsPrefName, birth_year, gender);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetOsDemographics(int birth_year, UserDemographicsProto::Gender gender) {
     SetDemographicsImpl(kSyncOsDemographicsPrefName, birth_year, gender);
   }
@@ -123,7 +123,7 @@ TEST_F(UserDemographicsPrefsTest, ReadDemographicsWithRandomOffset) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(UserDemographicsPrefsTest, ReadOsDemographicsWithRandomOffset) {
   int user_demographics_birth_year = 1983;
   UserDemographicsProto_Gender user_demographics_gender =
@@ -158,7 +158,7 @@ TEST_F(UserDemographicsPrefsTest, ReadOsDemographicsWithRandomOffset) {
     EXPECT_EQ(provided_birth_year, demographics_result.value().birth_year);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(UserDemographicsPrefsTest, ReadAndClearUserDemographicPreferences) {
   // Verify demographic prefs are not available when there is nothing set.
@@ -193,7 +193,7 @@ TEST_F(UserDemographicsPrefsTest, ReadAndClearUserDemographicPreferences) {
                    GetNowTime(), GetLocalState(), GetProfilePrefs())
                    .IsSuccess());
   EXPECT_FALSE(GetProfilePrefs()->HasPrefPath(kSyncDemographicsPrefName));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(GetProfilePrefs()->HasPrefPath(kSyncOsDemographicsPrefName));
 #endif
   EXPECT_TRUE(
@@ -234,7 +234,7 @@ TEST_F(UserDemographicsPrefsTest, ReadAndClearDeprecatedOffsetPref) {
       kDeprecatedDemographicsBirthYearOffsetPrefName));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(UserDemographicsPrefsTest, ChromeOsAsh) {
   // Verify demographic prefs are not available when there is nothing set.
   ASSERT_FALSE(GetUserNoisedBirthYearAndGenderFromPrefs(
@@ -260,7 +260,7 @@ TEST_F(UserDemographicsPrefsTest, ChromeOsAsh) {
   EXPECT_TRUE(
       GetLocalState()->HasPrefPath(kUserDemographicsBirthYearOffsetPrefName));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 struct DemographicsTestParam {
   // Birth year of the user.

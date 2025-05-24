@@ -90,7 +90,7 @@ void SessionAbortedDialog::InitDialog(const std::string& user_email) {
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetAllowCharacterBreak(true);
-  AddChildView(label);
+  AddChildViewRaw(label);
 }
 
 }  // namespace ash

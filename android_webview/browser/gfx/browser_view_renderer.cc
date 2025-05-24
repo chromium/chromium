@@ -344,7 +344,7 @@ bool BrowserViewRenderer::OnDrawHardware() {
       std::move(future), frame_sink_id_, viewport_size_for_tile_priority,
       external_draw_constraints_.transform, offscreen_pre_raster_, dip_scale_,
       std::move(requests), did_invalidate,
-      begin_frame_source_->LastDispatchedBeginFrameArgs(), renderer_thread_ids_,
+      begin_frame_source_->LastDispatchedBeginFrameArgs(), renderer_threads_,
       browser_io_thread_id_);
 
   ReturnUnusedResource(
@@ -968,8 +968,8 @@ void BrowserViewRenderer::AddBeginFrameCompletionCallback(
   begin_frame_source_->AddBeginFrameCompletionCallback(std::move(callback));
 }
 
-void BrowserViewRenderer::SetThreadIds(const std::vector<int32_t>& thread_ids) {
-  renderer_thread_ids_ = thread_ids;
+void BrowserViewRenderer::SetThreads(const std::vector<viz::Thread>& threads) {
+  renderer_threads_ = threads;
 }
 
 void BrowserViewRenderer::PostInvalidate(

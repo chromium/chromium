@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "headless/lib/browser/headless_browser_impl.h"
 
 #include <string>
@@ -17,7 +22,6 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/user_agent.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -53,12 +57,9 @@
 namespace headless {
 
 namespace {
+
 // Product name for building the default user agent string.
 const char kHeadlessProductName[] = "HeadlessChrome";
-constexpr gfx::Size kDefaultWindowSize(800, 600);
-
-constexpr gfx::FontRenderParams::Hinting kDefaultFontRenderHinting =
-    gfx::FontRenderParams::Hinting::HINTING_FULL;
 
 #if defined(HEADLESS_USE_PREFS)
 const base::FilePath::CharType kLocalStateFilename[] =
@@ -67,101 +68,19 @@ const base::FilePath::CharType kLocalStateFilename[] =
 
 }  // namespace
 
-using Options = HeadlessBrowser::Options;
-using Builder = HeadlessBrowser::Options::Builder;
+HeadlessBrowser::Options::Options()
+    : user_agent(embedder_support::BuildUnifiedPlatformUserAgentFromProduct(
+          HeadlessBrowser::GetProductNameAndVersion())) {}
 
-Options::Options()
-    : user_agent(content::BuildUserAgentFromProduct(
-          HeadlessBrowser::GetProductNameAndVersion())),
-      window_size(kDefaultWindowSize),
-      font_render_hinting(kDefaultFontRenderHinting) {}
+HeadlessBrowser::Options::Options(Options&& options) = default;
 
-Options::Options(Options&& options) = default;
+HeadlessBrowser::Options::~Options() = default;
 
-Options::~Options() = default;
+HeadlessBrowser::Options& HeadlessBrowser::Options::operator=(
+    Options&& options) = default;
 
-Options& Options::operator=(Options&& options) = default;
-
-bool Options::DevtoolsServerEnabled() {
+bool HeadlessBrowser::Options::DevtoolsServerEnabled() {
   return (devtools_pipe_enabled || devtools_port.has_value());
-}
-
-Builder::Builder() = default;
-
-Builder::~Builder() = default;
-
-Builder& Builder::SetUserAgent(const std::string& agent) {
-  options_.user_agent = agent;
-  return *this;
-}
-
-Builder& Builder::SetEnableLazyLoading(bool enable) {
-  options_.lazy_load_enabled = enable;
-  return *this;
-}
-
-Builder& Builder::SetAcceptLanguage(const std::string& language) {
-  options_.accept_language = language;
-  return *this;
-}
-
-Builder& Builder::SetEnableBeginFrameControl(bool enable) {
-  options_.enable_begin_frame_control = enable;
-  return *this;
-}
-
-Builder& Builder::EnableDevToolsServer(int port) {
-  options_.devtools_port = port;
-  return *this;
-}
-
-Builder& Builder::EnableDevToolsPipe() {
-  options_.devtools_pipe_enabled = true;
-  return *this;
-}
-
-Builder& Builder::SetProxyConfig(std::unique_ptr<net::ProxyConfig> config) {
-  options_.proxy_config = std::move(config);
-  return *this;
-}
-
-Builder& Builder::SetUserDataDir(const base::FilePath& dir) {
-  options_.user_data_dir = dir;
-  return *this;
-}
-
-Builder& Builder::SetDiskCacheDir(const base::FilePath& dir) {
-  options_.disk_cache_dir = dir;
-  return *this;
-}
-
-Builder& Builder::SetWindowSize(const gfx::Size& size) {
-  options_.window_size = size;
-  return *this;
-}
-
-Builder& Builder::SetIncognitoMode(bool incognito) {
-  options_.incognito_mode = incognito;
-  return *this;
-}
-
-Builder& Builder::SetBlockNewWebContents(bool block) {
-  options_.block_new_web_contents = block;
-  return *this;
-}
-
-Builder& Builder::SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting) {
-  options_.font_render_hinting = hinting;
-  return *this;
-}
-
-Builder& Builder::SetForceNewBrowsingInstance(bool force) {
-  options_.force_new_browsing_instance = force;
-  return *this;
-}
-
-Options Builder::Build() {
-  return std::move(options_);
 }
 
 /// static
@@ -178,7 +97,6 @@ blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata() {
     return metadata;
   }
   std::string significant_version = version_info::GetMajorVersionNumber();
-  constexpr bool kEnableUpdatedGreaseByPolicy = true;
 
   // Use the major version number as a greasing seed
   int seed = 1;
@@ -187,12 +105,10 @@ blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata() {
 
   // Rengenerate the brand version lists with kHeadlessProductName.
   metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
-      seed, kHeadlessProductName, significant_version, std::nullopt,
-      std::nullopt, kEnableUpdatedGreaseByPolicy,
+      seed, kHeadlessProductName, significant_version,
       blink::UserAgentBrandVersionType::kMajorVersion);
   metadata.brand_full_version_list = embedder_support::GenerateBrandVersionList(
-      seed, kHeadlessProductName, metadata.full_version, std::nullopt,
-      std::nullopt, kEnableUpdatedGreaseByPolicy,
+      seed, kHeadlessProductName, metadata.full_version,
       blink::UserAgentBrandVersionType::kFullVersion);
   return metadata;
 }
@@ -298,17 +214,6 @@ HeadlessBrowserContext* HeadlessBrowserImpl::GetDefaultBrowserContext() {
 base::WeakPtr<HeadlessBrowserImpl> HeadlessBrowserImpl::GetWeakPtr() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-HeadlessWebContents* HeadlessBrowserImpl::GetWebContentsForDevToolsAgentHostId(
-    const std::string& devtools_agent_host_id) {
-  for (HeadlessBrowserContext* context : GetAllBrowserContexts()) {
-    HeadlessWebContents* web_contents =
-        context->GetWebContentsForDevToolsAgentHostId(devtools_agent_host_id);
-    if (web_contents)
-      return web_contents;
-  }
-  return nullptr;
 }
 
 HeadlessWebContentsImpl* HeadlessBrowserImpl::GetWebContentsForWindowId(

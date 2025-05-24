@@ -14,6 +14,7 @@ namespace blink {
 
 class Navigator;
 class V8LoginStatus;
+class LoginStatusOptions;
 
 // Methods to let websites tell the browser about their login status.
 class MODULES_EXPORT NavigatorLogin : public ScriptWrappable,
@@ -27,6 +28,10 @@ class MODULES_EXPORT NavigatorLogin : public ScriptWrappable,
 
   ScriptPromise<IDLUndefined> setStatus(ScriptState* script_state,
                                         const V8LoginStatus& status);
+
+  ScriptPromise<IDLUndefined> setStatus(ScriptState* script_state,
+                                        const V8LoginStatus& status,
+                                        const LoginStatusOptions* options);
 
   void Trace(Visitor*) const override;
 };

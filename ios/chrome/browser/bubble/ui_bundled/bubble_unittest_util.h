@@ -9,8 +9,9 @@
 
 UIButton* GetCloseButtonFromBubbleView(BubbleView* bubble_view);
 UILabel* GetTitleLabelFromBubbleView(BubbleView* bubble_view);
-UIImageView* GetImageViewFromBubbleView(BubbleView* bubble_view);
 UIButton* GetSnoozeButtonFromBubbleView(BubbleView* bubble_view);
 UIView* GetArrowViewFromBubbleView(BubbleView* bubble_view);
+UIButton* GetNextButtonFromBubbleView(BubbleView* bubble_view);
+UIStackView* GetPageControlPageBubbleView(BubbleView* bubble_view);
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_UI_BUNDLED_BUBBLE_UNITTEST_UTIL_H_

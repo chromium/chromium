@@ -30,7 +30,7 @@ export class ViewerAttachmentBarElement extends CrLitElement {
     };
   }
 
-  attachments: Attachment[] = [];
+  accessor attachments: Attachment[] = [];
 
   /* Indicates whether any oversized attachments exist */
   protected exceedSizeLimit_(): boolean {

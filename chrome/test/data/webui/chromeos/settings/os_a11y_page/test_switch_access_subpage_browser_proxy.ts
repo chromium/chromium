@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {SwitchAccessSubpageBrowserProxy} from 'chrome://os-settings/os_settings.js';
+import type {SwitchAccessSubpageBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestSwitchAccessSubpageBrowserProxy extends TestBrowserProxy

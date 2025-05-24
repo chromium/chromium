@@ -12,11 +12,10 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
-#import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 namespace {
 
@@ -47,6 +46,10 @@ bool IsUserPolicyNotificationNeeded(
     return false;
   }
 
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(
           policy::kShowUserPolicyNotificationAtStartupIfNeeded)) {
     return false;
@@ -69,26 +72,6 @@ bool IsUserPolicyNotificationNeeded(
 
 bool CanFetchUserPolicy(AuthenticationService* authService,
                         PrefService* prefService) {
-  if (!policy::IsAnyUserPolicyFeatureEnabled()) {
-    // Return false immediately if the user policy features isn't enabled for
-    // the minimal consent level.
-    return false;
-  }
-
-  // TODO(crbug.com/40066949): Remove kSync usage after users are migrated to
-  // kSignin only after kSync sunset. See ConsentLevel::kSync for more details.
-
-  bool enabled_for_sync =
-      policy::IsUserPolicyEnabledForSigninOrSyncConsentLevel();
-
-  if (!enabled_for_sync &&
-      authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSync)) {
-    // Return false if sync is turned ON while the feature for that consent
-    // level isn't enabled.
-    return false;
-  }
-
-  // Return true if the primary identity is managed with the minimal
-  // `consent_level` to enable User Policy.
+  // Return true if the primary identity is managed.
   return authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
 }

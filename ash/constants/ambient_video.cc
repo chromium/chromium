@@ -17,6 +17,8 @@ std::string_view ToString(AmbientVideo video) {
       return "NewMexico";
     case AmbientVideo::kClouds:
       return "Clouds";
+    case AmbientVideo::kJupiter:
+      return "Jupiter";
   }
 }
 

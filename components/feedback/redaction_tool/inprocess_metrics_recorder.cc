@@ -36,7 +36,8 @@ void InprocessMetricsRecorder::RecordRedactionToolCallerHistogram(
 
 void InprocessMetricsRecorder::RecordTimeSpentRedactingHistogram(
     base::TimeDelta time_spent) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(kTimeSpentRedactingHistogram, time_spent);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(kTimeSpentRedactingHistogram,
+                                        time_spent);
 }
 
 std::string_view

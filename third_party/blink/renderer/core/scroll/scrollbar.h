@@ -292,6 +292,10 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   bool ThumbWillBeUnderMouse() const;
   bool DeltaWillScroll(ScrollOffset delta) const;
 
+  // Theme color set as a web pref that will only be applied to root scrollbars
+  // when no other modification is present (high contrast or css styling).
+  std::optional<blink::Color> RootScrollbarThemeColor() const;
+
   bool track_and_buttons_need_repaint_ = true;
   bool thumb_needs_repaint_ = true;
   bool needs_update_display_ = true;

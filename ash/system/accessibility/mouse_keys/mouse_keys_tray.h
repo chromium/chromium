@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_TRAY_H_
 #define ASH_SYSTEM_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_TRAY_H_
 
-#include <string>
-
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/constants/tray_background_view_catalog.h"
@@ -37,7 +35,6 @@ class ASH_EXPORT MouseKeysTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void Initialize() override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
   void HideBubble(const TrayBubbleView* bubble_view) override {}
@@ -50,12 +47,21 @@ class ASH_EXPORT MouseKeysTray : public TrayBackgroundView,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
+  base::WeakPtr<MouseKeysTray> GetWeakPtr();
+  void SetMouseKeysStatusText(bool is_active);
+  void UpdateStatus();
+
  private:
   friend class MouseKeysTrayTest;
 
   views::ImageView* GetIcon();
 
   ScopedSessionObserver session_observer_{this};
+
+  // Callback that's called when they tray is pressed.
+  void OnMouseKeyIconPressed(const ui::Event& event);
+
+  base::WeakPtrFactory<MouseKeysTray> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

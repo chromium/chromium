@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
-
 #include "base/strings/utf_string_conversions.h"
 
 namespace base {
@@ -37,8 +36,9 @@ ScopedHString ScopedHString::Create(std::wstring_view str) {
   HSTRING hstr;
   HRESULT hr = ::WindowsCreateString(str.data(),
                                      checked_cast<UINT32>(str.length()), &hstr);
-  if (SUCCEEDED(hr))
+  if (SUCCEEDED(hr)) {
     return ScopedHString(hstr);
+  }
 
   if (hr == E_OUTOFMEMORY) {
     // This size is an approximation. The actual size likely includes

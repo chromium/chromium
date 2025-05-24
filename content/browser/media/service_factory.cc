@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -229,20 +228,18 @@ T& GetService(const media::CdmType& cdm_type,
               const GURL& site,
               const std::string& service_name,
               const base::FilePath& cdm_path) {
-  ServiceKey key;
-  std::string display_name = service_name;
-
-  if (base::FeatureList::IsEnabled(media::kCdmProcessSiteIsolation)) {
-    key = {cdm_type, browser_context, site};
-    auto site_display_name =
-        GetContentClient()->browser()->GetSiteDisplayNameForCdmProcess(
-            browser_context, site);
-    if (!site_display_name.empty())
-      display_name += " (" + site_display_name + ")";
-  } else {
-    key = {cdm_type, nullptr, GURL()};
-  }
+  // The service is always per CDM type, per user profile and per site.
+  ServiceKey key = {cdm_type, browser_context, site};
   DVLOG(2) << __func__ << ": key=" << key;
+
+  // Generate the service display name.
+  std::string display_name = service_name;
+  auto site_display_name =
+      GetContentClient()->browser()->GetSiteDisplayNameForCdmProcess(
+          browser_context, site);
+  if (!site_display_name.empty()) {
+    display_name += " (" + site_display_name + ")";
+  }
 
   auto& broker_service_pair = GetServiceMap<T>().GetOrCreateRemote(key);
   auto& broker_remote = broker_service_pair.first;
@@ -290,12 +287,12 @@ media::mojom::CdmService& GetCdmService(BrowserContext* browser_context,
 
 #if BUILDFLAG(IS_WIN)
 media::mojom::MediaFoundationService& GetMediaFoundationService(
+    const media::CdmType& cdm_type,
     BrowserContext* browser_context,
     const GURL& site,
     const base::FilePath& cdm_path) {
   return GetService<media::mojom::MediaFoundationService>(
-      media::CdmType(), browser_context, site, "Media Foundation Service",
-      cdm_path);
+      cdm_type, browser_context, site, "Media Foundation Service", cdm_path);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

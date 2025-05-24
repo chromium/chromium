@@ -70,7 +70,8 @@
           "builder": "gpu-try-linux-nvidia-dbg",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Debug (NVIDIA)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

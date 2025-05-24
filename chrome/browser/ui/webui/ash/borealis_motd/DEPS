@@ -1,0 +1,8 @@
+include_rules = [
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see crbug.com/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/common",
+  "+chrome/grit",
+  "+chrome/browser/ui/browser_dialogs.h",
+]

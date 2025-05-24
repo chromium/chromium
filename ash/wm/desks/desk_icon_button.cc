@@ -114,8 +114,14 @@ void DeskIconButton::UpdateState(State state) {
 
   state_ = state;
 
-  SetBackground(views::CreateRoundedRectBackground(
-      background()->get_color(), GetCornerRadiusOnState(state_)));
+  // A null `background()` means this view's hierarchy is not attached to a
+  // widget yet. When that happens, `OnThemeChanged()` -> `UpdateEnabledState()`
+  // will cause the background to be painted with a corner radius reflecting
+  // the new `state_`.
+  if (background()) {
+    SetBackground(views::CreateRoundedRectBackground(
+        background()->color(), GetCornerRadiusOnState(state_)));
+  }
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
@@ -181,8 +187,8 @@ gfx::Size DeskIconButton::CalculatePreferredSize(
     return gfx::Size(kZeroStateButtonWidth, kZeroStateButtonHeight);
   }
 
-  gfx::Rect desk_preview_bounds = DeskMiniView::GetDeskPreviewBounds(
-      GetWidget()->GetNativeWindow()->GetRootWindow());
+  gfx::Rect desk_preview_bounds =
+      DeskMiniView::GetDeskPreviewBounds(bar_view_->root());
   if (state_ == State::kExpanded) {
     return gfx::Size(kExpandedStateButtonWidth, desk_preview_bounds.height());
   }

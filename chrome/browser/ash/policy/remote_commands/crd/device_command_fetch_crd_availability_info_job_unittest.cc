@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -25,6 +26,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "remoting/host/chromeos/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -39,6 +41,7 @@ using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using enterprise_management::CrdSessionAvailability;
 using enterprise_management::RemoteCommand;
+using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 using test::SessionTypeToString;
 using test::TestSessionType;
 using testing::Not;
@@ -220,7 +223,6 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType
   CrdSessionAvailability GetExpectedRemoteSupportAvailabilityFor(
       TestSessionType session_type) {
     switch (session_type) {
-      case TestSessionType::kNoSession:
       case TestSessionType::kGuestSession:
       case TestSessionType::kUnaffiliatedUserSession:
         return CrdSessionAvailability::
@@ -232,6 +234,7 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType
       case TestSessionType::kAutoLaunchedKioskSession:
       case TestSessionType::kManagedGuestSession:
       case TestSessionType::kAffiliatedUserSession:
+      case TestSessionType::kNoSession:
         return CrdSessionAvailability::AVAILABLE;
     }
   }
@@ -304,6 +307,18 @@ TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
             CrdSessionAvailability::UNAVAILABLE_DISABLED_BY_POLICY);
 }
 
+TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
+       DontAllowRemoteSupportSessionAtLoginScreenIfDisabledByFeatureFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnableCrdSharedSessionToUnattendedDevice);
+
+  StartSessionOfType(TestSessionType::kNoSession);
+  Result result = CreateAndRunJob();
+
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteSupportAvailability"),
+            CrdSessionAvailability::UNAVAILABLE_UNSUPPORTED_USER_SESSION_TYPE);
+}
+
 TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
        ShouldReturnUserSessionType) {
   TestSessionType session_type = GetParam();
@@ -354,7 +369,10 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
   const base::Value::List expected = [&]() {
     switch (session_type) {
       case TestSessionType::kNoSession:
-        return ToList({CrdSessionType::REMOTE_ACCESS_SESSION});
+        return ToList({
+            CrdSessionType::REMOTE_SUPPORT_SESSION,
+            CrdSessionType::REMOTE_ACCESS_SESSION,
+        });
 
       case TestSessionType::kManuallyLaunchedWebKioskSession:
       case TestSessionType::kManuallyLaunchedKioskSession:
@@ -411,12 +429,12 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
 
   const CrdSessionAvailability expected = [&]() {
     switch (session_type) {
-      case TestSessionType::kNoSession:
       case TestSessionType::kGuestSession:
       case TestSessionType::kUnaffiliatedUserSession:
         return CrdSessionAvailability::
             UNAVAILABLE_UNSUPPORTED_USER_SESSION_TYPE;
 
+      case TestSessionType::kNoSession:
       case TestSessionType::kManuallyLaunchedWebKioskSession:
       case TestSessionType::kManuallyLaunchedKioskSession:
       case TestSessionType::kAutoLaunchedWebKioskSession:

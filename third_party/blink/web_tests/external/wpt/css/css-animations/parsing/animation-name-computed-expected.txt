@@ -1,5 +1,41 @@
 This is a testharness.js-based test.
 [FAIL] Property animation-name value '"something"'
   assert_true: '"something"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"---\\22---"'
+  assert_true: '"---\\22---"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"multi word string"'
+  assert_true: '"multi word string"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"none"'
+  assert_true: '"none"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"none", "INITIAL", "inherit"'
+  assert_true: '"none", "INITIAL", "inherit"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"none", both, ease-in'
+  assert_true: '"none", both, ease-in' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"NoNe"'
+  assert_true: '"NoNe"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"initial"'
+  assert_true: '"initial"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"INITIAL"'
+  assert_true: '"INITIAL"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"inherit"'
+  assert_true: '"inherit"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"INHERIT"'
+  assert_true: '"INHERIT"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"revert"'
+  assert_true: '"revert"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"REVERT"'
+  assert_true: '"REVERT"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"revert-layer"'
+  assert_true: '"revert-layer"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"REVERT-LAYER"'
+  assert_true: '"REVERT-LAYER"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"unset"'
+  assert_true: '"unset"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"UNSET"'
+  assert_true: '"UNSET"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"default"'
+  assert_true: '"default"' is a supported value for animation-name. expected true got false
+[FAIL] Property animation-name value '"DEFAULT"'
+  assert_true: '"DEFAULT"' is a supported value for animation-name. expected true got false
 Harness: the test ran to completion.
 

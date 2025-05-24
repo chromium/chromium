@@ -19,6 +19,7 @@
 #include "chrome/common/logging_chrome.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -32,8 +33,9 @@ base::FilePath GetDownloadsDirectory(content::WebUI* web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   const DownloadPrefs* const prefs = DownloadPrefs::FromBrowserContext(profile);
   base::FilePath path = prefs->DownloadPath();
-  if (file_manager::util::IsUnderNonNativeLocalPath(profile, path))
+  if (file_manager::util::IsUnderNonNativeLocalPath(profile, path)) {
     path = prefs->GetDefaultDownloadDirectoryForProfile();
+  }
   return path;
 }
 
@@ -76,10 +78,14 @@ void NetworkLogsMessageHandler::RegisterMessages() {
 void NetworkLogsMessageHandler::Respond(const std::string& callback_id,
                                         const std::string& result,
                                         bool is_error) {
-  base::Value::List response;
-  response.Append(result);
-  response.Append(is_error);
-  ResolveJavascriptCallback(base::Value(callback_id), response);
+  if (IsJavascriptAllowed()) {
+    base::Value::List response;
+    response.Append(result);
+    response.Append(is_error);
+    ResolveJavascriptCallback(base::Value(callback_id), response);
+  } else {
+    NET_LOG(ERROR) << "Unable to update UI as javascript calls are not allowed";
+  }
 }
 
 void NetworkLogsMessageHandler::OnStoreLogs(const base::Value::List& list) {

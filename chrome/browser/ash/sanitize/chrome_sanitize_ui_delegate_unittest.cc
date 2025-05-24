@@ -20,10 +20,12 @@ class FakeChromeSanitizeUIDelegate : public ChromeSanitizeUIDelegate {
  public:
   FakeChromeSanitizeUIDelegate(TestingProfile* profile,
                                content::TestWebUI* web_ui)
-      : ChromeSanitizeUIDelegate(web_ui), resetter_(profile) {}
+      : ChromeSanitizeUIDelegate(web_ui), resetter_(profile) {
+    // Set sanitize to not restart after process is complete
+    SetAttemptRestartForTesting(base::DoNothing());
+  }
 
   FakeProfileResetter* GetResetter() override { return &resetter_; }
-  void RestartChrome() override {}
 
  private:
   FakeProfileResetter resetter_;

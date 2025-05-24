@@ -211,6 +211,7 @@ function removeTestCookies() {
     partitionKey: TEST_FIRST_PARTY_PARTITIONED_COOKIE.partitionKey
   });
 }
+
 var pass = chrome.test.callbackPass;
 var fail = chrome.test.callbackFail;
 

@@ -1,0 +1,51 @@
+// This file is auto-generated, DO NOT EDIT.
+
+// The time at which this log list was last updated.
+const base::Time kLogListTimestamp = base::Time::FromTimeT(1234567890);
+
+// Previous operators for presently-qualifying CT logs.
+
+// Previous operators for disqualified CT logs.
+
+// The set of all presently-qualifying CT logs.
+const CTLogInfo kCTLogList[] = {
+    {"\x30\x59\x30\x13\x06\x07\x2a\x86\x48\xce\x3d\x02\x01\x06\x08\x2a\x86"
+     "\x48\xce\x3d\x03\x01\x07\x03\x42\x00\x04\x1d\xb9\x6c\xa9\xcb\x69\x94"
+     "\xc5\x5c\xe6\xb6\xa6\x03\xbb\xd2\xb8\xdc\x54\x43\x17\x28\x99\x0c\x06"
+     "\x01\x50\x1d\x9d\x64\xc0\x59\x46\x2b\xdc\xc8\x03\x1d\x05\xb4\x2d\xa8"
+     "\x09\xf7\x99\x41\xed\x04\xfb\xe5\x57\xba\x26\x04\xf6\x11\x52\xce\x14"
+     "\x65\x3b\x2f\x76\x2b\xc0",
+     91,
+     "Sample RFC6962 log",
+     LogType::kRFC6962,
+     "Google",
+     nullptr, 0},
+    {"\x30\x59\x30\x13\x06\x07\x2a\x86\x48\xce\x3d\x02\x01\x06\x08\x2a\x86"
+     "\x48\xce\x3d\x03\x01\x07\x03\x42\x00\x04\x20\x82\xa1\xf9\x67\x68\xa8"
+     "\xe4\xdb\x94\x98\xe2\xe1\x68\x87\xe4\x09\x6d\x20\x35\x33\x38\x3c\xaf"
+     "\x14\xaa\xd7\x08\x18\xf0\xfd\x16\x9b\xd3\xff\x7c\x27\x82\xd4\x87\xb7"
+     "\x4e\x24\x46\x3b\xfb\xae\xbe\xc8\x23\x52\x20\x2b\xaa\x44\x05\xfe\x54"
+     "\xf9\xd5\xf1\x1d\x45\x9a",
+     91,
+     "Static CT API log",
+     LogType::kStaticCTAPI,
+     "Google",
+     nullptr, 0}
+};
+
+// Information related to previously-qualified, but now disqualified,
+// CT logs.
+struct DisqualifiedCTLogInfo {
+  // The ID of the log (the SHA-256 hash of |log_info.log_key|.
+  const char log_id[33];
+  const CTLogInfo log_info;
+  // The offset from the Unix Epoch of when the log was disqualified.
+  // SCTs embedded in pre-certificates after this date should not count
+  // towards any uniqueness/freshness requirements.
+  const base::Time disqualification_date;
+};
+
+// The set of all disqualified logs, sorted by |log_id|.
+constexpr DisqualifiedCTLogInfo kDisqualifiedCTLogList[] = {
+
+};

@@ -2,15 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {assert} from './assert.js';
-import {isIOS} from './platform.js';
-// clang-format on
 
 
-let hideInk = false;
-
-assert(!isIOS, 'pointerdown doesn\'t work on iOS');
+let hideInk: boolean = false;
 
 document.addEventListener('pointerdown', function() {
   hideInk = true;

@@ -7,7 +7,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
-#include "components/global_media_controls/media_view_utils.h"
+#include "components/global_media_controls/public/format_duration.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -226,14 +226,19 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
 
   // Paint the progress rectangle indicator.
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  const gfx::SizeF indicator_size =
+  gfx::SizeF indicator_size =
       (use_squiggly_line_ ? kSquigglyProgressIndicatorSize
                           : kStraightProgressIndicatorSize);
-  canvas->DrawRoundRect(
-      gfx::RectF(gfx::PointF(progress_width - indicator_size.width() / 2,
-                             (view_height - indicator_size.height()) / 2),
-                 indicator_size),
-      indicator_size.width() / 2, flags);
+  // For live media, we should not draw an indicator.
+  if (is_live_) {
+    indicator_size = gfx::SizeF();
+  } else {
+    canvas->DrawRoundRect(
+        gfx::RectF(gfx::PointF(progress_width - indicator_size.width() / 2,
+                               (view_height - indicator_size.height()) / 2),
+                   indicator_size),
+        indicator_size.width() / 2, flags);
+  }
 
   // Paint the background straight line with rounded corners.
   int background_line_x =
@@ -277,6 +282,10 @@ void MediaProgressView::OnFocus() {
 void MediaProgressView::OnBlur() {
   views::View::OnBlur();
   SchedulePaint();
+}
+
+ui::Cursor MediaProgressView::GetCursor(const ui::MouseEvent& event) {
+  return ui::mojom::CursorType::kHand;
 }
 
 bool MediaProgressView::OnMousePressed(const ui::MouseEvent& event) {

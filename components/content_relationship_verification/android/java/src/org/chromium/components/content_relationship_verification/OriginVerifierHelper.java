@@ -14,12 +14,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /** Helper functions for the OriginVerification. */
+@NullMarked
 public class OriginVerifierHelper {
     private static final String TAG = "OriginVerifierHelper";
 
@@ -45,7 +47,7 @@ public class OriginVerifierHelper {
             }
 
             // Application context cannot access hosting apps resources.
-            String assetStatement = context.getResources().getString(statementsStringId);
+            String assetStatement = context.getString(statementsStringId);
             JSONArray statements = new JSONArray(assetStatement);
 
             if (statements == null) {

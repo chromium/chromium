@@ -13,9 +13,6 @@
 // user's Drive folders.
 @interface DriveFilePickerNavigationController : UINavigationController
 
-// Drive file picker handler.
-@property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_NAVIGATION_CONTROLLER_H_

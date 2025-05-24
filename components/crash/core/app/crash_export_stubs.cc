@@ -10,6 +10,7 @@
 
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_export_thunks.h"
+#include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/app/crashpad.h"
 
 void RequestSingleCrashUpload_ExportThunk(const char* local_id) {}
@@ -26,6 +27,14 @@ int CrashForException_ExportThunk(EXCEPTION_POINTERS* info) {
 }
 
 void SetUploadConsent_ExportThunk(bool consent) {}
+
+bool GetUploadConsent_ExportThunk() {
+  return crash_reporter::GetCrashReporterClient()->GetCollectStatsConsent();
+}
+
+void GetProductInfo_ExportThunk(crash_reporter::ProductInfo* product_info) {
+  return crash_reporter::GetCrashReporterClient()->GetProductInfo(product_info);
+}
 
 HANDLE InjectDumpForHungInput_ExportThunk(HANDLE process) {
   return nullptr;

@@ -38,19 +38,19 @@ export class CalendarElement extends CrLitElement {
   static override get properties() {
     return {
       calendarLink: {type: String},
-      events: {type: Object},
+      events: {type: Array},
       moduleName: {type: String},
-      doubleBookedIndices_: {type: Object},
+      doubleBookedIndices_: {type: Array},
       expandedEventIndex_: {type: Number},
     };
   }
 
-  calendarLink: string;
-  events: CalendarEvent[] = [];
-  moduleName: string;
+  accessor calendarLink: string = '';
+  accessor events: CalendarEvent[] = [];
+  accessor moduleName: string = '';
 
-  private doubleBookedIndices_: number[] = [];
-  private expandedEventIndex_: number;
+  private accessor doubleBookedIndices_: number[] = [];
+  private accessor expandedEventIndex_: number = -1;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

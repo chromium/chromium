@@ -43,33 +43,6 @@ class CORE_EXPORT CSSFontSelectorBase : public FontSelector {
 
   void ReportFailedLocalFontMatch(const AtomicString& font_name) override;
 
-  void ReportFontLookupByUniqueOrFamilyName(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) override;
-
-  void ReportFontLookupByUniqueNameOnly(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data,
-      bool is_loading_fallback = false) override;
-
-  void ReportFontLookupByFallbackCharacter(
-      UChar32 fallback_character,
-      FontFallbackPriority fallback_priority,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) override;
-
-  void ReportLastResortFallbackFontLookup(
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) override;
-
-  void ReportFontFamilyLookupByGenericFamily(
-      const AtomicString& generic_font_family_name,
-      UScriptCode script,
-      FontDescription::GenericFamilyType generic_family_type,
-      const AtomicString& resulting_font_name);
-
   void ReportNotDefGlyph() const override;
 
   void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,

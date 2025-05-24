@@ -24,8 +24,8 @@ class BlockingDataTypeStoreImpl;
 // underlying DataTypeStoreBackend).
 class DataTypeStoreImpl : public DataTypeStore {
  public:
-  // |backend_store| must not be null and must have been created in
-  // |backend_task_runner|.
+  // `backend_store` must not be null and must have been created in
+  // `backend_task_runner`.
   DataTypeStoreImpl(
       DataType data_type,
       StorageType storage_type,
@@ -80,7 +80,7 @@ class DataTypeStoreImpl : public DataTypeStore {
   const DataType data_type_;
   const StorageType storage_type_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
-  // |backend_store_| should be deleted on backend thread.
+  // `backend_store_` should be deleted on backend thread.
   std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
       backend_store_;
 

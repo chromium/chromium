@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/screen_layout_observer.h"
@@ -44,6 +45,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
                                            public ScreenLayoutObserver,
                                            public ShelfObserver,
                                            public TimeToClickRecorder::Delegate,
+                                           public KeyboardControllerObserver,
                                            public TabletModeObserver {
  public:
   explicit UnifiedSystemTrayBubble(UnifiedSystemTray* tray);
@@ -85,7 +87,8 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
   int GetCurrentTrayHeight() const;
 
   // Fire a notification that an accessibility event has occured on this object.
-  void NotifyAccessibilityEvent(ax::mojom::Event event, bool send_native_event);
+  void NotifyAccessibilityEventDeprecated(ax::mojom::Event event,
+                                          bool send_native_event);
 
   // Whether the bubble is currently showing audio details or display details or
   // calendar view.
@@ -113,6 +116,9 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
   // ShelfObserver:
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
 
+  // KeyboardControllerObserver:
+  void OnKeyboardVisibilityChanged(bool visible) override;
+
   // Updates the bubble height based on if it's going to show the main page or
   // the detailed page.
   void UpdateBubbleHeight(bool is_showing_detiled_view);
@@ -125,6 +131,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
 
  private:
   friend class SystemTrayTestApi;
+  friend class UnifiedSystemTray;
 
   void UpdateBubbleBounds();
 

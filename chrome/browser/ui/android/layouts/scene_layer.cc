@@ -18,8 +18,9 @@ namespace android {
 // static
 SceneLayer* SceneLayer::FromJavaObject(JNIEnv* env,
                                        const JavaRef<jobject>& jobj) {
-  if (jobj.is_null())
+  if (jobj.is_null()) {
     return nullptr;
+  }
   return reinterpret_cast<SceneLayer*>(Java_SceneLayer_getNativePtr(env, jobj));
 }
 
@@ -36,8 +37,9 @@ SceneLayer::SceneLayer(JNIEnv* env,
 SceneLayer::~SceneLayer() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = weak_java_scene_layer_.get(env);
-  if (jobj.is_null())
+  if (jobj.is_null()) {
     return;
+  }
 
   Java_SceneLayer_setNativePtr(
       env, jobj, reinterpret_cast<intptr_t>(static_cast<SceneLayer*>(nullptr)));

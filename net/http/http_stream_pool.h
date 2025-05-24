@@ -8,24 +8,28 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <variant>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/net_export.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
 #include "net/http/alternative_service.h"
-#include "net/http/http_stream_pool_switching_info.h"
+#include "net/http/http_stream_pool_request_info.h"
 #include "net/http/http_stream_request.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_attempt.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 
@@ -48,6 +52,16 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     kIgnore,
   };
 
+  // Specify when to start the TCP based attempt delay timer.
+  enum class TcpBasedAttemptDelayBehavior {
+    // Starts the stream attempt delay timer on the first service endpoint
+    // update.
+    kStartTimerOnFirstEndpointUpdate,
+    // Start the stream attempt delay timer when the first QUIC endpoint is
+    // attempted.
+    kStartTimerOnFirstQuicAttempt,
+  };
+
   // Observes events on the HttpStreamPool and may intercept preconnects. Used
   // only for tests.
   class NET_EXPORT_PRIVATE TestDelegate {
@@ -62,6 +76,27 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     virtual std::optional<int> OnPreconnect(const HttpStreamKey& stream_key,
                                             size_t num_streams) = 0;
   };
+
+  // The default maximum number of sockets per pool. The same as
+  // ClientSocketPoolManager::max_sockets_per_pool().
+  static constexpr size_t kDefaultMaxStreamSocketsPerPool = 256;
+
+  // The default maximum number of socket per group. The same as
+  // ClientSocketPoolManager::max_sockets_per_group().
+  static constexpr size_t kDefaultMaxStreamSocketsPerGroup = 6;
+
+  // The default connection attempt delay.
+  // https://datatracker.ietf.org/doc/html/draft-pauly-v6ops-happy-eyeballs-v3-02#name-summary-of-configurable-val
+  static constexpr base::TimeDelta kDefaultConnectionAttemptDelay =
+      base::Milliseconds(250);
+
+  static inline constexpr NextProtoSet kTcpBasedProtocols = {
+      NextProto::kProtoUnknown, NextProto::kProtoHTTP11,
+      NextProto::kProtoHTTP2};
+  static inline constexpr NextProtoSet kHttp11Protocols = {
+      NextProto::kProtoUnknown, NextProto::kProtoHTTP11};
+  static inline constexpr NextProtoSet kQuicBasedProtocols = {
+      NextProto::kProtoUnknown, NextProto::kProtoQUIC};
 
   // Reasons for closing streams.
   static constexpr std::string_view kIpAddressChanged = "IP address changed";
@@ -79,24 +114,39 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       "Connection was closed when it was returned to the pool";
   static constexpr std::string_view kSocketGenerationOutOfDate =
       "Socket generation out of date";
+  static constexpr std::string_view kExceededSocketLimits =
+      "Exceed socket pool/group limits";
 
-  // The maximum number of sockets per pool. The same as
-  // ClientSocketPoolManager::max_sockets_per_pool().
-  static constexpr size_t kMaxStreamSocketsPerPool = 256;
+  // FeatureParam names for configurable parameters.
+  static constexpr std::string_view kMaxStreamSocketsPerPoolParamName =
+      "max_stream_per_pool";
+  static constexpr std::string_view kMaxStreamSocketsPerGroupParamName =
+      "max_stream_per_group";
+  static constexpr std::string_view kConnectionAttemptDelayParamName =
+      "connection_attempt_delay";
+  static constexpr std::string_view kTcpBasedAttemptDelayBehaviorParamName =
+      "tcp_based_attempt_delay_behavior";
+  static constexpr std::string_view kVerboseNetLogParamName = "verbose_netlog";
+  static constexpr std::string_view kConsistencyCheckParamName =
+      "consistency_check";
 
-  // The maximum number of socket per group. The same as
-  // ClientSocketPoolManager::max_sockets_per_group().
-  static constexpr size_t kMaxStreamSocketsPerGroup = 6;
-
-  // The time to wait between connection attempts.
-  static constexpr base::TimeDelta kConnectionAttemptDelay =
-      base::Milliseconds(250);
+  static constexpr inline auto kTcpBasedAttemptDelayBehaviorOptions =
+      std::to_array<base::FeatureParam<TcpBasedAttemptDelayBehavior>::Option>(
+          {{TcpBasedAttemptDelayBehavior::kStartTimerOnFirstEndpointUpdate,
+            "first_endpoint_update"},
+           {TcpBasedAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt,
+            "first_quic_attempt"}});
 
   class NET_EXPORT_PRIVATE Job;
   class NET_EXPORT_PRIVATE JobController;
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE AttemptManager;
-  class NET_EXPORT_PRIVATE QuicTask;
+
+  // The time to wait between connection attempts.
+  static base::TimeDelta GetConnectionAttemptDelay();
+
+  // Returns when to start the stream attempt delay timer.
+  static TcpBasedAttemptDelayBehavior GetTcpBasedAttemptDelayBehavior();
 
   explicit HttpStreamPool(HttpNetworkSession* http_network_session,
                           bool cleanup_on_ip_address_change = true);
@@ -106,10 +156,14 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   ~HttpStreamPool() override;
 
+  // Called when the owner of `this`, which is an HttpNetworkSession, starts
+  // the process of being destroyed.
+  void OnShuttingDown();
+
   // Requests an HttpStream.
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
-      HttpStreamPoolSwitchingInfo switching_info,
+      HttpStreamPoolRequestInfo request_info,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
@@ -118,7 +172,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   // Requests that enough connections/sessions for `num_streams` be opened.
   // `callback` is only invoked when the return value is `ERR_IO_PENDING`.
-  int Preconnect(HttpStreamPoolSwitchingInfo switching_info,
+  int Preconnect(HttpStreamPoolRequestInfo request_info,
                  size_t num_streams,
                  CompletionOnceCallback callback);
 
@@ -147,7 +201,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   }
 
   // Closes all streams in this pool and cancels all pending requests.
-  void FlushWithError(int error, std::string_view net_log_close_reason_utf8);
+  void FlushWithError(int error,
+                      StreamSocketCloseReason attempt_cancel_reason,
+                      std::string_view net_log_close_reason_utf8);
 
   void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 
@@ -178,20 +234,33 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // streams before processing pending requests.
   void ProcessPendingRequestsInGroups();
 
-  // Returns true when HTTP/1.1 is required for `stream_key`.
-  bool RequiresHTTP11(const HttpStreamKey& stream_key);
+  // Returns true when HTTP/1.1 is required for `destination`.
+  bool RequiresHTTP11(const url::SchemeHostPort& destination,
+                      const NetworkAnonymizationKey& network_anonymization_key);
 
-  // Returns true when QUIC can be used for `stream_key`.
-  bool CanUseQuic(const HttpStreamKey& stream_key,
+  // Returns true when QUIC is broken for `destination`.
+  bool IsQuicBroken(const url::SchemeHostPort& destination,
+                    const NetworkAnonymizationKey& network_anonymization_key);
+
+  // Returns true when QUIC can be used for `destination`.
+  bool CanUseQuic(const url::SchemeHostPort& destination,
+                  const NetworkAnonymizationKey& network_anonymization_key,
                   bool enable_ip_based_pooling,
                   bool enable_alternative_services);
 
-  // Returns true when there is an existing QUIC session for `stream_key` and
-  // `quic_session_key`.
-  bool CanUseExistingQuicSession(const HttpStreamKey& stream_key,
-                                 const QuicSessionKey& quic_session_key,
-                                 bool enable_ip_based_pooling,
-                                 bool enable_alternative_services);
+  // Returns the first quic::ParsedQuicVersion that has been advertised in
+  // `alternative_service_info` and is supported, following the order of
+  // `alternative_service_info.advertised_versions()`. Returns
+  // quic::ParsedQuicVersion::Unsupported() when the alternative service is
+  // not QUIC or no mutually supported version is found.
+  quic::ParsedQuicVersion SelectQuicVersion(
+      const AlternativeServiceInfo& alternative_service_info);
+
+  // Returns true when there is an existing QUIC session for `quic_session_key`.
+  bool CanUseExistingQuicSession(
+      const QuicSessionAliasKey& quic_session_alias_key,
+      bool enable_ip_based_pooling,
+      bool enable_alternative_services);
 
   // Retrieves information on the current state of the pool as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
@@ -199,6 +268,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   void SetDelegateForTesting(std::unique_ptr<TestDelegate> observer);
 
   Group& GetOrCreateGroupForTesting(const HttpStreamKey& stream_key);
+
+  Group* GetGroupForTesting(const HttpStreamKey& stream_key);
 
   HttpNetworkSession* http_network_session() const {
     return http_network_session_;
@@ -226,14 +297,24 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     max_stream_sockets_per_group_ = max_stream_sockets_per_group;
   }
 
-  Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
-
   size_t JobControllerCountForTesting() const {
     return job_controllers_.size();
   }
 
  private:
-  class PooledStreamRequestHelper;
+  // Returns true when NetLog events should provide more fields.
+  // TODO(crbug.com/346835898): Remove this when we stabilize the
+  // implementation.
+  static bool VerboseNetLog();
+
+  // Checks whether the total active stream counts are below the pool's limit.
+  // If there are limit-ignoring stream requests (represented as
+  // JobControllers), always return true.
+  bool EnsureTotalActiveStreamCountBelowLimit() const;
+
+  Group& GetOrCreateGroup(
+      const HttpStreamKey& stream_key,
+      std::optional<QuicSessionAliasKey> quic_session_alias_key = std::nullopt);
 
   Group* GetGroup(const HttpStreamKey& stream_key);
 
@@ -252,22 +333,31 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       bool enable_ip_based_pooling,
       const NetLogWithSource& net_log = NetLogWithSource());
 
-  std::unique_ptr<HttpStreamRequest> CreatePooledStreamRequest(
-      HttpStreamRequest::Delegate* delegate,
-      std::unique_ptr<HttpStream> http_stream,
-      NextProto negotiated_protocol,
-      const NetLogWithSource& net_log);
+  void OnPreconnectComplete(JobController* job_controller,
+                            CompletionOnceCallback callback,
+                            int rv);
 
-  void OnPooledStreamRequestComplete(PooledStreamRequestHelper* helper);
+  // Periodically checks the total active/idle/handed-out streams are consistent
+  // with per-group streams. Only used when the kEnableConsistencyCheckParamName
+  // FeatureParam is enabled.
+  // TODO(crbug.com/346835898): Remove this when we stabilize the
+  // implementation.
+  void CheckConsistency();
 
   const raw_ptr<HttpNetworkSession> http_network_session_;
 
-  StreamAttemptParams stream_attempt_params_;
+  // Set to true when this is in the process of being destructed. When true,
+  // don't process pending requests.
+  bool is_shutting_down_ = false;
+
+  const StreamAttemptParams stream_attempt_params_;
 
   const bool cleanup_on_ip_address_change_;
 
-  size_t max_stream_sockets_per_pool_ = kMaxStreamSocketsPerPool;
-  size_t max_stream_sockets_per_group_ = kMaxStreamSocketsPerGroup;
+  const NetLogWithSource net_log_;
+
+  size_t max_stream_sockets_per_pool_;
+  size_t max_stream_sockets_per_group_;
 
   // The total number of active streams this pool handed out across all groups.
   size_t total_handed_out_stream_count_ = 0;
@@ -280,14 +370,13 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   std::map<HttpStreamKey, std::unique_ptr<Group>> groups_;
 
-  std::set<std::unique_ptr<PooledStreamRequestHelper>,
-           base::UniquePtrComparator>
-      pooled_stream_request_helpers_;
-
   std::set<std::unique_ptr<JobController>, base::UniquePtrComparator>
       job_controllers_;
+  size_t limit_ignoring_job_controller_counts_ = 0;
 
   std::unique_ptr<TestDelegate> delegate_for_testing_;
+
+  base::WeakPtrFactory<HttpStreamPool> weak_ptr_factory_{this};
 };
 
 }  // namespace net

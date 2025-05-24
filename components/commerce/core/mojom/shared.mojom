@@ -1,0 +1,71 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module commerce.shared.mojom;
+
+import "mojo/public/mojom/base/uuid.mojom";
+import "url/mojom/url.mojom";
+
+// This is a specialized version of shopping_specifics proto. The
+// struct here has most of the same information with the proto but
+// focuses more on UI needs.
+struct ProductInfo {
+  // The title of the product.
+  string title;
+
+  // The title of the product cluster.
+  string cluster_title;
+
+  // The eTLD+1 domain of the merchant website where the
+  // product was originally tracked on. This should only be used
+  // for showing this information directly on the UI.
+  string domain;
+
+  // Direct link to the product image.
+  url.mojom.Url image_url;
+
+  // Direct link to the product page.
+  url.mojom.Url product_url;
+
+  // Price as shown in the page. This should include
+  // both the amount and the currency symbol.
+  string current_price;
+
+  // Previous price if there has been a price drop.
+  // This should include both the amount and the currency
+  // symbol.
+  string previous_price;
+
+  // The product cluster id.
+  uint64 cluster_id;
+
+  // The category labels of the product.
+  array<string> category_labels;
+
+  // A formatted string showing the summary of the product's price. This may be
+  // a range or a singular value and may not match the |current_price| above (as
+  // it represents a single offer).
+  string price_summary;
+};
+
+struct BookmarkProductInfo {
+  // The ID of the bookmark that owns this product info.
+  int64 bookmark_id;
+
+  // The product information associated with 'bookmark_id'.
+  ProductInfo info;
+};
+
+// This struct represents information tied to sync (the product specifications
+// persistence layer).
+struct ProductSpecificationsSet {
+  // The human reabable name of this set.
+  string name;
+
+  // The UUID for this set in string form.
+  mojo_base.mojom.Uuid uuid;
+
+  // The user's product URLs.
+  array<url.mojom.Url> urls;
+};

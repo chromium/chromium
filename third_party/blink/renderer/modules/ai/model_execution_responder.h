@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -37,22 +38,30 @@ CreateModelExecutionStreamingResponder(
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
-    base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
-        complete_callback);
+    base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
+        complete_callback,
+    base::RepeatingClosure overflow_callback);
 
 // Creates a ModelStreamingResponder that handles the streaming output of the
-// model execution. The responder will resolves the returned promise with the
-// full result.
-MODULES_EXPORT std::tuple<
-    ScriptPromise<IDLString>,
-    mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>>
+// model execution. The responder will resolves given resolver with the full
+// result.
+MODULES_EXPORT
+mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
 CreateModelExecutionResponder(
     ScriptState* script_state,
     AbortSignal* signal,
+    ScriptPromiseResolver<IDLString>* resolver,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
-    base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
-        complete_callback);
+    base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
+        complete_callback,
+    base::RepeatingClosure overflow_callback);
+
+// Creates a closed ReadableStream without any chunk.
+MODULES_EXPORT
+ReadableStream* CreateEmptyReadableStream(
+    ScriptState* script_state,
+    AIMetrics::AISessionType session_type);
 
 }  // namespace blink
 

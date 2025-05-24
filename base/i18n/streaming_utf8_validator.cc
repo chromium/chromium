@@ -33,8 +33,9 @@ StreamingUtf8Validator::State StreamingUtf8Validator::AddBytes(
   uint8_t state = state_;
   for (const uint8_t ch : data) {
     if ((ch & 0x80) == 0) {
-      if (state == 0)
+      if (state == 0) {
         continue;
+      }
       state = internal::I18N_UTF8_VALIDATOR_INVALID_INDEX;
       break;
     }
@@ -47,9 +48,9 @@ StreamingUtf8Validator::State StreamingUtf8Validator::AddBytes(
   }
   state_ = state;
   return state == 0 ? VALID_ENDPOINT
-      : state == internal::I18N_UTF8_VALIDATOR_INVALID_INDEX
-      ? INVALID
-      : VALID_MIDPOINT;
+         : state == internal::I18N_UTF8_VALIDATOR_INVALID_INDEX
+             ? INVALID
+             : VALID_MIDPOINT;
 }
 
 void StreamingUtf8Validator::Reset() {

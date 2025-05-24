@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("display") {
   sources = [
@@ -29,6 +29,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "display_gpu_crash_browsertest.cc",
     "display_prefs_browsertest.cc",
     "quirks_browsertest.cc",
   ]
@@ -39,6 +40,8 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui:ui",
     "//chrome/test:test_support_ui",
     "//components/prefs",
     "//components/quirks",
@@ -46,6 +49,7 @@ source_set("browser_tests") {
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//ui/display",
+    "//ui/display:display_manager_test_api",
     "//ui/display/manager",
   ]
 }

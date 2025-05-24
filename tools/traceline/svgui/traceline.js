@@ -501,7 +501,6 @@ function() {
   for (var i = 0, il = this.threads.length; i < il; ++i) {
     var thread = this.threads[i];
 
-    // TODO make this not so stupid...
     if (i != 0) {
       for (var j = 0; j < this.thread_set_indexes.length; j++) {
         if (i == this.thread_set_indexes[j]) {
@@ -531,7 +530,6 @@ function() {
   for (var i = 0, il = this.threads.length; i < il; ++i) {
     var thread = this.threads[i];
 
-    // TODO make this not so stupid...
     if (i != 0) {
       for (var j = 0; j < this.thread_set_indexes.length; j++) {
         if (i == this.thread_set_indexes[j]) {

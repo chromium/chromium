@@ -22,7 +22,6 @@ group("wpt_tests_isolate") {
     "//third_party/blink/web_tests/wpt_internal/",
 
     # Configuration files
-    "//third_party/blink/web_tests/wptrunner.blink.ini",
     "//third_party/blink/web_tests/FlagSpecificConfig",
     "//third_party/blink/web_tests/VirtualTestSuites",
     "//third_party/blink/web_tests/TestLists/",
@@ -52,6 +51,13 @@ if (is_android) {
     data = [
       # Emulator
       "//build/android/pylib/",
+
+      # Common expectation
+      "//third_party/blink/web_tests/LeakExpectations",
+      "//third_party/blink/web_tests/NeverFixTests",
+      "//third_party/blink/web_tests/SlowTests",
+      "//third_party/blink/web_tests/StaleTestExpectations",
+      "//third_party/blink/web_tests/TestExpectations",
 
       # Android-specific expectations
       "//third_party/blink/web_tests/android/AndroidWPTNeverFixTests",

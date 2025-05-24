@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.password_check;
 import android.app.Activity;
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.ukm.UkmRecorder;
@@ -15,6 +17,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /** Helper class for recording password check UKM metrics */
+@NullMarked
 public class PasswordCheckUkmRecorder extends EmptyTabObserver {
     public static final String PASSWORD_CHECK_PACKAGE =
             "org.chromium.chrome.browser.password_check.";
@@ -34,7 +37,7 @@ public class PasswordCheckUkmRecorder extends EmptyTabObserver {
         tab.addObserver(this);
     }
 
-    private Intent getIntent(WebContents webContents) {
+    private @Nullable Intent getIntent(WebContents webContents) {
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) return null;
         Activity activity = window.getActivity().get();
@@ -44,12 +47,9 @@ public class PasswordCheckUkmRecorder extends EmptyTabObserver {
 
     private void recordPasswordChange(
             WebContents webContents, @PasswordChangeType int passwordChangeType) {
-        new UkmRecorder.Bridge()
-                .recordEventWithIntegerMetric(
-                        webContents,
-                        "PasswordManager.PasswordChangeTriggered",
-                        "PasswordChangeType",
-                        passwordChangeType);
+        new UkmRecorder(webContents, "PasswordManager.PasswordChangeTriggered")
+                .addMetric("PasswordChangeType", passwordChangeType)
+                .record();
     }
 
     @Override

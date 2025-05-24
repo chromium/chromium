@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
@@ -18,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/browser_context.h"
@@ -77,23 +78,25 @@ MockRenderProcessHost::MockRenderProcessHost(
       is_for_guests_only_(is_for_guests_only),
       priority_(base::Process::Priority::kUserBlocking),
       is_unused_(true),
+      pending_view_count_(0),
       worker_ref_count_(0),
       pending_reuse_ref_count_(0),
       foreground_service_worker_count_(0) {
   // Child process security operations can't be unit tested unless we add
   // ourselves as an existing child process.
-  ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
+  ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetDeprecatedID(),
+                                                     browser_context);
 
-  RenderProcessHostImpl::RegisterHost(GetID(), this);
+  RenderProcessHostImpl::RegisterHost(GetDeprecatedID(), this);
 }
 
 MockRenderProcessHost::~MockRenderProcessHost() {
-  ChildProcessSecurityPolicyImpl::GetInstance()->Remove(GetID());
+  ChildProcessSecurityPolicyImpl::GetInstance()->Remove(GetDeprecatedID());
   // In unit tests, Cleanup() might not have been called.
   if (!deletion_callback_called_) {
     for (auto& observer : observers_)
       observer.RenderProcessHostDestroyed(this);
-    RenderProcessHostImpl::UnregisterHost(GetID());
+    RenderProcessHostImpl::UnregisterHost(GetDeprecatedID());
   }
 }
 
@@ -202,6 +205,10 @@ bool MockRenderProcessHost::AreV8OptimizationsDisabled() {
   return false;
 }
 
+bool MockRenderProcessHost::DisallowV8FeatureFlagOverrides() {
+  return false;
+}
+
 bool MockRenderProcessHost::IsPdf() {
   return false;
 }
@@ -223,6 +230,10 @@ void MockRenderProcessHost::OnBoostForLoadingAdded() {}
 
 void MockRenderProcessHost::OnBoostForLoadingRemoved() {}
 
+void MockRenderProcessHost::OnImmersiveXrSessionStarted() {}
+
+void MockRenderProcessHost::OnImmersiveXrSessionStopped() {}
+
 StoragePartition* MockRenderProcessHost::GetStoragePartition() {
   return browser_context_->GetStoragePartition(storage_partition_config_);
 }
@@ -239,7 +250,9 @@ bool MockRenderProcessHost::ShutdownRequested() {
 }
 
 bool MockRenderProcessHost::FastShutdownIfPossible(size_t page_count,
-                                                   bool skip_unload_handlers) {
+                                                   bool skip_unload_handlers,
+                                                   bool ignore_workers,
+                                                   bool ignore_keep_alive) {
   if (GetActiveViewCount() != page_count)
     return false;
   // We aren't actually going to do anything, but set |fast_shutdown_started_|
@@ -273,8 +286,12 @@ bool MockRenderProcessHost::Send(IPC::Message* msg) {
   return true;
 }
 
-int MockRenderProcessHost::GetID() const {
+ChildProcessId MockRenderProcessHost::GetID() const {
   return id_;
+}
+
+int MockRenderProcessHost::GetDeprecatedID() const {
+  return id_.GetUnsafeValue();
 }
 
 base::SafeRef<RenderProcessHost> MockRenderProcessHost::GetSafeRef() const {
@@ -308,7 +325,8 @@ void MockRenderProcessHost::Cleanup() {
   }
   delayed_cleanup_ = false;
 
-  if (listeners_.IsEmpty() && !deletion_callback_called_) {
+  if (listeners_.IsEmpty() && !deletion_callback_called_ &&
+      !pending_view_count_) {
     if (IsInitializedAndNotDead()) {
       ChildProcessTerminationInfo termination_info;
       termination_info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
@@ -322,15 +340,21 @@ void MockRenderProcessHost::Cleanup() {
 
     for (auto& observer : observers_)
       observer.RenderProcessHostDestroyed(this);
-    RenderProcessHostImpl::UnregisterHost(GetID());
+    RenderProcessHostImpl::UnregisterHost(GetDeprecatedID());
     has_connection_ = false;
     deletion_callback_called_ = true;
   }
 }
 
-void MockRenderProcessHost::AddPendingView() {}
+void MockRenderProcessHost::AddPendingView() {
+  ++pending_view_count_;
+}
 
-void MockRenderProcessHost::RemovePendingView() {}
+void MockRenderProcessHost::RemovePendingView() {
+  CHECK(pending_view_count_);
+  --pending_view_count_;
+  Cleanup();
+}
 
 void MockRenderProcessHost::AddPriorityClient(
     RenderProcessHostPriorityClient* priority_client) {
@@ -352,6 +376,8 @@ bool MockRenderProcessHost::HasPriorityOverride() {
 
 void MockRenderProcessHost::ClearPriorityOverride() {}
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void MockRenderProcessHost::SetHasSpareRendererPriority(bool) {}
 
 #if BUILDFLAG(IS_ANDROID)
 ChildProcessImportance MockRenderProcessHost::GetEffectiveImportance() {
@@ -412,7 +438,7 @@ const base::TimeTicks& MockRenderProcessHost::GetLastInitTime() {
   return dummy_time;
 }
 
-base::Process::Priority MockRenderProcessHost::GetPriority() {
+base::Process::Priority MockRenderProcessHost::GetPriority() const {
   return priority_;
 }
 
@@ -481,6 +507,10 @@ void MockRenderProcessHost::DecrementPendingReuseRefCount() {
   --pending_reuse_ref_count_;
 }
 
+int MockRenderProcessHost::GetPendingReuseRefCountForTesting() const {
+  return pending_reuse_ref_count_;
+}
+
 size_t MockRenderProcessHost::GetWorkerRefCount() const {
   return worker_ref_count_;
 }
@@ -496,8 +526,9 @@ void MockRenderProcessHost::DisableRefCounts() {
   // MockRenderProcessHost is the spare RenderProcessHost, we know that it is
   // owned by the SpareRenderProcessHostManager and we need to delete the spare
   // to avoid reports/DCHECKs about memory leaks.
-  if (this == RenderProcessHostImpl::GetSpareRenderProcessHostForTesting())
+  if (IsSpare()) {
     Cleanup();
+  }
 }
 
 bool MockRenderProcessHost::AreRefCountsDisabled() {
@@ -531,20 +562,22 @@ bool MockRenderProcessHost::HostHasNotBeenUsed() {
 }
 
 bool MockRenderProcessHost::IsSpare() const {
-  return this == RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
+  return base::Contains(SpareRenderProcessHostManagerImpl::Get().GetSpares(),
+                        this);
 }
 
 void MockRenderProcessHost::SetProcessLock(
     const IsolationContext& isolation_context,
     const ProcessLock& process_lock) {
   ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-      isolation_context, GetID(), !IsUnused(), process_lock);
+      isolation_context, GetDeprecatedID(), !IsUnused(), process_lock);
   if (process_lock.IsASiteOrOrigin())
     is_renderer_locked_to_site_ = true;
 }
 
 ProcessLock MockRenderProcessHost::GetProcessLock() const {
-  return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
+  return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
+      GetDeprecatedID());
 }
 
 bool MockRenderProcessHost::IsProcessLockedToSiteForTesting() {
@@ -555,6 +588,7 @@ void MockRenderProcessHost::BindCacheStorage(
     const network::CrossOriginEmbedderPolicy&,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
     const network::DocumentIsolationPolicy&,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>,
     const storage::BucketLocator& bucket_locator,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   cache_storage_receiver_ = std::move(receiver);
@@ -582,16 +616,16 @@ MockRenderProcessHost::GetInfoForBrowserContextDestructionCrashReporting() {
 
 void MockRenderProcessHost::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {
-  proto->set_id(GetID());
+  proto->set_id(GetDeprecatedID());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void MockRenderProcessHost::ReinitializeLogging(
     uint32_t logging_dest,
     base::ScopedFD log_file_descriptor) {
   NOTIMPLEMENTED();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 uint64_t MockRenderProcessHost::GetPrivateMemoryFootprint() {
   return 0;

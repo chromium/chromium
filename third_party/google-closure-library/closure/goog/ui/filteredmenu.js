@@ -208,6 +208,7 @@ goog.ui.FilteredMenu.prototype.initFilterInput_ = function() {
   }
 
   if (this.maxLength_) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.filterInput_.maxLength = this.maxLength_;
   }
 };
@@ -313,6 +314,7 @@ goog.ui.FilteredMenu.prototype.getFilterLabel = function() {
 goog.ui.FilteredMenu.prototype.setFilter = function(str) {
   'use strict';
   if (this.filterInput_) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.filterInput_.value = str;
     this.filterItems_(str);
   }
@@ -413,6 +415,7 @@ goog.ui.FilteredMenu.prototype.hasPersistentVisibility = function(child) {
 /**
  * Handles filter input events.
  * @param {goog.events.BrowserEvent} e The event object.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.FilteredMenu.prototype.handleFilterEvent = function(e) {
   'use strict';
@@ -454,8 +457,7 @@ goog.ui.FilteredMenu.prototype.filterItems_ = function(str) {
 
     // If the number of comma separated items has changes recreate the
     // entered items array and fire a change event.
-    if (str.substr(str.length - 1, 1) == ',' ||
-        items.length != this.enteredItems_.length) {
+    if (str.slice(-1) == ',' || items.length != this.enteredItems_.length) {
       var lastItem = items[items.length - 1] || '';
 
       // Auto complete text in input box based on the highlighted item.
@@ -463,6 +465,10 @@ goog.ui.FilteredMenu.prototype.filterItems_ = function(str) {
         var caption = this.getHighlighted().getCaption();
         if (caption.toLowerCase().indexOf(lastItem.toLowerCase()) == 0) {
           items[items.length - 1] = caption;
+          /**
+           * @suppress {strictMissingProperties} Added to tighten compiler
+           * checks
+           */
           this.filterInput_.value = items.join(',') + ',';
         }
       }
@@ -525,14 +531,15 @@ goog.ui.FilteredMenu.prototype.boldContent = function(child, start, len) {
   if (len == 0) {
     boldedCaption = this.getDomHelper().createTextNode(caption);
   } else {
-    var preMatch = caption.substr(0, start);
-    var match = caption.substr(start, len);
-    var postMatch = caption.substr(start + len);
+    var preMatch = caption.slice(0, start);
+    var match = caption.slice(start, start + len);
+    var postMatch = caption.slice(start + len);
     boldedCaption = this.getDomHelper().createDom(
         goog.dom.TagName.SPAN, null, preMatch,
         this.getDomHelper().createDom(goog.dom.TagName.B, null, match),
         postMatch);
   }
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var accelerator = child.getAccelerator && child.getAccelerator();
   if (accelerator) {
     child.setContent([

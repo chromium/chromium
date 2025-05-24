@@ -14,12 +14,4 @@ GrammarFragment::GrammarFragment(const GrammarFragment& other) = default;
 
 GrammarFragment::~GrammarFragment() = default;
 
-bool GrammarFragment::operator==(const GrammarFragment& other) const {
-  return range == other.range && suggestion == other.suggestion;
-}
-
-bool GrammarFragment::operator!=(const GrammarFragment& other) const {
-  return !(*this == other);
-}
-
 }  // namespace ui

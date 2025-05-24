@@ -10,7 +10,6 @@ assert(enable_pdf, "enable_pdf check failed")
 build_webui_tests("build") {
   resource_path_prefix = "pdf"
 
-  ts_tsconfig_base = "../../../../tools/typescript/tsconfig_base_polymer.json"
   ts_path_mappings =
       [ "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
@@ -40,9 +39,11 @@ build_webui_tests("build") {
     "touch_handling_test.ts",
     "viewer_attachment_bar_test.ts",
     "viewer_attachment_test.ts",
+    "viewer_file_picker_test.ts",
     "viewer_password_dialog_test.ts",
     "viewer_pdf_sidenav_test.ts",
     "viewer_properties_dialog_test.ts",
+    "viewer_searchify_test.ts",
     "viewer_thumbnail_bar_test.ts",
     "viewer_thumbnail_test.ts",
     "viewer_toolbar_test.ts",
@@ -61,20 +62,34 @@ build_webui_tests("build") {
 
   if (enable_pdf_ink2) {
     files += [
+      "ink2_annotation_brush_mixin_test.ts",
+      "ink2_annotation_text_mixin_test.ts",
       "ink2_before_unload_stroke_test.ts",
       "ink2_before_unload_undo_test.ts",
+      "ink2_bottom_toolbar_dropdown_test.ts",
+      "ink2_bottom_toolbar_test.ts",
+      "ink2_brush_selector_test.ts",
+      "ink2_color_selector_test.ts",
+      "ink2_manager_test.ts",
       "ink2_save_test.ts",
       "ink2_side_panel_test.ts",
+      "ink2_size_selector_test.ts",
       "ink2_test.ts",
+      "ink2_text_alignment_selector_test.ts",
+      "ink2_text_bottom_toolbar_test.ts",
+      "ink2_text_box_test.ts",
+      "ink2_text_side_panel_test.ts",
+      "ink2_text_styles_selector_test.ts",
       "ink2_viewer_toolbar_test.ts",
+      "selectable_icon_button_test.ts",
     ]
 
-    if (!is_chromeos_ash) {
+    if (!is_chromeos) {
       files += [ "ink2_disabled_test.ts" ]
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     files += [ "printing_icon_test.ts" ]
   }
 

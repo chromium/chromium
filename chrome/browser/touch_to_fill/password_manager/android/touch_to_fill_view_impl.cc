@@ -51,6 +51,8 @@ UiCredential ConvertJavaCredential(JNIEnv* env,
                                Java_Credential_getPassword(env, credential)),
       url::Origin::Create(GURL(ConvertJavaStringToUTF8(
           env, Java_Credential_getOriginUrl(env, credential)))),
+      ConvertJavaStringToUTF8(env,
+                              Java_Credential_getDisplayName(env, credential)),
       static_cast<password_manager_util::GetLoginMatchType>(
           Java_Credential_getMatchType(env, credential)),
       base::Time::FromMillisecondsSinceUnixEpoch(

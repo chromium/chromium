@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "chrome/browser/extensions/api/messaging/native_message_process_host.h"
@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -194,8 +195,13 @@ void NativeMessageProcessHost::OnMessage(const std::string& json) {
   // Copy size and content of the message to the buffer.
   static_assert(sizeof(uint32_t) == kMessageHeaderSize,
                 "kMessageHeaderSize is incorrect");
-  *reinterpret_cast<uint32_t*>(buffer->data()) = json.size();
-  memcpy(buffer->data() + kMessageHeaderSize, json.data(), json.size());
+  const uint32_t message_size = base::checked_cast<uint32_t>(json.size());
+  memcpy(buffer->data(), reinterpret_cast<const char*>(&message_size),
+         kMessageHeaderSize);
+
+  buffer->span()
+      .subspan(kMessageHeaderSize)
+      .copy_from_nonoverlapping(base::as_byte_span(json));
 
   // Push new message to the write queue.
   write_queue_.push(buffer);

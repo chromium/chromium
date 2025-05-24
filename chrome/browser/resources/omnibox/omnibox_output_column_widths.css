@@ -9,6 +9,11 @@
 .header-relevance {
   width: 100%;
 }
+
+.header-image-and-icon {
+  width: 85px;
+}
+
 .header-contents-and-description {
   width: 480%;
 }

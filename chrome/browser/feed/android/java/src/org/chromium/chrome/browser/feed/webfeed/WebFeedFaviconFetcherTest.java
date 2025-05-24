@@ -50,9 +50,9 @@ public class WebFeedFaviconFetcherTest {
     private Bitmap mBitmapFromImageFetcher;
     private Bitmap mBitmapFromIconBridge;
     private Activity mActivity;
-    private TestImageFetcher mImageFetcher = Mockito.spy(new TestImageFetcher());
-    private TestLargeIconBridge mLargeIconBridge = Mockito.spy(new TestLargeIconBridge());
-    private WebFeedFaviconFetcher mFaviconFetcher =
+    private final TestImageFetcher mImageFetcher = Mockito.spy(new TestImageFetcher());
+    private final TestLargeIconBridge mLargeIconBridge = Mockito.spy(new TestLargeIconBridge());
+    private final WebFeedFaviconFetcher mFaviconFetcher =
             new WebFeedFaviconFetcher(mLargeIconBridge, mImageFetcher);
 
     @Before

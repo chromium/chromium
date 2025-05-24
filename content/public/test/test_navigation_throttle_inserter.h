@@ -5,19 +5,17 @@
 #ifndef CONTENT_PUBLIC_TEST_TEST_NAVIGATION_THROTTLE_INSERTER_H_
 #define CONTENT_PUBLIC_TEST_TEST_NAVIGATION_THROTTLE_INSERTER_H_
 
-#include <memory>
-
 #include "base/functional/callback.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 
 class NavigationThrottle;
+class NavigationThrottleRegistry;
 class WebContents;
 
 using ThrottleInsertionCallback =
-    base::RepeatingCallback<std::unique_ptr<NavigationThrottle>(
-        NavigationHandle*)>;
+    base::RepeatingCallback<void(NavigationThrottleRegistry& registry)>;
 
 // This class is instantiated with a NavigationThrottle factory callback, and
 //  - Calls the callback in every DidStartNavigation.

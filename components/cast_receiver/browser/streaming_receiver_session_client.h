@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -187,7 +188,7 @@ class StreamingReceiverSessionClient
   void OnPlaybackStarted();
 
   // Handler for callbacks associated with this class. May be empty.
-  Handler* const handler_;
+  const raw_ptr<Handler> handler_;
 
   // Task runner on which waiting for the result of an AV Settings query should
   // occur.

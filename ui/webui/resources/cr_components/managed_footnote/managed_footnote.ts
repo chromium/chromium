@@ -12,7 +12,7 @@
  */
 
 import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -49,7 +49,7 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
         type: Boolean,
       },
 
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       /**
        * Whether the device should be indicated as managed rather than the
        * browser.
@@ -71,11 +71,12 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
     };
   }
 
-  protected isManaged_: boolean = loadTimeData.getBoolean('isManaged');
-  protected managedByIcon_: string = loadTimeData.getString('managedByIcon');
+  protected accessor isManaged_: boolean = loadTimeData.getBoolean('isManaged');
+  protected accessor managedByIcon_: string =
+      loadTimeData.getString('managedByIcon');
 
-  // <if expr="chromeos_ash">
-  showDeviceInfo: boolean = false;
+  // <if expr="is_chromeos">
+  accessor showDeviceInfo: boolean = false;
   // </if>
 
   override firstUpdated() {
@@ -87,7 +88,7 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
 
   /** @return Message to display to the user. */
   protected getManagementString_(): TrustedHTML {
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     if (this.showDeviceInfo) {
       return this.i18nAdvanced('deviceManagedByOrg');
     }

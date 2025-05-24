@@ -21,7 +21,7 @@ TEST(DisplayItemTest, DebugStringsExist) {
 #endif  // DCHECK_IS_ON()
 
 TEST(DisplayItemTest, AllZeroIsTombstone) {
-  alignas(alignof(DisplayItem)) uint8_t buffer[sizeof(DisplayItem)] = {0};
+  alignas(alignof(DisplayItem)) uint8_t buffer[sizeof(DisplayItem)] = {};
   EXPECT_TRUE(reinterpret_cast<const DisplayItem*>(buffer)->IsTombstone());
 }
 

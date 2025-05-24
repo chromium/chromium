@@ -31,7 +31,7 @@ class CORE_EXPORT HighlightOverlay {
     kSpelling,
     kTargetText,
     kSearchText,
-    kSearchTextCurrent,
+    kSearchTextActiveMatch,
     kSelection,
   };
 

@@ -5,16 +5,37 @@
 #include "chrome/browser/global_features.h"
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
+#include "chrome/common/chrome_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+// This causes a gn error on Android builds, because gn does not understand
+// buildflags, so we include it only on platforms where it is used.
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"  // nogncheck
+#include "chrome/browser/glic/glic_enabling.h"         // nogncheck
+#include "chrome/browser/glic/glic_profile_manager.h"  // nogncheck
+#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // This causes a gn error on Android builds, because gn does not understand
 // buildflags, so we include it only on platforms where it is used.
-#include "components/user_education/common/user_education_features.h"  // nogncheck
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
+#include "components/user_education/common/user_education_features.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_infobar_delegate.h"
 #endif
 
 namespace {
@@ -50,9 +71,47 @@ void GlobalFeatures::ReplaceGlobalFeaturesForTesting(
 void GlobalFeatures::Init() {
   system_permissions_platform_handle_ = CreateSystemPermissionsPlatformHandle();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (user_education::features::IsWhatsNewV2()) {
-    whats_new_registry_ = CreateWhatsNewRegistry();
+  whats_new_registry_ = CreateWhatsNewRegistry();
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::GlicEnabling::IsEnabledByFlags()) {
+    glic_profile_manager_ = std::make_unique<glic::GlicProfileManager>();
+    glic_background_mode_manager_ =
+        std::make_unique<glic::GlicBackgroundModeManager>(
+            g_browser_process->status_tray());
+    synthetic_trial_manager_ =
+        std::make_unique<glic::GlicSyntheticTrialManager>(
+            g_browser_process->GetMetricsServicesManager());
   }
+#endif
+
+  application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (base::FeatureList::IsEnabled(
+          installer_downloader::kInstallerDownloader)) {
+    installer_downloader_controller_ = std::make_unique<
+        installer_downloader::InstallerDownloaderController>(
+        base::BindRepeating(
+            &installer_downloader::InstallerDownloaderInfoBarDelegate::Show),
+        base::BindRepeating(static_cast<bool (*)()>(
+            &ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled)));
+  }
+#endif
+}
+
+void GlobalFeatures::Shutdown() {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_background_mode_manager_) {
+    glic_background_mode_manager_->Shutdown();
+    glic_background_mode_manager_.reset();
+  }
+  if (glic_profile_manager_) {
+    glic_profile_manager_->Shutdown();
+    glic_profile_manager_.reset();
+  }
+  synthetic_trial_manager_.reset();
 #endif
 }
 

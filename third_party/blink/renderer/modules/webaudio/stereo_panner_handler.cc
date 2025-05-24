@@ -28,7 +28,7 @@ constexpr unsigned kMaximumOutputChannels = 2;
 StereoPannerHandler::StereoPannerHandler(AudioNode& node,
                                          float sample_rate,
                                          AudioParamHandler& pan)
-    : AudioHandler(kNodeTypeStereoPanner, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeStereoPanner, node, sample_rate),
       pan_(&pan),
       sample_accurate_pan_values_(
           GetDeferredTaskHandler().RenderQuantumFrames()) {
@@ -38,7 +38,7 @@ StereoPannerHandler::StereoPannerHandler(AudioNode& node,
   // The node-specific default mixing rules declare that StereoPannerNode
   // can handle mono to stereo and stereo to stereo conversion.
   channel_count_ = kMaximumOutputChannels;
-  SetInternalChannelCountMode(kClampedMax);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kClampedMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 
   Initialize();
@@ -75,7 +75,8 @@ void StereoPannerHandler::Process(uint32_t frames_to_process) {
     // Apply sample-accurate panning specified by AudioParam automation.
     DCHECK_LE(frames_to_process, sample_accurate_pan_values_.size());
     float* pan_values = sample_accurate_pan_values_.Data();
-    pan_->CalculateSampleAccurateValues(pan_values, frames_to_process);
+    pan_->CalculateSampleAccurateValues(
+        sample_accurate_pan_values_.as_span().first(frames_to_process));
     stereo_panner_->PanWithSampleAccurateValues(input_bus.get(), output_bus,
                                                 pan_values, frames_to_process);
     return;
@@ -101,7 +102,8 @@ void StereoPannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
   float values[render_quantum_frames_expected];
   DCHECK_LE(frames_to_process, render_quantum_frames_expected);
 
-  pan_->CalculateSampleAccurateValues(values, frames_to_process);
+  pan_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
 }
 
 void StereoPannerHandler::Initialize() {
@@ -123,7 +125,7 @@ void StereoPannerHandler::SetChannelCount(unsigned channel_count,
       channel_count <= kMaximumOutputChannels) {
     if (channel_count_ != channel_count) {
       channel_count_ = channel_count;
-      if (InternalChannelCountMode() != kMax) {
+      if (InternalChannelCountMode() != V8ChannelCountMode::Enum::kMax) {
         UpdateChannelsForInputs();
       }
     }
@@ -137,18 +139,17 @@ void StereoPannerHandler::SetChannelCount(unsigned channel_count,
   }
 }
 
-void StereoPannerHandler::SetChannelCountMode(const String& mode,
+void StereoPannerHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
                                               ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
-  ChannelCountMode old_mode = InternalChannelCountMode();
+  V8ChannelCountMode::Enum old_mode = InternalChannelCountMode();
 
-  if (mode == "clamped-max") {
-    new_channel_count_mode_ = kClampedMax;
-  } else if (mode == "explicit") {
-    new_channel_count_mode_ = kExplicit;
-  } else if (mode == "max") {
+  if (mode == V8ChannelCountMode::Enum::kClampedMax ||
+      mode == V8ChannelCountMode::Enum::kExplicit) {
+    new_channel_count_mode_ = mode;
+  } else if (mode == V8ChannelCountMode::Enum::kMax) {
     // This is not supported for a StereoPannerNode, which can only handle
     // 1 or 2 channels.
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,

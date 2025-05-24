@@ -1,7 +1,0 @@
-android.webkit.WebView focusable focused
-++android.widget.TextView role_description='heading 1' heading name='Image'
-++android.widget.Image role_description='graphic' name='ImageAlt'
-=== Start Continuation ===
-android.webkit.WebView focusable focused name='changed-class'
-++android.widget.TextView role_description='heading 1' heading name='Image'
-++android.widget.Image role_description='graphic' name='ImageAlt'

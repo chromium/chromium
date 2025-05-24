@@ -4,9 +4,13 @@
 
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 
-#include "base/functional/callback.h"
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/values.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "extensions/common/extension_urls.h"
 
 namespace chromeos {
@@ -80,7 +84,7 @@ void ChromeKioskExternalLoaderBroker::TriggerPrimaryAppInstall(
   CallPrimaryAppObserver();
 }
 
-void ChromeKioskExternalLoaderBroker::TriggerSecondaryAppInstall(
+void ChromeKioskExternalLoaderBroker::UpdateSecondaryAppList(
     const std::vector<std::string>& ids) {
   secondary_app_ids_ = ids;
 

@@ -67,7 +67,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
         mRemoveButton = mEndButtonView;
         mRemoveButton.setImageResource(R.drawable.btn_delete_24dp);
-        mRemoveButton.setContentDescription(getContext().getString((R.string.remove)));
+        mRemoveButton.setContentDescription(getContext().getString(R.string.remove));
         ImageViewCompat.setImageTintList(
                 mRemoveButton,
                 AppCompatResources.getColorStateList(
@@ -82,7 +82,6 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                         .getDimensionPixelSize(R.dimen.history_item_remove_button_lateral_padding),
                 getPaddingBottom());
 
-        findViewById(R.id.chip_description).setVisibility(View.VISIBLE);
         mChipView = findViewById(R.id.chip);
         mChipView.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
     }

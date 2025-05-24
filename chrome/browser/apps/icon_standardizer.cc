@@ -221,7 +221,7 @@ gfx::ImageSkia StandardizeSize(const gfx::ImageSkia& image) {
   TRACE_EVENT0("ui", "apps::StandardizeSize");
   gfx::ImageSkia final_image;
 
-  for (gfx::ImageSkiaRep rep : image.image_reps()) {
+  for (const gfx::ImageSkiaRep& rep : image.image_reps()) {
     std::optional<gfx::ImageSkiaRep> new_rep =
         StandardizeSizeOfImageRep(rep, rep.scale());
     if (!new_rep) {
@@ -344,7 +344,7 @@ gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image) {
   gfx::ImageSkia final_image;
   gfx::ImageSkia standard_size_image = StandardizeSize(image);
 
-  for (gfx::ImageSkiaRep rep : standard_size_image.image_reps()) {
+  for (const gfx::ImageSkiaRep& rep : standard_size_image.image_reps()) {
     std::optional<gfx::ImageSkiaRep> standard_rep =
         CreateStandardIconImageRep(rep, rep.scale());
     final_image.AddRepresentation(standard_rep.value_or(rep));

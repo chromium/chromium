@@ -32,15 +32,15 @@ PASS walker.firstChild(); walker.currentNode.id is 'A1'
 PASS walker.nextNode(); walker.currentNode.id is 'B1'
 
 Testing with object lacking acceptNode property
-PASS walker.firstChild(); threw exception TypeError: Failed to execute 'acceptNode' on 'NodeFilter': The provided callback is not callable..
+PASS walker.firstChild(); threw exception TypeError: Failed to execute 'firstChild' on 'TreeWalker': Failed to execute 'acceptNode' on 'NodeFilter': The provided callback is not callable..
 PASS walker.currentNode.id; is 'root'
-PASS walker.nextNode(); threw exception TypeError: Failed to execute 'acceptNode' on 'NodeFilter': The provided callback is not callable..
+PASS walker.nextNode(); threw exception TypeError: Failed to execute 'nextNode' on 'TreeWalker': Failed to execute 'acceptNode' on 'NodeFilter': The provided callback is not callable..
 PASS walker.currentNode.id; is 'root'
 
 Testing with object with non-function acceptNode property
-PASS walker.firstChild(); threw exception TypeError: Failed to execute 'acceptNode' on 'NodeFilter': The provided callback is not callable..
+PASS walker.firstChild(); threw exception TypeError: Failed to execute 'firstChild' on 'TreeWalker': Failed to execute 'acceptNode' on 'NodeFilter': The provided callback is not callable..
 PASS walker.currentNode.id; is 'root'
-PASS walker.nextNode(); threw exception TypeError: Failed to execute 'acceptNode' on 'NodeFilter': The provided callback is not callable..
+PASS walker.nextNode(); threw exception TypeError: Failed to execute 'nextNode' on 'TreeWalker': Failed to execute 'acceptNode' on 'NodeFilter': The provided callback is not callable..
 PASS walker.currentNode.id; is 'root'
 
 Testing with function having acceptNode function

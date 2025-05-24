@@ -25,6 +25,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link PartialCustomTabVersionCompat}. */
@@ -41,7 +42,7 @@ public class PartialCustomTabVersionCompatTest {
         final int navbarWidth = 150;
 
         Activity activity = mPCCTTestRule.mActivity;
-        var vc = PartialCustomTabVersionCompat.create(activity, () -> {});
+        var vc = PartialCustomTabVersionCompat.create(activity, CallbackUtils.emptyRunnable());
 
         final int displayWidth = DEVICE_WIDTH - cutoutWidth - navbarWidth;
         mPCCTTestRule.mDisplaySize = new Point(displayWidth, DEVICE_HEIGHT);

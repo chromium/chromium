@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/offline_items_collection/core/fail_state.h"
 #include "components/offline_items_collection/core/offline_item_filter.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
@@ -37,11 +38,8 @@ struct ContentId {
 
   ~ContentId();
 
-  bool operator==(const ContentId& content_id) const;
-
-  bool operator!=(const ContentId& content_id) const;
-
-  bool operator<(const ContentId& content_id) const;
+  friend bool operator==(const ContentId&, const ContentId&) = default;
+  friend auto operator<=>(const ContentId&, const ContentId&) = default;
 };
 
 // A Java counterpart will be generated for this enum.
@@ -220,6 +218,10 @@ struct OfflineItem {
   // represents an unknown time remaining.  This field is not used if |state| is
   // COMPLETE.
   int64_t time_remaining_ms;
+
+  // The danger type of this offline item. This should be consistent with the
+  // `is_dangerous` field below.
+  download::DownloadDangerType danger_type;
 
   // Whether the download might be dangerous and will require additional
   // validation from user.

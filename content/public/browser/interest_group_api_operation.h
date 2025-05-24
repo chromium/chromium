@@ -9,7 +9,14 @@ namespace content {
 
 // The possible operations performable by parties related to the Interest
 // Group API.
-enum class InterestGroupApiOperation { kJoin, kLeave, kUpdate, kSell, kBuy };
+enum class InterestGroupApiOperation {
+  kJoin,
+  kLeave,
+  kUpdate,
+  kSell,
+  kBuy,
+  kRead
+};
 
 }  // namespace content
 

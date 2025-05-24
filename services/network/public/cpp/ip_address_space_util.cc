@@ -333,6 +333,15 @@ IPAddressSpace CollapseUnknown(IPAddressSpace space) {
   return space;
 }
 
+// For comparison purposes, we treat kPrivate and kLocal as equivalent (kPrivate
+// arbitrarily chosen over kLocal).
+IPAddressSpace CollapsePrivateAndLocal(IPAddressSpace space) {
+  if (space == IPAddressSpace::kLocal) {
+    return IPAddressSpace::kPrivate;
+  }
+  return space;
+}
+
 }  // namespace
 
 bool IsLessPublicAddressSpace(IPAddressSpace lhs, IPAddressSpace rhs) {
@@ -340,6 +349,13 @@ bool IsLessPublicAddressSpace(IPAddressSpace lhs, IPAddressSpace rhs) {
   // works just fine. The comment on IPAddressSpace's definition notes that the
   // enum values' ordering matters.
   return CollapseUnknown(lhs) < CollapseUnknown(rhs);
+}
+
+bool IsLessPublicAddressSpaceLNA(IPAddressSpace lhs, IPAddressSpace rhs) {
+  // Similar to IsLessPublicAddressSpace but with additional collapsing of
+  // kPrivate and kLocal.
+  return CollapsePrivateAndLocal(CollapseUnknown(lhs)) <
+         CollapsePrivateAndLocal(CollapseUnknown(rhs));
 }
 
 CalculateClientAddressSpaceParams::~CalculateClientAddressSpaceParams() =
@@ -384,6 +400,23 @@ mojom::IPAddressSpace CalculateResourceAddressSpace(
   }
 
   return IPEndPointToIPAddressSpace(endpoint);
+}
+
+std::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
+  net::IPAddress address;
+  if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
+    return std::nullopt;
+  }
+
+  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kPrivate) {
+    return std::nullopt;
+  }
+
+  return address;
+}
+
+bool IsRFC6762LocalDomain(const GURL& url) {
+  return url.DomainIs("local");
 }
 
 }  // namespace network

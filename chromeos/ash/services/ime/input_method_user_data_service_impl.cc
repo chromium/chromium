@@ -201,6 +201,61 @@ void InputMethodUserDataServiceImpl::DeleteJapaneseDictionary(
   std::move(callback).Run(std::move(response));
 }
 
+void InputMethodUserDataServiceImpl::ExportJapaneseDictionary(
+    uint64_t dict_id,
+    ExportJapaneseDictionaryCallback callback) {
+  chromeos_input::UserDataRequest user_data_request;
+  user_data_request.mutable_export_japanese_dictionary()->set_dictionary_id(
+      dict_id);
+
+  chromeos_input::UserDataResponse user_data_response =
+      c_api_->ProcessUserDataRequest(user_data_request);
+
+  std::move(callback).Run(
+      std::move(user_data_response.export_japanese_dictionary()));
+}
+
+void InputMethodUserDataServiceImpl::ImportJapaneseDictionary(
+    uint64_t dict_id,
+    const std::string& tsv_data,
+    ImportJapaneseDictionaryCallback callback) {
+  chromeos_input::UserDataRequest user_data_request;
+  user_data_request.mutable_import_japanese_dictionary()->set_dictionary_id(
+      dict_id);
+  user_data_request.mutable_import_japanese_dictionary()->set_tsv_data(
+      tsv_data);
+
+  chromeos_input::UserDataResponse user_data_response =
+      c_api_->ProcessUserDataRequest(user_data_request);
+
+  mojom::StatusPtr response = mojom::Status::New();
+  response->success = user_data_response.status().success();
+  if (user_data_response.status().has_reason()) {
+    response->reason = user_data_response.status().reason();
+  }
+  std::move(callback).Run(std::move(response));
+}
+void InputMethodUserDataServiceImpl::ClearJapanesePersonalizationData(
+    bool clear_conversion_history,
+    bool clear_suggestion_history,
+    ClearJapanesePersonalizationDataCallback callback) {
+  chromeos_input::UserDataRequest user_data_request;
+  user_data_request.mutable_clear_personalization_data()
+      ->set_clear_conversion_history(clear_conversion_history);
+  user_data_request.mutable_clear_personalization_data()
+      ->set_clear_suggestion_history(clear_suggestion_history);
+
+  chromeos_input::UserDataResponse user_data_response =
+      c_api_->ProcessUserDataRequest(user_data_request);
+
+  mojom::StatusPtr response = mojom::Status::New();
+  response->success = user_data_response.status().success();
+  if (user_data_response.status().has_reason()) {
+    response->reason = user_data_response.status().reason();
+  }
+  std::move(callback).Run(std::move(response));
+}
+
 void InputMethodUserDataServiceImpl::AddReceiver(
     mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver) {
   receiver_set_.Add(this, std::move(receiver));

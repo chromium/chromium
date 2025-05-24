@@ -1,0 +1,16 @@
+Name: Collections Kotlin Extensions
+Short Name: collection-ktx
+URL: https://developer.android.com/jetpack/androidx/releases/collection#1.5.0
+Version: 1.5.0
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Kotlin extensions for 'collection' artifact
+
+Local Modifications:
+No modifications.

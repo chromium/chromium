@@ -84,7 +84,7 @@ class PartitionedOriginValueMap {
                 const ContentSettingsPattern& secondary_pattern,
                 ContentSettingsType content_type,
                 base::Value value,
-                const RuleMetaData& metadata,
+                RuleMetaData metadata,
                 const PartitionKey& partition_key)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 

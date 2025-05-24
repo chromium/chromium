@@ -11,6 +11,7 @@ desc: |-
 example_value:
 - www.example.com
 - '[*.]example.edu'
+deprecated: true
 features:
   dynamic_refresh: true
   per_profile: true
@@ -24,8 +25,9 @@ schema:
     type: string
   type: array
 supported_on:
-- chrome.*:79-
-- chrome_os:79-
-- android:79-
+# TODO(crbug.com/376084059): Clean up policy and supporting code
+- chrome.*:79-131
+- chrome_os:79-131
+- android:79-131
 tags: []
 type: list

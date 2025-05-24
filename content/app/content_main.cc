@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/public/app/content_main.h"
 
 #include <memory>
@@ -34,7 +39,7 @@
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/embedder_support/switches.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/app/content_main_runner_impl.h"
@@ -80,6 +85,12 @@
 #include "partition_alloc/shim/allocator_shim.h"
 #endif
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_IOS_TVOS)
+#include "base/files/file_path.h"
+#include "base/path_service.h"
+#include "content/shell/common/shell_switches.h"
+#endif
 
 namespace content {
 
@@ -200,11 +211,6 @@ NO_STACK_PROTECTOR int RunContentProcess(
     ContentMainParams params,
     ContentMainRunner* content_main_runner) {
   base::FeatureList::FailOnFeatureAccessWithoutFeatureList();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros is launched with inherited priority. Revert to normal priority
-  // before spawning more processes.
-  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
-#endif
   int exit_code = -1;
 #if BUILDFLAG(IS_MAC)
   base::apple::ScopedNSAutoreleasePool autorelease_pool;
@@ -307,10 +313,23 @@ NO_STACK_PROTECTOR int RunContentProcess(
 #endif
 
 #if BUILDFLAG(IS_IOS)
-    base::ConditionVariable::InitializeFeatures();
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kEnableViewport);
-    command_line->AppendSwitch(switches::kUseMobileUserAgent);
+    command_line->AppendSwitch(embedder_support::kUseMobileUserAgent);
+
+#if BUILDFLAG(IS_IOS_TVOS)
+    // Set tvOS to single-process mode by default.
+    command_line->AppendSwitch(switches::kSingleProcess);
+
+    // On tvOS, local storage is limited and data cannot be written anywhere
+    // other than the cache directory, so `base::DIR_CACHE` is used for
+    // the user data directory.
+    base::FilePath path;
+    if (base::PathService::Get(base::DIR_CACHE, &path) && !path.empty()) {
+      command_line->AppendSwitchASCII(switches::kContentShellUserDataDir,
+                                      path.MaybeAsASCII());
+    }
+#endif
 #endif
 
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && !defined(COMPONENT_BUILD)
@@ -346,8 +365,7 @@ NO_STACK_PROTECTOR int RunContentProcess(
             ::switches::kTraceToConsole)) {
       base::trace_event::TraceConfig trace_config =
           tracing::GetConfigForTraceToConsole();
-      base::trace_event::TraceLog::GetInstance()->SetEnabled(
-          trace_config, base::trace_event::TraceLog::RECORDING_MODE);
+      base::trace_event::TraceLog::GetInstance()->SetEnabled(trace_config);
     }
   }
 

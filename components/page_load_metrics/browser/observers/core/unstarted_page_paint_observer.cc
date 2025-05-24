@@ -9,14 +9,9 @@
 namespace internal {
 
 const char kPageLoadUnstartedPagePaint[] =
-    "PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout";
+    "PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout3";
 
 }  // namespace internal
-
-void RecordUnstartedPagePaint(bool timeout_expired) {
-  base::UmaHistogramBoolean(internal::kPageLoadUnstartedPagePaint,
-                            timeout_expired);
-}
 
 const char* UnstartedPagePaintObserver::GetObserverName() const {
   static const char kName[] = "UnstartedPagePaintObserver";
@@ -32,7 +27,10 @@ UnstartedPagePaintObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  StartUnstartedPagePaintTimer();
+  // Start unstarted page paint timer only if it is visible.
+  if (started_in_foreground) {
+    StartUnstartedPagePaintTimer();
+  }
 
   return CONTINUE_OBSERVING;
 }
@@ -62,21 +60,37 @@ UnstartedPagePaintObserver::OnEnterBackForwardCache(
   // Stop unstarted page paint timer in case that page enters BackForwardCache.
   StopUnstartedPagePaintTimer(false);
 
-  return CONTINUE_OBSERVING;
+  return GetObservePolicy();
 }
 
 void UnstartedPagePaintObserver::OnRestoreFromBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     content::NavigationHandle* navigation_handle) {
-  const page_load_metrics::mojom::PaintTimingPtr& paint_timing =
-      timing.paint_timing;
-
   // Start unstarted page paint timer when page restoring from
   // BackForwardCache and first contentful paint was not yet reported.
-  CHECK(!navigation_timeout_timer_.IsRunning());
-  if (!paint_timing->first_contentful_paint.has_value()) {
+  if (!has_histogram_been_recorded_) {
     StartUnstartedPagePaintTimer();
   }
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+UnstartedPagePaintObserver::OnHidden(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  // Stop unstarted page paint timer in case that page goes to hidden state.
+  StopUnstartedPagePaintTimer(false);
+
+  return GetObservePolicy();
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+UnstartedPagePaintObserver::OnShown() {
+  // Start unstarted page paint timer when page back to shown state
+  // and first contentful paint was not yet reported.
+  if (!has_histogram_been_recorded_) {
+    StartUnstartedPagePaintTimer();
+  }
+
+  return GetObservePolicy();
 }
 
 void UnstartedPagePaintObserver::StartUnstartedPagePaintTimer() {
@@ -91,13 +105,30 @@ void UnstartedPagePaintObserver::StartUnstartedPagePaintTimer() {
 void UnstartedPagePaintObserver::StopUnstartedPagePaintTimer(
     bool first_content_paint) {
   if (navigation_timeout_timer_.IsRunning()) {
-    if (first_content_paint) {
-      RecordUnstartedPagePaint(false);
-    }
     navigation_timeout_timer_.Stop();
+  }
+
+  if (first_content_paint) {
+    RecordUnstartedPagePaint(false);
   }
 }
 
-void UnstartedPagePaintObserver::OnUnstartedPagePaintExpired() const {
+void UnstartedPagePaintObserver::OnUnstartedPagePaintExpired() {
   RecordUnstartedPagePaint(true);
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+UnstartedPagePaintObserver::GetObservePolicy() const {
+  if (has_histogram_been_recorded_) {
+    return STOP_OBSERVING;
+  } else {
+    return CONTINUE_OBSERVING;
+  }
+}
+
+void UnstartedPagePaintObserver::RecordUnstartedPagePaint(
+    bool timeout_expired) {
+  base::UmaHistogramBoolean(internal::kPageLoadUnstartedPagePaint,
+                            timeout_expired);
+  has_histogram_been_recorded_ = true;
 }

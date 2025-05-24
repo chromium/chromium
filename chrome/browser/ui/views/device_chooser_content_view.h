@@ -23,7 +23,7 @@ class LabelButton;
 class TableView;
 class TableViewObserver;
 class Throbber;
-}
+}  // namespace views
 
 // A bubble or dialog view for choosing among several options in a table.
 // Used for WebUSB/WebBluetooth device selection for Chrome and extensions.

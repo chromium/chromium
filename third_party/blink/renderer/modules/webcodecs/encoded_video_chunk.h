@@ -16,6 +16,7 @@
 namespace blink {
 class EncodedVideoChunkInit;
 class ExceptionState;
+class V8EncodedVideoChunkType;
 
 class MODULES_EXPORT EncodedVideoChunk final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -28,7 +29,7 @@ class MODULES_EXPORT EncodedVideoChunk final : public ScriptWrappable {
                                    ExceptionState& exception_state);
 
   // encoded_video_chunk.idl implementation.
-  String type() const;
+  V8EncodedVideoChunkType type() const;
   int64_t timestamp() const;
   std::optional<uint64_t> duration() const;
   uint64_t byteLength() const;

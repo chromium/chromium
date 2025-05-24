@@ -15,16 +15,23 @@ include_rules = [
   "+third_party/skia/include",
   "+third_party/blink/public/mojom/quota",
   "+third_party/blink/public/mojom/badging",
+  "+third_party/blink/public/mojom/persistent_renderer_prefs.mojom.h",
+  "+third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h",
   "+third_party/blink/public/common/client_hints/enabled_client_hints.h",
   "+third_party/blink/public/common/renderer_preferences/renderer_preferences.h",
   "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
   "+third_party/blink/public/common/associated_interfaces/associated_interface_registry.h",
+  "+third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h",
   "+third_party/blink/public/common/permissions/permission_utils.h",
   "+ui/aura",
   "+ui/compositor",
   "+ui/events/keycodes/dom",
 ]
 specific_include_rules = {
+  "headless_bluetooth_delegate_unittest.cc": [
+    "+device/bluetooth/public/cpp/bluetooth_uuid.h",
+    "+third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h",
+  ],
   "headless_browser_main_parts.*": [
     "+components/origin_trials/browser",
   ],
@@ -57,6 +64,10 @@ specific_include_rules = {
   "headless_web_contents_impl.cc": [
     "+components/printing/browser/print_to_pdf",
     "+third_party/blink/public/mojom/window_features",
+  ],
+  "headless_screen_orientation_delegate.*": [
+    "+services/device/public/mojom",
+    "+ui/display/mojom",
   ],
   "command_line_handler.cc": [
     "+third_party/blink/public/common/switches.h",

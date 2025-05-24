@@ -2,7 +2,7 @@ Name: Compact Encoding Detection
 Short Name: ced
 URL: https://github.com/google/compact_enc_det
 Version: 2f40a850bcc5d6f7c1bfa02dbf42ad19d8220dc0
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

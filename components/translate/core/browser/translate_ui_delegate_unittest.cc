@@ -6,11 +6,10 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-
 #include "components/infobars/core/infobar.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -23,7 +22,6 @@
 #include "components/translate/core/browser/mock_translate_ranker.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
-#include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -62,7 +60,7 @@ class TranslateUIDelegateTest : public ::testing::Test {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     language::LanguagePrefs::RegisterProfilePrefs(pref_service_->registry());
     pref_service_->SetString(language::prefs::kAcceptLanguages, std::string());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     pref_service_->SetString(language::prefs::kPreferredLanguages,
                              std::string());
 #endif
@@ -87,7 +85,7 @@ class TranslateUIDelegateTest : public ::testing::Test {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         language::kContentLanguagesInLanguagePicker,
         {{language::kContentLanguagesDisableObserversParam,
-          disableObservers ? "true" : "false"}});
+          base::ToString(disableObservers)}});
     TranslateDownloadManager::GetInstance()->set_application_locale("en");
     std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
     prefs->AddToLanguageList("de", /*force_blocked=*/false);

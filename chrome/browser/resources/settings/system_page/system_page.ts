@@ -11,7 +11,6 @@ import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
 import '../relaunch_confirmation_dialog.js';
@@ -57,9 +56,6 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
 
       isProxyEnforcedByPolicy_: Boolean,
       isProxyDefault_: Boolean,
-      // <if expr="chromeos_lacros">
-      isSecondaryUser_: Boolean,
-      // </if>
 
       // <if expr="_google_chrome and is_win">
       showFeatureNotificationsSetting_: {
@@ -79,21 +75,11 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
     ];
   }
 
-  constructor() {
-    super();
-    // <if expr="chromeos_lacros">
-    this.isSecondaryUser_ = loadTimeData.getBoolean('isSecondaryUser');
-    // </if>
-  }
-
-  prefs: {proxy: chrome.settingsPrivate.PrefObject};
-  private isProxyEnforcedByPolicy_: boolean;
-  private isProxyDefault_: boolean;
-  // <if expr="chromeos_lacros">
-  private isSecondaryUser_: boolean;
-  // </if>
+  declare prefs: {proxy: chrome.settingsPrivate.PrefObject};
+  declare private isProxyEnforcedByPolicy_: boolean;
+  declare private isProxyDefault_: boolean;
   // <if expr="_google_chrome and is_win">
-  private showFeatureNotificationsSetting_: boolean;
+  declare private showFeatureNotificationsSetting_: boolean;
   // </if>
 
   private observeProxyPrefChanged_() {

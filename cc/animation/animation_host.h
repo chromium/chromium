@@ -18,7 +18,6 @@
 #include "cc/base/protected_sequence_synchronizer.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/mutator_host_client.h"
-#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -61,6 +60,12 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   AnimationHost& operator=(const AnimationHost&) = delete;
 
+  using IdToTimelineMap =
+      std::unordered_map<int, scoped_refptr<AnimationTimeline>>;
+  const IdToTimelineMap& timelines() const {
+    return id_to_timeline_map_.Read(*this);
+  }
+
   void AddAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
   void RemoveAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
 
@@ -96,6 +101,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void SetNeedsCommit();
   void SetNeedsPushProperties();
+  void ResetNeedsPushProperties();
   bool needs_push_properties() const {
     return needs_push_properties_.Read(*this);
   }
@@ -178,12 +184,17 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
       const gfx::Vector2dF& scroll_delta,
       const gfx::PointF& max_scroll_offset,
       base::TimeTicks frame_monotonic_time,
-      base::TimeDelta delayed_by) override;
+      base::TimeDelta delayed_by,
+      ElementId element_id) override;
 
-  void ScrollAnimationAbort() override;
+  void ScrollAnimationAbort(ElementId element_id) override;
 
-  ElementId ImplOnlyScrollAnimatingElement() const override;
-  void ImplOnlyScrollAnimatingElementRemoved() override;
+  bool HasImplOnlyScrollAnimatingElement() const override;
+  bool HasImplOnlyAutoScrollAnimatingElement() const override;
+  bool ElementHasImplOnlyScrollAnimation(ElementId) const override;
+  bool IsElementInPropertyTrees(ElementId element_id,
+                                bool commits_to_active) const;
+  void HandleRemovedScrollAnimatingElements(bool commits_to_active) override;
 
   // This should only be called from the main thread.
   ScrollOffsetAnimations& scroll_offset_animations();
@@ -212,17 +223,17 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool HasNativePropertyAnimation() const override;
   bool CurrentFrameHadRAF() const override;
   bool NextFrameHasPendingRAF() const override;
-  PendingThroughputTrackerInfos TakePendingThroughputTrackerInfos() override;
+  PendingCompositorMetricsTrackerInfos
+  TakePendingCompositorMetricsTrackerInfos() override;
   bool HasCanvasInvalidation() const override;
   bool HasJSAnimation() const override;
   bool HasSmilAnimation() const override;
   bool HasViewTransition() const override;
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
-  bool IsAutoScrolling() const override;
 
-  // Starts/stops throughput tracking represented by |sequence_id|.
-  void StartThroughputTracking(TrackedAnimationSequenceId sequence_id);
-  void StopThroughputTracking(TrackedAnimationSequenceId sequnece_id);
+  // Starts/stops metrics tracking represented by `sequence_id`.
+  void StartCompositorMetricsTracking(TrackedAnimationSequenceId sequence_id);
+  void StopCompositorMetricsTracking(TrackedAnimationSequenceId sequence_id);
 
   void SetAnimationCounts(size_t total_animations_count);
   void SetHasCanvasInvalidation(bool has_canvas_invalidation);
@@ -265,8 +276,6 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   ProtectedSequenceReadable<AnimationsList> ticking_animations_;
 
   // A list of all timelines which this host owns.
-  using IdToTimelineMap =
-      std::unordered_map<int, scoped_refptr<AnimationTimeline>>;
   ProtectedSequenceReadable<IdToTimelineMap> id_to_timeline_map_;
 
   // A list of IDs for detached timelines. A timeline may be detached on the
@@ -305,8 +314,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   ProtectedSequenceReadable<bool> has_smil_animation_{false};
   ProtectedSequenceReadable<bool> has_view_transition_{false};
 
-  ProtectedSequenceWritable<PendingThroughputTrackerInfos>
-      pending_throughput_tracker_infos_;
+  ProtectedSequenceWritable<PendingCompositorMetricsTrackerInfos>
+      pending_compositor_metrics_tracker_infos_;
 
   base::WeakPtrFactory<AnimationHost> weak_factory_{this};
 };

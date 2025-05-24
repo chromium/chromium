@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
@@ -49,21 +50,21 @@ ArchivableCredential* TestPasswordCredential() {
                                                   note:note];
 }
 
-ArchivableCredential* TestPasskeyCredential() {
-  return
-      [[ArchivableCredential alloc] initWithFavicon:nil
-                                               gaia:nil
-                                   recordIdentifier:@"recordIdentifier"
-                                             syncId:StringToData("syncId")
-                                           username:@"username"
-                                    userDisplayName:@"userDisplayName"
-                                             userId:StringToData("userId")
-                                       credentialId:StringToData("credentialId")
-                                               rpId:@"rpId"
-                                         privateKey:StringToData("privateKey")
-                                          encrypted:StringToData("encrypted")
-                                       creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+ArchivableCredential* TestPasskeyCredential(bool valid = true) {
+  return [[ArchivableCredential alloc]
+       initWithFavicon:nil
+                  gaia:nil
+      recordIdentifier:@"recordIdentifier"
+                syncId:StringToData("syncIdOfLength16")
+              username:@"username"
+       userDisplayName:@"userDisplayName"
+                userId:StringToData("userId")
+          credentialId:StringToData("credentialId_16_")
+                  rpId:valid ? @"rpId" : nil
+            privateKey:StringToData("privateKey")
+             encrypted:StringToData("encrypted")
+          creationTime:kJan1st2024
+          lastUsedTime:kJan1st2024];
 }
 
 class CredentialProviderMigratorTest : public PlatformTest {
@@ -76,6 +77,7 @@ class CredentialProviderMigratorTest : public PlatformTest {
   scoped_refptr<MockPasswordStoreInterface> mock_store_ =
       base::MakeRefCounted<testing::NiceMock<MockPasswordStoreInterface>>();
   webauthn::TestPasskeyModel test_passkey_model_;
+  const base::HistogramTester histogram_tester_;
 
  private:
   // Mocking time is required for password notes since they are created with the
@@ -94,7 +96,8 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
   id<Credential> credential = TestPasswordCredential();
   [store addCredential:credential];
   [store saveDataWithCompletion:^(NSError* error) {
-    EXPECT_TRUE(error == nil);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
   }];
   EXPECT_EQ(store.credentials.count, 1u);
 
@@ -112,7 +115,8 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
   __block BOOL blockWaitCompleted = false;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
     EXPECT_TRUE(success);
-    EXPECT_FALSE(error);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
     blockWaitCompleted = true;
   }];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
@@ -123,7 +127,7 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
   store =
       [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
                                                             key:store_key_];
-  // Verify credentials are empty
+  // Verify credentials are empty.
   EXPECT_EQ(store.credentials.count, 0u);
 }
 
@@ -149,24 +153,31 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
               passkeyStore:&test_passkey_model_];
   EXPECT_TRUE(migrator);
 
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyCreated, 0);
+
   // Start migration.
   sync_pb::WebauthnCredentialSpecifics expected =
       PasskeyFromCredential(credential);
   __block BOOL blockWaitCompleted = false;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
     EXPECT_TRUE(success);
-    EXPECT_FALSE(error);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
     blockWaitCompleted = true;
   }];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
     return blockWaitCompleted;
   }));
 
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyCreated, 1);
+
   // Reload temp store.
   store =
       [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
                                                             key:store_key_];
-  // Verify credentials are empty
+  // Verify credentials are empty.
   EXPECT_EQ(store.credentials.count, 0u);
 
   // Verify that the credential is migrated.
@@ -182,6 +193,100 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   EXPECT_EQ(passkeys[0].creation_time(), expected.creation_time());
   EXPECT_EQ(passkeys[0].last_used_time_windows_epoch_micros(),
             expected.last_used_time_windows_epoch_micros());
+
+  // Try to only update the last used time.
+  credential.lastUsedTime = kJan1st2024 + 10;
+  [store updateCredential:credential];
+  [store saveDataWithCompletion:^(NSError* error) {
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+  }];
+  EXPECT_EQ(store.credentials.count, 1u);
+
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyUpdated, 0);
+
+  blockWaitCompleted = false;
+  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+    EXPECT_TRUE(success);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+    blockWaitCompleted = true;
+  }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
+    return blockWaitCompleted;
+  }));
+
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyUpdated, 1);
+
+  // Reload temp store.
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  // Verify credentials are empty.
+  EXPECT_EQ(store.credentials.count, 0u);
+
+  // Verify that we still have only 1 passkey and that its last used time was
+  // updated.
+  passkeys = test_passkey_model_.GetAllPasskeys();
+  EXPECT_EQ(passkeys.size(), 1u);
+  EXPECT_EQ(passkeys[0].last_used_time_windows_epoch_micros(),
+            credential.lastUsedTime);
+}
+
+// Tests basic migration for 1 passkey credential.
+TEST_F(CredentialProviderMigratorTest, InvalidPasskeyMigration) {
+  // Create temp store and add 1 credential.
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  id<Credential> invalidCredential = TestPasskeyCredential(/*valid=*/false);
+
+  [store addCredential:invalidCredential];
+  [store saveDataWithCompletion:^(NSError* error) {
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+  }];
+  EXPECT_EQ(store.credentials.count, 1u);
+
+  // Create the migrator to be tested.
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+  EXPECT_TRUE(migrator);
+
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration", PasskeysMigrationStatus::kInvalidPasskey, 0);
+
+  // Start migration.
+  __block BOOL blockWaitCompleted = false;
+  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+    EXPECT_TRUE(success);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+    blockWaitCompleted = true;
+  }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
+    return blockWaitCompleted;
+  }));
+
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration", PasskeysMigrationStatus::kInvalidPasskey, 1);
+
+  // Reload temp store.
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  // Verify credentials are empty.
+  EXPECT_EQ(store.credentials.count, 0u);
+
+  // Verify that the credential is not migrated.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      test_passkey_model_.GetAllPasskeys();
+  EXPECT_EQ(passkeys.size(), 0u);
 }
 
 }  // namespace

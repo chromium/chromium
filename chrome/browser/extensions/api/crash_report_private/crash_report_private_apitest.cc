@@ -93,6 +93,7 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
   const std::optional<MockCrashEndpoint::Report>& last_report() {
     return crash_endpoint_->last_report();
   }
+  void clear_last_report() { crash_endpoint_->clear_last_report(); }
   raw_ptr<const Extension, DanglingUntriaged> extension_;
   std::unique_ptr<MockCrashEndpoint> crash_endpoint_;
   std::unique_ptr<ScopedMockChromeJsErrorReportProcessor> processor_;
@@ -259,12 +260,14 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, SuppressedIfDevtoolsOpen) {
   const std::optional<MockCrashEndpoint::Report>& report = last_report();
 
   // Ensure error is not reported since devtools is open.
+  clear_last_report();
   EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
   ASSERT_FALSE(report);
 
   DevToolsWindowTesting::CloseDevToolsWindow(devtools_window);
 
   // Ensure error is not reported after devtools has been closed.
+  clear_last_report();
   EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
   ASSERT_FALSE(report);
 }
@@ -278,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
       "_generated_background_page.html");
   content::WebContents* web_content =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(NavigateToURL(web_content, extension_context_url));
+  EXPECT_TRUE(content::NavigateToURL(web_content, extension_context_url));
 
   static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({
@@ -316,10 +319,6 @@ using CrashReportPrivateCalledFromSwaTest = ash::SystemWebAppIntegrationTest;
 // window.
 IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
                        CalledFromWebContentsInWebAppWindow) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    // TODO(crbug.com/40781751): Support Crosapi (web apps running in Lacros).
-    return;
-  }
   WaitForTestSystemAppInstall();
   // Set up test server to listen to handle crash reports & serve fake web app
   // content. Note: Creating a |MockCrashEndpoint| starts the server.
@@ -339,7 +338,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
   // Navigate to chrome://media-app which was access to |CrashReportPrivate|
   // from the |WebContents| in the web app window.
   const GURL extension_context_url("chrome://media-app");
-  EXPECT_TRUE(NavigateToURL(web_content, extension_context_url));
+  EXPECT_TRUE(content::NavigateToURL(web_content, extension_context_url));
 
   static constexpr char kTestScript[] = R"(
     chrome.crashReportPrivate.reportError({

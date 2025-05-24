@@ -7,7 +7,7 @@ import 'chrome://scanning/scan_to_select.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {ScanToSelectElement} from 'chrome://scanning/scan_to_select.js';
+import type {ScanToSelectElement} from 'chrome://scanning/scan_to_select.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 

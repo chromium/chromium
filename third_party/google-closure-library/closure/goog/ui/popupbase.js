@@ -519,7 +519,7 @@ goog.ui.PopupBase.prototype.setVisible = function(visible) {
  * Repositions the popup according to the current state.
  * Should be overriden by subclases.
  */
-goog.ui.PopupBase.prototype.reposition = goog.nullFunction;
+goog.ui.PopupBase.prototype.reposition = function() {};
 
 
 /**

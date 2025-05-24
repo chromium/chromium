@@ -14,6 +14,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/stringprintf.h"
@@ -57,7 +58,7 @@ bool GetMACAddressFromIterator(io_iterator_t primary_interface_iterator,
 
   bool success = false;
 
-  bzero(buffer, buffer_size);
+  UNSAFE_TODO(bzero(buffer, buffer_size));
   base::mac::ScopedIOObject<io_object_t> primary_interface;
   while (primary_interface.reset(IOIteratorNext(primary_interface_iterator)),
          primary_interface) {

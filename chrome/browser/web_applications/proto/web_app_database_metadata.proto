@@ -1,0 +1,15 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package web_app.proto;
+
+// Stores metadata about the database to enable non-app storage and operations
+// like migrations.
+message DatabaseMetadata {
+  optional int32 version = 1;
+}

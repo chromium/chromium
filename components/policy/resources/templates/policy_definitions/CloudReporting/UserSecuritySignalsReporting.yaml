@@ -1,0 +1,34 @@
+caption: Enable cloud reporting of security signals in managed profiles
+default: false
+desc: |-
+  This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting of security signals for a particular managed profile.
+
+  When this policy is set to Enabled, it will report security signals about the device, browser and profile to the device management server.
+
+  When this policy is set to Disabled, or is left unset, it will not trigger the collecton and upload of security signals.
+
+  The report contains profile state and usage information, including but not limited to OS version, browser version, installed extensions and applied policies.
+
+  This policy can only be set as cloud user policy.
+features:
+  dynamic_refresh: true
+  per_profile: true
+  cloud_only: true
+  user_only: true
+supported_on:
+- chrome.*:137-
+owners:
+- seblalancette@chromium.org
+- cbe-device-trust-eng@google.com
+example_value: true
+items:
+- caption: Enable user security signals cloud reporting
+  value: true
+- caption: Disable user security signals cloud reporting
+  value: false
+schema:
+  type: boolean
+tags:
+- admin-sharing
+- google-sharing
+type: main

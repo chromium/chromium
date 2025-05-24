@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_inspect_factory.h"
@@ -25,6 +24,8 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_coordinate_system.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -134,8 +135,8 @@ AccessibilityHitTestingBrowserTest::HitTestAndWaitForResultWithEvent(
   ui::BrowserAccessibilityManager* manager =
       GetRootBrowserAccessibilityManager();
 
-  AccessibilityNotificationWaiter event_waiter(
-      shell()->web_contents(), ui::kAXModeComplete, event_to_fire);
+  AccessibilityNotificationWaiter event_waiter(shell()->web_contents(),
+                                               event_to_fire);
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kHitTest;
   action_data.target_point = CSSToFramePoint(point);
@@ -194,8 +195,8 @@ AccessibilityHitTestingBrowserTest::CallCachingAsyncHitTest(
   // Each call to CachingAsyncHitTest results in at least one HOVER
   // event received. Block until we receive it. CachingAsyncHitTestNearestLeaf
   // will call CachingAsyncHitTest.
-  AccessibilityNotificationWaiter hover_waiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kHover);
+  AccessibilityNotificationWaiter hover_waiter(shell()->web_contents(),
+                                               ax::mojom::Event::kHover);
 
   ui::BrowserAccessibility* result =
       GetRootBrowserAccessibilityManager()->CachingAsyncHitTest(screen_point);
@@ -215,8 +216,8 @@ AccessibilityHitTestingBrowserTest::CallNearestLeafNode(
   // Each call to CachingAsyncHitTest results in at least one HOVER
   // event received. Block until we receive it. CachingAsyncHitTest
   // will call CachingAsyncHitTest.
-  AccessibilityNotificationWaiter hover_waiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kHover);
+  AccessibilityNotificationWaiter hover_waiter(shell()->web_contents(),
+                                               ax::mojom::Event::kHover);
   ui::AXPlatformNodeBase* platform_node = nullptr;
   if (manager->GetBrowserAccessibilityRoot()->GetAXPlatformNode()) {
     platform_node =
@@ -244,8 +245,7 @@ void AccessibilityHitTestingBrowserTest::SimulatePinchZoom(
     float desired_page_scale) {
   RenderFrameSubmissionObserver observer(shell()->web_contents());
   AccessibilityNotificationWaiter accessibility_waiter(
-      shell()->web_contents(), ui::AXMode(),
-      ax::mojom::Event::kLocationChanged);
+      shell()->web_contents(), ax::mojom::Event::kLocationChanged);
 
   const gfx::Rect contents_rect = shell()->web_contents()->GetContainerBounds();
   const gfx::Point pinch_position(contents_rect.x(), contents_rect.y());
@@ -318,6 +318,7 @@ class AccessibilityHitTestingCrossProcessBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+    AccessibilityHitTestingBrowserTest::SetUpOnMainThread();
   }
 };
 
@@ -346,7 +347,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/simple_rectangles.html"));
@@ -387,7 +387,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, MAYBE_HitTest) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/simple_rectangles.html"));
@@ -433,8 +432,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, MAYBE_HitTest) {
 // this platform.
 #if !BUILDFLAG(IS_ANDROID)
 
-// crbug.com/1317505: Flaky on Lacros and Linux Wayland
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+// crbug.com/1317505: Flaky on Linux Wayland
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_HitTestInPopup DISABLED_HitTestInPopup
 #else
 #define MAYBE_HitTestInPopup HitTestInPopup
@@ -446,7 +445,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/input-color-with-popup-open.html"));
@@ -456,8 +454,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "color picker");
 
-  AccessibilityNotificationWaiter click_waiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
+  AccessibilityNotificationWaiter click_waiter(shell()->web_contents(),
+                                               ax::mojom::Event::kClicked);
   auto* input = FindNode(ax::mojom::Role::kColorWell, "color picker");
   ASSERT_TRUE(input);
   ui::AXActionData action_data;
@@ -488,7 +486,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 
   // Load the page.
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   const char url_str[] =
       "data:text/html,"
@@ -526,7 +523,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingCrossProcessBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -586,6 +582,115 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingCrossProcessBrowserTest,
   }
 }
 
+class AXActionHandlerForStitchedChildTree : public ui::AXActionHandlerBase {
+ public:
+  explicit AXActionHandlerForStitchedChildTree(
+      const ui::AXTreeManager& child_manager) {
+    SetAXTreeID(child_manager.GetTreeID());
+  }
+
+  AXActionHandlerForStitchedChildTree(
+      const AXActionHandlerForStitchedChildTree&) = delete;
+  AXActionHandlerForStitchedChildTree& operator=(
+      const AXActionHandlerForStitchedChildTree&) = delete;
+  ~AXActionHandlerForStitchedChildTree() override = default;
+
+  const ui::AXActionData& action_data() const { return data_; }
+
+  void PerformAction(const ui::AXActionData& data) override { data_ = data; }
+
+ private:
+  ui::AXActionData data_;
+};
+
+IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
+                       HitTestingInStitchedChildTree) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <div role="link" aria-label="Link"
+            style="height: 100vh; width: 100vw">
+          <p>Text that is replaced by child tree.</p>
+        </div>
+      </body>
+      </html>"
+      )HTML");
+
+  ui::BrowserAccessibility* link = FindNode(ax::mojom::Role::kLink,
+                                            /*name_or_value=*/"Link");
+  ASSERT_NE(nullptr, link);
+  ASSERT_EQ(1u, link->PlatformChildCount());
+  ui::BrowserAccessibility* paragraph = link->PlatformGetChild(0u);
+  ASSERT_NE(nullptr, paragraph);
+  ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph->node()->GetRole());
+
+  //
+  // Set up a child tree that will be stitched into the link making the
+  // enclosed content invisible.
+  //
+
+  ui::AXNodeData root;
+  root.id = -2;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  root.relative_bounds.bounds = gfx::RectF(220, 50);
+
+  ui::AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes = {root};
+  update.has_tree_data = true;
+  update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ASSERT_NE(nullptr, link->manager());
+  update.tree_data.parent_tree_id = link->manager()->GetTreeID();
+  update.tree_data.title = "Generated content";
+
+  auto child_tree = std::make_unique<ui::AXTree>(update);
+  ui::AXTreeManager child_manager(std::move(child_tree));
+  AXActionHandlerForStitchedChildTree child_handler(child_manager);
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kStitchChildTree;
+  ASSERT_NE(nullptr, GetRootBrowserAccessibilityManager());
+  action_data.target_tree_id =
+      GetRootBrowserAccessibilityManager()->GetTreeID();
+  action_data.target_node_id = link->node()->id();
+  action_data.child_tree_id = update.tree_data.tree_id;
+
+  AccessibilityNotificationWaiter stitch_waiter(
+      shell()->web_contents(), ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+  link->AccessibilityPerformAction(action_data);
+  ASSERT_TRUE(stitch_waiter.WaitForNotification());
+
+  gfx::Rect link_bounds = link->GetBoundsRect(
+      ui::AXCoordinateSystem::kRootFrame, ui::AXClippingBehavior::kUnclipped);
+  gfx::Point target_point = FrameToCSSPoint(link_bounds.CenterPoint());
+  base::RunLoop run_loop;
+  ui::AXTreeManager* hit_manager = nullptr;
+  ui::AXNodeID hit_node_id = ui::kInvalidAXNodeID;
+
+  auto hit_callback = [&](ui::AXPlatformTreeManager* manager,
+                          ui::AXNodeID node_id) {
+    hit_manager = manager;
+    hit_node_id = node_id;
+    run_loop.QuitClosure().Run();
+  };
+
+  GetRootBrowserAccessibilityManager()->delegate()->AccessibilityHitTest(
+      target_point, ax::mojom::Event::kClicked, /*opt_request_id=*/2,
+      base::BindLambdaForTesting(hit_callback));
+  run_loop.Run();
+
+  EXPECT_EQ(hit_manager, GetRootBrowserAccessibilityManager());
+  EXPECT_EQ(link->GetId(), hit_node_id);
+  EXPECT_EQ(ax::mojom::Action::kHitTest, child_handler.action_data().action);
+  EXPECT_EQ(2, child_handler.action_data().request_id);
+  EXPECT_EQ(ax::mojom::Event::kClicked,
+            child_handler.action_data().hit_test_event_to_fire);
+  EXPECT_EQ(target_point - link_bounds.OffsetFromOrigin(),
+            child_handler.action_data().target_point);
+}
+
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
                        CachingAsyncHitTestMissesElement) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -593,7 +698,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/simple_rectangles_with_curtain.html"));
@@ -649,7 +753,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   GURL url(embedded_test_server()->GetURL(
@@ -695,7 +798,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   GURL url(embedded_test_server()->GetURL(
@@ -748,7 +850,6 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/simple_rectangles_with_curtain.html"));
@@ -809,7 +910,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/text_ranges.html"));

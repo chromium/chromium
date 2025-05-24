@@ -12,18 +12,18 @@
 #include <wrl/client.h>
 
 #include <array>
-#include <map>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/win/atl.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/accessibility/platform/ichromeaccessible.h"
@@ -316,20 +316,35 @@ enum {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(                     \
       "Accessibility.Performance.WinAPIs." #enum_value)
 
+// Macro to record performance metrics for Windows Accessibility APIs.
+#define WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(enum_value)          \
+  DCHECK(GetDelegate());                                                 \
+  absl::Cleanup record_metric =                                          \
+      [node = (GetDelegate() ? GetDelegate()->node() : nullptr),         \
+       timer = base::ElapsedTimer()] {                                   \
+        base::UmaHistogramMicrosecondsTimes(                             \
+            node && !node->IsView()                                      \
+                ? std::string_view("Accessibility.Performance.WinAPIs2." \
+                                   "WebContents." #enum_value)           \
+                : std::string_view("Accessibility.Performance.WinAPIs2." \
+                                   "View." #enum_value),                 \
+            timer.Elapsed());                                            \
+      }
+
 //
 // Macros to use at the top of any AXPlatformNodeWin (or derived class) method
 // that implements a UIA COM interface. The error code UIA_E_ELEMENTNOTAVAILABLE
 // signals to the OS that the object is no longer valid and no further methods
 // should be called on it.
 //
-#define UIA_VALIDATE_CALL()               \
-  if (!AXPlatformNodeBase::GetDelegate()) \
+#define UIA_VALIDATE_CALL()              \
+  if (AXPlatformNodeBase::IsDestroyed()) \
     return UIA_E_ELEMENTNOTAVAILABLE;
-#define UIA_VALIDATE_CALL_1_ARG(arg)      \
-  if (!AXPlatformNodeBase::GetDelegate()) \
-    return UIA_E_ELEMENTNOTAVAILABLE;     \
-  if (!arg)                               \
-    return E_INVALIDARG;                  \
+#define UIA_VALIDATE_CALL_1_ARG(arg)     \
+  if (AXPlatformNodeBase::IsDestroyed()) \
+    return UIA_E_ELEMENTNOTAVAILABLE;    \
+  if (!arg)                              \
+    return E_INVALIDARG;                 \
   *arg = {};
 
 // A helper for tracing calls for functions implementing accessibility COM
@@ -345,35 +360,8 @@ class VariantVector;
 
 namespace ui {
 
+class AXFragmentRootWin;
 class AXPlatformNodeWin;
-class AXPlatformRelationWin;
-
-// A simple interface for a class that wants to be notified when Windows
-// accessibility APIs are used by a client, a strong indication that full
-// accessibility support should be enabled.
-class COMPONENT_EXPORT(AX_PLATFORM) WinAccessibilityAPIUsageObserver {
- public:
-  WinAccessibilityAPIUsageObserver();
-  virtual ~WinAccessibilityAPIUsageObserver();
-  virtual void OnMSAAUsed() = 0;
-  virtual void OnBasicIAccessible2Used() = 0;
-  virtual void OnAdvancedIAccessible2Used() = 0;
-  virtual void OnScreenReaderHoneyPotQueried() = 0;
-  virtual void OnAccNameCalled() = 0;
-  virtual void OnBasicUIAutomationUsed() = 0;
-  virtual void OnAdvancedUIAutomationUsed() = 0;
-  virtual void OnUIAutomationIdRequested() = 0;
-  virtual void OnProbableUIAutomationScreenReaderDetected() = 0;
-  virtual void OnTextPatternRequested() = 0;
-  virtual void StartFiringUIAEvents() = 0;
-  virtual void EndFiringUIAEvents() = 0;
-};
-
-// Get an observer list that allows modules across the codebase to
-// listen to when usage of Windows accessibility APIs is detected.
-extern COMPONENT_EXPORT(
-    AX_PLATFORM) base::ObserverList<WinAccessibilityAPIUsageObserver>::
-    Unchecked& GetWinAccessibilityAPIUsageObserverList();
 
 // Used to simplify calling StartFiringUIAEvents and EndFiringEvents
 class COMPONENT_EXPORT(AX_PLATFORM)
@@ -383,8 +371,8 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   ~WinAccessibilityAPIUsageScopedUIAEventsNotifier();
 };
 
-class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
-    uuid("26f5641a-246d-457b-a96d-07f3fae6acf2")) AXPlatformNodeWin
+class COMPONENT_EXPORT(AX_PLATFORM)
+    __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2")) AXPlatformNodeWin
     : public SequenceAffineComObjectRoot,
       public IDispatchImpl<IAccessible2_4,
                            &IID_IAccessible2_4,
@@ -461,11 +449,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
     COM_INTERFACE_ENTRY(IServiceProvider)
   END_COM_MAP()
 
-  ~AXPlatformNodeWin() override;
-
-  // Clear any AXPlatformRelationWin nodes owned by this node.
-  void ClearOwnRelations();
-
   // AXPlatformNode overrides.
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
@@ -483,8 +466,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // consumer.
   virtual void OnReferenced();
 
-  // Invoked when the instance is fully dereferenced. This generally means that
-  // an accessibility consumer has released its last reference to the instance.
+  // Invoked when the instance loses its last reference before being disposed.
+  // This generally means that an accessibility consumer has released its last
+  // reference to the instance. This method will not be called if external
+  // references are held when the instance is disposed.
   virtual void OnDereferenced();
 
   //
@@ -553,9 +538,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   IFACEMETHODIMP get_accValue(VARIANT var_id, BSTR* value) override;
   IFACEMETHODIMP put_accValue(VARIANT var_id, BSTR new_value) override;
 
-  // IAccessible methods not implemented.
+  // Retrieve or set the selection.
   IFACEMETHODIMP get_accSelection(VARIANT* selected) override;
   IFACEMETHODIMP accSelect(LONG flags_sel, VARIANT var_id) override;
+
+  // IAccessible methods not implemented.
   IFACEMETHODIMP get_accHelpTopic(BSTR* help_file,
                                   VARIANT var_id,
                                   LONG* topic_id) override;
@@ -1191,6 +1178,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Clear the computed hypertext.
   void ResetComputedHypertext();
 
+  bool HasEventListenerForEvent(EVENTID event_id);
+  bool HasEventListenerForProperty(PROPERTYID property_id);
+
+  // Firing a UIA event can cause UIA to call back into our APIs, don't
+  // consider this to be usage.
+  static void PauseAXModeChanges(bool pause) { pause_ax_mode_changes_ = pause; }
+
   // Convert a mojo event to an MSAA event. Exposed for testing.
   static std::optional<DWORD> MojoEventToMSAAEvent(ax::mojom::Event event);
 
@@ -1201,11 +1195,21 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   static std::optional<PROPERTYID> MojoEventToUIAProperty(
       ax::mojom::Event event);
 
+  // Returns
+  // 1. The AXPlatformNodeBase instance count (expected to equal the dormant +
+  //    live counts).
+  // 2. The number of dormant platform nodes.
+  // 3. The number of live platform nodes.
+  // 4. The number of ghost platform nodes.
+  // See the comments in ax_platform_node_win.cc for descriptions of 2-4.
+  static std::tuple<size_t, size_t, size_t, size_t> GetCountsForTesting();
+
  protected:
   AXPlatformNodeWin();
+  ~AXPlatformNodeWin() override;
 
   // AXPlatformNode overrides.
-  void Init(AXPlatformNodeDelegate* delegate) override;
+  void Init(AXPlatformNodeDelegate& delegate) override;
 
   // This is hard-coded; all products based on the Chromium engine will have the
   // same framework name, so that assistive technology can detect any
@@ -1243,9 +1247,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // AXPlatformNodeBase overrides.
   void Dispose() override;
 
-  // Relationships between this node and other nodes.
-  std::vector<Microsoft::WRL::ComPtr<AXPlatformRelationWin>> relations_;
-
   // These protected methods are still used by BrowserAccessibilityComWin. At
   // some point post conversion, we can probably move these to be private
   // methods.
@@ -1275,6 +1276,16 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // It's okay for input to be the same as output.
   static void SanitizeStringAttributeForIA2(const std::string& input,
                                             std::string* output);
+
+  // Turn on AXMode::kWebContent if in web content, otherwise just kNativeAPIs.
+  void OnPropertiesUsed() const;
+
+  // Turn on AXMode::kExtendedProperties if in web content.
+  void OnExtendedPropertiesUsed() const;
+
+  // Turn on AXMode::kInlineTextBoxes if in web content.
+  void OnInlineTextBoxesUsed() const;
+
   FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeWinTest,
                            SanitizeStringAttributeForIA2);
 
@@ -1299,6 +1310,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
     LONG control_type;
     const wchar_t* aria_role;
   };
+
+  AXFragmentRootWin* GetAXFragmentRootWin();
 
   AXPlatformNodeWin* GetParentPlatformNodeWin() const;
 
@@ -1532,17 +1545,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
 
   // Fires UIA text edit event about composition (active or committed)
   void FireUiaTextEditTextChangedEvent(
-      const gfx::Range& range,
       const std::wstring& active_composition_text,
       bool is_composition_committed);
 
-  // Notifies observers that basic MSAA usage was detected. Only some of the
-  // APIs were chosen to avoid accessibility being enabled unnecessarily or
-  // unexpectedly in a test environment, while still ensuring that clients that
-  // only use MSAA/IAccessible have a way to turn on accessibility.
-  void NotifyObserverForMSAAUsage() const;
-
-  void NotifyAddAXModeFlagsForIA2(const uint32_t ax_modes) const;
   void NotifyAPIObserverForPatternRequest(PATTERNID pattern_id) const;
   void NotifyAPIObserverForPropertyRequest(PROPERTYID property_id) const;
 
@@ -1563,8 +1568,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Start and end offsets of an active composition
   gfx::Range active_composition_range_;
 
-  friend AXPlatformNode* AXPlatformNode::Create(
-      AXPlatformNodeDelegate* delegate);
+  friend AXPlatformNode::Pointer AXPlatformNode::Create(
+      AXPlatformNodeDelegate& delegate);
+
+  static bool pause_ax_mode_changes_;
 };
 
 }  // namespace ui

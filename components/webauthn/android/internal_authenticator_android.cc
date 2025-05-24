@@ -4,6 +4,9 @@
 
 #include "components/webauthn/android/internal_authenticator_android.h"
 
+#include <jni.h>
+
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,8 +15,13 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -30,11 +38,18 @@ namespace webauthn {
 
 InternalAuthenticatorAndroid::InternalAuthenticatorAndroid(
     content::RenderFrameHost* render_frame_host)
-    : render_frame_host_id_(render_frame_host->GetGlobalId()) {
+    : render_frame_host_id_(render_frame_host
+                                ? render_frame_host->GetGlobalId()
+                                : content::GlobalRenderFrameHostId()) {
   JNIEnv* env = AttachCurrentThread();
-  java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
-      env, reinterpret_cast<intptr_t>(this),
-      render_frame_host->GetJavaRenderFrameHost());
+  if (render_frame_host) {
+    java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
+        env, reinterpret_cast<intptr_t>(this),
+        render_frame_host->GetJavaRenderFrameHost());
+  } else {
+    java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
+        env, reinterpret_cast<intptr_t>(this));
+  }
 }
 
 InternalAuthenticatorAndroid::~InternalAuthenticatorAndroid() {
@@ -51,7 +66,7 @@ void InternalAuthenticatorAndroid::SetEffectiveOrigin(
   DCHECK(!obj.is_null());
 
   Java_InternalAuthenticator_setEffectiveOrigin(env, obj,
-                                                origin.ToJavaObject());
+                                                origin.ToJavaObject(env));
 }
 
 void InternalAuthenticatorAndroid::SetPaymentOptions(
@@ -89,7 +104,7 @@ void InternalAuthenticatorAndroid::MakeCredential(
 
 void InternalAuthenticatorAndroid::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-    blink::mojom::Authenticator::GetAssertionCallback callback) {
+    GetAssertionCallback callback) {
   JNIEnv* env = AttachCurrentThread();
   JavaRef<jobject>& obj = GetJavaObject();
   DCHECK(!obj.is_null());
@@ -163,7 +178,7 @@ void InternalAuthenticatorAndroid::InvokeMakeCredentialResponse(
 
   // |byte_buffer| may be null if authentication failed.
   if (byte_buffer) {
-    auto span = base::android::JavaByteBufferToSpan(env, byte_buffer);
+    auto span = base::android::JavaByteBufferToSpan(env, byte_buffer.obj());
     blink::mojom::MakeCredentialAuthenticatorResponse::Deserialize(
         span.data(), span.size(), &response);
   }
@@ -185,7 +200,7 @@ void InternalAuthenticatorAndroid::InvokeGetAssertionResponse(
 
   // |byte_buffer| may be null if authentication failed.
   if (byte_buffer) {
-    auto span = base::android::JavaByteBufferToSpan(env, byte_buffer);
+    auto span = base::android::JavaByteBufferToSpan(env, byte_buffer.obj());
     blink::mojom::GetAssertionAuthenticatorResponse::Deserialize(
         span.data(), span.size(), &response);
   }
@@ -216,12 +231,7 @@ void InternalAuthenticatorAndroid::InvokeGetMatchingCredentialIdsResponse(
 }
 
 JavaRef<jobject>& InternalAuthenticatorAndroid::GetJavaObject() {
-  if (java_internal_authenticator_ref_.is_null()) {
-    JNIEnv* env = AttachCurrentThread();
-    java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
-        env, reinterpret_cast<intptr_t>(this),
-        GetRenderFrameHost()->GetJavaRenderFrameHost());
-  }
+  CHECK(java_internal_authenticator_ref_);
   return java_internal_authenticator_ref_;
 }
 

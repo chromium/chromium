@@ -295,11 +295,11 @@ TEST_F(SecureChannelSharedResourceSchedulerTest, EdgeCases) {
   DeviceIdPair pair("remoteId", "localId");
 
   // Cannot update item priority before scheduling it.
-  EXPECT_DCHECK_DEATH(
+  EXPECT_NOTREACHED_DEATH(
       scheduler()->UpdateRequestPriority(pair, ConnectionPriority::kLow));
 
   // Cannot remove item before scheduling it.
-  EXPECT_DCHECK_DEATH(scheduler()->RemoveScheduledRequest(pair));
+  EXPECT_NOTREACHED_DEATH(scheduler()->RemoveScheduledRequest(pair));
 }
 
 }  // namespace ash::secure_channel

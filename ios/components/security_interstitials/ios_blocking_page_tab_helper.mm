@@ -14,8 +14,6 @@
 
 namespace security_interstitials {
 
-WEB_STATE_USER_DATA_KEY_IMPL(IOSBlockingPageTabHelper)
-
 #pragma mark - IOSBlockingPageTabHelper
 
 IOSBlockingPageTabHelper::IOSBlockingPageTabHelper(web::WebState* web_state)
@@ -45,10 +43,15 @@ IOSSecurityInterstitialPage* IOSBlockingPageTabHelper::GetCurrentBlockingPage()
 
 void IOSBlockingPageTabHelper::OnBlockingPageCommandReceived(
     SecurityInterstitialCommand command) {
-  if (!blocking_page_for_currently_committed_navigation_)
+  if (!blocking_page_for_currently_committed_navigation_) {
     return;
+  }
 
   blocking_page_for_currently_committed_navigation_->HandleCommand(command);
+}
+
+void IOSBlockingPageTabHelper::UpdateForBlockingPageDismissed() {
+  blocking_page_for_currently_committed_navigation_->WasDismissed();
 }
 
 void IOSBlockingPageTabHelper::UpdateForFinishedNavigation(
@@ -76,10 +79,24 @@ IOSBlockingPageTabHelper::CommittedNavigationIDListener::
     ~CommittedNavigationIDListener() = default;
 
 void IOSBlockingPageTabHelper::CommittedNavigationIDListener::
+    DidStartNavigation(web::WebState* web_state,
+                       web::NavigationContext* navigation_context) {
+  IOSSecurityInterstitialPage* page = tab_helper_->GetCurrentBlockingPage();
+  if (page && (navigation_context->GetPageTransition() &
+               ui::PAGE_TRANSITION_FORWARD_BACK)) {
+    // Interstitial page would be the last page shown so looking for this page
+    // transition would mean that a user is using the back button and is
+    // leaving the interstitial page.
+    tab_helper_->UpdateForBlockingPageDismissed();
+  }
+}
+
+void IOSBlockingPageTabHelper::CommittedNavigationIDListener::
     DidFinishNavigation(web::WebState* web_state,
                         web::NavigationContext* navigation_context) {
-  if (navigation_context->IsSameDocument())
+  if (navigation_context->IsSameDocument()) {
     return;
+  }
 
   tab_helper_->UpdateForFinishedNavigation(
       navigation_context->GetNavigationId(),
@@ -101,6 +118,13 @@ void IOSBlockingPageTabHelper::CommittedNavigationIDListener::WebStateDestroyed(
     web::WebState* web_state) {
   DCHECK(scoped_observation_.IsObservingSource(web_state));
   scoped_observation_.Reset();
+
+  IOSSecurityInterstitialPage* page = tab_helper_->GetCurrentBlockingPage();
+  if (page) {
+    // Logs closing the tab as `DONT_PROCEED` since an interstitial page is
+    // being dismissed.
+    tab_helper_->UpdateForBlockingPageDismissed();
+  }
 }
 
 }  // namespace security_interstitials

@@ -25,9 +25,9 @@ import {clientImplementationsForTesting, createClosureReleases} from './create_c
 import {Change, GitClient} from './git_client';
 import {GitHubClient} from './github_client';
 
-/** The fake GitHub API token to use in tests. */
+/** A fake GitHub API token to use in tests. */
 const FAKE_TOKEN = 'my-github-token';
-/** The fake GitHub Release URL to use in tests. */
+/** A fake GitHub Release URL to use in tests. */
 const FAKE_RELEASE_URL = 'http://my-github-release';
 /** A fake rollback hash used in several tests. */
 const FAKE_ROLLBACK_HASH = '0123456701234567012345670123456701234567';
@@ -59,7 +59,7 @@ function stripIndentForReleaseBody(
     output += strings[i] + `${subs[i]}`;
   }
   output += strings[strings.length - 1];
-  return output.trimStart().split('\n').map(str => str.trim()).join('\n');
+  return output.trimStart().split('\n').map((str) => str.trim()).join('\n');
 }
 
 /**
@@ -69,23 +69,26 @@ function stripIndentForReleaseBody(
  *                          GitHubClient#getLatestRelease is called.
  * @param fakeGitCommits An array of objects that describe commit data returned
  *                    by GitClient instance methods.
+ * @param fakeRecentDrafts An array of recent drafts to return when
+ *     GitHubClient#getRecentDrafts is called.
  */
 function spyOnClients(
-    fakeLatestReleaseHash: string, fakeGitCommits: FakeGitData[]) {
+    fakeLatestReleaseHash: string, fakeGitCommits: FakeGitData[],
+    fakeRecentDrafts: Array<{tagName: string; id: number}> = []) {
   // Validate that no hashes are the same in `fakeGitCommits`.
   assert.strictEqual(
-      new Set([...fakeGitCommits.map(x => x.hash)]).size,
+      new Set([...fakeGitCommits.map((x) => x.hash)]).size,
       fakeGitCommits.length);
 
   // Add a `body` to objects that are missing it.
   const gitCommits: Change[] =
-      fakeGitCommits.map(commit => Object.assign({body: ''}, commit));
+      fakeGitCommits.map((commit) => Object.assign({body: ''}, commit));
   // Make GitClient#listCommits list commits in `fakeGitCommits`.
   spyOn(GitClient.prototype, 'listCommits').and.callFake(async ({from, to}) => {
     assert.strictEqual(to, 'HEAD');
     // + 1 because listCommits excludes `from`.
     return gitCommits.slice(
-        gitCommits.findIndex(commit => commit.hash === from) + 1);
+        gitCommits.findIndex((commit) => commit.hash === from) + 1);
   });
 
   // Make GitClient#getFile return a minimal package.json with data from
@@ -94,7 +97,7 @@ function spyOnClients(
       .and.callFake(async (commitish, file) => {
         assert.strictEqual(file, 'package.json');
         const {pJsonVersion} =
-            fakeGitCommits.find(commit => commit.hash === commitish);
+            fakeGitCommits.find((commit) => commit.hash === commitish);
         return JSON.stringify({version: pJsonVersion});
       });
 
@@ -104,6 +107,9 @@ function spyOnClients(
   // Make GitHubClient#getLatestRelease return `FAKE_RELEASE_URL`.
   spyOn(GitHubClient.prototype, 'draftRelease')
       .and.returnValue(Promise.resolve(FAKE_RELEASE_URL));
+  // Make GitHubClient#getLatestRelease return `fakeRecentDrafts`.
+  spyOn(GitHubClient.prototype, 'getRecentDrafts')
+      .and.returnValue(Promise.resolve(fakeRecentDrafts));
 }
 
 describe('createClosureReleases', () => {
@@ -534,7 +540,7 @@ describe('createClosureReleases', () => {
         hash: '01',
         pJsonVersion: '20201009.0.0',
         message: 'commit 1',
-        body: 'RELNOTES: Stuff happened'
+        body: 'RELNOTES: Stuff happened',
       },
       {hash: '02', pJsonVersion: '20201010.0.0', message: ''},
     ]);
@@ -548,4 +554,45 @@ describe('createClosureReleases', () => {
       `,
     });
   });
+
+  it('updates a draft rather than create a new one with the same tag',
+     async () => {
+       spyOnClients(
+           '00',
+           [
+             {hash: '00', pJsonVersion: '20201009.0.0', message: ''},
+             {hash: '01', pJsonVersion: '20201010.0.0', message: ''},
+           ],
+           [{tagName: 'v20201010', id: 314159}]);
+       spyOn(clientImplementationsForTesting, 'GitHubClient').and.callThrough();
+       await createClosureReleases(FAKE_TOKEN);
+       expect(GitHubClient.prototype.getRecentDrafts).toHaveBeenCalled();
+       expect(GitHubClient.prototype.draftRelease).toHaveBeenCalledOnceWith({
+         name: 'Closure Library v20201010',
+         tagName: 'v20201010',
+         commit: '01',
+         body: 'No release notes.',
+         id: 314159,
+       });
+     });
+
+  it('creates a new draft rather than update one with a different tag',
+     async () => {
+       spyOnClients(
+           '00',
+           [
+             {hash: '00', pJsonVersion: '20201009.0.0', message: ''},
+             {hash: '01', pJsonVersion: '20201011.0.0', message: ''},
+           ],
+           [{tagName: 'v20201010', id: 314159}]);
+       spyOn(clientImplementationsForTesting, 'GitHubClient').and.callThrough();
+       await createClosureReleases(FAKE_TOKEN);
+       expect(GitHubClient.prototype.getRecentDrafts).toHaveBeenCalled();
+       expect(GitHubClient.prototype.draftRelease).toHaveBeenCalledOnceWith({
+         name: 'Closure Library v20201011',
+         tagName: 'v20201011',
+         commit: '01',
+         body: 'No release notes.',
+       });
+     });
 });

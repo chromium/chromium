@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 
 #include "base/feature_list.h"
@@ -14,7 +9,6 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -27,6 +21,7 @@
 #include "components/strings/grit/components_branded_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/webui/webui_util.h"
 
 IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   auto* profile = Profile::FromWebUI(web_ui);
@@ -34,20 +29,10 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIIntroHost);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kIntroResources, kIntroResourcesSize),
-      IDR_INTRO_INTRO_HTML);
+  webui::SetupWebUIDataSource(source, kIntroResources, IDR_INTRO_INTRO_HTML);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   int title_id = IDS_FRE_SIGN_IN_TITLE_0;
-  int backupCardDescription =
-      base::FeatureList::IsEnabled(switches::kExplicitBrowserSigninUIOnDesktop)
-          ? IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION
-          : IDS_FRE_BACKUP_CARD_DESCRIPTION;
-
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  int title_id = IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE;
-#endif
+  int backupCardDescription = IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION;
 
   // Setting the title here instead of relying on the one provided from the
   // page itself makes it available much earlier, and avoids having to fallback
@@ -56,7 +41,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   web_ui->OverrideTitle(l10n_util::GetStringUTF16(title_id));
 
   webui::LocalizedString localized_strings[] = {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       {"pageTitle", title_id},
       {"pageSubtitle", IDS_FRE_SIGN_IN_SUBTITLE_0},
       {"devicesCardTitle", IDS_FRE_DEVICES_CARD_TITLE},
@@ -75,10 +59,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
        IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT},
       {"defaultBrowserSetAsDefault", IDS_FRE_DEFAULT_BROWSER_SET_AS_DEFAULT},
       {"defaultBrowserSkip", IDS_FRE_DEFAULT_BROWSER_SKIP},
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      {"proceedLabel", IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL},
-#endif
   };
   source->AddLocalizedStrings(localized_strings);
 
@@ -95,11 +75,8 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
   source->AddResourcePath("tangible_sync_style_shared.css.js",
                           IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS);
-  source->AddResourcePath("tangible_sync_style_shared_lit.css.js",
-                          IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_LIT_CSS_JS);
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   source->AddBoolean("isDeviceManaged", is_device_managed);
 
   // Setup chrome://intro/default-browser UI.
@@ -112,14 +89,13 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath("images/gshield.svg", IDR_GSHIELD_ICON_SVG);
 #endif
-#endif
 
   // Unretained ok: `this` owns the handler.
   auto intro_handler = std::make_unique<IntroHandler>(
       base::BindRepeating(&IntroUI::HandleSigninChoice, base::Unretained(this)),
       base::BindOnce(&IntroUI::HandleDefaultBrowserChoice,
                      base::Unretained(this)),
-      is_device_managed);
+      is_device_managed, chrome::kChromeUIIntroHost);
   intro_handler_ = intro_handler.get();
   web_ui->AddMessageHandler(std::move(intro_handler));
 }
@@ -134,9 +110,7 @@ void IntroUI::SetSigninChoiceCallback(IntroSigninChoiceCallback callback) {
   DCHECK(!callback->is_null());
   signin_choice_callback_ = std::move(callback);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   intro_handler_->ResetIntroButtons();
-#endif
 }
 
 void IntroUI::SetDefaultBrowserCallback(DefaultBrowserCallback callback) {
@@ -163,6 +137,10 @@ void IntroUI::HandleDefaultBrowserChoice(DefaultBrowserChoice choice) {
   } else {
     std::move(default_browser_callback_.value()).Run(choice);
   }
+}
+
+void IntroUI::SetCanPinToTaskbar(bool can_pin) {
+  intro_handler_->SetCanPinToTaskbar(can_pin);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(IntroUI)

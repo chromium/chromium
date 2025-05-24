@@ -64,8 +64,9 @@ sessions::LiveTabContext* TabModel::GetLiveTabContext() const {
 
 content::WebContents* TabModel::GetActiveWebContents() const {
   int active_index = GetActiveIndex();
-  if (active_index == INVALID_TAB_INDEX)
+  if (active_index == INVALID_TAB_INDEX) {
     return nullptr;
+  }
   return GetWebContentsAt(active_index);
 }
 
@@ -73,8 +74,9 @@ void TabModel::BroadcastSessionRestoreComplete() {
   sync_sessions::SyncSessionsWebContentsRouter* router =
       sync_sessions::SyncSessionsWebContentsRouterFactory::GetForProfile(
           GetProfile());
-  if (router)
+  if (router) {
     router->NotifySessionRestoreComplete();
+  }
 
   RecordActualSyncedTabsHistogram();
 }

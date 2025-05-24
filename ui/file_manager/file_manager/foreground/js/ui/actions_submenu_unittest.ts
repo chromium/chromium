@@ -61,7 +61,7 @@ export function testCustomActionRendering() {
   submenu.setActionsModel(
       new MockActionsModel({id: new MockActionModel('title')}) as unknown as
       ActionsModel);
-  const item = menu.querySelector('cr-menu-item') as MenuItem;
+  const item = menu.querySelector<MenuItem>('cr-menu-item')!;
   assertTrue(!!item);
   assertEquals('title', item.textContent);
   assertEquals(null, item.command);
@@ -72,7 +72,7 @@ export function testCommandActionRendering() {
       new MockActionsModel(
           {SAVE_FOR_OFFLINE: new MockActionModel('save for offline!')}) as
       unknown as ActionsModel);
-  const item = menu.querySelector('cr-menu-item') as MenuItem;
+  const item = menu.querySelector<MenuItem>('cr-menu-item')!;
   assertTrue(!!item);
   assertEquals('Toggle pinned', item.textContent);
   assertEquals('toggle-pinned', item.command?.id);

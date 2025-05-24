@@ -4,8 +4,8 @@
 
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
@@ -40,8 +40,10 @@ bool UseCounterFeature::IsValid() const {
     case mojom::UseCounterFeatureType::kPermissionsPolicyViolationEnforce:
     case mojom::UseCounterFeatureType::kPermissionsPolicyHeader:
     case mojom::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
+    case mojom::UseCounterFeatureType::
+        kPermissionsPolicyEnabledPrivacySensitive:
       return value_ <= static_cast<UseCounterFeature::EnumValue>(
-                           mojom::PermissionsPolicyFeature::kMaxValue);
+                           network::mojom::PermissionsPolicyFeature::kMaxValue);
   }
 }
 

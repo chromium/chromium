@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] div group with aria-labeledby
+  assert_equals: <div role="group" aria-labeledby="h" class="ex" data-expectedlabel="" data-testname="div group with aria-labeledby">\n  <h2 id="h">first heading</h2>\n  <p>text inside div group</p>\n</div> expected "" but got "first heading"
+[FAIL] div group with aria-label and aria-labeledby
+  assert_equals: <div role="group" aria-label="self label" id="g2" aria-labeledby="g2 h2" class="ex" data-expectedlabel="self label" data-testname="div group with aria-label and aria-labeledby">\n  <h2 id="h2">+ first heading</h2>\n  <p>text inside div group</p>\n</div> expected "self label" but got "self label + first heading"
+Harness: the test ran to completion.
+

@@ -41,13 +41,13 @@ class SyncSessionDurationsMetricsRecorder
   SigninStatus GetSigninStatus() const;
 
   // Returns whether the user is syncing.
-  // Note: this is not the same as |sync_status_|.
-  // |sync_status_| says ON (kind of like saying "yes, syncing") even if
+  // Note: this is not the same as `sync_status_`.
+  // `sync_status_` says ON (kind of like saying "yes, syncing") even if
   // syncing is paused because the user signed out (i.e., the account is in an
   // error state).  IsSyncing() returns false in those cases.
   bool IsSyncing() const;
 
-  // Informs this service that a session started at |session_start| time.
+  // Informs this service that a session started at `session_start` time.
   void OnSessionStarted(base::TimeTicks session_start);
   void OnSessionEnded(base::TimeDelta session_length);
 
@@ -70,6 +70,8 @@ class SyncSessionDurationsMetricsRecorder
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  private:
   // The state the feature is in. The state starts as UNKNOWN. After it moves

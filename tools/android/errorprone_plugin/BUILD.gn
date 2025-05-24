@@ -13,10 +13,12 @@ java_binary("errorprone_plugin") {
     # Turned off because of existing code which fails the check
     # "src/org/chromium/tools/errorprone/plugin/NoContextGetApplicationContext.java",
     "src/org/chromium/tools/errorprone/plugin/AndroidNullableCheck.java",
+    "src/org/chromium/tools/errorprone/plugin/ChromeNullAwayLibraryModel.java",
     "src/org/chromium/tools/errorprone/plugin/NoAndroidAsyncTaskCheck.java",
     "src/org/chromium/tools/errorprone/plugin/NoDynamicStringsInTraceEventCheck.java",
     "src/org/chromium/tools/errorprone/plugin/NoRedundantFieldInitCheck.java",
     "src/org/chromium/tools/errorprone/plugin/NoResourcesGetColor.java",
+    "src/org/chromium/tools/errorprone/plugin/NoStreams.java",
     "src/org/chromium/tools/errorprone/plugin/NoSynchronizedMethodCheck.java",
     "src/org/chromium/tools/errorprone/plugin/NoSynchronizedThisCheck.java",
     "src/org/chromium/tools/errorprone/plugin/TestClassNameCheck.java",
@@ -26,6 +28,11 @@ java_binary("errorprone_plugin") {
   # Necessary to avoid dependency cycle
   enable_errorprone = false
   enable_bytecode_checks = false
+
+  # GN adds nullaway.jar when nullaway is enabled, so add it as a
+  # build-time-only dep here.
+  input_jars_paths =
+      [ "//third_party/android_build_tools/nullaway/cipd/nullaway.jar" ]
 
   deps = [
     "//build/android:build_java",

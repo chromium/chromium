@@ -1,9 +1,10 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "chrome/browser/ui/ash/device_scheduled_reboot/scheduled_reboot_dialog.h"
+
 #include <memory>
 
-#include "chrome/browser/ui/ash/device_scheduled_reboot/scheduled_reboot_dialog.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/test/browser_task_environment.h"
@@ -18,7 +19,7 @@ class ScheduledRebootDialogTest : public views::ViewsTestBase {
             std::make_unique<content::BrowserTaskEnvironment>(
                 content::BrowserTaskEnvironment::MainThreadType::UI,
                 content::BrowserTaskEnvironment::TimeSource::MOCK_TIME))) {}
-  ~ScheduledRebootDialogTest() override {}
+  ~ScheduledRebootDialogTest() override = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();

@@ -22,12 +22,12 @@ class WebViewAPITest : public AppShellTest {
  protected:
   WebViewAPITest();
 
-  // Launches the app_shell app in |app_location|.
+  // Launches the app_shell app in `app_location`.
   void LaunchApp(const std::string& app_location);
 
-  // Runs the test |test_name| in |app_location|. RunTest will launch the app
+  // Runs the test `test_name` in `app_location`. RunTest will launch the app
   // and execute the javascript function runTest(test_name) inside the app.
-  // If |ad_hoc_framework| is true, the test app defines its own testing
+  // If `ad_hoc_framework` is true, the test app defines its own testing
   // framework, otherwise the test app uses the chrome.test framework.
   // See https://crbug.com/876330
   void RunTest(const std::string& test_name,

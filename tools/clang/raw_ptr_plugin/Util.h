@@ -96,6 +96,28 @@ inline clang::SourceLocation getRepresentativeLocation(
   return node.getLocation();
 }
 
+template <typename Node>
+bool isNodeInThirdPartyLocation(const Node& node,
+                                const clang::SourceManager& source_manager) {
+  const std::string& filename =
+      GetFilename(source_manager, getRepresentativeLocation(node),
+                  FilenameLocationType::kSpellingLoc);
+
+  // Blink is part of the Chromium git repo, even though it contains
+  // "third_party" in its path.
+  if (filename.find("/third_party/blink/") != std::string::npos) {
+    return false;
+  }
+  // Dawn repo has started using raw_ptr.
+  if (filename.find("/third_party/dawn/") != std::string::npos) {
+    return false;
+  }
+  // Otherwise, just check if the paths contains the "third_party" substring.
+  // We don't want to rewrite content of such paths even if they are in the main
+  // Chromium git repository.
+  return filename.find("/third_party/") != std::string::npos;
+}
+
 enum LocationClassification {
   // First-party Chromium code that is part of the main project repo.
   kFirstParty,

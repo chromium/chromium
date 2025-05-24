@@ -13,17 +13,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -37,7 +34,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -189,29 +186,11 @@ ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog(
   Profile* profile = Profile::FromWebUI(web_ui_);
   if (base::FeatureList::IsEnabled(
           features::kHelpAppAutoTriggerInstallDialog)) {
-    // If the feature is enabled, we schedule the following command.
-    if (web_app::WebAppProvider::GetForWebApps(profile)) {
-      // Web apps are managed in Ash.
-      web_app::WebAppProvider* provider =
-          web_app::WebAppProvider::GetForWebApps(profile);
-      CHECK(provider);
-      provider->scheduler().ScheduleNavigateAndTriggerInstallDialog(
-          url, origin_url, /*is_renderer_initiated=*/true, base::DoNothing());
-    } else {
-      // Web apps are managed in Lacros.
-      crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-          crosapi::CrosapiManager::Get()
-              ->crosapi_ash()
-              ->web_app_service_ash()
-              ->GetWebAppProviderBridge();
-      if (!web_app_provider_bridge) {
-        return "ChromeHelpAppUIDelegate::OpenUrlInBrowser "
-               "web_app_provider_bridge"
-               " not ready";
-      }
-      web_app_provider_bridge->ScheduleNavigateAndTriggerInstallDialog(
-          url, origin_url, /*is_renderer_initiated=*/true);
-    }
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForWebApps(profile);
+    CHECK(provider);
+    provider->scheduler().ScheduleNavigateAndTriggerInstallDialog(
+        url, origin_url, /*is_renderer_initiated=*/true, base::DoNothing());
     return std::nullopt;
   }
 
@@ -233,13 +212,66 @@ void ChromeHelpAppUIDelegate::OpenSettings(
   Profile* profile = Profile::FromWebUI(web_ui_);
 
   switch (component) {
+    case ash::help_app::mojom::SettingsComponent::HOME:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile);
+      return;
+    case ash::help_app::mojom::SettingsComponent::ACCESSIBILITY:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kAccessibilitySectionPath);
+      return;
     case ash::help_app::mojom::SettingsComponent::BLUETOOTH:
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile, chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
       return;
+    case ash::help_app::mojom::SettingsComponent::DISPLAY:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kDisplaySubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::INPUT:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kInputSubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::MULTI_DEVICE:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kMultiDeviceSectionPath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::PEOPLE:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPeopleSectionPath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::PER_DEVICE_KEYBOARD:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::PER_DEVICE_TOUCHPAD:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::PERSONALIZATION:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPersonalizationSectionPath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::PRINTING:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPrintingDetailsSubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::SECURITY_AND_SIGN_IN:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2);
+      return;
+    case ash::help_app::mojom::SettingsComponent::TOUCHPAD_REVERSE_SCROLLING:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath,
+          chromeos::settings::mojom::Setting::kTouchpadReverseScrolling);
+      return;
+    case ash::help_app::mojom::SettingsComponent::TOUCHPAD_SIMULATE_RIGHT_CLICK:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath,
+          chromeos::settings::mojom::Setting::kTouchpadSimulateRightClick);
+      return;
   }
 
-  CHECK(false) << "Invalid settings component value provided";
+  NOTREACHED() << "Invalid settings component value provided";
 }
 
 }  // namespace ash

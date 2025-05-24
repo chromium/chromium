@@ -6,13 +6,13 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/common/chrome_paths.h"
@@ -45,17 +45,17 @@ const char kAdviseOnGclientSolution[] =
 
 #if defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER) || \
     defined(ADDRESS_SANITIZER)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const int kDefaultPollIntervalMsec = 2000;
 #else
 const int kDefaultPollIntervalMsec = 1000;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #else
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const int kDefaultPollIntervalMsec = 500;
 #else
 const int kDefaultPollIntervalMsec = 250;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif
 
 bool IsErrorResult(const std::string& result) {
@@ -83,8 +83,7 @@ base::FilePath GetToolForPlatform(const std::string& tool_name) {
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return tools_dir.Append(FILE_PATH_LITERAL("linux")).AppendASCII(tool_name);
 #else
-  CHECK(false) << "Can't retrieve tool " << tool_name << " on this platform.";
-  return base::FilePath();
+  NOTREACHED() << "Can't retrieve tool " << tool_name << " on this platform.";
 #endif
 }
 

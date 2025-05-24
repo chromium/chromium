@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -20,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -173,8 +174,7 @@ std::u16string GetIOTaskMessage(Profile* profile,
     case OperationType::kEmptyTrash:
     case OperationType::kRestore:
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected operation type " << status.type;
-      return u"Unknown operation type";
+      NOTREACHED() << "Unexpected operation type " << status.type;
   }
 
   if (status.sources.size() > 1) {

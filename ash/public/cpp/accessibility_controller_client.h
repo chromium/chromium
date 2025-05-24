@@ -98,6 +98,10 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
   virtual void SetA11yOverrideWindow(aura::Window* a11y_override_window) = 0;
 
   virtual std::string GetDictationDefaultLocale(bool new_user) = 0;
+
+  // Called when the FaceGaze disable dialog is accepted/rejected so that the
+  // settings UI can be properly updated.
+  virtual void SendFaceGazeDisableDialogResultToSettings(bool accepted) = 0;
 };
 
 }  // namespace ash

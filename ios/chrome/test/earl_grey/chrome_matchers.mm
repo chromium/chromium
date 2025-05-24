@@ -5,7 +5,10 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/browser_container/edit_menu_app_interface.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
@@ -143,6 +146,10 @@ id<GREYMatcher> NavigationBarCancelButton() {
   return [ChromeMatchersAppInterface navigationBarCancelButton];
 }
 
+id<GREYMatcher> NavigationBarSaveButton() {
+  return [ChromeMatchersAppInterface navigationBarSaveButton];
+}
+
 id<GREYMatcher> ForwardButton() {
   return [ChromeMatchersAppInterface forwardButton];
 }
@@ -237,6 +244,10 @@ id<GREYMatcher> ShowTabsButton() {
   return [ChromeMatchersAppInterface showTabsButton];
 }
 
+id<GREYMatcher> BlueDotOnShowTabsButton() {
+  return [ChromeMatchersAppInterface blueDotOnShowTabsButton];
+}
+
 id<GREYMatcher> AddToReadingListButton() {
   return [ChromeMatchersAppInterface addToReadingListButton];
 }
@@ -293,6 +304,11 @@ id<GREYMatcher> BookmarksNavigationBarDoneButton() {
 
 id<GREYMatcher> BookmarksNavigationBarBackButton() {
   return [ChromeMatchersAppInterface bookmarksNavigationBarBackButton];
+}
+
+id<GREYMatcher> ManagedProfileCreationNavigationBarBackButton() {
+  return [ChromeMatchersAppInterface
+      managedProfileCreationNavigationBarBackButton];
 }
 
 id<GREYMatcher> AddAccountButton() {
@@ -417,10 +433,6 @@ id<GREYMatcher> ContentSettingsButton() {
 
 id<GREYMatcher> GoogleServicesSettingsButton() {
   return [ChromeMatchersAppInterface googleServicesSettingsButton];
-}
-
-id<GREYMatcher> ManageSyncSettingsButton() {
-  return [ChromeMatchersAppInterface manageSyncSettingsButton];
 }
 
 id<GREYMatcher> InactiveTabsSettingsButton() {
@@ -671,6 +683,15 @@ id<GREYMatcher> TabStripGroupCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabStripGroupCellAtIndex:index];
 }
 
+id<GREYMatcher> BlueDotOnTabStripCellAtIndex(unsigned int index) {
+  return [ChromeMatchersAppInterface blueDotOnTabStripCellAtIndex:index];
+}
+
+id<GREYMatcher> NotificationDotOnTabStripGroupCellAtIndex(unsigned int index) {
+  return [ChromeMatchersAppInterface
+      notificationDotOnTabStripGroupCellAtIndex:index];
+}
+
 id<GREYMatcher> TabGroupsPanelCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGroupsPanelCellAtIndex:index];
 }
@@ -679,6 +700,20 @@ id<GREYMatcher> TabGroupsPanelCellWithName(NSString* group_name,
                                            NSInteger tab_count) {
   return [ChromeMatchersAppInterface tabGroupsPanelCellWithName:group_name
                                                           count:tab_count];
+}
+
+id<GREYMatcher> TabGroupRecentActivityCellAtIndex(unsigned int index) {
+  return [ChromeMatchersAppInterface tabGroupRecentActivityCellAtIndex:index];
+}
+
+id<GREYMatcher> TabGroupActivityLabelOnGroupCellAtIndex(unsigned int index) {
+  return [ChromeMatchersAppInterface
+      tabGroupActivityLabelOnGroupCellAtIndex:index];
+}
+
+id<GREYMatcher> TabGroupActivityLabelOnGridCellAtIndex(unsigned int index) {
+  return
+      [ChromeMatchersAppInterface tabGroupActivityLabelOnGridCellAtIndex:index];
 }
 
 id<GREYMatcher> TabGridDoneButton() {
@@ -757,6 +792,10 @@ id<GREYMatcher> IncognitoTabGrid() {
   return [ChromeMatchersAppInterface incognitoTabGrid];
 }
 
+id<GREYMatcher> InactiveTabGrid() {
+  return [ChromeMatchersAppInterface inactiveTabGrid];
+}
+
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGridCloseButtonForCellAtIndex:index];
 }
@@ -808,8 +847,20 @@ id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title) {
                    title:base::SysUTF8ToNSString(title)];
 }
 
+id<GREYMatcher> HistoryEntry(const GURL& url, const std::string& title) {
+  std::string url_string = base::UTF16ToUTF8(
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              url));
+  return HistoryEntry(url_string, title);
+}
+
 id<GREYMatcher> SettingsToolbarAddButton() {
   return [ChromeMatchersAppInterface settingsToolbarAddButton];
+}
+
+id<GREYMatcher> SettingsToolbarEditButton() {
+  return grey_accessibilityID(kSettingsToolbarEditButtonId);
 }
 
 id<GREYMatcher> CellCanBeSwipedToDismissed() {
@@ -893,12 +944,12 @@ id<GREYMatcher> SettingsActionButton() {
 
 #pragma mark - Promo style view controller
 
-id<GREYMatcher> PromoStylePrimaryActionButtonMatcher() {
-  return [ChromeMatchersAppInterface promoStylePrimaryActionButtonMatcher];
+id<GREYMatcher> PromoScreenPrimaryButtonMatcher() {
+  return [ChromeMatchersAppInterface promoScreenPrimaryButtonMatcher];
 }
 
-id<GREYMatcher> PromoStyleSecondaryActionButtonMatcher() {
-  return [ChromeMatchersAppInterface promoStyleSecondaryActionButtonMatcher];
+id<GREYMatcher> PromoScreenSecondaryButtonMatcher() {
+  return [ChromeMatchersAppInterface promoScreenSecondaryButtonMatcher];
 }
 
 #pragma mark - Incognito Interstitial
@@ -1009,8 +1060,16 @@ id<GREYMatcher> TabGroupOverflowMenuButton() {
   return [ChromeMatchersAppInterface tabGroupOverflowMenuButton];
 }
 
-id<GREYMatcher> TabGroupBackButton() {
-  return [ChromeMatchersAppInterface tabGroupBackButton];
+id<GREYMatcher> CloseTabGroupButton() {
+  return [ChromeMatchersAppInterface closeTabGroupButton];
+}
+
+id<GREYMatcher> TabGroupActivitySummaryCell() {
+  return [ChromeMatchersAppInterface tabGroupActivitySummaryCell];
+}
+
+id<GREYMatcher> TabGroupActivitySummaryCellCloseButton() {
+  return [ChromeMatchersAppInterface tabGroupActivitySummaryCellCloseButton];
 }
 
 #pragma mark - Tab Groups Context Menus
@@ -1045,6 +1104,50 @@ id<GREYMatcher> DeleteGroupConfirmationButton() {
 
 id<GREYMatcher> CloseGroupButton() {
   return [ChromeMatchersAppInterface closeGroupButton];
+}
+
+id<GREYMatcher> ShareGroupButton() {
+  return [ChromeMatchersAppInterface shareGroupButton];
+}
+
+id<GREYMatcher> ManageGroupButton() {
+  return [ChromeMatchersAppInterface manageGroupButton];
+}
+
+id<GREYMatcher> RecentActivityButton() {
+  return [ChromeMatchersAppInterface recentActivityButton];
+}
+
+id<GREYMatcher> LeaveSharedGroupButton() {
+  return [ChromeMatchersAppInterface leaveSharedGroupButton];
+}
+
+id<GREYMatcher> LeaveSharedGroupConfirmationButton() {
+  return [ChromeMatchersAppInterface leaveSharedGroupConfirmationButton];
+}
+
+id<GREYMatcher> DeleteSharedGroupButton() {
+  return [ChromeMatchersAppInterface deleteSharedGroupButton];
+}
+
+id<GREYMatcher> DeleteSharedConfirmationButton() {
+  return [ChromeMatchersAppInterface deleteSharedConfirmationButton];
+}
+
+id<GREYMatcher> KeepSharedConfirmationButton() {
+  return [ChromeMatchersAppInterface keepSharedConfirmationButton];
+}
+
+id<GREYMatcher> FakeShareFlowView() {
+  return [ChromeMatchersAppInterface fakeShareFlowView];
+}
+
+id<GREYMatcher> FakeManageFlowView() {
+  return [ChromeMatchersAppInterface fakeManageFlowView];
+}
+
+id<GREYMatcher> FakeJoinFlowView() {
+  return [ChromeMatchersAppInterface fakeJoinFlowView];
 }
 
 #pragma mark - Tab Groups Panel

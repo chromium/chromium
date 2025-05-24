@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
@@ -26,7 +26,7 @@ class MEDIA_EXPORT AudioInputIPCDelegate {
   // See media/mojo/mojom/audio_data_pipe.mojom for documentation of
   // |handle| and |socket_handle|.
   virtual void OnStreamCreated(
-      base::ReadOnlySharedMemoryRegion shared_memory_region,
+      base::UnsafeSharedMemoryRegion shared_memory_region,
       base::SyncSocket::ScopedHandle socket_handle,
       bool initially_muted) = 0;
 

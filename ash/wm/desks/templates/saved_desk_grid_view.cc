@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"
@@ -15,7 +16,6 @@
 #include "ash/wm/overview/overview_session.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -94,7 +94,7 @@ void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
 
   // If there is a uuid that is to be placed first, move that saved desk to the
   // front of the grid, and sort the rest of the entries after it.
-  auto rest = base::ranges::partition(
+  auto rest = std::ranges::partition(
       grid_items_,
       [&order_first_uuid](const base::Uuid& uuid) {
         return uuid == order_first_uuid;
@@ -102,7 +102,7 @@ void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
       &SavedDeskItemView::uuid);
 
   std::sort(
-      rest, grid_items_.end(),
+      rest.begin(), rest.end(),
       [&collator](const SavedDeskItemView* a, const SavedDeskItemView* b) {
         return base::i18n::CompareString16WithCollator(
                    *collator, a->name_view()->GetText(),
@@ -116,7 +116,7 @@ void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
   // be the new item, while the rest will be sorted alphabetically.
   for (size_t i = 0; i < grid_items_.size(); i++)
     ReorderChildView(grid_items_[i], i);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTreeChanged, true);
 
   if (bounds_animator_.IsAnimating())
     bounds_animator_.Cancel();
@@ -130,8 +130,8 @@ void SavedDeskGridView::AddOrUpdateEntries(
   std::vector<SavedDeskItemView*> new_grid_items;
 
   for (const DeskTemplate* entry : entries) {
-    auto iter = base::ranges::find(grid_items_, entry->uuid(),
-                                   &SavedDeskItemView::uuid);
+    auto iter =
+        std::ranges::find(grid_items_, entry->uuid(), &SavedDeskItemView::uuid);
 
     if (iter != grid_items_.end()) {
       (*iter)->UpdateSavedDesk(*entry);
@@ -158,7 +158,7 @@ void SavedDeskGridView::AddOrUpdateEntries(
 void SavedDeskGridView::DeleteEntries(const std::vector<base::Uuid>& uuids,
                                       bool delete_animation) {
   for (const base::Uuid& uuid : uuids) {
-    auto iter = base::ranges::find(grid_items_, uuid, &SavedDeskItemView::uuid);
+    auto iter = std::ranges::find(grid_items_, uuid, &SavedDeskItemView::uuid);
 
     if (iter == grid_items_.end())
       continue;
@@ -189,7 +189,7 @@ void SavedDeskGridView::DeleteEntries(const std::vector<base::Uuid>& uuids,
   }
 
   AnimateGridItems(/*new_grid_items=*/{});
-  NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTreeChanged, true);
 }
 
 bool SavedDeskGridView::IsSavedDeskNameBeingModified() const {
@@ -249,7 +249,7 @@ SavedDeskItemView* SavedDeskGridView::GetItemForUUID(const base::Uuid& uuid) {
   if (!uuid.is_valid())
     return nullptr;
 
-  auto it = base::ranges::find(grid_items_, uuid, &SavedDeskItemView::uuid);
+  auto it = std::ranges::find(grid_items_, uuid, &SavedDeskItemView::uuid);
   return it == grid_items_.end() ? nullptr : *it;
 }
 

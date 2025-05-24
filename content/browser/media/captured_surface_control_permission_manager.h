@@ -22,8 +22,6 @@ class CONTENT_EXPORT CapturedSurfaceControlPermissionManager {
     kError,
   };
 
-  static constexpr int kMaxPromptAttempts = 3;
-
   explicit CapturedSurfaceControlPermissionManager(
       GlobalRenderFrameHostId capturer_rfh_id);
   virtual ~CapturedSurfaceControlPermissionManager();
@@ -35,14 +33,6 @@ class CONTENT_EXPORT CapturedSurfaceControlPermissionManager {
 
   // Checks whether the user has approved the Captured Surface Control APIs.
   // If permission has not yet been granted, attempts to prompt the user.
-  //
-  // The check fails immediately without prompting the user if:
-  // * The user has already dismissed it `kMaxPromptAttempts` times.
-  // * A pending prompt is currently displayed.
-  //
-  // The check succeeds if:
-  // * The user has previously granted permission.
-  // * The user is prompted and grants permission.
   //
   // Must be called on the IO thread.
   //
@@ -73,21 +63,6 @@ class CONTENT_EXPORT CapturedSurfaceControlPermissionManager {
                      PermissionResult result);
 
   const GlobalRenderFrameHostId capturer_rfh_id_;
-
-  const bool sticky_permissions_;
-
-  // Indicates whether the user has given permission to use Captured Surface
-  // Control APIs for the capture session with which this object is associated.
-  // Once permission is granted, it can only be revoked by terminating capture.
-  bool granted_ = false;
-
-  // Indicates whether a prompt was shown to the user for this permission, and
-  // that prompt is still pending.
-  bool has_pending_prompt_ = false;
-
-  // Number of times that the user may still be prompted, before we stop showing
-  // additional prompts and start auto-denying all additional permission-checks.
-  int attempts_left_until_embargo_ = kMaxPromptAttempts;
 
   base::WeakPtrFactory<CapturedSurfaceControlPermissionManager> weak_factory_{
       this};

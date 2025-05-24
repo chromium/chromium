@@ -4,12 +4,15 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
@@ -134,22 +137,101 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         })");
     case ModelBasedCapabilityKey::kTextSafety:
       // TODO: b/330346344 - Add traffic annotation.
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+      // TODO: b/380116258 - Add traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kTest:
+    case ModelBasedCapabilityKey::kBlingPrototyping:
       // Used for testing purposes. No real features use this.
       return MISSING_TRAFFIC_ANNOTATION;
-    case ModelBasedCapabilityKey::kFormsAnnotations:
-      // TODO: b/361453212 - Add traffic annotation.
+    case ModelBasedCapabilityKey::kFormsClassifications:
+      return net::DefineNetworkTrafficAnnotation(
+          "forms_classifications_model_execution", R"(
+    semantics {
+      sender: "AutofillAI - Forms Classifications"
+      description:
+        "Analyze page content to classify the types of form fields and store "
+        "those classifications for subsequent autofilling of forms."
+      trigger: "User encounters a web form on page load and the Autofill "
+               "server has selected the form as relevant for model execution."
+      destination: GOOGLE_OWNED_SERVICE
+      data: "Title, URL, and content of the page."
+      internal {
+        contacts {
+          email: "chrome-intelligence-core@google.com"
+        }
+      }
+      user_data {
+        type: ACCESS_TOKEN
+        type: SENSITIVE_URL
+        type: WEB_CONTENT
+        type: USER_CONTENT
+      }
+      last_reviewed: "2025-04-23"
+    }
+    policy {
+      cookies_allowed: NO
+      setting:
+        "Users can control this by signing-in to Chrome, and via the "
+        "'Autofill with AI' setting in the 'Autofill and passwords' "
+        "section."
+      chrome_policy {
+        AutofillPredictionSettings {
+          AutofillPredictionSettings: 2
+        }
+      }
+    })");
+    case ModelBasedCapabilityKey::kEnhancedCalendar:
+      // TODO(crbug.com/398296762): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
-    case ModelBasedCapabilityKey::kFormsPredictions:
-      // TODO: b/358373261 - Add traffic annotation.
-      return MISSING_TRAFFIC_ANNOTATION;
+    case ModelBasedCapabilityKey::kZeroStateSuggestions:
+      return net::DefineNetworkTrafficAnnotation(
+          "zero_state_suggestions_model_execution", R"(
+    semantics {
+      sender: "Gemini in Chrome - Zero State Suggestions"
+      description:
+        "Generates contextual suggestions about the current page when Gemini "
+        "in Chrome does not have a query."
+      trigger:
+        "User opens Gemini in Chrome via browser entrypoint, OS entrypoint, or"
+        " hot key."
+      destination: GOOGLE_OWNED_SERVICE
+      data:
+        "Title, URL, and content of the page, which may potentially contain "
+        "user input. The access token is also sent to verify user is of "
+        "sufficient age to use Gemini in Chrome."
+      internal {
+        contacts {
+          email: "chrome-intelligence-core@google.com"
+        }
+      }
+      user_data {
+        type: ACCESS_TOKEN
+        type: SENSITIVE_URL
+        type: WEB_CONTENT
+      }
+      last_reviewed: "2025-05-21"
+    }
+    policy {
+      cookies_allowed: NO
+      setting:
+        "This feature can be disabled via GeminiSettings."
+      chrome_policy {
+        GeminiSettings {
+          GeminiSettings: 1
+        }
+      }
+    })");
     case ModelBasedCapabilityKey::kHistorySearch:
+    case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kPromptApi:
+    case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kPermissionsAi:
     case ModelBasedCapabilityKey::kSummarize:
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
+    case ModelBasedCapabilityKey::kProofreaderApi:
       // On-device only feature.
-      NOTREACHED_IN_MIGRATION();
-      return MISSING_TRAFFIC_ANNOTATION;
+      NOTREACHED();
   }
 }
 
@@ -159,6 +241,16 @@ void RecordRequestStatusHistogram(ModelBasedCapabilityKey feature,
       base::StrCat({"OptimizationGuide.ModelExecutionFetcher.RequestStatus.",
                     GetStringNameForModelExecutionFeature(feature)}),
       status);
+}
+
+// Appends headers as specified by the command line arguments.
+void AppendHeadersIfNeeded(network::ResourceRequest& request) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kModelExecutionEnableRemoteDebugLogging)) {
+    return;
+  }
+  request.headers.SetHeaderIfMissing(
+      kOptimizationGuideModelExecutionDebugLogsHeaderKey, "");
 }
 
 }  // namespace
@@ -179,7 +271,7 @@ ModelExecutionFetcher::ModelExecutionFetcher(
 }
 
 ModelExecutionFetcher::~ModelExecutionFetcher() {
-  if (active_url_loader_) {
+  if (model_execution_callback_) {
     DCHECK(model_execution_feature_);
     RecordRequestStatusHistogram(*model_execution_feature_,
                                  FetcherRequestStatus::kRequestCanceled);
@@ -194,6 +286,7 @@ void ModelExecutionFetcher::ExecuteModel(
     ModelBasedCapabilityKey feature,
     signin::IdentityManager* identity_manager,
     const google::protobuf::MessageLite& request_metadata,
+    std::optional<base::TimeDelta> timeout,
     ModelExecuteResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -222,11 +315,13 @@ void ModelExecutionFetcher::ExecuteModel(
       identity_manager,
       {GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope},
       base::BindOnce(&ModelExecutionFetcher::OnAccessTokenReceived,
-                     weak_ptr_factory_.GetWeakPtr(), serialized_request));
+                     weak_ptr_factory_.GetWeakPtr(), serialized_request,
+                     timeout));
 }
 
 void ModelExecutionFetcher::OnAccessTokenReceived(
     const std::string& serialized_request,
+    std::optional<base::TimeDelta> timeout,
     const std::string& access_token) {
   if (access_token.empty()) {
     RecordRequestStatusHistogram(*model_execution_feature_,
@@ -242,10 +337,14 @@ void ModelExecutionFetcher::OnAccessTokenReceived(
   if (!access_token.empty()) {
     PopulateAuthorizationRequestHeader(resource_request.get(), access_token);
   }
+  if (timeout && timeout->is_positive()) {
+    PopulateServerTimeoutRequestHeader(resource_request.get(), *timeout);
+  }
 
   resource_request->url = optimization_guide_service_url_;
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  AppendHeadersIfNeeded(*resource_request);
 
   active_url_loader_ = variations::CreateSimpleURLLoaderWithVariationsHeader(
       std::move(resource_request),

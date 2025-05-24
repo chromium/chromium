@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.UI_EVENT_LISTENER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
 
@@ -14,8 +14,11 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -26,11 +29,12 @@ import java.util.List;
  * Implements the FacilitatedPaymentsPaymentMethodsComponent. It uses a bottom sheet to let the user
  * select a form of payment.
  */
+@NullMarked
 public class FacilitatedPaymentsPaymentMethodsCoordinator
         implements FacilitatedPaymentsPaymentMethodsComponent {
     private final FacilitatedPaymentsPaymentMethodsMediator mMediator =
             new FacilitatedPaymentsPaymentMethodsMediator();
-    private PropertyModel mFacilitatedPaymentsPaymentMethodsModel;
+    private @Nullable PropertyModel mFacilitatedPaymentsPaymentMethodsModel;
 
     @Override
     public void initialize(
@@ -51,8 +55,13 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
-    public boolean showSheet(List<BankAccount> bankAccounts) {
-        return mMediator.showSheet(bankAccounts);
+    public void showSheetForPix(List<BankAccount> bankAccounts) {
+        mMediator.showSheetForPix(bankAccounts);
+    }
+
+    @Override
+    public void showSheetForEwallet(List<Ewallet> eWallets) {
+        mMediator.showSheetForEwallet(eWallets);
     }
 
     @Override
@@ -91,11 +100,11 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
         return new PropertyModel.Builder(FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                 .with(VISIBLE_STATE, HIDDEN)
                 .with(SCREEN, UNINITIALIZED)
-                .with(DISMISS_HANDLER, mediator::onDismissed)
+                .with(UI_EVENT_LISTENER, mediator::onUiEvent)
                 .build();
     }
 
-    PropertyModel getModelForTesting() {
+    @Nullable PropertyModel getModelForTesting() {
         return mFacilitatedPaymentsPaymentMethodsModel;
     }
 

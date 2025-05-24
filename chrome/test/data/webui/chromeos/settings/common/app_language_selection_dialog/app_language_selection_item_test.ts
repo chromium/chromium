@@ -4,8 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppLanguageSelectionItemElement} from 'chrome://os-settings/lazy_load.js';
-import {Locale} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppLanguageSelectionItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {Locale} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -14,7 +14,7 @@ import {isHidden, replaceBody} from '../../app_management/test_util.js';
 
 suite('<app-language-selection-item>', () => {
   const listItemId = '#listItem';
-  const ironIconTag = 'iron-icon' as const;
+  const ironIconTag = 'iron-icon';
   let appLanguageSelectionItem: AppLanguageSelectionItemElement;
 
   setup(() => {

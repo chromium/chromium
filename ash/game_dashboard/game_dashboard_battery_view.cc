@@ -69,9 +69,9 @@ void GameDashboardBatteryView::MaybeUpdateImage(bool theme_changed) {
     return;
   }
   battery_image_info_ = image_info;
-  SetImage(PowerStatus::GetBatteryImage(battery_image_info_.value(),
-                                        kUnifiedTrayBatteryIconSize,
-                                        color_provider));
+  SetImage(ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
+      battery_image_info_.value(), kUnifiedTrayBatteryIconSize,
+      color_provider)));
 }
 
 BEGIN_METADATA(GameDashboardBatteryView)

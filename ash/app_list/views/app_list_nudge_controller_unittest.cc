@@ -90,7 +90,7 @@ class AppListNudgeControllerTest : public AshTestBase {
 
 TEST_F(AppListNudgeControllerTest, Basic) {
   // Simulate a user login.
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
 
   // The reorder nudge should show 3 times to the users.
   ShowAppListAndWait();
@@ -118,7 +118,7 @@ TEST_F(AppListNudgeControllerTest, Basic) {
 
 TEST_F(AppListNudgeControllerTest, StopShowingNudgeAfterReordering) {
   // Simulate a user login.
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
 
   // The reorder nudge should show for the first time.
   ShowAppListAndWait();
@@ -144,7 +144,7 @@ TEST_F(AppListNudgeControllerTest, StopShowingNudgeAfterReordering) {
 
 TEST_F(AppListNudgeControllerTest, TabletModeVisibilityTest) {
   // Simulate a user login.
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
 
   ShowAppListAndWait();
   EXPECT_TRUE(GetToastContainerView()->IsToastVisible());
@@ -199,7 +199,7 @@ TEST_F(AppListNudgeControllerTest, TabletModeVisibilityTest) {
 
 TEST_F(AppListNudgeControllerTest, ReorderNudgeDismissButton) {
   // Simulate a user login.
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
 
   ShowAppListAndWait();
   EXPECT_TRUE(GetToastContainerView()->IsToastVisible());
@@ -225,7 +225,7 @@ TEST_F(AppListNudgeControllerTest, ReorderNudgeDismissButton) {
 
 TEST_F(AppListNudgeControllerTest, ReorderUndoCloseButton) {
   // Simulate a user login.
-  SimulateUserLogin("user@gmail.com");
+  SimulateUserLogin({"user@gmail.com"});
 
   ShowAppListAndWait();
 

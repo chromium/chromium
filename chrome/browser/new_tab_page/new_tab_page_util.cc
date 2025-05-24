@@ -8,8 +8,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/variations/service/variations_service.h"
@@ -66,12 +70,13 @@ bool IsDriveModuleEnabledForProfile(bool is_managed_profile, Profile* profile) {
     return false;
   }
 
-  // TODO(crbug.com/40837656): Explore not requiring sync for the drive
-  // module to be enabled.
-  auto* sync_service = SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service || !sync_service->IsSyncFeatureEnabled()) {
-    LogModuleEnablement(ntp_features::kNtpDriveModule, false, "no sync");
-    return false;
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpDriveModuleNoSyncRequirement)) {
+    auto* sync_service = SyncServiceFactory::GetForProfile(profile);
+    if (!sync_service || !sync_service->IsSyncFeatureEnabled()) {
+      LogModuleEnablement(ntp_features::kNtpDriveModule, false, "no sync");
+      return false;
+    }
   }
 
   if (!is_managed_profile) {
@@ -127,14 +132,44 @@ bool IsGoogleCalendarModuleEnabled(bool is_managed_profile) {
   return IsFeatureEnabled(ntp_features::kNtpCalendarModule);
 }
 
-bool IsOutlookCalendarModuleEnabled(bool is_managed_profile) {
-  if (!is_managed_profile) {
-    LogModuleEnablement(ntp_features::kNtpOutlookCalendarModule, false,
-                        "account not managed");
-    return false;
-  }
+bool IsMostRelevantTabResumeModuleEnabled() {
+  return g_browser_process &&
+         page_content_annotations::features::
+             ShouldExecutePageVisibilityModelOnPageContent(
+                 g_browser_process->GetApplicationLocale()) &&
+         base::FeatureList::IsEnabled(
+             ntp_features::kNtpMostRelevantTabResumptionModule);
+}
 
-  return IsFeatureEnabled(ntp_features::kNtpOutlookCalendarModule);
+bool IsMicrosoftFilesModuleEnabledForProfile(Profile* profile) {
+  if (IsFeatureEnabled(ntp_features::kNtpSharepointModule) &&
+      IsFeatureEnabled(ntp_features::kNtpMicrosoftAuthenticationModule) &&
+      profile->GetPrefs()->IsManagedPreference(
+          prefs::kNtpSharepointModuleVisible) &&
+      profile->GetPrefs()->GetBoolean(prefs::kNtpSharepointModuleVisible)) {
+    return true;
+  }
+  LogModuleEnablement(ntp_features::kNtpSharepointModule, false,
+                      "disabled by policy");
+  return false;
+}
+
+bool IsOutlookCalendarModuleEnabledForProfile(Profile* profile) {
+  if (IsFeatureEnabled(ntp_features::kNtpOutlookCalendarModule) &&
+      IsFeatureEnabled(ntp_features::kNtpMicrosoftAuthenticationModule) &&
+      profile->GetPrefs()->IsManagedPreference(
+          prefs::kNtpOutlookModuleVisible) &&
+      profile->GetPrefs()->GetBoolean(prefs::kNtpOutlookModuleVisible)) {
+    return true;
+  }
+  LogModuleEnablement(ntp_features::kNtpOutlookCalendarModule, false,
+                      "disabled by policy");
+  return false;
+}
+
+bool IsMicrosoftModuleEnabledForProfile(Profile* profile) {
+  return IsMicrosoftFilesModuleEnabledForProfile(profile) ||
+         IsOutlookCalendarModuleEnabledForProfile(profile);
 }
 
 std::string GetVariationsServiceCountryCode(

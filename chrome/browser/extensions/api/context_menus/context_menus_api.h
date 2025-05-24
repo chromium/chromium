@@ -14,7 +14,7 @@ class ContextMenusCreateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("contextMenus.create", CONTEXTMENUS_CREATE)
 
  protected:
-  ~ContextMenusCreateFunction() override {}
+  ~ContextMenusCreateFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -25,7 +25,7 @@ class ContextMenusUpdateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("contextMenus.update", CONTEXTMENUS_UPDATE)
 
  protected:
-  ~ContextMenusUpdateFunction() override {}
+  ~ContextMenusUpdateFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -36,7 +36,7 @@ class ContextMenusRemoveFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("contextMenus.remove", CONTEXTMENUS_REMOVE)
 
  protected:
-  ~ContextMenusRemoveFunction() override {}
+  ~ContextMenusRemoveFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -47,7 +47,7 @@ class ContextMenusRemoveAllFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("contextMenus.removeAll", CONTEXTMENUS_REMOVEALL)
 
  protected:
-  ~ContextMenusRemoveAllFunction() override {}
+  ~ContextMenusRemoveAllFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

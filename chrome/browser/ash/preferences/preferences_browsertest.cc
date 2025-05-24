@@ -40,8 +40,6 @@ class PreferencesTest : public LoginManagerTest {
   PreferencesTest()
       : LoginManagerTest(), input_settings_(nullptr), keyboard_(nullptr) {
     login_mixin_.AppendRegularUsers(2);
-
-    feature_list_.InitAndEnableFeature(features::kAllowScrollSettings);
   }
 
   PreferencesTest(const PreferencesTest&) = delete;

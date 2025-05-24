@@ -4,12 +4,12 @@
 
 #include "chrome/credential_provider/gaiacp/os_process_manager.h"
 
-#include <Windows.h>
+#include <windows.h>
+#include <winternl.h>
 
 #include <MDMRegistration.h>
-#include <Shellapi.h>  // For CommandLineToArgvW()
+#include <Shellapi.h>
 #include <Shlobj.h>
-#include <Winternl.h>
 #include <aclapi.h>
 #include <atlconv.h>
 #include <dpapi.h>
@@ -19,12 +19,12 @@
 #include <security.h>
 #include <stdlib.h>
 #include <userenv.h>
-#include <wincred.h>
 
 #include <iomanip>
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
 #include "base/scoped_native_library.h"
@@ -33,6 +33,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/win_util.h"
+#include "base/win/wincred_shim.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
@@ -430,7 +431,7 @@ void OSProcessManager::SetInstanceForTesting(OSProcessManager* instance) {
   *GetInstanceStorage() = instance;
 }
 
-OSProcessManager::~OSProcessManager() {}
+OSProcessManager::~OSProcessManager() = default;
 
 HRESULT OSProcessManager::GetTokenLogonSID(const base::win::ScopedHandle& token,
                                            PSID* sid) {
@@ -448,8 +449,9 @@ HRESULT OSProcessManager::CreateProcessWithToken(
     base::win::ScopedProcessInformation* procinfo) {
   // CreateProcessWithTokenW() expects the command line to be non-const, so make
   // a copy here.
-  std::unique_ptr<wchar_t, void (*)(void*)>
-      cmdline(wcsdup(command_line.GetCommandLineString().c_str()), std::free);
+  std::unique_ptr<wchar_t, void (*)(void*)> cmdline(
+      UNSAFE_TODO(wcsdup(command_line.GetCommandLineString().c_str())),
+      std::free);
   PROCESS_INFORMATION temp_procinfo = {};
   if (!::CreateProcessWithTokenW(logon_token.Get(),
                                  LOGON_WITH_PROFILE,

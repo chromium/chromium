@@ -4,9 +4,11 @@
 
 #include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -18,7 +20,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -38,12 +39,12 @@ namespace {
 
 void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,
                                       std::vector<bool> statuses) {
-  std::move(completion).Run(base::ranges::all_of(statuses, std::identity()));
+  std::move(completion).Run(std::ranges::all_of(statuses, std::identity()));
 }
 
 void RecordPasswordDeletionResult(PasswordChangesOrError result) {
   bool is_operation_successful = true;
-  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
     is_operation_successful = false;
   }
   base::UmaHistogramBoolean(
@@ -53,7 +54,7 @@ void RecordPasswordDeletionResult(PasswordChangesOrError result) {
     return;
   }
 
-  PasswordChanges changes = absl::get<PasswordChanges>(std::move(result));
+  PasswordChanges changes = std::get<PasswordChanges>(std::move(result));
 
   if (changes.has_value()) {
     base::UmaHistogramCounts1000(
@@ -139,12 +140,6 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
   main_backend()->GetAutofillableLoginsAsync(std::move(callback));
 }
 
-void PasswordStoreProxyBackend::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,
@@ -184,38 +179,19 @@ void PasswordStoreProxyBackend::RemoveLoginAsync(
   }
 }
 
-void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
-  // The `sync_completion` callback is only relevant for account passwords
-  // which don't exist on Android, so it is not passed in and can be ignored
-  // later.
-  CHECK(!sync_completion);
-  main_backend()->RemoveLoginsByURLAndTimeAsync(
-      location, url_filter, delete_begin, delete_end, base::NullCallback(),
-      std::move(callback));
-  if (UsesAndroidBackendAsMainBackend()) {
-    shadow_backend()->RemoveLoginsByURLAndTimeAsync(
-        location, url_filter, std::move(delete_begin), std::move(delete_end),
-        base::NullCallback(), base::DoNothing());
-  }
-}
-
 void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
   main_backend()->RemoveLoginsCreatedBetweenAsync(
-      location, delete_begin, delete_end, std::move(callback));
+      location, delete_begin, delete_end, base::NullCallback(),
+      std::move(callback));
   if (UsesAndroidBackendAsMainBackend()) {
     shadow_backend()->RemoveLoginsCreatedBetweenAsync(
         location, std::move(delete_begin), std::move(delete_end),
-        base::DoNothing());
+        base::NullCallback(), base::DoNothing());
   }
 }
 
@@ -249,14 +225,6 @@ void PasswordStoreProxyBackend::OnSyncServiceInitialized(
     prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
                        0);
   }
-}
-
-void PasswordStoreProxyBackend::RecordAddLoginAsyncCalledFromTheStore() {
-  main_backend()->RecordAddLoginAsyncCalledFromTheStore();
-}
-
-void PasswordStoreProxyBackend::RecordUpdateLoginAsyncCalledFromTheStore() {
-  main_backend()->RecordUpdateLoginAsyncCalledFromTheStore();
 }
 
 base::WeakPtr<PasswordStoreBackend> PasswordStoreProxyBackend::AsWeakPtr() {
@@ -343,7 +311,7 @@ void PasswordStoreProxyBackend::MaybeClearBuiltInBackend() {
   }
 
   built_in_backend_->RemoveLoginsCreatedBetweenAsync(
-      FROM_HERE, base::Time(), base::Time::Max(),
+      FROM_HERE, base::Time(), base::Time::Max(), base::NullCallback(),
       base::BindOnce(&RecordPasswordDeletionResult));
 }
 

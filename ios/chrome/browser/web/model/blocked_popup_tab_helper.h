@@ -10,10 +10,11 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/web/public/lazy_web_state_user_data.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "url/gurl.h"
+
+class ProfileIOS;
 
 namespace infobars {
 class InfoBar;
@@ -88,8 +89,6 @@ class BlockedPopupTabHelper
   base::ScopedObservation<infobars::InfoBarManager,
                           infobars::InfoBarManager::Observer>
       scoped_observation_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_BLOCKED_POPUP_TAB_HELPER_H_

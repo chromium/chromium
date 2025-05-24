@@ -10,13 +10,13 @@ Document IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.
 ++++Group ClassName='x-hidden-small not-scrollable' IsControlElement=false IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=false
 ++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++++++Text Name='x=hidden' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
-++++Group Name='x=hidden' ClassName='x-hidden-large scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=true
+++++Group ClassName='x-hidden-large scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=true
 ++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++++++Text Name='x=hidden' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
-++++Group Name='x=auto' ClassName='x-auto scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=false
+++++Group ClassName='x-auto scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=false
 ++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++++++Text Name='x=auto' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
-++++Group Name='x=scroll' ClassName='x-scroll scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=false
+++++Group ClassName='x-scroll scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=false
 ++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++++++Text Name='x=scroll' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
@@ -25,13 +25,13 @@ Document IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.
 ++++Group ClassName='y-hidden-small not-scrollable' IsControlElement=false IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=false Scroll.VerticallyScrollable=true
 ++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++++++Text Name='y=hidden' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
-++++Group Name='y=hidden' ClassName='y-hidden-large scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=true
+++++Group ClassName='y-hidden-large scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=true
 ++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++++++Text Name='y=hidden' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
-++++Group Name='y=auto' ClassName='y-auto scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=false Scroll.VerticallyScrollable=true
+++++Group ClassName='y-auto scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=false Scroll.VerticallyScrollable=true
 ++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++++++Text Name='y=auto' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
-++++Group Name='y=scroll' ClassName='y-scroll scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=false Scroll.VerticallyScrollable=true
+++++Group ClassName='y-scroll scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=false Scroll.VerticallyScrollable=true
 ++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++++++Text Name='y=scroll' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true

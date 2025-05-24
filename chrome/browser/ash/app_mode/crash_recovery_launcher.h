@@ -6,11 +6,12 @@
 #define CHROME_BROWSER_ASH_APP_MODE_CRASH_RECOVERY_LAUNCHER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace ash {
@@ -32,7 +33,6 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
   void Start(OnDoneCallback callback);
 
  private:
-  void OnLacrosLaunchComplete();
   void InvokeDoneCallback(bool success,
                           const std::optional<std::string>& app_name);
 
@@ -51,11 +51,9 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
   const raw_ref<Profile> profile_;
   OnDoneCallback done_callback_;
 
-  std::unique_ptr<app_mode::LacrosLauncher> lacros_launcher_;
   std::unique_ptr<KioskAppLauncher> app_launcher_;
   base::ScopedObservation<KioskAppLauncher, KioskAppLauncher::Observer>
       observation_{this};
-  base::WeakPtrFactory<CrashRecoveryLauncher> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -1,0 +1,40 @@
+caption: Allows the app to use provisional notification authorization on iOS
+
+desc: |-
+  If the policy is set to Enabled or left unset, the app may use iOS's
+  "Provisional" notification authorization to present notifications in the iOS
+  Notification Center.
+
+  If the policy is set to Disabled, the app will not use provisional
+  notifications.
+
+owners:
+- scottyoder@google.com
+- file://components/policy/OWNERS
+
+supported_on:
+- ios:137-
+
+deprecated: false
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+type: main
+
+schema:
+  type: boolean
+
+items:
+- caption: Allow the app to use provisional notification authorization
+  value: true
+- caption: Do not allow the app to use provisional notification authorization
+  value: false
+
+default: true
+
+example_value: true
+
+tags: []
+

@@ -6,9 +6,11 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -23,11 +25,58 @@
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browser_sync {
 namespace {
+
+// Parameter controlling whether to use the synchronous or asynchronous
+// version of MaybeMigrateSyncingUserToSignedIn(...) function.
+enum BlockingState {
+  kAllowed,
+  kDisallowed,
+};
+
+// Returns whether blocking is allowed.
+template <typename... Args>
+bool BlockingAllowed(const std::tuple<Args...>& param) {
+  return std::get<BlockingState>(param) == BlockingState::kAllowed;
+}
+
+// Helper to generate a test name with sync and async variants.
+template <typename... Args, typename Lambda>
+std::string GenerateTestName(const std::tuple<Args...>& param, Lambda lambda) {
+  return base::StrCat({
+      lambda(param),
+      BlockingAllowed(param) ? "Sync" : "Async",
+  });
+}
+
+// Wrapper around MaybeMigrateSyncingUserToSignedInWrapper(IsBlockingAllowed(),
+// ...) which allow to test either the synchronous or asynchronous version of
+// the function (checking that the asynchronous version does not block).
+void MaybeMigrateSyncingUserToSignedInWrapper(
+    bool is_blocking_allowed,
+    const base::FilePath& profile_path,
+    PrefService* pref_service) {
+  if (is_blocking_allowed) {
+    MaybeMigrateSyncingUserToSignedIn(profile_path, pref_service);
+    return;
+  }
+
+  base::RunLoop run_loop;
+  {
+    // Need to be in a nested block, since we want to block to wait for
+    // the callback to be called, but we do not want the function under
+    // test to block.
+    base::ScopedDisallowBlocking disallow_blocking;
+    MaybeMigrateSyncingUserToSignedInAsync(profile_path, pref_service,
+                                           run_loop.QuitClosure());
+  }
+  run_loop.Run();
+}
 
 class SyncToSigninMigrationTestBase {
  public:
@@ -51,11 +100,11 @@ class SyncToSigninMigrationTestBase {
   void RecordStateToPrefs(bool include_status_recorder = true) {
     // Populate signin prefs based on the state of the TestSyncService.
     pref_service_.SetString(prefs::kGoogleServicesAccountId,
-                            sync_service_.GetAccountInfo().gaia);
+                            sync_service_.GetAccountInfo().gaia.ToString());
     pref_service_.SetBoolean(prefs::kGoogleServicesConsentedToSync,
                              sync_service_.HasSyncConsent());
     pref_service_.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                            sync_service_.GetAccountInfo().gaia);
+                            sync_service_.GetAccountInfo().gaia.ToString());
     pref_service_.SetString(prefs::kGoogleServicesLastSyncingUsername,
                             sync_service_.GetAccountInfo().email);
 
@@ -65,9 +114,9 @@ class SyncToSigninMigrationTestBase {
     sync_prefs_->SetSelectedTypesForSyncingUser(
         settings->IsSyncEverythingEnabled(),
         settings->GetRegisteredSelectableTypes(), settings->GetSelectedTypes());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     sync_prefs_->SetInitialSyncFeatureSetupComplete();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
     if (include_status_recorder) {
       // Populate migration-specific Sync status prefs.
@@ -85,7 +134,7 @@ class SyncToSigninMigrationTestBase {
 
  private:
   base::test::ScopedFeatureList features_;
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  protected:
@@ -97,16 +146,20 @@ class SyncToSigninMigrationTestBase {
 
 // Fixture for tests covering the migration logic. The test param determines
 // whether the force-migration feature flag is enabled or not (the regular
-// migration is always enabled in this test).
-class SyncToSigninMigrationTest : public SyncToSigninMigrationTestBase,
-                                  public testing::TestWithParam<bool> {
+// migration is always enabled in this test) via the first parameter. The
+// second parameter controls whether the synchronous or asynchronous version
+// of MaybeMigrateSyncingUserToSignedIn(...) is tested.
+class SyncToSigninMigrationTest
+    : public SyncToSigninMigrationTestBase,
+      public testing::TestWithParam<std::tuple<bool, BlockingState>> {
  public:
   SyncToSigninMigrationTest()
       : SyncToSigninMigrationTestBase(
             /*migration_feature_enabled=*/true,
             /*force_migration_feature_enabled=*/IsForceMigrationEnabled()) {}
 
-  bool IsForceMigrationEnabled() const { return GetParam(); }
+  bool IsForceMigrationEnabled() const { return std::get<bool>(GetParam()); }
+  bool IsBlockingAllowed() const { return BlockingAllowed(GetParam()); }
 };
 
 TEST_P(SyncToSigninMigrationTest, SyncActive) {
@@ -115,7 +168,7 @@ TEST_P(SyncToSigninMigrationTest, SyncActive) {
             syncer::SyncService::TransportState::ACTIVE);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
 
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
 
   // Save the above state to prefs.
@@ -128,22 +181,23 @@ TEST_P(SyncToSigninMigrationTest, SyncActive) {
           .empty());
 
   // Run the migration. This should change the user to be non-syncing.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
   // The user should still be signed in.
-  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
   // But not syncing anymore.
   EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 #endif
   // The fact that the user was migrated should be recorded in prefs.
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-            gaia_id);
+            gaia_id.ToString());
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
@@ -173,8 +227,8 @@ TEST_P(SyncToSigninMigrationTest, SyncStatusPrefsUnset) {
 
   // Trigger the migration - it should only run in this state if the
   // force-migration is enabled.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
@@ -206,8 +260,8 @@ TEST_P(SyncToSigninMigrationTest, SyncTransport) {
       pref_service_.user_prefs_store()->GetValues();
 
   // Trigger the migration - it should NOT actually run in this state.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
@@ -223,7 +277,7 @@ TEST_P(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
             syncer::SyncService::TransportState::DISABLED);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
 
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
 
   // Save the above state to prefs.
@@ -236,19 +290,20 @@ TEST_P(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
 
   // Run the migration. This should change the user to be non-syncing (even
   // though Sync wasn't actually active).
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
   // The user should still be signed in.
-  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
   // But not syncing anymore.
   EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
   // The fact that the user was migrated should be recorded in prefs.
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-            gaia_id);
+            gaia_id.ToString());
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
@@ -272,12 +327,12 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayNotPassed) {
   ASSERT_TRUE(
       pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
           .empty());
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
 
   // Attempt to migrate.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
@@ -285,12 +340,12 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayNotPassed) {
     // Enabling the forced migration flag causes the min delay requirement to be
     // ignored, immediately moving the user to the signed-in state.
     EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
-              gaia_id);
+              gaia_id.ToString());
     EXPECT_FALSE(
         pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
     EXPECT_EQ(pref_service_.GetString(
                   prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-              gaia_id);
+              gaia_id.ToString());
     EXPECT_EQ(pref_service_.GetString(
                   prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
               email);
@@ -301,7 +356,7 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayNotPassed) {
     // The migration should not run yet, giving the user some time to resolve
     // the error (switches::kMinDelayToMigrateSyncPaused).
     EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
-              gaia_id);
+              gaia_id.ToString());
     EXPECT_TRUE(
         pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
     EXPECT_EQ(pref_service_.GetString(
@@ -335,28 +390,29 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayPassed) {
   ASSERT_TRUE(
       pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
           .empty());
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
   RecordStateToPrefs();
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
 
   // Now, enough time has passed and the migration is attempted again.
   FastForwardBy(switches::kMinDelayToMigrateSyncPaused.Get());
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
   // The user should still be signed in.
-  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
   // But not syncing anymore.
   EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
   // The fact that the user was migrated should be recorded in prefs.
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-            gaia_id);
+            gaia_id.ToString());
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
@@ -386,24 +442,25 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_AuthErrorResolved) {
   ASSERT_TRUE(
       pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
           .empty());
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
   RecordStateToPrefs();
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Attempt the migration again with the auth error resolved.
   sync_service_.ClearAuthError();
   RecordStateToPrefs();
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration should have run.
-  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
   EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-            gaia_id);
+            gaia_id.ToString());
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
@@ -428,8 +485,8 @@ TEST_P(SyncToSigninMigrationTest, SyncInitializing) {
 
   // Trigger the migration - it should only run in this state if the
   // force-migration is enabled.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
@@ -468,8 +525,8 @@ TEST_P(SyncToSigninMigrationTest, UndoFeaturePreventsMigration) {
   base::HistogramTester histograms;
 
   // Trigger the migration.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Even though the user would be eligible, the "undo" feature should have
   // prevented the migration from happening. (And since there was nothing to
@@ -481,33 +538,42 @@ TEST_P(SyncToSigninMigrationTest, UndoFeaturePreventsMigration) {
       /*SyncToSigninMigrationDecision::kUndoNotNecessary*/ 7, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         SyncToSigninMigrationTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "ForceMigrationEnabled"
-                                             : "ForceMigrationDisabled";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SyncToSigninMigrationTest,
+    testing::Combine(testing::Bool(),
+                     testing::Values(BlockingState::kAllowed,
+                                     BlockingState::kDisallowed)),
+    [](const auto& info) {
+      return GenerateTestName(info.param, [](const auto& param) {
+        return std::get<bool>(param) ? "ForceMigrationEnabled"
+                                     : "ForceMigrationDisabled";
+      });
+    });
 
-// Fixture for tests covering migration metrics. The test param determines
-// whether the migration feature flag and possibly also the force-migration
-// feature flag are enabled.
 enum class FeatureState {
   kMigrationDisabled,
   kMigrationEnabled,
   kMigrationForced,
 };
+
+// Fixture for tests covering migration metrics. The first param determines
+// whether the migration feature flag and possibly also the force-migration
+// feature flag are enabled. The second parameter controls whether the
+// synchronous or asynchronous version of MaybeMigrateSyncingUserToSignedIn(...)
+// is tested.
 class SyncToSigninMigrationMetricsTest
     : public SyncToSigninMigrationTestBase,
-      public testing::TestWithParam<FeatureState> {
+      public testing::TestWithParam<std::tuple<FeatureState, BlockingState>> {
  public:
   SyncToSigninMigrationMetricsTest()
       : SyncToSigninMigrationTestBase(
             /*migration_feature_enabled=*/IsMigrationEnabled(),
             /*force_migration_feature_enabled=*/IsForceMigrationEnabled()) {}
 
+  FeatureState GetFeature() const { return std::get<FeatureState>(GetParam()); }
   bool IsMigrationEnabled() const {
-    switch (GetParam()) {
+    switch (GetFeature()) {
       case FeatureState::kMigrationDisabled:
         return false;
       case FeatureState::kMigrationEnabled:
@@ -516,7 +582,7 @@ class SyncToSigninMigrationMetricsTest
     }
   }
   bool IsForceMigrationEnabled() const {
-    switch (GetParam()) {
+    switch (GetFeature()) {
       case FeatureState::kMigrationDisabled:
       case FeatureState::kMigrationEnabled:
         return false;
@@ -524,6 +590,7 @@ class SyncToSigninMigrationMetricsTest
         return true;
     }
   }
+  bool IsBlockingAllowed() const { return BlockingAllowed(GetParam()); }
 
   std::string GetTypeDecisionHistogramInfix() const {
     return IsMigrationEnabled() ? "Migration" : "DryRun";
@@ -543,8 +610,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncAndAllDataTypesActive) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The overall migration should run, except if the feature flag is disabled.
   int expected_decision =
@@ -603,8 +670,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncActiveButNotDataTypes) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The overall migration should run, except if the feature flag is disabled.
   int expected_decision =
@@ -658,8 +725,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncStatusPrefsUnset) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // With the missing/undefined status, the overall migration should only run if
   // the force-migration flag was enabled.
@@ -718,8 +785,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, NotSignedIn) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration should not run since there's no signed-in user.
   histograms.ExpectUniqueSample(
@@ -755,8 +822,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncTransport) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration should not run since this is not a Sync-the-feature user.
   histograms.ExpectUniqueSample(
@@ -787,8 +854,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayNotPassed) {
   RecordStateToPrefs();
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   std::string infix = GetTypeDecisionHistogramInfix();
   if (IsForceMigrationEnabled()) {
@@ -859,7 +926,7 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayNotPassed) {
 }
 
 TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayPassed) {
-  if (GetParam() != FeatureState::kMigrationEnabled) {
+  if (GetFeature() != FeatureState::kMigrationEnabled) {
     // For kMigrationForced, the duration of the auth error is irrelevant,
     // the migration succeeds on the first attempt and that's covered in
     // SyncPaused_MinDelayNotPassed.
@@ -877,14 +944,14 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayPassed) {
   ASSERT_TRUE(sync_service_.HasSyncConsent());
   ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
   RecordStateToPrefs();
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
   base::HistogramTester histograms;
 
   // Now, enough time has passed and the migration is attempted again.
   FastForwardBy(switches::kMinDelayToMigrateSyncPaused.Get());
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The overall migration should run, except if the feature flag is disabled.
   int expected_decision =
@@ -925,7 +992,7 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayPassed) {
 }
 
 TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_AuthErrorResolved) {
-  if (GetParam() != FeatureState::kMigrationEnabled) {
+  if (GetFeature() != FeatureState::kMigrationEnabled) {
     // For kMigrationForced, the duration of the auth error is irrelevant,
     // the migration succeeds on the first attempt and that's covered in
     // SyncPaused_MinDelayNotPassed.
@@ -943,15 +1010,15 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_AuthErrorResolved) {
   ASSERT_TRUE(sync_service_.HasSyncConsent());
   ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
   RecordStateToPrefs();
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
   sync_service_.ClearAuthError();
   RecordStateToPrefs();
   base::HistogramTester histograms;
 
   // Attempt the migration again with the auth error resolved.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration should run.
   std::string infix = GetTypeDecisionHistogramInfix();
@@ -987,8 +1054,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // If Sync was still initializing, the overall migration should only run if
   // the force-migration flag was enabled.
@@ -1037,25 +1104,33 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         SyncToSigninMigrationMetricsTest,
-                         testing::ValuesIn({FeatureState::kMigrationDisabled,
-                                            FeatureState::kMigrationEnabled,
-                                            FeatureState::kMigrationForced}),
-                         [](const testing::TestParamInfo<FeatureState>& info) {
-                           switch (info.param) {
-                             case FeatureState::kMigrationDisabled:
-                               return "MigrationDisabled";
-                             case FeatureState::kMigrationEnabled:
-                               return "MigrationEnabled";
-                             case FeatureState::kMigrationForced:
-                               return "MigrationForced";
-                           }
-                           return "";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SyncToSigninMigrationMetricsTest,
+    testing::Combine(testing::Values(FeatureState::kMigrationDisabled,
+                                     FeatureState::kMigrationEnabled,
+                                     FeatureState::kMigrationForced),
+                     testing::Values(BlockingState::kAllowed,
+                                     BlockingState::kDisallowed)),
+    [](const auto& info) {
+      return GenerateTestName(info.param, [](const auto& param) {
+        switch (std::get<FeatureState>(param)) {
+          case FeatureState::kMigrationDisabled:
+            return "MigrationDisabled";
+          case FeatureState::kMigrationEnabled:
+            return "MigrationEnabled";
+          case FeatureState::kMigrationForced:
+            return "MigrationForced";
+        }
+        NOTREACHED();
+      });
+    });
 
-class SyncToSigninMigrationDataTypesTest : public SyncToSigninMigrationTestBase,
-                                           public testing::Test {
+// The test parameter controls whether the synchronous or asynchronous version
+// of MaybeMigrateSyncingUserToSignedIn(...) is tested.
+class SyncToSigninMigrationDataTypesTest
+    : public SyncToSigninMigrationTestBase,
+      public testing::TestWithParam<std::tuple<BlockingState>> {
  public:
   SyncToSigninMigrationDataTypesTest()
       : SyncToSigninMigrationTestBase(
@@ -1087,9 +1162,11 @@ class SyncToSigninMigrationDataTypesTest : public SyncToSigninMigrationTestBase,
   base::FilePath GetPasswordsAccountStorePath() const {
     return fake_profile_dir_.GetPath().AppendASCII("Login Data For Account");
   }
+
+  bool IsBlockingAllowed() const { return BlockingAllowed(GetParam()); }
 };
 
-TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_BothExist) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MoveBookmarks_BothExist) {
   // Both bookmark stores exist on disk. The account store is empty, since it
   // was unused pre-migration. This is the typical pre-migration state.
   base::WriteFile(GetBookmarksLocalStorePath(), "local bookmarks");
@@ -1097,8 +1174,8 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_BothExist) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The local file should have been moved over the account one.
   EXPECT_FALSE(base::PathExists(GetBookmarksLocalStorePath()));
@@ -1114,7 +1191,7 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_BothExist) {
       -base::File::FILE_OK, 1);
 }
 
-TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_OnlyLocalExists) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MoveBookmarks_OnlyLocalExists) {
   // Only the local store exists on disk; the account store doesn't. This is
   // uncommon, but could happen upgrades directly from an old Chrome version
   // that didn't have an account store yet.
@@ -1122,8 +1199,8 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_OnlyLocalExists) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The local file should have been renamed to the account one.
   EXPECT_FALSE(base::PathExists(GetBookmarksLocalStorePath()));
@@ -1139,15 +1216,15 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_OnlyLocalExists) {
       -base::File::FILE_OK, 1);
 }
 
-TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_OnlyAccountExists) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MoveBookmarks_OnlyAccountExists) {
   // Only the account store exists on disk; the local store doesn't. This
   // should be impossible in practice, except maybe in rare error cases.
   base::WriteFile(GetBookmarksAccountStorePath(), "account bookmarks");
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration shouldn't have done anything; the account store should still
   // exist with the same contents.
@@ -1164,14 +1241,14 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_OnlyAccountExists) {
       -base::File::FILE_ERROR_NOT_FOUND, 1);
 }
 
-TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_NoneExists) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MoveBookmarks_NoneExists) {
   // Neither of the two stores exist on disk. This should be impossible in
   // practice, except maybe in rare error cases.
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration shouldn't have done anything; still neither of the stores
   // should exist.
@@ -1184,7 +1261,7 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_NoneExists) {
 }
 
 #if BUILDFLAG(IS_POSIX)
-TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_FolderNotWritable) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MoveBookmarks_FolderNotWritable) {
   // Both bookmark stores exist on disk. The account store is empty, since it
   // was unused pre-migration. This is the typical pre-migration state.
   base::WriteFile(GetBookmarksLocalStorePath(), "local bookmarks");
@@ -1203,8 +1280,8 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_FolderNotWritable) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Nothing should have changed.
   EXPECT_TRUE(base::PathExists(GetBookmarksLocalStorePath()));
@@ -1226,13 +1303,13 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_FolderNotWritable) {
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_NoMoveOnAndroid) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MovePasswords_NoMoveOnAndroid) {
   base::WriteFile(GetPasswordsLocalStorePath(), "local passwords");
   base::WriteFile(GetPasswordsAccountStorePath(), "account passwords");
   base::HistogramTester histogram_tester;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The files should be unchanged.
   std::string local_contents;
@@ -1247,7 +1324,7 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_NoMoveOnAndroid) {
       "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove", 0);
 }
 #else
-TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_BothExist) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MovePasswords_BothExist) {
   // Both password stores exist on disk. The account store is empty, since it
   // was unused pre-migration. This is the typical pre-migration state.
   base::WriteFile(GetPasswordsLocalStorePath(), "local passwords");
@@ -1255,8 +1332,8 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_BothExist) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The local file should have been moved over the account one.
   EXPECT_FALSE(base::PathExists(GetPasswordsLocalStorePath()));
@@ -1272,7 +1349,7 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_BothExist) {
       -base::File::FILE_OK, 1);
 }
 
-TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_OnlyLocalExists) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MovePasswords_OnlyLocalExists) {
   // Only the local store exists on disk; the account store doesn't. This is
   // uncommon, but could happen upgrades directly from an old Chrome version
   // that didn't have an account store yet.
@@ -1280,8 +1357,8 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_OnlyLocalExists) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The local file should have been renamed to the account one.
   EXPECT_FALSE(base::PathExists(GetPasswordsLocalStorePath()));
@@ -1297,15 +1374,15 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_OnlyLocalExists) {
       -base::File::FILE_OK, 1);
 }
 
-TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_OnlyAccountExists) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MovePasswords_OnlyAccountExists) {
   // Only the account store exists on disk; the local store doesn't. This
   // should be impossible in practice, except maybe in rare error cases.
   base::WriteFile(GetPasswordsAccountStorePath(), "account passwords");
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration shouldn't have done anything; the account store should still
   // exist with the same contents.
@@ -1322,14 +1399,14 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_OnlyAccountExists) {
       -base::File::FILE_ERROR_NOT_FOUND, 1);
 }
 
-TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_NoneExists) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MovePasswords_NoneExists) {
   // Neither of the two stores exist on disk. This should be impossible in
   // practice, except maybe in rare error cases.
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration shouldn't have done anything; still neither of the stores
   // should exist.
@@ -1342,7 +1419,7 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_NoneExists) {
 }
 
 #if BUILDFLAG(IS_POSIX)
-TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_FolderNotWritable) {
+TEST_P(SyncToSigninMigrationDataTypesTest, MovePasswords_FolderNotWritable) {
   // Both password stores exist on disk. The account store is empty, since it
   // was unused pre-migration. This is the typical pre-migration state.
   base::WriteFile(GetPasswordsLocalStorePath(), "local passwords");
@@ -1361,8 +1438,8 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_FolderNotWritable) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // Nothing should have changed.
   EXPECT_TRUE(base::PathExists(GetPasswordsLocalStorePath()));
@@ -1384,19 +1461,33 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_FolderNotWritable) {
 #endif  // BUILDFLAG(IS_POSIX)
 #endif  // BUILDFLAG(IS_ANDROID)
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SyncToSigninMigrationDataTypesTest,
+    testing::Combine(testing::Values(BlockingState::kAllowed,
+                                     BlockingState::kDisallowed)),
+    [](const auto& info) {
+      // Hack because the test has only one parameter.
+      return GenerateTestName(info.param, [](const auto& param) { return ""; });
+    });
+
 // A test fixture that performs the SyncToSignin migration, then enables the
-// "undo migration" feature.The test param determines whether the
+// "undo migration" feature.The first test param determines whether the
 // force-migration feature flag is enabled or not (the regular migration is
-// always enabled in this test).
-class SyncToSigninMigrationUndoTest : public SyncToSigninMigrationTestBase,
-                                      public testing::TestWithParam<bool> {
+// always enabled in this test). The second parameter controls whether the
+// synchronous or asynchronous version of MaybeMigrateSyncingUserToSignedIn(...)
+// is tested.
+class SyncToSigninMigrationUndoTest
+    : public SyncToSigninMigrationTestBase,
+      public testing::TestWithParam<std::tuple<bool, BlockingState>> {
  public:
   SyncToSigninMigrationUndoTest()
       : SyncToSigninMigrationTestBase(
             /*migration_feature_enabled=*/true,
             /*force_migration_feature_enabled=*/IsForceMigrationEnabled()) {}
 
-  bool IsForceMigrationEnabled() const { return GetParam(); }
+  bool IsForceMigrationEnabled() const { return std::get<bool>(GetParam()); }
+  bool IsBlockingAllowed() const { return BlockingAllowed(GetParam()); }
 
   void SetUp() override {
     // Everything is active.
@@ -1410,8 +1501,8 @@ class SyncToSigninMigrationUndoTest : public SyncToSigninMigrationTestBase,
     RecordStateToPrefs();
 
     // Run the migration, so that there is something to undo.
-    MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                      &pref_service_);
+    MaybeMigrateSyncingUserToSignedInWrapper(
+        IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
     undo_feature_.InitAndEnableFeature(
         switches::kUndoMigrationOfSyncingUserToSignedIn);
@@ -1426,27 +1517,27 @@ TEST_P(SyncToSigninMigrationUndoTest, UndoesMigration) {
   ASSERT_FALSE(
       pref_service_.GetString(prefs::kGoogleServicesAccountId).empty());
   ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
-            sync_service_.GetAccountInfo().gaia);
+            sync_service_.GetAccountInfo().gaia.ToString());
   // Not syncing:
   ASSERT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
   ASSERT_TRUE(
       pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId).empty());
   ASSERT_TRUE(pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername)
                   .empty());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 #endif
   // Marked as "migrated":
   ASSERT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-            sync_service_.GetAccountInfo().gaia);
+            sync_service_.GetAccountInfo().gaia.ToString());
   ASSERT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             sync_service_.GetAccountInfo().email);
 
   // Trigger the "undo" migration.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration should've been undone, and the user should be back in the
   // "syncing" state.
@@ -1456,7 +1547,7 @@ TEST_P(SyncToSigninMigrationUndoTest, UndoesMigration) {
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   // The "last syncing user" prefs should also have been restored.
   EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId),
-            sync_service_.GetAccountInfo().gaia);
+            sync_service_.GetAccountInfo().gaia.ToString());
   EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername),
             sync_service_.GetAccountInfo().email);
   // And the "was migrated" prefs should've been cleared.
@@ -1472,8 +1563,8 @@ TEST_P(SyncToSigninMigrationUndoTest, UndoesMigration) {
 
 TEST_P(SyncToSigninMigrationUndoTest, Idempotent) {
   // Trigger the "undo" migration.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The user is now back in the "syncing" state.
   ASSERT_FALSE(
@@ -1490,8 +1581,8 @@ TEST_P(SyncToSigninMigrationUndoTest, Idempotent) {
       pref_service_.user_prefs_store()->GetValues();
 
   // Trigger the (undo) migration again - it should have no further effect.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The prefs should be unmodified.
   EXPECT_EQ(pref_service_.user_prefs_store()->GetValues(), all_prefs);
@@ -1512,8 +1603,8 @@ TEST_P(SyncToSigninMigrationUndoTest, DoesNotUndoMigrationIfSignedOut) {
   pref_service_.ClearPref(prefs::kGoogleServicesAccountId);
 
   // Trigger the "undo" migration.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration should NOT have been undone, since the account isn't signed
   // in anymore.
@@ -1539,8 +1630,8 @@ TEST_P(SyncToSigninMigrationUndoTest, DoesNotUndoMigrationIfDiffentAccount) {
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn));
 
   // Trigger the "undo" migration.
-  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
-                                    &pref_service_);
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration should NOT have been undone, since a different account is
   // signed in now.
@@ -1549,13 +1640,18 @@ TEST_P(SyncToSigninMigrationUndoTest, DoesNotUndoMigrationIfDiffentAccount) {
   EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         SyncToSigninMigrationUndoTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "ForceMigrationEnabled"
-                                             : "ForceMigrationDisabled";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SyncToSigninMigrationUndoTest,
+    testing::Combine(testing::Bool(),
+                     testing::Values(BlockingState::kAllowed,
+                                     BlockingState::kDisallowed)),
+    [](const auto& info) {
+      return GenerateTestName(info.param, [](const auto& param) {
+        return std::get<bool>(param) ? "ForceMigrationEnabled"
+                                     : "ForceMigrationDisabled";
+      });
+    });
 
 }  // namespace
 }  // namespace browser_sync

@@ -18,8 +18,6 @@ source_set("model") {
   sources = [
     "chrome_ios_translate_client.h",
     "chrome_ios_translate_client.mm",
-    "language_selection_context.h",
-    "language_selection_context.mm",
     "translate_infobar_tags.h",
     "translate_ranker_factory.h",
     "translate_ranker_factory.mm",
@@ -32,8 +30,6 @@ source_set("model") {
     ":public",
     "//base",
     "//components/infobars/core",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/language/core/browser",
     "//components/language_detection/core/browser:language_detection_model_service",
     "//components/language_detection/ios/browser",
@@ -53,8 +49,8 @@ source_set("model") {
     "//ios/chrome/browser/language_detection/model",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/components/webui:url_constants",
@@ -74,6 +70,7 @@ source_set("unit_tests") {
     "chrome_ios_translate_client_unittest.mm",
     "translate_service_ios_unittest.cc",
   ]
+  public_deps = [ "//components/sync_preferences:test_support" ]
   deps = [
     ":model",
     ":public",
@@ -87,7 +84,6 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:prediction",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/sync_preferences:test_support",
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
@@ -102,12 +98,12 @@ source_set("unit_tests") {
     "//ios/chrome/common:string_util",
     "//ios/chrome/test:test_support",
     "//ios/web/public",
-    "//ios/web/public/test:test",
+    "//ios/web/public/test",
     "//ios/web/public/test:util",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -120,9 +116,9 @@ source_set("test_support") {
   deps = [
     "//components/infobars/core",
     "//components/sync_preferences:test_support",
-    "//components/translate/core/browser:browser",
+    "//components/translate/core/browser",
     "//components/translate/core/browser:test_support",
-    "//ios/chrome/test/fakes:fakes",
+    "//ios/chrome/test/fakes",
     "//testing/gmock",
     "//third_party/metrics_proto",
   ]
@@ -136,16 +132,16 @@ source_set("eg_app_support+eg2") {
     "translate_app_interface.mm",
   ]
   deps = [
-    "//base:base",
-    "//components/translate/core/browser:browser",
-    "//components/translate/core/common:common",
-    "//components/translate/ios/browser:browser",
+    "//base",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//components/translate/ios/browser",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/translate/model:model",
+    "//ios/chrome/browser/translate/model",
     "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/fakes:fakes",
+    "//ios/chrome/test/fakes",
     "//ios/web/public/js_messaging",
-    "//net:net",
+    "//net",
   ]
 }
 

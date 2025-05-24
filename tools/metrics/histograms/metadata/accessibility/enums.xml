@@ -139,6 +139,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/image_descriptions/android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsDialog.java:ImageDescriptionsDialogAction) -->
 
+<!-- LINT.IfChange(AccessibilityModeBundleEnum)-->
+
+<enum name="AccessibilityModeBundleEnum">
+  <summary>Tracks usage of named sets of mode flags.</summary>
+  <int value="0" label="Unnamed"/>
+  <int value="1" label="Basic"/>
+  <int value="2" label="WebContentsOnly"/>
+  <int value="3" label="Complete"/>
+  <int value="4" label="CompleteNoHTML"/>
+  <int value="5" label="FormControls"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/accessibility/ax_mode.h) -->
+
 <!-- LINT.IfChange(AccessibilityPageZoomAppMenuEnabledState)-->
 
 <enum name="AccessibilityPageZoomAppMenuEnabledState">
@@ -150,6 +164,293 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java:AccessibilityPageZoomAppMenuEnabledState) -->
+
+<!-- LINT.IfChange(AccessibilityPageZoomUsageType)-->
+
+<enum name="AccessibilityPageZoomUsageType">
+  <summary>Track usage type for the page zoom feature.</summary>
+  <int value="0" label="No Usage"/>
+  <int value="1" label="Site-level setting"/>
+  <int value="2" label="Default zoom setting"/>
+  <int value="3" label="Both site-level and default zoom settings"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java:AccessibilityPageZoomUsageType) -->
+
+<!-- LINT.IfChange(AccessibilityPredicateType)-->
+
+<enum name="AccessibilityPredicateType">
+  <summary>
+    Tracks the type of predicate used during next html element navigation on
+    Android.
+  </summary>
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="DEFAULT"/>
+  <int value="2" label="Article"/>
+  <int value="3" label="BlockQuote"/>
+  <int value="4" label="Button"/>
+  <int value="5" label="Checkbox"/>
+  <int value="6" label="Combobox"/>
+  <int value="7" label="Control"/>
+  <int value="8" label="Focusable"/>
+  <int value="9" label="Frame"/>
+  <int value="10" label="Graphic"/>
+  <int value="11" label="H1"/>
+  <int value="12" label="H2"/>
+  <int value="13" label="H3"/>
+  <int value="14" label="H4"/>
+  <int value="15" label="H5"/>
+  <int value="16" label="H6"/>
+  <int value="17" label="Heading"/>
+  <int value="18" label="Heading Same"/>
+  <int value="19" label="Landmark"/>
+  <int value="20" label="Link"/>
+  <int value="21" label="List"/>
+  <int value="22" label="ListItem"/>
+  <int value="23" label="Live"/>
+  <int value="24" label="Main"/>
+  <int value="25" label="Media"/>
+  <int value="26" label="Paragraph"/>
+  <int value="27" label="Radio"/>
+  <int value="28" label="RadioGroup"/>
+  <int value="29" label="Section"/>
+  <int value="30" label="Table"/>
+  <int value="31" label="TextField"/>
+  <int value="32" label="Text Bold"/>
+  <int value="33" label="Text Italic"/>
+  <int value="34" label="Text Underline"/>
+  <int value="35" label="Tree"/>
+  <int value="36" label="Unvisited Link"/>
+  <int value="37" label="Visited Link"/>
+  <int value="38" label="Row"/>
+  <int value="39" label="Column"/>
+  <int value="40" label="Row Bounds"/>
+  <int value="41" label="Column Bounds"/>
+  <int value="42" label="Table Bounds"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/accessibility/web_contents_accessibility_android.cc:AccessibilityPredicateType) -->
+
+<!-- LINT.IfChange(AccessibilityRole)-->
+
+<enum name="AccessibilityRole">
+  <summary>List of all possible accessibility node roles.</summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Abbr"/>
+  <int value="2" label="Alert"/>
+  <int value="3" label="AlertDialog"/>
+  <int value="4" label="Application"/>
+  <int value="5" label="Article"/>
+  <int value="6" label="Audio"/>
+  <int value="7" label="Banner"/>
+  <int value="8" label="Blockquote"/>
+  <int value="9" label="Button"/>
+  <int value="10" label="Canvas"/>
+  <int value="11" label="Caption"/>
+  <int value="12" label="Caret"/>
+  <int value="13" label="Cell"/>
+  <int value="14" label="CheckBox"/>
+  <int value="15" label="Client"/>
+  <int value="16" label="Code"/>
+  <int value="17" label="ColorWell"/>
+  <int value="18" label="Column"/>
+  <int value="19" label="ColumnHeader"/>
+  <int value="20" label="ComboBoxGrouping"/>
+  <int value="21" label="ComboBoxMenuButton"/>
+  <int value="22" label="Complementary"/>
+  <int value="23" label="Comment"/>
+  <int value="24" label="ContentDeletion"/>
+  <int value="25" label="ContentInsertion"/>
+  <int value="26" label="ContentInfo"/>
+  <int value="27" label="Date"/>
+  <int value="28" label="DateTime"/>
+  <int value="29" label="Definition"/>
+  <int value="30" label="DescriptionList"/>
+  <int value="31" label="DescriptionListDetailDeprecated"/>
+  <int value="32" label="DescriptionListTermDeprecated"/>
+  <int value="33" label="Desktop"/>
+  <int value="34" label="Details"/>
+  <int value="35" label="Dialog"/>
+  <int value="36" label="DirectoryDeprecated"/>
+  <int value="37" label="DisclosureTriangle"/>
+  <int value="38" label="DocAbstract"/>
+  <int value="39" label="DocAcknowledgments"/>
+  <int value="40" label="DocAfterword"/>
+  <int value="41" label="DocAppendix"/>
+  <int value="42" label="DocBackLink"/>
+  <int value="43" label="DocBiblioEntry"/>
+  <int value="44" label="DocBibliography"/>
+  <int value="45" label="DocBiblioRef"/>
+  <int value="46" label="DocChapter"/>
+  <int value="47" label="DocColophon"/>
+  <int value="48" label="DocConclusion"/>
+  <int value="49" label="DocCover"/>
+  <int value="50" label="DocCredit"/>
+  <int value="51" label="DocCredits"/>
+  <int value="52" label="DocDedication"/>
+  <int value="53" label="DocEndnote"/>
+  <int value="54" label="DocEndnotes"/>
+  <int value="55" label="DocEpigraph"/>
+  <int value="56" label="DocEpilogue"/>
+  <int value="57" label="DocErrata"/>
+  <int value="58" label="DocExample"/>
+  <int value="59" label="DocFootnote"/>
+  <int value="60" label="DocForeword"/>
+  <int value="61" label="DocGlossary"/>
+  <int value="62" label="DocGlossRef"/>
+  <int value="63" label="DocIndex"/>
+  <int value="64" label="DocIntroduction"/>
+  <int value="65" label="DocNoteRef"/>
+  <int value="66" label="DocNotice"/>
+  <int value="67" label="DocPageBreak"/>
+  <int value="68" label="DocPageFooter"/>
+  <int value="69" label="DocPageHeader"/>
+  <int value="70" label="DocPageList"/>
+  <int value="71" label="DocPart"/>
+  <int value="72" label="DocPreface"/>
+  <int value="73" label="DocPrologue"/>
+  <int value="74" label="DocPullquote"/>
+  <int value="75" label="DocQna"/>
+  <int value="76" label="DocSubtitle"/>
+  <int value="77" label="DocTip"/>
+  <int value="78" label="DocToc"/>
+  <int value="79" label="Document"/>
+  <int value="80" label="EmbeddedObject"/>
+  <int value="81" label="Emphasis"/>
+  <int value="82" label="Feed"/>
+  <int value="83" label="Figcaption"/>
+  <int value="84" label="Figure"/>
+  <int value="85" label="Footer"/>
+  <int value="86" label="SectionFooter"/>
+  <int value="87" label="Form"/>
+  <int value="88" label="GenericContainer"/>
+  <int value="89" label="GraphicsDocument"/>
+  <int value="90" label="GraphicsObject"/>
+  <int value="91" label="GraphicsSymbol"/>
+  <int value="92" label="Grid"/>
+  <int value="93" label="Group"/>
+  <int value="94" label="Header"/>
+  <int value="95" label="SectionHeader"/>
+  <int value="96" label="Heading"/>
+  <int value="97" label="Iframe"/>
+  <int value="98" label="IframePresentational"/>
+  <int value="99" label="Image"/>
+  <int value="100" label="ImeCandidate"/>
+  <int value="101" label="InlineTextBox"/>
+  <int value="102" label="InputTime"/>
+  <int value="103" label="Keyboard"/>
+  <int value="104" label="LabelText"/>
+  <int value="105" label="LayoutTable"/>
+  <int value="106" label="LayoutTableCell"/>
+  <int value="107" label="LayoutTableRow"/>
+  <int value="108" label="Legend"/>
+  <int value="109" label="LineBreak"/>
+  <int value="110" label="Link"/>
+  <int value="111" label="List"/>
+  <int value="112" label="ListBox"/>
+  <int value="113" label="ListBoxOption"/>
+  <int value="114" label="ListGrid"/>
+  <int value="115" label="ListItem"/>
+  <int value="116" label="ListMarker"/>
+  <int value="117" label="Log"/>
+  <int value="118" label="Main"/>
+  <int value="119" label="Mark"/>
+  <int value="120" label="Marquee"/>
+  <int value="121" label="Math"/>
+  <int value="122" label="Menu"/>
+  <int value="123" label="MenuBar"/>
+  <int value="124" label="MenuItem"/>
+  <int value="125" label="MenuItemCheckBox"/>
+  <int value="126" label="MenuItemRadio"/>
+  <int value="127" label="MenuListOption"/>
+  <int value="128" label="MenuListPopup"/>
+  <int value="129" label="Meter"/>
+  <int value="130" label="Navigation"/>
+  <int value="131" label="Note"/>
+  <int value="132" label="Pane"/>
+  <int value="133" label="Paragraph"/>
+  <int value="134" label="PdfActionableHighlight"/>
+  <int value="135" label="PdfRoot"/>
+  <int value="136" label="PluginObject"/>
+  <int value="137" label="PopUpButton"/>
+  <int value="138" label="PortalDeprecated"/>
+  <int value="139" label="PreDeprecated"/>
+  <int value="140" label="ProgressIndicator"/>
+  <int value="141" label="RadioButton"/>
+  <int value="142" label="RadioGroup"/>
+  <int value="143" label="Region"/>
+  <int value="144" label="RootWebArea"/>
+  <int value="145" label="Row"/>
+  <int value="146" label="RowGroup"/>
+  <int value="147" label="RowHeader"/>
+  <int value="148" label="Ruby"/>
+  <int value="149" label="RubyAnnotation"/>
+  <int value="150" label="ScrollBar"/>
+  <int value="151" label="ScrollView"/>
+  <int value="152" label="Search"/>
+  <int value="153" label="SearchBox"/>
+  <int value="154" label="Section"/>
+  <int value="155" label="Slider"/>
+  <int value="156" label="SpinButton"/>
+  <int value="157" label="Splitter"/>
+  <int value="158" label="StaticText"/>
+  <int value="159" label="Status"/>
+  <int value="160" label="Strong"/>
+  <int value="161" label="Suggestion"/>
+  <int value="162" label="SvgRoot"/>
+  <int value="163" label="Switch"/>
+  <int value="164" label="Tab"/>
+  <int value="165" label="TabList"/>
+  <int value="166" label="TabPanel"/>
+  <int value="167" label="Table"/>
+  <int value="168" label="TableHeaderContainer"/>
+  <int value="169" label="Term"/>
+  <int value="170" label="TextField"/>
+  <int value="171" label="TextFieldWithComboBox"/>
+  <int value="172" label="Time"/>
+  <int value="173" label="Timer"/>
+  <int value="174" label="TitleBar"/>
+  <int value="175" label="ToggleButton"/>
+  <int value="176" label="Toolbar"/>
+  <int value="177" label="Tooltip"/>
+  <int value="178" label="Tree"/>
+  <int value="179" label="TreeGrid"/>
+  <int value="180" label="TreeItem"/>
+  <int value="181" label="Unknown"/>
+  <int value="182" label="Video"/>
+  <int value="183" label="WebView"/>
+  <int value="184" label="Window"/>
+  <int value="185" label="Subscript"/>
+  <int value="186" label="Superscript"/>
+  <int value="187" label="MathMLMath"/>
+  <int value="188" label="MathMLFraction"/>
+  <int value="189" label="MathMLIdentifier"/>
+  <int value="190" label="MathMLMultiscripts"/>
+  <int value="191" label="MathMLNoneScript"/>
+  <int value="192" label="MathMLNumber"/>
+  <int value="193" label="MathMLOperator"/>
+  <int value="194" label="MathMLOver"/>
+  <int value="195" label="MathMLPrescriptDelimiter"/>
+  <int value="196" label="MathMLRoot"/>
+  <int value="197" label="MathMLRow"/>
+  <int value="198" label="MathMLSquareRoot"/>
+  <int value="199" label="MathMLStringLiteral"/>
+  <int value="200" label="MathMLSub"/>
+  <int value="201" label="MathMLSubSup"/>
+  <int value="202" label="MathMLSup"/>
+  <int value="203" label="MathMLTable"/>
+  <int value="204" label="MathMLTableCell"/>
+  <int value="205" label="MathMLTableRow"/>
+  <int value="206" label="MathMLText"/>
+  <int value="207" label="MathMLUnder"/>
+  <int value="208" label="MathMLUnderOver"/>
+  <int value="209" label="ComboBoxSelect"/>
+  <int value="210" label="DisclosureTriangleGrouped"/>
+  <int value="211" label="SectionWithoutName"/>
+  <int value="212" label="GridCell"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/accessibility/ax_enums.mojom:Role) -->
 
 <!-- LINT.IfChange(AccessibilityTreeUnserializeError) -->
 
@@ -876,6 +1177,36 @@ Unknown properties are collapsed to zero. -->
   <int value="30174" label="IsDialog"/>
 </enum>
 
+<!-- LINT.IfChange(AssistiveTech)-->
+
+<enum name="AssistiveTech">
+  <summary>
+    Auto Disable can be blocked via the detection of known screen assistive
+    technologies such as screen readers.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Uninitialized"/>
+  <int value="2" label="ChromeVox"/>
+  <int value="3" label="JAWS"/>
+  <int value="4" label="Narrator"/>
+  <int value="5" label="NVDA"/>
+  <int value="6" label="Orca"/>
+  <int value="7" label="Supernova"/>
+  <int value="8" label="Talkback"/>
+  <int value="9" label="VoiceOver"/>
+  <int value="10" label="ZoomText"/>
+  <int value="11" label="ZDSR"/>
+  <int value="12" label="Generic Screen Reader"/>
+  <int value="13" label="Windows Magnifier"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/accessibility/platform/assistive_tech.h:AssistiveTech) -->
+
+<enum name="AudioPlayback">
+  <int value="0" label="Can play through"/>
+  <int value="1" label="Ended"/>
+</enum>
+
 <!-- LINT.IfChange(AutoclickActionType) -->
 
 <enum name="AutoclickActionType">
@@ -888,6 +1219,20 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <!-- LINT.ThenChange(//ash/public/cpp/accessibility_controller_enums.h:AutoclickEventType) -->
+
+<!-- LINT.IfChange(AXTreeFixingClientScreenAIRequestType) -->
+
+<enum name="AXTreeFixingClientScreenAIRequestType">
+  <summary>
+    The various types of requests that an AXTreeFixing client can make to
+    ScreenAI.
+  </summary>
+  <int value="0" label="Invalid tree (contains kMain)"/>
+  <int value="1" label="Request before service initialized"/>
+  <int value="2" label="Valid"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/accessibility/tree_fixing/internal/ax_tree_fixing_screen_ai_service.cc:AXTreeFixingClientScreenAIRequestType) -->
 
 <!-- LINT.IfChange(AXTreeSnapshotErrorReason) -->
 
@@ -1099,6 +1444,7 @@ Unknown properties are collapsed to zero. -->
   <int value="176" label="TOGGLE_STICKY_MODE"/>
   <int value="177" label="TOP"/>
   <int value="178" label="VIEW_GRAPHIC_AS_BRAILLE"/>
+  <int value="179" label="TOGGLE_CAPTIONS"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/chromeos/accessibility/chromevox/common/command.ts:Command) -->
@@ -1254,6 +1600,56 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h:DependencyParserModelState) -->
 
+<!-- LINT.IfChange(DistillationResult)-->
+
+<enum name="DistillationResult">
+  <summary>Describes the end-state of the distillation result.</summary>
+  <int value="0" label="Not distillable"/>
+  <int value="1" label="Distillable"/>
+  <int value="2" label="Distillable but excluded for an unknown reason."/>
+  <int value="3"
+      label="Distillable but excluded because the page is considered mobile
+             friendly."/>
+  <int value="4"
+      label="Distillable but excluded because the user is requesting the
+             desktop version of the site."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java.java:DistillationResult) -->
+
+<!-- LINT.IfChange(JAWSMajorVersion)-->
+
+<enum name="JAWSMajorVersion">
+  <summary>
+    The major version of the JAWS screen reader that is detected.
+  </summary>
+  <int value="0" label="Legacy"/>
+  <int value="1" label="2020"/>
+  <int value="2" label="2021"/>
+  <int value="3" label="2022"/>
+  <int value="4" label="2023"/>
+  <int value="5" label="2024"/>
+  <int value="6" label="2025"/>
+  <int value="7" label="2026"/>
+  <int value="8" label="2027"/>
+  <int value="9" label="2028"/>
+  <int value="10" label="2029"/>
+  <int value="11" label="2030"/>
+  <int value="12" label="2031"/>
+  <int value="13" label="2032"/>
+  <int value="14" label="2033"/>
+  <int value="15" label="2034"/>
+  <int value="16" label="2035"/>
+  <int value="17" label="2036"/>
+  <int value="18" label="2037"/>
+  <int value="19" label="2038"/>
+  <int value="20" label="2039"/>
+  <int value="21" label="2040"/>
+  <int value="22" label="Post 2040"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_win.cc:JawsMajorVersion) -->
+
 <!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning) -->
 
 <enum name="KeyboardShortcutsSemanticMeaning">
@@ -1264,28 +1660,78 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Open new tab incognito"/>
   <int value="4" label="Open new window"/>
   <int value="5" label="Reload tab"/>
-  <int value="6" label="Close tab"/>
+  <int value="6" label="Reload tab, bypassing cache"/>
   <int value="7" label="Move to tab left"/>
   <int value="8" label="Move to tab right"/>
   <int value="9" label="Move to specific tab"/>
   <int value="10" label="Move to last tab"/>
-  <int value="11" label="Jump to omnibox"/>
-  <int value="12" label="Go back"/>
-  <int value="13" label="Go forward"/>
-  <int value="14" label="Open menu"/>
-  <int value="15" label="Open help"/>
-  <int value="16" label="Find in page"/>
-  <int value="17" label="Open bookmarks"/>
-  <int value="18" label="Bookmark page"/>
-  <int value="19" label="Open history"/>
-  <int value="20" label="Save page"/>
-  <int value="21" label="Print"/>
-  <int value="22" label="Zoom in"/>
-  <int value="23" label="Zoom out"/>
-  <int value="24" label="Zoom reset"/>
+  <int value="11" label="Search currently-open tabs (not implemented)"/>
+  <int value="12" label="Toggle multi-task menu (not implemented)"/>
+  <int value="13" label="Close tab"/>
+  <int value="14" label="Close window (not implemented)"/>
+  <int value="15" label="Quit Chrome (not implemented)"/>
+  <int value="16" label="Jump to omnibox"/>
+  <int value="17" label="Jump to search"/>
+  <int value="18" label="Focus the next web contents pane (not implemented)"/>
+  <int value="19" label="Scroll down (not implemented)"/>
+  <int value="20" label="Scroll up (not implemented)"/>
+  <int value="21"
+      label="Place keyboard focus on the toolbar (not implemented)"/>
+  <int value="22"
+      label="Place keyboard focus on the bookmarks bar (not implemented)"/>
+  <int value="23"
+      label="Switch which row of the top controls (tab strip, toolbar,
+             bookmarks bar) is keyboard-focused (not implemented)"/>
+  <int value="24"
+      label="Open the context menu for the keyboard-focused tab strip item
+             (not implemented)"/>
+  <int value="25"
+      label="Reorder the keyboard-focused tab strip item to the left (not
+             implemented)"/>
+  <int value="26"
+      label="Reorder the keyboard-focused tab strip item to the right (not
+             implemented)"/>
+  <int value="27"
+      label="Reorder the currently-open tab to the left (not implemented)"/>
+  <int value="28"
+      label="Reorder the currently-open tab to the right (not implemented)"/>
+  <int value="29" label="Toggle caret browsing (not implemented)"/>
+  <int value="30" label="Focus on inactive dialogs (not implemented)"/>
+  <int value="31" label="Open bookmarks"/>
+  <int value="32" label="Bookmark page"/>
+  <int value="33" label="Bookmark all tabs (not implemented)"/>
+  <int value="34" label="Show or hide the bookmarks bar"/>
+  <int value="35" label="Toggle immersive mode (not implemented)"/>
+  <int value="36" label="Exit immersive mode (not implemented)"/>
+  <int value="37" label="Open developer tools"/>
+  <int value="38" label="Open developer tools console (not implemented)"/>
+  <int value="39"
+      label="Open developer tools element inspection (not implemented)"/>
+  <int value="40" label="Toggle showing developer tools (not implemented)"/>
+  <int value="41" label="View page source (not implemented)"/>
+  <int value="42" label="Open task manager"/>
+  <int value="43" label="Save page"/>
+  <int value="44" label="Show downloads (not implemented)"/>
+  <int value="45" label="Open history"/>
+  <int value="46" label="Go back in history"/>
+  <int value="47" label="Go forward in history"/>
+  <int value="48" label="Clear browsing data (not implemented)"/>
+  <int value="49" label="Print"/>
+  <int value="50" label="Basic print (not implemented)"/>
+  <int value="51" label="Zoom in"/>
+  <int value="52" label="Zoom out"/>
+  <int value="53" label="Zoom reset"/>
+  <int value="54" label="Show avatar menu (not implemented)"/>
+  <int value="55" label="Show feedback form (not implemented)"/>
+  <int value="56" label="Find in page"/>
+  <int value="57" label="Go to home page (not implemented)"/>
+  <int value="58" label="Open help"/>
+  <int value="59" label="Open menu"/>
+  <int value="60"
+      label="Use a custom keyboard shortcut registered by an extension"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning) -->
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning) -->
 
 <enum name="KeyCode">
   <int value="0" label="UNKNOWN"/>
@@ -1575,6 +2021,17 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/services/speech/soda/soda_client.h:LoadSodaResult) -->
 
+<!-- LINT.IfChange(MainContentExtractionClientType) -->
+
+<enum name="MainContentExtractionClientType">
+  <int value="0" label="Tests"/>
+  <int value="1" label="Reading Mode"/>
+  <int value="2" label="MainNode"/>
+  <int value="3" label="ChromeOS Mahi"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/screen_ai/screen_ai_service_impl.cc:MainContentExtractionClientType) -->
+
 <!-- LINT.IfChange(MainNodeAnnotationResult) -->
 
 <enum name="MainNodeAnnotationResult">
@@ -1584,6 +2041,53 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <!-- LINT.ThenChange(//content/renderer/accessibility/annotations/ax_main_node_annotator.cc:MainNodeAnnotationResult) -->
+
+<!-- LINT.IfChange(NVDAMajorVersion)-->
+
+<enum name="NVDAMajorVersion">
+  <summary>
+    The major version of the NVDA screen reader that is detected.
+  </summary>
+  <int value="0" label="Legacy"/>
+  <int value="1" label="2020"/>
+  <int value="2" label="2021"/>
+  <int value="3" label="2022"/>
+  <int value="4" label="2023"/>
+  <int value="5" label="2024"/>
+  <int value="6" label="2025"/>
+  <int value="7" label="2026"/>
+  <int value="8" label="2027"/>
+  <int value="9" label="2028"/>
+  <int value="10" label="2029"/>
+  <int value="11" label="2030"/>
+  <int value="12" label="2031"/>
+  <int value="13" label="2032"/>
+  <int value="14" label="2033"/>
+  <int value="15" label="2034"/>
+  <int value="16" label="2035"/>
+  <int value="17" label="2036"/>
+  <int value="18" label="2037"/>
+  <int value="19" label="2038"/>
+  <int value="20" label="2039"/>
+  <int value="21" label="2040"/>
+  <int value="22" label="Post 2040"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_win.cc:NvdaMajorVersion) -->
+
+<!-- LINT.IfChange(OCRClientType) -->
+
+<enum name="OCRClientType">
+  <int value="0" label="Tests"/>
+  <int value="1" label="PDF Viewer"/>
+  <int value="2" label="Local Search"/>
+  <int value="3" label="Camera App"/>
+  <int value="4" label="Not Used"/>
+  <int value="5" label="MediaApp"/>
+  <int value="6" label="Screenshot Text Detection"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/screen_ai/screen_ai_service_impl.cc:OCRClientType) -->
 
 <!-- LINT.IfChange(PdfOcrRequestStatus) -->
 
@@ -1604,7 +2108,7 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Blue"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:Colors) -->
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:Colors) -->
 
 <!-- LINT.IfChange(ReadAnythingEmptyState) -->
 
@@ -1613,7 +2117,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="User selection after empty state shown"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingEmptyState) -->
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_app_model.h:ReadAnythingEmptyState) -->
 
 <!-- LINT.IfChange(ReadAnythingFontName) -->
 
@@ -1625,9 +2129,23 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Lexend Deca"/>
   <int value="5" label="EB Garamond"/>
   <int value="6" label="STIX Two Text"/>
+  <int value="7" label="Andika"/>
+  <int value="8" label="Atkinson Hyperlegible"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingFont) -->
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything_util.cc:ReadAnythingFont) -->
+
+<!-- LINT.IfChange(ReadAnythingHeuristics) -->
+
+<enum name="ReadAnythingHeuristics">
+  <int value="0" label="None"/>
+  <int value="1" label="NodeNotFound"/>
+  <int value="2" label="InvisibleOrIgnored"/>
+  <int value="3" label="NotExpanded"/>
+  <int value="4" label="NoDeepsetLastDecendent"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_app_model.cc:ReadAnythingHeuristics) -->
 
 <!-- LINT.IfChange(ReadAnythingHighlightState) -->
 
@@ -1647,7 +2165,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Very Wide"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:LetterSpacing) -->
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:LetterSpacing) -->
 
 <!-- LINT.IfChange(ReadAnythingLineSpacing) -->
 
@@ -1658,7 +2176,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Very Loose"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:LineSpacing) -->
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:LineSpacing) -->
 
 <!-- LINT.IfChange(ReadAnythingNewPage) -->
 
@@ -1679,12 +2197,13 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAloudSettingsChange) -->
 
-<!-- LINT.IfChange(ReadAnythingReadAloudVoice) -->
+<!-- LINT.IfChange(ReadAnythingReadAloudVoice2) -->
 
-<enum name="ReadAnythingReadAloudVoice">
+<enum name="ReadAnythingReadAloudVoice2">
   <int value="0" label="Natural voice"/>
   <int value="1" label="eSpeak voice"/>
   <int value="2" label="ChromeOS voice"/>
+  <int value="3" label="System voice"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingVoiceType) -->
@@ -1698,7 +2217,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Main panel scrolled"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingScrollEvent) -->
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_app_model.cc:ReadAnythingScrollEvent) -->
 
 <!-- LINT.IfChange(ReadAnythingSettingsChange) -->
 
@@ -1730,6 +2249,24 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingSpeechError) -->
 
+<!-- LINT.IfChange(ReadAnythingSpeechStopSource) -->
+
+<enum name="ReadAnythingSpeechStopSource">
+  <int value="0" label="Used pause button via mouse or keyboard"/>
+  <int value="1" label="Used keyboard shortcut k"/>
+  <int value="2" label="Closed Reading mode"/>
+  <int value="3" label="Closed tab or window"/>
+  <int value="4" label="Reloaded the page"/>
+  <int value="5" label="Changed page content"/>
+  <int value="6" label="Speech engine interrupted"/>
+  <int value="7" label="Speech engine error"/>
+  <int value="8" label="Finished reading content"/>
+  <int value="9" label="ChromeOS device locked"/>
+  <int value="10" label="Unexpectedly updated content while speaking"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_aloud_app_model.h:ReadAloudStopSource) -->
+
 <!-- LINT.IfChange(ReaderModeEntryPoint) -->
 
 <enum name="ReaderModeEntryPoint">
@@ -1738,23 +2275,6 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <!-- LINT.ThenChange(//components/dom_distiller/content/browser/uma_helper.h:ReaderModeEntryPoint) -->
-
-<!-- LINT.IfChange(ReaderModeMessageDismissalCondition) -->
-
-<enum name="ReaderModeMessageDismissalCondition">
-  <int value="0"
-      label="Message was accepted with accessibility setting selected"/>
-  <int value="1"
-      label="Message was accepted with accessibility setting deselected"/>
-  <int value="2"
-      label="Message was ignored or dismissed with accessibility setting
-             selected"/>
-  <int value="3"
-      label="Message was ignored or dismissed with accessibility setting
-             deselected"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java:MessageDismissalCondition) -->
 
 <!-- LINT.IfChange(SodaLanguageCode) -->
 

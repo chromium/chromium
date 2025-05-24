@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/strings/to_string.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -28,7 +29,7 @@
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -51,6 +53,39 @@
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
+
+namespace {
+// Returns a copy of `other` retaining only the fields that are needed for
+// a shortcut (e.g icons), and using the document title and URL instead of
+// manifest properties. This will strip out app-like fields (e.g. file
+// handlers).
+static WebAppInstallInfo CreateInstallInfoForCreateDiy(
+    const GURL& document_url,
+    const std::u16string& document_title,
+    const WebAppInstallInfo& other) {
+  WebAppInstallInfo create_diy_app_info(
+      GenerateManifestIdFromStartUrlOnly(document_url), document_url);
+  create_diy_app_info.title = document_title;
+  create_diy_app_info.description = other.description;
+  create_diy_app_info.manifest_url = other.manifest_url;
+  create_diy_app_info.manifest_icons = other.manifest_icons;
+  create_diy_app_info.icon_bitmaps = other.icon_bitmaps;
+  create_diy_app_info.other_icon_bitmaps = other.other_icon_bitmaps;
+  create_diy_app_info.is_generated_icon = other.is_generated_icon;
+  create_diy_app_info.theme_color = other.theme_color;
+  create_diy_app_info.dark_mode_theme_color = other.dark_mode_theme_color;
+  create_diy_app_info.background_color = other.background_color;
+  create_diy_app_info.dark_mode_background_color =
+      other.dark_mode_background_color;
+  create_diy_app_info.display_mode = other.display_mode;
+  create_diy_app_info.display_override = other.display_override;
+  create_diy_app_info.additional_search_terms = other.additional_search_terms;
+  create_diy_app_info.install_url = other.install_url;
+  create_diy_app_info.is_diy_app = true;
+
+  return create_diy_app_info;
+}
+}  // namespace
 
 ExternalAppResolutionCommand::ExternalAppResolutionCommand(
     Profile& profile,
@@ -170,8 +205,10 @@ void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
       return;
     }
 
+    CHECK(!apps_lock_);
+    apps_lock_ = std::make_unique<SharedWebContentsWithAppLock>();
     command_manager()->lock_manager().UpgradeAndAcquireLock(
-        std::move(web_contents_lock_),
+        std::move(web_contents_lock_), *apps_lock_,
         {GenerateAppId(/*manifest_id_path=*/std::nullopt,
                        install_options_.install_url)},
         base::BindOnce(
@@ -194,8 +231,7 @@ void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
     case webapps::WebAppUrlLoaderResult::kUrlLoaded:
     case webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed:
       // Handled above.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded:
       code = webapps::InstallResultCode::kInstallURLRedirected;
       break;
@@ -273,8 +309,8 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
     UpdateWebAppInfoFromManifest(*opt_manifest, web_app_info_.get());
   }
 
-  if (install_params_->install_as_shortcut) {
-    *web_app_info_ = WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
+  if (install_params_->install_as_diy) {
+    *web_app_info_ = CreateInstallInfoForCreateDiy(
         web_contents_->GetLastCommittedURL(), web_contents_->GetTitle(),
         *web_app_info_);
   }
@@ -335,8 +371,9 @@ void ExternalAppResolutionCommand::OnIconsRetrievedUpgradeLockDescription(
   install_error_log_entry_.LogDownloadedIconsErrors(
       *web_app_info_, result, icons_map, icons_http_results);
 
+  apps_lock_ = std::make_unique<SharedWebContentsWithAppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(web_contents_lock_), {app_id_},
+      std::move(web_contents_lock_), *apps_lock_, {app_id_},
       base::BindOnce(
           &ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall,
           weak_ptr_factory_.GetWeakPtr(),
@@ -344,9 +381,8 @@ void ExternalAppResolutionCommand::OnIconsRetrievedUpgradeLockDescription(
 }
 
 void ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall(
-    bool icon_download_failed,
-    std::unique_ptr<SharedWebContentsWithAppLock> apps_lock) {
-  apps_lock_ = std::move(apps_lock);
+    bool icon_download_failed) {
+  CHECK(apps_lock_->IsGranted());
   CHECK(install_params_.has_value() && !app_id_.empty());
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
 
@@ -369,7 +405,10 @@ void ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall(
   finalize_options.add_to_quick_launch_bar =
       install_params_->add_to_quick_launch_bar;
 
-  if (apps_lock_->registrar().IsInstalled(app_id_)) {
+  if (apps_lock_->registrar().IsInstallState(
+          app_id_, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                    proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     // If an installation is triggered for the same app but with a
     // different install_url, then we overwrite the manifest fields.
     // If icon downloads fail, then we would not overwrite the icon
@@ -467,9 +506,12 @@ void ExternalAppResolutionCommand::
   GetMutableDebugValue().Set("relaunch_app_after_placeholder_uninstall",
                              relaunch_app_after_placeholder_uninstall_);
 
+  // Note: This practice of releasing the app lock and requesting a whole new
+  // lock is highly discouraged & very selectively OK for this one case.
   all_apps_lock_description_ = std::make_unique<AllAppsLockDescription>();
+  all_apps_lock_ = std::make_unique<AllAppsLock>();
   command_manager()->lock_manager().AcquireLock(
-      *all_apps_lock_description_,
+      *all_apps_lock_description_, *all_apps_lock_,
       base::BindOnce(
           &ExternalAppResolutionCommand::OnAllAppsLockGrantedRemovePlaceholder,
           weak_ptr_factory_.GetWeakPtr()),
@@ -478,9 +520,8 @@ void ExternalAppResolutionCommand::
   apps_lock_.reset();
 }
 
-void ExternalAppResolutionCommand::OnAllAppsLockGrantedRemovePlaceholder(
-    std::unique_ptr<AllAppsLock> lock) {
-  all_apps_lock_ = std::move(lock);
+void ExternalAppResolutionCommand::OnAllAppsLockGrantedRemovePlaceholder() {
+  CHECK(all_apps_lock_->IsGranted());
   CHECK(installed_placeholder_app_id_);
 
   remove_placeholder_job_.emplace(
@@ -543,9 +584,9 @@ void ExternalAppResolutionCommand::OnLaunch(base::WeakPtr<Browser>,
                         install_code_, app_id_, uninstalled_for_replace_)));
 }
 
-void ExternalAppResolutionCommand::OnPlaceHolderAppLockAcquired(
-    std::unique_ptr<SharedWebContentsWithAppLock> apps_lock) {
-  apps_lock_ = std::move(apps_lock);
+void ExternalAppResolutionCommand::OnPlaceHolderAppLockAcquired() {
+  CHECK(apps_lock_);
+  CHECK(apps_lock_->IsGranted());
   if (on_lock_upgraded_callback_for_testing_) {
     std::move(on_lock_upgraded_callback_for_testing_).Run();
   }
@@ -609,20 +650,22 @@ void ExternalAppResolutionCommand::InstallFromInfo() {
   web_app_info_->install_url = install_params_->install_url;
 
   if (!apps_lock_) {
+    apps_lock_ = std::make_unique<SharedWebContentsWithAppLock>();
     command_manager()->lock_manager().UpgradeAndAcquireLock(
-        std::move(web_contents_lock_),
+        std::move(web_contents_lock_), *apps_lock_,
         {GenerateAppIdFromManifestId(web_app_info_->manifest_id())},
         base::BindOnce(
             &ExternalAppResolutionCommand::OnInstallFromInfoAppLockAcquired,
             weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-  OnInstallFromInfoAppLockAcquired(std::move(apps_lock_));
+  CHECK(apps_lock_->IsGranted());
+  OnInstallFromInfoAppLockAcquired();
 }
 
-void ExternalAppResolutionCommand::OnInstallFromInfoAppLockAcquired(
-    std::unique_ptr<SharedWebContentsWithAppLock> apps_lock) {
-  apps_lock_ = std::move(apps_lock);
+void ExternalAppResolutionCommand::OnInstallFromInfoAppLockAcquired() {
+  CHECK(apps_lock_);
+  CHECK(apps_lock_->IsGranted());
 
   install_from_info_job_.emplace(
       &profile_.get(),

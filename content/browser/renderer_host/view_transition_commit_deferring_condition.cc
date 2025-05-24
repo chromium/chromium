@@ -19,11 +19,6 @@ namespace content {
 std::unique_ptr<CommitDeferringCondition>
 ViewTransitionCommitDeferringCondition::MaybeCreate(
     NavigationRequest& navigation_request) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kViewTransitionOnNavigation)) {
-    return nullptr;
-  }
-
   // If we already have a transition animation, we should skip the view
   // transition.
   if (navigation_request.was_initiated_by_animated_transition()) {
@@ -41,17 +36,15 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     case FrameTree::Type::kFencedFrame:
       // TODO(khushalsagar): Enable for fenced frames with a WPT.
       return nullptr;
+    case FrameTree::Type::kGuest:
+      // TODO(crbug.com/40202416): Enable for MPArch based guests.
+      return nullptr;
   };
 
   RenderFrameHostImpl* old_rfh =
       navigation_request.frame_tree_node()->current_frame_host();
 
   if (!navigation_request.IsInMainFrame()) {
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kViewTransitionOnNavigationForIframes)) {
-      return nullptr;
-    }
-
     // We will not have a RFH if this navigation is not committing a new
     // Document.
     auto* new_rfh = navigation_request.GetRenderFrameHost();
@@ -114,7 +107,7 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
       // Same document navigations should already be excluded by
       // `ShouldDispatchPageSwapEvent`.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return base::WrapUnique(
@@ -178,6 +171,10 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
       GetSnapshotCallbackTimeout());
 
   return Result::kDefer;
+}
+
+const char* ViewTransitionCommitDeferringCondition::TraceEventName() const {
+  return "ViewTransitionCommitDeferringCondition";
 }
 
 void ViewTransitionCommitDeferringCondition::OnSnapshotTimeout() {

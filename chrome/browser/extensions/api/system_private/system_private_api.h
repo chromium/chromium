@@ -19,7 +19,7 @@ class SystemPrivateGetIncognitoModeAvailabilityFunction
                              SYSTEMPRIVATE_GETINCOGNITOMODEAVAILABILITY)
 
  protected:
-  ~SystemPrivateGetIncognitoModeAvailabilityFunction() override {}
+  ~SystemPrivateGetIncognitoModeAvailabilityFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -32,7 +32,7 @@ class SystemPrivateGetUpdateStatusFunction : public ExtensionFunction {
                              SYSTEMPRIVATE_GETUPDATESTATUS)
 
  protected:
-  ~SystemPrivateGetUpdateStatusFunction() override {}
+  ~SystemPrivateGetUpdateStatusFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -44,7 +44,7 @@ class SystemPrivateGetApiKeyFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("systemPrivate.getApiKey", SYSTEMPRIVATE_GETAPIKEY)
 
  protected:
-  ~SystemPrivateGetApiKeyFunction() override {}
+  ~SystemPrivateGetApiKeyFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

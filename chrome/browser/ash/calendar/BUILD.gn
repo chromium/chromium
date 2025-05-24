@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("calendar") {
   sources = [
@@ -21,7 +21,6 @@ static_library("calendar") {
   deps = [
     "//ash",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
@@ -59,6 +58,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/prefs",
     "//chrome/browser/web_applications",
     "//chrome/test:test_support",
     "//components/account_id",

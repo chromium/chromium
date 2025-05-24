@@ -4,24 +4,48 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_cache.h"
 
+#include "base/feature_list.h"
+#include "components/commerce/core/commerce_feature_list.h"
+
 namespace commerce {
 
 ProductSpecificationsCache::ProductSpecificationsCache() : cache_(kCacheSize) {}
 ProductSpecificationsCache::~ProductSpecificationsCache() = default;
 
+ProductSpecificationsCache::Entry::Entry(ProductSpecifications specs) {
+  this->specs = std::move(specs);
+  creation_time = base::Time::Now();
+}
+
 void ProductSpecificationsCache::SetEntry(std::vector<uint64_t> cluster_ids,
                                           ProductSpecifications specs) {
-  cache_.Put(GetKey(cluster_ids), std::move(specs));
+  if (!base::FeatureList::IsEnabled(kProductSpecificationsCache)) {
+    return;
+  }
+
+  cache_.Put(GetKey(cluster_ids), Entry(std::move(specs)));
 }
 
 const ProductSpecifications* ProductSpecificationsCache::GetEntry(
     std::vector<uint64_t> cluster_ids) {
+  if (!base::FeatureList::IsEnabled(kProductSpecificationsCache)) {
+    return nullptr;
+  }
+
   auto it = cache_.Get(GetKey(cluster_ids));
   if (it == cache_.end()) {
     return nullptr;
   }
 
-  return &it->second;
+  // Remove the entry from the cache if it has expired.
+  const Entry* entry = &it->second;
+  if (!entry ||
+      (base::Time::Now() - entry->creation_time) > kEntryInvalidationTime) {
+    cache_.Erase(it);
+    return nullptr;
+  }
+
+  return &entry->specs;
 }
 
 ProductSpecificationsCache::Key ProductSpecificationsCache::GetKey(

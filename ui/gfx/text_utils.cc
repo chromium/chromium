@@ -6,6 +6,9 @@
 
 #include <stdint.h>
 
+#include <string>
+#include <string_view>
+
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
@@ -44,7 +47,7 @@ bool IsSpace(UChar32 c) {
 }
 
 std::u16string RemoveAcceleratorChar(bool full_removal,
-                                     const std::u16string& s,
+                                     std::u16string_view s,
                                      int* accelerated_char_pos,
                                      int* accelerated_char_span) {
   bool escaped = false;
@@ -115,18 +118,18 @@ std::u16string RemoveAcceleratorChar(bool full_removal,
 
 }  // namespace
 
-std::u16string LocateAndRemoveAcceleratorChar(const std::u16string& s,
+std::u16string LocateAndRemoveAcceleratorChar(std::u16string_view s,
                                               int* accelerated_char_pos,
                                               int* accelerated_char_span) {
   return RemoveAcceleratorChar(false, s, accelerated_char_pos,
                                accelerated_char_span);
 }
 
-std::u16string RemoveAccelerator(const std::u16string& s) {
+std::u16string RemoveAccelerator(std::u16string_view s) {
   return RemoveAcceleratorChar(true, s, nullptr, nullptr);
 }
 
-size_t FindValidBoundaryBefore(const std::u16string& text,
+size_t FindValidBoundaryBefore(std::u16string_view text,
                                size_t index,
                                bool trim_whitespace) {
   UTF16CharIterator it = UTF16CharIterator::LowerBound(text, index);
@@ -145,7 +148,7 @@ size_t FindValidBoundaryBefore(const std::u16string& text,
   return it.array_pos();
 }
 
-size_t FindValidBoundaryAfter(const std::u16string& text,
+size_t FindValidBoundaryAfter(std::u16string_view text,
                               size_t index,
                               bool trim_whitespace) {
   UTF16CharIterator it = UTF16CharIterator::UpperBound(text, index);
@@ -177,7 +180,7 @@ HorizontalAlignment MaybeFlipForRTL(HorizontalAlignment alignment) {
   return alignment;
 }
 
-Size GetStringSize(const std::u16string& text, const FontList& font_list) {
+Size GetStringSize(std::u16string_view text, const FontList& font_list) {
   return Size(GetStringWidth(text, font_list), font_list.GetHeight());
 }
 

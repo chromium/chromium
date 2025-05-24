@@ -31,30 +31,30 @@ class ConsentAuditorImpl : public ConsentAuditor {
   void Shutdown() override;
 
   void RecordArcPlayConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent& consent)
       override;
   void RecordArcGoogleLocationServiceConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent& consent)
       override;
   void RecordArcBackupAndRestoreConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent& consent)
       override;
   void RecordSyncConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::SyncConsent& consent) override;
   void RecordAssistantActivityControlConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent)
       override;
   void RecordAccountPasswordsConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent)
       override;
   void RecordRecorderSpeakerLabelConsent(
-      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent)
       override;
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()

@@ -14,13 +14,20 @@ mojom("mojo_bindings") {
       types = [
         {
           mojom = "tabs.mojom.TabAlertState"
-          cpp = "::TabAlertState"
+          cpp = "::tabs::TabAlert"
+        },
+        {
+          mojom = "tabs.mojom.TabNetworkState"
+          cpp = "::TabNetworkState"
         },
       ]
       traits_headers = [ "tabs_mojom_traits.h" ]
+      traits_sources = [ "tabs_mojom_traits.cc" ]
       traits_public_deps = [
         "//base",
         "//chrome/browser/ui/tabs:tab_enums",
+        "//chrome/browser/ui/tabs:tabs_public",
+        "//chrome/browser/ui/tabs/alert:tab_alert",
       ]
     },
   ]

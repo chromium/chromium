@@ -20,6 +20,7 @@
 
   [slot='button-container'] {
     display: flex;
+    gap: 10px;
     justify-content: flex-end;
   }
 
@@ -86,11 +87,27 @@
     </div>
     <div slot="button-container"
         hidden$="[[!isUpdateDone(installationProgress.state)]]">
-      <cr-button class="action-button"
-          on-click="closeDialog"
-          id="updateDoneButton">
-        [[computeButtonText(installationProgress.state)]]
-      </cr-button>
+      <template is="dom-if"
+          if="[[!isUpdateSuccessfulAndRequiresReboot(updateIsDone)]]" restamp>
+        <cr-button class="action-button"
+            on-click="closeDialog"
+            id="updateDoneButton">
+          [[computeButtonText(installationProgress.state)]]
+        </cr-button>
+      </template>
+      <template is="dom-if"
+          if="[[isUpdateSuccessfulAndRequiresReboot(updateIsDone)]]" restamp>
+        <cr-button class="cancel-button"
+            on-click="closeDialog"
+            id="restartLaterButton">
+          [[i18n('restartLaterButton')]]
+        </cr-button>
+        <cr-button class="action-button"
+            on-click="restartDevice"
+            id="restartNowButton">
+          [[i18n('restartNowButton')]]
+        </cr-button>
+      </template>
     </div>
   </cr-dialog>
 </template>

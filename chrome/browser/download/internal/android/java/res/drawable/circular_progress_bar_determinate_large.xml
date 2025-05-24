@@ -16,8 +16,8 @@ found in the LICENSE file.
                 android:useLevel="true"
                 android:shape="ring">
                 <gradient
-                    android:startColor="@color/modern_grey_900"
-                    android:endColor="@color/modern_grey_900"
+                    android:startColor="@color/baseline_neutral_10"
+                    android:endColor="@color/baseline_neutral_10"
                     android:type="sweep" />
             </shape>
         </rotate>

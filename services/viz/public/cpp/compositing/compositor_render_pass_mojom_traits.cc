@@ -10,6 +10,7 @@
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/subtree_capture_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
+#include "skia/public/mojom/skpath_mojom_traits.h"
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 
 namespace mojo {

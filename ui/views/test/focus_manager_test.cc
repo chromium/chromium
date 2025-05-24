@@ -4,8 +4,9 @@
 
 #include "ui/views/test/focus_manager_test.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
@@ -37,8 +38,9 @@ void FocusManagerTest::SetUp() {
 }
 
 void FocusManagerTest::TearDown() {
-  if (focus_change_listener_)
+  if (focus_change_listener_) {
     GetFocusManager()->RemoveFocusChangeListener(focus_change_listener_);
+  }
   if (widget_focus_change_listener_) {
     WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(
         widget_focus_change_listener_);
@@ -69,7 +71,7 @@ const Widget* FocusManagerTest::GetWidget() const {
 }
 
 void FocusManagerTest::GetAccessiblePanes(std::vector<View*>* panes) {
-  base::ranges::copy(accessible_panes_, std::back_inserter(*panes));
+  std::ranges::copy(accessible_panes_, std::back_inserter(*panes));
 }
 
 void FocusManagerTest::InitContentView() {}

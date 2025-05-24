@@ -21,6 +21,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.R;
@@ -35,15 +37,16 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /**
  * The mediator of the autofill options component. Ensures that the model and the pref are in sync
  * (in either direction).
  */
+@NullMarked
 class AutofillOptionsMediator implements ModalDialogProperties.Controller {
-    private static final String AWG_PACKAGE_NAME = "package:com.google.android.gms";
+    private static final String NON_PACKAGE_NAME = "package:not.a.package.so.all.providers.show";
     private static final String SKIP_COMPATIBILITY_CHECK_PARAM_NAME = "skip_compatibility_check";
     private static final String SKIP_ALL_CHECKS_PARAM_VALUE = "skip_all_checks";
     private static final String ONLY_SKIP_AWG_CHECK_PARAM_VALUE = "only_skip_awg_check";
@@ -54,6 +57,10 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
 
     @VisibleForTesting
     static final String HISTOGRAM_REFERRER = "Autofill.Settings.AutofillOptionsReferrerAndroid";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_RESTART_ACCEPTED =
+            "Autofill.Settings.AutofillOptionsRestartAccepted";
 
     private final Profile mProfile;
     private final Runnable mRestartRunnable;
@@ -78,20 +85,17 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     public void onClick(PropertyModel restartConfirmationModel, int buttonType) {
         switch (buttonType) {
             case ModalDialogProperties.ButtonType.POSITIVE:
-                // TODO: crbug.com/308551195 - Add a metric to record acceptance like
-                // recordBooleanHistogram(HISTOGRAM_RESTARTED_FOR_3P, true);
+                RecordHistogram.recordBooleanHistogram(HISTOGRAM_RESTART_ACCEPTED, true);
                 onConfirmWithRestart();
                 return;
             case ModalDialogProperties.ButtonType.NEGATIVE:
-                // TODO: crbug.com/308551195 - Add a metric to record acceptance like
-                // recordBooleanHistogram(HISTOGRAM_RESTARTED_FOR_3P, false);
+                RecordHistogram.recordBooleanHistogram(HISTOGRAM_RESTART_ACCEPTED, false);
                 mModalDialogManagerSupplier
                         .get()
                         .dismissDialog(
                                 restartConfirmationModel,
                                 DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                 return;
-            case ModalDialogProperties.ButtonType.TITLE_ICON:
             case ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL:
                 assert false : "Unhandled button click!";
         }
@@ -103,6 +107,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         updateToggleStateFromPref(); // Radio buttons always change. Reset them to match the prefs.
     }
 
+    @Initializer
     void initialize(PropertyModel model, @AutofillOptionsReferrer int referrer, Context context) {
         mModel = model;
         mContext = context;
@@ -185,8 +190,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
                 new SpanApplier.SpanInfo(
                         "<link>",
                         "</link>",
-                        new NoUnderlineClickableSpan(
-                                mContext, this::onLinkToAndroidSettingsClicked)));
+                        new ChromeClickableSpan(mContext, this::onLinkToAndroidSettingsClicked)));
     }
 
     private void onLinkToAndroidSettingsClicked(View unusedView) {
@@ -195,7 +199,8 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
 
     private static Intent createAutofillServiceChangeIntent() {
         Intent intent = new Intent(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE);
-        intent.setData(Uri.parse(AWG_PACKAGE_NAME));
+        // Request an unlikely package to become the new provider to ensure the picker always shows.
+        intent.setData(Uri.parse(NON_PACKAGE_NAME));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
@@ -225,6 +230,6 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     }
 
     private String getString(@StringRes int stringRes) {
-        return mContext.getResources().getString(stringRes);
+        return mContext.getString(stringRes);
     }
 }

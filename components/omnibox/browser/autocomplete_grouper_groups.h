@@ -28,11 +28,12 @@ class Group {
   };
   using GroupIdLimitsAndCounts = std::map<omnibox::GroupId, LimitAndCount>;
 
-  Group(size_t limit,
-        GroupIdLimitsAndCounts group_id_limits_and_counts,
-        bool is_default = false);
-  // Construct a `Group` with just 1 `GroupId`.
-  Group(size_t limit, omnibox::GroupId group_id);
+  // Explicit to prevent uniform initialization (with curly braces {}) from
+  // hiding the constructor call.
+  explicit Group(size_t limit,
+                 std::map<omnibox::GroupId, size_t> group_id_limits,
+                 bool is_zps = true,
+                 bool is_default = false);
   Group(const Group& group);
   Group& operator=(const Group& group);
   virtual ~Group();
@@ -45,11 +46,11 @@ class Group {
   // the count for the `GroupId` of the match. `CanAdd()` should be verified by
   // the caller.
   void Add(const AutocompleteMatch& match);
-  // Performs semantic grouping by Search vs URL.
-  // TODO(ender): investigate whether we should split `Group` into ZPS and
-  // non-ZPS specific subclasses. If this proves valuable, move the call below
-  // to the non-ZPS subclass.
-  void GroupMatchesBySearchVsUrl();
+  // Called before matches are read from this `Group`, this method performs
+  // Additional grouping operation to ensure matches, which may not have been
+  // grouped by a specific criterion due to being sorted by relevance, are
+  // properly grouped together when read from this `Group`.
+  void GroupMatches();
 
   size_t limit() const { return limit_; }
   void set_limit(size_t limit) { limit_ = limit; }
@@ -59,6 +60,11 @@ class Group {
   const PMatches& matches() const { return matches_; }
 
  private:
+  // Performs semantic grouping by Search vs URL.
+  void GroupMatchesBySearchVsUrl();
+  // Performs semantic grouping by GroupId.
+  void GroupMatchesByGroupId();
+
   // Max number of matches this `Group` can contain.
   size_t limit_{0};
   // The number of matches this `Group` contains.
@@ -67,8 +73,9 @@ class Group {
   GroupIdLimitsAndCounts group_id_limits_and_counts_;
   // The matches this `Group` contains.
   PMatches matches_;
-  // Whether is a default `Group`, i.e., allows only matches that are
-  // `allowed_to_be_default_match`.
+  // Whether this `Group` contains zero-prefix suggestions only.
+  bool is_zps_{false};
+  // Whether this `Group` contains `allowed_to_be_default_match` matches only.
   bool is_default_{false};
 };
 

@@ -26,8 +26,8 @@ namespace {
 std::string ReadStringFromGDocFile(const base::FilePath& file_path,
                                    const std::string& key) {
   const int64_t kMaxGDocSize = 4096;
-  int64_t file_size = 0;
-  if (!base::GetFileSize(file_path, &file_size) || file_size > kMaxGDocSize) {
+  std::optional<int64_t> file_size = base::GetFileSize(file_path);
+  if (!file_size.has_value() || file_size.value() > kMaxGDocSize) {
     LOG(WARNING) << "File too large to be a GDoc file " << file_path.value();
     return std::string();
   }

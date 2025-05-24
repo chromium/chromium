@@ -72,7 +72,7 @@ BorealisInstallerDialog::BorealisInstallerDialog(
       profile_(profile),
       on_loaded_callback_(std::move(on_loaded_callback)) {}
 
-BorealisInstallerDialog::~BorealisInstallerDialog() {}
+BorealisInstallerDialog::~BorealisInstallerDialog() = default;
 
 void BorealisInstallerDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(::kDialogWidth, ::kDialogHeight);

@@ -4,6 +4,8 @@
 
 /**
  * @fileoverview Mixin for cr-radio-button-like elements.
+ *     Note: Clients must either also implement CrRippleMixin, or should set
+ *     |noRipple| to true before the element is connected to the DOM.
  */
 
 // clang-format off
@@ -66,19 +68,22 @@ export const CrRadioButtonMixinLit =
           };
         }
 
-        checked: boolean = false;
-        disabled: boolean = false;
-        focusable: boolean = false;
-        hideLabelText: boolean = false;
-        label: string = '';
-        name?: string;
-        ariaCheckedString: string = 'false';
-        ariaDisabledString: string = 'false';
+        accessor checked: boolean = false;
+        accessor disabled: boolean = false;
+        accessor focusable: boolean = false;
+        accessor hideLabelText: boolean = false;
+        accessor label: string = '';
+        accessor name: string|undefined;
+        noRipple: boolean = false;
+        accessor ariaCheckedString: string = 'false';
+        accessor ariaDisabledString: string = 'false';
 
         override connectedCallback() {
           super.connectedCallback();
-          this.addEventListener('blur', this.hideRipple_.bind(this));
-          this.addEventListener('up', this.hideRipple_.bind(this));
+          if (!this.noRipple) {
+            this.addEventListener('blur', this.hideRipple_.bind(this));
+            this.addEventListener('up', this.hideRipple_.bind(this));
+          }
         }
 
         override updated(changedProperties: PropertyValues<this>) {
@@ -108,7 +113,7 @@ export const CrRadioButtonMixinLit =
         }
 
         override focus() {
-          const button = this.shadowRoot!.querySelector<HTMLElement>('#button');
+          const button = this.shadowRoot.querySelector<HTMLElement>('#button');
           assert(button);
           button.focus();
         }
@@ -118,6 +123,7 @@ export const CrRadioButtonMixinLit =
         }
 
         private hideRipple_() {
+          assert(!this.noRipple);
           this.getRipple().clear();
         }
 
@@ -145,11 +151,13 @@ export interface CrRadioButtonMixinLitInterface {
   disabled: boolean;
   focusable: boolean;
   hideLabelText: boolean;
+  noRipple: boolean;
   label: string;
   name?: string;
   getButtonTabIndex(): number;
   getAriaDisabled(): string;
   getAriaChecked(): string;
   onInputKeydown(e: KeyboardEvent): void;
+  // Not called if noRipple is set to true.
   getRipple(): CrRippleElement;
 }

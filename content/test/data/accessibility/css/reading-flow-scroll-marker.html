@@ -1,0 +1,80 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:focusable*
+-->
+<!doctype html>
+
+<style>
+.carousel {
+  overflow-x: auto;
+  columns: 1;
+  height: 200px;
+  width: 200px;
+
+  display: grid;
+  grid-auto-flow: column;
+  reading-flow: grid-order;
+
+  scroll-marker-group: after;
+
+  /* Scroll marker group is generated on the .carousel element */
+  &::scroll-marker-group {
+    height: 1rem;
+    width: 100%;
+  }
+
+  /* These are div items children within the carousel */
+  & > div {
+    height: 100%;
+    width: 300px;
+
+    /* Request a scroll marker for this element by setting non-none content */
+    &::scroll-marker {
+      display: inline-block;
+      width: 3rem;
+      border: 1px solid black;
+    }
+    /* The currently selected scroll marker should be blue */
+    &::scroll-marker:target-current {
+      background: blue;
+    }
+  }
+}
+
+#One {
+  order: 1;
+  &::scroll-marker {
+    content: 'One' / 'One';
+  }
+}
+#Two {
+  order: 2;
+  &::scroll-marker {
+    content: 'Two' /  'Two';
+  }
+}
+#Three {
+  order: 3;
+  &::scroll-marker {
+    content: 'Three' / 'Three';
+  }
+}
+</style>
+
+<!--- Test reading flow for grid items re-ordered using CSS property order.
+The reading flow container is a carousel scroller with scroll-markers.
+
+Expect order to be:
+One  -> Two  -> Three
+
+// TODO(crbug.com/413659838)
+Note that currently, ::scroll-marker recognize its parent as display: block and
+the CSS order property does not take into effect.
+-->
+
+<div class=carousel>
+ <div id="Two" tabindex="0">Two</div>
+ <div id="Three" tabindex="0">Three</div>
+ <div id="One" tabindex="0">One</div>
+</div>

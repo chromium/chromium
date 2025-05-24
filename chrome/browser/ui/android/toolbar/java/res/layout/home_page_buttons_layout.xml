@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsContainerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/home_page_buttons_layout"
+    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:orientation="horizontal">
+
+    <org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonView
+        android:id="@+id/home_button"
+        android:src="@drawable/btn_toolbar_home"
+        android:contentDescription="@string/accessibility_toolbar_btn_home"
+        android:tooltipText="@string/accessibility_toolbar_btn_home"
+        style="@style/ToolbarHoverableButton"
+        android:visibility="gone"
+        app:menuVerticalOverlapAnchor="false"
+        app:menuMaxWidth="@dimen/home_button_list_menu_width"
+        app:menuPositionedAtStart="true"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonView
+        android:id="@+id/ntp_customization_button"
+        android:src="@drawable/edit_icon"
+        android:contentDescription="@string/ntp_customization_title"
+        style="@style/ToolbarHoverableButton"
+        android:visibility="gone"
+        app:tint="@color/default_icon_color_tint_list" />
+
+</org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsContainerView>

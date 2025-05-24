@@ -32,7 +32,7 @@ function runTest(testScenario) {
     var _8bitImageSrc = testImagesPath + testScenario._8bitImagePath;
     var _16bitImageSrc = testImagesPath + testScenario._16bitImagePath;
     var tolerance = defaultColorConversionTolerance;
-    if (testScenario.canvasColorParams.pixelFormat == 'float16')
+    if (testScenario.canvasColorParams.colorType == 'float16')
         tolerance = wideGamutColorConversionTolerance;
 
     var _8bitImage = new Image();
@@ -89,15 +89,15 @@ function runAllTests() {
     var canvasColorParams = [
         // When canvas is not half float backed, 16 bit PNGs will be decoded as
         // 8 bits PNGs (libpng strips 16 bits to 8 bits).
-        {colorSpace: 'srgb', pixelFormat: 'uint8'},
+        {colorSpace: 'srgb', colorType: 'unorm8'},
 
         // For half float backed canvases, 16 bit PNGs are decoded as 16 bits,
         // and then color converted to the canvas color space and color types.
         // We expect the new 16 bit decoding capability to be compatible with
         // the regular 8 bits decoding code path.
-        {colorSpace: 'srgb', pixelFormat: 'float16'},
-        {colorSpace: 'rec2020', pixelFormat: 'float16'},
-        {colorSpace: 'display-p3', pixelFormat: 'float16'}
+        {colorSpace: 'srgb', colorType: 'float16'},
+        {colorSpace: 'rec2020', colorType: 'float16'},
+        {colorSpace: 'display-p3', colorType: 'float16'}
     ];
 
     var testScenarioSet = [];
@@ -126,7 +126,7 @@ function runAllTests() {
 function testScenarioToString(testScenario) {
     var str = "Canvas color params: " +
         testScenario.canvasColorParams.colorSpace + ", " +
-        testScenario.canvasColorParams.pixelFormat + ". Testing " +
+        testScenario.canvasColorParams.colorType + ". Testing " +
         testScenario._8bitImagePath + " vs " + testScenario._16bitImagePath;
     return str;
 }

@@ -10,7 +10,6 @@ PASS window.find.call(targetWindow, 'string', false, false, false, false, false,
 PASS window.confirm.call(targetWindow, 'message') threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
 PASS window.prompt.call(targetWindow, 'message', 'defaultValue') threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
 PASS window.getComputedStyle.call(targetWindow, document.body, '') threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS window.openDatabase.call(targetWindow, 'name', '1.0', 'description', 0) threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
 PASS window.atob.call(targetWindow, 'string') threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
 PASS window.btoa.call(targetWindow, 'string') threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
 PASS window.clearTimeout.call(targetWindow, 0); threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..

@@ -28,6 +28,19 @@ class FakeDeskSyncService : public DeskSyncService {
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
+  // In prod this `callback` would be executed after the bridge executes
+  // `MergeFullSyncData` method. In tests with fake bridge we either run it
+  // immediately or never - depending on the value of
+  // `skip_on_first_sync_callback_`.
+  void RunWhenDesksTemplatesAreReadyOnFirstSync(
+      base::OnceClosure callback) override;
+
+  // Setting this to true will make us ignore the callback passed to
+  // `RunWhenDesksTemplatesAreReadyOnFirstSync`. This corresponds to the case of
+  // using Desk sync on a known Sync client where `MergeFullSyncData` wouldn't
+  // be called.
+  bool skip_on_first_sync_callback_ = false;
+
  private:
   std::unique_ptr<FakeDeskSyncBridge> fake_bridge_;
   syncer::FakeDataTypeControllerDelegate fake_data_type_controller_delegate_;

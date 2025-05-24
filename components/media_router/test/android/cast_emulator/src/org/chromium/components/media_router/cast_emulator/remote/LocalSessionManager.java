@@ -29,7 +29,6 @@ public class LocalSessionManager {
 
     private final Context mContext;
 
-    /** @param context */
     public LocalSessionManager(Context context) {
         mContext = context;
     }

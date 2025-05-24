@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
+#include <array>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
@@ -48,7 +50,7 @@ std::string CanonicalizeBluetoothAddress(std::string_view address) {
 }
 
 std::string CanonicalizeBluetoothAddress(
-    const std::array<uint8_t, 6>& address_bytes) {
+    base::span<const uint8_t, 6> address_bytes) {
   return base::StringPrintf(
       "%02X:%02X:%02X:%02X:%02X:%02X", address_bytes[0], address_bytes[1],
       address_bytes[2], address_bytes[3], address_bytes[4], address_bytes[5]);

@@ -395,13 +395,29 @@ goog.date.relative.formatPast = function(dateMs) {
 goog.date.relative.formatDay = function(dateMs, opt_formatter) {
   'use strict';
   var today = new Date(goog.now());
+  const originalTimezoneOffset = today.getTimezoneOffset();
 
   today.setHours(0);
   today.setMinutes(0);
   today.setSeconds(0);
   today.setMilliseconds(0);
 
-  var dayOffset = (dateMs - today.getTime()) / goog.date.relative.DAY_MS_;
+  // It is possible for the time zone to differ between 00:00 and HH:MM on a
+  // given day if daylight saving time ended on that day some time before HH:MM.
+  // In this case, the number of hours between 00:MM and HH:MM is not HH. It is
+  // HH + 1. In most cases this doesn't matter, but if the current date-time is
+  // 23:MM in PST on the day daylight saving time ended (e.g. Nov 7, 2021) and
+  // `dateMs` is in that same hour, then without correction, the number of hours
+  // between 00:00 and 23:MM would be calculated as 24+ hours, causing
+  // date-times corresponding to 'Today' to be formatted as 'Tomorrow' (e.g.
+  // b/205512072). Here we correct the offset by computing the difference
+  // between today's original time zone and the time zone at 00:00.
+  const timezoneOffsetCorrection =
+      (today.getTimezoneOffset() - originalTimezoneOffset) *
+      goog.date.relative.MINUTE_MS_;
+
+  let dayOffset = (dateMs - today.getTime() + timezoneOffsetCorrection) /
+      goog.date.relative.DAY_MS_;
 
   dayOffset = Math.floor(dayOffset);
 

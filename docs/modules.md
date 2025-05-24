@@ -18,17 +18,17 @@ their code bases with large performance wins.
 the build system.
 
 We're currently experimenting with modules for libc++ and they can be enabled
-with the GN arg `use_libcxx_modules`. Using this arg is not currently
-recommended, due to the limitations mentioned below. It is only interesting to
-people working on the feature.
+with the GN arg `use_libcxx_modules` and `use_implicit_libcxx_modules`. Using
+this arg is not currently recommended, due to the limitations mentioned below.
+It is only interesting to people working on the feature.
 
 ## Current limitations
 
 ### Implicit vs explicit modules
 
-We're using implicit modules, which are created on-the-fly when Clang doesn't
-see them in the module cache. This doesn't work with remote execution since the
-cached modules aren't known to the build system.
+`use_implicit_libcxx_modules` is using implicit modules, which are created
+on-the-fly when Clang doesn't see them in the module cache. This doesn't work
+with remote execution since the cached modules aren't known to the build system.
 
 The module cache is set to `<outdir>/gen/libcxx/module_cache`. Since the modules
 aren't known to ninja they aren't cleaned with `ninja -t clean` and need to be
@@ -40,6 +40,8 @@ will require support in GN and has been partially implemented
 [CL2](https://gn-review.googlesource.com/c/gn/+/9602),
 [CL3](https://gn-review.googlesource.com/c/gn/+/9680), and
 [crbug.com/gn/373](https://crbug.com/gn/373)).
+
+`use_libcxx_modules` enables explicit modules using existing features.
 
 ### Duplicate modules
 

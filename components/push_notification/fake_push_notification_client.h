@@ -23,7 +23,7 @@ class FakePushNotificationClient : public PushNotificationClient {
       base::flat_map<std::string, std::string> message_data) override;
 
   const base::flat_map<std::string, std::string>&
-  GetMostRecentMessageDataRecieved();
+  GetMostRecentMessageDataReceived();
 
  private:
   base::flat_map<std::string, std::string> last_received_message_data_;

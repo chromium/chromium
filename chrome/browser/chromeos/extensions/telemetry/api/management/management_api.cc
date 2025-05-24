@@ -12,7 +12,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/chromeos/extensions/api/management.h"
 #include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -20,10 +19,8 @@
 namespace chromeos {
 
 namespace {
-
 namespace cx_manage = api::os_management;
 namespace crosapi = ::crosapi::mojom;
-
 }  // namespace
 
 // ManagementApiFunctionBase ---------------------------------------------------
@@ -39,12 +36,6 @@ ManagementApiFunctionBase::GetRemoteService() {
   DCHECK(remote_telemetry_management_service_strategy_);
   return remote_telemetry_management_service_strategy_->GetRemoteService();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ManagementApiFunctionBase::IsCrosApiAvailable() {
-  return remote_telemetry_management_service_strategy_ != nullptr;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 template <class Params>
 std::optional<Params> ManagementApiFunctionBase::GetParams() {

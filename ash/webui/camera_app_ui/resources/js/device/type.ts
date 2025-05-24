@@ -29,7 +29,7 @@ export interface ModeConstraints {
   mode: Mode;
 }
 
-export type CameraViewUI = CaptureHandler;
+export type CameraViewUi = CaptureHandler;
 
 export class CameraInfo {
   readonly devicesInfo: MediaDeviceInfo[];
@@ -65,9 +65,9 @@ export class CameraInfo {
     return assertInstanceof(info, Camera3DeviceInfo);
   }
 
-  hasBuiltinPTZSupport(deviceId: string): boolean {
+  hasBuiltinPtzSupport(deviceId: string): boolean {
     const info = this.getCamera3DeviceInfo(deviceId);
-    return info === null ? false : info.builtinPTZSupport;
+    return info === null ? false : info.builtinPtzSupport;
   }
 }
 
@@ -100,7 +100,7 @@ export interface CameraConfigCandidate {
   captureCandidate: CaptureCandidate;
 }
 
-export interface CameraUI {
+export interface CameraUi {
   onUpdateCapability?(cameraInfo: CameraInfo): void;
   onTryingNewConfig?(config: CameraConfigCandidate): void;
   onUpdateConfig?(config: CameraConfig): Promise<void>|void;

@@ -34,12 +34,12 @@ uint64_t MediaStreamTrackVideoStats::totalFrames(ScriptState* script_state) {
          stats_.dropped_frames;
 }
 
-ScriptValue MediaStreamTrackVideoStats::toJSON(ScriptState* script_state) {
+ScriptObject MediaStreamTrackVideoStats::toJSON(ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddNumber("deliveredFrames", deliveredFrames(script_state));
   result.AddNumber("discardedFrames", discardedFrames(script_state));
   result.AddNumber("totalFrames", totalFrames(script_state));
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void MediaStreamTrackVideoStats::Trace(Visitor* visitor) const {

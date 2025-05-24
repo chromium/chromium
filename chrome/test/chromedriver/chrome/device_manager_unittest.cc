@@ -17,8 +17,8 @@ namespace {
 
 class FakeAdb : public Adb {
  public:
-  FakeAdb() {}
-  ~FakeAdb() override {}
+  FakeAdb() = default;
+  ~FakeAdb() override = default;
 
   Status GetDevices(std::vector<std::string>* devices) override {
     devices->push_back("a");
@@ -83,6 +83,18 @@ class FakeAdb : public Adb {
     *socket_name = "@webview_devtools_remote_0";
     return Status(kOk);
   }
+
+  Status SetPreferences(const std::string& device_serial,
+                        const std::string& path,
+                        const base::Value::Dict* custom_prefs) override {
+    return Status(kOk);
+  }
+
+  Status SetLocalState(const std::string& device_serial,
+                       const std::string& path,
+                       const base::Value::Dict* custom_local_state) override {
+    return Status(kOk);
+  }
 };
 
 class ClearAppDataCalledFakeAdb : public FakeAdb {
@@ -101,8 +113,8 @@ class ClearAppDataCalledFakeAdb : public FakeAdb {
 
 class SucceedsForwardPortFakeAdb : public FakeAdb {
  public:
-  SucceedsForwardPortFakeAdb() {}
-  ~SucceedsForwardPortFakeAdb() override {}
+  SucceedsForwardPortFakeAdb() = default;
+  ~SucceedsForwardPortFakeAdb() override = default;
 
   Status ForwardPort(const std::string& device_serial,
                      const std::string& remote_abstract,
@@ -126,8 +138,8 @@ class SucceedsForwardPortFakeAdb : public FakeAdb {
 
 class FailsForwardPortFakeAdb : public SucceedsForwardPortFakeAdb {
  public:
-  FailsForwardPortFakeAdb() {}
-  ~FailsForwardPortFakeAdb() override {}
+  FailsForwardPortFakeAdb() = default;
+  ~FailsForwardPortFakeAdb() override = default;
 
   Status ForwardPort(const std::string& device_serial,
                      const std::string& remote_abstract,

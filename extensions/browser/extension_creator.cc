@@ -89,8 +89,9 @@ bool ExtensionCreator::ValidateExtension(const base::FilePath& extension_dir,
                                          int run_flags) {
   int create_flags =
       Extension::FOLLOW_SYMLINKS_ANYWHERE | Extension::ERROR_ON_PRIVATE_KEY;
-  if (run_flags & kRequireModernManifestVersion)
+  if (run_flags & kRequireModernManifestVersion) {
     create_flags |= Extension::REQUIRE_MODERN_MANIFEST_VERSION;
+  }
 
   // Loading the extension does a lot of useful validation of the structure.
   scoped_refptr<Extension> extension(file_util::LoadExtension(
@@ -237,8 +238,9 @@ bool ExtensionCreator::CreateCrxAndPerformCleanup(
     crypto::RSAPrivateKey* private_key,
     const std::optional<std::string>& compressed_verified_contents) {
   base::ScopedTempDir temp_dir;
-  if (!temp_dir.CreateUniqueTempDir())
+  if (!temp_dir.CreateUniqueTempDir()) {
     return false;
+  }
 
   base::FilePath zip_path;
   bool result =
@@ -265,10 +267,11 @@ bool ExtensionCreator::Run(const base::FilePath& extension_dir,
 
   // Initialize Key Pair
   std::unique_ptr<crypto::RSAPrivateKey> key_pair;
-  if (!private_key_path.value().empty())
+  if (!private_key_path.value().empty()) {
     key_pair = ReadInputKey(private_key_path);
-  else
+  } else {
     key_pair = GenerateKey(output_private_key_path);
+  }
   if (!key_pair) {
     DCHECK(!error_message_.empty()) << "Set proper error message.";
     return false;

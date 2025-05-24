@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
-#include "build/chromeos_buildflags.h"
+
+#include "build/build_config.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "components/upload_list/upload_list.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #endif
@@ -34,7 +35,7 @@ class StubUploadList : public UploadList {
   void RequestSingleUpload(const std::string& local_id) override {}
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class TestDebugDaemonClient : public ash::FakeDebugDaemonClient {
  public:
   TestDebugDaemonClient() = default;
@@ -72,6 +73,6 @@ TEST(CrashIdsSourceTest, CallsCrashSender) {
 
   ash::DebugDaemonClient::SetInstanceForTest(nullptr);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace system_logs

@@ -22,14 +22,14 @@ namespace {
 int GetInputMethodCategory(const std::string& id) {
   const std::string engine_id =
       extension_ime_util::GetComponentIDByInputMethodID(id);
-  if (base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE)) {
+  if (engine_id.starts_with("xkb:")) {
     return 0;
   }
-  if (base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE)) {
+  if (engine_id.starts_with("vkd_")) {
     return 1;
   }
   if (engine_id.find("-t-i0-") != std::string::npos &&
-      !base::StartsWith(engine_id, "zh-", base::CompareCase::SENSITIVE)) {
+      !engine_id.starts_with("zh-")) {
     return 2;
   }
   return 3;
@@ -80,7 +80,7 @@ ComponentExtensionIMEManager::ComponentExtensionIMEManager(
 ComponentExtensionIMEManager::~ComponentExtensionIMEManager() = default;
 
 bool ComponentExtensionIMEManager::LoadComponentExtensionIME(
-    Profile* profile,
+    content::BrowserContext* context,
     const std::string& input_method_id,
     std::set<std::string>* extension_loaded) {
   TRACE_EVENT0("ime",
@@ -94,7 +94,7 @@ bool ComponentExtensionIMEManager::LoadComponentExtensionIME(
       will_load = true;
     }
     if (will_load) {
-      delegate_->Load(profile, ime.id, ime.manifest, ime.path);
+      delegate_->Load(context, ime.id, ime.manifest, ime.path);
     }
     return will_load;
   }

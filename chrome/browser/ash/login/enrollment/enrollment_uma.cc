@@ -36,6 +36,10 @@ const char* const kMetricEnrollmentTokenBased =
     "Enterprise.EnrollmentTokenBased";
 const char* const kMetricEnrollmentTokenBasedManualFallback =
     "Enterprise.EnrollmentTokenBasedManualFallback";
+const char* const kMetricEnrollmentRemoteDeployment =
+    "Enterprise.EnrollmentRemoteDeployment";
+const char* const kMetricEnrollmentRemoteDeploymentManualFallback =
+    "Enterprise.EnrollmentRemoteDeploymentManualFallback";
 
 }  // namespace
 
@@ -90,9 +94,15 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
       base::UmaHistogramSparse(kMetricEnrollmentTokenBasedManualFallback,
                                sample);
       break;
-    case policy::EnrollmentConfig::MODE_NONE:
-      NOTREACHED_IN_MIGRATION();
+    case policy::EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED:
+      base::UmaHistogramSparse(kMetricEnrollmentRemoteDeployment, sample);
       break;
+    case policy::EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK:
+      base::UmaHistogramSparse(kMetricEnrollmentRemoteDeploymentManualFallback,
+                               sample);
+      break;
+    case policy::EnrollmentConfig::MODE_NONE:
+      NOTREACHED();
   }
 }
 

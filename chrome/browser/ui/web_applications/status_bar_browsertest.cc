@@ -20,7 +20,7 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoStatusBar) {
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   Browser* const app_browser =
       ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
-  EXPECT_EQ(nullptr, app_browser->GetStatusBubbleForTesting());
+  EXPECT_EQ(0u, app_browser->GetStatusBubblesForTesting().size());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayBrowserHasStatusBar) {
@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayBrowserHasStatusBar) {
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   Browser* const app_browser =
       ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
-  EXPECT_NE(nullptr, app_browser->GetStatusBubbleForTesting());
+  EXPECT_LT(0u, app_browser->GetStatusBubblesForTesting().size());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoManifestHasStatusBar) {
@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoManifestHasStatusBar) {
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   Browser* const app_browser =
       ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
-  EXPECT_NE(nullptr, app_browser->GetStatusBubbleForTesting());
+  EXPECT_LT(0u, app_browser->GetStatusBubblesForTesting().size());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayMinimalUiHasStatusBar) {
@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayMinimalUiHasStatusBar) {
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   Browser* const app_browser =
       ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
-  EXPECT_NE(nullptr, app_browser->GetStatusBubbleForTesting());
+  EXPECT_LT(0u, app_browser->GetStatusBubblesForTesting().size());
 }
 
 }  // namespace

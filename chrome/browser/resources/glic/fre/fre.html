@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="fre.css">
+  <script type="module"
+    src="chrome://resources/cr_elements/cr_shared_vars.css.js">
+  </script>
+  <script type="module" src="main.js"></script>
+</head>
+
+<body>
+  <section hidden class="dialog panel" id="errorPanel">
+    <div class="header">
+      <cr-icon-button class="close-button" iron-icon="cr:close"
+          aria-label="$i18n{closeButtonLabel}">
+      </cr-icon-button>
+    </div>
+    <div class="container">
+      <div class="notice">
+        <div class="icon"><cr-icon icon="glic:error"></cr-icon></div>
+        <p class="headline">$i18n{errorNoticeHeader}</p>
+        <p>$i18n{errorNotice}</p>
+        <cr-button class="tonal-button" id="reload"
+            role="button">$i18n{errorNoticeActionButton}
+        </cr-button>
+      </div>
+    </div>
+  </section>
+  <section hidden class="dialog panel" id="offlinePanel">
+    <div class="header">
+      <cr-icon-button class="close-button" iron-icon="cr:close"
+          aria-label="$i18n{closeButtonLabel}">
+      </cr-icon-button>
+    </div>
+    <div class="container">
+      <div class="notice">
+        <div class="icon"><cr-icon icon="glic:offline"></cr-icon></div>
+        <p class="headline">$i18n{offlineNoticeHeader}</p>
+        <p>$i18n{offlineNoticeAction}</p>
+      </div>
+    </div>
+  </section>
+  <section hidden class="dialog panel" id="loadingPanel">
+    <div class="header">
+      <cr-icon-button class="close-button" iron-icon="cr:close"
+          aria-label="$i18n{closeButtonLabel}">
+      </cr-icon-button>
+    </div>
+    <!-- Block contains the skeleton loader. -->
+    <div class="container">
+      <div class="skeleton-loader-block a"></div>
+      <div class="skeleton-loader-block b"></div>
+      <div class="skeleton-loader-block c"></div>
+      <div class="skeleton-loader-block d"></div>
+      <div class="skeleton-loader-block e"></div>
+      <div class="skeleton-loader-block f"></div>
+      <div class="bottom">
+        <div class="skeleton-loader-block g"></div>
+        <div class="skeleton-loader-block g"></div>
+      </div>
+    </div>
+  </section>
+  <section hidden class="panel" id="guestPanel">
+    <div id="webviewContainer"></div>
+  </section>
+</body>
+</html>

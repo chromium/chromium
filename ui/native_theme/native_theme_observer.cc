@@ -6,6 +6,6 @@
 
 namespace ui {
 
-NativeThemeObserver::~NativeThemeObserver() {}
+NativeThemeObserver::~NativeThemeObserver() = default;
 
 }  // namespace ui

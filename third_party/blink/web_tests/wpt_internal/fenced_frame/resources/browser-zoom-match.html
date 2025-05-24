@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+  <style>
+    body {
+      margin: 20px; /* = 10 * 2 */
+    }
+
+    p {
+      font-size: 20px; /* = 10 * 2 */
+    }
+
+    h1 {
+      width: 600px; /* This is the same as the 100% width for the ff h1 tag. */
+      font-size: 40px; /* = 20 * 2 */
+      padding: 0px;
+      margin: 0px;
+    }
+
+    div {
+      background-color: green;
+      border: 4px inset;
+      padding: 20px; /* = 10 * 2 */
+      width: 600px; /* = (320 * 2) - (20 * 2) to account for padding */
+      height: 60px; /* = (50 * 2) - (20 * 2) to account for padding */
+      overflow: scroll;
+      overflow-y: hidden;
+    }
+  </style>
+</head>
+<body>
+  <p>This is text outside of the fenced frame.</p>
+  <div>
+    <h1>This is the page.</h1>
+  </div>
+</body>
+</html>

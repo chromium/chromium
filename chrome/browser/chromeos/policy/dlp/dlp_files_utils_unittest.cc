@@ -62,7 +62,7 @@ TEST_F(DlpFilesUtilsTest, IsFilesTransferBlocked_NoneBlocked) {
       kExampleSourcePattern1, kExampleSourcePattern2, std::string()};
 
   EXPECT_CALL(
-      *rules_manager_,
+      *rules_manager(),
       IsRestrictedComponent(_, data_controls::Component::kOneDrive, _, _, _))
       .WillOnce(testing::Return(DlpRulesManager::Level::kReport))
       .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
@@ -76,7 +76,7 @@ TEST_F(DlpFilesUtilsTest, IsFilesTransferBlocked_SomeBlocked) {
       kExampleSourcePattern1, kExampleSourcePattern2, std::string()};
 
   EXPECT_CALL(
-      *rules_manager_,
+      *rules_manager(),
       IsRestrictedComponent(_, data_controls::Component::kOneDrive, _, _, _))
       .WillOnce(testing::Return(DlpRulesManager::Level::kReport))
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));

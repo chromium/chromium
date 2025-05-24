@@ -8,10 +8,14 @@ import android.net.Uri;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The callback used to indicate what action the user took in the picker. */
+@NullMarked
 public interface PhotoPickerListener {
     /** The action the user took in the picker. */
     @IntDef({
@@ -39,7 +43,7 @@ public interface PhotoPickerListener {
      *
      * @param photos The photos that were selected.
      */
-    void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri[] photos);
+    void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri @Nullable [] photos);
 
     /** Called when the dialog has been dismissed. */
     void onPhotoPickerDismissed();

@@ -10,7 +10,6 @@
 #include <string>
 #include <string_view>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -25,6 +24,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
@@ -66,6 +66,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -73,6 +74,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -320,6 +322,7 @@ class DemoSetupTestBase : public OobeBaseTest {
  protected:
   test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 
  private:
   // TODO(agawronska): Maybe create a separate test fixture for offline setup.
@@ -484,7 +487,7 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   }
 
   std::string GetQueryForCountrySelectOptionFromCountryCode(
-      const std::string country_code) {
+      std::string_view country_code) {
     return base::StrCat({test::GetOobeElementPath(kDemoPreferencesCountry),
                          ".shadowRoot.querySelector('option[value=\"",
                          country_code, "\"]').innerHTML"});
@@ -672,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   UseOnlineModeOnNetworkScreen();
 
-  for (const std::string country_code : DemoSession::kSupportedCountries) {
+  for (const std::string country_code : demo_mode::kSupportedCountries) {
     const auto it = kCountryCodeToNameMap.find(country_code);
     ASSERT_NE(kCountryCodeToNameMap.end(), it);
     const std::string query =
@@ -1009,12 +1012,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnErrorScreen) {
 }
 
 // TODO(crbug.com/40249751): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_RetryOnErrorScreen DISABLED_RetryOnErrorScreen
-#else
-#define MAYBE_RetryOnErrorScreen RetryOnErrorScreen
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_RetryOnErrorScreen) {
   // Simulate online setup failure.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -1057,6 +1055,54 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
       "DemoMode.Setup.Error",
       DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 2);
   histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickRetryOnErrorScreen) {
+  // Simulate online setup failure.
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION);
+  enrollment_helper_.ExpectAttestationEnrollmentError(
+      policy::EnrollmentStatus::ForRegistrationError(
+          policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  SimulateNetworkConnected();
+
+  TriggerDemoModeOnWelcomeScreen();
+
+  UseOnlineModeOnNetworkScreen();
+
+  ProceedThroughDemoPreferencesScreen();
+
+  // policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE matching to
+  // DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable in
+  // DemoSetupController::CreateFromClientStatus().
+  AcceptTermsAndExpectDemoSetupFailure(
+      DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable);
+
+  // Default error returned by MockDemoModeOnlineEnrollmentHelperCreator.
+  ExpectErrorMessage(IDS_DEMO_SETUP_TEMPORARY_ERROR,
+                     IDS_DEMO_SETUP_RECOVERY_RETRY);
+
+  test::OobeJS().ExpectVisiblePath(kDemoSetupErrorDialogRetry);
+  test::OobeJS().ExpectHiddenPath(kDemoSetupErrorDialogPowerwash);
+  test::OobeJS().ExpectEnabledPath(kDemoSetupErrorDialogBack);
+
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+
+  test::LockDemoDeviceInstallAttributes();
+
+  // We need to create another mock after showing error dialog.
+  enrollment_helper_.ResetMock();
+  // Simulate successful online setup on retry.
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION);
+  enrollment_helper_.ExpectAttestationEnrollmentSuccess();
+
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   "DemoMode.Setup.RetryButtonClicked"));
+  test::OobeJS().ClickOnPath(kDemoSetupErrorDialogRetry);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "DemoMode.Setup.RetryButtonClicked"));
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -1431,14 +1477,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
  */
 class DemoSetupQuickStartEnabledTest : public DemoSetupArcSupportedTest {
  public:
+  DemoSetupQuickStartEnabledTest() = default;
+
   ~DemoSetupQuickStartEnabledTest() override = default;
-
-  DemoSetupQuickStartEnabledTest() {
-    feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupQuickStartEnabledTest, QuickStartButton) {

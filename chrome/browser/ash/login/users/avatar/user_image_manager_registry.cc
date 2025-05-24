@@ -63,13 +63,13 @@ void UserImageManagerRegistry::Shutdown() {
 }
 
 void UserImageManagerRegistry::OnUserListLoaded() {
-  for (const user_manager::User* user : user_manager_->GetUsers()) {
+  for (const user_manager::User* user : user_manager_->GetPersistedUsers()) {
     GetManager(user->GetAccountId())->LoadUserImage();
   }
 }
 
 void UserImageManagerRegistry::OnDeviceLocalUserListUpdated() {
-  for (const user_manager::User* user : user_manager_->GetUsers()) {
+  for (const user_manager::User* user : user_manager_->GetPersistedUsers()) {
     if (user->IsDeviceLocalAccount()) {
       GetManager(user->GetAccountId())->LoadUserImage();
     }
@@ -96,6 +96,7 @@ void UserImageManagerRegistry::OnUserLoggedIn(const user_manager::User& user) {
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       // Ignore these users.
       return;
   }

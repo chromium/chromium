@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Test sink for div.setAttributeNS(null, onclick)
+  assert_equals: expected "Element onclick" but got "Element setAttributeNS"
+[FAIL] Test sink for iframe.setAttributeNS(null, srcdoc)
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNS"
+[FAIL] Test sink for script.setAttributeNS(null, src)
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNS"
+[FAIL] Test sink for script.setAttributeNS(null, href)
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNS"
+[FAIL] Test sink for script.setAttributeNS(http://www.w3.org/1999/xlink, href)
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNS"
+Harness: the test ran to completion.
+

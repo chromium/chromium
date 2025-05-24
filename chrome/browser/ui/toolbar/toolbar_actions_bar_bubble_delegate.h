@@ -44,7 +44,7 @@ class ToolbarActionsBarBubbleDelegate {
     bool is_learn_more;
   };
 
-  virtual ~ToolbarActionsBarBubbleDelegate() {}
+  virtual ~ToolbarActionsBarBubbleDelegate() = default;
 
   // Returns true if the bubble should (still) be shown. Since bubbles are
   // sometimes shown asynchronously, they may be invalid by the time they would

@@ -5,14 +5,12 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_HELPERS_H_
 #define MEDIA_GPU_WINDOWS_D3D12_HELPERS_H_
 
-#include <wrl.h>
-
 #include <array>
-#include <memory>
 
+#include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "media/base/limits.h"
 #include "media/base/video_codecs.h"
-#include "media/base/video_types.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d_com_defs.h"
@@ -22,6 +20,12 @@
 #include "third_party/libgav1/src/src/utils/constants.h"
 
 namespace media {
+
+struct D3D12HeapProperties {
+  constexpr static D3D12_HEAP_PROPERTIES kDefault{D3D12_HEAP_TYPE_DEFAULT};
+  constexpr static D3D12_HEAP_PROPERTIES kUpload{D3D12_HEAP_TYPE_UPLOAD};
+  constexpr static D3D12_HEAP_PROPERTIES kReadback{D3D12_HEAP_TYPE_READBACK};
+};
 
 // Manages reference frame buffers, for reference frame descriptors to index on.
 class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
@@ -56,6 +60,33 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
   // D3D12_VIDEO_DECODE_REFERENCE_FRAMES also has ID3D12VideoDecoderHeap**
   // ppHeaps. The items in |heaps_| are always |heap_.Get()|.
   std::array<ID3D12VideoDecoderHeap*, kMaxSize> heaps_;
+};
+
+// A scoped class managing the |Map()| and |Unmap()| of a |ID3D12Resource|. The
+// instances of this class are expected to live shortly since it relies on the
+// validity of the underlying |ID3D12Resource|.
+// Note: Since the Map() operation may fail, the |data()| must be checked
+// before use.
+class MEDIA_GPU_EXPORT ScopedD3D12ResourceMap {
+ public:
+  ScopedD3D12ResourceMap();
+  ~ScopedD3D12ResourceMap();
+
+  bool Map(ID3D12Resource* resource,
+           UINT subresource = 0,
+           const D3D12_RANGE* read_range = nullptr);
+
+  // The mapped memory span. It can be empty if there is no successful |Map()|
+  // call.
+  base::span<uint8_t> data() const { return data_; }
+
+  // |Unmap()| the resource with given |written_range|, if it is not committed.
+  void Commit(const D3D12_RANGE* written_range = nullptr);
+
+ private:
+  raw_ptr<ID3D12Resource> resource_ = nullptr;
+  UINT subresource_ = 0;
+  base::raw_span<uint8_t> data_;
 };
 
 MEDIA_GPU_EXPORT ComD3D12Device CreateD3D12Device(IDXGIAdapter* adapter);

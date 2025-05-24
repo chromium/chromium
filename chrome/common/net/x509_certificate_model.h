@@ -7,11 +7,11 @@
 
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/parse_name.h"
@@ -25,9 +25,9 @@ struct Extension {
   std::string value;
 };
 
-struct NotPresent : absl::monostate {};
-struct Error : absl::monostate {};
-using OptionalStringOrError = absl::variant<Error, NotPresent, std::string>;
+struct NotPresent : std::monostate {};
+struct Error : std::monostate {};
+using OptionalStringOrError = std::variant<Error, NotPresent, std::string>;
 
 class X509CertificateModel {
  public:

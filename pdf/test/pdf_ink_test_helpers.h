@@ -5,28 +5,67 @@
 #ifndef PDF_TEST_PDF_INK_TEST_HELPERS_H_
 #define PDF_TEST_PDF_INK_TEST_HELPERS_H_
 
-#include <string>
+#include <stdint.h>
 
+#include <optional>
+#include <string_view>
+
+#include "base/containers/span.h"
+#include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "pdf/pdf_ink_annotation_mode.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
+#include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
+#include "ui/gfx/geometry/point_f.h"
+
+using SkColor = uint32_t;
+
+namespace base::test {
+class TaskEnvironment;
+}  // namespace base::test
 
 namespace chrome_pdf {
+
+// A possible configuration of Ink feature parameters.
+struct InkTestVariation {
+  bool use_text_annotations;
+  bool use_text_highlighting;
+};
+
+enum class TestAnnotationUndoRedoMessageType {
+  kUndo,
+  kRedo,
+};
 
 // Optional parameters that the `setAnnotationBrushMessage` may have, depending
 // on the brush type.
 struct TestAnnotationBrushMessageParams {
-  int color_r;
-  int color_g;
-  int color_b;
+  SkColor color;
+  double size;
 };
 
-base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable);
+// Used to generate ink::StrokeInput. Many tests may need both a `position` and
+// a `time` to consistently generate the same results.
+struct PdfInkInputData {
+  gfx::PointF position;
+  base::TimeDelta time;
+};
+
+// Generates an ink::StrokeInputBatch.  Treats `inputs` as mouse inputs.
+std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
+    base::span<const PdfInkInputData> inputs);
+
+base::Value::Dict CreateSetAnnotationModeMessageForTesting(
+    InkAnnotationMode mode);
 
 base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
-    const std::string& type,
-    double size,
+    std::string_view type,
     const TestAnnotationBrushMessageParams* params);
+
+base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(
+    TestAnnotationUndoRedoMessageType type);
 
 MATCHER_P6(InkAffineTransformEq,
            expected_a,
@@ -45,6 +84,23 @@ MATCHER_P6(InkAffineTransformEq,
          Matches(FloatEq(expected_e))(arg.E()) &&
          Matches(FloatEq(expected_f))(arg.F());
 }
+
+// Generate the path for test files specific to Ink.
+base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename);
+
+// Returns all variations of Ink tests to cover all features in development.
+base::span<const InkTestVariation> GetAllInkTestVariations();
+
+// Returns all variations of Ink tests that have text highlighting enabled.
+base::span<const InkTestVariation> GetInkTestVariationsWithTextHighlighting();
+
+// Sets the global PDF test task environment.
+void SetPdfTestTaskEnvironment(base::test::TaskEnvironment* task_environment);
+
+// Returns the global PDF test task environment. Should always exist for any
+// tests in the PDF test suite, otherwise crashes if no task environment was
+// set.
+base::test::TaskEnvironment& GetPdfTestTaskEnvironment();
 
 }  // namespace chrome_pdf
 

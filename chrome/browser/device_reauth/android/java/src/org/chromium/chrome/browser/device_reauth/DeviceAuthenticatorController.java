@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.device_reauth;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Encapsulates the logic for the user authentication on Android device. */
+@NullMarked
 interface DeviceAuthenticatorController {
     interface Delegate {
 

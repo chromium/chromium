@@ -32,7 +32,18 @@ async function pollNumResults(endpoint, id) {
 function checkReportExists(reports, type, url) {
   for (const report of reports) {
     if (report.type !== type) continue;
-    if (report.body.documentURL == url || report.body.sourceFile === url) return true;
+    if (report.body.documentURL === url || report.body.sourceFile === url) return true;
   }
   assert_unreached(`A report of ${type} from ${url} is not found.`);
 }
+
+function getReport(reports, type, document_url, subresource_url) {
+  for (const report of reports) {
+    if (report.type !== type) continue;
+    if (report.body.documentURL === document_url
+        && (report.body.subresourceURL == subresource_url
+           || report.body.blockedURL == subresource_url)) return report;
+  }
+  return null;
+}
+

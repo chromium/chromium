@@ -452,7 +452,7 @@ void TtsPlatformImplBackgroundWorker::GetVoices(
       int lcid_value;
       base::HexStringToInt(base::WideToUTF8(language.get()), &lcid_value);
       LCID lcid = MAKELCID(lcid_value, SORT_DEFAULT);
-      WCHAR locale_name[LOCALE_NAME_MAX_LENGTH] = {0};
+      WCHAR locale_name[LOCALE_NAME_MAX_LENGTH] = {};
       LCIDToLocaleName(lcid, locale_name, LOCALE_NAME_MAX_LENGTH, 0);
       voice.lang = base::WideToUTF8(locale_name);
     }

@@ -22,6 +22,51 @@ struct DebugModeDetails {
   DebugKey? debug_key;
 };
 
+// A Private Aggregation error condition. Histogram contributions can be made
+// conditional on one of these conditions. Note that error events are triggered
+// based on a report's unconditional contributions only, i.e. what would've
+// happened if there were no conditional contributions. (This avoids circular
+// logic; for example, when kEmptyReportDropped is triggered.)
+// Note: this functionality is gated behind the
+// `kPrivateAggregationApiErrorReporting` feature and is not fully implemented.
+// TODO(crbug.com/381788013): Finish implementation and expose new
+// PrivateAggregationHost call.
+enum PrivateAggregationErrorEvent {
+  // A report was scheduled and no contributions were dropped.
+  kReportSuccess,
+
+  // A report was scheduled, but some contributions were dropped due to the per-
+  // report limit.
+  kTooManyContributions,
+
+  // A report was not scheduled as it had no contributions.
+  kEmptyReportDropped,
+
+  // A report was scheduled, but the limit of pending reports was reached. That
+  // is, the next report would be dropped due to the limit.
+  kPendingReportLimitReached,
+
+  // One or more contributions were dropped (or the whole report) as there was
+  // not enough contribution budget.
+  kInsufficientBudget,
+
+  // The JavaScript context was still running when the contribution timeout
+  // occurred. (This currently only applies to Shared Storage.)
+  kContributionTimeoutReached,
+
+  // Represents an error event that is not internal to Private Aggregation (i.e.
+  // is not enumerated above) and that has (already) occurred. Embedding APIs
+  // (i.e. Shared Storage and Protected Audience) can define their own error
+  // events that they handle before passing any conditional contributions to the
+  // PrivateAggregationHost interface. If the event did not occur, the
+  // contributions should be dropped before a mojo call is made. A call to
+  // `ContributeToHistogramOnEvent()` using this error event is mostly
+  // equivalent to just calling `ContributeToHistogram()`, but there
+  // are some differences, see details of the two-phase flows in
+  // `PrivateAggregationPendingContributions`.
+  kAlreadyTriggeredExternalError
+};
+
 // Interface implemented in the browser for worklets and renderers to forward
 // histogram report requests. Requests a histogram report with the specified
 // contributions (and debug details) be sent to the origin associated with the
@@ -33,6 +78,14 @@ interface PrivateAggregationHost {
   // Adds `contributions` to the list of contributions to be embedded in the
   // report.
   ContributeToHistogram(
+      array<AggregatableReportHistogramContribution> contributions);
+
+  // Adds `contributions` to the list of contributions to be embedded in the
+  // report if the `error_event` is triggered.
+  // Only valid to call if the `kPrivateAggregationApiErrorReporting` feature is
+  // enabled.
+  ContributeToHistogramOnEvent(
+      PrivateAggregationErrorEvent error_event,
       array<AggregatableReportHistogramContribution> contributions);
 
   // If a non-null report is sent from this mojo pipe, enables debug mode for

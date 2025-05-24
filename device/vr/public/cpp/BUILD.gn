@@ -37,6 +37,8 @@ component("features") {
   sources = [
     "features.cc",
     "features.h",
+    "switches.cc",
+    "switches.h",
   ]
 
   public_deps = [

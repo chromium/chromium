@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 
@@ -14,13 +10,16 @@
 
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "build/buildflag.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/geometry/transform.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -152,8 +151,7 @@ wl_output_transform ToWaylandTransform(gfx::OverlayTransform transform) {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WL_OUTPUT_TRANSFORM_NORMAL;
+  NOTREACHED();
 }
 
 gfx::RectF ApplyWaylandTransform(const gfx::RectF& rect,
@@ -198,8 +196,7 @@ gfx::RectF ApplyWaylandTransform(const gfx::RectF& rect,
       result.set_height(rect.width());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -246,8 +243,7 @@ gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
       result.set_height(rect.width());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -269,8 +265,7 @@ gfx::SizeF ApplyWaylandTransform(const gfx::SizeF& size,
       result.set_height(size.width());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -328,33 +323,11 @@ void SkColorToWlArray(const SkColor4f& color, wl_array& array) {
   }
 }
 
-void TransformToWlArray(
-    const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform,
-    wl_array& array) {
-  if (absl::holds_alternative<gfx::OverlayTransform>(transform)) {
-    return;
-  }
-
-  gfx::Transform t = absl::get<gfx::Transform>(transform);
-  constexpr std::array<std::array<int, 2>, 6> rcs = {
-      {{0, 0}, {1, 0}, {0, 1}, {1, 1}, {0, 3}, {1, 3}}};
-
-  for (const auto& rc : rcs) {
-    float* ptr = static_cast<float*>(wl_array_add(&array, sizeof(float)));
-    DCHECK(ptr);
-    *ptr = static_cast<float>(t.rc(rc[0], rc[1]));
-  }
-}
-
 base::TimeTicks EventMillisecondsToTimeTicks(uint32_t milliseconds) {
-#if BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/40287874): `milliseconds` comes from Weston that
   // uses timestamp from libinput, which is different from TimeTicks.
   // Use EventTimeForNow(), for now.
   return ui::EventTimeForNow();
-#else
-  return base::TimeTicks() + base::Milliseconds(milliseconds);
-#endif
 }
 
 float ClampScale(float scale) {
@@ -376,9 +349,7 @@ bool MaybeHandlePlatformEventForDrag(const ui::PlatformEvent& event,
   //    in addition to the actual dnd drop events, in which case the event is
   //    suppressed, otherwise it leads to broken UI state, as observed for
   //    example in https://crbug.com/329703410.
-  if (!event->IsSynthesized() &&
-      (event->type() == ui::EventType::kMouseReleased ||
-       event->type() == ui::EventType::kTouchReleased)) {
+  if (EventShouldCancelDrag(event)) {
     if (!start_drag_ack_received) {
       std::move(cancel_drag_cb).Run();
     } else {
@@ -388,8 +359,13 @@ bool MaybeHandlePlatformEventForDrag(const ui::PlatformEvent& event,
   return false;
 }
 
+bool EventShouldCancelDrag(const ui::PlatformEvent& event) {
+  return !event->IsSynthesized() &&
+         (event->type() == ui::EventType::kMouseReleased ||
+          event->type() == ui::EventType::kTouchReleased);
+}
+
 void RecordConnectionMetrics(wl_display* display) {
-#if BUILDFLAG(IS_LINUX)
   CHECK(display);
 
   // These values are logged to metrics so must not be changed.
@@ -430,6 +406,7 @@ void RecordConnectionMetrics(wl_display* display) {
         {"cosmic", WaylandCompositor::kCosmic},
         {"dwl", WaylandCompositor::kDwl},
         {"gamescope", WaylandCompositor::kGamescope},
+        {"gnome", WaylandCompositor::kMutter},
         {"hyprland", WaylandCompositor::kHyprland},
         {"kwin", WaylandCompositor::kKWin},
         {"labwc", WaylandCompositor::kLabwc},
@@ -474,7 +451,6 @@ void RecordConnectionMetrics(wl_display* display) {
   };
 
   base::UmaHistogramEnumeration("Linux.Wayland.Compositor", get_compositor());
-#endif
 }
 
 }  // namespace wl

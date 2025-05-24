@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test freeze callback.
+  assert_unreached: During onfreeze: testOnFreeze never finshed. Reached unreachable code
+Harness: the test ran to completion.
+

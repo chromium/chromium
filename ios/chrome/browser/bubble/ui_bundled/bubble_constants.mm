@@ -12,9 +12,6 @@ NSString* const kBubbleViewTitleLabelIdentifier =
     @"BubbleViewTitleLabelIdentifier";
 // Accessibility identifier for the label.
 NSString* const kBubbleViewLabelIdentifier = @"BubbleViewLabelIdentifier";
-// Accessibility identifier for the image view.
-NSString* const kBubbleViewImageViewIdentifier =
-    @"BubbleViewImageViewIdentifier";
 // Accessibility identifier for the snooze button.
 NSString* const kBubbleViewSnoozeButtonIdentifier =
     @"kBubbleViewSnoozeButtonIdentifier";
@@ -23,6 +20,10 @@ NSString* const kBubbleViewArrowViewIdentifier =
     @"kBubbleViewArrowViewIdentifier";
 // How long, in seconds, the bubble is visible on the screen.
 NSTimeInterval const kBubbleVisibilityDuration = 5.0;
+NSString* const kBubbleViewNextButtonIdentifier =
+    @"kBubbleViewNextButtonIdentifier";
+NSString* const kBubbleViewPageControlIdentifier =
+    @"kBubbleViewPageControlIdentifier";
 // How long, in seconds, the default "long duration" bubbles are visible.
 NSTimeInterval const kDefaultLongDurationBubbleVisibility = 8.0;
 // Metric name for bubble dismissal tracking.

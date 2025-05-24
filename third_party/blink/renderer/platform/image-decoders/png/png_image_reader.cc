@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_reader.h"
 
 #include <memory>
+
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
@@ -101,13 +102,13 @@ PNGImageReader::PNGImageReader(PNGImageDecoder* decoder,
       ignore_animation_(false) {
   png_ = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, pngFailed,
                                 nullptr);
-  // Configure the PNG encoder to always keep the cICP, cLLi and mDCv chunks if
+  // Configure the PNG encoder to always keep the cICP, cLLI and mDCV chunks if
   // present.
-  // TODO(veluca): when libpng starts supporting cICP/cLLi chunks explicitly,
+  // TODO(veluca): when libpng starts supporting cICP/cLLI chunks explicitly,
   // remove this code.
   png_set_keep_unknown_chunks(
       png_, PNG_HANDLE_CHUNK_ALWAYS,
-      reinterpret_cast<const png_byte*>("cICP\0cLLi\0mDCv"), 3);
+      reinterpret_cast<const png_byte*>("cICP\0cLLi\0mDCv\0cLLI\0mDCV"), 5);
   info_ = png_create_info_struct(png_);
   png_set_progressive_read_fn(png_, decoder_, nullptr, pngRowAvailable,
                               pngFrameComplete);
@@ -698,7 +699,7 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
     } else {
       auto is_necessary_ancillary = [](const png_byte* chunk) {
         for (const char* tag : {"tRNS", "cHRM", "iCCP", "sRGB", "gAMA", "cICP",
-                                "cLLi", "mDCv", "eXIf"}) {
+                                "cLLi", "cLLI", "mDCv", "mDCV", "eXIf"}) {
           if (IsChunk(chunk, tag)) {
             return true;
           }

@@ -13,13 +13,13 @@ function buildPaymentRequest() {
     throw new Error('Payment Request API not available.');
   }
 
-  var supportedInstruments = [
+  const supportedInstruments = [
     {
       supportedMethods: 'basic-card',
     },
   ];
 
-  var details = {
+  const details = {
     total: {
       label: 'Donation',
       amount: {
@@ -63,14 +63,14 @@ function buyWithNoPromise() {
  */
 function buyWithResolvingPromise() {
   try {
-    var request = buildPaymentRequest();
+    const request = buildPaymentRequest();
     print('The initial donation amount is USD $1.00.');
     request
         .show(new Promise(function(resolve) {
           print('Calculating the final donation amount...');
           window.setTimeout(function() {
             print('Final donation amount is USD $0.99.');
-            var details = {
+            const details = {
               total: {
                 label: 'Donation',
                 amount: {
@@ -99,7 +99,7 @@ function buyWithResolvingPromise() {
  */
 function buyWithRejectingPromise() {
   try {
-    var request = buildPaymentRequest();
+    const request = buildPaymentRequest();
     print('The initial donation amount is USD $1.00.');
     request
         .show(new Promise(function(resolve, reject) {

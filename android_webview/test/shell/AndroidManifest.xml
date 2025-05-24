@@ -28,6 +28,10 @@
   <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
   <!-- android.permission.RECORD_AUDIO -->
   <uses-feature android:name="android.hardware.microphone" android:required="false" />
+    <!-- Required by WebView Developer UI tests -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
   <queries>
     <intent>
@@ -143,7 +147,12 @@
               android:exported="true"
               android:authorities="org.chromium.android_webview.shell.DeveloperModeContentProvider"/>
     <service android:name="org.chromium.android_webview.services.DeveloperUiService"
-                         android:exported="true" />
+             android:exported="true"
+             android:foregroundServiceType="specialUse">
+        <property
+          android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+          android:value="debugging service" />
+      </service>
     <activity-alias android:name="org.chromium.android_webview.devui.DeveloperModeState"
                       android:targetActivity="org.chromium.android_webview.shell.AwShellActivity"
                       android:enabled="false" />

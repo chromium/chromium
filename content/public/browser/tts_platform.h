@@ -10,42 +10,8 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_utterance.h"
-#include "url/gurl.h"
 
 namespace content {
-
-// Interface for TTS functionality provided by the platform (e.g. on ChromeOS
-// by Ash while being used for LaCrOS).
-class CONTENT_EXPORT ExternalPlatformDelegate {
- public:
-  virtual ~ExternalPlatformDelegate() = default;
-
-  // Returns a list of all available voices for |browser_context|, including
-  // the ones registered with the external TtsController living in another
-  // browser process. The voices include both the native voice, if supported,
-  // and all voices registered by engines.
-  // |source_url| will be used for policy decisions by engines to determine
-  // which voices to return.
-  virtual void GetVoicesForBrowserContext(
-      BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<VoiceData>* out_voices) = 0;
-
-  // Enqueues the given utterance to the external TtsController. The
-  // utterance will be added to the utterance queue of the external
-  // TtsController and processed in sequence.
-  virtual void Enqueue(std::unique_ptr<TtsUtterance> utterance) = 0;
-
-  // Requests external TtsController to stop the current utterance if it matches
-  // the given |source_url|.
-  virtual void Stop(const GURL& source_url) = 0;
-
-  // Requests external TtsController to pause speech synthesis.
-  virtual void Pause() = 0;
-
-  // Requests external TtsController to resume speech synthesis.
-  virtual void Resume() = 0;
-};
 
 // Abstract class that defines the native platform TTS interface,
 // subclassed by specific implementations on Win, Mac, etc.
@@ -127,9 +93,6 @@ class CONTENT_EXPORT TtsPlatform {
   // Triggers the TtsPlatform to update its list of voices and relay that update
   // through VoicesChanged.
   virtual void RefreshVoices() = 0;
-
-  // Gets the delegate that routes TTS requests to the external TtsController.
-  virtual ExternalPlatformDelegate* GetExternalPlatformDelegate() = 0;
 };
 
 }  // namespace content

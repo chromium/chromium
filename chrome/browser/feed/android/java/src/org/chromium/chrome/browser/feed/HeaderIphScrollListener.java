@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.feed;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.ScrollListener.ScrollState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -25,6 +26,7 @@ import org.chromium.components.feature_engagement.TriggerState;
  * the feed visible. The goal of conditions (2) and (3) is to show the IPH when the signals are
  * that the user wants to interact with the feed are strong.
  */
+@NullMarked
 public class HeaderIphScrollListener implements ScrollListener {
     private static final float MIN_SCROLL_FRACTION = 0.1f;
     private static final float MAX_HEADER_POS_FRACTION = 0.35f;
@@ -33,16 +35,16 @@ public class HeaderIphScrollListener implements ScrollListener {
     private final ScrollableContainerDelegate mScrollableContainerDelegate;
     private final Runnable mShowIPHRunnable;
 
-    private float mMinScrollFraction;
-    private float mHeaderMaxPosFraction;
+    private final float mMinScrollFraction;
+    private final float mHeaderMaxPosFraction;
 
     HeaderIphScrollListener(
             FeedBubbleDelegate delegate,
             ScrollableContainerDelegate scrollableContainerDelegate,
-            Runnable showIPHRunnable) {
+            Runnable showIphRunnable) {
         mDelegate = delegate;
         mScrollableContainerDelegate = scrollableContainerDelegate;
-        mShowIPHRunnable = showIPHRunnable;
+        mShowIPHRunnable = showIphRunnable;
 
         mMinScrollFraction = MIN_SCROLL_FRACTION;
         mHeaderMaxPosFraction = MAX_HEADER_POS_FRACTION;
@@ -52,7 +54,7 @@ public class HeaderIphScrollListener implements ScrollListener {
     public void onScrollStateChanged(@ScrollState int state) {
         if (state != ScrollState.IDLE) return;
 
-        maybeTriggerIPH(mScrollableContainerDelegate.getVerticalScrollOffset());
+        maybeTriggerIph(mScrollableContainerDelegate.getVerticalScrollOffset());
     }
 
     @Override
@@ -63,12 +65,12 @@ public class HeaderIphScrollListener implements ScrollListener {
         if (verticalOffset == 0) return;
 
         // Negate the vertical offset because it is inversely proportional to the scroll offset.
-        // For example, a header verical offset of -50px corresponds to a scroll offset of 50px.
-        maybeTriggerIPH(-verticalOffset);
+        // For example, a header vertical offset of -50px corresponds to a scroll offset of 50px.
+        maybeTriggerIph(-verticalOffset);
     }
 
-    private void maybeTriggerIPH(int verticalScrollOffset) {
-        try (TraceEvent e = TraceEvent.scoped("HeaderIphScrollListener.maybeTriggerIPH")) {
+    private void maybeTriggerIph(int verticalScrollOffset) {
+        try (TraceEvent e = TraceEvent.scoped("HeaderIphScrollListener.maybeTriggerIph")) {
             // Get the feature tracker for the IPH and determine whether to show the IPH.
             final String featureForIph = FeatureConstants.FEED_HEADER_MENU_FEATURE;
             final Tracker tracker = mDelegate.getFeatureEngagementTracker();
@@ -92,7 +94,7 @@ public class HeaderIphScrollListener implements ScrollListener {
             }
 
             // Check that the feed header is well positioned in the recycler view to show the IPH.
-            if (!mDelegate.isFeedHeaderPositionInContainerSuitableForIPH(mHeaderMaxPosFraction)) {
+            if (!mDelegate.isFeedHeaderPositionInContainerSuitableForIph(mHeaderMaxPosFraction)) {
                 return;
             }
 

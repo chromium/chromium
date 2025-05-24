@@ -139,9 +139,10 @@ class CORE_EXPORT CompositorAnimations {
       const EffectModel&,
       const PaintArtifactCompositor*,
       double animation_playback_rate,
-      PropertyHandleSet* unsupported_properties = nullptr);
+      PropertyHandleSet* unsupported_properties_for_tracing = nullptr);
   static bool CompositorPropertyAnimationsHaveNoEffect(
       const Element& target_element,
+      const Animation* animation,
       const EffectModel& effect,
       const PaintArtifactCompositor*);
   static void CancelIncompatibleAnimationsOnCompositor(const Element&,
@@ -223,7 +224,7 @@ class CORE_EXPORT CompositorAnimations {
       const EffectModel&,
       const PaintArtifactCompositor*,
       double animation_playback_rate,
-      PropertyHandleSet* unsupported_properties = nullptr);
+      PropertyHandleSet* unsupported_properties_for_tracing = nullptr);
   static FailureReasons CheckCanStartElementOnCompositor(
       const Element& element,
       const EffectModel& model);

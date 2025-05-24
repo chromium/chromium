@@ -29,8 +29,7 @@ EnumTraits<content::mojom::PointerActionType,
       return content::mojom::PointerActionType::kIdle;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return content::mojom::PointerActionType::kMaxValue;
+  NOTREACHED();
 }
 
 // static
@@ -66,8 +65,7 @@ bool EnumTraits<content::mojom::PointerActionType,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -90,8 +88,7 @@ EnumTraits<content::mojom::SyntheticButton,
       return content::mojom::SyntheticButton::kForward;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return content::mojom::SyntheticButton::kMaxValue;
+  NOTREACHED();
 }
 
 // static
@@ -120,8 +117,7 @@ bool EnumTraits<content::mojom::SyntheticButton,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

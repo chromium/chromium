@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -17,8 +18,7 @@
 #include "components/policy/policy_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -26,7 +26,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
-
 #endif
 
 namespace policy {
@@ -182,7 +181,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, InvalidValue) {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 struct TestParam {
   Availability primary_profile_availability;
@@ -205,8 +204,8 @@ class DeveloperToolsPolicyHandlerWithProfileTest
     {
       constexpr char kPrimaryProfileName[] = "primary_profile";
       const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
-      primary_profile_ = profile_manager_.CreateTestingProfile(
-          kPrimaryProfileName, /* is_main_profile= */ true);
+      primary_profile_ =
+          profile_manager_.CreateTestingProfile(kPrimaryProfileName);
 
       user_manager->AddUserWithAffiliationAndTypeAndProfile(
           account_id, /* is_affiliated= */ true,

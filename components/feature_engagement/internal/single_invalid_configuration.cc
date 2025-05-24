@@ -5,7 +5,6 @@
 #include "components/feature_engagement/internal/single_invalid_configuration.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 
 namespace feature_engagement {
@@ -59,7 +58,7 @@ const std::vector<std::string> SingleInvalidConfiguration::GetRegisteredGroups()
   return {};
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void SingleInvalidConfiguration::UpdateConfig(
     const base::Feature& feature,
     const ConfigurationProvider* provider) {}

@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -41,14 +43,18 @@ static const int kDefaultSampleRate = 48000;
 // real devices, we remove them from the list to avoiding duplicate counting.
 // In addition, note that we support no more than 2 channels for recording,
 // hence surround devices are not stored in the list.
-static const char* const kInvalidAudioInputDevices[] = {
-    "default", "dmix", "null", "pulse", "surround",
-};
+constexpr auto kInvalidAudioInputDevices = std::to_array<const char*>({
+    "default",
+    "dmix",
+    "null",
+    "pulse",
+    "surround",
+});
 
 AudioManagerAlsa::AudioManagerAlsa(std::unique_ptr<AudioThread> audio_thread,
                                    AudioLogFactory* audio_log_factory)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory),
-      wrapper_(new AlsaWrapper()) {
+      wrapper_(std::make_unique<AlsaWrapper>()) {
   SetMaxOutputStreamsAllowed(kMaxOutputStreams);
 }
 
@@ -89,7 +95,7 @@ AudioParameters AudioManagerAlsa::GetInputStreamParameters(
                          kDefaultInputBufferSize);
 }
 
-const char* AudioManagerAlsa::GetName() {
+const std::string_view AudioManagerAlsa::GetName() {
   return "ALSA";
 }
 
@@ -101,7 +107,7 @@ void AudioManagerAlsa::GetAlsaAudioDevices(StreamType type,
 
   // Loop through the physical sound cards to get ALSA device hints.
   while (!wrapper_->CardNext(&card) && card >= 0) {
-    void** hints = NULL;
+    void** hints = nullptr;
     int error = wrapper_->DeviceNameHint(card, kPcmInterfaceName, &hints);
     if (!error) {
       GetAlsaDevicesInfo(type, hints, device_names);
@@ -124,13 +130,14 @@ void AudioManagerAlsa::GetAlsaDevicesInfo(AudioManagerAlsa::StreamType type,
 
   const char* unwanted_device_type = UnwantedDeviceTypeWhenEnumerating(type);
 
-  for (void** hint_iter = hints; *hint_iter != NULL; hint_iter++) {
+  for (void** hint_iter = hints; *hint_iter != nullptr; hint_iter++) {
     // Only examine devices of the right type.  Valid values are
     // "Input", "Output", and NULL which means both input and output.
     std::unique_ptr<char, base::FreeDeleter> io(
         wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName));
-    if (io != NULL && strcmp(unwanted_device_type, io.get()) == 0)
+    if (io != nullptr && strcmp(unwanted_device_type, io.get()) == 0) {
       continue;
+    }
 
     // Found a device, prepend the default device since we always want
     // it to be on the top of the list for all platforms. And there is
@@ -240,7 +247,7 @@ bool AudioManagerAlsa::HasAnyAlsaAudioDevice(
     AudioManagerAlsa::StreamType stream) {
   static const char kPcmInterfaceName[] = "pcm";
   static const char kIoHintName[] = "IOID";
-  void** hints = NULL;
+  void** hints = nullptr;
   bool has_device = false;
   int card = -1;
 
@@ -250,14 +257,15 @@ bool AudioManagerAlsa::HasAnyAlsaAudioDevice(
   while (!wrapper_->CardNext(&card) && (card >= 0) && !has_device) {
     int error = wrapper_->DeviceNameHint(card, kPcmInterfaceName, &hints);
     if (!error) {
-      for (void** hint_iter = hints; *hint_iter != NULL; hint_iter++) {
+      for (void** hint_iter = hints; *hint_iter != nullptr; hint_iter++) {
         // Only examine devices that are |stream| capable.  Valid values are
         // "Input", "Output", and NULL which means both input and output.
         std::unique_ptr<char, base::FreeDeleter> io(
             wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName));
         const char* unwanted_type = UnwantedDeviceTypeWhenEnumerating(stream);
-        if (io != NULL && strcmp(unwanted_type, io.get()) == 0)
+        if (io != nullptr && strcmp(unwanted_type, io.get()) == 0) {
           continue;  // Wrong type, skip the device.
+        }
 
         // Found an input device.
         has_device = true;
@@ -266,7 +274,7 @@ bool AudioManagerAlsa::HasAnyAlsaAudioDevice(
 
       // Destroy the hints now that we're done with it.
       wrapper_->DeviceNameFreeHint(hints);
-      hints = NULL;
+      hints = nullptr;
     } else {
       DLOG(WARNING) << "HasAnyAudioDevice: unable to get device hints: "
                     << wrapper_->StrError(error);

@@ -200,17 +200,18 @@ DEVICE_BLUETOOTH_EXPORT void RecordSetDeviceNickName(SetNicknameResult success);
 DEVICE_BLUETOOTH_EXPORT void RecordTimeIntervalBetweenConnections(
     base::TimeDelta time_interval_since_last_connection);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Record the number of times the connection toast is shown to user in the
 // last 24 hours.
 DEVICE_BLUETOOTH_EXPORT void MaybeRecordConnectionToastShownCount(
     PrefService* local_state_pref,
     bool triggered_by_connect);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 DEVICE_BLUETOOTH_EXPORT void RecordFlossManagerClientInit(
     bool success,
     base::TimeDelta duration);
+
+// Record each time a Bluetooth device has missing keys
+DEVICE_BLUETOOTH_EXPORT void RecordDeviceKeyMissing();
 }  // namespace device
 
 #endif  // DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_

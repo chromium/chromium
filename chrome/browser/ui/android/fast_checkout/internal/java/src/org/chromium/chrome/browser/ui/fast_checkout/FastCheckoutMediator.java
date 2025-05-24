@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import androidx.annotation.MainThread;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
@@ -29,12 +31,14 @@ import java.util.List;
  * Contains the logic for the FastCheckout component. It sets the state of the model and reacts to
  * events like clicks.
  */
+@NullMarked
 public class FastCheckoutMediator implements FastCheckoutSheetState {
     private PropertyModel mModel;
     private FastCheckoutComponent.Delegate mDelegate;
     private BottomSheetController mBottomSheetController;
     private BottomSheetObserver mBottomSheetDismissedObserver;
 
+    @Initializer
     void initialize(
             FastCheckoutComponent.Delegate delegate,
             PropertyModel model,

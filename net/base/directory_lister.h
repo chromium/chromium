@@ -121,10 +121,10 @@ class NET_EXPORT DirectoryLister  {
     // Only used on the origin thread.
     raw_ptr<DirectoryLister> lister_;
 
-    // Set to 1 on cancellation. Used both to abort listing files early on the
+    // Set to true on cancellation. Used both to abort listing files early on the
     // worker pool thread for performance reasons and to ensure |lister_| isn't
     // called after cancellation on the origin thread.
-    base::subtle::Atomic32 cancelled_ = 0;
+    std::atomic<bool> cancelled_ = {};
   };
 
   // Call into the corresponding DirectoryListerDelegate. Must not be called

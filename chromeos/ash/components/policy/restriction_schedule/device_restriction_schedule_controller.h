@@ -5,22 +5,22 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_POLICY_RESTRICTION_SCHEDULE_DEVICE_RESTRICTION_SCHEDULE_CONTROLLER_H_
 #define CHROMEOS_ASH_COMPONENTS_POLICY_RESTRICTION_SCHEDULE_DEVICE_RESTRICTION_SCHEDULE_CONTROLLER_H_
 
-#include <optional>
-#include <vector>
+#include <memory>
+#include <string>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ref.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "base/timer/wall_clock_timer.h"
-#include "base/values.h"
-#include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace policy {
+namespace base {
+class Clock;
+class WallClockTimer;
+}  // namespace base
 
-class WeeklyTimeIntervalChecked;
+namespace policy {
 
 // This class observes the pref `kDeviceRestrictionSchedule`, and handles
 // restricting the device access when the schedule is active.
@@ -29,10 +29,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
-
-    // Blocks login and displays login screen banner if enabled.
-    virtual void BlockLogin(bool enabled) = 0;
+    virtual ~Delegate() = default;
 
     // Checks if a user is logged in.
     virtual bool IsUserLoggedIn() const = 0;
@@ -44,38 +41,36 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
     virtual void ShowPostLogoutNotification() = 0;
   };
 
-  DeviceRestrictionScheduleController(Delegate& delegate,
-                                      PrefService& local_state);
-  ~DeviceRestrictionScheduleController();
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the restriction schedule state changes. `enabled` is set to
+    // true if restriction schedule is enabled, and false otherwise.
+    virtual void OnRestrictionScheduleStateChanged(bool enabled) = 0;
 
-  DeviceRestrictionScheduleController(
-      const DeviceRestrictionScheduleController&) = delete;
-  DeviceRestrictionScheduleController& operator=(
-      const DeviceRestrictionScheduleController&) = delete;
+    // Called when the restriction schedule message changes.
+    virtual void OnRestrictionScheduleMessageChanged() = 0;
+  };
+
+  static std::unique_ptr<DeviceRestrictionScheduleController> Create(
+      PrefService& local_state);
+  static std::unique_ptr<DeviceRestrictionScheduleController>
+  CreateWithDelegate(std::unique_ptr<Delegate> delegate,
+                     PrefService& local_state);
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
- private:
-  enum class State { kRegular, kRestricted };
+  virtual ~DeviceRestrictionScheduleController() = default;
 
-  void OnPolicyUpdated();
-  void Run();
-  void MaybeShowUpcomingLogoutNotification(base::Time logout_time);
-  void MaybeShowPostLogoutNotification();
-  std::optional<base::Time> GetNextRunTime(base::Time current_time) const;
-  State GetCurrentState(base::Time current_time) const;
-  bool UpdateIntervalsIfChanged(const base::Value::List& policy_value);
-  void StartNotificationTimer(base::Time current_time, base::Time logout_time);
-  void StartRunTimer(base::Time next_run_time);
+  virtual bool RestrictionScheduleEnabled() const = 0;
+  virtual std::u16string RestrictionScheduleEndDay() const = 0;
+  virtual std::u16string RestrictionScheduleEndTime() const = 0;
 
-  // `delegate_` has to outlive `DeviceRestrictionScheduleController`.
-  const raw_ref<Delegate> delegate_;
-  PrefChangeRegistrar registrar_;
+  virtual void SetClockForTesting(const base::Clock& clock) = 0;
+  virtual void SetMessageUpdateTimerForTesting(
+      std::unique_ptr<base::WallClockTimer> timer) = 0;
 
-  std::vector<WeeklyTimeIntervalChecked> intervals_;
-
-  base::WallClockTimer run_timer_;
-  base::WallClockTimer notification_timer_;
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 };
 
 }  // namespace policy

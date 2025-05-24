@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/views/view_targeter.h"
+
 #include <memory>
 #include <utility>
-
-#include "ui/views/view_targeter.h"
 
 #include "ui/events/event_target.h"
 #include "ui/views/focus/focus_manager.h"
@@ -39,11 +39,13 @@ ui::EventTarget* ViewTargeter::FindTargetForEvent(ui::EventTarget* root,
                                                   ui::Event* event) {
   View* const view = static_cast<View*>(root);
 
-  if (event->IsKeyEvent())
+  if (event->IsKeyEvent()) {
     return FindTargetForKeyEvent(view, *event->AsKeyEvent());
+  }
 
-  if (event->IsScrollEvent())
+  if (event->IsScrollEvent()) {
     return FindTargetForScrollEvent(view, *event->AsScrollEvent());
+  }
 
   CHECK(event->IsGestureEvent())
       << "ViewTargeter does not yet support this event type.";
@@ -57,8 +59,9 @@ ui::EventTarget* ViewTargeter::FindTargetForEvent(ui::EventTarget* root,
 ui::EventTarget* ViewTargeter::FindNextBestTarget(
     ui::EventTarget* previous_target,
     ui::Event* event) {
-  if (!previous_target)
+  if (!previous_target) {
     return nullptr;
+  }
 
   if (event->IsGestureEvent()) {
     ui::GestureEvent* gesture = event->AsGestureEvent();
@@ -72,8 +75,9 @@ ui::EventTarget* ViewTargeter::FindNextBestTarget(
 }
 
 View* ViewTargeter::FindTargetForKeyEvent(View* root, const ui::KeyEvent& key) {
-  if (root->GetFocusManager())
+  if (root->GetFocusManager()) {
     return root->GetFocusManager()->GetFocusedView();
+  }
   return nullptr;
 }
 

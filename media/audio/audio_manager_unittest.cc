@@ -4,6 +4,7 @@
 
 #include "media/audio/audio_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -23,7 +23,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_message_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
 #include "media/audio/audio_device_name.h"
@@ -596,7 +595,7 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
 
 #if BUILDFLAG(IS_MAC)
   CreateAudioManagerForTesting<AudioManagerMac>();
-#elif BUILDFLAG(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(USE_CRAS) && BUILDFLAG(IS_CHROMEOS)
   CreateAudioManagerForTesting<AudioManagerCras>();
 #endif
 
@@ -613,13 +612,12 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
   ASSERT_GT(default_params.frames_per_buffer(),
             GetMinAudioBufferSizeMacOS(media::limits::kMinAudioBufferSize,
                                        default_params.sample_rate()));
-#elif BUILDFLAG(USE_CRAS)
+#else
+  static_assert(BUILDFLAG(USE_CRAS));
   // On CRAS the preferred output buffer size varies per board and may be as low
   // as the minimum for some boards.
   ASSERT_GE(default_params.frames_per_buffer(),
             media::limits::kMinAudioBufferSize);
-#else
-  NOTREACHED_IN_MIGRATION();
 #endif
 
   AudioOutputStream* stream;

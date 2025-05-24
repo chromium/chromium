@@ -29,7 +29,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -156,7 +156,7 @@ public class TemplateUrlServiceTest {
     @Test
     @SmallTest
     @Feature({"SearchEngines"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // see crbug.com/581268
+    @Restriction(DeviceFormFactor.PHONE) // see crbug.com/581268
     public void testLoadUrlService() {
         waitForTemplateUrlServiceToLoad();
 
@@ -203,7 +203,7 @@ public class TemplateUrlServiceTest {
 
         // Outside of the EEA, where prepopulated engines are always sorted by ID, Google has the
         // lowest ID and will be at the index 0 in the sorted list.
-        Assert.assertEquals(defaultSearchEngine.getPrepopulatedId(), /* Google's ID: */ 1);
+        Assert.assertEquals(1, /* Google's ID: */ defaultSearchEngine.getPrepopulatedId());
         Assert.assertEquals(searchEngines.get(0), defaultSearchEngine);
 
         // Set search engine index and verify it stuck.

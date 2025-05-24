@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <memory>
 #include <tuple>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -59,7 +55,7 @@ using testing::Invoke;
 using testing::Return;
 using testing::ReturnRef;
 using testing::ReturnRefOfCopy;
-using testing::SaveArg;
+using testing::WithArg;
 
 namespace {
 
@@ -114,9 +110,9 @@ const uint8_t kTestDescriptorDefaultValue1[] = {0x04, 0x05};
 
 class BluetoothLowEnergyApiTest : public extensions::ExtensionApiTest {
  public:
-  BluetoothLowEnergyApiTest() {}
+  BluetoothLowEnergyApiTest() = default;
 
-  ~BluetoothLowEnergyApiTest() override {}
+  ~BluetoothLowEnergyApiTest() override = default;
 
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
@@ -162,9 +158,7 @@ class BluetoothLowEnergyApiTest : public extensions::ExtensionApiTest {
             BluetoothUUID(kTestCharacteristicUuid0),
             kTestCharacteristicProperties0,
             BluetoothRemoteGattCharacteristic::PERMISSION_NONE);
-    default_value.assign(kTestCharacteristicDefaultValue0,
-                         (kTestCharacteristicDefaultValue0 +
-                          sizeof(kTestCharacteristicDefaultValue0)));
+    default_value = base::ToVector(kTestCharacteristicDefaultValue0);
     ON_CALL(*chrc0_, GetValue()).WillByDefault(ReturnRefOfCopy(default_value));
 
     chrc1_ =
@@ -173,9 +167,7 @@ class BluetoothLowEnergyApiTest : public extensions::ExtensionApiTest {
             BluetoothUUID(kTestCharacteristicUuid1),
             kTestCharacteristicProperties1,
             BluetoothRemoteGattCharacteristic::PERMISSION_NONE);
-    default_value.assign(kTestCharacteristicDefaultValue1,
-                         (kTestCharacteristicDefaultValue1 +
-                          sizeof(kTestCharacteristicDefaultValue1)));
+    default_value = base::ToVector(kTestCharacteristicDefaultValue1);
     ON_CALL(*chrc1_, GetValue()).WillByDefault(ReturnRefOfCopy(default_value));
 
     chrc2_ =
@@ -188,17 +180,13 @@ class BluetoothLowEnergyApiTest : public extensions::ExtensionApiTest {
     desc0_ = std::make_unique<testing::NiceMock<MockBluetoothGattDescriptor>>(
         chrc0_.get(), kTestDescriptorId0, BluetoothUUID(kTestDescriptorUuid0),
         BluetoothRemoteGattCharacteristic::PERMISSION_NONE);
-    default_value.assign(
-        kTestDescriptorDefaultValue0,
-        (kTestDescriptorDefaultValue0 + sizeof(kTestDescriptorDefaultValue0)));
+    default_value = base::ToVector(kTestDescriptorDefaultValue0);
     ON_CALL(*desc0_, GetValue()).WillByDefault(ReturnRefOfCopy(default_value));
 
     desc1_ = std::make_unique<testing::NiceMock<MockBluetoothGattDescriptor>>(
         chrc0_.get(), kTestDescriptorId1, BluetoothUUID(kTestDescriptorUuid1),
         BluetoothRemoteGattCharacteristic::PERMISSION_NONE);
-    default_value.assign(
-        kTestDescriptorDefaultValue1,
-        (kTestDescriptorDefaultValue1 + sizeof(kTestDescriptorDefaultValue1)));
+    default_value = base::ToVector(kTestDescriptorDefaultValue1);
     ON_CALL(*desc1_, GetValue()).WillByDefault(ReturnRefOfCopy(default_value));
   }
 
@@ -777,7 +765,11 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, WriteCharacteristicValue) {
       .Times(2)
       .WillOnce(InvokeCallbackArgument<2>(
           BluetoothGattService::GattErrorCode::kFailed))
-      .WillOnce(DoAll(SaveArg<0>(&write_value), InvokeCallbackArgument<1>()));
+      .WillOnce(
+          DoAll(WithArg<0>([&write_value](base::span<const uint8_t> value) {
+                  write_value = base::ToVector(value);
+                }),
+                InvokeCallbackArgument<1>()));
 
   EXPECT_CALL(*chrc0_, GetValue()).Times(1).WillOnce(ReturnRef(write_value));
 
@@ -1069,7 +1061,11 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, WriteDescriptorValue) {
       .Times(2)
       .WillOnce(InvokeCallbackArgument<2>(
           BluetoothGattService::GattErrorCode::kFailed))
-      .WillOnce(DoAll(SaveArg<0>(&write_value), InvokeCallbackArgument<1>()));
+      .WillOnce(
+          DoAll(WithArg<0>([&write_value](base::span<const uint8_t> value) {
+                  write_value = base::ToVector(value);
+                }),
+                InvokeCallbackArgument<1>()));
 
   EXPECT_CALL(*desc0_, GetValue()).Times(1).WillOnce(ReturnRef(write_value));
 

@@ -5,8 +5,6 @@
 #ifndef BASE_SEQUENCE_TOKEN_H_
 #define BASE_SEQUENCE_TOKEN_H_
 
-// TODO: Remove this unused include once no other file indirectly depends on it.
-#include "base/auto_reset.h"
 #include "base/base_export.h"
 
 namespace base {
@@ -27,7 +25,6 @@ class BASE_EXPORT SequenceToken {
   // An invalid SequenceToken is not equal to any other SequenceToken, including
   // other invalid SequenceTokens.
   bool operator==(const SequenceToken& other) const;
-  bool operator!=(const SequenceToken& other) const;
 
   // Returns true if this is a valid SequenceToken.
   bool IsValid() const;

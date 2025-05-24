@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/collaboration/public",
+  "+components/data_sharing/public",
+  "+components/saved_tab_groups/public/tab_group_sync_service.h",
+  "+ios/chrome/browser/data_sharing/model",
+  "+ios/chrome/browser/saved_tab_groups/ui",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_coordinator.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h",
+  "+ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h",
+  "+ios/chrome/browser/collaboration/model",
+]

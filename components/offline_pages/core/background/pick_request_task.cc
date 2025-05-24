@@ -54,7 +54,7 @@ PickRequestTask::PickRequestTask(
       disabled_requests_(disabled_requests),
       prioritized_requests_(prioritized_requests) {}
 
-PickRequestTask::~PickRequestTask() {}
+PickRequestTask::~PickRequestTask() = default;
 
 void PickRequestTask::Run() {
   GetRequests();

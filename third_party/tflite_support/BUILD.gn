@@ -33,7 +33,7 @@ proto_library("tflite_support_proto") {
   cc_generator_options = "lite=true:"
 
   import_dirs = [ "//third_party/tflite/src" ]
-  proto_deps = [ "//third_party/tflite:tflite_proto" ]
+  deps = [ "//third_party/tflite:tflite_proto" ]
 }
 
 config("tflite_support_flags") {
@@ -47,11 +47,6 @@ config("tflite_support_flags") {
     "-Wno-unused-function",
     "-Wno-unused-variable",
   ]
-  if (!is_win) {
-    cflags_cc = [ "-frtti" ]
-  } else {
-    cflags_cc = [ "/GR" ]
-  }
 }
 
 flatbuffer("metadata_schema") {
@@ -162,10 +157,14 @@ static_library("tflite_support") {
     "//third_party/re2",
   ]
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:no_rtti",
+  ]
 
   configs += [
     "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:rtti",
 
     # Must be after no_chromium_code for warning flags to be ordered correctly.
     ":tflite_support_flags",

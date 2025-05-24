@@ -5,12 +5,14 @@
 package org.chromium.components.data_sharing;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
  * Class for managing network requests for data sharing service. It represents a native
  * DataSharingNetworkLoader object in Java.
  */
+@NullMarked
 public interface DataSharingNetworkLoader {
 
     /**
@@ -19,7 +21,7 @@ public interface DataSharingNetworkLoader {
      * @param url URL to send the request.
      * @param scopes OAuth scopes of the request.
      * @param postData Data to be sent with the POST request.
-     * @param annotationTag Network annotation tag of the request.
+     * @param requestType Network annotation tag of the request.
      * @param callback Callback to be invoked once the response is received.
      */
     void loadUrl(

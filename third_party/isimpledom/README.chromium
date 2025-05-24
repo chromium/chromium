@@ -4,10 +4,15 @@ URL: https://github.com/mozilla/gecko-dev
 Version: N/A
 Date: 2010-07-02
 Revision: 3f397dafbaa9dbc7d740e440c7a5112e094588eb
-License: MPL 1.1/GPL 2.0/LGPL 2.1
+License: MPL-1.1
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+
+
+DO NOT USE. This API has been deprecated and will be removed, along with
+support, as soon as no longer needed for the JAWS screen reader.
+See https://crbug.com/378908266.
 
 Description:
 

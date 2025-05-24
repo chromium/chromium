@@ -31,6 +31,7 @@ class CONTENT_EXPORT FileSystemAccessTransferTokenImpl
   FileSystemAccessTransferTokenImpl(
       const storage::FileSystemURL& url,
       const url::Origin& origin,
+      const std::string& display_name,
       const FileSystemAccessManagerImpl::SharedHandleState& handle_state,
       FileSystemAccessPermissionContext::HandleType handle_type,
       FileSystemAccessManagerImpl* manager,
@@ -79,6 +80,7 @@ class CONTENT_EXPORT FileSystemAccessTransferTokenImpl
   const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
   const storage::FileSystemURL url_;
   const url::Origin origin_;
+  const std::string display_name_;
   const FileSystemAccessManagerImpl::SharedHandleState handle_state_;
   mojo::ReceiverSet<blink::mojom::FileSystemAccessTransferToken> receivers_
       GUARDED_BY_CONTEXT(sequence_checker_);

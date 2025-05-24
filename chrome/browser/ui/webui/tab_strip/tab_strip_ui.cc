@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -14,14 +9,15 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/tab_strip_resources.h"
@@ -39,6 +35,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 TabStripUI::TabStripUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /* enable_chrome_send */ true),
@@ -53,9 +50,13 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(profile,
                                              chrome::kChromeUITabStripHost);
-  webui::SetupWebUIDataSource(
-      html_source, base::make_span(kTabStripResources, kTabStripResourcesSize),
-      IDR_TAB_STRIP_TAB_STRIP_HTML);
+  if (base::FeatureList::IsEnabled(features::kTabStripBrowserApi)) {
+    webui::SetupWebUIDataSource(html_source, kTabStripResources,
+                                IDR_TAB_STRIP_TAB_STRIP_PLAYGROUND_HTML);
+  } else {
+    webui::SetupWebUIDataSource(html_source, kTabStripResources,
+                                IDR_TAB_STRIP_TAB_STRIP_HTML);
+  }
 
   html_source->AddString("tabIdDataType", kWebUITabIdDataType);
   html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);
@@ -104,6 +105,14 @@ void TabStripUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void TabStripUI::BindInterface(
+    mojo::PendingReceiver<tabs_api::mojom::TabStripService> receiver) {
+  if (auto* tab_strip_service =
+          browser_->browser_window_features()->tab_strip_service()) {
+    tab_strip_service->Accept(std::move(receiver));
+  }
 }
 
 void TabStripUI::CreatePageHandler(

@@ -57,12 +57,8 @@ scoped_refptr<VideoFrame> CreateSharedImageFrame(
   auto callback = base::BindOnce(&DestroySharedImage, shared_image,
                                  std::move(destroyed_callback));
   auto frame = VideoFrame::WrapSharedImage(
-      format, std::move(shared_image), sync_token, texture_target,
-      std::move(callback), coded_size, visible_rect, natural_size, timestamp);
-  // Set the format type to take new code path with single multiplanar shared
-  // image.
-  frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
+      format, std::move(shared_image), sync_token, std::move(callback),
+      coded_size, visible_rect, natural_size, timestamp);
   return frame;
 }
 
@@ -147,10 +143,12 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
   auto* sii = context_provider->SharedImageInterface();
   auto* ri = context_provider->RasterInterface();
   // These SharedImages will be read by the raster interface to create
-  // intermediate copies in copy to canvas and 2-copy upload to WebGL.
+  // intermediate copies in copy to canvas and 2-copy upload to WebGL and
+  // written to through WritePixelsYUV.
   // In the context of the tests using these SharedImages, GPU rasterization is
   // always used.
   auto usages = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                 gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
 #if !BUILDFLAG(IS_ANDROID)
   // These SharedImages may be read by the GLES2 interface for 1-copy upload to
@@ -233,10 +231,12 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
   auto* sii = context_provider->SharedImageInterface();
   auto* ri = context_provider->RasterInterface();
   // These SharedImages will be read by the raster interface to create
-  // intermediate copies in copy to canvas and 2-copy upload to WebGL.
+  // intermediate copies in copy to canvas and 2-copy upload to WebGL and
+  // written to through WritePixelsYUV.
   // In the context of the tests using these SharedImages, GPU rasterization is
   // always used.
   auto usages = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                 gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
 #if !BUILDFLAG(IS_ANDROID)
   // These SharedImages may be read by the GLES2 interface for 1-copy upload to

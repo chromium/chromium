@@ -4,6 +4,7 @@ bytes from a URLRequestJob. Currently, the following streams are implemented:
 
 * gzip (handling "deflate" and "gzip" Content-Encodings)
 * brotli (handling "br" Content-Encoding)
+* zstd (handling "zstd" Content-Encoding)
 
 Source streams conceptually form a chain, with the URLRequestJob as both the
 beginning and end of the chain, meaning the URLRequestJob produces raw bytes at
@@ -33,3 +34,6 @@ This function can return either synchronously or asynchronously via the supplied
 callback. The source stream chain is "pull-based", in that data does not
 propagate through the chain until requested by the final consumer of the
 filtered data.
+
+Shared dictionary decompression for encodings "dcb" and "dcz" is handled by a
+different mechanism. See the SharedDictionaryNetworkTransaction class.

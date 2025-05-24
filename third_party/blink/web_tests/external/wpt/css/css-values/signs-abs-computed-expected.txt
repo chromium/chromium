@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] calc(100dpi + 20dpi * sign(42px - 2em)) should be used-value-equivalent to 120dpi
+  assert_not_equals: calc(100dpi + 20dpi * sign(42px - 2em)) isn't valid in 'image-resolution'; got the default value instead. got disallowed value undefined
+[FAIL] calc(100dpi + 20dpi * sign(40px - 2em)) should be used-value-equivalent to 100dpi
+  assert_not_equals: calc(100dpi + 20dpi * sign(40px - 2em)) isn't valid in 'image-resolution'; got the default value instead. got disallowed value undefined
+[FAIL] calc(100dpi + 20dpi * sign(38px - 2em)) should be used-value-equivalent to 80dpi
+  assert_not_equals: calc(100dpi + 20dpi * sign(38px - 2em)) isn't valid in 'image-resolution'; got the default value instead. got disallowed value undefined
+[FAIL] calc(3fr + 1fr * sign(42px - 2em)) should be used-value-equivalent to 4fr
+  assert_not_equals: calc(3fr + 1fr * sign(42px - 2em)) isn't valid in 'grid-template-rows'; got the default value instead. got disallowed value "none"
+[FAIL] calc(3fr + 1fr * sign(40px - 2em)) should be used-value-equivalent to 3fr
+  assert_not_equals: calc(3fr + 1fr * sign(40px - 2em)) isn't valid in 'grid-template-rows'; got the default value instead. got disallowed value "none"
+[FAIL] calc(3fr + 1fr * sign(38px - 2em)) should be used-value-equivalent to 2fr
+  assert_not_equals: calc(3fr + 1fr * sign(38px - 2em)) isn't valid in 'grid-template-rows'; got the default value instead. got disallowed value "none"
+Harness: the test ran to completion.
+

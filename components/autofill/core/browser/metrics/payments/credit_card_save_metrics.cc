@@ -39,7 +39,7 @@ void LogCardUploadDecisionsUkm(ukm::UkmRecorder* ukm_recorder,
 void LogCardUploadEnabledMetric(
     CardUploadEnabled metric_value,
     AutofillMetrics::PaymentsSigninState sync_state) {
-  const std::string parent_metric = std::string("Autofill.CardUploadEnabled");
+  const std::string parent_metric = std::string("Autofill.CardUploadEnabled2");
   base::UmaHistogramEnumeration(parent_metric, metric_value);
 
   const std::string child_metric =

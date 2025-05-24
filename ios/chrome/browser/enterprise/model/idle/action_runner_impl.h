@@ -15,7 +15,7 @@ class ActionRunnerImpl : public ActionRunner {
  public:
   using ActionQueue = ActionFactory::ActionQueue;
 
-  ActionRunnerImpl(ChromeBrowserState* browser_state);
+  ActionRunnerImpl(ProfileIOS* profile);
   ~ActionRunnerImpl() override;
 
   ActionRunnerImpl(const ActionRunnerImpl&) = delete;
@@ -45,7 +45,7 @@ class ActionRunnerImpl : public ActionRunner {
 
   base::TimeTicks actions_start_time_;
   ActionsCompletedCallback actions_completed_callback_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<ActionFactory> action_factory_;
   base::WeakPtrFactory<ActionRunnerImpl> weak_ptr_factory_{this};
 };

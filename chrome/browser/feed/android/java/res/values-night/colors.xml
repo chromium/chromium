@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <color name="post_follow_illustration_device_outline">@color/modern_grey_600</color>
+    <color name="post_follow_illustration_device_outline">@color/baseline_neutral_40</color>
 
     <color name="feed_placeholder_color">@color/white_alpha_5</color>
 

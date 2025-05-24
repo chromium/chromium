@@ -36,17 +36,11 @@ bool WriteIconFiles(const base::FilePath& base_path,
         apps::GetForegroundIconPath(base_path, id, icon_size_in_px);
     const auto background_icon_path =
         apps::GetBackgroundIconPath(base_path, id, icon_size_in_px);
-    if (!base::CreateDirectory(foreground_icon_path.DirName()) ||
-        !base::CreateDirectory(background_icon_path.DirName())) {
-      return false;
-    }
-
-    auto foreground_icon_data = base::make_span(
-        &iv->foreground_icon_png_data[0], iv->foreground_icon_png_data.size());
-    auto background_icon_data = base::make_span(
-        &iv->background_icon_png_data[0], iv->background_icon_png_data.size());
-    return base::WriteFile(foreground_icon_path, foreground_icon_data) &&
-           base::WriteFile(background_icon_path, background_icon_data);
+    return base::CreateDirectory(foreground_icon_path.DirName()) &&
+           base::CreateDirectory(background_icon_path.DirName()) &&
+           base::WriteFile(foreground_icon_path,
+                           iv->foreground_icon_png_data) &&
+           base::WriteFile(background_icon_path, iv->background_icon_png_data);
   }
 
   if (iv->compressed.empty()) {
@@ -55,12 +49,8 @@ bool WriteIconFiles(const base::FilePath& base_path,
 
   const auto icon_path =
       apps::GetIconPath(base_path, id, icon_size_in_px, iv->is_maskable_icon);
-  if (!base::CreateDirectory(icon_path.DirName())) {
-    return false;
-  }
-
-  auto icon_data = base::make_span(&iv->compressed[0], iv->compressed.size());
-  return base::WriteFile(icon_path, icon_data);
+  return base::CreateDirectory(icon_path.DirName()) &&
+         base::WriteFile(icon_path, iv->compressed);
 }
 
 }  // namespace

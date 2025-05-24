@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -27,8 +26,10 @@
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
+#include "chrome/enterprise_companion/flags.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
@@ -41,9 +42,9 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include <algorithm>
 #include <iterator>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/wrapped_window_proc.h"
 
@@ -63,8 +64,6 @@ namespace enterprise_companion {
 namespace {
 
 constexpr char kNoRateLimitSwitch[] = "no-rate-limit";
-constexpr char kUsageStatsEnabledEnvVar[] = "GOOGLE_USAGE_STATS_ENABLED";
-constexpr char kUsageStatsEnabledEnvVarValueEnabled[] = "1";
 
 #if BUILDFLAG(IS_MAC)
 constexpr char kResetCrashHandlerPortSwitch[] =
@@ -73,19 +72,8 @@ constexpr char kResetCrashHandlerPortSwitch[] =
 
 // Determines if crash dump uploading should be enabled.
 bool ShouldEnableCrashUploads() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kEnableUsageStatsSwitch)) {
-    return true;
-  }
-
-  std::string env_usage_stats;
-  if (base::Environment::Create()->GetVar(kUsageStatsEnabledEnvVar,
-                                          &env_usage_stats) &&
-      env_usage_stats == kUsageStatsEnabledEnvVarValueEnabled) {
-    return true;
-  }
-
-  return false;
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnableUsageStatsSwitch);
 }
 
 std::vector<std::string> MakeCrashHandlerArgs() {
@@ -99,10 +87,9 @@ std::vector<std::string> MakeCrashHandlerArgs() {
   // which must be skipped.
 #if BUILDFLAG(IS_WIN)
   std::vector<std::string> args;
-  base::ranges::transform(
-      ++command_line.argv().begin(), command_line.argv().end(),
-      std::back_inserter(args),
-      [](const auto& arg) { return base::WideToUTF8(arg); });
+  std::ranges::transform(++command_line.argv().begin(),
+                         command_line.argv().end(), std::back_inserter(args),
+                         [](const auto& arg) { return base::WideToUTF8(arg); });
 
   return args;
 #else
@@ -126,13 +113,13 @@ class CrashClient {
     initialized = true;
 
     if (!crash_database_path || !base::CreateDirectory(*crash_database_path)) {
-      LOG(ERROR) << "Failed to get the database path.";
+      VLOG(1) << "Failed to get the database path.";
       return false;
     }
 
     database_ = crashpad::CrashReportDatabase::Initialize(*crash_database_path);
     if (!database_) {
-      LOG(ERROR) << "Failed to initialize Crashpad database.";
+      VLOG(1) << "Failed to initialize Crashpad database.";
       return false;
     }
 
@@ -161,8 +148,8 @@ class CrashClient {
                 << "\"; uploaded: " << (report.uploaded ? "yes" : "no");
       }
     } else {
-      LOG(ERROR) << "Failed to fetch completed crash reports: "
-                 << status_completed;
+      VLOG(1) << "Failed to fetch completed crash reports: "
+              << status_completed;
     }
 
     std::vector<crashpad::CrashReportDatabase::Report> reports_pending;
@@ -177,7 +164,7 @@ class CrashClient {
                 << "\", unique ID \"" << report.uuid.ToString() << "\"";
       }
     } else {
-      LOG(ERROR) << "Failed to fetch pending crash reports: " << status_pending;
+      VLOG(1) << "Failed to fetch pending crash reports: " << status_pending;
     }
 
     if (ShouldEnableCrashUploads()) {
@@ -213,7 +200,7 @@ class CrashClient {
     // Save dereferenced memory from all registers on the crashing thread.
     // Crashpad saves up to 512 bytes per CPU register, and in the worst case,
     // ARM64 has 32 registers.
-    constexpr uint32_t kIndirectMemoryLimit = 32 * 512;
+    static constexpr uint32_t kIndirectMemoryLimit = 32 * 512;
     crashpad::CrashpadInfo::GetCrashpadInfo()
         ->set_gather_indirectly_referenced_memory(crashpad::TriState::kEnabled,
                                                   kIndirectMemoryLimit);
@@ -230,10 +217,15 @@ class CrashClient {
                               GetGlobalConstants()->CrashUploadURL().spec(),
                               annotations, MakeCrashHandlerArgs(),
                               /*restartable=*/true,
-                              /*asynchronous_start=*/false)) {
+                              /*asynchronous_start=*/false, attachments)) {
       VLOG(1) << "Failed to start handler.";
       return false;
     }
+
+    static crash_reporter::CrashKeyString<64> crash_key_cohort_id("cohort_id");
+    crash_key_cohort_id.Set(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kCohortIdSwitch));
 
     VLOG(1) << "Crash handler launched and ready";
     return true;

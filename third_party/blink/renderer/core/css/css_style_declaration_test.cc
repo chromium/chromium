@@ -13,8 +13,12 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/property_set_css_style_declaration.h"
+#include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -107,6 +111,28 @@ TEST(CSSStyleDeclarationTest, ExposureCacheLeak) {
     EXPECT_EQ(g_null_atom,
               style->AnonymousNamedGetter(origin_trial_test_property));
   }
+}
+
+TEST(CSSStyleDeclarationTest, QuietlyRemoveProperty) {
+  test::TaskEnvironment task_environment;
+  auto holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  Document& document = holder->GetDocument();
+  document.documentElement()->setInnerHTML(
+      "<style>div {color: green;}</style>");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+  document.UpdateStyleAndLayoutTree();
+
+  auto* sheet = DynamicTo<CSSStyleSheet>(document.styleSheets()->item(0));
+  CSSRuleList* rules = sheet->cssRules(ASSERT_NO_EXCEPTION);
+  ASSERT_EQ(1u, rules->length());
+  CSSStyleDeclaration* declarations =
+      To<CSSStyleRule>(rules->ItemInternal(0))->style();
+
+  EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
+  ASSERT_EQ(1u, declarations->length());
+  declarations->QuietlyRemoveProperty("color");
+  EXPECT_EQ(0u, declarations->length());
+  EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
 }
 
 }  // namespace blink

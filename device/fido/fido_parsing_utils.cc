@@ -82,17 +82,6 @@ std::vector<base::span<const uint8_t>> SplitSpan(base::span<const uint8_t> span,
   return chunks;
 }
 
-std::array<uint8_t, crypto::kSHA256Length> CreateSHA256Hash(
-    std::string_view data) {
-  std::array<uint8_t, crypto::kSHA256Length> hashed_data;
-  crypto::SHA256HashString(data, hashed_data.data(), hashed_data.size());
-  return hashed_data;
-}
-
-std::string_view ConvertToStringView(base::span<const uint8_t> data) {
-  return {reinterpret_cast<const char*>(data.data()), data.size()};
-}
-
 std::string ConvertBytesToUuid(base::span<const uint8_t, 16> bytes) {
   uint64_t most_significant_bytes = 0;
   for (size_t i = 0; i < sizeof(uint64_t); i++) {

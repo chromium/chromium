@@ -22,6 +22,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+const msPerSecond = 1000;
+
 Utilities.extendObject(window.benchmarkController, {
     updateGraphData: function(testResult, testData, options)
     {
@@ -30,10 +33,11 @@ Utilities.extendObject(window.benchmarkController, {
         element._testResult = testResult;
         element._options = options;
 
-        var margins = new Insets(30, 30, 30, 40);
+        // top, right, bottom, left.
+        var margins = new Insets(30, 30, 50, 40);
+        // Note that changes to header content (in onGraphTypeChanged()) can change the available size, so we prepopulate
+        // "score" and "confidence" elements with non-breaking spaces in the HTML.
         var size = Point.elementClientSize(element);
-        size.y = window.innerHeight - element.offsetTop;
-        size = size.subtract(margins.size);
 
         // Convert from compact JSON output to propertied data
         var samplesWithProperties = {};
@@ -42,7 +46,7 @@ Utilities.extendObject(window.benchmarkController, {
             samplesWithProperties[seriesName] = series.toArray();
         })
 
-        this._targetFrameRate = options["frame-rate"] || 60;
+        this._targetFrameRate = options["frame-rate"];
 
         this.createTimeGraph(testResult, samplesWithProperties[Strings.json.controller], testData[Strings.json.marks], testData[Strings.json.controller], options, margins, size);
         this.onTimeGraphOptionsChanged();
@@ -98,14 +102,53 @@ Utilities.extendObject(window.benchmarkController, {
         this._addRegressionLine(svg, xScale, yScale, data.segment1, data.stdev);
         this._addRegressionLine(svg, xScale, yScale, data.segment2, data.stdev);
     },
+    
+    _tickValuesForFrameRate: function(frameRate, minValue, maxValue)
+    {
+        // Tick labels go up to 1.5x frame rate
+        const buildInFrameRates = {
+            15 : [5, 10, 15, 20],
+            30 : [5, 10, 15, 20, 25, 30, 35, 40],
+            45 : [30, 35, 40, 45, 50, 55, 60],
+            60 : [30, 35, 40, 45, 50, 55, 60, 90],
+            90 : [30, 35, 40, 45, 50, 55, 60, 90, 120],
+            120 : [30, 40, 50, 60, 70, 80, 100, 120, 150],
+            144 : [40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 200],
+        };
+        
+        let tickValues = buildInFrameRates[frameRate];
+        if (!tickValues) {
+            const minLabel = Math.round(minValue / 10) * 10;
+            const maxLabel = Math.round(maxValue / 10) * 10;
+            tickValues = [];
+            let curValue = minLabel;
+            while (curValue <= maxLabel) {
+                tickValues.push(curValue);
+                curValue += 20;
+            }
+        }
+        
+        tickValues = tickValues.map((x) => msPerSecond / x);
+        return tickValues;
+    },
+    
+    _minFrameRate: function()
+    {
+        return this._targetFrameRate / 4;
+    },
+
+    _maxFrameRate: function()
+    {
+        return this._targetFrameRate * 1.5;
+    },
 
     createComplexityGraph: function(result, timeRegressions, data, options, margins, size)
     {
         var svg = d3.select("#test-graph-data").append("svg")
             .attr("id", "complexity-graph")
             .attr("class", "hidden")
-            .attr("width", size.width + margins.left + margins.right)
-            .attr("height", size.height + margins.top + margins.bottom)
+            .attr("width", size.width)
+            .attr("height", size.height)
             .append("g")
                 .attr("transform", "translate(" + margins.left + "," + margins.top + ")");
 
@@ -124,30 +167,40 @@ Utilities.extendObject(window.benchmarkController, {
             xMax = d3.max(timeSamples, function(s) { return s.complexity; });
         }
 
+        const axisWidth = size.width - margins.left - margins.right;
+        const axisHeight = size.height - margins.top - margins.bottom;
+
+        // The y axis is frameLength in ms, inverted with the axis labels showing fps.
+        const minFrameRate = this._minFrameRate();
+        const maxFrameRate = this._maxFrameRate();
+
+        const yMin = msPerSecond / minFrameRate;
+        const yMax = msPerSecond / maxFrameRate;
+
         var xScale = d3.scale.linear()
-            .range([0, size.width])
+            .range([0, axisWidth])
             .domain([xMin, xMax]);
         var yScale = d3.scale.linear()
-            .range([size.height, 0])
-            .domain([1000/(this._targetFrameRate/3), 1000/this._targetFrameRate]);
+            .range([axisHeight, 0])
+            .domain([yMin, yMax]);
 
         var xAxis = d3.svg.axis()
             .scale(xScale)
             .orient("bottom");
         var yAxis = d3.svg.axis()
             .scale(yScale)
-            .tickValues([1000/20, 1000/25, 1000/30, 1000/35, 1000/40, 1000/45, 1000/50, 1000/55, 1000/60, 1000/90, 1000/120])
-            .tickFormat(function(d) { return (1000 / d).toFixed(0); })
+            .tickValues(this._tickValuesForFrameRate(this._targetFrameRate, minFrameRate, maxFrameRate))
+            .tickFormat(function(d) { return (msPerSecond / d).toFixed(0); })
             .orient("left");
 
         // x-axis
         svg.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0," + size.height + ")")
+            .attr("transform", "translate(0," + axisHeight + ")")
             .call(xAxis);
 
         // y-axis
-        svg.append("g")
+        var yAxisGroup = svg.append("g")
             .attr("class", "y axis")
             .call(yAxis);
 
@@ -155,7 +208,6 @@ Utilities.extendObject(window.benchmarkController, {
         var mean = svg.append("g")
             .attr("class", "mean complexity");
         var timeResult = result[Strings.json.controller];
-        var yMin = yScale.domain()[0], yMax = yScale.domain()[1];
         this._addRegressionLine(mean, xScale, yScale, [[timeResult.average, yMin], [timeResult.average, yMax]], timeResult.stdev, true);
 
         // regression
@@ -166,7 +218,7 @@ Utilities.extendObject(window.benchmarkController, {
             var histogram = d3.layout.histogram()
                 .bins(xScale.ticks(100))(bootstrapResult.data);
             var yBootstrapScale = d3.scale.linear()
-                .range([size.height/2, 0])
+                .range([axisHeight/2, 0])
                 .domain([0, d3.max(histogram, function(d) { return d.y; })]);
             group = svg.append("g").attr("class", "bootstrap");
             var bar = group.selectAll(".bar")
@@ -176,14 +228,14 @@ Utilities.extendObject(window.benchmarkController, {
                     .attr("transform", function(d) { return "translate(" + xScale(d.x) + "," + yBootstrapScale(d.y) + ")"; });
             bar.append("rect")
                 .attr("x", 1)
-                .attr("y", size.height/2)
+                .attr("y", axisHeight/2)
                 .attr("width", xScale(histogram[1].x) - xScale(histogram[0].x) - 1)
-                .attr("height", function(d) { return size.height/2 - yBootstrapScale(d.y); });
+                .attr("height", function(d) { return axisHeight/2 - yBootstrapScale(d.y); });
             group = group.append("g").attr("class", "median");
             this._addRegressionLine(group, xScale, yScale, [[bootstrapResult.median, yMin], [bootstrapResult.median, yMax]], [bootstrapResult.confidenceLow, bootstrapResult.confidenceHigh], true);
             group.append("circle")
                 .attr("cx", xScale(bootstrapResult.median))
-                .attr("cy", yScale(1000/60))
+                .attr("cy", yScale(msPerSecond / this._targetFrameRate))
                 .attr("r", 5);
         }
 
@@ -193,16 +245,19 @@ Utilities.extendObject(window.benchmarkController, {
             .selectAll("line")
                 .data(data[Strings.json.complexity])
                 .enter();
+
         group.append("line")
             .attr("x1", function(d) { return xScale(d.complexity) - 3; })
             .attr("x2", function(d) { return xScale(d.complexity) + 3; })
             .attr("y1", function(d) { return yScale(d.frameLength) - 3; })
-            .attr("y2", function(d) { return yScale(d.frameLength) + 3; });
-        group.append("line")
+            .attr("y2", function(d) { return yScale(d.frameLength) + 3; })
+            .attr("class", function(d) { return d.frameType === "m" ? 'mutation' : 'animation'; });
+        group.append("line") 
             .attr("x1", function(d) { return xScale(d.complexity) - 3; })
             .attr("x2", function(d) { return xScale(d.complexity) + 3; })
             .attr("y1", function(d) { return yScale(d.frameLength) + 3; })
-            .attr("y2", function(d) { return yScale(d.frameLength) - 3; });
+            .attr("y2", function(d) { return yScale(d.frameLength) - 3; })
+            .attr("class", function(d) { return d.frameType === "m" ? 'mutation' : 'animation'; });
 
         // Cursor
         var cursorGroup = svg.append("g").attr("class", "cursor hidden");
@@ -236,7 +291,7 @@ Utilities.extendObject(window.benchmarkController, {
             .attr("x", 0)
             .attr("y", 0)
             .attr("width", size.width)
-            .attr("height", size.height);
+            .attr("height", axisHeight);
 
         area.on("mouseover", function() {
             document.querySelector("#complexity-graph .cursor").classList.remove("hidden");
@@ -256,22 +311,25 @@ Utilities.extendObject(window.benchmarkController, {
                 .attr("y2", location[1]);
             cursorGroup.select("text.y")
                 .attr("y", location[1])
-                .text((1000 / location_domain[1]).toFixed(1));
+                .text((msPerSecond / location_domain[1]).toFixed(1));
         });
     },
 
     createTimeGraph: function(result, samples, marks, regressions, options, margins, size)
     {
+        const axisWidth = size.width - margins.left - margins.right;
+        const axisHeight = size.height - margins.top - margins.bottom;
+
         var svg = d3.select("#test-graph-data").append("svg")
             .attr("id", "time-graph")
-            .attr("width", size.width + margins.left + margins.right)
-            .attr("height", size.height + margins.top + margins.bottom)
+            .attr("width", size.width)
+            .attr("height", size.height)
             .append("g")
                 .attr("transform", "translate(" + margins.left + "," + margins.top + ")");
 
         // Axis scales
         var x = d3.scale.linear()
-                .range([0, size.width])
+                .range([0, axisWidth])
                 .domain([
                     Math.min(d3.min(samples, function(s) { return s.time; }), 0),
                     d3.max(samples, function(s) { return s.time; })]);
@@ -280,37 +338,48 @@ Utilities.extendObject(window.benchmarkController, {
                 return s.complexity;
             return 0;
         });
+        complexityMax *= 1.2;
 
+        const graphTop = 10;
         var yLeft = d3.scale.linear()
-                .range([size.height, 0])
+                .range([axisHeight, graphTop])
                 .domain([0, complexityMax]);
+
+
+        const minFrameRate = this._minFrameRate();
+        const maxFrameRate = this._maxFrameRate();
+
+        const yRightMin = msPerSecond / minFrameRate;
+        const yRightMax = msPerSecond / maxFrameRate;
+
         var yRight = d3.scale.linear()
-                .range([size.height, 0])
-                .domain([1000/(this._targetFrameRate/3), 1000/this._targetFrameRate]);
+                .range([axisHeight, graphTop])
+                .domain([yRightMin, yRightMax]);
 
         // Axes
         var xAxis = d3.svg.axis()
                 .scale(x)
                 .orient("bottom")
-                .tickFormat(function(d) { return (d/1000).toFixed(0); });
+                .tickFormat(function(d) { return (d / msPerSecond).toFixed(0); });
         var yAxisLeft = d3.svg.axis()
                 .scale(yLeft)
                 .orient("left");
+
         var yAxisRight = d3.svg.axis()
                 .scale(yRight)
-                .tickValues([1000/20, 1000/25, 1000/30, 1000/35, 1000/40, 1000/45, 1000/50, 1000/55, 1000/60, 1000/90, 1000/120])
-                .tickFormat(function(d) { return (1000/d).toFixed(0); })
+                .tickValues(this._tickValuesForFrameRate(this._targetFrameRate, minFrameRate, maxFrameRate))
+                .tickFormat(function(d) { return (msPerSecond / d).toFixed(0); })
                 .orient("right");
 
         // x-axis
         svg.append("g")
             .attr("class", "x axis")
             .attr("fill", "rgb(235, 235, 235)")
-            .attr("transform", "translate(0," + size.height + ")")
+            .attr("transform", "translate(0," + axisHeight + ")")
             .call(xAxis)
             .append("text")
                 .attr("class", "label")
-                .attr("x", size.width)
+                .attr("x", axisWidth)
                 .attr("y", -6)
                 .attr("fill", "rgb(235, 235, 235)")
                 .style("text-anchor", "end")
@@ -334,7 +403,7 @@ Utilities.extendObject(window.benchmarkController, {
         svg.append("g")
             .attr("class", "yRight axis")
             .attr("fill", "#FA4925")
-            .attr("transform", "translate(" + size.width + ", 0)")
+            .attr("transform", "translate(" + axisWidth + ", 0)")
             .call(yAxisRight)
             .append("text")
                 .attr("class", "label")
@@ -376,15 +445,15 @@ Utilities.extendObject(window.benchmarkController, {
             var frameLength = result[Strings.json.frameLength];
             var regression = svg.append("g")
                 .attr("class", "fps mean");
-            this._addRegressionLine(regression, x, yRight, [[samples[0].time, 1000/frameLength.average], [samples[samples.length - 1].time, 1000/frameLength.average]], frameLength.stdev);
+            this._addRegressionLine(regression, x, yRight, [[samples[0].time, msPerSecond / frameLength.average], [samples[samples.length - 1].time, msPerSecond / frameLength.average]], frameLength.stdev);
         }
 
         // right-target
         if (options["controller"] == "adaptive") {
-            var targetFrameLength = 1000 / options["frame-rate"];
+            var targetFrameLength = msPerSecond / options["frame-rate"];
             svg.append("line")
                 .attr("x1", x(0))
-                .attr("x2", size.width)
+                .attr("x2", axisWidth)
                 .attr("y1", yRight(targetFrameLength))
                 .attr("y2", yRight(targetFrameLength))
                 .attr("class", "target-fps marker");
@@ -485,8 +554,8 @@ Utilities.extendObject(window.benchmarkController, {
             .attr("fill", "transparent")
             .attr("x", 0)
             .attr("y", 0)
-            .attr("width", size.width)
-            .attr("height", size.height);
+            .attr("width", axisWidth)
+            .attr("height", axisHeight);
 
         var timeBisect = d3.bisector(function(d) { return d.time; }).right;
         var statsToHighlight = ["complexity", "rawFPS", "filteredFPS"];
@@ -506,7 +575,7 @@ Utilities.extendObject(window.benchmarkController, {
             var cursor_y = yAxisRight.scale().domain()[1];
             var ys = [yRight(yAxisRight.scale().domain()[0]), yRight(yAxisRight.scale().domain()[1])];
 
-            document.querySelector("#test-graph nav .time").textContent = (data.time / 1000).toFixed(4) + "s (" + index + ")";
+            document.querySelector("#test-graph nav .time").textContent = (data.time / msPerSecond).toFixed(4) + "s (" + index + ")";
             statsToHighlight.forEach(function(name) {
                 var element = document.querySelector("#test-graph nav ." + name);
                 var content = "";
@@ -517,12 +586,12 @@ Utilities.extendObject(window.benchmarkController, {
                     data_y = yLeft(data.complexity);
                     break;
                 case "rawFPS":
-                    content = (1000/data.frameLength).toFixed(2);
+                    content = (msPerSecond / data.frameLength).toFixed(2);
                     data_y = yRight(data.frameLength);
                     break;
                 case "filteredFPS":
                     if ("smoothedFrameLength" in data) {
-                        content = (1000/data.smoothedFrameLength).toFixed(2);
+                        content = (msPerSecond / data.smoothedFrameLength).toFixed(2);
                         data_y = yRight(data.smoothedFrameLength);
                     }
                     break;

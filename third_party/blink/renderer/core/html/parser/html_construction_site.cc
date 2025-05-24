@@ -24,15 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/attribute_part.h"
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
@@ -79,6 +75,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -150,25 +147,19 @@ static inline WhitespaceMode RecomputeWhiteSpaceMode(
                : WhitespaceMode::kNotAllWhitespace;
   }
 
-  auto check_whitespace = [](auto* buffer, size_t length) {
+  return VisitCharacters(string_view, [](auto chars) {
     WhitespaceMode result = WhitespaceMode::kNewlineThenWhitespace;
-    for (size_t i = 1; i < length; ++i) {
-      if (buffer[i] == ' ') [[likely]] {
+    for (auto ch : chars) {
+      if (ch == ' ') [[likely]] {
         continue;
-      } else if (IsHTMLSpecialWhitespace(buffer[i])) {
+      } else if (IsHTMLSpecialWhitespace(ch)) {
         result = WhitespaceMode::kAllWhitespace;
       } else {
         return WhitespaceMode::kNotAllWhitespace;
       }
     }
     return result;
-  };
-
-  if (string_view.Is8Bit()) {
-    return check_whitespace(string_view.Characters8(), string_view.length());
-  } else {
-    return check_whitespace(string_view.Characters16(), string_view.length());
-  }
+  });
 }
 
 enum class RecomputeMode {
@@ -225,7 +216,7 @@ static inline void Insert(HTMLConstructionSiteTask& task) {
 
   // https://html.spec.whatwg.org/C/#insert-a-foreign-element
   // 3.1, (3) Push (pop) an element queue
-  CEReactionsScope reactions;
+  CEReactionsScope reactions(task.child->GetDocument().GetAgent().isolate());
   if (task.next_child)
     task.parent->ParserInsertBefore(task.child.Get(), *task.next_child);
   else
@@ -294,6 +285,7 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kInsert) {
     ExecuteInsertTask(task);
     if (pending_dom_parts_) {
+      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
       if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
         if (task.dom_parts_needed.needs_node_part) {
           // Just mark the node as having a node part.
@@ -310,6 +302,7 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kInsertText) {
     ExecuteInsertTextTask(task);
     if (pending_dom_parts_) {
+      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
       if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
         if (task.dom_parts_needed.needs_node_part) {
           // Just mark the node as having a node part.
@@ -335,7 +328,7 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kTakeAllChildren)
     return ExecuteTakeAllChildrenTask(task);
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // This is only needed for TextDocuments where we might have text nodes
@@ -355,15 +348,13 @@ static unsigned FindBreakIndexBetween(const StringBuilder& string,
   if (string.Is8Bit())
     return proposed_break_index;
 
-  const UChar* break_search_characters =
-      string.Characters16() + current_position;
   // We need at least two characters look-ahead to account for UTF-16
   // surrogates, but can't search off the end of the buffer!
   unsigned break_search_length =
       std::min(proposed_break_index - current_position + 2,
                string.length() - current_position);
-  NonSharedCharacterBreakIterator it(break_search_characters,
-                                     break_search_length);
+  CharacterBreakIterator it(
+      string.Span16().subspan(current_position, break_search_length));
 
   if (it.IsBreak(proposed_break_index - current_position))
     return proposed_break_index;
@@ -921,15 +912,15 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
             html_names::kShadowrootserializableAttr);
     bool clonable = template_stack_item->GetAttributeItem(
         html_names::kShadowrootclonableAttr);
+    Element* host = open_elements_.TopStackItem()->GetElement();
     const auto* reference_target_attr =
-        RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()
+        RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+            host->GetDocument().GetExecutionContext())
             ? template_stack_item->GetAttributeItem(
                   html_names::kShadowrootreferencetargetAttr)
             : nullptr;
     const auto& reference_target =
         reference_target_attr ? reference_target_attr->Value() : g_null_atom;
-    HTMLStackItem* shadow_host_stack_item = open_elements_.TopStackItem();
-    Element* host = shadow_host_stack_item->GetElement();
 
     bool success = host->AttachDeclarativeShadowRoot(
         *template_element, declarative_shadow_root_mode, focus_delegation,
@@ -951,6 +942,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     DocumentFragment* template_content = template_element->content();
     if (pending_dom_parts_ && template_content &&
         !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
       pending_dom_parts_->PushPartRoot(&template_content->getPartRoot());
     }
   }
@@ -1189,7 +1181,7 @@ Element* HTMLConstructionSite::CreateElement(
 
     // "6.3 Push a new element queue onto the custom element
     // reactions stack."
-    CEReactionsScope reactions;
+    CEReactionsScope reactions(document.GetAgent().isolate());
 
     // "7. Let element be the result of creating an element given document,
     // localName, given namespace, null, and is. If will execute script is true,
@@ -1408,9 +1400,9 @@ void HTMLConstructionSite::FinishedTemplateElement(
   if (!pending_dom_parts_) {
     return;
   }
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-    PartRoot* last_root = pending_dom_parts_->PopPartRoot();
-    CHECK_EQ(&content_fragment->getPartRoot(), last_root);
+    pending_dom_parts_->PopPartRoot();
   }
 }
 
@@ -1439,9 +1431,11 @@ void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
   // then update its `next_sibling` later when we find it, rendering it (and
   // any dependant Parts) valid.
   ChildNodePart* new_part = MakeGarbageCollected<ChildNodePart>(
-      *CurrentPartRoot(), previous_sibling, previous_sibling, metadata);
+      *CurrentPartRoot(), previous_sibling, previous_sibling,
+      std::move(metadata));
   part_root_stack_.push_back(new_part);
 }
+
 void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
     Node& next_sibling) {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
@@ -1481,17 +1475,21 @@ void HTMLConstructionSite::PendingDOMParts::ConstructDOMPartsIfNeeded(
 }
 
 PartRoot* HTMLConstructionSite::PendingDOMParts::CurrentPartRoot() const {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   CHECK(!part_root_stack_.empty());
   return part_root_stack_.back().Get();
 }
 
 void HTMLConstructionSite::PendingDOMParts::PushPartRoot(PartRoot* root) {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  DCHECK(root);
   return part_root_stack_.push_back(root);
 }
 
 PartRoot* HTMLConstructionSite::PendingDOMParts::PopPartRoot() {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   CHECK(!part_root_stack_.empty());
   PartRoot* popped = part_root_stack_.back();

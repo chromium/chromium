@@ -11,7 +11,6 @@
 #import "components/password_manager/core/browser/password_reuse_detector_impl.h"
 #import "components/password_manager/core/browser/password_reuse_manager_impl.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
@@ -31,11 +30,6 @@ WebViewPasswordReuseManagerFactory::GetInstance() {
 password_manager::PasswordReuseManager*
 WebViewPasswordReuseManagerFactory::GetForBrowserState(
     WebViewBrowserState* browser_state) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordReuseDetectionEnabled)) {
-    return nullptr;
-  }
-
   return static_cast<password_manager::PasswordReuseManager*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -53,9 +47,6 @@ WebViewPasswordReuseManagerFactory::~WebViewPasswordReuseManagerFactory() =
 std::unique_ptr<KeyedService>
 WebViewPasswordReuseManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordReuseDetectionEnabled));
-
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
   std::unique_ptr<password_manager::PasswordReuseManager> reuse_manager =

@@ -8,12 +8,14 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {CrosNetworkConfig, CrosNetworkConfigRemote, FilterType, ManagedProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigRemote, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfig, FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_state_ui.html.js';
-import {NetworkUiBrowserProxy, NetworkUiBrowserProxyImpl} from './network_ui_browser_proxy.js';
+import type {NetworkUiBrowserProxy} from './network_ui_browser_proxy.js';
+import {NetworkUiBrowserProxyImpl} from './network_ui_browser_proxy.js';
 
 /**
  * Properties to display in the network state table. Each entry can be either
@@ -268,7 +270,7 @@ class NetworkStateUiElement extends PolymerElement {
     } else {
       btn.textContent = '-';
       const expandedRow = this.createExpandedRow_(state, row);
-      row.parentNode!.insertBefore(expandedRow, row.nextSibling!);
+      row.parentNode!.insertBefore(expandedRow, row.nextSibling);
     }
   }
 
@@ -309,7 +311,7 @@ class NetworkStateUiElement extends PolymerElement {
         this.getShillNetworkPropertiesResult_(response);
       });
     } else if (selectedId === 'state') {
-      this.networkConfig_!.getNetworkState(guid)
+      this.networkConfig_.getNetworkState(guid)
           .then((responseParams) => {
             if (responseParams && responseParams.result) {
               this.showDetail_(detailCell, responseParams.result);
@@ -322,7 +324,7 @@ class NetworkStateUiElement extends PolymerElement {
             this.showDetailError_(detailCell, 'Mojo service failure: ' + error);
           });
     } else if (selectedId === 'managed') {
-      this.networkConfig_!.getManagedProperties(guid)
+      this.networkConfig_.getManagedProperties(guid)
           .then((responseParams) => {
             if (responseParams && responseParams.result) {
               this.showDetail_(detailCell, responseParams.result);
@@ -465,7 +467,7 @@ class NetworkStateUiElement extends PolymerElement {
           this.onVisibleNetworksReceived_(responseParams.result);
         });
 
-    this.networkConfig_!
+    this.networkConfig_
         .getNetworkStateList({
           filter: FilterType.kConfigured,
           networkType: NetworkType.kAll,
@@ -475,7 +477,7 @@ class NetworkStateUiElement extends PolymerElement {
           this.onFavoriteNetworksReceived_(responseParams.result);
         });
 
-    this.networkConfig_!.getDeviceStateList().then((responseParams) => {
+    this.networkConfig_.getDeviceStateList().then((responseParams) => {
       this.onDeviceStatesReceived_(responseParams.result);
     });
 

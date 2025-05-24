@@ -12,7 +12,7 @@
 
 class MsiUtil {
  public:
-  virtual ~MsiUtil() {}
+  virtual ~MsiUtil() = default;
 
   // Using the Microsoft Installer API, retrieves the path of all the components
   // for a given product. This function should be called on a thread that allows

@@ -31,7 +31,7 @@ class ChromeRenderFrameObserverTest : public testing::Test,
                                                        image_format);
   }
 
-  bool IsAnimatedWebp(const std::vector<uint8_t> image_data) {
+  bool IsAnimatedWebp(const std::vector<uint8_t>& image_data) {
     return ChromeRenderFrameObserver::IsAnimatedWebp(image_data);
   }
 

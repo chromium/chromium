@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <vector>
 
 #include "gpu/config/gpu_blocklist.h"
@@ -27,42 +22,32 @@ class GpuBlocklistTest : public testing::Test {
   const GPUInfo& gpu_info() const { return gpu_info_; }
 
   void RunFeatureTest(GpuFeatureType feature_type) {
-    const int kFeatureListForEntry1[1] = {feature_type};
+    const std::array<const int, 1> kFeatureListForEntry1 = {feature_type};
     const GpuControlList::Device kDevicesForEntry1[1] = {{0x0640, 0x0}};
-    const GpuControlList::Entry kTestEntries[1] = {{
-        1,                      // id
-        "Test entry",           // description
-        1,                      // features size
-        kFeatureListForEntry1,  // features
-        0,                      // DisabledExtensions size
-        nullptr,                // DisabledExtensions
-        0,                      // DisabledWebGLExtensions size
-        nullptr,                // DisabledWebGLExtensions
-        0,                      // CrBugs size
-        nullptr,                // CrBugs
+    const std::array<GpuControlList::Entry, 1> kTestEntries = {{{
+        1,                                  // id
+        "Test entry",                       // description
+        base::span(kFeatureListForEntry1),  // features
+        base::span<const char* const>(),    // DisabledExtensions
+        base::span<const char* const>(),    // DisabledWebGLExtensions
+        base::span<const uint32_t>(),       // CrBugs
         {
             GpuControlList::kOsMacosx,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
              nullptr},                             // os_version
             0x10de,                                // vendor_id
-            1,                                     // Devices size
-            kDevicesForEntry1,                     // Devices
+            base::span(kDevicesForEntry1),         // Devices
             GpuControlList::kMultiGpuCategoryAny,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,    // multi_gpu_style
             nullptr,                               // driver info
             nullptr,                               // GL strings
             nullptr,                               // machine model info
-            0,                                     // gpu_series size
-            nullptr,                               // gpu_series
-            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-             GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},  // intel_gpu_generation
-            nullptr,    // more conditions
+            nullptr,                               // Intel conditions
+            nullptr,                               // more conditions
         },
-        0,        // exceptions count
-        nullptr,  // exceptions
-    }};
+        base::span<GpuControlList::Conditions>(),  // exceptions
+    }}};
     std::unique_ptr<GpuBlocklist> blocklist =
         GpuBlocklist::Create(kTestEntries);
     std::set<int> type =
@@ -154,8 +139,7 @@ void TestBlockList(base::span<const GpuControlList::Entry> entries) {
             << "gl_version=" << gl_strings->gl_version;
       }
     }
-    for (size_t j = 0; j < entry.exception_size; ++j) {
-      const auto& conditions = entry.exceptions[j];
+    for (const auto& conditions : entry.exceptions) {
       if (const auto* gl_strings = conditions.gl_strings) {
         if (gl_strings->gl_vendor) {
           EXPECT_TRUE(RE2(gl_strings->gl_vendor).ok())
@@ -180,8 +164,8 @@ void TestBlockList(base::span<const GpuControlList::Entry> entries) {
 
 // It checks software_rendering_list.json
 TEST_F(GpuBlocklistTest, VerifyGLStrings) {
-  TestBlockList(kSoftwareRenderingListEntries);
-  TestBlockList(kGpuDriverBugListEntries);
+  TestBlockList(GetSoftwareRenderingListEntries());
+  TestBlockList(GetGpuDriverBugListEntries());
 }
 
 }  // namespace gpu

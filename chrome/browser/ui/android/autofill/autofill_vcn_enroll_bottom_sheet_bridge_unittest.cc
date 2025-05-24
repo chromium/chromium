@@ -8,11 +8,11 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
@@ -33,7 +33,7 @@ class AutofillVCNEnrollBottomSheetBridgeTest
         static_cast<VirtualCardEnrollBubbleControllerImpl*>(
             VirtualCardEnrollBubbleControllerImpl::GetOrCreate(web_contents()));
     VirtualCardEnrollmentFields virtual_card_enrollment_fields;
-    virtual_card_enrollment_fields.credit_card = test::GetFullServerCard();
+    virtual_card_enrollment_fields.credit_card = test::GetCreditCard();
     virtual_card_enrollment_fields.card_art_image = &card_art_image_;
     virtual_card_enrollment_fields.google_legal_message = {
         TestLegalMessageLine("google_test_legal_message")};

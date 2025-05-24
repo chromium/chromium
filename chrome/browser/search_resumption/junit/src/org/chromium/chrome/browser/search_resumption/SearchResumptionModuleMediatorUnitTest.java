@@ -21,7 +21,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -30,11 +29,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
@@ -64,8 +63,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
+@Features.DisableFeatures(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)
 public class SearchResumptionModuleMediatorUnitTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private Tab mTabToTrack;
     @Mock private Tab mTab;
@@ -93,18 +92,12 @@ public class SearchResumptionModuleMediatorUnitTest {
     private UserActionTester mActionTester;
     private UserDataHost mUserDataHost;
     private SearchResumptionModuleMediator mMediator;
-    private FeatureList.TestValues mFeatureListValues;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mFeatureListValues = new FeatureList.TestValues();
-        FeatureList.setTestValues(mFeatureListValues);
-        mFeatureListValues.addFeatureFlagOverride(
-                ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, false);
-
         mUserDataHost = new UserDataHost();
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
+        AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
         doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
         mUrlToTrack = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(mUrlToTrack).when(mTabToTrack).getUrl();
@@ -228,11 +221,11 @@ public class SearchResumptionModuleMediatorUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
 
-        mMediator.onExpandedOrCollapsed(/* expand= */ true);
+        mMediator.onExpandedOrCollapsed(/* expanded= */ true);
         Assert.assertTrue(
                 mActionTester.getActions().contains(SearchResumptionModuleUtils.ACTION_EXPAND));
 
-        mMediator.onExpandedOrCollapsed(/* expand= */ false);
+        mMediator.onExpandedOrCollapsed(/* expanded= */ false);
         Assert.assertTrue(
                 mActionTester.getActions().contains(SearchResumptionModuleUtils.ACTION_COLLAPSE));
     }
@@ -301,20 +294,13 @@ public class SearchResumptionModuleMediatorUnitTest {
         if (!useNewServiceEnabled && cachedSuggestions == null) {
             verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
             verify(mAutocompleteController, times(1))
-                    .startZeroSuggest(
-                            any(),
-                            eq(mUrlToTrack),
-                            anyInt(),
-                            any(),
-                            /* isOnFocusContext= */ eq(false));
+                    .startZeroSuggest(any(), eq(mUrlToTrack), anyInt(), any());
         }
 
-        mFeatureListValues.addFeatureFlagOverride(
-                ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, true);
-        mFeatureListValues.addFieldTrialParamOverride(
-                ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
-                SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM,
-                String.valueOf(useNewServiceEnabled));
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)
+                .param(SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM, useNewServiceEnabled)
+                .apply();
     }
 
     private void initSuggestions() {

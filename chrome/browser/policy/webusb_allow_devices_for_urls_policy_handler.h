@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_WEBUSB_ALLOW_DEVICES_FOR_URLS_POLICY_HANDLER_H_
 #define CHROME_BROWSER_POLICY_WEBUSB_ALLOW_DEVICES_FOR_URLS_POLICY_HANDLER_H_
 
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefValueMap;

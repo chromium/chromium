@@ -29,8 +29,8 @@ namespace policies {
 // UserspaceSwapPolicy is a policy which will trigger a renderer to swap itself
 // via userspace.
 class UserspaceSwapPolicy : public GraphOwned,
-                            public ProcessNode::ObserverDefaultImpl,
-                            public SystemNode::ObserverDefaultImpl {
+                            public ProcessNodeObserver,
+                            public SystemNodeObserver {
  public:
   UserspaceSwapPolicy();
 
@@ -73,7 +73,7 @@ class UserspaceSwapPolicy : public GraphOwned,
   virtual bool IsPageNodeVisible(const PageNode* page_node);
   virtual bool IsPageNodeAudible(const PageNode* page_node);
   virtual bool IsPageNodeLoadingOrBusy(const PageNode* page_node);
-  virtual base::TimeDelta GetTimeSinceLastVisibilityChange(
+  virtual base::TimeTicks GetLastVisibilityChangeTime(
       const PageNode* page_node);
 
   // IsEligibleToSwap will return true if the |page_node| belonging to the

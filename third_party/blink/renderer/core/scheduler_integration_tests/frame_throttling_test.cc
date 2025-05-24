@@ -56,17 +56,8 @@ using html_names::kStyleAttr;
 
 // NOTE: This test uses <iframe sandbox> to create cross origin iframes.
 
-// This should not conflict with the existing PaintTestConfiguration bits.
-enum { kIntersectionOptimization = 1 << 20 };
-
-class FrameThrottlingTest : public PaintTestConfigurations,
-                            public SimTest,
-                            private ScopedIntersectionOptimizationForTest {
+class FrameThrottlingTest : public PaintTestConfigurations, public SimTest {
  protected:
-  FrameThrottlingTest()
-      : ScopedIntersectionOptimizationForTest(GetParam() &
-                                              kIntersectionOptimization) {}
-
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(640, 480));
@@ -100,10 +91,7 @@ class FrameThrottlingTest : public PaintTestConfigurations,
   };
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         FrameThrottlingTest,
-                         ::testing::Values(PAINT_TEST_SUITE_P_VALUES,
-                                           kIntersectionOptimization));
+INSTANTIATE_PAINT_TEST_SUITE_P(FrameThrottlingTest);
 
 TEST_P(FrameThrottlingTest, ThrottleInvisibleFrames) {
   SimRequest main_resource("https://example.com/", "text/html");
@@ -537,11 +525,7 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   EXPECT_FALSE(frame_view->CanThrottleRendering());
   auto* root_layer = WebView().MainFrameImpl()->GetFrameView()->RootCcLayer();
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "container").size());
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
-  } else {
-    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
-  }
+  EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
 
   // First make the child hidden to enable throttling, and composite
   // the container.
@@ -553,11 +537,7 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   CompositeFrame();
   EXPECT_TRUE(frame_view->CanThrottleRendering());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "container").size());
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
-  } else {
-    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
-  }
+  EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
 
   // Then bring it back on-screen, and decomposite container.
   container_element->setAttribute(kStyleAttr, g_empty_atom);
@@ -566,11 +546,7 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   CompositeFrame();
   EXPECT_FALSE(frame_view->CanThrottleRendering());
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "container").size());
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
-  } else {
-    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
-  }
+  EXPECT_TRUE(CcLayerByOwnerNodeId(root_layer, frame_doc->GetDomNodeId()));
 }
 
 TEST_P(FrameThrottlingTest, MutatingThrottledFrameDoesNotCauseAnimation) {

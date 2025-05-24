@@ -43,6 +43,16 @@ class WTF_EXPORT TextOffsetMap {
   // we mapped string-2 to string-3 with producing map23. This constructor
   // creates a TextOffsetMap instance for mapping string-1 to string-3.
   TextOffsetMap(const TextOffsetMap& map12, const TextOffsetMap& map23);
+  // Suppose that we mapped string-1 of which length is `length1` to string-2
+  // of which length is `length2` with producing map12, and we mapped
+  // string-2 to string-3 of which length is `length3` with producing map23.
+  // This constructor creates a TextOffsetMap instance for mapping string-1
+  // to string-3.
+  TextOffsetMap(wtf_size_t length1,
+                const TextOffsetMap& map12,
+                wtf_size_t length2,
+                const TextOffsetMap& map23,
+                wtf_size_t length3);
 
   bool IsEmpty() const { return entries_.empty(); }
 
@@ -52,6 +62,13 @@ class WTF_EXPORT TextOffsetMap {
 
   void Append(wtf_size_t source, wtf_size_t target);
   void Append(const icu::Edits& edits);
+
+  using Length = uint32_t;
+  // This returns a list of which size is `new_length`. The Nth element of
+  // the list represents the source character length of the Nth character
+  // in the destination string.
+  Vector<Length> CreateLengthMap(wtf_size_t old_length,
+                                 wtf_size_t new_length) const;
 
  private:
   Vector<Entry> entries_;

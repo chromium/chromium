@@ -11,7 +11,7 @@ import '../../components/throbber_notice.js';
 
 import {assert} from '//resources/js/assert.js';
 import {ensureTransitionEndEvent} from '//resources/js/util.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeUiState} from '../../components/display_manager_types.js';
@@ -60,15 +60,22 @@ class AppLaunchSplash extends AppLaunchSplashBase {
         type: String,
         value: '',
       },
+      showThrobber: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
   private appName: string;
   private appUrl: string;
   private launchText: string;
+  private showThrobber: boolean;
 
   override get EXTERNAL_API(): string[] {
-    return ['toggleNetworkConfig', 'setAppData', 'updateMessage'];
+    return [
+      'toggleNetworkConfig', 'setAppData', 'updateMessage', 'hideThrobber'
+    ];
   }
 
   override ready(): void {
@@ -119,6 +126,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
     if (data) {
       this.setAppData(data);
     }
+    this.showThrobber = true;
   }
 
   setAppData(data: AppLaunchSplashScreenData): void {
@@ -162,6 +170,10 @@ class AppLaunchSplash extends AppLaunchSplashBase {
    */
   updateMessage(message: string): void {
     this.launchText = message;
+  }
+
+  hideThrobber(): void {
+    this.showThrobber = false;
   }
 }
 

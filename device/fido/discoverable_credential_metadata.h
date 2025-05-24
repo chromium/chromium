@@ -5,9 +5,11 @@
 #ifndef DEVICE_FIDO_DISCOVERABLE_CREDENTIAL_METADATA_H_
 #define DEVICE_FIDO_DISCOVERABLE_CREDENTIAL_METADATA_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_user_entity.h"
 
@@ -21,7 +23,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) DiscoverableCredentialMetadata {
   DiscoverableCredentialMetadata(AuthenticatorType source,
                                  std::string rp_id,
                                  std::vector<uint8_t> cred_id,
-                                 PublicKeyCredentialUserEntity user);
+                                 PublicKeyCredentialUserEntity user,
+                                 std::optional<std::string> provider_name,
+                                 std::optional<base::Time> last_used_time = base::Time());
 
   DiscoverableCredentialMetadata();
   DiscoverableCredentialMetadata(const DiscoverableCredentialMetadata& other);
@@ -41,6 +45,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) DiscoverableCredentialMetadata {
   // automatically by the system. This can happen on Windows where (at least) a
   // credential for login.microsoft.com can be auto-created for users.
   bool system_created = false;
+
+  // The name of the third-party provider the passkey is stored in. This is
+  // populated for credentials coming from the MacOS API.
+  std::optional<std::string> provider_name;
+
+  // Time when this passkey was last successfully asserted. Can be nullopt for
+  // platform provided credentials.
+  std::optional<base::Time> last_used_time;
 };
 
 }  // namespace device

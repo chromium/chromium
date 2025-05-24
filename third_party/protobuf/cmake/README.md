@@ -1,15 +1,38 @@
-This directory contains *CMake* files that can be used to build protobuf
-with *MSVC* on *Windows*. You can build the project from *Command Prompt*
-and using an *Visual Studio* IDE.
+This directory contains *CMake* files that can be used to build protobuf.
 
-You need to have [CMake](http://www.cmake.org), [Visual Studio](https://www.visualstudio.com)
-and optionally [Git](http://git-scm.com) installed on your computer before proceeding.
+You need to have [CMake](http://www.cmake.org),
+[Git](http://git-scm.com), and [Abseil](https://github.com/abseil/abseil-cpp)
+installed on your computer before proceeding.  We currently support CMake 3.5
+and newer on both [Windows](#windows-builds) and [Linux](#linux-builds).
 
-Most of the instructions will be given to the *Сommand Prompt*, but the same
-actions can be performed using appropriate GUI tools.
+Most of the instructions will be given using CMake's command-line interface, but
+the same actions can be performed using appropriate GUI tools.
 
-Environment Setup
-=================
+# CMake Flags
+
+## C++ Version
+
+By default, CMake will use whatever C++ version is the system default. Since
+protobuf requires C++17 or newer, sometimes you will need to explicitly override
+this. For example, the following:
+
+```
+cmake . -DCMAKE_CXX_STANDARD=17
+cmake --build .
+```
+
+will build protobuf using C++17 (see
+[CXX_STANDARD](https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html#prop_tgt:CXX_STANDARD){.external}
+for all available options).
+
+# Windows Builds
+
+On Windows, you can build the project from *Command Prompt* and using an
+*Visual Studio* IDE.  You will also need to have
+[Visual Studio](https://www.visualstudio.com) installed on your computer before
+proceeding.
+
+## Environment Setup
 
 Open the appropriate *Command Prompt* from the *Start* menu.
 
@@ -42,17 +65,11 @@ Optionally, you will want to download [ninja](https://ninja-build.org/) and add 
 
 Good. Now you are ready to continue.
 
-Getting Sources
-===============
+## Getting Sources
 
 You can get the latest stable source packages from the release page:
 
     https://github.com/protocolbuffers/protobuf/releases/latest
-
-For example: if you only need C++, download `protobuf-cpp-[VERSION].tar.gz`; if
-you need C++ and Java, download `protobuf-java-[VERSION].tar.gz` (every package
-contains C++ source already); if you need C++ and multiple other languages,
-download `protobuf-all-[VERSION].tar.gz`.
 
 Or you can use git to clone from protobuf git repository.
 
@@ -67,26 +84,15 @@ Go to the project folder:
      C:\Path\to\src> cd protobuf
      C:\Path\to\src\protobuf>
 
-Remember to update any submodules if you are using git clone (you can skip this
-step if you are using a release .tar.gz or .zip package):
-
-```console
-C:\Path\to\src\protobuf> git submodule update --init --recursive
-```
-
 Good. Now you are ready for *CMake* configuration.
 
-CMake Configuration
-===================
+## CMake Configuration
 
 *CMake* supports a lot of different
 [generators](http://www.cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
 for various native build systems.
 
 Of most interest to Windows programmers are the following:
-
-* [Makefile](http://www.cmake.org/cmake/help/latest/manual/cmake-generators.7.html#makefile-generators).
-  This generates NMake Makefiles for Visual Studio. These work, but they are rather slow.
 
 * [Visual Studio](http://www.cmake.org/cmake/help/latest/manual/cmake-generators.7.html#visual-studio-generators)
   This generates a Visual Studio solution for the project.
@@ -105,18 +111,26 @@ Create a temporary *build* folder and change your working directory to it:
      cd C:\Path\to\build\protobuf
      C:\Path\to\build\protobuf>
 
+During configuration you will also be specifying where CMake should expect to
+find your Abseil installation. To do so, set `-DCMAKE_PREFIX_PATH` to the path
+where you installed Abseil.
+
+For example:
+
+```console
+C:\Path\to\build\protobuf> cmake -S. -Bcmake-out \
+                           -DCMAKE_INSTALL_PREFIX=/tmp/protobuf \
+                           -DCMAKE_CXX_STANDARD=17 \
+                           -DCMAKE_PREFIX_PATH=/tmp/absl  # Path to where I installed Abseil
+```
+
+If the installation of a dependency can't be found, CMake will default to
+downloading and building a copy from GitHub. To prevent this and make it an
+error condition, you can optionally set
+`-Dprotobuf_LOCAL_DEPENDENCIES_ONLY=ON`.
+
 The *Makefile* and *Ninja* generators can build the project in only one configuration, so you need to build
 a separate folder for each configuration.
-
-To start using a *Release* configuration via the *NMmake* generator:
-
-     C:\Path\to\build\protobuf>mkdir release & cd release
-     C:\Path\to\build\protobuf\release>cmake -G "NMake Makefiles" ^
-     -DCMAKE_BUILD_TYPE=Release ^
-     -DCMAKE_INSTALL_PREFIX=C:\Path\to\install ^
-     C:\Path\to\src\protobuf
-
-It will generate a *NMake* *Makefile* in the current directory.
 
 To use *Debug* configuration using *Ninja*:
 
@@ -137,20 +151,18 @@ The *Visual Studio* generator is multi-configuration: it will generate a single 
 
 It will generate *Visual Studio* solution file *protobuf.sln* in current directory.
 
-Unit Tests
-----------
+### Unit Tests
 
 Unit tests are being built along with the rest of protobuf. The unit tests require Google Mock (now a part of Google Test).
 
-A copy of [Google Test](https://github.com/google/googletest) is included as a Git submodule in the `third-party/googletest` folder.
-(You do need to initialize the Git submodules as explained above.)
+By default, a local copy of [Google Test](https://github.com/google/googletest)
+will be downloaded during CMake configuration.
 
 Alternately, you may want to use protobuf in a larger set-up, you may want to use that standard CMake approach where
 you build and install a shared copy of Google Test.
 
-After you've built and installed your Google Test copy, you need add the following definition to your *cmake* command line
-during the configuration step: `-Dprotobuf_USE_EXTERNAL_GTEST=ON`.
-This will cause the standard CMake `find_package(GTest REQUIRED)` to be used.
+After you've built and installed your Google Test copy, the standard CMake
+`find_package(GTest)` will use it.
 
 [find_package](https://cmake.org/cmake/help/latest/command/find_package.html) will search in a default location,
 which on Windows is *C:\Program Files*. This is most likely not what you want. You will want instead to search for
@@ -178,8 +190,7 @@ For example:
      -Dprotobuf_BUILD_TESTS=OFF ^
      C:\Path\to\src\protobuf
 
-Compiling
-=========
+## Compiling
 
 The standard way to compile a *CMake* project is `cmake --build <directory>`.
 
@@ -189,10 +200,6 @@ Note that if your generator supports multiple configurations, you will probably 
      cmake --build C:\Path\to\build\protobuf\solution --config Release
 
 You can also run directly the build tool you've configured:
-
-     C:\Path\to\build\protobuf\release>nmake
-
-or
 
      C:\Path\to\build\protobuf\debug>ninja
 
@@ -206,8 +213,7 @@ If you prefer to use the IDE:
 
 And wait for the compilation to finish.
 
-Testing
-=======
+## Testing
 
 To run unit-tests, first you must compile protobuf as described above.
 Then run:
@@ -259,18 +265,13 @@ Note that the tests must be run from the source folder.
 
 If all tests are passed, safely continue.
 
-Installing
-==========
+## Installing
 
 To install protobuf to the *install* folder you've specified in the configuration step, you need to build the `install` target:
 
      cmake --build C:\Path\to\build\protobuf\solution --config Release --target install
 
 Or if you prefer:
-
-     C:\Path\to\build\protobuf\release>nmake install
-
-or
 
      C:\Path\to\build\protobuf\debug>ninja install
 
@@ -292,8 +293,7 @@ compiling a debug build of your application, you may need to link against a
 debug build of libprotobufd.lib with "d" postfix.  Similarly, release builds should link against
 release libprotobuf.lib library.
 
-DLLs vs. static linking
-=======================
+## DLLs vs. static linking
 
 Static linking is now the default for the Protocol Buffer libraries.  Due to
 issues with Win32's use of a separate heap for each DLL, as well as binary
@@ -318,8 +318,7 @@ recommend that you do NOT expose protocol buffer objects in your library's
 public interface, and that you statically link protocol buffers into your
 library.
 
-ZLib support
-============
+## ZLib support
 
 If you want to include GzipInputStream and GzipOutputStream
 (google/protobuf/io/gzip_stream.h) in libprotobuf, you will need to do a few
@@ -369,8 +368,7 @@ If you already have ZLIB library and headers at some other location on your syst
 
 Build and testing protobuf as usual.
 
-Notes on Compiler Warnings
-==========================
+## Notes on Compiler Warnings
 
 The following warnings have been disabled while building the protobuf libraries
 and compiler.  You may have to disable some of them in your own project as
@@ -397,3 +395,23 @@ unique, so there should be no problem with this, but MSVC prints warning
 nevertheless.  So, we disable it.  Unfortunately, this warning will also be
 produced when compiling code which merely uses protocol buffers, meaning you
 may have to disable it in your code too.
+
+# Linux Builds
+
+Building with CMake works very similarly on Linux.  Instead of Visual Studio,
+you will need to have gcc or clang installed to handle the C++ builds.  CMake
+will generate Makefiles by default, but can also be configured to use Ninja.  To
+build Protobuf, you will need to run (from the source directory):
+
+     cmake .
+     cmake --build . --parallel 10
+
+Protobuf can be tested and installed with CMake:
+
+     ctest --verbose
+     sudo cmake --install .
+
+or directly with the generated Makefiles:
+
+     make VERBOSE=1 test
+     sudo make install

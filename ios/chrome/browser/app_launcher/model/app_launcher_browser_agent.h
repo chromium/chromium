@@ -83,9 +83,6 @@ class AppLauncherBrowserAgent
 
   // A helper class to observer SceneState activation state.
   AppLauncherSceneStateObserver* app_launcher_scene_state_observer_;
-
-  // BrowserUserData key.
-  BROWSER_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_APP_LAUNCHER_MODEL_APP_LAUNCHER_BROWSER_AGENT_H_

@@ -1,0 +1,26 @@
+ALERT: Hello World
+Tests Page.javascriptDialogOpening event
+Page.javascriptDialogOpening: {
+    method : Page.javascriptDialogOpening
+    params : {
+        defaultPrompt : 
+        frameId : <string>
+        hasBrowserHandler : true
+        message : Hello World
+        type : alert
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
+    sessionId : <string>
+}
+Page.javascriptDialogOpening has expected frameId
+Page.javascriptDialogClosed: {
+    method : Page.javascriptDialogClosed
+    params : {
+        frameId : <string>
+        result : true
+        userInput : 
+    }
+    sessionId : <string>
+}
+Page.javascriptDialogClosed has expected frameId
+

@@ -46,7 +46,7 @@ class NotificationPlatformBridge {
   NotificationPlatformBridge(const NotificationPlatformBridge&) = delete;
   NotificationPlatformBridge& operator=(const NotificationPlatformBridge&) =
       delete;
-  virtual ~NotificationPlatformBridge() {}
+  virtual ~NotificationPlatformBridge() = default;
 
   // Shows a toast on screen using the data passed in |notification|.
   virtual void Display(

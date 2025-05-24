@@ -8,8 +8,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/platform/bidirectional_stream.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 WifiLanSocket::ConnectedSocketParameters::ConnectedSocketParameters(
     mojo::PendingRemote<network::mojom::TCPConnectedSocket>
@@ -91,5 +90,4 @@ void WifiLanSocket::CloseTcpSocketIfNecessary() {
   tcp_connected_socket_.reset();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

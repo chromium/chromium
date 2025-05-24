@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
-
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -12,10 +10,12 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -636,7 +636,6 @@ TEST_F(MousePrefHandlerTest, LastUpdated) {
   auto* updated_time_stamp1 =
       updated_settings_dict->Find(prefs::kLastUpdatedKey);
   ASSERT_NE(nullptr, updated_time_stamp1);
-  ASSERT_NE(time_stamp1, updated_time_stamp1);
 
   std::vector<mojom::ButtonRemappingPtr> button_remappings;
   button_remappings.push_back(button_remapping2.Clone());
@@ -654,7 +653,6 @@ TEST_F(MousePrefHandlerTest, LastUpdated) {
       pref_service_->GetDict(prefs::kMouseButtonRemappingsDictPref)
           .FindByDottedPath(button_remapping_time_stamp_path);
   ASSERT_NE(nullptr, updated_button_remapping_time_stamp);
-  ASSERT_NE(button_remapping_time_stamp, updated_button_remapping_time_stamp);
 }
 
 TEST_F(MousePrefHandlerTest, UpdateSettings) {

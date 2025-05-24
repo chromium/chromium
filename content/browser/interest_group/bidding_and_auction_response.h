@@ -28,11 +28,57 @@ namespace content {
 using PrivateAggregationRequests =
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
+using FinalizedPrivateAggregationRequests =
+    std::vector<auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
+
 std::optional<base::span<const uint8_t>> CONTENT_EXPORT
 ExtractCompressedBiddingAndAuctionResponse(
     base::span<const uint8_t> decrypted_data);
 
 struct CONTENT_EXPORT BiddingAndAuctionResponse {
+  struct CONTENT_EXPORT KAnonJoinCandidate {
+    KAnonJoinCandidate();
+    ~KAnonJoinCandidate();
+    KAnonJoinCandidate(KAnonJoinCandidate&& other);
+    KAnonJoinCandidate& operator=(KAnonJoinCandidate&& other);
+
+    using ByteVector = std::vector<uint8_t>;
+    ByteVector ad_render_url_hash;
+    std::vector<ByteVector> ad_component_render_urls_hash;
+    ByteVector reporting_id_hash;
+  };
+
+  struct CONTENT_EXPORT GhostWinnerForTopLevelAuction {
+    GhostWinnerForTopLevelAuction();
+    ~GhostWinnerForTopLevelAuction();
+    GhostWinnerForTopLevelAuction(GhostWinnerForTopLevelAuction&& other);
+    GhostWinnerForTopLevelAuction& operator=(
+        GhostWinnerForTopLevelAuction&& other);
+
+    GURL ad_render_url;
+    std::vector<GURL> ad_components;
+    double modified_bid;
+    std::optional<blink::AdCurrency> bid_currency;
+    std::optional<std::string> ad_metadata;
+    std::optional<std::string> buyer_reporting_id;
+    std::optional<std::string> buyer_and_seller_reporting_id;
+    std::optional<std::string> selected_buyer_and_seller_reporting_id;
+  };
+
+  struct CONTENT_EXPORT KAnonGhostWinner {
+    KAnonGhostWinner();
+    ~KAnonGhostWinner();
+    KAnonGhostWinner(KAnonGhostWinner&& other);
+    KAnonGhostWinner& operator=(KAnonGhostWinner&& other);
+
+    KAnonJoinCandidate candidate;
+    blink::InterestGroupKey interest_group;
+    // `non_kanon_private_aggregation_requests` will only have reject reason
+    // contributions, which the server will guarantee.
+    PrivateAggregationRequests non_kanon_private_aggregation_requests;
+    std::optional<GhostWinnerForTopLevelAuction> ghost_winner;
+  };
+
   BiddingAndAuctionResponse();
   ~BiddingAndAuctionResponse();
 
@@ -44,6 +90,17 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
       const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
       const base::flat_map<blink::InterestGroupKey, url::Origin>&
           group_pagg_coordinators);
+
+  static std::optional<KAnonJoinCandidate> TryParseKAnonWinnerJoinCandidate(
+      base::Value::Dict& k_anon_join_candidate);
+
+  static std::optional<KAnonGhostWinner> TryParseKAnonGhostWinner(
+      base::Value::List& k_anon_ghost_winners,
+      const base::flat_map<url::Origin, std::vector<std::string>>& group_names);
+
+  static std::optional<GhostWinnerForTopLevelAuction>
+  TryParseGhostWinnerForTopLevelAuction(
+      base::Value::Dict& ghost_winner_for_top_level_auction);
 
   static void TryParsePAggResponse(
       const base::Value::List& pagg_response,
@@ -114,6 +171,10 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   // auctions start the bidding phase.
   AuctionResult result = AuctionResult::kInvalidServerResponse;
 
+  // Nonce used to match against the Ad-Auction-Result-Nonce header in a fetch
+  // response from the seller.
+  std::optional<std::string> nonce;
+
   bool is_chaff = false;  // indicates this response should be ignored.
   // TODO(behamilton): Add support for creative dimensions to the response from
   // the Bidding and Auction server.
@@ -128,6 +189,10 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   std::optional<std::string> ad_metadata;
   std::optional<std::string> buyer_reporting_id;
   std::optional<std::string> buyer_and_seller_reporting_id;
+  std::optional<std::string> selected_buyer_and_seller_reporting_id;
+
+  std::optional<KAnonJoinCandidate> k_anon_join_candidate;
+  std::optional<KAnonGhostWinner> k_anon_ghost_winner;
 
   std::optional<std::string> error;
   // The Bidding and Auction server uses the top_level_seller_reporting field
@@ -145,9 +210,9 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   // include component losing buyers/sellers PAgg contributions, or
   // contributions from single level auctions or server orchestrated multi-level
   // auctions.
-  std::map<PrivateAggregationKey, PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
       server_filtered_pagg_requests_reserved;
-  std::map<std::string, PrivateAggregationRequests>
+  std::map<std::string, FinalizedPrivateAggregationRequests>
       server_filtered_pagg_requests_non_reserved;
 
   // forDebuggingOnly reports from component winning buyer/seller. These need to
@@ -162,6 +227,9 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   // Ad tech origins that have forDebuggingOnly reports from server. This is
   // used to get these origin's cooldown status.
   base::flat_set<url::Origin> debugging_only_report_origins;
+
+  // Interest group updates triggered by "update if older than" signals.
+  std::map<blink::InterestGroupKey, base::TimeDelta> triggered_updates;
 };
 
 }  // namespace content

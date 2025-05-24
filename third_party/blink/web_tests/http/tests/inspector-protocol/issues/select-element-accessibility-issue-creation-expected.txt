@@ -1,0 +1,86 @@
+Verifies that the <select> accessibility issue is created when the content model is not followed.
+Inspector issue: {
+    issue : {
+        code : SelectElementAccessibilityIssue
+        details : {
+            selectElementAccessibilityIssueDetails : {
+                hasDisallowedAttributes : false
+                nodeId : <number>
+                selectElementAccessibilityIssueReason : DisallowedSelectChild
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : SelectElementAccessibilityIssue
+        details : {
+            selectElementAccessibilityIssueDetails : {
+                hasDisallowedAttributes : false
+                nodeId : <number>
+                selectElementAccessibilityIssueReason : DisallowedSelectChild
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : SelectElementAccessibilityIssue
+        details : {
+            selectElementAccessibilityIssueDetails : {
+                hasDisallowedAttributes : false
+                nodeId : <number>
+                selectElementAccessibilityIssueReason : NonPhrasingContentOptionChild
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : SelectElementAccessibilityIssue
+        details : {
+            selectElementAccessibilityIssueDetails : {
+                hasDisallowedAttributes : true
+                nodeId : <number>
+                selectElementAccessibilityIssueReason : InteractiveContentOptionChild
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : SelectElementAccessibilityIssue
+        details : {
+            selectElementAccessibilityIssueDetails : {
+                hasDisallowedAttributes : false
+                nodeId : <number>
+                selectElementAccessibilityIssueReason : NonPhrasingContentOptionChild
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : SelectElementAccessibilityIssue
+        details : {
+            selectElementAccessibilityIssueDetails : {
+                hasDisallowedAttributes : true
+                nodeId : <number>
+                selectElementAccessibilityIssueReason : InteractiveContentLegendChild
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : SelectElementAccessibilityIssue
+        details : {
+            selectElementAccessibilityIssueDetails : {
+                hasDisallowedAttributes : false
+                nodeId : <number>
+                selectElementAccessibilityIssueReason : InteractiveContentLegendChild
+            }
+        }
+    }
+}
+

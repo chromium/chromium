@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SHARED_TAB_GROUP_DATA_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SHARED_TAB_GROUP_DATA_HELPER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
@@ -12,9 +13,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -30,7 +33,7 @@ MATCHER_P2(HasSpecificsSharedTab, title, url, "") {
 
 MATCHER_P3(HasSharedGroupMetadata, title, color, collaboration_id, "") {
   return base::UTF16ToUTF8(arg.title()) == title && arg.color() == color &&
-         arg.collaboration_id() == collaboration_id;
+         arg.collaboration_id() == CollaborationId(collaboration_id);
 }
 
 MATCHER_P2(HasTabMetadata, title, url, "") {
@@ -74,6 +77,10 @@ class SharedTabGroupsMatchChecker : public TabGroupSyncService::Observer,
 
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          TriggerSource source) override;
+
+  void OnTabGroupMigrated(const SavedTabGroup& shared_group,
+                          const base::Uuid& old_sync_id,
+                          TriggerSource source) override;
 
   void OnTabGroupUpdated(const SavedTabGroup& group,
                          TriggerSource source) override;

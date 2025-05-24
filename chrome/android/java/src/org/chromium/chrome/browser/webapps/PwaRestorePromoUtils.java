@@ -81,9 +81,7 @@ public class PwaRestorePromoUtils {
      * `notifyFirstRunPromoTriggered`) and launches when the flag is seen, which normally is the
      * next launch _after_ the first run experience launch.
      *
-     * @param activity The current {@link Activity} to use for this promo.
      * @param windowAndroid The current {@link WindowAndroid} to use for this promo.
-     * @param arrowResourceId The resource id for the Back arrow to use.
      * @return Whether the PWA Restore promo was shown.
      */
     public static boolean launchPromoIfNeeded(Profile profile, WindowAndroid windowAndroid) {

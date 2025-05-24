@@ -11,17 +11,11 @@
       var video = document.querySelector('video');
       var mediaType = 'video/webm; codecs="vorbis, vp8"';
 
-      var CLEAR_MEDIA_1 = 'bear-320x240.webm';
-      var CLEAR_MEDIA_2 = 'bear-640x360.webm';
-      var ENCRYPTED_MEDIA_1 = 'bear-320x240-av_enc-av.webm';
-      var ENCRYPTED_MEDIA_2 = 'bear-640x360-av_enc-av.webm';
-
-      var MEDIA_1_WIDTH = 320;
-      var MEDIA_1_HEIGHT = 240;
-
-      var MEDIA_2_WIDTH = 640;
-      var MEDIA_2_HEIGHT = 360;
-      var MEDIA_2_LENGTH = 2.75;
+      const CLEAR_MEDIA_1 = 'bear-320x240.webm';
+      const CLEAR_MEDIA_2 = 'bear-640x360.webm';
+      const ENCRYPTED_MEDIA_1 = 'bear-320x240-av_enc-av.webm';
+      const ENCRYPTED_MEDIA_2 = 'bear-640x360-av_enc-av.webm';
+      const MEDIA_2_LENGTH = 2.75;
 
       // The time in secs to append the second media source.
       var APPEND_TIME = 1;
@@ -32,7 +26,12 @@
       var TOTAL_DURATION = APPEND_TIME + MEDIA_2_LENGTH;
 
       var firstFile;
+      var firstWidth = 320;
+      var firstHeight = 240;
+
       var secondFile;
+      var secondWidth = 640;
+      var secondHeight = 360;
 
       function initTestConfig() {
         testConfig = new TestConfig();
@@ -45,6 +44,16 @@
             console.log('Config change type: clear to clear.');
             firstFile = CLEAR_MEDIA_1;
             secondFile = CLEAR_MEDIA_2;
+            if ('avFile1' in testConfig) {
+              mediaType = testConfig.avFormat;
+              firstFile = testConfig.avFile1;
+              secondFile = testConfig.avFile2;
+              [firstWidth, firstHeight] =
+                  testConfig.avResolution1.split('x').map(s => parseInt(s, 10));
+              [secondWidth, secondHeight] =
+                  testConfig.avResolution2.split('x').map(s => parseInt(s, 10));
+            }
+
             break;
           case CONFIG_CHANGE_TYPE.CLEAR_TO_ENCRYPTED:
             console.log('Config change type: clear to encrypted.');
@@ -93,8 +102,7 @@
       }
 
       function onTimeUpdate() {
-        // crbug.com/246308
-        //checkVideoProperties();
+        logVideoDimensions();
 
         // Seek to APPEND_TIME because after a seek a timeUpdate event is fired
         // before video width and height properties get updated.
@@ -118,24 +126,6 @@
           Utils.installTitleEventHandler(video, 'ended');
           // Seek to save test execution time and to test seek on second buffer.
           video.currentTime = APPEND_TIME + MEDIA_2_LENGTH * 0.9;
-        }
-      }
-
-      function checkVideoProperties() {
-        if (video.currentTime <= APPEND_TIME) {
-          if (video.videoWidth != MEDIA_1_WIDTH ||
-              video.videoHeight != MEDIA_1_HEIGHT) {
-            logVideoDimensions();
-            Utils.failTest('Unexpected dimensions for first video segment.');
-            return;
-          }
-        } else if (video.currentTime >= APPEND_TIME + DELTA) {
-          if (video.videoWidth != MEDIA_2_WIDTH ||
-              video.videoHeight != MEDIA_2_HEIGHT) {
-            logVideoDimensions();
-            Utils.failTest('Unexpected dimensions for second video segment.');
-            return;
-          }
         }
       }
 

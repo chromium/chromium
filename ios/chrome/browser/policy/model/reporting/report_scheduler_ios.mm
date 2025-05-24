@@ -16,6 +16,10 @@ PrefService* ReportSchedulerIOS::GetPrefService() {
   return GetApplicationContext()->GetLocalState();
 }
 
+void ReportSchedulerIOS::OnInitializationCompleted() {
+  // No-op.
+}
+
 void ReportSchedulerIOS::StartWatchingUpdatesIfNeeded(
     base::Time last_upload,
     base::TimeDelta upload_interval) {
@@ -28,6 +32,20 @@ void ReportSchedulerIOS::StopWatchingUpdates() {
 
 void ReportSchedulerIOS::OnBrowserVersionUploaded() {
   // Not used on iOS because there is no in-app auto-update.
+}
+
+bool ReportSchedulerIOS::AreSecurityReportsEnabled() {
+  // Not supported.
+  return false;
+}
+
+bool ReportSchedulerIOS::UseCookiesInUploads() {
+  // Not supported.
+  return false;
+}
+
+void ReportSchedulerIOS::OnSecuritySignalsUploaded() {
+  // No-op because signals reporting is not supported on Android.
 }
 
 policy::DMToken ReportSchedulerIOS::GetProfileDMToken() {

@@ -146,9 +146,14 @@ std::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     info.use_skia = ShouldEnableSkiaRenderer(contents);
     if (chrome_pdf::features::IsOopifPdfEnabled()) {
       net::HttpResponseHeaders* response_headers = stream->response_headers();
-      info.require_corp = response_headers &&
-                          response_headers->HasHeaderValue(
-                              "Cross-Origin-Embedder-Policy", "require-corp");
+      if (response_headers) {
+        std::optional<std::string> coep_header =
+            response_headers->GetNormalizedHeader(
+                "Cross-Origin-Embedder-Policy");
+        if (coep_header.has_value()) {
+          info.coep_header = coep_header.value();
+        }
+      }
     }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else if (stream_url.GetWithEmptyPath() ==
@@ -219,6 +224,32 @@ void ChromePdfStreamDelegate::OnPdfEmbedderSandboxed(
   // The stream should always be unclaimed, since the navigation hasn't
   // committed.
   pdf_viewer_stream_manager->DeleteUnclaimedStreamInfo(frame_tree_node_id);
+}
+
+bool ChromePdfStreamDelegate::ShouldAllowPdfExtensionFrameNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // If PdfOopif is enabled, or if this is an about:blank navigation, allow it.
+  if (chrome_pdf::features::IsOopifPdfEnabled() ||
+      navigation_handle->GetURL().IsAboutBlank()) {
+    return true;
+  }
+
+  // Verify this is a guest, otherwise allow the navigation to proceed.
+  auto* guest =
+      extensions::MimeHandlerViewGuest::FromNavigationHandle(navigation_handle);
+  if (!guest) {
+    return true;
+  }
+
+  // Since this is the PDF delegate, don't suppress navigations for other stream
+  // types (should they exist).
+  base::WeakPtr<extensions::StreamContainer> stream = guest->GetStreamWeakPtr();
+  if (!stream || stream->extension_id() != extension_misc::kPdfExtensionId) {
+    return true;
+  }
+
+  return url::IsSameOriginWith(stream->handler_url(),
+                               navigation_handle->GetURL());
 }
 
 bool ChromePdfStreamDelegate::ShouldAllowPdfFrameNavigation(

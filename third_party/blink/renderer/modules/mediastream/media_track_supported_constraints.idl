@@ -57,4 +57,5 @@ dictionary MediaTrackSupportedConstraints {
     // https://w3c.github.io/mediacapture-screen-share/#extensions-to-mediatracksupportedconstraints
     boolean displaySurface = true;
     boolean suppressLocalAudioPlayback = true;
+    [RuntimeEnabled=RestrictOwnAudio] boolean restrictOwnAudio = true;
 };

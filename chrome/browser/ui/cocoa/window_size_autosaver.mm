@@ -108,8 +108,9 @@ const int kMinWindowHeight = 17;
   } else {
     std::optional<int> x = windowPrefs.FindInt("x");
     std::optional<int> y = windowPrefs.FindInt("y");
-    if (!x.has_value() || !y.has_value())
+    if (!x.has_value() || !y.has_value()) {
       return;  // Nothing stored.
+    }
     // Turn the origin (lower-left) into an upper-left window point.
     NSPoint upperLeft =
         NSMakePoint(x.value(), y.value() + NSHeight([_window frame]));

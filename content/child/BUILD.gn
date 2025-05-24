@@ -41,6 +41,8 @@ target(link_target_type, "child") {
     "blink_platform_impl.h",
     "browser_exposed_child_interfaces.cc",
     "browser_exposed_child_interfaces.h",
+    "child_performance_coordinator.cc",
+    "child_performance_coordinator.h",
     "child_process.cc",
     "child_process.h",
     "child_process_synthetic_trial_syncer.cc",
@@ -62,6 +64,7 @@ target(link_target_type, "child") {
     "//gpu/ipc/client:client",
     "//ipc",
     "//services/service_manager/public/mojom:mojom_blink",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   deps = [
@@ -71,8 +74,10 @@ target(link_target_type, "child") {
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
     "//components/metrics",
+    "//components/performance_manager/public/mojom",
+    "//components/performance_manager/scenario_api",
     "//components/permissions:permissions_common",
-    "//components/tracing:startup_tracing",
+    "//components/tracing:tracing_config",
     "//components/variations",
     "//components/webcrypto",
     "//content/common",
@@ -132,6 +137,8 @@ target(link_target_type, "child") {
 
   if (is_win) {
     sources += [
+      "child_process_sandbox_support_impl_win.cc",
+      "child_process_sandbox_support_impl_win.h",
       "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.cc",
       "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h",
       "dwrite_font_proxy/dwrite_font_proxy_win.cc",

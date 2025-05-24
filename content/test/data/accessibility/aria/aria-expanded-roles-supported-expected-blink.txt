@@ -36,7 +36,7 @@ rootWebArea
 ++++++genericContainer
 ++++++link expanded
 ++++++list
-++++++++listItem
+++++++++listItem expanded
 ++++++listBox
 ++++++log
 ++++++main

@@ -35,7 +35,7 @@ class SessionStorageDataMap final
  public:
   class Listener {
    public:
-    virtual ~Listener() {}
+    virtual ~Listener() = default;
     virtual void OnDataMapCreation(const std::vector<uint8_t>& map_id,
                                    SessionStorageDataMap* map) = 0;
     virtual void OnDataMapDestruction(const std::vector<uint8_t>& map_id) = 0;

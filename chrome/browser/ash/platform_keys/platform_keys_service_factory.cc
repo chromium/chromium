@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/kcer/extra_instances.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -25,13 +24,17 @@
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/kcer/extra_instances.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_context.h"
 #include "net/cert/nss_cert_database.h"
+#include "net/ssl/client_cert_store_nss.h"
 
 namespace ash {
 namespace platform_keys {
@@ -80,7 +83,9 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
     if (ash::features::ShouldUseKcerClientCertStore()) {
       return std::make_unique<ClientCertStoreKcer>(
           nullptr,  // no additional provider
-          kcer::KcerFactoryAsh::GetKcer(profile));
+          kcer::KcerFactoryAsh::GetKcer(profile),
+          ProfileNetworkContextServiceFactory::GetForContext(profile)
+              ->GetClientCertIssuerSourceFactory());
     } else {
       const user_manager::User* user =
           ProfileHelper::Get()->GetUserByProfile(profile);
@@ -97,6 +102,18 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
  private:
   raw_ptr<content::BrowserContext> browser_context_;
 };
+
+void ClientCertIssuerSourceGetterForDevice(
+    net::ClientCertIssuerSourceGetterCallback callback) {
+  // TODO(https://crbug.com/40554868): remove dependency on NSS and
+  // NSSTempCertsCacheChromeOS and pass the device policy certs directly. (A
+  // bit tricky since accessing the DeviceNetworkConfigurationUpdaterAsh here
+  // to get the ONC certs causes a dependency cycle.)
+  net::ClientCertIssuerSourceCollection sources;
+  sources.push_back(
+      std::make_unique<net::ClientCertStoreNSS::IssuerSourceNSS>());
+  std::move(callback).Run(std::move(sources));
+}
 
 class DelegateForDevice : public PlatformKeysServiceImplDelegate,
                           public SystemTokenCertDbStorage::Observer {
@@ -115,7 +132,8 @@ class DelegateForDevice : public PlatformKeysServiceImplDelegate,
     if (ash::features::ShouldUseKcerClientCertStore()) {
       return std::make_unique<ClientCertStoreKcer>(
           nullptr,  // no additional provider
-          kcer::ExtraInstances::GetDeviceKcer());
+          kcer::ExtraInstances::GetDeviceKcer(),
+          base::BindOnce(&ClientCertIssuerSourceGetterForDevice));
     } else {
       return std::make_unique<ClientCertStoreAsh>(
           nullptr,  // no additional provider

@@ -36,6 +36,10 @@ const CSSPropertyID kCSSComputableProperties[] = {
 {{computable_properties}}
 };
 
+inline constexpr CSSPropertyID kCSSIncludesCurrentColorProperties[] = {
+  {{includes_currentcolor_properties}}
+};
+
 // The lowest CSSPropertyID excluding kInvalid and kVariable.
 const int kIntFirstCSSProperty = {{first_property_id}};
 const CSSPropertyID kFirstCSSProperty =
@@ -72,7 +76,7 @@ static_assert((static_cast<size_t>(1) << kCSSPropertyIDBitLength) >
 static_assert(CSSPropertyID::kColorScheme == kFirstHighPriorityCSSProperty);
 static_assert(CSSPropertyID::kZoom == kLastHighPriorityCSSProperty);
 static_assert((static_cast<int>(kLastHighPriorityCSSProperty) -
-               static_cast<int>(kFirstHighPriorityCSSProperty)) == 42,
+               static_cast<int>(kFirstHighPriorityCSSProperty)) == 41,
               "There should a low number of high-priority properties");
 
 inline int GetCSSPropertyIDIndex(CSSPropertyID id) {

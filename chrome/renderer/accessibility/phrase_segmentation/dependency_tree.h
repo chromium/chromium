@@ -54,7 +54,7 @@ class DependencyTree {
   // dependency_heads vector should be identical to the number of tokens in the
   // TokenizedSentence, and in the same order.)
   DependencyTree(const TokenizedSentence& sentence,
-                 const std::vector<int> dependency_heads);
+                 const std::vector<int>& dependency_heads);
 
   ~DependencyTree();
 

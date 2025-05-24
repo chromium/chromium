@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/request/auth_request.h"
 #include "components/account_id/account_id.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -92,7 +93,8 @@ bool ActiveSessionFingerprintClientImpl::IsFingerprintAvailable(
     case AuthRequest::Reason::kSettings:
       return false;
     case AuthRequest::Reason::kPasswordManager: {
-      if (ash::features::IsBiometricsInPasswordManagerEnabled()) {
+      if (pref_service->GetBoolean(
+              password_manager::prefs::kBiometricAuthenticationBeforeFilling)) {
         const base::Value::List& factors =
             pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
         if (base::Contains(factors, base::Value(kFactorsOptionAll)) ||

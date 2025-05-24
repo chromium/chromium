@@ -7,14 +7,15 @@ package org.chromium.chrome.browser.autofill.settings;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
-
 /** Dialog shown to user to confirm deleting a saved payment method. */
+@NullMarked
 public class AutofillDeletePaymentMethodConfirmationDialog {
 
     private final ModalDialogManager mModalDialogManager;

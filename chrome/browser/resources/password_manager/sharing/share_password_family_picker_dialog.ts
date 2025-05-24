@@ -67,24 +67,25 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
     };
   }
 
-  dialogTitle: string;
-  members: chrome.passwordsPrivate.RecipientInfo[];
-  selectedRecipients: chrome.passwordsPrivate.RecipientInfo[];
-  private eligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
-  private ineligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
+  declare dialogTitle: string;
+  declare members: chrome.passwordsPrivate.RecipientInfo[];
+  declare selectedRecipients: chrome.passwordsPrivate.RecipientInfo[];
+  declare private eligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
+  declare private ineligibleRecipients_:
+      chrome.passwordsPrivate.RecipientInfo[];
 
-    override ready() {
-      super.ready();
+  override ready() {
+    super.ready();
 
-      recordPasswordSharingInteraction(
-          PasswordSharingActions.FAMILY_PICKER_OPENED);
+    recordPasswordSharingInteraction(
+        PasswordSharingActions.FAMILY_PICKER_OPENED);
 
-      // Pre-select the member if they are eligible for sharing and there are no
-      // other members in the group.
-      if (this.members.length === 1 && this.computeEligible_().length === 1) {
-        this.selectedRecipients = this.members;
-      }
+    // Pre-select the member if they are eligible for sharing and there are no
+    // other members in the group.
+    if (this.members.length === 1 && this.computeEligible_().length === 1) {
+      this.selectedRecipients = this.members;
     }
+  }
 
   private computeEligible_(): chrome.passwordsPrivate.RecipientInfo[] {
     const eligibleMembers = this.members.filter(member => member.isEligible);

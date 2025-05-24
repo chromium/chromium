@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/scheduler/dom_task_controller.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_task_controller_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_task_priority.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
@@ -18,17 +19,17 @@ DOMTaskController* DOMTaskController::Create(ExecutionContext* context,
 }
 
 DOMTaskController::DOMTaskController(ExecutionContext* context,
-                                     const AtomicString& priority)
+                                     const V8TaskPriority& priority)
     : AbortController(MakeGarbageCollected<DOMTaskSignal>(
           context,
-          priority,
+          priority.AsEnum(),
           AbortSignal::SignalType::kController)) {
   DCHECK(!context->IsContextDestroyed());
 }
 
-void DOMTaskController::setPriority(const AtomicString& priority,
+void DOMTaskController::setPriority(const V8TaskPriority& priority,
                                     ExceptionState& exception_state) {
-  static_cast<DOMTaskSignal*>(signal())->SignalPriorityChange(priority,
+  static_cast<DOMTaskSignal*>(signal())->SignalPriorityChange(priority.AsEnum(),
                                                               exception_state);
 }
 

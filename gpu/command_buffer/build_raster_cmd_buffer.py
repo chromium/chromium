@@ -350,6 +350,12 @@ _FUNCTION_INFO = {
     'unit_test': False,
     'data_transfer_methods': ['immediate', 'shm'],
   },
+  'DeletePaintCacheEffectsINTERNAL': {
+    'type': 'DELn',
+    'internal': True,
+    'unit_test': False,
+    'data_transfer_methods': ['immediate', 'shm'],
+  },
   'ClearPaintCacheINTERNAL': {
     'decoder_func': 'DoClearPaintCacheINTERNAL',
     'internal': True,

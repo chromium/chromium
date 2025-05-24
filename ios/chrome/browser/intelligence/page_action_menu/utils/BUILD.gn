@@ -1,0 +1,12 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  sources = [
+    "ai_hub_constants.h",
+    "ai_hub_constants.mm",
+  ]
+  deps = [ "//ui/base" ]
+  frameworks = [ "UIKit.framework" ]
+}

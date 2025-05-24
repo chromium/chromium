@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/url_matcher/url_util.h"
 
 #include <memory>
@@ -51,9 +56,6 @@ const char kGoogleWebCacheQueryPattern[] =
 
 const char kGoogleTranslateSubdomain[] = "translate.";
 const char kAlternateGoogleTranslateHost[] = "translate.googleusercontent.com";
-
-// Maximum filters allowed. Filters over this index are ignored.
-const size_t kMaxFiltersAllowed = 1000;
 
 // Returns a full URL using either "http" or "https" as the scheme.
 GURL BuildURL(bool is_https, const std::string& host_and_path) {
@@ -131,17 +133,9 @@ class EmbeddedURLExtractor {
     }
 
     // Check for "www.google.TLD/amp/" URLs.
-    if (google_util::IsGoogleDomainUrl(
-            url, google_util::DISALLOW_SUBDOMAIN,
-            google_util::DISALLOW_NON_STANDARD_PORTS)) {
-      std::string s;
-      std::string embedded;
-      if (re2::RE2::FullMatch(url.path(), google_amp_viewer_path_regex_, &s,
-                              &embedded)) {
-        // The embedded URL may be percent-encoded. Undo that.
-        embedded = base::UnescapeBinaryURLComponent(embedded);
-        return BuildURL(!s.empty(), embedded);
-      }
+    if (GURL google_amp_embedded_url = GetGoogleAmpViewerEmbeddedURL(url);
+        !google_amp_embedded_url.is_empty()) {
+      return google_amp_embedded_url;
     }
 
     // Check for Google web cache URLs
@@ -186,6 +180,24 @@ class EmbeddedURLExtractor {
         // The embedded URL may or may not include a scheme. Fix it if
         // necessary.
         return url_formatter::FixupURL(embedded, /*desired_tld=*/std::string());
+      }
+    }
+
+    return GURL();
+  }
+
+  GURL GetGoogleAmpViewerEmbeddedURL(const GURL& url) const {
+    // Check for "www.google.TLD/amp/" URLs.
+    if (google_util::IsGoogleDomainUrl(
+            url, google_util::DISALLOW_SUBDOMAIN,
+            google_util::DISALLOW_NON_STANDARD_PORTS)) {
+      std::string s;
+      std::string embedded;
+      if (re2::RE2::FullMatch(url.path(), google_amp_viewer_path_regex_, &s,
+                              &embedded)) {
+        // The embedded URL may be percent-encoded. Undo that.
+        embedded = base::UnescapeBinaryURLComponent(embedded);
+        return BuildURL(!s.empty(), embedded);
       }
     }
 
@@ -244,8 +256,9 @@ GURL GetEmbeddedURL(const GURL& url) {
   return EmbeddedURLExtractor::GetInstance()->GetEmbeddedURL(url);
 }
 
-size_t GetMaxFiltersAllowed() {
-  return kMaxFiltersAllowed;
+GURL GetGoogleAmpViewerEmbeddedURL(const GURL& url) {
+  return EmbeddedURLExtractor::GetInstance()->GetGoogleAmpViewerEmbeddedURL(
+      url);
 }
 
 FilterComponents::FilterComponents() = default;
@@ -419,18 +432,19 @@ bool FilterToComponents(const std::string& filter,
   return true;
 }
 
-void AddFilters(URLMatcher* matcher,
-                bool allow,
-                base::MatcherStringPattern::ID* id,
-                const base::Value::List& patterns,
-                std::map<base::MatcherStringPattern::ID,
-                         url_matcher::util::FilterComponents>* filters) {
+void AddFiltersWithLimit(
+    URLMatcher* matcher,
+    bool allow,
+    base::MatcherStringPattern::ID* id,
+    const base::Value::List& patterns,
+    std::map<base::MatcherStringPattern::ID, FilterComponents>* filters,
+    size_t max_filters) {
   URLMatcherConditionSet::Vector all_conditions;
-  size_t size = std::min(kMaxFiltersAllowed, patterns.size());
+  size_t limit = std::min(max_filters, patterns.size());
   scoped_refptr<URLMatcherConditionSet> condition_set;
-  for (size_t i = 0; i < size; ++i) {
+  for (size_t i = 0; i < limit; ++i) {
     DCHECK(patterns[i].is_string());
-    const std::string pattern = patterns[i].GetString();
+    const std::string& pattern = patterns[i].GetString();
     FilterComponents components;
     components.allow = allow;
     if (!FilterToComponents(pattern, &components.scheme, &components.host,
@@ -453,16 +467,17 @@ void AddFilters(URLMatcher* matcher,
   matcher->AddConditionSets(all_conditions);
 }
 
-void AddFilters(URLMatcher* matcher,
-                bool allow,
-                base::MatcherStringPattern::ID* id,
-                const std::vector<std::string>& patterns,
-                std::map<base::MatcherStringPattern::ID,
-                         url_matcher::util::FilterComponents>* filters) {
+void AddFiltersWithLimit(
+    URLMatcher* matcher,
+    bool allow,
+    base::MatcherStringPattern::ID* id,
+    const std::vector<std::string>& patterns,
+    std::map<base::MatcherStringPattern::ID, FilterComponents>* filters,
+    size_t max_filters) {
   URLMatcherConditionSet::Vector all_conditions;
-  size_t size = std::min(kMaxFiltersAllowed, patterns.size());
+  size_t limit = std::min(max_filters, patterns.size());
   scoped_refptr<URLMatcherConditionSet> condition_set;
-  for (size_t i = 0; i < size; ++i) {
+  for (size_t i = 0; i < limit; ++i) {
     FilterComponents components;
     components.allow = allow;
     if (!FilterToComponents(patterns[i], &components.scheme, &components.host,
@@ -485,16 +500,20 @@ void AddFilters(URLMatcher* matcher,
   matcher->AddConditionSets(all_conditions);
 }
 
-void AddAllowFilters(url_matcher::URLMatcher* matcher,
-                     const base::Value::List& patterns) {
+void AddAllowFiltersWithLimit(url_matcher::URLMatcher* matcher,
+                              const base::Value::List& patterns,
+                              size_t max_filters) {
   base::MatcherStringPattern::ID id(0);
-  AddFilters(matcher, true, &id, patterns);
+  AddFiltersWithLimit(matcher, true, &id, patterns, /*filters= */ nullptr,
+                      max_filters);
 }
 
-void AddAllowFilters(url_matcher::URLMatcher* matcher,
-                     const std::vector<std::string>& patterns) {
+void AddAllowFiltersWithLimit(url_matcher::URLMatcher* matcher,
+                              const std::vector<std::string>& patterns,
+                              size_t max_filters) {
   base::MatcherStringPattern::ID id(0);
-  AddFilters(matcher, true, &id, patterns);
+  AddFiltersWithLimit(matcher, true, &id, patterns, /*filters= */ nullptr,
+                      max_filters);
 }
 
 }  // namespace util

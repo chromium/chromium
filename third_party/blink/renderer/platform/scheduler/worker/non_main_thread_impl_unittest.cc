@@ -82,6 +82,13 @@ class NonMainThreadImplTest : public testing::Test {
         ThreadCreationParams(ThreadType::kTestThread));
   }
 
+#if DCHECK_IS_ON()
+  void TearDown() override {
+    thread_.reset();
+    WTF::SetIsBeforeThreadCreatedForTest();
+  }
+#endif  // DCHECK_IS_ON()
+
   void RunOnWorkerThread(const base::Location& from_here,
                          base::OnceClosure task) {
     base::WaitableEvent completion(

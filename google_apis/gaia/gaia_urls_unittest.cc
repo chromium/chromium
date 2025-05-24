@@ -13,9 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
+#include "google_apis/gaia/gaia_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -72,6 +73,8 @@ TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {
             "https://classroom.googleapis.com/");
   EXPECT_EQ(gaia_urls()->tasks_api_origin_url(),
             "https://tasks.googleapis.com/");
+  EXPECT_EQ(gaia_urls()->people_api_origin_url(),
+            "https://people.googleapis.com/");
   EXPECT_EQ(gaia_urls()->embedded_setup_chromeos_url().spec(),
             "https://accounts.google.com/embedded/setup/v2/chromeos");
   EXPECT_EQ(gaia_urls()->embedded_setup_chromeos_kid_signup_url().spec(),
@@ -258,6 +261,8 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllUrls) {
             "https://classroom.will-be-overridden.com/");
   EXPECT_EQ(gaia_urls()->tasks_api_origin_url(),
             "https://tasks.will-be-overridden.com/");
+  EXPECT_EQ(gaia_urls()->people_api_origin_url(),
+            "https://people.will-be-overridden.com/");
   EXPECT_EQ(gaia_urls()->embedded_setup_chromeos_url().spec(),
             "https://accounts.example.com/embedded/setup/v2/chromeos");
   EXPECT_EQ(gaia_urls()->embedded_setup_chromeos_kid_signup_url().spec(),
@@ -325,6 +330,8 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
             "https://classroom.exampleapis.com/");
   EXPECT_EQ(gaia_urls()->tasks_api_origin_url(),
             "https://tasks.exampleapis.com/");
+  EXPECT_EQ(gaia_urls()->people_api_origin_url(),
+            "https://people.exampleapis.com/");
   EXPECT_EQ(gaia_urls()->embedded_setup_chromeos_url().spec(),
             "https://accounts.example.com/embedded/setup/v2/chromeos");
   EXPECT_EQ(gaia_urls()->embedded_setup_windows_url().spec(),
@@ -375,6 +382,20 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
             "https://lso.example.com/o/oauth2/revoke");
   EXPECT_EQ(gaia_urls()->reauth_api_url().spec(),
             "https://www.exampleapis.com/reauth/v1beta/users/");
+}
+
+TEST_F(GaiaUrlsTest, InitializeDefault_ListAccountsFormat) {
+  base::test::ScopedFeatureList feature_list;
+
+  // Default behaviour - kListAccountsUsesBinaryFormat disabled.
+  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("fake_source").spec(),
+            "https://accounts.google.com/"
+            "ListAccounts?gpsia=1&source=fake_source&json=standard");
+  feature_list.InitAndEnableFeature(
+      gaia::features::kListAccountsUsesBinaryFormat);
+  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("fake_source").spec(),
+            "https://accounts.google.com/"
+            "ListAccounts?gpsia=1&source=fake_source&laf=b64bin&json=standard");
 }
 
 TEST_F(GaiaUrlsTest, InitializeFromConfigContents) {

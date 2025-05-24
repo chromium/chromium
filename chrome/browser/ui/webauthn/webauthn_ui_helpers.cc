@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 
+#include <cstddef>
+#include <string>
+
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/gfx/font_list.h"

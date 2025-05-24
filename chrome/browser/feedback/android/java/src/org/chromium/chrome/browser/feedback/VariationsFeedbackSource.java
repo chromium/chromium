@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.feedback;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.variations.VariationsAssociatedData;
 
 import java.util.Map;
 
 /** Grabs feedback about the current variations state. */
+@NullMarked
 class VariationsFeedbackSource implements FeedbackSource {
     private final boolean mIsOffTheRecord;
 
@@ -18,7 +21,7 @@ class VariationsFeedbackSource implements FeedbackSource {
     }
 
     @Override
-    public Map<String, String> getFeedback() {
+    public @Nullable Map<String, String> getFeedback() {
         if (mIsOffTheRecord) return null;
         return VariationsAssociatedData.getFeedbackMap();
     }

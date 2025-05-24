@@ -205,7 +205,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
         // DownloadNotificationService afterward.
         if (VERSION.SDK_INT >= VERSION_CODES.O && notification == null && !mStartForegroundCalled) {
             assert update.mDownloadStatus == DownloadStatus.CANCELLED;
-            notification = createEmptyNotification(notificationId, update.mContext);
+            notification = createEmptyNotification(notificationId);
         }
 
         if (mBoundService != null
@@ -235,7 +235,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
     }
 
     // Creates an empty notification to feed to startForeground().
-    private Notification createEmptyNotification(int notificationId, Context context) {
+    private Notification createEmptyNotification(int notificationId) {
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                         ChromeChannelDefinitions.ChannelId.DOWNLOADS,

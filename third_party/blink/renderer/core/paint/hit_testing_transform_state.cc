@@ -47,7 +47,9 @@ void HitTestingTransformState::Flatten() {
   if (accumulated_transform_.GetInverse(&inverse_transform)) {
     last_planar_point_ = inverse_transform.ProjectPoint(last_planar_point_);
     last_planar_quad_ = inverse_transform.ProjectQuad(last_planar_quad_);
-    last_planar_area_ = inverse_transform.ProjectQuad(last_planar_area_);
+    if (last_planar_area_) {
+      *last_planar_area_ = inverse_transform.ProjectQuad(*last_planar_area_);
+    }
   }
 
   accumulated_transform_.MakeIdentity();
@@ -68,7 +70,8 @@ PhysicalRect HitTestingTransformState::BoundsOfMappedQuad() const {
 }
 
 PhysicalRect HitTestingTransformState::BoundsOfMappedArea() const {
-  return BoundsOfMappedQuadInternal(last_planar_area_);
+  return last_planar_area_ ? BoundsOfMappedQuadInternal(*last_planar_area_)
+                           : PhysicalRect(InfiniteIntRect());
 }
 
 PhysicalRect HitTestingTransformState::BoundsOfMappedQuadInternal(

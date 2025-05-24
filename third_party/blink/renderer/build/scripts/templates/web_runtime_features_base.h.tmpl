@@ -15,7 +15,11 @@ class BLINK_PLATFORM_EXPORT WebRuntimeFeaturesBase {
 {% for feature in features %}
 {% if feature.public %}
   static void Enable{{feature.name}}(bool);
+  {% if feature.in_origin_trial %}
+  static bool Is{{feature.name}}EnabledByRuntimeFlag();
+  {% else %}
   static bool Is{{feature.name}}Enabled();
+  {% endif %}
 {% endif %}
 {% endfor %}
 

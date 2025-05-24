@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_controller.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -22,13 +23,17 @@ TestMenuDelegate::TestMenuDelegate() = default;
 
 TestMenuDelegate::~TestMenuDelegate() = default;
 
+void TestMenuDelegate::DisableContextMenuForCommandId(int command_id) {
+  commands_without_context_menus_.insert(command_id);
+}
+
 bool TestMenuDelegate::ShowContextMenu(MenuItemView* source,
                                        int id,
                                        const gfx::Point& p,
-                                       ui::MenuSourceType source_type) {
+                                       ui::mojom::MenuSourceType source_type) {
   show_context_menu_count_++;
   show_context_menu_source_ = source;
-  return true;
+  return !commands_without_context_menus_.contains(id);
 }
 
 void TestMenuDelegate::ExecuteCommand(int id) {
@@ -65,6 +70,10 @@ bool TestMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
   return should_execute_command_without_closing_menu_;
 }
 
+bool TestMenuDelegate::ShouldCloseOnDragComplete() {
+  return should_close_on_drag_complete_;
+}
+
 void TestMenuDelegate::PerformDrop(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
@@ -81,14 +90,16 @@ MenuControllerTestApi::MenuControllerTestApi()
 MenuControllerTestApi::~MenuControllerTestApi() = default;
 
 void MenuControllerTestApi::ClearState() {
-  if (!controller_)
+  if (!controller_) {
     return;
+  }
   controller_->ClearStateForTest();
 }
 
 void MenuControllerTestApi::SetShowing(bool showing) {
-  if (!controller_)
+  if (!controller_) {
     return;
+  }
   controller_->showing_ = showing;
 }
 
@@ -112,8 +123,9 @@ ReleaseRefTestViewsDelegate::ReleaseRefTestViewsDelegate() = default;
 ReleaseRefTestViewsDelegate::~ReleaseRefTestViewsDelegate() = default;
 
 void ReleaseRefTestViewsDelegate::ReleaseRef() {
-  if (!release_ref_callback_.is_null())
+  if (!release_ref_callback_.is_null()) {
     release_ref_callback_.Run();
+  }
 }
 
 }  // namespace views::test

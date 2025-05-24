@@ -112,39 +112,32 @@ bool IsIppColorModelColorful(mojom::ColorModel color_model) {
 
 base::expected<std::vector<uint8_t>, mojom::ResultCode>
 CaptureSystemPrintSettings(PMPrintSettings& print_settings) {
-  CFDataRef data_ref = nullptr;
+  base::apple::ScopedCFTypeRef<CFDataRef> data_ref;
   OSStatus status = PMPrintSettingsCreateDataRepresentation(
-      print_settings, &data_ref, kPMDataFormatXMLDefault);
+      print_settings, data_ref.InitializeInto(), kPMDataFormatXMLDefault);
   if (status != noErr) {
     OSSTATUS_LOG(ERROR, status)
         << "Failed to create data representation of print settings";
     return base::unexpected(mojom::ResultCode::kFailed);
   }
 
-  base::apple::ScopedCFTypeRef<CFDataRef> scoped_data_ref(data_ref);
-  uint32_t data_size = CFDataGetLength(data_ref);
-  std::vector<uint8_t> capture_data(data_size);
-  CFDataGetBytes(data_ref, CFRangeMake(0, data_size),
-                 static_cast<UInt8*>(&capture_data.front()));
-  return capture_data;
+  auto data_span = base::apple::CFDataToSpan(data_ref.get());
+  return std::vector<uint8_t>(data_span.begin(), data_span.end());
 }
 
 base::expected<std::vector<uint8_t>, mojom::ResultCode> CaptureSystemPageFormat(
     PMPageFormat& page_format) {
-  CFDataRef data_ref = nullptr;
+  base::apple::ScopedCFTypeRef<CFDataRef> data_ref;
   OSStatus status = PMPageFormatCreateDataRepresentation(
-      page_format, &data_ref, kPMDataFormatXMLDefault);
+      page_format, data_ref.InitializeInto(), kPMDataFormatXMLDefault);
   if (status != noErr) {
     OSSTATUS_LOG(ERROR, status)
         << "Failed to create data representation of page format";
     return base::unexpected(mojom::ResultCode::kFailed);
   }
 
-  uint32_t data_size = CFDataGetLength(data_ref);
-  std::vector<uint8_t> capture_data(data_size);
-  CFDataGetBytes(data_ref, CFRangeMake(0, data_size),
-                 static_cast<UInt8*>(&capture_data.front()));
-  return capture_data;
+  auto data_span = base::apple::CFDataToSpan(data_ref.get());
+  return std::vector<uint8_t>(data_span.begin(), data_span.end());
 }
 
 base::expected<base::apple::ScopedCFTypeRef<CFStringRef>, mojom::ResultCode>
@@ -402,13 +395,15 @@ mojom::ResultCode ApplySystemPrintDialogData(
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
-    ProcessBehavior process_behavior) {
-  return std::make_unique<PrintingContextMac>(delegate, process_behavior);
+    OutOfProcessBehavior out_of_process_behavior) {
+  return std::make_unique<PrintingContextMac>(delegate,
+                                              out_of_process_behavior);
 }
 
-PrintingContextMac::PrintingContextMac(Delegate* delegate,
-                                       ProcessBehavior process_behavior)
-    : PrintingContext(delegate, process_behavior),
+PrintingContextMac::PrintingContextMac(
+    Delegate* delegate,
+    OutOfProcessBehavior out_of_process_behavior)
+    : PrintingContext(delegate, out_of_process_behavior),
       print_info_([NSPrintInfo.sharedPrintInfo copy]) {}
 
 PrintingContextMac::~PrintingContextMac() {
@@ -464,7 +459,8 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
         InitPrintSettingsFromPrintInfo();
         mojom::ResultCode result = mojom::ResultCode::kSuccess;
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-        if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
+        if (out_of_process_behavior() ==
+            OutOfProcessBehavior::kEnabledSkipSystemCalls) {
           // This is running in the browser process, where system calls are
           // normally not allowed except for this system dialog exception.
           // Capture the setting here to be transmitted to a PrintBackend
@@ -808,13 +804,15 @@ mojom::ResultCode PrintingContextMac::NewDocument(
   in_print_job_ = true;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
+  if (out_of_process_behavior() ==
+      OutOfProcessBehavior::kEnabledSkipSystemCalls) {
     return mojom::ResultCode::kSuccess;
   }
 #endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls &&
+  if (out_of_process_behavior() ==
+          OutOfProcessBehavior::kEnabledPerformSystemCalls &&
       !settings_->system_print_dialog_data().empty()) {
     // Settings which the browser process captured from the system dialog now
     // need to be applied to the printing context here which is running in a

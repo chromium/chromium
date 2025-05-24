@@ -52,7 +52,7 @@ class GCMMessageCryptographer {
   // Interface that different versions of the encryption scheme must implement.
   class EncryptionScheme {
    public:
-    virtual ~EncryptionScheme() {}
+    virtual ~EncryptionScheme() = default;
 
     // Type of encoding to produce in GenerateInfoForContentEncoding().
     enum class EncodingType { CONTENT_ENCRYPTION_KEY, NONCE };

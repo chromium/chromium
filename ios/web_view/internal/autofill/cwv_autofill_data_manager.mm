@@ -2,29 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
-#include "base/functional/bind.h"
+#import "base/functional/bind.h"
 #import "base/location.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/address_data_manager.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store/password_store_change.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
 #import "ios/web_view/public/cwv_credential_provider_extension_utils.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 // Typedefs of |completionHandler| in |fetchProfilesWithCompletionHandler:|,
 // |fetchCreditCardsWithCompletionHandler:|, and
@@ -132,8 +133,7 @@ class WebViewPasswordStoreObserver
           [removed addObject:password];
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
     [data_manager_ handlePasswordStoreLoginsAdded:added
@@ -234,7 +234,8 @@ class WebViewPasswordStoreObserver
 }
 
 - (void)deleteProfile:(CWVAutofillProfile*)profile {
-  _personalDataManager->RemoveByGUID(profile.internalProfile->guid());
+  _personalDataManager->address_data_manager().RemoveProfile(
+      profile.internalProfile->guid());
 }
 
 - (void)fetchCreditCardsWithCompletionHandler:
@@ -268,9 +269,11 @@ class WebViewPasswordStoreObserver
 
 - (void)updatePassword:(CWVPassword*)password
            newUsername:(nullable NSString*)newUsername
-           newPassword:(nullable NSString*)newPassword {
+           newPassword:(nullable NSString*)newPassword
+             timestamp:(NSDate*)timestamp {
   password_manager::PasswordForm* passwordForm =
       [password internalPasswordForm];
+  passwordForm->date_password_modified = base::Time::FromNSDate(timestamp);
 
   // Only change the password if it actually changed and not empty.
   if (newPassword && newPassword.length > 0 &&
@@ -298,7 +301,8 @@ class WebViewPasswordStoreObserver
 
 - (void)addNewPasswordForUsername:(NSString*)username
                          password:(NSString*)password
-                             site:(NSString*)site {
+                             site:(NSString*)site
+                        timestamp:(NSDate*)timestamp {
   password_manager::PasswordForm form;
 
   DCHECK_GT(username.length, 0ul);
@@ -310,13 +314,15 @@ class WebViewPasswordStoreObserver
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = base::SysNSStringToUTF16(username);
   form.password_value = base::SysNSStringToUTF16(password);
+  form.date_created = base::Time::FromNSDate(timestamp);
 
   _passwordStore->AddLogin(form);
 }
 
 - (void)addNewPasswordForUsername:(NSString*)username
                 serviceIdentifier:(NSString*)serviceIdentifier
-               keychainIdentifier:(NSString*)keychainIdentifier {
+               keychainIdentifier:(NSString*)keychainIdentifier
+                        timestamp:(NSDate*)timestamp {
   password_manager::PasswordForm form;
 
   GURL url(base::SysNSStringToUTF8(serviceIdentifier));
@@ -326,6 +332,7 @@ class WebViewPasswordStoreObserver
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = base::SysNSStringToUTF16(username);
   form.keychain_identifier = base::SysNSStringToUTF8(keychainIdentifier);
+  form.date_created = base::Time::FromNSDate(timestamp);
 
   _passwordStore->AddLogin(form);
 }
@@ -390,7 +397,7 @@ class WebViewPasswordStoreObserver
 
 - (NSArray<CWVCreditCard*>*)creditCards {
   NSMutableArray* creditCards = [NSMutableArray array];
-  for (autofill::CreditCard* internalCard :
+  for (const autofill::CreditCard* internalCard :
        _personalDataManager->payments_data_manager().GetCreditCards()) {
     CWVCreditCard* creditCard =
         [[CWVCreditCard alloc] initWithCreditCard:*internalCard];

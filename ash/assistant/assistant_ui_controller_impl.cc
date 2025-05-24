@@ -24,6 +24,7 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -102,6 +103,11 @@ void AssistantUiControllerImpl::SetKeyboardTraversalMode(
 }
 
 void AssistantUiControllerImpl::ShowUi(AssistantEntryPoint entry_point) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    assistant::AssistantBrowserDelegate::Get()->OpenNewEntryPoint();
+    return;
+  }
+
   // Skip if the opt-in window is active.
   auto* assistant_setup = AssistantSetup::GetInstance();
   if (assistant_setup && assistant_setup->BounceOptInWindowIfActive())

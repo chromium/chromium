@@ -5,7 +5,7 @@
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -19,7 +19,7 @@ type AnchorAlignmentKey = keyof typeof AnchorAlignment;
 export interface CrActionMenuDemoElement {
   $: {
     menu: CrActionMenuElement,
-    minMaxContainer: HTMLDivElement,
+    minMaxContainer: HTMLElement,
     anchorAlignmentDemo: HTMLButtonElement,
   };
 }
@@ -42,19 +42,18 @@ export class CrActionMenuDemoElement extends CrLitElement {
       alignmentOptions_: {type: Array},
       customAlignmentX_: {type: String},
       customAlignmentY_: {type: String},
-      statusText_: {type: String},
     };
   }
 
-  protected alignmentOptions_: AnchorAlignmentKey[] = [
+  protected accessor alignmentOptions_: AnchorAlignmentKey[] = [
     'BEFORE_START',
     'AFTER_START',
     'CENTER',
     'BEFORE_END',
     'AFTER_END',
   ];
-  protected customAlignmentX_: AnchorAlignmentKey = 'CENTER';
-  protected customAlignmentY_: AnchorAlignmentKey = 'CENTER';
+  protected accessor customAlignmentX_: AnchorAlignmentKey = 'CENTER';
+  protected accessor customAlignmentY_: AnchorAlignmentKey = 'CENTER';
 
   protected onShowAnchoredMenuClick_(event: MouseEvent) {
     this.$.menu.showAt(event.target as HTMLElement);

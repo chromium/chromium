@@ -10,16 +10,12 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
 
-namespace gfx {
-class Point;
-}
-
 namespace views {
 class View;
 }
 
-// GlowHoverController is responsible for drawing a hover effect as is used by
-// the tabstrip. Typical usage:
+// GlowHoverController is responsible for drawing a hover effect and is used by
+// the TabStrip. Typical usage:
 //   OnMouseEntered() -> invoke Show().
 //   OnMouseMoved()   -> invoke SetLocation().
 //   OnMouseExited()  -> invoke Hide().
@@ -36,14 +32,8 @@ class GlowHoverController : public views::AnimationDelegateViews {
   // Sets the AnimationContainer used by the animation.
   void SetAnimationContainer(gfx::AnimationContainer* container);
 
-  // Sets the location of the hover, relative to the View passed to the
-  // constructor.
-  void SetLocation(const gfx::Point& location);
-
   // Set opacity scale to use when Show is called with SUBTLE.
   void SetSubtleOpacityScale(double opacity_scale);
-
-  const gfx::Point& location() const { return location_; }
 
   // Initiates showing the hover.
   void Show(TabStyle::ShowHoverStyle style);
@@ -57,7 +47,7 @@ class GlowHoverController : public views::AnimationDelegateViews {
   SkAlpha GetAlpha() const;
 
   // Returns true if there is something to be drawn. Use this instead of
-  // invoking Draw() if creating |mask_image| is expensive.
+  // invoking Draw() if creating `mask_image` is expensive.
   bool ShouldDraw() const;
 
   // views::AnimationDelegateViews overrides:
@@ -71,8 +61,6 @@ class GlowHoverController : public views::AnimationDelegateViews {
   // Opacity of the glow ramps up over time.
   gfx::SlideAnimation animation_;
 
-  // Location of the glow, relative to view.
-  gfx::Point location_;
   double opacity_scale_;
   double subtle_opacity_scale_;
 };

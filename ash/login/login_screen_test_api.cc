@@ -12,8 +12,8 @@
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
-#include "ash/login/ui/local_authentication_request_view.h"
-#include "ash/login/ui/local_authentication_request_widget.h"
+#include "ash/login/ui/local_authentication_request_controller_impl.h"
+#include "ash/login/ui/local_authentication_test_api.h"
 #include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_auth_user_view.h"
@@ -25,6 +25,7 @@
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/pin_request_view.h"
 #include "ash/login/ui/pin_request_widget.h"
+#include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_client.h"
 #include "ash/shelf/login_shelf_view.h"
@@ -36,7 +37,6 @@
 #include "base/run_loop.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -440,22 +440,44 @@ void LoginScreenTestApi::SubmitPassword(const AccountId& account_id,
 }
 
 // static
-std::u16string LoginScreenTestApi::GetChallengeResponseLabel(
+void LoginScreenTestApi::SubmitPin(const AccountId& account_id,
+                                   const std::string& pin) {
+  ASSERT_TRUE(FocusUser(account_id));
+  LoginBigUserView* big_user_view = GetBigUserView(account_id);
+  ASSERT_TRUE(big_user_view);
+  ASSERT_TRUE(big_user_view->IsAuthEnabled());
+  LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
+  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
+  ASSERT_EQ(account_id,
+            auth_test.user_view()->current_user().basic_user_info.account_id);
+  ASSERT_TRUE(auth_test.HasAuthMethod(LoginAuthUserView::AUTH_PIN));
+
+  for (char c : pin) {
+    EXPECT_GE(c, '0');
+    EXPECT_LE(c, '9');
+    pin_pad_api.ClickOnDigit(c - '0');
+  }
+  auto event_generator = MakeAshEventGenerator();
+  event_generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+}
+
+// static
+std::u16string_view LoginScreenTestApi::GetChallengeResponseLabel(
     const AccountId& account_id) {
   if (GetFocusedUser() != account_id) {
     ADD_FAILURE() << "The user " << account_id.Serialize() << " is not focused";
-    return std::u16string();
+    return {};
   }
   LoginBigUserView* big_user_view = GetBigUserView(account_id);
   if (!big_user_view) {
     ADD_FAILURE() << "Could not find user " << account_id.Serialize();
-    return std::u16string();
+    return {};
   }
   LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
   if (!auth_test.challenge_response_label()->IsDrawn()) {
     ADD_FAILURE() << "Challenge-response label is not drawn for user "
                   << account_id.Serialize();
-    return std::u16string();
+    return {};
   }
   return auth_test.challenge_response_label()->GetText();
 }
@@ -559,28 +581,9 @@ bool LoginScreenTestApi::ClickOsInstallButton() {
 
 // static
 bool LoginScreenTestApi::PressAccelerator(const ui::Accelerator& accelerator) {
-  // TODO(https://crbug.com/1321609): Migrate to SendAcceleratorNatively.
+  // TODO(https://crbug.com/262257946): Migrate to EventGenerator.
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
   return lock_screen_test.contents_view()->AcceleratorPressed(accelerator);
-}
-
-// static
-bool LoginScreenTestApi::SendAcceleratorNatively(
-    const ui::Accelerator& accelerator) {
-  gfx::NativeWindow login_window = gfx::NativeWindow();
-  if (LockScreen::HasInstance()) {
-    login_window = LockScreen::Get()->widget()->GetNativeWindow();
-  } else {
-    login_window =
-        LoginScreen::Get()->GetLoginWindowWidget()->GetNativeWindow();
-  }
-  if (!login_window) {
-    return false;
-  }
-  return ui_controls::SendKeyPress(
-      login_window, accelerator.key_code(), accelerator.IsCtrlDown(),
-      accelerator.IsShiftDown(), accelerator.IsAltDown(),
-      accelerator.IsCmdDown());
 }
 
 // static
@@ -804,12 +807,12 @@ std::string LoginScreenTestApi::GetDisplayedName(const AccountId& account_id) {
 }
 
 // static
-std::u16string LoginScreenTestApi::GetDisabledAuthMessage(
+std::u16string_view LoginScreenTestApi::GetDisabledAuthMessage(
     const AccountId& account_id) {
   LoginBigUserView* big_user_view = GetBigUserView(account_id);
   if (!big_user_view) {
     ADD_FAILURE() << "Could not find user " << account_id.Serialize();
-    return std::u16string();
+    return {};
   }
   LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
 
@@ -817,18 +820,18 @@ std::u16string LoginScreenTestApi::GetDisabledAuthMessage(
 }
 
 // static
-std::u16string LoginScreenTestApi::GetManagementDisclosureText(
+std::u16string_view LoginScreenTestApi::GetManagementDisclosureText(
     const AccountId& account_id) {
   LoginBigUserView* big_user_view = GetBigUserView(account_id);
   if (!big_user_view) {
     ADD_FAILURE() << "Could not find user " << account_id.Serialize();
-    return std::u16string();
+    return {};
   }
   LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
   if (!auth_test.remove_account_dialog()) {
     ADD_FAILURE() << "Could not find dialog for user "
                   << account_id.Serialize();
-    return std::u16string();
+    return {};
   }
   LoginRemoveAccountDialog::TestApi dialog(auth_test.remove_account_dialog());
   return dialog.management_disclosure_label()->GetText();
@@ -842,10 +845,10 @@ bool LoginScreenTestApi::IsOobeDialogVisible() {
 }
 
 // static
-std::u16string LoginScreenTestApi::GetShutDownButtonLabel() {
+std::u16string_view LoginScreenTestApi::GetShutDownButtonLabel() {
   views::View* button = GetShutDownButton();
   if (!button) {
-    return std::u16string();
+    return {};
   }
 
   return static_cast<views::LabelButton*>(button)->GetText();
@@ -878,12 +881,10 @@ gfx::Rect LoginScreenTestApi::GetShutDownButtonMirroredBounds() {
 
 // static
 std::string LoginScreenTestApi::GetAppsButtonClassName() {
-  views::View* button = GetAppsButton();
-  if (!button) {
-    return "";
+  if (views::View* button = GetAppsButton()) {
+    return std::string(button->GetClassName());
   }
-
-  return button->GetClassName();
+  return {};
 }
 
 // static
@@ -893,10 +894,10 @@ void LoginScreenTestApi::SetPinRequestWidgetShownCallback(
 }
 
 // static
-std::u16string LoginScreenTestApi::GetPinRequestWidgetTitle() {
+std::u16string_view LoginScreenTestApi::GetPinRequestWidgetTitle() {
   if (!PinRequestWidget::Get()) {
     ADD_FAILURE() << "No PIN request widget is shown";
-    return std::u16string();
+    return {};
   }
   PinRequestWidget::TestApi pin_widget_test(PinRequestWidget::Get());
   PinRequestView::TestApi pin_view_test(pin_widget_test.pin_request_view());
@@ -940,26 +941,46 @@ void LoginScreenTestApi::CancelPinRequestWidget() {
 
 // static
 bool LoginScreenTestApi::IsLocalAuthenticationDialogVisible() {
-  return LocalAuthenticationRequestWidget::TestApi::IsVisible();
+  auto* controller = LocalAuthenticationRequestController::Get();
+  if (controller == nullptr) {
+    return false;
+  }
+  return controller->IsDialogVisible();
 }
 
 // static
 void LoginScreenTestApi::CancelLocalAuthenticationDialog() {
-  bool dialog_exists =
-      LocalAuthenticationRequestWidget::TestApi::CancelDialog();
-  if (!dialog_exists) {
+  auto* controller = LocalAuthenticationRequestController::Get();
+  if (controller == nullptr || !controller->IsDialogVisible()) {
     FAIL() << "Local Authentication dialog is not shown";
   }
+  auto test_api = GetLocalAuthenticationTestApi(controller);
+  test_api->Close();
 }
 
 // static
 void LoginScreenTestApi::SubmitPasswordLocalAuthenticationDialog(
     const std::string& password) {
-  bool dialog_exists =
-      LocalAuthenticationRequestWidget::TestApi::SubmitPassword(password);
-  if (!dialog_exists) {
+  auto* controller = LocalAuthenticationRequestController::Get();
+  if (controller == nullptr || !controller->IsDialogVisible()) {
     FAIL() << "Local Authentication dialog is not shown";
   }
+  auto test_api = GetLocalAuthenticationTestApi(controller);
+  test_api->SubmitPassword(password);
+}
+
+// static
+void LoginScreenTestApi::SubmitPinLocalAuthenticationDialog(
+    const std::string& pin) {
+  auto* controller = LocalAuthenticationRequestController::Get();
+  if (controller == nullptr || !controller->IsDialogVisible()) {
+    FAIL() << "Local Authentication dialog is not shown";
+  }
+  if (!controller->IsPinSupported()) {
+    FAIL() << "This controller is not supporting pin";
+  }
+  auto test_api = GetLocalAuthenticationTestApi(controller);
+  test_api->SubmitPin(pin);
 }
 
 // static

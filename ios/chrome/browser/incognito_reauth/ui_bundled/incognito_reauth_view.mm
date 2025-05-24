@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -24,12 +27,17 @@ const CGFloat kVerticalContentPadding = 70.0f;
 }  // namespace
 
 @interface IncognitoReauthView () <IncognitoReauthViewLabelOwner>
-// The background view for the authenticate button.
-// Has to be separate from the button because it's a blur view (on iOS 13+).
-@property(nonatomic, weak) UIView* authenticateButtonBackgroundView;
 @end
 
-@implementation IncognitoReauthView
+@implementation IncognitoReauthView {
+  // The background view for the authenticate button.
+  // Has to be separate from the button because it's a blur view (on iOS 13+).
+  UIView* _authenticateButtonBackgroundView;
+  // Use a IncognitoReauthViewLabel for the button label, because the built-in
+  // UIButton's `titleLabel` does not correctly resize for multiline labels and
+  // using a UILabel doesn't provide feedback to adjust the corner radius.
+  IncognitoReauthViewLabel* _authenticateButtonLabel;
+}
 
 - (instancetype)init {
   self = [super init];
@@ -79,7 +87,6 @@ const CGFloat kVerticalContentPadding = 70.0f;
         [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
     _tabSwitcherButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     _tabSwitcherButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-
     _tabSwitcherButton.pointerInteractionEnabled = YES;
 
     UIView* authButtonContainer =
@@ -90,6 +97,38 @@ const CGFloat kVerticalContentPadding = 70.0f;
 
     [blurBackgroundView.contentView addSubview:_tabSwitcherButton];
     AddSameCenterXConstraint(_tabSwitcherButton, blurBackgroundView);
+
+    if (IsIOSSoftLockEnabled()) {
+      _exitIncognitoButton = [[UIButton alloc] init];
+      _exitIncognitoButton.translatesAutoresizingMaskIntoConstraints = NO;
+      [_exitIncognitoButton setTitleColor:[UIColor whiteColor]
+                                 forState:UIControlStateNormal];
+      [_exitIncognitoButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.4]
+                                 forState:UIControlStateHighlighted];
+      // TODO: Check the capitalization of "Incognito Tabs". Match the current
+      // implementation of the 2 other buttons.
+      [_exitIncognitoButton
+          setTitle:l10n_util::GetNSString(
+                       IDS_IOS_INCOGNITO_REAUTH_CLOSE_INCOGNITO_TABS)
+          forState:UIControlStateNormal];
+      _exitIncognitoButton.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
+      _exitIncognitoButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+      _exitIncognitoButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+      _exitIncognitoButton.pointerInteractionEnabled = YES;
+
+      [blurBackgroundView.contentView addSubview:_exitIncognitoButton];
+      AddSameCenterXConstraint(_exitIncognitoButton, blurBackgroundView);
+
+      [NSLayoutConstraint activateConstraints:@[
+        [_exitIncognitoButton.topAnchor
+            constraintEqualToAnchor:authButtonContainer.bottomAnchor
+                           constant:kButtonPaddingV],
+        [_exitIncognitoButton.widthAnchor
+            constraintLessThanOrEqualToAnchor:self.widthAnchor
+                                     constant:-2 * kButtonPaddingH],
+      ]];
+    }
 
     [NSLayoutConstraint activateConstraints:@[
       [_tabSwitcherButton.topAnchor
@@ -139,29 +178,26 @@ const CGFloat kVerticalContentPadding = 70.0f;
 - (UIView*)buildAuthenticateButtonWithBlurEffect:(UIBlurEffect*)blurEffect {
   DCHECK(!_authenticateButton);
 
-  // Use a IncognitoReauthViewLabel for the button label, because the built-in
-  // UIButton's `titleLabel` does not correctly resize for multiline labels and
-  // using a UILabel doesn't provide feedback to adjust the corner radius.
-  IncognitoReauthViewLabel* titleLabel =
-      [[IncognitoReauthViewLabel alloc] init];
-  titleLabel.owner = self;
-  titleLabel.numberOfLines = 0;
-  titleLabel.textColor = [UIColor colorWithWhite:1 alpha:0.95];
-  titleLabel.textAlignment = NSTextAlignmentCenter;
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
-  titleLabel.text = l10n_util::GetNSStringF(
+  _authenticateButtonLabel = [[IncognitoReauthViewLabel alloc] init];
+  _authenticateButtonLabel.owner = self;
+  _authenticateButtonLabel.numberOfLines = 0;
+  _authenticateButtonLabel.textColor = [UIColor colorWithWhite:1 alpha:0.95];
+  _authenticateButtonLabel.textAlignment = NSTextAlignmentCenter;
+  _authenticateButtonLabel.adjustsFontForContentSizeCategory = YES;
+  _authenticateButtonLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
+  _authenticateButtonLabel.text = l10n_util::GetNSStringF(
       IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON,
       base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
-  [titleLabel
+  [_authenticateButtonLabel
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
-  [titleLabel
+  [_authenticateButtonLabel
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];
-  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _authenticateButtonLabel.translatesAutoresizingMaskIntoConstraints = NO;
   // Disable a11y; below the UIButton will get a correct label.
-  titleLabel.accessibilityLabel = nil;
+  _authenticateButtonLabel.accessibilityLabel = nil;
 
   UIButton* button = [[UIButton alloc] init];
   button.backgroundColor = [UIColor clearColor];
@@ -179,11 +215,11 @@ const CGFloat kVerticalContentPadding = 70.0f;
                          effectForBlurEffect:blurEffect
                                        style:UIVibrancyEffectStyleFill]];
 
-  [button addSubview:titleLabel];
+  [button addSubview:_authenticateButtonLabel];
   [effectView.contentView addSubview:button];
   backgroundView = effectView;
   AddSameConstraintsWithInsets(
-      button, titleLabel,
+      button, _authenticateButtonLabel,
       NSDirectionalEdgeInsetsMake(-kButtonPaddingV, -kButtonPaddingH,
                                   -kButtonPaddingV, -kButtonPaddingH));
 
@@ -205,6 +241,14 @@ const CGFloat kVerticalContentPadding = 70.0f;
   return backgroundView;
 }
 
+#pragma mark - public
+
+- (void)setAuthenticateButtonText:(NSString*)text
+               accessibilityLabel:(NSString*)accessibilityLabel {
+  _authenticateButtonLabel.text = text;
+  self.authenticateButton.accessibilityLabel = accessibilityLabel;
+}
+
 #pragma mark - voiceover
 
 - (BOOL)accessibilityViewIsModal {
@@ -220,13 +264,15 @@ const CGFloat kVerticalContentPadding = 70.0f;
 #pragma mark - internal
 
 - (void)blurButtonEventHandler {
+  UIView* buttonBackgroundView = _authenticateButtonBackgroundView;
+  UIColor* newColor =
+      [self.authenticateButton isHighlighted]
+          ? [IncognitoReauthView blurButtonHighlightBackgroundColor]
+          : [IncognitoReauthView blurButtonBackgroundColor];
+
   [UIView animateWithDuration:0.1
                    animations:^{
-                     self.authenticateButtonBackgroundView.backgroundColor =
-                         [self.authenticateButton isHighlighted]
-                             ? [IncognitoReauthView
-                                   blurButtonHighlightBackgroundColor]
-                             : [IncognitoReauthView blurButtonBackgroundColor];
+                     buttonBackgroundView.backgroundColor = newColor;
                    }];
 }
 
@@ -235,8 +281,8 @@ const CGFloat kVerticalContentPadding = 70.0f;
 - (void)labelDidLayout {
   CGFloat cornerRadius =
       std::min(kAuthenticateButtonBagroundMaxCornerRadius,
-               self.authenticateButtonBackgroundView.frame.size.height / 2);
-  self.authenticateButtonBackgroundView.layer.cornerRadius = cornerRadius;
+               _authenticateButtonBackgroundView.frame.size.height / 2);
+  _authenticateButtonBackgroundView.layer.cornerRadius = cornerRadius;
 }
 
 #pragma mark - helpers

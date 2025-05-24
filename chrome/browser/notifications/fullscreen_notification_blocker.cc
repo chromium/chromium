@@ -16,8 +16,7 @@ FullscreenNotificationBlocker::FullscreenNotificationBlocker(
     message_center::MessageCenter* message_center)
     : NotificationBlocker(message_center), is_fullscreen_mode_(false) {}
 
-FullscreenNotificationBlocker::~FullscreenNotificationBlocker() {
-}
+FullscreenNotificationBlocker::~FullscreenNotificationBlocker() = default;
 
 void FullscreenNotificationBlocker::CheckState() {
   bool was_fullscreen_mode = is_fullscreen_mode_;

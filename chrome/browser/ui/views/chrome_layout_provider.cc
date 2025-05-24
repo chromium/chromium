@@ -81,6 +81,12 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       // label button because it behaves like a menu control.
       return gfx::Insets::VH(insets.height(), horizontal_padding);
     }
+    case INSETS_RECENT_ACTIVITY_IMAGE_MARGIN:
+      return gfx::Insets::TLBR(0, 12, 0, 16);
+    case INSETS_TASK_MANAGER:
+      return gfx::Insets::TLBR(4, 20, 20, 20);
+    case INSETS_PAGE_INFO_FOOTER_BUTTON:
+      return gfx::Insets::VH(12, 20);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -90,16 +96,15 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
   DCHECK_GE(metric, views::VIEWS_DISTANCE_START);
   DCHECK_LT(metric, views::VIEWS_DISTANCE_MAX);
 
-  if (metric < views::VIEWS_DISTANCE_END)
+  if (metric < views::VIEWS_DISTANCE_END) {
     return LayoutProvider::GetDistanceMetric(metric);
+  }
 
   switch (static_cast<ChromeDistanceMetric>(metric)) {
     case DISTANCE_CONTENT_LIST_VERTICAL_SINGLE:
       return 4;
     case DISTANCE_CONTENT_LIST_VERTICAL_MULTI:
       return 8;
-    case DISTANCE_CONTROL_LIST_VERTICAL:
-      return 12;
     case DISTANCE_EXTENSIONS_MENU_WIDTH:
       return kMediumDialogWidth;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE:
@@ -113,7 +118,9 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
               GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE)) /
              2;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN:
-      return GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+      return 12;
+    case DISTANCE_EXTENSIONS_MENU_LABEL_ICON_SPACING:
+      return 4;
     case DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL:
       return 16;
     case DISTANCE_RELATED_CONTROL_VERTICAL_SMALL:
@@ -132,12 +139,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 16;
     case DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE:
       return 16;
-    case DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE:
-      return 20;
     case DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH:
       return kMediumDialogWidth;
-    case DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH:
-      return kLargeDialogWidth;
     case DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL:
       return 24;
     case DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING:
@@ -162,9 +165,21 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 8;
     case DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL:
       return 8;
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_ICON_AND_BUTTON_HORIZONTAL_SPACING:
+      return 4;
+    case DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE:
+      return 20;
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_WIDTH:
+      return 160;
+    case DISTANCE_TASK_MANAGER_SEARCH_BAR_MIN_HEIGHT:
+      return 36;
+    case DISTANCE_TASK_MANAGER_TAB_HEIGHT:
+      return 54;
     case DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING:
+    case DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN:
       return 4;
     case DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_ACTION_BUTTON_SPACING:
+    case DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_MENU_BUTTON_SPACING:
       return 16;
     case DISTANCE_TOAST_BUBBLE_HEIGHT:
       return 48;
@@ -172,14 +187,56 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 36;
     case DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT:
       return 24;
+    case DISTANCE_TOAST_BUBBLE_ICON_SIZE:
+    case DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE:
+      return 20;
+    case DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIDE_MARGINS:
+      return 2;
     case DISTANCE_TOAST_BUBBLE_MARGIN_LEFT:
       return 12;
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_ACTION_BUTTON:
       return 6;
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON:
-      return 12;
+    case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_MENU_BUTTON:
+      return 10;
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_LABEL:
       return 16;
+    case DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE:
+      return 32;
+    case DISTANCE_RECENT_ACTIVITY_AVATAR_FALLBACK_SIZE:
+      return 24;
+    case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS:
+      return 9;
+    case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_BORDER_WIDTH:
+      return 2;
+    case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_PADDING:
+      return 4;
+    case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_OFFSET_FROM_AVATAR:
+      return 2;
+    case DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS:
+      return 8;
+    case DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_MARGIN:
+      return 10;
+    case DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_PADDING:
+      return 6;
+    case DISTANCE_RECENT_ACTIVITY_ROW_VERTICAL_PADDING:
+      return 6;
+    case DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL:
+      return 8;
+    case DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_PADDING:
+      return 2;
+    case DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_BORDER_SIZE:
+      return 1;
+    case DISTANCE_TEXTFIELD_ACCOUNT_CARD_VERTICAL:
+      return 4;
+    case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ICON_SIZE:
+      return 16;
+    case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_PADDING:
+      return 12;
+    case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS:
+      return 12;
+    case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_VERTICAL:
+      return 1;
   }
   NOTREACHED();
 }
@@ -187,8 +244,9 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
 int ChromeLayoutProvider::GetSnappedDialogWidth(int min_width) const {
   for (int snap_point :
        {kSmallDialogWidth, kMediumDialogWidth, kLargeDialogWidth}) {
-    if (min_width <= snap_point)
+    if (min_width <= snap_point) {
       return snap_point;
+    }
   }
 
   return ((min_width + 15) / 16) * 16;

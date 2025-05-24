@@ -197,6 +197,15 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
     return suggested_file_paths;
   }
 
+  MockFileSuggestKeyedService* file_suggest_service() {
+    return file_suggest_service_;
+  }
+  ScopedTestMountPoint* drive_mount_point() {
+    return drive_fs_mount_point_.get();
+  }
+  ScopedTestMountPoint* local_mount_point() {
+    return local_fs_mount_point_.get();
+  }
   // Hosts the proto file.
   base::ScopedTempDir temp_dir_;
 
@@ -312,6 +321,74 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, RemoveMixedFileSuggestions) {
   // Check the suggested files after suggestion removal.
   EXPECT_TRUE(GetSuggestionsForType(FileSuggestionType::kDriveFile)->empty());
   EXPECT_TRUE(GetSuggestionsForType(FileSuggestionType::kLocalFile)->empty());
+}
+
+// Verifies filtering out duplicate drive file suggestions.
+TEST_F(FileSuggestKeyedServiceRemoveTest, FilterDuplicateDriveFileSuggestions) {
+  const base::FilePath file_path_1 = drive_mount_point()->CreateArbitraryFile();
+  std::optional<std::vector<FileSuggestData>> suggestions;
+  suggestions =
+      std::vector<FileSuggestData>{{FileSuggestionType::kDriveFile, file_path_1,
+                                    /*title=*/std::nullopt,
+                                    /*new_prediction_reason=*/std::nullopt,
+                                    /*modified_time=*/std::nullopt,
+                                    /*viewed_time=*/std::nullopt,
+                                    /*shared_time=*/std::nullopt,
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt,
+                                    /*icon_url=*/std::nullopt},
+                                   {FileSuggestionType::kDriveFile, file_path_1,
+                                    /*title=*/std::nullopt,
+                                    /*new_prediction_reason=*/std::nullopt,
+                                    /*modified_time=*/std::nullopt,
+                                    /*viewed_time=*/std::nullopt,
+                                    /*shared_time=*/std::nullopt,
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt,
+                                    /*icon_url=*/std::nullopt}};
+
+  EXPECT_EQ(suggestions->size(), 2u);
+  file_suggest_service()->SetSuggestionsForType(FileSuggestionType::kDriveFile,
+                                                /*suggestions=*/suggestions);
+
+  // Check the suggested drive files, duplicate files should be removed.
+  suggestions = GetSuggestionsForType(FileSuggestionType::kDriveFile);
+  EXPECT_EQ(suggestions->size(), 1u);
+  EXPECT_EQ(suggestions->at(0).file_path.value(), file_path_1.value());
+}
+
+// Verifies filtering out duplicate local file suggestions.
+TEST_F(FileSuggestKeyedServiceRemoveTest, FilterDuplicateLocalFileSuggestions) {
+  const base::FilePath file_path_1 = local_mount_point()->CreateArbitraryFile();
+  std::optional<std::vector<FileSuggestData>> suggestions;
+  suggestions =
+      std::vector<FileSuggestData>{{FileSuggestionType::kLocalFile, file_path_1,
+                                    /*title=*/std::nullopt,
+                                    /*new_prediction_reason=*/std::nullopt,
+                                    /*modified_time=*/std::nullopt,
+                                    /*viewed_time=*/std::nullopt,
+                                    /*shared_time=*/std::nullopt,
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt,
+                                    /*icon_url=*/std::nullopt},
+                                   {FileSuggestionType::kLocalFile, file_path_1,
+                                    /*title=*/std::nullopt,
+                                    /*new_prediction_reason=*/std::nullopt,
+                                    /*modified_time=*/std::nullopt,
+                                    /*viewed_time=*/std::nullopt,
+                                    /*shared_time=*/std::nullopt,
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt,
+                                    /*icon_url=*/std::nullopt}};
+
+  EXPECT_EQ(suggestions->size(), 2u);
+  file_suggest_service()->SetSuggestionsForType(FileSuggestionType::kLocalFile,
+                                                /*suggestions=*/suggestions);
+
+  // Check the suggested local files, duplicate files should be removed.
+  suggestions = GetSuggestionsForType(FileSuggestionType::kLocalFile);
+  EXPECT_EQ(suggestions->size(), 1u);
+  EXPECT_EQ(suggestions->at(0).file_path.value(), file_path_1.value());
 }
 
 }  // namespace ash::test

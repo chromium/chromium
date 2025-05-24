@@ -102,6 +102,10 @@ struct NativeValueTraitsBase {
   }
 };
 
+template <class T>
+concept TypeHasAnyNamedPropertiesMethod =
+    requires(T a) { a.HasAnyNamedProperties(); };
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_NATIVE_VALUE_TRAITS_H_

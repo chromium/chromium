@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/drag_and_drop_command.h"
@@ -77,6 +76,7 @@
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/page/drag_state.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -124,9 +124,7 @@ static bool DragTypeIsValid(DragSourceAction action) {
     case kDragSourceActionNone:
       return false;
   }
-  // Make sure MSVC doesn't complain that not all control paths return a value.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 #endif  // DCHECK_IS_ON()
 
@@ -165,9 +163,6 @@ static DocumentFragment* DocumentFragmentFromDragData(
     DragSourceType& drag_source_type,
     bool is_richly_editable_position) {
   DCHECK(drag_data);
-  CHECK(is_richly_editable_position ||
-        RuntimeEnabledFeatures::
-            DropUrlAsPlainTextInPlainTextOnlyEditablePositionEnabled());
   drag_source_type = DragSourceType::kHTMLSource;
 
   Document& document = context->OwnerDocument();
@@ -225,7 +220,14 @@ void DragController::ClearDragCaret() {
 void DragController::DragEnded() {
   drag_initiator_ = nullptr;
   did_initiate_drag_ = false;
+  drag_pointer_id_.reset();
   page_->GetDragCaret().Clear();
+  // When dragging occurs, the mousedown event is triggered, causing the caret's
+  // blinking state to be suspended. Therefore, it is necessary to reset the
+  // blinking state after dragging.
+  if (auto* focused_frame = page_->GetFocusController().FocusedFrame()) {
+    focused_frame->Selection().SetCaretBlinkingSuspended(false);
+  }
 }
 
 void DragController::DragExited(DragData* drag_data, LocalFrame& local_root) {
@@ -301,26 +303,41 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
   }
 
   if (OperationForLoad(drag_data, local_root) != DragOperation::kNone) {
-    ResourceRequest resource_request(drag_data->AsURL());
-    resource_request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(
-        document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr));
+    Vector<String> urls;
+    if (base::FeatureList::IsEnabled(
+            blink::features::kOpenAllUrlsOrFilesOnDrop)) {
+      urls = drag_data->AsURLs();
+    } else {
+      urls.push_back(drag_data->AsURL());
+    }
+    bool has_transient_user_activation = LocalFrame::HasTransientUserActivation(
+        document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr);
+    bool should_focus_tab = true;
+    for (const String& url : urls) {
+      ResourceRequest resource_request(url);
+      resource_request.SetHasUserGesture(has_transient_user_activation);
 
-    // Use a unique origin to match other navigations that are initiated
-    // outside of a renderer process (e.g. omnibox navigations).  Here, the
-    // initiator of the navigation is a user dragging files from *outside* of
-    // the current page.  See also https://crbug.com/930049.
-    //
-    // TODO(crbug.com/331733543): Once supported, use the source of the drag as
-    // the initiator of the navigation below.
-    resource_request.SetRequestorOrigin(SecurityOrigin::CreateUniqueOpaque());
+      // Use a unique origin to match other navigations that are initiated
+      // outside of a renderer process (e.g. omnibox navigations).  Here, the
+      // initiator of the navigation is a user dragging files from *outside* of
+      // the current page.  See also https://crbug.com/930049.
+      //
+      // TODO(crbug.com/331733543): Once supported, use the source of the drag
+      // as the initiator of the navigation below.
+      resource_request.SetRequestorOrigin(SecurityOrigin::CreateUniqueOpaque());
 
-    FrameLoadRequest request(nullptr, resource_request);
+      FrameLoadRequest request(nullptr, resource_request);
 
-    // Open the dropped URL in a new tab to avoid potential data-loss in the
-    // current tab. See https://crbug.com/451659.
-    request.SetNavigationPolicy(
-        NavigationPolicy::kNavigationPolicyNewForegroundTab);
-    local_root.Navigate(request, WebFrameLoadType::kStandard);
+      // Open the dropped URL in a new tab to avoid potential data-loss in the
+      // current tab. See https://crbug.com/451659.
+      // First tab should be focused, the rest should be background tabs.
+      request.SetNavigationPolicy(
+          should_focus_tab
+              ? NavigationPolicy::kNavigationPolicyNewForegroundTab
+              : NavigationPolicy::kNavigationPolicyNewBackgroundTab);
+      local_root.Navigate(request, WebFrameLoadType::kStandard);
+      should_focus_tab = false;
+    }
   }
 
   document_under_mouse_ = nullptr;
@@ -649,10 +666,6 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
 
   if (drag_is_move || is_richly_editable_position) {
     DragSourceType drag_source_type = DragSourceType::kHTMLSource;
-    if (!RuntimeEnabledFeatures::
-            DropUrlAsPlainTextInPlainTextOnlyEditablePositionEnabled()) {
-      is_richly_editable_position = true;
-    }
     DocumentFragment* fragment = DocumentFragmentFromDragData(
         drag_data, inner_frame, range, true, drag_source_type,
         is_richly_editable_position);
@@ -899,6 +912,8 @@ Node* DragController::DraggableNode(const LocalFrame* src,
         candidate_drag_type = kDragSourceActionDHTML;
         break;
       }
+      // TODO(crbug.com/369219144): Should this be
+      // DynamicTo<HTMLAnchorElementBase>?
       auto* html_anchor_element = DynamicTo<HTMLAnchorElement>(node);
       if (html_anchor_element && html_anchor_element->IsLiveLink()) {
         candidate_drag_type = kDragSourceActionLink;
@@ -984,6 +999,7 @@ bool DragController::PopulateDragDataTransfer(LocalFrame* src,
   DataTransfer* data_transfer = state.drag_data_transfer_.Get();
   Node* node = state.drag_src_.Get();
 
+  // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?
   auto* html_anchor_element = DynamicTo<HTMLAnchorElement>(node);
   if (html_anchor_element && html_anchor_element->IsLiveLink() &&
       !link_url.IsEmpty()) {
@@ -1076,8 +1092,9 @@ bool CanDragImage(const Element& element) {
     return false;
   const ImageResourceContent* image_content = layout_image->CachedImage();
   if (!image_content || image_content->ErrorOccurred() ||
-      image_content->GetImage()->IsNull())
+      !image_content->HasImage()) {
     return false;
+  }
   scoped_refptr<const SharedBuffer> buffer = image_content->ResourceBuffer();
   if (!buffer || !buffer->size())
     return false;
@@ -1103,7 +1120,7 @@ std::unique_ptr<DragImage> DragImageForImage(
   if (image_size.Area64() > kMaxOriginalImageArea)
     return nullptr;
 
-  InterpolationQuality interpolation_quality = kInterpolationDefault;
+  InterpolationQuality interpolation_quality = GetDefaultInterpolationQuality();
   if (layout_image->StyleRef().ImageRendering() == EImageRendering::kPixelated)
     interpolation_quality = kInterpolationNone;
 
@@ -1337,8 +1354,7 @@ bool DragController::StartDrag(LocalFrame* frame,
       return false;
   } else if (state.drag_type_ != kDragSourceActionSelection &&
              state.drag_type_ != kDragSourceActionDHTML) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   if (state.drag_type_ == kDragSourceActionLink)
@@ -1351,6 +1367,7 @@ bool DragController::StartDrag(LocalFrame* frame,
       drag_obj_rect, effective_drag_initiation_location, frame, state,
       hit_test_result, drag_initiation_location, mouse_dragged_point);
 
+  drag_pointer_id_ = drag_event.id;
   DoSystemDrag(drag_image.get(), drag_obj_rect,
                effective_drag_initiation_location,
                state.drag_data_transfer_.Get(), frame);

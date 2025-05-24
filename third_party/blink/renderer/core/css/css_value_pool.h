@@ -191,7 +191,7 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   Member<CSSColor> color_black_;
 
   // Vector caches.
-  HeapVector<Member<CSSIdentifierValue>, numCSSValueKeywords>
+  HeapVector<Member<CSSIdentifierValue>, kNumCSSValueKeywords>
       identifier_value_cache_;
   HeapVector<Member<CSSNumericLiteralValue>, kMaximumCacheableIntegerValue + 1>
       pixel_value_cache_;

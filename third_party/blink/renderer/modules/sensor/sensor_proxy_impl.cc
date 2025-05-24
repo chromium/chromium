@@ -241,10 +241,8 @@ void SensorProxyImpl::RemoveActiveFrequency(double frequency) {
   Vector<double>::iterator it = std::lower_bound(
       active_frequencies_.begin(), active_frequencies_.end(), frequency);
   if (it == active_frequencies_.end() || *it != frequency) {
-    NOTREACHED_IN_MIGRATION()
-        << "Attempted to remove active frequency which is not present "
-           "in the list";
-    return;
+    NOTREACHED() << "Attempted to remove active frequency which is not present "
+                    "in the list";
   }
 
   active_frequencies_.erase(it);

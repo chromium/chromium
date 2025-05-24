@@ -86,32 +86,36 @@ class MediaToolbarButtonWatcher
   void OnMediaDialogClosed() override {}
 
   [[nodiscard]] bool WaitForDialogOpened() {
-    if (MediaDialogView::IsShowing())
+    if (MediaDialogView::IsShowing()) {
       return true;
+    }
     waiting_for_dialog_opened_ = true;
     Wait();
     return MediaDialogView::IsShowing();
   }
 
   [[nodiscard]] bool WaitForButtonShown() {
-    if (button_->GetVisible())
+    if (button_->GetVisible()) {
       return true;
+    }
     waiting_for_button_shown_ = true;
     Wait();
     return button_->GetVisible();
   }
 
   [[nodiscard]] bool WaitForButtonHidden() {
-    if (!button_->GetVisible())
+    if (!button_->GetVisible()) {
       return true;
+    }
     waiting_for_button_hidden_ = true;
     Wait();
     return !button_->GetVisible();
   }
 
   void WaitForDialogToContainText(const std::u16string& text) {
-    if (DialogContainsText(text))
+    if (DialogContainsText(text)) {
       return;
+    }
 
     waiting_for_dialog_to_contain_text_ = true;
     expected_text_ = text;
@@ -121,8 +125,9 @@ class MediaToolbarButtonWatcher
   }
 
   void WaitForItemCount(int count) {
-    if (GetItemCount() == count)
+    if (GetItemCount() == count) {
       return;
+    }
 
     waiting_for_item_count_ = true;
     expected_item_count_ = count;
@@ -132,8 +137,9 @@ class MediaToolbarButtonWatcher
   }
 
   void WaitForPictureInPictureButtonVisibility(bool visible) {
-    if (CheckPictureInPictureButtonVisibility(visible))
+    if (CheckPictureInPictureButtonVisibility(visible)) {
       return;
+    }
 
     waiting_for_pip_visibility_changed_ = true;
     expected_pip_visibility_ = visible;
@@ -144,41 +150,48 @@ class MediaToolbarButtonWatcher
 
  private:
   void CheckDialogForText() {
-    if (!waiting_for_dialog_to_contain_text_)
+    if (!waiting_for_dialog_to_contain_text_) {
       return;
+    }
 
-    if (!DialogContainsText(expected_text_))
+    if (!DialogContainsText(expected_text_)) {
       return;
+    }
 
     waiting_for_dialog_to_contain_text_ = false;
     MaybeStopWaiting();
   }
 
   void CheckItemCount() {
-    if (!waiting_for_item_count_)
+    if (!waiting_for_item_count_) {
       return;
+    }
 
-    if (GetItemCount() != expected_item_count_)
+    if (GetItemCount() != expected_item_count_) {
       return;
+    }
 
     waiting_for_item_count_ = false;
     MaybeStopWaiting();
   }
 
   void CheckPictureInPictureButton() {
-    if (!waiting_for_pip_visibility_changed_)
+    if (!waiting_for_pip_visibility_changed_) {
       return;
+    }
 
-    if (!CheckPictureInPictureButtonVisibility(expected_pip_visibility_))
+    if (!CheckPictureInPictureButtonVisibility(expected_pip_visibility_)) {
       return;
+    }
 
     waiting_for_pip_visibility_changed_ = false;
     MaybeStopWaiting();
   }
 
   void MaybeStopWaiting() {
-    if (!run_loop_)
+    if (!run_loop_) {
       return;
+    }
 
     if (!waiting_for_dialog_opened_ && !waiting_for_button_shown_ &&
         !waiting_for_dialog_to_contain_text_ && !waiting_for_item_count_ &&

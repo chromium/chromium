@@ -39,7 +39,8 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
@@ -60,8 +61,8 @@ public class CustomTabExternalNavigationTest {
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mTestAppActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mTestAppActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     /** A dummy activity that claims to handle "customtab://customtabtest". */
     public static class DummyActivityForSpecialScheme extends Activity {
@@ -138,17 +139,17 @@ public class CustomTabExternalNavigationTest {
     }
 
     private void launchAuthTab(String url) throws TimeoutException {
-        mTestAppActivityTestRule.startMainActivityOnBlankPage();
+        mTestAppActivityTestRule.startOnBlankPage();
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =
                 CustomTabsIntentTestUtils.createCustomTabIntent(context, url, false, builder -> {})
                         .putExtra(AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, true)
                         .putExtra(AuthTabIntent.EXTRA_REDIRECT_SCHEME, CUSTOM_SCHEME)
                         .putExtra(
-                                AuthTabIntentDataProvider.EXTRA_HTTPS_REDIRECT_HOST,
+                                AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST,
                                 AUTH_TAB_HTTPS_REDIRECT_HOST)
                         .putExtra(
-                                AuthTabIntentDataProvider.EXTRA_HTTPS_REDIRECT_PATH,
+                                AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH,
                                 AUTH_TAB_HTTPS_REDIRECT_PATH);
         String packageName = context.getPackageName();
         TrustedWebActivityTestUtil.spoofVerification(packageName, AUTH_TAB_HTTPS_REDIRECT_URL);
@@ -167,17 +168,21 @@ public class CustomTabExternalNavigationTest {
     }
 
     private OverrideUrlLoadingResult getOverrideUrlLoadingResult(String url) {
-        ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
-        final GURL testUrl = new GURL(url);
-        RedirectHandler redirectHandler = RedirectHandler.create();
-        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false, true);
-        ExternalNavigationParams params =
-                new ExternalNavigationParams.Builder(testUrl, false)
-                        .setIsMainFrame(true)
-                        .setIsRendererInitiated(true)
-                        .setRedirectHandler(redirectHandler)
-                        .build();
-        return mUrlHandler.shouldOverrideUrlLoading(params);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
+                    final GURL testUrl = new GURL(url);
+                    RedirectHandler redirectHandler = RedirectHandler.create();
+                    redirectHandler.updateNewUrlLoading(
+                            PageTransition.LINK, false, true, 0, false, true);
+                    ExternalNavigationParams params =
+                            new ExternalNavigationParams.Builder(testUrl, false)
+                                    .setIsMainFrame(true)
+                                    .setIsRendererInitiated(true)
+                                    .setRedirectHandler(redirectHandler)
+                                    .build();
+                    return mUrlHandler.shouldOverrideUrlLoading(params);
+                });
     }
 
     /**
@@ -256,14 +261,17 @@ public class CustomTabExternalNavigationTest {
     @SmallTest
     @DisableIf.Build(
             supported_abis_includes = "x86",
-            sdk_is_greater_than = VERSION_CODES.O_MR1,
-            sdk_is_less_than = VERSION_CODES.Q,
+            sdk_equals = VERSION_CODES.P,
+            message = "crbug.com/1188920")
+    @DisableIf.Build(
+            supported_abis_includes = "x86_64",
+            sdk_is_less_than = VERSION_CODES.TIRAMISU,
             message = "crbug.com/1188920")
     public void testIntentPickerNotShownForNormalUrl() throws TimeoutException {
         setUpTwa();
         final GURL testUrl = new GURL("http://customtabtest.com");
         RedirectHandler redirectHandler = RedirectHandler.create();
-        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false, true);
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, false, true);
         ExternalNavigationParams params =
                 new ExternalNavigationParams.Builder(testUrl, false)
                         .setRedirectHandler(redirectHandler)
@@ -274,7 +282,7 @@ public class CustomTabExternalNavigationTest {
 
     private @VerificationStatus int getCurrentPageVerifierStatus() {
         CustomTabActivity customTabActivity = mCustomTabActivityTestRule.getActivity();
-        return customTabActivity.getComponent().resolveCurrentPageVerifier().getState().status;
+        return customTabActivity.getCurrentPageVerifier().getState().status;
     }
 
     /**

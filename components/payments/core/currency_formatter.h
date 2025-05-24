@@ -30,8 +30,8 @@ class CurrencyFormatter {
   ~CurrencyFormatter();
 
   // Set the maximum number of fractional digits. (kMaximumNumFractionalDigits
-  // is the default if unset)
-  void SetMaxFractionalDigits(const int maxFractionalDigits);
+  // is the default if unset).
+  void SetMaxFractionalDigits(int max_fractional_digits);
 
   // Formats the |amount| according to the currency code that was set. The
   // result will NOT contain the currency code, nor a subset of it. Rather, the

@@ -61,7 +61,7 @@ class ScrollJankUkmReporterTest : public testing::Test {
         /*delta=*/10.0f, first_input_ts, base::TimeTicks(), &tick_clock,
         /*trace_id=*/std::nullopt);
     scroll_jank_dropped_frame_tracker_->ReportLatestPresentationData(
-        *event.get(), last_input_ts, presentation_ts, vsync_interval);
+        *event, *event, last_input_ts, presentation_ts, vsync_interval);
   }
 
   void ReportFramesToPredictorJankTracker(double delta,

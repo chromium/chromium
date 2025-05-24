@@ -11,7 +11,7 @@ rust_executable("cloud_authenticator_test_service") {
     "//third_party/cloud_authenticator/crypto",
     "//third_party/cloud_authenticator/handshake",
     "//third_party/cloud_authenticator/processor",
-    "//third_party/rust/base64/v0_13:lib",
+    "//third_party/rust/base64/v0_22:lib",
     "//third_party/rust/hex/v0_4:lib",
   ]
   testonly = true

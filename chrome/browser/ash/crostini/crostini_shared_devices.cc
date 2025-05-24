@@ -6,60 +6,13 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 
 namespace crostini {
-
-namespace {
-
-class CrostiniSharedDevicesFactory : public ProfileKeyedServiceFactory {
- public:
-  static CrostiniSharedDevices* GetForProfile(Profile* profile) {
-    return static_cast<CrostiniSharedDevices*>(
-        GetInstance()->GetServiceForBrowserContext(profile, true));
-  }
-
-  static CrostiniSharedDevicesFactory* GetInstance() {
-    static base::NoDestructor<CrostiniSharedDevicesFactory> factory;
-    return factory.get();
-  }
-
- private:
-  friend class base::NoDestructor<CrostiniSharedDevicesFactory>;
-
-  CrostiniSharedDevicesFactory()
-      : ProfileKeyedServiceFactory(
-            "CrostiniSharedDevicesService",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kOriginalOnly)
-                .Build()) {}
-
-  ~CrostiniSharedDevicesFactory() override = default;
-
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override {
-    Profile* profile = Profile::FromBrowserContext(context);
-    return new CrostiniSharedDevices(profile);
-  }
-};
-
-}  // namespace
-
-CrostiniSharedDevices* CrostiniSharedDevices::GetForProfile(Profile* profile) {
-  return CrostiniSharedDevicesFactory::GetForProfile(profile);
-}
 
 CrostiniSharedDevices::CrostiniSharedDevices(Profile* profile)
     : profile_(profile) {
@@ -67,7 +20,7 @@ CrostiniSharedDevices::CrostiniSharedDevices(Profile* profile)
   // an already running container for which we have not yet applied user prefs.
   // In this case, there is little risk as CrostiniRecoveryView should have been
   // shown to tell the user they need to restart their container.
-  guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+  guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
       ->AddContainerStartedObserver(this);
 }
 
@@ -97,8 +50,8 @@ void CrostiniSharedDevices::SetVmDeviceShared(guest_os::GuestId container_id,
   }
   shared_devices.Set(vm_device, shared);
 
-  if (guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
-          container_id)) {
+  if (guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
+          ->IsRunning(container_id)) {
     ApplySharingState(std::move(container_id), std::move(shared_devices),
                       std::move(callback));
   } else {
@@ -108,10 +61,6 @@ void CrostiniSharedDevices::SetVmDeviceShared(guest_os::GuestId container_id,
                                  std::move(shared_devices));
     std::move(callback).Run(false);
   }
-}
-
-void CrostiniSharedDevices::EnsureFactoryBuilt() {
-  CrostiniSharedDevicesFactory::GetInstance();
 }
 
 void CrostiniSharedDevices::ApplySharingState(

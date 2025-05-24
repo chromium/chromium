@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/types/expected.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -19,11 +20,28 @@ class ImageBitmap;
 class ImageBitmapOptions;
 class ScriptState;
 
+enum class ImageBitmapSourceError {
+  kUndecodable,  // Image element with a 'broken' image
+  kZeroWidth,    // The source image width is zero
+  kZeroHeight,   // The source image height is zero
+  kIncomplete,   // Image element with no source media
+  kInvalid,
+  kLayersOpenInCanvas,  // Source is a canvas with open layers
+};
+using ImageBitmapSourceStatus = base::expected<void, ImageBitmapSourceError>;
+
 class CORE_EXPORT ImageBitmapSource {
   DISALLOW_NEW();
 
  public:
-  virtual gfx::Size BitmapSourceSize() const { return gfx::Size(); }
+  // Hook for implementing the "check the usability of the image argument"
+  // algorithm:
+  //
+  //  https://html.spec.whatwg.org/#check-the-usability-of-the-image-argument
+  //
+  // Should return ok() if "good", and an ImageBitmapSourceError if "bad" or if
+  // an exception should be thrown.
+  virtual ImageBitmapSourceStatus CheckUsability() const = 0;
   virtual ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       std::optional<gfx::Rect>,

@@ -12,6 +12,7 @@ group("tests") {
     "mojom_parser_test_case.py",
     "mojom_parser_unittest.py",
     "mojom_parser.py",
+    "result_unittest.py",
     "stable_attribute_unittest.py",
     "version_compatibility_unittest.py",
   ]

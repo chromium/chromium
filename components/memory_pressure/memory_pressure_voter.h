@@ -22,7 +22,7 @@ namespace memory_pressure {
 // they are attached.
 class MemoryPressureVoter {
  public:
-  virtual ~MemoryPressureVoter() {}
+  virtual ~MemoryPressureVoter() = default;
 
   // Called to set a vote / change a vote.
   virtual void SetVote(base::MemoryPressureListener::MemoryPressureLevel level,

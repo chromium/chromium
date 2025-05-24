@@ -17,7 +17,7 @@ WebContentsWrapper::WebContentsWrapper(content::WebContents* web_contents,
 
 WebContentsWrapper::~WebContentsWrapper() = default;
 
-const GURL& WebContentsWrapper::GetLastCommittedURL() {
+const GURL& WebContentsWrapper::GetLastCommittedURL() const {
   if (!web_contents_)
     return GURL::EmptyGURL();
 

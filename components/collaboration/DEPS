@@ -1,0 +1,16 @@
+include_rules = [
+  "+components/data_sharing/public",
+  "+components/data_sharing/test_support",
+  "+components/keyed_service",
+  "+components/prefs/pref_change_registrar.h",
+  "+components/prefs/pref_service.h",
+  "+components/prefs/pref_registry_simple.h",
+  "+components/saved_tab_groups/public",
+  "+components/saved_tab_groups/test_support",
+  "+components/signin/public",
+  "+components/strings",
+  "+components/sync",
+  "+components/sync_preferences/testing_pref_service_syncable.h",
+  "+google_apis/gaia/gaia_id.h",
+  "+ui/base",
+]

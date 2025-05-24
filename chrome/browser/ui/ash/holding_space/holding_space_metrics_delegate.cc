@@ -29,14 +29,16 @@ void HoldingSpaceMetricsDelegate::OnPersistenceRestored() {
 
 void HoldingSpaceMetricsDelegate::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
-  if (!is_restoring_persistence())
+  if (!is_restoring_persistence()) {
     RescheduleRecordTotalItemCounts();
+  }
 }
 
 void HoldingSpaceMetricsDelegate::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
-  if (!is_restoring_persistence())
+  if (!is_restoring_persistence()) {
     RescheduleRecordTotalItemCounts();
+  }
 }
 
 void HoldingSpaceMetricsDelegate::RescheduleRecordTotalItemCounts() {
@@ -51,8 +53,9 @@ void HoldingSpaceMetricsDelegate::RescheduleRecordTotalItemCounts() {
 
 void HoldingSpaceMetricsDelegate::RecordTotalItemCounts() {
   std::vector<const HoldingSpaceItem*> items;
-  for (const auto& item : model()->items())
+  for (const auto& item : model()->items()) {
     items.push_back(item.get());
+  }
   holding_space_metrics::RecordTotalItemCounts(items);
 }
 

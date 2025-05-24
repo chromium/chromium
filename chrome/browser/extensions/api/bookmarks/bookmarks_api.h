@@ -15,9 +15,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/extensions/api/bookmarks_core/bookmarks_function.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -28,10 +31,11 @@ class FilePath;
 }
 
 namespace bookmarks {
-class BookmarkNode;
 class BookmarkModel;
+class BookmarkNode;
+class BookmarkPermanentNode;
 class ManagedBookmarkService;
-}
+}  // namespace bookmarks
 
 namespace content {
 class BrowserContext;
@@ -73,6 +77,8 @@ class BookmarkEventRouter : public bookmarks::BookmarkModelObserver {
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(
       const bookmarks::BookmarkNode* node) override;
+  void BookmarkPermanentNodeVisibilityChanged(
+      const bookmarks::BookmarkPermanentNode* node) override;
   void ExtensiveBookmarkChangesBeginning() override;
   void ExtensiveBookmarkChangesEnded() override;
 
@@ -108,13 +114,21 @@ class BookmarksAPI : public BrowserContextKeyedAPI,
   raw_ptr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
-  static const char* service_name() {
-    return "BookmarksAPI";
-  }
+  static const char* service_name() { return "BookmarksAPI"; }
   static const bool kServiceIsNULLWhileTesting = true;
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<BookmarkEventRouter> bookmark_event_router_;
+};
+
+template <>
+struct BrowserContextFactoryDependencies<BookmarksAPI> {
+  static void DeclareFactoryDependencies(
+      BrowserContextKeyedAPIFactory<BookmarksAPI>* factory) {
+    factory->DependsOn(BookmarkModelFactory::GetInstance());
+    factory->DependsOn(EventRouterFactory::GetInstance());
+    factory->DependsOn(ManagedBookmarkServiceFactory::GetInstance());
+  }
 };
 
 class BookmarksGetFunction : public BookmarksFunction {
@@ -122,7 +136,7 @@ class BookmarksGetFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.get", BOOKMARKS_GET)
 
  protected:
-  ~BookmarksGetFunction() override {}
+  ~BookmarksGetFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -133,7 +147,7 @@ class BookmarksGetChildrenFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.getChildren", BOOKMARKS_GETCHILDREN)
 
  protected:
-  ~BookmarksGetChildrenFunction() override {}
+  ~BookmarksGetChildrenFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -144,7 +158,7 @@ class BookmarksGetRecentFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.getRecent", BOOKMARKS_GETRECENT)
 
  protected:
-  ~BookmarksGetRecentFunction() override {}
+  ~BookmarksGetRecentFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -155,7 +169,7 @@ class BookmarksGetTreeFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.getTree", BOOKMARKS_GETTREE)
 
  protected:
-  ~BookmarksGetTreeFunction() override {}
+  ~BookmarksGetTreeFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -166,7 +180,7 @@ class BookmarksGetSubTreeFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.getSubTree", BOOKMARKS_GETSUBTREE)
 
  protected:
-  ~BookmarksGetSubTreeFunction() override {}
+  ~BookmarksGetSubTreeFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -177,7 +191,7 @@ class BookmarksSearchFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.search", BOOKMARKS_SEARCH)
 
  protected:
-  ~BookmarksSearchFunction() override {}
+  ~BookmarksSearchFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -185,7 +199,7 @@ class BookmarksSearchFunction : public BookmarksFunction {
 
 class BookmarksRemoveFunctionBase : public BookmarksFunction {
  protected:
-  ~BookmarksRemoveFunctionBase() override {}
+  ~BookmarksRemoveFunctionBase() override = default;
 
   virtual bool is_recursive() const = 0;
 
@@ -198,7 +212,7 @@ class BookmarksRemoveFunction : public BookmarksRemoveFunctionBase {
   DECLARE_EXTENSION_FUNCTION("bookmarks.remove", BOOKMARKS_REMOVE)
 
  protected:
-  ~BookmarksRemoveFunction() override {}
+  ~BookmarksRemoveFunction() override = default;
 
   // BookmarksRemoveFunctionBase:
   bool is_recursive() const override;
@@ -209,7 +223,7 @@ class BookmarksRemoveTreeFunction : public BookmarksRemoveFunctionBase {
   DECLARE_EXTENSION_FUNCTION("bookmarks.removeTree", BOOKMARKS_REMOVETREE)
 
  protected:
-  ~BookmarksRemoveTreeFunction() override {}
+  ~BookmarksRemoveTreeFunction() override = default;
 
   // BookmarksRemoveFunctionBase:
   bool is_recursive() const override;
@@ -220,14 +234,14 @@ class BookmarksCreateFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.create", BOOKMARKS_CREATE)
 
  protected:
-  ~BookmarksCreateFunction() override {}
+  ~BookmarksCreateFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
 
  private:
   // Helper to create a bookmark node from a CreateDetails object. If a node
-  // can't be created based on the given details, sets |error| and returns
+  // can't be created based on the given details, sets `error` and returns
   // nullptr.
   const bookmarks::BookmarkNode* CreateBookmarkNode(
       bookmarks::BookmarkModel* model,
@@ -240,7 +254,7 @@ class BookmarksMoveFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.move", BOOKMARKS_MOVE)
 
  protected:
-  ~BookmarksMoveFunction() override {}
+  ~BookmarksMoveFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -251,7 +265,7 @@ class BookmarksUpdateFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.update", BOOKMARKS_UPDATE)
 
  protected:
-  ~BookmarksUpdateFunction() override {}
+  ~BookmarksUpdateFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;

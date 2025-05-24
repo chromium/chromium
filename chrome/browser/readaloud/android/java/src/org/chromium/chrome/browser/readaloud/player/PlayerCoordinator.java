@@ -11,12 +11,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,6 +33,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * <p>States: A. no players shown B. mini player visible C. expanded player open and mini player
  * visible (behind expanded player)
  */
+@NullMarked
 public class PlayerCoordinator implements Player {
     private static final String TAG = "ReadAloudPlayer";
     private final ObserverList<Observer> mObserverList;
@@ -38,7 +41,6 @@ public class PlayerCoordinator implements Player {
     private final Delegate mDelegate;
     private final MiniPlayerCoordinator mMiniPlayer;
     private final ExpandedPlayerCoordinator mExpandedPlayer;
-    private Playback mPlayback;
     private boolean mRestoreMiniPlayer;
     private boolean mRestoreExpandedPlayer;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -60,8 +62,7 @@ public class PlayerCoordinator implements Player {
                         .build();
         // This Context can be used to inflate views from the split.
         Context contextForInflation =
-                BundleUtils.createContextForInflation(
-                        delegate.getActivity(), "read_aloud_playback");
+                BundleUtils.createContextForInflation(delegate.getActivity(), "google3");
         mMiniPlayer =
                 new MiniPlayerCoordinator(
                         delegate.getActivity(),
@@ -118,8 +119,9 @@ public class PlayerCoordinator implements Player {
     }
 
     @Override
-    public void playTabRequested() {
+    public void playTabRequested(PlaybackMode playbackMode) {
         mMediator.setPlayback(null);
+        mMediator.setRequestedPlaybackMode(playbackMode);
         mMediator.setPlaybackState(PlaybackListener.State.BUFFERING);
         if (!mExpandedPlayer.anySheetShowing()) {
             mMiniPlayer.show(/* animate= */ true);
@@ -130,7 +132,6 @@ public class PlayerCoordinator implements Player {
     public void playbackReady(Playback playback, @PlaybackListener.State int currentPlaybackState) {
         mMediator.setPlayback(playback);
         mMediator.setPlaybackState(currentPlaybackState);
-        mPlayback = playback;
     }
 
     @Override

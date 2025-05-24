@@ -12,15 +12,16 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {DefaultUserImage, UserImage} from '../../personalization_app.mojom-webui.js';
+import type {DefaultUserImage, UserImage} from '../../personalization_app.mojom-webui.js';
 import {isUserAvatarCustomizationSelectorsEnabled} from '../load_time_booleans.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isSelectionEvent} from '../utils.js';
 
-import {AvatarCameraElement, AvatarCameraMode} from './avatar_camera_element.js';
+import type {AvatarCameraElement} from './avatar_camera_element.js';
+import {AvatarCameraMode} from './avatar_camera_element.js';
 import {getTemplate} from './avatar_list_element.html.js';
 import {fetchDefaultUserImages} from './user_controller.js';
 import {getUserProvider} from './user_interface_provider.js';

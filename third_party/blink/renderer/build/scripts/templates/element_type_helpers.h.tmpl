@@ -19,6 +19,21 @@ class Document;
 class {{tag.interface}};
 template <>
 struct DowncastTraits<{{tag.interface}}> {
+  // AllowFrom(const {{namespace}}Element&) and AllowFrom(const Element&)
+  // have the same code, but the {{namespace}}Element ones are a little
+  // more efficient because of the
+  // {{namespace}}Element::HasTagName(const {{namespace}}QualifiedName&)
+  // override.
+  static bool AllowFrom(const {{namespace}}Element& element) {
+    {% if tag.runtimeEnabled %}
+    // If the following line doesn't compile, your feature may vary by context,
+    // in which case you'll need to write your own type helpers that can
+    // distinguish elements without relying solely on tag name.
+    if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled())
+      return false;
+    {% endif %}
+    return element.HasTagName({{cpp_namespace}}::{{tag|symbol}}Tag);
+  }
   static bool AllowFrom(const Element& element) {
     {% if tag.runtimeEnabled %}
     // If the following line doesn't compile, your feature may vary by context,

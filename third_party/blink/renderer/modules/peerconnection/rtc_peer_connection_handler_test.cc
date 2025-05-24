@@ -36,6 +36,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processing_layout.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
@@ -72,12 +73,17 @@ static const char kDummySdp[] = "dummy sdp";
 static const char kDummySdpType[] = "dummy type";
 
 using testing::_;
+using testing::ElementsAre;
 using testing::Invoke;
+using testing::IsNull;
 using testing::NiceMock;
+using testing::NotNull;
 using testing::Ref;
 using testing::Return;
 using testing::SaveArg;
+using testing::SaveArgByMove;
 using testing::WithArg;
+using Message = webrtc::DataChannelEventObserverInterface::Message;
 
 namespace blink {
 
@@ -163,6 +169,8 @@ class MockPeerConnectionTracker : public PeerConnectionTracker {
                     const String& value));
   MOCK_METHOD1(TrackOnRenegotiationNeeded,
                void(RTCPeerConnectionHandler* pc_handler));
+  MOCK_METHOD2(TrackRtcDataChannelLogWrite,
+               void(RTCPeerConnectionHandler*, const WTF::Vector<uint8_t>&));
 };
 
 class DummyRTCVoidRequest final : public RTCVoidRequest {
@@ -239,9 +247,6 @@ class RTCPeerConnectionHandlerUnderTest : public RTCPeerConnectionHandler {
   webrtc::PeerConnectionObserver* observer() {
     return native_peer_connection()->observer();
   }
-
-  bool HasThermalUmaListener() const { return thermal_uma_listener(); }
-  bool HasSpeedLimitUmaListener() const { return speed_limit_uma_listener(); }
 };
 
 class RTCPeerConnectionHandlerTest : public SimTest {
@@ -292,8 +297,11 @@ class RTCPeerConnectionHandlerTest : public SimTest {
                           media::AudioParameters::kAudioCDSampleRate,
                           media::ChannelLayoutConfig::Stereo(),
                           media::AudioParameters::kAudioCDSampleRate / 100),
-        false /* disable_local_echo */, blink::AudioProcessingProperties(),
-        1 /* num_requested_channels */, base::DoNothing(),
+        false /* disable_local_echo */,
+        MediaStreamAudioProcessingLayout(AudioProcessingProperties(),
+                                         /*available_platform_effects=*/0,
+                                         /*multichannel_processing=*/false),
+        base::DoNothing(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     auto* processed_audio_source_ptr = processed_audio_source.get();
     processed_audio_source->SetAllowInvalidRenderFrameIdForTesting(true);
@@ -349,11 +357,11 @@ class RTCPeerConnectionHandlerTest : public SimTest {
 
   // Creates a remote MediaStream and adds it to the mocked native
   // peer connection.
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> AddRemoteMockMediaStream(
+  webrtc::scoped_refptr<webrtc::MediaStreamInterface> AddRemoteMockMediaStream(
       const String& stream_label,
       const String& video_track_label,
       const String& audio_track_label) {
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream(
+    webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream(
         mock_dependency_factory_->CreateLocalMediaStream(stream_label).get());
     if (!video_track_label.empty()) {
       InvokeAddTrack<webrtc::VideoTrackInterface>(
@@ -426,7 +434,8 @@ class RTCPeerConnectionHandlerTest : public SimTest {
   }
 
   void InvokeOnAddStream(
-      const rtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream) {
+      const webrtc::scoped_refptr<webrtc::MediaStreamInterface>&
+          remote_stream) {
     for (const auto& audio_track : remote_stream->GetAudioTracks()) {
       InvokeOnAddTrack(audio_track, remote_stream);
     }
@@ -436,12 +445,14 @@ class RTCPeerConnectionHandlerTest : public SimTest {
   }
 
   void InvokeOnAddTrack(
-      const rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>& remote_track,
-      const rtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream) {
-    rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver(
-        new rtc::RefCountedObject<blink::FakeRtpReceiver>(remote_track));
+      const webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>&
+          remote_track,
+      const webrtc::scoped_refptr<webrtc::MediaStreamInterface>&
+          remote_stream) {
+    webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver(
+        new webrtc::RefCountedObject<blink::FakeRtpReceiver>(remote_track));
     receivers_by_track_.insert(std::make_pair(remote_track.get(), receiver));
-    std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>
+    std::vector<webrtc::scoped_refptr<webrtc::MediaStreamInterface>>
         receiver_streams;
     receiver_streams.push_back(remote_stream);
     InvokeOnSignalingThread(
@@ -451,7 +462,8 @@ class RTCPeerConnectionHandlerTest : public SimTest {
   }
 
   void InvokeOnRemoveStream(
-      const rtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream) {
+      const webrtc::scoped_refptr<webrtc::MediaStreamInterface>&
+          remote_stream) {
     for (const auto& audio_track : remote_stream->GetAudioTracks()) {
       InvokeOnRemoveTrack(audio_track);
     }
@@ -461,9 +473,9 @@ class RTCPeerConnectionHandlerTest : public SimTest {
   }
 
   void InvokeOnRemoveTrack(
-      const rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>&
+      const webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>&
           remote_track) {
-    rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver =
+    webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver =
         receivers_by_track_.find(remote_track.get())->second;
     InvokeOnSignalingThread(CrossThreadBindOnce(
         &webrtc::PeerConnectionObserver::OnRemoveTrack,
@@ -472,12 +484,12 @@ class RTCPeerConnectionHandlerTest : public SimTest {
 
   template <typename T>
   void InvokeAddTrack(
-      const rtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream,
+      const webrtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream,
       const scoped_refptr<T>& webrtc_track) {
     InvokeOnSignalingThread(CrossThreadBindOnce(
         [](webrtc::MediaStreamInterface* remote_stream, T* webrtc_track) {
           EXPECT_TRUE(
-              remote_stream->AddTrack(rtc::scoped_refptr<T>(webrtc_track)));
+              remote_stream->AddTrack(webrtc::scoped_refptr<T>(webrtc_track)));
         },
         CrossThreadUnretained(remote_stream.get()),
         CrossThreadUnretained(webrtc_track.get())));
@@ -485,7 +497,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
 
   template <typename T>
   void InvokeRemoveTrack(
-      const rtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream,
+      const webrtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream,
       const scoped_refptr<T> webrtc_track) {
     InvokeOnSignalingThread(CrossThreadBindOnce(
         [](webrtc::MediaStreamInterface* remote_stream, T* webrtc_track) {
@@ -496,7 +508,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
   }
 
   bool HasReceiverForEveryTrack(
-      const rtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream,
+      const webrtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream,
       const std::vector<std::unique_ptr<RTCRtpReceiverPlatform>>& receivers) {
     for (const auto& audio_track : remote_stream->GetAudioTracks()) {
       if (!HasReceiverForTrack(*audio_track.get(), receivers))
@@ -557,7 +569,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
 
   std::vector<std::unique_ptr<blink::RTCRtpSenderImpl>> senders_;
   std::map<webrtc::MediaStreamTrackInterface*,
-           rtc::scoped_refptr<webrtc::RtpReceiverInterface>>
+           webrtc::scoped_refptr<webrtc::RtpReceiverInterface>>
       receivers_by_track_;
 };
 
@@ -584,7 +596,7 @@ TEST_F(RTCPeerConnectionHandlerTest, NoCallbacksToClientAfterStop) {
 
   EXPECT_CALL(*mock_client_.Get(), DidModifyTransceiversForMock(_, _, _))
       .Times(0);
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> remote_stream(
+  webrtc::scoped_refptr<webrtc::MediaStreamInterface> remote_stream(
       AddRemoteMockMediaStream("remote_stream", "video", "audio"));
   InvokeOnAddStream(remote_stream);
 
@@ -594,8 +606,8 @@ TEST_F(RTCPeerConnectionHandlerTest, NoCallbacksToClientAfterStop) {
 
   EXPECT_CALL(*mock_client_.Get(), DidAddRemoteDataChannel(_)).Times(0);
   webrtc::DataChannelInit config;
-  rtc::scoped_refptr<webrtc::DataChannelInterface> remote_data_channel(
-      new rtc::RefCountedObject<blink::MockDataChannel>("dummy", &config));
+  webrtc::scoped_refptr<webrtc::DataChannelInterface> remote_data_channel(
+      new webrtc::RefCountedObject<blink::MockDataChannel>("dummy", &config));
   pc_handler_->observer()->OnDataChannel(remote_data_channel);
 
   RunMessageLoopsUntilIdle();
@@ -951,7 +963,7 @@ TEST_F(RTCPeerConnectionHandlerTest, CreateDataChannel) {
   EXPECT_CALL(*mock_tracker_.Get(),
               TrackCreateDataChannel(pc_handler_.get(), testing::NotNull(),
                                      PeerConnectionTracker::kSourceLocal));
-  rtc::scoped_refptr<webrtc::DataChannelInterface> channel =
+  webrtc::scoped_refptr<webrtc::DataChannelInterface> channel =
       pc_handler_->CreateDataChannel("d1", webrtc::DataChannelInit());
   EXPECT_TRUE(channel.get());
   EXPECT_EQ(label.Utf8(), channel->label());
@@ -1022,23 +1034,79 @@ TEST_F(RTCPeerConnectionHandlerTest,
   thermal_resource->SetResourceListener(nullptr);
 }
 
-TEST_F(RTCPeerConnectionHandlerTest,
-       ThermalStateUmaListenerCreatedWhenVideoStreamAdded) {
-  base::HistogramTester histogram;
-  EXPECT_FALSE(pc_handler_->HasThermalUmaListener());
-  MediaStreamDescriptor* local_stream = CreateLocalMediaStream("local_stream");
-  EXPECT_TRUE(AddStream(local_stream));
-  EXPECT_TRUE(pc_handler_->HasThermalUmaListener());
+TEST_F(RTCPeerConnectionHandlerTest, StartDataChannelLog) {
+  EXPECT_CALL(*mock_peer_connection_, SetDataChannelEventObserver(NotNull()));
+  pc_handler_->StartDataChannelLog();
 }
 
-TEST_F(RTCPeerConnectionHandlerTest,
-       SpeedLimitUmaListenerCreatedWhenStreamAdded) {
-  base::HistogramTester histogram;
-  EXPECT_FALSE(pc_handler_->HasSpeedLimitUmaListener());
-  MediaStreamDescriptor* local_stream = CreateLocalMediaStream("local_stream");
-  EXPECT_TRUE(AddStream(local_stream));
-  EXPECT_TRUE(pc_handler_->HasSpeedLimitUmaListener());
+TEST_F(RTCPeerConnectionHandlerTest, StopDataChannelLog) {
+  EXPECT_CALL(*mock_peer_connection_, SetDataChannelEventObserver(IsNull()));
+  pc_handler_->StopDataChannelLog();
 }
+
+TEST_F(RTCPeerConnectionHandlerTest, OnWebRtcDataChannelLogWrite) {
+  EXPECT_CALL(*mock_tracker_,
+              TrackRtcDataChannelLogWrite(_, ElementsAre(1, 2, 3)));
+  pc_handler_->OnWebRtcDataChannelLogWrite({1, 2, 3});
+}
+
+class RTCPeerConnectionHandlerDataChannelOnMessageTest
+    : public RTCPeerConnectionHandlerTest,
+      public ::testing::WithParamInterface<
+          std::tuple<Message::Direction, Message::DataType>> {
+ public:
+  RTCPeerConnectionHandlerDataChannelOnMessageTest()
+      : direction_(std::get<0>(GetParam())),
+        data_type_(std::get<1>(GetParam())) {}
+  Message::Direction direction_;
+  Message::DataType data_type_;
+};
+
+TEST_P(RTCPeerConnectionHandlerDataChannelOnMessageTest, OnMessage) {
+  std::unique_ptr<webrtc::DataChannelEventObserverInterface> observer;
+  EXPECT_CALL(*mock_peer_connection_, SetDataChannelEventObserver)
+      .WillOnce(SaveArgByMove<0>(&observer));
+  pc_handler_->StartDataChannelLog();
+
+  ASSERT_THAT(observer, NotNull());
+
+  const String direction_string =
+      direction_ == Message::Direction::kSend ? "send" : "receive";
+  const String data_type_string =
+      data_type_ == Message::DataType::kString ? "string" : "binary";
+  const String data_string =
+      data_type_ == Message::DataType::kString ? "Hello" : "SGVsbG8=";
+
+  const String expected_string =
+      R"({"type":"message","unix_timestamp_ms":2147483648,)"
+      R"("datachannel_id":9,"label":"lbl","direction":")" +
+      direction_string + R"(","data_type":")" + data_type_string +
+      R"(","data":")" + data_string + R"("})" + "\n";
+  EXPECT_CALL(*mock_tracker_, TrackRtcDataChannelLogWrite)
+      .WillOnce([&expected_string](auto, auto vec) {
+        // Comparing as string makes the output of a failed expectation useful.
+        EXPECT_EQ(expected_string, String(vec));
+      });
+
+  Message msg;
+  const int64_t max_int32 = std::numeric_limits<int32_t>::max();
+  msg.set_unix_timestamp_ms(max_int32 + 1);
+  msg.set_datachannel_id(9);
+  msg.set_label("lbl");
+  msg.set_direction(direction_);
+  msg.set_data_type(data_type_);
+  uint8_t data[] = {'H', 'e', 'l', 'l', 'o'};
+  msg.set_data(data);
+  observer->OnMessage(msg);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RTCPeerConnectionHandlerDataChannelOnMessageTest,
+    ::testing::Combine(::testing::Values(Message::Direction::kSend,
+                                         Message::Direction::kReceive),
+                       ::testing::Values(Message::DataType::kString,
+                                         Message::DataType::kBinary)));
 
 TEST_F(RTCPeerConnectionHandlerTest, CandidatesIgnoredWheHandlerDeleted) {
   auto* observer = pc_handler_->observer();

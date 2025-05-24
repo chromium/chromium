@@ -7,13 +7,13 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_fifo.h"
 #include "media/base/audio_parameters.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_encoder.h"
-
 #include "third_party/opus/src/include/opus.h"
 
 namespace blink {
@@ -72,6 +72,8 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   std::unique_ptr<float[]> buffer_;
 
   raw_ptr<OpusEncoder, DanglingUntriaged> opus_encoder_;
+
+  base::HeapArray<uint8_t> packet_buffer_;
 };
 
 }  // namespace blink

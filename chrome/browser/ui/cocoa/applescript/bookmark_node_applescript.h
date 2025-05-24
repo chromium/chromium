@@ -13,7 +13,7 @@
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
-}
+}  // namespace bookmarks
 
 // Contains all the elements that are common to both a bookmark folder and
 // bookmark item.

@@ -79,29 +79,23 @@ TEST(DemuxerMemoryLimitCastTest, GetDemuxerStreamAudioMemoryLimit) {
 }
 
 TEST(DemuxerMemoryLimitCastTest, GetDemuxerStreamVideoMemoryLimit) {
-  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(
-                Demuxer::DemuxerTypes::kFFmpegDemuxer, nullptr),
-            internal::kDemuxerStreamVideoMemoryLimitDefault);
-  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(
-                Demuxer::DemuxerTypes::kChunkDemuxer, nullptr),
-            internal::kDemuxerStreamVideoMemoryLimitLow);
-  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(
-                Demuxer::DemuxerTypes::kMediaUrlDemuxer, nullptr),
-            internal::kDemuxerStreamVideoMemoryLimitLow);
+  EXPECT_EQ(
+      GetDemuxerStreamVideoMemoryLimit(DemuxerType::kFFmpegDemuxer, nullptr),
+      internal::kDemuxerStreamVideoMemoryLimitDefault);
+  EXPECT_EQ(
+      GetDemuxerStreamVideoMemoryLimit(DemuxerType::kChunkDemuxer, nullptr),
+      internal::kDemuxerStreamVideoMemoryLimitLow);
 
   VideoDecoderConfig video_config(
       VideoCodec::kVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
       kNoTransformation, kCodedSize, kVisibleRect, kNaturalSize,
       EmptyExtraData(), EncryptionScheme::kUnencrypted);
-  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(
-                Demuxer::DemuxerTypes::kFFmpegDemuxer, &video_config),
+  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(DemuxerType::kFFmpegDemuxer,
+                                             &video_config),
             internal::kDemuxerStreamVideoMemoryLimitDefault);
-  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(
-                Demuxer::DemuxerTypes::kChunkDemuxer, &video_config),
-            internal::kDemuxerStreamVideoMemoryLimitLow);
-  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(
-                Demuxer::DemuxerTypes::kMediaUrlDemuxer, &video_config),
+  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(DemuxerType::kChunkDemuxer,
+                                             &video_config),
             internal::kDemuxerStreamVideoMemoryLimitLow);
 
   video_config.Initialize(VideoCodec::kVP9, VIDEO_CODEC_PROFILE_UNKNOWN,
@@ -109,25 +103,19 @@ TEST(DemuxerMemoryLimitCastTest, GetDemuxerStreamVideoMemoryLimit) {
                           VideoColorSpace(), kNoTransformation, kCodedSize,
                           kVisibleRect, kNaturalSize, EmptyExtraData(),
                           EncryptionScheme::kUnencrypted);
-  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(
-                Demuxer::DemuxerTypes::kFFmpegDemuxer, &video_config),
+  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(DemuxerType::kFFmpegDemuxer,
+                                             &video_config),
             internal::kDemuxerStreamVideoMemoryLimitDefault);
-  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(
-                Demuxer::DemuxerTypes::kChunkDemuxer, &video_config),
+  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(DemuxerType::kChunkDemuxer,
+                                             &video_config),
             internal::kDemuxerStreamVideoMemoryLimitMedium);
-  EXPECT_EQ(GetDemuxerStreamVideoMemoryLimit(
-                Demuxer::DemuxerTypes::kMediaUrlDemuxer, &video_config),
-            internal::kDemuxerStreamVideoMemoryLimitLow);
 }
 
 TEST(DemuxerMemoryLimitCastTest, GetDemuxerMemoryLimit) {
-  EXPECT_EQ(GetDemuxerMemoryLimit(Demuxer::DemuxerTypes::kFFmpegDemuxer),
+  EXPECT_EQ(GetDemuxerMemoryLimit(DemuxerType::kFFmpegDemuxer),
             internal::kDemuxerStreamAudioMemoryLimitLow +
                 internal::kDemuxerStreamVideoMemoryLimitDefault);
-  EXPECT_EQ(GetDemuxerMemoryLimit(Demuxer::DemuxerTypes::kChunkDemuxer),
-            internal::kDemuxerStreamAudioMemoryLimitLow +
-                internal::kDemuxerStreamVideoMemoryLimitLow);
-  EXPECT_EQ(GetDemuxerMemoryLimit(Demuxer::DemuxerTypes::kMediaUrlDemuxer),
+  EXPECT_EQ(GetDemuxerMemoryLimit(DemuxerType::kChunkDemuxer),
             internal::kDemuxerStreamAudioMemoryLimitLow +
                 internal::kDemuxerStreamVideoMemoryLimitLow);
 }

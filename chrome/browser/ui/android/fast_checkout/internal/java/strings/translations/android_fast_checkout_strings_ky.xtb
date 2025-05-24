@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1122068467107743258">Жумуш</translation>
 <translation id="1275718070701477396">Тандалган</translation>
 <translation id="138513070655895675">Бул менюдагы нерседен башка төлөм ыкмасына өзгөртүү</translation>
 <translation id="2129442648318919291">Даректерди тескөө</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Жеткирүү дареги</translation>
 <translation id="8873105120914375071">Тезирээк төлөгүңүз келеби?</translation>
 <translation id="9032876013752408138">Маалыматты автоматтык түрдө толтуруу</translation>
+<translation id="932327136139879170">Башкы</translation>
 <translation id="984275831282074731">Төлөм ыкмалары</translation>
 </translationbundle>

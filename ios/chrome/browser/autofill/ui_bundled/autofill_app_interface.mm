@@ -10,18 +10,18 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/autofill/core/browser/address_data_manager.h"
-#import "components/autofill/core/browser/autofill_client.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
-#import "components/autofill/core/browser/browser_autofill_manager_test_api.h"
-#import "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#import "components/autofill/core/browser/form_data_importer.h"
+#import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#import "components/autofill/core/browser/form_import/form_data_importer.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #import "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -60,7 +60,7 @@ GetPasswordProfileStore() {
   // This test does not deal with Incognito, and should not run in Incognito
   // context. Therefore IMPLICIT_ACCESS is used to let the test fail if in
   // Incognito context.
-  return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+  return IOSChromeProfilePasswordStoreFactory::GetForProfile(
       chrome_test_util::GetOriginalProfile(),
       ServiceAccessType::IMPLICIT_ACCESS);
 }
@@ -128,8 +128,9 @@ void SaveToPasswordProfileStore(const password_manager::PasswordForm& form) {
   // Check the result and ensure PasswordStore processed this.
   TestStoreConsumer consumer;
   for (const auto& result : consumer.GetStoreResults()) {
-    if (result == expected_form)
+    if (result == expected_form) {
       return;
+    }
   }
 }
 
@@ -162,7 +163,8 @@ void ClearProfilePasswordStore() {
 
 // Saves an example profile in the store.
 void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
-                        bool isAccountProfile) {
+                        std::optional<autofill::AutofillProfile::RecordType>
+                            recordType = std::nullopt) {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   // If the test profile is already in the store, adding it will be a no-op.
   // In that case, early return.
@@ -175,9 +177,8 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
   size_t profileCount =
       personalDataManager->address_data_manager().GetProfiles().size();
 
-  if (isAccountProfile) {
-    test_api(profile).set_record_type(
-        autofill::AutofillProfile::RecordType::kAccount);
+  if (recordType.has_value()) {
+    test_api(profile).set_record_type(recordType.value());
   }
   personalDataManager->address_data_manager().AddProfile(profile);
 
@@ -368,7 +369,7 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
   std::unique_ptr<IOSTestEventWaiter<CreditCardSaveManagerObserverEvent>>
       event_waiter_;
 };
-}
+}  // namespace autofill
 
 @implementation AutofillAppInterface
 
@@ -393,18 +394,28 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   return personalDataManager->address_data_manager().GetProfiles().size();
 }
 
++ (BOOL)isAccountProfileAtIndex:(NSInteger)index {
+  CHECK_LT(index, self.profilesCount);
+
+  autofill::PersonalDataManager* personalDataManager =
+      [self personalDataManager];
+  return personalDataManager->address_data_manager()
+      .GetProfiles()[index]
+      ->IsAccountProfile();
+}
+
 + (void)clearProfilesStore {
   ProfileIOS* profileIOS = chrome_test_util::GetOriginalProfile();
-  autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForProfile(profileIOS);
+  autofill::AddressDataManager& addressDataManager =
+      autofill::PersonalDataManagerFactory::GetForProfile(profileIOS)
+          ->address_data_manager();
   for (const autofill::AutofillProfile* profile :
-       personalDataManager->address_data_manager().GetProfiles()) {
-    personalDataManager->RemoveByGUID(profile->guid());
+       addressDataManager.GetProfiles()) {
+    addressDataManager.RemoveProfile(profile->guid());
   }
 
   ConditionBlock conditionBlock = ^bool {
-    return 0 ==
-           personalDataManager->address_data_manager().GetProfiles().size();
+    return 0 == addressDataManager.GetProfiles().size();
   };
   CHECK(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, conditionBlock));
@@ -413,11 +424,17 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 }
 
 + (void)saveExampleProfile {
-  AddAutofillProfile([self personalDataManager], false);
+  AddAutofillProfile([self personalDataManager]);
 }
 
 + (void)saveExampleAccountProfile {
-  AddAutofillProfile([self personalDataManager], true);
+  AddAutofillProfile([self personalDataManager],
+                     autofill::AutofillProfile::RecordType::kAccount);
+}
+
++ (void)saveExampleHomeWorkAccountProfile {
+  AddAutofillProfile([self personalDataManager],
+                     autofill::AutofillProfile::RecordType::kAccountHome);
 }
 
 + (NSString*)exampleProfileName {
@@ -429,12 +446,12 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 }
 
 + (void)clearCreditCardStore {
-  autofill::PersonalDataManager* personalDataManager =
-      [self personalDataManager];
+  autofill::PaymentsDataManager& paymentsDataManager =
+      [self personalDataManager]->payments_data_manager();
   for (const autofill::CreditCard* creditCard :
-       personalDataManager->payments_data_manager().GetCreditCards()) {
+       paymentsDataManager.GetCreditCards()) {
     // This will not remove server cards, as they have no guid.
-    personalDataManager->RemoveByGUID(creditCard->guid());
+    paymentsDataManager.RemoveByGUID(creditCard->guid());
   }
 
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
@@ -503,6 +520,20 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
                     .GetCreditCards()
                     .size() == card_count + 1);
       }));
+
+  personalDataManager->NotifyPersonalDataObserver();
+  return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
+}
+
++ (NSString*)saveMaskedCreditCardEnrolledInCardInfoRetrieval {
+  autofill::PersonalDataManager* personalDataManager =
+      [self personalDataManager];
+  autofill::CreditCard card =
+      autofill::test::GetMaskedServerCardEnrolledIntoRuntimeRetrieval();
+  CHECK_NE(card.record_type(), autofill::CreditCard::RecordType::kLocalCard);
+
+  personalDataManager->payments_data_manager().AddServerCreditCardForTest(
+      std::make_unique<autofill::CreditCard>(card));
 
   personalDataManager->NotifyPersonalDataObserver();
   return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());

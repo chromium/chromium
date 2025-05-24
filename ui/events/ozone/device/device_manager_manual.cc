@@ -99,9 +99,7 @@ void DeviceManagerManual::OnDevicesScanned(
       continue;
 
     DeviceEvent event(DeviceEvent::INPUT, DeviceEvent::ADD, path);
-    for (DeviceEventObserver& observer : observers_) {
-      observer.OnDeviceEvent(event);
-    }
+    observers_.Notify(&DeviceEventObserver::OnDeviceEvent, event);
   }
 
   // Report removed devices.
@@ -110,9 +108,7 @@ void DeviceManagerManual::OnDevicesScanned(
       continue;
 
     DeviceEvent event(DeviceEvent::INPUT, DeviceEvent::REMOVE, path);
-    for (DeviceEventObserver& observer : observers_) {
-      observer.OnDeviceEvent(event);
-    }
+    observers_.Notify(&DeviceEventObserver::OnDeviceEvent, event);
   }
 
   devices_.swap(new_devices);

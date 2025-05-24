@@ -49,8 +49,9 @@ bool ThemeColorPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
   const base::Value* value = nullptr;
-  if (!CheckAndGetValue(policies, errors, &value))
+  if (!CheckAndGetValue(policies, errors, &value)) {
     return false;
+  }
 
   if (value && !IsValidHexColor(value->GetString())) {
     errors->AddError(policy_name(), IDS_POLICY_HEX_COLOR_ERROR,
@@ -65,8 +66,9 @@ void ThemeColorPolicyHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::STRING);
-  if (!value)
+  if (!value) {
     return;
+  }
 
   prefs->SetInteger(prefs::kPolicyThemeColor, HexToSkColor(value->GetString()));
 }

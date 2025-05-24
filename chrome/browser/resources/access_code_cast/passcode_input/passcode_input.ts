@@ -6,12 +6,12 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {getTemplate} from './passcode_input.html.js';
 
-type ForEachCallback = (el: HTMLParagraphElement|HTMLDivElement, index: number) => void;
+type ForEachCallback = (el: HTMLElement, index: number) => void;
 
 export interface PasscodeInputElement {
   $: {
     inputElement: HTMLInputElement,
-    container: HTMLDivElement,
+    container: HTMLElement,
   };
 }
 
@@ -30,6 +30,7 @@ export class PasscodeInputElement extends PolymerElement {
         type: String,
         value: '',
       },
+      charDisplayBoxes: Array,
       disabled: {
         type: Boolean,
         observer: 'disabledChange',
@@ -45,12 +46,13 @@ export class PasscodeInputElement extends PolymerElement {
     };
   }
 
-  length: number;
-  value: string;
+  declare ariaLabel: string;
+  declare private charDisplayBoxes: string[];
+  declare disabled: boolean;
+  declare length: number;
+  declare value: string;
   focused: boolean;
-  disabled: boolean;
   private afterFirstRender: boolean;
-  private charDisplayBoxes: string[];
 
   private static readonly PASSCODE_INPUT_SIZE = 40;
   private static readonly PASSCODE_BOX_SPACING = 8;
@@ -99,13 +101,12 @@ export class PasscodeInputElement extends PolymerElement {
   }
 
   getCharBox(boxIndex: number) {
-    const el = this.shadowRoot!.querySelector('#char-box-' + boxIndex)!;
-    return el as HTMLDivElement;
+    return this.shadowRoot!.querySelector<HTMLElement>('#char-box-' + boxIndex)!
+        ;
   }
 
   getDisplayChar(charIndex: number) {
-    const el = this.shadowRoot!.querySelector('#char-' + charIndex)!;
-    return el as HTMLParagraphElement;
+    return this.shadowRoot!.querySelector<HTMLElement>('#char-' + charIndex)!;
   }
 
   focusInput() {
@@ -202,7 +203,7 @@ export class PasscodeInputElement extends PolymerElement {
   }
 
   private forEach(elementType: 'char'|'char-box', callback: ForEachCallback) {
-    let el: HTMLDivElement | HTMLParagraphElement | null;
+    let el: HTMLElement|null;
     for (let i = 0; i < this.length; i++) {
       el = this.shadowRoot!.querySelector('#' + elementType + '-' + i);
       if (el !== null) {
@@ -240,7 +241,7 @@ export class PasscodeInputElement extends PolymerElement {
     });
   }
 
-  private async afterPageLoaded(callback: () => void) {
+  private afterPageLoaded(callback: () => void) {
     if (this.afterFirstRender) {
       callback();
     } else {

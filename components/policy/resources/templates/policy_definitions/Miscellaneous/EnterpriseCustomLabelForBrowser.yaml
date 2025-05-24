@@ -1,0 +1,21 @@
+caption: Set a custom enterprise label for a managed browser
+default: null
+desc: |-
+  This policy controls a custom label used to indicate a managed browser. For managed browsers, this label will be shown in a management disclaimer on a footer on the New Tab page. The custom label will not be translated.
+
+  When this policy is applied, any strings that surpass 16 characters will be truncated with a “...” Please refrain from using extended names.
+
+  Note that this policy is only applied for managed browsers, so it will have no effect for managed users on unmanaged browsers.
+example_value: Chromium
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- chrome.*
+owners:
+- file://components/enterprise/OWNERS
+- esalma@google.com
+schema:
+  type: string
+tags: []
+type: string

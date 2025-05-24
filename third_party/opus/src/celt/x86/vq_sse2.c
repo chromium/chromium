@@ -75,7 +75,7 @@ opus_val16 op_pvq_search_sse2(celt_norm *_X, int *iy, int K, int N, int arch)
       sums = _mm_add_ps(sums, x4);
       /* Clear y and iy in case we don't do the projection. */
       _mm_storeu_ps(&y[j], _mm_setzero_ps());
-      _mm_storeu_si128((__m128i*)&iy[j], _mm_setzero_si128());
+      _mm_storeu_si128((__m128i*)(void*)&iy[j], _mm_setzero_si128());
       _mm_storeu_ps(&X[j], x4);
       _mm_storeu_ps(&signy[j], s4);
    }
@@ -116,7 +116,7 @@ opus_val16 op_pvq_search_sse2(celt_norm *_X, int *iy, int K, int N, int arch)
          rx4 = _mm_mul_ps(x4, rcp4);
          iy4 = _mm_cvttps_epi32(rx4);
          pulses_sum = _mm_add_epi32(pulses_sum, iy4);
-         _mm_storeu_si128((__m128i*)&iy[j], iy4);
+         _mm_storeu_si128((__m128i*)(void*)&iy[j], iy4);
          y4 = _mm_cvtepi32_ps(iy4);
          xy4 = _mm_add_ps(xy4, _mm_mul_ps(x4, y4));
          yy4 = _mm_add_ps(yy4, _mm_mul_ps(y4, y4));
@@ -205,10 +205,10 @@ opus_val16 op_pvq_search_sse2(celt_norm *_X, int *iy, int K, int N, int arch)
    {
       __m128i y4;
       __m128i s4;
-      y4 = _mm_loadu_si128((__m128i*)&iy[j]);
+      y4 = _mm_loadu_si128((__m128i*)(void*)&iy[j]);
       s4 = _mm_castps_si128(_mm_loadu_ps(&signy[j]));
       y4 = _mm_xor_si128(_mm_add_epi32(y4, s4), s4);
-      _mm_storeu_si128((__m128i*)&iy[j], y4);
+      _mm_storeu_si128((__m128i*)(void*)&iy[j], y4);
    }
    RESTORE_STACK;
    return yy;

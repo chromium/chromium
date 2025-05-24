@@ -30,7 +30,8 @@ class VideoCaptureDeviceWebRtc : public VideoCaptureDevice,
       const VideoCaptureDeviceDescriptor& device_descriptor);
 
   explicit VideoCaptureDeviceWebRtc(
-      rtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module);
+      webrtc::VideoCaptureOptions* options,
+      webrtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module);
 
   VideoCaptureDeviceWebRtc(const VideoCaptureDeviceWebRtc&) = delete;
   VideoCaptureDeviceWebRtc& operator=(const VideoCaptureDeviceWebRtc&) = delete;
@@ -55,7 +56,8 @@ class VideoCaptureDeviceWebRtc : public VideoCaptureDevice,
                      int64_t capture_time_ms) override;
 
  private:
-  rtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module_;
+  webrtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module_;
+  raw_ptr<webrtc::VideoCaptureOptions> options_;
   VideoCaptureFormat capture_format_;
   std::optional<base::TimeDelta> base_time_;
 

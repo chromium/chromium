@@ -124,7 +124,7 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // network::mojom::URLLoader implementation.
@@ -140,9 +140,6 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
 
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
   size_t create_loader_and_start_called_ = 0;
   std::vector<std::string> headers_removed_on_redirect_;

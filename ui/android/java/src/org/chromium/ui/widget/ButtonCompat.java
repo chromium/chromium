@@ -16,6 +16,8 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatButton;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 
 /**
@@ -39,8 +41,9 @@ import org.chromium.ui.R;
  *
  * See {@link R.styleable#ButtonCompat ButtonCompat Attributes}.
  */
+@NullMarked
 public class ButtonCompat extends AppCompatButton {
-    private RippleBackgroundHelper mRippleBackgroundHelper;
+    private final RippleBackgroundHelper mRippleBackgroundHelper;
 
     /**
      * Constructor for programmatically creating a {@link ButtonCompat}.
@@ -57,7 +60,8 @@ public class ButtonCompat extends AppCompatButton {
         this(context, attrs, R.style.FilledButtonThemeOverlay);
     }
 
-    private ButtonCompat(Context context, AttributeSet attrs, @StyleRes int themeOverlay) {
+    private ButtonCompat(
+            Context context, @Nullable AttributeSet attrs, @StyleRes int themeOverlay) {
         super(new ContextThemeWrapper(context, themeOverlay), attrs, android.R.attr.buttonStyle);
 
         TypedArray a =
@@ -85,7 +89,7 @@ public class ButtonCompat extends AppCompatButton {
                 a.getResourceId(R.styleable.ButtonCompat_borderColor, android.R.color.transparent);
         int borderWidthId =
                 a.getResourceId(
-                        R.styleable.ButtonCompat_borderWidth,
+                        R.styleable.ButtonCompat_buttonBorderWidth,
                         R.dimen.default_ripple_background_border_size);
         int verticalInset =
                 a.getDimensionPixelSize(

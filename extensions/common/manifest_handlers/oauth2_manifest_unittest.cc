@@ -116,7 +116,7 @@ TEST_F(OAuth2ManifestTest, OAuth2SectionParsing) {
   // OAuth2 section should be parsed for an extension.
   {
     base::Value::Dict ext_manifest;
-    // Lack of "app" section representa an extension. So the base manifest
+    // Lack of "app" section represents an extension. So the base manifest
     // itself represents an extension.
     ext_manifest.Merge(base_manifest.Clone());
     ext_manifest.Set(keys::kKey, kExtensionKey);

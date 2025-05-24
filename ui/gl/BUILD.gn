@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
@@ -35,6 +34,7 @@ buildflag_header("buildflags") {
     "USE_STATIC_ANGLE=$use_static_angle",
     "USE_OPENGL_APITRACE=$enable_opengl_apitrace",
     "ENABLE_VALIDATING_COMMAND_DECODER=$enable_validating_command_decoder",
+    "ENABLE_VULKAN=$enable_vulkan",
   ]
 }
 
@@ -146,13 +146,20 @@ component("gl") {
     "shader_tracking.h",
     "shared_gl_fence_egl.cc",
     "shared_gl_fence_egl.h",
+    "startup_trace.cc",
+    "startup_trace.h",
     "sync_control_vsync_provider.cc",
     "sync_control_vsync_provider.h",
     "trace_util.cc",
     "trace_util.h",
   ]
 
-  configs += [ "//build/config:precompiled_headers" ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+    "//build/config:precompiled_headers",
+  ]
+
   defines = [ "GL_IMPLEMENTATION" ]
   if (enable_gpu_service_logging) {
     defines += [ "GPU_ENABLE_SERVICE_LOGGING" ]
@@ -160,6 +167,7 @@ component("gl") {
 
   deps = [
     ":buildflags",
+    "//build:android_buildflags",
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//ui/base:ozone_buildflags",
@@ -252,12 +260,19 @@ component("gl") {
       "gl_fence_win.h",
       "hdr_metadata_helper_win.cc",
       "hdr_metadata_helper_win.h",
+      "os_compositor_tree_base.h",
       "swap_chain_presenter.cc",
       "swap_chain_presenter.h",
       "vsync_provider_win.cc",
       "vsync_provider_win.h",
+      "vsync_provider_win_dcomp.cc",
+      "vsync_provider_win_dcomp.h",
       "vsync_thread_win.cc",
       "vsync_thread_win.h",
+      "vsync_thread_win_dcomp.cc",
+      "vsync_thread_win_dcomp.h",
+      "vsync_thread_win_dxgi.cc",
+      "vsync_thread_win_dxgi.h",
     ]
 
     libs = [
@@ -353,7 +368,10 @@ component("gl") {
 
     libs = [ "android" ]
 
-    deps += [ ":gl_jni_headers" ]
+    deps += [
+      ":gl_jni_headers",
+      "//third_party/angle:angle_gpu_info_util",
+    ]
   }
 
   if (is_android || is_chromeos || is_linux) {
@@ -450,6 +468,7 @@ static_library("test_support") {
   ]
   deps = [
     "//base/test:test_support",
+    "//gpu/config",
     "//testing/gtest",
     "//third_party/angle:includes",
     "//ui/base",
@@ -515,6 +534,7 @@ test("gl_unittests") {
       "delegated_ink_point_renderer_gpu_unittest.cc",
       "gl_fence_win_unittest.cc",
       "hdr_metadata_helper_win_unittest.cc",
+      "os_compositor_tree_base_unittest.cc",
     ]
   }
 
@@ -562,14 +582,16 @@ group("gl_unittests_ozone") {
 
 if (is_android) {
   generate_jar_jni("surface_jni_headers") {
-    classes = [ "android/view/Surface.class" ]
+    classes = [
+      "android/view/Surface.class",
+      "android/window/InputTransferToken.class",
+    ]
   }
 
   generate_jni("gl_jni_headers") {
     sources = [
+      "../android/java/src/org/chromium/ui/gl/ChromeSurfaceTexture.java",
       "../android/java/src/org/chromium/ui/gl/ScopedJavaSurfaceControl.java",
-      "../android/java/src/org/chromium/ui/gl/SurfaceTextureListener.java",
-      "../android/java/src/org/chromium/ui/gl/SurfaceTexturePlatformWrapper.java",
     ]
     public_deps = [ ":surface_jni_headers" ]
   }

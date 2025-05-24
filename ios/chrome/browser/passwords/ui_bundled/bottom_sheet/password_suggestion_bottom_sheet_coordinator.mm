@@ -6,11 +6,18 @@
 
 #import <optional>
 
+#import "base/feature_list.h"
+#import "base/not_fatal_until.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
@@ -21,6 +28,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -69,15 +79,14 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
         initWithHandler:self
                     URL:URL];
 
-    ChromeBrowserState* browserState =
-        browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
 
     auto profilePasswordStore =
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browserState, ServiceAccessType::EXPLICIT_ACCESS);
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
     auto accountPasswordStore =
-        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-            browserState, ServiceAccessType::EXPLICIT_ACCESS);
+        IOSChromeAccountPasswordStoreFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
 
     self.reauthModule =
         ScopedPasswordSuggestionBottomSheetReauthModuleOverride::Get();
@@ -86,18 +95,18 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     }
     self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
           initWithWebStateList:webStateList
-                 faviconLoader:IOSChromeFaviconLoaderFactory::
-                                   GetForBrowserState(browserState)
-                   prefService:browserState->GetPrefs()
+                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                   profile)
+                   prefService:profile->GetPrefs()
                         params:params
                   reauthModule:_reauthModule
                            URL:URL
           profilePasswordStore:profilePasswordStore
           accountPasswordStore:accountPasswordStore
-        sharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()
+        sharedURLLoaderFactory:profile->GetSharedURLLoaderFactory()
              engagementTracker:feature_engagement::TrackerFactory::
-                                   GetForBrowserState(
-                                       self.browser->GetBrowserState())];
+                                   GetForProfile(self.profile)
+                     presenter:self];
     self.viewController.delegate = self.mediator;
     self.mediator.consumer = self.viewController;
   }
@@ -107,11 +116,13 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  // If the bottom sheet has no suggestion to show, do not show the bottom
-  // sheet. Instead, re-focus the field which triggered the bottom sheet and
-  // disable it.
+  // If the bottom sheet has no suggestion to show, stop the presentation right
+  // away.
   if (![self.mediator hasSuggestions]) {
-    [self.mediator dismiss];
+    // Cleanup the coordinator if it couldn't be started.
+    [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
+    // Do not add any logic past this point in this specific context since the
+    // the coordinator was torn down at this point hence now unusable.
     return;
   }
 
@@ -146,12 +157,12 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 }
 
 - (void)stop {
-  [super stop];
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator = nil;
   _viewController.delegate = nil;
   _viewController = nil;
+  [super stop];
 }
 
 #pragma mark - PasswordSuggestionBottomSheetHandler
@@ -161,7 +172,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   [self.mediator logExitReason:kShowPasswordManager];
 
   __weak __typeof(self) weakSelf = self;
-  [self.baseViewController.presentedViewController
+  [self.viewController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:^{
                            [weakSelf displaySavedPasswordList];
@@ -178,7 +189,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
       [self.mediator getCredentialForFormSuggestion:formSuggestion];
 
   __weak __typeof(self) weakSelf = self;
-  [self.baseViewController.presentedViewController
+  [self.viewController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:^{
                            // TODO(crbug.com/40896839): Add metric for when the
@@ -195,24 +206,55 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 - (void)primaryButtonTappedForSuggestion:(FormSuggestion*)formSuggestion
                                  atIndex:(NSInteger)index {
+  if (_dismissing) {
+    // Do not handle an action if the view controller is already being
+    // dismissed. Only one action is allowed on the sheet.
+    return;
+  }
+  // Disable user interactions on the root view of the view controller so any
+  // further user action isn't allowed. Only one action is allowed on the sheet.
+  self.viewController.view.userInteractionEnabled = NO;
+
   _dismissing = YES;
   [self.mediator logExitReason:kUsePasswordSuggestion];
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^{
     [weakSelf.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
   };
-  [self.viewController
-      dismissViewControllerAnimated:NO
+  [self.viewController.presentingViewController
+      dismissViewControllerAnimated:YES
                          completion:^{
                            [weakSelf.mediator didSelectSuggestion:formSuggestion
                                                           atIndex:index
                                                        completion:completion];
                          }];
+
+  // Dismiss the soft keyboard right after starting the animation so it doesn't
+  // flicker.
+  [self dismissSoftKeyboard];
+
+  // Records the usage of password autofill. This notifies the Tips Manager,
+  // which may trigger tips or guidance related to password management features.
+  if (IsSegmentationTipsManagerEnabled()) {
+    TipsManagerIOS* tipsManager =
+        TipsManagerIOSFactory::GetForProfile(self.profile);
+
+    tipsManager->NotifySignal(
+        segmentation_platform::tips_manager::signals::kUsedPasswordAutofill);
+  }
+
+  // Notify Welcome Back to remove Save and Autofill Passwords from the eligible
+  // features.
+  if (first_run::IsWelcomeBackInFirstRunEnabled()) {
+    MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kSaveAndAutofillPasswords);
+  }
 }
 
 - (void)secondaryButtonTapped {
   // "Use Keyboard" button, which dismisses the bottom sheet.
-  [self.viewController dismissViewControllerAnimated:YES completion:NULL];
+  [self.viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
 }
 
 - (void)viewDidDisappear {
@@ -220,10 +262,40 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     return;
   }
 
+  // Terminate dismissal if the entrypoint that dismissed the bottom sheet
+  // wasn't handled yet (e.g. when swipped away).
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordBottomSheetV2)) {
+    // Explicitly refocus the field if the sheet is dismissed without using any
+    // of its features. This is only required for V2 where the listeners are
+    // detached as soon as the sheet is presented which requires another means
+    // to refocus the blurred field once the sheet is dismissed.
+    [self.mediator refocus];
+  }
+
   [self.mediator logExitReason:kDismissal];
-  [self.mediator dismiss];
+  [self.mediator onDismissWithoutAnyPasswordAction];
+
+  // Disconnect as a last step of cleaning up the presentation. This should
+  // always be kept as the last step.
   [self.mediator disconnect];
-  [_browserCoordinatorCommandsHandler dismissPasswordSuggestions];
+  [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
+}
+
+#pragma mark - PasswordSuggestionBottomSheetPresenter
+
+- (void)endPresentation {
+  if (_dismissing) {
+    // The bottom sheet was already dismissed by another entrypoint, so no need
+    // to do it twice.
+    return;
+  }
+
+  // Dismiss the bottom sheet, then the presentation will be fully torn down
+  // upon calling -viewDidDisappear.
+  [self.viewController.presentingViewController
+      dismissViewControllerAnimated:NO
+                         completion:nil];
 }
 
 #pragma mark - Private
@@ -240,6 +312,17 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 - (void)showPasswordDetailsForCredential:
     (password_manager::CredentialUIEntry)credential {
   [_passwordControllerDelegate showPasswordDetailsForCredential:credential];
+}
+
+// Dismisses the soft keyboard. Make sure to only call this when there is an
+// active webstate.
+- (void)dismissSoftKeyboard {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  CHECK(activeWebState, base::NotFatalUntil::M135);
+  if (activeWebState) {
+    [activeWebState->GetView() endEditing:NO];
+  }
 }
 
 @end

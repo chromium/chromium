@@ -24,11 +24,6 @@ class CloseListenerHostBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-  }
-
   WebContentsImpl* web_contents() const {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
@@ -73,6 +68,42 @@ IN_PROC_BROWSER_TEST_F(CloseListenerHostBrowserTest,
   InstallCloseWatcherAndSignal();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   InstallCloseWatcherAndSignal();
+}
+
+IN_PROC_BROWSER_TEST_F(CloseListenerHostBrowserTest, CloseWatcherOnDialog) {
+  NavigationController& controller = web_contents()->GetController();
+  GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  // Add a dialog with closedby=none
+  std::string script = R"(
+    let dialog = document.createElement('dialog');
+    dialog.closedBy = 'none';
+    document.body.appendChild(dialog);
+    dialog.showModal();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), script));
+  base::RunLoop().RunUntilIdle();
+
+  // Try to signal the close watcher - should *fail* because there are no
+  // close watchers that have |enabled| true.
+  RenderFrameHostImpl* render_frame_host_impl =
+      web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
+  EXPECT_FALSE(
+      CloseListenerHost::GetOrCreateForCurrentDocument(render_frame_host_impl)
+          ->SignalIfActive());
+
+  // Make the dialog closable, which should allow it to be signaled.
+  script = R"(
+    let dialog = document.querySelector('dialog');
+    dialog.closedBy = 'any';
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), script));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      CloseListenerHost::GetOrCreateForCurrentDocument(render_frame_host_impl)
+          ->SignalIfActive());
 }
 
 }  // namespace content

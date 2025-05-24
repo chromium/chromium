@@ -16,7 +16,7 @@ TEST_F(DeskTestUtilTest, PopulateRegistryCacheHasAppInfo) {
   auto cache = std::make_unique<apps::AppRegistryCache>();
   desk_test_util::PopulateAppRegistryCache(
       AccountId::FromUserEmail("test@gmail.com"), cache.get());
-  EXPECT_EQ(10ul, cache->GetAllApps().size());
+  EXPECT_EQ(8ul, cache->GetAllApps().size());
 }
 
 TEST_F(DeskTestUtilTest, AddOneAppIdToRegistryCacheHasAppInfo) {
@@ -24,7 +24,7 @@ TEST_F(DeskTestUtilTest, AddOneAppIdToRegistryCacheHasAppInfo) {
   auto cache = std::make_unique<apps::AppRegistryCache>();
   desk_test_util::PopulateAppRegistryCache(account_id, cache.get());
   desk_test_util::AddAppIdToAppRegistryCache(account_id, cache.get(), "test");
-  EXPECT_EQ(11ul, cache->GetAllApps().size());
+  EXPECT_EQ(9ul, cache->GetAllApps().size());
 }
 
 }  // namespace desks_storage

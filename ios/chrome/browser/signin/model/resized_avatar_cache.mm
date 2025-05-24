@@ -63,8 +63,9 @@
 
   // If the currently used image has already been resized, use it.
   if ([_resizedImages objectForKey:identity] &&
-      [_originalImages objectForKey:identity] == image)
+      [_originalImages objectForKey:identity] == image) {
     return [_resizedImages objectForKey:identity];
+  }
 
   [_originalImages setObject:image forKey:identity];
 

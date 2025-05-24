@@ -36,7 +36,7 @@ class TabLoaderDelegate {
   TabLoaderDelegate(const TabLoaderDelegate&) = delete;
   TabLoaderDelegate& operator=(const TabLoaderDelegate&) = delete;
 
-  virtual ~TabLoaderDelegate() {}
+  virtual ~TabLoaderDelegate() = default;
 
   // Create a tab loader delegate. |TabLoaderCallback::SetTabLoadingEnabled| can
   // get called to disable / enable tab loading.
@@ -83,7 +83,7 @@ class TabLoaderDelegate {
 
  protected:
   // The delegate should only be created via the factory function.
-  TabLoaderDelegate() {}
+  TabLoaderDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_TAB_LOADER_DELEGATE_H_

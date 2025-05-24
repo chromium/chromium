@@ -70,15 +70,10 @@ void SVGForeignObjectElement::Trace(Visitor* visitor) const {
 void SVGForeignObjectElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
-  bool is_width_height_attribute =
-      attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
-  bool is_xy_attribute =
-      attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr;
-
-  if (is_xy_attribute || is_width_height_attribute) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-    UpdatePresentationAttributeStyle(attr_name);
-    UpdateRelativeLengthsInformation();
+  if (attr_name == svg_names::kWidthAttr ||
+      attr_name == svg_names::kHeightAttr || attr_name == svg_names::kXAttr ||
+      attr_name == svg_names::kYAttr) {
+    UpdatePresentationAttributeStyle(params.property);
     if (LayoutObject* layout_object = GetLayoutObject())
       MarkForLayoutAndParentResourceInvalidation(*layout_object);
 
@@ -137,7 +132,7 @@ void SVGForeignObjectElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGForeignObjectElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
       {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);

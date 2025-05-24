@@ -4,9 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -14,20 +12,7 @@
 
 namespace blink {
 
-class ClientHintsPreferencesTest : public testing::Test {
- public:
-  ClientHintsPreferencesTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kClientHintsPrefersReducedTransparency},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ClientHintsPreferencesTest, BasicSecure) {
+TEST(ClientHintsPreferencesTest, BasicSecure) {
   struct TestCase {
     const char* header_value;
     bool expectation_resource_width_DEPRECATED;
@@ -201,7 +186,7 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
 
 // Verify that the set of enabled client hints is merged every time
 // Update*() methods are called.
-TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
+TEST(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   ClientHintsPreferences preferences;
   const KURL kurl(String::FromUTF8("https://www.google.com/"));
   bool did_update = preferences.UpdateFromMetaCH(
@@ -332,7 +317,7 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
       network::mojom::WebClientHintsType::kPrefersReducedTransparency));
 }
 
-TEST_F(ClientHintsPreferencesTest, Insecure) {
+TEST(ClientHintsPreferencesTest, Insecure) {
   for (const auto& use_secure_url : {false, true}) {
     ClientHintsPreferences preferences;
     const KURL kurl = use_secure_url
@@ -356,7 +341,7 @@ TEST_F(ClientHintsPreferencesTest, Insecure) {
 
 // Verify that the client hints header and the lifetime header is parsed
 // correctly.
-TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
+TEST(ClientHintsPreferencesTest, ParseHeaders) {
   struct TestCase {
     const char* accept_ch_header_value;
     bool expect_device_memory_DEPRECATED;

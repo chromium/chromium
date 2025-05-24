@@ -1,0 +1,26 @@
+caption: Configure <ph name="CLASS_TOOLS_NAME">Class Tools</ph> Google Classroom integration feature
+default: true
+desc: |-
+  Setting the policy specifies if teachers can connect to students using a Google Classroom class roster. See <ph name="GOOGLE_CLASSROOM_LINK">https://support.google.com/edu/classroom/answer/10495270</ph>.
+
+  If value set to true or unset, they can use Google Classroom class roster.
+
+  If set to false they cannot access the feature.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: Allow teachers to use Google Classroom class roster.
+  value: true
+- caption: Prevent teachers from using Google Classroom class roster.
+  value: false
+owners:
+- cros-edu-eng@google.com
+- aprilzhou@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:137-
+tags: []
+type: main

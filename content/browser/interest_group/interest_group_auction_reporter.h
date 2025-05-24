@@ -31,8 +31,8 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -53,14 +53,6 @@ class AuctionWorkletManager;
 class BrowserContext;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
-
-// Configures rounding on reported results from FLEDGE. This feature is intended
-// to be always enabled, but available to attach FeatureParams to so that we can
-// adjust the rounding setting via Finch.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeRounding);
-CONTENT_EXPORT extern const base::FeatureParam<int> kFledgeBidReportingBits;
-CONTENT_EXPORT extern const base::FeatureParam<int> kFledgeScoreReportingBits;
-CONTENT_EXPORT extern const base::FeatureParam<int> kFledgeAdCostReportingBits;
 
 // Handles the reporting phase of FLEDGE auctions with a winner. Loads the
 // bidder, seller, and (if present) component seller worklets and invokes
@@ -99,6 +91,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
+
+  using FinalizedPrivateAggregationRequests = std::vector<
+      auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
 
   using PrivateAggregationAllParticipantsData =
       std::array<PrivateAggregationParticipantData,
@@ -166,7 +161,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
         component_auction_modified_bid_params;
   };
 
-  // Information about the winning bit that is not specific to a seller.
+  // Information about the winning bid that is not specific to a seller.
   struct CONTENT_EXPORT WinningBidInfo {
     explicit WinningBidInfo(
         const SingleStorageInterestGroup& storage_interest_group);
@@ -176,7 +171,11 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     const SingleStorageInterestGroup storage_interest_group;
 
     GURL render_url;
-    std::vector<GURL> ad_components;
+
+    // Points to the InterestGroupAd within the `interest_group` owned by
+    // `storage_interest_group`.
+    raw_ptr<const blink::InterestGroup::Ad> bid_ad;
+
     std::optional<std::vector<url::Origin>> allowed_reporting_origins;
 
     // Bid returned by the bidder.
@@ -190,6 +189,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
     // Modeling signals returned by the bidder.
     std::optional<uint16_t> modeling_signals;
+
+    // Arbitrary data passed from generateBid to use in `reportAggregateWin()`.
+    std::optional<std::string> aggregate_win_signals;
 
     // How long it took to generate the bid.
     base::TimeDelta bid_duration;
@@ -250,8 +252,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       const url::Origin& frame_origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      auction_worklet::mojom::KAnonymityBidMode kanon_mode,
-      bool bid_is_kanon,
+      auction_worklet::mojom::KAnonymityStatus kanon_status,
       WinningBidInfo winning_bid_info,
       SellerWinningBidInfo top_level_seller_winning_bid_info,
       std::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
@@ -259,9 +260,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       std::vector<GURL> debug_win_report_urls,
       std::vector<GURL> debug_loss_report_urls,
       base::flat_set<std::string> k_anon_keys_to_join,
-      std::map<PrivateAggregationKey, PrivateAggregationRequests>
+      std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
           private_aggregation_requests_reserved,
-      std::map<std::string, PrivateAggregationRequests>
+      std::map<std::string, FinalizedPrivateAggregationRequests>
           private_aggregation_requests_non_reserved,
       PrivateAggregationAllParticipantsData all_participants_data,
       std::map<url::Origin, RealTimeReportingContributions>
@@ -331,7 +332,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       const url::Origin& main_frame_origin,
       std::map<
           PrivateAggregationKey,
-          std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
+          std::vector<
+              auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>>
           private_aggregation_requests);
 
   static double RoundBidStochastically(double bid);
@@ -348,6 +350,11 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       unsigned k);
 
  private:
+  // Configures rounding on reported results from FLEDGE.
+  static constexpr int kFledgeBidReportingBits = 8;
+  static constexpr int kFledgeScoreReportingBits = 8;
+  static constexpr int kFledgeAdCostReportingBits = 8;
+
   // Starts request for a seller worklet. Invokes OnSellerWorkletReceived() on
   // success, OnSellerWorkletFatalError() on error.
   void RequestSellerWorklet(
@@ -417,6 +424,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
       const base::flat_map<std::string, std::string>& bidder_ad_macro_map,
       PrivateAggregationRequests pa_requests,
+      auction_worklet::mojom::PrivateModelTrainingRequestDataPtr
+          pmt_request_data,
       auction_worklet::mojom::BidderTimingMetricsPtr timing_metrics,
       const std::vector<std::string>& errors);
 
@@ -499,8 +508,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   const network::mojom::ClientSecurityStatePtr client_security_state_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
-  const bool bid_is_kanon_;
+  const auction_worklet::mojom::KAnonymityStatus kanon_status_;
 
   const WinningBidInfo winning_bid_info_;
   const SellerWinningBidInfo top_level_seller_winning_bid_info_;
@@ -530,9 +538,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Stores all pending Private Aggregation API report requests until they have
   // been flushed. Keyed by the origin of the script that issued the request
   // (i.e. the reporting origin).
-  std::map<PrivateAggregationKey, PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, FinalizedPrivateAggregationRequests>
       private_aggregation_requests_reserved_;
-  std::map<std::string, PrivateAggregationRequests>
+  std::map<std::string, FinalizedPrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;
   // Metrics from the parties that took part in winning, in case they want to
   // request them from the reporting scripts.

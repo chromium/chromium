@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_PLATFORM_LOCALE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_PLATFORM_LOCALE_H_
 
+#include <array>
 #include <memory>
 
 #include "third_party/blink/renderer/platform/language.h"
@@ -59,7 +60,7 @@ class PLATFORM_EXPORT Locale {
   // Converts the specified localized number string to a number string in the
   // HTML floating-point number format. The input string is provided by a end
   // user, and might not be a number string. It's ok that the function returns
-  // a string which is not conforms to the HTML floating-point number format,
+  // a string which does not conform to the HTML floating-point number format,
   // callers of this function are responsible to check the format of the
   // resultant string.
   String ConvertFromLocalizedNumber(const String&);
@@ -108,7 +109,7 @@ class PLATFORM_EXPORT Locale {
   // Returns a year-month format in Unicode TR35 LDML.
   virtual String MonthFormat() = 0;
 
-  // Returns a year-month format using short month lanel in Unicode TR35 LDML.
+  // Returns a year-month format using short month label in Unicode TR35 LDML.
   virtual String ShortMonthFormat() = 0;
 
   // Returns time format in Unicode TR35 LDML[1] containing hour, minute, and
@@ -216,7 +217,7 @@ class PLATFORM_EXPORT Locale {
                                   unsigned& end_index);
   unsigned MatchedDecimalSymbolIndex(const String& input, unsigned& position);
 
-  String decimal_symbols_[kDecimalSymbolsSize];
+  std::array<String, kDecimalSymbolsSize> decimal_symbols_;
   String positive_prefix_;
   String positive_suffix_;
   String negative_prefix_;

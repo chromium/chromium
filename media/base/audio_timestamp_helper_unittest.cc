@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/audio_timestamp_helper.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <array>
 
 #include "media/base/timestamp_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -143,7 +140,8 @@ TEST_F(AudioTimestampHelperTest, GetDuration) {
   helper_.SetBaseTimestamp(base::Microseconds(100));
 
   int frame_count = 5;
-  int64_t expected_durations[] = {113, 113, 114, 113, 113, 114};
+  auto expected_durations =
+      std::to_array<int64_t>({113, 113, 114, 113, 113, 114});
   for (size_t i = 0; i < std::size(expected_durations); ++i) {
     base::TimeDelta duration = helper_.GetFrameDuration(frame_count);
     EXPECT_EQ(expected_durations[i], duration.InMicroseconds());

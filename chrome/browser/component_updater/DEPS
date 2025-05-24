@@ -8,6 +8,7 @@ include_rules = [
   "+components/cdm/common",
   "+components/feed",
   "+components/live_caption",
+  "+components/webapps/isolated_web_apps",
   "+components/soda",
   "+media/cdm",
   "+ppapi/thunk",

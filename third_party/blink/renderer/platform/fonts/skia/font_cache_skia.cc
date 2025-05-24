@@ -62,7 +62,7 @@
 namespace blink {
 
 AtomicString ToAtomicString(const SkString& str) {
-  return AtomicString::FromUTF8(str.c_str(), str.size());
+  return AtomicString::FromUTF8(std::string_view(str.begin(), str.end()));
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -287,15 +287,9 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
                           font_description.GetFontSynthesisStyle() ==
                               FontDescription::kAutoFontSynthesisStyle;
 
-  ResolvedFontFeatures resolved_font_features =
-      font_description.GetFontVariantAlternates()
-          ? font_description.GetFontVariantAlternates()
-                ->GetResolvedFontFeatures()
-          : ResolvedFontFeatures();
-
   FontPlatformData* font_platform_data = MakeGarbageCollected<FontPlatformData>(
       typeface, name, font_size, synthetic_bold, synthetic_italic,
-      font_description.TextRendering(), resolved_font_features,
+      font_description.TextRendering(), font_description.ResolveFontFeatures(),
       font_description.Orientation());
 
   font_platform_data->SetAvoidEmbeddedBitmaps(

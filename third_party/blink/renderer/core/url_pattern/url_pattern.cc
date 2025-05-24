@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpattern_urlpatterninit_usvstring.h"
@@ -37,9 +40,6 @@ namespace blink {
 
 using url_pattern::Component;
 using url_pattern::ValueType;
-using ComponentSet = base::EnumSet<Component::Type,
-                                   Component::Type::kProtocol,
-                                   Component::Type::kHash>;
 
 namespace {
 
@@ -92,8 +92,13 @@ bool IsProtocolDefaultPort(const String& protocol, const String& port) {
 // up pattern parsing.  Automatically escape them.  We must not escape inputs
 // for non-pattern base URLs, though.
 String EscapeBaseURLString(const StringView& input, ValueType type) {
-  if (type != ValueType::kPattern || !input.length())
+  if (input.empty()) {
+    return g_empty_string;
+  }
+
+  if (type != ValueType::kPattern) {
     return input.ToString();
+  }
 
   std::string result;
   result.reserve(input.length());
@@ -150,25 +155,22 @@ void ApplyInit(const URLPatternInit* init,
     //                                 +-> pathname --> search --> hash
     // protocol --> hostname --> port -|
     //                                 +-> username --> password
-    protocol = init->hasProtocol() ? String()
-               : base_url.Protocol()
-                   ? EscapeBaseURLString(base_url.Protocol(), type)
-                   : g_empty_string;
+    protocol = init->hasProtocol()
+                   ? String()
+                   : EscapeBaseURLString(base_url.Protocol(), type);
     username = (type == ValueType::kPattern ||
                 (init->hasProtocol() || init->hasHostname() ||
                  init->hasPort() || init->hasUsername()))
                    ? String()
-               : base_url.User() ? EscapeBaseURLString(base_url.User(), type)
-                                 : g_empty_string;
+                   : EscapeBaseURLString(base_url.User(), type);
     password = (type == ValueType::kPattern ||
                 (init->hasProtocol() || init->hasHostname() ||
                  init->hasPort() || init->hasUsername() || init->hasPassword()))
                    ? String()
-               : base_url.Pass() ? EscapeBaseURLString(base_url.Pass(), type)
-                                 : g_empty_string;
-    hostname = (init->hasProtocol() || init->hasHostname()) ? String()
-               : base_url.Host() ? EscapeBaseURLString(base_url.Host(), type)
-                                 : g_empty_string;
+                   : EscapeBaseURLString(base_url.Pass(), type);
+    hostname = (init->hasProtocol() || init->hasHostname())
+                   ? String()
+                   : EscapeBaseURLString(base_url.Host(), type);
     port = (init->hasProtocol() || init->hasHostname() || init->hasPort())
                ? String()
            : base_url.Port() > 0 ? String::Number(base_url.Port())
@@ -176,14 +178,11 @@ void ApplyInit(const URLPatternInit* init,
     pathname = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
                 init->hasPathname())
                    ? String()
-               : !base_url.GetPath().empty()
-                   ? EscapeBaseURLString(base_url.GetPath(), type)
-                   : g_empty_string;
+                   : EscapeBaseURLString(base_url.GetPath(), type);
     search = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
               init->hasPathname() || init->hasSearch())
                  ? String()
-             : base_url.Query() ? EscapeBaseURLString(base_url.Query(), type)
-                                : g_empty_string;
+                 : EscapeBaseURLString(base_url.Query(), type);
     hash = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
             init->hasPathname() || init->hasSearch() || init->hasHash())
                ? String()
@@ -316,37 +315,6 @@ URLPatternInit* MakeURLPatternInit(
   return init;
 }
 
-ComponentSet ToURLPatternComponentSet(
-    const liburlpattern::ConstructorStringParser::ComponentSet&
-        present_components) {
-  ComponentSet result;
-  if (present_components.protocol) {
-    result.Put(Component::Type::kProtocol);
-  }
-  if (present_components.username) {
-    result.Put(Component::Type::kUsername);
-  }
-  if (present_components.password) {
-    result.Put(Component::Type::kPassword);
-  }
-  if (present_components.hostname) {
-    result.Put(Component::Type::kHostname);
-  }
-  if (present_components.port) {
-    result.Put(Component::Type::kPort);
-  }
-  if (present_components.pathname) {
-    result.Put(Component::Type::kPathname);
-  }
-  if (present_components.search) {
-    result.Put(Component::Type::kSearch);
-  }
-  if (present_components.hash) {
-    result.Put(Component::Type::kHash);
-  }
-  return result;
-}
-
 }  // namespace
 
 URLPattern* URLPattern::From(v8::Isolate* isolate,
@@ -422,14 +390,16 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
 
   Component* protocol_component = nullptr;
   absl::Status status = constructor_string_parser.Parse(
-      [=, &protocol_component, &exception_state](
-          std::string_view protocol_string) -> absl::StatusOr<bool> {
+      [=, &protocol_component,
+       &exception_state](std::string_view protocol_string)
+          -> base::expected<bool, absl::Status> {
         protocol_component = Component::Compile(
             isolate, String::FromUTF8(protocol_string),
             Component::Type::kProtocol,
             /*protocol_component=*/nullptr, *options, exception_state);
         if (exception_state.HadException()) {
-          return absl::InvalidArgumentError("Failed to compile protocol");
+          return base::unexpected(
+              absl::InvalidArgumentError("Failed to compile protocol"));
         }
         return protocol_component &&
                protocol_component->ShouldTreatAsStandardURL();
@@ -456,54 +426,7 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   if (base_url)
     init->setBaseURL(base_url);
 
-  URLPattern* result =
-      Create(isolate, init, protocol_component, options, exception_state);
-  if (result) {
-    URLPattern::ComponentSet present = ToURLPatternComponentSet(
-        constructor_string_parser.GetPresentComponents());
-    URLPattern::ComponentSet wildcard_with_string_format_change =
-        URLPattern::ComponentSet::All();
-    wildcard_with_string_format_change.RemoveAll(present);
-    if (present.Has(Component::Type::kUsername)) {
-      wildcard_with_string_format_change.RemoveAll({Component::Type::kProtocol,
-                                                    Component::Type::kHostname,
-                                                    Component::Type::kPort});
-    }
-    if (present.Has(Component::Type::kPassword)) {
-      wildcard_with_string_format_change.RemoveAll(
-          {Component::Type::kProtocol, Component::Type::kHostname,
-           Component::Type::kPort, Component::Type::kUsername});
-    }
-    if (present.Has(Component::Type::kHostname)) {
-      // As a special case, don't wildcard the port if the host is present, even
-      // with no path.
-      wildcard_with_string_format_change.RemoveAll(
-          {Component::Type::kProtocol, Component::Type::kPort});
-    }
-    if (present.Has(Component::Type::kPort)) {
-      wildcard_with_string_format_change.RemoveAll(
-          {Component::Type::kProtocol, Component::Type::kHostname});
-    }
-    if (present.Has(Component::Type::kPathname)) {
-      wildcard_with_string_format_change.RemoveAll({Component::Type::kProtocol,
-                                                    Component::Type::kHostname,
-                                                    Component::Type::kPort});
-    }
-    if (present.Has(Component::Type::kSearch)) {
-      wildcard_with_string_format_change.RemoveAll(
-          {Component::Type::kProtocol, Component::Type::kHostname,
-           Component::Type::kPort, Component::Type::kPathname});
-    }
-    if (present.Has(Component::Type::kHash)) {
-      wildcard_with_string_format_change.RemoveAll(
-          {Component::Type::kProtocol, Component::Type::kHostname,
-           Component::Type::kPort, Component::Type::kPathname,
-           Component::Type::kSearch});
-    }
-    result->wildcard_with_string_format_change_ =
-        wildcard_with_string_format_change;
-  }
-  return result;
+  return Create(isolate, init, protocol_component, options, exception_state);
 }
 
 URLPattern* URLPattern::Create(v8::Isolate* isolate,
@@ -624,44 +547,12 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   if (exception_state.HadException())
     return nullptr;
 
-  Options urlpattern_options;
-  urlpattern_options.ignore_case = options->ignoreCase();
+  auto urlpattern_options = Options::FromV8URLPatternOptions(options);
 
-  URLPattern* result = MakeGarbageCollected<URLPattern>(
+  return MakeGarbageCollected<URLPattern>(
       protocol_component, username_component, password_component,
       hostname_component, port_component, pathname_component, search_component,
       hash_component, urlpattern_options, base::PassKey<URLPattern>());
-  if (init->hasBaseURL()) {
-    auto& would_be_wildcard = result->wildcard_with_base_url_change_;
-    if (!init->hasUsername() &&
-        (init->hasProtocol() || init->hasHostname() || init->hasPort())) {
-      would_be_wildcard.Put(Component::Type::kUsername);
-    }
-    if (!init->hasPassword() && (init->hasProtocol() || init->hasHostname() ||
-                                 init->hasPort() || init->hasUsername())) {
-      would_be_wildcard.Put(Component::Type::kPassword);
-    }
-    if (!init->hasHostname() && init->hasProtocol()) {
-      would_be_wildcard.Put(Component::Type::kHostname);
-    }
-    if (!init->hasPort() && (init->hasProtocol() || init->hasHostname())) {
-      would_be_wildcard.Put(Component::Type::kPort);
-    }
-    if (!init->hasPathname() &&
-        (init->hasProtocol() || init->hasHostname() || init->hasPort())) {
-      would_be_wildcard.Put(Component::Type::kPathname);
-    }
-    if (!init->hasSearch() && (init->hasProtocol() || init->hasHostname() ||
-                               init->hasPort() || init->hasPathname())) {
-      would_be_wildcard.Put(Component::Type::kSearch);
-    }
-    if (!init->hasHash() &&
-        (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
-         init->hasPathname() || init->hasSearch())) {
-      would_be_wildcard.Put(Component::Type::kHash);
-    }
-  }
-  return result;
 }
 
 URLPattern::URLPattern(Component* protocol,
@@ -672,7 +563,7 @@ URLPattern::URLPattern(Component* protocol,
                        Component* pathname,
                        Component* search,
                        Component* hash,
-                       Options options,
+                       const Options& options,
                        base::PassKey<URLPattern> key)
     : protocol_(protocol),
       username_(username),
@@ -750,8 +641,8 @@ bool URLPattern::hasRegExpGroups() const {
   const url_pattern::Component* components[] = {protocol_, username_, password_,
                                                 hostname_, port_,     pathname_,
                                                 search_,   hash_};
-  return base::ranges::any_of(components,
-                              &url_pattern::Component::HasRegExpGroups);
+  return std::ranges::any_of(components,
+                             &url_pattern::Component::HasRegExpGroups);
 }
 
 // static
@@ -781,7 +672,7 @@ int URLPattern::compareComponent(const V8URLPatternComponent& component,
     case V8URLPatternComponent::Enum::kHash:
       return url_pattern::Component::Compare(*left->hash_, *right->hash_);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<SafeUrlPattern> URLPattern::ToSafeUrlPattern(
@@ -916,21 +807,27 @@ bool URLPattern::Match(ScriptState* script_state,
       // Apply the parsed URL components on top of our defaults.
       if (url.Protocol())
         protocol = url.Protocol();
-      if (url.User())
-        username = url.User();
-      if (url.Pass())
-        password = url.Pass();
-      if (url.Host())
-        hostname = url.Host();
-      if (url.Port() > 0)
+      if (!url.User().empty()) {
+        username = url.User().ToString();
+      }
+      if (!url.Pass().empty()) {
+        password = url.Pass().ToString();
+      }
+      if (!url.Host().empty()) {
+        hostname = url.Host().ToString();
+      }
+      if (url.Port() > 0) {
         port = String::Number(url.Port());
+      }
       if (!url.GetPath().empty()) {
         pathname = url.GetPath().ToString();
       }
-      if (url.Query())
-        search = url.Query();
-      if (url.FragmentIdentifier())
-        hash = url.FragmentIdentifier();
+      if (!url.Query().empty()) {
+        search = url.Query().ToString();
+      }
+      if (url.HasFragmentIdentifier()) {
+        hash = url.FragmentIdentifier().ToString();
+      }
       break;
     }
   }

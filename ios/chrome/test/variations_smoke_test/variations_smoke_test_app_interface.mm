@@ -10,11 +10,10 @@
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/pref_names.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
-using variations::prefs::kVariationsCompressedSeed;
 using variations::prefs::kVariationsLastFetchTime;
-using variations::prefs::kVariationsSeedSignature;
 
 namespace {
 
@@ -32,13 +31,15 @@ base::Time GetProcessStartTime() {
 
 @implementation VariationsSmokeTestAppInterface
 
-+ (BOOL)variationsSeedInLocalStatePrefs {
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  const std::string& compressedSeed =
-      localState->GetString(kVariationsCompressedSeed);
-  const std::string& seedSignature =
-      localState->GetString(kVariationsSeedSignature);
-  return !compressedSeed.empty() && !seedSignature.empty();
++ (BOOL)isVariationsSeedStored {
+  variations::SeedReaderWriter* seedReaderWriter =
+      GetApplicationContext()
+          ->GetVariationsService()
+          ->GetSeedStoreForTesting()
+          ->GetSeedReaderWriterForTesting();
+  variations::StoredSeed storedSeed = seedReaderWriter->GetSeedData();
+  return !storedSeed.data.empty() && !storedSeed.signature.empty() &&
+         !seedReaderWriter->HasPendingWrite();
 }
 
 + (BOOL)variationsSeedFetchedInCurrentLaunch {

@@ -1,4 +1,4 @@
-<style include="cr-actionable-row-style iron-flex cr-shared-style shared-style">
+<style include="cr-actionable-row-style cr-shared-style shared-style">
   :host {
     --cr-icon-button-margin-end: 20px;
     padding: 0 var(--cr-section-padding);
@@ -16,6 +16,7 @@
   }
 
   #labelWrapper {
+    flex: 1;
     margin-inline-end: var(--control-label-spacing);
     padding: var(--cr-section-vertical-padding) 0;
   }
@@ -25,7 +26,7 @@
   }
 </style>
 <div id="outerRow" noSubLabel$="[[!subLabel]]">
-  <div class="flex" id="labelWrapper">
+  <div id="labelWrapper">
     <div class="label" aria-hidden="true">[[label]]</div>
     <div class="cr-secondary-text label" id="sub-label" hidden="[[!subLabel]]">
       <span id="sub-label-text" aria-hidden="true">

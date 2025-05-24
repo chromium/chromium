@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** The UI state required to properly display an update-related main menu item. */
+@NullMarked
 public class MenuItemState {
-    /** The title resource of the menu.  Always set if this object is not {@code null}. */
+    /** The title resource of the menu. Always set if this object is not {@code null}. */
     public @StringRes int title;
 
     /** The color resource of the title.  Always set if this object is not {@code null}. */

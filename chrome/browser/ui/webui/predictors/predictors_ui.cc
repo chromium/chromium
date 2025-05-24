@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/predictors/predictors_ui.h"
 
 #include <memory>
@@ -26,8 +21,7 @@ namespace {
 void CreateAndAddPredictorsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIPredictorsHost);
-  source->AddResourcePaths(
-      base::make_span(kPredictorsResources, kPredictorsResourcesSize));
+  source->AddResourcePaths(kPredictorsResources);
   source->SetDefaultResource(IDR_PREDICTORS_PREDICTORS_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::RequireTrustedTypesFor,

@@ -26,6 +26,8 @@ GL_EXPORT extern const char kANGLEImplementationDefaultName[];
 GL_EXPORT extern const char kANGLEImplementationD3D9Name[];
 GL_EXPORT extern const char kANGLEImplementationD3D11Name[];
 GL_EXPORT extern const char kANGLEImplementationD3D11on12Name[];
+GL_EXPORT extern const char kANGLEImplementationD3D11WarpName[];
+GL_EXPORT extern const char kANGLEImplementationD3D11WarpForWebGLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLEGLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLESName[];
@@ -49,6 +51,7 @@ GL_EXPORT extern const char kCmdDecoderPassthroughName[];
 GL_EXPORT extern const char kSwapChainFormatNV12[];
 GL_EXPORT extern const char kSwapChainFormatYUY2[];
 GL_EXPORT extern const char kSwapChainFormatBGRA[];
+GL_EXPORT extern const char kSwapChainFormatP010[];
 
 }  // namespace gl
 
@@ -70,6 +73,7 @@ GL_EXPORT extern const char kUseGpuInTests[];
 GL_EXPORT extern const char kEnableSgiVideoSync[];
 GL_EXPORT extern const char kDisableGLExtensions[];
 GL_EXPORT extern const char kEnableSwapBuffersWithBounds[];
+GL_EXPORT extern const char kDisableDirectComposition[];
 GL_EXPORT extern const char kEnableDirectCompositionVideoOverlays[];
 GL_EXPORT extern const char kUseAdapterLuid[];
 GL_EXPORT extern const char kEnableUnsafeSwiftShader[];

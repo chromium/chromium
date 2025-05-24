@@ -103,7 +103,7 @@ bool TailoredSecurityServiceInfobarDelegate::Accept() {
         SetSafeBrowsingState(
             profile->GetPrefs(),
             safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION,
-            /*is_esb_enabled_in_sync=*/false);
+            /*is_esb_enabled_by_account_integration=*/false);
         break;
     }
   }

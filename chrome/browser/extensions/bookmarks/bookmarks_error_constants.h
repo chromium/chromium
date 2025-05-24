@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_BOOKMARKS_BOOKMARKS_ERROR_CONSTANTS_H_
 #define CHROME_BROWSER_EXTENSIONS_BOOKMARKS_BOOKMARKS_ERROR_CONSTANTS_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 // Error constants used for bookmarks-related APIs.
 
 namespace extensions::bookmarks_errors {

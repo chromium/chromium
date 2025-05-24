@@ -33,7 +33,7 @@ suite('CrComponentsThemeColorTest', () => {
     colorElement.style.height = '66px';
     await microtasksFinished();
 
-    const wrapper = colorElement.shadowRoot!.querySelector(
+    const wrapper = colorElement.shadowRoot.querySelector(
         'cr-theme-color-check-mark-wrapper')!;
     assertTrue(wrapper.checked);
   });
@@ -44,7 +44,7 @@ suite('CrComponentsThemeColorTest', () => {
     colorElement.style.height = '66px';
     await microtasksFinished();
 
-    const wrapper = colorElement.shadowRoot!.querySelector(
+    const wrapper = colorElement.shadowRoot.querySelector(
         'cr-theme-color-check-mark-wrapper')!;
     assertFalse(wrapper.checked);
   });

@@ -34,7 +34,8 @@
 #include <tuple>
 
 #include "base/debug/crash_logging.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-blink.h"
+#include "base/notreached.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -83,35 +84,32 @@ void WorkerOrWorkletScriptController::DisposeContextIfNeeded() {
   if (!IsContextInitialized())
     return;
 
+  ScriptState::Scope scope(script_state_);
   if (!global_scope_->IsMainThreadWorkletGlobalScope()) {
-    ScriptState::Scope scope(script_state_);
     WorkerThreadDebugger* debugger = WorkerThreadDebugger::From(isolate_);
     debugger->ContextWillBeDestroyed(global_scope_->GetThread(),
                                      script_state_->GetContext());
   }
 
-  {
-    ScriptState::Scope scope(script_state_);
-    v8::Local<v8::Context> context = script_state_->GetContext();
-    // After disposing the world, all Blink->V8 references are gone. Blink
-    // stand-alone GCs may collect the WorkerOrWorkletGlobalScope because there
-    // are no more roots (V8->Blink references that are actually found by
-    // iterating Blink->V8 references). Clear the back pointers to avoid
-    // referring to cleared memory on the next GC in case the JS wrapper objects
-    // survived.
-    v8::Local<v8::Object> global_proxy_object = context->Global();
-    v8::Local<v8::Object> global_object =
-        global_proxy_object->GetPrototype().As<v8::Object>();
-    DCHECK(!global_object.IsEmpty());
-    V8DOMWrapper::ClearNativeInfo(isolate_, global_object,
-                                  global_scope_->GetWrapperTypeInfo());
-    V8DOMWrapper::ClearNativeInfo(isolate_, global_proxy_object,
-                                  global_scope_->GetWrapperTypeInfo());
+  v8::Local<v8::Context> context = script_state_->GetContext();
+  // After disposing the world, all Blink->V8 references are gone. Blink
+  // stand-alone GCs may collect the WorkerOrWorkletGlobalScope because there
+  // are no more roots (V8->Blink references that are actually found by
+  // iterating Blink->V8 references). Clear the back pointers to avoid
+  // referring to cleared memory on the next GC in case the JS wrapper objects
+  // survived.
+  v8::Local<v8::Object> global_proxy_object = context->Global();
+  v8::Local<v8::Object> global_object =
+      global_proxy_object->GetPrototype().As<v8::Object>();
+  DCHECK(!global_object.IsEmpty());
+  V8DOMWrapper::ClearNativeInfo(isolate_, global_object,
+                                global_scope_->GetWrapperTypeInfo());
+  V8DOMWrapper::ClearNativeInfo(isolate_, global_proxy_object,
+                                global_scope_->GetWrapperTypeInfo());
 
-    // This detaches v8::MicrotaskQueue pointer from v8::Context, so that we can
-    // destroy EventLoop safely.
-    context->DetachGlobal();
-  }
+  // This detaches v8::MicrotaskQueue pointer from v8::Context, so that we can
+  // destroy EventLoop safely.
+  context->DetachGlobal();
 
   script_state_->DisposePerContextData();
   script_state_->DissociateContext();
@@ -179,7 +177,7 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
     }
     SCOPED_CRASH_KEY_STRING256("shared-storage", "context-empty",
                                ot_feature_string.ReleaseString().Utf8());
-    CHECK(false) << "V8 context is empty";
+    NOTREACHED() << "V8 context is empty";
   }
   CHECK(!context.IsEmpty());
 

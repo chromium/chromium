@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/add_username_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class EditableCombobox;
@@ -16,6 +17,8 @@ class EditableCombobox;
 // missing. Contains a username and password field. In addition, it contains a
 // "Save" button and a "Nope" button.
 class PasswordAddUsernameView : public PasswordBubbleViewBase {
+  METADATA_HEADER(PasswordAddUsernameView, PasswordBubbleViewBase)
+
  public:
   PasswordAddUsernameView(content::WebContents* web_contents,
                           views::View* anchor_view,

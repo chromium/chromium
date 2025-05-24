@@ -40,6 +40,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -54,7 +55,7 @@
 
 namespace extensions {
 
-using ContextType = ExtensionApiTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionContentSettingsApiTest : public ExtensionApiTest {
  public:
@@ -106,7 +107,8 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     GURL example_url("http://www.example.com");
     EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
         example_url, net::SiteForCookies::FromUrl(example_url),
-        url::Origin::Create(example_url), net::CookieSettingOverrides()));
+        url::Origin::Create(example_url), net::CookieSettingOverrides(),
+        /*cookie_partition_key=*/std::nullopt));
     EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(example_url));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(example_url, example_url,
@@ -147,7 +149,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     GURL url("http://www.google.com");
     EXPECT_FALSE(cookie_settings->IsFullCookieAccessAllowed(
         url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-        net::CookieSettingOverrides()));
+        net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
     EXPECT_EQ(
@@ -193,7 +195,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     GURL url("http://www.google.com");
     EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
         url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-        net::CookieSettingOverrides()));
+        net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
     EXPECT_FALSE(cookie_settings->IsCookieSessionOnly(url));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
@@ -238,7 +240,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
 
     content_settings.push_back(cookie_settings->IsFullCookieAccessAllowed(
         url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-        net::CookieSettingOverrides()));
+        net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
     content_settings.push_back(cookie_settings->IsCookieSessionOnly(url));
     content_settings.push_back(
         map->GetContentSetting(url, url, ContentSettingsType::IMAGES));

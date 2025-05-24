@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_UI_ERROR_H_
 
 #include <string>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
@@ -78,15 +79,13 @@ class SigninUIError {
   credential_provider::UiExitCodes credential_provider_exit_code() const;
 #endif
 
-  bool operator==(const SigninUIError& other) const;
-  bool operator!=(const SigninUIError& other) const;
+  friend bool operator==(const SigninUIError&, const SigninUIError&) = default;
 
  private:
   SigninUIError(Type type,
                 const std::string& email,
                 const std::u16string& error_message);
 
-  // Don't forget to update operator==() when adding new class members.
   Type type_;
   std::u16string email_;
   std::u16string message_;
@@ -118,6 +117,9 @@ class ForceSigninUIError {
     kReauthTimeout,
     // Signin pattern not matching.
     kSigninPatternNotMatching,
+    // Reauth flows are not supported in Glic Mode, redirects the user to do the
+    // reauth in the Regular Picker.
+    kReauthNotSupportedByGlicFlow,
   };
 
   // Helper pair to get the error messages based on the `Type` error enum to be
@@ -133,6 +135,7 @@ class ForceSigninUIError {
   static ForceSigninUIError ReauthWrongAccount(const std::string& email);
   static ForceSigninUIError ReauthTimeout();
   static ForceSigninUIError SigninPatternNotMatching(const std::string& email);
+  static ForceSigninUIError ReauthNotSupportedByGlicFlow();
 
   // Returns the error messages for the given `error`.
   // `type_` must not be `ForceSigninUIError::kNone`.

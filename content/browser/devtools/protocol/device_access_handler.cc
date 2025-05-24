@@ -68,7 +68,7 @@ DispatchResponse DeviceAccessHandler::CancelPrompt(const String& in_id) {
 
 const std::string& DeviceAccessHandler::FindOrAddRequestId(
     DevtoolsDeviceRequestPromptInfo* prompt_info) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       request_prompt_infos_,
       [prompt_info](auto& pair) { return pair.second == prompt_info; });
   if (it != request_prompt_infos_.end()) {

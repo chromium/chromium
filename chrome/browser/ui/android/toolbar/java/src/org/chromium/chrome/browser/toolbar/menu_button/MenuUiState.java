@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.toolbar.menu_button;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
- * The UI state required to properly decorate the main menu.  This may include the button
- * decorations as well as the actual update item to show in the menu.
+ * The UI state required to properly decorate the main menu. This may include the button decorations
+ * as well as the actual update item to show in the menu.
  */
+@NullMarked
 public class MenuUiState {
     /**
-     * The optional UI state for building the menu item.  If {@code null} no item should be
-     * shown.
+     * The optional UI state for building the menu item. If {@code null} no item should be shown.
      */
     public @Nullable MenuItemState itemState;
 

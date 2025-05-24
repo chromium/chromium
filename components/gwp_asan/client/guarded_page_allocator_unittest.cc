@@ -51,6 +51,8 @@ class BaseGpaTest : public testing::Test {
         is_partition_alloc);
   }
 
+  void TearDown() override { gpa_.DestructForTesting(); }
+
   GuardedPageAllocator gpa_;
   bool allocator_oom_ = false;
 };
@@ -97,6 +99,8 @@ INSTANTIATE_TEST_SUITE_P(VaryPartitionAlloc,
                          GuardedPageAllocatorTest,
                          testing::Values(false, true));
 
+#if defined(GTEST_HAS_DEATH_TEST)
+
 TEST_P(GuardedPageAllocatorTest, SingleAllocDealloc) {
   char* buf = reinterpret_cast<char*>(gpa_.Allocate(base::GetPageSize()));
   EXPECT_NE(buf, nullptr);
@@ -115,6 +119,8 @@ TEST_P(GuardedPageAllocatorTest, CrashOnBadDeallocPointer) {
   gpa_.Deallocate(buf);
 }
 
+#endif  // defined(GTEST_HAS_DEATH_TEST)
+
 TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
   void* buf = gpa_.Allocate(1);
   auto malloc_ptr = std::make_unique<char>();
@@ -125,6 +131,8 @@ TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
   EXPECT_FALSE(gpa_.PointerIsMine(&stack_var));
   EXPECT_FALSE(gpa_.PointerIsMine(malloc_ptr.get()));
 }
+
+#if defined(GTEST_HAS_DEATH_TEST)
 
 TEST_P(GuardedPageAllocatorTest, GetRequestedSize) {
   void* buf = gpa_.Allocate(100);
@@ -154,6 +162,8 @@ TEST_P(GuardedPageAllocatorTest, RightAlignedAllocation) {
   EXPECT_DEATH(buf[GuardedPageAllocator::kGpaAllocAlignment] = 'A', "");
   gpa_.Deallocate(buf);
 }
+
+#endif  // defined(GTEST_HAS_DEATH_TEST)
 
 TEST_P(GuardedPageAllocatorTest, AllocationAlignment) {
   const uintptr_t page_size = base::GetPageSize();
@@ -196,7 +206,7 @@ class GuardedPageAllocatorParamTest
 
 TEST_P(GuardedPageAllocatorParamTest, AllocDeallocAllPages) {
   size_t num_allocations = GetParam();
-  char* bufs[kMaxMetadata];
+  std::array<char*, kMaxMetadata> bufs;
   for (size_t i = 0; i < num_allocations; i++) {
     bufs[i] = reinterpret_cast<char*>(gpa_.Allocate(1));
     EXPECT_NE(bufs[i], nullptr);
@@ -251,7 +261,7 @@ class ThreadedAllocCountDelegate : public base::DelegateSimpleThread::Delegate {
 // extra pages are allocated when there's concurrent calls to Allocate().
 TEST_P(GuardedPageAllocatorTest, ThreadedAllocCount) {
   constexpr size_t num_threads = 2;
-  std::array<void*, kMaxMetadata> allocations[num_threads];
+  std::array<std::array<void*, kMaxMetadata>, num_threads> allocations;
   {
     base::DelegateSimpleThreadPool threads("alloc_threads", num_threads);
     threads.Start();

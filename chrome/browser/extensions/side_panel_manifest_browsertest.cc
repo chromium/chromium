@@ -16,7 +16,7 @@ using SidePanelManifestBrowserTest = ExtensionBrowserTest;
 
 // Succeed when a file exists, when there is a query, or a bookmark.
 IN_PROC_BROWSER_TEST_F(SidePanelManifestBrowserTest, ValidateSuccess) {
-  // Load the extenesion and a real file for validation.
+  // Load the extension and a real file for validation.
   static constexpr char kManifest[] =
       R"({
         "name": "Test",

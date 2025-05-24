@@ -3,32 +3,49 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+import(
+    "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
+import("//chrome/common/features.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
 import("//tools/typescript/ts_library.gni")
-import("../tools/run_jsbundler.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 braille_ime_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/braille_ime"
 tsc_out_dir = "$target_gen_dir/tsc"
+braille_ime_mv3_out_dir = "$braille_ime_out_dir/mv3"
 
 # TS files to compile.
-ts_modules = []
-
-# JS files required by TS compiler.
-js_deps = []
+ts_modules = [
+  "braille_ime.ts",
+  "braille_ime_loader.ts",
+]
 
 group("build") {
   deps = [
     ":braille_ime_manifest",
+    ":braille_ime_mv3_manifest",
     ":copied_files",
+    ":copied_mv3_files",
   ]
 }
 
 ts_library("ts_build") {
-  in_files = js_deps + ts_modules
+  in_files = ts_modules
   out_dir = tsc_out_dir
-  definitions = []
+
+  definitions = [
+    "../definitions/extension_types.d.ts",
+    "../definitions/input_ime.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/storage_mv2.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/windows.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+  ]
+
   tsconfig_base = "../tsconfig.base.json"
 }
 
@@ -43,14 +60,58 @@ run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = braille_ime_out_dir
   deps = [ ":ts_build" ]
-  sources = [
-    "braille_ime.js",
-    "main.js",
-  ]
+  sources = [ "background.html" ]
   sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path(tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
   ]
+}
+copy("braille_ime_mv3_manifest") {
+  sources = [ "mv3/manifest.json" ]
+  outputs = [ "$braille_ime_mv3_out_dir/manifest.json" ]
+}
+
+run_jsbundler("copied_mv3_files") {
+  mode = "copy"
+  dest_dir = braille_ime_mv3_out_dir
+  deps = [ ":ts_build" ]
+  sources = filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+
+  rewrite_rules = [
+    rebase_path(tsc_out_dir, root_build_dir) + ":",
+    rebase_path(".", root_build_dir) + ":",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  assert(enable_extensions)
+
+  deps = [ ":braille_ime_extjs_tests" ]
+  data = [
+    "$root_out_dir/resources/chromeos/accessibility/braille_ime/",
+    "//chrome/browser/resources/chromeos/accessibility/braille_ime/",
+  ]
+  data += js2gtest_js_libraries
+}
+
+js2gtest("braille_ime_extjs_tests") {
+  test_type = "extension"
+  sources = [ "braille_ime_unittest.js" ]
+  gen_include_files = [
+    "../common/testing/accessibility_test_base.js",
+    "../common/testing/e2e_test_base.js",
+  ]
+  deps = [
+    ":ts_build",
+    "//ash",
+    "//base",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/common",
+  ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }

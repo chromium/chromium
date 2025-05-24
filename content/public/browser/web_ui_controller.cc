@@ -6,7 +6,6 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webui/web_ui_managed_interface.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "url/gurl.h"
 
@@ -45,9 +44,6 @@ bool WebUIController::IsJavascriptErrorReportingEnabled() {
 
 void WebUIController::WebUIReadyToCommitNavigation(
     RenderFrameHost* render_frame_host) {
-  GURL site_url = render_frame_host->GetSiteInstance()->GetSiteURL();
-  GetContentClient()->browser()->LogWebUIUrl(site_url);
-
   broker_ =
       g_web_ui_browser_interface_broker_registry.Get().CreateInterfaceBroker(
           *this);

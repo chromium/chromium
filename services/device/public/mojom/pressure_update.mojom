@@ -6,6 +6,8 @@ module device.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
+const double kDefaultOwnContributionEstimate = -1.0;
+
 enum PressureSource {
   // TODO(crbug.com/40230901): Consider other sources.
   // For now, "cpu" is the only source.
@@ -31,6 +33,15 @@ enum PressureState {
 // Represents availability of compute resources.
 struct PressureUpdate {
   PressureSource source;
-  PressureState state;
+  PressureData data;
   mojo_base.mojom.TimeTicks timestamp;
+};
+
+// Represents pressure combined data.
+struct PressureData {
+  // Global pressure value from probe from 0.0 to 1.0.
+  double cpu_utilization = 0;
+  // Contribution estimate of current process from 0.0 to 1.0.
+  // If no data available or data out of range, the value is set to -1.0.
+  double own_contribution_estimate = kDefaultOwnContributionEstimate;
 };

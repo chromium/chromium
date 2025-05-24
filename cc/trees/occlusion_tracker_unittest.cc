@@ -210,7 +210,6 @@ class OcclusionTrackerTest : public testing::Test {
     LayerImpl* layer = CreateSurface(parent, transform, position, bounds);
     auto* effect_node = GetEffectNode(layer);
     effect_node->render_surface_reason = RenderSurfaceReason::kCopyRequest;
-    effect_node->has_copy_request = true;
     effect_node->closest_ancestor_with_copy_request_id = effect_node->id;
     auto& effect_tree = GetPropertyTrees(layer)->effect_tree_mutable();
     effect_tree.AddCopyRequest(effect_node->id,

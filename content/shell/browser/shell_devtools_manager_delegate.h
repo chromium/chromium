@@ -33,9 +33,9 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
   void HandleCommand(content::DevToolsAgentHostClientChannel* channel,
                      base::span<const uint8_t> message,
                      NotHandledCallback callback) override;
-  scoped_refptr<DevToolsAgentHost> CreateNewTarget(
-      const GURL& url,
-      TargetType target_type) override;
+  scoped_refptr<DevToolsAgentHost> CreateNewTarget(const GURL& url,
+                                                   TargetType target_type,
+                                                   bool new_window) override;
   std::string GetDiscoveryPageHTML() override;
   bool HasBundledFrontendResources() override;
   void ClientAttached(

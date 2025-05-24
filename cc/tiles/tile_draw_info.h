@@ -31,8 +31,7 @@ class CC_EXPORT TileDrawInfo {
       case OOM_MODE:
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   bool NeedsRaster() const {
     switch (mode_) {
@@ -43,8 +42,7 @@ class CC_EXPORT TileDrawInfo {
       case OOM_MODE:
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   viz::ResourceId resource_id_for_export() const {
@@ -70,8 +68,6 @@ class CC_EXPORT TileDrawInfo {
     return solid_color_;
   }
 
-  bool is_premultiplied() const { return is_premultiplied_; }
-
   bool requires_resource() const {
     return mode_ == RESOURCE_MODE || mode_ == OOM_MODE;
   }
@@ -95,8 +91,7 @@ class CC_EXPORT TileDrawInfo {
   friend class TileManager;
 
   void SetResource(ResourcePool::InUsePoolResource resource,
-                   bool resource_is_checker_imaged,
-                   bool is_premultiplied);
+                   bool resource_is_checker_imaged);
   ResourcePool::InUsePoolResource TakeResource();
 
   void set_resource_ready_for_draw() {
@@ -114,7 +109,6 @@ class CC_EXPORT TileDrawInfo {
   Mode mode_ = RESOURCE_MODE;
   SkColor4f solid_color_ = SkColors::kWhite;
   ResourcePool::InUsePoolResource resource_;
-  bool is_premultiplied_ = false;
   bool is_resource_ready_to_draw_ = false;
 
   // Set to true if |resource_| was rasterized with checker-imaged content. The

@@ -9,10 +9,13 @@ import android.util.DisplayMetrics;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
@@ -23,15 +26,9 @@ import java.util.Locale;
 
 /** Bridge for FeedService-related calls. */
 @JNINamespace("feed")
+@NullMarked
 public final class FeedServiceBridge {
-    // Access to JNI test hooks for other libraries. This can go away once more Feed code is
-    // migrated to chrome/browser/feed.
-    public static org.jni_zero.JniStaticTestMocker<FeedServiceBridge.Natives>
-            getTestHooksForTesting() {
-        return FeedServiceBridgeJni.TEST_HOOKS;
-    }
-
-    public static ProcessScope xSurfaceProcessScope() {
+    public static @Nullable ProcessScope xSurfaceProcessScope() {
         return XSurfaceProcessScopeProvider.getProcessScope();
     }
 
@@ -46,7 +43,7 @@ public final class FeedServiceBridge {
 
     // Java functionality needed for the native FeedService.
     @CalledByNative
-    public static String getLanguageTag() {
+    public static @JniType("std::string") String getLanguageTag() {
         return getLocale(ContextUtils.getApplicationContext()).toLanguageTag();
     }
 
@@ -64,7 +61,7 @@ public final class FeedServiceBridge {
     }
 
     @CalledByNative
-    public static void prefetchImage(String url) {
+    public static void prefetchImage(@JniType("std::string") String url) {
         ProcessScope processScope = xSurfaceProcessScope();
         if (processScope != null) {
             ImageCacheHelper imageCacheHelper = processScope.provideImageCacheHelper();
@@ -101,18 +98,20 @@ public final class FeedServiceBridge {
         FeedServiceBridgeJni.get().setContentOrderForWebFeed(contentOrder);
     }
 
-    /**
-     * Reports that a user action occurred which is untied to a Feed tab. Use
-     * FeedStream.reportOtherUserAction for stream-specific actions.
-     */
+    /** Reports that a user action occurred which is associated with a feed stream. */
     public static void reportOtherUserAction(
             @StreamKind int streamKind, @FeedUserActionType int userAction) {
-        FeedServiceBridgeJni.get().reportOtherUserAction(streamKind, userAction);
+        FeedServiceBridgeJni.get().reportOtherUserActionForStream(streamKind, userAction);
+    }
+
+    /** Reports that a user action occurred which is independent of any feed stream. */
+    public static void reportOtherUserAction(@FeedUserActionType int userAction) {
+        FeedServiceBridgeJni.get().reportOtherUserAction(userAction);
     }
 
     /**
      * @return True if the user is signed in for feed purposes (i.e. if a personalized feed can be
-     *         requested).
+     *     requested).
      */
     public static boolean isSignedIn() {
         return FeedServiceBridgeJni.get().isSignedIn();
@@ -157,7 +156,10 @@ public final class FeedServiceBridge {
 
         long getReliabilityLoggingId();
 
-        void reportOtherUserAction(@StreamKind int streamKind, @FeedUserActionType int userAction);
+        void reportOtherUserActionForStream(
+                @StreamKind int streamKind, @FeedUserActionType int userAction);
+
+        void reportOtherUserAction(@FeedUserActionType int userAction);
 
         @ContentOrder
         int getContentOrderForWebFeed();

@@ -14,7 +14,8 @@
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 
 namespace vr {
-
+// TODO(https://crbug.com/381000093): Fix tests on Android
+#if !BUILDFLAG(IS_ANDROID)
 namespace {
 
 const float kIPD = 0.2f;
@@ -220,7 +221,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPoses) {
             << "Frame for right eye submitted more than once";
         seen_right.insert(frame_id);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
 
       // Validate that frames arrive in order.
@@ -248,5 +249,6 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPoses) {
   t->ExecuteStepAndWait("finishTest()");
   t->EndTest();
 }
+#endif  // if !BUILDFLAG(IS_ANDROID)
 
 }  // namespace vr

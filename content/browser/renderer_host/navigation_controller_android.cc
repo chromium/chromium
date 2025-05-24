@@ -343,7 +343,8 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
   }
 
   if (j_initiator_origin) {
-    params.initiator_origin = url::Origin::FromJavaObject(j_initiator_origin);
+    params.initiator_origin =
+        url::Origin::FromJavaObject(env, j_initiator_origin);
   }
 
   if (input_start != 0)
@@ -572,6 +573,17 @@ void NavigationControllerAndroid::SetEntryExtraData(
   MapData* map_data =
       MapData::Get(navigation_controller_->GetEntryAtIndex(index));
   map_data->map()[key] = value;
+}
+
+void NavigationControllerAndroid::CopyStateFrom(
+    JNIEnv* env,
+    jlong source_navigation_controller_ptr,
+    jboolean needs_reload) {
+  navigation_controller_->CopyStateFrom(
+      reinterpret_cast<NavigationControllerAndroid*>(
+          source_navigation_controller_ptr)
+          ->navigation_controller_,
+      needs_reload);
 }
 
 }  // namespace content

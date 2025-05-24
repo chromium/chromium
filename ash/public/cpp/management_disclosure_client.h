@@ -5,6 +5,9 @@
 #ifndef ASH_PUBLIC_CPP_MANAGEMENT_DISCLOSURE_CLIENT_H_
 #define ASH_PUBLIC_CPP_MANAGEMENT_DISCLOSURE_CLIENT_H_
 
+#include <string>
+#include <vector>
+
 #include "ash/public/cpp/ash_public_export.h"
 
 namespace ash {
@@ -18,7 +21,11 @@ class ASH_PUBLIC_EXPORT ManagementDisclosureClient {
   ManagementDisclosureClient& operator=(const ManagementDisclosureClient&) =
       delete;
 
-  virtual void SetVisible(bool visible) = 0;
+  // Retrieves the list of device policy disclosures from the
+  // management_ui_handler (same place chrome://management is populated from so
+  // they should match). The device disclosures are than passed to
+  // management_disclosure_dialog so they can be shown on the login/lock screen.
+  virtual std::vector<std::u16string> GetDisclosures() = 0;
 
  protected:
   virtual ~ManagementDisclosureClient();

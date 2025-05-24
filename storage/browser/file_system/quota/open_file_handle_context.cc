@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "storage/browser/file_system/quota/quota_reservation_buffer.h"
 
@@ -21,7 +23,7 @@ OpenFileHandleContext::OpenFileHandleContext(
       reservation_buffer_(reservation_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::GetFileSize(platform_path, &initial_file_size_);
+  initial_file_size_ = base::GetFileSize(platform_path).value_or(0);
   maximum_written_offset_ = initial_file_size_;
 }
 
@@ -55,8 +57,7 @@ OpenFileHandleContext::~OpenFileHandleContext() {
 
   // TODO(tzik): Optimize this for single operation.
 
-  int64_t file_size = 0;
-  base::GetFileSize(platform_path_, &file_size);
+  int64_t file_size = base::GetFileSize(platform_path_).value_or(0);
   int64_t usage_delta = file_size - initial_file_size_;
 
   // |reserved_quota_consumption| may be greater than the recorded file growth

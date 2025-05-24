@@ -14,6 +14,7 @@ source_set("tracked") {
     "pref_hash_calculator.h",
     "pref_hash_filter.cc",
     "pref_hash_filter.h",
+    "pref_hash_store.cc",
     "pref_hash_store.h",
     "pref_hash_store_impl.cc",
     "pref_hash_store_impl.h",
@@ -44,6 +45,11 @@ source_set("tracked") {
     sources += [ "device_id_stub.cc" ]
   }
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     "//services/preferences/public/cpp/tracked",
     "//services/preferences/public/mojom",
@@ -51,6 +57,7 @@ source_set("tracked") {
 
   deps = [
     "//base",
+    "//components/os_crypt/async/common",
     "//components/pref_registry",
     "//components/prefs",
     "//crypto",
@@ -80,7 +87,10 @@ source_set("unit_tests") {
     ":tracked",
     "//base",
     "//base/test:test_support",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/os_crypt/async/common",
     "//components/prefs:test_support",
+    "//crypto:crypto",
     "//services/preferences/public/cpp/tracked:test_support",
     "//testing/gtest",
   ]

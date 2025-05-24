@@ -58,8 +58,7 @@ class LayoutTextTest : public RenderingTest {
       if (node.GetLayoutObject() && node.GetLayoutObject()->IsText())
         return To<LayoutText>(node.GetLayoutObject());
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   PhysicalRect GetSelectionRectFor(const std::string& selection_text) {
@@ -115,7 +114,8 @@ class LayoutTextTest : public RenderingTest {
     }
     const InlineNodeData& data = *block_flow.GetInlineNodeData();
     std::ostringstream stream;
-    for (const InlineItem& item : data.items) {
+    for (const Member<InlineItem>& item_ptr : data.items) {
+      const InlineItem& item = *item_ptr;
       if (item.Type() != InlineItem::kText) {
         continue;
       }
@@ -152,8 +152,8 @@ class LayoutTextTest : public RenderingTest {
   unsigned CountNumberOfGlyphs(const LayoutText& layout_text) {
     auto* const items = layout_text.GetInlineItems();
     return std::accumulate(items->begin(), items->end(), 0u,
-                           [](unsigned sum, const InlineItem& item) {
-                             return sum + item.TextShapeResult()->NumGlyphs();
+                           [](unsigned sum, const Member<InlineItem>& item) {
+                             return sum + item->TextShapeResult()->NumGlyphs();
                            });
   }
 };
@@ -173,7 +173,7 @@ TEST_F(LayoutTextTest, PrewarmFamily) {
   LayoutObject* container = GetLayoutObjectByElementId("container");
   EXPECT_TRUE(container->StyleRef()
                   .GetFont()
-                  .GetFontDescription()
+                  ->GetFontDescription()
                   .Family()
                   .IsPrewarmed());
 }
@@ -195,7 +195,7 @@ TEST_F(LayoutTextTest, PrewarmFontFace) {
   LayoutObject* container = GetLayoutObjectByElementId("container");
   EXPECT_FALSE(container->StyleRef()
                    .GetFont()
-                   .GetFontDescription()
+                   ->GetFontDescription()
                    .Family()
                    .IsPrewarmed());
 }
@@ -213,7 +213,7 @@ TEST_F(LayoutTextTest, PrewarmGenericFamily) {
   LayoutObject* container = GetLayoutObjectByElementId("container");
   EXPECT_TRUE(container->StyleRef()
                   .GetFont()
-                  .GetFontDescription()
+                  ->GetFontDescription()
                   .Family()
                   .IsPrewarmed());
 }
@@ -1126,7 +1126,7 @@ TEST_F(LayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
 TEST_F(LayoutTextTest, WordBreakElement) {
   SetBasicBody("foo <wbr> bar");
 
-  const Element* wbr = GetDocument().QuerySelector(AtomicString("wbr"));
+  const Element* wbr = QuerySelector("wbr");
   DCHECK(wbr->GetLayoutObject()->IsText());
   const auto* layout_wbr = To<LayoutText>(wbr->GetLayoutObject());
 
@@ -1256,53 +1256,6 @@ TEST_F(LayoutTextTest, LocalSelectionRectLineHeightVertical) {
             GetSelectionRectFor("<div style='line-height: 50px; height:1em; "
                                 "writing-mode:vertical-lr'>"
                                 "foo bar b^a|z</div>"));
-}
-
-TEST_F(LayoutTextTest, VisualRectInDocumentSVGTspan) {
-  LoadAhem();
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      body {
-        margin:0px;
-        font: 20px/20px Ahem;
-      }
-    </style>
-    <svg>
-      <text x="10" y="50" width="100">
-        <tspan id="target" dx="15" dy="25">tspan</tspan>
-      </text>
-    </svg>
-  )HTML");
-
-  auto* target =
-      To<LayoutText>(GetLayoutObjectByElementId("target")->SlowFirstChild());
-  const int ascent = 16;
-  PhysicalRect expected(10 + 15, 50 + 25 - ascent, 20 * 5, 20);
-  EXPECT_EQ(expected, target->VisualRectInDocument());
-  EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
-}
-
-TEST_F(LayoutTextTest, VisualRectInDocumentSVGTspanTB) {
-  LoadAhem();
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      body {
-        margin:0px;
-        font: 20px/20px Ahem;
-      }
-    </style>
-    <svg>
-      <text x="50" y="10" width="100" writing-mode="tb">
-        <tspan id="target" dx="15" dy="25">tspan</tspan>
-      </text>
-    </svg>
-  )HTML");
-
-  auto* target =
-      To<LayoutText>(GetLayoutObjectByElementId("target")->SlowFirstChild());
-  PhysicalRect expected(50 + 15 - 20 / 2, 10 + 25, 20, 20 * 5);
-  EXPECT_EQ(expected, target->VisualRectInDocument());
-  EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
 }
 
 TEST_F(LayoutTextTest, PositionForPointAtLeading) {

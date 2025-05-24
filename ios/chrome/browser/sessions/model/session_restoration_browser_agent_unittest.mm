@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -138,14 +139,15 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
  public:
   SessionRestorationBrowserAgentTest() {
     test_session_service_ = [[TestSessionService alloc] init];
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    test_profile_builder.AddTestingFactory(
+        TipsManagerIOSFactory::GetInstance(),
+        TipsManagerIOSFactory::GetDefaultFactory());
+    profile_ = std::move(test_profile_builder).Build();
 
     session_identifier_ = [[NSUUID UUID] UUIDString];
   }
@@ -158,8 +160,8 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     // rather than the TestWebStateList delegate used in the default TestBrowser
     // constructor.
     browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_.get(),
-        std::make_unique<BrowserWebStateListDelegate>());
+        profile_.get(),
+        std::make_unique<BrowserWebStateListDelegate>(profile_.get()));
   }
 
   void TearDown() override {
@@ -185,7 +187,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
 
   // Creates a WebState with the given parameters.
   std::unique_ptr<web::WebState> CreateWebState() {
-    web::WebState::CreateParams create_params(chrome_browser_state_.get());
+    web::WebState::CreateParams create_params(profile_.get());
     create_params.created_with_opener = false;
 
     std::unique_ptr<web::WebState> web_state =
@@ -213,7 +215,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
 
   __strong NSString* session_identifier_ = nil;
@@ -371,7 +373,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
   [test_session_service_ setPerformIO:NO];
 
   // Restore, expect that there are no sessions.
-  const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
+  const base::FilePath& state_path = profile_->GetStatePath();
   SessionWindowIOS* session_window =
       [test_session_service_ loadSessionWithSessionID:session_id()
                                             directory:state_path];
@@ -410,7 +412,7 @@ TEST_F(SessionRestorationBrowserAgentTest, DISABLED_SaveAndRestoreSession) {
   // close all the webStates
   CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
-  const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
+  const base::FilePath& state_path = profile_->GetStatePath();
   SessionWindowIOS* session_window =
       [test_session_service_ loadSessionWithSessionID:session_id()
                                             directory:state_path];
@@ -459,7 +461,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
   // Close all the webStates
   CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
-  const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
+  const base::FilePath& state_path = profile_->GetStatePath();
   SessionWindowIOS* session_window =
       [test_session_service_ loadSessionWithSessionID:session_id()
                                             directory:state_path];

@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_driver_factory_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_factory_test_api.h"
 
 namespace autofill {
 

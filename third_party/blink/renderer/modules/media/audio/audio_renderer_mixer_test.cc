@@ -100,7 +100,8 @@ class AudioRendererMixerTest
   AudioRendererMixerTest(const AudioRendererMixerTest&) = delete;
   AudioRendererMixerTest& operator=(const AudioRendererMixerTest&) = delete;
 
-  AudioRendererMixer* GetMixer(const FrameToken&,
+  AudioRendererMixer* GetMixer(const LocalFrameToken&,
+                               const FrameToken&,
                                const media::AudioParameters&,
                                media::AudioLatency::Type,
                                const media::OutputDeviceInfo&,
@@ -113,6 +114,7 @@ class AudioRendererMixerTest
   }
 
   scoped_refptr<media::AudioRendererSink> GetSink(const LocalFrameToken&,
+                                                  const FrameToken&,
                                                   std::string_view) override {
     return sink_;
   }

@@ -101,6 +101,17 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
       std::move(reached_callback_).Run();
   }
 
+  void QueueIntegrityViolationReport(const KURL& url,
+                                     const String& endpoint,
+                                     const String& document_url,
+                                     const String& blocked_url,
+                                     const String& destionation,
+                                     bool report_only) override {
+    if (reached_callback_) {
+      std::move(reached_callback_).Run();
+    }
+  }
+
   void QueuePermissionsPolicyViolationReport(const KURL& url,
                                              const String& endpoint,
                                              const String& policy_id,
@@ -109,6 +120,23 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
                                              const String& source_file,
                                              int32_t line_number,
                                              int32_t column_number) override {
+    last_message_ = message;
+    if (reached_callback_) {
+      std::move(reached_callback_).Run();
+    }
+  }
+
+  void QueuePotentialPermissionsPolicyViolationReport(
+      const KURL& url,
+      const String& endpoint,
+      const String& policy_id,
+      const String& disposition,
+      const String& message,
+      const String& allow_attribute,
+      const String& src_attribute,
+      const String& source_file,
+      int32_t line_number,
+      int32_t column_number) override {
     last_message_ = message;
     if (reached_callback_)
       std::move(reached_callback_).Run();
@@ -125,6 +153,18 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
     last_message_ = message;
     if (reached_callback_)
       std::move(reached_callback_).Run();
+  }
+
+  void QueueCSPHashReport(const KURL& url,
+                          const String& endpoint,
+                          const String& subresource_url,
+                          const String& integrity_hash,
+                          const String& type,
+                          const String& destination) override {
+    last_message_ = "";
+    if (reached_callback_) {
+      std::move(reached_callback_).Run();
+    }
   }
 
   const BrowserInterfaceBrokerProxy& broker_;

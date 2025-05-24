@@ -22,6 +22,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -46,6 +47,7 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
                                       // TODO(b/329895423): Add shadow.
                                       views::BubbleBorder::NO_SHADOW),
       controller_(controller) {
+  SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
   set_margins(gfx::Insets(12));
   set_corner_radius(20);
   set_close_on_deactivate(false);
@@ -144,9 +146,9 @@ DeleteEditShortcut::CreateNonClientFrameView(views::Widget* widget) {
   // Create the customized bubble border.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
-  bubble_border->SetColor(color());
+  bubble_border->SetColor(background_color());
   if (GetParams().round_corners) {
-    bubble_border->SetCornerRadius(GetCornerRadius());
+    bubble_border->set_rounded_corners(gfx::RoundedCornersF(GetCornerRadius()));
   }
   bubble_border->set_avoid_shadow_overlap(true);
   bubble_border->set_insets(
@@ -159,14 +161,6 @@ DeleteEditShortcut::CreateNonClientFrameView(views::Widget* widget) {
     frame_view->SetBubbleBorder(std::move(bubble_border));
   }
   return frame;
-}
-
-void DeleteEditShortcut::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-  if (auto* color_provider = GetColorProvider()) {
-    set_color(color_provider->GetColor(
-        cros_tokens::kCrosSysSystemBaseElevatedOpaque));
-  }
 }
 
 void DeleteEditShortcut::OnMouseExited(const ui::MouseEvent& event) {

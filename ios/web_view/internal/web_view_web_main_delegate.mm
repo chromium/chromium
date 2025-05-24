@@ -5,9 +5,9 @@
 #import "ios/web_view/internal/web_view_web_main_delegate.h"
 
 #import "base/apple/bundle_locations.h"
-#include "base/base_paths.h"
-#include "base/logging.h"
-#include "components/component_updater/component_updater_paths.h"
+#import "base/base_paths.h"
+#import "base/logging.h"
+#import "components/component_updater/component_updater_paths.h"
 
 // Dummy class used to locate the containing NSBundle.
 @interface CWVBundleLocator : NSObject

@@ -48,8 +48,8 @@ TEST(WebTransportErrorTest, InternalCreate) {
   V8TestingScope scope;
   auto* isolate = scope.GetIsolate();
   auto context = scope.GetContext();
-  auto v8value = WebTransportError::Create(isolate, 27, "badness",
-                                           WebTransportError::Source::kSession);
+  auto v8value = WebTransportError::Create(
+      isolate, 27, "badness", V8WebTransportErrorSource::Enum::kSession);
 
   ASSERT_TRUE(v8value->IsObject());
   v8::Local<v8::Value> stack;

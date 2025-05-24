@@ -10,7 +10,7 @@ namespace ash::smb_client {
 extern const char kSmbScheme[];
 extern const char kSmbSchemePrefix[];
 
-constexpr int kNetBiosDiscoveryTimeoutSeconds = 1;
+inline constexpr int kNetBiosDiscoveryTimeoutSeconds = 1;
 
 }  // namespace ash::smb_client
 

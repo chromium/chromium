@@ -7,7 +7,7 @@
 #include <mfapi.h>
 #include <mferror.h>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "media/base/win/mf_helpers.h"
 
 namespace media {

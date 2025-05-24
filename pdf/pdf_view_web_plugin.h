@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
+#include "pdf/loader/result_codes.h"
 #include "pdf/loader/url_loader.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_manager.h"
@@ -34,6 +35,7 @@
 #include "pdf/post_message_receiver.h"
 #include "pdf/preview_mode_client.h"
 #include "pdf/v8_value_converter.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -49,8 +51,8 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8.h"
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
-#include "pdf/pdf_ink_module_client.h"
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
 #endif
 
 namespace blink {
@@ -84,6 +86,7 @@ class Thumbnail;
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 class PdfInkModule;
+class PdfInkModuleClient;
 #endif
 
 class PdfViewWebPlugin final : public PDFiumEngineClient,
@@ -94,9 +97,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                                public PaintManager::Client,
                                public PdfAccessibilityActionHandler,
                                public PdfAccessibilityImageFetcher,
-#if BUILDFLAG(ENABLE_PDF_INK2)
-                               public PdfInkModuleClient,
-#endif
                                public PreviewModeClient::Client {
  public:
   // Do not save files larger than 100 MB. This cap should be kept in sync with
@@ -114,6 +114,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     kAnnotation = 0,
     kOriginal = 1,
     kEdited = 2,
+    kSearchified = 3,
   };
 
   // Provides services from the plugin's container.
@@ -234,13 +235,43 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     virtual void RecordComputedAction(const std::string& action) {}
 
     // Creates an implementation of `PdfAccessibilityDataHandler` catered to the
-    // client.
+    // client. The return value must be non-null.
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler,
         PdfAccessibilityImageFetcher* image_fetcher,
         blink::WebPluginContainer* plugin_container,
-        bool print_preview);
+        bool print_preview) = 0;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    // Returns the maximum expected dimension of the images to be OCRed. If
+    // images are larger than the returned value, they will be downsampled
+    // before processing.
+    virtual void GetOcrMaxImageDimension(
+        base::OnceCallback<void(uint32_t)> callback) = 0;
+
+    // Performs OCR on `image` and sends the recognized text to `callback`.
+    // In case OCR service gets disconnected before or during running this
+    // request, `callback` will not be called.
+    virtual void PerformOcr(
+        const SkBitmap& image,
+        base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
+            callback) = 0;
+
+    // Sets a `callback` that is notified if OCR service gets disconnected.
+    virtual void SetOcrDisconnectedCallback(
+        base::RepeatingClosure callback) = 0;
+#endif
+  };
+
+  struct SaveDataBlock {
+    SaveDataBlock();
+    SaveDataBlock(SaveDataBlock&& other) noexcept;
+    SaveDataBlock& operator=(SaveDataBlock&&) noexcept;
+    ~SaveDataBlock();
+
+    std::vector<uint8_t> block;
+    uint32_t total_file_size = 0;
   };
 
   PdfViewWebPlugin(std::unique_ptr<Client> client,
@@ -350,8 +381,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                   int length) override;
   std::unique_ptr<UrlLoader> CreateUrlLoader() override;
   v8::Isolate* GetIsolate() override;
-  std::vector<SearchStringResult> SearchString(const char16_t* string,
-                                               const char16_t* term,
+  std::vector<SearchStringResult> SearchString(const std::u16string& needle,
+                                               const std::u16string& haystack,
                                                bool case_sensitive) override;
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
@@ -370,13 +401,19 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 #if BUILDFLAG(ENABLE_PDF_INK2)
   bool IsInAnnotationMode() const override;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void OnSearchifyStateChange(bool busy) override;
+  void OnHasSearchifyText() override;
+#endif
 
   // pdf::mojom::PdfListener:
   void SetCaretPosition(const gfx::PointF& position) override;
   void MoveRangeSelectionExtent(const gfx::PointF& extent) override;
   void SetSelectionBounds(const gfx::PointF& base,
                           const gfx::PointF& extent) override;
-  void GetPdfBytes(GetPdfBytesCallback callback) override;
+  void GetPdfBytes(uint32_t size_limit, GetPdfBytesCallback callback) override;
+  void GetPageText(int32_t page_index, GetPageTextCallback callback) override;
+  void GetMostVisiblePageIndex(GetMostVisiblePageIndexCallback callback) override;
 
   // UrlLoader::Client:
   bool IsValid() const override;
@@ -410,20 +447,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   SkBitmap GetImageForOcr(int32_t page_index,
                           int32_t page_object_index) override;
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
-  // PdfInkModuleClient:
-  PageOrientation GetOrientation() const override;
-  gfx::Rect GetPageContentsRect(int index) override;
-  gfx::Vector2dF GetViewportOriginOffset() override;
-  float GetZoom() const override;
-  bool IsPageVisible(int page_index) override;
-  void OnAnnotationModeToggled(bool enable) override;
-  void StrokeFinished() override;
-  void UpdateInkCursorImage(SkBitmap bitmap) override;
-  void UpdateThumbnail(int page_index) override;
-  int VisiblePageIndexFromPoint(const gfx::PointF& point) override;
-#endif
-
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;
   void PreviewDocumentLoadFailed() override;
@@ -443,11 +466,17 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     return document_load_state_;
   }
 
+  void set_cursor_type_for_testing(ui::mojom::CursorType cursor_type) {
+    cursor_ = cursor_type;
+  }
+  const ui::Cursor& cursor_for_testing() const { return cursor_; }
+
   int GetContentRestrictionsForTesting() const {
     return GetContentRestrictions();
   }
 
-  AccessibilityDocInfo GetAccessibilityDocInfoForTesting() const {
+  std::unique_ptr<AccessibilityDocInfo> GetAccessibilityDocInfoForTesting()
+      const {
     return GetAccessibilityDocInfo();
   }
 
@@ -459,12 +488,36 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     next_accessibility_page_index_ = index;
   }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  PdfInkModuleClient* ink_module_client_for_testing() {
+    return ink_module_client_.get();
+  }
+
+  void set_in_paint_for_testing(bool in_paint) { in_paint_ = in_paint; }
+
+  const std::vector<gfx::Rect>& deferred_invalidates_for_testing() const {
+    return deferred_invalidates_;
+  }
+
+  bool HasInkInputsSnapshotForTesting() const {
+    return snapshot_ink_inputs_.has_value();
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+  void SetMaxSaveBufferSizeForTesting(uint32_t max_save_buffer_size) {
+    max_save_buffer_size_ = max_save_buffer_size;
+  }
+
+  bool IsSaveDataBufferEmptyForTesting() const {
+    return save_data_buffer_.empty();
+  }
+
  private:
   // Callback that runs after `LoadUrl()`. The `loader` is the loader used to
   // load the URL, and `result` is the result code for the load.
   using LoadUrlCallback =
       base::OnceCallback<void(std::unique_ptr<UrlLoader> loader,
-                              int32_t result)>;
+                              Result result)>;
 
   enum class AccessibilityState {
     kOff = 0,  // Off.
@@ -486,6 +539,10 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     int dest_page_index = -1;
   };
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  class PdfInkModuleClientImpl;
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
   // Call `Destroy()` instead.
   ~PdfViewWebPlugin() override;
 
@@ -495,7 +552,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void SendSetSmoothScrolling();
 
   // Handles `LoadUrl()` result for the main document.
-  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);
+  void DidOpen(std::unique_ptr<UrlLoader> loader, Result result);
 
   // Updates the scroll position, which is in CSS pixels relative to the
   // top-left corner.
@@ -505,7 +562,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void LoadUrl(std::string_view url, LoadUrlCallback callback);
 
   // Handles `Open()` result for `form_loader_`.
-  void DidFormOpen(int32_t result);
+  void DidFormOpen(Result result);
 
   // Sends start/stop loading notifications to the plugin's render frame.
   void DidStartLoading();
@@ -519,9 +576,13 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void HandleGetNamedDestinationMessage(const base::Value::Dict& message);
   void HandleGetPageBoundingBoxMessage(const base::Value::Dict& message);
   void HandleGetPasswordCompleteMessage(const base::Value::Dict& message);
+  void HandleGetSaveDataBlockMessage(const base::Value::Dict& message);
   void HandleGetSelectedTextMessage(const base::Value::Dict& message);
+  void HandleGetSuggestedFileName(const base::Value::Dict& message);
   void HandleGetThumbnailMessage(const base::Value::Dict& message);
+  void HandleHighlightTextFragmentsMessage(const base::Value::Dict& message);
   void HandlePrintMessage(const base::Value::Dict& /*message*/);
+  void HandleReleaseSaveInBlockBuffers(const base::Value::Dict& /*message*/);
   void HandleRotateClockwiseMessage(const base::Value::Dict& /*message*/);
   void HandleRotateCounterclockwiseMessage(
       const base::Value::Dict& /*message*/);
@@ -534,8 +595,33 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void HandleStopScrollingMessage(const base::Value::Dict& message);
   void HandleViewportMessage(const base::Value::Dict& message);
 
-  void SaveToBuffer(const std::string& token);
+  void SaveToBuffer(SaveRequestType request_type, const std::string& token);
   void SaveToFile(const std::string& token);
+
+  // Returns `block_size` bytes to save the PDF with `request_type`, starting
+  // from location `offset`. Since the caller may not know the exact file size,
+  // the first request (when `offset` is 0) can be called with `block_size` 0
+  // and in that case, the entire file data, capped at 16MB limit is returned.
+  // The function also returns the total file size.
+  // Note that it only handles files less than INT_MAX size, and if the file is
+  // larger than that, it returns 0 as file size and no data.
+  SaveDataBlock SaveBlockToBuffer(SaveRequestType request_type,
+                                  uint32_t offset,
+                                  uint32_t block_size);
+
+  // For a call to `SaveBlockToBuffer`, ensures `offset` and `block_size` have
+  // expected values and returns the effective `block_size`.
+  uint32_t VerifyParamsAndGetSaveBlockSize(uint32_t total_file_size,
+                                           uint32_t offset,
+                                           uint32_t block_size);
+
+  // Release buffered data for saving.
+  void ReleaseSaveBuffer();
+
+  // Sets whether the plugin can and should handle the save by using `pdf_host_`
+  // to notify the browser. Prevents duplicate notifications to the browser if
+  // the state has not changed.
+  void SetPluginCanSave(bool can_save);
 
   // Converts a scroll offset (which is relative to a UI direction-dependent
   // scroll origin) to a scroll position (which is always relative to the
@@ -636,7 +722,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void LoadAvailablePreviewPage();
 
   // Handles `LoadUrl()` result for a preview page.
-  void DidOpenPreview(std::unique_ptr<UrlLoader> loader, int32_t result);
+  void DidOpenPreview(std::unique_ptr<UrlLoader> loader, Result result);
 
   // Continues loading the next preview page.
   void LoadNextPreviewPage();
@@ -650,14 +736,18 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                      Thumbnail thumbnail);
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  void GenerateAndSendInkThumbnail(int page_index, const gfx::Size& size);
+  static std::unique_ptr<PdfInkModuleClient> MaybeCreatePdfInkModuleClient(
+      PdfViewWebPlugin& plugin);
+  static std::unique_ptr<PdfInkModule> MaybeCreatePdfInkModule(
+      PdfInkModuleClient* client);
 #endif
 
   // Converts `frame_coordinates` to PDF coordinates.
   gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;
 
   // Gets the accessibility doc info based on the information from `engine_`.
-  AccessibilityDocInfo GetAccessibilityDocInfo() const;
+  // The return value is never nullptr.
+  std::unique_ptr<AccessibilityDocInfo> GetAccessibilityDocInfo() const;
 
   // Sets the accessibility information about the given `page_index` in the
   // renderer.
@@ -671,7 +761,14 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // Starts loading accessibility information.
   void LoadAccessibility();
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Triggered to show/hide Searchify progress indicator.
+  void SetShowSearchifyInProgress(bool show);
+#endif
+
   bool initialized_ = false;
+
+  bool plugin_can_save_ = false;
 
   blink::WebString selected_text_;
 
@@ -683,7 +780,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   mojo::Receiver<pdf::mojom::PdfListener> listener_receiver_{this};
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  // Null if `features::kPdfInk2` is not enabled.
+  // Both are non-null if `features::kPdfInk2` is enabled.
+  // Both are null if `features::kPdfInk2` is disabled.
+  //
+  // `ink_module_client_` must outlive `ink_module_`.
+  std::unique_ptr<PdfInkModuleClient> const ink_module_client_;
   std::unique_ptr<PdfInkModule> const ink_module_;
 #endif
 
@@ -719,6 +820,15 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   // The current image snapshot.
   cc::PaintImage snapshot_;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // The last saved image snapshot for rendering of Ink inputs.
+  std::optional<cc::PaintImage> snapshot_ink_inputs_;
+
+  // Tracks if `snapshot_` still needs to be updated to reflect a newly
+  // added Ink stroke.
+  bool snapshot_needs_update_for_ink_input_ = false;
+#endif
 
   // Translate from snapshot to device pixels.
   gfx::Vector2dF snapshot_translate_;
@@ -845,10 +955,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // spamming the metrics if a feature shows up many times per document.
   base::flat_set<std::string> unsupported_features_reported_;
 
-  // Indicates whether the browser has been notified about an unsupported
-  // feature once, which helps prevent the infobar from going up more than once.
-  bool notified_browser_about_unsupported_feature_ = false;
-
   // The metafile in which to save the printed output. Assigned a value only
   // between `PrintBegin()` and `PrintEnd()` calls.
   raw_ptr<printing::MetafileSkia> printing_metafile_ = nullptr;
@@ -886,6 +992,23 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   // Queue of available preview pages to load next.
   base::queue<PreviewPageInfo> preview_pages_info_;
+
+  // Buffer for saving data by Web UI.
+  // `SaveBlockToBuffer` allocates this variable when WebUI requests saving the
+  // PDF by getting the content in blocks, and the content needs to be buffered
+  // during the save process. It is released when saving is finished or
+  // canceled.
+  std::vector<uint8_t> save_data_buffer_;
+
+  // Maximum size of save data in each block.
+  uint32_t max_save_buffer_size_;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  bool show_searchify_in_progress_ = false;
+
+  // Tells if searchify ever started.
+  bool searchify_started_ = false;
+#endif
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };

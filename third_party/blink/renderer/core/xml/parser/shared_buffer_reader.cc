@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/xml/parser/shared_buffer_reader.h"
 
 #include <algorithm>
@@ -49,25 +44,24 @@ SharedBufferReader::SharedBufferReader(scoped_refptr<const SharedBuffer> buffer)
 
 SharedBufferReader::~SharedBufferReader() = default;
 
-int SharedBufferReader::ReadData(char* output_buffer, int asked_to_read) {
+size_t SharedBufferReader::ReadData(base::span<char> output_buffer) {
   if (!buffer_ || current_offset_ > buffer_->size())
     return 0;
 
-  size_t bytes_copied = 0;
-  size_t len_to_copy = std::min(base::checked_cast<size_t>(asked_to_read),
-                                buffer_->size() - current_offset_);
+  const size_t output_buffer_size = output_buffer.size();
   for (auto it = buffer_->GetIteratorAt(current_offset_); it != buffer_->cend();
        ++it) {
-    if (bytes_copied >= len_to_copy)
+    const size_t to_be_written = std::min(it->size(), output_buffer.size());
+    output_buffer.copy_prefix_from(it->first(to_be_written));
+    output_buffer = output_buffer.subspan(to_be_written);
+    if (output_buffer.empty()) {
       break;
-    size_t to_be_written = std::min(it->size(), len_to_copy - bytes_copied);
-
-    memcpy(output_buffer + bytes_copied, it->data(), to_be_written);
-    bytes_copied += to_be_written;
+    }
   }
 
+  const size_t bytes_copied = output_buffer_size - output_buffer.size();
   current_offset_ += bytes_copied;
-  return base::checked_cast<int>(bytes_copied);
+  return bytes_copied;
 }
 
 }  // namespace blink

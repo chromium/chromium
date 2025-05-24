@@ -15,7 +15,6 @@
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_util.h"
 #include "ui/gfx/render_text.h"

@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/page_load_metrics/browser/observers/ad_metrics/univariate_stats.h"
 
+#include <array>
 #include <cmath>
 
 #include "base/check_op.h"
@@ -18,7 +15,7 @@ namespace page_load_metrics {
 void UnivariateStats::Accumulate(double value, double weight) {
   DCHECK_GE(weight, 0);
 
-  double x[4] = {};
+  std::array<double, 4> x = {};
 
   double prev = 1;
   for (size_t i = 0; i < 4; ++i) {
@@ -36,8 +33,8 @@ UnivariateStats::DistributionMoments UnivariateStats::CalculateStats() const {
   if (std::abs(total_weight_) < 1E-7)
     return result;
 
-  double ex[4] = {};
-  double mu[4] = {};
+  std::array<double, 4> ex = {};
+  std::array<double, 4> mu = {};
 
   double prev = 1;
   for (size_t i = 0; i < 4; ++i) {
@@ -46,7 +43,7 @@ UnivariateStats::DistributionMoments UnivariateStats::CalculateStats() const {
     prev = mu[i];
   }
 
-  double sigma[4] = {};
+  std::array<double, 4> sigma = {};
 
   sigma[1] = ex[1] - mu[1];
   sigma[0] = std::sqrt(sigma[1]);

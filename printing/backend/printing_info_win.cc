@@ -6,28 +6,31 @@
 
 #include <stdint.h>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 
 namespace printing {
 
 namespace internal {
 
-std::unique_ptr<uint8_t[]> GetDriverInfo(HANDLE printer, int level) {
+base::HeapArray<uint8_t> GetDriverInfo(HANDLE printer, int level) {
   DWORD size = 0;
   // ::GetPrinterDriver() will always fail on this check for the required size
   // because the provided buffer is intentionally insufficient.
   ::GetPrinterDriver(printer, nullptr, level, nullptr, 0, &size);
   if (GetLastError() != ERROR_INSUFFICIENT_BUFFER || size == 0)
-    return nullptr;
+    return {};
 
-  auto buffer = std::make_unique<uint8_t[]>(size);
-  if (!::GetPrinterDriver(printer, nullptr, level, buffer.get(), size, &size))
-    return nullptr;
+  auto buffer = base::HeapArray<uint8_t>::Uninit(size);
+  if (!::GetPrinterDriver(printer, nullptr, level, buffer.data(), size,
+                          &size)) {
+    return {};
+  }
 
   return buffer;
 }
 
-std::unique_ptr<uint8_t[]> GetPrinterInfo(HANDLE printer, int level) {
+base::HeapArray<uint8_t> GetPrinterInfo(HANDLE printer, int level) {
   DWORD size = 0;
   // ::GetPrinter() will always fail on this check for the required size
   // because the provided buffer is intentionally insufficient.
@@ -36,14 +39,14 @@ std::unique_ptr<uint8_t[]> GetPrinterInfo(HANDLE printer, int level) {
   if (last_err != ERROR_INSUFFICIENT_BUFFER || size == 0) {
     LOG(WARNING) << "Failed to get size of PRINTER_INFO_" << level
                  << ", error = " << last_err;
-    return nullptr;
+    return {};
   }
 
-  auto buffer = std::make_unique<uint8_t[]>(size);
-  if (!::GetPrinter(printer, level, buffer.get(), size, &size)) {
+  auto buffer = base::HeapArray<uint8_t>::Uninit(size);
+  if (!::GetPrinter(printer, level, buffer.data(), size, &size)) {
     LOG(WARNING) << "Failed to get PRINTER_INFO_" << level
                  << ", error = " << GetLastError();
-    return nullptr;
+    return {};
   }
   return buffer;
 }

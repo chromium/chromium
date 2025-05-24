@@ -41,7 +41,6 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
 
   // View:
   gfx::Insets GetInsets() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
@@ -105,8 +104,7 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
   // If set the currently set border is a bubble border.
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
 
-  // Corner radius of the background.
-  int corner_radius_ = 0;
+  gfx::RoundedCornersF background_rounded_corners_;
 
   // The portion of GetInsets() that represent the region outside the border
   // (e.g. any shadows).

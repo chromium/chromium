@@ -25,8 +25,9 @@ class PageTimingSender {
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) = 0;
-  virtual void SetUpSmoothnessReporting(
-      base::ReadOnlySharedMemoryRegion shared_memory) = 0;
+  virtual void SetUpUkmReporting(
+      base::ReadOnlySharedMemoryRegion shared_memory_smoothness,
+      base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames) = 0;
   virtual void SendCustomUserTiming(mojom::CustomUserTimingMarkPtr timing) = 0;
 };
 

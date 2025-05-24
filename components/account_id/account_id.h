@@ -13,23 +13,24 @@
 #include <string>
 #include <string_view>
 
+#include "base/component_export.h"
+#include "google_apis/gaia/gaia_id.h"
+
 enum class AccountType {
   // Unspecified account (eg. other domains)
   UNKNOWN,
 
-  // aka Gaia account
+  // aka Gaia account.
   GOOGLE,
 
-  // Microsoft Active Directory accounts (Deprecated, pending removal:
-  // b/263367348).
-  ACTIVE_DIRECTORY
+  // ACTIVE_DIRECTORY account type was deprecated.
 };
 
 // Type that contains enough information to identify user.
 //
 // TODO(alemate): Rename functions and fields to reflect different types of
 // accounts. (see crbug.com/672253)
-class AccountId {
+class COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID) AccountId {
  public:
   // Creates an empty account id.
   //
@@ -45,10 +46,7 @@ class AccountId {
   // compares emails.
   // If both are not UNKNOWN and not equal then it returns false.
   // If AccountType == GOOGLE then it checks if either ids or emails are equal.
-  // If AccountType == ACTIVE_DIRECTORY then it checks if ids and emails are
-  // equal.
   bool operator==(const AccountId& other) const;
-  bool operator!=(const AccountId& other) const;
   bool operator<(const AccountId& right) const;
 
   bool empty() const;
@@ -56,8 +54,7 @@ class AccountId {
   void clear();
 
   AccountType GetAccountType() const;
-  const std::string& GetGaiaId() const;
-  const std::string& GetObjGuid() const;
+  const GaiaId& GetGaiaId() const;
   // Users of AccountId should make no assumptions on the format of email.
   // I.e. it cannot be used as account identifier, because it is (in general)
   // non-comparable.
@@ -72,7 +69,7 @@ class AccountId {
   void SetUserEmail(std::string_view email);
 
   static AccountId FromNonCanonicalEmail(std::string_view email,
-                                         std::string_view gaia_id,
+                                         const GaiaId& gaia_id,
                                          AccountType account_type);
   // This method is to be used during transition period only.
   // AccountId with UNKNOWN AccountType;
@@ -81,11 +78,7 @@ class AccountId {
   // full account information.
   // AccountId with GOOGLE AccountType;
   static AccountId FromUserEmailGaiaId(std::string_view user_email,
-                                       std::string_view gaia_id);
-  // These methods are used to construct Active Directory AccountIds.
-  // AccountId with ACTIVE_DIRECTORY AccountType;
-  static AccountId AdFromUserEmailObjGuid(std::string_view email,
-                                          std::string_view obj_guid);
+                                       const GaiaId& gaia_id);
 
   // Translation functions between AccountType and std::string. Used for
   // serialization.
@@ -100,21 +93,25 @@ class AccountId {
   static std::optional<AccountId> Deserialize(std::string_view serialized);
 
  private:
+  COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID)
   friend std::ostream& operator<<(std::ostream&, const AccountId&);
 
-  AccountId(std::string_view id,
-            std::string_view user_email,
-            AccountType account_type);
+  AccountId(std::string_view user_email,
+            AccountType account_type,
+            const GaiaId& gaia_id);
 
-  std::string id_;
   std::string user_email_;
   AccountType account_type_ = AccountType::UNKNOWN;
+  // ID for AccountType::GOOGLE, empty otherwise.
+  GaiaId gaia_id_;
 };
 
 // Overload << operator to allow logging of AccountIds.
+COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID)
 std::ostream& operator<<(std::ostream& stream, const AccountId& account_id);
 
 // Returns a reference to a singleton.
+COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID)
 const AccountId& EmptyAccountId();
 
 namespace std {
@@ -122,6 +119,7 @@ namespace std {
 // Implement hashing of AccountId, so it can be used as a key in STL containers.
 template <>
 struct hash<AccountId> {
+  COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID)
   std::size_t operator()(const AccountId& user_id) const;
 };
 

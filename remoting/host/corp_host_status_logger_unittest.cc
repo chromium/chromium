@@ -31,12 +31,16 @@ using testing::Return;
 using testing::ReturnRef;
 
 constexpr char kFakeSessionId[] = "fake_session_id";
+constexpr char kFakeHostToken[] = "fake_host_token";
 constexpr char kFakeReauthToken[] = "fake_reauth_token";
 
-const SessionPolicies kFakeLocalSessionPolicies = {
-    .allow_relayed_connections = true,
-    .allow_file_transfer = false,
-};
+const SessionPolicies FakeLocalSessionPolicies() {
+  SessionPolicies session_policies;
+  session_policies.allow_relayed_connections = true;
+  session_policies.allow_file_transfer = false;
+
+  return session_policies;
+}
 
 class MockLoggingServiceClient final : public LoggingServiceClient {
  public:
@@ -79,7 +83,7 @@ CorpHostStatusLoggerTest::CorpHostStatusLoggerTest() {
   auto service_client = std::make_unique<MockLoggingServiceClient>();
   service_client_ = service_client.get();
   local_session_policies_provider_.set_local_policies(
-      kFakeLocalSessionPolicies);
+      FakeLocalSessionPolicies());
   logger_ = std::make_unique<CorpHostStatusLogger>(
       std::move(service_client), &local_session_policies_provider_);
   logger_as_observer_ = logger_.get();
@@ -110,6 +114,7 @@ void CorpHostStatusLoggerTest::SetUpSessionAuthzAuthenticator() {
   EXPECT_CALL(authenticator_, GetSessionPolicies())
       .WillRepeatedly(Return(nullptr));
   session_authz_authenticator_.SetSessionIdForTesting(kFakeSessionId);
+  session_authz_authenticator_.SetHostTokenForTesting(kFakeHostToken);
   session_authz_authenticator_.SetReauthorizerForTesting(
       std::make_unique<protocol::SessionAuthzReauthorizer>(
           nullptr, kFakeSessionId, kFakeReauthToken, base::Minutes(5),
@@ -148,11 +153,11 @@ TEST_F(CorpHostStatusLoggerTest, IgnoreSessionWithoutSessionAuthzId) {
 TEST_F(CorpHostStatusLoggerTest,
        ReportsSessionDisconnectedForSessionWithoutReauthorizer) {
   EXPECT_CALL(session_, error()).WillOnce(Return(ErrorCode::PEER_IS_OFFLINE));
-  internal::ReportSessionDisconnectedRequestStruct expected_request{
-      .session_authz_id = kFakeSessionId,
-      .error_code = ErrorCode::PEER_IS_OFFLINE,
-      .effective_session_policies = kFakeLocalSessionPolicies,
-  };
+  internal::ReportSessionDisconnectedRequestStruct expected_request;
+  expected_request.session_authz_id = kFakeSessionId;
+  expected_request.host_token = kFakeHostToken;
+  expected_request.error_code = ErrorCode::PEER_IS_OFFLINE;
+  expected_request.effective_session_policies = FakeLocalSessionPolicies();
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
   SetUpSessionAuthzAuthenticator();
   session_authz_authenticator_.SetReauthorizerForTesting(nullptr);
@@ -161,14 +166,30 @@ TEST_F(CorpHostStatusLoggerTest,
                                             protocol::Session::State::FAILED);
 }
 
+TEST_F(CorpHostStatusLoggerTest,
+       ReportsSessionDisconnectedForSessionWithoutHostTokenAndReauthorizer) {
+  EXPECT_CALL(session_, error()).WillOnce(Return(ErrorCode::PEER_IS_OFFLINE));
+  internal::ReportSessionDisconnectedRequestStruct expected_request;
+  expected_request.session_authz_id = kFakeSessionId;
+  expected_request.error_code = ErrorCode::PEER_IS_OFFLINE;
+  expected_request.effective_session_policies = FakeLocalSessionPolicies();
+  EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
+  SetUpSessionAuthzAuthenticator();
+  session_authz_authenticator_.SetHostTokenForTesting({});
+  session_authz_authenticator_.SetReauthorizerForTesting(nullptr);
+
+  logger_as_observer_->OnSessionStateChange(session_,
+                                            protocol::Session::State::FAILED);
+}
+
 TEST_F(CorpHostStatusLoggerTest, ReportsSessionDisconnectedForClosed) {
   EXPECT_CALL(session_, error()).WillOnce(Return(ErrorCode::OK));
-  internal::ReportSessionDisconnectedRequestStruct expected_request{
-      .session_authz_id = kFakeSessionId,
-      .session_authz_reauth_token = kFakeReauthToken,
-      .error_code = ErrorCode::OK,
-      .effective_session_policies = kFakeLocalSessionPolicies,
-  };
+  internal::ReportSessionDisconnectedRequestStruct expected_request;
+  expected_request.session_authz_id = kFakeSessionId;
+  expected_request.host_token = kFakeHostToken;
+  expected_request.session_authz_reauth_token = kFakeReauthToken;
+  expected_request.error_code = ErrorCode::OK;
+  expected_request.effective_session_policies = FakeLocalSessionPolicies();
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
   SetUpSessionAuthzAuthenticator();
 
@@ -178,12 +199,12 @@ TEST_F(CorpHostStatusLoggerTest, ReportsSessionDisconnectedForClosed) {
 
 TEST_F(CorpHostStatusLoggerTest, ReportsSessionDisconnectedForFailed) {
   EXPECT_CALL(session_, error()).WillOnce(Return(ErrorCode::PEER_IS_OFFLINE));
-  internal::ReportSessionDisconnectedRequestStruct expected_request{
-      .session_authz_id = kFakeSessionId,
-      .session_authz_reauth_token = kFakeReauthToken,
-      .error_code = ErrorCode::PEER_IS_OFFLINE,
-      .effective_session_policies = kFakeLocalSessionPolicies,
-  };
+  internal::ReportSessionDisconnectedRequestStruct expected_request;
+  expected_request.session_authz_id = kFakeSessionId;
+  expected_request.host_token = kFakeHostToken;
+  expected_request.session_authz_reauth_token = kFakeReauthToken;
+  expected_request.error_code = ErrorCode::PEER_IS_OFFLINE;
+  expected_request.effective_session_policies = FakeLocalSessionPolicies();
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
   SetUpSessionAuthzAuthenticator();
 
@@ -193,18 +214,17 @@ TEST_F(CorpHostStatusLoggerTest, ReportsSessionDisconnectedForFailed) {
 
 TEST_F(CorpHostStatusLoggerTest,
        AuthenticatorHasSessionPolicies_ReportsItInsteadOfLocalPolicies) {
-  SessionPolicies authenticator_session_policies = {
-      .allow_relayed_connections = false,
-      .allow_file_transfer = true,
-  };
-  EXPECT_NE(authenticator_session_policies, kFakeLocalSessionPolicies);
+  SessionPolicies authenticator_session_policies;
+  authenticator_session_policies.allow_relayed_connections = false;
+  authenticator_session_policies.allow_file_transfer = true;
+  EXPECT_NE(authenticator_session_policies, FakeLocalSessionPolicies());
   EXPECT_CALL(session_, error()).WillOnce(Return(ErrorCode::OK));
-  internal::ReportSessionDisconnectedRequestStruct expected_request{
-      .session_authz_id = kFakeSessionId,
-      .session_authz_reauth_token = kFakeReauthToken,
-      .error_code = ErrorCode::OK,
-      .effective_session_policies = authenticator_session_policies,
-  };
+  internal::ReportSessionDisconnectedRequestStruct expected_request;
+  expected_request.session_authz_id = kFakeSessionId;
+  expected_request.host_token = kFakeHostToken;
+  expected_request.session_authz_reauth_token = kFakeReauthToken;
+  expected_request.error_code = ErrorCode::OK;
+  expected_request.effective_session_policies = authenticator_session_policies;
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
   SetUpSessionAuthzAuthenticator();
   EXPECT_CALL(authenticator_, GetSessionPolicies())
@@ -217,11 +237,11 @@ TEST_F(CorpHostStatusLoggerTest,
 TEST_F(CorpHostStatusLoggerTest,
        AuthenticatorIsNotAccepted_DoesNotReportSessionPolicies) {
   EXPECT_CALL(session_, error()).WillOnce(Return(ErrorCode::PEER_IS_OFFLINE));
-  internal::ReportSessionDisconnectedRequestStruct expected_request{
-      .session_authz_id = kFakeSessionId,
-      .session_authz_reauth_token = kFakeReauthToken,
-      .error_code = ErrorCode::PEER_IS_OFFLINE,
-  };
+  internal::ReportSessionDisconnectedRequestStruct expected_request;
+  expected_request.session_authz_id = kFakeSessionId;
+  expected_request.host_token = kFakeHostToken;
+  expected_request.session_authz_reauth_token = kFakeReauthToken;
+  expected_request.error_code = ErrorCode::PEER_IS_OFFLINE;
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
   SetUpSessionAuthzAuthenticator();
   EXPECT_CALL(authenticator_, state())

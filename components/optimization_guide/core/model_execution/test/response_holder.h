@@ -12,20 +12,47 @@
 
 namespace optimization_guide {
 
+class RemoteResponseHolder {
+ public:
+  RemoteResponseHolder();
+  ~RemoteResponseHolder();
+
+  OptimizationGuideModelExecutionResultCallback GetCallback();
+
+  bool GetFinalStatus() { return future_.Get(); }
+
+  std::string GetComposeOutput();
+
+  OptimizationGuideModelExecutionError::ModelExecutionError error() {
+    return result_->response.error().error();
+  }
+
+  ModelQualityLogEntry* log_entry() { return log_entry_.get(); }
+
+ private:
+  void OnResponse(OptimizationGuideModelExecutionResult result,
+                  std::unique_ptr<ModelQualityLogEntry> log_entry);
+
+  base::test::TestFuture<bool> future_;
+  std::optional<OptimizationGuideModelExecutionResult> result_;
+  std::unique_ptr<ModelQualityLogEntry> log_entry_;
+  base::WeakPtrFactory<RemoteResponseHolder> weak_ptr_factory_{this};
+};
+
 class ResponseHolder {
  public:
   ResponseHolder();
   ~ResponseHolder();
 
-  OptimizationGuideModelExecutionResultStreamingCallback callback();
+  OptimizationGuideModelExecutionResultStreamingCallback GetStreamingCallback();
 
   // Wait for and get the final execution status (true if completed without
   // error).
   bool GetFinalStatus() { return final_status_future_.Get(); }
 
   const std::optional<std::string>& value() const { return response_received_; }
-  const std::vector<std::string>& streamed() const {
-    return streamed_responses_;
+  const std::vector<std::string>& partials() const {
+    return partial_responses_;
   }
   const std::optional<
       OptimizationGuideModelExecutionError::ModelExecutionError>&
@@ -35,18 +62,27 @@ class ResponseHolder {
   const std::optional<bool>& provided_by_on_device() const {
     return provided_by_on_device_;
   }
-  ModelQualityLogEntry* log_entry() { return log_entry_received_.get(); }
+  proto::ModelExecutionInfo* model_execution_info() {
+    return model_execution_info_received_.get();
+  }
+
+  size_t input_token_count() const { return input_token_count_; }
+
+  size_t output_token_count() const { return output_token_count_; }
 
  private:
-  void OnResponse(OptimizationGuideModelStreamingExecutionResult result);
+  void OnStreamingResponse(
+      OptimizationGuideModelStreamingExecutionResult result);
 
   base::test::TestFuture<bool> final_status_future_;
-  std::vector<std::string> streamed_responses_;
+  std::vector<std::string> partial_responses_;
   std::optional<std::string> response_received_;
   std::optional<bool> provided_by_on_device_;
-  std::unique_ptr<ModelQualityLogEntry> log_entry_received_;
+  std::unique_ptr<proto::ModelExecutionInfo> model_execution_info_received_;
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
       response_error_;
+  size_t input_token_count_ = 0;
+  size_t output_token_count_ = 0;
   base::WeakPtrFactory<ResponseHolder> weak_ptr_factory_;
 };
 

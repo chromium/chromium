@@ -12,13 +12,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 
@@ -28,12 +28,11 @@ import org.chromium.chrome.browser.profiles.ProfileJni;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class MerchantTrustSignalsStorageFactoryTest {
 
-    @Rule public JniMocker mMocker = new JniMocker();
-
     @Mock private Profile mMockProfile1;
 
     @Mock private Profile mMockProfile2;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private MerchantTrustSignalsEventStorage.Natives mMockStorage;
 
     private ObservableSupplierImpl<Profile> mProfileSupplier;
@@ -42,9 +41,8 @@ public class MerchantTrustSignalsStorageFactoryTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mMocker.mock(MerchantTrustSignalsEventStorageJni.TEST_HOOKS, mMockStorage);
-        mMocker.mock(ProfileJni.TEST_HOOKS, mMockProfileNatives);
+        MerchantTrustSignalsEventStorageJni.setInstanceForTesting(mMockStorage);
+        ProfileJni.setInstanceForTesting(mMockProfileNatives);
 
         doReturn(false).when(mMockProfile1).isOffTheRecord();
         doReturn(false).when(mMockProfile2).isOffTheRecord();

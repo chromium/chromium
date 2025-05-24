@@ -10,7 +10,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -242,12 +241,6 @@ TEST(InterestGroupMojomTraitsTest,
 
 TEST(InterestGroupMojomTraitsTest,
      SerializeAndDeserializeCrossOriginTrustedBiddingSignalsUrl) {
-  // Like with everything here, the negative test is in
-  // validate_blink_interest_group_test.cc
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgePermitCrossOriginTrustedSignals);
-
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.trusted_bidding_signals_url =
       GURL("https://cross-origin.test/");
@@ -295,6 +288,23 @@ TEST(InterestGroupMojomTraitsTest,
       url::Origin::Create(GURL("http://example.test"));
   SerializeAndDeserializeExpectFailure(interest_group,
                                        "trustedBiddingSignalsCoordinator");
+}
+
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeViewAndClickCountsProviders) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.view_and_click_counts_providers = {
+      {url::Origin::Create(GURL("https://example.test"))}};
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeInvalidViewAndClickCountsProviders) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.view_and_click_counts_providers = {
+      {url::Origin::Create(GURL("http://example.test"))}};
+  SerializeAndDeserializeExpectFailure(interest_group,
+                                       "viewAndClickCountsProviders");
 }
 
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeUserBiddingSignals) {
@@ -451,6 +461,22 @@ TEST(InterestGroupMojomTraitsTest,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
       /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/std::nullopt, allowed_reporting_origins_2);
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeAdsWithCreativeScanningMetadata) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ads.emplace();
+  interest_group.ads->emplace_back(GURL(kUrl1),
+                                   /*metadata=*/std::nullopt);
+  interest_group.ads->emplace_back(GURL(kUrl2),
+                                   /*metadata=*/"[]");
+  interest_group.ads->emplace_back(GURL("https://example.org/"),
+                                   /*metadata=*/"[]");
+  interest_group.ads.value()[0].creative_scanning_metadata = "hi";
+  interest_group.ads.value()[1].creative_scanning_metadata = "there";
+  interest_group.ads.value()[2].creative_scanning_metadata = std::nullopt;
   SerializeAndDeserializeAndCompare(interest_group);
 }
 

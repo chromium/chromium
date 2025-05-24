@@ -9,6 +9,8 @@ import android.content.Context;
 
 import androidx.core.app.NotificationCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperCompatBuilder;
@@ -19,12 +21,13 @@ import org.chromium.components.browser_ui.notifications.channels.ChannelsInitial
  * Extends the base NotificationWrapperCompatBuilder to add UMA by way of {@link
  * NotificationIntentInterceptor}.
  */
+@NullMarked
 public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperCompatBuilder {
     ChromeNotificationWrapperCompatBuilder(
             Context context,
             String channelId,
             ChannelsInitializer channelsInitializer,
-            NotificationMetadata metadata) {
+            @Nullable NotificationMetadata metadata) {
         super(context, channelId, channelsInitializer, metadata);
         if (metadata != null) {
             getBuilder()
@@ -34,7 +37,8 @@ public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperC
     }
 
     @Override
-    public NotificationWrapperBuilder setContentIntent(PendingIntentProvider contentIntent) {
+    public NotificationWrapperBuilder setContentIntent(
+            @Nullable PendingIntentProvider contentIntent) {
         PendingIntent pendingIntent =
                 NotificationIntentInterceptor.createInterceptPendingIntent(
                         NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
@@ -76,7 +80,7 @@ public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperC
     }
 
     @Override
-    public NotificationWrapperBuilder setDeleteIntent(PendingIntentProvider intent) {
+    public NotificationWrapperBuilder setDeleteIntent(@Nullable PendingIntentProvider intent) {
         return setDeleteIntent(
                 NotificationIntentInterceptor.createInterceptPendingIntent(
                         NotificationIntentInterceptor.IntentType.DELETE_INTENT,
@@ -87,7 +91,8 @@ public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperC
 
     @Override
     public NotificationWrapperBuilder setDeleteIntent(
-            PendingIntentProvider intent, @NotificationUmaTracker.ActionType int actionType) {
+            @Nullable PendingIntentProvider intent,
+            @NotificationUmaTracker.ActionType int actionType) {
         // As `actionType` will be part of the `requestCode` that `NotificationIntentInterceptor`
         // generates, the below wrapper `PendingIntent` will not be `Intent.filterEquals` to the
         // one above.

@@ -1,3 +1,12 @@
+#region Copyright notice and license
+// Protocol Buffers - Google's data interchange format
+// Copyright 2015 Google Inc.  All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+#endregion
+
 using System;
 using System.Collections;
 using Google.Protobuf.TestProtos.Proto2;
@@ -72,7 +81,7 @@ namespace Google.Protobuf
             message.SetExtension(OptionalStringExtension, "abcd");
 
             var input = new CodedInputStream(message.ToByteArray());
-            input.ExtensionRegistry = new ExtensionRegistry() { OptionalStringExtension };
+            input.ExtensionRegistry = new ExtensionRegistry { OptionalStringExtension };
             input.ReadTag(); // TryMergeFieldFrom expects that a tag was just read and will inspect the LastTag value
 
             ExtensionSet<TestAllExtensions> extensionSet = null;
@@ -103,8 +112,9 @@ namespace Google.Protobuf
 
             var ex = Assert.Throws<InvalidOperationException>(() => message.GetExtension(wrongTypedExtension));
 
-            var expectedMessage = "The stored extension value has a type of 'Google.Protobuf.TestProtos.Proto2.TestAllTypes+Types+NestedMessage, Google.Protobuf.Test.TestProtos, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604'. " +
-                "This a different from the requested type of 'Google.Protobuf.TestProtos.Proto2.TestAllTypes, Google.Protobuf.Test.TestProtos, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604'.";
+            var fullAssemblyName = typeof(TestAllTypes).Assembly.FullName;
+            var expectedMessage = $"The stored extension value has a type of 'Google.Protobuf.TestProtos.Proto2.TestAllTypes+Types+NestedMessage, {fullAssemblyName}'. " +
+                $"This a different from the requested type of 'Google.Protobuf.TestProtos.Proto2.TestAllTypes, {fullAssemblyName}'.";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
 
@@ -133,8 +143,9 @@ namespace Google.Protobuf
 
             var ex = Assert.Throws<InvalidOperationException>(() => message.GetExtension(wrongTypedExtension));
 
-            var expectedMessage = "The stored extension value has a type of 'Google.Protobuf.TestProtos.Proto2.TestAllTypes+Types+NestedMessage, Google.Protobuf.Test.TestProtos, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604'. " +
-                "This a different from the requested type of 'Google.Protobuf.TestProtos.Proto2.TestAllTypes, Google.Protobuf.Test.TestProtos, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604'.";
+            var fullAssemblyName = typeof(TestAllTypes).Assembly.FullName;
+            var expectedMessage = $"The stored extension value has a type of 'Google.Protobuf.TestProtos.Proto2.TestAllTypes+Types+NestedMessage, {fullAssemblyName}'. " +
+                $"This a different from the requested type of 'Google.Protobuf.TestProtos.Proto2.TestAllTypes, {fullAssemblyName}'.";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
 

@@ -23,27 +23,9 @@ void JavaScriptBrowserTest::AddLibrary(const base::FilePath& library_path) {
 
 JavaScriptBrowserTest::JavaScriptBrowserTest() = default;
 
-JavaScriptBrowserTest::~JavaScriptBrowserTest() {
-}
-
-void JavaScriptBrowserTest::SetUpInProcessBrowserTestFixture() {
-  ash_starter_ = std::make_unique<test::AshBrowserTestStarter>();
-  if (ash_starter_->HasLacrosArgument()) {
-    ASSERT_TRUE(ash_starter_->PrepareEnvironmentForLacros());
-    ash_starter_->EnableFeaturesInLacros(
-        {privacy_sandbox::kDisablePrivacySandboxPrompts});
-  }
-}
-
-void JavaScriptBrowserTest::TearDownInProcessBrowserTestFixture() {
-  if (ash_starter_->HasLacrosArgument())
-    ash_starter_.reset();
-}
+JavaScriptBrowserTest::~JavaScriptBrowserTest() = default;
 
 void JavaScriptBrowserTest::SetUpOnMainThread() {
-  if (ash_starter_->HasLacrosArgument())
-    ash_starter_->StartLacros(this);
-
   JsTestApiConfig config;
   library_search_paths_.push_back(config.search_path);
   DCHECK(user_libraries_.empty());
@@ -129,13 +111,5 @@ std::u16string JavaScriptBrowserTest::BuildRunTestJSCall(
 }
 
 Profile* JavaScriptBrowserTest::GetProfile() const {
-  CHECK(ash_starter_);
-  if (ash_starter_->HasLacrosArgument()) {
-    // In LacrosOnly mode, ash web browser is disabled, don't access profile via
-    // browser().
-    Profile* profile = ProfileManager::GetActiveUserProfile();
-    CHECK(profile) << "Failed to get a valid profile in Ash.";
-    return profile;
-  }
   return browser()->profile();
 }

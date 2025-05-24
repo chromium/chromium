@@ -35,7 +35,7 @@ class CrossUserSharingKeys {
   // Serialization to proto.
   sync_pb::CrossUserSharingKeys ToProto() const;
 
-  // Makes a deep copy of |*this|.
+  // Makes a deep copy of `*this`.
   CrossUserSharingKeys Clone() const;
 
   size_t size() const;

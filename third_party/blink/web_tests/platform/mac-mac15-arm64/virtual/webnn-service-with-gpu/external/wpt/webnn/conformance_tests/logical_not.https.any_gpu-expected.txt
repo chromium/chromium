@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] logicalNot uint8 0D scalar
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] logicalNot uint8 1D constant tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] logicalNot uint8 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] logicalNot uint8 2D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] logicalNot uint8 3D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] logicalNot uint8 4D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] logicalNot uint8 5D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint8 must be one of [float32,float16,int32]."
+Harness: the test ran to completion.
+

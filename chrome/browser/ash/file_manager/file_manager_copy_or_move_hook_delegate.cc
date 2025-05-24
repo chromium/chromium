@@ -108,8 +108,7 @@ std::ostream& operator<<(
       return out << "kError";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return out << "Unknown type";
+  NOTREACHED();
 }
 
 }  // namespace file_manager

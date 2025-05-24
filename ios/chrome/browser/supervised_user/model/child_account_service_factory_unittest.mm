@@ -20,7 +20,7 @@ class ChildAccountServiceFactoryTest : public PlatformTest {
   ProfileIOS* GetRegularProfile() { return profile_.get(); }
 
   ProfileIOS* GetOffTheRecordProfile() {
-    return profile_->GetOffTheRecordChromeBrowserState();
+    return profile_->GetOffTheRecordProfile();
   }
 
  private:
@@ -37,8 +37,8 @@ TEST_F(ChildAccountServiceFactoryTest, CreateService) {
 }
 
 // Tests that ChildAccountServiceFactory retuns null
-// with an off-the-record ChromeBrowserState.
-TEST_F(ChildAccountServiceFactoryTest, ReturnsNullOnOffTheRecordBrowserState) {
+// with an off-the-record ProfileIOS.
+TEST_F(ChildAccountServiceFactoryTest, ReturnsNullOnOffTheRecordProfile) {
   ProfileIOS* otr_profile = GetOffTheRecordProfile();
   ASSERT_TRUE(otr_profile);
   supervised_user::ChildAccountService* service =

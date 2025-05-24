@@ -30,6 +30,9 @@ if (((is_linux && !is_castos) || is_chromeos) && !use_fuzzing_engine) {
       # xmlparse.c has some |if (0 && ...)| statements.
       "-Wno-unreachable-code",
 
+      # xmlparse.c has a switch with a break that is unreachable.
+      "-Wno-unreachable-code-break",
+
       # Various files have fallthrough annotated with comments instead of
       # attributes, and switching to attributes is difficult.
       "-Wno-implicit-fallthrough",

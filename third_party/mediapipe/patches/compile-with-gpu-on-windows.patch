@@ -1,8 +1,7 @@
-From 8fded278548ac4a55592dbd4cf39b6a3aa30c289 Mon Sep 17 00:00:00 2001
+From f54d1ebaf0b039ea47c09383ff445ae686025390 Mon Sep 17 00:00:00 2001
 From: Piotr Bialecki <bialpio@chromium.org>
 Date: Thu, 24 Aug 2023 16:01:51 -0700
-Subject: [PATCH] [PATCH] Compile MediaPipe with GPU support on Windows on
- ANGLE
+Subject: [PATCH] Compile MediaPipe with GPU support on Windows on ANGLE
 
 Major changes:
 - Allow mediapipe to be built with pthreads disabled.
@@ -10,18 +9,18 @@ Major changes:
 ---
  .../mediapipe/src/mediapipe/gpu/gl_base.h     |  3 ++
  .../src/mediapipe/gpu/gl_calculator_helper.h  |  6 ++--
- .../mediapipe/src/mediapipe/gpu/gl_context.cc | 31 +++++++++++++++----
- .../mediapipe/src/mediapipe/gpu/gl_context.h  |  7 ++--
- .../src/mediapipe/gpu/gl_context_egl.cc       |  9 +++++-
- .../src/mediapipe/gpu/gl_context_internal.h   | 12 ++++++-
- .../src/mediapipe/gpu/gpu_service.cc          |  5 +--
+ .../mediapipe/src/mediapipe/gpu/gl_context.cc | 29 +++++++++++++++----
+ .../mediapipe/src/mediapipe/gpu/gl_context.h  |  7 ++---
+ .../src/mediapipe/gpu/gl_context_egl.cc       |  6 ++++
+ .../src/mediapipe/gpu/gl_context_internal.h   | 12 +++++++-
+ .../src/mediapipe/gpu/gpu_service.cc          |  5 ++--
  7 files changed, 54 insertions(+), 14 deletions(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_base.h b/third_party/mediapipe/src/mediapipe/gpu/gl_base.h
-index 12a04e0bbf017..bfd8d64f60b70 100644
+index a16bcffa3b27b..64e288d5aca75 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gl_base.h
 +++ b/third_party/mediapipe/src/mediapipe/gpu/gl_base.h
-@@ -77,6 +77,9 @@
+@@ -78,6 +78,9 @@
  #undef Bool
  #undef Success
  
@@ -32,7 +31,7 @@ index 12a04e0bbf017..bfd8d64f60b70 100644
  
  namespace mediapipe {
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h b/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h
-index c1b94fa822550..f78d439124b05 100644
+index 467defe4cae70..6b45031c6f7ff 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h
 +++ b/third_party/mediapipe/src/mediapipe/gpu/gl_calculator_helper.h
 @@ -16,6 +16,7 @@
@@ -43,7 +42,7 @@ index c1b94fa822550..f78d439124b05 100644
  
  #include "absl/base/attributes.h"
  #include "absl/memory/memory.h"
-@@ -97,8 +98,9 @@ class GlCalculatorHelper {
+@@ -98,8 +99,9 @@ class GlCalculatorHelper {
    //
    // Therefore, instead of using std::function<void(void)>, we use a template
    // that only accepts arguments with a void result type.
@@ -56,7 +55,7 @@ index c1b94fa822550..f78d439124b05 100644
      RunInGlContext([f] {
        f();
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc b/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
-index 307af7992041c..a9d6ae08c79b9 100644
+index 0be605db552c6..302bfb8466f31 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
 +++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
 @@ -14,6 +14,10 @@
@@ -69,8 +68,8 @@ index 307af7992041c..a9d6ae08c79b9 100644
 +
  #include <sys/types.h>
  
- #include <cmath>
-@@ -70,17 +75,29 @@ static void SetThreadName(const char* name) {
+ #include <algorithm>
+@@ -95,17 +99,29 @@ static void SetThreadName(const char* name) {
  }
  
  GlContext::DedicatedThread::DedicatedThread() {
@@ -100,7 +99,7 @@ index 307af7992041c..a9d6ae08c79b9 100644
    }
  }
  
-@@ -106,11 +123,14 @@ void GlContext::DedicatedThread::PutJob(Job job) {
+@@ -131,11 +147,14 @@ void GlContext::DedicatedThread::PutJob(Job job) {
    has_jobs_cv_.SignalAll();
  }
  
@@ -115,7 +114,7 @@ index 307af7992041c..a9d6ae08c79b9 100644
  
  #ifdef __APPLE__
  #define AUTORELEASEPOOL @autoreleasepool
-@@ -174,7 +194,11 @@ void GlContext::DedicatedThread::RunWithoutWaiting(GlVoidFunction gl_func) {
+@@ -199,7 +218,11 @@ void GlContext::DedicatedThread::RunWithoutWaiting(GlVoidFunction gl_func) {
  }
  
  bool GlContext::DedicatedThread::IsCurrentThread() {
@@ -127,7 +126,7 @@ index 307af7992041c..a9d6ae08c79b9 100644
  }
  
  bool GlContext::ParseGlVersion(absl::string_view version_string, GLint* major,
-@@ -475,10 +499,6 @@ void GlContext::RunWithoutWaiting(GlVoidFunction gl_func) {
+@@ -499,10 +522,6 @@ void GlContext::RunWithoutWaiting(GlVoidFunction gl_func) {
  }
  
  std::weak_ptr<GlContext>& GlContext::CurrentContext() {
@@ -138,7 +137,7 @@ index 307af7992041c..a9d6ae08c79b9 100644
    ABSL_CONST_INIT thread_local std::weak_ptr<GlContext> current_context;
    return current_context;
  }
-@@ -1057,7 +1077,7 @@ void GlContext::SetStandardTextureParams(GLenum target, GLint internal_format) {
+@@ -1126,7 +1145,7 @@ void GlContext::SetStandardTextureParams(GLenum target, GLint internal_format) {
    glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
  }
  
@@ -148,7 +147,7 @@ index 307af7992041c..a9d6ae08c79b9 100644
        GLuint framebuffer;
        glGenFramebuffers(1, &framebuffer);
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context.h b/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
-index 9f6bc17ae7a1d..fdf313459a800 100644
+index e491bb9b06ce1..35c93064960ba 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
 +++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context.h
 @@ -15,8 +15,6 @@
@@ -158,9 +157,9 @@ index 9f6bc17ae7a1d..fdf313459a800 100644
 -#include <pthread.h>
 -
  #include <atomic>
+ #include <cstdint>
  #include <functional>
- #include <memory>
-@@ -277,8 +275,9 @@ class GlContext : public std::enable_shared_from_this<GlContext> {
+@@ -285,8 +283,9 @@ class GlContext : public std::enable_shared_from_this<GlContext> {
    //
    // Therefore, instead of using std::function<void(void)>, we use a template
    // that only accepts arguments with a void result type.
@@ -173,10 +172,10 @@ index 9f6bc17ae7a1d..fdf313459a800 100644
      Run([f] {
        f();
 diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc b/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc
-index 4117d8a039598..78ac41ba4dc35 100644
+index 48b6192b29c18..ea3582961956a 100644
 --- a/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc
 +++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context_egl.cc
-@@ -35,6 +36,7 @@ namespace mediapipe {
+@@ -35,6 +35,7 @@ namespace mediapipe {
  
  namespace {
  
@@ -184,7 +183,7 @@ index 4117d8a039598..78ac41ba4dc35 100644
  static pthread_key_t egl_release_thread_key;
  static pthread_once_t egl_release_key_once = PTHREAD_ONCE_INIT;
  
-@@ -71,6 +73,7 @@ static void EnsureEglThreadRelease() {
+@@ -71,6 +72,7 @@ static void EnsureEglThreadRelease() {
    pthread_setspecific(egl_release_thread_key,
                        reinterpret_cast<void*>(0xDEADBEEF));
  }
@@ -192,7 +191,7 @@ index 4117d8a039598..78ac41ba4dc35 100644
  
  static absl::StatusOr<EGLDisplay> GetInitializedDefaultEglDisplay() {
    EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-@@ -288,7 +291,11 @@ void GlContext::GetCurrentContextBinding(GlContext::ContextBinding* binding) {
+@@ -289,7 +291,11 @@ void GlContext::GetCurrentContextBinding(GlContext::ContextBinding* binding) {
  
  absl::Status GlContext::SetCurrentContextBinding(
      const ContextBinding& new_binding) {
@@ -258,4 +257,5 @@ index 53a0e0f479052..ef77952dff8c7 100644
  
  }  // namespace mediapipe
 -- 
-2.39.1.windows.1
+2.48.0.rc2.279.g1de40edade-goog
+

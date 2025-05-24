@@ -6,11 +6,11 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -21,8 +21,11 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
 
 END_METADATA
 
-ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(Profile* profile)
+ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(
+    Profile* profile,
+    SidePanelEntryScope& scope)
     : SidePanelWebUIViewT(
+          scope,
           base::RepeatingClosure(),
           base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>(

@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/download/download_request_limiter.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
 #include "url/origin.h"
 
 // A permission request that presents the user with a choice to allow or deny
@@ -27,10 +28,11 @@ class DownloadPermissionRequest : public permissions::PermissionRequest {
   ~DownloadPermissionRequest() override;
 
  private:
-  void PermissionDecided(ContentSetting result,
-                         bool is_one_time,
-                         bool is_final_decision);
-  void DeleteRequest();
+  void PermissionDecided(
+      ContentSetting result,
+      bool is_one_time,
+      bool is_final_decision,
+      const permissions::PermissionRequestData& request_data);
 
   base::WeakPtr<DownloadRequestLimiter::TabDownloadState> host_;
   url::Origin requesting_origin_;

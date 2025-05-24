@@ -16,6 +16,7 @@
 
 #ifdef __SSE2__
 #include <immintrin.h>
+
 #include "base/bits.h"
 #endif
 
@@ -40,8 +41,9 @@ std::vector<const MatcherStringPattern*> GetVectorOfPointers(
   std::vector<const MatcherStringPattern*> pattern_pointers;
   pattern_pointers.reserve(patterns.size());
 
-  for (const MatcherStringPattern& pattern : patterns)
+  for (const MatcherStringPattern& pattern : patterns) {
     pattern_pointers.push_back(&pattern);
+  }
 
   return pattern_pointers;
 }
@@ -181,8 +183,9 @@ SubstringSetMatcher::NodeID SubstringSetMatcher::GetTreeSize(
   DCHECK(std::is_sorted(patterns.begin(), patterns.end(), ComparePatterns));
 
   base::CheckedNumeric<NodeID> result = 1u;  // 1 for the root node.
-  if (patterns.empty())
+  if (patterns.empty()) {
     return result.ValueOrDie();
+  }
 
   auto last = patterns.begin();
   auto current = last + 1;
@@ -218,8 +221,9 @@ void SubstringSetMatcher::BuildAhoCorasickTree(
   tree_.emplace_back();
 
   // Build the initial trie for all the patterns.
-  for (const MatcherStringPattern* pattern : patterns)
+  for (const MatcherStringPattern* pattern : patterns) {
     InsertPatternIntoAhoCorasickTree(pattern);
+  }
 
   CreateFailureAndOutputEdges();
 }
@@ -236,8 +240,9 @@ void SubstringSetMatcher::InsertPatternIntoAhoCorasickTree(
   // Follow existing paths for as long as possible.
   while (i != text_end) {
     NodeID child = current_node->GetEdge(static_cast<unsigned char>(*i));
-    if (child == kInvalidNodeID)
+    if (child == kInvalidNodeID) {
       break;
+    }
     current_node = &tree_[child];
     ++i;
   }
@@ -336,8 +341,9 @@ void SubstringSetMatcher::AccumulateMatchesForNode(
     // Fast reject.
     return;
   }
-  if (node->IsEndOfPattern())
+  if (node->IsEndOfPattern()) {
     matches->insert(node->GetMatchID());
+  }
 
   NodeID node_id = node->output_link();
   while (node_id != kInvalidNodeID) {
@@ -411,8 +417,9 @@ SubstringSetMatcher::AhoCorasickNode::GetEdgeNoInline(uint32_t label) const {
 #else
   for (unsigned edge_idx = 0; edge_idx < num_edges(); ++edge_idx) {
     const AhoCorasickEdge& edge = edges_.edges[edge_idx];
-    if (edge.label == label)
+    if (edge.label == label) {
       return edge.node_id;
+    }
   }
 #endif
   return kInvalidNodeID;

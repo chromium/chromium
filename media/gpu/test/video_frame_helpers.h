@@ -14,9 +14,11 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace media {
-namespace test {
+namespace gpu {
+class TestSharedImageInterface;
+}  // namespace gpu
 
+namespace media::test {
 class Image;
 
 // The video frame processor defines an abstract interface for classes that are
@@ -67,6 +69,7 @@ scoped_refptr<VideoFrame> ScaleVideoFrame(const VideoFrame* src_frame,
 scoped_refptr<VideoFrame> CloneVideoFrame(
     const VideoFrame* const src_frame,
     const VideoFrameLayout& dst_layout,
+    gpu::TestSharedImageInterface* test_sii = nullptr,
     VideoFrame::StorageType dst_storage_type = VideoFrame::STORAGE_OWNED_MEMORY,
     std::optional<gfx::BufferUsage> dst_buffer_usage = std::nullopt);
 
@@ -84,7 +87,8 @@ scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
 // This function works on ChromeOS only.
 scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     const VideoFrame* const frame,
-    gfx::BufferUsage buffer_usage);
+    gfx::BufferUsage buffer_usage,
+    gpu::TestSharedImageInterface* test_sii);
 
 // Get VideoFrame that contains Load()ed data. The returned VideoFrame doesn't
 // own the data and thus must not be changed.
@@ -99,7 +103,6 @@ std::optional<VideoFrameLayout> CreateVideoFrameLayout(
     const gfx::Size& dimension,
     const uint32_t alignment = VideoFrame::kFrameAddressAlignment,
     std::vector<size_t>* plane_rows = nullptr);
-}  // namespace test
-}  // namespace media
+}  // namespace media::test
 
 #endif  // MEDIA_GPU_TEST_VIDEO_FRAME_HELPERS_H_

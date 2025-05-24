@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 
 namespace segmentation_platform {
 
@@ -68,39 +69,39 @@ DefaultBrowserUserSegment GetDefaultBrowserUserSegment(
 
 int GetFirstRunDefaultBrowserScreenTitleStringID(
     DefaultBrowserUserSegment segment) {
+  BOOL usesTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
   switch (segment) {
     case DefaultBrowserUserSegment::kDesktopUser:
     case DefaultBrowserUserSegment::kAndroidSwitcher:
-      return UseIPadTailoredStringForDefaultBrowserPromo()
+      return usesTablet
                  ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD
                  : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE;
     case DefaultBrowserUserSegment::kShopper:
       return IDS_IOS_SEGMENTED_DEFAULT_BROWSER_SCREEN_SHOPPER_TITLE;
     case DefaultBrowserUserSegment::kDefault:
-      return UseIPadTailoredStringForDefaultBrowserPromo()
-                 ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
-                 : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE;
+      return usesTablet ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
+                        : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE;
   }
   NOTREACHED();
 }
 
 int GetFirstRunDefaultBrowserScreenSubtitleStringID(
     DefaultBrowserUserSegment segment) {
+  BOOL usesTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
   switch (segment) {
     case DefaultBrowserUserSegment::kDesktopUser:
-      return UseIPadTailoredStringForDefaultBrowserPromo()
+      return usesTablet
                  ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPAD
                  : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPHONE;
     case DefaultBrowserUserSegment::kAndroidSwitcher:
-      return UseIPadTailoredStringForDefaultBrowserPromo()
+      return usesTablet
                  ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPAD
                  : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPHONE;
     case DefaultBrowserUserSegment::kShopper:
       return IDS_IOS_SEGMENTED_DEFAULT_BROWSER_SCREEN_SHOPPER_SUBTITLE;
     case DefaultBrowserUserSegment::kDefault:
-      return UseIPadTailoredStringForDefaultBrowserPromo()
-                 ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
-                 : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE;
+      return usesTablet ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
+                        : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE;
   }
   NOTREACHED();
 }

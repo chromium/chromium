@@ -20,16 +20,17 @@
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
 #include "third_party/blink/renderer/core/paint/theme_painter.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -125,10 +126,9 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
 
   if (ShouldPaintBoxDecorationBackground(local_paint_info)) {
     bool should_paint_background = false;
-    if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-        // TODO(crbug.com/1477914): Without this condition, scaled canvas
-        // would become pixelated on Linux.
-        !layout_replaced_.IsCanvas()) {
+    // TODO(crbug.com/40280438): Without this condition, scaled canvas would
+    // become pixelated on Linux.
+    if (!layout_replaced_.IsCanvas()) {
       should_paint_background = true;
     } else if (layout_replaced_.HasBoxDecorationBackground()) {
       should_paint_background = true;
@@ -184,7 +184,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     MeasureOverflowMetrics();
   }
 
-  if (layout_replaced_.StyleRef().UsedVisibility() == EVisibility::kVisible &&
+  if (layout_replaced_.StyleRef().Visibility() == EVisibility::kVisible &&
       layout_replaced_.CanResize()) {
     auto* scrollable_area = layout_replaced_.GetScrollableArea();
     DCHECK(scrollable_area);
@@ -235,7 +235,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     Color selection_bg = HighlightStyleUtils::HighlightBackgroundColor(
         layout_replaced_.GetDocument(), layout_replaced_.StyleRef(),
         layout_replaced_.GetNode(), std::nullopt, kPseudoIdSelection,
-        SearchTextIsCurrent::kNo);
+        SearchTextIsActiveMatch::kNo);
     local_paint_info.context.FillRect(
         selection_painting_int_rect, selection_bg,
         PaintAutoDarkMode(layout_replaced_.StyleRef(),
@@ -260,7 +260,7 @@ bool ReplacedPainter::ShouldPaint(const ScopedPaintState& paint_state) const {
   // But if it's an SVG root, there can be children, so we'll check visibility
   // later.
   if (!layout_replaced_.IsSVGRoot() &&
-      layout_replaced_.StyleRef().UsedVisibility() != EVisibility::kVisible) {
+      layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
     return false;
   }
 
@@ -310,7 +310,7 @@ void ReplacedPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   const ComputedStyle& style = layout_replaced_.StyleRef();
-  if (style.UsedVisibility() != EVisibility::kVisible) {
+  if (style.Visibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -411,9 +411,10 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
   if (BleedAvoidanceIsClipping(
           box_decoration_data.GetBackgroundBleedAvoidance())) {
     state_saver.Save();
-    FloatRoundedRect border =
-        RoundedBorderGeometry::PixelSnappedRoundedBorder(style, paint_rect);
-    paint_info.context.ClipRoundedRect(border);
+
+    ContouredRect border =
+        ContouredBorderGeometry::PixelSnappedContouredBorder(style, paint_rect);
+    paint_info.context.ClipContouredRect(border);
 
     if (box_decoration_data.GetBackgroundBleedAvoidance() ==
         kBackgroundBleedClipLayer) {
@@ -494,7 +495,7 @@ void ReplacedPainter::PaintMask(const PaintInfo& paint_info,
   DCHECK_EQ(PaintPhase::kMask, paint_info.phase);
 
   if (!layout_replaced_.HasMask() ||
-      layout_replaced_.StyleRef().UsedVisibility() != EVisibility::kVisible) {
+      layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
     return;
   }
 

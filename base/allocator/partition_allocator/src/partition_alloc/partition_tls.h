@@ -32,7 +32,6 @@ using PartitionTlsKey = pthread_key_t;
 // which is not the case in macOS 12. See libsyscall/os/tsd.h in XNU
 // (_os_tsd_get_direct() is used by pthread_getspecific() internally).
 #if PA_BUILDFLAG(IS_MAC) && PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
-namespace {
 
 PA_ALWAYS_INLINE void* FastTlsGet(PartitionTlsKey index) {
   // On macOS, pthread_getspecific() is in libSystem, so a call to it has to go
@@ -61,7 +60,6 @@ PA_ALWAYS_INLINE void* FastTlsGet(PartitionTlsKey index) {
   return reinterpret_cast<void*>(result);
 }
 
-}  // namespace
 #endif  // PA_BUILDFLAG(IS_MAC) && PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
 
 PA_ALWAYS_INLINE bool PartitionTlsCreate(PartitionTlsKey* key,

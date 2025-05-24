@@ -380,7 +380,7 @@ TEST_F(PrepareFilesForWritableAppTest,
   run_loop.Run();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PrepareFilesForWritableAppTest, SingleFileThatExistsDlpGrantsAccess) {
   testing::StrictMock<base::MockOnceCallback<void()>> success_callback;

@@ -14,47 +14,12 @@
 #include "cc/trees/layer_tree_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/platform/widget/compositing/test/stub_widget_base_client.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
-
-class StubWidgetBaseClient : public WidgetBaseClient {
- public:
-  void OnCommitRequested() override {}
-  void BeginMainFrame(base::TimeTicks) override {}
-  void UpdateLifecycle(WebLifecycleUpdate, DocumentUpdateReason) override {}
-  std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
-      override {
-    return nullptr;
-  }
-  KURL GetURLForDebugTrace() override { return {}; }
-  WebInputEventResult DispatchBufferedTouchEvents() override {
-    return WebInputEventResult::kNotHandled;
-  }
-  WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override {
-    return WebInputEventResult::kNotHandled;
-  }
-  bool SupportsBufferedTouchEvents() override { return false; }
-  void WillHandleGestureEvent(const WebGestureEvent&, bool* suppress) override {
-  }
-  void WillHandleMouseEvent(const WebMouseEvent&) override {}
-  void ObserveGestureEventAndResult(const WebGestureEvent&,
-                                    const gfx::Vector2dF&,
-                                    const cc::OverscrollBehavior&,
-                                    bool) override {}
-  void FocusChanged(mojom::blink::FocusState) override {}
-  void UpdateVisualProperties(
-      const VisualProperties& visual_properties) override {}
-  const display::ScreenInfos& GetOriginalScreenInfos() override {
-    return screen_infos_;
-  }
-  gfx::Rect ViewportVisibleRect() override { return gfx::Rect(); }
-
- private:
-  display::ScreenInfos screen_infos_;
-};
 
 class FakeWidgetCompositor : public WidgetCompositor {
  public:

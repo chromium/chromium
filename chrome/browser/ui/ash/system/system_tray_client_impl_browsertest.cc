@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 
-#include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/login_types.h"
@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -33,13 +32,11 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -57,6 +54,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -70,9 +68,9 @@ namespace {
 const char kManager[] = "admin@example.com";
 const char16_t kManager16[] = u"admin@example.com";
 const char kNewUser[] = "new_test_user@gmail.com";
-const char kNewGaiaID[] = "11111";
+const GaiaId::Literal kNewGaiaID("11111");
 const char kManagedUser[] = "user@example.com";
-const char kManagedGaiaID[] = "33333";
+const GaiaId::Literal kManagedGaiaID("33333");
 
 }  // namespace
 
@@ -110,11 +108,7 @@ IN_PROC_BROWSER_TEST_F(ConsumerDeviceTest, WithNoLicense) {
 
 class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
  public:
-  EnterpriseManagedTest() {
-    device_state_.set_skip_initial_policy_setup(true);
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kEnableKioskLoginScreen);
-  }
+  EnterpriseManagedTest() { device_state_.set_skip_initial_policy_setup(true); }
   ~EnterpriseManagedTest() override = default;
   EnterpriseManagedTest(const EnterpriseManagedTest&) = delete;
   void operator=(const EnterpriseManagedTest&) = delete;
@@ -129,7 +123,6 @@ class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   policy::DevicePolicyCrosTestHelper policy_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that the management device mode is indeed Kiosk Sku.
@@ -476,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, NoEventUrl) {
   EXPECT_EQ(final_url.spec(), GURL(kExpectedUrlStr).spec());
 
   // Now install the calendar PWA.
-  InstallApp(web_app::kGoogleCalendarAppId, "Google Calendar");
+  InstallApp(ash::kGoogleCalendarAppId, "Google Calendar");
   opened_pwa = false;
   final_url = GURL();
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
@@ -505,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, OfficialEventUrl) {
   EXPECT_EQ(final_url.spec(), event_url.spec());
 
   // Install the calendar PWA.
-  InstallApp(web_app::kGoogleCalendarAppId, "Google Calendar");
+  InstallApp(ash::kGoogleCalendarAppId, "Google Calendar");
   opened_pwa = false;
   final_url = GURL();
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
@@ -536,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, UnofficialEventUrl) {
   EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarEventUrl).spec());
 
   // Install the calendar PWA.
-  InstallApp(web_app::kGoogleCalendarAppId, "Google Calendar");
+  InstallApp(ash::kGoogleCalendarAppId, "Google Calendar");
   opened_pwa = false;
   final_url = GURL();
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
@@ -581,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(
     SystemTrayClientShowVideoConferenceTest,
     LaunchGoogleMeetUrlInBrowser_WhenAppIsInstalledButNotPreferred) {
   const auto kVideoConferenceUrl = GURL("https://meet.google.com/abc-123");
-  InstallApp(web_app::kGoogleMeetAppId, "Google Meet");
+  InstallApp(ash::kGoogleMeetAppId, "Google Meet");
 
   ash::Shell::Get()->system_tray_model()->client()->ShowVideoConference(
       kVideoConferenceUrl);
@@ -595,11 +588,11 @@ IN_PROC_BROWSER_TEST_F(
     SystemTrayClientShowVideoConferenceTest,
     LaunchGoogleMeetUrlInApp_WhenAppIsInstalledAndPreferred) {
   const auto kVideoConferenceUrl = GURL("https://meet.google.com/abc-123");
-  InstallApp(web_app::kGoogleMeetAppId, "Google Meet");
-  SetPreferredApp(web_app::kGoogleMeetAppId);
+  InstallApp(ash::kGoogleMeetAppId, "Google Meet");
+  SetPreferredApp(ash::kGoogleMeetAppId);
 
   ASSERT_EQ(
-      web_app::kGoogleMeetAppId,
+      ash::kGoogleMeetAppId,
       proxy()->PreferredAppsList().FindPreferredAppForUrl(kVideoConferenceUrl));
 
   ash::Shell::Get()->system_tray_model()->client()->ShowVideoConference(

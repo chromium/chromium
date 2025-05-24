@@ -29,13 +29,13 @@ static_library("common") {
     "content_settings_utils.h",
     "cookie_blocking_3pcd_status.h",
     "cookie_controls_enforcement.h",
+    "cookie_controls_state.h",
     "cookie_settings_base.cc",
     "cookie_settings_base.h",
     "host_indexed_content_settings.cc",
     "host_indexed_content_settings.h",
     "pref_names.h",
     "third_party_site_data_access_type.h",
-    "tracking_protection_feature.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -45,6 +45,7 @@ static_library("common") {
     ":content_settings_types",
     ":features",
     "//base",
+    "//services/network/public/cpp:web_platform",
   ]
 
   deps = [
@@ -144,6 +145,7 @@ mojom("mojo_bindings") {
         {
           mojom = "content_settings.mojom.RuleMetaData"
           cpp = "::content_settings::RuleMetaData"
+          move_only = true
         },
       ]
       traits_headers = [ "content_settings_mojom_traits.h" ]

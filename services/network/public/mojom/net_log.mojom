@@ -9,18 +9,23 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/network_param.mojom";
 
+// See also: //net/log/net_log_capture_mode.h
 enum NetLogCaptureMode {
+  // Log all events, but only allow a narrow set of allowlisted "known safe"
+  // params.
+  HEAVILY_REDACTED,  // NetLogCaptureMode::kHeavilyRedacted
+
   // Log all events, but do not include the actual transferred bytes, and
   // remove cookies and HTTP credentials and HTTP/2 GOAWAY frame debug data.
-  DEFAULT,
+  DEFAULT,  // NetLogCaptureMode::kDefault
 
   // Log all events, but do not include the actual transferred bytes as
   // parameters for bytes sent/received events.
-  INCLUDE_PRIVACY_INFO,
+  INCLUDE_PRIVACY_INFO,  // NetLogCaptureMode::kIncludeSensitive
 
   // Log everything possible, even if it is slow and memory expensive.
   // Includes logging of transferred bytes.
-  EVERYTHING
+  EVERYTHING,  // NetLogCaptureMode::kEverything
 };
 
 // Manages export of ongoing NetLog events to a file.
@@ -67,7 +72,7 @@ enum NetLogEventPhase {
 // changes.
 interface NetLogProxySource {
   // |modes| is a NetLogCaptureModeSet, a bitfield.
-  UpdateCaptureModes(uint32 modes);
+  UpdateCaptureModes(uint8 modes);
 };
 
 // Receives NetLog events from another process and inserts them into the main

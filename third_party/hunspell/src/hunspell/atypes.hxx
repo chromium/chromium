@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -74,13 +74,15 @@ static inline void HUNSPELL_WARNING(FILE*, const char*, ...) {}
 #define IN_CPD_OTHER 3
 
 // info options
-#define SPELL_COMPOUND (1 << 0)
+#define SPELL_COMPOUND (1 << 0)    // the result is a compound word
 #define SPELL_FORBIDDEN (1 << 1)
 #define SPELL_ALLCAP (1 << 2)
 #define SPELL_NOCAP (1 << 3)
 #define SPELL_INITCAP (1 << 4)
 #define SPELL_ORIGCAP (1 << 5)
 #define SPELL_WARN (1 << 6)
+#define SPELL_COMPOUND_2 (1 << 7)  // permit only 2 dictionary words in the compound
+#define SPELL_BEST_SUG (1 << 8)    // limit suggestions for the best ones, i.e. ph:
 
 #define MINCPDLEN 3
 #define MAXCOMPOUND 10
@@ -95,10 +97,26 @@ static inline void HUNSPELL_WARNING(FILE*, const char*, ...) {}
 
 #define TESTAFF(a, b, c) (std::binary_search(a, a + c, b))
 
+// timelimit: max. ~1/4 sec (process time on Linux) for
+// for a suggestion, including max. ~/10 sec for a case
+// sensitive plain or compound word suggestion, within
+// ~1/20 sec long time consuming suggestion functions
+#define TIMELIMIT_GLOBAL (CLOCKS_PER_SEC / 4)
+#define TIMELIMIT_SUGGESTION (CLOCKS_PER_SEC / 10)
+#define TIMELIMIT (CLOCKS_PER_SEC / 20)
+#define MINTIMER 100
+#define MAXPLUSTIMER 100
+
 struct guessword {
   char* word;
   bool allow;
   char* orig;
+  guessword()
+    : word(nullptr)
+    , allow(false)
+    , orig(nullptr)
+  {
+  }
 };
 
 typedef std::vector<std::string> mapentry;

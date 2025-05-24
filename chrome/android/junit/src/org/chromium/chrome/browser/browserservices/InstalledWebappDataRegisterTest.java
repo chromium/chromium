@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.browserservices;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -26,30 +25,23 @@ public class InstalledWebappDataRegisterTest {
     private static final String DOMAIN = "example.com";
     private static final String OTHER_DOMAIN = "otherexample.com";
 
-    private InstalledWebappDataRegister mRegister;
-
-    @Before
-    public void setUp() {
-        mRegister = new InstalledWebappDataRegister();
-    }
-
     @Test
     @Feature("TrustedWebActivities")
     public void registration() {
         register(DOMAIN);
 
-        Assert.assertTrue(mRegister.chromeHoldsDataForPackage(UID));
-        Assert.assertEquals(APP_NAME, mRegister.getAppNameForRegisteredUid(UID));
+        Assert.assertTrue(InstalledWebappDataRegister.chromeHoldsDataForPackage(UID));
+        Assert.assertEquals(APP_NAME, InstalledWebappDataRegister.getAppNameForRegisteredUid(UID));
     }
 
     @Test
     @Feature("TrustedWebActivities")
     public void deregistration() {
         register(DOMAIN);
-        mRegister.removePackage(UID);
+        InstalledWebappDataRegister.removePackage(UID);
 
-        Assert.assertFalse(mRegister.chromeHoldsDataForPackage(UID));
-        Assert.assertNull(mRegister.getAppNameForRegisteredUid(UID));
+        Assert.assertFalse(InstalledWebappDataRegister.chromeHoldsDataForPackage(UID));
+        Assert.assertNull(InstalledWebappDataRegister.getAppNameForRegisteredUid(UID));
     }
 
     @Test
@@ -58,7 +50,7 @@ public class InstalledWebappDataRegisterTest {
         register(DOMAIN);
         register(OTHER_DOMAIN);
 
-        Set<String> origins = mRegister.getDomainsForRegisteredUid(UID);
+        Set<String> origins = InstalledWebappDataRegister.getDomainsForRegisteredUid(UID);
         Assert.assertEquals(2, origins.size());
         Assert.assertTrue(origins.contains(DOMAIN));
         Assert.assertTrue(origins.contains(OTHER_DOMAIN));
@@ -69,9 +61,9 @@ public class InstalledWebappDataRegisterTest {
     public void clearOrigins() {
         register(DOMAIN);
         register(OTHER_DOMAIN);
-        mRegister.removePackage(UID);
+        InstalledWebappDataRegister.removePackage(UID);
 
-        Set<String> origins = mRegister.getDomainsForRegisteredUid(UID);
+        Set<String> origins = InstalledWebappDataRegister.getDomainsForRegisteredUid(UID);
         Assert.assertTrue(origins.isEmpty());
     }
 
@@ -79,18 +71,19 @@ public class InstalledWebappDataRegisterTest {
     @Feature("TrustedWebActivities")
     public void getAppName() {
         register(DOMAIN);
-        Assert.assertEquals(APP_NAME, mRegister.getAppNameForRegisteredUid(UID));
+        Assert.assertEquals(APP_NAME, InstalledWebappDataRegister.getAppNameForRegisteredUid(UID));
     }
 
     @Test
     @Feature("TrustedWebActivities")
     public void getPackageName() {
         register(DOMAIN);
-        Assert.assertEquals(APP_PACKAGE, mRegister.getPackageNameForRegisteredUid(UID));
+        Assert.assertEquals(
+                APP_PACKAGE, InstalledWebappDataRegister.getPackageNameForRegisteredUid(UID));
     }
 
     private void register(String domain) {
-        mRegister.registerPackageForOrigin(
+        InstalledWebappDataRegister.registerPackageForOrigin(
                 UID, APP_NAME, APP_PACKAGE, domain, Origin.create("https://www." + domain));
     }
 }

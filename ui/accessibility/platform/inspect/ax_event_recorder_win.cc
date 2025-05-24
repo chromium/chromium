@@ -215,13 +215,14 @@ void AXEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
           std::wstring(attributes_bstr.Get(), attributes_bstr.Length()),
           std::wstring(1, ';'), base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
       for (std::wstring& attr : ia2_attributes) {
-        if (base::StartsWith(attr, L"class:"))
+        if (attr.starts_with(L"class:")) {
           obj_class = attr.substr(6);  // HTML or view class
-        if (base::StartsWith(attr, L"id:")) {
+        }
+        if (attr.starts_with(L"id:")) {
           html_id = std::wstring(L"#");
           html_id += attr.substr(3);
         }
-        if (base::StartsWith(attr, L"tag:")) {
+        if (attr.starts_with(L"tag:")) {
           html_tag = attr.substr(4);
         }
       }

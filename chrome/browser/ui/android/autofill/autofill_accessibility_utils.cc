@@ -16,8 +16,7 @@ namespace autofill {
 
 void AnnounceTextForA11y(const std::u16string& message) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutofillAccessibilityUtils_announce(
-      env, base::android::ConvertUTF16ToJavaString(env, message));
+  Java_AutofillAccessibilityUtils_announce(env, message);
 }
 
 }  // namespace autofill

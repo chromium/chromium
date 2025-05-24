@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/task/sequenced_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/policy_map.h"
@@ -23,7 +22,7 @@ UserCloudPolicyStoreBase::UserCloudPolicyStoreBase(
     : background_task_runner_(background_task_runner),
       policy_scope_(policy_scope) {}
 
-UserCloudPolicyStoreBase::~UserCloudPolicyStoreBase() {}
+UserCloudPolicyStoreBase::~UserCloudPolicyStoreBase() = default;
 
 std::unique_ptr<UserCloudPolicyValidator>
 UserCloudPolicyStoreBase::CreateValidator(
@@ -42,22 +41,12 @@ UserCloudPolicyStoreBase::CreateValidator(
 }
 
 void UserCloudPolicyStoreBase::InstallPolicy(
-    std::unique_ptr<enterprise_management::PolicyFetchResponse>
-        policy_fetch_response,
     std::unique_ptr<enterprise_management::PolicyData> policy_data,
     std::unique_ptr<enterprise_management::CloudPolicySettings> payload,
     const std::string& policy_signature_public_key) {
   // Decode the payload.
   policy_map_.Clear();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // From the policies that Lacros fetched from the cloud, it should only
-  // respect the ones with per_profile=True. Session-wide policies
-  // (per_profile=False) are be provided by ash and installed by
-  // PolicyLoaderLacros.
-  PolicyPerProfileFilter filter = PolicyPerProfileFilter::kTrue;
-#else
   PolicyPerProfileFilter filter = PolicyPerProfileFilter::kAny;
-#endif
   DecodeProtoFields(*payload, external_data_manager(), POLICY_SOURCE_CLOUD,
                     policy_scope_, &policy_map_, filter);
 
@@ -71,7 +60,7 @@ void UserCloudPolicyStoreBase::InstallPolicy(
         {policy_data->device_affiliation_ids().begin(),
          policy_data->device_affiliation_ids().end()});
   }
-  SetPolicy(std::move(policy_fetch_response), std::move(policy_data));
+  SetPolicy(std::move(policy_data));
   policy_signature_public_key_ = policy_signature_public_key;
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -40,9 +40,9 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.h"
+#include "chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -53,10 +53,10 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/session_manager/core/session_manager.h"
@@ -87,8 +87,9 @@ bool IsKnownUser(const AccountId& account_id) {
 // Returns the type of the user with the specified |id| or kRegular.
 user_manager::UserType GetUserType(const AccountId& id) {
   if (user_manager::UserManager::IsInitialized()) {
-    if (auto* user = user_manager::UserManager::Get()->FindUser(id))
+    if (auto* user = user_manager::UserManager::Get()->FindUser(id)) {
       return user->GetType();
+    }
   }
   // TODO(b/258750657): Convert this to a DCHECK when tests are fixed.
   LOG(WARNING) << "No matching user. This should only happen in tests.";
@@ -114,8 +115,9 @@ std::string HashWallpaperFilesIdStr(std::string_view files_id_unhashed) {
 
   // System salt must be defined at this point.
   const ash::SystemSaltGetter::RawSalt* salt = salt_getter->GetRawSalt();
-  if (!salt)
+  if (!salt) {
     LOG(FATAL) << "WallpaperManager HashWallpaperFilesIdStr(): no salt!";
+  }
 
   std::vector<uint8_t> data = *salt;
   // Note: The original code in https://codereview.chromium.org/1886653002/
@@ -132,10 +134,11 @@ bool CanGetFilesId() {
 }
 
 void GetFilesIdSaltReady(
+    PrefService* local_state,
     const AccountId& account_id,
     base::OnceCallback<void(const std::string&)> files_id_callback) {
   DCHECK(CanGetFilesId());
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(local_state);
   if (const std::string* stored_value =
           known_user.FindStringPath(account_id, kWallpaperFilesId)) {
     std::move(files_id_callback).Run(*stored_value);
@@ -178,10 +181,11 @@ user_manager::User* FindPublicSession(const user_manager::UserList& users) {
 }  // namespace
 
 WallpaperControllerClientImpl::WallpaperControllerClientImpl(
+    PrefService& local_state,
     std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
         wallpaper_fetcher_delegate)
-    : wallpaper_fetcher_delegate_(std::move(wallpaper_fetcher_delegate)) {
-  local_state_ = g_browser_process->local_state();
+    : local_state_(local_state),
+      wallpaper_fetcher_delegate_(std::move(wallpaper_fetcher_delegate)) {
   show_user_names_on_signin_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
           ash::kAccountsPrefShowUserNamesOnSignIn,
@@ -194,8 +198,9 @@ WallpaperControllerClientImpl::WallpaperControllerClientImpl(
 
   SessionManager* session_manager = SessionManager::Get();
   // SessionManager might not exist in unit tests.
-  if (session_manager)
+  if (session_manager) {
     session_observation_.Observe(session_manager);
+  }
 
   if (user_manager::UserManager::IsInitialized()) {
     user_manager_observation_.Observe(user_manager::UserManager::Get());
@@ -212,7 +217,7 @@ WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
 }
 
 void WallpaperControllerClientImpl::Init() {
-  pref_registrar_.Init(local_state_);
+  pref_registrar_.Init(&local_state_.get());
   pref_registrar_.Add(
       prefs::kDeviceWallpaperImageFilePath,
       base::BindRepeating(
@@ -255,8 +260,9 @@ void WallpaperControllerClientImpl::SetInitialWallpaper() {
   }
 
   // Do not set wallpaper in tests.
-  if (ash::WizardController::IsZeroDelayEnabled())
+  if (ash::WizardController::IsZeroDelayEnabled()) {
     return;
+  }
 
   // Show the wallpaper of the active user during an user session.
   if (user_manager::UserManager::Get()->IsUserLoggedIn()) {
@@ -283,8 +289,9 @@ WallpaperControllerClientImpl* WallpaperControllerClientImpl::Get() {
 void WallpaperControllerClientImpl::SetPolicyWallpaper(
     const AccountId& account_id,
     std::unique_ptr<std::string> data) {
-  if (!data || !IsKnownUser(account_id))
+  if (!data || !IsKnownUser(account_id)) {
     return;
+  }
 
   wallpaper_controller_->SetPolicyWallpaper(account_id, GetUserType(account_id),
                                             *data);
@@ -322,8 +329,9 @@ void WallpaperControllerClientImpl::RemoveUserWallpaper(
 
 void WallpaperControllerClientImpl::RemovePolicyWallpaper(
     const AccountId& account_id) {
-  if (!IsKnownUser(account_id))
+  if (!IsKnownUser(account_id)) {
     return;
+  }
 
   wallpaper_controller_->RemovePolicyWallpaper(account_id);
 }
@@ -331,20 +339,23 @@ void WallpaperControllerClientImpl::RemovePolicyWallpaper(
 void WallpaperControllerClientImpl::GetFilesId(
     const AccountId& account_id,
     base::OnceCallback<void(const std::string&)> files_id_callback) const {
-  ash::SystemSaltGetter::Get()->AddOnSystemSaltReady(base::BindOnce(
-      &GetFilesIdSaltReady, account_id, std::move(files_id_callback)));
+  ash::SystemSaltGetter::Get()->AddOnSystemSaltReady(
+      base::BindOnce(&GetFilesIdSaltReady, &local_state_.get(), account_id,
+                     std::move(files_id_callback)));
 }
 
 bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
     const AccountId& account_id) const {
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  if (!profile)
+  if (!profile) {
     return false;
+  }
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service)
+  if (!sync_service) {
     return false;
+  }
   syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
   return user_settings->IsSyncAllOsTypesEnabled() ||
          profile->GetPrefs()->GetBoolean(
@@ -383,10 +394,13 @@ void WallpaperControllerClientImpl::MakeTransparent(
       SK_ColorTRANSPARENT);
 
   // Turn off the web contents background.
-  static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
-                                    web_contents->GetTopLevelNativeWindow())
-                                    ->contents_web_view())
-      ->SetBackgroundVisible(false);
+  std::vector<ContentsWebView*> contents_views =
+      BrowserView::GetBrowserViewForNativeWindow(
+          web_contents->GetTopLevelNativeWindow())
+          ->GetAllVisibleContentsWebViews();
+  for (ContentsWebView* contents_view : contents_views) {
+    contents_view->SetBackgroundVisible(false);
+  }
 }
 
 void WallpaperControllerClientImpl::MakeOpaque(
@@ -394,10 +408,13 @@ void WallpaperControllerClientImpl::MakeOpaque(
   // Reversing `contents_web_view` is sufficient to make the view opaque,
   // as `window_backdrop`, `top_level_window` and `web_contents` are not
   // highly impactful to the animated theme change effect.
-  static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
-                                    web_contents->GetTopLevelNativeWindow())
-                                    ->contents_web_view())
-      ->SetBackgroundVisible(true);
+  std::vector<ContentsWebView*> contents_views =
+      BrowserView::GetBrowserViewForNativeWindow(
+          web_contents->GetTopLevelNativeWindow())
+          ->GetAllVisibleContentsWebViews();
+  for (ContentsWebView* contents_view : contents_views) {
+    contents_view->SetBackgroundVisible(true);
+  }
 }
 
 void WallpaperControllerClientImpl::OnVolumeMounted(
@@ -461,11 +478,12 @@ void WallpaperControllerClientImpl::InitController() {
 }
 
 void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
-  if (user_manager::UserManager::Get()->IsUserLoggedIn())
+  if (user_manager::UserManager::Get()->IsUserLoggedIn()) {
     return;
+  }
 
   const user_manager::UserList& users =
-      user_manager::UserManager::Get()->GetUsers();
+      user_manager::UserManager::Get()->GetPersistedUsers();
   user_manager::User* public_session = FindPublicSession(users);
 
   // Show the default signin wallpaper if there's no user to display.
@@ -655,7 +673,7 @@ void WallpaperControllerClientImpl::OnGooglePhotosDailyAlbumFetched(
   base::RandomShuffle(photos.begin(), photos.end());
 
   // Get the first photo from the shuffled set that is not in the LRU cache.
-  auto selected_itr = base::ranges::find_if(
+  auto selected_itr = std::ranges::find_if(
       photos,
       [&ids](
           const ash::personalization_app::mojom::GooglePhotosPhotoPtr& photo) {

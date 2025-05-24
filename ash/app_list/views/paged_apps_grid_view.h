@@ -17,8 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/presentation_time_recorder.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/animation/animation_abort_handle.h"
@@ -95,7 +95,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // views::View:
   void Layout(PassKey) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
   // AppsGridView:
@@ -161,8 +160,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // calculate the first apps grid page layout (number of rows and the padding
   // between them).
   // `offset` is reserved space for continue section in the apps
-  // container (which is shown above the grid on the first app list page with
-  // productivity launcher).
+  // container (which is shown above the grid on the first app list page).
   // `shown_under_recent_apps` indicates whether the
   // continue section contains list of recent apps. If this is the case, the
   // apps grid will add additional padding above the apps grid (i.e. treat the

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id=a></div>
+<div id=b></div>
+
+<body>
+  <script type=module>
+    const a = document.querySelector('#a');
+    const b = document.querySelector('#b');
+    import {WebDXFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.m.js';
+
+    test(() => {
+      assert_false(internals.isWebDXFeatureUseCounted(document, WebDXFeature.kMoveBefore));
+      document.body.moveBefore(b, a);
+      assert_true(internals.isWebDXFeatureUseCounted(document, WebDXFeature.kMoveBefore));
+    });
+  </script>
+</body>

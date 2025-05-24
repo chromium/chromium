@@ -9,12 +9,13 @@
 
 #include "base/base64.h"
 #include "crypto/sha2.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace signin {
 
 // static
-GaiaIdHash GaiaIdHash::FromGaiaId(std::string_view gaia_id) {
-  return FromBinary(crypto::SHA256HashString(gaia_id));
+GaiaIdHash GaiaIdHash::FromGaiaId(const GaiaId& gaia_id) {
+  return FromBinary(crypto::SHA256HashString(gaia_id.ToString()));
 }
 
 // static

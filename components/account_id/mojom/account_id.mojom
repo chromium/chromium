@@ -8,7 +8,7 @@ module signin.mojom;
 enum AccountType {
   UNKNOWN,
   GOOGLE,
-  ACTIVE_DIRECTORY,
+  // ACTIVE_DIRECTORY account type was deprecated.
 };
 
 // Mirror of AccountId in Mojo.

@@ -49,7 +49,7 @@ void BookmarkClientBase::AddSuggestedSaveLocationProvider(
 
 void BookmarkClientBase::RemoveSuggestedSaveLocationProvider(
     SuggestedSaveLocationProvider* suggestion_provider) {
-  auto it = base::ranges::find(save_location_providers_, suggestion_provider);
+  auto it = std::ranges::find(save_location_providers_, suggestion_provider);
   if (it != save_location_providers_.end()) {
     save_location_providers_.erase(it);
   }
@@ -122,30 +122,18 @@ const bookmarks::BookmarkNode* BookmarkClientBase::GetSuggestedSaveLocation(
   last_used_provider_ = nullptr;
 
   // If there's no suggested folder, ensure we're not accidentally suggesting
-  // one via the most recently modified. If the most recently modified folder
-  // was recommended, find one that isn't.
-  std::vector<const bookmarks::BookmarkNode*> recently_modified_list =
-      bookmarks::GetMostRecentlyModifiedUserFolders(
-          bookmark_model_, save_location_providers_.size() + 1);
-  CHECK(!recently_modified_list.empty());
-
-  std::string was_saved_to_suggested;
-  int recently_modified_index = 0;
-  bool found_value =
-      recently_modified_list[recently_modified_index]->GetMetaInfo(
-          kWasSuggestedFolderKey, &was_saved_to_suggested);
-  bool most_recent_is_suggested = false;
-  while (found_value && was_saved_to_suggested == kTrue) {
-    most_recent_is_suggested = true;
-    recently_modified_index++;
-    found_value = recently_modified_list[recently_modified_index]->GetMetaInfo(
-        kWasSuggestedFolderKey, &was_saved_to_suggested);
+  // one via the most recently modified.
+  for (const bookmarks::BookmarkNode* node :
+       bookmarks::GetMostRecentlyModifiedUserFolders(bookmark_model_)) {
+    // Suggest first non-suggested folder in the MRU.
+    std::string was_saved_to_suggested;
+    if (!node->GetMetaInfo(kWasSuggestedFolderKey, &was_saved_to_suggested) ||
+        was_saved_to_suggested != kTrue) {
+      return node;
+    }
   }
 
-  if (most_recent_is_suggested) {
-    return recently_modified_list[recently_modified_index];
-  }
-
+  // No non-suggested bookmark folder among MRU, give up.
   return nullptr;
 }
 

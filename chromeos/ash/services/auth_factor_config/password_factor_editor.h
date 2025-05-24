@@ -50,6 +50,10 @@ class PasswordFactorEditor : public mojom::PasswordFactorEditor {
       const std::string& password,
       base::OnceCallback<void(mojom::PasswordComplexity)> callback) override;
 
+  void RemovePassword(
+      const std::string& auth_token,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback) override;
+
   void BindReceiver(
       mojo::PendingReceiver<mojom::PasswordFactorEditor> receiver);
 
@@ -76,6 +80,17 @@ class PasswordFactorEditor : public mojom::PasswordFactorEditor {
       std::unique_ptr<UserContext> user_context);
 
   void OnPasswordConfigured(
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      const std::string& auth_token,
+      std::unique_ptr<UserContext> context,
+      std::optional<AuthenticationError> error);
+
+  void RemovePasswordWithContext(
+      const std::string& auth_token,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      std::unique_ptr<UserContext> user_context);
+
+  void OnPasswordRemoved(
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       const std::string& auth_token,
       std::unique_ptr<UserContext> context,

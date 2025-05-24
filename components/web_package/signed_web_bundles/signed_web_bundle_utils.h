@@ -8,13 +8,14 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 
 namespace web_package {
 
 struct SignedWebBundleSignatureData {
-  base::span<const uint8_t> unsigned_web_bundle_hash;
-  base::span<const uint8_t> integrity_block_cbor;
-  base::span<const uint8_t> attributes_cbor;
+  base::raw_span<const uint8_t> unsigned_web_bundle_hash;
+  base::raw_span<const uint8_t> integrity_block_cbor;
+  base::raw_span<const uint8_t> attributes_cbor;
 };
 
 // Utility function to construct and correctly encode the message for signature

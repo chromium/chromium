@@ -12,6 +12,7 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -65,9 +66,7 @@ class BASE_EXPORT PowerMonitor {
   // Returns true if the system is currently suspended.
   bool AddPowerSuspendObserverAndReturnSuspendedState(
       PowerSuspendObserver* observer);
-  // Returns true if the system is on-battery.
-  bool AddPowerStateObserverAndReturnOnBatteryState(
-      PowerStateObserver* observer);
+  // Returns the battery power status (battery power, external power, unknown).
   PowerStateObserver::BatteryPowerStatus
   AddPowerStateObserverAndReturnBatteryPowerStatus(
       PowerStateObserver* observer);
@@ -96,14 +95,6 @@ class BASE_EXPORT PowerMonitor {
 
   // Update the result of thermal state.
   void SetCurrentThermalState(PowerThermalObserver::DeviceThermalState state);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Read and return the current remaining battery capacity (microampere-hours).
-  // Only supported with a device power source (i.e. not in child processes in
-  // Chrome) and on devices with Android >= Lollipop as well as a power supply
-  // that supports this counter. Returns 0 if unsupported.
-  int GetRemainingBatteryCapacity() const;
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Uninitializes the PowerMonitor. Should be called at the end of any unit
   // test that mocks out the PowerMonitor, to avoid affecting subsequent tests.
@@ -139,6 +130,7 @@ class BASE_EXPORT PowerMonitor {
 
   mutable Lock battery_power_status_lock_;
 
+  perfetto::NamedTrack process_track_;
   PowerThermalObserver::DeviceThermalState power_thermal_state_
       GUARDED_BY(power_thermal_state_lock_) =
           PowerThermalObserver::DeviceThermalState::kUnknown;

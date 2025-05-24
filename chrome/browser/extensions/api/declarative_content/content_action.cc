@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,14 +23,15 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/icon_util.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
-#include "extensions/common/script_constants.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -68,12 +69,12 @@ void RecordContentActionCreated(
 // Action that instructs to show an extension's page action.
 class ShowExtensionAction : public ContentAction {
  public:
-  ShowExtensionAction() {}
+  ShowExtensionAction() = default;
 
   ShowExtensionAction(const ShowExtensionAction&) = delete;
   ShowExtensionAction& operator=(const ShowExtensionAction&) = delete;
 
-  ~ShowExtensionAction() override {}
+  ~ShowExtensionAction() override = default;
 
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
@@ -98,8 +99,8 @@ class ShowExtensionAction : public ContentAction {
     ExtensionAction* action =
         GetAction(apply_info.browser_context, apply_info.extension);
     action->DeclarativeShow(ExtensionTabUtil::GetTabId(apply_info.tab));
-    ExtensionActionAPI::Get(apply_info.browser_context)->NotifyChange(
-        action, apply_info.tab, apply_info.browser_context);
+    ExtensionActionDispatcher::Get(apply_info.browser_context)
+        ->NotifyChange(action, apply_info.tab, apply_info.browser_context);
   }
   // The page action is already showing, so nothing needs to be done here.
   void Reapply(const ApplyInfo& apply_info) const override {}
@@ -107,8 +108,8 @@ class ShowExtensionAction : public ContentAction {
     if (ExtensionAction* action =
             GetAction(apply_info.browser_context, apply_info.extension)) {
       action->UndoDeclarativeShow(ExtensionTabUtil::GetTabId(apply_info.tab));
-      ExtensionActionAPI::Get(apply_info.browser_context)->NotifyChange(
-          action, apply_info.tab, apply_info.browser_context);
+      ExtensionActionDispatcher::Get(apply_info.browser_context)
+          ->NotifyChange(action, apply_info.tab, apply_info.browser_context);
     }
   }
 
@@ -128,7 +129,7 @@ class SetIcon : public ContentAction {
   SetIcon(const SetIcon&) = delete;
   SetIcon& operator=(const SetIcon&) = delete;
 
-  ~SetIcon() override {}
+  ~SetIcon() override = default;
 
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
@@ -145,8 +146,8 @@ class SetIcon : public ContentAction {
       action->DeclarativeSetIcon(ExtensionTabUtil::GetTabId(apply_info.tab),
                                  apply_info.priority,
                                  icon_);
-      ExtensionActionAPI::Get(profile)
-          ->NotifyChange(action, apply_info.tab, profile);
+      ExtensionActionDispatcher::Get(profile)->NotifyChange(
+          action, apply_info.tab, profile);
     }
   }
 
@@ -161,7 +162,7 @@ class SetIcon : public ContentAction {
           ExtensionTabUtil::GetTabId(apply_info.tab),
           apply_info.priority,
           icon_);
-      ExtensionActionAPI::Get(apply_info.browser_context)
+      ExtensionActionDispatcher::Get(apply_info.browser_context)
           ->NotifyChange(action, apply_info.tab, profile);
     }
   }
@@ -233,7 +234,7 @@ struct RequestContentScript::ScriptData {
 RequestContentScript::ScriptData::ScriptData()
     : all_frames(false),
       match_about_blank(false) {}
-RequestContentScript::ScriptData::~ScriptData() {}
+RequestContentScript::ScriptData::~ScriptData() = default;
 
 // static
 std::unique_ptr<ContentAction> RequestContentScript::Create(
@@ -326,8 +327,9 @@ void RequestContentScript::InitScript(const mojom::HostID& host_id,
   script_.set_match_all_frames(script_data.all_frames);
   script_.set_match_origin_as_fallback(
       script_data.match_about_blank
-          ? MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree
-          : MatchOriginAsFallbackBehavior::kNever);
+          ? mojom::MatchOriginAsFallbackBehavior::
+                kMatchForAboutSchemeAndClimbTree
+          : mojom::MatchOriginAsFallbackBehavior::kNever);
   for (const auto& css_file_name : script_data.css_file_names) {
     GURL url = extension->GetResourceURL(css_file_name);
     ExtensionResource resource = extension->GetResource(css_file_name);
@@ -406,8 +408,8 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   gfx::ImageSkia icon;
   const base::Value::Dict* canvas_set = dict->FindDict("imageData");
   if (canvas_set &&
-      ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon) !=
-          ExtensionAction::IconParseResult::kSuccess) {
+      extensions::ParseIconFromCanvasDictionary(*canvas_set, &icon) !=
+          extensions::IconParseResult::kSuccess) {
     *error = kInvalidIconDictionary;
     return nullptr;
   }
@@ -430,7 +432,7 @@ std::unique_ptr<ContentAction> SetIcon::Create(
 // ContentAction
 //
 
-ContentAction::~ContentAction() {}
+ContentAction::~ContentAction() = default;
 
 // static
 std::unique_ptr<ContentAction> ContentAction::Create(
@@ -462,6 +464,6 @@ void ContentAction::SetAllowInvisibleIconsForTest(bool value) {
   g_allow_invisible_icons_content_action = value;
 }
 
-ContentAction::ContentAction() {}
+ContentAction::ContentAction() = default;
 
 }  // namespace extensions

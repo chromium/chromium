@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_PREFS_OBSERVER_H_
 
 #include "base/time/time.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -15,10 +16,9 @@ class ExtensionPrefs;
 class ExtensionPrefsObserver {
  public:
   // Called when the reasons for an extension being disabled have changed.
-  // This is *not* called when the disable reasons change due to the extension
-  // being enabled/disabled.
-  virtual void OnExtensionDisableReasonsChanged(const ExtensionId& extension_id,
-                                                int disabled_reasons) {}
+  virtual void OnExtensionDisableReasonsChanged(
+      const ExtensionId& extension_id,
+      DisableReasonSet disabled_reasons) {}
 
   // Called when an extension is registered with ExtensionPrefs.
   virtual void OnExtensionRegistered(const ExtensionId& extension_id,
@@ -36,6 +36,8 @@ class ExtensionPrefsObserver {
   // Note: This does not necessarily correspond to the extension being loaded/
   // unloaded. For that, observe the ExtensionRegistry, and reconcile that the
   // events might not match up.
+  // TODO(crbug.com/40554334): Remove this and migrate consumers to
+  // OnExtensionDisableReasonsChanged.
   virtual void OnExtensionStateChanged(const ExtensionId& extension_id,
                                        bool state) {}
 
@@ -56,7 +58,7 @@ class ExtensionPrefsObserver {
       const base::Time& last_launch_time) {}
 
   // Called when the ExtensionPrefs object (the thing that this observer
-  // observes) will be destroyed. In response, the observer, |this|, should
+  // observes) will be destroyed. In response, the observer, `this`, should
   // call "prefs->RemoveObserver(this)", whether directly or indirectly (e.g.
   // via ScopedObservation::Reset).
   virtual void OnExtensionPrefsWillBeDestroyed(ExtensionPrefs* prefs) {}
@@ -70,11 +72,11 @@ class ExtensionPrefsObserver {
 class EarlyExtensionPrefsObserver {
  public:
   // Called when "prefs->AddObserver(observer)" should be called, during or
-  // shortly after |prefs|' constructor. OnExtensionPrefsAvailable
+  // shortly after `prefs`' constructor. OnExtensionPrefsAvailable
   // implementations should make that AddObserver call, but are also
   // responsible for making the matching RemoveObserver call at an appropriate
   // time, no later than during the observer's destructor. Otherwise, the
-  // observee (the |prefs| object) will follow a dangling pointer whenever the
+  // observee (the `prefs` object) will follow a dangling pointer whenever the
   // next event occurs.
   //
   // Making that RemoveObserver call at the right time has to be the

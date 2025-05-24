@@ -443,8 +443,9 @@ TEST(JniArray, JavaArrayOfByteArrayToBytesVector) {
   input_bytes.reserve(kMaxItems);
   for (size_t i = 0; i < kMaxItems; ++i) {
     std::vector<uint8_t> cur_bytes(i + 1);
-    for (size_t j = 0; j < cur_bytes.size(); ++j)
+    for (size_t j = 0; j < cur_bytes.size(); ++j) {
       cur_bytes[j] = static_cast<uint8_t>(i + j * kStep);
+    }
     ScopedJavaLocalRef<jbyteArray> byte_array = ToJavaByteArray(env, cur_bytes);
     ASSERT_TRUE(byte_array);
 
@@ -460,8 +461,9 @@ TEST(JniArray, JavaArrayOfByteArrayToBytesVector) {
   JavaArrayOfByteArrayToBytesVector(env, array, &result);
 
   EXPECT_EQ(input_bytes.size(), result.size());
-  for (size_t i = 0; i < kMaxItems; ++i)
+  for (size_t i = 0; i < kMaxItems; ++i) {
     EXPECT_THAT(result[i], ::testing::ElementsAreArray(input_bytes.at(i)));
+  }
 }
 
 TEST(JniArray, JavaArrayOfStringArrayToVectorOfStringVector) {

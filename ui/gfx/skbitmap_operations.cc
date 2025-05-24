@@ -12,15 +12,17 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "skia/ext/pmcolor_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -118,9 +120,8 @@ SkBitmap SkBitmapOperations::CreateMaskedBitmap(const SkBitmap& rgb,
     uint32_t* dst_row = masked.getAddr32(0, y);
 
     for (int x = 0; x < masked.width(); ++x) {
-      unsigned alpha32 = SkGetPackedA32(alpha_row[x]);
-      unsigned scale = SkAlpha255To256(alpha32);
-      dst_row[x] = SkAlphaMulQ(rgb_row[x], scale);
+      unsigned alpha32 = SkPMColorGetA(alpha_row[x]);
+      dst_row[x] = skia::ScaleChannelsByAlpha(rgb_row[x], alpha32);
     }
   }
 
@@ -263,14 +264,14 @@ void LineProcHnopSnopLdec(const color_utils::HSL& hsl_shift,
 
   uint32_t ldec_num = static_cast<uint32_t>(hsl_shift.l * 2 * den);
   for (int x = 0; x < width; x++) {
-    uint32_t a = SkGetPackedA32(in[x]);
-    uint32_t r = SkGetPackedR32(in[x]);
-    uint32_t g = SkGetPackedG32(in[x]);
-    uint32_t b = SkGetPackedB32(in[x]);
+    uint32_t a = SkPMColorGetA(in[x]);
+    uint32_t r = SkPMColorGetR(in[x]);
+    uint32_t g = SkPMColorGetG(in[x]);
+    uint32_t b = SkPMColorGetB(in[x]);
     r = r * ldec_num / den;
     g = g * ldec_num / den;
     b = b * ldec_num / den;
-    out[x] = SkPackARGB32(a, r, g, b);
+    out[x] = SkPMColorSetARGB(a, r, g, b);
   }
 }
 
@@ -287,14 +288,14 @@ void LineProcHnopSnopLinc(const color_utils::HSL& hsl_shift,
 
   uint32_t linc_num = static_cast<uint32_t>((hsl_shift.l - 0.5) * 2 * den);
   for (int x = 0; x < width; x++) {
-    uint32_t a = SkGetPackedA32(in[x]);
-    uint32_t r = SkGetPackedR32(in[x]);
-    uint32_t g = SkGetPackedG32(in[x]);
-    uint32_t b = SkGetPackedB32(in[x]);
+    uint32_t a = SkPMColorGetA(in[x]);
+    uint32_t r = SkPMColorGetR(in[x]);
+    uint32_t g = SkPMColorGetG(in[x]);
+    uint32_t b = SkPMColorGetB(in[x]);
     r += (a - r) * linc_num / den;
     g += (a - g) * linc_num / den;
     b += (a - b) * linc_num / den;
-    out[x] = SkPackARGB32(a, r, g, b);
+    out[x] = SkPMColorSetARGB(a, r, g, b);
   }
 }
 
@@ -333,10 +334,10 @@ void LineProcHnopSdecLnop(const color_utils::HSL& hsl_shift,
   const int32_t denom = 65536;
   int32_t s_numer = static_cast<int32_t>(hsl_shift.s * 2 * denom);
   for (int x = 0; x < width; x++) {
-    int32_t a = static_cast<int32_t>(SkGetPackedA32(in[x]));
-    int32_t r = static_cast<int32_t>(SkGetPackedR32(in[x]));
-    int32_t g = static_cast<int32_t>(SkGetPackedG32(in[x]));
-    int32_t b = static_cast<int32_t>(SkGetPackedB32(in[x]));
+    int32_t a = static_cast<int32_t>(SkPMColorGetA(in[x]));
+    int32_t r = static_cast<int32_t>(SkPMColorGetR(in[x]));
+    int32_t g = static_cast<int32_t>(SkPMColorGetG(in[x]));
+    int32_t b = static_cast<int32_t>(SkPMColorGetB(in[x]));
 
     int32_t vmax, vmin;
     if (r > g) {  // This uses 3 compares rather than 4.
@@ -354,7 +355,7 @@ void LineProcHnopSdecLnop(const color_utils::HSL& hsl_shift,
     r = (denom_l + r * s_numer - s_numer_l) / denom;
     g = (denom_l + g * s_numer - s_numer_l) / denom;
     b = (denom_l + b * s_numer - s_numer_l) / denom;
-    out[x] = SkPackARGB32(a, r, g, b);
+    out[x] = SkPMColorSetARGB(a, r, g, b);
   }
 }
 
@@ -372,10 +373,10 @@ void LineProcHnopSdecLdec(const color_utils::HSL& hsl_shift,
   int32_t l_numer = static_cast<int32_t>(hsl_shift.l * 2 * denom);
   int32_t s_numer = static_cast<int32_t>(hsl_shift.s * 2 * denom);
   for (int x = 0; x < width; x++) {
-    int32_t a = static_cast<int32_t>(SkGetPackedA32(in[x]));
-    int32_t r = static_cast<int32_t>(SkGetPackedR32(in[x]));
-    int32_t g = static_cast<int32_t>(SkGetPackedG32(in[x]));
-    int32_t b = static_cast<int32_t>(SkGetPackedB32(in[x]));
+    int32_t a = static_cast<int32_t>(SkPMColorGetA(in[x]));
+    int32_t r = static_cast<int32_t>(SkPMColorGetR(in[x]));
+    int32_t g = static_cast<int32_t>(SkPMColorGetG(in[x]));
+    int32_t b = static_cast<int32_t>(SkPMColorGetB(in[x]));
 
     int32_t vmax, vmin;
     if (r > g) {  // This uses 3 compares rather than 4.
@@ -393,7 +394,7 @@ void LineProcHnopSdecLdec(const color_utils::HSL& hsl_shift,
     r = (denom_l + r * s_numer - s_numer_l) * l_numer / (denom * denom);
     g = (denom_l + g * s_numer - s_numer_l) * l_numer / (denom * denom);
     b = (denom_l + b * s_numer - s_numer_l) * l_numer / (denom * denom);
-    out[x] = SkPackARGB32(a, r, g, b);
+    out[x] = SkPMColorSetARGB(a, r, g, b);
   }
 }
 
@@ -411,10 +412,10 @@ void LineProcHnopSdecLinc(const color_utils::HSL& hsl_shift,
   int32_t l_numer = static_cast<int32_t>((hsl_shift.l - 0.5) * 2 * denom);
   int32_t s_numer = static_cast<int32_t>(hsl_shift.s * 2 * denom);
   for (int x = 0; x < width; x++) {
-    int32_t a = static_cast<int32_t>(SkGetPackedA32(in[x]));
-    int32_t r = static_cast<int32_t>(SkGetPackedR32(in[x]));
-    int32_t g = static_cast<int32_t>(SkGetPackedG32(in[x]));
-    int32_t b = static_cast<int32_t>(SkGetPackedB32(in[x]));
+    int32_t a = static_cast<int32_t>(SkPMColorGetA(in[x]));
+    int32_t r = static_cast<int32_t>(SkPMColorGetR(in[x]));
+    int32_t g = static_cast<int32_t>(SkPMColorGetG(in[x]));
+    int32_t b = static_cast<int32_t>(SkPMColorGetB(in[x]));
 
     int32_t vmax, vmin;
     if (r > g) {  // This uses 3 compares rather than 4.
@@ -436,7 +437,7 @@ void LineProcHnopSdecLinc(const color_utils::HSL& hsl_shift,
     r = (r * denom + (a * denom - r) * l_numer) / (denom * denom);
     g = (g * denom + (a * denom - g) * l_numer) / (denom * denom);
     b = (b * denom + (a * denom - b) * l_numer) / (denom * denom);
-    out[x] = SkPackARGB32(a, r, g, b);
+    out[x] = SkPMColorSetARGB(a, r, g, b);
   }
 }
 

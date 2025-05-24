@@ -195,6 +195,9 @@ struct GenericHashTraitsBase {
   // type for which HashTraits<T>::kCanTraceConcurrently is true can be traced
   // on a concurrent thread.
   static constexpr bool kCanTraceConcurrently = false;
+  // Used by Oilpan compaction. Only types that return true here will be
+  // compacted.
+  static constexpr bool kSupportsCompaction = false;
 };
 
 template <typename T, auto empty_value, auto deleted_value>
@@ -205,6 +208,8 @@ struct IntOrEnumHashTraits : internal::GenericHashTraitsBase<T> {
       static_cast<int64_t>(empty_value) == 0;
   static constexpr T EmptyValue() { return static_cast<T>(empty_value); }
   static constexpr T DeletedValue() { return static_cast<T>(deleted_value); }
+
+  static constexpr bool kSupportsCompaction = true;
 };
 
 }  // namespace internal
@@ -248,6 +253,8 @@ struct GenericHashTraits<T> : internal::GenericHashTraitsBase<T> {
   static constexpr T DeletedValue() {
     return -std::numeric_limits<T>::infinity();
   }
+
+  static constexpr bool kSupportsCompaction = true;
 };
 
 // Default integral traits disallow both 0 and max as keys -- use these traits
@@ -415,25 +422,23 @@ struct HashTraits<String>;
 
 namespace internal {
 
-template <typename Traits, typename Enabled = void>
+template <typename Traits>
 struct HashTraitsEmptyValueChecker {
   static bool IsEmptyValue(const typename Traits::TraitType& value) {
     return value == Traits::EmptyValue();
   }
 };
 template <typename Traits>
-struct HashTraitsEmptyValueChecker<
-    Traits,
-    std::enable_if_t<
-        std::is_same_v<decltype(Traits::IsEmptyValue(
-                           std::declval<typename Traits::TraitType>())),
-                       bool>>> {
+  requires requires(const typename Traits::TraitType& t) {
+    { Traits::IsEmptyValue(t) } -> std::same_as<bool>;
+  }
+struct HashTraitsEmptyValueChecker<Traits> {
   static bool IsEmptyValue(const typename Traits::TraitType& value) {
     return Traits::IsEmptyValue(value);
   }
 };
 
-template <typename Traits, typename Enabled = void>
+template <typename Traits>
 struct HashTraitsDeletedValueHelper {
   static bool IsDeletedValue(const typename Traits::TraitType& value) {
     return value == Traits::DeletedValue();
@@ -444,12 +449,10 @@ struct HashTraitsDeletedValueHelper {
   }
 };
 template <typename Traits>
-struct HashTraitsDeletedValueHelper<
-    Traits,
-    std::enable_if_t<
-        std::is_same_v<decltype(Traits::IsDeletedValue(
-                           std::declval<typename Traits::TraitType>())),
-                       bool>>> {
+  requires requires(const typename Traits::TraitType& t) {
+    { Traits::IsDeletedValue(t) } -> std::same_as<bool>;
+  }
+struct HashTraitsDeletedValueHelper<Traits> {
   static bool IsDeletedValue(const typename Traits::TraitType& value) {
     return Traits::IsDeletedValue(value);
   }

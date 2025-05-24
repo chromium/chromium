@@ -32,13 +32,8 @@ struct DetailedQuotaError {
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr DetailedQuotaError(QuotaError error) : quota_error(error) {}
 
-  constexpr bool operator==(const DetailedQuotaError& error) const {
-    return std::tie(quota_error, sqlite_error) ==
-           std::tie(error.quota_error, error.sqlite_error);
-  }
-  constexpr bool operator!=(const DetailedQuotaError& error) const {
-    return !operator==(error);
-  }
+  friend constexpr bool operator==(const DetailedQuotaError&,
+                                   const DetailedQuotaError&) = default;
 
   QuotaError quota_error;
   int sqlite_error = 0;
@@ -47,10 +42,6 @@ struct DetailedQuotaError {
 constexpr bool operator==(QuotaError error,
                           const DetailedQuotaError& detailed_error) {
   return DetailedQuotaError(error) == detailed_error;
-}
-constexpr bool operator!=(QuotaError error,
-                          const DetailedQuotaError& detailed_error) {
-  return !operator==(error, detailed_error);
 }
 
 // Helper for methods which perform database operations which may fail. Objects

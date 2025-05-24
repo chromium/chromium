@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
 
 #include <optional>
+#include <variant>
 
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/memory/raw_ptr.h"
@@ -38,8 +39,8 @@ class EcheAppNotificationController {
   void ShowNotificationFromWebUI(
       const std::optional<std::u16string>& title,
       const std::optional<std::u16string>& message,
-      absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
-                    mojom::WebNotificationType> type);
+      std::variant<LaunchAppHelper::NotificationInfo::NotificationType,
+                   mojom::WebNotificationType> type);
 
   // Close the notifiication according to id
   void CloseNotification(const std::string& notification_id);

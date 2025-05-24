@@ -52,7 +52,8 @@ class ExtensionDownloaderTest : public ExtensionsTest {
     GURL kUpdateUrl("http://localhost/manifest1");
     std::unique_ptr<ManifestFetchData> fetch(
         CreateManifestFetchData(kUpdateUrl));
-    DownloadPingData zero_days(0, 0, true, 0);
+    DownloadPingData zero_days(/*rollcall=*/0, /*active=*/0, /*enabled=*/true,
+                               /*disable_reasons=*/{});
     fetch->AddExtension(kTestExtensionId, "1.0", &zero_days, "", "",
                         mojom::ManifestLocation::kInternal,
                         DownloadFetchPriority::kBackground);

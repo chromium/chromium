@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NET_BROWSER_URL_OPENER_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_NET_BROWSER_URL_OPENER_IMPL_H_
 
-#include "ash/components/arc/net/browser_url_opener.h"
+#include "chromeos/ash/experiences/arc/net/browser_url_opener.h"
 
 namespace arc {
 

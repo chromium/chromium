@@ -44,8 +44,22 @@ interface AutofillAgent {
   // be found and extracted.
   ExtractForm(FormRendererId form) => (FormData? form);
 
+  // Tries to extract the node value from the DOM and returns the extracted
+  // value back to the browser process. The response string contains the
+  // node value if present. If the string is empty, it means no node value
+  // was found.
+  // See `form_util::ExtractFinalCheckoutAmountFromDom()` for details.
+  ExtractLabeledTextNodeValue(mojo_base.mojom.String16 value_regex,
+                        mojo_base.mojom.String16 label_regex,
+                        uint32 number_of_ancestor_levels_to_search) =>
+      (string value);
+
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
+
+  // For all elements the DOM Node ID will be exposed on the DOM
+  // as attribute "dom-node-id".This is done for data collection purposes.
+  ExposeDomNodeIDs();
 
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();
@@ -98,18 +112,23 @@ interface PasswordAutofillAgent {
   // prepare field autocomplete for multiple matching logins. Lets the renderer
   // know if it should disable the popup because the browser process will own
   // the popup UI.
-  SetPasswordFillData(PasswordFormFillData form_data);
+  ApplyFillDataOnParsingCompletion(PasswordFormFillData form_data);
 
   // Fills the username and password with with given values.
   FillPasswordSuggestion(
-      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password);
+      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password)
+         => (bool success);
 
   // Similar to FillPasswordSuggestion, but is also provided the
   // FieldRendererIds of the elements to be filled.
+  // `suggestion_source` specified how the user has interacted with
+  // PWM suggestions, such as manual fallback. Used to update the
+  // `FieldPropertiesMask` of the filled fields.
   FillPasswordSuggestionById(FieldRendererId username_element_id,
                              FieldRendererId password_element_id,
                              mojo_base.mojom.String16 username,
-                             mojo_base.mojom.String16 password);
+                             mojo_base.mojom.String16 password,
+                             AutofillSuggestionTriggerSource suggestion_source);
 
   // Previews the username and password, determined from the given
   // FieldRendererIds, with the given values.
@@ -119,8 +138,10 @@ interface PasswordAutofillAgent {
                                 mojo_base.mojom.String16 password);
 
   // Informs that there are no saved credentials for filling.
-  // This is the "no results" equivalent of SetPasswordFillData.
-  InformNoSavedCredentials(bool should_show_popup_without_passwords);
+  // This is the "no results" equivalent of ApplyFillDataOnParsingCompletion. In
+  // certain cases the password manager shows popups (e.g. promo UIs) even if
+  // there are no saved credentials.
+ InformNoSavedCredentials(bool should_show_popup_without_passwords);
 
   // Fills the given `credential` into the last focused text input.
   FillIntoFocusedField(
@@ -130,19 +151,31 @@ interface PasswordAutofillAgent {
   PreviewField(FieldRendererId field_id, mojo_base.mojom.String16 value);
 
   // Fills the given `value` into the field identified by `field_id`.
-  FillField(FieldRendererId field_id, mojo_base.mojom.String16 value);
+  // `suggestion_source` specified how the user has interacted with
+  // PWM suggestions, such as manual fallback. Used to update the
+  // `FieldPropertiesMask` of the filled fields.
+  FillField(FieldRendererId field_id, mojo_base.mojom.String16 value,
+    AutofillSuggestionTriggerSource suggestion_source);
+
+  // Fills a given change password form, specifically `password_element_id` with
+  // `old_password` and `new_password_element_id`, `confirm_password_element_id`
+  // with `new_password`. Upon completion asynchronously returns `form_data`
+  // with filled values if the form was successfully filled.
+  FillChangePasswordForm(FieldRendererId password_element_id,
+                         FieldRendererId new_password_element_id,
+                         FieldRendererId confirm_password_element_id,
+                         mojo_base.mojom.String16 old_password,
+                         mojo_base.mojom.String16 new_password)
+      => (FormData? form_data);
+
+  // Submits a form based on field id if all conditions for submission with
+  // Enter are satisfied, i.e. the form exists, there is a submit element
+  // inside a form, the submit element is not disabled.
+  SubmitFormWithEnter(FieldRendererId field_id) => (bool success);
 
   // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);
-
-  // Informs that the Keyboard Replacing Surface has been closed.
-  // Indicates whether the virtual keyboard should be shown instead.
-  // TODO(crbug.com/40274966): Remove this API once
-  // PasswordSuggestionBottomSheetV2
-  // is launched.
-  [EnableIf=is_android]
-  KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard);
 
   // Triggers a form submission on the last interacted element.
   [EnableIf=is_android]
@@ -159,6 +192,10 @@ interface PasswordGenerationAgent {
   // Tells the renderer to populate the correct password fields with this
   // generated password.
   GeneratedPasswordAccepted(mojo_base.mojom.String16 generated_password);
+
+  // Tells the renderer that the generated password was rejected by the user
+  // and should not be shown again in the same generation flow.
+  GeneratedPasswordRejected();
 
   // Tells the renderer to find a focused element, and if it is a password field
   // eligible for generation then to trigger generation by returning

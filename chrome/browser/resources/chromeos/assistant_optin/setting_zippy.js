@@ -6,10 +6,10 @@ import '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import '../components/common_styles/oobe_common_styles.css.js';
 import './assistant_common_styles.css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './setting_zippy.html.js';
 import {AssistantNativeIconType} from './utils.js';
-
 
 /** @polymer */
 class SettingZippy extends PolymerElement {
@@ -18,7 +18,7 @@ class SettingZippy extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

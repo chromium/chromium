@@ -4,6 +4,7 @@
 
 module pdf.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -19,19 +20,40 @@ interface PdfListener {
   // be moved if the selection is modified.
   SetSelectionBounds(gfx.mojom.PointF base, gfx.mojom.PointF extent);
 
-  // Get PDF bytes.
-  GetPdfBytes() => (array<uint8> bytes);
+  // The status of the GetPdfBytes call.
+  enum GetPdfBytesStatus {
+    kSuccess = 0,
+    kSizeLimitExceeded = 1,
+    kFailed = 2,
+  };
+
+  // Get PDF bytes. If the size of the PDF in bytes is larger than `size_limit`,
+  // an empty vector will be returned instead. `bytes` is only guaranteed to be
+  // from the PDF engine if `status` is `kSuccess`. `page_count` is the number
+  // of pages in the PDF displayed in the renderer, not the number of pages
+  // returned in `bytes`.
+  GetPdfBytes(uint32 size_limit)
+      => (GetPdfBytesStatus status, array<uint8> bytes, uint32 page_count);
+
+  // Get the text contained on the given page of the PDF. `page_index` should be
+  // the range [0, # of pages).
+  GetPageText(int32 page_index) => (mojo_base.mojom.String16 text);
+
+  // Returns the index of the most visible page. If no page is visible,
+  // returns nullopt.
+  GetMostVisiblePageIndex() => (uint32? page_index);
 };
 
 // Browser-side interface used by PDF renderers.
 interface PdfHost {
   SetListener(pending_remote<PdfListener> client);
 
+  // Invoked when document load is completed successfully. Will not be invoked
+  // if the load fails.
+  OnDocumentLoadComplete();
+
   // Updates the content restrictions, i.e. to disable print/copy.
   UpdateContentRestrictions(int32 restrictions);
-
-  // The currently displayed PDF has an unsupported feature.
-  HasUnsupportedFeature();
 
   // Brings up SaveAs... dialog to save specified URL.
   SaveUrlAs(url.mojom.Url url, network.mojom.ReferrerPolicy policy);
@@ -45,4 +67,9 @@ interface PdfHost {
 
   // Notifies the embedder know the plugin can handle save commands internally.
   SetPluginCanSave(bool can_save);
+
+  // Notifies that PDF searchifier has started processing pages. This should be
+  // called at most once.
+  [EnableIf=enable_screen_ai_service]
+  OnSearchifyStarted();
 };

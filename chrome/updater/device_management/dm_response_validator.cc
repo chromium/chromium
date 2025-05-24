@@ -58,13 +58,12 @@ bool VerifySignature(const std::string& data,
                      const std::string& signature,
                      crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
   crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(algorithm,
-                           base::as_bytes(base::make_span(signature)),
-                           base::as_bytes(base::make_span(key)))) {
+  if (!verifier.VerifyInit(algorithm, base::as_byte_span(signature),
+                           base::as_byte_span(key))) {
     VLOG(1) << "Invalid verification signature/key format.";
     return false;
   }
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
+  verifier.VerifyUpdate(base::as_byte_span(data));
   return verifier.VerifyFinal();
 }
 

@@ -47,18 +47,6 @@ class BASE_EXPORT HistogramSnapshotManager final {
                      HistogramBase::Flags flags_to_set,
                      HistogramBase::Flags required_flags);
 
-  // Same as PrepareDeltas() above, but the samples obtained from the histograms
-  // are not immediately marked as logged. Instead, they are stored internally
-  // in |histograms_and_snapshots_|, and a call to MarkUnloggedSamplesAsLogged()
-  // should be made subsequently in order to mark them as logged.
-  void SnapshotUnloggedSamples(const std::vector<HistogramBase*>& histograms,
-                               HistogramBase::Flags required_flags);
-
-  // Marks the unlogged samples obtained from SnapshotUnloggedSamples() as
-  // logged. For each call to this function, there should be a corresponding
-  // call to SnapshotUnloggedSamples() before it.
-  void MarkUnloggedSamplesAsLogged();
-
   // When the collection is not so simple as can be done using a single
   // iterator, the steps can be performed separately. Call PerpareDelta()
   // as many times as necessary. PrepareFinalDelta() works like PrepareDelta()
@@ -74,24 +62,10 @@ class BASE_EXPORT HistogramSnapshotManager final {
  private:
   FRIEND_TEST_ALL_PREFIXES(HistogramSnapshotManagerTest, CheckMerge);
 
-  using HistogramSnapshotPair =
-      std::pair<HistogramBase*, std::unique_ptr<HistogramSamples>>;
-
   // Capture and hold samples from a histogram. This does all the heavy
   // lifting for PrepareDelta() and PrepareFinalDelta().
   void PrepareSamples(const HistogramBase* histogram,
                       const HistogramSamples& samples);
-
-  // A list of histograms and snapshots of unlogged samples. Filled when calling
-  // SnapshotUnloggedSamples(). They are marked as logged when calling
-  // MarkUnloggedSamplesAsLogged().
-  std::vector<HistogramSnapshotPair> histograms_and_snapshots_;
-
-  // Keeps track of whether SnapshotUnloggedSamples() has been called. This
-  // resets back to false after calling MarkUnloggedSamplesAsLogged(), so that
-  // the same HistogramSnapshotManager instance can be used to take multiple
-  // snapshots if needed.
-  bool unlogged_samples_snapshot_taken_ = false;
 
   // |histogram_flattener_| handles the logistics of recording the histogram
   // deltas.

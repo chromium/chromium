@@ -32,7 +32,7 @@ CSSAxisValue::CSSAxisValue(CSSValueID axis_name)
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   Append(
       *CSSNumericLiteralValue::Create(x, CSSPrimitiveValue::UnitType::kNumber));
@@ -79,7 +79,7 @@ CSSAxisValue::CSSAxisValue(const CSSPrimitiveValue* x_value,
 String CSSAxisValue::CustomCSSText() const {
   StringBuilder result;
   if (IsValidCSSValueID(axis_name_)) {
-    result.Append(AtomicString(getValueName(axis_name_)));
+    result.Append(GetCSSValueNameAs<AtomicString>(axis_name_));
   } else {
     result.Append(CSSValueList::CustomCSSText());
   }

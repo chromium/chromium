@@ -94,8 +94,7 @@ covered by the smoke tests.
 ***
 
 *** promo
-Similar to Fuchsia's case, the tests listed in [Mac.txt]
-(../../third_party/blink/web_tests/TestLists/Mac.txt)
+Similar to Fuchsia's case, the tests listed in [MacOld.txt](../../third_party/blink/web_tests/TestLists/MacOld.txt)
 are run on older mac version bots. By doing this we reduced the resources needed to run
 the tests. This relies on the fact that the majority of web tests will behavior similarly on
 different mac versions.
@@ -684,3 +683,8 @@ for issues related to Blink tools, include the web test runner.
 * If QuickTime is not installed, the plugin tests
   `fast/dom/object-embed-plugin-scripting.html` and
   `plugins/embed-attributes-setting.html` are expected to fail.
+* Fluent scrollbar rendering has some tweaks to geometry and behavior that are
+  just for web tests. These are described in the
+  [Fluent Scrollbars Visual Spec](https://bit.ly/fluent-scrollbars-visual-spec)
+  under "Special rendering - Web tests". We'd like to remove them eventually
+  ([crbug.com/382298324](https://crbug.com/382298324)).

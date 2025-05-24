@@ -6,15 +6,16 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {CurrentWallpaper, DailyRefreshType, DisplayableImage, FullscreenPreviewState, GooglePhotosPhoto, OnlineImageType, setFullscreenStateAction, setShouldWaitForFullscreenOpacityTransitionsForTesting, WallpaperActionName, WallpaperFullscreenElement, WallpaperImage, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import type {CurrentWallpaper, DisplayableImage, GooglePhotosPhoto, WallpaperImage} from 'chrome://personalization/js/personalization_app.js';
+import {DailyRefreshType, FullscreenPreviewState, OnlineImageType, setFullscreenStateAction, setShouldWaitForFullscreenOpacityTransitionsForTesting, WallpaperActionName, WallpaperFullscreenElement, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('WallpaperFullscreenElementTest', function() {
   let wallpaperFullscreenElement: WallpaperFullscreenElement|null = null;
@@ -24,6 +25,7 @@ suite('WallpaperFullscreenElementTest', function() {
   const currentSelectedCustomImage: CurrentWallpaper = {
     descriptionContent: '',
     descriptionTitle: '',
+    actionUrl: null,
     key: 'testing',
     layout: WallpaperLayout.kCenter,
     type: WallpaperType.kCustomized,
@@ -324,8 +326,9 @@ suite('WallpaperFullscreenElementTest', function() {
         FullscreenPreviewState.VISIBLE;
     personalizationStore.notifyObservers();
 
-    let button = wallpaperFullscreenElement.shadowRoot!.querySelector(
-                     'cr-button[data-layout="FILL"]')! as HTMLButtonElement;
+    let button =
+        wallpaperFullscreenElement.shadowRoot!.querySelector<HTMLButtonElement>(
+            'cr-button[data-layout="FILL"]')!;
     button.click();
 
     const [fillImage, fillLayout, fillPreviewMode] =
@@ -336,8 +339,9 @@ suite('WallpaperFullscreenElementTest', function() {
     assertEquals(WallpaperLayout.kCenterCropped, fillLayout);
     assertTrue(fillPreviewMode);
 
-    button = wallpaperFullscreenElement.shadowRoot!.querySelector(
-                 'cr-button[data-layout="CENTER"]') as HTMLButtonElement;
+    button =
+        wallpaperFullscreenElement.shadowRoot!.querySelector<HTMLButtonElement>(
+            'cr-button[data-layout="CENTER"]')!;
     button.click();
 
     const [centerImage, centerLayout, centerPreviewMode] =

@@ -21,7 +21,9 @@ namespace media {
 
 class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
  public:
-  D3D11AV1Accelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
+  D3D11AV1Accelerator(D3D11VideoDecoderClient* client,
+                      MediaLog* media_log,
+                      bool disable_invalid_ref);
 
   D3D11AV1Accelerator(const D3D11AV1Accelerator&) = delete;
   D3D11AV1Accelerator& operator=(const D3D11AV1Accelerator&) = delete;
@@ -43,7 +45,7 @@ class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
       const DXVA_PicParams_AV1& pic_params,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);
 
-  void FillPicParams(size_t picture_index,
+  bool FillPicParams(size_t picture_index,
                      bool apply_grain,
                      const libgav1::ObuFrameHeader& frame_header,
                      const libgav1::ObuSequenceHeader& seq_header,
@@ -52,6 +54,9 @@ class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
 
   std::unique_ptr<MediaLog> media_log_;
   raw_ptr<D3D11VideoDecoderClient> client_;
+  // When set to true, the accelerator will use current frame for the missing
+  // reference.
+  bool disable_invalid_ref_ = false;
 };
 
 }  // namespace media

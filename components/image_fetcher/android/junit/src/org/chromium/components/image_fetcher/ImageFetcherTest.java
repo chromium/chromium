@@ -41,7 +41,7 @@ public class ImageFetcherTest {
     private static final int EXPIRATION_INTERVAL = 60;
 
     /** Concrete implementation for testing purposes. */
-    private class ImageFetcherForTest extends ImageFetcher {
+    private static class ImageFetcherForTest extends ImageFetcher {
         ImageFetcherForTest(ImageFetcherBridge imageFetcherBridge) {
             super(imageFetcherBridge);
         }

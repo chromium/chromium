@@ -515,6 +515,9 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="Operation not supported">
     ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_OPNOTSUPP (28) from libzip
   </int>
+  <int value="45" label="Truncated ZIP">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_TRUNCATED_ZIP (35) from libzip
+  </int>
   <int value="132" label="Terminated by SIGILL">
     MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
   </int>

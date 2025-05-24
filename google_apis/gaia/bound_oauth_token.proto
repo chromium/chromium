@@ -21,3 +21,22 @@ message BoundOAuthToken {
   // Required.
   optional string token_binding_assertion = 3;
 }
+
+// Structured content of the "MultiOAuth" Authorization header.
+message MultiOAuthHeader {
+  repeated AccountRequest account_requests = 1;
+
+  // The message schema is currently identical to `BoundOAuthToken`. Keep two
+  // definitions separate because they are separate on the server and might
+  // diverge over time.
+  message AccountRequest {
+    // Required.
+    optional string gaia_id = 1;
+
+    // Required.
+    optional string token = 2;
+
+    // Required only for bound tokens.
+    optional bytes token_binding_assertion = 3;
+  }
+}

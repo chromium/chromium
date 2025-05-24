@@ -7,6 +7,10 @@ import("//components/nacl/toolchain.gni")
 import("//gpu/vulkan/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")  # For `target_platform`
+}
+
 group("common") {
   if (is_component_build) {
     public_deps = [ "//gpu" ]
@@ -78,6 +82,7 @@ source_set("ipc_common_sources") {
 
   sources = [
     "command_buffer_id.h",
+    "command_buffer_trace_utils.h",
     "gpu_client_ids.h",
     "gpu_disk_cache_type.cc",
     "gpu_disk_cache_type.h",
@@ -125,6 +130,7 @@ source_set("ipc_common_sources") {
     ":gpu_peak_memory",
     ":interfaces_cpp_sources",
     ":memory_stats_sources",
+    ":shared_image_pool_client_interface",
     ":surface_handle_type",
     ":vulkan_ycbcr_info",
     "//ipc",
@@ -156,6 +162,13 @@ source_set("ipc_common_sources") {
     frameworks = [ "IOSurface.framework" ]
   }
 
+  if (is_ios && target_platform == "iphoneos") {
+    sources += [
+      "ios/be_layer_hierarchy_transport.cc",
+      "ios/be_layer_hierarchy_transport.h",
+    ]
+  }
+
   if (!is_nacl && !is_minimal_toolchain) {
     deps += [ "//ui/gfx/ipc/skia" ]
   }
@@ -172,6 +185,7 @@ source_set("ipc_common_sources") {
       "gpu_surface_tracker.h",
     ]
     libs = [ "android" ]
+    deps += [ "//ui/gl:surface_jni_headers" ]
   }
 
   if (use_ozone) {
@@ -209,6 +223,7 @@ mojom("gpu_channel_mojom") {
   sources = [ "gpu_channel.mojom" ]
 
   public_deps = [
+    ":shared_image_pool_client_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom:shared_image_format",
@@ -305,6 +320,19 @@ mojom("gmb_interface") {
   ]
 }
 
+mojom("shared_image_pool_client_interface") {
+  generate_java = true
+  visibility = [
+    "//gpu/*",
+    "//services/*",
+  ]
+  sources = [ "shared_image_pool_client_interface.mojom" ]
+  deps = [ "//mojo/public/mojom/base" ]
+  export_class_attribute = "GPU_EXPORT"
+  export_header = "gpu/gpu_export.h"
+  cpp_configs = [ "//gpu:gpu_implementation" ]
+}
+
 mojom("surface_handle") {
   generate_java = true
   sources = [ "surface_handle.mojom" ]
@@ -339,6 +367,7 @@ mojom("interfaces") {
     "memory_stats.mojom",
     "shared_image_capabilities.mojom",
     "shared_image_metadata.mojom",
+    "shared_image_pool_id.mojom",
     "sync_token.mojom",
     "vulkan_ycbcr_info.mojom",
   ]
@@ -349,6 +378,7 @@ mojom("interfaces") {
 
   public_deps = [
     ":gpu_preferences_interface",
+    ":shared_image_pool_client_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom:shared_image_format",
@@ -361,9 +391,6 @@ mojom("interfaces") {
   if (enable_vulkan) {
     public_deps += [ ":vulkan_interface" ]
     enabled_features += [ "supports_vulkan" ]
-  }
-  if (is_win || is_chromeos) {
-    enabled_features += [ "has_gpu_revision_info" ]
   }
 
   cpp_typemaps = [
@@ -420,6 +447,7 @@ mojom("interfaces") {
         {
           mojom = "gpu.mojom.ExportedSharedImage"
           cpp = "::gpu::ExportedSharedImage"
+          move_only = true
         },
       ]
       traits_headers = [ "exported_shared_image_mojom_traits.h" ]
@@ -543,6 +571,17 @@ mojom("interfaces") {
     {
       types = [
         {
+          mojom = "gpu.mojom.SharedImagePoolId"
+          cpp = "::gpu::SharedImagePoolId"
+        },
+      ]
+      traits_sources = [ "shared_image_pool_id_mojom_traits.cc" ]
+      traits_headers = [ "shared_image_pool_id_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
           mojom = "gpu.mojom.SyncToken"
           cpp = "::gpu::SyncToken"
         },
@@ -634,6 +673,7 @@ mojom("interfaces") {
         {
           mojom = "gpu.mojom.ExportedSharedImage"
           cpp = "::gpu::ExportedSharedImage"
+          move_only = true
         },
       ]
       traits_headers = [ "exported_shared_image_mojom_traits.h" ]
@@ -795,7 +835,7 @@ mojom("vulkan_interface") {
 
 mojom("test_interfaces") {
   testonly = true
-  sources = [ "traits_test_service.mojom" ]
+  sources = [ "traits_test_service.test-mojom" ]
 
   public_deps = [
     ":gpu_preferences_interface",

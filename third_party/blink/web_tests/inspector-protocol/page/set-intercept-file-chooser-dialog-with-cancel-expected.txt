@@ -1,0 +1,5 @@
+Tests that Page.setInterceptFileChooserDialog can cancel dialog
+Input's DOM cancel event: {
+    isTrusted : true
+}
+

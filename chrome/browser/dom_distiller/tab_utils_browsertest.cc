@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
                                              ->tab_strip_model()
                                              ->GetActiveWebContents()
                                              ->GetPrimaryMainFrame();
-  int process_id = main_frame->GetProcess()->GetID();
+  int process_id = main_frame->GetProcess()->GetDeprecatedID();
   int frame_routing_id = main_frame->GetRoutingID();
   distillability_observer.WaitForResult(expected_result);
 

@@ -23,10 +23,6 @@
 namespace reporting {
 
 // static
-bool StorageSelector::is_uploader_required() {
-  return true;  // Local storage must have an uploader.
-}
-
 // static
 bool StorageSelector::is_use_missive() {
   return false;  // Use Local storage.

@@ -25,8 +25,8 @@ template <>
 struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     StructTraits<mojo_base::mojom::String16DataView, std::u16string_view> {
   static base::span<const uint16_t> data(std::u16string_view str) {
-    return base::make_span(reinterpret_cast<const uint16_t*>(str.data()),
-                           str.size());
+    return base::span(reinterpret_cast<const uint16_t*>(str.data()),
+                      str.size());
   }
 };
 

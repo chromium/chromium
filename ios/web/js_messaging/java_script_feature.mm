@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "build/blink_buildflags.h"
 #import "ios/web/javascript_flags.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
@@ -186,12 +187,14 @@ NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
 
 NSString* JavaScriptFeature::FeatureScript::ReplacePlaceholders(
     NSString* script) const {
-  if (replacements_callback_.is_null())
+  if (replacements_callback_.is_null()) {
     return script;
+  }
 
   PlaceholderReplacements replacements = replacements_callback_.Run();
-  if (!replacements)
+  if (!replacements) {
     return script;
+  }
 
   for (NSString* key in replacements) {
     script = [script stringByReplacingOccurrencesOfString:key
@@ -265,6 +268,10 @@ bool JavaScriptFeature::CallJavaScriptFunction(
     const base::Value::List& parameters) {
   DCHECK(web_frame);
 
+#if BUILDFLAG(USE_BLINK)
+  // TODO(crbug.com/40254930): Call the ContentJavascriptFeatureManager instead.
+  return false;
+#else
   JavaScriptFeatureManager* feature_manager =
       JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
   DCHECK(feature_manager);
@@ -282,6 +289,7 @@ bool JavaScriptFeature::CallJavaScriptFunction(
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world);
+#endif
 }
 
 bool JavaScriptFeature::CallJavaScriptFunction(
@@ -292,6 +300,10 @@ bool JavaScriptFeature::CallJavaScriptFunction(
     base::TimeDelta timeout) {
   DCHECK(web_frame);
 
+#if BUILDFLAG(USE_BLINK)
+  // TODO(crbug.com/40254930): Call the ContentJavascriptFeatureManager instead.
+  return false;
+#else
   JavaScriptFeatureManager* feature_manager =
       JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
   DCHECK(feature_manager);
@@ -309,6 +321,7 @@ bool JavaScriptFeature::CallJavaScriptFunction(
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world, std::move(callback), timeout);
+#endif
 }
 
 bool JavaScriptFeature::ExecuteJavaScript(
@@ -317,6 +330,10 @@ bool JavaScriptFeature::ExecuteJavaScript(
     ExecuteJavaScriptCallbackWithError callback) {
   DCHECK(web_frame);
 
+#if BUILDFLAG(USE_BLINK)
+  // TODO(crbug.com/40254930): Call the ContentJavascriptFeatureManager instead.
+  return false;
+#else
   JavaScriptFeatureManager* feature_manager =
       JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
   DCHECK(feature_manager);
@@ -334,6 +351,7 @@ bool JavaScriptFeature::ExecuteJavaScript(
 
   return web_frame->GetWebFrameInternal()->ExecuteJavaScriptInContentWorld(
       script, content_world, std::move(callback));
+#endif
 }
 
 }  // namespace web

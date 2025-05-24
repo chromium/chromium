@@ -7,10 +7,17 @@
     <meta name=variant content="?mimeType=video/webm;codecs=vp8,opus">
     <meta name=variant content="?mimeType=video/webm;codecs=vp9,opus">
     <meta name=variant content="?mimeType=video/webm;codecs=av1,opus">
-    <meta name=variant content="?mimeType=video/mp4;codecs=avc1,mp4a.40.2">
+    <meta name=variant content="?mimeType=video/mp4;codecs=avc1.64003E,mp4a.40.2">
+    <meta name=variant content="?mimeType=video/mp4;codecs=avc3.64003E,mp4a.40.2">
     <meta name=variant content="?mimeType=video/mp4;codecs=vp9,opus">
     <meta name=variant content="?mimeType=video/mp4;codecs=av01,opus">
     <meta name=variant content="?mimeType=video/mp4;codecs=av01,mp4a.40.2">
+    <meta name=variant content="?mimeType=video/mp4;codecs=hvc1.1.6.L186.B0,opus">
+    <meta name=variant content="?mimeType=video/mp4;codecs=hev1.1.6.L186.B0,opus">
+    <meta name=variant content="?mimeType=video/mp4;codecs=hvc1.1.6.L186.B0,mp4a.40.2">
+    <meta name=variant content="?mimeType=video/mp4;codecs=hev1.1.6.L186.B0,mp4a.40.2">
+    <meta name=variant content="?mimeType=video/x-matroska;codecs=hvc1.1.6.L186.B0,opus">
+    <meta name=variant content="?mimeType=video/x-matroska;codecs=hev1.1.6.L186.B0,opus">
     <meta name=variant content="?mimeType=video/mp4">
     <link rel="help" href="https://w3c.github.io/mediacapture-record/MediaRecorder.html#mediarecorder">
     <script src="/resources/testharness.js"></script>
@@ -71,7 +78,7 @@
       recorder.pause();
     });
 
-    const {stream, control} = createVideoStream(test);
+    const { stream } = createFlowingVideoStream(test);
     assert_equals(stream.getAudioTracks().length, 0);
     assert_equals(stream.getVideoTracks().length, 1);
     assert_equals(stream.getVideoTracks()[0].readyState, 'live');
@@ -109,8 +116,6 @@
                       "recorder should throw() when starting with inactive stream");
 
     recorder.stream.addTrack(stream.getTracks()[0]);
-
-    control.addVideoFrame();
 
     recorder.onstop = recorderOnUnexpectedEvent;
     recorder.onpause = recorderOnUnexpectedEvent;

@@ -56,16 +56,15 @@ ChromeExtensionsClient::ChromeExtensionsClient() {
   AddAPIProvider(std::make_unique<CoreExtensionsAPIProvider>());
 }
 
-ChromeExtensionsClient::~ChromeExtensionsClient() {
-}
+ChromeExtensionsClient::~ChromeExtensionsClient() = default;
 
 void ChromeExtensionsClient::Initialize() {
   // Set up the scripting allowlist.
   // Allowlist ChromeVox, an accessibility extension from Google that needs
   // the ability to script webui pages. This is temporary and is not
   // meant to be a general solution.
-  // TODO(dmazzoni): remove this once we have an extension API that
-  // allows any extension to request read-only access to webui pages.
+  // TODO(crbug.com/412291638): Remove this once an extension API can allow any
+  // extension to request read-only access to WebUI pages.
   scripting_allowlist_.push_back(extension_misc::kChromeVoxExtensionId);
   InitializeWebStoreUrls(base::CommandLine::ForCurrentProcess());
 }

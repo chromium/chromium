@@ -27,6 +27,27 @@ class FileIOClient;
 
 namespace media {
 
+// Some of these fields are optional because the CDM can choose to not report
+// some fields and report others. These fields will then be left as unset when
+// reported via UKM, and are treated differently than if the field was reported
+// as the default value, e.g 0.
+struct MEDIA_EXPORT CdmMetricsData {
+  std::optional<uint64_t> license_sdk_version;
+  uint64_t number_of_update_calls = 0;
+  uint64_t number_of_on_message_events = 0;
+  std::optional<uint64_t> certificate_serial_number;
+  std::optional<uint64_t> decoder_bypass_block_count;
+  uint64_t video_frames_processed = 0;
+
+  url::Origin cdm_origin;
+
+  bool IsCdmValueSet() {
+    return (license_sdk_version.has_value() ||
+            certificate_serial_number.has_value() ||
+            decoder_bypass_block_count.has_value());
+  }
+};
+
 // Provides a wrapper on the auxiliary functions (CdmAllocator, CdmFileIO,
 // OutputProtection, CdmDocumentService) needed by the library CDM. The
 // default implementation does nothing -- it simply returns nullptr, false, 0,
@@ -53,6 +74,10 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
   // Gets the origin of the frame associated with the CDM, which could be empty
   // if the origin is unavailable or if error happened.
   virtual url::Origin GetCdmOrigin();
+
+  // Records a UKM for the following metrics from the CDM. This is called on the
+  // destruction of a CDM instance in cdm_adapter.cc.
+  virtual void RecordUkm(const CdmMetricsData& cdm_metrics_data);
 
   // CdmAllocator implementation.
   cdm::Buffer* CreateCdmBuffer(size_t capacity) override;

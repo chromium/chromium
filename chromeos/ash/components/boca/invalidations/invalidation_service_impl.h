@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/common/api_error_codes.h"
+#include "net/base/backoff_entry.h"
 
 namespace instance_id {
 class InstanceIDDriver;
@@ -34,7 +35,8 @@ class InvalidationServiceImpl : public InvalidationsListener,
                           instance_id::InstanceIDDriver* instance_id_driver,
                           AccountId account_id,
                           BocaSessionManager* boca_session_manager_,
-                          SessionClientImpl* session_client_impl_);
+                          SessionClientImpl* session_client_impl_,
+                          std::string base_url);
   ~InvalidationServiceImpl() override;
 
   // InvalidationsListener implementation.
@@ -43,12 +45,19 @@ class InvalidationServiceImpl : public InvalidationsListener,
   // FCMRegistrationTokenObserver implementation.
   void OnFCMRegistrationTokenChanged() override;
 
+  void UploadToken();
   void OnTokenUploaded(base::expected<bool, google_apis::ApiErrorCode> result);
+
+  virtual void ShutDown();
 
   FCMHandler* fcm_handler() { return fcm_handler_.get(); }
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  const std::string school_tools_base_url_;
+  net::BackoffEntry upload_retry_backoff_;
+  base::OneShotTimer token_refresh_timer_;
   std::unique_ptr<FCMHandler> fcm_handler_;
   AccountId account_id_;
   raw_ptr<BocaSessionManager> boca_session_manager_;

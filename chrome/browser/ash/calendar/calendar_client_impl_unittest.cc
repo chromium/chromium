@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -111,7 +111,7 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarApp) {
 
   std::vector<apps::AppPtr> app_deltas;
   app_deltas.push_back(apps::AppPublisher::MakeApp(
-      apps::AppType::kWeb, web_app::kGoogleCalendarAppId,
+      apps::AppType::kWeb, ash::kGoogleCalendarAppId,
       apps::Readiness::kDisabledByPolicy, "Calendar",
       apps::InstallReason::kUser, apps::InstallSource::kBrowser));
   apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(

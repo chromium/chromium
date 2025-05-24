@@ -11,22 +11,28 @@
           "GenAiDefaultSettings": 0
         },
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
-            "value": 0
-          },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
-            "value": 0
-          },
-          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
-            "value": 0
-          },
           "devtools.gen_ai_settings": {
+            "value": 0
+          },
+          "omnibox.ai_mode_search_suggest_settings": {
+            "value": 0
+          },
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 0
+          },
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 0
           },
           "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
             "value": 0
           },
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+            "value": 0
+          },
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
+            "value": 0
+          },
+          "browser.gemini_settings": {
             "value": 0
           }
         }
@@ -36,16 +42,16 @@
           "GenAiDefaultSettings": 1
         },
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
-            "value": 1
-          },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
-            "value": 1
-          },
-          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
-            "value": 1
-          },
           "devtools.gen_ai_settings": {
+            "value": 1
+          },
+          "omnibox.ai_mode_search_suggest_settings": {
+            "value": 0
+          },
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 1
+          },
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 1
           },
           "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
@@ -53,6 +59,12 @@
           },
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
             "value": 1
+          },
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
+            "value": 1
+          },
+          "browser.gemini_settings": {
+            "value": 0
           }
         }
       },
@@ -61,16 +73,16 @@
           "GenAiDefaultSettings": 2
         },
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
-            "value": 2
-          },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
-            "value": 2
-          },
-          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
-            "value": 2
-          },
           "devtools.gen_ai_settings": {
+            "value": 2
+          },
+          "omnibox.ai_mode_search_suggest_settings": {
+            "value": 1
+          },
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 2
+          },
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 2
           },
           "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
@@ -78,28 +90,40 @@
           },
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
             "value": 2
+          },
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
+            "value": 2
+          },
+          "browser.gemini_settings": {
+            "value": 1
           }
         }
       },
       {
         "policies": {},
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
-            "default_value": 0
-          },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
-            "default_value": 0
-          },
-          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
-            "default_value": 0
-          },
           "devtools.gen_ai_settings": {
+            "default_value": 0
+          },
+          "omnibox.ai_mode_search_suggest_settings": {
+            "default_value": 0
+          },
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "default_value": 0
+          },
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "default_value": 0
           },
           "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
             "default_value": 0
           },
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+            "default_value": 0
+          },
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
+            "default_value": 0
+          },
+          "browser.gemini_settings": {
             "default_value": 0
           }
         }
@@ -107,24 +131,22 @@
       {
         "policies": {
           "GenAiDefaultSettings": 1,
-          "HelpMeWriteSettings": 2,
-          "TabOrganizerSettings": 2,
+          "AutofillPredictionSettings": 2,
           "CreateThemesSettings": 2,
           "DevToolsGenAiSettings": 2,
+          "HelpMeWriteSettings": 2,
           "HistorySearchSettings": 2,
-          "TabCompareSettings": 2
+          "TabCompareSettings": 2,
+          "GeminiSettings": 1
         },
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
-            "value": 2
-          },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
-            "value": 2
-          },
-          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
-            "value": 2
-          },
           "devtools.gen_ai_settings": {
+            "value": 2
+          },
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 2
+          },
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
             "value": 2
           },
           "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
@@ -132,6 +154,12 @@
           },
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
             "value": 2
+          },
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
+            "value": 2
+          },
+          "browser.gemini_settings": {
+            "value": 1
           }
         }
       }
@@ -139,8 +167,7 @@
   },
   {
     "os": [
-      "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -148,22 +175,13 @@
           "GenAiDefaultSettings": 0
         },
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+          "ash.gen_ai_photo_editing_settings": {
             "value": 0
           },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
+          "ash.gen_ai_smart_grouping_settings": {
             "value": 0
           },
-          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
-            "value": 0
-          },
-          "devtools.gen_ai_settings": {
-            "value": 0
-          },
-          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
-            "value": 0
-          },
-          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+          "ash.scanner.enterprise_policy_allowed": {
             "value": 0
           },
           "ash.personalization_app.gen_ai_wallpaper_enterprise_policy_settings": {
@@ -172,7 +190,37 @@
           "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
             "value": 0
           },
+          "devtools.gen_ai_settings": {
+            "value": 0
+          },
+          "omnibox.ai_mode_search_suggest_settings": {
+            "value": 0
+          },
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 0
+          },
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+            "value": 0
+          },
+          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
+            "value": 0
+          },
+          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+            "value": 0
+          },
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
+            "value": 0
+          },
           "settings.managed.help_me_read": {
+            "value": 0
+          },
+          "settings.managed.help_me_write": {
+            "value": 0
+          },
+          "settings.lobster.enterprise_settings": {
+            "value": 0
+          },
+          "browser.gemini_settings": {
             "value": 0
           }
         }
@@ -180,22 +228,13 @@
       {
         "policies": {},
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+          "ash.gen_ai_photo_editing_settings": {
             "value": 1
           },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
+          "ash.gen_ai_smart_grouping_settings": {
             "value": 1
           },
-          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
-            "value": 1
-          },
-          "devtools.gen_ai_settings": {
-            "value": 1
-          },
-          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
-            "value": 1
-          },
-          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+          "ash.scanner.enterprise_policy_allowed": {
             "value": 1
           },
           "ash.personalization_app.gen_ai_wallpaper_enterprise_policy_settings": {
@@ -204,41 +243,64 @@
           "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
             "value": 1
           },
+          "devtools.gen_ai_settings": {
+            "value": 1
+          },
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 1
+          },
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+            "value": 1
+          },
+          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
+            "value": 1
+          },
+          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+            "value": 1
+          },
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
+            "value": 1
+          },
           "settings.managed.help_me_read": {
             "value": 1
+          },
+          "settings.managed.help_me_write": {
+            "value": 1
+          },
+          "settings.lobster.enterprise_settings": {
+            "value": 1
+          },
+          "browser.gemini_settings": {
+            "value": 0
           }
         }
       },
       {
         "policies": {
           "GenAiDefaultSettings": 0,
-          "HelpMeWriteSettings": 2,
-          "TabOrganizerSettings": 2,
+          "AutofillPredictionSettings": 2,
           "CreateThemesSettings": 2,
           "DevToolsGenAiSettings": 2,
+          "GenAiChromeOsSmartActionsSettings": 2,
+          "GenAIInlineImageSettings": 2,
+          "GenAIPhotoEditingSettings": 2,
+          "GenAISmartGroupingSettings": 2,
+          "GenAIVcBackgroundSettings": 2,
+          "GenAIWallpaperSettings": 2,
+          "HelpMeReadSettings": 2,
+          "HelpMeWriteSettings": 2,
           "HistorySearchSettings": 2,
           "TabCompareSettings": 2,
-          "GenAIWallpaperSettings": 2,
-          "GenAIVcBackgroundSettings": 2,
-          "HelpMeReadSettings": 2
+          "GeminiSettings": 1
         },
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+          "ash.gen_ai_photo_editing_settings": {
             "value": 2
           },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
+          "ash.gen_ai_smart_grouping_settings": {
             "value": 2
           },
-          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
-            "value": 2
-          },
-          "devtools.gen_ai_settings": {
-            "value": 2
-          },
-          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
-            "value": 2
-          },
-          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+          "ash.scanner.enterprise_policy_allowed": {
             "value": 2
           },
           "ash.personalization_app.gen_ai_wallpaper_enterprise_policy_settings": {
@@ -247,8 +309,35 @@
           "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
             "value": 2
           },
+          "devtools.gen_ai_settings": {
+            "value": 2
+          },
+          "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
+            "value": 2
+          },
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+            "value": 2
+          },
+          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
+            "value": 2
+          },
+          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+            "value": 2
+          },
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
+            "value": 2
+          },
           "settings.managed.help_me_read": {
             "value": 2
+          },
+          "settings.managed.help_me_write": {
+            "value": 2
+          },
+          "settings.lobster.enterprise_settings": {
+            "value": 2
+          },
+          "browser.gemini_settings": {
+            "value": 1
           }
         }
       }
@@ -258,6 +347,45 @@
     "os": [
       "android"
     ],
-    "reason_for_missing_test": "No covered GenAI policies are currently supported on Android."
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GenAiDefaultSettings": 0
+        },
+        "prefs": {
+          "omnibox.ai_mode_search_suggest_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 1
+        },
+        "prefs": {
+          "omnibox.ai_mode_search_suggest_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 2
+        },
+        "prefs": {
+          "omnibox.ai_mode_search_suggest_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "omnibox.ai_mode_search_suggest_settings": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
   }
 ]

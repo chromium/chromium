@@ -23,7 +23,8 @@ class MallPageHandler : public mall::mojom::PageHandler {
   MallPageHandler& operator=(const MallPageHandler&) = delete;
   ~MallPageHandler() override;
 
-  void GetMallEmbedUrl(GetMallEmbedUrlCallback callback) override;
+  void GetMallEmbedUrl(const std::string& path,
+                       GetMallEmbedUrlCallback callback) override;
 
  private:
   mojo::Receiver<mall::mojom::PageHandler> receiver_;

@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/trace_event/trace_id_helper.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
@@ -15,7 +16,9 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
@@ -24,6 +27,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_picture_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_animation_agent.h"
@@ -39,10 +44,12 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -107,6 +114,13 @@ String ToHexString(const void* p) {
   return String::Format("0x%" PRIx64,
                         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(p)));
 }
+uint64_t InspectorTraceEvents::GetNextSampleTraceId() {
+  uint64_t sample_trace_id = base::trace_event::GetNextGlobalTraceId();
+  // Bit mask the 64-bit sample trace id to 53 bits to allow it to be
+  // used in JavaScript trace clients (e.g. DevTools).
+  uint64_t mask = ((1ULL << 53) - 1);
+  return sample_trace_id & mask;
+}
 
 void SetCallStack(v8::Isolate* isolate, perfetto::TracedDictionary& dict) {
   static const unsigned char* trace_category_enabled = nullptr;
@@ -121,9 +135,11 @@ void SetCallStack(v8::Isolate* isolate, perfetto::TracedDictionary& dict) {
   // So we collect the top frame with  CaptureSourceLocation() to
   // get the binding call site info.
   auto source_location = CaptureSourceLocation();
+  uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
+  dict.Add("sampleTraceId", sample_trace_id);
   if (source_location->HasStackTrace())
     dict.Add("stackTrace", source_location);
-  v8::CpuProfiler::CollectSample(isolate);
+  v8::CpuProfiler::CollectSample(isolate, sample_trace_id);
 }
 
 void InspectorTraceEvents::WillSendRequest(
@@ -278,165 +294,9 @@ void InspectorTraceEvents::FrameStartedLoading(LocalFrame* frame) {
 
 namespace {
 
-void SetNodeInfo(perfetto::TracedDictionary& dict,
-                 Node* node,
-                 perfetto::StaticString id_field_name,
-                 perfetto::StaticString name_field_name = nullptr) {
-  dict.Add(id_field_name, IdentifiersFactory::IntIdForNode(node));
-  if (name_field_name.value)
-    dict.Add(name_field_name, node->DebugName());
-}
-
-const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
-  switch (pseudo_type) {
-#define DEFINE_STRING_MAPPING(pseudoType) \
-  case CSSSelector::k##pseudoType:        \
-    return #pseudoType;
-    DEFINE_STRING_MAPPING(PseudoActiveViewTransition)
-    DEFINE_STRING_MAPPING(PseudoActiveViewTransitionType)
-    DEFINE_STRING_MAPPING(PseudoUnknown)
-    DEFINE_STRING_MAPPING(PseudoEmpty)
-    DEFINE_STRING_MAPPING(PseudoFirstChild)
-    DEFINE_STRING_MAPPING(PseudoFirstOfType)
-    DEFINE_STRING_MAPPING(PseudoLastChild)
-    DEFINE_STRING_MAPPING(PseudoLastOfType)
-    DEFINE_STRING_MAPPING(PseudoOnlyChild)
-    DEFINE_STRING_MAPPING(PseudoOnlyOfType)
-    DEFINE_STRING_MAPPING(PseudoFirstLine)
-    DEFINE_STRING_MAPPING(PseudoFirstLetter)
-    DEFINE_STRING_MAPPING(PseudoNthChild)
-    DEFINE_STRING_MAPPING(PseudoNthOfType)
-    DEFINE_STRING_MAPPING(PseudoNthLastChild)
-    DEFINE_STRING_MAPPING(PseudoNthLastOfType)
-    DEFINE_STRING_MAPPING(PseudoPart)
-    DEFINE_STRING_MAPPING(PseudoState)
-    DEFINE_STRING_MAPPING(PseudoStateDeprecatedSyntax)
-    DEFINE_STRING_MAPPING(PseudoLink)
-    DEFINE_STRING_MAPPING(PseudoVisited)
-    DEFINE_STRING_MAPPING(PseudoAny)
-    DEFINE_STRING_MAPPING(PseudoIs)
-    DEFINE_STRING_MAPPING(PseudoWhere)
-    DEFINE_STRING_MAPPING(PseudoWebkitAnyLink)
-    DEFINE_STRING_MAPPING(PseudoAnyLink)
-    DEFINE_STRING_MAPPING(PseudoAutofill)
-    DEFINE_STRING_MAPPING(PseudoWebKitAutofill)
-    DEFINE_STRING_MAPPING(PseudoAutofillPreviewed)
-    DEFINE_STRING_MAPPING(PseudoAutofillSelected)
-    DEFINE_STRING_MAPPING(PseudoHover)
-    DEFINE_STRING_MAPPING(PseudoDrag)
-    DEFINE_STRING_MAPPING(PseudoFocus)
-    DEFINE_STRING_MAPPING(PseudoFocusVisible)
-    DEFINE_STRING_MAPPING(PseudoFocusWithin)
-    DEFINE_STRING_MAPPING(PseudoActive)
-    DEFINE_STRING_MAPPING(PseudoChecked)
-    DEFINE_STRING_MAPPING(PseudoCurrent)
-    DEFINE_STRING_MAPPING(PseudoEnabled)
-    DEFINE_STRING_MAPPING(PseudoFullPageMedia)
-    DEFINE_STRING_MAPPING(PseudoDefault)
-    DEFINE_STRING_MAPPING(PseudoDir)
-    DEFINE_STRING_MAPPING(PseudoDisabled)
-    DEFINE_STRING_MAPPING(PseudoOptional)
-    DEFINE_STRING_MAPPING(PseudoPlaceholderShown)
-    DEFINE_STRING_MAPPING(PseudoRequired)
-    DEFINE_STRING_MAPPING(PseudoReadOnly)
-    DEFINE_STRING_MAPPING(PseudoReadWrite)
-    DEFINE_STRING_MAPPING(PseudoUserInvalid)
-    DEFINE_STRING_MAPPING(PseudoUserValid)
-    DEFINE_STRING_MAPPING(PseudoValid)
-    DEFINE_STRING_MAPPING(PseudoInvalid)
-    DEFINE_STRING_MAPPING(PseudoIndeterminate)
-    DEFINE_STRING_MAPPING(PseudoTarget)
-    DEFINE_STRING_MAPPING(PseudoBefore)
-    DEFINE_STRING_MAPPING(PseudoAfter)
-    DEFINE_STRING_MAPPING(PseudoMarker)
-    DEFINE_STRING_MAPPING(PseudoBackdrop)
-    DEFINE_STRING_MAPPING(PseudoLang)
-    DEFINE_STRING_MAPPING(PseudoNot)
-    DEFINE_STRING_MAPPING(PseudoPlaceholder)
-    DEFINE_STRING_MAPPING(PseudoFileSelectorButton)
-    DEFINE_STRING_MAPPING(PseudoResizer)
-    DEFINE_STRING_MAPPING(PseudoRoot)
-    DEFINE_STRING_MAPPING(PseudoScope)
-    DEFINE_STRING_MAPPING(PseudoScrollbar)
-    DEFINE_STRING_MAPPING(PseudoScrollbarButton)
-    DEFINE_STRING_MAPPING(PseudoScrollbarCorner)
-    DEFINE_STRING_MAPPING(PseudoScrollbarThumb)
-    DEFINE_STRING_MAPPING(PseudoScrollbarTrack)
-    DEFINE_STRING_MAPPING(PseudoScrollbarTrackPiece)
-    DEFINE_STRING_MAPPING(PseudoScrollMarker)
-    DEFINE_STRING_MAPPING(PseudoScrollMarkerGroup)
-    DEFINE_STRING_MAPPING(PseudoScrollNextButton)
-    DEFINE_STRING_MAPPING(PseudoScrollPrevButton)
-    DEFINE_STRING_MAPPING(PseudoColumn)
-    DEFINE_STRING_MAPPING(PseudoWindowInactive)
-    DEFINE_STRING_MAPPING(PseudoCornerPresent)
-    DEFINE_STRING_MAPPING(PseudoDecrement)
-    DEFINE_STRING_MAPPING(PseudoIncrement)
-    DEFINE_STRING_MAPPING(PseudoHorizontal)
-    DEFINE_STRING_MAPPING(PseudoVertical)
-    DEFINE_STRING_MAPPING(PseudoStart)
-    DEFINE_STRING_MAPPING(PseudoEnd)
-    DEFINE_STRING_MAPPING(PseudoDoubleButton)
-    DEFINE_STRING_MAPPING(PseudoSingleButton)
-    DEFINE_STRING_MAPPING(PseudoNoButton)
-    DEFINE_STRING_MAPPING(PseudoSelection)
-    DEFINE_STRING_MAPPING(PseudoLeftPage)
-    DEFINE_STRING_MAPPING(PseudoRightPage)
-    DEFINE_STRING_MAPPING(PseudoFirstPage)
-    DEFINE_STRING_MAPPING(PseudoFullScreen)
-    DEFINE_STRING_MAPPING(PseudoFullScreenAncestor)
-    DEFINE_STRING_MAPPING(PseudoFullscreen)
-    DEFINE_STRING_MAPPING(PseudoPaused)
-    DEFINE_STRING_MAPPING(PseudoPermissionGranted)
-    DEFINE_STRING_MAPPING(PseudoPictureInPicture)
-    DEFINE_STRING_MAPPING(PseudoPlaying)
-    DEFINE_STRING_MAPPING(PseudoInRange)
-    DEFINE_STRING_MAPPING(PseudoOutOfRange)
-    DEFINE_STRING_MAPPING(PseudoTrue)
-    DEFINE_STRING_MAPPING(PseudoWebKitCustomElement)
-    DEFINE_STRING_MAPPING(PseudoBlinkInternalElement)
-    DEFINE_STRING_MAPPING(PseudoCue)
-    DEFINE_STRING_MAPPING(PseudoFutureCue)
-    DEFINE_STRING_MAPPING(PseudoPastCue)
-    DEFINE_STRING_MAPPING(PseudoDefined)
-    DEFINE_STRING_MAPPING(PseudoHost)
-    DEFINE_STRING_MAPPING(PseudoHostContext)
-    DEFINE_STRING_MAPPING(PseudoSlotted)
-    DEFINE_STRING_MAPPING(PseudoSpatialNavigationFocus)
-    DEFINE_STRING_MAPPING(PseudoHasDatalist)
-    DEFINE_STRING_MAPPING(PseudoIsHtml)
-    DEFINE_STRING_MAPPING(PseudoListBox)
-    DEFINE_STRING_MAPPING(PseudoMultiSelectFocus)
-    DEFINE_STRING_MAPPING(PseudoOpen)
-    DEFINE_STRING_MAPPING(PseudoClosed)
-    DEFINE_STRING_MAPPING(PseudoSelectHasChildButton)
-    DEFINE_STRING_MAPPING(PseudoPicker)
-    DEFINE_STRING_MAPPING(PseudoDialogInTopLayer)
-    DEFINE_STRING_MAPPING(PseudoPopoverInTopLayer)
-    DEFINE_STRING_MAPPING(PseudoPopoverOpen)
-    DEFINE_STRING_MAPPING(PseudoHostHasNonAutoAppearance)
-    DEFINE_STRING_MAPPING(PseudoVideoPersistent)
-    DEFINE_STRING_MAPPING(PseudoVideoPersistentAncestor)
-    DEFINE_STRING_MAPPING(PseudoXrOverlay)
-    DEFINE_STRING_MAPPING(PseudoSearchText)
-    DEFINE_STRING_MAPPING(PseudoTargetText)
-    DEFINE_STRING_MAPPING(PseudoSelectorFragmentAnchor)
-    DEFINE_STRING_MAPPING(PseudoModal)
-    DEFINE_STRING_MAPPING(PseudoHighlight)
-    DEFINE_STRING_MAPPING(PseudoSpellingError)
-    DEFINE_STRING_MAPPING(PseudoGrammarError)
-    DEFINE_STRING_MAPPING(PseudoHas)
-    DEFINE_STRING_MAPPING(PseudoRelativeAnchor)
-    DEFINE_STRING_MAPPING(PseudoViewTransition)
-    DEFINE_STRING_MAPPING(PseudoViewTransitionGroup);
-    DEFINE_STRING_MAPPING(PseudoViewTransitionImagePair);
-    DEFINE_STRING_MAPPING(PseudoViewTransitionNew);
-    DEFINE_STRING_MAPPING(PseudoViewTransitionOld);
-    DEFINE_STRING_MAPPING(PseudoDetailsContent)
-    DEFINE_STRING_MAPPING(PseudoParent);
-    DEFINE_STRING_MAPPING(PseudoUnparsed)
-#undef DEFINE_STRING_MAPPING
-  }
+void SetNodeInfo(perfetto::TracedDictionary& dict, Node* node) {
+  dict.Add("nodeId", IdentifiersFactory::IntIdForNode(node));
+  dict.Add("nodeName", node->DebugName());
 }
 
 String UrlForFrame(LocalFrame* frame) {
@@ -517,7 +377,7 @@ void FillCommonPart(perfetto::TracedDictionary& dict,
                     const InvalidationSet& invalidation_set,
                     const char* invalidated_selector) {
   dict.Add("frame", IdentifiersFactory::FrameId(node.GetDocument().GetFrame()));
-  SetNodeInfo(dict, &node, "nodeId", "nodeName");
+  SetNodeInfo(dict, &node);
   dict.Add("invalidationSet",
            DescendantInvalidationSetToIdString(invalidation_set));
   dict.Add("invalidatedSelectorId", invalidated_selector);
@@ -602,8 +462,9 @@ void inspector_schedule_style_invalidation_tracking_event::PseudoChange(
     const InvalidationSet& invalidation_set,
     CSSSelector::PseudoType pseudo_type) {
   auto dict = std::move(context).WriteDictionary();
-  FillCommonPart(dict, element, invalidation_set, kAttribute);
-  dict.Add("changedPseudo", PseudoTypeToString(pseudo_type));
+  FillCommonPart(dict, element, invalidation_set, kPseudo);
+  dict.Add("changedPseudo",
+           CSSSelector::FormatPseudoTypeForDebugging(pseudo_type));
 }
 
 String DescendantInvalidationSetToIdString(const InvalidationSet& set) {
@@ -632,17 +493,21 @@ const char inspector_style_invalidator_invalidate_event::
     kInvalidationSetMatchedTagName[] = "Invalidation set matched tagName";
 const char inspector_style_invalidator_invalidate_event::
     kInvalidationSetMatchedPart[] = "Invalidation set matched part";
+const char inspector_style_invalidator_invalidate_event::
+    kInvalidationSetInvalidatesTreeCounting[] =
+        "Invalidation set invalidates tree-counting";
 
 namespace inspector_style_invalidator_invalidate_event {
 void FillCommonPart(perfetto::TracedDictionary& dict,
                     ContainerNode& node,
                     const char* reason) {
   dict.Add("frame", IdentifiersFactory::FrameId(node.GetDocument().GetFrame()));
-  SetNodeInfo(dict, &node, "nodeId", "nodeName");
+  SetNodeInfo(dict, &node);
   dict.Add("reason", reason);
 }
 void FillSelectors(
     perfetto::TracedDictionary& dict,
+    Element& element,
     const InvalidationSet& invalidation_set,
     InvalidationSetToSelectorMap::SelectorFeatureType feature_type,
     const AtomicString& feature_value) {
@@ -653,7 +518,15 @@ void FillSelectors(
     dict.Add("selectorCount", selectors->size());
     auto array = dict.AddArray("selectors");
     for (auto selector : *selectors) {
-      array.Append(selector->GetSelectorText());
+      auto selector_dict = array.AppendDictionary();
+      selector_dict.Add("selector", selector->GetSelectorText());
+      const StyleSheetContents* contents = selector->GetStyleSheetContents();
+      const CSSStyleSheet* style_sheet =
+          (contents != nullptr)
+              ? contents->ClientInTreeScope(element.GetTreeScope())
+              : nullptr;
+      selector_dict.Add("style_sheet_id",
+                        IdentifiersFactory::IdForCSSStyleSheet(style_sheet));
     }
   }
 }
@@ -692,7 +565,7 @@ void inspector_style_invalidator_invalidate_event::SelectorPart(
   }
   if (feature_type !=
       InvalidationSetToSelectorMap::SelectorFeatureType::kUnknown) {
-    FillSelectors(dict, invalidation_set, feature_type, selector_part);
+    FillSelectors(dict, element, invalidation_set, feature_type, selector_part);
   }
 
   {
@@ -721,13 +594,25 @@ void inspector_style_recalc_invalidation_tracking_event::Data(
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame",
            IdentifiersFactory::FrameId(node->GetDocument().GetFrame()));
-  SetNodeInfo(dict, node, "nodeId", "nodeName");
+  SetNodeInfo(dict, node);
   dict.Add("subtree", change_type == kSubtreeStyleChange);
   dict.Add("reason", reason.ReasonString());
   dict.Add("extraData", reason.GetExtraData());
   auto source_location = CaptureSourceLocation();
   if (source_location->HasStackTrace())
     dict.Add("stackTrace", source_location);
+}
+
+void inspector_style_resolver_resolve_style_event::Data(
+    perfetto::TracedValue context,
+    Element* element,
+    PseudoId pseudo_id) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("nodeId", IdentifiersFactory::IntIdForNode(element));
+  Element* parent = element->parentElement();
+  dict.Add("parentNodeId",
+           parent != nullptr ? IdentifiersFactory::IntIdForNode(parent) : 0);
+  dict.Add("pseudoId", pseudo_id);
 }
 
 void inspector_layout_event::BeginData(perfetto::TracedValue context,
@@ -759,24 +644,21 @@ static void CreateQuad(perfetto::TracedValue context, const gfx::QuadF& quad) {
   array.Append(quad.p4().y());
 }
 
-static void SetGeneratingNodeInfo(
-    perfetto::TracedDictionary& dict,
-    const LayoutObject* layout_object,
-    perfetto::StaticString id_field_name,
-    perfetto::StaticString name_field_name = nullptr) {
+static void SetGeneratingNodeInfo(perfetto::TracedDictionary& dict,
+                                  const LayoutObject* layout_object) {
   Node* node = nullptr;
   for (; layout_object && !node; layout_object = layout_object->Parent())
     node = layout_object->GeneratingNode();
   if (!node)
     return;
 
-  SetNodeInfo(dict, node, id_field_name, name_field_name);
+  SetNodeInfo(dict, node);
 }
 
 static void CreateLayoutRoot(perfetto::TracedValue context,
                              const LayoutObjectWithDepth& layout_root) {
   auto dict = std::move(context).WriteDictionary();
-  SetGeneratingNodeInfo(dict, layout_root.object, "nodeId");
+  SetGeneratingNodeInfo(dict, layout_root.object);
   dict.Add("depth", static_cast<int>(layout_root.depth));
   Vector<gfx::QuadF> quads;
   layout_root.object->AbsoluteQuads(quads);
@@ -853,6 +735,8 @@ const char kScrollbarChanged[] = "Scrollbar changed";
 const char kDisplayLock[] = "Display lock";
 const char kDevtools[] = "Inspected by devtools";
 const char kAnchorPositioning[] = "Anchor positioning";
+const char kScrollMarkersChanged[] = "::scroll-markers changed";
+const char kOutOfFlowAlignmentChanged[] = "Out-of-flow alignment changed";
 }  // namespace layout_invalidation_reason
 
 void inspector_layout_invalidation_tracking_event::Data(
@@ -862,7 +746,7 @@ void inspector_layout_invalidation_tracking_event::Data(
   DCHECK(layout_object);
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(layout_object->GetFrame()));
-  SetGeneratingNodeInfo(dict, layout_object, "nodeId", "nodeName");
+  SetGeneratingNodeInfo(dict, layout_object);
   dict.Add("reason", reason);
   auto source_location = CaptureSourceLocation();
   if (source_location->HasStackTrace())
@@ -1250,13 +1134,12 @@ void inspector_xhr_load_event::Data(perfetto::TracedValue trace_context,
 void inspector_paint_event::Data(perfetto::TracedValue context,
                                  LocalFrame* frame,
                                  const LayoutObject* layout_object,
-                                 const gfx::QuadF& quad,
-                                 int layer_id) {
+                                 const gfx::Rect& contents_cull_rect) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
-  CreateQuad(dict.AddItem("clip"), quad);
-  SetGeneratingNodeInfo(dict, layout_object, "nodeId");
-  dict.Add("layerId", layer_id);
+  CreateQuad(dict.AddItem("clip"), gfx::QuadF(gfx::RectF(contents_cull_rect)));
+  SetGeneratingNodeInfo(dict, layout_object);
+  dict.Add("layerId", 0);  // For backward compatibility.
   SetCallStack(frame->DomWindow()->GetIsolate(), dict);
 }
 
@@ -1316,7 +1199,7 @@ void inspector_scroll_layer_event::Data(perfetto::TracedValue context,
                                         LayoutObject* layout_object) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(layout_object->GetFrame()));
-  SetGeneratingNodeInfo(dict, layout_object, "nodeId");
+  SetGeneratingNodeInfo(dict, layout_object);
 }
 
 namespace {
@@ -1345,6 +1228,10 @@ void inspector_target_rundown_event::Data(perfetto::TracedValue context,
                                           v8::Isolate* isolate,
                                           ScriptState* scriptState,
                                           int scriptId) {
+  if (scriptId == v8::UnboundScript::kNoScriptId) {
+    return;
+  }
+
   // Target related info
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
   LocalFrame* frame = window ? window->GetFrame() : nullptr;
@@ -1359,7 +1246,11 @@ void inspector_target_rundown_event::Data(perfetto::TracedValue context,
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("frameType", frameType);
   dict.Add("url", window->Url().GetString());
-  dict.Add("isolate", base::NumberToString(reinterpret_cast<size_t>(isolate)));
+  ThreadDebugger* thread_debugger = ThreadDebugger::From(isolate);
+  DCHECK(thread_debugger);
+  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
+  DCHECK(inspector);
+  dict.Add("isolate", inspector->isolateId());
 
   // ExecutionContext related info
   DOMWrapperWorld& world = scriptState->World();
@@ -1474,12 +1365,19 @@ void inspector_function_call_event::Data(
     dict.Add("functionName", ToCoreString(context->GetIsolate(),
                                           function_name.As<v8::String>()));
   }
+  ThreadDebugger* thread_debugger = ThreadDebugger::From(context->GetIsolate());
+  DCHECK(thread_debugger);
+  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
+  DCHECK(inspector);
+  dict.Add("isolate", inspector->isolateId());
   std::unique_ptr<SourceLocation> location =
       CaptureSourceLocation(context->GetIsolate(), original_function);
   dict.Add("scriptId", String::Number(location->ScriptId()));
   dict.Add("url", location->Url());
   dict.Add("lineNumber", location->LineNumber());
   dict.Add("columnNumber", location->ColumnNumber());
+  uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
+  dict.Add("sampleTraceId", sample_trace_id);
 }
 
 void inspector_paint_image_event::Data(perfetto::TracedValue context,
@@ -1487,7 +1385,7 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
                                        const gfx::RectF& src_rect,
                                        const gfx::RectF& dest_rect) {
   auto dict = std::move(context).WriteDictionary();
-  SetGeneratingNodeInfo(dict, &layout_image, "nodeId");
+  SetGeneratingNodeInfo(dict, &layout_image);
   if (const ImageResourceContent* content = layout_image.CachedImage())
     dict.Add("url", content->Url().ElidedString());
 
@@ -1497,13 +1395,27 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
   dict.Add("height", dest_rect.height());
   dict.Add("srcWidth", src_rect.width());
   dict.Add("srcHeight", src_rect.height());
+  dict.Add("isCSS", layout_image.IsGeneratedContent());
+
+  if (HTMLImageElement* imageElement =
+          DynamicTo<HTMLImageElement>(layout_image.GetNode())) {
+    dict.Add("loadingAttribute",
+             imageElement->getAttribute(html_names::kLoadingAttr));
+    dict.Add("srcsetAttribute",
+             imageElement->getAttribute(html_names::kSrcsetAttr));
+    dict.Add("isPicture", IsA<HTMLPictureElement>(imageElement->parentNode()));
+  }
+
+  if (LocalFrame* frame = layout_image.GetFrame()) {
+    dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  }
 }
 
 void inspector_paint_image_event::Data(perfetto::TracedValue context,
                                        const LayoutObject& owning_layout_object,
                                        const StyleImage& style_image) {
   auto dict = std::move(context).WriteDictionary();
-  SetGeneratingNodeInfo(dict, &owning_layout_object, "nodeId");
+  SetGeneratingNodeInfo(dict, &owning_layout_object);
   if (const ImageResourceContent* content = style_image.CachedImage())
     dict.Add("url", content->Url().ElidedString());
 }
@@ -1514,8 +1426,12 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
                                        const gfx::RectF& src_rect,
                                        const gfx::RectF& dest_rect) {
   auto dict = std::move(context).WriteDictionary();
-  if (node)
-    SetNodeInfo(dict, node, "nodeId", nullptr);
+  if (node) {
+    SetNodeInfo(dict, node);
+    if (LocalFrame* frame = node->GetDocument().GetFrame()) {
+      dict.Add("frame", IdentifiersFactory::FrameId(frame));
+    }
+  }
   if (const ImageResourceContent* content = style_image.CachedImage())
     dict.Add("url", content->Url().ElidedString());
 
@@ -1525,6 +1441,7 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
   dict.Add("height", dest_rect.height());
   dict.Add("srcWidth", src_rect.width());
   dict.Add("srcHeight", src_rect.height());
+  dict.Add("isCSS", true);
 }
 
 void inspector_paint_image_event::Data(
@@ -1532,7 +1449,7 @@ void inspector_paint_image_event::Data(
     const LayoutObject* owning_layout_object,
     const ImageResourceContent& image_content) {
   auto dict = std::move(context).WriteDictionary();
-  SetGeneratingNodeInfo(dict, owning_layout_object, "nodeId");
+  SetGeneratingNodeInfo(dict, owning_layout_object);
   dict.Add("url", image_content.Url().ElidedString());
 }
 
@@ -1593,9 +1510,7 @@ void inspector_event_dispatch_event::Data(perfetto::TracedValue context,
       dict.Add("key", keyboard_event->key());
     }
 
-    const auto* mouse_event = DynamicTo<MouseEvent>(event);
-    const auto* wheel_event = DynamicTo<WheelEvent>(event);
-    if (mouse_event || wheel_event) {
+    if (const auto* mouse_event = DynamicTo<MouseEvent>(event)) {
       dict.Add("x", mouse_event->x());
       dict.Add("y", mouse_event->y());
       dict.Add("modifier", GetModifierFromEvent(*mouse_event));
@@ -1605,10 +1520,11 @@ void inspector_event_dispatch_event::Data(perfetto::TracedValue context,
       dict.Add("button", mouse_event->button());
       dict.Add("buttons", mouse_event->buttons());
       dict.Add("clickCount", mouse_event->detail());
-      if (wheel_event) {
-        dict.Add("deltaX", wheel_event->deltaX());
-        dict.Add("deltaY", wheel_event->deltaY());
-      }
+    }
+
+    if (const auto* wheel_event = DynamicTo<WheelEvent>(event)) {
+      dict.Add("deltaX", wheel_event->deltaX());
+      dict.Add("deltaY", wheel_event->deltaY());
     }
   }
   SetCallStack(isolate, dict);
@@ -1616,11 +1532,45 @@ void inspector_event_dispatch_event::Data(perfetto::TracedValue context,
 
 void inspector_time_stamp_event::Data(perfetto::TracedValue trace_context,
                                       ExecutionContext* context,
-                                      const String& message) {
+                                      const String& message,
+                                      const v8::LocalVector<v8::Value>& args) {
   auto dict = std::move(trace_context).WriteDictionary();
   dict.Add("message", message);
-  if (LocalFrame* frame = FrameForExecutionContext(context))
-    dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  LocalFrame* frame = FrameForExecutionContext(context);
+  if (!frame) {
+    return;
+  }
+
+  auto* window = frame->DomWindow();
+  v8::Isolate* isolate = frame->DomWindow()->GetIsolate();
+  Performance* performance = DOMWindowPerformance::performance(*window);
+  uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
+  v8::CpuProfiler::CpuProfiler::CollectSample(isolate, sample_trace_id);
+  dict.Add("sampleTraceId", sample_trace_id);
+  dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  static constexpr std::array<const char*, 6> kNames = {
+      "name", "start", "end", "track", "trackGroup", "color"};
+  for (size_t i = 0; i < args.size() && i < std::size(kNames); ++i) {
+    auto name = kNames[i];
+    auto value = args[i];
+    if (value->IsNumber()) {
+      if (i == 1 || i == 2) {
+        // If the second or third parameter is a number, it's
+        // assumed to be a millisecond timestamp obtained with
+        // performance.now(), so we map it into the tracing clock.
+        dict.Add(perfetto::StaticString(name),
+                 performance->GetTimeOriginInternal() +
+                     base::Milliseconds(value.As<v8::Number>()->Value()));
+        continue;
+      }
+      dict.Add(perfetto::StaticString(name), value.As<v8::Number>()->Value());
+    } else if (value->IsString()) {
+      dict.Add(perfetto::StaticString(name),
+               ToCoreString(isolate, value.As<v8::String>()).Utf8());
+    } else {
+      dict.Add(perfetto::StaticString(name), "");
+    }
+  }
 }
 
 void inspector_tracing_session_id_for_worker_event::Data(
@@ -1663,18 +1613,91 @@ void inspector_set_layer_tree_id::Data(perfetto::TracedValue context,
            frame->GetPage()->GetChromeClient().GetLayerTreeId(*frame));
 }
 
+struct DOMStats : public GarbageCollected<DOMStats>,
+                  public GarbageCollectedMixin {
+  unsigned int total_elements = 0;
+  unsigned int max_children = 0;
+  unsigned int max_depth = 0;
+  Member<Node> max_children_node;
+  Member<Node> max_depth_node;
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(max_children_node);
+    visitor->Trace(max_depth_node);
+  }
+};
+
+void GetDOMStats(Node& node, DOMStats* dom_stats, unsigned int current_depth) {
+  if (node.IsElementNode()) {
+    ++dom_stats->total_elements;
+  }
+
+  unsigned int num_child_elements = 0;
+  for (Element& child : ElementTraversal::ChildrenOf(node)) {
+    ++num_child_elements;
+    GetDOMStats(child, dom_stats, current_depth + 1);
+
+    if (ShadowRoot* shadowRoot = child.AuthorShadowRoot()) {
+      GetDOMStats(*shadowRoot, dom_stats, current_depth + 1);
+    }
+  }
+
+  if (num_child_elements > dom_stats->max_children) {
+    dom_stats->max_children = num_child_elements;
+    dom_stats->max_children_node = node;
+  }
+
+  if (current_depth > dom_stats->max_depth) {
+    dom_stats->max_depth = current_depth;
+    dom_stats->max_depth_node = node;
+  }
+}
+
+void inspector_dom_stats::Data(perfetto::TracedValue context,
+                               LocalFrame* frame) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("frame", IdentifiersFactory::FrameId(frame));
+
+  DOMStats* dom_stats = MakeGarbageCollected<DOMStats>();
+  Document* document = frame->GetDocument();
+  if (Element* document_element = document->documentElement()) {
+    dom_stats->total_elements = 1;
+    dom_stats->max_children_node = document_element;
+    dom_stats->max_depth_node = document_element;
+    if (HTMLElement* body = document->body()) {
+      dom_stats->max_children = 1;
+      GetDOMStats(*body, dom_stats, 1);
+    }
+  }
+  dict.Add("totalElements", dom_stats->total_elements);
+
+  if (dom_stats->max_children_node) {
+    auto max_children_dict = dict.AddDictionary("maxChildren");
+    max_children_dict.Add("numChildren", dom_stats->max_children);
+    SetNodeInfo(max_children_dict, dom_stats->max_children_node);
+  }
+
+  if (dom_stats->max_depth_node) {
+    auto max_depth_dict = dict.AddDictionary("maxDepth");
+    max_depth_dict.Add("depth", dom_stats->max_depth);
+    SetNodeInfo(max_depth_dict, dom_stats->max_depth_node);
+  }
+}
+
 void inspector_animation_event::Data(perfetto::TracedValue context,
                                      const Animation& animation) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", String::Number(animation.SequenceNumber()));
-  dict.Add("state", animation.PlayStateString());
+  dict.Add(
+      "state",
+      V8AnimationPlayState(animation.CalculateAnimationPlayState()).AsCStr());
   if (const AnimationEffect* effect = animation.effect()) {
     dict.Add("displayName",
              InspectorAnimationAgent::AnimationDisplayName(animation));
     dict.Add("name", animation.id());
     if (auto* frame_effect = DynamicTo<KeyframeEffect>(effect)) {
       if (Element* target = frame_effect->EffectTarget())
-        SetNodeInfo(dict, target, "nodeId", "nodeName");
+        SetNodeInfo(dict, target);
     }
   }
 }
@@ -1682,18 +1705,20 @@ void inspector_animation_event::Data(perfetto::TracedValue context,
 void inspector_animation_state_event::Data(perfetto::TracedValue context,
                                            const Animation& animation) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("state", animation.PlayStateString());
+  dict.Add(
+      "state",
+      V8AnimationPlayState(animation.CalculateAnimationPlayState()).AsCStr());
 }
 
 void inspector_animation_compositor_event::Data(
     perfetto::TracedValue context,
     CompositorAnimations::FailureReasons failure_reasons,
-    const PropertyHandleSet& unsupported_properties) {
+    const PropertyHandleSet& unsupported_properties_for_tracing) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("compositeFailed", failure_reasons);
   {
     auto unsupported_properties_array = dict.AddArray("unsupportedProperties");
-    for (const PropertyHandle& p : unsupported_properties) {
+    for (const PropertyHandle& p : unsupported_properties_for_tracing) {
       unsupported_properties_array.Append(
           p.GetCSSPropertyName().ToAtomicString());
     }
@@ -1718,13 +1743,71 @@ void inspector_hit_test_event::EndData(perfetto::TracedValue context,
   if (request.ListBased())
     dict.Add("listBased", true);
   else if (Node* node = result.InnerNode())
-    SetNodeInfo(dict, node, "nodeId", "nodeName");
+    SetNodeInfo(dict, node);
 }
 
 void inspector_async_task::Data(perfetto::TracedValue context,
                                 const StringView& name) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("name", name.ToString());
+}
+
+namespace {
+const char* WebSchedulingPriorityToString(WebSchedulingPriority priority) {
+  switch (priority) {
+    case WebSchedulingPriority::kUserBlockingPriority:
+      return "user-blocking";
+    case WebSchedulingPriority::kUserVisiblePriority:
+      return "user-visible";
+    case WebSchedulingPriority::kBackgroundPriority:
+      return "background";
+  }
+}
+void SchedulerBaseData(perfetto::TracedDictionary& dict,
+                       ExecutionContext* context,
+                       uint64_t task_id) {
+  dict.Add("taskId", task_id);
+  // TODO(crbug.com/376069345): Add identifier for worker contexts.
+  if (auto* frame = FrameForExecutionContext(context)) {
+    dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  }
+}
+}  // namespace
+
+void inspector_scheduler_schedule_event::Data(
+    perfetto::TracedValue trace_context,
+    ExecutionContext* execution_context,
+    uint64_t task_id,
+    WebSchedulingPriority priority,
+    std::optional<double> delay) {
+  auto dict = std::move(trace_context).WriteDictionary();
+  SchedulerBaseData(dict, execution_context, task_id);
+  dict.Add("priority", WebSchedulingPriorityToString(priority));
+  if (delay) {
+    dict.Add("delay", delay.value());
+  }
+  SetCallStack(execution_context->GetIsolate(), dict);
+}
+
+void inspector_scheduler_run_event::Data(perfetto::TracedValue trace_context,
+                                         ExecutionContext* execution_context,
+                                         uint64_t task_id,
+                                         WebSchedulingPriority priority,
+                                         std::optional<double> delay) {
+  auto dict = std::move(trace_context).WriteDictionary();
+  SchedulerBaseData(dict, execution_context, task_id);
+  dict.Add("priority", WebSchedulingPriorityToString(priority));
+  if (delay) {
+    dict.Add("delay", delay.value());
+  }
+}
+
+void inspector_scheduler_abort_event::Data(perfetto::TracedValue trace_context,
+                                           ExecutionContext* execution_context,
+                                           uint64_t task_id) {
+  auto dict = std::move(trace_context).WriteDictionary();
+  SchedulerBaseData(dict, execution_context, task_id);
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 }  // namespace blink

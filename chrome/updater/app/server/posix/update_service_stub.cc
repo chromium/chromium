@@ -4,6 +4,7 @@
 
 #include "chrome/updater/app/server/posix/update_service_stub.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -16,12 +17,11 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom-forward.h"
 #include "chrome/updater/ipc/ipc_names.h"
 #include "chrome/updater/ipc/ipc_security.h"
+#include "chrome/updater/mojom/updater_service.mojom-forward.h"
 #include "chrome/updater/registration_data.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
@@ -55,6 +55,9 @@ namespace {
   }
   if (mojom->ap_key) {
     request.ap_key = *mojom->ap_key;
+  }
+  if (mojom->install_id) {
+    request.install_id = *mojom->install_id;
   }
   return request;
 }
@@ -127,7 +130,6 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
   UpdateServiceStubUntrusted(const UpdateServiceStubUntrusted&) = delete;
   UpdateServiceStubUntrusted& operator=(const UpdateServiceStubUntrusted&) =
       delete;
-  ~UpdateServiceStubUntrusted() override = default;
 
   // updater::mojom::UpdateService
   void GetVersion(GetVersionCallback callback) override {
@@ -145,21 +147,23 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
               UpdateService::Priority priority,
               UpdateService::PolicySameVersionUpdate policy_same_version_update,
               bool do_update_check_only,
+              const std::optional<std::string>& language,
               UpdateCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     impl_->Update(app_id, install_data_index, priority,
                   policy_same_version_update, do_update_check_only,
-                  std::move(callback));
+                  language.value_or(""), std::move(callback));
   }
 
   void CheckForUpdate(
       const std::string& app_id,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::optional<std::string>& language,
       UpdateCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     impl_->CheckForUpdate(app_id, priority, policy_same_version_update,
-                          std::move(callback));
+                          language.value_or(""), std::move(callback));
   }
 
   void RunPeriodicTasks(RunPeriodicTasksCallback callback) override {
@@ -167,9 +171,10 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
     impl_->RunPeriodicTasks(std::move(callback));
   }
 
-  void FetchPolicies(FetchPoliciesCallback callback) override {
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     FetchPoliciesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    impl_->FetchPolicies(std::move(callback));
+    impl_->FetchPolicies(reason, std::move(callback));
   }
 
   void UpdateAll(UpdateAllCallback callback) override {
@@ -189,6 +194,7 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
                const std::string& client_install_data,
                const std::string& install_data_index,
                UpdateService::Priority priority,
+               const std::optional<std::string>& language,
                InstallCallback callback) override {
     VLOG(1) << __func__ << " rejected (untrusted caller)";
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -207,6 +213,7 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
                     const std::string& install_args,
                     const std::string& install_data,
                     const std::string& install_settings,
+                    const std::optional<std::string>& language,
                     RunInstallerCallback callback) override {
     VLOG(1) << __func__ << " rejected (untrusted caller)";
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -248,10 +255,11 @@ void UpdateServiceStub::GetVersion(GetVersionCallback callback) {
           .Then(task_end_listener_));
 }
 
-void UpdateServiceStub::FetchPolicies(FetchPoliciesCallback callback) {
+void UpdateServiceStub::FetchPolicies(policy::PolicyFetchReason reason,
+                                      FetchPoliciesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
-  impl_->FetchPolicies(std::move(callback).Then(task_end_listener_));
+  impl_->FetchPolicies(reason, std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::RegisterApp(mojom::RegistrationRequestPtr request,
@@ -269,9 +277,9 @@ void UpdateServiceStub::GetAppStates(GetAppStatesCallback callback) {
       base::BindOnce(
           [](const std::vector<updater::UpdateService::AppState>& app_states) {
             std::vector<mojom::AppStatePtr> app_states_mojom;
-            base::ranges::transform(app_states,
-                                    std::back_inserter(app_states_mojom),
-                                    &MakeMojoAppState);
+            std::ranges::transform(app_states,
+                                   std::back_inserter(app_states_mojom),
+                                   &MakeMojoAppState);
             return app_states_mojom;
           })
           .Then(std::move(callback))
@@ -303,6 +311,7 @@ void UpdateServiceStub::Update(
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
     bool do_update_check_only,
+    const std::optional<std::string>& language,
     UpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -316,14 +325,14 @@ void UpdateServiceStub::Update(
         app_id, static_cast<updater::UpdateService::Priority>(priority),
         static_cast<updater::UpdateService::PolicySameVersionUpdate>(
             policy_same_version_update),
-        state_change_callback,
+        language.value_or(""), state_change_callback,
         std::move(on_complete_callback).Then(task_end_listener_));
   } else {
     impl_->Update(app_id, install_data_index,
                   static_cast<updater::UpdateService::Priority>(priority),
                   static_cast<updater::UpdateService::PolicySameVersionUpdate>(
                       policy_same_version_update),
-                  state_change_callback,
+                  language.value_or(""), state_change_callback,
                   std::move(on_complete_callback).Then(task_end_listener_));
   }
 }
@@ -332,6 +341,7 @@ void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
                                 const std::string& client_install_data,
                                 const std::string& install_data_index,
                                 UpdateService::Priority priority,
+                                const std::optional<std::string>& language,
                                 InstallCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -344,7 +354,7 @@ void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
   impl_->Install(MakeRegistrationRequest(registration), client_install_data,
                  install_data_index,
                  static_cast<updater::UpdateService::Priority>(priority),
-                 std::move(state_change_callback),
+                 language.value_or(""), std::move(state_change_callback),
                  std::move(on_complete_callback).Then(task_end_listener_));
 }
 
@@ -360,6 +370,7 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
                                      const std::string& install_args,
                                      const std::string& install_data,
                                      const std::string& install_settings,
+                                     const std::optional<std::string>& language,
                                      RunInstallerCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -370,7 +381,8 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
   auto [state_change_callback, on_complete_callback] =
       MakeStateChangeObserverCallbacks(std::move(observer));
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
-                      install_settings, std::move(state_change_callback),
+                      install_settings, language.value_or(""),
+                      std::move(state_change_callback),
                       std::move(on_complete_callback).Then(task_end_listener_));
 }
 
@@ -378,6 +390,7 @@ void UpdateServiceStub::CheckForUpdate(
     const std::string& app_id,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    const std::optional<std::string>& language,
     UpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -389,7 +402,7 @@ void UpdateServiceStub::CheckForUpdate(
       app_id, static_cast<updater::UpdateService::Priority>(priority),
       static_cast<updater::UpdateService::PolicySameVersionUpdate>(
           policy_same_version_update),
-      state_change_callback,
+      language.value_or(""), state_change_callback,
       std::move(on_complete_callback).Then(task_end_listener_));
 }
 
@@ -400,18 +413,16 @@ UpdateServiceStub::UpdateServiceStub(
     base::RepeatingClosure task_end_listener,
     base::RepeatingClosure endpoint_created_listener_for_testing)
     : filter_(std::make_unique<UpdateServiceStubUntrusted>(this)),
-      server_(
-          {.server_name = GetUpdateServiceServerName(scope),
-           .message_pipe_id =
+      server_({GetUpdateServiceServerName(scope),
                named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
-          base::BindRepeating(base::BindRepeating(
-              [](mojom::UpdateService* interface,
-                 mojom::UpdateService* filter,
-                 std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> info) {
-                return IsConnectionTrusted(*info) ? interface : filter;
-              },
-              this,
-              filter_.get()))),
+              base::BindRepeating(base::BindRepeating(
+                  [](mojom::UpdateService* interface,
+                     mojom::UpdateService* filter,
+                     const named_mojo_ipc_server::ConnectionInfo& info) {
+                    return IsConnectionTrusted(info) ? interface : filter;
+                  },
+                  this,
+                  filter_.get()))),
       impl_(impl),
       task_start_listener_(task_start_listener),
       task_end_listener_(task_end_listener) {

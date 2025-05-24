@@ -1619,7 +1619,7 @@ class PolicyTemplateChecker(object):
                 'You seem to change a default value for a launched policy '
                 '\'%s\'. This will certainly break the contract if the policy '
                 'is already supported in the Admin Console. Please consider '
-                'contacting cros-policy-muc-eng@google.com for guidance.' %
+                'contacting chromium-enterprise@chromium.org for guidance.' %
                 policy['name'])
             continue
 
@@ -1631,6 +1631,6 @@ class PolicyTemplateChecker(object):
                 'for a launched policy \'%s\'. This will certainly break the '
                 ' contract if the policy is already supported in the Admin '
                 'Console. Please consider contacting '
-                'cros-policy-muc-eng@google.com for guidance' % policy['name'])
+                'chromium-enterprise@chromium.org for guidance' % policy['name'])
 
     return self.errors, self.warnings

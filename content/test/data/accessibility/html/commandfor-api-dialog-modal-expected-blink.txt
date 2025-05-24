@@ -1,0 +1,15 @@
+rootWebArea
+++genericContainer ignored invisible
+++++dialog ispopup=manual
+++++++button name='d1 button - inside - show-modal'
+++++++++staticText name='d1 button - inside - show-modal'
+++++++++++inlineTextBox name='d1 button - inside - show-modal'
+++++++button name='d1 button - inside - close'
+++++++++staticText name='d1 button - inside - close'
+++++++++++inlineTextBox name='d1 button - inside - close'
+++++++button name='Button inside popover, with unrelated action'
+++++++++staticText name='Button inside popover, with unrelated action'
+++++++++++inlineTextBox name='Button inside popover, with unrelated action'
+++++++button name='d1 button - inside - custom action'
+++++++++staticText name='d1 button - inside - custom action'
+++++++++++inlineTextBox name='d1 button - inside - custom action'

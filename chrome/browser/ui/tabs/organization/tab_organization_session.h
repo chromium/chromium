@@ -13,12 +13,13 @@
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 class Browser;
 
-namespace content {
-class WebContents;
-}  // namespace content
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 class TabOrganizationSession : public TabOrganization::Observer {
  public:
@@ -40,7 +41,7 @@ class TabOrganizationSession : public TabOrganization::Observer {
   explicit TabOrganizationSession(
       std::unique_ptr<TabOrganizationRequest> request,
       TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::kNone,
-      const content::WebContents* base_session_webcontents = nullptr);
+      const tabs::TabInterface* base_session_tab = nullptr);
   ~TabOrganizationSession() override;
 
   const TabOrganizationRequest* request() const { return request_.get(); }
@@ -50,14 +51,14 @@ class TabOrganizationSession : public TabOrganization::Observer {
   ID session_id() const { return session_id_; }
   std::u16string feedback_id() const { return feedback_id_; }
   optimization_guide::proto::UserFeedback feedback() const { return feedback_; }
-  const content::WebContents* base_session_webcontents() const {
-    return base_session_webcontents_;
+  const tabs::TabInterface* base_session_tab() const {
+    return base_session_tab_;
   }
 
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
       const Browser* browser,
       const TabOrganizationEntryPoint entrypoint,
-      const content::WebContents* base_session_webcontents = nullptr);
+      const tabs::TabInterface* base_session_tab = nullptr);
 
   const TabOrganization* GetNextTabOrganization() const;
   TabOrganization* GetNextTabOrganization();
@@ -76,6 +77,8 @@ class TabOrganizationSession : public TabOrganization::Observer {
   void SetFeedback(optimization_guide::proto::UserFeedback feedback) {
     feedback_ = feedback;
   }
+
+  void SetUserInstruction(const std::string& user_instruction);
 
   void AddObserver(Observer* new_observer);
   void RemoveObserver(Observer* new_observer);
@@ -112,7 +115,7 @@ class TabOrganizationSession : public TabOrganization::Observer {
   TabOrganizationEntryPoint entrypoint_;
 
   // Active tab web contents tied to the session, if any.
-  raw_ptr<const content::WebContents> base_session_webcontents_;
+  raw_ptr<const tabs::TabInterface> base_session_tab_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 };

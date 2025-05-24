@@ -1,0 +1,127 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- from 'cpp_macros.tmpl' import namespace_begin, namespace_end, include_guard %}
+
+{%- set header_guard = include_guard('', module.path ~ '_data_view', variant) %}
+
+{%- macro mojom_type_traits(kind) %}
+template <>
+struct MojomTypeTraits<{{kind|get_qualified_name_for_kind}}DataView> {
+  using Data = {{kind|get_qualified_name_for_kind(internal=True)}};
+{%-  if kind|is_union_kind %}
+  using DataAsArrayElement = Data;
+  static constexpr MojomTypeCategory category = MojomTypeCategory::kUnion;
+{%-  else %}
+  using DataAsArrayElement = Pointer<Data>;
+  static constexpr MojomTypeCategory category = MojomTypeCategory::kStruct;
+{%-  endif %}
+};
+{%- endmacro %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include <stdint.h>
+
+#include <functional>
+#include <iosfwd>
+#include <type_traits>
+#include <utility>
+
+{%- if not contains_only_enums %}
+#include "mojo/public/cpp/bindings/array_data_view.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/interface_data_view.h"
+#include "mojo/public/cpp/bindings/map_data_view.h"
+#include "mojo/public/cpp/bindings/string_data_view.h"
+{%- endif %}
+
+#include "{{module.path}}-shared-internal.h"
+{%- for import in imports %}
+#include "{{import.path}}-shared.h"
+{%- endfor %}
+
+{{namespace_begin(namespaces_as_array)}}
+
+{#--- Struct Forward Declarations -#}
+{%- for struct in structs %}
+{%-   if struct|is_native_only_kind %}
+using {{struct.name}}DataView = mojo::native::NativeStructDataView;
+{%-   else %}
+class {{struct.name}}DataView;
+{%-   endif %}
+{%  endfor %}
+
+{#--- Union Forward Declarations -#}
+{%- for union in unions %}
+class {{union.name}}DataView;
+{%- endfor %}
+
+{{namespace_end(namespaces_as_array)}}
+
+
+namespace mojo {
+namespace internal {
+
+{%- for struct in structs %}
+{%-   if not struct|is_native_only_kind %}
+{{mojom_type_traits(struct)}}
+{%-   endif %}
+{%- endfor %}
+
+{%- for union in unions %}
+{{mojom_type_traits(union)}}
+{%- endfor %}
+
+}  // namespace internal
+}  // namespace mojo
+
+{{namespace_begin(namespaces_as_array)}}
+
+{%- set module_prefix = "%s"|format(namespaces_as_array|join(".")) %}
+
+{#--- Enums #}
+{%- from "enum_macros.tmpl" import enum_decl with context %}
+{%- for enum in all_enums %}
+{%-   if enum|is_native_only_kind %}
+using {{enum|get_name_for_kind(flatten_nested_kind=True)}} = mojo::NativeEnum;
+{%-   else %}
+{{enum_decl(enum, export_attribute)}}
+{%-   endif %}
+{%- endfor %}
+
+{#--- Interfaces #}
+{%- if interfaces %}
+// Interface base classes. They are used for type safety check.
+{%- endif %}
+{%- for interface in interfaces %}
+class {{interface.name}}InterfaceBase {};
+
+using {{interface.name}}PtrDataView =
+    mojo::InterfacePtrDataView<{{interface.name}}InterfaceBase>;
+using {{interface.name}}RequestDataView =
+    mojo::InterfaceRequestDataView<{{interface.name}}InterfaceBase>;
+using {{interface.name}}AssociatedPtrInfoDataView =
+    mojo::AssociatedInterfacePtrInfoDataView<{{interface.name}}InterfaceBase>;
+using {{interface.name}}AssociatedRequestDataView =
+    mojo::AssociatedInterfaceRequestDataView<{{interface.name}}InterfaceBase>;
+
+{%- endfor %}
+
+{#--- Structs #}
+{%- for struct in structs %}
+{%-   if not struct|is_native_only_kind %}
+{%      include "struct_data_view_declaration.tmpl" %}
+{%-   endif %}
+{%- endfor %}
+
+{#--- Unions #}
+{%- for union in unions %}
+{%    include "union_data_view_declaration.tmpl" %}
+{%- endfor %}
+
+{{namespace_end(namespaces_as_array)}}
+
+#endif  // {{header_guard}}

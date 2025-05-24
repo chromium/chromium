@@ -11,7 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "base/values.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_manager/user_type.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"

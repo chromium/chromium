@@ -44,6 +44,7 @@ class BookmarkProvider : public AutocompleteProvider {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BookmarkProviderTest, InlineAutocompletion);
+  FRIEND_TEST_ALL_PREFIXES(BookmarkProviderTest, MatchingAlgorithmForHubSearch);
 
   ~BookmarkProvider() override;
 

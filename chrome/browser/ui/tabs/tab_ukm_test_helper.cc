@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/tabs/tab_ukm_test_helper.h"
-#include "base/memory/raw_ptr.h"
 
+#include <algorithm>
 #include <sstream>
 
-#include "base/ranges/algorithm.h"
+#include "base/memory/raw_ptr.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,12 +40,14 @@ bool EntryContainsMetrics(const ukm::mojom::UkmEntry* entry,
     const int64_t* metric =
         ukm::TestUkmRecorder::GetEntryMetric(entry, expected_pair.first);
     if (expected_pair.second.has_value()) {
-      if (!metric || *metric != expected_pair.second.value())
+      if (!metric || *metric != expected_pair.second.value()) {
         return false;
+      }
     } else {
       // The metric shouldn't exist.
-      if (ukm::TestUkmRecorder::EntryHasMetric(entry, expected_pair.first))
+      if (ukm::TestUkmRecorder::EntryHasMetric(entry, expected_pair.first)) {
         return false;
+      }
     }
   }
   return true;
@@ -59,7 +61,7 @@ FindMatchingEntry(
     const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
         entries,
     const UkmMetricMap& expected_metrics) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       entries, [&expected_metrics](const ukm::mojom::UkmEntry* entry) {
         return EntryContainsMetrics(entry, expected_metrics);
       });
@@ -75,8 +77,9 @@ UkmEntryChecker::~UkmEntryChecker() {
     const std::string& entry_name = pair.first;
     int num_unexpected_entries = NumNewEntriesRecorded(entry_name);
     // Could be negative if an expectation has already failed.
-    if (num_unexpected_entries <= 0)
+    if (num_unexpected_entries <= 0) {
       continue;
+    }
 
     ADD_FAILURE() << "Found " << num_unexpected_entries
                   << " unexpected UKM entries at shutdown for: " << entry_name;
@@ -85,8 +88,9 @@ UkmEntryChecker::~UkmEntryChecker() {
         ukm_recorder_.GetEntriesByName(entry_name)[first_unexpected_index];
 
     std::ostringstream entry_metrics;
-    for (const auto& metric : ukm_entry->metrics)
+    for (const auto& metric : ukm_entry->metrics) {
       entry_metrics << "\n" << metric.first << ": " << metric.second;
+    }
     LOG(ERROR) << "First unexpected entry: " << entry_metrics.str();
   }
 }
@@ -104,8 +108,9 @@ void UkmEntryChecker::ExpectNewEntry(const std::string& entry_name,
 
   // Verify the entry is associated with the correct URL.
   const ukm::mojom::UkmEntry* entry = entries[num_entries_[entry_name] - 1];
-  if (!source_url.is_empty())
+  if (!source_url.is_empty()) {
     ukm_recorder_.ExpectEntrySourceHasUrl(entry, source_url);
+  }
 
   ExpectEntryMetrics(*entry, expected_metrics);
 }
@@ -163,8 +168,9 @@ void UkmEntryChecker::ExpectNewEntriesBySource(
 
     const GURL& source_url = expected_url_metrics.first;
     const UkmMetricMap& expected_metrics = expected_url_metrics.second;
-    if (!source_url.is_empty())
+    if (!source_url.is_empty()) {
       ukm_recorder_.ExpectEntrySourceHasUrl(entry, source_url);
+    }
 
     // Each expected metric should match a named value in the UKM entry.
     ExpectEntryMetrics(*entry, expected_metrics);
@@ -177,8 +183,9 @@ int UkmEntryChecker::NumNewEntriesRecorded(
 
   // If a value hasn't been inserted for |entry_name|, the test hasn't checked
   // for these entries before, so they all count as new.
-  if (!num_entries_.count(entry_name))
+  if (!num_entries_.count(entry_name)) {
     return current_ukm_entries;
+  }
 
   size_t previous_num_entries = num_entries_.at(entry_name);
   EXPECT_GE(current_ukm_entries, previous_num_entries);

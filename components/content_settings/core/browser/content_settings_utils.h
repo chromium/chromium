@@ -26,9 +26,8 @@ class MapValueIterator {
  public:
   explicit MapValueIterator(IteratorType iterator) : iterator_(iterator) {}
 
-  bool operator!=(const MapValueIterator& other) const {
-    return iterator_ != other.iterator_;
-  }
+  friend bool operator==(const MapValueIterator&,
+                         const MapValueIterator&) = default;
 
   MapValueIterator& operator++() {
     ++iterator_;
@@ -111,6 +110,11 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants();
 // OneTimePermissionProvider in HostContentSettingsMap. Other types not stored
 // in the provider have their own custom grant expiry logic.
 const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm();
+
+// Returns the list of ContentSettingsTypes which should be actively expired
+// upon their expiration. All other expired content settings will only be
+// expired upon the first reload after the expiration date.
+bool ShouldTypeExpireActively(ContentSettingsType type);
 
 }  // namespace content_settings
 

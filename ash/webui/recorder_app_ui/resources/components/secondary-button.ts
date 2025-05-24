@@ -15,7 +15,7 @@ export class SecondaryButton extends CraIconButton {
       :host {
         --cra-icon-button-container-height: 56px;
         --cra-icon-button-container-width: 72px;
-        --cros-icon-button-color-override: var(--cros-sys-secondary);
+        --cros-icon-button-color-override: var(--cros-sys-on-surface);
         --cros-icon-button-icon-size: 24px;
 
         @container style(--small-viewport: 1) {

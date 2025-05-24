@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "extensions/common/manifest_handler_helpers.h"
 
 namespace extensions {
@@ -35,6 +36,21 @@ ExtensionIconVariant::~ExtensionIconVariant() = default;
 
 ExtensionIconVariant::ExtensionIconVariant(ExtensionIconVariant&& other) =
     default;
+
+ExtensionIconVariant::ExtensionIconVariant(const ExtensionIconVariant& other) =
+    default;
+
+bool ExtensionIconVariant::ValidateIconPath(std::string_view path) {
+  if (!manifest_handler_helpers::IsIconMimeTypeValid(
+          base::FilePath::FromUTF8Unsafe(path))) {
+    diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
+        diagnostics::icon_variants::Feature::kIconVariants,
+        diagnostics::icon_variants::Id::kIconVariantsInvalidMimeType));
+    return false;
+  }
+
+  return true;
+}
 
 // Add color schemes if the input value is valid and has valid color_schemes.
 void ExtensionIconVariant::MaybeAddColorSchemes(const base::Value& value) {
@@ -83,12 +99,16 @@ void ExtensionIconVariant::MaybeAddSizeEntry(
     return;
   }
 
-  sizes_[size.value()] = entry.second.GetString();
+  const auto& file_path = entry.second.GetString();
+  if (!ValidateIconPath(file_path)) {
+    return;
+  }
+
+  sizes_[size.value()] = file_path;
 }
 
 std::unique_ptr<ExtensionIconVariant> ExtensionIconVariant::Parse(
-    const base::Value& value,
-    std::string* issue) {
+    const base::Value& value) {
   if (!value.is_dict()) {
     return nullptr;
   }
@@ -99,7 +119,10 @@ std::unique_ptr<ExtensionIconVariant> ExtensionIconVariant::Parse(
   for (const auto entry : dict) {
     // `any`. Optional string.
     if (entry.first == "any") {
-      icon_variant->any_ = std::make_optional(entry.second.GetString());
+      if (const auto& file_path = entry.second.GetString();
+          icon_variant->ValidateIconPath(file_path)) {
+        icon_variant->any_ = std::make_optional(file_path);
+      }
       continue;
     }
 

@@ -21,7 +21,7 @@ WTF::String OverscrollBehaviorTypeToString(cc::OverscrollBehavior::Type value) {
     case cc::OverscrollBehavior::Type::kContain:
       return "contain";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -40,7 +40,7 @@ PaintPropertyChangeType ScrollPaintPropertyNode::State::ComputeChange(
           other.max_scroll_offset_affected_by_page_scale ||
       composited_scrolling_preference !=
           other.composited_scrolling_preference ||
-      main_thread_scrolling_reasons != other.main_thread_scrolling_reasons ||
+      main_thread_repaint_reasons != other.main_thread_repaint_reasons ||
       compositor_element_id != other.compositor_element_id ||
       overscroll_behavior != other.overscroll_behavior ||
       snap_container_data != other.snap_container_data) {
@@ -87,11 +87,10 @@ std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
             ? (state_.user_scrollable_vertical ? "both" : "horizontal")
             : "vertical");
   }
-  if (state_.main_thread_scrolling_reasons) {
-    json->SetString("mainThreadReasons",
-                    cc::MainThreadScrollingReason::AsText(
-                        state_.main_thread_scrolling_reasons)
-                        .c_str());
+  if (state_.main_thread_repaint_reasons) {
+    json->SetString("mainThreadReasons", cc::MainThreadScrollingReason::AsText(
+                                             state_.main_thread_repaint_reasons)
+                                             .c_str());
   }
   if (state_.max_scroll_offset_affected_by_page_scale)
     json->SetString("maxScrollOffsetAffectedByPageScale", "true");

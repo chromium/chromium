@@ -33,10 +33,11 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
              ModuleType,
              ResourceFetcher*,
              ModuleGraphLevel,
-             ModuleScriptFetcher::Client*) override;
+             ModuleScriptFetcher::Client*,
+             ModuleImportPhase import_phase) override;
 
   // Implements WorkerMainScriptLoaderClient, and these will be called for
-  // dedicated workers (when PlzDedicatedWorker is enabled) and shared workers.
+  // dedicated workers and shared workers.
   void DidReceiveDataWorkerMainScript(base::span<const char> span) override;
   void OnStartLoadingBodyWorkerMainScript(
       const ResourceResponse& resource_response) override;
@@ -51,15 +52,14 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
   String DebugName() const override { return "WorkerModuleScriptFetcher"; }
 
   void NotifyClient(const KURL& request_url,
-                    ModuleType module_type,
+                    ResolvedModuleType module_type,
                     const ParkableString& source_text,
                     const ResourceResponse& response,
                     CachedMetadataHandler* cache_handler);
 
   const Member<WorkerGlobalScope> global_scope_;
 
-  // These are used for dedicated workers (when PlzDedicatedWorker is enabled)
-  // and shared workers.
+  // These are used for dedicated workers and shared workers.
   Member<WorkerMainScriptLoader> worker_main_script_loader_;
   std::unique_ptr<TextResourceDecoder> decoder_;
   StringBuilder source_text_;
@@ -68,6 +68,7 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
   Member<Client> client_;
   ModuleGraphLevel level_;
   ModuleType expected_module_type_;
+  ModuleImportPhase import_phase_;
 };
 
 }  // namespace blink

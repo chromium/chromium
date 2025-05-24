@@ -34,10 +34,12 @@ const CascadingProperty<T>* GetCascadingPropertyObject(
     View* view,
     const ui::ClassProperty<CascadingProperty<T>*>* property_key) {
   const CascadingProperty<T>* property = view->GetProperty(property_key);
-  if (property != nullptr)
+  if (property != nullptr) {
     return property;
-  if (!view->parent())
+  }
+  if (!view->parent()) {
     return nullptr;
+  }
   return GetCascadingPropertyObject(view->parent(), property_key);
 }
 

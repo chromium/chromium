@@ -1,8 +1,5 @@
-monorail: {
-  component: "Platform>Apps>Foundation>Sharesheet"
-}
-team_email: "chromeos-apps-foundation-team@google.com"
+team_email: "cros-web-apps-team@google.com"
 os: CHROME_OS
-buganizer_public: {
-  component_id: 1456780
+buganizer: {
+  component_id: 1389907
 }

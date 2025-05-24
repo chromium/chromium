@@ -50,7 +50,7 @@ features:
   per_profile: false
 owners:
 - arc-commercial@google.com
-- mhasank@chromium.org
+- yaohuali@google.com
 schema:
   type: string
 supported_on:

@@ -7,7 +7,7 @@ module payments.mojom;
 
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "third_party/blink/public/mojom/payments/payment_credential.mojom";
+import "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/webauthn/authenticator.mojom";
@@ -165,6 +165,11 @@ struct SecurePaymentConfirmationRequest {
 
   // Webauthn extensions to be set on the credential request.
   blink.mojom.AuthenticationExtensionsClientInputs? extensions;
+
+  // Specifies the types of algorithms that may be used for creating the
+  // browser bound keys that the relying party would accept. If empty a default
+  // is used instead.
+  array<blink.mojom.PublicKeyCredentialParameters> browser_bound_pub_key_cred_params;
 
   // Whether or not to render an 'opt out' experience on the browser-hosted UX,
   // which allows the user to indicate to the RP that they wish to remove any

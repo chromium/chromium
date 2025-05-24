@@ -237,7 +237,7 @@ class CdbRun(object):
             [cdb_path, '-z', dump_path, '-c', command + ';q'], text=True)
 
     def Check(self, pattern, message, re_flags=0, must_not_match=False):
-        match_obj = re.search(pattern, self.out, re_flags)
+        match_obj = re.search(pattern, self.out, flags=re_flags)
         if match_obj and not must_not_match:
             # Matched. Consume up to end of match.
             self.out = self.out[match_obj.end(0):]
@@ -263,7 +263,7 @@ class CdbRun(object):
             g_had_failures = True
 
     def Find(self, pattern, re_flags=0):
-        match_obj = re.search(pattern, self.out, re_flags)
+        match_obj = re.search(pattern, self.out, flags=re_flags)
         if match_obj:
             # Matched. Consume up to end of match.
             self.out = self.out[match_obj.end(0):]

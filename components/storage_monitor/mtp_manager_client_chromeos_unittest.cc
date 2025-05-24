@@ -115,7 +115,7 @@ class MtpManagerClientChromeOSTest : public testing::Test {
   MtpManagerClientChromeOSTest& operator=(const MtpManagerClientChromeOSTest&) =
       delete;
 
-  ~MtpManagerClientChromeOSTest() override {}
+  ~MtpManagerClientChromeOSTest() override = default;
 
  protected:
   void SetUp() override {

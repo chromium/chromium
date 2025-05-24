@@ -9,6 +9,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
@@ -23,8 +24,9 @@ class AccessibilityFullscreenBrowserTest : public ContentBrowserTest {
 
  protected:
   ui::BrowserAccessibility* FindButton(ui::BrowserAccessibility* node) {
-    if (node->GetRole() == ax::mojom::Role::kButton)
+    if (node->GetRole() == ax::mojom::Role::kButton) {
       return node;
+    }
     for (unsigned i = 0; i < node->PlatformChildCount(); i++) {
       if (ui::BrowserAccessibility* button =
               FindButton(node->PlatformGetChild(i))) {
@@ -35,8 +37,9 @@ class AccessibilityFullscreenBrowserTest : public ContentBrowserTest {
   }
 
   int CountLinks(ui::BrowserAccessibility* node) {
-    if (node->GetRole() == ax::mojom::Role::kLink)
+    if (node->GetRole() == ax::mojom::Role::kLink) {
       return 1;
+    }
     int links_in_children = 0;
     for (unsigned i = 0; i < node->PlatformChildCount(); i++) {
       links_in_children += CountLinks(node->PlatformGetChild(i));
@@ -86,8 +89,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFullscreenBrowserTest,
   shell()->web_contents()->SetDelegate(&delegate);
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
+  ScopedAccessibilityModeOverride complete_mode(ui::kAXModeComplete);
+
   GURL url(
       embedded_test_server()->GetURL("/accessibility/fullscreen/links.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -124,8 +128,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFullscreenBrowserTest,
   shell()->web_contents()->SetDelegate(&delegate);
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
+  ScopedAccessibilityModeOverride complete_mode(ui::kAXModeComplete);
+
   GURL url(
       embedded_test_server()->GetURL("/accessibility/fullscreen/iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));

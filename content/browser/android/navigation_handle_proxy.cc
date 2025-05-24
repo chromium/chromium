@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "net/http/http_response_headers.h"
 #include "url/android/gurl_android.h"
@@ -28,25 +29,33 @@ NavigationHandleProxy::NavigationHandleProxy(
   JNIEnv* env = AttachCurrentThread();
 
   java_navigation_handle_ = Java_NavigationHandle_Constructor(
-      env, reinterpret_cast<jlong>(cpp_navigation_handle));
+      env, reinterpret_cast<jlong>(cpp_navigation_handle),
+      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
+      cpp_navigation_handle_->IsRendererInitiated(),
+      cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE,
+      cpp_navigation_handle_->IsHistory(),
+      cpp_navigation_handle_->IsHistory() &&
+          cpp_navigation_handle_->GetNavigationEntryOffset() < 0,
+      cpp_navigation_handle_->IsHistory() &&
+          cpp_navigation_handle_->GetNavigationEntryOffset() > 0,
+      cpp_navigation_handle_->GetRestoreType() ==
+          content::RestoreType::kRestored);
 }
 
 void NavigationHandleProxy::DidStart() {
   JNIEnv* env = AttachCurrentThread();
 
   // Set all these methods on the Java side over JNI with a new JNI method.
-  Java_NavigationHandle_initialize(
-      env, java_navigation_handle_, reinterpret_cast<jlong>(this),
-      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
+  Java_NavigationHandle_didStart(
+      env, java_navigation_handle_,
       url::GURLAndroid::FromNativeGURL(
           env, cpp_navigation_handle_->GetReferrer().url),
       url::GURLAndroid::FromNativeGURL(
           env, cpp_navigation_handle_->GetBaseURLForDataURL()),
       cpp_navigation_handle_->IsInPrimaryMainFrame(),
       cpp_navigation_handle_->IsSameDocument(),
-      cpp_navigation_handle_->IsRendererInitiated(),
       cpp_navigation_handle_->GetInitiatorOrigin()
-          ? cpp_navigation_handle_->GetInitiatorOrigin()->ToJavaObject()
+          ? cpp_navigation_handle_->GetInitiatorOrigin()->ToJavaObject(env)
           : nullptr,
       cpp_navigation_handle_->GetPageTransition(),
       cpp_navigation_handle_->IsPost(),
@@ -55,11 +64,11 @@ void NavigationHandleProxy::DidStart() {
       cpp_navigation_handle_->IsExternalProtocol(),
       cpp_navigation_handle_->GetNavigationId(),
       cpp_navigation_handle_->IsPageActivation(),
-      cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE,
       cpp_navigation_handle_->IsPdf(),
       base::android::ConvertUTF8ToJavaString(env, GetMimeType()),
       GetContentClient()->browser()->IsSaveableNavigation(
-          cpp_navigation_handle_));
+          cpp_navigation_handle_),
+      cpp_navigation_handle_->GetWebContents()->GetJavaWebContents());
 }
 
 void NavigationHandleProxy::DidRedirect() {
@@ -113,7 +122,8 @@ void NavigationHandleProxy::DidFinish() {
       cpp_navigation_handle_->IsPdf(),
       base::android::ConvertUTF8ToJavaString(env, GetMimeType()),
       GetContentClient()->browser()->IsSaveableNavigation(
-          cpp_navigation_handle_));
+          cpp_navigation_handle_),
+      cpp_navigation_handle_->GetWebContents()->GetPrimaryPage().GetJavaPage());
 }
 
 NavigationHandleProxy::~NavigationHandleProxy() {

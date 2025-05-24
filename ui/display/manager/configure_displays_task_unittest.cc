@@ -43,6 +43,7 @@ class ConfigureDisplaysTaskTest : public testing::Test {
         small_mode_30hz_({1366, 768}, false, 30.0f),
         medium_mode_60hz_({1920, 1080}, false, 60.0f),
         medium_mode_29_98hz_({1920, 1080}, false, 29.98f),
+        medium_interlaced_mode_60hz_({1920, 1080}, true, 60.0f),
         big_mode_60hz_({2560, 1600}, false, 60.0f),
         big_mode_29_97hz_({2560, 1600}, false, 29.97f) {}
 
@@ -96,6 +97,7 @@ class ConfigureDisplaysTaskTest : public testing::Test {
   const DisplayMode small_mode_30hz_;
   const DisplayMode medium_mode_60hz_;
   const DisplayMode medium_mode_29_98hz_;
+  const DisplayMode medium_interlaced_mode_60hz_;
   const DisplayMode big_mode_60hz_;
   const DisplayMode big_mode_29_97hz_;
   std::vector<std::unique_ptr<DisplaySnapshot>> displays_;
@@ -2620,6 +2622,64 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureVrr) {
               .c_str(),
           GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                          &big_mode_60hz_, /*enable_vrr=*/true})
+              .c_str(),
+          kModesetOutcomeSuccess, nullptr),
+      log_.GetActionsAndClear());
+}
+
+// Ensure that progressive modes are prioritized over interlaced modes
+TEST_F(ConfigureDisplaysTaskTest, TestPrioritizeProgressiveOverInterlaced) {
+  ConfigureDisplaysTask::ResponseCallback callback = base::BindOnce(
+      &ConfigureDisplaysTaskTest::ConfigureCallback, base::Unretained(this));
+
+  // Only need one display for this test
+  displays_.pop_back();
+
+  displays_[0] = FakeDisplaySnapshot::Builder()
+                     .SetId(0xBADC0FFEE)
+                     .SetNativeMode(big_mode_60hz_.Clone())
+                     .SetCurrentMode(big_mode_60hz_.Clone())
+                     .AddMode(medium_interlaced_mode_60hz_.Clone())
+                     .AddMode(small_mode_60hz_.Clone())
+                     .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
+                     .SetBaseConnectorId(kSecondConnectorId)
+                     .Build();
+
+  delegate_.set_max_configurable_pixels(
+      medium_interlaced_mode_60hz_.size().GetArea());
+
+  std::vector<DisplayConfigureRequest> requests;
+  requests.emplace_back(displays_[0].get(), displays_[0]->native_mode(),
+                        gfx::Point(), /*enable_vrr=*/false);
+
+  ConfigureDisplaysTask(&delegate_, requests, std::move(callback)).Run();
+
+  EXPECT_TRUE(callback_called_);
+  EXPECT_EQ(ConfigureDisplaysTask::PARTIAL_SUCCESS, status_);
+  EXPECT_EQ(
+      JoinActions(
+          // First modeset will fail
+          kTestModesetStr,
+          GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                         displays_[0]->native_mode()})
+              .c_str(),
+          kModesetOutcomeFailure,
+          // We first test-modeset the display with big mode which will fail
+          kTestModesetStr,
+          GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                         displays_[0]->native_mode()})
+              .c_str(),
+          kModesetOutcomeFailure,
+
+          // Next, we should modeset to the small progressive mode, skipping
+          // the interlaced mode which has a higher area
+          kTestModesetStr,
+          GetCrtcAction(
+              {displays_[0]->display_id(), gfx::Point(), &small_mode_60hz_})
+              .c_str(),
+          kModesetOutcomeSuccess, kCommitModesetStr,
+          GetCrtcAction(
+              {displays_[0]->display_id(), gfx::Point(), &small_mode_60hz_})
               .c_str(),
           kModesetOutcomeSuccess, nullptr),
       log_.GetActionsAndClear());

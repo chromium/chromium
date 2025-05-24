@@ -56,7 +56,7 @@ class SigninEmailConfirmationDialog::DialogWebContentsObserver
   DialogWebContentsObserver& operator=(const DialogWebContentsObserver&) =
       delete;
 
-  ~DialogWebContentsObserver() override {}
+  ~DialogWebContentsObserver() override = default;
 
  private:
   void WebContentsDestroyed() override {
@@ -94,7 +94,7 @@ SigninEmailConfirmationDialog::SigninEmailConfirmationDialog(
   set_show_dialog_title(false);
 }
 
-SigninEmailConfirmationDialog::~SigninEmailConfirmationDialog() {}
+SigninEmailConfirmationDialog::~SigninEmailConfirmationDialog() = default;
 
 // static
 SigninEmailConfirmationDialog*
@@ -135,15 +135,17 @@ void SigninEmailConfirmationDialog::ShowDialog() {
 
 void SigninEmailConfirmationDialog::CloseDialog() {
   content::WebContents* dialog_web_contents = GetDialogWebContents();
-  if (!dialog_web_contents)
+  if (!dialog_web_contents) {
     return;
+  }
 
   content::WebUI* web_ui = dialog_web_contents->GetWebUI();
   if (web_ui) {
     SigninEmailConfirmationUI* signin_email_confirmation_ui =
         static_cast<SigninEmailConfirmationUI*>(web_ui->GetController());
-    if (signin_email_confirmation_ui)
+    if (signin_email_confirmation_ui) {
       signin_email_confirmation_ui->Close();
+    }
   }
 }
 
@@ -174,12 +176,10 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
       } else if (*action_string == kSigninEmailConfirmationActionStartSync) {
         action = START_SYNC;
       } else {
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected action value [" << *action_string << "]";
+        NOTREACHED() << "Unexpected action value [" << *action_string << "]";
       }
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "No action in the dialog close return arguments";
+      NOTREACHED() << "No action in the dialog close return arguments";
     }
   } else {
     // If the dialog is dismissed without any return value, then simply close
@@ -189,8 +189,9 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
 
   NotifyModalDialogClosed();
 
-  if (callback_)
+  if (callback_) {
     std::move(callback_).Run(action);
+  }
 }
 
 void SigninEmailConfirmationDialog::CloseModalSignin() {

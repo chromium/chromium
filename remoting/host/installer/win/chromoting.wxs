@@ -216,10 +216,18 @@
       </Component>
 
       <Component Id="remote_assistance_host_uiaccess" Guid="*">
-          <File Id="remote_assistance_host_uiaccess.exe"
+        <File Id="remote_assistance_host_uiaccess.exe"
               DiskId="1"
               KeyPath="yes"
               Name="remote_assistance_host_uiaccess.exe"
+              Vital="yes"/>
+      </Component>
+
+      <Component Id="remoting_crashpad_handler" Guid="*">
+        <File Id="remoting_crashpad_handler.exe"
+              DiskId="1"
+              KeyPath="yes"
+              Name="remoting_crashpad_handler.exe"
               Vital="yes"/>
       </Component>
 
@@ -810,6 +818,7 @@
       <ComponentRef Id="remote_security_key_registration"/>
       <ComponentRef Id="remoting_native_messaging_host"/>
       <ComponentRef Id="remoting_core"/>
+      <ComponentRef Id="remoting_crashpad_handler"/>
       <ComponentRef Id="remoting_desktop"/>
       <ComponentRef Id="remoting_host"/>
       <ComponentRef Id="remoting_lib"/>

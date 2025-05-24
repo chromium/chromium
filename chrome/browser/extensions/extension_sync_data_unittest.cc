@@ -14,6 +14,7 @@
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/common/extension.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -49,6 +50,13 @@ void ProtobufToSyncDataEqual(const sync_pb::EntitySpecifics& entity) {
   EXPECT_EQ(input.enabled(), output.enabled());
   EXPECT_EQ(input.incognito_enabled(), output.incognito_enabled());
   EXPECT_EQ(input.remote_install(), output.remote_install());
+  EXPECT_EQ(input.disable_reasons(), output.disable_reasons());
+
+  EXPECT_EQ(input.disable_reasons_list_size(),
+            output.disable_reasons_list_size());
+  for (int i = 0; i < input.disable_reasons_list_size(); ++i) {
+    EXPECT_EQ(input.disable_reasons_list(i), output.disable_reasons_list(i));
+  }
 }
 
 // Serializes an ExtensionSyncData into a protobuf structure and back again, and
@@ -86,6 +94,15 @@ TEST_F(ExtensionSyncDataTest, ExtensionSyncDataForExtension) {
   extension_specifics->set_remote_install(false);
   extension_specifics->set_version(kVersion);
 
+  // Populate disable reasons (biflag and the list).
+  constexpr int kDisableReasons[] = {disable_reason::DISABLE_USER_ACTION,
+                                     disable_reason::DISABLE_BLOCKED_BY_POLICY};
+  constexpr int kDisasbleReasonsBitflag =
+      kDisableReasons[0] | kDisableReasons[1];
+  extension_specifics->set_disable_reasons(kDisasbleReasonsBitflag);
+  extension_specifics->add_disable_reasons_list(kDisableReasons[0]);
+  extension_specifics->add_disable_reasons_list(kDisableReasons[1]);
+
   // Check the serialize-deserialize process for proto to ExtensionSyncData.
   ProtobufToSyncDataEqual(entity);
 
@@ -100,6 +117,9 @@ TEST_F(ExtensionSyncDataTest, ExtensionSyncDataForExtension) {
   EXPECT_EQ(true, extension_sync_data.incognito_enabled());
   EXPECT_FALSE(extension_sync_data.remote_install());
   EXPECT_EQ(base::Version(kVersion), extension_sync_data.version());
+  EXPECT_THAT(
+      extension_sync_data.disable_reasons(),
+      testing::UnorderedElementsAre(kDisableReasons[0], kDisableReasons[1]));
 
   // Check the serialize-deserialize process for ExtensionSyncData to proto.
   SyncDataToProtobufEqual(extension_sync_data);
@@ -115,10 +135,73 @@ TEST_F(ExtensionSyncDataTest, ExtensionSyncDataForExtension) {
   ProtobufToSyncDataEqual(entity);
 }
 
+// Tests that disable reasons are deserialized from the protobuf correctly.
+TEST_F(ExtensionSyncDataTest, DisableReasonsDeserialization) {
+  sync_pb::EntitySpecifics entity;
+  sync_pb::ExtensionSpecifics* extension_specifics = entity.mutable_extension();
+  extension_specifics->set_id(kValidId);
+  extension_specifics->set_update_url(kValidUpdateUrl);
+  extension_specifics->set_enabled(false);
+  extension_specifics->set_incognito_enabled(true);
+  extension_specifics->set_remote_install(false);
+  extension_specifics->set_version(kVersion);
+
+  {
+    // Disable reasons set should be empty if the bitflag is not set and the
+    // list is empty.
+    ExtensionSyncData extension_sync_data;
+    extension_sync_data.PopulateFromExtensionSpecifics(*extension_specifics);
+    EXPECT_TRUE(extension_sync_data.disable_reasons().empty());
+  }
+
+  {
+    // Disable reasons set should be populated with the bitflag if the list is
+    // empty and the bitflag is set.
+    extension_specifics->set_disable_reasons(
+        disable_reason::DISABLE_USER_ACTION |
+        disable_reason::DISABLE_BLOCKED_BY_POLICY);
+    ExtensionSyncData extension_sync_data;
+    extension_sync_data.PopulateFromExtensionSpecifics(*extension_specifics);
+    EXPECT_THAT(extension_sync_data.disable_reasons(),
+                testing::UnorderedElementsAre(
+                    disable_reason::DISABLE_USER_ACTION,
+                    disable_reason::DISABLE_BLOCKED_BY_POLICY));
+  }
+
+  {
+    // Populate the list. The bitflag is already set to a different value.
+    extension_specifics->add_disable_reasons_list(
+        disable_reason::DISABLE_GREYLIST);
+    extension_specifics->add_disable_reasons_list(
+        disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION);
+
+    // Disable reasons set should be populated with the list if both the list
+    // and the bitflag are set.
+    ExtensionSyncData extension_sync_data;
+    extension_sync_data.PopulateFromExtensionSpecifics(*extension_specifics);
+    EXPECT_THAT(extension_sync_data.disable_reasons(),
+                testing::UnorderedElementsAre(
+                    disable_reason::DISABLE_GREYLIST,
+                    disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION));
+  }
+
+  {
+    // Disable reasons set should be populated with the list if the bitflag is
+    // not set.
+    extension_specifics->clear_disable_reasons();
+    ExtensionSyncData extension_sync_data;
+    extension_sync_data.PopulateFromExtensionSpecifics(*extension_specifics);
+    EXPECT_THAT(extension_sync_data.disable_reasons(),
+                testing::UnorderedElementsAre(
+                    disable_reason::DISABLE_GREYLIST,
+                    disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION));
+  }
+}
+
 class AppSyncDataTest : public testing::Test {
  public:
-  AppSyncDataTest() {}
-  ~AppSyncDataTest() override {}
+  AppSyncDataTest() = default;
+  ~AppSyncDataTest() override = default;
 
   void SetRequiredExtensionValues(
       sync_pb::ExtensionSpecifics* extension_specifics) {
@@ -127,6 +210,7 @@ class AppSyncDataTest : public testing::Test {
     extension_specifics->set_version(kVersion);
     extension_specifics->set_enabled(false);
     extension_specifics->set_disable_reasons(kValidDisableReasons);
+    extension_specifics->add_disable_reasons_list(kValidDisableReasons);
     extension_specifics->set_incognito_enabled(true);
     extension_specifics->set_remote_install(false);
   }

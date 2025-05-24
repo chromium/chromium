@@ -44,7 +44,8 @@
           "builder": "Mac Builder reclient staging untrusted",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/reclient/Mac Builder reclient staging untrusted/targets"
     }
   },
   "$build/reclient": {

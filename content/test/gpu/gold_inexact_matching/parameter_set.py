@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
 import typing
-
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 
 @dataclasses.dataclass
@@ -32,20 +31,20 @@ class ParameterSet():
     """
     return [
         '--parameter',
-        'fuzzy_max_different_pixels:%d' % self.max_diff,
+        f'fuzzy_max_different_pixels:{self.max_diff}',
         '--parameter',
-        'fuzzy_pixel_delta_threshold:%d' % self.delta_threshold,
+        f'fuzzy_pixel_delta_threshold:{self.delta_threshold}',
         '--parameter',
-        'fuzzy_ignored_border_thickness:%d' % self.ignored_border_thickness,
+        f'fuzzy_ignored_border_thickness:{self.ignored_border_thickness}',
         '--parameter',
-        'sobel_edge_threshold:%d' % self.edge_threshold,
+        f'sobel_edge_threshold:{self.edge_threshold}',
     ]
 
   def __str__(self) -> str:
-    return ('Max different pixels: %d, Max per-channel delta sum: %d, Sobel '
-            'edge threshold: %d, Ignored border thickness: %d') % (
-                self.max_diff, self.delta_threshold, self.edge_threshold,
-                self.ignored_border_thickness)
+    return (f'Max different pixels: {self.max_diff}, '
+            f'Max per-channel delta sum: {self.delta_threshold}, '
+            f'Sobel edge threshold: {self.edge_threshold}, '
+            f'Ignored border thickness: {self.ignored_border_thickness}')
 
   def __eq__(self, other: 'ParameterSet') -> bool:
     return (self.max_diff == other.max_diff

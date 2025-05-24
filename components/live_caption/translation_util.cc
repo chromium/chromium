@@ -90,8 +90,8 @@ bool IsIdeographicLocale(const std::string& locale) {
           script_code[0] == USCRIPT_YI || script_code[0] == USCRIPT_KATAKANA);
 }
 
-TranslationCache::TranslationCache() {}
-TranslationCache::~TranslationCache() {}
+TranslationCache::TranslationCache() = default;
+TranslationCache::~TranslationCache() = default;
 
 std::pair<std::string, std::string>
 TranslationCache::FindCachedTranslationOrRemaining(

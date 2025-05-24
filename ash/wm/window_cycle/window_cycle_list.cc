@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_cycle/window_cycle_list.h"
 
+#include <algorithm>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
@@ -25,7 +27,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
@@ -137,7 +138,7 @@ WindowCycleList::WindowCycleList(const WindowList& windows, bool same_app_only)
   if (ShouldShowUi()) {
     // Disable the tab scrubber so three finger scrolling doesn't scrub tabs as
     // well.
-    Shell::Get()->shell_delegate()->SetTabScrubberChromeOSEnabled(false);
+    Shell::Get()->shell_delegate()->SetTabScrubberEnabled(false);
 
     if (g_disable_initial_delay) {
       InitWindowCycleView();
@@ -152,7 +153,7 @@ WindowCycleList::~WindowCycleList() {
   if (!ShouldShowUi())
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(false);
 
-  Shell::Get()->shell_delegate()->SetTabScrubberChromeOSEnabled(true);
+  Shell::Get()->shell_delegate()->SetTabScrubberEnabled(true);
 
   for (aura::Window* window : windows_) {
     window->RemoveObserver(this);
@@ -317,7 +318,7 @@ void WindowCycleList::SetDisableInitialDelayForTesting(bool disabled) {
 void WindowCycleList::OnWindowDestroying(aura::Window* window) {
   window->RemoveObserver(this);
 
-  WindowList::iterator i = base::ranges::find(windows_, window);
+  WindowList::iterator i = std::ranges::find(windows_, window);
   CHECK(i != windows_.end());
   int removed_index = static_cast<int>(i - windows_.begin());
   windows_.erase(i);
@@ -503,14 +504,13 @@ void WindowCycleList::MakeSameAppOnly() {
   if (!mru_window_app_id) {
     return;
   }
-  windows_.erase(
-      base::ranges::remove_if(windows_.begin(), windows_.end(),
-                              [&mru_window_app_id](aura::Window* window) {
-                                const auto* const app_id =
-                                    window->GetProperty(kAppIDKey);
-                                return !app_id || *app_id != *mru_window_app_id;
-                              }),
-      windows_.end());
+  auto to_remove = std::ranges::remove_if(
+      windows_.begin(), windows_.end(),
+      [&mru_window_app_id](aura::Window* window) {
+        const auto* const app_id = window->GetProperty(kAppIDKey);
+        return !app_id || *app_id != *mru_window_app_id;
+      });
+  windows_.erase(to_remove.begin(), to_remove.end());
 }
 
 int WindowCycleList::GetOffsettedWindowIndex(int offset) const {
@@ -524,7 +524,7 @@ int WindowCycleList::GetOffsettedWindowIndex(int offset) const {
 }
 
 int WindowCycleList::GetIndexOfWindow(aura::Window* window) const {
-  auto target_window = base::ranges::find(windows_, window);
+  auto target_window = std::ranges::find(windows_, window);
   DCHECK(target_window != windows_.end());
   return std::distance(windows_.begin(), target_window);
 }

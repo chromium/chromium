@@ -175,14 +175,20 @@ SharingMessageBridgeImpl::GetAllDataForDebugging() {
 }
 
 std::string SharingMessageBridgeImpl::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string SharingMessageBridgeImpl::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_sharing_message());
   return entity_data.specifics.sharing_message().message_id();
+}
+
+bool SharingMessageBridgeImpl::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  // SHARING_MESSAGE is a commit only data type so this method is not called.
+  NOTREACHED();
 }
 
 void SharingMessageBridgeImpl::OnCommitAttemptErrors(

@@ -5,8 +5,10 @@
 #ifndef MEDIA_GPU_CHROMEOS_FRAME_RESOURCE_H_
 #define MEDIA_GPU_CHROMEOS_FRAME_RESOURCE_H_
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
@@ -28,6 +30,8 @@ class NativePixmapFrameResource;
 // e.g. VideoFrame or NativePixmap.
 class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   FrameResource();
   // FrameResource is not moveable or copyable.
   FrameResource(const FrameResource&) = delete;
@@ -97,11 +101,6 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   virtual std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
       const = 0;
 
-  // Returns an identifier based on the frame data's underlying storage. This
-  // returns consistent results even if the frame gets wrapped. Returns an
-  // invalid GenericSharedMemoryId if an identifier cannot be determined.
-  virtual gfx::GenericSharedMemoryId GetSharedMemoryId() const = 0;
-
   virtual const VideoFrameLayout& layout() const = 0;
 
   virtual VideoPixelFormat format() const = 0;
@@ -137,6 +136,10 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   virtual const VideoFrameMetadata& metadata() const = 0;
   virtual VideoFrameMetadata& metadata() = 0;
   virtual void set_metadata(const VideoFrameMetadata& metadata) = 0;
+
+  // An UnguessableToken that identifies unique frames regardless of wrapping.
+  // The returned UnguessableToken is guaranteed to be non-empty.
+  virtual const base::UnguessableToken& tracking_token() const = 0;
 
   virtual base::TimeDelta timestamp() const = 0;
   virtual void set_timestamp(base::TimeDelta timestamp) = 0;
@@ -177,7 +180,6 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
 
  protected:
   friend class base::RefCountedThreadSafe<FrameResource>;
-
   virtual ~FrameResource() = default;
 
  private:

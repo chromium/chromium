@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/filter/mock_source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -48,7 +49,8 @@ struct SourceStreamToDataPipeTestParam {
 
 class DummyPendingSourceStream : public net::SourceStream {
  public:
-  DummyPendingSourceStream() : net::SourceStream(SourceStream::TYPE_NONE) {}
+  DummyPendingSourceStream()
+      : net::SourceStream(net::SourceStreamType::kNone) {}
   ~DummyPendingSourceStream() override = default;
 
   DummyPendingSourceStream(const DummyPendingSourceStream&) = delete;
@@ -213,10 +215,11 @@ TEST_P(SourceStreamToDataPipeTest, Error) {
 }
 
 TEST_P(SourceStreamToDataPipeTest, ConsumerClosed) {
-  const char message[] = "a";
+  const std::string message(GetParam().pipe_capacity, 'a');
 
   Init();
-  source()->AddReadResult(message, sizeof(message) - 1, net::OK,
+  source()->set_expect_all_input_consumed(false);
+  source()->AddReadResult(message.data(), message.size(), net::OK,
                           GetParam().mode);
   adapter()->Start(callback());
 

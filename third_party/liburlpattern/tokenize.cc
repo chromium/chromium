@@ -33,10 +33,10 @@ class Tokenizer {
     token_list_.reserve(pattern_.size());
   }
 
-  absl::StatusOr<std::vector<Token>> Tokenize() {
+  base::expected<std::vector<Token>, absl::Status> Tokenize() {
     while (index_ < pattern_.size()) {
       if (!status_.ok())
-        return std::move(status_);
+        return base::unexpected(std::move(status_));
 
       if (!NextAt(index_)) {
         Error(absl::StrFormat("Invalid UTF-8 codepoint at index %d.", index_));
@@ -88,7 +88,7 @@ class Tokenizer {
         // Iterate over codepoints until we find the first non-name codepoint.
         while (pos < pattern_.size()) {
           if (!status_.ok())
-            return std::move(status_);
+            return base::unexpected(std::move(status_));
           if (!NextAt(pos)) {
             Error(absl::StrFormat("Invalid UTF-8 codepoint at index %d.", pos));
             continue;
@@ -231,7 +231,7 @@ class Tokenizer {
     }
 
     if (!status_.ok())
-      return std::move(status_);
+      return base::unexpected(std::move(status_));
 
     AddToken(TokenType::kEnd, index_, index_);
 
@@ -346,8 +346,9 @@ std::ostream& operator<<(std::ostream& o, Token token) {
 }
 
 // Split the input pattern into a list of tokens.
-absl::StatusOr<std::vector<Token>> Tokenize(std::string_view pattern,
-                                            TokenizePolicy policy) {
+base::expected<std::vector<Token>, absl::Status> Tokenize(
+    std::string_view pattern,
+    TokenizePolicy policy) {
   Tokenizer tokenizer(std::move(pattern), policy);
   return tokenizer.Tokenize();
 }

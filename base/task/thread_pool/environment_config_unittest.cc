@@ -4,17 +4,23 @@
 
 #include "base/task/thread_pool/environment_config.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 // This test summarizes which platforms use background thread priority.
 TEST(ThreadPoolEnvironmentConfig, CanUseBackgroundPriorityForWorker) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   EXPECT_TRUE(CanUseBackgroundThreadTypeForWorkerThread());
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+#elif BUILDFLAG(IS_ANDROID)
+  // On Android, use of background thread priority is controlled by one of two
+  // feature flags.
+  EXPECT_EQ(CanUseBackgroundThreadTypeForWorkerThread(),
+            base::FeatureList::IsEnabled(
+                FeatureControllingBackgroundPriorityWorkerThreads()));
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_NACL)
   EXPECT_FALSE(CanUseBackgroundThreadTypeForWorkerThread());
 #else
@@ -31,5 +37,4 @@ TEST(ThreadPoolEnvironmentConfig, CanUseBackgroundPriorityForWorker) {
 #endif
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

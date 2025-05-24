@@ -26,7 +26,8 @@ class LocalSessionPoliciesProvider final {
   LocalSessionPoliciesProvider& operator=(const LocalSessionPoliciesProvider&) =
       delete;
 
-  // Calls `callback` whenever the local policies are changed.
+  // Calls `callback` whenever the local policies have changed unless
+  // |send_policy_change_notifications_| is false.
   // This is marked `const` to allow a holder of a const reference or pointer of
   // `this` to add callbacks but not change the local policies.
   base::CallbackListSubscription AddLocalPoliciesChangedCallback(
@@ -38,8 +39,22 @@ class LocalSessionPoliciesProvider final {
   // policies LocalPoliciesChanged callbacks will not be notified.
   void set_local_policies(const SessionPolicies& policies);
 
+  // Sets a value to indicate whether to send a notification when local policies
+  // have changed.
+  void send_policy_change_notifications(bool send_notifications) {
+    send_policy_change_notifications_ = send_notifications;
+  }
+
  private:
+  // Indicates whether to send notifications when the local policies have
+  // changed. This is used for cases where the initial policies should be used
+  // but subsequent changes should be ignored such as for admin sessions on
+  // Chrome OS.
+  bool send_policy_change_notifications_ = true;
+
+  // The set of policies retrieved from the local machine.
   SessionPolicies local_policies_;
+
   // Mutable to allow const access from `AddLocalPoliciesChangedCallback()`.
   mutable LocalPoliciesChangedCallbackList local_policies_changed_callbacks_;
 };

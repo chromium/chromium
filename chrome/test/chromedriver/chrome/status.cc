@@ -76,8 +76,8 @@ const char* StatusCodeToString(StatusCode code) {
       return "no such shadow root";
     case kDetachedShadowRoot:
       return "detached shadow root";
-    case kNavigationDetectedByRemoteEnd:
-      return "navigation detected by remote end";
+    case kAbortedByNavigation:
+      return "aborted by navigation";
     case kTestError:
       return "test error";
     default:
@@ -113,7 +113,7 @@ Status::Status(StatusCode code, const std::string& details, const Status& cause)
     stack_trace_ = cause.stack_trace();
 }
 
-Status::~Status() {}
+Status::~Status() = default;
 
 void Status::AddDetails(const std::string& details) {
   msg_ += base::StringPrintf("\n  (%s)", details.c_str());

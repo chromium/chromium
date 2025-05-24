@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -15,6 +20,8 @@
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
@@ -32,6 +39,7 @@ using themes_helper::UseDefaultTheme;
 using themes_helper::UseSystemTheme;
 using themes_helper::UsingCustomTheme;
 using themes_helper::UsingDefaultTheme;
+using themes_helper::UsingGrayscaleTheme;
 using themes_helper::UsingSystemTheme;
 
 // Note: All of these matchers take a sync_pb::ThemeSpecifics.
@@ -63,9 +71,15 @@ MATCHER_P(HasUserColor, color, "") {
   return arg.has_user_color_theme() && arg.user_color_theme().color() == color;
 }
 
+MATCHER(HasGrayscaleTheme, "") {
+  return arg.has_grayscale_theme_enabled();
+}
+
 std::unique_ptr<syncer::LoopbackServerEntity> CreateDefaultThemeEntity() {
   sync_pb::EntitySpecifics specifics;
-  specifics.mutable_theme();
+  // Clients always write `browser_color_scheme` field.
+  specifics.mutable_theme()->set_browser_color_scheme(
+      sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
   return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
       ThemeSyncableService::kSyncEntityClientTag,
       ThemeSyncableService::kSyncEntityClientTag, specifics,
@@ -74,6 +88,9 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateDefaultThemeEntity() {
 
 std::unique_ptr<syncer::LoopbackServerEntity> CreateSystemThemeEntity() {
   sync_pb::EntitySpecifics specifics;
+  // Clients always write `browser_color_scheme` field.
+  specifics.mutable_theme()->set_browser_color_scheme(
+      sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
   specifics.mutable_theme()->set_use_system_theme_by_default(true);
   return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
       ThemeSyncableService::kSyncEntityTitle,
@@ -87,6 +104,16 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateCustomThemeEntity(
   specifics.mutable_theme()->set_use_custom_theme(true);
   specifics.mutable_theme()->set_custom_theme_id(theme_id);
   specifics.mutable_theme()->set_custom_theme_name("custom theme");
+  return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+      ThemeSyncableService::kSyncEntityTitle,
+      ThemeSyncableService::kSyncEntityClientTag, specifics,
+      /*creation_time=*/0, /*last_modified_time=*/0);
+}
+
+std::unique_ptr<syncer::LoopbackServerEntity> CreateGrayscaleThemeEntity() {
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_theme()->set_use_custom_theme(false);
+  specifics.mutable_theme()->mutable_grayscale_theme_enabled();
   return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
       ThemeSyncableService::kSyncEntityTitle,
       ThemeSyncableService::kSyncEntityClientTag, specifics,
@@ -171,17 +198,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, UploadsThemesOnInstall) {
   EXPECT_TRUE(ServerThemeMatchChecker(HasDefaultTheme()).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, UploadsPreexistingTheme) {
-  ASSERT_TRUE(SetupClients());
-
-  UseCustomTheme(GetProfile(0), 0);
-
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  EXPECT_TRUE(
-      ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
-}
-
 IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsCustomTheme) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -226,22 +242,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DownloadsDefaultTheme) {
   EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
 }
 
-class SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest
-    : public SingleClientThemesSyncTest {
- private:
-  bool TestUsesSelfNotifications() override { return true; }
-
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kMoveThemePrefsToSpecifics};
-};
-
 // Verifies that theme from syncing theme prefs get applied if the migration is
 // unset. After this, the migration flag should get set to disallow future reads
 // from the syncing theme prefs. The incoming theme is committed to the server
 // with the new fields in the ThemeSpecifics.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
-    ShouldApplyThemeFromSyncingPrefsIfFlagUnmarked) {
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+                       ShouldApplyThemeFromSyncingPrefsIfFlagUnmarked) {
   ASSERT_TRUE(SetupClients());
   // Migration flag is unset.
   ASSERT_TRUE(preferences_helper::GetPrefs(/*index=*/0)
@@ -251,30 +257,32 @@ IN_PROC_BROWSER_TEST_F(
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kBrowserColorSchemeDoNotUse);
+    preference_specifics->set_name(
+        prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kBrowserColorSchemeDoNotUse,
-            /*client_tag=*/prefs::kBrowserColorSchemeDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
   {
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kUserColorDoNotUse);
+    preference_specifics->set_name(prefs::kDeprecatedUserColorDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(
             base::Value(static_cast<int>(SK_ColorRED))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kUserColorDoNotUse,
-            /*client_tag=*/prefs::kUserColorDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedUserColorDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedUserColorDoNotUse, specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
@@ -300,20 +308,24 @@ IN_PROC_BROWSER_TEST_F(
 
 // Simulate pref migration being run in the previous browser session by setting
 // the migration flag.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
-    PRE_ShouldNotApplyThemeFromSyncingPrefsIfFlagMarked) {
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+                       PRE_ShouldNotApplyThemeFromSyncingPrefsIfFlagMarked) {
   ASSERT_TRUE(SetupClients());
 
   // Set the flag to not read incoming prefs.
   preferences_helper::GetPrefs(/*index=*/0)
       ->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
+
+  // Wait for data to be committed to disk.
+  base::RunLoop loop;
+  preferences_helper::GetPrefs(/*index=*/0)
+      ->CommitPendingWrite(loop.QuitClosure());
+  loop.Run();
 }
 
 // Verifies that the syncing theme prefs are not read if the migration is set.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
-    ShouldNotApplyThemeFromSyncingPrefsIfFlagMarked) {
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+                       ShouldNotApplyThemeFromSyncingPrefsIfFlagMarked) {
   ASSERT_TRUE(SetupClients());
 
   // Migration flag is already set.
@@ -324,30 +336,32 @@ IN_PROC_BROWSER_TEST_F(
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kBrowserColorSchemeDoNotUse);
+    preference_specifics->set_name(
+        prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kDark))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kBrowserColorSchemeDoNotUse,
-            /*client_tag=*/prefs::kBrowserColorSchemeDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
   {
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kUserColorDoNotUse);
+    preference_specifics->set_name(prefs::kDeprecatedUserColorDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(
             base::Value(static_cast<int>(SK_ColorBLUE))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kUserColorDoNotUse,
-            /*client_tag=*/prefs::kUserColorDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedUserColorDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedUserColorDoNotUse, specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
@@ -364,9 +378,8 @@ IN_PROC_BROWSER_TEST_F(
 // Verifies that syncing theme prefs are not read with the incremental updates.
 // They can only be applied when the prefs sync starts (which will set the
 // migration flag to disallow future reads).
-IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
-    ShouldNotApplyThemeFromSyncingPrefsAfterSyncHasStarted) {
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
+                       ShouldNotApplyThemeFromSyncingPrefsAfterSyncHasStarted) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(preferences_helper::GetPrefs(/*index=*/0)
                   ->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
@@ -385,20 +398,22 @@ IN_PROC_BROWSER_TEST_F(
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kBrowserColorSchemeDoNotUse);
+    preference_specifics->set_name(
+        prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kBrowserColorSchemeDoNotUse,
-            /*client_tag=*/prefs::kBrowserColorSchemeDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
   ASSERT_TRUE(PrefValueChecker(preferences_helper::GetPrefs(/*index=*/0),
-                               prefs::kBrowserColorSchemeDoNotUse,
+                               prefs::kDeprecatedBrowserColorSchemeDoNotUse,
                                base::Value(static_cast<int>(
                                    ThemeService::BrowserColorScheme::kLight)))
                   .Wait());
@@ -413,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(
 // ThemeSpecifics has the new fields, which implies another client has already
 // updated the ThemeSpecifics using the prefs.
 IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
+    SingleClientThemesSyncTest,
     ShouldNotApplyThemeFromSyncingPrefsIfReceivedViaSpecifics) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(preferences_helper::GetPrefs(/*index=*/0)
@@ -422,29 +437,31 @@ IN_PROC_BROWSER_TEST_F(
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kBrowserColorSchemeDoNotUse);
+    preference_specifics->set_name(
+        prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kBrowserColorSchemeDoNotUse,
-            /*client_tag=*/prefs::kBrowserColorSchemeDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
   {
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kUserColorDoNotUse);
+    preference_specifics->set_name(prefs::kDeprecatedUserColorDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(
             base::Value(static_cast<int>(SK_ColorBLUE))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kUserColorDoNotUse,
-            /*client_tag=*/prefs::kUserColorDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedUserColorDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedUserColorDoNotUse, specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
   {
@@ -475,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(
 // Verifies that the syncing theme prefs are applied if the incoming
 // ThemeSpecifics does not have the new fields.
 IN_PROC_BROWSER_TEST_F(
-    SingleClientThemesWithMoveThemePrefsToSpecficsiEnabledSyncTest,
+    SingleClientThemesSyncTest,
     ShouldApplyThemeFromSyncingPrefsIfNotReceivedViaSpecifics) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(preferences_helper::GetPrefs(/*index=*/0)
@@ -484,14 +501,16 @@ IN_PROC_BROWSER_TEST_F(
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kBrowserColorSchemeDoNotUse);
+    preference_specifics->set_name(
+        prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kBrowserColorSchemeDoNotUse,
-            /*client_tag=*/prefs::kBrowserColorSchemeDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
   {
@@ -526,5 +545,291 @@ IN_PROC_BROWSER_TEST_F(
                       sync_pb::ThemeSpecifics_BrowserColorScheme_LIGHT))
                   .Wait());
 }
+
+class SingleClientThemesSyncTestWithoutAccountThemesSeparation
+    : public SingleClientThemesSyncTest {
+ public:
+  SingleClientThemesSyncTestWithoutAccountThemesSeparation() {
+    feature_list_.InitAndDisableFeature(syncer::kSeparateLocalAndAccountThemes);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithoutAccountThemesSeparation,
+                       UploadsPreexistingTheme) {
+  ASSERT_TRUE(SetupClients());
+
+  UseCustomTheme(GetProfile(0), 0);
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  EXPECT_TRUE(
+      ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
+}
+
+class SingleClientThemesSyncTestWithAccountThemesSeparation
+    : public SingleClientThemesSyncTest {
+ public:
+  SingleClientThemesSyncTestWithAccountThemesSeparation()
+      : feature_list_(syncer::kSeparateLocalAndAccountThemes) {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldNotUploadPreexistingTheme) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // Use custom theme locally.
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // Default theme on the server.
+  ASSERT_FALSE(UsingDefaultTheme(GetProfile(0)));
+  GetFakeServer()->InjectEntity(CreateDefaultThemeEntity());
+
+  // Enable sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
+
+  // Local custom theme is not uploaded to the account.
+  EXPECT_TRUE(ServerThemeMatchChecker(HasDefaultTheme()).Wait());
+  EXPECT_TRUE(UsingCustomTheme(GetProfile(0)));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldRestoreLocalThemeUponSyncStop) {
+  ASSERT_TRUE(SetupClients());
+
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
+
+  ASSERT_TRUE(SetupSync());
+  EXPECT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+
+  // Disable sync.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+
+  // Original local theme should get re-applied.
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       PRE_ShouldPersistSavedLocalThemeOverBrowserRestart) {
+  ASSERT_TRUE(SetupClients());
+
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
+
+  ASSERT_TRUE(SetupSync());
+  EXPECT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldPersistSavedLocalThemeOverBrowserRestart) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
+
+  // Disable sync.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+
+  // Original local theme should get re-applied.
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldNotApplyLocalUpdateOnLocalThemeWhenSignedIn) {
+  ASSERT_TRUE(SetupSync());
+
+  // Change to a custom theme.
+  UseCustomTheme(GetProfile(0), 0);
+  // Custom theme is uploaded to account.
+  EXPECT_TRUE(
+      ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
+
+  // Disable syncing of themes.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+
+  // Original local theme is restored.
+  EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTestWithAccountThemesSeparation,
+                       ShouldNotApplyRemoteUpdateOnLocalTheme) {
+  ASSERT_TRUE(SetupClients());
+
+  // Set up a custom theme first, so we can then switch back to default.
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  ASSERT_TRUE(SetupSync());
+
+  // Remote update.
+  GetFakeServer()->InjectEntity(CreateDefaultThemeEntity());
+  EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
+
+  // Disable sync.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kThemes));
+
+  // Original local theme should get re-applied.
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
+}
+
+// Signing out is not supported on ChromeOS, thus excluded from this test suite.
+#if !BUILDFLAG(IS_CHROMEOS)
+class SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState
+    : public SingleClientThemesSyncTestWithAccountThemesSeparation {
+ public:
+  bool HasUnsyncedThemeData() {
+    return GetClient(0)
+        ->GetTypesWithUnsyncedDataAndWait({syncer::THEMES})
+        .contains(syncer::THEMES);
+  }
+
+ private:
+  // `kEnablePreferencesAccountStorage` is used to enable themes in transport
+  // mode alongside some other data types.
+  base::test::ScopedFeatureList feature_list_{
+      switches::kEnablePreferencesAccountStorage};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState,
+    ShouldMarkThemeChangeWhileSigninPendingUnsynced) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(UsingDefaultTheme(GetProfile(0)));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  themes_helper::UseGrayscaleTheme(GetProfile(0));
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(UsingGrayscaleTheme(GetProfile(0)));
+
+  // Enter sign-in pending state.
+  ASSERT_TRUE(GetClient(0)->EnterSignInPendingStateForPrimaryAccount());
+  ASSERT_FALSE(HasUnsyncedThemeData());
+
+  // Set up a custom theme.
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // Themes should be checked for unsynced data when sign-out is attempted.
+  ASSERT_TRUE(
+      syncer::TypesRequiringUnsyncedDataCheckOnSignout().Has(syncer::THEMES));
+
+  // Themes has unsynced data.
+  EXPECT_TRUE(HasUnsyncedThemeData());
+
+  // Sign out.
+  GetClient(0)->SignOutPrimaryAccount();
+  EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState,
+    ShouldCommitUnsyncedThemeChangeUponResolve) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(UsingDefaultTheme(GetProfile(0)));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  themes_helper::UseGrayscaleTheme(GetProfile(0));
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(UsingGrayscaleTheme(GetProfile(0)));
+
+  // Enter sign-in pending state.
+  ASSERT_TRUE(GetClient(0)->EnterSignInPendingStateForPrimaryAccount());
+  ASSERT_FALSE(HasUnsyncedThemeData());
+
+  // Set up a custom theme.
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // Themes should be checked for unsynced data when sign-out is attempted.
+  ASSERT_TRUE(
+      syncer::TypesRequiringUnsyncedDataCheckOnSignout().Has(syncer::THEMES));
+
+  // Themes has unsynced data.
+  EXPECT_TRUE(HasUnsyncedThemeData());
+  // Server still has the old theme.
+  ASSERT_TRUE(ServerThemeMatchChecker(HasGrayscaleTheme()).Wait());
+
+  // Resolve sign-in pending state.
+  ASSERT_TRUE(GetClient(0)->ExitSignInPendingStateForPrimaryAccount());
+  ASSERT_TRUE(UsingCustomTheme(GetProfile(0)));
+  ASSERT_TRUE(
+      ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState,
+    PRE_ShouldPersistUnsyncedThemeChangeAcrossRestart) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(UsingDefaultTheme(GetProfile(0)));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  themes_helper::UseGrayscaleTheme(GetProfile(0));
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(UsingGrayscaleTheme(GetProfile(0)));
+
+  // Enter sign-in pending state.
+  ASSERT_TRUE(GetClient(0)->EnterSignInPendingStateForPrimaryAccount());
+  ASSERT_FALSE(HasUnsyncedThemeData());
+
+  // Set up a custom theme.
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+  ASSERT_TRUE(HasUnsyncedThemeData());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState,
+    ShouldPersistUnsyncedThemeChangeAcrossRestart) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(UsingCustomTheme(GetProfile(0)));
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportPaused());
+  // Hacky wait for entity tracker to be loaded.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return ThemeServiceFactory::GetForProfile(GetProfile(0))
+        ->GetThemeSyncableService()
+        ->GetThemeSyncStartState()
+        .has_value();
+  }));
+
+  // Themes has unsynced data.
+  EXPECT_TRUE(HasUnsyncedThemeData());
+  // Server still has the old theme.
+  ASSERT_TRUE(ServerThemeMatchChecker(HasGrayscaleTheme()).Wait());
+
+  // Resolve sign-in pending state.
+  ASSERT_TRUE(GetClient(0)->ExitSignInPendingStateForPrimaryAccount());
+  ASSERT_TRUE(UsingCustomTheme(GetProfile(0)));
+  ASSERT_TRUE(
+      ServerThemeMatchChecker(HasCustomThemeWithId(GetCustomTheme(0))).Wait());
+
+  // Sign out.
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

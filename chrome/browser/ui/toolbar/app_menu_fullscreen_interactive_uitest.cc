@@ -200,13 +200,14 @@ IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, ContextMenu) {
       CheckFullscreenForBrowser(waiter1, true),
       // 4. Right click anywhere on the page to open the context menu. This
       // chooses the center of the browser window, which is fine.
-      MoveMouseTo(kBrowserViewElementId), ClickMouse(ui_controls::RIGHT),
-      // 5. Make sure context menu is displayed correctly at the expected
-      // location when chrome is in full screen mode.
-      InAnyContext(WaitForShow(RenderViewContextMenu::kExitFullscreenMenuItem)),
       CreateFullscreenWaiter(waiter2, false),
-      InAnyContext(
-          SelectMenuItem(RenderViewContextMenu::kExitFullscreenMenuItem)),
+      MoveMouseTo(kBrowserViewElementId),
+      MayInvolveNativeContextMenu(
+          // 5. Make sure context menu is displayed correctly at the expected
+          // location when chrome is in full screen mode.
+          ClickMouse(ui_controls::RIGHT),
+          InAnyContext(
+              SelectMenuItem(RenderViewContextMenu::kExitFullscreenMenuItem))),
       CheckFullscreenForBrowser(waiter2, false));
 }
 

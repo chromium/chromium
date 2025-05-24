@@ -24,9 +24,9 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
-// windows.h needs to come first.  The gap above prevents reordering.
 #include <shellapi.h>
 
+#include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/win/app_icon.h"
 #include "ui/gfx/icon_util.h"
 #endif
@@ -37,10 +37,10 @@ gfx::ImageSkia CreateDefaultFavicon() {
   gfx::ImageSkia icon;
 #if BUILDFLAG(IS_WIN)
   // The default window icon is the application icon, not the default favicon.
-  HICON app_icon = GetAppIcon();
+  base::win::ScopedGDIObject<HICON> app_icon(GetAppIcon());
   icon = gfx::ImageSkia::CreateFromBitmap(
-      IconUtil::CreateSkBitmapFromHICON(app_icon, gfx::Size(16, 16)), 1.0f);
-  DestroyIcon(app_icon);
+      IconUtil::CreateSkBitmapFromHICON(app_icon.get(), gfx::Size(16, 16)),
+      1.0f);
 #else
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   icon = *rb.GetImageSkiaNamed(IDR_PRODUCT_LOGO_16);
@@ -76,8 +76,7 @@ TabIconView::TabIconView() {
   SetFocusBehavior(FocusBehavior::NEVER);
 }
 
-TabIconView::~TabIconView() {
-}
+TabIconView::~TabIconView() = default;
 
 void TabIconView::SetModel(TabIconViewModel* model) {
   model_ = model;
@@ -85,15 +84,17 @@ void TabIconView::SetModel(TabIconViewModel* model) {
 }
 
 void TabIconView::Update() {
-  if (!model_ || !model_->ShouldTabIconViewAnimate())
+  if (!model_ || !model_->ShouldTabIconViewAnimate()) {
     throbber_start_time_ = base::TimeTicks();
+  }
 
   SchedulePaint();
 }
 
 void TabIconView::PaintThrobber(gfx::Canvas* canvas) {
-  if (throbber_start_time_ == base::TimeTicks())
+  if (throbber_start_time_ == base::TimeTicks()) {
     throbber_start_time_ = base::TimeTicks::Now();
+  }
 
   gfx::PaintThrobberSpinning(canvas, GetLocalBounds(),
                              GetColorProvider()->GetColor(ui::kColorThrobber),

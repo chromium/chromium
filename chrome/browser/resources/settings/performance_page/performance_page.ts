@@ -51,22 +51,8 @@ export class SettingsPerformancePageElement extends
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      isPerformanceInterventionUiEnabled_: {
-        readOnly: true,
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isPerformanceInterventionUiEnabled');
-        },
-      },
-    };
-  }
-
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
-
-  private isPerformanceInterventionUiEnabled_: boolean;
 
   override ready() {
     super.ready();

@@ -6,7 +6,7 @@
 
 namespace offline_pages {
 
-OfflinePageNavigationUIData::OfflinePageNavigationUIData() {}
+OfflinePageNavigationUIData::OfflinePageNavigationUIData() = default;
 
 OfflinePageNavigationUIData::OfflinePageNavigationUIData(bool is_offline_page)
     : is_offline_page_(is_offline_page) {}

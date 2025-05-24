@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, FkeyRowElement, Keyboard, KeyboardRemapModifierKeyRowElement, KeyboardSixPackKeyRowElement, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
+
+import type {FkeyRowElement, KeyboardRemapModifierKeyRowElement, KeyboardSixPackKeyRowElement, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/lazy_load.js';
+import type {Keyboard} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -75,7 +79,8 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     assertEquals(ModifierKey.kCapsLock, page.get('fakeCapsLockPref.value'));
     assertEquals(ctrlDefaultMapping, page.get('fakeCtrlPref.value'));
     assertEquals(ModifierKey.kEscape, page.get('fakeEscPref.value'));
-    assertEquals(ModifierKey.kRightAlt, page.get('fakeRightAltPref.value'));
+    assertEquals(
+        ModifierKey.kQuickInsert, page.get('fakeQuickInsertPref.value'));
     assertEquals(ModifierKey.kFunction, page.get('fakeFunctionPref.value'));
     assertEquals(metaDefaultMapping, page.get('fakeMetaPref.value'));
   }
@@ -190,33 +195,34 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
   });
 
   /**
-   * Verify that the right alt row is shown in the remap subpage when modifier
-   * split feature flag is on.
+   * Verify that the quick insert row is shown in the remap subpage when
+   * modifier split feature flag is on.
    */
 
-  test('show right alt row with modifier split on', async () => {
+  test('show quick insert row with modifier split on', async () => {
     await setModifierSplitEnabled(true);
     await initializePerDeviceKeyboardRemapKeys(4);
 
-    assertEquals(ModifierKey.kRightAlt, page.get('fakeRightAltPref.value'));
-    const rightAltKeyRow =
-        page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
-            '#rightAltKey');
-    assert(rightAltKeyRow);
-    assertEquals('right alt', rightAltKeyRow.get('keyLabel'));
-    const rightAltKeyDropdown =
-        rightAltKeyRow.shadowRoot!.querySelector('#keyDropdown');
-    assert(rightAltKeyDropdown);
     assertEquals(
-        ModifierKey.kRightAlt.toString(),
-        rightAltKeyDropdown.shadowRoot!.querySelector('select')!.value);
+        ModifierKey.kQuickInsert, page.get('fakeQuickInsertPref.value'));
+    const quickInsertKeyRow =
+        page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
+            '#quickInsertKey');
+    assert(quickInsertKeyRow);
+    assertEquals('quick insert', quickInsertKeyRow.get('keyLabel'));
+    const quickInsertKeyDropdown =
+        quickInsertKeyRow.shadowRoot!.querySelector('#keyDropdown');
+    assert(quickInsertKeyDropdown);
+    assertEquals(
+        ModifierKey.kQuickInsert.toString(),
+        quickInsertKeyDropdown.shadowRoot!.querySelector('select')!.value);
 
     await initializePerDeviceKeyboardRemapKeys(0);
 
-    const updatedRightAltRow =
+    const updatedQuickInsertRow =
         page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
-            '#rightAltKey');
-    assertFalse(isVisible(updatedRightAltRow));
+            '#quickInsertKey');
+    assertFalse(isVisible(updatedQuickInsertRow));
   });
 
   /**
@@ -445,8 +451,8 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     page.set('fakeAltPref.value', ModifierKey.kAssistant);
     page.set('fakeBackspacePref.value', ModifierKey.kControl);
     page.set('fakeEscPref.value', ModifierKey.kVoid);
-    page.set('fakeRightAltPref.value', ModifierKey.kAlt);
-    page.set('fakeFunctionPref.value', ModifierKey.kRightAlt);
+    page.set('fakeQuickInsertPref.value', ModifierKey.kAlt);
+    page.set('fakeFunctionPref.value', ModifierKey.kQuickInsert);
 
     // Verify that the keyboard settings in the provider are updated.
     const keyboards = await provider.getConnectedKeyboardSettings();
@@ -460,9 +466,9 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     assertEquals(ModifierKey.kVoid, updatedRemapping[ModifierKey.kEscape]);
     assertEquals(ModifierKey.kControl, updatedRemapping[ModifierKey.kMeta]);
     assertEquals(ModifierKey.kMeta, updatedRemapping[ModifierKey.kControl]);
-    assertEquals(ModifierKey.kAlt, updatedRemapping[ModifierKey.kRightAlt]);
+    assertEquals(ModifierKey.kAlt, updatedRemapping[ModifierKey.kQuickInsert]);
     assertEquals(
-        ModifierKey.kRightAlt, updatedRemapping[ModifierKey.kFunction]);
+        ModifierKey.kQuickInsert, updatedRemapping[ModifierKey.kFunction]);
   });
 
   test('Keyboard description populated correctly', async () => {

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_util.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -32,19 +32,19 @@ void RecordChromeColorsColorType(ChromeColorType type) {
 void RecordChromeColorsDynamicColor(int color_id) {
   base::UmaHistogramExactLinear(
       "ChromeColors.DynamicColorOnLoad", color_id,
-      base::ranges::max_element(kDynamicCustomizeChromeColors, {},
-                                &DynamicColorInfo::id)
+      std::ranges::max_element(kDynamicCustomizeChromeColors, {},
+                               &DynamicColorInfo::id)
           ->id);
   RecordChromeColorsColorType(ChromeColorType::kDynamicChromeColor);
 }
 
 int GetDynamicColorId(const SkColor color,
                       ui::mojom::BrowserColorVariant variant) {
-  auto it = base::ranges::find_if(kDynamicCustomizeChromeColors,
-                                  [&](const DynamicColorInfo& dynamic_color) {
-                                    return dynamic_color.color == color &&
-                                           dynamic_color.variant == variant;
-                                  });
+  auto it = std::ranges::find_if(kDynamicCustomizeChromeColors,
+                                 [&](const DynamicColorInfo& dynamic_color) {
+                                   return dynamic_color.color == color &&
+                                          dynamic_color.variant == variant;
+                                 });
   return it == kDynamicCustomizeChromeColors.end() ? kOtherDynamicColorId
                                                    : it->id;
 }
@@ -67,8 +67,8 @@ void RecordDynamicColorOnLoadHistogram(SkColor color,
 }
 
 int GetChromeColorsInfo(SkColor color) {
-  const auto it = base::ranges::find(chrome_colors::kGeneratedColorsInfo, color,
-                                     &chrome_colors::ColorInfo::color);
+  const auto it = std::ranges::find(chrome_colors::kGeneratedColorsInfo, color,
+                                    &chrome_colors::ColorInfo::color);
   return it == std::end(chrome_colors::kGeneratedColorsInfo) ? kOtherColorId
                                                              : it->id;
 }

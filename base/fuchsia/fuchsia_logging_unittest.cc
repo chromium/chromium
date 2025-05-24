@@ -82,7 +82,7 @@ TEST(FuchsiaLoggingTest, SystemLoggingMultipleTags) {
   // Create a logger with multiple tags and emit a message to it.
   ScopedFxLogger logger = ScopedFxLogger::CreateFromLogSink(
       std::move(log_sink_client_end.value()), kTags);
-  logger.LogMessage("", 0, kLogMessage, FUCHSIA_LOG_ERROR);
+  logger.LogMessage("", 0, kLogMessage, logging::LOGGING_ERROR);
 
   std::optional<fuchsia_logger::LogMessage> logged_message =
       listener.RunUntilMessageReceived(kLogMessage);

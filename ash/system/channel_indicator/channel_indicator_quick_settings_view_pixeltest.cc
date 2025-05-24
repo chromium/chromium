@@ -31,7 +31,8 @@ class ChannelIndicatorQuickSettingsViewPixelTest : public AshTestBase {
     // Install a test delegate to allow overriding channel version.
     auto delegate = std::make_unique<TestShellDelegate>();
     delegate->set_channel(version_info::Channel::BETA);
-    AshTestBase::SetUp(std::move(delegate));
+    set_shell_delegate(std::move(delegate));
+    AshTestBase::SetUp();
 
     system_tray_client_ = GetSystemTrayClient();
     system_tray_client_->set_user_feedback_enabled(true);
@@ -87,7 +88,7 @@ TEST_F(ChannelIndicatorQuickSettingsViewPixelTest, FeedbackButtonVisible) {
   // `ChannelIndicatorQuickSettingsView`.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "feedback_button_visible",
-      /*revision_number=*/8, view()));
+      /*revision_number=*/9, view()));
 }
 
 }  // namespace ash

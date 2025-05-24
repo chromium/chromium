@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryStatus, DevicePageBrowserProxy, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport} from 'chrome://os-settings/os_settings.js';
+import type {BatteryStatus, DevicePageBrowserProxy, IdleBehavior, LidClosedBehavior, NoteAppInfo} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
@@ -33,7 +32,6 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
       'requestNoteTakingApps',
       'requestPowerManagementSettings',
       'setPreferredNoteTakingApp',
-      'setPreferredNoteTakingAppEnabledOnLockScreen',
       'showShortcutCustomizationApp',
       'showPlayStore',
       'updatePowerStatus',
@@ -136,33 +134,8 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
     });
 
     if (changed) {
-      this.scheduleLockScreenAppsUpdated_();
+      this.scheduleNoteTakingAppsUpdated_();
     }
-  }
-
-  setPreferredNoteTakingAppEnabledOnLockScreen(enabled: boolean): void {
-    this.methodCalled('setPreferredNoteTakingAppEnabledOnLockScreen');
-
-    this.noteTakingApps_.forEach((app) => {
-      if (enabled) {
-        if (app.preferred) {
-          assertEquals(
-              NoteAppLockScreenSupport.SUPPORTED, app.lockScreenSupport);
-        }
-        if (app.lockScreenSupport === NoteAppLockScreenSupport.SUPPORTED) {
-          app.lockScreenSupport = NoteAppLockScreenSupport.ENABLED;
-        }
-      } else {
-        if (app.preferred) {
-          assertEquals(NoteAppLockScreenSupport.ENABLED, app.lockScreenSupport);
-        }
-        if (app.lockScreenSupport === NoteAppLockScreenSupport.ENABLED) {
-          app.lockScreenSupport = NoteAppLockScreenSupport.SUPPORTED;
-        }
-      }
-    });
-
-    this.scheduleLockScreenAppsUpdated_();
   }
 
   highlightDisplay(id: string): void {
@@ -195,7 +168,7 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
   setAndroidAppsReceived(received: boolean): void {
     this.androidAppsReceived_ = received;
 
-    this.scheduleLockScreenAppsUpdated_();
+    this.scheduleNoteTakingAppsUpdated_();
   }
 
   /**
@@ -210,24 +183,12 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
   }
 
   /**
-   * @return The lock screen support state of the app currently selected as
-   *     preferred.
-   */
-  getPreferredAppLockScreenState(): NoteAppLockScreenSupport|undefined {
-    const app = this.noteTakingApps_.find((existing) => {
-      return existing.preferred;
-    });
-
-    return app?.lockScreenSupport;
-  }
-
-  /**
    * Sets the current list of known note taking apps.
    * @param apps The list of apps to set.
    */
   setNoteTakingApps(apps: NoteAppInfo[]): void {
     this.noteTakingApps_ = apps;
-    this.scheduleLockScreenAppsUpdated_();
+    this.scheduleNoteTakingAppsUpdated_();
   }
 
   /**
@@ -240,13 +201,13 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
     assert(!appAlreadyExists);
 
     this.noteTakingApps_.push(app);
-    this.scheduleLockScreenAppsUpdated_();
+    this.scheduleNoteTakingAppsUpdated_();
   }
 
   /**
    * Invokes the registered note taking apps update callback.
    */
-  private scheduleLockScreenAppsUpdated_(): void {
+  private scheduleNoteTakingAppsUpdated_(): void {
     this.onNoteTakingAppsUpdated_(
         this.noteTakingApps_.map((app) => {
           return Object.assign({}, app);

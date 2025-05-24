@@ -76,10 +76,8 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // SSLSocket implementation.
   int ExportKeyingMaterial(std::string_view label,
-                           bool has_context,
-                           std::string_view context,
-                           unsigned char* out,
-                           unsigned int outlen) override;
+                           std::optional<base::span<const uint8_t>> context,
+                           base::span<uint8_t> out) override;
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override;
@@ -137,7 +135,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   void OnHandshakeIOComplete(int result);
 
   int DoHandshakeLoop(int last_io_result);
-  int DoPayloadRead(IOBuffer* buf, int buf_len);
+  int DoPayloadRead(base::span<uint8_t> buf);
   int DoPayloadWrite();
   void DoPeek();
 
@@ -152,7 +150,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   static ssl_verify_result_t VerifyCertCallback(SSL* ssl, uint8_t* out_alert);
   ssl_verify_result_t VerifyCert();
   ssl_verify_result_t HandleVerifyResult();
-  int CheckCTRequirements();
 
   // Callback from the SSL layer that indicates the remote server is requesting
   // a certificate for this client.
@@ -172,15 +169,11 @@ class SSLClientSocketImpl : public SSLClientSocket,
   bool IsCachingEnabled() const;
 
   // Callbacks for operations with the private key.
-  ssl_private_key_result_t PrivateKeySignCallback(uint8_t* out,
-                                                  size_t* out_len,
-                                                  size_t max_out,
-                                                  uint16_t algorithm,
-                                                  const uint8_t* in,
-                                                  size_t in_len);
-  ssl_private_key_result_t PrivateKeyCompleteCallback(uint8_t* out,
-                                                      size_t* out_len,
-                                                      size_t max_out);
+  ssl_private_key_result_t PrivateKeySignCallback(
+      uint16_t algorithm,
+      base::span<const uint8_t> input);
+  ssl_private_key_result_t PrivateKeyCompleteCallback(base::span<uint8_t> buf,
+                                                      size_t* out_len);
 
   void OnPrivateKeyComplete(Error error, const std::vector<uint8_t>& signature);
 
@@ -222,7 +215,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // Used by Write function.
   scoped_refptr<IOBuffer> user_write_buf_;
   int user_write_buf_len_;
-  bool first_post_handshake_write_ = true;
 
   // True if we've already handled the result of our attempt to use early data.
   bool handled_early_data_result_ = false;
@@ -285,7 +277,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // True if certificate verification used an ECH name override.
   bool used_ech_name_override_ = false;
 
-  NextProto negotiated_protocol_ = kProtoUnknown;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 
   // Set to true if a CertificateRequest was received.
   bool certificate_requested_ = false;

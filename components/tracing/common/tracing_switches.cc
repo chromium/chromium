@@ -18,13 +18,17 @@ namespace switches {
 //  < {input txt config}.pbtxt > {output proto config}.pb
 const char kEnableBackgroundTracing[] = "enable-background-tracing";
 
-// Enables background tracing by passing legacy trigger rules as an argument.
-const char kEnableLegacyBackgroundTracing[] =
-    "enable-legacy-background-tracing";
-
-// Causes TRACE_EVENT flags to be recorded from startup.
-// This flag will be ignored if --trace-startup or --trace-shutdown is provided.
+// Enables startup tracing by passing a file path containing the chrome Json
+// tracing config as an argument. This flag will be ignored if --trace-startup
+// or --trace-shutdown is provided.
 const char kTraceConfigFile[]               = "trace-config-file";
+
+// Enables startup tracing by passing a file path containing the perfetto config
+// as an argument. The config is a serialized or base64 encoded proto
+// `perfetto.protos.TraceConfig` defined in
+// third_party/perfetto/protos/perfetto/config/trace_config.proto. This flag
+// will be ignored if --trace-startup or --trace-shutdown is provided.
+const char kTracePerfettoConfigFile[] = "trace-perfetto-config-file";
 
 // Causes TRACE_EVENT flags to be recorded from startup. Optionally, can
 // specify the specific trace categories to include (e.g.
@@ -49,6 +53,11 @@ const char kEnableTracing[] = "enable-tracing";
 // handle containing the serialized perfetto config. This flag will be
 // ignored if --trace-startup or --trace-shutdown is provided.
 const char kTraceConfigHandle[] = "trace-config-handle";
+
+// Handle to the shared memory segment a child process should use to transmit
+// tracing data back to the tracing service. This flag allows tracing to be
+// recorded before sandbox setup.
+const char kTraceBufferHandle[] = "trace-buffer-handle";
 
 // Sets the time in seconds until startup tracing ends. If omitted:
 // - if --trace-startup is specified, a default of 5 seconds is used.

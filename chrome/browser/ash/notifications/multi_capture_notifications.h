@@ -9,12 +9,16 @@
 #include <memory>
 #include <string>
 
-#include "ash/multi_capture/multi_capture_service_client.h"
+#include "ash/multi_capture/multi_capture_service.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+
+namespace base {
+class OneShotTimer;
+}  // namespace base
 
 namespace url {
 class Origin;
@@ -26,7 +30,7 @@ namespace ash {
 // automatic multi captures being started. On managed devices, administrators
 // can enforce automatic capturing by using the getAllScreensMedia API.
 // Users are notified to make sure their privacy is respected.
-class MultiCaptureNotifications : public MultiCaptureServiceClient::Observer,
+class MultiCaptureNotifications : public MultiCaptureService::Observer,
                                   public LoginState::Observer {
  public:
   struct NotificationMetadata {
@@ -61,9 +65,10 @@ class MultiCaptureNotifications : public MultiCaptureServiceClient::Observer,
                            const url::Origin& origin) override;
   void MultiCaptureStartedFromApp(const std::string& label,
                                   const std::string& app_id,
-                                  const std::string& app_short_name) override;
+                                  const std::string& app_short_name,
+                                  const url::Origin& app_origin) override;
   void MultiCaptureStopped(const std::string& label) override;
-  void MultiCaptureServiceClientDestroyed() override;
+  void MultiCaptureServiceDestroyed() override;
 
   // LoginState::Observer:
   void LoggedInStateChanged() override;
@@ -71,15 +76,15 @@ class MultiCaptureNotifications : public MultiCaptureServiceClient::Observer,
  private:
   void MultiCaptureStartedInternal(const std::string& label,
                                    const std::string& notification_id,
-                                   const std::string& app_name);
+                                   const std::string& app_name,
+                                   const url::Origin& app_origin);
 
   // Maps the multi capture label (as received in `MultiCaptureStarted` and
   // `MultiCaptureStopped`) to the notification metadata.
   std::map<std::string, NotificationMetadata> notifications_metadata_;
 
-  base::ScopedObservation<MultiCaptureServiceClient,
-                          MultiCaptureServiceClient::Observer>
-      multi_capture_service_client_observation_{this};
+  base::ScopedObservation<MultiCaptureService, MultiCaptureService::Observer>
+      multi_capture_observation_{this};
   base::ScopedObservation<LoginState, LoginState::Observer>
       login_state_observation_{this};
   base::WeakPtrFactory<MultiCaptureNotifications> weak_factory_{this};

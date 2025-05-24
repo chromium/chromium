@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
+#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -40,7 +41,14 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     // Called to make the WebGPU/Dawn stop accessing the texture prior to its
     // transfer to the compositor/video frame
     virtual void OnTextureTransferred() = 0;
+    virtual void InitializeLayer(cc::Layer* layer) = 0;
     virtual void SetNeedsCompositingUpdate() = 0;
+    // Check whether GPUDevice is destroyed. wgpu::Device doesn't have interface
+    // to check device destroyed state.
+    // TODO(crbug.com/370694819): Move device destroy fallback logics from
+    // renderer process to gpu process so that we can detect device destroy
+    // immediately.
+    virtual bool IsGPUDeviceDestroyed() = 0;
   };
 
   WebGPUSwapBufferProvider(
@@ -55,9 +63,9 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   ~WebGPUSwapBufferProvider() override;
 
   viz::SharedImageFormat Format() const;
+  wgpu::TextureFormat TextureFormat() const { return format_; }
   gfx::Size Size() const;
   cc::Layer* CcLayer();
-  void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
   void DiscardCurrentSwapBuffer();
   scoped_refptr<WebGPUMailboxTexture> GetNewTexture(
@@ -90,14 +98,11 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       const gfx::ColorSpace& dst_color_space,
       WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback);
 
-  scoped_refptr<WebGPUMailboxTexture> GetLastWebGPUMailboxTexture() const;
-
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
 
   // cc::TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
 
@@ -105,7 +110,27 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   // be used with WebGPU will additionally be sent to the display.
   gpu::SharedImageUsageSet GetSharedImageUsagesForDisplay();
 
+  // Returns the SharedImage of the current swapbuffer.
   scoped_refptr<gpu::ClientSharedImage> GetCurrentSharedImage();
+
+  // Returns the SharedImage (if any) in the front buffer
+  scoped_refptr<gpu::ClientSharedImage> GetFrontBufferSharedImage();
+  gpu::SyncToken GetFrontBufferSyncToken();
+
+  gfx::HDRMetadata GetHDRMetadata() { return hdr_metadata_; }
+
+  // Exports the SharedImage of the current swapbuffer for external usage:
+  // * Ends any ongoing WebGPU access on that SharedImage and populates
+  //   `sync_token` with a token that the external access should wait on before
+  //   accessing the SharedImage.
+  // * Moves the current swapbuffer into `out_release_callback` to ensure that
+  //   WebGPU does not continue to access that SharedImage while that
+  //   SharedImage is being accessed externally.
+  //   `out_release_callback` should be invoked when the SharedImage is
+  //   available for reuse by WebGPU after the external usage finishes.
+  scoped_refptr<gpu::ClientSharedImage> ExportCurrentSharedImage(
+      gpu::SyncToken& sync_token,
+      viz::ReleaseCallback* out_release_callback);
 
   gpu::Mailbox GetCurrentMailboxForTesting() const;
 
@@ -122,9 +147,11 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     ~SwapBuffer() override;
   };
 
-  void MailboxReleased(scoped_refptr<SwapBuffer> swap_buffer,
-                       const gpu::SyncToken& sync_token,
-                       bool lost_resource);
+  static void MailboxReleased(base::WeakPtr<WebGPUSwapBufferProvider> provider,
+                              base::PlatformThreadRef thread_ref,
+                              scoped_refptr<SwapBuffer> swap_buffer,
+                              const gpu::SyncToken& sync_token,
+                              bool lost_resource);
 
   // This method will dissociate current Dawn Texture (produced by
   // GetNewTexture()) from the mailbox so that the mailbox can be used by other
@@ -144,15 +171,17 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   const wgpu::TextureUsage internal_usage_;
   const PredefinedColorSpace color_space_;
   const gfx::HDRMetadata hdr_metadata_;
-  cc::PaintFlags::FilterQuality filter_quality_ =
-      cc::PaintFlags::FilterQuality::kLow;
   int max_texture_size_;
 
   // Pool of SwapBuffers which manages creation, release and recycling of
   // SwapBuffer resources.
   std::unique_ptr<gpu::SharedImagePool<SwapBuffer>> swap_buffer_pool_;
-  scoped_refptr<SwapBuffer> last_swap_buffer_;
   scoped_refptr<SwapBuffer> current_swap_buffer_;
+
+  scoped_refptr<gpu::ClientSharedImage> front_buffer_shared_image_;
+  gpu::SyncToken front_buffer_sync_token_;
+
+  base::WeakPtrFactory<WebGPUSwapBufferProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

@@ -100,7 +100,7 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
     @CallSuper
     protected void after() {
         if (mFinishActivity && mActivity != null) {
-            ApplicationTestUtils.finishActivity(mActivity);
+            finishActivity();
         }
     }
 
@@ -132,8 +132,10 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
     /**
      * Launches the Activity under test using the provided intent. If the provided intent is null,
      * an explicit intent targeting the Activity is created and used.
+     *
+     * @return The activity launched as a result of this method.
      */
-    public void launchActivity(@Nullable Intent startIntent) {
+    public T launchActivity(@Nullable Intent startIntent) {
         if (startIntent == null) {
             startIntent = getActivityIntent();
         } else {
@@ -155,7 +157,8 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
         // https://developer.android.com/reference/android/app/Activity#onNewIntent(android.content.Intent)
         Stage targetStage =
                 ((startIntent.getFlags() & Intent.FLAG_ACTIVITY_SINGLE_TOP) != 0
-                                && mActivity != null)
+                                && mActivity != null
+                                && !mActivity.isFinishing())
                         ? Stage.PAUSED
                         : Stage.CREATED;
         mActivity =
@@ -163,6 +166,7 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
                         mActivityClass,
                         targetStage,
                         () -> ContextUtils.getApplicationContext().startActivity(intent));
+        return mActivity;
     }
 
     /**

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 
@@ -264,7 +265,7 @@ class CORE_EXPORT InkOverflow {
     // When both self and contents overflow.
     ContainerInkOverflow* container_;
     // Outsets in small |LayoutUnit|s when overflow is small.
-    SmallRawValue outsets_[4];
+    std::array<SmallRawValue, 4> outsets_;
     static_assert(sizeof(outsets_) == sizeof(single_),
                   "outsets should be the size of a pointer");
   };

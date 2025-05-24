@@ -5,7 +5,6 @@
 source_set("infobar_modal") {
   sources = [
     "infobar_modal_overlay_responses.h",
-    "infobar_modal_overlay_responses.mm",
     "save_address_profile_infobar_modal_overlay_request_config.h",
     "save_address_profile_infobar_modal_overlay_request_config.mm",
     "save_address_profile_infobar_modal_overlay_responses.h",

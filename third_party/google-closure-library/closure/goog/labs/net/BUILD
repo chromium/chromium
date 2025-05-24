@@ -7,6 +7,7 @@ licenses(["notice"])
 closure_js_library(
     name = "net",
     srcs = [],
+    lenient = True,
     exports = [
         ":image",
         ":webchannel",
@@ -20,9 +21,9 @@ closure_js_library(
 closure_js_library(
     name = "image",
     srcs = ["image.js"],
+    lenient = True,
     deps = [
         "//closure/goog/disposable",
-        "//closure/goog/dom:safe",
         "//closure/goog/events:eventhandler",
         "//closure/goog/events:eventtype",
         "//closure/goog/html:safeurl",
@@ -35,6 +36,7 @@ closure_js_library(
 closure_js_library(
     name = "webchannel",
     srcs = ["webchannel.js"],
+    lenient = True,
     deps = [
         "//closure/goog/events",
         "//closure/goog/events:event",
@@ -46,12 +48,14 @@ closure_js_library(
 closure_js_library(
     name = "webchanneltransport",
     srcs = ["webchanneltransport.js"],
+    lenient = True,
     deps = [":webchannel"],
 )
 
 closure_js_library(
     name = "webchanneltransportfactory",
     srcs = ["webchanneltransportfactory.js"],
+    lenient = True,
     deps = [
         ":webchanneltransport",
         "//closure/goog/labs/net/webchannel:webchannelbasetransport",
@@ -61,6 +65,7 @@ closure_js_library(
 closure_js_library(
     name = "xhr",
     srcs = ["xhr.js"],
+    lenient = True,
     deps = [
         "//closure/goog/asserts",
         "//closure/goog/debug:error",

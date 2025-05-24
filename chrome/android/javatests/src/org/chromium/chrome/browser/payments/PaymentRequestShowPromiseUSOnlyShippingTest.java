@@ -67,7 +67,7 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest {
                         .setPhoneNumber("555-222-2222")
                         .setLanguageCode("en-CA")
                         .build());
-        mRule.triggerUIAndWait("buy", mRule.getReadyForInput());
+        mRule.triggerUiAndWait("buy", mRule.getReadyForInput());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());
         Assert.assertEquals(
@@ -115,7 +115,7 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest {
                         .setPhoneNumber("555-111-1111")
                         .setLanguageCode("en-US")
                         .build());
-        mRule.triggerUIAndWait("buy", mRule.getReadyForInput());
+        mRule.triggerUiAndWait("buy", mRule.getReadyForInput());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());
         Assert.assertEquals(

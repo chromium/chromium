@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_util.h"
@@ -21,7 +20,6 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "ui/base/page_transition_types.h"
 
@@ -194,11 +192,10 @@ int ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
 // static
 bool ServiceWorkerLoaderHelpers::IsMainRequestDestination(
     network::mojom::RequestDestination destination) {
-  // When PlzDedicatedWorker is enabled, a dedicated worker script is considered
-  // to be a main resource.
-  if (destination == network::mojom::RequestDestination::kWorker)
-    return base::FeatureList::IsEnabled(features::kPlzDedicatedWorker);
   return IsRequestDestinationFrame(destination) ||
+         // A dedicated worker or shared worker script is considered to be a
+         // main resource.
+         destination == network::mojom::RequestDestination::kWorker ||
          destination == network::mojom::RequestDestination::kSharedWorker;
 }
 
@@ -216,8 +213,7 @@ const char* ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
     case network::mojom::FetchResponseSource::kCacheStorage:
       return "CacheStorage";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 }  // namespace blink

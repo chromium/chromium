@@ -231,13 +231,13 @@ suite('cr-slider', function() {
 
   test('markers', async () => {
     const markersElement =
-        crSlider.shadowRoot!.querySelector<HTMLElement>('#markers')!;
+        crSlider.shadowRoot.querySelector<HTMLElement>('#markers')!;
     assertTrue(markersElement.hidden);
     crSlider.markerCount = 10;
     await microtasksFinished();
     assertFalse(markersElement.hidden);
     const markers =
-        Array.from(crSlider.shadowRoot!.querySelectorAll('#markers div'));
+        Array.from(crSlider.shadowRoot.querySelectorAll('#markers div'));
     assertEquals(9, markers.length);
     markers.forEach(marker => {
       assertTrue(marker.classList.contains('inactive-marker'));
@@ -267,7 +267,7 @@ suite('cr-slider', function() {
     assertEquals('4', crSlider.getAttribute('aria-valuetext'));
     assertEquals('4', crSlider.getAttribute('aria-valuenow'));
     assertEquals(
-        '', crSlider.shadowRoot!.querySelector('#label')!.textContent!.trim());
+        '', crSlider.shadowRoot.querySelector('#label')!.textContent!.trim());
     assertEquals(2, crSlider.value);
     pressArrowRight();
     assertEquals(3, crSlider.value);
@@ -275,7 +275,7 @@ suite('cr-slider', function() {
     assertEquals('8', crSlider.getAttribute('aria-valuetext'));
     assertEquals('8', crSlider.getAttribute('aria-valuenow'));
     assertEquals(
-        '', crSlider.shadowRoot!.querySelector('#label')!.textContent!.trim());
+        '', crSlider.shadowRoot.querySelector('#label')!.textContent!.trim());
 
     crSlider.value = 2;
     crSlider.ticks = [
@@ -301,7 +301,7 @@ suite('cr-slider', function() {
     assertEquals('Third', crSlider.getAttribute('aria-valuetext'));
     assertEquals(
         'Third',
-        crSlider.shadowRoot!.querySelector('#label')!.textContent!.trim());
+        crSlider.shadowRoot.querySelector('#label')!.textContent!.trim());
     assertEquals('3', crSlider.getAttribute('aria-valuenow'));
     pressArrowLeft();
     await microtasksFinished();
@@ -309,7 +309,7 @@ suite('cr-slider', function() {
     assertEquals('20', crSlider.getAttribute('aria-valuenow'));
     assertEquals(
         'Second',
-        crSlider.shadowRoot!.querySelector('#label')!.textContent!.trim());
+        crSlider.shadowRoot.querySelector('#label')!.textContent!.trim());
   });
 
   test('disabled whenever public |disabled| is true', async () => {
@@ -403,16 +403,16 @@ suite('cr-slider', function() {
       const expected = 'all';
       assertEquals(
           expected,
-          getComputedStyle(crSlider.shadowRoot!.querySelector('#knobAndLabel')!)
+          getComputedStyle(crSlider.shadowRoot.querySelector('#knobAndLabel')!)
               .transition);
       assertEquals(
           expected,
-          getComputedStyle(crSlider.shadowRoot!.querySelector('#bar')!)
+          getComputedStyle(crSlider.shadowRoot.querySelector('#bar')!)
               .transition);
     }
 
     const knobAndLabel =
-        crSlider.shadowRoot!.querySelector<HTMLElement>('#knobAndLabel')!;
+        crSlider.shadowRoot.querySelector<HTMLElement>('#knobAndLabel')!;
 
     type TransitionEventName = 'transitionstart'|'transitionend';
     function whenTransitionEvent(eventName: TransitionEventName):

@@ -12,7 +12,7 @@
 
 // The customize chrome side panel only uses the chrome colors with the
 // following ids, which is a subset of all chrome colors.
-constexpr int kCustomizeChromeColorIds[] = {
+inline constexpr std::array kCustomizeChromeColorIds{
     2,   // Cool grey.
     3,   // Midnight blue.
     4,   // Black.

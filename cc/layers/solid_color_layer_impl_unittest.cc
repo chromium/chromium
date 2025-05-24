@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "cc/animation/animation_host.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/test/layer_tree_impl_test_base.h"
@@ -38,7 +39,8 @@ TEST_F(SolidColorLayerImplTest, VerifyTilingCompleteAndNoOverlap) {
   CreateEffectNode(layer).render_surface_reason = RenderSurfaceReason::kTest;
   UpdateActiveTreeDrawProperties();
   AppendQuadsData data;
-  layer->AppendQuads(render_pass.get(), &data);
+  layer->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                     render_pass.get(), &data);
 
   VerifyQuadsExactlyCoverRect(render_pass->quad_list, visible_layer_rect);
 }
@@ -64,7 +66,8 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectBackgroundColorInQuad) {
   EXPECT_EQ(visible_layer_rect, layer->draw_properties().visible_layer_rect);
 
   AppendQuadsData data;
-  layer->AppendQuads(render_pass.get(), &data);
+  layer->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                     render_pass.get(), &data);
 
   ASSERT_EQ(render_pass->quad_list.size(), 1U);
   EXPECT_EQ(
@@ -90,7 +93,8 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectOpacityInQuad) {
   EXPECT_EQ(opacity, layer->draw_properties().opacity);
 
   AppendQuadsData data;
-  layer->AppendQuads(render_pass.get(), &data);
+  layer->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                     render_pass.get(), &data);
 
   ASSERT_EQ(render_pass->quad_list.size(), 1U);
   EXPECT_EQ(opacity, viz::SolidColorDrawQuad::MaterialCast(
@@ -118,7 +122,8 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectRenderSurfaceOpacityInQuad) {
   EXPECT_EQ(1.f, layer->draw_properties().opacity);
 
   AppendQuadsData data;
-  layer->AppendQuads(render_pass.get(), &data);
+  layer->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                     render_pass.get(), &data);
 
   ASSERT_EQ(render_pass->quad_list.size(), 1U);
   // Opacity is applied on render surface, so the quad doesn't have opacity.
@@ -142,7 +147,8 @@ TEST_F(SolidColorLayerImplTest, VerifyEliminateTransparentAlpha) {
   UpdateActiveTreeDrawProperties();
 
   AppendQuadsData data;
-  layer->AppendQuads(render_pass.get(), &data);
+  layer->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                     render_pass.get(), &data);
   EXPECT_EQ(render_pass->quad_list.size(), 0U);
 }
 
@@ -162,7 +168,8 @@ TEST_F(SolidColorLayerImplTest, VerifyEliminateTransparentOpacity) {
   UpdateActiveTreeDrawProperties();
 
   AppendQuadsData data;
-  layer->AppendQuads(render_pass.get(), &data);
+  layer->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                     render_pass.get(), &data);
   EXPECT_EQ(render_pass->quad_list.size(), 0U);
 }
 
@@ -212,7 +219,8 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
     auto render_pass = viz::CompositorRenderPass::Create();
 
     AppendQuadsData data;
-    layer_impl->AppendQuads(render_pass.get(), &data);
+    layer_impl->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                            render_pass.get(), &data);
 
     ASSERT_EQ(render_pass->quad_list.size(), 1U);
     EXPECT_FALSE(render_pass->quad_list.front()->needs_blending);
@@ -249,7 +257,8 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
     auto render_pass = viz::CompositorRenderPass::Create();
 
     AppendQuadsData data;
-    layer_impl->AppendQuads(render_pass.get(), &data);
+    layer_impl->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                            render_pass.get(), &data);
 
     ASSERT_EQ(render_pass->quad_list.size(), 1U);
     EXPECT_TRUE(render_pass->quad_list.front()->needs_blending);

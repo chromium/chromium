@@ -89,8 +89,6 @@ viz_static_library("test_support") {
     "test_output_surface_provider.h",
     "test_raster_interface.cc",
     "test_raster_interface.h",
-    "test_shared_bitmap_manager.cc",
-    "test_shared_bitmap_manager.h",
     "test_shared_image_interface_provider.cc",
     "test_shared_image_interface_provider.h",
     "test_surface_id_allocator.cc",
@@ -102,7 +100,6 @@ viz_static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/viz/host",
     "//components/viz/service",
     "//gpu:raster",

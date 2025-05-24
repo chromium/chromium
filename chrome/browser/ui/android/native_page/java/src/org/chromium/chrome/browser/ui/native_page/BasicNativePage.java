@@ -10,6 +10,8 @@ import android.widget.FrameLayout.LayoutParams;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -19,14 +21,21 @@ import org.chromium.content_public.browser.LoadUrlParams;
  *
  * Sub-classes must call {@link #initWithView(View)} to finish setup.
  */
+@NullMarked
 public abstract class BasicNativePage implements NativePage {
     private final NativePageHost mHost;
     private final int mBackgroundColor;
-    private DestroyableObservableSupplier<Rect> mMarginSupplier;
+    private @Nullable DestroyableObservableSupplier<Rect> mMarginSupplier;
+
+    @SuppressWarnings("NullAway.Init")
     private Callback<Rect> mMarginObserver;
-    private View mView;
+
+    private @Nullable View mView;
+
+    @SuppressWarnings("NullAway.Init")
     private String mUrl;
-    private SmoothTransitionDelegate mSmoothTransitionDelegate;
+
+    private @Nullable SmoothTransitionDelegate mSmoothTransitionDelegate;
 
     protected BasicNativePage(NativePageHost host) {
         mHost = host;
@@ -118,7 +127,7 @@ public abstract class BasicNativePage implements NativePage {
         getView().setLayoutParams(layoutParams);
     }
 
-    public SmoothTransitionDelegate getSmoothTransitionDelegateForTesting() {
+    public @Nullable SmoothTransitionDelegate getSmoothTransitionDelegateForTesting() {
         return mSmoothTransitionDelegate;
     }
 }

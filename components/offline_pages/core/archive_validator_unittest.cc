@@ -20,8 +20,8 @@ namespace offline_pages {
 
 namespace {
 
-const char kTestData1[] = "This is a test. ";
-const char kTestData2[] = "Hello World!";
+const std::string_view kTestData1 = "This is a test. ";
+const std::string_view kTestData2 = "Hello World!";
 
 const int kSmallFileSize = 2 * 1024;
 const int kBigFileSize = 3 * 1024 * 1024;
@@ -107,8 +107,8 @@ base::FilePath ArchiveValidatorTest::CreateFileWithContent(
 
 TEST_F(ArchiveValidatorTest, ComputeDigestOnData) {
   ArchiveValidator archive_validator;
-  archive_validator.Update(kTestData1, sizeof(kTestData1) - 1);
-  archive_validator.Update(kTestData2, sizeof(kTestData2) - 1);
+  archive_validator.Update(base::as_byte_span(kTestData1));
+  archive_validator.Update(base::as_byte_span(kTestData2));
   std::string actual_digest = archive_validator.Finish();
   EXPECT_EQ(kExpectedDigestForTestData, actual_digest);
 }

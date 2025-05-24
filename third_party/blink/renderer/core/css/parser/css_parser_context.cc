@@ -222,6 +222,12 @@ void CSSParserContext::Count(WebFeature feature) const {
   }
 }
 
+void CSSParserContext::Count(WebDXFeature feature) const {
+  if (IsUseCounterRecordingEnabled()) {
+    document_->CountWebDXFeature(feature);
+  }
+}
+
 void CSSParserContext::CountDeprecation(WebFeature feature) const {
   if (IsUseCounterRecordingEnabled() && document_) {
     Deprecation::CountDeprecation(document_->GetExecutionContext(), feature);
@@ -244,12 +250,31 @@ const Document* CSSParserContext::GetDocument() const {
 
 // Fuzzers may execution CSS parsing code without a Document being available,
 // thus this method can return null.
-const ExecutionContext* CSSParserContext::GetExecutionContext() const {
+ExecutionContext* CSSParserContext::GetExecutionContext() const {
   return (document_.Get()) ? document_.Get()->GetExecutionContext() : nullptr;
 }
 
 bool CSSParserContext::IsForMarkupSanitization() const {
   return document_ && document_->IsForMarkupSanitization();
+}
+
+bool CSSParserContext::InElementContext() const {
+  switch (Mode()) {
+    case kCSSFontFaceRuleMode:
+    case kCSSPropertyRuleMode:
+    case kCSSFontPaletteValuesRuleMode:
+      return false;
+    case kHTMLStandardMode:
+    case kHTMLQuirksMode:
+    case kSVGAttributeMode:
+    case kCSSKeyframeRuleMode:
+    case kCSSPositionTryRuleMode:
+    case kCSSFunctionDescriptorsMode:
+    case kUASheetMode:
+      return true;
+    case kNumCSSParserModes:
+      NOTREACHED();
+  }
 }
 
 void CSSParserContext::Trace(Visitor* visitor) const {

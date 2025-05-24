@@ -23,7 +23,7 @@ bool StubSurfaceClient::IsVideoCaptureStarted() {
   return false;
 }
 
-base::flat_set<base::PlatformThreadId> StubSurfaceClient::GetThreadIds() {
+std::vector<Thread> StubSurfaceClient::GetThreads() {
   return {};
 }
 

@@ -8,8 +8,9 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 namespace autofill {
 
@@ -17,16 +18,10 @@ class StrikeDatabase;
 
 // Singleton that owns all StrikeDatabases and associates them with
 // ProfileIOS.
-class StrikeDatabaseFactory : public BrowserStateKeyedServiceFactory {
+class StrikeDatabaseFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static StrikeDatabase* GetForBrowserState(ChromeBrowserState* browser_state);
-
   static StrikeDatabase* GetForProfile(ProfileIOS* profile);
   static StrikeDatabaseFactory* GetInstance();
-
-  StrikeDatabaseFactory(const StrikeDatabaseFactory&) = delete;
-  StrikeDatabaseFactory& operator=(const StrikeDatabaseFactory&) = delete;
 
  private:
   friend class base::NoDestructor<StrikeDatabaseFactory>;

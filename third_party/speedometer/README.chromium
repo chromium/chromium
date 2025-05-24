@@ -1,8 +1,9 @@
 Name: Speedometer
 Short Name: speedometer
 URL: https://github.com/WebKit/Speedometer
-Version: unknown
-License: BSD 2-Clause
+Version: N/A
+Revision: DEPS
+License: BSD-2-Clause
 License File: LICENSE
 Shipped: no
 Security Critical: no

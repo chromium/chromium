@@ -32,7 +32,7 @@ enum class ChoiceMadeLocation;
 // together) and are followed by generated keywords.
 
 class TemplateURLTableModel : public ui::TableModel,
-                                     TemplateURLServiceObserver {
+                              TemplateURLServiceObserver {
  public:
   explicit TemplateURLTableModel(TemplateURLService* template_url_service);
 
@@ -50,9 +50,6 @@ class TemplateURLTableModel : public ui::TableModel,
   size_t RowCount() override;
   std::u16string GetText(size_t row, int column) override;
   void SetObserver(ui::TableModelObserver* observer) override;
-
-  // Returns the keyword to display corresponding to the search engine in `row`.
-  std::u16string GetKeywordToDisplay(size_t row);
 
   // Removes the entry at the specified index.
   void Remove(size_t index);
@@ -126,6 +123,5 @@ class TemplateURLTableModel : public ui::TableModel,
   // group boundaries.
   size_t last_other_engine_index_;
 };
-
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_TEMPLATE_URL_TABLE_MODEL_H_

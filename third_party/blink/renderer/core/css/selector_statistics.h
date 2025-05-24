@@ -6,23 +6,32 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_STATISTICS_H_
 
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
 class RuleData;
+class StyleRule;
 
 struct RulePerfDataPerRequest {
+  DISALLOW_NEW();
+
+ public:
   RulePerfDataPerRequest(const RuleData* r, bool f, bool m, base::TimeDelta e)
-      : rule(r), fast_reject(f), did_match(m), elapsed(e) {}
-  // RuleData is Traceable but not owned here, so there's no need to Trace it
-  // here. The RuleData is owned and traced by HeapVectors in RuleSet.
-  const RuleData* const rule;
+      : style_rule(r->Rule()),
+        selector_text(r->Selector().SelectorText()),
+        fast_reject(f),
+        did_match(m),
+        elapsed(e) {}
+  Member<StyleRule> style_rule;
+  String selector_text;
   bool fast_reject;
   bool did_match;
   base::TimeDelta elapsed;
 
-  DISALLOW_NEW();
+  void Trace(Visitor* visitor) const { visitor->Trace(style_rule); }
 };
 
 // For a given pass to collect matching rules against a single element (i.e.
@@ -52,15 +61,12 @@ class SelectorStatisticsCollector {
   void SetWasFastRejected() { fast_reject_ = true; }
   void SetDidMatch() { did_match_ = true; }
 
-  const Vector<RulePerfDataPerRequest>& PerRuleStatistics() const {
+  const HeapVector<RulePerfDataPerRequest>& PerRuleStatistics() const {
     return per_rule_statistics_;
   }
 
  private:
-  // `Vector` is more beneficial here since `RulePerfDataPerRequest` is
-  // non-traceable and `SelectorStatisticsCollector` is stack allocated.
-  // `HeapVector` could also be used but will be less performant in this case.
-  Vector<RulePerfDataPerRequest> per_rule_statistics_;
+  HeapVector<RulePerfDataPerRequest> per_rule_statistics_;
   // The below values are for the selector currently being matched. These values
   // are pushed into `per_rule_statistics_` when `EndCollectionForCurrentRule`
   // is called.

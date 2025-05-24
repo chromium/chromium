@@ -20,6 +20,10 @@ namespace base {
 class Version;
 }
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 using RpcError = HRESULT;
@@ -40,6 +44,7 @@ class UpdateServiceProxyImpl
       base::OnceCallback<void(base::expected<base::Version, RpcError>)>
           callback);
   void FetchPolicies(
+      policy::PolicyFetchReason reason,
       base::OnceCallback<void(base::expected<int, RpcError>)> callback);
   void RegisterApp(
       const RegistrationRequest& request,
@@ -53,6 +58,7 @@ class UpdateServiceProxyImpl
       const std::string& app_id,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -62,6 +68,7 @@ class UpdateServiceProxyImpl
       const std::string& install_data_index,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -76,6 +83,7 @@ class UpdateServiceProxyImpl
       const std::string& client_install_data,
       const std::string& install_data_index,
       UpdateService::Priority priority,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -87,6 +95,7 @@ class UpdateServiceProxyImpl
       const std::string& install_args,
       const std::string& install_data,
       const std::string& install_settings,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>

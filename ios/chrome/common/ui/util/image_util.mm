@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <CoreImage/CoreImage.h>
-
 #import "ios/chrome/common/ui/util/image_util.h"
+
+#import <CoreImage/CoreImage.h>
 
 #import "ui/gfx/image/resize_image_dimensions.h"
 
@@ -24,8 +24,9 @@ UIImage* ResizeImage(UIImage* image,
   CalculateProjection([image size], targetSize, projectionMode,
                       revisedTargetSize, projectTo);
 
-  if (CGRectEqualToRect(projectTo, CGRectZero))
+  if (CGRectEqualToRect(projectTo, CGRectZero)) {
     return nil;
+  }
 
   // Resize photo. Use UIImage drawing methods because they respect
   // UIImageOrientation as opposed to CGContextDrawImage().
@@ -100,10 +101,12 @@ void CalculateProjection(CGSize originalSize,
                          CGRect& projectTo) {
   targetSize = desiredTargetSize;
   projectTo = CGRectZero;
-  if (originalSize.height < 1 || originalSize.width < 1)
+  if (originalSize.height < 1 || originalSize.width < 1) {
     return;
-  if (targetSize.height < 1 || targetSize.width < 1)
+  }
+  if (targetSize.height < 1 || targetSize.width < 1) {
     return;
+  }
 
   CGFloat aspectRatio = originalSize.width / originalSize.height;
   CGFloat targetAspectRatio = targetSize.width / targetSize.height;

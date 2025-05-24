@@ -15,6 +15,8 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -45,17 +47,16 @@ BookmarkContextMenu::BookmarkContextMenu(
     Browser* browser,
     Profile* profile,
     BookmarkLaunchLocation opened_from,
-    const BookmarkNode* parent,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
         selection,
     bool close_on_remove)
     : controller_(new BookmarkContextMenuController(
-          parent_widget ? parent_widget->GetNativeWindow() : nullptr,
+          parent_widget ? parent_widget->GetNativeWindow()
+                        : gfx::NativeWindow(),
           this,
           browser,
           profile,
           opened_from,
-          parent,
           selection)),
       parent_widget_(parent_widget),
       menu_(new views::MenuItemView(this)),
@@ -63,7 +64,7 @@ BookmarkContextMenu::BookmarkContextMenu(
   menu_runner_ = std::make_unique<views::MenuRunner>(
       base::WrapUnique<views::MenuItemView>(menu_),
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::IS_NESTED |
-          views::MenuRunner::CONTEXT_MENU);
+          views::MenuRunner::MENU_ITEM_CONTEXT_MENU);
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
     views::MenuModelAdapter::AppendMenuItemFromModel(
@@ -71,7 +72,7 @@ BookmarkContextMenu::BookmarkContextMenu(
   }
 }
 
-BookmarkContextMenu::~BookmarkContextMenu() {}
+BookmarkContextMenu::~BookmarkContextMenu() = default;
 
 void BookmarkContextMenu::InstallPreRunCallback(base::OnceClosure callback) {
   DCHECK(PreRunCallback().is_null());
@@ -79,12 +80,14 @@ void BookmarkContextMenu::InstallPreRunCallback(base::OnceClosure callback) {
 }
 
 void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
-                                    ui::MenuSourceType source_type) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
+                                    ui::mojom::MenuSourceType source_type) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode)) {
     return;
+  }
 
-  if (!PreRunCallback().is_null())
+  if (!PreRunCallback().is_null()) {
     std::move(PreRunCallback()).Run();
+  }
 
   // width/height don't matter here.
   menu_runner_->RunMenuAt(parent_widget_, nullptr,
@@ -116,8 +119,9 @@ bool BookmarkContextMenu::ShouldCloseAllMenusOnExecute(int id) {
 }
 
 void BookmarkContextMenu::OnMenuClosed(views::MenuItemView* menu) {
-  if (observer_)
+  if (observer_) {
     observer_->OnContextMenuClosed();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,11 +136,13 @@ void BookmarkContextMenu::WillExecuteCommand(
     int command_id,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
         bookmarks) {
-  if (observer_ && IsRemoveBookmarksCommand(command_id))
+  if (observer_ && IsRemoveBookmarksCommand(command_id)) {
     observer_->WillRemoveBookmarks(bookmarks);
+  }
 }
 
 void BookmarkContextMenu::DidExecuteCommand(int command_id) {
-  if (observer_ && IsRemoveBookmarksCommand(command_id))
+  if (observer_ && IsRemoveBookmarksCommand(command_id)) {
     observer_->DidRemoveBookmarks();
+  }
 }

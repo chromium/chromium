@@ -16,7 +16,7 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 
 :: The version of GoogleTest to be used in the CMake tests in this directory.
 :: Keep this in sync with the version in the WORKSPACE file.
-SET ABSL_GOOGLETEST_VERSION=1.15.2
+SET ABSL_GOOGLETEST_VERSION=1.17.0
 SET ABSL_GOOGLETEST_DOWNLOAD_URL=https://github.com/google/googletest/releases/download/v%ABSL_GOOGLETEST_VERSION%/googletest-%ABSL_GOOGLETEST_VERSION%.tar.gz
 
 :: Replace '\' with '/' in Windows paths for CMake.

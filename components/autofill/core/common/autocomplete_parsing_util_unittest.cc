@@ -74,6 +74,18 @@ const AutocompleteAttributeTestcase kAutocompleteTestcases[]{
     {"webauthn",
      {{"", HtmlFieldMode::kNone, HtmlFieldType::kUnspecified,
        /*webauthn=*/true}}},
+    {"name webauthn webidentity",
+     {{"", HtmlFieldMode::kNone, HtmlFieldType::kName, /*webauthn=*/true,
+       /*webidentity=*/true}}},
+    {"name webidentity webauthn",
+     {{"", HtmlFieldMode::kNone, HtmlFieldType::kName, /*webauthn=*/true,
+       /*webidentity=*/true}}},
+    {"webauthn webidentity",
+     {{"", HtmlFieldMode::kNone, HtmlFieldType::kUnspecified,
+       /*webauthn=*/true, /*webidentity=*/true}}},
+    {"webidentity",
+     {{"", HtmlFieldMode::kNone, HtmlFieldType::kUnspecified,
+       /*webauthn=*/false, /*webidentity=*/true}}},
 
     // Too many tokens.
     {"hello section-one shipping home tel webauthn", std::nullopt}};

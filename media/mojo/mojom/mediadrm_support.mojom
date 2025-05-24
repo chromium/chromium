@@ -4,11 +4,13 @@
 
 module media.mojom;
 
+import "mojo/public/mojom/base/version.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 struct MediaDrmSupportResult {
   bool key_system_supports_video_mp4;
   bool key_system_supports_video_webm;
+  mojo_base.mojom.Version? key_system_version;
 };
 
 // A service to execute some MediaDrm functions on Android due to the OS
@@ -18,6 +20,6 @@ interface MediaDrmSupport {
   // Checks whether key system `key_system` is supported. If it is, returns
   // `key_system_supports` with whether `key_system` supports MP4 and/or
   // WebM. If `key_system` is not supported, nothing is returned.
-  IsKeySystemSupported(string key_system)
+  IsKeySystemSupported(string key_system, bool is_secure)
       => (MediaDrmSupportResult? key_system_supports);
 };

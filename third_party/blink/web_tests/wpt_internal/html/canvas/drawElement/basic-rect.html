@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<title>Canvas.drawElement: green rect</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="basic-rect-ref.html">
+<style>
+#child {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+#canvas {
+  background: grey;
+}
+</style>
+
+<canvas id=canvas width="200" height="200" layoutsubtree=true>
+  <div id=child></div>
+</canvas>
+
+<script>
+function runTest() {
+  canvas.getContext("2d").drawElement(child, 20, 30);
+}
+
+onload = () => runTest();
+
+</script>
+</html>

@@ -224,8 +224,9 @@ class OpenFileTest : public OsValidationTest,
     while (bits_begin < bits_end) {
       const BitAndName& bit_name = *bits_begin;
       if (bitfield & bit_name.bit) {
-        if (!result->empty())
+        if (!result->empty()) {
           result->append(" | ");
+        }
         result->append(bit_name.name);
         bitfield &= ~bit_name.bit;
       }
@@ -270,8 +271,9 @@ TEST_P(OpenFileTest, MoveFileEx) {
 // deletion.
 TEST_P(OpenFileTest, DeleteThenMove) {
   // Don't test combinations that cannot be deleted.
-  if (!CanMoveFile(access(), share_mode()))
+  if (!CanMoveFile(access(), share_mode())) {
     return;
+  }
   ASSERT_NE(::DeleteFileW(temp_file_path().value().c_str()), 0)
       << "Last error code: " << ::GetLastError();
   // Move fails with ERROR_ACCESS_DENIED (STATUS_DELETE_PENDING under the
@@ -285,8 +287,9 @@ TEST_P(OpenFileTest, DeleteThenMove) {
 // deleted.
 TEST_P(OpenFileTest, MapThenDelete) {
   // There is nothing to test if the file can't be read.
-  if (!(access() & FILE_READ_DATA))
+  if (!(access() & FILE_READ_DATA)) {
     return;
+  }
 
   // Pick the protection option that matches the access rights used to open the
   // file.

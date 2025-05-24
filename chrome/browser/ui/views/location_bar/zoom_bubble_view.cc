@@ -15,16 +15,22 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
+#include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
@@ -33,6 +39,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -159,8 +166,9 @@ views::View* GetAnchorViewForBrowser(Browser* browser) {
 #endif
   if (!IsBrowserFullscreen(browser) || browser_view->IsToolbarVisible() ||
       browser_view->immersive_mode_controller()->IsRevealed()) {
-    return browser_view->toolbar_button_provider()->GetAnchorView(
-        PageActionIconType::kZoom);
+    // TODO(crbug.com/376284060): An action ID should be created and used here
+    // when Zoom is migrated to the new page actions framework.
+    return browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
   }
   return nullptr;
 }
@@ -177,15 +185,22 @@ void ParentToBrowser(Browser* browser,
                      content::WebContents* web_contents) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
-  zoom_bubble->SetHighlightedButton(
-      browser_view->toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kZoom));
+  views::Button* button;
+  if (IsPageActionMigrated(PageActionIconType::kZoom)) {
+    button = browser_view->toolbar_button_provider()->GetPageActionView(
+        kActionZoomNormal);
+  } else {
+    button = browser_view->toolbar_button_provider()->GetPageActionIconView(
+        PageActionIconType::kZoom);
+  }
+
+  zoom_bubble->SetHighlightedButton(button);
 
   // If we don't anchor to anything the BrowserView is our parent. This happens
   // in fullscreen cases.
   zoom_bubble->set_parent_window(
       zoom_bubble->anchor_widget()
-          ? nullptr
+          ? gfx::NativeView()
           : browser_view->GetWidget()->GetNativeView());
 
   views::BubbleDialogDelegateView::CreateBubble(zoom_bubble);
@@ -200,6 +215,17 @@ const extensions::ExtensionZoomRequestClient* GetExtensionZoomRequestClient(
   return static_cast<const extensions::ExtensionZoomRequestClient*>(client);
 }
 
+void UpdateBubbleVisibilityState(Browser* browser, bool is_bubble_visible) {
+  if (!browser) {
+    return;
+  }
+
+  auto* action_item = actions::ActionManager::Get().FindAction(
+      kActionZoomNormal, browser->browser_actions()->root_action_item());
+  CHECK(action_item);
+  action_item->SetIsShowingBubble(is_bubble_visible);
+}
+
 }  // namespace
 
 // static
@@ -211,11 +237,13 @@ void ZoomBubbleView::ShowBubble(content::WebContents* web_contents,
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   // |web_contents| could have been unloaded if a tab gets closed and a mouse
   // event arrives before the zoom icon gets hidden.
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
-  if (RefreshBubbleIfShowing(web_contents))
+  if (RefreshBubbleIfShowing(web_contents)) {
     return;
+  }
 
   // If the bubble is already showing but in a different tab, the current
   // bubble must be closed and a new one created.
@@ -233,25 +261,29 @@ void ZoomBubbleView::ShowBubble(content::WebContents* web_contents,
 
   // If the zoom change was initiated by an extension, capture the relevent
   // information from it.
-  if (client)
+  if (client) {
     zoom_bubble_->SetExtensionInfo(client->extension());
+  }
 
   ParentToBrowser(browser, zoom_bubble_, anchor_view, web_contents);
 
-  if (!anchor_view && IsBrowserFullscreen(browser))
+  if (!anchor_view && IsBrowserFullscreen(browser)) {
     zoom_bubble_->AdjustForFullscreen(browser->window()->GetBounds());
+  }
 
   // Do not announce hotkey for refocusing inactive Zoom bubble as it
   // disappears after a short timeout.
   zoom_bubble_->ShowForReason(reason, /* allow_refocus_alert */ false);
   zoom_bubble_->UpdateZoomIconVisibility();
+  UpdateBubbleVisibilityState(browser, /*is_bubble_visible=*/true);
 }
 
 // static
 bool ZoomBubbleView::RefreshBubbleIfShowing(
     const content::WebContents* web_contents) {
-  if (!CanRefresh(web_contents))
+  if (!CanRefresh(web_contents)) {
     return false;
+  }
 
   DCHECK_EQ(web_contents, zoom_bubble_->web_contents());
   zoom_bubble_->Refresh();
@@ -262,21 +294,24 @@ bool ZoomBubbleView::RefreshBubbleIfShowing(
 // static
 bool ZoomBubbleView::CanRefresh(const content::WebContents* web_contents) {
   // Can't refresh when there's not already a bubble for this tab.
-  if (!zoom_bubble_ || (zoom_bubble_->web_contents() != web_contents))
+  if (!zoom_bubble_ || (zoom_bubble_->web_contents() != web_contents)) {
     return false;
+  }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser ||
-      (zoom_bubble_->GetAnchorView() != GetAnchorViewForBrowser(browser)))
+      (zoom_bubble_->GetAnchorView() != GetAnchorViewForBrowser(browser))) {
     return false;
+  }
 
   const extensions::ExtensionZoomRequestClient* client =
       GetExtensionZoomRequestClient(web_contents);
 
   // Allow refreshes when the client won't create its own bubble; otherwise
   // the existing bubble would show the wrong zoom value.
-  if (client && client->ShouldSuppressBubble())
+  if (client && client->ShouldSuppressBubble()) {
     return true;
+  }
 
   // Allow refreshes when the existing bubble has the same attribution for
   // the zoom change, so only the label needs updating.
@@ -286,8 +321,9 @@ bool ZoomBubbleView::CanRefresh(const content::WebContents* web_contents) {
 
 // static
 void ZoomBubbleView::CloseCurrentBubble() {
-  if (zoom_bubble_)
+  if (zoom_bubble_) {
     zoom_bubble_->CloseBubble();
+  }
 }
 
 // static
@@ -313,23 +349,32 @@ ZoomBubbleView::ZoomBubbleView(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   SetNotifyEnterExitOnChild(true);
-  if (immersive_mode_controller_)
+  if (immersive_mode_controller_) {
     immersive_mode_controller_->AddObserver(this);
+  }
   UseCompactMargins();
 }
 
 ZoomBubbleView::~ZoomBubbleView() {
-  if (immersive_mode_controller_)
+  if (immersive_mode_controller_) {
     immersive_mode_controller_->RemoveObserver(this);
+  }
 }
 
 std::u16string ZoomBubbleView::GetAccessibleWindowTitle() const {
   Browser* browser = GetBrowser();
-  if (!browser)
+  if (!browser) {
     return {};
-  return BrowserView::GetBrowserViewForBrowser(browser)
-      ->toolbar_button_provider()
-      ->GetPageActionIconView(PageActionIconType::kZoom)
+  }
+
+  ToolbarButtonProvider* provider =
+      BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
+
+  if (IsPageActionMigrated(PageActionIconType::kZoom)) {
+    return provider->GetPageActionView(kActionZoomNormal)->GetAccessibleName();
+  }
+
+  return provider->GetPageActionIconView(PageActionIconType::kZoom)
       ->GetTextForTooltipAndAccessibleName();
 }
 
@@ -342,8 +387,9 @@ void ZoomBubbleView::OnBlur() {
   LocationBarBubbleDelegateView::OnBlur();
 
   const views::FocusManager* focus_manager = GetFocusManager();
-  if (focus_manager && Contains(focus_manager->GetFocusedView()))
+  if (focus_manager && Contains(focus_manager->GetFocusedView())) {
     return;
+  }
 
   StartTimerIfNecessary();
 }
@@ -360,14 +406,16 @@ void ZoomBubbleView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void ZoomBubbleView::OnKeyEvent(ui::KeyEvent* event) {
-  if (!zoom_bubble_ || !zoom_bubble_->auto_close_)
+  if (!zoom_bubble_ || !zoom_bubble_->auto_close_) {
     return;
+  }
 
   const views::FocusManager* focus_manager = GetFocusManager();
-  if (focus_manager && Contains(focus_manager->GetFocusedView()))
+  if (focus_manager && Contains(focus_manager->GetFocusedView())) {
     StopTimer();
-  else
+  } else {
     StartTimerIfNecessary();
+  }
 }
 
 void ZoomBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -476,10 +524,13 @@ void ZoomBubbleView::WindowClosing() {
   // |zoom_bubble_| can be a new bubble by this point (as Close(); doesn't
   // call this right away). Only set to nullptr when it's this bubble.
   bool this_bubble = zoom_bubble_ == this;
-  if (this_bubble)
+  if (this_bubble) {
     zoom_bubble_ = nullptr;
+  }
 
   UpdateZoomIconVisibility();
+  UpdateBubbleVisibilityState(GetBrowser(),
+                              /*is_bubble_visible=*/zoom_bubble_ != nullptr);
 }
 
 void ZoomBubbleView::CloseBubble() {
@@ -533,8 +584,9 @@ void ZoomBubbleView::SetExtensionInfo(const extensions::Extension* extension) {
   if (!has_default_sized_icon) {
     const extensions::ActionInfo* action =
         extensions::ActionInfo::GetExtensionActionInfo(extension);
-    if (!action || action->default_icon.empty())
+    if (!action || action->default_icon.empty()) {
       return;  // Out of options.
+    }
 
     icons = &action->default_icon;
     icon_size = icons->map().begin()->first;
@@ -549,7 +601,7 @@ void ZoomBubbleView::UpdateZoomPercent() {
   label_->SetText(base::FormatPercent(
       zoom::ZoomController::FromWebContents(web_contents())->GetZoomPercent()));
   label_->GetViewAccessibility().SetName(GetAccessibleWindowTitle());
-  label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 
   // Disable buttons at min, max and default
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents());
@@ -571,13 +623,24 @@ void ZoomBubbleView::UpdateZoomIconVisibility() {
   // may also be destroyed: the call to WindowClosing() may be triggered by
   // parent window destruction tearing down its child windows.
   Browser* browser = chrome::FindBrowserWithID(session_id_);
-  if (browser && browser->window())
+  if (!browser || !browser->window() || !browser->GetActiveTabInterface()) {
+    return;
+  }
+
+  if (!IsPageActionMigrated(PageActionIconType::kZoom)) {
     browser->window()->UpdatePageActionIcon(PageActionIconType::kZoom);
+    return;
+  }
+
+  auto* tab_feature = browser->GetActiveTabInterface()->GetTabFeatures();
+  CHECK(tab_feature);
+  tab_feature->zoom_view_controller()->UpdatePageActionIcon();
 }
 
 void ZoomBubbleView::StartTimerIfNecessary() {
-  if (!auto_close_)
+  if (!auto_close_) {
     return;
+  }
 
   auto_close_timer_.Start(FROM_HERE, auto_close_duration_, this,
                           &ZoomBubbleView::CloseBubble);
@@ -615,9 +678,9 @@ Browser* ZoomBubbleView::GetBrowser() const {
   return web_contents() ? chrome::FindBrowserWithTab(web_contents()) : nullptr;
 }
 
-ZoomBubbleView::ZoomBubbleExtensionInfo::ZoomBubbleExtensionInfo() {}
+ZoomBubbleView::ZoomBubbleExtensionInfo::ZoomBubbleExtensionInfo() = default;
 
-ZoomBubbleView::ZoomBubbleExtensionInfo::~ZoomBubbleExtensionInfo() {}
+ZoomBubbleView::ZoomBubbleExtensionInfo::~ZoomBubbleExtensionInfo() = default;
 
 BEGIN_METADATA(ZoomBubbleView)
 END_METADATA

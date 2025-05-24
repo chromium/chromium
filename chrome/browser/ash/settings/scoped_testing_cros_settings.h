@@ -14,6 +14,7 @@ namespace ash {
 class CrosSettings;
 class StubCrosSettingsProvider;
 class SystemSettingsProvider;
+class UserLoginPermissionTracker;
 
 // Helper class which calls CrosSettings::SetForTesting when it is constructed,
 // and calls CrosSettings::ShutdownForTesting when it goes out of scope,
@@ -47,6 +48,7 @@ class ScopedTestingCrosSettings {
 
  private:
   std::unique_ptr<CrosSettings> test_instance_;
+  std::unique_ptr<UserLoginPermissionTracker> user_login_permission_tracker_;
 
   // These are raw pointers since these objects are owned by |test_instance_|.
   raw_ptr<StubCrosSettingsProvider> device_settings_ptr_;

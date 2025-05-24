@@ -31,10 +31,10 @@
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
 #include "third_party/blink/renderer/core/svg/animation/svg_smil_element.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
@@ -648,8 +648,9 @@ bool NonRenderedElementThatAffectsContent(const SVGElement& target) {
 }
 
 bool CanThrottleTarget(const SVGElement& target) {
-  // Don't throttle if the target is in the layout tree.
-  if (target.GetLayoutObject()) {
+  // Don't throttle if the target is in the layout tree or needs to
+  // recalc style.
+  if (target.GetLayoutObject() || target.NeedsStyleRecalc()) {
     return false;
   }
   // Don't throttle if the target has computed style (for example <stop>

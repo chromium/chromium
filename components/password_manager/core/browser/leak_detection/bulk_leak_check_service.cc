@@ -64,8 +64,6 @@ void BulkLeakCheckService::MetricsReporter::OnCancelCheck() {
 }
 
 void BulkLeakCheckService::MetricsReporter::OnError(LeakDetectionError error) {
-  UMA_HISTOGRAM_ENUMERATION("PasswordManager.BulkCheck.Error", error);
-
   error_or_canceled_ = true;
 }
 

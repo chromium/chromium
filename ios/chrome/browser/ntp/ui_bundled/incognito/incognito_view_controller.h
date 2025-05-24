@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol NewTabPageControllerDelegate;
-@protocol PrivacyCookiesCommands;
 class UrlLoadingBrowserAgent;
 
 @interface IncognitoViewController : UIViewController

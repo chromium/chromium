@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_APP_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_APP_LOCK_H_
 
-#include <memory>
-
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/lock.h"
@@ -15,7 +13,6 @@
 
 namespace web_app {
 
-struct PartitionedLockHolder;
 class WebAppLockManager;
 
 // This locks the given app ID(s) in the WebAppProvider system.
@@ -37,20 +34,20 @@ class AppLockDescription : public LockDescription {
 // See `WebAppLockManager` for how to use locks. Destruction of this class will
 // release the lock or cancel the lock request if it is not acquired yet.
 //
-// Note: Accessing a lock will CHECK-fail if the WebAppProvider system has
-// shutdown (or the profile has shut down).
+// Note: Accessing a lock before it is granted or after the WebAppProvider
+// system has shutdown (or the profile has shut down) will CHECK-fail.
 class AppLock : public Lock, public WithAppResources {
  public:
   using LockDescription = AppLockDescription;
 
+  AppLock();
   ~AppLock();
 
   base::WeakPtr<AppLock> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
   friend class WebAppLockManager;
-  AppLock(base::WeakPtr<WebAppLockManager> lock_manager,
-          std::unique_ptr<PartitionedLockHolder> holder);
+  void GrantLock(WebAppLockManager& lock_manager);
 
   base::WeakPtrFactory<AppLock> weak_factory_{this};
 };

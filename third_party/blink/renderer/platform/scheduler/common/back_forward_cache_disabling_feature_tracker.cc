@@ -14,8 +14,10 @@ BackForwardCacheDisablingFeatureTracker::
         TraceableVariableController* tracing_controller,
         ThreadSchedulerBase* scheduler)
     : opted_out_from_back_forward_cache_{false,
-                                         "FrameScheduler."
-                                         "OptedOutFromBackForwardCache",
+                                         MakeNamedTrack(
+                                             "FrameScheduler."
+                                             "OptedOutFromBackForwardCache",
+                                             this),
                                          tracing_controller,
                                          YesNoStateToString},
       scheduler_{scheduler} {}

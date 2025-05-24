@@ -298,6 +298,7 @@
         "type": "function",
         "description": "Retrieves the JavaScript 'window' object for the background page running inside the current extension/app. If the background page is an event page, the system will ensure it is loaded before calling the callback. If there is no background page, an error is set.",
         "parameters": [],
+        "deprecated": "Background pages do not exist in MV3 extensions.",
         "returns_async": {
           "name": "callback",
           "parameters": [
@@ -317,7 +318,7 @@
       {
         "name": "openOptionsPage",
         "type": "function",
-        "description": "<p>Open your Extension's options page, if possible.</p><p>The precise behavior may depend on your manifest's <code><a href=\"/docs/extensions/develop/ui/options-page#embedded_options\">options_ui</a></code> or <code><a href=\"/docs/extensions/develop/ui/options-page#full_page\">options_page</a></code> key, or what Chrome happens to support at the time. For example, the page may be opened in a new tab, within chrome://extensions, within an App, or it may just focus an open options page. It will never cause the caller page to reload.</p><p>If your Extension does not declare an options page, or Chrome failed to create one for some other reason, the callback will set $(ref:lastError).</p>",
+        "description": "<p>Open your Extension's options page, if possible.</p><p>The precise behavior may depend on your manifest's <a href=\"/docs/extensions/develop/ui/options-page#embedded_options\"><code>options_ui</code></a> or <a href=\"/docs/extensions/develop/ui/options-page#full_page\"><code>options_page</code></a> key, or what Chrome happens to support at the time. For example, the page may be opened in a new tab, within chrome://extensions, within an App, or it may just focus an open options page. It will never cause the caller page to reload.</p><p>If your Extension does not declare an options page, or Chrome failed to create one for some other reason, the callback will set $(ref:lastError).</p>",
         "parameters": [],
         "returns_async": {
           "name": "callback",

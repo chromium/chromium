@@ -22,6 +22,9 @@ const char kNotificationAutorizationStatusChangedToAuthorized[] =
 
 const char kNotificationAutorizationStatusChangedToDenied[] =
     "IOS.PushNotification.NotificationAutorizationStatusChangedToDenied";
+
+NSDictionary<NSString*, id>* testPayload =
+    @{@"$" : @{@"n" : @"a:content_push_notify:RANDOM_ID"}};
 }  // namespace
 
 class PushNotificationUtilTest : public PlatformTest {
@@ -98,4 +101,18 @@ TEST_F(PushNotificationUtilTest, loggingAuthorizationStatusChange) {
       updateAuthorizationStatusPref:UNAuthorizationStatusAuthorized];
   histogram_tester_.ExpectTotalCount(
       kNotificationAutorizationStatusChangedToAuthorized, 1);
+}
+
+// Test the client id Mapping for stable chime client.
+TEST_F(PushNotificationUtilTest, mappingClientIds) {
+  ASSERT_EQ([PushNotificationUtil
+                mapToPushNotificationClientIdFromUserInfo:testPayload],
+            PushNotificationClientId::kContent);
+}
+
+// Test the client id mapping for unstable chime client.
+TEST_F(PushNotificationUtilTest, mappingUnsableClientIds) {
+  ASSERT_EQ([PushNotificationUtil
+                mapToPushNotificationClientIdFromUserInfo:testPayload],
+            PushNotificationClientId::kContent);
 }

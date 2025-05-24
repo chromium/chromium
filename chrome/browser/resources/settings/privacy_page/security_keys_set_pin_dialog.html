@@ -1,4 +1,4 @@
-    <style include="settings-shared">
+    <style include="settings-shared cr-spinner-style">
       cr-input {
         display: inline-block;
         --cr-input-width: 8em;
@@ -18,7 +18,7 @@
         --cr-input-error-white-space: nowrap;
       }
 
-      paper-spinner-lite {
+      .spinner {
         padding-bottom: 12px;
       }
     </style>
@@ -31,7 +31,7 @@
             on-iron-select="onIronSelect_">
           <div id="initial">
             <p>$i18n{securityKeysTouchToContinue}</p>
-            <paper-spinner-lite active></paper-spinner-lite>
+            <div class="spinner"></div>
           </div>
 
           <div id="noPINSupport">

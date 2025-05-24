@@ -132,7 +132,7 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
                 AppPresence.HAVE_APPS,
                 FactorySpeed.FAST_FACTORY,
                 AppSpeed.FAST_APP);
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(

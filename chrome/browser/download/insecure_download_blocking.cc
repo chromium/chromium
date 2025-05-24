@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -143,8 +144,7 @@ std::string GetDownloadBlockingExtensionMetricName(
           kInsecureDownloadExtensionInitiatorInferredInsecure,
           kInsecureDownloadHistogramTargetInsecure);
     case InsecureDownloadSecurityStatus::kDownloadIgnored:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case InsecureDownloadSecurityStatus::kInitiatorInsecureNonUniqueFileSecure:
       return GetDLBlockingHistogramName(
           kInsecureDownloadExtensionInitiatorInsecureNonUnique,
@@ -155,8 +155,7 @@ std::string GetDownloadBlockingExtensionMetricName(
           kInsecureDownloadExtensionInitiatorInsecureNonUnique,
           kInsecureDownloadHistogramTargetInsecure);
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Get appropriate enum value for the initiator/download security state combo
@@ -227,6 +226,14 @@ struct InsecureDownloadData {
     // Extract extension.
 #if BUILDFLAG(IS_WIN)
     extension_ = base::WideToUTF8(path.FinalExtension());
+#elif BUILDFLAG(IS_ANDROID)
+    // If the file path is a content URI, extension should come from the file
+    // name.
+    if (path.IsContentUri()) {
+      extension_ = item->GetFileNameToReportUser().FinalExtension();
+    } else {
+      extension_ = path.FinalExtension();
+    }
 #else
     extension_ = path.FinalExtension();
 #endif
@@ -303,9 +310,10 @@ struct InsecureDownloadData {
       auto security_status =
           GetDownloadBlockingEnum(initiator_, download_delivered_securely,
                                   initiator_inferred, insecure_nonunique);
-      base::UmaHistogramEnumeration(
-          GetDownloadBlockingExtensionMetricName(security_status),
-          GetExtensionEnumFromString(extension_));
+      std::string metric_name =
+          GetDownloadBlockingExtensionMetricName(security_status);
+      base::UmaHistogramEnumeration(metric_name,
+                                    GetExtensionEnumFromString(extension_));
       base::UmaHistogramEnumeration(kInsecureDownloadHistogramName,
                                     security_status);
       download::RecordDownloadValidationMetrics(
@@ -345,6 +353,10 @@ struct InsecureDownloadData {
            !download_delivered_securely) &&
           !net::IsLocalhost(dl_url);
     }
+
+    is_user_initiated_on_webui_ =
+        item->GetTabUrl().SchemeIs(content::kChromeUIScheme) &&
+        download_source == DownloadSource::CONTEXT_MENU;
   }
 
   std::optional<url::Origin> initiator_;
@@ -357,6 +369,8 @@ struct InsecureDownloadData {
   bool is_mixed_content_;
   // Was the download initiated by an insecure origin or delivered insecurely?
   bool is_insecure_download_;
+  // Was the download initiated by a user on a chrome:// WebUI?
+  bool is_user_initiated_on_webui_;
 };
 
 // Check if |extension| is contained in the comma separated |extension_list|.
@@ -376,14 +390,14 @@ bool ContainsExtension(const std::string& extension_list,
 // Just print a descriptive message to the console about the blocked download.
 // |is_blocked| indicates whether this download will be blocked now.
 void PrintConsoleMessage(const InsecureDownloadData& data) {
-  content::WebContents* web_contents =
-      content::DownloadItemUtils::GetWebContents(data.item_);
-  if (!web_contents) {
+  content::RenderFrameHost* rfh =
+      content::DownloadItemUtils::GetRenderFrameHost(data.item_);
+  if (!rfh) {
     return;
   }
 
   if (data.is_mixed_content_) {
-    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
+    rfh->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         base::StringPrintf(
             "Mixed Content: The site at '%s' was loaded over a secure "
@@ -398,7 +412,15 @@ void PrintConsoleMessage(const InsecureDownloadData& data) {
     return;
   }
 
-  web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
+  // The user can right-click and save a HTTP link from a chrome:// WebUI
+  // (e.g. NTP or history). This is arguably a valid use case unless we
+  // completely ban users from visiting HTTP sites, so don't warn. Otherwise,
+  // an error will be generated and uploaded to the crash server.
+  if (data.is_user_initiated_on_webui_) {
+    return;
+  }
+
+  rfh->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(
           "The file at '%s' was %s an insecure connection. "
@@ -413,7 +435,9 @@ bool IsDownloadPermittedByContentSettings(
     const std::optional<url::Origin>& initiator) {
   // TODO(crbug.com/40117459): Checking content settings crashes unit tests on
   // Android. It shouldn't.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   ContentSettingsForOneType settings =
@@ -432,10 +456,8 @@ bool IsDownloadPermittedByContentSettings(
       return setting.GetContentSetting() == CONTENT_SETTING_ALLOW;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
-
-  return false;
 }
 
 bool IsHttpsFirstModeEnabled(Profile* profile) {

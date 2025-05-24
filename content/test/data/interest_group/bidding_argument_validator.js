@@ -214,7 +214,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     throw 'Wrong topLevelSeller ' + browserSignals.topLevelSeller;
 
   if (isGenerateBid) {
-    if (Object.keys(browserSignals).length !== 10) {
+    if (Object.keys(browserSignals).length !== 13) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -231,16 +231,57 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.forDebuggingOnlyInCooldownOrLockout)
       throw 'Wrong forDebuggingOnlyInCooldownOrLockout ' +
           browserSignals.forDebuggingOnlyInCooldownOrLockout;
+    if (browserSignals.forDebuggingOnlySampling)
+      throw 'Wrong forDebuggingOnlySampling ' +
+          browserSignals.forDebuggingOnlySampling;
     if (browserSignals.multiBidLimit !== 1)
       throw 'Wrong multiBidLimit ' + browserSignals.multiBidLimit;
+    if (!('viewCounts' in browserSignals))
+      throw 'viewCounts unexpectedly not in browserSignals';
+    if (!('clickCounts' in browserSignals))
+      throw 'clickCounts unexpectedly not in browserSignals';
+    if (browserSignals.viewCounts.pastHour !== 0) {
+      throw 'Wrong browserSignals.viewCounts.pastHour ' +
+          browserSignals.viewCounts.pastHour;
+    }
+    if (browserSignals.viewCounts.pastDay !== 0) {
+      throw 'Wrong browserSignals.viewCounts.pastDay ' +
+          browserSignals.viewCounts.pastDay;
+    }
+    if (browserSignals.viewCounts.pastWeek !== 0) {
+      throw 'Wrong browserSignals.viewCounts.pastWeek ' +
+          browserSignals.viewCounts.pastWeek;
+    }
+    if (browserSignals.viewCounts.past30Days !== 0) {
+      throw 'Wrong browserSignals.viewCounts.past30Days ' +
+          browserSignals.viewCounts.past30Days;
+    }
+    if (browserSignals.viewCounts.past90Days !== 0) {
+      throw 'Wrong browserSignals.viewCounts.past90Days ' +
+          browserSignals.viewCounts.past90Days;
+    }
+    if (browserSignals.clickCounts.pastHour !== 0) {
+      throw 'Wrong browserSignals.clickCounts.pastHour ' +
+          browserSignals.clickCounts.pastHour;
+    }
+    if (browserSignals.clickCounts.pastDay !== 0) {
+      throw 'Wrong browserSignals.clickCounts.pastDay ' +
+          browserSignals.clickCounts.pastDay;
+    }
+    if (browserSignals.clickCounts.pastWeek !== 0) {
+      throw 'Wrong browserSignals.clickCounts.pastWeek ' +
+          browserSignals.clickCounts.pastWeek;
+    }
+    if (browserSignals.clickCounts.past30Days !== 0) {
+      throw 'Wrong browserSignals.clickCounts.past30Days ' +
+          browserSignals.clickCounts.past30Days;
+    }
+    if (browserSignals.clickCounts.past90Days !== 0) {
+      throw 'Wrong browserSignals.clickCounts.past90Days ' +
+          browserSignals.clickCounts.past90Days;
+    }
   } else {
-    // FledgePassKAnonStatusToReportWin feature adds a new parameter
-    // KAnonStatus to reportWin(), which is under a Finch trial for some enabled
-    // tests.
-    // TODO(xtlsheep): Check length only equals to 16 after
-    // FledgePassKAnonStatusToReportWin is completely turned on.
-    if (Object.keys(browserSignals).length !== 15 &&
-        Object.keys(browserSignals).length !== 16) {
+    if (Object.keys(browserSignals).length !== 16) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }

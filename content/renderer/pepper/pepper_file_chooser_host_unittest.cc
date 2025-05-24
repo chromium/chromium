@@ -173,8 +173,8 @@ TEST_F(PepperFileChooserHostTest, Show) {
   selected_info_vector.push_back(
       blink::mojom::FileChooserFileInfo::NewNativeFile(
           blink::mojom::NativeFileInfo::New(
-              base::FilePath(FILE_PATH_LITERAL("myp\\ath/foo")),
-              display_name)));
+              base::FilePath(FILE_PATH_LITERAL("myp\\ath/foo")), display_name,
+              std::vector<std::u16string>())));
   mock_file_chooser()->ResponseOnOpenFileChooser(
       std::move(selected_info_vector));
 

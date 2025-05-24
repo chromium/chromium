@@ -22,13 +22,13 @@ namespace content::indexed_db {
 namespace indexed_db_callback_helpers_internal {
 
 template <typename T>
-leveldb::Status InvokeOrSucceed(base::WeakPtr<T> ptr,
-                                Transaction::Operation operation,
-                                Transaction* transaction) {
+Status InvokeOrSucceed(base::WeakPtr<T> ptr,
+                       Transaction::Operation operation,
+                       Transaction* transaction) {
   if (ptr) {
     return std::move(operation).Run(transaction);
   }
-  return leveldb::Status::OK();
+  return Status::OK();
 }
 
 template <typename R>

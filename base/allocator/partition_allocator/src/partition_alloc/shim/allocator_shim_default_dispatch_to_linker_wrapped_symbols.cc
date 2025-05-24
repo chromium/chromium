@@ -49,6 +49,21 @@ void RealFree(void* address, void* context) {
   __real_free(address);
 }
 
+void RealFreeWithSize(void* address, size_t, void* context) {
+  __real_free(address);
+}
+
+void RealFreeWithAlignment(void* address, size_t, void* context) {
+  __real_free(address);
+}
+
+void RealFreeWithSizeAndAlignment(void* address,
+                                  size_t,
+                                  size_t,
+                                  void* context) {
+  __real_free(address);
+}
+
 size_t RealSizeEstimate(void* address, void* context) {
   return __real_malloc_usable_size(address);
 }
@@ -56,24 +71,26 @@ size_t RealSizeEstimate(void* address, void* context) {
 }  // namespace
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
-    &RealMalloc,       /* alloc_function */
-    &RealMalloc,       /* alloc_unchecked_function */
-    &RealCalloc,       /* alloc_zero_initialized_function */
-    &RealMemalign,     /* alloc_aligned_function */
-    &RealRealloc,      /* realloc_function */
-    &RealRealloc,      /* realloc_unchecked_function */
-    &RealFree,         /* free_function */
-    &RealSizeEstimate, /* get_size_estimate_function */
-    nullptr,           /* good_size_function */
-    nullptr,           /* claimed_address */
-    nullptr,           /* batch_malloc_function */
-    nullptr,           /* batch_free_function */
-    nullptr,           /* free_definite_size_function */
-    nullptr,           /* try_free_default_function */
-    nullptr,           /* aligned_malloc_function */
-    nullptr,           /* aligned_malloc_unchecked_function */
-    nullptr,           /* aligned_realloc_function */
-    nullptr,           /* aligned_realloc_unchecked_function */
-    nullptr,           /* aligned_free_function */
-    nullptr,           /* next */
+    &RealMalloc,                   /* alloc_function */
+    &RealMalloc,                   /* alloc_unchecked_function */
+    &RealCalloc,                   /* alloc_zero_initialized_function */
+    &RealMemalign,                 /* alloc_aligned_function */
+    &RealRealloc,                  /* realloc_function */
+    &RealRealloc,                  /* realloc_unchecked_function */
+    &RealFree,                     /* free_function */
+    &RealFreeWithSize,             /* free_with_size_function */
+    &RealFreeWithAlignment,        /* free_with_alignment_function */
+    &RealFreeWithSizeAndAlignment, /* free_with_size_and_alignment_function */
+    &RealSizeEstimate,             /* get_size_estimate_function */
+    nullptr,                       /* good_size_function */
+    nullptr,                       /* claimed_address */
+    nullptr,                       /* batch_malloc_function */
+    nullptr,                       /* batch_free_function */
+    nullptr,                       /* try_free_default_function */
+    nullptr,                       /* aligned_malloc_function */
+    nullptr,                       /* aligned_malloc_unchecked_function */
+    nullptr,                       /* aligned_realloc_function */
+    nullptr,                       /* aligned_realloc_unchecked_function */
+    nullptr,                       /* aligned_free_function */
+    nullptr,                       /* next */
 };

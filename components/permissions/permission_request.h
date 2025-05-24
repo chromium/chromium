@@ -5,14 +5,17 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
@@ -38,30 +41,25 @@ class PermissionRequest {
   // be passed into this callback.
   // If `is_one_time` is true, the decision will last until all tabs of
   // `requesting_origin_` are closed or navigated away from.
-  using PermissionDecidedCallback =
-      base::RepeatingCallback<void(ContentSetting /*result*/,
-                                   bool /*is_one_time*/,
-                                   bool /*is_final_decision*/)>;
+  using PermissionDecidedCallback = base::RepeatingCallback<void(
+      ContentSetting /*result*/,
+      bool /*is_one_time*/,
+      bool /*is_final_decision*/,
+      const PermissionRequestData& /*request_data*/)>;
 
   // `permission_decided_callback` is called when the permission request is
   // resolved by the user (see comment on PermissionDecidedCallback above).
-  // `delete_callback` is called when the permission request is no longer needed
-  // by the permission system. Therefore, it is safe to delete `this` inside
-  // `delete_callback`. It will always be called eventually by the permission
-  // system.
-  // `delete_callback` may be called before `permission_decided_callback`, for
-  // example if the tab is closed without user interaction. In this case, the
-  // javascript promise from the requesting origin will not be resolved.
-  PermissionRequest(const GURL& requesting_origin,
-                    RequestType request_type,
-                    bool has_gesture,
-                    PermissionDecidedCallback permission_decided_callback,
-                    base::OnceClosure delete_callback);
-
-  PermissionRequest(PermissionRequestData request_data,
-                    PermissionDecidedCallback permission_decided_callback,
-                    base::OnceClosure delete_callback,
-                    bool uses_automatic_embargo);
+  // `request_finished_callback` is called when the permission request is being
+  // destructed after being handled by the permission system. It will always be
+  // called eventually by the permission system. `request_finished_callback` may
+  // be called before `permission_decided_callback`, for example if the tab is
+  // closed without user interaction. In this case, the javascript promise from
+  // the requesting origin will not be resolved.
+  PermissionRequest(
+      std::unique_ptr<PermissionRequestData> request_data,
+      PermissionDecidedCallback permission_decided_callback,
+      base::OnceClosure request_finished_callback = base::DoNothing(),
+      bool uses_automatic_embargo = true);
 
   PermissionRequest(const PermissionRequest&) = delete;
   PermissionRequest& operator=(const PermissionRequest&) = delete;
@@ -79,7 +77,7 @@ class PermissionRequest {
 
   virtual ~PermissionRequest();
 
-  GURL requesting_origin() const { return data_.requesting_origin; }
+  GURL requesting_origin() const { return data_->requesting_origin; }
   RequestType request_type() const;
 
   // Whether |this| and |other_request| are duplicates and therefore don't both
@@ -147,6 +145,13 @@ class PermissionRequest {
   // The default implementation returns std::nullopt (ie, use generic text).
   virtual std::optional<std::u16string> GetAllowAlwaysText() const;
 
+  // Returns the text to be used in the "block" button of the permission
+  // prompt.
+  //
+  // If not provided, the generic text for this button will be used instead.
+  // The default implementation returns std::nullopt (ie, use generic text).
+  virtual std::optional<std::u16string> GetBlockText() const;
+
   // Whether the request was initiated by the user clicking on the permission
   // element.
   bool IsEmbeddedPermissionElementInitiated() const;
@@ -172,15 +177,6 @@ class PermissionRequest {
   // be able to distinguish between an active refusal or an implicit refusal.
   void Cancelled(bool is_final_decision = true);
 
-  // The UI this request was associated with was answered by the user.
-  // It is safe for the request to be deleted at this point -- it will receive
-  // no further message from the permission request system. This method will
-  // eventually be called on every request which is not unregistered.
-  // It is ok to call this method without actually resolving the request via
-  // PermissionGranted(), PermissionDenied() or Canceled(). However, it will not
-  // resolve the javascript promise from the requesting origin.
-  void RequestFinished();
-
   // Used to record UMA for whether requests are associated with a user gesture.
   // To keep things simple this metric is only recorded for the most popular
   // request types.
@@ -196,11 +192,11 @@ class PermissionRequest {
   ContentSettingsType GetContentSettingsType() const;
 
   void set_requesting_frame_id(content::GlobalRenderFrameHostId id) {
-    data_.id.set_global_render_frame_host_id(id);
+    data_->id.set_global_render_frame_host_id(id);
   }
 
   const content::GlobalRenderFrameHostId& get_requesting_frame_id() {
-    return data_.id.global_render_frame_host_id();
+    return data_->id.global_render_frame_host_id();
   }
 
   // Permission name text fragment which can be used in permission prompts to
@@ -209,6 +205,12 @@ class PermissionRequest {
 
   bool uses_automatic_embargo() const { return uses_automatic_embargo_; }
 
+  std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
+  get_preview_parameters() const;
+
+  void set_preview_parameters(
+      PermissionHatsTriggerHelper::PreviewParametersForHats preview_parmeters);
+
  protected:
   // Sets whether this request is permission element initiated, for testing
   // subclasses only.
@@ -216,16 +218,19 @@ class PermissionRequest {
       bool embedded_permission_element_initiated);
 
  private:
-  PermissionRequestData data_;
+  // The PermissionRequestData associated with this request.
+  std::unique_ptr<PermissionRequestData> data_;
 
   // Called once a decision is made about the permission.
   PermissionDecidedCallback permission_decided_callback_;
 
-  // Called when the request is no longer in use so it can be deleted by the
-  // caller.
-  base::OnceClosure delete_callback_;
+  // Called when the request is finished to perform bookkeeping tasks.
+  base::OnceClosure request_finished_callback_;
 
   const bool uses_automatic_embargo_ = true;
+
+  std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
+      preview_parameters_;
 
   base::WeakPtrFactory<PermissionRequest> weak_factory_{this};
 };

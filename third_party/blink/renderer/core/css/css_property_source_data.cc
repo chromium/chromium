@@ -36,15 +36,6 @@
 
 namespace blink {
 
-SourceRange::SourceRange() : start(0), end(0) {}
-
-SourceRange::SourceRange(unsigned start, unsigned end)
-    : start(start), end(end) {}
-
-unsigned SourceRange::length() const {
-  return end - start;
-}
-
 CSSPropertySourceData::CSSPropertySourceData(const String& name,
                                              const String& value,
                                              bool important,

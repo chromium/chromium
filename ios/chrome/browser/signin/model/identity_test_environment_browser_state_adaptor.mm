@@ -12,9 +12,8 @@
 std::unique_ptr<KeyedService>
 IdentityTestEnvironmentBrowserStateAdaptor::BuildIdentityManagerForTests(
     web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
-      SigninClientFactory::GetForBrowserState(browser_state),
-      browser_state->GetPrefs(), browser_state->GetStatePath());
+      SigninClientFactory::GetForProfile(profile), profile->GetPrefs(),
+      profile->GetStatePath());
 }

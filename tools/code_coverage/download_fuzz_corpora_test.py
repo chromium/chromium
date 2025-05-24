@@ -54,25 +54,25 @@ class DownloadFuzzCorporaTest(unittest.TestCase):
     with patch('download_fuzz_corpora._ParseCommandArguments'
                ) as _ParseCommandArgumentsMock:
       with patch('download_fuzz_corpora._gsutil') as _gsutil_mock:
-        with patch('download_fuzz_corpora.unzip_corpora') as unzip_corpora_mock:
-          _gsutil_mock.return_value = None
-          _ParseCommandArgumentsMock.return_value = argparse.Namespace(
-              download_dir=self.__class__.fake_download_dir,
-              build_dir=self.__class__.fake_binary_dir)
-          unzip_corpora_mock.return_value = None
-          download_fuzz_corpora.Main()
-          self.assertTrue(
-              os.path.isdir(
-                  os.path.join(self.__class__.fake_download_dir,
-                               "fake_1_fuzzer")))
-          self.assertTrue(
-              os.path.isdir(
-                  os.path.join(self.__class__.fake_download_dir,
-                               "fake_2_fuzzer")))
-          self.assertFalse(
-              os.path.isdir(
-                  os.path.join(self.__class__.fake_binary_dir,
-                               "some_other_binary")))
+        _gsutil_mock.return_value = None
+        _ParseCommandArgumentsMock.return_value = argparse.Namespace(
+            download_dir=self.__class__.fake_download_dir,
+            build_dir=self.__class__.fake_binary_dir,
+            corpora_type='libfuzzer',
+            arch='x64')
+        download_fuzz_corpora.Main()
+        self.assertTrue(
+            os.path.isdir(
+                os.path.join(self.__class__.fake_download_dir,
+                             "fake_1_fuzzer")))
+        self.assertTrue(
+            os.path.isdir(
+                os.path.join(self.__class__.fake_download_dir,
+                             "fake_2_fuzzer")))
+        self.assertFalse(
+            os.path.isdir(
+                os.path.join(self.__class__.fake_binary_dir,
+                             "some_other_binary")))
 
 
 if __name__ == '__main__':

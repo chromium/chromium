@@ -4,13 +4,13 @@
 
 #include "chrome/browser/android/httpclient/http_client.h"
 
+#include <algorithm>
 #include <iostream>
 #include <ostream>
 #include <string>
 #include <type_traits>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

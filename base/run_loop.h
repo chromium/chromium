@@ -5,7 +5,6 @@
 #ifndef BASE_RUN_LOOP_H_
 #define BASE_RUN_LOOP_H_
 
-#include <stack>
 #include <utility>
 #include <vector>
 

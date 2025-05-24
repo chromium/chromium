@@ -100,14 +100,8 @@ class HashPrefixMap {
   // Returns a read-only view of the data stored in this map.
   HashPrefixMapView view() const;
 
-  // Returns the prefix at `size`.
-  HashPrefixesView at(PrefixSize size) const;
-
   // Appends |prefix| to the prefix list of size |size|.
   void Append(PrefixSize size, HashPrefixesView prefix);
-
-  // Reserves space for the prefix list of size |size|.
-  virtual void Reserve(PrefixSize size, size_t capacity);
 
   // Reads the map from disk.
   ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format);
@@ -157,7 +151,10 @@ class HashPrefixMap {
     FileInfo(const base::FilePath& store_path, PrefixSize size);
     ~FileInfo();
 
-    bool Initialize(const HashFile& hash_file);
+    // `initialize_after_write` will control some extra logging for
+    // investigating https://crbug.com/393395944.
+    // TODO(crbug.com/393395944): Remove `initialize_after_write`.
+    bool Initialize(const HashFile& hash_file, bool initialize_after_write);
     bool Finalize(HashFile* hash_file);
 
     HashPrefixesView GetView() const;
@@ -173,7 +170,6 @@ class HashPrefixMap {
 
     base::MemoryMappedFile file_;
     std::unique_ptr<BufferedFileWriter> writer_;
-    std::vector<uint32_t> offsets_;
   };
 
   FileInfo& GetFileInfo(PrefixSize size);

@@ -38,7 +38,7 @@ class MockObserver : public AvatarMenuObserver {
   MockObserver(const MockObserver&) = delete;
   MockObserver& operator=(const MockObserver&) = delete;
 
-  ~MockObserver() override {}
+  ~MockObserver() override = default;
 
   void OnAvatarMenuChanged(AvatarMenu* avatar_menu) override { ++count_; }
 

@@ -57,8 +57,8 @@ void IpProtectionAuthClient::CreateConnectedInstance(
 
 // static
 void IpProtectionAuthClient::CreateConnectedInstanceForTesting(
-    const std::string_view packageName,
-    const std::string_view className,
+    std::string_view packageName,
+    std::string_view className,
     base::OnceCallback<ClientCreated> callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_IpProtectionAuthClient_createConnectedInstanceForTesting(  // IN-TEST

@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
@@ -422,6 +423,10 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   void OnSetBeginFrameSourcePaused(bool paused);
   void OnBeginFrame(const BeginFrameArgs& args);
 
+  const BeginFrameArgs& last_begin_frame_args() const {
+    return last_begin_frame_args_;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // Notifies when the refresh rate of the display is updated. |refresh_rate| is
   // the rate in frames per second.
@@ -432,8 +437,9 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   // observers.
   virtual void SetPreferredInterval(base::TimeDelta interval) {}
 
-  // Returns the maximum supported refresh rate interval for a given BFS.
-  virtual base::TimeDelta GetMaximumRefreshFrameInterval();
+  // Returns the minimium supported frame interval for a given BFS.
+  // This gives the maximium refresh rate that can be requested.
+  virtual base::TimeDelta GetMinimumFrameInterval();
 
   virtual base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
       base::TimeDelta interval);
@@ -451,6 +457,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
 
  private:
   BeginFrameArgs pending_begin_frame_args_;
+  base::MetricsSubSampler metrics_sub_sampler_;
 };
 
 }  // namespace viz

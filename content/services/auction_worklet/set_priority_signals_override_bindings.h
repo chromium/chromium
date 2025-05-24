@@ -24,9 +24,10 @@ namespace auction_worklet {
 class SetPrioritySignalsOverrideBindings : public Bindings {
  public:
   explicit SetPrioritySignalsOverrideBindings(AuctionV8Helper* v8_helper);
-  SetPrioritySignalsOverrideBindings(const SetPriorityBindings&) = delete;
-  SetPrioritySignalsOverrideBindings& operator=(const SetPriorityBindings&) =
-      delete;
+  SetPrioritySignalsOverrideBindings(
+      const SetPrioritySignalsOverrideBindings&) = delete;
+  SetPrioritySignalsOverrideBindings& operator=(
+      const SetPrioritySignalsOverrideBindings&) = delete;
   ~SetPrioritySignalsOverrideBindings() override;
 
   // Add report method to global context. `this` must outlive the context.

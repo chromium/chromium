@@ -10,12 +10,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -23,11 +25,16 @@
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_testing_local_state.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using network::GetUploadData;
 using testing::Return;
@@ -44,6 +51,18 @@ namespace safe_browsing {
 namespace {
 const char kTestDownloadUrl[] = "https://example.com";
 }
+
+// Mock SafeBrowsingPrefChangeHandler.
+class MockSafeBrowsingPrefChangeHandler
+    : public safe_browsing::SafeBrowsingPrefChangeHandler {
+ public:
+  explicit MockSafeBrowsingPrefChangeHandler(Profile* profile)
+      : SafeBrowsingPrefChangeHandler(profile) {}
+  MOCK_METHOD(void,
+              MaybeShowEnhancedProtectionSettingChangeNotification,
+              (),
+              (override));
+};
 
 class SafeBrowsingServiceTest : public testing::Test {
  public:
@@ -70,11 +89,7 @@ class SafeBrowsingServiceTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     profile_ = std::make_unique<TestingProfile>();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Local state is needed to construct ProxyConfigService, which is a
-    // dependency of PingManager on ChromeOS.
-    TestingBrowserProcess::GetGlobal()->SetLocalState(profile_->GetPrefs());
-#endif
+    profile2_ = std::make_unique<TestingProfile>();
   }
 
   void TearDown() override {
@@ -82,9 +97,6 @@ class SafeBrowsingServiceTest : public testing::Test {
     browser_process_->safe_browsing_service()->ShutDown();
     browser_process_->SetSafeBrowsingService(nullptr);
     safe_browsing::SafeBrowsingServiceInterface::RegisterFactory(nullptr);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-#endif
     base::RunLoop().RunUntilIdle();
   }
 
@@ -103,6 +115,7 @@ class SafeBrowsingServiceTest : public testing::Test {
                                                      /*web_contents=*/nullptr);
     EXPECT_CALL(download_item_, GetDangerType())
         .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST));
+    EXPECT_CALL(download_item_, IsDangerous()).WillRepeatedly(Return(true));
     EXPECT_CALL(download_item_, GetURL())
         .WillRepeatedly(ReturnRef(download_url_));
 
@@ -197,11 +210,21 @@ class SafeBrowsingServiceTest : public testing::Test {
     EXPECT_EQ(warning_action.interval_msec(), interval_msec);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<TestingBrowserProcess> browser_process_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Local state is needed to construct ProxyConfigService, which is a
+  // dependency of PingManager on ChromeOS.
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   scoped_refptr<SafeBrowsingService> sb_service_;
   TestingProfile::Builder profile_builder_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestingProfile> profile2_;
   raw_ptr<TestingProfile> otr_profile_;
 
   ::testing::NiceMock<download::MockDownloadItem> download_item_;
@@ -275,7 +298,7 @@ TEST_F(
 
   sb_service_->SendDownloadReport(
       &download_item_,
-      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
+      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY,
       /*did_proceed=*/true,
       /*show_download_in_folder=*/true);
   histogram_tester.ExpectUniqueSample(
@@ -394,6 +417,187 @@ TEST_F(SafeBrowsingServiceTest,
   // disabled now.
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated));
+}
+
+TEST_F(SafeBrowsingServiceTest, TestMinAllowedTimeForReferrerChains) {
+  sb_service_->OnProfileAdded(profile());
+  // If real-time URL lookups are disabled, referrer chains are not allowed.
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            base::Time::Max());
+
+  // Enable ESB and check the timestamp is updated.
+  auto time_esb_enabled = base::Time::Now();
+  SetEnhancedProtectionPrefForTests(profile_->GetPrefs(), true);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_esb_enabled);
+  // Enable MBB and check the timestamp hasn't changed, since ESB is already
+  // enabled.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_esb_enabled);
+  // Disable MBB and check the timestamp hasn't changed, since ESB is still
+  // enabled.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_esb_enabled);
+  // Disable ESB and confirm the timestamp is the max time (referrer chains are
+  // not allowed).
+  SetEnhancedProtectionPrefForTests(profile_->GetPrefs(), false);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            base::Time::Max());
+
+  // Enable MBB and check the timestamp is updated.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  auto time_mbb_enabled = base::Time::Now();
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_mbb_enabled);
+  // Enable ESB and check the timestamp hasn't changed, since MBB is already
+  // enabled.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  SetEnhancedProtectionPrefForTests(profile_->GetPrefs(), true);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_mbb_enabled);
+  // Disable ESB and check the timestamp hasn't changed, since MBB is still
+  // enabled.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  SetEnhancedProtectionPrefForTests(profile_->GetPrefs(), false);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_mbb_enabled);
+  // Disable MBB and confirm the timestamp is the max time (referrer chains are
+  // not allowed).
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            base::Time::Max());
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       TestMinAllowedTimeForReferrerChains_EsbEnabledOnStartup) {
+  SetEnhancedProtectionPrefForTests(profile_->GetPrefs(), true);
+  sb_service_->OnProfileAdded(profile());
+  auto time_profile_added = base::Time::Now();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_profile_added);
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       TestMinAllowedTimeForReferrerChains_MbbEnabledOnStartup) {
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  sb_service_->OnProfileAdded(profile());
+  auto time_profile_added = base::Time::Now();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_profile_added);
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       TestMinAllowedTimeForReferrerChains_MultipleProfiles) {
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  sb_service_->OnProfileAdded(profile());
+  auto time_original_profile_enabled = base::Time::Now();
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_original_profile_enabled);
+
+  auto second_profile = std::make_unique<TestingProfile>();
+  second_profile->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  // Checking a profile not currently tracked is not expected, but if it
+  // happens, it should not cause a crash.
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
+                second_profile.get()),
+            base::Time::Max());
+  // Confirm the original profile still returns the original time and the second
+  // profile does not.
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_original_profile_enabled);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
+                second_profile.get()),
+            base::Time::Max());
+
+  // Now add the second profile and again confirm the two profile return
+  // different time stamps.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  sb_service_->OnProfileAdded(second_profile.get());
+  auto time_second_profile_enabled = base::Time::Now();
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            time_original_profile_enabled);
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
+                second_profile.get()),
+            time_second_profile_enabled);
+
+  // Triggering profile destruction should reset the timestamp back to the max
+  // timestamp.
+  sb_service_->OnProfileWillBeDestroyed(profile());
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            base::Time::Max());
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
+                second_profile.get()),
+            time_second_profile_enabled);
+  sb_service_->OnProfileWillBeDestroyed(second_profile.get());
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(profile()),
+            base::Time::Max());
+  EXPECT_EQ(sb_service_->GetMinAllowedTimestampForReferrerChains(
+                second_profile.get()),
+            base::Time::Max());
+}
+
+TEST_F(SafeBrowsingServiceTest, EnhancedProtectionPrefChange_SingleProfile) {
+  // 1. Create a single profile (using the fixture's profile).
+  Profile* profile1 = profile();
+
+  // 2. Create a mock SafeBrowsingPrefChangeHandler.
+  auto mock_handler1 =
+      std::make_unique<::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>(
+          profile1);
+
+  // 3. Set the expectation: The mock should be called once.
+  EXPECT_CALL(*mock_handler1,
+              MaybeShowEnhancedProtectionSettingChangeNotification());
+
+  // 4. Add the mock handler to the map.
+  sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
+
+  // 5. Call the method under test.
+  sb_service_->EnhancedProtectionPrefChange(profile1);
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       EnhancedProtectionPrefChange_SupportsMultipleProfiles) {
+  // 1. Create multiple profiles.
+  Profile* profile1 = profile();
+  Profile* profile2_ptr = profile2_.get();  // Store the pointer before moving
+
+  // 2. Create mock SafeBrowsingPrefChangeHandlers for each profile.
+  auto mock_handler1 =
+      std::make_unique<::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>(
+          profile1);
+  auto mock_handler2 =
+      std::make_unique<::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>(
+          profile2_ptr);
+
+  // 3. Set expectations: Each mock should be called once.
+  EXPECT_CALL(*mock_handler1.get(),
+              MaybeShowEnhancedProtectionSettingChangeNotification());
+  EXPECT_CALL(*mock_handler2.get(),
+              MaybeShowEnhancedProtectionSettingChangeNotification());
+
+  // 4. Add the mock handlers to the map, associating them with their profiles.
+  sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
+  sb_service_->pref_change_handlers_map_[profile2_ptr] =
+      std::move(mock_handler2);
+
+  // 5. Call the method under test for each profile.
+  sb_service_->EnhancedProtectionPrefChange(profile1);
+  sb_service_->EnhancedProtectionPrefChange(profile2_ptr);
 }
 
 class SafeBrowsingServiceAntiPhishingTelemetryTest
@@ -557,7 +761,7 @@ TEST_F(SendNotificationsAcceptedTest, SendReportForAllowlistedURL) {
           &test_url_loader_factory));
 // TODO(b/325636200): We should remove this once we figure out why the test is
 // crashing for ChromeOS and how to properly test it.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(sb_service_->MaybeSendNotificationsAcceptedReport(
       nullptr, profile(), notification_url1, notification_url2,
       notification_url3, display_duration));

@@ -11,7 +11,8 @@
 
 namespace blink {
 
-void PrintTo(const ExceptionState& exception_state, std::ostream* os) {
+void PrintTo(const DummyExceptionStateForTesting& exception_state,
+             std::ostream* os) {
   if (!exception_state.HadException()) {
     *os << "no exception";
     return;

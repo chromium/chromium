@@ -7,13 +7,13 @@
 
 #include <jni.h>
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
 // Provides access to Android's ViewConfiguration for gesture-related constants.
 // Note: All methods may be safely called from any thread.
-class GFX_EXPORT ViewConfiguration {
+class COMPONENT_EXPORT(GFX) ViewConfiguration {
  public:
   static int GetDoubleTapTimeoutInMs();
   static int GetLongPressTimeoutInMs();

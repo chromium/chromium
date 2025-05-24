@@ -30,12 +30,10 @@ source_set("factory") {
     ":features",
     ":internal",
     ":model",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 

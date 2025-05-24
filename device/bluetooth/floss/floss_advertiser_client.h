@@ -17,11 +17,7 @@
 namespace floss {
 
 constexpr char kAdvertisingSetCallbackPath[] =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "/org/chromium/bluetooth/advertising_set/callback/lacros";
-#else
     "/org/chromium/bluetooth/advertising_set/callback";
-#endif
 
 // Represents type of address to advertise.
 enum class OwnAddressType {

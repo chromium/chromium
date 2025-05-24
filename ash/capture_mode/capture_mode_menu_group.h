@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -124,7 +125,7 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // For tests only.
   views::View* GetOptionForTesting(int option_id);
   views::View* GetSelectFolderMenuItemForTesting();
-  std::u16string GetOptionLabelForTesting(int option_id) const;
+  std::u16string_view GetOptionLabelForTesting(int option_id) const;
   views::View* SetOptionCheckedForTesting(int option_id, bool checked) const;
 
  private:

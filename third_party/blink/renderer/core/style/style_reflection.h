@@ -33,13 +33,10 @@
 
 namespace blink {
 
-class StyleReflection : public RefCounted<StyleReflection> {
-  USING_FAST_MALLOC(StyleReflection);
-
+class StyleReflection : public GarbageCollected<StyleReflection> {
  public:
-  static scoped_refptr<StyleReflection> Create() {
-    return base::AdoptRef(new StyleReflection);
-  }
+  StyleReflection()
+      : offset_(Length::Fixed(0)), mask_(NinePieceImage::MaskDefaults()) {}
 
   bool operator==(const StyleReflection& o) const {
     return direction_ == o.direction_ && offset_ == o.offset_ &&
@@ -54,14 +51,10 @@ class StyleReflection : public RefCounted<StyleReflection> {
   void SetDirection(CSSReflectionDirection dir) { direction_ = dir; }
   void SetOffset(const Length& length) { offset_ = length; }
   void SetMask(const NinePieceImage& image) { mask_ = image; }
+  void Trace(Visitor* visitor) const { visitor->Trace(mask_); }
 
  private:
-  StyleReflection()
-      : direction_(kReflectionBelow),
-        offset_(Length::Fixed(0)),
-        mask_(NinePieceImage::MaskDefaults()) {}
-
-  CSSReflectionDirection direction_;
+  CSSReflectionDirection direction_ = kReflectionBelow;
   Length offset_;
   NinePieceImage mask_;
 };

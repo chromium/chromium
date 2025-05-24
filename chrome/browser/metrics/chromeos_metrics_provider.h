@@ -56,7 +56,6 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   void ProvideCurrentSessionUKMData() override;
 
  private:
-  void ProvideAccessibilityMetrics();
   void ProvideSuggestedContentMetrics();
   void ProvideMetrics(metrics::SystemProfileProto* system_profile_proto,
                       bool should_include_arc_metrics);

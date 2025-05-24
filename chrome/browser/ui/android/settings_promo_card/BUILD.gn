@@ -1,0 +1,70 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  resources_package = "org.chromium.chrome.browser.ui.settings_promo_card"
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/settings_promo_card/DefaultBrowserPromoCard.java",
+    "java/src/org/chromium/chrome/browser/ui/settings_promo_card/SettingsPromoCardPreference.java",
+    "java/src/org/chromium/chrome/browser/ui/settings_promo_card/SettingsPromoCardProvider.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/ui/android/default_browser_promo:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/widget/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//components/signin/public/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/default_browser_promo_illustration.xml",
+    "java/res/drawable/default_browser_promo_illustration_left.xml",
+    "java/res/drawable/default_browser_promo_illustration_right.xml",
+    "java/res/layout/settings_promo_card.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/signin:java_resources",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/settings_promo_card/DefaultBrowserPromoCardTest.java",
+    "java/src/org/chromium/chrome/browser/ui/settings_promo_card/SettingsPromoCardPreferenceTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/default_browser_promo:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

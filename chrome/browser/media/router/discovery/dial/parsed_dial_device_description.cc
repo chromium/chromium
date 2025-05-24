@@ -14,8 +14,9 @@ ParsedDialDeviceDescription::~ParsedDialDeviceDescription() = default;
 
 ParsedDialDeviceDescription& ParsedDialDeviceDescription::operator=(
     const ParsedDialDeviceDescription& other) {
-  if (this == &other)
+  if (this == &other) {
     return *this;
+  }
 
   this->unique_id = other.unique_id;
   this->friendly_name = other.friendly_name;

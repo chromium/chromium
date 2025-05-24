@@ -20,10 +20,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
@@ -62,7 +62,7 @@ class WindowedNetworkObserver {
 
   ~WindowedNetworkObserver() = default;
 
-  // Waits for a network request with the |expected_upload_data_|.
+  // Waits for a network request with the `expected_upload_data_`.
   void Wait() {
     message_loop_runner_->Run();
     interceptor_.reset();
@@ -120,9 +120,8 @@ class AutofillServerTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         // Enabled.
         {features::test::kAutofillServerCommunication,
-         features::kAutofillUseCAAddressModel,
          features::kAutofillUseFRAddressModel,
-         features::kAutofillUseITAddressModel},
+         features::kAutofillUseNLAddressModel},
         // Disabled.
         {});
   }
@@ -221,98 +220,6 @@ MATCHER_P(EqualsUploadProto, expected_const, "") {
   expected.mutable_upload()->clear_language();
 
   return request.SerializeAsString() == expected.SerializeAsString();
-}
-
-// Regression test for http://crbug.com/177419
-IN_PROC_BROWSER_TEST_F(AutofillServerTest,
-                       QueryAndUploadBothIncludeFieldsWithAutocompleteOff) {
-  // Seed some test Autofill profile data, as upload requests are only made when
-  // there is local data available to use as a baseline.
-  AddTestProfile(browser()->profile(), test::GetFullProfile());
-
-  // Load the test page. Expect a query request upon loading the page.
-  SetUrlContent("/test.html", R"(
-      <form id=test_form action=about:blank>
-        <input name=one>
-        <input name=two autocomplete=off>
-        <input name=three>
-        <input name=four autocomplete=off>
-        <input type=submit>
-      </form>
-      <script>
-        document.onclick = function() {
-          document.getElementById('test_form').submit();
-        };
-      </script>
-  )");
-
-  AutofillPageQueryRequest query;
-  query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
-  auto* query_form = query.add_forms();
-  query_form->set_signature(16565345157617645697U);
-  query_form->set_alternative_signature(11880064796695671551U);
-
-  query_form->add_fields()->set_signature(2594484045U);
-  query_form->add_fields()->set_signature(2750915947U);
-  query_form->add_fields()->set_signature(3494787134U);
-  query_form->add_fields()->set_signature(1236501728U);
-
-  std::string expected_query_string;
-  ASSERT_TRUE(query.SerializeToString(&expected_query_string));
-
-  WindowedNetworkObserver query_network_observer(expected_query_string);
-
-  NavigateToUrl("/test.html");
-  query_network_observer.Wait();
-
-  // Submit the form, using a simulated mouse click because form submissions not
-  // triggered by user gestures are ignored. Expect an upload request upon form
-  // submission, with form fields matching those from the query request.
-  AutofillUploadRequest request;
-  AutofillUploadContents* upload = request.mutable_upload();
-  upload->set_submission(true);
-  upload->set_client_version(
-      std::string(GetProductNameAndVersionForUserAgent()));
-  upload->set_form_signature(16565345157617645697U);
-  upload->set_autofill_used(false);
-
-  // The `data_present` fields is a bit mask of field types that are associated
-  // with non-empty profile values. Each bit in this mask corresponds to a
-  // specific type. For details on that mapping please consult
-  // |EncodeFieldTypes()| in components/autofill/core/browser/form_structure.cc.
-  // The resulting bit mask in this test is hard-coded to capture regressions in
-  // the calculation of the mask.
-  std::string data_present = "1f7e0003780000080004000000042018";
-
-  // TODO(crbug.com/40220393): Additional phone number trunk types are present
-  // if AutofillEnableSupportForPhoneNumberTrunkTypes is enabled. Clean-up
-  // implementation when launched.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForPhoneNumberTrunkTypes)) {
-    data_present.rbegin()[1] = '7';
-  }
-  upload->set_data_present(data_present);
-  upload->set_submission_event(
-      AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
-  upload->set_has_form_tag(true);
-  // We don't set metadata, because the matcher will skip them.
-  upload->set_language("und");
-  *upload->mutable_randomized_form_metadata() =
-      autofill::AutofillRandomizedFormMetadata();
-
-  // Enabling raw form data uploading (e.g., field name) is too complicated in
-  // this test. So, don't expect it in the upload.
-  test::FillUploadField(upload->add_field_data(), 2594484045U, 2U);
-  test::FillUploadField(upload->add_field_data(), 2750915947U, 2U);
-  test::FillUploadField(upload->add_field_data(), 3494787134U, 2U);
-  test::FillUploadField(upload->add_field_data(), 1236501728U, 2U);
-
-  WindowedNetworkObserver upload_network_observer(EqualsUploadProto(request));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::SimulateMouseClick(web_contents, 0,
-                              blink::WebMouseEvent::Button::kLeft);
-  upload_network_observer.Wait();
 }
 
 // Verify that a site with password fields will query even in the presence

@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 
 namespace arc {
@@ -28,7 +29,7 @@ bool LoadThreads(const base::Value* value,
 
   for (const auto it : value->GetDict()) {
     int tid;
-    if (sscanf(it.first.c_str(), "%d", &tid) != 1) {
+    if (UNSAFE_TODO(sscanf(it.first.c_str(), "%d", &tid)) != 1) {
       return false;
     }
 

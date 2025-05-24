@@ -48,7 +48,7 @@ class SystemDisplayApiTest : public ShellApiTest {
   std::unique_ptr<MockDisplayInfoProvider> provider_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // TODO(stevenjb): Add API tests for {GS}etDisplayLayout. That code currently
 // lives in src/chrome but should be getting moved soon.
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ResetDisplayIds) {
   ASSERT_FALSE(provider_->calibration_started(id));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 using SystemDisplayGetInfoTest = ShellApiTest;

@@ -95,18 +95,6 @@ public class CookieManagerTest extends AwParameterizedTest {
 
     private static final String SECURE_COOKIE_HISTOGRAM_NAME = "Android.WebView.SecureCookieAction";
 
-    private static final String ASSET_STATEMENT_TEMPLATE =
-            """
-                [{
-                        "relation": ["delegate_permission/common.handle_all_urls"],
-                        "target": {
-                                "namespace": "android_app",
-                                "package_name": "%s",
-                                "sha256_cert_fingerprints": ["%s"]
-                        }
-                }]
-        """;
-
     public CookieManagerTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
@@ -332,28 +320,6 @@ public class CookieManagerTest extends AwParameterizedTest {
         }
     }
 
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("disable-partitioned-cookies")
-    public void setDisabledPartitionedCookieWithCookieManager() throws Throwable {
-        TestWebServer webServer = TestWebServer.start();
-        try {
-            final String url = "https://www.example.com";
-            mCookieManager.setCookie(
-                    url, "partitioned=foo;Path=/;Secure;Partitioned;SameSite=None");
-
-            final String expected =
-                    "partitioned=foo; domain=www.example.com; path=/; secure; samesite=none";
-            List<String> cookieInfo = mCookieManager.getCookieInfo(url);
-            Assert.assertNotNull(cookieInfo);
-            Assert.assertFalse("cookieInfo should not be empty", cookieInfo.isEmpty());
-            Assert.assertEquals(expected, cookieInfo.get(0));
-        } finally {
-            webServer.shutdown();
-        }
-    }
-
     private void setCookieWithDocumentCookieAPI(final String name, final String value)
             throws Throwable {
         JSUtils.executeJavaScriptAndWaitForResult(
@@ -502,7 +468,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetCookie() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kNotASecureCookie= */ 3);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 3);
         String url = "http://www.example.com";
         String cookie = "name=test";
         mCookieManager.setCookie(url, cookie);
@@ -566,7 +532,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetSecureCookieForHttpUrlNotTargetingAndroidR() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kFixedUp= */ 4);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 4);
 
         mCookieManager.setWorkaroundHttpSecureCookiesForTesting(true);
         String url = "http://www.example.com";
@@ -585,7 +551,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetSecureCookieForHttpUrlTargetingAndroidR() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kDisallowedAndroidR= */ 5);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 5);
 
         mCookieManager.setWorkaroundHttpSecureCookiesForTesting(false);
         String url = "http://www.example.com";
@@ -605,7 +571,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetSecureCookieForHttpsUrl() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kAlreadySecureScheme= */ 1);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 1);
 
         String secureUrl = "https://www.example.com";
         String cookie = "name=test";
@@ -645,7 +611,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     public void testSetCookieCallback_badUrl() throws Throwable {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        SECURE_COOKIE_HISTOGRAM_NAME, /* kInvalidUrl= */ 0);
+                        SECURE_COOKIE_HISTOGRAM_NAME, /* value= */ 0);
         final String cookie = "name=test";
         final String brokenUrl = "foo";
 
@@ -1276,8 +1242,8 @@ public class CookieManagerTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
-    @CommandLineFlags.Add("webview-intercepted-cookie-header")
     public void testPartitionedNetCookies() throws Throwable {
+        mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setIncludeCookiesOnIntercept(true);
         TestAwContentsClient.ShouldInterceptRequestHelper shouldInterceptRequestHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
 
@@ -1331,7 +1297,7 @@ public class CookieManagerTest extends AwParameterizedTest {
             Assert.assertEquals(
                     failureMessage,
                     expectedCookies,
-                    interceptedRequest.requestHeaders.get("Cookie"));
+                    interceptedRequest.getRequestHeaders().get("Cookie"));
 
             expectedCookies = "partitioned_cookie=foo";
             failureMessage = "Partitioned cookies should be returned when 3PCs are disabled";
@@ -1348,7 +1314,7 @@ public class CookieManagerTest extends AwParameterizedTest {
             Assert.assertEquals(
                     failureMessage,
                     expectedCookies,
-                    interceptedRequest.requestHeaders.get("Cookie"));
+                    interceptedRequest.getRequestHeaders().get("Cookie"));
 
             failureMessage = "No cookies should be returned when all cookies are disabled";
             blockAllCookies();
@@ -1362,75 +1328,9 @@ public class CookieManagerTest extends AwParameterizedTest {
             interceptedRequest =
                     shouldInterceptRequestHelper.getRequestsForUrl(iframeUrl + "path_to_intercept");
             Assert.assertEquals(
-                    failureMessage, false, interceptedRequest.requestHeaders.containsKey("Cookie"));
-
-        } finally {
-            webServer.shutdown();
-        }
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView", "Privacy"})
-    @CommandLineFlags.Add("disable-partitioned-cookies")
-    public void testDisabledPartitionedNetCookies() throws Throwable {
-        TestWebServer webServer = TestWebServer.startSsl();
-
-        // This test suite relies on an image to force a network request that has cookies attached.
-        // The AwParameterizedTest will disable this setting so force enabling it again so that
-        // we can still test the rest of the parameterized test settings.
-        mAwContents.getSettings().setImagesEnabled(true);
-
-        try {
-            String[] cookies = {
-                "partitioned_cookie=foo; SameSite=None; Secure; Partitioned",
-                "unpartitioned_cookie=bar; SameSite=None; Secure"
-            };
-            List<Pair<String, String>> responseHeaders = new ArrayList<Pair<String, String>>();
-            for (String cookie : cookies) {
-                responseHeaders.add(Pair.create("Set-Cookie", cookie));
-            }
-
-            String iframeWithNetRequest =
-                    """
-                    <html>
-                    <body>
-                    <!-- Force a network request to happen from the iframe with a navigation so -->
-                    <!-- that we can intercept it and see which cookies were attached -->
-                    <img src="/path_to_intercept" >
-                    </body>
-                    </html>
-                    """;
-            String iframeUrl = webServer.setResponse("/", iframeWithNetRequest, responseHeaders);
-            // We don't need this to do anything fancy, we just need the path to exist
-            webServer.setResponse("/path_to_intercept", "hello", responseHeaders);
-
-            String url = toThirdPartyUrl(makeIframeUrl(webServer, "/parent.html", iframeUrl));
-
-            allowFirstPartyCookies();
-            allowThirdPartyCookies(mAwContents);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-            Assert.assertEquals(
-                    "All cookies should be returned when 3PCs are enabled",
-                    "partitioned_cookie=foo; unpartitioned_cookie=bar",
-                    webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
-
-            blockThirdPartyCookies(mAwContents);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-            Assert.assertEquals(
-                    "Partitioned cookies should not be returned while CHIPS is disabled",
-                    "",
-                    webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
-
-            blockAllCookies();
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-            Assert.assertEquals(
-                    "No cookies should be returned when all cookies are disabled",
-                    "",
-                    webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
+                    failureMessage,
+                    false,
+                    interceptedRequest.getRequestHeaders().containsKey("Cookie"));
 
         } finally {
             webServer.shutdown();
@@ -1446,15 +1346,7 @@ public class CookieManagerTest extends AwParameterizedTest {
         String unpartitionedCookie = "regular-cookie=456";
 
         TestWebServer webServer = TestWebServer.start();
-        // Add an asset statement to test storage access since we can auto grant
-        // under these circumstances.
-        webServer.setResponse(
-                "/.well-known/assetlinks.json",
-                String.format(
-                        ASSET_STATEMENT_TEMPLATE,
-                        BuildInfo.getInstance().hostPackageName,
-                        BuildInfo.getInstance().getHostSigningCertSha256()),
-                null);
+        addServerAssetLinks(webServer);
 
         try {
             // TODO(crbug.com/41496912): The WebView cookie manager API does not currently
@@ -1535,94 +1427,169 @@ public class CookieManagerTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
-    @CommandLineFlags.Add("disable-partitioned-cookies")
     @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
-    public void testDisabledPartitionedJSCookies() throws Throwable {
-        String partitionedCookie = "partitioned-cookie=123";
-        String unpartitionedCookie = "regular-cookie=456";
-
+    public void testAutoStorageAccessNetCookies() throws Throwable {
         TestWebServer webServer = TestWebServer.start();
-        // Add an asset statement to test storage access since we can auto grant
-        // under these circumstances.
-        webServer.setResponse(
-                "/.well-known/assetlinks.json",
-                String.format(
-                        ASSET_STATEMENT_TEMPLATE,
-                        BuildInfo.getInstance().hostPackageName,
-                        BuildInfo.getInstance().getHostSigningCertSha256()),
-                null);
+        addServerAssetLinks(webServer);
+
+        // This test suite relies on an image to force a network request that has cookies attached.
+        // The AwParameterizedTest will disable this setting so force enabling it again so that
+        // we can still test the rest of the parameterized test settings.
+        mAwContents.getSettings().setImagesEnabled(true);
 
         try {
-            // TODO(https://crbug.com/1523964): The WebView cookie manager API does not currently
-            // provide access to
-            // third party partitioned urls so we need to retrieve these cookies from the iframe
-            // itself to validate this
-            // behavior. We should refactor this test once support has been added to just use the
-            // CookieManager.
-            final LinkedBlockingQueue<String> javascriptInterfaceQueue =
-                    new LinkedBlockingQueue<>();
+            // We want to wait for the page to first have access
+            // to SAA and make a net request before we check for anything
+            // so we will add this API to let us know when the test
+            // has tried the net request.
+            var pageLoadFuture = SettableFuture.create();
             AwActivityTestRule.addJavascriptInterfaceOnUiThread(
                     mAwContents,
                     new Object() {
                         @JavascriptInterface
-                        public void report(String cookies) {
-                            javascriptInterfaceQueue.add(cookies);
+                        public void done() {
+                            pageLoadFuture.set(null);
                         }
                     },
-                    "cookieResults");
+                    "pageLoader");
 
-            IframeCookieSupplier iframeCookiesSupplier =
-                    (boolean requestStorageAccess) -> {
-                        String iframeUrl =
-                                toThirdPartyUrl(
-                                        makeCookieScriptResultsUrl(
-                                                webServer,
-                                                "/iframe.html",
-                                                requestStorageAccess,
-                                                partitionedCookie
-                                                        + "; Secure; Path=/; SameSite=None;"
-                                                        + " Partitioned;",
-                                                unpartitionedCookie
-                                                        + "; Secure; Path=/; SameSite=None;"));
+            // This iframe will request SAA, then try set a cookie, and then
+            // finally initiate a network request where we should see the 3PC
+            // attached.
+            // We listen for the onerror event on the image because we are making
+            // a request to a resource that doesn't actually exist, all we care about
+            // is the outgoing request.
+            String iframeWithNetRequest =
+                    """
+                    <html>
+                    <body>
+                    <img>
+                    <script>
 
-                        String url = makeIframeUrl(webServer, "/parent.html", iframeUrl);
+                    document.requestStorageAccess().then(() => {
+                        const image = document.querySelector("img");
+                        document.cookie = "foo=bar;";
+                        image.onerror = () => {
+                            pageLoader.done();
+                        };
+                        image.src = "/path_to_intercept";
+                    });
+                    </script>
+                    </body>
+                    </html>
+                    """;
+            String iframeUrl =
+                    toThirdPartyUrl(webServer.setResponse("/", iframeWithNetRequest, null));
+            // We don't need this to do anything fancy, we just need the path to exist
+            webServer.setResponse("/path_to_intercept", "hello", null);
 
-                        try {
-                            mActivityTestRule.loadUrlSync(
-                                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-
-                            return AwActivityTestRule.waitForNextQueueElement(
-                                    javascriptInterfaceQueue);
-                        } catch (Exception e) {
-                            // Failed to retrieve so we can treat this as "no-data" - this in turn
-                            // will fail equality checks
-                            return "Failed to retrieve data";
-                        }
-                    };
+            String url = makeIframeUrl(webServer, "/parent.html", iframeUrl);
 
             allowFirstPartyCookies();
             blockThirdPartyCookies(mAwContents);
+
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+            AwActivityTestRule.waitForFuture(pageLoadFuture);
+
             Assert.assertEquals(
-                    "Partitioned cookies should not be returned while CHIPS is disabled",
+                    "Cookies should have been attached to the request after receiving storage"
+                            + " access.",
+                    "foo=bar",
+                    webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
+    public void testAutoStorageAccessNotAllFrames() throws Throwable {
+        // This test confirms that when one frame is granted storage access,
+        // it is not granted to all frames from that site.
+        // It does this by:
+        // - loading an iframe
+        //   - requesting storage access in this frame
+        //   - then triggering a new iframe to be loaded at the top level
+        // - from the new iframe of the same site, try set a 3PC and report it
+        //
+        // That 3PC is expected to not be set because the second iframe should
+        // not have storage access granted.
+        TestWebServer webServer = TestWebServer.start();
+        SettableFuture<Void> storageAccessFuture = SettableFuture.create();
+        SettableFuture<String> secondFrameCookieFuture = SettableFuture.create();
+        addServerAssetLinks(webServer);
+
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                mAwContents,
+                new Object() {
+                    @JavascriptInterface
+                    public void done() {
+                        storageAccessFuture.set(null);
+                    }
+
+                    @JavascriptInterface
+                    public void reportCookies(String cookie) {
+                        secondFrameCookieFuture.set(cookie);
+                    }
+                },
+                "testInterface");
+
+        try {
+            String iframeWithNetRequest =
+                    """
+                    <html><body><script>
+                    document.requestStorageAccess().then(() => {
+                        testInterface.done();
+                    });
+                    </script></body></html>
+                    """;
+            String iframeUrl =
+                    toThirdPartyUrl(webServer.setResponse("/", iframeWithNetRequest, null));
+            String url = makeIframeUrl(webServer, "/parent.html", iframeUrl);
+
+            allowFirstPartyCookies();
+            blockThirdPartyCookies(mAwContents);
+
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+            // Wait until the first iframe has storage access granted...
+            AwActivityTestRule.waitForFuture(storageAccessFuture);
+
+            // Once we have granted storage access to one frame, we then load another frame to
+            // ensure that we don't share storage access across all frames.
+            // This frame should not have access to unpartitioned cookies
+            // and so should not report any cookies after attempting to set them.
+            String reportCookies =
+                    """
+                    <html><body><script>
+                    document.cookie="blah=hello;";
+                    testInterface.reportCookies(document.cookie);
+                    </script></body></html>
+                    """;
+
+            String secondFrameUrl =
+                    toThirdPartyUrl(webServer.setResponse("/", reportCookies, null));
+
+            JavaScriptUtils.executeJavaScript(
+                    mAwContents.getWebContents(),
+                    String.format(
+                            """
+                        const secondFrame = document.createElement("iframe");
+                        secondFrame.src="%s";
+                        document.body.appendChild(secondFrame);""",
+                            secondFrameUrl));
+
+            String secondFrameCookieString =
+                    AwActivityTestRule.waitForFuture(secondFrameCookieFuture);
+            Assert.assertEquals(
+                    "Second frame should not have storage access granted.",
                     "",
-                    iframeCookiesSupplier.get(/* requestStorageAccess= */ false));
-
-            Assert.assertEquals(
-                    "All cookies should be returned when SAA is requested.",
-                    partitionedCookie + "; " + unpartitionedCookie,
-                    iframeCookiesSupplier.get(/* requestStorageAccess= */ true));
-
-            allowThirdPartyCookies(mAwContents);
-            Assert.assertEquals(
-                    "All cookies should be returned when 3PCs are enabled",
-                    partitionedCookie + "; " + unpartitionedCookie,
-                    iframeCookiesSupplier.get(/* requestStorageAccess= */ false));
-
-            blockAllCookies();
-            Assert.assertEquals(
-                    "No cookies should ever be returned if all cookies are disabled",
-                    "",
-                    iframeCookiesSupplier.get(/* requestStorageAccess= */ false));
+                    secondFrameCookieString);
         } finally {
             webServer.shutdown();
         }
@@ -1674,6 +1641,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
+    @DisabledTest(message = "crbug.com/410745515")
     public void testAcceptFileSchemeCookies() throws Throwable {
         mCookieManager.setAcceptFileSchemeCookies(true);
         Assert.assertTrue(
@@ -1984,14 +1952,15 @@ public class CookieManagerTest extends AwParameterizedTest {
     }
 
     /**
-     * Creates a response on the TestWebServer which load a given URL in an iframe,
-     * and provides helpers for forwarding JavaScript calls to that iframe via postMessage.
-     * @param  webServer  the webServer on which to create the response
-     * @param  path the path component of the url (e.g "/my_thing_with_iframe.html")
-     * @param  url the url which which should appear as the src of the iframe.
-     * @return  the url which gets the response
+     * Creates a response on the TestWebServer which load a given URL in an iframe, and provides
+     * helpers for forwarding JavaScript calls to that iframe via postMessage.
+     *
+     * @param webServer the webServer on which to create the response
+     * @param path the path component of the url (e.g "/my_thing_with_iframe.html")
+     * @param url the url which which should appear as the src of the iframe.
+     * @return the url which gets the response
      */
-    private String makeIframeUrl(TestWebServer webServer, String path, String url) {
+    public static String makeIframeUrl(TestWebServer webServer, String path, String url) {
         String responseStr =
                 "<html><head><title>Content!</title>"
                         + "<script>"
@@ -2018,7 +1987,7 @@ public class CookieManagerTest extends AwParameterizedTest {
      * @param value the value of the cookie
      * @return the url which gets the response
      */
-    private String makeCookieScriptUrl(
+    public static String makeCookieScriptUrl(
             TestWebServer webServer, String path, String key, String value) {
         String response =
                 "<html><head></head><body>"
@@ -2060,11 +2029,13 @@ public class CookieManagerTest extends AwParameterizedTest {
     /**
      * Returns code fragment to be embedded into an async function to set a cookie with CookieStore
      * API
+     *
      * @param name name of cookie to set
      * @param value value to set the cookie to
      * @param finallyAction code to run once set finishes, regardless of success or failure
      */
-    private String makeCookieStoreSetFragment(String name, String value, String finallyAction) {
+    private static String makeCookieStoreSetFragment(
+            String name, String value, String finallyAction) {
         return "try {"
                 + "  await window.cookieStore.set("
                 + "      { name: "
@@ -2090,7 +2061,7 @@ public class CookieManagerTest extends AwParameterizedTest {
      * @param cookies A list of cookies to set
      * @return the url which gets the response
      */
-    private String makeCookieScriptResultsUrl(
+    public static String makeCookieScriptResultsUrl(
             TestWebServer webServer, String path, boolean requestStorageAccess, String... cookies) {
         String response = "<html><body><script>";
 
@@ -2115,10 +2086,11 @@ public class CookieManagerTest extends AwParameterizedTest {
 
     /**
      * Makes a url look as if it comes from a different host.
-     * @param  url the url to fake.
-     * @return  the resulting url after faking.
+     *
+     * @param url the url to fake.
+     * @return the resulting url after faking.
      */
-    private String toThirdPartyUrl(String url) {
+    public static String toThirdPartyUrl(String url) {
         return url.replace("localhost", "127.0.0.1");
     }
 
@@ -2306,6 +2278,26 @@ public class CookieManagerTest extends AwParameterizedTest {
         mCookieManager.setAcceptCookie(false);
         String msg = "acceptCookie() should return false after setAcceptCookie(false)";
         Assert.assertFalse(msg, mCookieManager.acceptCookie());
+    }
+
+    /** Adds an asset links json to allow SAA auto grants. */
+    public static void addServerAssetLinks(TestWebServer webServer) {
+        webServer.setResponse(
+                "/.well-known/assetlinks.json",
+                String.format(
+                        """
+                                [{
+                                        "relation": ["delegate_permission/common.handle_all_urls"],
+                                        "target": {
+                                                "namespace": "android_app",
+                                                "package_name": "%s",
+                                                "sha256_cert_fingerprints": ["%s"]
+                                        }
+                                }]
+                        """,
+                        BuildInfo.getInstance().hostPackageName,
+                        BuildInfo.getInstance().getHostSigningCertSha256()),
+                null);
     }
 
     interface IframeCookieSupplier {

@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -49,10 +50,14 @@ class CONTENT_EXPORT IdentityRequestAccount
 
   IdentityRequestAccount(
       const std::string& id,
+      const std::string& display_identifier,
+      const std::string& display_name,
       const std::string& email,
       const std::string& name,
       const std::string& given_name,
       const GURL& picture,
+      const std::string& phone,
+      const std::string& username,
       std::vector<std::string> login_hints,
       std::vector<std::string> domain_hints,
       std::vector<std::string> labels,
@@ -60,15 +65,24 @@ class CONTENT_EXPORT IdentityRequestAccount
       LoginState browser_trusted_login_state = LoginState::kSignUp,
       std::optional<base::Time> last_used_timestamp = std::nullopt);
 
+  explicit IdentityRequestAccount(
+      const blink::common::webid::LoginStatusAccount& account);
+
   // The identity provider to which the account belongs to. This is not set in
   // the constructor but instead set later.
   scoped_refptr<IdentityProviderData> identity_provider = nullptr;
 
   std::string id;
+  // E.g. email or phone number
+  std::string display_identifier;
+  // E.g. the user's full name or username
+  std::string display_name;
   std::string email;
   std::string name;
   std::string given_name;
   GURL picture;
+  std::string phone;
+  std::string username;
   // This will be an empty image if fetching failed.
   gfx::Image decoded_picture;
 
@@ -88,6 +102,11 @@ class CONTENT_EXPORT IdentityRequestAccount
   // Whether this account is filtered out or not. An account may be filtered out
   // due to login hint, domain hint, or account label.
   bool is_filtered_out = false;
+
+  // Whether this account was retrieved from the Lightweight FedCM Accounts Push
+  // storage. If this is true, the request for the account picture will only
+  // check against cache, and will fail on cache miss.
+  bool from_accounts_push = false;
 
  private:
   friend class base::RefCounted<IdentityRequestAccount>;

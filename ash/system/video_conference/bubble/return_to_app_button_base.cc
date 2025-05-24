@@ -108,7 +108,7 @@ ReturnToAppButtonBase::ReturnToAppButtonBase(
 
   label->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
   label_ = AddChildView(std::move(label));
   GetViewAccessibility().SetName(GetPeripheralsAccessibleName() + display_text);
@@ -146,7 +146,7 @@ std::u16string ReturnToAppButtonBase::GetPeripheralsAccessibleName() const {
   return tooltip_text;
 }
 
-std::u16string ReturnToAppButtonBase::GetLabelText() const {
+std::u16string_view ReturnToAppButtonBase::GetLabelText() const {
   return label_->GetText();
 }
 

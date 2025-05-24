@@ -52,7 +52,7 @@ class DISPLAY_MANAGER_EXPORT DisplayLayoutStore {
                             bool default_unified);
 
  private:
-  friend void DisplayManager::UpdateDisplaysWith(
+  friend bool DisplayManager::UpdateDisplaysWith(
       const std::vector<ManagedDisplayInfo>& updated_display_info_list);
 
   // Returns a layout for the given `display_id_list` or create one if no layout

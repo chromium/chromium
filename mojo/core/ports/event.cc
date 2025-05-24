@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
-#include "base/ranges/algorithm.h"
 #include "mojo/core/ports/user_message.h"
 
 namespace mojo {
@@ -287,11 +286,11 @@ void UserMessageEvent::SerializeData(void* buffer) const {
   data->padding = 0;
 
   auto* ports_data = reinterpret_cast<PortDescriptor*>(data + 1);
-  base::ranges::copy(port_descriptors_, ports_data);
+  std::ranges::copy(port_descriptors_, ports_data);
 
   auto* port_names_data =
       reinterpret_cast<PortName*>(ports_data + ports_.size());
-  base::ranges::copy(ports_, port_names_data);
+  std::ranges::copy(ports_, port_names_data);
 }
 
 PortAcceptedEvent::PortAcceptedEvent(const PortName& port_name,

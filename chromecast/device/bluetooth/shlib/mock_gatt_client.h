@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chromecast/device/bluetooth/shlib/gatt_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -57,7 +58,7 @@ class MockGattClient : public GattClient {
   Gatt::Client::Delegate* delegate() const { return delegate_; }
 
  private:
-  Gatt::Client::Delegate* delegate_ = nullptr;
+  raw_ptr<Gatt::Client::Delegate> delegate_ = nullptr;
 };
 
 inline MockGattClient::MockGattClient() {

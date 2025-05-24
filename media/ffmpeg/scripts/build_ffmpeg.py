@@ -182,15 +182,13 @@ class AndroidApiLevels:
         print('removing temp dir ' + tmp_dir)
         shutil.rmtree(tmp_dir, ignore_errors=False)
 
-        api64_match = re.search(r'android64_ndk_api_level\s*=\s*(\d{2})',
+        api_match = re.search(r'android_ndk_api_level\s*=\s*(\d{2})',
                                 config_output)
-        api32_match = re.search(r'android32_ndk_api_level\s*=\s*(\d{2})',
-                                config_output)
-        if not api32_match or not api64_match:
+        if not api_match:
             raise Exception('Failed to find the android api levels')
 
-        self.api32 = api32_match.group(1)
-        self.api64 = api64_match.group(1)
+        self.api32 = api_match.group(1)
+        self.api64 = api_match.group(1)
 
     def ApiLevels(self):
         return (self.api32, self.api64)

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/native_input_method_engine_observer.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -17,11 +18,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ash/input_method/japanese/japanese_prefs.h"
 #include "chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
+#include "chrome/browser/ash/lobster/lobster_event_sink.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -143,7 +146,7 @@ bool IsPredictiveWritingEnabled(PrefService* pref_service,
           IsUsEnglishEngine(engine_id));
 }
 
-std::string NormalizeRuleBasedEngineId(const std::string engine_id) {
+std::string NormalizeRuleBasedEngineId(const std::string& engine_id) {
   // For legacy reasons, |engine_id| starts with "vkd_" in the input method
   // manifest, but the InputEngineManager expects the prefix "m17n:".
   // TODO(https://crbug.com/1012490): Migrate to m17n prefix and remove this.
@@ -399,6 +402,8 @@ std::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
       return mojom::NamedDomKey::kCapsLock;
     case ui::DomKey::CONTROL:
       return mojom::NamedDomKey::kControl;
+    case ui::DomKey::DEL:
+      return mojom::NamedDomKey::kDelete;
     case ui::DomKey::SHIFT:
       return mojom::NamedDomKey::kShift;
     case ui::DomKey::ENTER:
@@ -449,6 +454,30 @@ std::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
       return mojom::NamedDomKey::kF11;
     case ui::DomKey::F12:
       return mojom::NamedDomKey::kF12;
+    case ui::DomKey::BROWSER_BACK:
+      return mojom::NamedDomKey::kBrowserBack;
+    case ui::DomKey::BROWSER_FORWARD:
+      return mojom::NamedDomKey::kBrowserForward;
+    case ui::DomKey::BROWSER_REFRESH:
+      return mojom::NamedDomKey::kBrowserRefresh;
+    case ui::DomKey::ZOOM_TOGGLE:
+      // This the DomKey for the "full screen" key.
+      return mojom::NamedDomKey::kZoomToggle;
+    case ui::DomKey::LAUNCH_MY_COMPUTER:
+      // This the DomKey for the "Show all open windows" key.
+      return mojom::NamedDomKey::kLaunchMyComputer;
+    case ui::DomKey::BRIGHTNESS_DOWN:
+      return mojom::NamedDomKey::kBrightnessDown;
+    case ui::DomKey::BRIGHTNESS_UP:
+      return mojom::NamedDomKey::kBrightnessUp;
+    case ui::DomKey::AUDIO_VOLUME_MUTE:
+      return mojom::NamedDomKey::kAudioVolumeMute;
+    case ui::DomKey::AUDIO_VOLUME_DOWN:
+      return mojom::NamedDomKey::kAudioVolumeDown;
+    case ui::DomKey::AUDIO_VOLUME_UP:
+      return mojom::NamedDomKey::kAudioVolumeUp;
+    case ui::DomKey::NUM_LOCK:
+      return mojom::NamedDomKey::kNumLock;
     default:
       return std::nullopt;
   }
@@ -621,7 +650,7 @@ bool InferIsUserSelecting(
     return true;
   }
 
-  const bool any_non_empty_label = base::ranges::any_of(
+  const bool any_non_empty_label = std::ranges::any_of(
       candidates, [](const ime::mojom::CandidatePtr& candidate) {
         return !candidate->label->empty();
       });
@@ -700,6 +729,7 @@ bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
 NativeInputMethodEngineObserver::NativeInputMethodEngineObserver(
     PrefService* prefs,
     EditorEventSink* editor_event_sink,
+    LobsterEventSink* lobster_event_sink,
     std::unique_ptr<InputMethodEngineObserver> ime_base_observer,
     std::unique_ptr<AssistiveSuggester> assistive_suggester,
     std::unique_ptr<AutocorrectManager> autocorrect_manager,
@@ -708,6 +738,7 @@ NativeInputMethodEngineObserver::NativeInputMethodEngineObserver(
     bool use_ime_service)
     : prefs_(prefs),
       editor_event_sink_(editor_event_sink),
+      lobster_event_sink_(lobster_event_sink),
       ime_base_observer_(std::move(ime_base_observer)),
       assistive_suggester_(std::move(assistive_suggester)),
       autocorrect_manager_(std::move(autocorrect_manager)),
@@ -882,6 +913,9 @@ void NativeInputMethodEngineObserver::OnFocus(
       TextClient{.context_id = context_id, .state = TextClientState::kPending};
   if (chromeos::features::IsOrcaEnabled() && editor_event_sink_) {
     editor_event_sink_->OnFocus(context_id);
+  }
+  if (lobster_event_sink_) {
+    lobster_event_sink_->OnFocus(context_id);
   }
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     assistive_suggester_->OnFocus(context_id, context);
@@ -1427,7 +1461,7 @@ void NativeInputMethodEngineObserver::DEPRECATED_ReportSuggestionOpportunity(
 void NativeInputMethodEngineObserver::ReportHistogramSample(
     base::Histogram* histogram,
     uint16_t value) {
-  histogram->Add(base::strict_cast<base::Histogram::Sample>(value));
+  histogram->Add(base::strict_cast<base::Histogram::Sample32>(value));
 }
 
 void NativeInputMethodEngineObserver::UpdateQuickSettings(

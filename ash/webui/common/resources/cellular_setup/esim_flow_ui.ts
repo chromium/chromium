@@ -16,18 +16,22 @@ import {hasActiveCellularNetwork} from '//resources/ash/common/network/cellular_
 import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior} from '//resources/ash/common/network/network_listener_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {ESimManagerInterface, ESimOperationResult, ESimProfileProperties, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {FilterType, NetworkStateProperties, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {ESimManagerInterface, ESimProfileProperties, EuiccRemote} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {ESimOperationResult, ProfileInstallMethod, ProfileInstallResult, ProfileState} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import type {CrosNetworkConfigInterface, NetworkStateProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {FilterType, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ActivationCodePageElement} from './activation_code_page.js';
-import {CellularSetupDelegate} from './cellular_setup_delegate.js';
-import {ButtonBarState, ButtonState} from './cellular_types.js';
+import type {ActivationCodePageElement} from './activation_code_page.js';
+import type {CellularSetupDelegate} from './cellular_setup_delegate.js';
+import type {ButtonBarState} from './cellular_types.js';
+import {ButtonState} from './cellular_types.js';
 import {getTemplate} from './esim_flow_ui.html.js';
 import {getEuicc} from './esim_manager_utils.js';
 import {getESimManagerRemote} from './mojo_interface_provider.js';
-import {ProfileDiscoveryListPageElement} from './profile_discovery_list_page.js';
+import type {ProfileDiscoveryListPageElement} from './profile_discovery_list_page.js';
 import {SubflowMixin} from './subflow_mixin.js';
 
 export enum EsimPageName {
@@ -226,7 +230,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     super();
 
     this.eSimManagerRemote_ = getESimManagerRemote();
-    const networkConfig =
+    const networkConfig: CrosNetworkConfigInterface =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
     const filter = {
@@ -277,7 +281,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         break;
     }
 
-    if (this.isOffline_ && resultCode !== ProfileInstallResult.kSuccess) {
+    if (this.isOffline_ && resultCode !== EsimSetupFlowResult.SUCCESS) {
       resultCode = EsimSetupFlowResult.NO_NETWORK;
     }
 
@@ -463,7 +467,13 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     this.forwardButtonLabel = this.i18n('next');
     return {
       cancel: cancelButtonStateIfEnabled,
-      forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
+      forward: (enableForwardBtn ||
+                (loadTimeData.valueExists(
+                     'isESimEmptyActivationCodeSupportEnabled') &&
+                 loadTimeData.getBoolean(
+                     'isESimEmptyActivationCodeSupportEnabled'))) ?
+          ButtonState.ENABLED :
+          ButtonState.DISABLED,
     };
   }
 
@@ -666,6 +676,14 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
           bubbles: true, composed: true,
         }));
         break;
+      case EsimUiState.ACTIVATION_CODE_ENTRY:
+        if (loadTimeData.valueExists(
+                'isESimEmptyActivationCodeSupportEnabled') &&
+            loadTimeData.getBoolean(
+                'isESimEmptyActivationCodeSupportEnabled')) {
+          this.state_ = EsimUiState.SETUP_FINISH;
+        }
+        break;
       default:
         assertNotReached();
     }
@@ -683,7 +701,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         if (!activationCodePage) {
           return false;
         }
-        return activationCodePage!.attemptToFocusOnPageContent();
+        return activationCodePage.attemptToFocusOnPageContent();
       case EsimUiState.PROFILE_SELECTION:
         const profileDiscoveryPage =
             this.shadowRoot!.querySelector<ProfileDiscoveryListPageElement>(

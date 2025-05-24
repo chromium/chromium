@@ -14,7 +14,9 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -37,6 +39,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
+#include "net/base/mime_util.h"
 #endif
 
 using blink::mojom::FileSystemAccessEntry;
@@ -49,7 +52,6 @@ using storage::FileSystemOperationRunner;
 namespace content {
 
 using HandleType = FileSystemAccessPermissionContext::HandleType;
-using PathType = FileSystemAccessPermissionContext::PathType;
 using SensitiveEntryResult =
     FileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserAction = FileSystemAccessPermissionContext::UserAction;
@@ -131,9 +133,64 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
                                                   GetFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Lookup content-URI by display-name. If the file does not exist, and
+  // `create` is set, ContentUriGetChildDocumentOrQuery() will return a
+  // create-child-document query URI which is used in
+  // NativeFileUtil::EnsureFileExists() to call ContentUriGetDocumentFromQuery()
+  // and create the document. DidGetFile() will then update the child path
+  // before creating the returned handle.
+  if (url().virtual_path().IsContentUri()) {
+    std::string mime_type;
+    if (!net::GetWellKnownMimeTypeFromFile(base::FilePath(basename),
+                                           &mime_type)) {
+      mime_type = "application/octet-stream";
+    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&base::ContentUriGetChildDocumentOrQuery,
+                       url().virtual_path(), basename, mime_type,
+                       /*is_directory=*/false, create),
+        base::BindOnce(
+            &FileSystemAccessDirectoryHandleImpl::OnGetFileContentUri,
+            weak_factory_.GetWeakPtr(), basename, create, std::move(callback)));
+    return;
+  }
+#endif
+
   storage::FileSystemURL child_url;
   blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
       GetChildURL(basename, &child_url);
+  GetFileResolved(basename, create, std::move(callback),
+                  std::move(get_child_url_result), std::move(child_url));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void FileSystemAccessDirectoryHandleImpl::OnGetFileContentUri(
+    std::string basename,
+    bool create,
+    GetFileCallback callback,
+    base::FilePath child_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (child_path.empty()) {
+    std::move(callback).Run(file_system_access_error::FromFileError(
+                                base::File::FILE_ERROR_NOT_FOUND),
+                            mojo::NullRemote());
+    return;
+  }
+
+  GetFileResolved(basename, create, std::move(callback),
+                  file_system_access_error::Ok(), CreateChildURL(child_path));
+}
+#endif
+
+void FileSystemAccessDirectoryHandleImpl::GetFileResolved(
+    const std::string& basename,
+    bool create,
+    GetFileCallback callback,
+    blink::mojom::FileSystemAccessErrorPtr get_child_url_result,
+    storage::FileSystemURL child_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
     std::move(callback).Run(std::move(get_child_url_result),
                             mojo::NullRemote());
@@ -154,24 +211,26 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
     // checked for the blocklist, a child symlink file may have been created
     // since then, pointing to a blocklisted file or directory.  Check for
     // sensitive entry access, which is run on the resolved path.
-    manager()->permission_context()->ConfirmSensitiveEntryAccess(
-        context().storage_key.origin(),
+    PathInfo path_info{
         child_url.type() == storage::FileSystemType::kFileSystemTypeLocal
             ? PathType::kLocal
             : PathType::kExternal,
-        child_url.path(), HandleType::kFile, UserAction::kNone,
-        context().frame_id,
+        child_url.path(), basename};
+    manager()->permission_context()->ConfirmSensitiveEntryAccess(
+        context().storage_key.origin(), path_info, HandleType::kFile,
+        UserAction::kNone, context().frame_id,
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DoGetFile,
-                       weak_factory_.GetWeakPtr(), create, child_url,
+                       weak_factory_.GetWeakPtr(), basename, create, child_url,
                        std::move(callback)));
     return;
   }
 
-  DoGetFile(create, child_url, std::move(callback),
+  DoGetFile(basename, create, child_url, std::move(callback),
             SensitiveEntryResult::kAllowed);
 }
 
 void FileSystemAccessDirectoryHandleImpl::DoGetFile(
+    const std::string& basename,
     bool create,
     storage::FileSystemURL url,
     GetFileCallback callback,
@@ -192,7 +251,7 @@ void FileSystemAccessDirectoryHandleImpl::DoGetFile(
     RunWithWritePermission(
         base::BindOnce(
             &FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission,
-            weak_factory_.GetWeakPtr(), url),
+            weak_factory_.GetWeakPtr(), basename, url),
         base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                           GetFileCallback callback) {
           std::move(callback).Run(std::move(result), mojo::NullRemote());
@@ -202,7 +261,8 @@ void FileSystemAccessDirectoryHandleImpl::DoGetFile(
     manager()->DoFileSystemOperation(
         FROM_HERE, &FileSystemOperationRunner::FileExists,
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DidGetFile,
-                       weak_factory_.GetWeakPtr(), url, std::move(callback)),
+                       weak_factory_.GetWeakPtr(), basename, url,
+                       std::move(callback)),
         url);
   }
 }
@@ -213,9 +273,61 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectory(
     GetDirectoryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Lookup content-URI by display-name. If the directory does not exist, and
+  // `create` is set, ContentUriGetChildDocumentOrQuery() will return a
+  // create-child-document query URI which is used in
+  // NativeFileUtil::CreateDirectory() to call ContentUriGetDocumentFromQuery()
+  // and create the document. DidGetDirectory() will then update the child path
+  // before creating the returned handle.
+  if (url().virtual_path().IsContentUri()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&base::ContentUriGetChildDocumentOrQuery,
+                       url().virtual_path(), basename,
+                       /*mime_type=*/std::string(),
+                       /*is_directory=*/true, create),
+        base::BindOnce(
+            &FileSystemAccessDirectoryHandleImpl::OnGetDirectoryContentUri,
+            weak_factory_.GetWeakPtr(), basename, create, std::move(callback)));
+    return;
+  }
+#endif
+
   storage::FileSystemURL child_url;
   blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
       GetChildURL(basename, &child_url);
+  GetDirectoryResolved(basename, create, std::move(callback),
+                       std::move(get_child_url_result), std::move(child_url));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void FileSystemAccessDirectoryHandleImpl::OnGetDirectoryContentUri(
+    std::string basename,
+    bool create,
+    GetDirectoryCallback callback,
+    base::FilePath child_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (child_path.empty()) {
+    std::move(callback).Run(file_system_access_error::FromFileError(
+                                base::File::FILE_ERROR_NOT_FOUND),
+                            mojo::NullRemote());
+    return;
+  }
+
+  GetDirectoryResolved(basename, create, std::move(callback),
+                       file_system_access_error::Ok(),
+                       CreateChildURL(child_path));
+}
+#endif
+
+void FileSystemAccessDirectoryHandleImpl::GetDirectoryResolved(
+    const std::string& basename,
+    bool create,
+    GetDirectoryCallback callback,
+    blink::mojom::FileSystemAccessErrorPtr get_child_url_result,
+    storage::FileSystemURL child_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
     std::move(callback).Run(std::move(get_child_url_result),
                             mojo::NullRemote());
@@ -320,9 +432,56 @@ void FileSystemAccessDirectoryHandleImpl::RemoveEntry(
     RemoveEntryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Lookup content-URI by display-name.
+  if (url().virtual_path().IsContentUri()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&base::ContentUriGetChildDocumentOrQuery,
+                       url().virtual_path(), basename,
+                       /*mime_type=*/std::string(),
+                       /*is_directory=*/false, /*create=*/false),
+        base::BindOnce(
+            &FileSystemAccessDirectoryHandleImpl::OnRemoveEntryContentUri,
+            weak_factory_.GetWeakPtr(), basename, recurse,
+            std::move(callback)));
+    return;
+  }
+#endif
+
   storage::FileSystemURL child_url;
   blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
       GetChildURL(basename, &child_url);
+  RemoveEntryResolved(basename, recurse, std::move(callback),
+                      std::move(get_child_url_result), std::move(child_url));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void FileSystemAccessDirectoryHandleImpl::OnRemoveEntryContentUri(
+    std::string basename,
+    bool recurse,
+    RemoveEntryCallback callback,
+    base::FilePath child_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (child_path.empty()) {
+    std::move(callback).Run(file_system_access_error::FromFileError(
+        base::File::FILE_ERROR_NOT_FOUND));
+    return;
+  }
+
+  RemoveEntryResolved(basename, recurse, std::move(callback),
+                      file_system_access_error::Ok(),
+                      CreateChildURL(child_path));
+}
+#endif
+
+void FileSystemAccessDirectoryHandleImpl::RemoveEntryResolved(
+    const std::string& basename,
+    bool recurse,
+    RemoveEntryCallback callback,
+    blink::mojom::FileSystemAccessErrorPtr get_child_url_result,
+    storage::FileSystemURL child_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
     std::move(callback).Run(std::move(get_child_url_result));
     return;
@@ -432,6 +591,7 @@ void FileSystemAccessDirectoryHandleImpl::Transfer(
 }
 
 void FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission(
+    const std::string& basename,
     const storage::FileSystemURL& child_url,
     GetFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -441,17 +601,52 @@ void FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission(
   manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::CreateFile,
       base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DidGetFile,
-                     weak_factory_.GetWeakPtr(), child_url,
+                     weak_factory_.GetWeakPtr(), basename, child_url,
                      std::move(callback)),
       child_url,
       /*exclusive=*/false);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void FileSystemAccessDirectoryHandleImpl::DidGetFileQueryUri(
+    const std::string& basename,
+    GetFileCallback callback,
+    base::FilePath child_path) {
+  if (child_path.empty()) {
+    DidGetFile(basename, storage::FileSystemURL(), std::move(callback),
+               base::File::FILE_ERROR_NOT_FOUND);
+  } else {
+    DidGetFile(basename, CreateChildURL(child_path), std::move(callback),
+               base::File::FILE_OK);
+  }
+}
+#endif
+
 void FileSystemAccessDirectoryHandleImpl::DidGetFile(
-    const storage::FileSystemURL& url,
+    const std::string& basename,
+    storage::FileSystemURL child_url,
     GetFileCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_ANDROID)
+  // If getFile() was called with `create` for a non-existing file, then
+  // `child_url` will be a create-child-document URI which would have been used
+  // in NativeFileUtils::EnsureFileExists() to create the document, and we need
+  // to lookup the document URI.
+  base::FilePath child_path = child_url.path();
+  if (result == base::File::FILE_OK &&
+      base::ContentUriIsCreateChildDocumentQuery(child_path)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&base::ContentUriGetDocumentFromQuery, child_path,
+                       /*create=*/false),
+        base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DidGetFileQueryUri,
+                       weak_factory_.GetWeakPtr(), basename,
+                       std::move(callback)));
+    return;
+  }
+#endif
 
   if (result != base::File::FILE_OK) {
     std::move(callback).Run(file_system_access_error::FromFileError(result),
@@ -459,9 +654,9 @@ void FileSystemAccessDirectoryHandleImpl::DidGetFile(
     return;
   }
 
-  std::move(callback).Run(
-      file_system_access_error::Ok(),
-      manager()->CreateFileHandle(context(), url, handle_state()));
+  std::move(callback).Run(file_system_access_error::Ok(),
+                          manager()->CreateFileHandle(
+                              context(), child_url, basename, handle_state()));
 }
 
 void FileSystemAccessDirectoryHandleImpl::GetDirectoryWithWritePermission(
@@ -480,11 +675,44 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectoryWithWritePermission(
       /*exclusive=*/false, /*recursive=*/false);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void FileSystemAccessDirectoryHandleImpl::DidGetDirectoryQueryUri(
+    GetDirectoryCallback callback,
+    base::FilePath child_path) {
+  if (child_path.empty()) {
+    DidGetDirectory(storage::FileSystemURL(), std::move(callback),
+                    base::File::FILE_ERROR_NOT_FOUND);
+  } else {
+    DidGetDirectory(CreateChildURL(child_path), std::move(callback),
+                    base::File::FILE_OK);
+  }
+}
+#endif
+
 void FileSystemAccessDirectoryHandleImpl::DidGetDirectory(
-    const storage::FileSystemURL& url,
+    storage::FileSystemURL child_url,
     GetDirectoryCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_ANDROID)
+  // If getDirectory() was called with `create` for a non-existing file, then
+  // `child_url` will be a create-child-document URI which would have been used
+  // in NativeFileUtils::CreateDirectory() to create the dir, and we need
+  // to lookup the document URI.
+  base::FilePath child_path = child_url.path();
+  if (result == base::File::FILE_OK &&
+      base::ContentUriIsCreateChildDocumentQuery(child_path)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&base::ContentUriGetDocumentFromQuery, child_path,
+                       /*create=*/false),
+        base::BindOnce(
+            &FileSystemAccessDirectoryHandleImpl::DidGetDirectoryQueryUri,
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+#endif
 
   if (result != base::File::FILE_OK) {
     std::move(callback).Run(file_system_access_error::FromFileError(result),
@@ -494,7 +722,7 @@ void FileSystemAccessDirectoryHandleImpl::DidGetDirectory(
 
   std::move(callback).Run(
       file_system_access_error::Ok(),
-      manager()->CreateDirectoryHandle(context(), url, handle_state()));
+      manager()->CreateDirectoryHandle(context(), child_url, handle_state()));
 }
 
 void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
@@ -544,7 +772,7 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
             weak_factory_.GetWeakPtr(), std::move(final_callback)));
 
     for (const auto& entry : file_list) {
-      std::string basename = storage::FilePathToString(entry.name);
+      std::string basename = storage::FilePathToString(entry.name.path());
       storage::FileSystemURL child_url;
       blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
           GetChildURL(basename, &child_url);
@@ -567,11 +795,12 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
       // link.
       manager()->permission_context()->ConfirmSensitiveEntryAccess(
           context().storage_key.origin(),
-          child_url.type() == storage::FileSystemType::kFileSystemTypeLocal
-              ? PathType::kLocal
-              : PathType::kExternal,
-          child_url.path(), HandleType::kFile, UserAction::kNone,
-          context().frame_id,
+          PathInfo(
+              child_url.type() == storage::FileSystemType::kFileSystemTypeLocal
+                  ? PathType::kLocal
+                  : PathType::kExternal,
+              child_url.path(), basename),
+          HandleType::kFile, UserAction::kNone, context().frame_id,
           base::BindOnce(&FileSystemAccessDirectoryHandleImpl::
                              DidVerifySensitiveAccessForFileEntry,
                          weak_factory_.GetWeakPtr(), entry.name,
@@ -582,7 +811,7 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
 
   std::vector<FileSystemAccessEntryPtr> entries;
   for (const auto& entry : file_list) {
-    std::string basename = storage::FilePathToString(entry.name);
+    std::string basename = storage::FilePathToString(entry.name.path());
 
     storage::FileSystemURL child_url;
     blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
@@ -604,8 +833,8 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
 }
 
 void FileSystemAccessDirectoryHandleImpl::DidVerifySensitiveAccessForFileEntry(
-    base::FilePath basename,
-    base::FilePath display_name,
+    base::SafeBaseName basename,
+    std::string display_name,
     storage::FileSystemURL child_url,
     base::OnceCallback<void(FileSystemAccessEntryPtr)> barrier_callback,
     FileSystemAccessPermissionContext::SensitiveEntryResult
@@ -667,7 +896,8 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const storage::FileSystemURL& parent = url();
-  if (!manager()->IsSafePathComponent(parent.type(), basename)) {
+  if (!manager()->IsSafePathComponent(
+          parent.type(), context().storage_key.origin(), basename)) {
     return file_system_access_error::FromStatus(
         FileSystemAccessStatus::kInvalidArgument, "Name is not allowed.");
   }
@@ -687,24 +917,32 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
   base::FilePath child_path =
       parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename));
 #endif
-  *result = file_system_context()->CreateCrackedFileSystemURL(
-      parent.storage_key(), parent.mount_type(), child_path);
-  // Child URLs inherit their parent's storage bucket.
-  if (parent.bucket()) {
-    result->SetBucket(parent.bucket().value());
-  }
+  *result = CreateChildURL(child_path);
   return file_system_access_error::Ok();
 }
 
+storage::FileSystemURL FileSystemAccessDirectoryHandleImpl::CreateChildURL(
+    const base::FilePath& child_path) {
+  const storage::FileSystemURL& parent = url();
+  storage::FileSystemURL child_url =
+      file_system_context()->CreateCrackedFileSystemURL(
+          parent.storage_key(), parent.mount_type(), child_path);
+  // Child URLs inherit their parent's storage bucket.
+  if (parent.bucket()) {
+    child_url.SetBucket(parent.bucket().value());
+  }
+  return child_url;
+}
+
 FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
-    const base::FilePath& basename,
-    const base::FilePath& display_name,
+    const base::SafeBaseName& basename,
+    const std::string& display_name,
     const storage::FileSystemURL& url,
     HandleType handle_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::string name =
-      storage::FilePathToString(display_name.empty() ? basename : display_name);
+      !display_name.empty() ? display_name : basename.AsUTF8Unsafe();
   if (handle_type == HandleType::kDirectory) {
     return FileSystemAccessEntry::New(
         FileSystemAccessHandle::NewDirectory(
@@ -713,7 +951,7 @@ FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
   }
   return FileSystemAccessEntry::New(
       FileSystemAccessHandle::NewFile(
-          manager()->CreateFileHandle(context(), url, handle_state())),
+          manager()->CreateFileHandle(context(), url, name, handle_state())),
       name);
 }
 

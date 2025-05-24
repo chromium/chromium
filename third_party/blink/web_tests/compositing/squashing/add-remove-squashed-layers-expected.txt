@@ -97,7 +97,7 @@ CASE 3, overlap2 gets removed. Since this does not resize the layer, there shoul
       "bounds": [140, 140],
       "backgroundColor": "#FF00FF",
       "invalidations": [
-        [20, 20, 100, 100]
+        [20, 20, 120, 120]
       ]
     }
   ],

@@ -11,38 +11,79 @@
 // clang-format on
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "components/update_client/protocol_parser.h"
 
 namespace updater {
 
+struct OfflineManifestSystemRequirements {
+  std::string platform;  // For example, "win".
+
+  // Expected host processor architecture that the app is compatible with.
+  // `arch` can be a single entry, or multiple entries separated with `,`.
+  // Entries prefixed with a `-` (negative entries) indicate non-compatible
+  // hosts.
+  //
+  // Examples:
+  // * `arch` == "x86".
+  // * `arch` == "x64".
+  // * `arch` == "x86,x64,-arm64": the app will fail installation if the
+  // underlying host is arm64.
+  std::string arch;
+
+  std::string min_os_version;  // major.minor.
+};
+
 // Class that parses the XML manifest for offline installers.
 //
-// Only features that are used by Windows legacy offline installers AND those
-// supported by `ProtocolParser` (components/update_client/protocol_parser.h)
-// are implemented. Element types that are not (fully) handled:
-//   * All elements related with diff update are ignored.
-//   * Parse fails if <package> only has SHA1 hash.
-//   * Only the first manifest action is honored and the rest are ignored.
-//   * All elements related with cohort are ignored.
-//
-class ProtocolParserXML final : public update_client::ProtocolParser {
+// Only features that are used by Windows legacy offline installers are parsed.
+class ProtocolParserXML final {
  public:
-  ProtocolParserXML() = default;
+  struct Manifest {
+    std::string version;
+    std::string run;
+    std::string arguments;
+  };
+
+  struct Data {
+    std::string install_data_index;
+    std::string text;
+  };
+
+  struct App {
+    App();
+    App(const App& app);
+    ~App();
+
+    std::string app_id;
+    Manifest manifest;
+    std::vector<Data> data;
+  };
+
+  struct Results {
+    Results();
+    Results(const Results& results);
+    ~Results();
+
+    OfflineManifestSystemRequirements system_requirements;
+    std::vector<App> apps;
+  };
+
+  static std::optional<Results> Parse(const std::string& xml);
 
   ProtocolParserXML(const ProtocolParserXML&) = delete;
   ProtocolParserXML& operator=(const ProtocolParserXML&) = delete;
 
  private:
-  using ElementHandler =
-      bool (ProtocolParserXML::*)(IXMLDOMNode* node,
-                                  ProtocolParserXML::Results* results);
+  ProtocolParserXML() = default;
+
+  using ElementHandler = bool (ProtocolParserXML::*)(IXMLDOMNode* node,
+                                                     Results* results);
   using ElementHandlerMap = base::flat_map<std::wstring, ElementHandler>;
 
-  // Overrides for ProtocolParser.
-  bool DoParse(const std::string& response_xml, Results* results) override;
+  std::optional<Results> DoParse(const std::string& response_xml);
 
   // Helper functions to traverse the XML document.
   bool ParseElement(const ElementHandlerMap& handler_map,
@@ -59,14 +100,9 @@ class ProtocolParserXML final : public update_client::ProtocolParser {
   bool ParseData(IXMLDOMNode* node, Results* results);
   bool ParseEvent(IXMLDOMNode* node, Results* results);
   bool ParseManifest(IXMLDOMNode* node, Results* results);
-  bool ParsePackage(IXMLDOMNode* node, Results* results);
-  bool ParsePackages(IXMLDOMNode* node, Results* results);
-  bool ParsePing(IXMLDOMNode* node, Results* results);
   bool ParseResponse(IXMLDOMNode* node, Results* results);
   bool ParseSystemRequirements(IXMLDOMNode* node, Results* results);
   bool ParseUpdateCheck(IXMLDOMNode* node, Results* results);
-  bool ParseUrl(IXMLDOMNode* node, Results* results);
-  bool ParseUrls(IXMLDOMNode* node, Results* results);
 };
 
 }  // namespace updater

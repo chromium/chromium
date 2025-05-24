@@ -19,8 +19,8 @@ namespace ash {
 
 class GnubbyNotificationTest : public BrowserWithTestWindowTest {
  public:
-  GnubbyNotificationTest() {}
-  ~GnubbyNotificationTest() override {}
+  GnubbyNotificationTest() = default;
+  ~GnubbyNotificationTest() override = default;
 
   void SetUp() override {
     GnubbyClient::InitializeFake();

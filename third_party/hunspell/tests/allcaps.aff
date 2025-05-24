@@ -1,5 +1,0 @@
-# check uppercase forms of allcaps word + affix and words with mixed casing
-WORDCHARS '.
-
-SFX S N 1
-SFX S   0     's      .

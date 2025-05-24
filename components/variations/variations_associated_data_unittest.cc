@@ -35,7 +35,7 @@ scoped_refptr<base::FieldTrial> CreateFieldTrial(
 
 class VariationsAssociatedDataTest : public ::testing::Test {
  public:
-  VariationsAssociatedDataTest() {}
+  VariationsAssociatedDataTest() = default;
 
   VariationsAssociatedDataTest(const VariationsAssociatedDataTest&) = delete;
   VariationsAssociatedDataTest& operator=(const VariationsAssociatedDataTest&) =

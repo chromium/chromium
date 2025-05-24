@@ -28,12 +28,18 @@ function getPropertyPath(path, length)
 
 function emitExpectedResult(path, expected)
 {
-    if (path[0] == 'clientInformation' // Just an alias for navigator.
-        || path[0] == 'testRunner' // Skip testRunner since they are only for testing.
-        || path[0] == 'eventSender'// Skip eventSender since they are only for testing.
-        || path[1] == 'gpuBenchmarking') { // Skip gpuBenchmarking since they're only for testing.
-        return;
-    }
+  if (path[0] == 'clientInformation'  // Just an alias for navigator.
+      || path[0] ==
+          'testRunner'  // Skip testRunner since they are only for testing.
+      || path[0] ==
+          'eventSender'  // Skip eventSender since they are only for testing.
+      || path[0] == 'navigator' &&
+          path[1] == 'clipboard'  // crbug.com/417636704 Clipboardchange event
+                                  // is not enabled on all platforms.
+      || path[1] == 'gpuBenchmarking') {  // Skip gpuBenchmarking since they're
+                                          // only for testing.
+    return;
+  }
 
     // Skip the properties which are hard to expect a stable result.
     if (path[0] == 'accessibilityController' // we can hardly estimate the states of the cached WebAXObjects.
@@ -129,6 +135,13 @@ function emitExpectedResult(path, expected)
     case "navigator.mediaSession.playbackState":
         expected = "'none'";
         break;
+
+    // https://drafts.csswg.org/cssom-view/#dom-screen-colordepth
+    case "screen.colorDepth":
+    case "screen.pixelDepth":
+        expected = "24";
+        break;
+
     // Web tests are loaded from the local filesystem.
     case "origin":
         expected = "'file://'";

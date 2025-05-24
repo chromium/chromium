@@ -60,12 +60,6 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
     return registration;
   }
 
-  std::string GetRootSecret() override { return root_secret_; }
-
-  void SetRootSecret(std::string secret) override {
-    root_secret_ = std::move(secret);
-  }
-
   void CanDeviceSupportCable(base::OnceCallback<void(bool)> callback) override {
     CHECK(!support_callback_);
     support_callback_ = std::move(callback);
@@ -74,18 +68,6 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
   void AmInWorkProfile(base::OnceCallback<void(bool)> callback) override {
     CHECK(!work_profile_callback_);
     work_profile_callback_ = std::move(callback);
-  }
-
-  void CalculateIdentityKey(
-      const std::array<uint8_t, 32>& secret,
-      base::OnceCallback<void(bssl::UniquePtr<EC_KEY>)> callback) override {
-    CHECK(!identity_key_callback_);
-    identity_key_callback_ = std::move(callback);
-  }
-
-  void OnCloudMessage(std::vector<uint8_t> serialized,
-                      bool is_make_credential) override {
-    on_cloud_message_called_ = true;
   }
 
   void RefreshLocalDeviceInfo() override {
@@ -99,15 +81,12 @@ class TestSystemInterface : public RegistrationState::SystemInterface {
     prelink_callback_ = std::move(callback);
   }
 
-  std::string root_secret_;
   raw_ptr<TestRegistration> linking_registration_ = nullptr;
   raw_ptr<TestRegistration> syncing_registration_ = nullptr;
-  bool on_cloud_message_called_ = false;
   bool refresh_local_device_info_called_ = false;
 
   base::OnceCallback<void(bool)> support_callback_;
   base::OnceCallback<void(bool)> work_profile_callback_;
-  base::OnceCallback<void(bssl::UniquePtr<EC_KEY>)> identity_key_callback_;
   base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
       prelink_callback_;
 };
@@ -131,33 +110,10 @@ class CableRegistrationStateTest : public testing::Test {
   std::unique_ptr<RegistrationState> state_;
 };
 
-constexpr unsigned kLengthOf32BytesBase64Encoded = 44;
-
-TEST_F(CableRegistrationStateTest, EmptySecret) {
-  state_->Register();
-  // 44 is the length of a 32-byte secret, base64-encoded.
-  EXPECT_EQ(interface_->root_secret_.size(), kLengthOf32BytesBase64Encoded);
-}
-
-TEST_F(CableRegistrationStateTest, WrongLengthSecret) {
-  interface_->root_secret_ = "AAAA";
-  state_->Register();
-  EXPECT_EQ(interface_->root_secret_.size(), kLengthOf32BytesBase64Encoded);
-}
-
-TEST_F(CableRegistrationStateTest, SecretMaintained) {
-  const std::string secret = "zs0gi/qLipq53eg24sccdaPKcpSEgSwE0Jd9kZLj4DU=";
-  interface_->root_secret_ = secret;
-  state_->Register();
-  EXPECT_EQ(interface_->root_secret_, secret);
-}
-
 TEST_F(CableRegistrationStateTest, HaveDataForSync) {
   state_->Register();
   EXPECT_FALSE(state_->have_data_for_sync());
   std::move(interface_->support_callback_).Run(true);
-  EXPECT_FALSE(state_->have_data_for_sync());
-  std::move(interface_->identity_key_callback_).Run(FakeKey());
   EXPECT_FALSE(state_->have_data_for_sync());
   EXPECT_FALSE(interface_->refresh_local_device_info_called_);
   state_->SignalSyncWhenReady();
@@ -173,39 +129,6 @@ TEST_F(CableRegistrationStateTest, HaveDataForSync) {
   EXPECT_TRUE(state_->device_supports_cable());
   EXPECT_TRUE(state_->am_in_work_profile());
   EXPECT_FALSE(state_->link_data_from_play_services().has_value());
-}
-
-TEST_F(CableRegistrationStateTest,
-       DontProcessLinkingEventsBeforeContactIdReady) {
-  state_->Register();
-  EXPECT_FALSE(interface_->on_cloud_message_called_);
-
-  interface_->linking_registration_->contact_id_ = std::nullopt;
-  auto event = std::make_unique<Registration::Event>();
-  event->source = Registration::Type::LINKING;
-  interface_->linking_registration_->on_event_.Run(std::move(event));
-  EXPECT_FALSE(interface_->on_cloud_message_called_);
-
-  interface_->linking_registration_->contact_id_ =
-      TestRegistration::ContactID();
-  std::move(interface_->linking_registration_->on_ready_).Run();
-  EXPECT_TRUE(interface_->on_cloud_message_called_);
-}
-
-TEST_F(CableRegistrationStateTest, SyncEventTooOld) {
-  state_->Register();
-  EXPECT_FALSE(interface_->on_cloud_message_called_);
-
-  for (const bool too_old : {false, true}) {
-    auto event = std::make_unique<Registration::Event>();
-    event->source = Registration::Type::SYNC;
-    const uint64_t now = device::cablev2::sync::IDNow() - (too_old ? 50 : 0);
-    memcpy(event->pairing_id.data(), &now, event->pairing_id.size());
-
-    interface_->on_cloud_message_called_ = false;
-    interface_->syncing_registration_->on_event_.Run(std::move(event));
-    EXPECT_EQ(interface_->on_cloud_message_called_, !too_old);
-  }
 }
 
 }  // namespace

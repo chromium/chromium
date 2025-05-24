@@ -17,18 +17,51 @@ goog.module.declareLegacyNamespace();
 
 const googString = goog.require('goog.string.internal');
 const util = goog.require('goog.labs.userAgent.util');
+const {AsyncValue, Version} = goog.require('goog.labs.userAgent.highEntropy.highEntropyValue');
+const {platformVersion} = goog.require('goog.labs.userAgent.highEntropy.highEntropyData');
+const {useClientHints} = goog.require('goog.labs.userAgent');
+
+/**
+ * @param {boolean=} ignoreClientHintsFlag Iff truthy, the `useClientHints`
+ *     function will not be called when evaluating if User-Agent Client Hints
+ *     Brand data can be used. For existing labs.userAgent API surfaces with
+ *     widespread use, this should be a falsy value so that usage of the Client
+ *     Hints APIs can be gated behind flags / experiment rollouts.
+ * @return {boolean} Whether to use navigator.userAgentData to determine
+ * the current platform.
+ * userAgentData.platform was enabled by default in Chrome 93:
+ * https://www.chromestatus.com/feature/5733498725859328
+ * TODO(user): Skip this check with FEATURESET_YEAR once userAgentData is
+ * present in all major browsers (may not be until 2024).
+ * See https://caniuse.com/mdn-api_navigator_useragentdata.
+ */
+function useUserAgentDataPlatform(ignoreClientHintsFlag = false) {
+  if (util.ASSUME_CLIENT_HINTS_SUPPORT) return true;
+  // High-entropy API surfaces should not be gated behind the useClientHints
+  // check (as in production it is gated behind a define).
+  if (!ignoreClientHintsFlag && !useClientHints()) return false;
+  const userAgentData = util.getUserAgentData();
+  return !!userAgentData && !!userAgentData.platform;
+}
 
 /**
  * @return {boolean} Whether the platform is Android.
  */
 function isAndroid() {
+  if (useUserAgentDataPlatform()) {
+    return util.getUserAgentData().platform === 'Android';
+  }
   return util.matchUserAgent('Android');
 }
 
 /**
  * @return {boolean} Whether the platform is iPod.
+ * TODO(user): Combine iPod/iPhone detection since they may become
+ * indistinguishable if we begin relying on userAgentdata in iOS.
  */
 function isIpod() {
+  // navigator.userAgentData is currently not supported on any iOS browser, so
+  // rely only on navigator.userAgent.
   return util.matchUserAgent('iPod');
 }
 
@@ -36,6 +69,8 @@ function isIpod() {
  * @return {boolean} Whether the platform is iPhone.
  */
 function isIphone() {
+  // navigator.userAgentData is currently not supported on any iOS browser, so
+  // rely only on navigator.userAgent.
   return util.matchUserAgent('iPhone') && !util.matchUserAgent('iPod') &&
       !util.matchUserAgent('iPad');
 }
@@ -49,6 +84,8 @@ function isIphone() {
  * @return {boolean} Whether the platform is iPad.
  */
 function isIpad() {
+  // navigator.userAgentData is currently not supported on any iOS browser, so
+  // rely only on navigator.userAgent.
   return util.matchUserAgent('iPad');
 }
 
@@ -68,6 +105,9 @@ function isIos() {
  * @return {boolean} Whether the platform is Mac.
  */
 function isMacintosh() {
+  if (useUserAgentDataPlatform()) {
+    return util.getUserAgentData().platform === 'macOS';
+  }
   return util.matchUserAgent('Macintosh');
 }
 
@@ -77,6 +117,9 @@ function isMacintosh() {
  * @return {boolean} Whether the platform is Linux.
  */
 function isLinux() {
+  if (useUserAgentDataPlatform()) {
+    return util.getUserAgentData().platform === 'Linux';
+  }
   return util.matchUserAgent('Linux');
 }
 
@@ -84,6 +127,9 @@ function isLinux() {
  * @return {boolean} Whether the platform is Windows.
  */
 function isWindows() {
+  if (useUserAgentDataPlatform()) {
+    return util.getUserAgentData().platform === 'Windows';
+  }
   return util.matchUserAgent('Windows');
 }
 
@@ -91,6 +137,9 @@ function isWindows() {
  * @return {boolean} Whether the platform is ChromeOS.
  */
 function isChromeOS() {
+  if (useUserAgentDataPlatform()) {
+    return util.getUserAgentData().platform === 'Chrome OS';
+  }
   return util.matchUserAgent('CrOS');
 }
 
@@ -98,6 +147,8 @@ function isChromeOS() {
  * @return {boolean} Whether the platform is Chromecast.
  */
 function isChromecast() {
+  // TODO(user): Check against util.getUserAgentData().platform once the
+  // OS string for Chromecast is known.
   return util.matchUserAgent('CrKey');
 }
 
@@ -105,6 +156,8 @@ function isChromecast() {
  * @return {boolean} Whether the platform is KaiOS.
  */
 function isKaiOS() {
+  // navigator.userAgentData is currently not supported on any KaiOS browser, so
+  // rely only on navigator.userAgent.
   return util.matchUserAgentIgnoreCase('KaiOS');
 }
 
@@ -164,6 +217,66 @@ function isVersionOrHigher(version) {
   return googString.compareVersions(getVersion(), version) >= 0;
 }
 
+/**
+ * Represents a high-entropy version string.
+ * @implements {AsyncValue<!Version>}
+ */
+class PlatformVersion {
+  constructor() {
+    /** @private {boolean} */
+    this.preUachHasLoaded_ = false;
+  }
+
+  /**
+   * @return {!Version|undefined}
+   * @override
+   */
+  getIfLoaded() {
+    if (useUserAgentDataPlatform(true)) {
+      const loadedPlatformVersion = platformVersion.getIfLoaded();
+      if (loadedPlatformVersion === undefined) {
+        // No platform data has been cached
+        return undefined;
+      }
+      return new Version(loadedPlatformVersion);
+    } else if (!this.preUachHasLoaded_) {
+      // Nobody ever called `load` on this class instance, so we should return
+      // nothing to match the semantics of the class when using the Client Hint
+      // APIs.
+      return undefined;
+    } else {
+      // `load` has been called, so we can return a Version derived from the
+      // useragent string.
+      return new Version(getVersion());
+    }
+  }
+
+  /**
+   * @return {!Promise<!Version>}
+   * @override
+   */
+  async load() {
+    if (useUserAgentDataPlatform(true)) {
+      return new Version(await platformVersion.load());
+    } else {
+      this.preUachHasLoaded_ = true;
+      return new Version(getVersion());
+    }
+  }
+
+  /** @package */
+  resetForTesting() {
+    platformVersion.resetForTesting();
+    this.preUachHasLoaded_ = false;
+  }
+}
+
+/**
+ * The platform version, a high-entropy value.
+ * @type {!PlatformVersion}
+ */
+const version = new PlatformVersion();
+
 exports = {
   getVersion,
   isAndroid,
@@ -178,4 +291,5 @@ exports = {
   isMacintosh,
   isVersionOrHigher,
   isWindows,
+  version,
 };

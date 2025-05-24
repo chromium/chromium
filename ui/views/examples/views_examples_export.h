@@ -18,11 +18,7 @@
 #endif  // defined(VIEWS_EXAMPLES_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(VIEWS_EXAMPLES_IMPLEMENTATION)
 #define VIEWS_EXAMPLES_EXPORT __attribute__((visibility("default")))
-#else
-#define VIEWS_EXAMPLES_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

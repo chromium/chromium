@@ -7,7 +7,6 @@
 
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
 namespace storage {
 
@@ -20,7 +19,6 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketLocator {
   BucketLocator();
   BucketLocator(BucketId bucket_id,
                 blink::StorageKey storage_key,
-                blink::mojom::StorageType type,
                 bool is_default);
 
   ~BucketLocator();
@@ -38,19 +36,15 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketLocator {
   bool IsEquivalentTo(const BucketLocator& other) const;
 
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
-  friend bool operator==(const BucketLocator& lhs, const BucketLocator& rhs);
+  friend bool operator==(const BucketLocator&, const BucketLocator&) = default;
 
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
-  friend bool operator!=(const BucketLocator& lhs, const BucketLocator& rhs);
-
-  COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
-  friend bool operator<(const BucketLocator& lhs, const BucketLocator& rhs);
+  friend auto operator<=>(const BucketLocator&, const BucketLocator&) = default;
 
   // Only positive IDs are valid. A default bucket without a specified bucket ID
   // can be represented by this struct when `id` is zero.
   BucketId id = BucketId::FromUnsafeValue(0);
   blink::StorageKey storage_key = blink::StorageKey();
-  blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
   bool is_default = false;
 };
 

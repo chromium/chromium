@@ -7,6 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/apple/bundle_locations.h"
+#import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
@@ -51,8 +52,12 @@ id ExecuteJavaScript(WKWebView* web_view,
       << "\nWKWebView failed to complete javascript execution.\n"
       << base::SysNSStringToUTF8(
              [[NSThread callStackSymbols] componentsJoinedByString:@"\n"]);
-  if (error) {
-    *error = block_error;
+  if (block_error) {
+    DLOG(WARNING) << "\nWKWebView javascript execution failed.\n"
+                  << base::SysNSStringToUTF8(block_error.description);
+    if (error) {
+      *error = block_error;
+    }
   }
   return result;
 }
@@ -115,4 +120,3 @@ void OverrideJavaScriptFeatures(web::BrowserState* browser_state,
 
 }  // namespace test
 }  // namespace web
-

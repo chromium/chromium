@@ -87,7 +87,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   using TabConnectionInfo = mojom::TabConnectionInfo;
   using ExternalConnectionInfo = mojom::ExternalConnectionInfo;
   // Dispatches the onConnect content script messaging event to some contexts
-  // in |context_set|. If |restrict_to_render_frame| is specified, only contexts
+  // in `context_set`. If `restrict_to_render_frame` is specified, only contexts
   // in that render frame will receive the message.
   void DispatchOnConnect(
       ScriptContextSetIterable* context_set,
@@ -103,7 +103,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
       ConnectCallback);
 
   // Delivers a message sent using content script messaging to some of the
-  // contexts in |bindings_context_set|. If |restrict_to_render_frame| is
+  // contexts in `bindings_context_set`. If `restrict_to_render_frame` is
   // specified, only contexts in that render view will receive the message.
   void DeliverMessage(ScriptContextSetIterable* context_set,
                       const PortId& target_port_id,
@@ -199,12 +199,12 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                                            const std::string& error_message,
                                            ScriptContext* script_context);
 
-  // Returns true if the given |script_context| has a port with the given
-  // |port_id|.
+  // Returns true if the given `script_context` has a port with the given
+  // `port_id`.
   bool ContextHasMessagePort(ScriptContext* script_context,
                              const PortId& port_id);
 
-  // Dispatches the onConnect event to listeners in the given |script_context|.
+  // Dispatches the onConnect event to listeners in the given `script_context`.
   void DispatchOnConnectToListeners(ScriptContext* script_context,
                                     const PortId& target_port_id,
                                     const ExtensionId& target_extension_id,
@@ -214,27 +214,27 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                                     const ExternalConnectionInfo& info,
                                     const std::string& event_name);
 
-  // Dispatches the onMessage event to listeners in the given |script_context|.
+  // Dispatches the onMessage event to listeners in the given `script_context`.
   // This will only be called if the context has a port with the given id.
   void DispatchOnMessageToListeners(ScriptContext* script_context,
                                     const Message& message,
                                     const PortId& target_port_id);
 
   // Dispatches the onDisconnect event to listeners in the given
-  // |script_context|. This will only be called if the context has a port
+  // `script_context`. This will only be called if the context has a port
   // with the given id.
   void DispatchOnDisconnectToListeners(ScriptContext* script_context,
                                        const PortId& port_id,
                                        const std::string& error);
 
-  // Creates a new port in the given context, with the specified |channel_name|
-  // and |port_id|. Assumes no such port exists.
+  // Creates a new port in the given context, with the specified `channel_name`
+  // and `port_id`. Assumes no such port exists.
   gin::Handle<GinPort> CreatePort(ScriptContext* script_context,
                                   const std::string& channel_name,
                                   const mojom::ChannelType channel_type,
                                   const PortId& port_id);
 
-  // Returns the port with the given |port_id| in the given |script_context|;
+  // Returns the port with the given `port_id` in the given `script_context`;
   // requires that such a port exists.
   gin::Handle<GinPort> GetPort(ScriptContext* script_context,
                                const PortId& port_id);

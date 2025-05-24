@@ -104,14 +104,10 @@ class MEDIA_EXPORT DataSource : public DataSourceInfo {
   // an empty GURL.
   virtual GURL GetUrlAfterRedirects() const;
 
-  // Cancels any open network connections once reaching the deferred state. If
-  // |must_cancel_netops| is false this is done only for preload=metadata, non-
-  // streaming resources that have not started playback. If |must_cancel_netops|
-  // is true, all resource types will have their connections canceled. If
-  // already deferred, connections will be immediately closed. Most data source
-  // implementations do not need to override this, as they do not open other
-  // network connections.
-  virtual void OnBufferingHaveEnough(bool must_cancel_netops);
+  // Stops any outstanding speculative loading. Active and future Read() calls
+  // will not be stopped. OnMediaIsPlaying() or OnMediaPlaybackRateChanged()
+  // with a rate > 0 will reset this flag.
+  virtual void StopPreloading();
 
   // Allows a holder to notify certain events to the data source. Most data
   // sources won't care too much about these events though.

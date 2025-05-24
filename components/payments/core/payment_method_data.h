@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/values.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 
 namespace base {
 class Value;
@@ -27,8 +27,8 @@ class PaymentMethodData {
   PaymentMethodData(const PaymentMethodData& other);
   ~PaymentMethodData();
 
-  bool operator==(const PaymentMethodData& other) const;
-  bool operator!=(const PaymentMethodData& other) const;
+  friend bool operator==(const PaymentMethodData&,
+                         const PaymentMethodData&) = default;
 
   // Populates the properties of this PaymentMethodData from |dict|. Returns
   // true if the required values are present.

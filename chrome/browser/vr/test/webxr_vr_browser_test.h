@@ -19,6 +19,10 @@
 #include "sandbox/policy/features.h"
 #endif
 
+namespace permissions {
+class MockPermissionPromptFactory;
+}
+
 namespace vr {
 
 // WebXR for VR-specific test base class without any particular runtime.
@@ -31,24 +35,32 @@ class WebXrVrBrowserTestBase : public WebXrBrowserTestBase {
       content::WebContents* web_contents) override;
   void EndSession(content::WebContents* web_contents) override;
   void EndSessionOrFail(content::WebContents* web_contents) override;
+  void WaitForSessionEndOrFail(content::WebContents* web_contents) override;
 
-  permissions::PermissionRequestManager* GetPermissionRequestManager();
-  permissions::PermissionRequestManager* GetPermissionRequestManager(
-      content::WebContents* web_contents);
+  permissions::MockPermissionPromptFactory* GetPermissionPromptFactory();
+  void SetPermissionAutoResponse(
+      permissions::PermissionRequestManager::AutoResponseType
+          permission_auto_response);
 
   virtual gfx::Vector3dF GetControllerOffset() const;
 
   // Necessary to use the WebContents-less versions of functions.
-  using WebXrBrowserTestBase::XrDeviceFound;
+  using WebXrBrowserTestBase::EndSession;
+  using WebXrBrowserTestBase::EndSessionOrFail;
   using WebXrBrowserTestBase::EnterSessionWithUserGesture;
   using WebXrBrowserTestBase::EnterSessionWithUserGestureAndWait;
   using WebXrBrowserTestBase::EnterSessionWithUserGestureOrFail;
-  using WebXrBrowserTestBase::EndSession;
-  using WebXrBrowserTestBase::EndSessionOrFail;
+  using WebXrBrowserTestBase::WaitForSessionEndOrFail;
+  using WebXrBrowserTestBase::XrDeviceFound;
 
+ private:
+  void OnBeforeLoadFile() override;
   permissions::PermissionRequestManager::AutoResponseType
       permission_auto_response_ =
           permissions::PermissionRequestManager::ACCEPT_ALL;
+  base::flat_map<content::WebContents*,
+                 std::unique_ptr<permissions::MockPermissionPromptFactory>>
+      mock_permissions_map_;
 };
 
 // Test class with all runtimes disabled.
@@ -70,6 +82,7 @@ class WebXrVrOpenXrBrowserTestBase : public WebXrVrBrowserTestBase {
   WebXrVrOpenXrBrowserTestBase();
   ~WebXrVrOpenXrBrowserTestBase() override;
   XrBrowserTestBase::RuntimeType GetRuntimeType() const override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
 };
 
 class WebXrVrOpenXrBrowserTest : public WebXrVrOpenXrBrowserTestBase {

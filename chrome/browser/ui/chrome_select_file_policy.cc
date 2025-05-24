@@ -20,7 +20,7 @@ ChromeSelectFilePolicy::ChromeSelectFilePolicy(
     content::WebContents* source_contents)
     : source_contents_(source_contents) {}
 
-ChromeSelectFilePolicy::~ChromeSelectFilePolicy() {}
+ChromeSelectFilePolicy::~ChromeSelectFilePolicy() = default;
 
 bool ChromeSelectFilePolicy::CanOpenSelectFileDialog() {
   return FileSelectDialogsAllowed();
@@ -47,8 +47,9 @@ bool ChromeSelectFilePolicy::FileSelectDialogsAllowed() {
   DCHECK(g_browser_process);
 
   // local_state() can return NULL for tests.
-  if (!g_browser_process->local_state())
+  if (!g_browser_process->local_state()) {
     return false;
+  }
 
   return !g_browser_process->local_state()->FindPreference(
              prefs::kAllowFileSelectionDialogs) ||

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_plane.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_plane_orientation.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/xr/vr_service_type_converters.h"
 #include "third_party/blink/renderer/modules/xr/xr_object_space.h"
@@ -68,16 +69,16 @@ device::mojom::blink::XRNativeOriginInformationPtr XRPlane::NativeOrigin()
       this->id());
 }
 
-String XRPlane::orientation() const {
+std::optional<V8XRPlaneOrientation> XRPlane::orientation() const {
   if (orientation_) {
     switch (*orientation_) {
       case Orientation::kHorizontal:
-        return "Horizontal";
+        return V8XRPlaneOrientation(V8XRPlaneOrientation::Enum::kHorizontal);
       case Orientation::kVertical:
-        return "Vertical";
+        return V8XRPlaneOrientation(V8XRPlaneOrientation::Enum::kVertical);
     }
   }
-  return "";
+  return std::nullopt;
 }
 
 double XRPlane::lastChangedTime() const {

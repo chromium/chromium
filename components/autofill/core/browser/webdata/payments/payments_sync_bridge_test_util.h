@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 
 namespace sync_pb {
@@ -38,7 +38,7 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForIban(
     const std::string& client_tag);
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForBankAccount(
-    const std::string_view client_tag,
+    std::string_view client_tag,
     std::string nickname,
     const GURL& display_icon_url,
     std::string bank_name,
@@ -46,12 +46,24 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForBankAccount(
     sync_pb::BankAccountDetails::AccountType account_type);
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForEwalletAccount(
-    const std::string_view client_tag,
+    std::string_view client_tag,
     std::string nickname,
     const GURL& display_icon_url,
     std::string ewallet_name,
     std::string account_display_name,
     bool is_fido_enrolled);
+
+sync_pb::AutofillWalletSpecifics
+CreateAutofillWalletSpecificsForLinkedBnplIssuer(int64_t instrument_id,
+                                                 std::string issuer_id,
+                                                 std::string currency,
+                                                 int price_lower_bound,
+                                                 int price_upper_bound);
+
+sync_pb::AutofillWalletSpecifics
+CreateAutofillWalletSpecificsForPaymentInstrumentCreationOption(
+    const sync_pb::PaymentInstrumentCreationOption&
+        payment_instrument_creation_option);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_SYNC_BRIDGE_TEST_UTIL_H_

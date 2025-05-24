@@ -44,6 +44,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
   AutoPictureInPictureTabStripObserverHelper helper(original_web_contents,
                                                     callback.Get());
   helper.StartObserving();
+  EXPECT_EQ(helper.GetActiveWebContents(), original_web_contents);
 
   // Opening and switching to a new tab should trigger the callback with
   // `is_tab_activated` set to false.
@@ -51,6 +52,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
   OpenNewForegroundTab(browser());
   auto* second_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(helper.GetActiveWebContents(), second_web_contents);
   testing::Mock::VerifyAndClearExpectations(&callback);
 
   // Switching back to the original tab should trigger the callback with

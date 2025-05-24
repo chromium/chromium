@@ -12,21 +12,29 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/http/http_no_vary_search_data.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace network::mojom {
 class NetworkContext;
-class URLLoaderFactory;
 }  // namespace network::mojom
 
 namespace content {
@@ -36,6 +44,7 @@ class PrefetchMatchResolver;
 class PrefetchOriginProber;
 class PrefetchProxyConfigurator;
 class PrefetchServiceDelegate;
+class PrefetchScheduler;
 class ServiceWorkerContext;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -98,23 +107,43 @@ class CONTENT_EXPORT PrefetchService {
   virtual PrefetchOriginProber* GetPrefetchOriginProber() const;
   virtual void PrefetchUrl(base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Finds the prefetch (if any) that can be used to serve a navigation to
-  // |url|, and then calls |on_prefetch_to_serve_ready| with that prefetch.
-  using OnPrefetchToServeReady =
-      base::OnceCallback<void(PrefetchContainer::Reader prefetch_to_serve)>;
-  void GetPrefetchToServe(const PrefetchContainer::Key& key,
-                          base::WeakPtr<PrefetchServingPageMetricsContainer>
-                              serving_page_metrics_container,
-                          PrefetchMatchResolver& prefetch_match_resolver);
-
   // Copies any cookies in the isolated network context associated with
   // |prefetch_container| to the default network context.
   virtual void CopyIsolatedCookies(const PrefetchContainer::Reader& reader);
 
-  void AddPrefetchContainer(
+  // Adds `PrefetchContainer` under control of `PrefetchService` and returns
+  // PrefetchHandle so that the caller can control prefetch resources associated
+  // with this.
+  //
+  // `AddPrefetchContainer*()` synchronously destruct `prefetch_container` if
+  // the key conflicted to the one already added with migration of some
+  // attributes. See also `MigrateNewlyaAdded()`.
+  [[nodiscard]] std::unique_ptr<PrefetchHandle> AddPrefetchContainerWithHandle(
+      std::unique_ptr<PrefetchContainer> prefetch_container);
+  void AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::unique_ptr<PrefetchContainer> prefetch_container);
 
-  void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
+  // Returns `true` if a new prefetch request with `url` and
+  // `no_vary_search_hint` has a duplicate in the prefetch cache and thus the
+  // caller can choose not to start the prefetch request.
+  //
+  // Note: This is currently used for WebView initiated prefetches
+  // so consideration should be taken if updating the
+  // underlying implementation (or its dependencies).
+  bool IsPrefetchDuplicate(
+      GURL& url,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint);
+
+  // Whether the prefetch attempt for `key` has failed or discarded.
+  // Note: the semantics of this method is not super clear and thus is exposed
+  // only for the existing `PrefetchDocumentManager` use case for now.
+  bool IsPrefetchAttemptFailedOrDiscardedInternal(
+      base::PassKey<PrefetchDocumentManager>,
+      PrefetchContainer::Key key) const;
+
+  // An interface to notify `PrefetchService` that the given `PrefetchContainer`
+  // is no longer needed from outside of the service.
+  void MayReleasePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called by PrefetchDocumentManager when it finishes processing the latest
   // update of speculation candidates.
@@ -131,7 +160,7 @@ class CONTENT_EXPORT PrefetchService {
   // that this does not take ownership of |url_loader_factory|, and caller must
   // keep ownership over the course of the test.
   static void SetURLLoaderFactoryForTesting(
-      network::mojom::URLLoaderFactory* url_loader_factory);
+      network::SharedURLLoaderFactory* url_loader_factory);
 
   // Sets the NetworkContext to use just for the proxy lookup. Note that this
   // does not take ownership of |network_context|, and the caller must keep
@@ -139,11 +168,18 @@ class CONTENT_EXPORT PrefetchService {
   static void SetNetworkContextForProxyLookupForTesting(
       network::mojom::NetworkContext* network_context);
 
-  // Set a callback for waiting for prefetch completion in tests.
-  using PrefetchResponseCompletedCallbackForTesting =
-      base::RepeatingCallback<void(base::WeakPtr<PrefetchContainer>)>;
-  static void SetPrefetchResponseCompletedCallbackForTesting(
-      PrefetchResponseCompletedCallbackForTesting callback);
+  // Set a callback for injecting delay for eligibility check in tests.
+  //
+  // Make sure to call
+  // `SetDelayEligibilityCheckForTesting(base::NullCallback())` at the end of an
+  // unit test that used this method, as this sets a global variable and it is
+  // shared in unit tests.
+  using DelayEligibilityCheckForTesting =
+      base::RepeatingCallback<void(base::OnceClosure)>;
+  static void SetDelayEligibilityCheckForTesting(
+      DelayEligibilityCheckForTesting callback);
+  // Set an ineligibility to make eligibility check always fail in tests.
+  static void SetForceIneligibilityForTesting(PreloadingEligibility);
 
   base::WeakPtr<PrefetchContainer> MatchUrl(
       const PrefetchContainer::Key& key) const;
@@ -151,13 +187,39 @@ class CONTENT_EXPORT PrefetchService {
   GetAllForUrlWithoutRefAndQueryForTesting(
       const PrefetchContainer::Key& key) const;
 
-  // Helper function for |GetPrefetchToServe|, which collects
-  // |PrefetchContainer|s that are potentially matching. Corresponds to 3.4. of
+  // Evicts completed and in-progress prefetches as part of
+  // Clear-Site-Data header and Clearing Browser Data if the prefetch's
+  // referring origin matches the storage_key_filter.
+  void EvictPrefetchesForBrowsingDataRemoval(
+      const StoragePartition::StorageKeyMatcherFunction& storage_key_filter,
+      PrefetchStatus status);
+
+  // Returns candidate `PrefetchContainer`s and servable states for matching
+  // process. Corresponds to 3.4. of
   // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
-  std::vector<PrefetchContainer*> CollectPotentiallyMatchingPrefetchContainers(
-      const PrefetchContainer::Key& key,
-      base::WeakPtr<PrefetchServingPageMetricsContainer>
-          serving_page_metrics_container);
+  //
+  // Note that `PrefetchContainer::GetServableState()` depends on
+  // `base::TimeTicks::now()` and can expire (can change from `kServable` to
+  // `kNotServable`) in the minute between two calls. Deciding something with
+  // multiple `PrefetchContainer::GetServableState()` calls can lead
+  // inconsistent state. To avoid that, we record `ServableState` in the
+  // `flat_map` at the beginning of matching process and refer to it.
+  std::pair<
+      std::vector<PrefetchContainer*>,
+      base::flat_map<PrefetchContainer::Key, PrefetchContainer::ServableState>>
+  CollectMatchCandidates(const PrefetchContainer::Key& key,
+                         bool is_nav_prerender,
+                         base::WeakPtr<PrefetchServingPageMetricsContainer>
+                             serving_page_metrics_container);
+
+  // Exposes methods for `PrefetchScheduler`. See documentation of private
+  // methods with the same names.
+  void EvictPrefetch(base::PassKey<PrefetchScheduler>,
+                     base::WeakPtr<PrefetchContainer> prefetch_container);
+  bool StartSinglePrefetch(base::PassKey<PrefetchScheduler>,
+                           base::WeakPtr<PrefetchContainer> prefetch_container);
+
+  PrefetchScheduler& GetPrefetchSchedulerForTesting() { return *scheduler_; }
 
   base::WeakPtr<PrefetchService> GetWeakPtr();
 
@@ -246,7 +308,7 @@ class CONTENT_EXPORT PrefetchService {
       PreloadingEligibility eligibility);
 
   // Adds `prefetch_container` to the cache but doesn't initiate prefetching.
-  // Use `AddPrefetchContainer()` for non-test cases.
+  // Use `AddPrefetchContainerWithHandle()` for non-test cases.
   void AddPrefetchContainerWithoutStartingPrefetch(
       std::unique_ptr<PrefetchContainer> prefetch_container);
 
@@ -262,16 +324,24 @@ class CONTENT_EXPORT PrefetchService {
   std::tuple<base::WeakPtr<PrefetchContainer>, base::WeakPtr<PrefetchContainer>>
   PopNextPrefetchContainer();
 
-  // After |PrefetchContainerLifetimeInPrefetchService| amount of time, the
-  // prefetch is deleted. Note that if
-  // |PrefetchContainerLifetimeInPrefetchService| is 0 or less, then it is kept
-  // forever.
+  // The prefetch is reset after
+  // `PrefetchContainerDefaultTtlInPrefetchService()`
+  // or the overridden TTL duration. If
+  // `PrefetchContainerDefaultTtlInPrefetchService()` returns a value less than
+  // or equal to zero, the prefetch is kept indefinitely.
   void OnPrefetchTimeout(base::WeakPtr<PrefetchContainer> prefetch);
 
-  // Starts the given |prefetch_container|. If |prefetch_to_evict| is specified,
-  // it is evicted immediately before starting |prefetch_container|.
-  void StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container,
-                           base::WeakPtr<PrefetchContainer> prefetch_to_evict);
+  // Evict `prefetch_container` before starting a new prefetch.
+  //
+  // Precondition: `prefetch_container` must be valid.
+  void EvictPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
+  // Starts the given |prefetch_container|.
+  //
+  // Returns true iff a prefetch is started and the caller should regard this is
+  // active.
+  //
+  // Precondition: `prefetch_container` must be valid.
+  bool StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Creates a new URL loader and starts a network request for
   // |prefetch_container|. |MakePrefetchRequest| must have been previously
@@ -280,7 +350,8 @@ class CONTENT_EXPORT PrefetchService {
 
   // Gets the URL loader for the given |prefetch_container|. If an override was
   // set by |SetURLLoaderFactoryForTesting|, then that will be returned instead.
-  network::mojom::URLLoaderFactory* GetURLLoaderFactoryForCurrentPrefetch(
+  scoped_refptr<network::SharedURLLoaderFactory>
+  GetURLLoaderFactoryForCurrentPrefetch(
       base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called when the request for |prefetch_container| is redirected.
@@ -365,6 +436,38 @@ class CONTENT_EXPORT PrefetchService {
   void RecordExistingPrefetchWithMatchingURL(
       base::WeakPtr<PrefetchContainer> prefetch_container) const;
 
+  // If `should_progress` is true, calls `PrefetchScheduler::ProgressAsync()`
+  // (implicitly). This argument is meaningful only if `UsePrefetchScheduler()`.
+  void ResetPrefetchContainer(
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      bool should_progress = true);
+
+  // Methods for scheduling
+  void ScheduleAndProgress(base::WeakPtr<PrefetchContainer> prefetch_container);
+  void ScheduleAndProgressAsync(
+      base::WeakPtr<PrefetchContainer> prefetch_container);
+  void ResetPrefetchContainerAndProgressAsync(
+      base::WeakPtr<PrefetchContainer> prefetch_container);
+  void ResetPrefetchContainersAndProgressAsync(
+      std::vector<base::WeakPtr<PrefetchContainer>> prefetch_containers);
+  // CAUTION: This doesn't call `ResetPrefetchContainer()` to preserve current
+  // behavior.
+  void RemoveFromSchedulerAndProgressAsync(
+      PrefetchContainer& prefetch_container);
+
+  // Returns `true` if the `prefetch_container` is stale. I.e.
+  // the prefetch either is not or never will be servable to a
+  // navigation.
+  //
+  // Note: This is currently used for WebView initiated prefetches so
+  // consideration should be taken if updating the underlying implementation (or
+  // its dependencies).
+  bool IsPrefetchStale(base::WeakPtr<PrefetchContainer> prefetch_container);
+
+  // Returns if the `prefetch_container` is in active set.
+  bool IsPrefetchContainerInActiveSet(
+      const PrefetchContainer& prefetch_container);
+
   void DumpPrefetchesForDebug() const;
 
   raw_ptr<BrowserContext> browser_context_;
@@ -382,14 +485,21 @@ class CONTENT_EXPORT PrefetchService {
 
   // A FIFO queue of prefetches that have been confirmed to be eligible but have
   // not started yet.
+  //
+  // It is used only if `!UsePrefetchScheduler()`.
+  //
+  // TODO(crbug.com/406754449): Remove it.
   std::vector<base::WeakPtr<PrefetchContainer>> prefetch_queue_;
 
   // Current prefetch with an in-progress request (if any).
+  //
+  // It is used only if `!UsePrefetchScheduler()`.
+  //
+  // TODO(crbug.com/406754449): Remove it.
   std::optional<PrefetchContainer::Key> active_prefetch_;
 
-  // Prefetches owned by |this|. Once the network request for a prefetch is
-  // started, |this| takes ownership of the prefetch so the response can be used
-  // on future page loads.
+  // Prefetches owned by `this`. All `PrefetchContainer`s added by
+  // `AddPrefetchContainer*` will be stored here.
   std::map<PrefetchContainer::Key, std::unique_ptr<PrefetchContainer>>
       owned_prefetches_;
 
@@ -397,6 +507,13 @@ class CONTENT_EXPORT PrefetchService {
 #if DCHECK_IS_ON()
   bool prefetch_reentrancy_guard_ = false;
 #endif
+
+  // Manages queue of prefetches, active set, and scheduling.
+  //
+  // It is used only if `UsePrefetchScheduler()`.
+  //
+  // TODO(crbug.com/406754449): Remove the last sentence.
+  std::unique_ptr<PrefetchScheduler> scheduler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

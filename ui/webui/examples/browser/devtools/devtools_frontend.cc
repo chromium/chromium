@@ -159,15 +159,27 @@ class DevToolsFrontend::AgentHostClient
       if (!agent_host_ || !protocol_message)
         return;
       agent_host_->DispatchProtocolMessage(
-          this, base::as_bytes(base::make_span(*protocol_message)));
+          this, base::as_byte_span(*protocol_message));
     } else if (*method == "loadCompleted") {
       CallClientFunction("DevToolsAPI", "setUseSoftMenu", base::Value(true));
     } else if (*method == "loadNetworkResource" && params.size() == 3) {
       // TODO(robliao): Add support for this if necessary.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     } else if (*method == "getPreferences") {
       SendMessageAck(request_id, base::Value(std::move(preferences_)));
+      return;
+    } else if (*method == "getHostConfig") {
+      base::Value::Dict response_dict;
+
+      // Chrome's DevToolsUIBindings sets feature flag values to this
+      // devToolsVeLogging dictionary, but they're not accessible from //ui.
+      // Just set the default values instead.
+      base::Value::Dict ve_logging_dict;
+      ve_logging_dict.Set("enabled", true);
+      ve_logging_dict.Set("testing", false);
+      response_dict.Set("devToolsVeLogging", std::move(ve_logging_dict));
+
+      SendMessageAck(request_id, base::Value(std::move(response_dict)));
       return;
     } else if (*method == "setPreference") {
       if (params.size() < 2)

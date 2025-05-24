@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This `Cargo.toml` is a test input for some unit tests of `gnrt`.  Output of
+# `cargo metadata` has been saved in `gnrt/lib/test_metadata2.json`.
+#
+# The main point of this test it checking if `icu_capi`'s dependencies will
+# be trimmed because only a small set of crate features is enabled below.
+
+[package]
+name = "sample_package2"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies.icu_capi]
+version = "2.0.0-beta2"
+default-features = false
+features = ["calendar", "compiled_data", "experimental"]

@@ -4,14 +4,18 @@
 
 #include "base/win/wrapped_window_proc.h"
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 
 namespace {
 
-base::win::WinProcExceptionFilter s_exception_filter = nullptr;
+std::atomic<base::win::WinProcExceptionFilter> s_exception_filter = nullptr;
+static_assert(
+    std::atomic<base::win::WinProcExceptionFilter>::is_always_lock_free,
+    "");
 
 HMODULE GetModuleFromWndProc(WNDPROC window_proc) {
   HMODULE instance = nullptr;
@@ -33,15 +37,13 @@ namespace win {
 
 WinProcExceptionFilter SetWinProcExceptionFilter(
     WinProcExceptionFilter filter) {
-  subtle::AtomicWord rv = subtle::NoBarrier_AtomicExchange(
-      reinterpret_cast<subtle::AtomicWord*>(&s_exception_filter),
-      reinterpret_cast<subtle::AtomicWord>(filter));
-  return reinterpret_cast<WinProcExceptionFilter>(rv);
+  return s_exception_filter.exchange(filter, std::memory_order_relaxed);
 }
 
 int CallExceptionFilter(EXCEPTION_POINTERS* info) {
-  return s_exception_filter ? s_exception_filter(info)
-                            : EXCEPTION_CONTINUE_SEARCH;
+  base::win::WinProcExceptionFilter filter =
+      s_exception_filter.load(std::memory_order_relaxed);
+  return filter ? filter(info) : EXCEPTION_CONTINUE_SEARCH;
 }
 
 BASE_EXPORT void InitializeWindowClass(const wchar_t* class_name,

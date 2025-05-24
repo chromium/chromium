@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -26,11 +27,13 @@
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/resource_attribution/cpu_measurement_data.h"
+#include "components/performance_manager/scenarios/loading_scenario_data.h"
+#include "components/performance_manager/scenarios/performance_scenario_data.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
 
@@ -56,11 +59,16 @@ class ProcessNodeImpl
     : public PublicNodeImpl<ProcessNodeImpl, ProcessNode>,
       public TypedNodeBase<ProcessNodeImpl, ProcessNode, ProcessNodeObserver>,
       public mojom::ProcessCoordinationUnit,
-      public SupportsNodeInlineData<ProcessPriorityAggregatorData,
-                                    FrozenData,
-                                    resource_attribution::CPUMeasurementData,
-                                    // Keep this last to avoid merge conflicts.
-                                    NodeAttachedDataStorage> {
+      public mojom::ChildProcessCoordinationUnit,
+      public SupportsNodeInlineData<
+          ProcessPriorityAggregatorData,
+          FrozenData,
+          PerformanceScenarioData,
+          resource_attribution::CPUMeasurementData,
+          resource_attribution::SharedCPUTimeResultData,
+          LoadingScenarioCounts,
+          // Keep this last to avoid merge conflicts.
+          NodeAttachedDataStorage> {
  public:
   using PassKey = base::PassKey<ProcessNodeImpl>;
 
@@ -82,7 +90,10 @@ class ProcessNodeImpl
 
   ~ProcessNodeImpl() override;
 
-  void Bind(mojo::PendingReceiver<mojom::ProcessCoordinationUnit> receiver);
+  void BindRenderProcessCoordinationUnit(
+      mojo::PendingReceiver<mojom::ProcessCoordinationUnit> receiver);
+  void BindChildProcessCoordinationUnit(
+      mojo::PendingReceiver<mojom::ChildProcessCoordinationUnit> receiver);
 
   // mojom::ProcessCoordinationUnit implementation:
   void SetMainThreadTaskLoadIsLow(bool main_thread_task_load_is_low) override;
@@ -100,7 +111,11 @@ class ProcessNodeImpl
   void OnRemoteIframeDetached(
       const blink::LocalFrameToken& parent_frame_token,
       const blink::RemoteFrameToken& remote_frame_token) override;
-  void FireBackgroundTracingTrigger(const std::string& trigger_name) override;
+
+  // mojom::ChildProcessCoordinationUnit implementation:
+  void InitializeChildProcessCoordination(
+      uint64_t process_track_id,
+      InitializeChildProcessCoordinationCallback callback) override;
 
   // Partial ProcessNode implementation:
   content::ProcessType GetProcessType() const override;
@@ -113,6 +128,7 @@ class ProcessNodeImpl
   bool GetMainThreadTaskLoadIsLow() const override;
   uint64_t GetPrivateFootprintKb() const override;
   uint64_t GetResidentSetKb() const override;
+  uint64_t GetPrivateSwapKb() const override;
   RenderProcessHostId GetRenderProcessHostId() const override;
   const RenderProcessHostProxy& GetRenderProcessHostProxy() const override;
   const BrowserChildProcessHostProxy& GetBrowserChildProcessHostProxy()
@@ -123,6 +139,7 @@ class ProcessNodeImpl
   // Private implementation properties.
   NodeSetView<FrameNodeImpl*> frame_nodes() const;
   NodeSetView<WorkerNodeImpl*> worker_nodes() const;
+  std::optional<perfetto::Track> tracing_track() const;
 
   void SetProcessExitStatus(int32_t exit_status);
   void SetProcessMetricsName(const std::string& metrics_name);
@@ -135,6 +152,10 @@ class ProcessNodeImpl
   void set_resident_set_kb(uint64_t resident_set_kb) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     resident_set_kb_ = resident_set_kb;
+  }
+  void set_private_swap_kb(uint64_t private_swap_kb) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    private_swap_kb_ = private_swap_kb;
   }
 
   // Add |frame_node| to this process.
@@ -159,10 +180,7 @@ class ProcessNodeImpl
   }
 
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
-  static void FireBackgroundTracingTriggerOnUIForTesting(
-      const std::string& trigger_name);
 
-  base::WeakPtr<ProcessNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<ProcessNodeImpl> GetWeakPtr();
 
   static PassKey CreatePassKeyForTesting() { return PassKey(); }
@@ -176,7 +194,7 @@ class ProcessNodeImpl
   friend class ProcessMetricsDecoratorAccess;
 
   using AnyChildProcessHostProxy =
-      absl::variant<RenderProcessHostProxy, BrowserChildProcessHostProxy>;
+      std::variant<RenderProcessHostProxy, BrowserChildProcessHostProxy>;
 
   // Shared constructor for all process types.
   ProcessNodeImpl(content::ProcessType process_type,
@@ -191,15 +209,21 @@ class ProcessNodeImpl
   void OnAllFramesInProcessFrozen();
 
   // NodeBase:
-  void OnJoiningGraph() override;
-  void OnBeforeLeavingGraph() override;
-  void RemoveNodeAttachedData() override;
+  void OnInitializingProperties() override;
+  void OnUninitializingEdges() override;
+  void CleanUpNodeState() override;
 
-  mojo::Receiver<mojom::ProcessCoordinationUnit> receiver_
+  // Receiver for renderer-only messages.
+  mojo::Receiver<mojom::ProcessCoordinationUnit> render_process_receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
+
+  // Receiver for messages from all child processes.
+  mojo::Receiver<mojom::ChildProcessCoordinationUnit> child_process_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   uint64_t private_footprint_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0u;
   uint64_t resident_set_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  uint64_t private_swap_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   base::ProcessId process_id_ GUARDED_BY_CONTEXT(sequence_checker_) =
       base::kNullProcessId;
@@ -240,11 +264,14 @@ class ProcessNodeImpl
   // either currently or in the past.
   ContentTypes hosted_content_types_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // The Perfetto ProcessTrack for this process.
+  std::optional<perfetto::Track> tracing_track_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   NodeSet frame_nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   NodeSet worker_nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtr<ProcessNodeImpl> weak_this_;
   base::WeakPtrFactory<ProcessNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

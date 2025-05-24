@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_FACTORY_EVDEV_METRICS_H_
 #define UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_FACTORY_EVDEV_METRICS_H_
 
+#include "base/component_export.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 

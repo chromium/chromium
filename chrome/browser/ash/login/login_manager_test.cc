@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -41,7 +42,7 @@ LoginManagerTest::LoginManagerTest() {
   set_exit_when_last_browser_closes(false);
 }
 
-LoginManagerTest::~LoginManagerTest() {}
+LoginManagerTest::~LoginManagerTest() = default;
 
 void LoginManagerTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kLoginManager);
@@ -106,6 +107,15 @@ UserContext LoginManagerTest::CreateUserContextWithLocalPassword(
   return user_context;
 }
 
+UserContext LoginManagerTest::CreateUserContextWithPin(
+    const AccountId& account_id,
+    const std::string& pin) {
+  UserContext user_context(user_manager::UserType::kRegular, account_id);
+  user_context.SetKey(Key(pin));
+  user_context.SetIsUsingPin(true);
+  return user_context;
+}
+
 void LoginManagerTest::SetExpectedCredentials(const UserContext& user_context) {
   test::UserSessionManagerTestApi session_manager_test_api(
       UserSessionManager::GetInstance());
@@ -150,6 +160,13 @@ void LoginManagerTest::LoginUser(const AccountId& account_id) {
 void LoginManagerTest::LoginUserWithLocalPassword(const AccountId& account_id) {
   const UserContext user_context =
       CreateUserContextWithLocalPassword(account_id, kLocalPassword);
+  SetExpectedCredentials(user_context);
+  EXPECT_TRUE(TryToLogin(user_context));
+}
+
+void LoginManagerTest::LoginUserWithPin(const AccountId& account_id) {
+  const UserContext user_context =
+      CreateUserContextWithPin(account_id, test::kAuthPin);
   SetExpectedCredentials(user_context);
   EXPECT_TRUE(TryToLogin(user_context));
 }

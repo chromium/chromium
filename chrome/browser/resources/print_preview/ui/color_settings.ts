@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/cr_elements/md_select_lit.css.js';
 import './print_preview_shared.css.js';
 import './settings_section.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getCss as getMdSelectLitCss} from 'chrome://resources/cr_elements/md_select_lit.css.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './color_settings.html.js';
+import {getHtml} from './color_settings.html.js';
+import {getCss as getPrintPreviewSharedCss} from './print_preview_shared.css.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 const PrintPreviewColorSettingsElementBase =
-    SettingsMixin(SelectMixin(PolymerElement));
+    SettingsMixin(SelectMixin(CrLitElement));
 
 export class PrintPreviewColorSettingsElement extends
     PrintPreviewColorSettingsElementBase {
@@ -21,39 +23,49 @@ export class PrintPreviewColorSettingsElement extends
     return 'print-preview-color-settings';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getPrintPreviewSharedCss(),
+      getMdSelectLitCss(),
+    ];
   }
 
-  static get properties() {
-    return {
-      disabled: Boolean,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      disabled_: {
-        type: Boolean,
-        computed: 'computeDisabled_(disabled, settings.color.setByPolicy)',
-      },
+  static override get properties() {
+    return {
+      disabled: {type: Boolean},
+      managed_: {type: Boolean},
     };
   }
 
-  static get observers() {
-    return ['onColorSettingChange_(settings.color.value)'];
-  }
+  accessor disabled: boolean = false;
+  private accessor managed_: boolean = false;
 
-  disabled: boolean;
-  private disabled_: boolean;
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addSettingObserver(
+        'color.value', this.onColorSettingChange_.bind(this));
+    this.onColorSettingChange_(this.getSettingValue('color'));
+
+    this.addSettingObserver('color.setByGlobalPolicy', (value: boolean) => {
+      this.managed_ = value;
+    });
+    this.managed_ = this.getSetting('color').setByGlobalPolicy;
+  }
 
   private onColorSettingChange_(newValue: boolean) {
     this.selectedValue = newValue ? 'color' : 'bw';
   }
 
   /**
-   * @param disabled Whether color selection is disabled.
-   * @param managed Whether color selection is managed.
    * @return Whether drop-down should be disabled.
    */
-  private computeDisabled_(disabled: boolean, managed: boolean): boolean {
-    return disabled || managed;
+  protected computeDisabled_(): boolean {
+    return this.disabled || this.managed_;
   }
 
   /** @param value The new select value. */
@@ -61,6 +73,8 @@ export class PrintPreviewColorSettingsElement extends
     this.setSetting('color', value === 'color');
   }
 }
+
+export type ColorSettingsElement = PrintPreviewColorSettingsElement;
 
 declare global {
   interface HTMLElementTagNameMap {

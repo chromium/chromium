@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/liburlpattern/pattern.h"
+#include "third_party/liburlpattern/part.h"
 
 namespace blink {
 

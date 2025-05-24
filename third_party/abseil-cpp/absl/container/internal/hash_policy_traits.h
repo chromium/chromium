@@ -22,6 +22,7 @@
 #include <utility>
 
 #include "absl/container/internal/common_policy_traits.h"
+#include "absl/container/internal/container_memory.h"
 #include "absl/meta/type_traits.h"
 
 namespace absl {
@@ -36,16 +37,12 @@ struct hash_policy_traits : common_policy_traits<Policy> {
 
  private:
   struct ReturnKey {
-    // When C++17 is available, we can use std::launder to provide mutable
-    // access to the key for use in node handle.
-#if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
     template <class Key,
               absl::enable_if_t<std::is_lvalue_reference<Key>::value, int> = 0>
     static key_type& Impl(Key&& k, int) {
       return *std::launder(
           const_cast<key_type*>(std::addressof(std::forward<Key>(k))));
     }
-#endif
 
     template <class Key>
     static Key Impl(Key&& k, char) {
@@ -149,8 +146,6 @@ struct hash_policy_traits : common_policy_traits<Policy> {
     return P::value(elem);
   }
 
-  using HashSlotFn = size_t (*)(const void* hash_fn, void* slot);
-
   template <class Hash>
   static constexpr HashSlotFn get_hash_slot_fn() {
 // get_hash_slot_fn may return nullptr to signal that non type erased function
@@ -172,15 +167,6 @@ struct hash_policy_traits : common_policy_traits<Policy> {
   static constexpr bool soo_enabled() { return soo_enabled_impl(Rank1{}); }
 
  private:
-  template <class Hash>
-  struct HashElement {
-    template <class K, class... Args>
-    size_t operator()(const K& key, Args&&...) const {
-      return h(key);
-    }
-    const Hash& h;
-  };
-
   template <class Hash>
   static size_t hash_slot_fn_non_type_erased(const void* hash_fn, void* slot) {
     return Policy::apply(HashElement<Hash>{*static_cast<const Hash*>(hash_fn)},

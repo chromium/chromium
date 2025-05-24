@@ -4,7 +4,10 @@
 
 package org.chromium.webapk.shell_apk;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.IntDef;
@@ -19,6 +22,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
+import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 import org.chromium.webapk.test.WebApkTestHelper;
 
 import java.lang.annotation.Retention;
@@ -56,10 +60,10 @@ public class HostBrowserUtilsTest {
                     BROWSERS_NOT_SUPPORTING_WEBAPKS);
 
     private Context mContext;
-    private TestBrowserInstaller mBrowserInstaller = new TestBrowserInstaller();
+    private final TestBrowserInstaller mBrowserInstaller = new TestBrowserInstaller();
 
     // Whether we are testing with bound WebAPKs.
-    private boolean mIsBoundWebApk;
+    private final boolean mIsBoundWebApk;
 
     @Parameters
     public static Collection<Object[]> data() {
@@ -85,7 +89,7 @@ public class HostBrowserUtilsTest {
             // Bound browser in AndroidManifest.xml is no longer installed.
             setHostBrowserInMetadata(BROWSERS_SUPPORTING_WEBAPKS[0]);
         }
-        Assert.assertNull(HostBrowserUtils.computeHostBrowserPackageName(mContext));
+        Assert.assertNull(HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext));
     }
 
     // Tests the order of precedence for bound WebAPKs for
@@ -101,39 +105,66 @@ public class HostBrowserUtilsTest {
         setHostBrowserInMetadata(boundBrowserSupportingWebApks);
 
         // Bound browser in AndroidManifest.xml: Still installed
+        // No ComponentName is present for bound WebAPKs.
         setInstalledBrowsers(DefaultBrowserWebApkSupport.YES, ALL_BROWSERS);
-        Assert.assertEquals(
-                boundBrowserSupportingWebApks,
-                HostBrowserUtils.computeHostBrowserPackageName(mContext));
+        PackageNameAndComponentName packageAndComponent =
+                HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext);
+        Assert.assertEquals(boundBrowserSupportingWebApks, packageAndComponent.getPackageName());
+        Assert.assertNull(packageAndComponent.getComponentName());
 
         // Bound browser in AndroidManifest.xml: No longer installed
         // Should use default browser.
+        // ComponentName exists because this is effectively an unbound WebAPK now.
         setInstalledBrowsers(DefaultBrowserWebApkSupport.YES, null);
+        packageAndComponent =
+                HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext);
+        Assert.assertEquals(
+                DEFAULT_BROWSER_SUPPORTING_WEBAPKS, packageAndComponent.getPackageName());
+        Assert.assertNotNull(packageAndComponent.getComponentName());
         Assert.assertEquals(
                 DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
-                HostBrowserUtils.computeHostBrowserPackageName(mContext));
+                packageAndComponent.getComponentName().getPackageName());
+        Assert.assertEquals(
+                TestBrowserInstaller.COMPONENT_CLASS,
+                packageAndComponent.getComponentName().getClassName());
     }
 
     // Tests the order of precedence for unbound WebAPKs for
     // {@link #computeHostBrowserPackageName()}. This is expected to always open in the default
-    // browser.
+    // browser, and the ComponentName should always exist.
     @Test
     public void testComputeHostBrowserUnboundWebApkPrecedence() {
         if (mIsBoundWebApk) return;
 
         // Default browser: Supports WebAPKs
         setInstalledBrowsers(DefaultBrowserWebApkSupport.YES, ALL_BROWSERS);
+        PackageNameAndComponentName packageAndComponent =
+                HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext);
+        Assert.assertEquals(
+                DEFAULT_BROWSER_SUPPORTING_WEBAPKS, packageAndComponent.getPackageName());
+        Assert.assertNotNull(packageAndComponent.getComponentName());
         Assert.assertEquals(
                 DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
-                HostBrowserUtils.computeHostBrowserPackageName(mContext));
+                packageAndComponent.getComponentName().getPackageName());
+        Assert.assertEquals(
+                TestBrowserInstaller.COMPONENT_CLASS,
+                packageAndComponent.getComponentName().getClassName());
 
         // Default browser: Does not support WebAPKs
         // > 1 installed browsers supporting WebAPKs - just use the default browser even though it
         // doesn't support WebAPKs.
         setInstalledBrowsers(DefaultBrowserWebApkSupport.NO, ALL_BROWSERS);
+        packageAndComponent =
+                HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext);
+        Assert.assertEquals(
+                DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS, packageAndComponent.getPackageName());
+        Assert.assertNotNull(packageAndComponent.getComponentName());
         Assert.assertEquals(
                 DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS,
-                HostBrowserUtils.computeHostBrowserPackageName(mContext));
+                packageAndComponent.getComponentName().getPackageName());
+        Assert.assertEquals(
+                TestBrowserInstaller.COMPONENT_CLASS,
+                packageAndComponent.getComponentName().getClassName());
 
         // Default browser: Does not support WebAPKS
         // 1 installed browser supporting WebAPKS - still use the default browser even though it
@@ -145,9 +176,17 @@ public class HostBrowserUtilsTest {
                     BROWSERS_NOT_SUPPORTING_WEBAPKS[0],
                     BROWSERS_NOT_SUPPORTING_WEBAPKS[1]
                 });
+        packageAndComponent =
+                HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext);
+        Assert.assertEquals(
+                DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS, packageAndComponent.getPackageName());
+        Assert.assertNotNull(packageAndComponent.getComponentName());
         Assert.assertEquals(
                 DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS,
-                HostBrowserUtils.computeHostBrowserPackageName(mContext));
+                packageAndComponent.getComponentName().getPackageName());
+        Assert.assertEquals(
+                TestBrowserInstaller.COMPONENT_CLASS,
+                packageAndComponent.getComponentName().getClassName());
 
         // Default browser: Does not support WebAPKs
         // > 1 installed browsers
@@ -156,9 +195,17 @@ public class HostBrowserUtilsTest {
                 new String[] {
                     BROWSERS_NOT_SUPPORTING_WEBAPKS[0], BROWSERS_NOT_SUPPORTING_WEBAPKS[1]
                 });
+        packageAndComponent =
+                HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext);
+        Assert.assertEquals(
+                DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS, packageAndComponent.getPackageName());
+        Assert.assertNotNull(packageAndComponent.getComponentName());
         Assert.assertEquals(
                 DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS,
-                HostBrowserUtils.computeHostBrowserPackageName(mContext));
+                packageAndComponent.getComponentName().getPackageName());
+        Assert.assertEquals(
+                TestBrowserInstaller.COMPONENT_CLASS,
+                packageAndComponent.getComponentName().getClassName());
     }
 
     /**
@@ -174,11 +221,74 @@ public class HostBrowserUtilsTest {
         }
 
         setInstalledBrowsers(DefaultBrowserWebApkSupport.NO, ALL_BROWSERS);
-        Assert.assertEquals(browserToUse, HostBrowserUtils.computeHostBrowserPackageName(mContext));
+        PackageNameAndComponentName packageAndComponent =
+                HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext);
+        Assert.assertEquals(browserToUse, packageAndComponent.getPackageName());
+        if (mIsBoundWebApk) {
+            Assert.assertNull(packageAndComponent.getComponentName());
+        } else {
+            Assert.assertNotNull(packageAndComponent.getComponentName());
+            Assert.assertEquals(
+                    browserToUse, packageAndComponent.getComponentName().getPackageName());
+            Assert.assertEquals(
+                    TestBrowserInstaller.COMPONENT_CLASS,
+                    packageAndComponent.getComponentName().getClassName());
+        }
 
         mBrowserInstaller.uninstallBrowser(browserToUse);
+        packageAndComponent =
+                HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(mContext);
+        Assert.assertNotEquals(browserToUse, packageAndComponent.getPackageName());
+        Assert.assertNotNull(packageAndComponent.getComponentName());
         Assert.assertNotEquals(
-                browserToUse, HostBrowserUtils.computeHostBrowserPackageName(mContext));
+                browserToUse, packageAndComponent.getComponentName().getPackageName());
+        Assert.assertEquals(
+                TestBrowserInstaller.COMPONENT_CLASS,
+                packageAndComponent.getComponentName().getClassName());
+    }
+
+    /* Tests that {@link #getBrowserLaunchIntentWithoutFlagsAndExtras()} returns an
+     * ACTION_START_WEBAPK intent with the right package name for bound WebAPKs. */
+    @Test
+    public void testBrowserLaunchIntentForBoundWebApk() {
+        Intent intent =
+                HostBrowserUtils.getBrowserLaunchIntentWithoutFlagsAndExtras(
+                        /* hostBrowserIsFromManifest= */ true,
+                        DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
+                        /* hostBrowserComponentName= */ null,
+                        Uri.parse("https://example.com/"));
+
+        Assert.assertEquals(HostBrowserUtils.ACTION_START_WEBAPK, intent.getAction());
+        Assert.assertNull(intent.getComponent());
+        Assert.assertNull(intent.getSelector());
+        Assert.assertEquals(DEFAULT_BROWSER_SUPPORTING_WEBAPKS, intent.getPackage());
+        Assert.assertNull(intent.getData());
+    }
+
+    /* Tests that {@link #getBrowserLaunchIntentWithoutFlagsAndExtras()} returns an
+     * ACTION_VIEW intent with the right ComponentName, Selector, and StartUrl for
+     * unbound WebAPKs. */
+    @Test
+    public void testBrowserLaunchIntentForUnboundWebApk() {
+        Uri startUrl = Uri.parse("https://example.com/");
+        String launchIntentDispatcherClassName =
+                "org.chromium.chrome.browser.LaunchIntentDispatcher";
+        Intent intent =
+                HostBrowserUtils.getBrowserLaunchIntentWithoutFlagsAndExtras(
+                        /* hostBrowserIsFromManifest= */ false,
+                        DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
+                        new ComponentName(
+                                DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
+                                launchIntentDispatcherClassName),
+                        startUrl);
+
+        Assert.assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        Assert.assertEquals(launchIntentDispatcherClassName, intent.getComponent().getClassName());
+        Assert.assertEquals(
+                DEFAULT_BROWSER_SUPPORTING_WEBAPKS, intent.getComponent().getPackageName());
+        assertIntentHasBrowserSelector(intent);
+        Assert.assertNull(intent.getPackage());
+        Assert.assertEquals(startUrl, intent.getData());
     }
 
     @SafeVarargs
@@ -205,5 +315,19 @@ public class HostBrowserUtilsTest {
         bundle.putString(WebApkMetaDataKeys.RUNTIME_HOST, hostBrowserPackage);
         WebApkTestHelper.registerWebApkWithMetaData(
                 mContext.getPackageName(), bundle, /* shareTargetMetaData= */ null);
+    }
+
+    /**
+     * Checks that the passed-in intent contains a Selector which will restrict the set of potential
+     * intent receivers down to actual browsers, and not WebAPKs.
+     */
+    private static void assertIntentHasBrowserSelector(Intent intent) {
+        Intent selector = intent.getSelector();
+        Assert.assertNotNull(selector);
+
+        Intent queryBrowsersIntent = WebApkUtils.getQueryInstalledBrowsersIntent();
+        Assert.assertEquals(selector.getAction(), queryBrowsersIntent.getAction());
+        Assert.assertEquals(selector.getCategories(), queryBrowsersIntent.getCategories());
+        Assert.assertEquals(selector.getData(), queryBrowsersIntent.getData());
     }
 }

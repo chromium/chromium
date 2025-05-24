@@ -18,7 +18,7 @@
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +51,7 @@ class MockSafeBrowsingSyncObserver : public SafeBrowsingSyncObserver {
 
 class VerdictCacheManagerTest : public ::testing::Test {
  public:
-  VerdictCacheManagerTest() {}
+  VerdictCacheManagerTest() = default;
 
   void SetUp() override {
     test_pref_service_.registry()->RegisterBooleanPref(
@@ -154,7 +154,7 @@ class ArtificialHashRealTimeVerdictCacheManagerTest
   ArtificialHashRealTimeVerdictCacheManagerTest() {
     auto* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(
-        safe_browsing::kArtificialCachedHashPrefixRealTimeVerdictFlag,
+        safe_browsing::switches::kArtificialCachedHashPrefixRealTimeVerdictFlag,
         kArtificialHashRealTimeUnsafeUrl);
   }
   void TearDown() override {

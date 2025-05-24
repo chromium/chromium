@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
@@ -17,6 +18,7 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,8 +32,10 @@ namespace ash::boca {
 
 namespace {
 constexpr char kTestEmail[] = "testemail";
-constexpr char kGaiaId[] = "123";
+constexpr GaiaId::Literal kGaiaId("123");
 constexpr int kTokenValidationPeriodMinutesDefault = 60 * 24;
+constexpr char kBocaUploadTokenErrorCodeUmaPath[] =
+    "Ash.Boca.UploadToken.ErrorCode";
 
 class MockSessionClientImpl : public SessionClientImpl {
  public:
@@ -47,10 +51,11 @@ class MockSessionClientImpl : public SessionClientImpl {
 class MockSessionManager : public BocaSessionManager {
  public:
   explicit MockSessionManager(SessionClientImpl* session_client_impl)
-      : BocaSessionManager(
-            session_client_impl,
-            AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId)) {}
-  MOCK_METHOD(void, LoadCurrentSession, (), (override));
+      : BocaSessionManager(session_client_impl,
+                           /*pref_service=*/nullptr,
+                           AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId),
+                           /*is_producer=*/false) {}
+  MOCK_METHOD(void, LoadCurrentSession, (bool), (override));
   ~MockSessionManager() override = default;
 };
 
@@ -139,7 +144,8 @@ class InvalidationServiceImplTest : public testing::Test {
     invalidation_service_impl_ = std::make_unique<InvalidationServiceImpl>(
         &fake_gcm_driver_, mock_instance_id_driver_.get(),
         AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId),
-        boca_session_manager_.get(), session_client_impl_.get());
+        boca_session_manager_.get(), session_client_impl_.get(),
+        "https://test");
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -153,7 +159,9 @@ class InvalidationServiceImplTest : public testing::Test {
 };
 
 TEST_F(InvalidationServiceImplTest, HandleInvalidation) {
-  EXPECT_CALL(*boca_session_manager_, LoadCurrentSession()).Times(1);
+  EXPECT_CALL(*boca_session_manager_,
+              LoadCurrentSession(/*from_polling=*/false))
+      .Times(1);
   const std::string kPayloadValue = "payload_1";
   gcm::IncomingMessage gcm_message;
   gcm_message.raw_data = kPayloadValue;
@@ -179,6 +187,39 @@ TEST_F(InvalidationServiceImplTest, HandleTokenUpload) {
 
   EXPECT_EQ(kGaiaId, request->gaia_id());
   EXPECT_EQ(token, request->token());
+}
+
+TEST_F(InvalidationServiceImplTest, HandleTokenUploadFailureWithBackoff) {
+  base::HistogramTester histogram_tester;
+  // Check that the handler gets the token through GetToken.
+  const char token[] = "token_2";
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(
+          RunOnceCallback<4>(token, instance_id::InstanceID::Result::SUCCESS));
+  std::unique_ptr<UploadTokenRequest> request;
+  EXPECT_CALL(*session_client_impl_, UploadToken(_))
+      .WillOnce([&](std::unique_ptr<UploadTokenRequest> request_1) {
+        request = std::move(request_1);
+        std::move(request->callback())
+            .Run(base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
+      });
+  // Adjust the time and check that validation will happen in time.
+  // The old token is invalid, so token observer should be informed.
+  task_environment_.FastForwardBy(
+      base::Minutes(kTokenValidationPeriodMinutesDefault));
+
+  // A retry and succeeded and stop uploading.
+  EXPECT_CALL(*session_client_impl_, UploadToken(_))
+      .WillOnce([&](std::unique_ptr<UploadTokenRequest> request_1) {
+        request = std::move(request_1);
+        std::move(request->callback()).Run(true);
+      });
+  task_environment_.FastForwardBy(base::Seconds(3));
+  histogram_tester.ExpectTotalCount(kBocaUploadTokenErrorCodeUmaPath, 1);
+
+  histogram_tester.ExpectBucketCount(
+      kBocaUploadTokenErrorCodeUmaPath,
+      google_apis::ApiErrorCode::HTTP_BAD_REQUEST, 1);
 }
 }  // namespace
 }  // namespace ash::boca

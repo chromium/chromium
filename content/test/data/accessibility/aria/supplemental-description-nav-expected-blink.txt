@@ -1,0 +1,28 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='The nav element defines a set of navigation links:'
+++++++++++inlineTextBox name='The nav element defines a set of navigation links:'
+++++++navigation name='programming languages'
+++++++++link name='HTML'
+++++++++++staticText name='HTML'
+++++++++++++inlineTextBox name='HTML'
+++++++++staticText name=' | '
+++++++++++inlineTextBox name=' | '
+++++++++link name='CSS'
+++++++++++staticText name='CSS'
+++++++++++++inlineTextBox name='CSS'
+++++++++staticText name=' | '
+++++++++++inlineTextBox name=' | '
+++++++++link name='JavaScript'
+++++++++++staticText name='JavaScript'
+++++++++++++inlineTextBox name='JavaScript'
+++++++++staticText name=' | '
+++++++++++inlineTextBox name=' | '
+++++++++link name='Python'
+++++++++++staticText name='Python'
+++++++++++++inlineTextBox name='Python'
+++++++paragraph
+++++++++staticText name='The nav element is intended only for major blocks of navigation links.'
+++++++++++inlineTextBox name='The nav element is intended only for major blocks of navigation links.'

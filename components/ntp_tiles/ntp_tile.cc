@@ -11,17 +11,13 @@ NTPTile::NTPTile()
 
 NTPTile::NTPTile(const NTPTile&) = default;
 
-NTPTile::~NTPTile() {}
+NTPTile::~NTPTile() = default;
 
 bool operator==(const NTPTile& a, const NTPTile& b) {
   return (a.title == b.title) && (a.url == b.url) && (a.source == b.source) &&
          (a.title_source == b.title_source) &&
          (a.favicon_url == b.favicon_url) &&
          (a.from_most_visited == b.from_most_visited);
-}
-
-bool operator!=(const NTPTile& a, const NTPTile& b) {
-  return !(a == b);
 }
 
 }  // namespace ntp_tiles

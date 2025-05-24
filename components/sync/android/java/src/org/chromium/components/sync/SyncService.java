@@ -4,15 +4,16 @@
 
 package org.chromium.components.sync;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.json.JSONArray;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -21,6 +22,7 @@ import java.util.Set;
  * Java version of the native SyncService interface. Must only be used on the UI thread.
  * TODO(crbug.com/40161455): Document the remaining methods.
  */
+@NullMarked
 public interface SyncService {
     /** Listener for the underlying sync status. */
     public interface SyncStateChangedListener {
@@ -29,22 +31,13 @@ public interface SyncService {
     }
 
     /**
-     * Checks if the sync engine is initialized. Note that this refers to
-     * Sync-the-transport, i.e. it can be true even if the user has *not*
-     * enabled Sync-the-feature.
-     * This mostly needs to be checked as a precondition for the various
-     * encryption-related methods (see below).
+     * Checks if the sync engine is initialized. Note that this refers to Sync-the-transport, i.e.
+     * it can be true even if the user has *not* enabled Sync-the-feature. This mostly needs to be
+     * checked as a precondition for the various encryption-related methods (see below).
      *
      * @return true if the sync engine is initialized.
      */
     public boolean isEngineInitialized();
-
-    /**
-     * Checks whether sync machinery is active.
-     *
-     * @return true if the transport state is active.
-     */
-    public boolean isTransportStateActive();
 
     /**
      * Returns whether all conditions are satisfied for Sync-the-feature to start. This means that
@@ -70,7 +63,7 @@ public interface SyncService {
     // codebase. See ConsentLevel::kSync documentation for details.
     public boolean isSyncFeatureActive();
 
-    public @GoogleServiceAuthError.State int getAuthError();
+    public GoogleServiceAuthError getAuthError();
 
     /**
      * Checks whether Sync is disabled by enterprise policy (through prefs) or account policy
@@ -158,12 +151,10 @@ public interface SyncService {
 
     public boolean isInitialSyncFeatureSetupComplete();
 
-    public void setSyncRequested();
-
     /**
-     * Instances of this class keep sync paused until {@link #close} is called. Use
-     * {@link SyncService#getSetupInProgressHandle} to create. Please note that
-     * {@link #close} should be called on every instance of this class.
+     * Instances of this class keep sync paused until {@link #close} is called. Use {@link
+     * SyncService#getSetupInProgressHandle} to create. Please note that {@link #close} should be
+     * called on every instance of this class.
      */
     public interface SyncSetupInProgressHandle {
         public void close();
@@ -192,6 +183,12 @@ public interface SyncService {
      * should ask the user for a passphrase, use isPassphraseRequiredForPreferredDataTypes().
      */
     public @PassphraseType int getPassphraseType();
+
+    /**
+     * The overall state of Sync-the-transport, in ascending order of "activeness". Note that this
+     * refers to the transport layer, which may be active even if Sync-the-feature is turned off.
+     */
+    public @TransportState int getTransportState();
 
     /**
      * Checks if sync is currently set to use a custom passphrase (or the similar -and legacy-

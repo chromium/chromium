@@ -43,8 +43,8 @@ export const SiteSettingsMixin = dedupingMixin(
           };
         }
 
-        category: ContentSettingsTypes;
-        private contentTypes_: ContentSettingsTypes[];
+        declare category: ContentSettingsTypes;
+        declare private contentTypes_: ContentSettingsTypes[];
         browserProxy: SiteSettingsPrefsBrowserProxy;
 
         constructor(...args: any[]) {

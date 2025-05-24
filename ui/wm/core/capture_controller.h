@@ -74,7 +74,9 @@ class COMPONENT_EXPORT(UI_WM) CaptureController
   raw_ptr<aura::client::CaptureDelegate> capture_delegate_;
 
   // The delegates notified when capture changes.
-  std::map<aura::Window*, aura::client::CaptureDelegate*> delegates_;
+  std::map<aura::Window*,
+           raw_ptr<aura::client::CaptureDelegate, CtnExperimental>>
+      delegates_;
 
   base::ObserverList<aura::client::CaptureClientObserver>::Unchecked observers_;
 };

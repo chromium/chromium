@@ -19,7 +19,8 @@ var KeyType =
 var KeyUsage = {
   __proto__: null,
   sign: 'sign',
-  verify: 'verify'
+  verify: 'verify',
+  unwrapKey: 'unwrapKey',
 };
 
 function CreateInvalidKeyObjectError() {

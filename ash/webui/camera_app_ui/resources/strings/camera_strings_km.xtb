@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">កូដ QR</translation>
 <translation id="2244252133441425811">បើកផ្ទាំងជ្រើសរើស FPS នៃវីដេអូ</translation>
 <translation id="2271433936731426666">បើកការសង្ខេប​អំពីវីដេអូ​ដែលមានទំហំពេញ</translation>
-<translation id="2281736597583450397">ទទួលបានផ្នែកលម្អិតកាន់តែច្បាស់តាមរយៈការពង្រីកបង្រួមដែលបានធ្វើឱ្យប្រសើរឡើង</translation>
 <translation id="2320741269052147773">រំកិល​ទៅឆ្វេង</translation>
 <translation id="2360840973209616515">កម្មវិធី​កាមេរ៉ា​ត្រូវបាន​គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក។
         ដើម្បី​ទទួលបាន​ព័ត៌មានលម្អិត សូម​ទាក់ទងទៅ​អ្នកគ្រប់គ្រង​នោះ។</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">បង្រួម</translation>
 <translation id="5976160379964388480">ផ្សេងទៀត</translation>
 <translation id="6073451960410192870">បញ្ឈប់ការថត</translation>
-<translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
 <translation id="6197807149213783179">រក្សាទុក​ទិន្នន័យ​មេតា</translation>
 <translation id="6233780560267770709">3 គុណ​នឹង 3</translation>
 <translation id="6243827288366940320">អត្រា​ពណ៌​មាស</translation>
@@ -122,7 +120,6 @@
 ប្រសិនបើមតិកែលម្អរបស់អ្នកពាក់ព័ន្ធនឹងគុណភាពរូបភាព ឬវីដេអូ សូមភ្ជាប់ជាមួយសំណាករូបថត ឬវីដេអូ និងរៀបរាប់ថាមានបញ្ហាអ្វី។ (ឧទាហរណ៍ រូបថតងងឹតជ្រុល ឬមានលក្ខណៈព្រាល។)</translation>
 <translation id="6519884562954018934">ចូលរួម <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">ចែករំលែក</translation>
-<translation id="6586509689874700895">ជាដំបូង សូមចុច <ph name="BUTTON_NAME" /> ដើម្បីពង្រីក។ បន្ទាប់មក ក្រោយពីអ្នកថតរូបរួច អ្នកនឹងឃើញផ្នែកលម្អិតដែលបានធ្វើឱ្យប្រសើរឡើង។</translation>
 <translation id="659539649712855529">បានចម្លង <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">បង្ហាញកម្រិតគុណភាពទាំងអស់</translation>
 <translation id="6631515515009660915">បិទ​កញ្ចក់</translation>
@@ -168,7 +165,6 @@
 <translation id="8609951387004618906">បើក <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">ប៊ូតុងបិទ/បើកសំឡេងមីក្រូហ្វូន។ ការបិទសំឡេង​ត្រូវបានបើក</translation>
-<translation id="8712637175834984815">យល់ហើយ</translation>
 <translation id="8730621377337864115">រួចរាល់</translation>
 <translation id="8732462232047530626">មើលទិន្នន័យ​មេតាសាកល្បង</translation>
 <translation id="874854738381978209">បានរកឃើញ​បណ្ដាញ Wi-Fi។</translation>

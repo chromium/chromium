@@ -6,6 +6,7 @@
 #define COMPONENTS_OS_CRYPT_SYNC_OS_CRYPT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -13,6 +14,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "crypto/subtle_passkey.h"
+
+#if BUILDFLAG(IS_APPLE)
+namespace crypto {
+class AppleKeychain;
+}
+#endif
 
 #if BUILDFLAG(IS_LINUX)
 class KeyStorageLinux;
@@ -22,12 +30,6 @@ class KeyStorageLinux;
 class PrefRegistrySimple;
 class PrefService;
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
-namespace crypto {
-class SymmetricKey;
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
 
 namespace os_crypt {
 struct Config;
@@ -90,6 +92,13 @@ COMPONENT_EXPORT(OS_CRYPT) void ClearCacheForTesting();
 COMPONENT_EXPORT(OS_CRYPT)
 void SetEncryptionPasswordForTesting(const std::string& password);
 #endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
+        !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_FUCHSIA)
+COMPONENT_EXPORT(OS_CRYPT)
+void SetEncryptionAvailableForTesting(std::optional<bool> available);
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !(BUILDFLAG(IS_LINUX)
+        // && !BUILDFLAG(IS_CASTOS)) || BUILDFLAG(IS_FUCHSIA)
 }  // namespace OSCrypt
 
 // The OSCryptImpl class gives access to simple encryption and decryption of
@@ -115,12 +124,16 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
   void SetConfig(std::unique_ptr<os_crypt::Config> config);
 #endif  // BUILDFLAG(IS_LINUX)
 
-  // On Linux returns true iff the real secret key (not hardcoded one) is
-  // available. On MacOS returns true if Keychain is available (for mock
-  // Keychain it returns true if not using locked Keychain, false if using
-  // locked mock Keychain). On Windows returns true if non mock encryption
-  // key is available. On other platforms, returns false as OSCryptImpl will use
-  // a hardcoded key.
+  // In production code:
+  // - On Linux, returns true iff the real secret key (not hardcoded one) is
+  //   available.
+  // - On MacOS, returns true if Keychain is available (for mock Keychain it
+  //   returns true if not using locked Keychain, false if using locked mock
+  //   Keychain).
+  // - On Windows, returns true if non mock encryption key is available.
+  // - On other platforms, returns true as OSCryptImpl will use a hardcoded key.
+  //
+  // Tests may override the above behavior.
   bool IsEncryptionAvailable();
 
   // Encrypt a string16. The output (second argument) is really an array of
@@ -219,10 +232,12 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
 #endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
  private:
 #if BUILDFLAG(IS_APPLE)
-  // Generates a newly allocated SymmetricKey object based on the password found
-  // in the Keychain.  The generated key is for AES encryption.  Returns NULL
-  // key in the case password access is denied or key generation error occurs.
-  crypto::SymmetricKey* GetEncryptionKey();
+  // Return the keychain to use for accessing the encryption key.
+  std::unique_ptr<crypto::AppleKeychain> GetKeychain() const;
+
+  // Derives an encryption key from data stored in the keychain if necessary.
+  // Returns true if there is an encryption key available and false otherwise.
+  bool DeriveKey();
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
@@ -232,21 +247,28 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_LINUX)
-  // Returns a cached string of "peanuts". Is thread-safe.
-  crypto::SymmetricKey* GetPasswordV10();
+  static constexpr size_t kDerivedKeyBytes = 16;
 
-  // Caches and returns the password from the KeyStorage or null if there is no
-  // service. Is thread-safe. Set `probe` to true if caller wishes to get
-  // nullptr back rather than crashing due to no config being set.
-  crypto::SymmetricKey* GetPasswordV11(bool probe);
+  crypto::SubtlePassKey MakeCryptoPassKey();
 
-  // For password_v10, nullptr means uninitialised.
-  std::unique_ptr<crypto::SymmetricKey> password_v10_cache_;
+  // Derive a new key of `kDerivedKeyBytes` from a given input key using
+  // PBKDF2-HMAC-SHA1.
+  std::array<uint8_t, kDerivedKeyBytes> Pbkdf2(const std::string& key);
 
-  // For password_v11, nullptr means no backend.
-  std::unique_ptr<crypto::SymmetricKey> password_v11_cache_;
+  // Try to fill in `v11_key_` with a V1.1 derived key. Returns true if a v11
+  // key is now present in `v11_key_` (which may have just been cached
+  // previously) and false if one is not present. If `try_v11_` is false, and
+  // there is no cached v11 key, this method just returns false.
+  bool DeriveV11Key();
 
-  bool is_password_v11_cached_ = false;
+  // The cached V1.1 derived key. If this is nullopt, no V1.1 key is available
+  // yet, but `DeriveV11Key()` may be able to generate one.
+  std::optional<std::array<uint8_t, kDerivedKeyBytes>> v11_key_;
+
+  // Whether to try V1.1 key generation at all. When OSCrypt is used in the
+  // network service, V1.1 key generation can't succeed (it is blocked by the
+  // sandbox) so it should never be attempted.
+  bool try_v11_ = true;
 
   // |config_| is used to initialise |password_v11_cache_| and then cleared.
   std::unique_ptr<os_crypt::Config> config_;
@@ -270,11 +292,16 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_APPLE)
-  // true if |cached_encryption_key_| has been initialized.
-  bool key_is_cached_ = false;
-  // The cached AES encryption key.
-  std::unique_ptr<crypto::SymmetricKey> cached_encryption_key_;
-  // TODO(dhollowa): Refactor to allow dependency injection of Keychain.
+  // `try_keychain_` indicates whether this object should try using the keychain
+  // (which may itself be mocked out) to derive an encryption key; it can be
+  // false even if `key_present_` is also false because this object will only
+  // try using the keychain at most once and if the first use fails it will
+  // persistently fail to decrypt.
+  bool try_keychain_ = true;
+
+  static constexpr size_t kDerivedKeySize = 16;
+  std::optional<std::array<uint8_t, kDerivedKeySize>> key_;
+  // TODO(crbug.com/389737048): Refactor to allow dependency injection of Keychain.
   bool use_mock_keychain_ = false;
   // This flag is used to make the GetEncryptionKey method return NULL if used
   // along with mock Keychain.

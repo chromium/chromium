@@ -93,7 +93,7 @@ struct HUPScoringParams {
     bool use_decay_factor_;
   };
 
-  HUPScoringParams() {}
+  HUPScoringParams() = default;
 
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
@@ -295,45 +295,11 @@ bool IsOnDeviceHeadSuggestEnabledForIncognito();
 bool IsOnDeviceHeadSuggestEnabledForNonIncognito();
 bool IsOnDeviceHeadSuggestEnabledForAnyMode();
 bool IsOnDeviceHeadSuggestEnabledForLocale(const std::string& locale);
-bool IsOnDeviceTailSuggestEnabled();
+bool IsOnDeviceTailSuggestEnabled(const std::string& locale);
 bool ShouldEncodeLeadingSpaceForOnDeviceTailSuggest();
 bool ShouldApplyOnDeviceHeadModelSelectionFix();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
-
-// Omnibox UI Simplification - Square icon backgrounds.
-// Blue rounded rect background icons for answers e.g. '1+1' and 'define x'.
-// Does not apply to weather answers. Also updates the shade of blue and the
-// stroke color.
-extern const base::FeatureParam<bool> kSquareSuggestIconAnswers;
-// Gray rounded rect background for search loop and nav fav icons.
-extern const base::FeatureParam<bool> kSquareSuggestIconIcons;
-// Gray rounded rect background for entities.
-extern const base::FeatureParam<bool> kSquareSuggestIconEntities;
-// The entity size relative to the background. 0.5 means the entity
-// takes up half of the space. Should be (0, 1). No effect if
-// `kSquareSuggestIconEntities` is false or this is 1.
-extern const base::FeatureParam<double> kSquareSuggestIconEntitiesScale;
-// Gray rounded rect background for weather icons.
-extern const base::FeatureParam<bool> kSquareSuggestIconWeather;
-
-// Omnibox UI simplification - uniform row heights.
-// Returns true if the feature to enable uniform row height is enabled.
-bool IsUniformRowHeightEnabled();
-
-// Specifies the row height in pixels for omnibox suggestions.
-extern const base::FeatureParam<int> kSuggestionRowHeight;
-// Specifies the vertical margin to use in one-line rich entity and answer
-// suggestions.
-extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
-
-// Omnibox GM3 - text style.
-// Returns true if the feature to enable GM3 text styling is enabled.
-bool IsGM3TextStyleEnabled();
-// Specifies the omnibox font size (Touch UI).
-extern const base::FeatureParam<int> kFontSizeTouchUI;
-// Specifies the omnibox font size (non-Touch UI).
-extern const base::FeatureParam<int> kFontSizeNonTouchUI;
 
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
@@ -420,6 +386,14 @@ extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 
+// Whether to ignore all ZPS prefetch responses received from the Suggest
+// service when the user is on a Google SRP. This can be used, for example,
+// during experimentation to measure the performance impact of only the
+// request/response portion of ZPS prefetching (i.e. without updating the
+// user-visible list of suggestions in the Omnibox).
+extern const base::FeatureParam<bool>
+    kZeroSuggestPrefetchingOnSRPCounterfactual;
+
 // Determines the debouncing delay (in milliseconds) to use when throttling ZPS
 // prefetch requests.
 extern const base::FeatureParam<int> kZeroSuggestPrefetchDebounceDelay;
@@ -431,9 +405,6 @@ extern const base::FeatureParam<bool> kZeroSuggestPrefetchDebounceFromLastRun;
 // Determines the maximum number of entries stored by the in-memory ZPS cache.
 extern const base::FeatureParam<int> kZeroSuggestCacheMaxSize;
 
-// Determines the relevance score for the local history zero-prefix suggestions.
-extern const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore;
-
 // Returns true if any of the zero-suggest prefetching features are enabled.
 bool IsZeroSuggestPrefetchingEnabled();
 
@@ -441,30 +412,21 @@ bool IsZeroSuggestPrefetchingEnabled();
 bool IsZeroSuggestPrefetchingEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
 
+// Returns whether on-focus zero-suggest is enabled in the given context.
+bool IsOnFocusZeroSuggestEnabledInContext(
+    metrics::OmniboxEventProto::PageClassification page_classification);
+
+// Returns whether suggestion group headers should be hidden in the Omnibox
+// popup in the given context.
+bool IsHideSuggestionGroupHeadersEnabledInContext(
+    metrics::OmniboxEventProto::PageClassification page_classification);
+
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
-bool RichAutocompletionShowAdditionalText();
-extern const base::FeatureParam<bool> kRichAutocompletionAutocompleteTitles;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteTitlesShortcutProvider;
-extern const base::FeatureParam<int>
+extern const base::FeatureParam<size_t>
     kRichAutocompletionAutocompleteTitlesMinChar;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteNonPrefixAll;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteNonPrefixShortcutProvider;
-extern const base::FeatureParam<int>
-    kRichAutocompletionAutocompleteNonPrefixMinChar;
-extern const base::FeatureParam<bool> kRichAutocompletionShowAdditionalText;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAdditionalTextWithParenthesis;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteShortcutText;
-extern const base::FeatureParam<int>
+extern const base::FeatureParam<size_t>
     kRichAutocompletionAutocompleteShortcutTextMinChar;
-extern const base::FeatureParam<bool> kRichAutocompletionCounterfactual;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompletePreferUrlsOverPrefixes;
 
 // Specifies the relevance scores for the Site Search Starter Pack ACMatches
 // (e.g. @bookmarks, @history) provided by the Builtin Provider.
@@ -719,31 +681,23 @@ std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
     PiecewiseMappingVariant mapping_variant =
         PiecewiseMappingVariant::kRegular);
 
+// Ipad suggestions limit ->
+
+constexpr base::FeatureParam<int> kIpadAdditionalTrendingQueries(
+    &omnibox::kIpadZeroSuggestMatches,
+    "IpadAdditionalTrendingQueries",
+    5);
+
+constexpr base::FeatureParam<int> kIpadZPSLimit(
+    &omnibox::kIpadZeroSuggestMatches,
+    "IpadZPSSuggestionsLimit",
+    20);
+
+// <- Ipad suggestions limit
+// ---------------------------------------------------------
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
 // Actions In Suggest ->
-//
-// When set to true, permits Entity suggestion with associated Actions to be
-// promoted over the Escape Hatch.
-constexpr base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion(
-    &omnibox::kActionsInSuggest,
-    "PromoteEntitySuggestion",
-    (!!BUILDFLAG(IS_ANDROID) || !!BUILDFLAG(IS_IOS)));
-
-// Specifies which actions in suggest will be offered to users.
-constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>::Option
-    kActionsInSuggestRemoveActionTypesVariants[] = {
-        {{}, ""},
-        {omnibox::ActionInfo_ActionType_CALL, "call"},
-        {omnibox::ActionInfo_ActionType_DIRECTIONS, "directions"},
-        {omnibox::ActionInfo_ActionType_REVIEWS, "reviews"},
-};
-constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>
-    kActionsInSuggestRemoveActionTypes(
-        &omnibox::kActionsInSuggest,
-        "RemoveActionTypes",
-        {},
-        &kActionsInSuggestRemoveActionTypesVariants);
 
 constexpr base::FeatureParam<bool> kAnswerActionsCounterfactual(
     &omnibox::kOmniboxAnswerActions,
@@ -764,13 +718,6 @@ constexpr base::FeatureParam<bool> kAnswerActionsShowRichCard(
     "ShowRichCard",
     false);
 
-// Controls the placement of Reviews and Call actions position.
-// false => Call, Directions, Reviews.
-// true  => Reviews, Directions, Call.
-constexpr base::FeatureParam<bool> kActionsInSuggestPromoteReviewsAction(
-    &omnibox::kActionsInSuggest,
-    "PromoteReviewsAction",
-    false);
 // <- Actions In Suggest
 // ---------------------------------------------------------
 // Touch Down Trigger For Prefetch ->
@@ -784,19 +731,67 @@ extern const base::FeatureParam<int>
 // DB or TemplateURLService's copy of the URL.
 extern const base::FeatureParam<std::string> kGeminiUrlOverride;
 
-// Whether the expansion pack for the site search starter pack is enabled.
+// Whether the expansion pack (the StarterPackID::kGemini keyword/engine) for
+// the site search starter pack is enabled.
 bool IsStarterPackExpansionEnabled();
 
 // When true, enables an informational IPH message at the bottom of the Omnibox
 // directing users to certain starter pack engines.
 bool IsStarterPackIPHEnabled();
 
-// When true, enables an informational IPH message at the bottom of the Omnibox
-// directing users to featured Enterprise search created by policy.
-bool IsFeaturedEnterpriseSearchIPHEnabled();
-
 // <- Site Search Starter Pack
 // ---------------------------------------------------------
+// Android Hub Search -->
+//
+// Controls different variations of android hub search including what
+// primitives are included.
+#if BUILDFLAG(IS_ANDROID)
+constexpr base::FeatureParam<bool> kAndroidHubSearchEnableBookmarkProvider{
+    &omnibox::kAndroidHubSearch, "enable_bookmark_provider", true};
+
+constexpr base::FeatureParam<bool> kAndroidHubSearchEnableHistoryProvider{
+    &omnibox::kAndroidHubSearch, "enable_history_provider", true};
+#endif
+
+// <- Android Hub Search
+// ---------------------------------------------------------
+// Power Tools -->
+constexpr base::FeatureParam<size_t> kOmniboxNumNtpZpsRecentSearches{
+    &omnibox::kNumNtpZpsRecentSearches, "omnibox_num_ntp_zps_recent_searches",
+    15};
+constexpr base::FeatureParam<size_t> kOmniboxNumNtpZpsTrendingSearches{
+    &omnibox::kNumNtpZpsTrendingSearches,
+    "omnibox_num_ntp_zps_trending_searches", 5};
+constexpr base::FeatureParam<size_t> kOmniboxNumWebZpsRecentSearches{
+    &omnibox::kNumWebZpsRecentSearches, "omnibox_num_web_zps_recent_searches",
+    15};
+constexpr base::FeatureParam<size_t> kOmniboxNumWebZpsRelatedSearches{
+    &omnibox::kNumWebZpsRelatedSearches, "omnibox_num_web_zps_related_searches",
+    8};
+constexpr base::FeatureParam<size_t> kOmniboxNumWebZpsMostVisitedUrls{
+    &omnibox::kNumWebZpsMostVisitedUrls,
+    "omnibox_num_web_zps_most_visited_urls", 10};
+constexpr base::FeatureParam<size_t> kOmniboxNumSrpZpsRecentSearches{
+    &omnibox::kNumSrpZpsRecentSearches, "omnibox_num_srp_zps_recent_searches",
+    15};
+constexpr base::FeatureParam<size_t> kOmniboxNumSrpZpsRelatedSearches{
+    &omnibox::kNumSrpZpsRelatedSearches, "omnibox_num_srp_zps_related_searches",
+    15};
+// <- Power Tools
+// ---------------------------------------------------------
+// Diagnostics -->
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr base::FeatureParam<bool> kAndroidDiagInputConnection{
+    &omnibox::kDiagnostics, "omnibox_diag_input_connection", false};
+#endif
+// <- Diagnostics
+// ---------------------------------------------------------
+// Mobile Parity update -->
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr base::FeatureParam<bool> kMobileParityRetrieveTrueFavicon{
+    &omnibox::kOmniboxMobileParityUpdate, "retrieve_true_favicon", false};
+#endif
+// <-- Mobile Parity update
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:

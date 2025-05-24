@@ -11,8 +11,8 @@
 #import "base/functional/callback.h"
 #import "base/unguessable_token.h"
 #import "base/uuid.h"
-#import "components/saved_tab_groups/saved_tab_group.h"
-#import "components/saved_tab_groups/tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
@@ -274,7 +274,8 @@ int TabsCloser::CloseTabs() {
       if (saved_group) {
         local_to_saved_group_ids_.insert(
             std::make_pair(local_id, saved_group->saved_guid()));
-        sync_service->RemoveLocalTabGroupMapping(local_id);
+        sync_service->RemoveLocalTabGroupMapping(
+            local_id, tab_groups::ClosingSource::kCloseAllTabs);
       }
     }
   }
@@ -319,8 +320,7 @@ int TabsCloser::UndoCloseTabs() {
   for (const TabGroup* tab_group : web_state_list->GetGroups()) {
     tab_groups::LocalTabGroupID local_id = tab_group->tab_group_id();
     auto iterator = local_to_saved_group_ids_.find(local_id);
-    CHECK(iterator != local_to_saved_group_ids_.end(),
-          base::NotFatalUntil::M132);
+    CHECK(iterator != local_to_saved_group_ids_.end());
 
     base::Uuid saved_id = iterator->second;
     std::optional<tab_groups::SavedTabGroup> saved_group =
@@ -330,7 +330,8 @@ int TabsCloser::UndoCloseTabs() {
       tab_groups_to_delete.insert(tab_group);
       continue;
     }
-    sync_service->ConnectLocalTabGroup(saved_id, local_id);
+    sync_service->ConnectLocalTabGroup(
+        saved_id, local_id, tab_groups::OpeningSource::kUndoCloseAllTabs);
   }
   for (const TabGroup* tab_group : tab_groups_to_delete) {
     web_state_list->DeleteGroup(tab_group);

@@ -48,10 +48,11 @@ IOSSSLBlockingPage::IOSSSLBlockingPage(
       controller_(std::move(client)) {
   DCHECK(web_state_);
   // Override prefs for the SSLErrorUI.
-  if (overridable_)
+  if (overridable_) {
     options_mask |= SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED;
-  else
+  } else {
     options_mask &= ~SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED;
+  }
 
   ssl_error_ui_.reset(new SSLErrorUI(request_url, cert_error, ssl_info,
                                      options_mask, time_triggered, GURL(),
@@ -75,8 +76,7 @@ bool IOSSSLBlockingPage::ShouldCreateNewNavigation() const {
   return true;
 }
 
-IOSSSLBlockingPage::~IOSSSLBlockingPage() {
-}
+IOSSSLBlockingPage::~IOSSSLBlockingPage() {}
 
 void IOSSSLBlockingPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) const {

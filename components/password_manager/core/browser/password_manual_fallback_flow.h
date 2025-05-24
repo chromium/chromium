@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANUAL_FALLBACK_FLOW_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANUAL_FALLBACK_FLOW_H_
 
+#include <variant>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
@@ -67,7 +69,7 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
                base::i18n::TextDirection text_direction) override;
 
   // AutofillSuggestionDelegate:
-  absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
+  std::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
       override;
   void OnSuggestionsShown(
       base::span<const autofill::Suggestion> suggestions) override;

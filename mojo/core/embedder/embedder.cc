@@ -59,12 +59,8 @@ std::atomic<bool> g_mojo_ipcz_enabled{true};
 bool g_mojo_ipcz_force_disabled = false;
 
 std::optional<std::string> GetMojoIpczEnvVar() {
-  std::string value;
   auto env = base::Environment::Create();
-  if (!env->GetVar("MOJO_IPCZ", &value)) {
-    return std::nullopt;
-  }
-  return value;
+  return env->GetVar("MOJO_IPCZ");
 }
 
 // Allows MojoIpcz to be forcibly enabled if and only if MOJO_IPCZ=1 in the
@@ -154,7 +150,7 @@ void Init(const Configuration& configuration) {
     InitializeCore();
     MojoEmbedderSetSystemThunks(&GetSystemThunks());
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 }
@@ -170,7 +166,7 @@ void ShutDown() {
 #if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
     ShutDownCore();
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 }
@@ -182,7 +178,7 @@ scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() {
 #if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
     return Core::Get()->GetNodeController()->io_task_runner();
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 }

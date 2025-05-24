@@ -32,8 +32,6 @@ function updateDriveRelatedPreferences(preferences) {
  */
 function updateConnectionStatus(connStatus) {
   $('connection-status').textContent = connStatus['status'];
-  $('push-notification-enabled').textContent =
-      connStatus['push-notification-enabled'];
 }
 
 /**

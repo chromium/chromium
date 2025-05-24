@@ -16,6 +16,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -49,7 +50,7 @@ WebContentsStateByteBuffer::WebContentsStateByteBuffer(
     : state_version(saved_state_version) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_buffer.Reset(web_contents_byte_buffer_result);
-  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer);
+  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer.obj());
 }
 
 WebContentsStateByteBuffer::WebContentsStateByteBuffer(
@@ -302,8 +303,8 @@ ScopedJavaLocalRef<jobject> WriteSerializedNavigationsAsByteBuffer(
   ScopedJavaLocalRef<jobject> buffer =
       CreateByteBufferDirect(env, static_cast<jint>(pickle.size()));
   if (buffer) {
-    memcpy(env->GetDirectBufferAddress(buffer.obj()), pickle.data(),
-           pickle.size());
+    UNSAFE_TODO(memcpy(env->GetDirectBufferAddress(buffer.obj()), pickle.data(),
+                       pickle.size()));
   }
   return buffer;
 }
@@ -350,7 +351,7 @@ std::unique_ptr<content::NavigationEntry> CreatePendingNavigationEntry(
 
   url::Origin initiator_origin;
   if (jinitiator_origin) {
-    initiator_origin = url::Origin::FromJavaObject(jinitiator_origin);
+    initiator_origin = url::Origin::FromJavaObject(env, jinitiator_origin);
   }
   // TODO(crbug.com/40062134): Deal with getting initiator_base_url
   // plumbed here too.
@@ -476,7 +477,7 @@ ScopedJavaLocalRef<jstring> WebContentsState::GetVirtualUrlFromByteBuffer(
 
 ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& state,
+    jobject state,
     jint saved_state_version,
     jboolean initially_hidden,
     jboolean no_renderer) {
@@ -560,12 +561,6 @@ bool WebContentsState::ExtractNavigationEntries(
                << buffer.size() << ").";
     return false;
   }
-
-  // TODO(crbug.com/41493935): Remove this once we have enough data to
-  // conclude whether V0 and V1 are still used.
-  constexpr size_t kHighestVersion = 3;
-  UMA_HISTOGRAM_EXACT_LINEAR("Android.WebContentsState.SavedStateVersion",
-                             saved_state_version, kHighestVersion);
 
   if (!saved_state_version) {
     // When |saved_state_version| is 0, it predates our notion of each tab

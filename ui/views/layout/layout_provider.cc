@@ -27,8 +27,9 @@ LayoutProvider::LayoutProvider() {
 }
 
 LayoutProvider::~LayoutProvider() {
-  if (this == g_layout_delegate)
+  if (this == g_layout_delegate) {
     g_layout_delegate = nullptr;
+  }
 }
 
 // static
@@ -82,6 +83,8 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
   DCHECK_LT(metric, VIEWS_DISTANCE_END);
 
   switch (static_cast<DistanceMetric>(metric)) {
+    case DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE:
+      return 20;
     case DISTANCE_BUBBLE_PREFERRED_WIDTH:
       return kSmallDialogWidth;
     case DISTANCE_BUTTON_HORIZONTAL_PADDING:
@@ -90,8 +93,12 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
       return 112;
     case DISTANCE_CLOSE_BUTTON_MARGIN:
       return 20;
+    case DISTANCE_CONTROL_LIST_VERTICAL:
+      return 12;
     case DISTANCE_CONTROL_VERTICAL_TEXT_PADDING:
       return 10;
+    case DISTANCE_TABLE_VERTICAL_TEXT_PADDING:
+      return 6;
     case DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH:
       // Minimum label size plus padding.
       return 32 + 2 * GetDistanceMetric(DISTANCE_BUTTON_HORIZONTAL_PADDING);
@@ -115,6 +122,8 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
       return 16;
     case DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH:
       return kMediumDialogWidth;
+    case DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH:
+      return kLargeDialogWidth;
     case DISTANCE_RELATED_BUTTON_HORIZONTAL:
       return 8;
     case DISTANCE_RELATED_CONTROL_HORIZONTAL:
@@ -199,6 +208,8 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
           {ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
           {ShapeContextTokens::kComboboxRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kDialogRadius, ShapeSysTokens::kMediumSmall},
+          {ShapeContextTokens::kExtensionsMenuButtonRadius,
+           ShapeSysTokens::kXSmall},
           {ShapeContextTokens::kFindBarViewRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kMenuRadius, ShapeSysTokens::kMediumSmall},
           {ShapeContextTokens::kMenuAuxRadius, ShapeSysTokens::kMediumSmall},

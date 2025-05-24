@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
@@ -23,10 +24,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal_processor.h"
@@ -45,6 +45,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -55,20 +56,28 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
 namespace safe_browsing {
 
 namespace {
 
 using ::extensions::ExtensionManagement;
+using ::extensions::ManagedInstallationMode;
 using ::extensions::mojom::ManifestLocation;
 using ::google::protobuf::RepeatedPtrField;
 using ExtensionInfo =
@@ -139,6 +148,53 @@ void RecordWhenFileWasPersisted(bool persisted_at_write_interval) {
   base::UmaHistogramBoolean(
       "SafeBrowsing.ExtensionTelemetry.FilePersistedAtWriteInterval",
       persisted_at_write_interval);
+}
+
+void RecordSignalUploadSize(size_t size, ExtensionSignalType signal_type) {
+  switch (signal_type) {
+    case ExtensionSignalType::kTabsExecuteScript:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.TabsExecuteScript", size);
+      break;
+    case ExtensionSignalType::kRemoteHostContacted:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.RemoteHostContacted",
+          size);
+      break;
+    case ExtensionSignalType::kCookiesGetAll:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.CookiesGetAll", size);
+      break;
+    case ExtensionSignalType::kPotentialPasswordTheft:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.PotentialPasswordTheft",
+          size);
+      break;
+    case ExtensionSignalType::kCookiesGet:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.CookiesGet", size);
+      break;
+    case ExtensionSignalType::kDeclarativeNetRequest:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.DeclarativeNetRequest",
+          size);
+      break;
+    case ExtensionSignalType::kTabsApi:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.TabsApi", size);
+      break;
+    case ExtensionSignalType::kDeclarativeNetRequestAction:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize."
+          "DeclarativeNetRequestAction",
+          size);
+      break;
+    case ExtensionSignalType::kPasswordReuse:
+    // This signal is used to construct the potential password theft signal and
+    // is not itself included in a telemetry report.
+    default:
+      break;
+  }
 }
 
 void RecordNumOffstoreExtensions(int num_extensions) {
@@ -248,17 +304,17 @@ ExtensionTelemetryReportRequest::ManagementAuthority GetManagementAuthority(
 
 ExtensionInfo::InstallationPolicy
 ExtensionManagementInstallationModeToExtensionInfoInstallationPolicy(
-    const ExtensionManagement::InstallationMode& installation_mode) {
+    const ManagedInstallationMode& installation_mode) {
   switch (installation_mode) {
-    case ExtensionManagement::InstallationMode::INSTALLATION_ALLOWED:
+    case ManagedInstallationMode::kAllowed:
       return ExtensionInfo::INSTALLATION_ALLOWED;
-    case ExtensionManagement::InstallationMode::INSTALLATION_BLOCKED:
+    case ManagedInstallationMode::kBlocked:
       return ExtensionInfo::INSTALLATION_BLOCKED;
-    case ExtensionManagement::InstallationMode::INSTALLATION_FORCED:
+    case ManagedInstallationMode::kForced:
       return ExtensionInfo::INSTALLATION_FORCED;
-    case ExtensionManagement::InstallationMode::INSTALLATION_RECOMMENDED:
+    case ManagedInstallationMode::kRecommended:
       return ExtensionInfo::INSTALLATION_RECOMMENDED;
-    case ExtensionManagement::InstallationMode::INSTALLATION_REMOVED:
+    case ManagedInstallationMode::kRemoved:
       return ExtensionInfo::INSTALLATION_REMOVED;
     default:
       return ExtensionInfo::NO_POLICY;
@@ -357,11 +413,13 @@ extensions::ExtensionSet CollectCommandLineExtensionInfo() {
   return commandline_extensions;
 }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 // Retrieves the ExtensionTelemetryEventRouter associated with the profile.
 enterprise_connectors::ExtensionTelemetryEventRouter*
 GetExtensionTelemetryEventRouter(Profile* profile) {
   return enterprise_connectors::ExtensionTelemetryEventRouter::Get(profile);
 }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 // Returns true if the signal type should be collected for enterprise telemetry.
 bool CollectForEnterprise(ExtensionSignalType type) {
@@ -409,6 +467,7 @@ ExtensionTelemetryService::ExtensionTelemetryService(
   // Set initial enable/disable state for ESB.
   SetEnabledForESB(IsEnhancedProtectionEnabled(*pref_service_));
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   if (base::FeatureList::IsEnabled(kExtensionTelemetryForEnterprise)) {
     // Register for enterprise policy changes.
     auto* connector_service =
@@ -422,6 +481,7 @@ ExtensionTelemetryService::ExtensionTelemetryService(
     SetEnabledForEnterprise(
         GetExtensionTelemetryEventRouter(profile_)->IsPolicyEnabled());
   }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void ExtensionTelemetryService::RecordSignalType(
@@ -445,8 +505,12 @@ void ExtensionTelemetryService::OnEnterprisePolicyChanged() {
     return;
   }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   SetEnabledForEnterprise(
       GetExtensionTelemetryEventRouter(profile_)->IsPolicyEnabled());
+#else
+  SetEnabledForEnterprise(false);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 // Telemetry features for ESB include:
@@ -703,8 +767,10 @@ void ExtensionTelemetryService::CreateAndSendEnterpriseReport() {
       CreateReportForEnterprise();
   if (enterprise_report) {
     RecordEnterpriseReportSize(enterprise_report->ByteSizeLong());
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     GetExtensionTelemetryEventRouter(profile_)->UploadTelemetryReport(
         std::move(enterprise_report));
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   } else {
     DLOG(WARNING) << "Upload skipped due to empty enterprise report.";
   }
@@ -719,9 +785,7 @@ void ExtensionTelemetryService::OnUploadComplete(
     SetLastUploadTimeForExtensionTelemetry(*pref_service_, base::Time::Now());
 
     ExtensionTelemetryReportResponse response;
-    if (base::FeatureList::IsEnabled(
-            kExtensionTelemetryDisableOffstoreExtensions) &&
-        response.ParseFromString(response_data)) {
+    if (response.ParseFromString(response_data)) {
       ProcessOffstoreExtensionVerdicts(response);
     }
   }
@@ -853,6 +917,8 @@ ExtensionTelemetryService::CreateReport() {
           signal_info_pb = processor_it.second->GetSignalInfoForReport(
               extension_store_it.first);
       if (signal_info_pb) {
+        RecordSignalUploadSize(signal_info_pb->ByteSizeLong(),
+                               processor_it.first);
         signals_pb->AddAllocated(signal_info_pb.release());
       }
     }
@@ -1280,7 +1346,7 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
     extension_info->set_install_timestamp_msec(0);
   } else {
     extension_info->set_install_timestamp_msec(
-        extension_prefs_->GetLastUpdateTime(extension.id())
+        GetLastUpdateTime(extension_prefs_, extension.id())
             .InMillisecondsSinceUnixEpoch());
   }
   extension_info->set_is_default_installed(
@@ -1299,8 +1365,24 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
   extension_info->set_telemetry_blocklist_state(
       GetExtensionTelemetryServiceBlocklistState(extension.id(),
                                                  extension_prefs_));
-  extension_info->set_disable_reasons(
-      extension_prefs_->GetDisableReasons(extension.id()));
+
+  // Use the GetRawDisableReasons() getter here as we want all the disable
+  // reasons (known and unknown).
+  extensions::ExtensionPrefs::DisableReasonRawManipulationPasskey passkey;
+  base::flat_set<int> disable_reasons =
+      extension_prefs_->GetRawDisableReasons(passkey, extension.id());
+
+  for (int reason : disable_reasons) {
+    extension_info->add_disable_reasons_list(reason);
+  }
+
+  // TODO(crbug.com/372186532): Remove this code and deprecate the
+  // disable_reasons field in the proto after the Safe Browsing service is
+  // migrated to use disable_reasons_list.
+  const int disable_reasons_bitflag =
+      extensions::IntegerSetToBitflag(disable_reasons);
+  extension_info->set_disable_reasons(disable_reasons_bitflag);
+
   if (base::FeatureList::IsEnabled(kExtensionTelemetryIncludePolicyData)) {
     bool installation_managed =
         extension_management->IsInstallationExplicitlyAllowed(extension.id()) ||

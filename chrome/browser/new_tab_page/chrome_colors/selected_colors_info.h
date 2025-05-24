@@ -22,7 +22,7 @@ struct ColorInfo {
 
 // List of preselected colors to show in Chrome Colors menu. This array should
 // always be in sync with ChromeColorsInfo in enums.xml.
-constexpr ColorInfo kSelectedColorsInfo[] = {
+inline constexpr ColorInfo kSelectedColorsInfo[] = {
     // 0  - reserved for any color not in this set.
     ColorInfo(1, SkColorSetRGB(239, 235, 233), IDS_NTP_COLORS_WARM_GREY),
     ColorInfo(2, SkColorSetRGB(120, 127, 145), IDS_NTP_COLORS_COOL_GREY),

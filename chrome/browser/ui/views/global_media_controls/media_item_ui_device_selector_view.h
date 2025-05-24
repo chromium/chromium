@@ -26,13 +26,13 @@ namespace {
 class ExpandDeviceSelectorLabel;
 class ExpandDeviceSelectorButton;
 
-const char kAudioDevicesCountHistogramName[] =
+inline constexpr char kAudioDevicesCountHistogramName[] =
     "Media.GlobalMediaControls.NumberOfAvailableAudioDevices";
-const char kCastDeviceCountHistogramName[] =
+inline constexpr char kCastDeviceCountHistogramName[] =
     "Media.GlobalMediaControls.CastDeviceCount";
-const char kDeviceSelectorAvailableHistogramName[] =
+inline constexpr char kDeviceSelectorAvailableHistogramName[] =
     "Media.GlobalMediaControls.DeviceSelectorAvailable";
-const char kDeviceSelectorOpenedHistogramName[] =
+inline constexpr char kDeviceSelectorOpenedHistogramName[] =
     "Media.GlobalMediaControls.DeviceSelectorOpened";
 }  // anonymous namespace
 
@@ -161,7 +161,7 @@ class MediaItemUIDeviceSelectorView
   // Each button has a unique tag, which is used to look up DeviceEntryUI* in
   // |device_entry_ui_map_|.
   int next_tag_ = 0;
-  std::map<int, DeviceEntryUI*> device_entry_ui_map_;
+  std::map<int, raw_ptr<DeviceEntryUI, CtnExperimental>> device_entry_ui_map_;
 
   mojo::Remote<global_media_controls::mojom::DeviceListHost> device_list_host_;
   mojo::Receiver<global_media_controls::mojom::DeviceListClient> receiver_;

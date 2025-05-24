@@ -57,18 +57,25 @@ extern NSString* const kTextfieldPlaceholderColor;
 extern NSString* const kToolbarButtonColor;
 // Color used for a shadow/separator next to a toolbar.
 extern NSString* const kToolbarShadowColor;
+
+// Colors of the omnibox.
 // Background color for omnibox keyboard buttons.
 extern NSString* const kOmniboxKeyboardButtonColor;
-// Color for separator between omnibox suggestions.
-extern NSString* const kOmniboxSuggestionRowSeparatorColor;
-// Color for separator between omnibox popout suggestions.
-extern NSString* const kOmniboxPopoutSuggestionRowSeparatorColor;
-// Background colorfor the tab group favicon views.
-extern NSString* const kTabGroupFaviconBackgroundColor;
 // Color for the omnibox popout overlay.
 extern NSString* const kOmniboxPopoutOverlayColor;
+// Color for separator between omnibox popout suggestions.
+extern NSString* const kOmniboxPopoutSuggestionRowSeparatorColor;
+extern NSString* const kOmniboxSuggestionAnswerIconColor;
+extern NSString* const kOmniboxSuggestionIconColor;
+// Color for separator between omnibox suggestions.
+extern NSString* const kOmniboxSuggestionRowSeparatorColor;
+
+// Background colorfor the tab group favicon views.
+extern NSString* const kTabGroupFaviconBackgroundColor;
+
 // Color of the Tab Strip.
 extern NSString* const kTabStripBackgroundColor;
+extern NSString* const kTabStripV3BackgroundColor;
 // Color of the symbol of the Tab Strip new tab button.
 extern NSString* const kTabStripNewTabButtonColor;
 // Colors for the TabGroup.
@@ -82,6 +89,7 @@ extern NSString* const kTabGroupGreyColor;
 extern NSString* const kWhiteBlackAlpha50Color;
 // Lens overlay consent dialog description text color.
 extern NSString* const kLensOverlayConsentDialogDescriptionColor;
+extern NSString* const kLensOverlayConsentDialogAnimationPlayerButtonColor;
 // ***************
 // Standard Colors
 // ***************
@@ -105,6 +113,7 @@ extern NSString* const kBlue400Color;
 extern NSString* const kBlue500Color;
 extern NSString* const kBlue600Color;
 extern NSString* const kBlue700Color;
+extern NSString* const kBlue900Color;
 // Static blue palette (same color for light and dark modes).
 extern NSString* const kStaticBlueColor;
 extern NSString* const kStaticBlue400Color;

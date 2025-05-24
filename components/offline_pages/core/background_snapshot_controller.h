@@ -49,7 +49,7 @@ class BackgroundSnapshotController {
     virtual void StartSnapshot() = 0;
 
    protected:
-    virtual ~Client() {}
+    virtual ~Client() = default;
   };
 
   BackgroundSnapshotController(

@@ -1,4 +1,4 @@
 include_rules = [
-"+ios/chrome/browser/ui/settings",
+"+ios/chrome/browser/settings/ui_bundled",
 "+third_party/libphonenumber/phonenumber_api.h",
 ]

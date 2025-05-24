@@ -6,17 +6,19 @@ package org.chromium.chrome.browser.pwd_migration;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 /** The factory used to create the coordinator of the post password migration sheet. */
+@NullMarked
 public class PostPasswordMigrationSheetCoordinatorFactory {
 
-    private static PostPasswordMigrationSheetCoordinator sCoordinatorInstanceForTesting;
+    private static @Nullable PostPasswordMigrationSheetCoordinator sCoordinatorInstanceForTesting;
 
     /**
      * Creates and returns a new {@link PostPasswordMigrationSheetCoordinator} or the instance set
@@ -25,10 +27,10 @@ public class PostPasswordMigrationSheetCoordinatorFactory {
      * @param windowAndroid is used to get the {@link BottomSheetController}.
      * @return {@link PostPasswordMigrationSheetCoordinator} or null.
      */
-    @Nullable
-    public static PostPasswordMigrationSheetCoordinator
-            maybeGetOrCreatePostPasswordMigrationSheetCoordinator(
-                    WindowAndroid windowAndroid, Profile profile) {
+    public static @Nullable
+            PostPasswordMigrationSheetCoordinator
+                    maybeGetOrCreatePostPasswordMigrationSheetCoordinator(
+                            WindowAndroid windowAndroid, Profile profile) {
         if (sCoordinatorInstanceForTesting != null) {
             return sCoordinatorInstanceForTesting;
         }
@@ -47,6 +49,7 @@ public class PostPasswordMigrationSheetCoordinatorFactory {
     public static void setCoordinatorInstanceForTesting(
             PostPasswordMigrationSheetCoordinator testingCoordinator) {
         sCoordinatorInstanceForTesting = testingCoordinator;
+        ResettersForTesting.register(() -> sCoordinatorInstanceForTesting = null);
     }
 
     private PostPasswordMigrationSheetCoordinatorFactory() {}

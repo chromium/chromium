@@ -34,8 +34,15 @@ export const FocusRowMixin = dedupingMixin(
       class FocusRowMixin extends superClass implements FocusRowMixinInterface {
         static get properties() {
           return {
-            row_: Object,
-            mouseFocused_: Boolean,
+            row_: {
+              type: Object,
+              value: null,
+            },
+
+            mouseFocused_: {
+              type: Boolean,
+              value: false,
+            },
 
             // Will be updated when |index| is set, unless specified elsewhere.
             id: {
@@ -46,6 +53,7 @@ export const FocusRowMixin = dedupingMixin(
             isFocused: {
               type: Boolean,
               notify: true,
+              value: false,
             },
 
             focusRowIndex: {
@@ -56,6 +64,7 @@ export const FocusRowMixin = dedupingMixin(
             lastFocused: {
               type: Object,
               notify: true,
+              value: null,
             },
 
             ironListTabIndex: {
@@ -66,20 +75,23 @@ export const FocusRowMixin = dedupingMixin(
             listBlurred: {
               type: Boolean,
               notify: true,
+              value: false,
             },
           };
         }
 
-        private row_: VirtualFocusRow|null = null;
-        private mouseFocused_: boolean = false;
+        declare private row_: VirtualFocusRow|null;
+        declare private mouseFocused_: boolean;
+
+        declare id: string;
 
         // For notifying when the row is in focus.
-        isFocused: boolean = false;
+        declare isFocused: boolean;
 
         // Should be bound to the index of the item from the iron-list.
-        focusRowIndex?: number;
+        declare focusRowIndex?: number;
 
-        lastFocused: HTMLElement|null = null;
+        declare lastFocused: HTMLElement|null;
 
         /**
          * This is different from tabIndex, since the template only does a
@@ -87,8 +99,8 @@ export const FocusRowMixin = dedupingMixin(
          * use of this fact. For example, when a control within a row is
          * focused, it will have tabIndex = -1 and ironListTabIndex = 0.
          */
-        ironListTabIndex?: number;
-        listBlurred: boolean = false;
+        declare ironListTabIndex?: number;
+        declare listBlurred: boolean;
 
         private firstControl_: HTMLElement|null = null;
         private controlObservers_: MutationObserver[] = [];

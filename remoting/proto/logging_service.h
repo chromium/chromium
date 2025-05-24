@@ -14,11 +14,17 @@
 namespace remoting::internal {
 
 struct ReportSessionDisconnectedRequestStruct {
+  ReportSessionDisconnectedRequestStruct();
+  ReportSessionDisconnectedRequestStruct(
+      const ReportSessionDisconnectedRequestStruct&);
+  ~ReportSessionDisconnectedRequestStruct();
+
   bool operator==(const ReportSessionDisconnectedRequestStruct&) const =
       default;
 
   std::string session_authz_id;
   std::string session_authz_reauth_token;
+  std::string host_token;
   ErrorCode error_code;
   std::optional<SessionPolicies> effective_session_policies;
 };

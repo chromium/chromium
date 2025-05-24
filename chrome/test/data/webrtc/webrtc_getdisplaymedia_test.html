@@ -6,7 +6,8 @@
   <script type="text/javascript" src="video_detector.js"></script>
   <script>
   'use strict';
-  let controller;
+  const controller = new CaptureController;
+  let zoom_level_event_count = 0;
   let settings;
   let video_track;
   let audio_track;
@@ -47,7 +48,7 @@
       }).then((event) => event.data);
     }
 
-    controller = new CaptureController;
+    controller.onzoomlevelchange = (() => ++zoom_level_event_count);
     return navigator.mediaDevices.getDisplayMedia({...constraints, controller}).
       then(handleSuccess).catch(expectedError ? compareErrors(expectedError)
                                               : handleError);
@@ -159,22 +160,64 @@
     return logAndReturn("stopped");
   }
 
-  async function sendWheel(action) {
-    await controller.sendWheel(action);
-    return logAndReturn("send-wheel-resolved");
+  async function forwardWheel(targetId) {
+    // Note that if `targetId === null` then `targetId === null`.
+    const target = document.getElementById(targetId);
+    try {
+      await controller.forwardWheel(target);
+      return logAndReturn("forward-wheel-resolved");
+    } catch (e) {
+      return `${e}`;
+    }
   }
 
-  async function setZoomLevel(zoomLevel) {
+  async function forwardWheel(action) {
     try {
-      await controller.setZoomLevel(zoomLevel);
+      await controller.forwardWheel(action);
+      return logAndReturn("forward-wheel-resolved");
     } catch (e) {
-      return logAndReturn("set-zoom-level-error");
+      return `${e}`;
     }
-    return logAndReturn("set-zoom-level-resolved");
+  }
+
+  async function updateZoomLevel(action) {
+    try {
+      if (action === "increase") {
+        await controller.increaseZoomLevel();
+      } else if (action === "decrease") {
+        await controller.decreaseZoomLevel();
+      } else if (action === "reset") {
+        await controller.resetZoomLevel();
+      } else {
+        return logAndReturn("unknown-action-error");
+      }
+    } catch (e) {
+      return logAndReturn(`${action}-zoom-level-error`);
+    }
+    return logAndReturn(`${action}-zoom-level-resolved`);
+  }
+
+  function zoomLevelChangeEventsSinceLast() {
+    const result = zoom_level_event_count;
+    zoom_level_event_count = 0;
+    return result;
   }
 
   function getZoomLevel() {
-    return controller.getZoomLevel();
+    return controller.zoomLevel;
+  }
+
+  function getSupportedZoomLevels() {
+    try {
+      return controller.getSupportedZoomLevels();
+    } catch (e) {
+      // `EvalJsResult` is limiting; we cannot inspect it until after
+      // we ExtractList() or use some other ExtractX().
+      // We therefore pack the error the same way we would pack a valid
+      // result; the test fixture will detect a single entry as one
+      // containing an error.
+      return [`${e}`];
+    }
   }
 </script>
 </head>
@@ -185,7 +228,7 @@
     </tr>
     <tr>
       <td>
-        <video id="local-view" autoplay></video>
+        <video id="video" autoplay></video>
       </td>
     </tr>
   </table>

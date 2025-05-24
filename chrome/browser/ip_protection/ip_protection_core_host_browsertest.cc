@@ -7,26 +7,35 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/mojom/core.mojom-test-utils.h"
+#include "components/ip_protection/mojom/core.mojom.h"
+#include "components/ip_protection/mojom/data_types.mojom-test-utils.h"
+#include "components/ip_protection/mojom/data_types.mojom.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -37,9 +46,15 @@
 #include "services/network/public/mojom/network_context.mojom-test-utils.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "chrome/common/chrome_features.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 using ::ip_protection::BlindSignedAuthToken;
 using ::ip_protection::GeoHint;
@@ -47,27 +62,49 @@ using ::ip_protection::GeoHint;
 namespace {
 class ScopedIpProtectionFeatureList {
  public:
-  ScopedIpProtectionFeatureList() {
-    feature_list_.InitWithFeatures({net::features::kEnableIpProtectionProxy,
-                                    network::features::kMaskedDomainList},
-                                   {});
+  explicit ScopedIpProtectionFeatureList(bool incognito_mode,
+                                         bool enterprise_killswitch_enabled) {
+    std::vector<base::test::FeatureRefAndParams> features_and_params;
+    features_and_params.push_back(
+        {net::features::kEnableIpProtectionProxy,
+         {{net::features::kIpPrivacyOnlyInIncognito.name,
+           base::ToString(incognito_mode)},
+          {net::features::kIpPrivacyDisableForEnterpriseByDefault.name,
+           base::ToString(enterprise_killswitch_enabled)}}});
+    features_and_params.push_back({network::features::kMaskedDomainList, {}});
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    // Use of IpProtectionCoreHostFactory::GetInstance() in the test
+    // constructor means that the KeyedService Factory instances get
+    // created before feature overrides in
+    // testing/variations/fieldtrial_testing_config.json get applied;
+    // this is needed to ensure that the factory in
+    // chrome/browser/net/server_certificate_database_service_factory is
+    // created consistent with the rest of the code.
+    //
+    // See http://g/chrome-secure-web-and-net/Qre0HqS0hgA for more info.
+    features_and_params.push_back(
+        {::features::kEnableCertManagementUIV2Write, {}});
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+    feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Helper class to intercept `IpProtectionConfigGetter::TryGetAuthTokens()`
+// Helper class to intercept `IpProtectionCoreHost::TryGetAuthTokens()`
 // requests and return a fake token value and a fake expiration value for
 // testing.
-class IpProtectionConfigGetterInterceptor
-    : public network::mojom::IpProtectionConfigGetterInterceptorForTesting {
+class IpProtectionCoreHostInterceptor
+    : public ip_protection::mojom::CoreHostInterceptorForTesting {
  public:
-  IpProtectionConfigGetterInterceptor(IpProtectionCoreHost* getter,
-                                      std::string token,
-                                      base::Time expiration,
-                                      GeoHint geo_hint,
-                                      bool should_intercept = true)
+  IpProtectionCoreHostInterceptor(IpProtectionCoreHost* getter,
+                                  std::string token,
+                                  base::Time expiration,
+                                  GeoHint geo_hint,
+                                  bool should_intercept = true)
       : getter_(getter),
         receiver_id_(getter_->receiver_id_for_testing()),
         token_(std::move(token)),
@@ -80,17 +117,17 @@ class IpProtectionConfigGetterInterceptor
     CHECK_EQ(getter, old_impl);
   }
 
-  ~IpProtectionConfigGetterInterceptor() override {
+  ~IpProtectionCoreHostInterceptor() override {
     std::ignore = getter_->receivers_for_testing().SwapImplForTesting(
         receiver_id_, getter_);
   }
 
-  network::mojom::IpProtectionConfigGetter* GetForwardingInterface() override {
+  ip_protection::mojom::CoreHost* GetForwardingInterface() override {
     return getter_;
   }
 
   void TryGetAuthTokens(uint32_t batch_size,
-                        network::mojom::IpProtectionProxyLayer proxy_layer,
+                        ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     if (should_intercept_) {
       std::vector<BlindSignedAuthToken> tokens;
@@ -133,19 +170,24 @@ constexpr base::Time kDontRetry = base::Time::Max();
 
 class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
  public:
-  IpProtectionCoreHostBrowserTest()
-      : profile_selections_(
+  explicit IpProtectionCoreHostBrowserTest(
+      bool incognito_mode = false,
+      bool enterprise_killswitch_enabled = false)
+      : scoped_ip_protection_feature_list_(incognito_mode,
+                                           enterprise_killswitch_enabled),
+        profile_selections_(
             IpProtectionCoreHostFactory::GetInstance(),
             IpProtectionCoreHostFactory::CreateProfileSelectionsForTesting()) {}
 
   void TearDownOnMainThread() override {
     PlatformBrowserTest::TearDownOnMainThread();
 
-    IpProtectionCoreHost::Get(GetProfile())->Shutdown();
+    IpProtectionCoreHostFactory::GetForProfile(GetProfile())->Shutdown();
   }
 
   void CreateIncognitoNetworkContextAndInterceptors() {
-    IpProtectionCoreHost* provider = IpProtectionCoreHost::Get(GetProfile());
+    IpProtectionCoreHost* provider =
+        IpProtectionCoreHostFactory::GetForProfile(GetProfile());
     ASSERT_TRUE(provider);
     ASSERT_EQ(provider->receivers_for_testing().size(), 1U);
 
@@ -154,7 +196,7 @@ class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
     GeoHint geo_hint = {
         .country_code = "US", .iso_region = "US-AL", .city_name = "ALABASTER"};
     main_profile_auth_token_getter_interceptor_ =
-        std::make_unique<IpProtectionConfigGetterInterceptor>(
+        std::make_unique<IpProtectionCoreHostInterceptor>(
             provider, token, expiration, geo_hint, /*should_intercept=*/false);
 
     network::mojom::NetworkContext* main_profile_network_context =
@@ -171,7 +213,7 @@ class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
     ASSERT_NE(main_profile_ipp_control_, incognito_profile_ipp_control_);
 
     incognito_profile_auth_token_getter_interceptor_ =
-        std::make_unique<IpProtectionConfigGetterInterceptor>(
+        std::make_unique<IpProtectionCoreHostInterceptor>(
             provider, token, expiration, geo_hint, /*should_intercept=*/false);
   }
 
@@ -198,15 +240,15 @@ class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
  protected:
-  raw_ptr<network::mojom::IpProtectionControl> main_profile_ipp_control_ =
+  raw_ptr<ip_protection::mojom::CoreControl> main_profile_ipp_control_ =
       nullptr;
-  std::unique_ptr<IpProtectionConfigGetterInterceptor>
+  std::unique_ptr<IpProtectionCoreHostInterceptor>
       main_profile_auth_token_getter_interceptor_;
 
   raw_ptr<Profile> incognito_profile_ = nullptr;
-  raw_ptr<network::mojom::IpProtectionControl> incognito_profile_ipp_control_ =
+  raw_ptr<ip_protection::mojom::CoreControl> incognito_profile_ipp_control_ =
       nullptr;
-  std::unique_ptr<IpProtectionConfigGetterInterceptor>
+  std::unique_ptr<IpProtectionCoreHostInterceptor>
       incognito_profile_auth_token_getter_interceptor_;
 
  private:
@@ -220,7 +262,8 @@ class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
                        NetworkServiceCanRequestTokens) {
-  IpProtectionCoreHost* getter = IpProtectionCoreHost::Get(GetProfile());
+  IpProtectionCoreHost* getter =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(getter);
 
   std::string token = "best_token_ever";
@@ -229,8 +272,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
       .country_code = "US", .iso_region = "US-AL", .city_name = "ALABASTER"};
   ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
   auto auth_token_getter_interceptor_ =
-      std::make_unique<IpProtectionConfigGetterInterceptor>(
-          getter, token, expiration, geo_hint);
+      std::make_unique<IpProtectionCoreHostInterceptor>(getter, token,
+                                                        expiration, geo_hint);
 
   // To test that the Network Service can successfully request tokens, use the
   // test method on NetworkContext that will have it request tokens and then
@@ -239,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
                          std::optional<base::Time>>
       future;
   auto* ipp_control = getter->last_remote_for_testing();
-  ipp_control->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
+  ipp_control->VerifyIpProtectionCoreHostForTesting(future.GetCallback());
   const std::optional<BlindSignedAuthToken>& result =
       future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(result);
@@ -255,14 +298,14 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
   // incognito mode network context's `mojo::Receiver()`.
   ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
   auto incognito_auth_token_getter_interceptor_ =
-      std::make_unique<IpProtectionConfigGetterInterceptor>(
-          getter, token, expiration, geo_hint);
+      std::make_unique<IpProtectionCoreHostInterceptor>(getter, token,
+                                                        expiration, geo_hint);
 
   // Verify that we can get tokens from the incognito mode profile.
   future.Clear();
   auto* incognito_ipp_control = getter->last_remote_for_testing();
   ASSERT_NE(incognito_ipp_control, ipp_control);
-  incognito_ipp_control->VerifyIpProtectionConfigGetterForTesting(
+  incognito_ipp_control->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<BlindSignedAuthToken>& incognito_result =
       future.Get<std::optional<BlindSignedAuthToken>>();
@@ -272,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
 
   // Ensure that we can still get tokens from the main profile.
   future.Clear();
-  ipp_control->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
+  ipp_control->VerifyIpProtectionCoreHostForTesting(future.GetCallback());
   const std::optional<BlindSignedAuthToken>& second_attempt_result =
       future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(second_attempt_result);
@@ -282,7 +325,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
                        ExpectedReceiverSetStateAfterNetworkServiceCrash) {
-  IpProtectionCoreHost* getter = IpProtectionCoreHost::Get(GetProfile());
+  IpProtectionCoreHost* getter =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(getter);
   ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
 
@@ -309,17 +353,121 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
   ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
 }
 
+IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
+                       NotDisabledForManagedDevice) {
+  IpProtectionCoreHost* getter =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(getter);
+  ASSERT_TRUE(getter->IsIpProtectionEnabled());
+
+  {
+    policy::ScopedManagementServiceOverrideForTesting browser_management{
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
+
+    EXPECT_TRUE(getter->IsIpProtectionEnabled());
+  }
+}
+
+class IpProtectionBrowserTestEnterpriseKillSwitchEnabled
+    : public IpProtectionCoreHostBrowserTest {
+ public:
+  IpProtectionBrowserTestEnterpriseKillSwitchEnabled()
+      : IpProtectionCoreHostBrowserTest(
+            /*incognito_mode=*/false,
+            /*enterprise_killswitch_enabled=*/true) {}
+};
+
+IN_PROC_BROWSER_TEST_F(IpProtectionBrowserTestEnterpriseKillSwitchEnabled,
+                       DisabledForManagedDevice) {
+  IpProtectionCoreHost* getter =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(getter);
+
+  // If this test is running on a device that is already managed, we expect IP
+  // Protection to be disabled. Verify this and then skip the rest of the test.
+  if (getter->ShouldDisableIpProtectionForEnterpriseForTesting()) {
+    EXPECT_FALSE(getter->IsIpProtectionEnabled());
+    return;
+  }
+  ASSERT_TRUE(getter->IsIpProtectionEnabled());
+
+  {
+    policy::ScopedManagementServiceOverrideForTesting browser_management{
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
+
+    EXPECT_FALSE(getter->IsIpProtectionEnabled());
+  }
+}
+
+class IpProtectionBrowserTestIncognitoOnlyModeDisabled
+    : public IpProtectionCoreHostBrowserTest {
+ public:
+  IpProtectionBrowserTestIncognitoOnlyModeDisabled()
+      : IpProtectionCoreHostBrowserTest(/*incognito_mode=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IpProtectionBrowserTestIncognitoOnlyModeDisabled,
+    IpProtectionReceiversPresentForRegularAndIncognitoProfiles) {
+  IpProtectionCoreHost* getter =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(getter);
+
+  // If IPP is active/allowed, the `IpProtectionCoreHost` will have receivers
+  // for a regular profile.
+  ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
+
+  // Now create a new incognito mode profile (with a different associated
+  // network context).
+  GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  // A new network context for the incognito profile implies we should have
+  // additional receivers for the new network context.
+  ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
+}
+
+class IpProtectionBrowserTestIncognitoOnlyModeEnabled
+    : public IpProtectionCoreHostBrowserTest {
+ public:
+  IpProtectionBrowserTestIncognitoOnlyModeEnabled()
+      : IpProtectionCoreHostBrowserTest(/*incognito_mode=*/true) {}
+};
+
+IN_PROC_BROWSER_TEST_F(IpProtectionBrowserTestIncognitoOnlyModeEnabled,
+                       IpProtectionReceiversAbsentForRegularProfiles) {
+  IpProtectionCoreHost* getter =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(getter);
+
+  // The `IpProtectionCoreHost` will not have receivers for a regular profile
+  // when the incognito mode feature param is enabled.
+  ASSERT_EQ(getter->receivers_for_testing().size(), 0U);
+}
+
+IN_PROC_BROWSER_TEST_F(IpProtectionBrowserTestIncognitoOnlyModeEnabled,
+                       IpProtectionReceiversPresentForIncognitoProfiles) {
+  IpProtectionCoreHost* getter = IpProtectionCoreHostFactory::GetForProfile(
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  ASSERT_TRUE(getter);
+
+  // The `IpProtectionCoreHost` will have a receiver for an incognito profile
+  // when the incognito mode feature param is enabled.
+  ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class IpProtectionCoreHostIdentityBrowserTest
     : public IpProtectionCoreHostBrowserTest {
  public:
-  IpProtectionCoreHostIdentityBrowserTest() {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&IpProtectionCoreHostIdentityBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
+  IpProtectionCoreHostIdentityBrowserTest() = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    IpProtectionCoreHostBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
   void SetUpOnMainThread() override {
@@ -354,16 +502,9 @@ class IpProtectionCoreHostIdentityBrowserTest
         ->ClearPrimaryAccount();
   }
 
- protected:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-
  private:
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
@@ -371,10 +512,11 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   CreateIncognitoNetworkContextAndInterceptors();
   // Simulate logging the user out, which should make the provider indicate that
   // `TryGetAuthTokens()` calls should not be retried on the next request.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
   ClearPrimaryAccount();
 #else
-  IpProtectionCoreHost* provider = IpProtectionCoreHost::Get(GetProfile());
+  IpProtectionCoreHost* provider =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(provider);
 
   // On ChromeOS, `ClearPrimaryAccount()` either isn't supported (Ash) or
@@ -395,14 +537,14 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
                          std::optional<base::Time>>
       future;
-  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<base::Time>& main_profile_first_attempt_result =
       future.Get<std::optional<base::Time>>();
   EXPECT_EQ(main_profile_first_attempt_result.value(), kDontRetry);
 
   future.Clear();
-  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  incognito_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<base::Time>& incognito_profile_first_attempt_result =
       future.Get<std::optional<base::Time>>();
@@ -416,14 +558,14 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   // Run the test again and check that the network service is still in a
   // cooldown phase.
   future.Clear();
-  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<base::Time>& main_profile_second_attempt_result =
       future.Get<std::optional<base::Time>>();
   EXPECT_EQ(main_profile_second_attempt_result.value(), kDontRetry);
 
   future.Clear();
-  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  incognito_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<base::Time>& incognito_profile_second_attempt_result =
       future.Get<std::optional<base::Time>>();
@@ -432,8 +574,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   // Simulate the account becoming active again, which should cause `provider`
   // to notify the network contexts. No need to flush the remotes after, since
   // the messages generated will be in order with the
-  // `VerifyIpProtectionConfigGetterForTesting()` messages used below.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // `VerifyIpProtectionCoreHostForTesting()` messages used below.
+#if !BUILDFLAG(IS_CHROMEOS)
   MakePrimaryAccountAvailable();
 #else
   provider->OnPrimaryAccountChanged(signin::PrimaryAccountChangeEvent(
@@ -442,13 +584,13 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
           IdentityManager()->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin),
           signin::ConsentLevel::kSignin),
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
+      signin_metrics::AccessPoint::kUnknown));
 #endif
 
   // Verify that cooldown timers in the network context have been reset and
   // that we can now request tokens successfully.
   future.Clear();
-  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<BlindSignedAuthToken>& main_profile_third_attempt_result =
       future.Get<std::optional<BlindSignedAuthToken>>();
@@ -459,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
             main_profile_auth_token_getter_interceptor_->expiration());
 
   future.Clear();
-  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  incognito_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<BlindSignedAuthToken>&
       incognito_profile_third_attempt_result =
@@ -478,7 +620,7 @@ class IpProtectionCoreHostUserSettingBrowserTest
     : public IpProtectionCoreHostBrowserTest {
  public:
   IpProtectionCoreHostUserSettingBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
+    scoped_feature_list_.InitAndEnableFeature(privacy_sandbox::kIpProtectionUx);
   }
 
  private:
@@ -487,10 +629,11 @@ class IpProtectionCoreHostUserSettingBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
                        OnIpProtectionEnabledChanged) {
-  CreateIncognitoNetworkContextAndInterceptors();
-
-  IpProtectionCoreHost* provider = IpProtectionCoreHost::Get(GetProfile());
+  IpProtectionCoreHost* provider =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(provider);
+
+  CreateIncognitoNetworkContextAndInterceptors();
 
   // Simulate the user disabling the IP Protection setting.
   GetProfile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
@@ -518,9 +661,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
                          std::optional<base::Time>>
       incognito_profile_verification_future;
 
-  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       main_profile_verification_future.GetCallback());
-  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  incognito_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       incognito_profile_verification_future.GetCallback());
 
   const std::optional<base::Time>& main_profile_first_attempt_result =
@@ -556,9 +699,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
 
   // Verify that cooldown timers in the network context have been reset and
   // that we can now request tokens successfully.
-  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       main_profile_verification_future.GetCallback());
-  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+  incognito_profile_ipp_control_->VerifyIpProtectionCoreHostForTesting(
       incognito_profile_verification_future.GetCallback());
 
   const std::optional<BlindSignedAuthToken>&
@@ -588,8 +731,12 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
 
 class IpProtectionCoreHostPolicyBrowserTest : public policy::PolicyTest {
  public:
-  IpProtectionCoreHostPolicyBrowserTest()
-      : profile_selections_(
+  explicit IpProtectionCoreHostPolicyBrowserTest(
+      bool incognito_mode = false,
+      bool enterprise_killswitch_enabled = false)
+      : scoped_ip_protection_feature_list_(incognito_mode,
+                                           enterprise_killswitch_enabled),
+        profile_selections_(
             IpProtectionCoreHostFactory::GetInstance(),
             IpProtectionCoreHostFactory::CreateProfileSelectionsForTesting()) {}
 
@@ -601,7 +748,19 @@ class IpProtectionCoreHostPolicyBrowserTest : public policy::PolicyTest {
     provider_.UpdateChromePolicy(policies);
   }
 
-  void UnsetIpProtectionEnterprisePolicyValue() {
+  // Enable an unrelated policy (currently BuiltInDnsClientEnabled, chosen
+  // arbitrarily) that will cause the browser to be considered managed. Note
+  // that this method will unset any previously set IP Protection enterprise
+  // policy values when called.
+  void EnableUnrelatedPolicy() {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kBuiltInDnsClientEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+    provider_.UpdateChromePolicy(policies);
+  }
+
+  void UnsetPolicyValues() {
     policy::PolicyMap policies;
     provider_.UpdateChromePolicy(policies);
   }
@@ -616,8 +775,9 @@ class IpProtectionCoreHostPolicyBrowserTest : public policy::PolicyTest {
 
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
                        IpProtectionEnterprisePolicyDisableAndEnable) {
-  IpProtectionCoreHost* provider = IpProtectionCoreHost::Get(GetProfile());
-
+  IpProtectionCoreHost* provider =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(provider);
   ASSERT_TRUE(provider->IsIpProtectionEnabled());
 
   // Setting the enterprise policy value to "Disabled" should change the default
@@ -636,11 +796,83 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
 // reset to its initial state.
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
                        IpProtectionEnterprisePolicyUnsetAfterSet) {
-  IpProtectionCoreHost* provider = IpProtectionCoreHost::Get(GetProfile());
+  IpProtectionCoreHost* provider =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(provider);
+
+  // The initial state likely indicates that IP protection is enabled, unless
+  // the machine this test is running on is managed.
+  bool initial_state = provider->IsIpProtectionEnabled();
 
   UpdateIpProtectionEnterpisePolicyValue(/*enabled=*/false);
   EXPECT_FALSE(provider->IsIpProtectionEnabled());
 
-  UnsetIpProtectionEnterprisePolicyValue();
+  UnsetPolicyValues();
+  EXPECT_EQ(provider->IsIpProtectionEnabled(), initial_state);
+}
+
+IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
+                       NotDisabledForManagedBrowser) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS this is required for the unrelated policy enabled below to
+  // cause the profile `policy::ManagementService` to reflect that the profile
+  // is managed.
+  policy::ScopedManagementServiceOverrideForTesting browser_management{
+      policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
+#endif
+
+  IpProtectionCoreHost* provider =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(provider);
+  ASSERT_TRUE(provider->IsIpProtectionEnabled());
+
+  EnableUnrelatedPolicy();
+
+  EXPECT_TRUE(provider->IsIpProtectionEnabled());
+
+  UnsetPolicyValues();
+  EXPECT_TRUE(provider->IsIpProtectionEnabled());
+}
+
+class IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled
+    : public IpProtectionCoreHostPolicyBrowserTest {
+ public:
+  IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled()
+      : IpProtectionCoreHostPolicyBrowserTest(
+            /*incognito_mode=*/false,
+            /*enterprise_killswitch_enabled=*/true) {}
+};
+
+// With the killswitch, if the browser is considered managed and IP Protection
+// isn't enabled via enterprise policy, IP Protection should be disabled.
+IN_PROC_BROWSER_TEST_F(IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled,
+                       DisabledForManagedBrowser) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS this is required for the unrelated policy enabled below to
+  // cause the profile `policy::ManagementService` to reflect that the profile
+  // is managed.
+  policy::ScopedManagementServiceOverrideForTesting browser_management{
+      policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
+#endif
+
+  IpProtectionCoreHost* provider =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(provider);
+
+  // If this test is running on a device that is already managed, we expect IP
+  // Protection to be disabled. Verify this and then skip the rest of the test.
+  if (provider->ShouldDisableIpProtectionForEnterpriseForTesting()) {
+    EXPECT_FALSE(provider->IsIpProtectionEnabled());
+    return;
+  }
+  ASSERT_TRUE(provider->IsIpProtectionEnabled());
+
+  EnableUnrelatedPolicy();
+
+  EXPECT_FALSE(provider->IsIpProtectionEnabled());
+
+  UnsetPolicyValues();
   EXPECT_TRUE(provider->IsIpProtectionEnabled());
 }

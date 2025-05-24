@@ -6,8 +6,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -42,7 +42,7 @@
   ReauthenticationModule* _reauthenticationModule;
 
   // PersonalDataManager
-  autofill::PersonalDataManager* _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 }
 
 // The view controller presented above the keyboard where the user can select
@@ -92,9 +92,9 @@
     _cardMediator.consumer = _cardViewController;
 
     _cardRequester = [[ManualFillFullCardRequester alloc]
-        initWithBrowserState:super.browser->GetProfile()->GetOriginalProfile()
-                webStateList:super.browser->GetWebStateList()
-              resultDelegate:_cardMediator];
+        initWithProfile:super.browser->GetProfile()->GetOriginalProfile()
+           webStateList:super.browser->GetWebStateList()
+         resultDelegate:_cardMediator];
     _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                      ApplicationCommands);
   }
@@ -180,7 +180,7 @@
   [_dispatcher
       openURLInNewTab:[OpenNewTabCommand
                           commandWithURLFromChrome:url.gurl
-                                       inIncognito:self.browser->GetProfile()
+                                       inIncognito:self.profile
                                                        ->IsOffTheRecord()]];
 }
 

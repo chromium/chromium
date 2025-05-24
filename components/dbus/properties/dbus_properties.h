@@ -14,7 +14,7 @@
 #include "dbus/exported_object.h"
 
 // https://dbus.freedesktop.org/doc/dbus-specification.html#standard-interfaces-properties
-class COMPONENT_EXPORT(DBUS) DbusProperties {
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusProperties {
  public:
   using InitializedCallback = base::OnceCallback<void(bool success)>;
 
@@ -72,8 +72,7 @@ class COMPONENT_EXPORT(DBUS) DbusProperties {
 
   bool initialized_ = false;
 
-  raw_ptr<dbus::ExportedObject, AcrossTasksDanglingUntriaged> exported_object_ =
-      nullptr;
+  raw_ptr<dbus::ExportedObject> exported_object_ = nullptr;
 
   base::RepeatingCallback<void(bool)> barrier_;
 

@@ -37,6 +37,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_embedded_worker.h"
 #include "third_party/blink/public/web/web_embedded_worker_start_data.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -78,8 +79,11 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
       CrossVariantMojoRemote<mojom::blink::BrowserInterfaceBrokerInterfaceBase>
           browser_interface_broker,
       InterfaceRegistry* interface_registry,
-      scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner)
-      override;
+      scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
+      CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
+          coep_reporting_observer,
+      CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
+          dip_reporting_observer) override;
   void TerminateWorkerContext() override;
 
   void WaitForShutdownForTesting();
@@ -92,7 +96,11 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
       mojo::PendingRemote<mojom::blink::CacheStorage>,
       mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>,
       InterfaceRegistry* interface_registry,
-      scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
+      mojo::PendingReceiver<mojom::blink::ReportingObserver>
+          coep_reporting_observer,
+      mojo::PendingReceiver<mojom::blink::ReportingObserver>
+          dip_reporting_observer);
 
   // Creates a cross-thread copyable outside settings object for top-level
   // worker script fetch.

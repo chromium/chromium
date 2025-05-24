@@ -27,8 +27,8 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animator.h"
@@ -48,8 +48,7 @@ constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 class FocusModeTrayTest : public AshTestBase {
  public:
   FocusModeTrayTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        feature_list_(features::kFocusMode) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~FocusModeTrayTest() override = default;
 
   // AshTestBase:
@@ -140,7 +139,6 @@ class FocusModeTrayTest : public AshTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<FocusModeTray> focus_mode_tray_ = nullptr;
 };
 
@@ -287,8 +285,7 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
   EXPECT_TRUE(animator &&
               animator->IsAnimatingProperty(
                   ui::LayerAnimationElement::AnimatableProperty::BOUNDS));
-  // Layer top edge animates down.
-  EXPECT_GT(bubble_view_layer->bounds().y(), bubble_view->y());
+
   // `task_item_view` will be removed at the start of the animation.
   EXPECT_FALSE(GetTaskItemView());
 }
@@ -502,28 +499,76 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
                 time_remaining, base::UTF8ToUTF16(task_name)),
             focus_mode_tray_->GetAccessibleNameForBubble());
 
+  {
+    ui::AXNodeData node_data;
+    GetBubbleView()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              focus_mode_tray_->GetAccessibleNameForBubble());
+  }
+
+  {
+    ui::AXNodeData node_data;
+    focus_mode_tray_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
+                  time_remaining));
+  }
+
+  {
+    ui::AXNodeData node_data;
+    focus_mode_tray_->image_view()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
+                  time_remaining));
+  }
+
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
   views::FocusManager* focus_manager =
       GetBubbleView()->GetWidget()->GetFocusManager();
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME),
-      focus_manager->GetFocusedView()->GetViewAccessibility().GetCachedName());
+
+  {
+    ui::AXNodeData node_data;
+    focus_manager->GetFocusedView()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME),
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  }
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME),
-      focus_manager->GetFocusedView()->GetViewAccessibility().GetCachedName());
+
+  {
+    ui::AXNodeData node_data;
+    focus_manager->GetFocusedView()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME),
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  }
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
-  views::ViewAccessibility& focused_view_a11y =
-      focus_manager->GetFocusedView()->GetViewAccessibility();
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON),
-            focused_view_a11y.GetCachedName());
-  EXPECT_EQ(base::UTF8ToUTF16(task_name),
-            focused_view_a11y.GetCachedDescription());
+
+  {
+    ui::AXNodeData node_data;
+    focus_manager->GetFocusedView()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON),
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+    EXPECT_EQ(base::UTF8ToUTF16(task_name),
+              node_data.GetString16Attribute(
+                  ax::mojom::StringAttribute::kDescription));
+  }
 }
 
 // Tests basic ending moment functionality. If the time expires for the ending

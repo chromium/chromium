@@ -18,7 +18,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -47,7 +47,7 @@ TEST_F(V4StorePerftest, StressTest) {
   const size_t kNumPrefixes = 20000;
 #endif
 
-  static_assert(kMaxHashPrefixLength == crypto::kSHA256Length,
+  static_assert(kMaxHashPrefixLength == crypto::hash::kSha256Size,
                 "SHA256 produces a valid FullHashStr");
   CHECK(base::IsValidForType<size_t>(
       base::CheckMul(kNumPrefixes, kMaxHashPrefixLength)));
@@ -57,10 +57,13 @@ TEST_F(V4StorePerftest, StressTest) {
   std::string full_hashes(kNumPrefixes * kMaxHashPrefixLength, 0);
   std::string_view full_hashes_piece = std::string_view(full_hashes);
   std::vector<std::string> prefixes;
+  prefixes.reserve(kNumPrefixes);
   for (size_t i = 0; i < kNumPrefixes; i++) {
     size_t index = i * kMaxHashPrefixLength;
-    crypto::SHA256HashString(base::StringPrintf("%zu", i), &full_hashes[index],
-                             kMaxHashPrefixLength);
+    auto result_buffer = base::as_writable_byte_span(full_hashes)
+                             .subspan(index, kMaxHashPrefixLength);
+    crypto::hash::Hash(crypto::hash::HashKind::kSha256,
+                       base::byte_span_from_ref(i), result_buffer);
     prefixes.push_back(full_hashes.substr(index, kMinHashPrefixLength));
   }
 

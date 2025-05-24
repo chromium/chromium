@@ -61,6 +61,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/segmentation_platform/embedder/home_modules:unit_tests",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:unit_tests",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",

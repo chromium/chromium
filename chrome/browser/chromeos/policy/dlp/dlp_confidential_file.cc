@@ -27,10 +27,6 @@ bool DlpConfidentialFile::operator==(const DlpConfidentialFile& other) const {
   return file_path == other.file_path;
 }
 
-bool DlpConfidentialFile::operator!=(const DlpConfidentialFile& other) const {
-  return !(*this == other);
-}
-
 bool DlpConfidentialFile::operator<(const DlpConfidentialFile& other) const {
   return file_path < other.file_path;
 }

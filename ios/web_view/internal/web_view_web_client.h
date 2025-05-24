@@ -46,6 +46,8 @@ class WebViewWebClient : public web::WebClient {
   bool EnableWebInspector(web::BrowserState* browser_state) const override;
   bool IsInsecureFormWarningEnabled(
       web::BrowserState* browser_state) const override;
+  void BuildEditMenu(web::WebState* web_state,
+                     id<UIMenuBuilder>) const override;
 };
 
 }  // namespace ios_web_view

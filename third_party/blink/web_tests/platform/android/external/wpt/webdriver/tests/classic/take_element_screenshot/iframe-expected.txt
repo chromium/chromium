@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_frame_element
+  assert (100, 100) == (300, 300)
+[FAIL] test_source_origin[same_origin]
+  assert (200, 200) == (600, 600)
+[FAIL] test_source_origin[cross_origin]
+  assert (200, 200) == (600, 600)
+Harness: the test ran to completion.
+

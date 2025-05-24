@@ -121,9 +121,9 @@ std::unique_ptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
       return std::make_unique<AudioTrackMojoEncoder>(
           encoder_task_runner, codec, std::move(on_encoded_audio_cb),
           std::move(on_encoded_audio_error_cb), bits_per_second);
+#else
+      NOTREACHED() << "AAC encoder is not supported.";
 #endif
-      NOTREACHED_IN_MIGRATION() << "AAC encoder is not supported.";
-      return nullptr;
     case CodecId::kOpus:
     default:
       return std::make_unique<AudioTrackOpusEncoder>(

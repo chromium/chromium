@@ -4,16 +4,18 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, AppManagementSupportedLinksItemElement, CrRadioButtonElement, CrRadioGroupElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {App, AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
+import type {AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://os-settings/lazy_load.js';
+import type {AppManagementSupportedLinksItemElement, CrRadioButtonElement, CrRadioGroupElement} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {createApp, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 import {clearBody} from '../../utils.js';
 

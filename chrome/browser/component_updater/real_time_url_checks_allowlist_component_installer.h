@@ -32,7 +32,6 @@ class RealTimeUrlChecksAllowlistComponentInstallerPolicy
       const RealTimeUrlChecksAllowlistComponentInstallerPolicy&) = delete;
   RealTimeUrlChecksAllowlistComponentInstallerPolicy& operator=(
       const RealTimeUrlChecksAllowlistComponentInstallerPolicy&) = delete;
-  ~RealTimeUrlChecksAllowlistComponentInstallerPolicy() override = default;
 
  private:
   friend class RealTimeUrlChecksAllowlistComponentInstallerTest;

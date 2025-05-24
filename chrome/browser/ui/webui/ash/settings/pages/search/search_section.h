@@ -51,6 +51,7 @@ class SearchSection : public OsSettingsSection,
   // QuickAnswersStateObserver:
   void OnSettingsEnabled(bool enabled) override;
   void OnEligibilityChanged(bool eligible) override;
+  void OnFeatureTypeChanged() override;
 
   // chromeos::MagicBoostState::Observer:
   void OnMagicBoostEnabledUpdated(bool enabled) override;
@@ -59,7 +60,10 @@ class SearchSection : public OsSettingsSection,
   bool IsAssistantAllowed() const;
   void UpdateAssistantSearchTags();
   void UpdateQuickAnswersSearchTags();
-  void UpdateSubMagicBoostSearchTags();
+  // Add or remove magic boost search tags based on `is_magic_boost_available`.
+  // If available, also add / remove the sub search tags based on the magic
+  // boost prefs status.
+  void UpdateMagicBoostSearchTags(bool is_magic_boost_available);
 
   base::ScopedObservation<chromeos::MagicBoostState,
                           chromeos::MagicBoostState::Observer>

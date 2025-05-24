@@ -11,7 +11,7 @@ class AvatarMenu;
 // AvatarMenu changes.
 class AvatarMenuObserver {
  public:
-  virtual ~AvatarMenuObserver() {}
+  virtual ~AvatarMenuObserver() = default;
 
   virtual void OnAvatarMenuChanged(AvatarMenu* avatar_menu) = 0;
 };

@@ -49,7 +49,7 @@ TestBrowserWindowAura::TestBrowserWindowAura(
     std::unique_ptr<aura::Window> native_window)
     : native_window_(std::move(native_window)) {}
 
-TestBrowserWindowAura::~TestBrowserWindowAura() {}
+TestBrowserWindowAura::~TestBrowserWindowAura() = default;
 
 gfx::NativeWindow TestBrowserWindowAura::GetNativeWindow() const {
   return native_window_.get();
@@ -103,7 +103,7 @@ TestBrowserWindowViews::TestBrowserWindowViews(aura::Window* parent)
   widget_->Init(std::move(params));
 }
 
-TestBrowserWindowViews::~TestBrowserWindowViews() {}
+TestBrowserWindowViews::~TestBrowserWindowViews() = default;
 
 gfx::NativeWindow TestBrowserWindowViews::GetNativeWindow() const {
   return widget_->GetNativeWindow();

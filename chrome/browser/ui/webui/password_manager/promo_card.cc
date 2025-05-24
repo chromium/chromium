@@ -34,7 +34,6 @@ constexpr char kLastTimeShownKey[] = "last_time_shown";
 constexpr char kNumberOfTimesShownKey[] = "number_of_times_shown";
 constexpr char kWasDismissedKey[] = "was_dismissed";
 
-
 // Creates new pref entry for the promo card with a given id.
 base::Value::Dict CreatePromoCardPrefEntry(const std::string& id) {
   base::Value::Dict promo_card_pref_entry;

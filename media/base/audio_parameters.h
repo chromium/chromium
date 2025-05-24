@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
@@ -46,7 +47,10 @@ struct MEDIA_SHMEM_EXPORT alignas(kParametersAlignment)
   uint32_t glitch_count;
   uint32_t size;
   uint32_t id;
-  bool key_pressed;
+  // Intentionally using deprecated Atomic32 instead of std::atomic to keep the
+  // struct as a trivial type.
+  // TODO(https://crbug.com/40259737): Switch to atomic_ref once it's available.
+  base::subtle::Atomic32 has_unread_data;
 };
 struct MEDIA_SHMEM_EXPORT alignas(kParametersAlignment)
     AudioOutputBufferParameters {
@@ -188,6 +192,8 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
 
   // Bitmasks to determine whether certain platform (typically hardware) audio
   // effects should be enabled.
+  // Ensure that EffectsMaskToString() is updated to match the content of this
+  // enumerator when it is updated.
   enum PlatformEffectsMask {
     NO_EFFECTS = 0x0,
     ECHO_CANCELLER = 1 << 0,
@@ -196,9 +202,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     HOTWORD = 1 << 3,
     NOISE_SUPPRESSION = 1 << 4,
     AUTOMATIC_GAIN_CONTROL = 1 << 5,
-    EXPERIMENTAL_ECHO_CANCELLER = 1 << 6,  // Indicates an echo canceller is
-                                           // available that should only
-                                           // experimentally be enabled.
+    // EXPERIMENTAL_ECHO_CANCELLER used to hold 1 << 6, but has been deprecated.
     MULTIZONE = 1 << 7,
     AUDIO_PREFETCH = 1 << 8,
     ALLOW_DSP_ECHO_CANCELLER = 1 << 9,
@@ -223,6 +227,8 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     VOICE_ISOLATION = 1 << 20,  // Enable/Disable platform voice isolation.
                                 // Only meaningful when
                                 // CLIENT_CONTROLLED_VOICE_ISOLATION is set.
+
+    DEEP_NOISE_SUPPRESSION = 1 << 21,  // Also called Voice Focus on Windows.
   };
 
   struct HardwareCapabilities {
@@ -262,6 +268,10 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     // Require audio processing offload.
     bool require_audio_offload = false;
   };
+
+  // Returns a string which contains the full bitmask for the given `mask`.
+  // Example: mask=3 => returns "ECHO_CANCELLER | DUCKING".
+  static std::string EffectsMaskToString(int mask);
 
   AudioParameters();
 

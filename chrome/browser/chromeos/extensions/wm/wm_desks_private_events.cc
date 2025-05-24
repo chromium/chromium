@@ -8,7 +8,6 @@
 #include "base/lazy_instance.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -110,18 +109,6 @@ void WMDesksPrivateEventsAPI::OnListenerAdded(
     const EventListenerInfo& details) {
   if (!desk_events_router_ && HasDeskEventsListener()) {
     desk_events_router_ = std::make_unique<WMDesksEventsRouter>(profile_);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Only register once
-    chromeos::LacrosService* service = chromeos::LacrosService::Get();
-    if (!service->IsAvailable<crosapi::mojom::Desk>() ||
-        service->GetInterfaceVersion<crosapi::mojom::Desk>() <
-            static_cast<int>(crosapi::mojom::Desk::MethodMinVersions::
-                                 kAddDeskEventObserverMinVersion)) {
-      return;
-    }
-    service->GetRemote<crosapi::mojom::Desk>()->AddDeskEventObserver(
-        desk_events_router_->BindDeskClient());
-#endif
   }
 }
 

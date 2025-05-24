@@ -61,7 +61,12 @@ class COMPONENT_EXPORT(ASH_DBUS_SMBPROVIDER) FakeSmbProviderClient
   // Runs |stored_callback_|.
   void RunStoredReadDirCallback();
 
+  // Changes the flag when smbproviderd stops.
+  void OnStopJobCalled();
+
  private:
+  void CheckDbusMethodsNotCalledAfterStopJob();
+
   // Result of a GetShares() call.
   struct ShareResult {
     ShareResult();
@@ -70,6 +75,10 @@ class COMPONENT_EXPORT(ASH_DBUS_SMBPROVIDER) FakeSmbProviderClient
     smbprovider::ErrorType error = smbprovider::ErrorType::ERROR_OK;
     std::vector<std::string> shares;
   };
+
+  // Used to ensure that no D-Bus methods are called after `StopJob()` is
+  // called.
+  bool stop_job_called_ = false;
 
   // Controls whether |stored_readdir_callback_| should run synchronously.
   bool should_run_synchronously_ = true;

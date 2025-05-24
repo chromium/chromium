@@ -40,6 +40,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -191,10 +192,13 @@ class PromiseIconBackground : public views::Background {
   PromiseIconBackground(ui::ColorId color_id,
                         const gfx::Rect& icon_bounds,
                         const gfx::Insets& insets)
-      : color_id_(color_id), icon_bounds_(icon_bounds), insets_(insets) {}
+      : icon_bounds_(icon_bounds), insets_(insets) {
+    SetColor(color_id);
+  }
 
   PromiseIconBackground(const PromiseIconBackground&) = delete;
   PromiseIconBackground& operator=(const PromiseIconBackground&) = delete;
+
   ~PromiseIconBackground() override = default;
 
   // views::Background:
@@ -207,18 +211,16 @@ class PromiseIconBackground : public views::Background {
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(get_color());
+    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
 
     canvas->DrawCircle(bounds.CenterPoint(), radius, flags);
   }
 
   void OnViewThemeChanged(views::View* view) override {
-    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
     view->SchedulePaint();
   }
 
  private:
-  const ui::ColorId color_id_;
   const gfx::Rect icon_bounds_;
   const gfx::Insets insets_;
 };
@@ -472,7 +474,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   indicator_->SetPaintToLayer();
   indicator_->layer()->SetFillsBoundsOpaquely(false);
 
-  AddChildView(indicator_.get());
+  AddChildViewRaw(indicator_.get());
 
   notification_indicator_ =
       AddChildView(std::make_unique<DotIndicator>(kDefaultIndicatorColor));
@@ -492,6 +494,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
           gfx::Insets::VH(views::FocusRing::kDefaultHaloThickness / 2, 0), 0));
 
   UpdateAccessibleDescription();
+  UpdateAccessibleName();
 }
 
 ShelfAppButton::~ShelfAppButton() {
@@ -499,13 +502,15 @@ ShelfAppButton::~ShelfAppButton() {
 }
 
 void ShelfAppButton::SetShadowedImage(const gfx::ImageSkia& image) {
-  icon_view_->SetImage(gfx::ImageSkiaOperations::CreateImageWithDropShadow(
-      image, icon_shadows_));
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateImageWithDropShadow(image,
+                                                          icon_shadows_)));
 }
 
 void ShelfAppButton::UpdateMainAndMaybeHostBadgeIconImage() {
   if (is_promise_app_ || progress_indicator_ || has_host_badge_) {
-    icon_view_->SetImage(GetIconImage(icon_scale_));
+    icon_view_->SetImage(
+        ui::ImageModel::FromImageSkia(GetIconImage(icon_scale_)));
     return;
   }
 
@@ -677,7 +682,7 @@ void ShelfAppButton::OnMenuClosed() {
 }
 
 void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
-                                     ui::MenuSourceType source_type) {
+                                     ui::mojom::MenuSourceType source_type) {
   // Return early if:
   // 1. the context menu controller is not set; or
   // 2. `context_menu_target_visibility_` is already true.
@@ -700,14 +705,6 @@ void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
     else
       ClearState(STATE_HOVERED);
   }
-}
-
-void ShelfAppButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  ShelfButton::GetAccessibleNodeData(node_data);
-  const std::u16string accessible_name = GetViewAccessibility().GetCachedName();
-  node_data->SetName(!accessible_name.empty()
-                         ? accessible_name
-                         : shelf_view_->GetTitleForView(this));
 }
 
 bool ShelfAppButton::ShouldEnterPushedState(const ui::Event& event) {
@@ -906,9 +903,13 @@ void ShelfAppButton::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void ShelfAppButton::OnMouseCaptureLost() {
+  drag_timer_.Stop();
+
+  ClearState(STATE_DRAGGING);
   ClearState(STATE_HOVERED);
-  shelf_view_->PointerReleasedOnButton(this, ShelfView::MOUSE, true);
   ShelfButton::OnMouseCaptureLost();
+
+  shelf_view_->PointerReleasedOnButton(this, ShelfView::MOUSE, true);
 }
 
 bool ShelfAppButton::OnMouseDragged(const ui::MouseEvent& event) {
@@ -1200,6 +1201,7 @@ void ShelfAppButton::UpdateState() {
   icon_view_->SetVerticalAlignment(is_horizontal_shelf
                                        ? views::ImageView::Alignment::kLeading
                                        : views::ImageView::Alignment::kCenter);
+  UpdateAccessibleName();
   SchedulePaint();
 }
 
@@ -1454,6 +1456,23 @@ void ShelfAppButton::UpdateAccessibleDescription() {
     default:
       GetViewAccessibility().RemoveDescription();
       break;
+  }
+}
+
+void ShelfAppButton::UpdateAccessibleName() {
+  std::u16string accessible_name = GetViewAccessibility().GetCachedName();
+
+  if (!accessible_name.empty()) {
+    GetViewAccessibility().SetName(accessible_name);
+  } else {
+    accessible_name = shelf_view_->GetTitleForView(this);
+
+    if (!accessible_name.empty()) {
+      GetViewAccessibility().SetName(accessible_name);
+    } else {
+      GetViewAccessibility().SetName(
+          std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    }
   }
 }
 

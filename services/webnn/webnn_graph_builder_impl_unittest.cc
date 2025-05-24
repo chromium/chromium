@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
@@ -15,30 +16,32 @@
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
 
 namespace {
 
-mojom::GraphInfoPtr BuildSimpleGraphInfo() {
+mojom::GraphInfoPtr BuildSimpleGraphInfo(
+    mojo::AssociatedRemote<mojom::WebNNGraphBuilder>& graph_builder_remote) {
   // Build a simple graph.
-  GraphInfoBuilder builder;
-  uint64_t input_operand_id = builder.BuildInput("input", /*dimensions=*/{2, 3},
-                                                 OperandDataType::kFloat32);
-  uint64_t output_operand_id = builder.BuildOutput(
+  GraphInfoBuilder builder(graph_builder_remote);
+  OperandId input_operand_id = builder.BuildInput(
+      "input", /*dimensions=*/{2, 3}, OperandDataType::kFloat32);
+  OperandId output_operand_id = builder.BuildOutput(
       "output", /*dimensions=*/{2, 3}, OperandDataType::kFloat32);
   builder.BuildClamp(input_operand_id, output_operand_id, /*min_value=*/0.0,
                      /*max_value=*/1.0);
-  EXPECT_TRUE(WebNNGraphBuilderImpl::IsValidForTesting(
-      GetContextPropertiesForTesting(), builder.GetGraphInfo()));
-
   return builder.TakeGraphInfo();
 }
 
@@ -46,21 +49,20 @@ mojom::GraphInfoPtr BuildSimpleGraphInfo() {
 // computing graph message.
 class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
-  FakeWebNNGraphImpl(WebNNContextImpl* context,
-                     ComputeResourceInfo compute_resource_info)
-      : WebNNGraphImpl(context, std::move(compute_resource_info)) {}
+  FakeWebNNGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      WebNNContextImpl* context,
+      ComputeResourceInfo compute_resource_info)
+      : WebNNGraphImpl(std::move(receiver),
+                       context,
+                       std::move(compute_resource_info),
+                       /*devices=*/{}) {}
   ~FakeWebNNGraphImpl() override = default;
 
  private:
-  void ComputeImpl(base::flat_map<std::string, mojo_base::BigBuffer> inputs,
-                   mojom::WebNNGraph::ComputeCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
   void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)
-      override {
+      base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
+      base::flat_map<std::string, WebNNTensorImpl*> named_outputs) override {
     NOTIMPLEMENTED();
   }
 };
@@ -85,25 +87,30 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
 
  private:
   void CreateGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
       /*constant_operands*/,
+      base::flat_map<OperandId, WebNNTensorImpl*>
+      /*constant_tensor_operands*/,
       CreateGraphImplCallback callback) override {
     // Asynchronously resolve `callback` so there's an opportunity for
     // subsequent messages to be (illegally) sent from the `WebNNGraphBuilder`
     // remote before it's disconnected.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    scheduler_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](base::WeakPtr<WebNNContextImpl> context,
+            [](mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+               base::WeakPtr<WebNNContextImpl> context,
                WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
                CreateGraphImplCallback callback) {
               CHECK(context);
               std::move(callback).Run(std::make_unique<FakeWebNNGraphImpl>(
-                  context.get(), std::move(compute_resource_info)));
+                  std::move(receiver), context.get(),
+                  std::move(compute_resource_info)));
             },
-            AsWeakPtr(), std::move(compute_resource_info),
+            std::move(receiver), AsWeakPtr(), std::move(compute_resource_info),
             std::move(callback)));
   }
 
@@ -195,11 +202,15 @@ class WebNNGraphBuilderImplTest : public testing::Test {
 TEST_F(WebNNGraphBuilderImplTest, CreateGraph) {
   EXPECT_TRUE(graph_builder_remote().is_connected());
 
-  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
-  graph_builder_remote()->CreateGraph(BuildSimpleGraphInfo(),
+  mojom::GraphInfoPtr graph_info = BuildSimpleGraphInfo(graph_builder_remote());
+
+  base::test::TestFuture<
+      base::expected<mojom::CreateGraphSuccessPtr, mojom::ErrorPtr>>
+      create_graph_future;
+  graph_builder_remote()->CreateGraph(std::move(graph_info),
                                       create_graph_future.GetCallback());
-  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
-  EXPECT_TRUE(create_graph_result->is_graph_remote());
+  auto create_graph_result = create_graph_future.Take();
+  EXPECT_TRUE(create_graph_result.has_value());
 
   // The remote should disconnect shortly after the future resolves since the
   // `WebNNGraphBuilder` is destroyed shortly after firing its `CreateGraph()`
@@ -209,17 +220,120 @@ TEST_F(WebNNGraphBuilderImplTest, CreateGraph) {
 }
 
 TEST_F(WebNNGraphBuilderImplTest, CreateGraphTwice) {
-  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
-  graph_builder_remote()->CreateGraph(BuildSimpleGraphInfo(),
+  mojom::GraphInfoPtr graph_info = BuildSimpleGraphInfo(graph_builder_remote());
+
+  base::test::TestFuture<
+      base::expected<mojom::CreateGraphSuccessPtr, mojom::ErrorPtr>>
+      create_graph_future;
+  graph_builder_remote()->CreateGraph(CloneGraphInfoForTesting(*graph_info),
                                       create_graph_future.GetCallback());
 
   // Don't wait for `create_graph_future` to resolve.
 
   mojo::test::BadMessageObserver bad_message_observer;
-  graph_builder_remote()->CreateGraph(BuildSimpleGraphInfo(),
-                                      base::DoNothing());
+  graph_builder_remote()->CreateGraph(std::move(graph_info), base::DoNothing());
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             kBadMessageOnBuiltGraphBuilder);
+}
+
+TEST_F(WebNNGraphBuilderImplTest, CreateGraphWithConstant) {
+  const std::array<float, 6> kConstantData{3.0, 4.0, 5.0, 6.0, 7.0, 8.0};
+
+  GraphInfoBuilder builder(graph_builder_remote());
+  OperandId constant_operand_id = builder.BuildConstant(
+      /*dimensions=*/{2, 3}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, kConstantData));
+  OperandId output_operand_id = builder.BuildOutput(
+      "output", /*dimensions=*/{2, 3}, OperandDataType::kFloat32);
+  builder.BuildClamp(constant_operand_id, output_operand_id, /*min_value=*/5.0,
+                     /*max_value=*/7.0);
+  EXPECT_TRUE(builder.IsValidGraphForTesting(GetContextPropertiesForTesting()));
+
+  base::test::TestFuture<
+      base::expected<mojom::CreateGraphSuccessPtr, mojom::ErrorPtr>>
+      create_graph_future;
+  graph_builder_remote()->CreateGraph(builder.TakeGraphInfo(),
+                                      create_graph_future.GetCallback());
+  auto create_graph_result = create_graph_future.Take();
+  EXPECT_TRUE(create_graph_result.has_value());
+}
+
+TEST_F(WebNNGraphBuilderImplTest, CreatePendingConstantOnBuiltGraph) {
+  mojom::GraphInfoPtr graph_info = BuildSimpleGraphInfo(graph_builder_remote());
+
+  base::test::TestFuture<
+      base::expected<mojom::CreateGraphSuccessPtr, mojom::ErrorPtr>>
+      create_graph_future;
+  graph_builder_remote()->CreateGraph(CloneGraphInfoForTesting(*graph_info),
+                                      create_graph_future.GetCallback());
+
+  // Don't wait for `create_graph_future` to resolve.
+
+  const std::array<float, 6> kConstantData{3.0, 4.0, 5.0, 6.0, 7.0, 8.0};
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  graph_builder_remote()->CreatePendingConstant(
+      blink::WebNNPendingConstantToken(), OperandDataType::kFloat32,
+      mojo_base::BigBuffer(
+          base::as_byte_span(base::allow_nonunique_obj, kConstantData)));
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            kBadMessageOnBuiltGraphBuilder);
+}
+
+TEST_F(WebNNGraphBuilderImplTest, CreateInvalidPendingConstantDuplicate) {
+  const std::array<float, 6> kConstantData{3.0, 4.0, 5.0, 6.0, 7.0, 8.0};
+
+  blink::WebNNPendingConstantToken token;
+
+  graph_builder_remote()->CreatePendingConstant(
+      token, OperandDataType::kFloat32,
+      mojo_base::BigBuffer(
+          base::as_byte_span(base::allow_nonunique_obj, kConstantData)));
+
+  // Create another pending constant with the same token.
+  mojo::test::BadMessageObserver bad_message_observer;
+  graph_builder_remote()->CreatePendingConstant(
+      token, OperandDataType::kFloat32,
+      mojo_base::BigBuffer(
+          base::as_byte_span(base::allow_nonunique_obj, kConstantData)));
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            kBadMessageInvalidPendingConstant);
+}
+
+TEST_F(WebNNGraphBuilderImplTest, CreateInvalidPendingConstantEmpty) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  graph_builder_remote()->CreatePendingConstant(
+      blink::WebNNPendingConstantToken(), OperandDataType::kFloat32,
+      // Data buffer cannot be empty.
+      mojo_base::BigBuffer(0));
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            kBadMessageInvalidPendingConstant);
+}
+
+TEST_F(WebNNGraphBuilderImplTest, CreateInvalidPendingConstantBadType) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  graph_builder_remote()->CreatePendingConstant(
+      blink::WebNNPendingConstantToken(), OperandDataType::kFloat32,
+      // The size of the data buffer must be a multiple of the 4 since the data
+      // type has 4-byte elements.
+      mojo_base::BigBuffer(6));
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            kBadMessageInvalidPendingConstant);
+}
+
+TEST_F(WebNNGraphBuilderImplTest, CreateInvalidGraphForTensorByteLengthLimit) {
+  const std::vector<uint32_t> large_tensor_shape = {
+      base::checked_cast<uint32_t>(std::numeric_limits<int32_t>::max() / 4), 2};
+
+  GraphInfoBuilder builder(graph_builder_remote());
+  OperandId input_operand_id = builder.BuildInput("input", large_tensor_shape,
+                                                  OperandDataType::kFloat32);
+  OperandId output_operand_id = builder.BuildOutput(
+      "output", large_tensor_shape, OperandDataType::kFloat32);
+  builder.BuildClamp(input_operand_id, output_operand_id, /*min_value=*/0.0,
+                     /*max_value=*/1.0);
+  EXPECT_FALSE(
+      builder.IsValidGraphForTesting(GetContextPropertiesForTesting()));
 }
 
 }  // namespace webnn

@@ -30,21 +30,21 @@ class MODULES_EXPORT ExtendableMessageEvent final : public ExtendableEvent {
   static ExtendableMessageEvent* Create(
       scoped_refptr<SerializedScriptValue> data,
       const String& origin,
-      MessagePortArray* ports,
+      GCedMessagePortArray* ports,
       ServiceWorkerClient* source,
       WaitUntilObserver*);
   static ExtendableMessageEvent* Create(
       scoped_refptr<SerializedScriptValue> data,
       const String& origin,
-      MessagePortArray* ports,
+      GCedMessagePortArray* ports,
       ServiceWorker* source,
       WaitUntilObserver*);
   static ExtendableMessageEvent* CreateError(const String& origin,
-                                             MessagePortArray* ports,
+                                             GCedMessagePortArray* ports,
                                              ServiceWorkerClient* source,
                                              WaitUntilObserver*);
   static ExtendableMessageEvent* CreateError(const String& origin,
-                                             MessagePortArray* ports,
+                                             GCedMessagePortArray* ports,
                                              ServiceWorker* source,
                                              WaitUntilObserver*);
 
@@ -55,11 +55,11 @@ class MODULES_EXPORT ExtendableMessageEvent final : public ExtendableEvent {
                          WaitUntilObserver*);
   ExtendableMessageEvent(scoped_refptr<SerializedScriptValue> data,
                          const String& origin,
-                         MessagePortArray* ports,
+                         GCedMessagePortArray* ports,
                          WaitUntilObserver*);
   // Creates a 'messageerror' event.
   ExtendableMessageEvent(const String& origin,
-                         MessagePortArray* ports,
+                         GCedMessagePortArray* ports,
                          WaitUntilObserver*);
 
   SerializedScriptValue* SerializedData() const {
@@ -88,7 +88,7 @@ class MODULES_EXPORT ExtendableMessageEvent final : public ExtendableEvent {
   Member<ServiceWorkerClient> source_as_client_;
   Member<ServiceWorker> source_as_service_worker_;
   Member<MessagePort> source_as_message_port_;
-  Member<MessagePortArray> ports_;
+  Member<GCedMessagePortArray> ports_;
 };
 
 }  // namespace blink

@@ -17,13 +17,10 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/common/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
-#include "third_party/blink/renderer/platform/scheduler/common/metrics_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
@@ -87,13 +84,6 @@ std::optional<base::TimeDelta> GetMaxThrottlingDelay() {
   return base::Milliseconds(max_throttling_delay_ms);
 }
 
-std::unique_ptr<ukm::MojoUkmRecorder> CreateMojoUkmRecorder() {
-  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      factory.BindNewPipeAndPassReceiver());
-  return ukm::MojoUkmRecorder::Create(*factory);
-}
-
 }  // namespace
 
 WorkerThreadScheduler::WorkerThreadScheduler(
@@ -111,10 +101,7 @@ WorkerThreadScheduler::WorkerThreadScheduler(
                    base::Milliseconds(300),
                    idle_helper_queue_->GetTaskQueue()),
       lifecycle_state_(proxy ? proxy->lifecycle_state()
-                             : SchedulingLifecycleState::kNotThrottled),
-      initial_frame_status_(proxy ? proxy->initial_frame_status()
-                                  : FrameStatus::kNone),
-      ukm_source_id_(proxy ? proxy->ukm_source_id() : ukm::kInvalidSourceId) {
+                             : SchedulingLifecycleState::kNotThrottled) {
   if (thread_type == ThreadType::kDedicatedWorkerThread &&
       base::FeatureList::IsEnabled(kDedicatedWorkerThrottling)) {
     CreateBudgetPools();
@@ -206,10 +193,9 @@ void WorkerThreadScheduler::OnTaskCompleted(
   task_timing->RecordTaskEnd(lazy_now);
   DispatchOnTaskCompletionCallbacks();
 
-  if (task_queue != nullptr)
+  if (task_queue) {
     task_queue->OnTaskRunTimeReported(task_timing);
-
-  RecordTaskUkm(task_queue, task, *task_timing);
+  }
 }
 
 SchedulerHelper* WorkerThreadScheduler::GetSchedulerHelperForTesting() {
@@ -223,7 +209,7 @@ bool WorkerThreadScheduler::CanEnterLongIdlePeriod(base::TimeTicks,
 
 base::TimeTicks WorkerThreadScheduler::CurrentIdleTaskDeadlineForTesting()
     const {
-  return idle_helper_.CurrentIdleTaskDeadline();
+  return idle_helper_.CurrentIdleTaskDeadlineForTesting();
 }
 
 void WorkerThreadScheduler::OnLifecycleStateChanged(
@@ -268,42 +254,6 @@ void WorkerThreadScheduler::CreateBudgetPools() {
   cpu_time_budget_pool_->SetMaxThrottlingDelay(now, GetMaxThrottlingDelay());
 }
 
-void WorkerThreadScheduler::RecordTaskUkm(
-    NonMainThreadTaskQueue* worker_task_queue,
-    const base::sequence_manager::Task& task,
-    const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  if (!GetHelper().ShouldRecordTaskUkm(task_timing.has_thread_time()))
-    return;
-
-  if (!ukm_recorder_)
-    ukm_recorder_ = CreateMojoUkmRecorder();
-
-  ukm::builders::RendererSchedulerTask builder(ukm_source_id_);
-
-  builder.SetVersion(kUkmMetricVersion);
-  builder.SetThreadType(static_cast<int>(thread_type_));
-
-  builder.SetRendererBackgrounded(
-      internal::ProcessState::Get()->is_process_backgrounded);
-  builder.SetTaskType(task.task_type);
-  builder.SetFrameStatus(static_cast<int>(initial_frame_status_));
-  builder.SetTaskDuration(task_timing.wall_duration().InMicroseconds());
-
-  if (task_timing.has_thread_time())
-    builder.SetTaskCPUDuration(task_timing.thread_duration().InMicroseconds());
-
-  builder.Record(ukm_recorder_.get());
-}
-
-void WorkerThreadScheduler::SetUkmRecorderForTest(
-    std::unique_ptr<ukm::UkmRecorder> ukm_recorder) {
-  ukm_recorder_ = std::move(ukm_recorder);
-}
-
-void WorkerThreadScheduler::SetUkmTaskSamplingRateForTest(double rate) {
-  GetHelper().SetUkmTaskSamplingRateForTest(rate);
-}
-
 void WorkerThreadScheduler::SetCPUTimeBudgetPoolForTesting(
     std::unique_ptr<CPUTimeBudgetPool> cpu_time_budget_pool) {
   cpu_time_budget_pool_ = std::move(cpu_time_budget_pool);
@@ -345,10 +295,8 @@ void WorkerThreadScheduler::PostIdleTask(const base::Location& location,
   IdleTaskRunner()->PostIdleTask(location, std::move(task));
 }
 
-void WorkerThreadScheduler::PostNonNestableIdleTask(
-    const base::Location& location,
-    Thread::IdleTask task) {
-  IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
+void WorkerThreadScheduler::RemoveCancelledIdleTasks() {
+  idle_helper_.RemoveCancelledIdleTasks();
 }
 
 void WorkerThreadScheduler::PostDelayedIdleTask(const base::Location& location,

@@ -12,8 +12,8 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
 
 class ExtensionShelfContextMenuBrowserTest
@@ -23,12 +23,13 @@ class ExtensionShelfContextMenuBrowserTest
   ~ExtensionShelfContextMenuBrowserTest() override = default;
 
   const gfx::VectorIcon& GetExpectedLaunchNewIcon(int command_id) {
-    if (command_id == ash::USE_LAUNCH_TYPE_REGULAR)
+    if (command_id == ash::USE_LAUNCH_TYPE_REGULAR) {
       return views::kNewTabIcon;
-    else if (command_id == ash::USE_LAUNCH_TYPE_WINDOW)
+    } else if (command_id == ash::USE_LAUNCH_TYPE_WINDOW) {
       return views::kNewWindowIcon;
-    else
+    } else {
       return views::kOpenIcon;
+    }
   }
 };
 

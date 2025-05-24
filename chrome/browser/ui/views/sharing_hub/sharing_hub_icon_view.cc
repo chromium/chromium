@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 
+#include "base/check.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
@@ -73,8 +74,13 @@ views::BubbleDialogDelegate* SharingHubIconView::GetBubble() const {
     return nullptr;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  CHECK(!controller->sharing_hub_bubble_view());
+  return nullptr;
+#else
   return static_cast<SharingHubBubbleViewImpl*>(
       controller->sharing_hub_bubble_view());
+#endif
 }
 
 void SharingHubIconView::UpdateImpl() {

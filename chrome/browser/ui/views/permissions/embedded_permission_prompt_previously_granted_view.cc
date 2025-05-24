@@ -47,8 +47,7 @@ std::u16string EmbeddedPermissionPromptPreviouslyGrantedView::GetWindowTitle()
   }
 
   return l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_PREVIOUSLY_ALLOWED,
-                                    permission_name,
-                                    GetUrlIdentityObject().name);
+                                    permission_name);
 }
 
 void EmbeddedPermissionPromptPreviouslyGrantedView::RunButtonCallback(

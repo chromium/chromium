@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="da">
+<translation id="1293272072740285747">Behold denne gruppe for at tilføje faner senere, eller slet den, hvis du ikke længere skal bruge den.
+
+Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph name="TITLE_OF_GROUP" />", og den slettes fra alle enheder.</translation>
+<translation id="1340839264183302272">Forlad gruppe</translation>
+<translation id="1419023007528516122">Denne handling sletter gruppen permanent fra din enhed</translation>
+<translation id="1501480321619201731">Slet gruppe</translation>
+<translation id="2677748264148917807">Forlad</translation>
+<translation id="3547352561153509682">Dette sletter gruppen fra alle enheder, hvor du er logget ind på <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Vil du ophæve grupperingen af fanegruppen?</translation>
+<translation id="4139634748112164403">Fanerne forbliver åbne på denne enhed, men gruppen slettes permanent</translation>
+<translation id="4431937619879060901">Du mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle dine enheder</translation>
+<translation id="4460014764210899310">Ophæv gruppering</translation>
+<translation id="4777866634702576038">Vil du slette fanegruppen?</translation>
+<translation id="5094423602314093681">Vil du fjerne fanerne og slette gruppen?</translation>
+<translation id="5647702255748985085">Vil du forlade gruppen?</translation>
+<translation id="742664698522525515">Vil du beholde gruppen?</translation>
+<translation id="750886945254958667">Behold denne gruppe for at tilføje faner senere, eller forlad den, hvis du ikke længere vil have adgang til den</translation>
+<translation id="8261506727792406068">Slet</translation>
+<translation id="870736955561925754">Vil du lukke fanen og slette gruppen?</translation>
+<translation id="8804742093141782941">Behold gruppen</translation>
+<translation id="9169141410816678175">Alle mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle enheder</translation>
+<translation id="9216898458513705996">Fanerne forbliver åbne på denne enhed, men gruppen slettes fra alle enheder, hvor du er logget ind på <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Vil du slette gruppen?</translation>
+</translationbundle>

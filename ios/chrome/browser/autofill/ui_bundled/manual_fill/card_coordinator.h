@@ -15,7 +15,7 @@ class CreditCard;
 @class ReauthenticationModule;
 
 // Delegate for the coordinator actions.
-@protocol CardCoordinatorDelegate<FallbackCoordinatorDelegate>
+@protocol CardCoordinatorDelegate <FallbackCoordinatorDelegate>
 
 // Open feature to add a credit card.
 - (void)cardCoordinatorDidTriggerOpenAddCreditCard:

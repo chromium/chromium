@@ -25,7 +25,7 @@ namespace healthd = ash::cros_healthd::mojom;
 
 constexpr int kMilliampsInAnAmp = 1000;
 
-void EmitCrosHealthdProbeError(const std::string_view source_type,
+void EmitCrosHealthdProbeError(std::string_view source_type,
                                healthd::ErrorType error_type,
                                const std::string& metric_name_for_histogram) {
   // `metric_name` may be empty in which case we do not want a metric send

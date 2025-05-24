@@ -2,22 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/network_interfaces_getifaddrs.h"
-
-#include <string>
-
-#include "build/build_config.h"
-#include "net/base/ip_endpoint.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <netinet/in.h>
+
+#include <string>
+
+#include "base/containers/span.h"
+#include "build/build_config.h"
+#include "net/base/ip_endpoint.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 namespace {
@@ -49,7 +45,7 @@ bool FillIfaddrs(ifaddrs* interfaces,
                  uint flags,
                  const IPAddress& ip_address,
                  const IPAddress& ip_netmask,
-                 sockaddr_storage sock_addrs[2]) {
+                 base::span<sockaddr_storage> sock_addrs) {
   interfaces->ifa_next = nullptr;
   interfaces->ifa_name = const_cast<char*>(ifname);
   interfaces->ifa_flags = flags;

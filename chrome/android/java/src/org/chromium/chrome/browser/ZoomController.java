@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser;
 
+
 import android.os.SystemClock;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.zoom.ZoomConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.EventForwarder;
@@ -16,6 +18,7 @@ import org.chromium.ui.base.GestureEventType;
  * <p>The methods use the term 'zoom' for legacy reasons, but relates
  * to what chrome calls the 'page scale factor'.
  */
+@NullMarked
 public class ZoomController {
     /**
      * Zooms in the WebContents by 25% (or less if that would result in

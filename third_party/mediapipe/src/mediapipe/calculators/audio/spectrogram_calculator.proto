@@ -1,0 +1,121 @@
+// Copyright 2019 The MediaPipe Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package mediapipe;
+
+import "mediapipe/framework/calculator.proto";
+
+message SpectrogramCalculatorOptions {
+  extend CalculatorOptions {
+    optional SpectrogramCalculatorOptions ext = 76186688;
+  }
+
+  // Options mirror those of TimeSeriesFramerCalculator.
+
+  // Analysis window duration in seconds.  Required.  Must be greater than 0.
+  // (Note: the spectrogram DFT length will be the smallest power-of-2
+  // sample count that can hold this duration.)
+  optional double frame_duration_seconds = 1;
+
+  // Duration of overlap between adjacent windows.
+  // Hence, frame_rate = 1/(frame_duration_seconds - frame_overlap_seconds).
+  // Note the frame_rate here is not the MediaPipe packet rate, the frame here
+  // means each Fourier transform analysis waveform frame, the output MediaPipe
+  // packet rate will the the same as input, if frame rate is lower than input
+  // packet rate, will result in intermittent empty output packets. Required
+  // that 0 <= frame_overlap_seconds <  frame_duration_seconds.
+  optional double frame_overlap_seconds = 2 [default = 0.0];
+
+  // Whether to pad the final packet with zeros.  If true, guarantees that
+  // all input samples will output.  If set to false, any partial packet
+  // at the end of the stream will be dropped.
+  optional bool pad_final_packet = 3 [default = true];
+
+  // Output value type can be squared-magnitude, linear-magnitude,
+  // deciBels (dB, = 20*log10(linear_magnitude)), or std::complex.
+  // Their relationship:
+  // COMPLEX c = Re + Im*i;
+  // SQUARED_MAGNITUDE = Re^2 + Im^2;
+  // LINEAR_MAGNITUDE = sqrt(SQUARED_MAGNITUDE);
+  // DECIBELS = 20*log10(LINEAR_MAGNITUDE) = 10*log10(SQUARED_MAGNITUDE);
+  enum OutputType {
+    SQUARED_MAGNITUDE = 0;
+    LINEAR_MAGNITUDE = 1;
+    DECIBELS = 2;
+    COMPLEX = 3;
+  }
+  optional OutputType output_type = 4 [default = SQUARED_MAGNITUDE];
+
+  // If set to true then the output will be a vector of spectrograms, one for
+  // each channel and the stream will have a MultiStreamTimeSeriesHeader.
+  optional bool allow_multichannel_input = 5 [default = false];
+
+  // Which window to use when computing the FFT.
+  enum WindowType {
+    HANN = 0;
+    HAMMING = 1;
+    COSINE = 2;
+    SQRT_HANN = 4;  // Alias of COSINE.
+  }
+  optional WindowType window_type = 6 [default = HANN];
+
+  // Support a fixed multiplicative scaling of the output.  This is applied
+  // uniformly regardless of output type (i.e., even dBs are multiplied, not
+  // offset).
+  optional double output_scale = 7 [default = 1.0];
+
+  // If use_local_timestamp is true, the output packet's timestamp is based on
+  // the last sample of the packet and it's inferred from the latest input
+  // packet's timestamp.  If false, the output packet's timestamp is based on
+  // the cumulative timestamping, which is inferred from the initial input
+  // timestamp and the cumulative number of samples.
+  optional bool use_local_timestamp = 8 [default = false];
+
+  // Defines a fixed FFT size. If set to 0, the FFT size will be determined
+  // based on the frame duration and sample rate.
+  optional int32 fft_size = 9 [default = 0];
+
+  // Support a fixed multiplicative scaling of the input.
+  optional float input_scale = 10 [default = 1.0];
+
+  // The SpectogramCalculator buffers incoming time domain signal to slice it up
+  // into chunks of frame_duration_seconds. This parameter controls how to treat
+  // leftover samples at the end of the signal that were not able to form a full
+  // chunk.
+  enum SampleBufferMode {
+    // Leftover samples from previous call are buffered and used for the next
+    // call.
+    NONE = 0;
+    // Leftover samples from previous call are discarded, i.e. every new signal
+    // is processed independently.
+    RESET = 1;
+  }
+  optional SampleBufferMode sample_buffer_mode = 11 [default = NONE];
+
+  enum OutputLayout {
+    OUTPUT_LAYOUT_UNSPECIFIED = 0;
+    // Output is a matrix or a vector of matrices. Within the matrix, each
+    // column represents the spectrogram for a frame. If the input has multiple
+    // channels, the output will be a vector of matrices, each matrix
+    // corresponding to a channel.
+    SPECTROGRAM_FRAMES_IN_COLUMNS = 1;
+    // Output is a one matrix per packet. Within the matrix, each row represents
+    // a channel.
+    SPECTROGRAM_CHANNELS_IN_ROWS = 2;
+  }
+  optional OutputLayout output_layout = 13
+      [default = SPECTROGRAM_FRAMES_IN_COLUMNS];
+}

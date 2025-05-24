@@ -12,6 +12,8 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.security.InvalidKeyException;
@@ -40,13 +42,14 @@ import javax.crypto.spec.SecretKeySpec;
  * and the app being installed/uninstalled). The salt is also updated whenever the cookies are
  * cleared.
  */
+@NullMarked
 class PackageHash {
     // This map stores salts that have been calculated for different browser sessions (i.e. Browser
     // Contexts). A SparseArray is used instead of a HashMap to avoid holding a reference to the key
     // object.
     private static final SparseArray<byte[]> sSaltMap = new SparseArray<byte[]>();
 
-    private static byte[] sGlobalSaltForTesting;
+    private static byte @Nullable [] sGlobalSaltForTesting;
 
     @VisibleForTesting
     static byte[] getSaltBytes(BrowserContextHandle browserContext) {
@@ -90,7 +93,7 @@ class PackageHash {
         }
         byte[] digest = hasher.doFinal(packageNameBytes);
         // Take just the first two bytes of the digest.
-        int hash = (((digest[0]) & 0xff) << 8) | ((digest[1]) & 0xff);
+        int hash = ((digest[0] & 0xff) << 8) | (digest[1] & 0xff);
         return (short) hash;
     }
 

@@ -18,38 +18,50 @@ namespace keystore_service_util {
 COMPONENT_EXPORT(CROSAPI)
 extern const char kWebCryptoEcdsa[];
 
-// The WebCrypto string for PKCS1.
+// The WebCrypto string for RSASSA-PKCS1-v1_5.
 COMPONENT_EXPORT(CROSAPI)
 extern const char kWebCryptoRsassaPkcs1v15[];
+
+// The WebCrypto string for RSA-OAEP.
+COMPONENT_EXPORT(CROSAPI)
+extern const char kWebCryptoRsaOaep[];
 
 // The WebCrypto string for the P-256 named curve.
 COMPONENT_EXPORT(CROSAPI)
 extern const char kWebCryptoNamedCurveP256[];
 
-// Converts a crosapi signing algorithm into a WebCrypto dictionary. Returns
+// Converts a crosapi keystore algorithm into a WebCrypto dictionary. Returns
 // std::nullopt on error.
 COMPONENT_EXPORT(CROSAPI)
-std::optional<base::Value::Dict> DictionaryFromSigningAlgorithm(
-    const mojom::KeystoreSigningAlgorithmPtr& algorithm);
+std::optional<base::Value::Dict> MakeDictionaryFromKeystoreAlgorithm(
+    const mojom::KeystoreAlgorithmPtr& algorithm);
 
-// Converts a WebCrypto dictionary into a crosapi signing algorithm. Returns
+// Converts a WebCrypto dictionary into a crosapi keystore algorithm. Returns
 // std::nullopt on error.
 COMPONENT_EXPORT(CROSAPI)
-std::optional<mojom::KeystoreSigningAlgorithmPtr>
-SigningAlgorithmFromDictionary(const base::Value::Dict& dictionary);
+std::optional<mojom::KeystoreAlgorithmPtr> MakeKeystoreAlgorithmFromDictionary(
+    const base::Value::Dict& dictionary);
 
-// Creates the KeystorePKCS115Params variant of the KeystoreSigningAlgorithm
-// union and populates the modulus_length field with |modulus_length|.
+// Creates the RSASSA-PKCS1-v1_5 variant of the KeystoreAlgorithm union
+// and populates the modulus_length and sw_backed fields with the provided
+// values.
 COMPONENT_EXPORT(CROSAPI)
-mojom::KeystoreSigningAlgorithmPtr MakeRsaKeystoreSigningAlgorithm(
+mojom::KeystoreAlgorithmPtr MakeRsassaPkcs1v15KeystoreAlgorithm(
     unsigned int modulus_length,
     bool sw_backed);
 
-// Creates the KeystoreECDSAParams variant of the KeystoreSigningAlgorithm
-// union and populates the named_curve field with |modulus_length|.
+// Creates the ECDSA variant of the KeystoreAlgorithm union and populates
+// the named_curve field with the provided value.
 COMPONENT_EXPORT(CROSAPI)
-mojom::KeystoreSigningAlgorithmPtr MakeEcKeystoreSigningAlgorithm(
+mojom::KeystoreAlgorithmPtr MakeEcdsaKeystoreAlgorithm(
     const std::string& named_curve);
+
+// Creates the RSA-OAEP variant of the KeystoreAlgorithm union and
+// populates the modulus_length and sw_backed fields with the provided values.
+COMPONENT_EXPORT(CROSAPI)
+mojom::KeystoreAlgorithmPtr MakeRsaOaepKeystoreAlgorithm(
+    unsigned int modulus_length,
+    bool sw_backed);
 
 }  // namespace keystore_service_util
 }  // namespace crosapi

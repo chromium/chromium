@@ -22,8 +22,7 @@ class MockDistillerFactory : public DistillerFactory {
   MockDistillerFactory();
   ~MockDistillerFactory() override;
   MOCK_METHOD0(CreateDistillerImpl, Distiller*());
-  std::unique_ptr<Distiller> CreateDistillerForUrl(
-      const GURL& unused) override {
+  std::unique_ptr<Distiller> CreateDistiller() override {
     return std::unique_ptr<Distiller>(CreateDistillerImpl());
   }
 };

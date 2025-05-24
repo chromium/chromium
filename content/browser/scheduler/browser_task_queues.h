@@ -49,11 +49,6 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // practice.
     kBestEffort,
 
-    // Those are tasks that affect the UI, but not urgent enough to run
-    // immediately, those tasks are either deferred or run based on the
-    // scheduling policy.
-    kDeferrableUserBlocking,
-
     // base::TaskPriority::kUserBlocking maps to this task queue. It's for tasks
     // that affect the UI immediately after a user interaction. Has the same
     // priority as kDefault.
@@ -114,11 +109,13 @@ class CONTENT_EXPORT BrowserTaskQueues {
 
     // Called quite early in startup after initialising the owning thread's
     // scheduler, before we call RunLoop::Run on the thread.
-    // Note: default_task_queue_ doesn't need to be enabled as it is not
-    // disabled during startup.
     // Enables all task queues except the effort ones. Can be called multiple
     // times.
     void EnableAllExceptBestEffortQueues();
+
+    // Enables the specified task queue. Called early in startup when
+    // BrowserTaskExecutor is created to enabled the default IO task queue.
+    void EnableTaskQueue(QueueType type);
 
     // Schedules |on_pending_task_ran| to run when all pending tasks (at the
     // time this method was invoked) have run. Only "runnable" tasks are taken
@@ -159,19 +156,13 @@ class CONTENT_EXPORT BrowserTaskQueues {
         browser_task_runners_;
   };
 
-  // Creates queue voters for all task queues created within this
-  // BrowserTaskQueues object.
-  // NOTE: You can only call this function from the thread that owns the
-  // task queues, and you can only use the voters on the same thread.
-  std::array<
-      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>,
-      kNumQueueTypes>
-  CreateQueueEnabledVoters() const;
-
   // |sequence_manager| must outlive this instance.
   explicit BrowserTaskQueues(
       BrowserThread::ID thread_id,
       base::sequence_manager::SequenceManager* sequence_manager);
+
+  void SetOnTaskCompletedHandler(
+      base::sequence_manager::TaskQueue::OnTaskCompletedHandler handler);
 
   // Destroys all queues.
   ~BrowserTaskQueues();
@@ -198,6 +189,7 @@ class CONTENT_EXPORT BrowserTaskQueues {
       base::ScopedClosureRunner on_pending_task_ran);
   void OnStartupComplete();
   void EnableAllExceptBestEffortQueues();
+  void EnableTaskQueue(QueueType type);
 
   base::sequence_manager::TaskQueue* GetBrowserTaskQueue(QueueType type) const {
     return queue_data_[static_cast<size_t>(type)].task_queue.get();

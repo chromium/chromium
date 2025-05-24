@@ -110,8 +110,24 @@ def main():
     fd.seek(0)
     fd.write(enums_xml)
 
-  # Print any changes.
-  subprocess.run(['git', 'diff', xml_path])
+  try:
+    # Print any changes.
+    completed_process = subprocess.run(
+        ['git', 'diff', xml_path],
+        capture_output=True,
+        encoding='utf-8',
+        check=True,
+    )
+    print(completed_process.stdout)
+  except subprocess.CalledProcessError:
+    # This may indicate that this is not a git repository. Output a success
+    # message instead (as the enums.xml file was updated above).
+    print(
+        'Successfully updated '
+        + xml_path
+        + '. Did not display a diff because this does not appear to be a git'
+        + 'repository.'
+    )
 
 
 if __name__ == '__main__':

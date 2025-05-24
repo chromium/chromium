@@ -34,7 +34,8 @@ def executor_kwargs(test_type, test_environment, run_info_data, subsuite, **kwar
                        "target_platform": run_info_data["os"]}
 
     if test_type in ("reftest", "print-reftest"):
-        executor_kwargs["screenshot_cache"] = test_environment.cache_manager.dict()
+        screenshot_cache = test_environment.screenshot_caches[test_type, subsuite.name]
+        executor_kwargs["screenshot_cache"] = screenshot_cache
         executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
 
     if test_type == "wdspec":
@@ -417,7 +418,7 @@ class RefTestImplementation:
         return self.executor.logger
 
     def get_hash(self, test, viewport_size, dpi, page_ranges):
-        key = (self.subsuite, test.url, viewport_size, dpi)
+        key = (test.url, viewport_size, dpi)
 
         if key not in self.screenshot_cache:
             success, data = self.get_screenshot_list(test, viewport_size, dpi, page_ranges)
@@ -462,19 +463,19 @@ class RefTestImplementation:
                                                           lhs_screenshots,
                                                           rhs_screenshots)):
             comparison_screenshots = (lhs_screenshot, rhs_screenshot)
-            if not fuzzy or fuzzy == ((0, 0), (0, 0)):
-                equal = lhs_hash == rhs_hash
-                # sometimes images can have different hashes, but pixels can be identical.
-                if not equal:
-                    self.logger.info("Image hashes didn't match%s, checking pixel differences" %
-                                     ("" if len(hashes) == 1 else " on page %i" % (page_idx + 1)))
-                    max_per_channel, pixels_different = self.get_differences(comparison_screenshots,
-                                                                             urls)
-                    equal = pixels_different == 0 and max_per_channel == 0
+            if lhs_hash == rhs_hash:
+                max_per_channel, pixels_different = 0, 0
             else:
+                # sometimes images can have different hashes, but pixels can be identical.
+                self.logger.info("Image hashes didn't match%s, checking pixel differences" %
+                                 ("" if len(hashes) == 1 else " on page %i" % (page_idx + 1)))
                 max_per_channel, pixels_different = self.get_differences(comparison_screenshots,
                                                                          urls,
                                                                          page_idx if len(hashes) > 1 else None)
+
+            if not fuzzy or fuzzy == ((0, 0), (0, 0)):
+                equal = pixels_different == 0 and max_per_channel == 0
+            else:
                 allowed_per_channel, allowed_different = fuzzy
                 self.logger.info("Allowed %s pixels different, maximum difference per channel %s" %
                                  ("-".join(str(item) for item in allowed_different),
@@ -493,6 +494,11 @@ class RefTestImplementation:
 
         lhs = Image.open(io.BytesIO(base64.b64decode(screenshots[0]))).convert("RGB")
         rhs = Image.open(io.BytesIO(base64.b64decode(screenshots[1]))).convert("RGB")
+        if lhs.size != rhs.size:
+            self.logger.info(
+                f"Images differ in size; {urls[0]} is {lhs.size}, {urls[1]} is {rhs.size}" +
+                ("" if page_idx is None else f" on page {page_idx + 1}")
+            )
         self.check_if_solid_color(lhs, urls[0])
         self.check_if_solid_color(rhs, urls[1])
         diff = ImageChops.difference(lhs, rhs)
@@ -782,12 +788,13 @@ class CallbackHandler:
         except self.unimplemented_exc:
             self.logger.warning("Action %s not implemented" % action)
             self._send_message(cmd_id, "complete", "error", f"Action {action} not implemented")
-        except self.expected_exc:
-            self.logger.debug(f"Action {action} failed with an expected exception")
-            self._send_message(cmd_id, "complete", "error", f"Action {action} failed")
+        except self.expected_exc as e:
+            self.logger.debug(f"Action {action} failed with an expected exception", exc_info=True)
+            self._send_message(cmd_id, "complete", "error", f"Action {action} failed: {e!s}")
         except Exception:
-            self.logger.warning(f"Action {action} failed")
-            self._send_message(cmd_id, "complete", "error")
+            self.logger.warning(f"Action {action} failed with an unexpected exception", exc_info=True)
+            exception_string = traceback.format_exc()
+            self._send_message(cmd_id, "complete", "error", f"Action {action} failed:\n{exception_string}")
             raise
         else:
             self.logger.debug(f"Action {action} completed with result {result}")

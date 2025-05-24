@@ -36,7 +36,7 @@ export class SpFooterElement extends CrLitElement {
     };
   }
 
-  pinned: boolean = false;
+  accessor pinned: boolean = false;
 
   override firstUpdated() {
     this.setAttribute('role', 'toolbar');

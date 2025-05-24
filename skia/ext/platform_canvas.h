@@ -56,18 +56,18 @@ SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvasWithSharedSection(
 // Returns the NativeDrawingContext to use for native platform drawing calls.
 SK_API HDC GetNativeDrawingContext(SkCanvas* canvas);
 
-#elif defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__) || \
-    defined(__sun) || defined(ANDROID) || defined(__APPLE__) ||             \
-    defined(__Fuchsia__)
+#endif
 // Construct a canvas from the given memory region. The memory is not cleared
-// first. @data must be, at least, @height * StrideForWidth(@width) bytes.
+// first. `data` must be, at least, `height` * StrideForWidth(`width`) bytes if
+// `bytes_per_row` is 0. If `bytes_per_row` is non-zero, then `data` must be at
+// least `height` * `bytes_per_row`.
 SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvasWithPixels(
     int width,
     int height,
     bool is_opaque,
     uint8_t* data,
+    size_t bytes_per_row,
     OnFailureType failure_type);
-#endif
 
 inline std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
                                                       int height,
@@ -76,7 +76,7 @@ inline std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
   return CreatePlatformCanvasWithSharedSection(width, height, is_opaque, 0,
                                                CRASH_ON_FAILURE);
 #else
-  return CreatePlatformCanvasWithPixels(width, height, is_opaque, nullptr,
+  return CreatePlatformCanvasWithPixels(width, height, is_opaque, nullptr, 0u,
                                         CRASH_ON_FAILURE);
 #endif
 }
@@ -88,7 +88,7 @@ inline std::unique_ptr<SkCanvas> TryCreateBitmapCanvas(int width,
   return CreatePlatformCanvasWithSharedSection(width, height, is_opaque, 0,
                                                RETURN_NULL_ON_FAILURE);
 #else
-  return CreatePlatformCanvasWithPixels(width, height, is_opaque, nullptr,
+  return CreatePlatformCanvasWithPixels(width, height, is_opaque, nullptr, 0u,
                                         RETURN_NULL_ON_FAILURE);
 #endif
 }

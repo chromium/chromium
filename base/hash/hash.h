@@ -35,7 +35,7 @@ BASE_EXPORT uint32_t Hash(const std::string& str);
 // May changed without warning, do not expect stability of outputs.
 BASE_EXPORT size_t FastHash(base::span<const uint8_t> data);
 inline size_t FastHash(std::string_view str) {
-  return FastHash(as_bytes(make_span(str)));
+  return FastHash(as_byte_span(str));
 }
 
 // Computes a hash of a memory buffer. This hash function must not change so
@@ -55,8 +55,9 @@ template <typename T1, typename T2>
 inline size_t HashInts(T1 value1, T2 value2) {
   // This condition is expected to be compile-time evaluated and optimised away
   // in release builds.
-  if (sizeof(T1) > sizeof(uint32_t) || (sizeof(T2) > sizeof(uint32_t)))
+  if (sizeof(T1) > sizeof(uint32_t) || (sizeof(T2) > sizeof(uint32_t))) {
     return HashInts64(value1, value2);
+  }
 
   return HashInts32(static_cast<uint32_t>(value1),
                     static_cast<uint32_t>(value2));
@@ -75,6 +76,26 @@ struct IntPairHash<std::pair<Type1, Type2>> {
     return HashInts(value.first, value.second);
   }
 };
+
+// Combine the hash `seed` with the computed hash of `value`.
+template <typename T>
+size_t HashCombine(size_t seed, const T& value) {
+  size_t hash;
+  if constexpr (sizeof(size_t) == 8) {
+    hash = HashInts64(seed, std::hash<T>()(value));
+  } else {
+    hash = HashInts32(seed, std::hash<T>()(value));
+  }
+
+  return hash;
+}
+
+// Computes the combination of hashes for `values`.
+template <typename T, typename... V>
+size_t HashCombine(size_t seed, const T& first, const V&... values) {
+  size_t hash = HashCombine(seed, first);
+  return HashCombine(hash, values...);
+}
 
 }  // namespace base
 

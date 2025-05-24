@@ -17,7 +17,7 @@ TestSessionRestorationService::TestSessionRestorationService() = default;
 TestSessionRestorationService::~TestSessionRestorationService() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+TestSessionRestorationService::TestingFactory
 TestSessionRestorationService::GetTestingFactory() {
   return base::BindRepeating(
       [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
@@ -89,8 +89,8 @@ TestSessionRestorationService::CreateUnrealizedWebState(
   metadata.Swap(storage.mutable_metadata());
 
   return web::WebState::CreateWithStorage(
-      browser->GetBrowserState(), web::WebStateID::NewUnique(),
-      std::move(metadata), base::ReturnValueOnce(std::move(storage)),
+      browser->GetProfile(), web::WebStateID::NewUnique(), std::move(metadata),
+      base::ReturnValueOnce(std::make_optional(std::move(storage))),
       base::ReturnValueOnce<NSData*>(nil));
 }
 

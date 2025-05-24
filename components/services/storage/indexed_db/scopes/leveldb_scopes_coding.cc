@@ -73,7 +73,7 @@ std::string KeyToDebugString(base::span<const uint8_t> key_without_prefix) {
   }
   char type_byte = key_without_prefix[0];
   std::string_view key_after_type =
-      MakeStringView(key_without_prefix.subspan(1));
+      MakeStringView(key_without_prefix.subspan<1>());
   switch (type_byte) {
     case kGlobalMetadataByte:
       result << "GlobalMetadata";

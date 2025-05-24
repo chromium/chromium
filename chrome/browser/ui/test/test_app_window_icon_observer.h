@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "crypto/hash.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/image/image_skia.h"
@@ -57,7 +58,8 @@ class TestAppWindowIconObserver
   int icon_updates_ = 0;
   int expected_icon_updates_ = 0;
   std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_;
-  std::map<aura::Window*, std::string> last_app_icon_hash_map_;
+  std::map<aura::Window*, std::array<uint8_t, crypto::hash::kSha256Size>>
+      last_app_icon_hash_map_;
   base::OnceClosure icon_updated_callback_;
   gfx::ImageSkia last_app_icon_;
   gfx::ImageSkia expected_image_skia_;

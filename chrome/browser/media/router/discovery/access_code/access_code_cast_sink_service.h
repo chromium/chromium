@@ -7,7 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -24,10 +24,6 @@
 #include "components/media_router/common/discovery/media_sink_service_base.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class CrosapiPrefObserver;
-#endif
 
 namespace media_router {
 
@@ -89,6 +85,14 @@ class AccessCodeCastSinkService : public KeyedService,
   // expiration occurs.
   static constexpr base::TimeDelta kExpirationDelay = base::Milliseconds(450);
 
+  // Upon network changes, we remove all saved devices, and then we attempt to
+  // add all saved devices again. In the case where a device is connectable
+  // both before and after the network change, we must wait for the device to
+  // fully be removed from media_router, or else the attempt to add it back will
+  // not be successful. This buffer gives us enough time to ensure the device is
+  // removed before we try to add it back.
+  static constexpr base::TimeDelta kNetworkChangeBuffer = base::Seconds(4);
+
   // This function manually calculates the duration till expiration and
   // overrides any existing expiration timers if the duration is zero. This
   // function exists largely for edge case scenarios with instant expiration
@@ -112,8 +116,6 @@ class AccessCodeCastSinkService : public KeyedService,
   GetCurrentSessionExpirationTimersForTesting() {
     return current_session_expiration_timers_;
   }
-
-  bool IsAccessCodeCastLacrosSyncEnabledForTesting();
 
   void ResetPrefUpdaterForTesting();
 
@@ -240,10 +242,8 @@ class AccessCodeCastSinkService : public KeyedService,
   // Invoked with validated sinks fetched from the pref service. Adds the
   // validated sinks to the Media Router and sets the expiration timers.
   // `OnStored...` is used when the sink service initializes with stored
-  // devicces. `OnSynced...` is used when the pref service is changed.
+  // devices.
   void OnStoredDevicesValidated(
-      const std::vector<MediaSinkInternal>& validated_sinks);
-  void OnSyncedDevicesValidated(
       const std::vector<MediaSinkInternal>& validated_sinks);
 
   // Fetches devices and passes the validated devices to
@@ -251,6 +251,7 @@ class AccessCodeCastSinkService : public KeyedService,
   void FetchAndValidateStoredDevices(
       base::OnceCallback<void(const std::vector<MediaSinkInternal>&)>
           on_device_validated_callback);
+
   // Iterates through `stored_sinks` fetched from the pref service and attempts
   // to validate the base::Value into a MediaSinkInternal. Removes invalid
   // devices from the pref service and passes the validated devices to
@@ -308,6 +309,8 @@ class AccessCodeCastSinkService : public KeyedService,
   // DiscoveryNetworkMonitor::Observer implementation
   void OnNetworksChanged(const std::string& network_id) override;
 
+  void ResetExpirationTimersAndInitAllStoredDevices();
+
   void OnDurationPrefChange();
   void OnEnabledPrefChange();
   void OnDevicesPrefChange();
@@ -317,16 +320,6 @@ class AccessCodeCastSinkService : public KeyedService,
 
   // Instantiate `pref_updater_` and call `InitAllStoredDevices()`.
   void InitializePrefUpdater();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Due to version skewing, kAccessCodeCastDevices might not be registered for
-  // crosapi. In that case, we should use AccessCodeCastPrefUpdaterImpl for
-  // Lacros.
-  void MaybeCreateAccessCodePrefUpdaterLacros(bool is_pref_registered);
-  void OnAccessCodeCastDevicesChanged(base::Value value);
-#endif
-
-  bool IsAccessCodeCastLacrosSyncEnabled();
 
   void LogInfo(const std::string& log_message, const std::string& sink_id);
   void LogWarning(const std::string& log_message, const std::string& sink_id);
@@ -377,10 +370,6 @@ class AccessCodeCastSinkService : public KeyedService,
 
   raw_ptr<PrefService, DanglingUntriaged> prefs_;
 
-  // On Lacros, `pref_updater_` is not initialized until it's confirmed whether
-  // kAccessCodeCastDevicesDict pref has been registered for sync through the
-  // Prefs crosapi. So its value might be nullptr during the time when the sink
-  // service is waiting for the response from Prefs crosapi.
   std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater_;
 
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
@@ -388,14 +377,6 @@ class AccessCodeCastSinkService : public KeyedService,
 
   // This registrar monitors for user prefs changes.
   std::unique_ptr<PrefChangeRegistrar> user_prefs_registrar_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<CrosapiPrefObserver> access_code_cast_devices_observer_;
-
-  // Its value is set to True when `pref_updater_` is initialized as a
-  // AccessCodeCastPrefUpdaterLacros.
-  bool lacros_device_sync_enabled_ = false;
-#endif
 
   base::WeakPtrFactory<AccessCodeCastSinkService> weak_ptr_factory_{this};
 };

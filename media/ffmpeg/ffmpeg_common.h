@@ -165,6 +165,9 @@ std::string AVErrorToString(int errnum);
 // unit test for more information and code for generating the histogram XML.
 MEDIA_EXPORT int32_t HashCodecName(const char* codec_name);
 
+// Returns the list of allowed decoders for audio.
+MEDIA_EXPORT const char* GetAllowedAudioDecoders();
+
 }  // namespace media
 
 #endif  // MEDIA_FFMPEG_FFMPEG_COMMON_H_

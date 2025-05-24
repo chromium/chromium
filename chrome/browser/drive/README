@@ -1,4 +1,0 @@
-This directory contains left-behind, browser-dependent parts of
-components/drive/service.  These parts should probably be moved
-somewhere else - chrome/browser/ash/drive is one possible
-destination, but it is ChromeOS-specific.  See crbug.com/257943.

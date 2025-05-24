@@ -17,13 +17,16 @@ import android.os.UserHandle;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
 
 /** Class of static helper methods to call Context.bindService variants. */
+@NullMarked
 final class BindService {
-    private static Method sBindServiceAsUserMethod;
+    private static @Nullable Method sBindServiceAsUserMethod;
 
     static boolean supportVariableConnections() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
@@ -39,7 +42,7 @@ final class BindService {
             int flags,
             Handler handler,
             Executor executor,
-            String instanceName) {
+            @Nullable String instanceName) {
         if (supportVariableConnections() && instanceName != null) {
             return context.bindIsolatedService(intent, flags, instanceName, executor, connection);
         }

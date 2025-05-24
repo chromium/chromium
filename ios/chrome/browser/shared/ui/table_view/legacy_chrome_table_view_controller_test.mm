@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
-
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -38,6 +37,11 @@ void LegacyChromeTableViewControllerTest::CreateController() {
 
   // Force the tableView to be built.
   EXPECT_TRUE([controller_ view]);
+}
+
+void LegacyChromeTableViewControllerTest::CreateControllerWithoutView() {
+  DCHECK(!controller_);
+  controller_ = InstantiateController();
 }
 
 LegacyChromeTableViewController*

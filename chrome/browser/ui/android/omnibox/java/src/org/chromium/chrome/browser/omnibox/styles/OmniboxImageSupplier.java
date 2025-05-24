@@ -7,12 +7,11 @@ package org.chromium.chrome.browser.omnibox.styles;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -30,12 +29,13 @@ import java.util.List;
 import java.util.Map;
 
 /** Image fetching mechanism for Omnibox and Suggestions. */
+@NullMarked
 public class OmniboxImageSupplier {
     private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
 
     private final Map<GURL, List<Callback<Bitmap>>> mPendingImageRequests;
-    private int mDesiredFaviconWidthPx;
-    private @NonNull RoundedIconGenerator mIconGenerator;
+    private final int mDesiredFaviconWidthPx;
+    private RoundedIconGenerator mIconGenerator;
     private @Nullable LargeIconBridge mIconBridge;
     private @Nullable ImageFetcher mImageFetcher;
     private boolean mNativeInitialized;
@@ -45,7 +45,7 @@ public class OmniboxImageSupplier {
      *
      * @param context An Android context.
      */
-    public OmniboxImageSupplier(@NonNull Context context) {
+    public OmniboxImageSupplier(Context context) {
         mDesiredFaviconWidthPx =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_favicon_size);
@@ -118,7 +118,7 @@ public class OmniboxImageSupplier {
      * @param url The url to retrieve a favicon for.
      * @param callback The callback that will be invoked with the result.
      */
-    public void fetchFavicon(@NonNull GURL url, @NonNull Callback<Bitmap> callback) {
+    public void fetchFavicon(GURL url, Callback<@Nullable Bitmap> callback) {
         if (mIconBridge == null) {
             callback.onResult(null);
             return;
@@ -141,7 +141,7 @@ public class OmniboxImageSupplier {
      * @param url The url to generate a favicon for.
      * @param callback The callback that will be invoked with the result.
      */
-    public void generateFavicon(@NonNull GURL url, @NonNull Callback<Bitmap> callback) {
+    public void generateFavicon(GURL url, Callback<@Nullable Bitmap> callback) {
         if (!mNativeInitialized) {
             callback.onResult(null);
             return;
@@ -169,7 +169,7 @@ public class OmniboxImageSupplier {
      * @param url The url to retrieve a favicon for.
      * @param callback The callback that will be invoked with the result.
      */
-    public void fetchImage(GURL url, @NonNull Callback<Bitmap> callback) {
+    public void fetchImage(GURL url, Callback<Bitmap> callback) {
         if (mImageFetcher == null || !url.isValid() || url.isEmpty()) {
             return;
         }
@@ -206,15 +206,11 @@ public class OmniboxImageSupplier {
      *
      * @param generator RoundedIconGenerator to use
      */
-    void setRoundedIconGeneratorForTesting(@NonNull RoundedIconGenerator generator) {
+    void setRoundedIconGeneratorForTesting(RoundedIconGenerator generator) {
         mIconGenerator = generator;
     }
 
-    /**
-     * Overrides ImageFetcher instance for testing.
-     *
-     * @param generator ImageFetcher instance to use
-     */
+    /** Overrides ImageFetcher instance for testing. */
     void setImageFetcherForTesting(@Nullable ImageFetcher fetcher) {
         mImageFetcher = fetcher;
     }

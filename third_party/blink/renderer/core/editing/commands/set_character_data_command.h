@@ -23,6 +23,7 @@ class CORE_EXPORT SetCharacterDataCommand final : public SimpleEditCommand {
   // EditCommand implementation
   void DoApply(EditingState*) final;
   void DoUnapply() final;
+  String ToString() const final;
 
   const Member<Text> node_;
   const unsigned offset_;

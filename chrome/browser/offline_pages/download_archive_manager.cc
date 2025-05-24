@@ -23,7 +23,7 @@ DownloadArchiveManager::DownloadArchiveManager(
                      task_runner),
       prefs_(prefs) {}
 
-DownloadArchiveManager::~DownloadArchiveManager() {}
+DownloadArchiveManager::~DownloadArchiveManager() = default;
 
 const base::FilePath& DownloadArchiveManager::GetPublicArchivesDir() {
   if (prefs_) {

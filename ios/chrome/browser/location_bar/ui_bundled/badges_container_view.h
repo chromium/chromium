@@ -10,8 +10,6 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 
-@protocol HelpCommands;
-
 // Location bar badges container view, it contains location bar accessories such
 // as infobar badges and entrypoints.
 // This view does not itself create any badges. The embedder needs to provide
@@ -27,8 +25,6 @@
 // A placeholder to be displayed by default when there are no visible badges.
 // Set to nil to remove the view.
 @property(nonatomic, strong) UIView* placeholderView;
-// A help commands handler to display the iph bubble.
-@property(nonatomic, weak) id<HelpCommands> helpCommandsHandler;
 
 @end
 

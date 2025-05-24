@@ -5,13 +5,19 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_SCREEN_STORAGE_LOGIN_SCREEN_STORAGE_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_SCREEN_STORAGE_LOGIN_SCREEN_STORAGE_API_H_
 
-#include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "extensions/browser/extension_function.h"
+
+namespace login_manager {
+class LoginScreenStorageMetadata;
+}
 
 namespace extensions {
 
-// Provides common callback functions to return results from the
-// LoginScreenStorage crosapi's `Store` and `Retrieve` methods.
+// Provides shared store and retrieve operations.
 class LoginScreenStorageExtensionFunction : public ExtensionFunction {
  public:
   LoginScreenStorageExtensionFunction(
@@ -23,14 +29,21 @@ class LoginScreenStorageExtensionFunction : public ExtensionFunction {
   LoginScreenStorageExtensionFunction();
   ~LoginScreenStorageExtensionFunction() override;
 
-  // When passed as a callback to the LoginScreenStorage `Store` crosapi method,
-  // returns its result to the calling extension.
-  void OnDataStored(const std::optional<std::string>& error_message);
+  void StoreAndRespond(
+      std::vector<std::string> keys,
+      const login_manager::LoginScreenStorageMetadata& metadata,
+      const std::string& data);
 
-  // When passed as a callback to the LoginScreenStorage `Retrieve` crosapi
-  // method, returns its result to the calling extension.
-  void OnDataRetrieved(
-      crosapi::mojom::LoginScreenStorageRetrieveResultPtr result);
+  void RetrieveAndRespond(const std::string& key);
+
+ private:
+  void OnStored(std::vector<std::string> remaining_keys,
+                const login_manager::LoginScreenStorageMetadata& metadata,
+                const std::string& data,
+                std::optional<std::string> error);
+
+  void OnRetrieved(std::optional<std::string> data,
+                   std::optional<std::string> error);
 };
 
 class LoginScreenStorageStorePersistentDataFunction

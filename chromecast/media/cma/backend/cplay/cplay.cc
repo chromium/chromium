@@ -87,7 +87,8 @@ class WavMixerInputSource : public MixerInput::Source {
  public:
   WavMixerInputSource(const Parameters& params)
       : wav_data_(ReadInputFile(params)),
-        input_handler_(::media::WavAudioHandler::Create(wav_data_)),
+        input_handler_(
+            ::media::WavAudioHandler::Create(base::as_byte_span(wav_data_))),
         device_id_(params.device_id),
         bytes_per_frame_(input_handler_->num_channels() *
                          input_handler_->bits_per_sample() / 8) {

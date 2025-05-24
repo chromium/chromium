@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/aura/window.h"
 #include "ui/views/win/hwnd_util.h"
 
@@ -55,7 +54,6 @@ enum class AuthenticationStateWin {
 using AvailabilityCallback = AuthenticatorWinInterface::AvailabilityCallback;
 using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Security::Credentials::UI::IUserConsentVerifierStatics;
-using ABI::Windows::Security::Credentials::UI::UserConsentVerificationResult;
 using ABI::Windows::Security::Credentials::UI::UserConsentVerifierAvailability;
 using enum ABI::Windows::Security::Credentials::UI::
     UserConsentVerifierAvailability;
@@ -351,31 +349,19 @@ void PerformInteropWindowsHelloAuthenticationAsync(
 void PerformWin11Authentication(
     const std::u16string& message,
     base::OnceCallback<void(bool)> result_callback) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kAuthenticateUsingUserConsentVerifierInteropApi)) {
-    PerformInteropWindowsHelloAuthenticationAsync(std::move(result_callback),
-                                                  message);
-    return;
-  }
-  AuthenticateWithLegacyApi(message, std::move(result_callback));
+  PerformInteropWindowsHelloAuthenticationAsync(std::move(result_callback),
+                                                message);
 }
 
 void PerformWin10Authentication(
     const std::u16string& message,
     base::OnceCallback<void(bool)> result_callback) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kAuthenticateUsingUserConsentVerifierApi)) {
-    // Posting authentication using the new API on a background thread causes
-    // Windows Hello dialog not to attach to Chrome's UI and instead it is
-    // visible behind it. Running it on the default thread isn't that bad
-    // because the thread itself is not blocked and there are operations
-    // happening while the win hello dialog is visible.
-    PerformWindowsHelloAuthenticationAsync(std::move(result_callback), message);
-    return;
-  }
-  AuthenticateWithLegacyApi(message, std::move(result_callback));
+  // Posting authentication using the new API on a background thread causes
+  // Windows Hello dialog not to attach to Chrome's UI and instead it is
+  // visible behind it. Running it on the default thread isn't that bad
+  // because the thread itself is not blocked and there are operations
+  // happening while the win hello dialog is visible.
+  PerformWindowsHelloAuthenticationAsync(std::move(result_callback), message);
 }
 
 }  // namespace

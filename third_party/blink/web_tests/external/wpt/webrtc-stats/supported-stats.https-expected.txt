@@ -1,23 +1,55 @@
 This is a testharness.js-based test.
-Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] inbound-rtp's framesRendered
   assert_true: Is framesRendered present expected true got false
-[FAIL] inbound-rtp's fecBytesReceived
-  assert_true: Is fecBytesReceived present expected true got false
+[PRECONDITION_FAILED] inbound-rtp's fecBytesReceived
+  inbound-rtp.fecBytesReceived marked as not testable.
 [FAIL] inbound-rtp's estimatedPlayoutTimestamp
   assert_true: Is estimatedPlayoutTimestamp present expected true got false
 [PRECONDITION_FAILED] inbound-rtp's fecSsrc
   inbound-rtp.fecSsrc marked as not testable.
+[FAIL] inbound-rtp's totalCorruptionProbability
+  assert_true: Is totalCorruptionProbability present expected true got false
+[FAIL] inbound-rtp's totalSquaredCorruptionProbability
+  assert_true: Is totalSquaredCorruptionProbability present expected true got false
+[FAIL] inbound-rtp's corruptionMeasurements
+  assert_true: Is corruptionMeasurements present expected true got false
+[FAIL] inbound-rtp's packetsReceivedWithEct1
+  assert_true: Is packetsReceivedWithEct1 present expected true got false
+[FAIL] inbound-rtp's packetsReceivedWithCe
+  assert_true: Is packetsReceivedWithCe present expected true got false
+[FAIL] inbound-rtp's packetsReportedAsLost
+  assert_true: Is packetsReportedAsLost present expected true got false
+[FAIL] inbound-rtp's packetsReportedAsLostButRecovered
+  assert_true: Is packetsReportedAsLostButRecovered present expected true got false
 [PRECONDITION_FAILED] outbound-rtp's rid
   outbound-rtp.rid marked as not testable.
+[FAIL] outbound-rtp's packetsSentWithEct1
+  assert_true: Is packetsSentWithEct1 present expected true got false
+[FAIL] remote-inbound-rtp's packetsWithBleachedEct1Marking
+  assert_true: Is packetsWithBleachedEct1Marking present expected true got false
 [FAIL] remote-inbound-rtp's packetsReceived
   assert_true: Is packetsReceived present expected true got false
+[FAIL] remote-inbound-rtp's packetsReceivedWithEct1
+  assert_true: Is packetsReceivedWithEct1 present expected true got false
+[FAIL] remote-inbound-rtp's packetsReceivedWithCe
+  assert_true: Is packetsReceivedWithCe present expected true got false
+[FAIL] remote-inbound-rtp's packetsReportedAsLost
+  assert_true: Is packetsReportedAsLost present expected true got false
+[FAIL] remote-inbound-rtp's packetsReportedAsLostButRecovered
+  assert_true: Is packetsReportedAsLostButRecovered present expected true got false
 [FAIL] remote-outbound-rtp's roundTripTime
   assert_true: Is roundTripTime present expected true got false
+[FAIL] remote-outbound-rtp's packetsSentWithEct1
+  assert_true: Is packetsSentWithEct1 present expected true got false
 [PRECONDITION_FAILED] media-source's echoReturnLoss
   media-source.echoReturnLoss marked as not testable.
 [PRECONDITION_FAILED] media-source's echoReturnLossEnhancement
   media-source.echoReturnLossEnhancement marked as not testable.
+[FAIL] transport's ccfbMessagesSent
+  assert_true: Is ccfbMessagesSent present expected true got false
+[FAIL] transport's ccfbMessagesReceived
+  assert_true: Is ccfbMessagesReceived present expected true got false
 [PRECONDITION_FAILED] candidate-pair's availableIncomingBitrate
   candidate-pair.availableIncomingBitrate marked as not testable.
 [PRECONDITION_FAILED] local-candidate's url

@@ -10,32 +10,45 @@
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 
 namespace optimization_guide {
 
 SimpleResponseParser::SimpleResponseParser(
-    const proto::OnDeviceModelExecutionOutputConfig& config)
-    : config_(config) {}
-SimpleResponseParser::~SimpleResponseParser() = default;
+    std::string_view proto_type,
+    const proto::ProtoField& proto_field,
+    bool suppress_parsing_incomplete_response)
+    : proto_type_(proto_type),
+      proto_field_(proto_field),
+      suppress_parsing_incomplete_response_(
+          suppress_parsing_incomplete_response) {}
 
 void SimpleResponseParser::ParseAsync(const std::string& redacted_output,
                                       ResultCallback result_callback) const {
-  auto result = SetProtoValue(config_.proto_type(), config_.proto_field(),
-                              redacted_output);
-  if (!result) {
+  std::unique_ptr<google::protobuf::MessageLite> message =
+      BuildMessage(proto_type_);
+
+  if (!message) {
     std::move(result_callback)
-        .Run(base::unexpected(ResponseParsingError::kFailed));
+        .Run(base::unexpected(ResponseParsingError::kInvalidConfiguration));
     return;
   }
-  std::move(result_callback).Run(*result);
+
+  ProtoStatus status =
+      SetProtoValueFromString(message.get(), proto_field_, redacted_output);
+
+  if (status != ProtoStatus::kOk) {
+    std::move(result_callback)
+        .Run(base::unexpected(ResponseParsingError::kInvalidConfiguration));
+    return;
+  }
+
+  std::move(result_callback).Run(AnyWrapProto(*message));
 }
 
-SimpleResponseParserFactory::SimpleResponseParserFactory() = default;
-SimpleResponseParserFactory::~SimpleResponseParserFactory() = default;
-
-std::unique_ptr<ResponseParser> SimpleResponseParserFactory::CreateParser(
-    const proto::OnDeviceModelExecutionOutputConfig& config) {
-  return std::make_unique<SimpleResponseParser>(config);
+bool SimpleResponseParser::SuppressParsingIncompleteResponse() const {
+  return suppress_parsing_incomplete_response_;
 }
 
 }  // namespace optimization_guide

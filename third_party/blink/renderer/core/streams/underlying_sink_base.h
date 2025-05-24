@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/streams/stream_algorithms.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -17,11 +18,10 @@ class ExceptionState;
 class ScriptState;
 class WritableStreamDefaultController;
 
-class CORE_EXPORT UnderlyingSinkBase : public ScriptWrappable {
-  DEFINE_WRAPPERTYPEINFO();
-
+class CORE_EXPORT UnderlyingSinkBase
+    : public GarbageCollected<UnderlyingSinkBase> {
  public:
-  ~UnderlyingSinkBase() override = default;
+  virtual ~UnderlyingSinkBase() = default;
 
   // We define non-virtual |start| and |write| which take ScriptValue for
   // |controller| and are called from IDL. Also we define virtual |start| and
@@ -38,23 +38,19 @@ class CORE_EXPORT UnderlyingSinkBase : public ScriptWrappable {
                                             ScriptValue reason,
                                             ExceptionState&) = 0;
 
-  ScriptPromise<IDLUndefined> start(ScriptState*,
-                                    ScriptValue controller,
-                                    ExceptionState&);
+  ScriptPromise<IDLUndefined> start(ScriptState* script_state,
+                                    ExceptionState& exception_state) {
+    return start(script_state, controller_, exception_state);
+  }
 
   ScriptPromise<IDLUndefined> write(ScriptState* script_state,
                                     ScriptValue chunk,
-                                    ScriptValue controller,
                                     ExceptionState& exception_state) {
     DCHECK(controller_);
     return write(script_state, chunk, controller_, exception_state);
   }
 
-  // Returns a JavaScript "undefined" value. This is required by the
-  // WritableStream Create() method.
-  ScriptValue type(ScriptState*) const;
-
-  void Trace(Visitor*) const override;
+  virtual void Trace(Visitor*) const;
 
  protected:
   WritableStreamDefaultController* Controller() const {
@@ -62,9 +58,66 @@ class CORE_EXPORT UnderlyingSinkBase : public ScriptWrappable {
   }
 
  private:
+  friend class UnderlyingSinkStartAlgorithm;
   Member<WritableStreamDefaultController> controller_;
 };
 
-}  // namespace blink
+class UnderlyingSinkStartAlgorithm final : public StreamStartAlgorithm {
+ public:
+  UnderlyingSinkStartAlgorithm(UnderlyingSinkBase* sink,
+                               WritableStreamDefaultController* controller)
+      : sink_(sink) {
+    sink_->controller_ = controller;
+  }
 
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state) final;
+  void Trace(Visitor* visitor) const final;
+
+ private:
+  Member<UnderlyingSinkBase> sink_;
+};
+
+class UnderlyingSinkWriteAlgorithm final : public StreamAlgorithm {
+ public:
+  explicit UnderlyingSinkWriteAlgorithm(UnderlyingSinkBase* sink)
+      : sink_(sink) {}
+
+  ScriptPromise<IDLUndefined> Run(ScriptState*,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) final;
+  void Trace(Visitor* visitor) const final;
+
+ private:
+  Member<UnderlyingSinkBase> sink_;
+};
+
+class UnderlyingSinkCloseAlgorithm final : public StreamAlgorithm {
+ public:
+  explicit UnderlyingSinkCloseAlgorithm(UnderlyingSinkBase* sink)
+      : sink_(sink) {}
+
+  ScriptPromise<IDLUndefined> Run(ScriptState*,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) final;
+  void Trace(Visitor* visitor) const final;
+
+ private:
+  Member<UnderlyingSinkBase> sink_;
+};
+
+class UnderlyingSinkAbortAlgorithm final : public StreamAlgorithm {
+ public:
+  explicit UnderlyingSinkAbortAlgorithm(UnderlyingSinkBase* sink)
+      : sink_(sink) {}
+
+  ScriptPromise<IDLUndefined> Run(ScriptState*,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) final;
+  void Trace(Visitor* visitor) const final;
+
+ private:
+  Member<UnderlyingSinkBase> sink_;
+};
+
+}  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_SINK_BASE_H_

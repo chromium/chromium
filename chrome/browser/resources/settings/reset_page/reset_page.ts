@@ -51,24 +51,19 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase {
     return getTemplate();
   }
 
+  // <if expr="_google_chrome and is_win">
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: Object,
-
-      // <if expr="_google_chrome and is_win">
       showIncompatibleApplications_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('showIncompatibleApplications');
         },
       },
-      // </if>
     };
   }
 
-  // <if expr="_google_chrome and is_win">
-  private showIncompatibleApplications_: boolean;
+  declare private showIncompatibleApplications_: boolean;
   // </if>
 
   /**

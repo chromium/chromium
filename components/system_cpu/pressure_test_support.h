@@ -25,8 +25,8 @@ namespace system_cpu {
 
 // Test double for platform specific CpuProbe that stores the CpuSample in
 // a TestFuture.
-template <typename T,
-          typename = std::enable_if_t<std::is_base_of_v<CpuProbe, T>>>
+template <typename T>
+  requires(std::is_base_of_v<CpuProbe, T>)
 class FakePlatformCpuProbe : public T {
  public:
   template <typename... Args>

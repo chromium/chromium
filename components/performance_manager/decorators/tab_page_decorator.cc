@@ -82,7 +82,7 @@ void TabPageDecorator::MaybeTabCreated(const PageNode* page_node) {
   }
 }
 
-// PageNode::ObserverDefaultImpl:
+// PageNodeObserver:
 void TabPageDecorator::OnPageNodeAdded(const PageNode* page_node) {
   MaybeTabCreated(page_node);
 }

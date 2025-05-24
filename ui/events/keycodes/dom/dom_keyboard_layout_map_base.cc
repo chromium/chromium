@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map_base.h"
 
@@ -48,9 +44,7 @@ void DomKeyboardLayoutMapBase::PopulateLayout(uint32_t keyboard_layout_index,
                                               ui::DomKeyboardLayout* layout) {
   DCHECK(layout);
 
-  for (size_t entry = 0; entry < ui::kWritingSystemKeyDomCodeEntries; entry++) {
-    ui::DomCode dom_code = ui::writing_system_key_domcodes[entry];
-
+  for (const ui::DomCode dom_code : ui::kWritingSystemKeyDomCodes) {
     ui::DomKey dom_key =
         GetDomKeyFromDomCodeForLayout(dom_code, keyboard_layout_index);
     if (dom_key == ui::DomKey::NONE)

@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
@@ -66,11 +67,11 @@ class PDFiumPrint {
                                          const gfx::Rect& printable_area);
 
   std::vector<uint8_t> PrintPagesAsPdf(
-      const std::vector<int>& page_indices,
+      base::span<const int> page_indices,
       const blink::WebPrintParams& print_params);
 
  private:
-  ScopedFPDFDocument CreatePrintPdf(const std::vector<int>& page_indices,
+  ScopedFPDFDocument CreatePrintPdf(base::span<const int> page_indices,
                                     const blink::WebPrintParams& print_params);
 
   ScopedFPDFDocument CreateRasterPdf(ScopedFPDFDocument doc, int dpi);

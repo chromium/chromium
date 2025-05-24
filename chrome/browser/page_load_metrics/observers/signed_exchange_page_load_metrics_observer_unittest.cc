@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
@@ -43,7 +42,7 @@ class SignedExchangePageLoadMetricsObserverTest
     base::HistogramTester::CountsMap empty_counts_map =
         tester()->histogram_tester().GetTotalCountsForPrefix(prefix);
     for (const auto& it : empty_counts_map) {
-      base::HistogramBase::Count count = it.second;
+      base::HistogramBase::Count32 count = it.second;
       EXPECT_EQ(0, count) << "Histogram \"" << it.first
                           << "\" should be empty.";
     }

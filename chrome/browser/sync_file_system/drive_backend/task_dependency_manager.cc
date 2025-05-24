@@ -58,7 +58,7 @@ bool InsertPaths(std::vector<base::FilePath> paths_to_insert,
 }  // namespace
 
 TaskBlocker::TaskBlocker() : exclusive(false) {}
-TaskBlocker::~TaskBlocker() {}
+TaskBlocker::~TaskBlocker() = default;
 
 TaskDependencyManager::TaskDependencyManager()
     : running_task_count_(0),

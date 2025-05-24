@@ -74,9 +74,6 @@ const char kIsCameraRollFilePermissionGranted[] =
     "isCameraRollFilePermissionGranted";
 const char kIsPhoneHubFeatureCombinedSetupSupported[] =
     "isPhoneHubFeatureCombinedSetupSupported";
-const char kIsChromeOSSyncedSessionSharingEnabled[] =
-    "isChromeOSSyncedSessionSharingEnabled";
-const char kIsLacrosTabSyncEnabled[] = "isLacrosTabSyncEnabled";
 
 void OnRetrySetHostNowResult(bool success) {
   if (success) {
@@ -727,9 +724,6 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
                                   ? multidevice_feature_access_manager_
                                         ->GetFeatureSetupRequestSupported()
                                   : false);
-
-  page_content_dictionary.Set(kIsChromeOSSyncedSessionSharingEnabled, false);
-  page_content_dictionary.Set(kIsLacrosTabSyncEnabled, false);
 
   return page_content_dictionary;
 }

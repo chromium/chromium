@@ -19,7 +19,7 @@ DiagnosticsProviderImpl::DiagnosticsProviderImpl(
   DCHECK(profile_oauth2_token_service_);
 }
 
-DiagnosticsProviderImpl::~DiagnosticsProviderImpl() {}
+DiagnosticsProviderImpl::~DiagnosticsProviderImpl() = default;
 
 signin::LoadCredentialsState
 DiagnosticsProviderImpl::GetDetailedStateOfLoadingOfRefreshTokens() const {

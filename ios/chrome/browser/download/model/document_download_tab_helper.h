@@ -86,8 +86,6 @@ class DocumentDownloadTabHelper
   // The size of the file in bytes, if reported in the response headers.
   int64_t file_size_ = -1;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
   base::WeakPtrFactory<DocumentDownloadTabHelper> weak_ptr_factory_{this};
 };
 

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
@@ -32,7 +33,7 @@ constexpr char kTag[] = "MSAT::";
 MediaStreamAudioTrack::MediaStreamAudioTrack(bool is_local_track)
     : MediaStreamTrackPlatform(is_local_track), is_enabled_(1) {
   WebRtcLog(kTag, this, "%s({is_local_track=%s})", __func__,
-            (is_local_track ? "true" : "false"));
+            base::ToString(is_local_track).c_str());
 }
 
 MediaStreamAudioTrack::~MediaStreamAudioTrack() {
@@ -89,7 +90,7 @@ media::AudioParameters MediaStreamAudioTrack::GetOutputFormat() const {
 void MediaStreamAudioTrack::SetEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   WebRtcLog(kTag, this, "%s({enabled=%s})", __func__,
-            (enabled ? "true" : "false"));
+            base::ToString(enabled).c_str());
 
   const bool previously_enabled =
       is_enabled_.exchange(enabled, std::memory_order_relaxed);

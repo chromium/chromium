@@ -45,9 +45,6 @@ per-file builders/*/*/targets/chromium.android.*=chrome-weblayer-builder@chops-s
 per-file builders/*/*/targets/chromium.android.*=zhiyuans@google.com
 per-file builders/*/*/targets/chromium.android.*=wnwen@chromium.org
 
-# For Lacros version skew tests related reviews
-per-file builders/*/*/targets/chromium.chromiumos.json=lacros-version-skew-roller@chops-service-accounts.iam.gserviceaccount.com
-per-file builders/*/*/targets/chromium.fyi.json=lacros-version-skew-roller@chops-service-accounts.iam.gserviceaccount.com
 # TODO(crbug.com/40191809) Remove the following 3 lines when the conversion is done.
 per-file builders/*/*/targets/chromium.fyi.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 per-file builders/*/*/targets/chromium.chromiumos.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
@@ -80,5 +77,10 @@ per-file builders/*/*/targets/chromium.coverage.json=pasthana@google.com
 # WebRTC owners
 per-file builders/*/*/targets/chromium.webrtc.fyi.json=file://infra/config/subprojects/webrtc/OWNERS
 per-file builders/*/*/targets/chromium.webrtc.json=file://infra/config/subprojects/webrtc/OWNERS
+
+# Build team owners
+per-file builders/*/*/targets/chromium.build.fyi.json=file://infra/config/groups/chrome-build/OWNERS
+per-file builders/*/*/targets/chromium.build.json=file://infra/config/groups/chrome-build/OWNERS
+
 
 # LINT.ThenChange(/testing/buildbot/OWNERS:chromium_tests)

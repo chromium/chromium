@@ -12,6 +12,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/network_handle.h"
+#include "net/quic/quic_context.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
 
 namespace net {
 class URLRequest;
@@ -50,6 +52,9 @@ class TestUtil {
   static base::flat_map<net::handles::NetworkHandle,
                         std::unique_ptr<net::URLRequestContext>>*
   GetURLRequestContexts(jlong jcontext_adapter);
+
+  static net::QuicParams& GetDefaultURLRequestQuicParams(
+      jlong jcontext_adapter);
 
  private:
   static void RunAfterContextInitOnNetworkThread(jlong jcontext_adapter,

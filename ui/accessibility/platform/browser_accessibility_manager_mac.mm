@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -14,6 +15,7 @@
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
@@ -134,8 +136,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
   BrowserAccessibility* wrapper = GetFromAXNode(node);
   DCHECK(wrapper);
-  BrowserAccessibilityCocoa* native_node = wrapper->GetNativeViewAccessible();
-  DCHECK(native_node);
+  BrowserAccessibilityCocoa* native_node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          wrapper->GetNativeViewAccessible().Get());
 
   // Refer to |AXObjectCache::postPlatformNotification| in WebKit source code.
   NSString* mac_notification = nullptr;
@@ -200,9 +203,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         return;
 
       NSAccessibilityPostNotificationWithUserInfo(
-          focus->GetNativeViewAccessible(), mac_notification, user_info);
+          focus->GetNativeViewAccessible().Get(), mac_notification, user_info);
       NSAccessibilityPostNotificationWithUserInfo(
-          root->GetNativeViewAccessible(), mac_notification, user_info);
+          root->GetNativeViewAccessible().Get(), mac_notification, user_info);
       return;
     }
     case AXEventGenerator::Event::EXPANDED:
@@ -358,7 +361,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         NSAccessibilityPostNotificationWithUserInfo(
             native_node, mac_notification, user_info);
         NSAccessibilityPostNotificationWithUserInfo(
-            root->GetNativeViewAccessible(), mac_notification, user_info);
+            root->GetNativeViewAccessible().Get(), mac_notification, user_info);
         return;
       }
       break;
@@ -429,18 +432,18 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
 }
 
 void BrowserAccessibilityManagerMac::FireSentinelEventForTesting() {
-  // The drawer created event is used as an end-of-test signal because it
-  // is used for an obsolete OS feature that will never occur in tests.
-  FireNativeMacNotification(NSAccessibilityDrawerCreatedNotification,
+  // The application deactivated event is used as an end-of-test signal because
+  // it never occurs in tests.
+  FireNativeMacNotification(NSAccessibilityApplicationDeactivatedNotification,
                             GetBrowserAccessibilityRoot());
 }
 
 void BrowserAccessibilityManagerMac::FireAriaNotificationEvent(
     BrowserAccessibility* node,
     const std::string& announcement,
-    const std::string& notification_id,
+    ax::mojom::AriaNotificationPriority priority_property,
     ax::mojom::AriaNotificationInterrupt interrupt_property,
-    ax::mojom::AriaNotificationPriority priority_property) {
+    const std::string& type) {
   DCHECK(node);
 
   auto* root_manager = GetManagerForRootFrame();
@@ -453,9 +456,9 @@ void BrowserAccessibilityManagerMac::FireAriaNotificationEvent(
   auto MapPropertiesToNSAccessibilityPriorityLevel =
       [&]() -> NSAccessibilityPriorityLevel {
     switch (priority_property) {
-      case ax::mojom::AriaNotificationPriority::kNone:
+      case ax::mojom::AriaNotificationPriority::kNormal:
         return NSAccessibilityPriorityMedium;
-      case ax::mojom::AriaNotificationPriority::kImportant:
+      case ax::mojom::AriaNotificationPriority::kHigh:
         return NSAccessibilityPriorityHigh;
     }
     NOTREACHED();
@@ -470,8 +473,9 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
     NSString* mac_notification,
     BrowserAccessibility* node) {
   DCHECK(mac_notification);
-  BrowserAccessibilityCocoa* native_node = node->GetNativeViewAccessible();
-  DCHECK(native_node);
+  BrowserAccessibilityCocoa* native_node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          node->GetNativeViewAccessible().Get());
   // TODO(accessibility) We should look into why background tabs return null for
   // GetWindow. Is it safe to fire notifications when there is no window? We've
   // had trouble in the past with "Chrome is not responding" lockups in AppKit
@@ -481,7 +485,7 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
 }
 
 bool BrowserAccessibilityManagerMac::OnAccessibilityEvents(
-    const AXUpdatesAndEvents& details) {
+    AXUpdatesAndEvents& details) {
   text_edits_.clear();
   return BrowserAccessibilityManager::OnAccessibilityEvents(details);
 }
@@ -500,9 +504,11 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
       if (ancestor) {
         BrowserAccessibility* obj = GetFromAXNode(ancestor);
         const BrowserAccessibilityCocoa* editable_root =
-            obj->GetNativeViewAccessible();
-        if ([editable_root instanceActive])
+            base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+                obj->GetNativeViewAccessible().Get());
+        if ([editable_root instanceActive]) {
           changed_editable_roots.insert(editable_root);
+        }
       }
     }
   }
@@ -513,6 +519,22 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
     if (!text_edit.IsEmpty())
       text_edits_[[obj owner]->GetId()] = text_edit;
   }
+}
+
+void BrowserAccessibilityManagerMac::OnNodeDataChanged(
+    AXTree* tree,
+    const AXNodeData& old_node_data,
+    const AXNodeData& new_node_data) {
+  BrowserAccessibilityMac* node =
+      static_cast<BrowserAccessibilityMac*>(GetFromID(new_node_data.id));
+  CHECK(node);
+  if (!features::IsMacAccessibilityOptimizeChildrenChangedEnabled() ||
+      (old_node_data.child_ids == new_node_data.child_ids &&
+       !node->node()->GetExtraMacNodes())) {
+    return;
+  }
+
+  [node->GetNativeWrapper() childrenChanged];
 }
 
 NSDictionary* BrowserAccessibilityManagerMac::
@@ -544,7 +566,8 @@ NSDictionary* BrowserAccessibilityManagerMac::
 
   focus_object = focus_object->PlatformGetLowestPlatformAncestor();
   BrowserAccessibilityCocoa* native_focus_object =
-      focus_object->GetNativeViewAccessible();
+      base::apple::ObjCCast<BrowserAccessibilityCocoa>(
+          focus_object->GetNativeViewAccessible().Get());
   if (native_focus_object && [native_focus_object instanceActive]) {
     user_info[NSAccessibilityTextChangeElement] = native_focus_object;
 
@@ -611,11 +634,11 @@ BrowserAccessibilityManagerMac::GetUserInfoForValueChangedNotification(
 }
 
 id BrowserAccessibilityManagerMac::GetParentView() {
-  return delegate()->AccessibilityGetNativeViewAccessible();
+  return delegate()->AccessibilityGetNativeViewAccessible().Get();
 }
 
 id BrowserAccessibilityManagerMac::GetWindow() {
-  return delegate()->AccessibilityGetNativeViewAccessibleForWindow();
+  return delegate()->AccessibilityGetNativeViewAccessibleForWindow().Get();
 }
 
 bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {

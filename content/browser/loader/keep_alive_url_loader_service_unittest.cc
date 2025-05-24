@@ -16,10 +16,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/attribution_reporting/constants.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/test_utils.h"
+#include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -345,10 +347,17 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
         }));
     RenderViewHostTestHarness::SetUp();
 
+    test_web_contents()->NavigateAndCommit(GURL("https://example.com"));
+
+    pending_navigation_ = NavigationSimulator::CreateBrowserInitiated(
+        GURL("https://example.com"), web_contents());
+    pending_navigation_->ReadyToCommit();
+
     AddConnectSrcCSPToRFH(kTestRedirectRequestUrl);
   }
 
   void TearDown() override {
+    pending_navigation_.reset();
     network_url_loader_factory_ = nullptr;
     loader_service_ = nullptr;
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
@@ -358,6 +367,10 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
 
   void ExpectMojoBadMessage(const std::string& message) {
     EXPECT_EQ(mojo_bad_message_, message);
+  }
+
+  NavigationHandle* GetNavigationHandle() {
+    return pending_navigation_->GetNavigationHandle();
   }
 
   // Asks KeepAliveURLLoaderService to bind a KeepAliveURLLoaderFactory to the
@@ -379,8 +392,7 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->policy_container_host()
             ->Clone());
-    context->OnDidCommitNavigation(
-        static_cast<RenderFrameHostImpl*>(main_rfh())->GetWeakDocumentPtr());
+    context->OnDidCommitNavigation(GetNavigationHandle());
   }
 
   network::TestURLLoaderFactory::PendingRequest* GetLastPendingRequest() {
@@ -427,6 +439,7 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
   // The test target.
   std::unique_ptr<KeepAliveURLLoaderService> loader_service_ = nullptr;
   std::optional<std::string> mojo_bad_message_;
+  std::unique_ptr<NavigationSimulator> pending_navigation_;
 };
 
 class KeepAliveURLLoaderServiceTest : public KeepAliveURLLoaderServiceTestBase {
@@ -447,7 +460,9 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
 
   // Loads a keepalive request with invalid feature config:
-  feature_list().Reset();
+  base::test::ScopedFeatureList overwritten_feature_list;
+  overwritten_feature_list.InitAndDisableFeature(
+      blink::features::kKeepAliveInBrowserMigration);
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote(),
@@ -553,8 +568,7 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterUpdateFactory) {
       static_cast<RenderFrameHostImpl*>(main_rfh())
           ->policy_container_host()
           ->Clone());
-  context->OnDidCommitNavigation(
-      static_cast<RenderFrameHostImpl*>(main_rfh())->GetWeakDocumentPtr());
+  context->OnDidCommitNavigation(GetNavigationHandle());
   {
     // Load a keepalive request. There should be no network loader created.
     MockReceiverURLLoaderClient renderer_loader_client;
@@ -573,6 +587,7 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterUpdateFactory) {
   auto pending_factory = std::make_unique<blink::PendingURLLoaderFactoryBundle>(
       factory.Unbind(), blink::PendingURLLoaderFactoryBundle::SchemeMap(),
       blink::PendingURLLoaderFactoryBundle::OriginMap(),
+      /*local_resource_loader_config=*/nullptr,
       /*bypass_redirect_checks=*/false);
   context->UpdateFactory(
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)));
@@ -621,7 +636,6 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   // Set up the Attribution Manager.
-  test_web_contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto mock_manager = std::make_unique<MockAttributionManager>();
   mock_manager->SetDataHostManager(
       std::make_unique<AttributionDataHostManagerImpl>(mock_manager.get()));
@@ -658,6 +672,77 @@ TEST_F(KeepAliveURLLoaderServiceTest,
                            kRegisterSourceJson}}),
       /*body=*/{}, /*cached_metadata=*/std::nullopt);
 
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(KeepAliveURLLoaderServiceTest, ForwardErrorToAttributionRequestHelper) {
+  // Set up the Attribution Manager.
+  auto mock_manager = std::make_unique<MockAttributionManager>();
+  auto mock_data_host_manager =
+      std::make_unique<MockAttributionDataHostManager>();
+  MockAttributionDataHostManager* mock_data_host_manager_ptr =
+      mock_data_host_manager.get();
+  mock_manager->SetDataHostManager(std::move(mock_data_host_manager));
+  static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition())
+      ->OverrideAttributionManagerForTesting(std::move(mock_manager));
+
+  // Loads keepalive request.
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+  network::ResourceRequest request =
+      CreateResourceRequest(GURL(kTestRequestUrl));
+  request.attribution_reporting_eligibility =
+      network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger;
+  renderer_loader_factory.CreateLoaderAndStart(
+      std::move(request), renderer_loader_client.BindNewPipeAndPassRemote());
+
+  // Simluates receiving error in the network service.
+  EXPECT_CALL(*mock_data_host_manager_ptr,
+              NotifyBackgroundRegistrationCompleted)
+      .Times(1);
+  GetLastPendingRequest()->client->OnComplete(
+      network::URLLoaderCompletionStatus(-1));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(
+    KeepAliveURLLoaderServiceTest,
+    OnReceiveRedirectWithErrorRedirectMode_NotForwardedToAttributionRequestHelper) {
+  // Set up the Attribution Manager.
+  auto mock_manager = std::make_unique<MockAttributionManager>();
+  auto mock_data_host_manager =
+      std::make_unique<MockAttributionDataHostManager>();
+  MockAttributionDataHostManager* mock_data_host_manager_ptr =
+      mock_data_host_manager.get();
+  mock_manager->SetDataHostManager(std::move(mock_data_host_manager));
+  static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition())
+      ->OverrideAttributionManagerForTesting(std::move(mock_manager));
+
+  // Loads keepalive request that redirects first, with error redirect_mode:
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+  network::ResourceRequest request = CreateResourceRequest(
+      GURL(kTestRequestUrl), /*keepalive=*/true,
+      /*is_trusted=*/false, network::mojom::RedirectMode::kError);
+  request.attribution_reporting_eligibility =
+      network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger;
+  renderer_loader_factory.CreateLoaderAndStart(
+      std::move(request), renderer_loader_client.BindNewPipeAndPassRemote());
+
+  // Simluates receiving redirect in the network service.
+  EXPECT_CALL(*mock_data_host_manager_ptr, NotifyBackgroundRegistrationData)
+      .Times(0);
+  EXPECT_CALL(*mock_data_host_manager_ptr,
+              NotifyBackgroundRegistrationCompleted)
+      .Times(1);
+  GetLastPendingRequest()->client->OnReceiveRedirect(
+      CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
+      CreateResponseHead(
+          {{kTestResponseHeaderName, kTestResponseHeaderValue}}));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1245,8 +1330,7 @@ class FetchLaterKeepAliveURLLoaderServiceTest
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->policy_container_host()
             ->Clone());
-    context->OnDidCommitNavigation(
-        static_cast<RenderFrameHostImpl*>(main_rfh())->GetWeakDocumentPtr());
+    context->OnDidCommitNavigation(GetNavigationHandle());
   }
 };
 
@@ -1383,23 +1467,14 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest, Shutdown) {
   EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
 }
 
-// TODO(https://crbug.com/368570340)
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ForwardRedirectsAndResponseToAttributionRequestHelper \
-  DISABLED_ForwardRedirectsAndResponseToAttributionRequestHelper
-#else
-#define MAYBE_ForwardRedirectsAndResponseToAttributionRequestHelper \
-  ForwardRedirectsAndResponseToAttributionRequestHelper
-#endif
 TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
-       MAYBE_ForwardRedirectsAndResponseToAttributionRequestHelper) {
+       ForwardRedirectsAndResponseToAttributionRequestHelper) {
   // The Attribution Manager uses the DataDecoder service, which, when an
   // InProcessDataDecoer object exists, will route to an internal in-process
   // instance.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   // Set up the Attribution Manager.
-  test_web_contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto mock_manager = std::make_unique<MockAttributionManager>();
   mock_manager->SetDataHostManager(
       std::make_unique<AttributionDataHostManagerImpl>(mock_manager.get()));
@@ -1428,24 +1503,33 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
   // The network should now have created pending URLLoader.
   EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
 
+  base::RunLoop run_loop_1;
+
   // Simluates receiving a redirect in the network service.
-  EXPECT_CALL(*mock_attribution_manager, HandleTrigger).Times(1);
+  EXPECT_CALL(*mock_attribution_manager, HandleTrigger)
+      .WillOnce([&](AttributionTrigger, GlobalRenderFrameHostId) {
+        run_loop_1.Quit();
+      });
   constexpr char kRegisterTriggerJson[] = R"json({ })json";
   GetLastPendingRequest()->client->OnReceiveRedirect(
       CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
       CreateResponseHead({{kAttributionReportingRegisterTriggerHeader,
                            kRegisterTriggerJson}}));
+  run_loop_1.Run();
+
+  base::RunLoop run_loop_2;
 
   // Simluates receiving response in the network service.
-  EXPECT_CALL(*mock_attribution_manager, HandleSource).Times(1);
+  EXPECT_CALL(*mock_attribution_manager, HandleSource)
+      .WillOnce(
+          [&](StorableSource, GlobalRenderFrameHostId) { run_loop_2.Quit(); });
   constexpr char kRegisterSourceJson[] =
       R"json({"destination":"https://destination.example"})json";
   GetLastPendingRequest()->client->OnReceiveResponse(
       CreateResponseHead(
           {{kAttributionReportingRegisterSourceHeader, kRegisterSourceJson}}),
       /*body=*/{}, /*cached_metadata=*/std::nullopt);
-
-  base::RunLoop().RunUntilIdle();
+  run_loop_2.Run();
 }
 
 }  // namespace content

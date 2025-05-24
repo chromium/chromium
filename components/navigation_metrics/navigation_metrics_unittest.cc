@@ -34,6 +34,9 @@ TEST(NavigationMetrics, MainFrameSchemeDifferentDocument) {
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
                           profile_metrics::BrowserProfileType::kRegular, 1);
+  test.ExpectTotalCount(kMainFrameProfileTypeDifferentPage, 1);
+  test.ExpectUniqueSample(kMainFrameProfileTypeDifferentPage,
+                          profile_metrics::BrowserProfileType::kRegular, 1);
 }
 
 TEST(NavigationMetrics, MainFrameSchemeDifferentDocument_NonUniqueHostname) {
@@ -55,6 +58,9 @@ TEST(NavigationMetrics, MainFrameSchemeDifferentDocument_NonUniqueHostname) {
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
                           profile_metrics::BrowserProfileType::kRegular, 1);
+  test.ExpectTotalCount(kMainFrameProfileTypeDifferentPage, 1);
+  test.ExpectUniqueSample(kMainFrameProfileTypeDifferentPage,
+                          profile_metrics::BrowserProfileType::kRegular, 1);
 }
 
 TEST(NavigationMetrics, MainFrameSchemeSameDocument) {
@@ -73,6 +79,7 @@ TEST(NavigationMetrics, MainFrameSchemeSameDocument) {
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
                           profile_metrics::BrowserProfileType::kRegular, 1);
+  test.ExpectTotalCount(kMainFrameProfileTypeDifferentPage, 0);
 }
 
 TEST(NavigationMetrics, MainFrameSchemeDifferentDocumentOTR) {
@@ -94,6 +101,9 @@ TEST(NavigationMetrics, MainFrameSchemeDifferentDocumentOTR) {
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
                           profile_metrics::BrowserProfileType::kIncognito, 1);
+  test.ExpectTotalCount(kMainFrameProfileTypeDifferentPage, 1);
+  test.ExpectUniqueSample(kMainFrameProfileTypeDifferentPage,
+                          profile_metrics::BrowserProfileType::kIncognito, 1);
 }
 
 TEST(NavigationMetrics, MainFrameSchemeSameDocumentOTR) {
@@ -113,6 +123,7 @@ TEST(NavigationMetrics, MainFrameSchemeSameDocumentOTR) {
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
                           profile_metrics::BrowserProfileType::kIncognito, 1);
+  test.ExpectTotalCount(kMainFrameProfileTypeDifferentPage, 0);
 }
 
 TEST(NavigationMetrics, MainFrameDifferentDocumentHasRTLDomainFalse) {
@@ -156,92 +167,6 @@ TEST(NavigationMetrics, MainFrameSameDocumentHasRTLDomainTrue) {
   test.ExpectTotalCount(kMainFrameHasRTLDomainDifferentPage, 0);
   test.ExpectTotalCount(kMainFrameHasRTLDomain, 1);
   test.ExpectUniqueSample(kMainFrameHasRTLDomain, 1 /* true */, 1);
-}
-
-TEST(NavigationMetrics, RecordIDNA2008Metrics) {
-  static constexpr char kHistogram[] =
-      "Navigation.HostnameHasDeviationCharacters";
-  base::HistogramTester histograms;
-
-  // Shouldn't record metrics for non-unique hostnames.
-  RecordIDNA2008Metrics(u"faß.local");
-  histograms.ExpectTotalCount(kHistogram, 0);
-
-  // Shouldn't record deviation characters in subdomains.
-  RecordIDNA2008Metrics(u"faß.example.de");
-  histograms.ExpectTotalCount(kHistogram, 1);
-  histograms.ExpectBucketCount(kHistogram, false, 1);
-  histograms.ExpectBucketCount(kHistogram, true, 0);
-
-  // Shouldn't record deviation characters in subdomains of private registries.
-  RecordIDNA2008Metrics(u"faß.blogspot.com");
-  histograms.ExpectTotalCount(kHistogram, 2);
-  histograms.ExpectBucketCount(kHistogram, false, 2);
-  histograms.ExpectBucketCount(kHistogram, true, 0);
-
-  // Positive tests.
-  RecordIDNA2008Metrics(u"faß.de");
-  histograms.ExpectTotalCount(kHistogram, 3);
-  histograms.ExpectBucketCount(kHistogram, false, 2);
-  histograms.ExpectBucketCount(kHistogram, true, 1);
-
-  RecordIDNA2008Metrics(u"subdomain.faß.de");
-  histograms.ExpectTotalCount(kHistogram, 4);
-  histograms.ExpectBucketCount(kHistogram, false, 2);
-  histograms.ExpectBucketCount(kHistogram, true, 2);
-
-  // Should work well with non-standard separators
-  RecordIDNA2008Metrics(u"example。com");
-  histograms.ExpectTotalCount(kHistogram, 5);
-  histograms.ExpectBucketCount(kHistogram, false, 3);
-  histograms.ExpectBucketCount(kHistogram, true, 2);
-
-  RecordIDNA2008Metrics(u"subdomain。faß。de");
-  histograms.ExpectTotalCount(kHistogram, 6);
-  histograms.ExpectBucketCount(kHistogram, false, 3);
-  histograms.ExpectBucketCount(kHistogram, true, 3);
-
-  // Should drop edge cases like %-encoded separators (%2e is ".") and not
-  // record metrics.
-  RecordIDNA2008Metrics(u"subdomain%2efaß%2ede");
-  histograms.ExpectTotalCount(kHistogram, 6);
-
-  // Should drop edge cases where the label count check passes but the
-  // canonicalized eTLD+1 and non-canonicalized eTLD+1 have diverged. (This case
-  // should be rare and shouldn't cause crashes, but will result in potentially
-  // junk metrics being collected.)
-  RecordIDNA2008Metrics(u"abc.def.faß.example%2ecom");
-  histograms.ExpectTotalCount(kHistogram, 6);
-}
-
-// Regression test for crbug.com/1362507. Tests that the IDNA2008 metrics code
-// correctly handles hostnames with trailing dots.
-TEST(NavigationMetrics, RecordIDNA2008MetricsTrailingDots) {
-  static constexpr char kHistogram[] =
-      "Navigation.HostnameHasDeviationCharacters";
-  base::HistogramTester histograms;
-
-  // This would previously trigger the DCHECK in GetEtldPlusOne16(), or cause
-  // a crash in the std::vector::erase() call later in that function, because
-  // the canonicalized hostname has two dots and so the logic would calculate
-  // this as having three labels, but the noncanonicalized labels vector would
-  // only have two elements due to dropping the final empty string after the
-  // trailing dot.
-  RecordIDNA2008Metrics(u"googlé.com.");
-  histograms.ExpectTotalCount(kHistogram, 1);
-
-  // GetDomainAndRegistry() should return the empty string for this hostname,
-  // so no metrics will be recorded.
-  RecordIDNA2008Metrics(u"googlé.com..");
-  histograms.ExpectTotalCount(kHistogram, 1);
-
-  // Should be treated the same as the "googlé.com" case.
-  RecordIDNA2008Metrics(u".googlé.com");
-  histograms.ExpectTotalCount(kHistogram, 2);
-
-  // Should be treated the same as the "googlé.com." case.
-  RecordIDNA2008Metrics(u".googlé.com.");
-  histograms.ExpectTotalCount(kHistogram, 3);
 }
 
 }  // namespace navigation_metrics

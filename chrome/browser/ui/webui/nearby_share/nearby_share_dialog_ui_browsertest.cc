@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
+
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -21,7 +21,8 @@
 
 namespace {
 
-// Keep in sync with //chrome/browser/resources/nearby_share/shared/types.js
+// Keep in sync with
+// chrome/browser/resources/chromeos/nearby_share/shared/types.ts
 enum class CloseReason {
   kUnknown = 0,
   kTransferStarted = 1,
@@ -43,12 +44,6 @@ class TestSharesheetController : public sharesheet::SharesheetController {
 };
 
 class NearbyShareDialogUITest : public InProcessBrowserTest {
- public:
-  NearbyShareDialogUITest() {
-    scoped_feature_list_.InitWithFeatures({features::kNearbySharing}, {});
-  }
-  ~NearbyShareDialogUITest() override = default;
-
  protected:
   content::WebContents* GetWebContentsForNearbyShareHost() const {
     GURL kUrl(content::GetWebUIURL(chrome::kChromeUINearbyShareHost));
@@ -62,7 +57,6 @@ class NearbyShareDialogUITest : public InProcessBrowserTest {
     return web_contents;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestSharesheetController sharesheet_controller_;
 };
 

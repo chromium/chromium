@@ -40,11 +40,6 @@ void GamepadMonitor::OnGamepadDisconnected(uint32_t index,
     gamepad_observer_remote_->GamepadDisconnected(index, gamepad);
 }
 
-void GamepadMonitor::OnGamepadChanged(const mojom::GamepadChanges& changes) {
-  if (gamepad_observer_remote_)
-    gamepad_observer_remote_->GamepadChanged(changes.Clone());
-}
-
 void GamepadMonitor::GamepadStartPolling(GamepadStartPollingCallback callback) {
   DCHECK(!is_started_);
   is_started_ = true;

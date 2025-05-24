@@ -89,13 +89,6 @@ id<GREYMatcher> OtpNewCodeLink() {
 
 #pragma mark - Setup
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableVirtualCards);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface setUpFakeCreditCardServer];
@@ -117,10 +110,10 @@ id<GREYMatcher> OtpNewCodeLink() {
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearAllServerDataForTesting];
   [AutofillAppInterface tearDownFakeCreditCardServer];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)showOtpInputDialog {
@@ -191,6 +184,10 @@ id<GREYMatcher> OtpNewCodeLink() {
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
                      IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_TITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+    StaticTextWithAccessibilityLabel(@"Enter 6-digit verification code")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:OtpTextfield()]

@@ -6,15 +6,15 @@
 
 #import <WebKit/WebKit.h>
 
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -28,15 +28,16 @@ namespace {
 // The modality used in tests.
 const OverlayModality kModality = OverlayModality::kWebContentArea;
 // Request config used in tests.
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(kConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(kConfig);
 }  // namespace
 
 // Test fixture for OverlayPresentationContextFullscreenDisabler.
 class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
  public:
   OverlayPresentationContextFullscreenDisablerTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
 
     disabler_ = std::make_unique<OverlayContainerFullscreenDisabler>(
         browser_.get(), kModality);
@@ -82,7 +83,7 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<OverlayContainerFullscreenDisabler> disabler_;
   FakeOverlayPresentationContext presentation_context_;

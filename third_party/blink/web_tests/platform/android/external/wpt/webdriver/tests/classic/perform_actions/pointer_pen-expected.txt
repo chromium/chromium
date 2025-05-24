@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchWindowException'>
+[FAIL] test_pointer_down_closes_browsing_context
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchWindowException'>
+[FAIL] test_pen_pointer_properties
+  AssertionError: assert 12 == 10
+Harness: the test ran to completion.
+

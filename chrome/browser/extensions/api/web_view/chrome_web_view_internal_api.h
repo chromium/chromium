@@ -20,7 +20,7 @@ class ChromeWebViewInternalContextMenusCreateFunction
  public:
   DECLARE_EXTENSION_FUNCTION("chromeWebViewInternal.contextMenusCreate",
                              WEBVIEWINTERNAL_CONTEXTMENUSCREATE)
-  ChromeWebViewInternalContextMenusCreateFunction() {}
+  ChromeWebViewInternalContextMenusCreateFunction() = default;
 
   ChromeWebViewInternalContextMenusCreateFunction(
       const ChromeWebViewInternalContextMenusCreateFunction&) = delete;
@@ -28,7 +28,7 @@ class ChromeWebViewInternalContextMenusCreateFunction
       const ChromeWebViewInternalContextMenusCreateFunction&) = delete;
 
  protected:
-  ~ChromeWebViewInternalContextMenusCreateFunction() override {}
+  ~ChromeWebViewInternalContextMenusCreateFunction() override = default;
 
   // ExtensionFunction implementation.
   ResponseAction Run() override;
@@ -39,7 +39,7 @@ class ChromeWebViewInternalContextMenusUpdateFunction
  public:
   DECLARE_EXTENSION_FUNCTION("chromeWebViewInternal.contextMenusUpdate",
                              WEBVIEWINTERNAL_CONTEXTMENUSUPDATE)
-  ChromeWebViewInternalContextMenusUpdateFunction() {}
+  ChromeWebViewInternalContextMenusUpdateFunction() = default;
 
   ChromeWebViewInternalContextMenusUpdateFunction(
       const ChromeWebViewInternalContextMenusUpdateFunction&) = delete;
@@ -47,7 +47,7 @@ class ChromeWebViewInternalContextMenusUpdateFunction
       const ChromeWebViewInternalContextMenusUpdateFunction&) = delete;
 
  protected:
-  ~ChromeWebViewInternalContextMenusUpdateFunction() override {}
+  ~ChromeWebViewInternalContextMenusUpdateFunction() override = default;
 
   // ExtensionFunction implementation.
   ResponseAction Run() override;
@@ -58,7 +58,7 @@ class ChromeWebViewInternalContextMenusRemoveFunction
  public:
   DECLARE_EXTENSION_FUNCTION("chromeWebViewInternal.contextMenusRemove",
                              WEBVIEWINTERNAL_CONTEXTMENUSREMOVE)
-  ChromeWebViewInternalContextMenusRemoveFunction() {}
+  ChromeWebViewInternalContextMenusRemoveFunction() = default;
 
   ChromeWebViewInternalContextMenusRemoveFunction(
       const ChromeWebViewInternalContextMenusRemoveFunction&) = delete;
@@ -66,7 +66,7 @@ class ChromeWebViewInternalContextMenusRemoveFunction
       const ChromeWebViewInternalContextMenusRemoveFunction&) = delete;
 
  protected:
-  ~ChromeWebViewInternalContextMenusRemoveFunction() override {}
+  ~ChromeWebViewInternalContextMenusRemoveFunction() override = default;
 
   // ExtensionFunction implementation.
   ResponseAction Run() override;
@@ -77,7 +77,7 @@ class ChromeWebViewInternalContextMenusRemoveAllFunction
  public:
   DECLARE_EXTENSION_FUNCTION("chromeWebViewInternal.contextMenusRemoveAll",
                              WEBVIEWINTERNAL_CONTEXTMENUSREMOVEALL)
-  ChromeWebViewInternalContextMenusRemoveAllFunction() {}
+  ChromeWebViewInternalContextMenusRemoveAllFunction() = default;
 
   ChromeWebViewInternalContextMenusRemoveAllFunction(
       const ChromeWebViewInternalContextMenusRemoveAllFunction&) = delete;
@@ -85,7 +85,7 @@ class ChromeWebViewInternalContextMenusRemoveAllFunction
       const ChromeWebViewInternalContextMenusRemoveAllFunction&) = delete;
 
  protected:
-  ~ChromeWebViewInternalContextMenusRemoveAllFunction() override {}
+  ~ChromeWebViewInternalContextMenusRemoveAllFunction() override = default;
 
   // ExtensionFunction implementation.
   ResponseAction Run() override;

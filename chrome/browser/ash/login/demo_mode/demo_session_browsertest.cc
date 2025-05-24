@@ -10,6 +10,13 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/scoped_observation.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -17,17 +24,20 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
@@ -37,6 +47,7 @@
 #include "components/variations/active_field_trials.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "net/base/url_util.h"
 
 namespace ash {
@@ -48,7 +59,12 @@ inline constexpr char kDemoModeAppUrl[] =
     "chrome-untrusted://demo-mode-app/index.html";
 
 inline constexpr char kGrowthCampaignsComponentName[] = "growth-campaigns";
+inline constexpr char kDemoResourceComponentName[] = "demo-mode-resources";
 inline constexpr char kCampaignsFileName[] = "campaigns.json";
+inline constexpr char kDemoMediaDirName[] = "media/photos";
+inline constexpr char kDemoPhotoName[] = "photo.jpg";
+
+// inline constexpr base::TimeDelta kDemoIdleTimeout = base::Seconds(90);
 
 void SetDemoConfigPref(DemoSession::DemoModeConfig demo_config) {
   PrefService* prefs = g_browser_process->local_state();
@@ -68,6 +84,8 @@ void CheckNoDemoMode() {
   EXPECT_FALSE(DemoSession::IsDeviceInDemoMode());
   EXPECT_EQ(DemoSession::DemoModeConfig::kNone, DemoSession::GetDemoConfig());
 }
+
+}  // namespace
 
 // Tests locking device to policy::DEVICE_MODE_DEMO mode. It is an equivalent to
 // going through online demo mode setup or using offline setup.
@@ -226,17 +244,29 @@ class DemoLoginTestMainExtraParts : public ChromeBrowserMainExtraParts {
         .AppendASCII(kGrowthCampaignsComponentName);
   }
 
+  base::FilePath GetDemoResourceComponentPath() {
+    return components_temp_dir_.GetPath()
+        .AppendASCII("cros-components")
+        .AppendASCII(kDemoResourceComponentName);
+  }
+
   void PostEarlyInitialization() override {
     auto component_manager_ash =
         base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
     component_manager_ash->set_supported_components(
-        {"demo-mode-app", kGrowthCampaignsComponentName});
+        {"demo-mode-app", kGrowthCampaignsComponentName,
+         kDemoResourceComponentName});
     component_manager_ash->ResetComponentState(
         "demo-mode-app",
         component_updater::FakeComponentManagerAsh::ComponentInfo(
             component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/dev/null"),
             base::FilePath("/run/imageloader/demo-mode-app")));
+    component_manager_ash->ResetComponentState(
+        "demo-mode-resources",
+        component_updater::FakeComponentManagerAsh::ComponentInfo(
+            component_updater::ComponentManagerAsh::Error::NONE,
+            base::FilePath("/dev/null"), GetDemoResourceComponentPath()));
     component_manager_ash->ResetComponentState(
         "growth-campaigns",
         component_updater::FakeComponentManagerAsh::ComponentInfo(
@@ -281,6 +311,7 @@ class DemoSessionLoginTest : public LoginManagerTest,
       content::BrowserMainParts* browser_main_parts) override {
     auto extra_parts = std::make_unique<DemoLoginTestMainExtraParts>();
     growth_campaigns_mounted_path_ = extra_parts->GetGrowthCampaignsPath();
+    demo_resource_mounted_path_ = extra_parts->GetDemoResourceComponentPath();
     static_cast<ChromeBrowserMainParts*>(browser_main_parts)
         ->AddParts(std::move(extra_parts));
     LoginManagerTest::CreatedBrowserMainParts(browser_main_parts);
@@ -351,6 +382,10 @@ class DemoSessionLoginTest : public LoginManagerTest,
     return growth_campaigns_mounted_path_;
   }
 
+  base::FilePath& demo_resource_mounted_path() {
+    return demo_resource_mounted_path_;
+  }
+
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
@@ -358,6 +393,7 @@ class DemoSessionLoginTest : public LoginManagerTest,
   base::OnceClosure on_browser_added_callback_;
   static constexpr double kInitialBrightness = 20.0;
   base::FilePath growth_campaigns_mounted_path_;
+  base::FilePath demo_resource_mounted_path_;
   base::WeakPtrFactory<DemoSessionLoginTest> weak_ptr_factory_{this};
 };
 
@@ -586,5 +622,185 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
       variations::IsInSyntheticTrialGroup("CrOSGrowthStudy", "CampaignId3"));
 }
 
-}  // namespace
+class DemoSessionLoginIdleHandlerTest : public DemoSessionLoginTest {
+ public:
+  DemoSessionLoginIdleHandlerTest() : DemoSessionLoginTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDemoModeSignInFileCleanup}, {});
+
+    login_manager_mixin_.AppendRegularUsers(1);
+    demo_account_id_ = login_manager_mixin_.users()[0].account_id;
+  }
+
+  void SetUpOnMainThread() override {
+    CreateTestMediaFile();
+
+    // Setup DriveIntegrationService:
+    create_drive_integration_service_ = base::BindRepeating(
+        &DemoSessionLoginIdleHandlerTest::CreateDriveIntegrationService,
+        base::Unretained(this));
+    service_factory_for_test_ = std::make_unique<
+        drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
+        &create_drive_integration_service_);
+
+    drive::SetUpUserDataDirectoryForDriveFsTest(demo_account_id_);
+
+    DemoSessionLoginTest::SetUpOnMainThread();
+  }
+
+  void CreateTestMediaFile() {
+    const base::FilePath media_dir =
+        demo_resource_mounted_path_.AppendASCII(kDemoMediaDirName);
+    CHECK(base::CreateDirectory(media_dir));
+
+    const base::FilePath photo(media_dir.Append(kDemoPhotoName));
+    CHECK(base::WriteFile(photo, "random text"));
+  }
+
+  void FlushIOTasks() {
+    base::RunLoop run_loop;
+    DemoSession::Get()->GetBlockingTaskRunnerForTest()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  drive::DriveIntegrationService* CreateDriveIntegrationService(
+      Profile* profile) {
+    // Ignore non-user profile.
+    if (!ProfileHelper::IsUserProfile(profile)) {
+      return nullptr;
+    }
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath mount_path = profile->GetPath().Append("drivefs");
+
+    fake_drivefs_helper_ =
+        std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
+    auto* integration_service = new drive::DriveIntegrationService(
+        profile, std::string(), mount_path,
+        fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
+    return integration_service;
+  }
+
+  base::FilePath GetDriveFsAbsolutePath(const std::string& relative_path) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    drive::DriveIntegrationService* service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(
+            ProfileManager::GetActiveUserProfile());
+    EXPECT_TRUE(service->IsMounted());
+    EXPECT_TRUE(base::PathExists(service->GetMountPointPath()));
+
+    base::FilePath root("/");
+    base::FilePath absolute_path(service->GetMountPointPath());
+    root.AppendRelativePath(base::FilePath(relative_path), &absolute_path);
+    return absolute_path;
+  }
+
+  drivefs::FakeDriveFs* GetFakeDriveFs() {
+    return &fake_drivefs_helper_->fake_drivefs();
+  }
+
+  // Creates file under the Drive relative `file_path`. Returns the absolute
+  // path.
+  base::FilePath CreateFileInDriveFsFolder(const std::string& file_path) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath relative_file_path(file_path);
+    base::FilePath folder_path =
+        GetDriveFsAbsolutePath(relative_file_path.DirName().value());
+
+    // base::CreateDirectory returns 'true' on successful creation, or if the
+    // directory already exists.
+    EXPECT_TRUE(base::CreateDirectory(folder_path));
+    base::FilePath absolute_path =
+        folder_path.Append(relative_file_path.BaseName());
+    CHECK(base::WriteFile(absolute_path, "random text"));
+    return absolute_path;
+  }
+
+  AccountId demo_account_id_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // DriveFS test dependencies:
+  drive::DriveIntegrationServiceFactory::FactoryCallback
+      create_drive_integration_service_;
+  std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
+      service_factory_for_test_;
+  std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
+};
+
+// TODO(crbugs.com/406823191): Investigate the flaky and and re-enabled it.
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginIdleHandlerTest,
+                       DISABLED_CleanUpLocalFiles) {
+  demo_mode::SetForceEnableDemoAccountSignIn(true);
+
+  // Mock login with demo account, which is a regular user.
+  LoginUser(demo_account_id_);
+  login_manager_mixin_.WaitForActiveSession();
+
+  // Ensure media of resource components gets installed.
+  FlushIOTasks();
+  // Wait for idle handler get created at
+  // `DemoSession::OnDemoAppComponentLoaded`:
+  EXPECT_TRUE(base::test::RunUntil(
+    []() { return DemoSession::Get()->GetIdleHandlerForTest(); }));
+
+  //  Verify the photo was copied to download folder.
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  base::FilePath downloads_path =
+      file_manager::util::GetDownloadsFolderForProfile(profile);
+  base::FilePath photo_file = downloads_path.AppendASCII(kDemoPhotoName);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(photo_file));
+  }
+
+  // Shorten the timeout for testing.
+  base::TimeDelta idle_timeout = base::Seconds(2);
+  DemoSession::Get()->GetIdleHandlerForTest()->SetIdleTimeoutForTest(
+      idle_timeout);
+
+  // Mock user activity:
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
+  base::FilePath user_created_dir_path;
+  base::FilePath drive_fs_file;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Mock user creates a new folder under "MyFiles" and deletes the photo
+    // files.
+    base::ScopedTempDir user_created_dir;
+    base::FilePath my_files_path = profile->GetPath().AppendASCII("MyFiles");
+    EXPECT_TRUE(user_created_dir.CreateUniqueTempDirUnderPath(my_files_path));
+    EXPECT_TRUE(base::DirectoryExists(user_created_dir.GetPath()));
+    EXPECT_TRUE(base::DeleteFile(photo_file));
+    user_created_dir_path = user_created_dir.GetPath();
+
+    // Mock user creates a file under DriveFS:
+    drive_fs_file = CreateFileInDriveFsFolder("/root/test1.txt");
+    EXPECT_TRUE(base::PathExists(drive_fs_file));
+  }
+
+  // Wait idle timeout + 1s buffer for invoking the file clean up task.
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), idle_timeout + base::Seconds(1));
+  run_loop.Run();
+
+  // Wait file clean up tasks to be finished.
+  FlushIOTasks();
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Verify `user_created_dir` was deleted and photo was reset.
+    EXPECT_TRUE(base::test::RunUntil([&user_created_dir_path]() {
+      return !base::DirectoryExists(user_created_dir_path);
+    }));
+    EXPECT_TRUE(base::test::RunUntil(
+        [&photo_file]() { return base::PathExists(photo_file); }));
+    // Verify DriveFS file is deleted.
+    EXPECT_TRUE(base::test::RunUntil(
+        [&drive_fs_file]() { return !base::PathExists(drive_fs_file); }));
+  }
+}
+
 }  // namespace ash

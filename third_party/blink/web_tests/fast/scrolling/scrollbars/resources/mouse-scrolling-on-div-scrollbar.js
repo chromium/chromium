@@ -11,8 +11,7 @@ async function testArrows(scroller) {
   // and counts downwards into the negatives.
   const rtl = scroller.style.direction === "rtl";
 
-  const expectedScroll =
-      getScrollbarButtonScrollDelta(scroller).y;
+  const expectedScroll = SCROLLBAR_SCROLL_PIXELS;
 
   // Click on the Down arrow
   let position = downArrow(scroller);

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.search_engines.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
@@ -21,18 +23,22 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.GoogleFaviconServerCallback;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.ChoiceMadeLocation;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -49,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 
 /** A custom adapter for listing search engines. */
+@NullMarked
 public class SearchEngineAdapter extends BaseAdapter
         implements TemplateUrlService.LoadListener,
                 TemplateUrlService.TemplateUrlServiceObserver,
@@ -142,7 +149,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
     private boolean mIsLocationPermissionChanged;
 
-    @Nullable private Runnable mDisableAutoSwitchRunnable;
+    private @MonotonicNonNull Runnable mDisableAutoSwitchRunnable;
 
     /**
      * Construct a SearchEngineAdapter.
@@ -158,6 +165,7 @@ public class SearchEngineAdapter extends BaseAdapter
     }
 
     /** Start the adapter to gather the available search engines and listen for updates. */
+    @Initializer
     public void start() {
         mLargeIconBridge = createLargeIconBridge();
         refreshData();
@@ -203,13 +211,16 @@ public class SearchEngineAdapter extends BaseAdapter
             return; // Flow continues in onTemplateUrlServiceLoaded below.
         }
 
+        RegionalCapabilitiesService regionalCapabilities =
+                RegionalCapabilitiesServiceFactory.getForProfile(mProfile);
         List<TemplateUrl> templateUrls = templateUrlService.getTemplateUrls();
         TemplateUrl defaultSearchEngineTemplateUrl =
                 templateUrlService.getDefaultSearchEngineTemplateUrl();
+        assert defaultSearchEngineTemplateUrl != null;
         sortAndFilterUnnecessaryTemplateUrl(
                 templateUrls,
                 defaultSearchEngineTemplateUrl,
-                templateUrlService.isEeaChoiceCountry());
+                regionalCapabilities.isInEeaCountry());
         boolean forceRefresh = mIsLocationPermissionChanged;
         mIsLocationPermissionChanged = false;
         if (!didSearchEnginesChange(templateUrls)) {
@@ -402,7 +413,7 @@ public class SearchEngineAdapter extends BaseAdapter
     }
 
     @Override
-    public Object getItem(int pos) {
+    public @Nullable Object getItem(int pos) {
         if (pos < mPrepopulatedSearchEngines.size()) {
             return mPrepopulatedSearchEngines.get(pos);
         } else if (pos > mPrepopulatedSearchEngines.size()) {
@@ -454,6 +465,7 @@ public class SearchEngineAdapter extends BaseAdapter
         TextView description = view.findViewById(R.id.name);
 
         TemplateUrl templateUrl = (TemplateUrl) getItem(position);
+        assumeNonNull(templateUrl);
         description.setText(templateUrl.getShortName());
 
         TextView url = view.findViewById(R.id.url);
@@ -568,6 +580,7 @@ public class SearchEngineAdapter extends BaseAdapter
         boolean manualSwitch = mSelectedSearchEnginePosition != mInitialEnginePosition;
         if (manualSwitch) {
             RecordUserAction.record("SearchEngine_ManualChange");
+            assumeNonNull(mDisableAutoSwitchRunnable);
             mDisableAutoSwitchRunnable.run();
         }
         notifyDataSetChanged();
@@ -583,7 +596,7 @@ public class SearchEngineAdapter extends BaseAdapter
         return mPrepopulatedSearchEngines.size();
     }
 
-    void setDisableAutoSwitchRunnable(@NonNull Runnable runnable) {
+    void setDisableAutoSwitchRunnable(Runnable runnable) {
         mDisableAutoSwitchRunnable = runnable;
     }
 }

@@ -10,13 +10,13 @@ goog.setTestOnly();
 const Deferred = goog.require('goog.async.Deferred');
 const GoogPromise = goog.require('goog.Promise');
 const IterIterator = goog.require('goog.iter.Iterator');
-const StopIteration = goog.require('goog.iter.StopIteration');
 const StructsMap = goog.require('goog.structs.Map');
 const StructsSet = goog.require('goog.structs.Set');
 const TestCase = goog.require('goog.testing.TestCase');
 const asserts = goog.require('goog.testing.asserts');
 const dom = goog.require('goog.dom');
 const googArray = goog.require('goog.array');
+const googIter = goog.require('goog.iter');
 const product = goog.require('goog.userAgent.product');
 const testSuite = goog.require('goog.testing.testSuite');
 const throwException = goog.require('goog.async.throwException');
@@ -40,7 +40,7 @@ async function internalTestAssertRejects(swallowUnhandledRejections, factory) {
     // TODO(user): Stop the unhandled rejection handler from firing
     // rather than swallowing the errors.
     if (swallowUnhandledRejections) {
-      GoogPromise.setUnhandledRejectionHandler(goog.nullFunction);
+      GoogPromise.setUnhandledRejectionHandler(() => {});
     }
 
     let e;
@@ -741,11 +741,16 @@ testSuite({
        * type checking
        */
       iter.thing = this;
-      iter.nextValueOrThrow = function() {
+      /**
+       * @return {!IIterableResult<string>}
+       * @override
+       */
+      iter.next = function() {
         if (this.index < this.thing.what.length) {
-          return this.thing.what[this.index++].split('@')[0];
+          return googIter.createEs6IteratorYield(
+              this.thing.what[this.index++].split('@')[0]);
         } else {
-          throw StopIteration;
+          return googIter.ES6_ITERATOR_DONE;
         }
       };
 
@@ -775,6 +780,22 @@ testSuite({
     assertObjectEquals(new Date(2010, 0, 1), date);
     assertThrowsJsUnitException(
         goog.partial(assertObjectEquals, date, dateWithMilliseconds));
+  },
+
+
+  testAssertObjectEqualsWithCustomComparatorErrorMessage() {
+    class A {}
+
+    asserts.registerComparator(
+        A.prototype, (a, b, cmp) => 'pretty error message');
+    let exception = assertThrowsJsUnitException(() => {
+      assertObjectEquals(new A(), new A());
+    });
+    assertEquals('pretty error message', exception.message);
+    exception = assertThrowsJsUnitException(() => {
+      assertObjectEquals({a: new A()}, {a: new A()});
+    });
+    assertContains('a: pretty error message', exception.message);
   },
 
   testAssertObjectEqualsSparseArrays() {
@@ -1218,7 +1239,7 @@ testSuite({
         error.message);
 
     error = assertThrowsJsUnitException(() => {
-      assertThrowsJsUnitException(goog.nullFunction);
+      assertThrowsJsUnitException(() => {});
     });
     assertEquals('Expected a failure', error.message);
   },
@@ -1485,6 +1506,23 @@ testSuite({
         asserts.findDifferences(new Set(['a', 'b']), new Set(['b', 'a'])));
   },
 
+  testFindDifferences_customNoOpPredicate_equal() {
+    const findDifferences = (a, b) => asserts.findDifferences(
+        a, b, () => asserts.EQUALITY_PREDICATE_CANT_PROCESS);
+    assertNull(findDifferences(true, true));
+    assertNull(findDifferences(null, null));
+    assertNull(findDifferences(undefined, undefined));
+    assertNull(findDifferences(1, 1));
+    assertNull(findDifferences([1, 'a'], [1, 'a']));
+    assertNull(findDifferences([[1, 2], [3, 4]], [[1, 2], [3, 4]]));
+    assertNull(findDifferences([{a: 1, b: 2}], [{b: 2, a: 1}]));
+    assertNull(findDifferences(null, null));
+    assertNull(findDifferences(undefined, undefined));
+    assertNull(findDifferences(
+        new Map([['a', 1], ['b', 2]]), new Map([['b', 2], ['a', 1]])));
+    assertNull(findDifferences(new Set(['a', 'b']), new Set(['b', 'a'])));
+  },
+
   testFindDifferences_unequal() {
     assertNotNull(asserts.findDifferences(true, false));
     assertNotNull(asserts.findDifferences([{a: 1, b: 2}], [{a: 2, b: 1}]));
@@ -1510,6 +1548,35 @@ testSuite({
     assertNotNull(
         'Values have different types"',
         asserts.findDifferences(new Set(['1']), new Set([1])));
+  },
+
+  testFindDifferences_customNoOpPredicate_unequal() {
+    const findDifferences = (a, b) => asserts.findDifferences(
+        a, b, () => asserts.EQUALITY_PREDICATE_CANT_PROCESS);
+    assertNotNull(findDifferences(true, false));
+    assertNotNull(findDifferences([{a: 1, b: 2}], [{a: 2, b: 1}]));
+    assertNotNull(findDifferences([{a: 1}], [{a: 1, b: [2]}]));
+    assertNotNull(findDifferences([{a: 1, b: [2]}], [{a: 1}]));
+
+    assertNotNull(
+        'Second map is missing key "a"; first map is missing key "b"',
+        findDifferences(new Map([['a', 1]]), new Map([['b', 2]])));
+    assertNotNull(
+        'Value for key "a" differs by value',
+        findDifferences(new Map([['a', '1']]), new Map([['a', '2']])));
+    assertNotNull(
+        'Value for key "a" differs by type',
+        findDifferences(new Map([['a', '1']]), new Map([['a', 1]])));
+
+    assertNotNull(
+        'Second set is missing key "a"',
+        findDifferences(new Set(['a', 'b']), new Set(['b'])));
+    assertNotNull(
+        'First set is missing key "b"',
+        findDifferences(new Set(['a']), new Set(['a', 'b'])));
+    assertNotNull(
+        'Values have different types"',
+        findDifferences(new Set(['1']), new Set([1])));
   },
 
   testFindDifferences_arrays_nonNaturalKeys_notConfsuedForSparseness() {
@@ -1636,6 +1703,60 @@ testSuite({
     //    createBinTree(5, null), createBinTree(5, null)));
     assertNotNull(asserts.findDifferences(
         createBinTree(4, null), createBinTree(5, null)));
+  },
+
+  testFindDifferences_customEquality() {
+    const A = class {};
+    const B = class extends A {};
+    const C = class extends A {};
+    const D = class extends C {};
+
+    // Asserts that the result of findDifferences on a and b results in the
+    // given failure. Because findDifferences will not output the actual failure
+    // message for root types, we have to parse the failure message for types
+    // with paths.
+    const assertFindDifferencesFailure = (a, b, failure) => assertEquals(
+        failure,
+        asserts.findDifferences([a], [b])
+            .split('\n')[1]  // There will be one failure, on the 0th element.
+            .split(':')[1]   // We want the message on the RHS of the index.
+            .substring(1)    // Skip the leading space.
+    );
+
+    // Test registration of one comparator. All subtypes of A should use this
+    // comparator.
+    const aDifferences = 'hello';
+    asserts.registerComparator(A.prototype, (a, b, cmp) => aDifferences);
+    assertFindDifferencesFailure(new A(), new A(), aDifferences);
+    assertFindDifferencesFailure(new B(), new C(), aDifferences);
+    assertFindDifferencesFailure(new C(), new B(), aDifferences);
+    assertFindDifferencesFailure(new C(), new A(), aDifferences);
+
+    // Test registration of two comparators on subtypes. We should only use
+    // the comparator for B if _both_ arguments are B.
+    const bDifferences = 'goodbye';
+    asserts.registerComparator(B.prototype, (a, b, cmp) => bDifferences);
+    assertFindDifferencesFailure(new A(), new A(), aDifferences);
+    assertFindDifferencesFailure(new B(), new C(), aDifferences);
+    assertFindDifferencesFailure(new C(), new B(), aDifferences);
+    assertFindDifferencesFailure(new B(), new B(), bDifferences);
+
+    // Test registration of comparators on disjoint types. We should use the
+    // comparator for C on its subclass D, and use A otherwise.
+    const cDifferences = 'hello again';
+    asserts.registerComparator(C.prototype, (a, b, cmp) => cDifferences);
+    assertFindDifferencesFailure(new C(), new D(), cDifferences);
+    assertFindDifferencesFailure(new B(), new D(), aDifferences);
+    assertFindDifferencesFailure(new A(), new D(), aDifferences);
+
+    // Test that we can clear out these comparators correctly. Note that if
+    // a test above fails, we can end up with some prototypes still in our
+    // global registration list, but because the classes are anonymous, they
+    // cannot break other code.
+    asserts.clearCustomComparator(B.prototype);
+    asserts.clearCustomComparator(C.prototype);
+    assertFindDifferencesFailure(new C(), new D(), aDifferences);
+    asserts.clearCustomComparator(A.prototype);
   },
 
   testStringSamePrefix() {

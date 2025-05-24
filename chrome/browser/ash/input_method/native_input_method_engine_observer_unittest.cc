@@ -18,6 +18,7 @@ class NativeInputMethodEngineObserverTest : public ::testing::Test {
   NativeInputMethodEngineObserverTest()
       : observer_(/*prefs=*/profile_.GetPrefs(),
                   /*editor_event_sink=*/nullptr,
+                  /*lobster_event_sink=*/nullptr,
                   /*ime_base_observer=*/nullptr,
                   /*assistive_suggester=*/nullptr,
                   /*autocorrect_manager=*/nullptr,

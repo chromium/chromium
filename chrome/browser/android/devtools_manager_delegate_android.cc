@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/devtools/chrome_devtools_session_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -37,7 +38,7 @@ class ClientProxy : public content::DevToolsAgentHostClient {
   ClientProxy(const ClientProxy&) = delete;
   ClientProxy& operator=(const ClientProxy&) = delete;
 
-  ~ClientProxy() override {}
+  ~ClientProxy() override = default;
 
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {
@@ -69,11 +70,10 @@ class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {
   TabProxyDelegate(const TabProxyDelegate&) = delete;
   TabProxyDelegate& operator=(const TabProxyDelegate&) = delete;
 
-  ~TabProxyDelegate() override {}
+  ~TabProxyDelegate() override = default;
 
   void Attach(content::DevToolsExternalAgentProxy* proxy) override {
     proxies_[proxy] = std::make_unique<ClientProxy>(proxy);
-    MaterializeAgentHost();
     if (agent_host_)
       agent_host_->AttachClient(proxies_[proxy].get());
   }
@@ -85,8 +85,10 @@ class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {
     if (agent_host_)
       agent_host_->DetachClient(it->second.get());
     proxies_.erase(it);
-    if (proxies_.empty())
+    if (proxies_.empty()) {
       agent_host_ = nullptr;
+      MaterializeAgentHost();
+    }
   }
 
   std::string GetType() override {
@@ -204,16 +206,6 @@ scoped_refptr<DevToolsAgentHost> DevToolsAgentHostForTab(TabAndroid* tab,
 
 static const void* const kCreatedByDevTools = &kCreatedByDevTools;
 
-bool IsCreatedByDevTools(const WebContents& web_contents) {
-  return !!web_contents.GetUserData(kCreatedByDevTools);
-}
-
-void MarkCreatedByDevTools(WebContents& web_contents) {
-  DCHECK(!IsCreatedByDevTools(web_contents));
-  web_contents.SetUserData(kCreatedByDevTools,
-                           std::make_unique<base::SupportsUserData::Data>());
-}
-
 } //  namespace
 
 DevToolsManagerDelegateAndroid::DevToolsManagerDelegateAndroid() = default;
@@ -223,6 +215,18 @@ DevToolsManagerDelegateAndroid::~DevToolsManagerDelegateAndroid() = default;
 content::BrowserContext*
 DevToolsManagerDelegateAndroid::GetDefaultBrowserContext() {
   return ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
+}
+
+bool DevToolsManagerDelegateAndroid::IsCreatedByDevTools(
+    const WebContents& web_contents) {
+  return !!web_contents.GetUserData(kCreatedByDevTools);
+}
+
+void DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(
+    WebContents& web_contents) {
+  DCHECK(!IsCreatedByDevTools(web_contents));
+  web_contents.SetUserData(kCreatedByDevTools,
+                           std::make_unique<base::SupportsUserData::Data>());
 }
 
 std::string DevToolsManagerDelegateAndroid::GetTargetType(
@@ -272,27 +276,31 @@ DevToolsAgentHost::List DevToolsManagerDelegateAndroid::RemoteDebuggingTargets(
   return result;
 }
 
-scoped_refptr<DevToolsAgentHost>
-DevToolsManagerDelegateAndroid::CreateNewTarget(
-    const GURL& url,
-    DevToolsManagerDelegate::TargetType target_type) {
-  if (TabModelList::models().empty())
-    return nullptr;
-
-  TabModel* tab_model = TabModelList::models()[0];
-  if (!tab_model)
-    return nullptr;
-
-  WebContents* web_contents = tab_model->CreateNewTabForDevTools(url);
-  if (!web_contents)
-    return nullptr;
-
-  MarkCreatedByDevTools(*web_contents);
-  return target_type == DevToolsManagerDelegate::kTab
-             ? DevToolsAgentHost::GetOrCreateForTab(web_contents)
-             : DevToolsAgentHost::GetOrCreateFor(web_contents);
-}
-
 bool DevToolsManagerDelegateAndroid::IsBrowserTargetDiscoverable() {
   return true;
+}
+
+void DevToolsManagerDelegateAndroid::HandleCommand(
+    content::DevToolsAgentHostClientChannel* channel,
+    base::span<const uint8_t> message,
+    NotHandledCallback callback) {
+  auto it = sessions_.find(channel);
+  if (it == sessions_.end()) {
+    // This should not happen, but happens. NOTREACHED tries to get
+    // a repro in some test.
+    NOTREACHED();
+  }
+  it->second->HandleCommand(message, std::move(callback));
+}
+
+void DevToolsManagerDelegateAndroid::ClientAttached(
+    content::DevToolsAgentHostClientChannel* channel) {
+  DCHECK(sessions_.find(channel) == sessions_.end());
+  sessions_.emplace(channel,
+                    std::make_unique<ChromeDevToolsSessionAndroid>(channel));
+}
+
+void DevToolsManagerDelegateAndroid::ClientDetached(
+    content::DevToolsAgentHostClientChannel* channel) {
+  sessions_.erase(channel);
 }

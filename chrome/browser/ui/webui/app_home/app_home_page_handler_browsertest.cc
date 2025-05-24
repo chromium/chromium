@@ -10,8 +10,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/create_application_shortcut_view_test_support.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -35,6 +35,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -191,8 +192,8 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
                                                     page_.BindAndGetRemote());
   }
 
-  extensions::ExtensionService* extension_service() {
-    return extensions::ExtensionSystem::Get(profile())->extension_service();
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(profile());
   }
 
   webapps::AppId InstallTestWebApp(
@@ -225,7 +226,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
             base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
             manifest, 0, &error);
 
-    extension_service()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
     return extension;
   }
 
@@ -242,7 +243,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
             base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
             manifest, 0, &error);
 
-    extension_service()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
     return extension;
   }
 
@@ -260,7 +261,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
     // locking semantics on WinOS platfom. To workaround this case, make sure
     // the task of uninstalling extension complete before the `AppHome` test
     // tear down.
-    extension_service()->UninstallExtension(
+    extension_registrar()->UninstallExtension(
         extension->id(),
         extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error,
         run_loop.QuitClosure());

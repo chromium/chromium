@@ -1,0 +1,311 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "icu_properties_data"
+  epoch = "2"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/lib.rs"
+  sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/lib.rs" ]
+  inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_alnum_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_alnum_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_alphabetic_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_alphabetic_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_ascii_hex_digit_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_ascii_hex_digit_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_basic_emoji_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_basic_emoji_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_bidi_control_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_bidi_control_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_bidi_mirrored_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_bidi_mirrored_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_blank_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_blank_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_case_ignorable_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_case_ignorable_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_case_sensitive_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_case_sensitive_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_cased_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_cased_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_casefolded_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_casefolded_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_casemapped_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_casemapped_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_lowercased_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_lowercased_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_nfkc_casefolded_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_nfkc_casefolded_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_titlecased_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_titlecased_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_uppercased_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_changes_when_uppercased_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_dash_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_dash_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_default_ignorable_code_point_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_default_ignorable_code_point_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_deprecated_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_deprecated_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_diacritic_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_diacritic_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_emoji_component_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_emoji_component_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_emoji_modifier_base_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_emoji_modifier_base_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_emoji_modifier_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_emoji_modifier_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_emoji_presentation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_emoji_presentation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_emoji_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_emoji_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_extended_pictographic_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_extended_pictographic_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_extender_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_extender_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_full_composition_exclusion_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_full_composition_exclusion_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_graph_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_graph_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_grapheme_base_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_grapheme_base_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_grapheme_extend_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_grapheme_extend_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_grapheme_link_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_grapheme_link_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_hex_digit_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_hex_digit_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_hyphen_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_hyphen_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_id_continue_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_id_continue_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_id_start_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_id_start_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_ideographic_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_ideographic_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_ids_binary_operator_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_ids_binary_operator_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_ids_trinary_operator_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_ids_trinary_operator_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_join_control_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_join_control_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_logical_order_exception_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_logical_order_exception_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_lowercase_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_lowercase_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_math_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_math_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_nfc_inert_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_nfc_inert_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_nfd_inert_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_nfd_inert_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_nfkc_inert_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_nfkc_inert_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_nfkd_inert_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_nfkd_inert_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_noncharacter_code_point_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_noncharacter_code_point_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_pattern_syntax_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_pattern_syntax_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_pattern_white_space_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_pattern_white_space_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_prepended_concatenation_mark_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_prepended_concatenation_mark_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_print_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_print_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_quotation_mark_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_quotation_mark_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_radical_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_radical_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_regional_indicator_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_regional_indicator_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_segment_starter_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_segment_starter_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_sentence_terminal_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_sentence_terminal_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_soft_dotted_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_soft_dotted_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_terminal_punctuation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_terminal_punctuation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_unified_ideograph_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_unified_ideograph_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_uppercase_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_uppercase_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_variation_selector_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_variation_selector_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_white_space_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_white_space_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_xdigit_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_xdigit_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_xid_continue_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_xid_continue_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_xid_start_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_binary_xid_start_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_bidi_mirroring_glyph_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_bidi_mirroring_glyph_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_canonical_combining_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_canonical_combining_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_east_asian_width_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_east_asian_width_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_general_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_general_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_grapheme_cluster_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_grapheme_cluster_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_hangul_syllable_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_hangul_syllable_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_indic_conjunct_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_indic_conjunct_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_indic_syllabic_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_indic_syllabic_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_joining_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_joining_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_line_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_line_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_script_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_script_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_sentence_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_sentence_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_vertical_orientation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_vertical_orientation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_word_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_enum_word_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_canonical_combining_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_canonical_combining_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_east_asian_width_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_east_asian_width_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_general_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_general_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_grapheme_cluster_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_grapheme_cluster_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_hangul_syllable_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_hangul_syllable_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_indic_syllabic_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_indic_syllabic_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_joining_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_joining_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_line_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_line_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_script_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_script_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_sentence_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_sentence_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_vertical_orientation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_vertical_orientation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_word_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_long_word_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_canonical_combining_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_canonical_combining_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_east_asian_width_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_east_asian_width_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_general_category_mask_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_general_category_mask_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_general_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_general_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_grapheme_cluster_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_grapheme_cluster_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_hangul_syllable_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_hangul_syllable_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_indic_syllabic_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_indic_syllabic_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_joining_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_joining_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_line_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_line_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_script_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_script_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_sentence_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_sentence_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_vertical_orientation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_vertical_orientation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_word_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_parse_word_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_bidi_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_canonical_combining_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_canonical_combining_class_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_east_asian_width_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_east_asian_width_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_general_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_general_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_grapheme_cluster_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_grapheme_cluster_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_hangul_syllable_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_hangul_syllable_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_indic_syllabic_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_indic_syllabic_category_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_joining_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_joining_type_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_line_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_line_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_script_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_script_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_sentence_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_sentence_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_vertical_orientation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_vertical_orientation_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_word_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_name_short_word_break_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_script_with_extensions_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/src/../data/property_script_with_extensions_v1.rs.data",
+  ]
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_authors = "The ICU4X Project Developers"
+  cargo_pkg_name = "icu_properties_data"
+  cargo_pkg_description = "Data for the icu_properties crate"
+  cargo_pkg_version = "2.0.1"
+
+  allow_unsafe = false
+
+  build_root = "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/build.rs"
+  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_properties_data-v2/build.rs" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_ANDROID_COMPOSITOR_H_
 #define CONTENT_PUBLIC_BROWSER_ANDROID_COMPOSITOR_H_
 
+#include <optional>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -48,12 +50,10 @@ class CONTENT_EXPORT Compositor {
   // instance can be used. This should be called only once.
   static void Initialize();
 
-  // Creates a GL context for the provided |handle|. If a null handle is passed,
-  // an offscreen context is created. This must be called on the UI thread.
+  // Creates an offscreen GL context. This must be called on the UI thread.
   using ContextProviderCallback =
       base::OnceCallback<void(scoped_refptr<viz::ContextProvider>)>;
   static void CreateContextProvider(
-      gpu::SurfaceHandle handle,
       gpu::SharedMemoryLimits shared_memory_limits,
       ContextProviderCallback callback);
 
@@ -74,8 +74,10 @@ class CONTENT_EXPORT Compositor {
   virtual const gfx::Size& GetWindowBounds() = 0;
 
   // Set the output surface which the compositor renders into.
-  virtual void SetSurface(const base::android::JavaRef<jobject>& surface,
-                          bool can_be_used_with_surface_control) = 0;
+  virtual std::optional<gpu::SurfaceHandle> SetSurface(
+      const base::android::JavaRef<jobject>& surface,
+      bool can_be_used_with_surface_control,
+      const base::android::JavaRef<jobject>& host_input_token) = 0;
 
   // Set the background color used by the layer tree host.
   virtual void SetBackgroundColor(int color) = 0;

@@ -1,0 +1,134 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+<root root=true> = <lines>
+
+<bool> = true
+<bool> = false
+<String> = "<string>"
+
+# basic-type arrays
+<uint8ArrayElements> = 
+<uint8ArrayElements> = <uint8>,<uint8ArrayElements>
+<uint8Array> = [<uint8ArrayElements>]
+
+<uint16ArrayElements> = 
+<uint16ArrayElements> = <uint16>,<uint16ArrayElements>
+<uint16Array> = [<uint16ArrayElements>]
+
+<int32ArrayElements> = 
+<int32ArrayElements> = <int32>,<int32ArrayElements>
+<int32Array> = [<int32ArrayElements>]
+
+<Nullable_int32Array> = null
+<Nullable_int32Array> = <int32Array>
+
+<Nullable_uint8Array> = null
+<Nullable_uint8Array> = <uint8Array>
+
+<Nullable_mojo_base_mojom_String16> = null
+<Nullable_mojo_base_mojom_String16> = <mojo_base_mojom_String16>
+<mojo_base_mojom_String16> = {data:<uint16Array>}
+
+<blink_mojom_NotificationDirection> = 0 # LEFT_TO_RIGHT
+<blink_mojom_NotificationDirection> = 1 # RIGHT_TO_LEFT
+<blink_mojom_NotificationDirection> = 2 # Auto
+
+<Nullable_String> = null
+<Nullable_String> = <String>
+
+<url_mojom_Url> = {url:<String>}
+
+<Nullable_blink_mojom_NotificationActionArray> = null
+<Nullable_blink_mojom_NotificationActionArray> = <blink_mojom_NotificationActionArray>
+
+<blink_mojom_NotificationActionArray> = [<blink_mojom_NotificationActionArrayElements>]
+<blink_mojom_NotificationActionArrayElements> = 
+<blink_mojom_NotificationActionArrayElements> = <blink_mojom_NotificationAction>,<blink_mojom_NotificationActionArrayElements>
+
+<Nullable_mojo_base_mojom_Time> = null
+<Nullable_mojo_base_mojom_Time> = <mojo_base_mojom_Time>
+<mojo_base_mojom_Time> = {internalValue:<int64>}
+
+<blink_mojom_NotificationScenario> = 0
+<blink_mojom_NotificationScenario> = 1
+
+<blink_mojom_NotificationActionType> = 0
+<blink_mojom_NotificationActionType> = 1
+
+<Nullable_skia_mojom_BitmapN32> = null
+<Nullable_skia_mojom_BitmapN32> = <skia_mojom_BitmapN32>
+
+<Nullable_Nullable_skia_mojom_BitmapN32Array> = null
+<Nullable_Nullable_skia_mojom_BitmapN32Array> = <Nullable_skia_mojom_BitmapN32Array>
+<Nullable_skia_mojom_BitmapN32Array> = [<Nullable_skia_mojom_BitmapN32ArrayElements>]
+<Nullable_skia_mojom_BitmapN32ArrayElements> = 
+<Nullable_skia_mojom_BitmapN32ArrayElements> = <Nullable_skia_mojom_BitmapN32>,<Nullable_skia_mojom_BitmapN32ArrayElements>
+
+<skia_mojom_AlphaType> = 0
+<skia_mojom_AlphaType> = 1
+<skia_mojom_AlphaType> = 2
+<skia_mojom_AlphaType> = 3
+
+<OptionalFloat7Array> = null
+<OptionalFloat7Array> = [<float>,<float>,<float>,<float>,<float>,<float>,<float>]
+
+<OptionalFloat9Array> = null
+<OptionalFloat9Array> = [<float>,<float>,<float>,<float>,<float>,<float>,<float>,<float>,<float>]
+
+<skia_mojom_BitmapN32ImageInfo> = {alphaType:<skia_mojom_AlphaType>,width:<uint32>,height:<uint32>,colorTransferFunction:<OptionalFloat7Array>,colorToXyzMatrix:<OptionalFloat9Array>}
+
+<blink_mojom_NotificationAction> = {type:<blink_mojom_NotificationActionType>,action:<String>,title:<mojo_base_mojom_String16>,icon:<url_mojom_Url>,placeholder:<Nullable_mojo_base_mojom_String16>}
+
+<blink_mojom_NotificationData> = {title:<mojo_base_mojom_String16>,direction:<blink_mojom_NotificationDirection>,lang:<Nullable_String>,body:<mojo_base_mojom_String16>,tag:<String>,image:<url_mojom_Url>,icon:<url_mojom_Url>,badge:<url_mojom_Url>,vibrationPattern:<Nullable_int32Array>,timestamp:<double>,renotify:<bool>,silent:<bool>,requireInteraction:<bool>,data:<Nullable_uint8Array>,actions:<Nullable_blink_mojom_NotificationActionArray>,showTriggerTimestamp:<Nullable_mojo_base_mojom_Time>,scenario:<blink_mojom_NotificationScenario>}
+
+<skia_mojom_BitmapN32> = {imageInfo:<skia_mojom_BitmapN32ImageInfo>,pixelData:<mojo_base_mojom_BigBuffer>}
+
+<mojo_base_mojom_BigBuffer> = {bytes:<uint8Array>}
+
+<mojo_base_mojom_BigBuffer> = {invalidBuffer:<bool>}
+
+<blink_mojom_NotificationResources> = {image:<Nullable_skia_mojom_BitmapN32>,icon:<Nullable_skia_mojom_BitmapN32>,badge:<Nullable_skia_mojom_BitmapN32>,actionIcons:<Nullable_Nullable_skia_mojom_BitmapN32Array>}
+
+<blink_mojom_NonPersistentNotificationListenerPendingRemote> = <blink_mojom_NonPersistentNotificationListenerReceiver>.$.bindNewPipeAndPassRemote()
+
+<blink_mojom_PermissionStatus> = <blink_mojom_NotificationServiceGetPermissionStatusResponseType>.status
+
+<blink_mojom_PersistentNotificationError> = <blink_mojom_NotificationServiceDisplayPersistentNotificationResponseType>.error
+
+<StringArray> = <blink_mojom_NotificationServiceGetNotificationsResponseType>.notificationIds
+
+<blink_mojom_NotificationDataArray> = <blink_mojom_NotificationServiceGetNotificationsResponseType>.notificationDatas
+
+!begin helperlines
+
+<new RootInterfaceBinder> = (root_interface_class) => { root_interface_remote = new root_interface_class(); root_interface_remote.$.bindNewPipeAndPassReceiver().bindInBrowser(); return root_interface_remote;};
+
+<new NotificationServiceRemote> = <RootInterfaceBinder>(blink.mojom.NotificationServiceRemote);
+
+<new blink_mojom_NonPersistentNotificationListenerStubClass> = class {onShow(){}onClick(){return Promise.resolve();}onClose(){return Promise.resolve();}};
+
+<new blink_mojom_NonPersistentNotificationListenerStub> = new <blink_mojom_NonPersistentNotificationListenerStubClass>();
+
+<new blink_mojom_NonPersistentNotificationListenerReceiver> = new blink.mojom.NonPersistentNotificationListenerReceiver(<blink_mojom_NonPersistentNotificationListenerStub>);
+
+!end helperlines
+
+!lineguard try { <line> } catch(e) {}
+!begin lines
+
+<new blink_mojom_NotificationServiceGetPermissionStatusResponseType> = <NotificationServiceRemote>.getPermissionStatus();
+
+await <NotificationServiceRemote>.displayNonPersistentNotification(<String>,<blink_mojom_NotificationData>,<blink_mojom_NotificationResources>,<blink_mojom_NonPersistentNotificationListenerPendingRemote>);
+
+await <NotificationServiceRemote>.closeNonPersistentNotification(<String>);
+
+<new blink_mojom_NotificationServiceDisplayPersistentNotificationResponseType> = await <NotificationServiceRemote>.displayPersistentNotification(<int64>,<blink_mojom_NotificationData>,<blink_mojom_NotificationResources>);
+
+await <NotificationServiceRemote>.closePersistentNotification(<String>);
+
+<new blink_mojom_NotificationServiceGetNotificationsResponseType> = await <NotificationServiceRemote>.getNotifications(<int64>,<String>,<bool>);
+
+!end lines
+

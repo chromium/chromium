@@ -4,6 +4,7 @@
 
 #include "ash/api/tasks/fake_tasks_client.h"
 
+#include <algorithm>
 #include <list>
 #include <memory>
 #include <optional>
@@ -16,7 +17,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -122,8 +122,8 @@ void FakeTasksClient::MarkAsCompleted(const std::string& task_list_id,
         base::JoinString({task_list_id, task_id}, ":"));
   } else {
     pending_completed_tasks_.erase(
-        base::ranges::find(pending_completed_tasks_,
-                           base::JoinString({task_list_id, task_id}, ":")));
+        std::ranges::find(pending_completed_tasks_,
+                          base::JoinString({task_list_id, task_id}, ":")));
   }
 }
 

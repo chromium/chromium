@@ -6,6 +6,7 @@
 
   data: [
     "cache",
+    "cache-storage",
     "navigational-prefetch",
   ],
 }

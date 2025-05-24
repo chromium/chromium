@@ -31,9 +31,11 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/to_string.h"
 #include "encrypted_media_utils.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_exception.h"
@@ -108,8 +110,7 @@ static bool IsPersistentSessionType(WebEncryptedMediaSessionType session_type) {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 V8MediaKeySessionClosedReason::Enum ConvertSessionClosedReason(
@@ -954,7 +955,7 @@ void MediaKeySession::ActionTimerFired(TimerBase*) {
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -1020,15 +1021,14 @@ void MediaKeySession::OnSessionClosed(media::CdmSessionClosedReason reason) {
 
   // 5. Run the Update Key Statuses algorithm on the session, providing
   //    an empty sequence.
-  OnSessionKeysChange(WebVector<WebEncryptedMediaKeyInformation>(), false);
+  OnSessionKeysChange(std::vector<WebEncryptedMediaKeyInformation>(), false);
 
   // 6. Run the Update Expiration algorithm on the session, providing NaN.
   OnSessionExpirationUpdate(std::numeric_limits<double>::quiet_NaN());
 
   // 7. Resolve promise.
   closed_promise_->Resolve(
-      V8MediaKeySessionClosedReason(ConvertSessionClosedReason(reason))
-          .AsString());
+      V8MediaKeySessionClosedReason(ConvertSessionClosedReason(reason)));
 
   // Fail any pending events, except if it's a close request.
   action_timer_.Stop();
@@ -1075,12 +1075,12 @@ void MediaKeySession::OnSessionExpirationUpdate(
 }
 
 void MediaKeySession::OnSessionKeysChange(
-    const WebVector<WebEncryptedMediaKeyInformation>& keys,
+    const std::vector<WebEncryptedMediaKeyInformation>& keys,
     bool has_additional_usable_key) {
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL)
       << __func__ << "(" << this << ") with " << keys.size()
       << " keys and hasAdditionalUsableKey is "
-      << (has_additional_usable_key ? "true" : "false");
+      << base::ToString(has_additional_usable_key);
 
   // From https://w3c.github.io/encrypted-media/#update-key-statuses:
   // The following steps are run:
@@ -1093,6 +1093,9 @@ void MediaKeySession::OnSessionKeysChange(
   // 4.1 Empty statuses.
   key_statuses_map_->Clear();
 
+  auto* ukm_recorder = GetExecutionContext()->UkmRecorder();
+  const ukm::SourceId source_id = GetExecutionContext()->UkmSourceID();
+
   // 4.2 For each pair in input statuses.
   for (size_t i = 0; i < keys.size(); ++i) {
     // 4.2.1 Let pair be the pair.
@@ -1100,7 +1103,11 @@ void MediaKeySession::OnSessionKeysChange(
     // 4.2.2 Insert an entry for pair's key ID into statuses with the
     //       value of pair's MediaKeyStatus value.
     key_statuses_map_->AddEntry(
-        key.Id(), EncryptedMediaUtils::ConvertKeyStatusToString(key.Status()));
+        key.Id(), EncryptedMediaUtils::ConvertKeyStatusToEnum(key.Status()));
+
+    ukm::builders::Media_EME_CdmSystemCode(source_id)
+        .SetCdmSystemCode(key.SystemCode())
+        .Record(ukm_recorder);
   }
 
   // 5. Queue a task to fire a simple event named keystatuseschange

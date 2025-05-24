@@ -7,6 +7,7 @@
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "device/base/features.h"
 #include "device/fido/features.h"
 #include "services/device/public/cpp/device_features.h"
 
@@ -22,14 +23,17 @@ namespace {
 // services/device/public/cpp/device_features.h or in other locations in the
 // code base.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &device::kWebAuthnAndroidCredMan,
+    &device::kWebAuthnAndroidUsePasskeyCache,
+    &device::kWebAuthnRemoteDesktopAllowedOriginsPolicy,
     &kGenericSensorExtraClasses,
-};
+    &kBatteryStatusManagerBroadcastReceiverInBackground,
+    &device::features::kBluetoothRfcommAndroid,
+    &device::features::kGmsCoreLocationRequestParamOverride};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 

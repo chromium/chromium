@@ -69,6 +69,7 @@ status::Code ReadReferences(ConstBufferView image,
 }
 
 status::Code DetectAll(ConstBufferView image,
+                       const GenerateOptions& options,
                        std::ostream& out,
                        std::vector<ConstBufferView>* sub_image_list) {
   DCHECK_NE(sub_image_list, nullptr);
@@ -83,10 +84,12 @@ status::Code DetectAll(ConstBufferView image,
         << ": " << msg << std::endl;
   };
 
-  ElementFinder finder(image,
-                       base::BindRepeating(DetectElementFromDisassembler));
-  for (auto element = finder.GetNext(); element.has_value();
-       element = finder.GetNext()) {
+  std::unique_ptr<ElementFinder> element_finder =
+      std::make_unique<ElementFinder>(
+          image, base::BindRepeating(DetectElementFromDisassembler),
+          options.start_scan_at);
+  for (auto element = element_finder->GetNext(); element.has_value();
+       element = element_finder->GetNext()) {
     ConstBufferView sub_image = image[element->region()];
     sub_image_list->push_back(sub_image);
     size_t pos = sub_image.begin() - image.begin();
@@ -112,14 +115,17 @@ status::Code DetectAll(ConstBufferView image,
 
 status::Code MatchAll(ConstBufferView old_image,
                       ConstBufferView new_image,
-                      std::string imposed_matches,
+                      const GenerateOptions& options,
                       std::ostream& out) {
   std::unique_ptr<EnsembleMatcher> matcher;
-  if (imposed_matches.empty()) {
-    matcher = std::make_unique<HeuristicEnsembleMatcher>(&out);
-  } else {
+  if (options.imposed_matches.empty()) {
     matcher =
-        std::make_unique<ImposedEnsembleMatcher>(std::move(imposed_matches));
+        std::make_unique<HeuristicEnsembleMatcher>(options.start_scan_at, &out);
+  } else {
+    if (options.start_scan_at > 0) {
+      LOG(WARNING) << "-start_scan_at option is meaningless under -imposed.";
+    }
+    matcher = std::make_unique<ImposedEnsembleMatcher>(options.imposed_matches);
   }
   if (!matcher->RunMatch(old_image, new_image)) {
     out << "RunMatch() failed.";

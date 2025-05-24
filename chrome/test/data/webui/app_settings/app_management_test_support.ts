@@ -65,6 +65,7 @@ export function createTestApp(id: string, optConfig?: AppConfig): App {
     selectedLocale: null,
     showSystemNotificationsSettingsLink: false,
     allowUninstall: true,
+    disableUserChoiceNavigationCapturing: false,
   };
 
   if (optConfig) {

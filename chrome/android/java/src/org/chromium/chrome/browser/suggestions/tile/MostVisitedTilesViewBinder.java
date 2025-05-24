@@ -39,9 +39,9 @@ final class MostVisitedTilesViewBinder {
             model.get(PLACEHOLDER_VIEW)
                     .setVisibility(model.get(IS_MVT_LAYOUT_VISIBLE) ? View.GONE : View.VISIBLE);
         } else if (HORIZONTAL_INTERVAL_PADDINGS == propertyKey) {
-            viewHolder.mvTilesLayout.setIntervalPaddings(model.get(HORIZONTAL_INTERVAL_PADDINGS));
+            viewHolder.mvTilesLayout.setIntervalMargins(model.get(HORIZONTAL_INTERVAL_PADDINGS));
         } else if (HORIZONTAL_EDGE_PADDINGS == propertyKey) {
-            viewHolder.mvTilesLayout.setEdgePaddings(model.get(HORIZONTAL_EDGE_PADDINGS));
+            viewHolder.mvTilesLayout.setEdgeMargins(model.get(HORIZONTAL_EDGE_PADDINGS));
         }
     }
 }

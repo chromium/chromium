@@ -11,28 +11,30 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 
 /** View of the tab on the single tab tab switcher. */
+@NullMarked
 class SingleTabView extends LinearLayout {
-    @Nullable private TextView mSeeMoreLinkView;
+    private TextView mSeeMoreLinkView;
     private ImageView mFavicon;
     private TextView mTitle;
-    @Nullable private TabThumbnailView mTabThumbnail;
-    @Nullable private TextView mUrl;
+    private @Nullable TabThumbnailView mTabThumbnail;
+    private TextView mUrl;
 
     /** Default constructor needed to inflate via XML. */
     public SingleTabView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
+    @Initializer
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -65,7 +67,6 @@ class SingleTabView extends LinearLayout {
                         resources.getQuantityString(
                                 R.plurals.home_modules_tab_resumption_title, 1));
             }
-            mTabThumbnail.setScaleType(ScaleType.MATRIX);
             mTabThumbnail.updateThumbnailPlaceholder(
                     /* isIncognito= */ false, /* isSelected= */ false);
         }
@@ -142,6 +143,7 @@ class SingleTabView extends LinearLayout {
     }
 
     private void updateThumbnailMatrix(Drawable thumbnail) {
+        assert mTabThumbnail != null;
         final int width = mTabThumbnail.getMeasuredWidth();
         final int height = mTabThumbnail.getMeasuredHeight();
         if (width == 0 || height == 0) {

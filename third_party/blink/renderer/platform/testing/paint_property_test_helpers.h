@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
@@ -114,7 +115,8 @@ inline EffectPaintPropertyNode* CreateFilterEffect(
   EffectPaintPropertyNode::State state;
   state.local_transform_space = &local_transform_space;
   state.output_clip = output_clip;
-  state.filter = std::move(filter);
+  state.filter_info = std::make_unique<EffectPaintPropertyNode::FilterInfo>(
+      filter, filter.MapRect(gfx::ToEnclosingRect(filter.ReferenceBox())));
   state.direct_compositing_reasons = compositing_reasons;
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       NewUniqueObjectId(), CompositorElementIdNamespace::kEffectFilter);
@@ -137,7 +139,8 @@ inline EffectPaintPropertyNode* CreateAnimatingFilterEffect(
   EffectPaintPropertyNode::State state;
   state.local_transform_space = &parent.Unalias().LocalTransformSpace();
   state.output_clip = output_clip;
-  state.filter = std::move(filter);
+  state.filter_info = std::make_unique<EffectPaintPropertyNode::FilterInfo>(
+      filter, filter.MapRect(gfx::ToEnclosingRect(filter.ReferenceBox())));
   state.direct_compositing_reasons = CompositingReason::kActiveFilterAnimation;
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       NewUniqueObjectId(), CompositorElementIdNamespace::kEffectFilter);
@@ -318,7 +321,7 @@ inline TransformPaintPropertyNode* CreateScrollTranslation(
   scroll_state.overflow_clip_node = overflow_clip;
   scroll_state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       NewUniqueObjectId(), CompositorElementIdNamespace::kScroll);
-  scroll_state.main_thread_scrolling_reasons = main_thread_reasons;
+  scroll_state.main_thread_repaint_reasons = main_thread_reasons;
   scroll_state.user_scrollable_horizontal = true;
   scroll_state.user_scrollable_vertical = true;
   TransformPaintPropertyNode::State translation_state{
@@ -372,14 +375,13 @@ inline PropertyTreeState CreateScrollTranslationState(
     CompositingReasons compositing_reasons = CompositingReason::kNone,
     MainThreadScrollingReasons main_thread_reasons =
         cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
-  PropertyTreeState state(PropertyTreeState::Root());
-  state.SetClip(*CreateClip(parent_state.Clip(), parent_state.Transform(),
-                            FloatRoundedRect(container_rect)));
-  state.SetTransform(*CreateScrollTranslation(
-      parent_state.Transform(), parent_scroll, offset_x, offset_y,
-      container_rect, contents_size, &state.Clip(), compositing_reasons,
-      main_thread_reasons));
-  return state;
+  auto* clip = CreateClip(parent_state.Clip(), parent_state.Transform(),
+                          FloatRoundedRect(container_rect));
+  auto* transform =
+      CreateScrollTranslation(parent_state.Transform(), parent_scroll, offset_x,
+                              offset_y, container_rect, contents_size, clip,
+                              compositing_reasons, main_thread_reasons);
+  return PropertyTreeState(*transform, *clip, parent_state.Effect());
 }
 
 inline PropertyTreeState CreateScrollTranslationState(

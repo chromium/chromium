@@ -4,6 +4,8 @@
 
 package org.chromium.base.library_loader;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This is interface to preload the native library before calling System.loadLibrary.
  *
@@ -13,6 +15,7 @@ package org.chromium.base.library_loader;
  * dlopen() later called by System.loadLibrary() becomes a noop. This is what the
  * only subclass (WebViewLibraryPreloader) is doing.
  */
+@NullMarked
 public abstract class NativeLibraryPreloader {
     public abstract int loadLibrary(String packageName);
 }

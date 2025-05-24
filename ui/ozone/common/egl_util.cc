@@ -11,6 +11,7 @@
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(USE_OPENGL_APITRACE)
 #include <stdlib.h>
@@ -38,16 +39,23 @@ const base::FilePath::CharType kAngleGlesSoname[] =
 bool LoadEGLGLES2Bindings(const base::FilePath& egl_library_path,
                           const base::FilePath& gles_library_path) {
   base::NativeLibraryLoadError error;
-  base::NativeLibrary gles_library =
-      base::LoadNativeLibrary(gles_library_path, &error);
+  base::NativeLibrary gles_library;
+  {
+    GPU_STARTUP_TRACE_EVENT("Load gles_library");
+    gles_library = base::LoadNativeLibrary(gles_library_path, &error);
+  }
   if (!gles_library) {
     LOG(ERROR) << "Failed to load GLES library: " << gles_library_path << ": "
                << error.ToString();
     return false;
   }
 
-  base::NativeLibrary egl_library =
-      base::LoadNativeLibrary(base::FilePath(egl_library_path), &error);
+  base::NativeLibrary egl_library;
+  {
+    GPU_STARTUP_TRACE_EVENT("Load egl_library");
+    egl_library =
+        base::LoadNativeLibrary(base::FilePath(egl_library_path), &error);
+  }
   if (!egl_library) {
     LOG(ERROR) << "Failed to load EGL library: " << egl_library_path << ": "
                << error.ToString();

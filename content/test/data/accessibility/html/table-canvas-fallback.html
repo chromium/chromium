@@ -1,8 +1,23 @@
 <!DOCTYPE html>
 <!-- All tables in canvas fallback content are data tables, because there is no
      other reason to use a table there. After all, canvas fallback content
-     not rendered, so author has no reason to use the table for layout.  -->
+     not rendered, so author has no reason to use the table for layout.
+     However, with layoutsubtree set, HTML content is drawn, so we should
+     output the table. -->
 <canvas width=300 height=300>
+  <table>
+    <tr>
+      <td>Rabbits</td>
+      <td>Goldfish</td>
+    </tr>
+    <tr>
+      <td>Cats</td>
+      <td>Dogs</td>
+    </tr>
+  </table>
+</canvas>
+
+<canvas width=300 height=300 layoutsubtree=true>
   <table>
     <tr>
       <td>Rabbits</td>

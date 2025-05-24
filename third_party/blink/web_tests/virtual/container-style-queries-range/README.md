@@ -1,0 +1,1 @@
+Test container queries with style range syntax flag disables, see https://github.com/w3c/csswg-drafts/issues/8376#issuecomment-2751161553.

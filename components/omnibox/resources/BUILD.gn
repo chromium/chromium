@@ -5,10 +5,7 @@
 import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 
-grit("omnibox_pedal_synonyms") {
+grit_strings("omnibox_pedal_synonyms") {
   source = "omnibox_pedal_synonyms.grd"
   outputs = [ "grit/omnibox_pedal_synonyms.h" ]
-  foreach(locale, all_chrome_locales) {
-    outputs += [ "omnibox_pedal_synonyms_$locale.pak" ]
-  }
 }

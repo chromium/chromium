@@ -51,8 +51,7 @@ SVGTransformDistance::SVGTransformDistance(
 
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case SVGTransformType::kUnknown:
       break;
     case SVGTransformType::kRotate: {
@@ -88,8 +87,7 @@ SVGTransformDistance SVGTransformDistance::ScaledDistance(
     float scale_factor) const {
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case SVGTransformType::kUnknown:
       return SVGTransformDistance();
     case SVGTransformType::kRotate:
@@ -113,8 +111,7 @@ SVGTransformDistance SVGTransformDistance::ScaledDistance(
                                   AffineTransform());
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SVGTransformDistance();
+  NOTREACHED();
 }
 
 SVGTransform* SVGTransformDistance::AddSVGTransforms(const SVGTransform* first,
@@ -126,8 +123,7 @@ SVGTransform* SVGTransformDistance::AddSVGTransforms(const SVGTransform* first,
 
   switch (first->TransformType()) {
     case SVGTransformType::kMatrix:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case SVGTransformType::kUnknown:
       return transform;
     case SVGTransformType::kRotate: {
@@ -160,8 +156,7 @@ SVGTransform* SVGTransformDistance::AddSVGTransforms(const SVGTransform* first,
       transform->SetSkewY(first->Angle() + second->Angle() * repeat_count);
       return transform;
   }
-  NOTREACHED_IN_MIGRATION();
-  return transform;
+  NOTREACHED();
 }
 
 SVGTransform* SVGTransformDistance::AddToSVGTransform(
@@ -173,8 +168,7 @@ SVGTransform* SVGTransformDistance::AddToSVGTransform(
 
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case SVGTransformType::kUnknown:
       return MakeGarbageCollected<SVGTransform>();
     case SVGTransformType::kTranslate: {
@@ -205,15 +199,13 @@ SVGTransform* SVGTransformDistance::AddToSVGTransform(
       return new_transform;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return new_transform;
+  NOTREACHED();
 }
 
 float SVGTransformDistance::Distance() const {
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case SVGTransformType::kUnknown:
       return 0;
     case SVGTransformType::kRotate:
@@ -228,8 +220,7 @@ float SVGTransformDistance::Distance() const {
     case SVGTransformType::kSkewy:
       return angle_;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace blink

@@ -6,12 +6,16 @@ package org.chromium.base;
 
 import android.net.Uri;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.io.File;
 
 /** This class provides methods to access content URI schemes. */
+@NullMarked
 public abstract class FileProviderUtils {
     private static final String TAG = "FileProviderUtils";
-    private static FileProviderUtil sFileProviderUtil;
+    private static @Nullable FileProviderUtil sFileProviderUtil;
 
     // Guards access to sFileProviderUtil.
     private static final Object sLock = new Object();
@@ -47,7 +51,7 @@ public abstract class FileProviderUtils {
      * @throws IllegalArgumentException when the given File is outside the paths supported by the
      *     provider.
      */
-    public static Uri getContentUriFromFile(File file) {
+    public static @Nullable Uri getContentUriFromFile(File file) {
         synchronized (sLock) {
             if (sFileProviderUtil != null) {
                 return sFileProviderUtil.getContentUriFromFile(file);

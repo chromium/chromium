@@ -31,7 +31,7 @@
 // https://webidl.spec.whatwg.org/#es-DOMException
 
 [
-    Exposed=(Window,Worker),
+    Exposed=(Window,Worker,ShadowRealm), // TODO(crbug.com/41480387): This should be Exposed=*
     Serializable
 ] interface DOMException {
     constructor(optional DOMString message = "", optional DOMString name = "Error");

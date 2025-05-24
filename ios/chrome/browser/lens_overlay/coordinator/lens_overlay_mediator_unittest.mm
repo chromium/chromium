@@ -4,18 +4,26 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 
+#import "base/base64url.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/feature_engagement/test/test_tracker.h"
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_web_provider.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
+#import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -24,6 +32,13 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+/// Fake LensWebProvider.
+@interface FakeLensWebProviderImpl : NSObject <LensWebProvider>
+@property(nonatomic, assign) web::WebState* webState;
+@end
+@implementation FakeLensWebProviderImpl
+@end
 
 @interface FakeResultConsumer : NSObject <LensOverlayResultConsumer>
 @property(nonatomic, assign) GURL lastPushedURL;
@@ -54,6 +69,10 @@
   // NO-OP
 }
 
+- (void)handleSlowRequestHasStarted {
+  // NO-OP
+}
+
 - (void)disconnect {
   self.webState = nil;
 }
@@ -65,7 +84,17 @@ namespace {
 class LensOverlayMediatorTest : public PlatformTest {
  public:
   LensOverlayMediatorTest() {
-    mediator_ = [[LensOverlayMediator alloc] init];
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+
+    SceneState* mock_scene_state = OCMClassMock([SceneState class]);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), mock_scene_state);
+    mediator_ = [[LensOverlayMediator alloc]
+        initWithWebStateList:browser_.get()->GetWebStateList()
+                profilePrefs:browser_.get()->GetProfile()->GetPrefs()];
     mediator_.templateURLService =
         search_engines_test_environment_.template_url_service();
     mock_omnibox_coordinator_ =
@@ -83,12 +112,21 @@ class LensOverlayMediatorTest : public PlatformTest {
     [fake_chrome_lens_overlay_ setLensOverlayDelegate:mediator_];
     [fake_chrome_lens_overlay_ start];
 
+    tracker_ = feature_engagement::CreateTestTracker();
+
+    fake_web_provider_ = [[FakeLensWebProviderImpl alloc] init];
+    fake_web_provider_.webState = fake_web_state_.get();
+
+    lens_omnibox_client_ = std::make_unique<LensOmniboxClient>(
+        profile_.get(), tracker_.get(), fake_web_provider_, nil);
+
     mediator_.resultConsumer = fake_result_consumer_;
     mediator_.omniboxCoordinator = mock_omnibox_coordinator_;
     mediator_.toolbarConsumer = mock_toolbar_consumer_;
-    mediator_.webState = fake_web_state_.get();
     mediator_.lensHandler = fake_chrome_lens_overlay_;
     mediator_.commandsHandler = mock_lens_commands_;
+    mediator_.omniboxClient = lens_omnibox_client_.get();
+    [mediator_ lensResultPageDidChangeActiveWebState:fake_web_state_.get()];
   }
 
   ~LensOverlayMediatorTest() override {
@@ -122,13 +160,18 @@ class LensOverlayMediatorTest : public PlatformTest {
 
     // UI is updated.
     OCMExpect([mock_omnibox_coordinator_ setThumbnailImage:[OCMArg any]]);
+    // Expect omnibox text update when accepting an omnibox text.
+    OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
+    // Expect omnibox text update after page load.
     OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
-
+    OCMExpect([mock_toolbar_consumer_ setOmniboxEnabled:YES]);
+    OCMExpect([mock_toolbar_consumer_ setOmniboxEnabled:YES]);
+    ExpectOmniboxDefocus();
     fake_chrome_lens_overlay_.resultURL = resultURL;
     [mediator_ omniboxDidAcceptText:omniboxText
                      destinationURL:omniboxURL
-                   thumbnailRemoved:NO];
+                      textClobbered:NO];
 
     EXPECT_EQ(fake_result_consumer_.lastPushedURL, resultURL);
     EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
@@ -140,9 +183,30 @@ class LensOverlayMediatorTest : public PlatformTest {
   /// Simulates new lens selection and returns the generated result.
   id<ChromeLensOverlayResult> UpdateLensSelection(const GURL& resultURL,
                                                   BOOL expectCanGoBack) {
+    ExpectOmniboxDefocus();
     OCMExpect([mock_omnibox_coordinator_ setThumbnailImage:[OCMArg any]]);
     OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
+    OCMExpect([mock_toolbar_consumer_ setOmniboxEnabled:YES]);
+    OCMExpect([mock_toolbar_consumer_ setOmniboxEnabled:YES]);
+
+    fake_chrome_lens_overlay_.resultURL = resultURL;
+    [fake_chrome_lens_overlay_ simulateSelectionUpdate];
+
+    EXPECT_EQ(fake_result_consumer_.lastPushedURL, resultURL);
+    EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
+    EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
+
+    return fake_chrome_lens_overlay_.lastResult;
+  }
+
+  /// Simulates the delayed delivery of suggest signals after the results.
+  id<ChromeLensOverlayResult> UpdateLensSignals(const GURL& resultURL,
+                                                BOOL expectCanGoBack) {
+    OCMExpect([mock_omnibox_coordinator_ setThumbnailImage:[OCMArg any]]);
+    OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
+    OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
+    OCMExpect([mock_toolbar_consumer_ setOmniboxEnabled:YES]);
 
     fake_chrome_lens_overlay_.resultURL = resultURL;
     [fake_chrome_lens_overlay_ simulateSelectionUpdate];
@@ -157,7 +221,6 @@ class LensOverlayMediatorTest : public PlatformTest {
   /// Simulates a web navigation.
   void SimulateWebNavigation(const GURL& URL, BOOL expectCanGoBack) {
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
-    OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
 
     web::FakeNavigationContext navigationContext;
     navigationContext.SetWebState(fake_web_state_.get());
@@ -166,7 +229,6 @@ class LensOverlayMediatorTest : public PlatformTest {
     fake_web_state_->OnNavigationStarted(&navigationContext);
     fake_web_state_->OnNavigationFinished(&navigationContext);
 
-    EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
     EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
   }
 
@@ -174,10 +236,16 @@ class LensOverlayMediatorTest : public PlatformTest {
   void GoBack(const GURL& expectedURL,
               BOOL expectCanGoBack,
               id<ChromeLensOverlayResult> expectedResultReload) {
+    // Expect UI update when starting to go back and on navigation start.
+    ExpectOmniboxDefocus();
+    OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
     OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
-
+    OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
+    OCMExpect([mock_toolbar_consumer_ setOmniboxEnabled:YES]);
+    OCMExpect([mock_toolbar_consumer_ setOmniboxEnabled:YES]);
     if (expectedResultReload) {
+      OCMExpect([mock_omnibox_coordinator_ setThumbnailImage:[OCMArg any]]);
       OCMExpect([mock_omnibox_coordinator_ setThumbnailImage:[OCMArg any]]);
     }
 
@@ -187,10 +255,11 @@ class LensOverlayMediatorTest : public PlatformTest {
       EXPECT_EQ(fake_chrome_lens_overlay_.lastReload, expectedResultReload);
     }
 
-    EXPECT_EQ(fake_result_consumer_.lastPushedURL, expectedURL);
     EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
     EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
   }
+
+  web::WebTaskEnvironment task_environment_;
 
   LensOverlayMediator* mediator_;
 
@@ -201,6 +270,11 @@ class LensOverlayMediatorTest : public PlatformTest {
   OCMockObject<LensToolbarConsumer>* mock_toolbar_consumer_;
   OCMockObject<LensOverlayCommands>* mock_lens_commands_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
+  std::unique_ptr<feature_engagement::Tracker> tracker_;
+  FakeLensWebProviderImpl* fake_web_provider_;
+  std::unique_ptr<LensOmniboxClient> lens_omnibox_client_;
+  std::unique_ptr<TestBrowser> browser_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 /// Tests that the omnibox and toolbar are updated on omnibox focus.
@@ -231,8 +305,10 @@ TEST_F(LensOverlayMediatorTest, DefocusOmnibox) {
 
 // Tests simulating web navigation.
 TEST_F(LensOverlayMediatorTest, WebNavigation) {
-  SimulateWebNavigation(/*URL=*/GURL("https://some-url.com"),
-                        /*expectCanGoBack=*/NO);
+  UpdateLensSelection(/*resultURL=*/GURL("https://some-url.com/1"),
+                      /*expectCanGoBack=*/NO);
+  SimulateWebNavigation(/*URL=*/GURL("https://some-url.com/2"),
+                        /*expectCanGoBack=*/YES);
 }
 
 // Tests simulating omnibox navigation.
@@ -249,29 +325,7 @@ TEST_F(LensOverlayMediatorTest, SelectionUpdate) {
                       /*expectCanGoBack=*/NO);
 }
 
-// Tests going back with web navigation on the same ChromeLensOverlayResult.
-TEST_F(LensOverlayMediatorTest, HistoryStackWebNavigation) {
-  GURL URL1 = GURL("https://url.com/1");
-  UpdateLensSelection(URL1, /*expectCanGoBack=*/NO);
-
-  // One navigation.
-  GURL URL2 = GURL("https://url.com/2");
-  SimulateWebNavigation(URL2, /*expectCanGoBack=*/YES);
-  GoBack(/*expectedURL=*/URL1, /*expectCanGoBack=*/NO,
-         /*expectedResultReload=*/nil);
-
-  // Two navigation.
-  GURL URL3 = GURL("https://url.com/3");
-  SimulateWebNavigation(URL3, /*expectCanGoBack=*/YES);
-  SimulateWebNavigation(GURL("https://url.com/X"), /*expectCanGoBack=*/YES);
-
-  GoBack(/*expectedURL=*/URL3, /*expectCanGoBack=*/YES,
-         /*expectedResultReload=*/nil);
-  GoBack(/*expectedURL=*/URL1, /*expectCanGoBack=*/NO,
-         /*expectedResultReload=*/nil);
-}
-
-// Tests going back with a mix of omnibox, web, lensSelection updates.
+// Tests going back with a mix of omnibox, lensSelection updates.
 TEST_F(LensOverlayMediatorTest, HistoryStackMixed) {
   // Lens selection.
   // lensResult1/URL1
@@ -279,40 +333,21 @@ TEST_F(LensOverlayMediatorTest, HistoryStackMixed) {
   id<ChromeLensOverlayResult> lensResult1 =
       UpdateLensSelection(URL1, /*expectCanGoBack=*/NO);
 
-  // Web navigation.
-  // lensResult1/URL1 > lensResult1/URL2
-  GURL URL2 = GURL("https://url.com/2");
-  SimulateWebNavigation(/*URL=*/URL2, /*expectCanGoBack=*/YES);
-
   // Omnibox navigation.
-  // lensResult1/URL1 > lensResult1/URL2 > lensResult2/URL3
-  GURL URL3 = GURL("https://url.com/3");
+  // lensResult1/URL1 > lensResult2/URL2
+  GURL URL2 = GURL("https://url.com/2");
   id<ChromeLensOverlayResult> lensResult2 =
       AcceptOmniboxText(/*text=*/u"search terms",
                         /*omniboxURL=*/GURL("https://some-url.com"),
-                        /*resultURL=*/URL3,
+                        /*resultURL=*/URL2,
                         /*expectCanGoBack=*/YES);
 
-  // Web navigation.
-  // lensResult1/URL1 > lensResult1/URL2 > lensResult2/URL3 > lensResult2/URL4
-  GURL URL4 = GURL("https://url.com/4");
-  SimulateWebNavigation(/*URL=*/URL4, /*expectCanGoBack=*/YES);
-
   // Lens selection.
-  // lensResult1/URL1 > lensResult1/URL2 > lensResult2/URL3 > lensResult2/URL4 >
-  // lensResultX/URLX
+  // lensResult1/URL1 > lensResult2/URL2 > lensResultX/URLX
   UpdateLensSelection(GURL("https://url.com/X"), /*expectCanGoBack=*/YES);
 
-  GoBack(/*expectedURL=*/URL4, /*expectCanGoBack=*/YES,
-         /*expectedResultReload=*/lensResult2);
-
-  // Reloading a result will create a new one. So `lensResult2` is expected to
-  // be reloaded. After the first goBack, the history stack is:
-  // lensResult1/URL1 > lensResult1/URL2 > lensResult2/URL3 > lensResult3/URL4
-  GoBack(/*expectedURL=*/URL3, /*expectCanGoBack=*/YES,
-         /*expectedResultReload=*/lensResult2);
   GoBack(/*expectedURL=*/URL2, /*expectCanGoBack=*/YES,
-         /*expectedResultReload=*/lensResult1);
+         /*expectedResultReload=*/lensResult2);
   GoBack(/*expectedURL=*/URL1, /*expectCanGoBack=*/NO,
          /*expectedResultReload=*/lensResult1);
 }
@@ -332,7 +367,10 @@ TEST_F(LensOverlayMediatorTest, SearchEngineChange) {
   const TemplateURL* google_provider =
       template_url_service->GetDefaultSearchProvider();
 
-  OCMExpect([mock_lens_commands_ destroyLensUI:[OCMArg any]]);
+  OCMExpect([mock_lens_commands_
+      destroyLensUI:[OCMArg any]
+             reason:lens::LensOverlayDismissalSource::
+                        kDefaultSearchEngineChange]);
 
   // Change the default search provider to a non-Google one.
   TemplateURLData non_google_provider_data;
@@ -349,6 +387,34 @@ TEST_F(LensOverlayMediatorTest, SearchEngineChange) {
   // Change the default search provider back to Google.
   template_url_service->SetUserSelectedDefaultSearchProvider(
       const_cast<TemplateURL*>(google_provider));
+}
+
+// Tests that suggest signals are forwarded correctly.
+TEST_F(LensOverlayMediatorTest, SuggestSignals) {
+  // Populate a selection.
+  UpdateLensSelection(/*resultURL=*/GURL("https://some-url.com"),
+                      /*expectCanGoBack=*/NO);
+
+  // Pretend the signlas were successfully fetched from the server.
+  NSData* signals = [@"xyz" dataUsingEncoding:NSUTF8StringEncoding];
+  [fake_chrome_lens_overlay_ simulateSuggestSignalsUpdate:signals];
+
+  // Expected signals are base64 URL encoded, but otherwise identical to what
+  // was passed.
+  std::string expected_signals;
+  Base64UrlEncode("xyz", base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                  &expected_signals);
+
+  EXPECT_TRUE(lens_omnibox_client_->GetLensOverlaySuggestInputs()
+                  ->has_encoded_image_signals());
+  EXPECT_EQ(expected_signals,
+            lens_omnibox_client_->GetLensOverlaySuggestInputs()
+                ->encoded_image_signals());
+
+  // On a new selection, the signals reset until they are fetched again.
+  UpdateLensSelection(/*resultURL=*/GURL("https://some-other-url.com"),
+                      /*expectCanGoBack=*/YES);
+  EXPECT_FALSE(lens_omnibox_client_->GetLensOverlaySuggestInputs());
 }
 
 }  // namespace

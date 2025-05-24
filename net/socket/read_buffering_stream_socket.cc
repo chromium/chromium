@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/socket/read_buffering_stream_socket.h"
 
 #include <algorithm>
@@ -73,9 +78,7 @@ int ReadBufferingStreamSocket::DoLoop(int result) {
         break;
       case STATE_NONE:
       default:
-        NOTREACHED_IN_MIGRATION() << "Unexpected state: " << current_state;
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "Unexpected state: " << current_state;
     }
   } while (rv != ERR_IO_PENDING && state_ != STATE_NONE);
   return rv;

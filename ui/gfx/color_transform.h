@@ -19,9 +19,6 @@
 
 namespace gfx {
 
-COLOR_SPACE_EXPORT BASE_DECLARE_FEATURE(kHlgPqUnifiedTonemap);
-COLOR_SPACE_EXPORT BASE_DECLARE_FEATURE(kHlgPqSdrRelative);
-
 class COLOR_SPACE_EXPORT ColorTransform {
  public:
   // Parameters that must be specified at creation time. Changing these
@@ -41,7 +38,12 @@ class COLOR_SPACE_EXPORT ColorTransform {
 
   // Parameters that may be specified when the transform is applied. Changing
   // these parameters will change the uniforms for a single SkShader.
-  struct RuntimeOptions {
+  struct COLOR_SPACE_EXPORT RuntimeOptions {
+    RuntimeOptions();
+    RuntimeOptions(const RuntimeOptions&) = delete;
+    RuntimeOptions& operator=(const RuntimeOptions&) = delete;
+    ~RuntimeOptions();
+
     // Offset and multiplier used when sampling textures;
     float offset = 0.f;
     float multiplier = 1.f;
@@ -76,13 +78,6 @@ class COLOR_SPACE_EXPORT ColorTransform {
   virtual void Transform(TriStim* colors,
                          size_t num,
                          const RuntimeOptions& options) const = 0;
-
-  // Return an SkRuntimeEffect to perform this transform.
-  virtual sk_sp<SkRuntimeEffect> GetSkRuntimeEffect() const = 0;
-
-  // Return the uniforms used by the above SkRuntimeEffect.
-  virtual sk_sp<SkData> GetSkShaderUniforms(
-      const RuntimeOptions& options) const = 0;
 
   // Returns true if this transform is the identity.
   virtual bool IsIdentity() const = 0;

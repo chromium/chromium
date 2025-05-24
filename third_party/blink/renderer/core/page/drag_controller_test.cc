@@ -724,4 +724,42 @@ TEST_F(DragControllerTest,
   EXPECT_EQ("", drag_text_area->Value());
 }
 
+// https://issues.chromium.org/issues/379761996
+TEST_F(DragControllerTest, ResumeCaretBlinkingAfterDrag) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body,html { height: 1000px; width: 1000px; }
+    textarea { height: 100px; width: 250px; }
+    </style>
+    <textarea id='drag'>httts://www.example.com/index.html</textarea>
+    <p id='drop' contenteditable='plaintext-only'></p>
+  )HTML");
+  auto* drag_text_area = DynamicTo<HTMLTextAreaElement>(GetElementById("drag"));
+  Element* drop_paragraph_plain = GetElementById("drop");
+  WebDragData web_drag_data;
+  WebDragData::StringItem item;
+  item.type = "text/plain";
+  item.data = WebString::FromUTF8("hello");
+  item.title = "index.html";
+  web_drag_data.AddItem(item);
+
+  DataObject* data_object = DataObject::Create(web_drag_data);
+  DragController& drag_controller = GetPage().GetDragController();
+  auto& drag_state = drag_controller.GetDragState();
+  drag_state.drag_type_ = kDragSourceActionSelection;
+  drag_state.drag_src_ = drag_text_area;
+  drag_state.drag_data_transfer_ =
+      DataTransfer::Create(DataTransfer::kDragAndDrop,
+                           DataTransferAccessPolicy::kWritable, data_object);
+  // The mousedown event does not trigger, manually set the caret blinking state
+  // to suspended.
+  Selection().SetCaretBlinkingSuspended(true);
+  EXPECT_TRUE(Selection().IsCaretBlinkingSuspended());
+  PerformDragAndDropFromTextareaToTargetElement(drag_text_area, data_object,
+                                                drop_paragraph_plain);
+  EXPECT_TRUE(Selection().IsCaretBlinkingSuspended());
+  drag_controller.DragEnded();
+  EXPECT_FALSE(Selection().IsCaretBlinkingSuspended());
+}
+
 }  // namespace blink

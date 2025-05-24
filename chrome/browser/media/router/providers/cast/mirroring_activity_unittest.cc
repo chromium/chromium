@@ -23,7 +23,6 @@
 #include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/test/media_router_mojo_test.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
-#include "components/media_router/common/mojom/debugger.mojom.h"
 #include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
@@ -119,22 +118,6 @@ class MockCastMessageChannel : public mirroring::mojom::CastMessageChannel {
   MOCK_METHOD(void, OnMessage, (mirroring::mojom::CastMessagePtr message));
 };
 
-class MockMediaRouterDebugger : public mojom::Debugger {
- public:
-  MOCK_METHOD(void,
-              ShouldFetchMirroringStats,
-              (base::OnceCallback<void(bool)> callback),
-              (override));
-  MOCK_METHOD(void,
-              OnMirroringStats,
-              (const base::Value json_stats_cb),
-              (override));
-  MOCK_METHOD(void,
-              BindReceiver,
-              (mojo::PendingReceiver<mojom::Debugger> receiver),
-              (override));
-};
-
 }  // namespace
 
 class MirroringActivityTest
@@ -160,13 +143,6 @@ class MirroringActivityTest
         .WillByDefault(make_mirroring_service);
     ON_CALL(mirroring_service_host_factory_, GetForOffscreenTab)
         .WillByDefault(make_mirroring_service);
-
-    ON_CALL(media_router_, GetDebugger(_))
-        .WillByDefault([this](mojo::PendingReceiver<mojom::Debugger> receiver) {
-          auto debugger = std::make_unique<MockMediaRouterDebugger>();
-          debugger_object_ = debugger.get();
-          mojo::MakeSelfOwnedReceiver(std::move(debugger), std::move(receiver));
-        });
   }
 
   void MakeActivity() { MakeActivity(MediaSource::ForTab(kTabId)); }
@@ -184,14 +160,12 @@ class MirroringActivityTest
     MediaRoute route(kRouteId, source, kSinkId, kDescription, route_is_local_);
     route.set_presentation_id(kPresentationId);
     activity_ = std::make_unique<MirroringActivity>(
-        route, kAppId, &message_handler_, &session_tracker_, frame_tree_node_id,
-        cast_data, on_stop_.Get(), on_source_changed_.Get());
+        route, kAppId, &message_handler_, &session_tracker_, logger_, debugger_,
+        frame_tree_node_id, cast_data, on_stop_.Get(),
+        on_source_changed_.Get());
 
-    activity_->CreateMojoBindings(&media_router_);
-
-    // This needs to be called before the mojo bindings are created, since we
-    // are creating the debugger_object_ at that point.
-    ON_CALL(*debugger_object_, ShouldFetchMirroringStats)
+    activity_->BindChannelToServiceReceiver();
+    ON_CALL(mock_debugger_, ShouldFetchMirroringStats)
         .WillByDefault(
             [enable_rtcp_reporting](base::OnceCallback<void(bool)> callback) {
               std::move(callback).Run(enable_rtcp_reporting);
@@ -224,8 +198,6 @@ class MirroringActivityTest
 
   bool route_is_local_ = true;
   raw_ptr<MockCastMessageChannel, DanglingUntriaged> channel_to_service_ =
-      nullptr;
-  raw_ptr<MockMediaRouterDebugger, DanglingUntriaged> debugger_object_ =
       nullptr;
   raw_ptr<MockMirroringServiceHost, DanglingUntriaged> mirroring_service_ =
       nullptr;
@@ -606,7 +578,7 @@ TEST_F(MirroringActivityTest, EnableRtcpReports) {
         std::move(callback).Run(base::Value("foo"));
       });
 
-  EXPECT_CALL(*debugger_object_, OnMirroringStats)
+  EXPECT_CALL(mock_debugger_, OnMirroringStats)
       .WillOnce(testing::Invoke([&](const base::Value json_stats_cb) {
         EXPECT_EQ(base::Value("foo"), json_stats_cb);
       }));
@@ -877,7 +849,7 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
             std::move(callback).Run(stats->Clone());
           });
 
-  EXPECT_CALL(*debugger_object_, OnMirroringStats)
+  EXPECT_CALL(mock_debugger_, OnMirroringStats)
       .WillOnce(testing::Invoke([&stats](const base::Value json_stats_cb) {
         ASSERT_TRUE(json_stats_cb.is_dict());
         EXPECT_EQ(stats, json_stats_cb.GetDict());

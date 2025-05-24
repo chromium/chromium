@@ -114,18 +114,6 @@ Tests name sources in images and figures.
     nodeId : <string>
     parentId : <string>
     properties : [
-        [0] : {
-            name : details
-            value : {
-                relatedNodes : [
-                    [0] : {
-                        nodeResult : figcaption
-                    }
-                ]
-                type : idrefList
-                value : 
-            }
-        }
     ]
     role : {
         type : role
@@ -182,18 +170,6 @@ Tests name sources in images and figures.
     nodeId : <string>
     parentId : <string>
     properties : [
-        [0] : {
-            name : details
-            value : {
-                relatedNodes : [
-                    [0] : {
-                        nodeResult : figcaption
-                    }
-                ]
-                type : idrefList
-                value : 
-            }
-        }
     ]
     role : {
         type : role
@@ -267,18 +243,6 @@ Tests name sources in images and figures.
     parentId : <string>
     properties : [
         [0] : {
-            name : details
-            value : {
-                relatedNodes : [
-                    [0] : {
-                        nodeResult : figcaption
-                    }
-                ]
-                type : idrefList
-                value : 
-            }
-        }
-        [1] : {
             name : labelledby
             value : {
                 relatedNodes : [

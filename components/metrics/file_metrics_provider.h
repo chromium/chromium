@@ -184,7 +184,7 @@ class FileMetricsProvider : public MetricsProvider,
   // about a monitored file across process restarts. The |prefs_key| is
   // typically the filename.
   static void RegisterSourcePrefs(PrefRegistrySimple* prefs,
-                                  const std::string_view prefs_key);
+                                  std::string_view prefs_key);
 
   static void RegisterPrefs(PrefRegistrySimple* prefs);
 

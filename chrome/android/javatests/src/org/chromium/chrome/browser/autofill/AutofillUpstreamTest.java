@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,7 +56,7 @@ public class AutofillUpstreamTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.setUpAccountAndEnableSyncForTesting();
+        mActivityTestRule.setUpAccountAndSignInForTesting();
         mServer = new EmbeddedTestServer();
         mServer.initializeNative(
                 ApplicationProvider.getApplicationContext(),
@@ -65,7 +68,7 @@ public class AutofillUpstreamTest {
     private void assertInfoBarPrimaryButtonLabel(String buttonLabel) {
         InfoBarLayout view = (InfoBarLayout) getAutofillSaveCardInfoBar().getView();
         ButtonCompat primaryButton = view.getPrimaryButton();
-        Assert.assertEquals(buttonLabel, primaryButton.getText().toString());
+        assertEquals(buttonLabel, primaryButton.getText().toString());
     }
 
     private void waitForSaveCardInfoBar() {
@@ -85,7 +88,7 @@ public class AutofillUpstreamTest {
         if (hasAutofillSaveCardInfobar(infobars)) {
             return (AutofillSaveCardInfoBar) infobars.get(0);
         }
-        Assert.fail("Save card infobar not found");
+        fail("Save card infobar not found");
         return null;
     }
 
@@ -180,7 +183,7 @@ public class AutofillUpstreamTest {
         PropertyModel fixflowPromptPropertyModel = getPropertyModelForDialog();
 
         // Verify that dialog is not null.
-        Assert.assertNotNull(fixflowPromptPropertyModel);
+        assertNotNull(fixflowPromptPropertyModel);
     }
 
     @Test
@@ -220,6 +223,6 @@ public class AutofillUpstreamTest {
         PropertyModel fixflowPromptPropertyModel = getPropertyModelForDialog();
 
         // Verify that dialog is not null.
-        Assert.assertNotNull(fixflowPromptPropertyModel);
+        assertNotNull(fixflowPromptPropertyModel);
     }
 }

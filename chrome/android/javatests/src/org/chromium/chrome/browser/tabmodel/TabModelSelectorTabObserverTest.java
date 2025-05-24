@@ -4,17 +4,21 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.ThreadUtils;
@@ -29,7 +33,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.HashSet;
@@ -39,6 +42,7 @@ import java.util.Set;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class TabModelSelectorTabObserverTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
     private int mTabId;
@@ -49,8 +53,7 @@ public class TabModelSelectorTabObserverTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
     }
 
     @Test
@@ -132,7 +135,7 @@ public class TabModelSelectorTabObserverTest {
         TabModelSelectorBase selector =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new TabModelSelectorBase(null, TabGroupModelFilter::new, false) {
+                            return new TabModelSelectorBase(null, false) {
                                 @Override
                                 public void requestToShowTab(Tab tab, int type) {}
 
@@ -154,8 +157,13 @@ public class TabModelSelectorTabObserverTest {
         TestTabModelSelectorTabObserver observer = createTabModelSelectorTabObserver();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    TabUngrouperFactory factory =
+                            (isIncognitoBranded, tabGroupModelFilterSupplier) ->
+                                    new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
                     selector.initialize(
-                            sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel());
+                            sTestRule.getNormalTabModel(),
+                            sTestRule.getIncognitoTabModel(),
+                            factory);
                 });
 
         Tab normalTab1 = createTestTab(false);
@@ -212,11 +220,16 @@ public class TabModelSelectorTabObserverTest {
 
     private static void closeTab(TabModel tabModel, Tab tab) {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> tabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build()));
+                () ->
+                        tabModel.getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                        /* allowDialog= */ false));
     }
 
     private static void removeTab(TabModel tabModel, Tab tab) {
-        ThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeTab(tab));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> tabModel.getTabRemover().removeTab(tab, /* allowDialog= */ false));
     }
 
     private static class TestTabModelSelectorTabObserver extends TabModelSelectorTabObserver {
@@ -247,8 +260,8 @@ public class TabModelSelectorTabObserverTest {
     }
 
     private void assertTabHasObserver(Tab tab, TestTabModelSelectorTabObserver observer) {
-        Assert.assertTrue(tabHasObserver(tab, observer));
-        Assert.assertTrue(
+        assertTrue(tabHasObserver(tab, observer));
+        assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return observer.isRegisteredTab(tab);
@@ -257,9 +270,9 @@ public class TabModelSelectorTabObserverTest {
 
     private void assertTabDoesNotHaveObserver(
             Tab tab, TestTabModelSelectorTabObserver observer, boolean checkUnregistration) {
-        Assert.assertFalse(tabHasObserver(tab, observer));
+        assertFalse(tabHasObserver(tab, observer));
         if (!checkUnregistration) return;
-        Assert.assertTrue(
+        assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return observer.isUnregisteredTab(tab);

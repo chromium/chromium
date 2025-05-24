@@ -69,11 +69,6 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   virtual bool CanMinimize() const = 0;
   virtual bool CanActivate() const = 0;
 
-  // Returns true if the delegate wants mouse events when inactive and the
-  // window is clicked and should not become activated. A return value of false
-  // indicates the mouse events will be dropped.
-  virtual bool WantsMouseEventsWhenInactive() const = 0;
-
   virtual bool WidgetSizeIsClientSize() const = 0;
 
   // Returns true if the delegate represents a modal window.
@@ -84,17 +79,14 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   virtual int GetInitialShowState() const = 0;
 
   virtual int GetNonClientComponent(const gfx::Point& point) const = 0;
-  virtual void GetWindowMask(const gfx::Size& size, SkPath* mask) = 0;
+  virtual void GetWindowMask(const gfx::Size& size_px, SkPath* mask) = 0;
 
   // Returns true if the delegate modifies |insets| to define a custom client
   // area for the window, false if the default client area should be used. If
-  // false is returned, |insets| is not modified.  |monitor| is the monitor
-  // this window is on.  Normally that would be determined from the HWND, but
-  // during WM_NCCALCSIZE Windows does not return the correct monitor for the
-  // HWND, so it must be passed in explicitly (see HWNDMessageHandler::
-  // OnNCCalcSize for more details).
+  // false is returned, |insets| is not modified.  |frame_thickness| is the the
+  // window frame thickness on the monitor this window is on.
   virtual bool GetClientAreaInsets(gfx::Insets* insets,
-                                   HMONITOR monitor) const = 0;
+                                   int frame_thickness) const = 0;
 
   // Returns true if DWM frame should be extended into client area by |insets|.
   // Insets are specified in screen pixels not DIP because that's what DWM uses.
@@ -134,6 +126,9 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // Called when the user tried to close the window.
   virtual void HandleClose() = 0;
 
+  // Called when the user tried to close the application, through TaskManager.
+  virtual void HandleRequestClose() = 0;
+
   // Called when a command defined by the application was performed. Returns
   // true if the command was handled.
   virtual bool HandleCommand(int command) = 0;
@@ -164,6 +159,11 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // manager.
   virtual void HandleBeginWMSizeMove() = 0;
   virtual void HandleEndWMSizeMove() = 0;
+
+  // Called when the user begins or ends resizing the window by dragging the
+  // resize handle.
+  virtual void HandleBeginUserResize() = 0;
+  virtual void HandleEndUserResize() = 0;
 
   // Called when the window's position changed.
   virtual void HandleMove() = 0;

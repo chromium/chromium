@@ -12,9 +12,10 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
@@ -39,6 +40,15 @@
 #include "ui/views/style/typography.h"
 
 namespace autofill {
+
+constexpr char16_t kEllipsisDotSeparator[] = u"\u2022";
+
+int GetObfuscationLength() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableNewFopDisplayDesktop)
+             ? 2
+             : 4;
+}
 
 SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,
                                          content::WebContents* web_contents,
@@ -72,7 +82,7 @@ void SaveCardBubbleViews::Hide() {
   // posted in CloseBubble() completes, but we need to fix references sooner.
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }
@@ -93,11 +103,13 @@ void SaveCardBubbleViews::AddedToWidget() {
   // Use a custom title container if offering to upload a server card.
   // Done when this view is added to the widget, so the bubble frame
   // view is guaranteed to exist.
-  if (!controller_->IsUploadSave())
+  if (!controller_->IsUploadSave()) {
     return;
+  }
 
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string SaveCardBubbleViews::GetWindowTitle() const {
@@ -107,7 +119,7 @@ std::u16string SaveCardBubbleViews::GetWindowTitle() const {
 void SaveCardBubbleViews::WindowClosing() {
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }
@@ -117,7 +129,8 @@ views::View* SaveCardBubbleViews::GetFootnoteViewForTesting() {
 }
 
 const std::u16string SaveCardBubbleViews::GetCardIdentifierString() const {
-  return controller_->GetCard().CardNameAndLastFourDigits();
+  return controller_->GetCard().CardNameAndLastFourDigits(
+      /*customized_nickname=*/u"", GetObfuscationLength());
 }
 
 SaveCardBubbleViews::~SaveCardBubbleViews() = default;
@@ -184,7 +197,8 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
   auto card_identifier_view = std::make_unique<views::View>();
   auto* layout = card_identifier_view->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
-  if (is_cvc_only_save) {
+  if (is_cvc_only_save || base::FeatureList::IsEnabled(
+                              features::kAutofillEnableNewFopDisplayDesktop)) {
     layout->SetCollapseMargins(true);
     layout->SetDefault(
         views::kMarginsKey,
@@ -236,6 +250,12 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
                                  views::MaximumFlexSizeRule::kUnbounded)
             .WithOrder(2));
   } else if (!card.IsExpired(base::Time::Now())) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableNewFopDisplayDesktop)) {
+      card_identifier_view->AddChildView(std::make_unique<views::Label>(
+          kEllipsisDotSeparator, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_SECONDARY));
+    }
     // Add card expiration date for card saves.
     auto* expiration_date_label =
         card_identifier_view->AddChildView(std::make_unique<views::Label>(
@@ -250,11 +270,13 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
 
 void SaveCardBubbleViews::AssignIdsToDialogButtons() {
   auto* ok_button = GetOkButton();
-  if (ok_button)
+  if (ok_button) {
     ok_button->SetID(DialogViewId::OK_BUTTON);
+  }
   auto* cancel_button = GetCancelButton();
-  if (cancel_button)
+  if (cancel_button) {
     cancel_button->SetID(DialogViewId::CANCEL_BUTTON);
+  }
 }
 
 void SaveCardBubbleViews::Init() {

@@ -4,6 +4,7 @@
 
 syntax = "proto3";
 package {{proto_ns}};
+option optimize_for = CODE_SIZE;
 
 {% for import in imports %}
 import "{{import}}";

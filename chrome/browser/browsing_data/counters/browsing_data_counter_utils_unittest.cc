@@ -33,7 +33,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/browsing_data/counters/tabs_counter.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -56,12 +55,8 @@ class BrowsingDataCounterUtilsTest : public testing::Test {
   TestingProfile profile_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResult) {
-#if BUILDFLAG(IS_ANDROID)
-  scoped_feature_list_.InitAndDisableFeature(
-      chrome::android::kQuickDeleteForAndroid);
-#endif
-
   // This test assumes that the strings are served exactly as defined,
   // i.e. that the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
@@ -110,12 +105,9 @@ TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResult) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#else
 // Tests the output of the hosted apps counter.
-TEST_F(BrowsingDataCounterUtilsTest, QuickDeleteAdvancedCacheCounterResult) {
-  scoped_feature_list_.InitAndEnableFeature(
-      chrome::android::kQuickDeleteForAndroid);
-
+TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResultAndroid) {
   // This test assumes that the strings are served exactly as defined,
   // i.e. that the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
@@ -125,35 +117,47 @@ TEST_F(BrowsingDataCounterUtilsTest, QuickDeleteAdvancedCacheCounterResult) {
   const struct TestCase {
     int bytes;
     bool is_upper_limit;
+    bool is_basic_tab;
     std::string expected_output;
   } kTestCases[] = {
-      {42, false,
+      {42, false, false,
        "Less than 1 MB. Some sites may load more slowly on your next "
        "visit."},
-      {static_cast<int>(2.312 * kBytesInAMegabyte), false,
+      {42, false, true,
+       "Frees up less than 1 MB. Some sites may load more slowly on your next "
+       "visit."},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false, false,
        "2.3 MB. Some sites may load more slowly on your next "
        "visit."},
-      {static_cast<int>(2.312 * kBytesInAMegabyte), true,
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false, true,
+       "Frees up 2.3 MB. Some sites may load more slowly on your next visit."},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true, false,
        "Less than 2.3 MB. Some sites may load more slowly on your next "
-       "visit."}};
+       "visit."},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true, true,
+       "Frees up less than 2.3 MB. Some sites may load more slowly on your "
+       "next visit."},
+  };
 
   for (const TestCase& test_case : kTestCases) {
     CacheCounter counter(GetProfile());
     browsing_data::ClearBrowsingDataTab tab =
-        browsing_data::ClearBrowsingDataTab::ADVANCED;
+        test_case.is_basic_tab ? browsing_data::ClearBrowsingDataTab::BASIC
+                               : browsing_data::ClearBrowsingDataTab::ADVANCED;
     counter.Init(GetProfile()->GetPrefs(), tab,
                  browsing_data::BrowsingDataCounter::ResultCallback());
     CacheCounter::CacheResult result(&counter, test_case.bytes,
                                      test_case.is_upper_limit);
-    SCOPED_TRACE(base::StringPrintf("Test params: %d bytes, %d is_upper_limit",
-                                    test_case.bytes, test_case.is_upper_limit));
+    SCOPED_TRACE(base::StringPrintf(
+        "Test params: %d bytes, %d is_upper_limit, %d is_basic_tab.",
+        test_case.bytes, test_case.is_upper_limit, test_case.is_basic_tab));
 
     std::u16string output =
         GetChromeCounterTextFromResult(&result, GetProfile());
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests the complex output of the hosted apps counter.
@@ -483,34 +487,8 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
   }
 };
 
-TEST_F(CookieBrowsingDataCounterUtilsTest,
-       CookieCounterResultExplicitSigninDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      switches::kExplicitBrowserSigninUIOnDesktop);
-  // This test assumes that the strings are served exactly as defined,
-  // i.e. that the locale is set to the default "en".
-  ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
-
-  // Test the output for various forms of cookie results. Some signin states do
-  // not exist when explicit signin is off.
-  const struct TestCase kTestCases[] = {
-      {.signin_state = SigninState::kSignedOut,
-       .expects_exception_text = false},
-      {.signin_state = SigninState::kImplicitSignin,
-       .expects_exception_text = false},
-      {.signin_state = SigninState::kSyncing, .expects_exception_text = true},
-      {.signin_state = SigninState::kSyncPaused,
-       .expects_exception_text = false},
-  };
-
-  for (const TestCase& test_case : kTestCases) {
-    VerifyTestCase(test_case);
-  }
-}
 
 TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
-  scoped_feature_list_.InitAndEnableFeature(
-      switches::kExplicitBrowserSigninUIOnDesktop);
   // This test assumes that the strings are served exactly as defined,
   // i.e. that the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());

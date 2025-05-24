@@ -11,33 +11,16 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
-namespace content {
-class WebUIDataSource;
-}  // namespace content
-
 namespace ash {
 
 class UntrustedAnnotatorPageHandlerImpl;
-
-// A delegate used during data source creation to expose some //chrome
-// functionality to the data source
-class UntrustedAnnotatorUIDelegate {
- public:
-  virtual ~UntrustedAnnotatorUIDelegate() {}
-  // Takes a WebUIDataSource, and populates its load-time data.
-  virtual void PopulateLoadTimeData(content::WebUIDataSource* source) = 0;
-};
 
 // The webui for chrome-untrusted://projector-annotator.
 class UntrustedAnnotatorUI
     : public ui::UntrustedWebUIController,
       public annotator::mojom::UntrustedAnnotatorPageHandlerFactory {
  public:
-  // UntrustedAnnotatorUI does not store the passed in
-  // `UntrustedAnnotatorUIDelegate`.
-  UntrustedAnnotatorUI(
-      content::WebUI* web_ui,
-      UntrustedAnnotatorUIDelegate* delegate);
+  UntrustedAnnotatorUI(content::WebUI* web_ui);
   UntrustedAnnotatorUI(const UntrustedAnnotatorUI&) = delete;
   UntrustedAnnotatorUI& operator=(
       const UntrustedAnnotatorUI&) = delete;

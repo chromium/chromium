@@ -29,9 +29,6 @@ using ::testing::Message;
 using ::testing::NiceMock;
 
 // Shorthands for common errors that the allocator can throw.
-const PlusProfileOrError kNotSupportedError =
-    base::unexpected(PlusAddressRequestError(
-        PlusAddressRequestErrorType::kRequestNotSupportedError));
 const PlusProfileOrError kMaxRefreshesReachedError = base::unexpected(
     PlusAddressRequestError(PlusAddressRequestErrorType::kMaxRefreshesReached));
 

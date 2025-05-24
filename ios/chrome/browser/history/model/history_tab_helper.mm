@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/history/model/history_tab_helper.h"
 
 #import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
 #import "components/history/core/browser/history_constants.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/complex_tasks/model/ios_content_record_task_id.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -45,8 +47,9 @@ HistoryTabHelper::~HistoryTabHelper() {
 void HistoryTabHelper::UpdateHistoryForNavigation(
     const history::HistoryAddPageArgs& add_page_args) {
   history::HistoryService* history_service = GetHistoryService();
-  if (!history_service)
+  if (!history_service) {
     return;
+  }
 
   // Update the previous navigation's end time.
   if (cached_navigation_state_) {
@@ -80,7 +83,10 @@ void HistoryTabHelper::UpdateHistoryPageTitle(const web::NavigationItem& item) {
 history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     web::NavigationItem* last_committed_item,
     web::NavigationContext* navigation_context) {
-  const GURL& url = last_committed_item->GetURL();
+  const GURL& url =
+      lens_url_processing_enabled_
+          ? lens::ProcessURLForHistory(last_committed_item->GetURL())
+          : last_committed_item->GetURL();
 
   const ui::PageTransition transition =
       last_committed_item->GetTransitionType();
@@ -153,13 +159,15 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       last_committed_item->GetUniqueID(), navigation_context->GetNavigationId(),
       referrer_url, redirects, transition, hidden, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
+      /*is_ephemeral=*/false,
       navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
                                            : std::nullopt,
       // TODO(crbug.com/40279742): due to WebKit constraints, iOS does not
       // support triple-key partitioning. Once supported, we need to populate
-      // `top_level_url` with the correct value. Until then, :visited history on
-      // iOS is unpartitioned.
+      // `top_level_url` and `frame_url` with the correct value. Until then,
+      // :visited history on iOS is unpartitioned.
       /*top_level_url=*/std::nullopt,
+      /*frame_url=*/std::nullopt,
       /*opener=*/std::nullopt,
       /*bookmark_id=*/std::nullopt,
       /*app_id=*/std::nullopt,
@@ -221,6 +229,10 @@ void HistoryTabHelper::DidFinishNavigation(
 
   // Do not record failed navigation nor 404 to the history (to prevent them
   // from showing up as Most Visited tiles on NTP).
+  UMA_HISTOGRAM_BOOLEAN("History.Is4XXOr5XXStatusCode",
+                        navigation_context->GetError());
+  UMA_HISTOGRAM_BOOLEAN("History.ShouldUpdateHistory",
+                        navigation_context->GetError());
   if (navigation_context->GetError()) {
     return;
   }
@@ -290,8 +302,9 @@ void HistoryTabHelper::TitleWasSet(web::WebState* web_state) {
   }
 
   // Protect against pages changing their title too often during page load.
-  if (num_title_changes_ >= history::kMaxTitleChanges)
+  if (num_title_changes_ >= history::kMaxTitleChanges) {
     return;
+  }
 
   // Only store page titles into history if they were set while the page was
   // loading or during a brief span after load is complete. This fixes the case
@@ -315,7 +328,10 @@ void HistoryTabHelper::WebStateDestroyed(web::WebState* web_state) {
   translate_observation_.Reset();
 
   history::HistoryService* history_service = GetHistoryService();
-  if (history_service) {
+  // A WebState cannot go from realized to unrealized. If it is unrealized
+  // it cannot have any cached state that would need to be updated or
+  // cleared.
+  if (web_state_->IsRealized() && history_service) {
     // If there is a current history-eligible navigation in this tab (i.e.
     // `cached_navigation_state_` exists), that visit is concluded now, so
     // update its end time.
@@ -342,5 +358,3 @@ history::HistoryService* HistoryTabHelper::GetHistoryService() {
   return ios::HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(HistoryTabHelper)

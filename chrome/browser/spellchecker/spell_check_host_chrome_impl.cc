@@ -206,9 +206,7 @@ void SpellCheckHostChromeImpl::InitializeDictionaries(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
-                          /*enable=*/false);
+  NOTREACHED();
 }
 
 void SpellCheckHostChromeImpl::OnDictionariesInitialized() {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHADER_TRANSLATOR_CACHE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHADER_TRANSLATOR_CACHE_H_
 
@@ -9,6 +14,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/shader_translator.h"
 #include "gpu/config/gpu_preferences.h"
@@ -90,7 +96,9 @@ class GPU_GLES2_EXPORT ShaderTranslatorCache
 
   const GpuPreferences gpu_preferences_;
 
-  typedef std::map<ShaderTranslatorInitParams, ShaderTranslator* > Cache;
+  typedef std::map<ShaderTranslatorInitParams,
+                   raw_ptr<ShaderTranslator, CtnExperimental>>
+      Cache;
   Cache cache_;
 };
 

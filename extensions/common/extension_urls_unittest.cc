@@ -4,47 +4,23 @@
 
 #include "extensions/common/extension_urls.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extension_urls {
 
-namespace {
-
-class ExtensionWebstoreURLsTest : public testing::Test,
-                                  public testing::WithParamInterface<bool> {
- public:
-  explicit ExtensionWebstoreURLsTest(bool enable_new_webstore_url = false) {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          extensions_features::kNewWebstoreURL);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          extensions_features::kNewWebstoreURL);
-    }
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(NewChromeWebstoreLaunchUrl,
-                         ExtensionWebstoreURLsTest,
-                         testing::Values(true));
-INSTANTIATE_TEST_SUITE_P(PreviousChromeWebstoreLaunchUrl,
-                         ExtensionWebstoreURLsTest,
-                         testing::Values(false));
-
-}  // namespace
-
-// Tests that the correct extensions webstore category URL is returned depending
-// on feature extensions_features::kNewWebstoreURL.
-TEST_P(ExtensionWebstoreURLsTest, GetNewWebstoreExtensionsCategoryURL) {
-  const std::string expected_category_url =
-      GetParam() ? GetNewWebstoreLaunchURL().spec() + "category/extensions"
-                 : GetWebstoreLaunchURL().spec() + "/category/extensions";
-  EXPECT_EQ(expected_category_url, GetWebstoreExtensionsCategoryURL());
+// Tests that the URL for the extensions category in the webstore is what
+// we expect.
+TEST(ExtensionWebstoreURLsTest, GetWebstoreExtensionsCategoryURL) {
+  // Hard-code the expected result. This is a bit of a change-detector
+  // test, but is valuable because
+  // a) The webstore URL *shouldn't* change often, and updating this test
+  //    if it does is very cheap.
+  // b) The construction of the URL in GetWebstoreExtensionsCategoryURL()
+  //    is a bit subtle and we've had tricky bugs in the past (e.g.,
+  //    double slashes or improperly resolved paths). This ensures the
+  //    construction succeeds properly with the default URL.
+  EXPECT_EQ("https://chromewebstore.google.com/category/extensions",
+            GetWebstoreExtensionsCategoryURL().spec());
 }
 
 }  // namespace extension_urls

@@ -17,7 +17,6 @@
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/fixed_array.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "components/cross_device/logging/logging.h"
@@ -41,7 +40,7 @@ bssl::UniquePtr<EC_POINT> GetEcPointFromPublicAntiSpoofingKey(
     const std::string& decoded_public_anti_spoofing) {
   std::array<uint8_t, kPublicKeyByteSize + 1> buffer;
   buffer[0] = POINT_CONVERSION_UNCOMPRESSED;
-  base::ranges::copy(decoded_public_anti_spoofing, buffer.begin() + 1);
+  std::ranges::copy(decoded_public_anti_spoofing, buffer.begin() + 1);
 
   bssl::UniquePtr<EC_POINT> new_ec_point(EC_POINT_new(ec_group.get()));
 

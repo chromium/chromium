@@ -5,6 +5,8 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_CONSTANTS_H_
 #define ASH_WALLPAPER_WALLPAPER_CONSTANTS_H_
 
+#include <string_view>
+
 #include "ash/public/cpp/style/color_provider.h"
 
 namespace ash::wallpaper_constants {
@@ -24,6 +26,11 @@ inline constexpr char kTimeOfDayWallpaperCollectionId[] =
     "_time_of_day_chromebook_collection";
 // The ID of the default time of day wallpaper.
 inline constexpr uint64_t kDefaultTimeOfDayWallpaperUnitId = 18;
+
+// Set a different time of day wallpaper for devices with specific customization
+// id.
+inline constexpr std::string_view kAlternateWallpaperCustomizationId = "navi";
+inline constexpr uint64_t kAlternateTimeOfDayWallpaperUnitId = 19;
 
 // The subdirectory name for storing SeaPen wallpaper. There is a SeaPen
 // subdirectory in the global wallpaper directory, and in

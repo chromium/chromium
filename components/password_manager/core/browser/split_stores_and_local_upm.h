@@ -16,6 +16,10 @@ namespace password_manager {
 //  Checks whether the UPM for local users is activated for this client.
 //  This also means that the single password store has been split in
 //  account and local stores.
+//
+// DEPRECATED: With kLoginDbDeprecationAndroid enabled, the UPM activation
+// pref is no longer set for new users. All users will have split stores, either
+// both empty or both using Google Play Services as storage.
 bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service);
 
 // Returns whether it is a requirement to update the GMSCore based on the

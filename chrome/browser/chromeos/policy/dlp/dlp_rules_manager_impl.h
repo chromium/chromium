@@ -86,11 +86,9 @@ class DlpRulesManagerImpl : public DlpRulesManager,
   // System-wide singleton instantiated when there are rules involving files.
   std::unique_ptr<DlpFilesController> files_controller_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Observe to re-notify DLP daemon in case of restart.
   base::ScopedObservation<chromeos::DlpClient, chromeos::DlpClient::Observer>
       dlp_client_observation_{this};
-#endif
 };
 
 }  // namespace policy

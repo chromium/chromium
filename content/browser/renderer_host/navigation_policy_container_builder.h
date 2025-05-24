@@ -20,6 +20,7 @@
 namespace content {
 
 class FrameNavigationEntry;
+class NavigationHandle;
 class RenderFrameHostImpl;
 class StoragePartition;
 
@@ -104,6 +105,9 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // This must be called before `ComputePolicies()`.
   void SetDocumentIsolationPolicy(const network::DocumentIsolationPolicy& dip);
 
+  void SetIntegrityPolicy(network::IntegrityPolicy ip);
+  void SetIntegrityPolicyReportOnly(network::IntegrityPolicy ip);
+
   // Sets the IP address space of the delivered policies of the new document.
   //
   // This must be called before `ComputePolicies()`.
@@ -116,9 +120,9 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // This must be called before `ComputePolicies()`.
   void SetIsOriginPotentiallyTrustworthy(bool value);
 
-  // Sets whether COOP origins allow the document to be crossOriginIsolated.
-  // This must be called before `ComputePolicies()`.
-  void SetAllowCrossOriginIsolation(bool value);
+  // Sets whether crossOriginIsolation is enabled by DocumentIsolationPolicy.
+  // This must be called after `ComputePolicies()`.
+  void SetCrossOriginIsolationEnabledByDIP();
 
   // Records an additional Content Security Policy that will apply to the new
   // document. `policy` must not be null. Policies added this way are ignored
@@ -147,8 +151,9 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // Sets final policies to their correct values and builds a policy container
   // host.
   //
-  // `url` should designate the URL of the document after all redirects have
-  // been followed.
+  // `navigation_handle` should be the handle for the navigation to compute
+  // policies for. Its URL should designate the URL of the document after all
+  // redirects have been followed.
   // `is_inside_mhtml` specifies whether the navigation loads an MHTML document
   // or a subframe of an MHTML document. This influences computed sandbox flags.
   // `frame_sandbox_flags` represents the frame's sandbox flags.
@@ -158,7 +163,7 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   //
   // This method must only be called once. `ComputePoliciesForError()` may be
   // called later, in which case it overrides the final policies.
-  void ComputePolicies(const GURL& url,
+  void ComputePolicies(NavigationHandle* navigation_handle,
                        bool is_inside_mhtml,
                        network::mojom::WebSandboxFlags frame_sandbox_flags,
                        bool is_credentialless);
@@ -229,19 +234,23 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // Sets `host_`.
   void SetFinalPolicies(PolicyContainerPolicies policies);
 
-  // Helper for `FinalizePolicies()`. Appends the delivered Content Security
-  // Policies to `policies`.
-  void IncorporateDeliveredPolicies(const GURL& url,
-                                    PolicyContainerPolicies& policies);
+  // Helper for `FinalizePolicies()`. Called for local scheme urls only,
+  // incorporates `delivered_policies_` into `policies` (e.g. appending the
+  // delivered Content Security Policies). This is needed for example for CSP
+  // Embedded Enforcement, in order to merge the inherited policies with the
+  // policies forced by the `csp` attribute (which are contained in
+  // `delivered_policies_`).
+  void IncorporateDeliveredPoliciesForLocalURL(
+      PolicyContainerPolicies& policies);
 
   // Helper for `FinalizePolicies()`. Returns, depending on `url`, the policies
   // that this document inherits from parent/initiator.
   PolicyContainerPolicies ComputeInheritedPolicies(const GURL& url);
 
-  // Helper for `FinalizePolicies()`. Returns, depending on `url`, the final
-  // policies for the document that is going to be committed.
+  // Helper for `FinalizePolicies()`. Returns, depending on `navigation_handle`,
+  // the final policies for the document that is going to be committed.
   PolicyContainerPolicies ComputeFinalPolicies(
-      const GURL& url,
+      NavigationHandle* navigation_handle,
       bool is_inside_mhtml,
       network::mojom::WebSandboxFlags frame_sandbox_flags,
       bool is_credentialless);

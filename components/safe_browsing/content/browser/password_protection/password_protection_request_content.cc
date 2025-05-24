@@ -221,8 +221,8 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
       LogCSDCacheContainsImages(
           verdict->mutable_visual_features()->has_image());
 
-      base::UmaHistogramCounts100(
-          "PasswordProtection.CSDCacheSizeAtHit",
+      base::UmaHistogramCounts100000(
+          "PasswordProtection.CSDCacheSizeAtHit2",
           feature_cache_map->GetTotalVerdictEntriesSize());
 
       ExtractClientPhishingRequestFeatures(*verdict);
@@ -438,13 +438,11 @@ void PasswordProtectionRequestContent::OnVisualFeatureCollectionDone(
 void PasswordProtectionRequestContent::SetReferringAppInfo() {
   PasswordProtectionService* service =
       static_cast<PasswordProtectionService*>(password_protection_service());
-  LoginReputationClientRequest::ReferringAppInfo referring_app_info =
+  ReferringAppInfo referring_app_info =
       service->GetReferringAppInfo(web_contents_);
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordProtection.RequestReferringAppSource",
-      referring_app_info.referring_app_source(),
-      LoginReputationClientRequest::ReferringAppInfo::ReferringAppSource_MAX +
-          1);
+  UMA_HISTOGRAM_ENUMERATION("PasswordProtection.RequestReferringAppSource",
+                            referring_app_info.referring_app_source(),
+                            ReferringAppInfo::ReferringAppSource_MAX + 1);
   *request_proto_->mutable_referring_app_info() = std::move(referring_app_info);
 }
 #endif  // BUILDFLAG(IS_ANDROID)

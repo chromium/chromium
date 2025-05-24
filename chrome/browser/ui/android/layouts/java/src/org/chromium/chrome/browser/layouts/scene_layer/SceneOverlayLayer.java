@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.layouts.scene_layer;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** An extension of SceneLayer for SceneOverlay. */
+@NullMarked
 public abstract class SceneOverlayLayer extends SceneLayer {
     /**
      * Sets a content tree inside this scene overlay tree.

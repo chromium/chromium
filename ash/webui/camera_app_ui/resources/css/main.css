@@ -572,7 +572,6 @@ body.doc-mode-reviewing #open-settings {
 #view-settings,
 #view-photo-aspect-ratio-settings,
 #view-photo-resolution-settings,
-#view-super-res-intro-dialog,
 #view-video-resolution-settings,
 #view-expert-settings,
 #view-warning,
@@ -600,7 +599,6 @@ body.view-low-storage-dialog #view-low-storage-dialog,
 body.view-settings #view-settings,
 body.view-photo-aspect-ratio-settings #view-photo-aspect-ratio-settings,
 body.view-photo-resolution-settings #view-photo-resolution-settings,
-body.view-super-res-intro-dialog #view-super-res-intro-dialog,
 body.view-video-resolution-settings #view-video-resolution-settings,
 body.view-expert-settings #view-expert-settings,
 body.view-warning #view-warning,
@@ -1289,66 +1287,6 @@ body:not(.video) #settings-video-resolution {
 .low-storage-dialog-buttons .external-link-icon {
   height: 20px;
   width: 20px;
-}
-
-#view-super-res-intro-dialog {
-  --border-radius: 20px;
-
-  align-items: flex-start;
-  background: unset;
-}
-
-#view-super-res-intro-dialog .dialog-container {
-  background-color: var(--cros-sys-base_elevated);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  /* Align the dialog with the center of the camera preview */
-  transform: translateY(calc(0.5*var(--preview-viewport-height) - 50%));
-}
-
-#super-res-dialog-illustration {
-  background: var(--cros-sys-app_base);
-}
-
-#super-res-dialog-content {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 32px 32px 32px;
-  width: 416px;
-}
-
-#super-res-dialog-content .dialog-title {
-  color: var(--cros-sys-on_surface);
-  font: var(--cros-display-7-font);
-}
-
-#super-res-dialog-content .dialog-description {
-  color: var(--cros-sys-secondary);
-  font: var(--cros-body-2-font);
-  margin-top: 16px;
-}
-
-#super-res-dialog-content .dialog-buttons {
-  display: flex;
-  gap: 8px;
-  margin-top: 20px;
-  justify-content: flex-end;
-}
-
-#super-res-dialog-content .ptz-icon {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-#open-ptz-panel:is(.notify-new-feature) #notify-super-res-indicator {
-  background: var(--cros-sys-primary);
-  border-radius: 50%;
-  height: 6px;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 6px;
 }
 
 #view-settings {

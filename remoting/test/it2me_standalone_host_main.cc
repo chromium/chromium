@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/at_exit.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "remoting/host/resources.h"
-#include "remoting/proto/event.pb.h"
 #include "remoting/test/it2me_standalone_host.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -15,6 +15,7 @@
 
 #include "base/linux_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/connection.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 int main(int argc, const char** argv) {

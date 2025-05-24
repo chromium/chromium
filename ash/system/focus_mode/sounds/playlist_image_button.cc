@@ -138,7 +138,7 @@ void PlaylistImageButton::SetIsSelected(bool is_selected) {
       is_selected
           ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_SELECTED_ACCESSIBLE_DESCRIPTION
           : IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_UNSELECTED_ACCESSIBLE_DESCRIPTION));
-  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kStateChanged, true);
 
   OnPropertyChanged(&is_selected_, views::kPropertyEffectsPaint);
 }
@@ -151,7 +151,7 @@ void PlaylistImageButton::UpdateContents(const gfx::ImageSkia& image) {
   }
 
   is_default_image_ = false;
-  image_view_->SetImage(image);
+  image_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 }
 
 void PlaylistImageButton::OnSetTooltipText(const std::u16string& tooltip_text) {
@@ -184,7 +184,8 @@ void PlaylistImageButton::UpdateToDefaultImage() {
   canvas.drawColor(
       SkColorSetA(color_provider->GetColor(cros_tokens::kCrosSysOnSurface),
                   kDefaultImageAlpha));
-  image_view_->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(std::move(bitmap)));
+  image_view_->SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFrom1xBitmap(std::move(bitmap))));
 }
 
 BEGIN_METADATA(PlaylistImageButton)

@@ -8,24 +8,25 @@
 #include <string_view>
 #include <utility>
 
-#include "base/check_op.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/json/string_escape.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
-#include "components/translate/core/common/translate_util.h"
+#import "base/check_op.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/json/string_escape.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/values.h"
+#import "components/translate/core/common/translate_util.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/navigation/navigation_context.h"
-#include "net/base/load_flags.h"
-#include "net/base/net_errors.h"
-#include "net/http/http_status_code.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
-#include "url/gurl.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "net/base/load_flags.h"
+#import "net/base/net_errors.h"
+#import "net/http/http_status_code.h"
+#import "net/traffic_annotation/network_traffic_annotation.h"
+#import "services/network/public/cpp/resource_request.h"
+#import "services/network/public/mojom/url_response_head.mojom.h"
+#import "url/gurl.h"
 
 namespace translate {
 
@@ -63,45 +64,43 @@ std::optional<TranslateErrors> FindTranslateErrorsKey(
 
 }  // anonymous namespace
 
-WEB_STATE_USER_DATA_KEY_IMPL(TranslateController)
-
 TranslateController::TranslateController(web::WebState* web_state)
-    : web_state_(web_state), observer_(nullptr), weak_method_factory_(this) {
+    : web_state_(web_state), observer_(nullptr) {
   DCHECK(web_state_);
-  web_state_->AddObserver(this);
-  if (web_state_->IsRealized()) {
-    TranslateJavaScriptFeature::GetInstance()
-        ->GetWebFramesManager(web_state_)
-        ->AddObserver(this);
-  }
 }
 
-TranslateController::~TranslateController() {
-  if (web_state_) {
-    web_state_->RemoveObserver(this);
-    if (web_state_->IsRealized()) {
-      TranslateJavaScriptFeature::GetInstance()
-          ->GetWebFramesManager(web_state_)
-          ->RemoveObserver(this);
-    }
-    web_state_ = nullptr;
-  }
+TranslateController::~TranslateController() {}
+
+web::WebFrame* TranslateController::GetMainWebFrame() {
+  return TranslateJavaScriptFeature::GetInstance()
+      ->GetWebFramesManager(web_state_)
+      ->GetMainWebFrame();
 }
 
 void TranslateController::InjectTranslateScript(
     const std::string& translate_script) {
-  TranslateJavaScriptFeature::GetInstance()->InjectTranslateScript(
-      main_web_frame_, translate_script);
+  web::WebFrame* main_web_frame = GetMainWebFrame();
+  if (main_web_frame) {
+    TranslateJavaScriptFeature::GetInstance()->InjectTranslateScript(
+        main_web_frame, translate_script);
+  }
 }
 
 void TranslateController::RevertTranslation() {
-  TranslateJavaScriptFeature::GetInstance()->RevertTranslation(main_web_frame_);
+  web::WebFrame* main_web_frame = GetMainWebFrame();
+  if (main_web_frame) {
+    TranslateJavaScriptFeature::GetInstance()->RevertTranslation(
+        main_web_frame);
+  }
 }
 
 void TranslateController::StartTranslation(const std::string& source_language,
                                            const std::string& target_language) {
-  TranslateJavaScriptFeature::GetInstance()->StartTranslation(
-      main_web_frame_, source_language, target_language);
+  web::WebFrame* main_web_frame = GetMainWebFrame();
+  if (main_web_frame) {
+    TranslateJavaScriptFeature::GetInstance()->StartTranslation(
+        main_web_frame, source_language, target_language);
+  }
 }
 
 void TranslateController::OnJavascriptCommandReceived(
@@ -160,44 +159,6 @@ void TranslateController::OnTranslateComplete(
     observer_->OnTranslateComplete(
         *error_type, source_language ? *source_language : std::string(),
         translation_time.value_or(0.));
-  }
-}
-
-#pragma mark - web::WebStateObserver implementation
-
-void TranslateController::WebStateDestroyed(web::WebState* web_state) {
-  DCHECK_EQ(web_state_, web_state);
-  web_state_->RemoveObserver(this);
-  if (web_state_->IsRealized()) {
-    TranslateJavaScriptFeature::GetInstance()
-        ->GetWebFramesManager(web_state_)
-        ->RemoveObserver(this);
-  }
-  web_state_ = nullptr;
-  main_web_frame_ = nullptr;
-}
-
-void TranslateController::WebStateRealized(web::WebState* web_state) {
-  TranslateJavaScriptFeature::GetInstance()
-      ->GetWebFramesManager(web_state_)
-      ->AddObserver(this);
-}
-
-#pragma mark - web::WebFramesManager implementation
-
-void TranslateController::WebFrameBecameAvailable(
-    web::WebFramesManager* web_frames_manager,
-    web::WebFrame* web_frame) {
-  if (web_frame->IsMainFrame()) {
-    main_web_frame_ = web_frame;
-  }
-}
-
-void TranslateController::WebFrameBecameUnavailable(
-    web::WebFramesManager* web_frames_manager,
-    const std::string& frame_id) {
-  if (web_frames_manager->GetFrameWithId(frame_id) == main_web_frame_) {
-    main_web_frame_ = nullptr;
   }
 }
 

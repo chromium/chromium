@@ -32,7 +32,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/constants.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
@@ -48,7 +47,7 @@
 #include "sandbox/linux/syscall_broker/broker_client.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
-#include "sandbox/linux/system_headers/landlock.h"
+#include "sandbox/linux/system_headers/linux_landlock.h"
 #include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/linux/bpf_broker_policy_linux.h"
@@ -63,10 +62,6 @@
 #if BUILDFLAG(USING_SANITIZER)
 #include <sanitizer/common_interface_defs.h>
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/assistant/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace sandbox {
 namespace policy {
@@ -342,18 +337,12 @@ bool SandboxLinux::StartSeccompBPF(sandbox::mojom::Sandbox sandbox_type,
           ? SandboxBPF::SeccompLevel::MULTI_THREADED
           : SandboxBPF::SeccompLevel::SINGLE_THREADED;
 
-  bool force_disable_spectre_variant2_mitigation =
-      base::FeatureList::IsEnabled(
-          features::kForceDisableSpectreVariant2MitigationInNetworkService) &&
-      sandbox_type == sandbox::mojom::Sandbox::kNetwork;
-
   // If the kernel supports the sandbox, and if the command line says we
   // should enable it, enable it or die.
   std::unique_ptr<BPFBasePolicy> policy =
       SandboxSeccompBPF::PolicyForSandboxType(sandbox_type, options);
   SandboxSeccompBPF::StartSandboxWithExternalPolicy(
-      std::move(policy), OpenProc(proc_fd_), seccomp_level,
-      force_disable_spectre_variant2_mitigation);
+      std::move(policy), OpenProc(proc_fd_), seccomp_level);
   SandboxSeccompBPF::RunSandboxSanityChecks(sandbox_type, options);
   seccomp_bpf_started_ = true;
   LogSandboxStarted("seccomp-bpf");
@@ -409,10 +398,6 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
           command_line->GetSwitchValueASCII(switches::kGpuSandboxFailuresFatal);
       sandbox_failure_fatal = switch_value != "no";
     }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    CHECK(process_type != switches::kGpuProcess || sandbox_failure_fatal);
-#endif
 
     if (sandbox_failure_fatal && !IsUnsandboxedSandboxType(sandbox_type)) {
       error_message += " Try waiting for /proc to be updated.";
@@ -505,7 +490,7 @@ rlim_t GetProcessDataSizeLimit(sandbox::mojom::Sandbox sandbox_type) {
     // Allow the GPU/RENDERER process's sandbox to access more physical memory
     // if it's available on the system.
     //
-    // Renderer processes are allowed to access 16 GB; the GPU process, up
+    // Renderer processes are allowed to access 32 GB; the GPU process, up
     // to 64 GB.
     constexpr rlim_t GB = 1024 * 1024 * 1024;
     const rlim_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
@@ -513,8 +498,7 @@ rlim_t GetProcessDataSizeLimit(sandbox::mojom::Sandbox sandbox_type) {
     if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
         physical_memory > 64 * GB) {
       limit = 64 * GB;
-    } else if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
-               physical_memory > 32 * GB) {
+    } else if (physical_memory > 32 * GB) {
       limit = 32 * GB;
     } else if (physical_memory > 16 * GB) {
       limit = 16 * GB;

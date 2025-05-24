@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_SEARCH_MAGIC_BOOST_NOTICE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/search/mojom/magic_boost_handler.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

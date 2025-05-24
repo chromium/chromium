@@ -158,9 +158,10 @@ void NetworkResourcesData::ResourceData::ProcessCustomWeakness(
       String content;
       bool base64_encoded;
       if (InspectorPageAgent::CachedResourceContent(cached_resource_, &content,
-                                                    &base64_encoded))
+                                                    &base64_encoded, nullptr)) {
         network_resources_data_->SetResourceContent(RequestId(), content,
                                                     base64_encoded);
+      }
     }
   } else {
     // We could be evicting resource being loaded, save the loaded part, the
@@ -394,9 +395,8 @@ void NetworkResourcesData::SetXHRReplayData(const String& request_id,
 
 HeapVector<Member<NetworkResourcesData::ResourceData>>
 NetworkResourcesData::Resources() {
-  HeapVector<Member<ResourceData>> result;
-  WTF::CopyValuesToVector(request_id_to_resource_data_map_, result);
-  return result;
+  return HeapVector<Member<NetworkResourcesData::ResourceData>>(
+      request_id_to_resource_data_map_.Values());
 }
 
 int64_t NetworkResourcesData::GetAndClearPendingEncodedDataLength(

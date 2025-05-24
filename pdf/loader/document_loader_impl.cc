@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "pdf/loader/document_loader_impl.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -264,12 +260,14 @@ void DocumentLoaderImpl::ContinueDownload() {
                                     weak_factory_.GetWeakPtr()));
 }
 
-void DocumentLoaderImpl::DidOpenPartial(int32_t result) {
-  if (result != Result::kSuccess)
+void DocumentLoaderImpl::DidOpenPartial(bool success) {
+  if (!success) {
     return ReadComplete();
+  }
 
-  if (!ResponseStatusSuccess(loader_.get()))
+  if (!ResponseStatusSuccess(loader_.get())) {
     return ReadComplete();
+  }
 
   // Leave position untouched for multiparted responce for now, when we read the
   // data we'll get it.
@@ -285,8 +283,9 @@ void DocumentLoaderImpl::DidOpenPartial(int32_t result) {
   // http://www.act.org/compass/sample/pdf/geometry.pdf
   int start_pos = 0;
   if (loader_->GetByteRangeStart(&start_pos)) {
-    if (start_pos % DataStream::kChunkSize != 0)
+    if (start_pos % DataStream::kChunkSize != 0) {
       return ReadComplete();
+    }
 
     DCHECK(!chunk_.chunk_data);
     chunk_.chunk_index = chunk_stream_.GetChunkIndex(start_pos);
@@ -336,15 +335,17 @@ bool DocumentLoaderImpl::SaveBuffer(uint32_t input_size) {
   bytes_received_ += input_size;
   bool chunk_saved = false;
   bool loading_pending_request = pending_requests_.Contains(chunk_.chunk_index);
-  auto input = base::make_span(buffer_).first(input_size);
+  auto input = base::span(buffer_).first(input_size);
   while (!input.empty()) {
     if (chunk_.data_size == 0)
       chunk_.chunk_data = std::make_unique<DataStream::ChunkData>();
 
     const size_t new_chunk_data_len =
         std::min(DataStream::kChunkSize - chunk_.data_size, input.size());
-    memcpy(chunk_.chunk_data->data() + chunk_.data_size, input.data(),
-           new_chunk_data_len);
+    UNSAFE_TODO({
+      memcpy(chunk_.chunk_data->data() + chunk_.data_size, input.data(),
+             new_chunk_data_len);
+    });
     chunk_.data_size += new_chunk_data_len;
     if (chunk_.data_size == DataStream::kChunkSize ||
         (document_size > 0 && document_size <= EndOfCurrentChunk())) {

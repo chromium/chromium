@@ -17,8 +17,6 @@ class X11MenuUtils : public PlatformMenuUtils {
   ~X11MenuUtils() override;
 
   int GetCurrentKeyModifiers() const override;
-
-  std::string ToDBusKeySym(KeyboardCode code) const override;
 };
 
 }  // namespace ui

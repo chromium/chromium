@@ -14,6 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 namespace ash {
 class WindowState;
 }
@@ -29,8 +31,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
 
   // ash::ShellDelegate:
   bool CanShowWindowForUser(const aura::Window* window) const override;
-  std::unique_ptr<ash::CaptureModeDelegate> CreateCaptureModeDelegate()
-      const override;
+  std::unique_ptr<ash::CaptureModeDelegate> CreateCaptureModeDelegate(
+      PrefService* local_state) const override;
   std::unique_ptr<ash::ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const override;
   std::unique_ptr<ash::CoralDelegate> CreateCoralDelegate() const override;
@@ -62,7 +64,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   GetBrowserProcessUrlLoaderFactory() const override;
   void OpenKeyboardShortcutHelpPage() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
-  void SetTabScrubberChromeOSEnabled(bool enabled) override;
+  void SetTabScrubberEnabled(bool enabled) override;
   bool AllowDefaultTouchActions(gfx::NativeWindow window) override;
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   bool IsTabDrag(const ui::OSExchangeData& drop_data) override;
@@ -72,9 +74,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   void BindMultiDeviceSetup(
       mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
           receiver) override;
-  void BindMultiCaptureService(
-      mojo::PendingReceiver<video_capture::mojom::MultiCaptureService> receiver)
-      override;
   media_session::MediaSessionService* GetMediaSessionService() override;
   bool IsSessionRestoreInProgress() const override;
   void SetUpEnvironmentForLockedFullscreen(
@@ -88,6 +87,12 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   void OpenFeedbackDialog(ShellDelegate::FeedbackSource source,
                           const std::string& description_template,
                           const std::string& category_tag) override;
+  bool SendSpecializedFeatureFeedback(
+      const AccountId& account_id,
+      int product_id,
+      std::string description,
+      std::optional<std::string> image,
+      std::optional<std::string> image_mime_type) override;
   void OpenProfileManager() override;
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();
@@ -99,7 +104,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   std::string GetVersionString() override;
   void ShouldExitFullscreenBeforeLock(
       ShouldExitFullscreenCallback callback) override;
-  ash::DeskProfilesDelegate* GetDeskProfilesDelegate() override;
   void OpenMultitaskingSettings() override;
   bool IsNoFirstRunSwitchOn() const override;
 };

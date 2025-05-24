@@ -10,7 +10,7 @@ bool ScreenAILibraryWrapperFake::Load(const base::FilePath& library_path) {
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ScreenAILibraryWrapperFake::ScreenAILibraryWrapperFake::SetLogger() {}
 #endif
 
@@ -34,6 +34,10 @@ bool ScreenAILibraryWrapperFake::InitOCR() {
 
 bool ScreenAILibraryWrapperFake::InitMainContentExtraction() {
   return true;
+}
+
+uint32_t ScreenAILibraryWrapperFake::GetMaxImageDimension() {
+  return 2048;
 }
 
 std::optional<chrome_screen_ai::VisualAnnotation>

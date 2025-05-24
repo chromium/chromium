@@ -1,4 +1,3 @@
-eugenis@chromium.org
 glider@chromium.org
 rnk@chromium.org
 per-file tsan_suppressions.cc=*

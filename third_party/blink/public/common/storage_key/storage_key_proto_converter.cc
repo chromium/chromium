@@ -43,7 +43,7 @@ blink::mojom::AncestorChainBit MakeAncestorChainBit(
     const storage_key_proto::StorageKey::AncestorChainBit& bit_proto,
     const url::Origin& origin,
     const net::SchemefulSite& top_level_site) {
-  if (origin.opaque() || top_level_site != net::SchemefulSite(origin)) {
+  if (origin.opaque() || !top_level_site.IsSameSiteWith(origin)) {
     return blink::mojom::AncestorChainBit::kCrossSite;
   }
   switch (bit_proto.bit()) {

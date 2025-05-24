@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/strings/sys_string_conversions.h"
+#include "build/build_config.h"
 
 namespace media {
 
@@ -28,9 +29,11 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
   AVAudioSession* audio_session = [AVAudioSession sharedInstance];
 
   NSError* error = nil;
-  auto options = AVAudioSessionCategoryOptionDefaultToSpeaker |
-                 AVAudioSessionCategoryOptionAllowBluetooth |
+  auto options = AVAudioSessionCategoryOptionAllowBluetooth |
                  AVAudioSessionCategoryOptionAllowBluetoothA2DP |
+#if !BUILDFLAG(IS_IOS_TVOS)
+                 AVAudioSessionCategoryOptionDefaultToSpeaker |
+#endif
                  AVAudioSessionCategoryOptionMixWithOthers;
   [audio_session setCategory:AVAudioSessionCategoryPlayAndRecord
                         mode:AVAudioSessionModeDefault
@@ -85,8 +88,13 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
     AVAudioSessionPortDescription* output = currentRoute.outputs.firstObject;
     if ([output.portType isEqualToString:AVAudioSessionPortBuiltInReceiver] ||
         [output.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
-      [audio_session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
-                                       error:&error];
+      auto option =
+#if !BUILDFLAG(IS_IOS_TVOS)
+          AVAudioSessionPortOverrideSpeaker;
+#else
+          AVAudioSessionPortOverrideNone;
+#endif
+      [audio_session overrideOutputAudioPort:option error:&error];
       if (error) {
         NSLog(@"Error overriding output audio port: %@",
               [error localizedDescription]);

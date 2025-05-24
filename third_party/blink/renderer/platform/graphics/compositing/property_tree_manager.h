@@ -28,7 +28,6 @@ enum class RenderSurfaceReason : uint8_t;
 
 namespace gfx {
 class PointF;
-class Rect;
 class RRectF;
 }
 
@@ -40,6 +39,9 @@ class EffectPaintPropertyNode;
 class ScrollPaintPropertyNode;
 class SynthesizedClip;
 class TransformPaintPropertyNode;
+
+using StackScrollTranslationVector =
+    HeapVector<Member<const TransformPaintPropertyNode>, 32>;
 
 class PropertyTreeManagerClient {
  public:
@@ -113,8 +115,7 @@ class PropertyTreeManager {
   // Ensure the compositor scroll and transform nodes for a scroll translation
   // transform node. Returns the id of the scroll node.
   int EnsureCompositorScrollAndTransformNode(
-      const TransformPaintPropertyNode& scroll_translation,
-      const gfx::Rect& scrolling_contents_cull_rect);
+      const TransformPaintPropertyNode& scroll_translation);
 
   // Same as above but marks the scroll nodes as being the viewport.
   int EnsureCompositorInnerScrollAndTransformNode(
@@ -176,12 +177,14 @@ class PropertyTreeManager {
   static void DropCompositorScrollDeltaNextCommit(cc::LayerTreeHost&,
                                                   CompositorElementId);
 
-  static uint32_t GetMainThreadScrollingReasons(const cc::LayerTreeHost&,
-                                                const ScrollPaintPropertyNode&);
+  static uint32_t GetMainThreadRepaintReasons(const cc::LayerTreeHost&,
+                                              const ScrollPaintPropertyNode&);
   // TODO(crbug.com/40517276): Remove this function after launching
   // RasterInducingScroll.
   static bool UsesCompositedScrolling(const cc::LayerTreeHost&,
                                       const ScrollPaintPropertyNode&);
+  static bool UsesRasterInducingScroll(const cc::LayerTreeHost&,
+                                       const ScrollPaintPropertyNode&);
 
   // Updates conditional render surface reasons for all effect nodes in
   // |GetEffectTree|. Every effect is supposed to have render surface enabled
@@ -193,7 +196,12 @@ class PropertyTreeManager {
   // TODO(crbug.com/504464): There is ongoing work in cc to delay render surface
   // decision until later phase of the pipeline. Remove premature optimization
   // here once the work is ready.
-  void UpdateConditionalRenderSurfaceReasons(const cc::LayerList& layers);
+  void UpdateConditionalRenderSurfaceReasons(
+      const cc::LayerList& layers,
+      const HashSet<int>& layers_having_text);
+
+  void EnsureCompositorNodesForAnchorPositionAdjustmentContainers(
+      const StackScrollTranslationVector& scroll_translations);
 
   // The type of operation the current cc effect node applies.
   enum CcEffectType {
@@ -358,7 +366,7 @@ class PropertyTreeManager {
 
   void UpdatePixelMovingFilterClipExpanders();
 
-  uint32_t NonCompositedMainThreadScrollingReasons(
+  uint32_t NonCompositedMainThreadRepaintReasons(
       const TransformPaintPropertyNode& scroll_translation) const;
 
   PropertyTreeManagerClient& client_;
@@ -399,6 +407,8 @@ class PropertyTreeManager {
   // clip_expander of their cc nodes after all effect nodes have been converted.
   HeapVector<Member<const ClipPaintPropertyNode>, 16>
       pixel_moving_filter_clip_expanders_;
+
+  HashSet<CompositorElementId> anchor_position_adjustment_container_ids_;
 };
 
 }  // namespace blink

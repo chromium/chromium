@@ -24,6 +24,11 @@ class FloatingSsoServiceFactory : public ProfileKeyedServiceFactory {
   FloatingSsoServiceFactory& operator=(const FloatingSsoServiceFactory&) =
       delete;
 
+  // Cookie sync functionality should be enabled only for primary profiles, but
+  // in some tests we bypass this restriction when it's not easy to mimic a
+  // logged in ChromeOS user.
+  void AllowNonPrimaryProfileForTests();
+
  private:
   friend base::NoDestructor<FloatingSsoServiceFactory>;
 
@@ -34,6 +39,8 @@ class FloatingSsoServiceFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
+
+  bool allow_non_primary_profile_for_tests_ = false;
 };
 
 }  // namespace ash::floating_sso

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_assertion_response.h"
 
 #include <utility>
+#include <variant>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_assertion_response_js_on.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/json.h"
@@ -15,7 +16,7 @@ AuthenticatorAssertionResponse::AuthenticatorAssertionResponse(
     const Vector<uint8_t> client_data_json,
     const Vector<uint8_t> authenticator_data,
     const Vector<uint8_t> signature,
-    const std::optional<Vector<uint8_t>> optional_user_handle)
+    std::optional<Vector<uint8_t>> optional_user_handle)
     : AuthenticatorAssertionResponse(
           DOMArrayBuffer::Create(client_data_json),
           DOMArrayBuffer::Create(authenticator_data),
@@ -36,8 +37,8 @@ AuthenticatorAssertionResponse::AuthenticatorAssertionResponse(
 
 AuthenticatorAssertionResponse::~AuthenticatorAssertionResponse() = default;
 
-absl::variant<AuthenticatorAssertionResponseJSON*,
-              AuthenticatorAttestationResponseJSON*>
+std::variant<AuthenticatorAssertionResponseJSON*,
+             AuthenticatorAttestationResponseJSON*>
 AuthenticatorAssertionResponse::toJSON() const {
   auto* json = AuthenticatorAssertionResponseJSON::Create();
   json->setClientDataJSON(WebAuthnBase64UrlEncode(clientDataJSON()));

@@ -4,13 +4,15 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -157,8 +159,8 @@ void MaybeReportDeepScanningVerdict(
     const int64_t content_size,
     BinaryUploadService::Result result,
     const enterprise_connectors::ContentAnalysisResponse& response,
-    EventResult event_result) {
-  DCHECK(base::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
+    enterprise_connectors::EventResult event_result) {
+  DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (!router)
@@ -212,7 +214,7 @@ void ReportAnalysisConnectorWarningBypass(
     const int64_t content_size,
     const enterprise_connectors::ContentAnalysisResponse& response,
     std::optional<std::u16string> user_justification) {
-  DCHECK(base::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
+  DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (!router)
@@ -230,23 +232,6 @@ void ReportAnalysisConnectorWarningBypass(
   }
 }
 
-std::string EventResultToString(EventResult result) {
-  switch (result) {
-    case EventResult::UNKNOWN:
-      return "EVENT_RESULT_UNKNOWN";
-    case EventResult::ALLOWED:
-      return "EVENT_RESULT_ALLOWED";
-    case EventResult::WARNED:
-      return "EVENT_RESULT_WARNED";
-    case EventResult::BLOCKED:
-      return "EVENT_RESULT_BLOCKED";
-    case EventResult::BYPASSED:
-      return "EVENT_RESULT_BYPASSED";
-  }
-  NOTREACHED_IN_MIGRATION();
-  return "";
-}
-
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
   switch (access_point) {
     case DeepScanAccessPoint::DOWNLOAD:
@@ -262,8 +247,7 @@ std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
     case DeepScanAccessPoint::FILE_TRANSFER:
       return "FileTransfer";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void RecordDeepScanMetrics(

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,7 +60,7 @@ class MockAudioSystem : public media::AudioSystem {
 
 bool DescriptionsAreEqual(const media::AudioDeviceDescriptions& lhs,
                           const media::AudioDeviceDescriptions& rhs) {
-  return base::ranges::equal(lhs, rhs, [](const auto& lhs, const auto& rhs) {
+  return std::ranges::equal(lhs, rhs, [](const auto& lhs, const auto& rhs) {
     // Group IDs are not used by this test and are therefore ignored in
     // comparison.
     return lhs.device_name == rhs.device_name && lhs.unique_id == rhs.unique_id;

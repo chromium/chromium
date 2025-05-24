@@ -1,0 +1,13 @@
+# crbug.com/411727705
+-MediaSourceTest.Playback_AudioVideo_Mp2t
+-MediaSourceTest.Playback_Video_MP4_Audio_WEBM
+-Default/MediaTest.HLSMultivariantBitrateBear/1
+-Default/MediaTest.HLSSingleFileBear/1
+-Default/MediaTest.HLSSingleWithoutExtension/1
+-Default/MediaTest.VideoBearRotated0/1
+-Default/MediaTest.VideoBearRotated180/1
+-Default/MediaTest.VideoBearRotated270/1
+-Default/MediaTest.VideoBearRotated90/1
+
+# crbug.com/343335591
+-FormControlsBrowserTest.MultiSelect

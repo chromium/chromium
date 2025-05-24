@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/common/crash_keys.h"
 
+#include <array>
 #include <deque>
 #include <string_view>
 
@@ -21,14 +17,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
-#include "components/flags_ui/flags_ui_switches.h"
+#include "components/webui/flags/flags_ui_switches.h"
 #include "content/public/common/content_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/app/crash_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "ui/gl/gl_switches.h"
@@ -112,47 +107,47 @@ void HandleEnableDisableFeatures(const base::CommandLine& command_line) {
 
 // Return true if we DON'T want to upload this flag to the crash server.
 bool IsBoringSwitch(const std::string& flag) {
-  static const std::string_view kIgnoreSwitches[] = {
-    kStringAnnotationsSwitch,
-    switches::kEnableLogging,
-    switches::kFlagSwitchesBegin,
-    switches::kFlagSwitchesEnd,
-    switches::kLoggingLevel,
-    switches::kProcessType,
-    switches::kV,
-    switches::kVModule,
-    // This is a serialized buffer which won't fit in the default 64 bytes
-    // anyways. Should be switches::kGpuPreferences but we run into linking
-    // errors on Windows if we try to use that directly.
-    "gpu-preferences",
-    switches::kEnableFeatures,
-    switches::kDisableFeatures,
+  static const auto kIgnoreSwitches = std::to_array<std::string_view>({
+      kStringAnnotationsSwitch,
+      switches::kEnableLogging,
+      switches::kFlagSwitchesBegin,
+      switches::kFlagSwitchesEnd,
+      switches::kLoggingLevel,
+      switches::kProcessType,
+      switches::kV,
+      switches::kVModule,
+      // This is a serialized buffer which won't fit in the default 64 bytes
+      // anyways. Should be switches::kGpuPreferences but we run into linking
+      // errors on Windows if we try to use that directly.
+      "gpu-preferences",
+      switches::kEnableFeatures,
+      switches::kDisableFeatures,
 #if BUILDFLAG(IS_MAC)
-    switches::kMetricsClientID,
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-    // --crash-loop-before is a "boring" switch because it is redundant;
-    // crash_reporter separately informs the crash server if it is doing
-    // crash-loop handling.
-    crash_reporter::switches::kCrashLoopBefore,
-    switches::kRegisterPepperPlugins,
-    switches::kUseGL,
-    switches::kUserDataDir,
-    // Cros/CC flags are specified as raw strings to avoid dependency.
-    "child-wallpaper-large",
-    "child-wallpaper-small",
-    "default-wallpaper-large",
-    "default-wallpaper-small",
-    "guest-wallpaper-large",
-    "guest-wallpaper-small",
-    "enterprise-enable-forced-re-enrollment",
-    "enterprise-enable-forced-re-enrollment-on-flex",
-    "enterprise-enrollment-initial-modulus",
-    "enterprise-enrollment-modulus-limit",
-    "login-profile",
-    "login-user",
-    "use-cras",
+      switches::kMetricsClientID,
+#elif BUILDFLAG(IS_CHROMEOS)
+      // --crash-loop-before is a "boring" switch because it is redundant;
+      // crash_reporter separately informs the crash server if it is doing
+      // crash-loop handling.
+      crash_reporter::switches::kCrashLoopBefore,
+      switches::kRegisterPepperPlugins,
+      switches::kUseGL,
+      switches::kUserDataDir,
+      // Cros/CC flags are specified as raw strings to avoid dependency.
+      "child-wallpaper-large",
+      "child-wallpaper-small",
+      "default-wallpaper-large",
+      "default-wallpaper-small",
+      "guest-wallpaper-large",
+      "guest-wallpaper-small",
+      "enterprise-enable-forced-re-enrollment",
+      "enterprise-enable-forced-re-enrollment-on-flex",
+      "enterprise-enrollment-initial-modulus",
+      "enterprise-enrollment-modulus-limit",
+      "login-profile",
+      "login-user",
+      "use-cras",
 #endif
-  };
+  });
 
 #if BUILDFLAG(IS_WIN)
   // Just about everything has this, don't bother.
@@ -209,6 +204,9 @@ void AppendStringAnnotationsCommandLineSwitch(base::CommandLine* command_line) {
     }
     string_annotations = base::StrCat(
         {string_annotations, crash_key.Name(), "=", crash_key.Value()});
+  }
+  if (string_annotations.empty()) {
+    return;
   }
   command_line->AppendSwitchASCII(kStringAnnotationsSwitch, string_annotations);
 }

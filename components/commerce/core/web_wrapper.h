@@ -26,7 +26,7 @@ class WebWrapper {
   virtual ~WebWrapper();
 
   // Get the URL that is currently being displayed for the page.
-  virtual const GURL& GetLastCommittedURL() = 0;
+  virtual const GURL& GetLastCommittedURL() const = 0;
 
   // Gets the title for the current page.
   virtual const std::u16string& GetTitle() = 0;

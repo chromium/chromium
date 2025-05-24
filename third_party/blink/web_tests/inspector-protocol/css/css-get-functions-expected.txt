@@ -1,0 +1,203 @@
+Verify that functions are reported properly.
+Functions for #test1
+function rule: {
+    children : [
+        [0] : {
+            style : {
+                cssProperties : [
+                    [0] : {
+                        name : --y
+                        value : var(--x)
+                    }
+                ]
+                shorthandEntries : [
+                ]
+            }
+        }
+        [1] : {
+            condition : {
+                children : [
+                    [0] : {
+                        condition : {
+                            children : [
+                                [0] : {
+                                    style : {
+                                        cssProperties : [
+                                            [0] : {
+                                                name : --y
+                                                value : green
+                                            }
+                                        ]
+                                        shorthandEntries : [
+                                        ]
+                                    }
+                                }
+                            ]
+                            conditionText : (width > 300px)
+                            media : {
+                                mediaList : [
+                                    [0] : {
+                                        active : true
+                                        expressions : [
+                                            [0] : {
+                                                computedLength : 300
+                                                feature : width
+                                                unit : px
+                                                value : 300
+                                            }
+                                        ]
+                                    }
+                                ]
+                                source : mediaRule
+                                sourceURL : <string 0>
+                                styleSheetId : <string 1>
+                                text : (width > 300px)
+                            }
+                        }
+                    }
+                ]
+                conditionText : (color: green)
+                supports : {
+                    active : true
+                    styleSheetId : <string 1>
+                    text : (color: green)
+                }
+            }
+        }
+        [2] : {
+            style : {
+                cssProperties : [
+                    [0] : {
+                        name : result
+                        value : var(--y)
+                    }
+                ]
+                shorthandEntries : [
+                ]
+            }
+        }
+    ]
+    name : {
+        text : --f
+    }
+    origin : regular
+    parameters : [
+        [0] : {
+            name : --x
+            type : *
+        }
+    ]
+    styleSheetId : <string 1>
+}
+Functions for #test2
+function rule: {
+    children : [
+        [0] : {
+            style : {
+                cssProperties : [
+                    [0] : {
+                        name : result
+                        value : var(--used)
+                    }
+                ]
+                shorthandEntries : [
+                ]
+            }
+        }
+    ]
+    name : {
+        text : --f2
+    }
+    origin : regular
+    parameters : [
+        [0] : {
+            name : --ignored
+            type : *
+        }
+        [1] : {
+            name : --used
+            type : *
+        }
+    ]
+    styleSheetId : <string 2>
+}
+Functions for #test3
+function rule: {
+    children : [
+        [0] : {
+            style : {
+                cssProperties : [
+                    [0] : {
+                        name : result
+                        value : var(--x)
+                    }
+                ]
+                shorthandEntries : [
+                ]
+            }
+        }
+    ]
+    name : {
+        text : --inner
+    }
+    origin : regular
+    parameters : [
+        [0] : {
+            name : --x
+            type : *
+        }
+    ]
+    styleSheetId : <string 1>
+}
+function rule: {
+    children : [
+        [0] : {
+            style : {
+                cssProperties : [
+                    [0] : {
+                        name : result
+                        value : orange
+                    }
+                ]
+                shorthandEntries : [
+                ]
+            }
+        }
+        [1] : {
+            condition : {
+                children : [
+                    [0] : {
+                        style : {
+                            cssProperties : [
+                                [0] : {
+                                    name : result
+                                    value : --inner(var(--x))
+                                }
+                            ]
+                            shorthandEntries : [
+                            ]
+                        }
+                    }
+                ]
+                conditionText : (width > 300px)
+                containerQueries : {
+                    physicalAxes : Horizontal
+                    styleSheetId : <string 1>
+                    text : (width > 300px)
+                }
+            }
+        }
+    ]
+    name : {
+        text : --outer
+    }
+    origin : regular
+    parameters : [
+        [0] : {
+            name : --x
+            type : *
+        }
+    ]
+    styleSheetId : <string 1>
+}
+

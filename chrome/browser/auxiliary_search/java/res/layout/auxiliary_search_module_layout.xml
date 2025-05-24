@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.auxiliary_search.module.AuxiliarySearchModuleView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/educational_tip_module_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/single_tab_module_padding_top"
+    android:layout_marginStart="@dimen/single_tab_module_lateral_margin"
+    android:layout_marginEnd="@dimen/single_tab_module_lateral_margin"
+    android:paddingStart="@dimen/auxiliary_search_module_padding_start"
+    android:paddingEnd="@dimen/auxiliary_search_module_padding_start"
+    android:paddingTop="@dimen/single_tab_module_padding_top"
+    android:paddingBottom="@dimen/single_tab_module_padding_top"
+    android:background="@drawable/home_surface_ui_background"
+    android:foreground="@drawable/single_tab_card_ripple"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/auxiliary_search_module_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+      <org.chromium.ui.widget.TextViewWithLeading
+          android:id="@+id/auxiliary_search_module_title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingBottom="@dimen/auxiliary_search_module_title_padding_bottom"
+          android:singleLine="true"
+          android:text="@string/auxiliary_search_module_name"
+          android:gravity="start"
+          android:layout_marginBottom="@dimen/auxiliary_search_module_title_margin_bottom"
+          android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary" />
+
+      <org.chromium.ui.widget.TextViewWithLeading
+          android:id="@+id/auxiliary_search_module_content"
+          android:layout_width="match_parent"
+          android:maxLines="4"
+          android:text="@string/auxiliary_search_module_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="top"
+          android:layout_marginBottom="@dimen/auxiliary_search_module_content_margin_bottom"
+          android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+    </LinearLayout>
+
+    <Space
+        android:id="@+id/auxiliary_search_middle_space"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/button_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom">
+
+      <Space
+          android:id="@+id/auxiliary_search_space"
+          android:layout_width="0dp"
+          android:layout_weight="1"
+          android:layout_height="match_parent" />
+
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/auxiliary_search_first_button"
+          style="@style/TextButton"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:paddingStart="@dimen/auxiliary_search_module_button_start_padding"
+          android:paddingEnd="@dimen/auxiliary_search_module_button_start_padding"
+          android:gravity="center_vertical|center_horizontal"
+          android:layout_gravity="bottom|end"
+          android:singleLine="true"
+          android:text="@string/auxiliary_search_module_button_go_to_settings" />
+
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/auxiliary_search_second_button"
+          style="@style/FilledButton"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:paddingStart="@dimen/auxiliary_search_module_button_start_padding"
+          android:paddingEnd="@dimen/auxiliary_search_module_button_start_padding"
+          android:singleLine="true"
+          android:layout_marginStart="@dimen/auxiliary_search_module_button_padding_middle"
+          android:layout_gravity="bottom|end"
+          android:text="@string/auxiliary_search_module_button_got_it" />
+
+  </LinearLayout>
+
+</org.chromium.chrome.browser.auxiliary_search.module.AuxiliarySearchModuleView>

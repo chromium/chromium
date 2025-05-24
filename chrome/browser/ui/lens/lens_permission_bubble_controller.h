@@ -7,9 +7,13 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/tabs/public/tab_interface.h"
+#include "ui/views/widget/widget.h"
 
 namespace content {
 class WebContents;
@@ -24,39 +28,18 @@ namespace views {
 class Widget;
 }
 
-class BrowserWindowInterface;
 class PrefService;
 
 namespace lens {
 
-static constexpr char kLensPermissionDialogName[] = "LensPermissionDialog";
+inline constexpr char kLensPermissionDialogName[] = "LensPermissionDialog";
 
 // Manages the Lens Permission Bubble instance for the associated browser.
 class LensPermissionBubbleController {
  public:
-  // Enumerates the user interactions with the Lens Permission Bubble.
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(UserAction)
-  enum class UserAction {
-    // User opened the Help Center link.
-    kLinkOpened = 0,
-    // User pressed the Accept button.
-    kAcceptButtonPressed = 1,
-    // User pressed the Cancel button.
-    kCancelButtonPressed = 2,
-    // User pressed the Esc key.
-    kEscKeyPressed = 3,
-    kMaxValue = kEscKeyPressed
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensPermissionBubbleUserAction)
-
-  LensPermissionBubbleController(
-      BrowserWindowInterface* browser_window_interface,
-      PrefService* pref_service,
-      std::string invocation_source);
+  LensPermissionBubbleController(tabs::TabInterface& tab_interface,
+                                 PrefService* pref_service,
+                                 LensOverlayInvocationSource invocation_source);
   LensPermissionBubbleController(const LensPermissionBubbleController&) =
       delete;
   LensPermissionBubbleController& operator=(
@@ -78,23 +61,34 @@ class LensPermissionBubbleController {
   bool HasOpenDialogWidget();
 
  private:
-  std::unique_ptr<ui::DialogModel> CreateLensPermissionDialogModel();
+  std::unique_ptr<ui::DialogModel> CreateLensPermissionDialogModel(
+      RequestPermissionCallback callback);
   void OnHelpCenterLinkClicked(const ui::Event& event);
-  void OnPermissionDialogAccept();
-  void OnPermissionDialogCancel();
-  void OnPermissionDialogClose();
-  void OnPermissionPreferenceUpdated(RequestPermissionCallback callback);
+  void OnPermissionDialogAccept(RequestPermissionCallback callback);
+  // Callback that closes permission dialogs open on non-active tabs if the
+  // active tab accepts the permission.
+  void OnPermissionPreferenceUpdated();
+  void TabWillDetach(tabs::TabInterface* tab,
+                     tabs::TabInterface::DetachReason reason);
+
+  // Creates and shows the dialog widget.
+  std::unique_ptr<views::Widget> ShowDialogWidget(
+      RequestPermissionCallback callback,
+      content::WebContents* web_contents);
+  void CloseDialogWidget(views::Widget::ClosedReason reason);
 
   // Invocation source for the lens overlay.
-  std::string invocation_source_;
-  // The associated browser.
-  raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+  LensOverlayInvocationSource invocation_source_;
+  // The associated tab.
+  const raw_ref<tabs::TabInterface> tab_interface_;
   // The pref service associated with the current profile.
   raw_ptr<PrefService> pref_service_ = nullptr;
   // Registrar for pref change notifications.
   PrefChangeRegistrar pref_observer_;
   // Pointer to the widget that contains the current open dialog, if any.
-  raw_ptr<views::Widget> dialog_widget_ = nullptr;
+  std::unique_ptr<views::Widget> dialog_widget_;
+
+  base::CallbackListSubscription tab_will_detach_subscription_;
 
   base::WeakPtrFactory<LensPermissionBubbleController> weak_ptr_factory_{this};
 };

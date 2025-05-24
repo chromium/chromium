@@ -80,6 +80,10 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
                                  const base::TimeDelta& interval) = 0;
   virtual void GetAutoRepeatRate(base::TimeDelta* delay,
                                  base::TimeDelta* interval) = 0;
+  virtual void SetSlowKeysEnabled(bool enabled) = 0;
+  virtual bool IsSlowKeysEnabled() const = 0;
+  virtual void SetSlowKeysDelay(base::TimeDelta delay) = 0;
+
   // Callback is invoked when the keyboard layout is available and initialized.
   virtual void SetCurrentLayoutByName(
       const std::string& layout_name,
@@ -217,10 +221,6 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   // connected.
   virtual void DisableKeyboardImposterCheck() = 0;
 };
-
-// Create an input controller that does nothing.
-COMPONENT_EXPORT(OZONE_BASE)
-std::unique_ptr<InputController> CreateStubInputController();
 
 }  // namespace ui
 

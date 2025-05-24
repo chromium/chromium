@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module chromeos.cdm.mojom;
 
@@ -52,6 +52,7 @@ enum CdmKeyStatus {
   OUTPUT_DOWNSCALED,
   KEY_STATUS_PENDING,
   RELEASED,
+  [MinVersion=4] USABLE_IN_FUTURE,
 };
 
 // See media::HdcpVersion

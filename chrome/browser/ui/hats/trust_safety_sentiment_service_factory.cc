@@ -37,7 +37,8 @@ TrustSafetySentimentService* TrustSafetySentimentServiceFactory::GetForProfile(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
-KeyedService* TrustSafetySentimentServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TrustSafetySentimentServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (context->IsOffTheRecord() ||
       (!base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey) &&
@@ -59,5 +60,5 @@ KeyedService* TrustSafetySentimentServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new TrustSafetySentimentService(profile);
+  return std::make_unique<TrustSafetySentimentService>(profile);
 }

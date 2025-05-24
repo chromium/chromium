@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_tree_source_checker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -86,7 +87,7 @@ class FakeAXTreeSource
 
  private:
   std::vector<FakeAXNode> nodes_;
-  std::map<AXNodeID, FakeAXNode*> id_to_node_;
+  std::map<AXNodeID, raw_ptr<FakeAXNode, CtnExperimental>> id_to_node_;
   AXNodeID root_id_;
 };
 

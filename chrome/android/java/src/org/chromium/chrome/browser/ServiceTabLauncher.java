@@ -172,8 +172,8 @@ public class ServiceTabLauncher {
         Context appContext = ContextUtils.getApplicationContext();
         if (!incognito) {
             Intent twaIntent =
-                    TrustedWebActivityClient.createLaunchIntentForTwa(
-                            appContext, url, resolveInfosForUrl);
+                    TrustedWebActivityClient.getInstance()
+                            .createLaunchIntentForTwa(appContext, url, resolveInfosForUrl);
 
             if (twaIntent != null) {
                 appContext.startActivity(twaIntent);

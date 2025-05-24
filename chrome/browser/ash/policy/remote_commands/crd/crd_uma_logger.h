@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_UMA_LOGGER_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_UMA_LOGGER_H_
 
-#include <string>
-
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
 
 namespace policy {
 
@@ -26,7 +25,6 @@ class CrdUmaLogger {
   void LogSessionDuration(base::TimeDelta duration);
 
  private:
-  std::string GetUmaHistogramName(const char* name_template) const;
   const char* FormatCrdSessionType() const;
   const char* FormatUserSessionType() const;
 

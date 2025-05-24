@@ -58,9 +58,10 @@ class PaymentRequestRowView : public views::Button {
   void UpdateButtonState();
 
   // views::Button:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void StateChanged(ButtonState old_state) override;
   void OnThemeChanged() override;
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override;
 
   // views::View:
   void OnFocus() override;

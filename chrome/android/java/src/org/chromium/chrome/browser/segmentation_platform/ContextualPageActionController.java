@@ -13,6 +13,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -41,27 +42,33 @@ public class ContextualPageActionController {
      * The interface to be implemented by the individual feature backends to provide signals
      * necessary for the controller in an uniform manner.
      */
-    public interface ActionProvider {
+    public interface ActionProvider extends Destroyable {
         /**
          * Called during a page load to fetch the relevant signals from the action provider.
+         *
          * @param tab The current tab for which the action would be shown.
          * @param signalAccumulator An accumulator into which the provider would populate relevant
-         *         signals.
+         *     signals.
          */
         void getAction(Tab tab, SignalAccumulator signalAccumulator);
 
         /**
          * Called when any contextual page action is shown.
+         *
          * @param tab The current tab for which the action was shown.
          * @param action Enum value of the action shown.
          */
         default void onActionShown(Tab tab, @AdaptiveToolbarButtonVariant int action) {}
+
+        @Override
+        default void destroy() {}
     }
 
     private final ObservableSupplier<Profile> mProfileSupplier;
-    private ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<Tab> mTabSupplier;
     private final AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private CurrentTabObserver mCurrentTabObserver;
+    private SignalAccumulator mSignalAccumulator;
 
     // The action provider backends.
     protected final List<ActionProvider> mActionProviders = new ArrayList<>();
@@ -116,14 +123,11 @@ public class ContextualPageActionController {
     protected void initActionProviders(
             Supplier<ShoppingService> shoppingServiceSupplier,
             Supplier<BookmarkModel> bookmarkModelSupplier) {
-        mActionProviders.clear();
+        removeProviders();
         mActionProviders.add(
-                new PriceTrackingActionProvider(
-                        shoppingServiceSupplier, bookmarkModelSupplier, mProfileSupplier));
+                new PriceTrackingActionProvider(shoppingServiceSupplier, bookmarkModelSupplier));
         mActionProviders.add(new ReaderModeActionProvider());
-        if (AdaptiveToolbarFeatures.isPriceInsightsPageActionEnabled()) {
-            mActionProviders.add(new PriceInsightsActionProvider(shoppingServiceSupplier));
-        }
+        mActionProviders.add(new PriceInsightsActionProvider(shoppingServiceSupplier));
         if (AdaptiveToolbarFeatures.isDiscountsPageActionEnabled()) {
             mActionProviders.add(new DiscountsActionProvider(shoppingServiceSupplier));
         }
@@ -131,7 +135,26 @@ public class ContextualPageActionController {
 
     /** Called on destroy. */
     public void destroy() {
-        if (mCurrentTabObserver != null) mCurrentTabObserver.destroy();
+        if (mCurrentTabObserver != null) {
+            mCurrentTabObserver.destroy();
+        }
+        removeProviders();
+    }
+
+    /**
+     * @return Whether the page is price insights eligible. The eligibility represents the most
+     *     recent price insights state, which could be from a previous page load or tab. Default is
+     *     false.
+     */
+    public boolean hasPriceInsights() {
+        return mSignalAccumulator == null ? false : mSignalAccumulator.hasPriceInsights();
+    }
+
+    private void removeProviders() {
+        for (ActionProvider provider : mActionProviders) {
+            provider.destroy();
+        }
+        mActionProviders.clear();
     }
 
     private void activeTabChanged(Tab tab) {
@@ -154,27 +177,27 @@ public class ContextualPageActionController {
 
     private void collectSignals(Tab tab) {
         if (mActionProviders.isEmpty()) return;
-        final SignalAccumulator signalAccumulator =
+        mSignalAccumulator =
                 new SignalAccumulator(new Handler(Looper.getMainLooper()), tab, mActionProviders);
-        signalAccumulator.getSignals(() -> findBestAction(signalAccumulator));
+        mSignalAccumulator.getSignals(this::findBestAction);
     }
 
-    private void findBestAction(SignalAccumulator signalAccumulator) {
+    private void findBestAction() {
         Tab tab = getValidActiveTab();
         if (tab == null) return;
         InputContext inputContext = new InputContext();
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT,
-                ProcessedValue.fromFloat(signalAccumulator.hasPriceTracking() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(mSignalAccumulator.hasPriceTracking() ? 1.0f : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
-                ProcessedValue.fromFloat(signalAccumulator.hasReaderMode() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(mSignalAccumulator.hasReaderMode() ? 1.0f : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT,
-                ProcessedValue.fromFloat(signalAccumulator.hasPriceInsights() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(mSignalAccumulator.hasPriceInsights() ? 1.0f : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT,
-                ProcessedValue.fromFloat(signalAccumulator.hasDiscounts() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(mSignalAccumulator.hasDiscounts() ? 1.0f : 0.0f));
         inputContext.addEntry("url", ProcessedValue.fromGURL(tab.getUrl()));
 
         ContextualPageActionControllerJni.get()

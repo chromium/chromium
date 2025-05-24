@@ -153,7 +153,7 @@ struct ClientResourceProvider::ImportedResource {
         returned_sync_token(resource.sync_token()),
         evicted_callback(std::move(evicted_callback)) {
     // We should never have no ReleaseCallback.
-    DCHECK(this->impl_release_callback || this->main_thread_release_callback);
+    CHECK(this->impl_release_callback || this->main_thread_release_callback);
     // Replace the |resource| id with the local id from this
     // ClientResourceProvider.
     this->resource.id = id;
@@ -226,16 +226,6 @@ ClientResourceProvider::~ClientResourceProvider() {
   // It is possible that we were deleted while a `ScopedBatchResourcesRelease`
   // was still being held. This ensures the callbacks are ran.
   BatchResourceRelease();
-}
-
-gpu::SyncToken ClientResourceProvider::GenerateSyncTokenHelper(
-    gpu::gles2::GLES2Interface* gl) {
-  DCHECK(gl);
-  gpu::SyncToken sync_token;
-  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  DCHECK(sync_token.HasData() ||
-         gl->GetGraphicsResetStatusKHR() != GL_NO_ERROR);
-  return sync_token;
 }
 
 gpu::SyncToken ClientResourceProvider::GenerateSyncTokenHelper(
@@ -388,9 +378,6 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
     // Save the sync token only when the exported count is going to 0. Or IOW
     // drop all by the last returned sync token.
     if (returned.sync_token.HasData()) {
-      DCHECK(
-          !imported.resource.is_software ||
-          base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage));
       imported.returned_sync_token = returned.sync_token;
     }
 
@@ -449,12 +436,15 @@ ResourceId ClientResourceProvider::ImportResource(
     ReleaseCallback main_thread_release_callback,
     ResourceEvictedCallback evicted_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Clients are not allowed to import any empty resource.
+  CHECK(!resource.is_empty());
   ResourceId id = id_generator_.GenerateNextId();
   auto result = imported_resources_.emplace(
       id, ImportedResource(id, resource, std::move(impl_release_callback),
                            std::move(main_thread_release_callback),
                            std::move(evicted_callback)));
-  DCHECK(result.second);  // If false, the id was already in the map.
+  CHECK(result.second);  // If false, the id was already in the map.
   return id;
 }
 

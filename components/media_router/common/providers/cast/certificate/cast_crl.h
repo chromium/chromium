@@ -21,7 +21,7 @@ namespace cast_certificate {
 // This class represents the CRL information parsed from the binary proto.
 class CastCRL {
  public:
-  virtual ~CastCRL() {}
+  virtual ~CastCRL() = default;
 
   // Verifies the revocation status of a cast device certificate given a chain
   // of X.509 certificates.

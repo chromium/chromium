@@ -23,10 +23,12 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.VoidAnswer1;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -52,6 +54,7 @@ public class GlobalNightModeStateControllerTest {
         public static void setDefaultNightMode(int mode) {}
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NightModeStateProvider.Observer mObserver;
 
     private GlobalNightModeStateController mGlobalNightModeStateController;
@@ -66,14 +69,10 @@ public class GlobalNightModeStateControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         captureObservers();
 
-        mGlobalNightModeStateController =
-                new GlobalNightModeStateController(
-                        mSystemNightModeMonitor,
-                        mPowerSavingMonitor,
-                        ChromeSharedPreferences.getInstance());
+        SystemNightModeMonitor.setInstanceForTesting(mSystemNightModeMonitor);
+        mGlobalNightModeStateController = new GlobalNightModeStateController(mPowerSavingMonitor);
 
         mGlobalNightModeStateController.onApplicationStateChange(HAS_RUNNING_ACTIVITIES);
 

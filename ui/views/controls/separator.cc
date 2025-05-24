@@ -11,6 +11,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/metadata/type_conversion.h"
 
 namespace views {
 
@@ -25,8 +26,9 @@ ui::ColorId Separator::GetColorId() const {
 }
 
 void Separator::SetColorId(ui::ColorId color_id) {
-  if (color_id_ == color_id)
+  if (color_id_ == color_id) {
     return;
+  }
 
   color_id_ = color_id;
   OnPropertyChanged(&color_id_, kPropertyEffectsPaint);
@@ -37,8 +39,9 @@ int Separator::GetPreferredLength() const {
 }
 
 void Separator::SetPreferredLength(int length) {
-  if (preferred_length_ == length)
+  if (preferred_length_ == length) {
     return;
+  }
 
   preferred_length_ = length;
   OnPropertyChanged(&preferred_length_, kPropertyEffectsPreferredSizeChanged);
@@ -52,14 +55,23 @@ void Separator::SetOrientation(Orientation orientation) {
   orientation_ = orientation;
 }
 
+int Separator::GetBorderRadius() const {
+  return border_radius_;
+}
+
+void Separator::SetBorderRadius(int radius) {
+  border_radius_ = radius;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Separator, View overrides:
 
 gfx::Size Separator::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
   gfx::Size size(kThickness, preferred_length_);
-  if (orientation_ == Orientation::kHorizontal)
+  if (orientation_ == Orientation::kHorizontal) {
     size.Transpose();
+  }
 
   gfx::Insets insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
@@ -101,13 +113,27 @@ void Separator::OnPaint(gfx::Canvas* canvas) {
   const int w = std::max(1, r - x);
   const int h = std::max(1, b - y);
 
-  canvas->FillRect({x, y, w, h}, color);
+  if (border_radius_) {
+    cc::PaintFlags flags;
+    flags.setColor(color);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setBlendMode(SkBlendMode::kSrcOver);
+    canvas->DrawRoundRect({x, y, w, h}, border_radius_, flags);
+  } else {
+    canvas->FillRect({x, y, w, h}, color);
+  }
 }
 
 BEGIN_METADATA(Separator)
 ADD_PROPERTY_METADATA(ui::ColorId, ColorId)
 ADD_PROPERTY_METADATA(int, PreferredLength)
 ADD_PROPERTY_METADATA(Separator::Orientation, Orientation)
+ADD_PROPERTY_METADATA(int, BorderRadius)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::Separator::Orientation,
+                       {views::Separator::Orientation::kHorizontal,
+                        u"kHorizontal"},
+                       {views::Separator::Orientation::kVertical, u"kVertical"})

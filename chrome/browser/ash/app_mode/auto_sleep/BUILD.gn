@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("auto_sleep") {
   sources = [
@@ -12,8 +12,8 @@ static_library("auto_sleep") {
     "device_weekly_scheduled_suspend_controller.h",
     "device_weekly_scheduled_suspend_policy_handler.cc",
     "device_weekly_scheduled_suspend_policy_handler.h",
-    "repeating_time_interval_task_executor.cc",
-    "repeating_time_interval_task_executor.h",
+    "weekly_interval_timer.cc",
+    "weekly_interval_timer.h",
   ]
   public_deps = [
     "//base",
@@ -25,7 +25,6 @@ static_library("auto_sleep") {
   ]
   deps = [
     "//ash",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/scheduled_task_handler",
     "//chrome/common:constants",
     "//components/policy:generated",
@@ -39,8 +38,6 @@ static_library("test_support") {
   sources = [
     "device_weekly_scheduled_suspend_test_policy_builder.cc",
     "device_weekly_scheduled_suspend_test_policy_builder.h",
-    "fake_repeating_time_interval_task_executor.cc",
-    "fake_repeating_time_interval_task_executor.h",
   ]
   public_deps = [
     ":auto_sleep",
@@ -62,7 +59,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "device_weekly_scheduled_suspend_controller_unittest.cc",
-    "repeating_time_interval_task_executor_unittest.cc",
+    "weekly_interval_timer_unittest.cc",
   ]
   deps = [
     ":auto_sleep",
@@ -88,6 +85,7 @@ source_set("browser_tests") {
     ":test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode/test:test_support",
     "//chrome/browser/ash/login/app_mode/test:test_support",
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/ui/ash/system_web_apps",

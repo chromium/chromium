@@ -76,7 +76,6 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaPosition {
   base::TimeDelta GetPositionAtTime(base::TimeTicks time) const;
 
   bool operator==(const MediaPosition&) const;
-  bool operator!=(const MediaPosition&) const;
 
   std::string ToString() const;
 

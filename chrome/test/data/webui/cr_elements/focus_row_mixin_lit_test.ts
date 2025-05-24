@@ -27,7 +27,7 @@ class ButtonThreeElement extends CrLitElement {
   }
 
   getFocusableElement() {
-    return this.shadowRoot!.querySelector('button');
+    return this.shadowRoot.querySelector('button');
   }
 }
 customElements.define(ButtonThreeElement.is, ButtonThreeElement);
@@ -74,7 +74,7 @@ class TestFocusRowMixinLitElement extends TestElementBase {
     // clang-format on
   }
 
-  showExtraControl: boolean = false;
+  accessor showExtraControl: boolean = false;
   focusCallCount: number = 0;
 
   override focus() {

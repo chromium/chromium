@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {Router, routes, settingMojom, SettingsDropdownMenuElement, StartupSettingsCardElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsDropdownMenuElement, StartupSettingsCardElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

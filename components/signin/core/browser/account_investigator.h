@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 struct CoreAccountInfo;
 class PrefRegistrySimple;
@@ -23,7 +24,7 @@ class Time;
 }  // namespace base
 
 namespace signin {
-struct AccountsInCookieJarInfo;
+class AccountsInCookieJarInfo;
 }  // namespace signin
 
 namespace signin_metrics {

@@ -41,8 +41,9 @@ class TestSafeDialAppInfoParser : public SafeDialAppInfoParser {
 
   void InvokeParseCallback(std::unique_ptr<ParsedDialAppInfo> app_info,
                            ParsingResult parsing_result) {
-    if (!parse_callback_)
+    if (!parse_callback_) {
       return;
+    }
     std::move(parse_callback_).Run(std::move(app_info), parsing_result);
   }
 
@@ -73,10 +74,11 @@ class DialAppDiscoveryServiceTest : public ::testing::Test {
   void OnAppInfo(const MediaSink::Id& sink_id,
                  const std::string& app_name,
                  DialAppInfoResult result) {
-    if (result.app_info)
+    if (result.app_info) {
       OnAppInfoSuccess(sink_id, app_name, *result.app_info, result.result_code);
-    else
+    } else {
       OnAppInfoFailure(sink_id, app_name, result.result_code);
+    }
   }
 
   // Returns a raw pointer to the PendingRequest tracked in

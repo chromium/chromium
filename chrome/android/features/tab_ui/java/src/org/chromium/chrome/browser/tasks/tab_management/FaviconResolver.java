@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** Parent view of the up to four corner favicon images/counts. */
 @FunctionalInterface
+@NullMarked
 public interface FaviconResolver {
     /**
      * Asynchronously fetches the favicon for a tab.

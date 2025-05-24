@@ -59,6 +59,8 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
   bool HasPercentage() const;
   void SubtractFromOneHundredPercent();
 
+  bool IsNeutralValue() const;
+
   InterpolableLength* Clone() const { return RawClone(); }
   InterpolableLength* CloneAndZero() const { return RawCloneAndZero(); }
 
@@ -67,10 +69,7 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
                    const double progress,
                    InterpolableValue& result) const final;
   bool IsLength() const final { return true; }
-  bool Equals(const InterpolableValue& other) const final {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  bool Equals(const InterpolableValue& other) const final { NOTREACHED(); }
   void Scale(double scale) final;
   void Add(const InterpolableValue& other) final;
   // We override this to avoid two passes in the case of LengthArrays.

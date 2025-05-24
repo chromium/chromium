@@ -1,0 +1,3 @@
+# This class is referenced by accessiblity_test_framework but is only needed
+# during compile (and we use a prebuilt).
+-dontwarn com.google.auto.value.AutoValue*

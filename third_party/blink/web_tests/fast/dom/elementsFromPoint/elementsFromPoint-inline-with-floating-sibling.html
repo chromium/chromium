@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<span id=outer>
+    <a id=anchor href='https://www.google.com'>
+        <div style='position: relative; float: left;'>text in div</div>
+        <span id=target>text</span>
+    </a>
+</span>
+<script>
+test(function(t)
+{
+    var position = target.getBoundingClientRect();
+
+    var elements = document.elementsFromPoint(position.x, position.y);
+    assert_true(elements.includes(anchor));
+}, "elementsFromPoint should return all elements under a point");
+</script>

@@ -4,21 +4,17 @@
 
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
 
-#include "build/chromeos_buildflags.h"
+#include "base/path_service.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/extension_system.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
  public:
@@ -42,11 +38,7 @@ class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
 
   void WaitForExtensionLoaded(Profile* profile,
                               const std::string& extension_id) {
-    extensions::ComponentLoader* component_loader =
-        extensions::ExtensionSystem::Get(profile)
-            ->extension_service()
-            ->component_loader();
-
+    auto* component_loader = extensions::ComponentLoader::Get(profile);
     while (!component_loader->Exists(extension_id)) {
       waiter_ = std::make_unique<base::RunLoop>();
       waiter_->Run();
@@ -57,10 +49,7 @@ class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
 
   void WaitForExtensionUnloaded(Profile* profile,
                                 const std::string& extension_id) {
-    extensions::ComponentLoader* component_loader =
-        extensions::ExtensionSystem::Get(profile)
-            ->extension_service()
-            ->component_loader();
+    auto* component_loader = extensions::ComponentLoader::Get(profile);
     while (component_loader->Exists(extension_id)) {
       waiter_ = std::make_unique<base::RunLoop>();
       waiter_->Run();
@@ -100,7 +89,6 @@ class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
   std::unique_ptr<base::RunLoop> waiter_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
                        InstallsRemovesAndReinstallsExtension) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -124,7 +112,31 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
       profile, extension_misc::kReadingModeGDocsHelperExtensionId);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
+                       InstallExtensionWithIdAndPath) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GT(profiles.size(), 0u);
+  Profile* profile = profiles[0];
+
+  char manifest_id[] = "cjlaeehoipngghikfjogbdkpbdgebppb";
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
+  base::FilePath extension_path = source_root_dir.AppendASCII("chrome")
+                                      .AppendASCII("test")
+                                      .AppendASCII("data")
+                                      .AppendASCII("accessibility")
+                                      .AppendASCII("extension");
+  base::FilePath::CharType manifest_name[] = FILE_PATH_LITERAL("manifest.json");
+  auto* embedded_a11y_extension_loader =
+      EmbeddedA11yExtensionLoader::GetInstance();
+  embedded_a11y_extension_loader->InstallExtensionWithIdAndPath(
+      manifest_id, extension_path, manifest_name, /*should_localize=*/false);
+  WaitForExtensionLoaded(profile, manifest_id);
+  RemoveAndWaitForExtensionUnloaded(profile, manifest_id);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
                        InstallsOnMultipleProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -164,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
         profile, extension_misc::kReadingModeGDocsHelperExtensionId);
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
                        InstallsOnIncognitoProfile) {
@@ -182,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
       incognito->profile(), extension_misc::kReadingModeGDocsHelperExtensionId);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // CreateGuestBrowser() is not supported for ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
                        InstallsOnGuestProfile) {
@@ -199,23 +211,4 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
       guest_browser->profile(),
       extension_misc::kReadingModeGDocsHelperExtensionId);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       InstallsExtensionOnLacros) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  const auto& profiles = profile_manager->GetLoadedProfiles();
-  ASSERT_GT(profiles.size(), 0u);
-  Profile* profile = profiles[0];
-
-  InstallAndWaitForExtensionLoaded(
-      profile, extension_misc::kEmbeddedA11yHelperExtensionId,
-      extension_misc::kEmbeddedA11yHelperExtensionPath,
-      extension_misc::kEmbeddedA11yHelperManifestFilename,
-      /*should_localize=*/true);
-  RemoveAndWaitForExtensionUnloaded(
-      profile, extension_misc::kEmbeddedA11yHelperExtensionId);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)

@@ -6,8 +6,11 @@
 
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "build/buildflag.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -22,6 +25,7 @@ enum UserGoal {
   kExitFullscreen = 0,
   kExitPointerLock = 1,
   kExitFullscreenAndSeeDownload = 2,
+  kSeeDownload = 3,
 };
 
 enum Shortcut {
@@ -35,8 +39,7 @@ struct InstructionTextTestCase {
   ExclusiveAccessBubbleType type;
   UserGoal goal;
   Shortcut shortcut;
-  bool enable_feature;
-  bool has_download = false;
+  bool enable_feature = false;
 };
 
 std::u16string GetUserGoalText(UserGoal goal) {
@@ -47,6 +50,8 @@ std::u16string GetUserGoalText(UserGoal goal) {
       return u"To show your cursor";
     case kExitFullscreenAndSeeDownload:
       return u"To exit full screen and see download";
+    case kSeeDownload:
+      return u"Download started. To see it";
     default:
       return u"";
   }
@@ -63,19 +68,9 @@ std::u16string GetEscShortcutString(bool press_and_hold) {
 
 }  // namespace
 
-class ExclusiveAccessBubbleViewsTest
-    : public TestWithBrowserView,
-      public testing::WithParamInterface<InstructionTextTestCase> {
+class ExclusiveAccessBubbleViewsTest : public TestWithBrowserView {
  public:
-  ExclusiveAccessBubbleViewsTest() {
-    if (GetParam().enable_feature) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kPressAndHoldEscToExitBrowserFullscreen);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kPressAndHoldEscToExitBrowserFullscreen);
-    }
-  }
+  ExclusiveAccessBubbleViewsTest() = default;
 
   void SetUp() override {
     TestWithBrowserView::SetUp();
@@ -91,19 +86,14 @@ class ExclusiveAccessBubbleViewsTest
   }
 
   void UpdateExclusiveAccessBubbleType(ExclusiveAccessBubbleType type,
-                                       bool has_download = false) {
-    // When `has_download` is true, the existing bubble type is not updated.
-    // In that case, set the type first, then signify the download bit.
-    ExclusiveAccessBubbleParams params{.type = type, .force_update = true};
+                                       bool has_download) {
+    ExclusiveAccessBubbleParams params{
+        .type = type, .has_download = has_download, .force_update = true};
     bubble_view_->Update(params, base::NullCallback());
-    if (has_download) {
-      params.has_download = true;
-      bubble_view_->Update(params, base::NullCallback());
-    }
   }
 
   std::u16string GetFullscreenAcceleratorString() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return u"Fullscreen";
 #else
     ui::Accelerator accelerator;
@@ -139,19 +129,36 @@ class ExclusiveAccessBubbleViewsTest
     return static_cast<SubtleNotificationView*>(bubble_view_->GetView());
   }
 
- private:
+ protected:
   std::unique_ptr<ExclusiveAccessBubbleViews> bubble_view_;
+};
+
+class ExclusiveAccessBubbleViewsInstructionTextTest
+    : public ExclusiveAccessBubbleViewsTest,
+      public testing::WithParamInterface<InstructionTextTestCase> {
+ public:
+  ExclusiveAccessBubbleViewsInstructionTextTest() {
+    if (GetParam().enable_feature) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kPressAndHoldEscToExitBrowserFullscreen);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kPressAndHoldEscToExitBrowserFullscreen);
+    }
+  }
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(ExclusiveAccessBubbleViewsTest, UpdateViewContent) {
+TEST_P(ExclusiveAccessBubbleViewsInstructionTextTest, UpdateViewContent) {
   const InstructionTextTestCase& test_case = GetParam();
-  UpdateExclusiveAccessBubbleType(test_case.type, test_case.has_download);
+  UpdateExclusiveAccessBubbleType(test_case.type, /*has_download=*/false);
   EXPECT_EQ(GetInstructionViewText(),
             CreateInstructionText(test_case.goal, test_case.shortcut));
 }
 
-TEST_P(ExclusiveAccessBubbleViewsTest,
+TEST_F(ExclusiveAccessBubbleViewsTest,
        SubtleNotificationViewAccessibleProperties) {
   ui::AXNodeData data;
   GetSubtleNotificationView()->GetViewAccessibility().GetAccessibleNodeData(
@@ -169,9 +176,10 @@ TEST_P(ExclusiveAccessBubbleViewsTest,
             u"Sample Accessible Text");
 }
 
+// Tests where the bubble is updated once with the specified type.
 INSTANTIATE_TEST_SUITE_P(
-    ExclusiveAccessTestInstantiation,
-    ExclusiveAccessBubbleViewsTest,
+    /* no label */,
+    ExclusiveAccessBubbleViewsInstructionTextTest,
     testing::ValuesIn<InstructionTextTestCase>({
         {"tabFullscreen",
          EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
@@ -209,30 +217,93 @@ INSTANTIATE_TEST_SUITE_P(
         {"extensionInitiatedBrowserFullscreen_EnablePressAndHoldEsc",
          EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION,
          UserGoal::kExitFullscreen, Shortcut::kPressAndHoldEsc, true},
+    }),
+    [](const testing::TestParamInfo<
+        ExclusiveAccessBubbleViewsInstructionTextTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+// Tests the creation of a has_download, non-overriding notification.
+TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
+  ExclusiveAccessBubbleParams params{.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
+                                     .has_download = true};
+  bubble_view_ = std::make_unique<ExclusiveAccessBubbleViews>(
+      browser_view(), params, base::NullCallback());
+  EXPECT_TRUE(base::StartsWith(
+      GetInstructionViewText(),
+      CreateInstructionText(UserGoal::kSeeDownload, Shortcut::kPressEsc)));
+}
+
+// Tests the updating of a has_download, non-overriding notification with a
+// second one of the same.
+TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownloadUpdateForDownload) {
+  ExclusiveAccessBubbleParams params{.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
+                                     .has_download = true};
+  bubble_view_ = std::make_unique<ExclusiveAccessBubbleViews>(
+      browser_view(), params, base::NullCallback());
+  UpdateExclusiveAccessBubbleType(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
+                                  /*has_download=*/true);
+  EXPECT_TRUE(base::StartsWith(
+      GetInstructionViewText(),
+      CreateInstructionText(UserGoal::kSeeDownload, Shortcut::kPressEsc)));
+}
+
+// Tests updating the bubble first with the type, then a second time for a
+// download notification.
+using ExclusiveAccessBubbleViewsTestWithDownload =
+    ExclusiveAccessBubbleViewsInstructionTextTest;
+TEST_P(ExclusiveAccessBubbleViewsTestWithDownload,
+       UpdateViewContentThenDownload) {
+  const InstructionTextTestCase& test_case = GetParam();
+  UpdateExclusiveAccessBubbleType(test_case.type, /*has_download=*/false);
+  // Download notifications pass the type NONE.
+  UpdateExclusiveAccessBubbleType(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
+                                  /*has_download=*/true);
+  EXPECT_EQ(GetInstructionViewText(),
+            CreateInstructionText(test_case.goal, test_case.shortcut));
+}
+
+// Tests the above but with the Update() calls coming in the other order.
+TEST_P(ExclusiveAccessBubbleViewsTestWithDownload,
+       UpdateViewContentAfterDownload) {
+  const InstructionTextTestCase& test_case = GetParam();
+  // Update it for a download.
+  UpdateExclusiveAccessBubbleType(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
+                                  /*has_download=*/true);
+  // A subsequent Update() call with the test-specified type.
+  UpdateExclusiveAccessBubbleType(test_case.type, /*has_download=*/false);
+  EXPECT_EQ(GetInstructionViewText(),
+            CreateInstructionText(test_case.goal, test_case.shortcut));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    ExclusiveAccessBubbleViewsTestWithDownload,
+    testing::ValuesIn<InstructionTextTestCase>({
         {"tabFullscreenSeeDownload",
          EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
-         UserGoal::kExitFullscreenAndSeeDownload, Shortcut::kPressEsc, false,
-         true},
+         UserGoal::kExitFullscreenAndSeeDownload, Shortcut::kPressEsc, false},
         {"browserFullscreenSeeDownload",
          EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
-         UserGoal::kExitFullscreenAndSeeDownload, Shortcut::kAccelerator, false,
-         true},
+         UserGoal::kExitFullscreenAndSeeDownload, Shortcut::kAccelerator,
+         false},
         {"extensionInitiatedFullscreenSeeDownload",
-         EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
-         UserGoal::kExitFullscreenAndSeeDownload, Shortcut::kAccelerator, false,
-         true},
+         EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION,
+         UserGoal::kExitFullscreenAndSeeDownload, Shortcut::kAccelerator,
+         false},
         {"tabFullscreenSeeDownload_EnablePressAndHoldEsc",
          EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
-         UserGoal::kExitFullscreenAndSeeDownload, Shortcut::kPressEsc, true,
-         true},
+         UserGoal::kExitFullscreenAndSeeDownload, Shortcut::kPressEsc, true},
         {"browserFullscreenSeeDownload_EnablePressAndHoldEsc",
          EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
          UserGoal::kExitFullscreenAndSeeDownload, Shortcut::kPressAndHoldEsc,
-         true, true},
+         true},
         {"extensionInitiatedFullscreenSeeDownload_EnablePressAndHoldEsc",
          EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION,
          UserGoal::kExitFullscreenAndSeeDownload, Shortcut::kPressAndHoldEsc,
-         true, true},
+         true},
     }),
-    [](const testing::TestParamInfo<ExclusiveAccessBubbleViewsTest::ParamType>&
-           info) { return info.param.test_name; });
+    [](const testing::TestParamInfo<
+        ExclusiveAccessBubbleViewsTestWithDownload::ParamType>& info) {
+      return info.param.test_name;
+    });

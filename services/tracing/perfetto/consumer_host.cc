@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "services/tracing/perfetto/consumer_host.h"
 
+#include <algorithm>
 #include <cstring>
 #include <set>
 #include <string>
@@ -14,13 +20,13 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_log.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -150,12 +156,11 @@ ConsumerHost::TracingSession::TracingSession(
     ConsumerHost* host,
     mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
     mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
-    const perfetto::TraceConfig& trace_config,
-    perfetto::base::ScopedFile output_file,
     mojom::TracingClientPriority priority)
     : host_(host),
       tracing_session_client_(std::move(tracing_session_client)),
       receiver_(this, std::move(tracing_session_host)),
+      privacy_filtering_enabled_(true),
       tracing_priority_(priority) {
   host_->service()->RegisterTracingSession(this);
 
@@ -163,7 +168,19 @@ ConsumerHost::TracingSession::TracingSession(
       &ConsumerHost::DestructTracingSession, base::Unretained(host)));
   receiver_.set_disconnect_handler(base::BindOnce(
       &ConsumerHost::DestructTracingSession, base::Unretained(host)));
+}
 
+ConsumerHost::TracingSession::TracingSession(
+    ConsumerHost* host,
+    mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
+    mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
+    const perfetto::TraceConfig& trace_config,
+    perfetto::base::ScopedFile output_file,
+    mojom::TracingClientPriority priority)
+    : TracingSession(host,
+                     std::move(tracing_session_host),
+                     std::move(tracing_session_client),
+                     priority) {
   privacy_filtering_enabled_ = false;
   for (const auto& data_source : trace_config.data_sources()) {
     if (data_source.config().chrome_config().privacy_filtering_enabled()) {
@@ -259,7 +276,7 @@ void ConsumerHost::TracingSession::OnPerfettoEvents(
   // Data sources are first reported as being stopped before starting, so once
   // all the data sources we know about have started we can declare tracing
   // begun.
-  bool all_data_sources_started = base::ranges::all_of(
+  bool all_data_sources_started = std::ranges::all_of(
       data_source_states_,
       [](std::pair<DataSourceHandle, bool> state) { return state.second; });
   if (!all_data_sources_started)
@@ -351,6 +368,17 @@ void ConsumerHost::TracingSession::ChangeTraceConfig(
 
 void ConsumerHost::TracingSession::DisableTracing() {
   host_->consumer_endpoint()->DisableTracing();
+}
+
+void ConsumerHost::TracingSession::CloneSession(
+    const base::UnguessableToken& uuid,
+    CloneSessionCallback callback) {
+  // Multiple concurrent cloning isn't supported.
+  DCHECK(!on_session_cloned_callback_);
+  on_session_cloned_callback_ = std::move(callback);
+  perfetto::ConsumerEndpoint::CloneSessionArgs args;
+  args.unique_session_name = uuid.ToString();
+  host_->consumer_endpoint()->CloneSession(std::move(args));
 }
 
 void ConsumerHost::TracingSession::OnTracingDisabled(const std::string& error) {
@@ -595,6 +623,16 @@ void ConsumerHost::TracingSession::OnTraceStats(
   std::move(request_buffer_usage_callback_).Run(true, percent_full, data_loss);
 }
 
+void ConsumerHost::TracingSession::OnSessionCloned(
+    const OnSessionClonedArgs& args) {
+  if (!on_session_cloned_callback_) {
+    return;
+  }
+  std::move(on_session_cloned_callback_)
+      .Run(args.success, args.error,
+           base::Token(args.uuid.lsb(), args.uuid.msb()));
+}
+
 void ConsumerHost::TracingSession::Flush(
     uint32_t timeout,
     base::OnceCallback<void(bool)> callback) {
@@ -681,6 +719,21 @@ void ConsumerHost::EnableTracing(
       trace_config, std::move(file), priority);
 }
 
+void ConsumerHost::CloneSession(
+    mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
+    mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
+    const base::UnguessableToken& uuid,
+    CloneSessionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!tracing_session_);
+
+  auto priority = mojom::TracingClientPriority::kUnknown;
+  tracing_session_ = std::make_unique<TracingSession>(
+      this, std::move(tracing_session_host), std::move(tracing_session_client),
+      priority);
+  tracing_session_->CloneSession(uuid, std::move(callback));
+}
+
 void ConsumerHost::OnConnect() {}
 
 void ConsumerHost::OnDisconnect() {}
@@ -716,8 +769,11 @@ void ConsumerHost::OnTraceStats(bool success,
   }
 }
 
-void ConsumerHost::OnSessionCloned(const OnSessionClonedArgs&) {
-  NOTREACHED_IN_MIGRATION();
+void ConsumerHost::OnSessionCloned(const OnSessionClonedArgs& args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (tracing_session_) {
+    tracing_session_->OnSessionCloned(args);
+  }
 }
 
 void ConsumerHost::DestructTracingSession() {

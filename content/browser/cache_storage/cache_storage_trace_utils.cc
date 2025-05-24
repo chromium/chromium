@@ -119,7 +119,7 @@ std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
 }
 
 std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
-    const std::vector<std::u16string> string_list) {
+    const std::vector<std::u16string>& string_list) {
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
   value->SetInteger("count", string_list.size());
   if (!string_list.empty()) {

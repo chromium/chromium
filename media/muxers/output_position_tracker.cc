@@ -17,7 +17,7 @@ OutputPositionTracker::OutputPositionTracker(
 
 OutputPositionTracker::~OutputPositionTracker() = default;
 
-void OutputPositionTracker::WriteString(std::string_view data) {
+void OutputPositionTracker::WriteSpan(base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   write_data_callback_.Run(data);

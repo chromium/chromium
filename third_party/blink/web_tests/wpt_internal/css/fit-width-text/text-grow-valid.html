@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Parsing text-grow with valid values</title>
+<link rel="help" href="https://github.com/explainers-by-googlers/css-fit-text/blob/main/README.md">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<body>
+<script>
+test_valid_value('text-grow', 'none');
+test_valid_value('text-grow', 'per-line');
+test_valid_value('text-grow', 'consistent');
+
+test_valid_value('text-grow', 'per-line scale', 'per-line');
+test_valid_value('text-grow', 'consistent font-size');
+
+test_valid_value('text-grow', 'per-line 32px');
+test_valid_value('text-grow', 'consistent 3em');
+
+test_valid_value('text-grow', 'per-line scale 4ch', 'per-line 4ch');
+test_valid_value('text-grow', 'consistent scale-inline 2lh');
+</script>
+</body>

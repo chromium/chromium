@@ -88,8 +88,6 @@ class PermissionsTabHelper
 
   // Request inserter for the TabHelper's WebState;
   raw_ptr<InfobarOverlayRequestInserter> inserter_ = nullptr;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_PERMISSIONS_MODEL_PERMISSIONS_TAB_HELPER_H_

@@ -22,7 +22,7 @@ InputMethodMenuItem::InputMethodMenuItem(const std::string& in_key,
 
 InputMethodMenuItem::InputMethodMenuItem() : is_selection_item_checked(false) {}
 
-InputMethodMenuItem::~InputMethodMenuItem() {}
+InputMethodMenuItem::~InputMethodMenuItem() = default;
 
 std::string InputMethodMenuItem::ToString() const {
   std::stringstream stream;

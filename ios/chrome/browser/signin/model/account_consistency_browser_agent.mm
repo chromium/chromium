@@ -8,6 +8,11 @@
 
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -18,12 +23,10 @@
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_dependency_installation_observer.h"
 
-BROWSER_USER_DATA_KEY_IMPL(AccountConsistencyBrowserAgent)
-
 AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     Browser* browser,
     UIViewController* base_view_controller)
-    : base_view_controller_(base_view_controller), browser_(browser) {
+    : BrowserUserData(browser), base_view_controller_(base_view_controller) {
   installation_observer_ =
       std::make_unique<WebStateDependencyInstallationObserver>(
           browser->GetWebStateList(), this);
@@ -40,7 +43,7 @@ void AccountConsistencyBrowserAgent::InstallDependency(
     web::WebState* web_state) {
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForProfile(
-              browser_->GetBrowserState())) {
+              browser_->GetProfile())) {
     accountConsistencyService->SetWebStateHandler(web_state, this);
   }
 }
@@ -49,7 +52,7 @@ void AccountConsistencyBrowserAgent::UninstallDependency(
     web::WebState* web_state) {
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForProfile(
-              browser_->GetBrowserState())) {
+              browser_->GetProfile())) {
     accountConsistencyService->RemoveWebStateHandler(web_state);
   }
 }
@@ -62,13 +65,18 @@ void AccountConsistencyBrowserAgent::OnRestoreGaiaCookies() {
       showSigninAccountNotificationFromViewController:base_view_controller_];
 }
 
-void AccountConsistencyBrowserAgent::OnManageAccounts() {
+void AccountConsistencyBrowserAgent::OnManageAccounts(const GURL& url) {
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
           ->GetState());
-  [settings_handler_
-      showAccountsSettingsFromViewController:base_view_controller_
-                        skipIfUINotAvailable:YES];
+
+  if (ShouldShowAccountMenu()) {
+    ShowAccountMenu(url);
+  } else {
+    [settings_handler_
+        showAccountsSettingsFromViewController:base_view_controller_
+                          skipIfUINotAvailable:YES];
+  }
 }
 
 void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
@@ -86,20 +94,25 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
   }
 }
 
-void AccountConsistencyBrowserAgent::OnAddAccount() {
+void AccountConsistencyBrowserAgent::OnAddAccount(const GURL& url) {
   if ([base_view_controller_ presentedViewController]) {
     // If the base view controller is already presenting a view, the sign-in
     // should not appear on top of it.
     // See http://crbug.com/1399464.
     return;
   }
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kAddAccount
-            accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE];
-  command.skipIfUINotAvaible = YES;
-  [application_handler_ showSignin:command
-                baseViewController:base_view_controller_];
+
+  if (ShouldShowAccountMenu()) {
+    ShowAccountMenu(url);
+  } else {
+    ShowSigninCommand* command = [[ShowSigninCommand alloc]
+        initWithOperation:AuthenticationOperation::kAddAccount
+              accessPoint:signin_metrics::AccessPoint::
+                              kAccountConsistencyService];
+    command.skipIfUINotAvailable = YES;
+    [application_handler_ showSignin:command
+                  baseViewController:base_view_controller_];
+  }
 }
 
 void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
@@ -127,4 +140,26 @@ void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
 void AccountConsistencyBrowserAgent::BrowserDestroyed(Browser* browser) {
   installation_observer_.reset();
   browser_->RemoveObserver(this);
+}
+
+bool AccountConsistencyBrowserAgent::ShouldShowAccountMenu() const {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    return false;
+  }
+  size_t num_profiles = GetApplicationContext()
+                            ->GetProfileManager()
+                            ->GetProfileAttributesStorage()
+                            ->GetNumberOfProfiles();
+  // If there are any profiles beside the current one, it's likely the user
+  // wanted to switch to another profile rather than add/manage accounts.
+  return num_profiles > 1;
+}
+
+void AccountConsistencyBrowserAgent::ShowAccountMenu(const GURL& url) {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+  // TODO(crbug.com/411614444): Open the account menu here instead of going
+  // through the handler.
+  [application_handler_
+      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb
+                                 URL:url];
 }

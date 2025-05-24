@@ -4,12 +4,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_data_removal_dialog.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,6 +32,8 @@ namespace arc {
 namespace {
 
 constexpr int kArcAppIconSize = 48;
+
+}  // namespace
 
 // This dialog is shown when ARC++ comes into the state when normal
 // functionality could not be possible without resetting whole container by data
@@ -96,7 +97,7 @@ DataRemovalConfirmationDialog::DataRemovalConfirmationDialog(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  views::LayoutProvider* provider = views::LayoutProvider::Get();
 
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
@@ -144,7 +145,7 @@ void DataRemovalConfirmationDialog::OnAppImageUpdated(
   DCHECK_EQ(image.width(), kArcAppIconSize);
   DCHECK_EQ(image.height(), kArcAppIconSize);
   icon_view_->SetImageSize(image.size());
-  icon_view_->SetImage(image);
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 }
 
 void DataRemovalConfirmationDialog::OnArcPlayStoreEnabledChanged(bool enabled) {
@@ -158,8 +159,6 @@ void DataRemovalConfirmationDialog::OnArcPlayStoreEnabledChanged(bool enabled) {
 
 BEGIN_METADATA(DataRemovalConfirmationDialog)
 END_METADATA
-
-}  // namespace
 
 void ShowDataRemovalConfirmationDialog(
     Profile* profile,

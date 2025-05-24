@@ -34,6 +34,20 @@ class BrowsingTopicsServiceImpl
       public privacy_sandbox::PrivacySandboxSettings::Observer,
       public history::HistoryServiceObserver {
  public:
+  using TopicAccessedCallback =
+      base::RepeatingCallback<void(content::RenderFrameHost* rfh,
+                                   const url::Origin& api_origin,
+                                   bool blocked_by_policy,
+                                   privacy_sandbox::CanonicalTopic topic)>;
+
+  // Use BrowsingTopicsServiceFactory::BuildServiceInstanceFor instead.
+  BrowsingTopicsServiceImpl(
+      const base::FilePath& profile_path,
+      privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+      history::HistoryService* history_service,
+      content::BrowsingTopicsSiteDataManager* site_data_manager,
+      std::unique_ptr<Annotator> annotator,
+      TopicAccessedCallback topic_accessed_callback);
   BrowsingTopicsServiceImpl(const BrowsingTopicsServiceImpl&) = delete;
   BrowsingTopicsServiceImpl& operator=(const BrowsingTopicsServiceImpl&) =
       delete;
@@ -114,24 +128,9 @@ class BrowsingTopicsServiceImpl
   FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsServiceImplTest,
                            MethodsFailGracefullyAfterShutdown);
 
-  using TopicAccessedCallback =
-      base::RepeatingCallback<void(content::RenderFrameHost* rfh,
-                                   const url::Origin& api_origin,
-                                   bool blocked_by_policy,
-                                   privacy_sandbox::CanonicalTopic topic)>;
-
-  BrowsingTopicsServiceImpl(
-      const base::FilePath& profile_path,
-      privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-      history::HistoryService* history_service,
-      content::BrowsingTopicsSiteDataManager* site_data_manager,
-      std::unique_ptr<Annotator> annotator,
-      TopicAccessedCallback topic_accessed_callback);
-
   void ScheduleBrowsingTopicsCalculation(bool is_manually_triggered,
                                          int previous_timeout_count,
-                                         base::TimeDelta delay,
-                                         bool persist_calculation_time);
+                                         base::TimeDelta delay);
 
   // Initialize `topics_calculator_` to start calculating this epoch's top
   // topics and context observed topics. `is_manually_triggered`  is true if

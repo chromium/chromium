@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+
+<menubar>
+  <menuitem id="menubaritem">Command 1</menuitem>
+  <menuitem>Command 2</menuitem>
+</menubar>
+
+<menulist>
+ <menuitem id="menulistitem" disabled>Command 1</menuitem>
+ <menuitem>Command 2</menuitem>
+</menulist>
+
+<script>
+
+test(() => {
+ const menubar = document.querySelector("menubar");
+ const menubaritem = document.getElementById("menubaritem");
+ 
+ assert_equals(menubar.constructor, HTMLMenuBarElement);
+ assert_equals(menubaritem.constructor, HTMLMenuItemElement);
+ assert_false(menubaritem.disabled);
+ menubaritem.disabled = true;
+ assert_true(menubaritem.disabled);
+
+ assert_false(menubaritem.checked);
+ menubaritem.defaultChecked = true;
+ assert_true(menubaritem.checked);
+ menubaritem.checked = false;
+ assert_false(menubaritem.checked);
+
+ const menulist = document.querySelector("menulist");
+ const menulistitem = document.getElementById("menulistitem");
+
+ assert_equals(menulist.constructor, HTMLMenuListElement);
+ assert_equals(menulistitem.constructor, HTMLMenuItemElement);
+ assert_true(menulistitem.disabled);
+ menulistitem.disabled = false;
+ assert_false(menulistitem.disabled);
+
+ assert_false(menulistitem.checked);
+ menulistitem.defaultChecked = false;
+ assert_false(menulistitem.checked);
+ menulistitem.checked = true;
+ assert_true(menulistitem.checked);
+}, "Menu elements are HTML elements.");
+</script>

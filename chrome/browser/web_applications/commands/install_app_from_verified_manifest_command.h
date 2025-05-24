@@ -90,8 +90,7 @@ class InstallAppFromVerifiedManifestCommand
   void OnIconsRetrieved(IconsDownloadedResult result,
                         IconsMap icons_map,
                         DownloadedIconsHttpResults icons_http_results);
-  void OnAppLockAcquired(
-      std::unique_ptr<SharedWebContentsWithAppLock> app_lock);
+  void OnAppLockAcquired();
   void OnInstallFinalized(const webapps::AppId& app_id,
                           webapps::InstallResultCode code);
 

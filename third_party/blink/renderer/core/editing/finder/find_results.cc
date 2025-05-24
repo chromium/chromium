@@ -24,9 +24,7 @@ FindResults::FindResults(const FindBuffer* find_buffer,
   text_searcher_->SetPattern(search_text_, options);
   text_searcher_->SetText(base::span(buffer));
   text_searcher_->SetOffset(0);
-  if (!RuntimeEnabledFeatures::FindRubyInPageEnabled()) {
-    DCHECK(!extra_buffers || extra_buffers->empty());
-  } else if (extra_buffers) {
+  if (extra_buffers) {
     extra_searchers_.reserve(extra_buffers->size());
     for (const auto& text : *extra_buffers) {
       extra_searchers_.push_back(
@@ -57,11 +55,11 @@ bool FindResults::IsEmpty() const {
   return begin() == end();
 }
 
-FindResults::BufferMatchResult FindResults::front() const {
+MatchResultICU FindResults::front() const {
   return *begin();
 }
 
-FindResults::BufferMatchResult FindResults::back() const {
+MatchResultICU FindResults::back() const {
   Iterator last_result;
   for (Iterator it = begin(); it != end(); ++it) {
     last_result = it;
@@ -97,6 +95,9 @@ FindResults::Iterator::Iterator(
 std::optional<MatchResultICU> FindResults::Iterator::EarliestMatch() const {
   auto min_iter = std::min_element(match_list_.begin(), match_list_.end(),
                                    [](const auto& a, const auto& b) {
+                                     if (a.has_value() && !b.has_value()) {
+                                       return true;
+                                     }
                                      if (!a.has_value() || !b.has_value()) {
                                        return false;
                                      }
@@ -109,15 +110,15 @@ std::optional<MatchResultICU> FindResults::Iterator::EarliestMatch() const {
   return result;
 }
 
-const FindResults::BufferMatchResult FindResults::Iterator::operator*() const {
+const MatchResultICU FindResults::Iterator::operator*() const {
   DCHECK(!IsAtEnd());
   std::optional<MatchResultICU> result = EarliestMatch();
-  return FindResults::BufferMatchResult({result->start, result->length});
+  return *result;
 }
 
 void FindResults::Iterator::operator++() {
   DCHECK(!IsAtEnd());
-  const FindResults::BufferMatchResult last_result = **this;
+  const MatchResultICU last_result = **this;
   for (size_t i = 0; i < text_searcher_list_.size(); ++i) {
     auto& optional_match = match_list_[i];
     if (optional_match.has_value() &&

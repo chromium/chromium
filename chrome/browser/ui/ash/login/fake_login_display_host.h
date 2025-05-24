@@ -60,6 +60,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void UpdateOobeDialogState(OobeDialogState state) override;
   void CancelPasswordChangedFlow() override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
+  void SkipPostLoginScreensForDemoMode() override;
   void HandleDisplayCaptivePortal() override;
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;

@@ -1,0 +1,26 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+import("//rlz/buildflags/buildflags.gni")
+
+source_set("model") {
+  sources = [
+    "regional_capabilities_service_factory.h",
+    "regional_capabilities_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/country_codes",
+    "//components/prefs",
+    "//components/regional_capabilities",
+    "//components/variations/service",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/common",
+    "//ios/web/public",
+  ]
+}

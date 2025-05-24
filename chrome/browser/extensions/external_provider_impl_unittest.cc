@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -34,6 +35,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
@@ -42,7 +45,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -93,21 +96,29 @@ const wchar_t kExternalAppRegistryKey[] =
 
 class ExternalProviderImplTest : public ExtensionServiceTestBase {
  public:
-  ExternalProviderImplTest() {}
+  ExternalProviderImplTest() = default;
 
   ExternalProviderImplTest(const ExternalProviderImplTest&) = delete;
   ExternalProviderImplTest& operator=(const ExternalProviderImplTest&) = delete;
 
-  ~ExternalProviderImplTest() override {}
+  ~ExternalProviderImplTest() override = default;
+
+  ExternalProviderManager* external_provider_manager() {
+    return ExternalProviderManager::Get(profile());
+  }
+
+  ExtensionUpdater* extension_updater() {
+    return ExtensionUpdater::Get(profile());
+  }
 
   void InitService() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     user_manager::ScopedUserManager scoped_user_manager(
         std::make_unique<ash::FakeChromeUserManager>());
 #endif
     InitializeExtensionServiceWithUpdaterAndPrefs();
 
-    service()->updater()->SetExtensionCacheForTesting(
+    extension_updater()->SetExtensionCacheForTesting(
         test_extension_cache_.get());
 
     // Don't install pre-installed apps. Some of the pre-installed apps are
@@ -130,11 +141,11 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
         switches::kDisableDefaultApps);
 
     ProviderCollection providers;
-    ExternalProviderImpl::CreateExternalProviders(service_, profile_.get(),
-                                                  &providers);
+    ExternalProviderImpl::CreateExternalProviders(external_provider_manager(),
+                                                  profile_.get(), &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers)
-      service_->AddProviderForTesting(std::move(provider));
+      external_provider_manager()->AddProviderForTesting(std::move(provider));
   }
 
   void OverrideExternalExtensionsPath() {
@@ -172,7 +183,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     params.prefs_content = "{}";
     params.autoupdate_enabled = true;
     InitializeExtensionService(std::move(params));
-    service_->updater()->Start();
+    extension_updater()->Start();
     content::RunAllTasksUntilIdle();
   }
 
@@ -191,11 +202,19 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
         test_server_->GetURL(kInAppPaymentsApp.update_path));
   }
 
+  void TearDown() override {
+    // Avoid dangling pointers.
+    extension_updater()->SetExtensionCacheForTesting(nullptr);
+    test_extension_cache_.reset();
+    ExtensionServiceTestBase::TearDown();
+  }
+
   void AwaitCheckForExternalUpdates() {
     base::RunLoop run_loop;
-    service_->set_external_updates_finished_callback_for_test(
-        run_loop.QuitWhenIdleClosure());
-    service_->CheckForExternalUpdates();
+    external_provider_manager()
+        ->set_external_updates_finished_callback_for_test(
+            run_loop.QuitWhenIdleClosure());
+    external_provider_manager()->CheckForExternalUpdates();
     run_loop.Run();
   }
 
@@ -237,7 +256,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   std::unique_ptr<base::ScopedPathOverride> external_externsions_overrides_;
   std::unique_ptr<ExtensionCacheFake> test_extension_cache_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // chromeos::ServicesCustomizationExternalLoader is hooked up as an
   // ExternalLoader and depends on a functioning StatisticsProvider.
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -259,7 +278,7 @@ TEST_F(ExternalProviderImplTest, InAppPayments) {
   AwaitCheckForExternalUpdates();
 
   EXPECT_TRUE(registry()->GetInstalledExtension(kInAppPaymentsApp.app_id));
-  EXPECT_TRUE(service_->IsExtensionEnabled(kInAppPaymentsApp.app_id));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(kInAppPaymentsApp.app_id));
 }
 
 TEST_F(ExternalProviderImplTest, BlockedExternalUserProviders) {
@@ -295,12 +314,13 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
       )",
       kGoodApp.app_id,
       test_server_->GetURL(kGoodApp.update_path).spec().c_str());
-  service_->AddProviderForTesting(std::make_unique<ExternalProviderImpl>(
-      service_,
-      base::MakeRefCounted<ExternalTestingLoader>(
-          json, base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
-      profile_.get(), mojom::ManifestLocation::kExternalPref,
-      mojom::ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS));
+  external_provider_manager()->AddProviderForTesting(
+      std::make_unique<ExternalProviderImpl>(
+          external_provider_manager(),
+          base::MakeRefCounted<ExternalTestingLoader>(
+              json, base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
+          profile_.get(), mojom::ManifestLocation::kExternalPref,
+          mojom::ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS));
 
   // App is not installed, we should not install if the flag is enabled.
   {

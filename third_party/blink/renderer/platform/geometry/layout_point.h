@@ -37,8 +37,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d.h"
 
 namespace WTF {
 class String;
@@ -46,24 +44,22 @@ class String;
 
 namespace blink {
 
-class PLATFORM_EXPORT LayoutPoint {
+// This class is deprecated. PhysicalOffset or LogicalOffset should be used.
+class PLATFORM_EXPORT DeprecatedLayoutPoint {
   DISALLOW_NEW();
 
  public:
-  constexpr LayoutPoint() = default;
-  constexpr LayoutPoint(LayoutUnit x, LayoutUnit y) : x_(x), y_(y) {}
-  constexpr LayoutPoint(int x, int y) : x_(LayoutUnit(x)), y_(LayoutUnit(y)) {}
-  constexpr explicit LayoutPoint(const gfx::PointF& point)
+  constexpr DeprecatedLayoutPoint() = default;
+  constexpr DeprecatedLayoutPoint(LayoutUnit x, LayoutUnit y) : x_(x), y_(y) {}
+  constexpr explicit DeprecatedLayoutPoint(const gfx::PointF& point)
       : x_(point.x()), y_(point.y()) {}
-
-  constexpr explicit operator gfx::PointF() const {
-    return gfx::PointF(x_.ToFloat(), y_.ToFloat());
-  }
 
   // This is deleted to avoid unwanted lossy conversion from float or double to
   // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
   // instead.
-  LayoutPoint(double, double) = delete;
+  DeprecatedLayoutPoint(double, double) = delete;
+
+  bool operator==(const DeprecatedLayoutPoint&) const = default;
 
   constexpr LayoutUnit X() const { return x_; }
   constexpr LayoutUnit Y() const { return y_; }
@@ -74,24 +70,8 @@ class PLATFORM_EXPORT LayoutPoint {
   LayoutUnit x_, y_;
 };
 
-ALWAYS_INLINE constexpr bool operator==(const LayoutPoint& a,
-                                        const LayoutPoint& b) {
-  return a.X() == b.X() && a.Y() == b.Y();
-}
-
-constexpr bool operator!=(const LayoutPoint& a, const LayoutPoint& b) {
-  return !(a == b);
-}
-
-inline gfx::Point ToRoundedPoint(const LayoutPoint& point) {
-  return gfx::Point(point.X().Round(), point.Y().Round());
-}
-
-inline gfx::Vector2d ToRoundedVector2d(const LayoutPoint& p) {
-  return gfx::Vector2d(p.X().Round(), p.Y().Round());
-}
-
-PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const LayoutPoint&);
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
+                                         const DeprecatedLayoutPoint&);
 
 }  // namespace blink
 

@@ -4,9 +4,9 @@
 
 #import "components/autofill/ios/browser/fake_autofill_agent.h"
 
-#include "base/functional/bind.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "base/functional/bind.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 
 using autofill::FormRendererId;
 using autofill::FieldRendererId;

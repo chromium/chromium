@@ -11,9 +11,11 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/base_event_utils.h"
@@ -34,11 +36,30 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
+using ui::mojom::DialogButton;
+
 namespace views {
+
+class DialogClientViewTest;
+
+class DialogClientViewTestDelegate : public DialogDelegateView {
+ public:
+  explicit DialogClientViewTestDelegate(DialogClientViewTest* parent);
+
+  // DialogDelegateView:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
+  gfx::Size GetMinimumSize() const override;
+  gfx::Size GetMaximumSize() const override;
+
+ private:
+  const raw_ptr<DialogClientViewTest> parent_;
+};
 
 // Base class for tests. Also acts as the dialog delegate and contents view for
 // TestDialogClientView.
@@ -54,7 +75,7 @@ class DialogClientViewTest : public test::WidgetTest {
   void SetUp() override {
     WidgetTest::SetUp();
 
-    delegate_ = new TestDialogDelegateView(this);
+    delegate_ = new DialogClientViewTestDelegate(this);
     delegate_->set_use_custom_frame(false);
     delegate_->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
@@ -74,6 +95,10 @@ class DialogClientViewTest : public test::WidgetTest {
     widget_.ExtractAsDangling()->CloseNow();
     WidgetTest::TearDown();
   }
+
+  gfx::Size preferred_size() const { return preferred_size_; }
+  gfx::Size min_size() const { return min_size_; }
+  gfx::Size max_size() const { return max_size_; }
 
  protected:
   gfx::Rect GetUpdatedClientBounds() {
@@ -120,12 +145,36 @@ class DialogClientViewTest : public test::WidgetTest {
     return passed_view;
   }
 
+  void SetFixedWidth(int width) {
+    delegate_->set_fixed_width(width);
+    delegate_->DialogModelChanged();
+  }
+
   void SetSizeConstraints(const gfx::Size& min_size,
                           const gfx::Size& preferred_size,
                           const gfx::Size& max_size) {
     min_size_ = min_size;
     preferred_size_ = preferred_size;
     max_size_ = max_size;
+  }
+
+  void SetAllowVerticalButtons(bool allow) {
+    delegate_->set_allow_vertical_buttons(allow);
+    delegate_->DialogModelChanged();
+  }
+
+  void SetThreeWideButtonConfiguration() {
+    // Ensure the wide button label will be wider than fixed dialog width.
+    constexpr int kFixedWidth = 100;
+    const std::u16string kLongLabel(kFixedWidth, 'a');
+
+    SetAllowVerticalButtons(true);
+    SetFixedWidth(kFixedWidth);
+    SetDialogButtons(static_cast<int>(DialogButton::kCancel) |
+                     static_cast<int>(DialogButton::kOk));
+    SetExtraView(
+        std::make_unique<LabelButton>(Button::PressedCallback(), u"extra"));
+    SetDialogButtonLabel(ui::mojom::DialogButton::kOk, kLongLabel);
   }
 
   View* FocusableViewAfter(View* view) {
@@ -144,23 +193,6 @@ class DialogClientViewTest : public test::WidgetTest {
     delegate_->DialogModelChanged();
   }
 
-  Button* GetButtonByAccessibleName(View* root, const std::u16string& name) {
-    Button* button = Button::AsButton(root);
-    if (button && button->GetViewAccessibility().GetCachedName() == name) {
-      return button;
-    }
-    for (views::View* child : root->children()) {
-      button = GetButtonByAccessibleName(child, name);
-      if (button)
-        return button;
-    }
-    return nullptr;
-  }
-
-  Button* GetButtonByAccessibleName(const std::u16string& name) {
-    return GetButtonByAccessibleName(widget_->GetRootView(), name);
-  }
-
   DialogClientView* client_view() {
     return static_cast<DialogClientView*>(widget_->client_view());
   }
@@ -171,23 +203,6 @@ class DialogClientViewTest : public test::WidgetTest {
   test::TestLayoutProvider* layout_provider() { return layout_provider_.get(); }
 
  private:
-  class TestDialogDelegateView : public DialogDelegateView {
-   public:
-    explicit TestDialogDelegateView(DialogClientViewTest* parent)
-        : parent_(parent) {}
-
-    // DialogDelegateView:
-    gfx::Size CalculatePreferredSize(
-        const SizeBounds& /*available_size*/) const override {
-      return parent_->preferred_size_;
-    }
-    gfx::Size GetMinimumSize() const override { return parent_->min_size_; }
-    gfx::Size GetMaximumSize() const override { return parent_->max_size_; }
-
-   private:
-    const raw_ptr<DialogClientViewTest> parent_;
-  };
-
   // The dialog Widget.
   std::unique_ptr<test::TestLayoutProvider> layout_provider_;
   raw_ptr<Widget> widget_ = nullptr;
@@ -197,6 +212,23 @@ class DialogClientViewTest : public test::WidgetTest {
   gfx::Size min_size_;
   gfx::Size max_size_;
 };
+
+DialogClientViewTestDelegate::DialogClientViewTestDelegate(
+    DialogClientViewTest* parent)
+    : parent_(parent) {}
+
+gfx::Size DialogClientViewTestDelegate::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  return parent_->preferred_size();
+}
+
+gfx::Size DialogClientViewTestDelegate::GetMinimumSize() const {
+  return parent_->min_size();
+}
+
+gfx::Size DialogClientViewTestDelegate::GetMaximumSize() const {
+  return parent_->max_size();
+}
 
 TEST_F(DialogClientViewTest, UpdateButtons) {
   // Make sure this test runs on all platforms. Mac doesn't allow 0 size
@@ -257,8 +289,6 @@ TEST_F(DialogClientViewTest, RemoveAndUpdateButtons) {
 
 // Test that views inside the dialog client view have the correct focus order.
 TEST_F(DialogClientViewTest, SetupFocusChain) {
-  const bool kIsOkButtonOnLeftSide = PlatformStyle::kIsOkButtonLeading;
-
   delegate()->GetContentsView()->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   // Initially the dialog client view only contains the content view.
   EXPECT_EQ(delegate()->GetContentsView(),
@@ -268,7 +298,7 @@ TEST_F(DialogClientViewTest, SetupFocusChain) {
   SetDialogButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
                    static_cast<int>(ui::mojom::DialogButton::kCancel));
 
-  if (kIsOkButtonOnLeftSide) {
+  if constexpr (PlatformStyle::kIsOkButtonLeading) {
     EXPECT_EQ(client_view()->ok_button(),
               FocusableViewAfter(delegate()->GetContentsView()));
     EXPECT_EQ(client_view()->cancel_button(),
@@ -299,7 +329,7 @@ TEST_F(DialogClientViewTest, SetupFocusChain) {
   View* dummy_view = new StaticSizedView(gfx::Size(200, 200));
   dummy_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   delegate()->GetContentsView()->SetFocusBehavior(View::FocusBehavior::NEVER);
-  delegate()->GetContentsView()->AddChildView(dummy_view);
+  delegate()->GetContentsView()->AddChildViewRaw(dummy_view);
   EXPECT_EQ(dummy_view, FocusableViewAfter(client_view()->cancel_button()));
   EXPECT_EQ(extra_view, FocusableViewAfter(dummy_view));
   EXPECT_EQ(client_view()->cancel_button(), FocusableViewAfter(extra_view));
@@ -788,9 +818,9 @@ TEST_F(DialogClientViewTest, ButtonLayoutWithExtra) {
 
   widget()->Show();
 
-  Button* ok = GetButtonByAccessibleName(u"ok");
-  Button* cancel = GetButtonByAccessibleName(u"cancel");
-  Button* extra = GetButtonByAccessibleName(u"extra");
+  View* ok = client_view()->ok_button();
+  View* cancel = client_view()->cancel_button();
+  View* extra = client_view()->extra_view();
 
   ASSERT_NE(ok, cancel);
   ASSERT_NE(ok, extra);
@@ -849,21 +879,108 @@ TEST_F(DialogClientViewTest, LayoutWithHiddenExtraView) {
 
   SizeAndLayoutWidget();
 
-  auto* ok = GetButtonByAccessibleName(u"ok");
-  auto* cancel = GetButtonByAccessibleName(u"cancel");
-  auto* extra = GetButtonByAccessibleName(u"extra");
+  View* ok = client_view()->ok_button();
+  View* cancel = client_view()->cancel_button();
+  View* extra = client_view()->extra_view();
 
   int ok_left = ok->bounds().x();
   int cancel_left = cancel->bounds().x();
 
   extra->SetVisible(false);
   // Re-layout but do not resize the widget. If we resized it without the extra
-  // view, it would get narrower and the other buttons would love.
+  // view, it would get narrower and the other buttons would move.
   EXPECT_TRUE(widget()->GetContentsView()->needs_layout());
   views::test::RunScheduledLayout(widget());
 
   EXPECT_EQ(ok_left, ok->bounds().x());
   EXPECT_EQ(cancel_left, cancel->bounds().x());
+}
+
+MATCHER(HasHorizontalButtons, "") {
+  const auto ok_bounds = arg->ok_button()->bounds();
+  const auto cancel_bounds = arg->cancel_button()->bounds();
+
+  EXPECT_EQ(ok_bounds.CenterPoint().y(), cancel_bounds.CenterPoint().y());
+
+  // Order from the top is always Extra, Cancel, Ok (unlike horizontal
+  // platform-specific ordering).
+  if (arg->extra_view()) {
+    const auto extra_bounds = arg->extra_view()->bounds();
+    EXPECT_EQ(ok_bounds.CenterPoint().y(), extra_bounds.CenterPoint().y());
+  }
+
+  return true;
+}
+
+MATCHER(HasVerticalButtons, "") {
+  EXPECT_NE(arg->extra_view(), nullptr);
+  if (!arg->extra_view()) {
+    return false;
+  }
+
+  const auto ok_bounds = arg->ok_button()->bounds();
+  const auto cancel_bounds = arg->cancel_button()->bounds();
+  const auto extra_bounds = arg->extra_view()->bounds();
+
+  // Buttons should have the same width and be vertically-aligned.
+  EXPECT_EQ(ok_bounds.width(), cancel_bounds.width());
+  EXPECT_EQ(ok_bounds.width(), extra_bounds.width());
+  EXPECT_EQ(ok_bounds.x(), cancel_bounds.x());
+  EXPECT_EQ(ok_bounds.x(), extra_bounds.x());
+
+  // Order from the top is always Extra, Cancel, Ok (unlike horizontal
+  // platform-specific ordering).
+  EXPECT_LT(extra_bounds.y(), cancel_bounds.y());
+  EXPECT_LT(cancel_bounds.y(), ok_bounds.y());
+
+  return true;
+}
+
+TEST_F(DialogClientViewTest, WideButtonsRenderVertically) {
+  SetThreeWideButtonConfiguration();
+
+  widget()->Show();
+  SizeAndLayoutWidget();
+  EXPECT_THAT(client_view(), HasVerticalButtons());
+}
+
+TEST_F(DialogClientViewTest, WideButtonsStayHorizontalIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      views::features::kDialogVerticalButtonFallback);
+
+  SetThreeWideButtonConfiguration();
+
+  widget()->Show();
+  SizeAndLayoutWidget();
+  EXPECT_THAT(client_view(), HasHorizontalButtons());
+}
+
+TEST_F(DialogClientViewTest, WideButtonsStayHorizontalIfNotFixedWidth) {
+  SetThreeWideButtonConfiguration();
+  SetFixedWidth(0);
+
+  widget()->Show();
+  SizeAndLayoutWidget();
+  EXPECT_THAT(client_view(), HasHorizontalButtons());
+}
+
+TEST_F(DialogClientViewTest, WideButtonsStayHorizontalIfNoExtraButton) {
+  SetThreeWideButtonConfiguration();
+  SetExtraView(std::unique_ptr<View>());
+
+  widget()->Show();
+  SizeAndLayoutWidget();
+  EXPECT_THAT(client_view(), HasHorizontalButtons());
+}
+
+TEST_F(DialogClientViewTest, WideButtonsStayHorizontalIfVerticalNotAllowed) {
+  SetThreeWideButtonConfiguration();
+  SetAllowVerticalButtons(false);
+
+  widget()->Show();
+  SizeAndLayoutWidget();
+  EXPECT_THAT(client_view(), HasHorizontalButtons());
 }
 
 }  // namespace views

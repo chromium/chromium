@@ -66,8 +66,8 @@
               <span id="cookies" hidden$="[[!siteGroup.numCookies]]">
                 &middot; [[cookieString_]]
               </span>
-              <span id="rwsMembership"
-                  hidden$="[[!isRwsMember_(siteGroup.rwsOwner)]]">
+              <span id="rwsMembership" hidden$=
+                  "[[!showRwsLabel_(siteGroup.rwsOwner, isRwsFiltered)]]">
                 &middot; [[rwsMembershipLabel_]]
               </span>
               <span id="extensionIdDescription"
@@ -164,7 +164,7 @@
                     </div>
                     <cr-icon-button class="subpage-arrow"
                         hidden$="[[item.isPartitioned]]"
-                        aria-label$="[[getSubpageLabel_(item.origin)]]"
+                        aria-label$="[[getOriginSubpageLabel_(item.origin)]]"
                         aria-roledescription=
                             "$i18n{subpageArrowRoleDescription}"
                         focus-row-control focus-type="detailed-sites">

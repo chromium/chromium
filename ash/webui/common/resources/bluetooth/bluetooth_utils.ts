@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
-import {BluetoothDeviceProperties, PairedBluetoothDeviceProperties} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothDeviceProperties, PairedBluetoothDeviceProperties} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {BatteryType} from './bluetooth_types.js';
 

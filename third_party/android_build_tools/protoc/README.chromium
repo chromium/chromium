@@ -3,7 +3,7 @@ Short Name: protobuf
 URL: https://github.com/protocolbuffers/protobuf/releases/
 Version: v28.0
 Revision: 439c42c735ae1efed57ab7771986f2a3c0b99319
-License: BSD
+License: BSD-3-Clause
 License File: LICENSE
 Security Critical: no
 Shipped: no

@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <vector>
+
 #include "base/memory/raw_ptr_exclusion.h"
 #endif
 
@@ -72,8 +73,8 @@ class TestSuite {
   // terminates the process.
   void UnitTestAssertHandler(const char* file,
                              int line,
-                             const std::string_view summary,
-                             const std::string_view stack_trace);
+                             std::string_view summary,
+                             std::string_view stack_trace);
 
   // Disable crash dialogs so that it doesn't gum up the buildbot
   virtual void SuppressErrorDialogs();

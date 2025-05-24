@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test scrolling into view when typing
-  assert_true: Scroll-padding should be respected expected true got false
-Harness: the test ran to completion.
-

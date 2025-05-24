@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+source_set("customize_buttons") {
+  sources = [ "customize_buttons_handler.h" ]
+  public_deps = [
+    ":mojo_bindings",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/common",
+  ]
+}
+source_set("impl") {
+  sources = [ "customize_buttons_handler.cc" ]
+  deps = [
+    ":customize_buttons",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/webui:webui_util",
+    "//components/feature_engagement/public:feature_constants",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "customize_buttons.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+}

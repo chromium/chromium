@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] pointerlock_unadjustedMovement
+  assert_unreached: unadjustedMovement must be implemented. Reached unreachable code
+Harness: the test ran to completion.

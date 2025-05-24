@@ -13,10 +13,8 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "crypto/fake_apple_keychain_v2.h"
-#include "crypto/features.h"
 #include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "crypto/scoped_lacontext.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,9 +104,6 @@ class UserVerifyingKeyMacTest : public testing::Test {
       kTestKeychainAccessGroup};
 
   base::test::TaskEnvironment task_environment_;
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kEnableMacUnexportableKeys};
 
   std::unique_ptr<UserVerifyingKeyProvider> provider_ =
       crypto::GetUserVerifyingKeyProvider(MakeConfig());

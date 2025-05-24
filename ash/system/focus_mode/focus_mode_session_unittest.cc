@@ -4,7 +4,6 @@
 
 #include "ash/system/focus_mode/focus_mode_session.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"

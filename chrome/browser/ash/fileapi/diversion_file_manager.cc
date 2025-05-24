@@ -9,6 +9,9 @@
 
 #include "chrome/browser/ash/fileapi/diversion_file_manager.h"
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #include <algorithm>
 #include <limits>
 #include <optional>
@@ -18,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/clamped_math.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/buildflag.h"
@@ -26,28 +30,17 @@
 #include "net/base/net_errors.h"
 #include "storage/common/file_system/file_system_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include <fcntl.h>
-#include <unistd.h>
-
-#include "base/posix/eintr_wrapper.h"
-#else
-#error "DiversionFileManager code only builds on ChromeOS"
-#endif
+static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
 
 namespace ash {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // In theory, we could get this at runtime via Profile::GetPath and
 // ProfileManager::GetActiveUserProfile, but calling those needs to happen on
 // the UI thread while the code in this C++ primarily happens on the IO thread.
-// It's simpler, assuming we're on ChromeOS, to just hard-code the home dir.
+// It's simpler, since we're on ChromeOS, to just hard-code the home dir.
 constexpr char kChronosHomeDir[] = "/home/chronos/user/";
-#else
-#error "DiversionFileManager code only builds on ChromeOS"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using GetFileInfoCallback =
     base::OnceCallback<void(base::File::Error result,
@@ -63,7 +56,7 @@ using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
 // of memory-backed, as disk is more plentiful than RAM.
 //
 // O_TMPFILE and the hard-coded kChronosHomeDir may be Linux-only and
-// ChromeOS-only concepts but this C++ file only builds when IS_CHROMEOS_ASH.
+// ChromeOS-only concepts but this C++ file only builds when IS_CHROMEOS.
 struct Tmpfile {
   base::ScopedFD scoped_fd;
   int64_t file_size = 0;

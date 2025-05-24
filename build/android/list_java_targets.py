@@ -29,7 +29,6 @@ import json
 import logging
 import os
 import shlex
-import shutil
 import subprocess
 import sys
 
@@ -58,14 +57,6 @@ _VALID_TYPES = (
 )
 
 
-def _resolve_ninja():
-  # Prefer the version on PATH, but fallback to known version if PATH doesn't
-  # have one (e.g. on bots).
-  if shutil.which('ninja') is None:
-    return os.path.join(_SRC_ROOT, 'third_party', 'ninja', 'ninja')
-  return 'ninja'
-
-
 def _compile(output_dir, args, quiet=False):
   cmd = gn_helpers.CreateBuildCommand(output_dir) + args
   logging.info('Running: %s', shlex.join(cmd))
@@ -77,18 +68,24 @@ def _compile(output_dir, args, quiet=False):
 
 def _query_for_build_config_targets(output_dir):
   # Query ninja rather than GN since it's faster.
-  # Use ninja rather than autoninja to avoid extra output if user has set the
-  # NINJA_SUMMARIZE_BUILD environment variable.
-  cmd = [_resolve_ninja(), '-C', output_dir, '-t', 'targets']
+  cmd = [
+      os.path.join(_SRC_ROOT, 'third_party', 'siso', 'cipd', 'siso'), 'query',
+      'targets', '-C', output_dir
+  ]
   logging.info('Running: %r', cmd)
-  ninja_output = subprocess.run(cmd,
-                                check=True,
-                                capture_output=True,
-                                encoding='ascii').stdout
+  try:
+    query_output = subprocess.run(cmd,
+                                  check=True,
+                                  capture_output=True,
+                                  encoding='ascii').stdout
+  except subprocess.CalledProcessError as e:
+    sys.stderr.write('Command output:\n' + e.stdout + e.stderr)
+    raise
+
   ret = []
   SUFFIX = '__build_config_crbug_908819'
   SUFFIX_LEN = len(SUFFIX)
-  for line in ninja_output.splitlines():
+  for line in query_output.splitlines():
     ninja_target = line.rsplit(':', 1)[0]
     # Ignore root aliases by ensuring a : exists.
     if ':' in ninja_target and ninja_target.endswith(SUFFIX):
@@ -159,16 +156,24 @@ class _TargetEntry:
     subpath = ninja_target.replace(':', os.path.sep) + '.build_config.json'
     return os.path.join(constants.GetOutDirectory(), 'gen', subpath)
 
+  @property
+  def params_path(self):
+    """Returns the filepath of the project's .params.json."""
+    return self.build_config_path.replace('.build_config.json', '.params.json')
+
   def build_config(self):
     """Reads and returns the project's .build_config.json JSON."""
     if not self._build_config:
-      with open(self.build_config_path) as jsonfile:
-        self._build_config = json.load(jsonfile)
+      with open(self.params_path) as f:
+        config = json.load(f)
+      with open(self.build_config_path) as f:
+        config.update(json.load(f))
+      self._build_config = config
     return self._build_config
 
   def get_type(self):
     """Returns the target type from its .build_config.json."""
-    return self.build_config()['deps_info']['type']
+    return self.build_config()['type']
 
   def proguard_enabled(self):
     """Returns whether proguard runs for this target."""
@@ -176,7 +181,7 @@ class _TargetEntry:
     # bundle level.
     if self.get_type() == 'android_app_bundle_module':
       return False
-    return self.build_config()['deps_info'].get('proguard_enabled', False)
+    return self.build_config().get('proguard_enabled', False)
 
 
 def main():
@@ -200,6 +205,9 @@ def main():
       '--print-build-config-paths',
       action='store_true',
       help='Print path to the .build_config.json of each target')
+  parser.add_argument('--print-params-paths',
+                      action='store_true',
+                      help='Print path to the .params.json of each target')
   parser.add_argument('--build',
                       action='store_true',
                       help='Build all .build_config.json files.')
@@ -216,9 +224,9 @@ def main():
   parser.add_argument('--query',
                       help='A dot separated string specifying a query for a '
                       'build config json value of each target. Example: Use '
-                      '--query deps_info.unprocessed_jar_path to show a list '
-                      'of all targets that have a non-empty deps_info dict and '
-                      'non-empty "unprocessed_jar_path" value in that dict.')
+                      '--query unprocessed_jar_path to show a list '
+                      'of all targets that have a non-empty '
+                      '"unprocessed_jar_path" value in that dict.')
   parser.add_argument('-v', '--verbose', default=0, action='count')
   parser.add_argument('-q', '--quiet', default=0, action='count')
   args = parser.parse_args()
@@ -234,9 +242,16 @@ def main():
   constants.CheckOutputDirectory()
   output_dir = constants.GetOutDirectory()
 
+  if args.build:
+    _compile(output_dir, ['build.ninja'])
+
   # Query ninja for all __build_config_crbug_908819 targets.
   targets = _query_for_build_config_targets(output_dir)
   entries = [_TargetEntry(t) for t in targets]
+
+  if not entries:
+    logging.warning('No targets found. Run with --build')
+    sys.exit(1)
 
   if args.build:
     logging.warning('Building %d .build_config.json files...', len(entries))
@@ -268,6 +283,8 @@ def main():
         to_print = f'{to_print}: {e.get_type()}'
       elif args.print_build_config_paths:
         to_print = f'{to_print}: {e.build_config_path}'
+      elif args.print_params_paths:
+        to_print = f'{to_print}: {e.params_path}'
       elif args.query:
         value = _query_json(json_dict=e.build_config(),
                             query=args.query,

@@ -9,11 +9,12 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RadioGroup;
 
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
@@ -36,6 +37,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayou
  * more information of a Safe Browsing mode is requested.
  * </p>
  */
+@NullMarked
 public class RadioButtonGroupSafeBrowsingPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener,
                 RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
@@ -48,12 +50,13 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
         void onSafeBrowsingModeDetailsRequested(@SafeBrowsingState int safeBrowsingState);
     }
 
-    private @Nullable RadioButtonWithDescriptionAndAuxButton mEnhancedProtection;
+    private RadioButtonWithDescriptionAndAuxButton mEnhancedProtection;
     private RadioButtonWithDescriptionAndAuxButton mStandardProtection;
     private RadioButtonWithDescription mNoProtection;
     private @SafeBrowsingState int mSafeBrowsingState;
     private @SettingsAccessPoint int mAccessPoint;
     private OnSafeBrowsingModeDetailsRequested mSafeBrowsingModeDetailsRequestedListener;
+
     private ManagedPreferenceDelegate mManagedPrefDelegate;
 
     public RadioButtonGroupSafeBrowsingPreference(Context context, AttributeSet attrs) {
@@ -86,6 +89,7 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
         callChangeListener(mSafeBrowsingState);
     }
 
+    @Initializer
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
@@ -145,6 +149,7 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
      * @param listener New listener that will be notified when details of a Safe Browsing mode are
      *         requested.
      */
+    @Initializer
     public void setSafeBrowsingModeDetailsRequestedListener(
             OnSafeBrowsingModeDetailsRequested listener) {
         mSafeBrowsingModeDetailsRequestedListener = listener;
@@ -153,6 +158,7 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
     /**
      * Sets the ManagedPreferenceDelegate which will determine whether this preference is managed.
      */
+    @Initializer
     public void setManagedPreferenceDelegate(ManagedPreferenceDelegate delegate) {
         mManagedPrefDelegate = delegate;
         // The value of `allowManagedIcon` doesn't matter, because the corresponding layout doesn't

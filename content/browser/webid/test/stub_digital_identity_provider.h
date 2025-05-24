@@ -18,16 +18,20 @@ class StubDigitalIdentityProvider : public DigitalIdentityProvider {
   StubDigitalIdentityProvider& operator=(const StubDigitalIdentityProvider&) =
       delete;
 
-  bool IsLowRiskOrigin(const url::Origin& to_check) const override;
+  bool IsLowRiskOrigin(RenderFrameHost& render_frame_host) const override;
   DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
       WebContents& web_contents,
       const url::Origin& origin,
       DigitalIdentityInterstitialType interstitial_type,
       DigitalIdentityInterstitialCallback callback) override;
-  void Request(WebContents*,
-               const url::Origin& origin,
-               base::Value request,
-               DigitalIdentityCallback) override;
+  void Get(WebContents*,
+           const url::Origin& origin,
+           base::ValueView request,
+           DigitalIdentityCallback) override;
+  void Create(WebContents*,
+              const url::Origin& origin,
+              base::ValueView request,
+              DigitalIdentityCallback) override;
 };
 
 }  // namespace content

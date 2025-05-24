@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
@@ -51,6 +50,7 @@
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "chromeos/ash/components/network/text_message_suppression_state.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/onc_validator.h"
@@ -1077,10 +1077,18 @@ ManagedNetworkConfigurationHandlerImpl::FindPolicyByGuidAndProfile(
   if (!policies)
     return nullptr;
 
-  const base::Value::Dict* policy =
-      (policy_type == PolicyType::kOriginal)
-          ? policies->GetOriginalPolicyByGuid(guid)
-          : policies->GetPolicyByGuid(guid);
+  const base::Value::Dict* policy = nullptr;
+  switch (policy_type) {
+    case PolicyType::kOriginal:
+      policy = policies->GetOriginalPolicyByGuid(guid);
+      break;
+    case PolicyType::kWithVariablesExpanded:
+      policy = policies->GetPolicyWithVariablesExpandedByGuid(guid);
+      break;
+    case PolicyType::kWithRuntimeValues:
+      policy = policies->GetPolicyByGuid(guid);
+      break;
+  }
   if (policy && out_onc_source) {
     *out_onc_source =
         (profile->userhash.empty() ? ::onc::ONC_SOURCE_DEVICE_POLICY

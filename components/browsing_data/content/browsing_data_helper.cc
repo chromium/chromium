@@ -14,7 +14,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/origin_trials/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/pref_names.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -164,13 +163,17 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       HostContentSettingsMap::PatternSourcePredicate(),
       host_content_settings_map);
 
-#if !BUILDFLAG(IS_ANDROID)
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::SERIAL_CHOOSER_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
 
+#if !BUILDFLAG(IS_ANDROID)
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::HID_CHOOSER_DATA, delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate());
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::INITIALIZED_TRANSLATIONS, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
 
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
@@ -187,6 +190,11 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       ContentSettingsType::SMART_CARD_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
 #endif
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
+      delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate());
 }
 
 void RemoveFederatedSiteSettingsData(

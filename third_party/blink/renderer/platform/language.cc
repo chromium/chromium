@@ -70,10 +70,8 @@ void InitializePlatformLanguage() {
         String canonicalized = CanonicalizeLanguageIdentifier(
             Platform::Current()->DefaultLocale());
         if (!canonicalized.empty()) {
-          StringImpl* impl = StringImpl::CreateStatic(
-              reinterpret_cast<const char*>(canonicalized.Characters8()),
-              canonicalized.length());
-
+          StringImpl* impl =
+              StringImpl::CreateStatic(base::as_chars(canonicalized.Span8()));
           return AtomicString(impl);
         }
         return AtomicString();

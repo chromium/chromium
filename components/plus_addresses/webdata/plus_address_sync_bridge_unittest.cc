@@ -203,7 +203,8 @@ TEST_F(PlusAddressSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
   // Simulate receiving an incremental update removing `profile1`.
   syncer::EntityChangeList change_list;
   change_list.push_back(syncer::EntityChange::CreateDelete(
-      bridge().GetStorageKey(EntityDataFromPlusProfile(profile))));
+      bridge().GetStorageKey(EntityDataFromPlusProfile(profile)),
+      syncer::EntityData()));
   // `ApplyIncrementalSyncChanges()` returns an error if it fails.
   EXPECT_CALL(on_data_changed_callback(),
               Run(/*changes=*/ElementsAre(PlusAddressDataChange(

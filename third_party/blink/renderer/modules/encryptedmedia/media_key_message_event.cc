@@ -29,17 +29,12 @@
 
 namespace blink {
 
-MediaKeyMessageEvent::MediaKeyMessageEvent() = default;
-
 MediaKeyMessageEvent::MediaKeyMessageEvent(
     const AtomicString& type,
     const MediaKeyMessageEventInit* initializer)
-    : Event(type, initializer) {
-  if (initializer->hasMessageType())
-    message_type_ = initializer->messageType();
-  if (initializer->hasMessage())
-    message_ = initializer->message();
-}
+    : Event(type, initializer),
+      message_type_(initializer->messageType()),
+      message_(initializer->message()) {}
 
 MediaKeyMessageEvent::~MediaKeyMessageEvent() = default;
 

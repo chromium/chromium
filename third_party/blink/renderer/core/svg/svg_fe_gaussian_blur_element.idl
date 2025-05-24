@@ -28,11 +28,11 @@
 [
     Exposed=Window
 ] interface SVGFEGaussianBlurElement : SVGElement {
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber stdDeviationX;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber stdDeviationY;
+    readonly attribute SVGAnimatedString in1;
+    readonly attribute SVGAnimatedNumber stdDeviationX;
+    readonly attribute SVGAnimatedNumber stdDeviationY;
 
-    [MeasureAs=SVG1DOMFilter] void setStdDeviation(float stdDeviationX, float stdDeviationY);
+    void setStdDeviation(float stdDeviationX, float stdDeviationY);
 };
 
 SVGFEGaussianBlurElement includes SVGFilterPrimitiveStandardAttributes;

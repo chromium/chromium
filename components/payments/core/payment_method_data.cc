@@ -19,18 +19,9 @@ static const char kSupportedNetworks[] = "supportedNetworks";
 
 }  // namespace
 
-PaymentMethodData::PaymentMethodData() {}
+PaymentMethodData::PaymentMethodData() = default;
 PaymentMethodData::PaymentMethodData(const PaymentMethodData& other) = default;
 PaymentMethodData::~PaymentMethodData() = default;
-
-bool PaymentMethodData::operator==(const PaymentMethodData& other) const {
-  return supported_method == other.supported_method && data == other.data &&
-         supported_networks == other.supported_networks;
-}
-
-bool PaymentMethodData::operator!=(const PaymentMethodData& other) const {
-  return !(*this == other);
-}
 
 bool PaymentMethodData::FromValueDict(const base::Value::Dict& dict) {
   supported_networks.clear();

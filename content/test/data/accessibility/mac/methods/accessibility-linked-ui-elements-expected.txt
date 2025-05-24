@@ -1,0 +1,1 @@
+tab.accessibilityLinkedUIElements=[:4]

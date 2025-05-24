@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -31,6 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_co_mem.h"
@@ -61,14 +61,14 @@ const size_t kDeleteRetryDelayInMs = 100;
 }
 
 // Returns |timestamp| in the format YYYY-MM-DDTHH:MM:SS.
-std::wstring GetTimestampString(const base::Time& timestamp) {
+std::wstring GetTimestampString(base::Time timestamp) {
   // This intentionally avoids depending on the facilities in
   // base/i18n/time_formatting.h so the updater will not need to depend on the
   // ICU data file.
   base::Time::Exploded exploded_time;
   // The Z timezone info at the end of the string means UTC.
   timestamp.UTCExplode(&exploded_time);
-  return base::ASCIIToWide(base::StringPrintf(
+  return base::UTF8ToWide(base::StringPrintf(
       "%04d-%02d-%02dT%02d:%02d:%02dZ", exploded_time.year, exploded_time.month,
       exploded_time.day_of_month, exploded_time.hour, exploded_time.minute,
       exploded_time.second));
@@ -555,18 +555,15 @@ class TaskSchedulerV2 final : public TaskScheduler {
           task_trigger_type = TASK_TRIGGER_REGISTRATION;
           break;
         case TRIGGER_TYPE_HOURLY:
+          task_trigger_type = TASK_TRIGGER_DAILY;
+          repetition_interval.Reset(::SysAllocString(kOneHourText));
+          break;
         case TRIGGER_TYPE_EVERY_FIVE_HOURS:
           task_trigger_type = TASK_TRIGGER_DAILY;
-          if (trigger_type == TRIGGER_TYPE_EVERY_FIVE_HOURS) {
-            repetition_interval.Reset(::SysAllocString(kFiveHoursText));
-          } else if (trigger_type == TRIGGER_TYPE_HOURLY) {
-            repetition_interval.Reset(::SysAllocString(kOneHourText));
-          } else {
-            NOTREACHED_IN_MIGRATION() << "Unknown TriggerType?";
-          }
+          repetition_interval.Reset(::SysAllocString(kFiveHoursText));
           break;
         default:
-          NOTREACHED_IN_MIGRATION() << "Unknown TriggerType?";
+          NOTREACHED() << "Unknown TriggerType.";
       }
 
       Microsoft::WRL::ComPtr<ITrigger> trigger;
@@ -842,6 +839,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
   };
 
   [[nodiscard]] Microsoft::WRL::ComPtr<ITaskService> GetTaskService() const {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
+
     Microsoft::WRL::ComPtr<ITaskService> task_service;
     HRESULT hr =
         ::CoCreateInstance(CLSID_TaskScheduler, nullptr, CLSCTX_INPROC_SERVER,
@@ -1182,7 +1182,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to get trigger collection: "
                  << logging::SystemErrorCodeToString(hr);
-      return false;
+      return hr;
     }
 
     LONG trigger_count = 0;
@@ -1190,7 +1190,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to get trigger collection count: "
                  << logging::SystemErrorCodeToString(hr);
-      return false;
+      return hr;
     }
 
     trigger_types = 0;
@@ -1200,7 +1200,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       if (FAILED(hr)) {
         LOG(ERROR) << "Failed to get trigger: "
                    << logging::SystemErrorCodeToString(hr);
-        return false;
+        return hr;
       }
 
       TASK_TRIGGER_TYPE2 task_trigger_type = {};
@@ -1208,7 +1208,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       if (FAILED(hr)) {
         LOG(ERROR) << "Failed to get trigger type: "
                    << logging::SystemErrorCodeToString(hr);
-        return false;
+        return hr;
       }
 
       switch (task_trigger_type) {
@@ -1224,7 +1224,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
           if (FAILED(hr)) {
             LOG(ERROR) << "Failed to get 'Repetition'. "
                        << logging::SystemErrorCodeToString(hr);
-            return false;
+            return hr;
           }
 
           base::win::ScopedBstr repetition_interval;
@@ -1232,7 +1232,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
           if (FAILED(hr)) {
             LOG(ERROR) << "Failed to get 'Interval': "
                        << logging::SystemErrorCodeToString(hr);
-            return false;
+            return hr;
           }
 
           if (base::EqualsCaseInsensitiveASCII(repetition_interval.Get(),
@@ -1242,14 +1242,16 @@ class TaskSchedulerV2 final : public TaskScheduler {
                                                       kOneHourText)) {
             trigger_types |= TRIGGER_TYPE_HOURLY;
           } else {
-            NOTREACHED_IN_MIGRATION() << "Unknown TriggerType for interval: "
-                                      << repetition_interval.Get();
+            LOG(ERROR) << "Unknown TriggerType for interval: "
+                       << repetition_interval.Get();
+            return E_UNEXPECTED;
           }
           break;
         }
-        default:
-          NOTREACHED_IN_MIGRATION()
-              << "Unknown task trigger type: " << task_trigger_type;
+        default: {
+          LOG(ERROR) << "Unknown task trigger type: " << task_trigger_type;
+          return E_UNEXPECTED;
+        }
       }
     }
 
@@ -1310,7 +1312,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
     hr = root_task_folder->DeleteFolder(
         base::win::ScopedBstr(folder_name).Get(), 0);
     if (FAILED(hr)) {
-      LOG(ERROR) << "Failed get delete the sub folder. " << std::hex << hr;
+      LOG(ERROR) << "Failed to delete the sub folder: " << folder_name
+                 << ", error: " << std::hex << hr;
       return false;
     }
 
@@ -1361,7 +1364,7 @@ std::ostream& operator<<(std::ostream& stream,
   stream << "TaskInfo: name: " << t.name << ", description: " << t.description
          << ", exec_actions: ";
 
-  for (auto exec_action : t.exec_actions) {
+  for (const auto& exec_action : t.exec_actions) {
     stream << ", exec_action: " << exec_action;
   }
 

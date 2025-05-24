@@ -52,10 +52,11 @@ extern.tclib.api.handlers.html.TCHTMLParser.
 import re
 
 from grit import clique
+from grit import constants
 from grit import exception
 from grit import lazy_re
-from grit import util
 from grit import tclib
+from grit import util
 
 from grit.gather import interface
 
@@ -655,9 +656,9 @@ class TrHtml(interface.GathererBase):
       if isinstance(item, str):
         out.append(item)
       else:
-        msg = item.MessageForLanguage(lang,
-                                      pseudo_if_not_available,
-                                      fallback_to_english)
+        msg = item.MessageForLanguageAndGender(lang, constants.DEFAULT_GENDER,
+                                               pseudo_if_not_available,
+                                               fallback_to_english)
         for content in msg.GetContent():
           if isinstance(content, tclib.Placeholder):
             out.append(content.GetOriginal())

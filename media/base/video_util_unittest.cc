@@ -14,6 +14,8 @@
 #include <cmath>
 #include <memory>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
@@ -156,31 +158,10 @@ namespace media {
 
 class VideoUtilTest : public testing::Test {
  public:
-  VideoUtilTest()
-      : height_(0),
-        y_stride_(0),
-        u_stride_(0),
-        v_stride_(0) {
-  }
+  VideoUtilTest() = default;
   VideoUtilTest(const VideoUtilTest&) = delete;
   VideoUtilTest& operator=(const VideoUtilTest&) = delete;
   ~VideoUtilTest() override = default;
-
-  void CreateSourceFrame(int width, int height,
-                         int y_stride, int u_stride, int v_stride) {
-    EXPECT_GE(y_stride, width);
-    EXPECT_GE(u_stride, width / 2);
-    EXPECT_GE(v_stride, width / 2);
-
-    height_ = height;
-    y_stride_ = y_stride;
-    u_stride_ = u_stride;
-    v_stride_ = v_stride;
-
-    y_plane_ = std::make_unique<uint8_t[]>(y_stride * height);
-    u_plane_ = std::make_unique<uint8_t[]>(u_stride * height / 2);
-    v_plane_ = std::make_unique<uint8_t[]>(v_stride * height / 2);
-  }
 
   void CreateDestinationFrame(int width, int height) {
     gfx::Size size(width, height);
@@ -189,15 +170,6 @@ class VideoUtilTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<uint8_t[]> y_plane_;
-  std::unique_ptr<uint8_t[]> u_plane_;
-  std::unique_ptr<uint8_t[]> v_plane_;
-
-  int height_;
-  int y_stride_;
-  int u_stride_;
-  int v_stride_;
-
   scoped_refptr<VideoFrame> destination_frame_;
 };
 
@@ -281,11 +253,9 @@ uint8_t* target4x6_270_y_n = target4x6_90_n_y;
 uint8_t* target4x6_270_y_y = target4x6_90_n_n;
 
 struct VideoRotationTestData {
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
+  // These fields are not raw_ptr<>s because they only ever point to
+  // statically-allocated data which is never freed, and hence cannot dangle.
   RAW_PTR_EXCLUSION uint8_t* src;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
   RAW_PTR_EXCLUSION uint8_t* target;
   int width;
   int height;
@@ -341,32 +311,32 @@ const VideoRotationTestData kVideoRotationTestData[] = {
 class VideoUtilRotationTest
     : public testing::TestWithParam<VideoRotationTestData> {
  public:
-  VideoUtilRotationTest() {
-    dest_ = std::make_unique<uint8_t[]>(GetParam().width * GetParam().height);
+  VideoUtilRotationTest()
+      : dest_(base::HeapArray<uint8_t>::Uninit(GetParam().width *
+                                               GetParam().height)) {
+    std::ranges::fill(dest_, 255);
   }
   VideoUtilRotationTest(const VideoUtilRotationTest&) = delete;
   VideoUtilRotationTest& operator=(const VideoUtilRotationTest&) = delete;
   ~VideoUtilRotationTest() override = default;
 
-  uint8_t* dest_plane() { return dest_.get(); }
+  base::span<uint8_t> dest_plane() { return dest_; }
 
  private:
-  std::unique_ptr<uint8_t[]> dest_;
+  base::HeapArray<uint8_t> dest_;
 };
 
 TEST_P(VideoUtilRotationTest, Rotate) {
   int rotation = GetParam().rotation;
   EXPECT_TRUE((rotation >= 0) && (rotation < 360) && (rotation % 90 == 0));
 
-  int size = GetParam().width * GetParam().height;
-  uint8_t* dest = dest_plane();
-  memset(dest, 255, size);
+  base::span<uint8_t> dest = dest_plane();
 
-  RotatePlaneByPixels(GetParam().src, dest, GetParam().width,
-                      GetParam().height, rotation,
-                      GetParam().flip_vert, GetParam().flip_horiz);
-
-  EXPECT_EQ(memcmp(dest, GetParam().target, size), 0);
+  RotatePlaneByPixels(GetParam().src, dest.data(), GetParam().width,
+                      GetParam().height, rotation, GetParam().flip_vert,
+                      GetParam().flip_horiz);
+  auto expected = base::span(GetParam().target, dest.size());
+  EXPECT_EQ(dest, expected);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -1,3 +1,19 @@
 include_rules = [
-    "+components/power_bookmarks/core"
+    "+components/power_bookmarks/core",
+    "+chrome/browser/partnerbookmarks",
+    "+components/image_fetcher",
+
+    # TODO(crbug.com/395908100): Temporary exceptions to bookmark modularization.
+    # Avoid adding to this list if possible, and ask wylieb@ if you have any
+    # questions or concerns.
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkEditActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkFolderPickerActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/signin/LegacySyncPromoView.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/signin/SigninAndHistorySyncActivityLauncherImpl.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/sync/settings/ManageSyncSettings.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/ActivityUtils.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
 ]

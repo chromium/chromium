@@ -17,8 +17,6 @@ namespace updater {
 
 enum class UpdaterScope;
 
-extern const char kPrefUpdateTime[];
-
 class UpdaterPrefs : public base::RefCountedThreadSafe<UpdaterPrefs> {
  public:
   UpdaterPrefs() = default;
@@ -38,6 +36,8 @@ class LocalPrefs : virtual public UpdaterPrefs {
 
   virtual bool GetQualified() const = 0;
   virtual void SetQualified(bool value) = 0;
+  virtual bool GetCecaExperimentEnabled() = 0;
+  virtual void SetCecaExperimentEnabled(bool value) = 0;
 
  protected:
   ~LocalPrefs() override = default;

@@ -204,8 +204,8 @@ class NetworkListViewControllerTest : public AshTestBase,
     delegate->SetMultiDeviceSetupBinder(base::BindRepeating(
         &multidevice_setup::MultiDeviceSetupBase::BindReceiver,
         base::Unretained(fake_multidevice_setup_.get())));
-
-    AshTestBase::SetUp(std::move(delegate));
+    set_shell_delegate(std::move(delegate));
+    AshTestBase::SetUp();
 
     cros_network_ = std::make_unique<FakeCrosNetworkConfig>();
     Shell::Get()
@@ -380,8 +380,8 @@ class NetworkListViewControllerTest : public AshTestBase,
                             size_t index,
                             const std::optional<std::string>& guid) {
     ASSERT_GT(network_list(type)->children().size(), index);
-    EXPECT_STREQ(network_list(type)->children().at(index)->GetClassName(),
-                 kNetworkListNetworkItemView);
+    EXPECT_EQ(network_list(type)->children().at(index)->GetClassName(),
+              kNetworkListNetworkItemView);
 
     const NetworkStatePropertiesPtr& network =
         static_cast<NetworkListNetworkItemView*>(
@@ -395,8 +395,8 @@ class NetworkListViewControllerTest : public AshTestBase,
   }
 
   bool GetNetworkListItemIsEnabled(NetworkType type, size_t index) {
-    EXPECT_STREQ(network_list(type)->children().at(index)->GetClassName(),
-                 kNetworkListNetworkItemView);
+    EXPECT_EQ(network_list(type)->children().at(index)->GetClassName(),
+              kNetworkListNetworkItemView);
 
     NetworkListNetworkItemView* network =
         static_cast<NetworkListNetworkItemView*>(
@@ -413,8 +413,7 @@ class NetworkListViewControllerTest : public AshTestBase,
   }
 
   void LoginAsSecondaryUser() {
-    GetSessionControllerClient()->AddUserSession(kUser1Email);
-    SimulateUserLogin(kUser1Email);
+    SimulateUserLogin({kUser1Email});
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::LOGIN_SECONDARY);
     base::RunLoop().RunUntilIdle();
@@ -1260,8 +1259,8 @@ TEST_P(NetworkListViewControllerTest,
 
   CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/false);
 
-  // The toggle is not enabled, the cellular device SIM is locked, and user
-  // cannot open the settings page.
+  // The user should be able to toggle mobile regardless of whether the SIM is
+  // locked.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_SECONDARY);
   properties->sim_lock_status =
@@ -1269,7 +1268,7 @@ TEST_P(NetworkListViewControllerTest,
   properties->sim_lock_status->lock_type = "lock";
   cros_network()->SetDeviceProperties(properties.Clone());
 
-  EXPECT_FALSE(GetMobileToggleButton()->GetEnabled());
+  EXPECT_TRUE(GetMobileToggleButton()->GetEnabled());
 }
 
 TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
@@ -1743,6 +1742,46 @@ TEST_P(NetworkListViewControllerTest, NetworkItemDuringFlashing) {
   cros_network()->SetDeviceProperties(properties.Clone());
   EXPECT_TRUE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 0u));
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
+}
+
+TEST_P(NetworkListViewControllerTest, NetworkItemWhileSimLocked) {
+  ClearLogin();
+
+  auto device_properties =
+      chromeos::network_config::mojom::DeviceStateProperties::New();
+  device_properties->type = NetworkType::kCellular;
+  device_properties->device_state = DeviceStateType::kEnabled;
+  device_properties->sim_infos =
+      CellularSIMInfos(kCellularTestIccid, kTestBaseEid);
+
+  cros_network()->SetDeviceProperties(device_properties.Clone());
+  ASSERT_THAT(GetMobileSubHeader(), NotNull());
+
+  auto network_properties =
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kCellularName, NetworkType::kCellular,
+          ConnectionStateType::kConnected);
+  cros_network()->AddNetworkAndDevice(network_properties.Clone());
+
+  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
+  CheckNetworkListItem(NetworkType::kCellular, /*index=*/0u, kCellularName);
+  EXPECT_TRUE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 0u));
+
+  // Update the cellular network to be SIM locked, and update the cellular
+  // device to have its SIM lock status configured.
+  chromeos::network_config::mojom::CellularStateProperties* cellular =
+      network_properties->type_state->get_cellular().get();
+  ASSERT_TRUE(cellular);
+  cellular->sim_locked = true;
+  cros_network()->UpdateNetworkProperties(network_properties.Clone());
+
+  device_properties->sim_lock_status =
+      chromeos::network_config::mojom::SIMLockStatus::New();
+  device_properties->sim_lock_status->lock_type = "lock";
+  cros_network()->SetDeviceProperties(device_properties.Clone());
+
+  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
+  EXPECT_FALSE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 0u));
 }
 
 }  // namespace ash

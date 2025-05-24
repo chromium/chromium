@@ -68,6 +68,15 @@ TEST(EventWinTest, EventSystemLocationFromNative) {
             EventSystemLocationFromNative(event));
 }
 
+TEST(EventWinTest, EventFlagsFromNativeReadsRepeatFlag) {
+  CHROME_MSG native_event;
+  native_event.message = WM_KEYDOWN;
+  native_event.wParam = VK_LEFT;
+  native_event.lParam = MAKELPARAM(0, KF_REPEAT);
+  int flags = EventFlagsFromNative(native_event);
+  ASSERT_TRUE(flags & ui::EF_IS_REPEAT);
+}
+
 }  // namespace
 
 }  // namespace ui

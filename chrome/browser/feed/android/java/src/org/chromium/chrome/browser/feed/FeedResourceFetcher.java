@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.feed;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProviderImpl.NetworkResponse;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher.Header;
@@ -23,16 +23,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Implementation of ResourceFetcher methods. */
+@NullMarked
 public class FeedResourceFetcher implements ResourceFetcher {
     @JNINamespace("feed::android")
     public static class FeedResponse implements Response {
-        private final @Nullable byte[] mRawData;
+        private final byte @Nullable [] mRawData;
         private final boolean mSuccess;
         private final int mStatusCode;
-        private final List<Header> mHeaders;
+        private final @Nullable List<Header> mHeaders;
 
         public FeedResponse(
-                boolean success, int statusCode, List<Header> headers, @Nullable byte[] rawData) {
+                boolean success,
+                int statusCode,
+                @Nullable List<Header> headers,
+                byte @Nullable [] rawData) {
             mSuccess = success;
             mStatusCode = statusCode;
             mHeaders = headers;
@@ -50,18 +54,18 @@ public class FeedResourceFetcher implements ResourceFetcher {
         }
 
         @Override
-        public List<Header> getHeaders() {
+        public @Nullable List<Header> getHeaders() {
             return mHeaders;
         }
 
         @Override
-        public @Nullable byte[] getRawData() {
+        public byte @Nullable [] getRawData() {
             return mRawData;
         }
 
         @CalledByNative
         static FeedResponse create(
-                boolean success, int statusCode, List<Header> headers, @Nullable byte[] rawData) {
+                boolean success, int statusCode, List<Header> headers, byte @Nullable [] rawData) {
             return new FeedResponse(success, statusCode, headers, rawData);
         }
     }

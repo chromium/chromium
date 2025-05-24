@@ -33,6 +33,8 @@
 #include <cmath>
 #include <limits>
 
+#include "base/check_op.h"
+
 namespace blink {
 
 void WebTimeRanges::Add(double start, double end) {
@@ -50,24 +52,24 @@ void WebTimeRanges::Add(double start, double end) {
 
   for (overlapping_arc_index = 0; overlapping_arc_index < size();
        overlapping_arc_index++) {
-    if (added_range.IsOverlappingRange((*this)[overlapping_arc_index]) ||
-        added_range.IsContiguousWithRange((*this)[overlapping_arc_index])) {
+    if (added_range.IsOverlappingRange(data_[overlapping_arc_index]) ||
+        added_range.IsContiguousWithRange(data_[overlapping_arc_index])) {
       // We need to merge the addedRange and that range.
       added_range = added_range.UnionWithOverlappingOrContiguousRange(
-          (*this)[overlapping_arc_index]);
-      EraseAt(overlapping_arc_index);
+          data_[overlapping_arc_index]);
+      data_.erase(begin() + overlapping_arc_index);
       overlapping_arc_index--;
     } else {
       // Check the case for which there is no more to do
       if (!overlapping_arc_index) {
-        if (added_range.IsBeforeRange((*this)[0])) {
+        if (added_range.IsBeforeRange(data_[0])) {
           // First index, and we are completely before that range (and not
           // contiguous, nor overlapping).  We just need to be inserted here.
           break;
         }
       } else {
-        if ((*this)[overlapping_arc_index - 1].IsBeforeRange(added_range) &&
-            added_range.IsBeforeRange((*this)[overlapping_arc_index])) {
+        if (data_[overlapping_arc_index - 1].IsBeforeRange(added_range) &&
+            added_range.IsBeforeRange(data_[overlapping_arc_index])) {
           // We are exactly after the current previous range, and before the
           // current range, while not overlapping with none of them. Insert
           // here.
@@ -78,11 +80,11 @@ void WebTimeRanges::Add(double start, double end) {
   }
 
   // Now that we are sure we don't overlap with any range, just add it.
-  Insert(overlapping_arc_index, added_range);
+  data_.insert(begin() + overlapping_arc_index, added_range);
 }
 
 bool WebTimeRanges::Contain(double time) const {
-  for (const WebTimeRange& range : *this) {
+  for (const WebTimeRange& range : data_) {
     if (time >= range.start && time <= range.end)
       return true;
   }
@@ -102,14 +104,14 @@ void WebTimeRanges::Invert() {
       inverted.Add(neg_inf, start);
 
     for (size_t index = 0; index + 1 < size(); ++index)
-      inverted.Add((*this)[index].end, (*this)[index + 1].start);
+      inverted.Add(data_[index].end, data_[index + 1].start);
 
     double end = back().end;
     if (end != pos_inf)
       inverted.Add(end, pos_inf);
   }
 
-  swap(inverted);
+  data_.swap(inverted.data_);
 }
 
 void WebTimeRanges::IntersectWith(const WebTimeRanges& other) {
@@ -122,7 +124,7 @@ void WebTimeRanges::IntersectWith(const WebTimeRanges& other) {
 }
 
 void WebTimeRanges::UnionWith(const WebTimeRanges& other) {
-  for (const WebTimeRange& range : other) {
+  for (const WebTimeRange& range : other.data_) {
     Add(range.start, range.end);
   }
 }
@@ -131,7 +133,7 @@ double WebTimeRanges::Nearest(double new_playback_position,
                               double current_playback_position) const {
   double best_match = 0;
   double best_delta = std::numeric_limits<double>::infinity();
-  for (const WebTimeRange& range : *this) {
+  for (const WebTimeRange& range : data_) {
     double start_time = range.start;
     double end_time = range.end;
     if (new_playback_position >= start_time &&

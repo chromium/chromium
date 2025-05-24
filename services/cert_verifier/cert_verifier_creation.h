@@ -26,9 +26,8 @@ namespace cert_verifier {
 bool IsUsingCertNetFetcher();
 
 // Creates a concrete net::CertVerifier based on the platform and the particular
-// build configuration. |creation_params| and |root_store_data| are optional.
+// build configuration.
 std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
-    mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
     const net::CertVerifyProc::ImplParams& impl_params,
     const net::CertVerifyProc::InstanceParams& instance_params);

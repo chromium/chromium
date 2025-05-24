@@ -18,11 +18,7 @@
 #endif  // defined(AURA_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(AURA_IMPLEMENTATION)
 #define AURA_EXPORT __attribute__((visibility("default")))
-#else
-#define AURA_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

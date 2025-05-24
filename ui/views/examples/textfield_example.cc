@@ -9,6 +9,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider.h"
@@ -104,16 +106,15 @@ void TextfieldExample::CreateExampleView(View* container) {
   rtl_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_TEXTFIELD_RTL_LABEL));
 
-  show_password_ =
-      container->AddChildView(std::make_unique<LabelButton>(
-          base::BindRepeating(
-              [](TextfieldExample* example) {
-                PrintStatus(
-                    "Password [%s]",
-                    base::UTF16ToUTF8(example->password_->GetText()).c_str());
-              },
-              base::Unretained(this)),
-          GetStringUTF16(IDS_TEXTFIELD_SHOW_PASSWORD_LABEL)));
+  show_password_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(
+          [](TextfieldExample* example) {
+            PrintStatus(base::StrCat(
+                {"Password [", base::UTF16ToUTF8(example->password_->GetText()),
+                 "]"}));
+          },
+          base::Unretained(this)),
+      GetStringUTF16(IDS_TEXTFIELD_SHOW_PASSWORD_LABEL)));
   container->AddChildView(std::make_unique<View>());
   set_background_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&Textfield::SetBackgroundColor,
@@ -148,7 +149,8 @@ bool TextfieldExample::HandleKeyEvent(Textfield* sender,
 
 bool TextfieldExample::HandleMouseEvent(Textfield* sender,
                                         const ui::MouseEvent& mouse_event) {
-  PrintStatus("HandleMouseEvent click count=%d", mouse_event.GetClickCount());
+  PrintStatus(base::StringPrintf("HandleMouseEvent click count=%d",
+                                 mouse_event.GetClickCount()));
   return false;
 }
 
@@ -183,14 +185,16 @@ void TextfieldExample::SetButtonPressed() {
 }
 
 void TextfieldExample::SetStyleButtonPressed() {
-  if (name_->GetText().empty())
+  if (name_->GetText().empty()) {
     return;
+  }
   auto* const cp = name_->GetColorProvider();
   name_->SetColor(cp->GetColor(ExamplesColorIds::kColorTextfieldExampleName));
 
   const size_t fifth = name_->GetText().length() / 5;
-  if (!fifth)
+  if (!fifth) {
     return;
+  }
 
   const gfx::Range big_range(1 * fifth, 4 * fifth);
   name_->ApplyStyle(gfx::TEXT_STYLE_UNDERLINE, true, big_range);

@@ -20,27 +20,25 @@ class MockVideoCapturerSource : public VideoCapturerSource {
 
   MOCK_METHOD0(RequestRefreshFrame, void());
   MOCK_METHOD0(GetPreferredFormats, media::VideoCaptureFormats());
-  MOCK_METHOD3(MockStartCapture,
-               RunState(const media::VideoCaptureParams& params,
-                        const VideoCaptureDeliverFrameCB& new_frame_callback,
-                        const RunningCallback& running_callback));
+  MOCK_METHOD3(
+      MockStartCapture,
+      VideoCaptureRunState(const media::VideoCaptureParams& params,
+                           VideoCaptureDeliverFrameCB new_frame_callback,
+                           VideoCaptureRunningCallbackCB running_callback));
   MOCK_METHOD0(MockStopCapture, void());
-  void StartCapture(
-      const media::VideoCaptureParams& params,
-      const VideoCaptureDeliverFrameCB& new_frame_callback,
-      const VideoCaptureSubCaptureTargetVersionCB&
-          sub_capture_target_version_callback,
-      const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
-      const RunningCallback& running_callback) override {
-    running_cb_ = running_callback;
+  void StartCapture(const media::VideoCaptureParams& params,
+                    VideoCaptureCallbacks video_capture_callbacks,
+                    VideoCaptureRunningCallbackCB running_callback) override {
+    running_cb_ = std::move(running_callback);
     capture_params_ = params;
 
-    RunState run_state =
-        MockStartCapture(params, new_frame_callback, running_callback);
+    VideoCaptureRunState run_state = MockStartCapture(
+        params, std::move(video_capture_callbacks.deliver_frame_cb),
+        running_cb_);
     SetRunning(run_state);
   }
   void StopCapture() override { MockStopCapture(); }
-  void SetRunning(RunState run_state) {
+  void SetRunning(VideoCaptureRunState run_state) {
     PostCrossThreadTask(*scheduler::GetSingleThreadTaskRunnerForTesting(),
                         FROM_HERE, CrossThreadBindOnce(running_cb_, run_state));
   }
@@ -49,7 +47,7 @@ class MockVideoCapturerSource : public VideoCapturerSource {
   }
 
  private:
-  RunningCallback running_cb_;
+  VideoCaptureRunningCallbackCB running_cb_;
   media::VideoCaptureParams capture_params_;
 };
 

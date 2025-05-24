@@ -4,7 +4,6 @@
 
 #include "components/safe_browsing/content/renderer/websocket_sb_extensions_handshake_throttle.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -43,19 +42,11 @@ void WebSocketSBExtensionsHandshakeThrottle::MaybeSendExtensionWebRequestData(
 
   if (!isolated_world_origin.IsNull() &&
       isolated_world_origin.Protocol() == extensions::kExtensionScheme) {
-    // Logging "false" represents the data being *sent*.
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
-        false);
     extension_web_request_reporter_->SendWebRequestData(
         isolated_world_origin.Host().Utf8().data(), url,
         mojom::WebRequestProtocolType::kWebSocket,
         mojom::WebRequestContactInitiatorType::kContentScript);
   } else if (creator_origin.Protocol() == extensions::kExtensionScheme) {
-    // Logging "false" represents the data being *sent*.
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
-        false);
     extension_web_request_reporter_->SendWebRequestData(
         creator_origin.Host().Utf8().data(), url,
         mojom::WebRequestProtocolType::kWebSocket,

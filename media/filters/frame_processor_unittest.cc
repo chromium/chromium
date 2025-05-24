@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -204,10 +210,8 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
       // later verification of possible buffer relocation in presentation
       // timeline due to coded frame processing.
       const std::string payload_string = EncodeTestPayload(pts);
-      const char* pts_as_cstr = payload_string.c_str();
       scoped_refptr<StreamParserBuffer> buffer = StreamParserBuffer::CopyFrom(
-          reinterpret_cast<const uint8_t*>(pts_as_cstr), strlen(pts_as_cstr),
-          is_keyframe, type, track_id);
+          base::as_byte_span(payload_string), is_keyframe, type, track_id);
       CHECK(DecodeTestPayload(base::as_string_view(*buffer)) == pts);
 
       buffer->set_timestamp(pts);
@@ -423,16 +427,17 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
         audio_ = std::make_unique<ChunkDemuxerStream>(DemuxerStream::AUDIO,
                                                       MediaTrack::Id("1"));
         AudioDecoderConfig decoder_config;
+        static constexpr int kSampleRate = 3000;
         if (support_audio_nonkeyframes) {
           decoder_config = AudioDecoderConfig(
               AudioCodec::kAAC, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO,
-              1000, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+              kSampleRate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
           decoder_config.set_profile(AudioCodecProfile::kXHE_AAC);
         } else {
-          decoder_config =
-              AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                                 CHANNEL_LAYOUT_STEREO, 1000, EmptyExtraData(),
-                                 EncryptionScheme::kUnencrypted);
+          decoder_config = AudioDecoderConfig(
+              AudioCodec::kVorbis, kSampleFormatPlanarF32,
+              CHANNEL_LAYOUT_STEREO, kSampleRate, EmptyExtraData(),
+              EncryptionScheme::kUnencrypted);
         }
         frame_processor_->OnPossibleAudioConfigUpdate(decoder_config);
         ASSERT_TRUE(

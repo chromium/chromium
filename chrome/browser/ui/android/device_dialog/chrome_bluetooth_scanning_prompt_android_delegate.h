@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_CHROME_BLUETOOTH_SCANNING_PROMPT_ANDROID_DELEGATE_H_
 #define CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_CHROME_BLUETOOTH_SCANNING_PROMPT_ANDROID_DELEGATE_H_
 
-#include "components/permissions/android/bluetooth_scanning_prompt_android_delegate.h"
-
 #include "base/android/scoped_java_ref.h"
+#include "components/permissions/android/bluetooth_scanning_prompt_android_delegate.h"
 
 class Profile;
 

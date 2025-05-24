@@ -9,6 +9,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/filename_util.h"
@@ -165,8 +167,11 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
   }
 
   void LoadInitialAccessibilityTreeFromHtml(const std::string& html) {
+    // Accessibility must already be enabled.
+    ASSERT_TRUE(BrowserAccessibilityState::GetInstance()
+                    ->GetAccessibilityMode()
+                    .has_mode(ui::AXMode::kWebContents));
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
     GURL html_data_url("data:text/html," + html);
     EXPECT_TRUE(NavigateToURL(shell(), html_data_url));
@@ -201,6 +206,8 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
                        VirtualKeyboardAccessibilityFocusTest) {
+  ScopedAccessibilityModeOverride complete(ui::kAXModeComplete);
+
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <div><button>Before</button></div>
       <div contenteditable>Editable text</div>
@@ -216,8 +223,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance()->group());
 
-  AccessibilityNotificationWaiter waiter2(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
+  AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
+                                          ax::mojom::Event::kFocus);
   GetManager()->SetFocus(*target);
   GetManager()->DoDefaultAction(*target);
   ASSERT_TRUE(waiter2.WaitForNotification());
@@ -236,6 +243,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance()->group());
+
+  // End paint-holding to enable input event processing.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -265,6 +275,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
   show_ime_observer_false.Wait();
 
+  // End paint-holding to enable input event processing.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
   // Tap on the third textarea to open VK.
@@ -292,6 +305,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance()->group());
+
+  // End paint-holding to enable input event processing.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -325,6 +341,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance()->group());
+
+  // End paint-holding to enable input event processing.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -377,6 +396,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
+  // End paint-holding to enable input event processing.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance()->group());

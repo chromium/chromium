@@ -28,7 +28,7 @@ class SignedExchangePageLoadMetricsBrowserTest
   SignedExchangePageLoadMetricsBrowserTest& operator=(
       const SignedExchangePageLoadMetricsBrowserTest&) = delete;
 
-  ~SignedExchangePageLoadMetricsBrowserTest() override {}
+  ~SignedExchangePageLoadMetricsBrowserTest() override = default;
 
  protected:
   void PreRunTestOnMainThread() override {

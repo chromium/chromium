@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -32,6 +33,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
@@ -45,8 +47,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -58,6 +62,7 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 
@@ -74,7 +79,7 @@ public final class TopicsFragmentTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setBugComponent(RenderTestRule.Component.UI_SETTINGS_PRIVACY)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_PRIVACY_SANDBOX)
                     .setRevision(1)
                     .build();
 
@@ -82,15 +87,13 @@ public final class TopicsFragmentTest {
     public SettingsActivityTestRule<TopicsFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(TopicsFragment.class);
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
-        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+        PrivacySandboxBridgeJni.setInstanceForTesting(mFakePrivacySandboxBridge);
 
         mUserActionTester = new UserActionTester();
     }
@@ -128,12 +131,12 @@ public final class TopicsFragmentTest {
         return getRootViewSanitized(R.string.settings_topics_page_toggle_sub_label_v2);
     }
 
-    private View getBlockedTopicsRootView() {
-        return getRootViewSanitized(R.string.settings_topics_page_blocked_topics_heading_new);
+    private View getTopicsRootViewAdTopicsContentParity() {
+        return getRootViewSanitized(R.string.settings_ad_topics_page_toggle_sub_label);
     }
 
-    private View getLearnMoreRootView() {
-        return getRootViewSanitized(R.string.settings_topics_page_learn_more_heading);
+    private View getBlockedTopicsRootView() {
+        return getRootViewSanitized(R.string.settings_topics_page_blocked_topics_heading_new);
     }
 
     private void setTopicsPrefEnabled(boolean isEnabled) {
@@ -153,6 +156,10 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
+    })
     public void testRenderTopicsOff() throws IOException {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
@@ -162,6 +169,10 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
+    })
     public void testRenderTopicsEmpty() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -171,6 +182,10 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
+    })
     public void testRenderTopicsPopulated() throws IOException {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -201,6 +216,65 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void adTopicsDisclaimerMetrics() throws IOException {
+        setTopicsPrefEnabled(true);
+        startTopicsSettings();
+        String disclaimerText =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.settings_ad_topics_page_disclaimer_clank);
+        String matcherText = disclaimerText.replaceAll("<link>|</link>", "");
+        ViewUtils.onViewWaiting(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(matcherText))));
+        onView(withText(matcherText)).check(matches(isDisplayed()));
+        onView(withText(matcherText)).perform(clickOnClickableSpan(0));
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked"));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
+    })
+    public void adTopicsDisclaimerMetricsAdTopicsContentParity() throws IOException {
+        setTopicsPrefEnabled(true);
+        startTopicsSettings();
+        String disclaimerText =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.settings_ad_topics_page_disclaimer_v2_clank);
+        String matcherText = disclaimerText.replaceAll("<link>|</link>", "");
+        ViewUtils.onViewWaiting(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(matcherText))));
+        onView(withText(matcherText)).check(matches(isDisplayed()));
+        onView(withText(matcherText)).perform(clickOnClickableSpan(0));
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    public void testRenderTopicsOffV2() throws IOException {
+        setTopicsPrefEnabled(false);
+        startTopicsSettings();
+        mRenderTestRule.render(getTopicsRootView(), "topics_page_off_v2");
+    }
+
+    @Test
+    @SmallTest
     public void testToggleUncheckedWhenTopicsOff() {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
@@ -217,7 +291,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testTurnTopicsOnWhenTopicListEmptyV2() {
+    public void testTurnTopicsOnWhenTopicListEmpty() {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
         onView(getTopicsToggleMatcher()).perform(click());
@@ -262,7 +336,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testTurnTopicsOffV2() {
+    public void testTurnTopicsOff() {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
         onView(getTopicsToggleMatcher()).perform(click());
@@ -290,7 +364,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBlockedTopicsAppearWhenTopicOnV2() {
+    public void testBlockedTopicsAppearWhenTopicOn() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
@@ -307,7 +381,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBlockTopicsV2() {
+    public void testBlockTopics() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
@@ -346,7 +420,8 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testUnblockTopicsV2() {
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    public void testUnblockTopics() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
@@ -385,6 +460,46 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    public void testUnblockTopicsAdTopicsContentParity() {
+        setTopicsPrefEnabled(true);
+        mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
+        startTopicsSettings();
+
+        // Open the blocked Topics sub-page
+        onView(withText(R.string.settings_topics_page_blocked_topics_heading_new)).perform(click());
+        onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_heading_new));
+
+        // Unblock the first Topic
+        clickImageButtonNextToText(TOPIC_NAME_1);
+        onView(withText(TOPIC_NAME_1)).check(doesNotExist());
+
+        // Unblock the second Topic
+        clickImageButtonNextToText(TOPIC_NAME_2);
+        onView(withText(TOPIC_NAME_2)).check(doesNotExist());
+
+        // Check that the empty state UI is displayed when the Topic list is empty.
+        onView(withText(R.string.settings_topics_page_blocked_topics_description_empty_text_v2))
+                .check(matches(isDisplayed()));
+
+        // Go back to the main Topics fragment
+        pressBack();
+        onViewWaiting(withText(R.string.settings_ad_topics_page_toggle_sub_label));
+
+        // Verify that the Topics are unblocked
+        onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
+        onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
+
+        // Verify that actions are sent
+        assertThat(
+                mUserActionTester.getActions(),
+                hasItems(
+                        "Settings.PrivacySandbox.Topics.BlockedTopicsOpened",
+                        "Settings.PrivacySandbox.Topics.TopicAdded"));
+    }
+
+    @Test
+    @SmallTest
     @Policies.Add({
         @Policies.Item(key = "PrivacySandboxAdTopicsEnabled", string = "false"),
         @Policies.Item(key = "PrivacySandboxPromptEnabled", string = "false")
@@ -405,6 +520,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testFooterFledgeLink() throws IOException {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -418,6 +534,27 @@ public final class TopicsFragmentTest {
         // Open a Fledge settings activity.
         onView(withText(containsString("suggested ads"))).perform(clickOnClickableSpan(0));
         onViewWaiting(withText(R.string.settings_fledge_page_toggle_sub_label))
+                .check(matches(isDisplayed()));
+        // Close the additional activity by navigating back.
+        pressBack();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void displaysFledgeFooterLinkV2() throws IOException {
+        setTopicsPrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
+        startTopicsSettings();
+        TopicsFragment fragment = mSettingsActivityTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                });
+        // Open a Fledge settings activity.
+        onView(withText(containsString("suggested ads"))).perform(clickOnClickableSpan(0));
+        onViewWaiting(withText(R.string.settings_site_suggested_ads_page_toggle_sub_label_v2))
                 .check(matches(isDisplayed()));
         // Close the additional activity by navigating back.
         pressBack();
@@ -447,7 +584,7 @@ public final class TopicsFragmentTest {
     @SmallTest
     public void testTopicsIconsExist() {
         var activity = mSettingsActivityTestRule.startSettingsActivity();
-        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, new PrivacySandboxBridgeJni());
+        PrivacySandboxBridgeJni.setInstanceForTesting(new PrivacySandboxBridgeJni());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrivacySandboxBridge privacySandboxBridge =
@@ -459,5 +596,65 @@ public final class TopicsFragmentTest {
                                 iconId != 0);
                     }
                 });
+    }
+
+    /* Ad Topics Content Parity Tests */
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
+    })
+    public void testRenderTopicsOffV2AdTopicsContentParity() throws IOException {
+        setTopicsPrefEnabled(false);
+        startTopicsSettings();
+        mRenderTestRule.render(
+                getTopicsRootViewAdTopicsContentParity(),
+                "topics_page_off_v2_ad_topics_content_parity");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void testRenderTopicsOffAdTopicsContentParity() throws IOException {
+        setTopicsPrefEnabled(false);
+        startTopicsSettings();
+        mRenderTestRule.render(
+                getTopicsRootViewAdTopicsContentParity(),
+                "topics_page_off_ad_topics_content_parity");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
+    })
+    public void testRenderTopicsEmptyAdTopicsContentParity() throws IOException {
+        setTopicsPrefEnabled(true);
+        startTopicsSettings();
+        mRenderTestRule.render(
+                getTopicsRootViewAdTopicsContentParity(),
+                "topics_page_empty_ad_topics_content_parity");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
+    })
+    public void testRenderTopicsPopulatedAdTopicsContentParity() throws IOException {
+        setTopicsPrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
+        startTopicsSettings();
+        mRenderTestRule.render(
+                getTopicsRootViewAdTopicsContentParity(),
+                "topic_page_populated_ad_topics_content_parity");
     }
 }

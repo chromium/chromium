@@ -31,6 +31,8 @@ class MockLocalSessionEventHandler : public LocalSessionEventHandler {
     seen_ids_.push_back(modified_tab->GetSessionId());
   }
 
+  void OnLocalTabClosed() override {}
+
   std::vector<GURL>* seen_urls() { return &seen_urls_; }
   std::vector<SessionID>* seen_ids() { return &seen_ids_; }
 

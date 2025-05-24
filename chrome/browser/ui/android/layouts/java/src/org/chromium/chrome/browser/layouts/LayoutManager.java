@@ -4,15 +4,20 @@
 
 package org.chromium.chrome.browser.layouts;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.Set;
+
 /** An interface for classes that manage the display of layouts and their components. */
+@NullMarked
 public interface LayoutManager extends LayoutStateProvider {
     /**
      * Add a {@link SceneOverlay} to be drawn on the composited layer of the active layout.
+     *
      * @param overlay The overlay to add.
      */
     void addSceneOverlay(SceneOverlay overlay);
@@ -21,6 +26,7 @@ public interface LayoutManager extends LayoutStateProvider {
      * Creates a CompositorModelChangeProcessor observing the given {@code model} that will operate
      * on this {@code LayoutManager}'s frame cycle. The model will be bound to the view initially
      * and request a new frame.
+     *
      * @param model The model containing the data to be bound to the view.
      * @param view The view which the model will be bound to.
      * @param viewBinder This is used to bind the model to the view.
@@ -31,7 +37,25 @@ public interface LayoutManager extends LayoutStateProvider {
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder);
 
     /**
+     * Creates a CompositorModelChangeProcessor observing the given {@code model} that will operate
+     * on this {@code LayoutManager}'s frame cycle. The model will be bound to the view initially
+     * and request a new frame.
+     *
+     * @param model The model containing the data to be bound to the view.
+     * @param view The view which the model will be bound to.
+     * @param viewBinder This is used to bind the model to the view.
+     * @param exclusions When the value of any of these PropertyKeys change, a new frame will not be
+     *     requested. The model will still be bound to the view.
+     */
+    <V extends SceneLayer> CompositorModelChangeProcessor<V> createCompositorMCPWithExclusions(
+            PropertyModel model,
+            V view,
+            PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            Set<PropertyKey> exclusions);
+
+    /**
      * Start hiding the currently visible layout and show the one provided.
+     *
      * @param layoutType The type of the next layout to show.
      * @param animate Whether the transition should be animated if the layout supports it.
      */

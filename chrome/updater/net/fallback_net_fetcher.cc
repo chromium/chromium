@@ -71,10 +71,11 @@ void FallbackNetFetcher::PostRequestDone(
     update_client::NetworkFetcher::ProgressCallback progress_callback,
     update_client::NetworkFetcher::PostRequestCompleteCallback
         post_request_complete_callback,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     int net_error,
     const std::string& header_etag,
     const std::string& header_x_cup_server_proof,
+    const std::string& header_cookie,
     int64_t xheader_retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const int should_fallback = net_error || (http_status_code_ != 200);
@@ -89,7 +90,7 @@ void FallbackNetFetcher::PostRequestDone(
   }
   std::move(post_request_complete_callback)
       .Run(std::move(response_body), net_error, header_etag,
-           header_x_cup_server_proof, xheader_retry_after_sec);
+           header_x_cup_server_proof, header_cookie, xheader_retry_after_sec);
 }
 
 base::OnceClosure FallbackNetFetcher::DownloadToFile(

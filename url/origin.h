@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <memory>
 #include <optional>
 #include <string>
@@ -60,6 +61,10 @@ struct UrlOriginAdapter;
 namespace net {
 class SchemefulSite;
 }  // namespace net
+
+namespace optimization_guide {
+class SecurityOriginSerializer;
+}
 
 namespace url {
 
@@ -228,11 +233,10 @@ class COMPONENT_EXPORT(URL) Origin {
   // are exact matches. Two opaque origins are same-origin only if their
   // internal nonce values match. A non-opaque origin is never same-origin with
   // an opaque origin.
+  //
+  // If you are looking for a same _site_ check between origins, see
+  // net::SchemefulSite::IsSameSite.
   bool IsSameOriginWith(const Origin& other) const;
-  bool operator==(const Origin& other) const { return IsSameOriginWith(other); }
-  bool operator!=(const Origin& other) const {
-    return !IsSameOriginWith(other);
-  }
 
   // Non-opaque origin is "same-origin" with `url` if their schemes, hosts, and
   // ports are exact matches. Opaque origin is never "same-origin" with any
@@ -285,7 +289,8 @@ class COMPONENT_EXPORT(URL) Origin {
 
   // Allows Origin to be used as a key in STL (for example, a std::set or
   // std::map).
-  bool operator<(const Origin& other) const;
+  friend bool operator==(const Origin& left, const Origin& right) = default;
+  friend auto operator<=>(const Origin& left, const Origin& right) = default;
 
   // Creates a new opaque origin that is guaranteed to be cross-origin to all
   // currently existing origins. An origin created by this method retains its
@@ -315,12 +320,12 @@ class COMPONENT_EXPORT(URL) Origin {
   std::string GetDebugString(bool include_nonce = true) const;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)
-  base::android::ScopedJavaLocalRef<jobject> ToJavaObject() const;
-  static Origin FromJavaObject(
-      const base::android::JavaRef<jobject>& java_origin);
+  jni_zero::ScopedJavaLocalRef<jobject> ToJavaObject(JNIEnv* env) const;
+  static Origin FromJavaObject(JNIEnv* env,
+                               const jni_zero::JavaRef<jobject>& java_origin);
   static jlong CreateNative(JNIEnv* env,
-                            const base::android::JavaRef<jstring>& java_scheme,
-                            const base::android::JavaRef<jstring>& java_host,
+                            const jni_zero::JavaRef<jstring>& java_scheme,
+                            const jni_zero::JavaRef<jstring>& java_host,
                             uint16_t port,
                             bool is_opaque,
                             uint64_t tokenHighBits,
@@ -358,6 +363,7 @@ class COMPONENT_EXPORT(URL) Origin {
   friend COMPONENT_EXPORT(URL) std::ostream& operator<<(std::ostream& out,
                                                         const Origin& origin);
   friend class blink::StorageKeyTest;
+  friend class optimization_guide::SecurityOriginSerializer;
 
   // Origin::Nonce is a wrapper around base::UnguessableToken that generates
   // the random value only when the value is first accessed. The lazy generation
@@ -392,11 +398,10 @@ class COMPONENT_EXPORT(URL) Origin {
     Nonce(Nonce&&) noexcept;
     Nonce& operator=(Nonce&&) noexcept;
 
-    // Note that operator<, used by maps type containers, will trigger |token_|
-    // lazy-initialization. Equality comparisons do not.
-    bool operator<(const Nonce& other) const;
+    // Note that operator<=>, used by maps type containers, will trigger
+    // |token_| lazy-initialization. Equality comparisons do not.
+    std::strong_ordering operator<=>(const Nonce& other) const;
     bool operator==(const Nonce& other) const;
-    bool operator!=(const Nonce& other) const;
 
    private:
     friend class OriginTest;
@@ -506,5 +511,23 @@ class COMPONENT_EXPORT(URL) ScopedOriginCrashKey {
 }  // namespace debug
 
 }  // namespace url
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+
+// @JniType conversion function.
+template <>
+inline url::Origin FromJniType<url::Origin>(JNIEnv* env,
+                                            const JavaRef<jobject>& j_obj) {
+  return url::Origin::FromJavaObject(env, j_obj);
+}
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
+                                             const url::Origin& obj) {
+  return obj.ToJavaObject(env);
+}
+
+}  // namespace jni_zero
+#endif
 
 #endif  // URL_ORIGIN_H_

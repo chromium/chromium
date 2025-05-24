@@ -12,7 +12,7 @@ class StatusControllerTest : public testing::Test {};
 
 // This test is useful, as simple as it sounds, due to the copy-paste prone
 // nature of status_controller.cc (we have had bugs in the past where a set_foo
-// method was actually setting |bar_| instead!).
+// method was actually setting `bar_` instead!).
 TEST_F(StatusControllerTest, ReadYourWrites) {
   StatusController status;
 

@@ -11,7 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class TabStripModel;
 
@@ -43,6 +43,7 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   // Command IDs for various submenus.
   static constexpr int kMinExistingWindowCommandId = 1001;
   static constexpr int kMinExistingTabGroupCommandId = 1301;
+  static constexpr int kMinExistingComparisonTableCommandId = 1601;
 
   ExistingBaseSubMenuModel(const ExistingBaseSubMenuModel&) = delete;
   ExistingBaseSubMenuModel& operator=(const ExistingBaseSubMenuModel&) = delete;

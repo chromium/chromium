@@ -15,6 +15,7 @@ import("//chrome/android/trichrome.gni")
 import("//chrome/common/features.gni")
 import("//chrome/version.gni")
 import("//components/crash/android/silent_java_assert_reporting.gni")
+import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("channel.gni")
 
@@ -43,6 +44,7 @@ default_chrome_public_jinja_variables = [
   "enable_openxr=$enable_openxr",
   "enable_arcore=$enable_arcore",
   "is_desktop_android=$is_desktop_android",
+  "enable_screen_capture=$enable_screen_capture",
   "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
 
@@ -151,7 +153,7 @@ template("chrome_common_apk_or_module_tmpl") {
                               invoker.include_32_bit_webview
     _include_primary_abi = !android_64bit_target_cpu || _is_64_bit_browser ||
                            _include_64_bit_webview
-    _include_secondary_abi = android_64bit_target_cpu &&
+    _include_secondary_abi = defined(android_app_secondary_abi) &&
                              (!_is_64_bit_browser || _include_32_bit_webview)
     if (_include_secondary_abi) {
       _secondary_out_dir =
@@ -499,14 +501,7 @@ template("chrome_common_apk_or_module_tmpl") {
         ]
         asset_deps += [ "//chrome/android:chrome_public_non_pak_assets" ]
       }
-      if (_is_bundle) {
-        if (_is_monochrome) {
-          # WebView needs these in the base module.
-          deps += [
-            "//content/public/android:identity_credentials_public_impl_java",
-          ]
-        }
-      } else {
+      if (!_is_bundle) {
         deps += [
           "//chrome/android:chrome_all_java",
           "//chrome/android:delegate_public_impl_java",
@@ -645,17 +640,17 @@ template("chrome_common_apk_or_module_tmpl") {
         _libarcore_dir = get_label_info(_arcore_target, "target_out_dir") +
                          "/com_google_ar_core_java/jni"
 
-        if (android_64bit_target_cpu) {
-          if (_is_64_bit_browser) {
-            loadable_modules +=
-                [ "$_libarcore_dir/arm64-v8a/libarcore_sdk_c.so" ]
-          } else {
-            secondary_abi_loadable_modules +=
-                [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
-          }
+        if (android_64bit_target_cpu && !_is_64_bit_browser) {
+          # We're targeting a 64-bit architecture but the browser is 32-bit,
+          # so we need to set the secondary_abi_loadable_modules appropriately:
+          secondary_abi_loadable_modules += [
+            "$_libarcore_dir/$android_app_secondary_abi/libarcore_sdk_c.so",
+          ]
         } else {
+          # We're targeting a 64-bit or 32-bit architecture and the browser
+          # matches the ABI, so we need to set the loadable_modules:
           loadable_modules +=
-              [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
+              [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
         }
       }
     }

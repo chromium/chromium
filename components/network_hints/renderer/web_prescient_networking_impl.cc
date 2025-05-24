@@ -16,7 +16,7 @@ WebPrescientNetworkingImpl::WebPrescientNetworkingImpl(
       handler_.BindNewPipeAndPassReceiver());
 }
 
-WebPrescientNetworkingImpl::~WebPrescientNetworkingImpl() {}
+WebPrescientNetworkingImpl::~WebPrescientNetworkingImpl() = default;
 
 void WebPrescientNetworkingImpl::PrefetchDNS(const blink::WebURL& url) {
   DVLOG(2) << "Prefetch DNS: " << url.GetString().Utf8();

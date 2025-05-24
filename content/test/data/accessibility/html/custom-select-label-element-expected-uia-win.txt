@@ -1,0 +1,5 @@
+Document
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='labeltext '
+++++ComboBox Name='labeltext' ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='one'

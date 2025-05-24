@@ -172,11 +172,11 @@ XMLPUBFUN xmlSchemaPtr
 	    xmlSchemaParse		(xmlSchemaParserCtxtPtr ctxt);
 XMLPUBFUN void
 	    xmlSchemaFree		(xmlSchemaPtr schema);
-#ifdef LIBXML_OUTPUT_ENABLED
+#ifdef LIBXML_DEBUG_ENABLED
 XMLPUBFUN void
 	    xmlSchemaDump		(FILE *output,
 					 xmlSchemaPtr schema);
-#endif /* LIBXML_OUTPUT_ENABLED */
+#endif /* LIBXML_DEBUG_ENABLED */
 /*
  * Interfaces for validating
  */
@@ -217,7 +217,7 @@ XMLPUBFUN int
 	    xmlSchemaValidateStream	(xmlSchemaValidCtxtPtr ctxt,
 					 xmlParserInputBufferPtr input,
 					 xmlCharEncoding enc,
-					 xmlSAXHandlerPtr sax,
+					 const xmlSAXHandler *sax,
 					 void *user_data);
 XMLPUBFUN int
 	    xmlSchemaValidateFile	(xmlSchemaValidCtxtPtr ctxt,

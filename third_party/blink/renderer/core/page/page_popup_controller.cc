@@ -56,9 +56,12 @@ PagePopupController::PagePopupController(Page& page,
 }
 
 void PagePopupController::setValueAndClosePopup(int num_value,
-                                                const String& string_value) {
-  if (popup_client_)
-    popup_client_->SetValueAndClosePopup(num_value, string_value);
+                                                const String& string_value,
+                                                bool is_keyboard_event) {
+  if (popup_client_) {
+    popup_client_->SetValueAndClosePopup(num_value, string_value,
+                                         is_keyboard_event);
+  }
 }
 
 void PagePopupController::setValue(const String& value) {
@@ -127,10 +130,10 @@ void PagePopupController::Trace(Visitor* visitor) const {
 }
 
 void PagePopupController::setMenuListOptionsBoundsInAXTree(
-    HeapVector<Member<DOMRect>>& options_bounds,
+    const HeapVector<Member<DOMRect>>& options_bounds,
     bool children_updated) {
   options_bounds_.clear();
-  for (auto option_bounds : options_bounds) {
+  for (const auto& option_bounds : options_bounds) {
     options_bounds_.emplace_back(
         gfx::Rect(option_bounds->x(), option_bounds->y(),
                   option_bounds->width(), option_bounds->height()));

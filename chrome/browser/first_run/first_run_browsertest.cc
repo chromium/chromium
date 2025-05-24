@@ -59,14 +59,6 @@ namespace {
 // from their SetUp() method before deferring the remainder of Setup() to this
 // class.
 class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
- public:
-  FirstRunMasterPrefsBrowserTestBase() {}
-
-  FirstRunMasterPrefsBrowserTestBase(
-      const FirstRunMasterPrefsBrowserTestBase&) = delete;
-  FirstRunMasterPrefsBrowserTestBase& operator=(
-      const FirstRunMasterPrefsBrowserTestBase&) = delete;
-
  protected:
   void SetUp() override {
     // All users of this test class need to call SetInitialPreferencesForTest()
@@ -110,20 +102,12 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<std::string> text_;
 };
 
-template<const char Text[]>
+template <const char text[]>
 class FirstRunMasterPrefsBrowserTestT
     : public FirstRunMasterPrefsBrowserTestBase {
- public:
-  FirstRunMasterPrefsBrowserTestT() {}
-
-  FirstRunMasterPrefsBrowserTestT(const FirstRunMasterPrefsBrowserTestT&) =
-      delete;
-  FirstRunMasterPrefsBrowserTestT& operator=(
-      const FirstRunMasterPrefsBrowserTestT&) = delete;
-
  protected:
   void SetUp() override {
-    SetInitialPreferencesForTest(Text);
+    SetInitialPreferencesForTest(text);
     FirstRunMasterPrefsBrowserTestBase::SetUp();
   }
 };
@@ -230,19 +214,7 @@ const char kWithTrackedPrefs[] =
 // set to kWithTrackedPrefs.
 class FirstRunMasterPrefsWithTrackedPreferences
     : public FirstRunMasterPrefsBrowserTestT<kWithTrackedPrefs> {
- public:
-  FirstRunMasterPrefsWithTrackedPreferences() {}
-
-  FirstRunMasterPrefsWithTrackedPreferences(
-      const FirstRunMasterPrefsWithTrackedPreferences&) = delete;
-  FirstRunMasterPrefsWithTrackedPreferences& operator=(
-      const FirstRunMasterPrefsWithTrackedPreferences&) = delete;
-
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    FirstRunMasterPrefsBrowserTestT::SetUpCommandLine(command_line);
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     FirstRunMasterPrefsBrowserTestT::SetUpInProcessBrowserTestFixture();
 

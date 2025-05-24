@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RTCPeerConnection red+opus support</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+
+function munge(sdp) {
+  const lines = sdp.split('\r\n').map(l => l.trim());
+  const rtpmapLines = lines.filter(l => l.startsWith('a=rtpmap:'));
+  const payloadTypes = rtpmapLines
+    .map(l => parseInt(l.substring(9).split(' ')[0], 10));
+  const opusLine = rtpmapLines.find(l => l.includes('opus'));
+  assert_true(!!opusLine);
+  const opusPayloadType = parseInt(opusLine.substring(9).split(' ')[0]);
+  let payloadType = undefined;
+  // Searching the upper range should typically be enough.
+  for (let i = 127; i >= 96; i--) {
+    if (!payloadTypes.includes(i)) {
+      payloadType = i;
+      break;
+    }
+  }
+  return sdp.replaceAll(opusPayloadType, payloadType);
+}
+
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
+
+  const stream = await navigator.mediaDevices.getUserMedia({audio:true})
+  t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+
+  const sender = pc1.addTrack(stream.getAudioTracks()[0], stream);
+  const offer = await pc1.createOffer();
+  await pc1.setLocalDescription({type: 'offer', sdp: munge(offer.sdp)});
+  await pc2.setRemoteDescription(pc1.localDescription);
+  await pc2.setLocalDescription();
+  await pc1.setRemoteDescription(pc2.localDescription);
+
+  const parameters = await sender.getParameters();
+  assert_equals(parameters.codecs[0].mimeType, 'audio/opus');
+  assert_equals(parameters.codecs[0].sdpFmtpLine, 'minptime=10;useinbandfec=1');
+}, 'Reassigning the opus payload type via SDP munging works');
+    </script>
+  </body>
+</html>
+

@@ -114,7 +114,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::optional<std::vector<std::string>> cors_exempt_header_list =
           std::nullopt,
-      ClientReceiverDelegate* client_receiver_delegate = nullptr);
+      ClientReceiverDelegate* client_receiver_delegate = nullptr,
+      const std::vector<int>* initiator_origin_trial_features = nullptr);
 
   ThrottlingURLLoader(const ThrottlingURLLoader&) = delete;
   ThrottlingURLLoader& operator=(const ThrottlingURLLoader&) = delete;
@@ -142,20 +143,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers);
   void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);
-  void PauseReadingBodyFromNet();
-  void ResumeReadingBodyFromNet();
-
-  // Restarts the load immediately with |factory| and |url_loader_options|.
-  // It must only be called when the following conditions are met:
-  // 1. The request already started and the original factory decided to not
-  //    handle the request. This condition is required because throttles are not
-  //    consulted prior to restarting.
-  // 2. The original factory did not call URLLoaderClient callbacks (e.g.,
-  //    OnReceiveResponse).
-  // This function is useful in the case of service worker network fallback.
-  void RestartWithFactory(
-      scoped_refptr<network::SharedURLLoaderFactory> factory,
-      uint32_t url_loader_options);
 
   // Disconnect the forwarding URLLoaderClient and the URLLoader. Returns the
   // datapipe endpoints.
@@ -188,7 +175,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
              uint32_t options,
              network::ResourceRequest* url_request,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
-             std::optional<std::vector<std::string>> cors_exempt_header_list);
+             std::optional<std::vector<std::string>> cors_exempt_header_list,
+             const std::vector<int>* initiator_origin_trial_features);
 
   void StartNow();
   void RestartWithURLResetNow();
@@ -290,14 +278,14 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
         std::optional<std::vector<std::string>> in_cors_exempt_header_list);
     ~StartInfo();
 
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-    int32_t request_id;
-    uint32_t options;
+    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+    const int32_t request_id;
+    const uint32_t options;
 
     network::ResourceRequest url_request;
     // |task_runner| is used to set up |client_receiver_|.
-    scoped_refptr<base::SequencedTaskRunner> task_runner;
-    std::optional<std::vector<std::string>> cors_exempt_header_list;
+    const scoped_refptr<base::SequencedTaskRunner> task_runner;
+    const std::optional<std::vector<std::string>> cors_exempt_header_list;
   };
   // Holds any info needed to start or restart the request. Used when start is
   // deferred or when FollowRedirectForcingRestart() is called.

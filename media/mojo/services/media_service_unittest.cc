@@ -155,7 +155,7 @@ class MediaServiceTest : public testing::Test {
     EXPECT_CALL(*this, OnRendererInitialized(expected_result))
         .WillOnce(QuitLoop(&run_loop));
     renderer_->Initialize(
-        std::move(client_remote), std::move(streams), nullptr,
+        std::move(client_remote), std::move(streams),
         base::BindOnce(&MediaServiceTest::OnRendererInitialized,
                        base::Unretained(this)));
     run_loop.Run();
@@ -283,7 +283,7 @@ TEST_F(MediaServiceTest, MoreIdling) {
   else if (renderer_)
     renderer_.FlushForTesting();
   else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 
   // Disconnecting CDM and Renderer will cause the service to idle since no
   // other interfaces are connected.

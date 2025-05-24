@@ -37,10 +37,10 @@
 
 namespace blink {
 
-WebVector<WebElement> WebSelectElement::GetListItems() const {
+std::vector<WebElement> WebSelectElement::GetListItems() const {
   const HeapVector<Member<HTMLElement>>& source_items =
       ConstUnwrap<HTMLSelectElement>()->GetListItems();
-  WebVector<WebElement> items(source_items.size());
+  std::vector<WebElement> items(source_items.size());
   for (wtf_size_t i = 0; i < source_items.size(); ++i)
     items[i] = WebElement(source_items[i].Get());
 

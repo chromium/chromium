@@ -10,10 +10,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/ui_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -27,6 +31,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -69,6 +74,9 @@ void ProductSpecificationsIconView::OnExecuting(
   CHECK(tab_helper);
 
   tab_helper->OnProductSpecificationsIconClicked();
+
+  commerce::ShowProductSpecsConfirmationToast(
+      tab_helper->GetComparisonSetName(), browser_);
 }
 
 void ProductSpecificationsIconView::ForceVisibleForTesting(bool is_added) {
@@ -83,10 +91,12 @@ const gfx::VectorIcon& ProductSpecificationsIconView::GetVectorIcon() const {
 void ProductSpecificationsIconView::UpdateImpl() {
   bool should_show = ShouldShow();
   if (should_show) {
-    // TODO(b/325660810): Add logics to flip button visual state.
+    // TODO(b/369238920): Delete the SetVisualState after the add to comparison
+    // table toast is launched.
     SetVisualState(IsInProductSpecificationsSet());
     MaybeShowPageActionLabel();
   } else {
+    scoped_window_call_to_action_ptr_.reset();
     HidePageActionLabel();
   }
   SetVisible(should_show);
@@ -140,9 +150,6 @@ void ProductSpecificationsIconView::SetVisualState(bool is_added) {
 }
 
 void ProductSpecificationsIconView::MaybeShowPageActionLabel() {
-  if (!base::FeatureList::IsEnabled(commerce::kCommerceAllowChipExpansion)) {
-    return;
-  }
   auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
                          ->GetTabFeatures()
                          ->commerce_ui_tab_helper();
@@ -150,6 +157,17 @@ void ProductSpecificationsIconView::MaybeShowPageActionLabel() {
                          PageActionIconType::kProductSpecifications)) {
     return;
   }
+  if (!tabs::TabInterface::GetFromContents(GetWebContents())
+           ->GetBrowserWindowInterface()
+           ->CanShowCallToAction()) {
+    return;
+  }
+
+  scoped_window_call_to_action_ptr_ =
+      tabs::TabInterface::GetFromContents(GetWebContents())
+          ->GetBrowserWindowInterface()
+          ->ShowCallToAction();
+
   should_extend_label_shown_duration_ = true;
   AnimateIn(std::nullopt);
 }

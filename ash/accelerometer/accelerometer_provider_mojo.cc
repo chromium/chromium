@@ -4,6 +4,7 @@
 
 #include "ash/accelerometer/accelerometer_provider_mojo.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -498,7 +498,7 @@ void AccelerometerProviderMojo::GetAttributesCallback(
       return;
     }
 
-    auto* it = base::ranges::find(kLocationStrings, values[index]);
+    auto* it = std::ranges::find(kLocationStrings, values[index]);
     if (it == std::end(kLocationStrings)) {
       LOG(WARNING) << "Unrecognized location: " << values[index].value()
                    << " for device with id: ";

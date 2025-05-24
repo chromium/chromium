@@ -4,6 +4,8 @@
 
 #include "components/enterprise/client_certificates/core/private_key.h"
 
+#include "base/base64.h"
+#include "components/enterprise/client_certificates/core/constants.h"
 #include "net/ssl/ssl_private_key.h"
 
 namespace client_certificates {
@@ -20,6 +22,14 @@ PrivateKeySource PrivateKey::GetSource() const {
 
 scoped_refptr<net::SSLPrivateKey> PrivateKey::GetSSLPrivateKey() {
   return ssl_private_key_;
+}
+
+base::Value::Dict PrivateKey::BuildSerializedPrivateKey(
+    std::vector<uint8_t> key) const {
+  base::Value::Dict key_dict;
+  key_dict.Set(kKey, base::Base64Encode(key));
+  key_dict.Set(kKeySource, static_cast<int>(source_));
+  return key_dict;
 }
 
 }  // namespace client_certificates

@@ -25,15 +25,6 @@
 
 namespace gl {
 
-namespace {
-struct DelegatedInkPointCompare {
-  bool operator()(const gfx::DelegatedInkPoint& lhs,
-                  const gfx::DelegatedInkPoint& rhs) const {
-    return lhs.timestamp() < rhs.timestamp();
-  }
-};
-}  // namespace
-
 // On construction, this class will create a new visual for the visual tree with
 // an IDCompositionDelegatedInk object as the contents. This will be added as
 // a child of the root surface visual in the tree, and the trail will be drawn
@@ -48,6 +39,12 @@ class GL_EXPORT DelegatedInkPointRendererGpu
   DelegatedInkPointRendererGpu();
   ~DelegatedInkPointRendererGpu() override;
 
+  struct DelegatedInkPointCompare {
+    bool operator()(const gfx::DelegatedInkPoint& lhs,
+                    const gfx::DelegatedInkPoint& rhs) const {
+      return lhs.timestamp() < rhs.timestamp();
+    }
+  };
   using DelegatedInkPointTokenMap = base::flat_map<gfx::DelegatedInkPoint,
                                                    std::optional<unsigned int>,
                                                    DelegatedInkPointCompare>;
@@ -75,7 +72,7 @@ class GL_EXPORT DelegatedInkPointRendererGpu
   // If the Delegated Ink Renderer can not be initialized, it returns a
   // nullptr. The ink trail will synchronize its updates with |root_swap_chain|
   // if present, otherwise it will synchronize with DComp commit.
-  std::unique_ptr<DCLayerOverlayParams> MakeDelegatedInkOverlay(
+  std::optional<DCLayerOverlayParams> MakeDelegatedInkOverlay(
       IDCompositionDevice2* dcomp_device2,
       IDXGISwapChain1* root_swap_chain,
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata);

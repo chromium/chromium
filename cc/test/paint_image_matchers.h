@@ -12,6 +12,10 @@
 
 namespace cc {
 
+inline void PrintTo(const PaintImage& image, std::ostream* os) {
+  *os << image.ToString();
+}
+
 // Checks `arg.IsSameForTesting(image)`.
 // Mainly used in container matchers:
 //    std::vector<PaintImage> images;

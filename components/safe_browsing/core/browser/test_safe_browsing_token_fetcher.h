@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_TEST_SAFE_BROWSING_TOKEN_FETCHER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -19,11 +20,14 @@ class TestSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
   void Start(Callback callback) override;
   void RunAccessTokenCallback(std::string token);
   bool WasStartCalled();
+  base::WeakPtr<TestSafeBrowsingTokenFetcher> AsWeakPtr();
   MOCK_METHOD1(OnInvalidAccessToken, void(const std::string&));
 
  private:
   Callback callback_;
   bool was_start_called_ = false;
+
+  base::WeakPtrFactory<TestSafeBrowsingTokenFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace safe_browsing

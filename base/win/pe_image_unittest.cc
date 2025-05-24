@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 // This file contains unit tests for PEImage.
+#include "base/win/pe_image.h"
+
 #include <algorithm>
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
-#include "base/win/pe_image.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

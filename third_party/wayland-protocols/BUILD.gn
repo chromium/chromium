@@ -23,6 +23,10 @@ wayland_protocol("cursor_shapes_protocol") {
   sources = [ "unstable/cursor-shapes/cursor-shapes-unstable-v1.xml" ]
 }
 
+wayland_protocol("drm_lease_protocol") {
+  sources = [ "src/staging/drm-lease/drm-lease-v1.xml" ]
+}
+
 wayland_protocol("extended_drag") {
   sources = [ "unstable/extended-drag/extended-drag-unstable-v1.xml" ]
 }
@@ -75,12 +79,20 @@ wayland_protocol("linux_dmabuf_protocol") {
   sources = [ "src/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml" ]
 }
 
+wayland_protocol("linux_drm_syncobj_protocol") {
+  sources = [ "src/staging/linux-drm-syncobj/linux-drm-syncobj-v1.xml" ]
+}
+
 wayland_protocol("linux_explicit_synchronization_protocol") {
   sources = [ "src/unstable/linux-explicit-synchronization/linux-explicit-synchronization-unstable-v1.xml" ]
 }
 
 wayland_protocol("notification_shell_protocol") {
   sources = [ "unstable/notification-shell/notification-shell-unstable-v1.xml" ]
+}
+
+wayland_protocol("org_kde_kwin_appmenu") {
+  sources = [ "kde/src/protocols/appmenu.xml" ]
 }
 
 wayland_protocol("org_kde_kwin_idle") {
@@ -159,10 +171,6 @@ wayland_protocol("ui_controls_protocol") {
   sources = [ "unstable/ui-controls/ui-controls-unstable-v1.xml" ]
 }
 
-wayland_protocol("test_controller_protocol") {
-  sources = [ "unstable/test-controller/test-controller-unstable-v1.xml" ]
-}
-
 wayland_protocol("viewporter_protocol") {
   sources = [ "src/stable/viewporter/viewporter.xml" ]
 }
@@ -184,6 +192,10 @@ wayland_protocol("xdg_activation") {
 
 wayland_protocol("xdg_decoration_protocol") {
   sources = [ "src/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml" ]
+}
+
+wayland_protocol("xdg_dialog_protocol") {
+  sources = [ "src/staging/xdg-dialog/xdg-dialog-v1.xml" ]
 }
 
 wayland_protocol("xdg_foreign") {
@@ -210,4 +222,10 @@ wayland_protocol("xdg_toplevel_drag_protocol") {
 
 wayland_protocol("xdg_toplevel_icon_protocol") {
   sources = [ "src/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml" ]
+}
+
+# Experimental session management protocol shipped in Mutter 47/48.
+# Will be replaced by upstream's version once it lands.
+wayland_protocol("xx_session_management_protocol") {
+  sources = [ "unstable/session-management/xx-session-management-v1.xml" ]
 }

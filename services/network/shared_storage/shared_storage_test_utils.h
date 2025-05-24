@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 
 namespace network {
 
@@ -35,6 +36,45 @@ class SharedStorageRequestCount {
  private:
   static size_t count_;
 };
+
+mojom::SharedStorageModifierMethodWithOptionsPtr MojomSetMethod(
+    const std::u16string& key,
+    const std::u16string& value,
+    bool ignore_if_present,
+    std::optional<std::string> with_lock = std::nullopt);
+
+mojom::SharedStorageModifierMethodWithOptionsPtr MojomAppendMethod(
+    const std::u16string& key,
+    const std::u16string& value,
+    std::optional<std::string> with_lock = std::nullopt);
+
+mojom::SharedStorageModifierMethodWithOptionsPtr MojomDeleteMethod(
+    const std::u16string& key,
+    std::optional<std::string> with_lock = std::nullopt);
+
+mojom::SharedStorageModifierMethodWithOptionsPtr MojomClearMethod(
+    std::optional<std::string> with_lock = std::nullopt);
+
+// Wraps `mojom::SharedStorageModifierMethodWithOptionsPtr` to use gmock
+// matchers.
+struct SharedStorageMethodWrapper {
+  explicit SharedStorageMethodWrapper(
+      mojom::SharedStorageModifierMethodWithOptionsPtr method_with_options);
+
+  SharedStorageMethodWrapper(const SharedStorageMethodWrapper& other);
+  SharedStorageMethodWrapper& operator=(
+      const SharedStorageMethodWrapper& other);
+
+  ~SharedStorageMethodWrapper();
+
+  friend bool operator==(const SharedStorageMethodWrapper& a,
+                         const SharedStorageMethodWrapper& b) = default;
+
+  mojom::SharedStorageModifierMethodWithOptionsPtr method_with_options;
+};
+
+std::ostream& operator<<(std::ostream& os,
+                         const SharedStorageMethodWrapper& wrapper);
 
 class SharedStorageResponse : public net::test_server::BasicHttpResponse {
  public:

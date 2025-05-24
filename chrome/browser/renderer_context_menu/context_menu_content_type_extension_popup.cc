@@ -8,8 +8,8 @@ ContextMenuContentTypeExtensionPopup::ContextMenuContentTypeExtensionPopup(
     const content::ContextMenuParams& params)
     : ContextMenuContentType(params, false) {}
 
-ContextMenuContentTypeExtensionPopup::~ContextMenuContentTypeExtensionPopup() {
-}
+ContextMenuContentTypeExtensionPopup::~ContextMenuContentTypeExtensionPopup() =
+    default;
 
 bool ContextMenuContentTypeExtensionPopup::SupportsGroup(int group) {
   switch (group) {

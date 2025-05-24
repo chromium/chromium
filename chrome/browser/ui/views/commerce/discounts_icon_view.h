@@ -18,6 +18,8 @@ namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
+class ScopedWindowCallToAction;
+
 class DiscountsIconView : public PageActionIconView {
   METADATA_HEADER(DiscountsIconView, PageActionIconView)
 
@@ -29,6 +31,12 @@ class DiscountsIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
 
+  void SetIsLabelExpanded(bool is_expanded);
+  // For testing only.
+  bool GetIsLabelExpanded() const;
+  [[nodiscard]] base::CallbackListSubscription
+  AddIsLabelExpandedChangedCallback(views::PropertyChangedCallback callback);
+
  protected:
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
@@ -39,6 +47,7 @@ class DiscountsIconView : public PageActionIconView {
   // IconLabelBubbleView:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
+  void UnpauseAnimation();
   bool ShouldShow();
   void HidePageActionLabel();
   void MaybeShowPageActionLabel();
@@ -54,6 +63,10 @@ class DiscountsIconView : public PageActionIconView {
   // This keeps the label visible for long enough to give users an opportunity
   // to read the label text.
   base::OneShotTimer animate_out_timer_;
+
+  bool is_label_expanded_;
+
+  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
 
   base::WeakPtrFactory<DiscountsIconView> weak_ptr_factory_{this};
 };

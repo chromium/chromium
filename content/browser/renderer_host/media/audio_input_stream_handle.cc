@@ -57,7 +57,7 @@ void AudioInputStreamHandle::SetOutputDeviceForAec(
 }
 
 void AudioInputStreamHandle::OnCreated(
-    media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+    media::mojom::ReadWriteAudioDataPipePtr data_pipe,
     bool initially_muted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_remote_);

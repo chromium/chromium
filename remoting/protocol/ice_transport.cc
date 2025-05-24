@@ -111,7 +111,7 @@ void IceTransport::ApplyNetworkSettings(const NetworkSettings& settings) {
 
 void IceTransport::CreateChannel(const std::string& name,
                                  ChannelCreatedCallback callback) {
-  DCHECK(!channels_[name]);
+  DCHECK(!channels_.contains(name));
 
   if (!network_settings_) {
     DCHECK(!pending_channel_created_callbacks_[name]);
@@ -166,7 +166,7 @@ void IceTransport::OnChannelIceCredentials(IceTransportChannel* channel,
 }
 
 void IceTransport::OnChannelCandidate(IceTransportChannel* channel,
-                                      const cricket::Candidate& candidate) {
+                                      const webrtc::Candidate& candidate) {
   EnsurePendingTransportInfoMessage();
   pending_transport_info_message_->candidates.push_back(
       IceTransportInfo::NamedCandidate(channel->name(), candidate));

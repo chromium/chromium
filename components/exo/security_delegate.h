@@ -55,7 +55,7 @@ class SecurityDelegate {
     ADJUST_IF_DECORATED,
   };
 
-  virtual ~SecurityDelegate() {}
+  virtual ~SecurityDelegate() = default;
 
   // "Self-activation" is a security sensitive windowing operation that is a
   // common paradigm in X11. The need to self-activate is controlled

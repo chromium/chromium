@@ -12,7 +12,6 @@ using UserInteractionLatenciesPtr =
 using UserInteractionLatencies =
     page_load_metrics::mojom::UserInteractionLatencies;
 using UserInteractionLatency = page_load_metrics::mojom::UserInteractionLatency;
-using UserInteractionType = page_load_metrics::mojom::UserInteractionType;
 
 class ResponsivenessMetricsNormalizationTest : public testing::Test {
  public:
@@ -51,14 +50,11 @@ TEST_F(ResponsivenessMetricsNormalizationTest, SendAllInteractions) {
       user_interaction_latencies_ptr->get_user_interaction_latencies();
   base::TimeTicks current_time = base::TimeTicks::Now();
   user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(3000), UserInteractionType::kTapOrClick, 0,
-      current_time + base::Milliseconds(1000)));
+      base::Milliseconds(3000), 0, current_time + base::Milliseconds(1000)));
   user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(3500), UserInteractionType::kTapOrClick, 1,
-      current_time + base::Milliseconds(2000)));
+      base::Milliseconds(3500), 1, current_time + base::Milliseconds(2000)));
   user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(2000), UserInteractionType::kTapOrClick, 2,
-      current_time + base::Milliseconds(3000)));
+      base::Milliseconds(2000), 2, current_time + base::Milliseconds(3000)));
   AddNewUserInteractions(3, *user_interaction_latencies_ptr);
   EXPECT_EQ(GetNumInteractions(), 3u);
   EXPECT_EQ(GetWorstInteraction().interaction_latency,
@@ -77,7 +73,7 @@ TEST_F(ResponsivenessMetricsNormalizationTest, SendAllInteractions) {
   user_interaction_latencies.clear();
   for (uint64_t i = 0; i < 50; i++) {
     user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-        base::Milliseconds(i + 100), UserInteractionType::kTapOrClick, i + 3,
+        base::Milliseconds(i + 100), i + 3,
         current_time + base::Milliseconds(4000 + (1000 * i))));
   }
   AddNewUserInteractions(50, *user_interaction_latencies_ptr);
@@ -98,7 +94,7 @@ TEST_F(ResponsivenessMetricsNormalizationTest, SendAllInteractions) {
   user_interaction_latencies.clear();
   for (uint64_t i = 0; i < 50; i++) {
     user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-        base::Milliseconds(300 - i), UserInteractionType::kTapOrClick, i + 53,
+        base::Milliseconds(300 - i), i + 53,
         current_time + base::Milliseconds(53000 + (1000 * i))));
   }
   AddNewUserInteractions(50, *user_interaction_latencies_ptr);
@@ -124,12 +120,12 @@ TEST_F(ResponsivenessMetricsNormalizationTest, TooManyInteractions) {
         UserInteractionLatencies::NewUserInteractionLatencies({});
     auto& user_interaction_latencies =
         user_interaction_latencies_ptr->get_user_interaction_latencies();
-    user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-        base::Milliseconds(3000 - i), UserInteractionType::kTapOrClick, i * 2,
-        current_time + base::Milliseconds(1000)));
-    user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-        base::Milliseconds(2000 - (i)), UserInteractionType::kTapOrClick,
-        (i * 2) + i, current_time + base::Milliseconds(1100)));
+    user_interaction_latencies.emplace_back(
+        UserInteractionLatency::New(base::Milliseconds(3000 - i), i * 2,
+                                    current_time + base::Milliseconds(1000)));
+    user_interaction_latencies.emplace_back(
+        UserInteractionLatency::New(base::Milliseconds(2000 - (i)), (i * 2) + i,
+                                    current_time + base::Milliseconds(1100)));
     AddNewUserInteractions(2, *user_interaction_latencies_ptr);
   }
   EXPECT_EQ(GetNumInteractions(), 1000u);

@@ -41,9 +41,9 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
     private final long mNativeAutofillSaveCardInfoBar;
     private final List<CardDetail> mCardDetails = new ArrayList<>();
     private int mIconDrawableId = -1;
-    private String mTitleText;
+    private final String mTitleText;
     private String mDescriptionText;
-    private boolean mIsGooglePayBrandingEnabled;
+    private final boolean mIsGooglePayBrandingEnabled;
     private final LinkedList<LegalMessageLine> mLegalMessageLines =
             new LinkedList<LegalMessageLine>();
 
@@ -227,7 +227,6 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
         if (mAccountFooterEmail != null && mAccountFooterAvatar != null) {
             Resources res = layout.getResources();
             int smallIconSize = res.getDimensionPixelSize(R.dimen.infobar_small_icon_size);
-            int padding = res.getDimensionPixelOffset(R.dimen.infobar_padding);
 
             LinearLayout footer =
                     (LinearLayout)

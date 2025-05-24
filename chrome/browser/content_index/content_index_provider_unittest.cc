@@ -95,7 +95,7 @@ class ContentIndexProviderImplTest : public testing::Test,
   MOCK_METHOD1(OnItemRemoved, void(const ContentId& id));
   void OnItemUpdated(const OfflineItem& item,
                      const std::optional<UpdateDelta>& update_delta) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void OnContentProviderGoingDown() override {}
 

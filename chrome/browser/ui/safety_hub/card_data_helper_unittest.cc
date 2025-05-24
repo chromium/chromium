@@ -21,10 +21,10 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -89,7 +89,11 @@ class SafetyHubCardDataHelperTest : public testing::Test {
         base::Time::Now().InSecondsFSinceUnixEpoch());
     SetMockCredentialEntry("https://example1.com", false);
     PasswordStatusCheckService* service =
-        PasswordStatusCheckServiceFactory::GetForProfile(profile());
+        safety_hub_test_util::CreateAndUsePasswordStatusService(profile());
+
+    safety_hub_test_util::CreateRevokedPermissionsService(profile());
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+
     service->UpdateInsecureCredentialCountAsync();
     RunUntilIdle();
 
@@ -130,7 +134,7 @@ class SafetyHubCardDataHelperTest : public testing::Test {
     base::Value::Dict dict;
     dict.Set(permissions::kRevokedKey,
              base::Value::List().Append(
-                 UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
+                 RevokedPermissionsService::ConvertContentSettingsTypeToKey(
                      ContentSettingsType::GEOLOCATION)));
     content_settings::ContentSettingConstraints default_constraint(
         base::Time::Now());
@@ -208,10 +212,9 @@ TEST_F(SafetyHubCardDataHelperTest, GetOverallState_NotificationPermission) {
 TEST_F(SafetyHubCardDataHelperTest, GetOverallState_UnusedSitePermissions) {
   // When there are unused permissions to review, the overall state should
   // be "warning".
-  auto* usp_service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile());
+  auto* rp_service = RevokedPermissionsServiceFactory::GetForProfile(profile());
   CreateMockUnusedSitePermissionForReview();
-  safety_hub_test_util::UpdateSafetyHubServiceAsync(usp_service);
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(rp_service);
   EXPECT_EQ(safety_hub::GetOverallState(profile()),
             safety_hub::SafetyHubCardState::kWarning);
 }

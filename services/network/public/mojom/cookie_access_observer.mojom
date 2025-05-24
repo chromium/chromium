@@ -24,6 +24,12 @@ struct CookieAccessDetails {
   // worker script looking them up.
   url.mojom.Url url;
 
+  // If non-null, then the cookies are accessed by a network transfer and
+  // |frame_origin| is the origin of the frame executing the fetch.  May be null
+  // for network transfers whose IsolationInfo's `frame_origin()` is
+  // std::nullopt.
+  url.mojom.Origin? frame_origin;
+
   // The top frame origin for the given request, we use top_frame_origin from
   // net::IsolationInfo.
   url.mojom.Origin top_frame_origin;

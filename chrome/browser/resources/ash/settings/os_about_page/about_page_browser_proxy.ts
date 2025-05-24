@@ -137,7 +137,7 @@ export interface AboutPageBrowserProxy {
   /**
    * Applies deferred update if it exists.
    */
-  applyDeferredUpdate(): void;
+  applyDeferredUpdateAdvanced(): void;
 
   /**
    * Indicates to the browser that the page is ready.
@@ -199,6 +199,8 @@ export interface AboutPageBrowserProxy {
    * the version updater is busy, for example with downloading updates.
    */
   getChannelInfo(): Promise<ChannelInfo>;
+
+  canChangeFirmware(): Promise<boolean>;
 
   canChangeChannel(): Promise<boolean>;
 
@@ -266,8 +268,8 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
     instance = obj;
   }
 
-  applyDeferredUpdate(): void {
-    chrome.send('applyDeferredUpdate');
+  applyDeferredUpdateAdvanced(): void {
+    chrome.send('applyDeferredUpdateAdvanced');
   }
 
   pageReady(): void {
@@ -322,6 +324,10 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
 
   getChannelInfo(): Promise<ChannelInfo> {
     return sendWithPromise('getChannelInfo');
+  }
+
+  canChangeFirmware(): Promise<boolean> {
+    return sendWithPromise('canChangeFirmware');
   }
 
   canChangeChannel(): Promise<boolean> {

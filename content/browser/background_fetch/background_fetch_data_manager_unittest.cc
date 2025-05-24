@@ -258,7 +258,7 @@ class BackgroundFetchDataManagerTest
   blink::mojom::BackgroundFetchRegistrationDataPtr GetRegistration(
       int64_t service_worker_registration_id,
       const blink::StorageKey& storage_key,
-      const std::string developer_id,
+      const std::string& developer_id,
       blink::mojom::BackgroundFetchError* out_error) {
     DCHECK(out_error);
 

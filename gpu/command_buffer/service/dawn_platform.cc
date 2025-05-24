@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "gpu/command_buffer/service/dawn_platform.h"
 
 #include "base/metrics/histogram.h"
@@ -236,9 +241,13 @@ DawnPlatform::CreateWorkerTaskPool() {
 bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
   switch (feature) {
     case dawn::platform::Features::kWebGPUUseDXC:
-      return base::FeatureList::IsEnabled(features::kWebGPUUseDXC);
+      // (crbug.com/362247692): Feature is enabled by default.
+      return true;
     case dawn::platform::Features::kWebGPUUseTintIR:
       return base::FeatureList::IsEnabled(features::kWebGPUUseTintIR);
+    case dawn::platform::Features::kWebGPUUseVulkanMemoryModel:
+      return base::FeatureList::IsEnabled(
+          features::kWebGPUUseVulkanMemoryModel);
     default:
       return false;
   }

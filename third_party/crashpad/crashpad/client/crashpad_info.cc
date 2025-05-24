@@ -137,7 +137,13 @@ CrashpadInfo::CrashpadInfo()
       extra_memory_ranges_(nullptr),
       simple_annotations_(nullptr),
       user_data_minidump_stream_head_(nullptr),
-      annotations_list_(nullptr) {}
+      annotations_list_(nullptr)
+#if BUILDFLAG(IS_IOS)
+      ,
+      intermediate_dump_extra_memory_ranges_(nullptr)
+#endif
+{
+}
 
 UserDataMinidumpStreamHandle* CrashpadInfo::AddUserDataMinidumpStream(
     uint32_t stream_type,

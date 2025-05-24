@@ -26,86 +26,37 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_LAYER_BRIDGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_LAYER_BRIDGE_H_
 
-#include <memory>
-#include <utility>
-
-#include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/rand_util.h"
-#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace blink {
 
-class StaticBitmapImage;
+class CanvasResourceHost;
 
+// Canvas2DLayerBridge historically served as the means of creating resources
+// for 2D canvas contexts. It has since had almost all functionality migrated
+// out of it and is merely a wrapper of CanvasHibernationHandler. However,
+// HTMLCanvasElement and CanvasRenderingContext2D still continue to base logic
+// on the dynamic presence/absence of a bridge instance for legacy reasons.
+// Until we migrate all of that legacy logic, we are leaving Canvas2DLayerBridge
+// in place.
+// DO NOT ADD ANY CODE OR FUNCTIONALITY HERE.
+// TODO(crbug.com/40280152): Eliminate this class once it is actually used
+// strictly as a wrapper for CanvasHibernationHandler's functionality.
 class PLATFORM_EXPORT Canvas2DLayerBridge {
  public:
-  explicit Canvas2DLayerBridge(CanvasResourceHost* resource_host);
+  explicit Canvas2DLayerBridge(CanvasResourceHost& resource_host);
   Canvas2DLayerBridge(const Canvas2DLayerBridge&) = delete;
   Canvas2DLayerBridge& operator=(const Canvas2DLayerBridge&) = delete;
 
   virtual ~Canvas2DLayerBridge();
 
-  void PageVisibilityChanged();
-
-  bool IsHibernating() const { return hibernation_handler_.IsHibernating(); }
-
-  scoped_refptr<StaticBitmapImage> NewImageSnapshot(FlushReason);
-
-  // The values of the enum entries must not change because they are used for
-  // usage metrics histograms. New values can be added to the end.
-  enum HibernationEvent {
-    kHibernationScheduled = 0,
-    kHibernationAbortedDueToDestructionWhileHibernatePending = 1,
-    // kHibernationAbortedDueToPendingDestruction = 2, (obsolete)
-    kHibernationAbortedDueToVisibilityChange = 3,
-    kHibernationAbortedDueGpuContextLoss = 4,
-    kHibernationAbortedDueToSwitchToUnacceleratedRendering = 5,
-    // kHibernationAbortedDueToAllocationFailure = 6, (obsolete)
-    kHibernationAbortedDueSnapshotFailure = 7,
-    kHibernationEndedNormally = 8,
-    kHibernationEndedWithSwitchToBackgroundRendering = 9,
-    kHibernationEndedWithFallbackToSW = 10,
-    kHibernationEndedWithTeardown = 11,
-    kHibernationAbortedBecauseNoSurface = 12,
-    kMaxValue = kHibernationAbortedBecauseNoSurface,
-  };
-
-  class PLATFORM_EXPORT Logger {
-   public:
-    virtual void ReportHibernationEvent(HibernationEvent);
-    virtual void DidStartHibernating() {}
-    virtual ~Logger() = default;
-  };
-
-  void SetLoggerForTesting(std::unique_ptr<Logger> logger) {
-    logger_ = std::move(logger);
-  }
-  CanvasResourceProvider* GetOrCreateResourceProvider();
-
-  CanvasHibernationHandler& GetHibernationHandlerForTesting() {
+  CanvasHibernationHandler& GetHibernationHandler() {
     return hibernation_handler_;
   }
 
  private:
-  static void HibernateOrLogFailure(base::WeakPtr<Canvas2DLayerBridge> bridge,
-                                    base::TimeTicks /*idleDeadline*/);
-  void Hibernate();
-
   CanvasHibernationHandler hibernation_handler_;
-
-  std::unique_ptr<Logger> logger_;
-  bool hibernation_scheduled_ = false;
-
-  raw_ptr<CanvasResourceHost> resource_host_;
-
-  base::WeakPtrFactory<Canvas2DLayerBridge> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

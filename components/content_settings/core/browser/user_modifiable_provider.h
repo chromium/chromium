@@ -66,6 +66,10 @@ class UserModifiableProvider : public ObservableProvider {
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_settings_type,
       const PartitionKey& partition_key);
+
+  // Triggers an update of settings from the backends and calls `callback` upon
+  // completion. Currently only used for notification permissions on Android.
+  virtual void EnsureUpdatedSettings(base::OnceClosure callback);
 };
 
 }  // namespace content_settings

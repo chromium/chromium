@@ -33,6 +33,8 @@ class BotStatsUnittest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       _ = bot_stats.failed_tasks
     with self.assertRaises(AssertionError):
+      _ = bot_stats.overall_failure_rate
+    with self.assertRaises(AssertionError):
       bot_stats.GetTotalTasksForSuite('suite')
     with self.assertRaises(AssertionError):
       bot_stats.GetFailedTasksForSuite('suite')
@@ -53,6 +55,7 @@ class BotStatsUnittest(unittest.TestCase):
 
     self.assertEqual(bot_stats.total_tasks, 30)
     self.assertEqual(bot_stats.failed_tasks, 5)
+    self.assertEqual(bot_stats.overall_failure_rate, float(5) / 30)
     self.assertEqual(bot_stats.GetTotalTasksForSuite('pixel'), 10)
     self.assertEqual(bot_stats.GetFailedTasksForSuite('pixel'), 5)
     self.assertEqual(bot_stats.GetTotalTasksForSuite('webgl'), 20)
@@ -81,6 +84,8 @@ class MixinStatsUnittest(unittest.TestCase):
       _ = mixin_stats.failed_tasks
     with self.assertRaises(AssertionError):
       list(mixin_stats.IterBots())
+    with self.assertRaises(AssertionError):
+      mixin_stats.GetOverallFailureRates()
 
   def testOnlyWritableWhenNotFrozen(self):
     """Tests that data is only writable when the object is not frozen."""
@@ -100,11 +105,15 @@ class MixinStatsUnittest(unittest.TestCase):
 
     self.assertEqual(mixin_stats.total_tasks, 70)
     self.assertEqual(mixin_stats.failed_tasks, 40)
+    failure_rates = mixin_stats.GetOverallFailureRates()
+    self.assertEqual(len(failure_rates), 2)
+    self.assertEqual(set(failure_rates), {float(5) / 30, float(35) / 40})
     for bot_id, bot_stats in mixin_stats.IterBots():
       self.assertIn(bot_id, ('bot-1', 'bot-2'))
       if bot_id == 'bot-1':
         self.assertEqual(bot_stats.total_tasks, 30)
         self.assertEqual(bot_stats.failed_tasks, 5)
+        self.assertEqual(bot_stats.overall_failure_rate, float(5) / 30)
         self.assertEqual(bot_stats.GetTotalTasksForSuite('suite-1'), 10)
         self.assertEqual(bot_stats.GetFailedTasksForSuite('suite-1'), 0)
         self.assertEqual(bot_stats.GetTotalTasksForSuite('suite-2'), 20)
@@ -112,6 +121,7 @@ class MixinStatsUnittest(unittest.TestCase):
       else:
         self.assertEqual(bot_stats.total_tasks, 40)
         self.assertEqual(bot_stats.failed_tasks, 35)
+        self.assertEqual(bot_stats.overall_failure_rate, float(35) / 40)
         self.assertEqual(bot_stats.GetTotalTasksForSuite('suite-1'), 30)
         self.assertEqual(bot_stats.GetFailedTasksForSuite('suite-1'), 30)
         self.assertEqual(bot_stats.GetTotalTasksForSuite('suite-2'), 10)

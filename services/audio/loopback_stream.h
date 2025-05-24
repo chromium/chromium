@@ -59,7 +59,7 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
                              public LoopbackCoordinator::Observer {
  public:
   using CreatedCallback =
-      base::OnceCallback<void(media::mojom::ReadOnlyAudioDataPipePtr)>;
+      base::OnceCallback<void(media::mojom::ReadWriteAudioDataPipePtr)>;
   using BindingLostCallback = base::OnceCallback<void(LoopbackStream*)>;
 
   LoopbackStream(

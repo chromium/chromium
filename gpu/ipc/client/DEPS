@@ -9,6 +9,7 @@ include_rules = [
 specific_include_rules = {
   "gpu_in_process_context_tests.cc": [
     "+components/viz/test/test_gpu_memory_buffer_manager.h",
+    "+components/viz/test/test_gpu_service_holder.h",
   ],
   "image_decode_accelerator_proxy(_unittest)?\.cc": [
     "+cc/paint/paint_image.h",

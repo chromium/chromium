@@ -60,4 +60,19 @@ const char* DxgiFormatToString(DXGI_FORMAT format) {
   }
 }
 
+DXGI_FORMAT VideoPixelFormatToDxgiFormat(VideoPixelFormat format) {
+  switch (format) {
+    case PIXEL_FORMAT_I420:
+      return DXGI_FORMAT_420_OPAQUE;
+    case PIXEL_FORMAT_NV12:
+      return DXGI_FORMAT_NV12;
+    case PIXEL_FORMAT_ARGB:
+      return DXGI_FORMAT_B8G8R8A8_UNORM;
+    case PIXEL_FORMAT_P010LE:
+      return DXGI_FORMAT_P010;
+    default:
+      return DXGI_FORMAT_UNKNOWN;
+  }
+}
+
 }  // namespace media

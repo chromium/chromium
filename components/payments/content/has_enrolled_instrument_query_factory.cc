@@ -27,7 +27,8 @@ HasEnrolledInstrumentQueryFactory::HasEnrolledInstrumentQueryFactory()
           "HasEnrolledInstrumentQuery",
           BrowserContextDependencyManager::GetInstance()) {}
 
-HasEnrolledInstrumentQueryFactory::~HasEnrolledInstrumentQueryFactory() {}
+HasEnrolledInstrumentQueryFactory::~HasEnrolledInstrumentQueryFactory() =
+    default;
 
 content::BrowserContext*
 HasEnrolledInstrumentQueryFactory::GetBrowserContextToUse(

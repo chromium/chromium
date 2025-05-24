@@ -9,7 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -70,9 +73,11 @@ class ExtensionInstallPromptShowParams {
   base::WeakPtr<content::WebContents> parent_web_contents_;
   gfx::NativeWindow parent_window_;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Used to track the parent_window_'s lifetime. We need to explicitly track it
   // because aura::Window does not expose a WeakPtr like WebContents.
   std::unique_ptr<views::NativeWindowTracker> native_window_tracker_;
+#endif
 };
 
 namespace test {

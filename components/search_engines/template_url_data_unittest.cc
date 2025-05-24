@@ -7,35 +7,36 @@
 #include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/regulatory_extension_type.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
-TemplateURLData BuildDataForRegulatoryExtensions(
+TemplateURLData BuildTestTemplateURLData(
+    int id,
     base::span<TemplateURLData::RegulatoryExtension> extensions) {
   return TemplateURLData(
-      u"shortname", u"keyword", "https://cs.chromium.org", std::string_view(),
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), {}, std::string_view(), std::string_view(),
-      std::u16string_view(), base::Value::List(), false, false, 0, extensions);
+      /*name=*/u"shortname", /*keyword=*/u"keyword",
+      /*search_url=*/"https://cs.chromium.org",
+      /*suggest_url=*/{}, /*image_url=*/{}, /*image_translate_url=*/{},
+      /*new_tab_url=*/{}, /*contextual_search_url=*/{}, /*logo_url=*/{},
+      /*doodle_url=*/{}, /*base_builtin_resource_id=*/{},
+      /*search_url_post_params=*/{},
+      /*suggest_url_post_params=*/{}, /*image_url_post_params=*/{},
+      /*image_translate_source_language_param_key=*/{},
+      /*image_translate_target_language_param_key=*/{},
+      /*search_intent_params=*/{}, /*favicon_url=*/{}, /*encoding=*/{},
+      /*image_search_branding_label=*/{}, /*alternate_urls_list=*/{},
+      /*preconnect_to_search_url=*/false, /*prefetch_likely_navigations=*/false,
+      /*id=*/id, /*regulatory_extensions=*/extensions);
 }
 }  // namespace
 
 TEST(TemplateURLDataTest, Trim) {
-  TemplateURLData data(
-      u" shortname ", u" keyword ", "https://cs.chromium.org",
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), std::string_view(), {}, std::string_view(),
-      std::string_view(), std::u16string_view(), base::Value::List(), false,
-      false, 0, {});
+  TemplateURLData data(BuildTestTemplateURLData(0, {}));
 
   EXPECT_EQ(u"shortname", data.short_name());
   EXPECT_EQ(u"keyword", data.keyword());
@@ -61,7 +62,7 @@ TEST(TemplateURLDataTest, AcceptKnownRegulatoryKeywords) {
        .suggest_params = "android_eea_suggest"},
   }};
 
-  auto data = BuildDataForRegulatoryExtensions(extensions);
+  auto data = BuildTestTemplateURLData(0, extensions);
   EXPECT_EQ("default_search",
             data.regulatory_extensions.at(RegulatoryExtensionType::kDefault)
                 ->search_params);
@@ -83,7 +84,22 @@ TEST(TemplateURLDataTest, DuplicateRegulatoryKeywords) {
       {RegulatoryExtensionType::kDefault, "android_eea_data"},
   }};
 
-  EXPECT_DEATH_IF_SUPPORTED(BuildDataForRegulatoryExtensions(duplicate_data),
-                            "");
+  EXPECT_DEATH_IF_SUPPORTED(BuildTestTemplateURLData(0, duplicate_data), "");
 }
 #endif
+
+TEST(TemplateURLDataTest, PrepopulatedActiveStatus) {
+  // Newly created TemplateURLData should be kUnspecified by default.
+  TemplateURLData data1;
+  ASSERT_EQ(data1.prepopulate_id, 0);
+  EXPECT_EQ(data1.is_active, TemplateURLData::ActiveStatus::kUnspecified);
+
+  TemplateURLData data2(BuildTestTemplateURLData(0, {}));
+  ASSERT_EQ(data2.prepopulate_id, 0);
+  EXPECT_EQ(data2.is_active, TemplateURLData::ActiveStatus::kUnspecified);
+
+  // Prepopulated engines also have active status as kUnspecified by default.
+  TemplateURLData data3(BuildTestTemplateURLData(1, {}));
+  ASSERT_EQ(data3.prepopulate_id, 1);
+  EXPECT_EQ(data3.is_active, TemplateURLData::ActiveStatus::kUnspecified);
+}

@@ -4,9 +4,10 @@
 
 #include "components/search_engines/enterprise/site_search_policy_handler.h"
 
+#include <algorithm>
+
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -17,7 +18,9 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
+#include "components/search_engines/enterprise/search_aggregator_policy_handler.h"
+#include "components/search_engines/enterprise/search_engine_fields_validators.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -27,7 +30,7 @@ namespace policy {
 
 namespace {
 
-bool IsSiteSearchPolicyEnabled() {
+bool IsAllowUserOverrideFieldEnabled() {
   // Check that FeatureList is available as a protection against early startup
   // crashes. Some policy providers are initialized very early even before
   // base::FeatureList is available, but when policies are finally applied, the
@@ -35,7 +38,8 @@ bool IsSiteSearchPolicyEnabled() {
   // final decision is delayed until all features are initialized, without any
   // other downstream effect.
   return base::FeatureList::GetInstance() &&
-         base::FeatureList::IsEnabled(omnibox::kSiteSearchSettingsPolicy);
+         base::FeatureList::IsEnabled(
+             omnibox::kEnableSiteSearchAllowUserOverridePolicy);
 }
 
 // Converts a site search policy entry `policy_dict` into a dictionary to be
@@ -62,9 +66,15 @@ base::Value SiteSearchDictFromPolicyValue(const base::Value::Dict& policy_dict,
 
   dict.Set(DefaultSearchManager::kFeaturedByPolicy, featured);
 
-  dict.Set(DefaultSearchManager::kCreatedByPolicy,
-           static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch));
-  dict.Set(DefaultSearchManager::kEnforcedByPolicy, false);
+  dict.Set(DefaultSearchManager::kPolicyOrigin,
+           static_cast<int>(TemplateURLData::PolicyOrigin::kSiteSearch));
+
+  const bool allow_user_override =
+      policy_dict.FindBool(SiteSearchPolicyHandler::kAllowUserOverride)
+          .value_or(false);
+  dict.Set(DefaultSearchManager::kEnforcedByPolicy,
+           !IsAllowUserOverrideFieldEnabled() || !allow_user_override);
+
   dict.Set(DefaultSearchManager::kIsActive,
            static_cast<int>(TemplateURLData::ActiveStatus::kTrue));
 
@@ -84,131 +94,12 @@ base::Value SiteSearchDictFromPolicyValue(const base::Value::Dict& policy_dict,
   return base::Value(std::move(dict));
 }
 
-const std::string& GetField(const base::Value& provider,
-                            const char* field_name) {
-  const std::string* value = provider.GetDict().FindString(field_name);
-  // This is safe because `SimpleSchemaValidatingPolicyHandler` guarantees that
-  // the policy value is valid according to the schema.
-  CHECK(value);
-  return *value;
-}
-
-const std::string& GetShortcut(const base::Value& provider) {
-  return GetField(provider, SiteSearchPolicyHandler::kShortcut);
-}
-
-const std::string& GetName(const base::Value& provider) {
-  return GetField(provider, SiteSearchPolicyHandler::kName);
-}
-
-const std::string& GetUrl(const base::Value& provider) {
-  return GetField(provider, SiteSearchPolicyHandler::kUrl);
-}
-
-bool ShortcutIsEmpty(const std::string& policy_name,
-                     const std::string& shortcut,
-                     PolicyErrorMap* errors) {
-  if (!shortcut.empty()) {
-    return false;
-  }
-
-  errors->AddError(policy_name,
-                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_IS_EMPTY);
-  return true;
-}
-
-bool NameIsEmpty(const std::string& policy_name,
-                 const std::string& name,
-                 PolicyErrorMap* errors) {
-  if (!name.empty()) {
-    return false;
-  }
-
-  errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY);
-  return true;
-}
-
-bool UrlIsEmpty(const std::string& policy_name,
-                const std::string& url,
-                PolicyErrorMap* errors) {
-  if (!url.empty()) {
-    return false;
-  }
-
-  errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY);
-  return true;
-}
-
-bool ShortcutHasWhitespace(const std::string& policy_name,
-                           const std::string& shortcut,
-                           PolicyErrorMap* errors) {
-  if (shortcut.find_first_of(base::kWhitespaceASCII) == std::u16string::npos) {
-    return false;
-  }
-
-  errors->AddError(policy_name,
-                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_CONTAINS_SPACE,
-                   shortcut);
-  return true;
-}
-
-bool ShortcutStartsWithAtSymbol(const std::string& policy_name,
-                                const std::string& shortcut,
-                                PolicyErrorMap* errors) {
-  if (shortcut[0] != '@') {
-    return false;
-  }
-
-  errors->AddError(policy_name,
-                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_STARTS_WITH_AT,
-                   shortcut);
-  return true;
-}
-
-bool ShortcutEqualsDefaultSearchProviderKeyword(const std::string& policy_name,
-                                                const std::string& shortcut,
-                                                const PolicyMap& policies,
-                                                PolicyErrorMap* errors) {
-  const base::Value* provider_enabled = policies.GetValue(
-      key::kDefaultSearchProviderEnabled, base::Value::Type::BOOLEAN);
-  const base::Value* provider_keyword = policies.GetValue(
-      key::kDefaultSearchProviderKeyword, base::Value::Type::STRING);
-  // Ignore if `DefaultSearchProviderEnabled` is not set, invalid, or disabled.
-  // Ignore if `DefaultSearchProviderKeyword` is not set, invalid, or different
-  // from `shortcut`.
-  if (!provider_enabled || !provider_enabled->GetBool() || !provider_keyword ||
-      shortcut != provider_keyword->GetString()) {
-    return false;
-  }
-
-  errors->AddError(policy_name,
-                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD,
-                   shortcut);
-  return true;
-}
-
-bool ReplacementStringIsMissingFromUrl(const std::string& policy_name,
-                                       const std::string& url,
-                                       PolicyErrorMap* errors) {
-  TemplateURLData data;
-  data.SetURL(url);
-  SearchTermsData search_terms_data;
-  if (TemplateURL(data).SupportsReplacement(search_terms_data)) {
-    return false;
-  }
-
-  errors->AddError(
-      policy_name,
-      IDS_POLICY_SITE_SEARCH_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT, url);
-  return true;
-}
-
 void WarnIfNonHttpsUrl(const std::string& policy_name,
                        const std::string& url,
                        PolicyErrorMap* errors) {
   GURL gurl(url);
   if (!gurl.SchemeIs(url::kHttpsScheme)) {
-    errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS,
+    errors->AddError(policy_name, IDS_SEARCH_POLICY_SETTINGS_URL_NOT_HTTPS,
                      url);
   }
 }
@@ -240,6 +131,8 @@ const char SiteSearchPolicyHandler::kName[] = "name";
 const char SiteSearchPolicyHandler::kShortcut[] = "shortcut";
 const char SiteSearchPolicyHandler::kUrl[] = "url";
 const char SiteSearchPolicyHandler::kFeatured[] = "featured";
+const char SiteSearchPolicyHandler::kAllowUserOverride[] =
+    "allow_user_override";
 
 const int SiteSearchPolicyHandler::kMaxSiteSearchProviders = 100;
 const int SiteSearchPolicyHandler::kMaxFeaturedProviders = 3;
@@ -247,7 +140,7 @@ const int SiteSearchPolicyHandler::kMaxFeaturedProviders = 3;
 SiteSearchPolicyHandler::SiteSearchPolicyHandler(Schema schema)
     : SimpleSchemaValidatingPolicyHandler(
           key::kSiteSearchSettings,
-          EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName,
+          EnterpriseSearchManager::kSiteSearchSettingsPrefName,
           schema,
           policy::SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN,
           SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
@@ -259,7 +152,7 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                   PolicyErrorMap* errors) {
   ignored_shortcuts_.clear();
 
-  if (!IsSiteSearchPolicyEnabled() || !policies.Get(policy_name())) {
+  if (!policies.Get(policy_name())) {
     return true;
   }
 
@@ -278,11 +171,9 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return false;
   }
 
-  int num_featured = base::ranges::count_if(
+  int num_featured = std::ranges::count_if(
       site_search_providers, [](const base::Value& provider) {
-        return provider.GetDict()
-            .FindBool(SiteSearchPolicyHandler::kFeatured)
-            .value_or(false);
+        return provider.GetDict().FindBool(kFeatured).value_or(false);
       });
   if (num_featured > kMaxFeaturedProviders) {
     errors->AddError(
@@ -295,23 +186,31 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   base::flat_set<std::string> shortcuts_already_seen;
   base::flat_set<std::string> duplicated_shortcuts;
   for (const base::Value& provider : site_search_providers) {
-    const std::string& shortcut = GetShortcut(provider);
-    const std::string& url = GetUrl(provider);
-
-    // TODO(b/309457951): Add validation to ensure that at most 3 entries are
-    //                    featured_by_policy.
+    const base::Value::Dict& provider_dict = provider.GetDict();
+    const std::string& shortcut = *provider_dict.FindString(kShortcut);
+    const std::string& url = *provider_dict.FindString(kUrl);
 
     bool invalid_entry =
-        ShortcutIsEmpty(policy_name(), shortcut, errors) ||
-        NameIsEmpty(policy_name(), GetName(provider), errors) ||
-        UrlIsEmpty(policy_name(), url, errors) ||
-        ShortcutHasWhitespace(policy_name(), shortcut, errors) ||
-        ShortcutStartsWithAtSymbol(policy_name(), shortcut, errors) ||
-        ShortcutEqualsDefaultSearchProviderKeyword(policy_name(), shortcut,
-                                                   policies, errors) ||
+        search_engine_fields_validators::ShortcutIsEmpty(policy_name(),
+                                                         shortcut, errors) ||
+        search_engine_fields_validators::NameIsEmpty(
+            policy_name(), *provider_dict.FindString(kName), errors) ||
+        search_engine_fields_validators::UrlIsEmpty(policy_name(), url,
+                                                    errors) ||
+        search_engine_fields_validators::ShortcutHasWhitespace(
+            policy_name(), shortcut, errors) ||
+        search_engine_fields_validators::ShortcutStartsWithAtSymbol(
+            policy_name(), shortcut, errors) ||
+        search_engine_fields_validators::
+            ShortcutEqualsSearchAggregatorProviderKeyword(shortcut, policies,
+                                                          errors) ||
+        search_engine_fields_validators::
+            ShortcutEqualsDefaultSearchProviderKeyword(policy_name(), shortcut,
+                                                       policies, errors) ||
         ShortcutAlreadySeen(policy_name(), shortcut, shortcuts_already_seen,
                             errors, &duplicated_shortcuts) ||
-        ReplacementStringIsMissingFromUrl(policy_name(), url, errors);
+        search_engine_fields_validators::ReplacementStringIsMissingFromUrl(
+            policy_name(), url, errors);
 
     if (invalid_entry) {
       ignored_shortcuts_.insert(shortcut);
@@ -328,22 +227,19 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   }
 
   errors->AddError(policy_name(),
-                   IDS_POLICY_SITE_SEARCH_SETTINGS_NO_VALID_PROVIDER);
+                   IDS_SEARCH_POLICY_SETTINGS_NO_VALID_PROVIDER);
   return false;
 }
 
 void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                   PrefValueMap* prefs) {
-  if (!IsSiteSearchPolicyEnabled()) {
-    return;
-  }
-
   const base::Value* policy_value =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
 
   if (!policy_value) {
     // Reset site search engines if policy was reset.
-    EnterpriseSiteSearchManager::AddPrefValueToMap(base::Value::List(), prefs);
+    prefs->SetValue(EnterpriseSearchManager::kSiteSearchSettingsPrefName,
+                    base::Value(base::Value::List()));
     return;
   }
 
@@ -351,20 +247,20 @@ void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 
   base::Value::List providers;
   for (const base::Value& item : policy_value->GetList()) {
-    const std::string& shortcut = GetShortcut(item);
+    const base::Value::Dict& policy_dict = item.GetDict();
+    const std::string& shortcut = *policy_dict.FindString(kShortcut);
     if (ignored_shortcuts_.find(shortcut) == ignored_shortcuts_.end()) {
-      const base::Value::Dict& policy_dict = item.GetDict();
       providers.Append(
           SiteSearchDictFromPolicyValue(policy_dict, /*featured=*/false));
-      if (policy_dict.FindBool(SiteSearchPolicyHandler::kFeatured)
-              .value_or(false)) {
+      if (policy_dict.FindBool(kFeatured).value_or(false)) {
         providers.Append(SiteSearchDictFromPolicyValue(policy_dict,
                                                        /*featured=*/true));
       }
     }
   }
 
-  EnterpriseSiteSearchManager::AddPrefValueToMap(std::move(providers), prefs);
+  prefs->SetValue(EnterpriseSearchManager::kSiteSearchSettingsPrefName,
+                  base::Value(std::move(providers)));
 }
 
 }  // namespace policy

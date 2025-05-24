@@ -13,6 +13,7 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync/service/sync_service_impl.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -24,7 +25,7 @@ namespace {
 
 GURL GetFakeTrustedVaultRetrievalURL(
     const net::test_server::EmbeddedTestServer& test_server,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<uint8_t>& encryption_key,
     int encryption_key_version) {
   // encryption_keys_retrieval.html would populate encryption key to
@@ -33,20 +34,21 @@ GURL GetFakeTrustedVaultRetrievalURL(
   const std::string base64_encoded_key = base::Base64Encode(encryption_key);
   return test_server.GetURL(base::StringPrintf(
       "/sync/encryption_keys_retrieval.html?gaia=%s&key=%s&key_version=%d",
-      gaia_id.c_str(), base64_encoded_key.c_str(), encryption_key_version));
+      gaia_id.ToString().c_str(), base64_encoded_key.c_str(),
+      encryption_key_version));
 }
 
 GURL GetFakeTrustedVaultRecoverabilityURL(
     const net::test_server::EmbeddedTestServer& test_server,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<uint8_t>& public_key) {
   // encryption_keys_recoverability.html would populate `public_key` to
   // TrustedVaultService upon loading. Key is provided as part of URL and needs
   // to be encoded with Base64, because it is binary.
   const std::string base64_encoded_public_key = base::Base64Encode(public_key);
-  return test_server.GetURL(
-      base::StringPrintf("/sync/encryption_keys_recoverability.html?%s#%s",
-                         gaia_id.c_str(), base64_encoded_public_key.c_str()));
+  return test_server.GetURL(base::StringPrintf(
+      "/sync/encryption_keys_recoverability.html?%s#%s",
+      gaia_id.ToString().c_str(), base64_encoded_public_key.c_str()));
 }
 
 // Helper function to install server redirects in the test HTTP server.
@@ -70,7 +72,7 @@ std::unique_ptr<net::test_server::HttpResponse> HttpServerRedirect(
 }  // namespace
 
 void SetupFakeTrustedVaultPages(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<uint8_t>& trusted_vault_key,
     int trusted_vault_key_version,
     const std::vector<uint8_t>& recovery_method_public_key,

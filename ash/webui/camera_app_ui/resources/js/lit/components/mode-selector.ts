@@ -260,7 +260,6 @@ window.customElements.define('mode-selector', ModeSelector);
 
 declare global {
   interface HTMLElementTagNameMap {
-    /* eslint-disable-next-line @typescript-eslint/naming-convention */
     'mode-selector': ModeSelector;
   }
 }

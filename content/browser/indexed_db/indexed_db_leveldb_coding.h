@@ -143,6 +143,7 @@ std::string IndexedDBKeyToDebugString(std::string_view key);
 // anyway).
 CONTENT_EXPORT PartitionedLockId
 GetDatabaseLockId(std::u16string database_name);
+// Note: this one is only to be used by the LevelDB backing store.
 CONTENT_EXPORT PartitionedLockId GetObjectStoreLockId(int64_t database_id,
                                                       int64_t object_store_id);
 
@@ -186,7 +187,7 @@ class KeyPrefix {
   static const int64_t kMaxIndexId =
       (1ULL << kMaxIndexIdBits) - 1;  // max signed int32_t
 
-  static const int64_t kInvalidId = -1;
+  CONTENT_EXPORT static const int64_t kInvalidId;
 
   KeyPrefix();
   explicit KeyPrefix(int64_t database_id);
@@ -474,7 +475,7 @@ class ObjectStoreDataKey {
   static bool Decode(std::string_view* slice, ObjectStoreDataKey* result);
   CONTENT_EXPORT static std::string Encode(int64_t database_id,
                                            int64_t object_store_id,
-                                           const std::string encoded_user_key);
+                                           const std::string& encoded_user_key);
   CONTENT_EXPORT static std::string Encode(int64_t database_id,
                                            int64_t object_store_id,
                                            const blink::IndexedDBKey& user_key);
@@ -560,8 +561,8 @@ class IndexDataKey {
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
-      const std::string& encoded_user_key,
-      const std::string& encoded_primary_key,
+      const std::string_view encoded_user_key,
+      const std::string_view encoded_primary_key,
       int64_t sequence_number);
   static std::string Encode(int64_t database_id,
                             int64_t object_store_id,

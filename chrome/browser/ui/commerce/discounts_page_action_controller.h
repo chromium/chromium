@@ -57,7 +57,7 @@ class DiscountsPageActionController : public CommercePageActionController {
   GURL last_committed_url_;
   bool got_discounts_response_for_page_ = false;
   // The last discounts that were fetched for the last committed URL.
-  std::optional<std::vector<DiscountInfo>> discounts_;
+  std::vector<DiscountInfo> discounts_;
   bool coupon_code_copied_ = false;
 
   base::WeakPtrFactory<DiscountsPageActionController> weak_ptr_factory_{this};

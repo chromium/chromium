@@ -1,4 +1,4 @@
-[document web] caret_offset=3 selection_start=0 selection_end=3
+[document web] caret_offset=2 selection_start=0 selection_end=3
 ++[section] selection_start=0 selection_end=16
 ++++[static] name='before selection' selection_start=0 selection_end=16
 ++[section] selection_start=0 selection_end=24

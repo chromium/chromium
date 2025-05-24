@@ -1,17 +1,11 @@
 <!DOCTYPE html>
 <meta name=fuzzy content="maxDifference=0-3; totalPixels=0-100">
 <style>
-input {
-    writing-mode: vertical-rl;
+input::-webkit-search-cancel-button {
+ opacity: 1;
 }
 </style>
 <body>
-<input id="in" type="search" value="foo" dir="rtl">
-
-<script>
-var input = document.getElementById('in');
-// A cancel button should be showing on the top (left)
-input.focus();
-</script>
+ <input type="search" value="foo" dir="ltr" style="writing-mode: vertical-rl">
+ <input type="search" value="foo" dir="ltr" style="writing-mode: sideways-rl">
 </body>
-

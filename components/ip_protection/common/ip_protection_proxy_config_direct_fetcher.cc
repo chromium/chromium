@@ -4,26 +4,34 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 
+#include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/base64.h"
-#include "base/functional/callback.h"
+#include "base/check.h"
+#include "base/debug/crash_logging.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/http/http_request_headers.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
+#include "url/gurl.h"
 
 namespace ip_protection {
 
@@ -34,10 +42,10 @@ constexpr net::NetworkTrafficAnnotationTag kGetProxyConfigTrafficAnnotation =
         "ip_protection_service_get_proxy_config",
         R"(
     semantics {
-      sender: "Chrome IP Protection Service Client"
+      sender: "IP Protection Service Client"
       description:
         "Request to a Google auth server to obtain proxy server hostnames "
-        "for Chrome's IP Protection privacy proxies."
+        "for IP Protection privacy proxies."
       trigger:
         "On startup, periodically, and on failure to connect to a proxy."
       data:
@@ -51,7 +59,7 @@ constexpr net::NetworkTrafficAnnotationTag kGetProxyConfigTrafficAnnotation =
       user_data {
         type: NONE
       }
-      last_reviewed: "2023-08-30"
+      last_reviewed: "2024-09-26"
     }
     policy {
       cookies_allowed: NO
@@ -71,15 +79,18 @@ constexpr char kProtobufContentType[] = "application/x-protobuf";
 IpProtectionProxyConfigDirectFetcher::IpProtectionProxyConfigDirectFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string service_type,
-    AuthenticateCallback authenticate_callback) {
+    Delegate* delegate)
+    : delegate_(delegate) {
   CHECK(url_loader_factory);
   ip_protection_proxy_config_retriever_ =
       std::make_unique<IpProtectionProxyConfigDirectFetcher::Retriever>(
-          url_loader_factory, service_type, std::move(authenticate_callback));
+          url_loader_factory, service_type, delegate);
 }
 
 IpProtectionProxyConfigDirectFetcher::IpProtectionProxyConfigDirectFetcher(
-    std::unique_ptr<Retriever> retriever) {
+    std::unique_ptr<Retriever> retriever,
+    Delegate* delegate)
+    : delegate_(delegate) {
   ip_protection_proxy_config_retriever_ = std::move(retriever);
 }
 
@@ -88,15 +99,35 @@ IpProtectionProxyConfigDirectFetcher::~IpProtectionProxyConfigDirectFetcher() =
 
 void IpProtectionProxyConfigDirectFetcher::GetProxyConfig(
     GetProxyConfigCallback callback) {
+  // If IP Protection is disabled via user settings then don't attempt to get a
+  // proxy list.
+  // TODO(crbug.com/41494110): Ideally the enabled/disabled status would be
+  // handled above the level of the fetcher (in managers or core), but for the
+  // moment it is handled here.
+  if (!delegate_->IsProxyConfigFetchEnabled()) {
+    std::move(callback).Run(std::nullopt, std::nullopt);
+    return;
+  }
+
+  // If we are not able to call `RetrieveProxyConfig` yet, return early.
+  if (no_get_proxy_config_until_ > base::Time::Now()) {
+    std::move(callback).Run(std::nullopt, std::nullopt);
+    return;
+  }
+
   ip_protection_proxy_config_retriever_->RetrieveProxyConfig(base::BindOnce(
       &IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted,
       base::Unretained(this), std::move(callback)));
 }
 
+void IpProtectionProxyConfigDirectFetcher::ClearBackoffTimer() {
+  no_get_proxy_config_until_ = base::Time();
+  next_get_proxy_config_backoff_ = kGetProxyConfigFailureTimeout;
+}
+
 void IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted(
     GetProxyConfigCallback callback,
-    base::expected<ip_protection::GetProxyConfigResponse, std::string>
-        response) {
+    base::expected<GetProxyConfigResponse, std::string> response) {
   // If either there is an empty response or no geo hint present, it should be
   // treated as an error and cause a retry.
   if (IsProxyConfigResponseError(response)) {
@@ -114,34 +145,31 @@ void IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted(
   }
 
   // Cancel any backoff on success.
-  no_get_proxy_config_until_ = base::Time();
-  next_get_proxy_config_backoff_ = kGetProxyConfigFailureTimeout;
+  ClearBackoffTimer();
 
   std::vector<net::ProxyChain> proxy_list =
       GetProxyListFromProxyConfigResponse(response.value());
-  std::optional<ip_protection::GeoHint> geo_hint =
+  std::optional<GeoHint> geo_hint =
       GetGeoHintFromProxyConfigResponse(response.value());
   std::move(callback).Run(std::move(proxy_list), std::move(geo_hint));
 }
 
 bool IpProtectionProxyConfigDirectFetcher::IsProxyConfigResponseError(
-    const base::expected<ip_protection::GetProxyConfigResponse, std::string>&
-        response) {
+    const base::expected<GetProxyConfigResponse, std::string>& response) {
   if (!response.has_value()) {
     return true;
   }
 
   // Returns true for an error when a geo hint is missing but is required b/c
   // the proxy chain is NOT empty.
-  const ip_protection::GetProxyConfigResponse& config_response =
-      response.value();
+  const GetProxyConfigResponse& config_response = response.value();
   return !config_response.has_geo_hint() &&
          !config_response.proxy_chain().empty();
 }
 
 std::vector<net::ProxyChain>
 IpProtectionProxyConfigDirectFetcher::GetProxyListFromProxyConfigResponse(
-    ip_protection::GetProxyConfigResponse response) {
+    GetProxyConfigResponse response) {
   // Shortcut to create a ProxyServer with SCHEME_HTTPS from a string in the
   // proto.
   auto add_server = [](std::vector<net::ProxyServer>& proxies,
@@ -193,20 +221,22 @@ IpProtectionProxyConfigDirectFetcher::GetProxyListFromProxyConfigResponse(
     }
   }
 
+  // Log is consumed by E2E tests. Please CC potassium-engprod@google.com if you
+  // have to change this log.
   VLOG(2) << "IPATP::GetProxyList got proxy list of length "
           << proxy_list.size();
 
   return proxy_list;
 }
 
-std::optional<ip_protection::GeoHint>
+std::optional<GeoHint>
 IpProtectionProxyConfigDirectFetcher::GetGeoHintFromProxyConfigResponse(
-    ip_protection::GetProxyConfigResponse& response) {
+    GetProxyConfigResponse& response) {
   if (!response.has_geo_hint()) {
     return std::nullopt;  // No GeoHint available in the response.
   }
 
-  return std::make_optional<ip_protection::GeoHint>(
+  return std::make_optional<GeoHint>(
       {.country_code = response.geo_hint().country_code(),
        .iso_region = response.geo_hint().iso_region(),
        .city_name = response.geo_hint().city_name()});
@@ -226,13 +256,13 @@ net::ProxyChain IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
 IpProtectionProxyConfigDirectFetcher::Retriever::Retriever(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string service_type,
-    AuthenticateCallback authenticate_callback)
+    Delegate* delegate)
     : url_loader_factory_(std::move(url_loader_factory)),
       ip_protection_server_url_(net::features::kIpPrivacyTokenServer.Get()),
       ip_protection_server_get_proxy_config_path_(
           net::features::kIpPrivacyTokenServerGetProxyConfigPath.Get()),
       service_type_(std::move(service_type)),
-      authenticate_callback_(std::move(authenticate_callback)) {
+      delegate_(delegate) {
   CHECK(url_loader_factory_);
 }
 
@@ -241,8 +271,8 @@ IpProtectionProxyConfigDirectFetcher::Retriever::~Retriever() = default;
 void IpProtectionProxyConfigDirectFetcher::Retriever::RetrieveProxyConfig(
     RetrieveCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  if (authenticate_callback_) {
-    authenticate_callback_.Run(
+  if (delegate_) {
+    delegate_->AuthenticateRequest(
         std::move(resource_request),
         base::BindOnce(&IpProtectionProxyConfigDirectFetcher::Retriever::
                            OnAuthenticatedResourceRequest,
@@ -271,7 +301,7 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::
     return;
   }
 
-  ip_protection::GetProxyConfigRequest get_proxy_config_request;
+  GetProxyConfigRequest get_proxy_config_request;
   get_proxy_config_request.set_service_type(service_type_);
 
   std::string body;
@@ -292,8 +322,11 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kGetProxyConfigTrafficAnnotation);
   // Retry on network changes, as sometimes this occurs during browser startup.
+  // A network change during DNS resolution results in a DNS error rather than
+  // a network change error, so retry in those cases as well.
   url_loader->SetRetryOptions(
-      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+             network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
 
   url_loader->AttachStringForUpload(body, kProtobufContentType);
   auto* url_loader_ptr = url_loader.get();
@@ -311,13 +344,13 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::
 void IpProtectionProxyConfigDirectFetcher::Retriever::OnGetProxyConfigCompleted(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     RetrieveCallback callback,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   if (!response) {
     std::move(callback).Run(base::unexpected("Failed GetProxyConfig request"));
     return;
   }
 
-  ip_protection::GetProxyConfigResponse response_proto;
+  GetProxyConfigResponse response_proto;
   if (!response_proto.ParseFromString(*response)) {
     std::move(callback).Run(
         base::unexpected("Failed to parse GetProxyConfig response"));
@@ -325,5 +358,12 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::OnGetProxyConfigCompleted(
   }
 
   std::move(callback).Run(std::move(response_proto));
+}
+
+void IpProtectionProxyConfigDirectFetcher::AccountStatusChanged(
+    bool account_available) {
+  if (account_available) {
+    ClearBackoffTimer();
+  }
 }
 }  // namespace ip_protection

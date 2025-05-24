@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/contextual_panel/ui/trait_collection_change_delegate.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -66,6 +67,13 @@ const CGFloat kTopCornerRadius = 10;
   self.view.layer.maskedCorners =
       kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
   self.view.clipsToBounds = YES;
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateUIOnTraitChange)];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -113,26 +121,16 @@ const CGFloat kTopCornerRadius = 10;
   _heightConstraint.active = YES;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  [self.traitCollectionDelegate traitCollectionDidChangeForViewController:self];
-
-  // It's possible that changing the trait collection removes this view from
-  // the view hierarchy, so only do the remaining updates if it's still here.
-  if (!self.view.superview) {
+  if (@available(iOS 17, *)) {
     return;
   }
 
-  [self
-      animateHeightConstraintToConstant:[self
-                                            restingHeightWithSheetVelocity:0]];
-
-  _widthConstraint.active =
-      self.traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact;
-  _compactHeightWidthConstraint.active =
-      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+  [self updateUIOnTraitChange];
 }
+#endif
 
 - (BOOL)accessibilityPerformEscape {
   [self closeSheet];
@@ -307,6 +305,29 @@ const CGFloat kTopCornerRadius = 10;
     return YES;
   }
   return NO;
+}
+
+#pragma mark - Private
+
+// Modifies the ViewController's UI configuration when a change in the device's
+// UITrait set is detected.
+- (void)updateUIOnTraitChange {
+  [self.traitCollectionDelegate traitCollectionDidChangeForViewController:self];
+
+  // It's possible that changing the trait collection removes this view from
+  // the view hierarchy, so only do the remaining updates if it's still here.
+  if (!self.view.superview) {
+    return;
+  }
+
+  [self
+      animateHeightConstraintToConstant:[self
+                                            restingHeightWithSheetVelocity:0]];
+
+  _widthConstraint.active =
+      self.traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact;
+  _compactHeightWidthConstraint.active =
+      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
 @end

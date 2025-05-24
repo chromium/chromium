@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
@@ -44,11 +45,11 @@ class AppListBubbleAppsCollectionsPageTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {app_list_features::kAppsCollections,
-         app_list_features::kForceShowAppsCollections},
-        {});
+    scoped_feature_list_.InitWithFeatures({app_list_features::kAppsCollections},
+                                          {});
     AshTestBase::SetUp();
+    AppsCollectionsController::Get()->ForceAppsCollectionsForTesting(
+        /*force=*/true);
   }
 
   AppsCollectionSectionView* GetViewForCollection(AppCollection id) {

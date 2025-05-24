@@ -30,6 +30,7 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
     private final TouchToFillMediator mMediator = new TouchToFillMediator();
     private final PropertyModel mModel =
             TouchToFillProperties.createDefaultModel(mMediator::onDismissed);
+    private TouchToFillView mView;
 
     @Override
     public void initialize(
@@ -51,7 +52,8 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.touch_to_fill_favicon_size_modern),
                 bottomSheetFocusHelper);
-        setUpModelChangeProcessors(mModel, new TouchToFillView(context, sheetController));
+        mView = new TouchToFillView(context, sheetController);
+        setUpModelChangeProcessors(mModel, mView);
     }
 
     @Override
@@ -73,6 +75,12 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
                 triggerSubmission,
                 managePasskeysHidesPasswords,
                 showHybridPasskeyOption);
+    }
+
+    @Override
+    public void cleanUp() {
+        if (mView == null) return;
+        mView.destroy();
     }
 
     /**

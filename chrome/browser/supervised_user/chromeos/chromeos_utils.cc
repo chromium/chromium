@@ -4,31 +4,15 @@
 
 #include "chrome/browser/supervised_user/chromeos/chromeos_utils.h"
 
-#include "base/notreached.h"
-#include "chromeos/crosapi/mojom/parent_access.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/parent_access.mojom.h"
 
 namespace supervised_user {
 
 crosapi::mojom::ParentAccess* GetParentAccessApi() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return crosapi::CrosapiManager::Get()->crosapi_ash()->parent_access_ash();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::ParentAccess>()
-      .get();
-#else
-  NOTREACHED();
-#endif
 }
 
 }  // namespace supervised_user

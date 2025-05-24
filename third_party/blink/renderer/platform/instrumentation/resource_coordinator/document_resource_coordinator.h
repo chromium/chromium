@@ -46,6 +46,7 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
   void OnWebMemoryMeasurementRequested(
       WebMemoryMeasurementMode mode,
       OnWebMemoryMeasurementRequestedCallback callback);
+  void OnFreezingOriginTrialOptOut();
 
  private:
   explicit DocumentResourceCoordinator(const BrowserInterfaceBrokerProxy&);

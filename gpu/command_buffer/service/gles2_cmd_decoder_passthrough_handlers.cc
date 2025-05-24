@@ -1611,23 +1611,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleUnmapBuffer(
   return DoUnmapBuffer(target);
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleResizeCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ResizeCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::ResizeCHROMIUM*>(cmd_data);
-  GLuint width = static_cast<GLuint>(c.width);
-  GLuint height = static_cast<GLuint>(c.height);
-  GLfloat scale_factor = static_cast<GLfloat>(c.scale_factor);
-  GLboolean has_alpha = static_cast<GLboolean>(c.alpha);
-  gfx::ColorSpace color_space;
-  if (!ReadColorSpace(c.shm_id, c.shm_offset, c.color_space_size,
-                      &color_space)) {
-    return error::kOutOfBounds;
-  }
-  return DoResizeCHROMIUM(width, height, scale_factor, color_space, has_alpha);
-}
-
 error::Error
 GLES2DecoderPassthroughImpl::HandleGetRequestableExtensionsCHROMIUM(
     uint32_t immediate_data_size,

@@ -8,7 +8,8 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {AmbientModeAlbum, BacklightColor, BLUE_COLOR, GooglePhotosAlbum, GREEN_COLOR, INDIGO_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, YELLOW_COLOR} from './../personalization_app.mojom-webui.js';
+import type {AmbientModeAlbum, GooglePhotosAlbum} from './../personalization_app.mojom-webui.js';
+import {BacklightColor, BLUE_COLOR, GREEN_COLOR, INDIGO_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, YELLOW_COLOR} from './../personalization_app.mojom-webui.js';
 
 export interface ColorInfo {
   hexVal: string;

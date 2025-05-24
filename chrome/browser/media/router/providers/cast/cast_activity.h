@@ -11,16 +11,19 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/media_route.h"
-#include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/mojom/debugger.mojom-forward.h"
+#include "components/media_router/common/mojom/logger.mojom-forward.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace cast_channel {
@@ -54,7 +57,9 @@ class CastActivity {
   CastActivity(const MediaRoute& route,
                const std::string& app_id,
                cast_channel::CastMessageHandler* message_handler,
-               CastSessionTracker* session_tracker);
+               CastSessionTracker* session_tracker,
+               mojo::Remote<mojom::Logger>& logger,
+               mojo::Remote<mojom::Debugger>& debugger);
   CastActivity(const CastActivity&) = delete;
   CastActivity& operator=(const CastActivity&) = delete;
   virtual ~CastActivity();
@@ -198,6 +203,9 @@ class CastActivity {
 
   MediaSinkInternal sink_;
   ClientMap connected_clients_;
+
+  const raw_ref<mojo::Remote<mojom::Logger>> logger_;
+  const raw_ref<mojo::Remote<mojom::Debugger>> debugger_;
 
  private:
   static CastSessionClientFactoryForTest* client_factory_for_test_;

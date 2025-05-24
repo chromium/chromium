@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-shared.h"
-#include "third_party/blink/public/mojom/device_posture/device_posture_provider_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/device_posture/device_posture_provider_automation.test-mojom.h"
 
 namespace content {
 

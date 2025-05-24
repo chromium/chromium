@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.USE_SHRINK_CLOSE_ANIMATION;
 
 import android.animation.Animator;
@@ -20,6 +22,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -33,6 +37,7 @@ import java.util.HashMap;
  * DefaultItemAnimator}. See
  * https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/com/android/internal/widget/DefaultItemAnimator.java.
  */
+@NullMarked
 public class TabListItemAnimator extends SimpleItemAnimator {
     private static final float ORIGINAL_SCALE = 1.0f;
     private static final float REMOVE_PART_1_FINAL_SCALE = 0.6f;
@@ -133,13 +138,15 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         }
     }
 
-    private AnimatorHolder mAdds = new AnimatorHolder("Add");
-    private AnimatorHolder mChanges = new AnimatorHolder("Change");
-    private AnimatorHolder mMoves = new AnimatorHolder("Move");
-    private AnimatorHolder mRemovals = new AnimatorHolder("Removal");
+    private final AnimatorHolder mAdds = new AnimatorHolder("Add");
+    private final AnimatorHolder mChanges = new AnimatorHolder("Change");
+    private final AnimatorHolder mMoves = new AnimatorHolder("Move");
+    private final AnimatorHolder mRemovals = new AnimatorHolder("Removal");
+    private final ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier;
 
-    TabListItemAnimator() {
+    TabListItemAnimator(ObservableSupplierImpl<Boolean> isAnimatorRunningSupplier) {
         setRemoveDuration(DEFAULT_REMOVE_DURATION);
+        mIsAnimatorRunningSupplier = isAnimatorRunningSupplier;
     }
 
     @Override
@@ -227,6 +234,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                     @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchAddStarting(holder);
+                        mIsAnimatorRunningSupplier.set(true);
                     }
 
                     @Override
@@ -310,6 +318,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                     @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchChangeStarting(oldHolder, true);
+                        mIsAnimatorRunningSupplier.set(true);
                     }
 
                     @Override
@@ -346,6 +355,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                         @Override
                         public void onAnimationStart(Animator animator) {
                             dispatchChangeStarting(newHolder, false);
+                            mIsAnimatorRunningSupplier.set(true);
                         }
 
                         @Override
@@ -397,6 +407,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                     @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchMoveStarting(holder);
+                        mIsAnimatorRunningSupplier.set(true);
                     }
 
                     @Override
@@ -435,8 +446,8 @@ public class TabListItemAnimator extends SimpleItemAnimator {
 
     private static boolean shouldUseShrinkCloseAnimation(ViewHolder holder) {
         if (holder instanceof SimpleRecyclerViewAdapter.ViewHolder adapterHolder) {
-            var model = adapterHolder.model;
-            if (model.get(CARD_TYPE) == TAB) {
+            var model = assumeNonNull(adapterHolder.model);
+            if (model.get(CARD_TYPE) == TAB || model.get(CARD_TYPE) == TAB_GROUP) {
                 return model.get(USE_SHRINK_CLOSE_ANIMATION);
             }
         }
@@ -454,6 +465,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                     @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchRemoveStarting(holder);
+                        mIsAnimatorRunningSupplier.set(true);
                     }
 
                     @Override
@@ -497,6 +509,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                     @Override
                     public void onAnimationStart(Animator animator) {
                         dispatchRemoveStarting(holder);
+                        mIsAnimatorRunningSupplier.set(true);
                     }
 
                     @Override
@@ -517,6 +530,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     void dispatchFinishedWhenAllAnimationsDone() {
         if (!isRunning()) {
             dispatchAnimationsFinished();
+            mIsAnimatorRunningSupplier.set(false);
         }
     }
 

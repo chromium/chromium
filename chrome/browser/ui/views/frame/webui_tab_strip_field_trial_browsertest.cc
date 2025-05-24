@@ -4,17 +4,16 @@
 
 #include "chrome/browser/ui/views/frame/webui_tab_strip_field_trial.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/variations/active_field_trials.h"
@@ -22,9 +21,9 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -49,18 +48,18 @@ bool IsInGroup(std::string_view group_name) {
   variations::ActiveGroupId id =
       variations::MakeActiveGroupId("WebUITabStripOnTablets", group_name);
 
-  std::vector<variations::ActiveGroupId> active_groups;
-  variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
-      ->GetActiveGroupIds(&active_groups);
+  std::vector<variations::ActiveGroupId> active_groups =
+      variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
+          ->GetActiveGroupIds();
 
   for (const auto& group_id : active_groups) {
     LOG(ERROR) << group_id.name << " " << group_id.group;
   }
 
-  return base::ranges::any_of(active_groups,
-                              [=](const variations::ActiveGroupId& e) {
-                                return e.name == id.name && e.group == id.group;
-                              });
+  return std::ranges::any_of(active_groups,
+                             [=](const variations::ActiveGroupId& e) {
+                               return e.name == id.name && e.group == id.group;
+                             });
 }
 
 }  // namespace
@@ -123,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripFieldTrialDefaultTabletModeBrowserTest,
 }
 
 // The following tests depend on ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Overrides the device's tablet mode capability, forcing it to appear
 // as a tablet.
@@ -191,4 +190,4 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripFieldTrialCommandLineOverrideBrowserTest,
   EXPECT_FALSE(IsInGroup("Default"));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

@@ -66,7 +66,7 @@ void GuestSessionConfirmationDialog::Show() {
 
   auto bubble = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kSystem);
-  bubble->SetOwnedByWidget(true);
+  bubble->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   views::Widget* widget =
       views::DialogDelegate::CreateDialogWidget(std::move(bubble),
                                                 /*context=*/nullptr,

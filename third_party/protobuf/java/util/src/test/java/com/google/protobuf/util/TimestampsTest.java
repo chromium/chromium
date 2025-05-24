@@ -1,40 +1,19 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 package com.google.protobuf.util;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 import static com.google.protobuf.util.DurationsTest.duration;
+import static org.junit.Assert.fail;
 
+import com.google.common.annotations.GwtIncompatible;
 import com.google.common.collect.Lists;
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.google.protobuf.Duration;
 import com.google.protobuf.Timestamp;
 import java.text.ParseException;
@@ -44,13 +23,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 /** Unit tests for {@link Timestamps}. */
 @RunWith(JUnit4.class)
+@SuppressWarnings("JavaUtilDate")
 public class TimestampsTest {
   private static final int MILLIS_PER_SECOND = 1000;
   private static final long MILLIS = 1409130915111L;
@@ -74,11 +53,43 @@ public class TimestampsTest {
       Timestamp.newBuilder().setSeconds(Long.MIN_VALUE).setNanos(Integer.MIN_VALUE).build();
 
   @Test
+  @GwtIncompatible("Uses reflection to access methods of java.time.Instant")
+  @J2ObjCIncompatible
+  public void testNow() {
+    Timestamp now = Timestamps.now();
+    long epochSeconds = System.currentTimeMillis() / 1000;
+    assertThat(now.getSeconds()).isAtLeast(epochSeconds - 1);
+    assertThat(now.getSeconds()).isAtMost(epochSeconds + 1);
+  }
+
+  @Test
+  @GwtIncompatible("Uses reflection to access methods of java.time.Instant")
+  @J2ObjCIncompatible
+  public void testNowWithSubMillisecondPrecision() {
+    try {
+      // throws if we're not on Java9+
+      Class.forName("java.lang.Runtime$Version");
+    } catch (ClassNotFoundException e) {
+      // ignored; we're not on Java 9+
+      return;
+    }
+
+    // grab 100 timestamps, and ensure that at least 1 of them has sub-millisecond precision
+    for (int i = 0; i < 100; i++) {
+      Timestamp now = Timestamps.now();
+      Timestamp nowWithMilliPrecision = Timestamps.fromMillis(Timestamps.toMillis(now));
+      if (!now.equals(nowWithMilliPrecision)) {
+        return;
+      }
+    }
+    fail("no timestamp had sub-millisecond precision");
+  }
+
+  @Test
   public void testMinMaxAreValid() {
     assertThat(Timestamps.isValid(Timestamps.MAX_VALUE)).isTrue();
     assertThat(Timestamps.isValid(Timestamps.MIN_VALUE)).isTrue();
   }
-
 
   @Test
   public void testIsValid_false() {
@@ -105,6 +116,8 @@ public class TimestampsTest {
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testTimestampStringFormat() throws Exception {
     Timestamp start = Timestamps.parse("0001-01-01T00:00:00Z");
     Timestamp end = Timestamps.parse("9999-12-31T23:59:59.999999999Z");
@@ -133,27 +146,29 @@ public class TimestampsTest {
     assertThat(value.getNanos()).isEqualTo(999000000);
 
     // Test that 3, 6, or 9 digits are used for the fractional part.
-    value = Timestamp.newBuilder().setNanos(10).build();
-    assertThat(Timestamps.toString(value)).isEqualTo("1970-01-01T00:00:00.000000010Z");
-    value = Timestamp.newBuilder().setNanos(10000).build();
-    assertThat(Timestamps.toString(value)).isEqualTo("1970-01-01T00:00:00.000010Z");
-    value = Timestamp.newBuilder().setNanos(10000000).build();
-    assertThat(Timestamps.toString(value)).isEqualTo("1970-01-01T00:00:00.010Z");
+    assertThat(Timestamps.toString(Timestamp.newBuilder().setNanos(10).build()))
+        .isEqualTo("1970-01-01T00:00:00.000000010Z");
+    assertThat(Timestamps.toString(Timestamp.newBuilder().setNanos(10000).build()))
+        .isEqualTo("1970-01-01T00:00:00.000010Z");
+    assertThat(Timestamps.toString(Timestamp.newBuilder().setNanos(10000000).build()))
+        .isEqualTo("1970-01-01T00:00:00.010Z");
 
     // Test that parsing accepts timezone offsets.
-    value = Timestamps.parse("1970-01-01T00:00:00.010+08:00");
-    assertThat(Timestamps.toString(value)).isEqualTo("1969-12-31T16:00:00.010Z");
-    value = Timestamps.parse("1970-01-01T00:00:00.010-08:00");
-    assertThat(Timestamps.toString(value)).isEqualTo("1970-01-01T08:00:00.010Z");
-    value = Timestamps.parseUnchecked("1970-01-01T00:00:00.010+08:00");
-    assertThat(Timestamps.toString(value)).isEqualTo("1969-12-31T16:00:00.010Z");
-    value = Timestamps.parseUnchecked("1970-01-01T00:00:00.010-08:00");
-    assertThat(Timestamps.toString(value)).isEqualTo("1970-01-01T08:00:00.010Z");
+    assertThat(Timestamps.toString(Timestamps.parse("1970-01-01T00:00:00.010+08:00")))
+        .isEqualTo("1969-12-31T16:00:00.010Z");
+    assertThat(Timestamps.toString(Timestamps.parse("1970-01-01T00:00:00.010-08:00")))
+        .isEqualTo("1970-01-01T08:00:00.010Z");
+    assertThat(Timestamps.toString(Timestamps.parseUnchecked("1970-01-01T00:00:00.010+08:00")))
+        .isEqualTo("1969-12-31T16:00:00.010Z");
+    assertThat(Timestamps.toString(Timestamps.parseUnchecked("1970-01-01T00:00:00.010-08:00")))
+        .isEqualTo("1970-01-01T08:00:00.010Z");
   }
 
   private volatile boolean stopParsingThreads = false;
   private volatile String errorMessage = "";
 
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   private class ParseTimestampThread extends Thread {
     private final String[] strings;
     private final Timestamp[] values;
@@ -164,6 +179,7 @@ public class TimestampsTest {
     }
 
     @Override
+    @SuppressWarnings("ProtoTimestampGetSecondsGetNano")
     public void run() {
       int index = 0;
       while (!stopParsingThreads) {
@@ -186,6 +202,8 @@ public class TimestampsTest {
   }
 
   @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   public void testTimestampConcurrentParsing() throws Exception {
     String[] timestampStrings =
         new String[] {
@@ -219,196 +237,186 @@ public class TimestampsTest {
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testTimestampInvalidFormatValueTooSmall() throws Exception {
+    // Value too small.
+    Timestamp value =
+        Timestamp.newBuilder().setSeconds(Timestamps.TIMESTAMP_SECONDS_MIN - 1).build();
     try {
-      // Value too small.
-      Timestamp value =
-          Timestamp.newBuilder().setSeconds(Timestamps.TIMESTAMP_SECONDS_MIN - 1).build();
       Timestamps.toString(value);
-      assertWithMessage("IllegalArgumentException is expected.").fail();
+      fail("IllegalArgumentException is expected.");
     } catch (IllegalArgumentException expected) {
     }
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testTimestampInvalidFormatValueTooLarge() throws Exception {
+    // Value too large.
+    Timestamp value =
+        Timestamp.newBuilder().setSeconds(Timestamps.TIMESTAMP_SECONDS_MAX + 1).build();
     try {
-      // Value too large.
-      Timestamp value =
-          Timestamp.newBuilder().setSeconds(Timestamps.TIMESTAMP_SECONDS_MAX + 1).build();
       Timestamps.toString(value);
-      assertWithMessage("IllegalArgumentException is expected.").fail();
+      fail("IllegalArgumentException is expected.");
     } catch (IllegalArgumentException expected) {
     }
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testTimestampInvalidFormatNanosTooSmall() throws Exception {
+    // Invalid nanos value.
+    Timestamp value = Timestamp.newBuilder().setNanos(-1).build();
     try {
-      // Invalid nanos value.
-      Timestamp value = Timestamp.newBuilder().setNanos(-1).build();
       Timestamps.toString(value);
-      assertWithMessage("IllegalArgumentException is expected.").fail();
+      fail("IllegalArgumentException is expected.");
     } catch (IllegalArgumentException expected) {
     }
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testTimestampInvalidFormatNanosTooLarge() throws Exception {
+    // Invalid nanos value.
+    Timestamp value = Timestamp.newBuilder().setNanos(1000000000).build();
     try {
-      // Invalid nanos value.
-      Timestamp value = Timestamp.newBuilder().setNanos(1000000000).build();
       Timestamps.toString(value);
-      assertWithMessage("IllegalArgumentException is expected.").fail();
+      fail("IllegalArgumentException is expected.");
     } catch (IllegalArgumentException expected) {
     }
   }
 
   @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   public void testTimestampInvalidFormatDateTooSmall() {
+    final String value = "0000-01-01T00:00:00Z";
     try {
-      Timestamps.parse("0000-01-01T00:00:00Z");
-      Assert.fail();
+      Timestamps.parse(value);
+      fail();
     } catch (ParseException expected) {
-      Assert.assertNotNull(expected.getMessage());
+      assertThat(expected).hasMessageThat().isNotNull();
       assertThat(expected).hasCauseThat().isNotNull();
     }
     try {
-      Timestamps.parseUnchecked("0000-01-01T00:00:00Z");
-      assertWithMessage("IllegalArgumentException is expected.").fail();
+      Timestamps.parseUnchecked(value);
+      fail("IllegalArgumentException is expected.");
     } catch (IllegalArgumentException expected) {
-      Assert.assertNotNull(expected.getMessage());
+      assertThat(expected).hasMessageThat().isNotNull();
     }
   }
 
   @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   public void testTimestampInvalidFormatDateTooLarge() {
-    try {
-      Timestamps.parse("10000-01-01T00:00:00Z");
-      Assert.fail();
-    } catch (ParseException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
-    try {
-      Timestamps.parseUnchecked("10000-01-01T00:00:00Z");
-      assertWithMessage("IllegalArgumentException is expected.").fail();
-    } catch (IllegalArgumentException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
+    assertParseFails("10000-01-01T00:00:00Z");
   }
 
   @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   public void testTimestampInvalidFormatMissingT() {
-    try {
-      Timestamps.parse("1970-01-01 00:00:00Z");
-      Assert.fail();
-    } catch (ParseException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
-    try {
-      Timestamps.parseUnchecked("1970-01-01 00:00:00Z");
-      assertWithMessage("IllegalArgumentException is expected.").fail();
-    } catch (IllegalArgumentException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
+    assertParseFails("1970-01-01 00:00:00Z");
   }
 
   @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   public void testTimestampInvalidFormatMissingZ() {
-    try {
-      Timestamps.parse("1970-01-01T00:00:00");
-      assertWithMessage("ParseException is expected.").fail();
-    } catch (ParseException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
-    try {
-      Timestamps.parseUnchecked("1970-01-01T00:00:00");
-      assertWithMessage("IllegalArgumentException is expected.").fail();
-    } catch (IllegalArgumentException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
+    assertParseFails("1970-01-01T00:00:00");
   }
 
   @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   public void testTimestampInvalidOffset() {
-    try {
-      Timestamps.parse("1970-01-01T00:00:00+0000");
-      assertWithMessage("ParseException is expected.").fail();
-    } catch (ParseException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
-    try {
-      Timestamps.parseUnchecked("1970-01-01T00:00:00+0000");
-      assertWithMessage("IllegalArgumentException is expected.").fail();
-    } catch (IllegalArgumentException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
+    assertParseFails("1970-01-01T00:00:00+0000");
   }
 
   @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
+  public void testTimestampInvalidOffsetWithDot() {
+    assertParseFails("2021-08-19T10:24:25-07.:00");
+  }
+
+  @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   public void testTimestampInvalidTrailingText() {
-    try {
-      Timestamps.parse("1970-01-01T00:00:00Z0");
-      assertWithMessage("ParseException is expected.").fail();
-    } catch (ParseException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
-    try {
-      Timestamps.parseUnchecked("1970-01-01T00:00:00Z0");
-      assertWithMessage("IllegalArgumentException is expected.").fail();
-    } catch (IllegalArgumentException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
+    assertParseFails("1970-01-01T00:00:00Z0");
   }
 
   @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   public void testTimestampInvalidNanoSecond() {
+    assertParseFails("1970-01-01T00:00:00.ABCZ");
+  }
+
+  @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
+  public void testTimestampParseInvalidMonth() throws Exception {
+    final String value = "2000-40-01T00:00:00Z";
+    final String expected = "2003-04-01T00:00:00Z";
+    // TODO: b/379874415 - this shouldn't parse successfully
+    assertThat(Timestamps.parse(value)).isEqualTo(Timestamps.parse(expected));
+    assertThat(Timestamps.parseUnchecked(value)).isEqualTo(Timestamps.parse(expected));
+  }
+
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
+  private static void assertParseFails(String value) {
     try {
-      Timestamps.parse("1970-01-01T00:00:00.ABCZ");
-      assertWithMessage("ParseException is expected.").fail();
+      Timestamps.parse(value);
+      fail("ParseException is expected.");
     } catch (ParseException expected) {
-      Assert.assertNotNull(expected.getMessage());
-    }
-    try {
-      Timestamps.parseUnchecked("1970-01-01T00:00:00.ABCZ");
-      assertWithMessage("IllegalArgumentException is expected.").fail();
-    } catch (IllegalArgumentException expected) {
-      Assert.assertNotNull(expected.getMessage());
+      assertThat(expected).hasMessageThat().isNotNull();
     }
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testTimestampConversion() throws Exception {
     Timestamp timestamp = Timestamps.parse("1970-01-01T00:00:01.111111111Z");
     assertThat(Timestamps.toNanos(timestamp)).isEqualTo(1111111111);
     assertThat(Timestamps.toMicros(timestamp)).isEqualTo(1111111);
     assertThat(Timestamps.toMillis(timestamp)).isEqualTo(1111);
     assertThat(Timestamps.toSeconds(timestamp)).isEqualTo(1);
-    timestamp = Timestamps.fromNanos(1111111111);
-    assertThat(Timestamps.toString(timestamp)).isEqualTo("1970-01-01T00:00:01.111111111Z");
-    timestamp = Timestamps.fromMicros(1111111);
-    assertThat(Timestamps.toString(timestamp)).isEqualTo("1970-01-01T00:00:01.111111Z");
-    timestamp = Timestamps.fromMillis(1111);
-    assertThat(Timestamps.toString(timestamp)).isEqualTo("1970-01-01T00:00:01.111Z");
-    timestamp = Timestamps.fromSeconds(1);
-    assertThat(Timestamps.toString(timestamp)).isEqualTo("1970-01-01T00:00:01Z");
+
+    assertThat(Timestamps.toString(Timestamps.fromNanos(1111111111)))
+        .isEqualTo("1970-01-01T00:00:01.111111111Z");
+    assertThat(Timestamps.toString(Timestamps.fromMicros(1111111)))
+        .isEqualTo("1970-01-01T00:00:01.111111Z");
+    assertThat(Timestamps.toString(Timestamps.fromMillis(1111)))
+        .isEqualTo("1970-01-01T00:00:01.111Z");
+    assertThat(Timestamps.toString(Timestamps.fromSeconds(1))).isEqualTo("1970-01-01T00:00:01Z");
 
     timestamp = Timestamps.parse("1969-12-31T23:59:59.111111111Z");
     assertThat(Timestamps.toNanos(timestamp)).isEqualTo(-888888889);
     assertThat(Timestamps.toMicros(timestamp)).isEqualTo(-888889);
     assertThat(Timestamps.toMillis(timestamp)).isEqualTo(-889);
     assertThat(Timestamps.toSeconds(timestamp)).isEqualTo(-1);
-    timestamp = Timestamps.fromNanos(-888888889);
-    assertThat(Timestamps.toString(timestamp)).isEqualTo("1969-12-31T23:59:59.111111111Z");
-    timestamp = Timestamps.fromMicros(-888889);
-    assertThat(Timestamps.toString(timestamp)).isEqualTo("1969-12-31T23:59:59.111111Z");
-    timestamp = Timestamps.fromMillis(-889);
-    assertThat(Timestamps.toString(timestamp)).isEqualTo("1969-12-31T23:59:59.111Z");
-    timestamp = Timestamps.fromSeconds(-1);
-    assertThat(Timestamps.toString(timestamp)).isEqualTo("1969-12-31T23:59:59Z");
+
+    assertThat(Timestamps.toString(Timestamps.fromNanos(-888888889)))
+        .isEqualTo("1969-12-31T23:59:59.111111111Z");
+    assertThat(Timestamps.toString(Timestamps.fromMicros(-888889)))
+        .isEqualTo("1969-12-31T23:59:59.111111Z");
+    assertThat(Timestamps.toString(Timestamps.fromMillis(-889)))
+        .isEqualTo("1969-12-31T23:59:59.111Z");
+    assertThat(Timestamps.toString(Timestamps.fromSeconds(-1))).isEqualTo("1969-12-31T23:59:59Z");
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testFromDate() {
     Date date = new Date(1111);
     Timestamp timestamp = Timestamps.fromDate(date);
@@ -416,6 +424,8 @@ public class TimestampsTest {
   }
 
   @Test
+  @GwtIncompatible("Calendar is not supported in non JVM java.time")
+  @J2ObjCIncompatible
   public void testFromDate_after9999CE() {
     // protobuf still requires Java 7 so no java.time :-(
     Calendar calendar = Calendar.getInstance();
@@ -425,13 +435,15 @@ public class TimestampsTest {
     Date date = calendar.getTime();
     try {
       Timestamps.fromDate(date);
-      Assert.fail("should have thrown IllegalArgumentException");
+      fail("should have thrown IllegalArgumentException");
     } catch (IllegalArgumentException expected) {
       assertThat(expected).hasMessageThat().startsWith("Timestamp is not valid.");
     }
   }
 
   @Test
+  @GwtIncompatible("Calendar is not supported in non JVM java.time")
+  @J2ObjCIncompatible
   public void testFromDate_beforeYear1() {
     // protobuf still requires Java 7 so no java.time :-(
     Calendar calendar = Calendar.getInstance();
@@ -441,13 +453,15 @@ public class TimestampsTest {
     Date date = calendar.getTime();
     try {
       Timestamps.fromDate(date);
-      Assert.fail("should have thrown IllegalArgumentException");
+      fail("should have thrown IllegalArgumentException");
     } catch (IllegalArgumentException expected) {
       assertThat(expected).hasMessageThat().startsWith("Timestamp is not valid.");
     }
   }
 
   @Test
+  @GwtIncompatible("Calendar is not supported in non JVM java.time")
+  @J2ObjCIncompatible
   public void testFromDate_after2262CE() {
     // protobuf still requires Java 7 so no java.time :-(
     Calendar calendar = Calendar.getInstance();
@@ -462,6 +476,8 @@ public class TimestampsTest {
   /* Timestamp only stores integral seconds in the Date parent class and stores the nanosecond
    * adjustment in the Timestamp class. */
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testFromSqlTimestampSubMillisecondPrecision() {
     java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp(1111);
     sqlTimestamp.setNanos(sqlTimestamp.getNanos() + 234567);
@@ -470,6 +486,8 @@ public class TimestampsTest {
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testFromSqlTimestamp() {
     Date date = new java.sql.Timestamp(1111);
     Timestamp timestamp = Timestamps.fromDate(date);
@@ -477,6 +495,26 @@ public class TimestampsTest {
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
+  public void testFromSqlTimestamp_beforeEpoch() {
+    Date date = new java.sql.Timestamp(-1111);
+    Timestamp timestamp = Timestamps.fromDate(date);
+    assertThat(Timestamps.toString(timestamp)).isEqualTo("1969-12-31T23:59:58.889Z");
+  }
+
+  @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
+  public void testFromSqlTimestamp_beforeEpochWholeSecond() {
+    Date date = new java.sql.Timestamp(-2000);
+    Timestamp timestamp = Timestamps.fromDate(date);
+    assertThat(Timestamps.toString(timestamp)).isEqualTo("1969-12-31T23:59:58Z");
+  }
+
+  @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   public void testTimeOperations() throws Exception {
     Timestamp start = Timestamps.parse("0001-01-01T00:00:00Z");
     Timestamp end = Timestamps.parse("9999-12-31T23:59:59.999999999Z");
@@ -567,10 +605,13 @@ public class TimestampsTest {
   }
 
   @Test
+  @GwtIncompatible("ParseException is not supported in Xplat")
+  @J2ObjCIncompatible
   public void testOverflowsArithmeticException() throws Exception {
+    Timestamp timestamp = Timestamps.parse("9999-12-31T23:59:59.999999999Z");
     try {
-      Timestamps.toNanos(Timestamps.parse("9999-12-31T23:59:59.999999999Z"));
-      assertWithMessage("Expected an ArithmeticException to be thrown").fail();
+      Timestamps.toNanos(timestamp);
+      fail("Expected an ArithmeticException to be thrown");
     } catch (ArithmeticException expected) {
     }
   }
@@ -579,7 +620,7 @@ public class TimestampsTest {
   public void testPositiveOverflow() {
     try {
       Timestamps.add(Timestamps.MAX_VALUE, Durations.MAX_VALUE);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -588,7 +629,7 @@ public class TimestampsTest {
   public void testNegativeOverflow() {
     try {
       Timestamps.subtract(Timestamps.MIN_VALUE, Durations.MAX_VALUE);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -597,15 +638,16 @@ public class TimestampsTest {
   public void testInvalidMaxNanosecondsOverflow() {
     try {
       Timestamps.toNanos(INVALID_MAX);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
+
   @Test
   public void testInvalidMaxMicrosecondsOverflow() {
     try {
       Timestamps.toMicros(INVALID_MAX);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -614,7 +656,7 @@ public class TimestampsTest {
   public void testInvalidMaxMillisecondsOverflow() {
     try {
       Timestamps.toMillis(INVALID_MAX);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -623,7 +665,7 @@ public class TimestampsTest {
   public void testInvalidMaxSecondsOverflow() {
     try {
       Timestamps.toSeconds(INVALID_MAX);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -632,7 +674,7 @@ public class TimestampsTest {
   public void testInvalidMinNanosecondsOverflow() {
     try {
       Timestamps.toNanos(INVALID_MIN);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -641,7 +683,7 @@ public class TimestampsTest {
   public void testInvalidMicrosecondsMinOverflow() {
     try {
       Timestamps.toMicros(INVALID_MIN);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -650,7 +692,7 @@ public class TimestampsTest {
   public void testInvalidMinMillisecondsOverflow() {
     try {
       Timestamps.toMillis(INVALID_MIN);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -659,12 +701,14 @@ public class TimestampsTest {
   public void testOverInvalidMinSecondsflow() {
     try {
       Timestamps.toSeconds(INVALID_MIN);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testMaxNanosecondsConversion() {
     assertThat(Timestamps.toString(Timestamps.fromNanos(Long.MAX_VALUE)))
         .isEqualTo("2262-04-11T23:47:16.854775807Z");
@@ -672,24 +716,25 @@ public class TimestampsTest {
 
   @Test
   public void testIllegalArgumentExceptionForMaxMicroseconds() {
-   try {
+    try {
       Timestamps.fromMicros(Long.MAX_VALUE);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
-
 
   @Test
   public void testIllegalArgumentExceptionForMaxMilliseconds() {
     try {
       Durations.fromMillis(Long.MAX_VALUE);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
 
   @Test
+  @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
+  @J2ObjCIncompatible
   public void testMinNanosecondsConversion() {
     assertThat(Timestamps.toString(Timestamps.fromNanos(Long.MIN_VALUE)))
         .isEqualTo("1677-09-21T00:12:43.145224192Z");
@@ -699,17 +744,16 @@ public class TimestampsTest {
   public void testIllegalArgumentExceptionForMinMicroseconds() {
     try {
       Timestamps.fromMicros(Long.MIN_VALUE);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
-
 
   @Test
   public void testIllegalArgumentExceptionForMinMilliseconds() {
     try {
       Timestamps.fromMillis(Long.MIN_VALUE);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -766,7 +810,7 @@ public class TimestampsTest {
     long timestampMaxSeconds = 253402300799L;
     try {
       Timestamps.fromMillis((timestampMaxSeconds + 1) * MILLIS_PER_SECOND);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -776,7 +820,7 @@ public class TimestampsTest {
     long timestampMinSeconds = -62135596800L;
     try {
       Timestamps.fromMillis((timestampMinSeconds - 1) * MILLIS_PER_SECOND);
-      assertWithMessage("Expected an IllegalArgumentException to be thrown").fail();
+      fail("Expected an IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException expected) {
     }
   }
@@ -820,6 +864,16 @@ public class TimestampsTest {
         .isEqualTo(timestamp(3, 0));
     assertThat(Timestamps.subtract(timestamp(1, 2), duration(-1, -999999999)))
         .isEqualTo(timestamp(3, 1));
+  }
+
+  @Test
+  public void normalizedTimestamp_veryLarge_isInvalidNotOverflow() {
+    try {
+      Timestamps.normalizedTimestamp(9223372036854775807L, 2);
+      fail("should have thrown IllegalArgumentException");
+    } catch (IllegalArgumentException expected) {
+      assertThat(expected).hasMessageThat().startsWith("Timestamp is not valid.");
+    }
   }
 
   static Timestamp timestamp(long seconds, int nanos) {

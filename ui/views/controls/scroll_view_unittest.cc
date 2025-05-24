@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/timer/timer.h"
@@ -407,8 +408,9 @@ class WidgetScrollViewTest : public test::WidgetTest,
     // use them for impl-side scrolling. Note that simply RunUntilIdle() works
     // when tests are run in isolation, but compositor scheduling can interact
     // between test runs in the general case.
-    if (commit_layers)
+    if (commit_layers) {
       WaitForCommit();
+    }
     return scroll_view;
   }
 
@@ -517,8 +519,9 @@ class WidgetScrollViewTestRTLAndLayers
         IsTestingRtl() ? gfx::Point(kDefaultWidth - 1, 1) : gfx::Point(1, 1);
     gfx::Point point = test_mouse_point_in_root;
     View::ConvertPointToTarget(widget()->GetRootView(), target, &point);
-    if (flip_result)
+    if (flip_result) {
       return gfx::Point(target->GetMirroredXInView(point.x()), point.y());
+    }
     return point;
   }
 
@@ -559,6 +562,17 @@ TEST_F(ScrollViewTest, BoundedViewportSizedToFit) {
   // Make sure the width of |contents| is set properly not to overflow the
   // viewport.
   EXPECT_EQ(96, contents->width());
+}
+
+// Verifies that the scroll view calls post-layout callback on every layout.
+TEST_F(ScrollViewTest, LayoutCallbackCalledOnEveryLayout) {
+  auto mock_post_layout_cb_ =
+      base::MockCallback<base::RepeatingCallback<void(ScrollView*)>>();
+  scroll_view_->RegisterPostLayoutCallback(mock_post_layout_cb_.Get());
+  EXPECT_CALL(mock_post_layout_cb_, Run(scroll_view_.get())).Times(1);
+  InstallContents();
+  ASSERT_FALSE(scroll_view_->GetContentsBounds().IsEmpty());
+  views::test::RunScheduledLayout(scroll_view_.get());
 }
 
 // Verifies that the vertical scrollbar does not unnecessarily appear for a
@@ -1433,8 +1447,9 @@ TEST_F(WidgetScrollViewTest, ChildWithLayerTest) {
   ScrollView* scroll_view = AddScrollViewWithContents(std::move(contents_ptr));
   ScrollViewTestApi test_api(scroll_view);
 
-  if (test_api.contents_viewport()->layer())
+  if (test_api.contents_viewport()->layer()) {
     return;
+  }
 
   View* child = contents->AddChildView(std::make_unique<View>());
   child->SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -1463,8 +1478,9 @@ TEST_F(ScrollViewTest, DontCreateLayerOnViewportIfLayerOnScrollViewCreated) {
   View* contents = InstallContents();
   ScrollViewTestApi test_api(scroll_view_.get());
 
-  if (test_api.contents_viewport()->layer())
+  if (test_api.contents_viewport()->layer()) {
     return;
+  }
 
   scroll_view_->SetPaintToLayer();
 
@@ -2261,15 +2277,17 @@ TEST_F(ScrollViewTest, CustomOverflowIndicator) {
   View* left_indicator = scroll_view_->SetCustomOverflowIndicator(
       OverflowIndicatorAlignment::kLeft, std::make_unique<View>(), 1, true);
   EXPECT_EQ(gfx::Rect(0, 0, 1, 100), left_indicator->bounds());
-  if (left_indicator->layer())
+  if (left_indicator->layer()) {
     EXPECT_TRUE(left_indicator->layer()->fills_bounds_opaquely());
+  }
 
   // A larger, but still reasonable, indicator that is not opaque.
   View* top_indicator = scroll_view_->SetCustomOverflowIndicator(
       OverflowIndicatorAlignment::kTop, std::make_unique<View>(), 20, false);
   EXPECT_EQ(gfx::Rect(0, 0, 100, 20), top_indicator->bounds());
-  if (top_indicator->layer())
+  if (top_indicator->layer()) {
     EXPECT_FALSE(top_indicator->layer()->fills_bounds_opaquely());
+  }
 
   // Negative thickness doesn't make sense. It should be treated like zero.
   View* right_indicator = scroll_view_->SetCustomOverflowIndicator(
@@ -2550,7 +2568,7 @@ TEST_P(WidgetScrollViewTestRTLAndLayers, ScrollOffsetWithoutLayers) {
     SCOPED_TRACE(testing::Message("Nesting = ") << i);
     View* child = new View;
     child->SetBoundsRect(kCellRect);
-    deepest_view->AddChildView(child);
+    deepest_view->AddChildViewRaw(child);
     deepest_view = child;
 
     // Add a view in one quadrant. Scrolling just this view should only scroll
@@ -2559,14 +2577,16 @@ TEST_P(WidgetScrollViewTestRTLAndLayers, ScrollOffsetWithoutLayers) {
     // scroll bars, the scroll offset needs to go "a bit more".
     View* partial_view = new View;
     partial_view->SetSize(gfx::Size(kCellWidth / 3, kCellHeight / 3));
-    deepest_view->AddChildView(partial_view);
+    deepest_view->AddChildViewRaw(partial_view);
     partial_view->ScrollViewToVisible();
     int x_offset_in_cell = kCellWidth - partial_view->width();
-    if (!scroll_view->horizontal_scroll_bar()->OverlapsContent())
+    if (!scroll_view->horizontal_scroll_bar()->OverlapsContent()) {
       x_offset_in_cell -= scroll_view->horizontal_scroll_bar()->GetThickness();
+    }
     int y_offset_in_cell = kCellHeight - partial_view->height();
-    if (!scroll_view->vertical_scroll_bar()->OverlapsContent())
+    if (!scroll_view->vertical_scroll_bar()->OverlapsContent()) {
       y_offset_in_cell -= scroll_view->vertical_scroll_bar()->GetThickness();
+    }
     EXPECT_EQ(gfx::PointF(kCellWidth * i - x_offset_in_cell,
                           kCellHeight * i - y_offset_in_cell),
               test_api.CurrentOffset());
@@ -2610,8 +2630,9 @@ TEST_P(WidgetScrollViewTestRTLAndLayers, ScrollOffsetUsingLayers) {
   // The following only makes sense when layered scrolling is enabled.
   View* container = scroll_view->contents();
   EXPECT_EQ(IsTestingLayers(), !!container->layer());
-  if (!container->layer())
+  if (!container->layer()) {
     return;
+  }
 
   // Container and viewport should have layers.
   EXPECT_TRUE(container->layer());

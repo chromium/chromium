@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
@@ -46,6 +48,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                     return true;
                 case ItemType.CREDIT_CARD:
                 case ItemType.IBAN:
+                case ItemType.LOYALTY_CARD:
                     return false;
             }
             assert false : "Undefined whether to skip setting background for item of type: " + type;
@@ -83,22 +86,26 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.autofill_payment_method_bottom_sheet_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        // TODO - crbug.com/: Update for loyalty cards.
+        return context.getString(R.string.autofill_payment_method_bottom_sheet_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
+        // TODO - crbug.com/: Update for loyalty cards.
         return R.string.autofill_payment_method_bottom_sheet_half_height;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
+        // TODO - crbug.com/: Update for loyalty cards.
         return R.string.autofill_payment_method_bottom_sheet_full_height;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
+        // TODO - crbug.com/: Update for loyalty cards.
         return R.string.autofill_payment_method_bottom_sheet_closed;
     }
 
@@ -119,7 +126,10 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
 
     @Override
     protected Set<Integer> listedItemTypes() {
-        return Set.of(TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD, TouchToFillPaymentMethodProperties.ItemType.IBAN);
+        return Set.of(
+                TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD,
+                TouchToFillPaymentMethodProperties.ItemType.IBAN,
+                TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD);
     }
 
     @Override

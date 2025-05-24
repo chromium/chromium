@@ -15,20 +15,20 @@
 @property(readonly, strong) CreditCardData* creditCard;
 
 // The title of the enrollment prompt.
-@property(readonly, strong) NSString* title;
+@property(readonly, copy) NSString* title;
 
 // The explanatory message of the prompt.
-@property(readonly, strong) NSString* explanatoryMessage;
+@property(readonly, copy) NSString* explanatoryMessage;
 
 // The label text for accepting the prompt (i.e. the accept button label).
-@property(readonly, strong) NSString* acceptActionText;
+@property(readonly, copy) NSString* acceptActionText;
 
 // The label text for cancelling the prompt (i.e. the decline button label).
-@property(readonly, strong) NSString* cancelActionText;
+@property(readonly, copy) NSString* cancelActionText;
 
 // A substring of the explanatory message that should link to the learn more
 // help page.
-@property(readonly, strong) NSString* learnMoreLinkText;
+@property(readonly, copy) NSString* learnMoreLinkText;
 
 // The legal message from the payment server.
 // TODO(crbug.com/40282545): Rename SaveCardMessageWithLinks to

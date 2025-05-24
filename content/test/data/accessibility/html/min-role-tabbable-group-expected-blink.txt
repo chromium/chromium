@@ -7,7 +7,7 @@ rootWebArea focusable scrollable=true
 ++++++genericContainer focusable
 ++++++++staticText name='Tabindex=-1'
 ++++++++++inlineTextBox name='Tabindex=-1'
-++++++group focusable className='scrollable' scrollable=true
+++++++group focusable className='scrollable' name='Scrollable' scrollable=true
 ++++++++paragraph
 ++++++++++staticText name='Scrollable'
 ++++++++++++inlineTextBox name='Scrollable'

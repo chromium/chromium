@@ -28,6 +28,12 @@ inline constexpr char kDefaultSearchProviderGUID[] =
 inline constexpr char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
+// Epoch timestamp in seconds of when the user's search engine choice was
+// invalidated. We do this for example when they detect that a choice has
+// been transferred to a different device.
+inline constexpr char kDefaultSearchProviderChoiceInvalidationTimestamp[] =
+    "default_search_provider.choice_invalidation_timestamp";
+
 // Epoch timestamp in seconds of when the user chose a search engine in
 // the choice screen.
 // The timestamp and the version indicate that the user has already made a
@@ -65,22 +71,9 @@ inline constexpr char kDefaultSearchProviderPendingChoiceScreenDisplayState[] =
 inline constexpr char kDefaultSearchProviderChoiceScreenRandomShuffleSeed[] =
     "default_search_provider.choice_screen_random_shuffle_seed";
 
-// The Chrome milestone number at which the random seed was last set.
-inline constexpr char kDefaultSearchProviderChoiceScreenShuffleMilestone[] =
-    "default_search_provider.choice_screen_shuffle_milestone";
-
 // Whether a search context menu item is allowed.
 inline constexpr char kDefaultSearchProviderContextMenuAccessAllowed[] =
     "default_search_provider.context_menu_access_allowed";
-
-// Whether the prepopulated data from which the keywords were loaded is the
-// extended list that is not limited to just 5 engines.
-// This pref helps versioning the keyword data in an orthogonal way from the
-// prepopulated data version numbers, as this is dependent on runtime feature
-// state.
-// TODO(b/304947278): Deprecate when the SearchEngineChoice feature launches.
-inline constexpr char kDefaultSearchProviderKeywordsUseExtendedList[] =
-    "default_search_provider.keywords_use_extended_list";
 
 // Whether having a default search provider is enabled.
 inline constexpr char kDefaultSearchProviderEnabled[] =

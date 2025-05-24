@@ -138,7 +138,8 @@ void RecordShoppingListIneligibilityReasons(
                                   ShoppingFeatureIneligibilityReason::kSignin);
   }
 
-  if (!account_checker->IsSyncingBookmarks()) {
+  if (!account_checker->IsSyncTypeEnabled(
+          syncer::UserSelectableType::kBookmarks)) {
     base::UmaHistogramEnumeration(kShoppingListIneligibleHistogramName,
                                   ShoppingFeatureIneligibilityReason::kSync);
   }
@@ -172,8 +173,7 @@ void RecordShoppingActionUKM(ukm::SourceId ukm_source_id,
       ukm_builder.SetPriceTracked(true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   ukm_builder.Record(ukm::UkmRecorder::Get());
 }

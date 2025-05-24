@@ -61,7 +61,7 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
     explicit Image(const SkPixmap* pixmap);
 
     // Constructor for YUVA images.
-    Image(const SkPixmap yuva_pixmaps[],
+    Image(base::span<const SkPixmap> yuva_pixmaps,
           const SkYUVAInfo& yuva_info,
           const SkColorSpace* color_space);
 

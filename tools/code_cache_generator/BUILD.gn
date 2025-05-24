@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Targets in this file are used to create compiled bytecode for chromium bundled
+# JS scripts at build time. The resulting compiled bytecode can be used during
+# runtime to improve load performance.
+
+import("//build/buildflag_header.gni")
+import("//build/config/c++/c++.gni")
+import("//build/config/compiler/compiler.gni")
+import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+executable("code_cache_generator") {
+  sources = [ "code_cache_generator.cc" ]
+
+  deps = [
+    "//gin:gin",
+    "//mojo/core/embedder",
+    "//third_party/blink/public:blink",
+    "//tools/v8_context_snapshot:buildflags",
+    "//v8",
+  ]
+  data = []
+
+  if (v8_use_external_startup_data) {
+    if (use_v8_context_snapshot) {
+      data += [ "$root_out_dir/$v8_context_snapshot_filename" ]
+    }
+    if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+      data += [ "$root_out_dir/snapshot_blob.bin" ]
+    }
+  }
+
+  configs += [ "//v8:external_startup_data" ]
+}

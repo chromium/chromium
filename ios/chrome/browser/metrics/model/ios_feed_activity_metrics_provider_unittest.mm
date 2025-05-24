@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/metrics/model/ios_feed_activity_metrics_provider.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/task_environment.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -27,24 +27,23 @@ class IOSFeedActivityMetricsProviderTest : public PlatformTest {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  void AddBrowserState(const std::string& name, FeedActivityBucket bucket) {
-    TestChromeBrowserState* browser_state =
-        profile_manager_.AddProfileWithBuilder(
-            std::move(TestChromeBrowserState::Builder().SetName(name)));
+  void AddProfile(const std::string& name, FeedActivityBucket bucket) {
+    TestProfileIOS* profile = profile_manager_.AddProfileWithBuilder(
+        std::move(TestProfileIOS::Builder().SetName(name)));
 
-    browser_state->GetPrefs()->SetInteger(kActivityBucketKey,
-                                          base::to_underlying(bucket));
+    profile->GetPrefs()->SetInteger(kActivityBucketKey,
+                                    base::to_underlying(bucket));
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   base::HistogramTester histogram_tester_;
 };
 
 // Tests the implementation of ProvideCurrentSessionData when there is
-// no ChromeBrowserState loaded.
+// no ProfileIOS loaded.
 TEST_F(IOSFeedActivityMetricsProviderTest,
        ProvideCurrentSessionData_NoBrowserState) {
   IOSFeedActivityMetricsProvider provider;
@@ -57,12 +56,12 @@ TEST_F(IOSFeedActivityMetricsProviderTest,
 }
 
 // Tests the implementation of ProvideCurrentSessionData when there is
-// one ChromeBrowserState loaded, with low activity bucket.
+// one ProfileIOS loaded, with low activity bucket.
 TEST_F(IOSFeedActivityMetricsProviderTest,
        ProvideCurrentSessionData_OneBrowserState) {
   IOSFeedActivityMetricsProvider provider;
 
-  AddBrowserState("Default", FeedActivityBucket::kLowActivity);
+  AddProfile("Default", FeedActivityBucket::kLowActivity);
 
   // Check that the data is recorded as expected.
   provider.ProvideCurrentSessionData(/*uma_proto=*/nullptr);
@@ -72,14 +71,14 @@ TEST_F(IOSFeedActivityMetricsProviderTest,
 }
 
 // Tests the implementation of ProvideCurrentSessionData when there are
-// multiple ChromeBrowserState loaded, with different activity buckets.
+// multiple ProfileIOS loaded, with different activity buckets.
 TEST_F(IOSFeedActivityMetricsProviderTest,
-       ProvideCurrentSessionData_MultipleChromeBrowserStates) {
+       ProvideCurrentSessionData_MultipleProfileIOS) {
   IOSFeedActivityMetricsProvider provider;
 
-  AddBrowserState("Profile1", FeedActivityBucket::kLowActivity);
-  AddBrowserState("Profile2", FeedActivityBucket::kLowActivity);
-  AddBrowserState("Profile3", FeedActivityBucket::kHighActivity);
+  AddProfile("Profile1", FeedActivityBucket::kLowActivity);
+  AddProfile("Profile2", FeedActivityBucket::kLowActivity);
+  AddProfile("Profile3", FeedActivityBucket::kHighActivity);
 
   // Check that the data is recorded as expected.
   provider.ProvideCurrentSessionData(/*uma_proto=*/nullptr);

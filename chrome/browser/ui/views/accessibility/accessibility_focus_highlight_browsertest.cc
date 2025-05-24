@@ -10,7 +10,6 @@
 #include "base/path_service.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,8 +73,9 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
     int count = 0;
     for (int x = 0; x < bitmap.width(); ++x) {
       for (int y = 0; y < bitmap.height(); ++y) {
-        if (ColorsApproximatelyEqual(color, bitmap.getColor(x, y)))
+        if (ColorsApproximatelyEqual(color, bitmap.getColor(x, y))) {
           count++;
+        }
       }
     }
     return count * 100.0f / (bitmap.width() * bitmap.height());
@@ -227,9 +227,9 @@ class ReadbackHolder : public base::RefCountedThreadSafe<ReadbackHolder> {
 
 const cc::ExactPixelComparator pixel_comparator;
 
-// TODO(crbug.com/40817482): Fix flaky test on Lacros.
 // TODO(crbug.com/40924319): Fix flaky test on Mac.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/373535999): Fix flaky test on Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_FocusAppearance DISABLED_FocusAppearance
 #else
 #define MAYBE_FocusAppearance FocusAppearance

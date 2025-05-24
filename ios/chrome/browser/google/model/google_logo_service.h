@@ -9,13 +9,13 @@
 #include "components/search_provider_logos/logo_service_impl.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-// Provides the logo if a BrowserState's default search provider is Google.
+// Provides the logo if a Profile's default search provider is Google.
 // In addition to the GetLogo() method provided by the base implementation,
 // includes extra methods {Get,Set}CachedLogo() as an extra, nearer cache.
 //
 // Example usage:
 //   GoogleLogoService* logo_service =
-//       GoogleLogoServiceFactory::GetForBrowserState(browser_state);
+//       GoogleLogoServiceFactory::GetForProfile(profile);
 //   logo_service->GetLogo(...);
 //
 class GoogleLogoService : public search_provider_logos::LogoServiceImpl {
@@ -36,7 +36,7 @@ class GoogleLogoService : public search_provider_logos::LogoServiceImpl {
   // the logo immediately on page load. This caches the SkBitmap so we can
   // immediately load. This prevents showing the google logo on every new tab
   // page and immediately animating to the logo. Only one SkBitmap is cached per
-  // BrowserState.
+  // Profile.
   void SetCachedLogo(const search_provider_logos::Logo* logo);
   search_provider_logos::Logo GetCachedLogo();
 

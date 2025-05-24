@@ -7,6 +7,10 @@ module attribution_reporting.mojom;
 // Controls how trigger data is matched against a source's trigger specs.
 // Corresponds to
 // https://wicg.github.io/attribution-reporting-api/#trigger-data-matching-mode
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(TriggerDataMatching)
 enum TriggerDataMatching {
   // Trigger data is taken modulo the default trigger data cardinality.
   kModulus = 0,
@@ -14,3 +18,4 @@ enum TriggerDataMatching {
   // Otherwise, no event-level attribution takes place.
   kExact = 1,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionTriggerDataMatching)

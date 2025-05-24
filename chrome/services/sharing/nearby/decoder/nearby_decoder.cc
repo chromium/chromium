@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
@@ -238,7 +239,10 @@ void NearbySharingDecoder::DecodeAdvertisement(
   }
 
   std::move(callback).Run(mojom::Advertisement::New(
-      advertisement->salt(), advertisement->encrypted_metadata_key(),
+      std::vector<uint8_t>(advertisement->salt().begin(),
+                           advertisement->salt().end()),
+      std::vector<uint8_t>(advertisement->encrypted_metadata_key().begin(),
+                           advertisement->encrypted_metadata_key().end()),
       advertisement->device_type(), advertisement->device_name()));
 }
 

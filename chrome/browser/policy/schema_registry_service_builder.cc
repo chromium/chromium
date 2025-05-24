@@ -9,13 +9,12 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "content/public/browser/browser_context.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -29,7 +28,7 @@
 
 namespace policy {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 DeviceLocalAccountPolicyBroker* GetBroker(content::BrowserContext* context) {
@@ -59,7 +58,7 @@ DeviceLocalAccountPolicyBroker* GetBroker(content::BrowserContext* context) {
 }
 
 }  // namespace
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
     content::BrowserContext* context,
@@ -69,7 +68,7 @@ std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
 
   std::unique_ptr<SchemaRegistry> registry;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DeviceLocalAccountPolicyBroker* broker = GetBroker(context);
   if (broker) {
     // The SchemaRegistry for a device-local account is owned by its
@@ -84,7 +83,7 @@ std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
   if (!registry)
     registry = std::make_unique<SchemaRegistry>();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* const profile = Profile::FromBrowserContext(context);
   if (ash::ProfileHelper::IsSigninProfile(profile)) {
     // Pass the SchemaRegistry of the signin profile to the device policy

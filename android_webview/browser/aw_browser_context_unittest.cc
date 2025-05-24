@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "android_webview/browser/aw_browser_context.h"
+
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
 #include "android_webview/common/aw_features.h"
@@ -36,7 +38,9 @@ class AwBrowserContextTest : public testing::Test {
 
     AwFeatureListCreator* aw_feature_list_creator = new AwFeatureListCreator();
     aw_feature_list_creator->CreateLocalState();
-    browser_process_ = new AwBrowserProcess(aw_feature_list_creator);
+    AwContentBrowserClient* aw_content_browser_client =
+        new AwContentBrowserClient(aw_feature_list_creator);
+    browser_process_ = new AwBrowserProcess(aw_content_browser_client);
   }
 
   void TearDown() override {
@@ -55,24 +59,6 @@ class AwBrowserContextTest : public testing::Test {
       test_content_client_initializer_;
   raw_ptr<AwBrowserProcess> browser_process_;
 };
-
-// Tests that constraints on trust for Symantec-issued certificates are not
-// enforced for the NetworkContext, as it should behave like the Android system.
-// TODO(crbug.com/40278955): Fix the flakiness and re-enable.
-TEST_F(AwBrowserContextTest, DISABLED_SymantecPoliciesExempted) {
-  AwBrowserContext context(
-      AwBrowserContextStore::kDefaultContextName,
-      base::FilePath(AwBrowserContextStore::kDefaultContextPath),
-      /*is_default=*/true);
-  network::mojom::NetworkContextParams network_context_params;
-  cert_verifier::mojom::CertVerifierCreationParams cert_verifier_params;
-  context.ConfigureNetworkContextParams(
-      false, base::FilePath(), &network_context_params, &cert_verifier_params);
-
-  ASSERT_TRUE(network_context_params.initial_ssl_config);
-  ASSERT_TRUE(
-      network_context_params.initial_ssl_config->symantec_enforcement_disabled);
-}
 
 // Tests that SHA-1 is still allowed for locally-installed trust anchors,
 // including those in application manifests, as it should behave like

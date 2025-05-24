@@ -23,8 +23,7 @@ EnumTraits<nearby::connections::mojom::LogSeverity,
       return nearby::connections::mojom::LogSeverity::kFatal;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nearby::connections::mojom::LogSeverity::kInfo;
+  NOTREACHED();
 }
 
 bool EnumTraits<nearby::connections::mojom::LogSeverity,
@@ -49,8 +48,7 @@ bool EnumTraits<nearby::connections::mojom::LogSeverity,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

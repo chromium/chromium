@@ -71,7 +71,7 @@ PathSegmentData SVGPathByteStreamSource::ParseSegment() {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return segment;
 }

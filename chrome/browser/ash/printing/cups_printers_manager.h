@@ -153,7 +153,8 @@ class CupsPrintersManager : public PrinterInstallationManager,
   // Performs an IPP query on `printer` for autoconf compatibility.
   virtual void QueryPrinterForAutoConf(
       const chromeos::Printer& printer,
-      base::OnceCallback<void(bool)> callback) = 0;
+      base::OnceCallback<void(bool, const chromeos::IppPrinterInfo&)>
+          callback) = 0;
 };
 
 }  // namespace ash

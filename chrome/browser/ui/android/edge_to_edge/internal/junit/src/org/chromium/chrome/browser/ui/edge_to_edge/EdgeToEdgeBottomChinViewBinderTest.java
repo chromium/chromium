@@ -71,7 +71,7 @@ public class EdgeToEdgeBottomChinViewBinderTest {
         // Set the y-offset to full height.
         mModel.set(Y_OFFSET, mModel.get(HEIGHT));
         verify(mSceneLayer).setYOffset(mModel.get(HEIGHT));
-        verify(mAndroidView, atLeastOnce()).setVisibility(eq(View.GONE));
+        verify(mAndroidView, never()).setVisibility(eq(View.GONE));
         verify(mSceneLayer, atLeastOnce()).setIsVisible(eq(false));
 
         clearInvocations(mSceneLayer);
@@ -79,14 +79,14 @@ public class EdgeToEdgeBottomChinViewBinderTest {
         // Clear the y-offset.
         mModel.set(Y_OFFSET, 0);
         verify(mSceneLayer).setYOffset(0);
-        verify(mAndroidView, atLeastOnce()).setVisibility(eq(View.VISIBLE));
+        verify(mAndroidView, never()).setVisibility(eq(View.GONE));
         verify(mSceneLayer, atLeastOnce()).setIsVisible(eq(true));
     }
 
     @Test
     public void testUpdate_Height() {
         mModel.set(HEIGHT, 0);
-        verify(mAndroidView, atLeastOnce()).setVisibility(eq(View.GONE));
+        verify(mAndroidView, never()).setVisibility(eq(View.GONE));
         verify(mSceneLayer, atLeastOnce()).setIsVisible(eq(false));
 
         mModel.set(HEIGHT, 60);

@@ -35,47 +35,12 @@ namespace {
 
 ModuleDatabase* g_module_database = nullptr;
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Callback for the pref change registrar. Is invoked when the
-// ThirdPartyBlockingEnabled policy is modified. Notifies the ModuleDatabase if
-// the policy was disabled.
-void OnThirdPartyBlockingPolicyChanged(
-    PrefChangeRegistrar* pref_change_registrar) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (ModuleDatabase::IsThirdPartyBlockingPolicyEnabled())
-    return;
-
-  // Stop listening to policy changes and notify the ModuleDatabase.
-  pref_change_registrar->Remove(prefs::kThirdPartyBlockingEnabled);
-  ModuleDatabase::GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce([]() {
-        ModuleDatabase::GetInstance()->OnThirdPartyBlockingPolicyDisabled();
-      }));
-}
-
-// Initializes the |pref_change_registrar| on the UI thread, where preferences
-// live.
-void InitPrefChangeRegistrarOnUIThread(
-    PrefChangeRegistrar* pref_change_registrar) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  pref_change_registrar->Init(g_browser_process->local_state());
-  // It is safe to pass the pointer to the registrar because the callback will
-  // only be invoked if it is still alive.
-  pref_change_registrar->Add(
-      prefs::kThirdPartyBlockingEnabled,
-      base::BindRepeating(&OnThirdPartyBlockingPolicyChanged,
-                          pref_change_registrar));
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 }  // namespace
 
 // static
 constexpr base::TimeDelta ModuleDatabase::kIdleTimeout;
 
-ModuleDatabase::ModuleDatabase(bool third_party_blocking_policy_enabled)
+ModuleDatabase::ModuleDatabase()
     : idle_timer_(FROM_HERE,
                   kIdleTimeout,
                   base::BindRepeating(&ModuleDatabase::OnDelayExpired,
@@ -83,9 +48,6 @@ ModuleDatabase::ModuleDatabase(bool third_party_blocking_policy_enabled)
       has_started_processing_(false),
       shell_extensions_enumerated_(false),
       ime_enumerated_(false),
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      pref_change_registrar_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
-#endif
       // ModuleDatabase owns |module_inspector_|, so it is safe to use
       // base::Unretained().
       module_inspector_(base::BindRepeating(&ModuleDatabase::OnModuleInspected,
@@ -94,8 +56,7 @@ ModuleDatabase::ModuleDatabase(bool third_party_blocking_policy_enabled)
   AddObserver(&third_party_metrics_);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  MaybeInitializeThirdPartyConflictsManager(
-      third_party_blocking_policy_enabled);
+  MaybeInitializeThirdPartyConflictsManager();
 #endif
 }
 
@@ -309,22 +270,6 @@ ModuleDatabase* ModuleDatabase::GetInstanceForTesting(
 }
 
 // static
-void ModuleDatabase::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  // Register the pref used to disable the Incompatible Applications warning and
-  // the blocking of third-party modules using group policy. Enabled by default.
-  registry->RegisterBooleanPref(prefs::kThirdPartyBlockingEnabled, true);
-}
-
-// static
-bool ModuleDatabase::IsThirdPartyBlockingPolicyEnabled() {
-  const PrefService::Preference* third_party_blocking_enabled_pref =
-      g_browser_process->local_state()->FindPreference(
-          prefs::kThirdPartyBlockingEnabled);
-  return !third_party_blocking_enabled_pref->IsManaged() ||
-         third_party_blocking_enabled_pref->GetValue()->GetBool();
-}
-
-// static
 void ModuleDatabase::DisableThirdPartyBlocking() {
   // Immediately disable the hook. DisableHook() can be called concurrently.
   DisableHook();
@@ -335,16 +280,6 @@ void ModuleDatabase::DisableThirdPartyBlocking() {
                             }));
 }
 
-void ModuleDatabase::OnThirdPartyBlockingPolicyDisabled() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(third_party_conflicts_manager_);
-
-  ThirdPartyConflictsManager::ShutdownAndDestroy(
-      std::move(third_party_conflicts_manager_));
-  // The registrar is no longer observing the local state prefs, so there's no
-  // point in keeping it around.
-  pref_change_registrar_ = nullptr;
-}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 bool ModuleDatabase::FindOrCreateModuleInfo(
@@ -394,8 +329,9 @@ void ModuleDatabase::OnModuleInspected(
   it->second.inspection_result = std::move(inspection_result);
 
   if (RegisteredModulesEnumerated())
-    for (auto& observer : observer_list_)
+    for (auto& observer : observer_list_) {
       observer.OnNewModuleFound(it->first, it->second);
+    }
 
   // Notify the observers if this was the last outstanding module inspection and
   // the delay has already expired.
@@ -429,12 +365,8 @@ void ModuleDatabase::OnThirdPartyBlockingDisabled() {
     third_party_conflicts_manager_->DisableModuleAnalysis();
 }
 
-void ModuleDatabase::MaybeInitializeThirdPartyConflictsManager(
-    bool third_party_blocking_policy_enabled) {
+void ModuleDatabase::MaybeInitializeThirdPartyConflictsManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!third_party_blocking_policy_enabled)
-    return;
 
   if (IncompatibleApplicationsUpdater::IsWarningEnabled() ||
       ModuleBlocklistCacheUpdater::IsBlockingEnabled()) {
@@ -442,20 +374,6 @@ void ModuleDatabase::MaybeInitializeThirdPartyConflictsManager(
 
     third_party_conflicts_manager_ =
         std::make_unique<ThirdPartyConflictsManager>(this);
-
-    // If Chrome detects that the group policy for third-party blocking gets
-    // disabled at run-time, the |third_party_conflicts_manager_| instance must
-    // be destroyed. Since prefs can only be read on the UI thread, the
-    // registrar is initialized there.
-    auto ui_task_runner = content::GetUIThreadTaskRunner({});
-    pref_change_registrar_ =
-        std::unique_ptr<PrefChangeRegistrar, base::OnTaskRunnerDeleter>(
-            new PrefChangeRegistrar(),
-            base::OnTaskRunnerDeleter(ui_task_runner));
-    ui_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&InitPrefChangeRegistrarOnUIThread,
-                       base::Unretained(pref_change_registrar_.get())));
   }
 }
 #endif

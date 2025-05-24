@@ -68,7 +68,7 @@ class FakePredictor : public BasePredictor {
   ~FakePredictor() override {}
   // Validation will always succeed.
   static RankerModelStatus ValidateModel(const RankerModel& model) {
-    return RankerModelStatus::OK;
+    return RankerModelStatus::kOk;
   }
 
  protected:

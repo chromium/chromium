@@ -24,12 +24,17 @@ class SharingMessageBridge;
 class TemplateURLService;
 
 namespace autofill {
+class AddressDataManager;
 class AutofillWebDataService;
 }  // namespace autofill
 
 namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
+
+namespace collaboration {
+class CollaborationService;
+}  // namespace collaboration
 
 namespace commerce {
 class ProductSpecificationsService;
@@ -129,6 +134,9 @@ class CommonControllerBuilder {
 
   // Setters to inject dependencies. Each of these setters must be invoked
   // before invoking `Build()`. In some cases it is allowed to inject nullptr.
+  void SetAddressDataManagerGetter(
+      base::RepeatingCallback<autofill::AddressDataManager*()>
+          address_data_manager_getter);
   void SetAutofillWebDataService(
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
       const scoped_refptr<autofill::AutofillWebDataService>&
@@ -141,6 +149,8 @@ class CommonControllerBuilder {
           local_or_syncable_bookmark_sync_service,
       sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service);
   void SetConsentAuditor(consent_auditor::ConsentAuditor* consent_auditor);
+  void SetCollaborationService(
+      collaboration::CollaborationService* collaboration_service);
   void SetDataSharingService(
       data_sharing::DataSharingService* data_sharing_service);
   void SetDeviceInfoSyncService(
@@ -242,6 +252,8 @@ class CommonControllerBuilder {
 
   // For all above, nullopt indicates the corresponding setter wasn't invoked.
   // nullptr indicates the setter was invoked with nullptr.
+  base::RepeatingCallback<autofill::AddressDataManager*()>
+      address_data_manager_getter_;
   SafeOptional<raw_ptr<signin::IdentityManager>> identity_manager_;
   SafeOptional<raw_ptr<consent_auditor::ConsentAuditor>> consent_auditor_;
   SafeOptional<raw_ptr<syncer::DeviceInfoSyncService>>
@@ -268,9 +280,9 @@ class CommonControllerBuilder {
   SafeOptional<scoped_refptr<base::SequencedTaskRunner>>
       autofill_web_data_ui_thread_;
   SafeOptional<scoped_refptr<autofill::AutofillWebDataService>>
-      autofill_web_data_service_on_disk_;
+      profile_autofill_web_data_service_;
   SafeOptional<scoped_refptr<autofill::AutofillWebDataService>>
-      autofill_web_data_service_in_memory_;
+      account_autofill_web_data_service_;
   SafeOptional<scoped_refptr<password_manager::PasswordStoreInterface>>
       profile_password_store_;
   SafeOptional<scoped_refptr<password_manager::PasswordStoreInterface>>
@@ -290,6 +302,8 @@ class CommonControllerBuilder {
       plus_address_webdata_service_;
   SafeOptional<raw_ptr<commerce::ProductSpecificationsService>>
       product_specifications_service_;
+  SafeOptional<raw_ptr<collaboration::CollaborationService>>
+      collaboration_service_;
   SafeOptional<raw_ptr<data_sharing::DataSharingService>> data_sharing_service_;
   SafeOptional<raw_ptr<SharingMessageBridge>> sharing_message_bridge_;
   SafeOptional<raw_ptr<tab_groups::TabGroupSyncService>>

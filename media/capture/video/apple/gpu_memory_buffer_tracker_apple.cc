@@ -21,9 +21,8 @@ bool GpuMemoryBufferTrackerApple::Init(const gfx::Size& dimensions,
                                        const mojom::PlaneStridesPtr& strides) {
   DCHECK(!io_surface_);
   if (format != PIXEL_FORMAT_NV12) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unsupported VideoPixelFormat " << VideoPixelFormatToString(format);
-    return false;
+    NOTREACHED() << "Unsupported VideoPixelFormat "
+                 << VideoPixelFormatToString(format);
   }
   if ((io_surface_ =
            CreateIOSurface(dimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
@@ -63,14 +62,12 @@ uint32_t GpuMemoryBufferTrackerApple::GetMemorySizeInBytes() {
 
 std::unique_ptr<VideoCaptureBufferHandle>
 GpuMemoryBufferTrackerApple::GetMemoryMappedAccess() {
-  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
-  return std::make_unique<NullHandle>();
+  NOTREACHED() << "Unsupported operation";
 }
 
 base::UnsafeSharedMemoryRegion
 GpuMemoryBufferTrackerApple::DuplicateAsUnsafeRegion() {
-  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
-  return base::UnsafeSharedMemoryRegion();
+  NOTREACHED() << "Unsupported operation";
 }
 
 gfx::GpuMemoryBufferHandle

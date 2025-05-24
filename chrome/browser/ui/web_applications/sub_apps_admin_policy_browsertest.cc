@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
@@ -66,15 +67,20 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
   }
 
   IsolatedWebAppUrlInfo InstallIwaParentApp() {
-    iwa_dev_server_ = CreateAndStartDevServer(
-        FILE_PATH_LITERAL("web_apps/subapps_isolated_app"));
-    IsolatedWebAppUrlInfo parent_app =
-        web_app::InstallDevModeProxyIsolatedWebApp(
-            browser()->profile(), iwa_dev_server_->GetOrigin());
+    std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+        IsolatedWebAppBuilder(
+            ManifestBuilder().AddPermissionsPolicy(
+                network::mojom::PermissionsPolicyFeature::kSubApps,
+                /*self=*/true,
+                /*origins=*/{}))
+            .AddFolderFromDisk("/", "web_apps/subapps_isolated_app")
+            .BuildBundle();
+    app->TrustSigningKey();
+    IsolatedWebAppUrlInfo parent_app = app->InstallChecked(profile());
     parent_app_id_ = parent_app.app_id();
 
-    EXPECT_THAT(provider().registrar_unsafe().IsInstalled(parent_app_id_),
-                IsTrue());
+    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(parent_app_id_),
+              proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
     EXPECT_THAT(provider().registrar_unsafe().IsIsolated(parent_app_id_),
                 IsTrue());
     EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());

@@ -155,7 +155,6 @@ void SVGFELightElement::SvgAttributeChanged(
     if (!layout_object || !layout_object->IsSVGFilterPrimitive())
       return;
 
-    SVGElement::InvalidationGuard invalidation_guard(this);
     if (auto* diffuse = DynamicTo<SVGFEDiffuseLightingElement>(*parent))
       diffuse->LightElementAttributeChanged(this, attr_name);
     else if (auto* specular = DynamicTo<SVGFESpecularLightingElement>(*parent))

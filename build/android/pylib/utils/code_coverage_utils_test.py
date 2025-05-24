@@ -1,13 +1,22 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Unit tests for code_coverage_utils_test.py."""
+"""Unit tests for code_coverage_utils_test.py.
+
+Example usage:
+  vpython3 code_coverage_utils_test.py
+"""
 
 # pylint: disable=protected-access
 
 import os
+from pathlib import Path
+import sys
 import tempfile
 import unittest
+
+path_root = Path(__file__).parents[2]
+sys.path.append(str(path_root))
 
 from pylib.utils import code_coverage_utils
 from py_utils import tempfile_ext

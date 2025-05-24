@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/controls/button/image_button.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -185,7 +186,7 @@ TEST_F(ImageButtonTest, PreferredSizeInvalidation) {
   gfx::ImageSkia second_image = gfx::test::CreateImageSkia(/*size=*/50);
   button.SetImageModel(Button::STATE_NORMAL,
                        ui::ImageModel::FromImageSkia(first_image));
-  parent.AddChildView(&button);
+  parent.AddChildViewRaw(&button);
   ASSERT_EQ(0, parent.pref_size_changed_calls());
 
   button.SetImageModel(Button::STATE_NORMAL,

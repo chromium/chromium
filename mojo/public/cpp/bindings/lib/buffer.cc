@@ -10,12 +10,11 @@
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 
 #include <cstring>
-#include <tuple>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_math.h"
-#include "mojo/public/c/system/message_pipe.h"
+#include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
 namespace mojo {

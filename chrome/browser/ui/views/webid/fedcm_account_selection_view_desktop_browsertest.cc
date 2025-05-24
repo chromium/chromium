@@ -10,11 +10,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
-#include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
@@ -22,6 +21,11 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 
+namespace webid {
+
+// TODO(https://crbug.com/378939142): This is a misuse of DialogBrowserTest.
+// DialogBrowserTest exists to test the visual properties of dialogs. Instead
+// use FedCmBrowserTest below.
 class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
  public:
   FedCmAccountSelectionViewBrowserTest() {
@@ -31,31 +35,43 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
   void PreShow() override {
     delegate_ = std::make_unique<FakeDelegate>(
         browser()->tab_strip_model()->GetActiveWebContents());
-    account_selection_view_ = browser()
-                                  ->tab_strip_model()
-                                  ->GetActiveTab()
-                                  ->tab_features()
-                                  ->fedcm_account_selection_view_controller()
-                                  ->CreateAccountSelectionView(delegate());
+    account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
+        delegate(), browser()->GetActiveTabInterface());
   }
 
   void ShowUi(const std::string& name) override { ShowAccounts(); }
 
-  void ShowAccounts(Account::SignInMode mode = Account::SignInMode::kExplicit) {
+  void Initialize() {
     idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
         "idp-example.com", content::IdentityProviderMetadata(),
-        content::ClientMetadata(GURL(), GURL(), GURL()),
-        blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+        content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
+        blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+        kDefaultDisclosureFields,
         /*has_login_status_mismatch=*/false)};
     accounts_ = {base::MakeRefCounted<Account>(
-        "id", "email", "name", "given_name", GURL(),
+        "id", "display_identifier", "display_name", "email", "name",
+        "given_name", GURL(), "tel", "username",
         /*login_hints=*/std::vector<std::string>(),
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>())};
     accounts_[0]->identity_provider = idps_[0];
+  }
+
+  void ShowAccounts() {
+    Initialize();
     account_selection_view()->Show(
-        "rp-example.com", idps_, accounts_, mode, blink::mojom::RpMode::kWidget,
+        content::RelyingPartyData(u"rp-example.com",
+                                  /*iframe_for_display=*/u""),
+        idps_, accounts_, blink::mojom::RpMode::kPassive,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
+  }
+
+  void ShowVerifyingDialog(Account::SignInMode sign_in_mode) {
+    Initialize();
+    account_selection_view()->ShowVerifyingDialog(
+        content::RelyingPartyData(u"rp-example.com",
+                                  /*iframe_for_display=*/u""),
+        idps_[0], accounts_[0], sign_in_mode, blink::mojom::RpMode::kPassive);
   }
 
   void Show() {
@@ -63,7 +79,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
     ShowUi("");
   }
 
-  base::WeakPtr<views::Widget> GetDialog() {
+  views::Widget* GetDialog() {
     return account_selection_view_->GetDialogWidget();
   }
 
@@ -122,9 +138,6 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ReShow) {
   // The dialog should be reshown after the WebContents is Visible.
   ASSERT_TRUE(GetDialog());
   EXPECT_TRUE(GetDialog()->IsVisible());
-  // Test workaround for http://crbug.com/1367309 where
-  // NativeWidgetMac::Activate() ignores views::Widget::IsVisible().
-  EXPECT_TRUE(GetDialog()->widget_delegate()->CanActivate());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
@@ -162,15 +175,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
   delegate_->SetAccountSelectedCallback(base::BindOnce(
       &FedCmAccountSelectionViewBrowserTest::ResetAccountSelectionView,
       base::Unretained(this)));
-  account_selection_view_->ShowModalDialog(GURL("https://example.test/"),
-                                           blink::mojom::RpMode::kWidget);
+  account_selection_view_->ShowModalDialog(GURL("https://rp-example.com"),
+                                           blink::mojom::RpMode::kPassive);
   // Because a modal dialog is up, this should save the accounts for later.
-  ShowAccounts(Account::SignInMode::kAuto);
+  ShowVerifyingDialog(Account::SignInMode::kAuto);
   // This should trigger auto re-authn without crashing or UAF.
   account_selection_view_->CloseModalDialog();
-  // The account selected callback should have been called, thus the view
-  // should be null now.
-  EXPECT_EQ(nullptr, account_selection_view_);
+  EXPECT_EQ(account_selection_view_->state_,
+            FedCmAccountSelectionView::State::AUTO_REAUTHN);
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, DetachAndDelete) {
@@ -211,9 +223,6 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, AddTabHidesUI) {
   // The dialog should be hidden since the new tab is appended foregrounded.
   ASSERT_TRUE(GetDialog());
   EXPECT_FALSE(GetDialog()->IsVisible());
-  // Test workaround for http://crbug.com/1367309 where
-  // NativeWidgetMac::Activate() ignores views::Widget::IsVisible().
-  EXPECT_FALSE(GetDialog()->widget_delegate()->CanActivate());
 
   ASSERT_TRUE(AddTabAtIndex(2, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(GetDialog());
@@ -241,9 +250,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
 
   // Add a new tab and detach the FedCM tab without closing it.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->DetachTabAtForInsertion(0);
+  std::unique_ptr<tabs::TabModel> tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(0);
 
   ASSERT_FALSE(GetDialog());
+
+  // Add the the FedCM tab back in to the tabstrip to complete the transfer so
+  // we can tear down cleanly.
+  browser()->tab_strip_model()->AppendTab(std::move(tab), true);
 }
 
 // Test that the dialog is disabled when occluded by a PiP window.
@@ -261,7 +275,9 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
       dialog_view->GetWidget()->GetWindowBoundsInScreen();
   gfx::Rect non_occluding_bounds =
       gfx::Rect(prompt_widget_bounds.right() + 1, 0, 100, 100);
-  views::Widget::InitParams init_params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams init_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   init_params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   init_params.bounds = non_occluding_bounds;
   auto pip_widget = std::make_unique<views::Widget>(std::move(init_params));
@@ -297,3 +313,169 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
   }
   EXPECT_TRUE(dialog_view->GetEnabled());
 }
+
+// Helper methods shared by FedCmBrowserTest and
+// FedCmAccountSelectionViewPopupTest.
+class FedCmMixin {
+ public:
+  // In a bubble view.
+  void ShowAccounts(Browser* browser) {
+    delegate_ = std::make_unique<FakeDelegate>(
+        browser->GetActiveTabInterface()->GetContents());
+    account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
+        delegate_.get(), browser->GetActiveTabInterface());
+
+    idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
+        "idp-example.com", content::IdentityProviderMetadata(),
+        content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
+        blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+        kDefaultDisclosureFields,
+        /*has_login_status_mismatch=*/false)};
+    accounts_ = {base::MakeRefCounted<Account>(
+        "id", "display_identifier", "display_name", "email", "name",
+        "given_name", GURL(), "phone", "username",
+        /*login_hints=*/std::vector<std::string>(),
+        /*domain_hints=*/std::vector<std::string>(),
+        /*labels=*/std::vector<std::string>())};
+    accounts_[0]->identity_provider = idps_[0];
+    account_selection_view_->Show(
+        content::RelyingPartyData(u"rp-example.com",
+                                  /*iframe_for_display=*/u""),
+        idps_, accounts_, blink::mojom::RpMode::kPassive,
+        /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
+  }
+
+  void Reset() {
+    account_selection_view_.reset();
+    delegate_.reset();
+  }
+
+  std::unique_ptr<FakeDelegate> delegate_;
+  std::vector<IdentityProviderDataPtr> idps_;
+  std::vector<IdentityRequestAccountPtr> accounts_;
+  std::unique_ptr<FedCmAccountSelectionView> account_selection_view_;
+};
+
+// These are normal browser tests. Add more of these.
+class FedCmBrowserTest : public InProcessBrowserTest, public FedCmMixin {
+ public:
+  void ShowModalLoadingDialog() {
+    delegate_ = std::make_unique<FakeDelegate>(
+        browser()->GetActiveTabInterface()->GetContents());
+    account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
+        delegate_.get(), browser()->GetActiveTabInterface());
+    account_selection_view_->ShowLoadingDialog(
+        content::RelyingPartyData(u"rp-example.com",
+                                  /*iframe_for_display=*/u""),
+        "idp_etld_plus_one.com", blink::mojom::RpContext::kSignIn,
+        blink::mojom::RpMode::kActive);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputDisabledForModalDialog) {
+  // Check that input is enabled by default.
+  EXPECT_FALSE(browser()
+                   ->GetActiveTabInterface()
+                   ->GetContents()
+                   ->ShouldIgnoreInputEventsForTesting());
+
+  // Show a modal dialog.
+  ShowModalLoadingDialog();
+
+  // Now input should be disabled.
+  EXPECT_TRUE(browser()
+                  ->GetActiveTabInterface()
+                  ->GetContents()
+                  ->ShouldIgnoreInputEventsForTesting());
+
+  // If we make a new tab input should be enabled.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_FALSE(browser()
+                   ->GetActiveTabInterface()
+                   ->GetContents()
+                   ->ShouldIgnoreInputEventsForTesting());
+
+  // If we switch to original tab input should be disabled.
+  browser()->tab_strip_model()->ActivateTabAt(/*index=*/0);
+  EXPECT_TRUE(browser()
+                  ->GetActiveTabInterface()
+                  ->GetContents()
+                  ->ShouldIgnoreInputEventsForTesting());
+
+  // If we close the dialog input should be enabled.
+  account_selection_view_.reset();
+  EXPECT_FALSE(browser()
+                   ->GetActiveTabInterface()
+                   ->GetContents()
+                   ->ShouldIgnoreInputEventsForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputEnabledForBubbleDialog) {
+  // Check that input is enabled by default.
+  EXPECT_FALSE(browser()
+                   ->GetActiveTabInterface()
+                   ->GetContents()
+                   ->ShouldIgnoreInputEventsForTesting());
+
+  // Show a bubble dialog.
+  ShowAccounts(browser());
+
+  // Check that input is still enabled.
+  EXPECT_FALSE(browser()
+                   ->GetActiveTabInterface()
+                   ->GetContents()
+                   ->ShouldIgnoreInputEventsForTesting());
+}
+
+class FedCmAccountSelectionViewPopupTest : public PopupTestBase,
+                                           public FedCmMixin {};
+
+IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewPopupTest,
+                       CanFitInWebContents) {
+  // Normal size popup should work fine.
+  {
+    Browser* popup = OpenPopup(
+        browser(), "open('.', '', 'left=0,top=0,width=1000,height=1000')");
+    ShowAccounts(popup);
+    EXPECT_TRUE(account_selection_view_->CanFitInWebContents());
+
+    auto* bubble = static_cast<AccountSelectionBubbleView*>(
+        account_selection_view_->account_selection_view());
+    EXPECT_TRUE(
+        popup->GetActiveTabInterface()->GetContents()->GetViewBounds().Contains(
+            bubble->GetBubbleBounds()));
+    Reset();
+  }
+
+  // Too small vertically. Popups have a minimum vertical height so the actual
+  // height will be larger, but that's still too small.
+  {
+    Browser* popup = OpenPopup(
+        browser(), "open('.', '', 'left=0,top=0,width=1000,height=10')");
+    ShowAccounts(popup);
+    EXPECT_FALSE(account_selection_view_->CanFitInWebContents());
+    Reset();
+  }
+
+  // Too small horizontally.
+  {
+    Browser* popup = OpenPopup(
+        browser(), "open('.', '', 'left=0,top=0,width=10,height=1000')");
+    ShowAccounts(popup);
+    EXPECT_FALSE(account_selection_view_->CanFitInWebContents());
+    Reset();
+  }
+
+  // Too small in both directions.
+  {
+    Browser* popup = OpenPopup(
+        browser(), "open('.', '', 'left=0,top=0,width=10,height=10')");
+    ShowAccounts(popup);
+    EXPECT_FALSE(account_selection_view_->CanFitInWebContents());
+    Reset();
+  }
+}
+
+}  // namespace webid

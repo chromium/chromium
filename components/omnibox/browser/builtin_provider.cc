@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/omnibox/browser/builtin_provider.h"
 
 #include <stddef.h>
@@ -71,9 +76,10 @@ void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
     ACMatchClassifications styles =
         ClassifyTermMatches(style_matches, std::string::npos, kMatch, kUrl);
     // Include some common builtin URLs as the user types the scheme.
-    for (std::u16string url : client_->GetBuiltinsToProvideAsUserTypes())
+    for (const std::u16string& url :
+         client_->GetBuiltinsToProvideAsUserTypes()) {
       AddBuiltinMatch(url, std::u16string(), styles);
-
+    }
   } else {
     // Match input about: or |embedderAbout| URL input against builtin URLs.
     GURL url = url_formatter::FixupURL(base::UTF16ToUTF8(text), std::string());

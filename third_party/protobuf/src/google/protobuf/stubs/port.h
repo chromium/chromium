@@ -1,82 +1,25 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 #ifndef GOOGLE_PROTOBUF_STUBS_PORT_H_
 #define GOOGLE_PROTOBUF_STUBS_PORT_H_
 
 #include <assert.h>
-#include <cstdint>
 #include <stdlib.h>
-#include <cstddef>
-#include <string>
 #include <string.h>
 
-#include <google/protobuf/stubs/platform_macros.h>
+#include <cstddef>
+#include <cstdint>
+#include <string>
 
-#include <google/protobuf/port_def.inc>
+#include "google/protobuf/stubs/platform_macros.h"
 
-#undef PROTOBUF_LITTLE_ENDIAN
-#ifdef _WIN32
-  // Assuming windows is always little-endian.
-  // TODO(xiaofeng): The PROTOBUF_LITTLE_ENDIAN is not only used for
-  // optimization but also for correctness. We should define an
-  // different macro to test the big-endian code path in coded_stream.
-  #if !defined(PROTOBUF_DISABLE_LITTLE_ENDIAN_OPT_FOR_TEST)
-    #define PROTOBUF_LITTLE_ENDIAN 1
-  #endif
-#if defined(_MSC_VER) && _MSC_VER >= 1300 && !defined(__INTEL_COMPILER)
-// If MSVC has "/RTCc" set, it will complain about truncating casts at
-// runtime.  This file contains some intentional truncating casts.
-#pragma runtime_checks("c", off)
-#endif
-#else
-#ifdef __APPLE__
-#include <machine/endian.h>  // __BYTE_ORDER
-#elif defined(__FreeBSD__)
-#include <sys/endian.h>  // __BYTE_ORDER
-#elif (defined(sun) || defined(__sun)) && (defined(__SVR4) || defined(__svr4__))
-#include <sys/isa_defs.h>  // __BYTE_ORDER
-#elif defined(_AIX) || defined(__TOS_AIX__)
-#include <sys/machine.h>  // BYTE_ORDER
-#else
-#if !defined(__QNX__)
-#include <endian.h>  // __BYTE_ORDER
-#endif
-#endif
-#if ((defined(__LITTLE_ENDIAN__) && !defined(__BIG_ENDIAN__)) ||   \
-     (defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN) || \
-     (defined(BYTE_ORDER) && BYTE_ORDER == LITTLE_ENDIAN)) &&      \
-    !defined(PROTOBUF_DISABLE_LITTLE_ENDIAN_OPT_FOR_TEST)
-#define PROTOBUF_LITTLE_ENDIAN 1
-#endif
-#endif
+// Must be last.
+#include "google/protobuf/port_def.inc"  // NOLINT
 
 // These #includes are for the byte swap functions declared later on.
 #ifdef _MSC_VER
@@ -86,6 +29,13 @@
 #include <libkern/OSByteOrder.h>
 #elif defined(__linux__) || defined(__ANDROID__) || defined(__CYGWIN__)
 #include <byteswap.h>  // IWYU pragma: export
+#endif
+
+#if defined(_MSC_VER) && !defined(__clang__) && \
+    defined(GOOGLE_PROTOBUF_USING_BAZEL) &&     \
+    !defined(GOOGLE_PROTOBUF_MSVC_BAZEL_OVERRIDE)
+#error \
+    "Protobuf will be dropping support for MSVC + Bazel in 34.0.  To continue using it until then, use the flag --define=protobuf_allow_msvc=true.  For feedback or discussion, see github.com/protocolbuffers/protobuf/issues/20085."
 #endif
 
 // Legacy: some users reference these (internal-only) macros even though we
@@ -119,9 +69,8 @@
   #define LIBPROTOC_EXPORT
 #endif
 
-#define PROTOBUF_RUNTIME_DEPRECATED(message) PROTOBUF_DEPRECATED_MSG(message)
-#define GOOGLE_PROTOBUF_RUNTIME_DEPRECATED(message) \
-  PROTOBUF_DEPRECATED_MSG(message)
+#define PROTOBUF_RUNTIME_DEPRECATED(message) [[deprecated]] (message)
+#define GOOGLE_PROTOBUF_RUNTIME_DEPRECATED(message) [[deprecated]] (message)
 
 // ===================================================================
 // from google3/base/port.h
@@ -138,8 +87,6 @@
 
 namespace google {
 namespace protobuf {
-
-using ConstStringParam = const std::string &;
 
 typedef unsigned int uint;
 
@@ -160,57 +107,6 @@ static const int64 kint64min = -kint64max - 1;
 static const uint32 kuint32max = 0xFFFFFFFFu;
 static const uint64 kuint64max = uint64_t{0xFFFFFFFFFFFFFFFFu};
 
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) ||\
-    defined(MEMORY_SANITIZER)
-
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
-uint16_t __sanitizer_unaligned_load16(const void *p);
-uint32_t __sanitizer_unaligned_load32(const void *p);
-uint64_t __sanitizer_unaligned_load64(const void *p);
-void __sanitizer_unaligned_store16(void *p, uint16_t v);
-void __sanitizer_unaligned_store32(void *p, uint32_t v);
-void __sanitizer_unaligned_store64(void *p, uint64_t v);
-#ifdef __cplusplus
-}  // extern "C"
-#endif  // __cplusplus
-
-inline uint16_t GOOGLE_UNALIGNED_LOAD16(const void *p) {
-  return __sanitizer_unaligned_load16(p);
-}
-
-inline uint32_t GOOGLE_UNALIGNED_LOAD32(const void *p) {
-  return __sanitizer_unaligned_load32(p);
-}
-
-inline uint64_t GOOGLE_UNALIGNED_LOAD64(const void *p) {
-  return __sanitizer_unaligned_load64(p);
-}
-
-inline void GOOGLE_UNALIGNED_STORE16(void *p, uint16_t v) {
-  __sanitizer_unaligned_store16(p, v);
-}
-
-inline void GOOGLE_UNALIGNED_STORE32(void *p, uint32_t v) {
-  __sanitizer_unaligned_store32(p, v);
-}
-
-inline void GOOGLE_UNALIGNED_STORE64(void *p, uint64_t v) {
-  __sanitizer_unaligned_store64(p, v);
-}
-
-#elif defined(GOOGLE_PROTOBUF_USE_UNALIGNED) && GOOGLE_PROTOBUF_USE_UNALIGNED
-
-#define GOOGLE_UNALIGNED_LOAD16(_p) (*reinterpret_cast<const uint16_t *>(_p))
-#define GOOGLE_UNALIGNED_LOAD32(_p) (*reinterpret_cast<const uint32_t *>(_p))
-#define GOOGLE_UNALIGNED_LOAD64(_p) (*reinterpret_cast<const uint64_t *>(_p))
-
-#define GOOGLE_UNALIGNED_STORE16(_p, _val) (*reinterpret_cast<uint16_t *>(_p) = (_val))
-#define GOOGLE_UNALIGNED_STORE32(_p, _val) (*reinterpret_cast<uint32_t *>(_p) = (_val))
-#define GOOGLE_UNALIGNED_STORE64(_p, _val) (*reinterpret_cast<uint64_t *>(_p) = (_val))
-
-#else
 inline uint16_t GOOGLE_UNALIGNED_LOAD16(const void *p) {
   uint16_t t;
   memcpy(&t, p, sizeof t);
@@ -240,7 +136,6 @@ inline void GOOGLE_UNALIGNED_STORE32(void *p, uint32_t v) {
 inline void GOOGLE_UNALIGNED_STORE64(void *p, uint64_t v) {
   memcpy(p, &v, sizeof v);
 }
-#endif
 
 #if defined(GOOGLE_PROTOBUF_OS_NACL) \
     || (defined(__ANDROID__) && defined(__clang__) \
@@ -296,75 +191,12 @@ static inline uint64_t bswap_64(uint64_t x) {
 #endif
 
 // ===================================================================
-// from google3/util/bits/bits.h
-
-class Bits {
- public:
-  static uint32_t Log2FloorNonZero(uint32_t n) {
-#if defined(__GNUC__)
-  return 31 ^ static_cast<uint32_t>(__builtin_clz(n));
-#elif defined(_MSC_VER)
-  unsigned long where;
-  _BitScanReverse(&where, n);
-  return where;
-#else
-  return Log2FloorNonZero_Portable(n);
-#endif
-  }
-
-  static uint32_t Log2FloorNonZero64(uint64_t n) {
-    // Older versions of clang run into an instruction-selection failure when
-    // it encounters __builtin_clzll:
-    // https://bugs.chromium.org/p/nativeclient/issues/detail?id=4395
-    // This includes arm-nacl-clang and clang in older Android NDK versions.
-    // To work around this, when we build with those we use the portable
-    // implementation instead.
-#if defined(__GNUC__) && !defined(GOOGLE_PROTOBUF_USE_PORTABLE_LOG2)
-  return 63 ^ static_cast<uint32_t>(__builtin_clzll(n));
-#elif defined(_MSC_VER) && defined(_M_X64)
-  unsigned long where;
-  _BitScanReverse64(&where, n);
-  return where;
-#else
-  return Log2FloorNonZero64_Portable(n);
-#endif
-  }
- private:
-  static int Log2FloorNonZero_Portable(uint32_t n) {
-    if (n == 0)
-      return -1;
-    int log = 0;
-    uint32_t value = n;
-    for (int i = 4; i >= 0; --i) {
-      int shift = (1 << i);
-      uint32_t x = value >> shift;
-      if (x != 0) {
-        value = x;
-        log += shift;
-      }
-    }
-    assert(value == 1);
-    return log;
-  }
-
-  static int Log2FloorNonZero64_Portable(uint64_t n) {
-    const uint32_t topbits = static_cast<uint32_t>(n >> 32);
-    if (topbits == 0) {
-      // Top bits are zero, so scan in bottom bits
-      return static_cast<int>(Log2FloorNonZero(static_cast<uint32_t>(n)));
-    } else {
-      return 32 + static_cast<int>(Log2FloorNonZero(topbits));
-    }
-  }
-};
-
-// ===================================================================
 // from google3/util/endian/endian.h
 PROTOBUF_EXPORT uint32_t ghtonl(uint32_t x);
 
 class BigEndian {
  public:
-#ifdef PROTOBUF_LITTLE_ENDIAN
+#ifdef ABSL_IS_LITTLE_ENDIAN
 
   static uint16_t FromHost16(uint16_t x) { return bswap_16(x); }
   static uint16_t ToHost16(uint16_t x) { return bswap_16(x); }
@@ -421,6 +253,6 @@ class BigEndian {
 }  // namespace protobuf
 }  // namespace google
 
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"
 
 #endif  // GOOGLE_PROTOBUF_STUBS_PORT_H_

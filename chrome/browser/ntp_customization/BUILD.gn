@@ -1,0 +1,130 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ntp_customization/BottomSheetDelegate.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/BottomSheetListContainerView.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/BottomSheetListContainerViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/BottomSheetListItemView.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/BottomSheetViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/ListContainerViewDelegate.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMediator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMetricsUtils.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationUtils.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationViewProperties.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/feed/FeedSettingsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/feed/FeedSettingsMediator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsListContainerView.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsListItemView.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediator.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:log_java",
+    "//base:metrics_java",
+    "//base:resetters_java",
+    "//base:supplier_java",
+    "//chrome/browser/feed/android:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/preferences:pref_service_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/feed/core/v2:feedv2_common_core_java",
+    "//components/prefs/android:java",
+    "//components/search_engines/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//ui/android:ui_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.ntp_customization"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/edit_icon_circle_background.xml",
+    "java/res/drawable/forward_arrow_icon.xml",
+    "java/res/drawable/ntp_customization_bottom_sheet_background.xml",
+    "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_bottom.xml",
+    "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_middle.xml",
+    "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_single.xml",
+    "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_top.xml",
+    "java/res/layout/bottom_sheet_list_item_view.xml",
+    "java/res/layout/ntp_customization_bottom_sheet.xml",
+    "java/res/layout/ntp_customization_drag_handle_bar.xml",
+    "java/res/layout/ntp_customization_feed_bottom_sheet.xml",
+    "java/res/layout/ntp_customization_main_bottom_sheet.xml",
+    "java/res/layout/ntp_customization_ntp_cards_bottom_sheet.xml",
+    "java/res/layout/ntp_customization_ntp_cards_list_item.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
+  ]
+  deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.ntp_customization"
+
+  sources = [
+    "junit/src/org/chromium/chrome/browser/ntp_customization/BottomSheetListContainerViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/BottomSheetListContainerViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/BottomSheetListItemViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/BottomSheetViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationBottomSheetContentUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMetricsUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/feed/FeedSettingsCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/feed/FeedSettingsMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsListContainerViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsListItemViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediatorUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/feed/android:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/prefs/android:java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

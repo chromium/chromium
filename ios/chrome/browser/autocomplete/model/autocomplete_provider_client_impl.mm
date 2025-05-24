@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 
-#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/history/core/browser/history_service.h"
@@ -15,10 +14,12 @@
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #import "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#import "components/omnibox/browser/on_device_tail_model_service.h"
 #import "components/omnibox/browser/provider_state_service.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scoring_model_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/model/omnibox_pedal_implementation.h"
+#import "ios/chrome/browser/autocomplete/model/on_device_tail_model_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/provider_state_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
@@ -48,28 +50,16 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace {
-
-// Killswitch, can be removed around December 2023. If enabled,
-// IsAuthenticated() will only return true for Sync-consented accounts.
-BASE_FEATURE(kIosAutocompleteProviderRequireSync,
-             "IosAutocompleteProviderRequireSync",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace
-
 AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
     ProfileIOS* profile)
     : profile_(profile),
       url_consent_helper_(
-          base::FeatureList::IsEnabled(
-              omnibox::kPrefBasedDataCollectionConsentHelper)
-              ? unified_consent::UrlKeyedDataCollectionConsentHelper::
-                    NewAnonymizedDataCollectionConsentHelper(
-                        profile_->GetPrefs())
-              : unified_consent::UrlKeyedDataCollectionConsentHelper::
-                    NewPersonalizedDataCollectionConsentHelper(
-                        SyncServiceFactory::GetForProfile(profile_))),
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewAnonymizedDataCollectionConsentHelper(profile_->GetPrefs())),
+      personalized_url_consent_helper_(
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewPersonalizedDataCollectionConsentHelper(
+                  SyncServiceFactory::GetForProfile(profile_))),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()),
       tab_matcher_(profile_) {
@@ -176,6 +166,12 @@ AutocompleteProviderClientImpl::GetKeywordExtensionsDelegate(
   return nullptr;
 }
 
+std::unique_ptr<UnscopedExtensionProviderDelegate>
+AutocompleteProviderClientImpl::GetUnscopedExtensionProviderDelegate(
+    UnscopedExtensionProvider* unscoped_extension_provider) {
+  return nullptr;
+}
+
 OmniboxTriggeredFeatureService*
 AutocompleteProviderClientImpl::GetOmniboxTriggeredFeatureService() const {
   return omnibox_triggered_feature_service_.get();
@@ -188,13 +184,19 @@ AutocompleteProviderClientImpl::GetAutocompleteScoringModelService() const {
 
 OnDeviceTailModelService*
 AutocompleteProviderClientImpl::GetOnDeviceTailModelService() const {
-  // TODO(crbug.com/40241602): implement the service factory for iOS.
-  return nullptr;
+  return OnDeviceTailModelServiceFactory::GetForProfile(profile_);
 }
 
 ProviderStateService* AutocompleteProviderClientImpl::GetProviderStateService()
     const {
   return ios::ProviderStateServiceFactory::GetForProfile(profile_);
+}
+
+base::CallbackListSubscription
+AutocompleteProviderClientImpl::GetLensSuggestInputsWhenReady(
+    LensOverlaySuggestInputsCallback callback) const {
+  NOTREACHED()
+      << "GetLensSuggestInputsWhenReady is not implemented by default.";
 }
 
 std::string AutocompleteProviderClientImpl::GetAcceptLanguages() const {
@@ -234,6 +236,11 @@ signin::IdentityManager* AutocompleteProviderClientImpl::GetIdentityManager()
   return IdentityManagerFactory::GetForProfile(profile_);
 }
 
+tab_groups::TabGroupSyncService*
+AutocompleteProviderClientImpl::GetTabGroupSyncService() const {
+  return nullptr;
+}
+
 bool AutocompleteProviderClientImpl::IsOffTheRecord() const {
   return profile_->IsOffTheRecord();
 }
@@ -250,27 +257,25 @@ bool AutocompleteProviderClientImpl::SearchSuggestEnabled() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kSearchSuggestEnabled);
 }
 
+bool AutocompleteProviderClientImpl::IsUrlDataCollectionActive() const {
+  return url_consent_helper_->IsEnabled();
+}
+
 bool AutocompleteProviderClientImpl::IsPersonalizedUrlDataCollectionActive()
     const {
-  return url_consent_helper_->IsEnabled();
+  return personalized_url_consent_helper_->IsEnabled();
 }
 
 bool AutocompleteProviderClientImpl::IsAuthenticated() const {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  signin::ConsentLevel level =
-      base::FeatureList::IsEnabled(kIosAutocompleteProviderRequireSync)
-          ? signin::ConsentLevel::kSync
-          : signin::ConsentLevel::kSignin;
-  return identity_manager && identity_manager->HasPrimaryAccount(level);
+  return identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 bool AutocompleteProviderClientImpl::IsSyncActive() const {
-  syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile_);
-  // TODO(crbug.com/40066949): Remove usage of IsSyncFeatureActive() after kSync
-  // users are migrated to kSignin in phase 3. See ConsentLevel::kSync
-  // documentation for details.
-  return sync && sync->IsSyncFeatureActive();
+  // Sync-the-feature is gone on iOS.
+  return false;
 }
 
 void AutocompleteProviderClientImpl::Classify(

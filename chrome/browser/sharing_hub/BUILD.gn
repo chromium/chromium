@@ -1,0 +1,21 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("sharing_hub") {
+  sources = [
+    "sharing_hub_features.h",
+    "sharing_hub_model.h",
+    "sharing_hub_service.h",
+    "sharing_hub_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//ui/gfx",
+  ]
+}

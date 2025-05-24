@@ -7,7 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 
-CreateDirWorkItem::~CreateDirWorkItem() {}
+CreateDirWorkItem::~CreateDirWorkItem() = default;
 
 CreateDirWorkItem::CreateDirWorkItem(const base::FilePath& path)
     : path_(path), rollback_needed_(false) {}

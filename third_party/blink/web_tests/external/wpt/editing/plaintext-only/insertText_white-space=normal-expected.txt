@@ -1,0 +1,55 @@
+This is a testharness.js-based test.
+[FAIL] execCommand("insertText", false, " ") when {}<br>
+  assert_in_array: value " " not in array [" <br>", "&nbsp;"]
+[FAIL] Typing " " when {}<br>
+  assert_in_array: value " " not in array [" <br>", "&nbsp;"]
+[FAIL] execCommand("insertText", false, "  ") when <b>A[]B</b>
+  assert_in_array: value "<b>A  B</b>" not in array ["<b>A &nbsp;B</b>", "<b>A&nbsp; B</b>"]
+[FAIL] Typing "  " when <b>A[]B</b>
+  assert_in_array: value "<b>A  B</b>" not in array ["<b>A &nbsp;B</b>", "<b>A&nbsp; B</b>"]
+[FAIL] execCommand("insertText", false, "  ") when <p style="white-space:normal">A[]B</p>
+  assert_in_array: value "<p style=\\"white-space:normal\\">A  B</p>" not in array ["<p style=\\"white-space:normal\\">A &nbsp;B</p>", "<p style=\\"white-space:normal\\">A&nbsp; B</p>"]
+[FAIL] Typing "  " when <p style="white-space:normal">A[]B</p>
+  assert_in_array: value "<p style=\\"white-space:normal\\">A  B</p>" not in array ["<p style=\\"white-space:normal\\">A &nbsp;B</p>", "<p style=\\"white-space:normal\\">A&nbsp; B</p>"]
+[FAIL] execCommand("insertText", false, "  ") when <p style="white-space:pre-line">A[]B</p>
+  assert_in_array: value "<p style=\\"white-space:pre-line\\">A  B</p>" not in array ["<p style=\\"white-space:pre-line\\">A &nbsp;B</p>", "<p style=\\"white-space:pre-line\\">A&nbsp; B</p>"]
+[FAIL] Typing "  " when <p style="white-space:pre-line">A[]B</p>
+  assert_in_array: value "<p style=\\"white-space:pre-line\\">A  B</p>" not in array ["<p style=\\"white-space:pre-line\\">A &nbsp;B</p>", "<p style=\\"white-space:pre-line\\">A&nbsp; B</p>"]
+[FAIL] execCommand("insertText", false, "a") when <p><b>[AB]</b></p> and execCommand("insertParagraph")
+  assert_equals: expected "<p><b><br></b></p><p><b>a</b></p>" but got "<p><br></p><p style=\\"font-weight: 700;\\">a</p>"
+[FAIL] Typing "a" when <p><b>[AB]</b></p> and execCommand("insertParagraph")
+  assert_equals: expected "<p><b><br></b></p><p><b>a</b></p>" but got "<p><br></p><p style=\\"font-weight: 700;\\">a</p>"
+[FAIL] execCommand("insertText", false, "a") when <p><b>[]AB</b></p> and execCommand("insertLineBreak")
+  assert_equals: expected "<p><b><br>aAB</b></p>" but got "<p><b>\\naAB</b></p>"
+[FAIL] Typing "a" when <p><b>[]AB</b></p> and execCommand("insertLineBreak")
+  assert_equals: expected "<p><b><br>aAB</b></p>" but got "<p><b>\\naAB</b></p>"
+[FAIL] execCommand("insertText", false, "a") when <p><b>A[]B</b></p> and execCommand("insertLineBreak")
+  assert_equals: expected "<p><b>A<br>aB</b></p>" but got "<p><b>A\\naB</b></p>"
+[FAIL] Typing "a" when <p><b>A[]B</b></p> and execCommand("insertLineBreak")
+  assert_equals: expected "<p><b>A<br>aB</b></p>" but got "<p><b>A\\naB</b></p>"
+[FAIL] execCommand("insertText", false, "a") when <p><b>AB[]</b></p> and execCommand("insertLineBreak")
+  assert_equals: expected "<p><b>AB<br>a</b></p>" but got "<p><b>AB\\na</b></p>"
+[FAIL] Typing "a" when <p><b>AB[]</b></p> and execCommand("insertLineBreak")
+  assert_equals: expected "<p><b>AB<br>a</b></p>" but got "<p><b>AB\\na</b></p>"
+[FAIL] execCommand("insertText", false, "a") when <p><b>[AB]</b></p> and execCommand("insertLineBreak")
+  assert_equals: expected "<p><b><br>a</b></p>" but got "<p>\\n<b>a</b></p>"
+[FAIL] Typing "a" when <p><b>[AB]</b></p> and execCommand("insertLineBreak")
+  assert_equals: expected "<p><b><br>a</b></p>" but got "<p>\\n<b>a</b></p>"
+[FAIL] execCommand("insertText", false, "a") when <p><b>[AB]</b></p> and execCommand("delete")
+  assert_equals: expected "<p><b>a</b></p>" but got "<p style=\\"font-weight: 700;\\">a</p>"
+[FAIL] Typing "a" when <p><b>[AB]</b></p> and execCommand("delete")
+  assert_equals: expected "<p><b>a</b></p>" but got "<p style=\\"font-weight: 700;\\">a</p>"
+[FAIL] execCommand("insertText", false, "a") when <p><b>A[]</b></p><p>B</p> and execCommand("delete") and move caret to the following paragraph temporarily
+  assert_equals: expected "<p><b>a</b></p><p>B</p>" but got "<p>a</p><p>B</p>"
+[FAIL] Typing "a" when <p><b>A[]</b></p><p>B</p> and execCommand("delete") and move caret to the following paragraph temporarily
+  assert_equals: expected "<p><b>a</b></p><p>B</p>" but got "<p>a</p><p>B</p>"
+[FAIL] execCommand("insertText", false, "a") when <p><b>[]A</b></p><p>B</p> and execCommand("forwardDelete") and move caret to the following paragraph temporarily
+  assert_equals: expected "<p><b>a</b></p><p>B</p>" but got "<p>a</p><p>B</p>"
+[FAIL] Typing "a" when <p><b>[]A</b></p><p>B</p> and execCommand("forwardDelete") and move caret to the following paragraph temporarily
+  assert_equals: expected "<p><b>a</b></p><p>B</p>" but got "<p>a</p><p>B</p>"
+[FAIL] execCommand("insertText", false, "a") when <p><b>[A]</b></p><p>B</p> and execCommand("delete") and move caret to the following paragraph temporarily
+  assert_equals: expected "<p><b>a</b></p><p>B</p>" but got "<p>a</p><p>B</p>"
+[FAIL] Typing "a" when <p><b>[A]</b></p><p>B</p> and execCommand("delete") and move caret to the following paragraph temporarily
+  assert_equals: expected "<p><b>a</b></p><p>B</p>" but got "<p>a</p><p>B</p>"
+Harness: the test ran to completion.
+

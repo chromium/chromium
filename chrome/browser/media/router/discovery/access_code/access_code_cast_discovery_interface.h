@@ -63,18 +63,18 @@ class AccessCodeCastDiscoveryInterface {
   }
 
   void SetEndpointFetcherForTesting(
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher) {
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher) {
     endpoint_fetcher_ = std::move(endpoint_fetcher);
   }
 
-  std::unique_ptr<EndpointFetcher> CreateEndpointFetcherForTesting(
-      const std::string& access_code);
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  CreateEndpointFetcherForTesting(const std::string& access_code);
 
   void HandleServerErrorForTesting(
-      std::unique_ptr<EndpointResponse> endpoint_response);
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> endpoint_response);
 
  private:
-  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher> CreateEndpointFetcher(
       const std::string& access_code);
 
   void SetDeviceCapabilitiesField(
@@ -86,18 +86,21 @@ class AccessCodeCastDiscoveryInterface {
       const std::string& value,
       const std::string& key);
   std::pair<std::optional<DiscoveryDevice>, AddSinkResultCode>
-  ConstructDiscoveryDeviceFromJson(base::Value json_response);
+  ConstructDiscoveryDeviceFromJson(base::Value::Dict json_response);
   void HandleDiscoveryDeviceJsonError(const std::string& field_missing);
-  void HandleServerResponse(std::unique_ptr<EndpointResponse> response);
+  void HandleServerResponse(
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Should only be called if the response has a error_type set in the struct.
-  void HandleServerError(std::unique_ptr<EndpointResponse> response);
+  void HandleServerError(
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Function that runs the member variable callback with the given error.
   void ReportErrorViaCallback(AddSinkResultCode error);
 
-  AddSinkResultCode GetErrorFromResponse(const base::Value& response);
-  AddSinkResultCode IsResponseValid(const std::optional<base::Value>& response);
+  AddSinkResultCode GetErrorFromResponse(const base::Value::Dict& response);
+  AddSinkResultCode IsResponseValid(
+      const std::optional<base::Value::Dict>& response);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   // Access code passed down from the WebUI and used in the construction of the
@@ -108,7 +111,7 @@ class AccessCodeCastDiscoveryInterface {
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
-  std::unique_ptr<EndpointFetcher> endpoint_fetcher_;
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher_;
 
   DiscoveryDeviceCallback callback_;
 

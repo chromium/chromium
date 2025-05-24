@@ -12,7 +12,7 @@
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 
 namespace content {
 
@@ -20,7 +20,10 @@ class RenderFrameImpl;
 
 class NavigationClient : mojom::NavigationClient {
  public:
-  explicit NavigationClient(RenderFrameImpl* render_frame);
+  // Used for browser-initiated navigations.
+  NavigationClient(RenderFrameImpl* render_frame,
+                   NavigationClient* initiator_navigation_client);
+  // Used for renderer-initiated navigations.
   NavigationClient(RenderFrameImpl* render_frame,
                    blink::mojom::BeginNavigationParamsPtr begin_params,
                    blink::mojom::CommonNavigationParamsPtr common_params);
@@ -48,7 +51,7 @@ class NavigationClient : mojom::NavigationClient {
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
       const base::Uuid& base_auction_nonce,
-      const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
+      const std::optional<network::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojo::PendingRemote<blink::mojom::CodeCacheHost>

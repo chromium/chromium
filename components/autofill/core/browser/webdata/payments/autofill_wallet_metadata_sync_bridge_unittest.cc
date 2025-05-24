@@ -10,6 +10,7 @@
 #include <memory>
 #include <sstream>
 #include <utility>
+#include <variant>
 
 #include "base/base64.h"
 #include "base/files/scoped_temp_dir.h"
@@ -19,9 +20,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
@@ -48,7 +48,7 @@ namespace autofill {
 namespace {
 
 using base::ScopedTempDir;
-using IbanChangeKey = absl::variant<std::string, int64_t>;
+using IbanChangeKey = std::variant<std::string, int64_t>;
 using sync_pb::WalletMetadataSpecifics;
 using syncer::DataBatch;
 using syncer::DataType;
@@ -92,20 +92,21 @@ const std::string kIban1StorageKey =
         kIban1SpecificsId);
 
 // Unique sync tag for the server ID.
-const char kCard1SyncTag[] = "card-Y2FyZDHvv74=";
-const char kIban1SyncTag[] = "iban-MTExMjIyMzMzNDQ0";
+constexpr char kCard1SyncTag[] = "card-Y2FyZDHvv74=";
+constexpr char kIban1SyncTag[] = "iban-MTExMjIyMzMzNDQ0";
 
-const char kLocalAddr1ServerId[] = "e171e3ed-858a-4dd5-9bf3-8517f14ba5fc";
-const char kLocalAddr2ServerId[] = "fa232b9a-f248-4e5a-8d76-d46f821c0c5f";
+constexpr char kLocalAddr1ServerId[] = "e171e3ed-858a-4dd5-9bf3-8517f14ba5fc";
+constexpr char kLocalAddr2ServerId[] = "fa232b9a-f248-4e5a-8d76-d46f821c0c5f";
 
-const char kDefaultCacheGuid[] = "CacheGuid";
+constexpr char kDefaultCacheGuid[] = "CacheGuid";
 
-base::Time UseDateFromProtoValue(int64_t use_date_proto_value) {
+constexpr base::Time UseDateFromProtoValue(int64_t use_date_proto_value) {
   return base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(use_date_proto_value));
 }
 
-const base::Time kDefaultTime = UseDateFromProtoValue(100);
+constexpr auto kDefaultTime =
+    base::Time::FromSecondsSinceUnixEpoch(86400 * 365 * 2);
 
 int64_t UseDateToProtoValue(base::Time use_date) {
   return use_date.ToDeltaSinceWindowsEpoch().InMicroseconds();
@@ -164,8 +165,8 @@ CreditCard CreateServerCreditCardWithDetails(
     int64_t use_date,
     const std::string& billing_address_id = "") {
   CreditCard card = CreateServerCreditCard(server_id);
-  card.set_use_count(use_count);
-  card.set_use_date(UseDateFromProtoValue(use_date));
+  card.usage_history().set_use_count(use_count);
+  card.usage_history().set_use_date(UseDateFromProtoValue(use_date));
   card.set_billing_address_id(billing_address_id);
   return card;
 }
@@ -175,8 +176,8 @@ Iban CreateServerIbanWithDetails(
     size_t use_count = 1,
     int64_t use_date = UseDateToProtoValue(kDefaultTime)) {
   Iban iban = CreateServerIban(instrument_id);
-  iban.set_use_count(use_count);
-  iban.set_use_date(UseDateFromProtoValue(use_date));
+  iban.usage_history().set_use_count(use_count);
+  iban.usage_history().set_use_date(UseDateFromProtoValue(use_date));
   return iban;
 }
 
@@ -184,8 +185,8 @@ CreditCard CreateLocalCreditCardWithDetails(size_t use_count,
                                             int64_t use_date) {
   CreditCard card;
   DCHECK_EQ(card.record_type(), CreditCard::RecordType::kLocalCard);
-  card.set_use_count(use_count);
-  card.set_use_date(UseDateFromProtoValue(use_date));
+  card.usage_history().set_use_count(use_count);
+  card.usage_history().set_use_date(UseDateFromProtoValue(use_date));
   return card;
 }
 
@@ -283,8 +284,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   ~AutofillWalletMetadataSyncBridgeTest() override {}
 
   void SetUp() override {
-    // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    test_clock_.SetNow(kDefaultTime);
+    task_environment_.AdvanceClock(kDefaultTime - base::Time::Now());
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
@@ -442,7 +442,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   }
 
   void AdvanceTestClockByTwoYears() {
-    test_clock_.Advance(base::Days(365 * 2));
+    task_environment_.AdvanceClock(base::Days(365 * 2));
   }
 
   AutofillWalletMetadataSyncBridge* bridge() { return bridge_.get(); }
@@ -461,9 +461,9 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
 
  private:
   int response_version = 0;
-  autofill::TestAutofillClock test_clock_;
   ScopedTempDir temp_dir_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   const os_crypt_async::Encryptor encryptor_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
@@ -570,8 +570,8 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
        GetData_ShouldReturnCompleteData_Cards) {
   CreditCard card = CreateServerCreditCard(kCard1ServerId);
-  card.set_use_count(6);
-  card.set_use_date(UseDateFromProtoValue(3));
+  card.usage_history().set_use_count(6);
+  card.usage_history().set_use_date(UseDateFromProtoValue(3));
   card.set_billing_address_id(kAddr1ServerId);
   table()->SetServerCreditCards({card});
   ResetBridge();
@@ -769,11 +769,13 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
        SendNewDataToServerOnLocalAddition_Cards) {
   ResetBridge();
   CreditCard new_card = CreateServerCreditCardWithDetails(
-      kCard1ServerId, /*use_count=*/30, /*use_date=*/40);
+      kCard1ServerId, /*use_count=*/30,
+      /*use_date=*/UseDateToProtoValue(base::Time::Now() - base::Minutes(1)));
 
   WalletMetadataSpecifics expected_card_specifics =
       CreateWalletMetadataSpecificsForCardWithDetails(
-          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
+          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/
+          UseDateToProtoValue(base::Time::Now() - base::Minutes(1)));
 
   EXPECT_CALL(mock_processor(),
               Put(kCard1StorageKey, HasSpecifics(expected_card_specifics), _));
@@ -821,11 +823,13 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
        SendNewDataToServerOnLocalUpdate_Cards) {
   ResetBridge();
   CreditCard new_card = CreateServerCreditCardWithDetails(
-      kCard1ServerId, /*use_count=*/30, /*use_date=*/40);
+      kCard1ServerId, /*use_count=*/30,
+      /*use_date=*/UseDateToProtoValue(base::Time::Now() - base::Minutes(1)));
 
   WalletMetadataSpecifics expected_card_specifics =
       CreateWalletMetadataSpecificsForCardWithDetails(
-          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
+          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/
+          UseDateToProtoValue(base::Time::Now() - base::Minutes(1)));
 
   EXPECT_CALL(mock_processor(),
               Put(kCard1StorageKey, HasSpecifics(expected_card_specifics), _));
@@ -988,8 +992,8 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
       .Times(0);
 
-  existing_card.set_use_count(31);
-  existing_card.set_use_date(UseDateFromProtoValue(41));
+  existing_card.usage_history().set_use_count(31);
+  existing_card.usage_history().set_use_date(UseDateFromProtoValue(41));
   bridge()->CreditCardChanged(CreditCardChange(
       CreditCardChange::UPDATE, existing_card.guid(), existing_card));
 
@@ -1005,7 +1009,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
           kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
 
   // Save only metadata and not data - simulate an orphan.
-  table()->AddServerCardMetadata(
+  table()->AddOrUpdateServerCardMetadata(
       CreateServerCreditCardFromSpecifics(card).GetMetadata());
 
   // Make the orphans old by advancing time.
@@ -1088,10 +1092,11 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
        DoNotDeleteRecentOrphanMetadataOnStartup_Cards) {
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
-          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
+          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/
+          UseDateToProtoValue(base::Time::Now() - base::Minutes(1)));
 
   // Save only metadata and not data - simulate an orphan.
-  table()->AddServerCardMetadata(
+  table()->AddOrUpdateServerCardMetadata(
       CreateServerCreditCardFromSpecifics(card).GetMetadata());
 
   // We do not advance time so the orphans are recent, should not get deleted.
@@ -1131,7 +1136,8 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
        InitialSync_UploadUniqueLocalData_Cards) {
   WalletMetadataSpecifics preexisting_card =
       CreateWalletMetadataSpecificsForCardWithDetails(
-          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
+          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/
+          UseDateToProtoValue(base::Time::Now() - base::Minutes(1)));
 
   table()->SetServerCreditCards(
       {CreateServerCreditCardFromSpecifics(preexisting_card)});
@@ -1139,7 +1145,8 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   // Have a different entity on the server.
   WalletMetadataSpecifics remote_card =
       CreateWalletMetadataSpecificsForCardWithDetails(
-          kCard2SpecificsId, /*use_count=*/30, /*use_date=*/40);
+          kCard2SpecificsId, /*use_count=*/30, /*use_date=*/
+          UseDateToProtoValue(base::Time::Now() - base::Minutes(1)));
 
   // The bridge should upload the unique local entities and store the remote
   // ones locally.
@@ -1195,14 +1202,16 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
        InitialSync_UploadOnlyUniqueLocalData) {
   WalletMetadataSpecifics preexisting_card =
       CreateWalletMetadataSpecificsForCardWithDetails(
-          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
+          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/
+          UseDateToProtoValue(base::Time::Now() - base::Minutes(1)));
 
   table()->SetServerCreditCards(
       {CreateServerCreditCardFromSpecifics(preexisting_card)});
 
   WalletMetadataSpecifics remote_card =
       CreateWalletMetadataSpecificsForCardWithDetails(
-          kCard2SpecificsId, /*use_count=*/30, /*use_date=*/40);
+          kCard2SpecificsId, /*use_count=*/30, /*use_date=*/
+          UseDateToProtoValue(base::Time::Now() - base::Minutes(1)));
 
   // Upload _only_ the unique local data, only the card.
   EXPECT_CALL(mock_processor(),
@@ -1227,7 +1236,9 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   ResetBridge(/*initial_sync_done=*/false);
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
-          kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
+          kCard1SpecificsId, /*use_count=*/30,
+          /*use_date=*/
+          UseDateToProtoValue(base::Time::Now() - base::Minutes(1)));
   StartSyncing({card});
 
   // Verify that both the processor and the local DB contain sync metadata.
@@ -1293,13 +1304,13 @@ enum RemoteChangesMode {
                      // UPDATE changes.
 };
 
-// Parametrized fixture for tests that apply in the same way for all
+// Parameterized fixture for tests that apply in the same way for all
 // RemoteChangesModes.
 class AutofillWalletMetadataSyncBridgeRemoteChangesTest
     : public testing::WithParamInterface<RemoteChangesMode>,
       public AutofillWalletMetadataSyncBridgeTest {
  public:
-  AutofillWalletMetadataSyncBridgeRemoteChangesTest() {}
+  AutofillWalletMetadataSyncBridgeRemoteChangesTest() = default;
 
   AutofillWalletMetadataSyncBridgeRemoteChangesTest(
       const AutofillWalletMetadataSyncBridgeRemoteChangesTest&) = delete;

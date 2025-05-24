@@ -15,7 +15,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/ranges/algorithm.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -183,7 +182,7 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(
 
   // Extend handles to 64-bit values if necessary.
   std::vector<int64_t> java_handles(handles.size());
-  base::ranges::copy(handles, java_handles.begin());
+  std::ranges::copy(handles, java_handles.begin());
   return Java_CoreImpl_newReadMessageResult(
       env, result,
       base::android::ToJavaByteArray(env, static_cast<uint8_t*>(buffer),

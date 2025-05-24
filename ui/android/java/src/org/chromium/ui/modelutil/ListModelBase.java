@@ -4,7 +4,7 @@
 
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +20,7 @@ import java.util.List;
  * @param <T> The object type that this class manages in a list.
  * @param <P> The payload type for partial change notifications.
  */
+@NullMarked
 public class ListModelBase<T, P> extends ListObservableImpl<P> implements SimpleList<T> {
     private final List<T> mItems = new ArrayList<>();
 
@@ -38,7 +39,6 @@ public class ListModelBase<T, P> extends ListObservableImpl<P> implements Simple
         return mItems.size();
     }
 
-    @NonNull
     @Override
     public Iterator<T> iterator() {
         return mItems.iterator();

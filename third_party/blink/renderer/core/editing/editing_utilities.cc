@@ -23,22 +23,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 
+#include <array>
+#include <string_view>
+
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -80,8 +76,12 @@
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/html_paragraph_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/core/html/html_table_caption_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
+#include "third_party/blink/renderer/core/html/html_table_col_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
+#include "third_party/blink/renderer/core/html/html_table_row_element.h"
+#include "third_party/blink/renderer/core/html/html_table_section_element.h"
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/html/image_document.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -105,13 +106,12 @@ using mojom::blink::FormControlType;
 
 namespace {
 
-std::ostream& operator<<(std::ostream& os, PositionMoveType type) {
-  static const char* const kTexts[] = {"CodeUnit", "BackwardDeletion",
-                                       "GraphemeCluster"};
-  auto* const* const it = std::begin(kTexts) + static_cast<size_t>(type);
-  DCHECK_GE(it, std::begin(kTexts)) << "Unknown PositionMoveType value";
-  DCHECK_LT(it, std::end(kTexts)) << "Unknown PositionMoveType value";
-  return os << *it;
+std::string_view ToString(PositionMoveType type) {
+  static const std::array<std::string_view, 3> kTexts = {
+      "CodeUnit", "BackwardDeletion", "GraphemeCluster"};
+  DCHECK_LT(static_cast<size_t>(type), kTexts.size())
+      << "Unknown PositionMoveType value";
+  return kTexts[static_cast<size_t>(type)];
 }
 
 UChar WhitespaceRebalancingCharToAppend(const String& string,
@@ -191,6 +191,21 @@ bool IsNodeFullyContained(const EphemeralRange& range, const Node& node) {
          Position::AfterNode(node) <= range.EndPosition();
 }
 
+bool EnsureNodeVisibility(HTMLElement* container) {
+  bool style_changed = false;
+  if (container->GetComputedStyle()->Visibility() == EVisibility::kHidden) {
+    container->SetInlineStyleProperty(CSSPropertyID::kVisibility,
+                                      CSSValueID::kVisible, true);
+    style_changed = true;
+  }
+  if (container->GetComputedStyle()->Display() == EDisplay::kNone) {
+    container->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                      CSSValueID::kInline, true);
+    style_changed = true;
+  }
+  return style_changed;
+}
+
 // TODO(editing-dev): We should implement real version which refers
 // "user-select" CSS property.
 bool IsUserSelectContain(const Node& node) {
@@ -212,33 +227,41 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
   // would fire in the middle of Document::setFocusedNode().
 
   for (const Node& ancestor : NodeTraversal::InclusiveAncestorsOf(node)) {
-    if (!(ancestor.IsHTMLElement() || ancestor.IsDocumentNode()))
+    if (!(ancestor.IsHTMLElement() || ancestor.IsDocumentNode())) {
       continue;
+    }
+    // If the `ancestor` is a child of the shadow host and does not have a slot
+    // assigned, it should use the style of the shadow host and therefore be
+    // skipped.
+    // See https://issues.chromium.org/issues/392725745 for more details.
+    if (RuntimeEnabledFeatures::UseShadowHostStyleCheckEditableEnabled() &&
+        ancestor.IsChildOfShadowHost() && !ancestor.AssignedSlot()) {
+      continue;
+    }
+    if (const ComputedStyle* style =
+            GetComputedStyleForElementOrLayoutObject(ancestor)) {
+      switch (style->UsedUserModify()) {
+        case EUserModify::kReadOnly:
+          return false;
+        case EUserModify::kReadWrite:
+          return true;
+        case EUserModify::kReadWritePlaintextOnly:
+          return editable_level != kRichlyEditable;
+      }
+    }
     // An inert subtree should not contain any content or controls which are
     // critical to understanding or using aspects of the page which are not in
     // the inert state. Content in an inert subtree will not be perceivable by
     // all users, or interactive. See
     // https://html.spec.whatwg.org/multipage/interaction.html#the-inert-attribute.
     // To prevent the invisible inert element being overlooked, the
-    // inert attribute of the element is initially assessed. See
-    // https://issues.chromium.org/issues/41490809.
+    // inert attribute of the element is considered when style is not present.
+    // See https://issues.chromium.org/issues/41490809.
     if (RuntimeEnabledFeatures::InertElementNonEditableEnabled()) {
       const Element* element = DynamicTo<Element>(ancestor);
       if (element && element->IsInertRoot()) {
         return false;
       }
-    }
-
-    const ComputedStyle* style = ancestor.GetComputedStyle();
-    if (!style)
-      continue;
-    switch (style->UsedUserModify()) {
-      case EUserModify::kReadOnly:
-        return false;
-      case EUserModify::kReadWrite:
-        return true;
-      case EUserModify::kReadWritePlaintextOnly:
-        return editable_level != kRichlyEditable;
     }
   }
 
@@ -736,7 +759,7 @@ PositionTemplate<Strategy> PreviousPositionOfAlgorithm(
         return PositionTemplate<Strategy>(
             node, PreviousGraphemeBoundaryOf(*node, offset));
       default:
-        NOTREACHED_IN_MIGRATION() << "Unhandled moveType: " << move_type;
+        NOTREACHED() << "Unhandled moveType: " << ToString(move_type);
     }
   }
 
@@ -792,15 +815,13 @@ PositionTemplate<Strategy> NextPositionOfAlgorithm(
       case PositionMoveType::kCodeUnit:
         return PositionTemplate<Strategy>::EditingPositionOf(node, offset + 1);
       case PositionMoveType::kBackwardDeletion:
-        NOTREACHED_IN_MIGRATION()
-            << "BackwardDeletion is only available for prevPositionOf "
-            << "functions.";
-        return PositionTemplate<Strategy>::EditingPositionOf(node, offset + 1);
+        NOTREACHED() << "BackwardDeletion is only available for prevPositionOf "
+                     << "functions.";
       case PositionMoveType::kGraphemeCluster:
         return PositionTemplate<Strategy>::EditingPositionOf(
             node, NextGraphemeBoundaryOf(*node, offset));
       default:
-        NOTREACHED_IN_MIGRATION() << "Unhandled moveType: " << move_type;
+        NOTREACHED() << "Unhandled moveType: " << ToString(move_type);
     }
   }
 
@@ -822,8 +843,7 @@ PositionInFlatTree NextPositionOf(const PositionInFlatTree& position,
 
 bool IsEnclosingBlock(const Node* node) {
   return node && node->GetLayoutObject() &&
-         !node->GetLayoutObject()->IsInline() &&
-         !node->GetLayoutObject()->IsRubyText();
+         !node->GetLayoutObject()->IsInline();
 }
 
 // TODO(yosin) Deploy this in all of the places where |enclosingBlockFlow()| and
@@ -900,6 +920,18 @@ TextDirection PrimaryDirectionOf(const Node& node) {
   }
 
   return primary_direction;
+}
+
+const ComputedStyle* GetComputedStyleForElementOrLayoutObject(
+    const Node& node) {
+  if (const auto* element = DynamicTo<Element>(node)) {
+    return element->GetComputedStyle();
+  }
+  // Text nodes and Document.
+  if (LayoutObject* layout_object = node.GetLayoutObject()) {
+    return layout_object->Style();
+  }
+  return nullptr;
 }
 
 String StringWithRebalancedWhitespace(const String& string,
@@ -1143,6 +1175,13 @@ bool IsTableCell(const Node* node) {
   return r ? r->IsTableCell() : IsA<HTMLTableCellElement>(*node);
 }
 
+bool IsTablePartElement(const Node* n) {
+  return n &&
+         (IsA<HTMLTableCellElement>(*n) || IsA<HTMLTableCaptionElement>(*n) ||
+          IsA<HTMLTableColElement>(*n) || IsA<HTMLTableSectionElement>(*n) ||
+          IsA<HTMLTableRowElement>(*n));
+}
+
 HTMLElement* CreateDefaultParagraphElement(Document& document) {
   switch (document.GetFrame()->GetEditor().DefaultParagraphSeparator()) {
     case EditorParagraphSeparator::kIsDiv:
@@ -1151,23 +1190,26 @@ HTMLElement* CreateDefaultParagraphElement(Document& document) {
       return MakeGarbageCollected<HTMLParagraphElement>(document);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool IsTabHTMLSpanElement(const Node* node) {
-  if (!IsA<HTMLSpanElement>(node))
+  const auto* span = DynamicTo<HTMLSpanElement>(node);
+  if (!span) {
     return false;
-  const Node* const first_child = NodeTraversal::FirstChild(*node);
+  }
+  const Node* const first_child = NodeTraversal::FirstChild(*span);
   auto* first_child_text_node = DynamicTo<Text>(first_child);
-  if (!first_child_text_node)
+  if (!first_child_text_node) {
     return false;
-  if (!first_child_text_node->data().Contains('\t'))
+  }
+  if (!first_child_text_node->data().Contains('\t')) {
     return false;
+  }
   // TODO(editing-dev): Hoist the call of UpdateStyleAndLayoutTree to callers.
   // See crbug.com/590369 for details.
-  node->GetDocument().UpdateStyleAndLayoutTree();
-  const ComputedStyle* style = node->GetComputedStyle();
+  span->GetDocument().UpdateStyleAndLayoutTree();
+  const ComputedStyle* style = span->GetComputedStyle();
   return style && style->WhiteSpace() == EWhiteSpace::kPre;
 }
 
@@ -1361,8 +1403,7 @@ Position ComputePositionForNodeRemoval(const Position& position,
         return position;
       return Position::InParentBeforeNode(node);
   }
-  NOTREACHED_IN_MIGRATION() << "We should handle all PositionAnchorType";
-  return position;
+  NOTREACHED() << "We should handle all PositionAnchorType";
 }
 
 bool IsMailHTMLBlockquoteElement(const Node* node) {
@@ -1581,7 +1622,7 @@ gfx::QuadF LocalToAbsoluteQuadOf(const LocalCaretRect& caret_rect) {
   return caret_rect.layout_object->LocalRectToAbsoluteQuad(caret_rect.rect);
 }
 
-const StaticRangeVector* TargetRangesForInputEvent(const Node& node) {
+const GCedStaticRangeVector* TargetRangesForInputEvent(const Node& node) {
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
   node.GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
@@ -1594,14 +1635,15 @@ const StaticRangeVector* TargetRangesForInputEvent(const Node& node) {
                                 .ComputeVisibleSelectionInDOMTree());
   if (range.IsNull())
     return nullptr;
-  return MakeGarbageCollected<StaticRangeVector>(1, StaticRange::Create(range));
+  return MakeGarbageCollected<GCedStaticRangeVector>(
+      1, StaticRange::Create(range));
 }
 
 DispatchEventResult DispatchBeforeInputInsertText(
     Node* target,
     const String& data,
     InputEvent::InputType input_type,
-    const StaticRangeVector* ranges) {
+    const GCedStaticRangeVector* ranges) {
   if (!target)
     return DispatchEventResult::kNotCanceled;
   // TODO(editing-dev): Pass appropriate |ranges| after it's defined on spec.
@@ -1615,7 +1657,7 @@ DispatchEventResult DispatchBeforeInputInsertText(
 DispatchEventResult DispatchBeforeInputEditorCommand(
     Node* target,
     InputEvent::InputType input_type,
-    const StaticRangeVector* ranges) {
+    const GCedStaticRangeVector* ranges) {
   if (!target)
     return DispatchEventResult::kNotCanceled;
   InputEvent* before_input_event = InputEvent::CreateBeforeInput(
@@ -1644,7 +1686,7 @@ DispatchEventResult DispatchBeforeInputDataTransfer(
         input_type, data_transfer, InputEvent::EventIsComposing::kNotComposing,
         TargetRangesForInputEvent(*target));
   } else {
-    const String& data = data_transfer->getData(kMimeTypeTextPlain);
+    const String& data = data_transfer->getData(ui::kMimeTypePlainText);
     // TODO(editing-dev): Pass appropriate |ranges| after it's defined on spec.
     // http://w3c.github.io/editing/input-events.html#dom-inputevent-inputtype
     before_input_event = InputEvent::CreateBeforeInput(

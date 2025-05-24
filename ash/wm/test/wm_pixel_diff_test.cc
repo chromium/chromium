@@ -25,7 +25,8 @@
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/strings/string_number_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
@@ -40,21 +41,11 @@ namespace ash {
 // dark/light mode, tablet mode, etc.
 class WmPixelDiffTest : public AshTestBase {
  public:
-  WmPixelDiffTest() {
-    scoped_features_.InitWithFeatures(
-        {features::kForestFeature, features::kSavedDeskUiRevamp,
-         features::kDeskBarWindowOcclusionOptimization},
-        {});
-  }
-
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 // A basic overview pixel test that shows three overview windows and the virtual
@@ -92,7 +83,7 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overview_and_desks_bar_basic",
-      /*revision_number=*/16, desk_widget, overview_widget1, overview_widget2,
+      /*revision_number=*/19, desk_widget, overview_widget1, overview_widget2,
       overview_widget3));
 }
 
@@ -171,7 +162,7 @@ TEST_F(WmPixelDiffTest, WindowCycleBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_basic",
-      /*revision_number=*/21, widget));
+      /*revision_number=*/25, widget));
 }
 
 TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
@@ -181,8 +172,8 @@ TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
   // chrome info with some example favicons.
   InformedRestoreContentsData::AppInfo chrome_app_info(
       app_constants::kChromeAppId, "Chrome", /*window_id=*/1);
-  chrome_app_info.tab_urls = std::vector<GURL>(5, GURL("http://example.com"));
-  chrome_app_info.tab_count = 23;
+  chrome_app_info.tab_infos = std::vector<InformedRestoreContentsData::TabInfo>(
+      23, InformedRestoreContentsData::TabInfo(GURL("http://example.com")));
 
   auto data = std::make_unique<InformedRestoreContentsData>();
   data->apps_infos.push_back(chrome_app_info);
@@ -207,7 +198,7 @@ TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "informed_restore_no_screenshot",
-      /*revision_number=*/1, widget));
+      /*revision_number=*/2, widget));
 }
 
 }  // namespace ash

@@ -9,6 +9,10 @@
 
 #include "extensions/common/extension_id.h"
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace extensions {
 
 class ExtensionPrefs;
@@ -19,6 +23,30 @@ std::string GetInstallParam(const ExtensionPrefs* prefs,
 void SetInstallParam(ExtensionPrefs* prefs,
                      const ExtensionId& extension_id,
                      std::string value);
+
+// Returns true if the extension was installed from the Chrome Web Store.
+bool IsFromWebStore(const ExtensionPrefs* prefs,
+                    const ExtensionId& extension_id);
+
+// Returns true if the extension was installed as a default app.
+bool WasInstalledByDefault(const ExtensionPrefs* prefs,
+                           const ExtensionId& extension_id);
+
+// Returns true if the extension was installed as an oem app.
+bool WasInstalledByOem(const ExtensionPrefs* prefs,
+                       const ExtensionId& extension_id);
+
+// Returns the original installation time of an extension.
+// Returns base::Time() if the installation time could not be parsed or
+// found.
+base::Time GetFirstInstallTime(const ExtensionPrefs* prefs,
+                               const ExtensionId& extension_id);
+
+// Returns the installation/last update time of an extension.
+// Returns base::Time() if the installation time could not be parsed or
+// found.
+base::Time GetLastUpdateTime(const ExtensionPrefs* prefs,
+                             const ExtensionId& extension_id);
 
 }  // namespace extensions
 

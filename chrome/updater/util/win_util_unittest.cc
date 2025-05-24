@@ -67,53 +67,58 @@ constexpr char kTestAppID[] = "{D07D2B56-F583-4631-9E8E-9942F63765BE}";
 
 }  // namespace
 
-TEST(WinUtil, GetServiceName) {
+class WinUtilServiceNameTest : public ::testing::TestWithParam<std::string> {
+ protected:
+  base::Version version() const { return base::Version(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(WinUtilServiceNameTestCases,
+                         WinUtilServiceNameTest,
+                         ::testing::Values(kUpdaterVersion,
+                                           "1.2.3.4",
+                                           "199.28537.11717"));
+
+TEST_P(WinUtilServiceNameTest, GetServiceName) {
   for (const bool is_internal_service : {true, false}) {
-    EXPECT_EQ(base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+    EXPECT_EQ(base::StrCat({base::UTF8ToWide(PRODUCT_FULLNAME_STRING),
                             is_internal_service ? kWindowsInternalServiceName
                                                 : kWindowsServiceName,
-                            kUpdaterVersionUtf16}),
-              GetServiceName(is_internal_service));
+                            base::UTF8ToWide(version().GetString())}),
+              GetServiceName(is_internal_service, version()));
   }
 }
 
 TEST(WinUtil, BuildMsiCommandLine) {
-  EXPECT_STREQ(L"", BuildMsiCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
-                                        base::FilePath(L"NotMsi.exe"))
-                        .c_str());
-  EXPECT_STREQ(
+  EXPECT_EQ(L"", BuildMsiCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
+                                     base::FilePath(L"NotMsi.exe")));
+  EXPECT_EQ(
       L"msiexec arg1 arg2 arg3 REBOOT=ReallySuppress /qn /i \"c:\\my "
       L"path\\YesMsi.msi\" /log \"c:\\my path\\YesMsi.msi.log\"",
       BuildMsiCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
-                          base::FilePath(L"c:\\my path\\YesMsi.msi"))
-          .c_str());
-  EXPECT_STREQ(
+                          base::FilePath(L"c:\\my path\\YesMsi.msi")));
+  EXPECT_EQ(
       L"msiexec arg1 arg2 arg3 INSTALLERDATA=\"c:\\my path\\installer data "
       L"file.dat\" REBOOT=ReallySuppress /qn /i \"c:\\my "
       L"path\\YesMsi.msi\" /log \"c:\\my path\\YesMsi.msi.log\"",
       BuildMsiCommandLine(
           std::wstring(L"arg1 arg2 arg3"),
           base::FilePath(L"c:\\my path\\installer data file.dat"),
-          base::FilePath(L"c:\\my path\\YesMsi.msi"))
-          .c_str());
+          base::FilePath(L"c:\\my path\\YesMsi.msi")));
 }
 
 TEST(WinUtil, BuildExeCommandLine) {
-  EXPECT_STREQ(L"", BuildExeCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
-                                        base::FilePath(L"NotExe.msi"))
-                        .c_str());
-  EXPECT_STREQ(L"\"c:\\my path\\YesExe.exe\" arg1 arg2 arg3",
-               BuildExeCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
-                                   base::FilePath(L"c:\\my path\\YesExe.exe"))
-                   .c_str());
-  EXPECT_STREQ(
+  EXPECT_EQ(L"", BuildExeCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
+                                     base::FilePath(L"NotExe.msi")));
+  EXPECT_EQ(L"\"c:\\my path\\YesExe.exe\" arg1 arg2 arg3",
+            BuildExeCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
+                                base::FilePath(L"c:\\my path\\YesExe.exe")));
+  EXPECT_EQ(
       L"\"c:\\my path\\YesExe.exe\" arg1 arg2 arg3 --installerdata=\"c:\\my "
       L"path\\installer data file.dat\"",
       BuildExeCommandLine(
           std::wstring(L"arg1 arg2 arg3"),
           base::FilePath(L"c:\\my path\\installer data file.dat"),
-          base::FilePath(L"c:\\my path\\YesExe.exe"))
-          .c_str());
+          base::FilePath(L"c:\\my path\\YesExe.exe")));
 }
 
 TEST(WinUtil, ShellExecuteAndWait) {
@@ -318,11 +323,11 @@ TEST(WinUtil, SignalShutdownEvent) {
 TEST(WinUtil, StopProcessesUnderPath) {
   base::FilePath exe_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
-  exe_dir = exe_dir.AppendASCII(test::GetTestName());
+  exe_dir = exe_dir.AppendUTF8(test::GetTestName());
 
   base::CommandLine command_line = GetTestProcessCommandLine(
       GetUpdaterScopeForTesting(), test::GetTestName());
-  command_line.AppendSwitchASCII(
+  command_line.AppendSwitchUTF8(
       updater::kTestSleepSecondsSwitch,
       base::NumberToString(TestTimeouts::action_timeout().InSeconds() / 4));
 
@@ -380,8 +385,8 @@ TEST(WinUtil, IsGuid) {
 }
 
 TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
-  constexpr int kRunEntries = 6;
-  const std::wstring kRunEntryPrefix(base::ASCIIToWide(test::GetTestName()));
+  static constexpr int kRunEntries = 6;
+  const std::wstring kRunEntryPrefix(base::UTF8ToWide(test::GetTestName()));
 
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
@@ -406,8 +411,8 @@ TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
 }
 
 TEST(WinUtil, DeleteRegValue) {
-  constexpr int kRegValues = 6;
-  const std::wstring kRegValuePrefix(base::ASCIIToWide(test::GetTestName()));
+  static constexpr int kRegValues = 6;
+  const std::wstring kRegValuePrefix(base::UTF8ToWide(test::GetTestName()));
 
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
@@ -431,8 +436,8 @@ TEST(WinUtil, ForEachServiceWithPrefix) {
     return;
   }
 
-  constexpr int kNumServices = 6;
-  const std::wstring kServiceNamePrefix(base::ASCIIToWide(test::GetTestName()));
+  static constexpr int kNumServices = 6;
+  const std::wstring kServiceNamePrefix(base::UTF8ToWide(test::GetTestName()));
 
   for (int count = 0; count < kNumServices; ++count) {
     std::wstring service_name(kServiceNamePrefix);
@@ -457,8 +462,8 @@ TEST(WinUtil, DeleteService) {
     return;
   }
 
-  constexpr int kNumServices = 6;
-  const std::wstring kServiceNamePrefix(base::ASCIIToWide(test::GetTestName()));
+  static constexpr int kNumServices = 6;
+  const std::wstring kServiceNamePrefix(base::UTF8ToWide(test::GetTestName()));
 
   for (int count = 0; count < kNumServices; ++count) {
     std::wstring service_name(kServiceNamePrefix);
@@ -481,14 +486,14 @@ TEST(WinUtil, GetAppAPValue) {
   EXPECT_EQ(ap, "");
 
   base::win::RegKey client_state_key(CreateAppClientStateKey(
-      GetUpdaterScopeForTesting(), base::ASCIIToWide(kTestAppID)));
+      GetUpdaterScopeForTesting(), base::UTF8ToWide(kTestAppID)));
   EXPECT_EQ(client_state_key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
 
   ap = GetAppAPValue(GetUpdaterScopeForTesting(), kTestAppID);
   EXPECT_EQ(ap, "TestAP");
 
   DeleteAppClientStateKey(GetUpdaterScopeForTesting(),
-                          base::ASCIIToWide(kTestAppID));
+                          base::UTF8ToWide(kTestAppID));
 }
 
 struct WinUtilGetRegKeyContentsTestCase {
@@ -614,20 +619,6 @@ TEST(WinUtil, StringFromGuid) {
   EXPECT_EQ(base::win::WStringFromGUID(guid), StringFromGuid(guid));
 }
 
-TEST(WinUtil, GetUniqueTempFilePath) {
-  EXPECT_FALSE(GetUniqueTempFilePath({}));
-
-  std::optional<base::FilePath> p = GetUniqueTempFilePath(base::FilePath(
-      L"C:\\Program Files (x86)\\Google\\GoogleUpdater\\updater.log"));
-  ASSERT_TRUE(p);
-  std::wstring p_base = p->BaseName().value();
-  EXPECT_TRUE(base::StartsWith(p_base, L"updater"));
-  EXPECT_TRUE(base::EndsWith(p_base, L".log"));
-  base::ReplaceSubstringsAfterOffset(&p_base, 0, L"updater", {});
-  base::ReplaceSubstringsAfterOffset(&p_base, 0, L".log", {});
-  EXPECT_TRUE(base::Uuid::ParseLowercase(base::WideToUTF8(p_base)).is_valid());
-}
-
 TEST(WinUtil, SetEulaAccepted) {
   // This will set `eulaaccepted=0` in the registry.
   EXPECT_TRUE(
@@ -644,6 +635,32 @@ TEST(WinUtil, SetEulaAccepted) {
       SetEulaAccepted(GetUpdaterScopeForTesting(), /*eula_accepted=*/true));
   EXPECT_FALSE(base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
                    .HasValue(L"eulaaccepted"));
+}
+
+TEST(WinUtil, IsServicePresent_IsServiceEnabled) {
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP();
+  }
+
+  GUID random_guid = {0};
+  EXPECT_HRESULT_SUCCEEDED(::CoCreateGuid(&random_guid));
+  const std::wstring service_name = base::StrCat(
+      {base::UTF8ToWide(test::GetTestName()), StringFromGuid(random_guid)});
+
+  EXPECT_FALSE(IsServicePresent(service_name));
+  EXPECT_FALSE(IsServiceEnabled(service_name));
+
+  ASSERT_TRUE(CreateService(service_name, service_name, L"C:\\temp\\temp.exe"));
+  EXPECT_TRUE(IsServicePresent(service_name));
+  EXPECT_TRUE(IsServiceEnabled(service_name));
+
+  EXPECT_TRUE(DisableService(service_name));
+  EXPECT_TRUE(IsServicePresent(service_name));
+  EXPECT_FALSE(IsServiceEnabled(service_name));
+
+  EXPECT_TRUE(DeleteService(service_name));
+  EXPECT_FALSE(IsServicePresent(service_name));
+  EXPECT_FALSE(IsServiceEnabled(service_name));
 }
 
 }  // namespace updater::test

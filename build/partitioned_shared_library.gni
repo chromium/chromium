@@ -78,6 +78,7 @@ template("partitioned_shared_library") {
     action(target_name) {
       deps = [ ":$_combined_library_target" ]
       script = "//build/extract_partition.py"
+      inputs = [ "$clang_base_path/bin/llvm-objcopy" ]
       sources =
           [ "$root_out_dir/lib.unstripped/lib${_output_name}__combined.so" ]
       outputs = [

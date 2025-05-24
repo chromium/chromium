@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/view.h"
-
 #import <Cocoa/Cocoa.h>
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 
 // We can't create NSEventTypeSwipe using normal means, and rely on duck typing
 // instead.
 @interface FakeSwipeEvent : NSEvent
 @property CGFloat deltaX;
 @property CGFloat deltaY;
-@property(assign) NSWindow* window;
+@property(strong) NSWindow* window;
 @property NSPoint locationInWindow;
 @property NSEventModifierFlags modifierFlags;
 @property NSTimeInterval timestamp;
@@ -71,7 +70,7 @@ class ThreeFingerSwipeView : public View {
     } else if (event->details().swipe_down()) {
       last_swipe_ = SWIPE_DOWN;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

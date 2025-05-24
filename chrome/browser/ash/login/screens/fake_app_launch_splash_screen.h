@@ -27,6 +27,9 @@ class FakeAppLaunchSplashScreen : public AppLaunchSplashScreen {
                               const std::string& network_name) override;
   void ContinueAppLaunch() override;
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
+  void HideThrobber() override;
+
+  bool IsThrobberVisible();
 
   // Returns the app launch error last passed to `ShowErrorMessage`.
   KioskAppLaunchError::Error GetLaunchError() const;
@@ -41,6 +44,7 @@ class FakeAppLaunchSplashScreen : public AppLaunchSplashScreen {
  private:
   // The launch error last passed to `ShowErrorMessage`.
   KioskAppLaunchError::Error launch_error_ = KioskAppLaunchError::Error::kNone;
+  bool show_throbber_ = true;
 };
 
 }  // namespace ash

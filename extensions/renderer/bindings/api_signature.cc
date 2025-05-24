@@ -296,8 +296,6 @@ bool ArgumentParser::ResolveArguments(
   if (provided.size() > expected.size())
     return false;
 
-  DCHECK(!expected.empty());
-
   // If there are more provided arguments (and more expected arguments, as
   // guaranteed above), check if the next argument could match the next expected
   // argument.
@@ -323,7 +321,7 @@ bool ArgumentParser::ResolveArguments(
     // always small. Further, it is only when parameters are optional, which is
     // also not the default.
     if (can_match &&
-        ResolveArguments(provided.subspan(1), expected.subspan(1), result,
+        ResolveArguments(provided.subspan<1>(), expected.subspan<1>(), result,
                          index + 1, allow_omitted_final_argument)) {
       return true;
     }
@@ -340,9 +338,10 @@ bool ArgumentParser::ResolveArguments(
     // Assume the expected argument was omitted.
     (*result)[index] = v8::Local<v8::Value>();
     // See comments above for recursion notes.
-    if (ResolveArguments(provided, expected.subspan(1), result, index + 1,
-                         allow_omitted_final_argument))
+    if (ResolveArguments(provided, expected.subspan<1>(), result, index + 1,
+                         allow_omitted_final_argument)) {
       return true;
+    }
   }
 
   // A required argument was not matched. There is only one case in which this

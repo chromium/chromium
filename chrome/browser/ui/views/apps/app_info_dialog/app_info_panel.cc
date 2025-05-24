@@ -26,7 +26,7 @@ const int kSpacingBetweenKeyAndStartOfValue = 3;
 AppInfoPanel::AppInfoPanel(Profile* profile, const extensions::Extension* app)
     : profile_(profile), app_(app) {}
 
-AppInfoPanel::~AppInfoPanel() {}
+AppInfoPanel::~AppInfoPanel() = default;
 
 void AppInfoPanel::Close() {
   GetWidget()->Close();

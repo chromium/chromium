@@ -65,7 +65,7 @@ void silk_VQ_WMat_EC_sse4_1(
     neg_xX_Q24[ 3 ] = -silk_LSHIFT32( xX_Q17[ 3 ], 7 );
     neg_xX_Q24[ 4 ] = -silk_LSHIFT32( xX_Q17[ 4 ], 7 );
 
-    v_XX_31_Q17 = _mm_loadu_si128( (__m128i *)(&XX_Q17[ 1 ] ) );
+    v_XX_31_Q17 = _mm_loadu_si128( (__m128i *)(void*)(&XX_Q17[ 1 ] ) );
     v_XX_42_Q17 = _mm_shuffle_epi32( v_XX_31_Q17, _MM_SHUFFLE( 0, 3, 2, 1 ) );
 
     /* Loop over codebook */

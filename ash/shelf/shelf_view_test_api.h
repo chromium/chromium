@@ -55,6 +55,9 @@ class ShelfViewTestAPI {
   // Adds a new item of the given type to the view.
   ShelfID AddItem(ShelfItemType type);
 
+  // Removes the item at the specified |index| from the view.
+  void RemoveItemAt(int index);
+
   // Retrieve the view at |index|.
   views::View* GetViewAt(int index);
 

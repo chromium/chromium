@@ -13,10 +13,6 @@
 #include "base/functional/callback.h"
 #include "build/branding_buildflags.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/icons/vector_icons.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace ash {
 
 namespace {
@@ -45,7 +41,6 @@ const char kBruschettaFolderId[] = "olojmkekngdacpmgcffeipkflkgohcja";
 bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
   switch (result_type) {
     case AppListSearchResultType::kInstalledApp:
-    case AppListSearchResultType::kInternalApp:
     case AppListSearchResultType::kPlayStoreApp:
     case AppListSearchResultType::kPlayStoreReinstallApp:
     case AppListSearchResultType::kArcAppShortcut:
@@ -89,7 +84,6 @@ bool IsZeroStateResultType(AppListSearchResultType result_type) {
     case AppListSearchResultType::kInstalledApp:
     case AppListSearchResultType::kPlayStoreApp:
     case AppListSearchResultType::kInstantApp:
-    case AppListSearchResultType::kInternalApp:
     case AppListSearchResultType::kOmnibox:
     case AppListSearchResultType::kLauncher:
     case AppListSearchResultType::kAnswerCard:
@@ -448,11 +442,7 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     case kKeyboardShortcutMediaLaunchApp1:
       return &kKsvOverviewIcon;
     case kKeyboardShortcutMediaLaunchApp1Refresh:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return &kOverviewRefreshIcon;
-#else
-      return &kKsvOverviewIcon;
-#endif
     case kKeyboardShortcutMediaFastForward:
       return &kKsMediaFastForwardIcon;
     case kKeyboardShortcutMediaLaunchMail:
@@ -473,11 +463,7 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     case kKeyboardShortcutBrightnessUp:
       return &kKsvBrightnessUpIcon;
     case kKeyboardShortcutBrightnessUpRefresh:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return &kBrightnessUpRefreshIcon;
-#else
-      return &kKsvBrightnessUpIcon;
-#endif
     // Volume.
     case kKeyboardShortcutVolumeMute:
       return &kKsvMuteIcon;
@@ -538,10 +524,12 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Context menu.
     case kKeyboardShortcutContextMenu:
       return &kKsContextMenuIcon;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case kKeyboardShortcutKeyboardRightAlt:
-      return &kRightAltInternalIcon;
-#endif
+    case kKeyboardShortcutKeyboardQuickInsert:
+      return &kQuickInsertIcon;
+    case kKeyboardShortcutDoNotDisturb:
+      return &kKsDoNotDisturbIcon;
+    case kKeyboardShortcutCameraAccessToggle:
+      return &kKsCameraAccessToggleIcon;
     default:
       return nullptr;
   }

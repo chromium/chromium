@@ -49,7 +49,7 @@ class Thread {
 
 #if BUILDFLAG(IS_APPLE)
   //! \brief Returns the thread id of the Thread pthread_t.
-  uint64_t GetThreadIdForTesting();
+  static uint64_t GetThreadIdForTesting();
 #endif  // BUILDFLAG(IS_APPLE)
 
  private:

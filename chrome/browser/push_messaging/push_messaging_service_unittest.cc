@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "content/public/browser/push_messaging_service.h"
 
 #include <stdint.h>
 
@@ -18,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +30,7 @@
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/push_messaging/push_messaging_utils.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/gcm_driver/crypto/gcm_crypto_test_helpers.h"
@@ -42,7 +41,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/permissions/permission_manager.h"
-#include "content/public/browser/push_messaging_service.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,6 +62,7 @@
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -70,13 +70,13 @@
 
 namespace {
 
-const char kTestOrigin[] = "https://example.com";
-const char kTestSenderId[] = "1234567890";
-const int64_t kTestServiceWorkerId = 42;
-const char kTestPayload[] = "Hello, world!";
+constexpr std::string_view kTestOrigin = "https://example.com";
+constexpr std::string_view kTestSenderId = "1234567890";
+constexpr int64_t kTestServiceWorkerId = 42;
+constexpr std::string_view kTestPayload = "Hello, world!";
 
 // NIST P-256 public key in uncompressed format per SEC1 2.3.3.
-const uint8_t kTestP256Key[] = {
+constexpr uint8_t kTestP256Key[] = {
     0x04, 0x55, 0x52, 0x6A, 0xA5, 0x6E, 0x8E, 0xAA, 0x47, 0x97, 0x36,
     0x10, 0xC1, 0x66, 0x3C, 0x1E, 0x65, 0xBF, 0xA1, 0x7B, 0xEE, 0x48,
     0xC9, 0xC6, 0xBB, 0xBF, 0x02, 0x18, 0x53, 0x72, 0x1D, 0x0C, 0x7B,
@@ -88,7 +88,7 @@ static_assert(sizeof(kTestP256Key) == 65,
               "The fake public key must be a valid P-256 uncompressed point.");
 
 // URL-safe base64 encoded version of the |kTestP256Key|.
-const char kTestEncodedP256Key[] =
+constexpr char kTestEncodedP256Key[] =
     "BFVSaqVujqpHlzYQwWY8HmW_oXvuSMnGu78CGFNyHQx7qeMRtwNSIdNxkBOowc_tIPcf0X_ydr"
     "YBINg1pdk8Q_0";
 
@@ -139,6 +139,10 @@ class PushMessagingServiceTest : public ::testing::Test {
   }
 
   ~PushMessagingServiceTest() override = default;
+
+  void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+  }
 
   void SetPermission(const GURL& origin, ContentSetting value) {
     HostContentSettingsMap* host_content_settings_map =
@@ -222,8 +226,7 @@ class PushMessagingServiceTest : public ::testing::Test {
     auto options = blink::mojom::PushSubscriptionOptions::New();
     options->user_visible_only = true;
     options->application_server_key = std::vector<uint8_t>(
-        kTestSenderId,
-        kTestSenderId + sizeof(kTestSenderId) / sizeof(char) - 1);
+        std::begin(kTestSenderId), std::end(kTestSenderId));
 
     push_service->SubscribeFromWorker(
         origin, kTestServiceWorkerId, /*render_process_id=*/-1,
@@ -406,7 +409,7 @@ TEST_F(PushMessagingServiceTest, NormalizeSenderInfo) {
   PushMessagingServiceImpl* push_service = profile()->GetPushMessagingService();
   ASSERT_TRUE(push_service);
 
-  std::string p256dh(kTestP256Key, kTestP256Key + std::size(kTestP256Key));
+  std::string p256dh(std::begin(kTestP256Key), std::end(kTestP256Key));
   ASSERT_EQ(65u, p256dh.size());
 
   // NIST P-256 public keys in uncompressed format will be encoded using the
@@ -435,7 +438,7 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
   scoped_feature_list_.InitWithFeatures(
       /* enabled features */
       {features::kPushSubscriptionWithExpirationTime,
-       features::kPushSubscriptionChangeEvent},
+       features::kPushSubscriptionChangeEventOnInvalidation},
       /* disabled features */
       {});
 
@@ -479,7 +482,7 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace extensions {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionsPushMessagingServiceTest
     : public ExtensionServiceTestWithInstall,
@@ -493,16 +496,17 @@ class ExtensionsPushMessagingServiceTest
       const ExtensionsPushMessagingServiceTest&) = delete;
 
   void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     ExtensionServiceTestWithInstall::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
   }
 };
 
-// Tests that extensions with various workers can request userVisible as true
-// or false when subscribing to push notifications. Only worker based extensions
-// are allowed to request userVisible as false.
-TEST_P(ExtensionsPushMessagingServiceTest,
-       GetPermissionStatus_ExtensionNonServiceWorker_UserVisible) {
+// Tests that extension origins with various background contexts have permission
+// to the Push API. It tests that they can request userVisible:true when
+// subscribing to push notifications. Only worker based extensions are allowed
+// to set userVisible:false though.
+TEST_P(ExtensionsPushMessagingServiceTest, PushMessagingAPIPermission) {
   static constexpr char kManifestPersistentBackgroundScript[] =
       R"({"scripts": ["background.js"], "persistent": true})";
   static constexpr char kManifestEventPageBackgroundScript[] =
@@ -543,21 +547,28 @@ TEST_P(ExtensionsPushMessagingServiceTest,
       loader.LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  // Ensure that permissions are always granted by default when we are not
-  // applying the exception for worker-based extensions.
+  // Assume (with mocking) that notifications permission is granted for
+  // extensions per the manifest (for workers and non-workers).
   auto mock_permission_controller =
       std::make_unique<content::MockPermissionController>();
-  auto permission_mock_return =
+  auto permission_status_mock_return = content::PermissionStatus::GRANTED;
+  EXPECT_CALL(*mock_permission_controller,
+              GetPermissionStatusForWorker(testing::_, testing::_, testing::_))
+      .WillRepeatedly(testing::Return(permission_status_mock_return));
+  EXPECT_CALL(*mock_permission_controller,
+              GetPermissionStatusForWorker(testing::_, testing::_, testing::_))
+      .WillRepeatedly(testing::Return(permission_status_mock_return));
+  auto permission_result_mock_return =
       content::PermissionResult(content::PermissionStatus::GRANTED,
                                 content::PermissionStatusSource::UNSPECIFIED);
   EXPECT_CALL(*mock_permission_controller,
               GetPermissionResultForOriginWithoutContext(testing::_, testing::_,
                                                          testing::_))
-      .WillRepeatedly(testing::Return(permission_mock_return));
+      .WillRepeatedly(testing::Return(permission_result_mock_return));
   EXPECT_CALL(
       *mock_permission_controller,
       GetPermissionResultForOriginWithoutContext(testing::_, testing::_))
-      .WillRepeatedly(testing::Return(permission_mock_return));
+      .WillRepeatedly(testing::Return(permission_result_mock_return));
   browser_context()->SetPermissionControllerForTesting(
       std::move(mock_permission_controller));
 
@@ -567,19 +578,24 @@ TEST_P(ExtensionsPushMessagingServiceTest,
   const GURL extension_origin =
       Extension::GetBaseURLFromExtensionId(extension->id());
 
-  // All workers can always set userVisible to true when subscribing.
+  // All extension origins (worker or non-worker) can always use the Push API if
+  // they set userVisibleOnly:true on push subscription.
   EXPECT_EQ(
       blink::mojom::PermissionStatus::GRANTED,
       push_service->GetPermissionStatus(extension_origin, /*user_visible=*/
                                         true));
 
-  // Only worker based extensions can set userVisible to false when subscribing.
+  // Extension origins with workers can set userVisible:false when subscribing
+  // and still use the Push API if they don't intend to show notifications
+  // (if they try to show notifications then the permission is still enforced).
   if (worker_extension) {
     EXPECT_EQ(
         blink::mojom::PermissionStatus::GRANTED,
         push_service->GetPermissionStatus(extension_origin, /*user_visible=*/
                                           false));
   } else {
+    // Extension origins that are not worker based are not allowed to use the
+    // Push API if they set userVisibleOnly:false on subscription.
     EXPECT_EQ(
         blink::mojom::PermissionStatus::DENIED,
         push_service->GetPermissionStatus(extension_origin, /*user_visible=*/
@@ -604,8 +620,6 @@ INSTANTIATE_TEST_SUITE_P(WorkerBasedExtension,
 class FCMRevocationTest : public PushMessagingServiceTest {
  public:
   FCMRevocationTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kRevokeNotificationsPermissionIfDisabledOnAppLevel);
     PushMessagingServiceImpl::RegisterPrefs(prefs_.registry());
   }
 
@@ -627,7 +641,6 @@ class FCMRevocationTest : public PushMessagingServiceTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   GURL origin_ = GURL("https://example.com");
   TestingPrefServiceSimple prefs_;
 };
@@ -636,15 +649,18 @@ TEST_F(FCMRevocationTest, ResetPrefs) {
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
 
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   content::PermissionResult result =
       permission_controller->GetPermissionResultForOriginWithoutContext(
-          blink::PermissionType::NOTIFICATIONS, GetOrigin());
+          notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   SetPermission(GetUrl(), ContentSetting::CONTENT_SETTING_ALLOW, profile());
 
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   const char kNotificationsPermissionRevocationGracePeriodDate[] =
@@ -666,7 +682,7 @@ TEST_F(FCMRevocationTest, ResetPrefs) {
 
   // Permission is not reset.
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 }
 
@@ -677,15 +693,18 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionInitGracePeriodPrefsTest) {
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
 
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   content::PermissionResult result =
       permission_controller->GetPermissionResultForOriginWithoutContext(
-          blink::PermissionType::NOTIFICATIONS, GetOrigin());
+          notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   SetPermission(GetUrl(), ContentSetting::CONTENT_SETTING_ALLOW, profile());
 
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   const char kNotificationsPermissionRevocationGracePeriodDate[] =
@@ -704,7 +723,7 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionInitGracePeriodPrefsTest) {
 
   // Permission is still granted.
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 }
 
@@ -714,16 +733,18 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionInitGracePeriodPrefsTest) {
 TEST_F(FCMRevocationTest, NoAppLevelPermissionRevocationTest) {
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
-
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   content::PermissionResult result =
       permission_controller->GetPermissionResultForOriginWithoutContext(
-          blink::PermissionType::NOTIFICATIONS, GetOrigin());
+          notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   SetPermission(GetUrl(), ContentSetting::CONTENT_SETTING_ALLOW, profile());
 
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   const char kNotificationsPermissionRevocationGracePeriodDate[] =
@@ -750,7 +771,7 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionRevocationTest) {
 
   // Permission is revoked.
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 }
 
@@ -760,16 +781,18 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionRevocationTest) {
 TEST_F(FCMRevocationTest, NoAppLevelPermissionIgnoreTest) {
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
-
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   content::PermissionResult result =
       permission_controller->GetPermissionResultForOriginWithoutContext(
-          blink::PermissionType::NOTIFICATIONS, GetOrigin());
+          notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   SetPermission(GetUrl(), ContentSetting::CONTENT_SETTING_ALLOW, profile());
 
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   const char kNotificationsPermissionRevocationGracePeriodDate[] =
@@ -795,7 +818,7 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionIgnoreTest) {
 
   // Permission is revoked.
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 }
 
@@ -804,16 +827,18 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionIgnoreTest) {
 TEST_F(FCMRevocationTest, ResetAndRecordGracePeriodTest) {
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
-
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   content::PermissionResult result =
       permission_controller->GetPermissionResultForOriginWithoutContext(
-          blink::PermissionType::NOTIFICATIONS, GetOrigin());
+          notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   SetPermission(GetUrl(), ContentSetting::CONTENT_SETTING_ALLOW, profile());
 
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   const char kNotificationsPermissionRevocationGracePeriodDate[] =
@@ -839,7 +864,7 @@ TEST_F(FCMRevocationTest, ResetAndRecordGracePeriodTest) {
 
   // Permission is revoked.
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType::NOTIFICATIONS, GetOrigin());
+      notification_permission_descriptor, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 }
 

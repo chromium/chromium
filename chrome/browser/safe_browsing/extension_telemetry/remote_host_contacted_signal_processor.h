@@ -12,7 +12,6 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "url/gurl.h"
 
 namespace safe_browsing {
 

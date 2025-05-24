@@ -149,7 +149,7 @@ you want to operate on, but it will default to the last value passed to init or
 select. This enables you to omit it from most commands.
 
 Both init and select do additional work to prepare the output directory, which
-include things like running gyp. You can do that work on it's own with the
+include things like running gyp. You can do that work on its own with the
 prepare command if you want, something you need to do when changing between
 branches where you have modified the build files.
 

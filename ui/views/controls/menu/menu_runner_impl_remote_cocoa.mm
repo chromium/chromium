@@ -68,6 +68,7 @@ void MenuRunnerImplRemoteCocoa::RunMenuAt(
     MenuButtonController* button_controller,
     const gfx::Rect& bounds,
     MenuAnchorPosition anchor,
+    ui::mojom::MenuSourceType source_type,
     int32_t run_types,
     gfx::NativeView native_view_for_gestures,
     std::optional<gfx::RoundedCornersF> corners,

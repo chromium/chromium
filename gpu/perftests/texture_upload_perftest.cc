@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -117,9 +118,8 @@ GLenum GLFormatToStorageFormat(GLenum format) {
     case GL_RED:
       return GL_R8;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return 0;
 }
 
 void GenerateTextureData(const gfx::Size& size,
@@ -153,7 +153,7 @@ bool CompareBufferToRGBABuffer(GLenum format,
     for (int x = 0; x < size.width(); ++x) {
       int rgba_index = y * rgba_stride + x * GLFormatBytePerPixel(GL_RGBA);
       int pixels_index = y * pixels_stride + x * bytes_per_pixel;
-      uint8_t expected[4] = {0};
+      uint8_t expected[4] = {0, 0, 0, 0};
       switch (format) {
         case GL_LUMINANCE:  // (L_t, L_t, L_t, 1)
           expected[1] = pixels[pixels_index];
@@ -167,7 +167,7 @@ bool CompareBufferToRGBABuffer(GLenum format,
           memcpy(expected, &pixels[pixels_index], 4);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
       if (memcmp(&rgba[rgba_index], expected, 4)) {
         return false;
@@ -500,7 +500,7 @@ TEST_F(TextureUploadPerfTest, upload) {
 TEST_F(TextureUploadPerfTest, renaming) {
   gfx::Size texture_size(fbo_size_.width() / 2, fbo_size_.height() / 2);
 
-  std::vector<uint8_t> pixels[4];
+  std::array<std::vector<uint8_t>, 4> pixels;
   for (int i = 0; i < 4; ++i) {
     GenerateTextureData(texture_size, 4, i + 1, &pixels[i]);
   }
@@ -508,10 +508,12 @@ TEST_F(TextureUploadPerfTest, renaming) {
   ui::ScopedMakeCurrent smc(gl_context_.get(), surface_.get());
   GenerateVertexBuffer(texture_size);
 
-  gfx::Vector2dF positions[] = {gfx::Vector2dF(0.f, 0.f),
-                                gfx::Vector2dF(1.f, 0.f),
-                                gfx::Vector2dF(0.f, 1.f),
-                                gfx::Vector2dF(1.f, 1.f)};
+  auto positions = std::to_array<gfx::Vector2dF>({
+      gfx::Vector2dF(0.f, 0.f),
+      gfx::Vector2dF(1.f, 0.f),
+      gfx::Vector2dF(0.f, 1.f),
+      gfx::Vector2dF(1.f, 1.f),
+  });
   GLuint texture_id = CreateGLTexture(GL_RGBA, texture_size, true);
 
   MeasurementTimers upload_and_draw_timers(gpu_timing_client_.get());

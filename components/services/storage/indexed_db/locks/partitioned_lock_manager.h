@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_H_
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_H_
 
-#include <deque>
 #include <iosfwd>
 #include <list>
 #include <map>
@@ -69,11 +68,18 @@ class PartitionedLockManager {
 
   int64_t LocksHeldForTesting() const;
   int64_t RequestsWaitingForTesting() const;
+  int64_t RequestsWaitingForMetrics() const;
 
   // Acquires locks for the given requests. Lock partitions are treated as
   // completely independent domains.
   struct PartitionedLockRequest {
     PartitionedLockRequest(PartitionedLockId lock_id, LockType type);
+
+    friend bool operator==(const PartitionedLockRequest&,
+                           const PartitionedLockRequest&) = default;
+    friend auto operator<=>(const PartitionedLockRequest&,
+                            const PartitionedLockRequest&) = default;
+
     PartitionedLockId lock_id;
     LockType type;
   };
@@ -98,9 +104,13 @@ class PartitionedLockManager {
   std::vector<PartitionedLockId> GetUnacquirableLocks(
       std::vector<PartitionedLockRequest>& lock_requests);
 
-  // Returns the lock requests that are blocked on the provided lock holder.
-  std::set<PartitionedLockHolder*> GetBlockedRequests(
-      const base::flat_set<PartitionedLockId>& held_locks) const;
+  // Returns true if `held_locks` are blocking any queued request. Only requests
+  // for which `filter` returns true are considered. It's possible for
+  // `blocked_requests` to be very large, so this is intended to be as efficient
+  // as possible.
+  bool IsBlockingAnyRequest(
+      const base::flat_set<PartitionedLockId>& held_locks,
+      base::RepeatingCallback<bool(PartitionedLockHolder*)> filter) const;
 
   // Outputs the lock state (held & requested locks) into a debug value,
   // suitable for printing an 'internals' or to print during debugging. The
@@ -188,13 +198,6 @@ class PartitionedLockManager {
 
   base::WeakPtrFactory<PartitionedLockManager> weak_factory_{this};
 };
-
-bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,
-               const PartitionedLockManager::PartitionedLockRequest& y);
-bool operator==(const PartitionedLockManager::PartitionedLockRequest& x,
-                const PartitionedLockManager::PartitionedLockRequest& y);
-bool operator!=(const PartitionedLockManager::PartitionedLockRequest& x,
-                const PartitionedLockManager::PartitionedLockRequest& y);
 
 }  // namespace content::indexed_db
 

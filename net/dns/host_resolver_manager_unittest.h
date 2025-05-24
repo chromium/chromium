@@ -31,6 +31,7 @@ class MockHostResolverProc;
 class HostResolverManagerTest : public TestWithTaskEnvironment {
  public:
   static const int kDefaultPort = 80;
+  static inline constexpr base::TimeDelta kDefaultTtl = base::Seconds(1);
 
   explicit HostResolverManagerTest(
       base::test::TaskEnvironment::TimeSource time_source =
@@ -100,6 +101,8 @@ class HostResolverManagerTest : public TestWithTaskEnvironment {
   bool GetLastIpv6ProbeResult();
 
   void PopulateCache(const HostCache::Key& key, IPEndPoint endpoint);
+  void PopulateCache(const HostCache::Key& key,
+                     std::vector<IPEndPoint> endpoints);
 
   const std::pair<const HostCache::Key, HostCache::Entry>* GetCacheHit(
       const HostCache::Key& key);

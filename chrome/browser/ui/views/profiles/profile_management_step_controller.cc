@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -116,13 +117,15 @@ class DiceSignInStepController : public ProfileManagementStepController {
 
   void OnReloadRequested() override {
     // Sign-in may fail due to connectivity issues, allow reloading.
-    if (dice_sign_in_provider_)
+    if (dice_sign_in_provider_) {
       dice_sign_in_provider_->ReloadSignInPage();
+    }
   }
 
   void OnNavigateBackRequested() override {
-    if (dice_sign_in_provider_)
+    if (dice_sign_in_provider_) {
       NavigateBackInternal(dice_sign_in_provider_->contents());
+    }
   }
 
  private:

@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API resample2d operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -8,6 +8,7 @@
 'use strict';
 
 const label = 'resample-2d';
+const regrexp = new RegExp('\\[' + label + '\\]');
 // Tests for resample2d(input, options)
 const tests = [
   {
@@ -204,12 +205,11 @@ tests.forEach(
       const options = test.options ?? {};
       if (test.output) {
         const output = builder.resample2d(input, options);
-        assert_equals(output.dataType(), test.output.dataType);
-        assert_array_equals(output.shape(), test.output.shape);
+        assert_equals(output.dataType, test.output.dataType);
+        assert_array_equals(output.shape, test.output.shape);
       } else {
         const options = {...test.options};
         if (options.label) {
-          const regrexp = new RegExp('\\[' + label + '\\]');
           assert_throws_with_label(
               () => builder.resample2d(input, options), regrexp);
         } else {
@@ -232,10 +232,24 @@ promise_test(async t => {
     if (context.opSupportLimits().resample2d.input.dataTypes.includes(
             dataType)) {
       const output = builder.resample2d(input);
-      assert_equals(output.dataType(), dataType);
-      assert_array_equals(output.shape(), shape);
+      assert_equals(output.dataType, dataType);
+      assert_array_equals(output.shape, shape);
     } else {
       assert_throws_js(TypeError, () => builder.resample2d(input));
     }
   }
 }, `[resample2d] Test resample2d with all of the data types.`);
+
+promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
+
+  const input = builder.input('input', {
+      dataType: 'float32',
+      shape: [1, 1, context.opSupportLimits().maxTensorByteLength / 4, 1]});
+
+  const options = {};
+  options.scales = [2.0, 2.0];
+  options.label = label;
+  assert_throws_with_label(
+      () => builder.resample2d(input, options), regrexp);
+}, '[resample2d] throw if the output tensor byte length exceeds limit');

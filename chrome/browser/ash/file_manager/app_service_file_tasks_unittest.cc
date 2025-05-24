@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
@@ -21,7 +23,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -38,11 +40,13 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,8 +143,8 @@ class AppServiceFileTasksTest : public testing::Test {
     file_tasks::FindAppServiceTasks(profile(), entries, file_urls,
                                     dlp_source_urls, &resulting_tasks->tasks);
     // Sort by app ID so we don't rely on ordering.
-    base::ranges::sort(
-        resulting_tasks->tasks, base::ranges::less(),
+    std::ranges::sort(
+        resulting_tasks->tasks, std::ranges::less(),
         [](const auto& task) { return task.task_descriptor.app_id; });
 
     return resulting_tasks;
@@ -284,7 +288,7 @@ class AppServiceFileTasksTest : public testing::Test {
   }
 
   // Load an extension from the supplied manifest, then add intent filters.
-  void LoadExtension(const std::string manifest) {
+  void LoadExtension(std::string_view manifest) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder("file handlers").AddJSON(manifest).Build();
     auto filters = apps_util::CreateIntentFiltersForExtension(extension.get());
@@ -624,20 +628,8 @@ TEST_F(AppServiceFileTasksTest, FindAppServiceArcAppWithExtensionMatching) {
   EXPECT_TRUE(tasks[0].is_file_extension_match);
 }
 
-// Enable MV3 File Handlers.
-class AppServiceFileHandlersTest : public AppServiceFileTasksTest {
- public:
-  AppServiceFileHandlersTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionWebFileHandlers);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Verify App Service tasks for extensions with MV3 File Handlers.
-TEST_F(AppServiceFileHandlersTest, FindAppServiceExtension) {
+TEST_F(AppServiceFileTasksTest, FileHandlersFindAppServiceExtension) {
   static constexpr char kAction[] = "/open.html";
   const std::string manifest = base::StringPrintf(R"(
     "version": "0.0.1",
@@ -937,15 +929,13 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTest {
     AppServiceFileTasksTest::SetUp();
 
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+        AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
     profile_->SetIsNewProfile(true);
-    user_manager::User* user =
-        fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-            account_id, /*is_affiliated=*/false,
-            user_manager::UserType::kRegular, profile_.get());
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
+    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
+        profile_.get());
+    fake_user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     fake_user_manager_->SimulateUserProfileLoad(account_id);
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(

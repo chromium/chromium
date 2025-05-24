@@ -118,8 +118,7 @@ struct EnumTraits<gpu::mojom::VkPhysicalDeviceType, VkPhysicalDeviceType> {
       case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU:
         return gpu::mojom::VkPhysicalDeviceType::CPU;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return gpu::mojom::VkPhysicalDeviceType::INVALID_VALUE;
+        NOTREACHED();
     }
   }
 
@@ -142,11 +141,9 @@ struct EnumTraits<gpu::mojom::VkPhysicalDeviceType, VkPhysicalDeviceType> {
         *out = VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU;
         return true;
       case gpu::mojom::VkPhysicalDeviceType::INVALID_VALUE:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 template <>

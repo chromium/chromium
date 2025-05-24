@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 
@@ -30,25 +26,27 @@
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_page_handler_impl.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "ui/webui/webui_util.h"
 
-// static
-OptimizationGuideInternalsUI*
-OptimizationGuideInternalsUI::MaybeCreateOptimizationGuideInternalsUI(
-    content::WebUI* web_ui,
-    SetupWebUIDataSourceCallback set_up_data_source_callback) {
-  return new OptimizationGuideInternalsUI(
-      web_ui, std::move(set_up_data_source_callback));
+bool OptimizationGuideInternalsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return service != nullptr;
 }
 
 OptimizationGuideInternalsUI::OptimizationGuideInternalsUI(
-    content::WebUI* web_ui,
-    SetupWebUIDataSourceCallback set_up_data_source_callback)
+    content::WebUI* web_ui)
     : MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  std::move(set_up_data_source_callback)
-      .Run(base::make_span(kOptimizationGuideInternalsResources,
-                           kOptimizationGuideInternalsResourcesSize),
-           IDR_OPTIMIZATION_GUIDE_INTERNALS_OPTIMIZATION_GUIDE_INTERNALS_HTML);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost);
+  webui::SetupWebUIDataSource(
+      source, kOptimizationGuideInternalsResources,
+      IDR_OPTIMIZATION_GUIDE_INTERNALS_OPTIMIZATION_GUIDE_INTERNALS_HTML);
 }
 
 OptimizationGuideInternalsUI::~OptimizationGuideInternalsUI() = default;
@@ -66,9 +64,7 @@ void OptimizationGuideInternalsUI::CreatePageHandler(
     mojo::PendingRemote<optimization_guide_internals::mojom::Page> page) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!service) {
-    return;
-  }
+  DCHECK(service);
   OptimizationGuideLogger* optimization_guide_logger =
       service->GetOptimizationGuideLogger();
   optimization_guide_internals_page_handler_ =
@@ -80,9 +76,6 @@ void OptimizationGuideInternalsUI::RequestDownloadedModelsInfo(
     RequestDownloadedModelsInfoCallback callback) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!service) {
-    return;
-  }
   optimization_guide::PredictionManager* prediction_manager =
       service->GetPredictionManager();
   std::vector<optimization_guide_internals::mojom::DownloadedModelInfoPtr>
@@ -95,21 +88,21 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
     RequestLoggedModelQualityClientIdsCallback callback) {
   PrefService* local_state = g_browser_process->local_state();
 
+  int64_t client_id =
+      local_state->GetInt64(optimization_guide::model_execution::prefs::
+                                localstate::kModelQualityLoggingClientId);
+
+  // If the client id is zero no client id is set, in that case do nothing.
+  if (client_id == 0) {
+    std::move(callback).Run({});
+    return;
+  }
+
   // Get the client ids for the compose and tab organization feature for the
   // past 28 days to show on chrome://optimization-guide-internals.
   // TODO(b/308642692): Add other features client id as requested.
   std::vector<optimization_guide_internals::mojom::LoggedClientIdsPtr>
       logged_client_ids;
-
-  int64_t client_id =
-      local_state->GetInt64(optimization_guide::model_execution::prefs::
-                                localstate::kModelQualityLogggingClientId);
-
-  // If the client id is zero no client id is set, in that case do nothing.
-  if (client_id == 0) {
-    return;
-  }
-
   // Initialize time outside to have it change when generating the client ids
   // for different days.
   base::Time now = base::Time::Now();

@@ -16,8 +16,8 @@ ContextualSearchPolicyHandlerAndroid::ContextualSearchPolicyHandlerAndroid()
     : TypeCheckingPolicyHandler(key::kContextualSearchEnabled,
                                 base::Value::Type::BOOLEAN) {}
 
-ContextualSearchPolicyHandlerAndroid::~ContextualSearchPolicyHandlerAndroid() {
-}
+ContextualSearchPolicyHandlerAndroid::~ContextualSearchPolicyHandlerAndroid() =
+    default;
 
 void ContextualSearchPolicyHandlerAndroid::ApplyPolicySettings(
     const PolicyMap& policies,

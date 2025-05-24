@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 
 import androidx.test.filters.LargeTest;
 
@@ -19,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
@@ -58,7 +60,7 @@ public final class AddToHomescreenCurrentPageVerifierTest {
 
     private @VerificationStatus int getCurrentPageVerifierStatus() {
         WebappActivity webappActivity = mActivityTestRule.getActivity();
-        return webappActivity.getComponent().resolveCurrentPageVerifier().getState().status;
+        return webappActivity.getCurrentPageVerifier().getState().status;
     }
 
     /**
@@ -68,6 +70,7 @@ public final class AddToHomescreenCurrentPageVerifierTest {
     @Test
     @LargeTest
     @Feature({"Webapps"})
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41490416")
     public void testInScope() {
         String page = "https://foo.com/chrome/test/data/android/customtabs/cct_header.html";
         String otherPageInScope = "https://foo.com/chrome/test/data/android/simple.html";

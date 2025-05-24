@@ -78,6 +78,13 @@ void DesktopSessionDurationTracker::OnUserEvent() {
   }
 }
 
+void DesktopSessionDurationTracker::EndSessionForTesting() {
+  if (!in_session_) {
+    StartSession();
+  }
+  EndSession(base::TimeDelta());
+}
+
 // static
 void DesktopSessionDurationTracker::CleanupForTesting() {
   DCHECK(g_desktop_session_duration_tracker_instance);
@@ -112,7 +119,7 @@ DesktopSessionDurationTracker::DesktopSessionDurationTracker()
   InitInactivityTimeout();
 }
 
-DesktopSessionDurationTracker::~DesktopSessionDurationTracker() {}
+DesktopSessionDurationTracker::~DesktopSessionDurationTracker() = default;
 
 void DesktopSessionDurationTracker::OnTimerFired() {
   base::TimeDelta remaining =
@@ -135,7 +142,6 @@ void DesktopSessionDurationTracker::StartSession() {
   is_first_session_ = false;
   session_start_ = base::TimeTicks::Now();
   StartTimer(inactivity_timeout_);
-  ResetDefaultSearchCounter();
 
   for (Observer& observer : observer_list_)
     observer.OnSessionStarted(session_start_);
@@ -169,9 +175,6 @@ void DesktopSessionDurationTracker::EndSession(
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", delta,
                              base::Milliseconds(1), base::Hours(24), 50);
-
-  UMA_HISTOGRAM_COUNTS_1000("Session.TotalNewDefaultSearchEngineCount",
-                            default_search_counter_);
 }
 
 void DesktopSessionDurationTracker::InitInactivityTimeout() {

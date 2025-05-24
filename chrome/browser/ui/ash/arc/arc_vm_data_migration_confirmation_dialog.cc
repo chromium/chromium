@@ -4,17 +4,16 @@
 
 #include "chrome/browser/ui/ash/arc/arc_vm_data_migration_confirmation_dialog.h"
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/vector_icons/vector_icons.h"
+#include "ash/public/cpp/ash_typography.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/vector_icons/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,6 +27,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
@@ -101,13 +101,13 @@ ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
 
   // Not system modal so that the user can interact with apps before restart.
   SetModalType(ui::mojom::ModalType::kNone);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   SetShowCloseButton(false);
 
-  const auto* layout_provider = ChromeLayoutProvider::Get();
+  const auto* layout_provider = views::LayoutProvider::Get();
   DCHECK(layout_provider);
   set_fixed_width(layout_provider->GetDistanceMetric(
-      ChromeDistanceMetric::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
+      views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_use_round_corners(true);
   set_corner_radius(kDialogCornerRadius);
   set_margins(layout_provider->GetDialogInsetsForContentType(
@@ -121,7 +121,7 @@ void ArcVmDataMigrationConfirmationDialog::InitializeView(
     int days_until_deadline) {
   auto view = std::make_unique<views::View>();
 
-  const auto* layout_provider = ChromeLayoutProvider::Get();
+  const auto* layout_provider = views::LayoutProvider::Get();
   DCHECK(layout_provider);
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -176,7 +176,7 @@ void ArcVmDataMigrationConfirmationDialog::InitializeView(
               IDS_ARC_VM_DATA_MIGRATION_DIALOG_DAYS_UNTIL_DEADLINE,
               days_until_deadline))
           .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-          .SetTextStyle(ChromeTextStyle::STYLE_RED)
+          .SetTextStyle(ash::STYLE_ALERT)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetMultiLine(true)
           .Build());

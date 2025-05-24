@@ -4,9 +4,6 @@
 
 // Use the <code>chrome.image_writer</code> API to write images to
 // removable media.
-//
-// See the design doc for a detailed description of this API.
-// https://goo.gl/KzMEFq
 namespace imageWriterPrivate {
   // The different stages of a write call.
   //

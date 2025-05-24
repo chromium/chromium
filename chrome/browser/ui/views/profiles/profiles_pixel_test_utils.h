@@ -34,7 +34,16 @@ struct PixelTestParam {
   std::string test_suffix = "";
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
-  bool use_small_window = false;
+
+  // Predefined sizes:
+  //
+  // Small windows: both width and height.
+  static constexpr gfx::Size kSmallWindowSize{750, 590};
+  // Portrait mode: longer height than width compared to the default ratio./
+  // Height of 750px is the maximum height a pixel test can reach.
+  static constexpr gfx::Size kPortraitModeWindowSize{700, 750};
+  // Leaving `window_size` unset means using the default size of the view.
+  std::optional<gfx::Size> window_size;
 };
 
 enum class AccountManagementStatus {

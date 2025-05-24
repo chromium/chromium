@@ -452,7 +452,7 @@ void BorealisInstallerImpl::UpdateProgress(double state_progress) {
       end_range = 1.0;
       break;
     case InstallingState::kInactive:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   double new_progress =

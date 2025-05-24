@@ -57,8 +57,7 @@ class OSCryptAsyncMigratorTest
     migrator_ =
         std::make_unique<OSCryptAsyncMigrator>(store_, GetParam(), &prefs_);
     feature_list_.InitWithFeatures(
-        {features::kUseAsyncOsCryptInLoginDatabase,
-         features::kUseNewEncryptionMethod,
+        {features::kUseNewEncryptionMethod,
          features::kEncryptAllPasswordsWithOSCryptAsync},
         {});
   }

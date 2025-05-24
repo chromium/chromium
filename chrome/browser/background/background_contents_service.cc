@@ -19,13 +19,14 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background/background_contents_service_observer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -39,6 +40,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/constants.h"
@@ -58,9 +60,9 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/notifier_catalogs.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::SiteInstance;
 using content::WebContents;
@@ -78,7 +80,7 @@ void CloseBalloon(const std::string& extension_id, Profile* profile) {
   if (g_disable_close_balloon_for_testing)
     return;
 
-  NotificationDisplayService::GetForProfile(profile)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
       NotificationHandler::Type::TRANSIENT,
       kCrashedNotificationPrefix + extension_id);
 }
@@ -105,7 +107,7 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
   }
 
  private:
-  ~CrashNotificationDelegate() override {}
+  ~CrashNotificationDelegate() override = default;
 
   // Static to prevent accidental use of members as *this might get destroyed.
   static void HandleClick(bool is_hosted_app,
@@ -129,9 +131,8 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
     } else if (is_platform_app) {
       apps::AppLoadService::Get(profile)->RestartApplication(extension_id);
     } else {
-      extensions::ExtensionSystem::Get(profile)
-          ->extension_service()
-          ->ReloadExtension(extension_id);
+      extensions::ExtensionRegistrar::Get(profile)->ReloadExtension(
+          extension_id);
     }
 
     CloseBalloon(extension_id, profile);
@@ -153,12 +154,9 @@ void ReloadExtension(const std::string& extension_id, Profile* profile) {
     return;
   }
 
-  extensions::ExtensionSystem* extension_system =
-      extensions::ExtensionSystem::Get(profile);
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
-  if (!extension_system || !extension_system->extension_service() ||
-      !extension_registry) {
+  auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile);
+  auto* extension_registry = extensions::ExtensionRegistry::Get(profile);
+  if (!extension_registrar || !extension_registry) {
     return;
   }
 
@@ -167,7 +165,7 @@ void ReloadExtension(const std::string& extension_id, Profile* profile) {
     // been restarted successfully by someone else (the user).
     return;
   }
-  extension_system->extension_service()->ReloadExtension(extension_id);
+  extension_registrar->ReloadExtension(extension_id);
 }
 
 }  // namespace
@@ -360,8 +358,7 @@ void BackgroundContentsService::OnExtensionUnloaded(
         break;
     }
   }
-  NOTREACHED_IN_MIGRATION() << "Undefined UnloadedExtensionReason.";
-  return ShutdownAssociatedBackgroundContents(extension->id());
+  NOTREACHED() << "Undefined UnloadedExtensionReason.";
 }
 
 void BackgroundContentsService::OnExtensionUninstalled(
@@ -745,7 +742,7 @@ void BackgroundContentsService::NotificationImageReady(
     scoped_refptr<message_center::NotificationDelegate> delegate,
     const gfx::Image& icon) {
   NotificationDisplayService* notification_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   CHECK(notification_service);
 
   if (g_browser_process->IsShuttingDown()) {
@@ -766,14 +763,14 @@ void BackgroundContentsService::NotificationImageReady(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(), message,
       ui::ImageModel::FromImage(notification_icon), std::u16string(),
       GURL("chrome://extension-crash"),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
           ash::NotificationCatalogName::kBackgroundCrash),
 #else
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       {}, delegate);
   notification_service->Display(NotificationHandler::Type::TRANSIENT,
                                 notification,

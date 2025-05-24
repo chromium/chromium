@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -46,7 +47,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/notifier_catalogs.h"
 #endif
 
@@ -166,7 +167,7 @@ bool IsInstalledNonChildApp(content::RenderFrameHost& render_frame_host) {
 // potential race between the parent app calling an API while being uninstalled.
 bool CanAccessSubAppsApi(content::RenderFrameHost& render_frame_host) {
   return render_frame_host.IsFeatureEnabled(
-             blink::mojom::PermissionsPolicyFeature::kSubApps) &&
+             network::mojom::PermissionsPolicyFeature::kSubApps) &&
          content::HasIsolatedContextCapability(&render_frame_host) &&
          IsInstalledNonChildApp(render_frame_host);
 }
@@ -566,7 +567,7 @@ void SubAppsServiceImpl::RemoveSubApp(
   // its parent_app is the one doing the current call.
   if (!app || !app->parent_app_id() ||
       *calling_app_id != *app->parent_app_id() ||
-      !provider->registrar_unsafe().IsInstalled(sub_app_id)) {
+      !provider->registrar_unsafe().IsInRegistrar(sub_app_id)) {
     return std::move(callback).Run(SubAppsServiceRemoveResult::New(
         manifest_id_path, SubAppsServiceResultCode::kFailure));
   }
@@ -590,7 +591,7 @@ void SubAppsServiceImpl::RemoveSubApp(
 void SubAppsServiceImpl::NotifyUninstall(
     RemoveCallback result_callback,
     std::vector<SubAppsServiceRemoveResultPtr> remove_results) {
-  int num_successful_uninstalls = base::ranges::count(
+  int num_successful_uninstalls = std::ranges::count(
       remove_results, SubAppsServiceResultCode::kSuccess,
       [](const auto& result) { return result->result_code; });
 
@@ -619,7 +620,7 @@ void SubAppsServiceImpl::NotifyUninstall(
         kSubAppsUninstallNotificationId, title, message, ui::ImageModel(),
         /*display_source=*/std::u16string(),
         /*origin_url=*/start_url,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT,
             kSubAppsUninstallNotifierId,

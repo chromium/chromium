@@ -78,7 +78,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   // Whether or not the control has been styled enough by the author to disable
   // the native appearance.
-  virtual bool IsControlStyled(ControlPart part,
+  virtual bool IsControlStyled(AppearanceValue appearance,
                                const ComputedStyleBuilder&) const;
 
   bool ShouldDrawDefaultFocusRing(const Node*, const ComputedStyle&) const;
@@ -261,12 +261,12 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // implementation to hand back the appropriate platform theme.
   static LayoutTheme& NativeTheme();
 
-  ControlPart AdjustAppearanceWithAuthorStyle(
-      ControlPart part,
+  AppearanceValue AdjustAppearanceWithAuthorStyle(
+      AppearanceValue appearance,
       const ComputedStyleBuilder& style);
 
-  ControlPart AdjustAppearanceWithElementType(const ComputedStyleBuilder&,
-                                              const Element*);
+  AppearanceValue AdjustAppearanceWithElementType(const ComputedStyleBuilder&,
+                                                  const Element*);
 
   void UpdateForcedColorsState();
 

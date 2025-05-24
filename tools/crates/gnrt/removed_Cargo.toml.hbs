@@ -1,0 +1,29 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `{{this.name}}-{{this.version}}` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "{{this.name}}"
+version = "{{this.version}}"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+{{#each this.features}}
+"{{this}}" = []
+{{/each}}
+
+{{#each this.dependencies}}
+[dependencies.{{this.name}}]
+version = "{{this.version}}"
+default_features = false
+{{/each}}

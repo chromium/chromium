@@ -56,14 +56,14 @@ class CORE_EXPORT MessageEvent final : public Event {
 
  public:
   static MessageEvent* Create() { return MakeGarbageCollected<MessageEvent>(); }
-  static MessageEvent* Create(MessagePortArray* ports,
+  static MessageEvent* Create(GCedMessagePortArray* ports,
                               const String& origin = String(),
                               const String& last_event_id = String(),
                               EventTarget* source = nullptr) {
     return MakeGarbageCollected<MessageEvent>(origin, last_event_id, source,
                                               ports);
   }
-  static MessageEvent* Create(MessagePortArray* ports,
+  static MessageEvent* Create(GCedMessagePortArray* ports,
                               scoped_refptr<SerializedScriptValue> data,
                               const String& origin = String(),
                               const String& last_event_id = String(),
@@ -71,7 +71,7 @@ class CORE_EXPORT MessageEvent final : public Event {
     return MakeGarbageCollected<MessageEvent>(
         std::move(data), origin, last_event_id, source, ports, nullptr);
   }
-  static MessageEvent* Create(MessagePortArray* ports,
+  static MessageEvent* Create(GCedMessagePortArray* ports,
                               scoped_refptr<SerializedScriptValue> data,
                               UserActivation* user_activation) {
     return MakeGarbageCollected<MessageEvent>(
@@ -114,12 +114,12 @@ class CORE_EXPORT MessageEvent final : public Event {
   MessageEvent(const String& origin,
                const String& last_event_id,
                EventTarget* source,
-               MessagePortArray*);
+               GCedMessagePortArray*);
   MessageEvent(scoped_refptr<SerializedScriptValue> data,
                const String& origin,
                const String& last_event_id,
                EventTarget* source,
-               MessagePortArray*,
+               GCedMessagePortArray*,
                UserActivation* user_activation);
   MessageEvent(scoped_refptr<SerializedScriptValue> data,
                const String& origin,
@@ -142,7 +142,7 @@ class CORE_EXPORT MessageEvent final : public Event {
                         const String& origin,
                         const String& last_event_id,
                         EventTarget* source,
-                        MessagePortArray& ports);
+                        MessagePortArray ports);
   void initMessageEvent(const AtomicString& type,
                         bool bubbles,
                         bool cancelable,
@@ -150,7 +150,7 @@ class CORE_EXPORT MessageEvent final : public Event {
                         const String& origin,
                         const String& last_event_id,
                         EventTarget* source,
-                        MessagePortArray*,
+                        GCedMessagePortArray*,
                         UserActivation* user_activation,
                         mojom::blink::DelegatedCapability delegated_capability);
   void initMessageEvent(const AtomicString& type,
@@ -160,7 +160,7 @@ class CORE_EXPORT MessageEvent final : public Event {
                         const String& origin,
                         const String& last_event_id,
                         EventTarget* source,
-                        MessagePortArray*);
+                        GCedMessagePortArray*);
 
   ScriptValue data(ScriptState*);
   bool IsDataDirty() const { return is_data_dirty_; }
@@ -206,11 +206,6 @@ class CORE_EXPORT MessageEvent final : public Event {
 
   void LockToAgentCluster();
 
-  [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
-      v8::Isolate*,
-      const WrapperTypeInfo*,
-      v8::Local<v8::Object> wrapper) override;
-
  private:
   enum DataType {
     kDataTypeNull,  // For "messageerror" events.
@@ -237,7 +232,7 @@ class CORE_EXPORT MessageEvent final : public Event {
   // ports_ are the MessagePorts in an entangled state, and channels_ are
   // the MessageChannels in a disentangled state. Only one of them can be
   // non-empty at a time. EntangleMessagePorts() moves between the states.
-  Member<MessagePortArray> ports_;
+  Member<GCedMessagePortArray> ports_;
   bool is_ports_dirty_ = true;
   Vector<MessagePortChannel> channels_;
   Member<UserActivation> user_activation_;

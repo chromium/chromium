@@ -6,19 +6,17 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_FEATURE_PROMO_HELPER_NEW_TAB_PAGE_FEATURE_PROMO_HELPER_H_
 
 #include "base/feature_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class NewTabPageFeaturePromoHelper {
  public:
-  virtual void RecordPromoFeatureUsage(const base::Feature& iph_feature,
-                                       content::WebContents* web_contents);
+  virtual void RecordPromoFeatureUsageAndClosePromo(
+      const base::Feature& iph_feature,
+      content::WebContents* web_contents);
   virtual void SetDefaultSearchProviderIsGoogleForTesting(bool value);
   virtual bool DefaultSearchProviderIsGoogle(Profile* profile);
   virtual void MaybeShowFeaturePromo(const base::Feature& iph_feature,
                                      content::WebContents* web_contents);
-  virtual void CloseFeaturePromo(const base::Feature& iph_feature,
-                                 content::WebContents* web_contents);
   virtual bool IsSigninModalDialogOpen(content::WebContents* web_contents);
 
   virtual ~NewTabPageFeaturePromoHelper() = default;

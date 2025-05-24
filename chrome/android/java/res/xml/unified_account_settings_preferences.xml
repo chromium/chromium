@@ -11,6 +11,7 @@ found in the LICENSE file.
 
     <org.chromium.chrome.browser.sync.settings.CentralAccountCardPreference
         android:key="central_account_card"
+        android:selectable="false"
         app:isPreferenceVisible="true"/>
 
     <org.chromium.chrome.browser.sync.settings.IdentityErrorCardPreference
@@ -98,6 +99,7 @@ found in the LICENSE file.
         android:title="@string/account_android_device_accounts"/>
 
     <org.chromium.chrome.browser.ui.signin.SignoutButtonPreference
-        android:key="sign_out_button"/>
+        android:key="sign_out_button"
+        app:allowDividerAbove="false"/>
 
 </PreferenceScreen>

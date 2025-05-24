@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/no_destructor.h"
@@ -41,10 +42,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // Serializes and deserializes a ClipboardFormatType for use in IPC messages.
   // The serialized string may not be human-readable.
   std::string Serialize() const;
-  static ClipboardFormatType Deserialize(const std::string& serialization);
-
-  // Gets the ClipboardFormatType corresponding to the standard formats.
-  static ClipboardFormatType GetType(const std::string& format_string);
+  static ClipboardFormatType Deserialize(std::string_view serialization);
 
   // Get format identifiers for various types.
   static const ClipboardFormatType& FilenamesType();
@@ -61,12 +59,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // Chromium-only type for custom formats copied via DataTransfer API.
   // See https://w3c.github.io/clipboard-apis/#clipboard-events-and-interfaces.
   static const ClipboardFormatType& DataTransferCustomType();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS custom type to sync clipboard source metadata between Ash and
-  // Lacros.
-  static const ClipboardFormatType& DataTransferEndpointDataType();
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
   // ANSI formats. Only Windows differentiates between ANSI and UNICODE formats
@@ -87,13 +79,16 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& IDListType();
   static const ClipboardFormatType& MozUrlType();
 
-  // Type only used by Chromium to track the source URL of clipboard data.
-  static const ClipboardFormatType& InternalSourceUrlType();
 
   // Prevents clipboard data from being included in the clipboard history.
   static const ClipboardFormatType& ClipboardHistoryType();
   // Prevents clipboard data from being included in the cloud clipboard.
   static const ClipboardFormatType& UploadCloudClipboardType();
+#endif
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+  // Type only used by Chromium to track the source URL of clipboard data.
+  static const ClipboardFormatType& InternalSourceUrlType();
 #endif
 
   // For custom formats, individual types are added to the clipboard with a type
@@ -109,11 +104,18 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // clipboard. Derived from the provided `index` value.
   static std::string WebCustomFormatName(int index);
 
-  // Returns the ClipboardFormatType used for web custom format data,
-  // registering it with the system if needed. Pass in a value obtained from
-  // `WebCustomFormatName` above.
-  static ClipboardFormatType CustomPlatformType(
-      const std::string& format_string);
+  // Returns a `ClipboardFormatType` for a custom format. This is a low-level
+  // interface and the input must not be controlled by potentially-malicious
+  // content: for better or worse, clipboard format registrations are a finite
+  // (and shared and unreleasable) resource on some platforms.
+  //
+  // The format string must be in ASCII and should conform to general platform
+  // conventions (i.e. it should generally be a MIME type, except on Apple
+  // platforms, where it should be a Uniform Type Identifier).
+  //
+  // On Windows, some types are unnameable, e.g. the built-in text types. Use
+  // the helpers for the predefined formats instead.
+  static ClipboardFormatType CustomPlatformType(std::string_view format_string);
 
   // Returns the ClipboardFormatType used for the web custom format map that has
   // the mapping of MIME types to custom format names.
@@ -166,7 +168,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // https://docs.microsoft.com/en-us/windows/desktop/com/the-formatetc-structure
   CHROME_FORMATETC data_;
 #elif defined(USE_AURA) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-  explicit ClipboardFormatType(const std::string& native_format);
+  explicit ClipboardFormatType(std::string_view native_format);
   std::string data_;
 #elif BUILDFLAG(IS_APPLE)
 #if __OBJC__

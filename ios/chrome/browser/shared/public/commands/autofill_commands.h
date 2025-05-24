@@ -12,6 +12,9 @@ struct AutofillErrorDialogContext;
 struct FormActivityParams;
 class VirtualCardEnrollUiModel;
 }  // namespace autofill
+namespace web {
+class WebState;
+}
 
 // Commands related to the Autofill flows (passwords, addresses, payments etc).
 @protocol AutofillCommands
@@ -34,9 +37,14 @@ class VirtualCardEnrollUiModel;
 // Shows the plus address bottom sheet view controller.
 - (void)showPlusAddressesBottomSheet;
 
+// Commands to manage save card bottomsheet.
+- (void)showSaveCardBottomSheet;
+- (void)dismissSaveCardBottomSheet;
+
 // Sends a command to show the VCN enrollment Bottom Sheet.
 - (void)showVirtualCardEnrollmentBottomSheet:
-    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model;
+            (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
+                              originWebState:(web::WebState*)originWebState;
 
 // Sends a command to show the bottom sheet to edit an address.
 - (void)showEditAddressBottomSheet;

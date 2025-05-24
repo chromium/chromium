@@ -5,14 +5,14 @@
 #ifndef BASE_CONTAINERS_TO_VALUE_LIST_H_
 #define BASE_CONTAINERS_TO_VALUE_LIST_H_
 
+#include <algorithm>
 #include <concepts>
 #include <functional>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
-#include "base/ranges/ranges.h"
 #include "base/values.h"
 
 namespace base {
@@ -27,13 +27,14 @@ concept AppendableToValueList =
 //
 // Complexity: Exactly `size(range)` applications of `proj`.
 template <typename Range, typename Proj = std::identity>
-  requires requires { typename internal::range_category_t<Range>; } &&
-           std::indirectly_unary_invocable<Proj, ranges::iterator_t<Range>> &&
+  requires std::ranges::sized_range<Range> && std::ranges::input_range<Range> &&
+           std::indirectly_unary_invocable<Proj,
+                                           std::ranges::iterator_t<Range>> &&
            internal::AppendableToValueList<
-               std::indirect_result_t<Proj, ranges::iterator_t<Range>>>
+               std::indirect_result_t<Proj, std::ranges::iterator_t<Range>>>
 Value::List ToValueList(Range&& range, Proj proj = {}) {
-  auto container = Value::List::with_capacity(std::size(range));
-  ranges::for_each(
+  auto container = Value::List::with_capacity(std::ranges::size(range));
+  std::ranges::for_each(
       std::forward<Range>(range),
       [&]<typename T>(T&& value) { container.Append(std::forward<T>(value)); },
       std::move(proj));

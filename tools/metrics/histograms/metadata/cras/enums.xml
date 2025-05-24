@@ -136,6 +136,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="CRAS_AP_NC_REQUESTED_SUCCEEDED"/>
 </enum>
 
+<enum name="CrasAudioEffectType">
+  <summary>
+    List of the audio effect types defined in enum AudioEffectType in
+    //chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom.
+  </summary>
+  <int value="0" label="NONE"/>
+  <int value="1" label="NOISE_CANCELLATION"/>
+  <int value="2" label="HFP_MIC_SR"/>
+  <int value="4" label="STYLE_TRANSFER"/>
+  <int value="8" label="BEAMFORMING"/>
+</enum>
+
 <enum name="CrasClientType">
   <summary>
     List of the client type of CRAS. The list can be found in
@@ -1090,6 +1102,11 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Force disable system effect"/>
   <int value="1" label="Force enable system effect"/>
   <int value="2" label="Use platform default state"/>
+</enum>
+
+<enum name="UcmCreateStatus">
+  <int value="0" label="Fail"/>
+  <int value="1" label="Success"/>
 </enum>
 
 </enums>

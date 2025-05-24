@@ -1,0 +1,13 @@
+# All changes to chromecast/:
+vigeni@google.com
+
+# For Android specific changes, please add:
+sanfin@chromium.org
+sandv@google.com
+
+# For Linux specific changes, please add:
+antoniori@google.com
+shawnq@google.com
+
+# For Android media pipeline changes, please add:
+yucliu@chromium.org

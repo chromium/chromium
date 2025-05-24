@@ -1,0 +1,16 @@
+Name: AndroidX Test Library
+Short Name: storage
+URL: https://developer.android.com/testing
+Version: 1.6.0-alpha04
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+The AndroidX Test Library provides an extensive framework for testing Android apps
+
+Local Modifications:
+No modifications.

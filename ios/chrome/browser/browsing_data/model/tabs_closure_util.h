@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_TABS_CLOSURE_UTIL_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_TABS_CLOSURE_UTIL_H_
 
+#include <map>
+#include <set>
+
 #import "base/time/time.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/web/public/session/proto/proto_util.h"
@@ -55,7 +58,8 @@ std::map<tab_groups::TabGroupId, std::set<int>> GetTabGroupsWithTabsToClose(
 void CloseTabs(WebStateList* web_state_list,
                base::Time begin_time,
                base::Time end_time,
-               const WebStateIDToTime& cached_tabs_to_close);
+               const WebStateIDToTime& cached_tabs_to_close,
+               bool keep_active_tab);
 
 }  // namespace tabs_closure_util
 

@@ -1,0 +1,35 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module privacy_sandbox.dialog.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+import "chrome/browser/privacy_sandbox/notice/notice.mojom";
+
+// Factory ensures that the Page and PageHandler interfaces are always created
+// together without requiring an initialization call from the WebUI to the
+// handler.
+interface BaseDialogPageHandlerFactory {
+  // Crate a page handler for the base dialog and link it to the UI.
+  CreatePageHandler(pending_remote<BaseDialogPage> page,
+  pending_receiver<BaseDialogPageHandler> receiver);
+};
+
+// Renderer -> Browser
+interface BaseDialogPageHandler {
+  // Resizes the native view dialog based on the height of the document.
+  // This can only be called once.
+  ResizeDialog(uint32 height);
+  // Shows the Native View dialog.
+  ShowDialog();
+  // Sends Event Occurred to the View Manager.
+  EventOccurred(privacy_sandbox.notice.mojom.PrivacySandboxNotice notice,
+    privacy_sandbox.notice.mojom.PrivacySandboxNoticeEvent event);
+};
+
+// Called from C++ side of chrome://privacy-sandbox-base-dialog. (Browser -> Renderer)
+interface BaseDialogPage {
+  // Notifies the existing notice to navigate to the next step.
+  NavigateToNextStep(privacy_sandbox.notice.mojom.PrivacySandboxNotice next_step);
+};

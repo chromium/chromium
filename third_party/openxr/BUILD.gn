@@ -25,6 +25,7 @@ if (enable_openxr) {
     # DEPS rules for it as are present in the below locations.
     visibility = [
       "//chrome/browser/vr/*",
+      "//chrome/test/*",
       "//components/webxr/*",
       "//device/vr/*",
     ]
@@ -42,7 +43,6 @@ if (enable_openxr) {
 
   if (is_android) {
     # On Android, the loader comes with a couple more external dependencies.
-
     source_set("jnipp") {
       sources = [
         "src/src/external/jnipp/jnipp.cpp",
@@ -51,8 +51,10 @@ if (enable_openxr) {
 
       cflags_cc = [ "-Wno-shadow" ]
 
-      # JNIPP uses exceptions to communicate failures:
-      configs += [ "//build/config/compiler:exceptions" ]
+      configs += [
+        # JNIPP uses exceptions to communicate failures:
+        "//build/config/compiler:exceptions",
+      ]
     }
 
     config("android-jni-wrappers-config") {
@@ -83,13 +85,14 @@ if (enable_openxr) {
     }
   }
 
-  source_set("openxr") {
+  component("openxr") {
     # This visibility is done to help enforce the dependency that
     # openxr_platform.h requires platform headers to be included before it.
     # If you'd like to expand this visibility, you will need to make similar
     # DEPS rules for it as are present in the below locations.
     visibility = [
       "//chrome/browser/vr/*",
+      "//chrome/test/*",
       "//components/webxr/*",
       "//device/vr/*",
     ]
@@ -129,6 +132,10 @@ if (enable_openxr) {
       "src/src/xr_generated_dispatch_table_core.h",
       "src_overrides/src/loader/manifest_file.cpp",
     ]
+
+    if (is_component_build && is_win) {
+      sources += [ "openxr.def" ]
+    }
 
     include_dirs = [
       "src/include",
@@ -174,6 +181,11 @@ if (enable_openxr) {
       # OpenXR loader on Android has a bug where there is unconditional try-catch block
       # (in android_utilities.cpp) even when built without exceptions support.
       configs += [ "//build/config/compiler:exceptions" ]
+
+      libs = [
+        "android",
+        "log",
+      ]
     }
   }
 

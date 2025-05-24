@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/kcer/cert_cache.h"
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/kcer/cert_cache.h"
 #include "chromeos/ash/components/network/certificate_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/nss_cert_database.h"
@@ -208,7 +208,7 @@ void Pkcs12Migrator::MigrateCertsWithKcerCerts(
     return RecordUmaEvent(KcerPkcs12MigrationEvent::kFailedToGetKcerCerts);
   }
 
-  kcer::internal::CertCache kcer_cert_cache(std::move(kcer_certs));
+  kcer::internal::CertCache kcer_cert_cache(kcer_certs);
   net::ScopedCERTCertificateList nss_certs_to_migrate;
 
   for (net::ScopedCERTCertificate& nss_cert : nss_certs) {

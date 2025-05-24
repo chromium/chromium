@@ -48,6 +48,10 @@ class DistillerPage {
   virtual void OnDistillationDone(const GURL& page_url,
                                   const base::Value* value);
 
+  // Returns true if the distiller page should fetch distillation data for
+  // offline consumption.
+  virtual bool ShouldFetchOfflineData() = 0;
+
   DistillerPage(const DistillerPage&) = delete;
   DistillerPage& operator=(const DistillerPage&) = delete;
 
@@ -56,10 +60,6 @@ class DistillerPage {
   // and distill the |url| using the provided |script|. The extracted content
   // should be the same regardless of the DistillerPage implementation.
   virtual void DistillPageImpl(const GURL& url, const std::string& script) = 0;
-
-  // The value returned between the JavaScript and the DistillerPage can be
-  // either a dictionary with all the content, or a stringified version.
-  virtual bool StringifyOutput() = 0;
 
  private:
   bool ready_;

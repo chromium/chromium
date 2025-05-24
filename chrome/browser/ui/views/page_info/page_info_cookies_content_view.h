@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
-#include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -19,6 +18,10 @@ namespace views {
 class BoxLayoutView;
 class Label;
 }  // namespace views
+
+#if BUILDFLAG(IS_CHROMEOS)
+class NonAccessibleImageView;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The view that is used as a content view of the Cookies subpage in page info.
 // It contains information about cookies (short description, how many sites
@@ -37,9 +40,15 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   void CookiesSettingsLinkClicked(const ui::Event& event);
 
+  void IncognitoTrackingProtectionSettingsLinkClicked(const ui::Event& event);
+
+  void SyncSettingsLinkClicked(const ui::Event& event);
+
   void RwsSettingsButtonClicked(const ui::Event& event);
 
   void OnToggleButtonPressed();
+
+  void OnTrackingProtectionButtonPressed();
 
   // Sets the callback for when the cookies subpage is fully initialized. If it
   // is already calls the callback
@@ -55,70 +64,81 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   // Sets `third_party_cookies_title_` and `third_party_cookies_description_`
   // text using:
-  // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
-  // `enforcement`: type of enforcement on the protection (e.g. by policy, user
+  // `controls_state`: state of controls to display
+  // `enforcement`: type of enforcement on 3PCs (e.g. by policy, user
   // setting)
   // `status: current 3PC blocking status
-  // `blocking_status`: label for the status of the protection (e.g. allowed,
+  // `blocking_status`: label for the status of 3PCs (e.g. allowed,
   // limited, blocked)
   // `expiration`: duration of site exception
   void SetThirdPartyCookiesTitleAndDescription(
-      bool protections_on,
+      CookieControlsState controls_state,
       CookieControlsEnforcement enforcement,
-      content_settings::TrackingProtectionBlockingStatus status,
       CookieBlocking3pcdStatus blocking_status,
       base::Time expiration);
 
+  // Updates the label of the tracking protection button using:
+  // `controls_state`: state of controls to display
+  void SetTrackingProtectionButtonLabel(CookieControlsState controls_state);
+
   // Sets properties for `third_party_cookies_toggle_` using:
-  // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
+  // `controls_state`: state of controls to display
   // `status: current 3PC blocking status
-  void SetThirdPartyCookiesToggle(
-      bool protections_on,
-      content_settings::TrackingProtectionBlockingStatus status);
+  void SetThirdPartyCookiesToggle(CookieControlsState controls_state,
+                                  CookieBlocking3pcdStatus blocking_status);
 
   // Sets `cookie_description_label_` text and style using:
-  // `blocking_status`: label for the status of the protection (e.g. allowed,
+  // `blocking_status`: label for the status of 3PCs (e.g. allowed,
   // limited, blocked)
-  // `enforcement`: type of enforcement on the protection (e.g. by policy, user
+  // `enforcement`: type of enforcement on 3PCs (e.g. by policy, user
   // setting)
   // `is_otr: whether the current profile is "off the record"
-  void SetDescriptionLabel(CookieBlocking3pcdStatus blocking_status,
-                           CookieControlsEnforcement enforcement,
-                           bool is_otr);
+  void SetCookiesDescription(CookieBlocking3pcdStatus blocking_status,
+                             CookieControlsEnforcement enforcement,
+                             bool is_otr);
+
+  // Sets `cookie_description_label_` text and style for incognito using:
+  // `enforcement`: type of enforcement on 3PCs (e.g. by policy, user
+  // setting)
+  // `controls_state`: state of controls to display
+  void SetIncognitoTrackingProtectionsDescription(
+      CookieControlsEnforcement enforcement,
+      CookieControlsState controls_state);
 
   // Updates the new third-party cookies section using:
-  // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
-  // `controls_visible`: whether toggle is visible
-  // `blocking_status`: label for the status of the protection (e.g. allowed,
+  // `controls_state`: state of controls to display
+  // `blocking_status`: label for the status of 3PCs (e.g. allowed,
   // limited, blocked)
   // `expiration`: duration of site exception
-  // `feature: list of tracking protection features
-  void SetThirdPartyCookiesInfo(
-      bool protections_on,
-      bool controls_visible,
-      CookieBlocking3pcdStatus blocking_status,
-      base::Time expiration,
-      content_settings::TrackingProtectionFeature feature);
+  void SetThirdPartyCookiesInfo(CookieControlsState controls_state,
+                                CookieControlsEnforcement enforcement,
+                                CookieBlocking3pcdStatus blocking_status,
+                                base::Time expiration);
 
   // Updates toggles state according to info.
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
 
   //  Checks if `rws_button_` should be initiated and if so does it and sets its
   //  info.
-  void SetRwsCookiesInfo(std::optional<CookiesRwsInfo> rws_info,
-                         bool is_rws_allowed);
+  void SetRwsCookiesInfo(std::optional<CookiesRwsInfo> rws_info);
 
   // Ensures the related website sets information UI is present, with
   // placeholder information if necessary.
   void InitRwsButton(bool is_managed);
+
+  void InitIncognitoTrackingProtectionSettingsButton();
 
   // Initializes the new third-party cookies section. The section starts out
   // hidden and is only shown when third-party cookies are blocked or there is
   // an active exception.
   void AddThirdPartyCookiesContainer();
 
-  std::u16string GetStatusLabel(
-      content_settings::TrackingProtectionBlockingStatus blocking_status);
+#if BUILDFLAG(IS_CHROMEOS)
+  // There is a ChromeOS enterprise policy which allows moving user's cookies
+  // across devices. In that case, we add a section which mentions it in Cookies
+  // subpage in page info.
+  void MaybeAddSyncDisclaimer();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::OnceClosure initialized_callback_ = base::NullCallback();
 
@@ -133,6 +153,15 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // The StyledLabel that appears above |third_party_cookies_container|.
   raw_ptr<views::StyledLabel> cookies_description_label_ = nullptr;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Cookie sync disclaimer which consists of an enterprise icon and a
+  // description. It should be displayed for ChromeOS enterprise users when
+  // their admin has configured cookie sync.
+  raw_ptr<views::BoxLayoutView> cookies_sync_container_ = nullptr;
+  raw_ptr<NonAccessibleImageView> cookies_sync_icon_ = nullptr;
+  raw_ptr<views::StyledLabel> cookies_sync_description_ = nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // The toggle on |blocking_third_party_cookies_row| when state is managed by
   // the user.
   raw_ptr<views::ToggleButton> blocking_third_party_cookies_toggle_ = nullptr;
@@ -146,6 +175,9 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // status changed.
   bool rws_histogram_recorded_ = false;
 
+  // The button that links to the Incognito tracking protection settings page.
+  raw_ptr<RichHoverButton> tp_settings_button_ = nullptr;
+
   // Third-party cookies section which contains a title, a description and a
   // toggle row view.
   raw_ptr<views::BoxLayoutView> third_party_cookies_container_ = nullptr;
@@ -154,6 +186,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   raw_ptr<views::Label> third_party_cookies_description_ = nullptr;
   raw_ptr<RichControlsContainerView> third_party_cookies_row_ = nullptr;
   raw_ptr<views::ToggleButton> third_party_cookies_toggle_ = nullptr;
+  raw_ptr<views::LabelButton> tracking_protection_button_ = nullptr;
   raw_ptr<views::ImageView> third_party_cookies_enforced_icon_ = nullptr;
   raw_ptr<views::Label> third_party_cookies_toggle_subtitle_ = nullptr;
 };

@@ -36,6 +36,12 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     request.fetchedViaServiceWorker = true;
     request.setResponseCacheStorageCacheName('v1');
     request.setServiceWorkerResponseSource('cache-storage');
+    const routerInfo = {
+      ruleIdMatched: 3,
+      matchedSourceType: Protocol.Network.ServiceWorkerRouterSource.Cache,
+      actualSourceType: Protocol.Network.ServiceWorkerRouterSource.Cache,
+    };
+    request.serviceWorkerRouterInfo = routerInfo;
 
     // sample timing values used here are copied from a real request
     request.setIssueTime(357904.060558);
@@ -54,6 +60,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       'workerReady': 232.1,
       'workerFetchStart': 232.1,
       'workerRespondWithSettled': 790,
+      'workerRouterEvaluationStart': 200,
+      'workerCacheLookupStart': 100,
       'sendStart': 232.218,
       'sendEnd': 232.515,
       'pushStart': 0,

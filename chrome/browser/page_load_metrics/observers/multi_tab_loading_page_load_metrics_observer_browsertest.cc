@@ -18,8 +18,8 @@
 
 class MultiTabLoadingPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
-  MultiTabLoadingPageLoadMetricsBrowserTest() {}
-  ~MultiTabLoadingPageLoadMetricsBrowserTest() override {}
+  MultiTabLoadingPageLoadMetricsBrowserTest() = default;
+  ~MultiTabLoadingPageLoadMetricsBrowserTest() override = default;
 
  protected:
   GURL GetTestURL() { return embedded_test_server()->GetURL("/simple.html"); }
@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest, SingleTab) {
       0);
 }
 
-// TODO(crbug.com/40830313): Test is flaky on Linux, lacros, Chrome OS, Mac.
+// TODO(crbug.com/40830313): Test is flaky on Linux, Chrome OS, Mac.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_MultiTabForeground DISABLED_MultiTabForeground
 #else

@@ -30,10 +30,13 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       headerTextColor: '',
       interceptedProfileColor: '',
       primaryProfileColor: '',
-      interceptedAccount: {pictureUrl: '', avatarBadge: ''},
-      primaryAccount: {pictureUrl: '', avatarBadge: ''},
+      interceptedAccount:
+          {pictureUrl: '', avatarBadge: '', userBadgeAltText: ''},
+      primaryAccount: {pictureUrl: '', avatarBadge: '', userBadgeAltText: ''},
       useV2Design: false,
       showManagedDisclaimer: false,
+      interceptedProfileBadgeColor: '',
+      primaryProfileBadgeColor: '',
     };
 
     this.chromeSigninInterceptionParameters_ = {
@@ -44,6 +47,7 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       email: '',
       pictureUrl: '',
       managedUserBadge: '',
+      userBadgeAltText: '',
     };
   }
 

@@ -34,7 +34,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/user_agent.h"
 #include "net/base/net_errors.h"
 #include "net/socket/unix_domain_server_socket_posix.h"
 
@@ -169,9 +168,8 @@ bool DevToolsServer::IsStarted() const {
 static jlong JNI_DevToolsServer_InitRemoteDebugging(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& socket_name_prefix) {
-  DevToolsServer* server = new DevToolsServer(
-      base::android::ConvertJavaStringToUTF8(env, socket_name_prefix));
+    std::string& socket_name_prefix) {
+  DevToolsServer* server = new DevToolsServer(socket_name_prefix);
   return reinterpret_cast<intptr_t>(server);
 }
 

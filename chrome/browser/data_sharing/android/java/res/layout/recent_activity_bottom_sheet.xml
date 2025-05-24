@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <include layout="@layout/bottom_sheet_handlebar"/>
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginTop="@dimen/recent_activity_title_top_margin"
+    android:paddingStart="@dimen/list_item_default_margin">
+
+        <TextView
+            android:id="@+id/title"
+            android:textAppearance="@style/TextAppearance.Headline2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/data_sharing_recent_activity_bottom_sheet_title"/>
+
+        <org.chromium.ui.listmenu.ListMenuButton
+            android:id="@+id/recent_activity_menu_button"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:paddingEnd="@dimen/list_item_default_margin"
+            android:background="@null"
+            android:src="@drawable/ic_more_vert_24dp"
+            android:contentDescription="@string/collaboration_recent_activity_menu_option"
+            app:tint="@color/default_icon_color_tint_list" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="@dimen/recent_activity_content_area_min_height">
+
+        <TextView
+            android:id="@+id/recent_activity_empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/recent_activity_empty_view_top_margin"
+            android:gravity="center"
+            android:text="@string/data_sharing_recent_activity_empty"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:textIsSelectable="true"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recent_activity_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/recent_activity_recycler_view_top_margin"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    </FrameLayout>
+</LinearLayout>

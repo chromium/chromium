@@ -17,7 +17,7 @@ function prepareDatabase()
 
 function testCursors()
 {
-    evalAndLog("trans = db.transaction('store', 'readonly', {durability: 'relaxed'})");
+    evalAndLog("trans = db.transaction('store', 'readonly')");
     evalAndLog("store = trans.objectStore('store')");
     testForwardCursor();
 }

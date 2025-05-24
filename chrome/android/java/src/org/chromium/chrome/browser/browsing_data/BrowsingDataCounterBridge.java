@@ -8,40 +8,60 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * Communicates between BrowsingDataCounter (C++ backend) and ClearBrowsingDataFragment (Java UI).
  */
+@NullMarked
 public class BrowsingDataCounterBridge {
     /** Can receive a callback from a BrowsingDataCounter. */
     public interface BrowsingDataCounterCallback {
         /**
-         * The callback to be called when a BrowsingDataCounter is finished.
-         * @param result A string describing how much storage space will be reclaimed by clearing
-         *      this data type.
+         * The callback to be called when a BrowsingDataCounter is finished and an update to the
+         * summary is required.
+         *
+         * @param result For example, a string describing how much storage space will be reclaimed
+         *     by clearing this data type.
          */
-        public void onCounterFinished(String result);
+        public void onCounterFinished(String summary);
     }
 
     private long mNativeBrowsingDataCounterBridge;
-    private BrowsingDataCounterCallback mCallback;
+    private final BrowsingDataCounterCallback mCallback;
 
     /**
      * Initializes BrowsingDataCounterBridge.
      *
      * @param profile The {@link Profile} owning the browsing data.
      * @param callback A callback to call with the result when the counter finishes.
+     * @param selectedTimePeriod The time period selected in the UI.
      * @param dataType The browsing data type to be counted (from the shared enum
-     * @param prefType The type of preference that should be handled (Default, Basic or Advanced
-     *     from {@link org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTab}).
      */
     public BrowsingDataCounterBridge(
-            Profile profile, BrowsingDataCounterCallback callback, int dataType, int prefType) {
+            Profile profile,
+            BrowsingDataCounterCallback callback,
+            @TimePeriod int selectedTimePeriod,
+            int dataType) {
         mCallback = callback;
         mNativeBrowsingDataCounterBridge =
                 BrowsingDataCounterBridgeJni.get()
-                        .init(BrowsingDataCounterBridge.this, profile, dataType, prefType);
+                        .initWithoutPeriodPref(
+                                BrowsingDataCounterBridge.this,
+                                profile,
+                                selectedTimePeriod,
+                                dataType);
+    }
+
+    public void setSelectedTimePeriod(@TimePeriod int selectedTimePeriod) {
+        if (mNativeBrowsingDataCounterBridge != 0) {
+            BrowsingDataCounterBridgeJni.get()
+                    .setSelectedTimePeriod(
+                            mNativeBrowsingDataCounterBridge,
+                            BrowsingDataCounterBridge.this,
+                            selectedTimePeriod);
+        }
     }
 
     /** Destroys the native counterpart of this class. */
@@ -54,17 +74,22 @@ public class BrowsingDataCounterBridge {
     }
 
     @CalledByNative
-    private void onBrowsingDataCounterFinished(@JniType("std::u16string") String result) {
-        mCallback.onCounterFinished(result);
+    private void onBrowsingDataCounterFinished(@JniType("std::u16string") String summary) {
+        mCallback.onCounterFinished(summary);
     }
 
     @NativeMethods
     interface Natives {
-        long init(
+        long initWithoutPeriodPref(
                 BrowsingDataCounterBridge caller,
                 @JniType("Profile*") Profile profile,
-                int dataType,
-                int prefType);
+                int selectedTimePeriod,
+                int dataType);
+
+        void setSelectedTimePeriod(
+                long nativeBrowsingDataCounterBridge,
+                BrowsingDataCounterBridge caller,
+                int selectedTimePeriod);
 
         void destroy(long nativeBrowsingDataCounterBridge, BrowsingDataCounterBridge caller);
     }

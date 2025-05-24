@@ -10,9 +10,6 @@
       "matches": ["*://*/*"]
     }
   ],
-  "action": {
-    "default_popup": "accept_danger.html"
-  },
   "permissions": [
     "downloads",
     "downloads.open",

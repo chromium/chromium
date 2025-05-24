@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check_is_test.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -27,7 +28,6 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
-
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -346,6 +346,12 @@ class HostContentSettingsMap : public content_settings::Observer,
   void AddObserver(content_settings::Observer* observer);
   void RemoveObserver(content_settings::Observer* observer);
 
+  // Forces a sync of content settings and invokes callback when the sync is
+  // done. Useful for ensuring that NOTIFICATIONS content settings are
+  // up-to-date on Android, where they reflect the state of the corresponding OS
+  // channels and need to be initialized from the OS.
+  void EnsureSettingsUpToDate(base::OnceClosure callback);
+
   // Schedules any pending lossy website settings to be written to disk.
   void FlushLossyWebsiteSettings();
 
@@ -383,6 +389,9 @@ class HostContentSettingsMap : public content_settings::Observer,
   FRIEND_TEST_ALL_PREFIXES(
       HostContentSettingsMapTest,
       MigrateRequestingAndTopLevelOriginSettingsResetsEmbeddedSetting);
+
+  // Enum for GetWebsiteSettingInternal() parameter.
+  enum class ProviderFilter { kUserModifiable, kAny };
 
   ~HostContentSettingsMap() override;
 
@@ -426,7 +435,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      ProviderType first_provider_to_search,
+      ProviderFilter provider_filter,
       content_settings::SettingInfo* info) const;
 
   content_settings::PatternPair GetNarrowestPatterns(
@@ -474,23 +483,15 @@ class HostContentSettingsMap : public content_settings::Observer,
   void UpdateExpiryEnforcementTimer(ContentSettingsType content_type,
                                     base::Time expiration);
 
-  // If the feature
-  // `kActiveContentSettingExpiry` is enabled,
-  // this method checks for and deletes all
-  // content setting entries which will have
-  // expired before `now() +
-  // kEagerExpiryBuffer` in any provider. It
-  // also determines the time of the next
-  // future expiry and schedules itself to run
-  // at `expiration() - kEagerExpiryBuffer` if
-  // such a closest expiry exists for other
-  // content setting entries of this type in
-  // any provider. This method can and should
-  // be called each time a new expiration
-  // metadata field may be set for the
-  // provider. It aborts and potentially
-  // reinitializes running OneShotTimers
-  // automatically in those cases.
+  // If the feature `kActiveContentSettingExpiry` is enabled, this method checks
+  // for and deletes all content setting entries for temporary allowable
+  // permissions expired before `now() + kEagerExpiryBuffer` in any provider. It
+  // also determines the time of the next future expiry and schedules itself to
+  // run at `expiration() - kEagerExpiryBuffer` if such a closest expiry exists
+  // for other content setting entries of this type in any provider. This method
+  // can and should be called each time a new expiration metadata field may be
+  // set for the provider. It aborts and potentially reinitializes running
+  // OneShotTimers automatically in those cases.
   void DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
       ContentSettingsType content_setting_type);
 
@@ -545,8 +546,8 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Maps content setting type to OneShotTimers that are used to run
   // `DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun` which checks for, and
-  // deletes expired entries of the content setting if the feature flag
-  // `kActiveContentSettingExpiry` is enabled.
+  // deletes expired entries of the temporary allowable content setting if the
+  // feature flag `kActiveContentSettingExpiry` is enabled.
   std::map<ContentSettingsType, std::unique_ptr<base::OneShotTimer>>
       expiration_enforcement_timers_;
 

@@ -13,10 +13,24 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
+// The `kMirroring` sandbox type is only defined on macOS, and enables access to
+// the IOSurface system calls.
 [EnableIf=is_mac]
-const sandbox.mojom.Sandbox kMirroringSandbox
-  = sandbox.mojom.Sandbox.kMirroring;
-[EnableIfNot=is_mac]
+const sandbox.mojom.Sandbox kMirroringSandbox =
+    sandbox.mojom.Sandbox.kMirroring;
+
+// On ChromeOS, we need a more permissive sandbox for hardware encoding video,
+// including calls to ioctl and other system methods.
+[EnableIf=is_chromeos_with_video_accelerators]
+const sandbox.mojom.Sandbox kMirroringSandbox =
+    sandbox.mojom.Sandbox.kHardwareVideoEncoding;
+
+// On all other platforms, the standard, restrictive service sandbox seems to be
+// permissive enough for our use case.
+//
+// NOTE: we don't support hardware encoding on Linux currently. If support is
+// added, its sandbox will likely have to be updated to match ChromeOS.
+[EnableIfNot=is_mac|is_chromeos_with_video_accelerators]
 const sandbox.mojom.Sandbox kMirroringSandbox = sandbox.mojom.Sandbox.kService;
 
 // This interface is used to control a Cast mirroring session.

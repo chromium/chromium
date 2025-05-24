@@ -31,6 +31,8 @@ class UpdaterPrefsImpl : public LocalPrefs, public GlobalPrefs {
   // Overrides for LocalPrefs
   bool GetQualified() const override;
   void SetQualified(bool value) override;
+  bool GetCecaExperimentEnabled() override;
+  void SetCecaExperimentEnabled(bool value) override;
 
   // Overrides for GlobalPrefs
   std::string GetActiveVersion() const override;

@@ -7,6 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/internal/metadata/feature_query.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -54,21 +55,20 @@ std::map<SignalKey, FeatureQuery> PriceTrackingNotificationPromo::GetInputs() {
 
 CardSelectionInfo::ShowResult PriceTrackingNotificationPromo::ComputeCardResult(
     const CardSelectionSignals& signals) const {
+  // Check for a forced `ShowResult`.
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      kPriceTrackingNotificationPromo ==
+          forced_result.value().result_label.value()) {
+    return forced_result.value();
+  }
+
   CardSelectionInfo::ShowResult result;
   result.result_label = kPriceTrackingNotificationPromo;
-  if (base::GetFieldTrialParamByFeatureAsString(
-          features::kSegmentationPlatformEphemeralCardRanker,
-          features::kEphemeralCardRankerForceShowCardParam,
-          "") == features::kPriceTrackingPromoForceOverride) {
-    result.position = EphemeralHomeModuleRank::kTop;
-    return result;
-  } else if (base::GetFieldTrialParamByFeatureAsString(
-                 features::kSegmentationPlatformEphemeralCardRanker,
-                 features::kEphemeralCardRankerForceHideCardParam,
-                 "") == features::kPriceTrackingPromoForceOverride) {
-    result.position = EphemeralHomeModuleRank::kNotShown;
-    return result;
-  }
+
   if (*signals.GetSignal(kHasSubscriptionSignalKey) &&
       !*signals.GetSignal(kIsNewUserSignalKey) &&
       *signals.GetSignal(kIsSyncedSignalKey)) {
@@ -84,25 +84,24 @@ bool PriceTrackingNotificationPromo::IsEnabled(int impression_count) {
   if (!base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo)) {
     return false;
   }
-  // Mark that the card shouldn't be shown if:
-  // 1) the force hide feature param is set.
-  // 2) the card has reached its max impression count and the force show
-  // feature maram is not set.
-  if (base::GetFieldTrialParamByFeatureAsString(
-          features::kSegmentationPlatformEphemeralCardRanker,
-          features::kEphemeralCardRankerForceHideCardParam,
-          "") == features::kPriceTrackingPromoForceOverride) {
-    return false;
-  }
-  if (impression_count > kMaxPriceTrackingNotificationCardImpressions &&
-      base::GetFieldTrialParamByFeatureAsString(
-          features::kSegmentationPlatformEphemeralCardRanker,
-          features::kEphemeralCardRankerForceShowCardParam,
-          "") != features::kPriceTrackingPromoForceOverride) {
-    return false;
+
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  // If forced to show/hide and the module label matches the current module,
+  // return true/false accordingly.
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      kPriceTrackingNotificationPromo ==
+          forced_result.value().result_label.value()) {
+    return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
-  return true;
+  if (impression_count < kMaxPriceTrackingNotificationCardImpressions) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace home_modules

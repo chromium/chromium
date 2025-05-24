@@ -166,6 +166,13 @@ class PLATFORM_EXPORT SchemeRegistry {
   static void RemoveURLSchemeAsCodeCacheWithHashing(const String& scheme);
   static bool SchemeSupportsCodeCacheWithHashing(const String& scheme);
 
+  // WebUI Schemes that can use bundled resource bytecode retrieved from the
+  // static resource bundle.
+  static void RegisterURLSchemeAsWebUIBundledBytecode(const String& scheme);
+  static void RemoveURLSchemeAsWebUIBundledBytecodeForTesting(
+      const String& scheme);
+  static bool SchemeSupportsWebUIBundledBytecode(const String& scheme);
+
  private:
   static const URLSchemesSet& LocalSchemes();
 };

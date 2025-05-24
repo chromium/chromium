@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHELL_INIT_ASH_SHELL_INIT_H_
 #define CHROME_BROWSER_UI_ASH_SHELL_INIT_ASH_SHELL_INIT_H_
 
+class PrefService;
+
 // Initializes and destroys the ash::Shell when Ash is running in process.
 class AshShellInit {
  public:
-  AshShellInit();
+  explicit AshShellInit(PrefService& local_state);
 
   AshShellInit(const AshShellInit&) = delete;
   AshShellInit& operator=(const AshShellInit&) = delete;

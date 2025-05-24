@@ -1,0 +1,52 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/regional_capabilities/RegionalCapabilitiesServiceClientAndroid.java",
+    "java/src/org/chromium/chrome/browser/regional_capabilities/RegionalCapabilitiesServiceFactory.java",
+  ]
+
+  srcjar_deps = [ ":jni_headers" ]
+
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
+    "//components/regional_capabilities/android:java",
+    "//components/search_engines/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/regional_capabilities/RegionalCapabilitiesServiceClientAndroid.java",
+    "java/src/org/chromium/chrome/browser/regional_capabilities/RegionalCapabilitiesServiceFactory.java",
+  ]
+}
+
+android_library("test_utils_java") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/regional_capabilities/test/util/RegionalCapabilitiesServiceTestUtil.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:promise_java",
+    "//components/search_engines/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+generate_jni("test_utils_jni_headers") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/regional_capabilities/test/util/RegionalCapabilitiesServiceTestUtil.java" ]
+}

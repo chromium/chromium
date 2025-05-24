@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
@@ -15,10 +14,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-// Allows for full TPM metrics reporting on non-Canary channels in case
-// the hash values collected are not able to map to their string
-// counterparts
-BASE_DECLARE_FEATURE(kReportFullTPMIdentifierDetails);
 
 // TPMMetricsProvider is responsible for adding TPM information to
 // the UMA system profile proto.

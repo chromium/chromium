@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.profiles;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserStartupController;
 
 /** Utilities for interacting with ProfileKeys. */
+@NullMarked
 public class ProfileKeyUtil {
     private ProfileKeyUtil() {}
 

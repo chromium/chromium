@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
 
 #include <stddef.h>
+
+#include <array>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -64,6 +62,7 @@ class AudioRendererMixerInputTest : public testing::Test,
   }
 
   AudioRendererMixer* GetMixer(
+      const LocalFrameToken&,
       const FrameToken&,
       const media::AudioParameters& params,
       media::AudioLatency::Type,
@@ -72,7 +71,7 @@ class AudioRendererMixerInputTest : public testing::Test,
     EXPECT_TRUE(params.IsValid());
     size_t idx = (sink_info.device_id() == kDefaultDeviceId) ? 0 : 1;
     if (!mixers_[idx]) {
-      EXPECT_CALL(*reinterpret_cast<media::MockAudioRendererSink*>(sink.get()),
+      EXPECT_CALL(*static_cast<media::MockAudioRendererSink*>(sink.get()),
                   Start());
 
       mixers_[idx] = std::make_unique<AudioRendererMixer>(audio_parameters_,
@@ -88,6 +87,7 @@ class AudioRendererMixerInputTest : public testing::Test,
 
   scoped_refptr<media::AudioRendererSink> GetSink(
       const LocalFrameToken&,
+      const FrameToken&,
       std::string_view device_id) override {
     media::OutputDeviceStatus status = media::OUTPUT_DEVICE_STATUS_OK;
     if (device_id == kNonexistentDeviceId) {
@@ -113,7 +113,7 @@ class AudioRendererMixerInputTest : public testing::Test,
 
   AudioRendererMixer* GetInputMixer() { return mixer_input_->mixer_; }
   media::MockAudioRendererSink* GetMockSink() const {
-    return reinterpret_cast<media::MockAudioRendererSink*>(
+    return static_cast<media::MockAudioRendererSink*>(
         mixer_input_->sink_.get());
   }
 
@@ -122,7 +122,7 @@ class AudioRendererMixerInputTest : public testing::Test,
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   media::AudioParameters audio_parameters_;
-  std::unique_ptr<AudioRendererMixer> mixers_[2];
+  std::array<std::unique_ptr<AudioRendererMixer>, 2> mixers_;
   scoped_refptr<AudioRendererMixerInput> mixer_input_;
   std::unique_ptr<media::FakeAudioRenderCallback> fake_callback_;
   std::unique_ptr<media::AudioBus> audio_bus_;

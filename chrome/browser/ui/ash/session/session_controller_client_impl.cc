@@ -14,21 +14,18 @@
 #include "ash/public/cpp/session/session_types.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -44,9 +41,9 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
-#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
@@ -82,9 +79,10 @@ SessionControllerClientImpl* g_session_controller_client_instance = nullptr;
 // Returns the session id of a given user or 0 if user has no session.
 uint32_t GetSessionId(const User& user) {
   const AccountId& account_id = user.GetAccountId();
-  for (auto& session : SessionManager::Get()->sessions()) {
-    if (session.user_account_id == account_id)
-      return session.id;
+  for (const auto& session : SessionManager::Get()->sessions()) {
+    if (session->account_id() == account_id) {
+      return session->session_id();
+    }
   }
 
   return 0u;
@@ -110,7 +108,7 @@ std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
       UserManager::Get()->IsUserNonCryptohomeDataEphemeral(user.GetAccountId());
   session->user_info.has_gaia_account = user.has_gaia_account();
   session->user_info.should_display_managed_ui =
-      profile && chrome::ShouldDisplayManagedUi(profile);
+      profile && ShouldDisplayManagedUi(profile);
   session->user_info.is_new_profile = profile->IsNewProfile();
   session->user_info.is_managed =
       profile->GetProfilePolicyConnector()->IsManaged();
@@ -126,15 +124,17 @@ std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
 }
 
 void DoSwitchUser(const AccountId& account_id, bool switch_user) {
-  if (switch_user)
-    UserManager::Get()->SwitchActiveUser(account_id);
+  if (switch_user) {
+    session_manager::SessionManager::Get()->SwitchActiveSession(account_id);
+  }
 }
 
 // Callback for the dialog that warns the user about multi-profile, which has
 // a "never show again" checkbox.
 void OnAcceptMultiprofilesIntroDialog(bool accept, bool never_show_again) {
-  if (!accept)
+  if (!accept) {
     return;
+  }
 
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   prefs->SetBoolean(user_manager::prefs::kMultiProfileNeverShowIntro,
@@ -144,7 +144,8 @@ void OnAcceptMultiprofilesIntroDialog(bool accept, bool never_show_again) {
 
 }  // namespace
 
-SessionControllerClientImpl::SessionControllerClientImpl() {
+SessionControllerClientImpl::SessionControllerClientImpl(
+    PrefService& local_state) {
   SessionManager::Get()->AddObserver(this);
   UserManager::Get()->AddSessionStateObserver(this);
   UserManager::Get()->AddObserver(this);
@@ -153,7 +154,7 @@ SessionControllerClientImpl::SessionControllerClientImpl() {
       &SessionControllerClientImpl::OnAppTerminating, base::Unretained(this)));
 
   local_state_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  local_state_registrar_->Init(g_browser_process->local_state());
+  local_state_registrar_->Init(&local_state);
   local_state_registrar_->Add(
       prefs::kSessionStartTime,
       base::BindRepeating(&SessionControllerClientImpl::SendSessionLengthLimit,
@@ -210,7 +211,7 @@ void SessionControllerClientImpl::PrepareForLock(base::OnceClosure callback) {
     Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
     if (profile) {
       auto* floating_workspace_service =
-          ash::FloatingWorkspaceService::GetForProfile(profile);
+          ash::FloatingWorkspaceServiceFactory::GetForProfile(profile);
       if (floating_workspace_service) {
         floating_workspace_service->CaptureAndUploadActiveDesk();
       }
@@ -270,8 +271,9 @@ void SessionControllerClientImpl::CycleActiveUser(
 }
 
 void SessionControllerClientImpl::ShowMultiProfileLogin() {
-  if (!IsMultiProfileAvailable())
+  if (!IsMultiProfileAvailable()) {
     return;
+  }
 
   // Only regular non-supervised users could add other users to current session.
   if (UserManager::Get()->GetActiveUser()->GetType() !=
@@ -283,14 +285,7 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
          session_manager::kMaximumNumberOfUserSessions);
 
   // Launch sign in screen to add another user to current session.
-  DCHECK(!UserManager::Get()->GetUsersAllowedForMultiProfile().empty());
-
-  // Lacros and multiprofile are mutually exclusive.
-  const auto* primary_user = UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
-  DCHECK(!crosapi::browser_util::IsLacrosEnabledForMigration(
-      primary_user,
-      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
+  DCHECK(!UserManager::Get()->GetUsersAllowedForMultiUserSignIn().empty());
 
   // Don't show the dialog if any logged-in user in the multi-profile session
   // dismissed it.
@@ -302,8 +297,9 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
         !multi_user_util::GetProfileFromAccountId(user->GetAccountId())
              ->GetPrefs()
              ->GetBoolean(user_manager::prefs::kMultiProfileNeverShowIntro);
-    if (!show_intro)
+    if (!show_intro) {
       break;
+    }
   }
   if (show_intro) {
     session_controller_->ShowMultiprofilesIntroDialog(
@@ -331,8 +327,9 @@ PrefService* SessionControllerClientImpl::GetUserPrefService(
     const AccountId& account_id) {
   Profile* const user_profile =
       multi_user_util::GetProfileFromAccountId(account_id);
-  if (!user_profile)
+  if (!user_profile) {
     return nullptr;
+  }
 
   return user_profile->GetPrefs();
 }
@@ -363,29 +360,25 @@ std::tuple<bool, bool> SessionControllerClientImpl::IsEligibleForSeaPen(
 
 std::optional<int> SessionControllerClientImpl::GetExistingUsersCount() const {
   const auto* user_manager = UserManager::Get();
-  return !user_manager ? std::nullopt
-                       : std::optional<int>(user_manager->GetUsers().size());
+  return !user_manager
+             ? std::nullopt
+             : std::optional<int>(user_manager->GetPersistedUsers().size());
 }
 
 // static
 bool SessionControllerClientImpl::IsMultiProfileAvailable() {
-  if (!profiles::IsMultipleProfilesEnabled() || !UserManager::IsInitialized())
+  if (!profiles::IsMultipleProfilesEnabled() || !UserManager::IsInitialized()) {
     return false;
+  }
   if (ash::SessionTerminationManager::Get() &&
       ash::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
     return false;
   }
-  // Multiprofile mode is not allowed if Lacros is enabled.
-  const auto* primary_user = UserManager::Get()->GetPrimaryUser();
-  if (primary_user && crosapi::browser_util::IsLacrosEnabledForMigration(
-                          primary_user, ash::standalone_browser::migrator_util::
-                                            PolicyInitState::kAfterInit)) {
-    return false;
-  }
+
   size_t users_logged_in = UserManager::Get()->GetLoggedInUsers().size();
   // Does not include users that are logged in.
   size_t users_available_to_add =
-      UserManager::Get()->GetUsersAllowedForMultiProfile().size();
+      UserManager::Get()->GetUsersAllowedForMultiUserSignIn().size();
   return (users_logged_in + users_available_to_add) > 1;
 }
 
@@ -396,8 +389,10 @@ void SessionControllerClientImpl::ActiveUserChanged(User* active_user) {
   // order if user session ends up to be pending (due to user profile loading).
   // TODO(crbug.com/40489520): Get rid of this after refactoring.
   SendUserSession(*active_user);
-  if (pending_users_.find(active_user->GetAccountId()) != pending_users_.end())
+  if (pending_users_.find(active_user->GetAccountId()) !=
+      pending_users_.end()) {
     return;
+  }
 
   SendUserSessionOrder();
 }
@@ -414,8 +409,9 @@ void SessionControllerClientImpl::LocalStateChanged(
 
 void SessionControllerClientImpl::OnUserImageChanged(const User& user) {
   // Only sends user session for signed-in user.
-  if (GetSessionId(user) != 0)
+  if (GetSessionId(user) != 0) {
     SendUserSession(user);
+  }
 }
 
 void SessionControllerClientImpl::OnUserNotAllowed(
@@ -423,6 +419,11 @@ void SessionControllerClientImpl::OnUserNotAllowed(
   LOG(ERROR) << "Shutdown session because a user is not allowed to be in the "
                 "current session";
   session_controller_->ShowMultiprofilesSessionAbortedDialog(user_email);
+}
+
+void SessionControllerClientImpl::OnUserToBeRemoved(
+    const AccountId& account_id) {
+  session_controller_->NotifyUserToBeRemoved(account_id);
 }
 
 // static
@@ -446,12 +447,14 @@ bool SessionControllerClientImpl::ShouldLockScreenAutomatically() {
 // static
 ash::AddUserSessionPolicy
 SessionControllerClientImpl::GetAddUserSessionPolicy() {
-  if (ash::SessionTerminationManager::Get()->IsLockedToSingleUser())
+  if (ash::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
     return ash::AddUserSessionPolicy::ERROR_LOCKED_TO_SINGLE_USER;
+  }
 
   UserManager* const user_manager = UserManager::Get();
-  if (user_manager->GetUsersAllowedForMultiProfile().empty())
+  if (user_manager->GetUsersAllowedForMultiUserSignIn().empty()) {
     return ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS;
+  }
 
   if (user_manager::GetMultiUserSignInPolicy(user_manager->GetPrimaryUser()) ==
       user_manager::MultiUserSignInPolicy::kNotAllowed) {
@@ -463,22 +466,14 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
     return ash::AddUserSessionPolicy::ERROR_MAXIMUM_USERS_REACHED;
   }
 
-  const auto* primary_user = user_manager->GetPrimaryUser();
-  if (primary_user) {
-    if (crosapi::browser_util::IsLacrosEnabledForMigration(
-            primary_user, ash::standalone_browser::migrator_util::
-                              PolicyInitState::kAfterInit)) {
-      return ash::AddUserSessionPolicy::ERROR_LACROS_ENABLED;
-    }
-  }
-
   return ash::AddUserSessionPolicy::ALLOWED;
 }
 
 // static
 void SessionControllerClientImpl::DoLockScreen() {
-  if (!CanLockScreen())
+  if (!CanLockScreen()) {
     return;
+  }
 
   VLOG(1) << "b/228873153 : Requesting screen lock from "
              "SessionControllerClientImpl";
@@ -489,8 +484,9 @@ void SessionControllerClientImpl::DoLockScreen() {
 void SessionControllerClientImpl::DoSwitchActiveUser(
     const AccountId& account_id) {
   // Disallow switching to an already active user since that might crash.
-  if (account_id == UserManager::Get()->GetActiveUser()->GetAccountId())
+  if (account_id == UserManager::Get()->GetActiveUser()->GetAccountId()) {
     return;
+  }
 
   // |client| may be null in tests.
   SessionControllerClientImpl* client = SessionControllerClientImpl::Get();
@@ -507,34 +503,35 @@ void SessionControllerClientImpl::DoSwitchActiveUser(
 void SessionControllerClientImpl::DoCycleActiveUser(
     ash::CycleUserDirection direction) {
   const UserList& logged_in_users = UserManager::Get()->GetLoggedInUsers();
-  if (logged_in_users.size() <= 1)
+  if (logged_in_users.size() <= 1) {
     return;
+  }
 
   AccountId account_id = UserManager::Get()->GetActiveUser()->GetAccountId();
 
   // Get an iterator positioned at the active user.
-  auto it =
-      base::ranges::find(logged_in_users, account_id, &User::GetAccountId);
+  auto it = std::ranges::find(logged_in_users, account_id, &User::GetAccountId);
 
   // Active user not found.
-  if (it == logged_in_users.end())
+  if (it == logged_in_users.end()) {
     return;
+  }
 
   // Get the user's email to select, wrapping to the start/end of the list if
   // necessary.
   if (direction == ash::CycleUserDirection::NEXT) {
-    if (++it == logged_in_users.end())
+    if (++it == logged_in_users.end()) {
       account_id = (*logged_in_users.begin())->GetAccountId();
-    else
+    } else {
       account_id = (*it)->GetAccountId();
+    }
   } else if (direction == ash::CycleUserDirection::PREVIOUS) {
-    if (it == logged_in_users.begin())
+    if (it == logged_in_users.begin()) {
       it = logged_in_users.end();
+    }
     account_id = (*(--it))->GetAccountId();
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid direction=" << static_cast<int>(direction);
-    return;
+    NOTREACHED() << "Invalid direction=" << static_cast<int>(direction);
   }
 
   DoSwitchActiveUser(account_id);
@@ -566,8 +563,9 @@ void SessionControllerClientImpl::OnCustodianInfoChanged() {
   DCHECK(supervised_user_profile_);
   User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(supervised_user_profile_);
-  if (user)
+  if (user) {
     SendUserSession(*user);
+  }
 }
 
 void SessionControllerClientImpl::OnAppTerminating() {
@@ -619,8 +617,9 @@ void SessionControllerClientImpl::SendSessionInfoIfChanged() {
   info->add_user_session_policy = GetAddUserSessionPolicy();
   info->state = session_manager->session_state();
 
-  if (last_sent_session_info_ && *info == *last_sent_session_info_)
+  if (last_sent_session_info_ && *info == *last_sent_session_info_) {
     return;
+  }
 
   last_sent_session_info_ = std::move(info);
   session_controller_->SetSessionInfo(*last_sent_session_info_);
@@ -639,16 +638,18 @@ void SessionControllerClientImpl::SendUserSession(const User& user) {
   }
 
   auto user_session = UserToUserSession(user);
-  if (last_sent_user_session_ && *user_session == *last_sent_user_session_)
+  if (last_sent_user_session_ && *user_session == *last_sent_user_session_) {
     return;
+  }
 
   last_sent_user_session_ = std::move(user_session);
   session_controller_->UpdateUserSession(*last_sent_user_session_);
 
   if (!pending_users_.empty()) {
     pending_users_.erase(user.GetAccountId());
-    if (pending_users_.empty())
+    if (pending_users_.empty()) {
       SendUserSessionOrder();
+    }
   }
 }
 
@@ -672,7 +673,7 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
   if (local_state->HasPrefPath(prefs::kSessionLengthLimit)) {
     session_length_limit = base::Milliseconds(
         std::clamp(local_state->GetInteger(prefs::kSessionLengthLimit),
-                    kSessionLengthLimitMinMs, kSessionLengthLimitMaxMs));
+                   kSessionLengthLimitMinMs, kSessionLengthLimitMaxMs));
   }
   base::Time session_start_time;
   if (local_state->HasPrefPath(prefs::kSessionStartTime)) {
@@ -684,8 +685,9 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
       ash::DeviceSettingsService::Get()->device_off_hours_controller();
   base::Time off_hours_session_end_time;
   // Use "OffHours" end time only if the session will be actually terminated.
-  if (off_hours_controller->IsCurrentSessionAllowedOnlyForOffHours())
+  if (off_hours_controller->IsCurrentSessionAllowedOnlyForOffHours()) {
     off_hours_session_end_time = off_hours_controller->GetOffHoursEndTime();
+  }
 
   // If |session_length_limit| is zero or |session_start_time| is null then
   // "SessionLengthLimit" policy is unset.
@@ -712,11 +714,4 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
       off_hours_session_end_time - off_hours_session_start_time;
   session_controller_->SetSessionLengthLimit(off_hours_session_length_limit,
                                              off_hours_session_start_time);
-}
-
-void SessionControllerClientImpl::OnStateChanged() {
-  // Lacros is mutually exclusive with multi sign-in. If Lacros was running
-  // (or launching/terminating) and now is not (or vice-versa), we want to
-  // propagate this change to make multi sign-in unavailable or available.
-  SendSessionInfoIfChanged();
 }

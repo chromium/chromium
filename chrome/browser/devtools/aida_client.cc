@@ -5,6 +5,7 @@
 #include "chrome/browser/devtools/aida_client.h"
 
 #include <string>
+#include <variant>
 
 #include "base/check_is_test.h"
 #include "base/containers/fixed_flat_set.h"
@@ -129,6 +130,9 @@ AidaClient::Availability AidaClient::CanUseAida(Profile* profile) {
       IsLoggingDisabledByGeo(country_code);
   result.blocked = result.blocked_by_age ||
                    result.blocked_by_enterprise_policy || result.blocked_by_geo;
+  result.enterprise_policy_value =
+      static_cast<DevToolsGenAiEnterprisePolicyValue>(
+          profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings));
 
   return result;
 #else
@@ -154,9 +158,13 @@ void AidaClient::OverrideAidaEndpointAndScopeForTesting(
   aida_scope_ = aida_scope;
 }
 
+void AidaClient::RemoveAccessToken() {
+  access_token_.clear();
+}
+
 void AidaClient::PrepareRequestOrFail(
     base::OnceCallback<
-        void(absl::variant<network::ResourceRequest, std::string>)> callback) {
+        void(std::variant<network::ResourceRequest, std::string>)> callback) {
   if (!access_token_.empty() && base::Time::Now() < access_token_expiration_) {
     PrepareAidaRequest(std::move(callback));
     return;
@@ -177,7 +185,7 @@ void AidaClient::PrepareRequestOrFail(
 
 void AidaClient::AccessTokenFetchFinished(
     base::OnceCallback<
-        void(absl::variant<network::ResourceRequest, std::string>)> callback,
+        void(std::variant<network::ResourceRequest, std::string>)> callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -194,7 +202,7 @@ void AidaClient::AccessTokenFetchFinished(
 
 void AidaClient::PrepareAidaRequest(
     base::OnceCallback<
-        void(absl::variant<network::ResourceRequest, std::string>)> callback) {
+        void(std::variant<network::ResourceRequest, std::string>)> callback) {
   CHECK(!access_token_.empty());
 
   network::ResourceRequest aida_request;

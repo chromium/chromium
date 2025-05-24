@@ -13,6 +13,7 @@ import unittest
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
+from grit import constants
 from grit import exception
 from grit import tclib
 from grit import util
@@ -94,7 +95,7 @@ class MessageUnittest(unittest.TestCase):
         </messages>''')
     msg, = root.GetChildrenOfType(message.MessageNode)
     msg.SetReplaceEllipsis(True)
-    content = msg.Translate('en')
+    content = msg.Translate('en', constants.DEFAULT_GENDER)
     self.assertEqual('A...B.... %s\u2026 B\u2026 C\u2026', content)
 
   def testRemoveByteOrderMark(self):
@@ -105,7 +106,7 @@ class MessageUnittest(unittest.TestCase):
         </message>
         </messages>''')
     msg, = root.GetChildrenOfType(message.MessageNode)
-    content = msg.Translate('en')
+    content = msg.Translate('en', constants.DEFAULT_GENDER)
     self.assertEqual('This is OK', content)
 
   def testPlaceholderHasTooManyExamples(self):

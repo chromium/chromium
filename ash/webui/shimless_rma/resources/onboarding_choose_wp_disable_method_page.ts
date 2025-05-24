@@ -5,14 +5,14 @@
 import './shimless_rma_shared.css.js';
 import './base_page.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {OnSelectedChangedEvent} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_choose_wp_disable_method_page.html.js';
-import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import type {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {disableNextButton, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
-import {OnSelectedChangedEvent} from './events.js';
 
 /**
  * @fileoverview
@@ -71,9 +71,9 @@ export class OnboardingChooseWpDisableMethodPage extends
 
   onNextButtonClick(): Promise<{stateResult: StateResult}> {
     if (this.hwwpMethod === 'hwwpDisableMethodManual') {
-      return this.shimlessRmaService.chooseManuallyDisableWriteProtect();
+      return this.shimlessRmaService.setManuallyDisableWriteProtect();
     } else if (this.hwwpMethod === 'hwwpDisableMethodRsu') {
-      return this.shimlessRmaService.chooseRsuDisableWriteProtect();
+      return this.shimlessRmaService.setRsuDisableWriteProtect();
     } else {
       return Promise.reject(new Error('No disable method selected'));
     }

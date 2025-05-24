@@ -10,15 +10,17 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashMap;
-import java.util.List;
 
 /** A utility class for handling feature flags used by {@link AdaptiveToolbarButtonController}. */
+@NullMarked
 public class AdaptiveToolbarFeatures {
     /** Finch default group for new tab variation. */
     static final String NEW_TAB = "new-tab";
@@ -48,14 +50,12 @@ public class AdaptiveToolbarFeatures {
     private static final String CONTEXTUAL_PAGE_ACTION_CHIP_ALTERNATE_COLOR =
             "action_chip_with_different_color";
 
-    @AdaptiveToolbarButtonVariant private static Integer sButtonVariant;
-
     /** For testing only. */
-    private static String sDefaultSegmentForTesting;
+    private static @Nullable String sDefaultSegmentForTesting;
 
-    private static HashMap<Integer, Boolean> sActionChipOverridesForTesting;
-    private static HashMap<Integer, Boolean> sAlternativeColorOverridesForTesting;
-    private static HashMap<Integer, Boolean> sIsDynamicActionOverridesForTesting;
+    private static @Nullable HashMap<Integer, Boolean> sActionChipOverridesForTesting;
+    private static @Nullable HashMap<Integer, Boolean> sAlternativeColorOverridesForTesting;
+    private static @Nullable HashMap<Integer, Boolean> sIsDynamicActionOverridesForTesting;
 
     /**
      * @return Whether the button variant is a dynamic action.
@@ -70,6 +70,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.UNKNOWN:
             case AdaptiveToolbarButtonVariant.NONE:
             case AdaptiveToolbarButtonVariant.NEW_TAB:
+            case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
             case AdaptiveToolbarButtonVariant.SHARE:
             case AdaptiveToolbarButtonVariant.VOICE:
             case AdaptiveToolbarButtonVariant.AUTO:
@@ -180,10 +181,6 @@ public class AdaptiveToolbarFeatures {
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY);
     }
 
-    public static boolean isPriceInsightsPageActionEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.PRICE_INSIGHTS);
-    }
-
     public static boolean isAdaptiveToolbarReadAloudEnabled(Profile profile) {
         return ReadAloudFeatures.isAllowed(profile);
     }
@@ -192,68 +189,29 @@ public class AdaptiveToolbarFeatures {
         return ChromeFeatureList.sEnableDiscountInfoApi.isEnabled();
     }
 
-    /**
-     * Returns top choice from segmentation results based on device form-factor.
-     *
-     * @param context @{@link Context} to determine form factor.
-     * @param segmentationResults List of rank-ordered results obtained from segmentation.
-     * @return Top result to use for UI flows.
-     */
-    public static @AdaptiveToolbarButtonVariant int getTopSegmentationResult(
-            Context context, List<Integer> segmentationResults) {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            // Exclude NTB and Bookmarks from segmentation results on tablets since these buttons
-            // are available on top chrome (on tab strip and omnibox).
-            for (int result : segmentationResults) {
-                if (AdaptiveToolbarButtonVariant.NEW_TAB == result
-                        || AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS == result) continue;
-                return result;
-            }
-            return AdaptiveToolbarButtonVariant.UNKNOWN;
-        }
-        return segmentationResults.get(0);
-    }
-
-    /**
-     * Returns the default variant to be shown in segmentation experiment when the backend results
-     * are unavailable or not configured.
-     *
-     * @param context @{@link Context} to determine form-factor.
-     */
-    static @AdaptiveToolbarButtonVariant int getSegmentationDefault(Context context) {
-        assert isCustomizationEnabled();
-        if (sButtonVariant != null) return sButtonVariant;
-        String defaultSegment = getDefaultSegment(context);
-        switch (defaultSegment) {
-            case NEW_TAB:
-                sButtonVariant = AdaptiveToolbarButtonVariant.NEW_TAB;
-                break;
-            case SHARE:
-                sButtonVariant = AdaptiveToolbarButtonVariant.SHARE;
-                break;
-            case VOICE:
-                sButtonVariant = AdaptiveToolbarButtonVariant.VOICE;
-                break;
-            default:
-                sButtonVariant = AdaptiveToolbarButtonVariant.UNKNOWN;
-                break;
-        }
-        return sButtonVariant;
-    }
-
-    /**
-     * Returns the default segment to be selected in absence of a valid segmentation result.
-     *
-     * @param context @{@link Context} to determine form-factor. Defaults defer by form-factor.
-     */
-    static String getDefaultSegment(Context context) {
-        if (sDefaultSegmentForTesting != null) return sDefaultSegmentForTesting;
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context) ? SHARE : NEW_TAB;
-    }
-
     static void setDefaultSegmentForTesting(String defaultSegment) {
         sDefaultSegmentForTesting = defaultSegment;
         ResettersForTesting.register(() -> sDefaultSegmentForTesting = null);
+    }
+
+    /**
+     * Returns the default adaptive button variant for BrApp. The device form factor is taken into
+     * account.
+     *
+     * @param context {@link Context} object.
+     */
+    public static @AdaptiveToolbarButtonVariant int getDefaultButtonVariant(Context context) {
+        if (sDefaultSegmentForTesting != null) {
+            return switch (sDefaultSegmentForTesting) {
+                case NEW_TAB -> AdaptiveToolbarButtonVariant.NEW_TAB;
+                case SHARE -> AdaptiveToolbarButtonVariant.SHARE;
+                case VOICE -> AdaptiveToolbarButtonVariant.VOICE;
+                default -> AdaptiveToolbarButtonVariant.UNKNOWN;
+            };
+        }
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                ? AdaptiveToolbarButtonVariant.SHARE
+                : AdaptiveToolbarButtonVariant.NEW_TAB;
     }
 
     public static void setActionChipOverrideForTesting(
@@ -284,7 +242,6 @@ public class AdaptiveToolbarFeatures {
     }
 
     public static void clearParsedParamsForTesting() {
-        sButtonVariant = null;
         sDefaultSegmentForTesting = null;
     }
 

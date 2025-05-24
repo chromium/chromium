@@ -31,8 +31,7 @@ class CORE_EXPORT SimplifiedOofLayoutAlgorithm
 
   const LayoutResult* Layout();
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
-    NOTREACHED_IN_MIGRATION();
-    return MinMaxSizesResult();
+    NOTREACHED();
   }
 
   // To be called when creating a new column based on an existing one. The break

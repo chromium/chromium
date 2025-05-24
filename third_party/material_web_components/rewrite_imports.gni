@@ -15,6 +15,7 @@ template("rewrite_imports") {
     forward_variables_from(invoker,
                            [
                              "deps",
+                             "public_deps",
                              "base_dir",
                              "out_dir",
                              "in_files",

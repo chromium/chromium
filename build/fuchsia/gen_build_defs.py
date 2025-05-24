@@ -12,6 +12,7 @@
 import json
 import logging
 import os
+import subprocess
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
@@ -80,6 +81,36 @@ def FormatGNTarget(fields):
 
 def MetaRootRelativePaths(sdk_relative_paths, meta_root):
   return [os.path.relpath(path, meta_root) for path in sdk_relative_paths]
+
+
+def _FindReadelfPath() -> str:
+  """Define the path of the readelf tool."""
+  if os.environ.get('FUCHSIA_READELF'):
+    return os.environ['FUCHSIA_READELF']
+  return os.path.join(DIR_SRC_ROOT, 'third_party', 'llvm-build',
+                      'Release+Asserts', 'bin', 'llvm-readelf')
+
+
+def GetGnuBuildId(elf_file: str, readelf_path: str) -> str:
+  """Extracts the GNU build ID from an ELF64 file.
+
+    Args:
+        elf_file: Path to input file.
+    Returns:
+        The build-id value has an hexadecimal string, or
+        an empty string on failure (e.g. not an ELF file,
+        or no .note.gnu.build-id section in it).
+    """
+  ret = subprocess.run([readelf_path, "-n", elf_file],
+                       text=True,
+                       capture_output=True)
+  if ret.returncode == 0:
+    for line in ret.stdout.splitlines():
+      _, prefix, build_id = line.partition("Build ID:")
+      if prefix:
+        return build_id.strip()
+
+  return ""
 
 
 def ConvertCommonFields(json):
@@ -342,6 +373,113 @@ def ConvertMeta(meta_path):
         buildfile.write(FormatGNTarget(target) + '\n\n')
 
 
+def PopulateBuildIdDirectory(toplevel_meta):
+  """Populate the SDK_ROOT/.build-id directory with symlinks.
+
+  Future versions of the IDK will no longer place debug symbols
+  in the top-level .build-id/ directory directly. Instead their
+  location is available by parsing the meta.json files of various
+  prebuilt atom types.
+
+  This function supports both the existing and future layout,
+  by only creating entries under SDK_ROOT/.build_id for
+  GNU build ID values that are not already listed here.
+
+  Note that this script is run as a DEPS hook and has no knowledge
+  of the current target_cpu value or Fuchsia API level, so symlinks
+  for all possible debug symbols will be created.
+  """
+  readelf_path = _FindReadelfPath()
+
+  # First, collect all debug symbols location from the manifest
+  # that are not already in the top-level .build-id directory.
+
+  # Map a Build ID hex value to the corresponding debug symbol file
+  # path, relative to the SDK root.
+  build_ids_map = {}
+
+  def probe_path(debug):
+    if debug and not debug.startswith(".build-id/"):
+      debug_path = os.path.join(SDK_ROOT, debug)
+      build_id = GetGnuBuildId(debug_path, readelf_path)
+      assert build_id, (
+          f"Could not extract GNU Build ID from debug symbol path: {debug_path}"
+      )
+      build_ids_map[build_id] = debug
+
+  def parse_sysroot(meta_json):
+    # Debug symbols for the HEAD API level, if available, are in
+    # binaries.$ARCH.debug_libs
+    for arch, values in meta_json.get("binaries", {}).items():
+      for debug in values.get("debug_libs", []):
+        probe_path(debug)
+
+    # Debug symbols for specific (ARCH, API_LEVEL) are in
+    # variants[$INDEX].values.debug_libs, where
+    # variants[$INDEX].constraints.{arch, api_level} match
+    # (ARCH, API_LEVEL).
+    for variant in meta_json.get("variants", []):
+      for debug in variant["values"].get("debug_libs", []):
+        probe_path(debug)
+
+  def parse_cc_prebuilt_library(meta_json):
+    # Only prebuilt shared libraries have Build ID values.
+    if meta_json["format"] != "shared":
+      return
+
+    # Debug symbols for HEAD API level  are in binaries.$ARCH.debug
+    for arch, values in meta_json.get("binaries", {}).items():
+      probe_path(values.get("debug"))
+
+    # Debug symbols for specific (ARCH, API_LEVEL) are in
+    # variants[$INDEX].values.debug, where
+    # variants[$INDEX].constraints.{arch, api_leve} match
+    # (ARCH, API_LEVEL)
+    for variant in meta_json.get("variants", []):
+      debug = variant["values"].get("debug")
+      probe_path(debug)
+
+  def parse_loadable_module(meta_json):
+    # https://issues.fuchsia.dev/407488427: There are currently
+    # no debug symbols for loadable_module atoms. Implement
+    # the function properly once this bug is fixed.
+    pass
+
+  type_to_parser = {
+      "sysroot": parse_sysroot,
+      "cc_prebuilt_library": parse_cc_prebuilt_library,
+      "loadable_module": parse_loadable_module,
+  }
+
+  for part in toplevel_meta["parts"]:
+    meta_path = os.path.join(SDK_ROOT, part["meta"])
+    parser = type_to_parser.get(part["type"])
+    if parser:
+      with open(meta_path, "rb") as f:
+        meta_json = json.load(f)
+      parser(meta_json)
+
+  # Populate the FUCHSIA_SDK_ROOT/.build-id/ directory with hard-links to the
+  # corresponding debug symbols
+  build_id_dir = os.path.join(SDK_ROOT, ".build-id")
+  for build_id, debug_file in build_ids_map.items():
+    link_path = os.path.join(build_id_dir, build_id[0:2],
+                             f"{build_id[2:]}.debug")
+
+    # https://issues.chromium.org/issues/407890258
+    # Remove symlinks in favor of hard-links to avoid incremental flakiness.
+    if os.path.islink(link_path):
+      os.remove(link_path)
+
+    if os.path.exists(link_path):
+      continue  # File already exists, ignore.
+
+    link_target = os.path.join(SDK_ROOT, debug_file)
+    link_dir = os.path.dirname(link_path)
+    os.makedirs(link_dir, exist_ok=True)
+    os.link(link_target, link_path)
+
+
 def ProcessSdkManifest():
   toplevel_meta = json.load(
       open(os.path.join(SDK_ROOT, 'meta', 'manifest.json')))
@@ -350,9 +488,10 @@ def ProcessSdkManifest():
     meta_path = os.path.join(SDK_ROOT, part['meta'])
     ConvertMeta(meta_path)
 
+  PopulateBuildIdDirectory(toplevel_meta)
+
 
 def main():
-
   # Exit if there's no Fuchsia support for this platform.
   try:
     get_host_os()

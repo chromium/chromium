@@ -11,9 +11,9 @@ program.usage('test-page [options]')
   .option('-d, --debug', 'enable debug mode');
 
 program.on('--help', () => {
-  console.log('');
-  console.log('  % ' + example);
-  console.log('');
+  console.info('');
+  console.info('  % ' + example);
+  console.info('');
 });
 
 program.explain = () => {
@@ -29,7 +29,7 @@ if (!program.args.length || program.explain()) {
 }
 
 process.on('unhandledRejection', (error) => {
-  console.log('unhandledRejection', error);
+  console.info('unhandledRejection', error);
   process.exit(1);
 });
 
@@ -40,7 +40,7 @@ const puppeteer = require('puppeteer');
 
 (async function main() {
   if (program.debug) {
-    console.log(puppeteer.defaultArgs());
+    console.info(puppeteer.defaultArgs());
   }
 
   let args = [];
@@ -62,7 +62,7 @@ const puppeteer = require('puppeteer');
 
   if (program.debug) {
     page.on('request', (request) => {
-      console.log('Request: ', request.url());
+      console.info('Request: ', request.url());
     });
 
     page.on('close', () => {
@@ -71,7 +71,7 @@ const puppeteer = require('puppeteer');
   }
 
   page.on('console', (message) => {
-    console.log(message.text());
+    console.info(message.text());
   });
 
   await page.goto('http://localhost:8123/' + process.argv[2], {
@@ -126,7 +126,7 @@ const puppeteer = require('puppeteer');
   }
 
   await page.evaluate(() => {
-    console.log('test: done total time', window.testTime.toFixed(3));
+    console.info('test: done total time', window.testTime.toFixed(3));
   });
 
   browser.close();

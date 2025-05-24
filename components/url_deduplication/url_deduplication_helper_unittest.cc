@@ -104,4 +104,22 @@ TEST_F(URLDeduplicationHelperTest, DeduplicateByDomainAndTitle) {
                 kSampleCalendarPageTitle));
 }
 
+TEST_F(URLDeduplicationHelperTest, StripPrefix) {
+  GURL url_1 = GURL("https://accounts.google.com");
+  GURL url_2 = GURL("https://myaccount.google.com");
+  GURL url_3 = GURL("https://login.corp.google.com");
+  DeduplicationStrategy strategy;
+  strategy.excluded_prefixes = {"www.", "accounts.", "myaccount.",
+                                "login.corp."};
+  InitHelper({}, strategy);
+  std::string stripped_url_1 =
+      Helper()->ComputeURLDeduplicationKey(url_1, kSamplePageTitle);
+  std::string stripped_url_2 =
+      Helper()->ComputeURLDeduplicationKey(url_2, kSamplePageTitle);
+  std::string stripped_url_3 =
+      Helper()->ComputeURLDeduplicationKey(url_3, kSamplePageTitle);
+  ASSERT_EQ(stripped_url_1, stripped_url_2);
+  ASSERT_EQ(stripped_url_1, stripped_url_3);
+}
+
 }  // namespace url_deduplication

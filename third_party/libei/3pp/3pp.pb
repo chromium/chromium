@@ -2,8 +2,8 @@ create {
   platform_re: "linux-.*"
   source { script { name: "fetch.py" } }
   build {
-    dep: "chromium/third_party/dbus"
     install: "install.sh"
+    external_tool: "infra/3pp/tools/cpython3/${platform}@3@3.11.10.chromium.35"
   }
 }
 

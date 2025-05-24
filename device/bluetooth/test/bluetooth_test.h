@@ -121,6 +121,7 @@ class BluetoothTestBase : public testing::Test {
   static const char kTestUUIDLinkLoss[];
   static const char kTestUUIDHeartRate[];
   static const char kTestUUIDU2f[];
+  static const char kTestUUIDSerial[];
   // Characteristics
   // The following three characteristics are for kTestUUIDGenericAccess.
   static const char kTestUUIDDeviceName[];
@@ -142,7 +143,9 @@ class BluetoothTestBase : public testing::Test {
   static const uint8_t kTestCableEid[];
   static const char kTestUuidFormattedClientEid[];
 
-  BluetoothTestBase();
+  explicit BluetoothTestBase(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT);
   ~BluetoothTestBase() override;
 
   // Checks that no unexpected calls have been made to callbacks.

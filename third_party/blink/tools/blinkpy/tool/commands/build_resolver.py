@@ -11,8 +11,8 @@ from typing import Collection, Dict, Optional, Tuple
 from requests.exceptions import RequestException
 
 from blinkpy.common import exit_codes
-from blinkpy.common.host import Host
 from blinkpy.common.net.rpc import Build
+from blinkpy.common.net.web import Web
 from blinkpy.common.net.git_cl import (
     BuildStatus,
     BuildStatuses,
@@ -20,7 +20,6 @@ from blinkpy.common.net.git_cl import (
     GitCL,
 )
 from blinkpy.tool.grammar import pluralize
-from blinkpy.w3c.gerrit import GerritAPI, OutputOption
 
 _log = logging.getLogger(__name__)
 
@@ -52,13 +51,11 @@ class BuildResolver:
     ]
 
     def __init__(self,
-                 host: Host,
+                 web: Web,
                  git_cl: GitCL,
                  io_pool: Optional[Executor] = None,
-                 gerrit: Optional[GerritAPI] = None,
                  can_trigger_jobs: bool = False):
-        self._web = host.web
-        self._gerrit = gerrit or GerritAPI(host)
+        self._web = web
         self._git_cl = git_cl
         self._io_pool = io_pool
         self._can_trigger_jobs = can_trigger_jobs
@@ -193,21 +190,16 @@ class BuildResolver:
         Arguments:
             builders: Try builder names.
             patchset: Patchset that build results should be fetched from.
-                Defaults to the latest patchset that's not a trivial rebase or
-                commit message edit.
+                Defaults to the latest patchset.
 
         Raises:
             UnresolvedBuildException: If the CL issue number is not set or no
                 try jobs are available but try jobs cannot be triggered.
         """
         issue_number = self._git_cl.get_issue_number()
-        try:
-            issue_number = int(issue_number)
-        except ValueError as error:
+        if not issue_number.isdigit():
             raise UnresolvedBuildException(
-                'No issue number for current branch.') from error
-        if not patchset:
-            patchset = self.latest_nontrivial_patchset(issue_number)
+                'No issue number for current branch.')
         cl = CLRevisionID(int(issue_number), patchset)
         _log.info(f'Fetching status for {pluralize("build", len(builders))} '
                   f'from {cl}.')
@@ -230,20 +222,6 @@ class BuildResolver:
         for builder in builders_without_results:
             build_statuses[Build(builder)] = placeholder_status
         return build_statuses
-
-    def latest_nontrivial_patchset(self, issue_number: int) -> int:
-        output = OutputOption.ALL_REVISIONS | OutputOption.SKIP_DIFFSTAT
-        cl = self._gerrit.query_cl(str(issue_number), output)
-        # https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#revision-info
-        for revision in sorted(cl.revisions.values(),
-                               key=lambda rev: rev['_number'],
-                               reverse=True):
-            if revision.get('kind') == 'REWORK':
-                return revision['_number']
-        # This error shouldn't happen because the initial upload to Gerrit
-        # should always be `REWORK`.
-        raise UnresolvedBuildException(
-            f'{CLRevisionID(issue_number)} has no nontrivial changes')
 
     def log_builds(self, build_statuses: BuildStatuses):
         """Log builds in a tabular format."""

@@ -1,0 +1,53 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+import("//chrome/common/features.gni")
+
+source_set("tab_alert") {
+  public = [
+    "tab_alert.h",
+    "tab_alert_controller.h",
+    "tab_alert_icon.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "tab_alert_controller.cc",
+    "tab_alert_icon.cc",
+  ]
+
+  deps = [
+    ":tab_alert",
+    "//chrome/app/vector_icons:vector_icons",
+    "//chrome/common:chrome_features",
+    "//components/vector_icons:vector_icons",
+  ]
+
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic:glic" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "tab_alert_controller_unittest.cc" ]
+
+  deps = [
+    ":impl",
+    ":tab_alert",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

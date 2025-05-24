@@ -5,32 +5,30 @@
 import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 
-grit("strings") {
+assert(is_chromeos)
+
+grit_strings("strings") {
   source = "../ui_chromeos_strings.grd"
-  outputs =
-      [ "grit/ui_chromeos_strings.h" ] +
-      process_file_template(all_chrome_locales,
-                            [ "ui_chromeos_strings_{{source_name_part}}.pak" ])
+  outputs = [ "grit/ui_chromeos_strings.h" ]
+  output_prefix = "ui_chromeos_strings_"
 }
 
-if (is_chromeos_ash) {
-  static_library("strings_provider") {
-    sources = [
-      "network/network_element_localized_strings_provider.cc",
-      "network/network_element_localized_strings_provider.h",
-    ]
-    deps = [
-      "//ash/constants",
-      "//chromeos/ash/components/login/login_state:login_state",
-      "//chromeos/ash/components/network",
-      "//chromeos/strings:strings_grit",
-      "//components/login:login",
-      "//components/strings:components_strings",
-      "//content/public/browser:browser",
-      "//ui/base",
-      "//ui/chromeos:chromeos",
-      "//ui/chromeos/strings:strings_grit",
-      "//ui/strings:ui_strings_grit",
-    ]
-  }
+static_library("strings_provider") {
+  sources = [
+    "network/network_element_localized_strings_provider.cc",
+    "network/network_element_localized_strings_provider.h",
+  ]
+  deps = [
+    "//ash/constants",
+    "//chromeos/ash/components/login/login_state:login_state",
+    "//chromeos/ash/components/network",
+    "//chromeos/strings:strings_grit",
+    "//components/login:login",
+    "//components/strings:components_strings",
+    "//content/public/browser:browser",
+    "//ui/base",
+    "//ui/chromeos:chromeos",
+    "//ui/chromeos/strings:strings_grit",
+    "//ui/strings:ui_strings_grit",
+  ]
 }

@@ -24,10 +24,11 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.embedder_support.util.TouchEventFilter;
 import org.chromium.content_public.browser.ImeAdapter;
@@ -53,6 +54,7 @@ import java.util.function.Supplier;
  * because the accessibility support provided by WebContentsAccessibility ignores all child views.
  * In other words, any children added to this are *not* accessible.
  */
+@NullUnmarked
 public class ContentView extends FrameLayout
         implements ViewEventSink.InternalAccessDelegate,
                 SmartClipProvider,
@@ -417,6 +419,12 @@ public class ContentView extends FrameLayout
     }
 
     @Override
+    public boolean onCapturedPointerEvent(MotionEvent event) {
+        EventForwarder forwarder = getEventForwarder();
+        return forwarder != null ? forwarder.onCapturedPointerEvent(event) : false;
+    }
+
+    @Override
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
         PointerIcon icon = null;
         if (mStylusWritingIconSupplier != null) {
@@ -611,10 +619,12 @@ public class ContentView extends FrameLayout
     //                End Implementation of ViewEventSink.InternalAccessDelegate                 //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
+    @EnsuresNonNullIf("mWebContents")
     private boolean hasValidWebContents() {
         return mWebContents != null && !mWebContents.isDestroyed();
     }
 
+    @EnsuresNonNullIf("mWebContents")
     private boolean webContentsAttached() {
         return hasValidWebContents() && mWebContents.getTopLevelNativeWindow() != null;
     }

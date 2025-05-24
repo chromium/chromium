@@ -67,7 +67,8 @@ void DriveFsAuth::GetAccessToken(bool use_cached,
       FROM_HERE, base::Seconds(30),
       base::BindOnce(&DriveFsAuth::AuthTimeout, base::Unretained(this)));
   std::set<std::string> scopes(
-      {GaiaConstants::kDriveOAuth2Scope,
+      {GaiaConstants::kClientChannelOAuth2Scope,
+       GaiaConstants::kDriveOAuth2Scope,
        GaiaConstants::kExperimentsAndConfigsOAuth2Scope});
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(

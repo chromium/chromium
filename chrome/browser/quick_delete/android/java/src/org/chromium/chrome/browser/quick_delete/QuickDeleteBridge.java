@@ -4,17 +4,17 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.content_public.browser.WebContents;
 
 /** The JNI bridge for Quick Delete on Android to fetch browsing history data. */
+@NullMarked
 class QuickDeleteBridge {
     private long mNativeQuickDeleteBridge;
 
@@ -38,7 +38,7 @@ class QuickDeleteBridge {
      *
      * @param profile {@link Profile} The profile for which to fetch the browsing history.
      */
-    public QuickDeleteBridge(@NonNull Profile profile) {
+    public QuickDeleteBridge(Profile profile) {
         mNativeQuickDeleteBridge = QuickDeleteBridgeJni.get().init(QuickDeleteBridge.this, profile);
     }
 
@@ -58,19 +58,10 @@ class QuickDeleteBridge {
      * @param callback The callback to call with the last visited domain and domain count.
      */
     public void getLastVisitedDomainAndUniqueDomainCount(
-            @TimePeriod int timePeriod, @NonNull DomainVisitsCallback callback) {
+            @TimePeriod int timePeriod, DomainVisitsCallback callback) {
         QuickDeleteBridgeJni.get()
                 .getLastVisitedDomainAndUniqueDomainCount(
                         mNativeQuickDeleteBridge, timePeriod, callback);
-    }
-
-    /**
-     * Attempt to trigger the HaTS survey if appropriate.
-     *
-     * @param webContents web contents of the tab to trigger the survey on.
-     */
-    public void showSurvey(WebContents webContents) {
-        QuickDeleteBridgeJni.get().showSurvey(mNativeQuickDeleteBridge, webContents);
     }
 
     @CalledByNative
@@ -81,13 +72,11 @@ class QuickDeleteBridge {
 
     @NativeMethods
     interface Natives {
-        long init(QuickDeleteBridge caller, @JniType("Profile*") Profile profile);
+        long init(QuickDeleteBridge caller, @JniType("Profile*") @Nullable Profile profile);
 
         void destroy(long nativeQuickDeleteBridge, QuickDeleteBridge caller);
 
         void getLastVisitedDomainAndUniqueDomainCount(
                 long nativeQuickDeleteBridge, int timePeriod, DomainVisitsCallback callback);
-
-        void showSurvey(long nativeQuickDeleteBridge, WebContents webContents);
     }
 }

@@ -132,5 +132,5 @@ class Speedometer21Story(_Speedometer2Story):
   NAME = 'Speedometer21'
 
 
-class Speedometer2Story(Speedometer20Story):
+class Speedometer2Story(Speedometer21Story):
   NAME = 'Speedometer2'

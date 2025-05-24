@@ -1,0 +1,6 @@
+monorail: {
+  component: "Chromium > UI > Browser > AdFilter"
+}
+buganizer_public: {
+  component_id: 1456114
+}

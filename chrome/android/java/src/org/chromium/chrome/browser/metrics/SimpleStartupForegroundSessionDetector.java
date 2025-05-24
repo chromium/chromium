@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Determines whether the browsing session early at startup is good enough for startup metrics.
  * Transitioning the activity to background would recommend omitting the metrics because of
  * background restrictions and throttling. Must be subscribed to pause/resume events.
  */
+@NullMarked
 public class SimpleStartupForegroundSessionDetector {
     private static boolean sSessionDiscarded;
     private static boolean sReachedForeground;
@@ -23,10 +26,6 @@ public class SimpleStartupForegroundSessionDetector {
 
     public static void discardSession() {
         sSessionDiscarded = true;
-    }
-
-    public static boolean isSessionDiscarded() {
-        return sSessionDiscarded;
     }
 
     /** Returns whether the startup happened cleanly in the foreground. */

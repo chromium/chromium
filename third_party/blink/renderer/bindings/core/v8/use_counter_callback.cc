@@ -17,10 +17,12 @@ namespace blink {
 
 void UseCounterCallback(v8::Isolate* isolate,
                         v8::Isolate::UseCounterFeature feature) {
-  if (V8PerIsolateData::From(isolate)->IsUseCounterDisabled())
+  if (V8PerIsolateData::From(isolate)->IsUseCounterDisabled()) {
     return;
+  }
 
-  WebFeature blink_feature;
+  std::optional<WebFeature> blink_feature;
+  std::optional<WebDXFeature> webdx_feature;
   bool deprecated = false;
   switch (feature) {
     case v8::Isolate::kUseAsm:
@@ -31,6 +33,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kBreakIterator:
       blink_feature = WebFeature::kBreakIterator;
+      deprecated = true;
       break;
     case v8::Isolate::kSloppyMode:
       blink_feature = WebFeature::kV8SloppyMode;
@@ -393,16 +396,99 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kConsoleContext:
       blink_feature = WebFeature::kV8ConsoleContext;
       break;
+    case v8::Isolate::kResizableArrayBuffer:
+    case v8::Isolate::kGrowableSharedArrayBuffer:
+      webdx_feature = WebDXFeature::kResizableBuffers;
+      break;
+    case v8::Isolate::kArrayByCopy:
+      webdx_feature = WebDXFeature::kArrayByCopy;
+      break;
+    case v8::Isolate::kArrayFromAsync:
+      webdx_feature = WebDXFeature::kArrayFromasync;
+      break;
+    case v8::Isolate::kIteratorMethods:
+      webdx_feature = WebDXFeature::kIteratorMethods;
+      break;
+    case v8::Isolate::kPromiseAny:
+      webdx_feature = WebDXFeature::kPromiseAny;
+      break;
+    case v8::Isolate::kSetMethods:
+      webdx_feature = WebDXFeature::kSetMethods;
+      break;
+    case v8::Isolate::kArrayFindLast:
+      webdx_feature = WebDXFeature::kArrayFindlast;
+      break;
+    case v8::Isolate::kArrayGroup:
+      webdx_feature = WebDXFeature::kArrayGroup;
+      break;
+    case v8::Isolate::kArrayBufferTransfer:
+      webdx_feature = WebDXFeature::kTransferableArraybuffer;
+      break;
+    case v8::Isolate::kPromiseWithResolvers:
+      webdx_feature = WebDXFeature::kPromiseWithresolvers;
+      break;
+    case v8::Isolate::kAtomicsWaitAsync:
+      webdx_feature = WebDXFeature::kAtomicsWaitAsync;
+      break;
+    case v8::Isolate::kLocaleInfoObsoletedGetters:
+      blink_feature = WebFeature::kLocaleInfoObsoletedGetters;
+      break;
+    case v8::Isolate::kLocaleInfoFunctions:
+      webdx_feature = WebDXFeature::kIntlLocaleInfo;
+      break;
+    case v8::Isolate::kExtendingNonExtensibleWithPrivate:
+      blink_feature = WebFeature::kV8ExtendingNonExtensibleWithPrivate;
+      break;
+    case v8::Isolate::kPromiseTry:
+      webdx_feature = WebDXFeature::kPromiseTry;
+      break;
+    case v8::Isolate::kStringReplaceAll:
+      webdx_feature = WebDXFeature::kStringReplaceall;
+      break;
+    case v8::Isolate::kStringWellFormed:
+      webdx_feature = WebDXFeature::kStringWellformed;
+      break;
+    case v8::Isolate::kWeakReferences:
+      webdx_feature = WebDXFeature::kWeakReferences;
+      break;
+    case v8::Isolate::kErrorIsError:
+      webdx_feature = WebDXFeature::kIsError;
+      break;
+    case v8::Isolate::kRegExpEscape:
+      webdx_feature = WebDXFeature::kRegexpEscape;
+      break;
+    case v8::Isolate::kFloat16Array:
+      webdx_feature = WebDXFeature::kFloat16Array;
+      break;
+    case v8::Isolate::kWasmBranchHinting:
+      webdx_feature = WebDXFeature::kDRAFT_WasmBranchHinting;
+      break;
+    case v8::Isolate::kExplicitResourceManagement:
+      webdx_feature = WebDXFeature::kDRAFT_ExplicitResourceManagement;
+      break;
+    case v8::Isolate::kUint8ArrayToFromBase64AndHex:
+      webdx_feature = WebDXFeature::kUint8ArrayBase64Hex;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.
       return;
   }
-  if (deprecated) {
-    Deprecation::CountDeprecation(CurrentExecutionContext(isolate),
-                                  blink_feature);
+  if (blink_feature.has_value()) {
+    CHECK(!webdx_feature.has_value());
+
+    if (deprecated) {
+      Deprecation::CountDeprecation(CurrentExecutionContext(isolate),
+                                    *blink_feature);
+    } else {
+      UseCounter::Count(CurrentExecutionContext(isolate), *blink_feature);
+    }
   } else {
-    UseCounter::Count(CurrentExecutionContext(isolate), blink_feature);
+    CHECK(webdx_feature.has_value());
+    CHECK(!deprecated);
+
+    UseCounter::CountWebDXFeature(CurrentExecutionContext(isolate),
+                                  *webdx_feature);
   }
 }
 

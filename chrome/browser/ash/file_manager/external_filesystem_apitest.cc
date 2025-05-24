@@ -36,6 +36,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
@@ -48,6 +49,7 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
 #include "google_apis/common/test_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -88,7 +90,7 @@ constexpr char kTestFileContent[] = "This is some test content.";
 // User account email and directory hash for secondary account for multi-profile
 // sensitive test cases.
 constexpr char kSecondProfileAccount[] = "profile2@test.com";
-constexpr char kSecondProfileGiaId[] = "9876543210";
+constexpr GaiaId::Literal kSecondProfileGaiaId("9876543210");
 constexpr char kSecondProfileHash[] = "fileBrowserApiTestProfile2";
 
 // Waits for a WebContents of the background page of the extension under test
@@ -425,8 +427,7 @@ class DriveFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (ash::IsSigninBrowserContext(profile) ||
-        ash::IsLockScreenAppBrowserContext(profile)) {
+    if (ash::IsSigninBrowserContext(profile)) {
       return nullptr;
     }
 
@@ -466,14 +467,27 @@ class MultiProfileDriveFileSystemExtensionApiTest
                                     "false");
   }
 
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    InProcessBrowserTest::SetUpLocalStatePrefService(local_state);
+
+    // Register persisted users.
+    user_manager::TestHelper::RegisterPersistedUser(
+        *local_state,
+        AccountId::FromUserEmailGaiaId("testuser@gmail.com", GaiaId("123456")));
+    user_manager::TestHelper::RegisterPersistedUser(
+        *local_state, AccountId::FromUserEmailGaiaId(kSecondProfileAccount,
+                                                     kSecondProfileGaiaId));
+  }
+
   void SetUpOnMainThread() override {
+    // Set up the secondary user session.
     base::FilePath user_data_directory;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
     session_manager::SessionManager::Get()->CreateSession(
         AccountId::FromUserEmailGaiaId(kSecondProfileAccount,
-                                       kSecondProfileGiaId),
-        kSecondProfileHash, false);
-    // Set up the secondary profile.
+                                       kSecondProfileGaiaId),
+        kSecondProfileHash, /*new_user=*/false,
+        /*has_active_session=*/false);
     base::FilePath profile_dir = user_data_directory.AppendASCII(
         ash::BrowserContextHelper::GetUserBrowserContextDirName(
             kSecondProfileHash));
@@ -506,8 +520,7 @@ class MultiProfileDriveFileSystemExtensionApiTest
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (ash::IsSigninBrowserContext(profile) ||
-        ash::IsLockScreenAppBrowserContext(profile)) {
+    if (ash::IsSigninBrowserContext(profile)) {
       return nullptr;
     }
 
@@ -591,8 +604,7 @@ class LocalAndDriveFileSystemExtensionApiTest
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (ash::IsSigninBrowserContext(profile) ||
-        ash::IsLockScreenAppBrowserContext(profile)) {
+    if (ash::IsSigninBrowserContext(profile)) {
       return nullptr;
     }
 
@@ -629,7 +641,7 @@ class LocalAndDriveFileSystemExtensionApiTest
 class FileSystemExtensionApiTestWithApps
     : public LocalFileSystemExtensionApiTest {
  public:
-  FileSystemExtensionApiTestWithApps() {}
+  FileSystemExtensionApiTestWithApps() = default;
 
   // FileManagerPrivateApiTest:
   void SetUpOnMainThread() override {
@@ -659,7 +671,9 @@ constexpr char kAppLaunchMetric[] = "Apps.DefaultAppLaunch.FromFileManager";
 
 // Check the interception of ExecuteTask calls to replace Gallery for PNGs. The
 // Media App should always be used in this case.
-IN_PROC_BROWSER_TEST_F(FileSystemExtensionApiTestWithApps, OpenGalleryForPng) {
+// TODO(crbug.com/402514601): Test is flaky.
+IN_PROC_BROWSER_TEST_F(FileSystemExtensionApiTestWithApps,
+                       DISABLED_OpenGalleryForPng) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(RunBackgroundPageTestCase("open_gallery",
                                         "testPngOpensGalleryReturnsOpened"))

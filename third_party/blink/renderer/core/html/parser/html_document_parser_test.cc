@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
@@ -41,6 +42,9 @@ class MockNoStatePrefetchClient : public NoStatePrefetchClient {
 class HTMLDocumentParserTest
     : public PageTestBase,
       public testing::WithParamInterface<ParserSynchronizationPolicy> {
+ public:
+  ParserSynchronizationPolicy Policy() const { return GetParam(); }
+
  protected:
   HTMLDocumentParserTest()
       : original_force_synchronous_parsing_for_testing_(
@@ -72,8 +76,6 @@ class HTMLDocumentParserTest
   }
 
  private:
-  ParserSynchronizationPolicy Policy() const { return GetParam(); }
-
   bool original_force_synchronous_parsing_for_testing_;
 };
 
@@ -182,6 +184,56 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
   static_cast<DocumentParser*>(parser)->StopParsing();
+}
+
+class HTMLDocumentParserThreadedPreloadYieldModeScannerTest
+    : public HTMLDocumentParserTest {
+ public:
+  HTMLDocumentParserThreadedPreloadYieldModeScannerTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kThreadedPreloadScanner,
+          {{"preload-processing-mode", "yield"}}}},
+        /*disabled_features=*/
+        {});
+    HTMLDocumentParser::ResetCachedFeaturesForTesting();
+    EXPECT_TRUE(
+        base::FeatureList::IsEnabled(features::kThreadedPreloadScanner));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(HTMLDocumentParserThreadedPreloadYieldModeScannerTest,
+                         HTMLDocumentParserThreadedPreloadYieldModeScannerTest,
+                         testing::Values(kForceSynchronousParsing,
+                                         kAllowDeferredParsing));
+
+TEST_P(HTMLDocumentParserThreadedPreloadYieldModeScannerTest,
+       BasicPendingPreloadsBehaviour) {
+  auto& document = To<HTMLDocument>(GetDocument());
+  document.Fetcher()->EnableIsPreloadedForTest();
+  HTMLDocumentParser* parser = CreateParser(document);
+  EXPECT_FALSE(parser->HasPendingPreloads());
+  parser->AppendBytes(base::byte_span_from_cstring("<img src='preload.png'>"));
+
+  const auto preload_url =
+      document.CompleteURL("https://example.test/preload.png");
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return document.Fetcher()->AllResources().Contains(preload_url);
+  }));
+  HTMLDocumentParser::FlushPreloadScannerThreadForTesting();
+
+  EXPECT_FALSE(parser->HasPendingPreloads());
+  if (Policy() == kAllowDeferredParsing) {
+    // There are no more pending preloads, but ensure we had one and it has been
+    // processed OR the preload URL has been regularly loaded.
+    EXPECT_TRUE(document.Fetcher()->IsPreloadedForTest(preload_url) ||
+                document.Fetcher()->AllResources().Contains(preload_url));
+  } else {
+    EXPECT_FALSE(document.Fetcher()->IsPreloadedForTest(preload_url));
+  }
 }
 
 class HTMLDocumentParserThreadedPreloadScannerTest : public PageTestBase {

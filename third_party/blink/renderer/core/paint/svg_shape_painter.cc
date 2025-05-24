@@ -18,11 +18,11 @@
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/style/paint_order_array.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -42,7 +42,7 @@ static std::optional<AffineTransform> SetupNonScalingStrokeContext(
 
 void SVGShapePainter::Paint(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground ||
-      layout_svg_shape_.StyleRef().UsedVisibility() != EVisibility::kVisible ||
+      layout_svg_shape_.StyleRef().Visibility() != EVisibility::kVisible ||
       layout_svg_shape_.IsShapeEmpty()) {
     return;
   }
@@ -147,8 +147,7 @@ void SVGShapePainter::PaintShape(const PaintInfo& paint_info) {
         PaintMarkers(paint_info);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -276,7 +275,7 @@ void SVGShapePainter::PaintMarker(const PaintInfo& paint_info,
   cc::PaintCanvas* canvas = paint_info.context.Canvas();
 
   canvas->save();
-  canvas->concat(AffineTransformToSkM44(transform));
+  canvas->concat(transform.ToSkM44());
   if (SVGLayoutSupport::IsOverflowHidden(marker))
     canvas->clipRect(gfx::RectFToSkRect(marker.Viewport()));
   PaintRecordBuilder builder(paint_info.context);

@@ -30,35 +30,6 @@
 
 namespace blink {
 
-struct CORE_EXPORT CSSPropertyValueMetadata {
-  DISALLOW_NEW();
-  CSSPropertyValueMetadata() = default;
-
-  CSSPropertyValueMetadata(const CSSPropertyName&,
-                           bool is_set_from_shorthand,
-                           int index_in_shorthands_vector,
-                           bool important,
-                           bool implicit);
-
-  CSSPropertyID ShorthandID() const;
-  CSSPropertyID PropertyID() const {
-    return ConvertToCSSPropertyID(property_id_);
-  }
-
-  CSSPropertyName Name() const;
-
-  AtomicString custom_name_;
-  unsigned property_id_ : kCSSPropertyIDBitLength;
-  unsigned is_set_from_shorthand_ : 1;
-  // If this property was set as part of an ambiguous shorthand, gives the index
-  // in the shorthands vector.
-  unsigned index_in_shorthands_vector_ : 2;
-  unsigned important_ : 1;
-  // Whether or not the property was set implicitly as the result of a
-  // shorthand.
-  unsigned implicit_ : 1;
-};
-
 class CORE_EXPORT CSSPropertyValue {
   DISALLOW_NEW();
 
@@ -69,44 +40,63 @@ class CORE_EXPORT CSSPropertyValue {
                    bool is_set_from_shorthand = false,
                    int index_in_shorthands_vector = 0,
                    bool implicit = false)
-      : metadata_(name,
-                  is_set_from_shorthand,
-                  index_in_shorthands_vector,
-                  important,
-                  implicit),
-        value_(value, decltype(value_)::AtomicInitializerTag{}) {}
+      : property_id_(static_cast<unsigned>(name.Id())),
+        is_set_from_shorthand_(is_set_from_shorthand),
+        index_in_shorthands_vector_(index_in_shorthands_vector),
+        important_(important),
+        implicit_(implicit),
+        value_(value, decltype(value_)::AtomicInitializerTag{}) {
+    if (name.IsCustomProperty()) {
+      custom_name_ = name.ToAtomicString();
+    }
+  }
 
   CSSPropertyValue(const CSSPropertyValue& other)
-      : metadata_(other.metadata_),
+      : custom_name_(other.custom_name_),
+        property_id_(other.property_id_),
+        is_set_from_shorthand_(other.is_set_from_shorthand_),
+        index_in_shorthands_vector_(other.index_in_shorthands_vector_),
+        important_(other.important_),
+        implicit_(other.implicit_),
         value_(other.value_.Get(), decltype(value_)::AtomicInitializerTag{}) {}
   CSSPropertyValue& operator=(const CSSPropertyValue& other) = default;
 
-  // FIXME: Remove this.
-  CSSPropertyValue(CSSPropertyValueMetadata metadata, const CSSValue& value)
-      : metadata_(metadata),
-        value_(value, decltype(value_)::AtomicInitializerTag{}) {}
-
-  CSSPropertyID Id() const { return metadata_.PropertyID(); }
-  const AtomicString& CustomPropertyName() const {
-    DCHECK_EQ(Id(), CSSPropertyID::kVariable);
-    return metadata_.custom_name_;
+  CSSPropertyID PropertyID() const {
+    return ConvertToCSSPropertyID(property_id_);
   }
-  bool IsSetFromShorthand() const { return metadata_.is_set_from_shorthand_; }
-  CSSPropertyID ShorthandID() const { return metadata_.ShorthandID(); }
-  bool IsImportant() const { return metadata_.important_; }
-  void SetImportant() { metadata_.important_ = true; }
-  CSSPropertyName Name() const { return metadata_.Name(); }
+  const AtomicString& CustomPropertyName() const {
+    DCHECK_EQ(PropertyID(), CSSPropertyID::kVariable);
+    return custom_name_;
+  }
+  bool IsSetFromShorthand() const { return is_set_from_shorthand_; }
+  CSSPropertyID ShorthandID() const;
+  bool IsImportant() const { return important_; }
+  void SetImportant() { important_ = true; }
+  bool IsImplicit() const { return implicit_; }
+  bool IsAffectedByAll() const {
+    return PropertyID() != CSSPropertyID::kVariable &&
+           CSSProperty::Get(PropertyID()).IsAffectedByAll();
+  }
+  CSSPropertyName Name() const;
 
-  const CSSValue* Value() const { return value_.Get(); }
-
-  const CSSPropertyValueMetadata& Metadata() const { return metadata_; }
+  const CSSValue& Value() const { return *value_; }
 
   bool operator==(const CSSPropertyValue& other) const;
 
   void Trace(Visitor* visitor) const { visitor->Trace(value_); }
 
  private:
-  CSSPropertyValueMetadata metadata_;
+  AtomicString custom_name_;
+  unsigned property_id_ : kCSSPropertyIDBitLength;
+  unsigned is_set_from_shorthand_ : 1;
+  // If this property was set as part of an ambiguous shorthand, gives the index
+  // in the shorthands vector.
+  unsigned index_in_shorthands_vector_ : 2;
+  unsigned important_ : 1;
+  // Whether or not the property was set implicitly as the result of a
+  // shorthand.
+  unsigned implicit_ : 1;
+  // 17 free bits here.
   Member<const CSSValue> value_;
 };
 

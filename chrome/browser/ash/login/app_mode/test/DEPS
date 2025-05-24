@@ -1,0 +1,4 @@
+include_rules = [
+  "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
+  "+chrome/browser/ui/views/frame",
+]

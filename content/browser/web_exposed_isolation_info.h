@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/common/content_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "url/origin.h"
 
 namespace content {
@@ -83,7 +85,6 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
   const url::Origin& origin() const;
 
   bool operator==(const WebExposedIsolationInfo& b) const;
-  bool operator!=(const WebExposedIsolationInfo& b) const;
 
   // Non-isolated < Isolated < Isolated Application.
   //
@@ -91,6 +92,9 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
   //
   // Origin comparisons determine ordering of isolated contexts.
   bool operator<(const WebExposedIsolationInfo& b) const;
+
+  using TraceProto = perfetto::protos::pbzero::WebExposedIsolationInfo;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
  private:
   WebExposedIsolationInfo(const std::optional<url::Origin>& origin,
@@ -115,18 +119,18 @@ CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
                                         const WebExposedIsolationInfo& info);
 
 // Disable these operators, AreCompatible() functions should be used instead.
-CONTENT_EXPORT bool operator==(const std::optional<WebExposedIsolationInfo>& a,
-                               const std::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator==(const WebExposedIsolationInfo& a,
-                               const std::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator==(const std::optional<WebExposedIsolationInfo>& a,
-                               const WebExposedIsolationInfo& b);
-CONTENT_EXPORT bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
-                               const std::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator!=(const WebExposedIsolationInfo& a,
-                               const std::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
-                               const WebExposedIsolationInfo& b);
+bool operator==(const std::optional<WebExposedIsolationInfo>& a,
+                const std::optional<WebExposedIsolationInfo>& b) = delete;
+bool operator==(const WebExposedIsolationInfo& a,
+                const std::optional<WebExposedIsolationInfo>& b) = delete;
+bool operator==(const std::optional<WebExposedIsolationInfo>& a,
+                const WebExposedIsolationInfo& b) = delete;
+bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
+                const std::optional<WebExposedIsolationInfo>& b) = delete;
+bool operator!=(const WebExposedIsolationInfo& a,
+                const std::optional<WebExposedIsolationInfo>& b) = delete;
+bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
+                const WebExposedIsolationInfo& b) = delete;
 
 }  // namespace content
 

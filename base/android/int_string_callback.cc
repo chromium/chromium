@@ -13,7 +13,7 @@
 #include "base/android/jni_string.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_jni/IntStringCallback_jni.h"
+#include "base/base_minimal_jni/IntStringCallback_jni.h"
 
 namespace base {
 namespace android {
@@ -22,9 +22,10 @@ void RunIntStringCallbackAndroid(const JavaRef<jobject>& callback,
                                  int int_arg,
                                  const std::string& str_arg) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_IntStringCallback_onResult(env, callback, int_arg,
-                                  ConvertUTF8ToJavaString(env, str_arg));
+  Java_IntStringCallback_onResult(env, callback, int_arg, str_arg);
 }
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI_FOR_IntStringCallback()

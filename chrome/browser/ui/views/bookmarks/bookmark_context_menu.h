@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class Browser;
@@ -16,7 +17,7 @@ class Browser;
 namespace views {
 class MenuRunner;
 class Widget;
-}
+}  // namespace views
 
 // Observer for the BookmarkContextMenu.
 class BookmarkContextMenuObserver {
@@ -33,7 +34,7 @@ class BookmarkContextMenuObserver {
   virtual void OnContextMenuClosed() = 0;
 
  protected:
-  virtual ~BookmarkContextMenuObserver() {}
+  virtual ~BookmarkContextMenuObserver() = default;
 };
 
 class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
@@ -45,7 +46,6 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
                       Browser* browser,
                       Profile* profile,
                       BookmarkLaunchLocation opened_from,
-                      const bookmarks::BookmarkNode* parent,
                       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
                                                 VectorExperimental>>& selection,
                       bool close_on_remove);
@@ -62,7 +62,7 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
 
   // Shows the context menu at the specified point.
   void RunMenuAt(const gfx::Point& point,
-                 ui::MenuSourceType source_type);
+                 ui::mojom::MenuSourceType source_type);
 
   views::MenuItemView* menu() const { return menu_; }
 

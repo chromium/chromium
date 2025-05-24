@@ -20,7 +20,6 @@ class MockPageInfoUiDelegate : public PageInfoUiDelegate {
   MOCK_METHOD(bool, IsMultipleTabsOpen, (), (override));
   MOCK_METHOD(void, OpenSiteSettingsFileSystem, (), (override));
 #endif
-  MOCK_METHOD(bool, IsTrackingProtection3pcdEnabled, (), (override));
   MOCK_METHOD(content::PermissionResult,
               GetPermissionResult,
               (blink::PermissionType permission),
@@ -28,6 +27,10 @@ class MockPageInfoUiDelegate : public PageInfoUiDelegate {
   MOCK_METHOD(std::optional<content::PermissionResult>,
               GetEmbargoResult,
               (ContentSettingsType type),
+              (override));
+  MOCK_METHOD(void,
+              GetMerchantTrustInfo,
+              (page_info::MerchantDataCallback callback),
               (override));
 };
 

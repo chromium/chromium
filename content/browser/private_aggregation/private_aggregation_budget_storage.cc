@@ -53,10 +53,11 @@ void RecordInitializationStatus(
 }
 
 void RecordFileSizeHistogram(const base::FilePath& path_to_database) {
-  if (int64_t size_bytes; base::GetFileSize(path_to_database, &size_bytes)) {
+  std::optional<int64_t> size_bytes = base::GetFileSize(path_to_database);
+  if (size_bytes.has_value()) {
     base::UmaHistogramCounts1M(
         "PrivacySandbox.PrivateAggregation.BudgetStorage.DbSize",
-        base::MakeClampedNum(size_bytes / 1024));
+        base::MakeClampedNum(size_bytes.value() / 1024));
   }
 }
 
@@ -112,7 +113,8 @@ PrivateAggregationBudgetStorage::PrivateAggregationBudgetStorage(
                     kFlushDelay),
       db_task_runner_(std::move(db_task_runner)),
       db_(std::make_unique<sql::Database>(
-          sql::DatabaseOptions{.page_size = 4096, .cache_size = 32})) {}
+          sql::DatabaseOptions().set_cache_size(32),
+          sql::Database::Tag("PrivateAggregation"))) {}
 
 PrivateAggregationBudgetStorage::~PrivateAggregationBudgetStorage() {
   Shutdown();
@@ -124,8 +126,6 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
     base::FilePath path_to_db_dir) {
   CHECK(db_task_runner_->RunsTasksInCurrentSequence());
   CHECK(db);
-
-  db->set_histogram_tag("PrivateAggregation");
 
   // TODO(crbug.com/40224647): Record histograms for the different
   // outcomes/errors.

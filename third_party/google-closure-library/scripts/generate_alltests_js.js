@@ -26,8 +26,7 @@ const HEADER = `
 `.trim();
 
 const FOOTER = `
-// If we're running in a nodejs context, export tests. Used when running tests
-// externally on Travis.
+// If we're running in a nodejs context, export tests.
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = _allTests;
 }

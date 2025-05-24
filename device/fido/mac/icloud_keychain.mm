@@ -7,6 +7,7 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "base/apple/foundation_util.h"
@@ -17,7 +18,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -31,6 +31,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -75,6 +76,26 @@ enum class PasskeyPermissionMetric {
 
   kMaxValue = 5,
 };
+
+template <typename T>
+API_AVAILABLE(macos(15.0))
+std::optional<std::vector<uint8_t>> PrfOutputToBytes(T* output) {
+  if (!output.first) {
+    return std::nullopt;
+  }
+
+  base::span<const uint8_t> first = NSDataToSpan(output.first);
+  CHECK_EQ(first.size(), 32u);
+  std::vector<uint8_t> result(first.begin(), first.end());
+
+  if (output.second) {
+    base::span<const uint8_t> second = NSDataToSpan(output.second);
+    CHECK_EQ(second.size(), 32u);
+    result.insert(result.end(), second.begin(), second.end());
+  }
+
+  return result;
+}
 
 constexpr char kMetricName[] = "WebAuthentication.MacOS.PasskeyPermission";
 
@@ -221,11 +242,17 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         const auto& cred = credentials[i];
         std::vector<uint8_t> cred_id = ToVector(cred.credentialID);
         if (!allow_list.empty() &&
-            base::ranges::none_of(
+            std::ranges::none_of(
                 allow_list,
                 [&cred_id](const PublicKeyCredentialDescriptor& allow_list_cred)
                     -> bool { return allow_list_cred.id == cred_id; })) {
           continue;
+        }
+        std::optional<std::string> provider_name;
+        if (@available(macOS 14.0, *)) {
+          // `providerName` is documented available in 13.3+, but appears broken
+          // in 13.* (see https://crbug.com/407900955)
+          provider_name = cred.providerName.UTF8String;
         }
         ret.emplace_back(AuthenticatorType::kICloudKeychain, rp_id,
                          std::move(cred_id),
@@ -233,7 +260,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                              ToVector(cred.userHandle), cred.name.UTF8String,
                              /* iCloud Keychain does not store
                                 a displayName for passkeys */
-                             std::nullopt));
+                             std::nullopt),
+                         std::move(provider_name));
       }
       const auto has_credentials =
           ret.empty() ? FidoRequestHandlerBase::RecognizedCredential::
@@ -346,7 +374,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     std::vector<uint8_t> credential_id_from_auth_data =
         response.attestation_object.authenticator_data().GetCredentialId();
     base::span<const uint8_t> credential_id = NSDataToSpan(result.credentialID);
-    if (!base::ranges::equal(credential_id_from_auth_data, credential_id)) {
+    if (!std::ranges::equal(credential_id_from_auth_data, credential_id)) {
       FIDO_LOG(ERROR) << "iCKC: credential ID mismatch: "
                       << base::HexEncode(credential_id_from_auth_data) << " vs "
                       << base::HexEncode(credential_id);
@@ -360,6 +388,20 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     response.transports->insert(FidoTransportProtocol::kHybrid);
     response.transports->insert(FidoTransportProtocol::kInternal);
     response.transport_used = FidoTransportProtocol::kInternal;
+
+    if (@available(macOS 15.0, *)) {
+      if ([result isKindOfClass:
+                      [ASAuthorizationPlatformPublicKeyCredentialRegistration
+                          class]]) {
+        ASAuthorizationPlatformPublicKeyCredentialRegistration*
+            platform_result =
+                (ASAuthorizationPlatformPublicKeyCredentialRegistration*)result;
+        if (platform_result.prf != nil) {
+          response.prf_enabled = platform_result.prf.isSupported;
+          response.prf_results = PrfOutputToBytes(platform_result.prf);
+        }
+      }
+    }
 
     std::move(callback).Run(MakeCredentialStatus::kSuccess,
                             std::move(response));
@@ -435,6 +477,18 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         fido_parsing_utils::Materialize(NSDataToSpan(result.credentialID)));
     response.user_selected = true;
 
+    if (@available(macOS 15.0, *)) {
+      if ([result
+              isKindOfClass:[ASAuthorizationPlatformPublicKeyCredentialAssertion
+                                class]]) {
+        ASAuthorizationPlatformPublicKeyCredentialAssertion* platform_result =
+            (ASAuthorizationPlatformPublicKeyCredentialAssertion*)result;
+        if (platform_result.prf != nil) {
+          response.hmac_secret = PrfOutputToBytes(platform_result.prf);
+        }
+      }
+    }
+
     std::vector<AuthenticatorGetAssertionResponse> responses;
     responses.emplace_back(std::move(response));
     std::move(callback).Run(GetAssertionStatus::kSuccess, std::move(responses));
@@ -487,15 +541,10 @@ bool IsSupported() {
   return false;
 }
 
-std::unique_ptr<FidoDiscoveryBase> NewDiscovery(uintptr_t ns_window) {
+std::unique_ptr<FidoDiscoveryBase> NewDiscovery(
+    base::apple::WeakNSWindow ns_window) {
   if (@available(macOS 13.5, *)) {
-    NSWindow* window = nullptr;
-    if (ns_window != kFakeNSWindowForTesting) {
-      window = (__bridge NSWindow*)(void*)ns_window;
-      static_assert(sizeof(window) == sizeof(ns_window));
-    }
-
-    return std::make_unique<Discovery>(window);
+    return std::make_unique<Discovery>(ns_window.Get());
   }
 
   NOTREACHED();

@@ -99,7 +99,7 @@ TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
   // should happen).
   EXPECT_CALL(*mock_generator, Paint(_, _, _)).Times(0);
   EXPECT_FALSE(
-      paint_value->GetImage(*target, GetDocument(), style, target_size));
+      paint_value->GetImage(*target, *target->GetNode(), style, target_size));
 
   // Now mark the generator as ready - GetImage should then succeed.
   ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
@@ -112,7 +112,7 @@ TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
   }
 
   EXPECT_TRUE(
-      paint_value->GetImage(*target, GetDocument(), style, target_size));
+      paint_value->GetImage(*target, *target->GetNode(), style, target_size));
 }
 
 // Regression test for crbug.com/998439. The problem is that GetImage is called
@@ -130,7 +130,7 @@ TEST_P(CSSPaintValueTest, GetImageCalledOnMultipleDocuments) {
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   EXPECT_EQ(paint_value->NumberOfGeneratorsForTesting(), 0u);
-  paint_value->GetImage(*target, GetDocument(), style, target_size);
+  paint_value->GetImage(*target, *target->GetNode(), style, target_size);
   // A new generator should be created if there is no generator exists.
   EXPECT_EQ(paint_value->NumberOfGeneratorsForTesting(), 1u);
 
@@ -200,18 +200,18 @@ TEST_P(CSSPaintValueTest, PrintingMustFallbackToMainThread) {
           Return(PaintGeneratedImage::Create(PaintRecord(), target_size)));
 
   ASSERT_TRUE(
-      paint_value->GetImage(*target, GetDocument(), style, target_size));
+      paint_value->GetImage(*target, *target->GetNode(), style, target_size));
 
   // Start printing; our paint should run on the main thread (and thus call
   // Paint).
   GetDocument().SetPrinting(Document::kPrinting);
   ASSERT_TRUE(
-      paint_value->GetImage(*target, GetDocument(), style, target_size));
+      paint_value->GetImage(*target, *target->GetNode(), style, target_size));
 
   // Stop printing; we should return to the compositor.
   GetDocument().SetPrinting(Document::kNotPrinting);
   ASSERT_TRUE(
-      paint_value->GetImage(*target, GetDocument(), style, target_size));
+      paint_value->GetImage(*target, *target->GetNode(), style, target_size));
 }
 
 // Regression test for https://crbug.com/835589.
@@ -233,7 +233,7 @@ TEST_P(CSSPaintValueTest, DoNotPaintForLink) {
   auto* ident =
       MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("linkpainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
-  EXPECT_FALSE(paint_value->GetImage(*target, GetDocument(), style,
+  EXPECT_FALSE(paint_value->GetImage(*target, *target->GetNode(), style,
                                      gfx::SizeF(100, 100)));
 }
 
@@ -262,7 +262,7 @@ TEST_P(CSSPaintValueTest, DoNotPaintWhenAncestorHasLink) {
   auto* ident =
       MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("linkpainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
-  EXPECT_FALSE(paint_value->GetImage(*target, GetDocument(), style,
+  EXPECT_FALSE(paint_value->GetImage(*target, *target->GetNode(), style,
                                      gfx::SizeF(100, 100)));
 }
 

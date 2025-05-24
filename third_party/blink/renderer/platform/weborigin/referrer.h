@@ -49,11 +49,18 @@ struct PLATFORM_EXPORT Referrer {
   Referrer();
   // We use these strings instead of "no-referrer" and "client" in the spec.
   static String NoReferrer() { return String(); }
-  static String ClientReferrerString() { return "about:client"; }
+  static const AtomicString& ClientReferrerString();
 
   AtomicString referrer;
   network::mojom::ReferrerPolicy referrer_policy;
 };
+
+inline bool operator==(const Referrer& a, const Referrer& b) {
+  return a.referrer == b.referrer && a.referrer_policy == b.referrer_policy;
+}
+inline bool operator!=(const Referrer& a, const Referrer& b) {
+  return !(a == b);
+}
 
 }  // namespace blink
 

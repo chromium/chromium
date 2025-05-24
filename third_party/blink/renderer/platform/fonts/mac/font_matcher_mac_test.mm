@@ -11,6 +11,7 @@
 #include "base/apple/bridging.h"
 #import "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
@@ -311,8 +312,8 @@ TEST_P(TestFontMatchingByNameAndWeight, TestCTAndNSMatchEqual) {
   // "HelveticaNeue-Light". This fonts should be skipped in this test.
   // This issue is described in the comment under
   // "MatchFamilyWithWeightVariations" test.
-  if (strcmp(font_name.family_name, "Helvetica Neue") == 0 ||
-      strcmp(font_name.family_name, "Hiragino Sans") == 0) {
+  if (UNSAFE_TODO(strcmp(font_name.family_name, "Helvetica Neue")) == 0 ||
+      UNSAFE_TODO(strcmp(font_name.family_name, "Hiragino Sans")) == 0) {
     return;
   }
   TestCTAndNSMatchEqual(font_name.family_name, 11, weight, kNormalSlopeValue,

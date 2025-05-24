@@ -10,6 +10,8 @@ source_set("choose_file") {
     "choose_file_controller.mm",
     "choose_file_event.h",
     "choose_file_event.mm",
+    "choose_file_event_holder.h",
+    "choose_file_event_holder.mm",
     "choose_file_java_script_feature.h",
     "choose_file_java_script_feature.mm",
     "choose_file_tab_helper.h",
@@ -18,13 +20,26 @@ source_set("choose_file") {
     "choose_file_util.mm",
   ]
   deps = [
+    ":choose_file_file_utils",
     ":choose_file_js",
+    ":choose_file_legacy_js",
     "//base",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("choose_file_file_utils") {
+  sources = [
+    "choose_file_file_utils.h",
+    "choose_file_file_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
 }
 
 source_set("unit_tests") {
@@ -58,10 +73,24 @@ source_set("test_support") {
   ]
 }
 
+compile_ts("choose_file_utils_js") {
+  sources = [ "resources/choose_file_utils.ts" ]
+}
+
 optimize_ts("choose_file_js") {
   visibility = [ ":choose_file" ]
-
   sources = [ "resources/choose_file.ts" ]
+  deps = [
+    ":choose_file_utils_js",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
 
-  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+optimize_ts("choose_file_legacy_js") {
+  visibility = [ ":choose_file" ]
+  sources = [ "resources/choose_file_legacy.ts" ]
+  deps = [
+    ":choose_file_utils_js",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }

@@ -27,15 +27,17 @@ std::optional<zx_info_handle_basic_t> GetBasicInfo(
 
 std::optional<zx_koid_t> GetKoid(const zx::object_base& handle) {
   auto basic_info = GetBasicInfo(handle);
-  if (!basic_info)
+  if (!basic_info) {
     return {};
+  }
   return basic_info->koid;
 }
 
 std::optional<zx_koid_t> GetRelatedKoid(const zx::object_base& handle) {
   auto basic_info = GetBasicInfo(handle);
-  if (!basic_info)
+  if (!basic_info) {
     return {};
+  }
   return basic_info->related_koid;
 }
 

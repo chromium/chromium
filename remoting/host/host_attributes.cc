@@ -85,8 +85,6 @@ static constexpr Attribute kAttributes[] = {
 
 }  // namespace
 
-static_assert(std::is_pod<Attribute>::value, "Attribute should be POD.");
-
 std::string GetHostAttributes() {
   std::vector<std::string> result;
   for (const auto& attribute : kAttributes) {

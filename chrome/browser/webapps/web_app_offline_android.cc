@@ -10,10 +10,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/grit/components_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/web_app_error_page_constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,8 +34,7 @@ std::vector<std::string> GetOfflinePageInfoJava(
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> java_result =
       Java_WebApkDataProvider_getOfflinePageInfo(
-          env, base::android::ToJavaIntArray(env, requested_fields),
-          base::android::ConvertUTF8ToJavaString(env, url),
+          env, base::android::ToJavaIntArray(env, requested_fields), url,
           web_contents->GetJavaWebContents());
   std::vector<std::string> resource_strings;
   base::android::AppendJavaStringArrayToStringVector(env, java_result,

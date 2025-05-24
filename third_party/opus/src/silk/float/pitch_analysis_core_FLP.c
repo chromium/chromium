@@ -291,7 +291,7 @@ opus_int silk_pitch_analysis_core_FLP(      /* O    Voicing estimate: 0 voiced, 
         for( j = 0; j < length_d_comp; j++ ) {
             d = d_comp[ j ];
             basis_ptr = target_ptr - d;
-            cross_corr = silk_inner_product_FLP( basis_ptr, target_ptr, sf_length_8kHz );
+            cross_corr = silk_inner_product_FLP( basis_ptr, target_ptr, sf_length_8kHz, arch );
             if( cross_corr > 0.0f ) {
                 energy = silk_energy_FLP( basis_ptr, sf_length_8kHz );
                 C[ k ][ d ] = (silk_float)( 2 * cross_corr / ( energy + energy_tmp ) );

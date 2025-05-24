@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -23,7 +23,6 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -32,7 +31,6 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -43,7 +41,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -117,10 +114,6 @@ PasswordForm MakePasswordForm(const std::string& signon_realm) {
   return form;
 }
 
-bool MatchesOrigin(const GURL& origin, const GURL& url) {
-  return origin.DeprecatedGetOriginAsURL() == url.DeprecatedGetOriginAsURL();
-}
-
 std::tuple<scoped_refptr<PasswordStore>, MockPasswordStoreBackend*>
 CreateUnownedStoreWithOwnedMockBackend() {
   auto backend = std::make_unique<MockPasswordStoreBackend>();
@@ -190,12 +183,16 @@ class PasswordStoreTest : public testing::Test {
     // Mock OSCrypt. There is a call to OSCrypt on initializling
     // PasswordReuseDetector, so it should be mocked.
     OSCryptMocker::SetUp();
-
-    feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
-                                   {});
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWereOldGoogleLoginsRemoved, false);
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+    // All tests currently rely on built-in backend, so the pref should stay
+    // off. Tests relying on the android backend should set this accordingly.
+    pref_service_.registry()->RegisterIntegerPref(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+#else
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kClearingUndecryptablePasswords, false);
 #endif
@@ -227,9 +224,6 @@ class PasswordStoreTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
- protected:
-  base::test::ScopedFeatureList feature_list_;
-
  private:
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
@@ -247,7 +241,7 @@ std::optional<PasswordHashData> GetPasswordFromPref(const std::string& username,
 TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   base::HistogramTester histogram_tester;
   /* clang-format off */
-  static const PasswordFormData kTestCredentials[] = {
+  static const auto kTestCredentials = std::to_array<PasswordFormData>({
       // The old credential.
       {PasswordForm::Scheme::kHtml,
        kTestWebRealm1,
@@ -261,7 +255,7 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
        kTestWebOrigin2,
        "", u"", u"username_element_2",  u"password_element_2",
        u"username_value_2",
-       u"", kTestLastUsageTime, 1}};
+       u"", kTestLastUsageTime, 1}});
   /* clang-format on */
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
@@ -291,9 +285,6 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   old_primary_key.password_element = old_form->password_element;
   store->UpdateLoginWithPrimaryKey(*new_form, old_primary_key);
   WaitForPasswordStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.BuiltInBackend.AddLoginCalledOnStore",
-      true, 2);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -331,9 +322,6 @@ TEST_F(PasswordStoreTest, AddLogins) {
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(2u)));
   store->AddLogins({all_credentials[0], all_credentials[1]});
   WaitForPasswordStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.BuiltInBackend.AddLoginCalledOnStore",
-      true, all_credentials.size());
 
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -352,8 +340,6 @@ TEST_F(PasswordStoreTest, AddLogins) {
 }
 
 TEST_F(PasswordStoreTest, UpdateLogins) {
-  base::HistogramTester histogram_tester;
-
   PasswordFormData form_data_1 =
       CreateTestPasswordFormDataByOrigin(kTestWebRealm1);
   PasswordFormData form_data_2 =
@@ -366,11 +352,7 @@ TEST_F(PasswordStoreTest, UpdateLogins) {
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
 
   store->AddLogins(all_credentials);
-
   WaitForPasswordStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.BuiltInBackend.AddLoginCalledOnStore",
-      true, all_credentials.size());
 
   form_data_1.password_value = u"new_password1";
   form_data_2.password_value = u"new_password2";
@@ -389,9 +371,6 @@ TEST_F(PasswordStoreTest, UpdateLogins) {
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(2u)));
   store->UpdateLogins(updated_credentials);
   WaitForPasswordStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.BuiltInBackend.UpdateLoginCalledOnStore",
-      true, all_credentials.size());
 
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -437,14 +416,61 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(1u)));
   base::test::TestFuture<bool> completion_future;
 
-  store->RemoveLoginsCreatedBetween(FROM_HERE,
-                                    base::Time::FromSecondsSinceUnixEpoch(0),
-                                    base::Time::FromSecondsSinceUnixEpoch(2),
-                                    completion_future.GetCallback());
+  store->RemoveLoginsCreatedBetween(
+      FROM_HERE, base::Time::FromSecondsSinceUnixEpoch(0),
+      base::Time::FromSecondsSinceUnixEpoch(2), completion_future.GetCallback(),
+      base::NullCallback());
+  WaitForPasswordStore();
+
+  EXPECT_TRUE(completion_future.IsReady());
   EXPECT_TRUE(completion_future.Take());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+
+// Verify that RemoveLoginsCreatedBetween() fires the sync_completion callback
+// after deletions have been performed and synced to cloud have been sent out.
+// Whether the correct logins are removed or not is verified in detail in other
+// tests.
+TEST_F(PasswordStoreTest,
+       RemoveLoginsCreatedBetweenSyncCompletionCallbackIsCalled) {
+  /* clang-format off */
+  static const PasswordFormData kTestCredential =
+      {PasswordForm::Scheme::kHtml,
+       kTestWebRealm1,
+       kTestWebOrigin1,
+       "", u"", u"username_element_1",  u"password_element_1",
+       u"username_value_1",
+       u"", kTestLastUsageTime, 1};
+  /* clang-format on */
+
+  scoped_refptr<PasswordStore> store = CreatePasswordStore();
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+
+  std::unique_ptr<PasswordForm> test_form(
+      FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
+  store->AddLogin(*test_form);
+  WaitForPasswordStore();
+
+  base::test::TestFuture<bool> sync_completion_future;
+
+  store->RemoveLoginsCreatedBetween(
+      FROM_HERE, base::Time::FromSecondsSinceUnixEpoch(0),
+      base::Time::FromSecondsSinceUnixEpoch(2), base::NullCallback(),
+      sync_completion_future.GetCallback());
+
+  EXPECT_FALSE(sync_completion_future.IsReady());
+
+  auto* built_in_backend =
+      static_cast<PasswordStoreBuiltInBackend*>(store->GetBackendForTesting());
+  built_in_backend->NotifyDeletionsHaveSyncedForTesting(true);
+  WaitForPasswordStore();
+
+  EXPECT_TRUE(sync_completion_future.IsReady());
+  EXPECT_TRUE(sync_completion_future.Take());
+
   store->ShutdownOnUIThread();
 }
 
@@ -460,7 +486,7 @@ TEST_F(PasswordStoreTest,
 
   base::test::TestFuture<bool> completion_future;
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
-      .WillOnce(WithArg<3>(Invoke([](PasswordChangesOrErrorReply reply) {
+      .WillOnce(WithArg<4>(Invoke([](PasswordChangesOrErrorReply reply) {
         std::move(reply).Run(PasswordStoreChangeList());
       })));
   store->RemoveLoginsCreatedBetween(FROM_HERE,
@@ -485,7 +511,7 @@ TEST_F(PasswordStoreTest,
   base::test::TestFuture<bool> completion_future;
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
       .WillOnce(
-          WithArg<3>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
+          WithArg<4>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
             std::move(reply).Run(kBackendError);
           })));
   store->RemoveLoginsCreatedBetween(FROM_HERE,
@@ -1878,113 +1904,6 @@ class PasswordStoreOriginTest : public PasswordStoreTest {
  private:
   scoped_refptr<PasswordStore> store_;
 };
-
-TEST_F(PasswordStoreOriginTest,
-       RemoveLoginsByURLAndTimeImpl_AllFittingOriginAndTime) {
-  constexpr char origin_url[] = "http://foo.example.com/";
-  std::unique_ptr<PasswordForm> form =
-      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url),
-                               /*is_account_store=*/false);
-  store()->AddLogin(*form);
-  WaitForPasswordStore();
-
-  MockPasswordStoreObserver observer;
-  store()->AddObserver(&observer);
-
-  const GURL origin = GURL(origin_url);
-  base::RepeatingCallback<bool(const GURL&)> filter =
-      base::BindRepeating(&MatchesOrigin, origin);
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer,
-              OnLoginsChanged(_, ElementsAre(PasswordStoreChange(
-                                     PasswordStoreChange::REMOVE, *form))));
-  store()->RemoveLoginsByURLAndTime(FROM_HERE, filter, base::Time(),
-                                    base::Time::Max(), run_loop.QuitClosure());
-  run_loop.Run();
-
-  store()->RemoveObserver(&observer);
-}
-
-TEST_F(PasswordStoreOriginTest,
-       RemoveLoginsByURLAndTimeImpl_SomeFittingOriginAndTime) {
-  constexpr char fitting_url[] = "http://foo.example.com/";
-  std::unique_ptr<PasswordForm> form =
-      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(fitting_url),
-                               /*is_account_store=*/false);
-  store()->AddLogin(*form);
-
-  const char nonfitting_url[] = "http://bar.example.com/";
-  store()->AddLogin(*FillPasswordFormWithData(
-      CreateTestPasswordFormDataByOrigin(nonfitting_url),
-      /*is_account_store=*/false));
-
-  WaitForPasswordStore();
-
-  MockPasswordStoreObserver observer;
-  store()->AddObserver(&observer);
-
-  const GURL fitting_origin = GURL(fitting_url);
-  base::RepeatingCallback<bool(const GURL&)> filter =
-      base::BindRepeating(&MatchesOrigin, fitting_origin);
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer,
-              OnLoginsChanged(_, ElementsAre(PasswordStoreChange(
-                                     PasswordStoreChange::REMOVE, *form))));
-  store()->RemoveLoginsByURLAndTime(FROM_HERE, filter, base::Time(),
-                                    base::Time::Max(), run_loop.QuitClosure());
-  run_loop.Run();
-
-  store()->RemoveObserver(&observer);
-}
-
-TEST_F(PasswordStoreOriginTest,
-       RemoveLoginsByURLAndTimeImpl_NonMatchingOrigin) {
-  constexpr char origin_url[] = "http://foo.example.com/";
-  std::unique_ptr<PasswordForm> form =
-      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url),
-                               /*is_account_store=*/false);
-  store()->AddLogin(*form);
-  WaitForPasswordStore();
-
-  MockPasswordStoreObserver observer;
-  store()->AddObserver(&observer);
-
-  const GURL other_origin = GURL("http://bar.example.com/");
-  base::RepeatingCallback<bool(const GURL&)> filter =
-      base::BindRepeating(&MatchesOrigin, other_origin);
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnLoginsChanged).Times(0);
-  store()->RemoveLoginsByURLAndTime(FROM_HERE, filter, base::Time(),
-                                    base::Time::Max(), run_loop.QuitClosure());
-  run_loop.Run();
-
-  store()->RemoveObserver(&observer);
-}
-
-TEST_F(PasswordStoreOriginTest,
-       RemoveLoginsByURLAndTimeImpl_NotWithinTimeInterval) {
-  constexpr char origin_url[] = "http://foo.example.com/";
-  std::unique_ptr<PasswordForm> form =
-      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url),
-                               /*is_account_store=*/false);
-  store()->AddLogin(*form);
-  WaitForPasswordStore();
-
-  MockPasswordStoreObserver observer;
-  store()->AddObserver(&observer);
-
-  const GURL origin = GURL(origin_url);
-  base::RepeatingCallback<bool(const GURL&)> filter =
-      base::BindRepeating(&MatchesOrigin, origin);
-  base::Time time_after_creation_date = form->date_created + base::Days(1);
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnLoginsChanged).Times(0);
-  store()->RemoveLoginsByURLAndTime(FROM_HERE, filter, time_after_creation_date,
-                                    base::Time::Max(), run_loop.QuitClosure());
-  run_loop.Run();
-
-  store()->RemoveObserver(&observer);
-}
 
 class PasswordStoreDelayedInitTest : public testing::Test {
  public:

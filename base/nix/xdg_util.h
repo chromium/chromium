@@ -14,6 +14,7 @@
 
 #include "base/base_export.h"
 #include "base/functional/callback.h"
+#include "base/strings/cstring_view.h"
 
 namespace base {
 
@@ -64,23 +65,26 @@ using XdgActivationLaunchOptionsCallback =
     base::OnceCallback<void(LaunchOptions)>;
 
 // The default XDG config directory name.
-BASE_EXPORT extern const char kDotConfigDir[];
+inline constexpr char kDotConfigDir[] = ".config";
 
 // The XDG config directory environment variable.
-BASE_EXPORT extern const char kXdgConfigHomeEnvVar[];
+inline constexpr char kXdgConfigHomeEnvVar[] = "XDG_CONFIG_HOME";
 
 // The XDG current desktop environment variable.
-BASE_EXPORT extern const char kXdgCurrentDesktopEnvVar[];
+inline constexpr char kXdgCurrentDesktopEnvVar[] = "XDG_CURRENT_DESKTOP";
 
 // The XDG session type environment variable.
-BASE_EXPORT extern const char kXdgSessionTypeEnvVar[];
+inline constexpr char kXdgSessionTypeEnvVar[] = "XDG_SESSION_TYPE";
 
 // The XDG activation token environment variable.
-BASE_EXPORT extern const char kXdgActivationTokenEnvVar[];
+inline constexpr char kXdgActivationTokenEnvVar[] = "XDG_ACTIVATION_TOKEN";
+
+// Desktop startup ID environment variable.
+inline constexpr char kDesktopStartupIdEnvVar[] = "DESKTOP_STARTUP_ID";
 
 // Internally used to communicate the activation token between a newly launched
 // process and an existing browser process.
-BASE_EXPORT extern const char kXdgActivationTokenSwitch[];
+inline constexpr char kXdgActivationTokenSwitch[] = "xdg-activation-token";
 
 // Utility function for getting XDG directories.
 // |env_name| is the name of an environment variable that we want to use to get
@@ -88,7 +92,7 @@ BASE_EXPORT extern const char kXdgActivationTokenSwitch[];
 // use if |env_name| cannot be found or is empty. |fallback_dir| may be NULL.
 // Examples of |env_name| are XDG_CONFIG_HOME and XDG_DATA_HOME.
 BASE_EXPORT FilePath GetXDGDirectory(Environment* env,
-                                     const char* env_name,
+                                     cstring_view env_name,
                                      const char* fallback_dir);
 
 // Wrapper around xdg_user_dir_lookup() from src/base/third_party/xdg-user-dirs
@@ -135,6 +139,10 @@ BASE_EXPORT std::optional<std::string> ExtractXdgActivationTokenFromEnv(
 BASE_EXPORT void ExtractXdgActivationTokenFromCmdLine(
     base::CommandLine& cmd_line);
 
+// Sets the global activation token not received from the command line or as
+// an environment variable, e.g. from notification D-BUS API.
+BASE_EXPORT void SetActivationToken(std::string token);
+
 // Transfers ownership of the currently set global activation token if set.
 BASE_EXPORT std::optional<std::string> TakeXdgActivationToken();
 
@@ -144,13 +152,25 @@ BASE_EXPORT void SetXdgActivationTokenCreator(
 
 // Tries to create an xdg-activation token and invokes the `callback` with
 // `LaunchOptions` containing the token if available, or empty `LaunchOptions`.
+// This must be called on UI thread.
 BASE_EXPORT void CreateLaunchOptionsWithXdgActivation(
     XdgActivationLaunchOptionsCallback callback);
+
+// Tries to create an xdg-activation token and invokes the `callback` with the
+// token if available, or an empty string.
+// This must be called on UI thread.
+BASE_EXPORT void CreateXdgActivationToken(XdgActivationTokenCallback callback);
 
 // Returns a request path as specified in v0.9 of xdg-desktop-portal:
 // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Request.html
 BASE_EXPORT
 std::string XdgDesktopPortalRequestPath(const std::string& sender,
+                                        const std::string& token);
+
+// Returns a session path as specified in v0.9 of xdg-desktop-portal:
+// https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Session.html
+BASE_EXPORT
+std::string XdgDesktopPortalSessionPath(const std::string& sender,
                                         const std::string& token);
 
 }  // namespace nix

@@ -120,10 +120,6 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
       break;
   }
 
-  // Not used by this interstitial.
-  load_time_data.Set("recurrentErrorParagraph", "");
-  load_time_data.Set("show_recurrent_error_paragraph", false);
-
   PopulateExtendedReportingOption(load_time_data);
   PopulateEnhancedProtectionMessage(load_time_data);
 }
@@ -248,6 +244,7 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
     case CMD_TEXT_NOT_FOUND:
     case CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
     case CMD_REQUEST_SITE_ACCESS_PERMISSION:
+    case CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS:
       break;
   }
 }

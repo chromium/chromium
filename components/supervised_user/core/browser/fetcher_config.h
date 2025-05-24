@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -18,7 +19,6 @@
 #include "net/base/backoff_entry.h"
 #include "net/base/request_priority.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace supervised_user {
 
@@ -78,7 +78,7 @@ struct FetcherConfig {
   // See the service specification at
   // google3/google/internal/kids/chrome/v1/kidschromemanagement.proto for
   // examples.
-  absl::variant<std::string_view, PathTemplate> service_path;
+  std::variant<std::string_view, PathTemplate> service_path;
 
   // HTTP method used to communicate with the service.
   const Method method = Method::kUndefined;

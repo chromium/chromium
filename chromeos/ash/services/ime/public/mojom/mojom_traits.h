@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/metrics/histogram.h"
+#include "base/notreached.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom-shared.h"
@@ -180,9 +181,8 @@ struct StructTraits<ash::ime::mojom::BucketedHistogramDataView,
       case base::CUSTOM_HISTOGRAM:
       case base::SPARSE_HISTOGRAM:
       case base::DUMMY_HISTOGRAM:
-        CHECK(false) << "Invalid histogram bucket type: "
+        NOTREACHED() << "Invalid histogram bucket type: "
                      << static_cast<int>(histogram->GetHistogramType());
-        return ash::ime::mojom::HistogramBucketType::kExponential;
     }
   }
 

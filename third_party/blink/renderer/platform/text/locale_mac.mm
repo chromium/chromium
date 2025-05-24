@@ -32,11 +32,11 @@
 
 #import <Foundation/Foundation.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -138,8 +138,7 @@ const Vector<String>& LocaleMac::MonthLabels() {
         month_labels_.push_back(String(array[i]));
       }
     } else {
-      base::ranges::copy(kFallbackMonthNames,
-                         std::back_inserter(month_labels_));
+      std::ranges::copy(kFallbackMonthNames, std::back_inserter(month_labels_));
     }
   }
   return month_labels_;
@@ -154,8 +153,8 @@ const Vector<String>& LocaleMac::WeekDayShortLabels() {
         week_day_short_labels_.push_back(String(array[i]));
       }
     } else {
-      base::ranges::copy(kFallbackWeekdayShortNames,
-                         std::back_inserter(week_day_short_labels_));
+      std::ranges::copy(kFallbackWeekdayShortNames,
+                        std::back_inserter(week_day_short_labels_));
     }
   }
   return week_day_short_labels_;
@@ -266,8 +265,8 @@ const Vector<String>& LocaleMac::ShortMonthLabels() {
         short_month_labels_.push_back(array[i]);
       }
     } else {
-      base::ranges::copy(kFallbackMonthShortNames,
-                         std::back_inserter(short_month_labels_));
+      std::ranges::copy(kFallbackMonthShortNames,
+                        std::back_inserter(short_month_labels_));
     }
   }
   return short_month_labels_;

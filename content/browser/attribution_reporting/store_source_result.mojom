@@ -29,4 +29,4 @@ enum StoreSourceResult {
   kExceedsMaxScopesChannelCapacity = 15,
   kExceedsMaxEventStatesLimit = 16,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionStorageSourceStatus)
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionStorageSourceStatus)

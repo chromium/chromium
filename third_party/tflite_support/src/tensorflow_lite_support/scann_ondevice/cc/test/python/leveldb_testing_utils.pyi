@@ -13,6 +13,4 @@
 # limitations under the License.
 # ==============================================================================
 
-from typing import List, Tuple
-
-def leveldb_table_to_pair_list(buffer: str, compressed: bool) -> List[Tuple[bytes,bytes]]: ...
+def leveldb_table_to_pair_list(buffer: str, compressed: bool) -> list[tuple[bytes, bytes]]: ...

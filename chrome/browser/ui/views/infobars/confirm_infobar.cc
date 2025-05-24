@@ -66,8 +66,8 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
                                 kCancelButtonElementId);
   }
 
-  // TODO(josephjoopark): It seems like link_ isn't always needed, but it's
-  // added regardless. See about only adding when necessary.
+  // TODO(crbug.com/378107817): It seems like link_ isn't always needed, but
+  // it's added regardless. See about only adding when necessary.
   link_ = AddChildView(CreateLink(delegate_ptr->GetLinkText()));
 }
 
@@ -110,8 +110,8 @@ void ConfirmInfoBar::Layout(PassKey) {
     order_of_buttons.push_back(cancel_button_);
   }
 
-  if (!views::PlatformStyle::kIsOkButtonLeading) {
-    base::ranges::reverse(order_of_buttons);
+  if constexpr (!views::PlatformStyle::kIsOkButtonLeading) {
+    std::ranges::reverse(order_of_buttons);
   }
 
   for (views::MdTextButton* button : order_of_buttons) {
@@ -125,17 +125,21 @@ void ConfirmInfoBar::Layout(PassKey) {
 }
 
 void ConfirmInfoBar::OkButtonPressed() {
-  if (!owner())
+  if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
-  if (GetDelegate()->Accept())
+  }
+  if (GetDelegate()->Accept()) {
     RemoveSelf();
+  }
 }
 
 void ConfirmInfoBar::CancelButtonPressed() {
-  if (!owner())
+  if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
-  if (GetDelegate()->Cancel())
+  }
+  if (GetDelegate()->Cancel()) {
     RemoveSelf();
+  }
 }
 
 ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() {

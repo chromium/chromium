@@ -57,7 +57,7 @@ bool AreImagesEqual(const gfx::ImageSkia& first, const gfx::ImageSkia& second) {
 
 ImageLoader::ImageLoader(const base::FilePath& path) : path_(path) {}
 
-ImageLoader::~ImageLoader() {}
+ImageLoader::~ImageLoader() = default;
 
 gfx::ImageSkia ImageLoader::Load() {
   std::string image_data;

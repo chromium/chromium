@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+
 #include "base/memory/raw_ref.h"
 #include "components/version_info/channel.h"
 

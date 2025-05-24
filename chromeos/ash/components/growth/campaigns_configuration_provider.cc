@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "components/feature_engagement/public/configuration.h"
@@ -62,8 +63,8 @@ bool CampaignsConfigurationProvider::MaybeProvideFeatureConfiguration(
     const feature_engagement::FeatureVector& known_features,
     const feature_engagement::GroupVector& known_groups) const {
   // Skip if it is not growth framework feature.
-  if (std::strcmp((&feature_engagement::kIPHGrowthFramework)->name,
-                  feature.name)) {
+  if (UNSAFE_TODO(std::strcmp((&feature_engagement::kIPHGrowthFramework)->name,
+                              feature.name))) {
     return false;
   }
 
@@ -80,8 +81,8 @@ const char* CampaignsConfigurationProvider::GetConfigurationSourceDescription()
 std::set<std::string>
 CampaignsConfigurationProvider::MaybeProvideAllowedEventPrefixes(
     const base::Feature& feature) const {
-  if (std::strcmp((&feature_engagement::kIPHGrowthFramework)->name,
-                  feature.name)) {
+  if (UNSAFE_TODO(std::strcmp((&feature_engagement::kIPHGrowthFramework)->name,
+                              feature.name))) {
     return {};
   }
 

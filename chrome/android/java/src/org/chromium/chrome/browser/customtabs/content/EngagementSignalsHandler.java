@@ -12,16 +12,15 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.tab.Tab;
 
 /**
- * Handles the initialization of Engagement Signals when the client sets an
- * {@link androidx.browser.customtabs.EngagementSignalsCallback}.
+ * Handles the initialization of Engagement Signals when the client sets an {@link
+ * androidx.browser.customtabs.EngagementSignalsCallback}.
  */
 public class EngagementSignalsHandler {
-    private final CustomTabsConnection mConnection;
     private final CustomTabsSessionToken mSession;
     @Nullable private EngagementSignalsInitialScrollObserver mInitialScrollObserver;
     @Nullable private RealtimeEngagementSignalObserver mObserver;
@@ -29,9 +28,7 @@ public class EngagementSignalsHandler {
     private EngagementSignalsCallback mCallback;
     private Callback<Boolean> mPrivacyPreferencesObserver;
 
-    public EngagementSignalsHandler(
-            CustomTabsConnection connection, CustomTabsSessionToken session) {
-        mConnection = connection;
+    public EngagementSignalsHandler(CustomTabsSessionToken session) {
         mSession = session;
     }
 
@@ -71,6 +68,19 @@ public class EngagementSignalsHandler {
         }
     }
 
+    /** Notify that Open in Browser is being invoked on the given tab. */
+    public void notifyOpenInBrowser(Tab tab) {
+        // When Open in Browser is tapped we need to manually collect user interactions, to ensure
+        // the ensuing invocation of EngagementSignalsCallback#onSessionEnded correctly signals
+        // whether user interactions occurred. We need to do this manually because the usual
+        // triggers for collecting user interactions (TabObserver#webContentsWillSwap,
+        // TabObserver#onClosingStateChanged, and TabObserver#onDestroyed) do not get invoked when
+        // Open in Browser is used.
+        if (mObserver != null) {
+            mObserver.collectUserInteraction(tab);
+        }
+    }
+
     private void createEngagementSignalsObserver() {
         if (!PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted()) {
             return;
@@ -87,7 +97,7 @@ public class EngagementSignalsHandler {
                         && mInitialScrollObserver.hasCurrentPageHadScrollDown();
         mObserver =
                 new RealtimeEngagementSignalObserver(
-                        mTabObserverRegistrar, mConnection, mSession, mCallback, hadScrollDown);
+                        mTabObserverRegistrar, mSession, mCallback, hadScrollDown);
         if (mInitialScrollObserver != null) {
             mInitialScrollObserver.destroy();
             mInitialScrollObserver = null;

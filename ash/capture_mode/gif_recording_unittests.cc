@@ -12,7 +12,6 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
@@ -20,7 +19,6 @@
 #include "ash/test/ash_test_util.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -32,7 +30,7 @@ namespace ash {
 
 class GifRecordingTest : public AshTestBase {
  public:
-  GifRecordingTest() : scoped_feature_list_(features::kGifRecording) {}
+  GifRecordingTest() = default;
   GifRecordingTest(const GifRecordingTest&) = delete;
   GifRecordingTest& operator=(const GifRecordingTest&) = delete;
   ~GifRecordingTest() override = default;
@@ -88,9 +86,6 @@ class GifRecordingTest : public AshTestBase {
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(GifRecordingTest, DropDownButtonVisibility) {

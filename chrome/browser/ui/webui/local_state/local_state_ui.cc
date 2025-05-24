@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -42,7 +41,7 @@ class LocalStateUIHandler : public content::WebUIMessageHandler {
   // sends them to the page.
   void HandleRequestJson(const base::Value::List& args);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the local state file contains some information about other
   // user accounts which we don't want to expose to other users. In that case,
   // this will filter out the prefs to only include variations and UMA related
@@ -51,7 +50,7 @@ class LocalStateUIHandler : public content::WebUIMessageHandler {
                                                    "user_experience_metrics"};
 #else
   std::vector<std::string> accepted_pref_prefixes_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 void LocalStateUIHandler::RegisterMessages() {
@@ -86,5 +85,4 @@ LocalStateUI::LocalStateUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<LocalStateUIHandler>());
 }
 
-LocalStateUI::~LocalStateUI() {
-}
+LocalStateUI::~LocalStateUI() = default;

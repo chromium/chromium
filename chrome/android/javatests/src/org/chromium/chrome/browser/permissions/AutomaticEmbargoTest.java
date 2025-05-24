@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -24,6 +25,7 @@ import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -127,6 +129,7 @@ public class AutomaticEmbargoTest {
     @LargeTest
     @Feature({"MediaPermissions"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/387226499
     public void testCameraEmbargo() throws Exception {
         runTest(MEDIA_TEST_FILE, "initiate_getMicrophone()", "deny", /* withGesture= */ true);
     }
@@ -135,6 +138,7 @@ public class AutomaticEmbargoTest {
     @LargeTest
     @Feature({"MediaPermissions"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    @DisabledTest(message = "Flaky. See crbug.com/380193331")
     public void testMicrophoneEmbargo() throws Exception {
         runTest(MEDIA_TEST_FILE, "initiate_getCamera()", "deny", /* withGesture= */ true);
     }

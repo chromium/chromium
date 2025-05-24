@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -41,6 +41,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_pin_util.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -51,6 +52,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/session_manager/session_manager_types.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -58,6 +60,7 @@
 #include "ui/gfx/image/image.h"
 
 using session_manager::SessionState;
+using testing::NotNull;
 
 namespace ash {
 
@@ -229,6 +232,35 @@ TEST_F(StatusAreaWidgetTest, DateTrayRoundedCornerBehavior) {
             TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
 }
 
+class LockedFullscreenStatusAreaWidgetTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool IsLocked() const { return GetParam(); }
+};
+
+TEST_P(LockedFullscreenStatusAreaWidgetTest,
+       TrayBubbleVisibilityWithPinnedWindow) {
+  // Create a window for testing purposes.
+  const std::unique_ptr<aura::Window> window = CreateTestWindow();
+
+  // Show the unified system tray bubble before pinning the window.
+  auto* const status_area_widget = GetPrimaryShelf()->GetStatusAreaWidget();
+  ASSERT_THAT(status_area_widget, NotNull());
+  auto* const unified_system_tray = status_area_widget->unified_system_tray();
+  ASSERT_THAT(unified_system_tray, NotNull());
+  unified_system_tray->ShowBubble();
+  ASSERT_TRUE(unified_system_tray->IsBubbleShown());
+
+  // Pin the window and verify tray bubble visibility.
+  PinWindow(window.get(), IsLocked());
+  EXPECT_EQ(unified_system_tray->IsBubbleShown(), !IsLocked());
+}
+
+INSTANTIATE_TEST_SUITE_P(LockedFullscreenStatusAreaWidgetTests,
+                         LockedFullscreenStatusAreaWidgetTest,
+                         testing::Bool());
+
 class SystemTrayFocusTestObserver : public SystemTrayObserver {
  public:
   SystemTrayFocusTestObserver() = default;
@@ -263,91 +295,12 @@ class StatusAreaWidgetFocusTest : public AshTestBase {
 
   ~StatusAreaWidgetFocusTest() override = default;
 
-  // AshTestBase:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    test_observer_ = std::make_unique<SystemTrayFocusTestObserver>();
-    Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(
-        test_observer_.get());
-  }
-
-  // AshTestBase:
-  void TearDown() override {
-    Shell::Get()->system_tray_notifier()->RemoveSystemTrayObserver(
-        test_observer_.get());
-    test_observer_.reset();
-    AshTestBase::TearDown();
-  }
-
   void GenerateTabEvent(bool reverse) {
     ui::KeyEvent tab_pressed(ui::EventType::kKeyPressed, ui::VKEY_TAB,
                              reverse ? ui::EF_SHIFT_DOWN : ui::EF_NONE);
     StatusAreaWidgetTestHelper::GetStatusAreaWidget()->OnKeyEvent(&tab_pressed);
   }
-
- protected:
-  std::unique_ptr<SystemTrayFocusTestObserver> test_observer_;
 };
-
-// Tests that tab traversal through status area widget in non-active session
-// could properly send FocusOut event.
-// TODO(crbug.com/934939): Failing on trybot.
-TEST_F(StatusAreaWidgetFocusTest, DISABLED_FocusOutObserverUnified) {
-  // Set session state to LOCKED.
-  SessionControllerImpl* session = Shell::Get()->session_controller();
-  ASSERT_TRUE(session->IsActiveUserSessionStarted());
-  TestSessionControllerClient* client = GetSessionControllerClient();
-  client->SetSessionState(SessionState::LOCKED);
-  ASSERT_TRUE(session->IsScreenLocked());
-
-  StatusAreaWidget* status = StatusAreaWidgetTestHelper::GetStatusAreaWidget();
-  // Default trays are constructed.
-  ASSERT_TRUE(status->overview_button_tray());
-  ASSERT_TRUE(status->unified_system_tray());
-  ASSERT_TRUE(status->logout_button_tray_for_testing());
-  ASSERT_TRUE(status->ime_menu_tray());
-  ASSERT_TRUE(status->virtual_keyboard_tray_for_testing());
-
-  // Default trays are visible.
-  ASSERT_FALSE(status->overview_button_tray()->GetVisible());
-  ASSERT_TRUE(status->unified_system_tray()->GetVisible());
-  ASSERT_FALSE(status->logout_button_tray_for_testing()->GetVisible());
-  ASSERT_FALSE(status->ime_menu_tray()->GetVisible());
-  ASSERT_FALSE(status->virtual_keyboard_tray_for_testing()->GetVisible());
-
-  // In Unified, we don't have notification tray, so ImeMenuTray is used for
-  // tab testing.
-  status->ime_menu_tray()->OnIMEMenuActivationChanged(true);
-  ASSERT_TRUE(status->ime_menu_tray()->GetVisible());
-
-  // Set focus to status area widget. The first focused view will be the IME
-  // tray.
-  ASSERT_TRUE(Shell::Get()->focus_cycler()->FocusWidget(status));
-  views::FocusManager* focus_manager = status->GetFocusManager();
-  EXPECT_EQ(status->ime_menu_tray(), focus_manager->GetFocusedView());
-
-  // A tab key event will move focus to the system tray.
-  GenerateTabEvent(false);
-  EXPECT_EQ(status->unified_system_tray(), focus_manager->GetFocusedView());
-  EXPECT_EQ(0, test_observer_->focus_out_count());
-  EXPECT_EQ(0, test_observer_->reverse_focus_out_count());
-
-  // Another tab key event will send FocusOut event, since we are not handling
-  // this event, focus will remain within the status widhet and will be
-  // moved to the IME tray.
-  GenerateTabEvent(false);
-  EXPECT_EQ(status->ime_menu_tray(), focus_manager->GetFocusedView());
-  EXPECT_EQ(1, test_observer_->focus_out_count());
-  EXPECT_EQ(0, test_observer_->reverse_focus_out_count());
-
-  // A reverse tab key event will send reverse FocusOut event, since we are not
-  // handling this event, focus will remain within the status widget and will
-  // be moved to the system tray.
-  GenerateTabEvent(true);
-  EXPECT_EQ(status->unified_system_tray(), focus_manager->GetFocusedView());
-  EXPECT_EQ(1, test_observer_->focus_out_count());
-  EXPECT_EQ(1, test_observer_->reverse_focus_out_count());
-}
 
 class StatusAreaWidgetPaletteTest : public AshTestBase {
  public:
@@ -390,11 +343,11 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
     // Initializing NetworkHandler before ash is more like production.
     AshTestBase::SetUp();
     network_handler_test_helper_.RegisterPrefs(profile_prefs_.registry(),
-                                               local_state_.registry());
+                                               local_state()->registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(profile_prefs_.registry());
 
     network_handler_test_helper_.InitializePrefs(&profile_prefs_,
-                                                 &local_state_);
+                                                 local_state());
 
     // Networking stubs may have asynchronous initialization.
     base::RunLoop().RunUntilIdle();

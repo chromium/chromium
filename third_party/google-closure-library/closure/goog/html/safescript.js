@@ -71,20 +71,38 @@ class SafeScript {
    * @param {!Object} token package-internal implementation detail.
    */
   constructor(value, token) {
+    if (goog.DEBUG && token !== CONSTRUCTOR_TOKEN_PRIVATE) {
+      throw Error('SafeScript is not meant to be built directly');
+    }
+
     /**
      * The contained value of this SafeScript.  The field has a purposely ugly
      * name to make (non-compiled) code that attempts to directly access this
      * field stand out.
+     * @const
      * @private {!TrustedScript|string}
      */
-    this.privateDoNotAccessOrElseSafeScriptWrappedValue_ =
-        (token === CONSTRUCTOR_TOKEN_PRIVATE) ? value : '';
+    this.privateDoNotAccessOrElseSafeScriptWrappedValue_ = value;
 
     /**
      * @override
      * @const
      */
     this.implementsGoogStringTypedString = true;
+  }
+
+  /**
+   * Returns a string-representation of this value.
+   *
+   * To obtain the actual string value wrapped in a SafeScript, use
+   * `SafeScript.unwrap`.
+   *
+   * @return {string}
+   * @see SafeScript#unwrap
+   * @override
+   */
+  toString() {
+    return this.privateDoNotAccessOrElseSafeScriptWrappedValue_.toString();
   }
 
   /**
@@ -200,26 +218,14 @@ class SafeScript {
    * @package
    */
   static createSafeScriptSecurityPrivateDoNotAccessOrElse(script) {
+    /** @noinline */
+    const noinlineScript = script;
     const policy = trustedtypes.getPolicyPrivateDoNotAccessOrElse();
-    const trustedScript = policy ? policy.createScript(script) : script;
+    const trustedScript =
+        policy ? policy.createScript(noinlineScript) : noinlineScript;
     return new SafeScript(trustedScript, CONSTRUCTOR_TOKEN_PRIVATE);
   }
 }
-
-/**
- * Returns a string-representation of this value.
- *
- * To obtain the actual string value wrapped in a SafeScript, use
- * `SafeScript.unwrap`.
- *
- * @return {string}
- * @see SafeScript#unwrap
- * @override
- */
-SafeScript.prototype.toString = function() {
-  return this.privateDoNotAccessOrElseSafeScriptWrappedValue_.toString();
-};
-
 
 /**
  * A SafeScript instance corresponding to the empty string.

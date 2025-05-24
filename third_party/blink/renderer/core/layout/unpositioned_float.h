@@ -30,7 +30,6 @@ struct CORE_EXPORT UnpositionedFloat final {
                     const BlockBreakToken* token,
                     const LogicalSize available_size,
                     const LogicalSize percentage_size,
-                    const LogicalSize replaced_percentage_size,
                     const BfcOffset& origin_bfc_offset,
                     const ConstraintSpace& parent_space,
                     const ComputedStyle& parent_style,
@@ -41,7 +40,6 @@ struct CORE_EXPORT UnpositionedFloat final {
         token(token),
         available_size(available_size),
         percentage_size(percentage_size),
-        replaced_percentage_size(replaced_percentage_size),
         origin_bfc_offset(origin_bfc_offset),
         parent_space(parent_space),
         parent_style(parent_style),
@@ -54,7 +52,6 @@ struct CORE_EXPORT UnpositionedFloat final {
 
   const LogicalSize available_size;
   const LogicalSize percentage_size;
-  const LogicalSize replaced_percentage_size;
   const BfcOffset origin_bfc_offset;
   const ConstraintSpace& parent_space;
   const ComputedStyle& parent_style;

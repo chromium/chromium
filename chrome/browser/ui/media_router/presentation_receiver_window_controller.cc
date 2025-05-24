@@ -143,15 +143,17 @@ void PresentationReceiverWindowController::OnProfileWillBeDestroyed(
 
 void PresentationReceiverWindowController::DidStartNavigation(
     content::NavigationHandle* handle) {
-  if (!navigation_policy_.AllowNavigation(handle))
+  if (!navigation_policy_.AllowNavigation(handle)) {
     Terminate();
+  }
 }
 
 void PresentationReceiverWindowController::TitleWasSet(
     content::NavigationEntry* entry) {
   window_->UpdateWindowTitle();
-  if (entry)
+  if (entry) {
     title_change_callback_.Run(base::UTF16ToUTF8(entry->GetTitle()));
+  }
 }
 
 void PresentationReceiverWindowController::NavigationStateChanged(
@@ -200,6 +202,7 @@ void PresentationReceiverWindowController::CanDownload(
 }
 
 bool PresentationReceiverWindowController::IsWebContentsCreationOverridden(
+    content::RenderFrameHost* opener,
     content::SiteInstance* source_site_instance,
     content::mojom::WindowContainerType window_container_type,
     const GURL& opener_url,

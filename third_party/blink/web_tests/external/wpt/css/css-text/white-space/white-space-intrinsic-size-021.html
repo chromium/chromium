@@ -166,6 +166,16 @@ x-br::before {
   <div class="break-spaces wrap"      data-expected-client-width="20" data-expected-client-height="20">X <x-br></x-br>É</div>
   <div class="break-spaces nowrap"    data-expected-client-width="20" data-expected-client-height="20">X <x-br></x-br>É</div>
 </div>
+<div class="container narrow">
+  <div class="collapse wrap"          data-expected-client-width="10" data-expected-client-height="20">X <a>É</a></div>
+  <div class="collapse nowrap"        data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+  <div class="preserve wrap"          data-expected-client-width="10" data-expected-client-height="20">X <a>É</a></div>
+  <div class="preserve nowrap"        data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+  <div class="preserve-breaks wrap"   data-expected-client-width="10" data-expected-client-height="20">X <a>É</a></div>
+  <div class="preserve-breaks nowrap" data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+  <div class="break-spaces wrap"      data-expected-client-width="20" data-expected-client-height="20">X <a>É</a></div>
+  <div class="break-spaces nowrap"    data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+</div>
 
 <hr>
 
@@ -279,6 +289,16 @@ x-br::before {
   <div class="break-spaces wrap"      data-expected-client-width="20" data-expected-client-height="20">X <x-br></x-br>É</div>
   <div class="break-spaces nowrap"    data-expected-client-width="20" data-expected-client-height="20">X <x-br></x-br>É</div>
 </div>
+<div class="container wide">
+  <div class="collapse wrap"          data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+  <div class="collapse nowrap"        data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+  <div class="preserve wrap"          data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+  <div class="preserve nowrap"        data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+  <div class="preserve-breaks wrap"   data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+  <div class="preserve-breaks nowrap" data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+  <div class="break-spaces wrap"      data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+  <div class="break-spaces nowrap"    data-expected-client-width="30" data-expected-client-height="10">X <a>É</a></div>
+</div>
 
 <hr>
 
@@ -286,5 +306,5 @@ x-br::before {
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/check-layout-th.js"></script>
 <script>
-checkLayout(".container > div");
+document.fonts.ready.then(() => checkLayout(".container > div"));
 </script>

@@ -16,12 +16,12 @@ class GURL;
 
 namespace network {
 
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 std::string ToString(const mojom::CSPSourceListPtr& source_list);
 
 // Return a CSPCheckResult that allows when at least one source in the
 // |source_list| matches the |url|.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 CSPCheckResult CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
                                   const mojom::CSPSourceList& source_list,
                                   const GURL& url,
@@ -32,7 +32,7 @@ CSPCheckResult CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
 // Check if |source_list_a| subsumes |source_list_b| with origin |origin_b| for
 // directive |directive| according to
 // https://w3c.github.io/webappsec-cspee/#subsume-source-list
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 bool CSPSourceListSubsumes(
     const mojom::CSPSourceList& source_list_a,
     const std::vector<const mojom::CSPSourceList*>& source_list_b,

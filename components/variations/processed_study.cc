@@ -215,7 +215,7 @@ bool ValidateStudyAndComputeTotalProbability(
 const char ProcessedStudy::kGenericDefaultExperimentName[] =
     "VariationsDefaultExperiment";
 
-ProcessedStudy::ProcessedStudy() {}
+ProcessedStudy::ProcessedStudy() = default;
 
 ProcessedStudy::ProcessedStudy(const ProcessedStudy& other) = default;
 

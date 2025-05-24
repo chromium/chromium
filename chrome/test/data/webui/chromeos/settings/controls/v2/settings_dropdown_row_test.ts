@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {SettingsDropdownRowElement, SettingsDropdownV2Element, SettingsRowElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsDropdownV2Element, SettingsRowElement} from 'chrome://os-settings/os_settings.js';
+import {SettingsDropdownRowElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

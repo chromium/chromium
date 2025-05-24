@@ -26,7 +26,7 @@ class LenientMockObserver : public MediaStreamCaptureIndicator::Observer {
   LenientMockObserver(const LenientMockObserver&) = delete;
   LenientMockObserver& operator=(const LenientMockObserver&) = delete;
 
-  ~LenientMockObserver() override {}
+  ~LenientMockObserver() override = default;
 
   // Helper functions used to set the expectations of the mock methods. This
   // allows passing function pointers to
@@ -51,6 +51,11 @@ class LenientMockObserver : public MediaStreamCaptureIndicator::Observer {
                                                 size_t times) {
     EXPECT_CALL(*this, OnIsCapturingWindowChanged(contents, testing::_))
         .Times(times);
+  }
+
+  void SetOnIsCapturingTabChangedExpectation(content::WebContents* contents,
+                                             bool is_capturing_tab) {
+    EXPECT_CALL(*this, OnIsCapturingTabChanged(contents, is_capturing_tab));
   }
 
   void SetOnIsCapturingWindowChangedExpectation(content::WebContents* contents,
@@ -78,6 +83,8 @@ class LenientMockObserver : public MediaStreamCaptureIndicator::Observer {
                void(content::WebContents* contents, bool is_capturing_audio));
   MOCK_METHOD2(OnIsBeingMirroredChanged,
                void(content::WebContents* contents, bool is_being_mirrored));
+  MOCK_METHOD2(OnIsCapturingTabChanged,
+               void(content::WebContents* contents, bool is_capturing_tab));
   MOCK_METHOD2(OnIsCapturingWindowChanged,
                void(content::WebContents* contents, bool is_capturing_window));
   MOCK_METHOD2(OnIsCapturingDisplayChanged,
@@ -96,8 +103,8 @@ typedef bool (MediaStreamCaptureIndicator::*AccessorMethod)(
 
 class MediaStreamCaptureIndicatorTest : public ChromeRenderViewHostTestHarness {
  public:
-  MediaStreamCaptureIndicatorTest() {}
-  ~MediaStreamCaptureIndicatorTest() override {}
+  MediaStreamCaptureIndicatorTest() = default;
+  ~MediaStreamCaptureIndicatorTest() override = default;
   MediaStreamCaptureIndicatorTest(const MediaStreamCaptureIndicatorTest&) =
       delete;
   MediaStreamCaptureIndicatorTest& operator=(
@@ -165,7 +172,21 @@ ObserverMethodTestParam kObserverMethodTestParams[] = {
      &MockObserver::SetOnIsBeingMirroredChangedExpectation,
      &MediaStreamCaptureIndicator::IsBeingMirrored},
     {blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-     /*display_media_info=*/nullptr,
+     media::mojom::DisplayMediaInformation::New(
+         media::mojom::DisplayCaptureSurfaceType::BROWSER,
+         /*logical_surface=*/true,
+         media::mojom::CursorCaptureType::NEVER,
+         /*capture_handle=*/nullptr,
+         /*initial_zoom_level=*/100),
+     &MockObserver::SetOnIsCapturingTabChangedExpectation,
+     &MediaStreamCaptureIndicator::IsCapturingTab},
+    {blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+     media::mojom::DisplayMediaInformation::New(
+         media::mojom::DisplayCaptureSurfaceType::WINDOW,
+         /*logical_surface=*/true,
+         media::mojom::CursorCaptureType::NEVER,
+         /*capture_handle=*/nullptr,
+         /*initial_zoom_level=*/100),
      &MockObserver::SetOnIsCapturingWindowChangedExpectation,
      &MediaStreamCaptureIndicator::IsCapturingWindow},
     {blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
@@ -191,12 +212,13 @@ blink::mojom::StreamDevices CreateFakeDevice(
   if (param.display_media_info)
     device.display_media_info = param.display_media_info->Clone();
 
-  if (blink::IsAudioInputMediaType(param.stream_type))
+  if (blink::IsAudioInputMediaType(param.stream_type)) {
     fake_devices.audio_device = device;
-  else if (blink::IsVideoInputMediaType(param.stream_type))
+  } else if (blink::IsVideoInputMediaType(param.stream_type)) {
     fake_devices.video_device = device;
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   return fake_devices;
 }
@@ -263,9 +285,7 @@ TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, AddAndRemoveDevice) {
   ::testing::Mock::VerifyAndClear(observer());
 }
 
-// TODO(crbug.com/40071631): re-enable once the bug is fixed.
-TEST_P(MediaStreamCaptureIndicatorObserverMethodTest,
-       DISABLED_StopMediaCapturing) {
+TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, StopMediaCapturing) {
   const ObserverMethodTestParam& param = GetParam();
   const auto media_tpy =
       MediaStreamCaptureIndicator::GetMediaType(param.stream_type);
@@ -343,7 +363,7 @@ TEST_P(MediaStreamCaptureIndicatorStreamTypeTest,
           /*captured_surface_control_active=*/false),
       source, content::DesktopMediaID(media_type, /*id=*/0),
       /*capture_audio=*/false, /*disable_local_echo=*/false,
-      /*suppress_local_audio_playback=*/false,
+      /*suppress_local_audio_playback=*/false, /*restrict_own_audio=*/false,
       /*display_notification=*/false, /*application_title=*/u"",
       /*captured_surface_control_active=*/false, devices);
   ASSERT_EQ(devices.video_device->type, video_stream_type);

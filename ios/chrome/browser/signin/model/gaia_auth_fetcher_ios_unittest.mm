@@ -78,24 +78,22 @@ class MockGaiaConsumer : public GaiaAuthConsumer {
   MOCK_METHOD1(OnLogOutFailure, void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(OnGetCheckConnectionInfoSuccess, void(const std::string& data));
 };
-}
+}  // namespace
 
 // Tests fixture for GaiaAuthFetcherIOS
 class GaiaAuthFetcherIOSTest : public PlatformTest {
  protected:
   GaiaAuthFetcherIOSTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
     gaia_auth_fetcher_.reset(new GaiaAuthFetcherIOS(
         &consumer_, gaia::GaiaSource::kChrome,
-        test_url_loader_factory_.GetSafeWeakWrapper(), browser_state_.get()));
+        test_url_loader_factory_.GetSafeWeakWrapper(), profile_.get()));
     gaia_auth_fetcher_->bridge_.reset(
         new FakeGaiaAuthFetcherIOSBridge(gaia_auth_fetcher_.get()));
   }
 
-  ~GaiaAuthFetcherIOSTest() override {
-    gaia_auth_fetcher_.reset();
-  }
+  ~GaiaAuthFetcherIOSTest() override { gaia_auth_fetcher_.reset(); }
 
   FakeGaiaAuthFetcherIOSBridge* GetBridge() {
     return static_cast<FakeGaiaAuthFetcherIOSBridge*>(
@@ -103,7 +101,7 @@ class GaiaAuthFetcherIOSTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   MockGaiaConsumer consumer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<GaiaAuthFetcherIOS> gaia_auth_fetcher_;

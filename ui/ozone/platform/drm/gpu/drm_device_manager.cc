@@ -4,12 +4,12 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
 
@@ -48,7 +48,7 @@ bool DrmDeviceManager::AddDrmDevice(const base::FilePath& path,
 }
 
 void DrmDeviceManager::RemoveDrmDevice(const base::FilePath& path) {
-  auto it = base::ranges::find(devices_, path, &DrmDevice::device_path);
+  auto it = std::ranges::find(devices_, path, &DrmDevice::device_path);
   if (it == devices_.end()) {
     VLOG(2) << "Got request to remove non-existent device: " << path.value();
     return;

@@ -15,6 +15,7 @@
 namespace blink {
 
 const int kCompositorNamespaceBitCount = 5;
+const int kCompositorReservedBitCount = cc::kElementIdReservedBitCount;
 
 // The functions in this header requires cc::ElementId::InternalValue to be
 // uint64_t.
@@ -40,6 +41,7 @@ enum class CompositorElementIdNamespace {
   kViewTransitionSubframeRoot,
   kViewTransitionElement,
   kElementCapture,
+  kPlaceElement,
   kDOMNodeId,
   // The following values are for internal usage only.
   kMax = kDOMNodeId,

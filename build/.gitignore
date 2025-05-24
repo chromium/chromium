@@ -12,7 +12,6 @@ ciopfs
 /Debug_x64
 /fuchsia/internal/
 /ipch/
-/lacros/prebuilt_ash_chrome/
 /Release
 /Release_x64
 /win_toolchain.json

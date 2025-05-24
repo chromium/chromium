@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 
 /** Stores webapp specific information on behalf of {@link BrowserServicesIntentDataProvider}. */
+@NullMarked
 public class WebappExtras {
     public final String id;
 
@@ -21,7 +21,7 @@ public class WebappExtras {
     public final String scopeUrl;
 
     /** The webapp's launcher icon. */
-    @NonNull public final WebappIcon icon;
+    public final WebappIcon icon;
 
     /** The webapp's name as it is usually displayed to the user. */
     public final String name;
@@ -63,7 +63,7 @@ public class WebappExtras {
             String id,
             String url,
             String scopeUrl,
-            @NonNull WebappIcon icon,
+            WebappIcon icon,
             String name,
             String shortName,
             @DisplayMode.EnumType int displayMode,

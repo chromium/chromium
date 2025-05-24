@@ -19,7 +19,7 @@ TODO: Move away from tables.
 | NixOS      | aszlig `"^[0-9]+$"@regexmail.net` | https://search.nixos.org/packages?query=chromium | https://github.com/NixOS/nixpkgs/tree/master/pkgs/applications/networking/browsers/chromium |
 | OpenMandriva | Bernhard Rosenkraenzer `bero@lindev.ch` | n/a | https://github.com/OpenMandrivaAssociation/chromium-browser-stable https://github.com/OpenMandrivaAssociation/chromium-browser-beta https://github.com/OpenMandrivaAssociation/chromium-browser-dev |
 | Fedora     | Tom Callaway `tcallawa@redhat.com` | https://src.fedoraproject.org/rpms/chromium/ | https://src.fedoraproject.org/rpms/chromium/tree/rawhide |
-| Yocto      | Raphael Kubo da Costa `raphael.kubo.da.costa@intel.com` | https://github.com/OSSystems/meta-browser | https://github.com/OSSystems/meta-browser/tree/master/meta-chromium/recipes-browser/chromium/files |
+| Yocto      | Max Ihlenfeldt `max@igalia.com` | https://github.com/OSSystems/meta-browser | https://github.com/OSSystems/meta-browser/tree/master/meta-chromium/recipes-browser/chromium/files |
 | Exherbo    | Timo Gurr `tgurr@exherbo.org` | https://git.exherbo.org/summer/packages/net-www/chromium-stable/ | https://git.exherbo.org/desktop.git/tree/packages/net-www/chromium-stable/files |
 
 ## Unofficial packages

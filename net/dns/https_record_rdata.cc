@@ -33,7 +33,7 @@ namespace {
 bool ReadNextServiceParam(std::optional<uint16_t> last_key,
                           base::SpanReader<const uint8_t>& reader,
                           uint16_t* out_param_key,
-                          std::string_view* out_param_value) {
+                          base::span<const uint8_t>* out_param_value) {
   DCHECK(out_param_key);
   DCHECK(out_param_value);
 
@@ -50,15 +50,15 @@ bool ReadNextServiceParam(std::optional<uint16_t> last_key,
   }
 
   *out_param_key = key;
-  *out_param_value = base::as_string_view(value);
+  *out_param_value = value;
   return true;
 }
 
-bool ParseMandatoryKeys(std::string_view param_value,
+bool ParseMandatoryKeys(base::span<const uint8_t> param_value,
                         std::set<uint16_t>* out_parsed) {
   DCHECK(out_parsed);
 
-  auto reader = base::SpanReader(base::as_byte_span(param_value));
+  auto reader = base::SpanReader(param_value);
 
   std::set<uint16_t> mandatory_keys;
   // Do/while to require at least one key.
@@ -82,11 +82,11 @@ bool ParseMandatoryKeys(std::string_view param_value,
   return true;
 }
 
-bool ParseAlpnIds(std::string_view param_value,
+bool ParseAlpnIds(base::span<const uint8_t> param_value,
                   std::vector<std::string>* out_parsed) {
   DCHECK(out_parsed);
 
-  auto reader = base::SpanReader(base::as_byte_span(param_value));
+  auto reader = base::SpanReader(param_value);
 
   std::vector<std::string> alpn_ids;
   // Do/while to require at least one ID.
@@ -108,11 +108,11 @@ bool ParseAlpnIds(std::string_view param_value,
 }
 
 template <size_t ADDRESS_SIZE>
-bool ParseIpAddresses(std::string_view param_value,
+bool ParseIpAddresses(base::span<const uint8_t> param_value,
                       std::vector<IPAddress>* out_addresses) {
   DCHECK(out_addresses);
 
-  auto reader = base::SpanReader(base::as_byte_span(param_value));
+  auto reader = base::SpanReader(param_value);
 
   std::vector<IPAddress> addresses;
   do {
@@ -133,11 +133,11 @@ bool ParseIpAddresses(std::string_view param_value,
 
 // static
 std::unique_ptr<HttpsRecordRdata> HttpsRecordRdata::Parse(
-    std::string_view data) {
+    base::span<const uint8_t> data) {
   if (!HasValidSize(data, kType))
     return nullptr;
 
-  auto reader = base::SpanReader(base::as_byte_span(data));
+  auto reader = base::SpanReader(data);
   uint16_t priority;
   CHECK(reader.ReadU16BigEndian(priority));
 
@@ -186,8 +186,8 @@ AliasFormHttpsRecordRdata::AliasFormHttpsRecordRdata(std::string alias_name)
 
 // static
 std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
-    std::string_view data) {
-  auto reader = base::SpanReader(base::as_byte_span(data));
+    base::span<const uint8_t> data) {
+  auto reader = base::SpanReader(data);
 
   uint16_t priority;
   if (!reader.ReadU16BigEndian(priority)) {
@@ -206,7 +206,7 @@ std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
   std::optional<uint16_t> last_param_key;
   while (reader.remaining() > 0u) {
     uint16_t param_key;
-    std::string_view param_value;
+    base::span<const uint8_t> param_value;
     if (!ReadNextServiceParam(last_param_key, reader, &param_key, &param_value))
       return nullptr;
     last_param_key = param_key;
@@ -241,7 +241,7 @@ ServiceFormHttpsRecordRdata::ServiceFormHttpsRecordRdata(
     bool default_alpn,
     std::optional<uint16_t> port,
     std::vector<IPAddress> ipv4_hint,
-    std::string ech_config,
+    base::span<const uint8_t> ech_config,
     std::vector<IPAddress> ipv6_hint,
     std::map<uint16_t, std::string> unparsed_params)
     : priority_(priority),
@@ -251,7 +251,7 @@ ServiceFormHttpsRecordRdata::ServiceFormHttpsRecordRdata(
       default_alpn_(default_alpn),
       port_(port),
       ipv4_hint_(std::move(ipv4_hint)),
-      ech_config_(std::move(ech_config)),
+      ech_config_(ech_config.begin(), ech_config.end()),
       ipv6_hint_(std::move(ipv6_hint)),
       unparsed_params_(std::move(unparsed_params)) {
   DCHECK_NE(priority_, 0);
@@ -296,8 +296,8 @@ bool ServiceFormHttpsRecordRdata::IsAlias() const {
 
 // static
 std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
-    std::string_view data) {
-  auto reader = base::SpanReader(base::as_byte_span(data));
+    base::span<const uint8_t> data) {
+  auto reader = base::SpanReader(data);
 
   uint16_t priority;
   if (!reader.ReadU16BigEndian(priority)) {
@@ -318,13 +318,13 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
         std::set<uint16_t>() /* mandatory_keys */,
         std::vector<std::string>() /* alpn_ids */, true /* default_alpn */,
         std::nullopt /* port */, std::vector<IPAddress>() /* ipv4_hint */,
-        std::string() /* ech_config */,
+        std::vector<uint8_t>() /* ech_config */,
         std::vector<IPAddress>() /* ipv6_hint */,
         std::map<uint16_t, std::string>() /* unparsed_params */);
   }
 
   uint16_t param_key = 0;
-  std::string_view param_value;
+  base::span<const uint8_t> param_value;
   if (!ReadNextServiceParam(std::nullopt /* last_key */, reader, &param_key,
                             &param_value)) {
     return nullptr;
@@ -392,10 +392,10 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
     }
   }
 
-  std::string ech_config;
+  std::vector<uint8_t> ech_config;
   if (param_key == dns_protocol::kHttpsServiceParamKeyEchConfig) {
     DCHECK(IsSupportedKey(param_key));
-    ech_config = std::string(param_value.data(), param_value.size());
+    ech_config = std::vector<uint8_t>(param_value.begin(), param_value.end());
     if (reader.remaining() > 0 &&
         !ReadNextServiceParam(param_key, reader, &param_key, &param_value)) {
       return nullptr;
@@ -420,7 +420,8 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
     for (;;) {
       DCHECK(!IsSupportedKey(param_key));
       CHECK(unparsed_params
-                .emplace(param_key, static_cast<std::string>(param_value))
+                .emplace(param_key,
+                         std::string(base::as_string_view(param_value)))
                 .second);
       if (reader.remaining() == 0)
         break;
@@ -432,7 +433,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
   return std::make_unique<ServiceFormHttpsRecordRdata>(
       HttpsRecordPriority{priority}, std::move(service_name).value(),
       std::move(mandatory_keys), std::move(alpn_ids), default_alpn, port,
-      std::move(ipv4_hint), std::move(ech_config), std::move(ipv6_hint),
+      std::move(ipv4_hint), ech_config, std::move(ipv6_hint),
       std::move(unparsed_params));
 }
 

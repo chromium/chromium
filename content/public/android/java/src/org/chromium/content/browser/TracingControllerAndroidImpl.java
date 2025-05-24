@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +22,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.TracingControllerAndroid;
 import org.chromium.ui.widget.Toast;
@@ -33,20 +37,24 @@ import java.util.TimeZone;
 /**
  * Controller for Chrome's tracing feature.
  *
- * We don't have any UI per se. Just call startTracing() to start and
- * stopTracing() to stop. We'll report progress to the user with Toasts.
+ * <p>We don't have any UI per se. Just call startTracing() to start and stopTracing() to stop.
+ * We'll report progress to the user with Toasts.
  *
- * If the host application registers this class's BroadcastReceiver, you can
- * also start and stop the tracer with a broadcast intent, as follows:
+ * <p>If the host application registers this class's BroadcastReceiver, you can also start and stop
+ * the tracer with a broadcast intent, as follows:
+ *
  * <ul>
- * <li>To start tracing: am broadcast -a org.chromium.content_shell_apk.GPU_PROFILER_START
- * <li>Add "-e file /foo/bar/xyzzy" to log trace data to a specific file.
- * <li>To stop tracing: am broadcast -a org.chromium.content_shell_apk.GPU_PROFILER_STOP
+ *   <li>To start tracing: am broadcast -a org.chromium.content_shell_apk.GPU_PROFILER_START
+ *   <li>Add "-e file /foo/bar/xyzzy" to log trace data to a specific file.
+ *   <li>To stop tracing: am broadcast -a org.chromium.content_shell_apk.GPU_PROFILER_STOP
  * </ul>
- * Note that the name of these intents change depending on which application
- * is being traced, but the general form is [app package name].GPU_PROFILER_{START,STOP}.
+ *
+ * Note that the name of these intents change depending on which application is being traced, but
+ * the general form is [app package name].GPU_PROFILER_{START,STOP}.
  */
 @JNINamespace("content")
+@SuppressWarnings("InlineFormatString")
+@NullMarked
 public class TracingControllerAndroidImpl implements TracingControllerAndroid {
     private static final String TAG = "TracingController";
 
@@ -72,7 +80,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
     // showing the toast impacts performance.  This gives us the chance to disable them.
     private boolean mShowToasts = true;
 
-    private String mFilename;
+    private @Nullable String mFilename;
     private boolean mCompressFile;
     private boolean mUseProtobuf;
 
@@ -98,10 +106,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
                 context, getBroadcastReceiver(), getIntentFilter(), null);
     }
 
-    /**
-     * Unregister the GPU BroadcastReceiver in the given context.
-     * @param context
-     */
+    /** Unregister the GPU BroadcastReceiver in the given context. */
     public void unregisterReceiver(Context context) {
         context.unregisterReceiver(getBroadcastReceiver());
     }
@@ -112,7 +117,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
     }
 
     @Override
-    public String getOutputPath() {
+    public @Nullable String getOutputPath() {
         return mFilename;
     }
 
@@ -121,7 +126,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
      * @param basename The basename to be used, if empty a unique one will be generated.
      */
     @CalledByNative
-    private static String generateTracingFilePath(String basename) {
+    private static @Nullable String generateTracingFilePath(String basename) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             String state = Environment.getExternalStorageState();
             if (!Environment.MEDIA_MOUNTED.equals(state)) {
@@ -170,7 +175,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
 
     @Override
     public boolean startTracing(
-            String filename,
+            @Nullable String filename,
             boolean showToasts,
             String categories,
             String traceOptions,
@@ -215,7 +220,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
     }
 
     @Override
-    public void stopTracing(Callback<Void> callback) {
+    public void stopTracing(@Nullable Callback<Void> callback) {
         if (isTracing()) {
             TracingControllerAndroidImplJni.get()
                     .stopTracing(
@@ -237,6 +242,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
             Log.e(TAG, "Received onTracingStopped, but we aren't tracing");
             return;
         }
+        assumeNonNull(mFilename);
 
         logForProfiler(String.format(PROFILER_FINISHED_FMT, mFilename));
         showToast(mContext.getString(R.string.profiler_stopped_toast, mFilename));
@@ -244,7 +250,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
         mFilename = null;
         mCompressFile = false;
 
-        if (callback != null) ((Callback<Void>) callback).onResult(null);
+        if (callback != null) ((Callback<@Nullable Void>) callback).onResult(null);
     }
 
     /** Get known categories and log them for the profiler. */
@@ -255,7 +261,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
     }
 
     @Override
-    public boolean getKnownCategories(Callback<String[]> callback) {
+    public boolean getKnownCategories(@Nullable Callback<String[]> callback) {
         // Lazy initialize the native side, to allow construction before the library is loaded.
         initializeNativeControllerIfNeeded();
         return TracingControllerAndroidImplJni.get()
@@ -336,7 +342,8 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
     class TracingBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().endsWith(ACTION_START)) {
+            String action = assumeNonNull(intent.getAction());
+            if (action.endsWith(ACTION_START)) {
                 String categories = intent.getStringExtra(CATEGORIES_EXTRA);
                 if (TextUtils.isEmpty(categories)) {
                     categories =
@@ -366,9 +373,9 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
                 } else {
                     startTracing(true, categories, traceOptions);
                 }
-            } else if (intent.getAction().endsWith(ACTION_STOP)) {
+            } else if (action.endsWith(ACTION_STOP)) {
                 stopTracing(null);
-            } else if (intent.getAction().endsWith(ACTION_LIST_CATEGORIES)) {
+            } else if (action.endsWith(ACTION_LIST_CATEGORIES)) {
                 getKnownCategories();
             } else {
                 Log.e(TAG, "Unexpected intent: %s", intent);
@@ -394,15 +401,15 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
         void stopTracing(
                 long nativeTracingControllerAndroid,
                 TracingControllerAndroidImpl caller,
-                String filename,
+                @Nullable String filename,
                 boolean compressFile,
                 boolean useProtobuf,
-                Callback<Void> callback);
+                @Nullable Callback<Void> callback);
 
         boolean getKnownCategoriesAsync(
                 long nativeTracingControllerAndroid,
                 TracingControllerAndroidImpl caller,
-                Callback<String[]> callback);
+                @Nullable Callback<String[]> callback);
 
         String getDefaultCategories(TracingControllerAndroidImpl caller);
 

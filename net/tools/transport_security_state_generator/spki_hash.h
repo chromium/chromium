@@ -5,6 +5,7 @@
 #ifndef NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_SPKI_HASH_H_
 #define NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_SPKI_HASH_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <string_view>

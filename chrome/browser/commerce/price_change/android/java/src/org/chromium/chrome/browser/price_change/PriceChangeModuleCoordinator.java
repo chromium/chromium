@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.price_change;
 import android.content.Context;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -21,6 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Coordinator for the price change module which can be embedded by surfaces like NTP or Start
  * surface.
  */
+@NullMarked
 public class PriceChangeModuleCoordinator implements ModuleProvider {
 
     private final PriceChangeModuleMediator mMediator;

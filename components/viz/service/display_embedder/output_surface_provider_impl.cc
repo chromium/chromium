@@ -16,13 +16,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/display_embedder/software_output_surface.h"
@@ -55,7 +53,7 @@
 #include "ui/ozone/public/surface_ozone_canvas.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/viz/service/display_embedder/output_surface_unified.h"
 #endif
 
@@ -96,7 +94,7 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
     DisplayCompositorMemoryAndTaskController* gpu_dependency,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (surface_handle == gpu::kNullSurfaceHandle)
     return std::make_unique<OutputSurfaceUnified>();
 #endif
@@ -125,8 +123,7 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
 #endif  // BUILDFLAG(IS_ANDROID)
 
     if (!output_surface) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS) || \
-    BUILDFLAG(IS_CAST_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
       // GPU compositing is expected to always work on Chrome OS and Cast
       // devices, so we should never encounter fatal context error. This could
       // be an unrecoverable hardware error or a bug.
@@ -148,14 +145,18 @@ OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
     return std::make_unique<SoftwareOutputDevice>();
 
 #if BUILDFLAG(IS_WIN)
-  return CreateSoftwareOutputDeviceWin(surface_handle, &output_device_backing_,
-                                       display_client);
+  HWND child_hwnd;
+  auto device = CreateSoftwareOutputDeviceWin(
+      surface_handle, &output_device_backing_, display_client, child_hwnd);
+  if (child_hwnd) {
+    display_client->AddChildWindowToBrowser(child_hwnd);
+  }
+  return device;
 #elif BUILDFLAG(IS_APPLE)
   return std::make_unique<SoftwareOutputDeviceMac>(task_runner_);
 #elif BUILDFLAG(IS_ANDROID)
   // Android does not do software compositing, so we can't get here.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #elif BUILDFLAG(IS_OZONE)
   ui::SurfaceFactoryOzone* factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
@@ -167,27 +168,20 @@ OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
   return std::make_unique<SoftwareOutputDeviceOzone>(
       std::move(platform_window_surface), std::move(surface_ozone));
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 
 gpu::SharedImageManager* OutputSurfaceProviderImpl::GetSharedImageManager() {
-  static const bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-  return use_shared_image ? gpu_service_impl_->shared_image_manager() : nullptr;
+  return gpu_service_impl_->shared_image_manager();
 }
 
 gpu::SyncPointManager* OutputSurfaceProviderImpl::GetSyncPointManager() {
-  static const bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-  return use_shared_image ? gpu_service_impl_->sync_point_manager() : nullptr;
+  return gpu_service_impl_->sync_point_manager();
 }
 
 gpu::Scheduler* OutputSurfaceProviderImpl::GetGpuScheduler() {
-  static const bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-  return use_shared_image ? gpu_service_impl_->gpu_scheduler() : nullptr;
+  return gpu_service_impl_->gpu_scheduler();
 }
 
 }  // namespace viz

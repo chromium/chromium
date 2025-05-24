@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_bucket_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/modules/buckets/storage_bucket.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -235,9 +236,7 @@ void StorageBucketManager::DidOpen(
             "Unknown error occured while creating a bucket."));
         return;
       case mojom::blink::BucketError::kQuotaExceeded:
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kQuotaExceededError,
-            "Too many buckets created."));
+        QuotaExceededError::Reject(resolver, "Too many buckets created.");
         return;
       case mojom::blink::BucketError::kInvalidExpiration:
         resolver->Reject(V8ThrowException::CreateTypeError(

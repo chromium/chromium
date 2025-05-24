@@ -42,7 +42,7 @@ class PasswordsPrivateEventRouterFactory : public ProfileKeyedServiceFactory {
   ~PasswordsPrivateEventRouterFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

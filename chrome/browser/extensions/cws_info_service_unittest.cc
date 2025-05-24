@@ -7,10 +7,9 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/cws_item_service.pb.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
@@ -81,6 +81,17 @@ class CWSInfoServiceTest : public ::testing::Test,
     return std::make_unique<CWSInfoService>(static_cast<Profile*>(context));
   }
 
+  // testing::Test:
+  void TearDown() override {
+    // Avoid dangling pointers.
+    cws_info_service_ = nullptr;
+    extension_prefs_ = nullptr;
+    extension_registry_ = nullptr;
+    extension_registrar_delegate_->Shutdown();
+    extension_registrar_ = nullptr;
+    profile_.reset();
+  }
+
   // CWSInfoService::Observer:
   void OnCWSInfoChanged() override {
     info_change_notification_received_ = true;
@@ -92,7 +103,9 @@ class CWSInfoServiceTest : public ::testing::Test,
   raw_ptr<CWSInfoService> cws_info_service_ = nullptr;
   raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
   raw_ptr<ExtensionRegistry> extension_registry_ = nullptr;
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
+  std::unique_ptr<ChromeExtensionRegistrarDelegate>
+      extension_registrar_delegate_;
+  raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
   bool info_change_notification_received_ = false;
 };
 
@@ -123,13 +136,13 @@ CWSInfoServiceTest::CWSInfoServiceTest()
   // Skip official Google API key check for testing.
   cws_info_service_->SetSkipApiCheckForTesting(true);
 
-  // Create test extension service instance.
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  auto* test_extension_system = static_cast<extensions::TestExtensionSystem*>(
-      extensions::ExtensionSystem::Get(profile_.get()));
-  extension_service_ = test_extension_system->CreateExtensionService(
-      &command_line, /*install_directory=*/base::FilePath(),
-      /*autoupdate_enabled=*/false);
+  extension_registrar_delegate_ =
+      std::make_unique<ChromeExtensionRegistrarDelegate>(profile_.get());
+  extension_registrar_ = ExtensionRegistrar::Get(profile_.get());
+  extension_registrar_->Init(extension_registrar_delegate_.get(), true,
+                             base::CommandLine::ForCurrentProcess(),
+                             base::FilePath(), base::FilePath());
+  extension_registrar_delegate_->Init(extension_registrar_);
 }
 
 CWSInfoServiceTest::~CWSInfoServiceTest() = default;
@@ -143,7 +156,7 @@ scoped_refptr<const Extension> CWSInfoServiceTest::AddExtension(
                            extension_urls::kChromeWebstoreUpdateURL);
   }
   scoped_refptr<const Extension> extension = builder.Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension.get());
   return extension;
 }
 

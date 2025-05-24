@@ -63,8 +63,8 @@ namespace gpu {
 class SharedContextState;
 class GpuProcessShmCount;
 class GpuTaskSchedulerHelper;
+class FenceSyncReleaseDelegate;
 class SharedImageInterface;
-class SyncPointClientState;
 struct ContextCreationAttribs;
 
 namespace webgpu {
@@ -154,7 +154,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   void OnFenceSyncRelease(uint64_t release) override;
   void OnDescheduleUntilFinished() override;
   void OnRescheduleAfterFinished() override;
-  void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
   void ScheduleGrContextCleanup() override;
   void HandleReturnData(base::span<const uint8_t> data) override;
   bool ShouldYield() override;
@@ -205,7 +204,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   // Flush up to put_offset. If execution is deferred either by yielding, or due
   // to a sync token wait, HasUnprocessedCommandsOnGpuThread() returns true.
   void FlushOnGpuThread(int32_t put_offset,
-                        const std::vector<SyncToken>& sync_token_fences);
+                        FenceSyncReleaseDelegate* release_delegate);
   bool HasUnprocessedCommandsOnGpuThread();
   void UpdateLastStateOnGpuThread();
 
@@ -221,18 +220,20 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   void PostOrRunClientCallback(base::OnceClosure callback);
   base::OnceClosure WrapClientCallback(base::OnceClosure callback);
 
-  void RunTaskOnGpuThread(base::OnceClosure task);
+  void RunTaskCallbackOnGpuThread(TaskCallback task,
+                                  FenceSyncReleaseDelegate* release_delegate);
+  void RunTaskClosureOnGpuThread(base::OnceClosure task);
 
-  using ReportingCallback =
-      base::OnceCallback<void(base::TimeTicks task_ready)>;
+  void ScheduleGpuTask(
+      TaskCallback task,
+      std::vector<SyncToken> sync_token_fences = std::vector<SyncToken>(),
+      const SyncToken& release = SyncToken());
   void ScheduleGpuTask(
       base::OnceClosure task,
       std::vector<SyncToken> sync_token_fences = std::vector<SyncToken>(),
-      ReportingCallback report_callback = ReportingCallback());
-  void ContinueGpuTask(base::OnceClosure task);
+      const SyncToken& release = SyncToken());
+  void ContinueGpuTask(TaskCallback task);
 
-  void SignalSyncTokenOnGpuThread(const SyncToken& sync_token,
-                                  base::OnceClosure callback);
   void SignalQueryOnGpuThread(unsigned query_id, base::OnceClosure callback);
   void CancelAllQueriesOnGpuThread();
 
@@ -272,7 +273,9 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   std::unique_ptr<CommandBufferService> command_buffer_;
   std::unique_ptr<DecoderContext> decoder_;
   scoped_refptr<gl::GLContext> context_;
-  scoped_refptr<SyncPointClientState> sync_point_client_state_;
+  ScopedSyncPointClientState sync_point_client_state_;
+  // Caching the `release_delegate` argument of Flush() during the call.
+  raw_ptr<FenceSyncReleaseDelegate> release_delegate_ = nullptr;
 
   // Used to throttle PerformDelayedWorkOnGpuThread.
   bool delayed_work_pending_ = false;

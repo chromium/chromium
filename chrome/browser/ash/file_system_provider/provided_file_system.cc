@@ -188,8 +188,6 @@ ProvidedFileSystem::ProvidedFileSystem(
   DCHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType());
   request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
       file_system_info_.provider_id().GetExtensionId(), event_router_,
-      base::BindRepeating(&ProvidedFileSystem::OnLacrosOperationForwarded,
-                          weak_ptr_factory_.GetWeakPtr()),
       GetServiceWorkerLifetimeManager(profile_));
   const ProviderId& provider_id = file_system_info_.provider_id();
   if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
@@ -211,8 +209,6 @@ void ProvidedFileSystem::SetEventRouterForTesting(
   event_router_ = event_router;
   request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
       file_system_info_.provider_id().GetExtensionId(), event_router_,
-      base::BindRepeating(&ProvidedFileSystem::OnLacrosOperationForwarded,
-                          weak_ptr_factory_.GetWeakPtr()),
       GetServiceWorkerLifetimeManager(profile_));
 }
 
@@ -947,11 +943,6 @@ void ProvidedFileSystem::OnCloseFileCompleted(
   // list of opened files.
   opened_files_.erase(file_handle);
   std::move(callback).Run(result);
-}
-
-void ProvidedFileSystem::OnLacrosOperationForwarded(int request_id,
-                                                    base::File::Error error) {
-  request_manager_->RejectRequest(request_id, RequestValue(), error);
 }
 
 void ProvidedFileSystem::ConstructRequestManager() {

@@ -49,12 +49,12 @@ struct LookupProxyForURLMockResult {
 // LookUpProxyForURL().
 class MockNetworkContext : public network::TestNetworkContext {
  public:
-  MockNetworkContext() {}
+  MockNetworkContext() = default;
 
   MockNetworkContext(const MockNetworkContext&) = delete;
   MockNetworkContext& operator=(const MockNetworkContext&) = delete;
 
-  ~MockNetworkContext() override {}
+  ~MockNetworkContext() override = default;
 
   // network::mojom::NetworkContext implementation:
   void LookUpProxyForURL(

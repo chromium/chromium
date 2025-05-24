@@ -51,12 +51,6 @@ class BLINK_EXPORT WebAXContext {
   // be reserialized.
   void ResetSerializer();
 
-  bool SerializeEntireTree(
-      size_t max_node_count,
-      base::TimeDelta timeout,
-      ui::AXTreeUpdate* response,
-      std::set<ui::AXSerializationErrorFlag>* out_error = nullptr);
-
   // Returns a vector of the images found in |updates|.
   void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                            std::vector<ui::AXNodeData*>&);

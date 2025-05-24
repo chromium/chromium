@@ -74,7 +74,10 @@ size_t FastSharedBufferReader::GetSomeData(const char*& some_data,
 
 void FastSharedBufferReader::GetSomeDataInternal(size_t data_position) const {
   data_position_ = data_position;
-  segment_length_ = data_->GetSomeData(segment_, data_position);
+  base::span<const char> segment =
+      base::as_chars(data_->GetSomeData(data_position));
+  segment_ = segment.data();
+  segment_length_ = segment.size();
   DCHECK(segment_length_);
 }
 

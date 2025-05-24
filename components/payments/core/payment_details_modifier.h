@@ -28,7 +28,6 @@ class PaymentDetailsModifier {
 
   PaymentDetailsModifier& operator=(const PaymentDetailsModifier& other);
   bool operator==(const PaymentDetailsModifier& other) const;
-  bool operator!=(const PaymentDetailsModifier& other) const;
 
   // Creates a dictionary base::Value with the properties of this
   // PaymentDetailsModifier.

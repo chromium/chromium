@@ -9,10 +9,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -26,6 +27,7 @@
 class WebAppContentSettingsContainer;
 class BrowserView;
 class ToolbarButtonProvider;
+class PinnedToolbarActionsContainer;
 class ExtensionsToolbarContainer;
 class WebAppMenuButton;
 class WebAppOriginText;
@@ -67,6 +69,8 @@ class WebAppToolbarButtonContainer : public views::View,
 
   views::FlexRule GetFlexRule() const;
 
+  ToolbarButton* GetDownloadButton();
+
   WebAppContentSettingsContainer* content_settings_container() {
     return content_settings_container_;
   }
@@ -75,16 +79,20 @@ class WebAppToolbarButtonContainer : public views::View,
     return page_action_icon_controller_.get();
   }
 
+  page_actions::PageActionContainerView* page_action_container() {
+    return page_action_container_.get();
+  }
+
   ExtensionsToolbarContainer* extensions_container() {
     return extensions_container_;
   }
 
-  ExtensionsToolbarCoordinator* extensions_toolbar_coordinator() {
-    return extensions_toolbar_coordinator_.get();
+  PinnedToolbarActionsContainer* pinned_toolbar_actions_container() {
+    return pinned_toolbar_actions_container_;
   }
 
-  DownloadToolbarButtonView* download_button() {
-    return download_button_.get();
+  ExtensionsToolbarCoordinator* extensions_toolbar_coordinator() {
+    return extensions_toolbar_coordinator_.get();
   }
 
   WebAppMenuButton* web_app_menu_button() { return web_app_menu_button_; }
@@ -146,6 +154,9 @@ class WebAppToolbarButtonContainer : public views::View,
   void AppShimChanged(const webapps::AppId& changed_app_id);
 #endif
 
+  // Calculates the appropriate insets for a page action, given the icon's size.
+  gfx::Insets PageActionIconInsetsFromSize(int icon_size) const;
+
   // Timers for synchronising their respective parts of the titlebar animation.
   base::OneShotTimer animation_start_delay_;
   base::OneShotTimer icon_fade_in_delay_;
@@ -159,6 +170,7 @@ class WebAppToolbarButtonContainer : public views::View,
 
   std::unique_ptr<PageActionIconController> page_action_icon_controller_;
   int page_action_insertion_point_ = 0;
+  raw_ptr<page_actions::PageActionContainerView> page_action_container_;
 
   std::unique_ptr<ExtensionsToolbarCoordinator> extensions_toolbar_coordinator_;
 
@@ -172,9 +184,10 @@ class WebAppToolbarButtonContainer : public views::View,
       window_controls_overlay_toggle_button_ = nullptr;
   raw_ptr<WebAppContentSettingsContainer> content_settings_container_ = nullptr;
   raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  raw_ptr<PinnedToolbarActionsContainer> pinned_toolbar_actions_container_ =
+      nullptr;
   raw_ptr<WebAppMenuButton> web_app_menu_button_ = nullptr;
   raw_ptr<SystemAppAccessibleName> system_app_accessible_name_ = nullptr;
-  raw_ptr<DownloadToolbarButtonView> download_button_ = nullptr;
   raw_ptr<AvatarToolbarButton> avatar_button_ = nullptr;
 };
 

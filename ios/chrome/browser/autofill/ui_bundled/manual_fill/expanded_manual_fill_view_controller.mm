@@ -7,13 +7,16 @@
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using manual_fill::ManualFillDataType;
@@ -33,6 +36,8 @@ constexpr CGFloat kHeaderViewBottomPadding = 12;
 constexpr CGFloat kHeaderViewHorizontalPadding = 16;
 // Top padding for the header view.
 constexpr CGFloat kHeaderViewTopPadding = 8;
+// Top padding for the header view when in a bottom popover.
+constexpr CGFloat kHeaderViewPopoverTopPadding = 22;
 // Height of the segmented control.
 constexpr CGFloat kSegmentedControlHeight = 32;
 // Multiplier used to constraint the view's height.
@@ -104,6 +109,12 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   // Header view's trailing constraint.
   NSLayoutConstraint* _headerViewTrailingConstraint;
 
+  // Header view's top constraint.
+  NSLayoutConstraint* _headerViewTopConstraint;
+
+  // Header view's top constraint, when presented in a popover.
+  NSLayoutConstraint* _headerViewPopoverTopConstraint;
+
   // Image view containing the Chrome logo.
   UIImageView* _chromeLogo;
 
@@ -140,12 +151,15 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   self.view.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
-  // Set the view's frame to get the right height initially. Once the view's
-  // window is loaded in `viewDidAppear`, the view's height will be dynamically
-  // constraint to its window's height instead.
-  self.view.autoresizingMask = UIViewAutoresizingNone;
-  self.view.frame = CGRectMake(
-      0, 0, 0, UIScreen.mainScreen.bounds.size.height * kViewHeightMultiplier);
+  if (!IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled()) {
+    // Set the view's frame to get the right height initially. Once the view's
+    // window is loaded in `viewDidAppear`, the view's height will be
+    // dynamically constraint to its window's height instead.
+    self.view.autoresizingMask = UIViewAutoresizingNone;
+    self.view.frame = CGRectMake(
+        0, 0, 0,
+        UIScreen.mainScreen.bounds.size.height * kViewHeightMultiplier);
+  }
 
   _headerView = [self createHeaderView];
   _headerTopView = [self createHeaderTopView];
@@ -171,25 +185,59 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   _headerViewTrailingConstraint = [_headerView.trailingAnchor
       constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                      constant:-kHeaderViewHorizontalPadding];
+  _headerViewTopConstraint =
+      [_headerView.topAnchor constraintEqualToAnchor:self.view.topAnchor
+                                            constant:kHeaderViewTopPadding];
+  _headerViewPopoverTopConstraint = [_headerView.topAnchor
+      constraintEqualToAnchor:self.view.topAnchor
+                     constant:kHeaderViewPopoverTopPadding];
   [NSLayoutConstraint activateConstraints:@[
-    [_headerView.topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                          constant:kHeaderViewTopPadding],
+    _headerViewTopConstraint,
     _headerViewLeadingConstraint,
     _headerViewTrailingConstraint,
   ]];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf resetHeaderViewOnTraitChange];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  [self adjustTopHeaderViewConstraint];
+
+  if (IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled()) {
+    // Set the view to be the same height as the keyboard and keyboard accessory
+    // combined.
+    [NSLayoutConstraint activateConstraints:@[
+      [self.view.heightAnchor
+          constraintEqualToAnchor:self.view.superview.heightAnchor
+                         constant:kFormInputAccessoryViewLargeHeight],
+    ]];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
-  // Anchor the view's height to its window's height so that the view's height
-  // resizes dynamically when switching between portrait and landscape modes.
-  self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-  [NSLayoutConstraint activateConstraints:@[
-    [self.view.heightAnchor
-        constraintEqualToAnchor:self.view.window.heightAnchor
-                     multiplier:kViewHeightMultiplier],
-  ]];
+  if (!IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled()) {
+    // Anchor the view's height to its window's height so that the view's height
+    // resizes dynamically when switching between portrait and landscape modes.
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    [NSLayoutConstraint activateConstraints:@[
+      [self.view.heightAnchor
+          constraintEqualToAnchor:self.view.window.heightAnchor
+                       multiplier:kViewHeightMultiplier],
+    ]];
+  }
 
   // Bring focus to the expanded view by focusing on the Chrome logo.
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
@@ -213,24 +261,25 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
                              trailingConstraint:_headerViewTrailingConstraint
                                        constant:_tableViewCellHorizontalInset];
   }
+
+  [self adjustTopHeaderViewConstraint];
 }
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (self.traitCollection.verticalSizeClass !=
       previousTraitCollection.verticalSizeClass) {
-    // Update the header view's layout when the view's vertical size class
-    // changes.
-    [self resetHeaderView:_headerView
-        headerViewHeightConstraint:_headerViewHeightConstraint
-                        chromeLogo:_chromeLogo
-                       closeButton:_closeButton
-                  segmentedControl:_segmentedControl
-                     headerTopView:_headerTopView];
+    [self resetHeaderViewOnTraitChange];
   }
 }
+#endif
 
 #pragma mark - Setters
 
@@ -262,6 +311,15 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 }
 
 #pragma mark - Private
+
+// Adjusts the top padding so that it takes into account the arrow of the
+// popover view if the arrow is at the top of the view.
+- (void)adjustTopHeaderViewConstraint {
+  BOOL isPopoverUpArrow = self.popoverPresentationController.arrowDirection ==
+                          UIPopoverArrowDirectionUp;
+  _headerViewTopConstraint.active = !isPopoverUpArrow;
+  _headerViewPopoverTopConstraint.active = isPopoverUpArrow;
+}
 
 // Creates and configures the header view.
 - (UIView*)createHeaderView {
@@ -517,6 +575,17 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
       static_cast<ManualFillDataType>(segmentedControl.selectedSegmentIndex);
   [self.delegate expandedManualFillViewController:self
                            didSelectSegmentOfType:selectedType];
+}
+
+// Update the header view's layout when the view's vertical size class
+// changes.
+- (void)resetHeaderViewOnTraitChange {
+  [self resetHeaderView:_headerView
+      headerViewHeightConstraint:_headerViewHeightConstraint
+                      chromeLogo:_chromeLogo
+                     closeButton:_closeButton
+                segmentedControl:_segmentedControl
+                   headerTopView:_headerTopView];
 }
 
 @end

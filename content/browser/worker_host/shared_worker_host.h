@@ -53,7 +53,7 @@
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-#include "content/browser/compute_pressure/pressure_service_for_worker.h"
+#include "content/browser/compute_pressure/pressure_service_for_shared_worker.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
@@ -68,6 +68,7 @@ namespace content {
 
 class ContentBrowserClient;
 class CrossOriginEmbedderPolicyReporter;
+class DocumentIsolationPolicyReporter;
 class ServiceWorkerMainResourceHandle;
 class SharedWorkerContentSettingsProxyImpl;
 class SharedWorkerServiceImpl;
@@ -143,6 +144,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   // be done based on a UI action.
   void Destruct();
 
+  void DestructIfNoClients();
+
   void AddClient(mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
                  GlobalRenderFrameHostId client_render_frame_host_id,
                  const blink::MessagePortChannel& port,
@@ -186,7 +189,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   }
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-  PressureServiceForWorker<SharedWorkerHost>* pressure_service() {
+  PressureServiceForSharedWorker* pressure_service() {
     return pressure_service_.get();
   }
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
@@ -327,7 +330,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   std::unique_ptr<SharedWorkerContentSettingsProxyImpl> content_settings_;
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-  std::unique_ptr<PressureServiceForWorker<SharedWorkerHost>> pressure_service_;
+  std::unique_ptr<PressureServiceForSharedWorker> pressure_service_;
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // This is kept alive during the lifetime of the shared worker, since it's
@@ -364,6 +367,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   network::mojom::ClientSecurityStatePtr worker_client_security_state_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
+
+  std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
 };

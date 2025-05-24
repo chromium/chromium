@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_smart_card_connect_allowed_for_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+          "isolated-app://anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai/"
+        ]
+      ]
+    }
+  }
+]

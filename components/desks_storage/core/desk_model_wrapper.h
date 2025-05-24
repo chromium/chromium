@@ -47,8 +47,10 @@ class DeskModelWrapper : public DeskModel {
   size_t GetEntryCount() const override;
   size_t GetSaveAndRecallDeskEntryCount() const override;
   size_t GetDeskTemplateEntryCount() const override;
+  size_t GetCoralEntryCount() const override;
   size_t GetMaxSaveAndRecallDeskEntryCount() const override;
   size_t GetMaxDeskTemplateEntryCount() const override;
+  size_t GetMaxCoralEntryCount() const override;
   std::set<base::Uuid> GetAllEntryUuids() const override;
   bool IsReady() const override;
   bool IsSyncing() const override;
@@ -71,7 +73,8 @@ class DeskModelWrapper : public DeskModel {
   void OnDeleteAllEntries(DeskModel::DeleteEntryCallback callback,
                           desks_storage::DeskModel::DeleteEntryStatus status);
 
-  raw_ptr<desks_storage::DeskModel> save_and_recall_desks_model_;
+  // The local model used for save and recall and coral saved groups.
+  raw_ptr<desks_storage::DeskModel> saved_desks_and_groups_model_;
 
   raw_ptr<desks_storage::DeskSyncBridge> desk_template_model_;
 

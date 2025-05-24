@@ -271,7 +271,7 @@
       "os": {
         "type": "linux"
       },
-      "gl_type": "gl",
+      "gl_type": "angle_gl",
       "gl_renderer": ".*Mesa.*",
       "features": [
         "disable_post_sub_buffers_for_onscreen_surfaces"
@@ -282,7 +282,11 @@
       "description": "Disable D3D11 on older nVidia drivers",
       "cr_bugs": [349929],
       "os": {
-        "type": "win"
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.22000.0"
+        }
       },
       "vendor_id": "0x10de",
       "driver_version": {
@@ -327,7 +331,11 @@
       "description": "Disable use of Direct3D 11 on Matrox video cards",
       "cr_bugs": [395861],
       "os": {
-        "type": "win"
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.22000.0"
+        }
       },
       "vendor_id": "0x102b",
       "features": [
@@ -339,7 +347,11 @@
       "description": "Disable use of Direct3D 11 on older AMD drivers",
       "cr_bugs": [402134],
       "os": {
-        "type": "win"
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.22000.0"
+        }
       },
       "vendor_id": "0x1002",
       "driver_version": {
@@ -383,7 +395,11 @@
       "description": "Old Intel drivers cannot reliably support D3D11",
       "cr_bugs": [363721],
       "os": {
-        "type": "win"
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.22000.0"
+        }
       },
       "vendor_id": "0x8086",
       "driver_version": {
@@ -419,7 +435,6 @@
       "os": {
         "type": "android"
       },
-      "gl_type": "gles",
       "gl_version": {
         "op": "<",
         "value": "3.0"
@@ -584,7 +599,6 @@
         "type": "android"
       },
       "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
       "gl_version": {
         "op": ">=",
         "value": "3.0"
@@ -776,7 +790,7 @@
         "op": "<",
         "value": "11.1"
       },
-      "gl_type": "gles",
+      "gl_type": "angle_gles",
       "gl_version": {
         "op": "<",
         "value": "3.0"
@@ -844,7 +858,6 @@
       "machine_model_name": ["SM-G361H", "SM-G531H"],
       "gl_vendor": "ARM.*",
       "gl_renderer": "Mali.*",
-      "gl_type": "gles",
       "gl_version": {
         "op": "<",
         "value": "3.0"
@@ -862,7 +875,7 @@
       },
       "vendor_id": "0x10de",
       "gl_vendor": "NVIDIA.*",
-      "gl_type": "gl",
+      "gl_type": "angle_gl",
       "features": [
         "disable_discard_framebuffer"
       ]
@@ -876,7 +889,7 @@
       },
       "vendor_id": "0x10de",
       "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
+      "gl_type": "angle_gles",
       "gl_version": {
         "op": ">=",
         "value": "3.0"
@@ -894,7 +907,7 @@
       },
       "vendor_id": "0x10de",
       "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
+      "gl_type": "angle_gles",
       "gl_version": {
         "op": ">=",
         "value": "3.0"
@@ -911,7 +924,6 @@
         "type": "android"
       },
       "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
       "gl_version": {
         "op": ">=",
         "value": "3.0"
@@ -1015,7 +1027,7 @@
       "os": {
         "type": "linux"
       },
-      "gl_type": "gl",
+      "gl_type": "angle_gl",
       "gl_version_string": ".*Mesa.*",
       "features": [
         "disable_post_sub_buffers_for_onscreen_surfaces"
@@ -1319,7 +1331,7 @@
       "os": {
         "type": "android"
       },
-      "gl_vendor": "Intel.*",
+      "gl_vendor": ".*Intel.*",
       "features": [
         "msaa_is_slow"
       ]
@@ -1716,7 +1728,7 @@
     },
     {
       "id": 300,
-      "cr_bugs": [775898, 785648],
+      "cr_bugs": [775898],
       "description": "Direct composition causes rendering issues on Intel SandyBridge and IvyBridge GPUs on early versions of RS3",
       "os": {
         "type" : "win",
@@ -1731,7 +1743,7 @@
         "ivybridge"
       ],
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
@@ -1872,12 +1884,15 @@
       "disabled_extensions": [
         "GL_EXT_shader_framebuffer_fetch"
       ]
-   },
-   {
+    },
+    {
       "id": 315,
       "cr_bugs": [964010],
       "description": "Disable GL_MESA_framebuffer_flip_y for desktop GL",
-      "gl_type": "gl",
+      "os": {
+        "type": "linux"
+      },
+      "gl_type": "angle_gl",
       "disabled_extensions": [
         "GL_MESA_framebuffer_flip_y"
       ]
@@ -2412,6 +2427,10 @@
       },
       "vendor_id": "0x1002",
       "multi_gpu_category": "any",
+      "driver_version": {
+        "op": "<",
+        "value": "31.0.22023.1014"
+      },
       "features": [
         "disable_direct_composition_sw_video_overlays"
       ]
@@ -2556,18 +2575,6 @@
       },
       "features": [
         "disable_media_foundation_hardware_security"
-      ]
-    },
-    {
-      "id": 378,
-      "cr_bugs": [1227033],
-      "description": "Don't use the OOPR Canvas feature on Macs with NVIDIA GPUs",
-      "os": {
-        "type" : "macosx"
-      },
-      "vendor_id": "0x10de",
-      "features": [
-        "disable_canvas_oop_rasterization"
       ]
     },
     {
@@ -2862,34 +2869,6 @@
       ]
     },
     {
-      "id": 403,
-      "description": "Disable hardware MFT Av1 encoder on machines with multiple GPUs except Intel alchemist GPUs",
-      "cr_bugs": [1367038],
-      "os": {
-        "type": "win"
-      },
-      "gpu_count": {
-        "op": ">",
-        "value": "1"
-      },
-      "exceptions": [
-        {
-          "vendor_id": "0x8086",
-          "multi_gpu_category":"any",
-          "intel_gpu_series": [
-            "alchemist"
-          ],
-          "driver_version": {
-            "op": ">=",
-            "value": "31.0.101.4146"
-          }
-        }
-      ],
-      "features": [
-        "disable_accelerated_av1_encode"
-      ]
-    },
-    {
       "id": 404,
       "description": "Disable EGL_EXT_image_dma_buf_import_modifiers for Exo KMS modifier discovery on kms_swrast/llvmpipe",
       "os": {
@@ -2915,22 +2894,6 @@
       },
       "features": [
         "disable_accelerated_vp9_decode"
-      ]
-    },
-    {
-      "id": 407,
-      "cr_bugs": [1355946],
-      "description": "ANGLE does not permit rendering to RGB external textures",
-      "os": {
-        "type": "android"
-      },
-      "gl_renderer": "ANGLE.*Samsung Xclipse.*",
-      "comment": [
-        "This issue affects the Samsung Galaxy S22/23/24 with Exynos chipsets which uses ANGLE",
-        "as the system GLES driver, and the cause appears be overly strict validation."
-      ],
-      "features": [
-        "disable_rendering_to_rgb_external_texture"
       ]
     },
     {
@@ -3095,28 +3058,8 @@
         }
       },
       "gl_vendor": "ARM.*",
-      "gl_type": "gles",
       "features": [
         "r8_egl_images_broken"
-      ]
-    },
-    {
-      "id": 419,
-      "cr_bugs": [1473665],
-      "description": "Corruption when consecutive VP9 keyframes are requested from MFVEA on Intel.",
-      "comment": [
-        "In MFVEA, the Intel MFT driver currently misbehaves when requesting ",
-        "two consecutive keyframes. MFVEA fixes this by causing a delta frame ",
-        "encode in between the keyframes whose results are thrown away. ",
-        "External bitrate control isn't made aware that this happens."
-      ],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "multi_gpu_category": "any",
-      "features": [
-        "avoid_consecutive_keyframes_for_vp9"
       ]
     },
     {
@@ -3289,11 +3232,21 @@
       "cr_bugs": [
         341327464
       ],
-      "description": "Block all NPU drivers until newer versions work with WebNN",
+      "description": "Block all NPU drivers except Intel driver versions >= 32.0.100.3053 for WebNN",
       "os": {
         "type": "win"
       },
       "multi_gpu_category": "npu",
+      "exceptions": [
+        {
+          "multi_gpu_category": "npu",
+          "vendor_id": "0x8086",
+          "driver_version": {
+            "op": ">=",
+            "value": "32.0.100.3053"
+          }
+        }
+      ],
       "features": [
         "disable_webnn_for_npu"
       ]
@@ -3417,10 +3370,116 @@
             "op": ">=",
             "value": "31.0.101.4471"
           }
+        },
+        {
+          "vendor_id": "0x10de",
+          "os": {
+            "type" : "win"
+          }
         }
       ],
       "features": [
         "disable_video_overlay_if_moving"
+      ]
+    },
+    {
+      "id": 437,
+      "cr_bugs": [ 372358970 ],
+      "description": "AV1 RTC decoding may crash driver on some of the Intel devices",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "intel_gpu_series": [
+            "tigerlake",
+            "rocketlake",
+            "dg1",
+            "alderlake",
+            "alchemist",
+            "raptorlake",
+            "meteorlake",
+            "arrowlake",
+            "lunarlake",
+            "battlemage"
+      ],
+      "features": [
+        "use_first_valid_ref_for_av1_invalid_ref"
+      ],
+      "driver_version": {
+        "op": "<",
+        "value": "32.0.101.6557"
+      }
+    },
+    {
+      "id": 438,
+      "cr_bugs": [ 377047083 ],
+      "description": "Disable DirectML execution of metacommands on Intel GPUs with driver version between 31.0.101.5518 and 32.0.101.6083 due to stability bugs",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "schema": "intel_driver",
+        "op": "between",
+        "value": "31.0.101.5518",
+        "value2": "32.0.101.6083"
+      },
+      "features": [
+        "disable_dml_meta_commands_for_gpu"
+      ]
+    },
+    {
+      "id": 440,
+      "cr_bugs": [376094900, 369737075],
+      "description": "Disable mssa because OOP-C dmsaa (implicit) resolve produces rendering artifacts",
+      "os": {
+        "type" : "chromeos"
+      },
+      "gl_vendor": "ARM.*",
+      "gl_renderer": "Mali.*",
+      "features": [
+        "msaa_is_slow"
+      ]
+    },
+    {
+      "id": 441,
+      "description": "Limits the number of system-wide accelerated video decoders to 10 due to a driver crash.",
+      "cr_bugs": [333711204],
+      "os": {
+        "type" : "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x98e4"],
+      "features": [
+        "max_num_hw_video_decoders_10"
+      ]
+    },
+    {
+      "id": 442,
+      "cr_bugs": [394610795],
+      "description": "Forcing RGB10A2 overlay due to MSFT bug, this enables HDR to take overlay path for AMD",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "force_rgb10a2_overlay_support"
+      ]
+    },
+    {
+      "id": 443,
+      "cr_bugs": [385039726],
+      "description": "Disable DComp texture support on older Windows versions",
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.26100.3624"
+        }
+      },
+      "features": [
+        "disable_dcomp_texture"
       ]
     }
   ]

@@ -13,11 +13,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncServiceImpl;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -37,7 +38,8 @@ public class FakeSyncServiceImpl implements SyncService {
     private boolean mTrustedVaultRecoverabilityDegraded;
     private boolean mEncryptEverythingEnabled;
     private boolean mRequiresClientUpgrade;
-    @GoogleServiceAuthError.State private int mAuthError;
+    private GoogleServiceAuthError mAuthError =
+            new GoogleServiceAuthError(GoogleServiceAuthErrorState.NONE);
     private Set<Integer> mTypesWithUnsyncedData = Set.of();
 
     public FakeSyncServiceImpl() {
@@ -60,13 +62,13 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public @GoogleServiceAuthError.State int getAuthError() {
+    public GoogleServiceAuthError getAuthError() {
         ThreadUtils.assertOnUiThread();
         return mAuthError;
     }
 
     @AnyThread
-    public void setAuthError(@GoogleServiceAuthError.State int authError) {
+    public void setAuthError(GoogleServiceAuthError authError) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAuthError = authError;
@@ -192,11 +194,6 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public boolean isTransportStateActive() {
-        return mDelegate.isTransportStateActive();
-    }
-
-    @Override
     public boolean isSyncFeatureEnabled() {
         return mDelegate.isSyncFeatureEnabled();
     }
@@ -284,11 +281,6 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public void setSyncRequested() {
-        mDelegate.setSyncRequested();
-    }
-
-    @Override
     public SyncSetupInProgressHandle getSetupInProgressHandle() {
         return mDelegate.getSetupInProgressHandle();
     }
@@ -306,6 +298,11 @@ public class FakeSyncServiceImpl implements SyncService {
     @Override
     public int getPassphraseType() {
         return mDelegate.getPassphraseType();
+    }
+
+    @Override
+    public int getTransportState() {
+        return mDelegate.getTransportState();
     }
 
     @Override

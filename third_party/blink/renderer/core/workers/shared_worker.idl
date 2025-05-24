@@ -30,9 +30,12 @@
  */
 
 // SharedWorkers also support the `sameSiteCookies` option outlined in:
-// https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
+// https://privacycg.github.io/saa-non-cookie-storage/#shared-worker
 dictionary SharedWorkerOptions : WorkerOptions {
     SharedWorkerSameSiteCookies sameSiteCookies;
+    // Experimental.
+    // See: https://github.com/whatwg/html/issues/10997
+    [RuntimeEnabled=SharedWorkerExtendedLifetime] boolean extendedLifetime;
 };
 
 enum SharedWorkerSameSiteCookies { "all", "none" };

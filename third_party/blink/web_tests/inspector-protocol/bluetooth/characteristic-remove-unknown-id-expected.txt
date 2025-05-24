@@ -1,0 +1,9 @@
+Tests Bluetooth removing an unknown characteristic id
+{
+    error : {
+        code : -32000
+        message : Failed to remove characteristic represented by unknown characteristic id
+    }
+    id : <number>
+}
+

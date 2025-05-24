@@ -1,0 +1,270 @@
+<style include="cr-icons cr-shared-style settings-columned-section settings-shared">
+  .keyboard-shortcut-setting {
+    align-items: start;
+  }
+
+  #mainShortcutSetting {
+    /* Remove the separator. */
+    border-top: none;
+  }
+
+  .shortcut-input {
+    margin-top: 2px;
+  }
+
+  .section {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .separator {
+    margin-inline-end: 4px;
+    margin-inline-start: 0;
+  }
+
+  #tabAccessToggleActions {
+    display: flex;
+    align-items: center;
+  }
+
+  .learn-more-label[href=''] {
+    display: none;
+  }
+</style>
+
+<settings-animated-pages id="pages" section="glicSection">
+  <div route-path="default">
+    <!-- TODO(crbug.com/393445109) Placeholder for final icons. -->
+    <cr-link-row id="glicLinkRow"
+<if expr="not _google_chrome">
+        start-icon="settings20:lightbulb"
+</if>
+<if expr="_google_chrome">
+        start-icon="settings-internal:spark"
+</if>
+        label="$i18n{glicRowLabel}"
+        on-click="onGlicPageClick_">
+
+    <div slot="sub-label">
+      $i18n{glicRowSublabel}
+      <a id="settingsPageLearnMoreLabel" class="learn-more-label"
+          href="$i18n{glicSettingsPageLearnMoreUrl}"
+          aria-description="$i18n{opensInNewTab}"
+          on-click="onSettingsPageLearnMoreClick_" target="_blank">
+        $i18n{learnMore}
+      </a>
+    </div>
+  </cr-link-row>
+  </div>
+  <template is="dom-if" route-path="/ai/gemini">
+    <settings-subpage page-title="$i18n{glicPageTitle}"
+        associated-control="[[$$('#glicLinkRow')]]">
+      <template is="dom-if" if="[[disallowedByAdmin_]]" restamp>
+        <div class="section">
+          <cr-icon icon="cr:domain"></cr-icon>
+          $i18n{glicPolicyDisabledMessage}
+        </div>
+      </template>
+      <div class="section">
+        <h2 class="cr-title-text">$i18n{glicPreferencesSection}</h2>
+        <!-- Glic Policy Disabled - show disabled controls -->
+        <template is="dom-if" if="[[disallowedByAdmin_]]" restamp>
+          <settings-toggle-button id="launcherToggle" pref="[[fakePref_]]"
+              disabled label="$i18n{glicOsWidgetToggle}">
+          </settings-toggle-button>
+        </template>
+
+        <!-- Glic Policy Enabled -->
+        <template is="dom-if"
+            on-dom-change="onEnabledTemplateDomChange_"
+            if="[[!disallowedByAdmin_]]"
+            restamp>
+          <settings-toggle-button
+              id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
+              label="$i18n{glicOsWidgetToggle}"
+              sub-label="$i18n{glicOsWidgetToggleSublabel}"
+              learn-more-url="$i18n{glicLauncherToggleLearnMoreUrl}"
+              on-learn-more-clicked="onLauncherToggleLearnMoreClick_"
+              checked="{{launcherToggleOn_}}"
+              on-settings-boolean-control-change="onLauncherToggleChange_">
+          </settings-toggle-button>
+          <cr-collapse opened="[[launcherToggleOn_]]">
+            <div class="cr-row keyboard-shortcut-setting"
+                 id="mainShortcutSetting">
+              <div class="flex cr-padded-text">
+                <div class="shortcut-label" aria-hidden>
+                  $i18n{glicKeyboardShortcut}
+                </div>
+                <div class="secondary"
+                    learn-more-url="$i18n{glicKeyboardShortcutLearnMoreUrl}">
+                  $i18n{glicKeyboardShortcutSublabel}
+                  <a id="shortcutsLearnMoreLabel" class="learn-more-label"
+                      href="$i18n{glicKeyboardShortcutLearnMoreUrl}"
+                      aria-label="$i18n{glicKeyboardShortcutLearnMoreLabel}"
+                      aria-description="$i18n{opensInNewTab}"
+                      on-click="onShortcutsLearnMoreClick_" target="_blank">
+                    $i18n{glicKeyboardShortcutLearnMoreLabel}
+                  </a>
+                </div>
+              </div>
+              <cr-shortcut-input class="cr-padded-text shortcut-input"
+                  input-aria-label="$i18n{glicKeyboardShortcut}"
+                  shortcut="[[registeredShortcut_]]"
+                  allow-ctrl-alt-shortcuts
+                  on-input-capture-change="onInputCaptureChange_"
+                  on-shortcut-updated="onShortcutUpdated_">
+              </cr-shortcut-input>
+            </div>
+          </cr-collapse>
+          <div class="cr-row keyboard-shortcut-setting"
+               id="focusToggleShortcutSetting">
+            <div class="flex cr-padded-text">
+              <div class="shortcut-label" aria-hidden>
+                $i18n{glicNavigationShortcut}
+              </div>
+              <div class="secondary">$i18n{glicNavigationShortcutSublabel}
+                  <a id="shortcutsNavigationLearnMoreLabel"
+                      class="learn-more-label"
+                      href="$i18n{glicKeyboardShortcutLearnMoreUrl}"
+                      aria-label="$i18n{glicKeyboardShortcutLearnMoreLabel}"
+                      aria-description="$i18n{opensInNewTab}"
+                      on-click="onShortcutsLearnMoreClick_" target="_blank">
+                    $i18n{glicKeyboardShortcutLearnMoreLabel}
+                  </a>
+              </div>
+            </div>
+            <cr-shortcut-input class="cr-padded-text shortcut-input"
+                input-aria-label="$i18n{glicNavigationShortcut}"
+                shortcut="[[registeredFocusToggleShortcut_]]"
+                allow-ctrl-alt-shortcuts
+                on-shortcut-updated="onFocusToggleShortcutUpdated_">
+            </cr-shortcut-input>
+          </div>
+          <settings-toggle-button
+              id="closedCaptionsToggle"
+              hidden="[[!closedCaptionsFeatureEnabled_]]"
+              pref="{{prefs.glic.closed_captioning_enabled}}"
+              label="$i18n{glicClosedCaptionsToggle}"
+              sub-label="$i18n{glicClosedCaptionsToggleSublabel}"
+              on-settings-boolean-control-change="onClosedCaptionsToggleChange_">
+          </settings-toggle-button>
+        </template>
+      </div>
+      <div class="section">
+        <h2 class="cr-title-text">$i18n{glicDataSection}</h2>
+        <!-- Glic Policy Disabled - show disabled controls -->
+        <template is="dom-if" if="[[disallowedByAdmin_]]" restamp>
+          <settings-toggle-button
+              id="geolocationToggle" pref="[[fakePref_]]" disabled
+              label="$i18n{glicLocationToggle}"
+              sub-label="$i18n{glicLocationToggleSublabel}">
+          </settings-toggle-button>
+          <settings-toggle-button
+              id="microphoneToggle" pref="[[fakePref_]]" disabled
+              label="$i18n{glicMicrophoneToggle}"
+              sub-label="$i18n{glicMicrophoneToggleSublabel}">
+          </settings-toggle-button>
+          <settings-toggle-button
+              id="tabAccessToggle" pref="[[fakePref_]]" disabled
+              label="$i18n{glicTabAccessToggle}"
+              sub-label="$i18n{glicTabAccessToggleSublabel}">
+          </settings-toggle-button>
+        </template>
+
+        <!-- Glic Policy Enabled -->
+        <template is="dom-if" if="[[!disallowedByAdmin_]]" restamp>
+          <settings-toggle-button
+              id="geolocationToggle" pref="{{prefs.glic.geolocation_enabled}}"
+              label="$i18n{glicLocationToggle}"
+              sub-label="$i18n{glicLocationToggleSublabel}"
+              learn-more-url="$i18n{glicLocationToggleLearnMoreUrl}"
+              on-learn-more-clicked="onLocationToggleLearnMoreClick_"
+              on-settings-boolean-control-change="onGeolocationToggleChange_">
+          </settings-toggle-button>
+          <settings-toggle-button
+              id="microphoneToggle" pref="{{prefs.glic.microphone_enabled}}"
+              label="$i18n{glicMicrophoneToggle}"
+              sub-label="$i18n{glicMicrophoneToggleSublabel}"
+              on-settings-boolean-control-change="onMicrophoneToggleChange_">
+          </settings-toggle-button>
+          <settings-toggle-button
+              id="tabAccessToggle" pref="{{prefs.glic.tab_context_enabled}}"
+              label="$i18n{glicTabAccessToggle}"
+              sub-label="$i18n{glicTabAccessToggleSublabel}"
+              learn-more-url="$i18n{glicTabAccessToggleLearnMoreUrl}"
+              on-learn-more-clicked="onTabAccessToggleLearnMoreClick_"
+              on-settings-boolean-control-change="onTabAccessToggleChange_">
+            <div id="tabAccessToggleActions" slot="more-actions">
+              <cr-expand-button id="tabAccessExpandButton" no-hover
+                  expanded="{{tabAccessToggleExpanded_}}">
+              </cr-expand-button>
+              <div class="separator"></div>
+            </div>
+          </settings-toggle-button>
+          <cr-collapse id="tabAccessInfoCollapse"
+              opened="[[tabAccessToggleExpanded_]]">
+            <div class="settings-columned-section">
+              <div class="column">
+                <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+                <ul class="icon-bulleted-list">
+                  <li>
+                    <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                        icon="settings20:edit-square">
+</if>
+<if expr="_google_chrome">
+                        icon="settings-internal:text-analysis">
+</if>
+                    </cr-icon>
+                    <div class="secondary">$i18n{glicTabAccessWhenOn1}</div>
+                  </li>
+                  <li>
+                    <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                        icon="settings20:account-circle">
+</if>
+<if expr="_google_chrome">
+                        icon="settings-internal:chat-spark-2">
+</if>
+                    </cr-icon>
+                    <div class="secondary">$i18n{glicTabAccessWhenOn2}</div>
+                  </li>
+                </ul>
+              </div>
+              <div class="column">
+                <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+                <ul class="icon-bulleted-list">
+                  <li>
+                    <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                        icon="settings20:web">
+</if>
+<if expr="_google_chrome">
+                        icon="settings-internal:screensaver-auto">
+</if>
+                    </cr-icon>
+                    <div class="secondary">$i18n{glicTabAccessConsider1}
+                      <a id="shortcutTabAccessConsider1LearnMoreLabel"
+                          class="learn-more-label"
+                          href="$i18n{glicTabAccessToggleLearnMoreUrl}"
+                          on-click="onTabAccessToggleLearnMoreClick_"
+                          aria-label=
+                             "$i18n{glicTabAccessConsider1LearnMoreLabel}"
+                          aria-description="$i18n{opensInNewTab}"
+                          target="_blank">
+                      $i18n{glicTabAccessConsider1LearnMoreLabel}
+                    </a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </cr-collapse>
+          <cr-link-row id="activityButton" on-click="onActivityRowClick_"
+              label="$i18n{glicActivityButton}"
+              sub-label="$i18n{glicActivityButtonSublabel}" external>
+          </cr-link-row>
+        </template>
+      </div>
+    </settings-subpage>
+  </template>
+</settings-animated-pages>

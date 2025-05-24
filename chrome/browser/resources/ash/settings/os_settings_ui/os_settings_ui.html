@@ -23,11 +23,15 @@
     z-index: 3;
   }
 
-  cr-drawer {
+  #drawer {
+    /* TODO(b/316088424) Use window border radius token if available */
+    --cr-drawer-border-start-end-radius: 12px;
+    --cr-drawer-border-end-end-radius: 12px;
+    --cr-drawer-header-color: var(--cros-sys-primary);
+    --cr-drawer-header-font: var(--cros-title-1-font);
+    --cr-drawer-header-padding: 22px;
+    --cr-drawer-width: var(--settings-menu-width);
     --cr-separator-line: none;
-    --cr-drawer-header-color: var(--cros-text-color-secondary);
-    --cr-drawer-header-font-weight: 500;
-    --cr-drawer-header-padding: 20px;
   }
 
   #cr-container-shadow-top {
@@ -45,21 +49,17 @@
   }
 
   #left,
-  #center,
-  #right {
+  #center {
     flex: 1 1 0;
   }
 
   #left {
+    flex-grow: 0;
     height: 100%;
     position: sticky;
     top: 0;
     /* Specify z-index so menu item tooltips overlay #center content. */
     z-index: 100;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) #left {
-    flex-grow: 0;
   }
 
   #left os-settings-menu {
@@ -68,41 +68,23 @@
     overscroll-behavior: contain;
   }
 
-  :host-context(body.revamp-wayfinding-enabled) #drawer {
-    /* TODO(b/316088424) Use window border radius token if available */
-    --cr-drawer-border-start-end-radius: 12px;
-    --cr-drawer-border-end-end-radius: 12px;
-    --cr-drawer-header-color: var(--cros-sys-primary);
-    --cr-drawer-header-font: var(--cros-title-1-font);
-    --cr-drawer-header-padding: 22px;
-    --cr-drawer-width: var(--settings-menu-width);
-  }
-
   #center {
-    flex-basis: var(--settings-main-basis);
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) #center  {
     box-sizing: border-box;
+    flex-basis: var(--settings-main-basis);
     height: 100%;
     padding-top: 8px;
   }
 
   /* Take up all remaining vertical space. */
-  :host-context(body.revamp-wayfinding-enabled) #center > os-settings-main {
+  #center > os-settings-main {
     min-height: 100%;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) #right {
-    display: none;
   }
 
   /* The breakpoint of 980px was decided on by the rounded sum of
     * var(--settings-main-basis), var(--settings-menu-width), and
     * var(--cr-section-padding). */
   @media (max-width: 980px) {
-    #left,
-    #right {
+    #left {
       display: none;
     }
 
@@ -115,15 +97,12 @@
   }
 
   #drawerIcon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+
     cursor: pointer;
-    margin-inline-end: 14px;
+    margin-inline-end: 6px;
     margin-inline-start: 0;
     outline: none;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) #drawerIcon {
-    --iron-icon-fill-color: var(--cros-sys-primary);
-    margin-inline-end: 6px;
   }
 </style>
 <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
@@ -154,8 +133,7 @@
         <os-settings-menu
             is-drawer-menu
             page-availability="[[pageAvailability_]]"
-            on-iron-activate="onMenuItemSelected_"
-            advanced-opened="{{advancedOpenedInMenu_}}">
+            on-iron-activate="onMenuItemSelected_">
         </os-settings-menu>
       </template>
     </div>
@@ -167,8 +145,7 @@
     <template is="dom-if" if="[[showNavMenu_]]">
       <os-settings-menu
           page-availability="[[pageAvailability_]]"
-          on-iron-activate="onMenuItemSelected_"
-          advanced-opened="{{advancedOpenedInMenu_}}">
+          on-iron-activate="onMenuItemSelected_">
       </os-settings-menu>
     </template>
   </div>
@@ -176,11 +153,7 @@
     <os-settings-main
         prefs="{{prefs}}"
         toolbar-spinner-active="{{toolbarSpinnerActive_}}"
-        page-availability="[[pageAvailability_]]"
-        advanced-toggle-expanded="{{advancedOpenedInMain_}}">
+        page-availability="[[pageAvailability_]]">
     </os-settings-main>
   </div>
-  <!-- An additional child of the flex #container to take up space,
-        aligned with the right-hand child of the flex toolbar. -->
-  <div id="right"></div>
 </div>

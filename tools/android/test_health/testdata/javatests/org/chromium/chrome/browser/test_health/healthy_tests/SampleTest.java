@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.MyStation;
 
 /** A sample Java test. */
 @SmallTest
@@ -18,6 +19,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 public class SampleTest {
     @Test
     public void testTrueIsTrue() {
+        MyStation myStation = new MyStation();
         Assert.assertTrue(true);
     }
 }

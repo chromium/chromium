@@ -1,0 +1,117 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("inttest") {
+  testonly = true
+  sources = [
+    "fake_omnibox_client.h",
+    "fake_omnibox_client.mm",
+    "fake_suggestions_builder.h",
+    "fake_suggestions_builder.mm",
+    "omnibox_inttest_autocomplete_controller.h",
+    "omnibox_inttest_autocomplete_controller.mm",
+    "omnibox_inttest_coordinator.h",
+    "omnibox_inttest_coordinator.mm",
+    "omnibox_inttest_view_controller.h",
+    "omnibox_inttest_view_controller.mm",
+    "omnibox_inttest_view_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/omnibox/browser:test_support",
+    "//components/search_engines",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:model_utils",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/https_upgrades/model",
+    "//ios/chrome/browser/omnibox/coordinator",
+    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/public",
+    "//ios/chrome/browser/omnibox/public:constants",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/omnibox/ui",
+    "//ios/chrome/browser/omnibox/ui:omnibox_internal",
+    "//ios/chrome/browser/omnibox/ui/popup",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/test:test_support",
+    "//ios/components/ui_util",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//ui/gfx:test_support",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "omnibox_inttest_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/omnibox/eg_tests:eg_test_support+eg2",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+    "//ui/base:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "omnibox_inttest_app_interface.h",
+    "omnibox_inttest_app_interface.mm",
+  ]
+  visibility = [ "//ios/chrome/test/earl_grey:hooks" ]
+  deps = [
+    ":inttest",
+    "//base",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/earl_grey:eg_app_support+eg2",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//net",
+  ]
+}
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "omnibox_inttest_app_interface.h",
+    "omnibox_inttest_app_interface_stub.mm",
+    "omnibox_inttest_earl_grey.h",
+    "omnibox_inttest_earl_grey.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net",
+    "//url",
+  ]
+}

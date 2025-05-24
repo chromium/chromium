@@ -1,0 +1,28 @@
+owners:
+- leimy@chromium.org
+- file://chrome/browser/ai/OWNERS
+caption: |-
+  Allow pages to use the built-in AI APIs.
+desc: |-
+  This policy controls if a page can use the built-in AI APIs (such as <ph name="LANGUAGE_MODEL_API_NAME">LanguageModel API</ph>, <ph name="SUMMARIZATION_API_NAME">Summarization API</ph>, <ph name="WRITER_API_NAME">Writer API</ph>, and <ph name="REWRITER_API_NAME">Rewriter API</ph>).
+
+  If the policy is enabled or unset, the APIs are enabled to be used.
+
+  If the policy is disabled, attempting using the APIs will result in an error.
+supported_on:
+- chrome.*:137-
+- chrome_os:137-
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: main
+schema:
+  type: boolean
+items:
+- caption: Allow the usage of the built-in AI APIs.
+  value: true
+- caption: Disallow the usage of the built-in AI APIs.
+  value: false
+default: true
+example_value: true
+tags: []

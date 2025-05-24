@@ -16,8 +16,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace arc {
 

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_VARIATIONS_MODEL_IOS_CHROME_VARIATIONS_SEED_STORE_FETCHER_H_
 #define IOS_CHROME_BROWSER_VARIATIONS_MODEL_IOS_CHROME_VARIATIONS_SEED_STORE_FETCHER_H_
 
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
+
 // Extraction of seed update method in IOSChromeVariationsSeedStore to
 // be used (and ONLY used) by the fetcher.
 @interface IOSChromeVariationsSeedStore (Fetcher)

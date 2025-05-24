@@ -1,0 +1,17 @@
+{
+  "name": "Test App 1",
+  "version": "1",
+  "manifest_version": 2,
+  "permissions": [
+    "unlimited_storage"
+  ],
+  "app": {
+    "urls": [
+      "https://www.example.com/path1",
+      "https://www.example.com/path2"
+    ],
+    "launch": {
+      "web_url": "https://www.example.com/path1/foo.html"
+    }
+  }
+}

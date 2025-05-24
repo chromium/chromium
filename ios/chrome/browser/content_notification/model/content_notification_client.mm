@@ -10,24 +10,50 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
+ContentNotificationClient::ContentNotificationClient(ProfileIOS* profile)
+    : PushNotificationClient(PushNotificationClientId::kContent, profile) {
+  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
+}
+
 ContentNotificationClient::ContentNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kContent) {}
+    : PushNotificationClient(PushNotificationClientId::kContent,
+                             PushNotificationClientScope::kPerProfile) {
+  CHECK(!IsMultiProfilePushNotificationHandlingEnabled());
+}
 
 ContentNotificationClient::~ContentNotificationClient() = default;
+
+bool ContentNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  return [notification.request.content.categoryIdentifier
+      isEqualToString:kContentNotificationFeedbackCategoryIdentifier];
+}
 
 bool ContentNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   // Need to check if it is a content notification first to avoid conflicts with
   // other clients.
-  if (![response.notification.request.content.categoryIdentifier
-          isEqualToString:kContentNotificationFeedbackCategoryIdentifier]) {
+  if (!CanHandleNotification(response.notification)) {
     return false;
   }
+
+  // If the app is not foreground active, store this interaction and process it
+  // later. This uses an arbitrary Browser and thus is unsafe in multi-profile.
+  // TODO(crbug.com/41497027): This API should be redesigned.
+  Browser* browser = GetActiveForegroundBrowser();
+  if (!browser) {
+    stored_interaction_ = response;
+    return true;
+  }
+  stored_interaction_ = nil;
+
   // In order to send delivered NAUs, the payload has been modified for it to be
   // processed on `HandleNotificationReception()`. Before reusing the payload,
   // remove the NAU body paramater from the payload to return it to its normal
@@ -41,8 +67,11 @@ bool ContentNotificationClient::HandleNotificationInteraction(
   // Regenerate the regular payload as NSDictionary after removing the extra
   // object.
   NSDictionary<NSString*, id>* payload = [unprocessedPayload copy];
+  ProfileIOS* profile = browser->GetProfile();
+  CHECK(profile);
   ContentNotificationService* contentNotificationService =
-      ContentNotificationServiceFactory::GetForBrowserState(GetAnyProfile());
+      ContentNotificationServiceFactory::GetForProfile(profile);
+  CHECK(contentNotificationService);
   ContentNotificationNAUConfiguration* config =
       [[ContentNotificationNAUConfiguration alloc] init];
   config.notification = response.notification;
@@ -107,4 +136,11 @@ ContentNotificationClient::RegisterActionableNotifications() {
            intentIdentifiers:@[]
                      options:UNNotificationCategoryOptionCustomDismissAction];
   return @[ contentNotificationCategory ];
+}
+
+void ContentNotificationClient::OnSceneActiveForegroundBrowserReady() {
+  if (stored_interaction_) {
+    HandleNotificationInteraction(stored_interaction_);
+  }
+  PushNotificationClient::OnSceneActiveForegroundBrowserReady();
 }

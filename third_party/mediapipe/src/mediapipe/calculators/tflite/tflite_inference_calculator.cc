@@ -275,8 +275,8 @@ class TfLiteInferenceCalculator : public CalculatorBase {
   }
 
   Packet model_packet_;
-  std::unique_ptr<tflite::Interpreter> interpreter_;
   TfLiteDelegatePtr delegate_;
+  std::unique_ptr<tflite::Interpreter> interpreter_;
 
 #if MEDIAPIPE_TFLITE_GL_INFERENCE
   mediapipe::GlCalculatorHelper gpu_helper_;
@@ -894,8 +894,8 @@ absl::StatusOr<Packet> TfLiteInferenceCalculator::GetModelAsPacket(
   const auto& options =
       cc.Options<mediapipe::TfLiteInferenceCalculatorOptions>();
   if (!options.model_path().empty()) {
-    return TfLiteModelLoader::LoadFromPath(options.model_path(),
-                                           options.try_mmap_model());
+    return TfLiteModelLoader::LoadFromPath(
+        cc.GetResources(), options.model_path(), options.try_mmap_model());
   }
   if (cc.InputSidePackets().HasTag(kModelTag)) {
     return cc.InputSidePackets().Tag(kModelTag);

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** Model for an {@link FastCheckoutAutofillProfile} entry in the Autofill profile screen sheet. */
+@NullMarked
 public class AutofillProfileItemProperties {
     /** The profile represented by this entry. */
     public static final ReadableObjectPropertyKey<FastCheckoutAutofillProfile> AUTOFILL_PROFILE =

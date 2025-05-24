@@ -397,4 +397,26 @@ TEST_F(ScreenOrientationProviderTest,
   ASSERT_FALSE(contents()->IsFullscreen());
 }
 
+TEST_F(ScreenOrientationProviderTest, ProviderReportsSupported) {
+  FakeScreenOrientationDelegate delegate(/*supported=*/true,
+                                         /*full_screen_required=*/false);
+  std::unique_ptr<FakeWebContentsDelegate> wc_delegate(
+      new FakeWebContentsDelegate());
+  contents()->SetDelegate(wc_delegate.get());
+  EXPECT_TRUE(contents()
+                  ->GetScreenOrientationProviderForTesting()
+                  ->IsOrientationLockSupported());
+}
+
+TEST_F(ScreenOrientationProviderTest, ProviderReportsNotSupported) {
+  FakeScreenOrientationDelegate delegate(/*supported=*/false,
+                                         /*full_screen_required=*/false);
+  std::unique_ptr<FakeWebContentsDelegate> wc_delegate(
+      new FakeWebContentsDelegate());
+  contents()->SetDelegate(wc_delegate.get());
+  EXPECT_FALSE(contents()
+                   ->GetScreenOrientationProviderForTesting()
+                   ->IsOrientationLockSupported());
+}
+
 }  // namespace content

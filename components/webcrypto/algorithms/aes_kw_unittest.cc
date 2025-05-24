@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/values.h"
@@ -31,7 +32,7 @@ struct AesKwKnownAnswer {
   const char* ciphertext;
 };
 
-const AesKwKnownAnswer kAesKwKnownAnswers[] = {
+constexpr auto kAesKwKnownAnswers = std::to_array<AesKwKnownAnswer>({
     // AES-KW test vectors from http://www.ietf.org/rfc/rfc3394.txt
     // 4.1 Wrap 128 bits of Key Data with a 128-bit KEK
     {"000102030405060708090A0B0C0D0E0F", "00112233445566778899AABBCCDDEEFF",
@@ -48,7 +49,8 @@ const AesKwKnownAnswer kAesKwKnownAnswers[] = {
     {"000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F",
      "00112233445566778899AABBCCDDEEFF000102030405060708090A0B0C0D0E0F",
      "28C9F404C4B810F4CBCCB35CFB87F8263F5786E2D80ED326CBC7F0E71A99F43BFB988B9B7"
-     "A02DD21"}};
+     "A02DD21"},
+});
 
 TEST_F(WebCryptoAesKwTest, GenerateKeyBadLength) {
   blink::WebCryptoKey key;

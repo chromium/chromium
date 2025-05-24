@@ -15,12 +15,14 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'incrementMetricCount',
       'recordHighlightOff',
       'recordHighlightOn',
+      'recordHighlightGranularity',
       'recordLanguage',
       'recordNewPage',
       'recordNewPageWithSpeech',
       'recordSpeechError',
       'recordSpeechPlaybackLength',
       'recordSpeechSettingsChange',
+      'recordSpeechStopSource',
       'recordTextSettingsChange',
       'recordTime',
       'recordVoiceSpeed',
@@ -48,6 +50,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordHighlightOff');
   }
 
+  recordHighlightGranularity(highlight: number) {
+    this.methodCalled('recordHighlightGranularity', highlight);
+  }
+
   recordVoiceType(voiceType: ReadAnythingVoiceType) {
     this.methodCalled('recordVoiceType', voiceType);
   }
@@ -62,6 +68,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordSpeechSettingsChange(settingsChange: ReadAloudSettingsChange) {
     this.methodCalled('recordSpeechSettingsChange', settingsChange);
+  }
+
+  recordSpeechStopSource(source: number) {
+    this.methodCalled('recordSpeechStopSource', source);
   }
 
   recordVoiceSpeed(index: number) {

@@ -43,7 +43,7 @@ namespace web_navigation = api::web_navigation;
 // WebNavigtionEventRouter -------------------------------------------
 
 WebNavigationEventRouter::PendingWebContents::PendingWebContents() = default;
-WebNavigationEventRouter::PendingWebContents::~PendingWebContents() {}
+WebNavigationEventRouter::PendingWebContents::~PendingWebContents() = default;
 
 void WebNavigationEventRouter::PendingWebContents::Set(
     int source_tab_id,
@@ -179,7 +179,7 @@ WebNavigationTabObserver::WebNavigationTabObserver(
     : WebContentsObserver(web_contents),
       content::WebContentsUserData<WebNavigationTabObserver>(*web_contents) {}
 
-WebNavigationTabObserver::~WebNavigationTabObserver() {}
+WebNavigationTabObserver::~WebNavigationTabObserver() = default;
 
 // static
 WebNavigationTabObserver* WebNavigationTabObserver::Get(
@@ -356,7 +356,7 @@ void WebNavigationTabObserver::DidOpenRequestedURL(
   bool new_contents_is_present_in_tabstrip = ExtensionTabUtil::GetTabStripModel(
       new_contents, &ignored_tab_strip_model, &ignored_tab_index);
   router->RecordNewWebContents(
-      web_contents(), source_render_frame_host->GetProcess()->GetID(),
+      web_contents(), source_render_frame_host->GetProcess()->GetDeprecatedID(),
       source_render_frame_host->GetRoutingID(), url, new_contents,
       !new_contents_is_present_in_tabstrip);
 }
@@ -628,7 +628,8 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
                 ExtensionApiFrameIdMap::GetFrameType(render_frame_host);
             frame.document_lifecycle =
                 ExtensionApiFrameIdMap::GetDocumentLifecycle(render_frame_host);
-            frame.process_id = render_frame_host->GetProcess()->GetID();
+            frame.process_id =
+                render_frame_host->GetProcess()->GetDeprecatedID();
             frame.error_occurred = navigation_state->GetErrorOccurredInFrame();
             result_list.push_back(std::move(frame));
             return content::RenderFrameHost::FrameIterationAction::kContinue;
@@ -658,7 +659,7 @@ WebNavigationAPI::WebNavigationAPI(content::BrowserContext* context)
                                  web_navigation::OnTabReplaced::kEventName);
 }
 
-WebNavigationAPI::~WebNavigationAPI() {}
+WebNavigationAPI::~WebNavigationAPI() = default;
 
 void WebNavigationAPI::Shutdown() {
   EventRouter::Get(browser_context_)->UnregisterObserver(this);

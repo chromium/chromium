@@ -5,10 +5,10 @@
 #ifndef IOS_WEB_NAVIGATION_CRW_WK_NAVIGATION_STATES_H_
 #define IOS_WEB_NAVIGATION_CRW_WK_NAVIGATION_STATES_H_
 
-#include <memory>
-
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
+
+#include <memory>
 
 namespace web {
 

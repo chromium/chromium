@@ -85,20 +85,14 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 
-namespace performance_manager {
-class FrameNodeImpl;
-class PageNodeImpl;
-class ProcessNodeImpl;
-class WorkerNodeImpl;
-}  // namespace performance_manager
-
 namespace base {
 
 namespace sequence_manager::internal {
 class TaskQueueImpl;
 }
 
-template <typename T> class WeakPtr;
+template <typename T>
+class WeakPtr;
 
 namespace internal {
 // These classes are part of the WeakPtr implementation.
@@ -182,7 +176,8 @@ SafeRef<T> MakeSafeRefFromWeakPtrInternals(internal::WeakReference&& ref,
 
 }  // namespace internal
 
-template <typename T> class WeakPtrFactory;
+template <typename T>
+class WeakPtrFactory;
 
 // The WeakPtr class holds a weak reference to |T*|.
 //
@@ -197,6 +192,12 @@ template <typename T> class WeakPtrFactory;
 //   if (foo)
 //     foo->method();
 //
+// WeakPtr intentionally doesn't implement operator== or operator<=>, because
+// comparisons of weak references are inherently unstable. If the comparison
+// takes validity into account, the result can change at any time as pointers
+// are invalidated. If it depends only on the underlying pointer value, even
+// after the pointer is invalidated, unrelated WeakPtrs can unexpectedly
+// compare equal if the address is reused.
 template <typename T>
 class TRIVIAL_ABI WeakPtr {
  public:
@@ -286,7 +287,8 @@ class TRIVIAL_ABI WeakPtr {
   bool WasInvalidated() const { return ptr_ && !ref_.IsValid(); }
 
  private:
-  template <typename U> friend class WeakPtr;
+  template <typename U>
+  friend class WeakPtr;
   friend class WeakPtrFactory<T>;
   friend class WeakPtrFactory<std::remove_const_t<T>>;
 
@@ -342,14 +344,9 @@ namespace subtle {
 // callers.
 class BASE_EXPORT BindWeakPtrFactoryPassKey {
  private:
-  // Avoid =default to disallow creation by uniform initialization.
-  BindWeakPtrFactoryPassKey() {}
+  BindWeakPtrFactoryPassKey() = default;
 
   friend class BindWeakPtrFactoryForTesting;
-  friend class performance_manager::FrameNodeImpl;
-  friend class performance_manager::PageNodeImpl;
-  friend class performance_manager::ProcessNodeImpl;
-  friend class performance_manager::WorkerNodeImpl;
   friend class sequence_manager::internal::TaskQueueImpl;
 };
 

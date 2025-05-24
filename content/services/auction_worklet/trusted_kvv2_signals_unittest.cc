@@ -5,12 +5,14 @@
 #include "content/services/auction_worklet/trusted_kvv2_signals.h"
 
 #include <cstddef>
+#include <optional>
 
 #include "base/containers/span_writer.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -20,6 +22,7 @@
 #include "components/cbor/writer.h"
 #include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/trusted_signals_kvv2_helper.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -41,12 +44,10 @@ namespace auction_worklet {
 namespace {
 
 const char kPublisherHostName[] = "publisher.test";
-const int kExperimentGroupId = 12345;
-const char kTrustedBiddingSignalsSlotSizeParam[] = "slotSize=100,200";
 const char kJoiningOrigin[] = "https://foo.test/";
 const size_t kFramingHeaderSize = 5;  // bytes
 const size_t kOhttpHeaderSize = 55;   // bytes
-const char kTrustedBiddingSignalsPath[] = "/bidder-signals";
+const char kTrustedSignalsPath[] = "/trusted-signals";
 const char kTrustedSignalsHost[] = "a.test";
 const uint8_t kKeyId = 0xFF;
 
@@ -105,8 +106,44 @@ const char kBiddingContentBase[] =
     "61746549664F6C6465725468616E4D73223A20333630303030307DA2647461677381646B65"
     "7973696B657956616C756573A1646B657931A16576616C7565682276616C75653122";
 
+// Hex string for scoring signals base response, converted from the following
+// CBOR data:
+// [
+//   {
+//     "id": 0,
+//     "keyGroupOutputs": [
+//       {
+//         "tags": [
+//           "renderURLs"
+//         ],
+//         "keyValues": {
+//           "https://foo.test/": {
+//             "value": "1"
+//           }
+//         }
+//       },
+//       {
+//         "tags": [
+//           "adComponentRenderURLs"
+//         ],
+//         "keyValues": {
+//           "https://foosub.test/": {
+//             "value": "[2]"
+//           }
+//         }
+//       }
+//     ]
+//   }
+// ]
+const char kScoringContentBase[] =
+    "81A2626964006F6B657947726F75704F75747075747382A26474616773816A72656E646572"
+    "55524C73696B657956616C756573A17168747470733A2F2F666F6F2E746573742FA1657661"
+    "6C75656131A2647461677381756164436F6D706F6E656E7452656E64657255524C73696B65"
+    "7956616C756573A17468747470733A2F2F666F6F7375622E746573742FA16576616C756563"
+    "5B325D";
+
 std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
-CreateRequestHelperBuilder() {
+CreateBiddingRequestHelperBuilder() {
   // Create a public key.
   mojom::TrustedSignalsPublicKeyPtr public_key =
       mojom::TrustedSignalsPublicKey::New(
@@ -115,14 +152,28 @@ CreateRequestHelperBuilder() {
           kKeyId);
 
   return std::make_unique<TrustedBiddingSignalsKVv2RequestHelperBuilder>(
-      kPublisherHostName, kExperimentGroupId, std::move(public_key),
-      kTrustedBiddingSignalsSlotSizeParam);
+      kPublisherHostName, /*experiment_group_id=*/std::nullopt,
+      /*contextual_data=*/std::nullopt, std::move(public_key),
+      /*trusted_bidding_signals_slot_size_param=*/"");
+}
+
+std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
+CreateScoringRequestHelperBuilder() {
+  // Create a public key.
+  mojom::TrustedSignalsPublicKeyPtr public_key =
+      mojom::TrustedSignalsPublicKey::New(
+          std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
+                      sizeof(kTestPublicKey)),
+          kKeyId);
+
+  return std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
+      kPublisherHostName, /*experiment_group_id=*/std::nullopt,
+      /*contextual_data=*/std::nullopt, std::move(public_key));
 }
 
 class TrustedKVv2SignalsEmbeddedTest : public testing::Test {
  public:
   TrustedKVv2SignalsEmbeddedTest() {
-    SetContentHex(kBiddingContentBase);
     SetResponseStatusCode(net::HttpStatusCode::HTTP_OK);
 
     feature_list_.InitWithFeatures(
@@ -144,9 +195,9 @@ class TrustedKVv2SignalsEmbeddedTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  GURL TrustedBiddingSignalsUrl() const {
+  GURL TrustedSignalsUrl() const {
     return embedded_test_server_.GetURL(kTrustedSignalsHost,
-                                        kTrustedBiddingSignalsPath);
+                                        kTrustedSignalsPath);
   }
 
   // Fetch bidding signals and wait for completion. Return nullptr on
@@ -164,7 +215,29 @@ class TrustedKVv2SignalsEmbeddedTest : public testing::Test {
         url_loader_factory_.get(),
         auction_network_events_handler_.CreateRemote(),
         std::move(interest_group_names),
-        std::move(trusted_bidding_signals_keys), TrustedBiddingSignalsUrl(),
+        std::move(trusted_bidding_signals_keys), TrustedSignalsUrl(),
+        std::move(request_helper_builder), v8_helper_,
+        base::BindOnce(&TrustedKVv2SignalsEmbeddedTest::LoadKVv2SignalsCallback,
+                       base::Unretained(this)));
+    WaitForLoadComplete();
+    return std::move(load_kvv2_signals_result_);
+  }
+
+  // Fetch scoring signals and wait for completion. Return nullptr on
+  // failure.
+  std::optional<TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap>
+  FetchScoringSignals(
+      std::set<std::string> render_urls,
+      std::set<std::string> ad_component_render_urls,
+      std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
+          request_helper_builder) {
+    CHECK(!load_signals_run_loop_);
+    DCHECK(!load_kvv2_signals_result_);
+
+    auto scoring_signals = TrustedKVv2Signals::LoadKVv2ScoringSignals(
+        url_loader_factory_.get(),
+        auction_network_events_handler_.CreateRemote(), std::move(render_urls),
+        std::move(ad_component_render_urls), TrustedSignalsUrl(),
         std::move(request_helper_builder), v8_helper_,
         base::BindOnce(&TrustedKVv2SignalsEmbeddedTest::LoadKVv2SignalsCallback,
                        base::Unretained(this)));
@@ -216,6 +289,42 @@ class TrustedKVv2SignalsEmbeddedTest : public testing::Test {
     return result;
   }
 
+  // Returns the results of calling TrustedSignals::Result::GetScoringSignals()
+  // with `index` and `trusted_scoring_signals_keys`. Returns value as a JSON
+  // std::string, for easy testing.
+  std::string ExtractScoringSignals(
+      TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap& result_map,
+      TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex& index,
+      const GURL& render_url,
+      const std::vector<std::string>& ad_component_render_urls) {
+    base::RunLoop run_loop;
+
+    std::string result;
+    v8_helper_->v8_runner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
+          v8::Isolate* isolate = v8_helper_->isolate();
+          // Could use the scratch context, but using a separate one more
+          // closely resembles actual use.
+          v8::Local<v8::Context> context = v8::Context::New(isolate);
+          v8::Context::Scope context_scope(context);
+
+          v8::Local<v8::Value> value = result_map.at(index)->GetScoringSignals(
+              v8_helper_.get(), context, render_url,
+              CreateMojoCreativeInfoWithoutOwnerVector(
+                  ad_component_render_urls));
+
+          if (v8_helper_->ExtractJson(context, value,
+                                      /*script_timeout=*/nullptr, &result) !=
+              AuctionV8Helper::Result::kSuccess) {
+            result = "JSON extraction failed.";
+          }
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
+  }
+
   // Set the response status code.
   void SetResponseStatusCode(net::HttpStatusCode code) {
     base::AutoLock auto_lock(lock_);
@@ -246,11 +355,10 @@ class TrustedKVv2SignalsEmbeddedTest : public testing::Test {
     size_t response_body_size = desired_size - kOhttpHeaderSize;
     response_body.resize(response_body_size, 0x00);
 
-    base::SpanWriter writer(
-        base::as_writable_bytes(base::make_span(response_body)));
+    base::SpanWriter writer(base::as_writable_byte_span(response_body));
     writer.WriteU8BigEndian(0x00);
     writer.WriteU32BigEndian(hex_bytes.size());
-    writer.Write(base::as_bytes(base::make_span(hex_bytes)));
+    writer.Write(base::as_byte_span(hex_bytes));
 
     return response_body;
   }
@@ -258,10 +366,6 @@ class TrustedKVv2SignalsEmbeddedTest : public testing::Test {
   std::unique_ptr<net::test_server::HttpResponse> HandleSignalsRequest(
       const net::test_server::HttpRequest& request) {
     base::AutoLock auto_lock(lock_);
-    if (request.relative_url != kTrustedBiddingSignalsPath) {
-      return nullptr;
-    }
-
     if (!request.headers.contains(net::HttpRequestHeaders::kContentType) ||
         request.headers.at(net::HttpRequestHeaders::kContentType) !=
             kTrustedSignalsKVv2EncryptionRequestMediaType) {
@@ -381,9 +485,8 @@ class TrustedKVv2SignalsEmbeddedTest : public testing::Test {
 };
 
 TEST_F(TrustedKVv2SignalsEmbeddedTest, BiddingSignalsBaseResponse) {
-  std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
-      request_helper_builder = CreateRequestHelperBuilder();
-
+  SetContentHex(kBiddingContentBase);
+  auto request_helper_builder = CreateBiddingRequestHelperBuilder();
   request_helper_builder->AddTrustedSignalsRequest(
       std::string("name1"), std::set<std::string>{"key1"},
       url::Origin::Create(GURL(kJoiningOrigin)),
@@ -405,15 +508,12 @@ TEST_F(TrustedKVv2SignalsEmbeddedTest, BiddingSignalsBaseResponse) {
             *priority_vector);
   EXPECT_EQ(base::Milliseconds(3600000),
             name1_per_group_data->update_if_older_than);
-
-  task_environment_.RunUntilIdle();
 }
 
 TEST_F(TrustedKVv2SignalsEmbeddedTest,
        BiddingSignalsExpectedEntriesNotPresent) {
-  std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
-      request_helper_builder = CreateRequestHelperBuilder();
-
+  SetContentHex(kBiddingContentBase);
+  auto request_helper_builder = CreateBiddingRequestHelperBuilder();
   request_helper_builder->AddTrustedSignalsRequest(
       std::string("name2"), std::set<std::string>{"key2"},
       url::Origin::Create(GURL(kJoiningOrigin)),
@@ -430,10 +530,9 @@ TEST_F(TrustedKVv2SignalsEmbeddedTest,
 }
 
 TEST_F(TrustedKVv2SignalsEmbeddedTest, BiddingSignalsNetworkError) {
+  SetContentHex(kBiddingContentBase);
   SetResponseStatusCode(net::HttpStatusCode::HTTP_NOT_FOUND);
-
-  std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
-      request_helper_builder = CreateRequestHelperBuilder();
+  auto request_helper_builder = CreateBiddingRequestHelperBuilder();
   request_helper_builder->AddTrustedSignalsRequest(
       std::string("name1"), std::set<std::string>{"key1"},
       url::Origin::Create(GURL(kJoiningOrigin)),
@@ -444,19 +543,13 @@ TEST_F(TrustedKVv2SignalsEmbeddedTest, BiddingSignalsNetworkError) {
   ASSERT_TRUE(error_msg_.has_value());
   EXPECT_EQ(error_msg_.value(),
             base::StringPrintf("Failed to load %s HTTP status = 404 Not Found.",
-                               TrustedBiddingSignalsUrl().spec().c_str()));
-
-  // Wait until idle to ensure all requests have been observed within the
-  // `auction_network_events_handler_`.
-  task_environment_.RunUntilIdle();
+                               TrustedSignalsUrl().spec().c_str()));
 }
 
-TEST_F(TrustedKVv2SignalsEmbeddedTest, FailedToParseResponseBody) {
+TEST_F(TrustedKVv2SignalsEmbeddedTest, FailedToParseBiddingResponseBody) {
   // Random 20 bytes hex string which cannot be parsed as CBOR.
   SetResponseBodyHex("666f421a72ed47aade0c63826288d5d1bbf2dc2a");
-
-  std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
-      request_helper_builder = CreateRequestHelperBuilder();
+  auto request_helper_builder = CreateBiddingRequestHelperBuilder();
   request_helper_builder->AddTrustedSignalsRequest(
       std::string("name1"), std::set<std::string>{"key1"},
       url::Origin::Create(GURL(kJoiningOrigin)),
@@ -466,18 +559,12 @@ TEST_F(TrustedKVv2SignalsEmbeddedTest, FailedToParseResponseBody) {
                                    std::move(request_helper_builder)));
   ASSERT_TRUE(error_msg_.has_value());
   EXPECT_EQ(error_msg_.value(), "Failed to parse response body as CBOR.");
-
-  // Wait until idle to ensure all requests have been observed within the
-  // `auction_network_events_handler_`.
-  task_environment_.RunUntilIdle();
 }
 
-TEST_F(TrustedKVv2SignalsEmbeddedTest, FailedToParseSignalsFetchResult) {
+TEST_F(TrustedKVv2SignalsEmbeddedTest, FailedToParseBiddingSignalsFetchResult) {
   // Random 20 bytes hex string which cannot be parsed as CBOR.
   SetContentHex("666f421a72ed47aade0c63826288d5d1bbf2dc2a");
-
-  std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
-      request_helper_builder = CreateRequestHelperBuilder();
+  auto request_helper_builder = CreateBiddingRequestHelperBuilder();
   request_helper_builder->AddTrustedSignalsRequest(
       std::string("name1"), std::set<std::string>{"key1"},
       url::Origin::Create(GURL(kJoiningOrigin)),
@@ -487,10 +574,107 @@ TEST_F(TrustedKVv2SignalsEmbeddedTest, FailedToParseSignalsFetchResult) {
                                    std::move(request_helper_builder)));
   ASSERT_TRUE(error_msg_.has_value());
   EXPECT_EQ(error_msg_.value(), "Failed to parse content as CBOR.");
+}
 
-  // Wait until idle to ensure all requests have been observed within the
-  // `auction_network_events_handler_`.
-  task_environment_.RunUntilIdle();
+TEST_F(TrustedKVv2SignalsEmbeddedTest, ScoringSignalsBaseResponse) {
+  SetContentHex(kScoringContentBase);
+  auto request_helper_builder = CreateScoringRequestHelperBuilder();
+  request_helper_builder->AddTrustedSignalsRequest(
+      GURL("https://foo.test/"), std::set<std::string>{"https://foosub.test/"},
+      url::Origin::Create(GURL("https://owner.test/")),
+      url::Origin::Create(GURL(kJoiningOrigin)));
+
+  std::optional<TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap>
+      result_map =
+          FetchScoringSignals({"https://foo.test/"}, {"https://foosub.test/"},
+                              std::move(request_helper_builder));
+
+  ASSERT_TRUE(result_map);
+  TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex index(0, 0);
+  EXPECT_EQ(
+      R"({"renderURL":{"https://foo.test/":1},)"
+      R"("renderUrl":{"https://foo.test/":1},)"
+      R"("adComponentRenderURLs":{"https://foosub.test/":[2]},)"
+      R"("adComponentRenderUrls":{"https://foosub.test/":[2]}})",
+      ExtractScoringSignals(
+          result_map.value(), index, /*render_url=*/GURL("https://foo.test/"),
+          /*ad_component_render_urls=*/{"https://foosub.test/"}));
+}
+
+TEST_F(TrustedKVv2SignalsEmbeddedTest,
+       ScoringSignalsExpectedEntriesNotPresent) {
+  SetContentHex(kScoringContentBase);
+  auto request_helper_builder = CreateScoringRequestHelperBuilder();
+  request_helper_builder->AddTrustedSignalsRequest(
+      GURL("https://bar.test/"), std::set<std::string>{"https://barsub.test/"},
+      url::Origin::Create(GURL("https://owner.test/")),
+      url::Origin::Create(GURL(kJoiningOrigin)));
+
+  std::optional<TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap>
+      result_map =
+          FetchScoringSignals({"https://bar.test/"}, {"https://barsub.test/"},
+                              std::move(request_helper_builder));
+
+  ASSERT_TRUE(result_map);
+  TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex index(0, 0);
+  EXPECT_EQ(
+      R"({"renderURL":{"https://bar.test/":null},)"
+      R"("renderUrl":{"https://bar.test/":null},)"
+      R"("adComponentRenderURLs":{"https://barsub.test/":null},)"
+      R"("adComponentRenderUrls":{"https://barsub.test/":null}})",
+      ExtractScoringSignals(
+          result_map.value(), index, /*render_url=*/GURL("https://bar.test/"),
+          /*ad_component_render_urls=*/{"https://barsub.test/"}));
+}
+
+TEST_F(TrustedKVv2SignalsEmbeddedTest, ScoringSignalsNetworkError) {
+  SetContentHex(kScoringContentBase);
+  SetResponseStatusCode(net::HttpStatusCode::HTTP_NOT_FOUND);
+  auto request_helper_builder = CreateScoringRequestHelperBuilder();
+  request_helper_builder->AddTrustedSignalsRequest(
+      GURL("https://foo.test/"), std::set<std::string>{"https://foosub.test/"},
+      url::Origin::Create(GURL("https://owner.test/")),
+      url::Origin::Create(GURL(kJoiningOrigin)));
+
+  EXPECT_FALSE(FetchScoringSignals({"https://foo.test/"},
+                                   {"https://foosub.test/"},
+                                   std::move(request_helper_builder)));
+  ASSERT_TRUE(error_msg_.has_value());
+  EXPECT_EQ(error_msg_.value(),
+            base::StringPrintf("Failed to load %s HTTP status = 404 Not Found.",
+                               TrustedSignalsUrl().spec().c_str()));
+}
+
+TEST_F(TrustedKVv2SignalsEmbeddedTest, FailedToParseScoringResponseBody) {
+  // Random 20 bytes hex string which cannot be parsed as CBOR.
+  SetResponseBodyHex("666f421a72ed47aade0c63826288d5d1bbf2dc2a");
+  auto request_helper_builder = CreateScoringRequestHelperBuilder();
+  request_helper_builder->AddTrustedSignalsRequest(
+      GURL("https://foo.test/"), std::set<std::string>{"https://foosub.test/"},
+      url::Origin::Create(GURL("https://owner.test/")),
+      url::Origin::Create(GURL(kJoiningOrigin)));
+
+  EXPECT_FALSE(FetchScoringSignals({"https://foo.test/"},
+                                   {"https://foosub.test/"},
+                                   std::move(request_helper_builder)));
+  ASSERT_TRUE(error_msg_.has_value());
+  EXPECT_EQ(error_msg_.value(), "Failed to parse response body as CBOR.");
+}
+
+TEST_F(TrustedKVv2SignalsEmbeddedTest, FailedToParseScoringSignalsFetchResult) {
+  // Random 20 bytes hex string which cannot be parsed as CBOR.
+  SetContentHex("666f421a72ed47aade0c63826288d5d1bbf2dc2a");
+  auto request_helper_builder = CreateScoringRequestHelperBuilder();
+  request_helper_builder->AddTrustedSignalsRequest(
+      GURL("https://foo.test/"), std::set<std::string>{"https://foosub.test/"},
+      url::Origin::Create(GURL("https://owner.test/")),
+      url::Origin::Create(GURL(kJoiningOrigin)));
+
+  EXPECT_FALSE(FetchScoringSignals({"https://foo.test/"},
+                                   {"https://foosub.test/"},
+                                   std::move(request_helper_builder)));
+  ASSERT_TRUE(error_msg_.has_value());
+  EXPECT_EQ(error_msg_.value(), "Failed to parse content as CBOR.");
 }
 
 class TrustedKVv2SignalsTest : public testing::Test {
@@ -527,10 +711,39 @@ TEST_F(TrustedKVv2SignalsTest, BiddingSignalsDeleteBeforeCallback) {
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
 
   std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
-      request_helper_builder = CreateRequestHelperBuilder();
+      request_helper_builder = CreateBiddingRequestHelperBuilder();
   auto bidding_signals = TrustedKVv2Signals::LoadKVv2BiddingSignals(
       &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
       {"name1"}, {"key1"}, url, std::move(request_helper_builder), v8_helper_,
+      base::BindOnce([](std::optional<TrustedSignalsKVv2ResponseParser::
+                                          TrustedSignalsResultMap> result,
+                        std::optional<std::string> error_msg) {
+        ADD_FAILURE() << "Callback should not be invoked since loader deleted";
+      }));
+  base::RunLoop().RunUntilIdle();
+  bidding_signals.reset();
+  event_handle->Signal();
+}
+
+TEST_F(TrustedKVv2SignalsTest, ScoringSignalsDeleteBeforeCallback) {
+  GURL url = GURL("https://url.test/");
+  std::string headers =
+      base::StringPrintf("%s\nContent-Type: %s", kAllowFledgeHeader,
+                         "message/ad-auction-trusted-signals-request");
+  // Parsing process is occurring on the V8 thread, so a non-CBOR response body
+  // will not cause any issue.
+  AddResponse(&url_loader_factory_, url, kAdAuctionTrustedSignalsMimeType,
+              /*charset=*/std::nullopt, "Fake response body", headers);
+
+  // Wedge the V8 thread to control when the JSON parsing takes place.
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+
+  std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
+      request_helper_builder = CreateScoringRequestHelperBuilder();
+  auto bidding_signals = TrustedKVv2Signals::LoadKVv2ScoringSignals(
+      &url_loader_factory_, auction_network_events_handler_.CreateRemote(),
+      {"https://foo.test/"}, {"https://foosub.test/"}, url,
+      std::move(request_helper_builder), v8_helper_,
       base::BindOnce([](std::optional<TrustedSignalsKVv2ResponseParser::
                                           TrustedSignalsResultMap> result,
                         std::optional<std::string> error_msg) {

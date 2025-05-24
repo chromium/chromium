@@ -91,7 +91,7 @@ inline bool HTMLOptionsCollection::ElementMatches(
       parent->parentNode() == &RootNode()) {
     return true;
   }
-  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+  if (HTMLSelectElement::SelectParserRelaxationEnabled(&ownerNode())) {
     // If there is another <select> in between RootNode and element, then
     // RootNode should not include element in its options.
     return To<HTMLOptionElement>(element).OwnerSelectElement() == RootNode();

@@ -1,0 +1,313 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(ActInFocusedTabErrorReason) -->
+
+<enum name="ActInFocusedTabErrorReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Get context failed"/>
+  <int value="2" label="Invalid action proto"/>
+  <int value="3" label="Target not found"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ActInFocusedTabErrorReason) -->
+
+<!-- LINT.IfChange(DeepScanAccessPoint) -->
+
+<enum name="DeepScanAccessPoint">
+<!-- These values are persisted to logs. Entries should not be renumbered and
+     numeric values should never be reused. Keep this in sync with
+     safe_browsing::DeepScanAccessPoint in
+     chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h
+    -->
+
+  <int value="0" label="File Downloaded"/>
+  <int value="1" label="File Uploaded"/>
+  <int value="2" label="Drag and Drop"/>
+  <int value="3" label="Paste"/>
+  <int value="4" label="Print"/>
+  <int value="5" label="File Transfer"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h:DeepScanAccessPoint) -->
+
+<!-- LINT.IfChange(FreWebUiState) -->
+
+<enum name="FreWebUiState">
+  <int value="0" label="Glic fre app controller not started."/>
+  <int value="1" label="Web client begins loading; no visible UI."/>
+  <int value="2"
+      label="Loading panel is displayed. This state, combined with the
+             `hold-loading` state, will be held for `kMinHoldLoadingTimeMs`
+             if entered."/>
+  <int value="3"
+      label="Loading panel is still displayed, but the web client is ready.
+             This state will be held for the remainder of
+             `kMinHoldLoadingTimeMs`."/>
+  <int value="4"
+      label="Loading panel is displayed until web client is ready, or until"/>
+  <int value="5" label="'Something went wrong' error panel is displayed."/>
+  <int value="6" label="Connection offline panel is displayed."/>
+  <int value="7" label="Web view is displayed."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/fre/glic_fre.mojom:FreWebUiState) -->
+
+<!-- LINT.IfChange(GlicAttachChangeReason) -->
+
+<enum name="GlicAttachChangeReason">
+  <int value="0" label="Drag gesture."/>
+  <int value="1" label="Menu click."/>
+  <int value="2" label="Panel initialized."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:AttachChangeReason) -->
+
+<!-- LINT.IfChange(GlicDetailedWebClientState) -->
+
+<enum name="GlicDetailedWebClientState">
+  <int value="0" label="Bootstrap pending"/>
+  <int value="1" label="Web client not created"/>
+  <int value="2" label="Web client initialize failed"/>
+  <int value="3" label="Web client created but not initialized"/>
+  <int value="4" label="Temporary unresponsive"/>
+  <int value="5" label="Permanent unresponsive"/>
+  <int value="6" label="Responsive"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/glic_api_host.ts:DetailedWebClientState) -->
+
+<!-- LINT.IfChange(GlicEntryPointImpression) -->
+
+<enum name="GlicEntryPointImpression">
+  <int value="0" label="User has not completed fre."/>
+  <int value="1"
+      label="User has completed fre, browser entry point is enabled, and os
+             entry point is disabled."/>
+  <int value="2"
+      label="User has completed fre, browser entry point is disabled, and os
+             entry point is enabled."/>
+  <int value="3"
+      label="User has completed fre, both browser and os entry points are
+             enabled."/>
+  <int value="4"
+      label="User has completed fre, neither entry point is enabled."/>
+  <int value="5"
+      label="User is not allowed to see glic, e.g. due to enterprise policy."/>
+  <int value="6"
+      label="User has not completed fre, neither entry point is enabled."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:EntryPointImpression) -->
+
+<!-- LINT.IfChange(GlicHotkeyUsage) -->
+
+<enum name="GlicHotkeyUsage">
+  <int value="0" label="Default"/>
+  <int value="1" label="Custom"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/background/glic/glic_background_mode_manager.h:HotkeyUsage) -->
+
+<!-- LINT.IfChange(GlicInputModesUsed) -->
+
+<enum name="GlicInputModesUsed">
+  <int value="0" label="No input submitted"/>
+  <int value="1" label="Only text input submitted"/>
+  <int value="2" label="Only audio input submitted"/>
+  <int value="3" label="Text and Audio input submitted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicInputModesUsed) -->
+
+<!-- LINT.IfChange(GlicInvocationSource) -->
+
+<enum name="GlicInvocationSource">
+  <int value="0" label="Button in the OS"/>
+  <int value="1" label="Menu from button in the OS"/>
+  <int value="2" label="OS-level hotkey"/>
+  <int value="3" label="Button in top-chrome"/>
+  <int value="4" label="First run experience"/>
+  <int value="5" label="From the profile picker"/>
+  <int value="6" label="From tab strip nudge"/>
+  <int value="7" label="From 3-dot menu"/>
+  <int value="8" label="An unsupported/unknown source"/>
+  <int value="9" label="From the What's New page"/>
+  <int value="10" label="User clicked sign-in and signed in"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
+
+<!-- LINT.IfChange(GlicResponseError) -->
+
+<enum name="GlicMetricsError">
+  <int value="0" label="Response start without input."/>
+  <int value="1" label="Response stop without input."/>
+  <int value="2" label="Response start while hiding or hidden."/>
+  <int value="3" label="Window close without window open."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:Error) -->
+
+<!-- LINT.IfChange(GlicRequestEvent) -->
+
+<enum name="GlicRequestEvent">
+  <int value="0" label="Request received."/>
+  <int value="1" label="Response sent."/>
+  <int value="2" label="Request handling exception caught."/>
+  <int value="3"
+      label="Request received while hidden (whether or not this is expected)."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/glic_api_host.ts:GlicRequestEvent, //chrome/browser/glic/glic_metrics.h:GlicRequestEvent) -->
+
+<!-- LINT.IfChange(GlicResponseSegmentation) -->
+
+<enum name="GlicResponseSegmentation">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Button in the OS, attached, text mode."/>
+  <int value="2" label="Button in the OS, attached, audio mode."/>
+  <int value="3" label="Button in the OS, detached, text mode."/>
+  <int value="4" label="Button in the OS, detached, audio mode."/>
+  <int value="5" label="Menu from button in the OS, attached, text mode."/>
+  <int value="6" label="Menu from button in the OS, attached, audio mode."/>
+  <int value="7" label="Menu from button in the OS, detached, text mode."/>
+  <int value="8" label="Menu from button in the OS, detached, audio mode."/>
+  <int value="9" label="OS hotkey, attached, text mode."/>
+  <int value="10" label="OS hotkey, attached, audio mode."/>
+  <int value="11" label="OS hotkey, detached, text mode."/>
+  <int value="12" label="OS hotkey, detached, audio mode."/>
+  <int value="13" label="Button in top-chrome, attached, text mode."/>
+  <int value="14" label="Button in top-chrome, attached, audio mode."/>
+  <int value="15" label="Button in top-chrome, detached, text mode."/>
+  <int value="16" label="Button in top-chrome, detached, audio mode."/>
+  <int value="17" label="First run experience, attached, text mode."/>
+  <int value="18" label="First run experience, attached, audio mode."/>
+  <int value="19" label="First run experience, detached, text mode."/>
+  <int value="20" label="First run experience, detached, audio mode."/>
+  <int value="21" label="Profile picker, attached, text mode."/>
+  <int value="22" label="Profile picker, attached, audio mode."/>
+  <int value="23" label="Profile picker, detached, text mode."/>
+  <int value="24" label="Profile picker, detached, audio mode."/>
+  <int value="25" label="Nudge, attached, text mode."/>
+  <int value="26" label="Nudge, attached, audio mode."/>
+  <int value="27" label="Nudge, detached, text mode."/>
+  <int value="28" label="Nudge, detached, audio mode."/>
+  <int value="29" label="3-dot menu, attached, text mode."/>
+  <int value="30" label="3-dot menu, attached, audio mode."/>
+  <int value="31" label="3-dot menu, detached, text mode."/>
+  <int value="32" label="3-dot menu, detached, audio mode."/>
+  <int value="33" label="Unsupported/unknown, attached, text mode."/>
+  <int value="34" label="Unsupported/unknown, attached, audio mode."/>
+  <int value="35" label="Unsupported/unknown, detached, text mode."/>
+  <int value="36" label="Unsupported/unknown, detached, audio mode."/>
+  <int value="37" label="What's New page, attached, text mode."/>
+  <int value="38" label="What's New page, attached, audio mode."/>
+  <int value="39" label="What's New page, detached, text mode."/>
+  <int value="40" label="What's New page, detached, audio mode."/>
+  <int value="41"
+      label="User clicked sign-in and signed in, attached, text mode."/>
+  <int value="42"
+      label="User clicked sign-in and signed in, attached, audio mode."/>
+  <int value="43"
+      label="User clicked sign-in and signed in, detached, text mode."/>
+  <int value="44"
+      label="User clicked sign-in and signed in, detached, audio mode."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->
+
+<!-- LINT.IfChange(GlicScrollToErrorReason) -->
+
+<enum name="GlicScrollToErrorReason">
+  <int value="0" label="NotSupported"/>
+  <int value="1" label="NewerScrollToCall"/>
+  <int value="2" label="NoFocusedTab"/>
+  <int value="3" label="NoMatchFound"/>
+  <int value="4" label="FocusedTabChangedOrNavigated"/>
+  <int value="5" label="NoMatchingDocument"/>
+  <int value="6" label="SearchRangeInvalid"/>
+  <int value="7" label="TabContextPermissionDisabled"/>
+  <int value="8" label="DroppedByWebClient"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ScrollToErrorReason) -->
+
+<!-- LINT.IfChange(TieredRolloutEnablementStatus) -->
+
+<enum name="GlicTieredRolloutEnablementStatus">
+  <int value="0" label="All profiles enabled"/>
+  <int value="1" label="Some profiles enabled"/>
+  <int value="2" label="No profiles enabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics_provider.h:TieredRolloutEnablementStatus) -->
+
+<!-- LINT.IfChange(GlicWebClientMode) -->
+
+<enum name="GlicWebClientMode">
+  <int value="0" label="Text"/>
+  <int value="1" label="Audio"/>
+  <int value="2" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebClientMode) -->
+
+<enum name="PdfRequestStates">
+  <int value="0" label="PDF main doc; PDF found"/>
+  <int value="1" label="PDF main doc; PDF not found"/>
+  <int value="2" label="Non-PDF main doc; PDF found"/>
+  <int value="3" label="Non-PDF main doc; PDF not found"/>
+</enum>
+
+<!-- LINT.IfChange(WebUiState) -->
+
+<enum name="WebUiState">
+  <int value="0" label="Glic app controller not started"/>
+  <int value="1" label="Web client begins loading; no visible UI"/>
+  <int value="2" label="Loading panel is displayed"/>
+  <int value="3"
+      label="Loading panel is still displayed, but the web client is ready"/>
+  <int value="4"
+      label="Loading panel is displayed until web client is ready, or timeout
+             is reached"/>
+  <int value="5" label="'Something went wrong' error panel is displayed"/>
+  <int value="6" label="Connection offline panel is displayed"/>
+  <int value="7" label="Glic is not available for profile"/>
+  <int value="8" label="Web view is displaying the application"/>
+  <int value="9" label="The panel is unresponsive"/>
+  <int value="10" label="The sign-in panel is displayed"/>
+  <int value="11"
+      label="Web view is displayed, but it is displaying an error page"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUiState) -->
+
+</enums>
+
+</histogram-configuration>

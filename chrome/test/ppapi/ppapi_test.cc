@@ -64,8 +64,7 @@ void AddPrivateSwitches(base::CommandLine* command_line) {
 
 }  // namespace
 
-PPAPITestMessageHandler::PPAPITestMessageHandler() {
-}
+PPAPITestMessageHandler::PPAPITestMessageHandler() = default;
 
 TestMessageHandler::MessageResponse PPAPITestMessageHandler::HandleMessage(
     const std::string& json) {

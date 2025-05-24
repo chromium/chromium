@@ -85,7 +85,7 @@ class PhotoTransitionAnimationObserver : public AmbientViewDelegateObserver {
   }
 
   void Cleanup() {
-    timer_.AbandonAndStop();
+    timer_.Stop();
     scoped_observation_.Reset();
   }
 

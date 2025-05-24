@@ -59,8 +59,7 @@ Button ToSyntheticMouseButton(int button) {
     return Button::BACK;
   if (button == 4)
     return Button::FORWARD;
-  NOTREACHED_IN_MIGRATION() << "Unexpected button";
-  return Button();
+  NOTREACHED() << "Unexpected button";
 }
 
 int ToKeyModifiers(const std::string& key) {
@@ -425,9 +424,8 @@ bool ActionsParser::ParseAction(
   } else if (source_type == "none") {
     return ParseNullAction(action, subtype, param_list);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  return false;
 }
 
 bool ActionsParser::ParseWheelAction(const base::Value::Dict& action,

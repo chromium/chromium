@@ -6,6 +6,7 @@
 #define UI_BASE_METADATA_METADATA_MACROS_INTERNAL_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ui/base/metadata/metadata_types.h"
@@ -60,7 +61,7 @@
 #define METADATA_ACCESSORS_INTERNAL_BASE(class_name)   \
   using kMetadataTag = class_name;                     \
   [[maybe_unused]] static const char kViewClassName[]; \
-  const char* GetClassName() const;                    \
+  std::string_view GetClassName() const;               \
   static ui::metadata::ClassMetaData* MetaData();      \
   class_name* ReinterpretToBaseClass(void* obj);       \
   /* Don't hide non-const base class version. */       \
@@ -169,7 +170,7 @@
 
 #define BEGIN_METADATA_INTERNAL_BASE(qualified_class_name,                   \
                                      metadata_class_name, parent_class_name) \
-  const char* qualified_class_name::GetClassName() const {                   \
+  std::string_view qualified_class_name::GetClassName() const {              \
     return GetClassMetaData()->type_name();                                  \
   }                                                                          \
                                                                              \

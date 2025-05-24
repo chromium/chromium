@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -15,7 +16,6 @@
 #include "base/containers/stack.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -51,27 +51,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "cc/slim/layer_tree.h"
-#include "content/browser/renderer_host/compositor_impl_android.h"
-#include "ui/android/window_android.h"
-#include "ui/android/window_android_compositor.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_MAC)
-#include "content/browser/renderer_host/browser_compositor_view_mac.h"
-#include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
-#endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_IOS)
-#include "content/browser/renderer_host/browser_compositor_ios.h"
-#include "content/browser/renderer_host/test_render_widget_host_view_ios_factory.h"
-#endif  // BUILDFLAG(IS_IOS)
-
-#if defined(USE_AURA)
-#include "content/browser/renderer_host/render_widget_host_view_aura.h"
-#endif  // defined(USE_AURA)
 
 namespace content {
 
@@ -219,7 +198,7 @@ RenderFrameHost* CreateSubframe(RenderFrameHost* parent,
 std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
     RenderFrameHostImpl* starting_rfh) {
   std::vector<RenderFrameHostImpl*> visited_frames;
-  starting_rfh->ForEachRenderFrameHost(
+  starting_rfh->ForEachRenderFrameHostImpl(
       [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
@@ -228,7 +207,7 @@ std::vector<RenderFrameHostImpl*>
 CollectAllRenderFrameHostsIncludingSpeculative(
     RenderFrameHostImpl* starting_rfh) {
   std::vector<RenderFrameHostImpl*> visited_frames;
-  starting_rfh->ForEachRenderFrameHostIncludingSpeculative(
+  starting_rfh->ForEachRenderFrameHostImplIncludingSpeculative(
       [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
@@ -236,7 +215,7 @@ CollectAllRenderFrameHostsIncludingSpeculative(
 std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
     WebContentsImpl* web_contents) {
   std::vector<RenderFrameHostImpl*> visited_frames;
-  web_contents->ForEachRenderFrameHost(
+  web_contents->ForEachRenderFrameHostImpl(
       [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
@@ -244,7 +223,7 @@ std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
 std::vector<RenderFrameHostImpl*>
 CollectAllRenderFrameHostsIncludingSpeculative(WebContentsImpl* web_contents) {
   std::vector<RenderFrameHostImpl*> visited_frames;
-  web_contents->ForEachRenderFrameHostIncludingSpeculative(
+  web_contents->ForEachRenderFrameHostImplIncludingSpeculative(
       [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
@@ -469,7 +448,7 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
 std::string FrameTreeVisualizer::GetName(SiteInstance* site_instance) {
   // Indices into the vector correspond to letters of the alphabet.
   size_t index =
-      base::ranges::find(seen_site_instance_ids_, site_instance->GetId()) -
+      std::ranges::find(seen_site_instance_ids_, site_instance->GetId()) -
       seen_site_instance_ids_.begin();
   if (index == seen_site_instance_ids_.size())
     seen_site_instance_ids_.push_back(site_instance->GetId());
@@ -576,7 +555,8 @@ void FileChooserDelegate::RunFileChooser(
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   for (const auto& file : files_) {
     auto file_info = blink::mojom::FileChooserFileInfo::NewNativeFile(
-        blink::mojom::NativeFileInfo::New(file, std::u16string()));
+        blink::mojom::NativeFileInfo::New(file, std::u16string(),
+                                          std::vector<std::u16string>()));
     files.push_back(std::move(file_info));
   }
   listener->FileSelected(std::move(files), base_dir_, params.mode);
@@ -710,7 +690,6 @@ ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::~ShowPopupMenuInterceptor() =
 void ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::ShowPopupMenu(
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,
-    int32_t item_height,
     double font_size,
     int32_t selected_item,
     std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -724,7 +703,7 @@ void ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::ShowPopupMenu(
   }
 
   GetForwardingInterface()->ShowPopupMenu(
-      std::move(popup_client), bounds, item_height, font_size, selected_item,
+      std::move(popup_client), bounds, font_size, selected_item,
       std::move(menu_items), right_aligned, allow_multiple_selection);
 }
 
@@ -777,7 +756,7 @@ void ShowPopupWidgetWaiter::ShowPopup(const gfx::Rect& initial_rect,
 
 void ShowPopupWidgetWaiter::DidCreatePopupWidget(
     RenderWidgetHostImpl* render_widget_host) {
-  process_id_ = render_widget_host->GetProcess()->GetID();
+  process_id_ = render_widget_host->GetProcess()->GetDeprecatedID();
   routing_id_ = render_widget_host->GetRoutingID();
   // Swapped back in destructor from process_id_ and routing_id_ lookup.
   std::ignore = render_widget_host->popup_widget_host_receiver_for_testing()
@@ -824,7 +803,6 @@ BeforeUnloadBlockingDelegate::~BeforeUnloadBlockingDelegate() {
     std::move(callback_).Run(true, std::u16string());
 
   web_contents_->SetDelegate(nullptr);
-  web_contents_->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 void BeforeUnloadBlockingDelegate::Wait() {
@@ -850,7 +828,7 @@ void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(
     const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BeforeUnloadBlockingDelegate::RunBeforeUnloadDialog(
@@ -866,8 +844,7 @@ bool BeforeUnloadBlockingDelegate::HandleJavaScriptDialog(
     WebContents* web_contents,
     bool accept,
     const std::u16string* prompt_override) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 FrameNavigateParamsCapturer::FrameNavigateParamsCapturer(WebContents* contents)
@@ -1170,64 +1147,6 @@ void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host) {
   CHECK(future.Wait());
 }
 
-void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
-  base::RunLoop run_loop;
-  auto callback = base::BindOnce(
-      [](base::RepeatingClosure cb,
-         const viz::FrameTimingDetails& frame_timing_details) {
-        std::move(cb).Run();
-      },
-      run_loop.QuitClosure());
-#if BUILDFLAG(IS_ANDROID)
-  ui::WindowAndroidCompositor* compositor =
-      web_contents->GetNativeView()->GetWindowAndroid()->GetCompositor();
-  compositor->PostRequestSuccessfulPresentationTimeForNextFrame(
-      std::move(callback));
-#elif BUILDFLAG(IS_MAC)
-  auto* browser_compositor = GetBrowserCompositorMacForTesting(
-      web_contents->GetRenderWidgetHostView());
-  browser_compositor->GetCompositor()
-      ->RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
-#elif BUILDFLAG(IS_IOS)
-  auto* browser_compositor = GetBrowserCompositorIOSForTesting(
-      web_contents->GetRenderWidgetHostView());
-  browser_compositor->GetCompositor()
-      ->RequestSuccessfulPresentationTimeForNextFrame(std::move(callback));
-#elif defined(USE_AURA)
-  auto* compositor = static_cast<RenderWidgetHostViewAura*>(
-                         web_contents->GetRenderWidgetHostView())
-                         ->GetCompositor();
-  compositor->RequestSuccessfulPresentationTimeForNextFrame(
-      std::move(callback));
-#else
-  NOTREACHED_IN_MIGRATION();
-#endif
-  run_loop.Run();
-}
-
-void ForceNewCompositorFrameFromBrowser(WebContents* web_contents) {
-#if BUILDFLAG(IS_ANDROID)
-  ui::WindowAndroid* window = web_contents->GetTopLevelNativeWindow();
-  ui::WindowAndroidCompositor* compositor = window->GetCompositor();
-  cc::slim::LayerTree* layer_tree =
-      static_cast<CompositorImpl*>(compositor)->GetLayerTreeForTesting();
-  layer_tree->SetNeedsRedrawForTesting();
-#elif BUILDFLAG(IS_MAC)
-  auto* browser_compositor = GetBrowserCompositorMacForTesting(
-      web_contents->GetRenderWidgetHostView());
-  browser_compositor->GetCompositor()->ScheduleFullRedraw();
-#elif BUILDFLAG(IS_IOS)
-  auto* browser_compositor = GetBrowserCompositorIOSForTesting(
-      web_contents->GetRenderWidgetHostView());
-  browser_compositor->GetCompositor()->ScheduleFullRedraw();
-#elif defined(USE_AURA)
-  auto* compositor = static_cast<RenderWidgetHostViewAura*>(
-                         web_contents->GetRenderWidgetHostView())
-                         ->GetCompositor();
-  compositor->ScheduleFullRedraw();
-#endif
-}
-
 namespace {
 
 // Helper to return a 200 OK non-cacheable response for a first request, and
@@ -1263,6 +1182,37 @@ void AddRedirectOnSecondNavigationHandler(net::EmbeddedTestServer* server) {
       "/redirect-on-second-navigation",
       base::BindRepeating(&RedirectToTargetOnSecondNavigation,
                           base::OwnedRef(navigation_counter))));
+}
+
+LoadingStartObserver::LoadingStartObserver(WebContents* web_contents,
+                                           Callback callback)
+    : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
+LoadingStartObserver::~LoadingStartObserver() = default;
+
+void LoadingStartObserver::DidStartLoading() {
+  callback_.Run();
+}
+
+LoadingStopObserver::LoadingStopObserver(WebContents* web_contents,
+                                         Callback callback)
+    : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
+LoadingStopObserver::~LoadingStopObserver() = default;
+
+void LoadingStopObserver::DidStopLoading() {
+  callback_.Run();
+}
+
+LoadFinishObserver::LoadFinishObserver(WebContents* web_contents,
+                                       Callback callback)
+    : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
+LoadFinishObserver::~LoadFinishObserver() = default;
+
+void LoadFinishObserver::DidFinishLoad(RenderFrameHost* render_frame_host,
+                                       const GURL& validated_url) {
+  callback_.Run(render_frame_host, validated_url);
 }
 
 }  // namespace content

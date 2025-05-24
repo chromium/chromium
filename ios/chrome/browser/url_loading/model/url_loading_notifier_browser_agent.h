@@ -67,7 +67,6 @@ class UrlLoadingNotifierBrowserAgent
 
  private:
   friend class BrowserUserData<UrlLoadingNotifierBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit UrlLoadingNotifierBrowserAgent(Browser* browser);
 

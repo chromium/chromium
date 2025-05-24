@@ -7,10 +7,13 @@
 #include <memory>
 
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 
 namespace base {
 
@@ -34,32 +37,6 @@ void HistogramSnapshotManager::PrepareDeltas(
   }
 }
 
-void HistogramSnapshotManager::SnapshotUnloggedSamples(
-    const std::vector<HistogramBase*>& histograms,
-    HistogramBase::Flags required_flags) {
-  DCHECK(!unlogged_samples_snapshot_taken_);
-  unlogged_samples_snapshot_taken_ = true;
-  for (HistogramBase* const histogram : histograms) {
-    if (histogram->HasFlags(required_flags)) {
-      const HistogramSnapshotPair& histogram_snapshot_pair =
-          histograms_and_snapshots_.emplace_back(
-              histogram, histogram->SnapshotUnloggedSamples());
-      PrepareSamples(histogram_snapshot_pair.first,
-                     *histogram_snapshot_pair.second);
-    }
-  }
-}
-
-void HistogramSnapshotManager::MarkUnloggedSamplesAsLogged() {
-  DCHECK(unlogged_samples_snapshot_taken_);
-  unlogged_samples_snapshot_taken_ = false;
-  std::vector<HistogramSnapshotPair> histograms_and_snapshots;
-  histograms_and_snapshots.swap(histograms_and_snapshots_);
-  for (auto& [histogram, snapshot] : histograms_and_snapshots) {
-    histogram->MarkSamplesAsLogged(*snapshot);
-  }
-}
-
 void HistogramSnapshotManager::PrepareDelta(HistogramBase* histogram) {
   std::unique_ptr<HistogramSamples> samples = histogram->SnapshotDelta();
   PrepareSamples(histogram, *samples);
@@ -74,11 +51,15 @@ void HistogramSnapshotManager::PrepareFinalDelta(
 void HistogramSnapshotManager::PrepareSamples(const HistogramBase* histogram,
                                               const HistogramSamples& samples) {
   DCHECK(histogram_flattener_);
+  if (samples.TotalCount() <= 0) {
+    return;
+  }
 
   // Crash if we detect that our histograms have been overwritten.  This may be
   // a fair distance from the memory smasher, but we hope to correlate these
   // crashes with other events, such as plugins, or usage patterns, etc.
   uint32_t corruption = histogram->FindCorruption(samples);
+  base::debug::Alias(&corruption);
   if (HistogramBase::BUCKET_ORDER_ERROR & corruption) {
     // Extract fields useful during debug.
     const BucketRanges* ranges =
@@ -86,14 +67,24 @@ void HistogramSnapshotManager::PrepareSamples(const HistogramBase* histogram,
     uint32_t ranges_checksum = ranges->checksum();
     uint32_t ranges_calc_checksum = ranges->CalculateChecksum();
     int32_t flags = histogram->flags();
-    // The checksum should have caught this, so crash separately if it didn't.
-    CHECK_NE(0U, HistogramBase::RANGE_CHECKSUM_ERROR & corruption);
-    CHECK(false);  // Crash for the bucket order corruption.
     // Ensure that compiler keeps around pointers to |histogram| and its
     // internal |bucket_ranges_| for any minidumps.
     base::debug::Alias(&ranges_checksum);
     base::debug::Alias(&ranges_calc_checksum);
     base::debug::Alias(&flags);
+
+    // TODO(crbug.com/397733765): Clean up crash keys once the bug is fixed.
+    SCOPED_CRASH_KEY_STRING32("PrepareSamples", "histogram",
+                              histogram->histogram_name());
+    std::string ranges_string;
+    for (size_t index = 0; index < ranges->size(); ++index) {
+      ranges_string += base::StringPrintf("%d ", ranges->range(index));
+    }
+    SCOPED_CRASH_KEY_STRING1024("PrepareSamples", "ranges", ranges_string);
+
+    // The checksum should have caught this, so crash separately if it didn't.
+    CHECK_NE(0U, HistogramBase::RANGE_CHECKSUM_ERROR & corruption);
+    NOTREACHED();  // Crash for the bucket order corruption.
   }
   // Checksum corruption might not have caused order corruption.
   CHECK_EQ(0U, HistogramBase::RANGE_CHECKSUM_ERROR & corruption);
@@ -108,8 +99,7 @@ void HistogramSnapshotManager::PrepareSamples(const HistogramBase* histogram,
     return;
   }
 
-  if (samples.TotalCount() > 0)
-    histogram_flattener_->RecordDelta(*histogram, samples);
+  histogram_flattener_->RecordDelta(*histogram, samples);
 }
 
 }  // namespace base

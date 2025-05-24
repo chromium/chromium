@@ -12,7 +12,6 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -31,8 +30,9 @@
 #include "content/public/browser/web_contents.h"
 #include "pdf/pdf_features.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/platform/ax_platform.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #endif
 
@@ -107,24 +107,25 @@ std::vector<content::WebContents*> GetAllPdfWebContents(Profile* profile) {
 // enabled.
 bool IsAccessibilityEnabled(Profile* profile) {
   // Active if a screen reader is present.
-  if (accessibility_state_utils::IsScreenReaderEnabled()) {
+  if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
     return true;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Conditionally active if select-to-speak is enabled.
   if (features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
-      accessibility_state_utils::IsSelectToSpeakEnabled()) {
+      ash::AccessibilityManager::Get()->IsSelectToSpeakEnabled()) {
     return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Check all web contentses. `ReadAnythingUntrustedPageHandler` sets the
-  // screen reader mode when starting to observe a PDF WebContents via
-  // `SetUpPdfObserver()`. So if any of them have screen reader mode enabled,
+  // extended properties mode when starting to observe a PDF WebContents via
+  // `SetUpPdfObserver()`. So if any of them have that mode enabled,
   // return true.
   for (auto* contents : GetAllPdfWebContents(profile)) {
-    if (contents->GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader)) {
+    if (contents->GetAccessibilityMode().has_mode(
+            ui::AXMode::kExtendedProperties)) {
       return true;
     }
   }
@@ -133,12 +134,12 @@ bool IsAccessibilityEnabled(Profile* profile) {
 }
 
 void RecordAcceptLanguages(const std::string& accept_languages) {
-  for (std::string language :
+  for (const std::string& language :
        base::SplitString(accept_languages, ",", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_NONEMPTY)) {
     // Convert to a Chrome language code synonym. This language synonym is then
-    // converted into a `LocaleCodeISO639` enum value for a UMA histogram. See
-    // tools/metrics/histograms/enums.xml enum LocaleCodeISO639. The enum there
+    // converted into a `LocaleCodeBCP47` enum value for a UMA histogram. See
+    // tools/metrics/histograms/enums.xml enum LocaleCodeBCP47. The enum there
     // doesn't always have locales where the base lang and the locale are the
     // same (e.g. they don't have id-id, but do have id). So if the base lang
     // and the locale are the same, just use the base lang.
@@ -165,7 +166,7 @@ PdfOcrController::PdfOcrController(Profile* profile)
   DCHECK(profile_);
 
   // Register for changes to screenreader/spoken feedback/select to speak.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (auto* const accessibility_manager = ash::AccessibilityManager::Get();
       accessibility_manager) {
     // Unretained is safe because `this` owns the subscription.
@@ -174,12 +175,9 @@ PdfOcrController::PdfOcrController(Profile* profile)
             base::BindRepeating(&PdfOcrController::OnAccessibilityStatusEvent,
                                 base::Unretained(this)));
   }
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/289010799): Observe Chrome OS's select-to-speak setting.
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#else   // BUILDFLAG(IS_CHROMEOS)
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Trigger if a screen reader or Select-to-Speak on ChromeOS is enabled.
   OnActivationChanged();
@@ -197,7 +195,7 @@ bool PdfOcrController::IsEnabled() const {
   return scoped_accessibility_mode_ != nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PdfOcrController::OnAccessibilityStatusEvent(
     const ash::AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
@@ -207,10 +205,17 @@ void PdfOcrController::OnAccessibilityStatusEvent(
     OnActivationChanged();
   }
 }
-#endif  // BUIDLFLAG(IS_CHROMEOS_ASH)
+#endif  // BUIDLFLAG(IS_CHROMEOS)
 
 void PdfOcrController::OnActivationChanged() {
-  bool enable = IsAccessibilityEnabled(profile_);
+  // PDF Searchify feature performs OCR on all inaccessible PDFs regardless of
+  // accessibility settings. Therefore if it is enabled, we don't need to enable
+  // OCR in PDF viewer.
+  // TODO(crbug.com/360803943): Remove this class when PDF Searchify is
+  // launched.
+  bool enable =
+      (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify) &&
+       IsAccessibilityEnabled(profile_));
 
   if (enable == IsEnabled()) {
     return;  // No change in activation.
@@ -276,12 +281,15 @@ void PdfOcrController::Activate() {
   OnActivationChanged();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void PdfOcrController::OnAXModeAdded(ui::AXMode mode) {
-  if (mode.has_mode(ui::AXMode::kScreenReader)) {
-    OnActivationChanged();
-  }
+  OnActivationChanged();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+void PdfOcrController::OnAssistiveTechChanged(
+    ui::AssistiveTech assistive_tech) {
+  OnActivationChanged();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace screen_ai

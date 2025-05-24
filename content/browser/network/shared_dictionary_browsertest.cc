@@ -365,11 +365,7 @@ bool HasSharedDictionaryAcceptEncoding(
   if (it == headers.end()) {
     return false;
   }
-  if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
     return it->second == "dcb, dcz" || base::EndsWith(it->second, ", dcb, dcz");
-  } else {
-    return it->second == "dcb" || base::EndsWith(it->second, ", dcb");
-  }
 }
 
 // A dummy ContentBrowserClient for testing HTTP Auth.
@@ -385,14 +381,17 @@ class DummyAuthContentBrowserClient
   // ContentBrowserClient method:
   std::unique_ptr<LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
-      content::WebContents* web_contents,
-      content::BrowserContext* browser_context,
+      WebContents* web_contents,
+      BrowserContext* browser_context,
       const GlobalRequestID& request_id,
-      bool is_request_for_primary_main_frame,
+      bool is_request_for_primary_main_frame_navigation,
+      bool is_request_for_navigation,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
-      LoginAuthRequiredCallback auth_required_callback) override {
+      GuestPageHolder* guest,
+      LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
+      override {
     create_login_delegate_called_ = true;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -525,14 +524,13 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
   int64_t GetTestDataFileSize(const std::string& name) {
     base::FilePath file_path;
     CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
-    int64_t file_size = 0;
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      CHECK(base::GetFileSize(
-          file_path.Append(GetTestDataFilePath()).AppendASCII(name),
-          &file_size));
+      std::optional<int64_t> size_result = base::GetFileSize(
+          file_path.Append(GetTestDataFilePath()).AppendASCII(name));
+      CHECK(size_result.has_value());
+      return size_result.value();
     }
-    return file_size;
   }
   std::string GetTestDataFile(const std::string& name) {
     base::FilePath file_path;
@@ -709,17 +707,10 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     if (dict_hash) {
       if (*dict_hash == kExpectedDictionaryHashBase64) {
         if (HasSharedDictionaryAcceptEncoding(request.headers)) {
-          if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
             response->AddCustomHeader(
                 "content-encoding",
                 net::shared_dictionary::kSharedZstdContentEncodingName);
             response->set_content(kZstdCompressedDataString);
-          } else {
-            response->AddCustomHeader(
-                "content-encoding",
-                net::shared_dictionary::kSharedBrotliContentEncodingName);
-            response->set_content(kBrotliCompressedDataString);
-          }
         } else {
           response->set_content(kErrorNoSharedDictionaryAcceptEncodingString);
         }
@@ -744,8 +735,7 @@ class SharedDictionaryBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {network::features::kCompressionDictionaryTransportBackend,
-         network::features::kCompressionDictionaryTransport,
-         network::features::kSharedZstd},
+         network::features::kCompressionDictionaryTransport},
         /*disabled_features=*/{});
   }
   SharedDictionaryBrowserTest(const SharedDictionaryBrowserTest&) = delete;

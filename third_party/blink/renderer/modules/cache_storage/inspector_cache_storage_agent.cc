@@ -145,8 +145,7 @@ const char* CacheStorageErrorString(mojom::blink::CacheStorageError error) {
       // This function should only be called upon error.
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 CachedResponseType ResponseTypeToString(
@@ -165,8 +164,7 @@ CachedResponseType ResponseTypeToString(
     case network::mojom::FetchResponseType::kOpaqueRedirect:
       return protocol::CacheStorage::CachedResponseTypeEnum::OpaqueRedirect;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 struct DataRequestParams {
@@ -263,8 +261,8 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
     } else {
       for (auto& request : old_requests) {
         String urlPath(request->url.GetPath().ToString());
-        if (!urlPath.Contains(params_.path_filter,
-                              WTF::kTextCaseUnicodeInsensitive)) {
+        if (urlPath.DeprecatedFindIgnoringCase(params_.path_filter) ==
+            WTF::kNotFound) {
           continue;
         }
         requests.push_back(std::move(request));
@@ -633,16 +631,15 @@ InspectorCacheStorageAgent::GetCacheStorageRemoteForId(
 }
 
 void InspectorCacheStorageAgent::requestCacheNames(
-    protocol::Maybe<String> maybe_security_origin,
-    protocol::Maybe<String> maybe_storage_key,
-    protocol::Maybe<protocol::Storage::StorageBucket> maybe_storage_bucket,
+    std::optional<String> maybe_security_origin,
+    std::optional<String> maybe_storage_key,
+    std::unique_ptr<protocol::Storage::StorageBucket> maybe_storage_bucket,
     std::unique_ptr<RequestCacheNamesCallback> callback) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
                          "InspectorCacheStorageAgent::requestCacheNames",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
-  if (maybe_security_origin.has_value() + maybe_storage_key.has_value() +
-          maybe_storage_bucket.has_value() !=
+  if (!!maybe_security_origin + !!maybe_storage_key + !!maybe_storage_bucket !=
       1) {
     callback->sendFailure(ProtocolResponse::InvalidParams(
         "At least and at most one of security_origin, "
@@ -650,10 +647,10 @@ void InspectorCacheStorageAgent::requestCacheNames(
     return;
   }
   String storage_key, security_origin;
-  if (maybe_storage_key.has_value() || maybe_storage_bucket.has_value()) {
+  if (maybe_storage_key || maybe_storage_bucket) {
     storage_key = maybe_storage_key.has_value()
                       ? maybe_storage_key.value()
-                      : maybe_storage_bucket.value().getStorageKey();
+                      : maybe_storage_bucket->getStorageKey();
     std::optional<StorageKey> key =
         StorageKey::Deserialize(StringUTF8Adaptor(storage_key).AsStringView());
     if (!key.has_value()) {
@@ -679,7 +676,7 @@ void InspectorCacheStorageAgent::requestCacheNames(
   }
 
   std::optional<WTF::String> bucket_name;
-  if (maybe_storage_bucket.has_value() && maybe_storage_bucket->hasName()) {
+  if (maybe_storage_bucket && maybe_storage_bucket->hasName()) {
     bucket_name = maybe_storage_bucket->getName("");
   }
 
@@ -699,7 +696,7 @@ void InspectorCacheStorageAgent::requestCacheNames(
       WTF::BindOnce(
           [](String security_origin, String storage_key,
              std::optional<WTF::String> bucket_name,
-             protocol::Maybe<protocol::Storage::StorageBucket>
+             std::unique_ptr<protocol::Storage::StorageBucket>
                  maybe_storage_bucket,
              int64_t trace_id,
              scoped_refptr<RequestCallbackWrapper<RequestCacheNamesCallback>>
@@ -716,7 +713,7 @@ void InspectorCacheStorageAgent::requestCacheNames(
                           BuildCacheId(storage_key, bucket_name, cache_name))
                       .build();
 
-              if (maybe_storage_bucket.has_value()) {
+              if (maybe_storage_bucket) {
                 protocol_cache->setStorageBucket(maybe_storage_bucket->Clone());
               }
 
@@ -731,9 +728,9 @@ void InspectorCacheStorageAgent::requestCacheNames(
 
 void InspectorCacheStorageAgent::requestEntries(
     const String& cache_id,
-    protocol::Maybe<int> skip_count,
-    protocol::Maybe<int> page_size,
-    protocol::Maybe<String> path_filter,
+    std::optional<int> skip_count,
+    std::optional<int> page_size,
+    std::optional<String> path_filter,
     std::unique_ptr<RequestEntriesCallback> callback) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage",

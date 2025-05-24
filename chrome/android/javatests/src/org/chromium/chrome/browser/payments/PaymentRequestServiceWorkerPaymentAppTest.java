@@ -175,7 +175,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
         // available, otherwise CanMakePayment is not called.
         PaymentAppServiceBridge.setCanMakePaymentForTesting(false);
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfPaymentApps());
     }
 
@@ -202,7 +202,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         Assert.assertNull(mPaymentRequestTestRule.getSelectedPaymentAppLabel());
     }
 
@@ -216,7 +216,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         Assert.assertNull(mPaymentRequestTestRule.getSelectedPaymentAppLabel());
     }
 
@@ -230,7 +230,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         Assert.assertNull(mPaymentRequestTestRule.getSelectedPaymentAppLabel());
     }
 
@@ -263,7 +263,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buy_with_shipping_requested", mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(3, mPaymentRequestTestRule.getNumberOfPaymentApps());
 
@@ -308,7 +308,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buy_with_contact_requested", mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfPaymentApps());
 
@@ -360,7 +360,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
 
         PaymentAppServiceBridge.setCanMakePaymentForTesting(true);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buy_with_shipping_and_contact_requested",
                 mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfPaymentApps());

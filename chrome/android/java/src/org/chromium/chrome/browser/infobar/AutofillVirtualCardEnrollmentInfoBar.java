@@ -19,15 +19,16 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBarControlLayout;
 import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 
 import java.util.LinkedList;
 
@@ -37,7 +38,7 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
     private Bitmap mIssuerIcon;
     private String mCardLabel;
     private int mIconDrawableId = -1;
-    private String mTitleText;
+    private final String mTitleText;
     private String mDescriptionText;
     private String mLearnMoreLinkText;
     private final LinkedList<LegalMessageLine> mGoogleLegalMessageLines =
@@ -214,7 +215,7 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
             SpannableString text = new SpannableString(mDescriptionText);
             int offset = mDescriptionText.length() - mLearnMoreLinkText.length();
             text.setSpan(
-                    new NoUnderlineClickableSpan(
+                    new ChromeClickableSpan(
                             layout.getContext(),
                             (unused) -> {
                                 AutofillVirtualCardEnrollmentInfoBarJni.get()
@@ -253,11 +254,15 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         // Get and resize the issuer icon.
-        AutofillUiUtils.CardIconSpecs cardIconSpecs =
-                AutofillUiUtils.CardIconSpecs.create(layout.getContext(), ImageSize.LARGE);
+        IconSpecs iconSpecs =
+                IconSpecs.create(
+                        layout.getContext(), ImageType.CREDIT_CARD_ART_IMAGE, ImageSize.LARGE);
         Bitmap scaledIssuerIcon =
                 Bitmap.createScaledBitmap(
-                        mIssuerIcon, cardIconSpecs.getWidth(), cardIconSpecs.getHeight(), true);
+                        mIssuerIcon,
+                        iconSpecs.getWidth(),
+                        iconSpecs.getHeight(),
+                        /* filter= */ true);
 
         // Add the issuer icon and the card container text.
         control.addIcon(

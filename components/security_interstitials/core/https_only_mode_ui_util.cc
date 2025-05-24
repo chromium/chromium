@@ -37,8 +37,13 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_WITH_SITE_ENGAGEMENT_PRIMARY_PARAGRAPH;
   } else if (interstitial_state.enabled_by_advanced_protection) {
+#if BUILDFLAG(IS_ANDROID)
+    primary_paragraph_id =
+        IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH_ANDROID;
+#else
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH;
+#endif
   } else if (interstitial_state.enabled_by_typically_secure_browsing) {
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_FOR_TYPICALLY_SECURE_BROWSING_PRIMARY_PARAGRAPH;
@@ -79,8 +84,6 @@ void PopulateHttpsOnlyModeStringsForSharedHTML(
   load_time_data.Set("type", "HTTPS_ONLY");
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button", false);
-  load_time_data.Set("show_recurrent_error_paragraph", false);
-  load_time_data.Set("recurrentErrorParagraph", "");
   load_time_data.Set("openDetails", "");
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");

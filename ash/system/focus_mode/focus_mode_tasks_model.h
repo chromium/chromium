@@ -118,6 +118,7 @@ class ASH_EXPORT FocusModeTasksModel final {
   const std::vector<FocusModeTask>& tasks() const;
   const FocusModeTask* selected_task() const;
 
+  const FocusModeTask* PendingTaskForTesting() const;
   const TaskId& PrefTaskIdForTesting() const;
 
  private:

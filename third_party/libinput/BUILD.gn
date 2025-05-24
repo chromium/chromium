@@ -1,0 +1,118 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/linux/pkg_config.gni")
+
+assert(is_linux)
+
+pkg_config("libevdev") {
+  packages = [ "libevdev" ]
+}
+
+pkg_config("libudev") {
+  packages = [ "libudev" ]
+}
+
+pkg_config("mtdev") {
+  packages = [ "mtdev" ]
+}
+
+config("libinput_public_config") {
+  include_dirs = [
+    "include",
+    "src",
+    "src/src",
+  ]
+}
+
+source_set("libinput") {
+  testonly = true
+
+  cflags_c = [
+    # cflags as per upstream meson.build:
+    "-D_FILE_OFFSET_BITS=64",
+    "-Wno-unused-parameter",
+    "-Wmissing-prototypes",
+    "-Wstrict-prototypes",
+    "-Wundef",
+    "-Wpointer-arith",
+    "-Wuninitialized",
+    "-Winit-self",
+    "-Wstrict-prototypes",
+    "-Wimplicit-fallthrough",
+    "-Wredundant-decls",
+    "-Wincompatible-pointer-types",
+    "-Wformat=2",
+    "-Wno-missing-field-initializers",
+    "-Wmissing-declarations",
+
+    # Additional flags for chromium build:
+    # to_human_time() may not always return a value
+    "-Wno-return-type",
+
+    # libinput uses assertions like `assert(!"some string")`
+    "-Wno-string-conversion",
+  ]
+
+  sources = [
+    "src/src/evdev-debounce.c",
+    "src/src/evdev-fallback.c",
+    "src/src/evdev-middle-button.c",
+    "src/src/evdev-mt-touchpad-buttons.c",
+    "src/src/evdev-mt-touchpad-edge-scroll.c",
+    "src/src/evdev-mt-touchpad-gestures.c",
+    "src/src/evdev-mt-touchpad-tap.c",
+    "src/src/evdev-mt-touchpad-thumb.c",
+    "src/src/evdev-mt-touchpad.c",
+    "src/src/evdev-tablet-pad-leds.c",
+    "src/src/evdev-tablet-pad.c",
+    "src/src/evdev-tablet.c",
+    "src/src/evdev-totem.c",
+    "src/src/evdev-wheel.c",
+    "src/src/evdev.c",
+    "src/src/filter-custom.c",
+    "src/src/filter-flat.c",
+    "src/src/filter-low-dpi.c",
+    "src/src/filter-mouse.c",
+    "src/src/filter-tablet.c",
+    "src/src/filter-touchpad-flat.c",
+    "src/src/filter-touchpad-x230.c",
+    "src/src/filter-touchpad.c",
+    "src/src/filter-trackpoint-flat.c",
+    "src/src/filter-trackpoint.c",
+    "src/src/filter.c",
+    "src/src/libinput-private-config.c",
+    "src/src/libinput.c",
+    "src/src/path-seat.c",
+    "src/src/timer.c",
+    "src/src/udev-seat.c",
+
+    # quirks sources
+    "src/src/quirks.c",
+
+    # util sources
+    "src/src/util-list.c",
+    "src/src/util-prop-parsers.c",
+    "src/src/util-ratelimit.c",
+    "src/src/util-strings.c",
+  ]
+
+  configs += [
+    ":libevdev",
+    ":libinput_public_config",
+    ":mtdev",
+    ":libudev",
+  ]
+
+  if (!is_debug) {
+    # libinput relies on assertions.
+    configs -= [ "//build/config:release" ]
+    configs += [ "//build/config:debug" ]
+  }
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":libinput_public_config" ]
+}

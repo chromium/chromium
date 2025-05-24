@@ -30,8 +30,7 @@ bool IsUrlWebApkCompatible(const GURL& url) {
 }  // namespace
 
 // static
-bool WebappsUtils::IsWebApkInstalled(content::BrowserContext* browser_context,
-                                     const GURL& url) {
+bool WebappsUtils::IsWebApkInstalled(const GURL& url) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> java_url =
       base::android::ConvertUTF8ToJavaString(env, url.spec());

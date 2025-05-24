@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
+group("unit_tests") {
+  testonly = true
+
+  deps = [
+    "//components/collaboration/internal:unit_tests",
+    "//components/collaboration/public:unit_tests",
+  ]
+
+  data_deps = [ ":components_unittests_gtest_filter" ]
+}
+
+if (is_android) {
+  java_group("junit") {
+    testonly = true
+
+    deps = [ "//components/collaboration/public:junit" ]
+  }
+}
+
+source_set("components_unittests_gtest_filter") {
+  testonly = true
+
+  data = [ "components_unittests.filter" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_support/mock_collaboration_controller_delegate.cc",
+    "test_support/mock_collaboration_controller_delegate.h",
+    "test_support/mock_collaboration_service.cc",
+    "test_support/mock_collaboration_service.h",
+    "test_support/mock_messaging_backend_service.cc",
+    "test_support/mock_messaging_backend_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/collaboration/public",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

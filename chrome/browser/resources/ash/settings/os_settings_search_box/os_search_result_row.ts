@@ -22,14 +22,14 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization_search.mojom-webui.js';
-import {Section, Subpage} from '../mojom-webui/routes.mojom-webui.js';
-import {SearchResult as SettingsSearchResult, SearchResultIdentifier, SearchResultType} from '../mojom-webui/search.mojom-webui.js';
+import type {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization_search.mojom-webui.js';
+import type {Section, Subpage} from '../mojom-webui/routes.mojom-webui.js';
+import type {SearchResult as SettingsSearchResult, SearchResultIdentifier} from '../mojom-webui/search.mojom-webui.js';
+import {SearchResultType} from '../mojom-webui/search.mojom-webui.js';
 import {SearchResultIcon} from '../mojom-webui/search_result_icon.mojom-webui.js';
-import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Router} from '../router.js';
-import {SearchResult} from '../search/combined_search_handler.js';
+import type {SearchResult} from '../search/combined_search_handler.js';
 
 import {getTemplate} from './os_search_result_row.html.js';
 
@@ -580,7 +580,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       return;
     }
 
-    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    const settingsSearchResult = this.searchResult;
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.Settings.SearchResultTypeSelected', settingsSearchResult.type,
         SearchResultType.MAX_VALUE);
@@ -612,8 +612,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
           }
         };
 
-    const args =
-        metricArgs(settingsSearchResult.type, settingsSearchResult.id)!;
+    const args = metricArgs(settingsSearchResult.type, settingsSearchResult.id);
     if (args.value) {
       chrome.metricsPrivate.recordSparseValue(args.metricName, args.value);
     }
@@ -632,7 +631,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       return;
     }
 
-    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    const settingsSearchResult = this.searchResult;
     assert(settingsSearchResult.urlPathWithParameters, 'Url path is empty.');
     this.recordSearchResultMetrics_();
 
@@ -665,17 +664,16 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
    * @return The name of the icon to use.
    */
   private getResultIcon_(): string {
-    const isRevampEnabled = isRevampWayfindingEnabled();
     if (isPersonalizationSearchResult(this.searchResult)) {
-      return isRevampEnabled ? 'os-settings:personalization-revamp' :
-                               'os-settings:paint-brush';
+      return 'os-settings:personalization';
     }
 
-    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    const settingsSearchResult = this.searchResult;
     switch (settingsSearchResult.icon) {
       case SearchResultIcon.kA11y:
-        return isRevampEnabled ? 'os-settings:accessibility-revamp' :
-                                 'os-settings:accessibility';
+        return 'os-settings:accessibility';
+      case SearchResultIcon.kAlwaysShowScrollbars:
+        return 'os-settings:scroll-vertical';
       case SearchResultIcon.kAndroid:
         return 'os-settings:android';
       case SearchResultIcon.kAppsParentalControls:
@@ -685,8 +683,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kAssistant:
         return 'os-settings:assistant';
       case SearchResultIcon.kAudio:
-        return isRevampEnabled ? 'os-settings:device-audio' :
-                                 'os-settings:audio';
+        return 'os-settings:device-audio';
       case SearchResultIcon.kAuthKey:
         return 'os-settings:auth-key';
       case SearchResultIcon.kAutoclick:
@@ -694,8 +691,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kSwitchAccess:
         return 'os-settings:switch-access';
       case SearchResultIcon.kAvatar:
-        return isRevampEnabled ? 'os-settings:privacy-manage-people' :
-                                 'cr:person';
+        return 'os-settings:privacy-manage-people';
       case SearchResultIcon.kBluetooth:
         return 'cr:bluetooth';
       case SearchResultIcon.kCamera:
@@ -721,12 +717,13 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kDictation:
         return 'os-settings:dictation';
       case SearchResultIcon.kDisplay:
-        return isRevampEnabled ? 'os-settings:device-display' :
-                                 'os-settings:display';
+        return 'os-settings:device-display';
       case SearchResultIcon.kDockedMagnifier:
         return 'os-settings:docked-magnifier';
       case SearchResultIcon.kEthernet:
         return 'os-settings:settings-ethernet';
+      case SearchResultIcon.kFaceGaze:
+        return 'os-settings:face-gaze';
       case SearchResultIcon.kFingerprint:
         return 'os-settings:fingerprint';
       case SearchResultIcon.kFirmwareUpdates:
@@ -740,11 +737,11 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kGeolocation:
         return 'os-settings:geolocation';
       case SearchResultIcon.kGoogleDrive:
-        return isRevampEnabled ? 'os-settings:google-drive-revamp' :
-                                 'os-settings:google-drive';
+        return 'os-settings:google-drive';
       case SearchResultIcon.kGooglePlay:
-        return isRevampEnabled ? 'os-settings:google-play-revamp' :
-                                 'os-settings:google-play';
+        return 'os-settings:google-play';
+      case SearchResultIcon.kGraduation:
+        return 'os-settings:graduation';
       case SearchResultIcon.kHearing:
         return 'os-settings:a11y-hearing';
       case SearchResultIcon.kHelp:
@@ -758,22 +755,19 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kInstantTethering:
         return 'os-settings:magic-tethering';
       case SearchResultIcon.kKeyboard:
-        return isRevampEnabled ? 'os-settings:device-keyboard' :
-                                 'os-settings:keyboard';
+        return 'os-settings:device-keyboard';
       case SearchResultIcon.kLanguage:
-        return isRevampEnabled ? 'os-settings:language-revamp' :
-                                 'os-settings:language';
+        return 'os-settings:language';
       case SearchResultIcon.kLaptop:
         return 'os-settings:laptop-chromebook';
       case SearchResultIcon.kLock:
-        return isRevampEnabled ? 'os-settings:lock-revamp' : 'os-settings:lock';
+        return 'os-settings:lock';
       case SearchResultIcon.kMagicBoost:
         return 'os-settings:magic-boost';
       case SearchResultIcon.kMicrophone:
         return 'os-settings:microphone';
       case SearchResultIcon.kMouse:
-        return isRevampEnabled ? 'os-settings:device-mouse' :
-                                 'os-settings:mouse';
+        return 'os-settings:device-mouse';
       case SearchResultIcon.kNearbyShare:
         // <if expr="_google_chrome">
         if (loadTimeData.getBoolean('isNameEnabled')) {
@@ -784,20 +778,17 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kNotifications:
         return 'os-settings:apps-notifications';
       case SearchResultIcon.kOneDrive:
-        return 'settings20:onedrive';
+        return 'os-settings:onedrive';
       case SearchResultIcon.kOnScreenKeyboard:
         return 'os-settings:on-screen-keyboard';
       case SearchResultIcon.kPaintbrush:
-        return isRevampEnabled ? 'os-settings:personalization-revamp' :
-                                 'os-settings:paint-brush';
+        return 'os-settings:personalization';
       case SearchResultIcon.kPenguin:
         return 'os-settings:crostini-mascot';
       case SearchResultIcon.kPersonalization:
-        return 'os-settings:personalization';
+        return 'os-settings:personalization-menu';
       case SearchResultIcon.kPhone:
-        return isRevampEnabled ?
-            'os-settings:connected-devices-android-phone' :
-            'os-settings:multidevice-better-together-suite';
+        return 'os-settings:connected-devices-android-phone';
       case SearchResultIcon.kPluginVm:
         return 'os-settings:plugin-vm';
       case SearchResultIcon.kPointingStick:
@@ -805,8 +796,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kPower:
         return 'os-settings:power';
       case SearchResultIcon.kPrinter:
-        return isRevampEnabled ? 'os-settings:device-print' :
-                                 'os-settings:print';
+        return 'os-settings:device-print';
       case SearchResultIcon.kPrivacyControls:
         return 'os-settings:privacy-controls';
       case SearchResultIcon.kReducedAnimations:
@@ -814,14 +804,13 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kReleaseNotes:
         return 'os-settings:about-release-notes';
       case SearchResultIcon.kReset:
-        return isRevampEnabled ? 'os-settings:startup' : 'os-settings:restore';
+        return 'os-settings:startup';
       case SearchResultIcon.kRestore:
-        return isRevampEnabled ? 'os-settings:restore-revamp' :
-                                 'os-settings:startup';
+        return 'os-settings:restore';
       case SearchResultIcon.kScanner:
         return 'os-settings:device-scan';
       case SearchResultIcon.kSearch:
-        return isRevampEnabled ? 'os-settings:explore' : 'cr:search';
+        return 'os-settings:explore';
       case SearchResultIcon.kSelectToSpeak:
         return 'os-settings:select-to-speak';
       case SearchResultIcon.kShield:
@@ -829,13 +818,11 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kSnapWindowSuggestions:
         return 'os-settings:snap-window-suggestions';
       case SearchResultIcon.kStorage:
-        return isRevampEnabled ? 'os-settings:storage' :
-                                 'os-settings:hard-drive';
+        return 'os-settings:storage';
       case SearchResultIcon.kStylus:
-        return isRevampEnabled ? 'os-settings:device-stylus' :
-                                 'os-settings:stylus';
+        return 'os-settings:device-stylus';
       case SearchResultIcon.kSync:
-        return isRevampEnabled ? 'os-settings:sync-revamp' : 'os-settings:sync';
+        return 'os-settings:sync';
       case SearchResultIcon.kSystemPreferences:
         return 'os-settings:system-preferences';
       case SearchResultIcon.kTextToSpeech:

@@ -20,7 +20,6 @@ namespace invalidation {
 namespace {
 constexpr char kApplicationName[] = "com.google.chrome.fcm.invalidations";
 constexpr char kDisableFcmInvalidationsSwitch[] = "disable-fcm-invalidations";
-constexpr char kDeprecatedSyncInvalidationGCMSenderId[] = "8181035976";
 }  // namespace
 
 FCMInvalidationService::FCMInvalidationService(
@@ -68,14 +67,6 @@ void FCMInvalidationService::Init() {
 // static
 void FCMInvalidationService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kInvalidationClientIDCache);
-}
-
-// static
-void FCMInvalidationService::ClearDeprecatedPrefs(PrefService* prefs) {
-  if (prefs->HasPrefPath(prefs::kInvalidationClientIDCache)) {
-    ScopedDictPrefUpdate update(prefs, prefs::kInvalidationClientIDCache);
-    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
-  }
 }
 
 void FCMInvalidationService::AddObserver(InvalidationHandler* handler) {

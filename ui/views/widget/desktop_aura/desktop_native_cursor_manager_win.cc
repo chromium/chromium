@@ -40,8 +40,9 @@ void DesktopNativeCursorManagerWin::SetSystemCursorSize(
 
 void DesktopNativeCursorManagerWin::RegisterCursorRegkeyObserver(
     wm::NativeCursorManagerDelegate* delegate) {
-  if (!hkcu_cursor_regkey_.Valid())
+  if (!hkcu_cursor_regkey_.Valid()) {
     return;
+  }
 
   hkcu_cursor_regkey_.StartWatching(base::BindOnce(
       [](DesktopNativeCursorManagerWin* manager,

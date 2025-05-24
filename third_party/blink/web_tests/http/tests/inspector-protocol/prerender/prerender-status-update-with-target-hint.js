@@ -13,24 +13,20 @@
 
   // Pending
   const resultPending = await dp.Preload.oncePrerenderStatusUpdated();
-  testRunner.log(resultPending, '', ['loaderId', 'sessionId']);
+  testRunner.log(resultPending);
 
   // Running
-  testRunner.log(
-      await dp.Preload.oncePrerenderStatusUpdated(), '',
-      ['loaderId', 'sessionId']);
+  testRunner.log(await dp.Preload.oncePrerenderStatusUpdated());
 
   // Ready
-  testRunner.log(
-      await dp.Preload.oncePrerenderStatusUpdated(), '',
-      ['loaderId', 'sessionId']);
+  testRunner.log(await dp.Preload.oncePrerenderStatusUpdated());
 
   // Activate prerendered page.
   session.evaluate(`document.getElementById('link').click()`);
 
   // Success
   const resultSuccess = await dp.Preload.oncePrerenderStatusUpdated();
-  testRunner.log(resultSuccess, '', ['loaderId', 'sessionId']);
+  testRunner.log(resultSuccess);
 
   if (resultPending.params.key.loaderId !== resultSuccess.params.key.loaderId) {
     testRunner.log('loaderId should remain consistent.');

@@ -89,7 +89,8 @@ class MojoVideoDecoder final : public VideoDecoder,
   void OnInitializeDone(const DecoderStatus& status,
                         bool needs_bitstream_conversion,
                         int32_t max_decode_requests,
-                        VideoDecoderType decoder_type);
+                        VideoDecoderType decoder_type,
+                        bool needs_transcryption);
   void OnDecodeDone(uint64_t decode_id, const DecoderStatus& status);
   void OnResetDone();
 
@@ -124,9 +125,7 @@ class MojoVideoDecoder final : public VideoDecoder,
   // `gpu_factories_` is not immortal when provided by ThumbnailMediaParserImpl.
   raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_ = nullptr;
 
-  // Raw pointer is safe since both `this` and the `media_log` are owned by
-  // WebMediaPlayerImpl with the correct declaration order.
-  raw_ptr<MediaLog> media_log_ = nullptr;
+  std::unique_ptr<MediaLog> media_log_;
 
   InitCB init_cb_;
   OutputCB output_cb_;

@@ -13,7 +13,7 @@
 namespace base {
 class MessageLoop;
 class Thread;
-}
+}  // namespace base
 
 namespace web {
 

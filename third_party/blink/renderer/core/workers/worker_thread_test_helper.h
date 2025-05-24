@@ -102,7 +102,7 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       const v8_inspector::V8StackTraceId& stack_id) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void FetchAndRunModuleScript(
       const KURL& module_url_record,
@@ -111,9 +111,8 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       std::unique_ptr<PolicyContainer> policy_container,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
-      network::mojom::CredentialsMode,
-      RejectCoepUnsafeNone reject_coep_unsafe_none) override {
-    NOTREACHED_IN_MIGRATION();
+      network::mojom::CredentialsMode) override {
+    NOTREACHED();
   }
   bool IsOffMainThreadScriptFetchDisabled() override { return true; }
 

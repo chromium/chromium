@@ -22,14 +22,14 @@
 
 namespace blink {
 
-class GPUImageCopyTexture;
-class GPUImageDataLayout;
+class ExceptionState;
+class GPUTexelCopyBufferLayout;
+class GPUTexelCopyTextureInfo;
 class V8UnionGPUAutoLayoutModeOrGPUPipelineLayout;
 
 // These conversions are used multiple times and are declared here. Conversions
 // used only once, for example for object construction, are defined
 // individually.
-wgpu::TextureFormat AsDawnType(SkColorType color_type);
 wgpu::PipelineLayout AsDawnType(
     V8UnionGPUAutoLayoutModeOrGPUPipelineLayout* webgpu_layout);
 
@@ -47,18 +47,13 @@ bool ConvertToDawn(const V8GPUOrigin3D* in,
 bool ConvertToDawn(const V8GPUOrigin2D* in,
                    wgpu::Origin2D* out,
                    ExceptionState&);
-bool ConvertToDawn(const GPUImageCopyTexture* in,
-                   wgpu::ImageCopyTexture* out,
+bool ConvertToDawn(const GPUTexelCopyTextureInfo* in,
+                   wgpu::TexelCopyTextureInfo* out,
                    ExceptionState&);
 
-const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
-                                      wgpu::TextureDataLayout* layout);
-
-// TODO(42241188): The const char* overload shouldn't be needed anymore once all
-// Dawn strings are converted to [Nullable]StringView.
-String ConvertFromDawn(const char* s);
-String ConvertFromDawn(wgpu::StringView view);
-String ConvertFromDawn(wgpu::NullableStringView view);
+const char* ValidateTexelCopyBufferLayout(
+    const GPUTexelCopyBufferLayout* webgpu_layout,
+    wgpu::TexelCopyBufferLayout* layout);
 
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.

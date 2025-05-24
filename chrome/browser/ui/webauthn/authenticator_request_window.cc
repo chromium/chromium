@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -29,7 +28,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "device/fido/enclave/metrics.h"
-#include "device/fido/features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -236,18 +234,14 @@ class AuthenticatorRequestWindow
         url = GaiaUrls::GetInstance()->gaia_url().Resolve(
             base::StrCat({"/encryption/unlock/desktop?kdi=", kKdi}));
         device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
-        webauthn::user_actions::RecordRecoveryShown(
-            /*is_create=*/model_->request_type ==
-            device::FidoRequestType::kMakeCredential);
-        if (base::FeatureList::IsEnabled(device::kWebAuthnPasskeysReset)) {
-          passkey_reset_observer_ =
-              std::make_unique<PasskeyResetWebContentsObserver>(
-                  web_contents.get(),
-                  // Unretained: `passkey_reset_observer_` is owned by this
-                  // object so if it exists, this object also exists.
-                  base::BindOnce(&AuthenticatorRequestWindow::OnPasskeysReset,
-                                 base::Unretained(this)));
-        }
+        webauthn::user_actions::RecordRecoveryShown(model_->request_type);
+        passkey_reset_observer_ =
+            std::make_unique<PasskeyResetWebContentsObserver>(
+                web_contents.get(),
+                // Unretained: `passkey_reset_observer_` is owned by this
+                // object so if it exists, this object also exists.
+                base::BindOnce(&AuthenticatorRequestWindow::OnPasskeysReset,
+                               base::Unretained(this)));
         break;
 
       case AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset:

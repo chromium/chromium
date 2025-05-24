@@ -305,7 +305,7 @@ base::FilePath StringToFilePath(const std::string& file_path_string) {
 #endif
 }
 
-bool GetFileSystemPublicType(const std::string type_string,
+bool GetFileSystemPublicType(const std::string& type_string,
                              blink::WebFileSystemType* type) {
   DCHECK(type);
   if (type_string == "Temporary") {

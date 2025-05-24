@@ -50,19 +50,11 @@ ChildUserService::TimeLimitPolicyType GetTimeLimitPolicyType(
       time_limit_policy = ChildUserService::TimeLimitPolicyType::kNoTimeLimit;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return time_limit_policy;
 }
 }  // namespace
-
-// static
-const char ChildUserService::kFamilyLinkHelperAppPackageName[] =
-    "com.google.android.apps.kids.familylinkhelper";
-// static
-const char ChildUserService::kFamilyLinkHelperAppPlayStoreURL[] =
-    "https://play.google.com/store/apps/"
-    "details?id=com.google.android.apps.kids.familylinkhelper";
 
 ChildUserService::TestApi::TestApi(ChildUserService* service)
     : service_(service) {}

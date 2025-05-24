@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ASYNC_ITERABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ASYNC_ITERABLE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/async_iterator_base.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/platform/bindings/async_iterator_base.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 
 namespace blink {
@@ -24,11 +24,8 @@ class CORE_EXPORT AsyncIterationSourceBase
   ~AsyncIterationSourceBase() override = default;
 
   // https://webidl.spec.whatwg.org/#es-asynchronous-iterator-prototype-object
-  v8::Local<v8::Promise> Next(ScriptState* script_state,
-                              ExceptionState& exception_state) final;
-  v8::Local<v8::Promise> Return(ScriptState* script_state,
-                                v8::Local<v8::Value> value,
-                                ExceptionState& exception_state) final;
+  ScriptPromise<IDLAny> Next(ScriptState*) final;
+  ScriptPromise<IDLAny> Return(ScriptState*, ScriptValue) final;
 
   void Trace(Visitor* visitor) const override;
 
@@ -49,9 +46,7 @@ class CORE_EXPORT AsyncIterationSourceBase
   // ScriptPromiseResolverBase for the return result has been created.
   //
   // [1] https://webidl.spec.whatwg.org/#asynchronous-iterator-return
-  virtual void AsyncIteratorReturn(ScriptValue value) {
-    NOTREACHED_IN_MIGRATION();
-  }
+  virtual void AsyncIteratorReturn(ScriptValue value) { NOTREACHED(); }
 
   bool HasPendingPromise() const {
     return pending_promise_resolver_ != nullptr;
@@ -88,14 +83,14 @@ class CORE_EXPORT AsyncIterationSourceBase
                                     ScriptValue value);
 
   Member<ScriptState> script_state_;
-  Member<ScriptFunction> on_settled_function_;
-  Member<ScriptFunction> on_fulfilled_function_;
-  Member<ScriptFunction> on_rejected_function_;
+  Member<CallableCommon> on_settled_function_;
+  Member<CallableCommon> on_fulfilled_function_;
+  Member<CallableCommon> on_rejected_function_;
 
   // https://webidl.spec.whatwg.org/#dfn-default-asynchronous-iterator-object
   // its 'ongoing promise', which is a Promise or null,
   // its 'is finished', which is a boolean.
-  ScriptPromise<IDLAny> ongoing_promise_;
+  MemberScriptPromise<IDLAny> ongoing_promise_;
   bool is_finished_ = false;
 
   // The pending promise resolver. This is basically corresponding to
@@ -152,8 +147,7 @@ class PairAsyncIterationSource : public AsyncIterationSourceBase {
         return ESCreateIterResultObject(script_state, false, v8_key, v8_value);
       }
     }
-    NOTREACHED_IN_MIGRATION();
-    return v8::Local<v8::Value>();
+    NOTREACHED();
   }
 };
 

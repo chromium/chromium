@@ -134,8 +134,7 @@ base::expected<std::vector<uint8_t>, HRESULT> GeneratePathValidationData(
 }
 
 HRESULT ValidatePath(const base::Process& process,
-                     base::span<const uint8_t> data,
-                     std::string* log_message) {
+                     base::span<const uint8_t> data) {
   const auto process_path = GetProcessExecutablePath(process);
   if (!process_path.has_value()) {
     return elevation_service::Elevator::kErrorCouldNotObtainPath;
@@ -153,13 +152,6 @@ HRESULT ValidatePath(const base::Process& process,
 
   SYSLOG(WARNING) << "Failed to authenticate caller process: "
                   << process_path->value();
-
-  if (log_message) {
-    *log_message =
-        "Data: '" + std::string(data.begin(), data.end()) + "'. Current: '" +
-        std::string(current_path_data->cbegin(), current_path_data->cend()) +
-        "'";
-  }
 
   return elevation_service::Elevator::kValidationDidNotPass;
 }
@@ -197,8 +189,7 @@ base::expected<std::vector<uint8_t>, HRESULT> GenerateValidationData(
 }
 
 HRESULT ValidateData(const base::Process& process,
-                     base::span<const uint8_t> validation_data,
-                     std::string* log_message) {
+                     base::span<const uint8_t> validation_data) {
   if (validation_data.empty()) {
     return E_INVALIDARG;
   }
@@ -215,7 +206,7 @@ HRESULT ValidateData(const base::Process& process,
       return S_OK;
     case ProtectionLevel::PROTECTION_PATH_VALIDATION_OLD:
     case ProtectionLevel::PROTECTION_PATH_VALIDATION:
-      return ValidatePath(process, validation_data.subspan(1), log_message);
+      return ValidatePath(process, validation_data.subspan<1>());
     case ProtectionLevel::PROTECTION_MAX:
       return E_INVALIDARG;
   }

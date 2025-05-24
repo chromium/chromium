@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.ui.device_lock;
 import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
+@NullMarked
 public class MissingDeviceLockProperties {
     static final WritableBooleanPropertyKey REMOVE_ALL_LOCAL_DATA_CHECKED =
             new WritableBooleanPropertyKey();

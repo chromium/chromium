@@ -8,6 +8,9 @@ import android.app.Activity;
 import android.content.res.Resources;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,6 +25,7 @@ import org.chromium.ui.util.TokenHolder;
  * download completes, and updating the summary text on the {@link LanguageItemPikerPreference}
  * representing the overridden app language.
  */
+@NullMarked
 public class AppLanguagePreferenceDelegate {
     /** Interface for holding the Chrome restart action. Passed in from {@link SettingsActivity}. */
     public interface RestartAction {
@@ -30,7 +34,7 @@ public class AppLanguagePreferenceDelegate {
 
     private int mSnackbarToken = TokenHolder.INVALID_TOKEN;
     private SnackbarManager mSnackbarManager;
-    private Snackbar mSnackbar;
+    private @Nullable Snackbar mSnackbar;
     private SnackbarController mSnackbarController;
     // Preference representing the current app language.
     private LanguageItemPickerPreference mPreference;
@@ -44,6 +48,7 @@ public class AppLanguagePreferenceDelegate {
      *
      * @param action RestartAction handler to restart Chrome from the Snackbar.
      */
+    @Initializer
     public void setRestartAction(RestartAction action) {
         mSnackbarController = new SuccessSnackbarControllerImpl(action);
     }
@@ -56,6 +61,7 @@ public class AppLanguagePreferenceDelegate {
      * @param preference LanguageItemPickerPreference for the app language.
      * @param profile The Profile for the current session.
      */
+    @Initializer
     public void setup(
             LanguageSettings fragment, LanguageItemPickerPreference preference, Profile profile) {
         mActivity = fragment.getActivity();
@@ -87,7 +93,7 @@ public class AppLanguagePreferenceDelegate {
      * language downloads.
      * @param code String language code to be downloaded and installed.
      */
-    public void startLanguageSplitDownload(String code) {
+    public void startLanguageSplitDownload(@Nullable String code) {
         assert mActivity != null : "mActivity must be set to start language split download";
         assert mPreference != null : "mPreference must be set to start language split download";
         // Set language text and initial downloading summary.
@@ -161,14 +167,14 @@ public class AppLanguagePreferenceDelegate {
 
     // Inner class for successfully downloaded language split SnackbarController.
     private static class SuccessSnackbarControllerImpl implements SnackbarController {
-        private RestartAction mRestartAction;
+        private final RestartAction mRestartAction;
 
         SuccessSnackbarControllerImpl(RestartAction action) {
             mRestartAction = action;
         }
 
         @Override
-        public void onAction(Object actionData) {
+        public void onAction(@Nullable Object actionData) {
             if (mRestartAction != null) mRestartAction.restart();
         }
     }

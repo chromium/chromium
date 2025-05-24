@@ -19,6 +19,7 @@
 
 namespace net {
 class NSSCertDatabase;
+class ServerCertificateDatabaseService;
 }
 
 namespace ash {
@@ -80,6 +81,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
     NetworkCert Clone() const;
 
    private:
+    // TODO(https://crbug.com/40554868): There are hidden dependencies on this
+    // being stored as a NSS certificate object, so that the certificate can be
+    // found using CERT_FindCertByName/CERT_FindCertIssuer. Fix these locations
+    // to explicitly access the certificates they care about.
     net::ScopedCERTCertificate cert_;
     bool available_for_network_auth_;
     bool device_wide_;
@@ -134,6 +139,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   // available.
   void MarkUserNSSDBWillBeInitialized();
 
+  // Marks that the initialization of the user ServerCertificateDatabaseService
+  // has started. The caller should call SetUserServerCertDatabaseService when
+  // the ServerCertificateDatabaseService is available.
+  void MarkUserServerCertDatabaseWillBeInitialized();
+
   // Sets the NSS cert database which NetworkCertLoader should use to access
   // user slot certificates. NetworkCertLoader understands the edge case that
   // this database could also give access to system slot certificates (e.g. for
@@ -144,6 +154,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   // NetworkCertLoader supports working with only one database or with both
   // (system and user) databases.
   void SetUserNSSDB(net::NSSCertDatabase* user_database);
+
+  // Sets the ServerCertificateDatabaseService which NetworkCertLoader should
+  // use to access user certificates. Should be called again with nullptr
+  // before the ServerCertificateDatabaseService will be destroyed.
+  void SetUserServerCertDatabaseService(
+      net::ServerCertificateDatabaseService* user_cert_db);
 
   // Sets the PolicyCertificateProvider for device policy (its authority
   // certificates will be available device-wide). Call with nullptr to remove it
@@ -214,6 +230,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
 
  private:
   class CertCache;
+  class ServerCertDbCache;
 
   NetworkCertLoader();
   ~NetworkCertLoader() override;
@@ -254,6 +271,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   // Cache for certificates from the user-specific NSSCertDatabase, listing
   // certificates from the public slot.
   std::unique_ptr<CertCache> user_public_slot_cert_cache_;
+  // Cache for certificates from the user-specific
+  // ServerCertificateDatabaseService.
+  std::unique_ptr<ServerCertDbCache> user_server_cert_db_cache_;
 
   // Client certificates.
   NetworkCertList all_client_certs_;

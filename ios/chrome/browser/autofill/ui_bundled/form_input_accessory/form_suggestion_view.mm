@@ -10,8 +10,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/strcat.h"
-#import "components/autofill/core/browser/filling_product.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
@@ -49,6 +49,9 @@ constexpr CGFloat kScrollHintInitialSpacing = 50;
 // The amount of time (in seconds) the scroll hint animation takes.
 constexpr CGFloat kScrollHintDuration = 0.5;
 
+// Leading horizontal offset.
+constexpr CGFloat kLeadingOffset = 16;
+
 // Logs the right histogram when a suggestion from the keyboard accessory is
 // selected. `suggestion_type` is the type of the selected suggestion and
 // `index` is the position of the selected position among the available
@@ -61,7 +64,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   switch (filling_product) {
     case FillingProduct::kCreditCard:
     case FillingProduct::kIban:
-    case FillingProduct::kStandaloneCvc:
+    case FillingProduct::kLoyaltyCard:
     case FillingProduct::kAddress:
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kPassword:
@@ -70,10 +73,11 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
       filling_product_bucket = FillingProductToString(filling_product);
       break;
     case FillingProduct::kCompose:
-    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kAutofillAi:
     case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIdentityCredential:
       // These cases are currently not available on iOS.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   UmaHistogramSparse(
       base::StrCat({"Autofill.UserAcceptedSuggestionAtIndex.",
@@ -98,9 +102,19 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
 
 @end
 
-@implementation FormSuggestionView
+@implementation FormSuggestionView {
+  // Whether the size of the accessory is compact.
+  BOOL _isCompact;
+}
 
 #pragma mark - Public
+
+- (instancetype)init {
+  if ((self = [super init])) {
+    _isCompact = YES;
+  }
+  return self;
+}
 
 - (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions
            showScrollHint:(BOOL)showScrollHint
@@ -136,6 +150,18 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   }
 }
 
+- (void)setIsCompact:(BOOL)isCompact {
+  if (_isCompact == isCompact) {
+    return;
+  }
+
+  _isCompact = isCompact;
+  self.stackView.layoutMargins = [self adjustedLayoutMargins];
+  if (self.window) {
+    [self layoutIfNeeded];
+  }
+}
+
 - (void)resetContentInsetAndDelegateAnimated:(BOOL)animated {
   self.delegate = nil;
   __weak __typeof(self) weakSelf = self;
@@ -151,7 +177,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   }
   LayoutOffset layoutOffset = CGRectGetLeadingLayoutOffsetInBoundingRect(
       self.trailingView.frame, {CGPointZero, self.contentSize});
-  // Because the way the scroll view is transformed for RTL, the insets don't
+  // Because of the way the scroll view is transformed for RTL, the insets don't
   // need to be directed.
   UIEdgeInsets lockedContentInsets = UIEdgeInsetsMake(0, -layoutOffset, 0, 0);
   __weak __typeof(self) weakSelf = self;
@@ -203,11 +229,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.layoutMarginsRelativeArrangement = YES;
-  stackView.layoutMargins = UIEdgeInsetsMake(
-      kSuggestionVerticalMargin, kSuggestionHorizontalMargin,
-      kSuggestionVerticalMargin,
-      IsKeyboardAccessoryUpgradeEnabled() ? kSuggestionEndHorizontalMargin
-                                          : kSuggestionHorizontalMargin);
+  stackView.layoutMargins = [self adjustedLayoutMargins];
   stackView.spacing = IsKeyboardAccessoryUpgradeEnabled()
                           ? kSpacing
                           : kSuggestionHorizontalMargin;
@@ -291,6 +313,18 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
     view.alpha = alpha;
     offset += spacing;
   }
+}
+
+// Adjust origin based on whether the keyboard accessory is in compact mode.
+- (UIEdgeInsets)adjustedLayoutMargins {
+  // Because of the way the scroll view is transformed for RTL, the insets don't
+  // need to be directed.
+  return UIEdgeInsetsMake(
+      kSuggestionVerticalMargin,
+      kSuggestionHorizontalMargin + (_isCompact ? 0.0 : kLeadingOffset),
+      kSuggestionVerticalMargin,
+      IsKeyboardAccessoryUpgradeEnabled() ? kSuggestionEndHorizontalMargin
+                                          : kSuggestionHorizontalMargin);
 }
 
 #pragma mark - Setters

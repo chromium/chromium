@@ -1,0 +1,6 @@
+{
+  "name": "extension_with_userscript_permission",
+  "manifest_version": 3,
+  "version": "0.1",
+  "permissions": ["userScripts"]
+}

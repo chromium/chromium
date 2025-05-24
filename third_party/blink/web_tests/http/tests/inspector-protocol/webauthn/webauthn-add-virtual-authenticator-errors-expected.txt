@@ -63,4 +63,13 @@ Check that the WebAuthn addVirtualAuthenticator command validates parameters
     id : <number>
     sessionId : <string>
 }
+Created first internal authenticator
+{
+    error : {
+        code : -32602
+        message : Chrome only supports one internal authenticator per environment
+    }
+    id : <number>
+    sessionId : <string>
+}
 

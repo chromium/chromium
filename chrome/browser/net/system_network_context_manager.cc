@@ -15,6 +15,7 @@
 
 #include "base/auto_reset.h"
 #include "base/build_time.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -66,7 +67,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/user_agent.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -92,21 +92,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/net/network_annotation_monitor.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/net/dhcp_wpad_url_client.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_paths_internal.h"
-#include "chrome/grit/branded_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
@@ -302,6 +291,18 @@ NetworkSandboxState IsNetworkSandboxEnabledInternal() {
              : NetworkSandboxState::kDisabledByPlatform;
 }
 
+network::mojom::CTLogInfo::LogType GetCTLogType(
+    certificate_transparency::LogType log_type) {
+  switch (log_type) {
+    case certificate_transparency::LogType::kUnspecified:
+      return network::mojom::CTLogInfo::LogType::kUnspecified;
+    case certificate_transparency::LogType::kRFC6962:
+      return network::mojom::CTLogInfo::LogType::kRFC6962;
+    case certificate_transparency::LogType::kStaticCTAPI:
+      return network::mojom::CTLogInfo::LogType::kStaticCTAPI;
+  }
+}
+
 std::vector<network::mojom::CTLogInfoPtr> GetStaticCtLogListMojo() {
   std::vector<std::pair<std::string, base::Time>> disqualified_logs =
       certificate_transparency::GetDisqualifiedLogs();
@@ -311,6 +312,7 @@ std::vector<network::mojom::CTLogInfoPtr> GetStaticCtLogListMojo() {
     log_info->public_key = std::string(ct_log.log_key, ct_log.log_key_length);
     log_info->id = crypto::SHA256HashString(log_info->public_key);
     log_info->name = ct_log.log_name;
+    log_info->log_type = GetCTLogType(ct_log.log_type);
     log_info->current_operator = ct_log.current_operator;
 
     auto it = std::lower_bound(
@@ -356,6 +358,7 @@ class SystemNetworkContextManager::NetworkProcessLaunchWatcher
   void BrowserChildProcessLaunchFailed(
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override {
+    CHECK(data.sandbox_type.has_value());
     if (data.sandbox_type == sandbox::mojom::Sandbox::kNetwork) {
       // This histogram duplicates data recorded in
       // ChildProcess.LaunchFailed.UtilityProcessErrorCode but is specific to
@@ -500,11 +503,13 @@ SystemNetworkContextManager* SystemNetworkContextManager::GetInstance() {
     // Initialize the network service, which will trigger
     // ChromeContentBrowserClient::OnNetworkServiceCreated(), which calls
     // CreateInstance() to initialize |g_system_network_context_manager|.
-    content::GetNetworkService();
 
-    // TODO(crbug.com/40634772): There should be a DCHECK() here to make sure
-    // |g_system_network_context_manager| has been created, but that is not
-    // true in many unit tests.
+    content::GetNetworkService();
+    // content::GetNetworkService() does not always create
+    // |g_system_network_context_manager| (in some unit tests).
+    if (!g_system_network_context_manager) {
+      CHECK_IS_TEST();
+    }
   }
 
   return g_system_network_context_manager;
@@ -626,6 +631,12 @@ SystemNetworkContextManager::SystemNetworkContextManager(
       base::BindRepeating(
           &SystemNetworkContextManager::UpdateIPv6ReachabilityOverrideEnabled,
           base::Unretained(this)));
+
+  pref_change_registrar_.Add(
+      prefs::kTLS13EarlyDataEnabled,
+      base::BindRepeating(
+          &SystemNetworkContextManager::UpdateTLS13EarlyDataEnabled,
+          base::Unretained(this)));
 }
 
 SystemNetworkContextManager::~SystemNetworkContextManager() {
@@ -653,12 +664,6 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kAuthServerAllowlist, std::string());
   registry->RegisterStringPref(prefs::kAuthNegotiateDelegateAllowlist,
                                std::string());
-
-// On ChromeOS Ash, the pref below is registered by the
-// `KerberosCredentialsManager`.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  registry->RegisterBooleanPref(prefs::kKerberosEnabled, false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(prefs::kAuthNegotiateDelegateByKdcPolicy,
@@ -693,9 +698,10 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kReceivedHttpAuthNegotiateHeader, false);
 #endif  // BUILDFLAG(IS_LINUX)
 
-  registry->RegisterBooleanPref(prefs::kZstdContentEncodingEnabled, true);
-
   registry->RegisterBooleanPref(prefs::kIPv6ReachabilityOverrideEnabled, false);
+
+  // Default value doesn't matter since this pref is only used when managed.
+  registry->RegisterBooleanPref(prefs::kTLS13EarlyDataEnabled, false);
 }
 
 // static
@@ -856,9 +862,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
   network_context_params->enable_brotli = true;
 
-  network_context_params->enable_zstd =
-      base::FeatureList::IsEnabled(net::features::kZstdContentEncoding) &&
-      local_state_->GetBoolean(prefs::kZstdContentEncodingEnabled);
+  network_context_params->enable_zstd = true;
 
   network_context_params->user_agent = embedder_support::GetUserAgent();
 
@@ -880,10 +884,10 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
       network_context_params->proxy_resolver_factory =
           ChromeMojoProxyResolverFactory::CreateWithSelfOwnedReceiver();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       network_context_params->dhcp_wpad_url_client =
           ash::DhcpWpadUrlClient::CreateWithSelfOwnedReceiver();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
 
@@ -921,10 +925,7 @@ SystemNetworkContextManager::CreateDefaultNetworkContextParams() {
   // CertVerifierServiceUpdater.
   network_context_params->cert_verifier_params =
       content::GetCertVerifierParams(std::move(cert_verifier_creation_params));
-  network_context_params->acam_preflight_spec_conformant =
-      base::FeatureList::IsEnabled(
-          network::features::
-              kAccessControlAllowMethodsInCORSPreflightSpecConformant);
+  network_context_params->acam_preflight_spec_conformant = true;
   return network_context_params;
 }
 
@@ -1064,6 +1065,16 @@ void SystemNetworkContextManager::UpdateIPv6ReachabilityOverrideEnabled() {
       net::features::kEnableIPv6ReachabilityOverride);
   bool value = is_managed ? pref_value : is_launched;
   content::GetNetworkService()->SetIPv6ReachabilityOverride(value);
+}
+
+void SystemNetworkContextManager::UpdateTLS13EarlyDataEnabled() {
+  bool is_managed =
+      local_state_->IsManagedPreference(prefs::kTLS13EarlyDataEnabled);
+  bool value =
+      is_managed
+          ? local_state_->GetBoolean(prefs::kTLS13EarlyDataEnabled)
+          : base::FeatureList::IsEnabled(net::features::kEnableTLS13EarlyData);
+  content::GetNetworkService()->SetTLS13EarlyDataEnabled(value);
 }
 
 // static

@@ -1,0 +1,77 @@
+diff --git a/src/google/protobuf/compiler/importer.h b/src/google/protobuf/compiler/importer.h
+index e63a7b7b30a79..b9b6cd8c00766 100644
+--- a/src/google/protobuf/compiler/importer.h
++++ b/src/google/protobuf/compiler/importer.h
+@@ -191,12 +191,30 @@ class PROTOBUF_EXPORT MultiFileErrorCollector {
+   // Line and column numbers are zero-based.  A line number of -1 indicates
+   // an error with the entire file (e.g. "not found").
+   virtual void RecordError(absl::string_view filename, int line, int column,
+-                           absl::string_view message)
+-      = 0;
++                           absl::string_view message) {
++    PROTOBUF_IGNORE_DEPRECATION_START
++    AddError(std::string(filename), line, column, std::string(message));
++    PROTOBUF_IGNORE_DEPRECATION_STOP
++  }
+   virtual void RecordWarning(absl::string_view filename, int line, int column,
+                              absl::string_view message) {
++    PROTOBUF_IGNORE_DEPRECATION_START
++    AddWarning(std::string(filename), line, column, std::string(message));
++    PROTOBUF_IGNORE_DEPRECATION_STOP
++  }
++
++ private:
++  // These should never be called directly, but if a legacy class overrides
++  // them they'll get routed to by the Record* methods.
++  [[deprecated("Use RecordError")]]
++  virtual void AddError(const std::string& filename, int line, int column,
++                        const std::string& message) {
++    ABSL_LOG(FATAL) << "AddError or RecordError must be implemented.";
+   }
+ 
++  [[deprecated("Use RecordWarning")]]
++  virtual void AddWarning(const std::string& filename, int line, int column,
++                          const std::string& message) {}
+ };
+ 
+ // Abstract interface which represents a directory tree containing proto files.
+diff --git a/src/google/protobuf/io/tokenizer.h b/src/google/protobuf/io/tokenizer.h
+index 007d09016eb35..0855a17db5b3a 100644
+--- a/src/google/protobuf/io/tokenizer.h
++++ b/src/google/protobuf/io/tokenizer.h
+@@ -55,16 +55,33 @@ class PROTOBUF_EXPORT ErrorCollector {
+   // column numbers.  The numbers are zero-based, so you may want to add
+   // 1 to each before printing them.
+   virtual void RecordError(int line, ColumnNumber column,
+-                           absl::string_view message)
+-      = 0;
++                           absl::string_view message) {
++    PROTOBUF_IGNORE_DEPRECATION_START
++    AddError(line, column, std::string(message));
++    PROTOBUF_IGNORE_DEPRECATION_STOP
++  }
+ 
+   // Indicates that there was a warning in the input at the given line and
+   // column numbers.  The numbers are zero-based, so you may want to add
+   // 1 to each before printing them.
+   virtual void RecordWarning(int line, ColumnNumber column,
+                              absl::string_view message) {
++    PROTOBUF_IGNORE_DEPRECATION_START
++    AddWarning(line, column, std::string(message));
++    PROTOBUF_IGNORE_DEPRECATION_STOP
+   }
+ 
++ private:
++  // These should never be called directly, but if a legacy class overrides
++  // them they'll get routed to by the Record* methods.
++  ABSL_DEPRECATED("Use RecordError")
++  virtual void AddError(int line, ColumnNumber column,
++                        const std::string& message) {
++    ABSL_LOG(FATAL) << "AddError or RecordError must be implemented.";
++  }
++  ABSL_DEPRECATED("Use RecordWarning")
++  virtual void AddWarning(int line, ColumnNumber column,
++                          const std::string& message) {}
+ };
+ 
+ // This class converts a stream of raw text into a stream of tokens for

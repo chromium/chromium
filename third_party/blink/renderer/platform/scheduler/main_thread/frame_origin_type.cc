@@ -22,7 +22,7 @@ FrameOriginType GetFrameOriginType(FrameScheduler* scheduler) {
   }
 }
 
-const char* FrameOriginTypeToString(FrameOriginType origin) {
+perfetto::StaticString FrameOriginTypeToString(FrameOriginType origin) {
   switch (origin) {
     case FrameOriginType::kMainFrame:
       return "main-frame";
@@ -31,8 +31,7 @@ const char* FrameOriginTypeToString(FrameOriginType origin) {
     case FrameOriginType::kCrossOriginToMainFrame:
       return "cross-origin-to-main-frame";
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace scheduler

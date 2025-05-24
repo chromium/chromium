@@ -10,7 +10,7 @@
 
 namespace system_logs {
 
-constexpr char kIwlwifiDumpKey[] = "iwlwifi_dump";
+inline constexpr char kIwlwifiDumpKey[] = "iwlwifi_dump";
 
 // The classes here are used to attach debug dump information from
 // Intel Wi-Fi NICs that will be produced when those NICs have issues

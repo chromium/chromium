@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -328,6 +327,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // this Layer's coordinate space. Backdrop effects are only visible and can
   // only sample from the intersection of the Layer's bounds and any set
   // backdrop filter bounds.
+  void SetBackdropFilterBounds(const SkPath& backdrop_filter_bounds);
   void SetBackdropFilterBounds(const gfx::RRectF& backdrop_filter_bounds);
   void ClearBackdropFilterBounds();
 
@@ -415,6 +415,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Note: Setting a layer non-opaque has significant performance impact,
   // especially on low-end Chrome OS devices. Please ensure you are not
   // adding unnecessary overdraw. When in doubt, talk to the graphics team.
+  // NOTE: Opacity of SOLID_COLOR layer is determined by the color's alpha
+  // channel. Calling this on SOLID_COLOR results in check failure.
   void SetFillsBoundsOpaquely(bool fills_bounds_opaquely);
   bool fills_bounds_opaquely() const { return fills_bounds_opaquely_; }
 
@@ -426,14 +428,11 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetName(const std::string& name);
 
   // Set new TransferableResource for this layer. This method only supports
-  // a gpu-backed |resource| which is assumed to have top-left origin. Clients
-  // should call SetTextureFlipped(true) for bottom-left origin resources.
+  // a gpu-backed |resource| which is assumed to have top-left origin.
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback,
                                gfx::Size texture_size_in_dip);
   void SetTextureSize(gfx::Size texture_size_in_dip);
-  void SetTextureFlipped(bool flipped);
-  bool TextureFlipped() const;
 
   // Begins showing content from a surface with a particular ID.
   // TODO(crbug.com/40285157): with surface sync, size shouldn't rely on
@@ -468,6 +467,10 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   bool has_external_content() const {
     return texture_layer_.get() || surface_layer_.get();
+  }
+
+  const viz::SurfaceId& external_content_surface_id() const {
+    return surface_layer_->surface_id();
   }
 
   // Show a solid color instead of delegated or surface contents.
@@ -549,7 +552,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      cc::SharedBitmapIdRegistrar* bitmap_registar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override;
 
@@ -613,11 +615,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
     compositor_ = compositor;
   }
 
-  void set_no_mutation(bool no_mutation) { no_mutation_ = no_mutation; }
-
  private:
-  // TODO(crbug.com/40786876): temporary while tracking down crash.
-  friend class Compositor;
   friend class LayerOwner;
   class LayerMirror;
   class SubpixelPositionOffsetCache;
@@ -653,7 +651,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
                                   PropertyChangeReason reason) override;
   void SetGrayscaleFromAnimation(float grayscale,
                                  PropertyChangeReason reason) override;
-  void SetColorFromAnimation(SkColor color,
+  void SetColorFromAnimation(SkColor4f color,
                              PropertyChangeReason reason) override;
   void SetClipRectFromAnimation(const gfx::Rect& clip_rect,
                                 PropertyChangeReason reason) override;
@@ -669,7 +667,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   bool GetVisibilityForAnimation() const override;
   float GetBrightnessForAnimation() const override;
   float GetGrayscaleForAnimation() const override;
-  SkColor GetColorForAnimation() const override;
+  SkColor4f GetColorForAnimation() const override;
   gfx::Rect GetClipRectForAnimation() const override;
   gfx::RoundedCornersF GetRoundedCornersForAnimation() const override;
   const gfx::LinearGradient& GetGradientMaskForAnimation() const override;
@@ -770,7 +768,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // does not affect the layer's descendants.
   bool accept_events_ = true;
 
-  // See SetFillsBoundsOpaquely(). Defaults to true.
+  // See SetFillsBoundsOpaquely().
   bool fills_bounds_opaquely_;
 
   bool fills_bounds_completely_;
@@ -872,11 +870,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // If the value == 0, means we should not perform trilinear filtering on the
   // layer.
   unsigned trilinear_filtering_request_;
-
-  // TODO(crbug.com/40786876): temporary while tracking down crash.
-  bool in_send_damaged_rects_ = false;
-  bool sending_damaged_rects_for_descendants_ = false;
-  bool no_mutation_ = false;  // CHECK on Add/SetMakeLayer if true.
 
   base::WeakPtrFactory<Layer> weak_ptr_factory_{this};
 };

@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/cdm_context.h"
 #include "media/base/demuxer_stream.h"
@@ -346,7 +345,11 @@ void DecoderSelector<StreamType>::FilterAndSortAvailableDecoders() {
       continue;
     }
 
-    if (!enable_priority_based_selection_) {
+    // If the stream doesn't support config changes, prioritize decoder
+    // selection based on resolution. Experiments show this greatly improves
+    // rebuffering for src= playbacks without config changes, but doesn't help
+    // and may hurt Media Source based playbacks.
+    if (!enable_priority_based_selection_ || stream_->SupportsConfigChanges()) {
       decoders_.push_back(std::move(decoder));
       continue;
     }

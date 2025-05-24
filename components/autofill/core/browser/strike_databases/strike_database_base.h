@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_STRIKE_DATABASE_BASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_STRIKE_DATABASE_BASE_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <string>
 #include <vector>
@@ -12,10 +14,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace autofill {
-
-namespace {
-const char kKeyDeliminator[] = "__";
-}  // namespace
 
 class StrikeData;
 
@@ -72,6 +70,8 @@ class StrikeDatabaseBase : public KeyedService {
 
  protected:
   friend class StrikeDatabaseIntegratorBase;
+
+  static constexpr char kKeyDeliminator[] = "__";
 
   // Returns a pointer to the internal cache.
   virtual std::map<std::string, StrikeData>& GetStrikeCache() = 0;

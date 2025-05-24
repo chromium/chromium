@@ -7,7 +7,9 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
+#include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
@@ -16,10 +18,12 @@
 #include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "third_party/blink/renderer/platform/sparse_vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 namespace blink {
 
 class CSSStyleDeclaration;
+class ColumnPseudoElement;
 class ShadowRoot;
 class NamedNodeMap;
 class DOMTokenList;
@@ -33,7 +37,6 @@ class EditContext;
 class AnchorElementObserver;
 class InlineStylePropertyMap;
 class ElementInternals;
-class AccessibleNode;
 class DisplayLockContext;
 class ContainerQueryData;
 class ResizeObserver;
@@ -41,6 +44,8 @@ class ResizeObservation;
 class StyleScopeData;
 class CustomElementDefinition;
 class PopoverData;
+class InvokerData;
+class InterestInvokerTargetData;
 class OutOfFlowData;
 class HTMLElement;
 
@@ -63,27 +68,31 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kPart = 10,
     kCssomMapWrapper = 11,
     kElementInternals = 12,
-    kAccessibleNode = 13,
-    kDisplayLockContext = 14,
-    kContainerQueryData = 15,
-    kRegionCaptureCropId = 16,
-    kResizeObserverData = 17,
-    kCustomElementDefinition = 18,
-    kPopoverData = 19,
-    kPartNamesMap = 20,
-    kNonce = 21,
-    kIsValue = 22,
-    kSavedLayerScrollOffset = 23,
-    kAnchorPositionScrollData = 24,
-    kAnchorElementObserver = 25,
-    kImplicitlyAnchoredElementCount = 26,
-    kLastRememberedBlockSize = 27,
-    kLastRememberedInlineSize = 28,
-    kRestrictionTargetId = 29,
-    kStyleScopeData = 30,
-    kOutOfFlowData = 31,
+    kDisplayLockContext = 13,
+    kContainerQueryData = 14,
+    kRegionCaptureCropId = 15,
+    kResizeObserverData = 16,
+    kCustomElementDefinition = 17,
+    kPopoverData = 18,
+    kPartNamesMap = 19,
+    kNonce = 20,
+    kIsValue = 21,
+    kSavedLayerScrollOffset = 22,
+    kAnchorPositionScrollData = 23,
+    kAnchorElementObserver = 24,
+    kImplicitlyAnchoredElementCount = 25,
+    kLastRememberedBlockSize = 26,
+    kLastRememberedInlineSize = 27,
+    kRestrictionTargetId = 28,
+    kStyleScopeData = 29,
+    kOutOfFlowData = 30,
+    kInvokerData = 31,
+    kInterestInvokerTargetData = 32,
+    kScrollMarkerGroupData = 33,
+    kScrollMarkerGroupContainerData = 34,
+    kExplicitlySetElementsForAttr = 35,
 
-    kNumFields = 32,
+    kNumFields = 36,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -100,7 +109,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     }
 
    private:
-    GC_PLUGIN_IGNORE("Why is std::unique_ptr failing? http://crbug.com/1395024")
     T data_;
   };
 
@@ -158,11 +166,13 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   PseudoElement* GetPseudoElement(
       PseudoId,
       const AtomicString& document_transition_tag = g_null_atom) const;
+  bool HasViewTransitionGroupPseudoElement() const;
+  bool HasScrollButtonOrMarkerGroupPseudos() const;
   PseudoElementData::PseudoElementVector GetPseudoElements() const;
-  void AddColumnPseudoElement(PseudoElement&);
-  const PseudoElementData::ColumnPseudoElementsVector* GetColumnPseudoElements()
-      const;
-  void ClearColumnPseudoElements();
+  void AddColumnPseudoElement(ColumnPseudoElement&);
+  const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
+  ColumnPseudoElement* GetColumnPseudoElement(wtf_size_t idx) const;
+  void ClearColumnPseudoElements(wtf_size_t to_keep);
 
   CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(Element* owner_element);
 
@@ -219,10 +229,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   const ElementInternals* GetElementInternals() const;
   ElementInternals& EnsureElementInternals(HTMLElement& target);
 
-  AccessibleNode* GetAccessibleNode() const;
-  AccessibleNode* EnsureAccessibleNode(Element* owner_element);
-  void ClearAccessibleNode();
-
   DisplayLockContext* EnsureDisplayLockContext(Element* element);
   DisplayLockContext* GetDisplayLockContext() const;
 
@@ -269,6 +275,13 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   PopoverData& EnsurePopoverData();
   void RemovePopoverData();
 
+  InvokerData* GetInvokerData() const;
+  InvokerData& EnsureInvokerData();
+
+  InterestInvokerTargetData* GetInterestInvokerTargetData() const;
+  InterestInvokerTargetData& EnsureInterestInvokerTargetData();
+  void RemoveInterestInvokerTargetData();
+
   bool HasElementFlag(ElementFlags mask) const {
     return element_flags_ & static_cast<uint16_t>(mask);
   }
@@ -287,6 +300,16 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void ClearTabIndexExplicitly() {
     ClearElementFlag(ElementFlags::kTabIndexWasSetExplicitly);
   }
+
+  ScrollMarkerGroupData* GetScrollMarkerGroupData() const;
+  void RemoveScrollMarkerGroupData();
+  ScrollMarkerGroupData& EnsureScrollMarkerGroupData(Element*);
+
+  void SetScrollMarkerGroupContainerData(ScrollMarkerGroupData*);
+  ScrollMarkerGroupData* GetScrollMarkerGroupContainerData() const;
+
+  ExplicitlySetAttrElementsMap* GetExplicitlySetElementsForAttr() const;
+  ExplicitlySetAttrElementsMap& EnsureExplicitlySetElementsForAttr();
 
   AnchorPositionScrollData* GetAnchorPositionScrollData() const;
   void RemoveAnchorPositionScrollData();

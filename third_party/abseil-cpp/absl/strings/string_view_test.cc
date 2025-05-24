@@ -34,7 +34,7 @@
 #include "absl/base/config.h"
 #include "absl/meta/type_traits.h"
 
-#if defined(ABSL_HAVE_STD_STRING_VIEW) || defined(__ANDROID__)
+#if defined(ABSL_USES_STD_STRING_VIEW) || defined(__ANDROID__)
 // We don't control the death messaging when using std::string_view.
 // Android assert messages only go to system log, so death tests cannot inspect
 // the message for matching.
@@ -1123,7 +1123,7 @@ TEST(StringViewTest, ConstexprCompiles) {
 #endif
 
 // MSVC 2017+ should be able to construct a constexpr string_view from a cstr.
-#if defined(_MSC_VER) && _MSC_VER >= 1910
+#if defined(_MSC_VER)
 #define ABSL_HAVE_CONSTEXPR_STRING_VIEW_FROM_CSTR 1
 #endif
 
@@ -1159,10 +1159,6 @@ TEST(StringViewTest, ConstexprCompiles) {
 #endif
 #endif
 
-#if !defined(__clang__) || 3 < __clang_major__ || \
-  (3 == __clang_major__ && 4 < __clang_minor__)
-  // older clang versions (< 3.5) complain that:
-  //   "cannot perform pointer arithmetic on null pointer"
   constexpr absl::string_view::iterator const_begin_empty = sp.begin();
   constexpr absl::string_view::iterator const_end_empty = sp.end();
   EXPECT_EQ(const_begin_empty, const_end_empty);
@@ -1172,7 +1168,6 @@ TEST(StringViewTest, ConstexprCompiles) {
   constexpr absl::string_view::iterator const_end_nullptr = cstr.end();
   EXPECT_EQ(const_begin_nullptr, const_end_nullptr);
 #endif  // ABSL_HAVE_STRING_VIEW_FROM_NULLPTR
-#endif  // !defined(__clang__) || ...
 
   constexpr absl::string_view::iterator const_begin = cstr_len.begin();
   constexpr absl::string_view::iterator const_end = cstr_len.end();

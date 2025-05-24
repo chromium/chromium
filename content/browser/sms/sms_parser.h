@@ -42,7 +42,7 @@ class CONTENT_EXPORT SmsParser {
 
     // The origin list consists of the origin that made the OTP request followed
     // by its cross-origin ancestor's origin if such an ancestor exists.
-    OriginList GetOriginList() const;
+    SmsFetcher::OriginList GetOriginList() const;
 
     const url::Origin top_origin;
     const url::Origin embedded_origin;

@@ -45,8 +45,9 @@ void MenuPreTargetHandlerAura::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  if (!controller_->drag_in_progress())
+  if (!controller_->drag_in_progress()) {
     controller_->Cancel(MenuController::ExitType::kAll);
+  }
 }
 
 void MenuPreTargetHandlerAura::OnWindowDestroying(aura::Window* window) {
@@ -109,12 +110,14 @@ bool MenuPreTargetHandlerAura::ShouldCancelMenuForEvent(
 }
 
 void MenuPreTargetHandlerAura::Cleanup() {
-  if (!root_)
+  if (!root_) {
     return;
+  }
   // The ActivationClient may have been destroyed by the time we get here.
   wm::ActivationClient* client = wm::GetActivationClient(root_);
-  if (client)
+  if (client) {
     client->RemoveObserver(this);
+  }
   root_->RemoveObserver(this);
   root_ = nullptr;
 }

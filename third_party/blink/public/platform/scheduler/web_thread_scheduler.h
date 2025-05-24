@@ -89,10 +89,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler
   virtual void ResumeTimersForAndroidWebView();
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Sets the kind of renderer process. Should be called on the main thread
-  // once.
-  virtual void SetRendererProcessType(WebRendererProcessType type);
-
   // IPC::Channel::UrgentMessageDelegate implementation:
   void OnUrgentMessageReceived() override;
   void OnUrgentMessageProcessed() override;

@@ -4,6 +4,7 @@
 
 python
 
+import gdb.printing
 import os
 import subprocess
 import sys

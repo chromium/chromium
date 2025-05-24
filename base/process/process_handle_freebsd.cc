@@ -21,10 +21,11 @@ namespace base {
 ProcessId GetParentProcessId(ProcessHandle process) {
   struct kinfo_proc info;
   size_t length;
-  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, process };
+  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, process};
 
-  if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0) {
     return -1;
+  }
 
   return info.ki_ppid;
 }

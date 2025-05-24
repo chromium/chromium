@@ -55,7 +55,7 @@ CreateExtensionServiceWorkerScriptURLLoaderFactory(
 
 // Creates a network::mojom::URLLoaderFactory implementation suitable for
 // handling subresource requests for extension URLs for the frame identified by
-// |render_process_id| and |render_frame_id|.
+// `render_process_id` and `render_frame_id`.
 // This function can also be used to make a factory for other non-subresource
 // requests to extension URLs, such as for the service worker script when
 // starting a service worker. In that case, render_frame_id will be

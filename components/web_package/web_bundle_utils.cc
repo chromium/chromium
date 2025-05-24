@@ -4,6 +4,7 @@
 
 #include "components/web_package/web_bundle_utils.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/strings/string_number_conversions.h"
@@ -61,10 +62,10 @@ network::mojom::URLResponseHeadPtr CreateResourceResponseFromHeaderString(
 }
 
 bool HasNoSniffHeader(const network::mojom::URLResponseHead& response) {
-  std::string content_type_options;
-  response.headers->EnumerateHeader(nullptr, kContentTypeOptionsHeaderName,
-                                    &content_type_options);
-  return base::EqualsCaseInsensitiveASCII(content_type_options,
+  std::optional<std::string_view> content_type_options =
+      response.headers->EnumerateHeader(nullptr, kContentTypeOptionsHeaderName);
+  return content_type_options &&
+         base::EqualsCaseInsensitiveASCII(*content_type_options,
                                           kNoSniffHeaderValue);
 }
 

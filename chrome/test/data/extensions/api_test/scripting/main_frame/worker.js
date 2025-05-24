@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getSingleTab} from '/_test_resources/test_util/tabs_util.js';
+
 const NEW_TITLE_FROM_FUNCTION = 'Hello, world!';
 const NEW_TITLE_FROM_FILE = 'Goodnight';
 
@@ -33,14 +35,6 @@ function getExecutionWorldFlags() {
     isolatedWorld: window.isolatedWorldFlag || '<none>',
     mainWorld: window.mainWorldFlag || '<none>',
   };
-}
-
-async function getSingleTab(query) {
-  const tabs = await new Promise(resolve => {
-    chrome.tabs.query(query, resolve);
-  });
-  chrome.test.assertEq(1, tabs.length);
-  return tabs[0];
 }
 
 chrome.test.runTests([

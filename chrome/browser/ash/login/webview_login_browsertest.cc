@@ -27,9 +27,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/simple_test_clock.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -38,6 +37,7 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
+#include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
@@ -57,10 +57,9 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -118,6 +117,7 @@
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -142,9 +142,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "ui/base/idle/idle_polling_service.h"
+#include "ui/base/idle/idle_time_provider.h"
+#include "ui/base/test/idle_test_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+
+using testing::NiceMock;
+using ui::test::ScopedIdleProviderForTest;
 
 namespace ash {
 
@@ -372,7 +378,6 @@ class WebviewLoginTest : public OobeBaseTest {
   }
 
  protected:
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -909,15 +914,35 @@ IN_PROC_BROWSER_TEST_F(WebviewDeviceOwnedLoginTest, AllowNewUser) {
   test::OobeJS().ExpectTrue(frame_url + ".search('flow=nosignup') == -1");
 
   // Disallow new users - we also need to set an allowlist due to weird logic.
-  scoped_testing_cros_settings_.device_settings()->Set(
-      kAccountsPrefUsers, base::Value(base::Value::List()));
-  scoped_testing_cros_settings_.device_settings()->Set(
-      kAccountsPrefAllowNewUser, base::Value(false));
+  ::policy::DevicePolicyCrosTestHelper test_helper;
+  test_helper.device_policy()
+      ->payload()
+      .mutable_user_allowlist()
+      ->clear_user_allowlist();
+  test_helper.device_policy()
+      ->payload()
+      .mutable_allow_new_users()
+      ->set_allow_new_users(false);
+  test_helper.RefreshDevicePolicy();
+
   WaitForGaiaPageReload();
 
   // flow=nosignup indicates that user creation is not allowed.
   test::OobeJS().ExpectTrue(frame_url + ".search('flow=nosignup') != -1");
 }
+
+class MockIdleTimeProvider : public ui::IdleTimeProvider {
+ public:
+  MockIdleTimeProvider() = default;
+
+  MockIdleTimeProvider(const MockIdleTimeProvider&) = delete;
+  MockIdleTimeProvider& operator=(const MockIdleTimeProvider&) = delete;
+
+  ~MockIdleTimeProvider() override = default;
+
+  MOCK_METHOD(base::TimeDelta, CalculateIdleTime, (), (override));
+  MOCK_METHOD(bool, CheckIdleStateIsLocked, (), (override));
+};
 
 // TODO(b/360829605) Add browser tests for case where proxy auth is required.
 // Class for testing `DeviceAuthenticationFlowAutoReloadInterval` policy cases.
@@ -964,25 +989,18 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
   }
 
   void AdvanceTime(base::TimeDelta time_change) {
-    // Advance() doesn't trigger the scheduled timer so we need to resume the
-    // timer in order to get the updated clock time
-    // TODO(b/353919505): Add method to WallClockTimer for resuming clock for
-    // testing.
-    test_clock_->Advance(time_change);
-    LoginDisplayHost::default_host()
-        ->GetOobeUI()
-        ->GetHandler<GaiaScreenHandler>()
-        ->GetAutoReloadManagerForTesting()
-        .ResumeTimerForTesting();
-  }
-
-  void SetUpTestClocks() {
-    base::Time now = base::Time::Now();
-    test_clock_ = std::make_unique<base::SimpleTestClock>();
-    test_clock_->SetNow(now);
-    base::TimeTicks now_ticks = base::TimeTicks::Now();
-    test_tick_clock_ = std::make_unique<base::SimpleTestTickClock>();
-    test_tick_clock_->SetNowTicks(now_ticks);
+    // TODO(b/353919505): Introduce a function for testing to advance time and
+    // reschedule the timer in one call.
+    task_runner()->FastForwardBy(time_change);
+    base::WallClockTimer* auto_reload_timer =
+        LoginDisplayHost::default_host()
+            ->GetOobeUI()
+            ->GetHandler<GaiaScreenHandler>()
+            ->GetAutoReloadManagerForTesting()
+            .GetTimerForTesting();
+    if (auto_reload_timer && auto_reload_timer->IsRunning()) {
+      auto_reload_timer->OnResume();
+    }
   }
 
   void SetUpOnMainThread() override {
@@ -995,9 +1013,14 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    SetUpTestClocks();
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+
+    polling_service().SetTaskRunnerForTest(task_runner_);
+    // The default 15s polling interval causes tests to time out.
+    polling_service().SetPollIntervalForTest(base::Seconds(1));
+
     AuthenticationFlowAutoReloadManager::SetClockForTesting(
-        test_clock_.get(), test_tick_clock_.get());
+        task_runner_->GetMockClock(), task_runner_->GetMockTickClock());
 
     WebviewLoginTest::SetUpInProcessBrowserTestFixture();
   }
@@ -1008,22 +1031,41 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
     WebviewLoginTest::TearDownOnMainThread();
   }
 
+  ui::IdlePollingService& polling_service() {
+    return *ui::IdlePollingService::GetInstance();
+  }
+
+  base::TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
+
+  NetworkStateTestHelper* network_state_test_helper() {
+    return network_state_test_helper_.get();
+  }
+
  protected:
   bool IsAutoReloadActive() {
     return LoginDisplayHost::default_host()
         ->GetOobeUI()
         ->GetHandler<GaiaScreenHandler>()
         ->GetAutoReloadManagerForTesting()
-        .IsTimerActiveForTesting();
+        .IsAutoReloadActive();
   }
 
-  std::unique_ptr<base::SimpleTestClock> test_clock_;
-  std::unique_ptr<base::SimpleTestTickClock> test_tick_clock_;
+  void ExpectAutoReloadDisabled() {
+    // Check policy not set
+    PrefService* local_state = g_browser_process->local_state();
+    int pref_reload_interval = local_state->GetInteger(
+        ash::prefs::kAuthenticationFlowAutoReloadInterval);
+    EXPECT_EQ(pref_reload_interval, 0);
 
-  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
+    EXPECT_FALSE(IsAutoReloadActive());
+  }
 
  private:
   policy::DevicePolicyBuilder device_policy_builder_;
+
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
@@ -1031,18 +1073,12 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
 
 IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
                        NewUserWithAutoReloadDisabled) {
-  EnterUsernameAndGoToPasswordPage();
-  // Check policy not set
-  PrefService* local_state = g_browser_process->local_state();
-  int pref_reload_interval = local_state->GetInteger(
-      ash::prefs::kAuthenticationFlowAutoReloadInterval);
-  EXPECT_EQ(pref_reload_interval, 0);
+  WaitForGaiaPageLoad();
 
-  EXPECT_FALSE(IsAutoReloadActive());
+  ExpectAutoReloadDisabled();
 
   std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
-  test::OobeJS().ExpectTrue(frame_url +
-                            ".search('auto_reload_attempts') == -1");
+  test::OobeJS().ExpectEQ(frame_url + ".search('auto_reload_attempts')", -1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest, NewUserWithAutoReloadSet) {
@@ -1055,15 +1091,13 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest, NewUserWithAutoReloadSet) {
   WaitForGaiaPageReload();
 
   std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
-  test::OobeJS().ExpectTrue(frame_url +
-                            ".search('auto_reload_attempts=1') != -1");
+  test::OobeJS().ExpectNE(frame_url + ".search('auto_reload_attempts=1')", -1);
 
   AdvanceTime(base::Minutes(10));
 
   WaitForGaiaPageReload();
 
-  test::OobeJS().ExpectTrue(frame_url +
-                            ".search('auto_reload_attempts=2') != -1");
+  test::OobeJS().ExpectNE(frame_url + ".search('auto_reload_attempts=2')", -1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
@@ -1094,7 +1128,7 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
   EXPECT_TRUE(IsAutoReloadActive());
 
   // Disconnect from all networks in order to trigger the network screen.
-  network_state_test_helper_->service_test()->ClearServices();
+  network_state_test_helper()->service_test()->ClearServices();
   base::RunLoop().RunUntilIdle();
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
@@ -1102,7 +1136,7 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
   EXPECT_FALSE(IsAutoReloadActive());
 
   // Reconnect network.
-  network_state_test_helper_->service_test()->AddService(
+  network_state_test_helper()->service_test()->AddService(
       /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
       /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
       /*state=*/shill::kStateOnline, /*visible=*/true);
@@ -1111,6 +1145,66 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
   WaitForGaiaPageReload();
 
   EXPECT_TRUE(IsAutoReloadActive());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
+                       PostponeAutoreloadOnUserActive) {
+  const int auto_reload_value = 10;  // 10 minutes
+  SetAutoReloadInterval(auto_reload_value);
+
+  EnterUsernameAndGoToPasswordPage();
+
+  AdvanceTime(base::Minutes(auto_reload_value) - base::Seconds(5));
+  EXPECT_TRUE(IsAutoReloadActive());
+
+  // Simulate user action by force returning the value for `CalculateIdleTime()`
+  // which will be used by `OnIdleStateChange()` in
+  // AuthenticationFlowAutoReloadManager.
+  auto mock_time_provider = std::make_unique<NiceMock<MockIdleTimeProvider>>();
+
+  EXPECT_CALL(*mock_time_provider, CalculateIdleTime())
+      // Simulates a user going back to active.
+      .WillRepeatedly(testing::Return(base::Seconds(0)));
+
+  ui::test::ScopedIdleProviderForTest scoped_idle_provider(
+      std::move(mock_time_provider));
+
+  // Advance time to be just past the original `auto_reload_value` reload
+  // interval. Here, the time passed would now be `auto_reload_value minutes` +
+  // 5 seconds.
+  AdvanceTime(base::Seconds(10));
+
+  // No autoreload should have fired yet.
+  std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
+  test::OobeJS().ExpectEQ(frame_url + ".search('auto_reload_attempts=1')", -1);
+
+  // Advance time to pass the postponed time interval.
+  const base::TimeDelta postpone_interval =
+      LoginDisplayHost::default_host()
+          ->GetOobeUI()
+          ->GetHandler<GaiaScreenHandler>()
+          ->GetAutoReloadManagerForTesting()
+          .kPostponeInterval;
+  AdvanceTime(postpone_interval - base::Seconds(5));
+  EXPECT_TRUE(IsAutoReloadActive());
+
+  // A reload should take place after kPostponeInterval has passed.
+  WaitForGaiaPageReload();
+  test::OobeJS().ExpectNE(frame_url + ".search('auto_reload_attempts=1')", -1);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
+                       AutoreloadDisabledThenEnabled) {
+  WaitForGaiaPageLoad();
+
+  ExpectAutoReloadDisabled();
+
+  SetAutoReloadInterval(10);  // 10 minutes
+  WaitForGaiaPageReload();
+  EXPECT_TRUE(IsAutoReloadActive());
+
+  AdvanceTime(base::Minutes(10));
+  WaitForGaiaPageReload();
 }
 
 class ReauthWebviewLoginTest : public WebviewLoginTest {
@@ -1146,16 +1240,7 @@ IN_PROC_BROWSER_TEST_F(ReauthWebviewLoginTest, EmailPrefill) {
             user_with_gaia_pw_.account_id.GetUserEmail());
 }
 
-class ReauthWebviewPasswordlessLoginTest : public ReauthWebviewLoginTest {
- public:
-  ReauthWebviewPasswordlessLoginTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPasswordlessGaiaForConsumers);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ReauthWebviewPasswordlessLoginTest, GaiaPasswordFactor) {
+IN_PROC_BROWSER_TEST_F(ReauthWebviewLoginTest, GaiaPasswordFactor) {
   TriggerOnlineSignin(user_with_gaia_pw_);
   // Passwordless login is disallowed when Gaia password factor is
   // configured.
@@ -1172,8 +1257,7 @@ IN_PROC_BROWSER_TEST_F(ReauthWebviewPasswordlessLoginTest, GaiaPasswordFactor) {
                                        0 /* password login */, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ReauthWebviewPasswordlessLoginTest,
-                       LocalPasswordFactor) {
+IN_PROC_BROWSER_TEST_F(ReauthWebviewLoginTest, LocalPasswordFactor) {
   TriggerOnlineSignin(user_with_local_pw_);
   // Passwordless login is allowed when only local password factor is
   // configured.
@@ -1196,11 +1280,24 @@ class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {
     login_manager_mixin_.AppendRegularUsers(1);
     user_with_invalid_token_ = login_manager_mixin_.users().back().account_id;
     cryptohome_mixin_.MarkUserAsExisting(user_with_invalid_token_);
+    UserDataAuthClient::InitializeFake();
+  }
+
+  void SetUpOnMainThread() override {
+    ReauthWebviewLoginTest::SetUpOnMainThread();
+    token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
+    token_handle_store_->SetInvalidTokenForTesting(kTestTokenHandle);
+  }
+
+  void TearDownOnMainThread() override {
+    token_handle_store_->SetInvalidTokenForTesting(nullptr);
+    token_handle_store_ = nullptr;
+    ReauthWebviewLoginTest::TearDownOnMainThread();
   }
 
   void ShowReauthDialog() {
-    TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_,
-                                      kTestTokenHandle);
+    token_handle_store_->StoreTokenHandle(user_with_invalid_token_,
+                                          kTestTokenHandle);
     // Force to remain in OOBE after login instead of start session, so we could
     // verify the value in UserContext.
     user_manager::KnownUser(g_browser_process->local_state())
@@ -1219,20 +1316,11 @@ class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {
   }
 
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    ReauthWebviewLoginTest::SetUpInProcessBrowserTestFixture();
-    TokenHandleUtil::SetInvalidTokenForTesting(kTestTokenHandle);
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    TokenHandleUtil::SetInvalidTokenForTesting(nullptr);
-    ReauthWebviewLoginTest::TearDownInProcessBrowserTestFixture();
-  }
-
   AccountId user_with_invalid_token_;
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   FakeRecoveryServiceMixin fake_recovery_service_{&mixin_host_,
                                                   embedded_test_server()};
+  raw_ptr<TokenHandleStore> token_handle_store_;
 };
 
 IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchSuccess) {
@@ -1293,7 +1381,8 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchFailure) {
 
 IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest,
                        SkipFetchTokenWhenRecoveryNotSetUp) {
-  TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTestTokenHandle);
+  token_handle_store_->StoreTokenHandle(user_with_invalid_token_,
+                                        kTestTokenHandle);
   ShowReauthDialog();
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
             user_with_invalid_token_.GetUserEmail());
@@ -1302,13 +1391,7 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest,
 
 class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {
  protected:
-  ReauthEndpointWebviewLoginTest() {
-    // TODO(https://crbug.com/1153912) Makes tests work with
-    // kParentAccessCodeForOnlineLogin enabled.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kParentAccessCodeForOnlineLogin);
-  }
+  ReauthEndpointWebviewLoginTest() = default;
   ~ReauthEndpointWebviewLoginTest() override = default;
 
   LoginManagerMixin::TestUserInfo reauth_user_{
@@ -2622,7 +2705,6 @@ class WebviewLoginQuickStartTest : public WebviewLoginTest {
  public:
   WebviewLoginQuickStartTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
     connection_broker_factory_.set_initial_feature_support_status(
         quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
             kUndetermined);

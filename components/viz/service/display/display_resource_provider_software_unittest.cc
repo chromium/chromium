@@ -29,7 +29,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -74,8 +73,7 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
     child_context_provider_ = std::move(context_provider);
 
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        /*shared_bitmap_manager=*/nullptr, gpu_service->shared_image_manager(),
-        gpu_service->sync_point_manager(), gpu_service->gpu_scheduler());
+        gpu_service->shared_image_manager(), gpu_service->gpu_scheduler());
 
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
   }
@@ -86,24 +84,28 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
       const uint32_t value) {
     auto* shared_image_interface =
         child_context_provider_->SharedImageInterface();
-    auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-        {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
-         "DisplayResourceProviderSoftwareTest"});
+    auto shared_image =
+        shared_image_interface->CreateSharedImageForSoftwareCompositor(
+            {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "DisplayResourceProviderSoftwareTest"});
+    auto mapping = shared_image->Map();
 
+    uint32_t* ptr =
+        reinterpret_cast<uint32_t*>(mapping->GetMemoryForPlane(0).data());
     base::span<uint32_t> span =
-        shared_image_mapping.mapping.GetMemoryAsSpan<uint32_t>(size.GetArea());
+        UNSAFE_BUFFERS(base::span(ptr, static_cast<uint32_t>(size.GetArea())));
+
     std::fill(span.begin(), span.end(), value);
 
     auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
-        shared_image_mapping.shared_image,
-        shared_image_interface->GenVerifiedSyncToken(), size,
+        shared_image, shared_image_interface->GenVerifiedSyncToken(), size,
         SinglePlaneFormat::kBGRA_8888,
         TransferableResource::ResourceSource::kTileRasterTask);
 
-    auto callback = base::BindOnce(
-        &MockReleaseCallback::Released, base::Unretained(&release_callback),
-        std::move(shared_image_mapping.shared_image));
+    auto callback = base::BindOnce(&MockReleaseCallback::Released,
+                                   base::Unretained(&release_callback),
+                                   std::move(shared_image));
 
     return child_resource_provider_->ImportResource(
         std::move(transferable_resource), std::move(callback));
@@ -146,7 +148,7 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
                                             kPremul_SkAlphaType));
 
     DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
-        resource_provider_.get(), mapped_resource_id, kPremul_SkAlphaType);
+        resource_provider_.get(), mapped_resource_id);
     const SkImage* sk_image = lock.sk_image();
     bool result = sk_image->readPixels(nullptr, dstBitmap.pixmap(),
                                        /*srcX=*/0, /*srcY=*/0);

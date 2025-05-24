@@ -9,8 +9,10 @@
 
 @implementation TestLensOverlayController
 
-- (BOOL)isPanningSelectionUI {
-  return NO;
+@synthesize visibleAreaLayoutGuide = _visibleAreaLayoutGuide;
+
+- (CGSize)imageSize {
+  return CGSizeZero;
 }
 
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate {
@@ -36,6 +38,34 @@
 - (void)setOcclusionInsets:(UIEdgeInsets)occlusionInsets
                 reposition:(BOOL)reposition
                   animated:(BOOL)animated {
+  // NO-OP
+}
+
+- (void)resetSelectionAreaToInitialPosition:(void (^)())completion {
+  // NO-OP
+}
+
+- (void)hideUserSelection {
+  // NO-OP
+}
+
+- (void)setTopIconsHidden:(BOOL)hidden {
+  // NO-OP
+}
+
+- (void)disableFlyoutMenu:(BOOL)disable {
+  // NO-OP
+}
+
+- (BOOL)translateFilterActive {
+  return NO;
+}
+
+- (CGRect)selectionRect {
+  return CGRectZero;
+}
+
+- (void)setGuidanceRestHeight:(CGFloat)height {
   // NO-OP
 }
 

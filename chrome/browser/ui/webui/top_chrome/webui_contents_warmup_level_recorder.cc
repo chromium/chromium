@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level_recorder.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -51,8 +53,8 @@ WebUIContentsWarmupLevelRecorder::~WebUIContentsWarmupLevelRecorder() = default;
 
 void WebUIContentsWarmupLevelRecorder::BeforeContentsCreation() {
   pre_condition_.emplace();
-  pre_condition_->spare_process =
-      content::RenderProcessHost::GetSpareRenderProcessHost();
+  pre_condition_->spare_process_ids =
+      content::SpareRenderProcessHostManager::Get().GetSpareIds();
   if (content::WebContents* preloaded_contents =
           WebUIContentsPreloadManager::GetInstance()
               ->preloaded_web_contents()) {
@@ -68,8 +70,9 @@ void WebUIContentsWarmupLevelRecorder::AfterContentsCreation(
   CHECK(pre_condition_) << "You must call BeforeContentsCreation()";
   CHECK(web_contents);
 
-  if (pre_condition_->spare_process ==
-      web_contents->GetPrimaryMainFrame()->GetProcess()) {
+  if (base::Contains(
+          pre_condition_->spare_process_ids,
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID())) {
     level_ = WebUIContentsWarmupLevel::kSpareRenderer;
     return;
   }

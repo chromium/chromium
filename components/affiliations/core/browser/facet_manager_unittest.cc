@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/affiliations/core/browser/facet_manager.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -35,7 +31,6 @@ namespace affiliations {
 
 namespace {
 
-using StrategyOnCacheMiss = FacetManager::StrategyOnCacheMiss;
 enum class NotificationAccuracy { PERFECT, TOO_LATE, TOO_EARLY, NEVER_CALLED };
 
 // Helper class to post callbacks to FacetManager::NotifyAtRequestedTime(),
@@ -270,10 +265,9 @@ class FacetManagerTest : public testing::Test {
   // Returns the elapsed time since CreateFacetManager() was last called.
   base::TimeDelta DeltaNow() { return Now() - facet_manager_creation_; }
 
-  void GetAffiliationsAndBranding(StrategyOnCacheMiss cache_miss_strategy) {
+  void GetAffiliationsAndBranding() {
     facet_manager()->GetAffiliationsAndBranding(
-        cache_miss_strategy, mock_consumer()->GetResultCallback(),
-        consumer_task_runner());
+        mock_consumer()->GetResultCallback(), consumer_task_runner());
   }
 
   void Prefetch(base::Time until) { facet_manager()->Prefetch(until); }
@@ -359,7 +353,7 @@ class FacetManagerTest : public testing::Test {
         GetTestEquivalenceClassWithUpdateTime(Now()));
     fake_facet_manager_host()->set_fake_database_content(fetch_result);
     fake_facet_manager_host()->reset_need_network_request();
-    facet_manager()->OnFetchSucceeded(fetch_result);
+    facet_manager()->UpdateLastFetchTime(fetch_result.last_update_time);
 
     main_task_runner_->RunUntilIdle();
     ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
@@ -386,7 +380,7 @@ class FacetManagerTest : public testing::Test {
 
   void ExpectRequestsServedFromCache() {
     EXPECT_TRUE(facet_manager()->IsCachedDataFresh());
-    GetAffiliationsAndBranding(StrategyOnCacheMiss::FAIL);
+    GetAffiliationsAndBranding();
     ExpectConsumerSuccessCallback();
   }
 
@@ -451,12 +445,12 @@ TEST_F(FacetManagerTest, GetAffiliationsAndBrandingServedFromCache) {
   CreateFacetManager();
   EXPECT_TRUE(facet_manager()->IsCachedDataFresh());
 
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FAIL);
+  GetAffiliationsAndBranding();
   ExpectConsumerSuccessCallback();
   EXPECT_TRUE(facet_manager()->CanBeDiscarded());
   ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
 
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
+  GetAffiliationsAndBranding();
   ExpectConsumerSuccessCallback();
   EXPECT_TRUE(facet_manager()->CanBeDiscarded());
   ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
@@ -469,80 +463,16 @@ TEST_F(FacetManagerTest, GetAffiliationsAndBrandingServedFromCache) {
   EXPECT_FALSE(main_task_runner()->HasPendingTask());
 }
 
-// On-demand GetAffiliationsAndBranding() requests should trigger a fetch if the
-// cache has already stale data, or no corresponding data whatsoever. Nothing
-// should happen once the newly fetched data expires.
-TEST_F(FacetManagerTest,
-       OnDemandGetAffiliationsAndBrandingRequestTriggersFetch) {
-  for (const bool cache_initially_has_stale_data : kFalseTrue) {
-    SCOPED_TRACE(cache_initially_has_stale_data);
-
-    if (cache_initially_has_stale_data) {
-      fake_facet_manager_host()->set_fake_database_content(
-          GetTestEquivalenceClassWithUpdateTime(Now()));
-      AdvanceTime(GetCacheHardExpiryPeriod());
-    } else {
-      fake_facet_manager_host()->clear_fake_database_content();
-    }
-
-    CreateFacetManager();
-    EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
-
-    GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-    ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-    EXPECT_FALSE(facet_manager()->CanBeDiscarded());
-    ASSERT_NO_FATAL_FAILURE(CompleteFetch());
-    ExpectConsumerSuccessCallback();
-
-    AdvanceTime(GetCacheHardExpiryPeriod() - Epsilon());
-    EXPECT_TRUE(facet_manager()->IsCachedDataFresh());
-
-    GetAffiliationsAndBranding(StrategyOnCacheMiss::FAIL);
-    ExpectConsumerSuccessCallback();
-    EXPECT_TRUE(facet_manager()->CanBeDiscarded());
-    ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-
-    GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-    ExpectConsumerSuccessCallback();
-    EXPECT_TRUE(facet_manager()->CanBeDiscarded());
-    ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-
-    AdvanceTime(Epsilon());
-
-    ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-    EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
-    EXPECT_TRUE(facet_manager()->CanBeDiscarded());
-    EXPECT_FALSE(main_task_runner()->HasPendingTask());
-    DestroyFacetManager();
-  }
-}
-
 TEST_F(FacetManagerTest,
        CachedOnlyGetAffiliationsAndBrandingFailsDueToStaleCache) {
   CreateFacetManager();
   EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
 
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FAIL);
+  GetAffiliationsAndBranding();
   ExpectConsumerFailureCallback();
   ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
   EXPECT_TRUE(facet_manager()->CanBeDiscarded());
   EXPECT_FALSE(main_task_runner()->HasPendingTask());
-}
-
-TEST_F(FacetManagerTest,
-       GetAffiliationsAndBrandingFailureCallbackInvokedOnDestruction) {
-  CreateFacetManager();
-  EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
-
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-  EXPECT_FALSE(facet_manager()->CanBeDiscarded());
-
-  // Leave the fetch hanging and destroy the facet manager.
-  DestroyFacetManager();
-
-  ExpectConsumerFailureCallback();
-  fake_facet_manager_host()->reset_need_network_request();
 }
 
 // The following tests verify both typical and edge case behavior of Prefetch()
@@ -581,10 +511,11 @@ TEST_F(FacetManagerTest,
 //     [F-------------------------F-----------------------F------------------>
 //
 TEST_F(FacetManagerTest, PrefetchWithEmptyOrStaleCache) {
-  struct {
+  struct TestCases {
     base::TimeDelta prefetch_length;
     size_t expected_num_fetches;
-  } const kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       // Note: Zero length prefetches are tested later.
       {GetShortTestPeriod(), 1},
       {GetCacheSoftExpiryPeriod(), 1},
@@ -592,12 +523,14 @@ TEST_F(FacetManagerTest, PrefetchWithEmptyOrStaleCache) {
       {GetCacheHardExpiryPeriod() + GetShortTestPeriod(), 2},
       {GetCacheSoftExpiryPeriod() + GetCacheSoftExpiryPeriod(), 2},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod(), 2},
-      {base::TimeDelta::Max(), 3}};
+      {base::TimeDelta::Max(), 3},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>({
       base::TimeDelta(),
       GetCacheSoftExpiryPeriod(),
-      2 * GetCacheSoftExpiryPeriod()};
+      2 * GetCacheSoftExpiryPeriod(),
+  });
 
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
@@ -688,11 +621,12 @@ TEST_F(FacetManagerTest, PrefetchWithEmptyOrStaleCache) {
 //                                : [F----------------------F------------->
 //
 TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache) {
-  struct {
+  struct TestCases {
     base::TimeDelta prefetch_start;
     base::TimeDelta prefetch_end;
     size_t expected_num_fetches;
-  } const kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       // Note: Zero length prefetches are tested later.
 
       // Prefetch starts at the exact time the data was incidentally fetched.
@@ -702,39 +636,34 @@ TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache) {
       {base::TimeDelta(), GetCacheHardExpiryPeriod() + GetShortTestPeriod(), 1},
       {base::TimeDelta(), 2 * GetCacheSoftExpiryPeriod(), 1},
       {base::TimeDelta(),
-       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       1},
+       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(), 1},
       {base::TimeDelta(), base::TimeDelta::Max(), 2},
 
       // Prefetch starts a short time after the unrelated fetch.
       {GetShortTestPeriod(), 2 * GetShortTestPeriod(), 0},
       {GetShortTestPeriod(), GetCacheSoftExpiryPeriod(), 0},
       {GetShortTestPeriod(), GetCacheHardExpiryPeriod(), 0},
-      {GetShortTestPeriod(),
-       GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
+      {GetShortTestPeriod(), GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
        1},
       {GetShortTestPeriod(), 2 * GetCacheSoftExpiryPeriod(), 1},
       {GetShortTestPeriod(),
-       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       1},
+       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(), 1},
       {GetShortTestPeriod(), base::TimeDelta::Max(), 2},
 
       // Prefetch starts at the soft expiry time of the unrelated fetch.
       {GetCacheSoftExpiryPeriod(),
-       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       0},
+       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(), 0},
       {GetCacheSoftExpiryPeriod(), GetCacheHardExpiryPeriod(), 0},
-      {GetShortTestPeriod(),
-       GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
+      {GetShortTestPeriod(), GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
        1},
       {GetCacheSoftExpiryPeriod(), 2 * GetCacheSoftExpiryPeriod(), 1},
       {GetCacheSoftExpiryPeriod(),
-       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       1},
-      {GetCacheSoftExpiryPeriod(), base::TimeDelta::Max(), 2}};
+       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(), 1},
+      {GetCacheSoftExpiryPeriod(), base::TimeDelta::Max(), 2},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
-      GetCacheSoftExpiryPeriod(), 2 * GetCacheSoftExpiryPeriod()};
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>(
+      {GetCacheSoftExpiryPeriod(), 2 * GetCacheSoftExpiryPeriod()});
 
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
@@ -772,34 +701,32 @@ TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache) {
 
 // Last block of tests from above.
 TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache2) {
-  struct {
+  struct TestCases {
     base::TimeDelta prefetch_start;
     base::TimeDelta prefetch_end;
     size_t expected_num_fetches;
-  } const kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       // Note: Zero length prefetches are tested later.
 
       // Prefetch starts between the soft and hard expiry time.
       {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       GetCacheHardExpiryPeriod(),
-       0},
+       GetCacheHardExpiryPeriod(), 0},
       {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
-       1},
+       GetCacheHardExpiryPeriod() + GetShortTestPeriod(), 1},
       {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       1},
+       2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod(), 1},
       {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
        GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod() +
            GetShortTestPeriod(),
        1},
       {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       base::TimeDelta::Max(),
-       2}};
+       base::TimeDelta::Max(), 2},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
-      GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-      2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod()};
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>(
+      {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
+       2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod()});
 
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
@@ -887,18 +814,20 @@ TEST_F(FacetManagerTest, ExpiredPrefetchDoesNothing) {
 //     :                          :                       : [----):
 //
 TEST_F(FacetManagerTest, NestedPrefetches) {
-  struct {
+  struct FirstPrefetchParams {
     base::TimeDelta prefetch_length;
     size_t expected_num_fetches;
-  } const kFirstPrefetchParams[] = {
+  };
+  const auto kFirstPrefetchParams = std::to_array<FirstPrefetchParams>({
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod(), 2},
       {base::TimeDelta::Max(), 3},
-  };
+  });
 
-  struct {
+  struct SecondPrefetchParams {
     base::TimeDelta second_prefetch_start;
     base::TimeDelta second_prefetch_end;
-  } const kSecondPrefetchParams[] = {
+  };
+  const auto kSecondPrefetchParams = std::to_array<SecondPrefetchParams>({
       {base::TimeDelta(), GetShortTestPeriod()},
       {GetShortTestPeriod(), 2 * GetShortTestPeriod()},
       {GetShortTestPeriod(), GetCacheSoftExpiryPeriod()},
@@ -919,12 +848,14 @@ TEST_F(FacetManagerTest, NestedPrefetches) {
       {2 * GetCacheSoftExpiryPeriod(),
        GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod()},
       {2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod()}};
+       GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod()},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>({
       base::TimeDelta(),
       GetCacheSoftExpiryPeriod(),
-      2 * GetCacheSoftExpiryPeriod()};
+      2 * GetCacheSoftExpiryPeriod(),
+  });
 
   const base::TimeDelta kTestDuration =
       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod();
@@ -972,24 +903,25 @@ TEST_F(FacetManagerTest, NestedPrefetches) {
 //     :                          [F----------------------F----------->
 //
 TEST_F(FacetManagerTest, OverlappingPrefetches) {
-  struct {
+  struct TestCases {
     base::TimeDelta second_prefetch_start;
     base::TimeDelta second_prefetch_end;
     size_t expected_num_fetches;
-  } const kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       {GetShortTestPeriod(),
-       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       2},
+       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(), 2},
       {GetShortTestPeriod(), base::TimeDelta::Max(), 3},
       {GetCacheSoftExpiryPeriod(),
-       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       2},
-      {GetCacheSoftExpiryPeriod(), base::TimeDelta::Max(), 3}};
+       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(), 2},
+      {GetCacheSoftExpiryPeriod(), base::TimeDelta::Max(), 3},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>({
       base::TimeDelta(),
       GetCacheSoftExpiryPeriod(),
-      2 * GetCacheSoftExpiryPeriod()};
+      2 * GetCacheSoftExpiryPeriod(),
+  });
 
   const base::TimeDelta kTestDuration =
       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod();
@@ -1044,76 +976,50 @@ TEST_F(FacetManagerTest, OverlappingPrefetches) {
 //     [NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN...
 //
 TEST_F(FacetManagerTest, PrefetchWithNonInstantFetches) {
-  struct {
+  struct TestCases {
     base::TimeDelta prefetch_length;
     base::TimeDelta expected_fetch_time1;
     base::TimeDelta fetch_completion_delay1;
     base::TimeDelta expected_fetch_time2;
     base::TimeDelta fetch_completion_delay2;
-  } const kTestCases[] = {
-      {GetCacheHardExpiryPeriod(),
-       base::TimeDelta(),
-       GetShortTestPeriod(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()},
+  };
+  const auto kTestCases = std::to_array<TestCases>({
+      {GetCacheHardExpiryPeriod(), base::TimeDelta(), GetShortTestPeriod(),
+       base::TimeDelta::Max(), base::TimeDelta::Max()},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta(),
-       GetCacheSoftExpiryPeriod(),
+       base::TimeDelta(), base::TimeDelta(), GetCacheSoftExpiryPeriod(),
        GetCacheSoftExpiryPeriod() + GetShortTestPeriod()},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod(),
-       base::TimeDelta(),
-       GetCacheSoftExpiryPeriod(),
-       base::TimeDelta::Max(),
+       base::TimeDelta(), GetCacheSoftExpiryPeriod(), base::TimeDelta::Max(),
        base::TimeDelta::Max()},
-      {GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
-       base::TimeDelta(),
-       GetShortTestPeriod(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()},
+      {GetCacheHardExpiryPeriod() + GetShortTestPeriod(), base::TimeDelta(),
+       GetShortTestPeriod(), base::TimeDelta::Max(), base::TimeDelta::Max()},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod() +
            GetShortTestPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta(),
-       GetCacheSoftExpiryPeriod(),
+       base::TimeDelta(), base::TimeDelta(), GetCacheSoftExpiryPeriod(),
        GetCacheSoftExpiryPeriod() + GetShortTestPeriod()},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod() +
            GetShortTestPeriod(),
-       base::TimeDelta(),
-       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()},
+       base::TimeDelta(), GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
+       base::TimeDelta::Max(), base::TimeDelta::Max()},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod() +
            2 * GetShortTestPeriod(),
-       base::TimeDelta(),
-       GetShortTestPeriod(),
+       base::TimeDelta(), GetShortTestPeriod(),
        GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
        GetCacheSoftExpiryPeriod() + 2 * GetShortTestPeriod()},
-      {GetShortTestPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()},
-      {GetCacheHardExpiryPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max(),
+      {GetShortTestPeriod(), base::TimeDelta(), base::TimeDelta::Max(),
+       base::TimeDelta::Max(), base::TimeDelta::Max()},
+      {GetCacheHardExpiryPeriod(), base::TimeDelta(), base::TimeDelta::Max(),
+       base::TimeDelta::Max(), base::TimeDelta::Max()},
+      {GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
+       base::TimeDelta(), base::TimeDelta(), GetCacheSoftExpiryPeriod(),
        base::TimeDelta::Max()},
       {GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta(),
-       GetCacheSoftExpiryPeriod(),
+       base::TimeDelta(), base::TimeDelta::Max(), base::TimeDelta::Max(),
        base::TimeDelta::Max()},
-      {GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()},
-      {base::TimeDelta::Max(),
-       base::TimeDelta(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()}};
+      {base::TimeDelta::Max(), base::TimeDelta(), base::TimeDelta::Max(),
+       base::TimeDelta::Max(), base::TimeDelta::Max()},
+  });
 
   const base::TimeDelta kMaximumTestDuration = GetCacheSoftExpiryPeriod() +
                                                GetCacheHardExpiryPeriod() +
@@ -1171,33 +1077,32 @@ TEST_F(FacetManagerTest, PrefetchWithNonInstantFetches) {
 //     [F-------------------------F-----------------------F--X- - - - ->
 //
 TEST_F(FacetManagerTest, CancelPrefetch) {
-  struct {
+  struct TestCases {
     base::TimeDelta prefetch_length;
     base::TimeDelta cancel_time;
     size_t expected_num_fetches;
-  } const kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       {GetCacheHardExpiryPeriod(), GetShortTestPeriod(), 1},
       {GetCacheHardExpiryPeriod(), GetCacheSoftExpiryPeriod(), 1},
       {GetCacheHardExpiryPeriod(),
-       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       1},
+       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(), 1},
       {base::TimeDelta::Max(), GetShortTestPeriod(), 1},
       {base::TimeDelta::Max(), GetCacheSoftExpiryPeriod(), 1},
       {base::TimeDelta::Max(),
-       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       2},
+       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(), 2},
       {base::TimeDelta::Max(),
-       GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
-       2},
+       GetCacheHardExpiryPeriod() + GetShortTestPeriod(), 2},
       {base::TimeDelta::Max(), 2 * GetCacheSoftExpiryPeriod(), 2},
       {base::TimeDelta::Max(),
-       2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       3}};
+       2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod(), 3},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>({
       base::TimeDelta(),
       GetCacheSoftExpiryPeriod(),
-      2 * GetCacheSoftExpiryPeriod()};
+      2 * GetCacheSoftExpiryPeriod(),
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
@@ -1460,32 +1365,6 @@ TEST_F(FacetManagerTest, RequestedNotificationsNeverCome) {
   DestroyFacetManager();
 }
 
-TEST_F(FacetManagerTest, StaleCachedDataBeCanDiscardedWhilePendingFetch) {
-  CreateFacetManager();
-  ASSERT_FALSE(facet_manager()->IsCachedDataFresh());
-
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-  EXPECT_FALSE(facet_manager()->CanBeDiscarded());
-  EXPECT_TRUE(facet_manager()->CanCachedDataBeDiscarded());
-
-  fake_facet_manager_host()->reset_need_network_request();
-}
-
-TEST_F(FacetManagerTest, CachedDataBeCanDiscardedAfterOnDemandGetAffiliatons) {
-  CreateFacetManager();
-  ASSERT_FALSE(facet_manager()->IsCachedDataFresh());
-
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-  ASSERT_NO_FATAL_FAILURE(CompleteFetch());
-  ExpectConsumerSuccessCallback();
-
-  EXPECT_TRUE(facet_manager()->IsCachedDataFresh());
-  EXPECT_TRUE(facet_manager()->CanBeDiscarded());
-  EXPECT_TRUE(facet_manager()->CanCachedDataBeDiscarded());
-}
-
 // The cached data can be discarded (indicated by 'd') if and only if it is no
 // longer needed to be kept fresh, or if it already stale.
 //
@@ -1541,34 +1420,6 @@ TEST_F(FacetManagerTest, CachedDataBeCanDiscardedAfterCancelledPrefetch) {
 
   EXPECT_TRUE(facet_manager()->CanBeDiscarded());
   EXPECT_TRUE(facet_manager()->CanCachedDataBeDiscarded());
-}
-
-TEST_F(FacetManagerTest, GetAffiliationsAndBrandingOnceOverNetworkSuccess) {
-  CreateFacetManager();
-  EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
-
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::TRY_ONCE_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-  EXPECT_FALSE(facet_manager()->CanBeDiscarded());
-  ASSERT_NO_FATAL_FAILURE(CompleteFetch());
-  ExpectConsumerSuccessCallback();
-}
-
-TEST_F(FacetManagerTest, GetAffiliationsAndBrandingOnceOverNetworkFailure) {
-  CreateFacetManager();
-  EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
-
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::TRY_ONCE_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-  EXPECT_FALSE(facet_manager()->CanBeDiscarded());
-
-  // Simulate failure.
-  fake_facet_manager_host()->reset_need_network_request();
-  facet_manager()->OnFetchFailed();
-  main_task_runner()->RunUntilIdle();
-  ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-
-  ExpectConsumerFailureCallback();
 }
 
 }  // namespace affiliations

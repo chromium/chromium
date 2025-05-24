@@ -1,0 +1,4 @@
+file://chrome/browser/storage_access_api/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

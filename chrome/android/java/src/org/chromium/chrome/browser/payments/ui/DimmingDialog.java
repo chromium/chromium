@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.interpolators.Interpolators;
@@ -45,7 +46,7 @@ import java.util.Collection;
 /* package */ class DimmingDialog {
     /**
      * Length of the animation to either show the UI or expand it to full height. Note that click of
-     * 'Pay' button in PaymentRequestUI is not accepted until the animation is done, so this
+     * 'Pay' button in PaymentRequestUi is not accepted until the animation is done, so this
      * duration also serves the function of preventing the user from accidentally double-clicking on
      * the screen when triggering payment and thus authorizing unwanted transaction.
      */
@@ -80,7 +81,11 @@ import java.util.Collection;
         // forth between the peeking and expanded state.
         mFullContainer = new FrameLayout(activity);
         mFullContainer.setBackgroundColor(activity.getColor(R.color.modal_dialog_scrim_color));
-        mDialog = new AlwaysDismissedDialog(activity, R.style.DimmingDialog);
+        mDialog =
+                new AlwaysDismissedDialog(
+                        activity,
+                        R.style.DimmingDialog,
+                        EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         mDialog.setOnDismissListener((v) -> notifyListenerDialogDismissed());
         mDialog.addContentView(
                 mFullContainer,

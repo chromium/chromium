@@ -3,22 +3,22 @@
 // found in the LICENSE file.
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {dp} = await testRunner.startBlank(
+  const {dp, session} = await testRunner.startBlank(
       'Test that an attributionsrc request that is eligible for source triggers an issue when web is preferred but there is no web source registration.');
 
   await dp.Audits.enable();
 
-  const issue = dp.Audits.onceIssueAdded();
-
-  await dp.Runtime.evaluate({expression: `
+  session.evaluateAsync(`
     fetch('/inspector-protocol/attribution-reporting/resources/register-os-source-prefer-web.php',
         {keepalive: true,
          attributionReporting: {
           eventSourceEligible: true,
           triggerEligible: false,
-        }});
-  `});
+        }})
+  `);
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
+  const issue = await dp.Audits.onceIssueAdded();
+
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
   testRunner.completeTest();
 })

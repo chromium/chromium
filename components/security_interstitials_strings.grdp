@@ -188,9 +188,6 @@
   <message name="IDS_SSL_V2_PRIMARY_PARAGRAPH" desc="The primary explanatory paragraph for the SSL interstitial.">
     Attackers might be trying to steal your information from <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="SITE">$1<ex>google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> (for example, passwords, messages, or credit cards). <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SSL_V2_RECURRENT_ERROR_PARAGRAPH" desc="A paragraph for an SSL interstitial that the user has seen multiple times in a browsing session.">
-    Warnings may be common while websites update their security. This should improve soon.
-  </message>
 
   <!-- SSL error page: overridable -->
   <message name="IDS_SSL_OVERRIDABLE_SAFETY_BUTTON" desc="The text for the button that takes the user back to the previous page.">
@@ -252,10 +249,10 @@
 
   <!-- Malware interstitial -->
   <message name="IDS_MALWARE_V3_PRIMARY_PARAGRAPH" desc="Mac: The primary explanatory paragraph for the malware interstitial.">
-    Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages, or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    Attackers on the site you tried visiting might install harmful software that steals or deletes things like your passwords, photos, messages, or credit card numbers. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_MALWARE_V3_EXPLANATION_PARAGRAPH" desc="The explanation of why Safe Browsing has blocked the page.">
-    Chrome has built-in safety features to protect you while you browse — like Google Safe Browsing, which <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>recently found malware<ph name="END_LINK">&lt;/a&gt;</ph> on the site you're trying to visit.
+    Chrome has built-in safety features to protect you while you browse — like Google Safe Browsing, which <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>recently found malware<ph name="END_LINK">&lt;/a&gt;</ph> on the site you tried visiting.
   </message>
   <message name="IDS_MALWARE_V3_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
     Even sites that are normally safe are sometimes compromised by attackers. Only visit <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> if you're sure you understand the risks.
@@ -269,11 +266,11 @@
 
   <!-- Harmful download interstitial -->
   <message name="IDS_HARMFUL_V3_PRIMARY_PARAGRAPH" desc="The primary explanatory paragraph for the unwanted software interstitial.">
-    Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit. Chrome strongly recommends going back to safety to avoid harm. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    Attackers on the site you tried visiting might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit. Chrome strongly recommends going back to safety to avoid harm. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
 
   <message name="IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH" desc="The explanation of why Safe Browsing has blocked the page.">
-    Chrome has built-in safety features to protect you while you browse —  like Google Safe Browsing, which recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>found harmful software<ph name="END_LINK">&lt;/a&gt;</ph> on the site you're trying to visit.
+    Chrome has built-in safety features to protect you while you browse —  like Google Safe Browsing, which recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>found harmful software<ph name="END_LINK">&lt;/a&gt;</ph> on the site you tried visiting.
   </message>
 
   <message name="IDS_HARMFUL_V3_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
@@ -282,10 +279,10 @@
 
   <!-- Phishing interstitial -->
   <message name="IDS_PHISHING_V4_PRIMARY_PARAGRAPH" desc="The primary explanatory paragraph for the phishing interstitial.">
-    Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone, or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    Attackers on the site you tried visiting might trick you into installing software or revealing things like your passwords, phone, or credit card numbers. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_PHISHING_V4_EXPLANATION_PARAGRAPH" desc="The explanation of why Safe Browsing has blocked the page.">
-    Chrome has built-in safety features to protect you while you browse — like Google Safe Browsing, which <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>recently found phishing<ph name="END_LINK">&lt;/a&gt;</ph> on the site you're trying to visit. Phishing sites pretend to be other sites to trick you.<ph name="NEW_LINE">&lt;br/&gt;&lt;br/&gt;</ph>Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK">&lt;a href="#" id="report-error-link"&gt;</ph>Let us know<ph name="END_ERROR_LINK">&lt;/a&gt;</ph> if you think there's been a mistake and that this site doesn't pose a danger.
+    Chrome has built-in safety features to protect you while you browse — like Google Safe Browsing, which <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>recently found phishing<ph name="END_LINK">&lt;/a&gt;</ph> on the site you tried visiting. Phishing sites pretend to be other sites to trick you.<ph name="NEW_LINE">&lt;br/&gt;&lt;br/&gt;</ph>Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK">&lt;a href="#" id="report-error-link"&gt;</ph>Let us know<ph name="END_ERROR_LINK">&lt;/a&gt;</ph> if you think there's been a mistake and that this site doesn't pose a danger.
   </message>
   <message name="IDS_PHISHING_V4_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
     Only visit <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> if you're sure you understand the risks.
@@ -348,8 +345,8 @@
   <message name="IDS_CONNECTION_HELP_SPECIFIC_ERROR_HEADING" desc="Heading for individual errors section in chrome://connection-help. Matches the heading for the specific error section in https://support.google.com/chrome/answer/6098869">
     Get help with a specific error message
   </message>
-  <message name="IDS_CONNECTION_HELP_CONNECTION_NOT_PRIVATE_TITLE" desc="Title for your connection is not private section in chrome://connection-help. Matches the heading for the fourth section in https://support.google.com/chrome/answer/6098869, with the addition of ERR_CERT_SYMANTEC_LEGACY.">
-    "Your connection is not private" or "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" or "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" or "SSL certificate error"
+  <message name="IDS_CONNECTION_HELP_CONNECTION_NOT_PRIVATE_TITLE" desc="Title for your connection is not private section in chrome://connection-help. Matches the heading for the fourth section in https://support.google.com/chrome/answer/6098869.">
+    "Your connection is not private" or "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" or "SSL certificate error"
   </message>
   <message name="IDS_CONNECTION_HELP_CONNECT_TO_NETWORK_TITLE" desc="Title for connect to network section in chrome://connection-help. Matches the heading for the fifth section in https://support.google.com/chrome/answer/6098869">
     "Connect to network"
@@ -500,7 +497,7 @@
   </message>
 
   <message name="IDS_HTTPS_ONLY_BALANCED_MODE_HEADING" desc="Large heading of the warning shown when an http only site is loaded with https-only balanced mode active">
-    <ph name="SITE">$1<ex>example.com</ex></ph> doesn’t support a secure connection
+    <ph name="SITE">$1<ex>example.com</ex></ph> doesn’t support a secure connection with HTTPS
   </message>
   <message name="IDS_HTTPS_ONLY_BALANCED_MODE_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Balanced Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS.">
     <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
@@ -511,9 +508,17 @@
     You might also contact the site owner and suggest they upgrade to HTTPS. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
 
-  <message name="IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user also has Advanced Protection enabled.">
-    You are seeing this warning because this site does not support HTTPS and you are under Google's Advanced Protection Program. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
-  </message>
+  <if expr="not is_android">
+    <message name="IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user also has Advanced Protection enabled.">
+      This site will remain blocked because you are under Google's Advanced Protection Program. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    </message>
+  </if>
+  <if expr="is_android">
+    <message name="IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH_ANDROID" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user also has Advanced Protection enabled.">
+        This site will remain blocked because you have Advanced Protection turned on in <ph name="BEGIN_ANDROID_SETTINGS_LINK">&lt;a href="#" id="android-advanced-protection-settings-link"&gt;</ph>Android settings<ph name="END_ANDROID_SETTINGS_LINK">&lt;/a&gt;</ph>. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    </message>
+  </if>
+
   <message name="IDS_HTTPS_ONLY_MODE_WITH_SITE_ENGAGEMENT_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user is seeing this warning because they typically visit HTTPS URLs.">
     You usually connect to this site securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>

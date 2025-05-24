@@ -181,8 +181,7 @@ int ProxyResolverWinHttp::GetProxyForURL(
       results->UseNamedProxy(base::WideToUTF8(info.lpszProxy));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      rv = ERR_FAILED;
+      NOTREACHED();
   }
 
   FreeInfo(&info);

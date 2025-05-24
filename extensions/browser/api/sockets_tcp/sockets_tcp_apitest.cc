@@ -14,6 +14,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/network_service_test_helper.h"
+#include "extensions/browser/api/socket/write_quota_checker.h"
 #include "extensions/browser/api/sockets_tcp/sockets_tcp_api.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension.h"
@@ -164,6 +165,40 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtensionTLS) {
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   listener.Reply(base::StringPrintf(
       "https:%s:%d", https_host_port_pair.host().c_str(), https_port));
+
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpSendWriteQuota) {
+  WriteQuotaChecker* write_quota_checker =
+      WriteQuotaChecker::Get(browser_context());
+  constexpr size_t kBytesLimit = 1;
+  WriteQuotaChecker::ScopedBytesLimitForTest scoped_quota(write_quota_checker,
+                                                          kBytesLimit);
+
+  net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTP);
+  test_server.AddDefaultHandlers();
+  EXPECT_TRUE(test_server.Start());
+
+  net::HostPortPair host_port_pair = test_server.host_port_pair();
+  int port = host_port_pair.port();
+  ASSERT_GT(port, 0);
+
+  // Test that connect() is properly resolving hostnames.
+  host_port_pair.set_host(kHostname);
+
+  ResultCatcher catcher;
+  catcher.RestrictToBrowserContext(browser_context());
+
+  ExtensionTestMessageListener listener("info_please",
+                                        ReplyBehavior::kWillReply);
+
+  scoped_refptr<const Extension> test_extension = LoadApp("sockets_tcp/api");
+  ASSERT_TRUE(test_extension);
+
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+  listener.Reply(base::StringPrintf("tcp_send_write_quota:%s:%d",
+                                    host_port_pair.host().c_str(), port));
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }

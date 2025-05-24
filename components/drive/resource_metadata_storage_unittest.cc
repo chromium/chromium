@@ -2,22 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/drive/resource_metadata_storage.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
+#include <array>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/drive/drive.pb.h"
@@ -247,8 +243,13 @@ TEST_F(ResourceMetadataStorageTest, GetIdByResourceId) {
 }
 
 TEST_F(ResourceMetadataStorageTest, GetChildren) {
-  const std::string parents_id[] = { "mercury", "venus", "mars", "jupiter",
-                                     "saturn" };
+  const auto parents_id = std::to_array<std::string>({
+      "mercury",
+      "venus",
+      "mars",
+      "jupiter",
+      "saturn",
+  });
   std::vector<base::StringPairs> children_name_id(std::size(parents_id));
   // Skip children_name_id[0/1] here because Mercury and Venus have no moon.
   children_name_id[2].push_back(std::make_pair("phobos", "mars_i"));
@@ -289,7 +290,7 @@ TEST_F(ResourceMetadataStorageTest, GetChildren) {
     storage_->GetChildren(parents_id[i], &children);
     EXPECT_EQ(children_name_id[i].size(), children.size());
     for (const auto& id : children_name_id[i]) {
-      EXPECT_EQ(1, base::ranges::count(children, id.second));
+      EXPECT_EQ(1, std::ranges::count(children, id.second));
     }
   }
 }

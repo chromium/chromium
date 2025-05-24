@@ -65,13 +65,14 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
  private:
   // Record for input/output buffers.
   struct BufferRecord {
-    BufferRecord();
-    ~BufferRecord();
-    void* address[VIDEO_MAX_PLANES];  // mmap() address.
-    size_t length[VIDEO_MAX_PLANES];  // mmap() length.
+    BufferRecord() = default;
+    ~BufferRecord() = default;
+
+    void* address[VIDEO_MAX_PLANES] = {};  // mmap() address.
+    size_t length[VIDEO_MAX_PLANES] = {};  // mmap() length.
 
     // Set true during QBUF and DQBUF. |address| will be accessed by hardware.
-    bool at_device;
+    bool at_device = false;
   };
 
   void EnqueueInput();

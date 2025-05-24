@@ -1,0 +1,15 @@
+include_rules = [
+  # These files should not depend on browser code.
+  "-chrome",
+  "-content",
+
+  # Except for constants which it links in directly.
+  "+chrome/test/chromedriver/chrome",
+  "+chrome/test/chromedriver/constants",
+  "+chrome/test/chromedriver/js",
+  "+chrome/test/chromedriver/net",
+
+  "+chrome/test/chromedriver",
+
+  "+third_party/selenium-atoms",
+]

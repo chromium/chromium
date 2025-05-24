@@ -38,7 +38,6 @@ class DummyRendererResourceCoordinator final
                                     const HTMLFrameOwnerElement& owner) final {}
   void OnBeforeContentFrameDetached(const Frame& frame,
                                     const HTMLFrameOwnerElement& owner) final {}
-  void FireBackgroundTracingTrigger(const String& trigger_name) final {}
 };
 
 }  // namespace

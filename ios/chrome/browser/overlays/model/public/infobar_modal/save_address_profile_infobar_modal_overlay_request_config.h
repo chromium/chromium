@@ -10,8 +10,8 @@
 #include <optional>
 
 #import "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 
 class InfoBarIOS;
@@ -69,7 +69,7 @@ class SaveAddressProfileModalRequestConfig
   }
 
  private:
-  OVERLAY_USER_DATA_SETUP(SaveAddressProfileModalRequestConfig);
+  friend class OverlayUserData<SaveAddressProfileModalRequestConfig>;
   explicit SaveAddressProfileModalRequestConfig(InfoBarIOS* infobar);
 
   // OverlayUserData:

@@ -4,6 +4,9 @@
 
 #include "components/user_education/views/new_badge_label.h"
 
+#include <string_view>
+
+#include "base/strings/strcat.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -124,7 +127,7 @@ void NewBadgeLabel::OnPaint(gfx::Canvas* canvas) {
                                   new_badge_text_, font_list());
 }
 
-void NewBadgeLabel::SetText(const std::u16string& text) {
+void NewBadgeLabel::SetText(std::u16string_view text) {
   views::Label::SetText(text);
   UpdateAccessibleName();
 }
@@ -171,16 +174,13 @@ std::u16string NewBadgeLabel::GetAccessibleDescription() const {
 }
 
 void NewBadgeLabel::SetBorder(std::unique_ptr<views::Border> b) {
-  NOTREACHED_IN_MIGRATION()
-      << "Calling SetBorder() externally is currently not allowed.";
+  NOTREACHED() << "Calling SetBorder() externally is currently not allowed.";
 }
 
 void NewBadgeLabel::UpdateAccessibleName() {
-  std::u16string accessible_name = GetText();
   if (display_new_badge_) {
-    accessible_name.push_back(' ');
-    accessible_name.append(GetAccessibleDescription());
-    GetViewAccessibility().SetName(accessible_name);
+    GetViewAccessibility().SetName(
+        base::StrCat({GetText(), u" ", GetAccessibleDescription()}));
   }
 }
 

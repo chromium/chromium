@@ -4,7 +4,7 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {DeviceNameState, SetDeviceNameResult} from './device_name_util.js';
+import type {DeviceNameState, SetDeviceNameResult} from './device_name_util.js';
 
 export interface DeviceNameMetadata {
   deviceName: string;

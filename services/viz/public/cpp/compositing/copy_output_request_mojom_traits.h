@@ -30,6 +30,11 @@ struct StructTraits<viz::mojom::CopyOutputRequestDataView,
     return request->result_destination();
   }
 
+  static base::TimeDelta send_result_delay(
+      const std::unique_ptr<viz::CopyOutputRequest>& request) {
+    return request->send_result_delay();
+  }
+
   static const gfx::Vector2d& scale_from(
       const std::unique_ptr<viz::CopyOutputRequest>& request) {
     return request->scale_from();

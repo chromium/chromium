@@ -123,8 +123,8 @@ Status UnzipArchive(const base::FilePath& unzip_dir,
 // Stream for writing binary data.
 class DataOutputStream {
  public:
-  DataOutputStream() {}
-  ~DataOutputStream() {}
+  DataOutputStream() = default;
+  ~DataOutputStream() = default;
 
   void WriteUInt16(uint16_t data) { WriteBytes(&data, sizeof(data)); }
 
@@ -153,7 +153,7 @@ class DataInputStream {
  public:
   DataInputStream(const char* data, int size)
       : data_(data), size_(size), iter_(0) {}
-  ~DataInputStream() {}
+  ~DataInputStream() = default;
 
   bool ReadUInt16(uint16_t* data) { return ReadBytes(data, sizeof(*data)); }
 
@@ -614,7 +614,7 @@ bool GetOptionalSafeInt(const base::Value::Dict& dict,
 }
 
 bool SetSafeInt(base::Value::Dict& dict,
-                const std::string_view path,
+                std::string_view path,
                 int64_t in_value_64) {
   int int_value = static_cast<int>(in_value_64);
   if (in_value_64 == int_value)

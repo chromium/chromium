@@ -47,8 +47,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/test/shell_surface_builder.h"
@@ -119,7 +119,7 @@ content::MediaStreamRequest CreateMediaStreamRequest(
     std::string requested_video_device_id,
     blink::mojom::MediaStreamType video_type) {
   return content::MediaStreamRequest(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       web_contents->GetPrimaryMainFrame()->GetRoutingID(),
       /*page_request_id=*/0, url::Origin::Create(GURL(kExampleUrl)),
       /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
@@ -967,7 +967,9 @@ class DlpContentManagerAshScreenShareBrowserTest
                                            content::DesktopMediaID::kFakeId);
     const std::string requested_video_device_id =
         content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-            web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            web_contents->GetPrimaryMainFrame()
+                ->GetProcess()
+                ->GetDeprecatedID(),
             web_contents->GetPrimaryMainFrame()->GetRoutingID(),
             url::Origin::Create(GURL(kExampleUrl)), media_id,
             content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
@@ -991,7 +993,8 @@ class DlpContentManagerAshScreenShareBrowserTest
       content::WebContents* web_contents,
       bool expect_allowed = true,
       bool expect_warning = false) {
-    int process_id = web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+    int process_id =
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
     int frame_id = web_contents->GetPrimaryMainFrame()->GetRoutingID();
     const content::DesktopMediaID media_id(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
@@ -1297,7 +1300,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
                                 stop_cb_.Get(), state_change_cb_.Get(),
@@ -1335,7 +1338,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          new_web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          new_web_contents->GetPrimaryMainFrame()
+              ->GetProcess()
+              ->GetDeprecatedID(),
           new_web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   // Simulate changing the source to another tab.
   manager->OnScreenShareSourceChanging(

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -216,6 +217,17 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   // termination.
   void DissociateContext();
 
+  void RecordScriptCompilation(String file, bool used_code_cache) {
+    last_compiled_script_file_name_ = file;
+    last_compiled_script_used_code_cache_ = used_code_cache;
+  }
+  String last_compiled_script_file_name() const {
+    return last_compiled_script_file_name_;
+  }
+  bool last_compiled_script_used_code_cache() const {
+    return last_compiled_script_used_code_cache_;
+  }
+
  protected:
   ScriptState(v8::Local<v8::Context>, DOMWrapperWorld*, ExecutionContext*);
 
@@ -254,6 +266,11 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   static constexpr int kV8ContextPerContextDataIndex =
       static_cast<int>(gin::kPerContextDataStartIndex) +
       static_cast<int>(gin::kEmbedderBlink);
+
+  // For accessing information about the last script compilation via
+  // internals.idl.
+  String last_compiled_script_file_name_;
+  bool last_compiled_script_used_code_cache_ = false;
 };
 
 // ScriptStateProtectingContext keeps the context associated with the

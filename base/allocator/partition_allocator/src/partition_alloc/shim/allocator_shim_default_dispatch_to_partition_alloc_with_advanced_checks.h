@@ -32,11 +32,13 @@
 namespace allocator_shim {
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void InstallDispatchToPartitionAllocWithAdvancedChecks(
-    AllocatorDispatch* dispatch);
+void InstallCustomDispatchForPartitionAllocWithAdvancedChecks();
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void UninstallDispatchToPartitionAllocWithAdvancedChecks();
+void InstallCustomDispatchForTesting(AllocatorDispatch* dispatch);
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void UninstallCustomDispatch();
 
 }  // namespace allocator_shim
 

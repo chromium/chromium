@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/common/autofill_data_validation.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_util.h"

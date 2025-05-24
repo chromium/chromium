@@ -22,28 +22,28 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
 
 }  // namespace
 
-base::TimeDelta GetTimeSinceMostRecentTabWasOpenForSceneState(
+std::optional<base::Time> GetTimeMostRecentTabWasOpenForSceneState(
     SceneState* scene_state) {
-  NSDate* timestamp = base::apple::ObjCCast<NSDate>([scene_state
-      sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime]);
-
-  if (timestamp == nil) {
-    return base::TimeDelta();
+  if (NSDate* timestamp = base::apple::ObjCCast<NSDate>([scene_state
+          sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime])) {
+    return base::Time::FromNSDate(timestamp);
   }
+  return std::nullopt;
+}
 
-  return base::Time::Now() - base::Time::FromNSDate(timestamp);
+std::optional<base::TimeDelta> GetTimeSinceMostRecentTabWasOpenForSceneState(
+    SceneState* scene_state) {
+  if (const std::optional<base::Time> timestamp =
+          GetTimeMostRecentTabWasOpenForSceneState(scene_state)) {
+    return base::Time::Now() - *timestamp;
+  }
+  return std::nullopt;
 }
 
 bool ShouldShowStartSurfaceForSceneState(SceneState* scene_state) {
-  NSDate* timestamp = base::apple::ObjCCast<NSDate>([scene_state
-      sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime]);
-  if (timestamp == nil) {
-    return NO;
-  }
-
-  const base::TimeDelta elapsed =
-      base::Time::Now() - base::Time::FromNSDate(timestamp);
-  if (elapsed < GetReturnToStartSurfaceDuration()) {
+  const std::optional<base::TimeDelta> elapsed =
+      GetTimeSinceMostRecentTabWasOpenForSceneState(scene_state);
+  if (!elapsed.has_value() || *elapsed < GetReturnToStartSurfaceDuration()) {
     return NO;
   }
 
@@ -57,22 +57,22 @@ bool ShouldShowStartSurfaceForSceneState(SceneState* scene_state) {
 }
 
 NSString* GetRecentTabTileTimeLabelForSceneState(SceneState* scene_state) {
-  const base::TimeDelta time_since_open =
+  const std::optional<base::TimeDelta> time_since_open =
       GetTimeSinceMostRecentTabWasOpenForSceneState(scene_state);
-  if (time_since_open == base::TimeDelta()) {
+  if (!time_since_open.has_value()) {
     return @"";
   }
   NSString* time_label = nil;
-  if (time_since_open > base::Days(1)) {
+  if (*time_since_open > base::Days(1)) {
     // If it has been at least a day since the most recent tab was opened,
     // then show days since instead of hours.
     time_label =
         l10n_util::GetNSStringF(IDS_IOS_RETURN_TO_RECENT_TAB_TIME_DAYS,
-                                base::FormatNumber(time_since_open.InDays()));
+                                base::FormatNumber(time_since_open->InDays()));
   } else {
     time_label =
         l10n_util::GetNSStringF(IDS_IOS_RETURN_TO_RECENT_TAB_TIME_HOURS,
-                                base::FormatNumber(time_since_open.InHours()));
+                                base::FormatNumber(time_since_open->InHours()));
   }
   DCHECK(time_label);
   return [NSString stringWithFormat:@" · %@", time_label];

@@ -54,6 +54,7 @@ goog.ui.FlatButtonRenderer.CSS_CLASS = goog.getCssName('goog-flat-button');
  * @param {goog.ui.Control} button Button to render.
  * @return {!Element} Root element for the button.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.FlatButtonRenderer.prototype.createDom = function(button) {
   'use strict';

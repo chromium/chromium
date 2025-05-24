@@ -23,10 +23,10 @@ Activity is rendered. For the latter two, we care both about:
 
 Here are some UMA metrics that measure start-up (UMA's UI has descriptions):
 
-* `Startup.Android.Cold.TimeToFirstVisibleContent2`
-* `Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed`
+* `Startup.Android.Cold.TimeToFirstVisibleContent4`
+* `Startup.Android.Cold.TimeToFirstNavigationCommit3.Tabbed`
 * `Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap`
-* `Startup.Android.Cold.TimeToFirstContentfulPaint.Tabbed`
+* `Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed`
 
 This one can be useful for measuring dex optimization changes:
 
@@ -52,7 +52,7 @@ environment:
 When using [Pinpoint] to test start-up changes, make sure to:
 
 * Use bundles rather than APKs.
-  * For 32-bit: `--browser=android-trichrome-bundle`
+  * For 32-bit: `--browser=android-trichrome-chrome-google-bundle`
   * For 64-bit: `--browser=android-trichrome-chrome-google-64-32-bundle`
 * Compile DEX: `--compile-apk=speed`
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/chromeos/vulkan_overlay_adaptor.h"
 
 #include <linux/videodev2.h>
@@ -22,6 +27,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -420,7 +426,6 @@ scoped_refptr<VideoFrame> ProcessFrameLibyuv(scoped_refptr<VideoFrame> in_frame,
       break;
     default:
       NOTREACHED() << "Invalid overlay transform: " << transform;
-      return nullptr;
   }
 
   // Assemble a graph of the available LibYUV conversion functions.
@@ -627,6 +632,7 @@ class VulkanOverlayAdaptorTest
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
   scoped_refptr<gpu::SharedContextState> context_state_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::GpuPreferences gpu_preferences_;
@@ -641,7 +647,8 @@ VulkanOverlayAdaptorTest::VulkanOverlayAdaptorTest()
                                                   gfx::Size())),
       context_(gl::init::CreateGLContext(share_group_.get(),
                                          surface_.get(),
-                                         gl::GLContextAttribs())) {
+                                         gl::GLContextAttribs())),
+      test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
   context_->MakeCurrent(surface_.get());
   context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
       share_group_, surface_, context_, false, base::DoNothing(),
@@ -698,9 +705,10 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateVideoFrame(
                           kMM21TileHeight) *
           bpp_numerator / bpp_denom);
 
-  scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
+  scoped_refptr<VideoFrame> frame = CreateMappableVideoFrame(
       VideoPixelFormat::PIXEL_FORMAT_NV12, alloc_size, visible_rect, alloc_size,
-      kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+      kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+      test_sii_.get());
 
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
@@ -738,11 +746,11 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
     bool is_10bit) {
   constexpr base::TimeDelta kNullTimestamp;
 
-  scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
+  scoped_refptr<VideoFrame> frame = CreateMappableVideoFrame(
       is_10bit ? VideoPixelFormat::PIXEL_FORMAT_XR30
                : VideoPixelFormat::PIXEL_FORMAT_ARGB,
       coded_size, gfx::Rect(coded_size), coded_size, kNullTimestamp,
-      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii_.get());
 
   auto gmb = CreateGpuMemoryBufferHandle(frame.get());
   shared_image_factory_->CreateSharedImage(
@@ -794,7 +802,7 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
       VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam().tiling);
 
   bool performed_cleanup = false;
-  auto fence_helper =
+  auto* fence_helper =
       vulkan_overlay_adaptor->GetVulkanDeviceQueue()->GetFenceHelper();
   fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
       [](bool* cleanup_flag, gpu::VulkanDeviceQueue* device_queue,
@@ -851,7 +859,8 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
         libyuv_out_frame->stride(VideoFrame::Plane::kARGB), output_size.width(),
         output_size.height());
   }
-  ASSERT_TRUE(psnr >= psnr_threshold);
+
+  EXPECT_GE(psnr, psnr_threshold);
 }
 
 TEST_P(VulkanOverlayAdaptorTest, Performance) {

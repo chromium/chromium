@@ -53,10 +53,16 @@ found in the LICENSE file.
         <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
     </style>
     <style name="OutlinedButton" parent="TextButton" tools:ignore="UnusedResources">
-        <item name="borderWidth">@dimen/button_outlined_border_width</item>
+        <item name="buttonBorderWidth">@dimen/button_outlined_border_width</item>
         <item name="borderColor">?attr/globalOutlinedButtonBorderColor</item>
     </style>
-
+    <style name="FilledTonalButton" parent="TextButton" tools:ignore="UnusedResources">
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Filled</item>
+        <item name="buttonTextColor">?attr/globalFilledTonalButtonTextColor</item>
+        <item name="buttonColor">?attr/globalFilledTonalButtonBgColor</item>
+    </style>
     <!-- Used by Chrome and Content -->
     <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources">
         <item name="android:fontFamily">sans-serif</item>
@@ -379,6 +385,16 @@ found in the LICENSE file.
     <style name="AnchoredPopupAnimStartBottom">
         <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom_left</item>
         <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom_left</item>
+    </style>
+
+    <!-- PopupWindowAnimationStyle -->
+    <style name="PopupWindowAnimDropdown">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_dropdown</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_dropdown</item>
+    </style>
+    <style name="PopupWindowAnimRaiseup">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_raiseup</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_raiseup</item>
     </style>
 
     <!-- ListMenuButton -->

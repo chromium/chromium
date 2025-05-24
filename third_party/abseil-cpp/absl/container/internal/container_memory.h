@@ -374,9 +374,6 @@ struct map_slot_policy {
     return slot->value;
   }
 
-  // When C++17 is available, we can use std::launder to provide mutable
-  // access to the key for use in node handle.
-#if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
   static K& mutable_key(slot_type* slot) {
     // Still check for kMutableKeys so that we can avoid calling std::launder
     // unless necessary because it can interfere with optimizations.
@@ -384,9 +381,6 @@ struct map_slot_policy {
                                : *std::launder(const_cast<K*>(
                                      std::addressof(slot->value.first)));
   }
-#else  // !(defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606)
-  static const K& mutable_key(slot_type* slot) { return key(slot); }
-#endif
 
   static const K& key(const slot_type* slot) {
     return kMutableKeys::value ? slot->key : slot->value.first;
@@ -439,11 +433,17 @@ struct map_slot_policy {
   template <class Allocator>
   static auto transfer(Allocator* alloc, slot_type* new_slot,
                        slot_type* old_slot) {
-    auto is_relocatable =
-        typename absl::is_trivially_relocatable<value_type>::type();
+    // This should really just be
+    // typename absl::is_trivially_relocatable<value_type>::type()
+    // but std::pair is not trivially copyable in C++23 in some standard
+    // library versions.
+    // See https://github.com/llvm/llvm-project/pull/95444 for instance.
+    auto is_relocatable = typename std::conjunction<
+        absl::is_trivially_relocatable<typename value_type::first_type>,
+        absl::is_trivially_relocatable<typename value_type::second_type>>::
+        type();
 
     emplace(new_slot);
-#if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
     if (is_relocatable) {
       // TODO(b/247130232,b/251814870): remove casts after fixing warnings.
       std::memcpy(static_cast<void*>(std::launder(&new_slot->value)),
@@ -451,7 +451,6 @@ struct map_slot_policy {
                   sizeof(value_type));
       return is_relocatable;
     }
-#endif
 
     if (kMutableKeys::value) {
       absl::allocator_traits<Allocator>::construct(
@@ -465,6 +464,54 @@ struct map_slot_policy {
   }
 };
 
+// Suppress erroneous uninitialized memory errors on GCC. For example, GCC
+// thinks that the call to slot_array() in find_or_prepare_insert() is reading
+// uninitialized memory, but slot_array is only called there when the table is
+// non-empty and this memory is initialized when the table is non-empty.
+#if !defined(__clang__) && defined(__GNUC__)
+#define ABSL_SWISSTABLE_IGNORE_UNINITIALIZED(x)                    \
+  _Pragma("GCC diagnostic push")                                   \
+      _Pragma("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")  \
+          _Pragma("GCC diagnostic ignored \"-Wuninitialized\"") x; \
+  _Pragma("GCC diagnostic pop")
+#define ABSL_SWISSTABLE_IGNORE_UNINITIALIZED_RETURN(x) \
+  ABSL_SWISSTABLE_IGNORE_UNINITIALIZED(return x)
+#else
+#define ABSL_SWISSTABLE_IGNORE_UNINITIALIZED(x) x
+#define ABSL_SWISSTABLE_IGNORE_UNINITIALIZED_RETURN(x) return x
+#endif
+
+// Variadic arguments hash function that ignore the rest of the arguments.
+// Useful for usage with policy traits.
+template <class Hash>
+struct HashElement {
+  template <class K, class... Args>
+  size_t operator()(const K& key, Args&&...) const {
+    return h(key);
+  }
+  const Hash& h;
+};
+
+// No arguments function hash function for a specific key.
+template <class Hash, class Key>
+struct HashKey {
+  size_t operator()() const { return HashElement<Hash>{hash}(key); }
+  const Hash& hash;
+  const Key& key;
+};
+
+// Variadic arguments equality function that ignore the rest of the arguments.
+// Useful for usage with policy traits.
+template <class K1, class KeyEqual>
+struct EqualElement {
+  template <class K2, class... Args>
+  bool operator()(const K2& lhs, Args&&...) const {
+    ABSL_SWISSTABLE_IGNORE_UNINITIALIZED_RETURN(eq(lhs, rhs));
+  }
+  const K1& rhs;
+  const KeyEqual& eq;
+};
+
 // Type erased function for computing hash of the slot.
 using HashSlotFn = size_t (*)(const void* hash_fn, void* slot);
 
@@ -473,7 +520,7 @@ using HashSlotFn = size_t (*)(const void* hash_fn, void* slot);
 template <class Fn, class T>
 size_t TypeErasedApplyToSlotFn(const void* fn, void* slot) {
   const auto* f = static_cast<const Fn*>(fn);
-  return (*f)(*static_cast<const T*>(slot));
+  return HashElement<Fn>{*f}(*static_cast<const T*>(slot));
 }
 
 // Type erased function to apply `Fn` to data inside of the `*slot_ptr`.
@@ -482,7 +529,7 @@ template <class Fn, class T>
 size_t TypeErasedDerefAndApplyToSlotFn(const void* fn, void* slot_ptr) {
   const auto* f = static_cast<const Fn*>(fn);
   const T* slot = *static_cast<const T**>(slot_ptr);
-  return (*f)(*slot);
+  return HashElement<Fn>{*f}(*slot);
 }
 
 }  // namespace container_internal

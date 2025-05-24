@@ -2,7 +2,7 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++UNKNOWN
-++++++++UNKNOWN
+++++++++UNKNOWN label='Term'
 ++++++++++STATIC_TEXT label='Term'
 ++++++++++++UNKNOWN label='Term'
 ++++++++UNKNOWN

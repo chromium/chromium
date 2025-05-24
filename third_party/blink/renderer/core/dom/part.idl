@@ -7,7 +7,7 @@
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
 interface Part {
-  [ImplementedAs=rootForBindings] readonly attribute PartRoot root;
+  [ImplementedAs=rootForBindings] readonly attribute PartRoot? root;
   readonly attribute FrozenArray<DOMString> metadata;
   void disconnect();
 };

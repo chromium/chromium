@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<grit latest_public_release="0" current_release="1">
+  <outputs>
+    <output filename="grit/glic_browser_resources.h" type="rc_header">
+      <emit emit_type="prepend"></emit>
+    </output>
+    <output filename="glic_browser_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON" file="glic_attach_button.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_SIMPLIFIED_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_BUTTON_VECTOR_ICON" file="glic_button.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_STATUS_ICON" file="glic_button.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_LOGO" file="logo.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_STATUS_ICON_DARK" file="glic_status_icon_dark.png" type="BINDATA" />
+      <include name="IDR_GLIC_STATUS_ICON_LIGHT" file="glic_status_icon_light.png" type="BINDATA" />
+      <include name="IDR_GLIC_PROFILE_LOGO" file="glic_profile_logo.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT" file="glic_profile_banner_bottom_left.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT" file="glic_profile_banner_top_right.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT_LIGHT" file="glic_profile_banner_bottom_left_light.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT_LIGHT" file="glic_profile_banner_top_right_light.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_PROFILE_BRANDING_CSS" file="glic_profile_branding.css" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_TAB_MEDIA_GLIC_ACTIVE" file="tab_media_glic_active.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_ACCESSING_ICON" file="../../../app/vector_icons/tv.icon" type="BINDATA" compress="brotli" />
+    </includes>
+
+    <!-- NOTE: file is currently marked as untranslatable in
+      translation_expectations.pyl, so changing the translateable attribute on
+      the following messages will have no effect until that .pyl file is
+      updated.
+    -->
+
+    <messages>
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="[Placeholder Description]" translateable="false">
+        [Placeholder String]
+      </message>
+      <message name="IDS_GLIC_PROMO_TITLE" desc="Glic promo title." translateable="false">
+        [placeholder text]
+      </message>
+      <message name="IDS_GLIC_PROMO_BODY" desc="Glic promo body text." translateable="false">
+        [placeholder text]
+      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_GLIC_PROMO_CUSTOM_ACTION" desc="Glic promo custom action button caption." translateable="false">
+          Try It Out
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_GLIC_PROMO_CUSTOM_ACTION" desc="Glic promo custom action button caption." translateable="false">
+          Try it out
+        </message>
+      </if>
+      <message name="IDS_TAB_AX_LABEL_GLIC_ACCESSING" is_accessibility_with_no_ui="true" desc="[Placeholder Description]" translateable="false">
+        <ph name="WINDOW_TITLE">
+          $1<ex>Google Photos</ex>
+        </ph> - [Placeholder String]
+      </message>
+
+      <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP" translateable="false" desc="This is the tooltip shown when hovering over the glic entry button in the tab strip.">
+        Open glic
+      </message>
+
+      <message name="IDS_GLIC_THREE_DOT_MENU_ITEM" desc="Glic three dot menu item entry point." translateable="false">
+        Open glic
+      </message>
+
+      <!-- Glic status tray icon strings -->
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
+        Open
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CANARY" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Canary version of the browser.">
+        Open (Canary)
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_DEV" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Dev version of the browser.">
+        Open (Dev)
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_BETA" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Beta version of the browser.">
+        Open (Beta)
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" translateable="false" desc="This is the menu item for showing the glic UI.">
+        Open glic
+      </message>
+      <if expr="is_win or is_linux">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" translateable="false" desc="This is the menu item for customizing the keyboard shortcut.">
+          Customize keyboard shortcut
+        </message>
+      </if>
+      <if expr="is_macosx">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" translateable="false" desc="This is the menu item for customizing the keyboard shortcut.">
+          Customize Keyboard Shortcut...
+        </message>
+      </if>
+      <if expr="is_macosx">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the glic icon from the menu bar.">
+          Disable glic in menu bar
+        </message>
+      </if>
+      <if expr="is_win or is_linux">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the glic icon from the notifications area.">
+          Disable glic in notifications area
+        </message>
+      </if>
+      <message name="IDS_GLIC_STATUS_ICON_MENU_CLOSE" translateable="false" desc="This is the menu item for closing the Glic window.">
+        Close Glic
+      </message>
+      <if expr="is_win or is_linux">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_EXIT" translateable="false" desc="This is the menu item for exiting Chrome.">
+          Exit
+        </message>
+      </if>
+      <if expr="is_win or is_linux">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings (on Windows and Linux).">
+          Settings
+        </message>
+      </if>
+      <if expr="is_macosx">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings (on Mac only).">
+          Settings...
+        </message>
+      </if>
+      <message name="IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE" translateable="false" desc="Help bubble above the toggle for turning off the glic os widget.">
+        Disable glic here
+      </message>
+      <message name="IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE" translateable="false" desc="Help bubble message above the keyboard shortcut editor that allows customizing it.">
+        Customize the keyboard shortcut here
+      </message>
+      <message name="IDS_GLIC_OFFLINE_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic offline notice informing the user that there is no network connection.">
+        You're offline
+      </message>
+      <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION" translateable="false" desc="This is the suggested user action for the glic offline notice.">
+        Check your internet connection and try to use glic again
+      </message>
+      <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic offline notice.">
+        Try again
+      </message>
+      <message name="IDS_GLIC_UNRESPONSIVE_MESSAGE" translateable="false" desc="This is the text of the glic unresponsive message.">
+        Glic is refreshing...
+      </message>
+      <message name="IDS_GLIC_ERROR_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic error notice.">
+        Something went wrong
+      </message>
+      <message name="IDS_GLIC_ERROR_NOTICE" translateable="false" desc="This is the text of the glic error notice.">
+        Glic isn't available right now. Try again later.
+      </message>
+      <message name="IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic error notice.">
+        Try again
+      </message>
+      <message name="IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL" translateable="false" desc="Accessible label for the dialog notice and FRE close buttons.">
+        Close
+      </message>
+      <message name="IDS_GLIC_SIGN_IN_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic sign in notice.">
+        Verify it's you
+      </message>
+      <message name="IDS_GLIC_SIGN_IN_NOTICE" translateable="false" desc="This is the text of the glic sign in notice.">
+        To continue using Glic, verify it's you
+      </message>
+      <message name="IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic sign in notice.">
+        Verify it's you
+      </message>
+
+      <!-- Experimental Glic settings -->
+      <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Title of the Glic settings subpage. Also shown as page title in tabstrip.">
+        Glic
+      </message>
+      <message name="IDS_SETTINGS_GLIC_SECTION_TITLE" translateable="false" desc="Text of the Glic section header on the AI settings page.">
+        Glic
+      </message>
+      <message name="IDS_SETTINGS_GLIC_ROW_LABEL" translateable="false" desc="Label of the Glic row button on the AI settings page leading to the Glic subpage.">
+        Glic
+      </message>
+      <message name="IDS_SETTINGS_GLIC_ROW_SUBLABEL" translateable="false" desc="Sublabel of the Glic row button leading to the Glic subpage.">
+        Manage your settings
+      </message>
+      <message name="IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE" translateable="false" desc="Message shown when Glic is disabled by enterprise policy.">
+        This feature is disabled by your organization
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PREFERENCES_SECTION" translateable="false" desc="Name of the Glic settings section for general preferences.">
+        Preferences
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_SECTION" translateable="false" desc="Name of the Glic settings section related to permissions.">
+        Permissions
+      </message>
+      <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" translateable="false" desc="Name of the toggle that controls whether the glic button is shown in the tabstrip.">
+        Show glic at the top of the browser
+      </message>
+      <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel of the toggle that controls whether the glic button is shown in the tabstrip.">
+        Quickly open glic whenever you need it
+      </message>
+      <if expr="is_macosx">
+        <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" translateable="false" desc="Name of the Glic setting for the toggle enabling feature in the menu (on Mac only).">
+          Feature in your toolbar
+        </message>
+      </if>
+      <if expr="not is_macosx">
+        <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" translateable="false" desc="Name of the Glic setting for the toggle enabling feature in the menu (on Windows and Linux).">
+          Feature in your Toolbar
+        </message>
+      </if>
+      <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel of the Glic setting for the toggle enabling feature in the menu.">
+        Feature enabled even if browser is minimized
+      </message>
+      <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" translateable="false" desc="Name of the Glic setting for the keyboard shortcut.">
+        Keyboard shortcut
+      </message>
+      <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" translateable="false" desc="Subheading for the 'keyboard shortcut' toggle.">
+        Open with shortcut
+      </message>
+      <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_LABEL" translateable="false" desc="Label for the 'Learn more' link in the sublabel describing the keyboard shortcut.">
+        Learn more about shortcuts
+      </message>
+      <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT" translateable="false" desc="Name of the navigation shortcut setting.">
+        Navigation shortcut
+      </message>
+      <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL" translateable="false" desc="Sublabel describing the keyboard shortcut navigate between Chrome and Glic.">
+        To leave or return to Glic, use keyboard shortcut
+      </message>
+      <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING" translateable="false" desc="Name of the closed captioning setting.">
+        Closed Captioning
+      </message>
+      <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING_SUBLABEL" translateable="false" desc="Sublabel describing that this setting will enable closed captions for Glic.">
+        Show closed captions when using Glic
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE" translateable="false" desc="Name of the 'enable location sharing' setting.">
+        Location
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'enable location sharing' setting.">
+        Use your location to allow enhanced accuracy
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE" translateable="false" desc="Name of the 'enable microphone' setting.">
+        Microphone
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'enable microphone' setting.">
+        Enable use of your microphone
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE" translateable="false" desc="Name of the 'enable tab access' setting.">
+        Current tab access
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'tab access' setting.">
+        Allow feature
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" translateable="false" desc="Name of the 'activity' button.">
+        Activity
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL" translateable="false" desc="Sublabel describing the 'activity' button.">
+        View and manage your activity
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_URL" translateable="false" desc="URL to navigate when clicking the 'manage your activity' button.">
+        https://example.com
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_1" translateable="false" desc="First point in the 'when on' column of the 'tab access' collapsible section.">
+        [Placeholder String 1]
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_2" translateable="false" desc="Second point in the 'when on' column of the 'tab access' collapsible section.">
+        [Placeholder String 2]
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1" translateable="false" desc="First point in the 'things to consider' column of the 'tab access' collapsible section.">
+        [Placeholder String 3]
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL" translateable="false" desc="Label for the 'Learn more' link in the 'things to consider' section.">
+        Learn more
+      </message>
+
+      <!-- Profile Picker Glic version-->
+      <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Profile picker main view title for Glic version. 'Glic' has a special styling." translateable="false">
+        Choose a Chromium profile to use with <ph name="START_GLIC_STYLING">&lt;span class="glic-brand-style"&gt;</ph>Glic<ph name="END_GLIC_STYLING">&lt;/span&gt;</ph>
+      </message>
+      <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC_NO_PROFILE" desc="Profile picker main view title for Glic version when no profiles are eligible to use Glic. 'Glic' has a special styling." translateable="false">
+        Sign into Chromium with your Google Account to use <ph name="START_GLIC_STYLING">&lt;span class="glic-brand-style"&gt;</ph>Glic<ph name="END_GLIC_STYLING">&lt;/span&gt;</ph>
+      </message>
+      <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC" desc="Profile picker main view subtitle for Glic version." translateable="false">
+        Select the Chromium profile linked to your Google Account to personalize your Glic experience
+      </message>
+      <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC_NO_PROFILE" desc="Profile picker main view subtitle for Glic version. This version is shown when no profiles are eligibile to use Glic." translateable="false">
+        To add a new profile and use it with Glic, sign in to Chromium with a Google Account. <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how to sign in to Chromium<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC" desc="Text shown in the Profile Picker Glic version below the profiles list container that helps the user to create a new profile and sign in to it." translateable="false">
+        To add a new profile and use it with Glic, sign in to Chromium with a different Google Account. <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how to add a new Chromium profile<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+
+      <!-- Glic button and tab strip context menu -->
+      <message name="IDS_GLIC_PIN" translateable="false" desc="Name of the context menu item for toggling Glic pinning, when glic is unpinned.">
+        Pin Glic
+      </message>
+      <message name="IDS_GLIC_UNPIN" translateable="false" desc="Name of the context menu item for toggling Glic pinning, when glic is pinned.">
+        Unpin Glic
+      </message>
+      <message name="IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT" desc="Polite announcement that happens when a contextual nudge is shown next to the Glic button." translateable="false">
+        To open Glic in Chrome, press <ph name="GLOBAL_HOTKEY">$1<ex>⌘+G</ex></ph>
+      </message>
+
+      <!-- Screenpicker Menu String -->
+      <message name="IDS_GLIC_SCREEN_PICKER_REQUESTER" desc="Text shown on screen picker dialog that indicates the requesting source is Glic." translateable="false">
+        Glic
+      </message>
+      <message name="IDS_GLIC_SCREEN_PICKER_HEADLINE" desc="Title of the Glic screen picker dialog used for specifying which screen to capture." translateable="false">
+        Choose a screen to capture
+      </message>
+      <message name="IDS_GLIC_SCREEN_PICKER_DESCRIPTION" desc="Text that shows on the Glic screen picker dialog to indicate what happens with the capture." translateable="false">
+        Your screenshot can be used with your prompt or deleted
+      </message>
+      <message name="IDS_GLIC_SCREEN_PICKER_CTA" desc="Text for call to action button on Glic screen picker dialog. " translateable="false">
+        Take a screenshot
+      </message>
+
+      <!-- Glic Window Title -->
+      <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Glic Window." translateable="false">
+        Glic
+      </message>
+      <message name="IDS_GLIC_WINDOW_TITLE_FIRST_LOAD" desc="Accessible title for the Glic Window. Only included on first load." translateable="false">
+        Glic. To return to where you were on the page press <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
+      </message>
+      <message name="IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT" desc="Announcement triggered the first time the Glic window loses focus." translateable="false">
+        To return to Glic, press <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
+      </message>
+
+      <!-- Task Manager -->
+      <message name="IDS_TASK_MANAGER_GLIC_RENDERER_PREFIX" desc="Task Manager row for a render process used to host the Glic UI" translateable="false">
+        Glic Host Renderer
+      </message>
+    </messages>
+  </release>
+</grit>

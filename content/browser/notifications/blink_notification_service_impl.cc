@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -34,9 +35,6 @@ namespace content {
 
 namespace {
 
-const char kBadMessageImproperNotificationImage[] =
-    "Received an unexpected message with image while notification images are "
-    "disabled.";
 const char kBadMessageInvalidNotificationTriggerTimestamp[] =
     "Received an invalid notification trigger timestamp.";
 const char kBadMessageInvalidNotificationActionButtons[] =
@@ -95,7 +93,7 @@ BlinkNotificationServiceImpl::BlinkNotificationServiceImpl(
     : notification_context_(notification_context),
       browser_context_(browser_context),
       service_worker_context_(std::move(service_worker_context)),
-      render_process_host_id_(render_process_host->GetID()),
+      render_process_host_id_(render_process_host->GetDeprecatedID()),
       storage_key_(storage_key),
       storage_key_if_3psp_enabled(
           storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning()),
@@ -216,6 +214,9 @@ void BlinkNotificationServiceImpl::CloseNonPersistentNotification(
 blink::mojom::PermissionStatus
 BlinkNotificationServiceImpl::CheckPermissionStatus() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const auto permission_descriptor = content::PermissionDescriptorUtil::
+      CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
 
   // TODO(crbug.com/40637582): It is odd that a service instance can be created
   // for cross-origin subframes, yet the instance is completely oblivious of
@@ -227,16 +228,15 @@ BlinkNotificationServiceImpl::CheckPermissionStatus() {
       return blink::mojom::PermissionStatus::DENIED;
     }
     return browser_context_->GetPermissionController()
-        ->GetPermissionStatusForCurrentDocument(
-            blink::PermissionType::NOTIFICATIONS, rfh);
+        ->GetPermissionStatusForCurrentDocument(permission_descriptor, rfh);
   } else {
     RenderProcessHost* rph = RenderProcessHost::FromID(render_process_host_id_);
     if (!rph) {
       return blink::mojom::PermissionStatus::DENIED;
     }
     return browser_context_->GetPermissionController()
-        ->GetPermissionStatusForWorker(blink::PermissionType::NOTIFICATIONS,
-                                       rph, storage_key_.origin());
+        ->GetPermissionStatusForWorker(permission_descriptor, rph,
+                                       storage_key_.origin());
   }
 }
 
@@ -252,16 +252,6 @@ bool BlinkNotificationServiceImpl::ValidateNotificationDataAndResources(
 
   if (!CheckNotificationTriggerRange(platform_notification_data)) {
     receiver_.ReportBadMessage(kBadMessageInvalidNotificationTriggerTimestamp);
-    OnConnectionError();
-    return false;
-  }
-
-  if (!notification_resources.image.drawsNothing() &&
-      !base::FeatureList::IsEnabled(features::kNotificationContentImage)) {
-    receiver_.ReportBadMessage(kBadMessageImproperNotificationImage);
-    // The above ReportBadMessage() closes |binding_| but does not trigger its
-    // connection error handler, so we need to call the error handler explicitly
-    // here to do some necessary work.
     OnConnectionError();
     return false;
   }

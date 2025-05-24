@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/capture_mode/camera_video_frame_renderer.h"
 
 #include <cmath>
@@ -19,6 +14,7 @@
 #include "base/check.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/renderers/video_resource_updater.h"
@@ -75,10 +71,8 @@ void CameraVideoFrameRenderer::Initialize() {
   const int max_texture_size =
       context_provider_->ContextCapabilities().max_texture_size;
   video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-      context_provider_.get(), layer_tree_frame_sink_.get(),
-      &client_resource_provider_,
+      context_provider_.get(), &client_resource_provider_,
       layer_tree_frame_sink_->shared_image_interface(),
-      /*use_stream_video_draw_quad=*/false,
       /*use_gpu_memory_buffer_resources=*/false, max_texture_size);
 
   video_frame_handler_.StartHandlingFrames(/*delegate=*/this);
@@ -284,16 +278,14 @@ viz::CompositorFrame CameraVideoFrameRenderer::CreateCompositorFrame(
 
   const auto& quad_list = compositor_frame.render_pass_list.back()->quad_list;
   DCHECK_EQ(quad_list.size(), 1u);
-  const viz::DrawQuad::Resources& resources = quad_list.front()->resources;
-  std::vector<viz::ResourceId> resource_ids;
-  resource_ids.reserve(resources.count);
-  for (uint32_t i = 0; i < resources.count; ++i)
-    resource_ids.push_back(resources.ids[i]);
 
-  std::vector<viz::TransferableResource> resource_list;
-  client_resource_provider_.PrepareSendToParent(resource_ids, &resource_list,
-                                                context_provider_.get());
-  compositor_frame.resource_list = std::move(resource_list);
+  auto resource_id = quad_list.front()->resource_id;
+  if (resource_id != viz::kInvalidResourceId) {
+    std::vector<viz::TransferableResource> resource_list;
+    client_resource_provider_.PrepareSendToParent({resource_id}, &resource_list,
+                                                  context_provider_.get());
+    compositor_frame.resource_list = std::move(resource_list);
+  }
 
   return compositor_frame;
 }

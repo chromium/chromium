@@ -15,6 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -57,8 +58,7 @@ std::string GetConsoleErrorMessage(FederatedAuthUserInfoRequestResult error) {
     }
     case FederatedAuthUserInfoRequestResult::kUnhandledRequest:
     case FederatedAuthUserInfoRequestResult::kSuccess: {
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
     }
   }
 }
@@ -145,9 +145,7 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
   }
 
   if (webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-          *render_frame_host_, idp_config_url_, permission_delegate_) &&
-      webid::GetIdpSigninStatusMode(*render_frame_host_, idp_origin) ==
-          FedCmIdpSigninStatusMode::ENABLED) {
+          *render_frame_host_, idp_config_url_, permission_delegate_)) {
     CompleteWithError(FederatedAuthUserInfoRequestResult::kNotSignedInWithIdp);
     return;
   }
@@ -163,13 +161,17 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
     return;
   }
 
-  // FederatedProviderFetcher is stored as a member so that
-  // FederatedProviderFetcher is destroyed when FederatedAuthRequestImpl is
-  // destroyed.
-  provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
+  // FedCmConfigFetcher is stored as a member so that it is destroyed when
+  // FederatedAuthRequestImpl is destroyed.
+  config_fetcher_ = std::make_unique<FedCmConfigFetcher>(
       *render_frame_host_, network_manager_.get());
-  provider_fetcher_->Start(
-      {idp_config_url_}, blink::mojom::RpMode::kWidget, /*icon_ideal_size=*/0,
+  // TODO(crbug.com/390626180): It seems ok to ignore the well-known checks in
+  // all cases here. However, keeping this unchanged for now when the IDP
+  // registration API is not enabled since we only really need this for that
+  // case.
+  config_fetcher_->Start(
+      {{idp_config_url_, IsFedCmIdPRegistrationEnabled()}},
+      blink::mojom::RpMode::kPassive, /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindOnce(
           &FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched,
@@ -177,8 +179,8 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
 }
 
 void FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched(
-    std::vector<FederatedProviderFetcher::FetchResult> fetch_results) {
-  provider_fetcher_.reset();
+    std::vector<FedCmConfigFetcher::FetchResult> fetch_results) {
+  config_fetcher_.reset();
 
   if (fetch_results.size() != 1u) {
     // This could happen when the user info request was sent from a compromised
@@ -199,16 +201,14 @@ void FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched(
   does_idp_have_failing_signin_status_ =
       webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
           *render_frame_host_, idp_config_url_, permission_delegate_);
-  if (does_idp_have_failing_signin_status_ &&
-      webid::GetIdpSigninStatusMode(*render_frame_host_,
-                                    url::Origin::Create(idp_config_url_)) ==
-          FedCmIdpSigninStatusMode::ENABLED) {
+  if (does_idp_have_failing_signin_status_) {
     CompleteWithError(FederatedAuthUserInfoRequestResult::kNotSignedInWithIdp);
     return;
   }
 
   network_manager_->SendAccountsRequest(
-      fetch_results[0].endpoints.accounts, client_id_,
+      url::Origin::Create(idp_config_url_), fetch_results[0].endpoints.accounts,
+      client_id_,
       base::BindOnce(&FederatedAuthUserInfoRequest::OnAccountsResponseReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }

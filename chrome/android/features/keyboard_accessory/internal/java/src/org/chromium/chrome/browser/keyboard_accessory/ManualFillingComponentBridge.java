@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.LoyaltyCardInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
@@ -36,7 +37,7 @@ import java.util.HashMap;
 class ManualFillingComponentBridge {
     private final SparseArray<PropertyProvider<AccessorySheetData>> mProviders =
             new SparseArray<>();
-    private HashMap<Integer, PropertyProvider<Action[]>> mActionProviders = new HashMap<>();
+    private final HashMap<Integer, PropertyProvider<Action[]>> mActionProviders = new HashMap<>();
     private final WindowAndroid mWindowAndroid;
     private final WebContents mWebContents;
     private long mNativeView;
@@ -177,6 +178,7 @@ class ManualFillingComponentBridge {
     private void addFieldToUserInfo(
             UserInfo userInfo,
             @AccessoryTabType int sheetType,
+            @AccessorySuggestionType int suggestionType,
             @JniType("std::u16string") String displayText,
             @JniType("std::u16string") String textToFill,
             @JniType("std::u16string") String a11yDescription,
@@ -190,7 +192,7 @@ class ManualFillingComponentBridge {
                     (field) -> {
                         assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
                         ManualFillingMetricsRecorder.recordSuggestionSelected(
-                                sheetType, field.isObfuscated());
+                                sheetType, suggestionType);
                         ManualFillingComponentBridgeJni.get()
                                 .onFillingTriggered(
                                         mNativeView,
@@ -202,6 +204,7 @@ class ManualFillingComponentBridge {
         userInfo.getFields()
                 .add(
                         new UserInfoField.Builder()
+                                .setSuggestionType(suggestionType)
                                 .setDisplayText(displayText)
                                 .setTextToFill(textToFill)
                                 .setA11yDescription(a11yDescription)
@@ -216,17 +219,20 @@ class ManualFillingComponentBridge {
     private void addPlusAddressInfoToAccessorySheetData(
             AccessorySheetData accessorySheetData,
             @AccessoryTabType int sheetType,
+            @AccessorySuggestionType int suggestionType,
             @JniType("std::string") String origin,
             @JniType("std::u16string") String plusAddress) {
         Callback<UserInfoField> callback =
                 (field) -> {
                     assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
-                    // TODO: crbug.com/327838324 - Record that the suggestion was accepted.
+                    ManualFillingMetricsRecorder.recordSuggestionSelected(
+                            sheetType, suggestionType);
                     ManualFillingComponentBridgeJni.get()
                             .onFillingTriggered(mNativeView, this, sheetType, field);
                 };
         UserInfoField field =
                 new UserInfoField.Builder()
+                        .setSuggestionType(suggestionType)
                         .setDisplayText(plusAddress)
                         .setTextToFill(plusAddress)
                         .setA11yDescription(plusAddress)
@@ -265,6 +271,7 @@ class ManualFillingComponentBridge {
     private void addPromoCodeInfoToAccessorySheetData(
             AccessorySheetData accessorySheetData,
             @AccessoryTabType int sheetType,
+            @AccessorySuggestionType int suggestionType,
             @JniType("std::u16string") String displayText,
             @JniType("std::u16string") String textToFill,
             @JniType("std::u16string") String a11yDescription,
@@ -274,12 +281,11 @@ class ManualFillingComponentBridge {
         PromoCodeInfo promoCodeInfo = new PromoCodeInfo();
         accessorySheetData.getPromoCodeInfoList().add(promoCodeInfo);
 
-        Callback<UserInfoField> callback = null;
-        callback =
+        Callback<UserInfoField> callback =
                 (field) -> {
                     assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
                     ManualFillingMetricsRecorder.recordSuggestionSelected(
-                            sheetType, field.isObfuscated());
+                            sheetType, suggestionType);
                     ManualFillingComponentBridgeJni.get()
                             .onFillingTriggered(
                                     mNativeView,
@@ -287,23 +293,24 @@ class ManualFillingComponentBridge {
                                     sheetType,
                                     field);
                 };
-        ((PromoCodeInfo) promoCodeInfo)
-                .setPromoCode(
-                        new UserInfoField.Builder()
-                                .setDisplayText(displayText)
-                                .setTextToFill(textToFill)
-                                .setA11yDescription(a11yDescription)
-                                .setId(guid)
-                                .setIsObfuscated(isObfuscated)
-                                .setCallback(callback)
-                                .build());
-        ((PromoCodeInfo) promoCodeInfo).setDetailsText(detailsText);
+        promoCodeInfo.initialize(
+                /* promoCode= */ new UserInfoField.Builder()
+                        .setSuggestionType(suggestionType)
+                        .setDisplayText(displayText)
+                        .setTextToFill(textToFill)
+                        .setA11yDescription(a11yDescription)
+                        .setId(guid)
+                        .setIsObfuscated(isObfuscated)
+                        .setCallback(callback)
+                        .build(),
+                /* detailsText= */ detailsText);
     }
 
     @CalledByNative
     private void addIbanInfoToAccessorySheetData(
             AccessorySheetData accessorySheetData,
             @AccessoryTabType int sheetType,
+            @AccessorySuggestionType int suggestionType,
             @JniType("std::string") String guid,
             @JniType("std::u16string") String value,
             @JniType("std::u16string") String textToFill) {
@@ -319,6 +326,7 @@ class ManualFillingComponentBridge {
         ((IbanInfo) ibanInfo)
                 .setValue(
                         new UserInfoField.Builder()
+                                .setSuggestionType(suggestionType)
                                 .setDisplayText(value)
                                 .setTextToFill(textToFill)
                                 .setA11yDescription(value)
@@ -326,6 +334,39 @@ class ManualFillingComponentBridge {
                                 .setId(guid)
                                 .setCallback(callback)
                                 .build());
+    }
+
+    @CalledByNative
+    private void addLoyaltyCardInfoToAccessorySheetData(
+            AccessorySheetData accessorySheetData,
+            @AccessoryTabType int sheetType,
+            @AccessorySuggestionType int suggestionType,
+            @JniType("std::string") String merchantName,
+            GURL programLogoUrl,
+            @JniType("std::u16string") String loyaltyCardNumber) {
+        Callback<UserInfoField> callback =
+                (field) -> {
+                    assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                    ManualFillingMetricsRecorder.recordSuggestionSelected(
+                            sheetType, suggestionType);
+                    ManualFillingComponentBridgeJni.get()
+                            .onFillingTriggered(mNativeView, this, sheetType, field);
+                };
+        accessorySheetData
+                .getLoyaltyCardInfoList()
+                .add(
+                        new LoyaltyCardInfo(
+                                merchantName,
+                                programLogoUrl,
+                                new UserInfoField.Builder()
+                                        .setSuggestionType(suggestionType)
+                                        .setDisplayText(loyaltyCardNumber)
+                                        .setTextToFill(loyaltyCardNumber)
+                                        .setA11yDescription(loyaltyCardNumber)
+                                        .setIsObfuscated(false)
+                                        .setId("")
+                                        .setCallback(callback)
+                                        .build()));
     }
 
     @CalledByNative

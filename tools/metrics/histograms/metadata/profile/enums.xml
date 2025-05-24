@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanReset">
-  <int value="0" label="Not reset"/>
-  <int value="1" label="Reset"/>
-</enum>
-
 <enum name="BooleanStale">
   <int value="0" label="Fresh"/>
   <int value="1" label="Stale"/>
@@ -66,13 +61,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="QuitOnDefaultBrowser"/>
   <int value="3" label="NotShownOnDefaultBrowserCheckTimeout"/>
   <int value="4" label="SuccessfullySetAsDefaultBrowser"/>
-</enum>
-
-<enum name="FirstRunEntryPoint">
-  <int value="0" label="Other"/>
-  <int value="1" label="Process startup"/>
-  <int value="2" label="Web app launch"/>
-  <int value="3" label="Web app context menu command"/>
 </enum>
 
 <enum name="FirstRunExitStatus">
@@ -348,6 +336,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Delayed and Crashed"/>
 </enum>
 
+<!-- LINT.IfChange(ProfileGaiaNameShareStatus) -->
+
+<enum name="ProfileGaiaNameShareStatus">
+  <int value="0" label="Not shared"/>
+  <int value="1" label="Shared by non managed profiles"/>
+  <int value="2" label="Shared only by managed profiles"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/profiles/profile_metrics.h:GaiaNameShareStatus) -->
+
 <enum name="ProfileKeepAliveOrigin">
   <int value="0" label="kWaitingForFirstBrowserWindow"/>
   <int value="1" label="kBrowserWindow"/>
@@ -378,9 +376,9 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="kCommanderFrontend"/>
   <int value="27" label="kDiceWebSigninInterceptionBubble"/>
   <int value="28" label="kHistoryMenuBridge"/>
-  <int value="29" label="kLacrosMainProfile"/>
+  <int value="29" label="(Obsolete) kLacrosMainProfile"/>
   <int value="30" label="kProfileCreationSamlFlow"/>
-  <int value="31" label="kDriveFsNativeMessageHostLacros"/>
+  <int value="31" label="(Obsolete) kDriveFsNativeMessageHostLacros"/>
   <int value="32" label="kProfileDeletionProcess"/>
   <int value="33" label="kProfileStatistics"/>
   <int value="34" label="kIsolatedWebAppInstall"/>
@@ -389,7 +387,11 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="kOsIntegrationForceUnregistration"/>
   <int value="38" label="kRemoteDebugging"/>
   <int value="39" label="kHeadlessCommand"/>
+  <int value="40" label="kGlicView"/>
+  <int value="41" label="kWaitingForGlicView"/>
 </enum>
+
+<!-- LINT.IfChange(ProfileMenuActionableItem) -->
 
 <enum name="ProfileMenuActionableItem">
   <int value="0" label="Manage your Google Account button"/>
@@ -398,10 +400,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Addresses button"/>
   <int value="4" label="Guest profile button"/>
   <int value="5" label="Manage profiles button"/>
-  <int value="6" label="Lock button"/>
+  <int value="6" label="Lock button (deprecated)"/>
   <int value="7" label="Exit profile button"/>
   <int value="8" label="Sync error button"/>
-  <int value="9" label="Current profile card"/>
+  <int value="9" label="Current profile card (deprecated)"/>
   <int value="10" label="Sign-in and turn on sync button"/>
   <int value="11" label="Turn on sync for account button"/>
   <int value="12" label="Sign-out button"/>
@@ -414,12 +416,18 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Sign-in and turn on sync button for web-only account"/>
   <int value="20" label="Chrome Profile management link"/>
   <int value="21" label="Reauth button (Verify it's you)"/>
+  <int value="22" label="Autofill settings button"/>
+  <int value="23" label="History sync opt-in button"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/profile_menu_view_base.h:ActionableItem) -->
 
 <enum name="ProfileNetUserCount">
   <int value="0" label="Added new user"/>
   <int value="1" label="Deleted a profile"/>
 </enum>
+
+<!-- LINT.IfChange(ProfilePickerAction) -->
 
 <enum name="ProfilePickerAction">
   <int value="0" label="Launch existing profile"/>
@@ -428,6 +436,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Launch new profile"/>
   <int value="4" label="Delete profile"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/signin/profile_picker_handler.h:ProfilePickerAction) -->
+
+<!-- LINT.IfChange(ProfilePickerEntryPoint) -->
 
 <enum name="ProfilePickerEntryPoint">
   <int value="0" label="On startup"/>
@@ -446,7 +458,10 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="No usable profile for existing process"/>
   <int value="14" label="Manage profile item in the app menu"/>
   <int value="15" label="Add new profile item in the app menu"/>
+  <int value="16" label="Glic Manager"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_picker.h:EntryPoint) -->
 
 <enum name="ProfilePickerPages">
   <int value="0" label="mainView"/>

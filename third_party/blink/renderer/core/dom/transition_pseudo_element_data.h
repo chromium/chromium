@@ -40,6 +40,10 @@ class TransitionPseudoElementData final
     visitor->Trace(transition_containers_);
   }
 
+  bool HasViewTransitionGroupPseudoElement() const {
+    return !transition_containers_.empty();
+  }
+
  private:
   Member<PseudoElement> transition_;
   Member<PseudoElement> transition_outgoing_image_;
@@ -110,7 +114,7 @@ inline void TransitionPseudoElementData::SetPseudoElement(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (previous_element)
@@ -144,7 +148,7 @@ inline PseudoElement* TransitionPseudoElementData::GetPseudoElement(
       return it == transition_containers_.end() ? nullptr : it->value.Get();
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return nullptr;
 }

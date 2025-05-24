@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("geolocation") {
   sources = [
@@ -58,6 +58,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/login:test_support",
     "//chrome/test:test_support",
     "//components/prefs",
     "//services/device/public/cpp/geolocation",

@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -100,10 +101,9 @@ class PromiseAppServiceTest : public testing::Test,
   // This is used to produce mock content for the url_loader_factory.
   std::string CreateImageString(int width) {
     SkBitmap bitmap = gfx::test::CreateBitmap(width, width);
-    std::vector<unsigned char> compressed;
-    gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, true, &compressed);
-    std::string image_string(compressed.begin(), compressed.end());
-    return image_string;
+    std::optional<std::vector<uint8_t>> compressed =
+        gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, true);
+    return std::string(base::as_string_view(compressed.value()));
   }
 
   // Set the number of updates we expect the Promise App Registry Cache to

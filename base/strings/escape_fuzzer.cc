@@ -12,8 +12,9 @@
 // TODO(crbug.com/40243629): Replace this with a more general solution.
 void UseResult(const std::string& input) {
   volatile char c;
-  if (input.length() > 0)
+  if (input.length() > 0) {
     c = input[0];
+  }
   (void)c;
 }
 

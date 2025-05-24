@@ -4,23 +4,28 @@
 
 package org.chromium.chrome.browser.base;
 
+import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
+
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * JobService base class which will call through to the given {@link Impl}. This class must be
  * present in the base module, while the Impl can be in the chrome module.
  */
+@NullMarked
 public class SplitCompatJobService extends JobService {
-    private String mServiceClassName;
-    private String mSplitName;
+    private final String mServiceClassName;
+    private final String mSplitName;
     private Impl mImpl;
 
     public SplitCompatJobService(String serviceClassName) {
-        mServiceClassName = serviceClassName;
+        this(serviceClassName, CHROME_SPLIT_NAME);
     }
 
     public SplitCompatJobService(String serviceClassName, String splitName) {
@@ -29,16 +34,18 @@ public class SplitCompatJobService extends JobService {
     }
 
     @Override
-    protected void attachBaseContext(Context context) {
+    protected void attachBaseContext(Context baseContext) {
+        String splitToLoad = CHROME_SPLIT_NAME;
         // Make sure specified split is installed, otherwise fall back to chrome split.
-        if (mSplitName != null && BundleUtils.isIsolatedSplitInstalled(mSplitName)) {
-            context = BundleUtils.createIsolatedSplitContext(context, mSplitName);
-        } else {
-            context = SplitCompatApplication.createChromeContext(context);
+        if (BundleUtils.isIsolatedSplitInstalled(mSplitName)) {
+            splitToLoad = mSplitName;
         }
-        mImpl = (Impl) BundleUtils.newInstance(context, mServiceClassName);
+        mImpl =
+                (Impl)
+                        SplitCompatUtils.loadClassAndAdjustContext(
+                                baseContext, mServiceClassName, splitToLoad);
         mImpl.setService(this);
-        super.attachBaseContext(context);
+        super.attachBaseContext(baseContext);
     }
 
     @Override
@@ -55,13 +62,13 @@ public class SplitCompatJobService extends JobService {
      * Holds the implementation of service logic. Will be called by {@link SplitCompatJobService}.
      */
     public abstract static class Impl {
-        private SplitCompatJobService mService;
+        private @Nullable SplitCompatJobService mService;
 
         private void setService(SplitCompatJobService service) {
             mService = service;
         }
 
-        protected final JobService getService() {
+        protected final @Nullable JobService getService() {
             return mService;
         }
 

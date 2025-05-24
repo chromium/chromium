@@ -7,9 +7,11 @@
 
 namespace syncer {
 
-// Note: This should confirm with the enums in sync.proto for
-// GetUpdatesCallerInfo. They will have 1:1 mapping but this will only map
-// to a subset of the GetUpdatesCallerInfo enum values.
+// Enum representing the reason that triggered a configuration cycle, i.e.
+// initializing DataTypeManager or changing the set of datatypes that should be
+// actively syncing. Note that configuration cycles can involve downloading
+// updates from the server (e.g. fully disabled datatype is now enabled) but
+// it's not always the case (in particular during browser startup).
 enum ConfigureReason {
   // We should never be here during actual configure. This is for setting
   // default values.
@@ -26,8 +28,11 @@ enum ConfigureReason {
   // also a config to download initial data once the user selects types.
   CONFIGURE_REASON_NEW_CLIENT,
 
-  // A new datatype is enabled for syncing due to a client upgrade.
-  CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE,
+  // An existing client restarted sync, including cases like profile startup
+  // or a persistent auth error having been fixed. In many cases, specially
+  // for the profile startup case, these configuration requests don't
+  // actually lead to downloading updates from the server.
+  CONFIGURE_REASON_EXISTING_CLIENT_RESTART,
 
   // A configuration due to enabling or disabling encrypted types due to
   // cryptographer errors/resolutions.

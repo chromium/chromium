@@ -61,7 +61,7 @@ void SendCommand(VirtualCtap2Device* device,
 // assumed to be a CTAP2 status byte.
 std::optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
   CHECK(!in.empty());
-  return cbor::Reader::Read(in.subspan(1));
+  return cbor::Reader::Read(in.subspan<1>());
 }
 
 std::vector<uint8_t> ToCTAP2Command(
@@ -106,7 +106,7 @@ class VirtualCtap2DeviceTest : public ::testing::Test {
 
 TEST_F(VirtualCtap2DeviceTest, ParseMakeCredentialRequestForVirtualCtapKey) {
   const auto& cbor_request = cbor::Reader::Read(
-      base::make_span(test_data::kCtapMakeCredentialRequest).subspan(1));
+      base::span(test_data::kCtapMakeCredentialRequest).subspan<1>());
   ASSERT_TRUE(cbor_request);
   ASSERT_TRUE(cbor_request->is_map());
   const std::optional<CtapMakeCredentialRequest> request =
@@ -153,8 +153,7 @@ TEST_F(VirtualCtap2DeviceTest, ParseGetAssertionRequestForVirtualCtapKey) {
       0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03};
 
   const auto& cbor_request = cbor::Reader::Read(
-      base::make_span(test_data::kTestComplexCtapGetAssertionRequest)
-          .subspan(1));
+      base::span(test_data::kTestComplexCtapGetAssertionRequest).subspan<1>());
   ASSERT_TRUE(cbor_request);
   ASSERT_TRUE(cbor_request->is_map());
 

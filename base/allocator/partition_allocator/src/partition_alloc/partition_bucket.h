@@ -1,7 +1,6 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #ifndef PARTITION_ALLOC_PARTITION_BUCKET_H_
 #define PARTITION_ALLOC_PARTITION_BUCKET_H_
 
@@ -51,15 +50,17 @@ struct PartitionBucket {
   bool can_store_raw_size;
 
   // This is `M` from the formula above. For accurate results, both `value` and
-  // `size`, which are bound by `kMaxBucketed` for our purposes, must be less
-  // than `2 ** (M / 2)`. On the other hand, the result of the expression
-  // `3 * M / 2` must be less than 64, otherwise integer overflow can occur.
+  // `size`, which are bound by `BucketIndexLookup::kMaxBucketSize` for our
+  // purposes, must be less than `2 ** (M / 2)`. On the other hand, the result
+  // of the expression `3 * M / 2` must be less than 64, otherwise integer
+  // overflow can occur.
   static constexpr uint64_t kReciprocalShift = 42;
   static constexpr uint64_t kReciprocalMask = (1ull << kReciprocalShift) - 1;
-  static_assert(
-      kMaxBucketed < (1 << (kReciprocalShift / 2)),
-      "GetSlotOffset may produce an incorrect result when kMaxBucketed is too "
-      "large.");
+  static_assert(BucketIndexLookup::kMaxBucketSize <
+                    (1 << (kReciprocalShift / 2)),
+                "GetSlotOffset may produce an incorrect result when "
+                "BucketIndexLookup::kMaxBucketSize is too "
+                "large.");
 
   static constexpr size_t kMaxSlotSpansToSort = 200;
 
@@ -144,8 +145,8 @@ struct PartitionBucket {
     // to function on Aarch64/Linux systems, albeit not
     // very efficiently.
     PA_DCHECK(internal::SystemPageSize() == (size_t{1} << 16) ||
-              offset_in_slot_span <= kMaxBucketed);
-    PA_DCHECK(slot_size <= kMaxBucketed);
+              offset_in_slot_span <= BucketIndexLookup::kMaxBucketSize);
+    PA_DCHECK(slot_size <= BucketIndexLookup::kMaxBucketSize);
 
     const size_t offset_in_slot =
         ((offset_in_slot_span * slot_size_reciprocal) >> kReciprocalShift);
@@ -170,6 +171,8 @@ struct PartitionBucket {
   void InitializeSlotSpanForGwpAsan(
       SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
       PartitionRoot* root);
+
+  size_t SlotSpanCommittedSize(PartitionRoot* root) const;
 
  private:
   // Sets `this->can_store_raw_size`.

@@ -6,24 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_QUERY_H_
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_shared_platform_3d_object.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
-
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
-}
 
 namespace blink {
 
-class WebGL2RenderingContextBase;
-
-class WebGLQuery : public WebGLSharedPlatform3DObject {
+class WebGLQuery : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebGLQuery(WebGL2RenderingContextBase*);
+  explicit WebGLQuery(WebGLContextObjectSupport*);
   ~WebGLQuery() override;
 
   void SetTarget(GLenum);
@@ -40,8 +32,6 @@ class WebGLQuery : public WebGLSharedPlatform3DObject {
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
  private:
-  bool IsQuery() const override { return true; }
-
   void ScheduleAllowAvailabilityUpdate();
   void AllowAvailabilityUpdate();
 

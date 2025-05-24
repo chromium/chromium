@@ -176,8 +176,7 @@ void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
     base::Process process,
     base::Process::Priority priority) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  if (process.CanSetPriority() && priority_ != priority) {
-    priority_ = priority;
+  if (process.CanSetPriority()) {
     process.SetPriority(priority);
   }
 }

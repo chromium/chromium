@@ -344,7 +344,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
   // Notify value change accessibility event because the popup is triggered by
   // changing value using an accessor key like VolUp.
-  slider_view_->slider()->NotifyAccessibilityEvent(
+  slider_view_->slider()->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kValueChanged, true);
 
   StartAutoCloseTimer();

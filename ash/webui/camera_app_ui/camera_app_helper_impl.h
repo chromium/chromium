@@ -126,6 +126,7 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
                         PerformOcrCallback callback) override;
   void CreatePdfBuilder(
       mojo::PendingReceiver<camera_app::mojom::PdfBuilder> receiver) override;
+  void GetAspectRatioOrder(GetAspectRatioOrderCallback callback) override;
 
  private:
   void CheckExternalScreenState();

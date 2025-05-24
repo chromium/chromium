@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_METADATA_UTILS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_METADATA_UTILS_H_
 
+#include <set>
+
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
@@ -159,6 +161,14 @@ proto::PredictionResult CreatePredictionResult(
 proto::ClientResult CreateClientResultFromPredResult(
     proto::PredictionResult pred_result,
     base::Time timestamp);
+
+// Returns input key name for FILL_FROM_INPUT_CONTEXT feature.
+std::string GetInputKeyForInputContextCustomInput(
+    const proto::CustomInput& custom_input);
+
+// Gets all input_context keys needed for the `metadata`.
+std::set<std::string> GetInputKeysForMetadata(
+    const proto::SegmentationModelMetadata& metadata);
 
 // Returns true if config has not migrated to multi output and uses legacy
 // output.

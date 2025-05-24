@@ -19,13 +19,13 @@ PerformanceServerTiming::PerformanceServerTiming(const String& name,
 
 PerformanceServerTiming::~PerformanceServerTiming() = default;
 
-ScriptValue PerformanceServerTiming::toJSONForBinding(
+ScriptObject PerformanceServerTiming::toJSONForBinding(
     ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.AddString("name", name());
   builder.AddNumber("duration", duration());
   builder.AddString("description", description());
-  return builder.GetScriptValue();
+  return builder.ToScriptObject();
 }
 
 HeapVector<Member<PerformanceServerTiming>>

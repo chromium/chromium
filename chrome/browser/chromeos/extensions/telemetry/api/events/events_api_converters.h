@@ -138,9 +138,8 @@ crosapi::mojom::TelemetryEventCategoryEnum Convert(
 int Convert(uint32_t input);
 
 template <class InputT,
-          class OutputT = decltype(Convert(std::declval<InputT>())),
-          class = std::enable_if_t<std::is_enum_v<InputT> ||
-                                   std::is_integral_v<InputT>>>
+          class OutputT = decltype(Convert(std::declval<InputT>()))>
+  requires(std::is_enum_v<InputT> || std::is_integral_v<InputT>)
 std::vector<OutputT> ConvertVector(std::vector<InputT> input) {
   std::vector<OutputT> output;
   for (auto elem : input) {
@@ -151,8 +150,8 @@ std::vector<OutputT> ConvertVector(std::vector<InputT> input) {
 
 template <class InputT,
           class OutputT =
-              decltype(unchecked::UncheckedConvertPtr(std::declval<InputT>())),
-          class = std::enable_if_t<std::is_default_constructible_v<OutputT>>>
+              decltype(unchecked::UncheckedConvertPtr(std::declval<InputT>()))>
+  requires(std::is_default_constructible_v<OutputT>)
 OutputT ConvertStructPtr(InputT input) {
   return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
                             : OutputT();

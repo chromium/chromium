@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_thread.h"
@@ -114,8 +113,7 @@ void TaskGroupSampler::Refresh(int64_t refresh_flags) {
   }
 }
 
-TaskGroupSampler::~TaskGroupSampler() {
-}
+TaskGroupSampler::~TaskGroupSampler() = default;
 
 double TaskGroupSampler::RefreshCpuUsage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
@@ -137,11 +135,15 @@ double TaskGroupSampler::RefreshCpuUsage() {
 int64_t TaskGroupSampler::RefreshSwappedMem() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return process_metrics_->GetVmSwapBytes();
+#if BUILDFLAG(IS_CHROMEOS)
+  auto info = process_metrics_->GetMemoryInfo();
+  if (!info.has_value()) {
+    return 0;
+  }
+  return info->vm_swap_bytes;
 #else
   return 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 int TaskGroupSampler::RefreshIdleWakeupsPerSecond() {

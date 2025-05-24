@@ -707,7 +707,6 @@ Both methods and attribute/constant getters annotated with this attribute are wi
 ```webidl
 [HighEntropy] attribute Node interestingAttribute;
 [HighEntropy] Node getInterestingNode();
-[HighEntropy] const INTERESTING_CONSTANT = 1;
 ```
 
 Attributes and methods labeled with `[HighEntropy=Direct]` are simple surfaces which can be expressed as a sequence of bytes without any need for additional parsing logic.
@@ -755,7 +754,7 @@ Summary: Measures usage of a specific feature via `UseCounter`.
 
 In order to measure usage of specific features, Chrome submits anonymous statistics through the Histogram recording system for users who opt-in to sharing usage statistics. This extended attribute hooks up a specific feature to this measurement system.
 
-Usage: `[Measure]` can be specified on interfaces, methods, attributes, and constants.
+Usage: `[Measure]` can be specified on interfaces, methods, and attributes.
 
 (_deprecated_) When specified on an interface usage of the constructor will be measured. This behavior could be changed in the future. Specify `[Measure]` on constructor operations instead.
 
@@ -764,7 +763,7 @@ The generated feature name must be added to `WebFeature` (in [blink/public/mojom
 ```webidl
 [Measure] attribute Node interestingAttribute;
 [Measure] Node getInterestingNode();
-[Measure] const INTERESTING_CONSTANT = 1;
+// Note that Measure is no longer supported on constants.
 ```
 
 ### [MeasureAs]
@@ -772,16 +771,19 @@ The generated feature name must be added to `WebFeature` (in [blink/public/mojom
 Summary: Like `[Measure]`, but the feature name is provided as the extended attribute value.
 This is similar to the standard `[DeprecateAs]` extended attribute, but does not display a deprecation warning.
 
-Usage: `[MeasureAs]` can be specified on interfaces, methods, attributes, and constants.
+Usage: `[MeasureAs]` can be specified on interfaces, methods, and attributes.
 
 (_deprecated_) Specifying `[MeasureAs]` on interfaces is deprecated. Specify `[MeasureAs]` on constructor operations instead.
 
 The value must match one of the enumeration values in `WebFeature` (in [blink/public/mojom/use_counter/metrics/web_feature.mojom](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom)).
 
+For WebDX features, the value must start with `WebDXFeature::` and must match one of the enumeration values in `WebDXFeature` (in [blink/public/mojom/use_counter/metrics/webdx_feature.mojom](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom)).
+
 ```webidl
 [MeasureAs=AttributeWeAreInterestedIn] attribute Node interestingAttribute;
 [MeasureAs=MethodsAreInterestingToo] Node getInterestingNode();
-[MeasureAs=EvenSomeConstantsAreInteresting] const INTERESTING_CONSTANT = 1;
+[MeasureAs="WebDXFeature::kInterestingFeature"] void doInterestingWork();
+// Note that MeasureAs is no longer supported on constants.
 ```
 
 ### [NotEnumerable]
@@ -1249,21 +1251,11 @@ Summary: The same as `[RuntimeEnabled]` but applied to the property exposed as `
 
 ### [NoAllocDirectCall]
 
-Summary: `[NoAllocDirectCall]` marks a given method as being usable with the fast API calls implemented in V8. They get their value conversions inlined in TurboFan, leading to overall better performance.
+Summary: `[NoAllocDirectCall]` marks a given method as being usable with the fast API calls implemented in V8. They get their value conversions inlined in TurboFan, leading to overall better performance for methods with primitive-type parameters. Note that the `NoAlloc` portion of the name is historical only, as nowadays it is allowed to allocate memory, and it is also allowed to throw exceptions and to call back to JavaScript.
 
-Usage: The method must adhere to the following requirements:
+Usage: The method must adhere to the following requirement: All overloads are marked as `[NoAllocDirectCall]`, and the overloads either differ in the number of arguments, or in a single argument's type if the argument type is a sequence.
 
-1. Doesn't trigger GC, i.e., doesn't allocate Blink or V8 objects;
-2. Doesn't trigger JavaScript execution;
-3. Has no side effect.
-
-Those requirements lead to the specific inability to log warnings to the console, as logging uses `MakeGarbageCollected<ConsoleMessage>`. If logging needs to happen, the method marked with `[NoAllocDirectCall]` should expect a last parameter `bool* has_error`, in which it might store `true` to signal V8. V8 will in turn re-execute the "default" callback, giving the possibility of the exception/error to be reported. This mechanism also implies that the "fast" callback is idempotent up to the point of reporting the error.
-
-If `[NoAllocDirectCall]` is applied to a method, then the corresponding implementation C++ class must **also** derive from the [`NoAllocDirectCallHost` class](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h).
-
-Calling `ThrowDOMException` would seemingly cause `MakeGarbageCollected<DOMException>` to occur, violating the requirement about potentially triggering garbage collection. However, `ThrowDOMException` from a `[NoAllocDirectCall]` method is actually safe in practice. When generating the bindings for a method which is marked as both `[NoAllocDirectCall]` and `[RaisesException]`, V8 will automatically use [`NoAllocDirectCallExceptionState`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/bindings/no_alloc_direct_call_exception_state.h) instead of `ExceptionState`. This class will defer the allocation of the `DOMException` object via `PostDeferrableAction` until it is safe to allocate GC memory. The `WTF::String` inside of the `DOMException` is not a V8 object and does not participate in garbage collection, so its allocation is safe and doesn't violate the requirements of `[NoAllocDirectCall]`.
-
-Note: the `[NoAllocDirectCall]` extended attribute can only be applied to methods, and not attributes. An attribute getter's V8 return value constitutes a V8 allocation, and setters likely allocate on the Blink side.
+For attributes, if the extended attribute should only be used for e.g. the setter, then `[NoAllocDirectCall=Setter]` can be used.
 
 ### [PerWorldBindings]
 
@@ -1316,12 +1308,6 @@ These extended attributes are _discouraged_ - they are not deprecated, but they 
 Summary: The byte length of buffer source types is currently restricted to be under 2 GB (exactly speaking, it must be less than the max size of a direct mapped memory of PartitionAlloc, which is a little less than 2 GB).  This extended attribute removes this limitation.
 
 Consult with the bindings team before you use this extended attribute.
-
-### [IDLTypeImplementedAsV8Promise]
-
-Summary: Indicates that an IDL `Promise` type should be implemented as `v8::Local<v8::Promise>` rather than the default `ScriptPromiseUntyped` type.
-
-This is currently only used for the return types of `AsyncIteratorBase` methods. Consult with the bindings team before you use this extended attribute.
 
 ### [NodeWrapInOwnContext]
 

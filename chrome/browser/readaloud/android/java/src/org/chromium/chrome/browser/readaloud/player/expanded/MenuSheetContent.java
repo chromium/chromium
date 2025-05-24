@@ -4,20 +4,24 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
+import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Base class for menu bottom sheets. */
+@NullMarked
 abstract class MenuSheetContent implements BottomSheetContent {
     private static final String TAG = "ReadAloudMenu";
-    private final BottomSheetController mBottomSheetController;
+    protected final BottomSheetController mBottomSheetController;
     protected final BottomSheetContent mParent;
     private boolean mOpeningSubmenu;
 
@@ -88,12 +92,6 @@ abstract class MenuSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        // Only full height mode enabled.
-        return HeightMode.DISABLED;
-    }
-
-    @Override
     public float getHalfHeightRatio() {
         // Only full height mode enabled.
         return HeightMode.DISABLED;
@@ -123,22 +121,22 @@ abstract class MenuSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         Log.e(
                 TAG,
                 "Tried to get half height accessibility string, but half height isn't supported.");
         assert false;
-        return 0;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         // "Read Aloud player opened at full height."
         return R.string.readaloud_player_opened_at_full_height;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         // "Read Aloud player minimized."
         return R.string.readaloud_player_minimized;
     }

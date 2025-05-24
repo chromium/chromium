@@ -4,6 +4,8 @@
 
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
 
+#include <compare>
+#include <functional>
 #include <memory>
 #include <sstream>
 
@@ -11,7 +13,9 @@
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -24,10 +28,11 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/interaction/interactive_views_test_internal.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "ui/aura/window.h"
 #endif
@@ -39,33 +44,52 @@ namespace internal {
 // isn't properly communicated, so this serves as a backup.
 class BrowserWidgetFocusSupplier
     : public views::test::internal::WidgetFocusSupplier,
-      public BrowserListObserver {
+      public BrowserListObserver,
+      public views::WidgetObserver {
  public:
   BrowserWidgetFocusSupplier() {
+    for (Browser* browser : *BrowserList::GetInstance()) {
+      ObserveBrowserActivationChange(browser);
+    }
     observation_.Observe(BrowserList::GetInstance());
   }
-  ~BrowserWidgetFocusSupplier() override = default;
+
+  ~BrowserWidgetFocusSupplier() override {
+    for (Browser* browser : *BrowserList::GetInstance()) {
+      OnBrowserRemoved(browser);
+    }
+  }
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
-  void OnBrowserSetLastActive(Browser* browser) override {
+  void OnBrowserAdded(Browser* browser) override {
+    ObserveBrowserActivationChange(browser);
+  }
+
+  void OnBrowserRemoved(Browser* browser) override {
     if (auto* const view = BrowserView::GetBrowserViewForBrowser(browser)) {
       if (auto* const widget = view->GetWidget()) {
-        if (gfx::NativeView native_view = widget->GetNativeView()) {
-          OnWidgetFocusChanged(native_view);
-        }
+        widget->RemoveObserver(this);
+      }
+    }
+  }
+
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (active) {
+      if (gfx::NativeView native_view = widget->GetNativeView()) {
+        OnWidgetFocusChanged(native_view);
       }
     }
   }
 
  protected:
   views::Widget::Widgets GetAllWidgets() const override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On Ash, this call is required to include shell/desktop widgets in
     // addition to other widgets - see documentation in widget_test_aura.cc.
     views::Widget::Widgets result;
     for (const auto& window : ash::Shell::GetAllRootWindows()) {
-      views::Widget::GetAllChildWidgets(window->GetRootWindow(), &result);
+      result.merge(views::Widget::GetAllChildWidgets(window->GetRootWindow()));
     }
     return result;
 #else
@@ -74,6 +98,14 @@ class BrowserWidgetFocusSupplier
   }
 
  private:
+  void ObserveBrowserActivationChange(Browser* browser) {
+    if (auto* const view = BrowserView::GetBrowserViewForBrowser(browser)) {
+      if (auto* const widget = view->GetWidget()) {
+        widget->AddObserver(this);
+      }
+    }
+  }
+
   base::ScopedObservation<BrowserList, BrowserListObserver> observation_{this};
 };
 
@@ -157,6 +189,18 @@ bool InteractiveBrowserTestPrivate::IsInstrumentedWebContents(
   return false;
 }
 
+bool InteractiveBrowserTestPrivate::UninstrumentWebContents(
+    ui::ElementIdentifier to_remove) {
+  for (auto it = instrumented_web_contents_.begin();
+       it != instrumented_web_contents_.end(); ++it) {
+    if ((*it)->page_identifier() == to_remove) {
+      instrumented_web_contents_.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
 std::string InteractiveBrowserTestPrivate::DeepQueryToString(
     const WebContentsInteractionTestUtil::DeepQuery& deep_query) {
   std::ostringstream oss;
@@ -207,6 +251,189 @@ gfx::NativeWindow InteractiveBrowserTestPrivate::GetNativeWindowFromContext(
     }
   }
   return window;
+}
+
+std::string InteractiveBrowserTestPrivate::DebugDescribeContext(
+    ui::ElementContext context) const {
+  if (const auto* browser =
+          InteractionTestUtilBrowser::GetBrowserFromContext(context)) {
+    std::string type;
+    switch (browser->type()) {
+      case Browser::TYPE_APP:
+        type = "App window";
+        break;
+      case Browser::TYPE_APP_POPUP:
+        type = "Popup app window";
+        break;
+      case Browser::TYPE_NORMAL:
+        type = "Tabbed browser window";
+        break;
+      case Browser::TYPE_DEVTOOLS:
+        type = "Devtools window";
+        break;
+      case Browser::TYPE_PICTURE_IN_PICTURE:
+        type = "Picture-in-picture window";
+        break;
+      default:
+        type = "Other browser window";
+        break;
+    }
+    if (browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP)) {
+      type += base::StringPrintf(", %d tab(s) (active: %d)",
+                                 browser->tab_strip_model()->count(),
+                                 browser->tab_strip_model()->active_index());
+    }
+    return base::StringPrintf(
+        "%s%s profile %s%s at %s",
+        (browser->window()->IsActive() ? "[ACTIVE] " : ""), type,
+        browser->profile()->GetDebugName(),
+        (browser->profile()->IsOffTheRecord() ? " (off-the-record)" : ""),
+        DebugDumpBounds(browser->window()->GetBounds()));
+  } else {
+    return InteractiveViewsTestPrivate::DebugDescribeContext(context);
+  }
+}
+
+InteractiveBrowserTestPrivate::DebugTreeNode
+InteractiveBrowserTestPrivate::DebugDumpElement(
+    const ui::TrackedElement* el) const {
+  if (const auto* contents = el->AsA<TrackedElementWebContents>()) {
+    auto* const web_contents = contents->owner()->web_contents();
+    int index = TabStripModel::kNoTab;
+    if (const auto* browser =
+            InteractionTestUtilBrowser::GetBrowserFromContext(el->context())) {
+      index = browser->tab_strip_model()->GetIndexOfWebContents(web_contents);
+    }
+    return DebugTreeNode(base::StringPrintf(
+        "WebContents %s - %s at %s with URL \"%s\"",
+        (index == TabStripModel::kNoTab
+             ? "in secondary UI"
+             : base::StringPrintf("in tab %d", index).c_str()),
+        el->identifier().GetName(), DebugDumpBounds(el->GetScreenBounds()),
+        web_contents->GetURL().spec().c_str()));
+  } else {
+    return InteractiveViewsTestPrivate::DebugDumpElement(el);
+  }
+}
+
+MatchableValue::MatchableValue() noexcept = default;
+MatchableValue::MatchableValue(const base::Value& value) noexcept
+    : value_(value.Clone()) {}
+MatchableValue::MatchableValue(base::Value&& value) noexcept
+    : value_(std::move(value)) {}
+MatchableValue::MatchableValue(const MatchableValue& value) noexcept
+    : value_(value.value_.Clone()) {}
+MatchableValue::MatchableValue(MatchableValue&&) noexcept = default;
+MatchableValue& MatchableValue::operator=(const base::Value& value) noexcept {
+  value_ = value.Clone();
+  return *this;
+}
+MatchableValue& MatchableValue::operator=(base::Value&& value) noexcept {
+  value_ = std::move(value);
+  return *this;
+}
+MatchableValue& MatchableValue::operator=(
+    const MatchableValue& value) noexcept {
+  if (this != &value) {
+    value_ = value.value_.Clone();
+  }
+  return *this;
+}
+MatchableValue& MatchableValue::operator=(MatchableValue&&) noexcept = default;
+MatchableValue::~MatchableValue() = default;
+
+void CheckValueTypes(const MatchableValue& source,
+                     const MatchableValue& target) {
+  using Type = base::Value::Type;
+  const auto source_type = source.value().type();
+  const auto target_type = target.value().type();
+
+  if (target_type == Type::DOUBLE &&
+      (source_type == Type::DOUBLE || source_type == Type::INTEGER)) {
+    // This is an allowed conversion.
+    return;
+  }
+
+  // Explicitly don't allow downcast to integer for comparison.
+  if (target_type == Type::INTEGER) {
+    CHECK_NE(source_type, Type::DOUBLE)
+        << "JS returned a floating-point value (" << source
+        << ") but comparison was with an integer (" << target
+        << "). If there is any chance the value will be floating-point, "
+           "compare to a double value instead.";
+  }
+
+  // Otherwise, the types *must* match.
+  CHECK_EQ(source_type, target_type) << "Type mismatch attempting to compare "
+                                     << source << " (from JS) and " << target;
+}
+
+bool MatchableValue::operator==(const MatchableValue& other) const {
+  CheckValueTypes(*this, other);
+  if (other.value_.type() == base::Value::Type::DOUBLE) {
+    return value_.GetDouble() == other.value_.GetDouble();
+  }
+  return value_ == other.value_;
+}
+
+namespace {
+
+template <template <typename...> class Op>
+bool MatchableValueCompare(const MatchableValue& lhs,
+                           const MatchableValue& rhs) {
+  CheckValueTypes(lhs, rhs);
+  switch (rhs.value().type()) {
+    case base::Value::Type::DOUBLE:
+      return Op<double>()(lhs.value().GetDouble(), rhs.value().GetDouble());
+    case base::Value::Type::INTEGER:
+      return Op<double>()(lhs.value().GetInt(), rhs.value().GetInt());
+    case base::Value::Type::STRING:
+      return Op<std::string>()(lhs.value().GetString(),
+                               rhs.value().GetString());
+    default:
+      NOTREACHED() << "Target value " << rhs << " (" << rhs.value().type()
+                   << ") does not support greater than/less than comparison.";
+  }
+}
+
+}  // namespace
+
+MatchableValue::operator std::string() const {
+  return value_.GetString();
+}
+
+bool MatchableValue::operator<(const MatchableValue& other) const {
+  return MatchableValueCompare<std::less>(*this, other);
+}
+
+bool MatchableValue::operator>(const MatchableValue& other) const {
+  return MatchableValueCompare<std::greater>(*this, other);
+}
+
+bool MatchableValue::operator<=(const MatchableValue& other) const {
+  return MatchableValueCompare<std::less_equal>(*this, other);
+}
+
+bool MatchableValue::operator>=(const MatchableValue& other) const {
+  return MatchableValueCompare<std::greater_equal>(*this, other);
+}
+
+std::ostream& operator<<(std::ostream& out, const MatchableValue& value) {
+  return out << value.value();
+}
+
+bool IsTruthyMatcher::MatchAndExplain(
+    const internal::MatchableValue& x,
+    testing::MatchResultListener* listener) const {
+  return WebContentsInteractionTestUtil::IsTruthy(x.value());
+}
+
+void IsTruthyMatcher::DescribeTo(std::ostream* os) const {
+  *os << "is truthy";
+}
+
+void IsTruthyMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "is falsy";
 }
 
 }  // namespace internal

@@ -11,8 +11,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/version.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 
 class GURL;
 
@@ -38,7 +40,8 @@ using MatcherGroup = std::list<Matcher>;
     const base::flat_map<std::string, std::string> expected_headers);
 
 // Returns a matcher which returns true if the request has updater's user-agent.
-Matcher GetUpdaterUserAgentMatcher();
+Matcher GetUpdaterUserAgentMatcher(
+    const base::Version& updater_version = base::Version(kUpdaterVersion));
 
 // Returns a matcher which returns true if the request is actually intended
 // for the `target_url` (uses current server as a proxy).

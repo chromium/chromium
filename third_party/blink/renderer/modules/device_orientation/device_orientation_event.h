@@ -38,7 +38,7 @@ namespace blink {
 class DeviceOrientationEventInit;
 class DeviceOrientationData;
 class ScriptState;
-class V8DeviceOrientationPermissionState;
+class V8PermissionState;
 
 class DeviceOrientationEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -73,8 +73,7 @@ class DeviceOrientationEvent final : public Event {
   std::optional<double> gamma() const;
   bool absolute() const;
 
-  static ScriptPromise<V8DeviceOrientationPermissionState> requestPermission(
-      ScriptState*);
+  static ScriptPromise<V8PermissionState> requestPermission(ScriptState*);
 
   const AtomicString& InterfaceName() const override;
 

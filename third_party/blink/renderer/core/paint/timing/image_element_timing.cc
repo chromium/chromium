@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -12,10 +14,13 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/paint/timing/element_timing_utils.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -24,10 +29,7 @@ namespace blink {
 
 namespace internal {
 
-// "CORE_EXPORT" is needed to make this function visible to tests.
-bool CORE_EXPORT
-IsExplicitlyRegisteredForTiming(const LayoutObject& layout_object) {
-  const auto* element = DynamicTo<Element>(layout_object.GetNode());
+bool IsExplicitlyRegisteredForElementTiming(const Element* element) {
   if (!element)
     return false;
 
@@ -36,6 +38,31 @@ IsExplicitlyRegisteredForTiming(const LayoutObject& layout_object) {
   // https://wicg.github.io/element-timing/#sec-modifications-DOM for report
   // vs. ignore criteria.
   return element->FastHasAttribute(html_names::kElementtimingAttr);
+}
+
+// "CORE_EXPORT" is needed to make this function visible to tests.
+bool CORE_EXPORT
+IsExplicitlyRegisteredForElementTiming(const LayoutObject& layout_object) {
+  const auto* element = DynamicTo<Element>(layout_object.GetNode());
+
+  return IsExplicitlyRegisteredForElementTiming(element);
+}
+
+bool ContributesToContainerTiming(const Element* element) {
+  if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
+    return false;
+  }
+  return (element && ContainerTiming::ContributesToContainerTiming(element));
+}
+
+bool ContributesToContainerTiming(const LayoutObject& layout_object) {
+  const auto* element = DynamicTo<Element>(layout_object.GetNode());
+  return ContributesToContainerTiming(element);
+}
+
+bool NeededForTiming(const LayoutObject& layout_object) {
+  return IsExplicitlyRegisteredForElementTiming(layout_object) ||
+         ContributesToContainerTiming(layout_object);
 }
 
 }  // namespace internal
@@ -65,8 +92,9 @@ ImageElementTiming::ImageElementTiming(LocalDOMWindow& window)
 void ImageElementTiming::NotifyImageFinished(
     const LayoutObject& layout_object,
     const ImageResourceContent* cached_image) {
-  if (!internal::IsExplicitlyRegisteredForTiming(layout_object))
+  if (!internal::NeededForTiming(layout_object)) {
     return;
+  }
 
   const auto& insertion_result = images_notified_.insert(
       MediaRecordId::GenerateHash(&layout_object, cached_image), ImageInfo());
@@ -95,8 +123,9 @@ void ImageElementTiming::NotifyImagePainted(
     const ImageResourceContent& cached_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
-  if (!internal::IsExplicitlyRegisteredForTiming(layout_object))
+  if (!internal::NeededForTiming(layout_object)) {
     return;
+  }
 
   auto it = images_notified_.find(
       MediaRecordId::GenerateHash(&layout_object, &cached_image));
@@ -156,19 +185,20 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   DCHECK(context->GetSecurityOrigin());
   // It's ok to expose rendering timestamp for data URIs so exclude those from
   // the Timing-Allow-Origin check.
-  if (!url.ProtocolIsData()) {
-    if (!cached_image.GetResponse().TimingAllowPassed()) {
-      WindowPerformance* performance =
-          DOMWindowPerformance::performance(*GetSupplementable());
-      if (performance) {
-        // Create an entry with a |startTime| of 0.
-        performance->AddElementTiming(
-            ImagePaintString(), url.GetString(), intersection_rect,
-            base::TimeTicks(), load_time, attr,
-            cached_image.IntrinsicSize(respect_orientation), id, element);
-      }
-      return;
+  if (!url.ProtocolIsData() &&
+      !cached_image.GetResponse().TimingAllowPassed() &&
+      !RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled() &&
+      internal::IsExplicitlyRegisteredForElementTiming(element)) {
+    if (WindowPerformance* performance =
+            DOMWindowPerformance::performance(*GetSupplementable())) {
+      // Create an entry with a |startTime| of 0.
+      performance->AddElementTiming(
+          ImagePaintString(), url.GetString(), intersection_rect, {}, load_time,
+          attr, cached_image.IntrinsicSize(respect_orientation), id, element);
     }
+    // Skip implementation for ContainerTiming: ExposeCoarsenedRenderTime is
+    // already enabled by default.
+    return;
   }
 
   // If the image URL is a data URL ("data:image/..."), then the |name| of the
@@ -179,18 +209,49 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   const String& image_url = url.ProtocolIsData()
                                 ? image_string.Left(kInlineImageMaxChars)
                                 : image_string;
-  element_timings_.emplace_back(MakeGarbageCollected<ElementTimingInfo>(
+  if (!element_timings_) {
+    element_timings_ =
+        MakeGarbageCollected<GCedHeapVector<Member<ElementTimingInfo>>>();
+  }
+  element_timings_->emplace_back(MakeGarbageCollected<ElementTimingInfo>(
       image_url, intersection_rect, load_time, attr,
       cached_image.IntrinsicSize(respect_orientation), id, element));
-  // Only queue a presentation promise when |element_timings_| was empty. All of
-  // the records in |element_timings_| will be processed when the promise
-  // succeeds or fails, and at that time the vector is cleared.
-  if (element_timings_.size() == 1) {
-    frame->GetChromeClient().NotifyPresentationTime(
-        *frame, CrossThreadBindOnce(
-                    &ImageElementTiming::ReportImagePaintPresentationTime,
-                    WrapCrossThreadWeakPersistent(this)));
+}
+
+OptionalPaintTimingCallback ImageElementTiming::TakePaintTimingCallback() {
+  if (!element_timings_) {
+    return std::nullopt;
   }
+
+  return BindOnce(
+      [](ImageElementTiming* self,
+         GCedHeapVector<Member<ElementTimingInfo>>* images,
+         const base::TimeTicks&, const DOMPaintTimingInfo& paint_timing_info) {
+        if (!self) {
+          return;
+        }
+        WindowPerformance* performance =
+            DOMWindowPerformance::performance(*self->GetSupplementable());
+        if (!performance) {
+          return;
+        }
+        for (ElementTimingInfo* painted_image : *images) {
+          if (internal::IsExplicitlyRegisteredForElementTiming(
+                  painted_image->element)) {
+            performance->AddElementTiming(
+                ImagePaintString(), painted_image->url, painted_image->rect,
+                paint_timing_info, painted_image->response_end,
+                painted_image->identifier, painted_image->intrinsic_size,
+                painted_image->id, painted_image->element);
+          }
+          if (internal::ContributesToContainerTiming(painted_image->element)) {
+            self->EnsureContainerTiming();
+            self->container_timing_->OnElementPainted(
+                paint_timing_info, painted_image->element, painted_image->rect);
+          }
+        }
+      },
+      WrapWeakPersistent(this), WrapPersistent(element_timings_.Release()));
 }
 
 void ImageElementTiming::NotifyBackgroundImagePainted(
@@ -202,8 +263,9 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
   if (!layout_object)
     return;
 
-  if (!internal::IsExplicitlyRegisteredForTiming(*layout_object))
+  if (!internal::NeededForTiming(*layout_object)) {
     return;
+  }
 
   const ImageResourceContent* cached_image = background_image.CachedImage();
   if (!cached_image || !cached_image->IsLoaded())
@@ -231,33 +293,25 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
   }
 }
 
-void ImageElementTiming::ReportImagePaintPresentationTime(
-    const viz::FrameTimingDetails& presentation_details) {
-  base::TimeTicks timestamp =
-      presentation_details.presentation_feedback.timestamp;
-  WindowPerformance* performance =
-      DOMWindowPerformance::performance(*GetSupplementable());
-  if (performance) {
-    for (const auto& element_timing : element_timings_) {
-      performance->AddElementTiming(
-          ImagePaintString(), element_timing->url, element_timing->rect,
-          timestamp, element_timing->response_end, element_timing->identifier,
-          element_timing->intrinsic_size, element_timing->id,
-          element_timing->element);
-    }
-  }
-  element_timings_.clear();
-}
-
 void ImageElementTiming::NotifyImageRemoved(const LayoutObject* layout_object,
                                             const ImageResourceContent* image) {
   images_notified_.erase(MediaRecordId::GenerateHash(layout_object, image));
+}
+
+void ImageElementTiming::EnsureContainerTiming() {
+  if (container_timing_) {
+    return;
+  }
+  LocalDOMWindow* window = GetSupplementable();
+  DCHECK(window);
+  container_timing_ = ContainerTiming::From(*window);
 }
 
 void ImageElementTiming::Trace(Visitor* visitor) const {
   visitor->Trace(element_timings_);
   visitor->Trace(background_image_timestamps_);
   Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(container_timing_);
 }
 
 }  // namespace blink

@@ -107,7 +107,7 @@ class Step final : public ParseNode {
   };
 
   Step(Axis, const NodeTest&);
-  Step(Axis, const NodeTest&, HeapVector<Member<Predicate>>&);
+  Step(Axis, const NodeTest&, GCedHeapVector<Member<Predicate>>&);
   Step(const Step&) = delete;
   Step& operator=(const Step&) = delete;
   ~Step() override;

@@ -12,8 +12,7 @@
 #include "chromeos/ash/components/phonehub/browser_tabs_model.h"
 #include "chromeos/ash/components/phonehub/phone_status_model.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Model representing the phone used for Phone Hub. Provides getters which
 // return the state of the phone when connected, or null if disconnected. Also
@@ -61,7 +60,6 @@ class PhoneModel {
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_MODEL_H_

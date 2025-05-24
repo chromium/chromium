@@ -21,7 +21,8 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/values.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -963,6 +964,93 @@ TEST_F(FidoGetAssertionHandlerTest, ReportTransportMetric) {
   histograms.ExpectUniqueSample(kResponseTransportHistogram,
                                 FidoTransportProtocol::kUsbHumanInterfaceDevice,
                                 1);
+}
+
+MATCHER_P(GetAssertionRequestWithAllowlist, empty_list, "") {
+  if (arg.empty() ||
+      arg[0] != base::strict_cast<uint8_t>(
+                    CtapRequestCommand::kAuthenticatorGetAssertion)) {
+    *result_listener << "not get assertion";
+    return false;
+  }
+
+  base::span<const uint8_t> param_bytes(arg);
+  param_bytes = param_bytes.subspan<1>();
+  const auto maybe_map = cbor::Reader::Read(param_bytes);
+  if (!maybe_map || !maybe_map->is_map()) {
+    *result_listener << "not a map";
+    return false;
+  }
+  const auto& map = maybe_map->GetMap();
+
+  const auto options_it = map.find(cbor::Value(3));
+  if (options_it == map.end() || !options_it->second.is_array()) {
+    return empty_list;
+  }
+
+  return empty_list == options_it->second.GetArray().empty();
+}
+
+TEST_F(FidoGetAssertionHandlerTest, CtapRequestUsesPreselectedAccount) {
+  auto request_handler =
+      CreateGetAssertionHandlerWithRequest(CtapGetAssertionRequest(
+          test_data::kRelyingPartyId, test_data::kClientDataJson));
+
+  discovery()->WaitForCallToStartAndSimulateSuccess();
+  auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
+  device->ExpectCtap2CommandAndRespondWith(
+      CtapRequestCommand::kAuthenticatorGetAssertion,
+      test_data::kTestGetAssertionResponseWithUserEntity, base::TimeDelta(),
+      GetAssertionRequestWithAllowlist(/*empty_list=*/false));
+
+  PublicKeyCredentialUserEntity user_entity(
+      fido_parsing_utils::Materialize(test_data::kUserId), test_data::kUsername,
+      test_data::kUserDisplayName);
+  DiscoverableCredentialMetadata preselected_account(
+      AuthenticatorType::kOther, test_data::kRelyingPartyId,
+      fido_parsing_utils::Materialize(test_data::kTestGetAssertionCredentialId),
+      std::move(user_entity),
+      /*provider_name=*/std::nullopt);
+  request_handler->PreselectAccount(std::move(preselected_account));
+
+  discovery()->AddDevice(std::move(device));
+  EXPECT_TRUE(get_assertion_future().Wait());
+
+  EXPECT_EQ(GetAssertionStatus::kSuccess,
+            std::get<0>(get_assertion_future().Get()));
+  EXPECT_TRUE(std::get<1>(get_assertion_future().Get()));
+}
+
+// See https://crbug.com/400761095 for context.
+TEST_F(FidoGetAssertionHandlerTest,
+       CtapRequestIgnoresPreselectedAccountFromOtherAuthenticator) {
+  auto request_handler =
+      CreateGetAssertionHandlerWithRequest(CtapGetAssertionRequest(
+          test_data::kRelyingPartyId, test_data::kClientDataJson));
+
+  discovery()->WaitForCallToStartAndSimulateSuccess();
+  auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
+  device->ExpectCtap2CommandAndRespondWith(
+      CtapRequestCommand::kAuthenticatorGetAssertion,
+      test_data::kTestGetAssertionResponseWithUserEntity, base::TimeDelta(),
+      GetAssertionRequestWithAllowlist(/*empty_list=*/true));
+
+  PublicKeyCredentialUserEntity user_entity(
+      fido_parsing_utils::Materialize(test_data::kUserId), test_data::kUsername,
+      test_data::kUserDisplayName);
+  DiscoverableCredentialMetadata preselected_account(
+      AuthenticatorType::kEnclave, test_data::kRelyingPartyId,
+      fido_parsing_utils::Materialize(test_data::kTestGetAssertionCredentialId),
+      std::move(user_entity),
+      /*provider_name=*/std::nullopt);
+  request_handler->PreselectAccount(std::move(preselected_account));
+
+  discovery()->AddDevice(std::move(device));
+  EXPECT_TRUE(get_assertion_future().Wait());
+
+  EXPECT_EQ(GetAssertionStatus::kSuccess,
+            std::get<0>(get_assertion_future().Get()));
+  EXPECT_TRUE(std::get<1>(get_assertion_future().Get()));
 }
 
 #if BUILDFLAG(IS_WIN)

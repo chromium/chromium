@@ -1,0 +1,88 @@
+' Copyright 2025 The Chromium Authors
+' Use of this source code is governed by a BSD-style license that can be
+' found in the LICENSE file.
+
+/'
+ ' This sequence diagram is used in the README of this directory.
+ ' Generated diagrams are by default located in
+ ' `out/components/autofill/core/browser/integrators/README_obj_suggestions/*`.
+ '
+ ' This diagram describes the control flow from a field interaction until the
+ ' eventual display of an Autofill UI.
+ '/
+@startuml
+!pragma useVerticalIf on
+start
+<style>
+document {
+   BackgroundColor transparent
+}
+activityDiagram {
+  FontSize 14
+  FontName arial
+}
+skinparam ConditionEndStyle hline
+</style>
+
+:Some text field interaction<
+-> via RenderFrameObserver;
+#CFC:AutofillAgent;
+-> AskForValuesToFill;
+#CFC: ContentAutofillDriver;
+-> OnAskForValuesToFillImpl;
+#CFC:BrowserAutofillManager;
+split
+  -[#F00]-> <color:red>GetOrCreate;
+  #CFC: <color:red>PasswordManagerDelegate;
+  if (is Android?) then (no)
+  else (yes)
+    -> ShowKeyboardReplacingSurface;
+    #CCF:PasswordManagerClient;
+    if (is Chrome?) then (yes)
+      if (replaces Keyboard?) then (no)
+      else (yes)
+        if (has Passkeys?) then (yes)
+          #CCF:CredManController;
+          :Defer to CredMan>
+          stop
+        else (no)
+          #CCF:TouchToFillController;
+          :Show BottomSheet>
+          stop
+        endif
+      endif
+    else (no)
+    endif
+  endif
+  -> OnShowPasswordSuggestions;
+  #CFC:PasswordAutofillManager;
+  fork
+    -> needs fallback;
+    #CFC:PwManualFallbackFlow;
+  fork again
+    -> has Passkeys;
+    #CFC:WebAuthnCredentialDelegate;
+  fork again
+    -> always;
+  end merge
+split again
+-> OnSuggestionsReturned;
+#CFC:AutofillExternalDelegate;
+end split
+-> ShowAutofillSuggestions;
+#CCF: ContentAutofillClient;
+
+if (is Android?) then (yes)
+  #CCF:AndroidAutofillClient;
+  if (uses 3P?) then (yes)
+    :Defer to AutofillService>
+  else (no)
+    :Show Keyboard Accessory>
+  endif
+else (no)
+  #CCF:ChromeAutofillClient;
+  :Show Popup UI>
+endif
+
+stop
+@enduml

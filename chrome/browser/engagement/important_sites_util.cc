@@ -14,13 +14,11 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/webapps/installable/installable_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -40,10 +38,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/webapps/common/web_app_id.h"
-#endif
 
 namespace site_engagement {
 
@@ -279,7 +273,7 @@ void PopulateInfoMapWithBookmarks(
   // Process the bookmarks and optionally trim them if we have too many.
   std::vector<UrlAndTitle> result_bookmarks;
   if (untrimmed_bookmarks.size() > kMaxBookmarks) {
-    base::ranges::copy_if(
+    std::ranges::copy_if(
         untrimmed_bookmarks, std::back_inserter(result_bookmarks),
         [&engagement_map](const UrlAndTitle& entry) {
           auto it = engagement_map.find(entry.url.DeprecatedGetOriginAsURL());

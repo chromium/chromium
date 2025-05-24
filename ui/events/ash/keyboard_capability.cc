@@ -13,6 +13,7 @@
 #include <linux/input-event-codes.h>
 #include <linux/input.h>
 
+#include <algorithm>
 #include <cstring>
 #include <functional>
 #include <memory>
@@ -26,11 +27,11 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -40,9 +41,9 @@
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/keyboard_info_metrics.h"
 #include "ui/events/ash/keyboard_layout_util.h"
-#include "ui/events/ash/modifier_split_dogfood_controller.h"
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/top_row_action_keys.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
@@ -82,8 +83,10 @@ const int kCustomNullScanCode = 0xC0000;
 const int kHotrodRemoteVendorId = 0x0471;
 const int kHotrodRemoteProductId = 0x21cc;
 
-constexpr auto kRightAltBlocklist =
+constexpr auto kQuickInsertBlocklist =
     base::MakeFixedFlatSet<std::string_view>({"eve", "nocturne", "atlas"});
+
+constexpr std::string_view kRevenBoardName = "reven";
 
 constexpr char kLayoutProperty[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kCustomTopRowLayoutAttribute[] = "function_row_physmap";
@@ -124,6 +127,7 @@ constexpr auto kVKeyToTopRowActionKeyMap =
         {VKEY_DICTATE, TopRowActionKey::kDictation},
         {VKEY_PRIVACY_SCREEN_TOGGLE, TopRowActionKey::kPrivacyScreenToggle},
         {VKEY_ACCESSIBILITY, TopRowActionKey::kAccessibility},
+        {VKEY_DO_NOT_DISTURB, TopRowActionKey::kDoNotDisturb},
     });
 
 // Some ChromeOS compatible keyboards have a capslock key.
@@ -338,7 +342,6 @@ KeyboardCapability::DeviceType IdentifyKeyboardType(
                : KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
   }
 
-  if (has_chromeos_top_row) {
     if (has_null_top_row) {
       VLOG(1) << "External Null Top Row keyboard '" << keyboard_device.name
               << "' connected: id=" << keyboard_device.id;
@@ -346,12 +349,13 @@ KeyboardCapability::DeviceType IdentifyKeyboardType(
           kDeviceExternalNullTopRowChromeOsKeyboard;
     }
 
-    // If the device was tagged as having Chrome OS top row layout it must be a
-    // Chrome OS keyboard.
-    VLOG(1) << "External Chrome OS keyboard '" << keyboard_device.name
-            << "' connected: id=" << keyboard_device.id;
-    return KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard;
-  }
+    if (has_chromeos_top_row) {
+      // If the device was tagged as having Chrome OS top row layout it must be
+      // a Chrome OS keyboard.
+      VLOG(1) << "External Chrome OS keyboard '" << keyboard_device.name
+              << "' connected: id=" << keyboard_device.id;
+      return KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard;
+    }
 
   const std::vector<std::string> tokens =
       base::SplitString(keyboard_device.name, " .", base::KEEP_WHITESPACE,
@@ -398,12 +402,21 @@ IdentifyKeyboardInfo(const KeyboardDevice& keyboard) {
   KeyboardTopRowLayout layout;
   std::vector<uint32_t> top_row_scan_codes = GetTopRowScanCodeVector(keyboard);
   bool null_top_row = false;
+  // Top row scancode vectors which are all null should empty the array so it is
+  // not considered a custom top row keyboard.
   if (!top_row_scan_codes.empty()) {
-    layout = KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
     null_top_row =
-        base::ranges::all_of(top_row_scan_codes, [](const uint32_t scancode) {
+        std::ranges::all_of(top_row_scan_codes, [](const uint32_t scancode) {
           return scancode == kCustomNullScanCode;
         });
+    if (base::FeatureList::IsEnabled(ash::features::kNullTopRowFix) &&
+        null_top_row) {
+      top_row_scan_codes.clear();
+    }
+  }
+
+  if (!top_row_scan_codes.empty()) {
+    layout = KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
   } else if (!GetTopRowLayoutProperty(keyboard, layout_string) ||
              !ParseKeyboardTopRowLayout(layout_string, layout)) {
     return {KeyboardCapability::DeviceType::kDeviceUnknown,
@@ -504,18 +517,14 @@ bool HasExternalKeyboardConnected() {
 KeyboardCapability::KeyboardCapability()
     : scan_code_to_evdev_key_converter_(
           base::BindRepeating(&ConvertScanCodeToEvdevKey)),
-      board_name_(base::ToLowerASCII(base::SysInfo::HardwareModelName())),
-      modifier_split_dogfood_controller_(
-          std::make_unique<ModifierSplitDogfoodController>()) {
+      board_name_(base::ToLowerASCII(base::SysInfo::HardwareModelName())) {
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
 KeyboardCapability::KeyboardCapability(
     ScanCodeToEvdevKeyConverter scan_code_to_evdev_key_converter)
     : scan_code_to_evdev_key_converter_(
-          std::move(scan_code_to_evdev_key_converter)),
-      modifier_split_dogfood_controller_(
-          std::make_unique<ModifierSplitDogfoodController>()) {
+          std::move(scan_code_to_evdev_key_converter)) {
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
@@ -524,6 +533,16 @@ KeyboardCapability::~KeyboardCapability() {
 }
 
 KeyboardCapability::KeyboardInfo::KeyboardInfo() = default;
+KeyboardCapability::KeyboardInfo::KeyboardInfo(
+    DeviceType device_type,
+    KeyboardTopRowLayout top_row_layout,
+    std::vector<uint32_t> top_row_scan_codes,
+    std::vector<TopRowActionKey> top_row_action_keys)
+    : device_type(device_type),
+      top_row_layout(top_row_layout),
+      top_row_scan_codes(std::move(top_row_scan_codes)),
+      top_row_action_keys(std::move(top_row_action_keys)) {}
+
 KeyboardCapability::KeyboardInfo::KeyboardInfo(KeyboardInfo&&) = default;
 KeyboardCapability::KeyboardInfo& KeyboardCapability::KeyboardInfo::operator=(
     KeyboardInfo&&) = default;
@@ -619,8 +638,7 @@ std::optional<KeyboardCode> KeyboardCapability::GetCorrespondingFunctionKey(
     return std::nullopt;
   }
 
-  auto iter =
-      base::ranges::find(keyboard_info->top_row_action_keys, action_key);
+  auto iter = std::ranges::find(keyboard_info->top_row_action_keys, action_key);
   if (iter == keyboard_info->top_row_action_keys.end()) {
     return std::nullopt;
   }
@@ -740,8 +758,8 @@ std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
     modifier_keys.push_back(mojom::ModifierKey::kFunction);
   }
 
-  if (HasRightAltKey(keyboard)) {
-    modifier_keys.push_back(mojom::ModifierKey::kRightAlt);
+  if (HasQuickInsertKey(keyboard)) {
+    modifier_keys.push_back(mojom::ModifierKey::kQuickInsert);
   }
 
   return modifier_keys;
@@ -829,9 +847,10 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
   // This metrics recording will happen once per keyboard per connection, since
   // GetKeyboardInfo is cached and isn't recomputed unless the keyboard
   // disconnects and reconnects.
-  RecordKeyboardInfoMetrics(keyboard_info,
-                            /*has_assistant_key=*/HasAssistantKey(keyboard),
-                            /*has_right_alt_key=*/HasRightAltKey(keyboard));
+  RecordKeyboardInfoMetrics(
+      keyboard_info,
+      /*has_assistant_key=*/HasAssistantKey(keyboard),
+      /*has_quick_insert_key=*/HasQuickInsertKey(keyboard));
 
   return &keyboard_info;
 }
@@ -945,6 +964,19 @@ bool KeyboardCapability::HasMediaKeysOnAnyKeyboard() const {
   return HasExternalKeyboardConnected();
 }
 
+bool KeyboardCapability::HasCameraAccessKey(
+    const KeyboardDevice& keyboard) const {
+  // TODO(dpad): Many external keyboards do not have these keys, but currently
+  // we do not have a good way to detect these situations.
+  return !IsInternalKeyboard(keyboard);
+}
+
+bool KeyboardCapability::HasCameraAccessKeyOnAnyKeyboard() const {
+  // TODO(dpad): Many external keyboards do not have these keys, but currently
+  // we do not have a good way to detect these situations.
+  return HasExternalKeyboardConnected();
+}
+
 const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
     const KeyboardDevice& keyboard) const {
   const auto* keyboard_info = GetKeyboardInfo(keyboard);
@@ -966,7 +998,7 @@ const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
 }
 
 bool KeyboardCapability::HasAssistantKey(const KeyboardDevice& keyboard) const {
-  if (HasRightAltKey(keyboard)) {
+  if (HasQuickInsertKey(keyboard)) {
     return false;
   }
 
@@ -1005,12 +1037,14 @@ bool KeyboardCapability::HasCapsLockKey(const KeyboardDevice& keyboard) const {
 }
 
 bool KeyboardCapability::HasFunctionKey(const KeyboardDevice& keyboard) const {
-  if (!modifier_split_dogfood_controller_->IsEnabled()) {
-    return false;
-  }
-
   if (ash::features::IsSplitKeyboardRefactorEnabled()) {
     return true;
+  }
+
+  // ChromeOS flex devices may have an fn key in their HID report, but are not
+  // supported in the same way.
+  if (board_name_ == kRevenBoardName) {
+    return false;
   }
 
   return ash::features::IsModifierSplitEnabled() &&
@@ -1037,35 +1071,9 @@ bool KeyboardCapability::HasFunctionKeyOnAnyKeyboard() const {
   return false;
 }
 
-bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
-  if (!modifier_split_dogfood_controller_->IsEnabled()) {
-    return false;
-  }
-
-  if (ash::features::IsSplitKeyboardRefactorEnabled()) {
-    return true;
-  }
-
-  if (kRightAltBlocklist.contains(board_name_)) {
-    return false;
-  }
-
-  return keyboard.type == InputDeviceType::INPUT_DEVICE_INTERNAL &&
-         keyboard.has_assistant_key;
-}
-
-bool KeyboardCapability::HasRightAltKey(int device_id) const {
-  auto keyboard = FindKeyboardWithId(device_id);
-  if (!keyboard) {
-    return false;
-  }
-
-  return HasRightAltKey(*keyboard);
-}
-
-bool KeyboardCapability::HasRightAltKeyForOobe(
+bool KeyboardCapability::HasQuickInsertKey(
     const KeyboardDevice& keyboard) const {
-  if (modifier_split_dogfood_controller_->IsEnabled()) {
+  if (!ash::features::IsModifierSplitEnabled()) {
     return false;
   }
 
@@ -1073,7 +1081,11 @@ bool KeyboardCapability::HasRightAltKeyForOobe(
     return true;
   }
 
-  if (kRightAltBlocklist.contains(board_name_)) {
+  if (kQuickInsertBlocklist.contains(board_name_)) {
+    return false;
+  }
+
+  if (board_name_ == kRevenBoardName) {
     return false;
   }
 
@@ -1081,18 +1093,45 @@ bool KeyboardCapability::HasRightAltKeyForOobe(
          keyboard.has_assistant_key;
 }
 
-bool KeyboardCapability::HasRightAltKeyForOobe(int device_id) const {
+bool KeyboardCapability::HasQuickInsertKey(int device_id) const {
   auto keyboard = FindKeyboardWithId(device_id);
   if (!keyboard) {
     return false;
   }
 
-  return HasRightAltKeyForOobe(*keyboard);
+  return HasQuickInsertKey(*keyboard);
+}
+
+bool KeyboardCapability::HasQuickInsertKeyForOobe(
+    const KeyboardDevice& keyboard) const {
+  if (ash::features::IsModifierSplitEnabled()) {
+    return false;
+  }
+
+  if (ash::features::IsSplitKeyboardRefactorEnabled()) {
+    return true;
+  }
+
+  if (kQuickInsertBlocklist.contains(board_name_)) {
+    return false;
+  }
+
+  return keyboard.type == InputDeviceType::INPUT_DEVICE_INTERNAL &&
+         keyboard.has_assistant_key;
+}
+
+bool KeyboardCapability::HasQuickInsertKeyForOobe(int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return false;
+  }
+
+  return HasQuickInsertKeyForOobe(*keyboard);
 }
 
 bool KeyboardCapability::IsSplitModifierKeyboardForOverride(
     const KeyboardDevice& keyboard) const {
-  if (kRightAltBlocklist.contains(board_name_)) {
+  if (kQuickInsertBlocklist.contains(board_name_)) {
     return false;
   }
 
@@ -1184,7 +1223,7 @@ ui::mojom::MetaKey KeyboardCapability::GetMetaKeyToDisplay() const {
 
   // Override meta key icon for external keyboards to be the highest priority
   // icon.
-  if (modifier_split_dogfood_controller_->IsEnabled()) {
+  if (ash::features::IsModifierSplitEnabled()) {
     return mojom::MetaKey::kLauncherRefresh;
   } else {
     return mojom::MetaKey::kLauncher;
@@ -1215,32 +1254,30 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
 
   auto sorted_keyboards =
       DeviceDataManager::GetInstance()->GetKeyboardDevices();
-  base::ranges::sort(sorted_keyboards, [](const ui::KeyboardDevice& device1,
-                                          const ui::KeyboardDevice& device2) {
-    return device1.id < device2.id;
-  });
+  std::vector<int> sorted_keyboard_ids;
+  sorted_keyboard_ids.reserve(sorted_keyboards.size());
+  std::ranges::transform(sorted_keyboards,
+                         std::back_inserter(sorted_keyboard_ids),
+                         &KeyboardDevice::id);
+  std::ranges::sort(sorted_keyboard_ids);
 
   // Generate a vector with only the device ids from the
   // `keyboard_info_map_` map. Guaranteed to be sorted as flat_map is always
   // in sorted order by key.
   std::vector<int> cached_keyboard_info_ids;
   cached_keyboard_info_ids.reserve(keyboard_info_map_.size());
-  base::ranges::transform(keyboard_info_map_,
-                          std::back_inserter(cached_keyboard_info_ids),
-                          [](const auto& pair) { return pair.first; });
-  DCHECK(base::ranges::is_sorted(cached_keyboard_info_ids));
+  std::ranges::transform(keyboard_info_map_,
+                         std::back_inserter(cached_keyboard_info_ids),
+                         [](const auto& pair) { return pair.first; });
+  DCHECK(std::ranges::is_sorted(cached_keyboard_info_ids));
 
-  // Compares the `cached_keyboard_info_ids` to the id field of
-  // `sorted_keyboards`. Ids that are in `cached_keyboard_info_ids` but not
-  // in `sorted_keyboards` are inserted into `keyboard_ids_to_remove`.
-  // `sorted_keyboards` and `cached_keyboard_info_ids` must be sorted.
+  // Compares the `cached_keyboard_info_ids` to `sorted_keyboard_ids`. Ids that
+  // are in `cached_keyboard_info_ids` but not in `sorted_keyboard_ids` are
+  // inserted into `keyboard_ids_to_remove`. `sorted_keyboard_ids` and
+  // `cached_keyboard_info_ids` must be sorted.
   std::vector<int> keyboard_ids_to_remove;
-  base::ranges::set_difference(
-      cached_keyboard_info_ids, sorted_keyboards,
-      std::back_inserter(keyboard_ids_to_remove),
-      /*Comp=*/base::ranges::less(),
-      /*Proj1=*/std::identity(),
-      /*Proj2=*/[](const KeyboardDevice& device) { return device.id; });
+  std::ranges::set_difference(cached_keyboard_info_ids, sorted_keyboard_ids,
+                              std::back_inserter(keyboard_ids_to_remove));
 
   for (const auto& id : keyboard_ids_to_remove) {
     keyboard_info_map_.erase(id);
@@ -1291,6 +1328,16 @@ bool KeyboardCapability::HasTopRowActionKey(const KeyboardDevice& keyboard,
   return base::Contains(keyboard_info->top_row_action_keys, action_key);
 }
 
+bool KeyboardCapability::HasTopRowActionKey(int device_id,
+                                            TopRowActionKey action_key) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return false;
+  }
+
+  return HasTopRowActionKey(*keyboard, action_key);
+}
+
 bool KeyboardCapability::HasTopRowActionKeyOnAnyKeyboard(
     TopRowActionKey action_key) const {
   for (const ui::KeyboardDevice& keyboard :
@@ -1304,7 +1351,7 @@ bool KeyboardCapability::HasTopRowActionKeyOnAnyKeyboard(
 
 bool KeyboardCapability::IsSplitModifierKeyboard(
     const KeyboardDevice& keyboard) const {
-  return HasRightAltKey(keyboard) && HasFunctionKey(keyboard);
+  return HasQuickInsertKey(keyboard) && HasFunctionKey(keyboard);
 }
 
 bool KeyboardCapability::IsChromeOSKeyboard(int device_id) const {
@@ -1315,15 +1362,6 @@ bool KeyboardCapability::IsChromeOSKeyboard(int device_id) const {
 
 void KeyboardCapability::SetBoardNameForTesting(const std::string& board_name) {
   board_name_ = board_name;
-}
-
-void KeyboardCapability::ForceEnableFeature() {
-  modifier_split_dogfood_controller_->ForceEnableFeature();
-}
-
-void KeyboardCapability::ResetModifierSplitDogfoodControllerForTesting() {
-  modifier_split_dogfood_controller_ =
-      std::make_unique<ModifierSplitDogfoodController>();  // IN-TEST
 }
 
 }  // namespace ui

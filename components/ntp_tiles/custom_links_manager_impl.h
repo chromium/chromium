@@ -49,6 +49,9 @@ class CustomLinksManagerImpl : public CustomLinksManager,
 
   const std::vector<Link>& GetLinks() const override;
 
+  bool AddLinkTo(const GURL& url,
+                 const std::u16string& title,
+                 size_t pos) override;
   bool AddLink(const GURL& url, const std::u16string& title) override;
   bool UpdateLink(const GURL& url,
                   const GURL& new_url,

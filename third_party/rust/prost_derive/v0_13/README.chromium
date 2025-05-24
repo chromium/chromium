@@ -1,0 +1,10 @@
+Name: prost-derive
+URL: https://crates.io/crates/prost-derive
+Version: 0.13.5
+Revision: d505b184e933e1f9ff5679106ffc51b7e3c2755e
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/prost-derive-v0_13/LICENSE
+Shipped: no
+Security Critical: no
+
+Description: Generate encoding and decoding implementations for Prost annotated types.

@@ -21,3 +21,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "input_overlay_resources_util.cc": [
+    "+components/arc/grit/input_overlay_resources.h",
+  ],
+}

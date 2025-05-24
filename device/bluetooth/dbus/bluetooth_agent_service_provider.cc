@@ -21,6 +21,110 @@
 
 namespace bluez {
 
+namespace {
+
+using Delegate = BluetoothAgentServiceProvider::Delegate;
+
+// Called by the Delegate to response to a method requesting a PIN code.
+void OnPinCode(base::PlatformThreadId origin_thread_id,
+               dbus::MethodCall* method_call,
+               dbus::ExportedObject::ResponseSender response_sender,
+               Delegate::Status status,
+               const std::string& pincode) {
+  DCHECK_EQ(origin_thread_id, base::PlatformThread::CurrentId());
+
+  switch (status) {
+    case Delegate::SUCCESS: {
+      std::unique_ptr<dbus::Response> response(
+          dbus::Response::FromMethodCall(method_call));
+      dbus::MessageWriter writer(response.get());
+      writer.AppendString(pincode);
+      std::move(response_sender).Run(std::move(response));
+      break;
+    }
+    case Delegate::REJECTED: {
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, bluetooth_agent::kErrorRejected, "rejected"));
+      break;
+    }
+    case Delegate::CANCELLED: {
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, bluetooth_agent::kErrorCanceled, "canceled"));
+      break;
+    }
+    default:
+      NOTREACHED() << "Unexpected status code from delegate: " << status;
+  }
+}
+
+// Called by the Delegate to response to a method requesting a Passkey.
+void OnPasskey(base::PlatformThreadId origin_thread_id,
+               dbus::MethodCall* method_call,
+               dbus::ExportedObject::ResponseSender response_sender,
+               Delegate::Status status,
+               uint32_t passkey) {
+  DCHECK_EQ(origin_thread_id, base::PlatformThread::CurrentId());
+
+  switch (status) {
+    case Delegate::SUCCESS: {
+      std::unique_ptr<dbus::Response> response(
+          dbus::Response::FromMethodCall(method_call));
+      dbus::MessageWriter writer(response.get());
+      writer.AppendUint32(passkey);
+      std::move(response_sender).Run(std::move(response));
+      break;
+    }
+    case Delegate::REJECTED: {
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, bluetooth_agent::kErrorRejected, "rejected"));
+      break;
+    }
+    case Delegate::CANCELLED: {
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, bluetooth_agent::kErrorCanceled, "canceled"));
+      break;
+    }
+    default:
+      NOTREACHED() << "Unexpected status code from delegate: " << status;
+  }
+}
+
+// Called by the Delegate in response to a method requiring confirmation.
+void OnConfirmation(base::PlatformThreadId origin_thread_id,
+                    dbus::MethodCall* method_call,
+                    dbus::ExportedObject::ResponseSender response_sender,
+                    Delegate::Status status) {
+  DCHECK_EQ(origin_thread_id, base::PlatformThread::CurrentId());
+
+  switch (status) {
+    case Delegate::SUCCESS: {
+      std::move(response_sender)
+          .Run(dbus::Response::FromMethodCall(method_call));
+      break;
+    }
+    case Delegate::REJECTED: {
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, bluetooth_agent::kErrorRejected, "rejected"));
+      break;
+    }
+    case Delegate::CANCELLED: {
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, bluetooth_agent::kErrorCanceled, "canceled"));
+      break;
+    }
+    default:
+      NOTREACHED() << "Unexpected status code from delegate: " << status;
+  }
+}
+
+}  // namespace
+
 // The BluetoothAgentServiceProvider implementation used in production.
 class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
  public:
@@ -149,15 +253,16 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::MessageReader reader(method_call);
     dbus::ObjectPath device_path;
     if (!reader.PopObjectPath(&device_path)) {
-      LOG(WARNING) << "RequestPinCode called with incorrect paramters: "
+      LOG(WARNING) << "RequestPinCode called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
-    Delegate::PinCodeCallback callback =
-        base::BindOnce(&BluetoothAgentServiceProviderImpl::OnPinCode,
-                       weak_ptr_factory_.GetWeakPtr(), method_call,
-                       std::move(response_sender));
+    Delegate::PinCodeCallback callback = base::BindOnce(
+        &OnPinCode, origin_thread_id_, method_call, std::move(response_sender));
 
     delegate_->RequestPinCode(device_path, std::move(callback));
   }
@@ -174,8 +279,11 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::ObjectPath device_path;
     std::string pincode;
     if (!reader.PopObjectPath(&device_path) || !reader.PopString(&pincode)) {
-      LOG(WARNING) << "DisplayPinCode called with incorrect paramters: "
+      LOG(WARNING) << "DisplayPinCode called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
@@ -194,15 +302,16 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::MessageReader reader(method_call);
     dbus::ObjectPath device_path;
     if (!reader.PopObjectPath(&device_path)) {
-      LOG(WARNING) << "RequestPasskey called with incorrect paramters: "
+      LOG(WARNING) << "RequestPasskey called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
-    Delegate::PasskeyCallback callback =
-        base::BindOnce(&BluetoothAgentServiceProviderImpl::OnPasskey,
-                       weak_ptr_factory_.GetWeakPtr(), method_call,
-                       std::move(response_sender));
+    Delegate::PasskeyCallback callback = base::BindOnce(
+        &OnPasskey, origin_thread_id_, method_call, std::move(response_sender));
 
     delegate_->RequestPasskey(device_path, std::move(callback));
   }
@@ -221,8 +330,11 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     uint16_t entered;
     if (!reader.PopObjectPath(&device_path) || !reader.PopUint32(&passkey) ||
         !reader.PopUint16(&entered)) {
-      LOG(WARNING) << "DisplayPasskey called with incorrect paramters: "
+      LOG(WARNING) << "DisplayPasskey called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
@@ -244,14 +356,16 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::ObjectPath device_path;
     uint32_t passkey;
     if (!reader.PopObjectPath(&device_path) || !reader.PopUint32(&passkey)) {
-      LOG(WARNING) << "RequestConfirmation called with incorrect paramters: "
+      LOG(WARNING) << "RequestConfirmation called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
     Delegate::ConfirmationCallback callback =
-        base::BindOnce(&BluetoothAgentServiceProviderImpl::OnConfirmation,
-                       weak_ptr_factory_.GetWeakPtr(), method_call,
+        base::BindOnce(&OnConfirmation, origin_thread_id_, method_call,
                        std::move(response_sender));
 
     delegate_->RequestConfirmation(device_path, passkey, std::move(callback));
@@ -268,14 +382,16 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::MessageReader reader(method_call);
     dbus::ObjectPath device_path;
     if (!reader.PopObjectPath(&device_path)) {
-      LOG(WARNING) << "RequestAuthorization called with incorrect paramters: "
+      LOG(WARNING) << "RequestAuthorization called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
     Delegate::ConfirmationCallback callback =
-        base::BindOnce(&BluetoothAgentServiceProviderImpl::OnConfirmation,
-                       weak_ptr_factory_.GetWeakPtr(), method_call,
+        base::BindOnce(&OnConfirmation, origin_thread_id_, method_call,
                        std::move(response_sender));
 
     delegate_->RequestAuthorization(device_path, std::move(callback));
@@ -293,14 +409,16 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
     dbus::ObjectPath device_path;
     std::string uuid;
     if (!reader.PopObjectPath(&device_path) || !reader.PopString(&uuid)) {
-      LOG(WARNING) << "AuthorizeService called with incorrect paramters: "
+      LOG(WARNING) << "AuthorizeService called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
     Delegate::ConfirmationCallback callback =
-        base::BindOnce(&BluetoothAgentServiceProviderImpl::OnConfirmation,
-                       weak_ptr_factory_.GetWeakPtr(), method_call,
+        base::BindOnce(&OnConfirmation, origin_thread_id_, method_call,
                        std::move(response_sender));
 
     delegate_->AuthorizeService(device_path, uuid, std::move(callback));
@@ -324,104 +442,6 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
                   bool success) {
     DVLOG_IF(1, !success) << "Failed to export " << interface_name << "."
                           << method_name;
-  }
-
-  // Called by the Delegate to response to a method requesting a PIN code.
-  void OnPinCode(dbus::MethodCall* method_call,
-                 dbus::ExportedObject::ResponseSender response_sender,
-                 Delegate::Status status,
-                 const std::string& pincode) {
-    DCHECK(OnOriginThread());
-
-    switch (status) {
-      case Delegate::SUCCESS: {
-        std::unique_ptr<dbus::Response> response(
-            dbus::Response::FromMethodCall(method_call));
-        dbus::MessageWriter writer(response.get());
-        writer.AppendString(pincode);
-        std::move(response_sender).Run(std::move(response));
-        break;
-      }
-      case Delegate::REJECTED: {
-        std::move(response_sender)
-            .Run(dbus::ErrorResponse::FromMethodCall(
-                method_call, bluetooth_agent::kErrorRejected, "rejected"));
-        break;
-      }
-      case Delegate::CANCELLED: {
-        std::move(response_sender)
-            .Run(dbus::ErrorResponse::FromMethodCall(
-                method_call, bluetooth_agent::kErrorCanceled, "canceled"));
-        break;
-      }
-      default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected status code from delegate: " << status;
-    }
-  }
-
-  // Called by the Delegate to response to a method requesting a Passkey.
-  void OnPasskey(dbus::MethodCall* method_call,
-                 dbus::ExportedObject::ResponseSender response_sender,
-                 Delegate::Status status,
-                 uint32_t passkey) {
-    DCHECK(OnOriginThread());
-
-    switch (status) {
-      case Delegate::SUCCESS: {
-        std::unique_ptr<dbus::Response> response(
-            dbus::Response::FromMethodCall(method_call));
-        dbus::MessageWriter writer(response.get());
-        writer.AppendUint32(passkey);
-        std::move(response_sender).Run(std::move(response));
-        break;
-      }
-      case Delegate::REJECTED: {
-        std::move(response_sender)
-            .Run(dbus::ErrorResponse::FromMethodCall(
-                method_call, bluetooth_agent::kErrorRejected, "rejected"));
-        break;
-      }
-      case Delegate::CANCELLED: {
-        std::move(response_sender)
-            .Run(dbus::ErrorResponse::FromMethodCall(
-                method_call, bluetooth_agent::kErrorCanceled, "canceled"));
-        break;
-      }
-      default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected status code from delegate: " << status;
-    }
-  }
-
-  // Called by the Delegate in response to a method requiring confirmation.
-  void OnConfirmation(dbus::MethodCall* method_call,
-                      dbus::ExportedObject::ResponseSender response_sender,
-                      Delegate::Status status) {
-    DCHECK(OnOriginThread());
-
-    switch (status) {
-      case Delegate::SUCCESS: {
-        std::move(response_sender)
-            .Run(dbus::Response::FromMethodCall(method_call));
-        break;
-      }
-      case Delegate::REJECTED: {
-        std::move(response_sender)
-            .Run(dbus::ErrorResponse::FromMethodCall(
-                method_call, bluetooth_agent::kErrorRejected, "rejected"));
-        break;
-      }
-      case Delegate::CANCELLED: {
-        std::move(response_sender)
-            .Run(dbus::ErrorResponse::FromMethodCall(
-                method_call, bluetooth_agent::kErrorCanceled, "canceled"));
-        break;
-      }
-      default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected status code from delegate: " << status;
-    }
   }
 
   // Origin thread (i.e. the UI thread in production).

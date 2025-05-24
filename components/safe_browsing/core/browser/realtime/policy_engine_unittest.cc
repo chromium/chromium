@@ -62,6 +62,11 @@ class RealTimePolicyEngineTest : public PlatformTest {
         /*variations_service=*/nullptr);
   }
 
+  bool HasPrefPermissionsToPerformFullURLLookup() {
+    return RealTimePolicyEngine::HasPrefPermissionsToPerformFullURLLookup(
+        &pref_service_);
+  }
+
   bool CanPerformEnterpriseFullURLLookup(bool has_valid_dm_token,
                                          bool is_off_the_record,
                                          bool is_guest_mode) {
@@ -116,6 +121,35 @@ TEST_F(RealTimePolicyEngineTest,
       base::BindOnce(&AreTokenFetchesEnabledInClient,
                      /*expected_ep_enabled_value=*/true,
                      /*return_value=*/true)));
+}
+
+TEST_F(RealTimePolicyEngineTest,
+       TestHasPrefPermissionsToPerformFullURLLookup_MbbDisabled) {
+  pref_service_.SetUserPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+      std::make_unique<base::Value>(false));
+  EXPECT_FALSE(HasPrefPermissionsToPerformFullURLLookup());
+}
+
+TEST_F(RealTimePolicyEngineTest,
+       TestHasPrefPermissionsToPerformFullURLLookup_MbbEnabled) {
+  pref_service_.SetUserPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+      std::make_unique<base::Value>(true));
+  EXPECT_TRUE(HasPrefPermissionsToPerformFullURLLookup());
+}
+
+TEST_F(RealTimePolicyEngineTest,
+       TestHasPrefPermissionsToPerformFullURLLookup_EnhancedProtection) {
+  pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  EXPECT_TRUE(HasPrefPermissionsToPerformFullURLLookup());
+}
+
+TEST_F(
+    RealTimePolicyEngineTest,
+    TestHasPrefPermissionsToPerformFullURLLookup_DisabledEnhancedProtection) {
+  pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  EXPECT_FALSE(HasPrefPermissionsToPerformFullURLLookup());
 }
 
 TEST_F(

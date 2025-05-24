@@ -4,6 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {AppType} from './app_home.mojom-webui.js';
 import type {AppItemElement} from './app_item.js';
 
 export function getHtml(this: AppItemElement) {
@@ -17,7 +18,7 @@ export function getHtml(this: AppItemElement) {
         draggable="false">
     <img id="deprecatedIcon"
         src="chrome://resources/images/error_yellow900.svg"
-        ?hidden="${!this.appInfo.isDeprecatedApp}">
+        ?hidden="${this.appInfo.appType !== AppType.kDeprecatedChromeApp}">
   </div>
   <div id="textContainer"
       aria-hidden="true">${this.appInfo.name}</div>

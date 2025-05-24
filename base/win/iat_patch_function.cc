@@ -229,8 +229,9 @@ DWORD IATPatchFunction::Unpatch() {
   // patch. In this case its better to be hands off the intercept as
   // trying to unpatch again in the destructor of IATPatchFunction is
   // not going to be any safer
-  if (module_handle_)
+  if (module_handle_) {
     FreeLibrary(module_handle_);
+  }
   module_handle_ = nullptr;
   intercept_function_ = nullptr;
   original_function_ = nullptr;

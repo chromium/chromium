@@ -19,6 +19,12 @@ std::unique_ptr<views::Button> CreateAddonButton(
     views::Button::PressedCallback callback,
     const std::u16string& label);
 
+// Creates a button for the glanceables chip with given `callback` and
+// `button_icon`, e.g. the expand/collapse button of coral chip.
+std::unique_ptr<views::Button> CreateCoralAddonButton(
+    views::Button::PressedCallback callback,
+    const gfx::VectorIcon& button_icon);
+
 // Creates a weather temperature view which consists of two labels, one is for
 // the temperature degree and the other is for the degree unit (Fahrenheit v.s.
 // Celsius).

@@ -26,7 +26,7 @@ class WelcomeTourDialogPixelTest : public UserEducationAshTestBase {
                               features::kWelcomeTourForceUserEligibility},
         /*disabled_features=*/{});
     UserEducationAshTestBase::SetUp();
-    SimulateUserLogin("primary@test");
+    SimulateUserLogin({"primary@test"});
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -38,7 +38,7 @@ TEST_F(WelcomeTourDialogPixelTest, Appearance) {
   // Take a screenshot of the Welcome Tour dialog.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "welcome_tour_dialog",
-      /*revision_number=*/3, WelcomeTourDialog::Get()));
+      /*revision_number=*/4, WelcomeTourDialog::Get()));
 }
 
 }  // namespace ash

@@ -4,9 +4,12 @@
 
 package org.chromium.base.test.transit;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.concurrent.Callable;
 
 /** A {@link Condition} that is checked in the UI thread. */
+@NullMarked
 public abstract class UiThreadCondition extends Condition {
     public UiThreadCondition() {
         super(/* isRunOnUiThread= */ true);

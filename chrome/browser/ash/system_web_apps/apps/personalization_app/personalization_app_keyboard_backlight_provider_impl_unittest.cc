@@ -23,6 +23,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -32,7 +33,7 @@ namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 const AccountId account_id =
-    AccountId::FromUserEmailGaiaId(kFakeTestEmail, kFakeTestEmail);
+    AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId("1111"));
 
 class TestKeyboardBacklightObserver
     : public ash::personalization_app::mojom::KeyboardBacklightObserver {

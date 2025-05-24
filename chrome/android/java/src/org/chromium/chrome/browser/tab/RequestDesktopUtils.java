@@ -13,7 +13,6 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
@@ -23,6 +22,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
@@ -57,10 +58,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /** Utilities for requesting desktop sites support. */
+@NullMarked
 public class RequestDesktopUtils {
     private static final String SITE_WILDCARD = "*";
     // Global defaults experiment constants.
-    private static DisplayMetrics sDisplayMetrics;
+    private static @Nullable DisplayMetrics sDisplayMetrics;
 
     static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES = 10.0;
     static final int DEFAULT_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP = 600;
@@ -96,14 +98,13 @@ public class RequestDesktopUtils {
 
         if (tab == null || tab.isOffTheRecord() || tab.getWebContents() == null) return;
 
-        new UkmRecorder.Bridge()
-                .recordEventWithIntegerMetric(
-                        tab.getWebContents(),
-                        "Android.UserRequestedUserAgentChange",
+        new UkmRecorder(tab.getWebContents(), "Android.UserRequestedUserAgentChange")
+                .addMetric(
                         "UserAgentType",
                         isDesktop
                                 ? UserAgentRequestType.REQUEST_DESKTOP
-                                : UserAgentRequestType.REQUEST_MOBILE);
+                                : UserAgentRequestType.REQUEST_MOBILE)
+                .record();
     }
 
     /**
@@ -115,12 +116,11 @@ public class RequestDesktopUtils {
     public static void recordScreenOrientationChangedUkm(boolean isLandscape, @Nullable Tab tab) {
         if (tab == null || tab.isOffTheRecord() || tab.getWebContents() == null) return;
 
-        new UkmRecorder.Bridge()
-                .recordEventWithIntegerMetric(
-                        tab.getWebContents(),
-                        "Android.ScreenRotation",
+        new UkmRecorder(tab.getWebContents(), "Android.ScreenRotation")
+                .addMetric(
                         "TargetDeviceOrientation",
-                        isLandscape ? DeviceOrientation2.LANDSCAPE : DeviceOrientation2.PORTRAIT);
+                        isLandscape ? DeviceOrientation2.LANDSCAPE : DeviceOrientation2.PORTRAIT)
+                .record();
     }
 
     /**
@@ -294,7 +294,7 @@ public class RequestDesktopUtils {
         }
         PrefService prefService = UserPrefs.get(profile);
         if (prefService.isDefaultValuePreference(DESKTOP_SITE_WINDOW_SETTING_ENABLED)) {
-            prefService.setBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED, /* newValue= */ true);
+            prefService.setBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED, /* value= */ true);
         }
     }
 
@@ -331,7 +331,7 @@ public class RequestDesktopUtils {
         }
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        if (!tracker.shouldTriggerHelpUI(
+        if (!tracker.shouldTriggerHelpUi(
                 FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE)) {
             return false;
         }

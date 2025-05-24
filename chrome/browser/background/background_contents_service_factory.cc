@@ -6,7 +6,7 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/background/background_contents_service.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -42,7 +42,7 @@ BackgroundContentsServiceFactory::BackgroundContentsServiceFactory()
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
-  DependsOn(extensions::ExtensionSystemFactory::GetInstance());
+  DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
   DependsOn(extensions::ExtensionHostRegistry::GetFactory());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }

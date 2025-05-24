@@ -111,6 +111,7 @@ message StructuredEventProto {
       RepeatedInt64 value_repeated_int64 = 6;
     }
   }
+
   repeated Metric metrics = 3;
 
   // Type of this event, which determines which log source the event is saved
@@ -125,30 +126,40 @@ message StructuredEventProto {
     RAW_STRING = 2;
     SEQUENCE = 3;
   }
+
   optional EventType event_type = 4;
 
   // The project name hash is the first 8 bytes of the MD5 hash of the project
   // name that is defined in src/tools/metrics/structured/structured.xml.
   optional fixed64 project_name_hash = 5;
+
   // These enum values represent the type of user segment for the primary
   // user.
   enum PrimaryUserSegment {
     UNKNOWN_PRIMARY_USER_TYPE = 0;
+
     // Primary profile is for an unmanaged user.
     UNMANAGED = 1;
+
     // Primary profile is for a user belonging to a K-12 EDU organization.
     K12 = 2;
+
     // Primary profile is for a user belonging to an university EDU
     // organization.
     UNIVERSITY = 3;
+
     // Primary profile is for a user belonging to a non-profit organization.
     NON_PROFIT = 4;
+
     // Primary profile is for a user belonging to an enterprise organization.
     ENTERPRISE_ORGANIZATION = 5;
+
     // Primary profile is for a kiosk app.
     KIOS_APP = 6;
+
     // Primary profile is for a managed guest session.
     MANAGED_GUEST_SESSION = 7;
+
     // Primary profile is for a Demo Mode.
     DEMO_MODE = 8;
   }

@@ -37,7 +37,7 @@ InProcessVideoCaptureProvider::CreateInstanceForScreenCapture(
 
 void InProcessVideoCaptureProvider::GetDeviceInfosAsync(
     GetDeviceInfosCallback result_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<VideoCaptureDeviceLauncher>

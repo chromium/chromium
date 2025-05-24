@@ -8,12 +8,15 @@ import android.view.View;
 
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 
 /** Abstract class for controllers that use a BaseSiteSettingsFragment as subpage. */
+@NullMarked
 public abstract class PageInfoPreferenceSubpageController implements PageInfoSubpageController {
     private final PageInfoControllerDelegate mDelegate;
-    private BaseSiteSettingsFragment mSubPage;
+    private @Nullable BaseSiteSettingsFragment mSubPage;
 
     public PageInfoPreferenceSubpageController(PageInfoControllerDelegate delegate) {
         mDelegate = delegate;
@@ -27,7 +30,7 @@ public abstract class PageInfoPreferenceSubpageController implements PageInfoSub
      * @param fragment The fragment that should be added.
      * @return The view for the fragment or null if the fragment couldn't get added.
      */
-    protected View addSubpageFragment(BaseSiteSettingsFragment fragment) {
+    protected @Nullable View addSubpageFragment(BaseSiteSettingsFragment fragment) {
         assert mSubPage == null;
 
         FragmentManager fragmentManager = mDelegate.getFragmentManager();

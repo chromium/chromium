@@ -12,10 +12,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <sstream>
 
-#include "base/ranges/algorithm.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +26,7 @@ typedef StreamParser::TrackId TrackId;
 typedef StreamParser::BufferQueue BufferQueue;
 
 const int kEnd = -1;
-const uint8_t kFakeData[] = {0xFF};
+const std::array<const uint8_t, 1> kFakeData = {0xFF};
 const TrackId kAudioTrackId = 0;
 const TrackId kVideoTrackId = 1;
 
@@ -54,8 +54,7 @@ static void GenerateBuffers(const int* decode_timestamps,
   for (int i = 0; decode_timestamps[i] != kEnd; ++i) {
     scoped_refptr<StreamParserBuffer> buffer;
     if (i % 3 == 0) {
-      buffer = StreamParserBuffer::CopyFrom(kFakeData, sizeof(kFakeData), true,
-                                            type, track_id);
+      buffer = StreamParserBuffer::CopyFrom(kFakeData, true, type, track_id);
     } else if (i % 3 == 1) {
       buffer = StreamParserBuffer::FromArray(
           base::HeapArray<uint8_t>::CopiedFrom(kFakeData), true, type,
@@ -84,7 +83,7 @@ class StreamParserTest : public testing::Test {
   size_t CountMatchingMergedBuffers(
       bool (*predicate)(scoped_refptr<StreamParserBuffer> buffer)) {
     return static_cast<size_t>(
-        base::ranges::count_if(merged_buffers_, predicate));
+        std::ranges::count_if(merged_buffers_, predicate));
   }
 
   // Appends test audio buffers in the sequence described by |decode_timestamps|
@@ -127,7 +126,7 @@ class StreamParserTest : public testing::Test {
             results_stream << "V";
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         results_stream << buffer.track_id() << ":";
       }

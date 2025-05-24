@@ -11,12 +11,14 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/pending_task.h"
@@ -32,11 +34,8 @@ using testing::_;
 using testing::ElementsAre;
 using testing::NotNull;
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
 // To avoid symbol collisions in jumbo builds.
-namespace task_queue_selector_unittest {
+namespace base::sequence_manager::internal::task_queue_selector_unittest {
 
 namespace {
 const TaskQueue::QueuePriority kHighestPriority = 0;
@@ -89,7 +88,7 @@ class TaskQueueSelectorTest : public testing::Test {
         selector_(associated_thread_) {}
   ~TaskQueueSelectorTest() override = default;
 
-  void PushTasks(const size_t queue_indices[], size_t num_tasks) {
+  void PushTasks(base::span<const size_t> queue_indices, size_t num_tasks) {
     EnqueueOrderGenerator enqueue_order_generator;
     for (size_t i = 0; i < num_tasks; i++) {
       task_queues_[queue_indices[i]]->immediate_work_queue()->Push(
@@ -185,7 +184,7 @@ TEST_F(TaskQueueSelectorTest, TestPriorities) {
 }
 
 TEST_F(TaskQueueSelectorTest, TestMultiplePriorities) {
-  size_t reverse_priority_order[kPriorityCount];
+  std::array<size_t, kPriorityCount> reverse_priority_order;
   for (size_t priority = 0; priority < kPriorityCount; ++priority) {
     reverse_priority_order[(kPriorityCount - 1) - priority] = priority;
   }
@@ -332,7 +331,8 @@ class TaskQueueSelectorStarvationTest : public TaskQueueSelectorTest {
   TaskQueueSelectorStarvationTest() = default;
 
  protected:
-  void TestPriorityOrder(const size_t queue_order[], size_t num_tasks) {
+  void TestPriorityOrder(base::span<const size_t> queue_order,
+                         size_t num_tasks) {
     for (size_t i = 0; i < kTaskQueueCount; i++) {
       // Setting the queue priority to its current value causes a check to fail.
       if (task_queues_[i]->GetQueuePriority() !=
@@ -365,9 +365,10 @@ class TaskQueueSelectorStarvationTest : public TaskQueueSelectorTest {
 
 TEST_F(TaskQueueSelectorStarvationTest,
        HigherPriorityWorkStarvesLowerPriorityWork) {
-  size_t queue_order[kTaskQueueCount];
-  for (size_t i = 0; i < kTaskQueueCount; i++)
+  std::array<size_t, kTaskQueueCount> queue_order;
+  for (size_t i = 0; i < kTaskQueueCount; i++) {
     queue_order[i] = i;
+  }
   TestPriorityOrder(queue_order, kTaskQueueCount);
 }
 
@@ -375,9 +376,10 @@ TEST_F(TaskQueueSelectorStarvationTest,
        NewHigherPriorityTasksStarveOldLowerPriorityTasks) {
   // Enqueue tasks in order from lowest to highest priority, and check that they
   // still run in order from highest to lowest priority.
-  size_t queue_order[kTaskQueueCount];
-  for (size_t i = 0; i < kTaskQueueCount; i++)
+  std::array<size_t, kTaskQueueCount> queue_order;
+  for (size_t i = 0; i < kTaskQueueCount; i++) {
     queue_order[i] = (kTaskQueueCount - i) - 1;
+  }
   TestPriorityOrder(queue_order, kTaskQueueCount);
 }
 
@@ -680,7 +682,4 @@ TEST_F(ActivePriorityTrackerTest, HighestActivePriority) {
   EXPECT_FALSE(active_priority_tracker_.HasActivePriority());
 }
 
-}  // namespace task_queue_selector_unittest
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal::task_queue_selector_unittest

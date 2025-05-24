@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
 #include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
@@ -26,7 +27,7 @@ namespace {
 
 bool ContainsSectionResult(const std::vector<mojom::SearchResultPtr>& results,
                            mojom::Section section) {
-  return base::ranges::any_of(results, [section](const auto& result) {
+  return std::ranges::any_of(results, [section](const auto& result) {
     return result->type == mojom::SearchResultType::kSection &&
            section == result->id->get_section();
   });
@@ -34,7 +35,7 @@ bool ContainsSectionResult(const std::vector<mojom::SearchResultPtr>& results,
 
 bool ContainsSubpageResult(const std::vector<mojom::SearchResultPtr>& results,
                            mojom::Subpage subpage) {
-  return base::ranges::any_of(results, [subpage](const auto& result) {
+  return std::ranges::any_of(results, [subpage](const auto& result) {
     return result->type == mojom::SearchResultType::kSubpage &&
            subpage == result->id->get_subpage();
   });

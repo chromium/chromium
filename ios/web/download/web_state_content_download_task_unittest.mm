@@ -13,6 +13,7 @@
 
 namespace {
 const char kValidUrl[] = "https://foo.test";
+NSString* const kOriginatingHost = @"host.test";
 NSString* const kMethodGet = @"GET";
 const char kContentDisposition[] = "attachment; filename=file.test";
 const char kMimeType[] = "application/pdf";
@@ -28,7 +29,8 @@ class WebStateContentDownloadTaskTest : public PlatformTest {
 // Test successful download.
 TEST_F(WebStateContentDownloadTaskTest, TestDownloadContentSuccess) {
   web::WebStateContentDownloadTask task(
-      &web_state_, GURL(kValidUrl), kMethodGet, kContentDisposition,
+      &web_state_, GURL(kValidUrl), kOriginatingHost, kMethodGet,
+      kContentDisposition,
       /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString],
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
@@ -43,7 +45,8 @@ TEST_F(WebStateContentDownloadTaskTest, TestDownloadContentSuccess) {
 // Test Failing download.
 TEST_F(WebStateContentDownloadTaskTest, TestDownloadContentSuccessFail) {
   web::WebStateContentDownloadTask task(
-      &web_state_, GURL(kValidUrl), kMethodGet, kContentDisposition,
+      &web_state_, GURL(kValidUrl), kOriginatingHost, kMethodGet,
+      kContentDisposition,
       /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString],
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));

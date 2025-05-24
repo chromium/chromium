@@ -6,7 +6,6 @@
 #define ASH_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_
 
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/color_palette.h"
 
 namespace ash {
 

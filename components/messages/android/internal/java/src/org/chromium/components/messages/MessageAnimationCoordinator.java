@@ -10,10 +10,10 @@ import static org.chromium.components.messages.MessagesMetrics.recordThreeStacke
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageStateHandler.Position;
@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Coordinator for toggling animation when message is about to show or hide. */
+@NullMarked
 public class MessageAnimationCoordinator implements SwipeAnimationHandler {
     private static final String TAG = MessageQueueManager.TAG;
     // Animation start delay for the back message for MessageBannerMediator.ENTER_DURATION_MS amount
@@ -36,23 +37,20 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
      * mCurrentDisplayedMessage refers to the message which is currently visible on the screen
      * including situations in which the message is already dismissed and hide animation is running.
      */
-    @Nullable private MessageState mCurrentDisplayedMessage;
+    private @Nullable MessageState mCurrentDisplayedMessage;
 
-    @NonNull private List<MessageState> mCurrentDisplayedMessages = Arrays.asList(null, null);
-    private MessageState mLastShownMessage;
+    private List<MessageState> mCurrentDisplayedMessages = Arrays.asList(null, null);
     private MessageQueueDelegate mMessageQueueDelegate;
     private AnimatorSet mAnimatorSet = new AnimatorSet();
-    private Animator mFrontAnimator;
-    private Animator mBackAnimator;
+    private @Nullable Animator mFrontAnimator;
+    private @Nullable Animator mBackAnimator;
     private final MessageContainer mContainer;
     private final Callback<Animator> mAnimatorStartCallback;
-    private final boolean mAreExtraHistogramsEnabled;
 
     public MessageAnimationCoordinator(
             MessageContainer messageContainer, Callback<Animator> animatorStartCallback) {
         mContainer = messageContainer;
         mAnimatorStartCallback = animatorStartCallback;
-        mAreExtraHistogramsEnabled = MessageFeatureList.areExtraHistogramsEnabled();
     }
 
     // TODO(crbug.com/40762119): Compare current shown messages with last shown ones.
@@ -82,7 +80,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
      * @param onFinished Runnable triggered after animation is finished.
      */
     public void updateWithStacking(
-            @NonNull List<MessageState> candidates, boolean isSuspended, Runnable onFinished) {
+            List<MessageState> candidates, boolean isSuspended, Runnable onFinished) {
         if (mMessageQueueDelegate.isDestroyed()) return;
         // Wait until the current animation is done, unless we need to hide them immediately.
         if (mAnimatorSet.isStarted()) {
@@ -110,7 +108,9 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
             return;
         }
 
-        if (mAreExtraHistogramsEnabled && currentFront != nextFront && nextFront != null) {
+        if (MessageFeatureList.areExtraHistogramsEnabled()
+                && currentFront != nextFront
+                && nextFront != null) {
             MessagesMetrics.recordRequestToFullyShow(nextFront.handler.getMessageIdentifier());
         }
 
@@ -124,10 +124,6 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
             if (!mMessageQueueDelegate.isPendingShow()) {
                 mMessageQueueDelegate.onRequestShowing(onFinished);
             }
-            if (mAreExtraHistogramsEnabled && currentFront != nextFront && nextFront != null) {
-                MessagesMetrics.recordBlockedByBrowserControl(
-                        nextFront.handler.getMessageIdentifier());
-            }
             return;
         }
 
@@ -135,10 +131,6 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
         // message is still waiting its animation to be triggered. Early return to avoid cancelling
         // that animation accidentally. Second message will be added after its animation is done.
         if (mContainer.isIsInitializingLayout()) {
-            if (mAreExtraHistogramsEnabled && currentFront != nextFront && nextFront != null) {
-                MessagesMetrics.recordBlockedByContainerInitializing(
-                        nextFront.handler.getMessageIdentifier());
-            }
             return;
         }
 
@@ -254,8 +246,8 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
     private void triggerStackingAnimation(
             List<MessageState> candidates,
             Runnable onFinished,
-            Animator frontAnimator,
-            Animator backAnimator) {
+            @Nullable Animator frontAnimator,
+            @Nullable Animator backAnimator) {
         Runnable runnable =
                 () -> {
                     // While the runnable is waiting to be triggered, hiding animation might be
@@ -281,15 +273,12 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
         if (candidates.get(0) == null) {
             runnable.run();
         } else {
-            boolean initialized = mContainer.runAfterInitialMessageLayout(runnable);
-            if (mAreExtraHistogramsEnabled && !initialized) {
-                MessagesMetrics.recordBlockedByContainerNotInitialized(
-                        candidates.get(0).handler.getMessageIdentifier());
-            }
+            mContainer.runAfterInitialMessageLayout(runnable);
         }
     }
 
-    private boolean isAnimatorExpired(Animator frontAnimator, Animator backAnimator) {
+    private boolean isAnimatorExpired(
+            @Nullable Animator frontAnimator, @Nullable Animator backAnimator) {
         return mFrontAnimator != frontAnimator || mBackAnimator != backAnimator;
     }
 
@@ -316,28 +305,28 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
         mAnimatorStartCallback.onResult(animator);
     }
 
+    @Initializer
     void setMessageQueueDelegate(MessageQueueDelegate delegate) {
         mMessageQueueDelegate = delegate;
     }
 
-    @Nullable
-    MessageState getCurrentDisplayedMessage() {
+    @Nullable MessageState getCurrentDisplayedMessage() {
         return mCurrentDisplayedMessage;
     }
 
     // Return a list of two messages which should be displayed when stacking animation is enabled.
-    @NonNull
+
     List<MessageState> getCurrentDisplayedMessages() {
         return mCurrentDisplayedMessages;
     }
 
     private void recordAnimationAction(
-            @StackingAnimationAction int action, @NonNull MessageState messageState) {
+            @StackingAnimationAction int action, MessageState messageState) {
         MessagesMetrics.recordStackingAnimationAction(
                 action, messageState.handler.getMessageIdentifier());
     }
 
-    class MessageAnimationListener extends CancelAwareAnimatorListener {
+    static class MessageAnimationListener extends CancelAwareAnimatorListener {
         private final Runnable mOnFinished;
 
         public MessageAnimationListener(Runnable onFinished) {

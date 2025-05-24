@@ -45,9 +45,9 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
-  bool Initialize(const Config& config,
-                  VideoEncodeAccelerator::Client* client,
-                  std::unique_ptr<MediaLog> media_log) override;
+  EncoderStatus Initialize(const Config& config,
+                           VideoEncodeAccelerator::Client* client,
+                           std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(
@@ -92,9 +92,11 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   base::TimeDelta AssignMonotonicTimestamp(base::TimeDelta real_timestamp);
   base::TimeDelta RetrieveRealTimestamp(base::TimeDelta monotonic_timestamp);
 
-  bool ResetMediaCodec();
+  EncoderStatus ResetMediaCodec();
 
   void SetEncoderColorSpace();
+
+  void NotifyEncoderInfo();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -161,6 +163,8 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   // True if any frames have been sent to the encoder.
   bool have_encoded_frames_ = false;
+
+  media::VideoEncoderInfo encoder_info_;
 };
 
 }  // namespace media

@@ -7,9 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "base/check_deref.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
@@ -23,22 +24,19 @@ CreditCardCvcAuthenticator::CvcAuthenticationResponse::
     ~CvcAuthenticationResponse() = default;
 
 CreditCardCvcAuthenticator::CreditCardCvcAuthenticator(AutofillClient* client)
-    : client_(client) {}
+    : client_(CHECK_DEREF(client)) {}
 
 CreditCardCvcAuthenticator::~CreditCardCvcAuthenticator() = default;
 
 void CreditCardCvcAuthenticator::Authenticate(
     const CreditCard& card,
     base::WeakPtr<Requester> requester,
-    PersonalDataManager* personal_data_manager,
     std::optional<std::string> context_token,
     std::optional<CardUnmaskChallengeOption> selected_challenge_option) {
   requester_ = requester;
 
-  full_card_request_ = std::make_unique<payments::FullCardRequest>(
-      client_,
-      client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface(),
-      personal_data_manager);
+  full_card_request_ =
+      std::make_unique<payments::FullCardRequest>(&client_.get());
 
   CreditCard::RecordType card_record_type = card.record_type();
   autofill_metrics::LogCvcAuthAttempt(card_record_type);
@@ -69,14 +67,13 @@ void CreditCardCvcAuthenticator::Authenticate(
         card, payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
         weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
         last_committed_primary_main_frame_origin, *context_token,
-        *selected_challenge_option,
-        client_->GetLastCommittedPrimaryMainFrameOrigin());
+        *selected_challenge_option);
   }
 
   full_card_request_->GetFullCard(
       card, payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
       weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
-      client_->GetLastCommittedPrimaryMainFrameOrigin(), context_token);
+      context_token);
 }
 
 void CreditCardCvcAuthenticator::OnFullCardRequestSucceeded(
@@ -89,7 +86,7 @@ void CreditCardCvcAuthenticator::OnFullCardRequestSucceeded(
   if (!requester_)
     return;
 
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response =
+  payments::UnmaskResponseDetails response =
       full_card_request.unmask_response_details();
   requester_->OnCvcAuthenticationComplete(
       CvcAuthenticationResponse()
@@ -123,9 +120,7 @@ void CreditCardCvcAuthenticator::OnFullCardRequestFailed(
       event = autofill_metrics::CvcAuthEvent::kGenericError;
       break;
     case payments::FullCardRequest::FailureType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      event = autofill_metrics::CvcAuthEvent::kUnknown;
-      break;
+      NOTREACHED();
   }
   autofill_metrics::LogCvcAuthResult(card_type, event);
 
@@ -165,10 +160,8 @@ payments::FullCardRequest* CreditCardCvcAuthenticator::GetFullCardRequest() {
   // CreditCardAccessManager to retrieve cards from payments instead of calling
   // this function directly.
   if (!full_card_request_) {
-    full_card_request_ = std::make_unique<payments::FullCardRequest>(
-        client_,
-        client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface(),
-        client_->GetPersonalDataManager());
+    full_card_request_ =
+        std::make_unique<payments::FullCardRequest>(&client_.get());
   }
   return full_card_request_.get();
 }

@@ -17,25 +17,19 @@ namespace base::apple {
 namespace internal {
 
 struct BASE_EXPORT SendRightTraits {
-  static mach_port_t InvalidValue() {
-    return MACH_PORT_NULL;
-  }
+  static mach_port_t InvalidValue() { return MACH_PORT_NULL; }
 
   BASE_EXPORT static void Free(mach_port_t port);
 };
 
 struct BASE_EXPORT ReceiveRightTraits {
-  static mach_port_t InvalidValue() {
-    return MACH_PORT_NULL;
-  }
+  static mach_port_t InvalidValue() { return MACH_PORT_NULL; }
 
   BASE_EXPORT static void Free(mach_port_t port);
 };
 
 struct PortSetTraits {
-  static mach_port_t InvalidValue() {
-    return MACH_PORT_NULL;
-  }
+  static mach_port_t InvalidValue() { return MACH_PORT_NULL; }
 
   BASE_EXPORT static void Free(mach_port_t port);
 };

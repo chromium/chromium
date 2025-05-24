@@ -16,7 +16,6 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Router, routes} from '../router.js';
 
@@ -45,26 +44,9 @@ export class StorageAndPowerSettingsCardElement extends
         },
         readOnly: true,
       },
-
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              storage: 'os-settings:storage',
-              power: 'os-settings:power',
-            };
-          }
-          return {
-            storage: '',
-            power: '',
-          };
-        },
-      },
     };
   }
 
-  private rowIcons_: Record<string, string>;
   private shouldShowStorageRow_: boolean;
 
   constructor() {
@@ -79,13 +61,6 @@ export class StorageAndPowerSettingsCardElement extends
 
     this.addFocusConfig(routes.STORAGE, '#storageRow');
     this.addFocusConfig(routes.POWER, '#powerRow');
-  }
-
-  private getHeaderText_(): string {
-    // The `storageAndPowerTitle` string is only defined when the
-    // OsSettingsRevampWayfinding feature flag is enabled. Avoid using $i18n{}
-    // templating in HTML to avoid crashes when the feature is disabled.
-    return this.i18n('storageAndPowerTitle');
   }
 
   private showStorageSubpage_(): void {

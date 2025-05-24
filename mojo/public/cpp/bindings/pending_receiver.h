@@ -107,7 +107,11 @@ class PendingReceiver {
     MojoResult result =
         WriteMessageNew(state_.pipe.get(), message.TakeMojoMessage(),
                         MOJO_WRITE_MESSAGE_FLAG_NONE);
-    DCHECK_EQ(MOJO_RESULT_OK, result);
+    // Either the message was sent successfully or the message pipe has already
+    // been closed on the other end.
+    DCHECK(result == MOJO_RESULT_OK ||
+           result == MOJO_RESULT_FAILED_PRECONDITION)
+        << "result: " << result;
 
     reset();
   }

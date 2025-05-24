@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 
 namespace ash::traffic_counters {
 
@@ -27,7 +28,8 @@ namespace ash::traffic_counters {
 // February would be February 28th on non-leap years and February 29th on leap
 // years. Similarly, if the user specified day was 31, the actual day of reset
 // for April would be April 30th.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) TrafficCountersHandler {
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) TrafficCountersHandler
+    : public ash::NetworkStateHandlerObserver {
  public:
   // Sets the global instance and begins the work of the this class. Must be
   // called before any calls to Get().
@@ -53,6 +55,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TrafficCountersHandler {
   TrafficCountersHandler(const TrafficCountersHandler&) = delete;
   TrafficCountersHandler& operator=(const TrafficCountersHandler&) = delete;
 
+  // ash::NetworkStateHandlerObserver:
+  void ActiveNetworksChanged(
+      const std::vector<const ash::NetworkState*>& active_networks) override;
+
   // Requests traffic counters for |service_path|.
   void RequestTrafficCounters(const std::string& service_path,
                               RequestTrafficCountersCallback callback);
@@ -74,7 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TrafficCountersHandler {
 
  private:
   TrafficCountersHandler();
-  ~TrafficCountersHandler();
+  ~TrafficCountersHandler() override;
 
   // Runs a check to determine whether traffic counters must be reset and starts
   // a timer to do so periodically.

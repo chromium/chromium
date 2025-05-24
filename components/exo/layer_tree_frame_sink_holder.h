@@ -99,6 +99,8 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   void ClearPendingBeginFramesForTesting();
 
+  void DeleteFrameTimingHistory() { frame_timing_history_.reset(); }
+
  private:
   struct PendingBeginFrame {
     viz::BeginFrameAck begin_frame_ack;

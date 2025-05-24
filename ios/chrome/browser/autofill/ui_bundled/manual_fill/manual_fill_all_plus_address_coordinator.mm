@@ -44,7 +44,7 @@
       initWithSearchController:searchController];
   _plusAddressViewController.delegate = self;
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
@@ -57,10 +57,11 @@
   CHECK(plusAddressService);
 
   _plusAddressMediator = [[ManualFillPlusAddressMediator alloc]
-      initWithFaviconLoader:faviconLoader
-         plusAddressService:plusAddressService
-                        URL:URL
-             isOffTheRecord:profile->IsOffTheRecord()];
+        initWithFaviconLoader:faviconLoader
+           plusAddressService:plusAddressService
+                          URL:URL
+               isOffTheRecord:profile->IsOffTheRecord()
+      isAddressManualFallback:self.isAddressManualFallback];
 
   // Fetch all plus addresses before setting the consumer.
   [_plusAddressMediator fetchAllPlusAddresses];
@@ -122,11 +123,11 @@
 #pragma mark - PlusAddressListNavigator
 
 - (void)openCreatePlusAddressSheet {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
-- (void)openAllPlusAddressList {
-  NOTREACHED_NORETURN();
+- (void)openAllPlusAddressList:(BOOL)isAddressManualFallback {
+  NOTREACHED();
 }
 
 - (void)openManagePlusAddress {

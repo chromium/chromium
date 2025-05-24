@@ -91,7 +91,7 @@ public class LogcatExtractionRunnableTest {
     }
 
     // Responsible for verifying that the correct intent is fired after the logcat is extracted.
-    private class TestContext extends AdvancedMockContext {
+    private static class TestContext extends AdvancedMockContext {
         TestContext(Context realContext) {
             super(realContext);
         }

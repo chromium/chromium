@@ -26,9 +26,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ATTRIBUTE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ATTRIBUTE_H_
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+namespace blink {
+class Attribute;
+}
+
+namespace base {
+template <>
+inline constexpr bool kCanSafelyConvertToByteSpan<::blink::Attribute> =
+    kCanSafelyConvertToByteSpan<::blink::QualifiedName> &&
+    kCanSafelyConvertToByteSpan<::WTF::AtomicString>;
+}
 
 namespace blink {
 
@@ -81,9 +93,7 @@ class Attribute {
   Attribute();
 #endif
 
-  bool operator==(const Attribute& other) const {
-    return name_ == other.name_ && value_ == other.value_;
-  }
+  bool operator==(const Attribute& other) const = default;
 
  private:
   QualifiedName name_;
@@ -93,17 +103,16 @@ static_assert(sizeof(Attribute) == sizeof(QualifiedName) + sizeof(AtomicString),
               "AttributeHash() assumes Attribute has no padding");
 
 inline bool Attribute::Matches(const QualifiedName& qualified_name) const {
-  if (qualified_name.LocalName() != LocalName())
-    return false;
-  return qualified_name.Prefix() == g_star_atom ||
-         qualified_name.NamespaceURI() == NamespaceURI();
+  return (qualified_name.LocalName() == LocalName()) &&
+         (qualified_name.NamespaceURI() == NamespaceURI() ||
+          qualified_name.Prefix() == g_star_atom);
 }
 
 inline bool Attribute::MatchesCaseInsensitive(
     const QualifiedName& qualified_name) const {
   return qualified_name.LocalNameUpper() == name_.LocalNameUpper() &&
-         (qualified_name.Prefix() == g_star_atom ||
-          qualified_name.NamespaceURI() == NamespaceURI());
+         (qualified_name.NamespaceURI() == NamespaceURI() ||
+          qualified_name.Prefix() == g_star_atom);
 }
 
 }  // namespace blink

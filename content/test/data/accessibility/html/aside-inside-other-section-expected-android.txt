@@ -1,11 +1,11 @@
 android.webkit.WebView focusable focused
 ++android.view.View role_description='article'
 ++++android.view.View
-++++++android.widget.TextView name='Unnamed aside inside article.'
+++++++android.widget.TextView interesting name='Unnamed aside inside article.'
 ++++android.view.View role_description='complementary' name='aside'
-++++++android.widget.TextView name='Named aside inside article.'
+++++++android.widget.TextView interesting name='Named aside inside article.'
 ++android.view.View
 ++++android.view.View
-++++++android.widget.TextView name='Unnamed aside inside section.'
+++++++android.widget.TextView interesting name='Unnamed aside inside section.'
 ++++android.view.View role_description='complementary' name='aside'
-++++++android.widget.TextView name='Named aside inside section.'
+++++++android.widget.TextView interesting name='Named aside inside section.'

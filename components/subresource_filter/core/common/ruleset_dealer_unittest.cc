@@ -27,7 +27,7 @@ std::vector<uint8_t> ReadRulesetContents(const MemoryMappedRuleset* ruleset) {
 
 class SubresourceFilterRulesetDealerTest : public ::testing::Test {
  public:
-  SubresourceFilterRulesetDealerTest() {}
+  SubresourceFilterRulesetDealerTest() = default;
 
   SubresourceFilterRulesetDealerTest(
       const SubresourceFilterRulesetDealerTest&) = delete;

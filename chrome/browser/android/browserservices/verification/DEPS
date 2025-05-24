@@ -2,6 +2,7 @@ noparent = True
 
 include_rules = [
   "+base/android/java/src/org/chromium/base",
+  "+build/android",
   "+chrome/browser/android/browserservices/metrics",
   "+chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences",
   "+chrome/browser/profiles/android/java/src/org/chromium/chrome/browser/profiles",

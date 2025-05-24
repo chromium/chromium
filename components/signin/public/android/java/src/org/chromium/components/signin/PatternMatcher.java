@@ -4,6 +4,8 @@
 
 package org.chromium.components.signin;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,7 @@ import java.util.List;
  * Encapsulates simple wildcard pattern-matching.
  * See {@link PatternMatcher#PatternMatcher(String)} for the format description.
  */
+@NullMarked
 class PatternMatcher {
     /** Encapsulates information about illegal pattern. */
     public static class IllegalPatternException extends Exception {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "headless/public/headless_shell.h"
 
 #include <memory>
@@ -123,9 +128,7 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
 
   // Remove empty arguments sometimes left there by scripts to prevent weird
   // error messages.
-  args.erase(
-      std::remove(args.begin(), args.end(), base::CommandLine::StringType()),
-      args.end());
+  std::erase(args, base::CommandLine::StringType());
 
   // If no explicit URL is present assume about:blank unless we're being
   // driven by a debugger.

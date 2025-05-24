@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/* global AudioWorkletProcessor */
+/* global registerProcessor */
 /**
  * Processor that sends audio slice raw data to main thread via port.
  */

@@ -21,7 +21,7 @@
 #data
 <!DOCTYPE html><math><mi>
 #errors
-25: End of file in a foreign namespace context.
+(1,25) expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -33,8 +33,8 @@
 #data
 <!DOCTYPE html><math><annotation-xml><svg><u>
 #errors
-45: HTML start tag “u” in a foreign namespace context.
-45: End of file seen and there were open elements.
+(1,45) unexpected-html-element-in-foreign-content
+(1,45) expected-closing-tag-but-got-eof
 #document
 | <!DOCTYPE html>
 | <html>
@@ -48,8 +48,8 @@
 #data
 <!DOCTYPE html><body><select><math></math></select>
 #errors
-Line: 1 Col: 35 Unexpected start tag token (math) in the select phase. Ignored.
-Line: 1 Col: 42 Unexpected end tag (math) in the select phase. Ignored.
+(1,35) unexpected-start-tag-in-select
+(1,42) unexpected-end-tag-in-select
 #document
 | <!DOCTYPE html>
 | <html>
@@ -60,8 +60,8 @@ Line: 1 Col: 42 Unexpected end tag (math) in the select phase. Ignored.
 #data
 <!DOCTYPE html><body><select><option><math></math></option></select>
 #errors
-Line: 1 Col: 43 Unexpected start tag token (math) in the select phase. Ignored.
-Line: 1 Col: 50 Unexpected end tag (math) in the select phase. Ignored.
+(1,43) unexpected-start-tag-in-select
+(1,50) unexpected-end-tag-in-select
 #document
 | <!DOCTYPE html>
 | <html>
@@ -73,8 +73,7 @@ Line: 1 Col: 50 Unexpected end tag (math) in the select phase. Ignored.
 #data
 <!DOCTYPE html><body><table><math></math></table>
 #errors
-Line: 1 Col: 34 Unexpected start tag (math) in table context caused voodoo mode.
-Line: 1 Col: 41 Unexpected end tag (math) in table context caused voodoo mode.
+(1,34) unexpected-start-tag-implies-table-voodoo
 #document
 | <!DOCTYPE html>
 | <html>
@@ -86,9 +85,10 @@ Line: 1 Col: 41 Unexpected end tag (math) in table context caused voodoo mode.
 #data
 <!DOCTYPE html><body><table><math><mi>foo</mi></math></table>
 #errors
-Line: 1 Col: 34 Unexpected start tag (math) in table context caused voodoo mode.
-Line: 1 Col: 46 Unexpected end tag (mi) in table context caused voodoo mode.
-Line: 1 Col: 53 Unexpected end tag (math) in table context caused voodoo mode.
+(1,34) foster-parenting-start-token
+(1,39) foster-parenting-character
+(1,40) foster-parenting-character
+(1,41) foster-parenting-character
 #document
 | <!DOCTYPE html>
 | <html>
@@ -102,10 +102,13 @@ Line: 1 Col: 53 Unexpected end tag (math) in table context caused voodoo mode.
 #data
 <!DOCTYPE html><body><table><math><mi>foo</mi><mi>bar</mi></math></table>
 #errors
-Line: 1 Col: 34 Unexpected start tag (math) in table context caused voodoo mode.
-Line: 1 Col: 46 Unexpected end tag (mi) in table context caused voodoo mode.
-Line: 1 Col: 58 Unexpected end tag (mi) in table context caused voodoo mode.
-Line: 1 Col: 65 Unexpected end tag (math) in table context caused voodoo mode.
+(1,34) foster-parenting-start-tag
+(1,39) foster-parenting-character
+(1,40) foster-parenting-character
+(1,41) foster-parenting-character
+(1,51) foster-parenting-character
+(1,52) foster-parenting-character
+(1,53) foster-parenting-character
 #document
 | <!DOCTYPE html>
 | <html>
@@ -121,10 +124,13 @@ Line: 1 Col: 65 Unexpected end tag (math) in table context caused voodoo mode.
 #data
 <!DOCTYPE html><body><table><tbody><math><mi>foo</mi><mi>bar</mi></math></tbody></table>
 #errors
-Line: 1 Col: 41 Unexpected start tag (math) in table context caused voodoo mode.
-Line: 1 Col: 53 Unexpected end tag (mi) in table context caused voodoo mode.
-Line: 1 Col: 65 Unexpected end tag (mi) in table context caused voodoo mode.
-Line: 1 Col: 72 Unexpected end tag (math) in table context caused voodoo mode.
+(1,41) foster-parenting-start-tag
+(1,46) foster-parenting-character
+(1,47) foster-parenting-character
+(1,48) foster-parenting-character
+(1,58) foster-parenting-character
+(1,59) foster-parenting-character
+(1,60) foster-parenting-character
 #document
 | <!DOCTYPE html>
 | <html>
@@ -141,10 +147,13 @@ Line: 1 Col: 72 Unexpected end tag (math) in table context caused voodoo mode.
 #data
 <!DOCTYPE html><body><table><tbody><tr><math><mi>foo</mi><mi>bar</mi></math></tr></tbody></table>
 #errors
-Line: 1 Col: 45 Unexpected start tag (math) in table context caused voodoo mode.
-Line: 1 Col: 57 Unexpected end tag (mi) in table context caused voodoo mode.
-Line: 1 Col: 69 Unexpected end tag (mi) in table context caused voodoo mode.
-Line: 1 Col: 76 Unexpected end tag (math) in table context caused voodoo mode.
+(1,45) foster-parenting-start-tag
+(1,50) foster-parenting-character
+(1,51) foster-parenting-character
+(1,52) foster-parenting-character
+(1,62) foster-parenting-character
+(1,63) foster-parenting-character
+(1,64) foster-parenting-character
 #document
 | <!DOCTYPE html>
 | <html>
@@ -218,8 +227,7 @@ Line: 1 Col: 76 Unexpected end tag (math) in table context caused voodoo mode.
 #data
 <!DOCTYPE html><body><table><caption><math><mi>foo</mi><mi>bar</mi><p>baz</table><p>quux
 #errors
-Line: 1 Col: 70 HTML start tag "p" in a foreign namespace context.
-Line: 1 Col: 81 Unexpected end table tag in caption. Generates implied end caption.
+(1,70) unexpected-html-element-in-foreign-content
 #document
 | <!DOCTYPE html>
 | <html>
@@ -240,8 +248,8 @@ Line: 1 Col: 81 Unexpected end table tag in caption. Generates implied end capti
 #data
 <!DOCTYPE html><body><table><caption><math><mi>foo</mi><mi>bar</mi>baz</table><p>quux
 #errors
-Line: 1 Col: 78 Unexpected end table tag in caption. Generates implied end caption.
-Line: 1 Col: 78 Unexpected end tag (caption). Missing end tag (math).
+(1,78) unexpected-end-tag
+(1,78) expected-one-end-tag-but-got-another
 #document
 | <!DOCTYPE html>
 | <html>
@@ -261,11 +269,18 @@ Line: 1 Col: 78 Unexpected end tag (caption). Missing end tag (math).
 #data
 <!DOCTYPE html><body><table><colgroup><math><mi>foo</mi><mi>bar</mi><p>baz</table><p>quux
 #errors
-Line: 1 Col: 44 Unexpected start tag (math) in table context caused voodoo mode.
-Line: 1 Col: 56 Unexpected end tag (mi) in table context caused voodoo mode.
-Line: 1 Col: 68 Unexpected end tag (mi) in table context caused voodoo mode.
-Line: 1 Col: 71 HTML start tag "p" in a foreign namespace context.
-Line: 1 Col: 71 Unexpected start tag (p) in table context caused voodoo mode.
+(1,44) foster-parenting-start-tag
+(1,49) foster-parenting-character
+(1,50) foster-parenting-character
+(1,51) foster-parenting-character
+(1,61) foster-parenting-character
+(1,62) foster-parenting-character
+(1,63) foster-parenting-character
+(1,71) unexpected-html-element-in-foreign-content
+(1,71) foster-parenting-start-tag
+(1,63) foster-parenting-character
+(1,63) foster-parenting-character
+(1,63) foster-parenting-character
 #document
 | <!DOCTYPE html>
 | <html>
@@ -286,13 +301,13 @@ Line: 1 Col: 71 Unexpected start tag (p) in table context caused voodoo mode.
 #data
 <!DOCTYPE html><body><table><tr><td><select><math><mi>foo</mi><mi>bar</mi><p>baz</table><p>quux
 #errors
-Line: 1 Col: 50 Unexpected start tag token (math) in the select phase. Ignored.
-Line: 1 Col: 54 Unexpected start tag token (mi) in the select phase. Ignored.
-Line: 1 Col: 62 Unexpected end tag (mi) in the select phase. Ignored.
-Line: 1 Col: 66 Unexpected start tag token (mi) in the select phase. Ignored.
-Line: 1 Col: 74 Unexpected end tag (mi) in the select phase. Ignored.
-Line: 1 Col: 77 Unexpected start tag token (p) in the select phase. Ignored.
-Line: 1 Col: 88 Unexpected table element end tag (tables) in the select in table phase.
+(1,50) unexpected-start-tag-in-select
+(1,54) unexpected-start-tag-in-select
+(1,62) unexpected-end-tag-in-select
+(1,66) unexpected-start-tag-in-select
+(1,74) unexpected-end-tag-in-select
+(1,77) unexpected-start-tag-in-select
+(1,88) unexpected-table-element-end-tag-in-select-in-table
 #document
 | <!DOCTYPE html>
 | <html>
@@ -310,14 +325,14 @@ Line: 1 Col: 88 Unexpected table element end tag (tables) in the select in table
 #data
 <!DOCTYPE html><body><table><select><math><mi>foo</mi><mi>bar</mi><p>baz</table><p>quux
 #errors
-Line: 1 Col: 36 Unexpected start tag (select) in table context caused voodoo mode.
-Line: 1 Col: 42 Unexpected start tag token (math) in the select phase. Ignored.
-Line: 1 Col: 46 Unexpected start tag token (mi) in the select phase. Ignored.
-Line: 1 Col: 54 Unexpected end tag (mi) in the select phase. Ignored.
-Line: 1 Col: 58 Unexpected start tag token (mi) in the select phase. Ignored.
-Line: 1 Col: 66 Unexpected end tag (mi) in the select phase. Ignored.
-Line: 1 Col: 69 Unexpected start tag token (p) in the select phase. Ignored.
-Line: 1 Col: 80 Unexpected table element end tag (tables) in the select in table phase.
+(1,36) unexpected-start-tag-implies-table-voodoo
+(1,42) unexpected-start-tag-in-select
+(1,46) unexpected-start-tag-in-select
+(1,54) unexpected-end-tag-in-select
+(1,58) unexpected-start-tag-in-select
+(1,66) unexpected-end-tag-in-select
+(1,69) unexpected-start-tag-in-select
+(1,80) unexpected-table-element-end-tag-in-select-in-table
 #document
 | <!DOCTYPE html>
 | <html>
@@ -332,8 +347,8 @@ Line: 1 Col: 80 Unexpected table element end tag (tables) in the select in table
 #data
 <!DOCTYPE html><body></body></html><math><mi>foo</mi><mi>bar</mi><p>baz
 #errors
-Line: 1 Col: 41 Unexpected start tag (math).
-Line: 1 Col: 68 HTML start tag "p" in a foreign namespace context.
+(1,41) expected-eof-but-got-start-tag
+(1,68) unexpected-html-element-in-foreign-content
 #document
 | <!DOCTYPE html>
 | <html>
@@ -350,8 +365,8 @@ Line: 1 Col: 68 HTML start tag "p" in a foreign namespace context.
 #data
 <!DOCTYPE html><body></body><math><mi>foo</mi><mi>bar</mi><p>baz
 #errors
-Line: 1 Col: 34 Unexpected start tag token (math) in the after body phase.
-Line: 1 Col: 61 HTML start tag "p" in a foreign namespace context.
+(1,34) unexpected-start-tag-after-body
+(1,61) unexpected-html-element-in-foreign-content
 #document
 | <!DOCTYPE html>
 | <html>
@@ -368,14 +383,14 @@ Line: 1 Col: 61 HTML start tag "p" in a foreign namespace context.
 #data
 <!DOCTYPE html><frameset><math><mi></mi><mi></mi><p><span>
 #errors
-Line: 1 Col: 31 Unexpected start tag token (math) in the frameset phase. Ignored.
-Line: 1 Col: 35 Unexpected start tag token (mi) in the frameset phase. Ignored.
-Line: 1 Col: 40 Unexpected end tag token (mi) in the frameset phase. Ignored.
-Line: 1 Col: 44 Unexpected start tag token (mi) in the frameset phase. Ignored.
-Line: 1 Col: 49 Unexpected end tag token (mi) in the frameset phase. Ignored.
-Line: 1 Col: 52 Unexpected start tag token (p) in the frameset phase. Ignored.
-Line: 1 Col: 58 Unexpected start tag token (span) in the frameset phase. Ignored.
-Line: 1 Col: 58 Expected closing tag. Unexpected end of file.
+(1,31) unexpected-start-tag-in-frameset
+(1,35) unexpected-start-tag-in-frameset
+(1,40) unexpected-end-tag-in-frameset
+(1,44) unexpected-start-tag-in-frameset
+(1,49) unexpected-end-tag-in-frameset
+(1,52) unexpected-start-tag-in-frameset
+(1,58) unexpected-start-tag-in-frameset
+(1,58) eof-in-frameset
 #document
 | <!DOCTYPE html>
 | <html>
@@ -385,13 +400,13 @@ Line: 1 Col: 58 Expected closing tag. Unexpected end of file.
 #data
 <!DOCTYPE html><frameset></frameset><math><mi></mi><mi></mi><p><span>
 #errors
-Line: 1 Col: 42 Unexpected start tag (math) in the after frameset phase. Ignored.
-Line: 1 Col: 46 Unexpected start tag (mi) in the after frameset phase. Ignored.
-Line: 1 Col: 51 Unexpected end tag (mi) in the after frameset phase. Ignored.
-Line: 1 Col: 55 Unexpected start tag (mi) in the after frameset phase. Ignored.
-Line: 1 Col: 60 Unexpected end tag (mi) in the after frameset phase. Ignored.
-Line: 1 Col: 63 Unexpected start tag (p) in the after frameset phase. Ignored.
-Line: 1 Col: 69 Unexpected start tag (span) in the after frameset phase. Ignored.
+(1,42) unexpected-start-tag-after-frameset
+(1,46) unexpected-start-tag-after-frameset
+(1,51) unexpected-end-tag-after-frameset
+(1,55) unexpected-start-tag-after-frameset
+(1,60) unexpected-end-tag-after-frameset
+(1,63) unexpected-start-tag-after-frameset
+(1,69) unexpected-start-tag-after-frameset
 #document
 | <!DOCTYPE html>
 | <html>

@@ -104,7 +104,7 @@ class PasswordAuthView : public FactorAuthView,
   // AuthTextfield::Delegate:
   void OnTextfieldBlur() override;
   void OnTextfieldFocus() override;
-  void OnContentsChanged(const std::u16string& new_contents) override;
+  void OnContentsChanged(std::u16string_view new_contents) override;
 
   raw_ptr<AuthPanelEventDispatcher, DanglingUntriaged> dispatcher_ = nullptr;
 

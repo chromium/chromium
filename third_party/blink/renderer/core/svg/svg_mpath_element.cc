@@ -91,7 +91,6 @@ void SVGMPathElement::RemovedFrom(ContainerNode& root_parent) {
 void SVGMPathElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   if (SVGURIReference::IsKnownAttribute(params.name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     BuildPendingResource();
     return;
   }

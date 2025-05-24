@@ -37,9 +37,20 @@ enum URLVisitAggregateRankingModelInputSignals {
   kDismissedCountLast30Days = 22,
   kSameTimeGroupVisitCount = 23,
   kSameDayGroupVisitCount = 24,
+  kTabRecentForegroundCount = 25,
+  kIsTabOpenedByUser = 26,
+  kAndroidTabLaunchType = 27,
+  kAndroidTabLaunchPackageName = 28,
+  kTabParentId = 29,
+  kTimeSinceTabCreationSec = 30,
+  kTabGroupSyncId = 31,
+  kTabId = 32,
+  kTabUrlOriginHash = 33,
+  kTabUkmSourceId = 34,
+  kIsTabSelected = 35,
+  kTabIndex = 36,
+  kIsLastTab = 37,
 };
-
-static constexpr size_t kNumInputs = 25;
 
 // Represents a field's metadata and is leveraged for the processing and
 // serialization of `URLVisitAggregate` fields participating in ML models.
@@ -52,7 +63,17 @@ struct FieldSchema {
 
 // A collection of relevant fields present in the `URLVisitAggregate` to be
 // leveraged for ML use cases.
-extern const std::array<FieldSchema, kNumInputs> kURLVisitAggregateSchema;
+static constexpr size_t kTabResumptionNumInputs = 25;
+extern const std::array<FieldSchema, kTabResumptionNumInputs>
+    kURLVisitAggregateSchema;
+
+// Collection of relevant fields for URL grouping computation.
+static constexpr size_t kSuggestionsNumInputs = 15;
+extern const std::array<FieldSchema, kSuggestionsNumInputs>
+    kSuggestionsPredictionSchema;
+
+// Helper function to get the name of the input signal.
+const char* GetNameForInput(URLVisitAggregateRankingModelInputSignals signal);
 
 }  // namespace visited_url_ranking
 

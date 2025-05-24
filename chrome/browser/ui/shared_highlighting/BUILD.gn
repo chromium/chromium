@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("shared_highlighting") {
+  sources = [
+    "shared_highlighting_promo.cc",
+    "shared_highlighting_promo.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/user_education",
+    "//components/feature_engagement/public:feature_constants",
+    "//services/service_manager/public/cpp",
+  ]
+}

@@ -8,7 +8,6 @@ goog.module('goog.fx.DragListGroupTest');
 goog.setTestOnly();
 
 const BrowserEvent = goog.require('goog.events.BrowserEvent');
-const BrowserFeature = goog.require('goog.events.BrowserFeature');
 const Coordinate = goog.require('goog.math.Coordinate');
 const DragListDirection = goog.require('goog.fx.DragListDirection');
 const DragListGroup = goog.require('goog.fx.DragListGroup');
@@ -339,7 +338,7 @@ testSuite({
     /** @suppress {checkTypes} suppression added to enable type checking */
     const be = new BrowserEvent({
       type: EventType.MOUSEDOWN,
-      button: BrowserFeature.HAS_W3C_BUTTON ? 0 : 1,
+      button: 0,
     });
     /**
      * @suppress {visibility,checkTypes} suppression added to enable type
@@ -373,7 +372,7 @@ testSuite({
     /** @suppress {checkTypes} suppression added to enable type checking */
     const be = new BrowserEvent({
       type: EventType.MOUSEDOWN,
-      button: BrowserFeature.HAS_W3C_BUTTON ? 0 : 1,
+      button: 0,
     });
     /**
      * @suppress {visibility,checkTypes} suppression added to enable type
@@ -626,7 +625,7 @@ testSuite({
     /** @suppress {checkTypes} suppression added to enable type checking */
     const be = new BrowserEvent({
       type: EventType.MOUSEMOVE,
-      button: BrowserFeature.HAS_W3C_BUTTON ? 0 : 1,
+      button: 0,
     });
     /**
      * @suppress {visibility,checkTypes} suppression added to enable type
@@ -719,7 +718,7 @@ testSuite({
     /** @suppress {checkTypes} suppression added to enable type checking */
     const be = new BrowserEvent({
       type: EventType.MOUSEMOVE,
-      button: BrowserFeature.HAS_W3C_BUTTON ? 0 : 1,
+      button: 0,
     });
     /**
      * @suppress {visibility,checkTypes} suppression added to enable type

@@ -10,12 +10,14 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './buying_options_section.css.js';
 import {getHtml} from './buying_options_section.html.js';
 
-export interface BuyingOptionsLink {
+export interface BuyingOptions {
+  price: string;
   jackpotUrl: string;
 }
 
 export interface BuyingOptionsSectionElement {
   $: {
+    price: HTMLElement,
     link: HTMLElement,
   };
 }
@@ -35,14 +37,18 @@ export class BuyingOptionsSectionElement extends CrLitElement {
 
   static override get properties() {
     return {
+      price: {type: String},
       jackpotUrl: {type: String},
     };
   }
 
-  jackpotUrl: string = '';
+  accessor price: string = '';
+  accessor jackpotUrl: string = '';
 
   protected openJackpotUrl_() {
     OpenWindowProxyImpl.getInstance().openUrl(this.jackpotUrl);
+    chrome.metricsPrivate.recordUserAction(
+        'Commerce.Compare.BuyingOptionsClicked');
   }
 }
 

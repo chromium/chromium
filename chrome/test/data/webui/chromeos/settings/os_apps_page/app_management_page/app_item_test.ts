@@ -4,9 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementAppItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {AppManagementAppItemElement} from 'chrome://os-settings/lazy_load.js';
 import {Router} from 'chrome://os-settings/os_settings.js';
-import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

@@ -11,3 +11,7 @@
   display: block;
   position: relative;
 }
+
+:host([using-default-scroll-target]) {
+  overflow-y: auto;
+}

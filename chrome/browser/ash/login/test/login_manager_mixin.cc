@@ -36,6 +36,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -49,7 +50,7 @@ constexpr char kManagedDomain[] = "@example.com";
 
 AccountId CreateAccountId(int id, const std::string& domain) {
   const std::string email = "test_user_" + base::NumberToString(id) + domain;
-  const std::string gaia_id = base::NumberToString(id) + "111111111";
+  const GaiaId gaia_id(base::NumberToString(id) + "111111111");
   return AccountId::FromUserEmailGaiaId(email, gaia_id);
 }
 
@@ -299,8 +300,9 @@ void LoginManagerMixin::LoginAsNewRegularUser(
   test::WaitForOobeJSReady();
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
   if (!user_context.has_value()) {
-    user_context = CreateDefaultUserContext(TestUserInfo(
-        AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)));
+    user_context =
+        CreateDefaultUserContext(TestUserInfo(AccountId::FromUserEmailGaiaId(
+            test::kTestEmail, GaiaId(test::kTestGaiaId))));
   }
 
   test::ProfilePreparedWaiter profile_prepared(user_context->GetAccountId());
@@ -315,9 +317,10 @@ void LoginManagerMixin::LoginAsNewEnterpriseUser() {
   test::WaitForOobeJSReady();
 
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
-  UserContext user_context = CreateDefaultUserContext(TestUserInfo(
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId)));
+  UserContext user_context =
+      CreateDefaultUserContext(TestUserInfo(AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kEnterpriseUser1,
+          GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId))));
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
 
   test::ProfilePreparedWaiter profile_prepared(user_context.GetAccountId());
@@ -332,7 +335,8 @@ void LoginManagerMixin::LoginAsNewChildUser() {
   test::WaitForOobeJSReady();
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
   TestUserInfo test_child_user_(
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),
+      AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                     GaiaId(test::kTestGaiaId)),
       test::kDefaultAuthSetup, user_manager::UserType::kChild);
   UserContext user_context = CreateDefaultUserContext(test_child_user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);

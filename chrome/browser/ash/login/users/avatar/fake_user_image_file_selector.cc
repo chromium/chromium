@@ -9,7 +9,7 @@ namespace ash {
 FakeUserImageFileSelector::FakeUserImageFileSelector(content::WebUI* web_ui)
     : UserImageFileSelector(web_ui) {}
 
-FakeUserImageFileSelector::~FakeUserImageFileSelector() {}
+FakeUserImageFileSelector::~FakeUserImageFileSelector() = default;
 
 void FakeUserImageFileSelector::SelectFile(
     base::OnceCallback<void(const base::FilePath&)> selected_cb,

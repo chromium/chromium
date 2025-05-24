@@ -113,16 +113,11 @@ void DiskCacheTestWithCache::SetTestMode() {
   cache_impl_->SetUnitTestMode();
 }
 
-void DiskCacheTestWithCache::SetMaxSize(int64_t size, bool should_succeed) {
+void DiskCacheTestWithCache::SetMaxSize(int64_t size) {
   size_ = size;
-  if (simple_cache_impl_)
-    EXPECT_EQ(should_succeed, simple_cache_impl_->SetMaxSize(size));
-
-  if (cache_impl_)
-    EXPECT_EQ(should_succeed, cache_impl_->SetMaxSize(size));
-
-  if (mem_cache_)
-    EXPECT_EQ(should_succeed, mem_cache_->SetMaxSize(size));
+  // Cache size should not generally be changed dynamically; it takes
+  // backend-specific knowledge to make it even semi-reasonable to do.
+  DCHECK(!cache_);
 }
 
 disk_cache::EntryResult DiskCacheTestWithCache::OpenOrCreateEntry(
@@ -362,15 +357,11 @@ void DiskCacheTestWithCache::ResetCaches() {
 }
 
 void DiskCacheTestWithCache::InitMemoryCache() {
-  auto cache = std::make_unique<disk_cache::MemBackendImpl>(nullptr);
+  auto cache =
+      disk_cache::MemBackendImpl::CreateBackend(size_, /*net_log=*/nullptr);
   mem_cache_ = cache.get();
   cache_ = std::move(cache);
   ASSERT_TRUE(cache_);
-
-  if (size_)
-    EXPECT_TRUE(mem_cache_->SetMaxSize(size_));
-
-  ASSERT_TRUE(mem_cache_->Init());
 }
 
 void DiskCacheTestWithCache::InitDiskCache() {
@@ -417,9 +408,10 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
 
   std::unique_ptr<disk_cache::BackendImpl> cache;
   if (mask_) {
-    cache = std::make_unique<disk_cache::BackendImpl>(cache_path_, mask_,
-                                                      runner, type_,
-                                                      /* net_log = */ nullptr);
+    cache = std::make_unique<disk_cache::BackendImpl>(
+        cache_path_, mask_,
+        /* cleanup_tracker = */ nullptr, runner, type_,
+        /* net_log = */ nullptr);
   } else {
     cache = std::make_unique<disk_cache::BackendImpl>(
         cache_path_, /* cleanup_tracker = */ nullptr, runner, type_,

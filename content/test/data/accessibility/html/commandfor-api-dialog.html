@@ -1,0 +1,54 @@
+<!--
+@MAC-ALLOW:AXExpanded
+@WIN-ALLOW:details-roles*
+@WIN-ALLOW:EXPANDED*
+@WIN-ALLOW:HASPOPUP*
+@WIN-ALLOW:haspopup*
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:expanded*
+@AURALINUX-ALLOW:details-roles*
+@AURALINUX-ALLOW:expanded*
+@AURALINUX-ALLOW:haspopup:*
+-->
+
+<!-- Closed dialog -->
+<button commandfor="d1" command="show-modal">d1 button - outside - show-modal</button>
+<button commandfor="d1" command="show-popover">d1 button - outside - unrelated action</button>
+<button commandfor="d1" command="--frobulate">d1 button - outside - custom action</button>
+<button commandfor="d1" command="close">d1 button - outside - close</button>
+<dialog id="d1">
+  <button commandfor="d1" command="show-modal">d1 button - inside - show-modal</button>
+  <button commandfor="d1" command="close">d1 button - inside - close</button>
+  <button commandfor="d1" command="toggle-popover">Button inside popover, with unrelated action</button>
+  <button commandfor="d1" command="--frobulate">d1 button - inside - custom action</button>
+</dialog>
+
+<!-- Opened dialog -->
+<button commandfor="d2" command="show-modal">d2 button - outside - show-modal</button>
+<button commandfor="d2" command="show-popover">d2 button - outside - unrelated action</button>
+<button commandfor="d2" command="--frobulate">d2 button - outside - custom action</button>
+<button commandfor="d2" command="close">d2 button - outside - close</button>
+<dialog id="d2" open>
+  <button commandfor="d2" command="show-modal">d2 button - inside - show-modal</button>
+  <button commandfor="d2" command="close">d2 button - inside - close</button>
+  <button commandfor="d2" command="toggle-popover">Button inside popover, with unrelated action</button>
+  <button commandfor="d2" command="--frobulate">d2 button - inside - custom action</button>
+</dialog>
+
+<!-- Closed dialog as modal -->
+<button commandfor="d3" command="show-modal">d3 button - outside - show-modal</button>
+<button commandfor="d3" command="show-popover">d3 button - outside - unrelated action</button>
+<button commandfor="d3" command="--frobulate">d3 button - outside - custom action</button>
+<button commandfor="d3" command="close">d3 button - outside - close</button>
+<dialog id="d3" popover="manual">
+  <button commandfor="d3" command="show-modal">d3 button - inside - show-modal</button>
+  <button commandfor="d3" command="close">d3 button - inside - close</button>
+  <button commandfor="d3" command="toggle-popover">Button inside popover, with unrelated action</button>
+  <button commandfor="d3" command="--frobulate">d3 button - inside - custom action</button>
+</dialog>
+
+<!-- Non-existent dialog -->
+<button commandfor="d3" command="show-modal">d3 button - outside - show-modal</button>
+<button commandfor="d3" command="show-popover">d3 button - outside - unrelated action</button>
+<button commandfor="d3" command="--frobulate">d3 button - outside - custom action</button>
+<button commandfor="d3" command="close">d3 button - outside - close</button>

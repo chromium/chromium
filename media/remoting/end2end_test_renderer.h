@@ -46,13 +46,9 @@ class End2EndTestRenderer final : public Renderer {
   base::TimeDelta GetMediaTime() override;
   RendererType GetRendererType() override;
 
-  void OnSelectedVideoTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) override;
-
-  void OnEnabledAudioTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       std::vector<DemuxerStream*> enabled_tracks,
+                       base::OnceClosure change_completed_cb) override;
 
  private:
   class TestRemotee;

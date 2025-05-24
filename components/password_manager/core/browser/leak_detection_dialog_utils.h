@@ -13,7 +13,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -27,6 +26,8 @@ enum CredentialLeakFlags {
   // Password is synced to a remote store (either syncing profile store or
   // account store).
   kPasswordSynced = 1 << 2,
+  // Password change url is available for this site.
+  kHasChangePasswordUrl = 1 << 3,
 };
 
 enum class PasswordCheckupReferrer {
@@ -39,13 +40,42 @@ enum class PasswordCheckupReferrer {
 // Contains combination of CredentialLeakFlags values.
 using CredentialLeakType = std::underlying_type_t<CredentialLeakFlags>;
 
+// Structure to combine all the information required to display a warning about
+// a leaked password.
+struct LeakedPasswordDetails {
+  LeakedPasswordDetails(CredentialLeakType leak_type,
+                        GURL origin,
+                        std::u16string username,
+                        std::u16string password,
+                        bool in_account_store);
+
+  LeakedPasswordDetails(const LeakedPasswordDetails&);
+  LeakedPasswordDetails(LeakedPasswordDetails&& other);
+  ~LeakedPasswordDetails();
+
+  LeakedPasswordDetails& operator=(const LeakedPasswordDetails&);
+  LeakedPasswordDetails& operator=(LeakedPasswordDetails&& other);
+
+  bool operator==(const LeakedPasswordDetails& other) const;
+
+  CredentialLeakType leak_type;
+  GURL origin;
+  std::u16string username;
+  std::u16string password;
+  bool in_account_store;
+};
+
 using IsSaved = base::StrongAlias<class IsSavedTag, bool>;
 using IsReused = base::StrongAlias<class IsReusedTag, bool>;
 using IsSyncing = base::StrongAlias<class IsSyncingTag, bool>;
+using HasChangePasswordUrl =
+    base::StrongAlias<class HasChangePasswordUrlTag, bool>;
 // Creates CredentialLeakType from strong booleans.
-CredentialLeakType CreateLeakType(IsSaved is_saved,
-                                  IsReused is_reused,
-                                  IsSyncing is_syncing);
+CredentialLeakType CreateLeakType(
+    IsSaved is_saved,
+    IsReused is_reused,
+    IsSyncing is_syncing,
+    HasChangePasswordUrl has_change_password = HasChangePasswordUrl(false));
 
 // Checks whether the password is saved in Chrome.
 bool IsPasswordSaved(CredentialLeakType leak_type);
@@ -56,26 +86,14 @@ bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type);
 // Checks whether the password is synced to a remote store (profile or account).
 bool IsPasswordSynced(CredentialLeakType leak_type);
 
-// Returns the label for the leak dialog accept button.
-std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type);
-
-// Returns the label for the leak dialog cancel button.
-std::u16string GetCancelButtonLabel(CredentialLeakType leak_type);
-
-// Returns the leak dialog message based on leak type.
-std::u16string GetDescription(CredentialLeakType leak_type);
-
-// Returns the leak dialog title based on leak type.
-std::u16string GetTitle(CredentialLeakType leak_type);
+// Checks whether the password change is supported.
+bool IsPasswordChangeSupported(CredentialLeakType leak_type);
 
 // Returns the leak dialog tooltip shown on (?) click.
 std::u16string GetLeakDetectionTooltip();
 
 // Checks whether the leak dialog should prompt user to password checkup.
 bool ShouldCheckPasswords(CredentialLeakType leak_type);
-
-// Checks whether the leak dialog should show cancel button.
-bool ShouldShowCancelButton(CredentialLeakType leak_type);
 
 // Returns the LeakDialogType corresponding to |leak_type|.
 metrics_util::LeakDialogType GetLeakDialogType(CredentialLeakType leak_type);

@@ -14,9 +14,11 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/shortcuts/shortcut_integration_interaction_test_base.h"
+#include "chrome/grit/branded_strings.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
@@ -191,15 +193,18 @@ class ShortcutIntegrationMultiProfileInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
                        CreatedForCorrectProfile) {
+  const std::u16string shortcut_title_1 =
+      u"Page with icon links (" +
+      // "Your Chrome"
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME) +
+      u")";
+  const std::u16string shortcut_title_2 = u"Page without icons (Person 1)";
   RunTestSequence(
       CreateShortcuts(),
-
-      CheckShortcut(kProfile1ShortcutId,
-                    IsShortcutWithTitle(u"Page with icon links (Person 1)")),
+      CheckShortcut(kProfile1ShortcutId, IsShortcutWithTitle(shortcut_title_1)),
       CheckShortcut(kProfile1ShortcutId,
                     IsShortcutForProfile(profile1()->GetPath())),
-      CheckShortcut(kProfile2ShortcutId,
-                    IsShortcutWithTitle(u"Page without icons (Person 2)")),
+      CheckShortcut(kProfile2ShortcutId, IsShortcutWithTitle(shortcut_title_2)),
       CheckShortcut(kProfile2ShortcutId,
                     IsShortcutForProfile(profile2()->GetPath())));
 }

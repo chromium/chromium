@@ -86,7 +86,7 @@ bool IdTargetObserverRegistry::HasObservers(const AtomicString& id) const {
   if (id.empty() || registry_.empty())
     return false;
   auto it = registry_.find(id.Impl());
-  return it != registry_.end() ? !it->value->empty() : false;
+  return it != registry_.end() && !it->value->empty();
 }
 
 }  // namespace blink

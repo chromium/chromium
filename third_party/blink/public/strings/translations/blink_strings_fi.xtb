@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normaali</translation>
 <translation id="1591562245178063882">Tässä kuussa</translation>
 <translation id="1637811476055996098">Valitse tiedostot</translation>
-<translation id="1680090928918677457">Käytä kameraa</translation>
 <translation id="1729654308190250600">Kirjoita ei-tyhjä sähköpostiosoite.</translation>
 <translation id="1758486001363313524">Muu...</translation>
 <translation id="1921819250265091946">pp</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Lyhennä tämä teksti alle <ph name="MAX_CHARACTERS" /> merkkiin (tällä hetkellä käytössä <ph name="CURRENT_LENGTH" /> merkkiä).</translation>
 <translation id="2247351761944213033">Viikko <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Kappale <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Kamera ja mikrofoni sallittu</translation>
 <translation id="2507943997699731163">Täytä tämä kenttä.</translation>
 <translation id="2613802280814924224">Syötä kelvollinen arvo. Lähin kelvollinen arvo on <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Lähetä</translation>
@@ -39,15 +37,12 @@
 <translation id="3822383571486410024">Pidennä tämä teksti yli <ph name="MIN_CHARACTERS" /> merkkiin (tällä hetkellä käytössä <ph name="CURRENT_LENGTH" /> merkkiä).</translation>
 <translation id="383465348367842624"><ph name="ATSIGN" />-osaa ennen tulevassa osassa ei pitäisi olla merkkiä <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="3846214748874656680">Sulje koko näytön tila.</translation>
-<translation id="4031179711345676612">Mikrofoni sallittu</translation>
 <translation id="4360991593054037559">Syötä kelvollinen arvo. Kaksi lähintä kelvollista arvoa ovat <ph name="VALID_VALUE_LOW" /> ja <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Tiedot</translation>
-<translation id="4663373278480897665">Kamera sallittu</translation>
 <translation id="4664250907885839816"><ph name="ATSIGN" />-osan jälkeen tulevassa osassa ei pitäisi olla merkkiä <ph name="INVALIDCHARACTER" />.</translation>
+<translation id="4703271465972936359">Ääniraidat</translation>
 <translation id="4718048029184481307">Toistetaan kuva kuvassa ‑tilassa</translation>
-<translation id="4792862212177489858">Jaa sijainti</translation>
 <translation id="4812940957355064477">Anna numero.</translation>
-<translation id="49269513399674318">Käytä mikrofonia</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> valittu</translation>
 <translation id="4992066212339426712">Poista mykistys</translation>
 <translation id="49969490063480558">Kirjoita loppuun asti osoite, joka alkaa <ph name="ATSIGN" />. <ph name="INVALIDADDRESS" /> on vielä kesken.</translation>
@@ -63,6 +58,7 @@
 <translation id="5537725057119320332">Suoratoista</translation>
 <translation id="5630795885300617244">Ohita 10 sekuntia kaksoisnapauttamalla vasemmalle tai oikealle.</translation>
 <translation id="57838592816432529">Mykistä</translation>
+<translation id="5868587040512539609">Videoraidat</translation>
 <translation id="588258955323874662">Koko näyttö</translation>
 <translation id="5888666972993069672">Katsotaan TV:stä <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
@@ -72,6 +68,7 @@
 <translation id="6484738902856791350">Kaunista koodia</translation>
 <translation id="6550675742724504774">Asetukset</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
+<translation id="6661136971638885481">Raita nro <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Joku muu profiili...</translation>
 <translation id="6709093583001123835">Arvon on oltava <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Heikko toiston laatu</translation>
@@ -79,9 +76,7 @@
 <translation id="6820355525329141109">Laajennuksen lataaminen epäonnistui.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Pidennä tämä teksti vähintään <ph name="MIN_CHARACTERS" /> merkkiin (tällä hetkellä käytössä 1 merkki).</translation>
-<translation id="7080893216867146095">Sijainnin jakaminen sallittu</translation>
 <translation id="709897737746224366">Käytä pyydettyä muotoilua.</translation>
-<translation id="7134810312945846184">Käytä mikrofonia ja kameraa</translation>
 <translation id="7263440858009898357">Valitse kohde luettelosta.</translation>
 <translation id="7364796246159120393">Valitse tiedosto</translation>
 <translation id="739024184232394898">Muu...</translation>
@@ -103,6 +98,7 @@
 <translation id="8668988909814782445">Rivitys</translation>
 <translation id="8750798805984357768">Valitse yksi vaihtoehdoista.</translation>
 <translation id="8845239796550121995">Suoratoistetaan televisioosi</translation>
+<translation id="8853540031347711208">Aktivoi painamalla <ph name="HOT_KEY" /></translation>
 <translation id="8875657656876809964">Videon toistovirhe</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kt</translation>
 <translation id="9132465097189459683">Muu...</translation>

@@ -21,7 +21,6 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -32,7 +31,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
@@ -49,8 +47,6 @@ import java.util.List;
 @LooperMode(LooperMode.Mode.PAUSED)
 public class PwaRestoreBottomSheetCoordinatorTest {
     Activity mActivity;
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     // Each entry in this list should have a corresponding entry in
     // mLastUsedList below.
@@ -71,7 +67,7 @@ public class PwaRestoreBottomSheetCoordinatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
-        mocker.mock(PwaRestoreBottomSheetMediatorJni.TEST_HOOKS, mNativeMediatorMock);
+        PwaRestoreBottomSheetMediatorJni.setInstanceForTesting(mNativeMediatorMock);
         when(mNativeMediatorMock.initialize(Mockito.any())).thenReturn(0L);
     }
 

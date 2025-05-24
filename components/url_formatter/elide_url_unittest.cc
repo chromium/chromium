@@ -312,30 +312,30 @@ TEST(TextEliderTest, TestElisionSpecialCases) {
 TEST(TextEliderTest, TestFileURLEliding) {
   const std::string kEllipsisStr(gfx::kEllipsis);
   const std::vector<ProgressiveTestcase> progressive_testcases = {
-    {"file:///C:/path1/path2/path3/filename",
-     {
-         /* clang-format off */
+      {"file:///C:/path1/path2/path3/filename",
+       {
+           /* clang-format off */
          "file:///C:/path1/path2/path3/filename",
          "/C:/path1/path2/path3/filename",
          "C:/path1/path2/path3/filename",
          "C:/path1/path2/" + kEllipsisStr + "/filename",
-         /* clang-format on */
-     }},
+           /* clang-format on */
+       }},
 // GURL parses "file:///C:path" differently on windows than it does on posix.
 #if BUILDFLAG(IS_WIN)
-    {"file:///C:path1/path2/path3/filename",
-     {
-         /* clang-format off */
+      {"file:///C:path1/path2/path3/filename",
+       {
+           /* clang-format off */
          "C:/path1/path2/path3/filename",
          "C:/path1/path2/" + kEllipsisStr + "/filename",
          "C:/path1/" + kEllipsisStr + "/filename",
          "C:/" + kEllipsisStr + "/filename",
-         /* clang-format on */
-     }},
+           /* clang-format on */
+       }},
 #endif  // BUILDFLAG(IS_WIN)
-    {"file://filer/foo/bar/file",
-     {
-         /* clang-format off */
+      {"file://filer/foo/bar/file",
+       {
+           /* clang-format off */
          "file://filer/foo/bar/file",
          "filer/foo/bar/file",
          "filer/foo/" + kEllipsisStr + "/file",
@@ -346,8 +346,8 @@ TEST(TextEliderTest, TestFileURLEliding) {
          "filer/" + kEllipsisStr,
          "filer" + kEllipsisStr,
          "file" + kEllipsisStr,
-         /* clang-format on */
-     }},
+           /* clang-format on */
+       }},
   };
 
   RunProgressiveElisionTest(progressive_testcases);
@@ -363,20 +363,20 @@ TEST(TextEliderTest, TestFileURLEliding) {
 TEST(TextEliderTest, TestHostEliding) {
   const std::string kEllipsisStr(gfx::kEllipsis);
   Testcase testcases[] = {
-    {"http://google.com", "google.com"},
-    {"http://reallyreallyreallylongdomainname.com",
-     "reallyreallyreallylongdomainname.com"},
-    {"http://foo", "foo"},
-    {"http://foo.bar", "foo.bar"},
-    {"http://subdomain.google.com", kEllipsisStr + ".google.com"},
-    {"http://a.b.c.d.e.f.com", kEllipsisStr + "f.com"},
-    {"http://subdomain.foo.bar", kEllipsisStr + "in.foo.bar"},
-    {"http://subdomain.reallylongdomainname.com",
-     kEllipsisStr + "ain.reallylongdomainname.com"},
-    {"http://a.b.c.d.e.f.com", kEllipsisStr + ".e.f.com"},
-    // IDN - Greek alpha.beta.gamma.delta.epsilon.zeta.com
-    {"http://xn--mxa.xn--nxa.xn--oxa.xn--pxa.xn--qxa.xn--rxa.com",
-     kEllipsisStr + ".\xCE\xB5.\xCE\xB6.com"},
+      {"http://google.com", "google.com"},
+      {"http://reallyreallyreallylongdomainname.com",
+       "reallyreallyreallylongdomainname.com"},
+      {"http://foo", "foo"},
+      {"http://foo.bar", "foo.bar"},
+      {"http://subdomain.google.com", kEllipsisStr + ".google.com"},
+      {"http://a.b.c.d.e.f.com", kEllipsisStr + "f.com"},
+      {"http://subdomain.foo.bar", kEllipsisStr + "in.foo.bar"},
+      {"http://subdomain.reallylongdomainname.com",
+       kEllipsisStr + "ain.reallylongdomainname.com"},
+      {"http://a.b.c.d.e.f.com", kEllipsisStr + ".e.f.com"},
+      // IDN - Greek alpha.beta.gamma.delta.epsilon.zeta.com
+      {"http://xn--mxa.xn--nxa.xn--oxa.xn--pxa.xn--qxa.xn--rxa.com",
+       kEllipsisStr + ".\xCE\xB5.\xCE\xB6.com"},
   };
 
   for (const auto& testcase : testcases) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file contains the Blink version of RuntimeCallStats which is implemented
 // by V8 in //v8/src/counters.h
 
@@ -16,6 +11,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
@@ -327,7 +323,7 @@ class PLATFORM_EXPORT RuntimeCallStats {
   void SetInUse(bool in_use) { in_use_ = in_use; }
 
   RuntimeCallCounter* GetCounter(CounterId id) {
-    return &(counters_[static_cast<uint16_t>(id)]);
+    return UNSAFE_TODO(&(counters_[static_cast<uint16_t>(id)]));
   }
 
   WTF::String ToString() const;

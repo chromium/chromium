@@ -38,7 +38,6 @@ struct CharacterRange;
 class Font;
 class ShapeCache;
 struct GlyphData;
-struct TextRunPaintInfo;
 
 class PLATFORM_EXPORT CachingWordShaper final {
   STACK_ALLOCATED();
@@ -55,7 +54,7 @@ class PLATFORM_EXPORT CachingWordShaper final {
                         IncludePartialGlyphsOption,
                         BreakGlyphsOption);
 
-  void FillResultBuffer(const TextRunPaintInfo&, ShapeResultBuffer*);
+  void FillResultBuffer(const TextRun&, ShapeResultBuffer*);
   CharacterRange GetCharacterRange(const TextRun&, unsigned from, unsigned to);
 
   HeapVector<ShapeResult::RunFontData> GetRunFontData(const TextRun&) const;

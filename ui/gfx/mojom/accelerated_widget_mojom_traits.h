@@ -21,8 +21,7 @@ struct StructTraits<gfx::mojom::AcceleratedWidgetDataView,
 #elif BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC)
     return static_cast<uint64_t>(widget);
 #else
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
 #endif
   }
 
@@ -35,8 +34,7 @@ struct StructTraits<gfx::mojom::AcceleratedWidgetDataView,
     *out = static_cast<gfx::AcceleratedWidget>(data.widget());
     return true;
 #else
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
 #endif
   }
 };

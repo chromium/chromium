@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
 #include "extensions/browser/api/api_resource_manager.h"
+#include "extensions/browser/api/socket/write_quota_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -107,7 +108,7 @@ class Socket : public ApiResource {
   // The |callback| will be called with |byte_count| or a negative number if an
   // error occurred.
   void Write(scoped_refptr<net::IOBuffer> io_buffer,
-             int byte_count,
+             size_t byte_count,
              net::CompletionOnceCallback callback);
 
   virtual void RecvFrom(int count, RecvFromCompletionCallback callback) = 0;
@@ -151,7 +152,7 @@ class Socket : public ApiResource {
                         net::CompletionOnceCallback callback) = 0;
 
   std::string hostname_;
-  bool is_connected_;
+  bool is_connected_ = false;
 
  private:
   friend class ApiResourceManager<Socket>;
@@ -159,14 +160,14 @@ class Socket : public ApiResource {
 
   struct WriteRequest {
     WriteRequest(scoped_refptr<net::IOBuffer> io_buffer,
-                 int byte_count,
+                 size_t byte_count,
                  net::CompletionOnceCallback callback);
     WriteRequest(WriteRequest&& other);
     ~WriteRequest();
     scoped_refptr<net::IOBuffer> io_buffer;
-    int byte_count;
+    size_t byte_count;
     net::CompletionOnceCallback callback;
-    int bytes_written;
+    size_t bytes_written = 0;
   };
 
   void OnWriteComplete(int result);
@@ -178,6 +179,21 @@ class Socket : public ApiResource {
   // Represents a hole punched in the system firewall for this socket.
   std::unique_ptr<AppFirewallHole> firewall_hole_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+};
+
+template <>
+struct BrowserContextFactoryDependencies<ApiResourceManager<Socket>> {
+  static void DeclareFactoryDependencies(
+      BrowserContextKeyedAPIFactory<ApiResourceManager<Socket>>* factory) {
+    // Base deps from BrowserContextFactoryDependencies<ApiResourceManager<T>.
+    factory->DependsOn(
+        ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+    factory->DependsOn(ExtensionRegistryFactory::GetInstance());
+    factory->DependsOn(ProcessManagerFactory::GetInstance());
+
+    // Extra deps for ApiResourceManager<Socket> service.
+    factory->DependsOn(WriteQuotaChecker::GetFactoryInstance());
+  }
 };
 
 }  //  namespace extensions

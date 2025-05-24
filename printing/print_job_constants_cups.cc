@@ -87,7 +87,7 @@ base::span<const PpdColorSetting> GetKnownPpdColorSettings() {
       {kCUPSXeroxXROutputColor, kPrintAsGrayscale, kPrintAsColor},  // Xerox
       {kCUPSXeroxXRXColor, kXeroxBW, kXeroxAutomatic},              // Xerox
   };
-  return base::make_span(kKnownPpdColorSettings);
+  return base::span(kKnownPpdColorSettings);
 }
 #endif
 

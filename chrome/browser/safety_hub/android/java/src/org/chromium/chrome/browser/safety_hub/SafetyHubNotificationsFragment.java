@@ -9,9 +9,10 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.NotificationsModuleInteractions;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -24,11 +25,12 @@ import java.util.List;
  * Safety Hub subpage that displays a list of all to be reviewed notifications alongside their
  * supported actions.
  */
+@NullMarked
 public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
         implements NotificationPermissionReviewBridge.Observer,
                 SafetyHubNotificationsPreference.MenuClickListener {
     private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable LargeIconBridge mLargeIconBridge;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -62,7 +64,8 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                     Snackbar.UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS,
                     new SnackbarManager.SnackbarController() {
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
+                            assert actionData != null : "Action data should be non-null.";
                             mNotificationPermissionReviewBridge.bulkAllowNotificationPermissions(
                                     (List<NotificationPermissions>) actionData);
                             recordNotificationsInteraction(
@@ -90,7 +93,7 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                 notificationPermissions.getPrimaryPattern(),
                 new SnackbarManager.SnackbarController() {
                     @Override
-                    public void onAction(Object actionData) {
+                    public void onAction(@Nullable Object actionData) {
                         mNotificationPermissionReviewBridge
                                 .undoIgnoreOriginForNotificationPermissionReview(
                                         (String) actionData);
@@ -111,7 +114,7 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                 notificationPermissions.getPrimaryPattern(),
                 new SnackbarManager.SnackbarController() {
                     @Override
-                    public void onAction(Object actionData) {
+                    public void onAction(@Nullable Object actionData) {
                         mNotificationPermissionReviewBridge.allowNotificationPermissionForOrigin(
                                 (String) actionData);
                         recordNotificationsInteraction(NotificationsModuleInteractions.UNDO_RESET);
@@ -181,5 +184,10 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                 Snackbar.UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS,
                 snackbarController,
                 origin);
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

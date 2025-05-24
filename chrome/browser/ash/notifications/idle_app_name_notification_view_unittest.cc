@@ -33,7 +33,7 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
   IdleAppNameNotificationViewTest& operator=(
       const IdleAppNameNotificationViewTest&) = delete;
 
-  ~IdleAppNameNotificationViewTest() override {}
+  ~IdleAppNameNotificationViewTest() override = default;
 
   void SetUp() override {
     // Add the application switch.

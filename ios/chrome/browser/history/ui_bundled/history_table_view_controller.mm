@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -52,7 +53,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
@@ -64,6 +64,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/strings/grit/ui_strings.h"
@@ -71,11 +72,8 @@
 using history::BrowsingHistoryService;
 
 namespace {
-typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeHistoryEntry = kItemTypeEnumZero,
-  ItemTypeEntriesStatus,
-  ItemTypeEntriesStatusWithLink,
-  ItemTypeActivityIndicator,
+enum ItemType : NSInteger {
+  kItemTypeHistoryEntry = kItemTypeEnumZero,
 };
 // The default UIButton font size used by UIKit.
 const CGFloat kButtonDefaultFontSize = 15.0;
@@ -227,8 +225,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     [self updateToolbarButtonsWithAnimation:YES];
   } else {
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    // Only navigate and record metrics if a ItemTypeHistoryEntry was selected.
-    if (item.type == ItemTypeHistoryEntry) {
+    // Only navigate and record metrics if a kItemTypeHistoryEntry was selected.
+    if (item.type == kItemTypeHistoryEntry) {
       if (self.searchInProgress) {
         // Set the searchController active property to NO or the SearchBar will
         // cause the navigation controller to linger for a second  when
@@ -273,12 +271,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     return nil;
   }
   return [super tableView:tableView URLInfoAtIndexPath:indexPath];
-}
-
-- (void)fetchHistoryForQuery:(NSString*)query continuation:(BOOL)continuation {
-  self.loading = YES;
-
-  [super fetchHistoryForQuery:query continuation:continuation];
 }
 
 #pragma mark - Navigation Toolbar Configuration
@@ -343,21 +335,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   }
 }
 
-#pragma mark - Context Menu
-
-- (void)displayContextMenuInvokedByGestureRecognizer:
-    (UILongPressGestureRecognizer*)gestureRecognizer {
-  if (self.editing) {
-    return;
-  }
-
-  if ([self scrimIsVisible]) {
-    self.searchController.active = NO;
-    return;
-  }
-  [super displayContextMenuInvokedByGestureRecognizer:gestureRecognizer];
-}
-
 #pragma mark - HistoryConsumer
 
 - (void)historyQueryWasCompletedWithResults:
@@ -367,7 +344,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                                    queryResultsInfo
                         continuationClosure:
                             (base::OnceClosure)continuationClosure {
-  self.loading = NO;
   [super historyQueryWasCompletedWithResults:results
                             queryResultsInfo:queryResultsInfo
                          continuationClosure:std::move(continuationClosure)];
@@ -383,8 +359,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (void)historyWasDeleted {
   // If history has been deleted, reload history filtering for the current
   // results. This only observes local changes to history, i.e. removing
-  // history via the clear browsing data page.
-  [super historyWasDeleted];
+  // history via delete browsing data.
+  self.filterQueryResult = YES;
   [self showHistoryMatchingQuery:nil];
 }
 
@@ -446,7 +422,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // Dismisses this ViewController.
 - (void)dismissHistory {
   base::RecordAction(base::UserMetricsAction("MobileHistoryClose"));
-  [self.delegate dismissViewController:self withCompletion:nil];
+  [self.delegate dismissViewController:self];
 }
 
 - (NSArray<UIBarButtonItem*>*)toolbarButtons {
@@ -516,10 +492,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   }
 }
 
-- (BOOL)scrimIsVisible {
-  return self.scrimView.superview ? YES : NO;
-}
-
 #pragma mark - Helper Methods
 
 // Returns YES if the history is actually empty, and the user is neither
@@ -542,7 +514,10 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     }
     id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-    [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:NO];
+    [quickDeleteHandler
+        showQuickDeleteAndCanPerformTabsClosureAnimation:
+            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+            self.canPerformTabsClosureAnimation];
     return;
   }
 

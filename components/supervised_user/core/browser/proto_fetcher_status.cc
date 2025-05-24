@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "net/http/http_status_code.h"
 
 namespace supervised_user {
 
@@ -60,6 +61,15 @@ bool ProtoFetcherStatus::IsOk() const {
 
 bool ProtoFetcherStatus::IsTransientError() const {
   if (state_ == State::HTTP_STATUS_OR_NET_ERROR) {
+    // Ideally we should treat a wider set of HTTP status codes as permanent
+    // errors (eg. most 4xx responses), but there is no standard utility in
+    // Chromium to classify these and there's no harm in retrying them.
+    //
+    // 401 must be treated as permanent, as it has specific retry handling in
+    // ProtoFetcher.
+    if (http_status_or_net_error_.value() == net::HTTP_UNAUTHORIZED) {
+      return false;
+    }
     return true;
   }
   if (state_ == State::GOOGLE_SERVICE_AUTH_ERROR) {
@@ -77,6 +87,10 @@ bool ProtoFetcherStatus::IsPersistentError() const {
   }
   if (state_ == State::GOOGLE_SERVICE_AUTH_ERROR) {
     return google_service_auth_error_.IsPersistentError();
+  }
+  if ((state_ == State::HTTP_STATUS_OR_NET_ERROR) &&
+      (http_status_or_net_error_.value() == net::HTTP_UNAUTHORIZED)) {
+    return true;
   }
   return false;
 }

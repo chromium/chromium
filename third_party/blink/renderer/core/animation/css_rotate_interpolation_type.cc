@@ -7,6 +7,10 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/length_units_checker.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
+#include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -54,30 +58,41 @@ class OptionalRotation {
 
 class CSSRotateNonInterpolableValue : public NonInterpolableValue {
  public:
-  static scoped_refptr<CSSRotateNonInterpolableValue> Create(
+  CSSRotateNonInterpolableValue(bool is_single,
+                                const OptionalRotation& start,
+                                const OptionalRotation& end,
+                                bool is_start_additive,
+                                bool is_end_additive)
+      : is_single_(is_single),
+        start_(start),
+        end_(end),
+        is_start_additive_(is_start_additive),
+        is_end_additive_(is_end_additive) {}
+
+  static CSSRotateNonInterpolableValue* Create(
       const OptionalRotation& rotation) {
-    return base::AdoptRef(new CSSRotateNonInterpolableValue(
-        true, rotation, OptionalRotation(), false, false));
+    return MakeGarbageCollected<CSSRotateNonInterpolableValue>(
+        true, rotation, OptionalRotation(), false, false);
   }
 
-  static scoped_refptr<CSSRotateNonInterpolableValue> Create(
+  static CSSRotateNonInterpolableValue* Create(
       const CSSRotateNonInterpolableValue& start,
       const CSSRotateNonInterpolableValue& end) {
-    return base::AdoptRef(new CSSRotateNonInterpolableValue(
+    return MakeGarbageCollected<CSSRotateNonInterpolableValue>(
         false, start.GetOptionalRotation(), end.GetOptionalRotation(),
-        start.IsAdditive(), end.IsAdditive()));
+        start.IsAdditive(), end.IsAdditive());
   }
 
-  static scoped_refptr<CSSRotateNonInterpolableValue> CreateAdditive(
+  static CSSRotateNonInterpolableValue* CreateAdditive(
       const CSSRotateNonInterpolableValue& other) {
     DCHECK(other.is_single_);
     const bool is_single = true;
     const bool is_additive = true;
-    return base::AdoptRef(new CSSRotateNonInterpolableValue(
-        is_single, other.start_, other.end_, is_additive, is_additive));
+    return MakeGarbageCollected<CSSRotateNonInterpolableValue>(
+        is_single, other.start_, other.end_, is_additive, is_additive);
   }
 
-  scoped_refptr<CSSRotateNonInterpolableValue> Composite(
+  CSSRotateNonInterpolableValue* Composite(
       const CSSRotateNonInterpolableValue& other,
       double other_progress) const {
     DCHECK(is_single_ && !is_start_additive_);
@@ -109,17 +124,6 @@ class CSSRotateNonInterpolableValue : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSRotateNonInterpolableValue(bool is_single,
-                                const OptionalRotation& start,
-                                const OptionalRotation& end,
-                                bool is_start_additive,
-                                bool is_end_additive)
-      : is_single_(is_single),
-        start_(start),
-        end_(end),
-        is_start_additive_(is_start_additive),
-        is_end_additive_(is_end_additive) {}
-
   const OptionalRotation& GetOptionalRotation() const {
     DCHECK(is_single_);
     return start_;
@@ -207,24 +211,41 @@ InterpolationValue CSSRotateInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSRotateInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
-    ConversionCheckers&) const {
-  if (!value.IsBaseValueList()) {
+    const StyleResolverState& state,
+    ConversionCheckers& conversion_checkers) const {
+  if (value.IsIdentifierValue()) {
+    // 'none'
     return ConvertRotation(OptionalRotation());
   }
 
-  if (auto* primitive = DynamicTo<CSSPrimitiveValue>(value)) {
-    if (!primitive->IsComputationallyIndependent()) {
-      return nullptr;
+  const CSSLengthResolver& length_resolver = state.CssToLengthConversionData();
+  const CSSValueList& list = To<CSSValueList>(value);
+  bool needs_tree_counting_checker = false;
+  CSSPrimitiveValue::LengthTypeFlags types;
+  if (list.length() == 2) {
+    for (const CSSValue* axis_component :
+         To<cssvalue::CSSAxisValue>(list.Item(0))) {
+      const auto* primitive_value = To<CSSPrimitiveValue>(axis_component);
+      primitive_value->AccumulateLengthUnitTypes(types);
+      if (primitive_value->IsElementDependent()) {
+        needs_tree_counting_checker = true;
+        break;
+      }
     }
   }
+  const auto& primitive_value =
+      To<CSSPrimitiveValue>(list.Item(list.length() - 1));
+  primitive_value.AccumulateLengthUnitTypes(types);
+  if (needs_tree_counting_checker || primitive_value.IsElementDependent()) {
+    conversion_checkers.push_back(TreeCountingChecker::Create(length_resolver));
+  }
+  if (InterpolationType::ConversionChecker* length_units_checker =
+          LengthUnitsChecker::MaybeCreate(types, state)) {
+    conversion_checkers.push_back(length_units_checker);
+  }
 
-  // TODO(crbug.com/328182246): we should not use the resolved angle
-  // here, but doing it for now, since proper fix would require
-  // rewriting Quaternion and Rotation to have unresolved versions.
-  return ConvertRotation(
-      OptionalRotation(StyleBuilderConverter::ConvertRotation(
-          CSSToLengthConversionData(), value)));
+  return ConvertRotation(OptionalRotation(
+      StyleBuilderConverter::ConvertRotation(length_resolver, value)));
 }
 
 InterpolationValue

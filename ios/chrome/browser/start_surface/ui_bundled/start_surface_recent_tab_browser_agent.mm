@@ -4,18 +4,18 @@
 
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 
 #pragma mark - StartSurfaceBrowserAgent
 
-BROWSER_USER_DATA_KEY_IMPL(StartSurfaceRecentTabBrowserAgent)
-
 StartSurfaceRecentTabBrowserAgent::StartSurfaceRecentTabBrowserAgent(
     Browser* browser)
-    : favicon_driver_observer_(this), browser_(browser) {
+    : BrowserUserData(browser), favicon_driver_observer_(this) {
   browser_->AddObserver(this);
   browser_->GetWebStateList()->AddObserver(this);
 }
@@ -29,7 +29,8 @@ void StartSurfaceRecentTabBrowserAgent::SaveMostRecentTab() {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   if (most_recent_tab_ != active_web_state) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kTabResumption);
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kTabResumption,
+                                browser_->GetProfile()->GetPrefs());
     most_recent_tab_ = active_web_state;
     DCHECK(favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
     if (favicon_driver_observer_.IsObserving()) {

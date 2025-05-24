@@ -8,7 +8,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/autofill/core/browser/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace autofill {
@@ -31,20 +31,14 @@ AutofillOptimizationGuideFactory::GetInstance() {
 AutofillOptimizationGuideFactory::AutofillOptimizationGuideFactory()
     : ProfileKeyedServiceFactory(
           "AutofillOptimizationGuide",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOwnInstance)
-              .WithGuest(ProfileSelection::kOwnInstance)
-              // OptimizationGuideKeyedService is not available if it is a
-              // sign-in or lockscreen profile, so we should not build
-              // AutofillOptimizationGuide for these profiles either.
-              .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 AutofillOptimizationGuideFactory::~AutofillOptimizationGuideFactory() = default;
 
-KeyedService* AutofillOptimizationGuideFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AutofillOptimizationGuideFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   OptimizationGuideKeyedService* optimization_service =
@@ -57,7 +51,8 @@ KeyedService* AutofillOptimizationGuideFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new AutofillOptimizationGuide(/*decider=*/optimization_service);
+  return std::make_unique<AutofillOptimizationGuide>(
+      /*decider=*/optimization_service);
 }
 
 }  // namespace autofill

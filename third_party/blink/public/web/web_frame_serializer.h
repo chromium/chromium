@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_SERIALIZER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_SERIALIZER_H_
 
+#include "base/functional/callback.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_thread_safe_data.h"
@@ -70,15 +71,18 @@ class BLINK_EXPORT WebFrameSerializer {
                                                WebLocalFrame*,
                                                MHTMLPartsGenerationDelegate*);
 
-  // Generates and returns MHTML parts for the given frame and the
-  // savable resources underneath.
+  // Generates and MHTML parts for the given frame and the savable resources
+  // underneath. Calls `callback` with the result which should be appended to
+  // the MHTML file.
   //
-  // Same |boundary| needs to used for all generateMHTMLHeader and
+  // The same `boundary` needs to be used for all generateMHTMLHeader and
   // generateMHTMLParts and generateMHTMLFooter calls that belong to the same
   // MHTML document (see also rfc1341, section 7.2.1, "boundary" description).
-  static WebThreadSafeData GenerateMHTMLParts(const WebString& boundary,
-                                              WebLocalFrame*,
-                                              MHTMLPartsGenerationDelegate*);
+  static void GenerateMHTMLParts(
+      const WebString& boundary,
+      WebLocalFrame*,
+      MHTMLPartsGenerationDelegate*,
+      base::OnceCallback<void(WebThreadSafeData)> callback);
 
   // IMPORTANT:
   // The API below is an older implementation of frame serialization that

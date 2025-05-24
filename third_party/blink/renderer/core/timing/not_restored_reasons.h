@@ -41,7 +41,7 @@ class CORE_EXPORT NotRestoredReasons : public ScriptWrappable {
 
   const std::optional<HeapVector<Member<NotRestoredReasons>>> children() const;
 
-  ScriptValue toJSON(ScriptState* script_state) const;
+  ScriptObject toJSON(ScriptState* script_state) const;
 
   void Trace(Visitor* visitor) const override;
 

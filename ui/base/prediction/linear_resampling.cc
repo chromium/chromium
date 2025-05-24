@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/base/ui_base_features.h"
 
 namespace ui {
@@ -43,9 +44,9 @@ inline gfx::PointF lerp(const InputPredictor::InputData& a,
 
 }  // namespace
 
-LinearResampling::LinearResampling() {}
+LinearResampling::LinearResampling() = default;
 
-LinearResampling::~LinearResampling() {}
+LinearResampling::~LinearResampling() = default;
 
 const char* LinearResampling::GetName() const {
   return features::kPredictorNameLinearResampling;
@@ -125,12 +126,16 @@ base::TimeDelta LinearResampling::LatencyCalculator::CalculateLatency() {
   std::string prediction_type = GetFieldTrialParamValueByFeature(
       ::features::kResamplingScrollEventsExperimentalPrediction, "mode");
 
+  std::string latency_value = GetFieldTrialParamValueByFeature(
+      ::features::kResamplingScrollEventsExperimentalPrediction, "latency");
+
+  TRACE_EVENT2("ui", "LatencyCalculator::CalculateLatency", "prediction_type",
+               prediction_type, "latency_value", latency_value);
+
   if (prediction_type != ::features::kPredictionTypeTimeBased &&
       prediction_type != ::features::kPredictionTypeFramesBased)
     return kResampleLatency;
 
-  std::string latency_value = GetFieldTrialParamValueByFeature(
-      ::features::kResamplingScrollEventsExperimentalPrediction, "latency");
   double latency;
   if (base::StringToDouble(latency_value, &latency)) {
     return prediction_type == ::features::kPredictionTypeTimeBased

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,7 +21,7 @@ TEST(ProtocolBinaryTest, base64EmptyArgs) {
   Binary decoded = Binary::fromBase64("", &success);
   EXPECT_TRUE(success);
   Vector<uint8_t> decoded_bytes;
-  decoded_bytes.Append(decoded.data(), static_cast<wtf_size_t>(decoded.size()));
+  decoded_bytes.AppendSpan(decoded.Span());
   EXPECT_EQ(Vector<uint8_t>(), decoded_bytes);
 }
 
@@ -29,15 +34,14 @@ TEST(ProtocolStringTest, AllBytesBase64Roundtrip) {
   Binary decoded = Binary::fromBase64(binary.toBase64(), &success);
   EXPECT_TRUE(success);
   Vector<uint8_t> decoded_bytes;
-  decoded_bytes.Append(decoded.data(), static_cast<wtf_size_t>(decoded.size()));
+  decoded_bytes.AppendSpan(decoded.Span());
   EXPECT_EQ(all_bytes, decoded_bytes);
 }
 
 TEST(ProtocolStringTest, HelloWorldBase64Roundtrip) {
-  const char* kMsg = "Hello, world.";
+  const char kMsg[] = "Hello, world.";
   Vector<uint8_t> msg;
-  msg.Append(reinterpret_cast<const uint8_t*>(kMsg),
-             static_cast<wtf_size_t>(strlen(kMsg)));
+  msg.AppendSpan(base::span_from_cstring(kMsg));
   EXPECT_EQ(strlen(kMsg), msg.size());
 
   protocol::String encoded = Binary::fromVector(msg).toBase64();
@@ -46,8 +50,7 @@ TEST(ProtocolStringTest, HelloWorldBase64Roundtrip) {
   Binary decoded_binary = Binary::fromBase64(encoded, &success);
   EXPECT_TRUE(success);
   Vector<uint8_t> decoded;
-  decoded.Append(decoded_binary.data(),
-                 static_cast<wtf_size_t>(decoded_binary.size()));
+  decoded.AppendSpan(decoded_binary.Span());
   EXPECT_EQ(msg, decoded);
 }
 

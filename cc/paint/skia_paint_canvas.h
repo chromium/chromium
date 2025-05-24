@@ -78,7 +78,7 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
   int saveLayerAlphaf(float alpha) override;
   int saveLayerAlphaf(const SkRect& bounds, float alpha) override;
-  int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+  int saveLayerFilters(base::span<const sk_sp<PaintFilter>> filters,
                        const PaintFlags& flags) override;
 
   void restore() override;
@@ -192,10 +192,10 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
 
   int GetMaxTextureSize() const;
 
-  raw_ptr<SkCanvas, DanglingUntriaged> canvas_;
+  raw_ptr<SkCanvas> canvas_;
   SkBitmap bitmap_;
   std::unique_ptr<SkCanvas> owned_;
-  raw_ptr<ImageProvider, DanglingUntriaged> image_provider_ = nullptr;
+  raw_ptr<ImageProvider> image_provider_ = nullptr;
 
   const ContextFlushes context_flushes_;
   int num_of_ops_ = 0;

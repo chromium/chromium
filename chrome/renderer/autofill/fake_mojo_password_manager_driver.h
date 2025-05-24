@@ -35,14 +35,7 @@ class FakeMojoPasswordManagerDriver
               PasswordFormCleared,
               (const autofill::FormData&),
               (override));
-
-#if BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(void,
-              ShowKeyboardReplacingSurface,
-              (autofill::mojom::SubmissionReadinessState, bool),
-              (override));
-#endif
-
+  MOCK_METHOD(void, UserModifiedPasswordField, (), (override));
   MOCK_METHOD(void,
               UserModifiedNonPasswordField,
               (autofill::FieldRendererId renderer_id,
@@ -107,10 +100,6 @@ class FakeMojoPasswordManagerDriver
     return called_record_save_progress_;
   }
 
-  bool called_user_modified_password_field() const {
-    return called_user_modified_password_field_;
-  }
-
   bool called_save_generation_field() const {
     return called_save_generation_field_;
   }
@@ -155,8 +144,6 @@ class FakeMojoPasswordManagerDriver
 
   void RecordSavePasswordProgress(const std::string& log) override;
 
-  void UserModifiedPasswordField() override;
-
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
 
@@ -188,8 +175,6 @@ class FakeMojoPasswordManagerDriver
   std::optional<std::vector<autofill::FormData>> form_data_rendered_;
   // Records whether RecordSavePasswordProgress() gets called.
   bool called_record_save_progress_ = false;
-  // Records whether UserModifiedPasswordField() gets called.
-  bool called_user_modified_password_field_ = false;
   // Records whether SaveGenerationFieldDetectedByClassifier() gets called.
   bool called_save_generation_field_ = false;
   // Records data received via SaveGenerationFieldDetectedByClassifier() call.

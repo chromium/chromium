@@ -21,8 +21,6 @@
 namespace ash {
 
 HidPreservingBluetoothStateController::HidPreservingBluetoothStateController() {
-  CHECK(features::IsBluetoothDisconnectWarningEnabled());
-
   // Asynchronously bind to CrosBluetoothConfig so that we don't attempt
   // to bind to it before it has initialized.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

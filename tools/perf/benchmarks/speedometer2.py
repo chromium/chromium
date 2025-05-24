@@ -19,8 +19,8 @@ from telemetry.web_perf import timeline_based_measurement
 
 from page_sets import speedometer2_pages
 
-_PERF_TEST_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
-                              'blink', 'perf_tests')
+_SPEEDOMETER_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
+                                'speedometer')
 
 
 class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
@@ -131,7 +131,7 @@ class Speedometer20(_Speedometer2):
   """Speedometer2.0 benchmark.
   Explicitly named version."""
 
-  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer20')
+  _SOURCE_DIR = os.path.join(_SPEEDOMETER_DIR, 'v2.0')
 
   @classmethod
   def GetStoryClass(cls):
@@ -149,7 +149,7 @@ class Speedometer21(_Speedometer2):
   """Speedometer2.1 benchmark.
   Explicitly named version."""
 
-  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer21')
+  _SOURCE_DIR = os.path.join(_SPEEDOMETER_DIR, 'v2.1')
 
   @classmethod
   def GetStoryClass(cls):
@@ -208,7 +208,7 @@ class Speedometer2MinorMS(Speedometer2):
     options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
 
 
-@benchmark.Info(emails=['agarwaltushar@google.com', 'wnwen@google.com'],
+@benchmark.Info(emails=['rasikan@google.com', 'wnwen@google.com'],
                 component='Blink>JavaScript',
                 documentation_url='https://browserbench.org/Speedometer2.1')
 class Speedometer2Predictable(Speedometer2):

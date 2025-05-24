@@ -51,8 +51,9 @@ NativeTheme::PreferredColorScheme TestNativeTheme::GetPreferredColorScheme()
 }
 
 NativeTheme::ColorScheme TestNativeTheme::GetDefaultSystemColorScheme() const {
-  if (is_platform_high_contrast_)
+  if (is_platform_high_contrast_) {
     return ColorScheme::kPlatformHighContrast;
+  }
   return NativeTheme::GetDefaultSystemColorScheme();
 }
 

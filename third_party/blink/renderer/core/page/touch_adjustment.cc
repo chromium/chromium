@@ -17,16 +17,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
 
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -115,12 +109,15 @@ bool NodeRespondsToTapGesture(Node* node) {
     }
     // Accept nodes that has a CSS effect when touched.
     if (element->ChildrenOrSiblingsAffectedByActive() ||
-        element->ChildrenOrSiblingsAffectedByHover())
+        element->ChildrenOrSiblingsAffectedByHover()) {
       return true;
-  }
-  if (const ComputedStyle* computed_style = node->GetComputedStyle()) {
-    if (computed_style->AffectedByActive() || computed_style->AffectedByHover())
-      return true;
+    }
+    if (const ComputedStyle* computed_style = element->GetComputedStyle()) {
+      if (computed_style->AffectedByActive() ||
+          computed_style->AffectedByHover()) {
+        return true;
+      }
+    }
   }
   return false;
 }

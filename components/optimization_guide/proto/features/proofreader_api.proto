@@ -1,0 +1,35 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package optimization_guide.proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_multiple_files = true;
+
+// The file is a manual copy of the google3 file
+// //chrome/intelligence/proto/features/proofreader_api.proto
+// Be sure to update the google3 file before making the change here.
+
+message ProofreaderApiLoggingData {
+  ProofreaderApiRequest request = 1;
+  ProofreaderApiResponse response = 2;
+}
+
+message ProofreadOptions {
+  bool include_correction_types = 1;
+  bool include_correction_explanations = 2;
+}
+
+message ProofreaderApiRequest {
+  string text = 1;
+  ProofreadOptions options = 2;
+}
+
+message ProofreaderApiResponse {
+  // Response from proofread execution call. The output contains the fully
+  // corrected version of the input text sent in the request.
+  string output = 1;
+}

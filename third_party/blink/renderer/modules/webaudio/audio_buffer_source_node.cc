@@ -51,17 +51,18 @@ constexpr double kDefaultDetuneValue = 0.0;
 
 AudioBufferSourceNode::AudioBufferSourceNode(BaseAudioContext& context)
     : AudioScheduledSourceNode(context),
-      playback_rate_(AudioParam::Create(
-          context,
-          Uuid(),
-          AudioParamHandler::kParamTypeAudioBufferSourcePlaybackRate,
-          kDefaultPlaybackRateValue,
-          AudioParamHandler::AutomationRate::kControl,
-          AudioParamHandler::AutomationRateMode::kFixed)),
+      playback_rate_(
+          AudioParam::Create(context,
+                             Uuid(),
+                             AudioParamHandler::AudioParamType::
+                                 kParamTypeAudioBufferSourcePlaybackRate,
+                             kDefaultPlaybackRateValue,
+                             AudioParamHandler::AutomationRate::kControl,
+                             AudioParamHandler::AutomationRateMode::kFixed)),
       detune_(AudioParam::Create(
           context,
           Uuid(),
-          AudioParamHandler::kParamTypeAudioBufferSourceDetune,
+          AudioParamHandler::AudioParamType::kParamTypeAudioBufferSourceDetune,
           kDefaultDetuneValue,
           AudioParamHandler::AutomationRate::kControl,
           AudioParamHandler::AutomationRateMode::kFixed)) {

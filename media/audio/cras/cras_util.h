@@ -15,6 +15,8 @@
 
 namespace media {
 
+const int kCrasConnectTimeoutMs = 1000;
+
 enum class DeviceType { kInput, kOutput };
 
 struct MEDIA_EXPORT CrasDevice {

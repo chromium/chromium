@@ -12,10 +12,13 @@ import android.view.View;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -31,6 +34,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * <p>TODO(crbug.com/40729195): Move this to ../voice/ along with VoiceRecognitionHandler and the
  * assistant support.
  */
+@NullMarked
 public class VoiceToolbarButtonController extends BaseButtonDataProvider {
     private final Supplier<Tracker> mTrackerSupplier;
 
@@ -60,7 +64,7 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
     public VoiceToolbarButtonController(
             Context context,
             Drawable buttonDrawable,
-            Supplier<Tab> activeTabSupplier,
+            Supplier<@Nullable Tab> activeTabSupplier,
             Supplier<Tracker> trackerSupplier,
             ModalDialogManager modalDialogManager,
             VoiceSearchDelegate voiceSearchDelegate) {
@@ -73,8 +77,7 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.VOICE,
-                /* tooltipTextResId= */ R.string.adaptive_toolbar_button_preference_voice_search,
-                /* showHoverHighlight= */ true);
+                /* tooltipTextResId= */ R.string.adaptive_toolbar_button_preference_voice_search);
         mTrackerSupplier = trackerSupplier;
         mVoiceSearchDelegate = voiceSearchDelegate;
     }
@@ -100,14 +103,15 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
     /**
      * Returns an IPH for this button. Only called once native is initialized and when {@code
      * AdaptiveToolbarFeatures.isCustomizationEnabled()} is true.
+     *
      * @param tab Current tab.
      */
     @Override
-    protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
+    protected IphCommandBuilder getIphCommandBuilder(Tab tab) {
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        IPHCommandBuilder iphCommandBuilder =
-                new IPHCommandBuilder(
+        IphCommandBuilder iphCommandBuilder =
+                new IphCommandBuilder(
                                 tab.getContext().getResources(),
                                 FeatureConstants
                                         .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE,
@@ -120,7 +124,8 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
     }
 
     @Override
-    protected boolean shouldShowButton(Tab tab) {
+    protected boolean shouldShowButton(@Nullable Tab tab) {
+        if (tab == null) return false;
         if (!super.shouldShowButton(tab)) return false;
 
         return mVoiceSearchDelegate.isVoiceSearchEnabled()

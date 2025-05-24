@@ -454,6 +454,20 @@ testSuite({
         dom.getActiveElement(document) == popup.getElement());
   },
 
+  testPopupGetsFocus_withOptionalParent() {
+    const parentEl = dom.createElement(TagName.DIV);
+    document.body.appendChild(parentEl);
+    popup = new ModalPopup();
+    popup.setCenterInsideParentElement(true);
+    popup.render(parentEl);
+
+    popup.setVisible(true);
+
+    assertTrue(
+        'Dialog must receive initial focus',
+        dom.getActiveElement(document) == popup.getElement());
+  },
+
   testDecoratedPopupGetsFocus() {
     const dialogElem = dom.createElement(TagName.DIV);
     document.body.appendChild(dialogElem);
@@ -465,4 +479,100 @@ testSuite({
         dom.getActiveElement(document) == popup.getElement());
     dom.removeNode(dialogElem);
   },
+
+  testBackgroundSize_withoutOptionalParent_inheritBodySize() {
+    popup = new ModalPopup();
+    popup.render();
+    // Because the test does not add css, the size of body element changes
+    // after showing the background.
+    const documentHeight = document.documentElement.scrollHeight;
+    const documentWidth = document.documentElement.scrollWidth;
+
+    popup.setVisible(true);
+
+    const backgroundSize = style.getSize(popup.getBackgroundElement());
+    assertTrue(backgroundSize.width === documentWidth);
+    assertTrue(backgroundSize.height === documentHeight);
+  },
+
+  testBackgroundSize_withOptionalParent_backgroundInheritParentSize() {
+    const parentEl = dom.createElement(TagName.DIV);
+    document.body.appendChild(parentEl);
+    style.setSize(parentEl, 99, 88);
+    // Reinforce the test by changing the parent element size and assert the
+    // modal popup receives the right parent dimensions.
+    parentEl.style.transform = 'scale(0.5)';
+    parentEl.style.zoom = '50%';
+    parentEl.style.border = '20px solid';
+    popup = new ModalPopup();
+    popup.setCenterInsideParentElement(true);
+    popup.render(parentEl);
+
+    popup.setVisible(true);
+
+    const backgroundSize = style.getSize(popup.getBackgroundElement());
+    assertTrue(backgroundSize.width === 99);
+    assertTrue(backgroundSize.height === 88);
+    dom.removeNode(parentEl);
+  },
+
+  testPopupPosition_withoutOptionalParent_relativeToBody() {
+    popup = new ModalPopup();
+    popup.render();
+    style.setSize(popup.getElement(), 20, 20);
+
+    popup.setVisible(true);
+
+    const viewportSize = dom.getViewportSize();
+    const modalEl = popup.getElement();
+    const modalSize = style.getSize(modalEl);
+    const top = style.getComputedStyle(modalEl, 'top');
+    const expectedTop = viewportSize.height / 2 - modalSize.height / 2;
+    assertTrue(top === expectedTop + 'px');
+    const left = style.getComputedStyle(modalEl, 'left');
+    const expectedLeft = viewportSize.width / 2 - modalSize.width / 2;
+    assertTrue(left === expectedLeft + 'px');
+  },
+
+  testPopupPosition_withOptionalParent_relativeToBody() {
+    const parentEl = dom.createElement(TagName.DIV);
+    document.body.appendChild(parentEl);
+    popup = new ModalPopup();
+    popup.setCenterInsideParentElement(true);
+    popup.render(parentEl);
+    style.setSize(popup.getElement(), 20, 20);
+    style.setSize(parentEl, 99, 88);
+    // Reinforce the test by changing the parent element size and assert the
+    // modal popup receives the right parent dimensions.
+    parentEl.style.transform = 'scale(0.5)';
+    parentEl.style.zoom = '50%';
+    const borderThickness = 20;
+    parentEl.style.border = `${borderThickness}px solid`;
+
+    popup.setVisible(true);
+
+    const modalEl = popup.getElement();
+    const modalSize = style.getSize(modalEl);
+    const parentSize = style.getSize(parentEl);
+    const parentInnerHeight =
+        parentSize.height - borderThickness - borderThickness;
+    const expectedTop = parentInnerHeight / 2 - modalSize.height / 2;
+    const top = style.getComputedStyle(modalEl, 'top');
+    assertTrue(top === expectedTop + 'px');
+    const left = style.getComputedStyle(modalEl, 'left');
+    const parentInnerWidth =
+        parentSize.width - borderThickness - borderThickness;
+    const expectedLeft = parentInnerWidth / 2 - modalSize.width / 2;
+    assertTrue(left === expectedLeft + 'px');
+    dom.removeNode(parentEl);
+  },
+
+  testSetCenterInsideParentElementAfterRender_throws() {
+    const parentEl = dom.createElement(TagName.DIV);
+    document.body.appendChild(parentEl);
+    popup = new ModalPopup();
+    popup.render();
+
+    assertThrows(() => popup.setCenterInsideParentElement(true));
+  }
 });

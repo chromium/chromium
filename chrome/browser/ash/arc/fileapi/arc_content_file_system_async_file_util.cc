@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_async_file_util.h"
 
-#include "ash/components/arc/arc_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner_util.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/shareable_file_reference.h"

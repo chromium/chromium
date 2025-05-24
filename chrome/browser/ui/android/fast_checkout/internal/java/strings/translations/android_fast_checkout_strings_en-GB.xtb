@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1122068467107743258">Work</translation>
 <translation id="1275718070701477396">Selected</translation>
 <translation id="138513070655895675">Change to other payment method under this menu item.</translation>
 <translation id="2129442648318919291">Manage addresses.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Delivery address</translation>
 <translation id="8873105120914375071">Check out faster?</translation>
 <translation id="9032876013752408138">Auto-fill my info</translation>
+<translation id="932327136139879170">Home</translation>
 <translation id="984275831282074731">Payment methods</translation>
 </translationbundle>

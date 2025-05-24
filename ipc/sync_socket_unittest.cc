@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/sync_socket.h"
 
 #include <stddef.h>
 #include <stdio.h>
 
+#include <array>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -164,7 +170,7 @@ class SyncSocketClientListener : public IPC::Listener {
     // the SyncSocketServerListener object.
     EXPECT_EQ(socket_->Peek(), expected_bytes_to_receive);
     base::FixedArray<char> buf(expected_bytes_to_receive);
-    socket_->Receive(base::as_writable_bytes(base::make_span(buf)));
+    socket_->Receive(base::as_writable_byte_span(buf));
     EXPECT_EQ(strcmp(str.c_str(), buf.data()), 0);
     // After receiving from the socket there should be no bytes left.
     EXPECT_EQ(0U, socket_->Peek());
@@ -188,7 +194,7 @@ TEST_F(SyncSocketTest, SanityTest) {
   listener.set_quit_closure(loop.QuitWhenIdleClosure());
   CreateChannel(&listener);
   // Create a pair of SyncSockets.
-  base::SyncSocket pair[2];
+  std::array<base::SyncSocket, 2> pair;
   base::SyncSocket::CreatePair(&pair[0], &pair[1]);
   // Immediately after creation there should be no pending bytes.
   EXPECT_EQ(0U, pair[0].Peek());
@@ -234,7 +240,7 @@ static void BlockingRead(base::SyncSocket* socket,
 // Tests that we can safely end a blocking Receive operation on one thread
 // from another thread by disconnecting (but not closing) the socket.
 TEST_F(SyncSocketTest, DisconnectTest) {
-  base::CancelableSyncSocket pair[2];
+  std::array<base::CancelableSyncSocket, 2> pair;
   ASSERT_TRUE(base::CancelableSyncSocket::CreatePair(&pair[0], &pair[1]));
 
   base::Thread worker("BlockingThread");
@@ -244,13 +250,12 @@ TEST_F(SyncSocketTest, DisconnectTest) {
   char buf[0xff];
   size_t received = 1U;  // Initialize to an unexpected value.
   worker.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BlockingRead, &pair[0],
-                     base::as_writable_bytes(base::make_span(buf)), &received));
+      FROM_HERE, base::BindOnce(&BlockingRead, &pair[0],
+                                base::as_writable_byte_span(buf), &received));
 
   // Wait for the worker thread to say hello.
-  char hello[kHelloStringLength] = {0};
-  pair[1].Receive(base::as_writable_bytes(base::make_span(hello)));
+  char hello[kHelloStringLength] = {};
+  pair[1].Receive(base::as_writable_byte_span(hello));
   EXPECT_EQ(strcmp(hello, kHelloString), 0);
   // Give the worker a chance to start Receive().
   base::PlatformThread::YieldCurrentThread();
@@ -266,23 +271,22 @@ TEST_F(SyncSocketTest, DisconnectTest) {
 
 // Tests that read is a blocking operation.
 TEST_F(SyncSocketTest, BlockingReceiveTest) {
-  base::CancelableSyncSocket pair[2];
+  std::array<base::CancelableSyncSocket, 2> pair;
   ASSERT_TRUE(base::CancelableSyncSocket::CreatePair(&pair[0], &pair[1]));
 
   base::Thread worker("BlockingThread");
   worker.Start();
 
   // Try to do a blocking read from one of the sockets on the worker thread.
-  char buf[kHelloStringLength] = {0};
+  char buf[kHelloStringLength] = {};
   size_t received = 1U;  // Initialize to an unexpected value.
   worker.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BlockingRead, &pair[0],
-                     base::as_writable_bytes(base::make_span(buf)), &received));
+      FROM_HERE, base::BindOnce(&BlockingRead, &pair[0],
+                                base::as_writable_byte_span(buf), &received));
 
   // Wait for the worker thread to say hello.
-  char hello[kHelloStringLength] = {0};
-  pair[1].Receive(base::as_writable_bytes(base::make_span(hello)));
+  char hello[kHelloStringLength] = {};
+  pair[1].Receive(base::as_writable_byte_span(hello));
   EXPECT_EQ(0, strcmp(hello, kHelloString));
   // Give the worker a chance to start Receive().
   base::PlatformThread::YieldCurrentThread();
@@ -301,7 +305,7 @@ TEST_F(SyncSocketTest, BlockingReceiveTest) {
 // Tests that the write operation is non-blocking and returns immediately
 // when there is insufficient space in the socket's buffer.
 TEST_F(SyncSocketTest, NonBlockingWriteTest) {
-  base::CancelableSyncSocket pair[2];
+  std::array<base::CancelableSyncSocket, 2> pair;
   ASSERT_TRUE(base::CancelableSyncSocket::CreatePair(&pair[0], &pair[1]));
 
   // Fill up the buffer for one of the socket, Send() should not block the
@@ -320,8 +324,8 @@ TEST_F(SyncSocketTest, NonBlockingWriteTest) {
   EXPECT_EQ(bytes_in_buffer, pair[1].Peek());
 
   // Read from another socket to free some space for a new write.
-  char hello[kHelloStringLength] = {0};
-  pair[1].Receive(base::as_writable_bytes(base::make_span(hello)));
+  char hello[kHelloStringLength] = {};
+  pair[1].Receive(base::as_writable_byte_span(hello));
 
   // Should be able to write more data to the buffer now.
   EXPECT_EQ(pair[0].Send(bytes_to_send), bytes_to_send.size());

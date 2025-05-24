@@ -4,12 +4,15 @@
 
 package org.chromium.components.content_capture;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 
 /**
  * This class is used to specify the frame's session by a list of Frame ContentCaptureData from the
  * interested frame to root.
  */
+@NullMarked
 public class FrameSession extends ArrayList<ContentCaptureFrame> {
     /** @param length is reserved frame list length. */
     public FrameSession(int length) {

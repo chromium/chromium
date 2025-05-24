@@ -8,13 +8,16 @@ import android.content.Context;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 /** Shows the snackbar for Privacy Sandbox settings, allowing the user to quickly navigate there. */
+@NullMarked
 public class PrivacySandboxSnackbarController implements SnackbarManager.SnackbarController {
-    private Context mContext;
-    private SnackbarManager mSnackbarManager;
+    private final Context mContext;
+    private final SnackbarManager mSnackbarManager;
 
     /** Creates an instance of the controller given a SnackbarManager. */
     public PrivacySandboxSnackbarController(Context context, SnackbarManager manager) {
@@ -45,11 +48,11 @@ public class PrivacySandboxSnackbarController implements SnackbarManager.Snackba
 
     // Implement SnackbarController.
     @Override
-    public void onAction(Object actionData) {
+    public void onAction(@Nullable Object actionData) {
         PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                 mContext, PrivacySandboxReferrer.COOKIES_SNACKBAR);
     }
 
     @Override
-    public void onDismissNoAction(Object actionData) {}
+    public void onDismissNoAction(@Nullable Object actionData) {}
 }

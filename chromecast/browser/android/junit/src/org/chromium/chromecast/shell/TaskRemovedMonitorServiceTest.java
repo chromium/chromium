@@ -34,22 +34,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ServiceController;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Tests for TaskRemovedMonitorService
- */
-@RunWith(RobolectricTestRunner.class)
+/** Tests for TaskRemovedMonitorService */
+@RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(Mode.PAUSED)
 public class TaskRemovedMonitorServiceTest {
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private final String mRootId = "1234";
     private final String mSessionId = "5678";
@@ -58,8 +55,7 @@ public class TaskRemovedMonitorServiceTest {
     private ServiceController<TaskRemovedMonitorService> mController;
     private Service mTaskRemovedMonitorService;
 
-    @Mock
-    private WebContents mWebContents;
+    @Mock private WebContents mWebContents;
 
     @Before
     public void setUp() {
@@ -77,7 +73,8 @@ public class TaskRemovedMonitorServiceTest {
         TaskRemovedMonitorService.start(mRootId, mSessionId);
         Intent serviceIntent = shadowOf(mContext).getNextStartedService();
         assertNotNull(serviceIntent);
-        assertEquals(TaskRemovedMonitorService.class.getName(),
+        assertEquals(
+                TaskRemovedMonitorService.class.getName(),
                 serviceIntent.getComponent().getClassName());
         assertEquals(
                 mRootId, serviceIntent.getStringExtra(TaskRemovedMonitorService.ROOT_SESSION_KEY));
@@ -87,13 +84,12 @@ public class TaskRemovedMonitorServiceTest {
 
     @Test
     public void testStopStopsTaskRemovedMonitorService() {
-        String root = "foo";
-        String session = "bar";
         TaskRemovedMonitorService.start(mRootId, mSessionId);
         TaskRemovedMonitorService.stop();
         Intent serviceIntent = shadowOf(mContext).getNextStoppedService();
         assertNotNull(serviceIntent);
-        assertEquals(TaskRemovedMonitorService.class.getName(),
+        assertEquals(
+                TaskRemovedMonitorService.class.getName(),
                 serviceIntent.getComponent().getClassName());
     }
 
@@ -103,10 +99,12 @@ public class TaskRemovedMonitorServiceTest {
         mController.startCommand(0, 0);
         Intent taskRemovedIntent = new Intent(mContext, TaskRemovedMonitorServiceTest.class);
         verifyBroadcastedIntent(
-                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> {
                     mTaskRemovedMonitorService.onTaskRemoved(taskRemovedIntent);
                     assertFalse(shadowOf(mTaskRemovedMonitorService).isStoppedBySelf());
-                }, false);
+                },
+                false);
     }
 
     @Test
@@ -114,11 +112,13 @@ public class TaskRemovedMonitorServiceTest {
         mController.create();
         mController.startCommand(0, 0);
         verifyBroadcastedIntent(
-                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> {
                     Intent taskRemovedIntent = getIntentForSession("foo_session_id");
                     mTaskRemovedMonitorService.onTaskRemoved(taskRemovedIntent);
                     assertFalse(shadowOf(mTaskRemovedMonitorService).isStoppedBySelf());
-                }, false);
+                },
+                false);
     }
 
     @Test
@@ -126,11 +126,13 @@ public class TaskRemovedMonitorServiceTest {
         mController.create();
         mController.startCommand(0, 0);
         verifyBroadcastedIntent(
-                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> {
                     Intent taskRemovedIntent = getIntentForSession(mRootId);
                     mTaskRemovedMonitorService.onTaskRemoved(taskRemovedIntent);
                     assertTrue(shadowOf(mTaskRemovedMonitorService).isStoppedBySelf());
-                }, true);
+                },
+                true);
     }
 
     private void verifyBroadcastedIntent(
@@ -160,8 +162,12 @@ public class TaskRemovedMonitorServiceTest {
     }
 
     private Intent getIntentForSession(String sessionId) {
-        return CastWebContentsIntentUtils.requestStartCastActivity(mContext, mWebContents,
-                /* enableTouch= */ true, /* shouldRequestAudioFocus= */ false,
-                /* turnOnScreen= */ false, /* keepScreenOn */ false, sessionId);
+        return CastWebContentsIntentUtils.requestStartCastActivity(
+                mWebContents,
+                /* enableTouch= */ true,
+                /* shouldRequestAudioFocus= */ false,
+                /* turnOnScreen= */ false,
+                /* keepScreenOn= */ false,
+                sessionId);
     }
 }

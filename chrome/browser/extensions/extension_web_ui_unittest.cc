@@ -13,9 +13,9 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/extensions/api/chrome_url_overrides.h"
 #include "chrome/common/webui_url_constants.h"
@@ -24,6 +24,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -35,10 +36,13 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif
 
 using extensions::mojom::ManifestLocation;
@@ -65,8 +69,8 @@ class ExtensionWebUITest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     TestExtensionSystem* system =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()));
-    extension_service_ = system->CreateExtensionService(
-        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+    system->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
+                                   base::FilePath(), false);
     ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildOverrideRegistrar));
     ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(profile_.get());
@@ -77,14 +81,20 @@ class ExtensionWebUITest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  ExtensionRegistrar* registrar() {
+    return ExtensionRegistrar::Get(profile_.get());
+  }
+
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
   content::BrowserTaskEnvironment task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  user_manager::ScopedUserManager test_user_manager_{
-      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<ash::UserManagerDelegateImpl>(),
+          g_browser_process->local_state(),
+          ash::CrosSettings::Get())};
 #endif
 };
 
@@ -106,7 +116,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
           .SetLocation(ManifestLocation::kUnpacked)
           .SetID("abcdefghijabcdefghijabcdefghijaa")
           .Build());
-  extension_service_->AddExtension(ext_unpacked.get());
+  registrar()->AddExtension(ext_unpacked.get());
 
   const GURL kExpectedUnpackedOverrideUrl =
       ext_unpacked->GetResourceURL(kOverrideResource);
@@ -143,7 +153,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
           .SetLocation(ManifestLocation::kComponent)
           .SetID("bbabcdefghijabcdefghijabcdefghij")
           .Build());
-  extension_service_->AddComponentExtension(ext_component.get());
+  registrar()->AddComponentExtension(ext_component.get());
 
   // Despite being registered more recently, the component extension should
   // not take precedence over the non-component extension.
@@ -211,7 +221,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
     all_overrides.Set("newtab", std::move(newtab_list));
   }
 
-  extension_service_->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()))
       ->SetReady();
   base::RunLoop().RunUntilIdle();
@@ -231,7 +241,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
 TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension").Build();
-  extension_service_->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()))
       ->SetReady();
 
@@ -259,11 +269,7 @@ TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
   for (const auto& favicon : favicon_results) {
     EXPECT_TRUE(favicon.is_valid());
 
-    SkBitmap bitmap;
-    bool result =
-        gfx::PNGCodec::Decode(favicon.bitmap_data.get()->front(),
-                              favicon.bitmap_data.get()->size(), &bitmap);
-    EXPECT_TRUE(result);
+    SkBitmap bitmap = gfx::PNGCodec::Decode(*favicon.bitmap_data);
     EXPECT_FALSE(bitmap.isNull());
     EXPECT_FALSE(bitmap.drawsNothing());
   }
@@ -280,7 +286,7 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
                             std::move(chrome_url_overrides))
             .Build();
 
-    extension_service_->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
     EXPECT_EQ(extension, ExtensionWebUI::GetExtensionControllingURL(
                              GURL(chrome::kChromeUINewTabURL), profile_.get()));
 
@@ -306,8 +312,8 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
                     ntp_url, profile_.get()));
 
   // Disabling an extension should remove it from the override count.
-  extension_service_->DisableExtension(extension2->id(),
-                                       disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(extension2->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
   EXPECT_EQ(2u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
                     ntp_url, profile_.get()));
 }
@@ -338,14 +344,17 @@ TEST_F(ExtensionWebUIOverrideURLTest,
   PackCRX(data_dir().AppendASCII("ntp_override"),
           data_dir().AppendASCII("ntp_override.pem"), crx_path);
 
+  ExternalProviderManager* external_provider_manager =
+      ExternalProviderManager::Get(profile());
   auto external_provider = std::make_unique<MockExternalProvider>(
-      service(), ManifestLocation::kExternalPref);
+      external_provider_manager, ManifestLocation::kExternalPref);
   external_provider->UpdateOrAddExtension(kNtpOverrideExtensionId, "1",
                                           crx_path);
-  service()->AddProviderForTesting(std::move(external_provider));
+  external_provider_manager->AddProviderForTesting(
+      std::move(external_provider));
 
   TestExtensionRegistryObserver observer(registry(), kNtpOverrideExtensionId);
-  service()->CheckForExternalUpdates();
+  external_provider_manager->CheckForExternalUpdates();
   ASSERT_TRUE(observer.WaitForExtensionInstalled());
 
   // Extension should be disabled by default with right reason.
@@ -353,9 +362,10 @@ TEST_F(ExtensionWebUIOverrideURLTest,
       registry()->disabled_extensions().Contains(kNtpOverrideExtensionId));
   EXPECT_FALSE(
       registry()->enabled_extensions().Contains(kNtpOverrideExtensionId));
-  EXPECT_EQ(disable_reason::DISABLE_EXTERNAL_EXTENSION,
-            ExtensionPrefs::Get(profile())->GetDisableReasons(
-                kNtpOverrideExtensionId));
+  EXPECT_THAT(ExtensionPrefs::Get(profile())->GetDisableReasons(
+                  kNtpOverrideExtensionId),
+              testing::UnorderedElementsAre(
+                  disable_reason::DISABLE_EXTERNAL_EXTENSION));
 
   // URLOverrides pref should not be updated for disabled by default extension.
   PrefService* prefs = profile()->GetPrefs();
@@ -364,7 +374,7 @@ TEST_F(ExtensionWebUIOverrideURLTest,
   const base::Value::List* newtab_overrides = overrides.FindList("newtab");
   EXPECT_FALSE(newtab_overrides);
 
-  EXPECT_TRUE(service()->UninstallExtension(
+  EXPECT_TRUE(registrar()->UninstallExtension(
       kNtpOverrideExtensionId, UNINSTALL_REASON_FOR_TESTING, nullptr));
   ASSERT_FALSE(registry()->GetInstalledExtension(kNtpOverrideExtensionId));
 }

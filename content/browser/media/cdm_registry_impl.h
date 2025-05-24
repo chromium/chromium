@@ -110,21 +110,24 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
                                 media::CdmCapabilityCB cdm_capability_cb);
 
   // Called when initialization of `key_system` with robustness `robustness`
-  // is complete. `cdm_capability` will be std::nullopt if the key system
-  // with specified robustness isn't supported.
+  // is complete. `cdm_capability_or_status.has_value()` will be false if the
+  // key system with specified robustness isn't supported.
+  // `cdm_capability_or_status.error()` can be used to inspect the reason when
+  // no capability reported.
   void OnCapabilityInitialized(
       const std::string& key_system,
       const CdmInfo::Robustness robustness,
-      std::optional<media::CdmCapability> cdm_capability);
+      media::CdmCapabilityOrStatus cdm_capability_or_status);
 
   // Finalizes the CdmInfo corresponding to `key_system` and `robustness` if its
   // CdmCapability is null (lazy initialization). No-op if the CdmInfo does not
   // exist, or if the CdmInfo's CdmCapability is not null. The CdmInfo will be
-  // removed if `cdm_capability` is null, since the CDM does not support any
-  // capability.
+  // removed if `cdm_capability_or_status.has_value()` is false, since the CDM
+  // does not support any capability. `cdm_capability_or_status.error()` can be
+  // used for user-facing information especially when no capability reported.
   void FinalizeCapability(const std::string& key_system,
                           const CdmInfo::Robustness robustness,
-                          std::optional<media::CdmCapability> cdm_capability,
+                          media::CdmCapabilityOrStatus cdm_capability_or_status,
                           CdmInfo::Status status);
 
   // When capabilities for all registered key systems have been determined,

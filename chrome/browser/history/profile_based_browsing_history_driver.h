@@ -35,7 +35,7 @@ class ProfileBasedBrowsingHistoryDriver
   virtual Profile* GetProfile() = 0;
 
  protected:
-  ProfileBasedBrowsingHistoryDriver() {}
+  ProfileBasedBrowsingHistoryDriver() = default;
 };
 
 #endif  // CHROME_BROWSER_HISTORY_PROFILE_BASED_BROWSING_HISTORY_DRIVER_H_

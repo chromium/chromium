@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/sandbox/sandbox_internals_ui.h"
 
 #include <string>
@@ -75,8 +70,7 @@ static void SetSandboxStatusData(content::WebUIDataSource* source) {
 void CreateAndAddDataSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUISandboxHost);
-  source->AddResourcePaths(base::make_span(kSandboxInternalsResources,
-                                           kSandboxInternalsResourcesSize));
+  source->AddResourcePaths(kSandboxInternalsResources);
   source->SetDefaultResource(IDR_SANDBOX_INTERNALS_SANDBOX_INTERNALS_HTML);
 
   source->OverrideContentSecurityPolicy(

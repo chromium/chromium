@@ -33,6 +33,8 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_composite_operation.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_composite_operation_or_auto.h"
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -54,9 +56,12 @@ class CORE_EXPORT EffectModel : public GarbageCollected<EffectModel> {
     kCompositeAdd,
     kCompositeAccumulate,
   };
-  static std::optional<CompositeOperation> StringToCompositeOperation(
-      const String&);
-  static String CompositeOperationToString(std::optional<CompositeOperation>);
+  static CompositeOperation EnumToCompositeOperation(
+      V8CompositeOperation::Enum);
+  static std::optional<CompositeOperation> EnumToCompositeOperation(
+      V8CompositeOperationOrAuto::Enum);
+  static V8CompositeOperation::Enum CompositeOperationToEnum(
+      CompositeOperation);
 
   EffectModel() = default;
   virtual ~EffectModel() = default;

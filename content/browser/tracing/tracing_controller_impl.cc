@@ -34,7 +34,6 @@
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/variations/active_field_trials.h"
@@ -50,10 +49,10 @@
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/network_change_notifier.h"
+#include "net/log/net_log_util.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
-#include "services/tracing/public/cpp/trace_event_agent.h"
+#include "services/tracing/public/cpp/perfetto/trace_event_metadata_source.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
@@ -61,9 +60,11 @@
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
+#include "third_party/webrtc_overrides/init_webrtc.h"
+#include "v8/include/v8-trace-categories.h"
 #include "v8/include/v8-version-string.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "content/browser/tracing/cros_tracing_agent.h"
 #endif
@@ -138,8 +139,7 @@ std::string GetClockString() {
       return "WIN_ROLLOVER_PROTECTED_TIME_GET_TIME";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -173,9 +173,15 @@ std::string GetClockOffsetSinceEpoch() {
 }
 #endif
 
-bool IsSpecialCategory(const std::string& name) {
-  return name == "__metadata" || name == "tracing_already_shutdown" ||
-         name == "tracing_categories_exhausted._must_increase_kMaxCategories";
+void AddCategoriesToSet(
+    const perfetto::internal::TrackEventCategoryRegistry& registry,
+    std::set<std::string>& category_set) {
+  for (size_t i = 0; i < registry.category_count(); ++i) {
+    if (registry.GetCategory(i)->IsGroup()) {
+      continue;
+    }
+    category_set.insert(registry.GetCategory(i)->name);
+  }
 }
 
 }  // namespace
@@ -189,10 +195,10 @@ TracingControllerImpl::TracingControllerImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Deliberately leaked, like this class.
   base::FileTracing::SetProvider(new FileTracingProviderImpl);
-  AddAgents();
+  InitializeDataSources();
   g_tracing_controller = this;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Bind hwclass once the statistics are available.
   ash::system::StatisticsProvider::GetInstance()
       ->ScheduleOnMachineStatisticsLoaded(
@@ -200,24 +206,21 @@ TracingControllerImpl::TracingControllerImpl() {
                          weak_ptr_factory_.GetWeakPtr()));
 #endif
 
-  tracing::PerfettoTracedProcess::Get()->SetConsumerConnectionFactory(
+  tracing::PerfettoTracedProcess::Get().SetConsumerConnectionFactory(
       &GetTracingService, base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 TracingControllerImpl::~TracingControllerImpl() = default;
 
-void TracingControllerImpl::AddAgents() {
+void TracingControllerImpl::InitializeDataSources() {
   tracing::TracedProcessImpl::GetInstance()->SetTaskRunner(
       base::SequencedTaskRunner::GetCurrentDefault());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  agents_.push_back(std::make_unique<CrOSTracingAgent>());
+#if BUILDFLAG(IS_CHROMEOS)
+  RegisterCrOSTracingDataSource();
 #elif defined(CAST_TRACING_AGENT)
-  agents_.push_back(std::make_unique<CastTracingAgent>());
+  RegisterCastTracingDataSource();
 #endif
-
-  // Ensure the TraceEventAgent has been created.
-  tracing::TraceEventAgent::GetInstance();
 
   // For adding general CPU, network, OS, and other system information to the
   // metadata.
@@ -229,10 +232,6 @@ void TracingControllerImpl::AddAgents() {
       base::Unretained(this)));
   metadata_source->AddGeneratorFunction(base::BindRepeating(
       &TracingControllerImpl::GenerateMetadataPacket, base::Unretained(this)));
-#if BUILDFLAG(IS_ANDROID)
-  tracing::PerfettoTracedProcess::Get()->AddDataSource(
-      tracing::JavaHeapProfiler::GetInstance());
-#endif
 }
 
 void TracingControllerImpl::GenerateMetadataPacketFieldTrials(
@@ -307,13 +306,13 @@ std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
 #endif
 
   // OS
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   metadata_dict.Set("os-name", "CrOS");
   if (are_statistics_loaded_)
     metadata_dict.Set("hardware-class", hardware_class_);
 #else
   metadata_dict.Set("os-name", base::SysInfo::OperatingSystemName());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   metadata_dict.Set("os-version", base::SysInfo::OperatingSystemVersion());
 #if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetArchitecture() ==
@@ -384,6 +383,10 @@ std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
 #endif
 
   metadata_dict.Set(
+      "net-constants",
+      net::GetNetConstants(net::NetConstantsRequestMode::kTracing));
+
+  metadata_dict.Set(
       "trace-capture-datetime",
       base::UnlocalizedTimeFormatWithPattern(TRACE_TIME_NOW(), "y-M-d H:m:s",
                                              icu::TimeZone::getGMT()));
@@ -416,15 +419,10 @@ TracingControllerImpl* TracingControllerImpl::GetInstance() {
 bool TracingControllerImpl::GetCategories(GetCategoriesDoneCallback callback) {
   std::set<std::string> category_set;
 
-  using base::perfetto_track_event::internal::kCategoryRegistry;
-  for (size_t i = 0; i < kCategoryRegistry.category_count(); ++i) {
-    std::string category_name = kCategoryRegistry.GetCategory(i)->name;
-    // Only add single categories, not groups. Also exclude special categories.
-    if (category_name.find(',') == std::string::npos &&
-        !IsSpecialCategory(category_name)) {
-      category_set.insert(category_name);
-    }
-  }
+  AddCategoriesToSet(base::perfetto_track_event::internal::kCategoryRegistry,
+                     category_set);
+  AddCategoriesToSet(v8::GetTrackEventCategoryRegistry(), category_set);
+  AddCategoriesToSet(GetWebRtcTrackEventCategoryRegistry(), category_set);
 
   std::move(callback).Run(category_set);
   return true;
@@ -592,7 +590,7 @@ void TracingControllerImpl::OnReadBuffersComplete() {
     CompleteFlush();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void TracingControllerImpl::OnMachineStatisticsLoaded() {
   if (const std::optional<std::string_view> hardware_class =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(

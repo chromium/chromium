@@ -103,13 +103,11 @@ void ParseLauncherOrdering(
         item_map[*parsed] = LauncherItemData(item.type(), item.order());
       }
     }
-    // Add packages for both chrome and lacros for TYPE_CHROME.
+    // Add packages for ash chrome for TYPE_CHROME.
     if (item.type() ==
         proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_CHROME) {
       item_map[PackageId(PackageType::kChromeApp,
                          app_constants::kChromeAppId)] =
-          LauncherItemData(item.type(), item.order());
-      item_map[PackageId(PackageType::kSystem, app_constants::kLacrosChrome)] =
           LauncherItemData(item.type(), item.order());
     }
     // Add nested child folder.

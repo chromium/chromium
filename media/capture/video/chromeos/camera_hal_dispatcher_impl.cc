@@ -43,10 +43,6 @@ const base::FilePath::CharType kForceEnableEffectsPath[] =
     "/run/camera/force_enable_effects";
 const base::FilePath::CharType kForceDisableEffectsPath[] =
     "/run/camera/force_disable_effects";
-const base::FilePath::CharType kForceEnableSuperResPath[] =
-    "/run/camera/force_enable_super_res";
-const base::FilePath::CharType kForceDisableSuperResPath[] =
-    "/run/camera/force_disable_super_res";
 const base::FilePath::CharType kEnableRetouchWithRelightPath[] =
     "/run/camera/enable_retouch_with_relight";
 const base::FilePath::CharType kEnableOnlyRetouchPath[] =
@@ -307,13 +303,6 @@ bool CameraHalDispatcherImpl::Start() {
   CreateEnableDisableFile(
       kForceEnableEffectsPath, kForceDisableEffectsPath,
       /*should_enable=*/ash::features::IsVideoConferenceEnabled(),
-      /*should_remove_both=*/false);
-
-  CreateEnableDisableFile(
-      kForceEnableSuperResPath, kForceDisableSuperResPath,
-      /*should_enable=*/
-      command_line->GetSwitchValueASCII(switches::kCameraSuperResOverride) !=
-          switches::kCameraSuperResForceDisabled,
       /*should_remove_both=*/false);
 
   std::string face_retouch_override =
@@ -946,7 +935,7 @@ std::string CameraHalDispatcherImpl::GetDeviceIdFromCameraId(
 }
 
 base::flat_set<std::string> CameraHalDispatcherImpl::GetDeviceIdsFromCameraIds(
-    base::flat_set<int32_t> camera_ids) {
+    const base::flat_set<int32_t>& camera_ids) {
   base::flat_set<std::string> device_ids;
   for (const auto& camera_id : camera_ids) {
     device_ids.insert(GetDeviceIdFromCameraId(camera_id));

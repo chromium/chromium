@@ -7,14 +7,17 @@
 
 #include "content/public/browser/navigation_throttle.h"
 
+namespace content {
+class NavigationThrottleRegistry;
+}  // namespace content
+
 // This class prevents users from opening reading mode in the main content area
 // by intercepting a request for the read anything page and instead showing the
 // side panel.
 class ReadAnythingSidePanelNavigationThrottle
     : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<content::NavigationThrottle> CreateFor(
-      content::NavigationHandle* handle);
+  static void CreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   // NavigationThrottle overrides:
   ThrottleCheckResult WillStartRequest() override;
@@ -22,7 +25,7 @@ class ReadAnythingSidePanelNavigationThrottle
 
  private:
   explicit ReadAnythingSidePanelNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 
   ThrottleCheckResult HandleSidePanelRequest();
 };

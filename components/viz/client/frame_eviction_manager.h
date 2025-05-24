@@ -34,7 +34,7 @@ namespace viz {
 
 class FrameEvictionManagerClient {
  public:
-  virtual ~FrameEvictionManagerClient() {}
+  virtual ~FrameEvictionManagerClient() = default;
   virtual void EvictCurrentFrame() = 0;
 };
 

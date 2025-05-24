@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="zh-CN">
+<translation id="1293272072740285747">您可以保留此分组以便日后添加标签页；如果不再需要，也可以将其删除。
+
+如果删除，所有人将立即失去对标签页分组“<ph name="TITLE_OF_GROUP" />”的访问权限，并且该分组将从所有设备中删除。</translation>
+<translation id="1340839264183302272">退出分组</translation>
+<translation id="1419023007528516122">此操作会将该分组从您的设备中永久删除</translation>
+<translation id="1501480321619201731">删除群组</translation>
+<translation id="2677748264148917807">离开</translation>
+<translation id="3547352561153509682">此操作会从已登录 <ph name="USER_EMAIL" /> 的所有设备中删除该分组</translation>
+<translation id="381219490185664296">要取消标签页分组吗？</translation>
+<translation id="4139634748112164403">相应标签页将在此设备上保持打开状态，但分组将被永久删除</translation>
+<translation id="4431937619879060901">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从您的所有设备中删除</translation>
+<translation id="4460014764210899310">取消分组</translation>
+<translation id="4777866634702576038">要删除标签页分组吗？</translation>
+<translation id="5094423602314093681">要移除标签页并删除分组吗？</translation>
+<translation id="5647702255748985085">退出分组？</translation>
+<translation id="742664698522525515">保留分组？</translation>
+<translation id="750886945254958667">您可以保留此分组，以便日后添加标签页；如果不再想访问它，也可以退出分组</translation>
+<translation id="8261506727792406068">删除</translation>
+<translation id="870736955561925754">要关闭标签页并删除分组吗？</translation>
+<translation id="8804742093141782941">保留分组</translation>
+<translation id="9169141410816678175">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除</translation>
+<translation id="9216898458513705996">相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除该分组</translation>
+<translation id="94870150074703282">要删除分组吗？</translation>
+</translationbundle>

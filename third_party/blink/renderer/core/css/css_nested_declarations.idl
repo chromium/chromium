@@ -4,7 +4,6 @@
 
 [
     Exposed=Window,
-    RuntimeEnabled=CSSNestedDeclarations,
     ImplementedAs=CSSNestedDeclarationsRule
 ] interface CSSNestedDeclarations : CSSRule {
     [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;

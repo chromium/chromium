@@ -27,9 +27,10 @@ enum FormControlType {
   kInputText = 9,
   kInputUrl = 10,
   kSelectOne = 11,
-  kSelectMultiple = 12,
-  kSelectList = 13,
+  // deprecated: kSelectMultiple = 12,
+  // deprecated: kSelectList = 13
   kTextArea = 14,
+  kInputDate = 15,
 };
 
 // The list of all HTML autocomplete field mode hints supported by Chrome.
@@ -312,6 +313,7 @@ struct AutocompleteParsingResult {
   HtmlFieldMode mode;
   HtmlFieldType field_type;
   bool webauthn;
+  bool webidentity;
 };
 
 // autofill::FormFieldData (components/autofill/core/common/form_field_data.h)
@@ -363,6 +365,7 @@ struct FormFieldData {
   FormControlType form_control_type;
   string autocomplete_attribute;
   AutocompleteParsingResult? parsed_autocomplete;
+  mojo_base.mojom.String16 pattern;
   mojo_base.mojom.String16 placeholder;
   mojo_base.mojom.String16 css_classes;
   mojo_base.mojom.String16 aria_label;
@@ -441,7 +444,10 @@ struct FormFieldDataPredictions {
   string? server_type;
   string html_type;
   string overall_type;
+  string autofill_ai_type;
+  string format_string;
   string parseable_name;
+  string parseable_label;
   string section;
   // See AutofillField for information on the ranks.
   uint32 rank;
@@ -466,6 +472,7 @@ struct PasswordAndMetadata {
   mojo_base.mojom.String16 password_value;
   string realm;
   bool uses_account_store;
+  bool is_grouped_affiliation;
 };
 
 // autofill::PasswordFormFillData
@@ -475,11 +482,11 @@ struct PasswordFormFillData {
   url.mojom.Url url;
   FieldRendererId username_element_renderer_id;
   FieldRendererId password_element_renderer_id;
-  bool username_may_use_prefilled_placeholder;
   PasswordAndMetadata preferred_login;
   array<PasswordAndMetadata> additional_logins;
   bool wait_for_username;
   array<FieldRendererId> suggestion_banned_fields;
+  bool notify_browser_of_successful_filling;
 };
 
 // autofill::PasswordFormGenerationData
@@ -499,21 +506,28 @@ struct PasswordGenerationUIData {
   bool is_generation_element_password_type;
   mojo_base.mojom.TextDirection text_direction;
   FormData form_data;
-  bool input_field_empty;
+  bool generation_rejected;
+};
+
+// autofill::TriggeringField
+// (components/autofill/core/common/password_form_fill_data.h)
+struct TriggeringField {
+  FieldRendererId element_id;
+  AutofillSuggestionTriggerSource trigger_source;
+  mojo_base.mojom.TextDirection text_direction;
+  mojo_base.mojom.String16 typed_username;
+  bool show_webauthn_credentials;
+  bool show_identity_credentials;
+  gfx.mojom.RectF bounds;
 };
 
 // autofill::PasswordSuggestionRequest
 // (components/autofill/core/common/password_form_fill_data.h)
 struct PasswordSuggestionRequest {
-  FieldRendererId element_id;
+  TriggeringField field;
   FormData form_data;
-  AutofillSuggestionTriggerSource trigger_source;
   uint64 username_field_index;
   uint64 password_field_index;
-  mojo_base.mojom.TextDirection text_direction;
-  mojo_base.mojom.String16 typed_username;
-  bool show_webauthn_credentials;
-  gfx.mojom.RectF bounds;
 };
 
 // autofill::ParsingResult
@@ -570,80 +584,71 @@ enum FieldActionType {
 // histograms/enums.xml. Do not reorder or remove items.
 enum AutofillSuggestionTriggerSource {
   // Used as a default value and cannot be used to trigger suggestions.
-  kUnspecified,
+  kUnspecified = 0,
   // Suggestions triggered by either:
   // - Clicking or tapping a text input (TAB key doesn't count).
   // - Focusing a text input using a screen reader.
   // Suggestion of this type can trigger FastCheckout or TouchToFill.
-  kFormControlElementClicked,
+  kFormControlElementClicked = 1,
   // Suggestions triggered by focusing a textarea without click or tab
   // interaction. Currently, this is only triggered on Desktop platforms and
   // only generates Compose suggestions.
-  kTextareaFocusedWithoutClick,
+  kTextareaFocusedWithoutClick = 2,
   // Suggestions triggered as above except that the target is a
   // contenteditable element rather than a form control element.
-  kContentEditableClicked,
+  kContentEditableClicked = 3,
   // Suggestions triggered by modifying the content of a text input.
-  kTextFieldDidChange,
+  kTextFieldValueChanged = 4,
   // Suggestions triggered by pressing the down key on a text input. This auto
   // selects the first suggestion.
-  kTextFieldDidReceiveKeyDown,
+  kTextFieldDidReceiveKeyDown = 5,
   // Suggestions triggered by the clicking onto the "triangle" on an
   // <input list=...> to show <datalist> suggestions. While this also counts
   // as a kFormControlElementClicked event, it is triggered slightly later.
   // As of crrev.com/c/107353005, prefix matching for such suggestions is
   // skipped, to make them behave more like a <select>.
   // TODO(crbug.com/40100455): It's unclear if this is still necessary.
-  kOpenTextDataListChooser,
-  // Credit card suggestions offer users with Sync transport eligiblity an
-  // option to display cards from their account. This causes the suggestions to
-  // update. The updated suggested are considered to have this trigger source.
-  kShowCardsFromAccount,
+  kOpenTextDataListChooser = 6,
+  // kShowCardsFromAccount = 7 is deprecated
   // The suggestion triggering logic through Blink events (e.g.
   // `kFormControlElementClicked`) is shared with the password manager. However,
   // the trigger source is not propagated to the password manager specific
   // code (password_autofill_agent.cc and onwards to the browser process).
   // On the browser process side, all password suggestions are treated as
   // `kPasswordManager`. On the renderer side, `kPasswordManager` is unused.
-  kPasswordManager,
+  kPasswordManager = 8,
   // Since iOS has no renderer, it has separate suggestion triggering logic.
   // This code currently doesn't distinguish between different suggestion
   // trigger sources. They are all treated as `kiOS`. See crbug.com/1448447.
-  kiOS,
-  // Suggestions triggered by selecting the Autofill address manual fallback
-  // entry from the Chrome context menu. This trigger source is also used to
-  // reopen the Autofill popup after the user closed a dialog opened from the
-  // popup.
-  kManualFallbackAddress,
-  // Suggestions triggered by selecting the Autofill payment methods manual
-  // fallback entry from the Chrome context menu.
-  kManualFallbackPayments,
+  kiOS = 9,
+  // kManualFallbackAddress = 10 is deprecated
+  // kManualFallbackPayments = 11 is deprecated
   // Suggestions triggered by selecting the Autofill password manager manual
   // fallback entry from the Chrome context menu.
-  kManualFallbackPasswords,
+  kManualFallbackPasswords = 12,
   // Suggestions triggered by selecting the Plus Address manual fallback entry
   // from the Chrome context menu.
-  kManualFallbackPlusAddresses,
+  kManualFallbackPlusAddresses = 13,
   // Suggestions are triggered after the user the user closed a dialog. For
   // example, this can be profile edit or delete dialog. This trigger source
   // is used only if the suggestions were triggered manually via the Chrome
   // context menu.
-  kShowPromptAfterDialogClosedNonManualFallback,
+  kShowPromptAfterDialogClosedNonManualFallback = 14,
   // The compose saved state notification is triggered when the compose dialog
   // loses focus and is closed.
-  kComposeDialogLostFocus,
+  kComposeDialogLostFocus = 15,
   // The compose proactive nudge is triggered after a delay by the compose
   // manager.
-  kComposeDelayedProactiveNudge,
+  kComposeDelayedProactiveNudge = 16,
   // Password manager renderer received password suggestions from the browser
   // after the field was focused (likely due to autofocus on the page load).
-  kPasswordManagerProcessedFocusedField,
-  // Prediction improvements was invoked.
-  kPredictionImprovements,
+  kPasswordManagerProcessedFocusedField = 17,
+  // Autofill AI was invoked.
+  kAutofillAi = 18,
   // An update to the suggestions is triggered, e.g. because a user decided
   // to refresh a plus address suggestion or because a network request for a
   // plus address suggestion terminated and its result needs to be shown.
   // This value is not allowed to be sent from the renderer to the browser since
   // it disables some of the click-jacking protections in the browser.
-  kPlusAddressUpdatedInBrowserProcess
+  kPlusAddressUpdatedInBrowserProcess = 19
 };

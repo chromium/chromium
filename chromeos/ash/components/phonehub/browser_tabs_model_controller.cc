@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/browser_tabs_model_controller.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -54,5 +53,4 @@ void BrowserTabsModelController::UpdateBrowserTabsModel() {
     mutable_phone_model_->SetBrowserTabsModel(std::nullopt);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

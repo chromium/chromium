@@ -39,7 +39,7 @@ class NetworkDiagnosticsRoutineTest : public ::testing::Test {
         delete;
     TestNetworkDiagnosticsRoutine& operator=(
         const TestNetworkDiagnosticsRoutine&) = delete;
-    ~TestNetworkDiagnosticsRoutine() override {}
+    ~TestNetworkDiagnosticsRoutine() override = default;
 
     // NetworkDiagnosticRoutine:
     mojom::RoutineType Type() override { return kType; }

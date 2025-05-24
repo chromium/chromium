@@ -20,10 +20,6 @@ class SequenceManager;
 }
 }  // namespace base
 
-namespace ukm {
-class UkmRecorder;
-}
-
 namespace blink {
 namespace scheduler {
 
@@ -56,8 +52,7 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
   void PostDelayedIdleTask(const base::Location&,
                            base::TimeDelta delay,
                            Thread::IdleTask) override;
-  void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override;
+  void RemoveCancelledIdleTasks() override;
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
   void SetV8Isolate(v8::Isolate* isolate) override;
   void Shutdown() override;
@@ -106,8 +101,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
       base::TimeTicks now,
       base::TimeDelta* next_long_idle_period_delay_out) override;
   void IsNotQuiescent() override {}
-  void OnIdlePeriodStarted() override {}
-  void OnIdlePeriodEnded() override {}
   void OnPendingTasksChanged(bool new_state) override {}
 
   void CreateBudgetPools();
@@ -116,9 +109,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
       std::unique_ptr<CPUTimeBudgetPool> cpu_time_budget_pool);
 
   HashSet<WorkerSchedulerImpl*>& GetWorkerSchedulersForTesting();
-
-  void SetUkmTaskSamplingRateForTest(double rate);
-  void SetUkmRecorderForTest(std::unique_ptr<ukm::UkmRecorder> ukm_recorder);
 
   virtual void PerformMicrotaskCheckpoint();
 
@@ -130,11 +120,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
   void OnVirtualTimeResumed() override;
 
   void MaybeStartLongIdlePeriod();
-
-  void RecordTaskUkm(
-      NonMainThreadTaskQueue* worker_task_queue,
-      const base::sequence_manager::Task& task,
-      const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
   const ThreadType thread_type_;
   scoped_refptr<NonMainThreadTaskQueue> idle_helper_queue_;
@@ -153,12 +138,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
 
   std::unique_ptr<WakeUpBudgetPool> wake_up_budget_pool_;
   std::unique_ptr<CPUTimeBudgetPool> cpu_time_budget_pool_;
-
-  // The status of the parent frame when the worker was created.
-  const FrameStatus initial_frame_status_;
-
-  const ukm::SourceId ukm_source_id_;
-  std::unique_ptr<ukm::UkmRecorder> ukm_recorder_;
 };
 
 }  // namespace scheduler

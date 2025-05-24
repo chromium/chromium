@@ -6,7 +6,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -18,6 +17,7 @@
 #include "components/embedder_support/switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -30,8 +30,7 @@ class FastShutdown : public InProcessBrowserTest {
   FastShutdown& operator=(const FastShutdown&) = delete;
 
  protected:
-  FastShutdown() {
-  }
+  FastShutdown() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(embedder_support::kDisablePopupBlocking);
@@ -41,8 +40,8 @@ class FastShutdown : public InProcessBrowserTest {
 // This tests for a previous error where uninstalling an onbeforeunload handler
 // would enable fast shutdown even if an onunload handler still existed.
 // Flaky on all platforms, http://crbug.com/89173
-#if !BUILDFLAG( \
-    IS_CHROMEOS_ASH)  // ChromeOS opens tabs instead of windows for popups.
+// ChromeOS opens tabs instead of windows for popups.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(FastShutdown, DISABLED_SlowTermination) {
   // Need to run these tests on http:// since we only allow cookies on that (and
   // https obviously).
@@ -82,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(FastShutdown, DISABLED_SlowTermination) {
 // Therefore, it is important that the test below is a //chrome-level test, even
 // though the test doesn't have any explicit dependencies on the //chrome layer.
 IN_PROC_BROWSER_TEST_F(FastShutdown, SpareRenderProcessHostDuringShutdown) {
-  content::RenderProcessHost::WarmupSpareRenderProcessHost(
+  content::SpareRenderProcessHostManager::Get().WarmupSpare(
       browser()->profile());
 
   // The verification is that there are no DCHECKs anywhere during test tear

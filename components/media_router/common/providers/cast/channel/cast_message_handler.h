@@ -167,6 +167,7 @@ class CastMessageHandler : public CastSocket::Observer {
     virtual void OnAppMessage(int channel_id, const CastMessage& message) = 0;
     virtual void OnInternalMessage(int channel_id,
                                    const InternalMessage& message) = 0;
+    virtual void OnMessageSent(int channel_id, const CastMessage& message) = 0;
   };
 
   // |parse_json|: A callback which can be used to parse a string of potentially

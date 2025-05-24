@@ -83,8 +83,8 @@ TEST_F(RequestBodyCollectorTest, Empty) {
 }
 
 TEST_F(RequestBodyCollectorTest, OnlyBytes) {
-  auto body =
-      network::ResourceRequestBody::CreateFromBytes(kBytes, strlen(kBytes));
+  auto body = network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::byte_span_from_cstring(kBytes));
   auto collector = RequestBodyCollector::Collect(*body, MakeCallback());
   EXPECT_THAT(collector, testing::IsNull());
   EXPECT_THAT(text_result_, testing::ElementsAre(kBytes));
@@ -174,17 +174,17 @@ TEST_F(RequestBodyCollectorTest, AllTogertherNow) {
   static constexpr char kDelimiter[] = "-------------------";
 
   auto body = base::MakeRefCounted<network::ResourceRequestBody>();
-  body->AppendBytes(kBytes, strlen(kBytes));
+  body->AppendCopyOfBytes(base::byte_span_from_cstring(kBytes));
 
   auto pipe1 = AddPipeGetterWithData(*body, "Pipe bytes 1");
-  body->AppendBytes(kDelimiter, strlen(kDelimiter));
+  body->AppendCopyOfBytes(base::byte_span_from_cstring(kDelimiter));
   auto pipe2 = AddPipeGetterWithData(*body, "Pipe bytes 2");
-  body->AppendBytes(kDelimiter, strlen(kDelimiter));
+  body->AppendCopyOfBytes(base::byte_span_from_cstring(kDelimiter));
   auto pipe3 = AddPipeGetterWithData(*body, "");
   pipe3->set_pipe_closed_early(true);
-  body->AppendBytes(kDelimiter, strlen(kDelimiter));
+  body->AppendCopyOfBytes(base::byte_span_from_cstring(kDelimiter));
   auto pipe4 = AddPipeGetterWithData(*body, "");
-  body->AppendBytes(kDelimiter, strlen(kDelimiter));
+  body->AppendCopyOfBytes(base::byte_span_from_cstring(kDelimiter));
 
   auto collector = RequestBodyCollector::Collect(*body, MakeCallback());
   EXPECT_THAT(collector, testing::NotNull());

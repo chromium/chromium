@@ -37,9 +37,9 @@ public class PathUtilsTest {
         String cacheDir = PathUtils.getCacheDirectory();
         String thumbnailDir = PathUtils.getThumbnailCacheDirectory();
 
-        assertEquals(dataDir, expectedDataDir);
-        assertEquals(cacheDir, expectedCacheDir);
-        assertEquals(thumbnailDir, expectedThumbnailDir);
+        assertEquals(expectedDataDir, dataDir);
+        assertEquals(expectedCacheDir, cacheDir);
+        assertEquals(expectedThumbnailDir, thumbnailDir);
     }
 
     @Test
@@ -74,9 +74,9 @@ public class PathUtilsTest {
         String cacheDir = PathUtils.getCacheDirectory();
         String thumbnailDir = PathUtils.getThumbnailCacheDirectory();
 
-        assertEquals(dataDir, expectedDataDir);
-        assertEquals(cacheDir, expectedCacheDir);
-        assertEquals(thumbnailDir, expectedThumbnailDir);
+        assertEquals(expectedDataDir, dataDir);
+        assertEquals(expectedCacheDir, cacheDir);
+        assertEquals(expectedThumbnailDir, thumbnailDir);
     }
 
     @Test
@@ -94,8 +94,8 @@ public class PathUtilsTest {
         String cacheDir = PathUtils.getCacheDirectory();
         String thumbnailDir = PathUtils.getThumbnailCacheDirectory();
 
-        assertEquals(dataDir, expectedDataDir);
-        assertEquals(cacheDir, expectedCacheDir);
-        assertEquals(thumbnailDir, expectedThumbnailDir);
+        assertEquals(expectedDataDir, dataDir);
+        assertEquals(expectedCacheDir, cacheDir);
+        assertEquals(expectedThumbnailDir, thumbnailDir);
     }
 }

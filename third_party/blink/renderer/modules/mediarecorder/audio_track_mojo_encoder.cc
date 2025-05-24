@@ -105,6 +105,13 @@ void AudioTrackMojoEncoder::EncodeAudio(
   DCHECK_EQ(input_bus->channels(), input_params_.channels());
   DCHECK(!capture_time.is_null());
 
+  if (paused_ && !pause_begin_timestamp_.has_value()) {
+    pause_begin_timestamp_ = capture_time;
+  } else if (!paused_ && pause_begin_timestamp_.has_value()) {
+    accumulated_paused_duration_ += capture_time - *pause_begin_timestamp_;
+    pause_begin_timestamp_ = std::nullopt;
+  }
+
   if (paused_ || has_error_) {
     return;
   }
@@ -165,10 +172,12 @@ void AudioTrackMojoEncoder::OnEncodeOutput(
     return;
   }
 
-  std::string encoded_data(encoded_buffer.encoded_data.begin(),
-                           encoded_buffer.encoded_data.end());
-  on_encoded_audio_cb_.Run(encoded_buffer.params, encoded_data,
-                           std::move(codec_desc), encoded_buffer.timestamp);
+  auto buffer =
+      media::DecoderBuffer::FromArray(std::move(encoded_buffer.encoded_data));
+
+  on_encoded_audio_cb_.Run(
+      encoded_buffer.params, std::move(buffer), std::move(codec_desc),
+      encoded_buffer.timestamp + accumulated_paused_duration_);
 }
 
 void AudioTrackMojoEncoder::NotifyError(media::EncoderStatus error) {

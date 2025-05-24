@@ -153,6 +153,6 @@ class MojoFacade {
   base::WeakPtrFactory<MojoFacade> weak_ptr_factory_{this};
 };
 
-}  // web
+}  // namespace web
 
 #endif  // IOS_WEB_WEBUI_MOJO_FACADE_H_

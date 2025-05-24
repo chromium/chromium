@@ -11,6 +11,8 @@ import android.view.autofill.VirtualViewFillInfo;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Locale;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Locale;
  * android.view.autofill.AutofillManager#notifyVirtualViewsReady(View, SparseArray)} from the {@link
  * FormData} object sent for the cache request.
  */
+@NullMarked
 class PrefillRequest {
     public static final String TAG = "PrefillRequest";
     private final FormData mForm;
@@ -42,8 +45,7 @@ class PrefillRequest {
         SparseArray<VirtualViewFillInfo> virtualViewsInfo;
 
         // Check the comment on SparseArrayWithWorkaround class.
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                && AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND.isEnabled()) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             virtualViewsInfo = new SparseArrayWithWorkaround();
         } else {
             virtualViewsInfo = new SparseArray<>();

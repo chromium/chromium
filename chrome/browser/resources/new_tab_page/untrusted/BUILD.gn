@@ -1,0 +1,64 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "new_tab_page_untrusted"
+
+  static_files = [
+    "background_image.html",
+    "image.html",
+    "microsoft_auth.html",
+    "one_google_bar.html",
+  ]
+
+  ts_files = [
+    "background_image.ts",
+    "microsoft_auth.ts",
+    "microsoft_auth_proxy.ts",
+    "msal_browser.ts",
+    "one_google_bar.ts",
+  ]
+
+  extra_grdp_files = [ "$target_gen_dir/msal_browser_resources.grdp" ]
+  extra_grdp_deps = [ ":build_msal_grdp" ]
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/ntp_microsoft_auth:shared_ts__generator",
+    "//chrome/browser/ui/webui/ntp_microsoft_auth:untrusted_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_shared_ui.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.mojom-webui.ts",
+  ]
+
+  ts_definitions = [ "msal_browser_fixed.d.ts" ]
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
+  ts_path_mappings = [
+    "/msal_browser/msal-browser.min.js|" +
+        rebase_path("msal_browser_fixed.d.ts", target_gen_dir),
+    "@azure/msal-browser/lib/*|" + rebase_path(
+            "//third_party/node/node_modules/@azure/msal-browser/lib/types/*",
+            target_gen_dir),
+    "@azure/msal-common/browser|" + rebase_path(
+            "//third_party/node/node_modules/@azure/msal-common/lib/types/index-browser.d.ts",
+            target_gen_dir),
+    "@azure/msal-common/lib/*|" + rebase_path(
+            "//third_party/node/node_modules/@azure/msal-common/lib/types/*",
+            target_gen_dir),
+  ]
+}
+
+generate_grd("build_msal_grdp") {
+  grd_prefix = "msal_browser"
+  out_grd = "$target_gen_dir/msal_browser_resources.grdp"
+  input_files_base_dir =
+      rebase_path("//third_party/node/node_modules/@azure/msal-browser/lib/",
+                  "//")
+  input_files = [ "msal-browser.min.js" ]
+  resource_path_prefix = "msal_browser"
+}

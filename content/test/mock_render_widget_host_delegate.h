@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/text_input_manager.h"
@@ -43,6 +44,11 @@ class MockRenderWidgetHostDelegate
       KeyboardEventProcessingResult result) {
     pre_handle_keyboard_event_result_ = result;
   }
+  void set_render_input_router_delegate_remote(
+      mojo::PendingRemote<input::mojom::RenderInputRouterDelegate> remote) {
+    rir_delegate_remote_.Bind(std::move(remote));
+  }
+
   void CreateInputEventRouter();
 
   void FlushInkRenderer() { delegated_ink_point_renderer_.FlushForTesting(); }
@@ -72,6 +78,8 @@ class MockRenderWidgetHostDelegate
   gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
       ui::Compositor* compositor) override;
   void OnInputIgnored(const blink::WebInputEvent& event) override;
+  input::mojom::RenderInputRouterDelegate* GetRenderInputRouterDelegateRemote()
+      override;
 
   //  RenderWidgetHostInputEventRouter::Delegate
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
@@ -79,7 +87,7 @@ class MockRenderWidgetHostDelegate
  private:
   std::unique_ptr<input::NativeWebKeyboardEvent> last_event_;
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> rwh_ = nullptr;
-  std::unique_ptr<input::RenderWidgetHostInputEventRouter>
+  scoped_refptr<input::RenderWidgetHostInputEventRouter>
       rwh_input_event_router_;
   mojo::Remote<gfx::mojom::DelegatedInkPointRenderer>
       delegated_ink_point_renderer_;
@@ -88,6 +96,7 @@ class MockRenderWidgetHostDelegate
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> focused_widget_ = nullptr;
   KeyboardEventProcessingResult pre_handle_keyboard_event_result_ =
       KeyboardEventProcessingResult::NOT_HANDLED;
+  mojo::Remote<input::mojom::RenderInputRouterDelegate> rir_delegate_remote_;
   StubRenderViewHostDelegateView rvh_delegate_view_;
   VisibleTimeRequestTrigger visible_time_request_trigger_;
 };

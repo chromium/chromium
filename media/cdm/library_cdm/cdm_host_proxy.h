@@ -21,6 +21,8 @@ class CdmHostProxy {
   virtual cdm::Time GetCurrentWallTime() = 0;
   virtual void OnResolveKeyStatusPromise(uint32_t promise_id,
                                          cdm::KeyStatus key_status) = 0;
+  virtual void OnResolveKeyStatusPromise(uint32_t promise_id,
+                                         cdm::KeyStatus_2 key_status) = 0;
   virtual void OnResolveNewSessionPromise(uint32_t promise_id,
                                           const char* session_id,
                                           uint32_t session_id_size) = 0;
@@ -40,6 +42,11 @@ class CdmHostProxy {
                                    bool has_additional_usable_key,
                                    const cdm::KeyInformation* keys_info,
                                    uint32_t keys_info_count) = 0;
+  virtual void OnSessionKeysChange(const char* session_id,
+                                   uint32_t session_id_size,
+                                   bool has_additional_usable_key,
+                                   const cdm::KeyInformation_2* keys_info,
+                                   uint32_t keys_info_count) = 0;
   virtual void OnExpirationChange(const char* session_id,
                                   uint32_t session_id_size,
                                   cdm::Time new_expiry_time) = 0;
@@ -55,6 +62,7 @@ class CdmHostProxy {
                                             cdm::Status decoder_status) = 0;
   virtual cdm::FileIO* CreateFileIO(cdm::FileIOClient* client) = 0;
   virtual void RequestStorageId(uint32_t version) = 0;
+  virtual void ReportMetrics(cdm::MetricName metric_name, uint64_t value) = 0;
 };
 
 }  // namespace media

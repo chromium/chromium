@@ -20,7 +20,7 @@ class MediaRouterStructTraitsTest
     : public testing::Test,
       public media_router::mojom::MediaRouterTraitsTestService {
  public:
-  MediaRouterStructTraitsTest() {}
+  MediaRouterStructTraitsTest() = default;
 
   MediaRouterStructTraitsTest(const MediaRouterStructTraitsTest&) = delete;
   MediaRouterStructTraitsTest& operator=(const MediaRouterStructTraitsTest&) =

@@ -32,6 +32,12 @@ class CreditCardAccessorySheetViewBinder {
          * appropriate drawable.
          */
         public Function<KeyboardAccessoryData.UserInfo, Drawable> cardDrawableFunction;
+
+        /**
+         * Converts an {@link KeyboardAccessoryData.LoyaltyCardInfo} to the appropriate drawable.
+         */
+        public Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
+                loyaltyCardDrawableFunction;
     }
 
     static ElementViewHolder create(
@@ -48,6 +54,9 @@ class CreditCardAccessorySheetViewBinder {
                 return new PromoCodeInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.IBAN_INFO:
                 return new IbanInfoViewHolder(parent);
+            case AccessorySheetDataPiece.Type.LOYALTY_CARD_INFO:
+                return new LoyaltyCardInfoViewHolder(
+                        parent, uiConfiguration.loyaltyCardDrawableFunction);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
@@ -135,6 +144,28 @@ class CreditCardAccessorySheetViewBinder {
         }
     }
 
+    /** View which represents a single Google Wallet loyalty card and its fields. */
+    static class LoyaltyCardInfoViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.LoyaltyCardInfo, LoyaltyCardInfoView> {
+        private final Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
+                mLoyaltyCardDrawableFunction;
+
+        LoyaltyCardInfoViewHolder(
+                ViewGroup parent,
+                Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
+                        loyaltyCardDrawableFunction) {
+            super(parent, R.layout.keyboard_accessory_sheet_tab_loyalty_card_info);
+            mLoyaltyCardDrawableFunction = loyaltyCardDrawableFunction;
+        }
+
+        @Override
+        protected void bind(KeyboardAccessoryData.LoyaltyCardInfo info, LoyaltyCardInfoView view) {
+            view.getMerchantName().setText(info.getMerchantName());
+            bindChipView(view.getLoyaltyCardNumber(), info.getLoyaltyCardNumber());
+            view.setIcon(mLoyaltyCardDrawableFunction.apply(info));
+        }
+    }
+
     static void initializeView(
             RecyclerView view, UiConfiguration uiConfiguration, AccessorySheetTabItemsModel model) {
         view.setAdapter(
@@ -150,37 +181,33 @@ class CreditCardAccessorySheetViewBinder {
     }
 
     static @DrawableRes int getDrawableForOrigin(String origin) {
-        boolean use_new_data =
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES);
-
         switch (origin) {
             case "americanExpressCC":
-                return use_new_data ? R.drawable.amex_metadata_card : R.drawable.amex_card;
+                return R.drawable.amex_metadata_card;
             case "dinersCC":
-                return use_new_data ? R.drawable.diners_metadata_card : R.drawable.diners_card;
+                return R.drawable.diners_metadata_card;
             case "discoverCC":
-                return use_new_data ? R.drawable.discover_metadata_card : R.drawable.discover_card;
+                return R.drawable.discover_metadata_card;
             case "eloCC":
-                return use_new_data ? R.drawable.elo_metadata_card : R.drawable.elo_card;
+                return R.drawable.elo_metadata_card;
             case "jcbCC":
-                return use_new_data ? R.drawable.jcb_metadata_card : R.drawable.jcb_card;
+                return R.drawable.jcb_metadata_card;
             case "masterCardCC":
-                return use_new_data ? R.drawable.mc_metadata_card : R.drawable.mc_card;
+                return R.drawable.mc_metadata_card;
             case "mirCC":
-                return use_new_data ? R.drawable.mir_metadata_card : R.drawable.mir_card;
+                return R.drawable.mir_metadata_card;
             case "troyCC":
-                return use_new_data ? R.drawable.troy_metadata_card : R.drawable.troy_card;
+                return R.drawable.troy_metadata_card;
             case "unionPayCC":
-                return use_new_data ? R.drawable.unionpay_metadata_card : R.drawable.unionpay_card;
+                return R.drawable.unionpay_metadata_card;
             case "verveCC":
                 if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.AUTOFILL_ENABLE_VERVE_CARD_SUPPORT)) {
-                    return use_new_data ? R.drawable.verve_metadata_card : R.drawable.verve_card;
+                        ChromeFeatureList.AUTOFILL_ENABLE_VERVE_CARD_SUPPORT)) {
+                    return R.drawable.verve_metadata_card;
                 }
                 break;
             case "visaCC":
-                return use_new_data ? R.drawable.visa_metadata_card : R.drawable.visa_card;
+                return R.drawable.visa_metadata_card;
         }
         return R.drawable.infobar_autofill_cc;
     }

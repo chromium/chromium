@@ -45,8 +45,22 @@ namespace blink {
 //
 // WebRtcVideoFrameAdapter keeps track of which crops and scales were
 // hard-applied during its lifetime.
-class PLATFORM_EXPORT WebRtcVideoFrameAdapter
+
+class PLATFORM_EXPORT WebRtcVideoFrameAdapterInterface
     : public webrtc::VideoFrameBuffer {
+ public:
+  virtual scoped_refptr<media::VideoFrame> getMediaVideoFrame() const = 0;
+
+  // Regardless of the pixel format used internally, kNative is returned
+  // indicating that GetMappedFrameBuffer() or ToI420() is required to obtain
+  // the pixels.
+  webrtc::VideoFrameBuffer::Type type() const override {
+    return webrtc::VideoFrameBuffer::Type::kNative;
+  }
+};
+
+class PLATFORM_EXPORT WebRtcVideoFrameAdapter
+    : public WebRtcVideoFrameAdapterInterface {
  public:
   class PLATFORM_EXPORT SharedResources
       : public ThreadSafeRefCounted<SharedResources> {
@@ -142,31 +156,27 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   // Implements a soft-applied "view" of the parent WebRtcVideoFrameAdapter. Its
   // size only gets hard-applied if GetMappedFrameBuffer() or ToI420() is
   // called, in which case the result is cached inside the parent.
-  class ScaledBuffer : public webrtc::VideoFrameBuffer {
+  class ScaledBuffer : public WebRtcVideoFrameAdapterInterface {
    public:
     ScaledBuffer(scoped_refptr<WebRtcVideoFrameAdapter> parent,
                  ScaledBufferSize size);
 
-    // Regardless of the pixel format used internally, kNative is returned
-    // indicating that GetMappedFrameBuffer() or ToI420() is required to obtain
-    // the pixels.
-    webrtc::VideoFrameBuffer::Type type() const override {
-      return webrtc::VideoFrameBuffer::Type::kNative;
-    }
+    scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override;
+
     int width() const override { return size_.natural_size.width(); }
     int height() const override { return size_.natural_size.height(); }
 
     // Obtains a mapped I420 buffer with this ScaledBuffer's size hard-applied.
     // If I420 is not used internally, a conversion happens.
-    rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override;
+    webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override;
 
     // Obtains a mapped buffer of this ScaledBuffer's size hard-applied. The
     // resulting buffer's type is the non-kNative type used internally.
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> GetMappedFrameBuffer(
-        rtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) override;
+    webrtc::scoped_refptr<webrtc::VideoFrameBuffer> GetMappedFrameBuffer(
+        webrtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) override;
 
     // Soft-applies cropping and scaling. The result is another ScaledBuffer.
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> CropAndScale(
+    webrtc::scoped_refptr<webrtc::VideoFrameBuffer> CropAndScale(
         int offset_x,
         int offset_y,
         int crop_width,
@@ -188,23 +198,19 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       scoped_refptr<media::VideoFrame> frame,
       scoped_refptr<SharedResources> shared_resources);
 
-  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const { return frame_; }
-
-  // Regardless of the pixel format used internally, kNative is returned
-  // indicating that GetMappedFrameBuffer() or ToI420() is required to obtain
-  // the pixels.
-  webrtc::VideoFrameBuffer::Type type() const override {
-    return webrtc::VideoFrameBuffer::Type::kNative;
+  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override {
+    return frame_;
   }
+
   int width() const override { return frame_->natural_size().width(); }
   int height() const override { return frame_->natural_size().height(); }
 
-  rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override;
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> GetMappedFrameBuffer(
-      rtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) override;
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override;
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> GetMappedFrameBuffer(
+      webrtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) override;
 
   // Soft-applies cropping and scaling. The result is a ScaledBuffer.
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> CropAndScale(
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> CropAndScale(
       int offset_x,
       int offset_y,
       int crop_width,
@@ -229,7 +235,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   struct AdaptedFrame {
     AdaptedFrame(ScaledBufferSize size,
                  scoped_refptr<media::VideoFrame> video_frame,
-                 rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer)
+                 webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer)
         : size(std::move(size)),
           video_frame(std::move(video_frame)),
           frame_buffer(std::move(frame_buffer)) {}
@@ -237,10 +243,10 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     ScaledBufferSize size;
     // If |frame_buffer| was produced without a media::VideoFrame this is null.
     scoped_refptr<media::VideoFrame> video_frame;
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer;
+    webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer;
   };
 
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> GetOrCreateFrameBufferForSize(
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> GetOrCreateFrameBufferForSize(
       const ScaledBufferSize& size);
   AdaptedFrame AdaptBestFrame(const ScaledBufferSize& size) const
       EXCLUSIVE_LOCKS_REQUIRED(adapted_frames_lock_);

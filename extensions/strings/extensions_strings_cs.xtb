@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Vstupní hodnota pro soukromý klíč musí být platná cesta.</translation>
 <translation id="388442998277590542">Nelze načíst stránku možností „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Při podepisování rozšíření došlo k chybě.</translation>
-<translation id="4115165561519362854">Správce tohoto zařízení vyžaduje, aby rozšíření <ph name="EXTENSION_NAME" /> mělo verzi alespoň <ph name="EXTENSION_VERSION" />. Dokud nebude aktualizováno na tuto (nebo vyšší) verzi, nelze jej povolit.</translation>
 <translation id="4233778200880751280">Načtení stránky s informacemi <ph name="ABOUT_PAGE" /> se nezdařilo.</translation>
 <translation id="471800408830181311">Vytvoření soukromého klíče se nezdařilo.</translation>
 <translation id="4811956658694082538">Balíček se nepodařilo nainstalovat, protože proces nástroje selhal. Restartujte Chrome a zkuste to znovu.</translation>
@@ -50,12 +49,14 @@
 <translation id="7068383018033524534">Soubor manifestu je neplatný</translation>
 <translation id="7217838517480956708">Správce tohoto počítače vyžaduje instalaci rozšíření <ph name="EXTENSION_NAME" />. Nelze je odebrat ani upravit.</translation>
 <translation id="7612608473764576263">Vstupní hodnota pro soukromý klíč musí mít platný formát (klíč RSA ve formátu PKCS#8 a kódováním PEM).</translation>
+<translation id="7876803335449432072">Soubor „<ph name="RELATIVE_PATH" />“ pro obsahový skript nelze načíst. Šablony stylů pro obsahové skripty lze načítat jen z podporovaných souborů šablon stylů, jako jsou soubory s příponou .css.</translation>
 <translation id="7939686037314084444">Rozšíření se nepodařilo správně načíst. Je možné, že nebude moci zachytávat síťové požadavky.</translation>
 <translation id="7972881773422714442">Možnosti: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Přední</translation>
 <translation id="8047248493720652249">Tomuto rozšíření se nepodařilo pojmenovat stahovaný soubor „<ph name="ATTEMPTED_FILENAME" />“, protože jiné rozšíření (<ph name="EXTENSION_NAME" />) vybralo jiný název souboru „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8284835137979141223">Zařízení <ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Soubor manifestu chybí nebo je nečitelný</translation>
+<translation id="8621383749470166852">Soubor „<ph name="RELATIVE_PATH" />“ pro obsahový skript nelze načíst. Obsahové skripty lze načítat jen z podporovaných souborů JavaScript, jako jsou soubory s příponou .js.</translation>
 <translation id="8636666366616799973">Balíček je neplatný. Podrobnosti: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="8761756413268424715">Aplikace <ph name="APP_NAME" /> žádá o přístup k jednomu z vašich zařízení:</translation>
 <translation id="8885905466771744233">Pro zadané rozšíření již existuje soukromý klíč. Použijte tento klíč znovu, nebo jej nejprve smažte.</translation>

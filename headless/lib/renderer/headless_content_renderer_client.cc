@@ -45,10 +45,10 @@ class HeadlessContentRendererUrlLoaderThrottleProvider
         base::PassKey<HeadlessContentRendererUrlLoaderThrottleProvider>());
   }
 
-  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
       base::optional_ref<const blink::LocalFrameToken> local_frame_token,
       const network::ResourceRequest& request) override {
-    blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     if (local_frame_token.has_value()) {
       auto throttle =
           content::MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
@@ -109,14 +109,15 @@ void HeadlessContentRendererClient::RenderFrameCreated(
 #endif
 }
 
-bool HeadlessContentRendererClient::IsSupportedVideoType(
+bool HeadlessContentRendererClient::IsDecoderSupportedVideoType(
     const media::VideoType& type) {
   const bool allowed_by_flags =
       !video_codecs_allowlist_ ||
       video_codecs_allowlist_->IsAllowed(
           base::ToLowerASCII(GetCodecName(type.codec)));
   // Besides being _allowed_, the codec actually has to be _supported_.
-  return allowed_by_flags && ContentRendererClient::IsSupportedVideoType(type);
+  return allowed_by_flags &&
+         ContentRendererClient::IsDecoderSupportedVideoType(type);
 }
 
 std::unique_ptr<blink::URLLoaderThrottleProvider>

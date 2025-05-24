@@ -1,0 +1,16 @@
+Name: AndroidX Test Library
+Short Name: espresso-contrib
+URL: https://developer.android.com/testing
+Version: 3.5.1
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+The AndroidX Test Library provides an extensive framework for testing Android apps
+
+Local Modifications:
+No modifications.

@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -125,7 +126,8 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, WebSignedOut) {
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, WebSignedIn) {
-  identity_test_env_.SetCookieAccounts({{"foo@gmail.com", "foo_gaia_id"}});
+  identity_test_env_.SetCookieAccounts(
+      {{"foo@gmail.com", GaiaId("foo_gaia_id")}});
 
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);

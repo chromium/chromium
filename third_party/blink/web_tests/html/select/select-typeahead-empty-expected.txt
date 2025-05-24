@@ -1,0 +1,3 @@
+Check that select does not crash on search when it's empty.
+
+Cannot run interactively.

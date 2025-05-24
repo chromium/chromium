@@ -11,6 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -62,8 +65,8 @@ class PermissionsUpdater {
 
   ~PermissionsUpdater();
 
-  // Grants |permissions| that were defined as optional in the manifest to
-  // |extension|, updating the active permission set and notifying any
+  // Grants `permissions` that were defined as optional in the manifest to
+  // `extension`, updating the active permission set and notifying any
   // observers. This method assumes the user has already been prompted, if
   // necessary, for the extra permissions.
   // NOTE: This should only be used for granting permissions defined in the
@@ -72,9 +75,9 @@ class PermissionsUpdater {
                                 const PermissionSet& permissions,
                                 base::OnceClosure completion_callback);
 
-  // Grants |permissions| that were withheld at installation and granted at
-  // runtime to |extension|, updating the active permission set and notifying
-  // any observers. |permissions| may contain permissions that were not
+  // Grants `permissions` that were withheld at installation and granted at
+  // runtime to `extension`, updating the active permission set and notifying
+  // any observers. `permissions` may contain permissions that were not
   // explicitly requested by the extension; if this happens, those permissions
   // will be added to the runtime-granted permissions in the preferences, but
   // will not be granted to the extension object or process itself.
@@ -84,9 +87,9 @@ class PermissionsUpdater {
                                const PermissionSet& permissions,
                                base::OnceClosure completion_callback);
 
-  // Removes |permissions| that were defined as optional in the manifest from
-  // the |extension|, updating the active permission set and notifying any
-  // observers. |remove_type| specifies whether the permissions should be
+  // Removes `permissions` that were defined as optional in the manifest from
+  // the `extension`, updating the active permission set and notifying any
+  // observers. `remove_type` specifies whether the permissions should be
   // revoked from the preferences, thus requiring the extension to re-prompt
   // the user if it wants to add them back.
   // NOTE: This should only be used for removing permissions defined in the
@@ -96,8 +99,8 @@ class PermissionsUpdater {
                                  RemoveType remove_type,
                                  base::OnceClosure completion_callback);
 
-  // Removes |permissions| that were withheld at installation and granted at
-  // runtime from |extension|, updating the active permission set and notifying
+  // Removes `permissions` that were withheld at installation and granted at
+  // runtime from `extension`, updating the active permission set and notifying
   // any observers.
   // NOTE: This should only be used for removing permissions through the runtime
   // host permissions feature.
@@ -105,7 +108,7 @@ class PermissionsUpdater {
                                 const PermissionSet& permissions,
                                 base::OnceClosure completion_callback);
 
-  // Removes the |permissions| from |extension| and makes no effort to determine
+  // Removes the `permissions` from `extension` and makes no effort to determine
   // if doing so is safe in the slightlest. This method shouldn't be used,
   // except for removing permissions totally blocklisted by management.
   void RemovePermissionsUnsafe(const Extension* extension,
@@ -115,7 +118,7 @@ class PermissionsUpdater {
   // applies them to the extension.
   void ApplyPolicyHostRestrictions(const Extension& extension);
 
-  // Sets list of hosts |extension| may not interact with (overrides default).
+  // Sets list of hosts `extension` may not interact with (overrides default).
   void SetPolicyHostRestrictions(const Extension* extension,
                                  const URLPatternSet& runtime_blocked_hosts,
                                  const URLPatternSet& runtime_allowed_hosts);
@@ -134,16 +137,16 @@ class PermissionsUpdater {
   std::unique_ptr<const PermissionSet> GetRevokablePermissions(
       const Extension* extension) const;
 
-  // Adds all permissions in the |extension|'s active permissions to its
+  // Adds all permissions in the `extension`'s active permissions to its
   // granted permission set.
   void GrantActivePermissions(const Extension* extension);
 
-  // Initializes the |extension|'s active permission set to include only
+  // Initializes the `extension`'s active permission set to include only
   // permissions currently requested by the extension and all the permissions
   // required by the extension.
   void InitializePermissions(const Extension* extension);
 
-  // Adds |permissions| to |extension| without doing any validation or
+  // Adds `permissions` to `extension` without doing any validation or
   // persisting values in prefs.
   // TODO(devlin): We shouldn't need this, even for tests. Tests shouldn't be
   // testing behavior that is impossible in production.
@@ -170,7 +173,7 @@ class PermissionsUpdater {
   };
 
   // Issues the relevant events, messages and notifications when the
-  // |extension|'s permissions have |changed| (|changed| is the delta).
+  // `extension`'s permissions have `changed` (`changed` is the delta).
   // Specifically, this sends the EXTENSION_PERMISSIONS_UPDATED notification,
   // the UpdatePermissions Mojo message, and fires the onAdded/onRemoved events
   // in the extension.
@@ -189,18 +192,18 @@ class PermissionsUpdater {
       const URLPatternSet default_runtime_blocked_hosts,
       const URLPatternSet default_runtime_allowed_hosts);
 
-  // Sets the |extension|'s active permissions to |active|, and calculates and
-  // sets the |extension|'s new withheld permissions. This also calculates the
+  // Sets the `extension`'s active permissions to `active`, and calculates and
+  // sets the `extension`'s new withheld permissions. This also calculates the
   // set of permissions to be withheld on the extension.
   void SetPermissions(const Extension* extension,
                       std::unique_ptr<const PermissionSet> active,
                       bool withhold_optional_permissions);
 
-  // Adds the given |active_permissions_to_add| to |extension|'s current
-  // active permissions (i.e., the permissions associated with the |extension|
+  // Adds the given `active_permissions_to_add` to `extension`'s current
+  // active permissions (i.e., the permissions associated with the `extension`
   // object and the extension's process). Updates the preferences according to
-  // |permission_store_mask| with |permissions_to_add_to_prefs|.
-  // The sets of |permissions_to_add_to_prefs| and |active_permissions_to_add|
+  // `permission_store_mask` with `permissions_to_add_to_prefs`.
+  // The sets of `permissions_to_add_to_prefs` and `active_permissions_to_add`
   // may differ in the case of granting a wider set of permissions than what
   // the extension explicitly requested, as described in
   // GrantRuntimePermissions().

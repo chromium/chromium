@@ -1,0 +1,9 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+# Android (non-desktop) and iOS don't support DevTools front-end.
+enable_devtools_frontend =
+    (!is_android || is_desktop_android) && !is_ios && !is_fuchsia

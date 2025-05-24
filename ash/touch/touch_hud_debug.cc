@@ -277,7 +277,7 @@ TouchHudDebug::TouchHudDebug(aura::Window* initial_root)
 
   views::View* content = widget()->GetContentsView();
 
-  content->AddChildView(canvas_.get());
+  content->AddChildViewRaw(canvas_.get());
 
   const gfx::Size& display_size = display.size();
   canvas_->SetSize(display_size);
@@ -294,13 +294,13 @@ TouchHudDebug::TouchHudDebug(aura::Window* initial_root)
     touch_labels_[i]->SetBackgroundColor(SK_ColorTRANSPARENT);
     touch_labels_[i]->SetShadows(gfx::ShadowValues(
         1, gfx::ShadowValue(gfx::Vector2d(1, 1), 0, kShadowColor)));
-    label_container_->AddChildView(touch_labels_[i]);
+    label_container_->AddChildViewRaw(touch_labels_[i]);
   }
   label_container_->SetX(0);
   label_container_->SetY(display_size.height() / kReducedScale);
   label_container_->SetSize(label_container_->GetPreferredSize());
   label_container_->SetVisible(false);
-  content->AddChildView(label_container_.get());
+  content->AddChildViewRaw(label_container_.get());
 }
 
 TouchHudDebug::~TouchHudDebug() = default;

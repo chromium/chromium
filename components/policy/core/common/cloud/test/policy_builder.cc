@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+
+#include <vector>
 
 #include "base/base64.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "crypto/signature_creator.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace em = enterprise_management;
 
@@ -379,7 +376,7 @@ void SignData(const std::string& data,
 
 // Constants used as dummy data for filling the PolicyData protobuf.
 // LINT.IfChange
-const char PolicyBuilder::kFakeGaiaId[] = "0000111111";
+const GaiaId::Literal PolicyBuilder::kFakeGaiaId("0000111111");
 const char PolicyBuilder::kFakeUsername[] = "username@example.com";
 // LINT.ThenChange(/chrome/test/base/fake_gaia_mixin.cc)
 
@@ -397,7 +394,7 @@ PolicyBuilder::PolicyBuilder() {
   CreatePolicyData();
   policy_data_->set_policy_type(kFakePolicyType);
   policy_data_->set_timestamp(kFakeTimestamp);
-  policy_data_->set_gaia_id(kFakeGaiaId);
+  policy_data_->set_gaia_id(kFakeGaiaId.ToString());
   policy_data_->set_request_token(kFakeToken);
   policy_data_->set_machine_name(kFakeMachineName);
   policy_data_->set_public_key_version(kFakePublicKeyVersion);
@@ -405,11 +402,13 @@ PolicyBuilder::PolicyBuilder() {
   policy_data_->set_device_id(kFakeDeviceId);
   policy_data_->set_state(em::PolicyData::ACTIVE);
   policy_data_->set_service_account_identity(kFakeServiceAccountIdentity);
+  policy_data_->set_cec_enabled(true);
+  policy_data_->set_command_invalidation_topic("fake-topic");
   policy_data_->add_user_affiliation_ids(user_affiliation_id1);
   policy_data_->add_user_affiliation_ids(user_affiliation_id2);
 }
 
-PolicyBuilder::~PolicyBuilder() {}
+PolicyBuilder::~PolicyBuilder() = default;
 
 std::unique_ptr<crypto::RSAPrivateKey> PolicyBuilder::GetSigningKey() const {
   if (raw_signing_key_.empty())
@@ -422,7 +421,7 @@ void PolicyBuilder::SetSigningKey(const crypto::RSAPrivateKey& key) {
 }
 
 void PolicyBuilder::SetDefaultSigningKey() {
-  raw_signing_key_.assign(kSigningKey, kSigningKey + std::size(kSigningKey));
+  raw_signing_key_.assign(std::begin(kSigningKey), std::end(kSigningKey));
 }
 
 void PolicyBuilder::UnsetSigningKey() {
@@ -436,8 +435,8 @@ std::unique_ptr<crypto::RSAPrivateKey> PolicyBuilder::GetNewSigningKey() const {
 }
 
 void PolicyBuilder::SetDefaultNewSigningKey() {
-  raw_new_signing_key_.assign(kNewSigningKey,
-                              kNewSigningKey + std::size(kNewSigningKey));
+  raw_new_signing_key_.assign(std::begin(kNewSigningKey),
+                              std::end(kNewSigningKey));
   raw_new_signing_key_signature_ = GetTestOtherSigningKeySignature();
 }
 
@@ -447,8 +446,7 @@ void PolicyBuilder::UnsetNewSigningKey() {
 }
 
 void PolicyBuilder::SetDefaultInitialSigningKey() {
-  raw_new_signing_key_.assign(kSigningKey,
-                              kSigningKey + std::size(kSigningKey));
+  raw_new_signing_key_.assign(std::begin(kSigningKey), std::end(kSigningKey));
   raw_new_signing_key_signature_ = GetTestSigningKeySignature();
   UnsetSigningKey();
 }
@@ -553,16 +551,16 @@ std::unique_ptr<em::PolicyFetchResponse> PolicyBuilder::GetCopy() const {
 
 // static
 std::unique_ptr<crypto::RSAPrivateKey> PolicyBuilder::CreateTestSigningKey() {
-  std::vector<uint8_t> raw_signing_key(kSigningKey,
-                                       kSigningKey + std::size(kSigningKey));
+  std::vector<uint8_t> raw_signing_key(std::begin(kSigningKey),
+                                       std::end(kSigningKey));
   return crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(raw_signing_key);
 }
 
 // static
 std::unique_ptr<crypto::RSAPrivateKey>
 PolicyBuilder::CreateTestOtherSigningKey() {
-  std::vector<uint8_t> raw_new_signing_key(
-      kNewSigningKey, kNewSigningKey + std::size(kNewSigningKey));
+  std::vector<uint8_t> raw_new_signing_key(std::begin(kNewSigningKey),
+                                           std::end(kNewSigningKey));
   return crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(raw_new_signing_key);
 }
 
@@ -674,7 +672,7 @@ TypedPolicyBuilder<em::ExternalPolicyData>::TypedPolicyBuilder() {
 template class TypedPolicyBuilder<em::ExternalPolicyData>;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 StringPolicyBuilder::StringPolicyBuilder() = default;
 
 void StringPolicyBuilder::Build() {

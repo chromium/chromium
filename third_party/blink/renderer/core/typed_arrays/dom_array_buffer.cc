@@ -36,8 +36,7 @@ const WrapperTypeInfo DOMArrayBuffer::wrapper_type_info_body_{
     kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kIdlBufferSourceType,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 const WrapperTypeInfo& DOMArrayBuffer::wrapper_type_info_ =
@@ -201,12 +200,11 @@ v8::Maybe<bool> DOMArrayBuffer::TransferDetachable(
 
 DOMArrayBuffer* DOMArrayBuffer::Create(
     scoped_refptr<SharedBuffer> shared_buffer) {
-  ArrayBufferContents contents(shared_buffer->size(), 1,
-                               ArrayBufferContents::kNotShared,
-                               ArrayBufferContents::kDontInitialize);
-  if (!contents.IsValid()) [[unlikely]] {
-    OOM_CRASH(shared_buffer->size());
-  }
+  ArrayBufferContents contents(
+      shared_buffer->size(), 1, ArrayBufferContents::kNotShared,
+      ArrayBufferContents::kDontInitialize,
+      ArrayBufferContents::AllocationFailureBehavior::kCrash);
+  CHECK(contents.IsValid());
 
   base::BufferIterator iterator(contents.ByteSpan());
   for (const auto& span : *shared_buffer) {
@@ -222,11 +220,11 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
   for (const auto& span : data) {
     size += span.size();
   }
-  ArrayBufferContents contents(size, 1, ArrayBufferContents::kNotShared,
-                               ArrayBufferContents::kDontInitialize);
-  if (!contents.IsValid()) [[unlikely]] {
-    OOM_CRASH(size);
-  }
+  ArrayBufferContents contents(
+      size, 1, ArrayBufferContents::kNotShared,
+      ArrayBufferContents::kDontInitialize,
+      ArrayBufferContents::AllocationFailureBehavior::kCrash);
+  CHECK(contents.IsValid());
 
   base::BufferIterator iterator(contents.ByteSpan());
   for (const auto& span : data) {

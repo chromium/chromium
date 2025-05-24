@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/notifications/echo_dialog_listener.h"
 #include "chrome/grit/generated_resources.h"
@@ -12,6 +13,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -34,14 +36,11 @@ class TestEchoDialogListener : public EchoDialogListener {
 };
 
 bool IsLabelWithText(const views::View* view, const std::u16string& text) {
-  const char* class_name = view->GetClassName();
-  if (!strcmp(class_name, "Label")) {
-    auto* label = static_cast<const views::Label*>(view);
-    return label->GetText().find(text) != label->GetText().npos;
+  if (const auto* label = views::AsViewClass<views::Label>(view)) {
+    return base::Contains(label->GetText(), text);
   }
-  if (!strcmp(class_name, "StyledLabel")) {
-    auto* styled_label = static_cast<const views::StyledLabel*>(view);
-    return styled_label->GetText().find(text) != styled_label->GetText().npos;
+  if (const auto* styled_label = views::AsViewClass<views::StyledLabel>(view)) {
+    return base::Contains(styled_label->GetText(), text);
   }
   return false;
 }

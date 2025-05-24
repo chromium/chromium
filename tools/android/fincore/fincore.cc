@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  size_t total_pages = (len + PAGE_SIZE - 1) / PAGE_SIZE;
+  size_t total_pages = (len + getpagesize() - 1) / getpagesize();
   std::vector<uint8_t> page_residencies(total_pages);
   if (mincore(start_address, len, page_residencies.data())) {
     perror("mincore");

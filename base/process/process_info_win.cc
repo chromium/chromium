@@ -25,17 +25,21 @@ IntegrityLevel GetProcessIntegrityLevelInternal(
   }
   DWORD integrity_level = token->IntegrityLevel();
 
-  if (integrity_level < SECURITY_MANDATORY_LOW_RID)
+  if (integrity_level < SECURITY_MANDATORY_LOW_RID) {
     return UNTRUSTED_INTEGRITY;
+  }
 
-  if (integrity_level < SECURITY_MANDATORY_MEDIUM_RID)
+  if (integrity_level < SECURITY_MANDATORY_MEDIUM_RID) {
     return LOW_INTEGRITY;
+  }
 
-  if (integrity_level < SECURITY_MANDATORY_HIGH_RID)
+  if (integrity_level < SECURITY_MANDATORY_HIGH_RID) {
     return MEDIUM_INTEGRITY;
+  }
 
-  if (integrity_level >= SECURITY_MANDATORY_HIGH_RID)
+  if (integrity_level >= SECURITY_MANDATORY_HIGH_RID) {
     return HIGH_INTEGRITY;
+  }
 
   NOTREACHED();
 }

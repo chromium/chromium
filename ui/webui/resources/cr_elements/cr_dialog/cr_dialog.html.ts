@@ -23,14 +23,17 @@ export function getHtml(this: CrDialogElement) {
       ${this.showCloseButton ? html`
         <cr-icon-button id="close" class="icon-clear"
             aria-label="${this.closeText || nothing}"
+            title="${this.closeText || nothing}"
             @click="${this.cancel}" @keypress="${this.onCloseKeypress_}">
         </cr-icon-button>
        ` : ''}
     </div>
     <slot name="header"></slot>
-    <div class="body-container" id="container" show-bottom-shadow
+    <div class="body-container cr-scrollable" id="container"
         part="body-container">
+      <div class="cr-scrollable-top"></div>
       <slot name="body"></slot>
+      <div class="cr-scrollable-bottom"></div>
     </div>
     <slot name="button-container"></slot>
     <slot name="footer"></slot>

@@ -12,8 +12,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
-class GURL;
-
 namespace ukm {
 namespace builders {
 class PageWithPassword;
@@ -21,8 +19,6 @@ class PageWithPassword;
 }  // namespace ukm
 
 namespace password_manager {
-
-class BrowserSavePasswordProgressLogger;
 
 // The pupose of this class is to record various types of metrics about the
 // behavior of the PasswordManager and its interaction with the user and the
@@ -101,11 +97,8 @@ class PasswordManagerMetricsRecorder {
   void RecordUserModifiedPasswordField();
 
   // Log failure to provisionally save a password to in the PasswordManager to
-  // UMA and the |logger|.
-  void RecordProvisionalSaveFailure(ProvisionalSaveFailure failure,
-                                    const GURL& main_frame_url,
-                                    const GURL& form_origin,
-                                    BrowserSavePasswordProgressLogger* logger);
+  // UMA and UKM.
+  void RecordProvisionalSaveFailure(ProvisionalSaveFailure failure);
 
   // Records form manager availability.
   void RecordFormManagerAvailable(FormManagerAvailable availability);

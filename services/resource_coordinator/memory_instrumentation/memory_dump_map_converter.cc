@@ -99,7 +99,7 @@ void MemoryDumpMapConverter::CopyAndConvertAllocatorDumpFlags(
     perfetto::trace_processor::RawMemoryGraphNode* output) const {
   output->clear_flags(output->flags());
   output->set_flags(
-      input.flags() & base::trace_event::MemoryAllocatorDump::WEAK
+      input.flags() & base::trace_event::MemoryAllocatorDump::kWeak
           ? perfetto::trace_processor::RawMemoryGraphNode::kWeak
           : perfetto::trace_processor::RawMemoryGraphNode::kDefault);
 }

@@ -64,7 +64,7 @@ class MODULES_EXPORT CSSPaintDefinition final
   PaintRecord Paint(const gfx::SizeF& container_size,
                     float zoom,
                     StylePropertyMapReadOnly*,
-                    const CSSStyleValueVector*);
+                    const GCedCSSStyleValueVector*);
   const Vector<CSSPropertyID>& NativeInvalidationProperties() const {
     return native_invalidation_properties_;
   }

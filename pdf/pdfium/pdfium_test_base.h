@@ -60,6 +60,12 @@ class PDFiumTestBase : public testing::TestWithParam<bool> {
       TestClient* client,
       const base::FilePath::CharType* pdf_name);
 
+  // Initializes a PDFiumEngine for use in testing with `client`. Loads PDF data
+  // directly.
+  std::unique_ptr<PDFiumEngine> InitializeEngineFromData(
+      TestClient* client,
+      std::vector<uint8_t> pdf_data);
+
   // Initializes a PDFiumEngine as with InitializeEngine(), but defers loading
   // until the test calls SimulateLoadData() on the returned TestDocumentLoader.
   InitializeEngineResult InitializeEngineWithoutLoading(
@@ -75,6 +81,14 @@ class PDFiumTestBase : public testing::TestWithParam<bool> {
 
  private:
   void InitializePDFiumSDK();
+
+  InitializeEngineResult InitializeEngineWithoutLoadingImpl(
+      TestClient* client,
+      std::unique_ptr<PDFiumEngine> engine,
+      std::unique_ptr<TestDocumentLoader> document_loader);
+  std::unique_ptr<PDFiumEngine> CreateEngine(TestClient* client);
+  void SimulateLoading(PDFiumEngine* engine,
+                       TestDocumentLoader* document_loader);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::FilePath test_fonts_path_;

@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
@@ -29,12 +30,6 @@ const int kRandomizedPercentage = 10;
 const double kDefaultPerStorageKeyRatio = 0.75;
 const double kIncognitoQuotaRatioLowerBound = 0.15;
 const double kIncognitoQuotaRatioUpperBound = 0.2;
-
-// Skews |value| by +/- |percent|.
-int64_t RandomizeByPercent(int64_t value, int percent) {
-  double random_percent = (base::RandDouble() - 0.5) * percent * 2;
-  return value + (value * (random_percent / 100.0));
-}
 
 QuotaSettings CalculateIncognitoDynamicSettings(
     uint64_t physical_memory_amount) {
@@ -143,10 +138,11 @@ std::optional<QuotaSettings> CalculateNominalDynamicSettings(
       std::min(kMustRemainAvailableFixed,
                static_cast<int64_t>(total * kMustRemainAvailableRatio));
   settings.per_storage_key_quota = pool_size * kPerStorageKeyTemporaryRatio;
-  settings.session_only_per_storage_key_quota = std::min(
-      RandomizeByPercent(kMaxSessionOnlyStorageKeyQuota, kRandomizedPercentage),
-      static_cast<int64_t>(settings.per_storage_key_quota *
-                           kSessionOnlyStorageKeyQuotaRatio));
+  settings.session_only_per_storage_key_quota =
+      std::min(base::RandomizeByPercentage(kMaxSessionOnlyStorageKeyQuota,
+                                           kRandomizedPercentage),
+               base::ClampRound<int64_t>(settings.per_storage_key_quota *
+                                         kSessionOnlyStorageKeyQuotaRatio));
   settings.refresh_interval = base::Seconds(60);
   return settings;
 }

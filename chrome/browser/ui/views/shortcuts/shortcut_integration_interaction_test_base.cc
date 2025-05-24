@@ -24,8 +24,8 @@ ShortcutIntegrationInteractionTestApi::ShortcutIntegrationInteractionTestApi()
   platform_util::internal::DisableShellOperationsForTesting();
 }
 
-ShortcutIntegrationInteractionTestApi
-    ::~ShortcutIntegrationInteractionTestApi() = default;
+ShortcutIntegrationInteractionTestApi ::
+    ~ShortcutIntegrationInteractionTestApi() = default;
 
 ui::test::InteractiveTestApi::MultiStep
 ShortcutIntegrationInteractionTestApi::ShowCreateShortcutDialog() {
@@ -34,6 +34,7 @@ ShortcutIntegrationInteractionTestApi::ShowCreateShortcutDialog() {
       // Sometimes the "Save and Share" item isn't immediately present, so
       // explicitly wait for it to show.
       WaitForShow(AppMenuModel::kSaveAndShareMenuItem),
+      ScrollIntoView(AppMenuModel::kSaveAndShareMenuItem),
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       // Sometimes the "Create Shortcut" item isn't immediately present, so
       // explicitly wait for it.
@@ -59,9 +60,8 @@ ShortcutIntegrationInteractionTestApi::ShowAndAcceptCreateShortcutDialog() {
           CreateDesktopShortcutDelegate::kCreateShortcutDialogOkButtonId));
 }
 
-ui::test::InteractiveTestApi::MultiStep
-ShortcutIntegrationInteractionTestApi
-    ::ShowCreateShortcutDialogSetTitleAndAccept(const std::u16string& title) {
+ui::test::InteractiveTestApi::MultiStep ShortcutIntegrationInteractionTestApi ::
+    ShowCreateShortcutDialogSetTitleAndAccept(const std::u16string& title) {
   return Steps(
       ShowCreateShortcutDialog(),
       EnterText(
@@ -83,7 +83,7 @@ ShortcutIntegrationInteractionTestApi::InstrumentNextShortcut(
   });
 }
 
-ui::test::InteractiveTestApi::StepBuilder
+ui::test::InteractiveTestApi::MultiStep
 ShortcutIntegrationInteractionTestApi::LaunchShortcut(
     ui::ElementIdentifier identifier) {
   return InAnyContext(WithElement(identifier, [](ui::TrackedElement* element) {

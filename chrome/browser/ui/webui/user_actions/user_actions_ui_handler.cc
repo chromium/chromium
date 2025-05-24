@@ -38,8 +38,9 @@ void UserActionsUIHandler::OnJavascriptDisallowed() {
 
 void UserActionsUIHandler::OnUserAction(const std::string& action,
                                         base::TimeTicks action_time) {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
   base::Value user_action_name(action);
 
   FireWebUIListener("user-action", user_action_name);

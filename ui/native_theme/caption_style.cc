@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/native_theme/caption_style.h"
+
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "build/build_config.h"

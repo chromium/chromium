@@ -23,6 +23,7 @@
 #include "base/version.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
@@ -198,8 +199,8 @@ scoped_refptr<App> MakeAppRecover() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   return base::MakeRefCounted<AppRecover>(
-      base::Version(command_line->GetSwitchValueASCII(kBrowserVersionSwitch)),
-      command_line->GetSwitchValueASCII(kAppGuidSwitch));
+      base::Version(command_line->GetSwitchValueUTF8(kBrowserVersionSwitch)),
+      command_line->GetSwitchValueUTF8(kAppGuidSwitch));
 }
 
 }  // namespace updater

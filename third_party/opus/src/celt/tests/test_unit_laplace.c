@@ -89,5 +89,6 @@ int main(void)
    }
 
    free(ptr);
+   RESTORE_STACK;
    return ret;
 }

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using bookmarks::BookmarkNode;
 
@@ -156,7 +157,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(2u, visible_folder_nodes.size());
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
               test_folder_title_1);
 }
@@ -170,12 +171,12 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderTitleChange) {
   [[mock_consumer_ expect] notifyModelUpdated];
   ChangeTitle(test_folder_node, test_folder_title_2);
 
-  [mock_consumer_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
   std::vector<const BookmarkNode*> visible_folder_nodes =
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(2u, visible_folder_nodes.size());
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
               test_folder_title_2);
 }
@@ -189,12 +190,12 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderAdded) {
   [[mock_consumer_ expect] notifyModelUpdated];
   AddFolder(test_folder_node_1, test_folder_title_2);
 
-  [mock_consumer_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
   std::vector<const BookmarkNode*> visible_folder_nodes =
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(3u, visible_folder_nodes.size());
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
               test_folder_title_1);
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[2]->GetTitle()),
@@ -216,14 +217,14 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderRemoved) {
   [[mock_consumer_ expect] notifyModelUpdated];
   RemoveNode(test_folder_node_2);
 
-  [mock_consumer_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
   ASSERT_EQ(test_folder_node_2,
             fake_parent_data_source_.bookmarkNodeDeletedArg);
   std::vector<const BookmarkNode*> visible_folder_nodes =
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(2u, visible_folder_nodes.size());
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
               test_folder_title_1);
 }
@@ -239,13 +240,13 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestAllFoldersRemoved) {
 
   RemoveAllNodes();
 
-  [mock_consumer_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
   std::vector<const BookmarkNode*> visible_folder_nodes =
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(1u, visible_folder_nodes.size());
   // "Mobile Bookmarks" is a permanent node and thus always exists.
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
 }
 
 // Tests that moving a node in the bookmark model updates the UI.
@@ -259,12 +260,12 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderMoved) {
   [[mock_consumer_ expect] notifyModelUpdated];
   MoveNode(test_folder_node_2, mobile_node());
 
-  [mock_consumer_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
   std::vector<const BookmarkNode*> visible_folder_nodes =
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(3u, visible_folder_nodes.size());
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
               test_folder_title_1);
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[2]->GetTitle()),

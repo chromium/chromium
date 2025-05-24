@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="enable_pdf_ink2 or enable_ink">
+export enum AnnotationMode {
+  OFF = 'off',
+  DRAW = 'draw',
+  // <if expr="enable_pdf_ink2">
+  TEXT = 'text',
+  // </if>
+}
+// </if>
+
 // <if expr="enable_pdf_ink2">
 // The different types of annotation brushes.
 export enum AnnotationBrushType {
@@ -16,12 +26,63 @@ export interface Color {
   b: number;
 }
 
-// The brush with parameters. Colors are optional, since some brushes do not
-// need colors.
+// The brush with parameters. Color and size are optional, since some brushes do
+// not need them.
 export interface AnnotationBrush {
   type: AnnotationBrushType;
   color?: Color;
+  size?: number;
+}
+
+export interface TextAnnotation {
+  id: number;
+  pageNumber: number;
+  text: string;
+  textAttributes: TextAttributes;
+  // Location of the text box relative to the top left corner of the page
+  // specified by pageNumber. This rect is in screen coordinates in the UI,
+  // and is in page coordinates when this annotation is sent or received in
+  // a message to/from the plugin.
+  textBoxRect: TextBoxRect;
+  // Orientation of the text in the box relative to the PDF page, in number of
+  // clockwise rotations from 0 to 3.
+  textOrientation: number;
+}
+
+export enum TextAlignment {
+  LEFT = 'left',
+  CENTER = 'center',
+  RIGHT = 'right',
+}
+
+export enum TextStyle {
+  BOLD = 'bold',
+  ITALIC = 'italic',
+}
+
+export enum TextTypeface {
+  SANS_SERIF = 'sans-serif',
+  SERIF = 'serif',
+  MONOSPACE = 'monospace',
+}
+
+export type TextStyles = {
+  [key in TextStyle]: boolean
+};
+
+export interface TextAttributes {
+  typeface: TextTypeface;
   size: number;
+  color: Color;
+  alignment: TextAlignment;
+  styles: TextStyles;
+}
+
+export interface TextBoxRect {
+  height: number;
+  locationX: number;
+  locationY: number;
+  width: number;
 }
 // </if>
 
@@ -88,6 +149,7 @@ export enum SaveRequestType {
   ANNOTATION,
   ORIGINAL,
   EDITED,
+  SEARCHIFIED,  // Saves the PDF with extracted text.
 }
 
 export interface Point {

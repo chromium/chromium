@@ -95,9 +95,9 @@ const PolicyToPreferenceMapEntry kDefaultSearchPolicyDataMap[] = {
 
 // DefaultSearchPolicyHandler implementation -----------------------------------
 
-DefaultSearchPolicyHandler::DefaultSearchPolicyHandler() {}
+DefaultSearchPolicyHandler::DefaultSearchPolicyHandler() = default;
 
-DefaultSearchPolicyHandler::~DefaultSearchPolicyHandler() {}
+DefaultSearchPolicyHandler::~DefaultSearchPolicyHandler() = default;
 
 bool DefaultSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                      PolicyErrorMap* errors) {
@@ -208,9 +208,9 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   dict.Set(DefaultSearchManager::kLastModified,
            static_cast<double>(base::Time::Now().ToInternalValue()));
   dict.Set(DefaultSearchManager::kUsageCount, 0);
-  dict.Set(DefaultSearchManager::kCreatedByPolicy,
-           static_cast<int>(
-               TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
+  dict.Set(
+      DefaultSearchManager::kPolicyOrigin,
+      static_cast<int>(TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
 
   // For the name and keyword, default to the host if not specified.  If
   // there is no host (as is the case with file URLs of the form:

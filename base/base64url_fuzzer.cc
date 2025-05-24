@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base64url.h"
+
 #include <fuzzer/FuzzedDataProvider.h>
 #include <stdint.h>
 
 #include <string>
 #include <tuple>
 
-#include "base/base64url.h"
 #include "base/check.h"
 #include "base/check_op.h"
 

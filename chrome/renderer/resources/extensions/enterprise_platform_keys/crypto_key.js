@@ -18,12 +18,15 @@ var KeyUsage = keyModule.KeyUsage;
  * @constructor
  */
 function KeyPairImpl(keyIdentifier, algorithm, usages) {
+  const allowedPublicKeyAlgorithms = [KeyUsage.verify];
+  const allowedPrivateKeyAlgorithms = [KeyUsage.sign, KeyUsage.unwrapKey];
+
   this.publicKey = new Key(
       KeyType.public, keyIdentifier, algorithm,
-      intersect([KeyUsage.verify], usages), /*extractable=*/ true);
+      intersect(allowedPublicKeyAlgorithms, usages), /*extractable=*/ true);
   this.privateKey = new Key(
       KeyType.private, keyIdentifier, algorithm,
-      intersect([KeyUsage.sign], usages), /*extractable=*/ false);
+      intersect(allowedPrivateKeyAlgorithms, usages), /*extractable=*/ false);
 }
 $Object.setPrototypeOf(KeyPairImpl.prototype, null);
 

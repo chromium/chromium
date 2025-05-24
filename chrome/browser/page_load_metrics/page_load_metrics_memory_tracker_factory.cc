@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/page_load_metrics_memory_tracker_factory.h"
 
 #include "base/no_destructor.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 
 namespace page_load_metrics {

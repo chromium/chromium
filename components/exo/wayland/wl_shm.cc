@@ -6,8 +6,9 @@
 
 #include <wayland-server-protocol-core.h>
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/shared_memory.h"
@@ -45,7 +46,7 @@ void shm_pool_create_buffer(wl_client* client,
                             int32_t height,
                             int32_t stride,
                             uint32_t format) {
-  const auto* supported_format = base::ranges::find(
+  const auto* supported_format = std::ranges::find(
       shm_supported_formats, format, &shm_supported_format::shm_format);
   if (supported_format == std::end(shm_supported_formats)) {
     wl_resource_post_error(resource, WL_SHM_ERROR_INVALID_FORMAT,

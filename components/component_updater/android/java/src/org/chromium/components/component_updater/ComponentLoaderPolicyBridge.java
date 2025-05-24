@@ -10,17 +10,20 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.LifetimeAssert;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.LifetimeAssert;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 
 /** Provides JNI bridge to the native ComponentLoaderPolicy. */
 @JNINamespace("component_updater")
+@NullMarked
 public class ComponentLoaderPolicyBridge {
     private static final long NATIVE_NULL = 0;
 
-    private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+    private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     private long mNativeAndroidComponentLoaderPolicy = NATIVE_NULL;
 
@@ -60,7 +63,7 @@ public class ComponentLoaderPolicyBridge {
 
         // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
         // with a stack trace showing the stack during LifetimeAssert.create().
-        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+        LifetimeAssert.destroy(mLifetimeAssert);
     }
 
     /**
@@ -82,7 +85,7 @@ public class ComponentLoaderPolicyBridge {
 
         // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
         // with a stack trace showing the stack during LifetimeAssert.create().
-        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+        LifetimeAssert.destroy(mLifetimeAssert);
     }
 
     /**

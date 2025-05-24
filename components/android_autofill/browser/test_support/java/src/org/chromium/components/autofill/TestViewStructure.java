@@ -22,8 +22,8 @@ import java.util.List;
 public class TestViewStructure extends ViewStructure {
     /** Test implementation of {@link HtmlInfo}. */
     public static class TestHtmlInfo extends HtmlInfo {
-        private String mTag;
-        private List<Pair<String, String>> mAttributes;
+        private final String mTag;
+        private final List<Pair<String, String>> mAttributes;
 
         public TestHtmlInfo(String tag, List<Pair<String, String>> attributes) {
             mTag = tag;
@@ -52,8 +52,8 @@ public class TestViewStructure extends ViewStructure {
 
     /** Test implementation of {@link HtmlInfo.Builder}. */
     public static class TestBuilder extends HtmlInfo.Builder {
-        private String mTag;
-        private ArrayList<Pair<String, String>> mAttributes;
+        private final String mTag;
+        private final ArrayList<Pair<String, String>> mAttributes;
 
         public TestBuilder(String tag) {
             mTag = tag;
@@ -379,7 +379,7 @@ public class TestViewStructure extends ViewStructure {
     private String mClassName;
     private String mWebDomain;
     private int mChildCount;
-    private ArrayList<TestViewStructure> mChildren;
+    private final ArrayList<TestViewStructure> mChildren;
     private CharSequence[] mAutofillOptions;
     private AutofillValue mAutofillValue;
     private boolean mDataIsSensitive;

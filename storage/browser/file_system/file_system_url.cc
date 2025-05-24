@@ -4,13 +4,13 @@
 
 #include "storage/browser/file_system/file_system_url.h"
 
+#include <compare>
 #include <sstream>
 
 #include "base/check.h"
 #include "base/files/safe_base_name.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
-#include "storage/browser/file_system/file_system_util.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -203,12 +203,14 @@ FileSystemURL::FileSystemURL(const blink::StorageKey& storage_key,
       mount_option_(mount_option) {}
 
 GURL FileSystemURL::ToGURL() const {
-  if (!is_valid_)
+  if (!is_valid_) {
     return GURL();
+  }
 
   GURL url = GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_);
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return GURL();
+  }
 
   std::string url_string = url.spec();
 
@@ -226,8 +228,9 @@ GURL FileSystemURL::ToGURL() const {
 }
 
 std::string FileSystemURL::DebugString() const {
-  if (!is_valid_)
+  if (!is_valid_) {
     return "invalid filesystem: URL";
+  }
   std::ostringstream ss;
   switch (mount_type_) {
     // Include GURL if GURL serialization is possible.
@@ -263,11 +266,11 @@ std::string FileSystemURL::DebugString() const {
 }
 
 BucketLocator FileSystemURL::GetBucket() const {
-  if (bucket())
+  if (bucket()) {
     return *bucket_;
+  }
 
   auto bucket = storage::BucketLocator::ForDefaultBucket(storage_key());
-  bucket.type = storage::FileSystemTypeToQuotaStorageType(type());
   return bucket;
 }
 
@@ -298,6 +301,21 @@ bool FileSystemURL::operator==(const FileSystemURL& that) const {
   return AreSameStorageKey(*this, that) && type_ == that.type_ &&
          path_ == that.path_ && filesystem_id_ == that.filesystem_id_ &&
          is_valid_ == that.is_valid_ && bucket_ == that.bucket_;
+}
+
+std::weak_ordering FileSystemURL::operator<=>(const FileSystemURL& that) const {
+  if (is_null_ && that.is_null_) {
+    return std::weak_ordering::equivalent;
+  }
+
+  if (!AreSameStorageKey(*this, that)) {
+    return storage_key_ < that.storage_key_ ? std::weak_ordering::less
+                                            : std::weak_ordering::greater;
+  }
+
+  return std::tie(type_, path_, filesystem_id_, is_valid_, bucket_) <=>
+         std::tie(that.type_, that.path_, that.filesystem_id_, that.is_valid_,
+                  that.bucket_);
 }
 
 bool FileSystemURL::Comparator::operator()(const FileSystemURL& lhs,

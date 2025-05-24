@@ -5,6 +5,7 @@
 #include "device/fido/credential_management_handler.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -17,7 +18,6 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -409,7 +409,7 @@ TEST_F(CredentialManagementHandlerTest, EnumerateCredentialsMultipleRPs) {
       {{1}, "bob", "Bob"},
   };
 
-  uint8_t credential_id[] = {0};
+  auto credential_id = std::to_array<uint8_t>({0});
   for (const auto& rp : rps) {
     for (const auto& user : users) {
       ASSERT_TRUE(virtual_device_factory_.mutable_state()->InjectResidentKey(
@@ -432,8 +432,8 @@ TEST_F(CredentialManagementHandlerTest, EnumerateCredentialsMultipleRPs) {
   ASSERT_EQ(responses.size(), 3u);
 
   PublicKeyCredentialRpEntity got_rps[3];
-  base::ranges::transform(responses, std::begin(got_rps),
-                          &AggregatedEnumerateCredentialsResponse::rp);
+  std::ranges::transform(responses, std::begin(got_rps),
+                         &AggregatedEnumerateCredentialsResponse::rp);
   EXPECT_THAT(got_rps, UnorderedElementsAreArray(rps));
 
   for (const AggregatedEnumerateCredentialsResponse& response : responses) {

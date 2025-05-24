@@ -26,12 +26,14 @@ class CSSCustomTransformFunctionInterpolationType
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
 
   const CSSValue* CreateCSSValue(const InterpolableValue&,
                                  const NonInterpolableValue*,
                                  const StyleResolverState&) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
 
  private:
   InterpolationValue PreInterpolationCompositeIfNeeded(
@@ -40,29 +42,30 @@ class CSSCustomTransformFunctionInterpolationType
       EffectModel::CompositeOperation,
       ConversionCheckers&) const final;
 
+  InterpolationValue MaybeConvertTransformFunction(
+      const CSSValue&,
+      const CSSToLengthConversionData&) const;
+
   // These methods only apply to CSSInterpolationTypes used by standard CSS
   // properties.
   // CSSCustomTransformInterpolationType is only accessible via registered
   // custom CSS properties.
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const final {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   void ApplyStandardPropertyValue(const InterpolableValue&,
                                   const NonInterpolableValue*,
                                   StyleResolverState&) const final {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   InterpolationValue MaybeConvertInitial(const StyleResolverState&,
                                          ConversionCheckers&) const final {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const final {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 };
 

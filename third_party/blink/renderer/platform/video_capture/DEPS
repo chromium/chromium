@@ -29,7 +29,6 @@ specific_include_rules = {
     ],
     "gpu_memory_buffer_test_support.cc": [
         "+components/viz/test/test_context_provider.h",
-        "+media/video/fake_gpu_memory_buffer.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
     ],
     "gpu_memory_buffer_test_support.h": [

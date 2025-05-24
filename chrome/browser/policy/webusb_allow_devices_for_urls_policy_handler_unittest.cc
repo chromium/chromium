@@ -362,7 +362,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
       u"Error at WebUsbAllowDevicesForUrls[0].devices[0]: Schema validation "
       u"error: Unknown property: serialNumber";
   EXPECT_EQ(kExpected,
-            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls,
+                                    PolicyMap::MessageType::kWarning));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -831,7 +832,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
       u"Error at WebUsbAllowDevicesForUrls[0]: Schema validation error: "
       u"Unknown property: unknown_top_level_property";
   EXPECT_EQ(kExpected,
-            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls,
+                                    PolicyMap::MessageType::kWarning));
 
   EXPECT_FALSE(
       store_->GetValue(prefs::kManagedWebUsbAllowDevicesForUrls, nullptr));

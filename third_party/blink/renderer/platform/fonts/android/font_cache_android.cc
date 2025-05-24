@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
+#include "third_party/blink/renderer/platform/fonts/opentype/color_table_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/character.h"
@@ -61,11 +62,7 @@ static AtomicString DefaultFontFamily(sk_sp<SkFontMgr> font_manager) {
       return ToAtomicString(family_name);
   }
 
-  // Some devices do not return the default typeface. There's not much we can
-  // do here, use "Arial", the value LayoutTheme uses for CSS system font
-  // keywords such as "menu".
-  NOTREACHED_IN_MIGRATION();
-  return font_family_names::kArial;
+  NOTREACHED();
 }
 
 static AtomicString DefaultFontFamily() {
@@ -155,23 +152,15 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
       fm.get(), c, font_description, generic_family_name,
       fallback_priority_with_emoji_text);
 
-  auto skia_fallback_is_noto_color_emoji = [&]() {
+  auto skia_fallback_is_color = [&]() {
     const FontPlatformData* skia_fallback_result = GetFontPlatformData(
         font_description, FontFaceCreationParams(family_name));
-
-    // Determining the PostScript name is required as Skia on Android gives
-    // synthetic family names such as "91##fallback" to fallback fonts
-    // determined (Compare Skia's SkFontMgr_Android::addFamily). In order to
-    // identify if really the Emoji font was returned, compare by PostScript
-    // name rather than by family.
-    SkString fallback_postscript_name;
     if (skia_fallback_result && skia_fallback_result->Typeface()) {
-      skia_fallback_result->Typeface()->getPostScriptName(
-          &fallback_postscript_name);
+      return ColorTableLookup::TypefaceHasAnySupportedColorTable(
+          skia_fallback_result->Typeface());
     }
-    return fallback_postscript_name.equals(kNotoColorEmoji);
+    return false;
   };
-
   // On Android when we request font with specific emoji locale (i.e. "Zsym" or
   // "Zsye"), Skia will first search for the font with the exact emoji locale,
   // if it didn't succeed it will look at fonts with other emoji locales and
@@ -186,7 +175,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   // or "Zsye", see https://unicode.org/reports/tr51/#Emoji_Script.
   if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
       IsTextPresentationEmoji(fallback_priority_with_emoji_text) &&
-      skia_fallback_is_noto_color_emoji()) {
+      skia_fallback_is_color()) {
     family_name = GetFamilyNameForCharacter(fm.get(), c, font_description,
                                             generic_family_name,
                                             FontFallbackPriority::kText);
@@ -205,6 +194,22 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
 
   if (IsEmojiPresentationEmoji(fallback_priority) &&
       base::FeatureList::IsEnabled(features::kGMSCoreEmoji)) {
+    auto skia_fallback_is_noto_color_emoji = [&]() {
+      const FontPlatformData* skia_fallback_result = GetFontPlatformData(
+          font_description, FontFaceCreationParams(family_name));
+
+      // Determining the PostScript name is required as Skia on Android gives
+      // synthetic family names such as "91##fallback" to fallback fonts
+      // determined (Compare Skia's SkFontMgr_Android::addFamily). In order to
+      // identify if really the Emoji font was returned, compare by PostScript
+      // name rather than by family.
+      SkString fallback_postscript_name;
+      if (skia_fallback_result && skia_fallback_result->Typeface()) {
+        skia_fallback_result->Typeface()->getPostScriptName(
+            &fallback_postscript_name);
+      }
+      return fallback_postscript_name.equals(kNotoColorEmoji);
+    };
     if (family_name.empty() || skia_fallback_is_noto_color_emoji()) {
       const FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
           font_description,

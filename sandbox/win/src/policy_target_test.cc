@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -13,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_process_information.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "sandbox/win/src/broker_services.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -488,7 +489,8 @@ TEST(PolicyTargetTest, ShareHandleTest) {
   ASSERT_TRUE(writable_region.IsValid());
   base::WritableSharedMemoryMapping writable_mapping = writable_region.Map();
   ASSERT_TRUE(writable_mapping.IsValid());
-  memcpy(writable_mapping.memory(), contents.data(), contents.size());
+  UNSAFE_TODO(
+      memcpy(writable_mapping.memory(), contents.data(), contents.size()));
 
   // Get the path to the sandboxed app.
   wchar_t prog_name[MAX_PATH];
@@ -590,6 +592,12 @@ TEST(PolicyTargetTest, FilterEnvironment) {
     EXPECT_EQ(SBOX_TEST_SECOND_ERROR,
               runner.RunTest(L"PolicyTargetTest_filterEnvironment"));
   }
+}
+
+TEST(PolicyTargetDeathTest, SharePseudoHandle) {
+  TestRunner runner;
+  auto* policy = runner.GetPolicy();
+  EXPECT_DEATH(policy->AddHandleToShare(::GetCurrentThread()), "");
 }
 
 }  // namespace sandbox

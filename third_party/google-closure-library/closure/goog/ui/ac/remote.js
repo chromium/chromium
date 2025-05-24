@@ -53,6 +53,7 @@ goog.inherits(goog.ui.ac.Remote, goog.ui.ac.AutoComplete);
 /**
  * Set whether or not standard highlighting should be used when rendering rows.
  * @param {boolean} useStandardHighlighting true if standard highlighting used.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.Remote.prototype.setUseStandardHighlighting = function(
     useStandardHighlighting) {
@@ -74,6 +75,7 @@ goog.ui.ac.Remote.prototype.getInputHandler = function() {
 /**
  * Set the send method ("GET", "POST") for the matcher.
  * @param {string} method The send method; default: GET.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.Remote.prototype.setMethod = function(method) {
   'use strict';
@@ -84,6 +86,7 @@ goog.ui.ac.Remote.prototype.setMethod = function(method) {
 /**
  * Set the post data for the matcher.
  * @param {string} content Post data.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.Remote.prototype.setContent = function(content) {
   'use strict';
@@ -95,6 +98,7 @@ goog.ui.ac.Remote.prototype.setContent = function(content) {
  * Set the HTTP headers for the matcher.
  * @param {Object|goog.structs.Map} headers Map of headers to add to the
  *     request.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.Remote.prototype.setHeaders = function(headers) {
   'use strict';
@@ -106,6 +110,7 @@ goog.ui.ac.Remote.prototype.setHeaders = function(headers) {
  * Set the timeout interval for the matcher.
  * @param {number} interval Number of milliseconds after which an
  *     incomplete request will be aborted; 0 means no timeout is set.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.Remote.prototype.setTimeoutInterval = function(interval) {
   'use strict';

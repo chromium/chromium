@@ -23,8 +23,8 @@ namespace updater {
 // daylight savings time changes happen in between.
 class UpdatesSuppressedTimes {
  public:
-  bool operator==(const UpdatesSuppressedTimes& other) const;
-  bool operator!=(const UpdatesSuppressedTimes& other) const;
+  friend constexpr bool operator==(const UpdatesSuppressedTimes&,
+                                   const UpdatesSuppressedTimes&) = default;
 
   bool valid() const;
 

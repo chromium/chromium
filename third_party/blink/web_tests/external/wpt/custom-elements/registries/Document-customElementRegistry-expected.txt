@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] customElementRegistry on a document of a disconnected iframe should return contentWindow.customElements
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+Harness: the test ran to completion.
+

@@ -19,18 +19,15 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_INTEGER_TO_STRING_CONVERSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_INTEGER_TO_STRING_CONVERSION_H_
 
+#include <array>
 #include <limits>
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -50,40 +47,36 @@ class IntegerToStringConverter {
                 "IntegerType must be a type of integer.");
 
   explicit IntegerToStringConverter(IntegerType input) {
-    LChar* end = buffer_ + kBufferSize;
-    begin_ = end;
-
     // We need to switch to the unsigned type when negating the value since
     // abs(INT_MIN) == INT_MAX + 1.
     bool is_negative = base::IsValueNegative(input);
     UnsignedIntegerType value = is_negative ? 0u - static_cast<UnsignedIntegerType>(input) : input;
 
+    size_t pos = buffer_.size();
     do {
-      --begin_;
-      DCHECK_GE(begin_, buffer_);
-      *begin_ = static_cast<LChar>((value % 10) + '0');
+      --pos;
+      buffer_[pos] = static_cast<LChar>((value % 10) + '0');
       value /= 10;
     } while (value);
 
     if (is_negative) {
-      --begin_;
-      DCHECK_GE(begin_, buffer_);
-      *begin_ = static_cast<LChar>('-');
+      --pos;
+      buffer_[pos] = static_cast<LChar>('-');
     }
 
-    length_ = static_cast<unsigned>(end - begin_);
+    length_ = static_cast<unsigned>(buffer_.size() - pos);
   }
 
-  const LChar* Characters8() const { return begin_; }
-  unsigned length() const { return length_; }
+  base::span<const LChar> Span() const {
+    return base::span(buffer_).last(length_);
+  }
 
  private:
   using UnsignedIntegerType = typename std::make_unsigned<IntegerType>::type;
   static const size_t kBufferSize = 3 * sizeof(UnsignedIntegerType) +
                                     std::numeric_limits<IntegerType>::is_signed;
 
-  LChar buffer_[kBufferSize];
-  LChar* begin_;
+  std::array<LChar, kBufferSize> buffer_;
   unsigned length_;
 };
 

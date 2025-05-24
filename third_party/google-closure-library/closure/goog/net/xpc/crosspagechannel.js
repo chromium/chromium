@@ -23,6 +23,7 @@ goog.require('goog.dom.safe');
 goog.require('goog.events');
 goog.require('goog.events.EventHandler');
 goog.require('goog.events.EventType');
+goog.require('goog.functions');
 goog.require('goog.html.legacyconversions');
 goog.require('goog.json');
 goog.require('goog.log');
@@ -31,7 +32,6 @@ goog.require('goog.net.xpc');
 goog.require('goog.net.xpc.CfgFields');
 goog.require('goog.net.xpc.ChannelStates');
 goog.require('goog.net.xpc.CrossPageChannelRole');
-goog.require('goog.net.xpc.DirectTransport');
 goog.require('goog.net.xpc.NativeMessagingTransport');
 goog.require('goog.net.xpc.TransportTypes');
 goog.require('goog.net.xpc.UriCfgFields');
@@ -263,6 +263,7 @@ goog.net.xpc.CrossPageChannel.prototype.getPeerWindowObject = function() {
  *
  * @return {boolean} Whether the peer window is available.
  * @package
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.xpc.CrossPageChannel.prototype.isPeerAvailable = function() {
   'use strict';
@@ -338,19 +339,6 @@ goog.net.xpc.CrossPageChannel.prototype.createTransport_ = function() {
         this.transport_ = new goog.net.xpc.NativeMessagingTransport(
             this, this.cfg_[CfgFields.PEER_HOSTNAME], this.domHelper_,
             !!this.cfg_[CfgFields.ONE_SIDED_HANDSHAKE], protocolVersion);
-        break;
-      case goog.net.xpc.TransportTypes.DIRECT:
-        if (this.peerWindowObject_ &&
-            goog.net.xpc.DirectTransport.isSupported(
-                /** @type {!Window} */ (this.peerWindowObject_))) {
-          this.transport_ =
-              new goog.net.xpc.DirectTransport(this, this.domHelper_);
-        } else {
-          goog.log.info(
-              goog.net.xpc.logger,
-              'DirectTransport not supported for this window, peer window in' +
-                  ' different security context or not set yet.');
-        }
         break;
     }
   }
@@ -550,7 +538,8 @@ goog.net.xpc.CrossPageChannel.prototype.getPeerUri = function(opt_addCfgParam) {
  */
 goog.net.xpc.CrossPageChannel.prototype.connect = function(opt_connectCb) {
   'use strict';
-  this.connectCb_ = opt_connectCb || goog.nullFunction;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
+  this.connectCb_ = opt_connectCb || goog.functions.UNDEFINED;
 
   // If this channel was previously closed, transition back to the NOT_CONNECTED
   // state to ensure that the connection can proceed (xpcDeliver blocks
@@ -624,6 +613,7 @@ goog.net.xpc.CrossPageChannel.prototype.close = function() {
   this.state_ = goog.net.xpc.ChannelStates.CLOSED;
   goog.dispose(this.transport_);
   this.transport_ = null;
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.connectCb_ = null;
   goog.dispose(this.connectionDelay_);
   this.connectionDelay_ = null;
@@ -637,6 +627,7 @@ goog.net.xpc.CrossPageChannel.prototype.close = function() {
  * @param {number=} opt_delay Delay this number of milliseconds before calling
  *     the connection callback. Usage is discouraged, but can be used to paper
  *     over timing vulnerabilities when there is no alternative.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.xpc.CrossPageChannel.prototype.notifyConnected = function(opt_delay) {
   'use strict';
@@ -648,6 +639,7 @@ goog.net.xpc.CrossPageChannel.prototype.notifyConnected = function(opt_delay) {
   goog.log.info(goog.net.xpc.logger, 'Channel "' + this.name + '" connected');
   goog.dispose(this.connectionDelay_);
   if (opt_delay !== undefined) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.connectionDelay_ = new goog.async.Delay(this.connectCb_, opt_delay);
     this.connectionDelay_.start();
   } else {

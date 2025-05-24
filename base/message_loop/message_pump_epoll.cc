@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/message_loop/message_pump_epoll.h"
 
 #include <sys/eventfd.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -19,7 +25,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
@@ -420,7 +425,7 @@ void MessagePumpEpoll::UnregisterInterest(
 
   EpollEventEntry& entry = entry_it->second;
   auto& interests = entry.interests;
-  auto* it = ranges::find(interests, interest);
+  auto* it = std::ranges::find(interests, interest);
   CHECK(it != interests.end(), base::NotFatalUntil::M125);
   interests.erase(it);
 
@@ -589,9 +594,10 @@ void MessagePumpEpoll::OnEpollEvent(EpollEventEntry& entry, uint32_t events) {
       continue;
     }
 
+    const bool one_shot = interest->params().one_shot;
     const bool can_read = (readable || disconnected) && interest->params().read;
-    const bool can_write =
-        (writable || disconnected) && interest->params().write;
+    const bool can_write = (writable || disconnected) &&
+                           interest->params().write && (!one_shot || !can_read);
     if (!can_read && !can_write) {
       // If this Interest is active but not watching for whichever event was
       // raised here, there's nothing to do. This can occur if a descriptor has

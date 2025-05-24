@@ -96,7 +96,7 @@ class CORE_EXPORT BreakToken : public GarbageCollected<BreakToken> {
   // The following bitfields are only to be used by InlineBreakToken (it's
   // defined here to save memory, since that class has no bitfields).
 
-  const unsigned flags_ : 5;  // InlineBreakTokenFlags
+  const unsigned flags_ : 6;  // InlineBreakTokenFlags
 
   // The following bitfields are only to be used by BlockBreakToken (it's
   // defined here to save memory, since that class has no bitfields).

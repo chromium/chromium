@@ -6,8 +6,7 @@ import {PostMessageApiClient} from 'chrome://resources/ash/common/post_message_a
 import {PostMessageApiServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-const TARGET_URL =
-    'chrome://webui-test/chromeos/ash_common/post_message_api/iframe.html';
+const TARGET_URL = 'chrome://webui-test/post_message_api/iframe.html';
 const TARGET_ORIGIN = 'chrome://webui-test/';
 
 class TestPostMessageApiServer extends PostMessageApiServer {
@@ -93,7 +92,7 @@ suite('PostMessageApiModuleTest', function() {
   let innerFrame: HTMLIFrameElement;
 
   suiteSetup(function() {
-    innerFrame = document.createElement('iframe') as HTMLIFrameElement;
+    innerFrame = document.createElement('iframe');
     innerFrame.src = TARGET_URL;
     document.body.appendChild(innerFrame);
   });

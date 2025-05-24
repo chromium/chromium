@@ -8,8 +8,8 @@ import android.content.Context;
 import android.os.Build;
 import android.view.PointerIcon;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.WebContents;
 
@@ -17,37 +17,64 @@ import org.chromium.content_public.browser.WebContents;
  * Helper class to determine whether Direct writing service is in consideration or the Android
  * platform Stylus Writing feature, and to set the appropriate handler to WebContents.
  */
+@NullMarked
 public class StylusWritingController {
     private final Context mContext;
-    private WebContents mCurrentWebContents;
-    @Nullable private PointerIcon mHandwritingIcon;
+    private @Nullable WebContents mCurrentWebContents;
+    private @Nullable PointerIcon mHandwritingIcon;
+    private @Nullable StylusApiOption mStylusHandler;
+    private boolean mIconFetched;
+    private final boolean mLazyFetchHandWritingIconFeatureEnabled;
     private boolean mShouldOverrideStylusHoverIcon;
+    private boolean mIsWindowFocused;
 
-    @Nullable private AndroidStylusWritingHandler mAndroidHandler;
-    @Nullable private DirectWritingTrigger mDirectWritingTrigger;
-    @Nullable private DisabledStylusWritingHandler mDisabledStylusWritingHandler;
+    private @Nullable AndroidStylusWritingHandler mAndroidHandler;
+    private @Nullable DirectWritingTrigger mDirectWritingTrigger;
+    private @Nullable DisabledStylusWritingHandler mDisabledStylusWritingHandler;
 
     static StylusWritingController createControllerForTests(Context context, PointerIcon icon) {
         StylusWritingController controller = new StylusWritingController(context);
+        controller.mIconFetched = true;
         controller.mHandwritingIcon = icon;
         return controller;
     }
 
     /** Creates a new instance of this class. */
     public StylusWritingController(Context context) {
+        this(context, false);
+    }
+
+    public StylusWritingController(
+            Context context, boolean lazyFetchHandWritingIconFeatureEnabled) {
         mContext = context;
-        int iconType = getHandler().getStylusPointerIcon();
-        if (iconType != PointerIcon.TYPE_NULL) {
-            mHandwritingIcon =
-                    PointerIcon.getSystemIcon(context, getHandler().getStylusPointerIcon());
+        mLazyFetchHandWritingIconFeatureEnabled = lazyFetchHandWritingIconFeatureEnabled;
+        mIconFetched = false;
+        if (!mLazyFetchHandWritingIconFeatureEnabled) {
+            int iconType = getHandler().getStylusPointerIcon();
+            if (iconType != PointerIcon.TYPE_NULL) {
+                mHandwritingIcon =
+                        PointerIcon.getSystemIcon(context, getHandler().getStylusPointerIcon());
+            }
         }
+    }
+
+    private @Nullable PointerIcon getHandwritingIcon() {
+        if (!mIconFetched) {
+            int iconType = getHandler().getStylusPointerIcon();
+            if (iconType != PointerIcon.TYPE_NULL) {
+                mHandwritingIcon = PointerIcon.getSystemIcon(mContext, iconType);
+            }
+            mIconFetched = true;
+        }
+
+        return mHandwritingIcon;
     }
 
     /**
      * Returns the appropriate StylusWritingHandler - this may change at runtime if the user
      * enables/disables the stylus writing feature in their Android settings.
      */
-    private StylusApiOption getHandler() {
+    private StylusApiOption chooseHandler() {
         if (DirectWritingSettingsHelper.isEnabled(mContext)) {
             // Lazily initialize the various handlers since a lot of the time only one will be used.
             if (mDirectWritingTrigger == null) {
@@ -75,6 +102,24 @@ public class StylusWritingController {
         return mDisabledStylusWritingHandler;
     }
 
+    /*
+     * Returns the currently selected handler, initializing it lazily if it has not been initialized
+     * already.
+     */
+    private StylusApiOption getHandler() {
+        // If the feature is enabled, we listen to settings changes and re-run the handler selection
+        // logic if stylus related settings changed. If the feature is disabled, we re-run the
+        // handler selection logic every time.
+        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
+                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
+            if (mStylusHandler == null) {
+                mStylusHandler = chooseHandler();
+            }
+            return mStylusHandler;
+        }
+        return chooseHandler();
+    }
+
     /**
      * Notifies the applicable {@link StylusWritingHandler} so that stylus writing messages can be
      * received and handled for performing handwriting recognition.
@@ -99,9 +144,35 @@ public class StylusWritingController {
      */
     public void onWindowFocusChanged(boolean hasFocus) {
         // This notification is used to determine if the Stylus writing feature is enabled or not
-        // from System settings as it can be changed while Chrome is in background.
+        // from System settings as it can be changed while Chrome is in background. If caching of
+        // stylus settings is enabled, we need to store the current focus state and send it when
+        // settings change is observed.
+        mIsWindowFocused = hasFocus;
+        updateStylusState();
+    }
+
+    /** Notify stylus related settings changed. */
+    public void onSettingsChange() {
+        mStylusHandler = chooseHandler();
+        updateStylusState();
+    }
+
+    public @Nullable PointerIcon resolvePointerIcon() {
+        if (mShouldOverrideStylusHoverIcon) {
+            return mLazyFetchHandWritingIconFeatureEnabled
+                    ? getHandwritingIcon()
+                    : mHandwritingIcon;
+        }
+        return null;
+    }
+
+    private void setShouldOverrideStylusHoverIcon(boolean shouldOverride) {
+        mShouldOverrideStylusHoverIcon = shouldOverride;
+    }
+
+    private void updateStylusState() {
         StylusApiOption handler = getHandler();
-        handler.onWindowFocusChanged(mContext, hasFocus);
+        handler.updateHandlerState(mContext, mIsWindowFocused);
 
         if (mCurrentWebContents == null) return;
         handler.onWebContentsChanged(mContext, mCurrentWebContents);
@@ -109,14 +180,5 @@ public class StylusWritingController {
         mCurrentWebContents
                 .getViewAndroidDelegate()
                 .setShouldShowStylusHoverIconCallback(this::setShouldOverrideStylusHoverIcon);
-    }
-
-    @Nullable
-    public PointerIcon resolvePointerIcon() {
-        return mShouldOverrideStylusHoverIcon ? mHandwritingIcon : null;
-    }
-
-    private void setShouldOverrideStylusHoverIcon(boolean shouldOverride) {
-        mShouldOverrideStylusHoverIcon = shouldOverride;
     }
 }

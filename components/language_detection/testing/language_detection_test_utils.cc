@@ -15,15 +15,18 @@
 #include "gtest/gtest.h"
 
 namespace language_detection {
-base::File GetValidModelFile() {
+base::FilePath GetValidModelFilePath() {
   base::FilePath source_root_dir;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
-  base::FilePath model_file_path = source_root_dir.AppendASCII("components")
-                                       .AppendASCII("test")
-                                       .AppendASCII("data")
-                                       .AppendASCII("translate")
-                                       .AppendASCII("valid_model.tflite");
-  base::File file(model_file_path,
+  return source_root_dir.AppendASCII("components")
+      .AppendASCII("test")
+      .AppendASCII("data")
+      .AppendASCII("translate")
+      .AppendASCII("valid_model.tflite");
+}
+
+base::File GetValidModelFile() {
+  base::File file(GetValidModelFilePath(),
                   (base::File::FLAG_OPEN | base::File::FLAG_READ));
   return file;
 }

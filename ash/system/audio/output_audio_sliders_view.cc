@@ -38,11 +38,7 @@ OutputAudioSlidersView::OutputAudioSlidersView(
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
   // Creates and adds the slider container.
-  AddChildView(views::Builder<views::BoxLayoutView>()
-                   .CopyAddressTo(&slider_container_)
-                   .SetBorder(views::CreateEmptyBorder(kSliderContainerPadding))
-                   .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                   .Build());
+  CreateSliderContainer();
 
   Update();
 }
@@ -87,13 +83,23 @@ void OutputAudioSlidersView::Update() {
 
   // Only display devices if they are for simple usage and are output devices.
   AudioDeviceList output_devices;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       all_devices, std::back_inserter(output_devices), [](const auto& device) {
         return device.is_for_simple_usage() && !device.is_input;
       });
 
   output_devices_by_name_views_.clear();
-  slider_container_->RemoveAllChildViews();
+
+  // Removing all from the parent and adding a layer to the container avoids
+  // calling `OrphanLayers()` when removing child views. Note that in the
+  // `LabeledSliderView` we set the layer of `unified_slider_view_` beneath the
+  // layer of `device_name_view_`. Meanwhile, `device_name_view_` is removed
+  // before `unified_slider_view_` due to the view order. As a result, the layer
+  // of `unified_slider_view_` will be removed from the parent twice, causing a
+  // CHECK error.
+  slider_container_ = nullptr;
+  RemoveAllChildViews();
+  CreateSliderContainer();
 
   // Inform the Media Panel view on devices update.
   on_devices_updated_callback_.Run(
@@ -122,6 +128,20 @@ void OutputAudioSlidersView::Update() {
       focused_device_id_ = std::nullopt;
     }
   }
+}
+
+void OutputAudioSlidersView::CreateSliderContainer() {
+  if (slider_container_) {
+    return;
+  }
+
+  AddChildView(views::Builder<views::BoxLayoutView>()
+                   .CopyAddressTo(&slider_container_)
+                   .SetBorder(views::CreateEmptyBorder(kSliderContainerPadding))
+                   .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                   .Build());
+
+  slider_container_->SetPaintToLayer();
 }
 
 BEGIN_METADATA(OutputAudioSlidersView)

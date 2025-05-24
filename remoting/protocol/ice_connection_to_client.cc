@@ -84,12 +84,14 @@ protocol::Session* IceConnectionToClient::session() {
   return session_.get();
 }
 
-void IceConnectionToClient::Disconnect(ErrorCode error) {
+void IceConnectionToClient::Disconnect(ErrorCode error,
+                                       std::string_view error_details,
+                                       const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This should trigger OnConnectionClosed() event and this object
   // may be destroyed as the result.
-  session_->Close(error);
+  session_->Close(error, error_details, error_location);
 }
 
 std::unique_ptr<VideoStream> IceConnectionToClient::StartVideoStream(
@@ -209,7 +211,7 @@ void IceConnectionToClient::OnIceTransportRouteChange(
 
 void IceConnectionToClient::OnIceTransportError(ErrorCode error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Disconnect(error);
+  Disconnect(error, /* error_details= */ {}, FROM_HERE);
 }
 
 void IceConnectionToClient::OnChannelInitialized(
@@ -222,7 +224,7 @@ void IceConnectionToClient::OnChannelInitialized(
 void IceConnectionToClient::OnChannelClosed(
     ChannelDispatcherBase* channel_dispatcher) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Disconnect(ErrorCode::OK);
+  Disconnect(ErrorCode::OK, /* error_details= */ {}, FROM_HERE);
 }
 
 void IceConnectionToClient::NotifyIfChannelsReady() {

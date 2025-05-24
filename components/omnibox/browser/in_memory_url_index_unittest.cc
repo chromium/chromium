@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
+
 
 #include "components/omnibox/browser/in_memory_url_index.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <fstream>
 #include <memory>
 #include <numeric>
@@ -24,7 +23,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -227,7 +225,7 @@ void InMemoryURLIndexTest::SetUp() {
         ASSERT_TRUE(base::ReadFileToString(golden_path, &sql));
         sql::Database& db(GetDB());
         ASSERT_TRUE(db.is_open());
-        ASSERT_TRUE(db.Execute(sql));
+        ASSERT_TRUE(db.ExecuteScriptForTesting(sql));
 
         // Update [urls.last_visit_time] and [visits.visit_time] to represent a
         // time relative to 'now'.
@@ -401,10 +399,10 @@ void InMemoryURLIndexTest::ExpectPrivateDataEqual(
     ASSERT_TRUE(actual_starts != actual.word_starts_map_.end());
     const RowWordStarts& expected_word_starts(expected_starts.second);
     const RowWordStarts& actual_word_starts(actual_starts->second);
-    EXPECT_TRUE(base::ranges::equal(expected_word_starts.url_word_starts_,
-                                    actual_word_starts.url_word_starts_));
-    EXPECT_TRUE(base::ranges::equal(expected_word_starts.title_word_starts_,
-                                    actual_word_starts.title_word_starts_));
+    EXPECT_TRUE(std::ranges::equal(expected_word_starts.url_word_starts_,
+                                   actual_word_starts.url_word_starts_));
+    EXPECT_TRUE(std::ranges::equal(expected_word_starts.title_word_starts_,
+                                   actual_word_starts.title_word_starts_));
   }
 }
 
@@ -713,7 +711,7 @@ TEST_F(InMemoryURLIndexTest, TrimHistoryIds) {
 
   auto CountGroupElementsInIds = [](const ItemGroup& group,
                                     const HistoryIDVector& ids) {
-    return base::ranges::count_if(ids, [&](history::URLID id) {
+    return std::ranges::count_if(ids, [&](history::URLID id) {
       return group.min_id <= id && id < group.max_id;
     });
   };
@@ -758,7 +756,7 @@ TEST_F(InMemoryURLIndexTest, TrimHistoryIds) {
 
   // Each next group should fill almost everything, while the previous group
   // should occupy what's left.
-  auto* error_position = base::ranges::adjacent_find(
+  auto* error_position = std::ranges::adjacent_find(
       item_groups, [&](const ItemGroup& previous, const ItemGroup& current) {
         auto ids = GetHistoryIdsUpTo(current.max_id);
         EXPECT_TRUE(GetPrivateData()->TrimHistoryIdsPool(&ids));
@@ -1130,7 +1128,7 @@ TEST_F(InMemoryURLIndexTest, CalculateWordStartsOffsets) {
     const char* search_string;
     size_t cursor_position;
     const size_t expected_word_starts_offsets_size;
-    const size_t expected_word_starts_offsets[3];
+    const std::array<size_t, 3> expected_word_starts_offsets;
   } test_cases[] = {
       /* No punctuations, only cursor position change. */
       {"ABCD", kInvalid, 1, {0, kInvalid, kInvalid}},

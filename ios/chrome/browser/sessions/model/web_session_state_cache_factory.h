@@ -8,24 +8,17 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
+class ProfileIOS;
 @class WebSessionStateCache;
 
 // Singleton that owns all WebSessionStateCaches and associates them with
-// ChromeBrowserState.
-class WebSessionStateCacheFactory : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class WebSessionStateCacheFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static WebSessionStateCache* GetForBrowserState(ProfileIOS* profile);
-
   static WebSessionStateCache* GetForProfile(ProfileIOS* profile);
   static WebSessionStateCacheFactory* GetInstance();
-
-  WebSessionStateCacheFactory(const WebSessionStateCacheFactory&) = delete;
-  WebSessionStateCacheFactory& operator=(const WebSessionStateCacheFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<WebSessionStateCacheFactory>;
@@ -35,8 +28,6 @@ class WebSessionStateCacheFactory : public BrowserStateKeyedServiceFactory {
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

@@ -9,16 +9,17 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetupInterface} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
+import type {CarrierPortalHandlerRemote, CellularMetadata, CellularSetupInterface} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
+import {ActivationDelegateReceiver, ActivationResult, CarrierPortalStatus} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CellularSetupDelegate} from './cellular_setup_delegate.js';
+import type {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonState} from './cellular_types.js';
-import {FinalPageElement} from './final_page.js';
+import type {FinalPageElement} from './final_page.js';
 import {getCellularSetupRemote} from './mojo_interface_provider.js';
-import {ProvisioningPageElement} from './provisioning_page.js';
+import type {ProvisioningPageElement} from './provisioning_page.js';
 import {getTemplate} from './psim_flow_ui.html.js';
-import {SetupLoadingPageElement} from './setup_loading_page.js';
+import type {SetupLoadingPageElement} from './setup_loading_page.js';
 import {SubflowMixin} from './subflow_mixin.js';
 
 export enum PsimPageName {

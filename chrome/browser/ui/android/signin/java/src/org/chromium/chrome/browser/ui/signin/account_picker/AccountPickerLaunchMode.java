@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Indicates which view should be shown first when the bottom sheet is displayed. */
+@NullMarked
 @IntDef({
     AccountPickerLaunchMode.DEFAULT,
     AccountPickerLaunchMode.CHOOSE_ACCOUNT,

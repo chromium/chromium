@@ -265,7 +265,12 @@ ServiceWatcherImplMac::ServiceWatcherImplMac(
     scoped_refptr<base::SingleThreadTaskRunner> service_discovery_runner)
     : service_type_(service_type),
       callback_(std::move(callback)),
-      service_discovery_runner_(service_discovery_runner) {}
+      service_discovery_runner_(service_discovery_runner) {
+  force_enable_legacy_discovery_ =
+      base::mac::MacOSMajorVersion() >= 15 ||
+      !base::FeatureList::IsEnabled(
+          media_router::kUseNetworkFrameworkForLocalDiscovery);
+}
 
 ServiceWatcherImplMac::~ServiceWatcherImplMac() {
   if (base::FeatureList::IsEnabled(
@@ -274,7 +279,9 @@ ServiceWatcherImplMac::~ServiceWatcherImplMac() {
         FROM_HERE, base::BindOnce(&StopServiceBrowser, nw_browser_,
                                   service_discovery_runner_));
     nw_browser_ = nil;
-  } else {
+  }
+
+  if (force_enable_legacy_discovery_) {
     service_discovery_runner_->PostTask(
         FROM_HERE, base::BindOnce(&StopNetServiceBrowser, browser_));
     browser_ = nil;
@@ -309,7 +316,9 @@ void ServiceWatcherImplMac::Start() {
                             weak_factory_.GetWeakPtr()),
         base::BindRepeating(&ServiceWatcherImplMac::RecordPermissionState,
                             weak_factory_.GetWeakPtr()));
-  } else {
+  }
+
+  if (force_enable_legacy_discovery_) {
     browser_ = [[NetServiceBrowser alloc]
         initWithServiceType:service_type_
                    callback:base::BindRepeating(
@@ -328,7 +337,9 @@ void ServiceWatcherImplMac::DiscoverNewServices() {
     service_discovery_runner_->PostTask(
         FROM_HERE, base::BindOnce(&StartServiceBrowser, nw_browser_,
                                   service_discovery_runner_));
-  } else {
+  }
+
+  if (force_enable_legacy_discovery_) {
     service_discovery_runner_->PostTask(
         FROM_HERE, base::BindOnce(&StartNetServiceBrowser, browser_));
   }

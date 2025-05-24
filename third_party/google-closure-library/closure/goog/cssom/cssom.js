@@ -23,6 +23,7 @@ goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');
 goog.require('goog.dom.safe');
+goog.require('goog.labs.userAgent.browser');
 
 
 /**
@@ -374,22 +375,36 @@ goog.cssom.addCssText = function(cssText, opt_domHelper) {
   var cssNode = domHelper.createElement(goog.dom.TagName.STYLE);
 
   // If a CSP nonce is present, propagate it to style blocks
-  const nonce = goog.dom.safe.getStyleNonce();
+  const nonce = goog.dom.safe.getStyleNonce(goog.dom.getWindow(document));
   if (nonce) {
     cssNode.setAttribute('nonce', nonce);
   }
 
   cssNode.type = 'text/css';
   var head = domHelper.getElementsByTagName(goog.dom.TagName.HEAD)[0];
-  head.appendChild(cssNode);
+
+  // IE requires the element to be inserted in the document before any
+  // style contents is added to the element. Other browsers don't
+  // process style content changes made after the element is attached
+  // to the DOM, as a performance optimization.
+  const isIE = goog.labs.userAgent.browser.isIE();
+  if (isIE) {
+    head.appendChild(cssNode);
+  }
+
   if (cssNode.styleSheet) {
-    // IE.
+    // IE pre-9
     cssNode.styleSheet.cssText = cssText;
   } else {
-    // W3C.
+    // W3C including IE9+
     var cssTextNode = document.createTextNode(cssText);
     cssNode.appendChild(cssTextNode);
   }
+
+  if (!isIE) {
+    head.appendChild(cssNode);
+  }
+
   return cssNode;
 };
 

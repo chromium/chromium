@@ -8,26 +8,26 @@ import static org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionReques
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Sets up the Mediator for Cormorant Creator surface.  It is based on the doc at
+ * Sets up the Mediator for Cormorant Creator surface. It is based on the doc at
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
  */
+@NullMarked
 public class CreatorMediator {
-    private Context mContext;
-    private PropertyModel mCreatorModel;
+    private final PropertyModel mCreatorModel;
     private final CreatorSnackbarController mCreatorSnackbarController;
-    private SignInInterstitialInitiator mSignInInterstitialInitiator;
+    private final SignInInterstitialInitiator mSignInInterstitialInitiator;
 
     CreatorMediator(
             Context context,
             PropertyModel creatorModel,
             CreatorSnackbarController creatorSnackbarController,
             SignInInterstitialInitiator signInInterstitialInitiator) {
-        mContext = context;
         mCreatorModel = creatorModel;
         mCreatorSnackbarController = creatorSnackbarController;
         mSignInInterstitialInitiator = signInInterstitialInitiator;

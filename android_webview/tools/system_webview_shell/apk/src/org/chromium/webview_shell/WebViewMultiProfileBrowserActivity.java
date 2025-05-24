@@ -24,6 +24,7 @@ public class WebViewMultiProfileBrowserActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeUtil.setupEdgeToEdge(this);
         setSupportActionBar(findViewById(R.id.browser_toolbar));
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;

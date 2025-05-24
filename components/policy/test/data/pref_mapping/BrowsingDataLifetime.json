@@ -2,8 +2,7 @@
   {
     "os": [
       "android",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "linux",
       "mac",
       "win",

@@ -6,6 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "content/browser/preloading/prerender/prerender_commit_deferring_condition.h"
 #include "content/browser/preloading/prerender/prerender_no_vary_search_commit_deferring_condition.h"
 #include "content/browser/preloading/prerender/prerender_no_vary_search_hint_commit_deferring_condition.h"
@@ -54,7 +56,15 @@ CommitDeferringConditionRunner::CommitDeferringConditionRunner(
       candidate_prerender_frame_tree_node_id_(
           candidate_prerender_frame_tree_node_id) {}
 
-CommitDeferringConditionRunner::~CommitDeferringConditionRunner() = default;
+CommitDeferringConditionRunner::~CommitDeferringConditionRunner() {
+  if (is_deferred_) {
+    // Pass a nullptr and it will close the opening slice.
+    TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", nullptr,
+                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
+        "navigation", "CommitDeferringConditionRunning", TRACE_ID_LOCAL(this));
+  }
+}
 
 void CommitDeferringConditionRunner::ProcessChecks() {
   ProcessConditions();
@@ -67,8 +77,9 @@ void CommitDeferringConditionRunner::AddConditionForTesting(
 
 CommitDeferringCondition*
 CommitDeferringConditionRunner::GetDeferringConditionForTesting() const {
-  if (!is_deferred_)
+  if (!is_deferred_) {
     return nullptr;
+  }
 
   DCHECK(!conditions_.empty());
   return (*conditions_.begin()).get();
@@ -77,7 +88,10 @@ CommitDeferringConditionRunner::GetDeferringConditionForTesting() const {
 void CommitDeferringConditionRunner::ResumeProcessing() {
   DCHECK(is_deferred_);
   is_deferred_ = false;
-
+  // Pass a nullptr and it will close the opening slice.
+  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", nullptr, TRACE_ID_LOCAL(this));
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "navigation", "CommitDeferringConditionRunning", TRACE_ID_LOCAL(this));
   // This is resuming from a check that resolved asynchronously. The current
   // check is always at the front of the vector so pop it and then proceed with
   // the next one.
@@ -184,7 +198,14 @@ void CommitDeferringConditionRunner::ProcessConditions() {
     switch (condition->WillCommitNavigation(std::move(resume_closure))) {
       case CommitDeferringCondition::Result::kDefer:
         is_deferred_ = true;
+        TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation",
+                                          "CommitDeferringConditionRunning",
+                                          TRACE_ID_LOCAL(this));
+        TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+            "navigation", condition->TraceEventName(), TRACE_ID_LOCAL(this));
         return;
+      // TODO(crbug.com/40270812): Also add instant tracing for the condition
+      // that is being resolved synchronously.
       case CommitDeferringCondition::Result::kCancelled:
         // DO NOT ADD CODE after this. The previous call to
         // `WillCommitNavigation()` may have caused the destruction of the

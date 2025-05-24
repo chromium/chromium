@@ -43,7 +43,7 @@ dividing by the current screen's display scale factor.
   account the monitor tree, connected components, and overlap handling when
   converting coordinates.
   - Example:
-  `display::win::ScreenWin::DIPToScreenRect(GetParentHWND(), dip_bounds)` will
+  `display::win::GetScreenWin()->DIPToScreenRect(GetParentHWND(), dip_bounds)` will
   convert a screen DIP rect to a screen physical one.
 
 - **Other Platforms:**

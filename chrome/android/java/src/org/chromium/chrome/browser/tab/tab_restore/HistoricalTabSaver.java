@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.tab.tab_restore;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.List;
 
 /** Interface for creating entries in TabRestoreService. */
+@NullMarked
 public interface HistoricalTabSaver {
     /** Destroys the instance. */
     public void destroy();
@@ -19,13 +21,13 @@ public interface HistoricalTabSaver {
      * Adds a secondary {@link TabModel} supplier to check if a deleted tab should be added to
      * recent tabs.
      */
-    public void addSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
+    public void addSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
 
     /**
      * Removes a secondary {@link TabModel} supplier to check if a deleted tab should be added to
      * recent tabs.
      */
-    public void removeSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
+    public void removeSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
 
     /**
      * Creates a Tab entry in TabRestoreService.

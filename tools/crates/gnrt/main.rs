@@ -114,7 +114,7 @@ fn format_log_entry(
 ) -> std::io::Result<()> {
     use std::io::Write;
 
-    let level = fmt.default_styled_level(record.level());
+    let level = fmt.default_level_style(record.level());
     write!(fmt, "[{level}")?;
     if let Some(f) = record.file() {
         write!(fmt, " {f}")?;

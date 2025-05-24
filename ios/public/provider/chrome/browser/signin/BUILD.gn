@@ -7,10 +7,10 @@ source_set("choice_api") {
   deps = [
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
     "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/ui/promos_manager:promos",
   ]
   frameworks = [ "UIKit.framework" ]
 }

@@ -39,7 +39,7 @@ class WaylandShmBuffer {
 
   // Returns the underlying raw memory buffer, if it's currently mapped into
   // local address space, otherwise return nullptr
-  uint8_t* GetMemory() const;
+  uint8_t* GetMemory();
 
   // Returns the underlying wl_buffer pointer
   wl_buffer* get() const { return buffer_.get(); }

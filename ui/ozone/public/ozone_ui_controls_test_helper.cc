@@ -13,7 +13,7 @@ namespace ui {
 
 #if BUILDFLAG(IS_LINUX)
 void OzoneUIControlsTestHelper::ForceUseScreenCoordinatesOnce() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_LINUX)
 

@@ -4,25 +4,34 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.multiwindow.UiUtils.INVALID_TASK_ID;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
+import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -38,22 +47,23 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Coordinator to construct the instance switcher dialog.
  * TODO: Resolve various inconsistencies that can be caused by Ui from multiple instances.
  */
+@NullMarked
 public class InstanceSwitcherCoordinator {
     // Last switcher dialog instance. This is used to prevent the user from interacting with
     // multiple instances of switcher UI.
     @SuppressLint("StaticFieldLeak")
-    static InstanceSwitcherCoordinator sPrevInstance;
+    static @Nullable InstanceSwitcherCoordinator sPrevInstance;
 
     /** Type of the entries shown on the dialog. */
     @Retention(RetentionPolicy.SOURCE)
@@ -70,14 +80,15 @@ public class InstanceSwitcherCoordinator {
     private final ModalDialogManager mModalDialogManager;
 
     private final ModelList mModelList = new ModelList();
+    private final ModelList mActiveModelList = new ModelList();
+    private final ModelList mInactiveModelList = new ModelList();
     private final UiUtils mUiUtils;
     private final View mDialogView;
-    private final Drawable mArrowBackIcon;
+    private @Nullable TabLayout mTabHeaderRow;
 
-    private PropertyModel mDialog;
-    private PropertyModel mConfirmDialog;
-    private InstanceInfo mItemToDelete;
-    private PropertyModel mNewWindowModel;
+    private @Nullable PropertyModel mDialog;
+    private @Nullable InstanceInfo mItemToDelete;
+    private @Nullable PropertyModel mNewWindowModel;
     private boolean mNewWindowEnabled;
 
     /**
@@ -123,10 +134,77 @@ public class InstanceSwitcherCoordinator {
         mCloseCallback = closeCallback;
         mUiUtils = new UiUtils(mContext, iconBridge);
         mNewWindowAction = newWindowAction;
-        mArrowBackIcon = mUiUtils.getTintedIcon(R.drawable.ic_arrow_back_24dp);
 
-        ModelListAdapter adapter = new ModelListAdapter(mModelList);
-        // TODO: Extend modern_list_item_view.xml to replace instance_switcher_item.xml
+        if (isInstanceSwitcherV2Enabled()) {
+            var activeListAdapter = getInstanceListAdapter(/* active= */ true);
+            var inactiveListAdapter = getInstanceListAdapter(/* active= */ false);
+
+            mDialogView =
+                    LayoutInflater.from(context)
+                            .inflate(R.layout.instance_switcher_dialog_v2, null);
+
+            int itemVerticalSpacing =
+                    mContext.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.instance_switcher_dialog_list_item_padding);
+            var itemDecoration = new DialogListItemDecoration(itemVerticalSpacing);
+
+            RecyclerView activeInstancesList = mDialogView.findViewById(R.id.active_instance_list);
+            activeInstancesList.setLayoutManager(
+                    new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+            activeInstancesList.setAdapter(activeListAdapter);
+            activeInstancesList.addItemDecoration(itemDecoration);
+
+            RecyclerView inactiveInstancesList =
+                    mDialogView.findViewById(R.id.inactive_instance_list);
+            inactiveInstancesList.setLayoutManager(
+                    new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+            inactiveInstancesList.setAdapter(inactiveListAdapter);
+            inactiveInstancesList.addItemDecoration(itemDecoration);
+
+            mTabHeaderRow = mDialogView.findViewById(R.id.tabs);
+            mTabHeaderRow.addOnTabSelectedListener(
+                    new OnTabSelectedListener() {
+                        @Override
+                        public void onTabSelected(Tab tab) {
+                            boolean isActiveTab = tab.getPosition() == 0;
+                            activeInstancesList.setVisibility(
+                                    isActiveTab ? View.VISIBLE : View.GONE);
+                            inactiveInstancesList.setVisibility(
+                                    isActiveTab ? View.GONE : View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onTabUnselected(Tab tab) {}
+
+                        @Override
+                        public void onTabReselected(Tab tab) {}
+                    });
+        } else {
+            ModelListAdapter adapter = new ModelListAdapter(mModelList);
+            // TODO: Extend modern_list_item_view.xml to replace instance_switcher_item.xml
+            adapter.registerType(
+                    EntryType.INSTANCE,
+                    parentView ->
+                            LayoutInflater.from(mContext)
+                                    .inflate(R.layout.instance_switcher_item, null),
+                    InstanceSwitcherItemViewBinder::bind);
+            adapter.registerType(
+                    EntryType.COMMAND,
+                    parentView ->
+                            LayoutInflater.from(mContext)
+                                    .inflate(R.layout.instance_switcher_cmd_item, null),
+                    InstanceSwitcherItemViewBinder::bind);
+
+            mDialogView =
+                    LayoutInflater.from(context).inflate(R.layout.instance_switcher_dialog, null);
+            ListView listView = mDialogView.findViewById(R.id.list_view);
+            listView.setAdapter(adapter);
+        }
+    }
+
+    private SimpleRecyclerViewAdapter getInstanceListAdapter(boolean active) {
+        var adapter = new SimpleRecyclerViewAdapter(active ? mActiveModelList : mInactiveModelList);
         adapter.registerType(
                 EntryType.INSTANCE,
                 parentView ->
@@ -139,28 +217,44 @@ public class InstanceSwitcherCoordinator {
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.instance_switcher_cmd_item, null),
                 InstanceSwitcherItemViewBinder::bind);
-        mDialogView = LayoutInflater.from(context).inflate(R.layout.instance_switcher_dialog, null);
-        ListView listView = (ListView) mDialogView.findViewById(R.id.list_view);
-        listView.setAdapter(adapter);
+        return adapter;
     }
 
     private void show(List<InstanceInfo> items, boolean newWindowEnabled) {
         UiUtils.closeOpenDialogs();
         sPrevInstance = this;
         for (int i = 0; i < items.size(); ++i) {
+            // An active instance should have an associated live task.
+            boolean isActiveInstance = items.get(i).taskId != INVALID_TASK_ID;
             PropertyModel itemModel = generateListItem(items.get(i));
-            mModelList.add(new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
+            if (isInstanceSwitcherV2Enabled()) {
+                if (isActiveInstance) {
+                    mActiveModelList.add(
+                            new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
+                } else {
+                    mInactiveModelList.add(
+                            new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
+                }
+            } else {
+                mModelList.add(new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
+            }
         }
         mNewWindowModel = new PropertyModel(InstanceSwitcherItemProperties.ALL_KEYS);
         enableNewWindowCommand(newWindowEnabled);
         mModelList.add(new ModelListAdapter.ListItem(EntryType.COMMAND, mNewWindowModel));
+        if (isInstanceSwitcherV2Enabled()) {
+            // "+New window" should only be added to the active instances list.
+            mActiveModelList.add(new ModelListAdapter.ListItem(EntryType.COMMAND, mNewWindowModel));
+            // Exclude COMMAND item from active instance count.
+            int numActiveInstances = mActiveModelList.size() - 1;
+            updateTabTitle(numActiveInstances, mInactiveModelList.size());
+        }
 
-        mDialog = createDialog(mDialogView, mModelList, items);
+        mDialog = createDialog(mDialogView);
         mModalDialogManager.showDialog(mDialog, ModalDialogType.APP);
     }
 
-    private PropertyModel createDialog(
-            View dialogView, ModelList modelList, List<InstanceInfo> items) {
+    private PropertyModel createDialog(View dialogView) {
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {
                     @Override
@@ -214,6 +308,7 @@ public class InstanceSwitcherCoordinator {
 
     private void enableNewWindowCommand(boolean enabled) {
         if (mNewWindowEnabled && enabled) return;
+        assumeNonNull(mNewWindowModel);
         mNewWindowModel.set(InstanceSwitcherItemProperties.ENABLE_COMMAND, enabled);
         if (enabled) {
             mNewWindowModel.set(
@@ -269,19 +364,36 @@ public class InstanceSwitcherCoordinator {
 
     private void removeInstance(InstanceInfo item) {
         int instanceId = item.instanceId;
-        Iterator<ListItem> it = mModelList.iterator();
-        while (it.hasNext()) {
-            ListItem li = it.next();
-            int id = li.model.get(InstanceSwitcherItemProperties.INSTANCE_ID);
-            if (id == instanceId) {
-                mModelList.remove(li);
-                break;
-            }
+
+        if (isInstanceSwitcherV2Enabled()) {
+            removeItemFromModelList(
+                    instanceId,
+                    item.taskId == INVALID_TASK_ID ? mInactiveModelList : mActiveModelList);
+        } else {
+            removeItemFromModelList(instanceId, mModelList);
         }
+
         mCloseCallback.onResult(item);
         RecordUserAction.record("Android.WindowManager.CloseWindow");
         // Removing an instance enables the new window item.
         enableNewWindowCommand(true);
+
+        if (isInstanceSwitcherV2Enabled()) {
+            // Exclude COMMAND item from active instance count.
+            int numActiveInstances = mActiveModelList.size() - 1;
+            int numInactiveInstances = mInactiveModelList.size();
+            updateTabTitle(numActiveInstances, numInactiveInstances);
+        }
+    }
+
+    private void removeItemFromModelList(int instanceId, ModelList list) {
+        for (ListItem li : list) {
+            int id = li.model.get(InstanceSwitcherItemProperties.INSTANCE_ID);
+            if (id == instanceId) {
+                list.remove(li);
+                return;
+            }
+        }
     }
 
     private static boolean canSkipConfirm(InstanceInfo item) {
@@ -305,26 +417,22 @@ public class InstanceSwitcherCoordinator {
         dialog.setContentView(R.layout.close_confirmation_dialog);
 
         Resources res = mContext.getResources();
-        ImageView iconView = (ImageView) dialog.findViewById(R.id.title_icon);
-        iconView.setImageDrawable(mArrowBackIcon);
-        iconView.setOnClickListener(v -> dialog.dismiss());
-
         String title = res.getString(R.string.instance_switcher_close_confirm_header);
         ((TextView) dialog.findViewById(R.id.title)).setText(title);
-        TextView messageView = (TextView) dialog.findViewById(R.id.message);
+        TextView messageView = dialog.findViewById(R.id.message);
         messageView.setText(mUiUtils.getConfirmationMessage(item));
 
-        TextView positiveButton = (TextView) dialog.findViewById(R.id.positive_button);
+        TextView positiveButton = dialog.findViewById(R.id.positive_button);
         positiveButton.setText(res.getString(R.string.close));
         positiveButton.setOnClickListener(
                 v -> {
                     assert mItemToDelete != null;
-                    CheckBox skipConfirm = (CheckBox) dialog.findViewById(R.id.no_more_check);
+                    CheckBox skipConfirm = dialog.findViewById(R.id.no_more_check);
                     if (skipConfirm.isChecked()) setSkipCloseConfirmation();
                     dialog.dismiss();
                     removeInstance(mItemToDelete);
                 });
-        TextView negativeButton = (TextView) dialog.findViewById(R.id.negative_button);
+        TextView negativeButton = dialog.findViewById(R.id.negative_button);
         negativeButton.setText(res.getString(R.string.cancel));
         negativeButton.setOnClickListener(
                 v -> {
@@ -332,5 +440,21 @@ public class InstanceSwitcherCoordinator {
                     dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                 });
         dialog.show();
+    }
+
+    private void updateTabTitle(int numActiveInstances, int numInactiveInstances) {
+        if (mTabHeaderRow == null) return;
+        Tab activeTab = mTabHeaderRow.getTabAt(0);
+        Tab inactiveTab = mTabHeaderRow.getTabAt(1);
+        assumeNonNull(activeTab);
+        assumeNonNull(inactiveTab);
+        activeTab.setText(
+                mContext.getString(R.string.instance_switcher_tabs_active, numActiveInstances));
+        inactiveTab.setText(
+                mContext.getString(R.string.instance_switcher_tabs_inactive, numInactiveInstances));
+    }
+
+    private static boolean isInstanceSwitcherV2Enabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER_V2);
     }
 }

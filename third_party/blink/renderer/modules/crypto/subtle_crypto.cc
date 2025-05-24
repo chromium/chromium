@@ -63,7 +63,7 @@ namespace {
 // Note: The choice of output as an octet string is to facilitate interop
 // with the non-JWK formats, but does mean there is a second parsing step.
 // This design choice should be revisited after crbug.com/614385).
-bool ParseJsonWebKey(const JsonWebKey& key, WebVector<uint8_t>& json_utf8) {
+bool ParseJsonWebKey(const JsonWebKey& key, std::vector<uint8_t>& json_utf8) {
   auto json_object = std::make_unique<JSONObject>();
 
   if (key.hasKty())
@@ -107,8 +107,8 @@ bool ParseJsonWebKey(const JsonWebKey& key, WebVector<uint8_t>& json_utf8) {
   if (key.hasK())
     json_object->SetString("k", key.k());
 
-  String json = json_object->ToJSONString();
-  json_utf8 = WebVector<uint8_t>(json.Utf8().c_str(), json.Utf8().length());
+  std::string json = json_object->ToJSONString().Utf8();
+  json_utf8 = base::ToVector(base::as_byte_span(json));
   return true;
 }
 
@@ -127,7 +127,7 @@ ScriptPromise<IDLAny> SubtleCrypto::encrypt(
 
   // 14.3.1.2: Let data be the result of getting a copy of the bytes held by
   //           the data parameter passed to the encrypt method.
-  WebVector<uint8_t> data = CopyBytes(raw_data);
+  std::vector<uint8_t> data = CopyBytes(raw_data);
 
   // 14.3.1.3: Let normalizedAlgorithm be the result of normalizing an
   //           algorithm, with alg set to algorithm and op set to "encrypt".
@@ -175,7 +175,7 @@ ScriptPromise<IDLAny> SubtleCrypto::decrypt(
 
   // 14.3.2.2: Let data be the result of getting a copy of the bytes held by
   //           the data parameter passed to the decrypt method.
-  WebVector<uint8_t> data = CopyBytes(raw_data);
+  std::vector<uint8_t> data = CopyBytes(raw_data);
 
   // 14.3.2.3: Let normalizedAlgorithm be the result of normalizing an
   //           algorithm, with alg set to algorithm and op set to "decrypt".
@@ -223,7 +223,7 @@ ScriptPromise<IDLAny> SubtleCrypto::sign(
 
   // 14.3.3.2: Let data be the result of getting a copy of the bytes held by
   //           the data parameter passed to the sign method.
-  WebVector<uint8_t> data = CopyBytes(raw_data);
+  std::vector<uint8_t> data = CopyBytes(raw_data);
 
   // 14.3.3.3: Let normalizedAlgorithm be the result of normalizing an
   //           algorithm, with alg set to algorithm and op set to "sign".
@@ -272,11 +272,11 @@ ScriptPromise<IDLAny> SubtleCrypto::verifySignature(
 
   // 14.3.4.2: Let signature be the result of getting a copy of the bytes
   //           held by the signature parameter passed to the verify method.
-  WebVector<uint8_t> signature = CopyBytes(raw_signature);
+  std::vector<uint8_t> signature = CopyBytes(raw_signature);
 
   // 14.3.4.3: Let data be the result of getting a copy of the bytes held by
   //           the data parameter passed to the verify method.
-  WebVector<uint8_t> data = CopyBytes(raw_data);
+  std::vector<uint8_t> data = CopyBytes(raw_data);
 
   // 14.3.4.4: Let normalizedAlgorithm be the result of normalizing an
   //           algorithm, with alg set to algorithm and op set to "verify".
@@ -323,7 +323,7 @@ ScriptPromise<IDLAny> SubtleCrypto::digest(
 
   // 14.3.5.2: Let data be the result of getting a copy of the bytes held
   //              by the data parameter passed to the digest method.
-  WebVector<uint8_t> data = CopyBytes(raw_data);
+  std::vector<uint8_t> data = CopyBytes(raw_data);
 
   // 14.3.5.3: Let normalizedAlgorithm be the result of normalizing an
   //           algorithm, with alg set to algorithm and op set to "digest".
@@ -415,7 +415,7 @@ ScriptPromise<CryptoKey> SubtleCrypto::importKey(
 
   // In the case of JWK keyData will hold the UTF8-encoded JSON for the
   // JsonWebKey, otherwise it holds a copy of the BufferSource.
-  WebVector<uint8_t> key_data;
+  std::vector<uint8_t> key_data;
 
   switch (format) {
     // 14.3.9.2: If format is equal to the string "raw", "pkcs8", or "spki":
@@ -645,7 +645,7 @@ ScriptPromise<CryptoKey> SubtleCrypto::unwrapKey(
   // 14.3.12.2: Let wrappedKey be the result of getting a copy of the bytes
   //            held by the wrappedKey parameter passed to the unwrapKey
   //            method.
-  WebVector<uint8_t> wrapped_key = CopyBytes(raw_wrapped_key);
+  std::vector<uint8_t> wrapped_key = CopyBytes(raw_wrapped_key);
 
   // 14.3.12.11: If the name member of normalizedAlgorithm is not equal to
   //             the name attribute of the [[algorithm]] internal slot of

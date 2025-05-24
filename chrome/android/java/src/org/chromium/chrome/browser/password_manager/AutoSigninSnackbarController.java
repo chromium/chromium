@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -33,11 +34,11 @@ public class AutoSigninSnackbarController implements SnackbarManager.SnackbarCon
     private final Tab mTab;
 
     /**
-     * Displays Auto sign-in snackbar, which communicates to the users that they
-     * were signed in to the web site.
+     * Displays Auto sign-in snackbar, which communicates to the users that they were signed in to
+     * the web site.
      */
     @CalledByNative
-    private static void showSnackbar(Tab tab, String text) {
+    private static void showSnackbar(Tab tab, @JniType("std::u16string") String text) {
         Activity activity = TabUtils.getActivity(tab);
         if (activity == null) return;
         WindowAndroid windowAndroid = tab.getWindowAndroid();

@@ -251,7 +251,6 @@ class CherryPicker(object):
         cmd = [
             'git', '--no-pager', 'log', '--color=never', '--all',
             '--pretty=format:%H', '--grep={}'.format(fossil_commit_id),
-            'origin/master'
         ]
         if self._print_cmds:
             _print_command(' '.join(cmd))

@@ -16,7 +16,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -38,15 +37,16 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/common/pref_names.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -59,26 +59,40 @@ using web_modal::WebContentsModalDialogHost;
 
 namespace {
 
-// The visible height of the shadow above the tabs. Clicks in this area are
-// treated as clicks to the frame, rather than clicks to the tab.
-const int kTabShadowSize = 2;
 // The number of pixels the constrained window should overlap the bottom
 // of the omnibox.
 const int kConstrainedWindowOverlap = 3;
 
-// Combines View::ConvertPointToTarget and View::HitTest for a given |point|.
-// Converts |point| from |src| to |dst| and hit tests it against |dst|. The
-// converted |point| can then be retrieved and used for additional tests.
-bool ConvertedHitTest(views::View* src, views::View* dst, gfx::Point* point) {
-  DCHECK(src);
-  DCHECK(dst);
-  DCHECK(point);
-  views::View::ConvertPointToTarget(src, dst, point);
-  return dst->HitTestPoint(*point);
+// The normal clipping created by `View::Paint()` may not cover the bottom of
+// the TopContainerView at certain scale factor because both of the position and
+// the height might be roudned down. This function sets the clip path that
+// enlarges the height at 2 DPs to compensate this error (both origin and size)
+// that the canvas can cover the entire TopContainerView.  See
+// crbug.com/390669712 for more details.  TODO(crbug.com/41344902): Remove this
+// hack once the pixel canvas is enabled on all aura platforms.  Note that macOS
+// supports integer scale only, so this isn't necessary on macOS.
+void SetClipPathWithBottomAllowance(views::View* view) {
+  if (!ui::IsPixelCanvasRecordingEnabled()) {
+    constexpr int kBottomPaintAllowance = 2;
+    const gfx::Rect local_bounds = view->GetLocalBounds();
+    const int extended_height = local_bounds.height() + kBottomPaintAllowance;
+    view->SetClipPath(
+        SkPath::Rect(SkRect::MakeWH(local_bounds.width(), extended_height)));
+  }
 }
+
 }  // namespace
 
 constexpr int BrowserViewLayout::kMainBrowserContentsMinimumWidth;
+
+struct BrowserViewLayout::ContentsContainerLayoutResult {
+  gfx::Rect contents_container_bounds;
+  gfx::Rect side_panel_bounds;
+  bool side_panel_visible;
+  bool side_panel_right_aligned;
+  bool contents_container_after_side_panel;
+  gfx::Rect separator_bounds;
+};
 
 class BrowserViewLayout::WebContentsModalDialogHostViews
     : public WebContentsModalDialogHost,
@@ -107,13 +121,35 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
     observer_list_.Notify(&ModalDialogHostObserver::OnPositionRequiresUpdate);
   }
 
-  gfx::Point GetDialogPosition(const gfx::Size& size) override {
+  gfx::Point GetDialogPosition(const gfx::Size& dialog_size) override {
     // Horizontally places the dialog at the center of the content.
+
     views::View* view = browser_view_layout_->contents_container_;
-    gfx::Rect rect = view->ConvertRectToWidget(view->GetLocalBounds());
-    const int middle_x = rect.x() + rect.width() / 2;
-    const int top = browser_view_layout_->dialog_top_y_;
-    return gfx::Point(middle_x - size.width() / 2, top);
+    // Recalculate bounds of `contents_container_`. It may be stale due to
+    // pending layouts (from switching tabs, for example). The `top` and
+    // `bottom` parameters should not be relevant to the result, since we only
+    // care about the resulting width here.
+    BrowserViewLayout::ContentsContainerLayoutResult layout_result =
+        browser_view_layout_->CalculateContentsContainerLayout(
+            view->bounds().y(), view->bounds().bottom());
+
+    int leading_x;
+    if (base::i18n::IsRTL()) {
+      // Dialog coordinates are not flipped for RTL, but the View's coordinates
+      // are. Calculate the left edge of `contents_container_bounds`.
+      if (layout_result.contents_container_after_side_panel) {
+        leading_x = 0;
+      } else {
+        leading_x = browser_view_layout_->vertical_layout_rect_.width() -
+                    layout_result.contents_container_bounds.width();
+      }
+    } else {
+      leading_x = layout_result.contents_container_bounds.x();
+    }
+    const int middle_x =
+        leading_x + layout_result.contents_container_bounds.width() / 2;
+    return gfx::Point(middle_x - dialog_size.width() / 2,
+                      browser_view_layout_->dialog_top_y_);
   }
 
   bool ShouldActivateDialog() const override {
@@ -125,44 +161,18 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
   }
 
   gfx::Size GetMaximumDialogSize() override {
-#if BUILDFLAG(IS_MAC)
-    // - small content (width < 400): dialog height <= 2x content height
-    // - medium content (width < 750):
-    //     content height <= dialog height <= 2x content height
-    // - large content (width >= 750): dialog height <= content height
-    //
-    // Note: 2x is a deliberate choice.
-    // 1x is too restrictive for displaying dialogs that have a header image.
-    // Beyond 2x, dialogs become too much higher than the browser window, so
-    // much so that they might be confused as top-level windows while not
-    // behaving like one (for example, top-level windows are draggable but
-    // dialogs are not).
-    //
-    // Note that the position will be adjusted to maximize the visible area on
-    // the current screen. This is handled by //components/constrained_window
-    // TODO(crbug.com/358138947): the content area can have zero height on
-    // Linux and Windows, resulting in invisible dialogs. Instead of setting
-    // a min dialog height, set a min content area height.
-    constexpr int kSmallContentHeight = 400;
-    constexpr int kLargeContentHeight = 750;
-    const gfx::Size content_size =
-        browser_view_layout_->contents_container_->size();
-    float fraction_between_small_and_large =
-        float(content_size.height() - kSmallContentHeight) /
-        (kLargeContentHeight - kSmallContentHeight);
-    float scale = 2.f - std::clamp(fraction_between_small_and_large, 0.f, 1.f);
-    return gfx::Size(content_size.width(), content_size.height() * scale);
-#else
     // Modals use NativeWidget and cannot be rendered beyond the browser
     // window boundaries. Restricting them to the browser window bottom
     // boundary and let the dialog to figure out a good layout.
+    // WARNING: previous attempts to allow dialog to extend beyond the browser
+    // boundaries have caused regressions in a number of dialogs. See
+    // crbug.com/364463378, crbug.com/369739216, crbug.com/363205507.
     // TODO(crbug.com/334413759, crbug.com/346974105): use desktop widgets
     // universally.
     views::View* view = browser_view_layout_->contents_container_;
     gfx::Rect content_area = view->ConvertRectToWidget(view->GetLocalBounds());
     const int top = browser_view_layout_->dialog_top_y_;
     return gfx::Size(content_area.width(), content_area.bottom() - top);
-#endif
   }
 
   views::Widget* GetHostWidget() const {
@@ -187,7 +197,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
  private:
   gfx::NativeView GetHostView() const override {
     views::Widget* const host_widget = GetHostWidget();
-    return host_widget ? host_widget->GetNativeView() : nullptr;
+    return host_widget ? host_widget->GetNativeView() : gfx::NativeView();
   }
 
   // Add/remove observer.
@@ -211,6 +221,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
 BrowserViewLayout::BrowserViewLayout(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
     BrowserView* browser_view,
+    views::View* window_scrim,
     views::View* top_container,
     WebAppFrameToolbarView* web_app_frame_toolbar,
     views::Label* web_app_window_title,
@@ -227,6 +238,7 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* contents_separator)
     : delegate_(std::move(delegate)),
       browser_view_(browser_view),
+      window_scrim_(window_scrim),
       top_container_(top_container),
       web_app_frame_toolbar_(web_app_frame_toolbar),
       web_app_window_title_(web_app_window_title),
@@ -241,10 +253,15 @@ BrowserViewLayout::BrowserViewLayout(
       immersive_mode_controller_(immersive_mode_controller),
       contents_separator_(contents_separator),
       tab_strip_(tab_strip),
-      dialog_host_(std::make_unique<WebContentsModalDialogHostViews>(this)) {
-}
+      dialog_host_(std::make_unique<WebContentsModalDialogHostViews>(this)) {}
 
 BrowserViewLayout::~BrowserViewLayout() = default;
+
+void BrowserViewLayout::SetUseBrowserContentMinimumSize(
+    bool use_browser_content_minimum_size) {
+  use_browser_content_minimum_size_ = use_browser_content_minimum_size;
+  InvalidateLayout();
+}
 
 WebContentsModalDialogHost* BrowserViewLayout::GetWebContentsModalDialogHost() {
   return dialog_host_.get();
@@ -281,19 +298,17 @@ gfx::Size BrowserViewLayout::GetMinimumSize(const views::View* host) const {
                              ? toolbar_->GetMinimumSize()
                              : gfx::Size());
   gfx::Size bookmark_bar_size;
-  if (has_bookmarks_bar)
+  if (has_bookmarks_bar) {
     bookmark_bar_size = bookmark_bar_->GetMinimumSize();
+  }
   gfx::Size infobar_container_size(infobar_container_->GetMinimumSize());
   // TODO(pkotwicz): Adjust the minimum height for the find bar.
 
   gfx::Size contents_size(contents_container_->GetMinimumSize());
-  contents_size.SetToMax(
-      (delegate_->BrowserIsTypeNormal() ||
-       (delegate_->BrowserIsTypeApp() && delegate_->BrowserIsWebApp() &&
-        !delegate_->BrowserIsSystemWebApp()))
-          ? gfx::Size(kMainBrowserContentsMinimumWidth,
-                      kMainBrowserContentsMinimumHeight)
-          : kContentsMinimumSize);
+  contents_size.SetToMax(use_browser_content_minimum_size_
+                             ? gfx::Size(kMainBrowserContentsMinimumWidth,
+                                         kMainBrowserContentsMinimumHeight)
+                             : kContentsMinimumSize);
 
   const int min_height =
       delegate_->GetTopInsetInBrowserView() + tabstrip_size.height() +
@@ -313,144 +328,17 @@ void BrowserViewLayout::SetContentBorderBounds(
   LayoutContentBorder();
 }
 
-gfx::NativeView BrowserViewLayout::GetHostView() {
-  return delegate_->GetHostView();
-}
-
-int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
-  // Since the TabStrip only renders in some parts of the top of the window,
-  // the un-obscured area is considered to be part of the non-client caption
-  // area of the window. So we need to treat hit-tests in these regions as
-  // hit-tests of the titlebar.
-
-  views::View* parent = browser_view_->parent();
-
-  gfx::Point point_in_browser_view_coords(point);
-  views::View::ConvertPointToTarget(parent, browser_view_,
-                                    &point_in_browser_view_coords);
-
-  // Check if the point is in the web_app_frame_toolbar_. Because this toolbar
-  // can entirely be within the window controls overlay area, this check needs
-  // to be done before the window controls overlay area check below.
-  if (web_app_frame_toolbar_) {
-    int web_app_component =
-        views::GetHitTestComponent(web_app_frame_toolbar_, point);
-    if (web_app_component != HTNOWHERE) {
-      return web_app_component;
-    }
-  }
-
-  // Let the frame handle any events that fall within the bounds of the window
-  // controls overlay.
-  if (browser_view_->IsWindowControlsOverlayEnabled() &&
-      browser_view_->GetActiveWebContents()) {
-    // The window controls overlays are to the left and/or right of the
-    // |titlebar_area_rect|.
-    gfx::Rect titlebar_area_rect =
-        browser_view_->GetActiveWebContents()->GetWindowsControlsOverlayRect();
-
-    // The top area rect is the same height as the |titlebar_area_rect| but
-    // fills the full width of the browser view.
-    gfx::Rect top_area_rect(0, titlebar_area_rect.y(), browser_view_->width(),
-                            titlebar_area_rect.height());
-
-    // If the point is within the top_area_rect but not the titlebar_area_rect,
-    // then it must be in the window controls overlay.
-    if (top_area_rect.Contains(point_in_browser_view_coords) &&
-        !titlebar_area_rect.Contains(point_in_browser_view_coords))
-      return HTNOWHERE;
-  }
-
-  // Determine if the TabStrip exists and is capable of being clicked on. We
-  // might be a popup window without a TabStrip.
-  if (delegate_->ShouldDrawTabStrip()) {
-    // See if the mouse pointer is within the bounds of the TabStripRegionView.
-    gfx::Point test_point(point);
-    if (ConvertedHitTest(parent, tab_strip_region_view_, &test_point)) {
-      if (tab_strip_region_view_->IsPositionInWindowCaption(test_point))
-        return HTCAPTION;
-      return HTCLIENT;
-    }
-
-    // The top few pixels of the TabStrip are a drop-shadow - as we're pretty
-    // starved of dragable area, let's give it to window dragging (this also
-    // makes sense visually).
-    // TODO(tluk): Investigate the impact removing this has on draggable area
-    // given the tab strip no longer uses shadows.
-    views::Widget* widget = browser_view_->GetWidget();
-    if (!(widget->IsMaximized() || widget->IsFullscreen()) &&
-        (point_in_browser_view_coords.y() <
-         (tab_strip_region_view_->y() + kTabShadowSize))) {
-      // We return HTNOWHERE as this is a signal to our containing
-      // NonClientView that it should figure out what the correct hit-test
-      // code is given the mouse position...
-      return HTNOWHERE;
-    }
-  }
-
-  // For PWAs with window-controls-overlay or borderless display override, see
-  // if we're in an app defined draggable region so we can return htcaption.
-  web_app::AppBrowserController* controller =
-      browser_view_->browser()->app_controller();
-
-  if (browser_view_->AreDraggableRegionsEnabled() && controller &&
-      controller->draggable_region().has_value()) {
-    // Draggable regions are defined relative to the web contents.
-    gfx::Point point_in_contents_web_view_coords(point_in_browser_view_coords);
-    views::View::ConvertPointToTarget(browser_view_,
-                                      browser_view_->contents_web_view(),
-                                      &point_in_contents_web_view_coords);
-
-    if (controller->draggable_region()->contains(
-            point_in_contents_web_view_coords.x(),
-            point_in_contents_web_view_coords.y())) {
-      // Draggable regions should be ignored for clicks into any browser view's
-      // owned widgets, for example alerts, permission prompts or find bar.
-      return browser_view_->WidgetOwnedByAnchorContainsPoint(
-                 point_in_browser_view_coords)
-                 ? HTCLIENT
-                 : HTCAPTION;
-    }
-  }
-
-  // If the point's y coordinate is below the top of the topmost view and
-  // otherwise within the bounds of this view, the point is considered to be
-  // within the client area.
-  gfx::Rect bounds_from_toolbar_top = browser_view_->bounds();
-  bounds_from_toolbar_top.Inset(gfx::Insets::TLBR(GetClientAreaTop(), 0, 0, 0));
-  if (bounds_from_toolbar_top.Contains(point)) {
-    return HTCLIENT;
-  }
-
-  // If the point's y coordinate is above the top of the toolbar, but not
-  // over the tabstrip (per previous checking in this function), then we
-  // consider it in the window caption (e.g. the area to the right of the
-  // tabstrip underneath the window controls). However, note that we DO NOT
-  // return HTCAPTION here, because when the window is maximized the window
-  // controls will fall into this space (since the BrowserView is sized to
-  // entire size of the window at that point), and the HTCAPTION value will
-  // cause the window controls not to work. So we return HTNOWHERE so that the
-  // caller will hit-test the window controls before finally falling back to
-  // HTCAPTION.
-  gfx::Rect tabstrip_background_bounds = browser_view_->bounds();
-  gfx::Point toolbar_origin = toolbar_->origin();
-  views::View::ConvertPointToTarget(top_container_, browser_view_,
-                                    &toolbar_origin);
-  tabstrip_background_bounds.set_height(toolbar_origin.y());
-  if (tabstrip_background_bounds.Contains(point)) {
-    return HTNOWHERE;
-  }
-
-  // If the point is somewhere else, delegate to the default implementation.
-  return browser_view_->views::ClientView::NonClientHitTest(point);
-}
-
 //////////////////////////////////////////////////////////////////////////////
 // BrowserViewLayout, views::LayoutManager implementation:
 
 void BrowserViewLayout::Layout(views::View* browser_view) {
   TRACE_EVENT0("ui", "BrowserViewLayout::Layout");
   vertical_layout_rect_ = browser_view->GetLocalBounds();
+  // The window scrim covers the entire browser view.
+  if (window_scrim_) {
+    window_scrim_->SetBoundsRect(vertical_layout_rect_);
+  }
+
   int top_inset = delegate_->GetTopInsetInBrowserView();
   int top = LayoutTitleBarForWebApp(top_inset);
   if (delegate_->ShouldLayoutTabStrip()) {
@@ -500,8 +388,9 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   // |top_container_| in immersive fullscreen.
   ExclusiveAccessBubbleViews* exclusive_access_bubble =
       delegate_->GetExclusiveAccessBubble();
-  if (exclusive_access_bubble)
+  if (exclusive_access_bubble) {
     exclusive_access_bubble->RepositionIfVisible();
+  }
 
   // Adjust any hosted dialogs if the browser's dialog hosting bounds changed.
   const gfx::Rect dialog_bounds(dialog_host_->GetDialogPosition(gfx::Size()),
@@ -538,9 +427,9 @@ BrowserViewLayout::GetChildViewsInPaintOrder(const views::View* host) const {
   // when this is a window using WindowControlsOverlay, to make sure the window
   // controls are in fact drawn on top of the web contents.
   if (delegate_->IsWindowControlsOverlayEnabled()) {
-    auto top_container_iter = base::ranges::find(result, top_container_);
+    auto top_container_iter = std::ranges::find(result, top_container_);
     auto contents_container_iter =
-        base::ranges::find(result, contents_container_);
+        std::ranges::find(result, contents_container_);
     CHECK(contents_container_iter != result.end());
     // When in Immersive Fullscreen `top_container_` might not be one of our
     // children at all. While Window Controls Overlay shouldn't be enabled in
@@ -622,12 +511,6 @@ int BrowserViewLayout::LayoutTabStripRegion(int top) {
   // anything to the left of it, like the incognito avatar.
   gfx::Rect tab_strip_region_bounds(
       delegate_->GetBoundsForTabStripRegionInBrowserView());
-  if (is_compact_mode_) {
-    constexpr int retain_some_padding = 2;
-    int height = GetLayoutConstant(TAB_STRIP_HEIGHT) -
-                 GetLayoutConstant(TAB_STRIP_PADDING) + retain_some_padding;
-    tab_strip_region_bounds.set_height(height);
-  }
 
   if (web_app_frame_toolbar_) {
     tab_strip_region_bounds.Inset(gfx::Insets::TLBR(
@@ -643,8 +526,9 @@ int BrowserViewLayout::LayoutTabStripRegion(int top) {
 
 int BrowserViewLayout::LayoutWebUITabStrip(int top) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutWebUITabStrip");
-  if (!webui_tab_strip_)
+  if (!webui_tab_strip_) {
     return top;
+  }
   if (!webui_tab_strip_->GetVisible()) {
     webui_tab_strip_->SetBoundsRect(gfx::Rect());
     return top;
@@ -663,6 +547,7 @@ int BrowserViewLayout::LayoutToolbar(int top) {
   SetViewVisibility(toolbar_, toolbar_visible);
   toolbar_->SetBounds(vertical_layout_rect_.x(), top, browser_view_width,
                       height);
+  SetClipPathWithBottomAllowance(toolbar_);
   return toolbar_->bounds().bottom();
 }
 
@@ -693,8 +578,9 @@ int BrowserViewLayout::LayoutBookmarkAndInfoBars(int top, int browser_view_y) {
     top += separator_height;
   } else {
     SetViewVisibility(contents_separator_, false);
-    if (loading_bar_)
+    if (loading_bar_) {
       SetViewVisibility(loading_bar_, false);
+    }
   }
 
   return LayoutInfoBar(top);
@@ -713,6 +599,18 @@ int BrowserViewLayout::LayoutBookmarkBar(int top) {
   int bookmark_bar_height = bookmark_bar_->GetPreferredSize().height();
   bookmark_bar_->SetBounds(vertical_layout_rect_.x(), top,
                            vertical_layout_rect_.width(), bookmark_bar_height);
+  SetClipPathWithBottomAllowance(bookmark_bar_);
+  if (!ui::IsPixelCanvasRecordingEnabled()) {
+    // Make sure the contents separator is painted last as the background for
+    // BookmarkVieBar/ToolbarView may paint over it otherwise.
+    // TODO(crbug.com/41344902): Remove once the pixel canvas is enabled on
+    // all aura platforms.
+    if (top_container_ == bookmark_bar_->parent()) {
+      top_container_->ReorderChildView(contents_separator_,
+                                       top_container_->children().size());
+    }
+  }
+
   // Set visibility after setting bounds, as the visibility update uses the
   // bounds to determine if the mouse is hovering over a button.
   SetViewVisibility(bookmark_bar_, true);
@@ -736,16 +634,18 @@ int BrowserViewLayout::LayoutInfoBar(int top) {
   int content_top = infobar_top + infobar_container_->height();
   infobar_top += delegate_->GetExtraInfobarOffset();
   SetViewVisibility(infobar_container_, IsInfobarVisible());
-  infobar_container_->SetBounds(
-      vertical_layout_rect_.x(), infobar_top, vertical_layout_rect_.width(),
-      infobar_container_->GetPreferredSize().height());
+  if (infobar_container_->GetVisible()) {
+    infobar_container_->SetBounds(
+        vertical_layout_rect_.x(), infobar_top, vertical_layout_rect_.width(),
+        infobar_container_->GetPreferredSize().height());
+  } else {
+    infobar_container_->SetBounds(vertical_layout_rect_.x(), infobar_top, 0, 0);
+  }
   return content_top;
 }
 
-void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
-  TRACE_EVENT0("ui", "BrowserViewLayout::LayoutContentsContainerView");
-  // |contents_container_| contains web page contents and devtools.
-  // See browser_view.h for details.
+BrowserViewLayout::ContentsContainerLayoutResult
+BrowserViewLayout::CalculateContentsContainerLayout(int top, int bottom) const {
   gfx::Rect contents_container_bounds(vertical_layout_rect_.x(), top,
                                       vertical_layout_rect_.width(),
                                       std::max(0, bottom - top));
@@ -756,46 +656,28 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
         gfx::Insets().set_bottom(-webui_tab_strip_->size().height()));
   }
 
-  LayoutSidePanelView(unified_side_panel_, contents_container_bounds);
-
-  contents_container_->SetBoundsRect(contents_container_bounds);
-}
-
-void BrowserViewLayout::LayoutSidePanelView(
-    views::View* side_panel,
-    gfx::Rect& contents_container_bounds) {
-  const bool side_panel_visible = side_panel && side_panel->GetVisible();
-  // Update side panel rounded corner visibility to match side panel visibility.
-  SetViewVisibility(side_panel_rounded_corner_, side_panel_visible);
-
-  if (left_aligned_side_panel_separator_) {
-    const bool side_panel_visible_on_left =
-        side_panel_visible &&
-        !views::AsViewClass<SidePanel>(unified_side_panel_)->IsRightAligned();
-    SetViewVisibility(left_aligned_side_panel_separator_,
-                      side_panel_visible_on_left);
+  const bool side_panel_visible =
+      unified_side_panel_ && unified_side_panel_->GetVisible();
+  if (!side_panel_visible) {
+    // The contents container takes all available space, and we're done.
+    return ContentsContainerLayoutResult{contents_container_bounds,
+                                         gfx::Rect(),
+                                         false,
+                                         false,
+                                         false,
+                                         gfx::Rect()};
   }
 
-  if (right_aligned_side_panel_separator_) {
-    const bool side_panel_visible_on_right =
-        side_panel_visible &&
-        views::AsViewClass<SidePanel>(unified_side_panel_)->IsRightAligned();
-    SetViewVisibility(right_aligned_side_panel_separator_,
-                      side_panel_visible_on_right);
-  }
+  SidePanel* side_panel = views::AsViewClass<SidePanel>(unified_side_panel_);
 
-  if (!side_panel || !side_panel->GetVisible())
-    return;
-
-  DCHECK(side_panel == unified_side_panel_);
-  bool is_right_aligned =
-      views::AsViewClass<SidePanel>(side_panel)->IsRightAligned();
-
+  const bool side_panel_right_aligned = side_panel->IsRightAligned();
+  const bool is_in_split_view = delegate_->IsInSplitView();
   views::View* side_panel_separator =
-      is_right_aligned ? right_aligned_side_panel_separator_.get()
-                       : left_aligned_side_panel_separator_.get();
-
-  DCHECK(side_panel_separator);
+      side_panel_right_aligned ? right_aligned_side_panel_separator_.get()
+                               : left_aligned_side_panel_separator_.get();
+  CHECK(side_panel_separator);
+  const int separator_width =
+      is_in_split_view ? 0 : side_panel_separator->GetPreferredSize().width();
 
   // Side panel occupies some of the container's space. The side panel should
   // never occupy more space than is available in the content window, and
@@ -803,33 +685,40 @@ void BrowserViewLayout::LayoutSidePanelView(
   // minimum.
   gfx::Rect side_panel_bounds = contents_container_bounds;
 
-  side_panel_bounds.set_width(
-      std::min(side_panel->GetPreferredSize().width(),
-               contents_container_bounds.width() - GetMinWebContentsWidth() -
-                   side_panel_separator->GetPreferredSize().width()));
+  // If necessary, cap the side panel width at 2/3rds of the contents container
+  // width as long as the side panel remains at or above its minimum width.
+  if (side_panel->ShouldRestrictMaxWidth()) {
+    side_panel_bounds.set_width(
+        std::max(std::min(side_panel->GetPreferredSize().width(),
+                          contents_container_bounds.width() * 2 / 3),
+                 side_panel->GetMinimumSize().width()));
+  } else {
+    side_panel_bounds.set_width(std::min(side_panel->GetPreferredSize().width(),
+                                         contents_container_bounds.width() -
+                                             GetMinWebContentsWidth() -
+                                             separator_width));
+  }
 
   double side_panel_visible_width =
       side_panel_bounds.width() *
       views::AsViewClass<SidePanel>(unified_side_panel_)->GetAnimationValue();
 
   // Shrink container bounds to fit the side panel.
-  contents_container_bounds.set_width(
-      contents_container_bounds.width() - side_panel_visible_width -
-      side_panel_separator->GetPreferredSize().width());
+  contents_container_bounds.set_width(contents_container_bounds.width() -
+                                      side_panel_visible_width -
+                                      separator_width);
 
   // In LTR, the point (0,0) represents the top left of the browser.
   // In RTL, the point (0,0) represents the top right of the browser.
-  const bool is_container_after_side_panel =
-      (base::i18n::IsRTL() && is_right_aligned) ||
-      (!base::i18n::IsRTL() && !is_right_aligned);
+  const bool contents_container_after_side_panel =
+      (base::i18n::IsRTL() && side_panel_right_aligned) ||
+      (!base::i18n::IsRTL() && !side_panel_right_aligned);
 
-  if (is_container_after_side_panel) {
+  if (contents_container_after_side_panel) {
     // When the side panel should appear before the main content area relative
     // to the ui direction, move `contents_container_bounds` after the side
     // panel. Also leave space for the separator.
-    contents_container_bounds.set_x(
-        side_panel_visible_width +
-        side_panel_separator->GetPreferredSize().width());
+    contents_container_bounds.set_x(side_panel_visible_width + separator_width);
     side_panel_bounds.set_x(side_panel_bounds.x() - (side_panel_bounds.width() -
                                                      side_panel_visible_width));
   } else {
@@ -837,44 +726,92 @@ void BrowserViewLayout::LayoutSidePanelView(
     // the ui direction, move `side_panel_bounds` after the main content area.
     // Also leave space for the separator.
     side_panel_bounds.set_x(contents_container_bounds.right() +
-                            side_panel_separator->GetPreferredSize().width());
+                            separator_width);
   }
-
-  side_panel->SetBoundsRect(side_panel_bounds);
 
   // Adjust the side panel separator bounds based on the side panel bounds
   // calculated above.
-  gfx::Rect side_panel_separator_bounds = side_panel_bounds;
-  side_panel_separator_bounds.set_width(
-      side_panel_separator->GetPreferredSize().width());
-
+  gfx::Rect separator_bounds = side_panel_bounds;
+  // TODO (https://crbug.com/389972209): Adding 1px to the width as a bandaid
+  // fix. This covers a case with subpixeling where a thin line of the
+  // background finds its way to the front.
+  separator_bounds.set_width(separator_width + 1);
   // If the side panel appears before `contents_container_bounds`, place the
-  // separator immediately after the side panel but before the container bounds.
-  // If the side panel appears after `contents_container_bounds`, place the
-  // separator immediately after the contents bounds but before the side panel.
-  side_panel_separator_bounds.set_x(is_container_after_side_panel
-                                        ? side_panel_bounds.right()
-                                        : contents_container_bounds.right());
+  // separator immediately after the side panel but before the container
+  // bounds. If the side panel appears after `contents_container_bounds`,
+  // place the separator immediately after the contents bounds but before the
+  // side panel.
+  separator_bounds.set_x(contents_container_after_side_panel
+                             ? side_panel_bounds.right()
+                             : contents_container_bounds.right());
 
-  side_panel_separator->SetBoundsRect(side_panel_separator_bounds);
+  return BrowserViewLayout::ContentsContainerLayoutResult{
+      contents_container_bounds,
+      side_panel_bounds,
+      side_panel_visible,
+      side_panel_right_aligned,
+      contents_container_after_side_panel,
+      separator_bounds};
+}
 
-  // Adjust the side panel rounded corner bounds based on the side panel bounds
-  // calculated above.
-  const float corner_radius =
-      side_panel_rounded_corner_->GetLayoutProvider()->GetCornerRadiusMetric(
-          views::ShapeContextTokens::kSidePanelPageContentRadius);
-  if (is_container_after_side_panel) {
-    side_panel_rounded_corner_->SetBounds(
-        side_panel_bounds.right(),
-        side_panel_bounds.y() - views::Separator::kThickness,
-        corner_radius + views::Separator::kThickness,
-        corner_radius + views::Separator::kThickness);
-  } else {
-    side_panel_rounded_corner_->SetBounds(
-        side_panel_bounds.x() - corner_radius - views::Separator::kThickness,
-        side_panel_bounds.y() - views::Separator::kThickness,
-        corner_radius + views::Separator::kThickness,
-        corner_radius + views::Separator::kThickness);
+void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
+  TRACE_EVENT0("ui", "BrowserViewLayout::LayoutContentsContainerView");
+  // |contents_container_| contains web page contents and devtools.
+  // See browser_view.h for details.
+
+  BrowserViewLayout::ContentsContainerLayoutResult layout_result =
+      CalculateContentsContainerLayout(top, bottom);
+  const bool is_in_split_view = delegate_->IsInSplitView();
+
+  contents_container_->SetBoundsRect(layout_result.contents_container_bounds);
+
+  if (unified_side_panel_) {
+    unified_side_panel_->SetBoundsRect(layout_result.side_panel_bounds);
+  }
+  if (right_aligned_side_panel_separator_) {
+    SetViewVisibility(right_aligned_side_panel_separator_,
+                      layout_result.side_panel_visible &&
+                          layout_result.side_panel_right_aligned &&
+                          !is_in_split_view);
+    right_aligned_side_panel_separator_->SetBoundsRect(
+        layout_result.separator_bounds);
+  }
+  if (left_aligned_side_panel_separator_) {
+    SetViewVisibility(left_aligned_side_panel_separator_,
+                      layout_result.side_panel_visible &&
+                          !layout_result.side_panel_right_aligned &&
+                          !is_in_split_view);
+    left_aligned_side_panel_separator_->SetBoundsRect(
+        layout_result.separator_bounds);
+  }
+
+  if (side_panel_rounded_corner_) {
+    SetViewVisibility(side_panel_rounded_corner_,
+                      layout_result.side_panel_visible && !is_in_split_view);
+    if (layout_result.side_panel_visible) {
+      // This can return nullptr when there is no Widget (for context, see
+      // http://crbug.com/40178332). The nullptr dereference does not always
+      // crash due to compiler optimizations, so CHECKing here ensures we crash.
+      CHECK(side_panel_rounded_corner_->GetLayoutProvider());
+      // Adjust the rounded corner bounds based on the side panel bounds.
+      const float corner_radius =
+          side_panel_rounded_corner_->GetLayoutProvider()
+              ->GetCornerRadiusMetric(
+                  views::ShapeContextTokens::kSidePanelPageContentRadius);
+      const float corner_size = corner_radius + views::Separator::kThickness;
+      if (layout_result.contents_container_after_side_panel) {
+        side_panel_rounded_corner_->SetBounds(
+            layout_result.side_panel_bounds.right(),
+            layout_result.side_panel_bounds.y() - views::Separator::kThickness,
+            corner_size, corner_size);
+      } else {
+        side_panel_rounded_corner_->SetBounds(
+            layout_result.side_panel_bounds.x() - corner_radius -
+                views::Separator::kThickness,
+            layout_result.side_panel_bounds.y() - views::Separator::kThickness,
+            corner_size, corner_size);
+      }
+    }
   }
 }
 
@@ -888,8 +825,9 @@ void BrowserViewLayout::UpdateTopContainerBounds() {
   // during an immersive fullscreen reveal.
   int height = 0;
   for (views::View* child : top_container_->children()) {
-    if (child->GetVisible())
+    if (child->GetVisible()) {
       height = std::max(height, child->bounds().bottom());
+    }
   }
 
   // Ensure that the top container view reaches the topmost view in the
@@ -912,6 +850,7 @@ void BrowserViewLayout::UpdateTopContainerBounds() {
             top_container_bounds.size()));
   }
   top_container_->SetBoundsRect(top_container_bounds);
+  SetClipPathWithBottomAllowance(top_container_);
 }
 
 int BrowserViewLayout::LayoutDownloadShelf(int bottom) {
@@ -931,13 +870,13 @@ void BrowserViewLayout::LayoutContentBorder() {
   }
 
   gfx::Point contents_top_left;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  views::View::ConvertPointToScreen(contents_container_, &contents_top_left);
-#else
+#if BUILDFLAG(IS_CHROMEOS)
   // On Ash placing the border widget on top of the contents container
   // does not require an offset -- see crbug.com/1030925.
   contents_top_left =
       gfx::Point(contents_container_->x(), contents_container_->y());
+#else
+  views::View::ConvertPointToScreen(contents_container_, &contents_top_left);
 #endif
 
   gfx::Rect rect;
@@ -986,5 +925,7 @@ int BrowserViewLayout::GetMinWebContentsWidth() const {
 }
 
 bool BrowserViewLayout::IsInfobarVisible() const {
-  return !infobar_container_->IsEmpty();
+  return !infobar_container_->IsEmpty() &&
+         (!browser_view_->IsFullscreen() ||
+          !infobar_container_->ShouldHideInFullscreen());
 }

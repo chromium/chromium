@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/feature_list.h"
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <array>
 #include <ostream>
 #include <set>
 #include <string>
@@ -19,22 +16,17 @@
 #include <vector>
 
 #include "base/feature_list_buildflags.h"
+#include "base/feature_visitor.h"
 #include "base/format_macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/feature_visitor.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 
@@ -53,7 +45,7 @@ BASE_FEATURE(kFeatureOffByDefault,
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<std::string_view> features =
       FeatureList::SplitFeatureListString(feature_list);
-  ranges::sort(features);
+  std::ranges::sort(features);
   return JoinString(features, ",");
 }
 
@@ -79,12 +71,13 @@ TEST_F(FeatureListTest, DefaultStates) {
 }
 
 TEST_F(FeatureListTest, InitFromCommandLine) {
-  struct {
+  struct TestCases {
     const char* enable_features;
     const char* disable_features;
     bool expected_feature_on_state;
     bool expected_feature_off_state;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       {"", "", true, false},
       {"OffByDefault", "", true, true},
       {"OffByDefault", "OnByDefault", false, true},
@@ -92,7 +85,7 @@ TEST_F(FeatureListTest, InitFromCommandLine) {
       {"", "OnByDefault,OffByDefault", false, false},
       // In the case an entry is both, disable takes precedence.
       {"OnByDefault", "OnByDefault,OffByDefault", false, false},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     const auto& test_case = test_cases[i];
@@ -184,19 +177,20 @@ TEST_F(FeatureListTest, CheckFeatureIdentity) {
 }
 
 TEST_F(FeatureListTest, FieldTrialOverrides) {
-  struct {
+  struct TestCases {
     FeatureList::OverrideState trial1_state;
     FeatureList::OverrideState trial2_state;
-  } test_cases[] = {
-      {FeatureList::OVERRIDE_DISABLE_FEATURE,
-       FeatureList::OVERRIDE_DISABLE_FEATURE},
-      {FeatureList::OVERRIDE_DISABLE_FEATURE,
-       FeatureList::OVERRIDE_ENABLE_FEATURE},
-      {FeatureList::OVERRIDE_ENABLE_FEATURE,
-       FeatureList::OVERRIDE_DISABLE_FEATURE},
-      {FeatureList::OVERRIDE_ENABLE_FEATURE,
-       FeatureList::OVERRIDE_ENABLE_FEATURE},
   };
+  auto test_cases = std::to_array<TestCases>({
+      {FeatureList::OVERRIDE_DISABLE_FEATURE,
+       FeatureList::OVERRIDE_DISABLE_FEATURE},
+      {FeatureList::OVERRIDE_DISABLE_FEATURE,
+       FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {FeatureList::OVERRIDE_ENABLE_FEATURE,
+       FeatureList::OVERRIDE_DISABLE_FEATURE},
+      {FeatureList::OVERRIDE_ENABLE_FEATURE,
+       FeatureList::OVERRIDE_ENABLE_FEATURE},
+  });
 
   FieldTrial::ActiveGroup active_group;
   for (size_t i = 0; i < std::size(test_cases); ++i) {
@@ -400,19 +394,20 @@ TEST_F(FeatureListTest, IsFeatureOverriddenFromCommandLine) {
 }
 
 TEST_F(FeatureListTest, AssociateReportingFieldTrial) {
-  struct {
+  struct TestCases {
     const char* enable_features;
     const char* disable_features;
     bool expected_enable_trial_created;
     bool expected_disable_trial_created;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       // If no enable/disable flags are specified, no trials should be created.
       {"", "", false, false},
       // Enabling the feature should result in the enable trial created.
       {kFeatureOffByDefaultName, "", true, false},
       // Disabling the feature should result in the disable trial created.
       {"", kFeatureOffByDefaultName, false, true},
-  };
+  });
 
   const char kTrialName[] = "ForcingTrial";
   const char kForcedOnGroupName[] = "ForcedOn";
@@ -468,13 +463,47 @@ TEST_F(FeatureListTest, AssociateReportingFieldTrial) {
   }
 }
 
+TEST_F(FeatureListTest, RegisterExtraFeatureOverrides_ReplaceUseDefault) {
+  auto feature_list = std::make_unique<FeatureList>();
+
+  FieldTrial* trial1 = FieldTrialList::CreateFieldTrial("Trial1", "Group");
+  feature_list->RegisterFieldTrialOverride(
+      kFeatureOnByDefaultName, FeatureList::OVERRIDE_USE_DEFAULT, trial1);
+
+  FieldTrial* trial2 = FieldTrialList::CreateFieldTrial("Trial2", "Group");
+  feature_list->RegisterFieldTrialOverride(
+      kFeatureOffByDefaultName, FeatureList::OVERRIDE_USE_DEFAULT, trial2);
+
+  std::vector<FeatureList::FeatureOverrideInfo> overrides;
+  overrides.emplace_back(std::cref(kFeatureOnByDefault),
+                         FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+  overrides.emplace_back(std::cref(kFeatureOffByDefault),
+                         FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
+  feature_list->RegisterExtraFeatureOverrides(
+      std::move(overrides), /*replace_use_default_overrides=*/true);
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // OVERRIDE_USE_DEFAULT entries should be overridden by AwFeatureOverrides.
+  // Before querying the feature, the trials shouldn't be active, but should
+  // be activated after querying.
+
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive("Trial1"));
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOnByDefault));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive("Trial1"));
+
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive("Trial2"));
+  EXPECT_TRUE(FeatureList::IsEnabled(kFeatureOffByDefault));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive("Trial2"));
+}
+
 TEST_F(FeatureListTest, RegisterExtraFeatureOverrides) {
   auto feature_list = std::make_unique<FeatureList>();
   std::vector<FeatureList::FeatureOverrideInfo> overrides;
-  overrides.push_back({std::cref(kFeatureOnByDefault),
-                       FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE});
-  overrides.push_back({std::cref(kFeatureOffByDefault),
-                       FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE});
+  overrides.emplace_back(std::cref(kFeatureOnByDefault),
+                         FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+  overrides.emplace_back(std::cref(kFeatureOffByDefault),
+                         FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
   feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
@@ -488,10 +517,10 @@ TEST_F(FeatureListTest, InitFromCommandLineThenRegisterExtraOverrides) {
   feature_list->InitFromCommandLine(kFeatureOnByDefaultName,
                                     kFeatureOffByDefaultName);
   std::vector<FeatureList::FeatureOverrideInfo> overrides;
-  overrides.push_back({std::cref(kFeatureOnByDefault),
-                       FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE});
-  overrides.push_back({std::cref(kFeatureOffByDefault),
-                       FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE});
+  overrides.emplace_back(std::cref(kFeatureOnByDefault),
+                         FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+  overrides.emplace_back(std::cref(kFeatureOffByDefault),
+                         FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
   feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
@@ -516,16 +545,15 @@ TEST_F(FeatureListTest, GetFeatureOverrides) {
   static BASE_FEATURE(feature_b, "B", FEATURE_ENABLED_BY_DEFAULT);
   static BASE_FEATURE(feature_c, "C", FEATURE_DISABLED_BY_DEFAULT);
   std::vector<FeatureList::FeatureOverrideInfo> overrides;
-  overrides.push_back({std::cref(feature_b),
-                       FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE});
-  overrides.push_back({std::cref(feature_c),
-                       FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE});
+  overrides.emplace_back(std::cref(feature_b),
+                         FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+  overrides.emplace_back(std::cref(feature_c),
+                         FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
   feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
 
   FieldTrial* trial = FieldTrialList::CreateFieldTrial("Trial", "Group");
-  feature_list->RegisterFieldTrialOverride(kFeatureOffByDefaultName,
-                                           FeatureList::OVERRIDE_ENABLE_FEATURE,
-                                           trial);
+  feature_list->RegisterFieldTrialOverride(
+      kFeatureOffByDefaultName, FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
 
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
@@ -635,8 +663,9 @@ TEST_F(FeatureListTest, UninitializedInstance_IsEnabledReturnsFalse) {
   EXPECT_EQ(nullptr, FeatureList::GetInstance());
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
 
-  if (original_feature_list)
+  if (original_feature_list) {
     FeatureList::RestoreInstanceForTesting(std::move(original_feature_list));
+  }
 }
 
 TEST_F(FeatureListTest, StoreAndRetrieveFeaturesFromSharedMemory) {
@@ -770,12 +799,13 @@ TEST(FeatureListAccessorTest, DefaultStates) {
 }
 
 TEST(FeatureListAccessorTest, InitFromCommandLine) {
-  struct {
+  struct TestCases {
     const char* enable_features;
     const char* disable_features;
     FeatureList::OverrideState expected_feature_on_state;
     FeatureList::OverrideState expected_feature_off_state;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       {"", "", FeatureList::OVERRIDE_USE_DEFAULT,
        FeatureList::OVERRIDE_USE_DEFAULT},
       {"OffByDefault", "", FeatureList::OVERRIDE_USE_DEFAULT,
@@ -790,7 +820,7 @@ TEST(FeatureListAccessorTest, InitFromCommandLine) {
       {"OnByDefault", "OnByDefault,OffByDefault",
        FeatureList::OVERRIDE_DISABLE_FEATURE,
        FeatureList::OVERRIDE_DISABLE_FEATURE},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     const auto& test_case = test_cases[i];
@@ -817,13 +847,14 @@ TEST(FeatureListAccessorTest, InitFromCommandLine) {
 }
 
 TEST(FeatureListAccessorTest, InitFromCommandLineWithFeatureParams) {
-  struct {
+  struct TestCases {
     const std::string enable_features;
     const std::map<std::string, std::string> expected_feature_params;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       {"Feature:x/100/y/test", {{"x", "100"}, {"y", "test"}}},
       {"Feature<Trial:asdf/ghjkl/y/123", {{"asdf", "ghjkl"}, {"y", "123"}}},
-  };
+  });
 
   // Clear global state so that repeated runs of this test don't flake.
   // When https://crrev.com/c/3694674 is submitted, we should be able to remove
@@ -851,7 +882,6 @@ TEST(FeatureListAccessorTest, InitFromCommandLineWithFeatureParams) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Test only class to verify correctness of
 // FeatureList::VisitFeaturesAndParams().
 class TestFeatureVisitor : public FeatureVisitor {
@@ -963,8 +993,8 @@ TEST(TestFeatureVisitor, FeatureHasParams) {
   base::test::ScopedFeatureList initialized_feature_list;
 
   initialized_feature_list.InitFromCommandLine(
-      /*enabled_features=*/"TestFeature<foo.bar:k1/v1/k2/v2",
-      /*disabled_features=*/"");
+      /*enable_features=*/"TestFeature<foo.bar:k1/v1/k2/v2",
+      /*disable_features=*/"");
 
   TestFeatureVisitor visitor;
   base::FeatureList::VisitFeaturesAndParams(visitor);
@@ -979,6 +1009,35 @@ TEST(TestFeatureVisitor, FeatureHasParams) {
 
   EXPECT_EQ(actual_feature_state, expected_feature_state);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST(TestFeatureVisitor, FeatureWithPrefix) {
+  base::test::ScopedFeatureList outer_scope;
+  outer_scope.InitWithEmptyFeatureAndFieldTrialLists();
+
+  base::test::ScopedFeatureList initialized_feature_list;
+
+  initialized_feature_list.InitFromCommandLine(
+      /*enable_features=*/
+      "AFeature,AnotherFeature,TestFeature,TestFeature2,PrefixedFeature,"
+      "PrefixedFeature2",
+      /*disable_features=*/"");
+
+  TestFeatureVisitor visitor;
+  base::FeatureList::VisitFeaturesAndParams(visitor, "Prefixed");
+  std::multiset<TestFeatureVisitor::VisitedFeatureState> actual_feature_state =
+      visitor.feature_state();
+
+  std::multiset<TestFeatureVisitor::VisitedFeatureState>
+      expected_feature_state = {
+          {"PrefixedFeature",
+           FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE,
+           FieldTrialParams{}, "", ""},
+          {"PrefixedFeature2",
+           FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE,
+           FieldTrialParams{}, "", ""},
+      };
+
+  EXPECT_EQ(actual_feature_state, expected_feature_state);
+}
 
 }  // namespace base

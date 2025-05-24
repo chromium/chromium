@@ -7,8 +7,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
-#include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"
@@ -17,6 +18,7 @@
 namespace webnn::dml {
 
 class Adapter;
+class CommandQueue;
 class CommandRecorder;
 class TensorImplDml;
 
@@ -24,7 +26,8 @@ class TensorImplDml;
 // creating `GraphImplDml` and `TensorImplDml` of DirectML backend for Windows
 // platform. The `Adapter` instance is shared by all `GraphImplDml` and
 // `TensorImplDml` created by this context.
-class ContextImplDml final : public WebNNContextImpl {
+class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
+    : public WebNNContextImpl {
  public:
   ContextImplDml(scoped_refptr<Adapter> adapter,
                  mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -57,12 +60,37 @@ class ContextImplDml final : public WebNNContextImpl {
   // gracefully terminate the GPU process.
   void HandleContextLostOrCrash(std::string_view message_for_log, HRESULT hr);
 
+  CommandQueue* GetCommandQueue() const;
+
+  void RemoveDeviceForTesting();
+
+  // The test cases can override the graph/tensor creating behavior by
+  // implementing this class and setting its instance by SetBackendForTesting().
+  class BackendForTesting {
+   public:
+    virtual void CreateGraphImpl(
+        mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+        ContextImplDml* context_impl,
+        WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+        CreateGraphImplCallback callback) = 0;
+
+    virtual void CreateTensorImpl(
+        ContextImplDml* context,
+        mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+        mojom::TensorInfoPtr tensor_info,
+        CreateTensorImplCallback callback) = 0;
+  };
+
+  static void SetBackendForTesting(BackendForTesting* backend_for_testing);
+
  private:
   void CreateGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
+      base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       CreateGraphImplCallback callback) override;
 
   void CreateTensorImpl(

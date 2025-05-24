@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="TextAppearance.SharedImageTilesSmall">
+        <item name="android:textSize">@dimen/small_shared_image_tiles_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

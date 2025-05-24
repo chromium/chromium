@@ -12,8 +12,7 @@
 #include "chromeos/ash/components/phonehub/public/cpp/attestation_certificate_generator.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -196,5 +195,4 @@ void CrosStateSender::OnCertificateGenerated(
   SendCrosStateMessage(&attestation_certs);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

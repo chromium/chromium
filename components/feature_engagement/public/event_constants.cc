@@ -14,8 +14,6 @@ namespace events {
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 const char kNewTabOpened[] = "new_tab_opened";
 const char kSixthTabOpened[] = "sixth_tab_opened";
-const char kTabGroupCreated[] = "tab_group_created";
-const char kClosedTabWithEightOrMore[] = "closed_tab_with_eight_or_more";
 const char kReadingListItemAdded[] = "reading_list_item_added";
 const char kReadingListMenuOpened[] = "reading_list_menu_opened";
 const char kBookmarkStarMenuOpened[] = "bookmark_star_menu_opened";
@@ -25,7 +23,6 @@ const char kMediaBackgrounded[] = "media_backgrounded";
 const char kGlobalMediaControlsOpened[] = "global_media_controls_opened";
 
 const char kSidePanelPinned[] = "side_panel_pinned";
-const char kSidePanelFromMenuShown[] = "side_panel_from_menu_shown";
 
 const char kSideSearchAutoTriggered[] = "side_search_auto_triggered";
 const char kSideSearchOpened[] = "side_search_opened";
@@ -33,9 +30,6 @@ const char kSideSearchPageActionLabelShown[] =
     "side_search_page_action_label_shown";
 
 const char kTabSearchOpened[] = "tab_search_opened";
-
-const char kWebUITabStripClosed[] = "webui_tab_strip_closed";
-const char kWebUITabStripOpened[] = "webui_tab_strip_opened";
 
 const char kDesktopNTPModuleUsed[] = "desktop_new_tab_page_modules_used";
 
@@ -46,15 +40,6 @@ const char kFocusHelpBubbleAcceleratorPressed[] =
 
 const char kFocusHelpBubbleAcceleratorPromoRead[] =
     "focus_help_bubble_accelerator_promo_read";
-
-const char kBatterySaverDialogShown[] = "battery_saver_info_shown";
-
-// The event constant is used in Finch experiments so it is unable to be renamed
-// alongside the variable name.
-const char kMemorySaverDialogShown[] = "high_efficiency_info_shown";
-
-const char kExtensionsMenuOpenedWhileExtensionHasAccess[] =
-    "extensions_menu_opened_while_extension_has_access";
 
 const char kExtensionsRequestAccessButtonClicked[] =
     "extensions_request_access_button_clicked";
@@ -69,7 +54,7 @@ const char kChromeOpened[] = "chrome_opened";
 const char kIncognitoTabOpened[] = "incognito_tab_opened";
 const char kClearedBrowsingData[] = "cleared_browsing_data";
 const char kViewedReadingList[] = "viewed_reading_list";
-const char kViewedWhatsNew[] = "viewed_whats_new_m128";
+const char kViewedWhatsNew[] = "viewed_whats_new_m134";
 const char kTriggeredTranslateInfobar[] = "triggered_translate_infobar";
 const char kBottomToolbarOpened[] = "bottom_toolbar_opened";
 const char kDiscoverFeedLoaded[] = "discover_feed_loaded";
@@ -81,6 +66,16 @@ const char kPriceNotificationsUsed[] = "price_notifications_used";
 const char kDefaultBrowserPromoShown[] = "default_browser_promo_shown";
 const char kDefaultBrowserPromoRemindMeLater[] =
     "default_browser_promo_remind_me_later";
+const char kNonModalDefaultBrowserPromoUrlPasteTrigger[] =
+    "non_modal_default_browser_promo_url_paste_trigger";
+const char kNonModalDefaultBrowserPromoAppSwitcherTrigger[] =
+    "non_modal_default_browser_promo_app_switcher_trigger";
+const char kNonModalDefaultBrowserPromoShareTrigger[] =
+    "non_modal_default_browser_promo_share_trigger";
+const char kNonModalSigninPromoPasswordTrigger[] =
+    "ios_non_modal_signin_promo_password_trigger";
+const char kNonModalSigninPromoBookmarkTrigger[] =
+    "ios_non_modal_signin_promo_bookmark_trigger";
 const char kPasswordManagerWidgetPromoTriggered[] =
     "password_manager_widget_promo_trigger";
 const char kPasswordManagerWidgetPromoUsed[] =
@@ -105,18 +100,16 @@ const char kCredentialProviderExtensionPromoSnoozed[] =
     "credential_provider_extension_promo_snoozed";
 const char kDockingPromoRemindMeLater[] = "docking_promo_remind_me_later";
 const char kOpenUrlFromOmnibox[] = "open_url_from_omnibox";
-const char kNewTabToolbarItemUsed[] = "new_tab_toolbar_item_used";
-const char kTabGridToolbarItemUsed[] = "tab_grid_toolbar_item_used";
 const char kHistoryOnOverflowMenuUsed[] = "history_on_overflow_menu_used";
-const char kShareToolbarItemUsed[] = "share_toolbar_item_used";
+const char kSettingsOnOverflowMenuUsed[] = "settings_on_overflow_menu_used";
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
-const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
-const char kParcelTracked[] = "parcel_tracked";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
 const char kIOSPullToRefreshIPHDismissButtonTapped[] =
     "pull_to_refresh_feature_iph_dismiss_button_tapped";
 const char kIOSIncognitoPageControlTapped[] = "incognito_page_control_tapped";
+const char kIOSSigninFullscreenPromoTrigger[] =
+    "signin_fullscreen_promo_trigger";
 const char kIOSSwipeRightForIncognitoUsed[] = "swipe_right_for_incognito_used";
 const char kIOSSwipeRightForIncognitoIPHDismissButtonTapped[] =
     "swipe_right_for_incognito_iph_dismiss_button_tapped";
@@ -161,6 +154,21 @@ const char kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[] =
     "ios_contextual_panel_price_insights_entrypoint_explicitly_dismissed";
 const char kHomeCustomizationMenuUsed[] = "home_customization_menu_used";
 const char kLensOverlayEntrypointUsed[] = "lens_overlay_entrypoint_used";
+const char kIOSTabReminderScheduled[] = "tab_reminder_scheduled";
+const char kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger[] =
+    "ios_reminder_notifications_overflow_menu_bubble_iph_trigger";
+const char kIOSOverflowMenuSetTabReminderTapped[] =
+    "ios_overflow_menu_set_tab_reminder_tapped";
+const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[] =
+    "ios_reminder_notifications_overflow_menu_new_badge_iph_trigger";
+const char kIOSDownloadAutoDeletionIPHCriterionMet[] =
+    "ios_download_auto_deletion_iph_criterion_met";
+const char kIOSScrolledOnFeed[] = "ios_scrolled_on_feed";
+const char kIOSActionOnFeed[] = "ios_action_on_feed";
+const char kIOSWelcomeBackPromoTrigger[] = "welcome_back_promo_trigger";
+const char kIOSWelcomeBackPromoUsed[] = "welcome_back_promo_used";
+const char kIOSGLICPromoTrigger[] = "glic_half_screen_promo_trigger";
+const char kIOSGLICPromoUsed[] = "glic_half_screen_promo_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

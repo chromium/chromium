@@ -8,13 +8,13 @@
 
 #include <optional>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/types/strong_alias.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace chrome_pdf {
 
@@ -22,12 +22,12 @@ namespace {
 
 PdfInkUndoRedoModel::DrawCommands& GetModifiableDrawCommands(
     PdfInkUndoRedoModel::Commands& commands) {
-  return absl::get<PdfInkUndoRedoModel::DrawCommands>(commands);
+  return std::get<PdfInkUndoRedoModel::DrawCommands>(commands);
 }
 
 PdfInkUndoRedoModel::EraseCommands& GetModifiableEraseCommands(
     PdfInkUndoRedoModel::Commands& commands) {
-  return absl::get<PdfInkUndoRedoModel::EraseCommands>(commands);
+  return std::get<PdfInkUndoRedoModel::EraseCommands>(commands);
 }
 
 }  // namespace
@@ -41,7 +41,7 @@ PdfInkUndoRedoModel::StartDraw() {
   return StartImpl<DrawCommands>();
 }
 
-bool PdfInkUndoRedoModel::Draw(size_t id) {
+bool PdfInkUndoRedoModel::Draw(InkStrokeId id) {
   CHECK(!commands_stack_.empty());
 
   if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kDraw)) {
@@ -70,11 +70,11 @@ bool PdfInkUndoRedoModel::FinishDraw() {
 
   auto& commands = commands_stack_.back();
   if (GetDrawCommands(commands)->empty()) {
-    commands = absl::monostate();  // Reuse top of stack if empty.
+    commands = std::monostate();  // Reuse top of stack if empty.
   } else {
     // Otherwise push new item onto the stack.
     ++stack_position_;
-    commands_stack_.push_back(absl::monostate());
+    commands_stack_.push_back(std::monostate());
   }
   return true;
 }
@@ -84,7 +84,7 @@ PdfInkUndoRedoModel::StartErase() {
   return StartImpl<EraseCommands>();
 }
 
-bool PdfInkUndoRedoModel::Erase(size_t id) {
+bool PdfInkUndoRedoModel::EraseStroke(InkStrokeId id) {
   CHECK(!commands_stack_.empty());
 
   if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kErase)) {
@@ -94,6 +94,22 @@ bool PdfInkUndoRedoModel::Erase(size_t id) {
   }
   if (!HasIdInDrawCommands(id)) {
     return false;  // Failed invariant 6.
+  }
+  if (HasIdInEraseCommands(id)) {
+    return false;  // Failed invariant 5.
+  }
+
+  GetModifiableEraseCommands(commands_stack_.back())->insert(id);
+  return true;
+}
+
+bool PdfInkUndoRedoModel::EraseShape(InkModeledShapeId id) {
+  CHECK(!commands_stack_.empty());
+
+  if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kErase)) {
+    // Can only erase at top of the stack, and the entry there must be for
+    // erasing.
+    return false;
   }
   if (HasIdInEraseCommands(id)) {
     return false;  // Failed invariant 5.
@@ -114,11 +130,11 @@ bool PdfInkUndoRedoModel::FinishErase() {
 
   auto& commands = commands_stack_.back();
   if (GetEraseCommands(commands)->empty()) {
-    commands = absl::monostate();  // Reuse top of stack if empty.
+    commands = std::monostate();  // Reuse top of stack if empty.
   } else {
     // Otherwise push new item onto the stack.
     ++stack_position_;
-    commands_stack_.push_back(absl::monostate());
+    commands_stack_.push_back(std::monostate());
   }
   return true;
 }
@@ -128,7 +144,7 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Undo() {
   CHECK_LT(stack_position_, commands_stack_.size());
 
   if (stack_position_ == 0) {
-    return absl::monostate();  // Already at bottom of stack.
+    return std::monostate();  // Already at bottom of stack.
   }
 
   // Result is reverse of the recorded commands.
@@ -140,14 +156,14 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Undo() {
     }
     case CommandsType::kDraw: {
       EraseCommands result;
-      for (size_t id : GetDrawCommands(commands).value()) {
+      for (IdType id : GetDrawCommands(commands).value()) {
         result->insert(id);
       }
       return result;
     }
     case CommandsType::kErase: {
       DrawCommands result;
-      for (size_t id : GetEraseCommands(commands).value()) {
+      for (IdType id : GetEraseCommands(commands).value()) {
         result->insert(id);
       }
       return result;
@@ -161,7 +177,7 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Redo() {
   CHECK_LT(stack_position_, commands_stack_.size());
 
   if (stack_position_ == commands_stack_.size() - 1) {
-    return absl::monostate();  // Already at top of stack.
+    return std::monostate();  // Already at top of stack.
   }
 
   // Result is the recorded commands as-is.
@@ -184,26 +200,26 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Redo() {
 // static
 PdfInkUndoRedoModel::CommandsType PdfInkUndoRedoModel::GetCommandsType(
     const Commands& commands) {
-  if (absl::holds_alternative<absl::monostate>(commands)) {
+  if (std::holds_alternative<std::monostate>(commands)) {
     return CommandsType::kNone;
   }
-  if (absl::holds_alternative<DrawCommands>(commands)) {
+  if (std::holds_alternative<DrawCommands>(commands)) {
     return CommandsType::kDraw;
   }
-  CHECK(absl::holds_alternative<EraseCommands>(commands));
+  CHECK(std::holds_alternative<EraseCommands>(commands));
   return CommandsType::kErase;
 }
 
 // static
 const PdfInkUndoRedoModel::DrawCommands& PdfInkUndoRedoModel::GetDrawCommands(
     const Commands& commands) {
-  return absl::get<DrawCommands>(commands);
+  return std::get<DrawCommands>(commands);
 }
 
 // static
 const PdfInkUndoRedoModel::EraseCommands& PdfInkUndoRedoModel::GetEraseCommands(
     const Commands& commands) {
-  return absl::get<EraseCommands>(commands);
+  return std::get<EraseCommands>(commands);
 }
 
 template <typename T>
@@ -226,8 +242,9 @@ PdfInkUndoRedoModel::StartImpl() {
     // Record the draw commands to discard.
     for (size_t i = stack_position_; i < commands_stack_.size(); ++i) {
       if (GetCommandsType(commands_stack_[i]) == CommandsType::kDraw) {
-        for (size_t id : GetDrawCommands(commands_stack_[i]).value()) {
-          bool inserted = discarded_commands.insert(id).second;
+        for (IdType id : GetDrawCommands(commands_stack_[i]).value()) {
+          bool inserted =
+              discarded_commands.insert(std::get<InkStrokeId>(id)).second;
           CHECK(inserted);
         }
       }
@@ -257,7 +274,7 @@ bool PdfInkUndoRedoModel::IsAtTopOfStackWithGivenCommandType(
   return GetCommandsType(commands_stack_.back()) == type;
 }
 
-bool PdfInkUndoRedoModel::HasIdInDrawCommands(size_t id) const {
+bool PdfInkUndoRedoModel::HasIdInDrawCommands(IdType id) const {
   for (const auto& commands : commands_stack_) {
     if (GetCommandsType(commands) == CommandsType::kDraw &&
         GetDrawCommands(commands)->contains(id)) {
@@ -267,7 +284,7 @@ bool PdfInkUndoRedoModel::HasIdInDrawCommands(size_t id) const {
   return false;
 }
 
-bool PdfInkUndoRedoModel::HasIdInEraseCommands(size_t id) const {
+bool PdfInkUndoRedoModel::HasIdInEraseCommands(IdType id) const {
   for (const auto& commands : commands_stack_) {
     if (GetCommandsType(commands) == CommandsType::kErase &&
         GetEraseCommands(commands)->contains(id)) {

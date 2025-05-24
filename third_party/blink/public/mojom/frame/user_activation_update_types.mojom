@@ -10,7 +10,6 @@ enum UserActivationUpdateType {
   // Used to give a document sticky and transient user activation as a result of
   // a user gesture.
   kNotifyActivation,
-  kNotifyActivationPendingBrowserVerification,
   // Used to propagate the sticky user activation state during cross-document
   // navigations.
   kNotifyActivationStickyOnly,

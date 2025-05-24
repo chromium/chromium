@@ -6,8 +6,7 @@
 
 // TODO(crbug/1223597) The rules to detect sentence end is not perfect, and we
 // may want to use regex to improve readability.
-namespace ash {
-namespace input_method {
+namespace ash::input_method {
 namespace {
 
 const int kMaxSearchRange = 200;
@@ -98,7 +97,7 @@ bool IsSentenceEnd(const std::u16string& text, uint32_t pos) {
 
 }  // namespace
 
-Sentence::Sentence() {}
+Sentence::Sentence() = default;
 
 Sentence::Sentence(const gfx::Range& original_range, const std::u16string& text)
     : original_range(original_range), text(text) {}
@@ -106,14 +105,6 @@ Sentence::Sentence(const gfx::Range& original_range, const std::u16string& text)
 Sentence::Sentence(const Sentence& other) = default;
 
 Sentence::~Sentence() = default;
-
-bool Sentence::operator==(const Sentence& other) const {
-  return original_range == other.original_range && text == other.text;
-}
-
-bool Sentence::operator!=(const Sentence& other) const {
-  return !(*this == other);
-}
 
 uint32_t FindLastSentenceEnd(const std::u16string& text, uint32_t pos) {
   if (pos == 0 || pos > text.size()) {
@@ -194,5 +185,4 @@ Sentence FindCurrentSentence(const std::u16string& text, uint32_t pos) {
                   text.substr(start, end - start + 1));
 }
 
-}  // namespace input_method
-}  // namespace ash
+}  // namespace ash::input_method

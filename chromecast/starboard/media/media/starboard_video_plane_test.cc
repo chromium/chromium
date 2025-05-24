@@ -60,6 +60,24 @@ TEST(StarboardVideoPlaneTest, RegistersAndUnregistersCallback) {
   plane.SetGeometry(resolution, kNoTransform);
 }
 
+TEST(StarboardVideoPlaneTest,
+     SetsGeometryIfCallbackIsRegisteredAfterGeometryWasSet) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  const RectF resolution(123.0f, 456.0f);
+  StarboardVideoPlane plane;
+
+  // Here we set the geometry before any callbacks are registered. The callbacks
+  // should still be called with this info as soon as they're registered.
+  plane.SetGeometry(resolution, kNoTransform);
+
+  MockFunction<void(const RectF& display_rect, VideoPlane::Transform transform)>
+      cb;
+  EXPECT_CALL(cb, Call(MatchesRect(resolution), kNoTransform)).Times(1);
+
+  plane.RegisterCallback(base::BindLambdaForTesting(cb.AsStdFunction()));
+}
+
 }  // namespace
 }  // namespace media
 }  // namespace chromecast

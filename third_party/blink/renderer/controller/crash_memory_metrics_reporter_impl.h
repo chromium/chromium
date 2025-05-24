@@ -12,19 +12,17 @@
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 #include "third_party/blink/public/mojom/crash/crash_memory_metrics_reporter.mojom-blink.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
-#include "third_party/blink/renderer/controller/memory_usage_monitor.h"
+#include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
 // Writes data about renderer into shared memory that will be read by browser.
 class CONTROLLER_EXPORT CrashMemoryMetricsReporterImpl
-    : public mojom::blink::CrashMemoryMetricsReporter,
-      public MemoryUsageMonitor::Observer {
+    : public mojom::blink::CrashMemoryMetricsReporter {
  public:
   static CrashMemoryMetricsReporterImpl& Instance();
   static void Bind(
       mojo::PendingReceiver<mojom::blink::CrashMemoryMetricsReporter> receiver);
-  static OomInterventionMetrics MemoryUsageToMetrics(MemoryUsage);
 
   ~CrashMemoryMetricsReporterImpl() override;
 
@@ -45,14 +43,13 @@ class CONTROLLER_EXPORT CrashMemoryMetricsReporterImpl
  private:
   FRIEND_TEST_ALL_PREFIXES(OomInterventionImplTest, CalculateProcessFootprint);
 
-  // MemoryUsageMonitor::Observer:
-  void OnMemoryPing(MemoryUsage) override;
-
   void WriteIntoSharedMemory();
+  void SampleMemoryState(TimerBase*);
 
   OomInterventionMetrics last_reported_metrics_;
   base::WritableSharedMemoryMapping shared_metrics_mapping_;
   mojo::Receiver<mojom::blink::CrashMemoryMetricsReporter> receiver_{this};
+  TaskRunnerTimer<CrashMemoryMetricsReporterImpl> timer_;
 };
 }  // namespace blink
 

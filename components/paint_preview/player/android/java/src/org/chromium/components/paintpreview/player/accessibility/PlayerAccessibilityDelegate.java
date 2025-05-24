@@ -4,24 +4,29 @@
 
 package org.chromium.components.paintpreview.player.accessibility;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewStructure;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.player.frame.PlayerFrameCoordinator;
 import org.chromium.components.paintpreview.player.frame.PlayerFrameViewport;
 import org.chromium.content.browser.accessibility.AccessibilityDelegate;
 import org.chromium.content_public.browser.WebContents;
 
 /** Implementation of {@link AccessibilityDelegate} based on the Paint Preview Player. */
+@NullMarked
 public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     private final PlayerFrameCoordinator mRootCoordinator;
     private final long mNativeAxTree;
     private final PlayerAccessibilityCoordinatesImpl mPlayerAccessibilityCoordinates;
 
     public PlayerAccessibilityDelegate(
-            PlayerFrameCoordinator coordinator, long nativeAxTree, Size constantOffset) {
+            PlayerFrameCoordinator coordinator, long nativeAxTree, @Nullable Size constantOffset) {
         mRootCoordinator = coordinator;
         mNativeAxTree = nativeAxTree;
         mPlayerAccessibilityCoordinates =
@@ -37,7 +42,7 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     }
 
     @Override
-    public String getProductVersion() {
+    public @Nullable String getProductVersion() {
         return null;
     }
 
@@ -47,7 +52,7 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     }
 
     @Override
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return null;
     }
 
@@ -74,13 +79,14 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     }
 
     @Override
-    public boolean performClick(Rect nodeRect) {
+    public boolean performClick(@Nullable Rect nodeRect) {
+        assumeNonNull(nodeRect);
         mRootCoordinator.handleClickForAccessibility(nodeRect.centerX(), nodeRect.centerY(), true);
         return true;
     }
 
     @Override
-    public boolean scrollToMakeNodeVisible(Rect nodeRect) {
+    public boolean scrollToMakeNodeVisible(@Nullable Rect nodeRect) {
         mRootCoordinator.scrollToMakeRectVisibleForAccessibility(nodeRect);
         return true;
     }
@@ -88,10 +94,10 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     static class PlayerAccessibilityCoordinatesImpl implements AccessibilityCoordinates {
         private final PlayerFrameViewport mViewport;
         private final Size mContentSize;
-        private final Size mConstantOffset;
+        private final @Nullable Size mConstantOffset;
 
         PlayerAccessibilityCoordinatesImpl(
-                PlayerFrameViewport viewport, Size contentSize, Size constantOffset) {
+                PlayerFrameViewport viewport, Size contentSize, @Nullable Size constantOffset) {
             mViewport = viewport;
             mContentSize = contentSize;
             mConstantOffset = constantOffset;

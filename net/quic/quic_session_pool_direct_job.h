@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_error_details.h"
+#include "net/base/reconnect_notifier.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -17,6 +18,7 @@
 #include "net/quic/quic_session_attempt.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_session_pool_job.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
@@ -28,17 +30,20 @@ namespace net {
 // QUIC session.
 class QuicSessionPool::DirectJob : public QuicSessionPool::Job {
  public:
-  DirectJob(QuicSessionPool* pool,
-            quic::ParsedQuicVersion quic_version,
-            HostResolver* host_resolver,
-            QuicSessionAliasKey key,
-            std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
-            bool retry_on_alternate_network_before_handshake,
-            RequestPriority priority,
-            bool use_dns_aliases,
-            bool require_dns_https_alpn,
-            int cert_verify_flags,
-            const NetLogWithSource& net_log);
+  DirectJob(
+      QuicSessionPool* pool,
+      quic::ParsedQuicVersion quic_version,
+      HostResolver* host_resolver,
+      QuicSessionAliasKey key,
+      std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
+      bool retry_on_alternate_network_before_handshake,
+      RequestPriority priority,
+      bool use_dns_aliases,
+      bool require_dns_https_alpn,
+      int cert_verify_flags,
+      MultiplexedSessionCreationInitiator session_creation_initiator,
+      std::optional<ConnectionManagementConfig> connection_management_config,
+      const NetLogWithSource& net_log);
 
   ~DirectJob() override;
 
@@ -87,6 +92,8 @@ class QuicSessionPool::DirectJob : public QuicSessionPool::Job {
   base::TimeTicks dns_resolution_start_time_;
   base::TimeTicks dns_resolution_end_time_;
   std::unique_ptr<QuicSessionAttempt> session_attempt_;
+  const MultiplexedSessionCreationInitiator session_creation_initiator_;
+  std::optional<ConnectionManagementConfig> connection_management_config_;
   base::WeakPtrFactory<DirectJob> weak_factory_{this};
 };
 

@@ -7,7 +7,6 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Price insights bottom sheet dimensions. -->
-    <dimen name="price_insights_surface_elevation">@dimen/default_elevation_1</dimen>
     <dimen name="price_insights_general_padding">16dp</dimen>
     <dimen name="price_insights_background_radius">16dp</dimen>
     <dimen name="price_insights_content_background_radius">24dp</dimen>
@@ -18,7 +17,5 @@ found in the LICENSE file.
     <dimen name="open_jackpot_url_button_text_horizontal_padding">28dp</dimen>
     <dimen name="open_jackpot_url_button_text_vertical_padding">14dp</dimen>
     <dimen name="price_insights_price_tracking_button_icon_size">16dp</dimen>
-    <dimen name="price_tracking_button_padding_start">12dp</dimen>
-    <dimen name="price_tracking_button_padding_end">16dp</dimen>
     <dimen name="price_history_chart_height">168dp</dimen>
 </resources>

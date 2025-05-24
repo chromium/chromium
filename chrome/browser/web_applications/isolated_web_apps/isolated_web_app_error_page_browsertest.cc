@@ -5,10 +5,12 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/test/gmock_expected_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_icon_waiter.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
@@ -36,32 +38,24 @@ namespace web_app {
 
 class IsolatedWebAppErrorPageTest : public IsolatedWebAppBrowserTestHarness {
  protected:
-  IsolatedWebAppUrlInfo InstallIsolatedWebApp() {
-    server_ =
-        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-    web_app::IsolatedWebAppUrlInfo url_info =
-        InstallDevModeProxyIsolatedWebApp(server_->GetOrigin());
-    return url_info;
-  }
-
   // Navigates IWA and fails with error
   Browser* LaunchIwaAndFailWithError(const webapps::AppId& app_id,
                                      const url::Origin& iwa_origin,
                                      net::Error error_code) {
-    GURL starting_url = iwa_origin.GetURL().Resolve("/index.html");
+    GURL starting_url = iwa_origin.GetURL().Resolve("/");
 
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
         content::URLLoaderInterceptor::SetupRequestFailForURL(starting_url,
                                                               error_code);
     return LaunchWebAppBrowserAndWait(app_id);
   }
-
- private:
-  std::unique_ptr<net::EmbeddedTestServer> server_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppErrorPageTest, UsesWebAppErrorPage) {
-  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+
   Browser* browser = LaunchIwaAndFailWithError(
       url_info.app_id(), url_info.origin(), net::ERR_INTERNET_DISCONNECTED);
   content::WebContents* web_contents =
@@ -72,13 +66,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppErrorPageTest, UsesWebAppErrorPage) {
                      "document.getElementById('default-web-app-msg') !== null")
                   .ExtractBool());
 
-  EXPECT_EQ("Simple Isolated App",
-            EvalJs(web_contents, "document.title").ExtractString());
+  // "Test App" is the default value set by the ManifestBuilder
+  EXPECT_EQ("Test App", EvalJs(web_contents, "document.title").ExtractString());
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppErrorPageTest,
                        SetsCorrectMessageForErrorCode) {
-  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
 
   for (auto& test_case : kTestCases) {
     net::Error error_code = test_case.first;

@@ -154,11 +154,11 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
 
   // For system installs, set file permissions to be drwxr-xr-x.
   if (IsSystemInstall(scope)) {
-    constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
-                                     base::FILE_PERMISSION_READ_BY_GROUP |
-                                     base::FILE_PERMISSION_EXECUTE_BY_GROUP |
-                                     base::FILE_PERMISSION_READ_BY_OTHERS |
-                                     base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
+    static constexpr int kPermissionsMask =
+        base::FILE_PERMISSION_USER_MASK | base::FILE_PERMISSION_READ_BY_GROUP |
+        base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+        base::FILE_PERMISSION_READ_BY_OTHERS |
+        base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
     if (!base::SetPosixFilePermissions(dest_path.DirName(), kPermissionsMask) ||
         !base::SetPosixFilePermissions(dest_path, kPermissionsMask)) {
       LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at "
@@ -190,26 +190,26 @@ bool CreateKeystoneLaunchCtlPlistFiles(UpdaterScope scope) {
       !CreateEmptyPlistFile(
           GetLibraryFolderPath(scope)
               ->Append("LaunchDaemons")
-              .AppendASCII(base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID
-                                              ".daemon.plist")))) {
+              .Append(base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID
+                                         ".daemon.plist")))) {
     return false;
   }
 
   base::FilePath launch_agent_dir =
       GetLibraryFolderPath(scope)->Append("LaunchAgents");
-  return CreateEmptyPlistFile(launch_agent_dir.AppendASCII(
+  return CreateEmptyPlistFile(launch_agent_dir.Append(
              base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID ".agent.plist"))) &&
-         CreateEmptyPlistFile(launch_agent_dir.AppendASCII(base::ToLowerASCII(
+         CreateEmptyPlistFile(launch_agent_dir.Append(base::ToLowerASCII(
              LEGACY_GOOGLE_UPDATE_APPID ".xpcservice.plist")));
 }
 
 }  // namespace
 
 bool CreateEmptyPlistFile(const base::FilePath& file_path) {
-  constexpr int kPermissionsMask = base::FILE_PERMISSION_READ_BY_USER |
-                                   base::FILE_PERMISSION_WRITE_BY_USER |
-                                   base::FILE_PERMISSION_READ_BY_GROUP |
-                                   base::FILE_PERMISSION_READ_BY_OTHERS;
+  static constexpr int kPermissionsMask = base::FILE_PERMISSION_READ_BY_USER |
+                                          base::FILE_PERMISSION_WRITE_BY_USER |
+                                          base::FILE_PERMISSION_READ_BY_GROUP |
+                                          base::FILE_PERMISSION_READ_BY_OTHERS;
   const base::FilePath dir = file_path.DirName();
   if (!base::PathExists(dir)) {
     base::File::Error error;

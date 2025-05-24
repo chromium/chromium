@@ -22,7 +22,7 @@ BitmapImage::BitmapImage(const gfx::Size& size, Colorspace colorspace)
       colorspace_(colorspace),
       data_(new uint8_t[size.GetArea() * channels()]) {}
 
-BitmapImage::~BitmapImage() {}
+BitmapImage::~BitmapImage() = default;
 
 uint8_t BitmapImage::channels() const {
   return kCurrentlySupportedNumberOfChannels;

@@ -14,8 +14,8 @@ import './app_notification_row.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
-import {App, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
+import type {App, AppNotificationsHandlerInterface} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
+import {AppNotificationsObserverReceiver} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
 import {isAppInstalled} from '../os_apps_page.js';
 
 import {getTemplate} from './app_notifications_manager_subpage.html.js';
@@ -71,9 +71,6 @@ export class SettingsAppNotificationsManagerSubpage extends PolymerElement {
   }
 
   override connectedCallback(): void {
-    // This page only exists when revamp wayfinding is enabled.
-    assert(isRevampWayfindingEnabled());
-
     super.connectedCallback();
 
     this.startObservingAppNotifications_();

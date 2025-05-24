@@ -11,6 +11,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -47,7 +49,7 @@ base::ScopedFD CreateClientSocket() {
 
 class SystemTracerImpl : public SystemTracer {
  public:
-  SystemTracerImpl() : buffer_(new char[kBufferSize]) {}
+  SystemTracerImpl() : buffer_(base::HeapArray<char>::Uninit(kBufferSize)) {}
   ~SystemTracerImpl() override { Cleanup(); }
 
   void StartTracing(std::string_view categories,
@@ -84,7 +86,7 @@ class SystemTracerImpl : public SystemTracer {
   std::unique_ptr<base::FileDescriptorWatcher::Controller> trace_pipe_watcher_;
 
   // Read buffer (of size kBufferSize).
-  std::unique_ptr<char[]> buffer_;
+  base::HeapArray<char> buffer_;
 
   // Callbacks for StartTracing() and StopTracing().
   StartTracingCallback start_tracing_callback_;
@@ -156,7 +158,7 @@ void SystemTracerImpl::ReceiveStartAckAndTracePipe() {
 
   std::vector<base::ScopedFD> fds;
   ssize_t received = base::UnixDomainSocket::RecvMsg(
-      connection_fd_.get(), buffer_.get(), kBufferSize, &fds);
+      connection_fd_.get(), buffer_.data(), buffer_.size(), &fds);
   if (received == 0) {
     LOG(ERROR) << "EOF from server";
     FailStartTracing();
@@ -183,8 +185,8 @@ void SystemTracerImpl::ReceiveTraceData() {
   DCHECK_EQ(state_, State::READING);
 
   for (;;) {
-    ssize_t bytes =
-        HANDLE_EINTR(read(trace_pipe_fd_.get(), buffer_.get(), kBufferSize));
+    ssize_t bytes = HANDLE_EINTR(
+        read(trace_pipe_fd_.get(), buffer_.data(), buffer_.size()));
     if (bytes < 0) {
       if (errno == EAGAIN)
         return;  // Wait for more data.
@@ -198,7 +200,7 @@ void SystemTracerImpl::ReceiveTraceData() {
       return;
     }
 
-    trace_data_.append(buffer_.get(), bytes);
+    trace_data_.append(base::as_string_view(buffer_.first(bytes)));
 
     static constexpr size_t kPartialTraceDataSize = 1UL << 20;  // 1 MiB
     if (trace_data_.size() > kPartialTraceDataSize) {

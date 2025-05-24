@@ -20,12 +20,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -162,14 +162,12 @@ void CloudExternalDataPolicyObserver::OnUserProfileLoaded(
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   const std::string& user_id = user->GetAccountId().GetUserEmail();
   if (base::Contains(logged_in_user_observers_, user_id)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   ProfilePolicyConnector* policy_connector =
@@ -300,7 +298,7 @@ void CloudExternalDataPolicyObserver::HandleExternalDataPolicyUpdate(
         base::BindOnce(&CloudExternalDataPolicyObserver::OnExternalDataFetched,
                        weak_ptr_factory->GetWeakPtr(), user_id));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

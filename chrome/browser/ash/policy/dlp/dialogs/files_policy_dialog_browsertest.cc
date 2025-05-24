@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 
+#include <string_view>
 #include <tuple>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -292,12 +294,12 @@ class ErrorDialogBrowserTest : public FilesPolicyDialogBrowserTest {
     }
   }
 
-  std::u16string GetTitle(FilesPolicyErrorDialog* dialog,
-                          FilesPolicyDialog::BlockReason reason) {
+  std::u16string_view GetTitle(FilesPolicyErrorDialog* dialog,
+                               FilesPolicyDialog::BlockReason reason) {
     views::View* title_label =
         dialog->GetViewByID(FilesPolicyDialog::MapBlockReasonToViewID(reason));
     if (!title_label) {
-      return u"";
+      return {};
     }
     // The view ID is attached to the title label.
     return static_cast<views::Label*>(title_label)->GetText();

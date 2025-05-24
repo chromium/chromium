@@ -13,6 +13,9 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,7 @@ import java.util.List;
  * Helper class for fetching supporting package for Custom Tabs along with
  * saving the last used package.
  */
+@NullMarked
 public class CustomTabsPackageHelper {
     private static final String CUSTOM_TABS_SERVICE_TAG =
             "android.support.customtabs.action.CustomTabsService";
@@ -61,7 +65,7 @@ public class CustomTabsPackageHelper {
         return supportingPackages;
     }
 
-    public void saveLastUsedPackage(final String lastUsedPackage) {
+    public void saveLastUsedPackage(final @Nullable String lastUsedPackage) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(PREF_KEY_LAST_USED_PACKAGE, lastUsedPackage);
         editor.apply();

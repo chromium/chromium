@@ -4,17 +4,15 @@
 
 #include "components/services/patch/public/cpp/patch.h"
 
-#include <string>
 #include <utility>
 
 #include "base/files/file.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace patch {
@@ -71,6 +69,21 @@ void PuffPatch(mojo::PendingRemote<mojom::FilePatcher> file_patcher,
   patch_params->file_patcher()->PatchFilePuffPatch(
       std::move(input_file), std::move(patch_file), std::move(output_file),
       base::BindOnce(&PatchDone, patch_params));
+}
+
+void ZucchiniPatch(mojo::PendingRemote<mojom::FilePatcher> file_patcher,
+                   base::File in,
+                   base::File patch,
+                   base::File out,
+                   base::OnceCallback<void(zucchini::status::Code)> callback) {
+  mojo::Remote<mojom::FilePatcher> patcher(std::move(file_patcher));
+  auto* patcher_raw = patcher.get();
+  patcher_raw->PatchFileZucchini(
+      std::move(in), std::move(patch), std::move(out),
+      base::BindOnce([](mojo::Remote<mojom::FilePatcher> remote,
+                        zucchini::status::Code result) { return result; },
+                     std::move(patcher))
+          .Then(std::move(callback)));
 }
 
 }  // namespace patch

@@ -13,8 +13,9 @@
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -23,9 +24,10 @@ namespace blink {
 namespace {
 
 inline float GetAscent(const ComputedStyle& style, const Font* font_override) {
-  const Font& font = font_override ? *font_override : style.GetFont();
-  if (const SimpleFontData* primary_font = font.PrimaryFont())
+  const Font* font = font_override ? font_override : style.GetFont();
+  if (const SimpleFontData* primary_font = font->PrimaryFont()) {
     return primary_font->GetFontMetrics().FloatAscent();
+  }
   return 0.f;
 }
 
@@ -227,20 +229,20 @@ Path PrepareWavyStrokePath(const WavyParams& params) {
   gfx::PointF cp1{start + gfx::Vector2dF(step, +control_point_distance)};
   gfx::PointF cp2{start + gfx::Vector2dF(step, -control_point_distance)};
 
-  Path result{};
+  PathBuilder result;
   result.MoveTo(start);
 
-  result.AddBezierCurveTo(cp1, cp2, end);
+  result.CubicTo(cp1, cp2, end);
   cp1.set_x(cp1.x() + 2.f * step);
   cp2.set_x(cp2.x() + 2.f * step);
   end.set_x(end.x() + 2.f * step);
-  result.AddBezierCurveTo(cp1, cp2, end);
+  result.CubicTo(cp1, cp2, end);
   cp1.set_x(cp1.x() + 2.f * step);
   cp2.set_x(cp2.x() + 2.f * step);
   end.set_x(end.x() + 2.f * step);
-  result.AddBezierCurveTo(cp1, cp2, end);
+  result.CubicTo(cp1, cp2, end);
 
-  return result;
+  return result.Finalize();
 }
 
 cc::PaintRecord PrepareWavyTileRecord(const WavyParams& params,
@@ -280,13 +282,16 @@ TextDecorationInfo::TextDecorationInfo(
       selection_decoration_line_(selection_decoration_line),
       selection_decoration_color_(selection_decoration_color),
       decoration_override_(decoration_override),
-      font_override_(font_override && font_override != &target_style.GetFont()
+      font_override_(font_override && font_override != target_style.GetFont()
                          ? font_override
                          : nullptr),
       local_origin_(local_origin),
       width_(width),
       target_ascent_(GetAscent(target_style, font_override)),
       scaling_factor_(scaling_factor),
+      // NOTE: The use of font_override_ here is probably problematic.
+      // See LayoutSVGInlineText::ComputeNewScaledFontForStyle() for
+      // a workaround that is needed due to that.
       use_decorating_box_(inline_context && !decoration_override_ &&
                           !font_override_ &&
                           ShouldUseDecoratingBox(target_style)),
@@ -377,7 +382,7 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
 
   // Compute the |Font| and its properties.
   const Font* font =
-      font_override_ ? font_override_ : &decorating_box_style_->GetFont();
+      font_override_ ? font_override_ : decorating_box_style_->GetFont();
   DCHECK(font);
   if (font != font_) {
     font_ = font;
@@ -418,9 +423,7 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
       wavy_offset_factor = 0;
       break;
     default:
-      double_offset = 0.0f;
-      wavy_offset_factor = 0;
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   line_data_.line = line;
@@ -614,7 +617,7 @@ float TextDecorationInfo::ComputeUnderlineThickness(
       thickness = ComputeDecorationThickness(
           applied_decoration_thickness,
           decorating_box_style->ComputedFontSize(), minimum_thickness,
-          decorating_box_style->GetFont().PrimaryFont());
+          decorating_box_style->GetFont()->PrimaryFont());
     } else {
       thickness = ComputeDecorationThickness(applied_decoration_thickness,
                                              computed_font_size_,
@@ -675,8 +678,7 @@ gfx::RectF TextDecorationInfo::Bounds() const {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::RectF();
+  NOTREACHED();
 }
 
 gfx::RectF TextDecorationInfo::BoundsForDottedOrDashed() const {

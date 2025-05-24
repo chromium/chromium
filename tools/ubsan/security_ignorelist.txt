@@ -40,7 +40,11 @@ fun:sqlite3ParseObjectReset
 #############################################################################
 # Function pointer of wrong type.
 [function]
-src:*/third_party/angle/src/libANGLE/renderer/vulkan/vk_wrapper.h
+# Vulkan in ANGLE indirects through function pointers implemented elsewhere, but
+# -fsanitize=function does not seem to read the separate definitions of Vulkan
+# types as the same.
+src:*/third_party/angle/src/libANGLE/renderer/vulkan/*
+src:*/third_party/swiftshader/src/Vulkan/*
 src:*/third_party/vulkan_memory_allocator/include/vk_mem_alloc.h
 fun:vmaFindMemoryTypeIndexForBufferInfo
 fun:*rx*vk*GarbageObject*destroy*

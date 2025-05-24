@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/policy/core/common/cloud/resource_cache.h"
 
@@ -30,9 +26,7 @@ bool Base64UrlEncode(const std::set<std::string>& input,
   output->clear();
   for (const auto& plain : input) {
     if (plain.empty()) {
-      NOTREACHED_IN_MIGRATION();
-      output->clear();
-      return false;
+      NOTREACHED();
     }
 
     std::string encoded;
@@ -229,8 +223,7 @@ bool ResourceCache::VerifyKeyPath(const std::string& key,
                                   bool allow_create,
                                   base::FilePath* path) {
   if (key.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   std::string encoded;
@@ -247,8 +240,7 @@ bool ResourceCache::VerifyKeyPathAndGetSubkeyPath(const std::string& key,
                                                   const std::string& subkey,
                                                   base::FilePath* path) {
   if (subkey.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   base::FilePath key_path;
@@ -319,8 +311,9 @@ int64_t ResourceCache::GetCacheDirectoryOrFileSize(
          child_path = enumerator.Next()) {
       path_size += GetCacheDirectoryOrFileSize(child_path);
     }
-  } else if (!base::GetFileSize(path, &path_size)) {
-    path_size = 0;
+  } else {
+    std::optional<int64_t> file_size = base::GetFileSize(path);
+    path_size = file_size.value_or(0);
   }
   return path_size;
 }

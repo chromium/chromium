@@ -224,9 +224,8 @@ public class WebappDataStorage {
     }
 
     /**
-     * Updates the data stored in this object to match that in the supplied
-     * {@link BrowserServicesIntentDataProvider}.
-     * @param info The WebappInfo to pull web app data from.
+     * Updates the data stored in this object to match that in the supplied {@link
+     * BrowserServicesIntentDataProvider}.
      */
     public void updateFromWebappIntentDataProvider(
             BrowserServicesIntentDataProvider intentDataProvider) {

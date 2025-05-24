@@ -6,11 +6,12 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller+Testing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
@@ -27,8 +28,6 @@ using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
 class NewTabPageHeaderViewControllerUnitTest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({kHomeCustomization}, {});
-
     view_controller_ = [[NewTabPageHeaderViewController alloc]
         initWithUseNewBadgeForLensButton:YES
          useNewBadgeForCustomizationMenu:YES];
@@ -36,9 +35,28 @@ class NewTabPageHeaderViewControllerUnitTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   NewTabPageHeaderViewController* view_controller_;
 };
+
+// Tests the header view when the user is signed out.
+TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOutWithoutAvatar) {
+  base::test::ScopedFeatureList feature_list(kSignInButtonNoAvatar);
+
+  [view_controller_ loadViewIfNeeded];
+
+  EXPECT_NE(nil, view_controller_.identityDiscButton);
+  EXPECT_NE(nil, view_controller_.headerView.customizationMenuButton);
+
+  // Checks that the identity disc's title is correctly set without avatar.
+  [view_controller_ setSignedOutAccountImage];
+  EXPECT_NSEQ(
+      view_controller_.identityDiscButton.configuration.attributedTitle.string,
+      l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT));
+
+  EXPECT_NSEQ(
+      [view_controller_.identityDiscButton imageForState:UIControlStateNormal],
+      nil);
+}
 
 // Tests the header view when the user is signed out.
 TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOut) {
@@ -85,7 +103,10 @@ TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedIn) {
 
 // Tests the header view when the user is signed in.
 TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedIn_AccountMenu) {
-  base::test::ScopedFeatureList scoped_feature_list{kIdentityDiscAccountMenu};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kIdentityDiscAccountMenu, switches::kEnableErrorBadgeOnIdentityDisc},
+      {});
 
   [view_controller_ loadViewIfNeeded];
 

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 
 // static
 supervised_user::ChildAccountService* ChildAccountServiceFactory::GetForProfile(
@@ -28,6 +29,8 @@ ChildAccountServiceFactory* ChildAccountServiceFactory::GetInstance() {
 ChildAccountServiceFactory::ChildAccountServiceFactory()
     : ProfileKeyedServiceFactoryIOS("ChildAccountService") {
   DependsOn(IdentityManagerFactory::GetInstance());
+  // Required to consume changes indicated by this service.
+  DependsOn(SupervisedUserServiceFactory::GetInstance());
   DependsOn(ListFamilyMembersServiceFactory::GetInstance());
 }
 
@@ -35,6 +38,7 @@ std::unique_ptr<KeyedService>
 ChildAccountServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
   return std::make_unique<supervised_user::ChildAccountService>(
       CHECK_DEREF(profile->GetPrefs()),
       IdentityManagerFactory::GetForProfile(profile),

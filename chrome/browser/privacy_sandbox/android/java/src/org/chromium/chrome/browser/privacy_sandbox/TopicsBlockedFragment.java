@@ -7,21 +7,23 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.util.HashSet;
 import java.util.List;
 
 /** Fragment for the blocked Topic preferences. */
+@NullMarked
 public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceClickListener {
     private static final String BLOCKED_TOPICS_PREFERENCE = "block_list";
@@ -44,7 +46,7 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Disable animations of preference changes.
@@ -52,14 +54,14 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         populateBlockedTopics();
         updateBlockedTopicsDescription();
     }
 
     @Override
-    public boolean onPreferenceClick(@NonNull Preference preference) {
+    public boolean onPreferenceClick(Preference preference) {
         if (!(preference instanceof TopicPreference)) return false;
 
         Topic topic = ((TopicPreference) preference).getTopic();
@@ -104,5 +106,10 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
             mBlockedTopicsCategory.setSummary(
                     R.string.settings_topics_page_blocked_topics_description_empty_text_v2);
         }
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

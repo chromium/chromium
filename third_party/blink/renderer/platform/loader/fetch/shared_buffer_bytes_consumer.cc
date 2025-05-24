@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/shared_buffer_bytes_consumer.h"
 
 #include <utility>
@@ -19,14 +14,12 @@ SharedBufferBytesConsumer::SharedBufferBytesConsumer(
     scoped_refptr<const SharedBuffer> data)
     : data_(std::move(data)), iterator_(data_->begin()) {}
 
-BytesConsumer::Result SharedBufferBytesConsumer::BeginRead(const char** buffer,
-                                                           size_t* available) {
-  *buffer = nullptr;
-  *available = 0;
+BytesConsumer::Result SharedBufferBytesConsumer::BeginRead(
+    base::span<const char>& buffer) {
+  buffer = {};
   if (iterator_ == data_->end())
     return Result::kDone;
-  *buffer = iterator_->data() + bytes_read_in_chunk_;
-  *available = iterator_->size() - bytes_read_in_chunk_;
+  buffer = iterator_->subspan(bytes_read_in_chunk_);
   return Result::kOk;
 }
 

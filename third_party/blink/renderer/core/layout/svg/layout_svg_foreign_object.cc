@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -73,9 +74,18 @@ AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {
   return transform;
 }
 
-LayoutPoint LayoutSVGForeignObject::LocationInternal() const {
+PhysicalOffset LayoutSVGForeignObject::PhysicalLocation(
+    const LayoutBox*) const {
   NOT_DESTROYED();
   return overridden_location_;
+}
+
+DeprecatedLayoutPoint LayoutSVGForeignObject::DeprecatedLocationInternal()
+    const {
+  NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
+  return DeprecatedLayoutPoint(overridden_location_.left,
+                               overridden_location_.top);
 }
 
 PaintLayerType LayoutSVGForeignObject::LayerTypeRequired() const {
@@ -121,9 +131,10 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   // This is necessary for external/wpt/inert/inert-on-non-html.html.
   // See FullyClipsContents() in fully_clipped_state_stack.cc.
   const float zoom = style.EffectiveZoom();
-  LogicalSize zoomed_size = PhysicalSize(LayoutUnit(viewport_.width() * zoom),
-                                         LayoutUnit(viewport_.height() * zoom))
-                                .ConvertToLogical(style.GetWritingMode());
+  LogicalSize zoomed_size =
+      ToLogicalSize(PhysicalSize(LayoutUnit(viewport_.width() * zoom),
+                                 LayoutUnit(viewport_.height() * zoom)),
+                    style.GetWritingMode());
 
   // Use the zoomed version of the viewport as the location, because we will
   // interpose a transform that "unzooms" the effective zoom to let the children
@@ -135,7 +146,7 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   // would pull this information from ComputedStyle - in SVG those properties
   // are ignored for non <svg> elements, so we mimic what happens when
   // specifying them through CSS.
-  overridden_location_ = LayoutPoint(zoomed_location);
+  overridden_location_ = PhysicalOffset::FromPointFFloor(zoomed_location);
 
   ConstraintSpaceBuilder builder(
       style.GetWritingMode(), style.GetWritingDirection(),
@@ -158,22 +169,18 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
 
   const PhysicalRect frame_rect(PhysicalLocation(), Size());
-  const bool bounds_changed = old_frame_rect != frame_rect;
-
-  SVGLayoutResult result;
-  if (bounds_changed) {
-    result.bounds_changed = true;
-  }
+  bool bounds_changed = old_frame_rect != frame_rect;
   if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
-    result.bounds_changed = true;
+    bounds_changed = true;
   }
 
-  if (result.bounds_changed) {
-    DeprecatedInvalidateIntersectionObserverCachedRects();
-  }
+  const bool has_viewport_dependence =
+      To<SVGForeignObjectElement>(GetElement())->SelfHasRelativeLengths() ||
+      (transform_uses_reference_box_ &&
+       StyleRef().TransformBox() == ETransformBox::kViewBox);
 
   DCHECK(!needs_transform_update_);
-  return result;
+  return SVGLayoutResult(bounds_changed, has_viewport_dependence);
 }
 
 bool LayoutSVGForeignObject::UpdateAfterSVGLayout(

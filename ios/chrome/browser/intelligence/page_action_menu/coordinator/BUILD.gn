@@ -1,0 +1,28 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "page_action_menu_coordinator.h",
+    "page_action_menu_coordinator.mm",
+    "page_action_menu_mediator.h",
+    "page_action_menu_mediator.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/intelligence/gemini/coordinator",
+    "//ios/chrome/browser/intelligence/gemini/model",
+    "//ios/chrome/browser/intelligence/gemini/model:glic_service_factory",
+    "//ios/chrome/browser/intelligence/page_action_menu/ui",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+  ]
+}

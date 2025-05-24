@@ -59,7 +59,7 @@ void fct() {
   // base::span<int> g = (condition) ? ctn1 : ctn2;
   int* g = (condition) ? ctn1.data() : ctn2.data();
 
-  g += 1;  // buffer udage: leads g to be rewritten.
+  g += 1;  // buffer usage: leads g to be rewritten.
 
   // Expected rewrite:
   // base::span<char> h = reinterpret_cast<char*>(g);
@@ -134,7 +134,7 @@ void raw_ptr_variables() {
 
   int index = 1;
   // Expected rewrite:
-  // raw_ptr<char> buf7 = (buf6 + index).data();
+  // raw_ptr<char> buf7 = buf6.subspan(index).data();
   raw_ptr<char> buf7 = buf6 + index;
   (void)buf7;
 }

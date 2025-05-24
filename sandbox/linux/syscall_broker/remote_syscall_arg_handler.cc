@@ -64,8 +64,9 @@ RemoteProcessIOResult WriteRemoteData(pid_t pid,
       return RemoteProcessIOResult::kUnknownError;
     }
 
-    remote_span = remote_span.subspan(bytes_written);
-    data = data.subspan(bytes_written);
+    const auto bytes_written_size_t = static_cast<size_t>(bytes_written);
+    remote_span = remote_span.subspan(bytes_written_size_t);
+    data = data.subspan(bytes_written_size_t);
   }
 
   return RemoteProcessIOResult::kSuccess;
@@ -118,16 +119,17 @@ RemoteProcessIOResult ReadFilePathFromRemoteProcess(pid_t pid,
     }
 
     // We successfully performed a read.
+    const auto bytes_read_size_t = static_cast<size_t>(bytes_read);
 #if defined(MEMORY_SANITIZER)
     // Msan does not hook syscall(__NR_process_vm_readv, ...)
-    __msan_unpoison(local_iov.iov_base, bytes_read);
+    __msan_unpoison(local_iov.iov_base, bytes_read_size_t);
 #endif
-    remote_ptr += bytes_read;
-    buffer_span = buffer_span.subspan(bytes_read);
+    remote_ptr += bytes_read_size_t;
+    buffer_span = buffer_span.subspan(bytes_read_size_t);
 
     // Check for null byte.
     char* null_byte_ptr =
-        static_cast<char*>(memchr(local_iov.iov_base, '\0', bytes_read));
+        static_cast<char*>(memchr(local_iov.iov_base, '\0', bytes_read_size_t));
     if (null_byte_ptr) {
       *out_str = std::string(buffer, null_byte_ptr);
       return RemoteProcessIOResult::kSuccess;

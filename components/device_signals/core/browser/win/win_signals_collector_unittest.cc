@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "components/device_signals/core/browser/mock_system_signals_service_host.h"
 #include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +66,8 @@ TEST_F(WinSignalsCollectorTest, GetSignal_Unsupported) {
   SignalName signal_name = SignalName::kFileSystemInfo;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
                            run_loop.QuitClosure());
 
   run_loop.Run();
@@ -83,7 +85,8 @@ TEST_F(WinSignalsCollectorTest, GetSignal_AV_MissingSystemSignalsService) {
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
                            run_loop.QuitClosure());
 
   run_loop.Run();
@@ -103,7 +106,8 @@ TEST_F(WinSignalsCollectorTest, GetSignal_Hotfix_MissingSystemSignalsService) {
   SignalName signal_name = SignalName::kHotfixes;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
                            run_loop.QuitClosure());
 
   run_loop.Run();
@@ -113,35 +117,6 @@ TEST_F(WinSignalsCollectorTest, GetSignal_Hotfix_MissingSystemSignalsService) {
   ASSERT_TRUE(response.hotfix_signal_response->collection_error.has_value());
   EXPECT_EQ(response.hotfix_signal_response->collection_error.value(),
             SignalCollectionError::kMissingSystemService);
-}
-
-// Tests a successful AV signal retrieval.
-TEST_F(WinSignalsCollectorTest, GetSignal_AV) {
-  std::vector<AvProduct> av_products;
-  av_products.push_back(
-      {"AV Product Name", AvProductState::kOn, "some product id"});
-
-  EXPECT_CALL(service_host_, GetService()).Times(1);
-  EXPECT_CALL(service_, GetAntiVirusSignals(_))
-      .WillOnce(
-          Invoke([&av_products](GetAntiVirusSignalsCallback signal_callback) {
-            std::move(signal_callback).Run(av_products);
-          }));
-
-  SignalName signal_name = SignalName::kAntiVirus;
-  SignalsAggregationResponse response;
-  base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
-                           run_loop.QuitClosure());
-
-  run_loop.Run();
-
-  EXPECT_FALSE(response.top_level_error.has_value());
-  ASSERT_TRUE(response.av_signal_response.has_value());
-  EXPECT_FALSE(response.av_signal_response->collection_error.has_value());
-  EXPECT_EQ(response.av_signal_response->av_products.size(),
-            av_products.size());
-  EXPECT_EQ(response.av_signal_response->av_products[0], av_products[0]);
 }
 
 // Tests a successful hotfix signal retrieval.
@@ -158,7 +133,8 @@ TEST_F(WinSignalsCollectorTest, GetSignal_Hotfix) {
   SignalName signal_name = SignalName::kHotfixes;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  win_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
                            run_loop.QuitClosure());
 
   run_loop.Run();
@@ -169,5 +145,93 @@ TEST_F(WinSignalsCollectorTest, GetSignal_Hotfix) {
   EXPECT_EQ(response.hotfix_signal_response->hotfixes.size(), hotfixes.size());
   EXPECT_EQ(response.hotfix_signal_response->hotfixes[0], hotfixes[0]);
 }
+
+TEST_F(WinSignalsCollectorTest, GetSignal_AV_Empty) {
+  EXPECT_CALL(service_host_, GetService()).Times(1);
+  EXPECT_CALL(service_, GetAntiVirusSignals(_))
+      .WillOnce(Invoke([](GetAntiVirusSignalsCallback signal_callback) {
+        std::move(signal_callback).Run(std::vector<AvProduct>());
+      }));
+
+  SignalName signal_name = SignalName::kAntiVirus;
+  SignalsAggregationResponse response;
+  base::RunLoop run_loop;
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
+                           run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  EXPECT_FALSE(response.top_level_error.has_value());
+  ASSERT_TRUE(response.av_signal_response.has_value());
+  EXPECT_FALSE(response.av_signal_response->collection_error.has_value());
+  EXPECT_EQ(response.av_signal_response->antivirus_state,
+            InstalledAntivirusState::kNone);
+  EXPECT_TRUE(response.av_signal_response->av_products.empty());
+}
+
+struct AntivirusTestCase {
+  std::vector<AvProductState> av_product_states{};
+  InstalledAntivirusState antivirus_state{};
+};
+
+class AntivirusWinSignalsCollectorTest
+    : public WinSignalsCollectorTest,
+      public testing::WithParamInterface<AntivirusTestCase> {};
+
+// Tests a successful AV signal retrieval.
+TEST_P(AntivirusWinSignalsCollectorTest, GetSignal_AV) {
+  const AntivirusTestCase& test_case = GetParam();
+
+  std::vector<AvProduct> av_products;
+  for (const auto& state : test_case.av_product_states) {
+    av_products.push_back({"AV Product Name", state, "some product id"});
+  }
+
+  EXPECT_CALL(service_host_, GetService()).Times(1);
+  EXPECT_CALL(service_, GetAntiVirusSignals(_))
+      .WillOnce(
+          Invoke([&av_products](GetAntiVirusSignalsCallback signal_callback) {
+            std::move(signal_callback).Run(av_products);
+          }));
+
+  SignalName signal_name = SignalName::kAntiVirus;
+  SignalsAggregationResponse response;
+  base::RunLoop run_loop;
+  win_collector_.GetSignal(signal_name, UserPermission::kGranted,
+                           CreateRequest(signal_name), response,
+                           run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  EXPECT_FALSE(response.top_level_error.has_value());
+  ASSERT_TRUE(response.av_signal_response.has_value());
+  EXPECT_FALSE(response.av_signal_response->collection_error.has_value());
+  EXPECT_EQ(response.av_signal_response->antivirus_state,
+            test_case.antivirus_state);
+  EXPECT_EQ(response.av_signal_response->av_products.size(),
+            av_products.size());
+  for (size_t i = 0U; i < av_products.size(); i++) {
+    EXPECT_EQ(response.av_signal_response->av_products[i], av_products[i]);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AntivirusWinSignalsCollectorTest,
+    testing::Values(
+        AntivirusTestCase{{AvProductState::kOn},
+                          InstalledAntivirusState::kEnabled},
+        AntivirusTestCase{{AvProductState::kOff},
+                          InstalledAntivirusState::kDisabled},
+        AntivirusTestCase{{AvProductState::kSnoozed},
+                          InstalledAntivirusState::kDisabled},
+        AntivirusTestCase{{AvProductState::kExpired},
+                          InstalledAntivirusState::kDisabled},
+        AntivirusTestCase{{AvProductState::kOff, AvProductState::kSnoozed},
+                          InstalledAntivirusState::kDisabled},
+        AntivirusTestCase{{AvProductState::kOff, AvProductState::kSnoozed,
+                           AvProductState::kExpired, AvProductState::kOn},
+                          InstalledAntivirusState::kEnabled}));
 
 }  // namespace device_signals

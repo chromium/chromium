@@ -67,7 +67,7 @@ class OpenItemRemovalOfflineContentProvider
   OpenItemRemovalOfflineContentProvider(const std::string& name_space,
                                         OfflineContentAggregator* aggregator)
       : ScopedMockOfflineContentProvider(name_space, aggregator) {}
-  ~OpenItemRemovalOfflineContentProvider() override {}
+  ~OpenItemRemovalOfflineContentProvider() override = default;
 
   void OpenItem(const OpenParams& open_params, const ContentId& id) override {
     ScopedMockOfflineContentProvider::OpenItem(open_params, id);
@@ -102,7 +102,7 @@ class OfflineContentAggregatorTest : public testing::Test {
   OfflineContentAggregatorTest()
       : task_runner_(new base::TestMockTimeTaskRunner),
         current_default_handle_(task_runner_) {}
-  ~OfflineContentAggregatorTest() override {}
+  ~OfflineContentAggregatorTest() override = default;
 
  protected:
   MOCK_METHOD1(OnGetAllItemsDone,

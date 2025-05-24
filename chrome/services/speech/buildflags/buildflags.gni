@@ -24,8 +24,8 @@ declare_args() {
   enable_browser_speech_service = enable_speech_service && !is_chromeos
 
   # Whether the server based speech recognition recognizer is available.
-  # Currently only available in official builds for ash ChromeOS.
-  enable_server_based_recognition = is_chromeos_ash && is_chrome_branded
+  # Currently only available in official builds for ChromeOS.
+  enable_server_based_recognition = is_chromeos && is_chrome_branded
 }
 
 assert(enable_speech_service || !enable_browser_speech_service)

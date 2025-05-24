@@ -9,20 +9,23 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
  * Interface used to wrap around ArCore SDK Java interface.
  *
- * For detailed documentation of the below methods, please see:
+ * <p>For detailed documentation of the below methods, please see:
  * https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk
  */
+@NullMarked
 public interface ArCoreShim {
     /**
      * Equivalent of ArCoreApk.ArInstallStatus enum.
      *
-     * For detailed description, please see:
+     * <p>For detailed description, please see:
      * https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk.InstallStatus
      */
     @IntDef({InstallStatus.INSTALLED, InstallStatus.INSTALL_REQUESTED})

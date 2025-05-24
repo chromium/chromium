@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -32,9 +33,11 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
@@ -75,6 +78,18 @@ class KeyCommandsProviderTest : public PlatformTest {
     bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    mock_browser_coordinator_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [dispatcher
+        startDispatchingToTarget:mock_browser_coordinator_commands_handler_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+    mock_page_side_swipe_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(PageSideSwipeCommands));
+    [dispatcher startDispatchingToTarget:mock_page_side_swipe_commands_handler_
+                             forProtocol:@protocol(PageSideSwipeCommands)];
   }
   ~KeyCommandsProviderTest() override {}
 
@@ -160,6 +175,9 @@ class KeyCommandsProviderTest : public PlatformTest {
   base::UserActionTester user_action_tester_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   KeyCommandsProvider* provider_;
+  OCMockObject<BrowserCoordinatorCommands>*
+      mock_browser_coordinator_commands_handler_;
+  OCMockObject<PageSideSwipeCommands>* mock_page_side_swipe_commands_handler_;
 };
 
 // Checks that KeyCommandsProvider returns key commands.
@@ -772,8 +790,7 @@ TEST_F(KeyCommandsProviderTest, AddToBookmarks_AddURL) {
   id addCommand = [OCMArg checkWithBlock:^BOOL(URLWithTitle* URL) {
     return URL.URL == url;
   }];
-  OCMExpect(
-      [provider_.bookmarksHandler createOrEditBookmarkWithURL:addCommand]);
+  OCMExpect([provider_.bookmarksHandler addOrEditBookmark:addCommand]);
   web::FakeWebState* web_state = InsertNewWebState(0);
   web_state->SetCurrentURL(url);
 
@@ -904,8 +921,18 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
       web_state->GetNavigationManager();
   int initial_index = navigation_manager->GetLastCommittedItemIndex();
 
+  if (IsLensOverlayAvailable(profile_->GetPrefs())) {
+    OCMExpect([mock_page_side_swipe_commands_handler_
+        navigateBackWithSideSwipeAnimationIfNeeded]);
+  }
+
   [provider_ keyCommand_back];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index - 1);
+
+  if (IsLensOverlayAvailable(profile_->GetPrefs())) {
+    OCMExpect([mock_page_side_swipe_commands_handler_
+        navigateBackWithSideSwipeAnimationIfNeeded]);
+  }
 
   [provider_ keyCommand_back];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index - 2);
@@ -915,6 +942,10 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
 
   [provider_ keyCommand_forward];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index);
+
+  if (IsLensOverlayAvailable(profile_->GetPrefs())) {
+    EXPECT_OCMOCK_VERIFY(mock_page_side_swipe_commands_handler_);
+  }
 }
 
 #pragma mark - Validate

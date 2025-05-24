@@ -30,10 +30,6 @@ class PaintContext;
 
 namespace views {
 
-namespace corewm {
-class TooltipController;
-}
-
 class VIEWS_EXPORT DesktopWindowTreeHostPlatform
     : public aura::WindowTreeHostPlatform,
       public DesktopWindowTreeHost,
@@ -74,6 +70,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void Init(const Widget::InitParams& params) override;
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
+  void OnWidgetThemeChanged(
+      ui::ColorProviderKey::ColorMode color_mode) override;
   void OnActiveWindowChanged(bool active) override;
   std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
   std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient() override;
@@ -104,6 +102,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
+  void ShowWindowControlsMenu(const gfx::Point& point) override;
   bool IsMaximized() const override;
   bool IsMinimized() const override;
   bool HasCapture() const override;
@@ -212,8 +211,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   Widget* GetWidget();
   const Widget* GetWidget() const;
-
-  views::corewm::TooltipController* tooltip_controller();
 
   void ScheduleRelayout();
 

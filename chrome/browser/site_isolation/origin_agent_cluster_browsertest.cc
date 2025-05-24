@@ -50,14 +50,14 @@ class TestMemoryDetails : public MetricsMemoryDetails {
 
   int GetTotalProcessCount() {
     std::vector<Bucket> buckets = uma_->GetAllSamples(
-        "Memory.RenderProcessHost.Count.InitializedAndNotDead");
+        "Memory.RenderProcessHost.Count2.InitializedAndNotDead");
     DCHECK(buckets.size() == 1U);
     return buckets[0].min;
   }
 
   int GetOacProcessCount() {
     std::vector<Bucket> buckets = uma_->GetAllSamples(
-        "Memory.RenderProcessHost.Count.OriginAgentClusterOverhead");
+        "Memory.RenderProcessHost.Count2.OriginAgentClusterOverhead");
     // The bucket size will be zero when testing with OriginAgentCluster
     // disabled.
     CHECK(buckets.size() == 1U || buckets.size() == 0U);

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 
+#include "base/compiler_specific.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedhtml_trustedscript_trustedscripturl.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -109,8 +111,7 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
              "This script element was modified without use of TrustedScript "
              "assignment and the 'default' policy failed to execute.";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 String GetSamplePrefix(const char* interface_name,
@@ -122,12 +123,12 @@ String GetSamplePrefix(const char* interface_name,
   StringBuilder sample_prefix;
   if (!interface_name) {
     // No interface name? Then we have no prefix to use.
-  } else if (strcmp("eval", interface_name) == 0) {
+  } else if (UNSAFE_TODO(strcmp("eval", interface_name)) == 0) {
     // eval? Try to distinguish between eval and Function constructor.
     sample_prefix.Append(value.StartsWith(kAnonymousPrefix) ? "Function"
                                                             : "eval");
-  } else if ((strcmp("Worker", interface_name) == 0 ||
-              strcmp("SharedWorker", interface_name) == 0) &&
+  } else if ((UNSAFE_TODO(strcmp("Worker", interface_name)) == 0 ||
+              UNSAFE_TODO(strcmp("SharedWorker", interface_name)) == 0) &&
              property_name) {
     // Worker/SharedWorker constructor has nullptr as property_name.
     sample_prefix.Append(interface_name);
@@ -147,8 +148,7 @@ const char* GetElementName(const ScriptElementBase::Type type) {
     case ScriptElementBase::Type::kSVGScriptElement:
       return "SVGScriptElement";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 HeapVector<ScriptValue> GetDefaultCallbackArgs(
@@ -222,9 +222,13 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
       ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation);
 
   if (!allow) {
-    exception_state.ThrowTypeError(GetMessage(kind));
-    MaybeAssociateExceptionMetaData(exception_state, "issueId",
+    v8::Isolate* isolate = execution_context->GetIsolate();
+    TryRethrowScope rethrow_scope(isolate, exception_state);
+    auto exception =
+        V8ThrowException::CreateTypeError(isolate, GetMessage(kind));
+    MaybeAssociateExceptionMetaData(exception, "issueId",
                                     IdentifiersFactory::IdFromToken(issue_id));
+    V8ThrowException::ThrowException(isolate, exception);
   }
   return !allow;
 }
@@ -270,27 +274,23 @@ String GetStringFromScriptHelper(
   //   function.
   v8::HandleScope handle_scope(context->GetIsolate());
   ScriptState::Scope script_state_scope(ToScriptStateForMainWorld(context));
-  ExceptionState exception_state(context->GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, interface_name,
-                                 property_name);
+  DummyExceptionStateForTesting exception_state;
 
   TrustedTypePolicy* default_policy = GetDefaultPolicy(context);
   if (!default_policy) {
     if (TrustedTypeFail(violation_kind, context, interface_name, property_name,
                         exception_state, script)) {
-      exception_state.ClearException();
       return String();
     }
     return script;
   }
 
-  TrustedScript* result = default_policy->CreateScript(
+  TrustedScript* result = default_policy->createScript(
       context->GetIsolate(), script,
       GetDefaultCallbackArgs(context->GetIsolate(), "TrustedScript",
                              interface_name, property_name, script),
       exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
+  if (!result) {
     return String();
   }
 
@@ -298,7 +298,6 @@ String GetStringFromScriptHelper(
     if (TrustedTypeFail(violation_kind_when_default_policy_failed, context,
                         interface_name, property_name, exception_state,
                         script)) {
-      exception_state.ClearException();
       return String();
     }
     return script;
@@ -345,7 +344,7 @@ String TrustedTypesCheckForHTML(const String& html,
   // TODO(ajwong): This can be optimized to avoid a AddRef in the
   // StringCache::CreateStringAndInsertIntoCache() also, but it's a hard mess.
   // Punt for now.
-  TrustedHTML* result = default_policy->CreateHTML(
+  TrustedHTML* result = default_policy->createHTML(
       execution_context->GetIsolate(), html,
       GetDefaultCallbackArgs(execution_context->GetIsolate(), "TrustedHTML",
                              interface_name, property_name),
@@ -399,7 +398,7 @@ String TrustedTypesCheckForScript(const String& script,
   // TODO(ajwong): This can be optimized to avoid a AddRef in the
   // StringCache::CreateStringAndInsertIntoCache() also, but it's a hard mess.
   // Punt for now.
-  TrustedScript* result = default_policy->CreateScript(
+  TrustedScript* result = default_policy->createScript(
       execution_context->GetIsolate(), script,
       GetDefaultCallbackArgs(execution_context->GetIsolate(), "TrustedScript",
                              interface_name, property_name, script),
@@ -454,7 +453,7 @@ String TrustedTypesCheckForScriptURL(const String& script_url,
   // TODO(ajwong): This can be optimized to avoid a AddRef in the
   // StringCache::CreateStringAndInsertIntoCache() also, but it's a hard mess.
   // Punt for now.
-  TrustedScriptURL* result = default_policy->CreateScriptURL(
+  TrustedScriptURL* result = default_policy->createScriptURL(
       execution_context->GetIsolate(), script_url,
       GetDefaultCallbackArgs(execution_context->GetIsolate(),
                              "TrustedScriptURL", interface_name, property_name),
@@ -535,8 +534,7 @@ String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
       return value->GetAsTrustedScript()->toString();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String TrustedTypesCheckForScript(
@@ -566,8 +564,27 @@ String TrustedTypesCheckForScript(
       return value->GetAsTrustedScript()->toString();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
+}
+
+String TrustedTypesCheckForScriptURL(
+    const V8UnionTrustedScriptURLOrUSVString* value,
+    const ExecutionContext* execution_context,
+    const char* interface_name,
+    const char* property_name,
+    ExceptionState& exception_state) {
+  if (!value) {
+    return g_empty_string;
+  }
+  switch (value->GetContentType()) {
+    case V8UnionTrustedScriptURLOrUSVString::ContentType::kUSVString:
+      return TrustedTypesCheckForScriptURL(value->GetAsUSVString(),
+                                           execution_context, interface_name,
+                                           property_name, exception_state);
+    case V8UnionTrustedScriptURLOrUSVString::ContentType::kTrustedScriptURL:
+      return value->GetAsTrustedScriptURL()->toString();
+  }
+  NOTREACHED();
 }
 
 String TrustedTypesCheckFor(SpecificTrustedType type,
@@ -592,8 +609,7 @@ String TrustedTypesCheckFor(SpecificTrustedType type,
     case SpecificTrustedType::kNone:
       return trusted;
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
 String CORE_EXPORT

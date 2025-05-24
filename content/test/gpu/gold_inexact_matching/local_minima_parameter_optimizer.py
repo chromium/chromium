@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import collections
 import itertools
 import logging
@@ -130,8 +128,8 @@ class LocalMinimaParameterOptimizer(
           smallest_parameters = [current_parameters]
       else:
         self._UpdateMostPermissiveFailedParameters(current_parameters)
-    print('Found %d parameter(s) with the smallest weight:' %
-          len(smallest_parameters))
+    print(f'Found {len(smallest_parameters)} parameter(s) with the smallest '
+          f'weight:')
     for p in smallest_parameters:
       print(p)
 

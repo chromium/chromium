@@ -80,7 +80,7 @@ void PriceInsightsModel::FetchConfigurationForWebState(
   price_insights_executions_[product_url] =
       std::make_unique<PriceInsightsExecution>();
 
-  shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
+  shopping_service_ = commerce::ShoppingServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   shopping_service_->GetProductInfoForUrl(
       product_url, base::BindOnce(&PriceInsightsModel::OnProductInfoUrlReceived,
@@ -131,9 +131,11 @@ void PriceInsightsModel::OnProductInfoUrlReceived(
 void PriceInsightsModel::OnPriceInsightsInfoUrlReceived(
     const GURL& url,
     const std::optional<commerce::PriceInsightsInfo>& info) {
+  bool has_valid_price_insights_info =
+      info.has_value() && info.value().catalog_history_prices.size() > 0;
   base::UmaHistogramBoolean(kPriceInsightsModelPriceInsightsInfo,
-                            info.has_value());
-  if (info.has_value()) {
+                            has_valid_price_insights_info);
+  if (has_valid_price_insights_info) {
     price_insights_executions_[url]->config->price_insights_info = info.value();
   }
   price_insights_executions_[url]->is_price_insights_info_processed = true;
@@ -201,7 +203,7 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
   execution_it->second->config->entrypoint_image_name =
       base::SysNSStringToUTF8(kDownTrendSymbol);
   execution_it->second->config->image_type =
-      ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
+      ContextualPanelItemConfiguration::EntrypointImageType::Image;
   execution_it->second->config->accessibility_label =
       l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY);
   execution_it->second->config->iph_feature =
@@ -266,7 +268,6 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
   execution_it->second->config->iph_title = message;
   execution_it->second->config->iph_text =
       l10n_util::GetStringUTF8(IDS_INSIGHTS_RICH_IPH_TEXT);
-  execution_it->second->config->iph_image_name = "rich_iph_price_insights";
 }
 
 PriceInsightsItemConfiguration::PriceInsightsItemConfiguration()
@@ -294,7 +295,6 @@ PriceInsightsItemConfiguration::PriceInsightsItemConfiguration(
   relevance = config->relevance;
   iph_title = config->iph_title;
   iph_text = config->iph_text;
-  iph_image_name = config->iph_image_name;
 }
 
 PriceInsightsExecution::PriceInsightsExecution() = default;

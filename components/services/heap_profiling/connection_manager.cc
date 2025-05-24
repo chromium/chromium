@@ -204,10 +204,6 @@ void ConnectionManager::DumpProcessesForTracing(
   for (auto& it : connections_) {
     base::ProcessId pid = it.first;
     Connection* connection = it.second.get();
-    // TODO(ssid): Stop writing JSON to traces when proto output is enabled,
-    // https://crbug.com/1228548.
-    if (write_proto)
-      connection->client->AddHeapProfileToTrace(base::DoNothing());
 
     connection->client->RetrieveHeapProfile(base::BindOnce(
         &ConnectionManager::HeapProfileRetrieved, weak_factory_.GetWeakPtr(),

@@ -14,10 +14,17 @@
 #include "net/filter/fuzzed_source_stream.h"
 #include "net/filter/source_stream.h"
 
+// Bail out on larger inputs to prevent out-of-memory and timeout failures.
+constexpr int kMaxInputSizeBytes = 300 * 1024;
+
 // Fuzzer for ZstdSourceStream.
 //
 // |data| is used to create a FuzzedSourceStream.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  if (size > kMaxInputSizeBytes) {
+    return 0;
+  }
+
   net::TestCompletionCallback callback;
   FuzzedDataProvider data_provider(data, size);
 

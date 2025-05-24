@@ -110,31 +110,35 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   friend class PermissionControllerImplTest;
   friend class PermissionServiceImpl;
 
-  PermissionStatus GetPermissionStatusInternal(PermissionType permission,
-                                               const GURL& requesting_origin,
-                                               const GURL& embedding_origin);
+  PermissionStatus GetPermissionStatusInternal(
+      const blink::mojom::PermissionDescriptorPtr& permission,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin);
 
   PermissionStatus GetPermissionStatusForCurrentDocumentInternal(
-      PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status = false);
 
   // PermissionController implementation.
   PermissionStatus GetPermissionStatusForWorker(
-      PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission,
       RenderProcessHost* render_process_host,
       const url::Origin& worker_origin) override;
   PermissionStatus GetPermissionStatusForCurrentDocument(
-      PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission,
       RenderFrameHost* render_frame_host) override;
   PermissionResult GetPermissionResultForCurrentDocument(
-      PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission,
+      RenderFrameHost* render_frame_host) override;
+  PermissionStatus GetCombinedPermissionAndDeviceStatus(
+      const blink::mojom::PermissionDescriptorPtr& permission,
       RenderFrameHost* render_frame_host) override;
   PermissionResult GetPermissionResultForOriginWithoutContext(
-      PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission,
       const url::Origin& origin) override;
   PermissionResult GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
   // WARNING: Permission requests order is not guaranteed.
@@ -161,16 +165,9 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
                        const url::Origin& origin) override;
 
   PermissionStatus GetPermissionStatusForEmbeddedRequester(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission,
       RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin);
-
-  // The method does the same as `GetPermissionStatusForCurrentDocument` but it
-  // also takes into account the device's status (OS permission status).
-  // Currently, this function is only used for Page Embedded Permission Control.
-  PermissionStatus GetCombinedPermissionAndDeviceStatus(
-      PermissionType permission,
-      RenderFrameHost* render_frame_host);
 
   using SubscriptionsStatusMap =
       base::flat_map<SubscriptionsMap::KeyType, PermissionStatus>;

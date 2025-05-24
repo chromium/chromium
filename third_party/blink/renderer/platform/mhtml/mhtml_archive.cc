@@ -195,7 +195,7 @@ String ConvertToPrintableCharacters(const String& text) {
   std::string utf8_text = text.Utf8();
   Vector<char> encoded_text;
   QuotedPrintableEncode(utf8_text, true /* is_header */, encoded_text);
-  return String(encoded_text.data(), encoded_text.size());
+  return String(encoded_text);
 }
 
 }  // namespace
@@ -373,8 +373,7 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
     content_encoding = kBase64;
 
   string_builder.Append("Content-Transfer-Encoding: ");
-  string_builder.Append(content_encoding.data(), base::checked_cast<wtf_size_t>(
-                                                     content_encoding.size()));
+  string_builder.Append(base::as_byte_span(content_encoding));
   string_builder.Append("\r\n");
 
   if (!resource.url.ProtocolIsAbout()) {

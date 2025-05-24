@@ -14,7 +14,7 @@ class BrowserState;
 }  // namespace web
 
 // Adaptor for the signin::IdentityTestEnvironment that adds support for
-// injecting test services that have been keyed by browser state to identity
+// injecting test services that have been keyed by profile to identity
 // management services.
 class IdentityTestEnvironmentBrowserStateAdaptor {
  public:

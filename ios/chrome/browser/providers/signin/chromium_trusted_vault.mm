@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/signin/trusted_vault_api.h"
-
 #import "base/functional/callback.h"
 #import "base/notreached.h"
+#import "ios/public/provider/chrome/browser/signin/trusted_vault_api.h"
 
 namespace ios {
 namespace provider {
@@ -22,7 +21,7 @@ class ChromiumTrustedVaultClientBackend final
       VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
                  trusted_vault::SecurityDomainId security_domain_id,
-                 KeyFetchedCallback completion) final;
+                 KeysFetchedCallback completion) final;
   void MarkLocalKeysAsStale(id<SystemIdentity> identity,
                             trusted_vault::SecurityDomainId security_domain_id,
                             base::OnceClosure completion) final;
@@ -45,6 +44,12 @@ class ChromiumTrustedVaultClientBackend final
                       base::OnceCallback<void(bool)> completion) final;
   void GetPublicKeyForIdentity(id<SystemIdentity> identity,
                                GetPublicKeyCallback completion) final;
+  void UpdateGPMPinForAccount(
+      id<SystemIdentity> identity,
+      trusted_vault::SecurityDomainId security_domain_id,
+      UINavigationController* navigationController,
+      UIView* brandedNavigationItemTitleView,
+      UpdateGPMPinCompletionCallback completion) final;
 };
 
 void ChromiumTrustedVaultClientBackend::
@@ -55,7 +60,7 @@ void ChromiumTrustedVaultClientBackend::
 void ChromiumTrustedVaultClientBackend::FetchKeys(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,
-    KeyFetchedCallback completion) {
+    KeysFetchedCallback completion) {
   NOTREACHED();
 }
 
@@ -101,6 +106,15 @@ void ChromiumTrustedVaultClientBackend::ClearLocalData(
 void ChromiumTrustedVaultClientBackend::GetPublicKeyForIdentity(
     id<SystemIdentity> identity,
     GetPublicKeyCallback completion) {
+  NOTREACHED();
+}
+
+void ChromiumTrustedVaultClientBackend::UpdateGPMPinForAccount(
+    id<SystemIdentity> identity,
+    trusted_vault::SecurityDomainId security_domain_id,
+    UINavigationController* navigationController,
+    UIView* brandedNavigationItemTitleView,
+    UpdateGPMPinCompletionCallback completion) {
   NOTREACHED();
 }
 

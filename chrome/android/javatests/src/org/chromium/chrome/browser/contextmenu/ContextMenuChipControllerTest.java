@@ -13,26 +13,33 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
+public class ContextMenuChipControllerTest {
     // This is the combination of the expected vertical margins and the chip height.
     private static final int EXPECTED_VERTICAL_DP = 80;
     // Computed by taking the 338dp max width and subtracting:
@@ -49,6 +56,13 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     // 8 (text start padding)
     private static final int EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP = 290;
 
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Runnable mMockChipClickRunnable;
 
     @Mock private Runnable mMockDismissRunnable;
@@ -56,16 +70,19 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     private float mMeasuredDeviceDensity;
     private View mAnchorView;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        MockitoAnnotations.initMocks(this);
-        mMeasuredDeviceDensity = getActivity().getResources().getDisplayMetrics().density;
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        mMeasuredDeviceDensity = sActivity.getResources().getDisplayMetrics().density;
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getActivity().setContentView(R.layout.context_menu_fullscreen_container);
-                    mAnchorView = getActivity().findViewById(R.id.context_menu_chip_anchor_point);
+                    sActivity.setContentView(R.layout.context_menu_fullscreen_container);
+                    mAnchorView = sActivity.findViewById(R.id.context_menu_chip_anchor_point);
                 });
     }
 
@@ -73,7 +90,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testDismissChipWhenNotShownBeforeClassificationReturned() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     chipController.dismissChipIfShowing();
@@ -89,7 +106,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testDismissChipWhenShown() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChipRenderParams chipRenderParams = new ChipRenderParams();
@@ -116,7 +133,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testClickChipWhenShown() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChipRenderParams chipRenderParams = new ChipRenderParams();
@@ -143,7 +160,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testExpectedVerticalPxNeededForChip() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
         assertEquals(
                 "Vertical px is not matching the expectation",
                 (int) Math.round(EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity),
@@ -154,7 +171,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testExpectedChipTextMaxWidthPx() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
         assertEquals(
                 "Chip width px is not matching the expectation",
                 (int) Math.round(EXPECTED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
@@ -165,7 +182,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testExpectedChipTextMaxWidthPx_EndButtonHidden() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
+                new ContextMenuChipController(sActivity, mAnchorView, mMockDismissRunnable);
         assertEquals(
                 "Chip width px is not matching the expectation",
                 (int) Math.round(EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP * mMeasuredDeviceDensity),

@@ -1,0 +1,52 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(!is_android)
+
+source_set("actor") {
+  sources = [
+    "click_tool.cc",
+    "click_tool.h",
+    "drag_and_release_tool.cc",
+    "drag_and_release_tool.h",
+    "mouse_move_tool.cc",
+    "mouse_move_tool.h",
+    "scroll_tool.cc",
+    "scroll_tool.h",
+    "select_tool.cc",
+    "select_tool.h",
+    "tool_base.h",
+    "tool_executor.cc",
+    "tool_executor.h",
+    "tool_utils.cc",
+    "tool_utils.h",
+    "type_tool.cc",
+    "type_tool.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/renderer",
+  ]
+
+  deps = [
+    "//chrome/common",
+    "//third_party/blink/public:blink",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "tool_utils_browsertest.cc" ]
+  deps = [
+    ":actor",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

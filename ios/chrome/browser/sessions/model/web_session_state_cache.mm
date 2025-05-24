@@ -57,10 +57,7 @@ void WriteSessionData(NSData* session_data, base::FilePath file_path) {
 
   const base::FilePath directory = file_path.DirName();
   if (!base::DirectoryExists(directory)) {
-    bool success = base::CreateDirectory(directory);
-    if (!success) {
-      DLOG(ERROR) << "Error creating session cache directory "
-                  << directory.AsUTF8Unsafe();
+    if (!base::CreateDirectory(directory)) {
       return;
     }
   }
@@ -70,13 +67,7 @@ void WriteSessionData(NSData* session_data, base::FilePath file_path) {
       NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
 
   NSString* file_path_string = base::apple::FilePathToNSString(file_path);
-  NSError* error = nil;
-  if (![session_data writeToFile:file_path_string
-                         options:options
-                           error:&error]) {
-    DLOG(WARNING) << "Error writing session data: "
-                  << base::SysNSStringToUTF8(file_path_string) << ": "
-                  << base::SysNSStringToUTF8([error description]);
+  if (![session_data writeToFile:file_path_string options:options error:nil]) {
     // If -writeToFile failed, this session data is now stale. Delete it and
     // revert to legacy session restore.
     base::DeleteFile(file_path);
@@ -88,15 +79,17 @@ void WriteSessionData(NSData* session_data, base::FilePath file_path) {
 void PurgeCacheOnBackgroundSequenceExcept(
     base::FilePath cache_directory,
     std::set<base::FilePath> files_to_keep) {
-  if (!base::DirectoryExists(cache_directory))
+  if (!base::DirectoryExists(cache_directory)) {
     return;
+  }
 
   base::FileEnumerator enumerator(cache_directory, false,
                                   base::FileEnumerator::FILES);
   for (base::FilePath current_file = enumerator.Next(); !current_file.empty();
        current_file = enumerator.Next()) {
-    if (base::Contains(files_to_keep, current_file))
+    if (base::Contains(files_to_keep, current_file)) {
       continue;
+    }
     base::DeleteFile(current_file);
   }
 }
@@ -104,8 +97,8 @@ void PurgeCacheOnBackgroundSequenceExcept(
 }  // anonymous namespace
 
 @interface WebSessionStateCache ()
-// The ChromeBrowserState passed on initialization.
-@property(nonatomic) ChromeBrowserState* browserState;
+// The ProfileIOS passed on initialization.
+@property(nonatomic, assign) ProfileIOS* profile;
 @end
 
 @implementation WebSessionStateCache {
@@ -125,12 +118,11 @@ void PurgeCacheOnBackgroundSequenceExcept(
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ((self = [super init])) {
-    _browserState = browserState;
-    _cacheDirectory =
-        browserState->GetStatePath().Append(kLegacyWebSessionsDirname);
+    _profile = profile;
+    _cacheDirectory = profile->GetStatePath().Append(kLegacyWebSessionsDirname);
     _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
@@ -172,8 +164,9 @@ void PurgeCacheOnBackgroundSequenceExcept(
 - (void)removeSessionStateDataForWebStateID:(web::WebStateID)webStateID
                                   incognito:(BOOL)incognito {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_taskRunner)
+  if (!_taskRunner) {
     return;
+  }
 
   if (_delayRemove && !incognito) {
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
@@ -199,7 +192,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [NSObject cancelPreviousPerformRequestsWithTarget:self];
   _taskRunner = nullptr;
-  _browserState = nullptr;
+  _profile = nullptr;
 }
 
 #pragma mark - Private
@@ -212,11 +205,10 @@ void PurgeCacheOnBackgroundSequenceExcept(
 // Returns a set of all known tab ids.
 - (std::set<std::string>)liveSessionIDs {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  DCHECK(_browserState) << "-liveSessionIDs called after -shutdown";
+  DCHECK(_profile) << "-liveSessionIDs called after -shutdown";
 
   std::set<std::string> liveSessionIDs;
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(self.browserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(self.profile);
   for (Browser* browser :
        browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
     WebStateList* webStateList = browser->GetWebStateList();

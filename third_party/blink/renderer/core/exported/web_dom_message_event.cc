@@ -51,12 +51,12 @@ WebDOMMessageEvent::WebDOMMessageEvent(
     const WebString& origin,
     const WebFrame* source_frame,
     const WebDocument& target_document,
-    WebVector<MessagePortChannel> channels)
+    std::vector<MessagePortChannel> channels)
     : WebDOMMessageEvent(MessageEvent::Create()) {
   DOMWindow* window = nullptr;
   if (source_frame)
     window = WebFrame::ToCoreFrame(*source_frame)->DomWindow();
-  MessagePortArray* ports = nullptr;
+  GCedMessagePortArray* ports = nullptr;
   if (!target_document.IsNull()) {
     Document* core_document = target_document;
     ports = MessagePort::EntanglePorts(*core_document->GetExecutionContext(),

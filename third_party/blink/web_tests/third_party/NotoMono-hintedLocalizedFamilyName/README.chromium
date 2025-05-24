@@ -1,20 +1,19 @@
-License: SIL Open Font License 1.1
+Name: Noto Mono
+URL: https://www.google.com/get/noto/
+Version: N/A
+Date: 2017-10-24
+License: OFL-1.1
 License File: LICENSE_OFL.txt
 Shipped: no
+Security Critical: no
 
-1. Source Origin
-Google Noto project
-    a) https://www.google.com/get/noto/
+Description:
+Noto Mono test font with local modifications to the name table.
 
-2. LICENSE AND OPENSOURCE
-    For license information, see the LICENSE_OFL.txt file
-
-3. Reason:
+Local Modifications:
 Font file included with modifications to the sfnt 'name' table to enable testing
 of fonts with localized (multiple) family names, and font subsetting to reduce
 number of glyphs (only a few are needed for testing).
-
-Explanation of modifications:
 
 (a) The font file now includes multiple localizations of the Font Family name in
 the sfnt 'name' table (see

@@ -166,6 +166,9 @@ bool GetRelativeBuildDirectory(base::FilePath* build_dir);
 // Blocks until an application modal dialog is shown and returns it.
 javascript_dialogs::AppModalDialogController* WaitForAppModalDialog();
 
+// Blocks until the web contents shows a web modal dialog.
+void WaitForWebModalDialog(content::WebContents* web_contents);
+
 #if defined(TOOLKIT_VIEWS)
 // Blocks until the given view attains the given visibility state.
 void WaitForViewVisibility(Browser* browser, ViewID vid, bool visible);

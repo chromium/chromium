@@ -7,8 +7,8 @@
 
 #include <windows.h>
 
+#include "base/component_export.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -16,15 +16,15 @@ namespace gfx {
 // only need to use BMP V4 if you need transparency (alpha channel). This
 // function sets the AlphaMask to 0xff000000, meaning this header is for a
 // 32-bits-per-pixel ARGB8888 bitmap.
-GFX_EXPORT void CreateBitmapV4HeaderForARGB888(int width,
-                                               int height,
-                                               BITMAPV4HEADER* hdr);
+COMPONENT_EXPORT(GFX)
+void CreateBitmapV4HeaderForARGB888(int width, int height, BITMAPV4HEADER* hdr);
 
 // Calculate scale to fit an entire page on DC.
-GFX_EXPORT float CalculatePageScale(HDC dc, int page_width, int page_height);
+COMPONENT_EXPORT(GFX)
+float CalculatePageScale(HDC dc, int page_width, int page_height);
 
 // Apply scaling to the DC.
-GFX_EXPORT bool ScaleDC(HDC dc, float scale_factor);
+COMPONENT_EXPORT(GFX) bool ScaleDC(HDC dc, float scale_factor);
 
 }  // namespace gfx
 

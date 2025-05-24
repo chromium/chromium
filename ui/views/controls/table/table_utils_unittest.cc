@@ -23,8 +23,9 @@ namespace {
 std::string IntVectorToString(const std::vector<int>& values) {
   std::string result;
   for (size_t i = 0; i < values.size(); ++i) {
-    if (i != 0)
+    if (i != 0) {
       result += ",";
+    }
     result += base::NumberToString(values[i]);
   }
   return result;

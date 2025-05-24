@@ -46,8 +46,9 @@ DownloadControllerImpl::~DownloadControllerImpl() {
     task->Cancel();
   }
 
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnDownloadControllerDestroyed(this);
+  }
 
   DCHECK(!delegate_);
 }
@@ -60,14 +61,16 @@ void DownloadControllerImpl::CreateWebStateDownloadTask(WebState* web_state,
     return;
   }
   OnDownloadCreated(std::make_unique<WebStateContentDownloadTask>(
-      web_state, web_state->GetLastCommittedURL(), @"", "", total_bytes,
-      web_state->GetContentsMimeType(), identifier, task_runner_));
+      web_state, web_state->GetLastCommittedURL(),
+      base::SysUTF8ToNSString(web_state->GetLastCommittedURL().host()), @"", "",
+      total_bytes, web_state->GetContentsMimeType(), identifier, task_runner_));
 }
 
 void DownloadControllerImpl::CreateNativeDownloadTask(
     WebState* web_state,
     NSString* identifier,
     const GURL& original_url,
+    NSString* originating_host,
     NSString* http_method,
     const std::string& content_disposition,
     int64_t total_bytes,
@@ -80,8 +83,9 @@ void DownloadControllerImpl::CreateNativeDownloadTask(
   }
 
   OnDownloadCreated(std::make_unique<DownloadNativeTaskImpl>(
-      web_state, original_url, http_method, content_disposition, total_bytes,
-      mime_type, identifier, task_runner_, download));
+      web_state, original_url, originating_host, http_method,
+      content_disposition, total_bytes, mime_type, identifier, task_runner_,
+      download));
 }
 
 void DownloadControllerImpl::SetDelegate(DownloadControllerDelegate* delegate) {

@@ -45,7 +45,7 @@ bool MockProvider::SetWebsiteSetting(
     RuleMetaData metadata;
     metadata.SetFromConstraints(constraints);
     value_map_.SetValue(requesting_url_pattern, embedding_url_pattern,
-                        content_type, std::move(in_value), metadata);
+                        content_type, std::move(in_value), std::move(metadata));
   } else {
     base::Value value(std::move(in_value));
     value_map_.DeleteValue(requesting_url_pattern, embedding_url_pattern,

@@ -28,9 +28,34 @@ using metrics_util::LeakDialogType;
 constexpr char kPasswordCheckupURL[] =
     "https://passwords.google.com/checkup/start?hideExplanation=true";
 
+LeakedPasswordDetails::LeakedPasswordDetails(CredentialLeakType leak_type,
+                                             GURL origin,
+                                             std::u16string username,
+                                             std::u16string password,
+                                             bool in_account_store)
+    : leak_type(leak_type),
+      origin(std::move(origin)),
+      username(std::move(username)),
+      password(std::move(password)),
+      in_account_store(in_account_store) {}
+LeakedPasswordDetails::LeakedPasswordDetails(const LeakedPasswordDetails&) =
+    default;
+LeakedPasswordDetails::LeakedPasswordDetails(LeakedPasswordDetails&& other) =
+    default;
+LeakedPasswordDetails::~LeakedPasswordDetails() = default;
+
+LeakedPasswordDetails& LeakedPasswordDetails::operator=(
+    const LeakedPasswordDetails&) = default;
+LeakedPasswordDetails& LeakedPasswordDetails::operator=(
+    LeakedPasswordDetails&& other) = default;
+
+bool LeakedPasswordDetails::operator==(
+    const LeakedPasswordDetails& other) const = default;
+
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,
-                                  IsSyncing is_syncing) {
+                                  IsSyncing is_syncing,
+                                  HasChangePasswordUrl has_change_password) {
   CredentialLeakType leak_type = 0;
   if (is_saved) {
     leak_type |= kPasswordSaved;
@@ -40,6 +65,9 @@ CredentialLeakType CreateLeakType(IsSaved is_saved,
   }
   if (is_syncing) {
     leak_type |= kPasswordSynced;
+  }
+  if (has_change_password) {
+    leak_type |= kHasChangePasswordUrl;
   }
   return leak_type;
 }
@@ -56,47 +84,14 @@ bool IsPasswordSynced(CredentialLeakType leak_type) {
   return leak_type & CredentialLeakFlags::kPasswordSynced;
 }
 
+bool IsPasswordChangeSupported(CredentialLeakType leak_type) {
+  return leak_type & CredentialLeakFlags::kHasChangePasswordUrl;
+}
+
 // Formats the `origin` to a human-friendly url string.
 std::u16string GetFormattedUrl(const GURL& origin) {
   return url_formatter::FormatUrlForSecurityDisplay(
       origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-}
-
-std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type) {
-  if (ShouldCheckPasswords(leak_type)) {
-    return l10n_util::GetStringUTF16(IDS_LEAK_CHECK_CREDENTIALS);
-  }
-
-  return l10n_util::GetStringUTF16(IDS_OK);
-}
-
-std::u16string GetCancelButtonLabel(CredentialLeakType leak_type) {
-  return l10n_util::GetStringUTF16(IDS_CLOSE);
-}
-
-std::u16string GetDescription(CredentialLeakType leak_type) {
-  if (!ShouldCheckPasswords(leak_type)) {
-    return l10n_util::GetStringUTF16(
-        UsesPasswordManagerGoogleBranding()
-            ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED
-            : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED);
-  }
-  if (password_manager::IsPasswordSaved(leak_type)) {
-    return l10n_util::GetStringUTF16(
-        UsesPasswordManagerGoogleBranding()
-            ? IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-            : IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
-  }
-  return l10n_util::GetStringUTF16(
-      UsesPasswordManagerGoogleBranding()
-          ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-          : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
-}
-
-std::u16string GetTitle(CredentialLeakType leak_type) {
-  return l10n_util::GetStringUTF16(ShouldCheckPasswords(leak_type)
-                                       ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
-                                       : IDS_CREDENTIAL_LEAK_TITLE_CHANGE);
 }
 
 std::u16string GetLeakDetectionTooltip() {
@@ -110,10 +105,6 @@ bool ShouldCheckPasswords(CredentialLeakType leak_type) {
   }
 #endif
   return password_manager::IsPasswordUsedOnOtherSites(leak_type);
-}
-
-bool ShouldShowCancelButton(CredentialLeakType leak_type) {
-  return ShouldCheckPasswords(leak_type);
 }
 
 LeakDialogType GetLeakDialogType(CredentialLeakType leak_type) {

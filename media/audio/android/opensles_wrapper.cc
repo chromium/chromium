@@ -41,13 +41,13 @@
 // SLInterfaceID_. Those symbols are defined as extern symbols in the OpenSLES
 // headers. They will be initialized to their correct values when the library is
 // loaded.
-SLInterfaceID SL_IID_ENGINE = NULL;
-SLInterfaceID SL_IID_ANDROIDSIMPLEBUFFERQUEUE = NULL;
-SLInterfaceID SL_IID_ANDROIDCONFIGURATION = NULL;
-SLInterfaceID SL_IID_RECORD = NULL;
-SLInterfaceID SL_IID_BUFFERQUEUE = NULL;
-SLInterfaceID SL_IID_VOLUME = NULL;
-SLInterfaceID SL_IID_PLAY = NULL;
+SLInterfaceID SL_IID_ENGINE = nullptr;
+SLInterfaceID SL_IID_ANDROIDSIMPLEBUFFERQUEUE = nullptr;
+SLInterfaceID SL_IID_ANDROIDCONFIGURATION = nullptr;
+SLInterfaceID SL_IID_RECORD = nullptr;
+SLInterfaceID SL_IID_BUFFERQUEUE = nullptr;
+SLInterfaceID SL_IID_VOLUME = nullptr;
+SLInterfaceID SL_IID_PLAY = nullptr;
 
 namespace {
 
@@ -57,10 +57,10 @@ const char kOpenSLLibraryName[] = "libOpenSLES.so";
 // Loads the OpenSLES library, and initializes all the proxies.
 base::NativeLibrary IntializeLibraryHandle() {
   base::NativeLibrary handle =
-      base::LoadNativeLibrary(base::FilePath(kOpenSLLibraryName), NULL);
+      base::LoadNativeLibrary(base::FilePath(kOpenSLLibraryName), nullptr);
   if (!handle) {
     DLOG(ERROR) << "Unable to load " << kOpenSLLibraryName;
-    return NULL;
+    return nullptr;
   }
 
   // Setup the proxy for each symbol.
@@ -85,7 +85,7 @@ base::NativeLibrary IntializeLibraryHandle() {
         base::GetFunctionPointerFromNativeLibrary(handle, kSymbols[i].name);
     if (!func_ptr) {
       DLOG(ERROR) << "Unable to find symbol for " << kSymbols[i].name;
-      return NULL;
+      return nullptr;
     }
     memcpy(kSymbols[i].sl_iid, func_ptr, sizeof(SLInterfaceID));
   }

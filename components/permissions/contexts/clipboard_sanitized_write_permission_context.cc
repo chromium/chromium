@@ -6,7 +6,7 @@
 
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 
 namespace permissions {
@@ -17,10 +17,10 @@ ClipboardSanitizedWritePermissionContext::
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::CLIPBOARD_SANITIZED_WRITE,
-          blink::mojom::PermissionsPolicyFeature::kClipboardWrite) {}
+          network::mojom::PermissionsPolicyFeature::kClipboardWrite) {}
 
 ClipboardSanitizedWritePermissionContext::
-    ~ClipboardSanitizedWritePermissionContext() {}
+    ~ClipboardSanitizedWritePermissionContext() = default;
 
 ContentSetting
 ClipboardSanitizedWritePermissionContext::GetPermissionStatusInternal(

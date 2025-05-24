@@ -38,8 +38,8 @@ void SharedWorkerReportingProxy::ReportException(
     std::unique_ptr<SourceLocation>,
     int exception_id) {
   DCHECK(!IsMainThread());
-  // TODO(nhiroki): Implement the "runtime script errors" algorithm in the HTML
-  // spec:
+  // TODO(crbug.com/412384494): Implement the "runtime script errors" algorithm
+  // in the HTML spec:
   // "For shared workers, if the error is still not handled afterwards, the
   // error may be reported to a developer console."
   // https://html.spec.whatwg.org/C/#runtime-script-errors-2

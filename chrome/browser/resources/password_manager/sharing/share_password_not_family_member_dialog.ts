@@ -37,7 +37,7 @@ export class SharePasswordNotFamilyMemberDialogElement extends I18nMixin
     };
   }
 
-  dialogTitle: string;
+  declare dialogTitle: string;
 
   private onDescriptionClick_(e: Event) {
     const element = e.target as HTMLElement;

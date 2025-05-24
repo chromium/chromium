@@ -2,12 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//testing/test.gni")
 
-assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
+assert(is_chromeos, "Non ChromeOS builds must not depend on //chromeos/ash")
 
 mojom("mojom") {
   sources = [ "userspace_swap.mojom" ]
@@ -52,7 +49,6 @@ source_set("unit_tests") {
     ":userspace_swap",
     "//base/allocator:buildflags",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//testing/gmock",

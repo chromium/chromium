@@ -54,7 +54,7 @@ namespace {
 
 class MockSearchIPCRouterDelegate : public SearchIPCRouter::Delegate {
  public:
-  virtual ~MockSearchIPCRouterDelegate() {}
+  virtual ~MockSearchIPCRouterDelegate() = default;
 
   MOCK_METHOD(void, FocusOmnibox, (bool focus));
   MOCK_METHOD(void, OnDeleteMostVisitedItem, (const GURL& url));
@@ -65,7 +65,7 @@ class MockSearchIPCRouterDelegate : public SearchIPCRouter::Delegate {
 
 class MockSearchIPCRouterPolicy : public SearchIPCRouter::Policy {
  public:
-  ~MockSearchIPCRouterPolicy() override {}
+  ~MockSearchIPCRouterPolicy() override = default;
 
   MOCK_METHOD(bool, ShouldProcessFocusOmnibox, (bool));
   MOCK_METHOD(bool, ShouldProcessDeleteMostVisitedItem, ());
@@ -97,7 +97,7 @@ class MockEmbeddedSearchClientFactory
 
 class SearchIPCRouterTest : public BrowserWithTestWindowTest {
  public:
-  SearchIPCRouterTest() {}
+  SearchIPCRouterTest() = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -126,8 +126,7 @@ class SearchIPCRouterTest : public BrowserWithTestWindowTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  SearchTabHelper* GetSearchTabHelper(
-      content::WebContents* web_contents) {
+  SearchTabHelper* GetSearchTabHelper(content::WebContents* web_contents) {
     EXPECT_NE(nullptr, web_contents);
     return SearchTabHelper::FromWebContents(web_contents);
   }

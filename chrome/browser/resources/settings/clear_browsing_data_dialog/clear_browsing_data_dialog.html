@@ -1,4 +1,4 @@
-    <style include="settings-shared">
+    <style include="settings-shared cr-spinner-style">
       :host {
         /* Fixed height to allow multiple tabs with different height.
          * The last entry in the advanced tab should show half an entry.
@@ -53,7 +53,7 @@
         min-height: 40px;
       }
 
-      paper-spinner-lite {
+      .spinner {
         margin-bottom: auto;
         margin-inline-end: 16px;
         margin-top: auto;
@@ -167,24 +167,13 @@
               <span class="time-range-label" aria-hidden="true">
                 $i18n{clearTimeRange}
               </span>
-              <template is="dom-if" if="[[!enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFromBasic" no-set-pref
-                    class="time-range-select"
-                    label="$i18n{clearTimeRange}"
-                    pref="{{prefs.browser.clear_data.time_period_basic}}"
-                    menu-options="[[clearFromOptions_]]"
-                    on-settings-control-change="onTimePeriodChanged_">
-                </settings-dropdown-menu>
-              </template>
-              <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFromBasic" required no-set-pref
-                    class="time-range-select"
-                    label="$i18n{clearTimeRange}"
-                    pref="{{prefs.browser.clear_data.time_period_v2_basic}}"
-                    menu-options="[[clearFromOptionsV2_]]"
-                    on-settings-control-change="onTimePeriodChanged_">
-                </settings-dropdown-menu>
-              </template>
+              <settings-dropdown-menu id="clearFromBasic" no-set-pref
+                  class="time-range-select"
+                  label="$i18n{clearTimeRange}"
+                  pref="{{prefs.browser.clear_data.time_period_basic}}"
+                  menu-options="[[clearFromOptions_]]"
+                  on-settings-control-change="onTimePeriodChanged_">
+              </settings-dropdown-menu>
             </div>
             <!-- Note: whether these checkboxes are checked are ignored if
                  deleting history is disabled (i.e. supervised users, policy),
@@ -223,7 +212,7 @@
                 disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <div class="search-history-box"
-                hidden="[[!isSignedIn_]]">
+                hidden="[[!showSearchHistoryBox_(syncStatus.signedInState)]]">
               <cr-icon class="search-history-box-icon" aria-hidden="true"
                   icon="settings20:googleg">
               </cr-icon>
@@ -247,23 +236,13 @@
               <span class="time-range-label" aria-hidden="true">
                 $i18n{clearTimeRange}
               </span>
-              <template is="dom-if" if="[[!enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFrom" no-set-pref
-                    class="time-range-select"
-                    label="$i18n{clearTimeRange}"
-                    pref="{{prefs.browser.clear_data.time_period}}"
-                    menu-options="[[clearFromOptions_]]"
-                    on-settings-control-change="onTimePeriodChanged_">
-                </settings-dropdown-menu>
-              </template>
-              <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFrom" required no-set-pref
-                    class="time-range-select"
-                    label="$i18n{clearTimeRange}"
-                    pref="{{prefs.browser.clear_data.time_period_v2}}"
-                    menu-options="[[clearFromOptionsV2_]]"
-                    on-settings-control-change="onTimePeriodChanged_">
-              </template>
+              <settings-dropdown-menu id="clearFrom" no-set-pref
+                  class="time-range-select"
+                  label="$i18n{clearTimeRange}"
+                  pref="{{prefs.browser.clear_data.time_period}}"
+                  menu-options="[[clearFromOptions_]]"
+                  on-settings-control-change="onTimePeriodChanged_">
+              </settings-dropdown-menu>
             </div>
             <settings-checkbox id="browsingCheckbox"
                 pref="{{prefs.browser.clear_data.browsing_history}}"
@@ -321,8 +300,7 @@
         </cr-page-selector>
       </div>
       <div slot="button-container">
-        <paper-spinner-lite active="[[clearingInProgress_]]">
-        </paper-spinner-lite>
+        <div class="spinner" hidden$="[[!clearingInProgress_]]"></div>
         <cr-button class="cancel-button" autofocus
             disabled="[[clearingInProgress_]]"
             on-click="onCancelClick_">
@@ -343,8 +321,8 @@
       </div>
 <if expr="not is_chromeos">
       <template is="dom-if"
-          if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedInState,
-              isClearPrimaryAccountAllowed_)]]"
+          if="[[shouldShowFooter_(
+              syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]"
           restamp>
         <div slot="footer">
           <settings-sync-account-control sync-status="[[syncStatus]]"
@@ -353,13 +331,13 @@
           <div class="divider"></div>
           <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
             <span id="signin-info"
-                hidden="[[!showSigninInfo_(isSignedIn_,
+                hidden="[[!showSigninInfo_(
                     syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]">
               $i18nRaw{clearBrowsingDataSignedIn}
             </span>
             <span id="sync-info"
-                hidden="[[!showSyncInfo_(isSignedIn_,
-                    syncStatus.signedInState)]]">
+                hidden="[[!showSyncInfo_(
+                    syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]">
               $i18nRaw{clearBrowsingDataWithSync}
             </span>
             <span id="sync-paused-info" hidden="[[!isSyncPaused_]]">

@@ -23,11 +23,10 @@ static void fatal_error(const char *message) {
 }
 
 /*
- * TODO(mcgrathr): This extremely stupid function should not exist.
- * If the startup calling sequence were sane, this would be done
- * someplace that has the initial pointer locally rather than stealing
- * it from environ.
- * See http://code.google.com/p/nativeclient/issues/detail?id=651
+ * TODO(mcgrathr): This function should not exist. If the startup calling
+ * sequence were sane, this would be done someplace that has the initial
+ * pointer locally rather than stealing it from environ. See
+ * http://code.google.com/p/nativeclient/issues/detail?id=651
  */
 static Elf32_auxv_t *find_auxv(void) {
   /*

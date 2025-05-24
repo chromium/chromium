@@ -1,0 +1,71 @@
+This is a testharness.js-based test.
+[FAIL] Property block-step value 'none'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'auto'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'margin-box'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'up'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'none auto'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'none margin-box'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'none up'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'auto none'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'auto margin-box'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'auto up'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'margin-box none'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'margin-box auto'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'margin-box up'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'up none'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'up auto'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'up margin-box'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'auto up margin-box'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'none auto up margin-box'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'padding-box'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'content-box'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value '100px'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'center'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'start'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'end'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'down'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'nearest'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'none padding-box up'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'content-box 100px up'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'content-box start 100px'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value '100px center down padding-box'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'start 100px'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'end 100px'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'end nearest 100px'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property block-step value 'center content-box 100px'
+  assert_true: block-step doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

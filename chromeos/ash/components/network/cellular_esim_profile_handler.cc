@@ -186,7 +186,7 @@ void CellularESimProfileHandler::OnRequestInstalledProfilesResult(
   if (status != HermesResponseStatus::kSuccess) {
     inhibit_lock_.reset();
   } else {
-    hermes_metrics::LogRequestPendingProfilesLatency(call_latency);
+    hermes_metrics::LogRefreshInstalledProfilesLatency(call_latency);
     has_completed_successful_profile_refresh_ = true;
     OnHermesPropertiesUpdated();
   }

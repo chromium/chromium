@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://issues.chromium.org/issues/402429384">
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
+
+<div id=target></div>
+
+<script>
+const target = document.getElementById('target');
+const parentSelect = 5546;
+const ancestorSelect = 5547;
+
+test(() => {
+  assert_false(internals.isUseCounted(document, parentSelect),
+    'parent <select> use counter should not be hit at the start of the test.');
+  assert_false(internals.isUseCounted(document, ancestorSelect),
+    'ancestor <select> use counter should not be hit at the start of the test.');
+
+  target.innerHTML = '<select><input>';
+  assert_true(internals.isUseCounted(document, parentSelect),
+    'parent <select> use counter should be hit after parsing <select><input>.');
+  assert_false(internals.isUseCounted(document, ancestorSelect),
+    'ancestor <select> use counter should not be hit after parsing <select><input>.');
+  internals.clearUseCounter(document, parentSelect);
+
+  target.innerHTML = '<select><div><input>';
+  assert_false(internals.isUseCounted(document, parentSelect),
+    'parent <select> use counter should not be hit after parsing <select><div><input>.');
+  assert_true(internals.isUseCounted(document, ancestorSelect),
+    'ancestor <select> use counter should be hit after parsing <select><div><input>.');
+}, 'UseCounters for <input> in <select>');
+</script>

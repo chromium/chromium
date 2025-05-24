@@ -59,8 +59,7 @@ class MojoDataPipeSender {
         // Just wait until OnWritable() is called by the watcher.
         return;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
     sent_bytes_ += actually_written_bytes;
     if (data_.size() == sent_bytes_)
@@ -159,9 +158,8 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
       case MOJO_RESULT_SHOULD_WAIT:
         return 0;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    return 0;
   }
 
   void ResetProducer() { source_body_handle_.reset(); }

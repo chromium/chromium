@@ -87,9 +87,9 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:minHeight="@dimen/min_touch_target_size"
           android:paddingTop="10dp"
-          app:iconSrc="@drawable/ic_mobile_friendly"
-          app:primaryText="@string/adaptive_toolbar_button_preference_page_summary" />
-
+          app:iconSrc="@drawable/summarize_auto"
+          app:primaryText="@string/adaptive_toolbar_button_preference_page_summary"
+          app:descriptionText="@string/adaptive_toolbar_button_preference_page_summary_description"/>
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 
 </LinearLayout>

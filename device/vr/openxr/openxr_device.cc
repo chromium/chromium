@@ -4,13 +4,13 @@
 
 #include "device/vr/openxr/openxr_device.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_render_loop.h"
@@ -40,7 +40,7 @@ bool AreAllRequiredFeaturesSupported(
     const mojom::XRSessionMode mode,
     const std::vector<mojom::XRSessionFeature>& required_features,
     const OpenXrExtensionHelper& extension_helper) {
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       required_features,
       [&extension_helper, mode](const mojom::XRSessionFeature& feature) {
         // First we check if we will allow the feature to be supported in the
@@ -79,9 +79,16 @@ OpenXrDevice::OpenXrDevice(
         mojom::XRSessionFeature::HAND_INPUT);
 
   // Only support layers if the feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kWebXrLayers))
+  if (base::FeatureList::IsEnabled(features::kWebXrLayers)) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::LAYERS);
+  }
+
+  // Only support WebGPU sessions if feature flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kWebXrWebGpuBinding)) {
+    device_data.supported_features.emplace_back(
+        mojom::XRSessionFeature::WEBGPU);
+  }
 
   // Only support hit test if the feature flag is enabled.
   if (device::features::IsOpenXrArEnabled()) {
@@ -111,6 +118,10 @@ OpenXrDevice::~OpenXrDevice() {
   if (request_session_callback_) {
     std::move(request_session_callback_).Run(nullptr);
   }
+
+  if (shutdown_request_callback_) {
+    std::move(shutdown_request_callback_).Run();
+  }
 }
 
 void OpenXrDevice::RequestSession(
@@ -124,6 +135,8 @@ void OpenXrDevice::RequestSession(
   OpenXrCreateInfo create_info;
   create_info.render_process_id = options->render_process_id;
   create_info.render_frame_id = options->render_frame_id;
+  create_info.needs_separate_activity =
+      OpenXrApiWrapper::NeedsSeparateActivity();
   platform_helper_->CreateInstanceWithCreateInfo(
       create_info,
       base::BindOnce(&OpenXrDevice::OnCreateInstanceResult,
@@ -232,6 +245,10 @@ void OpenXrDevice::ForceEndSession(ExitXrPresentReason reason) {
   if (instance_ != XR_NULL_HANDLE) {
     platform_helper_->DestroyInstance(instance_);
   }
+
+  if (shutdown_request_callback_) {
+    std::move(shutdown_request_callback_).Run();
+  }
 }
 
 void OpenXrDevice::OnPresentingControllerMojoConnectionError() {
@@ -240,13 +257,21 @@ void OpenXrDevice::OnPresentingControllerMojoConnectionError() {
 
 void OpenXrDevice::ShutdownSession(
     mojom::XRRuntime::ShutdownSessionCallback callback) {
-  ForceEndSession(ExitXrPresentReason::kBrowserShutdown);
-  std::move(callback).Run();
+  DVLOG(1) << __func__;
+  if (!HasExclusiveSession()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  shutdown_request_callback_ = std::move(callback);
+  platform_helper_->PrepareForSessionShutdown(base::BindOnce(
+      &OpenXrDevice::ForceEndSession, weak_ptr_factory_.GetWeakPtr(),
+      ExitXrPresentReason::kBrowserShutdown));
 }
 
 void OpenXrDevice::SetFrameDataRestricted(bool restricted) {
   // Presentation sessions can not currently be restricted.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace device

@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">ეს გვერდი დაბლოკილია Chromium-ის მიერ</translation>
 <translation id="48558539577516920">თქვენი ქსელის დაცვის ან ანტივირუსის პარამეტრებში, მიეცით Chromium-ს ქსელზე წვდომის
           უფლება.</translation>
+<translation id="4949828774841497663">გახსენით: აპები &gt; სისტემის პარამეტრები &gt; ქსელი, აირჩიეთ
+          აქტიური ქსელი, დააწკაპუნეთ ღილაკზე „დეტალები...“ და გააუქმეთ ნებისმიერი პროქსი-სერვერის
+          არჩევა.</translation>
 <translation id="580822234363523061">გახსენით
           Chromium-ის მენიუ &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +32,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
          და დარწმუნდით, რომ კონფიგურაციაში დაყენებულია მნიშვნელობები „პროქსის გარეშე“ ან „პირდაპირი“</translation>
+<translation id="648062525172759633">ეს გვერდები განკუთვნილია Chromium დეველოპერების მიერ გამოყენებისთვის და მათი აქტიურად შენარჩუნება ან ტესტირება დაუშვებელია. მათ ჩასართავად გახსენით <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, დააწკაპუნეთ ღილაკზე გვერდების გამართვის ჩასართავად და შემდეგ ისევ გადადით ამ გვერდზე.</translation>
 <translation id="6549378540556750549">Chromium, ასევე, მუშაობს <ph name="BEGIN_LINK_OSS" />ღია კოდის სხვა პროგრამული უზრუნველყოფის<ph name="END_LINK_OSS" /> დამსახურებით.</translation>
 <translation id="6613594504749178791">თქვენი ცვლილებები გააქტიურდება Chromium-ის შემდეგი გაშვებისას.</translation>
 <translation id="691026815377248078">დაწყვილების გასაგრძელებლად Chromium საჭიროებს Bluetooth-ზე წვდომას. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -41,9 +45,6 @@
           და მოხსენით მონიშვნა ელემენტიდან „<ph name="NO_PREFETCH_DESCRIPTION" />“.
           თუ პრობლემა ვერ გადაწყდა, გირჩევთ ხელახლა აირჩიოთ
           ეს პარამეტრი, გაუმჯობესებული ეფექტურობისთვის.</translation>
-<translation id="8187289872471304532">გადადით
-          პროგრამები &gt; სისტემის პარამეტრები &gt; ქსელი &gt; მოწინავე &gt; პროქსი
-          და გააუქმეთ ნებისმიერი არჩეული პროქსი.</translation>
 <translation id="8597726643333341451">თქვენი უყურებთ Chrome for Testing-ის დაცულ გვერდს</translation>
 <translation id="8684913864886094367">Chromium სწორად ვერ გაითიშა.</translation>
 </translationbundle>

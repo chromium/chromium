@@ -4,15 +4,16 @@
 
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 
-#include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
-#include "base/time/default_tick_clock.h"
-#include "base/trace_event/trace_event.h"
-#include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
-
 #import <AppKit/AppKit.h>
 #import <CoreFoundation/CoreFoundation.h>
 #import <QuartzCore/QuartzCore.h>
+
+#include <algorithm>
+
+#include "base/no_destructor.h"
+#include "base/time/default_tick_clock.h"
+#include "base/trace_event/trace_event.h"
+#include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 
 typedef NS_ENUM(unsigned int, CATransactionPhase) {
   kCATransactionPhasePreLayout,
@@ -95,7 +96,7 @@ void CATransactionCoordinator::PostCommitHandler() {
   auto* clock = base::DefaultTickClock::GetInstance();
   const base::TimeTicks deadline = clock->NowTicks() + kPostCommitTimeout;
   while (true) {
-    bool continue_waiting = base::ranges::any_of(
+    bool continue_waiting = std::ranges::any_of(
         post_commit_observers_, &PostCommitObserver::ShouldWaitInPostCommit);
     if (!continue_waiting)
       break;  // success

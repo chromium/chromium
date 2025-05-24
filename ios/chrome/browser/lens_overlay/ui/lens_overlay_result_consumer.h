@@ -19,6 +19,10 @@ class GURL;
 // Loads a new results URL.
 - (void)loadResultsURL:(GURL)url;
 
+// Notifies the consumer that Lens is trying to perform some network request,
+// but it's taking longer than expected to receive a result.
+- (void)handleSlowRequestHasStarted;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_RESULT_CONSUMER_H_

@@ -19,18 +19,15 @@ namespace extension_action_test_util {
 
 // TODO(devlin): Should we also pull out methods to test browser actions?
 
-// Returns the number of page actions that are visible in the given
-// |web_contents|. Note that the "visible" here is somewhat inaccurate, since
-// all extensions now have a permanent action. A better way of thinking of this
-// would be "active".
-// TODO(devlin): Rename this function.
-size_t GetVisiblePageActionCount(content::WebContents* web_contents);
+// Returns the number of page actions that are active in the given
+// `web_contents`.
+size_t GetActivePageActionCount(content::WebContents* web_contents);
 
 // Returns the total number of page actions (visible or not) for the given
-// |web_contents|.
+// `web_contents`.
 size_t GetTotalPageActionCount(content::WebContents* web_contents);
 
-// Creates a new ToolbarActionsModel for the given |profile|, and associates
+// Creates a new ToolbarActionsModel for the given `profile`, and associates
 // it with the profile as a keyed service.
 // This should only be used in unit tests (since it assumes the existence of
 // a TestExtensionSystem), but if running a browser test, the model should

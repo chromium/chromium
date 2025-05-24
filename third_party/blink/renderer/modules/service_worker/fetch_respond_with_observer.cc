@@ -72,8 +72,7 @@ const String GetMessageForResponseError(ServiceWorkerResponseError error,
           "is not no-cors";
       break;
     case ServiceWorkerResponseError::kResponseTypeNotBasicOrDefault:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case ServiceWorkerResponseError::kBodyUsed:
       error_message =
           error_message +
@@ -261,17 +260,9 @@ void FetchRespondWithObserver::OnResponseRejected(
   event_->RejectHandledPromise(error_message);
 }
 
-void FetchRespondWithObserver::OnResponseFulfilled(
-    ScriptState* script_state,
-    const ScriptValue& value,
-    const ExceptionContext& exception_context) {
+void FetchRespondWithObserver::OnResponseFulfilled(ScriptState* script_state,
+                                                   Response* response) {
   DCHECK(GetExecutionContext());
-  Response* response =
-      V8Response::ToWrappable(script_state->GetIsolate(), value.V8Value());
-  if (!response) {
-    OnResponseRejected(ServiceWorkerResponseError::kNoV8Instance);
-    return;
-  }
   // "If one of the following conditions is true, return a network error:
   //   - |response|'s type is |error|.
   //   - |request|'s mode is |same-origin| and |response|'s type is |cors|.
@@ -362,8 +353,7 @@ void FetchRespondWithObserver::OnResponseFulfilled(
     // drained or loading begins.
     fetch_api_response->side_data_blob = buffer->TakeSideDataBlob();
 
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   exception_context);
+    ExceptionState exception_state(script_state->GetIsolate());
 
     scoped_refptr<BlobDataHandle> blob_data_handle =
         buffer->DrainAsBlobDataHandle(

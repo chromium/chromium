@@ -37,11 +37,11 @@ ManagedConfigurationAPIFactory::ManagedConfigurationAPIFactory()
 
 ManagedConfigurationAPIFactory::~ManagedConfigurationAPIFactory() = default;
 
-KeyedService* ManagedConfigurationAPIFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ManagedConfigurationAPIFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile(Profile::FromBrowserContext(context));
-  ManagedConfigurationAPI* api = new ManagedConfigurationAPI(profile);
-  return api;
+  return std::make_unique<ManagedConfigurationAPI>(profile);
 }
 
 void ManagedConfigurationAPIFactory::RegisterProfilePrefs(

@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_checker.h"
+#include "components/drive/drive_export.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "google_apis/common/auth_service_interface.h"
 #include "google_apis/common/auth_service_observer.h"
@@ -48,7 +49,8 @@ class SharedURLLoaderFactory;
 namespace drive {
 
 // Builder for batch request returned by |DriveAPIService|.
-class BatchRequestConfigurator : public BatchRequestConfiguratorInterface {
+class COMPONENTS_DRIVE_EXPORT BatchRequestConfigurator
+    : public BatchRequestConfiguratorInterface {
  public:
   BatchRequestConfigurator(
       const base::WeakPtr<google_apis::drive::BatchUploadRequest>&
@@ -65,6 +67,7 @@ class BatchRequestConfigurator : public BatchRequestConfiguratorInterface {
   // BatchRequestConfiguratorInterface overrides.
   google_apis::CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
+      std::optional<std::string_view> converted_mime_type,
       int64_t content_length,
       const std::string& parent_resource_id,
       const std::string& title,
@@ -95,8 +98,9 @@ class BatchRequestConfigurator : public BatchRequestConfiguratorInterface {
 // This class provides Drive request calls using Drive V2 API.
 // Details of API call are abstracted in each request class and this class
 // works as a thin wrapper for the API.
-class DriveAPIService : public DriveServiceInterface,
-                        public google_apis::AuthServiceObserver {
+class COMPONENTS_DRIVE_EXPORT DriveAPIService
+    : public DriveServiceInterface,
+      public google_apis::AuthServiceObserver {
  public:
   // |identity_manager| is used for interacting with the identity system.
   // |url_request_context_getter| is used to initialize URLFetcher.
@@ -242,6 +246,7 @@ class DriveAPIService : public DriveServiceInterface,
       google_apis::drive::UploadRangeCallback callback) override;
   google_apis::CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
+      std::optional<std::string_view> converted_mime_type,
       int64_t content_length,
       const std::string& parent_resource_id,
       const std::string& title,

@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/service/configure_context.h"
+#include "components/sync/service/sync_error.h"
 #include "components/sync/test/fake_data_type_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +36,7 @@ class MockModelLoadManagerDelegate : public ModelLoadManagerDelegate {
   MOCK_METHOD(void, OnAllDataTypesReadyForConfigure, (), (override));
   MOCK_METHOD(void,
               OnSingleDataTypeWillStop,
-              (DataType, const SyncError& error),
+              (DataType, const std::optional<SyncError>& error),
               (override));
 };
 
@@ -59,7 +60,7 @@ class SyncModelLoadManagerTest : public testing::Test {
   DataTypeController::TypeMap controllers_;
 };
 
-// Start a type and make sure ModelLoadManager callst the |Start|
+// Start a type and make sure ModelLoadManager callst the `Start`
 // method and calls the callback when it is done.
 TEST_F(SyncModelLoadManagerTest, SimpleModelStart) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
@@ -308,8 +309,8 @@ TEST_F(SyncModelLoadManagerTest, StopDataType) {
 
   model_load_manager.StopDatatype(
       BOOKMARKS, SyncStopMetadataFate::CLEAR_METADATA,
-      SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
-                "Data type is unready.", BOOKMARKS));
+      SyncError(FROM_HERE, SyncError::PRECONDITION_ERROR_WITH_KEEP_DATA,
+                "Data type is unready."));
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
@@ -324,8 +325,8 @@ TEST_F(SyncModelLoadManagerTest, StopDataType_NotRunning) {
 
   model_load_manager.StopDatatype(
       BOOKMARKS, SyncStopMetadataFate::CLEAR_METADATA,
-      SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
-                "Data type is unready.", BOOKMARKS));
+      SyncError(FROM_HERE, SyncError::PRECONDITION_ERROR_WITH_KEEP_DATA,
+                "Data type is unready."));
 
   // The state should still be not running.
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);

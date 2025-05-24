@@ -16,6 +16,7 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace aura {
 class Window;
@@ -44,7 +45,6 @@ class AccessibilityPanelLayoutManager;
 class AlwaysOnTopController;
 class AppMenuModelAdapter;
 class AshWindowTreeHost;
-class LockScreenActionBackgroundController;
 class RootWindowLayoutManager;
 class ScreenRotationAnimator;
 class Shelf;
@@ -190,11 +190,6 @@ class ASH_EXPORT RootWindowController {
     return wallpaper_widget_controller_.get();
   }
 
-  LockScreenActionBackgroundController*
-  lock_screen_action_background_controller() {
-    return lock_screen_action_background_controller_.get();
-  }
-
   AshColorProviderSource* color_provider_source() {
     return color_provider_source_.get();
   }
@@ -233,7 +228,7 @@ class ASH_EXPORT RootWindowController {
 
   // Shows a context menu at the |location_in_screen|.
   void ShowContextMenu(const gfx::Point& location_in_screen,
-                       ui::MenuSourceType source_type);
+                       ui::mojom::MenuSourceType source_type);
 
   // Called when the login status changes after login (such as lock/unlock).
   void UpdateAfterLoginStatusChange(LoginStatus status);
@@ -301,11 +296,11 @@ class ASH_EXPORT RootWindowController {
 
   // Build a menu model adapter to configure birch bar in Overview.
   std::unique_ptr<AppMenuModelAdapter> BuildBirchMenuModelAdapter(
-      ui::MenuSourceType source_type);
+      ui::mojom::MenuSourceType source_type);
 
   // Build a menu model adapter to configure shelf.
   std::unique_ptr<AppMenuModelAdapter> BuildShelfMenuModelAdapter(
-      ui::MenuSourceType source_type);
+      ui::mojom::MenuSourceType source_type);
 
   // Callback for MenuRunner.
   void OnMenuClosed();
@@ -356,9 +351,6 @@ class ASH_EXPORT RootWindowController {
       nullptr;
 
   std::unique_ptr<::wm::ScopedCaptureClient> capture_client_;
-
-  std::unique_ptr<LockScreenActionBackgroundController>
-      lock_screen_action_background_controller_;
 
   std::unique_ptr<views::Widget> ambient_widget_;
 

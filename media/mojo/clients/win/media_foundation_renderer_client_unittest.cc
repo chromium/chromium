@@ -34,7 +34,6 @@ class FakeMojomRenderer : public mojom::Renderer {
   void Initialize(
       mojo::PendingAssociatedRemote<mojom::RendererClient>,
       std::optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>,
-      mojom::MediaUrlParamsPtr,
       InitializeCallback cb) override {
     std::move(cb).Run(true);
   }
@@ -239,7 +238,7 @@ class MediaFoundationRendererClientTest
       dcomp_on_state_change_cb_ = cb;
     } else {
       // Unexpected
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     return std::make_unique<MockOverlayStateObserverSubscription>();
@@ -259,14 +258,7 @@ class MediaFoundationRendererClientTest
   }
 
   void InitializeFramePool() {
-    gfx::GpuMemoryBufferHandle gpu_handle;
-    HANDLE shared_texture_handle = INVALID_HANDLE_VALUE;
-    base::win::ScopedHandle scoped_shared_texture_handle;
-    scoped_shared_texture_handle.Set(shared_texture_handle);
-
-    gpu_handle.dxgi_handle = std::move(scoped_shared_texture_handle);
-    gpu_handle.dxgi_token = gfx::DXGIHandleToken();
-    gpu_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
+    gfx::GpuMemoryBufferHandle gpu_handle(gfx::DXGIHandle::CreateFakeForTest());
 
     auto frame_info = media::mojom::FrameTextureInfo::New();
     frame_info->token = base::UnguessableToken::Create();

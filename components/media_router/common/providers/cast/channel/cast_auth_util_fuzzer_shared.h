@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+
 #include "components/media_router/common/providers/cast/channel/fuzz_proto/fuzzer_inputs.pb.h"
 
 namespace cast_channel {

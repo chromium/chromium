@@ -71,6 +71,11 @@
 
 namespace {
 
+// When enabled Cronet advertises zstd support. Suffixed with V2 to avoid
+// clashing with previous feature flag that was rolled back in
+// https://crrev.com/c/6458938.
+BASE_FEATURE(kEnableZstd, "EnableZstdV2", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This class wraps a NetLog that also contains network change events.
 class NetLogWithNetworkChangeEvents {
  public:
@@ -113,7 +118,7 @@ static base::LazyInstance<NetLogWithNetworkChangeEvents>::Leaky g_net_log =
 
 class BasicNetworkDelegate : public net::NetworkDelegateImpl {
  public:
-  BasicNetworkDelegate() {}
+  BasicNetworkDelegate() = default;
 
   BasicNetworkDelegate(const BasicNetworkDelegate&) = delete;
   BasicNetworkDelegate& operator=(const BasicNetworkDelegate&) = delete;
@@ -128,8 +133,9 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override {
     // Disallow sending cookies by default.
-    ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
-                      maybe_included_cookies, excluded_cookies);
+    ExcludeAllCookies(
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
+        maybe_included_cookies, excluded_cookies);
     return false;
   }
 
@@ -175,7 +181,8 @@ void SetQuicHint(net::URLRequestContext* context,
 
   url::SchemeHostPort quic_server("https", canon_host, quic_hint->port);
   net::AlternativeService alternative_service(
-      net::kProtoQUIC, "", static_cast<uint16_t>(quic_hint->alternate_port));
+      net::NextProto::kProtoQUIC, "",
+      static_cast<uint16_t>(quic_hint->alternate_port));
   context->http_server_properties()->SetQuicAlternativeService(
       quic_server, net::NetworkAnonymizationKey(), alternative_service,
       base::Time::Max(), quic::ParsedQuicVersionVector());
@@ -210,7 +217,7 @@ CronetContext::CronetContext(
           new NetworkTasks(std::move(context_config), std::move(callback))),
       network_task_runner_(network_task_runner) {
   if (!network_task_runner_) {
-    network_thread_ = std::make_unique<base::Thread>("network");
+    network_thread_ = std::make_unique<base::Thread>("CronetNet");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
     network_thread_->StartWithOptions(std::move(options));
@@ -458,6 +465,7 @@ void CronetContext::NetworkTasks::SetSharedURLRequestContextBuilderConfig(
 
   context_builder->set_check_cleartext_permitted(true);
   context_builder->set_enable_brotli(context_config_->enable_brotli);
+  context_builder->set_enable_zstd(base::FeatureList::IsEnabled(kEnableZstd));
   context_builder->set_enable_shared_dictionary(context_config_->enable_brotli);
 }
 
@@ -709,7 +717,7 @@ int CronetContext::default_load_flags() const {
 base::Thread* CronetContext::GetFileThread() {
   DCHECK(OnInitThread());
   if (!file_thread_) {
-    file_thread_ = std::make_unique<base::Thread>("Network File Thread");
+    file_thread_ = std::make_unique<base::Thread>("CronetFile");
     file_thread_->Start();
   }
   return file_thread_.get();

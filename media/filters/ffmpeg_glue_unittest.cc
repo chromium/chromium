@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/container_names.h"
 #include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
@@ -93,8 +92,7 @@ class FFmpegGlueDestructionTest : public ::testing::Test {
 
   void Initialize(const char* filename) {
     data_ = ReadTestDataFile(filename);
-    protocol_ = std::make_unique<InMemoryUrlProtocol>(data_->data(),
-                                                      data_->size(), false);
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(*data_, false);
     glue_ = std::make_unique<FFmpegGlue>(protocol_.get());
     CHECK(glue_->format_context());
     CHECK(glue_->format_context()->pb);

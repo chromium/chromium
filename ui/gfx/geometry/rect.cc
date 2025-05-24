@@ -258,12 +258,16 @@ Point Rect::CenterPoint() const {
   return Point(x() + width() / 2, y() + height() / 2);
 }
 
-void Rect::ClampToCenteredSize(const Size& size) {
-  int new_width = std::min(width(), size.width());
-  int new_height = std::min(height(), size.height());
-  int new_x = x() + (width() - new_width) / 2;
-  int new_y = y() + (height() - new_height) / 2;
-  SetRect(new_x, new_y, new_width, new_height);
+void Rect::ToCenteredSize(const Size& size) {
+  int new_x = x() + (width() - size.width()) / 2;
+  int new_y = y() + (height() - size.height()) / 2;
+  SetRect(new_x, new_y, size.width(), size.height());
+}
+
+void Rect::ClampToCenteredSize(const Size& to_size) {
+  gfx::Size new_size = size();
+  new_size.SetToMin(to_size);
+  ToCenteredSize(new_size);
 }
 
 void Rect::Transpose() {

@@ -37,7 +37,7 @@ OAuth2TokenFetcher::OAuth2TokenFetcher(
   DCHECK(delegate);
 }
 
-OAuth2TokenFetcher::~OAuth2TokenFetcher() {}
+OAuth2TokenFetcher::~OAuth2TokenFetcher() = default;
 
 void OAuth2TokenFetcher::StartExchangeFromAuthCode(
     const std::string& auth_code,

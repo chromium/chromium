@@ -84,7 +84,6 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
 
         TextView promptText = v.findViewById(R.id.prompt_text);
         promptText.setText(getPromptText());
-        promptText.setMovementMethod(LinkMovementMethod.getInstance());
 
         TextView resetText = v.findViewById(R.id.reset_text);
         resetText.setText(getResetText());

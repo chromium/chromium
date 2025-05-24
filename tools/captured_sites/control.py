@@ -4,8 +4,9 @@
 # found in the LICENSE file.
 """Runs captured sites framework recording and tests."""
 
-import sys
 import signal
+import sys
+import time
 
 import captured_sites_commands
 

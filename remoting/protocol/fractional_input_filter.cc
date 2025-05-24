@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "remoting/base/logging.h"
 #include "remoting/proto/event.pb.h"
 
@@ -101,11 +101,11 @@ bool FractionalInputFilter::ComputeXY(int& new_x,
   if (fractional.has_screen_id()) {
     auto screen_id = fractional.screen_id();
     VLOG(3) << "screen_id = " << screen_id;
-    auto it = base::ranges::find_if(video_layout_.video_track(),
-                                    [screen_id](const VideoTrackLayout& track) {
-                                      return track.has_screen_id() &&
-                                             track.screen_id() == screen_id;
-                                    });
+    auto it = std::ranges::find_if(video_layout_.video_track(),
+                                   [screen_id](const VideoTrackLayout& track) {
+                                     return track.has_screen_id() &&
+                                            track.screen_id() == screen_id;
+                                   });
     if (it == video_layout_.video_track().end()) {
       LOG(ERROR) << "screen_id " << screen_id
                  << " not found in the video layout.";

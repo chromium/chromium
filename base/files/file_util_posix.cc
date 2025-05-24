@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/files/file_util.h"
 
 #include <dirent.h>
@@ -376,7 +381,7 @@ bool DoDeleteFile(const FilePath& path, bool recursive) {
 
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
-    return DeleteContentUri(path);
+    return internal::DeleteContentUri(path);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -427,6 +432,38 @@ bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes) {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+
+// Checks if the given path is under ~/MyFiles or /media.
+// Recognizes the following patterns:
+// - "/home/chronos/user/MyFiles/<dir>[/...]"
+// - "/home/chronos/u-<id>/MyFiles/<dir>[/...]"
+// - "/media/<dir>[/...]"
+bool IsVisibleToUser(const FilePath& path) {
+  if (!path.IsAbsolute()) {
+    return false;
+  }
+
+  const std::vector parts = path.GetComponents();
+
+  // Since the path is absolute, the first part should be the root directory.
+  DCHECK(!parts.empty());
+  DCHECK_EQ(parts[0], "/");
+
+  // Is path under /media?
+  if (parts.size() > 2 && parts[1] == "media" && !parts[2].empty()) {
+    return true;
+  }
+
+  // Is path under ~/MyFiles?
+  return parts.size() > 5 && parts[1] == "home" && parts[2] == "chronos" &&
+         (parts[3] == "user" ||
+          (parts[3].starts_with("u-") && parts[3].size() > 2)) &&
+         parts[4] == "MyFiles" && !parts[5].empty();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
@@ -451,7 +488,7 @@ std::optional<FilePath> MakeAbsoluteFilePathNoResolveSymbolicLinks(
   // a relative |input|.
   if (input.IsAbsolute()) {
     collapsed_path = FilePath(components_span[0]);
-    components_span = components_span.subspan(1);
+    components_span = components_span.subspan<1>();
   } else {
     if (!GetCurrentDirectory(&collapsed_path)) {
       return std::nullopt;
@@ -596,7 +633,7 @@ bool PathExists(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
-    return ContentUriExists(path);
+    return internal::ContentUriExists(path);
   }
 #endif
   return access(path.value().c_str(), F_OK) == 0;
@@ -701,6 +738,14 @@ bool GetPosixFilePermissions(const FilePath& path, int* mode) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(mode);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Stat() for content URIs only implements dir bit currently, so fail for
+  // GetPosixFilePermissions() until permissions are implemented.
+  if (path.IsContentUri()) {
+    return false;
+  }
+#endif
+
   stat_wrapper_t file_info;
   // Uses stat(), because on symbolic link, lstat() does not return valid
   // permission bits in st_mode
@@ -738,8 +783,8 @@ bool SetPosixFilePermissions(const FilePath& path, int mode) {
 
 bool ExecutableExistsInPath(Environment* env,
                             const FilePath::StringType& executable) {
-  std::string path;
-  if (!env->GetVar("PATH", &path)) {
+  std::string path = env->GetVar("PATH").value_or("");
+  if (path.empty()) {
     LOG(ERROR) << "No $PATH variable. Assuming no " << executable << ".";
     return false;
   }
@@ -819,7 +864,7 @@ bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
   return fd.is_valid();
 }
 
-FilePath FormatTemporaryFileName(FilePath::StringPieceType identifier) {
+FilePath FormatTemporaryFileName(FilePath::StringViewType identifier) {
 #if BUILDFLAG(IS_APPLE)
   std::string_view prefix = base::apple::BaseBundleID();
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -868,7 +913,7 @@ static bool CreateTemporaryDirInDirImpl(const FilePath& base_dir,
 }
 
 bool CreateTemporaryDirInDir(const FilePath& base_dir,
-                             FilePath::StringPieceType prefix,
+                             FilePath::StringViewType prefix,
                              FilePath* new_dir) {
   FilePath::StringType mkdtemp_template(prefix);
   mkdtemp_template.append("XXXXXX");
@@ -889,23 +934,35 @@ bool CreateNewTempDirectory(const FilePath::StringType& prefix,
 bool CreateDirectoryAndGetError(const FilePath& full_path, File::Error* error) {
   ScopedBlockingCall scoped_blocking_call(
       FROM_HERE, BlockingType::MAY_BLOCK);  // For call to mkdir().
-  std::vector<FilePath> subpaths;
 
-  // Collect a list of all parent directories.
+  // Avoid checking subdirs if directory already exists.
+  if (DirectoryExists(full_path)) {
+    return true;
+  }
+
+  // Collect a list of all missing directories.
+  std::vector<FilePath> missing_subpaths({full_path});
   FilePath last_path = full_path;
-  subpaths.push_back(full_path);
   for (FilePath path = full_path.DirName(); path.value() != last_path.value();
        path = path.DirName()) {
-    subpaths.push_back(path);
+    if (DirectoryExists(path)) {
+      break;
+    }
+    missing_subpaths.push_back(path);
     last_path = path;
   }
 
-  // Iterate through the parents and create the missing ones.
-  for (const FilePath& subpath : base::Reversed(subpaths)) {
-    if (DirectoryExists(subpath)) {
-      continue;
+  // Iterate through the missing directories and create.
+  for (const FilePath& subpath : base::Reversed(missing_subpaths)) {
+    mode_t mode = S_IRWXU;
+
+#if BUILDFLAG(IS_CHROMEOS)
+    if (IsVisibleToUser(subpath)) {
+      mode |= S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
     }
-    if (mkdir(subpath.value().c_str(), 0700) == 0) {
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    if (mkdir(subpath.value().c_str(), mode) == 0) {
       continue;
     }
     // Mkdir failed, but it might have failed with EEXIST, or some other error
@@ -980,18 +1037,6 @@ bool IsLink(const FilePath& file_path) {
 
 bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   stat_wrapper_t file_info;
-#if BUILDFLAG(IS_ANDROID)
-  if (file_path.IsContentUri()) {
-    // Content-URIs may represent files on the local disk, or may be virtual
-    // files backed by a ContentProvider. First attempt to use fstat(fd) with a
-    // FD from ContentResolver#openAssetFileDescriptor(). Some files may not
-    // succeed at all, or may have size=0 in which case we will attempt to get
-    // info via DocumentFile.
-    File file = OpenContentUri(file_path, File::FLAG_OPEN | File::FLAG_READ);
-    return (file.IsValid() && file.GetInfo(results) && results->size > 0) ||
-           ContentUriGetFileInfo(file_path, results);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
   if (File::Stat(file_path, &file_info) != 0) {
     return false;
   }
@@ -1105,7 +1150,7 @@ bool WriteFileDescriptor(int fd, span<const uint8_t> data) {
 }
 
 bool WriteFileDescriptor(int fd, std::string_view data) {
-  return WriteFileDescriptor(fd, as_bytes(make_span(data)));
+  return WriteFileDescriptor(fd, as_byte_span(data));
 }
 
 bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
@@ -1214,7 +1259,7 @@ bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
 }
 
 bool AppendToFile(const FilePath& filename, std::string_view data) {
-  return AppendToFile(filename, as_bytes(make_span(data)));
+  return AppendToFile(filename, as_byte_span(data));
 }
 
 bool GetCurrentDirectory(FilePath* dir) {
@@ -1338,16 +1383,7 @@ bool GetShmemTempDir(bool executable, FilePath* path) {
 // Mac has its own implementation, this is for all other Posix systems.
 bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  File infile;
-#if BUILDFLAG(IS_ANDROID)
-  if (from_path.IsContentUri()) {
-    infile = OpenContentUri(from_path, File::FLAG_OPEN | File::FLAG_READ);
-  } else {
-    infile = File(from_path, File::FLAG_OPEN | File::FLAG_READ);
-  }
-#else
-  infile = File(from_path, File::FLAG_OPEN | File::FLAG_READ);
-#endif
+  File infile(from_path, File::FLAG_OPEN | File::FLAG_READ);
   if (!infile.IsValid()) {
     return false;
   }

@@ -32,8 +32,7 @@ struct EnumTraits<viz::mojom::ContextLostReason,
       case gpu::error::kInvalidGpuMessage:
         return viz::mojom::ContextLostReason::INVALID_GPU_MESSAGE;
     }
-    NOTREACHED_IN_MIGRATION();
-    return viz::mojom::ContextLostReason::UNKNOWN;
+    NOTREACHED();
   }
 
   static bool FromMojom(viz::mojom::ContextLostReason reason,

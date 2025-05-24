@@ -11,10 +11,9 @@ blink_modules_sources("ml") {
     "ml.h",
     "ml_context.cc",
     "ml_context.h",
-    "ml_trace.cc",
-    "ml_trace.h",
     "navigator_ml.cc",
     "navigator_ml.h",
+    "webnn/allow_shared_buffer_source_util.h",
     "webnn/ml_constant_operand.cc",
     "webnn/ml_constant_operand.h",
     "webnn/ml_error.cc",
@@ -23,6 +22,12 @@ blink_modules_sources("ml") {
     "webnn/ml_graph.h",
     "webnn/ml_graph_builder.cc",
     "webnn/ml_graph_builder.h",
+    "webnn/ml_graph_transform/layout_transformer.cc",
+    "webnn/ml_graph_transform/layout_transformer.h",
+    "webnn/ml_graph_transform/ml_graph_transformer.cc",
+    "webnn/ml_graph_transform/ml_graph_transformer.h",
+    "webnn/ml_graph_transform/pipeline.cc",
+    "webnn/ml_graph_transform/pipeline.h",
     "webnn/ml_graph_type_converter.cc",
     "webnn/ml_graph_type_converter.h",
     "webnn/ml_graph_utils.cc",
@@ -38,13 +43,13 @@ blink_modules_sources("ml") {
   deps = [
     "//services/webnn/public/cpp",
     "//services/webnn/public/mojom:mojom_blink",
+    "//third_party/blink/renderer/modules/webgpu",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "ml_trace_unittest.cc",
     "webnn/ml_graph_builder_test_utils.cc",
     "webnn/ml_graph_builder_test_utils.h",
     "webnn/ml_graph_test.cc",

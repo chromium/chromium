@@ -2,7 +2,7 @@ Name: Apache Maven
 Short Name: maven
 URL: https://maven.apache.org/index.html
 Version: 3.8.7
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: no

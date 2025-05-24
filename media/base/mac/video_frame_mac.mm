@@ -114,20 +114,6 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
   bool crop_needed = visible_rect != gfx::Rect(frame->coded_size());
 
   if (!crop_needed) {
-    // If the frame is backed by a pixel buffer, just return that buffer.
-    if (frame->CvPixelBuffer()) {
-      pixel_buffer.reset(frame->CvPixelBuffer(), base::scoped_policy::RETAIN);
-      if (!IsAcceptableCvPixelFormat(
-              frame->format(),
-              CVPixelBufferGetPixelFormatType(pixel_buffer.get()))) {
-        DLOG(ERROR) << "Dropping CVPixelBuffer w/ incorrect format.";
-        pixel_buffer.reset();
-      } else {
-        SetCvPixelBufferColorSpace(frame->ColorSpace(), pixel_buffer.get());
-      }
-      return pixel_buffer;
-    }
-
     // If the frame has a GMB, yank out its IOSurface if possible.
     if (frame->HasMappableGpuBuffer()) {
       auto handle = frame->GetGpuMemoryBufferHandle();

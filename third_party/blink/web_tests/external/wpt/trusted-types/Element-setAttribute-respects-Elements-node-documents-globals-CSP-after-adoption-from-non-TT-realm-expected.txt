@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] setAttribute and setAttributeNode respect the element's node document's global's CSP;\n Element=iframe; Parent=div; Attribute=srcdoc
+  assert_throws_js: function "() => {\n                  sourceElement.setAttributeNode(sourceAttr);\n                }" threw object "TypeError: Failed to execute 'setAttributeNode' on 'Element': This document requires 'TrustedHTML' assignment." ("TypeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] setAttribute and setAttributeNode respect the element's node document's global's CSP;\n Element=script; Parent=div; Attribute=src
+  assert_throws_js: function "() => {\n                  sourceElement.setAttributeNode(sourceAttr);\n                }" threw object "TypeError: Failed to execute 'setAttributeNode' on 'Element': This document requires 'TrustedScriptURL' assignment." ("TypeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] setAttribute and setAttributeNode respect the element's node document's global's CSP;\n Element=script; Parent=svg; Attribute=href
+  assert_throws_js: function "() => {\n                  sourceElement.setAttributeNode(sourceAttr);\n                }" threw object "TypeError: Failed to execute 'setAttributeNode' on 'Element': This document requires 'TrustedScriptURL' assignment." ("TypeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] setAttribute and setAttributeNode respect the element's node document's global's CSP;\n Element=script; Parent=svg; Attribute=xlink:href
+  assert_throws_js: function "() => {\n                  sourceElement.setAttributeNode(sourceAttr);\n                }" threw object "TypeError: Failed to execute 'setAttributeNode' on 'Element': This document requires 'TrustedScriptURL' assignment." ("TypeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+Harness: the test ran to completion.
+

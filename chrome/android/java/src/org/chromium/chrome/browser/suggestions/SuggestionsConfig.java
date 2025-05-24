@@ -21,8 +21,23 @@ public final class SuggestionsConfig {
     }
 
     /**
-     * Default value of referrer URL for content suggestions.
-     * It must be kept in sync with //components/feed/feed_feature_list.cc.
+     * Maximum number of tiles that is explicitly supported. UMA relies on this value, so even if
+     * the UI supports it, getting more can raise unexpected issues.
+     */
+    public static final int MAX_TILE_COUNT = 12;
+
+    /** Maximum number of custom tiles supported. In C++ backend this is `kMaxNumCustomLinks`. */
+    public static final int MAX_NUM_CUSTOM_LINKS = 8;
+
+    /** Maximum length of Custom Tiles name. */
+    public static final int MAX_CUSTOM_TILES_NAME_LENGTH = 50;
+
+    /** Maximum length of Custom Tiles URL. */
+    public static final int MAX_CUSTOM_TILES_URL_LENGTH = 2083;
+
+    /**
+     * Default value of referrer URL for content suggestions. It must be kept in sync with
+     * //components/feed/feed_feature_list.cc.
      */
     private static final String DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL =
             "https://www.google.com/";

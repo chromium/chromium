@@ -14,7 +14,8 @@ class FilePath;
 namespace installer {
 
 // Adds AppContainer ACEs to paths in support of the AppContainer sandbox.
-bool ConfigureAppContainerSandbox(base::span<const base::FilePath*> paths);
+bool ConfigureAppContainerSandbox(
+    base::span<const base::FilePath* const> paths);
 
 }  // namespace installer
 

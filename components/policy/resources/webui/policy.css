@@ -30,6 +30,11 @@ body > header {
 
 body > main {
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#policy-ui {
   padding: 12px;
 }
 

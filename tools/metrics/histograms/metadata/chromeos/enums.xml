@@ -188,6 +188,11 @@ chromium-metrics-reviews@google.com.
   <int value="134" label="TilingWindowResizeUp"/>
   <int value="135" label="TilingWindowResizeDown"/>
   <int value="136" label="ToggleMouseKeys"/>
+  <int value="137" label="ResizePipWindow"/>
+  <int value="138" label="ToggleGeminiApp"/>
+  <int value="139" label="ToggleDoNotDisturb"/>
+  <int value="140" label="ToggleCameraAllowed"/>
+  <int value="141" label="StartSunfishSession"/>
   <int value="9000" label="DebugClearUseKMeansPref"/>
   <int value="9001" label="DebugKeyboardBacklightToggle"/>
   <int value="9002" label="DebugMicrophoneMuteToggle"/>
@@ -217,6 +222,7 @@ chromium-metrics-reviews@google.com.
   <int value="9026" label="DevToggleUnifiedDesktop"/>
   <int value="9027" label="DebugToggleFocusModeState"/>
   <int value="9028" label="DebugStartSunfishSession"/>
+  <int value="9029" label="DebugShowTestWindow"/>
 </enum>
 
 <enum name="ArcIntentHandlerDestinationPlatform">
@@ -340,6 +346,31 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kBlurAndRelight"/>
 </enum>
 
+<enum name="CertProvBackendError">
+  <int value="0" label="Error unspecified"/>
+  <int value="1" label="Invalid operation"/>
+  <int value="2" label="Incosistent data"/>
+  <int value="3" label="Identity verification error"/>
+  <int value="4" label="CPP already exists"/>
+  <int value="5" label="Bad public key"/>
+  <int value="6" label="Invalid signature"/>
+  <int value="7" label="Instruction not yet available"/>
+  <int value="8" label="CA unavailable"/>
+  <int value="9" label="CA failure"/>
+  <int value="10" label="Profile not found"/>
+  <int value="11" label="User primary email not found"/>
+  <int value="12" label="CA connection not found"/>
+  <int value="13" label="Pubsub topic not found"/>
+  <int value="14" label="Bad adapter certifciate received"/>
+  <int value="15" label="Certificate provisioning process not found"/>
+  <int value="16" label="Immediate retry error zero"/>
+  <int value="17" label="Immediate retry error one"/>
+  <int value="18" label="Immediate retry error two"/>
+  <int value="19" label="Immediate retry error three"/>
+  <int value="20" label="Immediate retry error four"/>
+  <int value="21" label="Missing pubsub publisher permission"/>
+</enum>
+
 <enum name="CertProvisioningEvent">
   <int value="0" label="kRegisteredToInvalidationTopic"/>
   <int value="1" label="kInvalidationReceived"/>
@@ -371,6 +402,8 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="kImportCertificateInstructionReceived"/>
 </enum>
 
+<!-- LINT.IfChange(ChromeOSCameraClientType) -->
+
 <enum name="ChromeOSCameraClientType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Testing"/>
@@ -378,8 +411,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Android"/>
   <int value="4" label="PluginVM"/>
   <int value="5" label="AshChrome"/>
-  <int value="6" label="LacrosChrome"/>
+  <int value="6" label="DEPRECATED: LacrosChrome"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/capture/video/chromeos/mojom/cros_camera_service.mojom:CameraClientType) -->
 
 <enum name="ChromeOSCameraErrorType">
   <int value="1" label="Device"/>
@@ -408,6 +443,21 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Beta"/>
   <int value="4" label="Stable"/>
 </enum>
+
+<!-- LINT.IfChange(ChromeOSFallbackCountry) -->
+
+<enum name="ChromeOSFallbackCountry">
+  <int value="0" label="No statistics provider is available"/>
+  <int value="1" label="Statistics provider hasn't finished loading data"/>
+  <int value="2"
+      label="Loaded region is a group and not an individual country"/>
+  <int value="3" label="Region in VPD is too short for country code"/>
+  <int value="4" label="Region in VPD is too long for country code"/>
+  <int value="5" label="Valid country code parsed from VPD"/>
+  <int value="6" label="Removed subkey from country information"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/regional_capabilities/regional_capabilities_service_client.h:ChromeOSFallbackCountry) -->
 
 <enum name="ChromeOSIioServiceSensorUsage">
   <int value="0" label="ACCEL_base"/>
@@ -778,6 +828,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kLocked"/>
 </enum>
 
+<enum name="ClassManagementEnabled">
+  <int value="0" label="Class Management disabled"/>
+  <int value="1" label="Class Management enabled for student"/>
+  <int value="2" label="Class Management enabled for teacher"/>
+</enum>
+
 <enum name="ComboDeviceClassification">
   <int value="0" label="KnownKeyboardImposter"/>
   <int value="1" label="KnownMouseImposter"/>
@@ -1121,6 +1177,17 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="PWA selected and preferred"/>
 </enum>
 
+<!-- LINT.IfChange(K12AgeClassificationSegment) -->
+
+<enum name="K12UserAgeClassificationMatrix">
+  <summary>List of K12 user age classification.</summary>
+  <int value="0" label="K12 user age unspecified"/>
+  <int value="1" label="K12 user age under 18"/>
+  <int value="2" label="K12 user age equal or above 18"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/k12_age_classification_metrics_provider.h:K12AgeClassificationSegment,//components/policy/proto/device_management_backend.proto:K12AgeClassificationSegment) -->
+
 <enum name="KcerError">
   <summary>List of errors generated by the Kcer component.</summary>
   <int value="0" label="UnknownError"/>
@@ -1227,6 +1294,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Dictation"/>
   <int value="23" label="PrivacyScreenToggle"/>
   <int value="24" label="Accessibility"/>
+  <int value="25" label="DoNotDisturb"/>
 </enum>
 
 <enum name="KeyboardTopRowLayoutWithExtraSublayout">
@@ -1412,11 +1480,14 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="1" label="Outline"/>
   <int value="2" label="Settings Button"/>
   <int value="3" label="QA"/>
+  <int value="4" label="Elucidation Button"/>
+  <int value="5" label="Summary of Selection Button"/>
 </enum>
 
 <enum name="MahiFeature">
   <int value="0" label="Summary"/>
   <int value="1" label="QA"/>
+  <int value="2" label="Elucidation"/>
 </enum>
 
 <enum name="MahiMenuButton">
@@ -1425,6 +1496,8 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="Submit Question Button"/>
   <int value="3" label="Condensed Menu Button"/>
   <int value="4" label="Settings Button"/>
+  <int value="5" label="Elucidation Button"/>
+  <int value="6" label="Summary of Selection Button"/>
 </enum>
 
 <enum name="MahiProviderCreationStatus">
@@ -1452,6 +1525,37 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="0" label="NoMetadata"/>
   <int value="1" label="ClassificationOnly"/>
   <int value="2" label="HasButtonConfig"/>
+</enum>
+
+<enum name="MicrophoneMuteToggleDevices">
+  <int value="0" label="System Microphone Mute Jabra"/>
+  <int value="1" label="System Microphone Mute Logitech"/>
+  <int value="2" label="System Microphone Mute Poly"/>
+  <int value="3" label="System Microphone Mute Sony"/>
+  <int value="4" label="System Microphone Mute Google"/>
+  <int value="5" label="System Microphone Mute Other Has Keyboard"/>
+  <int value="6" label="System Microphone Mute Other Not Keyboard"/>
+  <int value="7" label="Phone Mute Jabra"/>
+  <int value="8" label="Phone Mute Logitech"/>
+  <int value="9" label="Phone Mute Poly"/>
+  <int value="10" label="Phone Mute Sony"/>
+  <int value="11" label="Phone Mute Google"/>
+  <int value="12" label="Phone Mute Other Has Keyboard"/>
+  <int value="13" label="Phone Mute Other Not Keyboard"/>
+  <int value="14" label="Start or Stop Microphone Capture Jabra"/>
+  <int value="15" label="Start or Stop Microphone Capture Logitech"/>
+  <int value="16" label="Start or Stop Microphone Capture Poly"/>
+  <int value="17" label="Start or Stop Microphone Capture Sony"/>
+  <int value="18" label="Start or Stop Microphone Capture Google"/>
+  <int value="19" label="Start or Stop Microphone Capture Other Has Keyboard"/>
+  <int value="20" label="Start or Stop Microphone Capture Other Not Keyboard"/>
+  <int value="21" label="Other Microphone Scan Code Jabra"/>
+  <int value="22" label="Other Microphone Scan Code Logitech"/>
+  <int value="23" label="Other Microphone Scan Code Poly"/>
+  <int value="24" label="Other Microphone Scan Code Sony"/>
+  <int value="25" label="Other Microphone Scan Code Google"/>
+  <int value="26" label="Other Microphone Scan Code Other Has Keyboard"/>
+  <int value="27" label="Other Microphone Scan Code Other Not Keyboard"/>
 </enum>
 
 <enum name="ModeEntryMetric">
@@ -1922,6 +2026,14 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
       label="Memfd execution attempt detected in the audit log file."/>
 </enum>
 
+<enum name="SelectedTextState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Eligible"/>
+  <int value="2" label="Empty"/>
+  <int value="3" label="Too short"/>
+  <int value="4" label="Too long"/>
+</enum>
+
 <enum name="SimulateRightClickModifier">
   <int value="0" label="None"/>
   <int value="1" label="Alt"/>
@@ -1949,13 +2061,6 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
   <int value="5" label="NetworkBandwidth"/>
   <int value="6" label="CameraFrameAnalysis"/>
   <int value="7" label="KeyboardBacklight"/>
-</enum>
-
-<enum name="UmaInitParamsResult">
-  <int value="0" label="Client ID and entropy sources were found"/>
-  <int value="1" label="Only the client ID was found"/>
-  <int value="2" label="Only entropy sources were found"/>
-  <int value="3" label="Neither the client ID nor entropy sources were found"/>
 </enum>
 
 <enum name="WebApkInstallResultChromeOS">

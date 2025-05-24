@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "net/spdy/spdy_http_utils.h"
 
@@ -227,7 +223,6 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
   // quic helpers but the header values for HTTP extensible priorities are
   // independent of quic.
   if (priority &&
-      base::FeatureList::IsEnabled(net::features::kPriorityHeader) &&
       headers->find(kHttp2PriorityHeader) == headers->end()) {
     uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority.value());
     bool incremental = info.priority_incremental;

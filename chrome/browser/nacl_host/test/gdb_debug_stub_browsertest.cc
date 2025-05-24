@@ -11,7 +11,6 @@
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/ppapi/ppapi_test.h"
 #include "components/nacl/browser/nacl_browser.h"
@@ -21,8 +20,7 @@
 
 class NaClGdbDebugStubTest : public PPAPINaClNewlibTest {
  public:
-  NaClGdbDebugStubTest() {
-  }
+  NaClGdbDebugStubTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
@@ -76,21 +74,18 @@ void NaClGdbDebugStubTest::RunDebugStubTest(const std::string& nacl_module,
 #else
 # define MAYBE_Empty Empty
 #endif
-
 IN_PROC_BROWSER_TEST_F(NaClGdbDebugStubTest, MAYBE_Empty) {
   RunDebugStubTest("Empty", "continue");
 }
 
 #if defined(ADDRESS_SANITIZER)
 # define MAYBE_Breakpoint DISABLED_Breakpoint
-#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    defined(ARCH_CPU_ARM_FAMILY)
+#elif BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM_FAMILY)
 // Timing out on ARM linux: http://crbug.com/238469
 # define MAYBE_Breakpoint DISABLED_Breakpoint
 #else
 # define MAYBE_Breakpoint Breakpoint
 #endif
-
 IN_PROC_BROWSER_TEST_F(NaClGdbDebugStubTest, MAYBE_Breakpoint) {
   RunDebugStubTest("Empty", "breakpoint");
 }

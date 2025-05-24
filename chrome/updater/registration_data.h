@@ -72,6 +72,11 @@ struct RegistrationRequest {
   // Date of install. The value is the number of days since Jan 1, 2007.
   std::optional<int> install_date;
 
+  // A unique identifier for the installer binary responsible for installing
+  // this application. This identifier comes from the tag of the binary, and is
+  // cleared after sending the first update check.
+  std::string install_id;
+
   // Opaque cohort string meaningful to the server.
   std::string cohort;
 
@@ -80,6 +85,9 @@ struct RegistrationRequest {
 
   // Server may use to move the app to a new cohort.
   std::string cohort_hint;
+
+  // `lang` of the app.
+  std::string lang;
 };
 
 }  // namespace updater

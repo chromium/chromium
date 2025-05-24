@@ -47,7 +47,7 @@ std::vector<uint8_t> StringViewToUint8Vector(std::string_view s) {
 }
 
 std::vector<uint8_t> String16ToUint8Vector(const std::u16string& s) {
-  auto bytes = base::as_bytes(base::make_span(s));
+  auto bytes = base::as_byte_span(s);
   return std::vector<uint8_t>(bytes.begin(), bytes.end());
 }
 

@@ -15,9 +15,7 @@ import android.os.Process;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +26,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwWindowCoverageTracker;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
@@ -49,7 +48,6 @@ import org.chromium.components.metrics.InstallerPackageType;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
-import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto.ChromeComponent;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -412,21 +410,6 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    public void testMetadata_accessibility() throws Throwable {
-        // Wait for a metrics log, since AccessibilityMetricsProvider only logs this histogram
-        // during log collection. Do not assert anything about this histogram before this point (ex.
-        // do not assert total count == 0), because this would race with the initial metrics log.
-        mPlatformServiceBridge.waitForNextMetricsLog();
-
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Accessibility.Android.ScreenReader.EveryReport"));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
     public void testMetadata_debugging() throws Throwable {
         // Wait for a metrics log, since DebuggingMetricsProvider only logs this histogram
         // during log collection. Do not assert anything about this histogram before this point (ex.
@@ -485,29 +468,6 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
         assertEquals(appPackageName, systemProfile.getAppPackageName());
-    }
-
-    private static TypeSafeMatcher<ChromeComponent> matchesChromeComponent(
-            ChromeComponent expected) {
-        return new TypeSafeMatcher<ChromeComponent>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText(expected.toString());
-            }
-
-            @Override
-            protected void describeMismatchSafely(
-                    ChromeComponent item, Description mismatchDescription) {
-                mismatchDescription.appendText("Doesn't match " + item.toString());
-            }
-
-            @Override
-            public boolean matchesSafely(ChromeComponent item) {
-                return expected.getComponentId() == item.getComponentId()
-                        && expected.getVersion().equals(item.getVersion())
-                        && expected.getOmahaFingerprint() == item.getOmahaFingerprint();
-            }
-        };
     }
 
     @Test
@@ -619,11 +579,9 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                 totalSamples);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertEquals(
-                            1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
-                    mAwContents.onDetachedFromWindow();
-                    assertEquals(
-                            0, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                    assertEquals(1, AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                    mAwContents.getViewMethods().onDetachedFromWindow();
+                    assertEquals(0, AwWindowCoverageTracker.sWindowCoverageTrackers.size());
                 });
     }
 

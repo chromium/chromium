@@ -34,8 +34,6 @@ export interface AccountManagerBrowserProxy {
   migrateAccount(accountEmail: string): void;
 
   removeAccount(account: Account): void;
-
-  changeArcAvailability(account: Account, isAvailableInArc: boolean): void;
 }
 
 let instance: AccountManagerBrowserProxy|null = null;
@@ -68,9 +66,5 @@ export class AccountManagerBrowserProxyImpl implements
 
   removeAccount(account: Account): void {
     chrome.send('removeAccount', [account]);
-  }
-
-  changeArcAvailability(account: Account, isAvailableInArc: boolean): void {
-    chrome.send('changeArcAvailability', [account, isAvailableInArc]);
   }
 }

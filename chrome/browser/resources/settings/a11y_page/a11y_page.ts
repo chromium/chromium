@@ -21,7 +21,6 @@ import '../settings_page/settings_subpage.js';
 // <if expr="is_win or is_linux or is_macosx">
 import './ax_annotations_section.js';
 // </if>
-
 // <if expr="is_win or is_macosx">
 import './live_caption_section.js';
 
@@ -34,8 +33,10 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BaseMixin} from '../base_mixin.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
+import type {Route} from '../router.js';
 import {Router} from '../router.js';
 
 import type {AccessibilityBrowserProxy} from './a11y_browser_proxy.js';
@@ -49,8 +50,25 @@ import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_t
 // </if>
 // clang-format on
 
+/**
+ * Must be kept in sync with the C++ enum of the same name in
+ * chrome/browser/ui/toasts/toast_metrics.h.
+ */
+export enum ToastAlertLevel {
+  ALL = 0,
+  ACTIONABLE = 1,
+  // Must be last.
+  COUNT = 1,
+}
+
 const SettingsA11yPageElementBase =
     PrefsMixin(WebUiListenerMixin(BaseMixin(PolymerElement)));
+
+export interface SettingsA11yPageElement {
+  $: {
+    toastToggle: SettingsToggleButtonElement,
+  };
+}
 
 export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   static get is() {
@@ -67,14 +85,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
        * The current active route.
        */
       currentRoute: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
-       * Preferences state.
-       */
-      prefs: {
         type: Object,
         notify: true,
       },
@@ -106,6 +116,16 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
       hasScreenReader_: {
         type: Boolean,
         value: false,
+      },
+
+      /**
+       * Whether to show the AxTreeFixing subpage.
+       */
+      showAxTreeFixingSection_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('axTreeFixingEnabled');
+        },
       },
 
       // <if expr="is_win or is_linux or is_macosx">
@@ -156,24 +176,43 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
           return showOverscroll;
         },
       },
+
+      // <if expr="not is_chromeos">
+
+      /** Valid toast alert level option. */
+      toastAlertLevelEnum_: {
+        type: Object,
+        value: ToastAlertLevel,
+      },
+
+      numericUncheckedToastAlertValues_: {
+        type: Array,
+        value: () => [ToastAlertLevel.ACTIONABLE],
+      },
+
+      // </if>
     };
   }
 
   private browserProxy_: AccessibilityBrowserProxy =
       AccessibilityBrowserProxyImpl.getInstance();
 
+  declare currentRoute: Route;
   // <if expr="not is_chromeos">
-  languages: LanguagesModel;
-  languageHelper: LanguageHelper;
+  declare languages: LanguagesModel;
+  declare languageHelper: LanguageHelper;
 
-  private enableLiveCaption_: boolean;
+  declare private enableLiveCaption_: boolean;
+  declare private numericUncheckedToastAlertValues_: ToastAlertLevel[];
   // </if>
 
-  private captionSettingsOpensExternally_: boolean;
-  private hasScreenReader_: boolean;
-  private showOverscrollHistoryNavigationToggle_: boolean;
+  declare private focusConfig_: FocusConfig;
+  declare private captionSettingsOpensExternally_: boolean;
+  declare private hasScreenReader_: boolean;
+  declare private showOverscrollHistoryNavigationToggle_: boolean;
+  declare private showAxTreeFixingSection_: boolean;
   // <if expr="is_win or is_linux or is_macosx">
-  private showAxAnnotationsSection_: boolean;
+  declare private showAxAnnotationsSection_: boolean;
   // </if>
 
   override connectedCallback() {
@@ -260,6 +299,15 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   // <if expr="is_macosx">
   private onMacTrackpadGesturesLinkClick_() {
     this.browserProxy_.openTrackpadGesturesSettings();
+  }
+  // </if>
+
+  // <if expr="not is_chromeos">
+  private onToastAlertLevelChange_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Toast.FrequencyPrefChanged',
+        this.getPref<number>('settings.toast.alert_level').value,
+        ToastAlertLevel.COUNT);
   }
   // </if>
 }

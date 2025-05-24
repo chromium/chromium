@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -135,8 +136,6 @@ public class SadTabTest {
      * Confirm that after a successive refresh of a failed tab that failed to load, change the
      * button from "Reload" to "Send Feedback". If reloaded a third time and it is successful it
      * reverts from "Send Feedback" to "Reload".
-     *
-     * @throws IllegalArgumentException
      */
     @Test
     @SmallTest
@@ -206,7 +205,10 @@ public class SadTabTest {
                 () -> {
                     SadTab sadTab = SadTab.from(tab);
                     sadTab.removeIfPresent();
-                    sadTab.show(tab.getContext(), () -> {}, () -> {});
+                    sadTab.show(
+                            tab.getContext(),
+                            CallbackUtils.emptyRunnable(),
+                            CallbackUtils.emptyRunnable());
                 });
     }
 

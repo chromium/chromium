@@ -102,8 +102,15 @@ struct UrlLoadParams {
   // Note: Currently only applies to tabs that are not instant-loaded.
   std::u16string placeholder_title;
 
+  // Whether the URL should be loaded as part of pinned tabs.
+  bool load_pinned = false;
+
   // Whether the URL should be loaded as part of a tab group.
   bool load_in_group = false;
+
+  // Whether the current mode (incognito/regular) should be updated to match the
+  // one from this URL (for foreground loads only).
+  bool switch_mode_if_needed = true;
 
   // The tab group where the URL should be loaded (if null and `load_in_group`
   // the URL is loaded in a new tab group).

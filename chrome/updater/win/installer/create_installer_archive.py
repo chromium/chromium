@@ -62,14 +62,10 @@ def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose, fast):
     RunSystemCommand(cmd, verbose)
 
 
-def CopyAllFilesToStagingDir(config, staging_dir, build_dir, timestamp,
-                             include_enterprise_companion):
+def CopyAllFilesToStagingDir(config, staging_dir, build_dir, timestamp):
     """Copies the files required for installer archive."""
     CopySectionFilesToStagingDir(config, 'GENERAL', staging_dir, build_dir,
                                  timestamp)
-    if include_enterprise_companion:
-        CopySectionFilesToStagingDir(config, 'ENTERPRISE_COMPANION',
-                                     staging_dir, build_dir, timestamp)
 
 
 def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
@@ -90,7 +86,7 @@ def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
             if not os.path.exists(dst_path):
                 if not os.path.exists(os.path.dirname(dst_path)):
                     os.makedirs(os.path.dirname(dst_dir))
-                g_archive_inputs.append(src_path)
+                g_archive_inputs.append(os.path.relpath(src_path, src_dir))
                 shutil.copy(src_path, dst_path)
                 os.utime(dst_path, (os.stat(dst_path).st_atime, timestamp))
         os.utime(dst_dir, (os.stat(dst_dir).st_atime, timestamp))
@@ -187,12 +183,13 @@ def CreateArchiveFile(options, staging_dir, timestamp):
                                 staging_file)
 
         # Finally, write the depfile referencing the inputs.
+        inputs = sorted(set(g_archive_inputs))
         with open(options.depfile, 'wb') as f:
             f.write(
                 PathFixup(os.path.relpath(archive_file, options.build_dir)) +
                 ': \\\n')
-            f.write('  ' +
-                    ' \\\n  '.join(PathFixup(x) for x in g_archive_inputs))
+            f.write('  ' + ' \\\n  '.join(PathFixup(x) for x in inputs))
+            f.write('\n')
 
     # It is important to use abspath to create the path to the directory because
     # if you use a relative path without any .. sequences then 7za.exe uses the
@@ -275,7 +272,8 @@ def DoComponentBuildTasks(staging_dir, build_dir, setup_runtime_deps):
     setup_component_dlls = ParseDLLsFromDeps(build_dir, setup_runtime_deps)
 
     for setup_component_dll in setup_component_dlls:
-        g_archive_inputs.append(setup_component_dll)
+        g_archive_inputs.append(os.path.relpath(setup_component_dll,
+                                                build_dir))
         shutil.copy(setup_component_dll, installer_dir)
 
 
@@ -288,8 +286,7 @@ def main(options):
 
     # Copy the files from the build dir.
     CopyAllFilesToStagingDir(config, staging_dir, options.build_dir,
-                             options.timestamp,
-                             options.include_enterprise_companion)
+                             options.timestamp)
 
     if options.component_build == '1':
         DoComponentBuildTasks(staging_dir, options.build_dir,
@@ -357,14 +354,6 @@ def _ParseOptions():
     parser.add_option('--timestamp',
                       type='int',
                       help='Timestamp to set archive entry modified times to.')
-    parser.add_option(
-        '--include_enterprise_companion',
-        action='store_true',
-        dest='include_enterprise_companion',
-        default=False,
-        help=
-        'Whether the Chrome Enterprise Companion App should be included in the '
-        'archive.')
 
     options, _ = parser.parse_args()
     if not options.build_dir:

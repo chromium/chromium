@@ -4,17 +4,18 @@
 
 // Use the <code>chrome.printing</code> API to send print jobs to printers
 // installed on Chromebook.
-[platforms=("chromeos", "lacros"),
+[platforms=("chromeos"),
 implemented_in="chrome/browser/extensions/api/printing/printing_api.h"]
 namespace printing {
   dictionary SubmitJobRequest {
     // The print job to be submitted.
-    // The only supported content type is "application/pdf", and the
+    // Supported content types are "application/pdf" and "image/png". The
     // <a href="https://developers.google.com/cloud-print/docs/cdd#cjt">Cloud Job Ticket</a>
     // shouldn't include <code>FitToPageTicketItem</code>,
-    // <code>PageRangeTicketItem</code>, <code>ReverseOrderTicketItem</code>
-    // and <code>VendorTicketItem</code> fields since they are
-    // irrelevant for native printing. All other fields must be present.
+    // <code>PageRangeTicketItem</code> and <code>ReverseOrderTicketItem</code>
+    // fields since they are irrelevant for native printing.
+    // <code>VendorTicketItem</code> is optional. All other fields must be
+    // present.
     printerProvider.PrintJob job;
 
     // Used internally to store the blob uuid after parameter customization and
@@ -153,6 +154,7 @@ namespace printing {
   callback CancelJobCallback = void();
   callback GetPrintersCallback = void(Printer[] printers);
   callback GetPrinterInfoCallback = void(GetPrinterInfoResponse response);
+  callback getJobStatusCallback = void(JobStatus status);
 
   interface Functions {
     // Submits the job for printing. If the extension is not listed in
@@ -183,6 +185,14 @@ namespace printing {
     static void getPrinterInfo(
         DOMString printerId,
         GetPrinterInfoCallback callback);
+
+    // Returns the status of the print job. This call will fail with a runtime
+    // error if the print job with the given `jobId` doesn't exist.
+    // `jobId`: The id of the print job to return the status of. This should be
+    // the same id received in a $(ref:SubmitJobResponse).
+    static void getJobStatus(
+        DOMString jobId,
+        getJobStatusCallback callback);
   };
 
   interface Properties {

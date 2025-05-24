@@ -50,7 +50,9 @@ class CSSStyleSheetInit;
 class Document;
 class Element;
 class ExceptionState;
+class InspectorGhostRules;
 class MediaQuerySet;
+class QuietMutationScope;
 class ScriptState;
 class StyleSheetContents;
 class TreeScope;
@@ -186,7 +188,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
   // True when this stylesheet is among the TreeScope's adopted style sheets.
   //
   // https://drafts.csswg.org/cssom/#dom-documentorshadowroot-adoptedstylesheets
-  bool IsAdoptedByTreeScope(TreeScope& tree_scope);
+  bool IsAdoptedByTreeScope(const TreeScope& tree_scope);
 
   // Associated document for constructed stylesheet. Always non-null for
   // constructed stylesheets, always null otherwise.
@@ -259,15 +261,27 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
   void Trace(Visitor*) const override;
 
  private:
+  friend class QuietMutationScope;
+  friend class InspectorGhostRules;
+
   bool IsAlternate() const;
   bool IsCSSStyleSheet() const override { return true; }
   String type() const override { return "text/css"; }
 
+  // True if the StyleSheetContents is shared with another CSSStyleSheet.
+  // See StyleSheetContents::IsCacheableForStyleElement()/
+  // IsCacheableForStyleElement() and their call sites.
+  bool IsContentsShared() const;
+  void SetContents(StyleSheetContents*);
   void ReattachChildRuleCSSOMWrappers();
 
   bool CanAccessRules() const;
 
   void SetLoadCompleted(bool);
+
+  // See QuietMutationScope.
+  void BeginQuietMutation();
+  void EndQuietMutation(StyleSheetContents* original_contents);
 
   FRIEND_TEST_ALL_PREFIXES(
       CSSStyleSheetTest,

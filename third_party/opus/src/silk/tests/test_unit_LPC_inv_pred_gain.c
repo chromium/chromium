@@ -125,5 +125,6 @@ int main(void) {
         }
     }
     printf("silk_LPC_inverse_pred_gain() optimization passed\n");
+    RESTORE_STACK;
     return 0;
 }

@@ -347,9 +347,8 @@ EnumTraits<network::mojom::SecureDnsPolicy, net::SecureDnsPolicy>::ToMojom(
     case net::SecureDnsPolicy::kDisable:
       return network::mojom::SecureDnsPolicy::DISABLE;
     case net::SecureDnsPolicy::kBootstrap:
-      NOTREACHED_IN_MIGRATION();  // The bootstrap policy is only for use within
-                                  // the net component.
-      return network::mojom::SecureDnsPolicy::DISABLE;
+      NOTREACHED();  // The bootstrap policy is only for use within the net
+                     // component.
   }
 }
 

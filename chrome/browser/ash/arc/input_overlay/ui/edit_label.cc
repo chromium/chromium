@@ -68,7 +68,7 @@ std::u16string GetAccessibleNameSuffixForDirection(Direction direction) {
       return l10n_util ::GetStringUTF16(
           IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_RIGHT_A11Y_LABEL);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -187,7 +187,7 @@ void EditLabel::SetTextLabel(const std::u16string& text) {
   SetText(text);
   UpdateAccessibleName();
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       text == kUnknownBind && !action_->is_new()
           ? cros_tokens::kCrosSysErrorHighlight
           : cros_tokens::kCrosSysHighlightShape,
@@ -207,8 +207,8 @@ void EditLabel::SetNameTagState(bool is_error,
 }
 
 void EditLabel::UpdateAccessibleName() {
-  const std::u16string a11y_name =
-      GetDisplayTextAccessibleName(label()->GetText());
+  const std::u16string a11y_name(
+      GetDisplayTextAccessibleName(std::u16string(label()->GetText())));
   const bool unassigned =
       a11y_name.empty() || a11y_name.compare(kUnknownBind) == 0;
   const std::u16string suffix_instruction = l10n_util::GetStringUTF16(
@@ -243,7 +243,7 @@ void EditLabel::UpdateAccessibleName() {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -255,17 +255,17 @@ void EditLabel::ChangeFocusToNextLabel() {
 }
 
 void EditLabel::SetToDefault() {
-  SetEnabledTextColorIds(IsInputUnbound() && !action_->is_new()
-                             ? cros_tokens::kCrosSysError
-                             : cros_tokens::kCrosSysOnPrimaryContainer);
+  SetEnabledTextColors(IsInputUnbound() && !action_->is_new()
+                           ? cros_tokens::kCrosSysError
+                           : cros_tokens::kCrosSysOnPrimaryContainer);
   SetBorder(nullptr);
 }
 
 void EditLabel::SetToFocused() {
-  SetEnabledTextColorIds(IsInputUnbound() && !action_->is_new()
-                             ? cros_tokens::kCrosSysError
-                             : cros_tokens::kCrosSysOnSurface);
-  SetBorder(views::CreateThemedRoundedRectBorder(
+  SetEnabledTextColors(IsInputUnbound() && !action_->is_new()
+                           ? cros_tokens::kCrosSysError
+                           : cros_tokens::kCrosSysOnSurface);
+  SetBorder(views::CreateRoundedRectBorder(
       /*thickness=*/2, kCornerRadius, cros_tokens::kCrosSysPrimary));
 }
 
@@ -370,7 +370,7 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   DCHECK(input);
   controller_->OnInputBindingChange(action_, std::move(input));

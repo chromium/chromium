@@ -17,7 +17,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
  */
 function encodeFormData(url: string): string {
   return encodeURIComponent(url).replace('%20', '+');
-};
+}
 
 /**
  * Returns element if it's of a type that can submit a form or null otherwise.
@@ -31,7 +31,7 @@ function asSubmitElement(element: Element): HTMLButtonElement|HTMLInputElement|
     return element;
   }
   return null;
-};
+}
 
 /**
  * Returns the value stored in the element's `name` property. If the
@@ -57,7 +57,7 @@ function isDisabledElement(element: Element): boolean {
 function isCheckableElement(element: Element): boolean {
   return element instanceof HTMLInputElement &&
       (element.type === 'radio' || element.type === 'checkbox');
-};
+}
 
 // Records the active submit element of <form> being submitted.
 let activeSubmitElement: HTMLButtonElement|HTMLInputElement|null = null;
@@ -77,12 +77,12 @@ function getActiveSubmitElement(form: HTMLFormElement): HTMLButtonElement|
   for (const element of form.elements) {
     const submitElement = asSubmitElement(element);
     if (submitElement) {
-      return submitElement
+      return submitElement;
     }
   }
 
   return null;
-};
+}
 
 /**
  * A set of all the text categories of <input>'s type attribute.
@@ -109,14 +109,14 @@ function isInDefaultState(element: Element): boolean {
 
   if (element instanceof HTMLSelectElement) {
     for (const option of element.options) {
-      if (option.selected != option.defaultSelected) {
+      if (option.selected !== option.defaultSelected) {
         return false;
       }
     }
   }
 
   return true;
-};
+}
 
 /**
  * Looks for a suitable search text field in |form|. Returns undefined if |form|
@@ -157,7 +157,7 @@ function findSuitableSearchInputElement(form: HTMLFormElement):
     }
   }
   return result;
-};
+}
 
 /**
  * Generates a searchable URL from `form` if it's a valid searchable <form>.
@@ -174,8 +174,9 @@ function generateSearchableUrl(form: Element): string|undefined {
   // Only consider <form> that navigates in current frame, because currently
   // TemplateURLs are created by SearchEngineTabHelper, which cannot handle
   // navigation across WebState.
-  if (form.target && form.target !== '_self')
+  if (form.target && form.target !== '_self') {
     return;
+  }
 
   // Only consider forms that GET data.
   if (form.method && form.method.toLowerCase() !== 'get') {
@@ -232,7 +233,7 @@ function generateSearchableUrl(form: Element): string|undefined {
   // dropped. Use URL class to get rid of these query args.
   const url = new URL(form.action);
   return url.origin + url.pathname + '?' + queryArgs.join('&');
-};
+}
 
 /**
  * Adds listener for 'click' event on `document`. When a submit element is
@@ -261,7 +262,7 @@ document.addEventListener('click', function(event) {
   if (event.defaultPrevented) {
     return;
   }
-  let element = event.target;
+  const element = event.target;
 
   if (!(element instanceof Element)) {
     return;
@@ -305,15 +306,15 @@ document.addEventListener('submit', function(event) {
 function findOpenSearchLink(): void {
   const links = document.getElementsByTagName('link');
   for (const link of links) {
-    if (link.type == 'application/opensearchdescription+xml') {
+    if (link.type === 'application/opensearchdescription+xml') {
       sendWebKitMessage('SearchEngineMessage', {
         'command': 'openSearch',
         'pageUrl': document.URL,
-        'osddUrl': link.href
+        'osddUrl': link.href,
       });
       return;
     }
-  };
+  }
 }
 
 // If document is loaded, finds the Open Search <link>, otherwise waits until

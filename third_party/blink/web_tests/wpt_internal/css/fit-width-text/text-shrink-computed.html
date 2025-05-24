@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>getComputedStyle().textShrink</title>
+<link rel="help" href="https://github.com/explainers-by-googlers/css-fit-text/blob/main/README.md">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<body>
+<div id="target" style="font-size:20px; line-height:1;"></div>
+<script>
+test_computed_value('text-shrink', 'none');
+test_computed_value('text-shrink', 'per-line');
+test_computed_value('text-shrink', 'consistent');
+
+test_computed_value('text-shrink', 'per-line scale', 'per-line');
+test_computed_value('text-shrink', 'consistent font-size');
+
+test_computed_value('text-shrink', 'per-line 32px');
+test_computed_value('text-shrink', 'consistent 3em', 'consistent 60px');
+
+test_computed_value('text-shrink', 'per-line scale 4ch', 'per-line 40px');
+test_computed_value('text-shrink', 'consistent scale-inline 2lh', 'consistent scale-inline 40px');
+</script>
+</body>

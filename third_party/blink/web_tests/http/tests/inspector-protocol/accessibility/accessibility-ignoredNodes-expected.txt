@@ -423,7 +423,6 @@ RootWebArea
     none
       *combobox
         MenuListPopup
-        MenuListPopup
 {
     childIds : <object>
     chromeRole : {
@@ -603,15 +602,10 @@ RootWebArea
     ignored : true
     ignoredReasons : [
         [0] : {
-            name : inertSubtree
+            name : inertElement
             value : {
-                relatedNodes : [
-                    [0] : {
-                        idref : inert-root
-                        nodeResult : div#inert-root
-                    }
-                ]
-                type : idref
+                type : boolean
+                value : true
             }
         }
     ]

@@ -17,11 +17,13 @@ import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERMS_OF_SERVICE_URL} from './feedback_constants.js';
-import {FeedbackFlowButtonClickEvent, FeedbackFlowState} from './feedback_flow.js';
+import type {FeedbackFlowButtonClickEvent} from './feedback_flow.js';
+import {FeedbackFlowState} from './feedback_flow.js';
 import {showScrollingEffects} from './feedback_utils.js';
 import {FileAttachmentElement} from './file_attachment.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
-import {FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report} from './os_feedback_ui.mojom-webui.js';
+import type {FeedbackContext, FeedbackServiceProviderInterface, Report} from './os_feedback_ui.mojom-webui.js';
+import {FeedbackAppPreSubmitAction} from './os_feedback_ui.mojom-webui.js';
 import {getTemplate} from './share_data_page.html.js';
 
 /**
@@ -110,14 +112,15 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   }
 
   /**
-   * If feedback app has been requested from settings search, we do not need to
-   * collect system info and metrics data by default.
+   * If feedback app has been requested from Settings Search and the search
+   * query is not "fingerprint", we do not need to collect system info and
+   * metrics data by default. See crbug.com/285618656 for more information.
    */
   protected checkSysInfoAndMetrics(): boolean {
     if (!this.feedbackContext) {
       return true;
     }
-    return !this.feedbackContext.fromSettingsSearch;
+    return !this.feedbackContext.settingsSearchDoNotRecordMetrics;
   }
 
   shouldShowPerformanceTraceCheckbox(): boolean {
@@ -305,7 +308,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     const report: Report = ({
       feedbackContext: {
         assistantDebugInfoAllowed: false,
-        fromSettingsSearch: false,
+        settingsSearchDoNotRecordMetrics: false,
         isInternalAccount: false,
         wifiDebugLogsAllowed: false,
         traceId: 0,

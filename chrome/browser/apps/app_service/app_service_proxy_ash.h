@@ -15,7 +15,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
@@ -25,8 +24,6 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
-#include "chrome/browser/apps/app_service/subscriber_crosapi.h"
-#include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -59,7 +56,6 @@ class BrowserAppInstanceTracker;
 class PackageId;
 class PromiseAppRegistryCache;
 class PromiseAppService;
-class StandaloneBrowserApps;
 class UninstallDialog;
 
 struct PromiseApp;
@@ -91,13 +87,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   apps::AppPlatformMetrics* AppPlatformMetrics();
   apps::AppPlatformMetricsService* AppPlatformMetricsService();
 
+  // TODO(373972275): Remove BrowserAppInstanceTracker,
+  // BrowserAppInstanceRegistry and InstanceRegistryUpdater.
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
   apps::BrowserAppInstanceRegistry* BrowserAppInstanceRegistry();
-
-  apps::StandaloneBrowserApps* StandaloneBrowserApps();
-
-  // Registers `crosapi_subscriber_`.
-  void RegisterCrosApiSubScriber(SubscriberCrosapi* subscriber);
 
   // Sets the publisher for `app_type` is unavailable, to allow
   // AppService to remove apps for `app_type`, and clean up launch requests,
@@ -264,8 +257,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                UninstallDialog* uninstall_dialog);
 
   // apps::AppServiceProxyBase overrides:
-  void InitializePreferredAppsForAllSubscribers() override;
-  void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
   void OnLaunched(LaunchCallback callback,
                   LaunchResult&& launch_result) override;
@@ -370,8 +361,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       const apps::IntentFilterPtr& filter,
       const apps::AppUpdate& update) override;
 
-  raw_ptr<SubscriberCrosapi> crosapi_subscriber_ = nullptr;
-
   std::unique_ptr<PublisherHost> publisher_host_;
 
   AppIconReader icon_reader_;
@@ -380,13 +369,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   bool arc_is_registered_ = false;
 
   apps::InstanceRegistry instance_registry_;
-
-  std::unique_ptr<apps::BrowserAppInstanceTracker>
-      browser_app_instance_tracker_;
-  std::unique_ptr<apps::BrowserAppInstanceRegistry>
-      browser_app_instance_registry_;
-  std::unique_ptr<apps::InstanceRegistryUpdater>
-      browser_app_instance_app_service_updater_;
 
   std::unique_ptr<apps::PromiseAppService> promise_app_service_;
 
@@ -409,10 +391,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   std::unique_ptr<apps::AppPlatformMetricsService>
       app_platform_metrics_service_;
-
-  // App service require the Lacros Browser to keep alive for web apps.
-  // TODO(crbug.com/40167449): Support Lacros not keeping alive.
-  std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive> keep_alive_;
 
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>

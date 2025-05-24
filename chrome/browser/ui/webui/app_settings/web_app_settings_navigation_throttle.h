@@ -9,10 +9,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_throttle.h"
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 // A NavigationThrottle that blocks request when navigating to
 // chrome://app-settings/<app-id> page with an invalid app-id.
 class WebAppSettingsNavigationThrottle : public content::NavigationThrottle {
@@ -20,12 +16,12 @@ class WebAppSettingsNavigationThrottle : public content::NavigationThrottle {
   // Returns a NavigationThrottle when:
   // - we are navigating to the new tab page, and
   // - the main frame is pointed at the new tab URL.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   static void DisableForTesting();
 
-  explicit WebAppSettingsNavigationThrottle(content::NavigationHandle* handle);
+  explicit WebAppSettingsNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
   ~WebAppSettingsNavigationThrottle() override;
 
   // content::NavigationThrottle:

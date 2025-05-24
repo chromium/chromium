@@ -78,6 +78,8 @@ class ASH_EXPORT BrightnessControllerChromeos
       const power_manager::BacklightBrightnessChange& change) override;
   void AmbientLightSensorEnabledChanged(
       const power_manager::AmbientLightSensorChange& change) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
 
   // LoginDataDispatcher::Observer:
   void OnFocusPod(const AccountId& account_id) override;
@@ -86,6 +88,8 @@ class ASH_EXPORT BrightnessControllerChromeos
   void RecordHistogramForBrightnessAction(BrightnessAction brightness_action);
   void OnGetBrightnessAfterLogin(std::optional<double> brightness_percent);
   void OnGetHasAmbientLightSensor(std::optional<bool> has_sensor);
+  void OnGetSwitchStates(
+      std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
   void RestoreBrightnessSettings(const AccountId& account_id);
   void MaybeRestoreBrightnessSettings();
   void RestoreBrightnessSettingsOnFirstLogin();
@@ -117,6 +121,9 @@ class ASH_EXPORT BrightnessControllerChromeos
 
   // True if device has an ambient light sensor.
   std::optional<bool> has_sensor_ = false;
+
+  chromeos::PowerManagerClient::LidState lid_state_ =
+      chromeos::PowerManagerClient::LidState::OPEN;
 
   // This PrefChangeRegistrar is used to check when the synced profile pref for
   // the ambient light sensor value has finished syncing.

@@ -7,16 +7,17 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import android.content.Context;
 import android.view.KeyEvent;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
@@ -24,8 +25,9 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  * Container view for the {@link ChipView}. Chips should be initially horizontally aligned with the
  * Content view and stretch to the end of the encompassing BaseSuggestionView.
  */
+@NullMarked
 public class ActionChipsView extends RecyclerView {
-    private @NonNull RecyclerViewSelectionController mSelectionController;
+    private RecyclerViewSelectionController mSelectionController;
 
     /**
      * Constructs a new pedal view.
@@ -40,8 +42,9 @@ public class ActionChipsView extends RecyclerView {
         var layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         setLayoutManager(layoutManager);
 
-        mSelectionController = new RecyclerViewSelectionController(layoutManager);
-        mSelectionController.setCycleThroughNoSelection(true);
+        mSelectionController =
+                new RecyclerViewSelectionController(
+                        layoutManager, SelectionController.Mode.SATURATING_WITH_SENTINEL);
         addOnChildAttachStateChangeListener(mSelectionController);
 
         setMinimumHeight(
@@ -89,10 +92,9 @@ public class ActionChipsView extends RecyclerView {
 
     @Override
     public void setSelected(boolean isSelected) {
-        mSelectionController.resetSelection();
+        mSelectionController.reset();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void setSelectionControllerForTesting(RecyclerViewSelectionController controller) {
         mSelectionController = controller;
     }

@@ -7,7 +7,7 @@
 @implementation FormSuggestionProviderQuery
 
 - (BOOL)hasFocusType {
-  return [_type isEqual:@"focus"];
+  return [_type isEqualToString:@"focus"];
 }
 
 - (instancetype)initWithFormName:(NSString*)formName
@@ -17,7 +17,8 @@
                        fieldType:(NSString*)fieldType
                             type:(NSString*)type
                       typedValue:(NSString*)typedValue
-                         frameID:(NSString*)frameID {
+                         frameID:(NSString*)frameID
+                    onlyPassword:(BOOL)onlyPassword {
   self = [super init];
   if (self) {
     _formName = [formName copy];
@@ -28,6 +29,7 @@
     _type = [type copy];
     _typedValue = [typedValue copy];
     _frameID = [frameID copy];
+    _onlyPassword = onlyPassword;
   }
   return self;
 }

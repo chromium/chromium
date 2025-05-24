@@ -7,10 +7,13 @@ package org.chromium.webapk.shell_apk;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Helper for using application level {@link SharedPreferences} in a consistent way, with the same
  * file name and using the application context.
  */
+@NullMarked
 public class PrefUtils {
     private PrefUtils() {}
 

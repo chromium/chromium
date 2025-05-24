@@ -11,7 +11,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> est débranchée.</translation>
 <translation id="1473110567575736769">Minuteur de 3 secondes</translation>
 <translation id="148783771699678004">Déplacement vers le haut à droite</translation>
-<translation id="1545749641540134597">Scanner le code QR</translation>
+<translation id="1545749641540134597">Scanner le QR code</translation>
 <translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Standard</translation>
 <translation id="1620510694547887537">Caméra</translation>
@@ -29,10 +29,9 @@
 <translation id="2064538373111010176">Option <ph name="CAMERA" /> activée</translation>
 <translation id="2134029355740465625">Paramètres vidéo</translation>
 <translation id="2144806332417375165">Paramètres vidéo personnalisés</translation>
-<translation id="2175927920773552910">Code QR</translation>
+<translation id="2175927920773552910">QR code</translation>
 <translation id="2244252133441425811">Activer le sélecteur de FPS vidéo</translation>
 <translation id="2271433936731426666">Activer les instantanés vidéo en taille réelle</translation>
-<translation id="2281736597583450397">Profitez d'une netteté accrue grâce au zoom amélioré</translation>
 <translation id="2320741269052147773">Pano à gauche</translation>
 <translation id="2360840973209616515">L'appli Appareil photo est gérée par votre administrateur.
         Pour en savoir plus, contactez-le.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5976160379964388480">Autres</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
-<translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6197807149213783179">Enregistrer les métadonnées</translation>
 <translation id="6233780560267770709">3 par 3</translation>
 <translation id="6243827288366940320">Ratio optimal</translation>
@@ -122,7 +120,6 @@
 S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exemple de photo ou de vidéo et décrire le problème. (Par exemple, la photo est trop sombre ou le sujet n'est pas net.)</translation>
 <translation id="6519884562954018934">Rejoindre <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Partager</translation>
-<translation id="6586509689874700895">Appuyez d'abord sur <ph name="BUTTON_NAME" /> pour faire un zoom avant. Une fois la photo prise, vous verrez des détails plus nets.</translation>
 <translation id="659539649712855529">Texte copié : <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Afficher toutes les résolutions</translation>
 <translation id="6631515515009660915">Miroir désactivé</translation>
@@ -168,7 +165,6 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="8609951387004618906">Ouvrir <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Couper le son du micro. Le son est désormais coupé.</translation>
-<translation id="8712637175834984815">OK</translation>
 <translation id="8730621377337864115">OK</translation>
 <translation id="8732462232047530626">Prévisualiser les métadonnées</translation>
 <translation id="874854738381978209">Réseau Wi-Fi détecté.</translation>

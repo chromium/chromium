@@ -25,7 +25,7 @@ GURL WebStringToGURL(const WebString& web_string) {
   }
 
   // GURL can consume UTF-16 directly.
-  return GURL(std::u16string_view(str.Characters16(), str.length()));
+  return GURL(str.View16());
 }
 
 }  // namespace blink

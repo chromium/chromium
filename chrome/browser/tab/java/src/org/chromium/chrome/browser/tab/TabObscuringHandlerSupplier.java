@@ -4,17 +4,18 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a
  * {@link TabObscuringHandler}.
  */
+@NullMarked
 public class TabObscuringHandlerSupplier extends UnownedUserDataSupplier<TabObscuringHandler> {
     private static final UnownedUserDataKey<TabObscuringHandlerSupplier> KEY =
             new UnownedUserDataKey<TabObscuringHandlerSupplier>(TabObscuringHandlerSupplier.class);

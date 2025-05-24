@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_INTERFACE_BRIDGE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_INTERFACE_BRIDGE_BASE_H_
 
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8-forward.h"
@@ -80,14 +80,14 @@ class PLATFORM_EXPORT V8InterfaceBridgeBase {
   using InstallUnconditionalPropertiesFuncType =
       void (*)(v8::Isolate* isolate,
                const DOMWrapperWorld& world,
-               v8::Local<v8::Template> instance_template,
-               v8::Local<v8::Template> prototype_template,
+               v8::Local<v8::ObjectTemplate> instance_template,
+               v8::Local<v8::ObjectTemplate> prototype_template,
                v8::Local<v8::Template> interface_template);
   using InstallContextIndependentPropertiesFuncType =
       void (*)(v8::Isolate* isolate,
                const DOMWrapperWorld& world,
-               v8::Local<v8::Template> instance_template,
-               v8::Local<v8::Template> prototype_template,
+               v8::Local<v8::ObjectTemplate> instance_template,
+               v8::Local<v8::ObjectTemplate> prototype_template,
                v8::Local<v8::Template> interface_template);
   using InstallContextDependentPropertiesFuncType =
       void (*)(v8::Local<v8::Context> context,

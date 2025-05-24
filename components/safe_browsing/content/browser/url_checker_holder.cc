@@ -66,7 +66,8 @@ UrlCheckerHolder::UrlCheckerHolder(
     hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
     bool is_async_check,
     bool check_allowlist_before_hash_database,
-    SessionID tab_id)
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info)
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id),
       navigation_id_(navigation_id),
@@ -83,7 +84,8 @@ UrlCheckerHolder::UrlCheckerHolder(
       is_async_check_(is_async_check),
       check_allowlist_before_hash_database_(
           check_allowlist_before_hash_database),
-      tab_id_(tab_id) {}
+      tab_id_(tab_id),
+      referring_app_info_(referring_app_info) {}
 
 UrlCheckerHolder::~UrlCheckerHolder() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -109,7 +111,7 @@ void UrlCheckerHolder::Start(const StartParams& params) {
         can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
         content::GetUIThreadTaskRunner({}), url_lookup_service_,
         hash_realtime_service_, hash_realtime_selection_, is_async_check_,
-        check_allowlist_before_hash_database_, tab_id_);
+        check_allowlist_before_hash_database_, tab_id_, referring_app_info_);
   }
 
   CheckUrl(params.url, params.method);

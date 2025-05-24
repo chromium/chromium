@@ -34,6 +34,9 @@ class MediaRouterUiForTestBase {
   // destructor will have already completed.
   void TearDown();
 
+  // NOTE: the dialog being showable depends on the button used to open it
+  // being visible. Callers should ensure that the button is visible before
+  // calling ShowDialog(), e.g. by playing video to make the GMC button appear.
   virtual void ShowDialog() = 0;
   virtual bool IsDialogShown() const = 0;
   virtual void HideDialog() = 0;

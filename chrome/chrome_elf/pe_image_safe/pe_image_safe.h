@@ -16,8 +16,8 @@
 
 namespace pe_image_safe {
 
-constexpr DWORD kPageSize = 4096;
-constexpr DWORD kImageSizeNotSet = std::numeric_limits<DWORD>::max();
+inline constexpr DWORD kPageSize = 4096;
+inline constexpr DWORD kImageSizeNotSet = std::numeric_limits<DWORD>::max();
 
 enum class ImageBitness { kUnknown, k32, k64 };
 

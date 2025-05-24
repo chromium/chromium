@@ -6,8 +6,10 @@
 
 use std::collections::BTreeMap;
 
+use anyhow::{Context, Result};
 use semver::Version;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 
 /// Set of dependencies for a particular usage: final artifacts, tests, or
 /// build scripts.
@@ -73,12 +75,16 @@ pub struct CargoManifest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workspace: Option<WorkspaceSpec>,
     /// Regular dependencies built into production code.
-    #[serde(
-        default,
-        skip_serializing_if = "DependencySet::is_empty",
-        serialize_with = "toml::ser::tables_last"
-    )]
+    #[serde(default, skip_serializing_if = "DependencySet::is_empty")]
     pub dependencies: CargoDependencySet,
+}
+
+impl CargoManifest {
+    pub fn from_path(path: &Path) -> Result<Self> {
+        let context = || format!("Error reading `Cargo.toml` from `{}`", path.display());
+        let file_content = std::fs::read_to_string(path).with_context(context)?;
+        toml::de::from_str(&file_content).with_context(context)
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

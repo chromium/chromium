@@ -36,7 +36,8 @@ class TestImageController : public ImageController {
   // the ImageController is over-ridden here.
   TestImageController()
       : ImageController(base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-                        base::SingleThreadTaskRunner::GetCurrentDefault()) {
+                        base::SingleThreadTaskRunner::GetCurrentDefault(),
+                        base::DoNothing()) {
     SetMaxImageCacheLimitBytesForTesting(kMaxImageCacheSizeBytes);
   }
 
@@ -55,9 +56,9 @@ class TestImageController : public ImageController {
     locked_images_.erase(id);
   }
 
-  ImageDecodeRequestId QueueImageDecode(
-      const DrawImage& image,
-      ImageDecodedCallback callback) override {
+  ImageDecodeRequestId QueueImageDecode(const DrawImage& image,
+                                        ImageDecodedCallback callback,
+                                        bool speculative) override {
     ImageDecodeRequestId request_id = next_image_request_id_++;
 
     decoded_images_.push_back(image);

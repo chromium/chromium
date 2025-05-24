@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/dragdrop/drop_target_win.h"
 
@@ -76,7 +77,8 @@ class DesktopDropTargetWin : public ui::DropTargetWin,
   // once when the user enters the associated HWND. But inside that HWND there
   // could be multiple aura windows, so we need to generate drag enter events
   // for them.
-  raw_ptr<aura::Window> target_window_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      target_window_observation_{this};
 };
 
 }  // namespace views

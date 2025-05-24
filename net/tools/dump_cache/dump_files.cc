@@ -36,7 +36,7 @@
 #include "net/disk_cache/blockfile/stats.h"
 #include "net/disk_cache/blockfile/storage_block-inl.h"
 #include "net/disk_cache/blockfile/storage_block.h"
-#include "net/url_request/view_cache_helper.h"
+#include "net/tools/dump_cache/dump_cache_helper.h"
 
 namespace {
 
@@ -323,7 +323,7 @@ bool CacheDumper::HexDump(disk_cache::CacheAddr addr, std::string* out) {
     return false;
 
   base::StringAppendF(out, "0x%x:\n", addr);
-  net::ViewCacheHelper::HexDump(buffer.get(), size, out);
+  DumpCacheHelper::HexDump(buffer.get(), size, out);
   return true;
 }
 
@@ -377,9 +377,11 @@ void DumpRankings(disk_cache::CacheAddr addr,
 
   if (verbose) {
     printf("dirty: %d\n", rankings.dirty);
-    if (rankings.last_used != rankings.last_modified)
-      printf("used: %s\n", ToLocalTime(rankings.last_used).c_str());
-    printf("modified: %s\n", ToLocalTime(rankings.last_modified).c_str());
+    printf("used: %s\n", ToLocalTime(rankings.last_used).c_str());
+    if (rankings.last_used != rankings.no_longer_used_last_modified) {
+      printf("(removed) modified: %s\n",
+             ToLocalTime(rankings.no_longer_used_last_modified).c_str());
+    }
     printf("hash: 0x%x\n", rankings.self_hash);
     printf("----------\n\n");
   } else {
@@ -602,8 +604,8 @@ int DumpAllocation(const base::FilePath& file) {
     return -1;
 
   std::string out;
-  net::ViewCacheHelper::HexDump(reinterpret_cast<char*>(&header.allocation_map),
-                                sizeof(header.allocation_map), &out);
+  DumpCacheHelper::HexDump(reinterpret_cast<char*>(&header.allocation_map),
+                           sizeof(header.allocation_map), &out);
   printf("%s\n", out.c_str());
   return 0;
 }

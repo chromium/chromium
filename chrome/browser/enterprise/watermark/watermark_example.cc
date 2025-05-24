@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/stringprintf.h"
 #include "cc/paint/paint_canvas.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

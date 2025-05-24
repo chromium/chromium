@@ -47,7 +47,7 @@ public class KeySystemTest extends AwParameterizedTest {
         }
     }
 
-    private TestAwContentsClient mContentsClient = new EmeAllowingAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new EmeAllowingAwContentsClient();
     private AwContents mAwContents;
 
     public KeySystemTest(AwSettingsMutation param) {
@@ -91,7 +91,7 @@ public class KeySystemTest extends AwParameterizedTest {
                     mActivityTestRule.executeJavaScriptAndWaitForResult(
                             mAwContents, mContentsClient, "result");
         } catch (Exception e) {
-            Assert.fail("Unable to get result");
+            throw new AssertionError("Unable to get result", e);
         }
         return result;
     }
@@ -139,14 +139,6 @@ public class KeySystemTest extends AwParameterizedTest {
     public void testSupportPlatformKeySystem() throws Throwable {
         Assert.assertEquals(
                 getPlatformKeySystemExpectations(),
-                isKeySystemSupported("x-com.oem.test-keysystem"));
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @SmallTest
-    public void testSupportPlatformKeySystemNoPrefix() throws Throwable {
-        Assert.assertEquals(
-                "\"NotSupportedError\"", isKeySystemSupported("com.oem.test-keysystem"));
+                isKeySystemSupported("com.oem.test-keysystem"));
     }
 }

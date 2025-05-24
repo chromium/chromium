@@ -113,11 +113,24 @@ void AsyncSharedStorageDatabaseImpl::Delete(
 
 void AsyncSharedStorageDatabaseImpl::Clear(
     url::Origin context_origin,
-    base::OnceCallback<void(OperationResult)> callback) {
+    base::OnceCallback<void(OperationResult)> callback,
+    DataClearSource source) {
   DCHECK(callback);
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::Clear)
-      .WithArgs(std::move(context_origin))
+      .WithArgs(std::move(context_origin), source)
+      .Then(std::move(callback));
+}
+
+void AsyncSharedStorageDatabaseImpl::BatchUpdate(
+    url::Origin context_origin,
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options,
+    base::OnceCallback<void(BatchUpdateResult)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_.AsyncCall(&SharedStorageDatabase::BatchUpdate)
+      .WithArgs(std::move(context_origin), std::move(methods_with_options))
       .Then(std::move(callback));
 }
 

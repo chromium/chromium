@@ -97,7 +97,7 @@ void ActionTypeButtonGroup::Init() {
       move_button->SetSelected(true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kRadioGroup);

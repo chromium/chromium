@@ -21,7 +21,7 @@ body=undefined body.length~undefined
 original=1322 encoded~300
 
 Results for /resources/square20.bmp encoding=png q=undefined sizeOnly=undefined
-body=string body.length~100
+body=string body.length~200
 original=1322 encoded~100
 
 Results for /resources/load-and-stall.php?name=dummy.html&mimeType=image%2Fpng encoding=png q=undefined sizeOnly=undefined

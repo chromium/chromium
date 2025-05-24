@@ -44,7 +44,6 @@ namespace ash {
 
 struct AcceleratorData;
 class ExitWarningHandler;
-class DebugDelegate;
 
 // AcceleratorControllerImpl provides functions for registering or unregistering
 // global keyboard accelerators, which are handled earlier than any windows. It
@@ -56,6 +55,16 @@ class ASH_EXPORT AcceleratorControllerImpl
       public AshAcceleratorConfiguration::Observer,
       public AcceleratorPrefs::Observer {
  public:
+  // Used to record the keyboard type which triggers a screenshot action via the
+  // overview key. Do not reorder values of this enum.
+  enum class OverviewBasedScreenshotKeyboardType {
+    kNonChromeOSKeyboard,
+    kChromeOSKeyboardWithScreenshot,
+    kChromeOSKeyboardWithoutScreenshot,
+    kMinValue = kNonChromeOSKeyboard,
+    kMaxValue = kChromeOSKeyboardWithoutScreenshot,
+  };
+
   // TestApi is used for tests to get internal implementation details.
   class TestApi {
    public:
@@ -187,9 +196,6 @@ class ASH_EXPORT AcceleratorControllerImpl
     return accelerator_configuration_;
   }
 
-  // Sets |DebugDelegate| which is implemented by lacros-chrome.
-  void SetDebugDelegate(DebugDelegate* delegate);
-
  private:
   // A map for looking up actions from accelerators.
   using AcceleratorActionMap = ui::AcceleratorMap<AcceleratorAction>;
@@ -215,10 +221,6 @@ class ASH_EXPORT AcceleratorControllerImpl
   // data the action needs.
   void PerformAction(AcceleratorAction action,
                      const ui::Accelerator& accelerator);
-
-  // Performs |action| on |DebugDelegate|s if registered and debug accelerators
-  // are enabled.
-  void PerformDebugActionOnDelegateIfEnabled(AcceleratorAction action);
 
   // Returns whether performing |action| should consume the key event.
   bool ShouldActionConsumeKeyEvent(AcceleratorAction action);
@@ -294,10 +296,6 @@ class ASH_EXPORT AcceleratorControllerImpl
   // Timer used to prevent the input gain from recording each time the user
   // presses a volume key while setting the desired volume.
   base::DelayTimer output_volume_metric_delay_timer_;
-
-  // Please refer to the comment on |DebugInterfaceAsh| for the lifetime of this
-  // pointer.
-  raw_ptr<DebugDelegate> debug_delegate_ = nullptr;
 
   std::unique_ptr<InputDeviceSettingsNotificationController>
       notification_controller_;

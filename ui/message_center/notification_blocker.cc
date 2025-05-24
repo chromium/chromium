@@ -41,8 +41,7 @@ bool NotificationBlocker::ShouldShowNotification(
 }
 
 void NotificationBlocker::NotifyBlockingStateChanged() {
-  for (auto& observer : observers_)
-    observer.OnBlockingStateChanged(this);
+  observers_.Notify(&Observer::OnBlockingStateChanged, this);
 }
 
 }  // namespace message_center

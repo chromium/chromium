@@ -105,8 +105,7 @@ class ShutdownNotifierFactory
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
-    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-        context, /*force_guest_profile=*/true);
+    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
   }
 };
 
@@ -225,8 +224,6 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::~InProgressRequest() {
       TRACE_EVENT_FLAG_FLOW_IN, "state", state_);
 
   if (request_.keepalive && !for_cors_preflight_) {
-    UMA_HISTOGRAM_ENUMERATION("Extensions.WebRequest.KeepaliveRequestState",
-                              state_);
     if (base::FeatureList::IsEnabled(
             extensions_features::kReportKeepaliveUkm)) {
       ukm::builders::Extensions_WebRequest_KeepaliveRequestFinished(
@@ -397,20 +394,6 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::SetPriority(
     int32_t intra_priority_value) {
   if (target_loader_.is_bound()) {
     target_loader_->SetPriority(priority, intra_priority_value);
-  }
-}
-
-void WebRequestProxyingURLLoaderFactory::InProgressRequest::
-    PauseReadingBodyFromNet() {
-  if (target_loader_.is_bound()) {
-    target_loader_->PauseReadingBodyFromNet();
-  }
-}
-
-void WebRequestProxyingURLLoaderFactory::InProgressRequest::
-    ResumeReadingBodyFromNet() {
-  if (target_loader_.is_bound()) {
-    target_loader_->ResumeReadingBodyFromNet();
   }
 }
 
@@ -645,10 +628,16 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnHeadersReceived(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
       "for_cors_preflight", for_cors_preflight_);
 
+  auto parsed_headers = base::MakeRefCounted<net::HttpResponseHeaders>(headers);
   if (!current_request_uses_header_client_) {
     std::move(callback).Run(net::OK, std::nullopt, std::nullopt);
 
-    if (for_cors_preflight_) {
+    // Do not finish proxied preflight requests that require proxy auth.
+    // The request is not finished yet, give control back to network service
+    // which will start authentication process.
+    const int status_code = parsed_headers->response_code();
+    if (for_cors_preflight_ &&
+        status_code != net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
       // CORS preflight is supported only when "extraHeaders" is specified.
       // Deletes |this|.
       factory_->RemoveRequest(network_service_request_id_, request_id_);
@@ -658,8 +647,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnHeadersReceived(
 
   on_headers_received_callback_ = std::move(callback);
   current_response_ = network::mojom::URLResponseHead::New();
-  current_response_->headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>(headers);
+  current_response_->headers = std::move(parsed_headers);
   current_response_->remote_endpoint = remote_endpoint;
   HandleResponseOrRedirectHeaders(
       base::BindOnce(&InProgressRequest::ContinueToHandleOverrideHeaders,
@@ -905,7 +893,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
         pending_follow_redirect_params_->modified_headers.SetHeader(
             set_header, *header_value);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
 
@@ -1031,8 +1019,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       state_ = State::kRejectedByOnAuthRequired;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   auth_credentials_ = std::nullopt;
@@ -1541,6 +1528,9 @@ void WebRequestProxyingURLLoaderFactory::StartProxying(
     content::ContentBrowserClient::URLLoaderFactoryType loader_factory_type,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  TRACE_EVENT("extensions",
+              "WebRequestProxyingURLLoaderFactory::StartProxying");
 
   auto proxy = std::make_unique<WebRequestProxyingURLLoaderFactory>(
       browser_context, render_process_id, frame_routing_id, view_routing_id,

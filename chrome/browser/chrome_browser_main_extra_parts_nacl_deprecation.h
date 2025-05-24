@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "components/prefs/pref_change_registrar.h"
 
 // Controls whether any NaCl plugins are allowed to be loaded.
 // This can be overridden by enterprise policy. Exposed for testing.
@@ -23,6 +24,14 @@ class ChromeBrowserMainExtraPartsNaclDeprecation
   // signal early enough to child processes. This is necessary since plugins are
   // loaded before field trial initialization.
   void PostEarlyInitialization() override;
+
+  // Used for cleanup of a pref observer.
+  void PostMainMessageLoopRun() override;
+
+ private:
+  void NaclAllowedChanged();
+
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_EXTRA_PARTS_NACL_DEPRECATION_H_

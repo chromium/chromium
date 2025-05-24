@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -40,8 +41,9 @@ int FindNextWordForward(base::span<const UChar> chars, int position) {
   while (position != kTextBreakDone) {
     // We stop searching when the character preceeding the break
     // is alphanumeric or underscore.
-    if (position < len && (WTF::unicode::IsAlphanumeric(chars[position - 1]) ||
-                           chars[position - 1] == kLowLineCharacter)) {
+    const auto prev = base::checked_cast<size_t>(position - 1);
+    if (position < len && (WTF::unicode::IsAlphanumeric(chars[prev]) ||
+                           chars[prev] == kLowLineCharacter)) {
       return position;
     }
 
@@ -58,9 +60,11 @@ int FindNextWordBackward(base::span<const UChar> chars, int position) {
   while (position != kTextBreakDone) {
     // We stop searching when the character following the break
     // is alphanumeric or underscore.
-    if (position > 0 && (WTF::unicode::IsAlphanumeric(chars[position]) ||
-                         chars[position] == kLowLineCharacter))
+    const auto cur = base::checked_cast<size_t>(position);
+    if (position > 0 && (WTF::unicode::IsAlphanumeric(chars[cur]) ||
+                         chars[cur] == kLowLineCharacter)) {
       return position;
+    }
 
     position = it->preceding(position);
   }

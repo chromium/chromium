@@ -17,7 +17,7 @@
 #include "printing/native_drawing_context.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #elif BUILDFLAG(IS_APPLE)
 #include <CoreGraphics/CoreGraphics.h>
 #endif

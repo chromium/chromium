@@ -137,8 +137,9 @@ CreateOpaqueOrTransparentButtonPointerStyleProvider() {
 
 - (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
                        styleForRegion:(UIPointerRegion*)region {
-  if (!interaction.view.window)
+  if (!interaction.view.window) {
     return nil;
+  }
 
   UIPointerHoverEffect* effect = [UIPointerHoverEffect
       effectWithPreview:[[UITargetedPreview alloc]

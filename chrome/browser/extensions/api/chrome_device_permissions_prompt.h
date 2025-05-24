@@ -13,7 +13,7 @@ class ChromeDevicePermissionsPrompt
   explicit ChromeDevicePermissionsPrompt(content::WebContents* web_contents)
       : extensions::DevicePermissionsPrompt(web_contents) {}
 
-  ~ChromeDevicePermissionsPrompt() override {}
+  ~ChromeDevicePermissionsPrompt() override = default;
 
  private:
   void ShowDialog() override;

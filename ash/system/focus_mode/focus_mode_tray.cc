@@ -23,6 +23,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "base/check.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -51,25 +52,6 @@ constexpr auto kProgressIndicatorInsets = gfx::Insets(-6);
 constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 constexpr base::TimeDelta kTaskItemViewFadeOutDuration =
     base::Milliseconds(200);
-
-std::u16string GetAccessibleTrayName(
-    const FocusModeSession::Snapshot& session_snapshot,
-    const size_t congratulatory_index) {
-  if (session_snapshot.state == FocusModeSession::State::kEnding) {
-    return focus_mode_util::GetCongratulatoryTextAndEmoji(congratulatory_index);
-  }
-
-  const std::u16string duration_string =
-      session_snapshot.remaining_time < base::Minutes(1)
-          ? l10n_util::GetStringUTF16(
-                IDS_ASH_STATUS_TRAY_FOCUS_MODE_SESSION_LESS_THAN_ONE_MINUTE)
-          : focus_mode_util::GetDurationString(session_snapshot.remaining_time,
-                                               /*digital_format=*/false);
-
-  return l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
-      duration_string);
-}
 
 std::u16string GetAccessibleBubbleName(
     const FocusModeSession::Snapshot& session_snapshot,
@@ -107,7 +89,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
     // Set the background color is not opaque.
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase, kTaskItemViewCornerRadius));
 
     const bool is_network_connected = glanceables_util::IsNetworkConnected();
@@ -133,11 +115,11 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
     task_title_ = AddChildView(std::make_unique<views::Label>());
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *task_title_);
-    task_title_->SetEnabledColorId(is_network_connected
-                                       ? cros_tokens::kCrosSysOnSurface
-                                       : cros_tokens::kCrosSysDisabled);
+    task_title_->SetEnabledColor(is_network_connected
+                                     ? cros_tokens::kCrosSysOnSurface
+                                     : cros_tokens::kCrosSysDisabled);
     task_title_->SetText(title);
-    task_title_->SetTooltipText(title);
+    task_title_->SetCustomTooltipText(title);
     task_title_->SetBorder(views::CreateEmptyBorder(kTaskTitleLabelInsets));
     task_title_->SetEnabled(is_network_connected);
   }
@@ -155,7 +137,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
   void UpdateTitle(const std::u16string& title) {
     radio_button_->GetViewAccessibility().SetDescription(title);
     task_title_->SetText(title);
-    task_title_->SetTooltipText(title);
+    task_title_->SetCustomTooltipText(title);
   }
 
   // Sets `radio_button_` as toggled which will update the button with a check
@@ -175,7 +157,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
         TypographyProvider::Get()
             ->ResolveTypographyToken(TypographyToken::kCrosButton2)
             .DeriveWithStyle(gfx::Font::FontStyle::STRIKE_THROUGH));
-    task_title_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+    task_title_->SetEnabledColor(cros_tokens::kCrosSysSecondary);
   }
 
  private:
@@ -263,6 +245,8 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
                       controller->in_ending_moment());
   tasks_observation_.Observe(&controller->tasks_model());
   controller->AddObserver(this);
+
+  UpdateAccessibleName();
 }
 
 FocusModeTray::~FocusModeTray() {
@@ -285,16 +269,6 @@ void FocusModeTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   }
 
   CloseBubble();
-}
-
-std::u16string FocusModeTray::GetAccessibleNameForTray() {
-  if (!session_snapshot_) {
-    return std::u16string();
-  }
-
-  return GetAccessibleTrayName(
-      session_snapshot_.value(),
-      FocusModeController::Get()->congratulatory_index());
 }
 
 std::u16string FocusModeTray::GetAccessibleNameForBubble() {
@@ -341,6 +315,18 @@ void FocusModeTray::ShowBubble() {
   auto* controller = FocusModeController::Get();
   CHECK(controller->current_session());
 
+  session_snapshot_ =
+      controller->current_session()->GetSnapshot(base::Time::Now());
+
+  // In the ending moment, we need to make sure that `OnEndingBubbleShowing()`
+  // is called to hide the nudge (if it is showing) before we show the bubble.
+  // This is to prevent unexpected focus controller window activation issues.
+  if (session_snapshot_->state == FocusModeSession::State::kEnding) {
+    controller->OnEndingBubbleShowing();
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+        NudgeCatalogName::kFocusModeEndingMomentNudge);
+  }
+
   auto bubble_view =
       std::make_unique<TrayBubbleView>(CreateInitParamsForTrayBubble(
           /*tray=*/this, /*anchor_to_shelf_corner=*/false));
@@ -358,8 +344,8 @@ void FocusModeTray::ShowBubble() {
   ending_moment_view_ = bubble_view_container_->AddChildView(
       std::make_unique<FocusModeEndingMomentView>());
 
-  session_snapshot_ =
-      controller->current_session()->GetSnapshot(base::Time::Now());
+  UpdateAccessibleName();
+  bubble_view->UpdateAccessibleName();
   UpdateBubbleViews(session_snapshot_.value());
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
@@ -370,12 +356,6 @@ void FocusModeTray::ShowBubble() {
   UpdateProgressRing();
 
   controller->tasks_model().RequestUpdate();
-
-  if (session_snapshot_->state == FocusModeSession::State::kEnding) {
-    controller->OnEndingBubbleShown();
-    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
-        NudgeCatalogName::kFocusModeEndingMomentNudge);
-  }
 }
 
 void FocusModeTray::UpdateTrayItemColor(bool is_active) {
@@ -412,15 +392,17 @@ void FocusModeTray::OnFocusModeChanged(FocusModeSession::State session_state) {
   auto current_session = focus_mode_controller->current_session();
   if (!current_session) {
     session_snapshot_.reset();
+    UpdateAccessibleName();
     return;
   }
 
   session_snapshot_ = current_session->GetSnapshot(base::Time::Now());
-  image_view_->SetTooltipText(
-      GetAccessibleTrayName(session_snapshot_.value(),
-                            focus_mode_controller->congratulatory_index()));
+  UpdateAccessibleName();
 
   if (bubble_) {
+    if (auto* bubble_view = bubble_->GetBubbleView()) {
+      bubble_view->UpdateAccessibleName();
+    }
     UpdateBubbleViews(session_snapshot_.value());
   } else if (session_snapshot_->state == FocusModeSession::State::kEnding) {
     bounce_in_animation_finished_ = false;
@@ -431,9 +413,10 @@ void FocusModeTray::OnFocusModeChanged(FocusModeSession::State session_state) {
 void FocusModeTray::OnTimerTick(
     const FocusModeSession::Snapshot& session_snapshot) {
   session_snapshot_ = session_snapshot;
-  image_view_->SetTooltipText(GetAccessibleTrayName(
-      session_snapshot_.value(),
-      FocusModeController::Get()->congratulatory_index()));
+  UpdateAccessibleName();
+  if (bubble_ && bubble_->GetBubbleView()) {
+    bubble_->GetBubbleView()->UpdateAccessibleName();
+  }
 
   // We only paint the progress ring if it has reached the next threshold of
   // progress. This is to try and decrease power usage of Focus mode when the
@@ -452,9 +435,10 @@ void FocusModeTray::OnTimerTick(
 void FocusModeTray::OnActiveSessionDurationChanged(
     const FocusModeSession::Snapshot& session_snapshot) {
   session_snapshot_ = session_snapshot;
-  image_view_->SetTooltipText(GetAccessibleTrayName(
-      session_snapshot_.value(),
-      FocusModeController::Get()->congratulatory_index()));
+  UpdateAccessibleName();
+  if (bubble_ && bubble_->GetBubbleView()) {
+    bubble_->GetBubbleView()->UpdateAccessibleName();
+  }
   UpdateProgressRing();
   progress_ring_update_threshold_ = 0.0;
   MaybeUpdateCountdownViewUI(session_snapshot);
@@ -567,7 +551,8 @@ void FocusModeTray::UpdateTrayIcon() {
   SkColor color = GetColorProvider()->GetColor(
       is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                   : cros_tokens::kCrosSysOnSurface);
-  image_view_->SetImage(CreateVectorIcon(kFocusModeLampIcon, color));
+  image_view_->SetImage(
+      ui::ImageModel::FromVectorIcon(kFocusModeLampIcon, color));
 }
 
 void FocusModeTray::FocusModeIconActivated(const ui::Event& event) {
@@ -717,6 +702,37 @@ void FocusModeTray::CloseBubbleAndMaybeReset(bool should_reset) {
   if (auto* controller = FocusModeController::Get();
       !controller->in_focus_session() && should_reset) {
     controller->ResetFocusSession();
+  }
+}
+
+void FocusModeTray::UpdateAccessibleName() {
+  if (!session_snapshot_) {
+    GetViewAccessibility().RemoveName();
+    image_view_->SetTooltipText(std::u16string());
+    return;
+  }
+
+  std::u16string name;
+  if (session_snapshot_->state == FocusModeSession::State::kEnding) {
+    name = focus_mode_util::GetCongratulatoryTextAndEmoji(
+        FocusModeController::Get()->congratulatory_index());
+  } else {
+    const std::u16string duration_string =
+        session_snapshot_->remaining_time < base::Minutes(1)
+            ? l10n_util::GetStringUTF16(
+                  IDS_ASH_STATUS_TRAY_FOCUS_MODE_SESSION_LESS_THAN_ONE_MINUTE)
+            : focus_mode_util::GetDurationString(
+                  session_snapshot_->remaining_time,
+                  /*digital_format=*/false);
+
+    name = l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
+        duration_string);
+  }
+
+  GetViewAccessibility().SetName(name);
+  if (image_view_) {
+    image_view_->SetTooltipText(name);
   }
 }
 

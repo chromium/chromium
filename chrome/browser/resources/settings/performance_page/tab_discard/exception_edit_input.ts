@@ -57,7 +57,7 @@ export class ExceptionEditInputElement extends
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 
-  private ruleToEdit: string;
+  declare private ruleToEdit: string;
 
   override ready() {
     super.ready();

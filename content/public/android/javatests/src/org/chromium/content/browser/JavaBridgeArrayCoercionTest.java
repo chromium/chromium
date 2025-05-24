@@ -1080,7 +1080,7 @@ public class JavaBridgeArrayCoercionTest {
 
         mActivityTestRule.executeJavaScript("testObject.setFloatArray(uint32_array);");
         Assert.assertEquals(
-                (Long.valueOf(4294967295L)).floatValue(),
+                Long.valueOf(4294967295L).floatValue(),
                 mTestObject.waitForFloatArray()[0],
                 ASSERTION_DELTA);
 

@@ -19,19 +19,17 @@
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_codecs.h"
-#include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/media.h"
 #include "media/base/video_codecs.h"
 #include "media/cast/cast_config.h"
-#include "media/cast/cast_environment.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/test/test_with_cast_environment.h"
 #include "media/cast/test/utility/audio_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
 static const int kNumChannels = 2;
 
@@ -39,8 +37,7 @@ namespace {
 
 class TestEncodedAudioFrameReceiver {
  public:
-  TestEncodedAudioFrameReceiver() : frames_received_(0) {}
-
+  TestEncodedAudioFrameReceiver() = default;
   TestEncodedAudioFrameReceiver(const TestEncodedAudioFrameReceiver&) = delete;
   TestEncodedAudioFrameReceiver& operator=(
       const TestEncodedAudioFrameReceiver&) = delete;
@@ -61,8 +58,7 @@ class TestEncodedAudioFrameReceiver {
 
   void FrameEncoded(std::unique_ptr<SenderEncodedFrame> encoded_frame,
                     int samples_skipped) {
-    EXPECT_EQ(encoded_frame->dependency,
-              openscreen::cast::EncodedFrame::Dependency::kKeyFrame);
+    EXPECT_TRUE(encoded_frame->is_key_frame);
     EXPECT_EQ(frames_received_, encoded_frame->frame_id - FrameId::first());
     EXPECT_EQ(encoded_frame->frame_id, encoded_frame->referenced_frame_id);
     // RTP timestamps should be monotonically increasing and integer multiples
@@ -84,9 +80,9 @@ class TestEncodedAudioFrameReceiver {
   }
 
  private:
-  int frames_received_;
+  int frames_received_ = 0;
   RtpTimeTicks rtp_lower_bound_;
-  int samples_per_frame_;
+  int samples_per_frame_ = 0;
   base::TimeTicks lower_bound_;
   base::TimeTicks upper_bound_;
 };
@@ -101,8 +97,9 @@ struct TestScenario {
   std::string ToString() const {
     std::ostringstream out;
     for (size_t i = 0; i < num_durations; ++i) {
-      if (i > 0)
+      if (i > 0) {
         out << ", ";
+      }
       out << durations_in_ms[i];
     }
     return out.str();
@@ -111,23 +108,17 @@ struct TestScenario {
 
 }  // namespace
 
-class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
+class AudioEncoderTest : public ::testing::TestWithParam<TestScenario>,
+                         public WithCastEnvironment {
  public:
   AudioEncoderTest() {
     InitializeMediaLibrary();
-    testing_clock_.Advance(base::TimeTicks::Now() - base::TimeTicks());
-  }
-
-  void SetUp() final {
-    task_runner_ = new FakeSingleThreadTaskRunner(&testing_clock_);
-    cast_environment_ = new CastEnvironment(&testing_clock_, task_runner_,
-                                            task_runner_, task_runner_);
   }
 
   AudioEncoderTest(const AudioEncoderTest&) = delete;
+  AudioEncoderTest(AudioEncoderTest&&) = delete;
   AudioEncoderTest& operator=(const AudioEncoderTest&) = delete;
-
-  virtual ~AudioEncoderTest() = default;
+  AudioEncoderTest& operator=(AudioEncoderTest&&) = delete;
 
   void RunTestForCodec(AudioCodec codec) {
     const TestScenario& scenario = GetParam();
@@ -141,18 +132,14 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
       const bool simulate_missing_data = scenario.durations_in_ms[i] < 0;
       const base::TimeDelta duration =
           base::Milliseconds(std::abs(scenario.durations_in_ms[i]));
-      receiver_->SetCaptureTimeBounds(
-          testing_clock_.NowTicks() - frame_duration,
-          testing_clock_.NowTicks() + duration);
-      if (simulate_missing_data) {
-        task_runner_->RunTasks();
-        testing_clock_.Advance(duration);
-      } else {
+      receiver_->SetCaptureTimeBounds(NowTicks() - frame_duration,
+                                      NowTicks() + duration);
+      if (!simulate_missing_data) {
         audio_encoder_->InsertAudio(audio_bus_factory_->NextAudioBus(duration),
-                                    testing_clock_.NowTicks());
-        task_runner_->RunTasks();
-        testing_clock_.Advance(duration);
+                                    NowTicks());
       }
+      RunUntilIdle();
+      AdvanceClock(duration);
 
       if (codec == AudioCodec::kOpus) {
         const int bitrate = audio_encoder_->GetBitrate();
@@ -173,14 +160,14 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
 
  private:
   void CreateObjectsForCodec(AudioCodec codec) {
-    audio_bus_factory_.reset(
-        new TestAudioBusFactory(kNumChannels, kDefaultAudioSamplingRate,
-                                TestAudioBusFactory::kMiddleANoteFreq, 0.5f));
+    audio_bus_factory_ = std::make_unique<TestAudioBusFactory>(
+        kNumChannels, kDefaultAudioSamplingRate,
+        TestAudioBusFactory::kMiddleANoteFreq, 0.5f);
 
-    receiver_.reset(new TestEncodedAudioFrameReceiver());
+    receiver_ = std::make_unique<TestEncodedAudioFrameReceiver>();
 
     audio_encoder_ = std::make_unique<AudioEncoder>(
-        cast_environment_, kNumChannels, kDefaultAudioSamplingRate,
+        cast_environment(), kNumChannels, kDefaultAudioSamplingRate,
         kDefaultAudioEncoderBitrate, codec,
         base::BindRepeating(&TestEncodedAudioFrameReceiver::FrameEncoded,
                             base::Unretained(receiver_.get())));
@@ -188,12 +175,9 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
     receiver_->SetSamplesPerFrame(audio_encoder_->GetSamplesPerFrame());
   }
 
-  base::SimpleTestTickClock testing_clock_;
-  scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
   std::unique_ptr<TestAudioBusFactory> audio_bus_factory_;
   std::unique_ptr<TestEncodedAudioFrameReceiver> receiver_;
   std::unique_ptr<AudioEncoder> audio_encoder_;
-  scoped_refptr<CastEnvironment> cast_environment_;
 };
 
 TEST_P(AudioEncoderTest, EncodeOpus) {
@@ -264,5 +248,4 @@ INSTANTIATE_TEST_SUITE_P(
         TestScenario(kTwoBigUnderruns, std::size(kTwoBigUnderruns)),
         TestScenario(kMixedUnderruns, std::size(kMixedUnderruns))));
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast

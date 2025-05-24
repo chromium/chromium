@@ -26,7 +26,7 @@ void Assign(BlocklistState* out, BlocklistState in) {
 
 BlocklistStateFetcherMock::BlocklistStateFetcherMock() : request_count_(0) {}
 
-BlocklistStateFetcherMock::~BlocklistStateFetcherMock() {}
+BlocklistStateFetcherMock::~BlocklistStateFetcherMock() = default;
 
 void BlocklistStateFetcherMock::Request(const std::string& id,
                                         RequestCallback callback) {

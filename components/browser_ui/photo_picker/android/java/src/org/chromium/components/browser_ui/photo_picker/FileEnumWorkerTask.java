@@ -17,6 +17,8 @@ import android.provider.MediaStore;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.MimeTypeFilter;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -26,7 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /** A worker task to enumerate image files on disk. */
-class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
+@NullMarked
+class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
     // A tag for logging error messages.
     private static final String TAG = "PhotoPicker";
 
@@ -37,16 +40,16 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
          *
          * @param files The list of images, or null if the function fails.
          */
-        void filesEnumeratedCallback(List<PickerBitmap> files);
+        void filesEnumeratedCallback(@Nullable List<PickerBitmap> files);
     }
 
     private final WindowAndroid mWindowAndroid;
 
     // The callback to use to communicate the results.
-    private FilesEnumeratedCallback mCallback;
+    private final FilesEnumeratedCallback mCallback;
 
     // The filter to apply to the list.
-    private MimeTypeFilter mFilter;
+    private final MimeTypeFilter mFilter;
 
     // Whether any image MIME types were requested.
     private boolean mIncludeImages;
@@ -55,7 +58,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
     private boolean mIncludeVideos;
 
     // The ContentResolver to use to retrieve image metadata from disk.
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     // The camera directory under DCIM.
     private static final String SAMPLE_DCIM_SOURCE_SUB_DIRECTORY = "Camera";
@@ -101,7 +104,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
      * @return A sorted list of images (by last-modified first).
      */
     @Override
-    protected List<PickerBitmap> doInBackground() {
+    protected @Nullable List<PickerBitmap> doInBackground() {
         ThreadUtils.assertOnBackgroundThread();
 
         if (isCancelled()) return null;
@@ -241,7 +244,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
      * @param files The resulting list of files on disk.
      */
     @Override
-    protected void onPostExecute(List<PickerBitmap> files) {
+    protected void onPostExecute(@Nullable List<PickerBitmap> files) {
         if (isCancelled()) {
             return;
         }
@@ -253,7 +256,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
      * Creates a cursor containing the image files to show. Can be overridden in tests to provide
      * fake data.
      */
-    protected Cursor createImageCursor(
+    protected @Nullable Cursor createImageCursor(
             Uri contentUri,
             String[] selectColumns,
             String whereClause,

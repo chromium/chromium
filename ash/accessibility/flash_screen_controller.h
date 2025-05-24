@@ -39,6 +39,10 @@ class FlashScreenController : public message_center::MessageCenterObserver,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
+  // Runs the flash notification without any notification needing to be
+  // displayed.
+  void PreviewFlash();
+
   // No need to stop an ongoing flash if one is happening, the duration is too
   // short.
   void set_enabled(bool enabled) { enabled_ = enabled; }
@@ -48,6 +52,7 @@ class FlashScreenController : public message_center::MessageCenterObserver,
   gfx::ThrobAnimation* GetAnimationForTesting() { return &throb_animation_; }
 
  private:
+  void MaybeFlashOn(const std::string& notification_id);
   void FlashOn();
   void FlashOff();
 
@@ -58,9 +63,6 @@ class FlashScreenController : public message_center::MessageCenterObserver,
   base::RetainingOneShotTimer notification_timer_;
 
   gfx::ThrobAnimation throb_animation_;
-
-  // How many flashes have elapsed for this timer.
-  int num_completed_flashes_ = 0;
 
   base::ScopedObservation<message_center::MessageCenter, MessageCenterObserver>
       notification_observer_{this};

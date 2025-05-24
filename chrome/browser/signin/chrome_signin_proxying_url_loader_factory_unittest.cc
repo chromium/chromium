@@ -72,7 +72,7 @@ class ChromeSigninProxyingURLLoaderFactoryTest : public testing::Test {
   ChromeSigninProxyingURLLoaderFactoryTest& operator=(
       const ChromeSigninProxyingURLLoaderFactoryTest&) = delete;
 
-  ~ChromeSigninProxyingURLLoaderFactoryTest() override {}
+  ~ChromeSigninProxyingURLLoaderFactoryTest() override = default;
 
   base::WeakPtr<MockDelegate> StartRequest(
       std::unique_ptr<network::ResourceRequest> request) {

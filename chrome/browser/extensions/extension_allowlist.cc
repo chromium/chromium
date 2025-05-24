@@ -6,14 +6,15 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_allowlist_factory.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "extensions/browser/allowlist_state.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 
@@ -54,18 +55,21 @@ constexpr PrefMap kPrefAllowlistAcknowledge = {
 
 }  // namespace
 
-ExtensionAllowlist::ExtensionAllowlist(Profile* profile,
-                                       ExtensionPrefs* extension_prefs,
-                                       ExtensionService* extension_service)
+// static
+ExtensionAllowlist* ExtensionAllowlist::Get(Profile* profile) {
+  return ExtensionAllowlistFactory::GetForBrowserContext(profile);
+}
+
+ExtensionAllowlist::ExtensionAllowlist(Profile* profile)
     : profile_(profile),
-      extension_prefs_(extension_prefs),
-      extension_service_(extension_service),
+      extension_prefs_(ExtensionPrefs::Get(profile)),
+      extension_registrar_(ExtensionRegistrar::Get(profile)),
       registry_(ExtensionRegistry::Get(profile)) {
   SetAllowlistEnforcementFields();
 
   // Relies on ExtensionSystem dependency on ExtensionPrefs to ensure
   // extension_prefs outlives this object.
-  extension_prefs_observation_.Observe(extension_prefs);
+  extension_prefs_observation_.Observe(extension_prefs_);
 
   // Register to Enhanced Safe Browsing setting changes for allowlist
   // enforcements.
@@ -194,7 +198,7 @@ void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
         return;
       }
 
-      extension_service_->RemoveDisableReasonAndMaybeEnable(
+      extension_registrar_->RemoveDisableReasonAndMaybeEnable(
           extension_id, disable_reason::DISABLE_NOT_ALLOWLISTED);
 
       if (registry_->enabled_extensions().Contains(extension_id)) {
@@ -220,8 +224,9 @@ bool ExtensionAllowlist::ShouldDisplayWarning(
   // disable.
   ExtensionManagement* settings =
       ExtensionManagementFactory::GetForBrowserContext(profile_);
-  if (settings->IsInstallationExplicitlyAllowed(extension_id))
+  if (settings->IsInstallationExplicitlyAllowed(extension_id)) {
     return false;  // Extension explicitly allowed.
+  }
 
   if (GetExtensionAllowlistState(extension_id) != ALLOWLIST_NOT_ALLOWLISTED)
     return false;  // Extension is allowlisted.
@@ -274,8 +279,9 @@ void ExtensionAllowlist::ApplyEnforcement(const ExtensionId& extension_id) {
   }
 
   bool was_enabled = registry_->enabled_extensions().Contains(extension_id);
-  extension_service_->DisableExtension(extension_id,
-                                       disable_reason::DISABLE_NOT_ALLOWLISTED);
+  extension_registrar_->DisableExtension(
+      extension_id,
+      DisableReasonSet({disable_reason::DISABLE_NOT_ALLOWLISTED}));
 
   // The user should acknowledge the disable action if the extension was
   // previously enabled and the disable reason could be added (it can be denied
@@ -315,7 +321,7 @@ void ExtensionAllowlist::DeactivateAllowlistEnforcement() {
   for (const auto& extension : all_extensions) {
     if (extension_prefs_->HasDisableReason(
             extension->id(), disable_reason::DISABLE_NOT_ALLOWLISTED)) {
-      extension_service_->RemoveDisableReasonAndMaybeEnable(
+      extension_registrar_->RemoveDisableReasonAndMaybeEnable(
           extension->id(), disable_reason::DISABLE_NOT_ALLOWLISTED);
       SetExtensionAllowlistAcknowledgeState(extension->id(),
                                             ALLOWLIST_ACKNOWLEDGE_NONE);

@@ -14,7 +14,7 @@
 // Observes MostVisitedSites events from Objective-C. To use as a
 // ntp_tiles::MostVisitedSites::Observer, wrap in a
 // MostVisitedSitesObserverBridge.
-@protocol MostVisitedSitesObserving<NSObject>
+@protocol MostVisitedSitesObserving <NSObject>
 
 // Invoked by ntp_tiles::MostVisitedSites::Observer::OnMostVisitedURLsAvailable.
 - (void)onMostVisitedURLsAvailable:

@@ -5,13 +5,16 @@
 #import <optional>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/new_frame_catcher.h"
+#import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
@@ -29,62 +32,6 @@ using base::test::ios::kWaitForJSCompletionTimeout;
 using web::WebFrame;
 
 namespace autofill {
-
-/*
- Holds instances of JavaScriptFeature classes related to Autofill. Use this
- object instead of the statically allocated instances of the features when
- testing injecting Autofill in different javascript content worlds. Using the
- statically stored instances of the features is not an option because once the
- feature instances are created, they can't be mutated. This means the features
- would be injected in the same content world, regardless of the value of the
- feature flag controlling the content world for Autofill. Tests can use this
- container to create new instances of javascript features that are injected in
- the content world dictated by the feature flag.
-
- The features instances are lazily evaluated and remain in memory until this
- object is destroyed.
-
- TODO(crbug.com/359538514): Remove this class once Autofill is moved to the
- isolated content world.
- */
-class TestAutofillJavaScriptFeatureContainer {
- public:
-  TestAutofillJavaScriptFeatureContainer() = default;
-
-  ~TestAutofillJavaScriptFeatureContainer() {
-    delete form_util_java_script_feature_;
-    delete form_handlers_java_script_feature_;
-  }
-
-  FormUtilJavaScriptFeature* form_util_java_script_feature() {
-    if (!form_util_java_script_feature_) {
-      form_util_java_script_feature_ = new FormUtilJavaScriptFeature();
-    }
-
-    return form_util_java_script_feature_;
-  }
-
-  FormHandlersJavaScriptFeature* form_handlers_java_script_feature() {
-    if (!form_handlers_java_script_feature_) {
-      // Create the form handlers feature using the self contained
-      // FormUtilJavaScriptFeature instance. This way the form util instance is
-      // created for the correct content world.
-      form_handlers_java_script_feature_ =
-          new FormHandlersJavaScriptFeature(form_util_java_script_feature());
-    }
-
-    return form_handlers_java_script_feature_;
-  }
-
- private:
-  TestAutofillJavaScriptFeatureContainer(
-      const TestAutofillJavaScriptFeatureContainer&) = delete;
-  TestAutofillJavaScriptFeatureContainer& operator=(
-      const TestAutofillJavaScriptFeatureContainer&) = delete;
-
-  FormUtilJavaScriptFeature* form_util_java_script_feature_ = nullptr;
-  FormHandlersJavaScriptFeature* form_handlers_java_script_feature_ = nullptr;
-};
 
 // Test fixture for verifying the registration of remote frame tokens associated
 // to frame IDs in the frames registrar.

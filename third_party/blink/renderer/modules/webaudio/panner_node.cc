@@ -48,48 +48,48 @@ constexpr double kDefaultOrientationZValue = 0.0;
 
 PannerNode::PannerNode(BaseAudioContext& context)
     : AudioNode(context),
-      position_x_(
-          AudioParam::Create(context,
-                             Uuid(),
-                             AudioParamHandler::kParamTypePannerPositionX,
-                             kDefaultPositionXValue,
-                             AudioParamHandler::AutomationRate::kAudio,
-                             AudioParamHandler::AutomationRateMode::kVariable)),
-      position_y_(
-          AudioParam::Create(context,
-                             Uuid(),
-                             AudioParamHandler::kParamTypePannerPositionY,
-                             kDefaultPositionYValue,
-                             AudioParamHandler::AutomationRate::kAudio,
-                             AudioParamHandler::AutomationRateMode::kVariable)),
-      position_z_(
-          AudioParam::Create(context,
-                             Uuid(),
-                             AudioParamHandler::kParamTypePannerPositionZ,
-                             kDefaultPositionZValue,
-                             AudioParamHandler::AutomationRate::kAudio,
-                             AudioParamHandler::AutomationRateMode::kVariable)),
-      orientation_x_(
-          AudioParam::Create(context,
-                             Uuid(),
-                             AudioParamHandler::kParamTypePannerOrientationX,
-                             kDefaultOrientationXValue,
-                             AudioParamHandler::AutomationRate::kAudio,
-                             AudioParamHandler::AutomationRateMode::kVariable)),
-      orientation_y_(
-          AudioParam::Create(context,
-                             Uuid(),
-                             AudioParamHandler::kParamTypePannerOrientationY,
-                             kDefaultOrientationYValue,
-                             AudioParamHandler::AutomationRate::kAudio,
-                             AudioParamHandler::AutomationRateMode::kVariable)),
-      orientation_z_(
-          AudioParam::Create(context,
-                             Uuid(),
-                             AudioParamHandler::kParamTypePannerOrientationZ,
-                             kDefaultOrientationZValue,
-                             AudioParamHandler::AutomationRate::kAudio,
-                             AudioParamHandler::AutomationRateMode::kVariable)),
+      position_x_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::AudioParamType::kParamTypePannerPositionX,
+          kDefaultPositionXValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable)),
+      position_y_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::AudioParamType::kParamTypePannerPositionY,
+          kDefaultPositionYValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable)),
+      position_z_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::AudioParamType::kParamTypePannerPositionZ,
+          kDefaultPositionZValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable)),
+      orientation_x_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::AudioParamType::kParamTypePannerOrientationX,
+          kDefaultOrientationXValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable)),
+      orientation_y_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::AudioParamType::kParamTypePannerOrientationY,
+          kDefaultOrientationYValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable)),
+      orientation_z_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::AudioParamType::kParamTypePannerOrientationZ,
+          kDefaultOrientationZValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable)),
       listener_(context.listener()) {
   SetHandler(PannerHandler::Create(
       *this, context.sampleRate(), position_x_->Handler(),
@@ -140,12 +140,12 @@ PannerHandler& PannerNode::GetPannerHandler() const {
   return static_cast<PannerHandler&>(Handler());
 }
 
-String PannerNode::panningModel() const {
-  return GetPannerHandler().PanningModel();
+V8PanningModelType PannerNode::panningModel() const {
+  return V8PanningModelType(GetPannerHandler().PanningModel());
 }
 
-void PannerNode::setPanningModel(const String& model) {
-  GetPannerHandler().SetPanningModel(model);
+void PannerNode::setPanningModel(const V8PanningModelType& model) {
+  GetPannerHandler().SetPanningModel(model.AsEnum());
 }
 
 void PannerNode::setPosition(float x,
@@ -162,12 +162,12 @@ void PannerNode::setOrientation(float x,
   GetPannerHandler().SetOrientation(x, y, z, exceptionState);
 }
 
-String PannerNode::distanceModel() const {
-  return GetPannerHandler().DistanceModel();
+V8DistanceModelType PannerNode::distanceModel() const {
+  return V8DistanceModelType(GetPannerHandler().DistanceModel());
 }
 
-void PannerNode::setDistanceModel(const String& model) {
-  GetPannerHandler().SetDistanceModel(model);
+void PannerNode::setDistanceModel(const V8DistanceModelType& model) {
+  GetPannerHandler().SetDistanceModel(model.AsEnum());
 }
 
 double PannerNode::refDistance() const {

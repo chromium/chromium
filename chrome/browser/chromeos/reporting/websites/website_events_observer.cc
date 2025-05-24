@@ -61,7 +61,7 @@ void WebsiteEventsObserver::OnUrlOpened(const GURL& url_opened,
                                         ->mutable_website_opened_data();
   website_opened_data->set_url(url_opened.spec());
   website_opened_data->set_render_process_host_id(
-      web_contents->GetRenderViewHost()->GetProcess()->GetID());
+      web_contents->GetRenderViewHost()->GetProcess()->GetDeprecatedID());
   website_opened_data->set_render_frame_routing_id(
       web_contents->GetRenderViewHost()->GetRoutingID());
 
@@ -84,7 +84,7 @@ void WebsiteEventsObserver::OnUrlClosed(const GURL& url_closed,
                                         ->mutable_website_closed_data();
   website_closed_data->set_url(url_closed.spec());
   website_closed_data->set_render_process_host_id(
-      web_contents->GetRenderViewHost()->GetProcess()->GetID());
+      web_contents->GetRenderViewHost()->GetProcess()->GetDeprecatedID());
   website_closed_data->set_render_frame_routing_id(
       web_contents->GetRenderViewHost()->GetRoutingID());
 

@@ -77,4 +77,4 @@ TEST_F(MemoryCredentialStoreTest, remove) {
   EXPECT_EQ(0u, credentialStore.credentials.count);
 }
 
-}
+}  // namespace

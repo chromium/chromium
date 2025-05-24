@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_mobile.h"
-#include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar.h"  // nogncheck
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -62,16 +62,9 @@ void VirtualCardEnrollBubbleControllerImpl::ShowBubble(
   is_user_gesture_ = false;
   Show();
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableVirtualCardEnrollMetricsLogger)) {
-    VirtualCardEnrollMetricsLogger::OnCardArtAvailable(
-        ui_model_->enrollment_fields().card_art_image,
-        ui_model_->enrollment_fields().virtual_card_enrollment_source);
-  } else {
-    LogVirtualCardEnrollBubbleCardArtAvailable(
-        ui_model_->enrollment_fields().card_art_image,
-        ui_model_->enrollment_fields().virtual_card_enrollment_source);
-  }
+  VirtualCardEnrollMetricsLogger::OnCardArtAvailable(
+      ui_model_->enrollment_fields().card_art_image,
+      ui_model_->enrollment_fields().virtual_card_enrollment_source);
 }
 
 void VirtualCardEnrollBubbleControllerImpl::ReshowBubble() {
@@ -159,20 +152,11 @@ void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton(
     // "did_switch_to_loading_state == true" we don't immediately close the
     // bubble, so this ensures we don't have to wait for a future closure to log
     // the user's acceptance.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableVirtualCardEnrollMetricsLogger)) {
-      VirtualCardEnrollMetricsLogger::OnDismissed(
-          VirtualCardEnrollmentBubbleResult::
-              VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
-          ui_model_->enrollment_fields().virtual_card_enrollment_source,
-          is_user_gesture_, ui_model_->enrollment_fields().previously_declined);
-    } else {
-      LogVirtualCardEnrollmentBubbleResultMetric(
-          VirtualCardEnrollmentBubbleResult::
-              VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
-          GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_,
-          ui_model_->enrollment_fields().previously_declined);
-    }
+    VirtualCardEnrollMetricsLogger::OnDismissed(
+        VirtualCardEnrollmentBubbleResult::
+            VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
+        ui_model_->enrollment_fields().virtual_card_enrollment_source,
+        is_user_gesture_, ui_model_->enrollment_fields().previously_declined);
   } else {
     bubble_state_ = BubbleState::kHidden;
     LogVirtualCardEnrollmentLoadingViewShown(/*is_shown=*/false);
@@ -194,15 +178,8 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
     const GURL& url) {
   reprompt_required_ = true;
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableVirtualCardEnrollMetricsLogger)) {
-    VirtualCardEnrollMetricsLogger::OnLinkClicked(
-        link_type,
-        ui_model_->enrollment_fields().virtual_card_enrollment_source);
-  } else {
-    LogVirtualCardEnrollmentLinkClickedMetric(
-        link_type, GetVirtualCardEnrollmentBubbleSource());
-  }
+  VirtualCardEnrollMetricsLogger::OnLinkClicked(
+      link_type, ui_model_->enrollment_fields().virtual_card_enrollment_source);
 
   web_contents()->OpenURL(
       content::OpenURLParams(url, content::Referrer(),
@@ -216,7 +193,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
 }
 
 void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
-    PaymentsBubbleClosedReason closed_reason) {
+    PaymentsUiClosedReason closed_reason) {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
 
@@ -226,24 +203,24 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
     return;
   }
 
-  auto get_metric = [](PaymentsBubbleClosedReason reason) {
+  auto get_metric = [](PaymentsUiClosedReason reason) {
     switch (reason) {
-      case PaymentsBubbleClosedReason::kAccepted:
+      case PaymentsUiClosedReason::kAccepted:
         return VirtualCardEnrollmentBubbleResult::
             VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED;
-      case PaymentsBubbleClosedReason::kCancelled:
+      case PaymentsUiClosedReason::kCancelled:
         return VirtualCardEnrollmentBubbleResult::
             VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED;
-      case PaymentsBubbleClosedReason::kClosed:
+      case PaymentsUiClosedReason::kClosed:
         return VirtualCardEnrollmentBubbleResult::
             VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED;
-      case PaymentsBubbleClosedReason::kNotInteracted:
+      case PaymentsUiClosedReason::kNotInteracted:
         return VirtualCardEnrollmentBubbleResult::
             VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED;
-      case PaymentsBubbleClosedReason::kLostFocus:
+      case PaymentsUiClosedReason::kLostFocus:
         return VirtualCardEnrollmentBubbleResult::
             VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS;
-      case PaymentsBubbleClosedReason::kUnknown:
+      case PaymentsUiClosedReason::kUnknown:
         return VirtualCardEnrollmentBubbleResult::
             VIRTUAL_CARD_ENROLLMENT_BUBBLE_RESULT_UNKNOWN;
     }
@@ -270,17 +247,10 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
 
   // If the result metric wasn't already recorded, record it here.
   if (!result_metric_already_recorded) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableVirtualCardEnrollMetricsLogger)) {
-      VirtualCardEnrollMetricsLogger::OnDismissed(
-          get_metric(closed_reason),
-          ui_model_->enrollment_fields().virtual_card_enrollment_source,
-          is_user_gesture_, ui_model_->enrollment_fields().previously_declined);
-    } else {
-      LogVirtualCardEnrollmentBubbleResultMetric(
-          get_metric(closed_reason), GetVirtualCardEnrollmentBubbleSource(),
-          is_user_gesture_, ui_model_->enrollment_fields().previously_declined);
-    }
+    VirtualCardEnrollMetricsLogger::OnDismissed(
+        get_metric(closed_reason),
+        ui_model_->enrollment_fields().virtual_card_enrollment_source,
+        is_user_gesture_, ui_model_->enrollment_fields().previously_declined);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -294,7 +264,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
 #endif
 }
 
-base::OnceCallback<void(PaymentsBubbleClosedReason)>
+base::OnceCallback<void(PaymentsUiClosedReason)>
 VirtualCardEnrollBubbleControllerImpl::GetOnBubbleClosedCallback() {
   return base::BindOnce(&VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed,
                         weak_ptr_factory_.GetWeakPtr());
@@ -357,18 +327,13 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
   if (enrollment_status_ == EnrollmentStatus::kCompleted) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-      set_bubble_view(
-          browser->window()
-              ->GetAutofillBubbleHandler()
-              ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
-      LogVirtualCardEnrollmentConfirmationViewShown(
-          /*is_shown=*/true, confirmation_ui_params_->is_success);
-    } else {
-      LogVirtualCardEnrollmentConfirmationViewShown(
-          /*is_shown=*/false, confirmation_ui_params_->is_success);
-    }
+    set_bubble_view(
+        browser->window()
+            ->GetAutofillBubbleHandler()
+            ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
+    LogVirtualCardEnrollmentConfirmationViewShown(
+        /*is_shown=*/true, confirmation_ui_params_->is_success);
+
   } else {
     // For reprompts after link clicks, `is_user_gesture` is set to false.
     bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
@@ -397,15 +362,9 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   // If the dialog is to be shown again because user clicked on links, do not
   // log metrics.
   if (!reprompt_required_) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableVirtualCardEnrollMetricsLogger)) {
-      VirtualCardEnrollMetricsLogger::OnShown(
-          ui_model_->enrollment_fields().virtual_card_enrollment_source,
-          is_user_gesture_);
-    } else {
-      LogVirtualCardEnrollmentBubbleShownMetric(
-          GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_);
-    }
+    VirtualCardEnrollMetricsLogger::OnShown(
+        ui_model_->enrollment_fields().virtual_card_enrollment_source,
+        is_user_gesture_);
   }
 
   // Reset value for the next time tab is switched.

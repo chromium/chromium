@@ -75,11 +75,11 @@ import org.chromium.ui.modelutil.PropertyModel;
             if (model.get(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE)) {
                 view.mAcceptButton.setVisibility(View.GONE);
                 view.mCancelButton.setVisibility(View.GONE);
-                view.mLoadingView.showLoadingUI(/* skipDelay= */ true);
+                view.mLoadingView.showLoadingUi(/* skipDelay= */ true);
                 view.mLoadingViewContainer.setVisibility(View.VISIBLE);
             } else {
                 view.mLoadingViewContainer.setVisibility(View.GONE);
-                view.mLoadingView.hideLoadingUI();
+                view.mLoadingView.hideLoadingUi();
                 view.mAcceptButton.setVisibility(View.VISIBLE);
                 view.mCancelButton.setVisibility(View.VISIBLE);
             }

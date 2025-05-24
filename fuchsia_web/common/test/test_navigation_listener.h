@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 class GURL;
 
@@ -47,7 +48,7 @@ class TestNavigationListener final
 
   // Calls RunUntilNavigationStateMatches with a NavigationState that has
   // |expected_title| and the normal page type.
-  void RunUntilTitleEquals(const std::string_view expected_title);
+  void RunUntilTitleEquals(std::string_view expected_title);
 
   // Calls RunUntilNavigationStateMatches with a NavigationState that has
   // |expected_url|, |expected_title|, and the normal page type.
@@ -108,7 +109,7 @@ class TestNavigationListener final
   fuchsia::web::NavigationState last_changes_;
 
   // Set for the duration of a call to RunUntilNavigationStateMatches().
-  const fuchsia::web::NavigationState* expected_state_ = nullptr;
+  raw_ptr<const fuchsia::web::NavigationState> expected_state_ = nullptr;
 
   BeforeAckCallback before_ack_;
 };

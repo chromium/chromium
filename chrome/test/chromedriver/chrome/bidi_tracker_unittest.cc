@@ -53,7 +53,7 @@ base::Value::Dict CreateValidParams(std::optional<std::string> channel,
   payload.Set("id", 1);
   payload.Set("result", std::move(result));
   if (channel.has_value()) {
-    payload.Set("channel", std::move(*channel));
+    payload.Set("goog:channel", std::move(*channel));
   }
 
   base::Value::Dict event_params;
@@ -86,7 +86,7 @@ TEST(BidiTrackerTest, ChannelAndFilter) {
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   EXPECT_TRUE(StatusOk(
       tracker.OnEvent(nullptr, "Runtime.bindingCalled", std::move(params))));
-  EXPECT_THAT(actual_payload.FindString("channel"), Pointee(Eq("/some")));
+  EXPECT_THAT(actual_payload.FindString("goog:channel"), Pointee(Eq("/some")));
   EXPECT_THAT(actual_payload.FindIntByDottedPath("result.pong"),
               Optional(Eq(222)));
 }
@@ -99,7 +99,8 @@ TEST(BidiTrackerTest, ChannelLongerThanFilter) {
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   EXPECT_TRUE(StatusOk(
       tracker.OnEvent(nullptr, "Runtime.bindingCalled", std::move(params))));
-  EXPECT_THAT(actual_payload.FindString("channel"), Pointee(Eq("/one/two")));
+  EXPECT_THAT(actual_payload.FindString("goog:channel"),
+              Pointee(Eq("/one/two")));
   EXPECT_THAT(actual_payload.FindIntByDottedPath("result.pong"),
               Optional(Eq(333)));
 }
@@ -122,7 +123,7 @@ TEST(BidiTrackerTest, ChannelAndNoFilter) {
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   EXPECT_TRUE(StatusOk(
       tracker.OnEvent(nullptr, "Runtime.bindingCalled", std::move(params))));
-  EXPECT_THAT(actual_payload.FindString("channel"), Pointee(Eq("/some")));
+  EXPECT_THAT(actual_payload.FindString("goog:channel"), Pointee(Eq("/some")));
   EXPECT_THAT(actual_payload.FindIntByDottedPath("result.pong"),
               Optional(Eq(321)));
 }
@@ -131,13 +132,13 @@ TEST(BidiTrackerTest, NoChannelNoFilter) {
   // The infrastructure ensures that that there are no missing or empty channels
   // If such a channel appears in the response we treat it as an error.
   base::Value::Dict params = CreateValidParams("/to-be-removed");
-  params.RemoveByDottedPath("payload.channel");
+  params.RemoveByDottedPath("payload.goog:channel");
   BidiTracker tracker;
   base::Value::Dict actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
-  EXPECT_THAT(status.message(), ContainsRegex("channel is missing"));
+  EXPECT_THAT(status.message(), ContainsRegex("goog:channel is missing"));
   EXPECT_TRUE(actual_payload.empty());
 }
 
@@ -145,14 +146,14 @@ TEST(BidiTrackerTest, NoChannelAndFilter) {
   // The infrastructure ensures that that there are no missing or empty channels
   // If such a channel appears in the response we treat it as an error.
   base::Value::Dict params = CreateValidParams("/to-be-removed");
-  params.RemoveByDottedPath("payload.channel");
+  params.RemoveByDottedPath("payload.goog:channel");
   BidiTracker tracker;
   tracker.SetChannelSuffix("/yyy");
   base::Value::Dict actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
-  EXPECT_THAT(status.message(), ContainsRegex("channel is missing"));
+  EXPECT_THAT(status.message(), ContainsRegex("goog:channel is missing"));
   EXPECT_TRUE(actual_payload.empty());
 }
 
@@ -165,7 +166,7 @@ TEST(BidiTrackerTest, EmptyChannelNoFilter) {
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
-  EXPECT_THAT(status.message(), ContainsRegex("channel is missing"));
+  EXPECT_THAT(status.message(), ContainsRegex("goog:channel is missing"));
   EXPECT_TRUE(actual_payload.empty());
 }
 
@@ -179,7 +180,7 @@ TEST(BidiTrackerTest, EmptyChannelAndFilter) {
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
-  EXPECT_THAT(status.message(), ContainsRegex("channel is missing"));
+  EXPECT_THAT(status.message(), ContainsRegex("goog:channel is missing"));
   EXPECT_TRUE(actual_payload.empty());
 }
 

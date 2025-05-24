@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -16,6 +17,7 @@
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
@@ -24,7 +26,7 @@
 
 namespace {
 
-using ContextType = extensions::ExtensionApiTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 using extensions::ScopedCurrentChannel;
 
 class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
@@ -37,7 +39,7 @@ class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
         /*disabled_features=*/{features::kHttpsUpgrades});
   }
   explicit DeclarativeNetRequestApiTest(ContextType context_type)
-      : ExtensionApiTest(context_type) {
+      : extensions::ExtensionApiTest(context_type) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
@@ -86,9 +88,12 @@ class DeclarativeNetRequestLazyApiTest
       : DeclarativeNetRequestApiTest(GetParam()) {}
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android only supports service worker.
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          DeclarativeNetRequestLazyApiTest,
                          ::testing::Values(ContextType::kEventPage));
+#endif
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestLazyApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
@@ -118,12 +123,15 @@ class DeclarativeNetRequestSafeRulesLazyApiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android only supports service worker.
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          DeclarativeNetRequestSafeRulesLazyApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          DeclarativeNetRequestSafeRulesLazyApiTest,
                          ::testing::Values(ContextType::kEventPage));
+#endif
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestSafeRulesLazyApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
@@ -163,6 +171,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSafeRulesLazyApiTest,
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, OnRulesMatchedDebug) {
   ASSERT_TRUE(RunExtensionTest("on_rules_matched_debug")) << message_;
 }
@@ -173,9 +184,12 @@ IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, ModifyHeaders) {
   ASSERT_TRUE(RunExtensionTest("modify_headers")) << message_;
 }
 
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, GetMatchedRules) {
   ASSERT_TRUE(RunExtensionTest("get_matched_rules")) << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, IsRegexSupported) {
   ASSERT_TRUE(RunExtensionTest("is_regex_supported")) << message_;
@@ -215,6 +229,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiFencedFrameTest, DISABLED_Load) {
   ASSERT_TRUE(RunExtensionTest("fenced_frames")) << message_;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class DeclarativeNetRequestApiPrerenderingTest
     : public DeclarativeNetRequestLazyApiTest {
  public:
@@ -235,10 +250,13 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestApiPrerenderingTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+// TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API is
+// available.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiPrerenderingTest,
                        PrerenderedPageInterception) {
   ASSERT_TRUE(RunExtensionTest("prerendering")) << message_;
 }
+#endif
 
 class DeclarativeNetRequestLazyApiResponseHeadersTest
     : public DeclarativeNetRequestLazyApiTest {
@@ -256,12 +274,15 @@ class DeclarativeNetRequestLazyApiResponseHeadersTest
   ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android only supports service worker.
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          DeclarativeNetRequestLazyApiResponseHeadersTest,
                          ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          DeclarativeNetRequestLazyApiResponseHeadersTest,
                          ::testing::Values(ContextType::kEventPage));
+#endif
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeNetRequestLazyApiResponseHeadersTest,
                          ::testing::Values(ContextType::kServiceWorker));

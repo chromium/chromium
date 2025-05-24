@@ -23,12 +23,12 @@ PersistentUniqueClientEntity::PersistentUniqueClientEntity(
     const sync_pb::EntitySpecifics& specifics,
     int64_t creation_time,
     int64_t last_modified_time,
-    const std::string& collaboration_id)
+    const sync_pb::SyncEntity::CollaborationMetadata& collaboration_metadata)
     : LoopbackServerEntity(id, data_type, version, name),
       client_tag_hash_(client_tag_hash),
       creation_time_(creation_time),
       last_modified_time_(last_modified_time),
-      collaboration_id_(collaboration_id) {
+      collaboration_metadata_(collaboration_metadata) {
   SetSpecifics(specifics);
 }
 
@@ -56,7 +56,7 @@ PersistentUniqueClientEntity::CreateFromEntity(
       id, data_type, client_entity.version(), client_entity.name(),
       client_entity.client_tag_hash(), client_entity.specifics(),
       client_entity.ctime(), client_entity.mtime(),
-      client_entity.collaboration().collaboration_id());
+      client_entity.collaboration());
 }
 
 // static
@@ -73,7 +73,8 @@ PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
   std::string id = LoopbackServerEntity::CreateId(data_type, client_tag_hash);
   return std::make_unique<PersistentUniqueClientEntity>(
       id, data_type, 0, non_unique_name, client_tag_hash, entity_specifics,
-      creation_time, last_modified_time, /*collaboration_id=*/"");
+      creation_time, last_modified_time,
+      /*collaboration_metadata=*/sync_pb::SyncEntity::CollaborationMetadata());
 }
 
 // static
@@ -84,14 +85,14 @@ PersistentUniqueClientEntity::CreateFromSharedSpecificsForTesting(
     const sync_pb::EntitySpecifics& entity_specifics,
     int64_t creation_time,
     int64_t last_modified_time,
-    const std::string& collaboration_id) {
+    const sync_pb::SyncEntity::CollaborationMetadata& collaboration_metadata) {
   DataType data_type = GetDataTypeFromSpecifics(entity_specifics);
   std::string client_tag_hash =
       ClientTagHash::FromUnhashed(data_type, client_tag).value();
   std::string id = LoopbackServerEntity::CreateId(data_type, client_tag_hash);
   return std::make_unique<PersistentUniqueClientEntity>(
       id, data_type, 0, non_unique_name, client_tag_hash, entity_specifics,
-      creation_time, last_modified_time, collaboration_id);
+      creation_time, last_modified_time, collaboration_metadata);
 }
 
 bool PersistentUniqueClientEntity::RequiresParentId() const {
@@ -116,8 +117,8 @@ void PersistentUniqueClientEntity::SerializeAsProto(
   proto->set_client_tag_hash(client_tag_hash_);
   proto->set_ctime(creation_time_);
   proto->set_mtime(last_modified_time_);
-  if (!collaboration_id_.empty()) {
-    proto->mutable_collaboration()->set_collaboration_id(collaboration_id_);
+  if (collaboration_metadata_.has_collaboration_id()) {
+    *proto->mutable_collaboration() = collaboration_metadata_;
   }
 }
 

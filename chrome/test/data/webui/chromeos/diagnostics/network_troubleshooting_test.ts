@@ -6,8 +6,8 @@ import 'chrome://diagnostics/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import 'chrome://diagnostics/network_troubleshooting.js';
 
-import {TroubleshootingInfo} from 'chrome://diagnostics/diagnostics_types.js';
-import {NetworkTroubleshootingElement} from 'chrome://diagnostics/network_troubleshooting.js';
+import type {TroubleshootingInfo} from 'chrome://diagnostics/diagnostics_types.js';
+import type {NetworkTroubleshootingElement} from 'chrome://diagnostics/network_troubleshooting.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertFalse} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -37,8 +37,8 @@ suite('networkTroubleshootingTestSuite', function() {
   function getLinkTextElement(): HTMLElement {
     assert(networkTroubleshootingElement);
 
-    return networkTroubleshootingElement.shadowRoot!.querySelector(
-               '#troubleshootingLinkText') as HTMLElement;
+    return networkTroubleshootingElement.shadowRoot!.querySelector<HTMLElement>(
+        '#troubleshootingLinkText')!;
   }
 
   function initializeNetworkTroubleshooting(info: TroubleshootingInfo):

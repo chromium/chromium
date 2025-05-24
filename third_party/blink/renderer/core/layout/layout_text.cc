@@ -22,11 +22,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
 #include <algorithm>
@@ -68,12 +63,15 @@
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
@@ -98,9 +96,10 @@ class SecureTextTimer;
 typedef HeapHashMap<WeakMember<const LayoutText>, Member<SecureTextTimer>>
     SecureTextTimerMap;
 static SecureTextTimerMap& GetSecureTextTimers() {
-  DEFINE_STATIC_LOCAL(const Persistent<SecureTextTimerMap>, map,
-                      (MakeGarbageCollected<SecureTextTimerMap>()));
-  return *map;
+  using SecureTextTimerMapHolder = DisallowNewWrapper<SecureTextTimerMap>;
+  DEFINE_STATIC_LOCAL(const Persistent<SecureTextTimerMapHolder>, holder,
+                      (MakeGarbageCollected<SecureTextTimerMapHolder>()));
+  return holder->Value();
 }
 
 class SecureTextTimer final : public GarbageCollected<SecureTextTimer>,
@@ -160,9 +159,12 @@ using SelectionDisplayItemClientMap =
     HeapHashMap<WeakMember<const LayoutText>,
                 Member<SelectionDisplayItemClient>>;
 SelectionDisplayItemClientMap& GetSelectionDisplayItemClientMap() {
-  DEFINE_STATIC_LOCAL(Persistent<SelectionDisplayItemClientMap>, map,
-                      (MakeGarbageCollected<SelectionDisplayItemClientMap>()));
-  return *map;
+  using SelectionDisplayItemClientMapHolder =
+      DisallowNewWrapper<SelectionDisplayItemClientMap>;
+  DEFINE_STATIC_LOCAL(
+      Persistent<SelectionDisplayItemClientMapHolder>, holder,
+      (MakeGarbageCollected<SelectionDisplayItemClientMapHolder>()));
+  return holder->Value();
 }
 
 }  // anonymous namespace
@@ -205,7 +207,7 @@ void LayoutText::StyleWillChange(StyleDifference diff,
 
   if (const ComputedStyle* current_style = Style()) {
     // Process accessibility for style changes that affect text.
-    if (current_style->UsedVisibility() != new_style.UsedVisibility() ||
+    if (current_style->Visibility() != new_style.Visibility() ||
         current_style->IsInert() != new_style.IsInert()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
         cache->StyleChanged(this, /*visibility_or_inertness_changed*/ true);
@@ -242,7 +244,7 @@ void LayoutText::StyleDidChange(StyleDifference diff,
 
   // This is an optimization that kicks off font load before layout.
   if (!TransformedText().ContainsOnlyWhitespaceOrEmpty()) {
-    new_style.GetFont().WillUseFontData(TransformedText());
+    new_style.GetFont()->WillUseFontData(TransformedText());
   }
 
   TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer();
@@ -264,12 +266,12 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
       Parent()->DirtyLinesFromChangedChild(this);
     }
     if (FirstInlineFragmentItemIndex()) {
-      DetachAbstractInlineTextBoxesIfNeeded();
+      DetachAxHooksIfNeeded();
       FragmentItems::LayoutObjectWillBeDestroyed(*this);
       ClearFirstInlineFragmentItemIndex();
     }
   } else if (FirstInlineFragmentItemIndex()) {
-    DetachAbstractInlineTextBoxesIfNeeded();
+    DetachAxHooksIfNeeded();
     ClearFirstInlineFragmentItemIndex();
   }
   DeleteTextBoxes();
@@ -301,10 +303,10 @@ void LayoutText::WillBeDestroyed() {
 
 void LayoutText::DeleteTextBoxes() {
   NOT_DESTROYED();
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
 }
 
-void LayoutText::DetachAbstractInlineTextBoxes() {
+void LayoutText::DetachAxHooks() {
   NOT_DESTROYED();
   // TODO(layout-dev): Because We should call |WillDestroy()| once for
   // associated fragments, when you reuse fragments, you should construct
@@ -314,14 +316,23 @@ void LayoutText::DetachAbstractInlineTextBoxes() {
   // TODO(yosin): Make sure we call this function within valid containg block
   // of |this|.
   InlineCursor cursor;
-  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
+  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
     AbstractInlineTextBox::WillDestroy(cursor);
+  }
+}
+
+void LayoutText::ClearBlockFlowCachedData() {
+  NOT_DESTROYED();
+  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->ClearBlockFlowCachedData(this);
+    cache->InlineTextBoxesUpdated(this);
+  }
 }
 
 void LayoutText::ClearFirstInlineFragmentItemIndex() {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
   first_fragment_item_index_ = 0u;
 }
 
@@ -330,7 +341,7 @@ void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   CHECK(IsInLayoutNGInlineFormattingContext());
   // TODO(yosin): Call |AbstractInlineTextBox::WillDestroy()|.
   DCHECK_NE(index, 0u);
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
   // Changing the first fragment item index causes
   // LayoutText::FirstAbstractInlineTextBox to return a box,
   // so notify the AX object for this LayoutText that it might need to
@@ -390,7 +401,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
            mapping->GetMappingUnitsForTextContentOffsetRange(offset.start,
                                                              offset.end)) {
         DCHECK_EQ(unit.GetLayoutObject(), this);
-        if (unit.GetType() == OffsetMappingUnitType::kCollapsed) {
+        if (unit.IsCollapsed()) {
           continue;
         }
         // [clamped_start, clamped_end] of |fragment| matches a legacy text box.
@@ -413,8 +424,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
             results.push_back(TextBoxInfo{rect, *box_start, box_length});
             continue;
           }
-          NOTREACHED_IN_MIGRATION();
-          continue;
+          NOTREACHED();
         }
         // Handle CSS generated content, e.g. ::before/::after
         const OffsetMappingUnit* const mapping_unit =
@@ -527,7 +537,7 @@ bool LayoutText::MapDOMOffsetToTextContentOffset(const OffsetMapping& mapping,
 
   // Adjust |start| to the next non-collapsed offset if |start| is collapsed.
   Position start_position =
-      PositionForCaretOffset(std::min(*start, OriginalTextLength()));
+      PositionForCaretOffset(std::min(*start, NonCollapsedCaretMaxOffset()));
   Position non_collapsed_start_position =
       mapping.StartOfNextNonCollapsedContent(start_position);
 
@@ -546,7 +556,7 @@ bool LayoutText::MapDOMOffsetToTextContentOffset(const OffsetMapping& mapping,
 
   // Adjust |end| to the last non-collapsed offset if |end| is collapsed.
   Position end_position =
-      PositionForCaretOffset(std::min(*end, OriginalTextLength()));
+      PositionForCaretOffset(std::min(*end, NonCollapsedCaretMaxOffset()));
   Position non_collpased_end_position =
       mapping.EndOfLastNonCollapsedContent(end_position);
 
@@ -609,7 +619,13 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
       PhysicalRect rect;
       if (!item.IsGeneratedText()) {
         const TextOffsetRange& offset = item.TextOffset();
-        if (start > offset.end || end < offset.start) {
+        // If `item` is a forced line break and `start` and `end` values
+        // ​​are equal, it signifies a collapsed range. In this case, we
+        // should skip processing `item`.
+        if (start > offset.end || end < offset.start ||
+            (RuntimeEnabledFeatures::
+                 SkipLineBreakItemWhenIsCollapsedEnabled() &&
+             item.IsLineBreak() && start == end)) {
           is_last_end_included = false;
           continue;
         }
@@ -639,7 +655,11 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
         quad.Scale(1 / scaling_factor, 1 / scaling_factor);
         quad = LocalToAbsoluteQuad(quad);
       } else {
-        rect.Move(cursor.CurrentOffsetInBlockFlow());
+        if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+          rect.Move(cursor.CurrentOffsetInFirstContainerFragment());
+        } else {
+          rect.Move(cursor.CurrentOffsetInBlockFlow());
+        }
         quad = LocalRectToAbsoluteQuad(rect);
       }
       if (!is_collapsed) {
@@ -718,30 +738,22 @@ PositionWithAffinity LayoutText::PositionForPoint(
   return CreatePositionWithAffinity(0);
 }
 
-PhysicalRect LayoutText::LocalCaretRect(
-    int caret_offset,
-    LayoutUnit* extra_width_to_end_of_line) const {
+PhysicalRect LayoutText::LocalCaretRect(int caret_offset) const {
   NOT_DESTROYED();
   return PhysicalRect();
 }
 
 bool LayoutText::IsAllCollapsibleWhitespace() const {
   NOT_DESTROYED();
-  unsigned length = text_.length();
-  if (text_.Is8Bit()) {
-    for (unsigned i = 0; i < length; ++i) {
-      if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters8()[i])) {
-        return false;
-      }
-    }
+  if (text_.empty()) {
     return true;
   }
-  for (unsigned i = 0; i < length; ++i) {
-    if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters16()[i])) {
-      return false;
-    }
-  }
-  return true;
+
+  const ComputedStyle& style = StyleRef();
+  return WTF::VisitCharacters(text_, [&style](auto chars) {
+    return std::ranges::all_of(
+        chars, [&style](auto ch) { return style.IsCollapsibleWhiteSpace(ch); });
+  });
 }
 
 UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {
@@ -805,8 +817,9 @@ void LayoutText::LogicalStartingPointAndHeight(
       return;
     }
     PhysicalSize outer_size = ContainingBlock()->Size();
-    logical_starting_point = physical_offset.ConvertToLogical(
-        StyleRef().GetWritingDirection(), outer_size, cursor.Current().Size());
+    logical_starting_point =
+        WritingModeConverter(StyleRef().GetWritingDirection(), outer_size)
+            .ToLogical(physical_offset, cursor.Current().Size());
     cursor.MoveToLastForSameLayoutObject();
     PhysicalRect last_physical_rect =
         cursor.Current().RectInContainerFragment();
@@ -916,7 +929,13 @@ String LayoutText::TransformAndSecureText(const String& original,
     }
     auto [masked, secure_map] = SecureText(transformed, mask);
     if (!secure_map.IsEmpty()) {
-      offset_map = TextOffsetMap(offset_map, secure_map);
+      if (RuntimeEnabledFeatures::TextOffsetMapCrashFixEnabled()) {
+        offset_map =
+            TextOffsetMap(original.length(), offset_map, transformed.length(),
+                          secure_map, masked.length());
+      } else {
+        offset_map = TextOffsetMap(offset_map, secure_map);
+      }
     }
     return masked;
   }
@@ -964,6 +983,7 @@ std::pair<String, TextOffsetMap> LayoutText::SecureText(const String& plain,
 void LayoutText::SetVariableLengthTransformResult(
     wtf_size_t original_length,
     const TextOffsetMap& offset_map) {
+  NOT_DESTROYED();
   if (offset_map.IsEmpty()) {
     ClearHasVariableLengthTransform();
     return;
@@ -975,6 +995,7 @@ void LayoutText::SetVariableLengthTransformResult(
 
 VariableLengthTransformResult LayoutText::GetVariableLengthTransformResult()
     const {
+  NOT_DESTROYED();
   return View()->GetVariableLengthTransformResult(*this);
 }
 
@@ -1005,6 +1026,7 @@ void LayoutText::ForceSetText(String text) {
 
 void LayoutText::SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
     LayoutInvalidationReasonForTracing reason) {
+  NOT_DESTROYED();
   auto* const text_combine = DynamicTo<LayoutTextCombine>(Parent());
   if (text_combine) [[unlikely]] {
     // Number of characters in text may change compressed font or scaling of
@@ -1091,11 +1113,6 @@ PhysicalRect LayoutText::VisualOverflowRect() const {
   NOT_DESTROYED();
   DCHECK(IsInLayoutNGInlineFormattingContext());
   return FragmentItem::LocalVisualRectFor(*this);
-}
-
-PhysicalRect LayoutText::LocalVisualRectIgnoringVisibility() const {
-  NOT_DESTROYED();
-  return UnionRect(VisualOverflowRect(), LocalSelectionVisualRect());
 }
 
 PhysicalRect LayoutText::LocalSelectionVisualRect() const {
@@ -1446,7 +1463,7 @@ void LayoutText::SetInlineItems(InlineItemsData* data,
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
   for (wtf_size_t i = begin; i < begin + size; i++) {
-    DCHECK_EQ(data->items[i].GetLayoutObject(), this);
+    DCHECK_EQ(data->items[i]->GetLayoutObject(), this);
   }
 #endif
   auto* items = GetInlineItems();
@@ -1479,8 +1496,9 @@ void LayoutText::RecalcVisualOverflow() {
   // |RecalcVisualOverflow| for each layer, and the containing |LayoutObject|
   // should recalculate its |FragmentItem|s without traversing descendant
   // |LayoutObject|s.
-  if (IsInline() && IsInLayoutNGInlineFormattingContext())
-    NOTREACHED_IN_MIGRATION();
+  if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
+    NOTREACHED();
+  }
 
   LayoutObject::RecalcVisualOverflow();
 }

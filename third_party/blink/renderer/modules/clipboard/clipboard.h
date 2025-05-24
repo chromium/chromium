@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard_change_event_controller.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -44,6 +45,7 @@ class Clipboard : public EventTarget, public Supplement<Navigator> {
   ScriptPromise<IDLUndefined> writeText(ScriptState*,
                                         const String&,
                                         ExceptionState&);
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(clipboardchange, kClipboardchange)
 
   // EventTarget
   const AtomicString& InterfaceName() const override;
@@ -55,6 +57,15 @@ class Clipboard : public EventTarget, public Supplement<Navigator> {
   static String ParseWebCustomFormat(const String& format);
 
   void Trace(Visitor*) const override;
+
+  // EventTarget callbacks.
+  void AddedEventListener(const AtomicString& event_type,
+                          RegisteredEventListener&) override;
+  void RemovedEventListener(const AtomicString& event_type,
+                            const RegisteredEventListener&) override;
+
+ private:
+  Member<ClipboardChangeEventController> clipboard_change_event_controller_;
 };
 
 }  // namespace blink

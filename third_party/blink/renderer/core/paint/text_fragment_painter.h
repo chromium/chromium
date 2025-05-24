@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -19,7 +20,6 @@ class InlineCursor;
 class InlinePaintContext;
 class LayoutObject;
 struct PaintInfo;
-struct PhysicalOffset;
 struct PhysicalRect;
 struct PhysicalSize;
 struct TextFragmentPaintInfo;

@@ -53,15 +53,15 @@ LockedTpmMessageView::LockedTpmMessageView() {
   SetPreferredSize(gfx::Size(kWidthDp, kHeightDp));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      kColorAshShieldAndBaseOpaque, kRoundedCornerRadiusDp, 0));
+  SetBackground(views::CreateRoundedRectBackground(kColorAshShieldAndBaseOpaque,
+                                                   kRoundedCornerRadiusDp, 0));
 
   message_icon_ = AddChildView(std::make_unique<views::ImageView>());
   message_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       kLockScreenAlertIcon, kColorAshIconColorPrimary, kIconSizeDp));
 
   message_warning_ = CreateLabel();
-  message_warning_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_warning_->SetEnabledColor(kColorAshTextColorPrimary);
 
   message_description_ = CreateLabel();
 
@@ -69,7 +69,7 @@ LockedTpmMessageView::LockedTpmMessageView() {
   std::u16string message_description =
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_TPM_LOCKED_ISSUE_DESCRIPTION);
   message_description_->SetText(message_description);
-  message_description_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_description_->SetEnabledColor(kColorAshTextColorPrimary);
 }
 
 LockedTpmMessageView::~LockedTpmMessageView() = default;

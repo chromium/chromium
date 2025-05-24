@@ -5,21 +5,31 @@
 #include "content/browser/devtools/protocol/browser_handler.h"
 
 #include <string.h>
+
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/command_line.h"
+#include "base/containers/map_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/immediate_crash.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
@@ -28,7 +38,6 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/user_agent.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
@@ -51,9 +60,10 @@ Response BrowserHandler::Disable() {
   for (auto& browser_context_id : contexts_with_overridden_permissions_) {
     content::BrowserContext* browser_context = nullptr;
     std::string error;
-    Maybe<std::string> context_id =
-        browser_context_id == "" ? Maybe<std::string>()
-                                 : Maybe<std::string>(browser_context_id);
+    std::optional<std::string> context_id =
+        browser_context_id == ""
+            ? std::nullopt
+            : std::optional<std::string>(browser_context_id);
     FindBrowserContext(context_id, &browser_context);
     if (browser_context) {
       PermissionControllerImpl* permission_controller =
@@ -67,9 +77,10 @@ Response BrowserHandler::Disable() {
   for (auto& browser_context_id : contexts_with_overridden_downloads_) {
     content::BrowserContext* browser_context = nullptr;
     std::string error;
-    Maybe<std::string> context_id =
-        browser_context_id == "" ? Maybe<std::string>()
-                                 : Maybe<std::string>(browser_context_id);
+    std::optional<std::string> context_id =
+        browser_context_id == ""
+            ? std::nullopt
+            : std::optional<std::string>(browser_context_id);
     FindBrowserContext(context_id, &browser_context);
     if (browser_context) {
       auto* delegate =
@@ -98,7 +109,7 @@ Response BrowserHandler::GetVersion(std::string* protocol_version,
                                     std::string* user_agent,
                                     std::string* js_version) {
   *protocol_version = DevToolsAgentHost::GetProtocolVersion();
-  *revision = GetChromiumGitRevision();
+  *revision = embedder_support::GetChromiumGitRevision();
   *product = GetContentClient()->browser()->GetProduct();
   *user_agent = GetContentClient()->browser()->GetUserAgent();
   *js_version = V8_VERSION_STRING;
@@ -148,8 +159,6 @@ Response PermissionDescriptorToPermissionType(
   } else if (name == "ambient-light-sensor" || name == "accelerometer" ||
              name == "gyroscope" || name == "magnetometer") {
     *permission_type = PermissionType::SENSORS;
-  } else if (name == "accessibility-events") {
-    *permission_type = PermissionType::ACCESSIBILITY_EVENTS;
   } else if (name == "clipboard-read") {
     *permission_type = PermissionType::CLIPBOARD_READ_WRITE;
   } else if (name == "clipboard-write") {
@@ -198,6 +207,8 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::AUTOMATIC_FULLSCREEN;
   } else if (name == "web-app-installation") {
     *permission_type = PermissionType::WEB_APP_INSTALLATION;
+  } else if (name == "local-network-access") {
+    *permission_type = PermissionType::LOCAL_NETWORK_ACCESS;
   } else {
     return Response::InvalidParams("Invalid PermissionDescriptor name: " +
                                    name);
@@ -209,7 +220,11 @@ Response PermissionDescriptorToPermissionType(
 Response FromProtocolPermissionType(
     const protocol::Browser::PermissionType& type,
     PermissionType* out_type) {
-  if (type == protocol::Browser::PermissionTypeEnum::Notifications) {
+  // Please keep this in the same order as blink::PermissionType enum in
+  // third_party/blink/public/common/permissions/permission_utils.h
+  if (type == protocol::Browser::PermissionTypeEnum::MidiSysex) {
+    *out_type = PermissionType::MIDI_SYSEX;
+  } else if (type == protocol::Browser::PermissionTypeEnum::Notifications) {
     *out_type = PermissionType::NOTIFICATIONS;
   } else if (type == protocol::Browser::PermissionTypeEnum::Geolocation) {
     *out_type = PermissionType::GEOLOCATION;
@@ -218,30 +233,16 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
   } else if (type == protocol::Browser::PermissionTypeEnum::Midi) {
     *out_type = PermissionType::MIDI;
-  } else if (type == protocol::Browser::PermissionTypeEnum::MidiSysex) {
-    *out_type = PermissionType::MIDI_SYSEX;
   } else if (type == protocol::Browser::PermissionTypeEnum::DurableStorage) {
     *out_type = PermissionType::DURABLE_STORAGE;
   } else if (type == protocol::Browser::PermissionTypeEnum::AudioCapture) {
     *out_type = PermissionType::AUDIO_CAPTURE;
   } else if (type == protocol::Browser::PermissionTypeEnum::VideoCapture) {
     *out_type = PermissionType::VIDEO_CAPTURE;
-  } else if (type ==
-             protocol::Browser::PermissionTypeEnum::VideoCapturePanTiltZoom) {
-    *out_type = PermissionType::CAMERA_PAN_TILT_ZOOM;
   } else if (type == protocol::Browser::PermissionTypeEnum::BackgroundSync) {
     *out_type = PermissionType::BACKGROUND_SYNC;
   } else if (type == protocol::Browser::PermissionTypeEnum::Sensors) {
     *out_type = PermissionType::SENSORS;
-  } else if (type ==
-             protocol::Browser::PermissionTypeEnum::AccessibilityEvents) {
-    *out_type = PermissionType::ACCESSIBILITY_EVENTS;
-  } else if (type ==
-             protocol::Browser::PermissionTypeEnum::ClipboardReadWrite) {
-    *out_type = PermissionType::CLIPBOARD_READ_WRITE;
-  } else if (type ==
-             protocol::Browser::PermissionTypeEnum::ClipboardSanitizedWrite) {
-    *out_type = PermissionType::CLIPBOARD_SANITIZED_WRITE;
   } else if (type == protocol::Browser::PermissionTypeEnum::PaymentHandler) {
     *out_type = PermissionType::PAYMENT_HANDLER;
   } else if (type == protocol::Browser::PermissionTypeEnum::BackgroundFetch) {
@@ -257,28 +258,57 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::WAKE_LOCK_SYSTEM;
   } else if (type == protocol::Browser::PermissionTypeEnum::Nfc) {
     *out_type = PermissionType::NFC;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::ClipboardReadWrite) {
+    *out_type = PermissionType::CLIPBOARD_READ_WRITE;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::ClipboardSanitizedWrite) {
+    *out_type = PermissionType::CLIPBOARD_SANITIZED_WRITE;
+  } else if (type == protocol::Browser::PermissionTypeEnum::Vr) {
+    *out_type = PermissionType::VR;
+  } else if (type == protocol::Browser::PermissionTypeEnum::Ar) {
+    *out_type = PermissionType::AR;
+  } else if (type == protocol::Browser::PermissionTypeEnum::StorageAccess) {
+    *out_type = PermissionType::STORAGE_ACCESS_GRANT;
+  } else if (type == protocol::Browser::PermissionTypeEnum::CameraPanTiltZoom) {
+    *out_type = PermissionType::CAMERA_PAN_TILT_ZOOM;
   } else if (type == protocol::Browser::PermissionTypeEnum::WindowManagement) {
     *out_type = PermissionType::WINDOW_MANAGEMENT;
   } else if (type == protocol::Browser::PermissionTypeEnum::LocalFonts) {
     *out_type = PermissionType::LOCAL_FONTS;
   } else if (type == protocol::Browser::PermissionTypeEnum::DisplayCapture) {
     *out_type = PermissionType::DISPLAY_CAPTURE;
-  } else if (type == protocol::Browser::PermissionTypeEnum::StorageAccess) {
-    *out_type = PermissionType::STORAGE_ACCESS_GRANT;
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::TopLevelStorageAccess) {
     *out_type = PermissionType::TOP_LEVEL_STORAGE_ACCESS;
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::CapturedSurfaceControl) {
     *out_type = PermissionType::CAPTURED_SURFACE_CONTROL;
+  } else if (type == protocol::Browser::PermissionTypeEnum::SmartCard) {
+    *out_type = PermissionType::SMART_CARD;
+  } else if (type == protocol::Browser::PermissionTypeEnum::WebPrinting) {
+    *out_type = PermissionType::WEB_PRINTING;
   } else if (type == protocol::Browser::PermissionTypeEnum::SpeakerSelection) {
     *out_type = PermissionType::SPEAKER_SELECTION;
+  } else if (type == protocol::Browser::PermissionTypeEnum::KeyboardLock) {
+    *out_type = PermissionType::KEYBOARD_LOCK;
+  } else if (type == protocol::Browser::PermissionTypeEnum::PointerLock) {
+    *out_type = PermissionType::POINTER_LOCK;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::AutomaticFullscreen) {
+    *out_type = PermissionType::AUTOMATIC_FULLSCREEN;
+  } else if (type == protocol::Browser::PermissionTypeEnum::HandTracking) {
+    *out_type = PermissionType::HAND_TRACKING;
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::WebAppInstallation) {
     *out_type = PermissionType::WEB_APP_INSTALLATION;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::LocalNetworkAccess) {
+    *out_type = PermissionType::LOCAL_NETWORK_ACCESS;
   } else {
     return Response::InvalidParams("Unknown permission type: " + type);
   }
+
   return Response::Success();
 }
 
@@ -301,7 +331,7 @@ Response PermissionSettingToPermissionStatus(
 
 // static
 Response BrowserHandler::FindBrowserContext(
-    const Maybe<std::string>& browser_context_id,
+    const std::optional<std::string>& browser_context_id,
     BrowserContext** browser_context) {
   DevToolsManagerDelegate* delegate =
       DevToolsManager::GetInstance()->delegate();
@@ -336,8 +366,8 @@ std::vector<BrowserHandler*> BrowserHandler::ForAgentHost(
 Response BrowserHandler::SetPermission(
     std::unique_ptr<protocol::Browser::PermissionDescriptor> permission,
     const protocol::Browser::PermissionSetting& setting,
-    Maybe<std::string> origin,
-    Maybe<std::string> browser_context_id) {
+    std::optional<std::string> origin,
+    std::optional<std::string> browser_context_id) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
@@ -380,8 +410,8 @@ Response BrowserHandler::SetPermission(
 Response BrowserHandler::GrantPermissions(
     std::unique_ptr<protocol::Array<protocol::Browser::PermissionType>>
         permissions,
-    Maybe<std::string> origin,
-    Maybe<std::string> browser_context_id) {
+    std::optional<std::string> origin,
+    std::optional<std::string> browser_context_id) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
@@ -419,7 +449,7 @@ Response BrowserHandler::GrantPermissions(
 }
 
 Response BrowserHandler::ResetPermissions(
-    Maybe<std::string> browser_context_id) {
+    std::optional<std::string> browser_context_id) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
@@ -433,9 +463,9 @@ Response BrowserHandler::ResetPermissions(
 
 Response BrowserHandler::SetDownloadBehavior(
     const std::string& behavior,
-    Maybe<std::string> browser_context_id,
-    Maybe<std::string> download_path,
-    Maybe<bool> events_enabled) {
+    std::optional<std::string> browser_context_id,
+    std::optional<std::string> download_path,
+    std::optional<bool> events_enabled) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
@@ -451,7 +481,7 @@ Response BrowserHandler::SetDownloadBehavior(
 Response BrowserHandler::DoSetDownloadBehavior(
     const std::string& behavior,
     BrowserContext* browser_context,
-    Maybe<std::string> download_path) {
+    std::optional<std::string> download_path) {
   if (!allow_set_download_behavior_)
     return Response::ServerError("Not allowed");
   if (behavior == Browser::SetDownloadBehavior::BehaviorEnum::Allow &&
@@ -491,8 +521,9 @@ Response BrowserHandler::DoSetDownloadBehavior(
   return Response::Success();
 }
 
-Response BrowserHandler::CancelDownload(const std::string& guid,
-                                        Maybe<std::string> browser_context_id) {
+Response BrowserHandler::CancelDownload(
+    const std::string& guid,
+    std::optional<std::string> browser_context_id) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
@@ -510,8 +541,8 @@ Response BrowserHandler::CancelDownload(const std::string& guid,
 }
 
 Response BrowserHandler::GetHistograms(
-    const Maybe<std::string> in_query,
-    const Maybe<bool> in_delta,
+    const std::optional<std::string> in_query,
+    const std::optional<bool> in_delta,
     std::unique_ptr<Array<Browser::Histogram>>* const out_histograms) {
   DCHECK(out_histograms);
   bool get_deltas = in_delta.value_or(false);
@@ -528,7 +559,7 @@ Response BrowserHandler::GetHistograms(
 
 Response BrowserHandler::GetHistogram(
     const std::string& in_name,
-    const Maybe<bool> in_delta,
+    const std::optional<bool> in_delta,
     std::unique_ptr<Browser::Histogram>* const out_histogram) {
   // Get histogram by name.
   base::HistogramBase* const in_histogram =
@@ -564,8 +595,7 @@ Response BrowserHandler::GetBrowserCommandLine(
 }
 
 Response BrowserHandler::Crash() {
-  CHECK(false);
-  return Response::Success();
+  base::ImmediateCrash();
 }
 
 Response BrowserHandler::CrashGpuProcess() {
@@ -574,6 +604,59 @@ Response BrowserHandler::CrashGpuProcess() {
     host->gpu_service()->Crash();
   }
   return Response::Success();
+}
+
+void BrowserHandler::AddPrivacySandboxCoordinatorKeyConfig(
+    const std::string& in_api,
+    const std::string& in_coordinator_origin,
+    const std::string& in_key_config,
+    std::optional<std::string> browser_context_id,
+    std::unique_ptr<AddPrivacySandboxCoordinatorKeyConfigCallback> callback) {
+  BrowserContext* browser_context = nullptr;
+  Response response = FindBrowserContext(browser_context_id, &browser_context);
+  if (!response.IsSuccess()) {
+    callback->sendFailure(response);
+    return;
+  }
+
+  url::Origin coordinator_origin =
+      url::Origin::Create(GURL(in_coordinator_origin));
+
+  if (!base::EndsWith(coordinator_origin.host(), ".test")) {
+    callback->sendFailure(
+        Response::InvalidParams("coordinatorOrigin not a .test domain"));
+    return;
+  }
+
+  std::optional<InterestGroupManager::TrustedServerAPIType> api;
+  if (in_api ==
+      protocol::Browser::PrivacySandboxAPIEnum::BiddingAndAuctionServices) {
+    api = InterestGroupManager::TrustedServerAPIType::kBiddingAndAuction;
+  } else if (in_api ==
+             protocol::Browser::PrivacySandboxAPIEnum::TrustedKeyValue) {
+    api = InterestGroupManager::TrustedServerAPIType::kTrustedKeyValue;
+  } else {
+    callback->sendFailure(Response::InvalidParams("Unrecognized API target"));
+    return;
+  }
+
+  CHECK(api.has_value());
+  static_cast<InterestGroupManagerImpl*>(
+      browser_context->GetDefaultStoragePartition()->GetInterestGroupManager())
+      ->AddTrustedServerKeysDebugOverride(
+          *api, coordinator_origin, in_key_config,
+          base::BindOnce(
+              [](std::unique_ptr<AddPrivacySandboxCoordinatorKeyConfigCallback>
+                     callback,
+                 std::optional<std::string> maybe_error) {
+                if (maybe_error.has_value()) {
+                  callback->sendFailure(
+                      Response::InvalidParams(std::move(maybe_error).value()));
+                } else {
+                  callback->sendSuccess();
+                }
+              },
+              std::move(callback)));
 }
 
 void BrowserHandler::OnDownloadUpdated(download::DownloadItem* item) {
@@ -590,7 +673,7 @@ void BrowserHandler::OnDownloadUpdated(download::DownloadItem* item) {
       state = Browser::DownloadProgress::StateEnum::Canceled;
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   frontend_->DownloadProgress(item->GetGuid(), item->GetTotalBytes(),
                               item->GetReceivedBytes(), state);
@@ -646,8 +729,8 @@ std::unique_ptr<Browser::Histogram> BrowserHandler::GetHistogramData(
   auto out_buckets = std::make_unique<Array<Browser::Bucket>>();
   for (const std::unique_ptr<base::SampleCountIterator> it = data->Iterator();
        !it->Done(); it->Next()) {
-    base::HistogramBase::Count count;
-    base::HistogramBase::Sample low;
+    base::HistogramBase::Count32 count;
+    base::HistogramBase::Sample32 low;
     int64_t high;
     it->Get(&low, &high, &count);
     out_buckets->emplace_back(Browser::Bucket::Create()
@@ -658,7 +741,7 @@ std::unique_ptr<Browser::Histogram> BrowserHandler::GetHistogramData(
   }
 
   auto result = Browser::Histogram::Create()
-                    .SetName(histogram.histogram_name())
+                    .SetName(std::string(histogram.histogram_name()))
                     .SetSum(data->sum())
                     .SetCount(data->TotalCount())
                     .SetBuckets(std::move(out_buckets))
@@ -670,7 +753,8 @@ std::unique_ptr<Browser::Histogram> BrowserHandler::GetHistogramData(
       // If we had subtracted previous data, re-add it to get the full snapshot.
       data->Add(*previous_data);
     }
-    histograms_snapshots_[histogram.histogram_name()] = std::move(data);
+    base::InsertOrAssign(histograms_snapshots_, histogram.histogram_name(),
+                         std::move(data));
   }
 
   return result;

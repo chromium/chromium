@@ -29,21 +29,21 @@
     Exposed=Window
 ] interface SVGFECompositeElement : SVGElement {
     // Composite Operators
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPOSITE_OPERATOR_UNKNOWN = 0;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPOSITE_OPERATOR_OVER = 1;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPOSITE_OPERATOR_IN = 2;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPOSITE_OPERATOR_OUT = 3;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPOSITE_OPERATOR_ATOP = 4;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPOSITE_OPERATOR_XOR = 5;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOMPOSITE_OPERATOR_ARITHMETIC = 6;
+    const unsigned short SVG_FECOMPOSITE_OPERATOR_UNKNOWN = 0;
+    const unsigned short SVG_FECOMPOSITE_OPERATOR_OVER = 1;
+    const unsigned short SVG_FECOMPOSITE_OPERATOR_IN = 2;
+    const unsigned short SVG_FECOMPOSITE_OPERATOR_OUT = 3;
+    const unsigned short SVG_FECOMPOSITE_OPERATOR_ATOP = 4;
+    const unsigned short SVG_FECOMPOSITE_OPERATOR_XOR = 5;
+    const unsigned short SVG_FECOMPOSITE_OPERATOR_ARITHMETIC = 6;
 
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in2;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
-    [ImplementedAs=svgOperator, MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedEnumeration operator;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber k1;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber k2;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber k3;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber k4;
+    readonly attribute SVGAnimatedString in2;
+    readonly attribute SVGAnimatedString in1;
+    [ImplementedAs=svgOperator] readonly attribute SVGAnimatedEnumeration operator;
+    readonly attribute SVGAnimatedNumber k1;
+    readonly attribute SVGAnimatedNumber k2;
+    readonly attribute SVGAnimatedNumber k3;
+    readonly attribute SVGAnimatedNumber k4;
 };
 
 SVGFECompositeElement includes SVGFilterPrimitiveStandardAttributes;

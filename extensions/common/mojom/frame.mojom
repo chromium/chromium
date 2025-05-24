@@ -10,6 +10,7 @@ import "extensions/common/mojom/context_type.mojom";
 import "extensions/common/mojom/extra_response_data.mojom";
 import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/injection_type.mojom";
+import "extensions/common/mojom/match_origin_as_fallback.mojom";
 import "extensions/common/mojom/message_port.mojom";
 import "extensions/common/mojom/run_location.mojom";
 import "extensions/common/mojom/stack_frame.mojom";
@@ -30,8 +31,8 @@ struct ExecuteCodeParams {
 
   // The webview guest source who calls to execute code.
   url.mojom.Url webview_src;
-  // Whether to inject into about:blank (sub)frames.
-  bool match_about_blank;
+  // Behavior for frames where the URL cannot be matched directly.
+  MatchOriginAsFallbackBehavior match_origin_as_fallback_behavior;
   // When to inject the code.
   RunLocation run_at;
   // Whether the request is coming from a <webview>.

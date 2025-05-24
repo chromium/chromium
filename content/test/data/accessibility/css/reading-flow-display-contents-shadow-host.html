@@ -7,9 +7,15 @@
 
 <!---Test reading flow for flex items re-ordered using CSS property order.
 Items are inside a shadow host that is a reading flow container.
+Buttons 1 and 2 are slotted to follow a reading flow.
+To respect the tree structure, 1 -> 2 must be visited together.
+Since 1 is first, (contents) is visited first.
 
 Expect order to be:
-3 -> (contents) -> 1 -> 2
+(contents)
+  (slot)
+    1  2
+3
 -->
 
 <div class=wrapper>

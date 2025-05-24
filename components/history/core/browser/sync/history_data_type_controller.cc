@@ -58,6 +58,7 @@ GetPreconditionStateFromManagedStatus(
           kMustStopAndClearData;
     case signin::AccountManagedStatusFinder::Outcome::kPending:
     case signin::AccountManagedStatusFinder::Outcome::kError:
+    case signin::AccountManagedStatusFinder::Outcome::kTimeout:
       // While the enterprise-ness of the account isn't known yet, or if the
       // detection failed, "stop and keep data" is a safe default.
       return syncer::DataTypeController::PreconditionState::

@@ -5,6 +5,7 @@
 #ifndef ASH_ACCESSIBILITY_UI_ACCESSIBILITY_HIGHLIGHT_CONTROLLER_H_
 #define ASH_ACCESSIBILITY_UI_ACCESSIBILITY_HIGHLIGHT_CONTROLLER_H_
 
+#include "ash/accessibility/ui/native_focus_watcher.h"
 #include "ash/ash_export.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/base/ime/input_method_observer.h"
@@ -26,6 +27,7 @@ namespace ash {
 class ASH_EXPORT AccessibilityHighlightController
     : public ui::EventHandler,
       public ui::InputMethodObserver,
+      public NativeFocusObserver,
       public aura::client::CursorClientObserver {
  public:
   AccessibilityHighlightController();
@@ -60,11 +62,17 @@ class ASH_EXPORT AccessibilityHighlightController
   // aura::client::CursorClientObserver:
   void OnCursorVisibilityChanged(bool is_visible) override;
 
+  // NativeFocusObserver:
+  void OnNativeFocusChanged(const gfx::Rect& bounds_in_screen) override;
+  void OnNativeFocusCleared() override;
+
  private:
   bool IsCursorVisible();
   bool IsCaretVisible(const gfx::Rect& caret_bounds_in_screen);
   void UpdateFocusAndCaretHighlights();
   void UpdateCursorHighlight();
+
+  void SetWidget(views::Widget* widget);
 
   bool focus_ = false;
   gfx::Rect focus_rect_;
@@ -75,6 +83,8 @@ class ASH_EXPORT AccessibilityHighlightController
   bool caret_ = false;
   bool caret_visible_ = false;
   gfx::Point caret_point_;
+
+  std::unique_ptr<NativeFocusWatcher> native_focus_watcher_;
 };
 
 }  // namespace ash

@@ -113,11 +113,11 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       assertTrue(isVisible(attachmentsElement));
       assertTrue(isVisible(conferenceElement));
 
-      const attachmentChips = element.shadowRoot!.querySelectorAll('cr-chip');
+      const attachmentChips = element.shadowRoot.querySelectorAll('cr-chip');
       assertEquals(attachmentChips.length, 3);
     });
 
-    test('Non-expanded event hides extra info', async () => {
+    test('Non-expanded event hides extra info', () => {
       // Assert.
       const locationElement = $$(element, '#location');
       const attachmentsElement = $$(element, '#attachments');
@@ -196,6 +196,43 @@ suite('NewTabPageModulesCalendarEventTest', () => {
 
       // Assert.
       assertEquals(attachmentListElement.className, 'scrollable-left');
+    });
+
+    test('attachment is disabled when resourceUrl does not exist', async () => {
+      const moduleName = 'OutlookCalendar';
+      element.expanded = true;
+      element.event = createEvent(
+          1, {attachments: createAttachments(3, {resourceUrl: {url: ''}})});
+      element.moduleName = moduleName;
+      await microtasksFinished();
+
+      const attachments = element.renderRoot.querySelectorAll('.attachment');
+      assertEquals(attachments.length, 3);
+
+      // Assert attachments are disabled.
+      for (let i = 0; i < attachments.length; i++) {
+        const attachment = attachments[i] as any;
+        assertTrue(!!attachment);
+        assertTrue(attachment.hasAttribute('disabled'));
+      }
+    });
+
+    test('attachment not disabled when resourceUrl exists', async () => {
+      const moduleName = 'OutlookCalendar';
+      element.expanded = true;
+      element.event = createEvent(1, {attachments: createAttachments(3)});
+      element.moduleName = moduleName;
+      await microtasksFinished();
+
+      // Assert.
+      const attachments = element.renderRoot.querySelectorAll('.attachment');
+      assertEquals(attachments.length, 3);
+
+      for (let i = 0; i < attachments.length; i++) {
+        const attachment = attachments[i] as any;
+        assertTrue(!!attachment);
+        assertFalse(attachment.hasAttribute('disabled'));
+      }
     });
 
     test('conference button hidden if empty', async () => {
@@ -309,7 +346,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       await microtasksFinished();
 
       // Act.
-      const attachments = element.renderRoot!.querySelectorAll('.attachment');
+      const attachments = element.renderRoot.querySelectorAll('.attachment');
       assertEquals(attachments.length, 3);
       (attachments[1]! as HTMLElement).click();
 
@@ -334,9 +371,9 @@ suite('NewTabPageModulesCalendarEventTest', () => {
 
       // Act.
       const conference =
-          element.renderRoot!.querySelector('#conference cr-button');
+          element.renderRoot.querySelector('#conference cr-button');
       assertTrue(!!conference);
-      (conference! as HTMLElement).click();
+      (conference as HTMLElement).click();
 
       // Assert.
       const usageEvent: Event = await usagePromise;

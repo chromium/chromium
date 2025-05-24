@@ -2,138 +2,141 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DuplexOption, MediaSizeOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
-import {Destination, DestinationOrigin, DuplexType, Margins, MarginsType, Size} from 'chrome://print/print_preview.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import 'chrome://print/print_preview.js';
 
-import {getCddTemplate, getSaveAsPdfDestination} from './print_preview_test_utils.js';
+import type {Cdd, DuplexOption, MediaSizeOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, DuplexType, Margins, MarginsType, Size} from 'chrome://print/print_preview.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {createDocumentSettings, getCddTemplate, getSaveAsPdfDestination} from './print_preview_test_utils.js';
 
 suite('ModelSettingsAvailabilityTest', function() {
   let model: PrintPreviewModelElement;
+
+  function simulateCapabilitiesChange(capabilities: Cdd) {
+    assertTrue(!!model.destination);
+    model.destination.capabilities = capabilities;
+    // In prod code, capabilities changes are detected by print-preview-app
+    // which then calls updateSettingsFromDestination().
+    model.updateSettingsFromDestination();
+  }
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
-    model.documentSettings = {
-      allPagesHaveCustomSize: false,
-      allPagesHaveCustomOrientation: false,
-      hasSelection: false,
-      isFromArc: false,
-      isModifiable: true,
-      isScalingDisabled: false,
-      fitToPageScaling: 100,
+    model.documentSettings = createDocumentSettings({
       pageCount: 3,
       title: 'title',
-    };
-
+    });
     model.pageSize = new Size(612, 792);
     model.margins = new Margins(72, 72, 72, 72);
 
     // Create a test destination.
     model.destination =
         new Destination('FooDevice', DestinationOrigin.LOCAL, 'FooName');
-    model.set(
-        'destination.capabilities',
-        getCddTemplate(model.destination.id).capabilities);
+    simulateCapabilitiesChange(
+        getCddTemplate(model.destination.id).capabilities!);
     model.applyStickySettings();
+    return microtasksFinished();
   });
 
   // These tests verify that the model correctly updates the settings
   // availability based on the destination and document info.
   test('copies', function() {
-    assertTrue(model.settings.copies.available);
+    assertTrue(!!model.destination);
+    assertTrue(model.getSetting('copies').available);
 
     // Set max copies to 1.
     let caps = getCddTemplate(model.destination.id).capabilities!;
     const copiesCap = {max: 1};
-    caps.printer!.copies = copiesCap;
-    model.set('destination.capabilities', caps);
-    assertFalse(model.settings.copies.available);
+    caps.printer.copies = copiesCap;
+    simulateCapabilitiesChange(caps);
+    assertFalse(model.getSetting('copies').available);
 
     // Set max copies to 2 (> 1).
     caps = getCddTemplate(model.destination.id).capabilities!;
     copiesCap.max = 2;
-    caps.printer!.copies = copiesCap;
-    model.set('destination.capabilities', caps);
-    assertTrue(model.settings.copies.available);
+    caps.printer.copies = copiesCap;
+    simulateCapabilitiesChange(caps);
+    assertTrue(model.getSetting('copies').available);
 
     // Remove copies capability.
     caps = getCddTemplate(model.destination.id).capabilities!;
-    delete caps.printer!.copies;
-    model.set('destination.capabilities', caps);
-    assertFalse(model.settings.copies.available);
+    delete caps.printer.copies;
+    simulateCapabilitiesChange(caps);
+    assertFalse(model.getSetting('copies').available);
 
     // Copies is restored.
     caps = getCddTemplate(model.destination.id).capabilities!;
-    model.set('destination.capabilities', caps);
-    assertTrue(model.settings.copies.available);
-    assertFalse(model.settings.copies.setFromUi);
+    simulateCapabilitiesChange(caps);
+    assertTrue(model.getSetting('copies').available);
+    assertFalse(model.getSetting('copies').setFromUi);
   });
 
   test('collate', function() {
-    assertTrue(model.settings.collate.available);
+    assertTrue(!!model.destination);
+    assertTrue(model.getSetting('collate').available);
 
     // Remove collate capability.
     let capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.collate;
-    model.set('destination.capabilities', capabilities);
+    delete capabilities.printer.collate;
+    simulateCapabilitiesChange(capabilities);
 
     // Copies is no longer available.
-    assertFalse(model.settings.collate.available);
+    assertFalse(model.getSetting('collate').available);
 
     // Copies is restored.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
-    model.set('destination.capabilities', capabilities);
-    assertTrue(model.settings.collate.available);
-    assertFalse(model.settings.collate.setFromUi);
+    simulateCapabilitiesChange(capabilities);
+    assertTrue(model.getSetting('collate').available);
+    assertFalse(model.getSetting('collate').setFromUi);
   });
 
-  test('layout', function() {
+  test('layout', async function() {
+    assertTrue(!!model.destination);
+
     // Layout is available since the printer has the capability and the
     // document is set to modifiable.
-    assertTrue(model.settings.layout.available);
+    assertTrue(model.getSetting('layout').available);
 
     // Each of these settings should not show the capability.
     [undefined,
      {option: [{type: 'PORTRAIT', is_default: true}]},
      {option: [{type: 'LANDSCAPE', is_default: true}]},
     ].forEach(layoutCap => {
-      const capabilities = getCddTemplate(model.destination.id).capabilities!;
-      capabilities.printer!.page_orientation = layoutCap;
+      const capabilities = getCddTemplate(model.destination!.id).capabilities!;
+      capabilities.printer.page_orientation = layoutCap;
       // Layout section should now be hidden.
-      model.set('destination.capabilities', capabilities);
-      assertFalse(model.settings.layout.available);
+      simulateCapabilitiesChange(capabilities);
+      assertFalse(model.getSetting('layout').available);
     });
 
     // Reset full capabilities
     const capabilities = getCddTemplate(model.destination.id).capabilities!;
-    model.set('destination.capabilities', capabilities);
-    assertTrue(model.settings.layout.available);
+    simulateCapabilitiesChange(capabilities);
+    assertTrue(model.getSetting('layout').available);
 
     // Test with PDF - should be hidden.
-    model.set('documentSettings.isModifiable', false);
-    assertFalse(model.settings.layout.available);
-
-    // Test with ARC - should be available.
-    model.set('documentSettings.isFromArc', true);
-    assertTrue(model.settings.layout.available);
-
-    model.set('documentSettings.isModifiable', true);
-    model.set('documentSettings.isFromArc', false);
-    assertTrue(model.settings.layout.available);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    assertFalse(model.getSetting('layout').available);
 
     // Unavailable if all pages have specified an orientation.
-    model.set('documentSettings.allPagesHaveCustomOrientation', true);
-    assertFalse(model.settings.layout.available);
-    assertFalse(model.settings.layout.setFromUi);
+    model.documentSettings = createDocumentSettings(
+        model.documentSettings, {allPagesHaveCustomOrientation: true});
+    await microtasksFinished();
+    assertFalse(model.getSetting('layout').available);
+    assertFalse(model.getSetting('layout').setFromUi);
   });
 
   test('color', function() {
+    assertTrue(!!model.destination);
     // Color is available since the printer has the capability.
-    assertTrue(model.settings.color.available);
+    assertTrue(model.getSetting('color').available);
 
     // Each of these settings should make the setting unavailable, with
     // |expectedValue| as its unavailableValue.
@@ -175,13 +178,13 @@ suite('ModelSettingsAvailabilityTest', function() {
        colorCap: {option: [{type: 'CUSTOM_COLOR', vendor_id: '42'}]},
        expectedValue: true,
      }].forEach(capabilityAndValue => {
-      const capabilities = getCddTemplate(model.destination.id).capabilities!;
-      capabilities.printer!.color = capabilityAndValue.colorCap;
-      model.set('destination.capabilities', capabilities);
-      assertFalse(model.settings.color.available);
+      const capabilities = getCddTemplate(model.destination!.id).capabilities!;
+      capabilities.printer.color = capabilityAndValue.colorCap;
+      simulateCapabilitiesChange(capabilities);
+      assertFalse(model.getSetting('color').available);
       assertEquals(
           capabilityAndValue.expectedValue,
-          model.settings.color.unavailableValue as boolean);
+          model.getSetting('color').unavailableValue as boolean);
     });
 
     // Each of these settings should make the setting available, with the
@@ -213,287 +216,225 @@ suite('ModelSettingsAvailabilityTest', function() {
        },
        expectedValue: true,
      }].forEach(capabilityAndValue => {
-      const capabilities = getCddTemplate(model.destination.id).capabilities!;
-      capabilities.printer!.color = capabilityAndValue.colorCap;
-      model.set('destination.capabilities', capabilities);
+      const capabilities = getCddTemplate(model.destination!.id).capabilities!;
+      capabilities.printer.color = capabilityAndValue.colorCap;
+      simulateCapabilitiesChange(capabilities);
       assertEquals(
-          capabilityAndValue.expectedValue, model.settings.color.value);
-      assertTrue(model.settings.color.available);
+          capabilityAndValue.expectedValue, model.getSetting('color').value);
+      assertTrue(model.getSetting('color').available);
     });
   });
 
-  function setSaveAsPdfDestination() {
+  function setSaveAsPdfDestination(): Promise<void> {
     const saveAsPdf = getSaveAsPdfDestination();
-    saveAsPdf.capabilities = getCddTemplate(model.destination.id).capabilities;
-    model.set('destination', saveAsPdf);
+    saveAsPdf.capabilities = getCddTemplate(saveAsPdf.id).capabilities;
+    model.destination = saveAsPdf;
+    return microtasksFinished();
   }
 
-  test('media size', function() {
+  test('media size', async function() {
+    assertTrue(!!model.destination);
     // Media size is available since the printer has the capability.
-    assertTrue(model.settings.mediaSize.available);
+    assertTrue(model.getSetting('mediaSize').available);
 
     // Remove capability.
     const capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.media_size;
+    delete capabilities.printer.media_size;
 
     // Section should now be hidden.
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.mediaSize.available);
+    simulateCapabilitiesChange(capabilities);
+    assertFalse(model.getSetting('mediaSize').available);
 
     // Set Save as PDF printer.
-    setSaveAsPdfDestination();
+    await setSaveAsPdfDestination();
 
     // Save as PDF printer has media size capability.
-    assertTrue(model.settings.mediaSize.available);
+    assertTrue(model.getSetting('mediaSize').available);
 
     // PDF to PDF -> media size is unavailable.
-    model.set('documentSettings.isModifiable', false);
-    assertFalse(model.settings.mediaSize.available);
-    model.set('documentSettings.isModifiable', true);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    assertFalse(model.getSetting('mediaSize').available);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: true});
 
     // Even if all pages have specified their orientation, the size option
     // should still be available.
-    model.set('documentSettings.allPagesHaveCustomOrientation', true);
-    assertTrue(model.settings.mediaSize.available);
-    model.set('documentSettings.allPagesHaveCustomOrientation', false);
+    model.documentSettings = createDocumentSettings(
+        model.documentSettings, {allPagesHaveCustomOrientation: true});
+    await microtasksFinished();
+    assertTrue(model.getSetting('mediaSize').available);
+    model.documentSettings = createDocumentSettings(
+        model.documentSettings, {allPagesHaveCustomOrientation: false});
+    await microtasksFinished();
 
     // If all pages have specified a size, the size option shouldn't be
     // available.
-    model.set('documentSettings.allPagesHaveCustomSize', true);
-    assertFalse(model.settings.mediaSize.available);
-    assertFalse(model.settings.color.setFromUi);
+    model.documentSettings = createDocumentSettings(
+        model.documentSettings, {allPagesHaveCustomSize: true});
+    await microtasksFinished();
+    assertFalse(model.getSetting('mediaSize').available);
+    assertFalse(model.getSetting('color').setFromUi);
   });
 
-  test('borderless', function() {
-    // Check that borderless setting is unavailable without the feature flag.
-    loadTimeData.overrideValues({isBorderlessPrintingEnabled: false});
-    model.set(
-        'destination.capabilities',
-        getCddTemplate(model.destination.id).capabilities);
-    assertFalse(model.settings.borderless.available);
-
-    // Enable the feature flag and set capabilities again to update borderless
-    // availability.
-    loadTimeData.overrideValues({isBorderlessPrintingEnabled: true});
-    model.set(
-        'destination.capabilities',
-        getCddTemplate(model.destination.id).capabilities);
-    assertTrue(model.settings.borderless.available);
-
-    // Remove the only media size with a borderless variant.
-    const capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer!.media_size!.option.splice(1, 1);
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.borderless.available);
-  });
-
-  test('mediaType', function() {
-    // Check that media type setting is unavailable without the feature flag.
-    loadTimeData.overrideValues({isBorderlessPrintingEnabled: false});
-    model.set(
-        'destination.capabilities',
-        getCddTemplate(model.destination.id).capabilities);
-    assertFalse(model.settings.mediaType.available);
-
-    // Enable the feature flag and set capabilities again to update media type
-    // availability.
-    loadTimeData.overrideValues({isBorderlessPrintingEnabled: true});
-    model.set(
-        'destination.capabilities',
-        getCddTemplate(model.destination.id).capabilities);
-    assertTrue(model.settings.mediaType.available);
-
-    // Remove media type capability.
-    const capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.media_type;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.mediaType.available);
-  });
-
-  test('margins', function() {
+  test('margins', async function() {
     // The settings are available since isModifiable is true.
-    assertTrue(model.settings.margins.available);
-    assertTrue(model.settings.customMargins.available);
-
-    // No margins settings for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.margins.available);
-    assertFalse(model.settings.customMargins.available);
-    assertFalse(model.settings.margins.setFromUi);
-    assertFalse(model.settings.customMargins.setFromUi);
+    assertTrue(model.getSetting('margins').available);
+    assertTrue(model.getSetting('customMargins').available);
 
     // No margins settings for PDFs.
-    model.set('documentSettings.isFromArc', false);
-    model.set('documentSettings.isModifiable', false);
-    assertFalse(model.settings.margins.available);
-    assertFalse(model.settings.customMargins.available);
-    assertFalse(model.settings.margins.setFromUi);
-    assertFalse(model.settings.customMargins.setFromUi);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    assertFalse(model.getSetting('margins').available);
+    assertFalse(model.getSetting('customMargins').available);
+    assertFalse(model.getSetting('margins').setFromUi);
+    assertFalse(model.getSetting('customMargins').setFromUi);
   });
 
   test('dpi', function() {
+    assertTrue(!!model.destination);
     // The settings are available since the printer has multiple DPI options.
-    assertTrue(model.settings.dpi.available);
-
-    // No resolution settings for ARC, but uses the default value.
-    model.set('documentSettings.isFromArc', true);
-    let capabilities = getCddTemplate(model.destination.id).capabilities;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.dpi.available);
-    assertEquals(200, model.settings.dpi.unavailableValue.horizontal_dpi);
-    assertEquals(200, model.settings.dpi.unavailableValue.vertical_dpi);
-
-    model.set('documentSettings.isFromArc', false);
-    assertTrue(model.settings.dpi.available);
+    assertTrue(model.getSetting('dpi').available);
 
     // Remove capability.
-    capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.dpi;
+    let capabilities = getCddTemplate(model.destination.id).capabilities!;
+    delete capabilities.printer.dpi;
 
     // Section should now be hidden.
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.dpi.available);
+    simulateCapabilitiesChange(capabilities);
+    assertFalse(model.getSetting('dpi').available);
 
     // Does not show up for only 1 option. Unavailable value should be set to
     // the only available option.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer!.dpi!.option.pop();
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.dpi.available);
-    assertEquals(200, model.settings.dpi.unavailableValue.horizontal_dpi);
-    assertEquals(200, model.settings.dpi.unavailableValue.vertical_dpi);
-    assertFalse(model.settings.dpi.setFromUi);
+    capabilities.printer.dpi!.option.pop();
+    simulateCapabilitiesChange(capabilities);
+    assertFalse(model.getSetting('dpi').available);
+    assertEquals(200, model.getSetting('dpi').unavailableValue.horizontal_dpi);
+    assertEquals(200, model.getSetting('dpi').unavailableValue.vertical_dpi);
+    assertFalse(model.getSetting('dpi').setFromUi);
   });
 
-  test('scaling', function() {
+  test('scaling', async function() {
     // HTML -> printer
-    assertTrue(model.settings.scaling.available);
+    assertTrue(model.getSetting('scaling').available);
 
     // HTML -> Save as PDF
     const defaultDestination = model.destination;
-    setSaveAsPdfDestination();
-    assertTrue(model.settings.scaling.available);
+    await setSaveAsPdfDestination();
+    assertTrue(model.getSetting('scaling').available);
 
     // PDF -> Save as PDF
-    model.set('documentSettings.isModifiable', false);
-    assertFalse(model.settings.scaling.available);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    assertFalse(model.getSetting('scaling').available);
 
     // PDF -> printer
-    model.set('destination', defaultDestination);
-    assertTrue(model.settings.scaling.available);
-    assertFalse(model.settings.scaling.setFromUi);
-
-    // ARC -> printer
-    model.set('destination', defaultDestination);
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.scaling.available);
-
-    // ARC -> Save as PDF
-    setSaveAsPdfDestination();
-    assertFalse(model.settings.scaling.available);
+    model.destination = defaultDestination;
+    await microtasksFinished();
+    assertTrue(model.getSetting('scaling').available);
+    assertFalse(model.getSetting('scaling').setFromUi);
   });
 
-  test('scalingType', function() {
+  test('scalingType', async function() {
     // HTML -> printer
-    assertTrue(model.settings.scalingType.available);
+    assertTrue(model.getSetting('scalingType').available);
 
     // HTML -> Save as PDF
     const defaultDestination = model.destination;
-    setSaveAsPdfDestination();
-    assertTrue(model.settings.scalingType.available);
+    await setSaveAsPdfDestination();
+    assertTrue(model.getSetting('scalingType').available);
 
     // PDF -> Save as PDF
-    model.set('documentSettings.isModifiable', false);
-    assertFalse(model.settings.scalingType.available);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    assertFalse(model.getSetting('scalingType').available);
 
     // PDF -> printer
-    model.set('destination', defaultDestination);
-    assertFalse(model.settings.scalingType.available);
-
-    // ARC -> printer
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.scalingType.available);
-
-    // ARC -> Save as PDF
-    setSaveAsPdfDestination();
-    assertFalse(model.settings.scalingType.available);
+    model.destination = defaultDestination;
+    await microtasksFinished();
+    assertFalse(model.getSetting('scalingType').available);
   });
 
-  test('scalingTypePdf', function() {
+  test('scalingTypePdf', async function() {
     // HTML -> printer
-    assertFalse(model.settings.scalingTypePdf.available);
+    assertFalse(model.getSetting('scalingTypePdf').available);
 
     // HTML -> Save as PDF
     const defaultDestination = model.destination;
-    setSaveAsPdfDestination();
-    assertFalse(model.settings.scalingTypePdf.available);
+    await setSaveAsPdfDestination();
+    assertFalse(model.getSetting('scalingTypePdf').available);
 
     // PDF -> Save as PDF
-    model.set('documentSettings.isModifiable', false);
-    assertFalse(model.settings.scalingTypePdf.available);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    assertFalse(model.getSetting('scalingTypePdf').available);
 
     // PDF -> printer
-    model.set('destination', defaultDestination);
-    assertTrue(model.settings.scalingTypePdf.available);
-
-    // ARC -> printer
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.scalingTypePdf.available);
-
-    // ARC -> Save as PDF
-    setSaveAsPdfDestination();
-    assertFalse(model.settings.scalingTypePdf.available);
+    model.destination = defaultDestination;
+    await microtasksFinished();
+    assertTrue(model.getSetting('scalingTypePdf').available);
   });
 
-  test('header footer', function() {
+  test('header footer', async function() {
     // Default margins + letter paper + HTML page.
-    assertTrue(model.settings.headerFooter.available);
+    assertTrue(model.getSetting('headerFooter').available);
 
     // Custom margins initializes with customMargins undefined and margins
     // values matching the defaults.
-    model.set('settings.margins.value', MarginsType.CUSTOM);
-    assertTrue(model.settings.headerFooter.available);
+    model.setSetting('margins', MarginsType.CUSTOM);
+    assertTrue(model.getSetting('headerFooter').available);
 
     // Set margins to NONE
-    model.set('settings.margins.value', MarginsType.NO_MARGINS);
-    assertFalse(model.settings.headerFooter.available);
+    model.setSetting('margins', MarginsType.NO_MARGINS);
+    assertFalse(model.getSetting('headerFooter').available);
 
     // Set margins to MINIMUM
-    model.set('settings.margins.value', MarginsType.MINIMUM);
-    assertTrue(model.settings.headerFooter.available);
+    model.setSetting('margins', MarginsType.MINIMUM);
+    assertTrue(model.getSetting('headerFooter').available);
 
     // Custom margins of 0.
-    model.set('settings.margins.value', MarginsType.CUSTOM);
-    model.set(
-        'settings.customMargins.value',
+    model.setSetting('margins', MarginsType.CUSTOM);
+    model.setSetting(
+        'customMargins',
         {marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0});
-    model.set('margins', new Margins(0, 0, 0, 0));
-    assertFalse(model.settings.headerFooter.available);
+    model.margins = new Margins(0, 0, 0, 0);
+    await microtasksFinished();
+    assertFalse(model.getSetting('headerFooter').available);
 
     // Custom margins of 36 -> header/footer available
-    model.set(
-        'settings.customMargins.value',
+    model.setSetting(
+        'customMargins',
         {marginTop: 36, marginLeft: 36, marginRight: 36, marginBottom: 36});
-    model.set('margins', new Margins(36, 36, 36, 36));
-    assertTrue(model.settings.headerFooter.available);
+    model.margins = new Margins(36, 36, 36, 36);
+    await microtasksFinished();
+    assertTrue(model.getSetting('headerFooter').available);
 
     // Zero top and bottom -> header/footer unavailable
-    model.set(
-        'settings.customMargins.value',
+    model.setSetting(
+        'customMargins',
         {marginTop: 0, marginLeft: 36, marginRight: 36, marginBottom: 0});
-    model.set('margins', new Margins(0, 36, 0, 36));
-    assertFalse(model.settings.headerFooter.available);
+    model.margins = new Margins(0, 36, 0, 36);
+    await microtasksFinished();
+    assertFalse(model.getSetting('headerFooter').available);
 
     // Zero top and nonzero bottom -> header/footer available
-    model.set(
-        'settings.customMargins.value',
+    model.setSetting(
+        'customMargins',
         {marginTop: 0, marginLeft: 36, marginRight: 36, marginBottom: 36});
-    model.set('margins', new Margins(0, 36, 36, 36));
-    assertTrue(model.settings.headerFooter.available);
+    model.margins = new Margins(0, 36, 36, 36);
+    await microtasksFinished();
+    assertTrue(model.getSetting('headerFooter').available);
 
     // Small paper sizes
+    assertTrue(!!model.destination);
     const capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer!.media_size = {
+    capabilities.printer.media_size = {
       'option': [
         {
           'name': 'SmallLabel',
@@ -509,180 +450,123 @@ suite('ModelSettingsAvailabilityTest', function() {
         },
       ] as MediaSizeOption[],
     };
-    model.set('destination.capabilities', capabilities);
-    model.set('settings.margins.value', MarginsType.DEFAULT);
+    simulateCapabilitiesChange(capabilities);
+    model.setSetting('margins', MarginsType.DEFAULT);
 
     // Header/footer should be available for default big label with
     // default margins.
-    assertTrue(model.settings.headerFooter.available);
+    assertTrue(model.getSetting('headerFooter').available);
 
-    model.set(
-        'settings.mediaSize.value', capabilities.printer.media_size!.option[0]);
+    model.setSetting('mediaSize', capabilities.printer.media_size.option[0]);
 
     // Header/footer should not be available for small label
-    assertFalse(model.settings.headerFooter.available);
+    assertFalse(model.getSetting('headerFooter').available);
 
     // Reset to big label.
-    model.set(
-        'settings.mediaSize.value', capabilities.printer.media_size!.option[1]);
-    assertTrue(model.settings.headerFooter.available);
+    model.setSetting('mediaSize', capabilities.printer.media_size.option[1]);
+    assertTrue(model.getSetting('headerFooter').available);
 
     // Header/footer is never available for PDFs.
-    model.set('documentSettings.isModifiable', false);
-    assertFalse(model.settings.headerFooter.available);
-    assertFalse(model.settings.headerFooter.setFromUi);
-
-    // Header/footer is never available for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.headerFooter.available);
-    assertFalse(model.settings.headerFooter.setFromUi);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    assertFalse(model.getSetting('headerFooter').available);
+    assertFalse(model.getSetting('headerFooter').setFromUi);
   });
 
-  test('css background', function() {
+  test('css background', async function() {
     // The setting is available since isModifiable is true.
-    assertTrue(model.settings.cssBackground.available);
+    assertTrue(model.getSetting('cssBackground').available);
 
     // No CSS background setting for PDFs.
-    model.set('documentSettings.isModifiable', false);
-    assertFalse(model.settings.cssBackground.available);
-    assertFalse(model.settings.cssBackground.setFromUi);
-
-    // No CSS background setting for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.cssBackground.available);
-    assertFalse(model.settings.cssBackground.setFromUi);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    assertFalse(model.getSetting('cssBackground').available);
+    assertFalse(model.getSetting('cssBackground').setFromUi);
   });
 
   test('duplex', function() {
-    assertTrue(model.settings.duplex.available);
-    assertTrue(model.settings.duplexShortEdge.available);
+    assertTrue(!!model.destination);
+    assertTrue(model.getSetting('duplex').available);
+    assertTrue(model.getSetting('duplexShortEdge').available);
 
     // Remove duplex capability.
     let capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.duplex;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.duplex.available);
-    assertFalse(model.settings.duplexShortEdge.available);
+    delete capabilities.printer.duplex;
+    simulateCapabilitiesChange(capabilities);
+    assertFalse(model.getSetting('duplex').available);
+    assertFalse(model.getSetting('duplexShortEdge').available);
 
     // Set a duplex capability with only 1 type, no duplex.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.duplex;
+    delete capabilities.printer.duplex;
     capabilities.printer.duplex = {
       option: [{type: DuplexType.NO_DUPLEX, is_default: true}],
     };
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.duplex.available);
-    assertFalse(model.settings.duplexShortEdge.available);
+    simulateCapabilitiesChange(capabilities);
+    assertFalse(model.getSetting('duplex').available);
+    assertFalse(model.getSetting('duplexShortEdge').available);
 
     // Set a duplex capability with 2 types, long edge and no duplex.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.duplex;
+    delete capabilities.printer.duplex;
     capabilities.printer.duplex = {
       option: [
         {type: DuplexType.NO_DUPLEX},
         {type: DuplexType.LONG_EDGE, is_default: true},
       ] as DuplexOption[],
     };
-    model.set('destination.capabilities', capabilities);
-    assertTrue(model.settings.duplex.available);
-    assertFalse(model.settings.duplexShortEdge.available);
-    assertFalse(model.settings.duplex.setFromUi);
-    assertFalse(model.settings.duplexShortEdge.setFromUi);
+    simulateCapabilitiesChange(capabilities);
+    assertTrue(model.getSetting('duplex').available);
+    assertFalse(model.getSetting('duplexShortEdge').available);
+    assertFalse(model.getSetting('duplex').setFromUi);
+    assertFalse(model.getSetting('duplexShortEdge').setFromUi);
   });
 
-  test('rasterize', function() {
+  // <if expr="is_linux">
+  test('rasterize', async function() {
     // Availability for PDFs varies depening upon OS.
     // Windows and macOS depend on policy - see policy_test.js for their
     // testing coverage.
-    model.set('documentSettings.isModifiable', false);
-    // <if expr="is_linux or is_chromeos">
-    // Always available for PDFs on Linux and ChromeOS
-    assertTrue(model.settings.rasterize.available);
-    assertFalse(model.settings.rasterize.setFromUi);
-    // </if>
-
-    // Unavailable for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.rasterize.available);
-  });
-
-  test('selection only', function() {
-    // Not available with no selection.
-    assertFalse(model.settings.selectionOnly.available);
-
-    model.set('documentSettings.hasSelection', true);
-    assertTrue(model.settings.selectionOnly.available);
-
-    // Not available for PDFs.
-    model.set('documentSettings.isModifiable', false);
-    assertFalse(model.settings.selectionOnly.available);
-    assertFalse(model.settings.selectionOnly.setFromUi);
-
-    // Not available for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.selectionOnly.available);
-    assertFalse(model.settings.selectionOnly.setFromUi);
-  });
-
-  test('pages per sheet', function() {
-    // Pages per sheet is available everywhere except for ARC.
-    // With the default settings for Blink content, it is available.
-    model.set('documentSettings.isModifiable', true);
-    assertTrue(model.settings.pagesPerSheet.available);
-
-    // Still available for PDF content.
-    model.set('documentSettings.isModifiable', false);
-    assertTrue(model.settings.pagesPerSheet.available);
-
-    // Not available for ARC.
-    model.set('documentSettings.isFromArc', true);
-    assertFalse(model.settings.pagesPerSheet.available);
-  });
-
-  // <if expr="is_chromeos">
-  test('pin', function() {
-    // Make device unmanaged.
-    loadTimeData.overrideValues({isEnterpriseManaged: false});
-    // Check that pin setting is unavailable on unmanaged devices.
-    assertFalse(model.settings.pin.available);
-
-    // Make device enterprise managed.
-    loadTimeData.overrideValues({isEnterpriseManaged: true});
-    // Set capabilities again to update pin availability.
-    model.set(
-        'destination.capabilities',
-        getCddTemplate(model.destination.id).capabilities);
-    assertTrue(model.settings.pin.available);
-
-    // Remove pin capability.
-    let capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.pin;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.pin.available);
-
-    // Set not supported pin capability.
-    capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer!.pin!.supported = false;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.pin.available);
-    assertFalse(model.settings.pin.setFromUi);
-  });
-
-  test('pinValue', function() {
-    assertTrue(model.settings.pinValue.available);
-
-    // Remove pin capability.
-    let capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer.pin;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.pinValue.available);
-
-    // Set not supported pin capability.
-    capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer.pin!.supported = false;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.pinValue.available);
-    assertFalse(model.settings.pinValue.setFromUi);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    // Always available for PDFs on Linux.
+    assertTrue(model.getSetting('rasterize').available);
+    assertFalse(model.getSetting('rasterize').setFromUi);
   });
   // </if>
+
+  test('selection only', async function() {
+    // Not available with no selection.
+    assertFalse(model.getSetting('selectionOnly').available);
+
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {hasSelection: true});
+    await microtasksFinished();
+    assertTrue(model.getSetting('selectionOnly').available);
+
+    // Not available for PDFs.
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    assertFalse(model.getSetting('selectionOnly').available);
+    assertFalse(model.getSetting('selectionOnly').setFromUi);
+  });
+
+  test('pages per sheet', async function() {
+    // Pages per sheet is available everywhere except for ARC.
+    // With the default settings for Blink content, it is available.
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: true});
+    await microtasksFinished();
+    assertTrue(model.getSetting('pagesPerSheet').available);
+
+    // Still available for PDF content.
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
+    await microtasksFinished();
+    assertTrue(model.getSetting('pagesPerSheet').available);
+  });
 });

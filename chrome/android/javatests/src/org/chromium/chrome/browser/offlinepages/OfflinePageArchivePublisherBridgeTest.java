@@ -6,13 +6,10 @@ package org.chromium.chrome.browser.offlinepages;
 
 import android.os.Build;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,11 +29,11 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallba
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -48,13 +45,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class OfflinePageArchivePublisherBridgeTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
     private static final int TIMEOUT_MS = 5000;
@@ -62,8 +55,7 @@ public class OfflinePageArchivePublisherBridgeTest {
             new ClientId(OfflinePageBridge.DOWNLOAD_NAMESPACE, "1234");
 
     private OfflinePageBridge mOfflinePageBridge;
-    private EmbeddedTestServer mTestServer;
-    private String mTestPage;
+    private String mTestUrl;
     private Profile mProfile;
 
     private void initializeBridgeForProfile() throws InterruptedException {
@@ -108,15 +100,7 @@ public class OfflinePageArchivePublisherBridgeTest {
         initializeBridgeForProfile();
         Assert.assertNotNull(mOfflinePageBridge);
 
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
-        mTestPage = mTestServer.getURL(TEST_PAGE);
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
+        mTestUrl = mActivityTestRule.getTestServer().getURL(TEST_PAGE);
     }
 
     @Test
@@ -129,8 +113,9 @@ public class OfflinePageArchivePublisherBridgeTest {
     public void testAddCompletedDownload() throws InterruptedException, TimeoutException {
         Assert.assertTrue(OfflinePageArchivePublisherBridge.isAndroidDownloadManagerInstalled());
 
-        sActivityTestRule.loadUrl(mTestPage);
-        savePage(TEST_CLIENT_ID);
+        WebPageStation webPage =
+                mActivityTestRule.startOnBlankPage().loadWebPageProgrammatically(mTestUrl);
+        savePage(TEST_CLIENT_ID, webPage);
         OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
 
         long downloadId =
@@ -155,8 +140,9 @@ public class OfflinePageArchivePublisherBridgeTest {
     public void testRemove() throws InterruptedException, TimeoutException {
         Assert.assertTrue(OfflinePageArchivePublisherBridge.isAndroidDownloadManagerInstalled());
 
-        sActivityTestRule.loadUrl(mTestPage);
-        savePage(TEST_CLIENT_ID);
+        WebPageStation webPage =
+                mActivityTestRule.startOnBlankPage().loadWebPageProgrammatically(mTestUrl);
+        savePage(TEST_CLIENT_ID, webPage);
         OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
 
         long downloadId =
@@ -185,8 +171,9 @@ public class OfflinePageArchivePublisherBridgeTest {
     public void testPublishArchiveToDownloadsCollection()
             throws InterruptedException, TimeoutException {
         // Save a page and publish.
-        sActivityTestRule.loadUrl(mTestPage);
-        savePage(TEST_CLIENT_ID);
+        WebPageStation webPage =
+                mActivityTestRule.startOnBlankPage().loadWebPageProgrammatically(mTestUrl);
+        savePage(TEST_CLIENT_ID, webPage);
         OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
 
         String publishedUri =
@@ -211,8 +198,9 @@ public class OfflinePageArchivePublisherBridgeTest {
             testPublishArchiveToDownloadsCollection_NoCrashWhenAndroidCantGenerateUniqueFilename()
                     throws InterruptedException, TimeoutException {
         // Save a page and publish.
-        sActivityTestRule.loadUrl(mTestPage);
-        savePage(TEST_CLIENT_ID);
+        WebPageStation webPage =
+                mActivityTestRule.startOnBlankPage().loadWebPageProgrammatically(mTestUrl);
+        savePage(TEST_CLIENT_ID, webPage);
         OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
 
         final int supportedDuplicatesCount = 32;
@@ -229,13 +217,14 @@ public class OfflinePageArchivePublisherBridgeTest {
     }
 
     // Returns offline ID.
-    private void savePage(final ClientId clientId) throws InterruptedException {
+    private void savePage(final ClientId clientId, WebPageStation webPage)
+            throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         final AtomicInteger result = new AtomicInteger(SavePageResult.MAX_VALUE);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mOfflinePageBridge.savePage(
-                            sActivityTestRule.getWebContents(),
+                            webPage.webContentsElement.get(),
                             clientId,
                             new SavePageCallback() {
                                 @Override

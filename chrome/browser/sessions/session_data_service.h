@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -75,6 +76,8 @@ class SessionDataService : public BrowserListObserver, public KeyedService {
   // A flag to indicate that a deletion was started and further requests for
   // cleanup should be ignored.
   bool cleanup_started_ = false;
+
+  base::WeakPtrFactory<SessionDataService> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_DATA_SERVICE_H_

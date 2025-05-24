@@ -9,14 +9,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
-import org.chromium.base.BundleUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Service base class which will call through to the given {@link Impl}. This class must be present
  * in the base module, while the Impl can be in the chrome module.
  */
+@NullMarked
 public class SplitCompatService extends Service {
-    private String mServiceClassName;
+    private final String mServiceClassName;
     private Impl mImpl;
 
     public SplitCompatService(String serviceClassName) {
@@ -24,11 +27,13 @@ public class SplitCompatService extends Service {
     }
 
     @Override
-    protected void attachBaseContext(Context context) {
-        context = SplitCompatApplication.createChromeContext(context);
-        mImpl = (Impl) BundleUtils.newInstance(context, mServiceClassName);
+    protected void attachBaseContext(Context baseContext) {
+        mImpl =
+                (Impl)
+                        SplitCompatUtils.loadClassAndAdjustContextChrome(
+                                baseContext, mServiceClassName);
         mImpl.setService(this);
-        super.attachBaseContext(context);
+        super.attachBaseContext(baseContext);
     }
 
     @Override
@@ -38,7 +43,7 @@ public class SplitCompatService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         return mImpl.onStartCommand(intent, flags, startId);
     }
 
@@ -70,7 +75,7 @@ public class SplitCompatService extends Service {
         return mImpl.onBind(intent);
     }
 
-    private int superOnStartCommand(Intent intent, int flags, int startId) {
+    private int superOnStartCommand(@Nullable Intent intent, int flags, int startId) {
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -87,6 +92,7 @@ public class SplitCompatService extends Service {
     public abstract static class Impl {
         private SplitCompatService mService;
 
+        @Initializer
         protected final void setService(SplitCompatService service) {
             mService = service;
         }
@@ -97,7 +103,7 @@ public class SplitCompatService extends Service {
 
         public void onCreate() {}
 
-        public int onStartCommand(Intent intent, int flags, int startId) {
+        public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
             return mService.superOnStartCommand(intent, flags, startId);
         }
 

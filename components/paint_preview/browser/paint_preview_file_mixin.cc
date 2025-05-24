@@ -54,7 +54,7 @@ GetProto(scoped_refptr<FileManager> file_manager,
       status = PaintPreviewFileMixin::ProtoReadStatus::kDeserializationError;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return std::make_pair(status, std::move(result.second));
 }

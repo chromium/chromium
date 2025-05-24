@@ -123,7 +123,7 @@ void RankerModelLoaderImpl::OnFileLoaded(const std::string& data) {
   // parse and validate the model.
   std::unique_ptr<RankerModel> model;
   if (data.empty()) {
-    ReportModelStatus(RankerModelStatus::LOAD_FROM_CACHE_FAILED);
+    ReportModelStatus(RankerModelStatus::kLoadFromCacheFailed);
   } else {
     model = CreateAndValidateModel(data);
   }
@@ -166,7 +166,7 @@ void RankerModelLoaderImpl::StartLoadFromURL() {
   // Do nothing if the download attempts should be throttled.
   if (base::TimeTicks::Now() < next_earliest_download_time_) {
     DVLOG(2) << "Last download attempt was too recent.";
-    ReportModelStatus(RankerModelStatus::DOWNLOAD_THROTTLED);
+    ReportModelStatus(RankerModelStatus::kDownloadThrottled);
     return;
   }
 
@@ -187,7 +187,7 @@ void RankerModelLoaderImpl::StartLoadFromURL() {
   // loading the model.
   if (!request_started) {
     DVLOG(2) << "Model download abandoned.";
-    ReportModelStatus(RankerModelStatus::MODEL_LOADING_ABANDONED);
+    ReportModelStatus(RankerModelStatus::kModelLoadingAbandoned);
     state_ = LoaderState::FINISHED;
   }
 }
@@ -201,7 +201,7 @@ void RankerModelLoaderImpl::OnURLFetched(bool success,
   // enforce the max download attempts, later.
   if (!success || data.empty()) {
     DVLOG(2) << "Download from '" << model_url_ << "'' failed.";
-    ReportModelStatus(RankerModelStatus::DOWNLOAD_FAILED);
+    ReportModelStatus(RankerModelStatus::kDownloadFailed);
     state_ = LoaderState::IDLE;
     return;
   }
@@ -239,8 +239,8 @@ std::unique_ptr<RankerModel> RankerModelLoaderImpl::CreateAndValidateModel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto model = RankerModel::FromString(data);
   if (ReportModelStatus(model ? validate_model_cb_.Run(*model)
-                              : RankerModelStatus::PARSE_FAILED) !=
-      RankerModelStatus::OK) {
+                              : RankerModelStatus::kParseFailed) !=
+      RankerModelStatus::kOk) {
     return nullptr;
   }
   return model;
@@ -251,8 +251,8 @@ RankerModelStatus RankerModelLoaderImpl::ReportModelStatus(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
       uma_prefix_ + kModelStatusHistogram, 1,
-      static_cast<int>(RankerModelStatus::MAX),
-      static_cast<int>(RankerModelStatus::MAX) + 1,
+      static_cast<int>(RankerModelStatus::kMaxValue) + 1,
+      static_cast<int>(RankerModelStatus::kMaxValue) + 2,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   if (histogram)
     histogram->Add(static_cast<int>(model_status));

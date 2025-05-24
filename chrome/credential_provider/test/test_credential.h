@@ -17,6 +17,7 @@
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace credential_provider {
 
@@ -32,8 +33,7 @@ class DECLSPEC_UUID("3710aa3a-13c7-44c2-bc38-09ba137804d8") ITestCredential
   virtual HRESULT STDMETHODCALLTYPE
   SetGlsGaiaPassword(const std::string& gaia_password) = 0;
   virtual HRESULT STDMETHODCALLTYPE
-  SetGaiaIdOverride(const std::string& gaia_id,
-                    bool ignore_expected_gaia_id) = 0;
+  SetGaiaIdOverride(const GaiaId& gaia_id, bool ignore_expected_gaia_id) = 0;
   virtual HRESULT STDMETHODCALLTYPE
   SetGaiaFullNameOverride(const std::string& full_name) = 0;
   virtual HRESULT STDMETHODCALLTYPE WaitForGls() = 0;
@@ -78,7 +78,7 @@ class ATL_NO_VTABLE CTestCredentialBase : public T, public ITestCredential {
   IFACEMETHODIMP SetDefaultExitCode(UiExitCodes default_exit_code) override;
   IFACEMETHODIMP SetGlsEmailAddress(const std::string& email) override;
   IFACEMETHODIMP SetGlsGaiaPassword(const std::string& gaia_password) override;
-  IFACEMETHODIMP SetGaiaIdOverride(const std::string& gaia_id,
+  IFACEMETHODIMP SetGaiaIdOverride(const GaiaId& gaia_id,
                                    bool ignore_expected_gaia_id) override;
   IFACEMETHODIMP SetGaiaFullNameOverride(const std::string& full_name) override;
   IFACEMETHODIMP FailLoadingGaiaLogonStub() override;
@@ -129,7 +129,7 @@ class ATL_NO_VTABLE CTestCredentialBase : public T, public ITestCredential {
   UiExitCodes default_exit_code_ = kUiecSuccess;
   std::string gls_email_;
   std::string gaia_password_;
-  std::string gaia_id_override_;
+  GaiaId gaia_id_override_;
   std::string full_name_override_;
   base::WaitableEvent gls_done_;
   base::win::ScopedHandle process_continue_event_;
@@ -149,7 +149,7 @@ CTestCredentialBase<T>::CTestCredentialBase()
                 base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
 template <class T>
-CTestCredentialBase<T>::~CTestCredentialBase() {}
+CTestCredentialBase<T>::~CTestCredentialBase() = default;
 
 template <class T>
 HRESULT CTestCredentialBase<T>::SetDefaultExitCode(
@@ -179,7 +179,7 @@ HRESULT CTestCredentialBase<T>::SetGlsGaiaPassword(
 
 template <class T>
 HRESULT CTestCredentialBase<T>::SetGaiaIdOverride(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     bool ignore_expected_gaia_id) {
   ignore_expected_gaia_id_ = ignore_expected_gaia_id;
   gaia_id_override_ = gaia_id;

@@ -62,7 +62,7 @@ std::unique_ptr<views::Label> CreateLabelView(
   return views::Builder<views::Label>()
       .CopyAddressTo(destination_view)
       .SetText(text)
-      .SetEnabledColorId(enabled_color_id)
+      .SetEnabledColor(enabled_color_id)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetMultiLine(false)
       .Build();
@@ -111,6 +111,9 @@ class ASH_EXPORT TopRowView : public views::View {
         CreateLabelView(&label_, std::u16string(), kColorAshTextColorPrimary));
 
     GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+    // Note: this static variable is used so that this view can be identified
+    // from tests. Do not change this, as it will cause test failures.
+    GetViewAccessibility().SetClassName("DictationBubbleView");
   }
 
   TopRowView(const TopRowView&) = delete;
@@ -139,15 +142,6 @@ class ASH_EXPORT TopRowView : public views::View {
     label_->SetVisible(text.has_value());
     label_->SetText(text.has_value() ? text.value() : std::u16string());
     SizeToPreferredSize();
-  }
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    // Note: this static variable is used so that this view can be identified
-    // from tests. Do not change this, as it will cause test failures.
-    static constexpr char kDictationBubbleViewName[] = "DictationBubbleView";
-    node_data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
-                                  kDictationBubbleViewName);
   }
 
  private:
@@ -239,7 +233,7 @@ void DictationBubbleView::OnBeforeBubbleWidgetInit(
   params->name = "DictationBubbleView";
 }
 
-std::u16string DictationBubbleView::GetTextForTesting() {
+std::u16string_view DictationBubbleView::GetTextForTesting() {
   return top_row_view_->label_->GetText();
 }
 
@@ -270,8 +264,9 @@ std::vector<std::u16string> DictationBubbleView::GetVisibleHintsForTesting() {
   std::vector<std::u16string> hints;
   for (size_t i = 0; i < hint_view_->labels_.size(); ++i) {
     views::Label* label = hint_view_->labels_[i];
-    if (label->GetVisible())
-      hints.push_back(label->GetText());
+    if (label->GetVisible()) {
+      hints.emplace_back(label->GetText());
+    }
   }
   return hints;
 }
@@ -327,7 +322,7 @@ void DictationHintView::Update(
   // hints to the user.
   if (num_visible_hints > 0) {
     SetVisible(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   } else {
     SetVisible(false);
   }

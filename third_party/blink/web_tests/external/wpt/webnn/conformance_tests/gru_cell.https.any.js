@@ -1,5 +1,5 @@
 // META: title=test WebNN API gruCell operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -309,7 +309,7 @@ const gruCellTests = [
 if (navigator.ml) {
   gruCellTests.forEach((test) => {
     webnn_conformance_test(
-        buildGraphAndCompute, getGruCellPrecisionTolerance, test);
+        buildAndExecuteGraph, getGruCellPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

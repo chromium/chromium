@@ -32,23 +32,9 @@ bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
 
 RequestResult Request(const GURL& webui_url,
                       content::BrowserContext* browser_context) {
-  // Currently we will always use the preload manager because it is always
-  // available, but we make a fallback just in case this assumption no longer
-  // holds.
-  if (auto* preload_manager = WebUIContentsPreloadManager::GetInstance()) {
-    return preload_manager->Request(webui_url, browser_context);
-  }
-
-  // Fallback when the preloaded manager is not available.
-  content::WebContents::CreateParams create_params(browser_context);
-  create_params.initially_hidden = true;
-  create_params.site_instance =
-      content::SiteInstance::CreateForURL(browser_context, webui_url);
-
-  RequestResult result;
-  result.web_contents = content::WebContents::Create(create_params),
-  result.is_ready_to_show = false;
-  return result;
+  auto* preload_manager = WebUIContentsPreloadManager::GetInstance();
+  CHECK(preload_manager);
+  return preload_manager->Request(webui_url, browser_context);
 }
 
 // Enables the web contents to automatically resize to its content and
@@ -95,6 +81,17 @@ content::WebContents* WebUIContentsWrapper::Host::OpenURLFromTab(
   return nullptr;
 }
 
+content::WebContents* WebUIContentsWrapper::Host::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
+  return nullptr;
+}
+
 WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
                                            Profile* profile,
                                            int task_manager_string_id,
@@ -113,7 +110,7 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
   WebContentsObserver::Observe(web_contents_.get());
 
   PrefsTabHelper::CreateForWebContents(web_contents_.get());
-  chrome::InitializePageLoadMetricsForWebContents(web_contents_.get());
+  InitializePageLoadMetricsForWebContents(web_contents_.get());
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
   if (site_engagement::SiteEngagementService::IsEnabled()) {
@@ -136,10 +133,11 @@ WebUIContentsWrapper::~WebUIContentsWrapper() {
 }
 
 void WebUIContentsWrapper::ResizeDueToAutoResize(content::WebContents* source,
-                                                  const gfx::Size& new_size) {
+                                                 const gfx::Size& new_size) {
   DCHECK_EQ(web_contents(), source);
-  if (host_)
+  if (host_) {
     host_->ResizeDueToAutoResize(source, new_size);
+  }
 }
 
 content::KeyboardEventProcessingResult
@@ -211,9 +209,9 @@ void WebUIContentsWrapper::DraggableRegionsChanged(
     content::WebContents* contents) {
   // Persist regions to allow support transfer between hosts.
   draggable_regions_.emplace();
-  base::ranges::transform(regions,
-                          std::back_inserter(draggable_regions_.value()),
-                          &blink::mojom::DraggableRegionPtr::Clone);
+  std::ranges::transform(regions,
+                         std::back_inserter(draggable_regions_.value()),
+                         &blink::mojom::DraggableRegionPtr::Clone);
   if (host_) {
     host_->DraggableRegionsChanged(regions, contents);
   }
@@ -224,6 +222,20 @@ void WebUIContentsWrapper::SetContentsBounds(content::WebContents* source,
   if (host_) {
     host_->SetContentsBounds(source, bounds);
   }
+}
+
+content::WebContents* WebUIContentsWrapper::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
+  return host_ ? host_->AddNewContents(source, std::move(new_contents),
+                                       target_url, disposition, window_features,
+                                       user_gesture, was_blocked)
+               : nullptr;
 }
 
 void WebUIContentsWrapper::PrimaryPageChanged(content::Page& page) {
@@ -257,20 +269,23 @@ void WebUIContentsWrapper::ShowUI() {
 }
 
 void WebUIContentsWrapper::CloseUI() {
-  if (host_)
+  if (host_) {
     host_->CloseUI();
+  }
 }
 
 void WebUIContentsWrapper::ShowContextMenu(
     gfx::Point point,
     std::unique_ptr<ui::MenuModel> menu_model) {
-  if (host_)
+  if (host_) {
     host_->ShowCustomContextMenu(point, std::move(menu_model));
+  }
 }
 
 void WebUIContentsWrapper::HideContextMenu() {
-  if (host_)
+  if (host_) {
     host_->HideCustomContextMenu();
+  }
 }
 
 base::WeakPtr<WebUIContentsWrapper::Host> WebUIContentsWrapper::GetHost() {

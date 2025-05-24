@@ -170,8 +170,7 @@ bool FieldMatches(
     case EQ: return accessor.Run(item) == value;
     case GT: return accessor.Run(item) > value;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Helper for building a Callback to FieldMatches<>().
@@ -321,7 +320,7 @@ bool DownloadQuery::MatchesQuery(const std::vector<std::u16string>& query_terms,
 }
 
 DownloadQuery::DownloadQuery() : limit_(std::numeric_limits<uint32_t>::max()) {}
-DownloadQuery::~DownloadQuery() {}
+DownloadQuery::~DownloadQuery() = default;
 
 // AddFilter() pushes a new FilterCallback to filters_. Most FilterCallbacks are
 // Callbacks to FieldMatches<>(). Search() iterates over given DownloadItems,
@@ -365,7 +364,8 @@ bool DownloadQuery::AddFilter(DownloadQuery::FilterType type,
       std::vector<std::u16string> query_terms;
       return GetAs(value, &query_terms) &&
              (query_terms.empty() ||
-              AddFilter(base::BindRepeating(&MatchesQuery, query_terms)));
+              AddFilter(
+                  base::BindRepeating(&MatchesQuery, std::move(query_terms))));
     }
     case FILTER_ENDED_AFTER:
       return AddFilter(BuildFilter<std::string>(value, GT, &GetEndTime));

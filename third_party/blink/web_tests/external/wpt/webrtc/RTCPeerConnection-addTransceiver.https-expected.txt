@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] addTransceiver("video") with duplicate rids should throw TypeError
+  assert_throws_js: function "() =>\n      pc.addTransceiver(kind, {\n        sendEncodings: [{rid: 'a'}, {rid: 'a'}]\n      })" did not throw
+[FAIL] addTransceiver("audio") with duplicate rids should throw TypeError
+  assert_throws_js: function "() =>\n      pc.addTransceiver(kind, {\n        sendEncodings: [{rid: 'a'}, {rid: 'a'}]\n      })" did not throw
+Harness: the test ran to completion.
+

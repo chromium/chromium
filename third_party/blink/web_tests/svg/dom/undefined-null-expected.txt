@@ -5,16 +5,16 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 SVGGeometryElement
 
 
-isPointInFill(SVGPoint point)
+isPointInFill(optional DOMPointInit point)
 PASS circle.isPointInFill(point) did not throw exception.
-PASS circle.isPointInFill(undefined) threw exception TypeError: Failed to execute 'isPointInFill' on 'SVGGeometryElement': parameter 1 is not of type 'SVGPoint'..
-PASS circle.isPointInFill(null) threw exception TypeError: Failed to execute 'isPointInFill' on 'SVGGeometryElement': parameter 1 is not of type 'SVGPoint'..
+PASS circle.isPointInFill(undefined) did not throw exception.
+PASS circle.isPointInFill(null) did not throw exception.
 
 
-isPointInStroke(SVGPoint point)
+isPointInStroke(optional DOMPointInit point)
 PASS circle.isPointInStroke(point) did not throw exception.
-PASS circle.isPointInStroke(undefined) threw exception TypeError: Failed to execute 'isPointInStroke' on 'SVGGeometryElement': parameter 1 is not of type 'SVGPoint'..
-PASS circle.isPointInStroke(null) threw exception TypeError: Failed to execute 'isPointInStroke' on 'SVGGeometryElement': parameter 1 is not of type 'SVGPoint'..
+PASS circle.isPointInStroke(undefined) did not throw exception.
+PASS circle.isPointInStroke(null) did not throw exception.
 
 
 
@@ -66,10 +66,10 @@ PASS svg.createSVGTransformFromMatrix(null) threw exception TypeError: Failed to
 SVGTextContentElement
 
 
-getCharNumAtPosition(SVGPoint point)
+getCharNumAtPosition(optional DOMPointInit point)
 PASS text.getCharNumAtPosition(point) did not throw exception.
-PASS text.getCharNumAtPosition(undefined) threw exception TypeError: Failed to execute 'getCharNumAtPosition' on 'SVGTextContentElement': parameter 1 is not of type 'SVGPoint'..
-PASS text.getCharNumAtPosition(null) threw exception TypeError: Failed to execute 'getCharNumAtPosition' on 'SVGTextContentElement': parameter 1 is not of type 'SVGPoint'..
+PASS text.getCharNumAtPosition(undefined) did not throw exception.
+PASS text.getCharNumAtPosition(null) did not throw exception.
 PASS successfullyParsed is true
 
 TEST COMPLETE

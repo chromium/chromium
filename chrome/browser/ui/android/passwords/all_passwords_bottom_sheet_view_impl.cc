@@ -30,7 +30,6 @@ using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 
-
 AllPasswordsBottomSheetViewImpl::AllPasswordsBottomSheetViewImpl(
     AllPasswordsBottomSheetController* controller)
     : controller_(controller) {}
@@ -48,8 +47,9 @@ void AllPasswordsBottomSheetViewImpl::Show(
         credentials,
     FocusedFieldType focused_field_type) {
   auto java_object = GetOrCreateJavaObject();
-  if (!java_object)
+  if (!java_object) {
     return;
+  }
 
   JNIEnv* env = AttachCurrentThread();
 

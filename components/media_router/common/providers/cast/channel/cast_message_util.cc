@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/media_router/common/providers/cast/channel/cast_auth_util.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
@@ -167,9 +166,9 @@ int GetVirtualConnectPlatformValue() {
   return 3;
 #elif BUILDFLAG(IS_APPLE)
   return 4;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return 5;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   return 6;
 #else
   return 0;
@@ -224,8 +223,9 @@ std::ostream& operator<<(std::ostream& lhs, const CastMessage& rhs) {
 }
 
 bool IsCastMessageValid(const CastMessage& message_proto) {
-  if (!message_proto.IsInitialized())
+  if (!message_proto.IsInitialized()) {
     return false;
+  }
 
   if (message_proto.namespace_().empty() || message_proto.source_id().empty() ||
       message_proto.destination_id().empty()) {
@@ -244,8 +244,9 @@ bool IsCastReservedNamespace(std::string_view message_namespace) {
   // messages, but there is at least one namespace in widespread use that uses
   // the "reserved" prefix for app-level messages, so after matching the main
   // prefix, we look for longer prefixes that really need to be reserved.
-  if (!base::StartsWith(message_namespace, kCastReservedNamespacePrefix))
+  if (!base::StartsWith(message_namespace, kCastReservedNamespacePrefix)) {
     return false;
+  }
 
   const auto prefix_length = kCastReservedNamespacePrefix.length();
   for (std::string_view reserved_namespace : kReservedNamespaces) {
@@ -260,8 +261,9 @@ bool IsCastReservedNamespace(std::string_view message_namespace) {
         // never out of bounds because |message_namespace| must be
         // at least as long as |reserved_namespace|.
         (message_namespace.length() == reserved_namespace.length() ||
-         message_namespace[reserved_namespace.length()] == '.'))
+         message_namespace[reserved_namespace.length()] == '.')) {
       return true;
+    }
   }
   return false;
 }
@@ -390,8 +392,9 @@ CastMessage CreateVirtualConnectionRequest(
   sender_info.Set("browserVersion", browser_version);
   sender_info.Set("platform", GetVirtualConnectPlatformValue());
   sender_info.Set("connectionType", kVirtualConnectTypeLocal);
-  if (!system_version.empty())
+  if (!system_version.empty()) {
     sender_info.Set("systemVersion", system_version);
+  }
 
   dict.Set("senderInfo", std::move(sender_info));
 
@@ -448,12 +451,14 @@ CastMessage CreateLaunchRequest(
   dict.Set("appId", app_id);
   dict.Set("language", locale);
   base::Value::List supported_app_types_value;
-  for (const std::string& type : supported_app_types)
+  for (const std::string& type : supported_app_types) {
     supported_app_types_value.Append(type);
+  }
 
   dict.Set("supportedAppTypes", std::move(supported_app_types_value));
-  if (app_params)
+  if (app_params) {
     dict.Set("appParams", app_params.value().Clone());
+  }
   return CreateCastMessage(kReceiverNamespace, base::Value(std::move(dict)),
                            source_id, kPlatformReceiverId);
 }
@@ -558,11 +563,13 @@ GetAppAvailabilityResult GetAppAvailabilityResultFromResponse(
     const Value::Dict& payload,
     const std::string& app_id) {
   const Value::Dict* availability_dict = payload.FindDict("availability");
-  if (!availability_dict)
+  if (!availability_dict) {
     return GetAppAvailabilityResult::kUnknown;
+  }
   const std::string* availability = availability_dict->FindString(app_id);
-  if (!availability)
+  if (!availability) {
     return GetAppAvailabilityResult::kUnknown;
+  }
 
   return StringToEnum<GetAppAvailabilityResult>(*availability)
       .value_or(GetAppAvailabilityResult::kUnknown);
@@ -585,8 +592,9 @@ LaunchSessionResponse GetLaunchSessionResponseError(std::string error_msg) {
 LaunchSessionResponse GetLaunchSessionResponse(
     const base::Value::Dict& payload) {
   const std::string* type_string = payload.FindString("type");
-  if (!type_string)
+  if (!type_string) {
     return LaunchSessionResponse();
+  }
 
   const auto type = CastMessageTypeFromString(*type_string);
   if (type != CastMessageType::kReceiverStatus &&
@@ -625,8 +633,9 @@ LaunchSessionResponse GetLaunchSessionResponse(
   }
 
   const Value::Dict* receiver_status = payload.FindDict("status");
-  if (!receiver_status)
+  if (!receiver_status) {
     return LaunchSessionResponse();
+  }
 
   response.result = LaunchSessionResponse::Result::kOk;
   response.receiver_status = receiver_status->Clone();

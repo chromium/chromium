@@ -44,10 +44,6 @@ class AnchorElementPreloaderBrowserTest
   static constexpr char kOrigin1[] = "https://www.origin1.com/";
   static constexpr char kOrigin2[] = "https://www.origin2.com/";
 
-  virtual base::FieldTrialParams GetAnchorElementInteractionFieldTrialParams() {
-    return {};
-  }
-
   virtual base::FieldTrialParams GetNavigationPredictorFieldTrialParams() {
     return {};
   }
@@ -55,11 +51,8 @@ class AnchorElementPreloaderBrowserTest
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kNavigationPredictor,
-          GetNavigationPredictorFieldTrialParams()},
-         {blink::features::kAnchorElementInteraction,
-          GetAnchorElementInteractionFieldTrialParams()},
-         {blink::features::kSpeculationRulesPointerDownHeuristics, {}}},
-        {blink::features::kSpeculationRulesPointerHoverHeuristics});
+          GetNavigationPredictorFieldTrialParams()}},
+        {});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory("chrome/test/data/preload");
@@ -84,7 +77,6 @@ class AnchorElementPreloaderBrowserTest
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
             chrome_preloading_predictor::kPointerDownOnAnchor);
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
     ASSERT_TRUE(loading_predictor);
     loading_predictor->preconnect_manager()->SetObserverForTesting(this);
   }
@@ -126,6 +118,8 @@ class AnchorElementPreloaderBrowserTest
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer,
       bool success) override {
     if (url != GURL(kOrigin1) && url != GURL(kOrigin2)) {
       return;
@@ -156,17 +150,17 @@ class AnchorElementPreloaderBrowserTest
  protected:
   int preresolve_count_;
   base::test::ScopedFeatureList feature_list_;
+  // Disable sampling of UKM preloading logs.
+  content::test::PreloadingConfigOverride preloading_config_override_;
 
  private:
+  base::ScopedMockElapsedTimersForTest test_timer_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       ukm_entry_builder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
-  // Disable sampling of UKM preloading logs.
-  content::test::PreloadingConfigOverride preloading_config_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
@@ -176,12 +170,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
 
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 1);
 
   // Navigate away to the same origin that was preconnected. This should flush
   // the Preloading UKM logs.
@@ -211,12 +199,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorInaccurate) {
 
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 1);
 
   // Navigate away to an origin that was not preconnected. This should flush
   // the Preloading UKM logs.
@@ -307,13 +289,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
   SimulateMouseDownElementWithId("anchor2");
   EXPECT_EQ(0, preresolve_count_);
 
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 0);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 0);
-
   // Navigate away. This should flush the Preloading UKM logs.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto ukm_entries = test_ukm_recorder()->GetEntries(
@@ -332,13 +307,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
       blink::WebMouseEvent::Button::kLeft, gfx::Point(200, 200));
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
-
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
@@ -352,13 +320,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
 
   // Give some time for Preloading APIs creation.
   GiveItSomeTime(base::Milliseconds(100));
-
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 0);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 0);
 
   // Navigate away to the same origin that was preconnected. This should flush
   // the Preloading UKM logs.
@@ -383,10 +344,11 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
 
 class AnchorElementPreloaderHoldbackBrowserTest
     : public AnchorElementPreloaderBrowserTest {
- public:
-  base::FieldTrialParams GetAnchorElementInteractionFieldTrialParams()
-      override {
-    return {{"preconnect_holdback", "true"}};
+  void SetUp() override {
+    preloading_config_override_.SetHoldback(
+        content::PreloadingType::kPreconnect,
+        chrome_preloading_predictor::kPointerDownOnAnchor, true);
+    AnchorElementPreloaderBrowserTest::SetUp();
   }
 };
 
@@ -398,18 +360,8 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
   SimulateMouseDownElementWithId("anchor1");
   EXPECT_EQ(0, preresolve_count_);
 
-  while (
-      histogram_tester()
-          ->GetAllSamples(kPreloadingAnchorElementPreloaderPreloadingTriggered)
-          .empty()) {
-    base::RunLoop().RunUntilIdle();
-  }
-  histogram_tester()->ExpectTotalCount(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
-
-  histogram_tester()->ExpectUniqueSample(
-      kPreloadingAnchorElementPreloaderPreloadingTriggered,
-      AnchorElementPreloaderType::kPreconnect, 1);
+  // Give some time for Preloading APIs creation.
+  GiveItSomeTime(base::Milliseconds(100));
 
   // Navigate away to the same origin that was preconnected. This should flush
   // the Preloading UKM logs.
@@ -430,61 +382,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
   EXPECT_EQ(ukm_entries[0], expected_entry)
       << content::test::ActualVsExpectedUkmEntryToString(ukm_entries[0],
                                                          expected_entry);
-}
-
-class AnchorElementPreloaderLimitedBrowserTest
-    : public AnchorElementPreloaderBrowserTest {
- public:
-  base::FieldTrialParams GetAnchorElementInteractionFieldTrialParams()
-      override {
-    return {{"max_preloading_attempts", "1"}};
-  }
-};
-
-// TODO(crbug.com/40878140): Re-enable this test
-IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderLimitedBrowserTest,
-                       DISABLED_LimitExceeded) {
-  const GURL& url = GetTestURL("/many_anchors.html");
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // First link with mousedown event should get preconnected.
-  SimulateMouseDownElementWithId("anchor1_origin1");
-  WaitForPreresolveCountForURL(1);
-
-  // Second mousedown event to a different origin: limit should be exceeded.
-  SimulateMouseDownElementWithId("anchor1_origin2");
-
-  // Navigate away to the first origin that was preconnected. This should flush
-  // the Preloading UKM logs.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kOrigin1) + "foo")));
-  ukm::SourceId ukm_source_id = GetPrimaryMainFrame()->GetPageUkmSourceId();
-  auto ukm_entries = test_ukm_recorder()->GetEntries(
-      Preloading_Attempt::kEntryName,
-      content::test::kPreloadingAttemptUkmMetrics);
-  EXPECT_EQ(ukm_entries.size(), 2u);
-  std::vector<UkmEntry> expected_entries = {
-      // Successful preconnect to first origin.
-      ukm_entry_builder().BuildEntry(
-          ukm_source_id, content::PreloadingType::kPreconnect,
-          content::PreloadingEligibility::kEligible,
-          content::PreloadingHoldbackStatus::kAllowed,
-          content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
-          content::PreloadingFailureReason::kUnspecified,
-          /*accurate=*/true),
-      // LimitExceeded for second origin.
-      ukm_entry_builder().BuildEntry(
-          ukm_source_id, content::PreloadingType::kPreconnect,
-          content::PreloadingEligibility::kEligible,
-          content::PreloadingHoldbackStatus::kAllowed,
-          content::PreloadingTriggeringOutcome::kFailure,
-          ToFailureReason(AnchorPreloadingFailureReason::kLimitExceeded),
-          /*accurate=*/false),
-  };
-  EXPECT_THAT(ukm_entries, testing::UnorderedElementsAreArray(expected_entries))
-      << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
-                                                           expected_entries);
 }
 
 class AnchorElementSetIsNavigationInDomainBrowserTest

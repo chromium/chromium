@@ -8,7 +8,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -116,7 +115,8 @@ class SyncAuthTest : public SyncTest {
   // error, false if the bookmark is committed successfully.
   bool AttemptToTriggerAuthError() {
     int bookmark_index = GetNextBookmarkIndex();
-    std::string title = base::StringPrintf("Bookmark %d", bookmark_index);
+    std::u16string title =
+        base::ASCIIToUTF16(base::StringPrintf("Bookmark %d", bookmark_index));
     GURL url = GURL(base::StringPrintf("http://www.foo%d.com", bookmark_index));
     EXPECT_NE(nullptr, bookmarks_helper::AddURL(0, title, url));
 
@@ -313,13 +313,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInitialSetupWithTransientError) {
 }
 
 // Verify that SyncServiceImpl fetches a new token when an old token expires.
-// TODO(crbug.com/40788468): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_TokenExpiry DISABLED_TokenExpiry
-#else
-#define MAYBE_TokenExpiry TokenExpiry
-#endif
-IN_PROC_BROWSER_TEST_F(SyncAuthTestOAuthTokens, MAYBE_TokenExpiry) {
+IN_PROC_BROWSER_TEST_F(SyncAuthTestOAuthTokens, TokenExpiry) {
   // Initial sync succeeds with a short lived OAuth2 Token.
   ASSERT_TRUE(SetupClients());
   GetFakeServer()->ClearHttpError();
@@ -418,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, ShouldTrackDeletionsInSyncPausedState) {
   const bookmarks::BookmarkNode* bar = bookmarks_helper::GetBookmarkBarNode(0);
   ASSERT_FALSE(bookmarks_helper::HasNodeWithURL(0, kTestURL));
   const bookmarks::BookmarkNode* bookmark = bookmarks_helper::AddURL(
-      0, bar, bar->children().size(), "Title", kTestURL);
+      0, bar, bar->children().size(), u"Title", kTestURL);
 
   // ...set a pref...
   ASSERT_FALSE(HasUserPrefValue(pref_service, prefs::kHomePageIsNewTabPage));

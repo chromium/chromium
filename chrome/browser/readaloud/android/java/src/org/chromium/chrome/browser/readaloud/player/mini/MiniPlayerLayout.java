@@ -26,27 +26,33 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
-import org.chromium.chrome.browser.readaloud.player.VisibilityState;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
 
 /** Convenience class for manipulating mini player UI layout. */
+@NullMarked
 public class MiniPlayerLayout extends LinearLayout {
     private static final long FADE_DURATION_MS = 300L;
     private static final Interpolator FADE_INTERPOLATOR =
             Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR;
 
+    private final Context mContext;
+
     private TextView mTitle;
-    private TextView mPublisher;
+    private TextView mSubtitle;
     private ProgressBar mProgressBar;
     private ImageView mPlayPauseView;
     private FrameLayout mBackdrop;
     private View mContents;
+    private TextView mLoadingMessage;
 
     // Layouts related to different playback states.
     private LinearLayout mNormalLayout;
@@ -55,18 +61,17 @@ public class MiniPlayerLayout extends LinearLayout {
 
     private @PlaybackListener.State int mLastPlaybackState;
     private boolean mEnableAnimations;
-    private InteractionHandler mInteractionHandler;
-    private ObjectAnimator mAnimator;
-    private @VisibilityState int mFinalVisibility;
+    private @Nullable ObjectAnimator mAnimator;
     private MiniPlayerMediator mMediator;
     private float mFinalOpacity;
     private @ColorInt int mBackgroundColorArgb;
     private int mYOffset;
+    private PlaybackMode mRequestedPlaybackMode = PlaybackMode.UNSPECIFIED;
 
     /** Constructor for inflating from XML. */
     public MiniPlayerLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mFinalVisibility = VisibilityState.GONE;
+        this.mContext = context;
     }
 
     void destroy() {
@@ -79,7 +84,7 @@ public class MiniPlayerLayout extends LinearLayout {
 
         // Cache important views.
         mTitle = (TextView) findViewById(R.id.title);
-        mPublisher = (TextView) findViewById(R.id.publisher);
+        mSubtitle = (TextView) findViewById(R.id.subtitle);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mPlayPauseView = (ImageView) findViewById(R.id.play_button);
 
@@ -88,6 +93,8 @@ public class MiniPlayerLayout extends LinearLayout {
         mNormalLayout = (LinearLayout) findViewById(R.id.normal_layout);
         mBufferingLayout = (LinearLayout) findViewById(R.id.buffering_layout);
         mErrorLayout = (LinearLayout) findViewById(R.id.error_layout);
+
+        mLoadingMessage = (TextView) findViewById(R.id.loading_message);
 
         // Set dynamic colors.
         Context context = getContext();
@@ -140,7 +147,7 @@ public class MiniPlayerLayout extends LinearLayout {
         View nonErrorLayoutContainer = mErrorLayout.getVisibility() == View.GONE ? mContents : null;
         Runnable onFinished =
                 endValue == 1f
-                        ? (() -> mMediator.onFullOpacityReached(nonErrorLayoutContainer))
+                        ? () -> mMediator.onFullOpacityReached(nonErrorLayoutContainer)
                         : mMediator::onZeroOpacityReached;
 
         if (mEnableAnimations) {
@@ -172,8 +179,21 @@ public class MiniPlayerLayout extends LinearLayout {
         mTitle.setText(title);
     }
 
-    void setPublisher(String publisher) {
-        mPublisher.setText(publisher);
+    void setRequestedPlaybackMode(PlaybackMode playbackMode) {
+        mRequestedPlaybackMode = playbackMode;
+        if (mRequestedPlaybackMode == PlaybackMode.OVERVIEW) {
+            mLoadingMessage.setText(
+                    mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
+        } else {
+            mLoadingMessage.setText(mContext.getString(R.string.readaloud_playback_loading));
+        }
+    }
+
+    void setPlaybackMode(PlaybackMode playbackMode) {
+        mSubtitle.setText(
+                playbackMode == PlaybackMode.OVERVIEW
+                        ? mContext.getString(R.string.readaloud_chrome_now_playing_audio_overview)
+                        : mContext.getString(R.string.readaloud_chrome_now_playing));
     }
 
     /**
@@ -200,7 +220,6 @@ public class MiniPlayerLayout extends LinearLayout {
     }
 
     void setInteractionHandler(InteractionHandler handler) {
-        mInteractionHandler = handler;
         setOnClickListener(R.id.close_button, handler::onCloseClick);
         setOnClickListener(R.id.mini_player_container, handler::onMiniPlayerExpandClick);
         setOnClickListener(R.id.play_button, handler::onPlayPauseClick);
@@ -215,18 +234,18 @@ public class MiniPlayerLayout extends LinearLayout {
                 // UNKNOWN is currently the "reset" state and can be treated same as buffering.
             case BUFFERING:
             case UNKNOWN:
-                showOnly(mBufferingLayout);
+                showBufferingLayout();
                 mProgressBar.setVisibility(View.GONE);
                 break;
 
             case ERROR:
-                showOnly(mErrorLayout);
+                showErrorLayout();
                 mProgressBar.setVisibility(View.GONE);
                 break;
 
             case PLAYING:
                 if (mLastPlaybackState != PLAYING && mLastPlaybackState != PAUSED) {
-                    showOnly(mNormalLayout);
+                    showNormalLayout();
                     mProgressBar.setVisibility(View.VISIBLE);
                 }
 
@@ -242,7 +261,7 @@ public class MiniPlayerLayout extends LinearLayout {
                 if (mLastPlaybackState != PLAYING
                         && mLastPlaybackState != PAUSED
                         && mLastPlaybackState != ERROR) {
-                    showOnly(mNormalLayout);
+                    showNormalLayout();
                     mProgressBar.setVisibility(View.VISIBLE);
                 }
                 mPlayPauseView.setImageResource(R.drawable.mini_play_button);
@@ -256,15 +275,28 @@ public class MiniPlayerLayout extends LinearLayout {
         mLastPlaybackState = state;
     }
 
-    // Show `layout` and hide the other two.
-    private void showOnly(LinearLayout layout) {
-        setVisibleIfMatch(mNormalLayout, layout);
-        setVisibleIfMatch(mBufferingLayout, layout);
-        setVisibleIfMatch(mErrorLayout, layout);
+    private void showBufferingLayout() {
+        mBufferingLayout.setVisibility(View.VISIBLE);
+        mNormalLayout.setVisibility(View.GONE);
+        mErrorLayout.setVisibility(View.GONE);
+        if (mRequestedPlaybackMode == PlaybackMode.OVERVIEW) {
+            mLoadingMessage.setText(
+                    mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
+        } else {
+            mLoadingMessage.setText(mContext.getString(R.string.readaloud_playback_loading));
+        }
     }
 
-    private static void setVisibleIfMatch(LinearLayout a, LinearLayout b) {
-        a.setVisibility(a == b ? View.VISIBLE : View.GONE);
+    private void showNormalLayout() {
+        mNormalLayout.setVisibility(View.VISIBLE);
+        mBufferingLayout.setVisibility(View.GONE);
+        mErrorLayout.setVisibility(View.GONE);
+    }
+
+    private void showErrorLayout() {
+        mErrorLayout.setVisibility(View.VISIBLE);
+        mNormalLayout.setVisibility(View.GONE);
+        mBufferingLayout.setVisibility(View.GONE);
     }
 
     private void setOnClickListener(int id, Runnable handler) {
@@ -283,7 +315,7 @@ public class MiniPlayerLayout extends LinearLayout {
         }
     }
 
-    ObjectAnimator getAnimatorForTesting() {
+    @Nullable ObjectAnimator getAnimatorForTesting() {
         return mAnimator;
     }
 }

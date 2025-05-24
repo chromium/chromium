@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/web/public/security/ssl_status.h"
-
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_ssl_util.h"
 #import "ios/web_view/internal/cwv_x509_certificate_internal.h"
-#include "net/base/net_errors.h"
-#include "net/cert/cert_status_flags.h"
+#import "net/base/net_errors.h"
+#import "net/cert/cert_status_flags.h"
 
 namespace {
 CWVSecurityStyle CWVSecurityStyleFromWebSecurityStyle(

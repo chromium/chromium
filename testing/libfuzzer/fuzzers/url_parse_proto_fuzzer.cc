@@ -12,6 +12,10 @@
 #include "base/i18n/icu_util.h"
 #include "url/gurl.h"
 
+// clang-format off
+#include "base/strings/string_number_conversions.h"
+// clang-format on
+
 // Includes *not* copied from url_parse_fuzzer.cc
 // Contains DEFINE_BINARY_PROTO_FUZZER, a macro we use to define our target
 // function.
@@ -29,9 +33,6 @@ struct TestCase {
 };
 
 TestCase* test_case = new TestCase();
-
-// Silence logging from the protobuf library.
-protobuf_mutator::protobuf::LogSilencer log_silencer;
 
 std::string Slash_to_string(int slash) {
   if (slash == url_proto::Url::NONE)
@@ -85,7 +86,7 @@ std::string protobuf_to_string(const url_proto::Url& url) {
     // that it is preceded by the host and then ":".
     if (url.has_port())
       // Convert url.port() from an unsigned 32 bit int before appending it.
-      url_string += ":" + std::to_string(url.port());
+      url_string += ":" + base::NumberToString(url.port());
   }
 
   // Append the path segments to the url, with each segment separated by

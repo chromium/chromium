@@ -22,6 +22,10 @@
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 
+#if defined(USE_AURA)
+#include "ui/views/accessibility/tree/browser_views_ax_manager.h"
+#endif
+
 namespace gfx {
 class ImageSkia;
 class Rect;
@@ -130,14 +134,6 @@ class VIEWS_EXPORT ViewsDelegate {
   // this returns true.
   virtual bool ShouldCloseMenuIfMouseCaptureLost() const;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns true if the native `window` should have rounded corners. The
-  // decision can be based on multiple factors, including the window's current
-  // state.
-  virtual bool ShouldWindowHaveRoundedCorners(
-      const gfx::NativeWindow window) const;
-#endif
-
 #if BUILDFLAG(IS_WIN)
   // Retrieves the default window icon to use for windows if none is specified.
   virtual HICON GetDefaultWindowIcon() const;
@@ -175,6 +171,8 @@ class VIEWS_EXPORT ViewsDelegate {
   // maximized windows; otherwise to restored windows.
   virtual bool WindowManagerProvidesTitleBar(bool maximized);
 
+  void InitializeViewsAXManager();
+
 #if BUILDFLAG(IS_MAC)
   // Returns the context factory for new windows.
   virtual ui::ContextFactory* GetContextFactory();
@@ -205,6 +203,8 @@ class VIEWS_EXPORT ViewsDelegate {
  private:
 #if defined(USE_AURA)
   std::unique_ptr<TouchSelectionMenuRunnerViews> touch_selection_menu_runner_;
+  std::unique_ptr<views::BrowserViewsAXManager::LifetimeHandle>
+      browser_views_ax_manager_handle_;
 #endif
 
   NativeWidgetFactory native_widget_factory_;

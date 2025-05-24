@@ -96,7 +96,7 @@ void BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon(
 KURL BackgroundFetchIconLoader::PickBestIconForDisplay(
     ExecutionContext* execution_context,
     int ideal_size_pixels) {
-  WebVector<Manifest::ImageResource> icons;
+  std::vector<Manifest::ImageResource> icons;
   for (auto& icon : icons_) {
     // Update the src of |icon| to include the base URL in case relative paths
     // were used.
@@ -114,7 +114,7 @@ KURL BackgroundFetchIconLoader::PickBestIconForDisplay(
   }
 
   return KURL(ManifestIconSelector::FindBestMatchingSquareIcon(
-      icons.ReleaseVector(), ideal_size_pixels, kMinimumIconSizeInPx,
+      std::move(icons), ideal_size_pixels, kMinimumIconSizeInPx,
       mojom::ManifestImageResource_Purpose::ANY));
 }
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browserservices.intents;
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
@@ -13,13 +14,15 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsIntent;
+
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Container for all parameters related to creating a customizable button. */
+@NullMarked
 public interface CustomButtonParams {
 
     /** Enum used to describe different types of buttons. */
@@ -44,7 +47,7 @@ public interface CustomButtonParams {
     }
 
     /** Replaces the current icon and description with new ones. */
-    void update(@NonNull Bitmap icon, @NonNull String description);
+    void update(Bitmap icon, String description);
 
     /**
      * @return Whether this button should be shown on the toolbar.
@@ -61,6 +64,12 @@ public interface CustomButtonParams {
      * @return The drawable for the customized button.
      */
     Drawable getIcon(Context context);
+
+    /**
+     * @param tint tint to be applied to icon, if icon should be tinted.
+     * @return The drawable for the customized button.
+     */
+    Drawable getIcon(Context context, ColorStateList tint);
 
     /**
      * @return The content description for the customized button.
@@ -84,9 +93,14 @@ public interface CustomButtonParams {
      *
      * @param parent The parent that the inflated {@link ImageButton}.
      * @param listener {@link OnClickListener} that should be used with the button.
+     * @param buttonIconTint tint to be applied to button icon, if icon should be tinted.
      * @return Parsed list of {@link CustomButtonParams}, which is empty if the input is invalid.
      */
-    ImageButton buildBottomBarButton(Context context, ViewGroup parent, OnClickListener listener);
+    ImageButton buildBottomBarButton(
+            Context context,
+            ViewGroup parent,
+            OnClickListener listener,
+            ColorStateList buttonIconTint);
 
     /**
      * @return Whether the given icon's size is suitable to put on toolbar.

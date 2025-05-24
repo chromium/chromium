@@ -11,20 +11,22 @@
 namespace page_load_metrics {
 
 // static
-std::unique_ptr<content::NavigationThrottle> MetricsNavigationThrottle::Create(
-    content::NavigationHandle* handle) {
-  return base::WrapUnique(new MetricsNavigationThrottle(handle));
+void MetricsNavigationThrottle::CreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  registry.AddThrottle(
+      base::WrapUnique(new MetricsNavigationThrottle(registry)));
 }
 
-MetricsNavigationThrottle::~MetricsNavigationThrottle() {}
+MetricsNavigationThrottle::~MetricsNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 MetricsNavigationThrottle::WillStartRequest() {
   MetricsWebContentsObserver* observer =
       MetricsWebContentsObserver::FromWebContents(
           navigation_handle()->GetWebContents());
-  if (observer)
+  if (observer) {
     observer->WillStartNavigationRequest(navigation_handle());
+  }
   return content::NavigationThrottle::PROCEED;
 }
 
@@ -33,8 +35,9 @@ MetricsNavigationThrottle::WillProcessResponse() {
   MetricsWebContentsObserver* observer =
       MetricsWebContentsObserver::FromWebContents(
           navigation_handle()->GetWebContents());
-  if (observer)
+  if (observer) {
     observer->WillProcessNavigationResponse(navigation_handle());
+  }
   return content::NavigationThrottle::PROCEED;
 }
 
@@ -43,7 +46,7 @@ const char* MetricsNavigationThrottle::GetNameForLogging() {
 }
 
 MetricsNavigationThrottle::MetricsNavigationThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 }  // namespace page_load_metrics

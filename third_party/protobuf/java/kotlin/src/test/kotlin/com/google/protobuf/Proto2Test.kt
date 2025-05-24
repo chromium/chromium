@@ -1,72 +1,51 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 package com.google.protobuf.kotlin
 
 import com.google.common.truth.Truth.assertThat
 import com.google.protobuf.TestUtil
 import com.google.protobuf.TestUtil.toBytes
-import com.google.protobuf.kotlin.generator.EvilNamesProto2OuterClass.EvilNamesProto2
-import com.google.protobuf.kotlin.generator.EvilNamesProto2OuterClass.HardKeywordsAllTypesProto2
-import com.google.protobuf.kotlin.generator.EvilNamesProto2OuterClass.Interface
-import com.google.protobuf.kotlin.generator.HardKeywordsAllTypesProto2Kt
-import com.google.protobuf.kotlin.generator.evilNamesProto2
-import com.google.protobuf.kotlin.generator.hardKeywordsAllTypesProto2
-import com.google.protobuf.kotlin.generator.interface_
 import com.google.protobuf.test.UnittestImport.ImportEnum
 import com.google.protobuf.test.UnittestImport.ImportMessage
 import com.google.protobuf.test.UnittestImportPublic.PublicImportMessage
-import protobuf_unittest.MapProto2Unittest.Proto2MapEnum
-import protobuf_unittest.MapProto2Unittest.TestEnumMap
-import protobuf_unittest.MapProto2Unittest.TestIntIntMap
-import protobuf_unittest.MapProto2Unittest.TestMaps
-import protobuf_unittest.TestAllTypesKt
-import protobuf_unittest.TestAllTypesKt.nestedMessage
-import protobuf_unittest.UnittestProto
-import protobuf_unittest.UnittestProto.ForeignEnum
-import protobuf_unittest.UnittestProto.TestAllTypes
-import protobuf_unittest.UnittestProto.TestAllTypes.NestedEnum
-import protobuf_unittest.UnittestProto.TestEmptyMessage
-import protobuf_unittest.UnittestProto.TestEmptyMessageWithExtensions
-import protobuf_unittest.copy
-import protobuf_unittest.foreignMessage
-import protobuf_unittest.optionalGroupExtension
-import protobuf_unittest.optionalNestedMessageOrNull
-import protobuf_unittest.repeatedGroupExtension
-import protobuf_unittest.testAllExtensions
-import protobuf_unittest.testAllTypes
-import protobuf_unittest.testEmptyMessage
-import protobuf_unittest.testEmptyMessageWithExtensions
-import protobuf_unittest.testEnumMap
-import protobuf_unittest.testIntIntMap
-import protobuf_unittest.testMaps
+import proto2_unittest.MapProto2Unittest.Proto2MapEnum
+import proto2_unittest.MapProto2Unittest.TestEnumMap
+import proto2_unittest.MapProto2Unittest.TestIntIntMap
+import proto2_unittest.MapProto2Unittest.TestMaps
+import proto2_unittest.TestAllTypesKt
+import proto2_unittest.TestAllTypesKt.nestedMessage
+import proto2_unittest.UnittestProto
+import proto2_unittest.UnittestProto.ForeignEnum
+import proto2_unittest.UnittestProto.TestAllTypes
+import proto2_unittest.UnittestProto.TestAllTypes.NestedEnum
+import proto2_unittest.UnittestProto.TestEmptyMessage
+import proto2_unittest.UnittestProto.TestEmptyMessageWithExtensions
+import proto2_unittest.copy
+import proto2_unittest.deprecatedMessageOrNull
+import proto2_unittest.foreignMessage
+import proto2_unittest.optionalGroupExtension
+import proto2_unittest.optionalNestedMessageOrNull
+import proto2_unittest.repeatedGroupExtension
+import proto2_unittest.testAllExtensions
+import proto2_unittest.testAllTypes
+import proto2_unittest.testDeprecatedFields
+import proto2_unittest.testEmptyMessage
+import proto2_unittest.testEmptyMessageWithExtensions
+import proto2_unittest.testEnumMap
+import proto2_unittest.testIntIntMap
+import proto2_unittest.testMaps
+import `in`.com.google.protobuf.kotlin.generator.EvilNamesProto2
+import `in`.com.google.protobuf.kotlin.generator.HardKeywordsAllTypesProto2
+import `in`.com.google.protobuf.kotlin.generator.HardKeywordsAllTypesProto2Kt
+import `in`.com.google.protobuf.kotlin.generator.Interface
+import `in`.com.google.protobuf.kotlin.generator.evilNamesProto2
+import `in`.com.google.protobuf.kotlin.generator.hardKeywordsAllTypesProto2
+import `in`.com.google.protobuf.kotlin.generator.interface_
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -183,6 +162,7 @@ class Proto2Test {
       .isEqualTo(TestUtil.getAllSetBuilder().build())
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testGetters() {
     testAllTypes {
@@ -203,6 +183,7 @@ class Proto2Test {
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testDefaultGetters() {
     testAllTypes {
@@ -213,6 +194,7 @@ class Proto2Test {
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testRepeatedGettersAndSetters() {
     testAllTypes {
@@ -245,7 +227,7 @@ class Proto2Test {
             TestAllTypesKt.repeatedGroup { a = 1 },
             TestAllTypesKt.repeatedGroup { a = 2 },
             TestAllTypesKt.repeatedGroup { a = 3 },
-            TestAllTypesKt.repeatedGroup { a = 4 }
+            TestAllTypesKt.repeatedGroup { a = 4 },
           )
         )
       repeatedGroup[0] = TestAllTypesKt.repeatedGroup { a = 5 }
@@ -255,7 +237,7 @@ class Proto2Test {
             TestAllTypesKt.repeatedGroup { a = 5 },
             TestAllTypesKt.repeatedGroup { a = 2 },
             TestAllTypesKt.repeatedGroup { a = 3 },
-            TestAllTypesKt.repeatedGroup { a = 4 }
+            TestAllTypesKt.repeatedGroup { a = 4 },
           )
         )
 
@@ -269,7 +251,7 @@ class Proto2Test {
             nestedMessage { bb = 1 },
             nestedMessage { bb = 2 },
             nestedMessage { bb = 3 },
-            nestedMessage { bb = 4 }
+            nestedMessage { bb = 4 },
           )
         )
       repeatedNestedMessage[0] = nestedMessage { bb = 5 }
@@ -279,7 +261,7 @@ class Proto2Test {
             nestedMessage { bb = 5 },
             nestedMessage { bb = 2 },
             nestedMessage { bb = 3 },
-            nestedMessage { bb = 4 }
+            nestedMessage { bb = 4 },
           )
         )
 
@@ -294,6 +276,7 @@ class Proto2Test {
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testHazzers() {
     testAllTypes {
@@ -324,6 +307,7 @@ class Proto2Test {
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testClears() {
     testAllTypes {
@@ -482,26 +466,26 @@ class Proto2Test {
           this[UnittestProto.repeatedImportEnumExtension] += ImportEnum.IMPORT_BAZ
           this[UnittestProto.repeatedStringPieceExtension] += "324"
           this[UnittestProto.repeatedCordExtension] += "325"
-          this[UnittestProto.defaultInt32Extension] = 401
-          this[UnittestProto.defaultInt64Extension] = 402L
-          this[UnittestProto.defaultUint32Extension] = 403
-          this[UnittestProto.defaultUint64Extension] = 404L
-          this[UnittestProto.defaultSint32Extension] = 405
-          this[UnittestProto.defaultSint64Extension] = 406L
-          this[UnittestProto.defaultFixed32Extension] = 407
-          this[UnittestProto.defaultFixed64Extension] = 408L
-          this[UnittestProto.defaultSfixed32Extension] = 409
-          this[UnittestProto.defaultSfixed64Extension] = 410L
-          this[UnittestProto.defaultFloatExtension] = 411F
-          this[UnittestProto.defaultDoubleExtension] = 412.0
-          this[UnittestProto.defaultBoolExtension] = false
-          this[UnittestProto.defaultStringExtension] = "415"
-          this[UnittestProto.defaultBytesExtension] = toBytes("416")
-          this[UnittestProto.defaultNestedEnumExtension] = NestedEnum.FOO
-          this[UnittestProto.defaultForeignEnumExtension] = ForeignEnum.FOREIGN_FOO
-          this[UnittestProto.defaultImportEnumExtension] = ImportEnum.IMPORT_FOO
-          this[UnittestProto.defaultStringPieceExtension] = "424"
-          this[UnittestProto.defaultCordExtension] = "425"
+          setExtension(UnittestProto.defaultInt32Extension, 401)
+          setExtension(UnittestProto.defaultInt64Extension, 402L)
+          setExtension(UnittestProto.defaultUint32Extension, 403)
+          setExtension(UnittestProto.defaultUint64Extension, 404L)
+          setExtension(UnittestProto.defaultSint32Extension, 405)
+          setExtension(UnittestProto.defaultSint64Extension, 406L)
+          setExtension(UnittestProto.defaultFixed32Extension, 407)
+          setExtension(UnittestProto.defaultFixed64Extension, 408L)
+          setExtension(UnittestProto.defaultSfixed32Extension, 409)
+          setExtension(UnittestProto.defaultSfixed64Extension, 410L)
+          setExtension(UnittestProto.defaultFloatExtension, 411F)
+          setExtension(UnittestProto.defaultDoubleExtension, 412.0)
+          setExtension(UnittestProto.defaultBoolExtension, false)
+          setExtension(UnittestProto.defaultStringExtension, "415")
+          setExtension(UnittestProto.defaultBytesExtension, toBytes("416"))
+          setExtension(UnittestProto.defaultNestedEnumExtension, NestedEnum.FOO)
+          setExtension(UnittestProto.defaultForeignEnumExtension, ForeignEnum.FOREIGN_FOO)
+          setExtension(UnittestProto.defaultImportEnumExtension, ImportEnum.IMPORT_FOO)
+          setExtension(UnittestProto.defaultStringPieceExtension, "424")
+          setExtension(UnittestProto.defaultCordExtension, "425")
           this[UnittestProto.oneofUint32Extension] = 601
           this[UnittestProto.oneofNestedMessageExtension] =
             TestAllTypesKt.nestedMessage { bb = 602 }
@@ -512,6 +496,7 @@ class Proto2Test {
       .isEqualTo(TestUtil.getAllExtensionsSet())
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testExtensionGetters() {
     testAllExtensions {
@@ -534,6 +519,7 @@ class Proto2Test {
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testRepeatedExtensionGettersAndSetters() {
     testAllExtensions {
@@ -564,7 +550,7 @@ class Proto2Test {
             repeatedGroupExtension { a = 1 },
             repeatedGroupExtension { a = 2 },
             repeatedGroupExtension { a = 3 },
-            repeatedGroupExtension { a = 4 }
+            repeatedGroupExtension { a = 4 },
           )
         )
       this[UnittestProto.repeatedGroupExtension][0] = repeatedGroupExtension { a = 5 }
@@ -574,7 +560,7 @@ class Proto2Test {
             repeatedGroupExtension { a = 5 },
             repeatedGroupExtension { a = 2 },
             repeatedGroupExtension { a = 3 },
-            repeatedGroupExtension { a = 4 }
+            repeatedGroupExtension { a = 4 },
           )
         )
 
@@ -591,7 +577,7 @@ class Proto2Test {
             nestedMessage { bb = 1 },
             nestedMessage { bb = 2 },
             nestedMessage { bb = 3 },
-            nestedMessage { bb = 4 }
+            nestedMessage { bb = 4 },
           )
         )
       this[UnittestProto.repeatedNestedMessageExtension][0] = nestedMessage { bb = 5 }
@@ -601,7 +587,7 @@ class Proto2Test {
             nestedMessage { bb = 5 },
             nestedMessage { bb = 2 },
             nestedMessage { bb = 3 },
-            nestedMessage { bb = 4 }
+            nestedMessage { bb = 4 },
           )
         )
 
@@ -614,6 +600,7 @@ class Proto2Test {
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testExtensionContains() {
     testAllExtensions {
@@ -644,6 +631,7 @@ class Proto2Test {
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testExtensionClears() {
     testAllExtensions {
@@ -725,6 +713,7 @@ class Proto2Test {
       )
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testMapGettersAndSetters() {
     val intMap = testIntIntMap {
@@ -770,12 +759,13 @@ class Proto2Test {
             1 to Proto2MapEnum.PROTO2_MAP_ENUM_FOO,
             2 to Proto2MapEnum.PROTO2_MAP_ENUM_BAR,
             3 to Proto2MapEnum.PROTO2_MAP_ENUM_BAZ,
-            4 to Proto2MapEnum.PROTO2_MAP_ENUM_FOO
+            4 to Proto2MapEnum.PROTO2_MAP_ENUM_FOO,
           )
         )
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testMapRemove() {
     val intMap = testIntIntMap {
@@ -803,6 +793,7 @@ class Proto2Test {
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testMapClear() {
     val intMap = testIntIntMap {
@@ -851,11 +842,15 @@ class Proto2Test {
           boolean = 1L
           sealed = "foo"
           interface_ = 1F
-          in_ = 1
           object_ = "foo"
           cachedSize_ = "foo"
           serializedSize_ = true
           by = "foo"
+          dEPRECATEDFoo = "foo"
+          DEPRECATEDBar = "foo"
+          iD = "foo"
+          aBNotification = "foo"
+          notDEPRECATEDFoo = "foo"
         }
       )
       .isEqualTo(
@@ -877,25 +872,27 @@ class Proto2Test {
           .setBoolean(1L)
           .setSealed("foo")
           .setInterface(1F)
-          .setIn(1)
           .setObject("foo")
           .setCachedSize_("foo")
           .setSerializedSize_(true)
           .setBy("foo")
+          .setDEPRECATEDFoo("foo")
+          .setDEPRECATEDBar("foo")
+          .setID("foo")
+          .setABNotification("foo")
+          .setNotDEPRECATEDFoo("foo")
           .build()
       )
 
     assertThat(interface_ {}).isEqualTo(Interface.newBuilder().build())
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testHardKeywordGettersAndSetters() {
     hardKeywordsAllTypesProto2 {
       as_ = 1
       assertThat(as_).isEqualTo(1)
-
-      in_ = "foo"
-      assertThat(in_).isEqualTo("foo")
 
       break_ = HardKeywordsAllTypesProto2.NestedEnum.FOO
       assertThat(break_).isEqualTo(HardKeywordsAllTypesProto2.NestedEnum.FOO)
@@ -920,14 +917,12 @@ class Proto2Test {
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testHardKeywordHazzers() {
     hardKeywordsAllTypesProto2 {
       as_ = 1
       assertThat(hasAs_()).isTrue()
-
-      in_ = "foo"
-      assertThat(hasIn_()).isTrue()
 
       break_ = HardKeywordsAllTypesProto2.NestedEnum.FOO
       assertThat(hasBreak_()).isTrue()
@@ -937,16 +932,13 @@ class Proto2Test {
     }
   }
 
+  @Suppress("CheckReturnValue")
   @Test
   fun testHardKeywordClears() {
     hardKeywordsAllTypesProto2 {
       as_ = 1
       clearAs_()
       assertThat(hasAs_()).isFalse()
-
-      in_ = "foo"
-      clearIn_()
-      assertThat(hasIn_()).isFalse()
 
       break_ = HardKeywordsAllTypesProto2.NestedEnum.FOO
       clearBreak_()
@@ -968,5 +960,16 @@ class Proto2Test {
     }
     assertThat(someNestedMessage.optionalNestedMessageOrNull)
       .isEqualTo(TestAllTypesKt.nestedMessage { bb = 118 })
+  }
+
+  @Test
+  fun testDeprecated() {
+    val testInstance =
+      proto2_unittest.UnittestProto.TestDeprecatedFields.getDefaultInstance()
+    assertThat(testInstance::deprecatedMessageOrNull.annotations.any { it is Deprecated }).isTrue()
+
+    val unused = testDeprecatedFields {
+      assertThat(::deprecatedMessage.annotations.any { it is Deprecated }).isTrue()
+    }
   }
 }

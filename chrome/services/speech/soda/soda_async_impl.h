@@ -56,6 +56,14 @@ typedef struct {
   void* callback_handle;
 } SerializedSodaConfig;
 
+typedef struct {
+  // A RecognitionContext serialized as a string.
+  const char* recognition_context;
+
+  // Length of char* in recognition_context.
+  int recognition_context_size;
+} RecognitionContext;
+
 void* CreateSoda(SerializedSodaConfig config);
 
 // Destroys the instance of SODA, called on the destruction of the SodaClient.
@@ -65,6 +73,10 @@ void DeleteSodaAsync(void* soda_async_handle);
 void AddAudio(void* soda_async_handle,
               const char* audio_buffer,
               int audio_buffer_size);
+
+// Updates the recognition context.
+void UpdateRecognitionContext(void* soda_async_handle,
+                              RecognitionContext context);
 }
 
 #endif  // CHROME_SERVICES_SPEECH_SODA_SODA_ASYNC_IMPL_H_

@@ -22,7 +22,7 @@ SoftwareOutputDeviceOzone::SoftwareOutputDeviceOzone(
   vsync_provider_ = surface_ozone_->CreateVSyncProvider();
 }
 
-SoftwareOutputDeviceOzone::~SoftwareOutputDeviceOzone() {}
+SoftwareOutputDeviceOzone::~SoftwareOutputDeviceOzone() = default;
 
 void SoftwareOutputDeviceOzone::Resize(const gfx::Size& viewport_pixel_size,
                                        float scale_factor) {

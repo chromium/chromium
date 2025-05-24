@@ -1,9 +1,9 @@
 #!/bin/sh
 # py-compile - Compile a Python program
 
-scriptversion=2021-02-27.01; # UTC
+scriptversion=2024-06-19.01; # UTC
 
-# Copyright (C) 2000-2021 Free Software Foundation, Inc.
+# Copyright (C) 2000-2024 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -62,22 +62,30 @@ while test $# -ne 0; do
       ;;
     -h|--help)
       cat <<\EOF
-Usage: py-compile [--help] [--version] [--basedir DIR] [--destdir DIR] FILES..."
+Usage: py-compile [options] FILES...
 
 Byte compile some python scripts FILES.  Use --destdir to specify any
 leading directory path to the FILES that you don't want to include in the
 byte compiled file.  Specify --basedir for any additional path information you
 do want to be shown in the byte compiled file.
 
+Options:
+  --basedir DIR   Prefix all FILES with DIR, and include in error messages.
+  --destdir DIR   Prefix all FILES with DIR before compiling.
+  -v, --version   Display version information.
+  -h, --help      This help screen.
+
 Example:
   py-compile --destdir /tmp/pkg-root --basedir /usr/share/test test.py test2.py
 
 Report bugs to <bug-automake@gnu.org>.
+GNU Automake home page: <https://www.gnu.org/software/automake/>.
+General help using GNU software: <https://www.gnu.org/gethelp/>.
 EOF
       exit $?
       ;;
     -v|--version)
-      echo "$me $scriptversion"
+      echo "$me (GNU Automake) $scriptversion"
       exit $?
       ;;
     --)
@@ -94,8 +102,7 @@ EOF
   shift
 done
 
-files=$*
-if test -z "$files"; then
+if test $# -eq 0; then
   usage_error "no files given"
 fi
 
@@ -115,68 +122,116 @@ else
   filetrans="filepath = os.path.normpath('$destdir' + os.sep + path)"
 fi
 
-python_major=`$PYTHON -V 2>&1 | sed -e 's/.* //;s/\..*$//;1q'`
+python_major=`$PYTHON -c 'import sys; print(sys.version_info[0])'`
 if test -z "$python_major"; then
-  echo "$me: could not determine $PYTHON major version, guessing 3" >&2
-  python_major=3
+  usage_error "could not determine $PYTHON major version"
 fi
 
-# The old way to import libraries was deprecated.
-if test "$python_major" -le 2; then
-  import_lib=imp
-  import_test="hasattr(imp, 'get_tag')"
-  import_call=imp.cache_from_source
-  import_arg2=', False' # needed in one call and not the other
-else
-  import_lib=importlib
-  import_test="hasattr(sys.implementation, 'cache_tag')"
-  import_call=importlib.util.cache_from_source
-  import_arg2=
-fi
+case $python_major in
+[01])
+  usage_error "python version 0.x and 1.x not supported"
+  ;;
+esac
 
+python_minor=`$PYTHON -c 'import sys; print(sys.version_info[1])'`
+
+# NB: When adding support for newer versions, prefer copying & adding new cases
+# rather than try to keep things merged with shell variables.
+
+# First byte compile (no optimization) all the modules.
+# This works for all currently known Python versions.
 $PYTHON -c "
-import sys, os, py_compile, $import_lib
+import sys, os, py_compile
 
-files = '''$files'''
+try:
+    import importlib
+except ImportError:
+    importlib = None
+
+# importlib.util.cache_from_source was added in 3.4
+if (
+        hasattr(importlib, 'util')
+        and hasattr(importlib.util, 'cache_from_source')
+):
+    destpath = importlib.util.cache_from_source
+else:
+    destpath = lambda filepath: filepath + 'c'
 
 sys.stdout.write('Byte-compiling python modules...\n')
-for file in files.split():
+for file in sys.argv[1:]:
     $pathtrans
     $filetrans
-    if not os.path.exists(filepath) or not (len(filepath) >= 3
-                                            and filepath[-3:] == '.py'):
-	    continue
-    sys.stdout.write(file)
+    if (
+            not os.path.exists(filepath)
+            or not (len(filepath) >= 3 and filepath[-3:] == '.py')
+     ):
+        continue
+    sys.stdout.write(file + ' ')
     sys.stdout.flush()
-    if $import_test:
-        py_compile.compile(filepath, $import_call(filepath), path)
-    else:
-        py_compile.compile(filepath, filepath + 'c', path)
-sys.stdout.write('\n')" || exit $?
+    py_compile.compile(filepath, destpath(filepath), path)
+sys.stdout.write('\n')" "$@" || exit $?
 
-# this will fail for python < 1.5, but that doesn't matter ...
+# Then byte compile w/optimization all the modules.
 $PYTHON -O -c "
-import sys, os, py_compile, $import_lib
+import sys, os, py_compile
 
-# pypy does not use .pyo optimization
-if hasattr(sys, 'pypy_translation_info'):
+try:
+    import importlib
+except ImportError:
+    importlib = None
+
+# importlib.util.cache_from_source was added in 3.4
+if (
+        hasattr(importlib, 'util')
+        and hasattr(importlib.util, 'cache_from_source')
+):
+    destpath = importlib.util.cache_from_source
+else:
+    destpath = lambda filepath: filepath + 'o'
+
+# pypy2 does not use .pyo optimization
+if sys.version_info.major <= 2 and hasattr(sys, 'pypy_translation_info'):
     sys.exit(0)
 
-files = '''$files'''
 sys.stdout.write('Byte-compiling python modules (optimized versions) ...\n')
-for file in files.split():
+for file in sys.argv[1:]:
     $pathtrans
     $filetrans
-    if not os.path.exists(filepath) or not (len(filepath) >= 3
-                                            and filepath[-3:] == '.py'):
-	    continue
-    sys.stdout.write(file)
+    if (
+            not os.path.exists(filepath)
+            or not (len(filepath) >= 3 and filepath[-3:] == '.py')
+    ):
+        continue
+    sys.stdout.write(file + ' ')
     sys.stdout.flush()
-    if $import_test:
-        py_compile.compile(filepath, $import_call(filepath$import_arg2), path)
-    else:
-        py_compile.compile(filepath, filepath + 'o', path)
-sys.stdout.write('\n')" 2>/dev/null || exit $?
+    py_compile.compile(filepath, destpath(filepath), path)
+sys.stdout.write('\n')" "$@" 2>/dev/null || exit $?
+
+# Then byte compile w/more optimization.
+# Only do this for Python 3.5+, see https://bugs.gnu.org/38043 for background.
+case $python_major.$python_minor in
+2.*|3.[0-4])
+  ;;
+*)
+  $PYTHON -OO -c "
+import sys, os, py_compile, importlib
+
+sys.stdout.write('Byte-compiling python modules (more optimized versions)'
+                 ' ...\n')
+for file in sys.argv[1:]:
+    $pathtrans
+    $filetrans
+    if (
+            not os.path.exists(filepath)
+            or not (len(filepath) >= 3 and filepath[-3:] == '.py')
+    ):
+        continue
+    sys.stdout.write(file + ' ')
+    sys.stdout.flush()
+    py_compile.compile(filepath, importlib.util.cache_from_source(filepath), path)
+sys.stdout.write('\n')" "$@" 2>/dev/null || exit $?
+  ;;
+esac
 
 # Local Variables:
 # mode: shell-script

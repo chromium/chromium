@@ -65,8 +65,8 @@ class TaskManagerInterface {
   // Returns if the task is killable.
   virtual bool IsTaskKillable(TaskId task_id) = 0;
 
-  // Kills the task with |task_id|.
-  virtual void KillTask(TaskId task_id) = 0;
+  // Kills the task with |task_id|. Returns true if the process terminates.
+  virtual bool KillTask(TaskId task_id) = 0;
 
   // Returns the CPU usage of the process on which |task_id| is running, over
   // the most recent refresh cycle. The value is in the range zero to
@@ -142,8 +142,14 @@ class TaskManagerInterface {
   virtual const base::ProcessHandle& GetProcessHandle(TaskId task_id) const = 0;
   virtual const base::ProcessId& GetProcessId(TaskId task_id) const = 0;
 
+  // Returns the task id of the process which spawned |task_id|.
+  virtual TaskId GetRootTaskId(TaskId task_id) const = 0;
+
   // Returns the type of the task with |task_id|.
   virtual Task::Type GetType(TaskId task_id) const = 0;
+
+  // Returns the subtype of the task with |task_id|.
+  virtual Task::SubType GetSubType(TaskId task_id) const = 0;
 
   // Gets the unique ID of the tab if the task with |task_id| represents a
   // WebContents of a tab. Returns -1 otherwise.
@@ -234,6 +240,11 @@ class TaskManagerInterface {
   virtual TaskId GetTaskIdForWebContents(
       content::WebContents* web_contents) const = 0;
 
+  // Returns whether a task is valid by the implementer. Concept of 'valid' is
+  // delegated to the implementer. An example of validness is
+  // task_manager_impl.cc tracking tasks in task_groups_by_task_ids_.
+  virtual bool IsTaskValid(TaskId task_id) const;
+
   // Returns true if the resource |type| usage calculation is enabled and
   // the implementation should refresh its value (this means that at least one
   // of the observers require this value). False otherwise.
@@ -250,7 +261,6 @@ class TaskManagerInterface {
   void NotifyObserversOnRefreshWithBackgroundCalculations(
       const TaskIdList& task_ids);
   void NotifyObserversOnTaskUnresponsive(TaskId id);
-  void NotifyObserversOnActiveTaskFetched(TaskId id);
 
   // Refresh all the enabled resources usage of all the available tasks.
   virtual void Refresh() = 0;

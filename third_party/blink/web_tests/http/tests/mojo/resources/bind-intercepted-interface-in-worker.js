@@ -3,7 +3,7 @@ importScripts('/resources/testharness.js');
 async function importModuleDeps() {
   const {kTestReply, TestHelperImpl} = await import('./helpers.js');
   const {MojoWebTestHelper, MojoWebTestHelperRemote} = await import(
-      '/gen/content/test/data/mojo_web_test_helper_test.mojom.m.js');
+      '/gen/content/test/data/mojo_web_test_helper.test-mojom.m.js');
   Object.assign(
       self,
       {kTestReply, TestHelperImpl, MojoWebTestHelper, MojoWebTestHelperRemote});

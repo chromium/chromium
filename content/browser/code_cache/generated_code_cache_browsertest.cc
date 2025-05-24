@@ -5,6 +5,7 @@
 #include "content/browser/code_cache/generated_code_cache.h"
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -22,6 +23,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
@@ -413,6 +415,85 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromThirdPartyFrames) {
   }
 }
 
+IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromIFrame) {
+  GURL a_com_parent_page =
+      embedded_test_server()->GetURL("a.com", "/empty.html");
+  const std::string_view kLoadCacheableJSInIframeScript = R"(
+    (async () => {
+      await new Promise(resolve => {
+        const iframe = document.createElement('iframe');
+        document.body.appendChild(iframe);
+        const script = iframe.contentWindow.document.createElement('script');
+        script.addEventListener('load', resolve);
+        script.src = '/cacheable.js';
+        iframe.contentWindow.document.body.appendChild(script);
+      });
+    })();
+  )";
+
+  {
+    // Navigate to the parent page and load an iframe that requests a cacheable
+    // javascript resource (/cacheable.js) in subframe.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), a_com_parent_page));
+
+    EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       kLoadCacheableJSInIframeScript));
+
+    FetchHistogramsFromChildProcesses();
+
+    histogram_tester.ExpectBucketCount(
+        "SiteIsolatedCodeCache.JS.Behaviour",
+        GeneratedCodeCache::CacheEntryStatus::kMiss, 1);
+    histogram_tester.ExpectBucketCount(
+        "SiteIsolatedCodeCache.JS.Behaviour",
+        GeneratedCodeCache::CacheEntryStatus::kCreate, 1);
+    histogram_tester.ExpectBucketCount(
+        "SiteIsolatedCodeCache.JS.Behaviour",
+        GeneratedCodeCache::CacheEntryStatus::kHit, 0);
+
+    PurgeResourceCacheFromTheFirstSubFrame();
+  }
+  {
+    // Navigate to the same test page again, code cache will be produced.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), a_com_parent_page));
+
+    EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       kLoadCacheableJSInIframeScript));
+
+    FetchHistogramsFromChildProcesses();
+
+    histogram_tester.ExpectBucketCount(
+        "SiteIsolatedCodeCache.JS.Behaviour",
+        GeneratedCodeCache::CacheEntryStatus::kMiss, 0);
+    histogram_tester.ExpectBucketCount(
+        "SiteIsolatedCodeCache.JS.Behaviour",
+        GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+
+    PurgeResourceCacheFromTheFirstSubFrame();
+  }
+  {
+    // Navigate to the same test page again, code cache will be consumed.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateToURL(shell(), a_com_parent_page));
+
+    EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       kLoadCacheableJSInIframeScript));
+
+    FetchHistogramsFromChildProcesses();
+
+    histogram_tester.ExpectBucketCount(
+        "SiteIsolatedCodeCache.JS.Behaviour",
+        GeneratedCodeCache::CacheEntryStatus::kMiss, 0);
+    histogram_tester.ExpectBucketCount(
+        "SiteIsolatedCodeCache.JS.Behaviour",
+        GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+
+    PurgeResourceCacheFromTheFirstSubFrame();
+  }
+}
+
 IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
                        CachingFromThirdPartySharedWorkers) {
   if (!SupportsSharedWorker()) {
@@ -561,7 +642,6 @@ class CodeCacheSizeChecker {
   const GURL url_;
   const GURL origin_;
   const size_t expected_size_;
-  size_t actual_size_ = 0;
   base::OnceClosure done_callback_;
 };
 

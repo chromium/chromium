@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 
@@ -15,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -36,6 +33,7 @@
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
@@ -73,6 +71,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -159,8 +158,9 @@ bool GetSettingManagedByUser(const GURL& url,
     setting = map->GetContentSetting(url, url, type, &info);
   }
 
-  if (out_setting)
+  if (out_setting) {
     *out_setting = setting;
+  }
 
   // Prevent creation of content settings for illegal urls like about:blank by
   // disallowing user management.
@@ -189,12 +189,12 @@ struct ContentSettingsTypeIdEntry {
   int id;
 };
 
-int GetIdForContentType(const ContentSettingsTypeIdEntry* entries,
-                        size_t num_entries,
+int GetIdForContentType(base::span<const ContentSettingsTypeIdEntry> entries,
                         ContentSettingsType type) {
-  for (size_t i = 0; i < num_entries; ++i) {
-    if (entries[i].type == type)
-      return entries[i].id;
+  if (auto found =
+          std::ranges::find(entries, type, &ContentSettingsTypeIdEntry::type);
+      found != entries.end()) {
+    return found->id;
   }
   return 0;
 }
@@ -309,15 +309,21 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_TITLE},
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_TITLE},
   };
-  const ContentSettingsTypeIdEntry* title_ids = kBlockedTitleIDs;
-  size_t num_title_ids = std::size(kBlockedTitleIDs);
-  if (IsContentAllowed()) {
-    title_ids = kAccessedTitleIDs;
-    num_title_ids = std::size(kAccessedTitleIDs);
-  }
-  int title_id = GetIdForContentType(title_ids, num_title_ids, content_type());
-  if (title_id)
+
+  int title_id = [&]() {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (content_type() == ContentSettingsType::SMART_CARD_GUARD) {
+      return IDS_ACCESSED_SMART_CARD_READER_TITLE;
+    }
+#endif
+    if (IsContentAllowed()) {
+      return GetIdForContentType(kAccessedTitleIDs, content_type());
+    }
+    return GetIdForContentType(kBlockedTitleIDs, content_type());
+  }();
+  if (title_id) {
     set_title(l10n_util::GetStringUTF16(title_id));
+  }
 }
 
 void ContentSettingSimpleBubbleModel::SetMessage() {
@@ -351,16 +357,21 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
            ? IDS_ALLOWED_SENSORS_MESSAGE
            : IDS_ALLOWED_MOTION_SENSORS_MESSAGE},
   };
-  const ContentSettingsTypeIdEntry* message_ids = kBlockedMessageIDs;
-  size_t num_message_ids = std::size(kBlockedMessageIDs);
-  if (IsContentAllowed()) {
-    message_ids = kAccessedMessageIDs;
-    num_message_ids = std::size(kAccessedMessageIDs);
-  }
-  int message_id =
-      GetIdForContentType(message_ids, num_message_ids, content_type());
-  if (message_id)
+
+  int message_id = [&]() {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (content_type() == ContentSettingsType::SMART_CARD_GUARD) {
+      return IDS_ACCESSED_SMART_CARD_READER_BODY;
+    }
+#endif
+    if (IsContentAllowed()) {
+      return GetIdForContentType(kAccessedMessageIDs, content_type());
+    }
+    return GetIdForContentType(kBlockedMessageIDs, content_type());
+  }();
+  if (message_id) {
     set_message(l10n_util::GetStringUTF16(message_id));
+  }
 }
 
 void ContentSettingSimpleBubbleModel::SetManageText() {
@@ -382,10 +393,10 @@ void ContentSettingSimpleBubbleModel::SetCustomLink() {
   static const ContentSettingsTypeIdEntry kCustomIDs[] = {
       {ContentSettingsType::MIXEDSCRIPT, IDS_ALLOW_INSECURE_CONTENT_BUTTON},
   };
-  int custom_link_id =
-      GetIdForContentType(kCustomIDs, std::size(kCustomIDs), content_type());
-  if (custom_link_id)
+  int custom_link_id = GetIdForContentType(kCustomIDs, content_type());
+  if (custom_link_id) {
     set_custom_link(l10n_util::GetStringUTF16(custom_link_id));
+  }
 }
 
 void ContentSettingSimpleBubbleModel::OnCustomLinkClicked() {}
@@ -425,8 +436,9 @@ ContentSettingMixedScriptBubbleModel::ContentSettingMixedScriptBubbleModel(
 }
 
 void ContentSettingMixedScriptBubbleModel::OnLearnMoreClicked() {
-  if (delegate())
+  if (delegate()) {
     delegate()->ShowLearnMorePage(content_type());
+  }
 }
 
 void ContentSettingMixedScriptBubbleModel::OnCustomLinkClicked() {
@@ -444,8 +456,9 @@ void ContentSettingMixedScriptBubbleModel::OnCustomLinkClicked() {
         // Stop the child frame enumeration if we have reached a fenced frame.
         // This is correct since fence frames should ignore InsecureContent
         // setting.
-        if (frame->IsFencedFrameRoot())
+        if (frame->IsFencedFrameRoot()) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
         SetAllowRunningInsecureContent(mixed_content_settings, frame);
         return content::RenderFrameHost::FrameIterationAction::kContinue;
       });
@@ -515,12 +528,13 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
   radio_group.radio_items = {radio_allow_label, radio_deny_label,
                              radio_ignore_label};
   ContentSetting setting = content_settings->pending_protocol_handler_setting();
-  if (setting == CONTENT_SETTING_ALLOW)
+  if (setting == CONTENT_SETTING_ALLOW) {
     radio_group.default_item = RPH_ALLOW;
-  else if (setting == CONTENT_SETTING_BLOCK)
+  } else if (setting == CONTENT_SETTING_BLOCK) {
     radio_group.default_item = RPH_BLOCK;
-  else
+  } else {
     radio_group.default_item = RPH_IGNORE;
+  }
 
   set_radio_group(radio_group);
 }
@@ -570,14 +584,15 @@ void ContentSettingRPHBubbleModel::ClearOrSetPreviousHandler() {
 }
 
 void ContentSettingRPHBubbleModel::PerformActionForSelectedItem() {
-  if (selected_item() == RPH_ALLOW)
+  if (selected_item() == RPH_ALLOW) {
     RegisterProtocolHandler();
-  else if (selected_item() == RPH_BLOCK)
+  } else if (selected_item() == RPH_BLOCK) {
     UnregisterProtocolHandler();
-  else if (selected_item() == RPH_IGNORE)
+  } else if (selected_item() == RPH_IGNORE) {
     IgnoreProtocolHandler();
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 }
 
 // ContentSettingSingleRadioGroup ----------------------------------------------
@@ -623,8 +638,9 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   // popup, and the popup PageSpecificContentSettings is unaware of the frame
   // busting block. Since the popup bubble won't happen without blocking, it's
   // safe to manually set this.
-  if (content_type() == ContentSettingsType::POPUPS)
+  if (content_type() == ContentSettingsType::POPUPS) {
     allowed = false;
+  }
 
   DCHECK(!allowed ||
          PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument())
@@ -657,12 +673,10 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
 
   std::u16string radio_allow_label;
   if (allowed) {
-    int resource_id = GetIdForContentType(
-        kAllowedAllowIDs, std::size(kAllowedAllowIDs), content_type());
+    int resource_id = GetIdForContentType(kAllowedAllowIDs, content_type());
     radio_allow_label = l10n_util::GetStringUTF16(resource_id);
   } else {
-    int resource_id = GetIdForContentType(
-        kBlockedAllowIDs, std::size(kBlockedAllowIDs), content_type());
+    int resource_id = GetIdForContentType(kBlockedAllowIDs, content_type());
     if (content_type() == ContentSettingsType::COOKIES) {
       radio_allow_label = l10n_util::GetStringUTF16(resource_id);
     } else {
@@ -692,16 +706,15 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
 
   std::u16string radio_block_label;
   if (allowed) {
-    int resource_id = GetIdForContentType(
-        kAllowedBlockIDs, std::size(kAllowedBlockIDs), content_type());
+    int resource_id = GetIdForContentType(kAllowedBlockIDs, content_type());
     if (content_type() == ContentSettingsType::COOKIES) {
       radio_block_label = l10n_util::GetStringUTF16(resource_id);
     } else {
       radio_block_label = l10n_util::GetStringFUTF16(resource_id, display_url);
     }
   } else {
-    radio_block_label = l10n_util::GetStringUTF16(GetIdForContentType(
-        kBlockedBlockIDs, std::size(kBlockedBlockIDs), content_type()));
+    radio_block_label = l10n_util::GetStringUTF16(
+        GetIdForContentType(kBlockedBlockIDs, content_type()));
   }
 
   radio_group.radio_items = {radio_allow_label, radio_block_label};
@@ -720,8 +733,9 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
 
 void ContentSettingSingleRadioGroup::SetNarrowestContentSetting(
     ContentSetting setting) {
-  if (!GetProfile())
+  if (!GetProfile()) {
     return;
+  }
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
   map->SetNarrowestContentSetting(bubble_content().radio_group.url,
@@ -896,8 +910,9 @@ ContentSettingPopupBubbleModel::ContentSettingPopupBubbleModel(
   auto* helper =
       blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);
   std::map<int32_t, GURL> blocked_popups = helper->GetBlockedPopupRequests();
-  for (const auto& blocked_popup : blocked_popups)
+  for (const auto& blocked_popup : blocked_popups) {
     AddListItem(CreateUrlListItem(blocked_popup.first, blocked_popup.second));
+  }
 
   url_list_observation_.Observe(helper->manager());
   content_settings::RecordPopupsAction(
@@ -1005,8 +1020,9 @@ void ContentSettingMediaStreamBubbleModel::CommitChanges() {
   // on a system level.
   if (!ShouldShowSystemMediaPermissions()) {
     // Update the media settings if the radio button selection was changed.
-    if (selected_item() != bubble_content().radio_group.default_item)
+    if (selected_item() != bubble_content().radio_group.default_item) {
       UpdateSettings(radio_item_setting_[selected_item()]);
+    }
   }
 }
 
@@ -1017,8 +1033,9 @@ ContentSettingMediaStreamBubbleModel::AsMediaStreamBubbleModel() {
 
 void ContentSettingMediaStreamBubbleModel::OnManageButtonClicked() {
   CHECK(CameraAccessed() || MicrophoneAccessed());
-  if (!delegate())
+  if (!delegate()) {
     return;
+  }
 
   CommitChanges();
 
@@ -1086,40 +1103,42 @@ void ContentSettingMediaStreamBubbleModel::SetIsUserModifiable() {
 void ContentSettingMediaStreamBubbleModel::SetTitle() {
   CHECK(CameraAccessed() || MicrophoneAccessed());
   int title_id = 0;
-  if (MicrophoneBlocked() && CameraBlocked())
+  if (MicrophoneBlocked() && CameraBlocked()) {
     title_id = IDS_MICROPHONE_CAMERA_BLOCKED_TITLE;
-  else if (MicrophoneBlocked())
+  } else if (MicrophoneBlocked()) {
     title_id = IDS_MICROPHONE_BLOCKED_TITLE;
-  else if (CameraBlocked())
+  } else if (CameraBlocked()) {
     title_id = IDS_CAMERA_BLOCKED_TITLE;
-  else if (MicrophoneAccessed() && CameraAccessed())
+  } else if (MicrophoneAccessed() && CameraAccessed()) {
     title_id = IDS_MICROPHONE_CAMERA_ALLOWED_TITLE;
-  else if (MicrophoneAccessed())
+  } else if (MicrophoneAccessed()) {
     title_id = IDS_MICROPHONE_ACCESSED_TITLE;
-  else if (CameraAccessed())
+  } else if (CameraAccessed()) {
     title_id = IDS_CAMERA_ACCESSED_TITLE;
-  else
+  } else {
     NOTREACHED();
+  }
   set_title(l10n_util::GetStringUTF16(title_id));
 }
 
 void ContentSettingMediaStreamBubbleModel::SetMessage() {
   CHECK(CameraAccessed() || MicrophoneAccessed());
   int message_id = 0;
-  if (MicrophoneBlocked() && CameraBlocked())
+  if (MicrophoneBlocked() && CameraBlocked()) {
     message_id = IDS_MICROPHONE_CAMERA_BLOCKED;
-  else if (MicrophoneBlocked())
+  } else if (MicrophoneBlocked()) {
     message_id = IDS_MICROPHONE_BLOCKED;
-  else if (CameraBlocked())
+  } else if (CameraBlocked()) {
     message_id = IDS_CAMERA_BLOCKED;
-  else if (MicrophoneAccessed() && CameraAccessed())
+  } else if (MicrophoneAccessed() && CameraAccessed()) {
     message_id = IDS_MICROPHONE_CAMERA_ALLOWED;
-  else if (MicrophoneAccessed())
+  } else if (MicrophoneAccessed()) {
     message_id = IDS_MICROPHONE_ACCESSED;
-  else if (CameraAccessed())
+  } else if (CameraAccessed()) {
     message_id = IDS_CAMERA_ACCESSED;
-  else
+  } else {
     NOTREACHED();
+  }
   set_message(l10n_util::GetStringUTF16(message_id));
 }
 
@@ -1139,29 +1158,34 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
     if (network::IsUrlPotentiallyTrustworthy(url)) {
       radio_item_setting_[0] = CONTENT_SETTING_ALLOW;
       radio_allow_label_id = IDS_BLOCKED_MEDIASTREAM_CAMERA_ALLOW;
-      if (MicrophoneAccessed())
+      if (MicrophoneAccessed()) {
         radio_allow_label_id =
             CameraAccessed() ? IDS_BLOCKED_MEDIASTREAM_MIC_AND_CAMERA_ALLOW
                              : IDS_BLOCKED_MEDIASTREAM_MIC_ALLOW;
+      }
     } else {
       radio_allow_label_id = IDS_BLOCKED_MEDIASTREAM_CAMERA_ASK;
-      if (MicrophoneAccessed())
+      if (MicrophoneAccessed()) {
         radio_allow_label_id = CameraAccessed()
                                    ? IDS_BLOCKED_MEDIASTREAM_MIC_AND_CAMERA_ASK
                                    : IDS_BLOCKED_MEDIASTREAM_MIC_ASK;
+      }
     }
     radio_block_label_id = IDS_BLOCKED_MEDIASTREAM_CAMERA_NO_ACTION;
-    if (MicrophoneAccessed())
+    if (MicrophoneAccessed()) {
       radio_block_label_id =
           CameraAccessed() ? IDS_BLOCKED_MEDIASTREAM_MIC_AND_CAMERA_NO_ACTION
                            : IDS_BLOCKED_MEDIASTREAM_MIC_NO_ACTION;
+    }
   } else {
     bool has_pan_tilt_zoom_permission_granted =
         web_contents()
             ->GetBrowserContext()
             ->GetPermissionController()
             ->GetPermissionStatusForCurrentDocument(
-                blink::PermissionType::CAMERA_PAN_TILT_ZOOM,
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(
+                        blink::PermissionType::CAMERA_PAN_TILT_ZOOM),
                 &GetPage().GetMainDocument()) ==
         blink::mojom::PermissionStatus::GRANTED;
 
@@ -1310,28 +1334,27 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
                                      web_contents,
                                      ContentSettingsType::GEOLOCATION) {
   SetCustomLink();
-    // Get the stored geolocation content setting and the system permission
-    // state to determine whether geolocation is blocked by a system permission.
-    //
-    // The content setting must be read from HostContentSettingsMap.
-    // PageSpecificContentSettings cannot be used because it combines the
-    // site-level and system-level permissions, indicating the feature is
-    // blocked if either the site-level or system-level permission is not
-    // granted. We need to distinguish these cases to ensure the bubble that
-    // launches the system dialog is not shown if the site-level permission was
-    // not granted.
-    const GURL& url =
-        web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
-    ContentSetting content_setting =
-        HostContentSettingsMapFactory::GetForProfile(GetProfile())
-            ->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION);
-    if (content_setting == CONTENT_SETTING_ALLOW &&
-        !system_permission_settings::IsAllowed(
-            ContentSettingsType::GEOLOCATION)) {
-      // If the permission is turned off in system preferences, overwrite the
-      // bubble to enable the user to trigger the system dialog.
-      InitializeSystemGeolocationPermissionBubble();
-    }
+  // Get the stored geolocation content setting and the system permission
+  // state to determine whether geolocation is blocked by a system permission.
+  //
+  // The content setting must be read from HostContentSettingsMap.
+  // PageSpecificContentSettings cannot be used because it combines the
+  // site-level and system-level permissions, indicating the feature is
+  // blocked if either the site-level or system-level permission is not
+  // granted. We need to distinguish these cases to ensure the bubble that
+  // launches the system dialog is not shown if the site-level permission was
+  // not granted.
+  const GURL& url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
+  ContentSetting content_setting =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile())
+          ->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION);
+  if (content_setting == CONTENT_SETTING_ALLOW &&
+      !system_permission_settings::IsAllowed(
+          ContentSettingsType::GEOLOCATION)) {
+    // If the permission is turned off in system preferences, overwrite the
+    // bubble to enable the user to trigger the system dialog.
+    InitializeSystemGeolocationPermissionBubble();
+  }
 }
 
 ContentSettingGeolocationBubbleModel::~ContentSettingGeolocationBubbleModel() =
@@ -1348,13 +1371,15 @@ void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
 }
 
 void ContentSettingGeolocationBubbleModel::OnManageButtonClicked() {
-  if (delegate())
+  if (delegate()) {
     delegate()->ShowContentSettingsPage(ContentSettingsType::GEOLOCATION);
+  }
 }
 
 void ContentSettingGeolocationBubbleModel::CommitChanges() {
-  if (show_system_geolocation_bubble_)
+  if (show_system_geolocation_bubble_) {
     return;
+  }
   ContentSettingSingleRadioGroup::CommitChanges();
 }
 
@@ -1364,19 +1389,19 @@ void ContentSettingGeolocationBubbleModel::
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
 #else
-    // The system-level location permission is not supported on Linux.
-    NOTREACHED();
+  // The system-level location permission is not supported on Linux.
+  NOTREACHED();
 #endif
 
-    clear_message();
-    AddListItem(ContentSettingBubbleModel::ListItem(
-        &vector_icons::kLocationOnIcon,
-        l10n_util::GetStringUTF16(IDS_GEOLOCATION),
-        l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
-    set_manage_text_style(ContentSettingBubbleModel::ManageTextStyle::kNone);
-    set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
-    set_radio_group(RadioGroup());
-    show_system_geolocation_bubble_ = true;
+  clear_message();
+  AddListItem(ContentSettingBubbleModel::ListItem(
+      &vector_icons::kLocationOnIcon,
+      l10n_util::GetStringUTF16(IDS_GEOLOCATION),
+      l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
+  set_manage_text_style(ContentSettingBubbleModel::ManageTextStyle::kNone);
+  set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
+  set_radio_group(RadioGroup());
+  show_system_geolocation_bubble_ = true;
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 }
 
@@ -1584,9 +1609,10 @@ void ContentSettingDownloadsBubbleModel::SetManageText() {
 }
 
 void ContentSettingDownloadsBubbleModel::OnManageButtonClicked() {
-  if (delegate())
+  if (delegate()) {
     delegate()->ShowContentSettingsPage(
         ContentSettingsType::AUTOMATIC_DOWNLOADS);
+  }
 }
 
 // ContentSettingFramebustBlockBubbleModel -------------------------------------
@@ -1600,8 +1626,9 @@ ContentSettingFramebustBlockBubbleModel::
   auto* helper = FramebustBlockTabHelper::FromWebContents(web_contents);
 
   // Build the blocked urls list.
-  for (const auto& blocked_url : helper->blocked_urls())
+  for (const auto& blocked_url : helper->blocked_urls()) {
     AddListItem(CreateUrlListItem(0 /* id */, blocked_url));
+  }
 
   url_list_observation_.Observe(helper->manager());
 }
@@ -1638,8 +1665,9 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  if (!quiet_ui_reason)
+  if (!quiet_ui_reason) {
     return;
+  }
   CHECK_GT(manager->Requests().size(), 0u);
   DCHECK_EQ(manager->Requests().size(), 1u);
   const permissions::RequestType request_type =
@@ -1653,7 +1681,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
       bubble_title_string_id = IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_TITLE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   set_title(l10n_util::GetStringUTF16(bubble_title_string_id));
   switch (*quiet_ui_reason) {
@@ -1727,7 +1755,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
               IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
       set_message(l10n_util::GetStringUTF16(bubble_message_string_id));
       set_done_button_text(
@@ -1773,7 +1801,7 @@ void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
             "Permissions.Prompt.QuietBubble.Geolocation.ManageClicked"));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -1838,8 +1866,9 @@ void ContentSettingQuietRequestBubbleModel::OnCancelButtonClicked() {
       permissions::PermissionRequestManager::FromWebContents(web_contents());
 
   auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  if (!quiet_ui_reason)
+  if (!quiet_ui_reason) {
     return;
+  }
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kTriggeredByCrowdDeny:
@@ -1905,11 +1934,15 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
     case ContentSettingsType::STORAGE_ACCESS:
       return std::make_unique<ContentSettingStorageAccessBubbleModel>(
           delegate, web_contents);
+#if BUILDFLAG(IS_CHROMEOS)
+    case ContentSettingsType::SMART_CARD_GUARD:
+      return std::make_unique<ContentSettingSimpleBubbleModel>(
+          delegate, web_contents, content_type);
+#endif
     default:
-      NOTREACHED_IN_MIGRATION() << "No bubble for the content type "
-                                << static_cast<int32_t>(content_type) << ".";
+      NOTREACHED() << "No bubble for the content type "
+                   << static_cast<int32_t>(content_type) << ".";
   }
-  return nullptr;
 }
 
 ContentSettingBubbleModel::ContentSettingBubbleModel(Delegate* delegate,
@@ -1973,13 +2006,15 @@ Profile* ContentSettingBubbleModel::GetProfile() const {
 
 void ContentSettingBubbleModel::AddListItem(const ListItem& item) {
   bubble_content_.list_items.push_back(item);
-  if (owner_)
+  if (owner_) {
     owner_->OnListItemAdded(item);
+  }
 }
 
 void ContentSettingBubbleModel::RemoveListItem(int index) {
-  if (owner_)
+  if (owner_) {
     owner_->OnListItemRemovedAt(index);
+  }
 
   bubble_content_.list_items.erase(bubble_content_.list_items.begin() + index);
 }

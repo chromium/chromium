@@ -20,6 +20,7 @@ items:
   value: null
 owners:
 - katie@chromium.org
+- file://ash/accessibility/OWNERS
 - file://ui/accessibility/OWNERS
 schema:
   type: boolean

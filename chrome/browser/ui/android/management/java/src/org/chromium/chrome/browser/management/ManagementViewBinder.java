@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.management;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View updater based on properties for ManagementPage. */
+@NullMarked
 class ManagementViewBinder {
     /**
      * Listens to changes in MVC model.
@@ -39,6 +41,22 @@ class ManagementViewBinder {
         } else if (propertyKey == ManagementProperties.LEGACY_TECH_REPORTING_TEXT) {
             view.setLegacyTechReportingText(
                     model.get(ManagementProperties.LEGACY_TECH_REPORTING_TEXT));
+        } else if (propertyKey == ManagementProperties.SECURITY_EVENT_REPORTING_ENABLED) {
+            view.setSecurityEventReportingEnabled(
+                    model.get(ManagementProperties.SECURITY_EVENT_REPORTING_ENABLED));
+        } else if (propertyKey == ManagementProperties.SECURITY_EVENT_REPORTING_TEXT) {
+            view.setSecurityEventReportingText(
+                    model.get(ManagementProperties.SECURITY_EVENT_REPORTING_TEXT));
+        } else if (propertyKey == ManagementProperties.SECURITY_EVENT_REPORTING_DESCRIPTION_TEXT) {
+            view.setSecurityEventReportingDescriptionText(
+                    model.get(ManagementProperties.SECURITY_EVENT_REPORTING_DESCRIPTION_TEXT));
+        } else if (propertyKey == ManagementProperties.URL_FILTERING_ENABLED) {
+            view.setUrlFilteringEnabled(model.get(ManagementProperties.URL_FILTERING_ENABLED));
+        } else if (propertyKey == ManagementProperties.URL_FILTERING_TEXT) {
+            view.setUrlFilteringText(model.get(ManagementProperties.URL_FILTERING_TEXT));
+        } else if (propertyKey == ManagementProperties.URL_FILTERING_DESCRIPTION_TEXT) {
+            view.setUrlFilteringDescriptionText(
+                    model.get(ManagementProperties.URL_FILTERING_DESCRIPTION_TEXT));
         }
     }
 }

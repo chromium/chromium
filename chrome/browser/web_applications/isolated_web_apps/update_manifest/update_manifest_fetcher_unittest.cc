@@ -12,10 +12,10 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
+#include "components/webapps/isolated_web_apps/update_channel.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -89,7 +89,6 @@ class UpdateManifestFetcherTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 };
@@ -111,11 +110,11 @@ TEST_F(UpdateManifestFetcherTest, FetchesValidManifest) {
       ElementsAre(
           UpdateManifest::VersionEntry{GURL("https://other.com/bundle.swbn"),
                                        base::Version("1.2.3"),
-                                       {*UpdateChannelId::Create("default")}},
+                                       {*UpdateChannel::Create("default")}},
           UpdateManifest::VersionEntry{
               GURL("https://example.com/foo/bundle.swbn"),
               base::Version("3.2.1"),
-              {*UpdateChannelId::Create("default")}}));
+              {*UpdateChannel::Create("default")}}));
 }
 
 TEST_F(UpdateManifestFetcherTest, SucceedsWhenManifestHasNoVersions) {

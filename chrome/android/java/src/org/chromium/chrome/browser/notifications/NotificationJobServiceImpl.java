@@ -47,6 +47,9 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
                 NotificationConstants.EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE,
                 intent.getStringExtra(
                         NotificationConstants.EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE));
+        bundle.putString(
+                NotificationConstants.EXTRA_NOTIFICATION_INFO_CHANNEL_ID,
+                intent.getStringExtra(NotificationConstants.EXTRA_NOTIFICATION_INFO_CHANNEL_ID));
         bundle.putString(NotificationConstants.EXTRA_NOTIFICATION_ACTION, intent.getAction());
         // Only primitives can be set on a persistable bundle, so extract the raw reply.
         bundle.putString(
@@ -77,6 +80,11 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
 
         if (!extras.containsKey(NotificationConstants.EXTRA_NOTIFICATION_ID)
                 || !extras.containsKey(NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN)) {
+            if (extras.containsKey(NotificationConstants.EXTRA_NOTIFICATION_ID)) {
+                TrampolineActivityTracker.getInstance()
+                        .onIntentCompleted(
+                                extras.getString(NotificationConstants.EXTRA_NOTIFICATION_ID));
+            }
             return false;
         }
 
@@ -84,7 +92,7 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
         intent.putExtras(new Bundle(extras));
 
         ThreadUtils.assertOnUiThread();
-        NotificationServiceImpl.dispatchIntentOnUIThread(intent);
+        NotificationServiceImpl.dispatchIntentOnUiThread(intent);
 
         // TODO(crbug.com/40503455): Return true here and call jobFinished to release the wake
         // lock only after the event has been completely handled by the service worker.

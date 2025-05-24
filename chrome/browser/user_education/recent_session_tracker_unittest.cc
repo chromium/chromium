@@ -13,11 +13,11 @@
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
-#include "components/user_education/common/feature_promo_data.h"
-#include "components/user_education/common/feature_promo_session_manager.h"
-#include "components/user_education/common/feature_promo_storage_service.h"
-#include "components/user_education/test/test_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
+#include "components/user_education/common/session/user_education_session_manager.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_storage_service.h"
+#include "components/user_education/test/test_user_education_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,10 +28,10 @@ namespace {
 // Short-circuits all of the functionality of the session manager except for
 // updating session data and sending notifications.
 class FakeSessionManager
-    : protected user_education::FeaturePromoSessionManager {
+    : protected user_education::UserEducationSessionManager {
  public:
   explicit FakeSessionManager(
-      user_education::FeaturePromoStorageService& storage_service)
+      user_education::UserEducationStorageService& storage_service)
       : storage_service_(storage_service) {}
   ~FakeSessionManager() override = default;
 
@@ -40,7 +40,7 @@ class FakeSessionManager
   void SimulateNewSession() {
     const auto old_session = storage_service_->ReadSessionData();
     const auto now = storage_service_->GetCurrentTime();
-    user_education::FeaturePromoSessionData new_session;
+    user_education::UserEducationSessionData new_session;
     new_session.most_recent_active_time = now;
     new_session.start_time = now;
     storage_service_->SaveSessionData(new_session);
@@ -48,18 +48,18 @@ class FakeSessionManager
                  now);
   }
 
-  user_education::FeaturePromoSessionManager& AsSessionManager() {
-    return *static_cast<user_education::FeaturePromoSessionManager*>(this);
+  user_education::UserEducationSessionManager& AsSessionManager() {
+    return *static_cast<user_education::UserEducationSessionManager*>(this);
   }
 
  private:
-  const raw_ref<user_education::FeaturePromoStorageService> storage_service_;
+  const raw_ref<user_education::UserEducationStorageService> storage_service_;
 };
 
 // Implementation of `RecentSessionDataStorageService` that extends
-// `TestFeaturePromoStorageService` with in-memory data storage.
+// `TestUserEducationStorageService` with in-memory data storage.
 class TestBrowserStorageService
-    : public user_education::test::TestFeaturePromoStorageService,
+    : public user_education::test::TestUserEducationStorageService,
       public RecentSessionDataStorageService {
  public:
   TestBrowserStorageService() = default;

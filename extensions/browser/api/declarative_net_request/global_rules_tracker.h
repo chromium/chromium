@@ -41,7 +41,7 @@ class GlobalRulesTracker {
   // Clears the extension's allocated rule count.
   void ClearExtensionAllocation(const ExtensionId& extension_id);
 
-  // Returns |allocated_global_rule_count_|.
+  // Returns `allocated_global_rule_count_`.
   size_t GetAllocatedGlobalRuleCountForTesting() const;
 
  private:
@@ -51,8 +51,8 @@ class GlobalRulesTracker {
 
   // The number of static rules from all extensions which contribute to the
   // global rule pool. Any enabled static rules for an extension past
-  // |GUARANTEED_MINIMUM_STATIC_RULES| count towards this. This value must never
-  // exceed |kMaxStaticRulesPerProfile|.
+  // `GUARANTEED_MINIMUM_STATIC_RULES` count towards this. This value must never
+  // exceed `kMaxStaticRulesPerProfile`.
   size_t allocated_global_rule_count_ = 0;
 
   const raw_ptr<ExtensionPrefs> extension_prefs_;

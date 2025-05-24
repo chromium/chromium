@@ -1,0 +1,106 @@
+{
+  "description": "public suffixes treated as distinct destination site",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://com",
+                "priority": "0",
+                "source_event_id": "1"
+              }
+            }
+          },
+          {
+            "timestamp": "1",
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://example.com",
+                // Irrelevant if the destination-matching behavior is correct,
+                // but included to verify that this source isn't considered at
+                // all for destination=https://com, as otherwise this source
+                // would be preferentially matched over the 0-priority first
+                // one.
+                "priority": "1000",
+                "source_event_id": "2"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "2",
+        "registration_request": {
+          // Should be attributed to the first source based on destination
+          // matching.
+          "context_origin": "https://com/x"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{"trigger_data": "7"}]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "3",
+        "registration_request": {
+          // Should be attributed to the second source based on destination
+          // matching.
+          "context_origin": "https://example.com/y"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{"trigger_data": "5"}]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": {
+          "attribution_destination": "https://com",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "1",
+          "source_type": "navigation",
+          "trigger_data": "7"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "172800000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://example.com",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "2",
+          "source_type": "navigation",
+          "trigger_data": "5"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "172800001"
+      }
+    ]
+  }
+}

@@ -26,7 +26,6 @@
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
-#include "net/cert/internal/system_trust_store_nss.h"
 #include "net/cert/internal/trust_store_nss.h"
 #elif BUILDFLAG(IS_MAC)
 #include <Security/Security.h>
@@ -166,6 +165,10 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
     return trust_store_chrome_->GetConstraintsForCert(cert);
   }
 
+  bssl::TrustStore* eutl_trust_store() override {
+    return trust_store_chrome_->eutl_trust_store();
+  }
+
   net::PlatformTrustStore* GetPlatformTrustStore() override {
     return platform_trust_store_;
   }
@@ -215,15 +218,6 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
   return std::make_unique<SystemTrustStoreChrome>(
       std::move(chrome_root), std::make_unique<TrustStoreNSS>(
                                   TrustStoreNSS::UseTrustFromAllUserSlots()));
-}
-
-std::unique_ptr<SystemTrustStore>
-CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
-    std::unique_ptr<TrustStoreChrome> chrome_root,
-    crypto::ScopedPK11Slot user_slot_restriction) {
-  return std::make_unique<SystemTrustStoreChrome>(
-      std::move(chrome_root),
-      std::make_unique<TrustStoreNSS>(std::move(user_slot_restriction)));
 }
 
 #elif BUILDFLAG(IS_MAC)

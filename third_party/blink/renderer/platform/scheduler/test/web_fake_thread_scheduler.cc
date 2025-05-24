@@ -41,8 +41,5 @@ void WebFakeThreadScheduler::ResumeTimersForAndroidWebView() {}
 
 void WebFakeThreadScheduler::Shutdown() {}
 
-void WebFakeThreadScheduler::SetRendererProcessType(
-    WebRendererProcessType type) {}
-
 }  // namespace scheduler
 }  // namespace blink

@@ -7,24 +7,22 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
 
 namespace display {
 namespace features {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kRoundedDisplay);
+#if BUILDFLAG(IS_WIN)
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+BASE_DECLARE_FEATURE(kSkipEmptyDisplayHotplugEvent);
+#endif  // BUILDFLAG(IS_WIN)
 
-COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsRoundedDisplayEnabled();
-
+#if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(DISPLAY_FEATURES)
 BASE_DECLARE_FEATURE(kUseHDRTransferFunction);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES)
 BASE_DECLARE_FEATURE(kEnableExternalDisplayHDR10Mode);
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(DISPLAY_FEATURES)
 BASE_DECLARE_FEATURE(kCtmColorManagement);
 #endif
@@ -65,6 +63,18 @@ COMPONENT_EXPORT(DISPLAY_FEATURES)
 BASE_DECLARE_FEATURE(kExcludeDisplayInMirrorMode);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsExcludeDisplayInMirrorModeEnabled();
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kFastDrmMasterDrop);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsFastDrmMasterDropEnabled();
+
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+bool DoesFormFactorControlSubpixelRendering();
+
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+BASE_DECLARE_FEATURE(kOpsDisplayScaleFactor);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsOpsDisplayScaleFactorEnabled();
 
 }  // namespace features
 }  // namespace display

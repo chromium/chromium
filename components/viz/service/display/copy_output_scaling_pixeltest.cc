@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <tuple>
 
@@ -74,12 +70,6 @@ class CopyOutputScalingPixelTest
   // The scene is drawn, which also causes the copy request to execute. Then,
   // the resulting bitmap is compared against an expected bitmap.
   void RunTest() {
-    // TODO(b/297344089): Enable these tests once Skia Graphite supports stale
-    // mipmap regeneration.
-    if (is_skia_graphite()) {
-      GTEST_SKIP();
-    }
-
     const char* result_format_as_str = "<unknown>";
 
     // Tests only issue requests for system-memory destinations, no need to
@@ -90,6 +80,7 @@ class CopyOutputScalingPixelTest
       result_format_as_str = "I420_PLANES";
     else
       NOTIMPLEMENTED();
+
     SCOPED_TRACE(testing::Message()
                  << "scale_from=" << scale_from_.ToString()
                  << ", scale_to=" << scale_to_.ToString()
@@ -104,15 +95,19 @@ class CopyOutputScalingPixelTest
     constexpr gfx::Size viewport_size = gfx::Size(48, 20);
     constexpr int x_block = 8;
     constexpr int y_block = 4;
-    constexpr SkColor4f smaller_pass_colors[4] = {
-        SkColors::kRed, SkColors::kGreen, SkColors::kBlue, SkColors::kYellow};
+    constexpr std::array<SkColor4f, 4> smaller_pass_colors = {
+        SkColors::kRed,
+        SkColors::kGreen,
+        SkColors::kBlue,
+        SkColors::kYellow,
+    };
     constexpr SkColor4f root_pass_color = SkColors::kWhite;
 
     AggregatedRenderPassList list;
 
     // Create the render passes drawn on top of the root render pass.
-    AggregatedRenderPass* smaller_passes[4];
-    gfx::Rect smaller_pass_rects[4];
+    std::array<AggregatedRenderPass*, 4> smaller_passes;
+    std::array<gfx::Rect, 4> smaller_pass_rects;
     AggregatedRenderPassId pass_id{5};
     for (int i = 0; i < 4;
          ++i, pass_id = AggregatedRenderPassId{pass_id.value() - 1}) {
@@ -145,44 +140,18 @@ class CopyOutputScalingPixelTest
     {
       base::RunLoop loop;
 
-      // Add a dummy copy request to be executed when the RED RenderPass is
-      // drawn (before the root RenderPass). This is a regression test to
-      // confirm GLRenderer state is consistent with the GL context after each
-      // copy request executes, and before the next RenderPass is drawn.
-      // http://crbug.com/792734
-      bool dummy_ran = false;
+      // Add a copy request to the root RenderPass, to capture the results of
+      // drawing all passes for this frame.
       auto request = std::make_unique<CopyOutputRequest>(
           result_format_, CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
-              [](bool* dummy_ran, std::unique_ptr<CopyOutputResult> result) {
-                EXPECT_TRUE(!result->IsEmpty());
-                EXPECT_FALSE(*dummy_ran);
-                *dummy_ran = true;
-              },
-              &dummy_ran));
-      // Set a 10X zoom, which should be more than sufficient to disturb the
-      // results of the main copy request (below) if the GL state is not
-      // properly restored.
-      request->SetUniformScaleRatio(1, 10);
-      // Ensure the result callback is run on test main thread.
-      request->set_result_task_runner(
-          base::SequencedTaskRunner::GetCurrentDefault());
-      list.front()->copy_requests.push_back(std::move(request));
-
-      // Add a copy request to the root RenderPass, to capture the results of
-      // drawing all passes for this frame.
-      request = std::make_unique<CopyOutputRequest>(
-          result_format_, CopyOutputRequest::ResultDestination::kSystemMemory,
-          base::BindOnce(
-              [](bool* dummy_ran,
-                 std::unique_ptr<CopyOutputResult>* test_result,
+              [](std::unique_ptr<CopyOutputResult>* test_result,
                  const base::RepeatingClosure& quit_closure,
                  std::unique_ptr<CopyOutputResult> result_from_renderer) {
-                EXPECT_TRUE(*dummy_ran);
                 *test_result = std::move(result_from_renderer);
                 quit_closure.Run();
               },
-              &dummy_ran, &result, loop.QuitClosure()));
+              &result, loop.QuitClosure()));
       request->set_result_selection(
           copy_output::ComputeResultRect(copy_rect, scale_from_, scale_to_));
       request->SetScaleRatio(scale_from_, scale_to_);
@@ -286,9 +255,8 @@ class CopyOutputScalingPixelTest
     auto v_data = base::HeapArray<uint8_t>::Uninit(v_stride * chroma_height);
 
     // Do the read.
-    const bool success =
-        result.ReadI420Planes(y_data.data(), y_stride, u_data.data(), u_stride,
-                              v_data.data(), v_stride);
+    const bool success = result.ReadI420Planes(y_data, y_stride, u_data,
+                                               u_stride, v_data, v_stride);
     CHECK(success);
 
     // Convert to an SkBitmap.

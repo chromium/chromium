@@ -2,15 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/native_messaging/native_messaging_writer.h"
-
-#include <stddef.h>
-#include <stdint.h>
 
 #include <string>
 #include <utility>
@@ -23,14 +15,14 @@
 namespace {
 
 // 4-byte type used for the message header.
-typedef uint32_t MessageLengthType;
+using MessageLengthType = std::uint32_t;
 
 // Limit the size of sent messages, since Chrome will not accept messages
 // larger than 1MB, and this helps deal with the problem of integer overflow
 // when passing sizes to net::FileStream APIs that take |int| parameters.
 // This is defined as size_t (unsigned type) so it can be compared with the
 // result of std::string::length() without compiler warnings.
-const size_t kMaximumMessageSize = 1024 * 1024;
+constexpr std::size_t kMaximumMessageSize = 1024 * 1024;
 
 }  // namespace
 
@@ -52,7 +44,8 @@ bool NativeMessagingWriter::WriteMessage(base::ValueView message) {
 
   CHECK_LE(message_json.length(), kMaximumMessageSize);
 
-  // Cast from size_t to the proper header type, checking this won't overflow.
+  // Cast from std::size_t to the proper header type, checking this won't
+  // overflow.
   MessageLengthType message_length =
       base::checked_cast<MessageLengthType>(message_json.length());
 

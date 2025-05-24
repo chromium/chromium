@@ -11,7 +11,7 @@ import type {AddSiteDialogElement, SettingsEditExceptionDialogElement, SiteExcep
 import {CookiesExceptionType, ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -136,13 +136,19 @@ function populateTestExceptions() {
     createContentSettingTypeToValuePair(
         ContentSettingsTypes.GEOLOCATION,
         [
-          createRawSiteException('https://bar-allow.com:443'),
-          createRawSiteException('https://foo-allow.com:443'),
+          createRawSiteException('https://bar-allow.com:443', {
+            embeddingOrigin: '',
+          }),
+          createRawSiteException('https://foo-allow.com:443', {
+            embeddingOrigin: '',
+          }),
           createRawSiteException('https://bar-block.com:443', {
             setting: ContentSetting.BLOCK,
+            embeddingOrigin: '',
           }),
           createRawSiteException('https://foo-block.com:443', {
             setting: ContentSetting.BLOCK,
+            embeddingOrigin: '',
           }),
         ]),
   ]);
@@ -683,7 +689,7 @@ suite('DISABLED_SiteList', function() {
     const clickable = testElement.shadowRoot!.querySelector('site-list-entry')!
                           .shadowRoot!.querySelector<HTMLElement>('.middle');
     assertTrue(!!clickable);
-    clickable!.click();
+    clickable.click();
 
     await flushTasks();
     assertEquals(
@@ -738,9 +744,12 @@ suite('SiteList', function() {
    *     open the action menu for.
    */
   function openActionMenu(index: number) {
-    const actionMenuButton =
-        testElement.$.listContainer.querySelectorAll('site-list-entry')[index]!
-            .$.actionMenuButton;
+    const siteListEntry =
+        testElement.$.listContainer.querySelectorAll('site-list-entry')[index];
+    assertTrue(!!siteListEntry);
+    const actionMenuButton: HTMLElement|null =
+        siteListEntry.shadowRoot!.querySelector('#actionMenuButton');
+    assertTrue(!!actionMenuButton);
     actionMenuButton.click();
     flush();
   }
@@ -760,7 +769,7 @@ suite('SiteList', function() {
   function assertMenu(items: string[]) {
     const menu = testElement.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!menu);
-    const menuItems = menu!.querySelectorAll('button:not([hidden])');
+    const menuItems = menu.querySelectorAll('button:not([hidden])');
     assertEquals(items.length, menuItems.length);
     for (let i = 0; i < items.length; i++) {
       assertEquals(items[i], menuItems[i]!.textContent!.trim());
@@ -788,16 +797,17 @@ suite('SiteList', function() {
     await browserProxy.whenCalled('getExceptionList');
     // Flush to be sure list container is populated.
     flush();
-    const dotsMenu =
-        testElement.shadowRoot!.querySelector(
-                                   'site-list-entry')!.$.actionMenuButton;
-    assertFalse(dotsMenu.hidden);
+    const siteListEntry =
+        testElement.shadowRoot!.querySelector('site-list-entry');
+    assertTrue(!!siteListEntry);
+
+    assertTrue(isChildVisible(siteListEntry, '#actionMenuButton'));
     testElement.toggleAttribute('read-only-list', true);
     flush();
-    assertTrue(dotsMenu.hidden);
+    assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
     testElement.removeAttribute('read-only-list');
     flush();
-    assertFalse(dotsMenu.hidden);
+    assertTrue(isChildVisible(siteListEntry, '#actionMenuButton'));
   });
 
   test('getExceptionList API used', async function() {
@@ -842,9 +852,8 @@ suite('SiteList', function() {
       const blockedPermissions = disabled ? [category] : [];
       webUIListenerCallback('osGlobalPermissionChanged', blockedPermissions);
 
-      const warningElement =
-          testElement.$.category.querySelector<HTMLDivElement>(
-              '#systemPermissionDeclinedWarning');
+      const warningElement = testElement.$.category.querySelector<HTMLElement>(
+          '#systemPermissionDeclinedWarning');
       assertTrue(!!warningElement);
       const linkElement =
           warningElement.querySelector('#openSystemSettingsLink');
@@ -1040,7 +1049,7 @@ suite('SiteList', function() {
     // Select 'Remove' from menu.
     const remove = testElement.shadowRoot!.querySelector<HTMLElement>('#reset');
     assertTrue(!!remove);
-    remove!.click();
+    remove.click();
     const args =
         await browserProxy.whenCalled('resetCategoryPermissionForPattern');
     assertEquals('http://foo.com', args[0]);
@@ -1075,7 +1084,7 @@ suite('SiteList', function() {
     openActionMenu(1);
     const remove = testElement.shadowRoot!.querySelector<HTMLElement>('#reset');
     assertTrue(!!remove);
-    remove!.click();
+    remove.click();
     const args =
         await browserProxy.whenCalled('resetCategoryPermissionForPattern');
     assertEquals('http://foo.com', args[0]);
@@ -1104,18 +1113,13 @@ suite('SiteList', function() {
 
     const item = testElement.shadowRoot!.querySelector('site-list-entry')!;
 
-    // Assert action button is hidden.
-    const dots = item.$.actionMenuButton;
-    assertTrue(!!dots);
-    assertTrue(dots.hidden);
-
-    // Assert reset button is visible.
+    assertFalse(isChildVisible(item, '#actionMenuButton'));
     const resetButton =
         item.shadowRoot!.querySelector<HTMLElement>('#resetSite');
     assertTrue(!!resetButton);
-    assertFalse(resetButton!.hidden);
+    assertTrue(isVisible(resetButton));
 
-    resetButton!.click();
+    resetButton.click();
     const args =
         await browserProxy.whenCalled('resetCategoryPermissionForPattern');
     assertEquals('https://foo-allow.com:443', args[0]);
@@ -1137,7 +1141,7 @@ suite('SiteList', function() {
     assertTrue(menu.open);
     const edit = testElement.shadowRoot!.querySelector<HTMLElement>('#edit');
     assertTrue(!!edit);
-    edit!.click();
+    edit.click();
     flush();
     assertFalse(menu.open);
     assertTrue(!!testElement.shadowRoot!.querySelector(
@@ -1158,7 +1162,7 @@ suite('SiteList', function() {
     const dialog =
         testElement.shadowRoot!.querySelector('settings-edit-exception-dialog');
     assertTrue(!!dialog);
-    const closeEventPromise = eventToPromise('close', dialog!);
+    const closeEventPromise = eventToPromise('close', dialog);
     browserProxy.setIncognito(true);
 
     await closeEventPromise;
@@ -1246,14 +1250,12 @@ suite('SiteList', function() {
     // Validate that embeddingOrigin sites cannot be edited.
     const entries = testElement.shadowRoot!.querySelectorAll('site-list-entry');
     const firstItem = entries[0]!;
-    assertTrue(firstItem.$.actionMenuButton.hidden);
-    assertFalse(
-        firstItem.shadowRoot!.querySelector<HTMLElement>('#resetSite')!.hidden);
+    assertFalse(isChildVisible(firstItem, '#actionMenuButton'));
+    assertTrue(isChildVisible(firstItem, '#resetSite'));
     // Validate that non-embeddingOrigin sites can be edited.
     const secondItem = entries[1]!;
-    assertFalse(secondItem.$.actionMenuButton.hidden);
-    assertTrue(secondItem.shadowRoot!.querySelector<HTMLElement>(
-                                         '#resetSite')!.hidden);
+    assertTrue(isChildVisible(secondItem, '#actionMenuButton'));
+    assertFalse(isChildVisible(secondItem, '#resetSite'));
   });
 
   test('Isolated Web Apps', async function() {
@@ -1268,21 +1270,19 @@ suite('SiteList', function() {
     // Validate that IWAs cannot be edited.
     const entries = testElement.shadowRoot!.querySelectorAll('site-list-entry');
     const firstItem = entries[0]!;
-    assertTrue(firstItem.$.actionMenuButton.hidden);
-    assertFalse(
-        firstItem.shadowRoot!.querySelector<HTMLElement>('#resetSite')!.hidden);
+    assertFalse(isChildVisible(firstItem, '#actionMenuButton'));
+    assertTrue(isChildVisible(firstItem, '#resetSite'));
 
     // Validate that IWA displays app name and not origin.
     assertEquals(
         firstItem.shadowRoot!.querySelector<HTMLElement>(
                                  '.url-directionality')!.textContent!.trim(),
-        prefsIsolatedWebApp!.exceptions!.notifications[0]!.displayName);
+        prefsIsolatedWebApp!.exceptions.notifications[0]!.displayName);
 
     // Validate that non-IWAs can be edited.
     const secondItem = entries[1]!;
-    assertFalse(secondItem.$.actionMenuButton.hidden);
-    assertTrue(secondItem.shadowRoot!.querySelector<HTMLElement>(
-                                         '#resetSite')!.hidden);
+    assertTrue(isChildVisible(secondItem, '#actionMenuButton'));
+    assertFalse(isChildVisible(secondItem, '#resetSite'));
 
     // Validate that non-IWA displays the displayName (in most cases same as
     // the origin).
@@ -1290,7 +1290,7 @@ suite('SiteList', function() {
         secondItem.shadowRoot!
             .querySelector<HTMLElement>(
                 '.url-directionality')!.textContent!.trim(),
-        prefsIsolatedWebApp!.exceptions!.notifications[1]!.displayName);
+        prefsIsolatedWebApp!.exceptions.notifications[1]!.displayName);
   });
 
   test('Mixed schemes (present and absent)', async function() {
@@ -1312,7 +1312,7 @@ suite('SiteList', function() {
     openActionMenu(0);
     const allow = testElement.shadowRoot!.querySelector<HTMLElement>('#allow');
     assertTrue(!!allow);
-    allow!.click();
+    allow.click();
     await browserProxy.whenCalled('setCategoryPermissionForPattern');
   });
 
@@ -1327,7 +1327,7 @@ suite('SiteList', function() {
 
     const allow = testElement.shadowRoot!.querySelector<HTMLElement>('#allow');
     assertTrue(!!allow);
-    allow!.click();
+    allow.click();
     const args =
         await browserProxy.whenCalled('setCategoryPermissionForPattern');
     assertEquals(
@@ -1669,42 +1669,42 @@ suite('EditExceptionDialog', function() {
   test('invalid input', async function() {
     const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
-    assertFalse(input!.invalid);
+    assertFalse(input.invalid);
 
     const actionButton = dialog.$.actionButton;
     assertTrue(!!actionButton);
     assertFalse(actionButton.disabled);
 
     // Simulate user input of whitespace only text.
-    input!.value = '  ';
+    input.value = '  ';
     await input.updateComplete;
-    input!.dispatchEvent(
+    input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     flush();
     assertTrue(actionButton.disabled);
-    assertTrue(input!.invalid);
+    assertTrue(input.invalid);
 
     // Simulate user input of invalid text.
     browserProxy.setIsPatternValidForType(false);
     const expectedPattern = '*';
-    input!.value = expectedPattern;
+    input.value = expectedPattern;
     await input.updateComplete;
-    input!.dispatchEvent(
+    input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
 
     const [pattern, _category] =
         await browserProxy.whenCalled('isPatternValidForType');
     assertEquals(expectedPattern, pattern);
     assertTrue(actionButton.disabled);
-    assertTrue(input!.invalid);
+    assertTrue(input.invalid);
   });
 
   test('action button calls proxy', async function() {
     const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
     // Simulate user edit.
-    const newValue = input!.value + ':1234';
-    input!.value = newValue;
+    const newValue = input.value + ':1234';
+    input.value = newValue;
     await input.updateComplete;
 
     const actionButton = dialog.$.actionButton;
@@ -1786,7 +1786,7 @@ suite('AddExceptionDialog', function() {
     // should not be shown for an empty input.
     const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
-    assertFalse(input!.invalid);
+    assertFalse(input.invalid);
 
     const actionButton = dialog.$.add;
     assertTrue(!!actionButton);
@@ -1795,16 +1795,16 @@ suite('AddExceptionDialog', function() {
     // Simulate user input of invalid text.
     browserProxy.setIsPatternValidForType(false);
     const expectedPattern = 'foobarbaz';
-    input!.value = expectedPattern;
+    input.value = expectedPattern;
     await input.updateComplete;
-    input!.dispatchEvent(
+    input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
 
     const [pattern, _category] =
         await browserProxy.whenCalled('isPatternValidForType');
     assertEquals(expectedPattern, pattern);
     assertTrue(actionButton.disabled);
-    assertTrue(input!.invalid);
+    assertTrue(input.invalid);
   });
 
   test(

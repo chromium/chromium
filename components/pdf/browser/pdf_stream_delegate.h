@@ -45,7 +45,7 @@ class PdfStreamDelegate {
     bool full_frame = false;
     bool allow_javascript = false;
     bool use_skia = false;
-    bool require_corp = false;
+    std::string coep_header;
   };
 
   virtual ~PdfStreamDelegate() = default;
@@ -73,6 +73,12 @@ class PdfStreamDelegate {
   // Navigation attempts in PDF extension and content frames should be canceled
   // if they are not related to PDF viewer setup.
   virtual bool ShouldAllowPdfFrameNavigation(
+      content::NavigationHandle* navigation_handle) = 0;
+
+  // Determines whether navigation attempts in the PDF extension frame should be
+  // allowed. If MimeHandlerGuestView is in use, don't allow navigations away
+  // from the extension's origin in the guest's main frame.
+  virtual bool ShouldAllowPdfExtensionFrameNavigation(
       content::NavigationHandle* navigation_handle) = 0;
 };
 

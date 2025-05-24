@@ -17,11 +17,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
@@ -44,13 +44,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
 namespace syncer {
 namespace {
 
+using base::test::EqualsProto;
 using sync_pb::DataTypeState;
 using sync_pb::DeviceInfoSpecifics;
 using sync_pb::EntitySpecifics;
@@ -87,10 +88,6 @@ const DeviceInfo::FormFactor kLocalDeviceFormFactor =
 
 MATCHER_P(HasDeviceInfo, expected, "") {
   return arg.device_info().SerializeAsString() == expected.SerializeAsString();
-}
-
-MATCHER_P(EqualsProto, expected, "") {
-  return arg.SerializeAsString() == expected.SerializeAsString();
 }
 
 MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
@@ -515,7 +512,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
       : store_(DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     DeviceInfoPrefs::RegisterProfilePrefs(pref_service_.registry());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     statistics_provider_ =
         std::make_unique<ash::system::ScopedFakeStatisticsProvider>();
 #endif
@@ -616,7 +613,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     return local_device_info_provider_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::system::ScopedFakeStatisticsProvider* statistics_provider() {
     EXPECT_TRUE(statistics_provider_);
     return statistics_provider_.get();
@@ -682,28 +679,8 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   }
 
   std::map<std::string, DeviceInfoSpecifics> ReadAllFromStore() {
-    std::unique_ptr<DataTypeStore::RecordList> records;
-    base::RunLoop loop;
-    store()->ReadAllData(base::BindOnce(
-        [](std::unique_ptr<DataTypeStore::RecordList>* output_records,
-           base::RunLoop* loop, const std::optional<syncer::ModelError>& error,
-           std::unique_ptr<DataTypeStore::RecordList> input_records) {
-          EXPECT_FALSE(error) << error->ToString();
-          EXPECT_THAT(input_records, NotNull());
-          *output_records = std::move(input_records);
-          loop->Quit();
-        },
-        &records, &loop));
-    loop.Run();
-    std::map<std::string, DeviceInfoSpecifics> result;
-    if (records) {
-      for (const DataTypeStore::Record& record : *records) {
-        DeviceInfoSpecifics specifics;
-        EXPECT_TRUE(specifics.ParseFromString(record.value));
-        result.emplace(record.id, specifics);
-      }
-    }
-    return result;
+    return DataTypeStoreTestUtil::ReadAllDataAsProtoAndWait<
+        DeviceInfoSpecifics>(*store());
   }
 
   std::map<std::string, sync_pb::EntitySpecifics> GetAllData() {
@@ -751,7 +728,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
   raw_ptr<TestLocalDeviceInfoProvider> local_device_info_provider_ = nullptr;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::system::ScopedFakeStatisticsProvider>
       statistics_provider_;
 #endif
@@ -912,7 +889,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesInMemory) {
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(
-      EntityChange::CreateDelete(specifics.cache_guid()));
+      EntityChange::CreateDelete(specifics.cache_guid(), syncer::EntityData()));
   auto error_on_delete = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
 
@@ -970,7 +947,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyDeleteNonexistent) {
   ASSERT_EQ(1, change_count());
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete("guid"));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete("guid", syncer::EntityData()));
   EXPECT_CALL(*processor(), Delete).Times(0);
   auto error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
@@ -1674,7 +1652,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldRemoveDeviceInfoOnTombstone) {
   ASSERT_EQ(2u, bridge()->GetAllDeviceInfo().size());
 
   EntityChangeList changes;
-  changes.push_back(EntityChange::CreateDelete(specifics.cache_guid()));
+  changes.push_back(
+      EntityChange::CreateDelete(specifics.cache_guid(), syncer::EntityData()));
   error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(changes));
   ASSERT_FALSE(error);
@@ -1690,8 +1669,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
   ASSERT_EQ(1u, bridge()->GetAllDeviceInfo().size());
 
   EntityChangeList changes;
-  changes.push_back(
-      EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix)));
+  changes.push_back(EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix),
+                                               syncer::EntityData()));
 
   // An incoming deletion for the local device info should result in a reupload.
   // The reupload should only be triggered once, to prevent any possible
@@ -1705,8 +1684,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
   EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());
 
   changes.clear();
-  changes.push_back(
-      EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix)));
+  changes.push_back(EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix),
+                                               syncer::EntityData()));
   error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(changes));
   ASSERT_FALSE(error);

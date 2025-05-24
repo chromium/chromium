@@ -4,22 +4,22 @@
 
 #include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/native_messaging/native_messaging_constants.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
+#include "remoting/host/webauthn/desktop_session_type_util.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
 
 namespace remoting {
@@ -61,11 +61,11 @@ RemoteWebAuthnNativeMessagingHost::RemoteWebAuthnNativeMessagingHost(
 RemoteWebAuthnNativeMessagingHost::~RemoteWebAuthnNativeMessagingHost() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // This makes sure the log messages below get sent to the extension before the
   // caller sequence gets terminated.
   log_message_handler_->set_log_synchronously_if_possible(true);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   if (!id_to_request_canceller_.empty()) {
     LOG(WARNING) << id_to_request_canceller_.size()
@@ -110,12 +110,12 @@ void RemoteWebAuthnNativeMessagingHost::Start(
     extensions::NativeMessageHost::Client* client) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   client_ = client;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   log_message_handler_ =
       std::make_unique<LogMessageHandler>(base::BindRepeating(
           &RemoteWebAuthnNativeMessagingHost::SendMessageToClient,
           base::Unretained(this)));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   HOST_LOG << "Remote WebAuthn native messaging host has started";
 }
 
@@ -251,7 +251,9 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCancel(
 void RemoteWebAuthnNativeMessagingHost::ProcessGetRemoteState(
     base::Value::Dict response) {
   // GetRemoteState request: {id: string, type: 'getRemoteState'}
-  // GetRemoteState response: {id: string, type: 'getRemoteStateResponse'}
+  // GetRemoteState response:
+  //   {id: string, type: 'getRemoteStateResponse', isRemoted: boolean,
+  //    desktopSessionType: 'unspecified'|'remote-only'|'local-only'}
 
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -395,6 +397,20 @@ void RemoteWebAuthnNativeMessagingHost::SendNextRemoteState(bool is_remoted) {
   get_remote_state_responses_.pop();
 
   response.Set(kGetRemoteStateResponseIsRemotedKey, is_remoted);
+  std::string desktop_session_type;
+  switch (GetDesktopSessionType()) {
+    case DesktopSessionType::UNSPECIFIED:
+      desktop_session_type = "unspecified";
+      break;
+    case DesktopSessionType::REMOTE_ONLY:
+      desktop_session_type = "remote-only";
+      break;
+    case DesktopSessionType::LOCAL_ONLY:
+      desktop_session_type = "local-only";
+      break;
+  }
+  response.Set(kGetRemoteStateResponseDesktopSessionTypeKey,
+               desktop_session_type);
   SendMessageToClient(std::move(response));
   if (!get_remote_state_responses_.empty()) {
     QueryNextRemoteState();
@@ -494,9 +510,8 @@ void RemoteWebAuthnNativeMessagingHost::OnRequestCancellerDisconnected(
     mojo::RemoteSetElementId disconnecting_canceller) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  auto it =
-      base::ranges::find(id_to_request_canceller_, disconnecting_canceller,
-                         &IdToRequestMap::value_type::second);
+  auto it = std::ranges::find(id_to_request_canceller_, disconnecting_canceller,
+                              &IdToRequestMap::value_type::second);
   if (it != id_to_request_canceller_.end()) {
     id_to_request_canceller_.erase(it);
   }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/chrome_elf/chrome_elf_main.h"
 
 #include <windows.h>
@@ -48,6 +53,10 @@ bool GetUserDataDirectoryThunk(wchar_t* user_data_dir,
             invalid_user_data_dir_str.c_str(), _TRUNCATE);
 
   return true;
+}
+
+bool IsTemporaryUserDataDirectoryCreatedForHeadless() {
+  return install_static::IsTemporaryUserDataDirectoryCreatedForHeadless();
 }
 
 // DllMain

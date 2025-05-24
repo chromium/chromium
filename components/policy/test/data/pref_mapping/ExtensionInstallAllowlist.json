@@ -4,25 +4,18 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
+      "desktop_android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExtensionInstallAllowlist": [
-            "lcncmkcnkcdbbanbjakcencbaoegdjlp"
-          ]
-        },
-        "prefs": {
-          "extensions.install.allowlist": {
-            "value": [
-              "lcncmkcnkcdbbanbjakcencbaoegdjlp"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "extensions.install.allowlist",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "lcncmkcnkcdbbanbjakcencbaoegdjlp"
+        ]
+      ]
+    }
   }
 ]

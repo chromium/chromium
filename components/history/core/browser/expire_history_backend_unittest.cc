@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -20,7 +22,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -105,8 +106,9 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
   void EnsureURLInfoGone(const URLRow& row, bool expired);
 
   const DeletionInfo* GetLastDeletionInfo() {
-    if (urls_deleted_notifications_.empty())
+    if (urls_deleted_notifications_.empty()) {
       return nullptr;
+    }
     return &urls_deleted_notifications_.back();
   }
 
@@ -153,13 +155,15 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 
     base::FilePath history_name = path().Append(kHistoryFilename);
     main_db_ = std::make_unique<TestHistoryDatabase>();
-    if (main_db_->Init(history_name) != sql::INIT_OK)
+    if (main_db_->Init(history_name) != sql::INIT_OK) {
       main_db_.reset();
+    }
 
     base::FilePath thumb_name = path().Append(kFaviconsFilename);
     thumb_db_ = std::make_unique<favicon::FaviconDatabase>();
-    if (thumb_db_->Init(thumb_name) != sql::INIT_OK)
+    if (thumb_db_->Init(thumb_name) != sql::INIT_OK) {
       thumb_db_.reset();
+    }
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     TopSitesImpl::RegisterPrefs(pref_service_->registry());
@@ -184,8 +188,9 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
     top_sites_->ShutdownOnUIThread();
     top_sites_ = nullptr;
 
-    if (base::CurrentThread::Get())
+    if (base::CurrentThread::Get()) {
       base::RunLoop().RunUntilIdle();
+    }
 
     pref_service_.reset();
   }
@@ -228,8 +233,9 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
                                        base::Time visit_times[4],
                                        bool set_app_id) {
-  if (!main_db_)
+  if (!main_db_) {
     return;
+  }
 
   // Four times for each visit.
   visit_times[3] = PretendNow();
@@ -249,20 +255,23 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
   url_row1.set_last_visit(visit_times[0]);
   url_row1.set_visit_count(1);
   url_ids[0] = main_db_->AddURL(url_row1);
-  thumb_db_->AddIconMapping(url_row1.url(), favicon1);
+  thumb_db_->AddIconMapping(url_row1.url(), favicon1,
+                            favicon::PageUrlType::kRegular);
 
   URLRow url_row2(GURL("http://www.google.com/2"));
   url_row2.set_last_visit(visit_times[2]);
   url_row2.set_visit_count(2);
   url_row2.set_typed_count(1);
   url_ids[1] = main_db_->AddURL(url_row2);
-  thumb_db_->AddIconMapping(url_row2.url(), favicon1);
+  thumb_db_->AddIconMapping(url_row2.url(), favicon1,
+                            favicon::PageUrlType::kRegular);
 
   URLRow url_row3(GURL("http://www.google.com/3"));
   url_row3.set_last_visit(visit_times[3]);
   url_row3.set_visit_count(1);
   url_ids[2] = main_db_->AddURL(url_row3);
-  thumb_db_->AddIconMapping(url_row3.url(), favicon2);
+  thumb_db_->AddIconMapping(url_row3.url(), favicon2,
+                            favicon::PageUrlType::kRegular);
 
   // Four visits.
   VisitRow visit_row1;
@@ -295,8 +304,9 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
 }
 
 bool ExpireHistoryTest::HasFavicon(favicon_base::FaviconID favicon_id) {
-  if (!thumb_db_ || favicon_id == 0)
+  if (!thumb_db_ || favicon_id == 0) {
     return false;
+  }
   return thumb_db_->GetFaviconHeader(favicon_id, nullptr, nullptr);
 }
 
@@ -330,7 +340,7 @@ void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
     EXPECT_EQ(expired, info.is_from_expiration());
     const history::URLRows& rows(info.deleted_rows());
     auto it_row =
-        base::ranges::find_if(rows, history::URLRow::URLRowHasURL(row.url()));
+        std::ranges::find_if(rows, history::URLRow::URLRowHasURL(row.url()));
     if (it_row != rows.end()) {
       // Further verify that the ID is set to what had been in effect in the
       // main database before the deletion. The InMemoryHistoryBackend relies
@@ -342,7 +352,7 @@ void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
   for (const auto& pair : urls_modified_notifications_) {
     const auto& rows = pair.second;
     EXPECT_TRUE(
-        base::ranges::none_of(rows, history::URLRow::URLRowHasURL(row.url())));
+        std::ranges::none_of(rows, history::URLRow::URLRowHasURL(row.url())));
   }
   EXPECT_TRUE(found_delete_notification);
 }
@@ -364,7 +374,7 @@ bool ExpireHistoryTest::ModifiedNotificationSent(
     const bool is_from_expiration = pair.first;
     const auto& rows = pair.second;
     if (is_from_expiration == should_be_from_expiration &&
-        base::ranges::any_of(rows, history::URLRow::URLRowHasURL(url))) {
+        std::ranges::any_of(rows, history::URLRow::URLRowHasURL(url))) {
       return true;
     }
   }
@@ -399,7 +409,7 @@ TEST_F(ExpireHistoryTest, DeleteFaviconsIfPossible) {
   URLRow row(GURL("http://www.google.com/2"));
   row.set_visit_count(1);
   EXPECT_TRUE(main_db_->AddURL(row));
-  thumb_db_->AddIconMapping(row.url(), icon_id);
+  thumb_db_->AddIconMapping(row.url(), icon_id, favicon::PageUrlType::kRegular);
 
   // Favicon should not be deletable.
   {
@@ -570,7 +580,7 @@ TEST_F(ExpireHistoryTest, DeleteStarredUnvisitedURL) {
   const GURL url("http://www.google.com/starred");
   favicon_base::FaviconID favicon = thumb_db_->AddFavicon(
       GURL("http://favicon/url1"), favicon_base::IconType::kFavicon);
-  thumb_db_->AddIconMapping(url, favicon);
+  thumb_db_->AddIconMapping(url, favicon, favicon::PageUrlType::kRegular);
   StarURL(url);
 
   // Delete it.
@@ -598,8 +608,8 @@ TEST_F(ExpireHistoryTest, DeleteURLs) {
   AddExampleData(url_ids, visit_times);
 
   // Verify things are the way we expect with URL rows, favicons.
-  URLRow rows[3];
-  favicon_base::FaviconID favicon_ids[3];
+  std::array<URLRow, 3> rows;
+  std::array<favicon_base::FaviconID, 3> favicon_ids;
   std::vector<GURL> urls;
   // Push back a bogus URL (which shouldn't change anything).
   urls.push_back(GURL());
@@ -1198,7 +1208,8 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesDeleteUnstarred) {
       GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url("http://google.com/");
-  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url, icon_id));
+  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url, icon_id,
+                                         favicon::PageUrlType::kRegular));
 
   expirer_.ClearOldOnDemandFaviconsIfPossible(GetOldFaviconThreshold());
 
@@ -1224,10 +1235,12 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesNotDeleteStarred) {
       GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url1("http://google.com/1");
-  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url1, icon_id));
+  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url1, icon_id,
+                                         favicon::PageUrlType::kRegular));
   StarURL(page_url1);
   GURL page_url2("http://google.com/2");
-  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url2, icon_id));
+  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url2, icon_id,
+                                         favicon::PageUrlType::kRegular));
 
   expirer_.ClearOldOnDemandFaviconsIfPossible(GetOldFaviconThreshold());
 
@@ -1264,7 +1277,8 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesDeleteAfterLongDelay) {
       GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url("http://google.com/");
-  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url, icon_id));
+  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url, icon_id,
+                                         favicon::PageUrlType::kRegular));
 
   expirer_.ClearOldOnDemandFaviconsIfPossible(GetOldFaviconThreshold());
 
@@ -1295,9 +1309,11 @@ TEST_F(ExpireHistoryTest,
       GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url1("http://google.com/1");
-  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url1, icon_id));
+  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url1, icon_id,
+                                         favicon::PageUrlType::kRegular));
   GURL page_url2("http://google.com/2");
-  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url2, icon_id));
+  ASSERT_NE(0, thumb_db_->AddIconMapping(page_url2, icon_id,
+                                         favicon::PageUrlType::kRegular));
 
   expirer_.ClearOldOnDemandFaviconsIfPossible(GetOldFaviconThreshold());
 

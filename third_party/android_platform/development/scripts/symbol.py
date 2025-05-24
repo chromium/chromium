@@ -49,19 +49,6 @@ ARCH = "arm"
 
 _SECONDARY_ABI_OUTPUT_PATH = None
 
-# See:
-# http://bugs.python.org/issue14315
-# https://hg.python.org/cpython/rev/6dd5e9556a60#l2.8
-def _PatchZipFile():
-  oldDecodeExtra = zipfile.ZipInfo._decodeExtra
-  def decodeExtra(self):
-    try:
-      oldDecodeExtra(self)
-    except struct.error:
-      pass
-  zipfile.ZipInfo._decodeExtra = decodeExtra
-_PatchZipFile()
-
 
 # Used by _GetApkPackageName() to extract package name from aapt dump output.
 _PACKAGE_NAME_RE = re.compile(r'package: .*name=\'(\S*)\'')

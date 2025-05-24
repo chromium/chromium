@@ -44,12 +44,30 @@ let SysInfoApiMemoryResult;
 let SysInfoApiZramResult;
 
 /**
+ * |getSysInfo| gpu result.
+ * @typedef {{
+ *   busy: number,
+ * }}
+ */
+let SysInfoApiGpuResult;
+
+/**
+ * |getSysInfo| npu result.
+ * @typedef {{
+ *   busy: number,
+ * }}
+ */
+let SysInfoApiNpuResult;
+
+/**
  * |getSysInfo| api result.
  * @typedef {{
  *   const: {counterMax: number},
  *   cpus: !Array<!SysInfoApiCpuResult>,
  *   memory: !SysInfoApiMemoryResult,
  *   zram: !SysInfoApiZramResult,
+ *   gpu: ?SysInfoApiGpuResult,
+ *   npu: ?SysInfoApiNpuResult,
  * }}
  */
 let SysInfoApiResult;

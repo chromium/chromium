@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1122068467107743258">Աշխատանքային</translation>
 <translation id="1275718070701477396">Ընտրված</translation>
 <translation id="138513070655895675">Փոխեք վճարման եղանակն այս ընտրացանկի տարրում։</translation>
 <translation id="2129442648318919291">Կառավարել հասցեները։</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Առաքման հասցե</translation>
 <translation id="8873105120914375071">Ուզո՞ւմ եք ավելի արագ վճարել</translation>
 <translation id="9032876013752408138">Ինքնալրացնել իմ տվյալները</translation>
+<translation id="932327136139879170">Գլխավոր էջ</translation>
 <translation id="984275831282074731">Վճարման եղանակներ</translation>
 </translationbundle>

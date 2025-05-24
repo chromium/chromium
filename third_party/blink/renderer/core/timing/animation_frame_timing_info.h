@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_ANIMATION_FRAME_TIMING_INFO_H_
 
 #include "base/time/time.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -16,6 +16,7 @@ namespace blink {
 
 class ExecutionContext;
 class SourceLocation;
+class LocalDOMWindow;
 
 class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
  public:
@@ -25,7 +26,8 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
     kUserCallback,
     kEventHandler,
     kPromiseResolve,
-    kPromiseReject
+    kPromiseReject,
+    kUserEntryPoint,
   };
 
   // Not using blink::SourceLocation directly as using it relies on stack traces
@@ -35,6 +37,8 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
     WTF::String url;
     WTF::String function_name;
     int char_position = -1;
+    int line_number = -1;
+    int column_number = -1;
   };
 
   ScriptTimingInfo(ExecutionContext* context,
@@ -59,13 +63,7 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   const ScriptSourceLocation& GetSourceLocation() const {
     return source_location_;
   }
-  void SetSourceLocation(const ScriptSourceLocation& location) {
-    source_location_ = location;
-    if (KURL(location.url).ProtocolIsData()) {
-      source_location_.url = "data:";
-    }
-  }
-
+  void SetSourceLocation(const ScriptSourceLocation& location);
   const AtomicString& ClassLikeName() const { return class_like_name_; }
   void SetClassLikeName(const AtomicString& name) { class_like_name_ = name; }
   const AtomicString& PropertyLikeName() const { return property_like_name_; }
@@ -134,6 +132,11 @@ class AnimationFrameTimingInfo
     total_blocking_duration_ = duration;
   }
 
+  void SetBeginFrameId(viz::BeginFrameId begin_frame_id) {
+    begin_frame_id_ = begin_frame_id;
+  }
+  viz::BeginFrameId BeginFrameId() const { return begin_frame_id_; }
+
   void SetDidPause() { did_pause_ = true; }
   bool DidPause() const { return did_pause_; }
 
@@ -163,6 +166,9 @@ class AnimationFrameTimingInfo
   base::TimeDelta total_blocking_duration_;
 
   HeapVector<Member<ScriptTimingInfo>> scripts_;
+
+  // Id for the BeginFrame, which triggered this animation frame.
+  viz::BeginFrameId begin_frame_id_;
 
   // Whether the LoAF included sync XHR or alerts (pause).
   bool did_pause_ = false;

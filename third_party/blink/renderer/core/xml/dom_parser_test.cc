@@ -7,8 +7,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_supported_type.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -33,8 +33,8 @@ TEST(DOMParserTest, DomParserDocumentUsesQuirksMode) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document =
-      parser->parseFromString("<div></div>", keywords::kTextHtml);
+  Document* document = parser->parseFromString(
+      "<div></div>", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   EXPECT_TRUE(document->InQuirksMode());
 }
 
@@ -43,8 +43,8 @@ TEST(DOMParserTest, DomParserDocumentUsesNoQuirksMode) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document =
-      parser->parseFromString("<!doctype html>", keywords::kTextHtml);
+  Document* document = parser->parseFromString(
+      "<!doctype html>", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   EXPECT_TRUE(document->InNoQuirksMode());
 }
 

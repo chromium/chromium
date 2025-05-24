@@ -316,7 +316,7 @@ void DisplayLockDocumentState::EndForcedScope(
     }
   }
   // We should always find a scope to erase.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DisplayLockDocumentState::EnsureMinimumForcedPhase(
@@ -396,7 +396,9 @@ DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
       if (context->HasElement()) {
         context->DidForceActivatableDisplayLocks();
       } else {
-        DUMP_WILL_BE_NOTREACHED()
+        // This used to be a DUMP_WILL_BE_NOTREACHED(), but the crash volume was
+        // too high. See crbug.com/41494130
+        DCHECK(false)
             << "The DisplayLockContext's element has been garbage collected or"
             << " otherwise deleted, but the DisplayLockContext is still alive!"
             << " This shouldn't happen and could cause a crash. See"

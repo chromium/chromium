@@ -1,5 +1,5 @@
 AXWebArea
-++AXGroup AXEditableAncestor=:2 AXHighestEditableAncestor=:2 AXValue='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.'
+++AXTextArea AXEditableAncestor=:2 AXHighestEditableAncestor=:2 AXValue='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.'
 ++++AXGroup AXEditableAncestor=:2 AXHighestEditableAncestor=:2
 ++++++AXStaticText AXEditableAncestor=:2 AXHighestEditableAncestor=:2 AXValue='A contenteditable with a '
 ++++++AXLink AXDescription='link' AXEditableAncestor=:2 AXHighestEditableAncestor=:2
@@ -23,5 +23,5 @@ AXWebArea
 ++++++++AXStaticText AXEditableAncestor=:2 AXHighestEditableAncestor=:2 AXValue='Editable list item.'
 ++AXGroup
 ++++AXStaticText AXValue='Non-editable paragraph.'
-++AXGroup AXEditableAncestor=:26 AXHighestEditableAncestor=:26 AXValue='Should keep the role but change the state.'
+++AXTextArea AXEditableAncestor=:26 AXHighestEditableAncestor=:26 AXValue='Should keep the role but change the state.'
 ++++AXStaticText AXEditableAncestor=:26 AXHighestEditableAncestor=:26 AXValue='Should keep the role but change the state.'

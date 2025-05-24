@@ -40,6 +40,8 @@ void ParamTraits<net::AuthCredentials>::Log(const param_type& p,
   l->append("<AuthCredentials>");
 }
 
+// TODO(crbug.com/408018829): convert these to mojom StructTraits
+// LINT.IfChange(CertVerifyResult)
 void ParamTraits<net::CertVerifyResult>::Write(base::Pickle* m,
                                                const param_type& p) {
   WriteParam(m, p.verified_cert);
@@ -47,10 +49,10 @@ void ParamTraits<net::CertVerifyResult>::Write(base::Pickle* m,
   WriteParam(m, p.has_sha1);
   WriteParam(m, p.public_key_hashes);
   WriteParam(m, p.is_issued_by_known_root);
-  WriteParam(m, p.is_issued_by_additional_trust_anchor);
   WriteParam(m, p.ocsp_result);
   WriteParam(m, p.scts);
   WriteParam(m, p.policy_compliance);
+  WriteParam(m, p.ct_requirement_status);
 }
 
 bool ParamTraits<net::CertVerifyResult>::Read(const base::Pickle* m,
@@ -61,10 +63,11 @@ bool ParamTraits<net::CertVerifyResult>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->has_sha1) &&
          ReadParam(m, iter, &r->public_key_hashes) &&
          ReadParam(m, iter, &r->is_issued_by_known_root) &&
-         ReadParam(m, iter, &r->is_issued_by_additional_trust_anchor) &&
          ReadParam(m, iter, &r->ocsp_result) && ReadParam(m, iter, &r->scts) &&
-         ReadParam(m, iter, &r->policy_compliance);
+         ReadParam(m, iter, &r->policy_compliance) &&
+         ReadParam(m, iter, &r->ct_requirement_status);
 }
+// LINT.ThenChange(/net/cert/cert_verify_result.h:CertVerifyResult)
 
 void ParamTraits<net::CertVerifyResult>::Log(const param_type& p,
                                              std::string* l) {

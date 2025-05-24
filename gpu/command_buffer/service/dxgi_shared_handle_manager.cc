@@ -226,7 +226,7 @@ DXGISharedHandleManager::~DXGISharedHandleManager() {
 
 scoped_refptr<DXGISharedHandleState>
 DXGISharedHandleManager::GetOrCreateSharedHandleState(
-    gfx::DXGIHandleToken token,
+    const gfx::DXGIHandleToken& token,
     base::win::ScopedHandle shared_handle,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
   DCHECK(shared_handle.IsValid());
@@ -257,8 +257,7 @@ DXGISharedHandleManager::GetOrCreateSharedHandleState(
       base::PassKey<DXGISharedHandleManager>(), base::WrapRefCounted(this),
       token, std::move(shared_handle), std::move(d3d11_texture));
 
-  shared_handle_state_map_.insert(
-      std::make_pair(std::move(token), state.get()));
+  shared_handle_state_map_.insert({token, state.get()});
 
   return state;
 }

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_histogram_value.h"
@@ -30,6 +32,12 @@ class GuestView : public GuestViewBase {
   }
 
   static T* FromInstanceID(int embedder_process_id, int guest_instance_id) {
+    return AsDerivedGuest(
+        GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id));
+  }
+
+  static T* FromInstanceID(content::ChildProcessId embedder_process_id,
+                           int guest_instance_id) {
     return AsDerivedGuest(
         GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id));
   }
@@ -61,15 +69,12 @@ class GuestView : public GuestViewBase {
   GuestView& operator=(const GuestView&) = delete;
 
   // GuestViewBase implementation.
-  const char* GetViewType() const final {
-    return T::Type;
-  }
+  std::string_view GetViewType() const final { return T::Type; }
 
  protected:
   explicit GuestView(content::RenderFrameHost* owner_rfh)
       : GuestViewBase(owner_rfh) {
-    base::UmaHistogramEnumeration("GuestView.GuestViewCreated",
-                                  T::HistogramValue);
+    LogUsage();
   }
   ~GuestView() override = default;
 
@@ -81,14 +86,24 @@ class GuestView : public GuestViewBase {
   // Downcasts to a *ViewGuest if the GuestViewBase is of the derived view type.
   // Otherwise, returns nullptr.
   static T* AsDerivedGuest(GuestViewBase* guest) {
-    if (!guest)
+    if (!guest) {
       return nullptr;
+    }
 
-    const bool same_type = !strcmp(guest->GetViewType(), T::Type);
-    if (!same_type)
+    if (guest->GetViewType() != T::Type) {
       return nullptr;
+    }
 
     return static_cast<T*>(guest);
+  }
+
+  void LogUsage() {
+    GuestViewHistogramValue value = T::HistogramValue;
+    if (value == GuestViewHistogramValue::kWebView &&
+        IsOwnedByControlledFrameEmbedder()) {
+      value = GuestViewHistogramValue::kControlledFrame;
+    }
+    base::UmaHistogramEnumeration("GuestView.GuestViewCreated", value);
   }
 };
 

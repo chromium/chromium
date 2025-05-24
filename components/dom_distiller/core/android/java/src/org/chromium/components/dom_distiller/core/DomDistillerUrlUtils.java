@@ -11,10 +11,13 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Wrapper for the dom_distiller::url_utils. */
 @JNINamespace("dom_distiller::url_utils::android")
+@NullMarked
 public final class DomDistillerUrlUtils {
     // Keep in sync with components/dom_distiller/core/url_constants.cc
     private static final String DOM_DISTILLER_SCHEME = "chrome-distiller";
@@ -70,7 +73,7 @@ public final class DomDistillerUrlUtils {
         return isDistilledPage(url.getSpec());
     }
 
-    public static String getValueForKeyInUrl(String url, String key) {
+    public static @Nullable String getValueForKeyInUrl(String url, String key) {
         assert key != null;
         if (TextUtils.isEmpty(url)) return null;
         return DomDistillerUrlUtilsJni.get().getValueForKeyInUrl(url, key);

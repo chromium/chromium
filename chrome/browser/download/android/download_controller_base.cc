@@ -43,4 +43,4 @@ DownloadInfo::DownloadInfo(const GURL& url,
 
 DownloadInfo::DownloadInfo(const DownloadInfo& other) = default;
 
-DownloadInfo::~DownloadInfo() {}
+DownloadInfo::~DownloadInfo() = default;

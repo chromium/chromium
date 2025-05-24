@@ -8,7 +8,9 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "extensions/renderer/script_context.h"
@@ -16,7 +18,6 @@
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_crypto_normalize.h"
 
 namespace extensions {
@@ -59,18 +60,19 @@ v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
   const blink::WebCryptoAlgorithm* hash = nullptr;
 
   switch (algorithm.Id()) {
-    case blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5: {
+    case blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5:
+    case blink::kWebCryptoAlgorithmIdRsaOaep: {
       const blink::WebCryptoRsaHashedKeyGenParams* rsa_hashed_key_gen =
           algorithm.RsaHashedKeyGenParams();
       if (rsa_hashed_key_gen) {
         builder.Set("modulusLength", rsa_hashed_key_gen->ModulusLengthBits());
 
-        const blink::WebVector<unsigned char>& public_exponent =
+        const std::vector<unsigned char>& public_exponent =
             rsa_hashed_key_gen->PublicExponent();
         v8::Local<v8::ArrayBuffer> buffer =
             v8::ArrayBuffer::New(isolate, public_exponent.size());
-        memcpy(buffer->GetBackingStore()->Data(), public_exponent.data(),
-               public_exponent.size());
+        UNSAFE_TODO(memcpy(buffer->GetBackingStore()->Data(),
+                           public_exponent.data(), public_exponent.size()));
         builder.Set("publicExponent", buffer);
 
         hash = &rsa_hashed_key_gen->GetHash();

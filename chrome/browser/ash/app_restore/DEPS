@@ -3,6 +3,8 @@ include_rules = [
   # details.
   "-chrome",
 
+  "+chromeos/ash/components/scheduler_config",
+
   # This directory is in //chrome, which violates the rule above. Allow this
   # directory to #include its own files.
   "+chrome/browser/ash/app_restore",
@@ -20,17 +22,13 @@ include_rules = [
   "+chrome/browser/apps/platform_apps",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/floating_workspace",
   "+chrome/browser/ash/login/demo_mode",
   "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/policy/scheduled_task_handler",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/ash/scheduler_config",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/chromeos/full_restore",
   "+chrome/browser/first_run",
   "+chrome/browser/lifetime",
@@ -48,8 +46,8 @@ include_rules = [
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/startup",
   "+chrome/browser/ui/web_applications/test",
+  "+chrome/browser/ui/webui/ash/settings",
   "+chrome/browser/web_applications/test",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/common/buildflags.h",
@@ -61,3 +59,13 @@ include_rules = [
   "+chrome/test/base",
   "+chrome/test/views",
 ]
+
+specific_include_rules = {
+  "app_restore_arc_task_handler_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
+  ".*browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin, type PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Constructor} from './types.js';
-import {Route, Router} from '../router.js';
+import {type Route, Router} from '../router.js';
+
+import type {Constructor} from './types.js';
 
 export interface RouteObserverMixinInterface {
   currentRouteChanged(newRoute: Route, oldRoute?: Route): void;

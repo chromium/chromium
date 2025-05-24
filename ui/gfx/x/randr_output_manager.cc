@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -215,7 +216,7 @@ DisplayLayoutDiff CalculateDisplayLayoutDiff(
       diff.new_displays.configs.push_back(new_config);
       continue;
     }
-    auto current_display_it = base::ranges::find(
+    auto current_display_it = std::ranges::find(
         current_displays, new_config.id(),
         [](const auto& display) { return display.config.id(); });
     if (current_display_it == current_displays.end()) {
@@ -288,9 +289,8 @@ RandRMonitorConfig& RandRMonitorConfig::operator=(
 
 RandRMonitorLayout::RandRMonitorLayout() = default;
 RandRMonitorLayout::RandRMonitorLayout(const RandRMonitorLayout&) = default;
-RandRMonitorLayout::RandRMonitorLayout(
-    const std::vector<RandRMonitorConfig> configs)
-    : configs(configs) {}
+RandRMonitorLayout::RandRMonitorLayout(std::vector<RandRMonitorConfig> configs)
+    : configs(std::move(configs)) {}
 RandRMonitorLayout& RandRMonitorLayout::operator=(const RandRMonitorLayout&) =
     default;
 RandRMonitorLayout::~RandRMonitorLayout() = default;

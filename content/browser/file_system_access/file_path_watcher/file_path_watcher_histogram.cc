@@ -19,8 +19,8 @@ void RecordCallbackErrorUma(WatchWithChangeInfoResult result) {
 }
 
 void RecordInotifyWatchCountUma(int count) {
-  base::UmaHistogramCounts10000(
-      "Storage.FileSystemAccess.InotifyWatchCountPerFilePathWatcher", count);
+  base::UmaHistogramCounts10000("Storage.FileSystemAccess.InotifyWatchCount",
+                                count);
 }
 
 }  // namespace content

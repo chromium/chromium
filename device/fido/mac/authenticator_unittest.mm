@@ -60,7 +60,7 @@ TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_RK) {
           ->first;
   DiscoverableCredentialMetadata credential_metadata(
       AuthenticatorType::kTouchID, kRp1, credential.credential_id,
-      std::move(user));
+      std::move(user), /*provider_name=*/std::nullopt);
 
   // Inject a non resident credential for RP 2. This one should be ignored.
   PublicKeyCredentialUserEntity user2(kUserId2);
@@ -105,7 +105,7 @@ TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
           ->first;
   DiscoverableCredentialMetadata credential_metadata(
       AuthenticatorType::kTouchID, kRp1, credential.credential_id,
-      std::move(user));
+      std::move(user), /*provider_name=*/std::nullopt);
 
   {
     // RP 1 should report the credential if it is in the allow list but not

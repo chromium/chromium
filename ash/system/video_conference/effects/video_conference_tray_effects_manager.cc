@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
@@ -123,7 +124,8 @@ VideoConferenceTrayEffectsManager::GetSetValueEffects() {
   EffectDataVector effects;
 
   for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
-    for (auto* effect : delegate->GetEffects(VcEffectType::kSetValue)) {
+    for (auto* effect :
+         delegate->GetAvailableEffects(VcEffectType::kSetValue)) {
       effects.push_back(effect);
     }
   }
@@ -136,7 +138,7 @@ VideoConferenceTrayEffectsManager::GetToggleEffects() {
   EffectDataVector effects;
 
   for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
-    for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
+    for (auto* effect : delegate->GetAvailableEffects(VcEffectType::kToggle)) {
       effects.push_back(effect);
     }
   }
@@ -212,10 +214,12 @@ VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
     case VcEffectId::kFaceRetouch:
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kStudioLook:
-      return {"ml-core-internal"};
-    case VcEffectId::kTestEffect:
+      return {"ml-core-dlc"};
     case VcEffectId::kNoiseCancellation:
     case VcEffectId::kStyleTransfer:
+      CHECK(CrasAudioHandler::Get()->GetAudioEffectDlcs() != std::nullopt);
+      return CrasAudioHandler::Get()->GetAudioEffectDlcs().value();
+    case VcEffectId::kTestEffect:
     case VcEffectId::kCameraFraming:
       return {};
   }
@@ -226,7 +230,7 @@ VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
   EffectDataVector effects;
 
   for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
-    for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
+    for (auto* effect : delegate->GetAvailableEffects(VcEffectType::kToggle)) {
       effects.push_back(effect);
     }
   }
@@ -243,7 +247,7 @@ void VideoConferenceTrayEffectsManager::RemoveTileControllers(
   if (!features::IsVcDlcUiEnabled()) {
     return;
   }
-  for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
+  for (auto* effect : delegate->GetAllEffects(VcEffectType::kToggle)) {
     const VcEffectId id = effect->id();
     if (base::Contains(controller_for_effect_id_, id)) {
       controller_for_effect_id_.erase(id);

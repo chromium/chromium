@@ -9,8 +9,8 @@
  * @return {object} The updated details.
  */
 function updateDetails(details, shippingOption) {
-  var selectedShippingOption;
-  var otherShippingOption;
+  let selectedShippingOption;
+  let otherShippingOption;
   if (shippingOption === 'standard') {
     selectedShippingOption = details.shippingOptions[0];
     otherShippingOption = details.shippingOptions[1];
@@ -35,7 +35,7 @@ function updateDetails(details, shippingOption) {
  * regardless of the shipping address.
  */
 function onBuyClicked() {
-  var supportedInstruments = [
+  const supportedInstruments = [
     {
       supportedMethods: 'https://android.com/pay',
       data: {
@@ -57,7 +57,7 @@ function onBuyClicked() {
     },
   ];
 
-  var details = {
+  const details = {
     total: {
       label: 'Donation',
       amount: {
@@ -102,7 +102,7 @@ function onBuyClicked() {
     ],
   };
 
-  var options = {
+  const options = {
     requestShipping: true,
     requestPayerName: true,
     requestPayerPhone: true,
@@ -115,7 +115,7 @@ function onBuyClicked() {
   }
 
   try {
-    var request = new PaymentRequest(supportedInstruments, details, options);
+    const request = new PaymentRequest(supportedInstruments, details, options);
 
     request.addEventListener('shippingaddresschange', function(e) {
       e.updateWith(new Promise(function(resolve) {

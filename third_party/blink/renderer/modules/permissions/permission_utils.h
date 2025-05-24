@@ -24,8 +24,6 @@ void ConnectToPermissionService(
 
 V8PermissionState ToV8PermissionState(mojom::blink::PermissionStatus);
 
-String PermissionStatusToString(mojom::blink::PermissionStatus);
-
 String PermissionNameToString(mojom::blink::PermissionName);
 
 mojom::blink::PermissionDescriptorPtr CreatePermissionDescriptor(

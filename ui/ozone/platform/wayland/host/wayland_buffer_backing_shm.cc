@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_shm.h"
 
-#include "build/chromeos_buildflags.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 

@@ -4,13 +4,16 @@
 
 package org.chromium.components.browser_ui.util.date;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Calendar;
 
 /** A set of utility methods meant to make interacting with a {@link Calendar} instance easier. */
+@NullMarked
 public final class CalendarUtils {
     private static final class LazyHolder {
-        private static Calendar sCalendar1 = CalendarFactory.get();
-        private static Calendar sCalendar2 = CalendarFactory.get();
+        private static final Calendar sCalendar1 = CalendarFactory.get();
+        private static final Calendar sCalendar2 = CalendarFactory.get();
     }
 
     private CalendarUtils() {}

@@ -12,10 +12,12 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.PendingIntent;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,6 +37,9 @@ import java.util.Optional;
 public class FakePasswordCheckupClientHelperTest {
     private static final String TEST_ACCOUNT = "test@example.com";
     private FakePasswordCheckupClientHelper mFakeHelper;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private PendingIntent mPendingIntentForLocalCheckupMock;
     @Mock private PendingIntent mPendingIntentForAccountCheckupMock;
 
@@ -45,7 +50,6 @@ public class FakePasswordCheckupClientHelperTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mFakeHelper = new FakePasswordCheckupClientHelper();
         mFakeHelper.setIntentForLocalCheckup(mPendingIntentForLocalCheckupMock);
         mFakeHelper.setIntentForAccountCheckup(mPendingIntentForAccountCheckupMock);
@@ -65,7 +69,7 @@ public class FakePasswordCheckupClientHelperTest {
         assertEquals(
                 mSuccessCallbackHelper.getOnlyPayloadBlocking(), mPendingIntentForLocalCheckupMock);
         // Verify that failure callback was not called.
-        assertEquals(mFailureCallbackHelper.getCallCount(), 0);
+        assertEquals(0, mFailureCallbackHelper.getCallCount());
     }
 
     @Test
@@ -83,7 +87,7 @@ public class FakePasswordCheckupClientHelperTest {
                 mSuccessCallbackHelper.getOnlyPayloadBlocking(),
                 mPendingIntentForAccountCheckupMock);
         // Verify that failure callback was not called.
-        assertEquals(mFailureCallbackHelper.getCallCount(), 0);
+        assertEquals(0, mFailureCallbackHelper.getCallCount());
     }
 
     @Test
@@ -106,7 +110,7 @@ public class FakePasswordCheckupClientHelperTest {
         // Move the clock forward
         shadowOf(getMainLooper()).idle();
         // Verify that success callback was not called.
-        assertEquals(successCallbackHelper.getCallCount(), 0);
+        assertEquals(0, successCallbackHelper.getCallCount());
         // Verify that failure callback was called.
         assertEquals(failureCallbackHelper.getOnlyPayloadBlocking(), expectedException);
     }
@@ -126,9 +130,9 @@ public class FakePasswordCheckupClientHelperTest {
         // Move the clock forward
         shadowOf(getMainLooper()).idle();
         // Verify that success callback was called.
-        assertEquals(successCallbackHelper.getCallCount(), 1);
+        assertEquals(1, successCallbackHelper.getCallCount());
         // Verify that failure callback was not called.
-        assertEquals(failureCallbackHelper.getCallCount(), 0);
+        assertEquals(0, failureCallbackHelper.getCallCount());
     }
 
     @Test
@@ -150,7 +154,7 @@ public class FakePasswordCheckupClientHelperTest {
         // Move the clock forward
         shadowOf(getMainLooper()).idle();
         // Verify that success callback was not called.
-        assertEquals(successCallbackHelper.getCallCount(), 0);
+        assertEquals(0, successCallbackHelper.getCallCount());
         // Verify that failure callback was called.
         assertEquals(failureCallbackHelper.getOnlyPayloadBlocking(), expectedException);
     }
@@ -175,7 +179,7 @@ public class FakePasswordCheckupClientHelperTest {
         // Verify that success callback was called.
         assertEquals(successCallbackHelper.getOnlyPayloadBlocking(), breachedCount);
         // Verify that failure callback was not called.
-        assertEquals(failureCallbackHelper.getCallCount(), 0);
+        assertEquals(0, failureCallbackHelper.getCallCount());
     }
 
     @Test
@@ -197,7 +201,7 @@ public class FakePasswordCheckupClientHelperTest {
         // Move the clock forward
         shadowOf(getMainLooper()).idle();
         // Verify that success callback was not called.
-        assertEquals(successCallbackHelper.getCallCount(), 0);
+        assertEquals(0, successCallbackHelper.getCallCount());
         // Verify that failure callback was called.
         assertEquals(failureCallbackHelper.getOnlyPayloadBlocking(), expectedException);
     }

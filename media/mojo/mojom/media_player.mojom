@@ -63,6 +63,11 @@ interface MediaPlayer {
   // If this method is called multiple times in a row, the newest callback
   // always takes precedence. Previous ones are immediately run with `false`.
   RequestVisibility() => (bool has_sufficiently_visible_video);
+
+  // Request the media player to record auto picture in picture related
+  // information. This information helps identify why a request to enter
+  // picture in picture automatically is denied/accepted.
+  RecordAutoPictureInPictureInfo (AutoPipInfo auto_picture_in_picture_info);
 };
 
 // Implemented by the MediaWebContentsObserver. The remote lives in the renderer
@@ -129,10 +134,11 @@ interface MediaPlayerObserver {
 interface MediaPlayerHost {
   // Sends a message to the browser notifying the render frame associated to the
   // document owning the HTMLMediaElement that a new MediaPlayer is available,
-  // passing a pending remote (i.e. |player_remote|) that will be used in the
+  // passing a pending remote (i.e. `player_remote`) that will be used in the
   // browser process to establish a channel with the HTMLMediaElement.
-  // |observer| starts observing the MediaPlayer as soon as the player is
-  // created.
+  // `observer` starts observing the MediaPlayer as soon as the player is
+  // created. `player_id` is an identifier for the player that is unique within
+  // the scope of the RenderFrame.
   OnMediaPlayerAdded(pending_associated_remote<MediaPlayer> player_remote,
                      pending_associated_receiver<MediaPlayerObserver> observer,
                      int32 player_id);

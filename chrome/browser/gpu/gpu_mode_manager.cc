@@ -69,8 +69,7 @@ GpuModeManager::GpuModeManager()
   }
 }
 
-GpuModeManager::~GpuModeManager() {
-}
+GpuModeManager::~GpuModeManager() = default;
 
 bool GpuModeManager::initial_gpu_mode_pref() const {
   return initial_gpu_mode_pref_;

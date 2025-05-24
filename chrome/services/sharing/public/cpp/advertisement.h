@@ -7,11 +7,13 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 
 namespace sharing {
@@ -22,9 +24,13 @@ namespace sharing {
 // a missing device name indicates the advertisement is contacts-only.
 class Advertisement {
  public:
+  static constexpr uint8_t kSaltSize = 2;
+  static constexpr uint8_t kMetadataEncryptionKeyHashByteSize = 14;
+
   static std::unique_ptr<Advertisement> NewInstance(
-      std::vector<uint8_t> salt,
-      std::vector<uint8_t> encrypted_metadata_key,
+      base::span<const uint8_t, kSaltSize> salt,
+      base::span<const uint8_t, kMetadataEncryptionKeyHashByteSize>
+          encrypted_metadata_key,
       nearby_share::mojom::ShareTargetType device_type,
       std::optional<std::string> device_name);
 
@@ -36,8 +42,9 @@ class Advertisement {
   std::vector<uint8_t> ToEndpointInfo();
 
   int version() const { return version_; }
-  const std::vector<uint8_t>& salt() const { return salt_; }
-  const std::vector<uint8_t>& encrypted_metadata_key() const {
+  base::span<const uint8_t, kSaltSize> salt() const { return salt_; }
+  base::span<const uint8_t, kMetadataEncryptionKeyHashByteSize>
+  encrypted_metadata_key() const {
     return encrypted_metadata_key_;
   }
   nearby_share::mojom::ShareTargetType device_type() const {
@@ -46,13 +53,11 @@ class Advertisement {
   const std::optional<std::string>& device_name() const { return device_name_; }
   bool HasDeviceName() const { return device_name_.has_value(); }
 
-  static const uint8_t kSaltSize = 2;
-  static const uint8_t kMetadataEncryptionKeyHashByteSize = 14;
-
  private:
   Advertisement(int version,
-                std::vector<uint8_t> salt,
-                std::vector<uint8_t> encrypted_metadata_key,
+                base::span<const uint8_t, kSaltSize> salt,
+                base::span<const uint8_t, kMetadataEncryptionKeyHashByteSize>
+                    encrypted_metadata_key,
                 nearby_share::mojom::ShareTargetType device_type,
                 std::optional<std::string> device_name);
 
@@ -62,13 +67,14 @@ class Advertisement {
 
   // Random bytes that were used as salt during encryption of public certificate
   // metadata.
-  std::vector<uint8_t> salt_;
+  std::array<uint8_t, kSaltSize> salt_;
 
   // An encrypted symmetric key that was used to encrypt public certificate
   // metadata, including an account identifier signifying the remote device.
   // The key can be decrypted using |salt| and the corresponding public
   // certificate's secret/authenticity key.
-  std::vector<uint8_t> encrypted_metadata_key_;
+  std::array<uint8_t, kMetadataEncryptionKeyHashByteSize>
+      encrypted_metadata_key_;
 
   // The type of device that the advertisement identifies.
   nearby_share::mojom::ShareTargetType device_type_;
@@ -79,4 +85,4 @@ class Advertisement {
 
 }  // namespace sharing
 
-#endif  //  CHROME_SERVICES_SHARING_PUBLIC_CPP_ADVERTISEMENT_H_
+#endif  // CHROME_SERVICES_SHARING_PUBLIC_CPP_ADVERTISEMENT_H_

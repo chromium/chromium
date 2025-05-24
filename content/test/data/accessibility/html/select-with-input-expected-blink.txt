@@ -1,0 +1,37 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect collapsed value='one'
+++++++++textField invisible controlsIds=menuListPopup
+++++++++++genericContainer invisible
+++++++++menuListPopup invisible ispopup=auto
+++++++++++genericContainer invisible
+++++++++++++genericContainer invisible
+++++++++++++menuListOption name='one' selected=true
+++++++++++++menuListOption invisible name='two' selected=false
+++++++comboBoxSelect collapsed value='one'
+++++++++textField invisible controlsIds=menuListPopup
+++++++++++genericContainer invisible
+++++++++menuListPopup invisible ispopup=auto
+++++++++++genericContainer invisible
+++++++++++++menuListOption name='one' selected=true
+++++++++++++genericContainer invisible
+++++++++++++menuListOption invisible name='two' selected=false
+++++++comboBoxSelect collapsed value='one'
+++++++++dialog invisible ispopup=auto
+++++++++++genericContainer invisible
+++++++++++++genericContainer invisible
+++++++++++++++radioButton invisible checkedState=false
+++++++++++++menuListOption name='one' selected=true
+++++++++++++menuListOption invisible name='two' selected=false
+++++++comboBoxSelect collapsed value='one'
+++++++++textField invisible controlsIds=dialog
+++++++++++genericContainer invisible
+++++++++dialog invisible ispopup=auto
+++++++++++genericContainer invisible
+++++++++++++genericContainer invisible
+++++++++++++genericContainer invisible
+++++++++++++++textField invisible controlsIds=dialog
+++++++++++++++++genericContainer invisible
+++++++++++++menuListOption name='one' selected=true
+++++++++++++menuListOption invisible name='two' selected=false

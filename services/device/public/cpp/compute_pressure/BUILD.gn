@@ -9,3 +9,11 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [ "ENABLE_COMPUTE_PRESSURE=$enable_compute_pressure" ]
 }
+
+source_set("compute_pressure") {
+  sources = [
+    "cpu_pressure_converter.cc",
+    "cpu_pressure_converter.h",
+  ]
+  public_deps = [ "//services/device/public/mojom" ]
+}

@@ -61,6 +61,9 @@ class HistoryTabHelper
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 
+  // Enables Lens URL processing when adding navigation to history.
+  void EnableLensURLProcessing() { lens_url_processing_enabled_ = true; }
+
  private:
   friend class web::WebStateUserData<HistoryTabHelper>;
 
@@ -108,6 +111,9 @@ class HistoryTabHelper
   // history system. Only applies to the main frame of the page.
   base::TimeTicks last_load_completion_;
 
+  // When enabled, process lens navigation URLs before adding them to history.
+  bool lens_url_processing_enabled_ = false;
+
   // Some cached state about the current navigation, used to identify it again
   // once a new navigation has happened.
   struct NavigationState {
@@ -115,8 +121,6 @@ class HistoryTabHelper
     GURL url;
   };
   std::optional<NavigationState> cached_navigation_state_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_MODEL_HISTORY_TAB_HELPER_H_

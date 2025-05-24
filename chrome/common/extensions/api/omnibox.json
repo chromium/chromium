@@ -31,6 +31,35 @@
         }
       },
       {
+        "id": "Action",
+        "type": "object",
+        "description": "An action button attached to a suggest result.",
+        "nodoc": true,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The string sent to the extension in the event corresponding to the user clicking on the action."
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The action button label."
+          },
+          "tooltipText": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The action button hover tooltip text."
+          },
+          "icon": {
+            "optional": true,
+            "type": "object",
+            "additionalProperties": { "type": "any" },
+            "description": "The icon shown in the action button on the leading side of the  action label. The icon must be specified as an imageData object. The size should not be more than 160 px wide and tall."
+          }
+        }
+      },
+      {
         "id": "SuggestResult",
         "type": "object",
         "description": "A suggest result.",
@@ -59,12 +88,26 @@
               "name": "matchClassification",
               "$ref": "MatchClassification"
             }
+          },
+          "actions": {
+            "nodoc": true,
+            "optional": true,
+            "type": "array",
+            "description": "An array of actions attached to the suggestion. Only supported for suggestions added in unscoped mode.",
+            "items": {
+              "$ref": "Action"
+            }
+          },
+          "iconUrl" : {
+            "nodoc": true,
+            "optional": true,
+            "description": "An icon shown on the leading edge of the suggestion in the omnibox dropdown. Only supported for suggestions added in unscoped mode.",
+            "type": "string"
           }
         }
       },
       {
         "id": "DefaultSuggestResult",
-        "inline_doc": true,
         "type": "object",
         "description": "A suggest result.",
         "properties": {
@@ -82,6 +125,22 @@
               "name": "matchClassification",
               "$ref": "MatchClassification"
             }
+          }
+        }
+      },
+      {
+        "id": "ActionExecution",
+        "type": "object",
+        "description": "Details about an action executed by the user sent in the listener of `onActionExecuted`.",
+        "nodoc": true,
+        "properties": {
+          "actionName": {
+            "type": "string",
+            "description": "The name of the action the user selected, as defined by the `action` field in `Action`."
+          },
+          "content": {
+            "type": "string",
+            "description": "The text of the suggestion corresponding to the action, as shown in the Omnibox. The same as the `SuggestResult.content`."
           }
         }
       }
@@ -196,6 +255,18 @@
             "type": "string",
             "name": "text",
             "description": "Text of the deleted suggestion."
+          }
+        ]
+      },
+      {
+        "name": "onActionExecuted",
+        "nodoc": true,
+        "type": "function",
+        "description": "User has selected an action attached to a suggested result by pressing the corresponding button in the Omnibox.",
+        "parameters": [
+          {
+            "name": "actionExecution",
+            "$ref": "ActionExecution"
           }
         ]
       }

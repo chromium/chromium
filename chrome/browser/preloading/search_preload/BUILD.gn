@@ -1,0 +1,53 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("search_preload") {
+  public = [
+    "search_preload_features.h",
+    "search_preload_service.h",
+    "search_preload_service_factory.h",
+  ]
+
+  sources = [
+    "search_preload_features.cc",
+    "search_preload_pipeline.cc",
+    "search_preload_pipeline.h",
+    "search_preload_pipeline_manager.cc",
+    "search_preload_pipeline_manager.h",
+    "search_preload_service.cc",
+    "search_preload_service.h",
+    "search_preload_service_factory.cc",
+    "search_preload_service_factory.h",
+  ]
+
+  public_deps = [ "//content/public/browser" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/search_engines:search_engines",
+    "//components/omnibox/browser:browser",
+    "//components/omnibox/browser:mojo_bindings",
+    "//components/search_engines",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "search_preload_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":search_preload",
+    "//base/test:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/test:platform_browser_tests",
+    "//chrome/test:test_support",
+  ]
+
+  data = [ "//chrome/test/data/" ]
+}

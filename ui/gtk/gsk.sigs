@@ -15,3 +15,6 @@ guint gsk_container_node_get_n_children(UI_GTK_CONST GskRenderNode* node);
 guint gsk_gl_shader_node_get_n_children(UI_GTK_CONST GskRenderNode* node);
 GdkTexture* gsk_texture_node_get_texture(UI_GTK_CONST GskRenderNode* node);
 float gsk_opacity_node_get_opacity(const GskRenderNode* node);
+GskRenderNode* gsk_mask_node_get_mask(const GskRenderNode* node);
+GdkTexture* gsk_texture_scale_node_get_texture(const GskRenderNode* node);
+GskRenderNode* gsk_subsurface_node_get_child(const GskRenderNode* node);

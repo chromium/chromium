@@ -4,13 +4,16 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -102,8 +105,13 @@ class SandboxAPIMetricsTest : public ExtensionApiTest,
 
 INSTANTIATE_TEST_SUITE_P(,
                          SandboxedPagesTest,
+#if BUILDFLAG(IS_ANDROID)
+                         // Android only supports manifest V3.
+                         ::testing::Values(ManifestVersion::THREE));
+#else
                          ::testing::Values(ManifestVersion::TWO,
                                            ManifestVersion::THREE));
+#endif
 
 IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, SandboxedPages) {
   const char* kManifestV2 = R"(
@@ -133,8 +141,10 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, SandboxedPages) {
       << message_;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Verifies the behavior of sandboxed pages in Manifest V2. Remote frames
-// should be disallowed.
+// should be disallowed. Android only supports Manifest V3, so this test is
+// skipped on Android.
 IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, ManifestV2DisallowsWebContent) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -159,6 +169,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, ManifestV2DisallowsWebContent) {
                       {.ignore_manifest_warnings = true}))
       << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verifies the behavior of sandboxed pages in Manifest V3. Remote frames
 // should be allowed.
@@ -206,8 +217,10 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, ManifestV3AllowsWebContent) {
   ASSERT_TRUE(extension);
 
   content::DOMMessageQueue message_queue;
-  content::RenderFrameHost* frame_host = ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("sandboxed.html"));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, extension->GetResourceURL("sandboxed.html")));
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame_host);
 
   // The frame should be sandboxed, so the origin should be "null" (as opposed
@@ -241,8 +254,10 @@ IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
   static constexpr char kSandboxedScriptSrc[] =
       R"((async function hasAccessToExtensionAPIs() {
             try {
-              let tabs = await chrome.tabs.query({});
-              return tabs && tabs.length && tabs.length != 0;
+              // Use chrome.extension because it is available on Android.
+              let allowed = await chrome.extension.isAllowedIncognitoAccess();
+              // Intentionally check the type and the false value.
+              return allowed === false;
             } catch(err) {
               return false;
             }
@@ -273,8 +288,10 @@ IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
   // Use message queue to verify that loading of the sandboxed child completed
   // successfully.
   content::DOMMessageQueue message_queue;
-  content::RenderFrameHost* frame_host = ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("main.html"));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                     extension->GetResourceURL("main.html")));
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame_host);
 
   // Verify the sandboxed frame loaded and has api access.
@@ -303,8 +320,10 @@ IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
       R"(window.onload = async () => {
            let hasApiAccess = true;
            try {
-             let tabs = await chrome.tabs.query({});
-             hasApiAccess = tabs && tabs.length && tabs.length != 0;
+             // Use chrome.extension because it is available on Android.
+             let allowed = await chrome.extension.isAllowedIncognitoAccess();
+             // Intentionally check the type and the false value.
+             hasApiAccess = allowed === false;
            } catch(err) {
              hasApiAccess = false;
            }
@@ -344,8 +363,10 @@ IN_PROC_BROWSER_TEST_P(SandboxAPIMetricsTest,
   // Use message queue to verify that loading of the sandboxed child completed
   // successfully.
   content::DOMMessageQueue message_queue;
-  content::RenderFrameHost* frame_host = ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("main.html"));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                     extension->GetResourceURL("main.html")));
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame_host);
 
   // Verify the sandboxed frame loaded.
@@ -414,16 +435,10 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, WebAccessibleResourcesTest) {
   auto test_frame_with_fetch = [&](const char* frame_url, const char* fetch_url,
                                    bool is_web_accessible_resource, int count,
                                    std::string expected_frame_origin) {
-    // Prepare histogram.
-    base::HistogramTester histograms;
-    const char* kHistogramName =
-        "Extensions.SandboxedPageLoad.IsWebAccessibleResource";
-
     // Fetch and test resource.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL(frame_url)));
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                       extension->GetResourceURL(frame_url)));
     constexpr char kFetchScriptTemplate[] =
         R"(
         fetch($1).then(result => {
@@ -436,8 +451,6 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, WebAccessibleResourcesTest) {
                   content::JsReplace(kFetchScriptTemplate,
                                      extension->GetResourceURL(fetch_url))),
               fetch_url);
-    histograms.ExpectBucketCount(kHistogramName, is_web_accessible_resource,
-                                 count);
     EXPECT_EQ(expected_frame_origin, web_contents->GetPrimaryMainFrame()
                                          ->GetLastCommittedOrigin()
                                          .Serialize());

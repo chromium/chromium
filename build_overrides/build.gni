@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
 import("//build/config/gclient_args.gni")
 
@@ -28,6 +29,13 @@ build_with_v8_embedder = build_with_chromium
 # Note that setting this to true only has an effect when also building with
 # `use_custom_libcxx = true`.
 enable_safe_libcxx = true
+
+if (is_cronet_build) {
+  # Used by //third_party/perfetto.
+  # Disabled for Cronet, where JSON support is not used and tends to cause
+  # problems (especially when building in the Android platform).
+  perfetto_libperfetto_includes_json = false
+}
 
 # Features used by //base/trace_event and //services/tracing.
 declare_args() {
@@ -58,7 +66,7 @@ declare_args() {
 declare_args() {
   # Use Perfetto's trace processor for converting protobuf-encoded traces to
   # the legacy JSON format in base::TraceLog.
-  use_perfetto_trace_processor = !is_nacl
+  use_perfetto_trace_processor = !is_nacl && !is_cronet_build
 }
 
 # Allows different projects to specify their own suppression/ignore lists for

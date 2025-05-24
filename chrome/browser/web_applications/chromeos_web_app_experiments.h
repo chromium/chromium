@@ -12,10 +12,14 @@
 #include "base/containers/span.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS), "For Chrome OS only");
+
+class Profile;
 
 namespace web_app {
 
@@ -36,6 +40,11 @@ class ChromeOsWebAppExperiments {
   // certain hard-coded web apps.
   static ScopeExtensions GetScopeExtensions(const webapps::AppId& app_id);
 
+  // Certain hard-coded apps should be configured to open supported links inside
+  // the app instead of inside a browser tab by default.
+  static bool ShouldAddLinkPreference(const webapps::AppId& app_id,
+                                      Profile* profile);
+
   // Returns the max scope score (similar to
   // WebAppRegistrar::GetUrlInAppScopeScore()) for the experimental extended
   // scopes.
@@ -45,6 +54,26 @@ class ChromeOsWebAppExperiments {
   // Whether the manifest theme_color and background_color should be ignored for
   // `app_id`.
   static bool IgnoreManifestColor(const webapps::AppId& app_id);
+
+  // Whether the Navigation Capturing Reimplementation behavior should be
+  // enabled when navigating to a URL controlled by the given app.
+  static bool IsNavigationCapturingReimplEnabledForTargetApp(
+      const webapps::AppId& target_app_id);
+  // Whether the Navigation Capturing Reimplementation behavior should be
+  // enabled when navigating from the given app's window to the given URL.
+  static bool IsNavigationCapturingReimplEnabledForSourceApp(
+      const webapps::AppId& source_app_id,
+      const GURL& url);
+
+  // Whether the app should be launched if a navigation goes to a URL controlled
+  // by the given app after one or multiple redirections.
+  static bool ShouldLaunchForRedirectedNavigation(
+      const webapps::AppId& target_app_id);
+
+  // Override the manifest id with predefined query params if the start URL in
+  // the manifest matches certain URLs controlled via a finch parameter.
+  static void MaybeOverrideManifest(content::RenderFrameHost* frame_host,
+                                    blink::mojom::ManifestPtr& manifest);
 
   static void SetAlwaysEnabledForTesting();
   static void SetScopeExtensionsForTesting(

@@ -18,30 +18,31 @@ import "url/mojom/url.mojom";
 // embedded frame trees like fenced frames (e.g. kMainFrame to
 // kOutermostMainFrame and kSubFrame to kEmbeddedFrame?)
 enum ResourceType {
-  kMainFrame = 0,           // top level page
-  kSubFrame = 1,            // frame or iframe (or fenced frame)
-  kStylesheet = 2,          // a CSS stylesheet
-  kScript = 3,              // an external script
-  kImage = 4,               // an image (jpg/gif/png/etc)
-  kFontResource = 5,        // a font
-  kSubResource = 6,         // an "other" subresource.
-  kObject = 7,              // an object (or embed) tag for a plugin.
-  kMedia = 8,               // a media resource.
-  kWorker = 9,              // the main resource of a dedicated worker.
-  kSharedWorker = 10,       // the main resource of a shared worker.
-  kPrefetch = 11,           // an explicitly requested prefetch
-  kFavicon = 12,            // a favicon
-  kXhr = 13,                // a XMLHttpRequest
-  kPing = 14,               // a ping request for <a ping>/sendBeacon.
-  kServiceWorker = 15,      // the main resource of a service worker.
-  kCspReport = 16,          // a report of Content Security Policy violations.
-  kPluginResource = 17,     // a resource that a plugin requested.
+  kMainFrame = 0,  // top level page
+  kSubFrame = 1,  // frame or iframe (or fenced frame)
+  kStylesheet = 2,  // a CSS stylesheet
+  kScript = 3,  // an external script
+  kImage = 4,  // an image (jpg/gif/png/etc)
+  kFontResource = 5,  // a font
+  kSubResource = 6,  // an "other" subresource.
+  kObject = 7,  // an object (or embed) tag for a plugin.
+  kMedia = 8,  // a media resource.
+  kWorker = 9,  // the main resource of a dedicated worker.
+  kSharedWorker = 10,  // the main resource of a shared worker.
+  kPrefetch = 11,  // an explicitly requested prefetch
+  kFavicon = 12,  // a favicon
+  kXhr = 13,  // a XMLHttpRequest
+  kPing = 14,  // a ping request for <a ping>/sendBeacon.
+  kServiceWorker = 15,  // the main resource of a service worker.
+  kCspReport = 16,  // a report of Content Security Policy violations.
+  kPluginResource = 17,  // a resource that a plugin requested.
   // kNavigationPreload = 18,  // Deprecated.
   // a main-frame service worker navigation preload request.
+
   kNavigationPreloadMainFrame = 19,
   // a sub-frame service worker navigation preload request.
   kNavigationPreloadSubFrame = 20,
-  kJson = 21,               // a JSON module (import ... with { type: "json" })
+  kJson = 21,  // a JSON module (import ... with { type: "json" })
 };
 
 // Network related information reported for loads and redirects.
@@ -106,6 +107,9 @@ struct ResourceLoadInfo {
 
   // The network error code, net::OK if no error happened.
   int32 net_error;
+
+  // The proxy chain used for this request.
+  network.mojom.ProxyChain proxy_chain;
 
   // The timing info.
   network.mojom.LoadTimingInfo load_timing_info;

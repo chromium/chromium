@@ -56,7 +56,7 @@ bool IsSceneStartupEnabled() {
   return [NSBundle.mainBundle.infoDictionary
       objectForKey:@"UIApplicationSceneManifest"];
 }
-}
+}  // namespace
 
 @interface UIApplication (Testing)
 - (void)_terminateWithStatus:(int)status;
@@ -141,8 +141,9 @@ bool IsSceneStartupEnabled() {
     PopulateUIWindow(_window);
   }
 
-  if ([self shouldRedirectOutputToFile])
+  if ([self shouldRedirectOutputToFile]) {
     [self redirectOutput];
+  }
 
   // Queue up the test run.
   if (!base::ShouldRunIOSUnittestsWithXCTest()) {
@@ -171,10 +172,8 @@ bool IsSceneStartupEnabled() {
 
 // Returns the path to the directory to store gtest output files.
 - (NSString*)outputPath {
-  NSArray* searchPath =
-      NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                          NSUserDomainMask,
-                                          YES);
+  NSArray* searchPath = NSSearchPathForDirectoriesInDomains(
+      NSDocumentDirectory, NSUserDomainMask, YES);
   CHECK(searchPath.count > 0) << "Failed to get the Documents folder";
   return searchPath[0];
 }
@@ -202,7 +201,7 @@ bool IsSceneStartupEnabled() {
   // NSLog doesn't end up in these files.
   fclose(stdout);
   fclose(stderr);
-  for (NSString* path in @[ [self stdoutPath], [self stderrPath]]) {
+  for (NSString* path in @[ [self stdoutPath], [self stderrPath] ]) {
     NSString* content = [NSString stringWithContentsOfFile:path
                                                   encoding:NSUTF8StringEncoding
                                                      error:nil];
@@ -226,8 +225,9 @@ bool IsSceneStartupEnabled() {
 
   int exitStatus = std::move(g_test_suite_callback).Run();
 
-  if ([self shouldRedirectOutputToFile])
+  if ([self shouldRedirectOutputToFile]) {
     [self writeOutputToNSLog];
+  }
 
   return exitStatus;
 }

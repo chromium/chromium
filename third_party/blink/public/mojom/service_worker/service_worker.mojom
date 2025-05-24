@@ -14,7 +14,6 @@ import "third_party/blink/public/mojom/associated_interfaces/associated_interfac
 import "third_party/blink/public/mojom/background_fetch/background_fetch.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_response.mojom";
-import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/notifications/notification.mojom";
@@ -32,6 +31,19 @@ import "third_party/blink/public/mojom/service_worker/service_worker_router_rule
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+
+// Enum to represent the service worker focus error.
+enum FocusError {
+  CLIENT_NOT_FOUND,
+  CLIENT_INACTIVE
+};
+
+// The result of a FocusClient request. On success, |client| tells service worker client
+// information of the focused window. Otherwise, |error_code| describes the failure.
+union FocusResult {
+  ServiceWorkerClientInfo client;
+  FocusError error_code;
+};
 
 // Host for a running service worker execution context. Implemented in the
 // browser process. The service worker running in the renderer process uses this
@@ -84,10 +96,7 @@ interface ServiceWorkerHost {
 
   // Corresponds to WindowClient#focus(). Requests the browser to focus the
   // client with |client_uuid|.
-  // On success, |client| contains service worker client information of the
-  // focused window.
-  // Otherwise, |client| is null.
-  FocusClient(string client_uuid) => (ServiceWorkerClientInfo? client);
+  FocusClient(string client_uuid) => (FocusResult result);
 
   // Corresponds to WindowClient#navigate(). Requests the browser to navigate
   // the client with |client_uuid| to |url|.
@@ -204,7 +213,6 @@ interface ServiceWorker {
       ServiceWorkerRegistrationObjectInfo registration_info,
       ServiceWorkerObjectInfo service_worker_info,
       FetchHandlerExistence fetch_handler_existence,
-      pending_receiver<ReportingObserver>? reporting_observer_receiver,
       AncestorFrameType ancestor_frame_type,
       blink.mojom.StorageKey storage_key);
 

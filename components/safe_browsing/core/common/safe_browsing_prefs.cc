@@ -46,7 +46,7 @@ void RecordExtendedReportingPrefChanged(
                             pref_value);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -81,14 +81,29 @@ SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs) {
   }
 }
 
+void EnableSafeBrowsingSettingSetLocallyPref(PrefService* prefs) {
+  // Explicitly set the kSafeBrowsingSyncedEnhancedProtectionSetLocally to true
+  // after the user manually sets the safe browsing state using the settings UI.
+  // Setting this value in this API makes sure we do not show multiple Synced
+  // Enhanced Protection notifications or show it on the device where the user
+  // modified the setting.
+  if (base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {
+    prefs->SetBoolean(prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally,
+                      true);
+    // Update the pref value whenever the Safe Browsing setting is changed.
+    prefs->SetTime(prefs::kSafeBrowsingSyncedEnhancedProtectionUpdateTimestamp,
+                   base::Time());
+  }
+}
+
 void SetSafeBrowsingState(PrefService* prefs,
                           SafeBrowsingState state,
-                          bool is_esb_enabled_in_sync) {
+                          bool is_esb_enabled_by_account_integration) {
   if (state == SafeBrowsingState::ENHANCED_PROTECTION) {
     SetEnhancedProtectionPref(prefs, true);
     SetStandardProtectionPref(prefs, true);
     prefs->SetBoolean(prefs::kEnhancedProtectionEnabledViaTailoredSecurity,
-                      is_esb_enabled_in_sync);
+                      is_esb_enabled_by_account_integration);
   } else if (state == SafeBrowsingState::STANDARD_PROTECTION) {
     SetEnhancedProtectionPref(prefs, false);
     SetStandardProtectionPref(prefs, true);
@@ -204,9 +219,21 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kSafeBrowsingEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
+  if (base::FeatureList::IsEnabled(kEsbAsASyncedSetting)) {
+    registry->RegisterBooleanPref(
+        prefs::kSafeBrowsingEnhanced, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  } else {
+    registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
+  }
   registry->RegisterBooleanPref(prefs::kSafeBrowsingProceedAnywayDisabled,
                                 false);
+  registry->RegisterIntegerPref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,
+      TailoredSecurityRetryState::UNSET);
+  registry->RegisterTimePref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionNextRetryTimestamp,
+      base::Time());
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingIncidentsSent);
   registry->RegisterDictionaryPref(
       prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
@@ -232,6 +259,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kAccountTailoredSecurityShownNotification, false);
   registry->RegisterBooleanPref(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+  registry->RegisterBooleanPref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally, false);
+  registry->RegisterTimePref(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionUpdateTimestamp,
+      base::Time());
   registry->RegisterTimePref(prefs::kTailoredSecuritySyncFlowLastRunTime,
                              base::Time());
   registry->RegisterTimePref(prefs::kTailoredSecurityNextSyncFlowTimestamp,
@@ -256,6 +288,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kSafeBrowsingDeepScanningEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated, false);
+  registry->RegisterDictionaryPref(prefs::kExternalAppRedirectTimestamps);
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {
@@ -461,7 +494,7 @@ bool MatchesPasswordProtectionLoginURL(const GURL& url,
   return MatchesURLList(url, login_urls);
 }
 
-bool MatchesURLList(const GURL& target_url, const std::vector<GURL> url_list) {
+bool MatchesURLList(const GURL& target_url, const std::vector<GURL>& url_list) {
   if (url_list.empty() || !target_url.is_valid()) {
     return false;
   }

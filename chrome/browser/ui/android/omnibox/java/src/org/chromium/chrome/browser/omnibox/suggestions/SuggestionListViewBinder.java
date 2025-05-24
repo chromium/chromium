@@ -4,18 +4,23 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Handles property updates to the suggestion list component. */
+@NullMarked
 class SuggestionListViewBinder {
     /** Holds the view components needed to renderer the suggestion list. */
     public static class SuggestionListViewHolder {
@@ -61,7 +66,7 @@ class SuggestionListViewBinder {
                             model.get(SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER));
         } else if (SuggestionListProperties.LIST_IS_FINAL.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.LIST_IS_FINAL)) {
-                view.dropdown.emitWindowContentChanged();
+                view.dropdown.emitWindowContentChangedAnnouncement();
             }
         } else if (SuggestionListProperties.SUGGESTION_MODELS.equals(propertyKey)) {
             ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
@@ -93,6 +98,17 @@ class SuggestionListViewBinder {
             updateContainerVisibility(model, view);
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
             view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.COLOR_SCHEME));
+        } else if (SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE.equals(propertyKey)
+                || SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED.equals(propertyKey)) {
+            if (model.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE)) {
+                Context context = view.dropdown.getContext();
+                @ColorInt
+                int backgroundColor =
+                        OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                                context, model.get(SuggestionListProperties.COLOR_SCHEME));
+                view.container.setBackgroundColor(backgroundColor);
+            }
+            updateContainerVisibility(model, view);
         } else if (SuggestionListProperties.DRAW_OVER_ANCHOR == propertyKey) {
             boolean drawOver = model.get(SuggestionListProperties.DRAW_OVER_ANCHOR);
             // Note: this assumes the anchor view's z hasn't been modified. If this changes, we'll
@@ -108,10 +124,16 @@ class SuggestionListViewBinder {
     private static void updateContainerVisibility(
             PropertyModel model, SuggestionListViewHolder holder) {
         ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
-        boolean shouldBeVisible =
+        boolean shouldListBeVisible =
                 model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE) && listItems.size() > 0;
-        int visibility = shouldBeVisible ? View.VISIBLE : View.GONE;
-        holder.container.setVisibility(visibility);
-        holder.dropdown.setVisibility(visibility);
+        boolean shouldContainerBeVisible =
+                model.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED)
+                        && model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE)
+                        && (listItems.size() > 0
+                                || model.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE));
+        int listVisibility = shouldListBeVisible ? View.VISIBLE : View.GONE;
+        int containerVisibility = shouldContainerBeVisible ? View.VISIBLE : View.GONE;
+        holder.container.setVisibility(containerVisibility);
+        holder.dropdown.setVisibility(listVisibility);
     }
 }

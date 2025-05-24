@@ -8,7 +8,6 @@ import static org.chromium.base.test.transit.Condition.whether;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.LogicalElement;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
@@ -25,7 +24,7 @@ import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
  * Station represent an page that has viewport-fit=cover. It expects an {@link
  * org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController} to be ready when the page
  * loads, so it requires the test to have corresponding test flag setup to make {@link
- * EdgeToEdgeUtils#isEnabled()}
+ * EdgeToEdgeUtils#isChromeEdgeToEdgeFeatureEnabled()}
  */
 public class ViewportFitCoverPageStation extends WebPageStation {
     /** Page opt-in edge-to-edge with sub frames. */
@@ -36,12 +35,30 @@ public class ViewportFitCoverPageStation extends WebPageStation {
     public static final HtmlElementSpec FULLSCREEN_MAIN_BUTTON =
             new HtmlElementSpec("fullscreen-main");
 
-    private HtmlElement mAvoidBottomElement;
-    private HtmlElement mFullScreenButtonElement;
+    private final HtmlElement mAvoidBottomElement;
+    private final HtmlElement mFullScreenButtonElement;
 
     protected <T extends ViewportFitCoverPageStation> ViewportFitCoverPageStation(
             Builder<T> builder) {
         super(builder);
+
+        // Ensure the web page elements are drawn and visible.
+        mAvoidBottomElement = declareElement(new HtmlElement(AVOID_BOTTOM_DIV, webContentsElement));
+        mFullScreenButtonElement =
+                declareElement(new HtmlElement(FULLSCREEN_MAIN_BUTTON, webContentsElement));
+
+        // Declare requiring EdgeToEdgeController, meaning #setDecorFitsSystemWindows(false)
+        declareEnterCondition(new EdgeToEdgeControllerCondition(mActivityElement));
+
+        // Ensure the bottom chin is on display.
+        Supplier<BottomControlsStacker> bottomControlsStacker =
+                declareEnterConditionAsElement(
+                        new BottomControlsStackerCondition(mActivityElement));
+        declareElement(
+                LogicalElement.uiThreadLogicalElement(
+                        "Bottom chin is not on display",
+                        this::isBottomChinShowing,
+                        bottomControlsStacker));
     }
 
     /** Load the test page viewport-fit-cover-sub-frames-main.html. */
@@ -50,31 +67,6 @@ public class ViewportFitCoverPageStation extends WebPageStation {
         String url = activityTestRule.getTestServer().getURL(PATH_VIEWPORT_FIT_COVER_SUB_FRAMES);
         return currentPageStation.loadPageProgrammatically(
                 url, new Builder<>(ViewportFitCoverPageStation::new));
-    }
-
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-
-        // Ensure the web page elements are drawn and visible.
-        mAvoidBottomElement =
-                elements.declareElement(new HtmlElement(AVOID_BOTTOM_DIV, mWebContentsSupplier));
-        mFullScreenButtonElement =
-                elements.declareElement(
-                        new HtmlElement(FULLSCREEN_MAIN_BUTTON, mWebContentsSupplier));
-
-        // Declare requiring EdgeToEdgeController, meaning #setDecorFitsSystemWindows(false)
-        elements.declareEnterCondition(new EdgeToEdgeControllerCondition(mActivityElement));
-
-        // Ensure the bottom chin is on display.
-        Supplier<BottomControlsStacker> bottomControlsStacker =
-                elements.declareEnterCondition(
-                        new BottomControlsStackerCondition(mActivityElement));
-        elements.declareLogicalElement(
-                LogicalElement.uiThreadLogicalElement(
-                        "Bottom chin is not on display",
-                        this::isBottomChinShowing,
-                        bottomControlsStacker));
     }
 
     private ConditionStatus isBottomChinShowing(BottomControlsStacker bottomControlsStacker) {

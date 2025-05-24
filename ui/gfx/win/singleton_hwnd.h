@@ -7,8 +7,8 @@
 
 #include <windows.h>
 
+#include "base/component_export.h"
 #include "base/observer_list.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/win/window_impl.h"
 
 namespace base {
@@ -21,7 +21,7 @@ class SingletonHwndObserver;
 
 // Singleton message-only HWND that allows interested clients to receive WM_*
 // notifications.
-class GFX_EXPORT SingletonHwnd : public WindowImpl {
+class COMPONENT_EXPORT(GFX) SingletonHwnd : public WindowImpl {
  public:
   static SingletonHwnd* GetInstance();
 

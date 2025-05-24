@@ -89,9 +89,8 @@ void ParentAccessAsh::GetWebsiteParentApproval(
     const gfx::ImageSkia& favicon,
     GetWebsiteParentApprovalCallback callback) {
   // Encode the favicon as a PNG bitmap.
-  std::vector<uint8_t> favicon_bitmap;
-  gfx::PNGCodec::FastEncodeBGRASkBitmap(*favicon.bitmap(), false,
-                                        &favicon_bitmap);
+  std::optional<std::vector<uint8_t>> favicon_bitmap =
+      gfx::PNGCodec::FastEncodeBGRASkBitmap(*favicon.bitmap(), false);
 
   // Assemble the parameters for a website access request.
   parent_access_ui::mojom::ParentAccessParamsPtr params =
@@ -99,7 +98,8 @@ void ParentAccessAsh::GetWebsiteParentApproval(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
               parent_access_ui::mojom::WebApprovalsParams::New(
-                  url, child_display_name, favicon_bitmap)),
+                  url, child_display_name,
+                  favicon_bitmap.value_or(std::vector<uint8_t>()))),
           /* is_disabled= */ false);
   ShowParentAccessDialog(std::move(params), std::move(callback));
 }
@@ -129,11 +129,11 @@ void ParentAccessAsh::GetExtensionParentApproval(
   }
 
   // Convert icon to a bitmap representation.
-  std::vector<uint8_t> icon_bitmap;
-  gfx::PNGCodec::FastEncodeBGRASkBitmap(*icon.bitmap(), false, &icon_bitmap);
+  std::optional<std::vector<uint8_t>> icon_bitmap =
+      gfx::PNGCodec::FastEncodeBGRASkBitmap(*icon.bitmap(), false);
   ExtensionApprovalsParamsPtr extension_params = ExtensionApprovalsParams::New(
-      extension_name, icon_bitmap, child_display_name,
-      std::move(extension_permissions));
+      extension_name, icon_bitmap.value_or(std::vector<uint8_t>()),
+      child_display_name, std::move(extension_permissions));
 
   // Assemble the parameters for a extension approval request.
   ParentAccessParamsPtr params = ParentAccessParams::New(

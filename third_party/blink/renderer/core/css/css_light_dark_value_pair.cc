@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+
 namespace blink {
 
 String CSSLightDarkValuePair::CustomCSSText() const {
   String first = First().CssText();
   String second = Second().CssText();
-  return "light-dark(" + first + ", " + second + ")";
+  return WTF::StrCat({"light-dark(", first, ", ", second, ")"});
 }
 
 }  // namespace blink

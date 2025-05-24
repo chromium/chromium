@@ -10,6 +10,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
@@ -112,7 +113,7 @@ bool RlzValueStoreMac::ReadAccessPointRlz(AccessPoint access_point,
       ASSERT_STRING("GetAccessPointRlz: Insufficient buffer size");
       return false;
     }
-    strncpy(rlz, s.c_str(), rlz_size);
+    UNSAFE_TODO(strncpy(rlz, s.c_str(), rlz_size));
     return true;
   }
   if (rlz_size > 0) {

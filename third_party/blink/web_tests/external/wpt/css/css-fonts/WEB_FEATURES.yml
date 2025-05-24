@@ -28,3 +28,11 @@ features:
   files:
   - alternates-order.html
   - font-variant-alternates-*
+- name: font-variant-position
+  files:
+  - font-variant-position-*
+- name: font-metric-overrides
+  files:
+  - ascent-descent-override.html
+  - line-gap-override.html
+  - metrics-override-normal-keyword.html

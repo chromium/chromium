@@ -9,7 +9,6 @@
 #include "base/memory/raw_ref.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/service/cast_service_simple.h"
-#include "chromecast/browser/webui/constants.h"
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/runtime/browser/runtime_service_impl.h"
 #include "chromecast/common/cors_exempt_headers.h"
@@ -106,8 +105,8 @@ void CastRuntimeContentBrowserClient::AppendExtraCommandLineSwitches(
 }
 
 bool CastRuntimeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
-    const url::Origin& origin) {
-  return origin.host() == kCastWebUIHomeHost;
+    const url::Origin&) {
+  return false;
 }
 
 bool CastRuntimeContentBrowserClient::IsBufferingEnabled() {

@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 
 using sandbox::syscall_broker::BrokerFilePermission;
@@ -18,12 +19,14 @@ namespace screen_ai {
 
 namespace {
 
+#if !BUILDFLAG(USE_FAKE_SCREEN_AI)
 NO_SANITIZE("cfi-icall")
 void CallPresandboxInitFunction(void* presandbox_init_function) {
   DCHECK(presandbox_init_function);
   typedef void (*PresandboxInitFn)();
   (*reinterpret_cast<PresandboxInitFn>(presandbox_init_function))();
 }
+#endif
 
 }  // namespace
 
@@ -47,8 +50,10 @@ bool ScreenAIPreSandboxHook(base::FilePath binary_path,
         VLOG(0) << "PresandboxInit function of Screen AI library not found.";
         binary_path.clear();
       } else {
+#if !BUILDFLAG(USE_FAKE_SCREEN_AI)
         VLOG(2) << "Screen AI library loaded pre-sandboxing: " << binary_path;
         CallPresandboxInitFunction(presandbox_init);
+#endif
       }
     }
   }
@@ -58,14 +63,13 @@ bool ScreenAIPreSandboxHook(base::FilePath binary_path,
   std::vector<BrokerFilePermission> permissions{
       BrokerFilePermission::ReadOnly("/dev/urandom"),
       BrokerFilePermission::ReadOnly("/proc/cpuinfo"),
-      BrokerFilePermission::ReadOnly("/proc/meminfo")};
+      BrokerFilePermission::ReadOnly("/proc/meminfo"),
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible")};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   permissions.push_back(BrokerFilePermission::ReadOnly("/proc/self/status"));
   permissions.push_back(
       BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/kernel_max"));
-  permissions.push_back(
-      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible"));
   permissions.push_back(
       BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/present"));
 #endif

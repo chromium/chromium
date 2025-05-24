@@ -12,14 +12,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/password_form_classification.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -115,7 +115,7 @@ class PlusAddressSubmissionLoggerTest : public ::testing::Test {
   }
 
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmMetrics> GetUkmMetrics() {
-    return autofill_client_.GetTestUkmRecorder()->GetMetrics(
+    return autofill_client_.GetUkmRecorder()->GetMetrics(
         ukm::builders::PlusAddresses_Submission::kEntryName,
         {"FieldCountBrowserForm", "FieldCountRendererForm", "PlusAddressCount",
          "CheckoutOrCartPage", "ManagedProfile", "NewlyCreatedPlusAddress",
@@ -165,8 +165,7 @@ TEST_F(PlusAddressSubmissionLoggerTest, NoMetricForSignedOutUsers) {
       /*plus_address_count=*/1);
 
   test_api(form).field(0).set_value(kSamplePlusAddress_U16);
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/true,
-                                     kSubmissionSource);
+  autofill_manager().OnFormSubmitted(form, kSubmissionSource);
   EXPECT_THAT(GetUkmMetrics(), IsEmpty());
 }
 
@@ -260,8 +259,7 @@ TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
       input.plus_address_count);
 
   test_api(form).field(0).set_value(input.submitted_value);
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/true,
-                                     kSubmissionSource);
+  autofill_manager().OnFormSubmitted(form, kSubmissionSource);
   EXPECT_THAT(GetUkmMetrics(), ElementsAreArray(GetParam().ukms));
 
   auto check_boolean_histogram = [&](std::string_view histogram_suffix,
@@ -325,6 +323,34 @@ INSTANTIATE_TEST_SUITE_P(
             .input = {.context = SuggestionContext::kAutocomplete,
                       .form_type = PasswordFormType::kNoPasswordForm,
                       .suggestion_type = SuggestionType::kCreateNewPlusAddress,
+                      .plus_address_count = 0,
+                      .submitted_value = kSamplePlusAddress_U16},
+            .ukms = {CreateUkmMetrics(
+                /*field_count_browser_form=*/1,
+                /*field_count_renderer_form=*/1,
+                /*plus_address_count=*/kNoPlusAddress,
+                /*is_checkout_or_cart_page=*/false,
+                /*is_managed=*/false,
+                /*is_newly_created=*/true,
+                /*submitted_plus_address=*/true,
+                PasswordFormType::kNoPasswordForm,
+                SuggestionContext::kAutocomplete,
+                /*was_shown_create_suggestion=*/true)},
+            .uma =
+                {.submitted_plus_address = true,
+                 .submitted_plus_address_first_time_user_yes = true,
+                 .submitted_plus_address_managed_user_no = true,
+                 .submitted_plus_address_is_single_field_renderer_form = true,
+                 .submitted_plus_address_is_single_field_renderer_form_managed_user_no =
+                     true}},
+        // Submission of an email form after seeing combined plus address &
+        // Autocomplete suggestions and creating and filling a new plus address
+        // using Desktop's creation suggestion.
+        PlusAddressSubmissionTestCase{
+            .input = {.context = SuggestionContext::kAutocomplete,
+                      .form_type = PasswordFormType::kNoPasswordForm,
+                      .suggestion_type =
+                          SuggestionType::kCreateNewPlusAddressInline,
                       .plus_address_count = 0,
                       .submitted_value = kSamplePlusAddress_U16},
             .ukms = {CreateUkmMetrics(

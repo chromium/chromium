@@ -44,21 +44,21 @@ using password_manager::TestPasswordStore;
 
 namespace {
 
-// Specific deleter for PasswordUIViewAndroid, which calls
-// PasswordUIViewAndroid::Destroy on the object. Use this with a
+// Specific deleter for PasswordUiViewAndroid, which calls
+// PasswordUiViewAndroid::Destroy on the object. Use this with a
 // std::unique_ptr.
-struct PasswordUIViewAndroidDestroyDeleter {
+struct PasswordUiViewAndroidDestroyDeleter {
   inline void operator()(void* ptr) const {
-    (static_cast<PasswordUIViewAndroid*>(ptr)->Destroy(
+    (static_cast<PasswordUiViewAndroid*>(ptr)->Destroy(
         nullptr, JavaParamRef<jobject>(nullptr)));
   }
 };
 
 }  // namespace
 
-class PasswordUIViewAndroidTest : public ::testing::Test {
+class PasswordUiViewAndroidTest : public ::testing::Test {
  protected:
-  PasswordUIViewAndroidTest()
+  PasswordUiViewAndroidTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()),
         env_(AttachCurrentThread()) {}
 
@@ -108,9 +108,9 @@ class PasswordUIViewAndroidTest : public ::testing::Test {
 };
 
 // Test that the asynchronous processing of password serialization controlled by
-// PasswordUIViewAndroid arrives at the same result as synchronous way to
+// PasswordUiViewAndroid arrives at the same result as synchronous way to
 // serialize the passwords.
-TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords) {
+TEST_F(PasswordUiViewAndroidTest, GetSerializedPasswords) {
   PasswordForm form =
       AddPasswordEntry("https://example.com", "username", "password");
 
@@ -121,13 +121,13 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords) {
       password_manager::PasswordCSVWriter::SerializePasswords(
           {password_manager::CredentialUIEntry(form)});
 
-  std::unique_ptr<PasswordUIViewAndroid, PasswordUIViewAndroidDestroyDeleter>
-      password_ui_view(new PasswordUIViewAndroid(
+  std::unique_ptr<PasswordUiViewAndroid, PasswordUiViewAndroidDestroyDeleter>
+      password_ui_view(new PasswordUiViewAndroid(
           env(), JavaParamRef<jobject>(nullptr), testing_profile_));
   // SavedPasswordsPresenter needs time to initialize and fetch passwords.
   RunUntilIdle();
 
-  PasswordUIViewAndroid::SerializationResult serialized_passwords;
+  PasswordUiViewAndroid::SerializationResult serialized_passwords;
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
   password_ui_view->HandleSerializePasswords(
       env(), nullptr, temp_dir().GetPath().AsUTF8Unsafe(), nullptr, nullptr);
@@ -150,16 +150,16 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords) {
 
 // Test that destroying the PasswordUIView when tasks are pending does not lead
 // to crashes.
-TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords_Cancelled) {
+TEST_F(PasswordUiViewAndroidTest, GetSerializedPasswords_Cancelled) {
   AddPasswordEntry("https://example.com", "username", "password");
 
-  std::unique_ptr<PasswordUIViewAndroid, PasswordUIViewAndroidDestroyDeleter>
-      password_ui_view(new PasswordUIViewAndroid(
+  std::unique_ptr<PasswordUiViewAndroid, PasswordUiViewAndroidDestroyDeleter>
+      password_ui_view(new PasswordUiViewAndroid(
           env(), JavaParamRef<jobject>(nullptr), testing_profile_));
   // SavedPasswordsPresenter needs time to initialize and fetch passwords.
   RunUntilIdle();
 
-  PasswordUIViewAndroid::SerializationResult serialized_passwords;
+  PasswordUiViewAndroid::SerializationResult serialized_passwords;
   serialized_passwords.entries_count = 123;
   serialized_passwords.exported_file_path = "somepath";
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
@@ -178,16 +178,16 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords_Cancelled) {
 }
 
 // Test that an I/O error is reported.
-TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords_WriteFailed) {
+TEST_F(PasswordUiViewAndroidTest, GetSerializedPasswords_WriteFailed) {
   AddPasswordEntry("https://example.com", "username", "password");
 
-  std::unique_ptr<PasswordUIViewAndroid, PasswordUIViewAndroidDestroyDeleter>
-      password_ui_view(new PasswordUIViewAndroid(
+  std::unique_ptr<PasswordUiViewAndroid, PasswordUiViewAndroidDestroyDeleter>
+      password_ui_view(new PasswordUiViewAndroid(
           env(), JavaParamRef<jobject>(nullptr), testing_profile_));
   // SavedPasswordsPresenter needs time to initialize and fetch passwords.
   RunUntilIdle();
 
-  PasswordUIViewAndroid::SerializationResult serialized_passwords;
+  PasswordUiViewAndroid::SerializationResult serialized_passwords;
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
   password_ui_view->HandleSerializePasswords(
       env(), nullptr, "/This directory cannot be created", nullptr, nullptr);

@@ -17,7 +17,7 @@ export interface StackFrame {
  */
 export function parseTopFrameInfo(stackTrace: string): StackFrame {
   const regex = /at (\[?\w+\]? |)\(?(.+):(\d+):(\d+)/;
-  const match = stackTrace.match(regex);
+  const match = regex.exec(stackTrace);
   return {
     funcName: match?.[1]?.trim() ?? '',
     fileName: match?.[2] ?? '',

@@ -115,15 +115,18 @@ luci.realm(
 
 luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_keys = ["status", "v.test_suite"]))
 
-# Test buildbucket v2 pubsub with findit-staging
-# TODO(b/352560718): Delete once testing is done.
-luci.buildbucket_notification_topic(
-    name = "projects/findit-for-me-staging/topics/buildbucket_build_staging_test",
-)
-
 exec("//dev/swarming.star")
 
 exec("//recipes.star")
 exec("//gn_args/gn_args.star")
+exec("//targets/basic_suites.star")
+exec("//targets/binaries.star")
+exec("//targets/bundles.star")
+exec("//targets/compile_targets.star")
+exec("//targets/compound_suites.star")
+exec("//targets/matrix_compound_suites.star")
+exec("//targets/mixins.star")
+exec("//targets/tests.star")
+exec("//targets/variants.star")
 
 exec("//dev/subprojects/chromium/subproject.star")

@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-assert(is_chromeos_ash)
+
+assert(is_chromeos)
+
 mojom("mojom") {
   generate_java = true
   sources = [ "accessibility_helper.mojom" ]

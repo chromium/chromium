@@ -11,10 +11,7 @@ import "ui/gfx/mojom/buffer_types.mojom";
 struct ANGLEFeature {
   string name;
   string category;
-  string description;
-  string bug;
   string status;
-  string condition;
 };
 
 // gfx:GpuExtraInfo

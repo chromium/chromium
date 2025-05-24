@@ -31,6 +31,7 @@ using CompositingReasons = uint64_t;
   V(ActiveFilterAnimation)                                                     \
   V(ActiveBackdropFilterAnimation)                                             \
   V(AffectedByOuterViewportBoundsDelta)                                        \
+  V(AffectedBySafeAreaBottom)                                                  \
   V(FixedPosition)                                                             \
   V(UndoOverscroll)                                                            \
   V(StickyPosition)                                                            \
@@ -46,6 +47,8 @@ using CompositingReasons = uint64_t;
   V(WillChangeOpacity)                                                         \
   V(WillChangeFilter)                                                          \
   V(WillChangeBackdropFilter)                                                  \
+  V(WillChangeClipPath)                                                        \
+  V(WillChangeMixBlendMode)                                                    \
   /* This flag is needed only when none of the explicit kWillChange* reasons   \
      are set. */                                                               \
   V(WillChangeOther)                                                           \
@@ -127,7 +130,7 @@ class PLATFORM_EXPORT CompositingReason {
         kWillChangeTransform | kWillChangeScale | kWillChangeRotate,
     kDirectReasonsForPaintOffsetTranslationProperty =
         kFixedPosition | kAffectedByOuterViewportBoundsDelta | kUndoOverscroll |
-        kVideo | kCanvas | kPlugin | kIFrame,
+        kVideo | kCanvas | kPlugin | kIFrame | kAffectedBySafeAreaBottom,
     // TODO(dbaron): kWillChangeOther probably shouldn't be in this list.
     // TODO(vmpstr): kViewTransitionElement is needed to make sure that the
     // capture escapes clips when view transition has a descendant that
@@ -147,7 +150,8 @@ class PLATFORM_EXPORT CompositingReason {
         kRootScroller | kOverflowScrolling,
     kDirectReasonsForEffectProperty =
         kActiveOpacityAnimation | kWillChangeOpacity | kBackdropFilter |
-        kWillChangeBackdropFilter | kActiveBackdropFilterAnimation |
+        kWillChangeBackdropFilter | kWillChangeClipPath |
+        kWillChangeMixBlendMode | kActiveBackdropFilterAnimation |
         kViewTransitionPseudoElement | kTransform3DSceneLeaf | kElementCapture,
     kDirectReasonsForFilterProperty =
         kActiveFilterAnimation | kWillChangeFilter,

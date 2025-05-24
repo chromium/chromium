@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.xsurface;
 
 import androidx.annotation.IntDef;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -19,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
     StreamType.SUPERVISED_USER_FEED
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface StreamType {
     int UNSPECIFIED = 0;
     int FOR_YOU = 1;

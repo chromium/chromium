@@ -25,7 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_AUDIO_SOURCE_PROVIDER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_AUDIO_SOURCE_PROVIDER_H_
 
-#include "third_party/blink/public/platform/web_vector.h"
+#include <vector>
 
 namespace blink {
 
@@ -38,7 +38,7 @@ class WebAudioSourceProvider {
 
   // ProvideInput() gets called repeatedly to render time-slices of a continuous
   // audio stream. May be called from any thread.
-  virtual void ProvideInput(const WebVector<float*>& audio_data,
+  virtual void ProvideInput(const std::vector<float*>& audio_data,
                             int number_of_frames) = 0;
 
   // If a client is set, we call it back when the audio format is available.

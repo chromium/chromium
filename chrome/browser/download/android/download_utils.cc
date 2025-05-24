@@ -33,7 +33,6 @@ namespace {
 // If received bytes is more than the size limit and resumption will restart
 // from the beginning, throttle it.
 int kDefaultAutoResumptionSizeLimit = 10 * 1024 * 1024;  // 10 MB
-const char kAutoResumptionSizeLimitParamName[] = "AutoResumptionSizeLimit";
 }  // namespace
 
 static jint JNI_DownloadUtils_GetResumeMode(
@@ -68,13 +67,7 @@ base::FilePath DownloadUtils::GetUriStringForPath(
 
 // static
 int DownloadUtils::GetAutoResumptionSizeLimit() {
-  std::string value = base::GetFieldTrialParamValueByFeature(
-      chrome::android::kDownloadAutoResumptionThrottling,
-      kAutoResumptionSizeLimitParamName);
-  int size_limit;
-  return base::StringToInt(value, &size_limit)
-             ? size_limit
-             : kDefaultAutoResumptionSizeLimit;
+  return kDefaultAutoResumptionSizeLimit;
 }
 
 // static
@@ -118,15 +111,6 @@ bool DownloadUtils::ShouldAutoOpenDownload(download::DownloadItem* item) {
 bool DownloadUtils::IsOmaDownloadDescription(const std::string& mime_type) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_MimeUtils_isOMADownloadDescription(env, mime_type);
-}
-
-// static
-void DownloadUtils::ShowDownloadManager(bool show_prefetched_content,
-                                        DownloadOpenSource open_source) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_DownloadUtils_showDownloadManager(
-      env, nullptr, nullptr, nullptr, static_cast<jint>(open_source),
-      static_cast<jboolean>(show_prefetched_content));
 }
 
 bool DownloadUtils::IsDownloadUserInitiated(download::DownloadItem* download) {

@@ -38,13 +38,6 @@ void RegionCaptureBounds::Reset() {
   bounds_.clear();
 }
 
-bool RegionCaptureBounds::operator==(const RegionCaptureBounds& rhs) const {
-  return bounds_ == rhs.bounds_;
-}
-bool RegionCaptureBounds::operator!=(const RegionCaptureBounds& rhs) const {
-  return !(*this == rhs);
-}
-
 std::string RegionCaptureBounds::ToString() const {
   std::ostringstream ss;
   ss << "{";

@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.test;
 
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
@@ -27,6 +28,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -139,6 +141,11 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testRequestMultiple() {
+        if (!ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_MIDI)) {
+            return;
+        }
         mPage =
                 mTestWebServer.setResponse(
                         "/permissions",
@@ -223,7 +230,7 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testEnumerateDevicesWithAllowFileAccessFromFileURLsFalse() throws Throwable {
         AwContents awContents = setUpEnumerateDevicesTest(null);
-        awContents.getSettings().setAllowFileAccessFromFileURLs(false);
+        awContents.getSettings().setAllowFileAccessFromFileUrls(false);
         mActivityTestRule.loadDataWithBaseUrlSync(
                 awContents,
                 mContentsClient.getOnPageFinishedHelper(),
@@ -248,7 +255,7 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testEnumerateDevicesWithAllowFileAccessFromFileURLsTrue() throws Throwable {
         AwContents awContents = setUpEnumerateDevicesTest(null);
-        awContents.getSettings().setAllowFileAccessFromFileURLs(true);
+        awContents.getSettings().setAllowFileAccessFromFileUrls(true);
         mActivityTestRule.loadDataWithBaseUrlSync(
                 awContents,
                 mContentsClient.getOnPageFinishedHelper(),
@@ -275,7 +282,7 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testPermissionIsCachedAfterFileNavigation() throws Throwable {
         AwContents awContents = setUpEnumerateDevicesTest(null);
-        awContents.getSettings().setAllowFileAccessFromFileURLs(true);
+        awContents.getSettings().setAllowFileAccessFromFileUrls(true);
         mActivityTestRule.loadDataWithBaseUrlSync(
                 awContents,
                 mContentsClient.getOnPageFinishedHelper(),

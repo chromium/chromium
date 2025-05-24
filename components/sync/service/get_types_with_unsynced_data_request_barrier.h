@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/data_type.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 
@@ -23,22 +24,22 @@ class GetTypesWithUnsyncedDataRequestBarrier
   // be empty.
   GetTypesWithUnsyncedDataRequestBarrier(
       DataTypeSet requested_types,
-      base::OnceCallback<void(DataTypeSet)> callback);
+      base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback);
 
   GetTypesWithUnsyncedDataRequestBarrier(
       const GetTypesWithUnsyncedDataRequestBarrier&) = delete;
   GetTypesWithUnsyncedDataRequestBarrier& operator=(
       const GetTypesWithUnsyncedDataRequestBarrier&) = delete;
 
-  void OnReceivedResultForType(const DataType type, bool has_unsynced_data);
+  void OnReceivedResultForType(const DataType type, size_t unsynced_data_count);
 
  private:
   friend class base::RefCounted<GetTypesWithUnsyncedDataRequestBarrier>;
   virtual ~GetTypesWithUnsyncedDataRequestBarrier();
 
   DataTypeSet awaiting_types_;
-  DataTypeSet types_with_unsynced_data_;
-  base::OnceCallback<void(DataTypeSet)> callback_;
+  absl::flat_hash_map<DataType, size_t> unsynced_data_counts_;
+  base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

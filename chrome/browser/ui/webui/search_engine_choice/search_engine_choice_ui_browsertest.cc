@@ -25,7 +25,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/search_engines/prepopulated_engines.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -36,6 +36,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -94,9 +95,12 @@ class MockSearchEngineChoiceDialogService
         if (i % 2 == 0) {
           // The bing icon should be bundled with Chrome.
           choice.SetKeyword(TemplateURLPrepopulateData::bing.keyword);
+          choice.base_builtin_resource_id =
+              TemplateURLPrepopulateData::bing.base_builtin_resource_id;
         } else {
           // Uses the default generic favicon.
-          choice.SetKeyword(TemplateURLPrepopulateData::incredibar.keyword);
+          choice.SetKeyword(u"incredibar");
+          choice.base_builtin_resource_id = "";
         }
         choices_.push_back(std::make_unique<TemplateURL>(choice));
       }
@@ -277,6 +281,8 @@ class SearchEngineChoiceUIPixelTest
 
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry, "BE");
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
@@ -320,7 +326,7 @@ class SearchEngineChoiceUIPixelTest
       dialog_height = kMaximumHeight;
     }
 
-    ShowSearchEngineChoiceDialog(
+    SearchEngineChoiceDialog::Show(
         *browser(), gfx::Size(dialog_width, dialog_height), zoom_factor);
     widget_waiter.WaitIfNeededAndGet();
 
@@ -356,8 +362,6 @@ class SearchEngineChoiceUIPixelTest
 
  private:
   base::AutoReset<bool> scoped_chrome_build_override_;
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceGuestExperience};
   PixelTestConfigurationMixin pixel_test_mixin_;
   base::CallbackListSubscription create_services_subscription_;
 };

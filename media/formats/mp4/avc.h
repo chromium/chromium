@@ -28,9 +28,9 @@ class MEDIA_EXPORT AVC {
                                    std::vector<uint8_t>* buffer,
                                    std::vector<SubsampleEntry>* subsamples);
 
-  // Inserts the SPS & PPS data from |avc_config| into |buffer|.
-  // |buffer| is expected to contain AnnexB conformant data.
-  // |subsamples| contains the SubsampleEntry info if |buffer| contains
+  // Inserts the SPS & PPS data from `avc_config` into `buffer`.
+  // `buffer` is expected to contain AnnexB conformant data.
+  // `subsamples` contains the SubsampleEntry info if `buffer` contains
   // encrypted data.
   // Returns true if the param sets were successfully inserted.
   static bool InsertParamSetsAnnexB(
@@ -42,23 +42,28 @@ class MEDIA_EXPORT AVC {
       const AVCDecoderConfigurationRecord& avc_config,
       std::vector<uint8_t>* buffer);
 
-  // Analyzes the contents of |buffer| for conformance to Section 7.4.1.2.3 of
-  // ISO/IEC 14496-10. Also analyzes |buffer| and reports if it looks like a
+  // Analyzes the contents of `buffer` for conformance to Section 7.4.1.2.3 of
+  // ISO/IEC 14496-10. Also analyzes `buffer` and reports if it looks like a
   // keyframe, if such can be determined. Determination of keyframe-ness is done
-  // only if |buffer| is conformant or if lack of conformance is detected after
+  // only if `buffer` is conformant or if lack of conformance is detected after
   // detecting keyframe-ness.
-  // |subsamples| contains the information about what parts of the buffer are
+  // `subsamples` contains the information about what parts of the buffer are
   // encrypted and which parts are clear.
   static BitstreamConverter::AnalysisResult AnalyzeAnnexB(
       const uint8_t* buffer,
       size_t size,
       const std::vector<SubsampleEntry>& subsamples);
 
-  // Given a |buffer| and |subsamples| information and |pts| pointer into the
-  // |buffer| finds the index of the subsample |ptr| is pointing into.
+  // Given a `buffer` and `subsamples` information and `pts` pointer into the
+  // `buffer` finds the index of the subsample `ptr` is pointing into.
   static int FindSubsampleIndex(const std::vector<uint8_t>& buffer,
                                 const std::vector<SubsampleEntry>* subsamples,
                                 const uint8_t* ptr);
+
+  // Convert a `buffer` from AVC bitstream to Annex-B bitstream by replacing
+  // 4-byte NALU length to 4-byte NALU start code.
+  static bool ConvertAVCToAnnexBInPlaceForLengthSize4(
+      std::vector<uint8_t>* buffer);
 };
 
 // AVCBitstreamConverter converts AVC/H.264 bitstream from MP4 container format

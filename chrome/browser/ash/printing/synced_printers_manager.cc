@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/ash/printing/specifics_translation.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/printing/printer_configuration.h"

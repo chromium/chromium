@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
@@ -38,6 +39,8 @@ std::string_view LocationProviderManagerModeAsString(
       return "kCustomOnly";
     case mojom::LocationProviderManagerMode::kHybridPlatform:
       return "kHybridPlatform";
+    case mojom::LocationProviderManagerMode::kHybridPlatform2:
+      return "kHybridPlatform2";
     case mojom::LocationProviderManagerMode::kHybridFallbackNetwork:
       return "kHybridFallbackNetwork";
   }
@@ -49,6 +52,7 @@ std::string_view LocationProviderManagerModeAsString(
 using ::device::mojom::LocationProviderManagerMode::kCustomOnly;
 using ::device::mojom::LocationProviderManagerMode::kHybridFallbackNetwork;
 using ::device::mojom::LocationProviderManagerMode::kHybridPlatform;
+using ::device::mojom::LocationProviderManagerMode::kHybridPlatform2;
 using ::device::mojom::LocationProviderManagerMode::kNetworkOnly;
 using ::device::mojom::LocationProviderManagerMode::kPlatformOnly;
 
@@ -84,8 +88,8 @@ LocationProviderManager::LocationProviderManager(
       internals_updated_closure_(std::move(internals_updated_closure)),
       network_request_callback_(std::move(network_request_callback)),
       network_response_callback_(std::move(network_response_callback)) {
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, default to using the platform location provider.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On Android and iOS, default to using the platform location provider.
   provider_manager_mode_ = kPlatformOnly;
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // On Ash / Lacros / Linux, default to using the network location provider.
@@ -146,6 +150,7 @@ void LocationProviderManager::StartProvider(bool enable_high_accuracy) {
         break;
       case kPlatformOnly:
       case kHybridPlatform:
+      case kHybridPlatform2:
         platform_location_provider_->StartProvider(enable_high_accuracy_);
     }
   }
@@ -217,6 +222,7 @@ bool LocationProviderManager::InitializeProvider() {
       break;
     case kPlatformOnly:
     case kHybridPlatform:
+    case kHybridPlatform2:
       platform_location_provider_ = NewSystemLocationProvider();
       if (!platform_location_provider_) {
         return false;
@@ -237,26 +243,37 @@ void LocationProviderManager::OnLocationUpdate(
 
   switch (provider_manager_mode_) {
     case kHybridPlatform:
+    case kHybridPlatform2:
       platform_location_provider_result_ = new_result.Clone();
-      // Currently, the fallback mechanism only triggers on macOS when Wi-Fi is
-      // disabled (either before or during position watching).
-      if (new_result->is_error() &&
-          new_result->get_error()->error_code ==
-              device::mojom::GeopositionErrorCode::kWifiDisabled) {
-        provider_manager_mode_ = kHybridFallbackNetwork;
-        platform_location_provider_->StopProvider();
-        platform_location_provider_.reset();
-        network_location_provider_ =
-            NewNetworkLocationProvider(url_loader_factory_, api_key_);
-        RegisterProvider(*network_location_provider_.get());
-        network_location_provider_->StartProvider(enable_high_accuracy_);
-        GEOLOCATION_LOG(DEBUG)
-            << "LocationProviderManager::OnLocationUpdate: kWifiDisabled error "
-               "code received, switch provider_manager_mode_ to "
-            << LocationProviderManagerModeAsString(provider_manager_mode_);
-        // Skip location update and wait for the network location provider to
-        // provide an update.
-        return;
+      if (new_result->is_error()) {
+        GEOLOCATION_LOG(DEBUG) << base::StringPrintf(
+            "LocationProviderManager::OnLocationUpdate: Error code %d is "
+            "received when in %s mode.",
+            (int)new_result->get_error()->error_code,
+            LocationProviderManagerModeAsString(provider_manager_mode_));
+
+        // Initiate fallback to network provider if:
+        // 1. The current mode is `kHybridPlatform2`, OR
+        // 2. The current mode is `kHybridPlatform` and the error is
+        // `kWifiDisabled`.
+        if (provider_manager_mode_ == kHybridPlatform2 ||
+            (provider_manager_mode_ == kHybridPlatform &&
+             new_result->get_error()->error_code ==
+                 device::mojom::GeopositionErrorCode::kWifiDisabled)) {
+          provider_manager_mode_ = kHybridFallbackNetwork;
+          platform_location_provider_->StopProvider();
+          platform_location_provider_.reset();
+          network_location_provider_ =
+              NewNetworkLocationProvider(url_loader_factory_, api_key_);
+          RegisterProvider(*network_location_provider_.get());
+          network_location_provider_->StartProvider(enable_high_accuracy_);
+          // Notify GeolocationProviderImpl of the location provider manager
+          // mode change.
+          internals_updated_closure_.Run();
+          // Skip location update and wait for the network location provider to
+          // provide an update.
+          return;
+        }
       }
       break;
     case kPlatformOnly:
@@ -295,6 +312,7 @@ void LocationProviderManager::OnLocationUpdate(
 const mojom::GeopositionResult* LocationProviderManager::GetPosition() {
   switch (provider_manager_mode_) {
     case kHybridPlatform:
+    case kHybridPlatform2:
     case kPlatformOnly:
       return platform_location_provider_result_.get();
     case kNetworkOnly:
@@ -312,8 +330,12 @@ void LocationProviderManager::FillDiagnostics(
         mojom::GeolocationDiagnostics::ProviderState::kStopped;
     return;
   }
+
+  diagnostics.location_provider_manager_mode = provider_manager_mode_;
+
   switch (provider_manager_mode_) {
     case kHybridPlatform:
+    case kHybridPlatform2:
     case kPlatformOnly:
       return platform_location_provider_->FillDiagnostics(diagnostics);
     case kNetworkOnly:

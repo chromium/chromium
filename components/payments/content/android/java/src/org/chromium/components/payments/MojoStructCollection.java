@@ -4,12 +4,14 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.bindings.Struct;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
 /** Helper class for serializing a collection of Mojo structs. */
+@NullMarked
 public class MojoStructCollection {
     /**
      * Serialize a collection of Mojo structs.

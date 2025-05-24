@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "net/websockets/websocket_stream.h"
 
@@ -50,8 +46,8 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/http2/test_tools/spdy_test_utils.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -125,26 +121,16 @@ static IsolationInfo CreateIsolationInfo() {
                                origin, SiteForCookies::FromOrigin(origin));
 }
 
-class WebSocketStreamCreateTest
-    : public TestWithParam<std::tuple<HandshakeStreamType, bool>>,
-      public WebSocketStreamCreateTestBase {
+class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
+                                  public WebSocketStreamCreateTestBase {
  protected:
   WebSocketStreamCreateTest()
-      : stream_type_(std::get<HandshakeStreamType>(GetParam())),
-        spdy_util_(/*use_priority_header=*/true) {
+      : stream_type_(GetParam()), spdy_util_(/*use_priority_header=*/true) {
     // Make sure these tests all pass with connection partitioning enabled. The
     // disabled case is less interesting, and is tested more directly at lower
     // layers.
-    if (PriorityHeaderEnabled()) {
-      feature_list_.InitWithFeatures(
-          {features::kPartitionConnectionsByNetworkIsolationKey,
-           net::features::kPriorityHeader},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {features::kPartitionConnectionsByNetworkIsolationKey},
-          {net::features::kPriorityHeader});
-    }
+    feature_list_.InitAndEnableFeature(
+        features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
   ~WebSocketStreamCreateTest() override {
@@ -165,7 +151,7 @@ class WebSocketStreamCreateTest
     ssl_data->ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
     if (stream_type_ == HTTP2_HANDSHAKE_STREAM)
-      ssl_data->next_proto = kProtoHTTP2;
+      ssl_data->next_proto = NextProto::kProtoHTTP2;
     ASSERT_TRUE(ssl_data->ssl_info.cert.get());
     url_request_context_host_.AddSSLSocketDataProvider(std::move(ssl_data));
   }
@@ -423,8 +409,6 @@ class WebSocketStreamCreateTest
                            additional_headers, std::move(timer_));
   }
 
-  bool PriorityHeaderEnabled() const { return std::get<bool>(GetParam()); }
-
  private:
   void AddWrite(const spdy::SpdySerializedFrame* frame) {
     writes_.emplace_back(ASYNC, frame->data(), frame->size(),
@@ -461,16 +445,14 @@ class WebSocketStreamCreateTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebSocketStreamCreateTest,
-                         testing::Combine(Values(BASIC_HANDSHAKE_STREAM),
-                                          testing::Bool()));
+                         Values(BASIC_HANDSHAKE_STREAM));
 
 using WebSocketMultiProtocolStreamCreateTest = WebSocketStreamCreateTest;
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebSocketMultiProtocolStreamCreateTest,
-                         testing::Combine(Values(BASIC_HANDSHAKE_STREAM,
-                                                 HTTP2_HANDSHAKE_STREAM),
-                                          testing::Bool()));
+                         Values(BASIC_HANDSHAKE_STREAM,
+                                HTTP2_HANDSHAKE_STREAM));
 
 // There are enough tests of the Sec-WebSocket-Extensions header that they
 // deserve their own test fixture.
@@ -492,9 +474,8 @@ class WebSocketStreamCreateExtensionTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebSocketStreamCreateExtensionTest,
-                         testing::Combine(Values(BASIC_HANDSHAKE_STREAM,
-                                                 HTTP2_HANDSHAKE_STREAM),
-                                          testing::Bool()));
+                         Values(BASIC_HANDSHAKE_STREAM,
+                                HTTP2_HANDSHAKE_STREAM));
 
 // Common code to construct expectations for authentication tests that receive
 // the auth challenge on one connection and then create a second connection to
@@ -579,8 +560,7 @@ class WebSocketStreamCreateBasicAuthTest : public WebSocketStreamCreateTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebSocketStreamCreateBasicAuthTest,
-                         testing::Combine(Values(BASIC_HANDSHAKE_STREAM),
-                                          testing::Bool()));
+                         Values(BASIC_HANDSHAKE_STREAM));
 
 class WebSocketStreamCreateDigestAuthTest : public WebSocketStreamCreateTest {
  protected:
@@ -592,8 +572,7 @@ class WebSocketStreamCreateDigestAuthTest : public WebSocketStreamCreateTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebSocketStreamCreateDigestAuthTest,
-                         testing::Combine(Values(BASIC_HANDSHAKE_STREAM),
-                                          testing::Bool()));
+                         Values(BASIC_HANDSHAKE_STREAM));
 
 const char WebSocketStreamCreateBasicAuthTest::kUnauthorizedResponse[] =
     "HTTP/1.1 401 Unauthorized\r\n"
@@ -945,8 +924,7 @@ TEST_P(WebSocketStreamCreateExtensionTest, PerMessageDeflateInflates) {
   ASSERT_THAT(rv, IsOk());
   ASSERT_EQ(1U, frames.size());
   ASSERT_EQ(5U, frames[0]->header.payload_length);
-  EXPECT_EQ(std::string("Hello"),
-            std::string(frames[0]->payload, frames[0]->header.payload_length));
+  EXPECT_EQ("Hello", base::as_string_view(frames[0]->payload));
 }
 
 // Unknown extension in the response is rejected
@@ -1873,16 +1851,17 @@ TEST_P(WebSocketStreamCreateTest, HandleConnectionCloseInFirstSegment) {
   WaitUntilConnectDone();
   ASSERT_TRUE(stream_);
 
-  std::vector<std::unique_ptr<WebSocketFrame>> frames;
-  TestCompletionCallback callback1;
-  int rv1 = stream_->ReadFrames(&frames, callback1.callback());
-  rv1 = callback1.GetResult(rv1);
-  ASSERT_THAT(rv1, IsOk());
-  ASSERT_EQ(1U, frames.size());
-  EXPECT_EQ(frames[0]->header.opcode, WebSocketFrameHeader::kOpCodeClose);
-  EXPECT_TRUE(frames[0]->header.final);
-  EXPECT_EQ(close_body,
-            std::string(frames[0]->payload, frames[0]->header.payload_length));
+  {
+    std::vector<std::unique_ptr<WebSocketFrame>> frames;
+    TestCompletionCallback callback1;
+    int rv1 = stream_->ReadFrames(&frames, callback1.callback());
+    rv1 = callback1.GetResult(rv1);
+    ASSERT_THAT(rv1, IsOk());
+    ASSERT_EQ(1U, frames.size());
+    EXPECT_EQ(frames[0]->header.opcode, WebSocketFrameHeader::kOpCodeClose);
+    EXPECT_TRUE(frames[0]->header.final);
+    EXPECT_EQ(close_body, base::as_string_view(frames[0]->payload));
+  }
 
   std::vector<std::unique_ptr<WebSocketFrame>> empty_frames;
   TestCompletionCallback callback2;

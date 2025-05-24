@@ -86,8 +86,7 @@ std::string StorageInfo::MakeDeviceId(Type type, const std::string& unique_id) {
     case MAC_IMAGE_CAPTURE:
       return std::string(kMacImageCapturePrefix) + unique_id;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // static

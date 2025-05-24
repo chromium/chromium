@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google Inc.
+ * Copyright 2019 Google LLC.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,23 +23,44 @@
 // Helper macro that checks if the right hand side (rexpression) evaluates to a
 // StatusOr with Status OK, and if so assigns the value to the value on the left
 // hand side (lhs), otherwise returns the error status. Example:
-//   ASSIGN_OR_RETURN(lhs, rexpression);
-#define ASSIGN_OR_RETURN(lhs, rexpr)                                          \
-  PRIVACY_BLINDERS_ASSIGN_OR_RETURN_IMPL_(                                    \
-      PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_(status_or_value, __LINE__), \
+//   PJC_ASSIGN_OR_RETURN(lhs, rexpression);
+#ifndef PJC_ASSIGN_OR_RETURN
+#define PJC_ASSIGN_OR_RETURN(lhs, rexpr)                                   \
+  PRIVATE_JOIN_AND_COMPUTE_ASSIGN_OR_RETURN_IMPL_(                         \
+      PRIVATE_JOIN_AND_COMPUTE_STATUS_MACROS_IMPL_CONCAT_(status_or_value, \
+                                                          __LINE__),       \
       lhs, rexpr)
 
 // Internal helper.
-#define PRIVACY_BLINDERS_ASSIGN_OR_RETURN_IMPL_(statusor, lhs, rexpr) \
-  auto statusor = (rexpr);                                            \
-  if (!statusor.ok()) [[unlikely]] {                                  \
-    return std::move(statusor).status();                              \
-  }                                                                   \
-  lhs = std::move(statusor).value()
+#define PRIVATE_JOIN_AND_COMPUTE_ASSIGN_OR_RETURN_IMPL_(statusor, lhs, rexpr) \
+  auto statusor = (rexpr);                                                    \
+  if (ABSL_PREDICT_FALSE(!statusor.ok())) {                                   \
+    return std::move(statusor).status();                                      \
+  }                                                                           \
+  lhs = *std::move(statusor)
+#endif  // PJC_ASSIGN_OR_RETURN
+
+// Helper macro that checks if the given expression evaluates to a
+// Status with Status OK. If not,  returns the error status. Example:
+//   PJC_RETURN_IF_ERROR(expression);
+#ifndef PJC_RETURN_IF_ERROR
+#define PJC_RETURN_IF_ERROR(expr)                                       \
+  PRIVATE_JOIN_AND_COMPUTE_RETURN_IF_ERROR_IMPL_(                       \
+      PRIVATE_JOIN_AND_COMPUTE_STATUS_MACROS_IMPL_CONCAT_(status_value, \
+                                                          __LINE__),    \
+      expr)
+
+// Internal helper.
+#define PRIVATE_JOIN_AND_COMPUTE_RETURN_IF_ERROR_IMPL_(status, expr) \
+  auto status = (expr);                                              \
+  if (ABSL_PREDICT_FALSE(!status.ok())) {                            \
+    return status;                                                   \
+  }
+#endif  // PJC_RETURN_IF_ERROR
 
 // Internal helper for concatenating macro values.
-#define PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
-#define PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_(x, y) \
-  PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y)
+#define PRIVATE_JOIN_AND_COMPUTE_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
+#define PRIVATE_JOIN_AND_COMPUTE_STATUS_MACROS_IMPL_CONCAT_(x, y) \
+  PRIVATE_JOIN_AND_COMPUTE_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y)
 
 #endif  // UTIL_STATUS_MACROS_H_

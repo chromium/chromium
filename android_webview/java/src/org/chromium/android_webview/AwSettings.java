@@ -121,7 +121,7 @@ public class AwSettings {
 
     private Set<String> mRequestedWithHeaderAllowedOriginRules;
 
-    private Context mContext;
+    private final Context mContext;
     private WebContents mWebContents;
 
     // This class must be created on the UI thread. Afterwards, it can be
@@ -132,7 +132,7 @@ public class AwSettings {
     private final boolean mHasInternetPermission;
 
     private ZoomSupportChangeListener mZoomChangeListener;
-    private double mDIPScale = 1.0;
+    private double mDipScale = 1.0;
 
     // Lock to protect all settings.
     private final Object mAwSettingsLock = new Object();
@@ -156,18 +156,17 @@ public class AwSettings {
     private boolean mLoadsImagesAutomatically = true;
     private boolean mImagesEnabled = true;
     private boolean mJavaScriptEnabled;
-    private boolean mAllowUniversalAccessFromFileURLs;
-    private boolean mAllowFileAccessFromFileURLs;
+    private boolean mAllowUniversalAccessFromFileUrls;
+    private boolean mAllowFileAccessFromFileUrls;
     private boolean mJavaScriptCanOpenWindowsAutomatically;
     private boolean mSupportMultipleWindows;
     private boolean mDomStorageEnabled;
-    private boolean mDatabaseEnabled;
     private boolean mUseWideViewport;
     private boolean mZeroLayoutHeightDisablesViewportQuirk;
     private boolean mForceZeroLayoutHeight;
     private boolean mLoadWithOverviewMode;
     private boolean mMediaPlaybackRequiresUserGesture = true;
-    private String mDefaultVideoPosterURL;
+    private String mDefaultVideoPosterUrl;
     private float mInitialPageScalePercent;
     private boolean mSpatialNavigationEnabled; // Default depends on device features.
     private boolean mEnableSupportedHardwareAcceleratedFeatures;
@@ -185,7 +184,7 @@ public class AwSettings {
     private boolean mBackForwardCacheEnabled;
     private boolean mHasCalledSetBackForwardCacheEnabledBefore;
 
-    private boolean mCSSHexAlphaColorEnabled;
+    private boolean mCssHexAlphaColorEnabled;
     private boolean mScrollTopLeftInteropEnabled;
     private boolean mWillSuppressErrorPage;
 
@@ -217,7 +216,10 @@ public class AwSettings {
     private boolean mSupportZoom = true;
     private boolean mBuiltInZoomControls;
     private boolean mDisplayZoomControls = true;
+    private boolean mPaymentRequestEnabled;
+    private boolean mHasEnrolledInstrumentEnabled = true;
     private final AwMediaIntegrityApiStatusConfig mIntegrityApiStatusConfig;
+    private boolean mIncludeCookiesOnIntercept;
 
     private @WebauthnMode int mWebauthnMode = WebauthnMode.NONE;
 
@@ -340,7 +342,7 @@ public class AwSettings {
 
     public AwSettings(
             Context context,
-            boolean isAccessFromFileURLsGrantedByDefault,
+            boolean isAccessFromFileUrlsGrantedByDefault,
             boolean supportsLegacyQuirks,
             boolean allowEmptyDocumentPersistence,
             boolean allowGeolocationOnInsecureOrigins,
@@ -356,9 +358,9 @@ public class AwSettings {
             mHasInternetPermission = hasInternetPermission;
             mBlockNetworkLoads = !hasInternetPermission;
             mEventHandler = new EventHandler();
-            if (isAccessFromFileURLsGrantedByDefault) {
-                mAllowUniversalAccessFromFileURLs = true;
-                mAllowFileAccessFromFileURLs = true;
+            if (isAccessFromFileUrlsGrantedByDefault) {
+                mAllowUniversalAccessFromFileUrls = true;
+                mAllowFileAccessFromFileUrls = true;
             }
 
             mUserAgent = LazyDefaultUserAgent.sInstance;
@@ -427,16 +429,16 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private double getDIPScaleLocked() {
+    private double getDipScaleLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
-        return mDIPScale;
+        return mDipScale;
     }
 
-    void setDIPScale(double dipScale) {
+    void setDipScale(double dipScale) {
         synchronized (mAwSettingsLock) {
-            mDIPScale = dipScale;
+            mDipScale = dipScale;
             // TODO(joth): This should also be synced over to native side, but right now
-            // the setDIPScale call is always followed by a setWebContents() which covers this.
+            // the setDipScale call is always followed by a setWebContents() which covers this.
         }
     }
 
@@ -752,16 +754,16 @@ public class AwSettings {
     }
 
     /**
-     * @returns the default User-Agent used by each WebContents instance, i.e. unless
-     * overridden by {@link #setUserAgentString()}
+     * @return the default User-Agent used by each WebContents instance, i.e. unless overridden by
+     *     {@link #setUserAgentString()}
      */
     public static String getDefaultUserAgent() {
         return LazyDefaultUserAgent.sInstance;
     }
 
     /**
-     * @returns the default metadata for user-agent client hints used by each WebContents instance,
-     * i.e. unless overridden by {@link #setUserAgentMetadata()}
+     * @return the default metadata for user-agent client hints used by each WebContents instance,
+     *     i.e. unless overridden by {@link #setUserAgentMetadata()}
      */
     public static AwUserAgentMetadata getDefaultUserAgentMetadata() {
         return LazyDefaultUserAgentMetadata.sInstance;
@@ -787,9 +789,9 @@ public class AwSettings {
             if (!oldUserAgent.equals(mUserAgent)) {
                 if (ua != null
                         && ua.length() > 0
-                        && AwContents.BAD_HEADER_CHAR.matcher(ua).find()) {
+                        && AwBrowserContext.BAD_HEADER_CHAR.matcher(ua).find()) {
                     throw new IllegalArgumentException(
-                            AwContents.BAD_HEADER_MSG + "Invalid User-Agent '" + ua + "'");
+                            AwBrowserContext.BAD_HEADER_MSG + "Invalid User-Agent '" + ua + "'");
                 }
                 mEventHandler.runOnUiThreadBlockingAndLocked(
                         () -> updateUserAgentOnUiThreadLocked());
@@ -1166,22 +1168,22 @@ public class AwSettings {
     }
 
     /** See {@link android.webkit.WebSettings#setAllowUniversalAccessFromFileURLs}. */
-    public void setAllowUniversalAccessFromFileURLs(boolean flag) {
+    public void setAllowUniversalAccessFromFileUrls(boolean flag) {
         if (TRACE) Log.i(TAG, "setAllowUniversalAccessFromFileURLs=" + flag);
         synchronized (mAwSettingsLock) {
-            if (mAllowUniversalAccessFromFileURLs != flag) {
-                mAllowUniversalAccessFromFileURLs = flag;
+            if (mAllowUniversalAccessFromFileUrls != flag) {
+                mAllowUniversalAccessFromFileUrls = flag;
                 mEventHandler.updateWebkitPreferencesLocked();
             }
         }
     }
 
     /** See {@link android.webkit.WebSettings#setAllowFileAccessFromFileURLs}. */
-    public void setAllowFileAccessFromFileURLs(boolean flag) {
+    public void setAllowFileAccessFromFileUrls(boolean flag) {
         if (TRACE) Log.i(TAG, "setAllowFileAccessFromFileURLs=" + flag);
         synchronized (mAwSettingsLock) {
-            if (mAllowFileAccessFromFileURLs != flag) {
-                mAllowFileAccessFromFileURLs = flag;
+            if (mAllowFileAccessFromFileUrls != flag) {
+                mAllowFileAccessFromFileUrls = flag;
                 mEventHandler.updateWebkitPreferencesLocked();
             }
         }
@@ -1249,29 +1251,29 @@ public class AwSettings {
     }
 
     /** See {@link android.webkit.WebSettings#getAllowUniversalAccessFromFileURLs}. */
-    public boolean getAllowUniversalAccessFromFileURLs() {
+    public boolean getAllowUniversalAccessFromFileUrls() {
         synchronized (mAwSettingsLock) {
-            return getAllowUniversalAccessFromFileURLsLocked();
+            return getAllowUniversalAccessFromFileUrlsLocked();
         }
     }
 
     @CalledByNative
-    private boolean getAllowUniversalAccessFromFileURLsLocked() {
+    private boolean getAllowUniversalAccessFromFileUrlsLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
-        return mAllowUniversalAccessFromFileURLs;
+        return mAllowUniversalAccessFromFileUrls;
     }
 
     /** See {@link android.webkit.WebSettings#getAllowFileAccessFromFileURLs}. */
-    public boolean getAllowFileAccessFromFileURLs() {
+    public boolean getAllowFileAccessFromFileUrls() {
         synchronized (mAwSettingsLock) {
-            return getAllowFileAccessFromFileURLsLocked();
+            return getAllowFileAccessFromFileUrlsLocked();
         }
     }
 
     @CalledByNative
-    private boolean getAllowFileAccessFromFileURLsLocked() {
+    private boolean getAllowFileAccessFromFileUrlsLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
-        return mAllowFileAccessFromFileURLs;
+        return mAllowFileAccessFromFileUrls;
     }
 
     /** See {@link android.webkit.WebSettings#setJavaScriptCanOpenWindowsAutomatically}. */
@@ -1411,15 +1413,15 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private boolean getCSSHexAlphaColorEnabledLocked() {
+    private boolean getCssHexAlphaColorEnabledLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
-        return mCSSHexAlphaColorEnabled;
+        return mCssHexAlphaColorEnabled;
     }
 
-    public void setCSSHexAlphaColorEnabled(boolean enabled) {
+    public void setCssHexAlphaColorEnabled(boolean enabled) {
         synchronized (mAwSettingsLock) {
-            if (mCSSHexAlphaColorEnabled != enabled) {
-                mCSSHexAlphaColorEnabled = enabled;
+            if (mCssHexAlphaColorEnabled != enabled) {
+                mCssHexAlphaColorEnabled = enabled;
                 mEventHandler.updateWebkitPreferencesLocked();
             }
         }
@@ -1588,30 +1590,6 @@ public class AwSettings {
         return mDomStorageEnabled;
     }
 
-    /** See {@link android.webkit.WebSettings#setDatabaseEnabled}. */
-    public void setDatabaseEnabled(boolean flag) {
-        if (TRACE) Log.i(TAG, "setDatabaseEnabled=" + flag);
-        synchronized (mAwSettingsLock) {
-            if (mDatabaseEnabled != flag) {
-                mDatabaseEnabled = flag;
-                mEventHandler.updateWebkitPreferencesLocked();
-            }
-        }
-    }
-
-    /** See {@link android.webkit.WebSettings#getDatabaseEnabled}. */
-    public boolean getDatabaseEnabled() {
-        synchronized (mAwSettingsLock) {
-            return mDatabaseEnabled;
-        }
-    }
-
-    @CalledByNative
-    private boolean getDatabaseEnabledLocked() {
-        assert Thread.holdsLock(mAwSettingsLock);
-        return mDatabaseEnabled;
-    }
-
     /** See {@link android.webkit.WebSettings#setDefaultTextEncodingName}. */
     public void setDefaultTextEncodingName(String encoding) {
         if (TRACE) Log.i(TAG, "setDefaultTextEncodingName=" + encoding);
@@ -1661,27 +1639,27 @@ public class AwSettings {
     }
 
     /** See {@link android.webkit.WebSettings#setDefaultVideoPosterURL}. */
-    public void setDefaultVideoPosterURL(String url) {
+    public void setDefaultVideoPosterUrl(String url) {
         synchronized (mAwSettingsLock) {
-            if ((mDefaultVideoPosterURL != null && !mDefaultVideoPosterURL.equals(url))
-                    || (mDefaultVideoPosterURL == null && url != null)) {
-                mDefaultVideoPosterURL = url;
+            if ((mDefaultVideoPosterUrl != null && !mDefaultVideoPosterUrl.equals(url))
+                    || (mDefaultVideoPosterUrl == null && url != null)) {
+                mDefaultVideoPosterUrl = url;
                 mEventHandler.updateWebkitPreferencesLocked();
             }
         }
     }
 
     /** See {@link android.webkit.WebSettings#getDefaultVideoPosterURL}. */
-    public String getDefaultVideoPosterURL() {
+    public String getDefaultVideoPosterUrl() {
         synchronized (mAwSettingsLock) {
-            return getDefaultVideoPosterURLLocked();
+            return getDefaultVideoPosterUrlLocked();
         }
     }
 
     @CalledByNative
-    private String getDefaultVideoPosterURLLocked() {
+    private String getDefaultVideoPosterUrlLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
-        return mDefaultVideoPosterURL;
+        return mDefaultVideoPosterUrl;
     }
 
     private void onGestureZoomSupportChanged(
@@ -1753,6 +1731,39 @@ public class AwSettings {
     public boolean getDisplayZoomControls() {
         synchronized (mAwSettingsLock) {
             return mDisplayZoomControls;
+        }
+    }
+
+    public void setPaymentRequestEnabled(boolean enabled) {
+        if (TRACE) Log.i(TAG, "setPaymentRequestEnabled=" + enabled);
+        synchronized (mAwSettingsLock) {
+            if (mPaymentRequestEnabled != enabled) {
+                mPaymentRequestEnabled = enabled;
+                mEventHandler.updateWebkitPreferencesLocked();
+            }
+        }
+    }
+
+    @CalledByNative
+    public boolean getPaymentRequestEnabled() {
+        synchronized (mAwSettingsLock) {
+            return mPaymentRequestEnabled;
+        }
+    }
+
+    public void setHasEnrolledInstrumentEnabled(boolean enabled) {
+        if (TRACE) Log.i(TAG, "setHasEnrolledInstrumentEnabled=" + enabled);
+        synchronized (mAwSettingsLock) {
+            if (mHasEnrolledInstrumentEnabled != enabled) {
+                flushBackForwardCacheOnUiThreadLocked();
+            }
+            mHasEnrolledInstrumentEnabled = enabled;
+        }
+    }
+
+    public boolean getHasEnrolledInstrumentEnabled() {
+        synchronized (mAwSettingsLock) {
+            return mHasEnrolledInstrumentEnabled;
         }
     }
 
@@ -2226,6 +2237,22 @@ public class AwSettings {
     public int getWebauthnSupport() {
         synchronized (mAwSettingsLock) {
             return getWebauthnSupportLocked();
+        }
+    }
+
+    /**
+     * Set whether the shouldInterceptRequest API should include request cookies and accept response
+     * cookies.
+     */
+    public void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept) {
+        synchronized (mAwSettingsLock) {
+            this.mIncludeCookiesOnIntercept = includeCookiesOnIntercept;
+        }
+    }
+
+    public boolean getIncludeCookiesOnIntercept() {
+        synchronized (mAwSettingsLock) {
+            return mIncludeCookiesOnIntercept;
         }
     }
 

@@ -147,14 +147,14 @@ void MessengerImpl::OnMessageReceived(const std::string& payload) {
 
 void MessengerImpl::HandleMessage(const std::string& message) {
   // The decoded message should be a JSON string.
-  std::optional<base::Value> message_value = base::JSONReader::Read(message);
-  if (!message_value || !message_value->is_dict()) {
+  std::optional<base::Value::Dict> message_value =
+      base::JSONReader::ReadDict(message);
+  if (!message_value) {
     PA_LOG(ERROR) << "Unable to parse message as JSON:\n" << message;
     return;
   }
 
-  const base::Value::Dict& message_dictionary = message_value->GetDict();
-  const std::string* type = message_dictionary.FindString(kTypeKey);
+  const std::string* type = message_value->FindString(kTypeKey);
   if (!type) {
     PA_LOG(ERROR) << "Missing '" << kTypeKey << "' key in message:\n "
                   << message;
@@ -163,7 +163,7 @@ void MessengerImpl::HandleMessage(const std::string& message) {
 
   // Remote status updates can be received out of the blue.
   if (*type == kMessageTypeRemoteStatusUpdate) {
-    HandleRemoteStatusUpdateMessage(message_dictionary);
+    HandleRemoteStatusUpdateMessage(*message_value);
     return;
   }
 
@@ -178,6 +178,9 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   if (pending_message_->type == kMessageTypeUnlockRequest) {
     expected_type = kMessageTypeUnlockResponse;
   } else {
+    // (crbug.com/286944516): Unexpected path occurring.
+    PA_LOG(ERROR) << "Response received from unexpected message type: "
+                  << pending_message_->type;
     DUMP_WILL_BE_NOTREACHED();  // There are no other message types
                                 // that expect a response.
   }
@@ -190,10 +193,9 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   }
 
   if (*type == kMessageTypeUnlockResponse) {
-    HandleUnlockResponseMessage(message_dictionary);
+    HandleUnlockResponseMessage(*message_value);
   } else {
-    NOTREACHED_IN_MIGRATION();  // There are no other message types that expect
-                                // a response.
+    NOTREACHED();  // There are no other message types that expect a response.
   }
 
   pending_message_.reset();

@@ -29,12 +29,9 @@ class CastCrashReporterClientAndroid
                                       base::FilePath* crash_dir);
 
   // crash_reporter::CrashReporterClient implementation:
-  void GetProductNameAndVersion(std::string* product_name,
-                                std::string* version,
-                                std::string* channel) override;
+  void GetProductInfo(ProductInfo* product_info) override;
   base::FilePath GetReporterLogFilename() override;
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
-  int GetAndroidMinidumpDescriptor() override;
   bool EnableBreakpadForProcess(const std::string& process_type) override;
 
  private:

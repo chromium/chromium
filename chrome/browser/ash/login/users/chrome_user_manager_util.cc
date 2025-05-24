@@ -57,24 +57,6 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
   return true;
 }
 
-std::optional<user_manager::UserType> DeviceLocalAccountTypeToUserType(
-    policy::DeviceLocalAccountType device_local_account_type) {
-  switch (device_local_account_type) {
-    case policy::DeviceLocalAccountType::kPublicSession:
-      return user_manager::UserType::kPublicAccount;
-    case policy::DeviceLocalAccountType::kSamlPublicSession:
-      // TODO(b/345700258): Unused in the production. Remove the case.
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
-    case policy::DeviceLocalAccountType::kKioskApp:
-      return user_manager::UserType::kKioskApp;
-    case policy::DeviceLocalAccountType::kWebKioskApp:
-    // TODO(crbug.com/358536558): Create a new user type for IWA kiosk.
-    case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
-      return user_manager::UserType::kWebKioskApp;
-  }
-}
-
 bool IsManagedGuestSessionOrEphemeralLogin() {
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();

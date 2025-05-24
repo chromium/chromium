@@ -10,17 +10,14 @@
 
 namespace blink {
 
-// Reject properties with the given flags set or unset.
+// Pass only properties with the given flags set.
 //
-// For example, the following applies only inherited properties that don't apply
-// to ::first-letter:
+// For example, the following applies only inherited properties:
 //
 //  CascadeFilter filter;
-//  filter = filter.Add(CSSProperty::kInherited, false);
-//  filter = filter.Add(CSSProperty::kValidForFirstLetter, true);
-//  filter.Reject(GetCSSPropertyColor());     // -> false
-//  filter.Reject(GetCSSPropertyDirection()); // -> true
-//  filter.Reject(GetCSSPropertyTop());       // -> true
+//  filter = filter.Add(CSSProperty::kInherited);
+//  filter.Accepts(GetCSSPropertyColor());            // -> true
+//  filter.Accepts(GetCSSPropertyScrollbarGutter());  // -> false
 //
 class CORE_EXPORT CascadeFilter {
  public:
@@ -34,68 +31,50 @@ class CORE_EXPORT CascadeFilter {
   //  CascadeFilter filter;
   //  filter = filter.Add(flag, v);
   //
-  CascadeFilter(CSSProperty::Flag flag, bool v)
-      : mask_(flag), flags_(v ? flag : 0) {}
+  explicit CascadeFilter(CSSProperty::Flag flag) : required_bits_(flag) {}
 
   bool operator==(const CascadeFilter& o) const {
-    return mask_ == o.mask_ && flags_ == o.flags_;
+    return required_bits_ == o.required_bits_;
   }
   bool operator!=(const CascadeFilter& o) const {
-    return mask_ != o.mask_ || flags_ != o.flags_;
+    return required_bits_ != o.required_bits_;
   }
 
-  // Add a given rule to the filter.
+  // Add a given rule to the filter. For instance:
   //
-  // A flag can be rejected when it's either set or unset. For example
+  //  CascadeFilter f1(CSSProperty::kInherited); // Rejects non-inherited
   //
-  //  CascadeFilter f1(CSSProperty::kInherited, true); // Rejects inherited
-  //  CascadeFilter f2(CSSProperty::kInherited, false); // Rejects non-inherited
-  //
-  // Note that it's not possible to reject both set and unset flags in the same
-  // filter. However, if you wish to reject all properties, you can do so by
-  // using the CSSProperty::kProperty flag.
+  // Note that it is not possible to reject on a negative. However, some flags
+  // have deliberately inverted flag (e.g. every property has exactly one of
+  // kAnimated and kNotAnimated). If you wish to reject all properties, you
+  // can do so by testing on both of the flags at the same time.
   //
   // Add() will have no effect if there already is a rule for the given flag:
   //
   //  CascadeFilter filter;
-  //  CascadeFilter f1 = filter.Add(CSSProperty::kInherited, true);
-  //  CascadeFilter f2 = f1.Add(CSSProperty::kInherited, false);
+  //  CascadeFilter f1 = filter.Add(CSSProperty::kInherited);
+  //  CascadeFilter f2 = f1.Add(CSSProperty::kInherited);
   //  bool equal = f1 == f2; // true. Second call to Add had to effect.
-  //
-  // If you want to overwrite a previous rule, use Set().
-  CascadeFilter Add(CSSProperty::Flag flag, bool v) const {
-    const CSSProperty::Flags mask = mask_ | flag;
-    const CSSProperty::Flags flags =
-        v ? (flags_ | (flag & ~mask_)) : (flags_ & ~(flag & ~mask_));
-    return CascadeFilter(mask, flags);
+  CascadeFilter Add(CSSProperty::Flag flag) const {
+    const CSSProperty::Flags required_bits = required_bits_ | flag;
+    return CascadeFilter(required_bits);
   }
 
-  // Like Add, except overwrites a previous rule for the same flag.
-  CascadeFilter Set(CSSProperty::Flag flag, bool v) const {
-    const CSSProperty::Flags mask = mask_ | flag;
-    const CSSProperty::Flags flags = v ? (flags_ | flag) : (flags_ & ~flag);
-    return CascadeFilter(mask, flags);
+  bool Accepts(const CSSProperty& property) const {
+    return (property.GetFlags() & required_bits_) == required_bits_;
   }
 
-  bool Rejects(const CSSProperty& property) const {
-    return ~(property.GetFlags() ^ flags_) & mask_;
+  bool Requires(CSSProperty::Flag flag) const {
+    return (required_bits_ & flag) != 0;
   }
 
-  bool Rejects(CSSProperty::Flag flag, bool v) const {
-    return ~((v ? flag : 0) ^ flags_) & (mask_ & flag);
-  }
-
-  bool IsEmpty() const { return mask_ == 0; }
+  bool IsEmpty() const { return required_bits_ == 0; }
 
  private:
-  CascadeFilter(CSSProperty::Flags mask, CSSProperty::Flags flags)
-      : mask_(mask), flags_(flags) {}
-  // Specifies which bits are significant in flags_. In other words, mask_
-  // contains a '1' at the corresponding position for each flag seen by
-  // Add().
-  CSSProperty::Flags mask_ = 0;
-  // Contains the flags to exclude. Only bits set in mask_ matter.
-  CSSProperty::Flags flags_ = 0;
+  explicit CascadeFilter(CSSProperty::Flags required_bits)
+      : required_bits_(required_bits) {}
+  // Contains the flags to require.
+  CSSProperty::Flags required_bits_ = 0;
 };
 
 }  // namespace blink

@@ -93,6 +93,7 @@ goog.inherits(goog.ui.ac.RichRemote, goog.ui.ac.Remote);
  * Set the filter that is called before the array matches are returned.
  * @param {Function} rowFilter A function(rows) that returns an array of rows as
  *     a subset of the rows input array.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.RichRemote.prototype.setRowFilter = function(rowFilter) {
   'use strict';
@@ -105,6 +106,7 @@ goog.ui.ac.RichRemote.prototype.setRowFilter = function(rowFilter) {
  * @param {goog.ui.ac.RichRemoteArrayMatcher.RowBuilder} rowBuilder
  *     A function(type, response) converting the type and the server response to
  *     an object with two methods: render(node, token) and select(target).
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.RichRemote.prototype.setRowBuilder = function(rowBuilder) {
   'use strict';

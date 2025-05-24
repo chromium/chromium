@@ -1,0 +1,8 @@
+include_rules = [
+  "+chromeos/ash/components/settings/cros_settings.h",
+  "+chromeos/ash/components/settings/fake_cros_settings_provider.h",
+  "+components/policy/core/common/device_local_account_type.h",
+  "+components/policy/core/common/policy_pref_names.h",
+  "+components/policy/core/common/system_features_disable_list_constants.h",
+  "+components/user_manager",
+]

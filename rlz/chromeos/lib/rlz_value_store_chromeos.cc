@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -270,7 +271,7 @@ bool RlzValueStoreChromeOS::ReadAccessPointRlz(AccessPoint access_point,
   const std::string* rlz_value = rlz_store_.FindStringByDottedPath(
       GetKeyName(kAccessPointKey, access_point));
   if (rlz_value && rlz_value->size() < rlz_size) {
-    strncpy(rlz, rlz_value->c_str(), rlz_size);
+    UNSAFE_TODO(strncpy(rlz, rlz_value->c_str(), rlz_size));
     return true;
   }
   if (rlz_size > 0)
@@ -358,8 +359,9 @@ bool RlzValueStoreChromeOS::AddStatefulEvent(Product product,
                                              const char* event_rlz) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (strcmp(event_rlz, "CAF") == 0)
+  if (UNSAFE_TODO(strcmp(event_rlz, "CAF")) == 0) {
     SetRlzPingSent(/*retry_count=*/0);
+  }
 
   return AddValueToList(GetKeyName(kStatefulEventKey, product),
                         base::Value(event_rlz));
@@ -372,7 +374,7 @@ bool RlzValueStoreChromeOS::IsStatefulEvent(Product product,
   const bool event_exists = ListContainsValue(
       GetKeyName(kStatefulEventKey, product), base::Value(event_rlz));
 
-  if (strcmp(event_rlz, "CAF") == 0) {
+  if (UNSAFE_TODO(strcmp(event_rlz, "CAF")) == 0) {
     ash::system::StatisticsProvider* stats =
         ash::system::StatisticsProvider::GetInstance();
     if (const std::optional<std::string_view> should_send_rlz_ping_value =

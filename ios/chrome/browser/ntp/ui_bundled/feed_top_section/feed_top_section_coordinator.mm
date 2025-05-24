@@ -7,19 +7,25 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/notifications_promo_view_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -34,10 +40,8 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::RecordAction;
@@ -66,7 +70,9 @@ using base::UserMetricsAction;
 
 @end
 
-@implementation FeedTopSectionCoordinator
+@implementation FeedTopSectionCoordinator {
+  SigninCoordinator* _signinCoordinator;
+}
 
 // Synthesized from ChromeCoordinator.
 @synthesize viewController = _viewController;
@@ -77,20 +83,22 @@ using base::UserMetricsAction;
       [[FeedTopSectionViewController alloc] init];
   _viewController = self.feedTopSectionViewController;
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.profile;
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  ProvisionalPushNotificationService* provisionalPushNotificationService =
+      ProvisionalPushNotificationServiceFactory::GetForProfile(profile);
 
   self.feedTopSectionMediator = [[FeedTopSectionMediator alloc]
-      initWithConsumer:self.feedTopSectionViewController
-       identityManager:identityManager
-           authService:authenticationService
-           isIncognito:browserState->IsOffTheRecord()
-           prefService:browserState->GetPrefs()];
+                        initWithConsumer:self.feedTopSectionViewController
+                         identityManager:identityManager
+                             authService:authenticationService
+      provisionalPushNotificationService:provisionalPushNotificationService
+                               incognito:profile->IsOffTheRecord()
+                             prefService:profile->GetPrefs()];
   self.isSignInPromoEnabled =
       ShouldShowTopOfFeedSyncPromo() && authenticationService &&
       [self.NTPDelegate isSignInAllowed] &&
@@ -100,17 +108,19 @@ using base::UserMetricsAction;
   // signin promo components.
   if (self.isSignInPromoEnabled) {
     ChromeAccountManagerService* accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+        ChromeAccountManagerServiceFactory::GetForProfile(profile);
     self.signinPromoMediator = [[SigninPromoViewMediator alloc]
-        initWithAccountManagerService:accountManagerService
-                          authService:AuthenticationServiceFactory::
-                                          GetForBrowserState(browserState)
-                          prefService:browserState->GetPrefs()
-                          syncService:syncService
-                          accessPoint:signin_metrics::AccessPoint::
-                                          ACCESS_POINT_NTP_FEED_TOP_PROMO
-                      signinPresenter:self
-             accountSettingsPresenter:nil];
+                  initWithIdentityManager:identityManager
+                    accountManagerService:accountManagerService
+                              authService:AuthenticationServiceFactory::
+                                              GetForProfile(profile)
+                              prefService:profile->GetPrefs()
+                              syncService:syncService
+                              accessPoint:signin_metrics::AccessPoint::
+                                              kNtpFeedTopPromo
+                          signinPresenter:self
+                 accountSettingsPresenter:nil
+        changeProfileContinuationProvider:DoNothingContinuationProvider()];
 
     self.signinPromoMediator.signinPromoAction =
         SigninPromoAction::kSigninWithNoDefaultIdentity;
@@ -121,7 +131,7 @@ using base::UserMetricsAction;
   }
 
   const TemplateURL* defaultSearchURLTemplate =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
+      ios::TemplateURLServiceFactory::GetForProfile(profile)
           ->GetDefaultSearchProvider();
 
   bool isDefaultSearchEngine =
@@ -145,6 +155,7 @@ using base::UserMetricsAction;
   self.signinPromoMediator = nil;
   self.feedTopSectionMediator = nil;
   self.feedTopSectionViewController = nil;
+  [self stopSigninCoordinator];
 }
 
 #pragma mark - Public
@@ -172,9 +183,17 @@ using base::UserMetricsAction;
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [handler showSignin:command baseViewController:self.baseViewController];
+  _signinCoordinator =
+      [SigninCoordinator signinCoordinatorWithCommand:command
+                                              browser:self.browser
+                                   baseViewController:self.baseViewController];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+        [weakSelf stopSigninCoordinator];
+        command.completion(result, identity);
+      };
+  [_signinCoordinator start];
 }
 
 #pragma mark - Setters
@@ -192,6 +211,7 @@ using base::UserMetricsAction;
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
+  _optInAlertCoordinator.accessPoint = NotificationOptInAccessPoint::kFeed;
   _optInAlertCoordinator.clientIds = std::vector{
       PushNotificationClientId::kContent, PushNotificationClientId::kSports};
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
@@ -254,6 +274,14 @@ using base::UserMetricsAction;
 
 - (void)logHistogramForEvent:(ContentNotificationTopOfFeedPromoEvent)event {
   UmaHistogramEnumeration("ContentNotifications.Promo.TopOfFeed.Event", event);
+}
+
+#pragma mark - Private
+
+// Stops the signin coordinator.
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
 }
 
 @end

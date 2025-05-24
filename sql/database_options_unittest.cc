@@ -25,6 +25,8 @@ enum class OpenVariant {
   kOnDiskExclusiveWal = 4,
 };
 
+}  // namespace
+
 // We use the parameter to run all tests with WAL mode on and off.
 class DatabaseOptionsTest : public testing::TestWithParam<OpenVariant> {
  public:
@@ -89,35 +91,34 @@ class DatabaseOptionsTest : public testing::TestWithParam<OpenVariant> {
 };
 
 TEST_P(DatabaseOptionsTest, FlushToDisk_FalseByDefault) {
-  DatabaseOptions options = {
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-  };
-  EXPECT_FALSE(options.flush_to_media) << "Invalid test assumption";
+  DatabaseOptions options = DatabaseOptions()
+                                .set_exclusive_locking(exclusive_locking())
+                                .set_wal_mode(wal_mode());
+  EXPECT_FALSE(options.flush_to_media_) << "Invalid test assumption";
 
-  Database db(options);
+  Database db(options, test::kTestTag);
   OpenDatabase(db);
 
   EXPECT_EQ("0", sql::test::ExecuteWithResult(&db, "PRAGMA fullfsync"));
 }
 
 TEST_P(DatabaseOptionsTest, FlushToDisk_True) {
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .flush_to_media = true,
-  });
+  Database db(DatabaseOptions()
+                  .set_exclusive_locking(exclusive_locking())
+                  .set_wal_mode(wal_mode())
+                  .set_flush_to_media(true),
+              test::kTestTag);
   OpenDatabase(db);
 
   EXPECT_EQ("1", sql::test::ExecuteWithResult(&db, "PRAGMA fullfsync"));
 }
 
 TEST_P(DatabaseOptionsTest, FlushToDisk_False_DoesNotCrash) {
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .flush_to_media = false,
-  });
+  Database db(DatabaseOptions()
+                  .set_exclusive_locking(exclusive_locking())
+                  .set_wal_mode(wal_mode())
+                  .set_flush_to_media(false),
+              test::kTestTag);
   OpenDatabase(db);
 
   EXPECT_EQ("0", sql::test::ExecuteWithResult(&db, "PRAGMA fullfsync"))
@@ -126,11 +127,11 @@ TEST_P(DatabaseOptionsTest, FlushToDisk_False_DoesNotCrash) {
 }
 
 TEST_P(DatabaseOptionsTest, FlushToDisk_True_DoesNotCrash) {
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .flush_to_media = true,
-  });
+  Database db(DatabaseOptions()
+                  .set_exclusive_locking(exclusive_locking())
+                  .set_wal_mode(wal_mode())
+                  .set_flush_to_media(true),
+              test::kTestTag);
   OpenDatabase(db);
 
   EXPECT_EQ("1", sql::test::ExecuteWithResult(&db, "PRAGMA fullfsync"))
@@ -141,11 +142,11 @@ TEST_P(DatabaseOptionsTest, FlushToDisk_True_DoesNotCrash) {
 TEST_P(DatabaseOptionsTest, PageSize_Default) {
   static_assert(DatabaseOptions::kDefaultPageSize == 4096,
                 "The page size numbers in this test file need to change");
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .page_size = 4096,
-  });
+  Database db(DatabaseOptions()
+                  .set_exclusive_locking(exclusive_locking())
+                  .set_wal_mode(wal_mode())
+                  .set_page_size(4096),
+              test::kTestTag);
 
   OpenDatabase(db);
   EXPECT_EQ("4096", sql::test::ExecuteWithResult(&db, "PRAGMA page_size"));
@@ -160,11 +161,11 @@ TEST_P(DatabaseOptionsTest, PageSize_Default) {
 TEST_P(DatabaseOptionsTest, PageSize_Large) {
   static_assert(DatabaseOptions::kDefaultPageSize < 16384,
                 "The page size numbers in this test file need to change");
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .page_size = 16384,
-  });
+  Database db(DatabaseOptions()
+                  .set_exclusive_locking(exclusive_locking())
+                  .set_wal_mode(wal_mode())
+                  .set_page_size(16384),
+              test::kTestTag);
 
   OpenDatabase(db);
   EXPECT_EQ("16384", sql::test::ExecuteWithResult(&db, "PRAGMA page_size"));
@@ -179,11 +180,11 @@ TEST_P(DatabaseOptionsTest, PageSize_Large) {
 TEST_P(DatabaseOptionsTest, PageSize_Small) {
   static_assert(DatabaseOptions::kDefaultPageSize > 1024,
                 "The page size numbers in this test file need to change");
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .page_size = 1024,
-  });
+  Database db(DatabaseOptions()
+                  .set_exclusive_locking(exclusive_locking())
+                  .set_wal_mode(wal_mode())
+                  .set_page_size(1024),
+              test::kTestTag);
 
   OpenDatabase(db);
   EXPECT_EQ("1024", sql::test::ExecuteWithResult(&db, "PRAGMA page_size"));
@@ -196,44 +197,43 @@ TEST_P(DatabaseOptionsTest, PageSize_Small) {
 }
 
 TEST_P(DatabaseOptionsTest, CacheSize_Legacy) {
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .cache_size = 0,
-  });
+  Database db(DatabaseOptions()
+                  .set_exclusive_locking(exclusive_locking())
+                  .set_wal_mode(wal_mode())
+                  .set_cache_size(0),
+              test::kTestTag);
   OpenDatabase(db);
 
   EXPECT_EQ("-2000", sql::test::ExecuteWithResult(&db, "PRAGMA cache_size"));
 }
 
 TEST_P(DatabaseOptionsTest, CacheSize_Small) {
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .cache_size = 16,
-  });
+  Database db(DatabaseOptions()
+                  .set_exclusive_locking(exclusive_locking())
+                  .set_wal_mode(wal_mode())
+                  .set_cache_size(16),
+              test::kTestTag);
   OpenDatabase(db);
   EXPECT_EQ("16", sql::test::ExecuteWithResult(&db, "PRAGMA cache_size"));
 }
 
 TEST_P(DatabaseOptionsTest, CacheSize_Large) {
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .cache_size = 1000,
-  });
+  Database db(DatabaseOptions()
+                  .set_exclusive_locking(exclusive_locking())
+                  .set_wal_mode(wal_mode())
+                  .set_cache_size(1000),
+              test::kTestTag);
   OpenDatabase(db);
   EXPECT_EQ("1000", sql::test::ExecuteWithResult(&db, "PRAGMA cache_size"));
 }
 
 TEST_P(DatabaseOptionsTest, EnableViewsDiscouraged_FalseByDefault) {
-  DatabaseOptions options = {
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-  };
-  EXPECT_FALSE(options.enable_views_discouraged) << "Invalid test assumption";
+  DatabaseOptions options = DatabaseOptions()
+                                .set_exclusive_locking(exclusive_locking())
+                                .set_wal_mode(wal_mode());
+  EXPECT_FALSE(options.enable_views_discouraged_) << "Invalid test assumption";
 
-  Database db(options);
+  Database db(options, test::kTestTag);
   OpenDatabase(db);
 
   // sqlite3_db_config() currently only disables querying views. Schema
@@ -254,11 +254,11 @@ TEST_P(DatabaseOptionsTest, EnableViewsDiscouraged_FalseByDefault) {
 }
 
 TEST_P(DatabaseOptionsTest, EnableViewsDiscouraged_True) {
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .enable_views_discouraged = true,
-  });
+  Database db(DatabaseOptions()
+                  .set_exclusive_locking(exclusive_locking())
+                  .set_wal_mode(wal_mode())
+                  .set_enable_views_discouraged(true),
+              test::kTestTag);
   OpenDatabase(db);
 
   ASSERT_TRUE(db.Execute("CREATE VIEW view(id) AS SELECT 1"));
@@ -278,7 +278,5 @@ INSTANTIATE_TEST_SUITE_P(
                     OpenVariant::kOnDiskExclusiveJournal,
                     OpenVariant::kOnDiskNonExclusiveJournal,
                     OpenVariant::kOnDiskExclusiveWal));
-
-}  // namespace
 
 }  // namespace sql

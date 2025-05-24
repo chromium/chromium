@@ -9,7 +9,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
 #import "url/gurl.h"
 
 @implementation SaveCardMessageWithLinks

@@ -28,9 +28,9 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/features.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -124,6 +124,7 @@ StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
   pref_change_registrar_.Add(prefs::kBuiltInDnsClientEnabled, pref_callback);
   pref_change_registrar_.Add(prefs::kAdditionalDnsQueryTypesEnabled,
                              pref_callback);
+  pref_change_registrar_.Add(prefs::kHappyEyeballsV3Enabled, pref_callback);
 
   parental_controls_delay_timer_.Start(
       FROM_HERE, kParentalControlsCheckDelay,
@@ -150,6 +151,7 @@ void StubResolverConfigReader::RegisterPrefs(PrefRegistrySimple* registry) {
   // for SystemNetworkContextManager, at which point the feature list is ready.
   registry->RegisterBooleanPref(prefs::kBuiltInDnsClientEnabled, false);
   registry->RegisterBooleanPref(prefs::kAdditionalDnsQueryTypesEnabled, true);
+  registry->RegisterBooleanPref(prefs::kHappyEyeballsV3Enabled, false);
 }
 
 SecureDnsConfig StubResolverConfigReader::GetSecureDnsConfiguration(
@@ -222,6 +224,13 @@ StubResolverConfigReader::GetDnsOverHttpsConfigSource() const {
     return override_doh_source_.get();
   }
   return default_doh_source_.get();
+}
+
+bool StubResolverConfigReader::GetHappyEyeballsV3Enabled() const {
+  if (local_state_->IsManagedPreference(prefs::kHappyEyeballsV3Enabled)) {
+    return local_state_->GetBoolean(prefs::kHappyEyeballsV3Enabled);
+  }
+  return base::FeatureList::IsEnabled(net::features::kHappyEyeballsV3);
 }
 
 void StubResolverConfigReader::OnParentalControlsDelayTimer() {
@@ -299,10 +308,9 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
             SecureDnsModeDetailsForHistogram::kOffByDetectedManagedEnvironment;
         break;
       case SecureDnsConfig::ManagementMode::kDisabledParentalControls:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     // No need to check for parental controls if DoH is already disabled.
@@ -346,8 +354,8 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
   }
   if (update_network_service) {
     content::GetNetworkService()->ConfigureStubHostResolver(
-        GetInsecureStubResolverEnabled(), secure_dns_mode, doh_config,
-        additional_dns_query_types_enabled);
+        GetInsecureStubResolverEnabled(), GetHappyEyeballsV3Enabled(),
+        secure_dns_mode, doh_config, additional_dns_query_types_enabled);
   }
 
   return SecureDnsConfig(secure_dns_mode, std::move(doh_config),

@@ -10,9 +10,12 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Collections;
 
 /** A FrameLayout that does not have System Gesture. */
+@NullMarked
 public class NoSystemGestureFrameLayout extends FrameLayout {
     public NoSystemGestureFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);

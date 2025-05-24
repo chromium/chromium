@@ -33,8 +33,6 @@ class CaptivePortalTabHelper
   CaptivePortalTabHelper(web::WebState* web_state);
 
   raw_ptr<TabInsertionBrowserAgent> insertionAgent_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_SSL_MODEL_CAPTIVE_PORTAL_TAB_HELPER_H_

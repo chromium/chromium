@@ -25,6 +25,7 @@ class PaymentAddress;
 class PaymentStateResolver;
 class PaymentValidationErrors;
 class ScriptState;
+class V8PaymentComplete;
 
 class MODULES_EXPORT PaymentResponse final
     : public EventTarget,
@@ -49,11 +50,11 @@ class MODULES_EXPORT PaymentResponse final
               PaymentAddress* shipping_address);
   void UpdatePayerDetail(payments::mojom::blink::PayerDetailPtr);
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
+  ScriptObject toJSONForBinding(ScriptState*) const;
 
   const String& requestId() const { return request_id_; }
   const String& methodName() const { return method_name_; }
-  ScriptValue details(ScriptState* script_state) const;
+  ScriptObject details() const { return details_; }
   PaymentAddress* shippingAddress() const { return shipping_address_.Get(); }
   const String& shippingOption() const { return shipping_option_; }
   const String& payerName() const { return payer_name_; }
@@ -61,7 +62,7 @@ class MODULES_EXPORT PaymentResponse final
   const String& payerPhone() const { return payer_phone_; }
 
   ScriptPromise<IDLUndefined> complete(ScriptState*,
-                                       const String& result,
+                                       const V8PaymentComplete& result,
                                        ExceptionState&);
   ScriptPromise<IDLUndefined> retry(ScriptState*,
                                     const PaymentValidationErrors*,
@@ -79,7 +80,7 @@ class MODULES_EXPORT PaymentResponse final
  private:
   String request_id_;
   String method_name_;
-  WorldSafeV8Reference<v8::Value> details_;
+  ScriptObject details_;
   Member<PaymentAddress> shipping_address_;
   String shipping_option_;
   String payer_name_;

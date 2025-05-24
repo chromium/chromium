@@ -33,8 +33,7 @@ class CascadingColorProviderColor final : public CascadingProperty<SkColor> {
 }  // namespace
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(CascadingProperty<SkColor>,
-                                   kCascadingBackgroundColor,
-                                   nullptr)
+                                   kCascadingBackgroundColor)
 
 void SetCascadingColorProviderColor(
     views::View* view,

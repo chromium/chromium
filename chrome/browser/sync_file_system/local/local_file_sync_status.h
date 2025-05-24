@@ -36,12 +36,12 @@ class LocalFileSyncStatus {
 
   class Observer {
    public:
-    Observer() {}
+    Observer() = default;
 
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     virtual void OnSyncEnabled(const storage::FileSystemURL& url) = 0;
     virtual void OnWriteEnabled(const storage::FileSystemURL& url) = 0;
   };

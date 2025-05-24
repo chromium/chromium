@@ -323,7 +323,13 @@ TEST_F(NotificationMenuViewTest, RemoveOlderNotification) {
 
 // Tests that the displayed NotificationItemView is only dismissed when dragged
 // beyond the threshold.
-TEST_F(NotificationMenuViewTest, SlideOut) {
+// TODO(crbug.com/401481106): This test is very flaky on Linux under Asan+Lsan.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_SlideOut DISABLED_SlideOut
+#else
+#define MAYBE_SlideOut SlideOut
+#endif
+TEST_F(NotificationMenuViewTest, MAYBE_SlideOut) {
   AddNotification("notification_id", u"title", u"message");
 
   EXPECT_EQ(0, mock_notification_menu_controller()->slide_out_count_);

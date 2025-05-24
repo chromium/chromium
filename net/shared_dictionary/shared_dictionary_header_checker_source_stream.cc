@@ -10,6 +10,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
+#include "net/filter/source_stream_type.h"
 
 namespace net {
 namespace {
@@ -22,12 +24,12 @@ static constexpr size_t kCompressionTypeBrotliSignatureSize =
     sizeof(kCompressionTypeBrotliSignature);
 static constexpr size_t kCompressionTypeZstdSignatureSize =
     sizeof(kCompressionTypeZstdSignature);
-static constexpr int kCompressionDictionaryHashSize = 32;
+static constexpr size_t kCompressionDictionaryHashSize = 32;
 static_assert(sizeof(SHA256HashValue) == kCompressionDictionaryHashSize,
               "kCompressionDictionaryHashSize mismatch");
-static constexpr int kCompressionTypeBrotliHeaderSize =
+static constexpr size_t kCompressionTypeBrotliHeaderSize =
     kCompressionTypeBrotliSignatureSize + kCompressionDictionaryHashSize;
-static constexpr int kCompressionTypeZstdHeaderSize =
+static constexpr size_t kCompressionTypeZstdHeaderSize =
     kCompressionTypeZstdSignatureSize + kCompressionDictionaryHashSize;
 
 size_t GetSignatureSize(SharedDictionaryHeaderCheckerSourceStream::Type type) {
@@ -71,7 +73,7 @@ SharedDictionaryHeaderCheckerSourceStream::
         std::unique_ptr<SourceStream> upstream,
         Type type,
         const SHA256HashValue& dictionary_hash)
-    : SourceStream(SourceStream::TYPE_NONE),
+    : SourceStream(SourceStreamType::kNone),
       upstream_(std::move(upstream)),
       type_(type),
       dictionary_hash_(dictionary_hash),
@@ -143,7 +145,7 @@ bool SharedDictionaryHeaderCheckerSourceStream::CheckHeaderBuffer() const {
   if (GetSignatureInBuffer() != GetExpectedSignature(type_)) {
     return false;
   }
-  if (GetHashInBuffer() != base::span(dictionary_hash_.data)) {
+  if (GetHashInBuffer() != dictionary_hash_) {
     return false;
   }
   return true;
@@ -171,7 +173,7 @@ void SharedDictionaryHeaderCheckerSourceStream::HeaderCheckCompleted(
 
 base::span<const unsigned char>
 SharedDictionaryHeaderCheckerSourceStream::GetSignatureInBuffer() const {
-  return head_read_buffer_->everything().subspan(0, GetSignatureSize(type_));
+  return head_read_buffer_->everything().first(GetSignatureSize(type_));
 }
 
 base::span<const unsigned char>

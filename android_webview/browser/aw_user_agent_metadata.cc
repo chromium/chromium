@@ -23,13 +23,6 @@ namespace android_webview {
 
 namespace {
 
-// Convert a Java string to UTF8. Returns a std string. If Java string is null,
-// return an empty std string.
-std::string ConvertJavaStringToUTF8Wrapper(
-    const base::android::JavaRef<jstring>& str) {
-  return str.obj() ? base::android::ConvertJavaStringToUTF8(str) : "";
-}
-
 }  // namespace
 blink::UserAgentMetadata FromJavaAwUserAgentMetadata(
     JNIEnv* env,
@@ -69,20 +62,19 @@ blink::UserAgentMetadata FromJavaAwUserAgentMetadata(
     ua_metadata.brand_full_version_list = std::move(brand_full_version_list);
   }
 
-  ua_metadata.full_version = ConvertJavaStringToUTF8Wrapper(
-      Java_AwUserAgentMetadata_getFullVersion(env, java_ua_metadata));
+  ua_metadata.full_version =
+      Java_AwUserAgentMetadata_getFullVersion(env, java_ua_metadata);
 
-  ua_metadata.platform = ConvertJavaStringToUTF8Wrapper(
-      Java_AwUserAgentMetadata_getPlatform(env, java_ua_metadata));
+  ua_metadata.platform =
+      Java_AwUserAgentMetadata_getPlatform(env, java_ua_metadata);
 
-  ua_metadata.platform_version = ConvertJavaStringToUTF8Wrapper(
-      Java_AwUserAgentMetadata_getPlatformVersion(env, java_ua_metadata));
+  ua_metadata.platform_version =
+      Java_AwUserAgentMetadata_getPlatformVersion(env, java_ua_metadata);
 
-  ua_metadata.architecture = ConvertJavaStringToUTF8Wrapper(
-      Java_AwUserAgentMetadata_getArchitecture(env, java_ua_metadata));
+  ua_metadata.architecture =
+      Java_AwUserAgentMetadata_getArchitecture(env, java_ua_metadata);
 
-  ua_metadata.model = ConvertJavaStringToUTF8Wrapper(
-      Java_AwUserAgentMetadata_getModel(env, java_ua_metadata));
+  ua_metadata.model = Java_AwUserAgentMetadata_getModel(env, java_ua_metadata);
 
   ua_metadata.mobile = Java_AwUserAgentMetadata_isMobile(env, java_ua_metadata);
 
@@ -118,28 +110,16 @@ ScopedJavaLocalRef<jobject> ToJavaAwUserAgentMetadata(
       ToJavaArrayOfStringArray(env, brand_version_list);
   ScopedJavaLocalRef<jobjectArray> java_brand_full_version_lis =
       ToJavaArrayOfStringArray(env, brand_full_version_list);
-  ScopedJavaLocalRef<jstring> java_full_version =
-      ConvertUTF8ToJavaString(env, ua_metadata.full_version);
-  ScopedJavaLocalRef<jstring> java_platform =
-      ConvertUTF8ToJavaString(env, ua_metadata.platform);
-  ScopedJavaLocalRef<jstring> java_platform_version =
-      ConvertUTF8ToJavaString(env, ua_metadata.platform_version);
-  ScopedJavaLocalRef<jstring> java_architecture =
-      ConvertUTF8ToJavaString(env, ua_metadata.architecture);
-  ScopedJavaLocalRef<jstring> java_model =
-      ConvertUTF8ToJavaString(env, ua_metadata.model);
   jboolean java_mobile = ua_metadata.mobile;
-  ScopedJavaLocalRef<jstring> java_bitness =
-      ConvertUTF8ToJavaString(env, ua_metadata.bitness);
   jboolean java_wow64 = ua_metadata.wow64;
   ScopedJavaLocalRef<jobjectArray> java_form_factors =
       ToJavaArrayOfStrings(env, ua_metadata.form_factors);
 
   return Java_AwUserAgentMetadata_create(
       env, java_brand_version_list, java_brand_full_version_lis,
-      java_full_version, java_platform, java_platform_version,
-      java_architecture, java_model, java_mobile, java_bitness, java_wow64,
-      java_form_factors);
+      ua_metadata.full_version, ua_metadata.platform,
+      ua_metadata.platform_version, ua_metadata.architecture, ua_metadata.model,
+      java_mobile, ua_metadata.bitness, java_wow64, java_form_factors);
 }
 
 }  // namespace android_webview

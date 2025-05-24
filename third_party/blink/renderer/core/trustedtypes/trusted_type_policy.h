@@ -26,30 +26,15 @@ class CORE_EXPORT TrustedTypePolicy final : public ScriptWrappable {
  public:
   TrustedTypePolicy(const String& policy_name, TrustedTypePolicyOptions*);
 
-  TrustedHTML* CreateHTML(v8::Isolate*,
+  TrustedHTML* createHTML(v8::Isolate*,
                           const String&,
                           const HeapVector<ScriptValue>&,
                           ExceptionState&);
-  TrustedScript* CreateScript(v8::Isolate*,
+  TrustedScript* createScript(v8::Isolate*,
                               const String&,
                               const HeapVector<ScriptValue>&,
                               ExceptionState&);
-  TrustedScriptURL* CreateScriptURL(v8::Isolate*,
-                                    const String&,
-                                    const HeapVector<ScriptValue>&,
-                                    ExceptionState&);
-
-  // IDL generates calls with ScriptState*, which contains the Isolate*.
-  // These methods all call the Isolate* variant.
-  TrustedHTML* createHTML(ScriptState*,
-                          const String&,
-                          const HeapVector<ScriptValue>&,
-                          ExceptionState&);
-  TrustedScript* createScript(ScriptState*,
-                              const String&,
-                              const HeapVector<ScriptValue>&,
-                              ExceptionState&);
-  TrustedScriptURL* createScriptURL(ScriptState*,
+  TrustedScriptURL* createScriptURL(v8::Isolate*,
                                     const String&,
                                     const HeapVector<ScriptValue>&,
                                     ExceptionState&);

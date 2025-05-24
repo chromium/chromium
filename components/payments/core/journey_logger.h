@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_JOURNEY_LOGGER_H_
 #define COMPONENTS_PAYMENTS_CORE_JOURNEY_LOGGER_H_
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -290,8 +291,7 @@ class JourneyLogger {
   // Returns whether this Payment Request was triggered (shown or skipped show).
   bool WasPaymentRequestTriggered();
 
-  SectionStats sections_[NUMBER_OF_SECTIONS];
-  bool has_recorded_ = false;
+  std::array<SectionStats, NUMBER_OF_SECTIONS> sections_;
 
   // Accumulates the many events that have happened during the Payment Request.
   int events2_;

@@ -102,7 +102,7 @@ class I18nSourceStreamTest : public ::testing::TestWithParam<I18nTestParam> {
     replacements_["beta"] = "banana";
     replacements_["gamma"] = "carrot";
     stream_ = I18nSourceStream::Create(
-        std::move(source), net::SourceStream::TYPE_NONE, &replacements_);
+        std::move(source), net::SourceStreamType::kNone, &replacements_);
   }
 
   // If MockSourceStream::Mode is ASYNC, completes 1 read from |mock_stream| and

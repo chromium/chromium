@@ -10,8 +10,7 @@
 #include "base/threading/platform_thread.h"
 #include "third_party/nearby/src/internal/platform/implementation/mutex.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // Concrete Mutex implementation with recursive lock.
 // As base::Lock does not support recursive locking, this class uses separate
@@ -42,7 +41,6 @@ class RecursiveMutex : public api::Mutex {
   size_t num_acquisitions_ GUARDED_BY(bookkeeping_lock_) = 0;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_RECURSIVE_MUTEX_H_

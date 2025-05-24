@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.feed.sections;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Constants for visibility of a view.
  * <p>
  * Maps to View.VISIBLE, View.INVISIBLE, and View.GONE.
  */
+@NullMarked
 public enum ViewVisibility {
     VISIBLE,
     INVISIBLE,

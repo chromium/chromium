@@ -272,18 +272,18 @@ AXTreeFuzzerGenerator::DetermineTreeUpdateOperation(const ui::AXNode* node,
       // text children.
       if (ax::mojom::Role::kRootWebArea != node->GetRole())
         return kRemoveNode;
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case 1:
       // Check to ensure this node can have children. Also consider that we
       // shouldn't add children to static text, as these nodes only expect to
       // have a inline text single child.
       if (CanHaveChildren(node->GetRole()) && !ui::IsText(node->GetRole()))
         return kAddChild;
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case 2:
       if (ax::mojom::Role::kStaticText == node->GetRole())
         return kTextChange;
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     default:
       return kNoOperation;
   }

@@ -34,6 +34,8 @@
 namespace extensions {
 namespace {
 
+// TODO(crbug.com/393179880): Port to desktop Android when ExtensionActionRunner
+// is ported.
 class ExtensionActiveTabTest : public ExtensionApiTest {
  public:
   ExtensionActiveTabTest() = default;

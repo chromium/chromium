@@ -129,9 +129,6 @@ std::u16string SearchResultBaseView::ComputeAccessibleName() const {
              AppListSearchResultType::kInstalledApp) {
     accessible_name = l10n_util::GetStringFUTF16(
         IDS_APP_ACCESSIBILITY_INSTALLED_APP_ANNOUNCEMENT, title);
-  } else if (result()->result_type() == AppListSearchResultType::kInternalApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_INTERNAL_APP_ANNOUNCEMENT, title);
   } else if (!result()->details().empty()) {
     accessible_name = base::JoinString({title, result()->details()}, u", ");
   } else {

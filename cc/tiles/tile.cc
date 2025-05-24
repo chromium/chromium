@@ -43,6 +43,7 @@ Tile::~Tile() {
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"),
       "cc::Tile", this);
+  deleted_ = true;
   tile_manager_->Release(this);
 }
 

@@ -40,7 +40,8 @@ class BoundSessionRegistrationFetcherParam {
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
-      std::string challenge);
+      std::string challenge,
+      bool is_wsbeta = false);
 
   const GURL& registration_endpoint() const { return registration_endpoint_; }
 
@@ -50,6 +51,8 @@ class BoundSessionRegistrationFetcherParam {
   }
 
   const std::string& challenge() const { return challenge_; }
+
+  bool is_wsbeta() const { return is_wsbeta_; }
 
  private:
   static std::optional<BoundSessionRegistrationFetcherParam> ParseListItem(
@@ -66,11 +69,13 @@ class BoundSessionRegistrationFetcherParam {
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
-      std::string challenge);
+      std::string challenge,
+      bool is_wsbeta);
 
   GURL registration_endpoint_;
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos_;
   std::string challenge_;
+  bool is_wsbeta_ = false;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_

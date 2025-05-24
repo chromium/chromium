@@ -264,10 +264,8 @@ TEST_F(TestURLLoaderFactoryTest, SimulateResponse) {
   EXPECT_EQ(net::HTTP_NOT_FOUND,
             client()->response_head()->headers->response_code());
   // Our header should be set.
-  std::string value;
-  EXPECT_TRUE(
-      client()->response_head()->headers->GetNormalizedHeader("Foo", &value));
-  EXPECT_EQ("Bar", value);
+  EXPECT_EQ(client()->response_head()->headers->GetNormalizedHeader("Foo"),
+            "Bar");
   std::string response;
   EXPECT_TRUE(
       mojo::BlockingCopyToString(client()->response_body_release(), &response));

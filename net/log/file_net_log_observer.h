@@ -100,6 +100,13 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
 
   ~FileNetLogObserver() override;
 
+  // Sets the number of events that can build up in the write queue before a
+  // task is posted to the file task runner to flush them to disk.
+  void set_num_write_queue_events(size_t num_write_queue_events) {
+    CHECK_GT(num_write_queue_events, 0u);
+    num_write_queue_events_ = num_write_queue_events;
+  }
+
   // Attaches this observer to |net_log| and begins observing events.
   void StartObserving(NetLog* net_log);
 
@@ -133,6 +140,9 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
       std::unique_ptr<base::Value::Dict> constants);
 
  private:
+  // The default number of events in the write queue.
+  static constexpr size_t kDefaultNumWriteQueueEvents = 15;
+
   class WriteQueue;
   class FileWriter;
 
@@ -160,6 +170,10 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
   // lifetime. It should be destroyed once both the observer has been destroyed
   // and all tasks posted to the file task runner have completed.
   scoped_refptr<WriteQueue> write_queue_;
+
+  // Number of events that can build up in `write_queue_` before a task is
+  // posted to the file task runner to flush them to disk.
+  size_t num_write_queue_events_ = kDefaultNumWriteQueueEvents;
 
   // The FileNetLogObserver is shared between the main thread and
   // |file_task_runner_|.

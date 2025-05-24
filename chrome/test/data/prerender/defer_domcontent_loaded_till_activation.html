@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Prerender test</title>
+  </head>
+
+  <body>
+    This page will not be fully loaded until it is activated.
+
+    <script>
+      let dom_content_loaded_called = false;
+      document.addEventListener("DOMContentLoaded", _ => {
+        dom_content_loaded_called = true;
+      });
+
+      let element = document.createElement('div');
+      element.setAttribute("id", "script_execution_watcher");
+      document.body.appendChild(element);
+
+    </script>
+    <script blocking="render" src="slow_layout.js"></script>
+  </body>
+  </html>

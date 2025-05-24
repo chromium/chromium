@@ -30,12 +30,12 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
   ~ShortcutMenuHandlingSubManager() override;
 
   void Configure(const webapps::AppId& app_id,
-                 proto::WebAppOsIntegrationState& desired_state,
+                 proto::os_state::WebAppOsIntegration& desired_state,
                  base::OnceClosure configure_done) override;
   void Execute(const webapps::AppId& app_id,
                const std::optional<SynchronizeOsOptions>& synchronize_options,
-               const proto::WebAppOsIntegrationState& desired_state,
-               const proto::WebAppOsIntegrationState& current_state,
+               const proto::os_state::WebAppOsIntegration& desired_state,
+               const proto::os_state::WebAppOsIntegration& current_state,
                base::OnceClosure execute_complete) override;
   void ForceUnregister(const webapps::AppId& app_id,
                        base::OnceClosure callback) override;
@@ -44,19 +44,19 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
   void StoreShortcutMenuData(
       const webapps::AppId& app_id,
       std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_info,
-      proto::ShortcutMenus* shortcut_menus,
+      proto::os_state::ShortcutMenus* shortcut_menus,
       WebAppIconManager::ShortcutIconDataVector data);
   void StartShortcutsMenuUnregistration(
       const webapps::AppId& app_id,
-      const proto::WebAppOsIntegrationState& current_state,
+      const proto::os_state::WebAppOsIntegration& current_state,
       base::OnceClosure registration_callback);
   void ReadIconDataForShortcutsMenu(
       const webapps::AppId& app_id,
-      const proto::WebAppOsIntegrationState& desired_state,
+      const proto::os_state::WebAppOsIntegration& desired_state,
       base::OnceClosure execute_complete);
   void OnIconDataLoadedRegisterShortcutsMenu(
       const webapps::AppId& app_id,
-      const proto::WebAppOsIntegrationState& desired_state,
+      const proto::os_state::WebAppOsIntegration& desired_state,
       base::OnceClosure execute_complete,
       ShortcutsMenuIconBitmaps shortcut_menu_icon_bitmaps);
 

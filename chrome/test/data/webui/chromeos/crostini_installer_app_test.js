@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://crostini-installer/app.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {BrowserProxy} from 'chrome://crostini-installer/browser_proxy.js';
+import {PageCallbackRouter} from 'chrome://crostini-installer/crostini_installer.mojom-webui.js';
+import {InstallerError, InstallerState} from 'chrome://crostini-installer/crostini_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-
-const InstallerState = crostini.mojom.InstallerState;
-const InstallerError = crostini.mojom.InstallerError;
 
 class FakePageHandler extends TestBrowserProxy {
   constructor() {
@@ -67,8 +67,8 @@ class FakePageHandler extends TestBrowserProxy {
 class FakeBrowserProxy {
   constructor() {
     this.handler = new FakePageHandler();
-    this.callbackRouter = new ash.crostiniInstaller.mojom.PageCallbackRouter();
-    /** @type {appManagement.mojom.PageRemote} */
+    this.callbackRouter = new PageCallbackRouter();
+    /** @type {PageRemote} */
     this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
   }
 }

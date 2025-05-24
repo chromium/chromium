@@ -175,7 +175,7 @@ struct CheckGCedTypeRestriction {
                 "Raw pointers are not allowed to bind into WTF::Function. Wrap "
                 "it with either WrapPersistent, WrapWeakPersistent, "
                 "WrapCrossThreadPersistent, WrapCrossThreadWeakPersistent, "
-                "RefPtr or unretained.");
+                "RetainedRef or Unretained.");
   static_assert(!WTF::IsMemberOrWeakMemberType<T>::value,
                 "Member and WeakMember are not allowed to bind into "
                 "WTF::Function. Wrap it with either WrapPersistent, "
@@ -183,7 +183,7 @@ struct CheckGCedTypeRestriction {
                 "WrapCrossThreadWeakPersistent.");
   static_assert(!WTF::IsGarbageCollectedType<T>::value,
                 "GCed types are forbidden as bound parameters.");
-  static_assert(!WTF::IsStackAllocatedType<T>,
+  static_assert(!WTF::IsStackAllocatedTypeV<T>,
                 "Stack allocated types are forbidden as bound parameters.");
   static_assert(
       !(WTF::IsDisallowNew<T> && WTF::IsTraceable<T>::value),

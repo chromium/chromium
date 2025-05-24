@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INVALIDATION_RULE_INVALIDATION_DATA_VISITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INVALIDATION_RULE_INVALIDATION_DATA_VISITOR_H_
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/css/invalidation/rule_invalidation_data.h"
 #include "third_party/blink/renderer/core/css/invalidation/selector_pre_match.h"
 
@@ -31,6 +32,8 @@ enum class RuleInvalidationDataVisitorType { kBuilder, kTracer };
 // steps taken by the Builder that the Tracer is following in.
 template <RuleInvalidationDataVisitorType VisitorType>
 class RuleInvalidationDataVisitor {
+  STACK_ALLOCATED();
+
  public:
   // Creates invalidation sets for the given CSS selector. This is done as part
   // of creating the RuleSet for the style sheet, i.e., before matching or
@@ -76,6 +79,9 @@ class RuleInvalidationDataVisitor {
       const CSSSelector&,
       unsigned max_direct_adjacent_selectors,
       FeatureMetadata&);
+  void CollectMetadataFromSelectorList(const CSSSelector* selector_list,
+                                       unsigned max_direct_adjacent_selectors,
+                                       FeatureMetadata&);
 
   void UpdateInvalidationSets(const CSSSelector&, const StyleScope*);
 

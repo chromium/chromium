@@ -15,7 +15,7 @@ if (is_chrome_branded) {
   enterprise_companion_product_full_name = "ChromeEnterpriseCompanion"
   enterprise_companion_product_full_name_dashed_lowercase =
       "chrome-enterprise-companion"
-  keystone_app_name = "GoogleSoftwareUpdate"
+  enterprise_companion_keystone_app_name = "GoogleSoftwareUpdate"
   mac_enterprise_companion_bundle_identifier =
       "com.google.ChromeEnterpriseCompanion"
 } else {
@@ -29,7 +29,7 @@ if (is_chrome_branded) {
   enterprise_companion_product_full_name = "ChromiumEnterpriseCompanion"
   enterprise_companion_product_full_name_dashed_lowercase =
       "chromium-enterprise-companion"
-  keystone_app_name = "ChromiumSoftwareUpdate"
+  enterprise_companion_keystone_app_name = "ChromiumSoftwareUpdate"
   mac_enterprise_companion_bundle_identifier =
       "org.chromium.ChromiumEnterpriseCompanion"
 }

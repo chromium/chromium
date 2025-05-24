@@ -6,9 +6,10 @@ package org.chromium.base;
 
 import android.util.ArrayMap;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.AlwaysInline;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -43,8 +44,9 @@ import java.util.ServiceLoader;
  *
  * </pre>
  */
+@NullMarked
 public final class ServiceLoaderUtil {
-    private static Map<Class<?>, Object> sOverridesForTesting;
+    private static @MonotonicNonNull Map<Class<?>, Object> sOverridesForTesting;
 
     private ServiceLoaderUtil() {}
 

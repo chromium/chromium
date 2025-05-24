@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
 import os
 import sys
-from typing import Any, List, Optional, Union
+from typing import Any
 import unittest
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
+from telemetry.internal.platform import gpu_info as gi
 
 from gpu_tests import common_typing as ct
 from gpu_tests import constants
@@ -15,15 +16,13 @@ from gpu_tests import gpu_integration_test
 from gpu_tests import overlay_support
 from gpu_tests.util import host_information
 
-from telemetry.internal.platform import gpu_info as gi
-
 
 @dataclasses.dataclass
 class InfoCollectionTestArgs():
   """Struct-like class for passing args to an InfoCollection test."""
-  expected_vendor_id_str: Optional[str] = None
-  expected_device_id_strs: Optional[List[str]] = None
-  gpu: Optional[gi.GPUInfo] = None
+  expected_vendor_id_str: str | None = None
+  expected_device_id_strs: list[str] | None = None
+  gpu: gi.GPUInfo | None = None
 
 
 class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
@@ -113,12 +112,12 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
 
     # Check expected and detected GPUs match
     if detected_vendor_id != expected_vendor_id:
-      self.fail('Vendor ID mismatch, expected %s but got %s.' %
-                (expected_vendor_id, detected_vendor_id))
+      self.fail(f'Vendor ID mismatch, expected {expected_vendor_id} but got '
+                f'{detected_vendor_id}.')
 
     if detected_device_id not in expected_device_ids:
-      self.fail('Device ID mismatch, expected %s but got %s.' %
-                (expected_device_ids, detected_device_id))
+      self.fail(f'Device ID mismatch, expected {expected_device_ids} but got '
+                f'{detected_device_id}.')
 
   def _RunDirectCompositionTest(self,
                                 test_args: InfoCollectionTestArgs) -> None:
@@ -140,8 +139,8 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
         detected = aux_attributes.get(field, 'NONE')
         if expected != detected:
           self.fail(
-              '%s mismatch, expected %s but got %s.' %
-              (field, self._ValueToStr(expected), self._ValueToStr(detected)))
+              f'{field} mismatch, expected {self._ValueToStr(expected)} but '
+              f'got {self._ValueToStr(detected)}.')
 
   def _RunDX12VulkanTest(self, _: InfoCollectionTestArgs) -> None:
     os_name = self.browser.platform.GetOSName()
@@ -164,8 +163,8 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
         detected = aux_attributes.get(field)
         if expected != detected:
           self.fail(
-              '%s mismatch, expected %s but got %s.' %
-              (field, self._ValueToStr(expected), self._ValueToStr(detected)))
+              f'{field} mismatch, expected {self._ValueToStr(expected)} but '
+              f'got {self._ValueToStr(detected)}.')
 
   def _RunAsanInfoTest(self, _: InfoCollectionTestArgs) -> None:
     gpu_info = self.browser.GetSystemInfo().gpu
@@ -214,7 +213,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
 
 
   @staticmethod
-  def _ValueToStr(value: Union[str, bool]) -> str:
+  def _ValueToStr(value: str | bool) -> str:
     if isinstance(value, str):
       return value
     if isinstance(value, bool):
@@ -223,7 +222,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     return False
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'info_collection_expectations.txt')

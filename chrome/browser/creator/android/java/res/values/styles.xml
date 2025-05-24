@@ -24,7 +24,7 @@ found in the LICENSE file.
         <item name="buttonTextColor">@macro/default_text_color_accent1</item>
         <item name="buttonColor">@android:color/transparent</item>
         <item name="rippleColor">@color/text_button_ripple_color_list</item>
-        <item name="borderWidth">@dimen/button_outlined_border_width</item>
+        <item name="buttonBorderWidth">@dimen/button_outlined_border_width</item>
         <item name="borderColor">?attr/globalOutlinedButtonBorderColor</item>
     </style>
 

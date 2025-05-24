@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.hub;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -17,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>IMPORTANT: Do not delete or renumber entries. Keep this list in sync with HubPaneId in
  * tools/metrics/histograms/metadata/android/enums.xml.
  */
+@NullMarked
 // LINT.IfChange(PaneId)
 @IntDef({
     PaneId.TAB_SWITCHER,
@@ -24,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
     PaneId.BOOKMARKS,
     PaneId.TAB_GROUPS,
     PaneId.CROSS_DEVICE,
+    PaneId.HISTORY,
     PaneId.COUNT
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -33,8 +37,9 @@ public @interface PaneId {
     int BOOKMARKS = 2;
     int TAB_GROUPS = 3;
     int CROSS_DEVICE = 4;
+    int HISTORY = 5;
 
     /** Must be last. */
-    int COUNT = 5;
+    int COUNT = 6;
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:HubPaneId)

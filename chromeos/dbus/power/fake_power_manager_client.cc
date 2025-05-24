@@ -64,9 +64,12 @@ power_manager::BacklightBrightnessChange_Cause RequestCauseToChangeCause(
         SetBacklightBrightnessRequest_Cause_RESTORED_FROM_USER_PREFERENCE:
       return power_manager::
           BacklightBrightnessChange_Cause_RESTORED_FROM_USER_PREFERENCE;
+    case power_manager::
+        SetBacklightBrightnessRequest_Cause_BATTERY_SAVER_STATE_CHANGED:
+      return power_manager::
+          BacklightBrightnessChange_Cause_BATTERY_SAVER_STATE_CHANGED;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled brightness request cause " << cause;
-  return power_manager::BacklightBrightnessChange_Cause_USER_REQUEST;
+  NOTREACHED() << "Unhandled brightness request cause " << cause;
 }
 
 power_manager::AmbientLightSensorChange_Cause
@@ -82,9 +85,7 @@ AmbientLightSensorRequestCauseToChangeCause(
       return power_manager::
           AmbientLightSensorChange_Cause_RESTORED_FROM_USER_PREFERENCE;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled brightness request cause " << cause;
-  return power_manager::
-      AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP;
+  NOTREACHED() << "Unhandled brightness request cause " << cause;
 }
 
 // Copied from Chrome's //base/time/time_now_posix.cc.
@@ -93,8 +94,7 @@ AmbientLightSensorRequestCauseToChangeCause(
 base::TimeDelta ClockNow(clockid_t clk_id) {
   struct timespec ts;
   if (clock_gettime(clk_id, &ts) != 0) {
-    NOTREACHED_IN_MIGRATION() << "clock_gettime(" << clk_id << ") failed.";
-    return base::TimeDelta();
+    NOTREACHED() << "clock_gettime(" << clk_id << ") failed.";
   }
   return base::TimeDelta::FromTimeSpec(ts);
 }

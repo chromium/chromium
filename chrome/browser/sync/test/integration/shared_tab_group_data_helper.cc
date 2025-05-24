@@ -4,11 +4,13 @@
 
 #include "chrome/browser/sync/test/integration/shared_tab_group_data_helper.h"
 
-#include "base/ranges/algorithm.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/saved_tab_group_model.h"
-#include "components/saved_tab_groups/saved_tab_group_tab.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include <algorithm>
+
+#include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -48,8 +50,8 @@ bool AreServicesEqual(TabGroupSyncService* service_1,
     return false;
   }
 
-  base::ranges::sort(shared_tab_groups_1, &CompareSavedTabGroups);
-  base::ranges::sort(shared_tab_groups_2, &CompareSavedTabGroups);
+  std::ranges::sort(shared_tab_groups_1, &CompareSavedTabGroups);
+  std::ranges::sort(shared_tab_groups_2, &CompareSavedTabGroups);
 
   for (size_t group_index = 0; group_index < shared_tab_groups_1.size();
        ++group_index) {
@@ -161,6 +163,13 @@ void SharedTabGroupsMatchChecker::OnTabGroupRemoved(
 
 void SharedTabGroupsMatchChecker::OnTabGroupRemoved(const base::Uuid& sync_id,
                                                     TriggerSource source) {
+  CheckExitCondition();
+}
+
+void SharedTabGroupsMatchChecker::OnTabGroupMigrated(
+    const SavedTabGroup& shared_group,
+    const base::Uuid& old_sync_id,
+    TriggerSource source) {
   CheckExitCondition();
 }
 

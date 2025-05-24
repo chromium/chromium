@@ -245,14 +245,6 @@ class VisitDatabase {
                             base::Time end_time,
                             base::Time* last_visit);
 
-  // Gets the last time `url` was visited before `end_time`. If the given `url`
-  // has no past visits, this will return true and `last_visit` will be set to
-  // base::Time(). False will be returned if `url` is not a valid HTTP or HTTPS
-  // url or for other database errors.
-  bool GetLastVisitToURL(const GURL& url,
-                         base::Time end_time,
-                         base::Time* last_visit);
-
   // Gets counts for total visits and days visited for pages matching `host`'s
   // scheme, port, and host. Counts only user-visible visits.
   DailyVisitsResult GetDailyVisitsToHost(const GURL& host,
@@ -279,6 +271,10 @@ class VisitDatabase {
       base::Time begin_time,
       base::Time end_time);
 
+  // Gets whether the URL is known to sync. A URL is considered known to sync
+  // if there is at least one visit with the URL that is known to sync.
+  bool GetIsUrlKnownToSync(URLID url_id, bool* is_known_to_sync);
+
  protected:
   // Returns the database for the functions in this interface.
   virtual sql::Database& GetDB() = 0;
@@ -302,55 +298,6 @@ class VisitDatabase {
   static bool FillVisitVectorWithOptions(sql::Statement& statement,
                                          const QueryOptions& options,
                                          VisitVector* visits);
-
-  // Called by the derived classes to migrate the older visits table which
-  // don't have visit_duration column yet.
-  bool MigrateVisitsWithoutDuration();
-
-  // Called by the derived classes to migrate the older visits table which
-  // don't have incremented_omnibox_typed_score column yet.
-  bool MigrateVisitsWithoutIncrementedOmniboxTypedScore();
-
-  // Called by the derived classes to migrate the older visits table which
-  // don't have publicly_routable column yet.
-  bool MigrateVisitsWithoutPubliclyRoutableColumn();
-
-  // Called by the derived classes to do early checks before migrating the older
-  // visits table's floc_allowed (for historical reasons named
-  // "publicly_routable" in the schema) column to another table.
-  bool CanMigrateFlocAllowed();
-
-  // Called by the derived classes to migrate the older visits table which
-  // which doesn't have `opener_visit` column and also drops `publicly_routable`
-  // column which is no longer used.
-  bool MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn();
-
-  // Called by the derived classes to migrate the older visits table which
-  // which aren't ready to accommodate Sync. It sets `id` to AUTOINCREMENT, and
-  // ensures the existence of the `originator_cache_guid` and
-  // `originator_visit_id` columns.
-  bool MigrateVisitsAutoincrementIdAndAddOriginatorColumns();
-
-  // Called by the derived classes to migrate the older visits table which
-  // doesn't have the `originator_from_visit` and `originator_opener_visit`
-  // columns.
-  bool MigrateVisitsAddOriginatorFromVisitAndOpenerVisitColumns();
-
-  // Return true if the visits table's schema contains "AUTOINCREMENT".
-  // false if table do not contain AUTOINCREMENT, or the table is not created.
-  bool VisitTableContainsAutoincrement();
-
-  // A subprocedure in the process of migration to version 40.
-  bool GetAllVisitedURLRowidsForMigrationToVersion40(
-      std::vector<URLID>* visited_url_rowids_sorted);
-
-  // Called by the derived classes to migrate the older visits table which
-  // doesn't have the `is_known_to_sync` column.
-  bool MigrateVisitsAddIsKnownToSyncColumn();
-
-  // Called by the derived classes to migrate the older visits table which
-  // doesn't have the `consider_for_ntp_most_visited` column.
-  bool MigrateVisitsAddConsiderForNewTabPageMostVisitedColumn();
 
   // Called by the derived classes to migrate the older visits table which
   // doesn't have the `external_referrer_url` column.

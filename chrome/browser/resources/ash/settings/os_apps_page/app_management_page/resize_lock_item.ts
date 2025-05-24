@@ -4,7 +4,7 @@
 
 import './toggle_row.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -16,7 +16,7 @@ import {recordSettingChange} from '../../metrics_recorder.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './resize_lock_item.html.js';
-import {AppManagementToggleRowElement} from './toggle_row.js';
+import type {AppManagementToggleRowElement} from './toggle_row.js';
 
 export class AppManagementResizeLockItemElement extends PolymerElement {
   static get is() {

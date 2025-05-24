@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -9,8 +11,8 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_context.h"
@@ -123,7 +125,6 @@ class ServiceWorkerFetchDispatcherBrowserTest : public ContentBrowserTest {
   std::unique_ptr<ServiceWorkerFetchDispatcher> CreateFetchDispatcher(
       base::OnceClosure done,
       const std::string& path,
-      bool is_offline_capability_check,
       ServiceWorkerVersion* version,
       FetchResult* result) {
     GURL url = embedded_test_server()->GetURL(path);
@@ -140,8 +141,7 @@ class ServiceWorkerFetchDispatcherBrowserTest : public ContentBrowserTest {
     return std::make_unique<ServiceWorkerFetchDispatcher>(
         std::move(request), destination, std::string() /* client_id */,
         std::string() /* resulting_client_id */, version,
-        base::DoNothing() /* prepare_result */, std::move(fetch_callback),
-        is_offline_capability_check);
+        base::DoNothing() /* prepare_result */, std::move(fetch_callback));
   }
 
   // Contrary to the style guide, the output parameter of this function comes
@@ -211,6 +211,8 @@ class ServiceWorkerFetchDispatcherBrowserTest : public ContentBrowserTest {
   ServiceWorkerContextWrapper* wrapper() { return wrapper_.get(); }
 
  protected:
+  base::SimpleTestTickClock tick_clock_;
+
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
 };
 
@@ -227,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchDispatcherBrowserTest, FetchEvent) {
   std::unique_ptr<ServiceWorkerFetchDispatcher> dispatcher =
       CreateFetchDispatcher(
           fetch_run_loop.QuitClosure(),
-          "/service_worker/empty.html?sleep_then_fetch&sleep=0", false, version,
+          "/service_worker/empty.html?sleep_then_fetch&sleep=0", version,
           &fetch_result);
   dispatcher->Run();
   fetch_run_loop.Run();
@@ -247,19 +249,40 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchDispatcherBrowserTest, FetchEvent) {
 // This is the timeout case that the lifetime of a fetch event is shorter than
 // the response finishes. ServiceWorkerFetchDispatcher::OnFetchEventFinished is
 // called first.
+// TODO(crbug.com/372638068): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchDispatcherBrowserTest,
-                       FetchEventTimeout) {
+                       DISABLED_FetchEventTimeout) {
   StartServerAndNavigateToSetup();
   ServiceWorkerVersion* version = CreateVersion();
+  version->SetTickClockForTesting(&tick_clock_);
 
   FetchResult fetch_result;
   base::RunLoop fetch_run_loop;
   std::unique_ptr<ServiceWorkerFetchDispatcher> dispatcher =
       CreateFetchDispatcher(
           fetch_run_loop.QuitClosure(),
-          "/service_worker/empty.html?sleep_then_fetch&sleep=20000", true,
-          version, &fetch_result);
+          // The time out (500sec) longer than
+          // `kTestTimeoutBeyondRequestTimeout` below to make the request not
+          // served before the fetch event timeout.
+          "/service_worker/empty.html?sleep_then_fetch&sleep=500000", version,
+          &fetch_result);
   dispatcher->Run();
+
+  constexpr base::TimeDelta kTestTimeoutBeyondRequestTimeout =
+      // Value of kRequestTimeout in service_worker_version.cc and
+      // `ServiceWorkerEventQueue::kEventTimeout`.
+      base::Minutes(5) +
+      // A little past that.
+      base::Minutes(1);
+
+  // Now advance time to make the fetch event to timeout.
+  // This seems trigger the timeout in `ServiceWorkerVersion` (not in
+  // `ServiceWorkerEventQueue` in the renderer process), but probably it's
+  // sufficient to test the code in `ServiceWorkerFetchDispatcher` in the
+  // browser process.
+  tick_clock_.Advance(kTestTimeoutBeyondRequestTimeout);
+  version->timeout_timer_.user_task().Run();
+
   fetch_run_loop.Run();
 
   EXPECT_FALSE(version->HasNoWork());

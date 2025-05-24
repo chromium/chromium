@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link CompositorAnimator}. */
@@ -25,7 +26,7 @@ public class CompositorAnimationHandlerTest {
     @Test
     @SmallTest
     public void testConcurrentAnimationsFinishSeparately() {
-        mAnimations = new CompositorAnimationHandler(() -> {});
+        mAnimations = new CompositorAnimationHandler(CallbackUtils.emptyRunnable());
 
         CompositorAnimator mFastAnimation =
                 CompositorAnimator.ofFloat(mAnimations, 0.f, 1.f, FAST_DURATION_MS, null);

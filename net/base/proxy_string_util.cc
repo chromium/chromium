@@ -128,8 +128,7 @@ std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
                                      proxy_server.GetPort());
     default:
       // Got called with an invalid scheme.
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -195,8 +194,7 @@ std::string ProxyServerToProxyUri(const ProxyServer& proxy_server) {
                                      proxy_server.GetPort());
     default:
       // Got called with an invalid scheme.
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -268,11 +266,7 @@ ProxyServer::Scheme GetSchemeFromUriScheme(std::string_view scheme,
 ProxyChain MultiProxyUrisToProxyChain(std::string_view uris,
                                       ProxyServer::Scheme default_scheme,
                                       bool is_quic_allowed) {
-#if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
-  // This function should not be called in non-debug modes.
-  CHECK(false);
-#endif  // !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
-
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
   uris = HttpUtil::TrimLWS(uris);
   if (uris.empty()) {
     return ProxyChain();
@@ -309,5 +303,9 @@ ProxyChain MultiProxyUrisToProxyChain(std::string_view uris,
   }
 
   return ProxyChain(std::move(proxy_server_list));
+#else
+  // This function should not be called in non-debug modes.
+  NOTREACHED();
+#endif  // !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 }
 }  // namespace net

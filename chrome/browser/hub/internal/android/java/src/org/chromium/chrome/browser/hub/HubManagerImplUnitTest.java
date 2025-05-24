@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -81,6 +82,7 @@ public class HubManagerImplUnitTest {
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
+    @Mock private SearchActivityClient mSearchActivityClient;
 
     private final ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
@@ -91,7 +93,11 @@ public class HubManagerImplUnitTest {
             new OneshotSupplierImpl<>();
     private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
-    private final int mSnackbarOverrideToken = 1;
+    private final ObservableSupplierImpl<Boolean> mRegularHubSearchEnabledStateSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier =
+            new ObservableSupplierImpl<>();
+    private static final int SNACKBAR_OVERRIDE_TOKEN = 1;
 
     private Activity mActivity;
     private FrameLayout mRootView;
@@ -102,16 +108,22 @@ public class HubManagerImplUnitTest {
         mReferenceButtonDataSupplier.set(mReferenceButtonData);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        when(mTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
+        when(mTabSwitcherPane.getHubSearchEnabledStateSupplier())
+                .thenReturn(mRegularHubSearchEnabledStateSupplier);
         when(mTabSwitcherPane.getActionButtonDataSupplier()).thenReturn(mActionButtonDataSupplier);
         when(mTabSwitcherPane.getRootView()).thenReturn(mTabSwitcherPaneView);
         when(mTabSwitcherPane.getMenuOrKeyboardActionHandler())
                 .thenReturn(mTabSwitcherMenuOrKeyboardActionHandler);
 
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        when(mIncognitoTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
         when(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
+        when(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier())
+                .thenReturn(mIncognitoHubSearchEnabledStateSupplier);
         when(mIncognitoTabSwitcherPane.getActionButtonDataSupplier())
                 .thenReturn(mActionButtonDataSupplier);
         when(mIncognitoTabSwitcherPane.getRootView()).thenReturn(mIncognitoTabSwitcherPaneView);
@@ -120,11 +132,14 @@ public class HubManagerImplUnitTest {
 
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
+        when(mHubLayoutController.getIsAnimatingSupplier())
+                .thenReturn(new ObservableSupplierImpl<>());
+
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 
         when(mSnackbarManager.pushParentViewToOverrideStack(any()))
-                .thenReturn(mSnackbarOverrideToken);
+                .thenReturn(SNACKBAR_OVERRIDE_TOKEN);
 
         mActivityScenarioRule
                 .getScenario()
@@ -158,7 +173,8 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSearchActivityClient);
 
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
@@ -189,7 +205,8 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSearchActivityClient);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -214,7 +231,7 @@ public class HubManagerImplUnitTest {
 
         hubManager.getPaneManager().focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
         verify(mTabSwitcherPane).setPaneHubController(null);
-        verify(mSnackbarManager).popParentViewFromOverrideStack(mSnackbarOverrideToken);
+        verify(mSnackbarManager).popParentViewFromOverrideStack(SNACKBAR_OVERRIDE_TOKEN);
         verify(mMenuOrKeyboardActionController)
                 .unregisterMenuOrKeyboardActionHandler(mTabSwitcherMenuOrKeyboardActionHandler);
         verify(mIncognitoTabSwitcherPane).setPaneHubController(coordinator);
@@ -227,7 +244,7 @@ public class HubManagerImplUnitTest {
         assertNull(hubManager.getHubCoordinatorForTesting());
         verify(mBackPressManager).removeHandler(eq(coordinator));
         verify(mIncognitoTabSwitcherPane).setPaneHubController(null);
-        verify(mSnackbarManager, times(2)).popParentViewFromOverrideStack(mSnackbarOverrideToken);
+        verify(mSnackbarManager, times(2)).popParentViewFromOverrideStack(SNACKBAR_OVERRIDE_TOKEN);
         verify(mMenuOrKeyboardActionController)
                 .unregisterMenuOrKeyboardActionHandler(
                         mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
@@ -251,7 +268,8 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSearchActivityClient);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
 
@@ -289,7 +307,8 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSearchActivityClient);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -331,7 +350,8 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSearchActivityClient);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -380,7 +400,8 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSearchActivityClient);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();

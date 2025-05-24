@@ -9,26 +9,35 @@ import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemPr
 import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider.getColorPickerDialogBackgroundColor;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewOverlay;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 
+import com.google.android.material.button.MaterialButton;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.ui.drawable.BorderDrawable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A binder class for color items on the color picker view. */
+@NullMarked
 public class ColorPickerItemViewBinder {
     // When a color picker item is not selected, a full circle of color is shown, and the complex
     // layer drawable that is used here is not needed. But when an item becomes selected, the desire
@@ -43,15 +52,20 @@ public class ColorPickerItemViewBinder {
     public static final int INNER_LAYER = 2;
 
     static View createItemView(Context context) {
-        return LayoutInflater.from(context)
-                .inflate(R.layout.color_picker_item, /* root= */ null, false);
+        int layoutToInflate =
+                isAndroidThemeModuleEnabled()
+                        ? R.layout.color_picker_icon_button_layout
+                        : R.layout.color_picker_item;
+
+        return LayoutInflater.from(context).inflate(layoutToInflate, /* root= */ null, false);
     }
 
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == COLOR_ID) {
             setColorOnColorIcon(model, view);
         } else if (propertyKey == ON_CLICK_LISTENER) {
-            view.setOnClickListener((v) -> model.get(ON_CLICK_LISTENER).run());
+            view.findViewById(R.id.color_picker_icon)
+                    .setOnClickListener((v) -> model.get(ON_CLICK_LISTENER).run());
         } else if (propertyKey == IS_SELECTED) {
             refreshColorIconOnSelection(model, view);
             setAccessibilityContent(view, model.get(IS_SELECTED), model.get(COLOR_ID));
@@ -65,31 +79,70 @@ public class ColorPickerItemViewBinder {
         int colorId = model.get(COLOR_ID);
 
         final @ColorInt int color = getColor(context, colorPickerType, colorId, isIncognito);
-        final @ColorInt int selectionBackgroundColor =
-                isIncognito
-                        ? ContextCompat.getColor(
-                                context, R.color.tab_group_color_picker_selection_bg_incognito)
-                        : SemanticColorUtils.getDialogBgColor(context);
 
         // Update the color icon with the indicated color id.
-        ImageView colorIcon = view.findViewById(R.id.color_picker_icon);
-        LayerDrawable layerDrawable = (LayerDrawable) colorIcon.getBackground();
-        ((GradientDrawable) layerDrawable.getDrawable(OUTER_LAYER)).setColor(color);
-        ((GradientDrawable) layerDrawable.getDrawable(SELECTION_LAYER))
-                .setColor(selectionBackgroundColor);
-        ((GradientDrawable) layerDrawable.getDrawable(INNER_LAYER)).setColor(color);
+        if (isAndroidThemeModuleEnabled()) {
+            Button colorIcon = view.findViewById(R.id.color_picker_icon);
+            colorIcon.setBackgroundTintList(ColorStateList.valueOf(color));
+        } else {
+            final @ColorInt int selectionBackgroundColor =
+                    getColorPickerDialogBackgroundColor(context, isIncognito);
+
+            ImageView colorIcon = view.findViewById(R.id.color_picker_icon);
+            LayerDrawable layerDrawable = (LayerDrawable) colorIcon.getBackground();
+            ((GradientDrawable) layerDrawable.getDrawable(OUTER_LAYER)).setColor(color);
+            ((GradientDrawable) layerDrawable.getDrawable(SELECTION_LAYER))
+                    .setColor(selectionBackgroundColor);
+            ((GradientDrawable) layerDrawable.getDrawable(INNER_LAYER)).setColor(color);
+        }
     }
 
     private static void refreshColorIconOnSelection(PropertyModel model, View view) {
-        ImageView colorIcon = view.findViewById(R.id.color_picker_icon);
-        LayerDrawable layerDrawable = (LayerDrawable) colorIcon.getBackground();
+        final View colorIcon = view.findViewById(R.id.color_picker_icon);
 
-        // Toggle the selected layer opaqueness based on the user click action.
-        int alpha = model.get(IS_SELECTED) ? 0xFF : 0;
-        layerDrawable.getDrawable(SELECTION_LAYER).setAlpha(alpha);
+        if (isAndroidThemeModuleEnabled()) {
+            ((MaterialButton) colorIcon).setChecked(model.get(IS_SELECTED));
+            colorIcon.setEnabled(!model.get(IS_SELECTED));
+
+            ViewOverlay overlay = colorIcon.getOverlay();
+
+            if (model.get(IS_SELECTED)) {
+                BorderDrawable borderDrawable = getBorderDrawable(model, view);
+                overlay.add(borderDrawable);
+            } else {
+                overlay.clear();
+            }
+        } else {
+            LayerDrawable layerDrawable = (LayerDrawable) colorIcon.getBackground();
+
+            // Toggle the selected layer opaqueness based on the user click action.
+            int alpha = model.get(IS_SELECTED) ? 0xFF : 0;
+            layerDrawable.getDrawable(SELECTION_LAYER).setAlpha(alpha);
+        }
 
         // Refresh the color item view.
         colorIcon.invalidate();
+    }
+
+    private static BorderDrawable getBorderDrawable(PropertyModel model, View view) {
+        Resources res = view.getResources();
+
+        int borderWidthPx = res.getDimensionPixelSize(R.dimen.color_picker_button_stroke_width);
+        int insetPx = res.getDimensionPixelSize(R.dimen.color_picker_button_stroke_inset);
+        int borderRadiusPx = res.getDimensionPixelSize(R.dimen.color_picker_button_stroke_radius);
+        int touchTargetSize = res.getDimensionPixelSize(R.dimen.min_touch_target_size);
+
+        BorderDrawable borderDrawable =
+                new BorderDrawable(
+                        borderWidthPx,
+                        insetPx,
+                        getColorPickerDialogBackgroundColor(
+                                view.getContext(), model.get(IS_INCOGNITO)),
+                        borderRadiusPx);
+
+        // Set the bounds of the drawable to match the color button view.
+        borderDrawable.setBounds(0, 0, touchTargetSize, touchTargetSize);
+        return borderDrawable;
     }
 
     private static @ColorInt int getColor(
@@ -98,7 +151,7 @@ public class ColorPickerItemViewBinder {
             int colorListIndex,
             boolean isIncognito) {
         if (colorPickerType == ColorPickerType.TAB_GROUP) {
-            return ColorPickerUtils.getTabGroupColorPickerItemColor(
+            return TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                     context, colorListIndex, isIncognito);
         } else {
             return Color.TRANSPARENT;
@@ -106,7 +159,7 @@ public class ColorPickerItemViewBinder {
     }
 
     private static void setAccessibilityContent(View view, boolean isSelected, int colorId) {
-        ImageView colorIcon = view.findViewById(R.id.color_picker_icon);
+        View colorIcon = view.findViewById(R.id.color_picker_icon);
         Resources res = view.getContext().getResources();
 
         final @StringRes int colorDescRes =
@@ -120,5 +173,9 @@ public class ColorPickerItemViewBinder {
         String colorDesc = res.getString(colorDescRes);
         String contentDescription = res.getString(selectedFormatDescRes, colorDesc);
         colorIcon.setContentDescription(contentDescription);
+    }
+
+    private static boolean isAndroidThemeModuleEnabled() {
+        return ThemeModuleUtils.isEnabled();
     }
 }

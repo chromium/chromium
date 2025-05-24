@@ -307,7 +307,7 @@ public class AwVariationsSeedFetcher extends JobService {
     }
 
     private class FetchTask extends BackgroundOnlyAsyncTask<Void> {
-        private JobParameters mParams;
+        private final JobParameters mParams;
 
         FetchTask(JobParameters params) {
             mParams = params;
@@ -344,7 +344,7 @@ public class AwVariationsSeedFetcher extends JobService {
             return null;
         }
 
-        private void saveMetrics(long startTime, long endTime) {
+        private void saveMetrics(long startTime) {
             Context context = ContextUtils.getApplicationContext();
             VariationsServiceMetricsHelper metrics =
                     VariationsServiceMetricsHelper.fromVariationsSharedPreferences(context);
@@ -385,7 +385,7 @@ public class AwVariationsSeedFetcher extends JobService {
                             .build();
             SeedFetchInfo fetchInfo = downloader.downloadContent(params, info);
 
-            saveMetrics(startTime, /* endTime= */ currentTimeMillis());
+            saveMetrics(startTime);
 
             if (isCancelled()) {
                 return new FetchSeedOutput(
@@ -419,10 +419,10 @@ public class AwVariationsSeedFetcher extends JobService {
             return new FetchSeedOutput(shouldFinish, needsReschedule, /* cancelled= */ false);
         }
 
-        private class FetchSeedOutput {
-            private boolean mShouldFinish;
-            private boolean mNeedsReschedule;
-            private boolean mCancelled;
+        private static class FetchSeedOutput {
+            private final boolean mShouldFinish;
+            private final boolean mNeedsReschedule;
+            private final boolean mCancelled;
 
             public boolean getShouldFinish() {
                 return mShouldFinish;
@@ -504,10 +504,6 @@ public class AwVariationsSeedFetcher extends JobService {
     public static void setDateForTesting(Date date) {
         sDateForTesting = date;
         ResettersForTesting.register(() -> sDateForTesting = null);
-    }
-
-    private static long getCurrentTimestamp() {
-        return sDateForTesting != null ? sDateForTesting.getTime() : new Date().getTime();
     }
 
     /** Determines whether the currently scheduled job is in Fast Mode and periodic. */

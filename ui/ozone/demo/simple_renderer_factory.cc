@@ -50,7 +50,7 @@ scoped_refptr<gl::GLSurface> CreateGLSurface(gl::GLDisplay* display,
 
 }  // namespace
 
-SimpleRendererFactory::SimpleRendererFactory() {}
+SimpleRendererFactory::SimpleRendererFactory() = default;
 
 SimpleRendererFactory::~SimpleRendererFactory() {
   if (display_) {

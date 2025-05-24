@@ -4,6 +4,8 @@
 
 #include "components/printing/browser/print_to_pdf/pdf_print_job.h"
 
+#include <variant>
+
 #include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/printing/browser/print_composite_client.h"
@@ -12,7 +14,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
 #include "printing/printing_utils.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace print_to_pdf {
 
@@ -43,14 +44,14 @@ void PdfPrintJob::StartJob(
     return;
   }
 
-  absl::variant<printing::PageRanges, PdfPrintResult> pages =
+  std::variant<printing::PageRanges, PdfPrintResult> pages =
       TextPageRangesToPageRanges(page_ranges);
-  if (absl::holds_alternative<PdfPrintResult>(pages)) {
-    std::move(callback).Run(absl::get<PdfPrintResult>(pages), nullptr);
+  if (std::holds_alternative<PdfPrintResult>(pages)) {
+    std::move(callback).Run(std::get<PdfPrintResult>(pages), nullptr);
     return;
   }
 
-  print_pages_params->pages = absl::get<printing::PageRanges>(pages);
+  print_pages_params->pages = std::get<printing::PageRanges>(pages);
 
   // Job is self-owned and will delete itself when complete.
   auto* job = new PdfPrintJob(contents, rfh, std::move(callback));

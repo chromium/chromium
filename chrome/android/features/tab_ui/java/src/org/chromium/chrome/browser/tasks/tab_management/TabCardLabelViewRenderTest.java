@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -50,14 +51,14 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class TabCardLabelViewRenderTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     @Rule
@@ -65,7 +66,7 @@ public class TabCardLabelViewRenderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private TabCardLabelView mTabCardLabelView;
-    private Runnable mCancelRunnable = () -> {};
+    private final Runnable mCancelRunnable = CallbackUtils.emptyRunnable();
 
     public TabCardLabelViewRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);

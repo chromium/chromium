@@ -98,7 +98,8 @@ class FileSequenceHelperTest : public ExtensionsTest {
         &run_loop, expected_did_load_successfully, expected_error);
 
     ExtensionId extension_id = crx_file::id_util::GenerateId("dummy_extension");
-    LoadRequestData data(extension_id, base::Version("1.0"));
+    LoadRequestData data(extension_id, base::Version("1.0"),
+                         LoadRulesetRequestSource::kUpdateDynamicRules);
     data.rulesets.emplace_back(std::move(source));
 
     // Unretained is safe because |helper_| outlives the |add_rules_task|.
@@ -121,7 +122,8 @@ class FileSequenceHelperTest : public ExtensionsTest {
   }
 
   void TestLoadRulesets(const std::vector<TestCase>& test_cases) {
-    LoadRequestData data(GenerateDummyExtensionID(), base::Version("1.0"));
+    LoadRequestData data(GenerateDummyExtensionID(), base::Version("1.0"),
+                         LoadRulesetRequestSource::kOnExtensionLoad);
     for (const auto& test_case : test_cases) {
       data.rulesets.emplace_back(test_case.source.Clone());
       data.rulesets.back().set_expected_checksum(test_case.checksum);
@@ -164,7 +166,8 @@ class FileSequenceHelperTest : public ExtensionsTest {
   }
 
   void TestNoRulesetsToLoad() {
-    LoadRequestData data(GenerateDummyExtensionID(), base::Version("1.0"));
+    LoadRequestData data(GenerateDummyExtensionID(), base::Version("1.0"),
+                         LoadRulesetRequestSource::kOnExtensionLoad);
 
     base::RunLoop run_loop;
     auto load_ruleset_callback = base::BindOnce(
@@ -237,18 +240,29 @@ TEST_F(FileSequenceHelperTest, ChecksumMismatch) {
 
   TestLoadRulesets(test_cases);
 
-  // Change the expected checksum for rulesets 2 and 3. Loading both of the
-  // rulesets should now fail due to a checksum mismatch.
+  // Change the expected checksum for rulesets 2 and 3 to simulate a checksum
+  // mismatch.
   test_cases[1].checksum--;
   test_cases[2].checksum--;
-  test_cases[1].expected_result.load_result =
-      LoadRulesetResult::kErrorChecksumMismatch;
-  test_cases[2].expected_result.load_result =
-      LoadRulesetResult::kErrorChecksumMismatch;
-  test_cases[1].expected_result.indexing_successful = false;
-  test_cases[2].expected_result.indexing_successful = false;
+
+  // When loading the rulesets, the mismatch is detected which will trigger a
+  // re-index and an update of the expected checksum to the one obtained from
+  // re-indexing.
+  test_cases[1].expected_result.has_new_checksum = true;
+  test_cases[2].expected_result.has_new_checksum = true;
+
+  // The ruleset load should succeed since the checksum obtained through
+  // re-indexing is used as the new "source of truth".
+  test_cases[1].expected_result.load_result = LoadRulesetResult::kSuccess;
+  test_cases[2].expected_result.load_result = LoadRulesetResult::kSuccess;
+
+  test_cases[1].expected_result.indexing_successful = true;
+  test_cases[2].expected_result.indexing_successful = true;
 
   TestLoadRulesets(test_cases);
+
+  // TODO(crbug.com/380434972): Wait for a mock content verification job to be
+  // started.
 }
 
 TEST_F(FileSequenceHelperTest, RulesetFormatVersionMismatch) {

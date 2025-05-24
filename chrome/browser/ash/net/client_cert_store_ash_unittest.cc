@@ -52,7 +52,7 @@ void SaveIdentitiesAndQuitCallback(net::ClientCertIdentityList* out_identities,
 
 class ClientCertStoreAshTest : public ::testing::Test {
  public:
-  ClientCertStoreAshTest() {}
+  ClientCertStoreAshTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(user1_.constructed_successfully());

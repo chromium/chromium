@@ -14,12 +14,12 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/page_info/page_info.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/safe_browsing/buildflags.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/native_widget_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/image/image_skia.h"
@@ -92,20 +92,8 @@ class PageInfoUI {
     CookiesNewInfo(CookiesNewInfo&&);
     ~CookiesNewInfo();
 
-    // The number of third-party sites blocked.
-    int blocked_third_party_sites_count = -1;
-
-    // The number of third-party sites allowed.
-    int allowed_third_party_sites_count = -1;
-
     // The number of sites allowed to access cookies.
     int allowed_sites_count = -1;
-
-    // Whether protections are enabled for the given site.
-    bool protections_on = true;
-
-    // Whether tracking protection controls should be shown.
-    bool controls_visible = true;
 
     // The type of third-party cookie blocking in 3PCD.
     CookieBlocking3pcdStatus blocking_status =
@@ -114,16 +102,16 @@ class PageInfoUI {
     // The status of enforcement of blocking third-party cookies.
     CookieControlsEnforcement enforcement;
 
-    // List of ACT features.
-    std::vector<content_settings::TrackingProtectionFeature> features;
+    // The state of cookie controls to display.
+    CookieControlsState controls_state;
 
     std::optional<CookiesRwsInfo> rws_info;
 
     // The expiration of the active third-party cookie exception.
     base::Time expiration;
 
-    // Whether the current profile is "off the record".
-    bool is_otr = false;
+    // Whether the current profile is incognito.
+    bool is_incognito = false;
   };
 
   // |ChosenObjectInfo| contains information about a single |chooser_object| of

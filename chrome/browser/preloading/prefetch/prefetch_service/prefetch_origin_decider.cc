@@ -80,16 +80,14 @@ void PrefetchOriginDecider::LoadFromPrefs() {
     if (!url_origin.is_valid()) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle
       // gracefully.
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     std::optional<base::Time> retry_after = base::ValueToTime(element.second);
     if (!retry_after) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle
       // gracefully.
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     url::Origin origin = url::Origin::Create(url_origin);

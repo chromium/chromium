@@ -6,9 +6,9 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_SEGMENT_SCORER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 
 namespace history {
@@ -18,13 +18,26 @@ class SegmentScorer {
  private:
   // Formula to add more weight to recent visits, and less to past ones.
   struct RecencyFactor {
+    static std::unique_ptr<RecencyFactor> Create(
+        const std::string& recency_factor_name);
+
     virtual ~RecencyFactor();
     virtual float Compute(int days_ago) = 0;
   };
 
-  struct RecencyFactorDefault : public RecencyFactor {
-    ~RecencyFactorDefault() override;
+  struct RecencyFactorClassic : public RecencyFactor {
+    ~RecencyFactorClassic() override;
     float Compute(int days_ago) override;
+  };
+
+  struct RecencyFactorDecay : public RecencyFactor {
+    // Requires 0 < |decay_per_day| <= 1.
+    explicit RecencyFactorDecay(double decay_per_day);
+    ~RecencyFactorDecay() override;
+    float Compute(int days_ago) override;
+
+   private:
+    const double decay_per_day_;
   };
 
   struct RecencyFactorDecayStaircase : public RecencyFactor {
@@ -34,12 +47,12 @@ class SegmentScorer {
 
  public:
   static std::unique_ptr<SegmentScorer> CreateFromFeatureFlags();
+  static std::unique_ptr<SegmentScorer> Create(
+      const std::string& recency_factor_name);
 
  private:
-  SegmentScorer(const std::string& recency_factor_name,
+  SegmentScorer(std::unique_ptr<RecencyFactor> recency_factor,
                 int daily_visit_count_cap);
-  FRIEND_TEST_ALL_PREFIXES(SegmentScorerTest, RankByDefaultScorer);
-  FRIEND_TEST_ALL_PREFIXES(SegmentScorerTest, RankByDecayStaircaseCap10Scorer);
 
  public:
   ~SegmentScorer();
@@ -49,7 +62,8 @@ class SegmentScorer {
 
   float Compute(const std::vector<base::Time>& time_slots,
                 const std::vector<int>& visit_counts,
-                base::Time now) const;
+                base::Time now,
+                std::optional<size_t> recency_window_days) const;
 
  private:
   std::unique_ptr<RecencyFactor> recency_factor_;

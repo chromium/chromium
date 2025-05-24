@@ -74,6 +74,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchMatchingURLLoaderFactory final
       const ResourceRequest& request,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) final;
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      ResourceRequest& request,
+      mojo::PendingRemote<mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) final;
 
   void Clone(mojo::PendingReceiver<URLLoaderFactory> receiver) final;
 
@@ -93,18 +100,24 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchMatchingURLLoaderFactory final
   // the CorsURLLoaderFactory it owns be kept alive.
   bool HasAdditionalReferences() const;
 
+  // Returns true if this URLLoaderFactory should not be reset when
+  // calling `ResetURLLoaderFactories()`.
+  bool ShouldIgnoreFactoryReset() const;
+
   // Returns the owned CorsURLLoaderFactory for unit tests. It's not a good idea
   // to call this and also call other methods on this object.
   cors::CorsURLLoaderFactory* GetCorsURLLoaderFactoryForTesting();
 
  private:
   void OnDisconnect();
+  bool IsRequestSafeForMatching(const ResourceRequest& request);
 
+  const bool ignore_factory_reset_;
   const std::unique_ptr<cors::CorsURLLoaderFactory> next_;
-  const raw_ptr<const cors::OriginAccessList> origin_access_list_;
   const raw_ptr<NetworkContext> context_;
   const raw_ptr<PrefetchCache> cache_;
   mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
+  const bool use_matches_;
 };
 
 }  // namespace network

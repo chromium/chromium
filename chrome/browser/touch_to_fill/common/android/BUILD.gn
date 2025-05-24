@@ -7,11 +7,13 @@ import("//build/config/android/rules.gni")
 android_resources("java_resources") {
   deps = [ "//ui/android:ui_java_resources" ]
   sources = [
+    "java/res/drawable-night/touch_to_fill_default_header_image.xml",
     "java/res/drawable/touch_to_fill_credential_background.xml",
     "java/res/drawable/touch_to_fill_credential_background_modern.xml",
     "java/res/drawable/touch_to_fill_credential_background_modern_rounded_all.xml",
     "java/res/drawable/touch_to_fill_credential_background_modern_rounded_down.xml",
     "java/res/drawable/touch_to_fill_credential_background_modern_rounded_up.xml",
+    "java/res/drawable/touch_to_fill_default_header_image.xml",
     "java/res/layout/touch_to_fill_fill_button.xml",
     "java/res/layout/touch_to_fill_sheet.xml",
     "java/res/values/dimens.xml",
@@ -41,9 +43,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/touch_to_fill/common/BottomSheetFocusHelper.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/common/FillableItemCollectionInfo.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/common/ItemDividerBase.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/common/TouchToFillResourceProvider.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/common/TouchToFillUtil.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/common/TouchToFillViewBase.java",
   ]
+
   resources_package = "org.chromium.chrome.browser.touch_to_fill.common"
 }
 

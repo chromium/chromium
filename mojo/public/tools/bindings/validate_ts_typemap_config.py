@@ -12,13 +12,13 @@ import sys
 
 def CheckTsTypemapConfigs(target_name, config_filename, out_filename):
   _SUPPORTED_CONFIG_KEYS = set([
+      'source',
       'types',
   ])
   _SUPPORTED_TYPE_KEYS = set([
       'ts',
       'ts_import',
       'converter',
-      'import',
       'mojom',
   ])
   with open(config_filename, 'r') as f:
@@ -27,6 +27,9 @@ def CheckTsTypemapConfigs(target_name, config_filename, out_filename):
         if key not in _SUPPORTED_CONFIG_KEYS:
           raise ValueError('Invalid typemap property "%s" when processing %s' %
                            (key, target_name))
+
+      if not config.get('source'):
+        raise ValueError('Typemap for %s must specify a source' % target_name)
 
       types = config.get('types')
       if not types:

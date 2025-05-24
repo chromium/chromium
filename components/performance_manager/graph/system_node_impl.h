@@ -31,7 +31,7 @@ class SystemNodeImpl
   ~SystemNodeImpl() override;
 
   // Implements NodeBase:
-  void RemoveNodeAttachedData() override;
+  void CleanUpNodeState() override;
 
   // This should be called after refreshing the memory usage data of the process
   // nodes.

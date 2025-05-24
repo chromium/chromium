@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -83,13 +84,13 @@ struct UsbTestGadgetConfiguration {
   uint16_t product_id;
 };
 
-static const struct UsbTestGadgetConfiguration kConfigurations[] = {
+static const auto kConfigurations = std::to_array<UsbTestGadgetConfiguration>({
     {UsbTestGadget::DEFAULT, "/unconfigure", 0x58F0},
     {UsbTestGadget::KEYBOARD, "/keyboard/configure", 0x58F1},
     {UsbTestGadget::MOUSE, "/mouse/configure", 0x58F2},
     {UsbTestGadget::HID_ECHO, "/hid_echo/configure", 0x58F3},
     {UsbTestGadget::ECHO, "/echo/configure", 0x58F4},
-};
+});
 
 bool ReadFile(const base::FilePath& file_path, std::string* content) {
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);

@@ -7,22 +7,21 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/policy/core/common/management/management_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/webui/webui_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,7 +31,7 @@ namespace settings {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Triggers a TPM firmware update using the least destructive mode from
 // |available_modes|.
 void TriggerTPMFirmwareUpdate(
@@ -57,13 +56,13 @@ void TriggerTPMFirmwareUpdate(
     return;
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
-BrowserLifetimeHandler::BrowserLifetimeHandler() {}
+BrowserLifetimeHandler::BrowserLifetimeHandler() = default;
 
-BrowserLifetimeHandler::~BrowserLifetimeHandler() {}
+BrowserLifetimeHandler::~BrowserLifetimeHandler() = default;
 
 void BrowserLifetimeHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -72,7 +71,7 @@ void BrowserLifetimeHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "relaunch", base::BindRepeating(&BrowserLifetimeHandler::HandleRelaunch,
                                       base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "signOutAndRestart",
       base::BindRepeating(&BrowserLifetimeHandler::HandleSignOutAndRestart,
@@ -81,9 +80,9 @@ void BrowserLifetimeHandler::RegisterMessages() {
       "factoryReset",
       base::BindRepeating(&BrowserLifetimeHandler::HandleFactoryReset,
                           base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "shouldShowRelaunchConfirmationDialog",
       base::BindRepeating(
@@ -105,7 +104,7 @@ void BrowserLifetimeHandler::HandleRelaunch(const base::Value::List& args) {
   chrome::AttemptRelaunch();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void BrowserLifetimeHandler::HandleSignOutAndRestart(
     const base::Value::List& args) {
   chrome::AttemptUserExit();
@@ -127,8 +126,9 @@ void BrowserLifetimeHandler::HandleFactoryReset(const base::Value::List& args) {
       !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
       !user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
-  if (!allow_powerwash)
+  if (!allow_powerwash) {
     return;
+  }
 
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetBoolean(prefs::kFactoryResetRequested, true);
@@ -138,9 +138,9 @@ void BrowserLifetimeHandler::HandleFactoryReset(const base::Value::List& args) {
   // be launched (as if it was a restart).
   chrome::AttemptRelaunch();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
     const base::Value::List& args) {
   AllowJavascript();

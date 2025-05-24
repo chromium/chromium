@@ -13,11 +13,13 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -33,6 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ExpandedPlayerMediatorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private PlayerCoordinator.Delegate mDelegate;
     @Mock private Playback mPlayback;
@@ -42,7 +45,6 @@ public class ExpandedPlayerMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mModel =
                 Mockito.spy(
                         new PropertyModel.Builder(PlayerProperties.ALL_KEYS)

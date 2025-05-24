@@ -44,7 +44,7 @@ constexpr int kAv1MinimumTargetBitrateKbpsPerMegapixel = 2500;
 
 // Use the highest possible encoder speed as it produces frames faster than the
 // lower settings, requires fewer CPU resources, and still has low bitrates.
-constexpr int kAv1DefaultEncoderSpeed = 10;
+constexpr int kAv1DefaultEncoderSpeed = 11;
 
 }  // namespace
 

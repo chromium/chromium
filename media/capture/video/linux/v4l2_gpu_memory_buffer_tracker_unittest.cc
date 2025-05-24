@@ -7,7 +7,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/viz/test/test_context_provider.h"
-#include "media/capture/video/mock_gpu_memory_buffer_manager.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

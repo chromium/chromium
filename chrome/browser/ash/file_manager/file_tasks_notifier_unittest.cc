@@ -50,10 +50,7 @@ ui::SelectedFileInfo CreateSelectedFileInfo(
 
 class FakeDriveFs : public drivefs::mojom::DriveFsInterceptorForTesting {
  public:
-  DriveFs* GetForwardingInterface() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  DriveFs* GetForwardingInterface() override { NOTREACHED(); }
 
   void GetMetadata(const base::FilePath& path,
                    GetMetadataCallback callback) override {

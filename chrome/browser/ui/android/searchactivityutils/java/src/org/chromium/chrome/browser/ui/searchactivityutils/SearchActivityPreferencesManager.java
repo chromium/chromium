@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.searchactivityutils;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE;
@@ -13,8 +14,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARC
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
@@ -22,6 +21,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -42,6 +43,7 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 /** Facilitates access to and updates of the cached SearchActivityPreferences. */
+@NullMarked
 public class SearchActivityPreferencesManager implements LoadListener, TemplateUrlServiceObserver {
     /** Data-only class representiing current SearchActivity preferences. */
     public static final class SearchActivityPreferences {
@@ -49,7 +51,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         public final @Nullable String searchEngineName;
 
         /** URL of the Default Search Engine. */
-        public final @NonNull GURL searchEngineUrl;
+        public final GURL searchEngineUrl;
 
         /** Whether Voice Search functionality is available. */
         public final boolean voiceSearchAvailable;
@@ -110,9 +112,10 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     private static final boolean DEFAULT_INCOGNITO_AVAILABILITY = true;
 
     private static @Nullable SearchActivityPreferencesManager sInstance;
-    private final @NonNull ObserverList<Consumer<SearchActivityPreferences>> mObservers =
+    private final ObserverList<Consumer<SearchActivityPreferences>> mObservers =
             new ObserverList<>();
-    private @NonNull SearchActivityPreferences mCurrentlyLoadedPreferences;
+
+    private @Nullable SearchActivityPreferences mCurrentlyLoadedPreferences;
 
     /**
      * Initialize instance of SearchActivityPreferencesManager. Note that the class operates as a
@@ -133,8 +136,10 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     }
 
     /** Returns current knowh SharedActivityPreferences values. */
-    public static @NonNull SearchActivityPreferences getCurrent() {
-        return get().mCurrentlyLoadedPreferences;
+    public static SearchActivityPreferences getCurrent() {
+        SearchActivityPreferences ret = get().mCurrentlyLoadedPreferences;
+        assert ret != null;
+        return ret;
     }
 
     /**
@@ -199,9 +204,10 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void setCurrentlyLoadedPreferences(
-            @NonNull SearchActivityPreferences prefs, boolean updateStorage) {
+            SearchActivityPreferences prefs, boolean updateStorage) {
         SearchActivityPreferencesManager self = get();
-        if (prefs.equals(self.mCurrentlyLoadedPreferences)) return;
+        if (self.mCurrentlyLoadedPreferences != null
+                && prefs.equals(self.mCurrentlyLoadedPreferences)) return;
         self.mCurrentlyLoadedPreferences = prefs;
 
         // Notify all listeners about update.
@@ -237,12 +243,13 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      *
      * @param observer The observer to be added.
      */
-    public static void addObserver(@NonNull Consumer<SearchActivityPreferences> observer) {
+    public static void addObserver(Consumer<SearchActivityPreferences> observer) {
         ThreadUtils.assertOnUiThread();
         SearchActivityPreferencesManager self = get();
-        if (!self.mObservers.hasObserver(observer)) {
-            self.mObservers.addObserver(observer);
-            observer.accept(self.mCurrentlyLoadedPreferences);
+        if (self.mObservers.addObserver(observer)) {
+            if (self.mCurrentlyLoadedPreferences != null) {
+                observer.accept(self.mCurrentlyLoadedPreferences);
+            }
         }
     }
 
@@ -306,6 +313,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
 
         GURL url = new GURL(service.getSearchEngineUrlFromTemplateUrl(dseTemplateUrl.getKeyword()));
 
+        assumeNonNull(mCurrentlyLoadedPreferences);
         setCurrentlyLoadedPreferences(
                 new SearchActivityPreferences(
                         dseTemplateUrl.getShortName(),

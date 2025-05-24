@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/services/ipp_parser/public/cpp/ipp_converter.h"
 
 #include <algorithm>
@@ -464,8 +469,9 @@ ipp_parser::mojom::IppMessagePtr ConvertIppToMojo(ipp_t* ipp) {
       }
     }
 
-    if (!attrptr->value)
-      NOTREACHED_IN_MIGRATION();
+    if (!attrptr->value) {
+      NOTREACHED();
+    }
 
     attributes.push_back(std::move(attrptr));
   }

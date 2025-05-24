@@ -12,7 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/payments/core/payer_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
@@ -46,7 +46,7 @@ class PaymentApp {
 
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Should be called with method name (e.g., "https://google.com/pay") and
     // json-serialized stringified details.
@@ -81,8 +81,6 @@ class PaymentApp {
   virtual std::u16string GetMissingInfoLabel() const = 0;
   // Returns this app's answer for PaymentRequest.hasEnrolledInstrument().
   virtual bool HasEnrolledInstrument() const = 0;
-  // Records the use of this payment app.
-  virtual void RecordUse() = 0;
   // Check whether this payment app needs installation before it can be used.
   virtual bool NeedsInstallation() const = 0;
 
@@ -96,6 +94,8 @@ class PaymentApp {
 
   // Returns the icon bitmap or null.
   virtual const SkBitmap* icon_bitmap() const;
+  virtual const SkBitmap* issuer_bitmap() const;
+  virtual const SkBitmap* network_bitmap() const;
 
   // Returns the identifier for another payment app that should be hidden when
   // this payment app is present.

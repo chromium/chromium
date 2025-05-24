@@ -17,6 +17,7 @@
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/aggregate_frame_data.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
@@ -36,10 +37,6 @@ class HeavyAdService;
 }  // namespace heavy_ad_intervention
 
 namespace page_load_metrics {
-
-namespace features {
-BASE_DECLARE_FEATURE(kRestrictedNavigationAdTagging);
-}
 
 // This observer labels each sub-frame as an ad or not, and keeps track of
 // relevant per-frame and whole-page byte statistics.
@@ -81,7 +78,9 @@ class AdsPageLoadMetricsObserver
   static std::unique_ptr<AdsPageLoadMetricsObserver> CreateIfNeeded(
       content::WebContents* web_contents,
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
-      const ApplicationLocaleGetter& application_local_getter);
+      history::HistoryService* history_service,
+      const ApplicationLocaleGetter& application_local_getter,
+      bool is_incognito);
 
   // For a given frame, returns whether or not the frame's url would be
   // considered same origin to the outermost main frame's url.
@@ -92,7 +91,9 @@ class AdsPageLoadMetricsObserver
   // |blocklist| should be set only if |heavy_ad_service| is null.
   explicit AdsPageLoadMetricsObserver(
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
+      history::HistoryService* history_service,
       const ApplicationLocaleGetter& application_local_getter,
+      bool is_incognito,
       base::TickClock* clock = nullptr,
       heavy_ad_intervention::HeavyAdBlocklist* blocklist = nullptr);
 
@@ -160,6 +161,15 @@ class AdsPageLoadMetricsObserver
                            FrameTreeData* frame_data,
                            bool update_density_tracker,
                            bool record_metrics);
+
+  // Query `history_service` for `ad_url` and log a UMA metric for the frequency
+  // at which `ad_url` appears in history.
+  static void QueryAdUrlFrequencyInHistory(
+      history::HistoryService* history_service,
+      const GURL& ad_url,
+      base::CancelableTaskTracker* query_ad_url_cancelable_task_tracker,
+      base::CancelableTaskTracker*
+          query_ad_url_etld_plus_one_cancelable_task_tracker);
 
  private:
   // Object which maps to a FrameTreeData object. This can either own the
@@ -277,9 +287,7 @@ class AdsPageLoadMetricsObserver
 
   // Per-frame memory usage by V8 in bytes. Memory data is stored for each frame
   // on the page during the navigation.
-  std::unordered_map<content::FrameTreeNodeId,
-                     uint64_t,
-                     content::FrameTreeNodeId::Hasher>
+  std::unordered_map<content::FrameTreeNodeId, uint64_t>
       v8_current_memory_usage_map_;
 
   // Tracks page-level information for the navigation.
@@ -301,10 +309,6 @@ class AdsPageLoadMetricsObserver
   // page.
   bool page_load_is_reload_ = false;
 
-  // Whether the restricted navigation ad tagging feature is enabled on this
-  // page load.
-  const bool restricted_navigation_ad_tagging_enabled_;
-
   // Stores whether the heavy ad intervention is blocklisted or not for the user
   // on the URL of this page. Incognito Profiles will cause this to be set to
   // true. Used as a cache to avoid checking the blocklist once the page is
@@ -314,6 +318,14 @@ class AdsPageLoadMetricsObserver
   // Pointer to the HeavyAdService from which the heavy ad blocklist is obtained
   // in production.
   raw_ptr<heavy_ad_intervention::HeavyAdService> heavy_ad_service_;
+
+  // Pointer to HistoryService, which records history of pages visited.
+  // This pointer is owned by HistoryServiceFactory singleton.
+  raw_ptr<history::HistoryService> history_service_;
+
+  // Trackers for the async tasks querying `history_service_` for ad URL.
+  base::CancelableTaskTracker query_ad_url_history_task_tracker_;
+  base::CancelableTaskTracker query_ad_url_etld_plus_one_history_task_tracker_;
 
   ApplicationLocaleGetter application_locale_getter_;
 
@@ -340,6 +352,9 @@ class AdsPageLoadMetricsObserver
 
   // Tracks number of memory updates received.
   int memory_update_count_ = 0;
+
+  // Whether the WebContents being observed is for an Incognito profile.
+  bool is_incognito_;
 };
 
 }  // namespace page_load_metrics

@@ -28,6 +28,9 @@ std::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
 // depend on e.g. Chrome feature flags, platform/OS, supported CPU instructions.
 bool IsLiveCaptionFeatureSupported();
 
+// Returns whether Headless Caption feature is enabled.
+bool IsHeadlessCaptionFeatureSupported();
+
 std::string GetCaptionSettingsUrl();
 
 }  // namespace captions

@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,13 +19,13 @@
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/address_bubbles_icon_view.h"
-#include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
+#include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
 #include "chrome/browser/ui/views/commerce/discounts_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
@@ -33,19 +34,22 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
+#include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
+#include "chrome/browser/ui/views/optimization_guide/optimization_guide_icon_view.h"
+#include "chrome/browser/ui/views/page_action/collaboration_messaging_page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
 #include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
+#include "chrome/browser/ui/views/passwords/password_change/password_change_icon_views.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
-#include "chrome/browser/ui/views/side_search/side_search_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/common/chrome_features.h"
@@ -84,20 +88,28 @@ void PageActionIconController::Init(const PageActionIconParams& params,
     views::InkDrop::Get(icon.get())
         ->SetVisibleOpacity(params.page_action_icon_delegate
                                 ->GetPageActionInkDropVisibleOpacity());
-    if (params.icon_color)
+    if (params.icon_color) {
       icon->SetIconColor(*params.icon_color);
-    if (params.font_list)
+    }
+    if (params.font_list) {
       icon->SetFontList(*params.font_list);
+    }
     icon->AddPageIconViewObserver(this);
     auto* icon_ptr = icon.get();
-    if (params.button_observer)
+    if (params.button_observer) {
       params.button_observer->ObserveButton(icon_ptr);
+    }
     this->icon_container_->AddPageActionIcon(std::move(icon));
     this->page_action_icon_views_.emplace(type, icon_ptr);
     return icon_ptr;
   };
 
   for (PageActionIconType type : params.types_enabled) {
+    // When the page action migration is enabled, the new
+    // PageActionContainerView will contain the migrated page action icon.
+    if (IsPageActionMigrated(type)) {
+      continue;
+    }
     switch (type) {
       case PageActionIconType::kPaymentsOfferNotification:
         add_page_action_icon(
@@ -153,16 +165,17 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
-      case PageActionIconType::kLocalCardMigration:
-        add_page_action_icon(
-            type, std::make_unique<autofill::LocalCardMigrationIconView>(
-                      params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
-        break;
       case PageActionIconType::kManagePasswords:
         DCHECK(params.command_updater);
         add_page_action_icon(
             type, std::make_unique<ManagePasswordsIconViews>(
+                      params.command_updater, params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate, params.browser));
+        break;
+      case PageActionIconType::kChangePassword:
+        DCHECK(params.command_updater);
+        add_page_action_icon(
+            type, std::make_unique<PasswordChangeIconViews>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate, params.browser));
         break;
@@ -241,12 +254,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                 }),
                 base::BindRepeating(SharingDialogView::GetAsBubble)));
         break;
-      case PageActionIconType::kSideSearch:
-        add_page_action_icon(
-            type, std::make_unique<SideSearchIconView>(
-                      params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate, params.browser));
-        break;
       case PageActionIconType::kTranslate:
         DCHECK(params.command_updater);
         add_page_action_icon(
@@ -260,9 +267,9 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
-      case PageActionIconType::kVirtualCardManualFallback:
+      case PageActionIconType::kFilledCardInformation:
         add_page_action_icon(
-            type, std::make_unique<autofill::VirtualCardManualFallbackIconView>(
+            type, std::make_unique<autofill::FilledCardInformationIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
@@ -274,6 +281,24 @@ void PageActionIconController::Init(const PageActionIconParams& params,
       case PageActionIconType::kLensOverlay:
         add_page_action_icon(
             type, std::make_unique<LensOverlayPageActionIconView>(
+                      params.browser, params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate));
+        break;
+      case PageActionIconType::kLensOverlayHomework:
+        add_page_action_icon(
+            type, std::make_unique<LensOverlayHomeworkPageActionIconView>(
+                      params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate, params.browser));
+        break;
+      case PageActionIconType::kOptimizationGuide:
+        add_page_action_icon(
+            type, std::make_unique<OptimizationGuideIconView>(
+                      params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate, params.browser));
+        break;
+      case PageActionIconType::kCollaborationMessaging:
+        add_page_action_icon(
+            type, std::make_unique<CollaborationMessagingPageActionIconView>(
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
@@ -309,8 +334,9 @@ PageActionIconType PageActionIconController::GetIconType(
 }
 
 void PageActionIconController::UpdateAll() {
-  for (auto icon_item : page_action_icon_views_)
+  for (auto icon_item : page_action_icon_views_) {
     icon_item.second->Update();
+  }
   if (!browser_ || !browser_->tab_strip_model() ||
       !browser_->tab_strip_model()->GetActiveWebContents()) {
     return;
@@ -324,34 +350,21 @@ void PageActionIconController::UpdateAll() {
 }
 
 bool PageActionIconController::IsAnyIconVisible() const {
-  return base::ranges::any_of(page_action_icon_views_, [](auto icon_item) {
+  return std::ranges::any_of(page_action_icon_views_, [](auto icon_item) {
     return icon_item.second->GetVisible();
   });
 }
 
-bool PageActionIconController::ActivateFirstInactiveBubbleForAccessibility() {
-  for (auto icon_item : page_action_icon_views_) {
-    auto* icon = icon_item.second;
-    if (!icon->GetVisible() || !icon->GetBubble())
-      continue;
-
-    views::Widget* widget = icon->GetBubble()->GetWidget();
-    if (widget && widget->IsVisible() && !widget->IsActive()) {
-      widget->Show();
-      return true;
-    }
-  }
-  return false;
-}
-
 void PageActionIconController::SetIconColor(SkColor icon_color) {
-  for (auto icon_item : page_action_icon_views_)
+  for (auto icon_item : page_action_icon_views_) {
     icon_item.second->SetIconColor(icon_color);
+  }
 }
 
 void PageActionIconController::SetFontList(const gfx::FontList& font_list) {
-  for (auto icon_item : page_action_icon_views_)
+  for (auto icon_item : page_action_icon_views_) {
     icon_item.second->SetFontList(font_list);
+  }
 }
 
 void PageActionIconController::OnPageActionIconViewShown(
@@ -384,16 +397,17 @@ void PageActionIconController::OnPageActionIconViewClicked(
 }
 
 void PageActionIconController::ZoomChangedForActiveTab(bool can_show_bubble) {
-  if (zoom_icon_)
+  if (zoom_icon_) {
     zoom_icon_->ZoomChangedForActiveTab(can_show_bubble);
+  }
 }
 
 std::vector<const PageActionIconView*>
 PageActionIconController::GetPageActionIconViewsForTesting() const {
   std::vector<const PageActionIconView*> icon_views;
-  base::ranges::transform(page_action_icon_views_,
-                          std::back_inserter(icon_views),
-                          &IconViews::value_type::second);
+  std::ranges::transform(page_action_icon_views_,
+                         std::back_inserter(icon_views),
+                         &IconViews::value_type::second);
   return icon_views;
 }
 
@@ -422,7 +436,7 @@ void PageActionIconController::PrimaryPageChanged(content::Page& page) {
 }
 
 int PageActionIconController::VisibleEphemeralActionCount() const {
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       page_action_icon_views_,
       [](std::pair<PageActionIconType, PageActionIconView*> view) {
         return view.second->ephemeral() && view.second->GetVisible();
@@ -476,6 +490,12 @@ void PageActionIconController::RecordOverallMetrics() {
 void PageActionIconController::RecordIndividualMetrics(
     PageActionIconType type,
     PageActionIconView* view) const {
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    // The page action with type `type` has been migrated and associated metrics
+    // will be recorded in the new framework.
+    return;
+  }
+
   CHECK(view->ephemeral());
   base::UmaHistogramEnumeration("PageActionController.Icon.CTR2",
                                 PageActionCTREvent::kShown);

@@ -46,24 +46,28 @@ class TestPlatformNativeWidget : public PlatformNativeWidget {
   TestPlatformNativeWidget& operator=(const TestPlatformNativeWidget&) = delete;
 
   ~TestPlatformNativeWidget() override {
-    if (destroyed_)
+    if (destroyed_) {
       *destroyed_ = true;
-    if (destroyed_callback_)
+    }
+    if (destroyed_callback_) {
       std::move(destroyed_callback_).Run();
+    }
   }
 
   // PlatformNativeWidget:
   void SetCapture() override {
-    if (mock_capture_)
+    if (mock_capture_) {
       mouse_capture_ = true;
-    else
+    } else {
       PlatformNativeWidget::SetCapture();
+    }
   }
 
   void ReleaseCapture() override {
     if (mock_capture_) {
-      if (mouse_capture_)
+      if (mouse_capture_) {
         PlatformNativeWidget::GetWidget()->OnMouseCaptureLost();
+      }
       mouse_capture_ = false;
     } else {
       PlatformNativeWidget::ReleaseCapture();

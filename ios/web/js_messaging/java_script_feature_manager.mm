@@ -6,9 +6,10 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/check_op.h"
 #import "base/ios/ios_util.h"
+#import "base/notreached.h"
 #import "ios/web/public/browser_state.h"
-#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
@@ -43,11 +44,21 @@ JavaScriptFeatureManager* JavaScriptFeatureManager::FromBrowserState(
 }
 
 JavaScriptContentWorld*
-JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
+JavaScriptFeatureManager::GetContentWorldForBrowserState(
+    ContentWorld content_world,
     BrowserState* browser_state) {
   DCHECK(browser_state);
+  CHECK_NE(content_world, ContentWorld::kAllContentWorlds);
+
   JavaScriptFeatureManager* feature_manager = FromBrowserState(browser_state);
-  return feature_manager->page_content_world_.get();
+  switch (content_world) {
+    case ContentWorld::kPageContentWorld:
+      return feature_manager->page_content_world_.get();
+    case ContentWorld::kIsolatedWorld:
+      return feature_manager->isolated_world_.get();
+    case ContentWorld::kAllContentWorlds:
+      NOTREACHED();
+  }
 }
 
 void JavaScriptFeatureManager::ConfigureFeatures(

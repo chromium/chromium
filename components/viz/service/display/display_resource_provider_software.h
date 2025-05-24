@@ -12,37 +12,31 @@
 #include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/service/blocking_sequence_runner.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace gpu {
 class SharedImageManager;
-class SyncPointManager;
 class Scheduler;
 }
 
 namespace viz {
-
-class SharedBitmapManager;
 
 // DisplayResourceProvider implementation used with SoftwareRenderer.
 class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
     : public DisplayResourceProvider {
  public:
   explicit DisplayResourceProviderSoftware(
-      SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageManager* shared_image_manager,
-      gpu::SyncPointManager* sync_point_manager,
       gpu::Scheduler* scheduler);
   ~DisplayResourceProviderSoftware() override;
 
   class VIZ_SERVICE_EXPORT ScopedReadLockSkImage {
    public:
     ScopedReadLockSkImage(DisplayResourceProviderSoftware* resource_provider,
-                          ResourceId resource_id,
-                          SkAlphaType alpha_type);
+                          ResourceId resource_id);
     ~ScopedReadLockSkImage();
 
     ScopedReadLockSkImage(const ScopedReadLockSkImage&) = delete;
@@ -78,16 +72,11 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
       DeleteStyle style,
       const std::vector<ResourceId>& unused) override;
 
-  void PopulateSkBitmapWithResource(SkBitmap* sk_bitmap,
-                                    const ChildResource* resource,
-                                    SkAlphaType alpha_type);
   void WaitSyncToken(gpu::SyncToken sync_token);
 
-  const raw_ptr<SharedBitmapManager> shared_bitmap_manager_;
   const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
-  const raw_ptr<gpu::SyncPointManager> sync_point_manager_;
   const raw_ptr<gpu::Scheduler> gpu_scheduler_;
-  scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data_;
+  std::unique_ptr<gpu::BlockingSequenceRunner> blocking_sequence_runner_;
 
   base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_images_;
 

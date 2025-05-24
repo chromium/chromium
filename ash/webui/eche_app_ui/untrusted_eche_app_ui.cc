@@ -47,8 +47,7 @@ UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
                                IDR_ASH_ECHE_APP_MESSAGE_TYPES_JS);
   html_source->AddResourcePath("receiver.js", IDR_ASH_ECHE_APP_RECEIVER_JS);
 
-  html_source->AddResourcePaths(
-      base::make_span(kAshEcheBundleResources, kAshEcheBundleResourcesSize));
+  html_source->AddResourcePaths(kAshEcheBundleResources);
 
   html_source->AddFrameAncestor(GURL(kChromeUIEcheAppURL));
 

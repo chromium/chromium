@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -41,20 +42,19 @@ class TestIdleDetectionPermissionContext
 
  private:
   // IdleDetectionPermissionContext:
-  void NotifyPermissionSet(const permissions::PermissionRequestID& id,
-                           const GURL& requesting_origin,
-                           const GURL& embedder_origin,
-                           permissions::BrowserPermissionCallback callback,
-                           bool persist,
-                           ContentSetting content_setting,
-                           bool is_one_time,
-                           bool is_final_decision) override {
+  void NotifyPermissionSet(
+      const permissions::PermissionRequestData& request_data,
+      permissions::BrowserPermissionCallback callback,
+      bool persist,
+      ContentSetting content_setting,
+      bool is_one_time,
+      bool is_final_decision) override {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
     last_permission_set_setting_ = content_setting;
     IdleDetectionPermissionContext::NotifyPermissionSet(
-        id, requesting_origin, embedder_origin, std::move(callback), persist,
-        content_setting, is_one_time, is_final_decision);
+        request_data, std::move(callback), persist, content_setting,
+        is_one_time, is_final_decision);
   }
 
   int permission_set_count_;
@@ -89,8 +89,9 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
             permission_context.last_permission_set_setting());
 
   permission_context.RequestPermission(
-      permissions::PermissionRequestData(&permission_context, id,
-                                         /*user_gesture=*/true, url),
+      std::make_unique<permissions::PermissionRequestData>(
+          &permission_context, id,
+          /*user_gesture=*/true, url),
       base::DoNothing());
 
   // Should be blocked after 1-2 seconds, but the timer is reset whenever the
@@ -159,12 +160,14 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
             permission_context.last_permission_set_setting());
 
   permission_context.RequestPermission(
-      permissions::PermissionRequestData(&permission_context, id1,
-                                         /*user_gesture=*/true, url),
+      std::make_unique<permissions::PermissionRequestData>(
+          &permission_context, id1,
+          /*user_gesture=*/true, url),
       base::DoNothing());
   permission_context.RequestPermission(
-      permissions::PermissionRequestData(&permission_context, id2,
-                                         /*user_gesture=*/true, url),
+      std::make_unique<permissions::PermissionRequestData>(
+          &permission_context, id2,
+          /*user_gesture=*/true, url),
       base::DoNothing());
 
   EXPECT_EQ(0, permission_context.permission_set_count());

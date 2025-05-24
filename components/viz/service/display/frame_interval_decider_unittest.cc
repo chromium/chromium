@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/containers/flat_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -22,20 +23,22 @@
 namespace viz {
 namespace {
 
+using ContinuousRangeSettings = FrameIntervalDecider::ContinuousRangeSettings;
 using FixedIntervalSettings = FrameIntervalDecider::FixedIntervalSettings;
 using FrameIntervalClass = FrameIntervalDecider::FrameIntervalClass;
+using ResultInterval = FrameIntervalMatcher::ResultInterval;
 using Result = FrameIntervalDecider::Result;
 
 constexpr base::TimeTicks kNow = base::TimeTicks() + base::Seconds(1234);
 
 void ExpectResult(Result result, FrameIntervalClass frame_interval_class) {
-  ASSERT_TRUE(absl::holds_alternative<FrameIntervalClass>(result));
-  EXPECT_EQ(frame_interval_class, absl::get<FrameIntervalClass>(result));
+  ASSERT_TRUE(std::holds_alternative<FrameIntervalClass>(result));
+  EXPECT_EQ(frame_interval_class, std::get<FrameIntervalClass>(result));
 }
 
 void ExpectResult(Result result, base::TimeDelta interval) {
-  ASSERT_TRUE(absl::holds_alternative<base::TimeDelta>(result));
-  EXPECT_EQ(interval, absl::get<base::TimeDelta>(result));
+  ASSERT_TRUE(std::holds_alternative<ResultInterval>(result));
+  EXPECT_EQ(interval, std::get<ResultInterval>(result).interval);
 }
 
 class TestFrameIntervalMatcher : public FrameIntervalMatcher {
@@ -249,7 +252,7 @@ TEST_F(FrameIntervalDeciderTest, NoMatchFixedIntervals) {
   FixedIntervalSettings fixed_interval_settings;
   fixed_interval_settings.supported_intervals.insert(base::Milliseconds(8));
   fixed_interval_settings.supported_intervals.insert(base::Milliseconds(16));
-  fixed_interval_settings.default_interval = base::Milliseconds(16);
+  fixed_interval_settings.default_interval = base::Milliseconds(0);
   settings_.interval_settings = fixed_interval_settings;
 
   InitializeDecider();
@@ -259,13 +262,30 @@ TEST_F(FrameIntervalDeciderTest, NoMatchFixedIntervals) {
   DrawSurfaces({surface}, kNow);
 
   EXPECT_TRUE(matchers_[1]->has_last_matcher_inputs());
-  ExpectResult(TakeLastResult(), base::Milliseconds(16));
+  ExpectResult(TakeLastResult(), base::Milliseconds(0));
+}
+
+TEST_F(FrameIntervalDeciderTest, NoMatchContinuousRange) {
+  ContinuousRangeSettings continuous_range_settings;
+  continuous_range_settings.min_interval = base::Milliseconds(8);
+  continuous_range_settings.max_interval = base::Milliseconds(16);
+  continuous_range_settings.default_interval = base::Milliseconds(0);
+  settings_.interval_settings = continuous_range_settings;
+
+  InitializeDecider();
+  FrameIntervalInputs inputs;
+  inputs.frame_time = kNow;
+  Surface* surface = CreateSurface(FrameSinkId(0, 1), inputs);
+  DrawSurfaces({surface}, kNow);
+
+  EXPECT_TRUE(matchers_[1]->has_last_matcher_inputs());
+  ExpectResult(TakeLastResult(), base::Milliseconds(0));
 }
 
 TEST_F(FrameIntervalDeciderTest, FirstMatch) {
   InitializeDecider();
 
-  matchers_[1]->SetResult(base::Milliseconds(32));
+  matchers_[1]->SetResult(ResultInterval(base::Milliseconds(32)));
 
   FrameIntervalInputs inputs;
   inputs.frame_time = kNow;
@@ -280,7 +300,7 @@ TEST_F(FrameIntervalDeciderTest, FirstMatch) {
 TEST_F(FrameIntervalDeciderTest, NoChange) {
   InitializeDecider();
 
-  matchers_[0]->SetResult(base::Milliseconds(32));
+  matchers_[0]->SetResult(ResultInterval(base::Milliseconds(32)));
 
   FrameIntervalInputs inputs;
   inputs.frame_time = kNow;
@@ -304,7 +324,7 @@ TEST_F(FrameIntervalDeciderTest, IncreaseIntervalDelayFrameInterval) {
   InitializeDecider();
 
   base::TimeTicks now = kNow;
-  matchers_[0]->SetResult(base::Milliseconds(32));
+  matchers_[0]->SetResult(ResultInterval(base::Milliseconds(32)));
 
   FrameIntervalInputs inputs;
   inputs.frame_time = now;
@@ -314,13 +334,13 @@ TEST_F(FrameIntervalDeciderTest, IncreaseIntervalDelayFrameInterval) {
   EXPECT_EQ(FrameIntervalMatcherType::kInputBoost, TakeLastMatcherType());
 
   now = kNow + base::Milliseconds(16);
-  matchers_[0]->SetResult(base::Milliseconds(16));
+  matchers_[0]->SetResult(ResultInterval(base::Milliseconds(16)));
   DrawSurfaces({surface}, now);
   ExpectResult(TakeLastResult(), base::Milliseconds(16));
   EXPECT_EQ(FrameIntervalMatcherType::kInputBoost, TakeLastMatcherType());
 
   now = kNow + base::Milliseconds(32);
-  matchers_[0]->SetResult(base::Milliseconds(32));
+  matchers_[0]->SetResult(ResultInterval(base::Milliseconds(32)));
   DrawSurfaces({surface}, now);
   EXPECT_FALSE(has_result());
   EXPECT_FALSE(has_matcher_type());
@@ -378,7 +398,7 @@ TEST_F(FrameIntervalDeciderTest, IncreaseIntervalDelayVariantSwitch) {
   EXPECT_EQ(FrameIntervalMatcherType::kInputBoost, TakeLastMatcherType());
 
   now = kNow + base::Milliseconds(16);
-  matchers_[0]->SetResult(base::Milliseconds(16));
+  matchers_[0]->SetResult(ResultInterval(base::Milliseconds(16)));
   DrawSurfaces({surface}, now);
   ExpectResult(TakeLastResult(), base::Milliseconds(16));
   EXPECT_EQ(FrameIntervalMatcherType::kInputBoost, TakeLastMatcherType());
@@ -390,7 +410,7 @@ TEST_F(FrameIntervalDeciderTest, IncreaseIntervalDelayVariantSwitch) {
   EXPECT_EQ(FrameIntervalMatcherType::kInputBoost, TakeLastMatcherType());
 
   now = kNow + base::Milliseconds(48);
-  matchers_[0]->SetResult(base::Milliseconds(32));
+  matchers_[0]->SetResult(ResultInterval(base::Milliseconds(32)));
   DrawSurfaces({surface}, now);
   ExpectResult(TakeLastResult(), base::Milliseconds(32));
   EXPECT_EQ(FrameIntervalMatcherType::kInputBoost, TakeLastMatcherType());

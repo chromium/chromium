@@ -303,7 +303,7 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   // address bar + typed transition (like Gmail auto navigation)
   std::unique_ptr<content::NavigationSimulator> forward_nav =
       content::NavigationSimulator::CreateHistoryNavigation(
-          1, web_contents, false /* is_renderer_initiated */);
+          1, web_contents, /*is_renderer_initiated=*/false);
   forward_nav->Start();
   web_contents->GetController().GetPendingEntry()->SetTransitionType(
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
@@ -347,7 +347,7 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   // (via Forward) but modify the navigation type while pending to look like a
   // PAGE_TRANSITION_AUTO_BOOKMARK.
   forward_nav = content::NavigationSimulator::CreateHistoryNavigation(
-      1, web_contents, false /* is_renderer_initiated */);
+      1, web_contents, /*is_renderer_initiated=*/false);
   forward_nav->Start();
   web_contents->GetController().GetPendingEntry()->SetTransitionType(
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK));

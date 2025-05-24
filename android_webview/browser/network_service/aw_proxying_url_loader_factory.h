@@ -76,6 +76,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           cookie_manager,
       AwCookieAccessPolicy* cookie_access_policy,
       std::optional<const net::IsolationInfo> isolation_info,
+      std::optional<WebContentsKey> key,
       content::FrameTreeNodeId frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -96,6 +97,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // navigation URL. This is an optimization that avoids hopping to the UI
   // thread before starting a request.
   static void SetXrwResultForNavigation(
+      content::OriginTrialsControllerDelegate* delegate,
       const GURL& url,
       blink::mojom::ResourceType resource_type,
       content::FrameTreeNodeId frame_tree_node_id,
@@ -107,6 +109,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
       AwCookieAccessPolicy* cookie_access_policy,
       std::optional<const net::IsolationInfo> isolation_info,
+      std::optional<WebContentsKey> web_contents_key,
       content::FrameTreeNodeId frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -124,6 +127,14 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override;
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory>
                  loader_receiver) override;
@@ -136,7 +147,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
                        base::OnceCallback<void(std::string)> callback);
 
   void SetCookieHeader(const network::ResourceRequest& request,
-                       const std::string& value,
+                       std::string_view value,
                        const std::optional<base::Time>& server_time);
 
   net::IsolationInfo GetIsolationInfo(const network::ResourceRequest& request);
@@ -144,6 +155,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   raw_ptr<AwCookieAccessPolicy> cookie_access_policy_;
   std::optional<const net::IsolationInfo> isolation_info_;
+  const std::optional<WebContentsKey> web_contents_key_;
   const content::FrameTreeNodeId frame_tree_node_id_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;

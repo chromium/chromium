@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/ozone.gni")
+import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+# TODO(crbug.com/378487333): Look into renaming from accelerator to hotkey.
+source_set("global_accelerator_listener") {
+  sources = [
+    "global_accelerator_listener.cc",
+    "global_accelerator_listener.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/events:event_constants",
+    "//ui/events:events_base",
+    "//ui/gfx",
+  ]
+
+  if (is_mac) {
+    sources += [
+      "global_accelerator_listener_mac.h",
+      "global_accelerator_listener_mac.mm",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "global_accelerator_listener_win.cc",
+      "global_accelerator_listener_win.h",
+    ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+    sources += [
+      "global_accelerator_listener_ozone.cc",
+      "global_accelerator_listener_ozone.h",
+    ]
+    deps += [
+      "//build:branding_buildflags",
+      "//build/config/linux/dbus:buildflags",
+    ]
+  }
+
+  if (is_linux) {
+    if (use_dbus) {
+      sources += [
+        "global_accelerator_listener_linux.cc",
+        "global_accelerator_listener_linux.h",
+      ]
+      deps += [ "//components/dbus" ]
+    }
+  }
+}

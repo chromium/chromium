@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <variant>
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_file.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class CommandLine;
@@ -34,7 +34,7 @@ namespace internal {
 std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
     int child_process_id,
     const mojo::PlatformChannelEndpoint& mojo_channel_remote_endpoint,
-    const std::map<std::string, absl::variant<base::FilePath, base::ScopedFD>>&
+    const std::map<std::string, std::variant<base::FilePath, base::ScopedFD>>&
         files_to_preload,
     const std::string& process_type,
     base::CommandLine* command_line);

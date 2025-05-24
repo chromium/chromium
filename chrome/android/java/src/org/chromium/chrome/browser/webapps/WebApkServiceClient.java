@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -81,7 +80,7 @@ public class WebApkServiceClient {
     private static WebApkServiceClient sInstance;
 
     /** Manages connections between the browser application and WebAPK services. */
-    private WebApkServiceConnectionManager mConnectionManager;
+    private final WebApkServiceConnectionManager mConnectionManager;
 
     public static WebApkServiceClient getInstance() {
         if (sInstance == null) {
@@ -157,7 +156,7 @@ public class WebApkServiceClient {
                     extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
                     try {
                         ActivityOptions options = ActivityOptions.makeBasic();
-                        ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(
+                        ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(
                                 options);
                         permissionRequestIntent.send(
                                 ContextUtils.getApplicationContext(),
@@ -211,24 +210,20 @@ public class WebApkServiceClient {
                             return;
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            InstalledWebappPermissionManager.get()
-                                    .updatePermission(
-                                            origin,
-                                            webApkPackage,
-                                            ContentSettingsType.NOTIFICATIONS,
-                                            settingValue);
+                            InstalledWebappPermissionManager.updatePermission(
+                                    origin,
+                                    webApkPackage,
+                                    ContentSettingsType.NOTIFICATIONS,
+                                    settingValue);
                         }
                         return;
                     }
 
-                    String channelName = null;
-                    if (webApkTargetsAtLeastO(webApkPackage)) {
-                        notificationBuilder.setChannelId(
-                                ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
-                        channelName =
-                                ContextUtils.getApplicationContext()
-                                        .getString(R.string.webapk_notification_channel_name);
-                    }
+                    notificationBuilder.setChannelId(ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
+                    String channelName =
+                            ContextUtils.getApplicationContext()
+                                    .getString(R.string.webapk_notification_channel_name);
+
                     NotificationMetadata metadata =
                             new NotificationMetadata(
                                     NotificationUmaTracker.SystemNotificationType.WEBAPK,
@@ -285,20 +280,6 @@ public class WebApkServiceClient {
         if (sInstance == null) return;
 
         sInstance.mConnectionManager.disconnectAll(ContextUtils.getApplicationContext());
-    }
-
-    /** Returns whether the WebAPK targets SDK 26+. */
-    private boolean webApkTargetsAtLeastO(String webApkPackage) {
-        try {
-            ApplicationInfo info =
-                    ContextUtils.getApplicationContext()
-                            .getPackageManager()
-                            .getApplicationInfo(webApkPackage, 0);
-            return info.targetSdkVersion >= Build.VERSION_CODES.O;
-        } catch (PackageManager.NameNotFoundException e) {
-        }
-
-        return false;
     }
 
     /** Decodes into a Bitmap an Image resource stored in an APK with the given package name. */

@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -74,8 +75,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
                                   std::optional<AuthenticationError> error);
 
   // Record the result of the recovery and time taken.
-  void RecordRecoveryResult(
-      AuthEventsRecorder::CryptohomeRecoveryResult result);
+  void RecordRecoveryResult(AuthEventsRecorder::CryptohomeRecoveryResult result,
+                            const SessionAuthFactors& auth_factors);
 
   std::unique_ptr<UserContext> user_context_;
   AuthOperationCallback callback_;

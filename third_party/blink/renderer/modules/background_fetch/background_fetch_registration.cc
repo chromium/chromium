@@ -2,22 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_registration.h"
 
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_background_fetch_failure_reason.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_background_fetch_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cache_query_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -100,7 +98,7 @@ void BackgroundFetchRegistration::OnRequestCompleted(
       observer->OnRequestCompleted(response->Clone());
       it = observers_.erase(it);
     } else {
-      it++;
+      UNSAFE_TODO(it++);
     }
   }
 }
@@ -342,22 +340,23 @@ void BackgroundFetchRegistration::DidAbort(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-const String BackgroundFetchRegistration::result() const {
+V8BackgroundFetchResult BackgroundFetchRegistration::result() const {
   switch (result_) {
     case mojom::BackgroundFetchResult::SUCCESS:
-      return "success";
+      return V8BackgroundFetchResult(V8BackgroundFetchResult::Enum::kSuccess);
     case mojom::BackgroundFetchResult::FAILURE:
-      return "failure";
+      return V8BackgroundFetchResult(V8BackgroundFetchResult::Enum::kFailure);
     case mojom::BackgroundFetchResult::UNSET:
-      return "";
+      return V8BackgroundFetchResult(V8BackgroundFetchResult::Enum::k);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-const String BackgroundFetchRegistration::failureReason() const {
+V8BackgroundFetchFailureReason BackgroundFetchRegistration::failureReason()
+    const {
   blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
       .Add(
           blink::IdentifiableSurface::FromTypeAndToken(
@@ -369,21 +368,27 @@ const String BackgroundFetchRegistration::failureReason() const {
       .Record(GetExecutionContext()->UkmRecorder());
   switch (failure_reason_) {
     case mojom::BackgroundFetchFailureReason::NONE:
-      return "";
+      return V8BackgroundFetchFailureReason(
+          V8BackgroundFetchFailureReason::Enum::k);
     case mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI:
     case mojom::BackgroundFetchFailureReason::CANCELLED_BY_DEVELOPER:
-      return "aborted";
+      return V8BackgroundFetchFailureReason(
+          V8BackgroundFetchFailureReason::Enum::kAborted);
     case mojom::BackgroundFetchFailureReason::BAD_STATUS:
-      return "bad-status";
+      return V8BackgroundFetchFailureReason(
+          V8BackgroundFetchFailureReason::Enum::kBadStatus);
     case mojom::BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE:
     case mojom::BackgroundFetchFailureReason::FETCH_ERROR:
-      return "fetch-error";
+      return V8BackgroundFetchFailureReason(
+          V8BackgroundFetchFailureReason::Enum::kFetchError);
     case mojom::BackgroundFetchFailureReason::QUOTA_EXCEEDED:
-      return "quota-exceeded";
+      return V8BackgroundFetchFailureReason(
+          V8BackgroundFetchFailureReason::Enum::kQuotaExceeded);
     case mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED:
-      return "download-total-exceeded";
+      return V8BackgroundFetchFailureReason(
+          V8BackgroundFetchFailureReason::Enum::kDownloadTotalExceeded);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool BackgroundFetchRegistration::HasPendingActivity() const {

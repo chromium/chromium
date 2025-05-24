@@ -27,8 +27,8 @@ struct TestStrikeDatabaseTraits {
   static constexpr base::TimeDelta kExpiryTimeDelta = base::Days(180);
   static constexpr bool kUniqueIdRequired = true;
 
-  static std::string OriginFromId(const std::string& id) {
-    // To keep testing simple, we assume the database is only keyed by origin.
+  static std::string HostFromId(const std::string& id) {
+    // To keep testing simple, we assume the database is only keyed by host.
     return id;
   }
 };

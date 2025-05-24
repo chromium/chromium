@@ -23,7 +23,7 @@
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/common/api/bluetooth.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #endif
 
@@ -149,7 +149,7 @@ void BluetoothGetDevicesFunction::DoWork(
   base::Value::List device_list;
 
   BluetoothAdapter::DeviceList devices;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Default filter values.
   bluetooth_api::FilterType filter_type = bluetooth_api::FilterType::kAll;
   int limit = 0; /*no limit*/

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_two_origins_view.h"
+#include "components/permissions/permission_request.h"
 
 raw_ptr<PermissionPromptBubbleBaseView> CreatePermissionPromptBubbleView(
     Browser* browser,

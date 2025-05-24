@@ -24,10 +24,6 @@ class AnnotationJsTest : public JavascriptTest {
   void SetUp() override {
     JavascriptTest::SetUp();
 
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEnableViewportIntents},
-        /*disabled_features=*/{});
-
     AddGCrWebScript();
     AddCommonScript();
     AddMessageScript();
@@ -67,8 +63,6 @@ class AnnotationJsTest : public JavascriptTest {
     }
     EXPECT_EQ(ok, result_array.count);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AnnotationJsTest, All) {

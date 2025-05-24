@@ -33,13 +33,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
-import org.chromium.android_webview.BrowserSafeModeActionList;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
 import org.chromium.android_webview.common.services.ISafeModeService;
 import org.chromium.android_webview.common.variations.VariationsUtils;
+import org.chromium.android_webview.safe_mode.BrowserSafeModeActionList;
 import org.chromium.android_webview.services.AwVariationsSeedFetcher;
 import org.chromium.android_webview.services.NonEmbeddedFastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.services.NonEmbeddedSafeModeAction;
@@ -161,24 +161,16 @@ public class SafeModeTest extends AwParameterizedTest {
 
     private AtomicInteger mTestSafeModeActionExecutionCounter;
 
-    private TestJobScheduler mScheduler = new TestJobScheduler();
-    private TestVariationsSeedFetcher mDownloader = new TestVariationsSeedFetcher();
+    private final TestJobScheduler mScheduler = new TestJobScheduler();
+    private final TestVariationsSeedFetcher mDownloader = new TestVariationsSeedFetcher();
     private static final int HTTP_NOT_FOUND = 404;
     private static final int HTTP_NOT_MODIFIED = 304;
     private static final int JOB_ID = TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID;
 
     // A test JobScheduler which only holds one job, and never does anything with it.
-    private class TestJobScheduler extends JobScheduler {
+    private static class TestJobScheduler extends JobScheduler {
         public JobInfo mJob;
-        public QueueContainer mQueueContainer = new QueueContainer();
-
-        public void clear() {
-            mJob = null;
-        }
-
-        public void assertScheduled() {
-            Assert.assertNotNull("No job scheduled", mJob);
-        }
+        public final QueueContainer mQueueContainer = new QueueContainer();
 
         public void assertNotScheduled() {
             Assert.assertNull("Job should not have been scheduled", mJob);
@@ -231,7 +223,7 @@ public class SafeModeTest extends AwParameterizedTest {
     }
 
     private static class QueueContainer {
-        private LinkedBlockingQueue<JobInfo> mQueue = new LinkedBlockingQueue<>();
+        private final LinkedBlockingQueue<JobInfo> mQueue = new LinkedBlockingQueue<>();
 
         public void notifyCalled(JobInfo job) {
             try {
@@ -245,15 +237,11 @@ public class SafeModeTest extends AwParameterizedTest {
         public JobInfo waitForMessageCallback() throws Exception {
             return AwActivityTestRule.waitForNextQueueElement(mQueue);
         }
-
-        public boolean isQueueEmpty() {
-            return mQueue.isEmpty();
-        }
     }
 
     // A test VariationsSeedFetcher which doesn't actually download seeds, but verifies the request
     // parameters.
-    private class TestVariationsSeedFetcher extends VariationsSeedFetcher {
+    private static class TestVariationsSeedFetcher extends VariationsSeedFetcher {
         private static final String SAVED_VARIATIONS_SEED_SERIAL_NUMBER = "savedSerialNumber";
 
         public int fetchResult;
@@ -660,7 +648,7 @@ public class SafeModeTest extends AwParameterizedTest {
         }
     }
 
-    private class TestNonEmbeddedSafeModeAction implements NonEmbeddedSafeModeAction {
+    private static class TestNonEmbeddedSafeModeAction implements NonEmbeddedSafeModeAction {
         private int mActivatedCount;
         private int mDeactivatedCount;
         private final String mId;
@@ -797,8 +785,8 @@ public class SafeModeTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Overall status should be unknown if at least one action is unrecognized and no"
                         + " actions failed",
-                success,
-                SafeModeController.SafeModeExecutionResult.ACTION_UNKNOWN);
+                SafeModeController.SafeModeExecutionResult.ACTION_UNKNOWN,
+                success);
         histogramExpectation.assertExpected("Unregistered safemode actions should be logged");
         // If we got this far without crashing, we assume SafeModeController correctly ignored the
         // unregistered actions.
@@ -838,8 +826,8 @@ public class SafeModeTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Overall status should be failure if at least one"
                         + " action is unrecognized and at least one action is a failure",
-                success,
-                SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
+                SafeModeController.SafeModeExecutionResult.ACTION_FAILED,
+                success);
         histogramExpectation.assertExpected("Failed safemode actions should be logged");
         // If we got this far without crashing, we assume SafeModeController correctly ignored the
         // unregistered actions.
@@ -921,8 +909,8 @@ public class SafeModeTest extends AwParameterizedTest {
         int success = SafeModeController.getInstance().executeActions(allSuccessful);
         Assert.assertEquals(
                 "Overall status should be successful if all actions are successful",
-                success,
-                SafeModeController.SafeModeExecutionResult.SUCCESS);
+                SafeModeController.SafeModeExecutionResult.SUCCESS,
+                success);
         histogramExpectation.assertExpected(
                 "Overall status should be successful if all actions are successful");
         Assert.assertEquals(
@@ -948,8 +936,8 @@ public class SafeModeTest extends AwParameterizedTest {
         success = SafeModeController.getInstance().executeActions(oneFailure);
         Assert.assertEquals(
                 "Overall status should be failure if at least one action fails",
-                success,
-                SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
+                SafeModeController.SafeModeExecutionResult.ACTION_FAILED,
+                success);
         histogramExpectation.assertExpected(
                 "Overall status should be failure if at least one action fails");
         Assert.assertEquals(

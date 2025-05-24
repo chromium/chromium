@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
+#include "chrome/browser/ash/file_manager/file_tasks_notifier_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
@@ -42,7 +43,7 @@
 namespace extensions {
 namespace {
 
-std::string Redact(const std::string_view path) {
+std::string Redact(std::string_view path) {
   return LOG_IS_ON(INFO) ? base::StrCat({"'", path, "'"}) : "(redacted)";
 }
 
@@ -83,7 +84,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
               : base::FilePath();
 
   if (auto* notifier =
-          file_manager::file_tasks::FileTasksNotifier::GetForProfile(profile)) {
+          file_manager::file_tasks::FileTasksNotifierFactory::GetForProfile(
+              profile)) {
     std::vector<storage::FileSystemURL> urls;
     urls.push_back(std::move(fs_url));
     notifier->NotifyFileTasks(urls);
@@ -263,8 +265,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
     case file_manager::VOLUME_TYPE_GUEST_OS:
       // TODO(crbug/1293229): Figure out if we need to support unmounting. I'm
       // not actually sure if it's possible to reach here.
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
 
     default:
       // Requested unmounting a device which is not unmountable.

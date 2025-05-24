@@ -6,6 +6,9 @@ package org.chromium.android_webview;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.Locale;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -13,6 +16,7 @@ import java.util.regex.Pattern;
 
 /** Java implementation of legacy WebView.findAddress algorithm. */
 @VisibleForTesting
+@NullMarked
 public class FindAddress {
     static class ZipRange {
         int mLow;
@@ -45,7 +49,7 @@ public class FindAddress {
     private static final int MAX_ADDRESS_LINES = 5;
 
     // No words in an address are longer than this many characters.
-    private static final int kMaxAddressNameWordLength = 25;
+    private static final int MAX_ADDRESS_NAME_WORD_LENGTH = 25;
 
     // Location name should be in the first MAX_LOCATION_NAME_DISTANCE words
     private static final int MAX_LOCATION_NAME_DISTANCE = 5;
@@ -329,15 +333,14 @@ public class FindAddress {
     }
 
     /**
-     * Attempt to match a house number beginnning at position offset
-     * in content.  The house number must be followed by a word
-     * delimiter or the end of the string, and if offset is non-zero,
+     * Attempt to match a house number beginnning at position offset in content. The house number
+     * must be followed by a word delimiter or the end of the string, and if offset is non-zero,
      * then it must also be preceded by a word delimiter.
      *
      * @return a MatchResult if a valid house number was found.
      */
     @VisibleForTesting
-    public static MatchResult matchHouseNumber(String content, int offset) {
+    public static @Nullable MatchResult matchHouseNumber(String content, int offset) {
         if (offset > 0 && HOUSE_PRE_DELIM.indexOf(content.charAt(offset - 1)) == -1) return null;
         Matcher matcher = sHouseNumberRe.matcher(content).region(offset, content.length());
         if (matcher.lookingAt()) {
@@ -348,31 +351,27 @@ public class FindAddress {
     }
 
     /**
-     * Attempt to match a US state beginnning at position offset in
-     * content.  The matching state must be followed by a word
-     * delimiter or the end of the string, and if offset is non-zero,
-     * then it must also be preceded by a word delimiter.
+     * Attempt to match a US state beginnning at position offset in content. The matching state must
+     * be followed by a word delimiter or the end of the string, and if offset is non-zero, then it
+     * must also be preceded by a word delimiter.
      *
-     * @return a MatchResult if a valid US state (or two letter code)
-     * was found.
+     * @return a MatchResult if a valid US state (or two letter code) was found.
      */
     @VisibleForTesting
-    public static MatchResult matchState(String content, int offset) {
+    public static @Nullable MatchResult matchState(String content, int offset) {
         if (offset > 0 && WORD_DELIM.indexOf(content.charAt(offset - 1)) == -1) return null;
         Matcher stateMatcher = sStateRe.matcher(content).region(offset, content.length());
         return stateMatcher.lookingAt() ? stateMatcher.toMatchResult() : null;
     }
 
     /**
-     * Test whether zipCode matches the U.S. zip code format (ddddd or
-     * ddddd-dddd) and is within the expected range, given that
-     * stateMatch is a match of sStateRe.
+     * Test whether zipCode matches the U.S. zip code format (ddddd or ddddd-dddd) and is within the
+     * expected range, given that stateMatch is a match of sStateRe.
      *
-     * @return true if zipCode is a valid zip code, is legal for the
-     * matched state, and is followed by a word delimiter or the end
-     * of the string.
+     * @return true if zipCode is a valid zip code, is legal for the matched state, and is followed
+     *     by a word delimiter or the end of the string.
      */
-    private static boolean isValidZipCode(String zipCode, MatchResult stateMatch) {
+    private static boolean isValidZipCode(String zipCode, @Nullable MatchResult stateMatch) {
         if (stateMatch == null) return false;
         // Work out the index of the state, based on which group matched.
         int stateIndex = stateMatch.groupCount();
@@ -445,7 +444,7 @@ public class FindAddress {
                 // No more words in the input sequence.
                 return -content.length();
             }
-            if (matcher.end() - matcher.start() > kMaxAddressNameWordLength) {
+            if (matcher.end() - matcher.start() > MAX_ADDRESS_NAME_WORD_LENGTH) {
                 // Word is too long to be part of an address. Fail.
                 return -matcher.end();
             }
@@ -528,7 +527,7 @@ public class FindAddress {
      * @return The first valid address, or null if no address was matched.
      */
     @VisibleForTesting
-    public static String findAddress(String content) {
+    public static @Nullable String findAddress(String content) {
         Matcher houseNumberMatcher = sHouseNumberRe.matcher(content);
         int start = 0;
         while (houseNumberMatcher.find(start)) {

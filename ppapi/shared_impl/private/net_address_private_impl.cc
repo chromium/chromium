@@ -12,12 +12,12 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <algorithm>
 #include <string>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/nacl/common/buildflags.h"
@@ -180,8 +180,8 @@ PP_Bool AreHostsEqual(const PP_NetAddress_Private* addr1,
   if ((net_addr1->is_ipv6 != net_addr2->is_ipv6) ||
       (net_addr1->flow_info != net_addr2->flow_info) ||
       (net_addr1->scope_id != net_addr2->scope_id) ||
-      !base::ranges::equal(GetAddressBytes(net_addr1),
-                           GetAddressBytes(net_addr2))) {
+      !std::ranges::equal(GetAddressBytes(net_addr1),
+                          GetAddressBytes(net_addr2))) {
     return PP_FALSE;
   }
 

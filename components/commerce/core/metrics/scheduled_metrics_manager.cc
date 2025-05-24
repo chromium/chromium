@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -54,27 +55,33 @@ void ScheduledMetricsManager::RunDailyTask() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, daily_scheduled_task_->callback(), kDailyInterval);
 
-  shopping_service_->GetAllSubscriptions(
-      SubscriptionType::kPriceTrack,
-      base::BindOnce(
-          [](PrefService* pref_service,
-             std::vector<CommerceSubscription> tracked_products) {
-            base::UmaHistogramCounts100(kTrackedProductCountHistogramName,
-                                        tracked_products.size());
+  // These metrics should only ever be recorded if the user is eligible for the
+  // feature.
+  if (commerce::IsShoppingListEligible(
+          shopping_service_->GetAccountChecker()) &&
+      IsSubscriptionsApiEnabled(shopping_service_->GetAccountChecker())) {
+    shopping_service_->GetAllSubscriptions(
+        SubscriptionType::kPriceTrack,
+        base::BindOnce(
+            [](PrefService* pref_service,
+               std::vector<CommerceSubscription> tracked_products) {
+              base::UmaHistogramCounts100(kTrackedProductCountHistogramName,
+                                          tracked_products.size());
 
-            PriceNotificationEmailState state =
-                PriceNotificationEmailState::kNotResponded;
-            if (tracked_products.size() > 0) {
-              if (pref_service->GetBoolean(kPriceEmailNotificationsEnabled)) {
-                state = PriceNotificationEmailState::kEnabled;
-              } else {
-                state = PriceNotificationEmailState::kDisabled;
+              PriceNotificationEmailState state =
+                  PriceNotificationEmailState::kNotResponded;
+              if (tracked_products.size() > 0) {
+                if (pref_service->GetBoolean(kPriceEmailNotificationsEnabled)) {
+                  state = PriceNotificationEmailState::kEnabled;
+                } else {
+                  state = PriceNotificationEmailState::kDisabled;
+                }
               }
-            }
-            base::UmaHistogramEnumeration(kPriceNotificationEmailHistogramName,
-                                          state);
-          },
-          pref_service_));
+              base::UmaHistogramEnumeration(
+                  kPriceNotificationEmailHistogramName, state);
+            },
+            pref_service_));
+  }
 }
 
 }  // namespace commerce::metrics

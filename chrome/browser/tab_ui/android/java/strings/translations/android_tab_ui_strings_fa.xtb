@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fa">
+<translation id="1293272072740285747">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر به این گروه نیاز ندارید، آن را حذف کنید.
+
+اگر گروه را حذف کنید، دسترسی همه به گروه برگه «<ph name="TITLE_OF_GROUP" />» فوراً برداشته خواهد شد و این گروه برگه از همه دستگاه‌ها حذف خواهد شد.</translation>
+<translation id="1340839264183302272">ترک گروه</translation>
+<translation id="1419023007528516122">با این کار، گروه برای همیشه از دستگاهتان حذف خواهد شد</translation>
+<translation id="1501480321619201731">حذف گروه</translation>
+<translation id="2677748264148917807">خروج</translation>
+<translation id="3547352561153509682">با این کار، گروه از همه دستگاه‌های واردشده به حساب <ph name="USER_EMAIL" /> حذف خواهد شد</translation>
+<translation id="381219490185664296">گروه‌بندی برگه‌ها لغو شود؟</translation>
+<translation id="4139634748112164403">برگه‌ها در این دستگاه باز می‌ماند اما گروه برای همیشه حذف خواهد شد</translation>
+<translation id="4431937619879060901">دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهید و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
+<translation id="4460014764210899310">لغو گروه‌بندی</translation>
+<translation id="4777866634702576038">گروه برگه حذف شود؟</translation>
+<translation id="5094423602314093681">برگه(ها) برداشته و گروه حذف شود؟</translation>
+<translation id="5647702255748985085">گروه را ترک می‌کنید؟</translation>
+<translation id="742664698522525515">گروه نگه داشته شود؟</translation>
+<translation id="750886945254958667">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر نمی‌خواهید به آن دسترسی داشته باشید، آن را ترک کنید</translation>
+<translation id="8261506727792406068">حذف</translation>
+<translation id="870736955561925754">برگه بسته و گروه حذف شود؟</translation>
+<translation id="8804742093141782941">نگه داشتن گروه</translation>
+<translation id="9169141410816678175">همه افراد دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و این گروه از همه دستگاه‌ها حذف می‌شود</translation>
+<translation id="9216898458513705996">برگه‌ها در این دستگاه باز می‌ماند اما گروه از همه دستگاه‌های واردشده به حساب <ph name="USER_EMAIL" /> حذف خواهد شد</translation>
+<translation id="94870150074703282">گروه حذف شود؟</translation>
+</translationbundle>

@@ -14,9 +14,10 @@ build_webui("build") {
     "connectors_tabs.ts",
     "device_trust_connector.ts",
     "managed_client_certificate.ts",
+    "signals_reporting.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "connectors_utils.ts",
   ]

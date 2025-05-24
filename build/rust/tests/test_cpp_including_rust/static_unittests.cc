@@ -12,15 +12,19 @@
 #include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-#include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_address_space.h"  // nogncheck
 #else
-#include "partition_alloc/address_pool_manager_bitmap.h"
+#include "partition_alloc/address_pool_manager_bitmap.h"  // nogncheck
+#endif
 #endif
 
 TEST(RustStaticTest, CppCallingIntoRust_BasicFFI) {
   EXPECT_EQ(7, add_two_ints_via_rust(3, 4));
 }
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 TEST(RustStaticTest, RustComponentUsesPartitionAlloc) {
   // Verify that PartitionAlloc is consistently used in C++ and Rust.
@@ -32,6 +36,8 @@ TEST(RustStaticTest, RustComponentUsesPartitionAlloc) {
                 reinterpret_cast<uintptr_t>(cpp_allocated_int.get())));
   rust::Box<SomeStruct>::from_raw(rust_allocated_ptr);
 }
+
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 TEST(RustStaticTest, AllocAligned) {
   alloc_aligned();

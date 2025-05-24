@@ -40,7 +40,7 @@ class WEBDATA_EXPORT WebDatabaseBackend
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Invoked when the backend has finished loading the db.
     // `status` is the result of initializing the db.

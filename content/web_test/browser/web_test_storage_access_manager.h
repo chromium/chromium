@@ -13,7 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/mojom/storage_access/storage_access_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/storage_access/storage_access_automation.test-mojom.h"
 
 namespace content {
 

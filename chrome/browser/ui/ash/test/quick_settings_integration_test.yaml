@@ -9,7 +9,6 @@ harness: "crosier"
 category: "integration"
 owners:
   - email: "jamescook@chromium.org"
-  - email: "brettw@chromium.org"
   - email: "chromeos-sw-engprod@google.com"
 hw_agnostic: True
 criteria: |

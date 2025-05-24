@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "gpu/command_buffer/service/gpu_tracer.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <array>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -30,11 +28,11 @@
 namespace gpu {
 namespace gles2 {
 
-constexpr const char* kGpuTraceSourceNames[] = {
+constexpr auto kGpuTraceSourceNames = std::to_array<const char*>({
     "TraceCHROMIUM",  // kTraceCHROMIUM,
     "TraceCmd",       // kTraceDecoder,
     "Disjoint",       // kTraceDisjoint, // Used internally.
-};
+});
 static_assert(NUM_TRACER_SOURCES == std::size(kGpuTraceSourceNames),
               "Trace source names must match enumeration.");
 

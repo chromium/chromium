@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] initialize sets element.customElementRegistry to the global registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] initialize does not set the registry of nested shadow tree to the global registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] initialize sets element.customElementRegistry to a scoped registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] initialize does not set the registry of nested shadow tree to a scoped registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] initialize sets element.customElementRegistry permantently
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] initialize is no-op on a subtree with a non-null registry
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+[FAIL] initialize works on Document
+  Failed to execute 'initialize' on 'CustomElementRegistry': The provided value is not of type '(Element or ShadowRoot)'.
+[FAIL] initialize works on DocumentFragment
+  Failed to execute 'initialize' on 'CustomElementRegistry': The provided value is not of type '(Element or ShadowRoot)'.
+Harness: the test ran to completion.
+

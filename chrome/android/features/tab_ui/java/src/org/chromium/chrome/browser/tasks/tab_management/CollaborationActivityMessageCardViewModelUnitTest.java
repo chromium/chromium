@@ -66,57 +66,22 @@ public class CollaborationActivityMessageCardViewModelUnitTest {
     public void testUpdateTextDescription() {
         PropertyModel model = mModel.getPropertyModel();
 
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 0, /* tabsChanged= */ 0, /* tabsClosed= */ 0);
+        mModel.updateDescriptionText(mContext, /* tabsAdded= */ 0, /* tabsClosed= */ 0);
         assertEquals("No tab updates", model.get(DESCRIPTION_TEXT));
 
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 1, /* tabsChanged= */ 0, /* tabsClosed= */ 0);
-        assertEquals("1 tab added", model.get(DESCRIPTION_TEXT));
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 2, /* tabsChanged= */ 0, /* tabsClosed= */ 0);
-        assertEquals("2 tabs added", model.get(DESCRIPTION_TEXT));
+        mModel.updateDescriptionText(mContext, /* tabsAdded= */ 1, /* tabsClosed= */ 0);
+        assertEquals("1 new tab", model.get(DESCRIPTION_TEXT));
+        mModel.updateDescriptionText(mContext, /* tabsAdded= */ 2, /* tabsClosed= */ 0);
+        assertEquals("2 new tabs", model.get(DESCRIPTION_TEXT));
 
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 0, /* tabsChanged= */ 1, /* tabsClosed= */ 0);
-        assertEquals("1 tab changed", model.get(DESCRIPTION_TEXT));
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 0, /* tabsChanged= */ 2, /* tabsClosed= */ 0);
-        assertEquals("2 tabs changed", model.get(DESCRIPTION_TEXT));
-
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 0, /* tabsChanged= */ 0, /* tabsClosed= */ 1);
+        mModel.updateDescriptionText(mContext, /* tabsAdded= */ 0, /* tabsClosed= */ 1);
         assertEquals("1 tab closed", model.get(DESCRIPTION_TEXT));
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 0, /* tabsChanged= */ 0, /* tabsClosed= */ 2);
+        mModel.updateDescriptionText(mContext, /* tabsAdded= */ 0, /* tabsClosed= */ 2);
         assertEquals("2 tabs closed", model.get(DESCRIPTION_TEXT));
 
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 1, /* tabsChanged= */ 2, /* tabsClosed= */ 0);
-        assertEquals("1 tab added, 2 changed", model.get(DESCRIPTION_TEXT));
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 2, /* tabsChanged= */ 3, /* tabsClosed= */ 0);
-        assertEquals("2 tabs added, 3 changed", model.get(DESCRIPTION_TEXT));
-
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 1, /* tabsChanged= */ 0, /* tabsClosed= */ 2);
-        assertEquals("1 tab added, 2 closed", model.get(DESCRIPTION_TEXT));
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 2, /* tabsChanged= */ 0, /* tabsClosed= */ 3);
-        assertEquals("2 tabs added, 3 closed", model.get(DESCRIPTION_TEXT));
-
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 0, /* tabsChanged= */ 1, /* tabsClosed= */ 2);
-        assertEquals("1 tab changed, 2 closed", model.get(DESCRIPTION_TEXT));
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 0, /* tabsChanged= */ 2, /* tabsClosed= */ 3);
-        assertEquals("2 tabs changed, 3 closed", model.get(DESCRIPTION_TEXT));
-
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 1, /* tabsChanged= */ 2, /* tabsClosed= */ 3);
-        assertEquals("1 tab added, 2 changed, 3 closed", model.get(DESCRIPTION_TEXT));
-        mModel.updateDescriptionText(
-                mContext, /* tabsAdded= */ 2, /* tabsChanged= */ 3, /* tabsClosed= */ 4);
-        assertEquals("2 tabs added, 3 changed, 4 closed", model.get(DESCRIPTION_TEXT));
+        mModel.updateDescriptionText(mContext, /* tabsAdded= */ 1, /* tabsClosed= */ 2);
+        assertEquals("1 new tab, 2 closed", model.get(DESCRIPTION_TEXT));
+        mModel.updateDescriptionText(mContext, /* tabsAdded= */ 2, /* tabsClosed= */ 3);
+        assertEquals("2 new tabs, 3 closed", model.get(DESCRIPTION_TEXT));
     }
 }

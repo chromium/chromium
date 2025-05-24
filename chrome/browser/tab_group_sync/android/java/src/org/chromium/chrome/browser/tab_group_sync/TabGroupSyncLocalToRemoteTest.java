@@ -28,7 +28,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.GroupInfo;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.TabInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
@@ -39,7 +40,7 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 
@@ -50,27 +51,21 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(b/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-    ChromeFeatureList.TAB_GROUP_PANE_ANDROID
-})
-@Restriction({
-    UiRestriction.RESTRICTION_TYPE_PHONE,
-    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-})
+@EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+@Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabGroupSyncLocalToRemoteTest {
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+    public SyncTestRule mSyncTestRule = new SyncTestRule();
 
-    ChromeTabbedActivityPublicTransitEntryPoints mTransitEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(mSyncTestRule);
+    @Rule
+    public FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.wrapTestRule(mSyncTestRule);
 
     private TabGroupSyncIntegrationTestHelper mHelper;
 
     @Before
     public void setUp() {
         mHelper = new TabGroupSyncIntegrationTestHelper(mSyncTestRule);
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mSyncTestRule.setUpAccountAndEnableHistorySync();
         SyncTestUtil.waitForHistorySyncEnabled();
         mHelper.assertSyncEntityCount(0);
     }
@@ -80,26 +75,27 @@ public class TabGroupSyncLocalToRemoteTest {
     @Feature({"Sync"})
     @DisabledTest(message = "crbug.com/353952795")
     public void testCreateTabGroup() {
-        WebPageStation firstPage = mTransitEntryPoints.alreadyStartedOnBlankPageNonBatched();
-        Tab firstTab = firstPage.getLoadedTab();
+        WebPageStation firstPage = mCtaTestRule.alreadyStartedOnBlankPage();
+        Tab firstTab = firstPage.loadedTabElement.get();
         int firstTabId = firstTab.getId();
         String firstTabTitle = ChromeTabUtils.getTitleOnUiThread(firstTab);
         String firstTabUrl = ChromeTabUtils.getUrlStringOnUiThread(firstTab);
 
-        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
-        Tab secondTab = secondPage.getLoadedTab();
+        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
+        Tab secondTab = secondPage.loadedTabElement.get();
         int secondTabId = secondTab.getId();
         String secondTabTitle = ChromeTabUtils.getTitleOnUiThread(secondTab);
         String secondTabUrl = ChromeTabUtils.getUrlStringOnUiThread(secondTab);
 
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
-        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
 
         String title = "test_tab_group_name";
-        NewTabGroupDialogFacility dialog =
-                editor.openAppMenuWithEditor().groupTabsWithParityEnabled();
+        NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
+                editor.openAppMenuWithEditor().groupTabs();
         dialog = dialog.inputName(title);
         dialog = dialog.pickColor(TabGroupColorId.RED);
         dialog.pressDone();

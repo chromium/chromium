@@ -278,14 +278,8 @@ bool Signals::WillSignalReraiseAutonomously(const siginfo_t* siginfo) {
 }
 
 // static
-void Signals::RestoreHandlerAndReraiseSignalOnReturn(
-    const siginfo_t* siginfo,
-    const struct sigaction* old_action) {
-  // Failures in this function should _exit(kFailureExitCode). This is a quick
-  // and quiet failure. This function runs in signal handler context, and it’s
-  // difficult to safely be loud from a signal handler.
-  constexpr int kFailureExitCode = 191;
-
+bool Signals::RestoreOrResetHandler(int sig,
+                                    const struct sigaction* old_action) {
   struct sigaction default_action;
   sigemptyset(&default_action.sa_mask);
   default_action.sa_flags = 0;
@@ -297,9 +291,25 @@ void Signals::RestoreHandlerAndReraiseSignalOnReturn(
   // Try to restore restore_action. If that fails and restore_action was
   // old_action, the problem may have been that old_action was bogus, so try to
   // set the default action.
-  const int sig = siginfo->si_signo;
   if (sigaction(sig, restore_action, nullptr) != 0 && old_action &&
       sigaction(sig, &default_action, nullptr) != 0) {
+    return false;
+  }
+  return true;
+}
+
+// static
+void Signals::RestoreHandlerAndReraiseSignalOnReturn(
+    const siginfo_t* siginfo,
+    const struct sigaction* old_action) {
+  // Failures in this function should _exit(kFailureExitCode). This is a quick
+  // and quiet failure. This function runs in signal handler context, and it’s
+  // difficult to safely be loud from a signal handler.
+  constexpr int kFailureExitCode = 191;
+
+  const int sig = siginfo->si_signo;
+
+  if (!RestoreOrResetHandler(sig, old_action)) {
     _exit(kFailureExitCode);
   }
 

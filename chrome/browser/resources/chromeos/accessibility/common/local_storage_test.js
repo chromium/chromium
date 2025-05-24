@@ -11,7 +11,6 @@ AccessibilityExtensionLocalStorageTest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('LocalStorage', '/common/local_storage.js');
 
     chrome = chrome || {};
     chrome.storage = chrome.storage || MockStorage;

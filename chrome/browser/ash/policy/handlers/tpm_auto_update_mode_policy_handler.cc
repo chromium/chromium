@@ -66,9 +66,8 @@ AutoUpdateMode GetTPMAutoUpdateModeSetting(
   // Verify that the value is within range.
   if (*auto_update_mode < static_cast<int>(AutoUpdateMode::kNever) ||
       *auto_update_mode > static_cast<int>(AutoUpdateMode::kEnrollment)) {
-    NOTREACHED_IN_MIGRATION() << "Invalid value for device policy key "
-                                 "TPMFirmwareUpdateSettings.AutoUpdateMode";
-    return AutoUpdateMode::kNever;
+    NOTREACHED() << "Invalid value for device policy key "
+                    "TPMFirmwareUpdateSettings.AutoUpdateMode";
   }
 
   return static_cast<AutoUpdateMode>(*auto_update_mode);
@@ -191,8 +190,10 @@ void TPMAutoUpdateModePolicyHandler::ShowTPMAutoUpdateNotification(
 
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
-  if (!user_manager->IsUserLoggedIn() || user_manager->IsLoggedInAsKioskApp())
+  if (!user_manager->IsUserLoggedIn() ||
+      user_manager->IsLoggedInAsAnyKioskApp()) {
     return;
+  }
 
   base::Time notification_shown =
       local_state_->GetTime(prefs::kTPMUpdatePlannedNotificationShownTime);

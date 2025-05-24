@@ -8,10 +8,8 @@ import type {ProfilePickerAppElement} from './profile_picker_app.js';
 
 export function getHtml(this: ProfilePickerAppElement) {
   return html`<!--_html_template_start_-->
-${this.shouldDisplayVerticalBanners_ ? html`
-  <img class="tangible-sync-style-left-banner" alt="">
-  <img class="tangible-sync-style-right-banner" alt="">
-` : ''}
+<img id="banner-right" alt="">
+<img id="banner-left" alt="">
 
 <cr-view-manager id="viewManager">
   <profile-picker-main-view id="mainView" slot="view">
@@ -27,15 +25,6 @@ ${this.shouldDisplayVerticalBanners_ ? html`
   <cr-lazy-render-lit id="profileSwitch"
       .template="${() => html`<profile-switch slot="view"></profile-switch>`}">
   </cr-lazy-render-lit>
-
-  <if expr="chromeos_lacros">
-    <cr-lazy-render-lit id="accountSelectionLacros"
-        .template="${() => html`
-          <account-selection-lacros slot="view"
-              .profileThemeInfo="${this.newProfileThemeInfo}">
-          </account-selection-lacros>`}">
-    </cr-lazy-render-lit>
-  </if>
 </cr-view-manager>
 <!--_html_template_end_-->`;
 }

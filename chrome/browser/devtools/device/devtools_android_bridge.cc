@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -21,7 +22,6 @@
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -99,13 +99,14 @@ DevToolsAndroidBridge::Factory::Factory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-DevToolsAndroidBridge::Factory::~Factory() {}
+DevToolsAndroidBridge::Factory::~Factory() = default;
 
-KeyedService* DevToolsAndroidBridge::Factory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DevToolsAndroidBridge::Factory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new DevToolsAndroidBridge(profile);
+  return std::make_unique<DevToolsAndroidBridge>(profile);
 }
 
 void DevToolsAndroidBridge::Shutdown() {
@@ -197,7 +198,7 @@ void DevToolsAndroidBridge::AddDeviceListListener(
 void DevToolsAndroidBridge::RemoveDeviceListListener(
     DeviceListListener* listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = base::ranges::find(device_list_listeners_, listener);
+  auto it = std::ranges::find(device_list_listeners_, listener);
   CHECK(it != device_list_listeners_.end(), base::NotFatalUntil::M130);
   device_list_listeners_.erase(it);
   if (!NeedsDeviceListPolling())
@@ -214,7 +215,7 @@ void DevToolsAndroidBridge::AddDeviceCountListener(
 void DevToolsAndroidBridge::RemoveDeviceCountListener(
     DeviceCountListener* listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = base::ranges::find(device_count_listeners_, listener);
+  auto it = std::ranges::find(device_count_listeners_, listener);
   CHECK(it != device_count_listeners_.end(), base::NotFatalUntil::M130);
   device_count_listeners_.erase(it);
   if (device_count_listeners_.empty())
@@ -231,7 +232,7 @@ void DevToolsAndroidBridge::AddPortForwardingListener(
 
 void DevToolsAndroidBridge::RemovePortForwardingListener(
     PortForwardingListener* listener) {
-  auto it = base::ranges::find(port_forwarding_listeners_, listener);
+  auto it = std::ranges::find(port_forwarding_listeners_, listener);
   CHECK(it != port_forwarding_listeners_.end(), base::NotFatalUntil::M130);
   port_forwarding_listeners_.erase(it);
   if (!NeedsDeviceListPolling())

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "remoting/base/authentication_method.h"
 #include "remoting/base/session_authz_service_client.h"
 
 namespace remoting {
@@ -19,6 +20,7 @@ class SessionAuthzServiceClientFactory
   SessionAuthzServiceClientFactory() = default;
 
   virtual std::unique_ptr<SessionAuthzServiceClient> Create() = 0;
+  virtual AuthenticationMethod method() = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<SessionAuthzServiceClientFactory>;

@@ -36,8 +36,12 @@ class SecurityInformationView : public views::View {
 
   // Sets the security details for the current page and the callback for the
   // "Learn more" link.
-  void SetDetails(const std::u16string& details_text,
-                  views::Link::ClickedCallback security_details_callback);
+  void SetDetailsWithLearnMore(
+      const std::u16string& details_text,
+      views::Link::ClickedCallback security_details_callback);
+
+  // Sets the security details for the current page.
+  void SetDetails(const std::u16string& details_text);
 
   // Adds the reset decision label and sets the callback for the link part of
   // the label.

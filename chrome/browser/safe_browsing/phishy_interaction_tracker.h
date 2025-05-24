@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_PHISHY_INTERACTION_TRACKER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_PHISHY_INTERACTION_TRACKER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"

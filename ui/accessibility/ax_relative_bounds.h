@@ -34,19 +34,19 @@ namespace ui {
 // to its immediate containing node.
 struct AX_BASE_EXPORT AXRelativeBounds final {
   AXRelativeBounds();
-  virtual ~AXRelativeBounds();
+  ~AXRelativeBounds();
 
   AXRelativeBounds(const AXRelativeBounds& other);
-  AXRelativeBounds& operator=(AXRelativeBounds other);
-  bool operator!=(const AXRelativeBounds& other) const;
+  AXRelativeBounds(AXRelativeBounds&& other) noexcept;
+  AXRelativeBounds& operator=(const AXRelativeBounds& other);
+  AXRelativeBounds& operator=(AXRelativeBounds&& other) noexcept = default;
   bool operator==(const AXRelativeBounds& other) const;
 
   std::string ToString() const;
 
-  // The id of an ancestor node in the same AXTree that this object's
-  // bounding box is relative to, or `kInvalidAXNodeID` if there's no offset
-  // container.
-  AXNodeID offset_container_id = kInvalidAXNodeID;
+  // The id of an ancestor node in the same AXTree that this object's bounding
+  // box is relative to, or -1 if there's no offset container.
+  AXNodeID offset_container_id = -1;
 
   // The relative bounding box of this node.
   gfx::RectF bounds;

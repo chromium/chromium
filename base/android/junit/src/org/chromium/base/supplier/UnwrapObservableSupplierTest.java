@@ -7,9 +7,12 @@ package org.chromium.base.supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,7 +70,7 @@ public class UnwrapObservableSupplierTest {
 
         ShadowLooper.idleMainLooper();
         assertTrue(parentSupplier.hasObservers());
-        verify(mOnChangeCallback).onResult(eq(0));
+        verify(mOnChangeCallback, never()).onResult(anyInt());
 
         parentSupplier.set(mObject1);
         verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
@@ -76,8 +79,7 @@ public class UnwrapObservableSupplierTest {
         verify(mOnChangeCallback).onResult(eq(mObject2.hashCode()));
 
         parentSupplier.set(null);
-        // times(2) because it was already called with this value once at the start.
-        verify(mOnChangeCallback, times(2)).onResult(eq(0));
+        verify(mOnChangeCallback, times(1)).onResult(eq(0));
 
         unwrapSupplier.removeObserver(mOnChangeCallback);
         assertFalse(parentSupplier.hasObservers());
@@ -92,6 +94,33 @@ public class UnwrapObservableSupplierTest {
         assertTrue(parentSupplier.hasObservers());
 
         ShadowLooper.idleMainLooper();
+        verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
+    }
+
+    @Test
+    public void testAddObserver_ShouldNotifyOnAdd() {
+        ObservableSupplierImpl<Object> parentSupplier = new ObservableSupplierImpl<>();
+        parentSupplier.set(3);
+        ObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
+        unwrapSupplier.addObserver(mOnChangeCallback);
+
+        ShadowLooper.idleMainLooper();
+        verify(mOnChangeCallback).onResult(eq(3));
+
+        parentSupplier.set(mObject1);
+        verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
+    }
+
+    @Test
+    public void testAddObserver_ShouldNotNotifyOnAdd() {
+        ObservableSupplierImpl<Object> parentSupplier = new ObservableSupplierImpl<>();
+        ObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
+        unwrapSupplier.addSyncObserver(mOnChangeCallback);
+
+        ShadowLooper.idleMainLooper();
+        verifyNoInteractions(mOnChangeCallback);
+
+        parentSupplier.set(mObject1);
         verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
     }
 }

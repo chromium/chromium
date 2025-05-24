@@ -1,0 +1,85 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+
+  android_library("java") {
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsBottomSheetContent.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsPromotionBinder.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsPromotionCoordinator.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsPromotionMediator.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsPromotionProperties.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsServiceFactory.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionEventObserver.java",
+    ]
+
+    deps = [
+      ":java_resources",
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/hub:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
+      "//components/browser_ui/bottomsheet/android:java",
+      "//components/embedder_support/android:util_java",
+      "//components/visited_url_ranking/public:public_java",
+      "//content/public/android:content_full_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
+      "//url:url_java",
+    ]
+    resources_package = "org.chromium.chrome.browser.tab_group_suggestion"
+  }
+
+  android_resources("java_resources") {
+    sources = [
+      "android/java/res/layout/group_suggestions_bottom_sheet_container.xml",
+    ]
+
+    deps = [
+      "//components/strings:components_strings_grd",
+      "//ui/android:ui_java_resources",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsServiceFactory.java" ]
+  }
+
+  robolectric_library("junit") {
+    testonly = true
+    resources_package = "org.chromium.chrome.browser.tab_group_suggestion"
+
+    sources = [
+      "android/junit/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsPromotionMediatorUnitTest.java",
+      "android/junit/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionEventObserverUnitTest.java",
+    ]
+
+    deps = [
+      ":java",
+      "//base:base_junit_test_support",
+      "//base:callback_java",
+      "//base:supplier_java",
+      "//chrome/browser/hub:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
+      "//components/browser_ui/bottomsheet/android:java",
+      "//components/embedder_support/android:util_java",
+      "//components/visited_url_ranking/public:public_java",
+      "//content/public/android:content_java",
+      "//third_party/junit:junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java",
+      "//url:gurl_junit_test_support",
+      "//url:url_java",
+    ]
+  }
+}

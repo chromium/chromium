@@ -142,7 +142,7 @@ class SplitViewDragIndicators::RotatedImageLabelView
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemBaseElevated,
         kSplitviewLabelRoundRectRadiusDp));
 
@@ -154,7 +154,7 @@ class SplitViewDragIndicators::RotatedImageLabelView
         std::u16string(), views::style::CONTEXT_LABEL));
     label_->SetFontList(views::Label::GetDefaultFontList().Derive(
         2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
-    label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   }
 
   RotatedImageLabelView(const RotatedImageLabelView&) = delete;

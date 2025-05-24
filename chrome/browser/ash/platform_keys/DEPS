@@ -18,8 +18,6 @@ include_rules = [
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/net",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/certificate_provider",
   "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/extensions/api/enterprise_platform_keys",

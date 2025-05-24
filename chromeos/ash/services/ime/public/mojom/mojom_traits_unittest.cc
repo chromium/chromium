@@ -38,7 +38,7 @@ TEST_P(BucketedHistogramTraitsTest, ValidHistogram) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BucketedHistogram>(
       histogram, output));
 
-  EXPECT_STREQ(output->histogram_name(), "Untrusted.Metric");
+  EXPECT_EQ(output->histogram_name(), "Untrusted.Metric");
   EXPECT_EQ(output->declared_min(), 1);
   EXPECT_EQ(output->declared_max(), 10);
   EXPECT_EQ(output->bucket_count(), 3u);

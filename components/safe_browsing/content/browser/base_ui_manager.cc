@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/scheme_logger.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -218,11 +218,15 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
     case SB_THREAT_TYPE_UNUSED:
     case SB_THREAT_TYPE_SAFE:
       return std::numeric_limits<ThreatSeverity>::max();
-    default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    case SB_THREAT_TYPE_EXTENSION:
+    case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+    case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SB_THREAT_TYPE_AD_SAMPLE:
+    case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case SB_THREAT_TYPE_APK_DOWNLOAD:
+      NOTREACHED();
   }
-  return std::numeric_limits<ThreatSeverity>::max();
 }
 
 }  // namespace
@@ -233,20 +237,24 @@ BaseUIManager::BaseUIManager() = default;
 
 BaseUIManager::~BaseUIManager() = default;
 
-bool BaseUIManager::IsAllowlisted(const UnsafeResource& resource) {
-  NavigationEntry* entry =
-      unsafe_resource_util::GetNavigationEntryForResource(resource);
+bool BaseUIManager::IsAllowlisted(
+    const GURL& url,
+    const security_interstitials::UnsafeResourceLocator& rfh_locator,
+    const std::optional<int64_t>& navigation_id,
+    safe_browsing::SBThreatType threat_type) {
+  NavigationEntry* entry = unsafe_resource_util::GetNavigationEntryForLocator(
+      rfh_locator, navigation_id, threat_type);
 
   content::WebContents* web_contents =
-      unsafe_resource_util::GetWebContentsForResource(resource);
+      unsafe_resource_util::GetWebContentsForLocator(rfh_locator);
   // |web_contents| can be null after RenderFrameHost is destroyed.
   if (!web_contents) {
     return false;
   }
 
   SBThreatType unused_threat_type;
-  return IsUrlAllowlistedOrPendingForWebContents(
-      resource.url, entry, web_contents, true, &unused_threat_type);
+  return IsUrlAllowlistedOrPendingForWebContents(url, entry, web_contents, true,
+                                                 &unused_threat_type);
 }
 
 // Check if the user has already seen and/or ignored a SB warning for this
@@ -338,7 +346,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
   // Check if the user has already ignored a SB warning for the same WebContents
   // and top-level domain.
-  if (IsAllowlisted(resource)) {
+  if (IsAllowlisted(resource.url, resource.rfh_locator, resource.navigation_id,
+                    resource.threat_type)) {
     resource.DispatchCallback(FROM_HERE, true /* proceed */,
                               false /* showed_interstitial */,
                               false /* has_post_commit_interstitial_skipped */);
@@ -384,18 +393,15 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   //
   // In other cases, the error interstitial is manually loaded here, after the
   // load is canceled:
-  // - Subresources: since only documents load using a navigation, these
-  //   won't hit the throttle.
-  // - Nested frames and WebContents: The interstitial should be shown in the
-  //   top, outer-most frame but the navigation is occurring in a nested
-  //   context.
   // - Delayed Warning Experiment: When enabled, this method is only called
   //   after the navigation completes and a user action occurs so the throttle
   //   cannot be used.
   // - Async check: If the check is not able to complete before
   //   DidFinishNavigation, it won't hit the throttle.
+  // - Client side detection phishing warning: CSD check starts after the
+  //   navigation has completed, so the throttle cannot be used.
   const bool load_post_commit_error_page =
-      !AsyncCheckTracker::IsMainPageLoadPending(resource) ||
+      !AsyncCheckTracker::IsMainPageResourceLoadPending(resource) ||
       resource.is_delayed_warning;
   if (!load_post_commit_error_page) {
     AddUnsafeResource(unsafe_url, resource);
@@ -415,7 +421,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   }
 
   if (load_post_commit_error_page) {
-    DCHECK(!IsAllowlisted(resource));
+    DCHECK(!IsAllowlisted(resource.url, resource.rfh_locator,
+                          resource.navigation_id, resource.threat_type));
 
     security_interstitials::SecurityInterstitialTabHelper* helper =
         security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
@@ -469,8 +476,7 @@ BaseUIManager::CreateBlockingPage(
   // committed interstitials. In the meantime, there is no create method for the
   // non-committed implementations, and this code won't be called if committed
   // interstitials are disabled.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // A SafeBrowsing hit is sent after a blocking page for malware/phishing
@@ -575,10 +581,7 @@ bool BaseUIManager::PopUnsafeResourceForNavigation(
       base::UmaHistogramBoolean(
           "SafeBrowsing.NavigationIdMatchedInUnsafeResource",
           match_navigation_id);
-      // Add the flag check to ensure no behavioral change when the flag is
-      // disabled.
-      if (match_navigation_id ||
-          !base::FeatureList::IsEnabled(kSafeBrowsingAsyncRealTimeCheck)) {
+      if (match_navigation_id) {
         *resource = it->second;
         unsafe_resources_.erase(it);
         return true;

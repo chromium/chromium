@@ -4,7 +4,7 @@ Need to ask a question? You can contact us with one of the methods below.
 
 ## Desktop
 
-### **Chat**
+### Chat
 
 [Slack #desktop-ui Chromium Channel](https://chromium.slack.com/archives/CGL100B7H)
 
@@ -12,20 +12,9 @@ Ask short questions here.
 
 Requires a Slack account.
 
-### **Discuss**
-
-[Chromium UI Discussion](https://groups.google.com/a/chromium.org/forum/#!forum/ui)
-
-Browse, ask, and respond to technical and design discussions.
-
-Asking and responding require a Google account.
-
-### **E-mail**
+### E-mail
 
 [ui@chromium.org](mailto:ui@chromium.org)
-
-Post to [Chromium UI Discussion](https://groups.google.com/a/chromium.org/forum/#!forum/ui)
-without a Google account.
 
 # Google Internal Resources
 

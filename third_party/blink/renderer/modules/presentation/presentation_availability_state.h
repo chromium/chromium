@@ -10,7 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_availability_callbacks.h"
+#include "third_party/blink/renderer/modules/presentation/presentation_availability.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -39,11 +40,10 @@ class MODULES_EXPORT PresentationAvailabilityState final
 
   ~PresentationAvailabilityState();
 
-  // Requests availability for the given URLs and invokes the given callbacks
-  // with the determined availability value. The callbacks will only be invoked
-  // once and will be deleted afterwards.
-  void RequestAvailability(const Vector<KURL>&,
-                           PresentationAvailabilityCallbacks* callbacks);
+  // Requests availability for the given URLs and resolves the Promise
+  // maintained by `availability` when the availability is known, or rejects
+  // the Promise if the availability cannot be determined.
+  void RequestAvailability(PresentationAvailability* availability);
 
   // Starts/stops listening for availability with the given observer.
   void AddObserver(PresentationAvailabilityObserver*);
@@ -52,6 +52,17 @@ class MODULES_EXPORT PresentationAvailabilityState final
   // Updates the availability value for a given URL, and invoking any affected
   // callbacks and observers.
   void UpdateAvailability(const KURL&, mojom::blink::ScreenAvailability);
+
+  // Returns AVAILABLE if any url in |urls| has screen availability AVAILABLE;
+  // otherwise returns DISABLED if at least one url in |urls| has screen
+  // availability DISABLED;
+  // otherwise, returns SOURCE_NOT_SUPPORTED if any url in |urls| has screen
+  // availability SOURCE_NOT_SUPPORTED;
+  // otherwise, returns UNAVAILABLE if any url in |urls| has screen
+  // availability UNAVAILABLE;
+  // otherwise returns UNKNOWN.
+  mojom::blink::ScreenAvailability GetScreenAvailability(
+      const Vector<KURL>&) const;
 
   void Trace(Visitor*) const;
 
@@ -75,9 +86,8 @@ class MODULES_EXPORT PresentationAvailabilityState final
 
     ~AvailabilityListener();
 
-    const Vector<KURL> urls;
-    HeapVector<Member<PresentationAvailabilityCallbacks>>
-        availability_callbacks;
+    const WTF::Vector<KURL> urls;
+    HeapHashSet<WeakMember<PresentationAvailability>> availabilities;
     HeapVector<Member<PresentationAvailabilityObserver>> availability_observers;
 
     void Trace(Visitor*) const;
@@ -102,17 +112,6 @@ class MODULES_EXPORT PresentationAvailabilityState final
   // PresentationService if needed.
   void MaybeStopListeningToURL(const KURL&);
 
-  // Returns AVAILABLE if any url in |urls| has screen availability AVAILABLE;
-  // otherwise returns DISABLED if at least one url in |urls| has screen
-  // availability DISABLED;
-  // otherwise, returns SOURCE_NOT_SUPPORTED if any url in |urls| has screen
-  // availability SOURCE_NOT_SUPPORTED;
-  // otherwise, returns UNAVAILABLE if any url in |urls| has screen
-  // availability UNAVAILABLE;
-  // otherwise returns UNKNOWN.
-  mojom::blink::ScreenAvailability GetScreenAvailability(
-      const Vector<KURL>&) const;
-
   // Returns nullptr if there is no AvailabilityListener for the given URLs.
   AvailabilityListener* GetAvailabilityListener(const Vector<KURL>&);
 
@@ -124,7 +123,7 @@ class MODULES_EXPORT PresentationAvailabilityState final
   ListeningStatus* GetListeningStatus(const KURL&) const;
 
   // ListeningStatus for known URLs.
-  Vector<std::unique_ptr<ListeningStatus>> availability_listening_status_;
+  WTF::Vector<std::unique_ptr<ListeningStatus>> availability_listening_status_;
 
   // Set of AvailabilityListener for known PresentationRequests.
   HeapVector<Member<AvailabilityListener>> availability_listeners_;

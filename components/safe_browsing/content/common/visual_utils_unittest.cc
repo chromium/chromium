@@ -12,16 +12,16 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 
 namespace safe_browsing::visual_utils {
 
 namespace {
 
-const SkPMColor kSkPMRed = SkPackARGB32(255, 255, 0, 0);
-const SkPMColor kSkPMGreen = SkPackARGB32(255, 0, 255, 0);
-const SkPMColor kSkPMBlue = SkPackARGB32(255, 0, 0, 255);
+const SkPMColor kSkPMRed = SkPMColorSetARGB(255, 255, 0, 0);
+const SkPMColor kSkPMGreen = SkPMColorSetARGB(255, 0, 255, 0);
+const SkPMColor kSkPMBlue = SkPMColorSetARGB(255, 0, 0, 255);
 
 }  // namespace
 

@@ -39,18 +39,13 @@
 #include "ui/base/base_window.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_pin_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "ui/aura/window.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/lacros/window_properties.h"
-#else
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #endif
 
 using content::OpenURLParams;
@@ -369,28 +364,17 @@ aura::Window* GetCurrentWindow() {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!controller || !controller->window())
-    return nullptr;
-#else
   EXPECT_TRUE(controller);
-#endif
+
   return controller->window()->GetNativeWindow();
 }
 
 chromeos::WindowPinType GetCurrentWindowPinType() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::WindowPinType type =
-      GetCurrentWindow()->GetProperty(lacros::kWindowPinTypeKey);
-#else
   chromeos::WindowPinType type = GetWindowPinType(GetCurrentWindow());
-#endif
+
   return type;
 }
 
-// Disabling this test temporarily - Ash needs to be built to make this test
-// work. Will enable after this landed.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void SetCurrentWindowPinType(chromeos::WindowPinType type) {
   if (type == chromeos::WindowPinType::kNone) {
     UnpinWindow(GetCurrentWindow());
@@ -398,13 +382,9 @@ void SetCurrentWindowPinType(chromeos::WindowPinType type) {
     PinWindow(GetCurrentWindow(), /*trusted=*/true);
   }
 }
-#endif
 
 }  // namespace
 
-// Disabling this test temporarily - Ash needs to be built to make this test
-// work. Will enable after this landed.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, OpenLockedFullscreenWindow) {
   ASSERT_TRUE(RunExtensionTest("locked_fullscreen/with_permission",
                                {.custom_arg = "openLockedFullscreenWindow"}))
@@ -414,17 +394,8 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, OpenLockedFullscreenWindow) {
   // it's in locked fullscreen mode).
   EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// Disabled on Lacros due to flaky. crbug.com/1254453
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_UpdateWindowToLockedFullscreen \
-  DISABLED_UpdateWindowToLockedFullscreen
-#else
-#define MAYBE_UpdateWindowToLockedFullscreen UpdateWindowToLockedFullscreen
-#endif
-IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
-                       MAYBE_UpdateWindowToLockedFullscreen) {
+IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, UpdateWindowToLockedFullscreen) {
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/with_permission",
                        {.custom_arg = "updateWindowToLockedFullscreen"}))
@@ -434,9 +405,6 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
   EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
 
-// Disabling this test temporarily - Ash needs to be built to make this test
-// work. Will enable after this landed.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, RemoveLockedFullscreenFromWindow) {
   // After locking the window, do a LockedFullscreenStateChanged so the
   // command_controller state catches up as well.
@@ -451,7 +419,6 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, RemoveLockedFullscreenFromWindow) {
   // Make sure the current window is removed from locked-fullscreen state.
   EXPECT_EQ(chromeos::WindowPinType::kNone, GetCurrentWindowPinType());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Make sure that commands disabling code works in locked fullscreen mode.
 IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, VerifyCommandsInLockedFullscreen) {
@@ -488,16 +455,8 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
   EXPECT_EQ(1u, extensions::WindowControllerList::GetInstance()->size());
 }
 
-// Disabled on Lacros due to flaky. crbug.com/1254453
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_UpdateWindowToLockedFullscreenWithoutPermission \
-  DISABLED_UpdateWindowToLockedFullscreenWithoutPermission
-#else
-#define MAYBE_UpdateWindowToLockedFullscreenWithoutPermission \
-  UpdateWindowToLockedFullscreenWithoutPermission
-#endif
 IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
-                       MAYBE_UpdateWindowToLockedFullscreenWithoutPermission) {
+                       UpdateWindowToLockedFullscreenWithoutPermission) {
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/without_permission",
                        {.custom_arg = "updateWindowToLockedFullscreen"}))
@@ -508,9 +467,6 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
   EXPECT_EQ(chromeos::WindowPinType::kNone, GetCurrentWindowPinType());
 }
 
-// Disabling this test temporarily - Ash needs to be built to make this test
-// work. Will enable after this landed.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
                        RemoveLockedFullscreenFromWindowWithoutPermission) {
   SetCurrentWindowPinType(chromeos::WindowPinType::kTrustedPinned);
@@ -524,7 +480,6 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
   // The current window is still locked-fullscreen.
   EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)

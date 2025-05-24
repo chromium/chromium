@@ -52,6 +52,11 @@ class UkmConsentStateObserver
   // URL-keyed anonymized data collection is enabled for all profiles.
   virtual bool IsUkmAllowedForAllProfiles();
 
+  // Returns true iff all DWA is allowed for all profile states. This means that
+  // URL-keyed anonymized data collection is enabled for all profiles.
+  // DWA is allowed if all applicable UKM consents for a platform are given.
+  virtual bool IsDwaAllowedForAllProfiles();
+
   // Returns the current state of all consent types.
   // See components/ukm/ukm_consent_state.h for details.
   virtual UkmConsentState GetUkmConsentState();
@@ -66,7 +71,7 @@ class UkmConsentStateObserver
       bool total_purge,
       UkmConsentState previous_consent_state) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Used to set is_demo_mode_ field.
   void SetIsDemoMode(bool is_demo_mode);
 
@@ -152,7 +157,7 @@ class UkmConsentStateObserver
   // if constructed with UkmConsentStateObserver(NoInitialUkmConsentStateTag).
   std::optional<UkmConsentState> ukm_consent_state_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Indicate whether the device is in demo mode. If it is true,
   // set APPS consent to collect App usage data for active demo
   // session. Default to false.

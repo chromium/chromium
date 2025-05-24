@@ -11,3 +11,8 @@ module ax.mojom;
 // be calculated by the user agent.
 // See: AXTableInfo
 const int32 kUnknownAriaColumnOrRowCount = -1;
+
+// Pass this anchor offset to the kSetSelection action to clear the selection.
+// The magic value is -99 instead of common -1 to disambiguate from other magic
+// values, specifically BEFORE_TEXT and INVALID_INDEX offsets in AXPosition.
+const int32 kNoSelectionOffset = -99;

@@ -1,0 +1,350 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+import(
+    "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//testing/test.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+
+assert(is_chromeos)
+
+group("build") {
+  deps = [
+    ":copy_misc_files",
+    ":minify_js",
+    ":minify_js_sandboxed_pumpkin_tagger",
+  ]
+}
+
+accessibility_common_dir =
+    "$root_out_dir/resources/chromeos/accessibility/accessibility_common/mv2"
+
+# Directory where typescript build will occur.
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
+
+tsc_out_dir = "$target_gen_dir/tsc"
+
+# Location of common typescript output.
+common_tsc_dir =
+    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
+
+# Location of third party mediapipe files.
+mediapipe_dir = "//third_party/node/node_modules/@mediapipe/tasks-vision/"
+
+misc_sources = [
+  "background.html",
+  "dictation/earcons/audio_end.wav",
+  "dictation/earcons/audio_initiate.wav",
+  "dictation/earcons/null_selection.wav",
+]
+
+# TS files to build.
+ts_modules = [
+  "accessibility_common_loader.ts",
+  "autoclick/autoclick.ts",
+  "dictation/dictation.ts",
+  "dictation/editing_util.ts",
+  "dictation/focus_handler.ts",
+  "dictation/input_controller_impl.ts",
+  "dictation/locale_info.ts",
+  "dictation/metrics_utils.ts",
+  "dictation/ui_controller.ts",
+  "dictation/macros/list_commands_macro.ts",
+  "dictation/parse/input_text_strategy.ts",
+  "dictation/parse/parse_strategy.ts",
+  "dictation/parse/pumpkin_parse_strategy.ts",
+  "dictation/parse/sandboxed_pumpkin_tagger.ts",
+  "dictation/parse/simple_parse_strategy.ts",
+  "dictation/parse/pumpkin/pumpkin_constants.ts",
+  "dictation/parse/speech_parser.ts",
+  "facegaze/bubble_controller.ts",
+  "facegaze/constants.ts",
+  "facegaze/facegaze.ts",
+  "facegaze/web_cam_face_landmarker.ts",
+  "facegaze/gesture_detector.ts",
+  "facegaze/gesture_handler.ts",
+  "facegaze/gesture_timer.ts",
+  "facegaze/metrics_utils.ts",
+  "facegaze/mouse_controller.ts",
+  "facegaze/scroll_mode_controller.ts",
+  "facegaze/macros/mouse_long_click_macro.ts",
+  "facegaze/macros/mouse_scroll_macro.ts",
+  "facegaze/macros/reset_cursor_macro.ts",
+  "magnifier/magnifier.ts",
+]
+
+# The relative path in the staging directory of TS modules that need to be copied from another directory.
+copied_ts_modules = [ "facegaze/facial_gestures.ts" ]
+
+ts_definitions = [
+  "$mediapipe_dir/vision.d.ts",
+  "dictation/parse/pumpkin/pumpkin_tagger_externs.d.ts",
+  "../../definitions/accessibility_features_mv2.d.ts",
+  "../../definitions/accessibility_private_mv2.d.ts",
+  "../../definitions/audio.d.ts",
+  "../../definitions/automation.d.ts",
+  "../../definitions/command_line_private.d.ts",
+  "../../definitions/extensions.d.ts",
+  "../../definitions/extension_types.d.ts",
+  "../../definitions/input_ime.d.ts",
+  "../../definitions/input_method_private.d.ts",
+  "../../definitions/language_settings_private.d.ts",
+  "../../definitions/metrics_private.d.ts",
+  "../../definitions/runtime.d.ts",
+  "../../definitions/settings_private_mv2.d.ts",
+  "../../definitions/speech_recognition_private.d.ts",
+  "../../definitions/tabs.d.ts",
+  "../../definitions/settings_private_mv2.d.ts",
+  "../../definitions/windows.d.ts",
+  "//tools/typescript/definitions/chrome_event.d.ts",
+  "//tools/typescript/definitions/i18n.d.ts",
+  "//tools/typescript/definitions/pending.d.ts",
+]
+
+ts_library("ts_build") {
+  root_dir = "$ts_build_staging_dir"
+  out_dir = tsc_out_dir
+
+  composite = true
+
+  deps = [ "../../common:ts_build" ]
+
+  # Targets that need to run before running the TS build.
+  extra_deps = [
+    #copied files
+    ":copy_ash_common_files",
+    ":stage_ts_build",
+  ]
+
+  path_mappings = [
+    "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir),
+    "/third_party/mediapipe/vision.js|" +
+        rebase_path("$mediapipe_dir/vision.d.ts", target_gen_dir),
+
+    # For type-checking purposes, map vision_bundle.mjs to the definition file
+    # in third_party/.
+    "/accessibility_common/mv2/third_party/mediapipe_task_vision/vision_bundle.mjs|" + rebase_path(
+            "$mediapipe_dir/vision.d.ts",
+            target_gen_dir),
+  ]
+
+  definitions = ts_definitions
+
+  in_files = ts_modules + copied_ts_modules
+
+  tsconfig_base = "../../tsconfig.base.json"
+}
+
+# Bundles the accessibility common files into a single file.
+bundle_js("bundle_js") {
+  visibility = [ ":minify_js" ]
+
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir", root_build_dir)
+  js_module_in_files = [ "accessibility_common_loader.js" ]
+  out_folder = "$target_gen_dir/bundle"
+
+  deps = [
+    ":copy_mediapipe_files",
+    ":ts_build",
+    "../../common:copied_files",
+  ]
+}
+
+# Minifies the bundled script to optimize memory footprint.
+# The minified file gets written directly to $accessibility_common_dir.
+minify_js("minify_js") {
+  visibility = [ ":build" ]
+
+  deps = [ ":bundle_js" ]
+  in_folder = "$target_gen_dir/bundle"
+  in_files = [ "accessibility_common_loader.rollup.js" ]
+  out_folder = "$accessibility_common_dir"
+}
+
+# Bundles the sandboxed pumpkin tagger and its imports into a single file, since
+# it is used to initialize a web worker that is separate from the main
+# background script.
+bundle_js("bundle_js_sandboxed_pumpkin_tagger") {
+  visibility = [ ":minify_js_sandboxed_pumpkin_tagger" ]
+
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir/dictation/parse", root_build_dir)
+  js_module_in_files = [ "sandboxed_pumpkin_tagger.js" ]
+  out_folder = "$target_gen_dir/bundle/dictation/parse"
+
+  deps = [ ":ts_build" ]
+}
+
+# Minifies the sandboxed pumpkin tagger to optimize memory footprint.
+# The minified file gets written directly to
+# $accessibility_common_dir/dictation/parse.
+minify_js("minify_js_sandboxed_pumpkin_tagger") {
+  visibility = [ ":build" ]
+
+  deps = [ ":bundle_js_sandboxed_pumpkin_tagger" ]
+  in_folder = "$target_gen_dir/bundle/dictation/parse"
+  in_files = [ "sandboxed_pumpkin_tagger.rollup.js" ]
+  out_folder = "$accessibility_common_dir/dictation/parse"
+}
+
+copy("copy_misc_files") {
+  sources = misc_sources
+  outputs = [ "$accessibility_common_dir/{{source_target_relative}}" ]
+}
+
+# Copies required mediapipe files into the accessibility_common extension
+# directory so that they are available at runtime.
+copy("copy_mediapipe_files") {
+  sources = [
+    "$mediapipe_dir/vision_bundle.mjs",
+    "$mediapipe_dir/wasm/vision_wasm_internal.js",
+  ]
+  outputs = [ "$accessibility_common_dir/third_party/mediapipe_task_vision/{{source_file_part}}" ]
+}
+
+# Copy all JS and TS sources to a staging folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("stage_ts_build") {
+  sources = ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
+}
+
+copy("copy_ash_common_files") {
+  sources = [ "//ash/webui/common/resources/accessibility/facial_gestures.ts" ]
+  outputs = [ "$ts_build_staging_dir/facegaze/facial_gestures.ts" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  assert(enable_extensions)
+
+  deps = [
+    ":accessibility_common_extjs_tests",
+    ":facegaze_test_files",
+    ":pumpkin_test_files",
+  ]
+
+  data = [
+    "$root_out_dir/chrome_100_percent.pak",
+    "$root_out_dir/chrome_200_percent.pak",
+    "$root_out_dir/locales/en-US.pak",
+    "$root_out_dir/resources.pak",
+    "$root_out_dir/resources/chromeos/accessibility/accessibility_common/mv2/",
+
+    "$root_out_dir/test_data/chrome/browser/resources/chromeos/accessibility/accessibility_common/",
+
+    # The test uses data from the original location, not the copied one.
+    "//chrome/browser/resources/chromeos/accessibility/accessibility_common/mv2/",
+    "//chrome/browser/resources/chromeos/accessibility/common/",
+  ]
+  data += js2gtest_js_libraries
+}
+
+js2gtest("accessibility_common_extjs_tests") {
+  test_type = "extension"
+  sources = [
+    "accessibility_common_test.js",
+    "autoclick/autoclick_test.js",
+    "dictation/dictation_test.js",
+    "dictation/dictation_test_base.js",
+    "dictation/dictation_ui_test.js",
+    "dictation/editing_util_test.js",
+    "dictation/focus_handler_test.js",
+    "dictation/locale_info_test.js",
+    "dictation/macros/dictation_macros_test.js",
+    "dictation/parse/dictation_parse_test.js",
+    "dictation/parse/dictation_pumpkin_parse_test.js",
+    "facegaze/facegaze_mediapipe_test.js",
+    "facegaze/facegaze_test.js",
+    "facegaze/facegaze_test_base.js",
+    "facegaze/metrics_utils_test.js",
+    "facegaze/scroll_mode_controller_test.js",
+    "magnifier/magnifier_test.js",
+  ]
+
+  gen_include_files = [
+    "../../common/testing/accessibility_test_base.js",
+    "../../common/testing/callback_helper.js",
+    "../../common/testing/common_e2e_test_base.js",
+    "../../common/testing/e2e_test_base.js",
+    "../../common/testing/mock_accessibility_private.js",
+    "../../common/testing/mock_audio.js",
+    "../../common/testing/mock_input_ime.js",
+    "../../common/testing/mock_input_method_private.js",
+    "../../common/testing/mock_language_settings_private.js",
+    "../../common/testing/mock_speech_recognition_private.js",
+  ]
+
+  # The test base classes generate C++ code with these deps.
+  deps = [
+    ":ts_build",
+    "//ash",
+    "//ash/keyboard/ui",
+    "//base",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/common",
+  ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+action("pumpkin_test_files") {
+  testonly = true
+  script = "../../tools/unpack_tar_archive.py"
+  sources = [ "../../common/testing/fake_pumpkin_dlc.tar.xz" ]
+  out_dir = "$accessibility_common_dir/third_party/pumpkin/"
+  files_to_extract = [
+    "$out_dir" + "js_pumpkin_tagger_bin.js",
+    "$out_dir" + "tagger_wasm_main.js",
+    "$out_dir" + "tagger_wasm_main.wasm",
+    "$out_dir" + "en_us/action_config.binarypb",
+    "$out_dir" + "en_us/pumpkin_config.binarypb",
+    "$out_dir" + "fr_fr/action_config.binarypb",
+    "$out_dir" + "fr_fr/pumpkin_config.binarypb",
+    "$out_dir" + "it_it/action_config.binarypb",
+    "$out_dir" + "it_it/pumpkin_config.binarypb",
+    "$out_dir" + "de_de/action_config.binarypb",
+    "$out_dir" + "de_de/pumpkin_config.binarypb",
+    "$out_dir" + "es_es/action_config.binarypb",
+    "$out_dir" + "es_es/pumpkin_config.binarypb",
+  ]
+
+  args = [
+    "--dest-dir=resources/chromeos/accessibility/accessibility_common/mv2/third_party/pumpkin",
+    rebase_path("../../common/testing/fake_pumpkin_dlc.tar.xz", root_build_dir),
+    string_join(",", files_to_extract),
+    out_dir,
+  ]
+  outputs = files_to_extract
+}
+
+# Extracts the FaceLandmarker model and WASM for testing purposes.
+action("facegaze_test_files") {
+  testonly = true
+  script = "../../tools/unpack_tar_archive.py"
+  sources = [ "../../common/testing/fake_facegaze_assets_dlc.tar.xz" ]
+  out_dir = "$accessibility_common_dir/third_party/mediapipe_task_vision/"
+  files_to_extract = [
+    "$out_dir" + "face_landmarker.task",
+    "$out_dir" + "vision_wasm_internal.wasm",
+  ]
+
+  args = [
+    "--dest-dir=resources/chromeos/accessibility/accessibility_common/mv2/third_party/mediapipe_task_vision",
+    rebase_path("../../common/testing/fake_facegaze_assets_dlc.tar.xz",
+                root_build_dir),
+    string_join(",", files_to_extract),
+    out_dir,
+  ]
+  outputs = files_to_extract
+}

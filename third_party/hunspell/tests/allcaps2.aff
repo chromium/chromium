@@ -1,6 +1,0 @@
-# forbidden all caps words are case sensitive
-# iPod -> ipodos ("iPodic" in Hungarian)
-FORBIDDENWORD *
-SFX s N 1
-SFX s 0 os .
-

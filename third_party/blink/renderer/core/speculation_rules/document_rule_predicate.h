@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SPECULATION_RULES_DOCUMENT_RULE_PREDICATE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -13,7 +14,7 @@
 
 namespace blink {
 
-class HTMLAnchorElement;
+class HTMLAnchorElementBase;
 class ExceptionState;
 class ExecutionContext;
 class JSONObject;
@@ -36,7 +37,7 @@ class CORE_EXPORT DocumentRulePredicate
   // always returns true).
   static DocumentRulePredicate* MakeDefaultPredicate();
 
-  virtual bool Matches(const HTMLAnchorElement& link) const = 0;
+  virtual bool Matches(const HTMLAnchorElementBase& link) const = 0;
   virtual HeapVector<Member<StyleRule>> GetStyleRules() const = 0;
 
   // Methods for testing.

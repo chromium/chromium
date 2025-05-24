@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/public/cpp/app_types_util.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -78,9 +77,6 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
   if (ash::borealis::IsBorealisWindow(top_level_window)) {
     return ui::EndpointType::kBorealis;
   }
-
-  if (crosapi::browser_util::IsLacrosWindow(top_level_window))
-    return ui::EndpointType::kLacros;
 
   if (crostini::IsCrostiniWindow(top_level_window))
     return ui::EndpointType::kCrostini;

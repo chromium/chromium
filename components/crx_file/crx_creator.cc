@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crx_file/crx_creator.h"
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "components/crx_file/crx3.pb.h"
 #include "components/crx_file/crx_file.h"
+#include "crypto/hash.h"
 #include "crypto/rsa_private_key.h"
-#include "crypto/sha2.h"
 #include "crypto/signature_creator.h"
 
 namespace crx_file {
@@ -23,46 +20,45 @@ namespace crx_file {
 namespace {
 
 std::string GetCrxId(const std::string& key) {
-  uint8_t hash[16] = {};  // CRX IDs are 16 bytes long.
-  crypto::SHA256HashString(key, hash, sizeof(hash));
-  static_assert(sizeof(char) == sizeof(uint8_t), "Unsupported char size.");
-  return std::string(reinterpret_cast<char*>(hash), sizeof(hash));
+  const auto full_hash = crypto::hash::Sha256(key);
+  const auto truncated_hash = base::span(full_hash).first<16>();
+  return std::string(base::as_string_view(truncated_hash));
 }
+
+constexpr size_t kFileBufferSize = 1 << 12;
 
 // Read to the end of the file, updating the signer.
 CreatorResult ReadAndSignArchive(base::File* file,
                                  crypto::SignatureCreator* signer,
                                  std::vector<uint8_t>* signature) {
-  uint8_t buffer[1 << 12] = {};
-  int read = 0;
-  static_assert(sizeof(char) == sizeof(uint8_t), "Unsupported char size.");
-  while ((read = file->ReadAtCurrentPos(reinterpret_cast<char*>(buffer),
-                                        std::size(buffer))) > 0) {
-    if (!signer->Update(buffer, read)) {
+  std::array<uint8_t, kFileBufferSize> buffer;
+  std::optional<size_t> read;
+  while ((read = file->ReadAtCurrentPos(buffer)).value_or(0) > 0) {
+    if (!signer->Update(buffer.data(), base::checked_cast<int>(*read))) {
       return CreatorResult::ERROR_SIGNING_FAILURE;
     }
   }
-  if (read < 0) {
+  if (!read.has_value()) {
     return CreatorResult::ERROR_SIGNING_FAILURE;
   }
   return signer->Final(signature) ? CreatorResult::OK
                                   : CreatorResult::ERROR_SIGNING_FAILURE;
 }
 
-bool WriteBuffer(base::File* file, const char buffer[], int len) {
-  return file->WriteAtCurrentPos(buffer, len) == len;
-}
-
 bool WriteArchive(base::File* out, base::File* in) {
-  char buffer[1 << 12] = {};
-  int read = 0;
+  std::array<uint8_t, kFileBufferSize> buffer;
+  std::optional<size_t> read;
   in->Seek(base::File::Whence::FROM_BEGIN, 0);
-  while ((read = in->ReadAtCurrentPos(buffer, std::size(buffer))) > 0) {
-    if (out->WriteAtCurrentPos(buffer, read) != read) {
+  while ((read = in->ReadAtCurrentPos(buffer)).value_or(0) > 0) {
+    auto to_write = base::span<const uint8_t>(buffer).first(*read);
+    if (!out->WriteAtCurrentPosAndCheck(to_write)) {
       return false;
     }
   }
-  return read == 0;
+  // A successful final read at the end of the file is indicated by returning a
+  // populated option with a read size of 0. An unpopulated option indicates a
+  // read error.
+  return read.has_value() && read.value() == 0;
 }
 
 CreatorResult SignArchiveAndCreateHeader(const base::FilePath& output_path,
@@ -79,12 +75,8 @@ CreatorResult SignArchiveAndCreateHeader(const base::FilePath& output_path,
   signed_header_data.set_crx_id(GetCrxId(public_key_str));
   const std::string signed_header_data_str =
       signed_header_data.SerializeAsString();
-  const int signed_header_size = signed_header_data_str.size();
-  const uint8_t signed_header_size_octets[] = {
-      static_cast<uint8_t>(signed_header_size),
-      static_cast<uint8_t>(signed_header_size >> 8),
-      static_cast<uint8_t>(signed_header_size >> 16),
-      static_cast<uint8_t>(signed_header_size >> 24)};
+  const auto signed_header_size_octets =
+      base::I32ToLittleEndian(signed_header_data_str.size());
 
   // Create a signer, init with purpose, SignedData length, run SignedData
   // through, run ZIP through.
@@ -92,8 +84,8 @@ CreatorResult SignArchiveAndCreateHeader(const base::FilePath& output_path,
       signing_key, crypto::SignatureCreator::HashAlgorithm::SHA256);
   signer->Update(reinterpret_cast<const uint8_t*>(kSignatureContext),
                  std::size(kSignatureContext));
-  signer->Update(signed_header_size_octets,
-                 std::size(signed_header_size_octets));
+  signer->Update(signed_header_size_octets.data(),
+                 signed_header_size_octets.size());
   signer->Update(
       reinterpret_cast<const uint8_t*>(signed_header_data_str.data()),
       signed_header_data_str.size());
@@ -118,25 +110,18 @@ CreatorResult WriteCRX(const CrxFileHeader& header,
                        const base::FilePath& output_path,
                        base::File* file) {
   const std::string header_str = header.SerializeAsString();
-  const int header_size = header_str.size();
-  const uint8_t header_size_octets[] = {
-      static_cast<uint8_t>(header_size), static_cast<uint8_t>(header_size >> 8),
-      static_cast<uint8_t>(header_size >> 16),
-      static_cast<uint8_t>(header_size >> 24)};
+  const auto header_size_octets = base::I32ToLittleEndian(header_str.size());
 
-  const uint8_t format_version_octets[] = {3, 0, 0, 0};
+  const auto format_version_octets = std::to_array<uint8_t>({3, 0, 0, 0});
   base::File crx(output_path,
                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   if (!crx.IsValid()) {
     return CreatorResult::ERROR_FILE_NOT_WRITABLE;
   }
-  static_assert(sizeof(char) == sizeof(uint8_t), "Unsupported char size.");
-  if (!WriteBuffer(&crx, kCrxFileHeaderMagic, kCrxFileHeaderMagicSize) ||
-      !WriteBuffer(&crx, reinterpret_cast<const char*>(format_version_octets),
-                   std::size(format_version_octets)) ||
-      !WriteBuffer(&crx, reinterpret_cast<const char*>(header_size_octets),
-                   std::size(header_size_octets)) ||
-      !WriteBuffer(&crx, header_str.c_str(), header_str.length()) ||
+  if (!crx.WriteAtCurrentPosAndCheck(kCrxFileHeaderMagic) ||
+      !crx.WriteAtCurrentPosAndCheck(format_version_octets) ||
+      !crx.WriteAtCurrentPosAndCheck(header_size_octets) ||
+      !crx.WriteAtCurrentPosAndCheck(base::as_byte_span(header_str)) ||
       !WriteArchive(&crx, file)) {
     return CreatorResult::ERROR_FILE_WRITE_FAILURE;
   }

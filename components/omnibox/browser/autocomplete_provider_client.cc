@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 
+#include "base/notreached.h"
+
 history_clusters::HistoryClustersService*
 AutocompleteProviderClient::GetHistoryClustersService() {
   return nullptr;
@@ -11,6 +13,11 @@ AutocompleteProviderClient::GetHistoryClustersService() {
 
 history_embeddings::HistoryEmbeddingsService*
 AutocompleteProviderClient::GetHistoryEmbeddingsService() {
+  return nullptr;
+}
+
+DocumentSuggestionsService*
+AutocompleteProviderClient::GetDocumentSuggestionsService() const {
   return nullptr;
 }
 
@@ -35,6 +42,14 @@ bool AutocompleteProviderClient::IsHistoryEmbeddingsEnabled() const {
 }
 
 bool AutocompleteProviderClient::IsHistoryEmbeddingsSettingVisible() const {
+  return false;
+}
+
+bool AutocompleteProviderClient::IsLensEnabled() const {
+  return false;
+}
+
+bool AutocompleteProviderClient::AreLensEntrypointsVisible() const {
   return false;
 }
 

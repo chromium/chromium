@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -100,7 +101,7 @@ public class MostVisitedSitesMetadataUtilsTest {
     @Test
     @SmallTest
     public void testCurrentNotNull() {
-        mMostVisitedSitesMetadataUtils.setCurrentTaskForTesting(() -> {});
+        mMostVisitedSitesMetadataUtils.setCurrentTaskForTesting(CallbackUtils.emptyRunnable());
 
         Runnable task1 =
                 () ->
@@ -183,7 +184,7 @@ public class MostVisitedSitesMetadataUtilsTest {
         List<Tile> sitesAfterRestore = MostVisitedSitesMetadataUtils.restoreFileToSuggestionLists();
         // Ensure that the new suggestion equals to old suggestion.
         assertEquals(1, sitesAfterRestore.size());
-        assertEquals(sitesAfterRestore.get(0).getData(), expectedSiteSuggestion);
+        assertEquals(expectedSiteSuggestion, sitesAfterRestore.get(0).getData());
     }
 
     private static List<Tile> createFakeSiteSuggestionTiles1() {

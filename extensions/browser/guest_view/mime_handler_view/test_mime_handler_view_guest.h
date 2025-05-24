@@ -36,7 +36,7 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
   static std::unique_ptr<GuestViewBase> Create(
       content::RenderFrameHost* owner_rfh);
 
-  // Set a delay in the next creation of a guest's WebContents by |delay|
+  // Set a delay in the next creation of a guest's WebContents by `delay`
   // milliseconds.
   // TODO(mcnee): The use of a timed delay makes for tests with fragile timing
   // dependencies. This should be implemented in a way that allows the test to
@@ -48,31 +48,26 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
   void WaitForGuestAttached();
 
   // MimeHandlerViewGuest override:
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) override;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       scoped_refptr<content::SiteInstance> site_instance,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
 
-  // In preparation for the migration of guest view from inner WebContents to
-  // MPArch (crbug/1261928), individual tests should avoid accessing the guest's
-  // inner WebContents. The direct access is centralized in this helper function
-  // for easier migration.
-  //
-  // TODO(crbug.com/40202416): Update this implementation for MPArch, and
-  // consider relocate it to `content/public/test/browser_test_utils.h`.
   static void WaitForGuestLoadStartThenStop(GuestViewBase* guest_view);
 
  private:
   explicit TestMimeHandlerViewGuest(content::RenderFrameHost* owner_rfh);
 
-  // Used to call MimeHandlerViewGuest::CreateWebContents using a scoped_ptr for
-  // |create_params|.
-  void CallBaseCreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                                 base::Value::Dict create_params,
-                                 WebContentsCreatedCallback callback);
+  // Used to call MimeHandlerViewGuest::CreateInnerPage.
+  void CallBaseCreateInnerPage(
+      std::unique_ptr<GuestViewBase> owned_this,
+      scoped_refptr<content::SiteInstance> site_instance,
+      base::Value::Dict create_params,
+      GuestPageCreatedCallback callback);
 
   // A value in milliseconds that the next creation of a guest's WebContents
-  // will be delayed. After this creation is delayed, |delay_| will be reset to
+  // will be delayed. After this creation is delayed, `delay_` will be reset to
   // 0.
   static int delay_;
 

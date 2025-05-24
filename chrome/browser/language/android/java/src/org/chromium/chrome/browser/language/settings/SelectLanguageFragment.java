@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.language.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -23,10 +25,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.util.ArrayList;
@@ -37,7 +43,9 @@ import java.util.Locale;
  * Fragment with a {@link RecyclerView} containing a list of languages that users may add to their
  * accept languages. There is a {@link SearchView} on its Actionbar to make a quick lookup.
  */
-public class SelectLanguageFragment extends Fragment implements ProfileDependentSetting {
+@NullMarked
+public class SelectLanguageFragment extends Fragment
+        implements ProfileDependentSetting, SettingsFragment {
     // Intent key to pass selected language code from SelectLanguageFragment.
     static final String INTENT_SELECTED_LANGUAGE = "SelectLanguageFragment.SelectedLanguage";
     // Intent key to receive type of languages to populate fragment with.
@@ -66,6 +74,7 @@ public class SelectLanguageFragment extends Fragment implements ProfileDependent
          * @param query The text to search for.
          */
         private void search(String query) {
+            assumeNonNull(mFilteredLanguages);
             if (TextUtils.isEmpty(query)) {
                 setDisplayedLanguages(mFilteredLanguages);
                 return;
@@ -86,19 +95,19 @@ public class SelectLanguageFragment extends Fragment implements ProfileDependent
     }
 
     // The view for searching the list of items.
-    private SearchView mSearchView;
+    private @Nullable SearchView mSearchView;
 
     // If not blank, represents a substring to use to search for language names.
     private String mSearch;
 
     private RecyclerView mRecyclerView;
     private LanguageSearchListAdapter mAdapter;
-    private List<LanguageItem> mFilteredLanguages;
+    private @MonotonicNonNull List<LanguageItem> mFilteredLanguages;
     private LanguageListBaseAdapter.ItemClickListener mItemClickListener;
-    private Profile mProfile;
+    private @MonotonicNonNull Profile mProfile;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
             getActivity().setTitle(R.string.languages_select);
@@ -110,7 +119,9 @@ public class SelectLanguageFragment extends Fragment implements ProfileDependent
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment.
         View view = inflater.inflate(R.layout.add_languages_main, container, false);
         mSearch = "";
@@ -129,6 +140,7 @@ public class SelectLanguageFragment extends Fragment implements ProfileDependent
                         .getIntExtra(
                                 INTENT_POTENTIAL_LANGUAGES,
                                 LanguagesManager.LanguageListType.ACCEPT_LANGUAGES);
+        assumeNonNull(mProfile);
         mFilteredLanguages =
                 LanguagesManager.getForProfile(mProfile).getPotentialLanguages(languageOption);
         mItemClickListener =
@@ -156,12 +168,13 @@ public class SelectLanguageFragment extends Fragment implements ProfileDependent
         inflater.inflate(R.menu.languages_action_bar_menu, menu);
 
         mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        assumeNonNull(mSearchView);
         mSearchView.setImeOptions(EditorInfo.IME_FLAG_NO_FULLSCREEN);
 
         mSearchView.setOnCloseListener(
                 () -> {
                     mSearch = "";
-                    mAdapter.setDisplayedLanguages(mFilteredLanguages);
+                    mAdapter.setDisplayedLanguages(assumeNonNull(mFilteredLanguages));
                     return false;
                 });
 
@@ -188,5 +201,10 @@ public class SelectLanguageFragment extends Fragment implements ProfileDependent
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

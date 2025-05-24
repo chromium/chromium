@@ -4,8 +4,6 @@
 
 #include "chrome/browser/component_updater/updater_state.h"
 
-#include <windows.h>
-
 #include <string>
 #include <utility>
 
@@ -14,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_types.h"
 
 namespace component_updater {
 namespace {

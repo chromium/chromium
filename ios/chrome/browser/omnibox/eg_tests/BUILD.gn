@@ -1,0 +1,146 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "omnibox_app_interface.h",
+    "omnibox_app_interface.mm",
+    "test_fake_suggestions_service.cc",
+    "test_fake_suggestions_service.h",
+  ]
+  deps = [
+    ":fake_suggestions_database",
+    ":resources_fake_suggestions_tests",
+    "//base",
+    "//components/google/core/common",
+    "//components/history/core/browser",
+    "//components/omnibox/browser",
+    "//components/search_engines",
+    "//components/variations",
+    "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/omnibox/model/omnibox_position",
+    "//ios/chrome/browser/omnibox/ui:omnibox_internal",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing:nserror_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
+    "//ui/base",
+    "//ui/base:test_support",
+  ]
+}
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "omnibox_app_interface.h",
+    "omnibox_app_interface_stub.mm",
+    "omnibox_earl_grey.h",
+    "omnibox_earl_grey.mm",
+    "omnibox_matchers.h",
+    "omnibox_matchers.mm",
+    "omnibox_test_util.h",
+    "omnibox_test_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/omnibox/public:constants",
+    "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//net:test_support",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "actions_in_suggest_egtest.mm",
+    "omnibox_browser_agent_egtest.mm",
+    "omnibox_edit_egtest.mm",
+    "omnibox_egtest.mm",
+    "omnibox_popup_carousel_egtest.mm",
+    "omnibox_popup_egtest.mm",
+    "omnibox_popup_pedal_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//components/feature_engagement/public",
+    "//components/omnibox/common",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
+    "//ios/chrome/browser/omnibox/public:constants",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/omnibox/ui:omnibox_popup_shared",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data:features",
+    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+    "//ui/base",
+    "//ui/strings",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("fake_suggestions_database") {
+  sources = [
+    "fake_suggestions_database.cc",
+    "fake_suggestions_database.h",
+  ]
+  deps = [
+    "//base",
+    "//components/search_engines",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fake_suggestions_database_unittest.cc" ]
+  deps = [
+    ":fake_suggestions_database",
+    "//base",
+    "//components/search_engines",
+    "//components/search_engines:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+bundle_data("resources_fake_suggestions_tests") {
+  visibility = [ ":eg_app_support+eg2" ]
+  testonly = true
+  sources = [
+    "//ios/chrome/test/data/omnibox/fake_suggestion_actions.json",
+    "//ios/chrome/test/data/omnibox/fake_suggestions_pedal.json",
+    "//ios/chrome/test/data/omnibox/fake_suggestions_sample.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}

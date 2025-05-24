@@ -7,8 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {DestinationProviderComposite} from '../data/destination_provider_composite.js';
 import {PrintPreviewPageHandlerComposite} from '../data/print_preview_page_handler_composite.js';
 
-import {DestinationProviderCompositeInterface} from './print_preview_cros_app_types.js';
-import type {PrintPreviewPageHandlerCompositeInterface} from './print_preview_cros_app_types.js';
+import type {DestinationProviderCompositeInterface, PrintPreviewPageHandlerCompositeInterface} from './print_preview_cros_app_types.js';
 
 /**
  * @fileoverview

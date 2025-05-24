@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -45,9 +45,18 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
 
   static get properties() {
     return {
-      canShowTooltipFromPrefs: Boolean,
-      currentTooltip: Number,
-      forceTooltipHidden: Boolean,
+      canShowTooltipFromPrefs: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('canShowTooltipFromPrefs'),
+      },
+      currentTooltip: {
+        type: Number,
+        value: CursorTooltipType.NONE,
+      },
+      forceTooltipHidden: {
+        type: Boolean,
+        value: false,
+      },
       isPointerInsideViewport: Boolean,
       tooltipMessage: String,
     };
@@ -55,20 +64,19 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
 
   // Whether the users has used the feature enough to not need the helping
   // tooltip anymore.
-  private canShowTooltipFromPrefs: boolean =
-      loadTimeData.getBoolean('canShowTooltipFromPrefs');
+  declare private canShowTooltipFromPrefs: boolean;
 
   // The current tooltip showing to the user.
-  private currentTooltip: CursorTooltipType = CursorTooltipType.NONE;
+  declare private currentTooltip: CursorTooltipType;
 
   // Whether or not to force the tooltip as hidden.
-  private forceTooltipHidden: boolean = false;
+  declare private forceTooltipHidden: boolean;
 
   // Whether or not the pointer is inside the web contents.
-  private isPointerInsideViewport: boolean;
+  declare private isPointerInsideViewport: boolean;
 
   // The tooltip message string.
-  private tooltipMessage: string;
+  declare private tooltipMessage: string;
 
   // The queued tooltip type.
   private queuedTooltipType?: CursorTooltipType;

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
@@ -60,16 +59,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillCoordinator.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillMediator.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillProperties.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillResourceProvider.java",
-    "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillResourceProviderImpl.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillView.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillViewBinder.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillViewHolder.java",
   ]
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [ "*/TouchToFillResourceProviderImpl.class" ]
 
   resources_package = "org.chromium.chrome.browser.touch_to_fill"
 }
@@ -80,8 +73,6 @@ android_resources("java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
-    "java/res/drawable-night/touch_to_fill_header_image.xml",
-    "java/res/drawable/touch_to_fill_header_image.xml",
     "java/res/drawable/touch_to_fill_more_passkeys_icon.xml",
     "java/res/layout/touch_to_fill_footer_item.xml",
     "java/res/layout/touch_to_fill_header_item.xml",
@@ -94,21 +85,4 @@ android_resources("java_resources") {
 java_strings_grd("java_strings_grd") {
   defines = chrome_grit_defines
   grd_file = "java/strings/android_touch_to_fill_strings.grd"
-  outputs =
-      [ "values/android_touch_to_fill_strings.xml" ] +
-      process_file_template(
-          android_bundle_locales_as_resources,
-          [ "values-{{source_name_part}}/android_touch_to_fill_strings.xml" ])
-}
-
-android_library("resource_provider_public_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillResourceProviderImpl.java" ]
-
-  deps = [
-    ":java",
-    ":java_resources",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
-
-  resources_package = "org.chromium.chrome.browser.touch_to_fill"
 }

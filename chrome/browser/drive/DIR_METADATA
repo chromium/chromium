@@ -1,6 +1,0 @@
-monorail: {
-  component: "Platform>Apps>FileManager"
-}
-buganizer_public: {
-  component_id: 1456107
-}

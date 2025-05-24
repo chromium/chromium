@@ -39,10 +39,10 @@ void CastBrowserTest::SetUp() {
 void CastBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kTestType, "browser");
   command_line->AppendSwitchASCII(
-      cast::core::kCastCoreRuntimeIdSwitch,
+      cast::core::switches::kCastCoreRuntimeId,
       base::Uuid::GenerateRandomV4().AsLowercaseString());
   command_line->AppendSwitchASCII(
-      cast::core::kRuntimeServicePathSwitch,
+      cast::core::switches::kRuntimeServicePath,
       "unix:/tmp/runtime-service.sock." +
           base::Uuid::GenerateRandomV4().AsLowercaseString());
 }

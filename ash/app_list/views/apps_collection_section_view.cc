@@ -97,7 +97,7 @@ AppsCollectionSectionView::AppsCollectionSectionView(
   apps_container_->SetLayoutManager(
       std::make_unique<SimpleGridLayout>(kAppsPerColumn));
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kCornerRadius));
 }
 
@@ -136,8 +136,8 @@ void AppsCollectionSectionView::UpdateAppsForCollection() {
 
   SetVisible(!apps.empty());
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                           /*send_native_event=*/true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                     /*send_native_event=*/true);
   PreferredSizeChanged();
 }
 

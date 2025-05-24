@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_color_channel_map.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 namespace blink {
@@ -23,19 +24,36 @@ class CORE_EXPORT ColorFunctionParser {
   ColorFunctionParser() = default;
   // Parses the color inputs rgb(), rgba(), hsl(), hsla(), hwb(), lab(),
   // oklab(), lch(), oklch() and color(). https://www.w3.org/TR/css-color-4/
-  CSSValue* ConsumeFunctionalSyntaxColor(CSSParserTokenStream& stream,
-                                         const CSSParserContext& context);
+  CSSValue* ConsumeFunctionalSyntaxColor(
+      CSSParserTokenStream& stream,
+      const CSSParserContext& context,
+      const css_parsing_utils::ColorParserContext& color_parser_context);
+
+  // These are exposed so that StyleColor::UnresolvedRelativeColor
+  // or similar can reuse our logic.
+  enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
+  static void MakePerColorSpaceAdjustments(
+      bool is_relative_color,
+      bool is_legacy_syntax,
+      Color::ColorSpace color_space,
+      std::array<std::optional<double>, 3>& channels,
+      std::optional<double>& alpha);
 
  private:
-  enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
-  bool ConsumeColorSpaceAndOriginColor(CSSParserTokenStream& stream,
-                                       CSSValueID function_id,
-                                       const CSSParserContext& context);
-  bool ConsumeChannel(CSSParserTokenStream& stream,
-                      const CSSParserContext& context,
-                      int index);
-  bool ConsumeAlpha(CSSParserTokenStream& stream,
-                    const CSSParserContext& context);
+  bool ConsumeColorSpaceAndOriginColor(
+      CSSParserTokenStream& stream,
+      CSSValueID function_id,
+      const CSSParserContext& context,
+      const css_parsing_utils::ColorParserContext& color_parser_context);
+  bool ConsumeChannel(
+      CSSParserTokenStream& stream,
+      const CSSParserContext& context,
+      int index,
+      const css_parsing_utils::ColorParserContext& color_parser_context);
+  bool ConsumeAlpha(
+      CSSParserTokenStream& stream,
+      const CSSParserContext& context,
+      const css_parsing_utils::ColorParserContext& color_parser_context);
   void MakePerColorSpaceAdjustments();
 
   static double ResolveColorChannel(
@@ -53,14 +71,13 @@ class CORE_EXPORT ColorFunctionParser {
       const CSSColorChannelMap& color_channel_map);
 
   bool IsRelativeColor() const;
+  bool AllChannelsAreResolvable() const;
 
   Color::ColorSpace color_space_ = Color::ColorSpace::kNone;
   std::array<const CSSValue*, 3> unresolved_channels_;
-  std::array<std::optional<double>, 3> channels_;
   std::array<ChannelType, 3> channel_types_;
   const CSSValue* unresolved_alpha_ = nullptr;
   ChannelType alpha_channel_type_;
-  std::optional<double> alpha_ = 1.0;
 
   // Metadata about the current function being parsed. Set by
   // `ConsumeColorSpaceAndOriginColor()` after parsing the preamble of the

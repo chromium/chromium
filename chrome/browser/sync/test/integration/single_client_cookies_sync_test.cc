@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/floating_sso/cookie_sync_conversions.h"
 #include "chrome/browser/ash/floating_sso/cookie_sync_test_util.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
@@ -35,6 +36,7 @@ using ash::floating_sso::CreatePredefinedCookieSpecificsForTest;
 using ash::floating_sso::FloatingSsoService;
 using ash::floating_sso::FloatingSsoServiceFactory;
 using ash::floating_sso::FloatingSsoSyncBridge;
+using ash::floating_sso::FromSyncProto;
 
 class CookiePresenceChecker : public SingleClientStatusChangeChecker {
  public:
@@ -87,12 +89,19 @@ class SingleClientCookiesSyncTest : public SyncTest {
         /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
+    SetFloatingSsoEnabledPolicy(true);
+    // Cookie sync is only enabled for the primary profile, but for these tests
+    // there is no real benefit in setting up a fully logged in ChromeOS user.
+    FloatingSsoServiceFactory::GetInstance()->AllowNonPrimaryProfileForTests();
+    SyncTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetFloatingSsoEnabledPolicy(bool policy_value) {
     policy::PolicyMap policy;
     policy.Set(policy::key::kFloatingSsoEnabled, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               base::Value(true), nullptr);
+               base::Value(policy_value), nullptr);
     policy_provider_.UpdateChromePolicy(policy);
-    SyncTest::SetUpInProcessBrowserTestFixture();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
@@ -114,16 +123,20 @@ class SingleClientCookiesSyncTest : public SyncTest {
     base::test::TestFuture<void> commit_future;
     bridge.SetOnStoreCommitCallbackForTest(
         commit_future.GetRepeatingCallback());
-    bridge.AddOrUpdateCookie(specifics);
+    std::unique_ptr<net::CanonicalCookie> cookie = FromSyncProto(specifics);
+    ASSERT_TRUE(cookie);
+    bridge.AddOrUpdateCookie(*cookie);
     commit_future.Get();
   }
 
-  void DeleteCookieOnTheClient(const std::string& storage_key) {
+  void DeleteCookieOnTheClient(const sync_pb::CookieSpecifics& specifics) {
     FloatingSsoSyncBridge& bridge = GetFloatingSsoBridge();
     base::test::TestFuture<void> commit_future;
     bridge.SetOnStoreCommitCallbackForTest(
         commit_future.GetRepeatingCallback());
-    bridge.DeleteCookie(storage_key);
+    std::unique_ptr<net::CanonicalCookie> cookie = FromSyncProto(specifics);
+    ASSERT_TRUE(cookie);
+    bridge.DeleteCookie(*cookie);
     commit_future.Get();
   }
 
@@ -146,6 +159,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, DownloadAndDelete) {
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::COOKIES, 1).Wait());
 
   ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
 
   // Check that the client downloaded `remote_cookie`.
   EXPECT_TRUE(CookiePresenceChecker(GetSyncService(0), GetFloatingSsoBridge(),
@@ -154,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, DownloadAndDelete) {
 
   // Delete `remote_cookie` on the client and check that the server reflects
   // this.
-  DeleteCookieOnTheClient(remote_cookie.unique_key());
+  DeleteCookieOnTheClient(remote_cookie);
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::COOKIES, 0).Wait());
 }
 
@@ -163,6 +177,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest,
   // Enable Sync in the browser under test - this allows the next test to check
   // the behavior of a client which already used Sync in the past.
   ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
 }
 
 // Test that the client which used Sync in the past receives an update.
@@ -182,6 +197,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, DownloadOnExistingClient) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, Upload) {
   ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
 
   // Make sure that the server has no cookies initially.
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::COOKIES, 0).Wait());
@@ -194,6 +210,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, Upload) {
 
   // Check that the server receives the cookie.
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::COOKIES, 1).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientCookiesSyncTest, FloatingSsoPolicyDisabled) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
+
+  SetFloatingSsoEnabledPolicy(false);
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::COOKIES));
 }
 
 }  // namespace

@@ -108,17 +108,17 @@ export class ClusterElement extends ClusterElementBase {
   // Properties
   //============================================================================
 
-  cluster?: Cluster;
-  index: number = -1;  // Initialized to an invalid value.
-  inSidePanel: boolean = loadTimeData.getBoolean('inSidePanel');
-  query: string = '';
-  protected imageUrl_: string = '';
-  protected relatedSearches_: SearchQuery[] = [];
+  accessor cluster: Cluster|undefined;
+  accessor index: number = -1;  // Initialized to an invalid value.
+  accessor inSidePanel: boolean = loadTimeData.getBoolean('inSidePanel');
+  accessor query: string = '';
+  protected accessor imageUrl_: string = '';
+  protected accessor relatedSearches_: SearchQuery[] = [];
 
   private callbackRouter_: PageCallbackRouter;
   private onVisitsHiddenListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
-  private label_: string = 'no_label';
+  private accessor label_: string = 'no_label';
 
   //============================================================================
   // Overridden methods
@@ -173,7 +173,7 @@ export class ClusterElement extends ClusterElementBase {
     if (changedPrivateProperties.has('label_') && this.label_ !== 'no_label' &&
         this.cluster) {
       insertHighlightedTextWithMatchesIntoElement(
-          this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
+          this.$.label, this.cluster.label, this.cluster.labelMatchPositions);
     }
     if (changedPrivateProperties.has('imageUrl_')) {
       // iron-list can't handle our size changing because of loading an image

@@ -5,8 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FRAME_RATE_THROTTLING_H_
 #define CONTENT_PUBLIC_BROWSER_FRAME_RATE_THROTTLING_H_
 
+#include <set>
+
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 
@@ -29,6 +32,20 @@ CONTENT_EXPORT void StartThrottlingAllFrameSinks(base::TimeDelta interval);
 // Stops the BeginFrame throttling enabled by `StartThrottlingAllFrameSinks()`.
 // Should be called from the UI thread.
 CONTENT_EXPORT void StopThrottlingAllFrameSinks();
+
+// Gets the frame sink id list from |throttle_frames|, and signals the frame
+// sink manager to throttle the frame sinks specified and all their descendant
+// sinks to send BeginFrames at an interval of |interval|. This operation clears
+// out any previous throttling operation on any frame sinks.
+//
+// Note that if global throttling (like StartThrottlingAllFrameSinks invoked) is
+// enabled, per-frame sink throttling with the same interval doesn't take
+// effect. Per-frame sink throttling with more aggressive interval would apply
+// on top of global throttling.
+// Should be called from the UI thread.
+CONTENT_EXPORT void UpdateThrottlingFrameSinks(
+    const std::set<GlobalRenderFrameHostId>& throttle_frames,
+    base::TimeDelta interval);
 
 }  // namespace content
 

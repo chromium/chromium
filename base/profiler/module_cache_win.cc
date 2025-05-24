@@ -51,8 +51,9 @@ void GetDebugInfoForModule(HMODULE module_handle,
   }
 
   FilePath::StringType pdb_filename;
-  if (!UTF8ToWide(pdb_file, pdb_file_length, &pdb_filename))
+  if (!UTF8ToWide(pdb_file, pdb_file_length, &pdb_filename)) {
     return;
+  }
   *pdb_name = FilePath(std::move(pdb_filename)).BaseName();
 
   auto buffer = win::WStringFromGUID(guid);
@@ -131,8 +132,9 @@ ScopedModuleHandle GetModuleHandleForAddress(uintptr_t address) {
   // GetModuleHandleEx crashes on Windows 11 observed in
   // https://crbug.com/1297776.
   debug::Alias(&address);
-  if (!IsValidUserSpaceAddress(address))
+  if (!IsValidUserSpaceAddress(address)) {
     return ScopedModuleHandle(nullptr);
+  }
 
   HMODULE module_handle = nullptr;
 
@@ -169,8 +171,9 @@ std::unique_ptr<ModuleCache::Module> CreateModuleForHandle(
 std::unique_ptr<const ModuleCache::Module> ModuleCache::CreateModuleForAddress(
     uintptr_t address) {
   ScopedModuleHandle module_handle = GetModuleHandleForAddress(address);
-  if (!module_handle.is_valid())
+  if (!module_handle.is_valid()) {
     return nullptr;
+  }
   return CreateModuleForHandle(std::move(module_handle));
 }
 

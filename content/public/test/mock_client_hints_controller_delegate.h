@@ -39,9 +39,6 @@ class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
   bool IsJavaScriptAllowed(const GURL& url,
                            content::RenderFrameHost* parent_rfh) override;
 
-  bool AreThirdPartyCookiesBlocked(const GURL& url,
-                                   content::RenderFrameHost* rfh) override;
-
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void PersistClientHints(
       const url::Origin& primary_origin,

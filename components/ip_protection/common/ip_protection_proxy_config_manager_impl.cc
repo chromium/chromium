@@ -4,16 +4,20 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
-#include "base/metrics/histogram_functions.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/rand_util.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
@@ -21,9 +25,6 @@
 namespace ip_protection {
 
 namespace {
-
-// Default Geo used until caching by geo is enabled.
-constexpr char kDefaultGeo[] = "EARTH";
 
 // Based on the logic in the `IpProtectionProxyConfigDirectFetcher`, if there is
 // a non-empty proxy list with an empty `GeoHint`, it would be considered a
@@ -52,23 +53,16 @@ void RecordTelemetry(
 
 IpProtectionProxyConfigManagerImpl::IpProtectionProxyConfigManagerImpl(
     IpProtectionCore* core,
-    IpProtectionConfigGetter& config_getter,
+    std::unique_ptr<IpProtectionProxyConfigFetcher> fetcher,
     bool disable_proxy_refreshing_for_testing)
     : ip_protection_core_(core),
-      config_getter_(config_getter),
+      fetcher_(std::move(fetcher)),
       proxy_list_min_age_(
           net::features::kIpPrivacyProxyListMinFetchInterval.Get()),
       proxy_list_refresh_interval_(
           net::features::kIpPrivacyProxyListFetchInterval.Get()),
-      enable_token_caching_by_geo_(
-          net::features::kIpPrivacyCacheTokensByGeo.Get()),
       disable_proxy_refreshing_for_testing_(
           disable_proxy_refreshing_for_testing) {
-  // If caching by geo is disabled, the current geo will be resolved to
-  // `kDefaultGeo` and should not be modified.
-  if (!enable_token_caching_by_geo_) {
-    current_geo_id_ = kDefaultGeo;
-  }
   if (!disable_proxy_refreshing_for_testing_) {
     // Refresh the proxy list immediately.
     RefreshProxyList();
@@ -91,11 +85,7 @@ const std::string& IpProtectionProxyConfigManagerImpl::CurrentGeo() {
   return current_geo_id_;
 }
 
-void IpProtectionProxyConfigManagerImpl::RefreshProxyListForGeoChange() {
-  if (!enable_token_caching_by_geo_) {
-    return;
-  }
-
+void IpProtectionProxyConfigManagerImpl::RequestRefreshProxyList() {
   if (IsProxyListOlderThanMinAge()) {
     RefreshProxyList();
     return;
@@ -104,19 +94,10 @@ void IpProtectionProxyConfigManagerImpl::RefreshProxyListForGeoChange() {
   // If list is not older than min interval, schedule refresh as soon as
   // possible.
   base::TimeDelta time_since_last_refresh =
-      base::Time::Now() - last_proxy_list_refresh_;
+      base::Time::Now() - last_successful_proxy_list_refresh_;
 
   base::TimeDelta delay = proxy_list_min_age_ - time_since_last_refresh;
   ScheduleRefreshProxyList(delay.is_negative() ? base::TimeDelta() : delay);
-}
-
-void IpProtectionProxyConfigManagerImpl::RequestRefreshProxyList() {
-  // Do not refresh the list too frequently.
-  if (!IsProxyListOlderThanMinAge()) {
-    return;
-  }
-
-  RefreshProxyList();
 }
 
 void IpProtectionProxyConfigManagerImpl::RefreshProxyList() {
@@ -125,18 +106,18 @@ void IpProtectionProxyConfigManagerImpl::RefreshProxyList() {
   }
 
   fetching_proxy_list_ = true;
-  last_proxy_list_refresh_ = base::Time::Now();
+  last_successful_proxy_list_refresh_ = base::Time::Now();
   const base::TimeTicks refresh_start_time_for_metrics = base::TimeTicks::Now();
 
-  config_getter_->GetProxyList(base::BindOnce(
+  fetcher_->GetProxyConfig(base::BindOnce(
       &IpProtectionProxyConfigManagerImpl::OnGotProxyList,
       weak_ptr_factory_.GetWeakPtr(), refresh_start_time_for_metrics));
 }
 
 void IpProtectionProxyConfigManagerImpl::OnGotProxyList(
     const base::TimeTicks refresh_start_time_for_metrics,
-    const std::optional<std::vector<net::ProxyChain>> proxy_list,
-    const std::optional<GeoHint> geo_hint) {
+    std::optional<std::vector<net::ProxyChain>> proxy_list,
+    std::optional<GeoHint> geo_hint) {
   fetching_proxy_list_ = false;
 
   RecordTelemetry(proxy_list,
@@ -145,20 +126,25 @@ void IpProtectionProxyConfigManagerImpl::OnGotProxyList(
   // If the request for fetching the proxy list is successful, utilize the new
   // proxy list, otherwise, continue using the existing list, if any.
   if (proxy_list.has_value()) {
-    proxy_list_ = *proxy_list;
+    proxy_list_ = std::move(*proxy_list);
     have_fetched_proxy_list_ = true;
 
     // Only trigger a callback to the config cache if the following requirements
     // are met:
-    // 1. Token caching by geo is enabled.
-    // 2. The proxy_list is non-empty. An empty list implies there is no
+    // 1. The proxy_list is non-empty. An empty list implies there is no
     //    geo_hint present.
-    // 3. The new geo is different than the existing geo.
-    if (enable_token_caching_by_geo_ && !proxy_list->empty()) {
+    // 2. The new geo is different than the existing geo.
+    if (!proxy_list_.empty()) {
       CHECK(geo_hint.has_value());
-      current_geo_id_ = ip_protection::GetGeoIdFromGeoHint(std::move(geo_hint));
+      current_geo_id_ = GetGeoIdFromGeoHint(std::move(geo_hint));
       ip_protection_core_->GeoObserved(current_geo_id_);
     }
+  } else {
+    // The request was not successful, so do not count this toward the
+    // minimum time between refreshes. Note that the proxy config fetcher
+    // implements its own backoff on errors, so this does not risk overwhelming
+    // the server.
+    last_successful_proxy_list_refresh_ = base::Time();
   }
 
   base::TimeDelta fuzzed_proxy_list_refresh_interval =
@@ -172,7 +158,7 @@ void IpProtectionProxyConfigManagerImpl::OnGotProxyList(
 
 base::TimeDelta IpProtectionProxyConfigManagerImpl::FuzzProxyListFetchInterval(
     base::TimeDelta delay) {
-  if (!enable_proxy_list_fetch_interval_fuzzing_for_testing_) {
+  if (!enable_proxy_list_fetch_interval_fuzzing_) {
     return delay;
   }
 
@@ -185,12 +171,21 @@ base::TimeDelta IpProtectionProxyConfigManagerImpl::FuzzProxyListFetchInterval(
 }
 
 bool IpProtectionProxyConfigManagerImpl::IsProxyListOlderThanMinAge() const {
-  return base::Time::Now() - last_proxy_list_refresh_ >= proxy_list_min_age_;
+  return base::Time::Now() - last_successful_proxy_list_refresh_ >=
+         proxy_list_min_age_;
+}
+
+void IpProtectionProxyConfigManagerImpl::SetProxyListForTesting(
+    std::vector<net::ProxyChain> proxy_list,
+    std::optional<GeoHint> geo_hint) {
+  current_geo_id_ = GetGeoIdFromGeoHint(std::move(geo_hint));
+  proxy_list_ = std::move(proxy_list);
+  have_fetched_proxy_list_ = true;
 }
 
 void IpProtectionProxyConfigManagerImpl::
     EnableProxyListFetchIntervalFuzzingForTesting(bool enable) {
-  enable_proxy_list_fetch_interval_fuzzing_for_testing_ = enable;
+  enable_proxy_list_fetch_interval_fuzzing_ = enable;
 }
 
 void IpProtectionProxyConfigManagerImpl::ScheduleRefreshProxyList(

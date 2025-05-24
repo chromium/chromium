@@ -22,8 +22,8 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/webui/resource_path.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 
@@ -59,9 +59,7 @@ StatusAreaInternalsUI::StatusAreaInternalsUI(content::WebUI* web_ui)
           kChromeUIStatusAreaInternalsHost);
 
   // Add required resources.
-  SetupWebUIDataSource(html_source,
-                       base::make_span(kAshStatusAreaInternalsResources,
-                                       kAshStatusAreaInternalsResourcesSize),
+  SetupWebUIDataSource(html_source, kAshStatusAreaInternalsResources,
                        IDR_ASH_STATUS_AREA_INTERNALS_MAIN_HTML);
 }
 

@@ -77,6 +77,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/test/mock_overscroll_refresh_handler_android.h"
+#include "ui/events/android/motion_event_android_java.h"
 #endif
 
 namespace content {
@@ -110,7 +111,8 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
 
   const blink::WebInputEvent& event() const { return *event_; }
 
-  void OnInputEvent(const blink::WebInputEvent& event) override {
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
     events_received_.push_back(event.GetType());
     event_ = event.Clone();
   }
@@ -119,7 +121,8 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
     return events_acked_;
   }
 
-  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+  void OnInputEventAck(const RenderWidgetHost& widget,
+                       blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent&) override {
     events_acked_.push_back(source);
@@ -800,6 +803,20 @@ bool IsScreenTooSmallForPopup(const display::ScreenInfo& screen_info) {
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+ui::MotionEventAndroidJava GetMotionEventAndroid(
+    ui::MotionEvent::Action action,
+    base::TimeTicks event_time,
+    base::TimeTicks down_time,
+    const ui::MotionEventAndroid::Pointer& pointer) {
+  float pix_to_dip = 1.0;
+
+  return ui::MotionEventAndroidJava(
+      nullptr, nullptr, pix_to_dip, 0.f, 0.f, 0.f, event_time, event_time,
+      down_time, ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, false, &pointer, nullptr, false);
+}
+#endif
 }  // namespace
 
 class SitePerProcessHitTestBrowserTest : public SitePerProcessBrowserTestBase {
@@ -870,27 +887,6 @@ class SitePerProcessNonIntegerScaleFactorHitTestBrowserTest
   }
 };
 
-//
-// SitePerProcessUserActivationHitTestBrowserTest
-//
-
-class SitePerProcessUserActivationHitTestBrowserTest
-    : public SitePerProcessHitTestBrowserTest {
- public:
-  SitePerProcessUserActivationHitTestBrowserTest() {}
-
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SitePerProcessBrowserTestBase::SetUpCommandLine(command_line);
-    ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
-    feature_list_.InitAndEnableFeature(
-        features::kBrowserVerifiedUserActivationMouse);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Restrict to Aura to we can use routable MouseWheel event via
 // RenderWidgetHostViewAura::OnScrollEvent().
 #if defined(USE_AURA)
@@ -920,9 +916,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::ValuesIn(kMultiScale)));
 
 // Flaky on MSAN. https://crbug.com/959924
-// Flaky on Linux Wayland and Lacros. https://crbug.com/1158437
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+// Flaky on Linux Wayland. https://crbug.com/1158437
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ScrollNestedLocalNonFastScrollableDiv \
   DISABLED_ScrollNestedLocalNonFastScrollableDiv
 #else
@@ -1819,7 +1814,8 @@ class OutgoingEventWaiter : public RenderWidgetHost::InputEventObserver {
       rwh_->RemoveInputEventObserver(this);
   }
 
-  void OnInputEvent(const blink::WebInputEvent& event) override {
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
     if (event.GetType() == type_) {
       seen_event_ = true;
       if (quit_closure_)
@@ -1857,7 +1853,8 @@ class BadInputEventObserver : public RenderWidgetHost::InputEventObserver {
       rwh_->RemoveInputEventObserver(this);
   }
 
-  void OnInputEvent(const blink::WebInputEvent& event) override {
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
     EXPECT_NE(type_, event.GetType())
         << "Unexpected " << blink::WebInputEvent::GetName(event.GetType());
   }
@@ -2411,37 +2408,70 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   // GestureScrollUpdates from being coalesced.
   mock_overscroll_observer->WaitForUpdate();
 
-  // This scroll is in the same direction and so it will contribute to the
-  // overscroll.
-  *delta = 10.0f;
-  mock_overscroll_observer->Reset();
-  router->RouteGestureEvent(rwhv_root, &gesture_scroll_update,
-                            ui::LatencyInfo());
-  mock_overscroll_observer->WaitForUpdate();
+#if defined(USE_AURA)
+  // Scroll in the same direction.
+  blink::WebGestureEvent event1 = gesture_scroll_update;
+  event1.data.scroll_update.delta_x = 10.0f;
 
-  // Now we reverse direction. The child could scroll in this direction, but
-  // since we're in an overscroll gesture, the root should consume it.
-  *delta = -5.0f;
-  mock_overscroll_observer->Reset();
-  router->RouteGestureEvent(rwhv_root, &gesture_scroll_update,
-                            ui::LatencyInfo());
-  mock_overscroll_observer->WaitForUpdate();
+  // Now we reverse direction for gesture scroll update.
+  blink::WebGestureEvent event2 = gesture_scroll_update;
+  event2.data.scroll_update.delta_x = -5.0f;
 
-  blink::WebGestureEvent gesture_scroll_end(
+  blink::WebGestureEvent end_event(
       blink::WebGestureEvent::Type::kGestureScrollEnd,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests(),
       blink::WebGestureDevice::kTouchscreen);
-  gesture_scroll_end.unique_touch_event_id = 1;
-  gesture_scroll_end.data.scroll_end.delta_units =
+  end_event.unique_touch_event_id = 1;
+  end_event.data.scroll_end.delta_units =
       ui::ScrollGranularity::kScrollByPrecisePixel;
+
+  auto route_event = [&](blink::WebGestureEvent& event) {
+    router->RouteGestureEvent(rwhv_root, &event, ui::LatencyInfo());
+  };
+#elif BUILDFLAG(IS_ANDROID)
+  base::TimeTicks event_time = base::TimeTicks::Now();
+  // Input event is being generated by moving in the same direction.
+  ui::MotionEventAndroid::Pointer finger_pointer(0, 10.0f, 0, 0, 0, 0, 0, 0, 1);
+  ui::MotionEventAndroidJava event1 = GetMotionEventAndroid(
+      ui::MotionEvent::Action::MOVE, event_time, event_time, finger_pointer);
+
+  // Now we reverse direction.
+  finger_pointer =
+      ui::MotionEventAndroid::Pointer(0, -5.0f, 0, 0, 0, 0, 0, 0, 1);
+  ui::MotionEventAndroidJava event2 = GetMotionEventAndroid(
+      ui::MotionEvent::Action::MOVE, event_time, event_time, finger_pointer);
+
+  ui::MotionEventAndroidJava end_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::UP, event_time, event_time, finger_pointer);
+
+  auto route_event = [&](ui::MotionEventAndroidJava& event) {
+    rwhv_android->OnTouchEvent(event);
+  };
+
+#endif
+
+  // This scroll is in the same direction and so it will contribute to the
+  // overscroll.
   mock_overscroll_observer->Reset();
-  router->RouteGestureEvent(rwhv_root, &gesture_scroll_end, ui::LatencyInfo());
+  route_event(event1);
+  mock_overscroll_observer->WaitForUpdate();
+
+  // Now we reverse direction. The child could scroll in this direction, but
+  // since we're in an overscroll gesture, the root should consume it.
+  mock_overscroll_observer->Reset();
+  route_event(event2);
+  mock_overscroll_observer->WaitForUpdate();
+
+  mock_overscroll_observer->Reset();
+  route_event(end_event);
   mock_overscroll_observer->WaitForEnd();
 
+#if defined(USE_AURA)
   // Ensure that the method of providing the child's scroll events to the root
   // does not leave the child in an invalid state.
   gesture_end_observer_child.Wait();
+#endif
 }
 #endif  // defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
 
@@ -5217,6 +5247,9 @@ void SendTouchpadPinchSequenceWithExpectedTarget(
   EXPECT_EQ(expected_target, router_touchpad_gesture_target);
   target_monitor.ResetEventsReceived();
 
+  InputEventAckWaiter pinch_update_waiter(
+      expected_target->GetRenderWidgetHost(),
+      blink::WebInputEvent::Type::kGesturePinchUpdate);
   ui::GestureEventDetails pinch_update_details(
       ui::EventType::kGesturePinchUpdate);
   pinch_update_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
@@ -5230,6 +5263,7 @@ void SendTouchpadPinchSequenceWithExpectedTarget(
   EXPECT_EQ(target_monitor.EventType(),
             blink::WebInputEvent::Type::kGesturePinchUpdate);
   target_monitor.ResetEventsReceived();
+  pinch_update_waiter.Wait();
 
   ui::GestureEventDetails pinch_end_details(ui::EventType::kGesturePinchEnd);
   pinch_end_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
@@ -5238,8 +5272,8 @@ void SendTouchpadPinchSequenceWithExpectedTarget(
   UpdateEventRootLocation(&pinch_end, root_view_aura);
   root_view_aura->OnGestureEvent(&pinch_end);
   EXPECT_TRUE(target_monitor.EventWasReceived());
-  EXPECT_EQ(target_monitor.EventType(),
-            blink::WebInputEvent::Type::kGesturePinchEnd);
+  EXPECT_TRUE(base::Contains(target_monitor.events_received(),
+                             blink::WebInputEvent::Type::kGesturePinchEnd));
   EXPECT_EQ(nullptr, router_touchpad_gesture_target);
 }
 
@@ -5496,20 +5530,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   // a different view. The root view should preserve validity of input event
   // sequences when processing acks from multiple views, so that waiting here is
   // not necessary.
-  auto wait_for_pinch_sequence_end = base::BindRepeating(
-      [](RenderWidgetHost* rwh) {
-        InputEventAckWaiter pinch_end_observer(
-            rwh, base::BindRepeating([](blink::mojom::InputEventResultSource,
-                                        blink::mojom::InputEventResultState,
-                                        const blink::WebInputEvent& event) {
-              return event.GetType() ==
-                         blink::WebGestureEvent::Type::kGesturePinchEnd &&
-                     !static_cast<const blink::WebGestureEvent&>(event)
-                          .NeedsWheelEvent();
-            }));
-        pinch_end_observer.Wait();
-      },
-      rwhv_parent->GetRenderWidgetHost());
+  InputEventAckWaiter pinch_end_waiter(
+      rwhv_parent->GetRenderWidgetHost(),
+      base::BindRepeating([](blink::mojom::InputEventResultSource,
+                             blink::mojom::InputEventResultState,
+                             const blink::WebInputEvent& event) {
+        return event.GetType() ==
+                   blink::WebGestureEvent::Type::kGesturePinchEnd &&
+               !static_cast<const blink::WebGestureEvent&>(event)
+                    .NeedsWheelEvent();
+      }));
 
   gfx::Point main_frame_point(25, 25);
   gfx::Point child_center(150, 150);
@@ -5519,13 +5549,15 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                                               router->touchpad_gesture_target_,
                                               rwhv_parent);
 
-  wait_for_pinch_sequence_end.Run();
+  pinch_end_waiter.Wait();
+  pinch_end_waiter.Reset();
 
   // Send touchpad pinch sequence to child.
   SendTouchpadPinchSequenceWithExpectedTarget(
       rwhv_parent, child_center, router->touchpad_gesture_target_, rwhv_child);
 
-  wait_for_pinch_sequence_end.Run();
+  pinch_end_waiter.Wait();
+  pinch_end_waiter.Reset();
 
   // Send another touchpad pinch sequence to main frame.
   SendTouchpadPinchSequenceWithExpectedTarget(rwhv_parent, main_frame_point,
@@ -5958,7 +5990,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   // Android use native widgets. Windows does not support this as UI
   // convention (it requires separate clicks to open the menu and select an
   // option). See https://crbug.com/703191.
-  int process_id = child_node->current_frame_host()->GetProcess()->GetID();
+  int process_id =
+      child_node->current_frame_host()->GetProcess()->GetDeprecatedID();
   popup_waiter.emplace(web_contents(), child_node->current_frame_host());
   input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -6677,9 +6710,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessNonIntegerScaleFactorHitTestBrowserTest,
 }
 
 // MacOSX does not have fractional device scales.
-// Linux/Lacros started failing after Wayland window configuration fixes have
+// Linux started failing after Wayland window configuration fixes have
 // landed. TODO(crbug.com/40832051): Re-enable once the test issue is addressed.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_NestedSurfaceHitTestTest DISABLED_NestedSurfaceHitTestTest
 #else
 #define MAYBE_NestedSurfaceHitTestTest NestedSurfaceHitTestTest
@@ -6889,96 +6922,6 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     run_loop.Run();
     EXPECT_EQ(rwhv_child->GetFrameSinkId(), received_frame_sink_id);
   }
-}
-
-// TODO(crbug.com/40804367): This flakes badly on debug & sanitizer
-// builds on almost all platforms, and on Mac and Android.
-IN_PROC_BROWSER_TEST_F(SitePerProcessUserActivationHitTestBrowserTest,
-                       DISABLED_RenderWidgetUserActivationStateTest) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "foo.com", "/frame_tree/page_with_positioned_frame.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  FrameTreeNode* child = root->child_at(0);
-  ASSERT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "Where A = http://foo.com/\n"
-      "      B = http://baz.com/",
-      DepictFrameTree(root));
-
-  WaitForHitTestData(child->current_frame_host());
-
-  RenderWidgetHostMouseEventMonitor main_frame_monitor(
-      root->current_frame_host()->GetRenderWidgetHost());
-  RenderWidgetHostMouseEventMonitor child_frame_monitor(
-      child->current_frame_host()->GetRenderWidgetHost());
-
-  RenderWidgetHostViewBase* rwhv_root = static_cast<RenderWidgetHostViewBase*>(
-      root->current_frame_host()->GetRenderWidgetHost()->GetView());
-  RenderWidgetHostViewBase* rwhv_child = static_cast<RenderWidgetHostViewBase*>(
-      child->current_frame_host()->GetRenderWidgetHost()->GetView());
-
-  // Send a mouse down event to main frame.
-  blink::WebMouseEvent mouse_event(
-      blink::WebInputEvent::Type::kMouseDown,
-      blink::WebInputEvent::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-  mouse_event.button = blink::WebPointerProperties::Button::kLeft;
-  mouse_event.click_count = 1;
-  main_frame_monitor.ResetEventReceived();
-
-  gfx::PointF click_point(10, 10);
-  DispatchMouseEventAndWaitUntilDispatch(web_contents(), mouse_event, rwhv_root,
-                                         click_point, rwhv_root, click_point);
-  EXPECT_TRUE(main_frame_monitor.EventWasReceived());
-  base::RunLoop().RunUntilIdle();
-
-  // Wait for root frame gets activated.
-  while (!root->HasTransientUserActivation()) {
-    base::RunLoop loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
-  // Child frame doesn't have user activation.
-  EXPECT_FALSE(child->HasTransientUserActivation());
-  // Root frame's pending activation state has been cleared by activation.
-  EXPECT_FALSE(root->current_frame_host()
-                   ->GetRenderWidgetHost()
-                   ->RemovePendingUserActivationIfAvailable());
-
-  // Clear the activation state.
-  root->UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kClearActivation,
-      blink::mojom::UserActivationNotificationType::kTest);
-
-  // Send a mouse down to child frame.
-  mouse_event.SetType(blink::WebInputEvent::Type::kMouseDown);
-  child_frame_monitor.ResetEventReceived();
-  DispatchMouseEventAndWaitUntilDispatch(web_contents(), mouse_event,
-                                         rwhv_child, click_point, rwhv_child,
-                                         click_point);
-  EXPECT_TRUE(child_frame_monitor.EventWasReceived());
-  base::RunLoop().RunUntilIdle();
-
-  // Wait for child frame to get activated.
-  while (!child->HasTransientUserActivation()) {
-    base::RunLoop loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
-  // With UAV2, ancestor frames get activated too.
-  EXPECT_TRUE(root->HasTransientUserActivation());
-  // Both child frame and root frame don't have allowed_activation state
-  EXPECT_FALSE(root->current_frame_host()
-                   ->GetRenderWidgetHost()
-                   ->RemovePendingUserActivationIfAvailable());
-  EXPECT_FALSE(child->current_frame_host()
-                   ->GetRenderWidgetHost()
-                   ->RemovePendingUserActivationIfAvailable());
 }
 
 class SitePerProcessHitTestDataGenerationBrowserTest
@@ -7377,14 +7320,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
   EXPECT_TRUE(ApproximatelyEqual(
       TransformRectToQuadF(gfx::Rect(100, 100), expected_transform1),
       TransformRectToQuadF(hit_test_data[3])));
-  if (base::FeatureList::IsEnabled(blink::features::kHitTestOpaqueness)) {
-    // The iframe is behind a pointer-events:none div. Because the div is
-    // transparent to hit test, the iframe surface can handle hit tests
-    // directly as if the div didn't exist.
-    EXPECT_EQ(kFastHitTestFlags, hit_test_data[3].flags);
-  } else {
-    EXPECT_EQ(kSlowHitTestFlags, hit_test_data[3].flags);
-  }
+  // The iframe is behind a pointer-events:none div. Because the div is
+  // transparent to hit test, the iframe surface can handle hit tests directly
+  // as if the div didn't exist.
+  EXPECT_EQ(kFastHitTestFlags, hit_test_data[3].flags);
 
   EXPECT_TRUE(ApproximatelyEqual(
       TransformRectToQuadF(gfx::Rect(100, 100), expected_transform2),
@@ -7401,7 +7340,8 @@ using SitePerProcessDelegatedInkBrowserTest = SitePerProcessHitTestBrowserTest;
 // TODO(crbug.com/40835227): Fix and enable the test on Fuchsia.
 // TODO(crbug.com/40935254): flaky on ChromeOS
 // TODO(http://b/331190208): Test failing on Linux
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_MetadataAndPointGoThroughOOPIF \
   DISABLED_MetadataAndPointGoThroughOOPIF
 #else

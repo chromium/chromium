@@ -164,17 +164,38 @@ SkPaint PaintFlags::ToSkPaint() const {
 
 SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
     PaintFlags::FilterQuality filter_quality) {
+  return FilterQualityToSkSamplingOptions(filter_quality,
+                                          ScalingOperation::kDefault);
+}
+
+SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
+    PaintFlags::FilterQuality filter_quality,
+    PaintFlags::ScalingOperation scaling_op) {
   switch (filter_quality) {
     case PaintFlags::FilterQuality::kHigh:
-      return SkSamplingOptions(SkCubicResampler::CatmullRom());
+      switch (scaling_op) {
+        case PaintFlags::ScalingOperation::kDefault:
+          return SkSamplingOptions(SkCubicResampler::CatmullRom());
+        case PaintFlags::ScalingOperation::kUnknown:
+          return SkSamplingOptions(SkFilterMode::kLinear,
+                                   SkMipmapMode::kLinear);
+        case PaintFlags::ScalingOperation::kUpscale:
+          return SkSamplingOptions(SkCubicResampler::Mitchell());
+      }
     case PaintFlags::FilterQuality::kMedium:
-      return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNearest);
+      switch (scaling_op) {
+        case PaintFlags::ScalingOperation::kDefault:
+          return SkSamplingOptions(SkFilterMode::kLinear,
+                                   SkMipmapMode::kNearest);
+        case PaintFlags::ScalingOperation::kUnknown:
+        case PaintFlags::ScalingOperation::kUpscale:
+          return SkSamplingOptions(SkFilterMode::kLinear,
+                                   SkMipmapMode::kLinear);
+      }
     case PaintFlags::FilterQuality::kLow:
       return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone);
     case PaintFlags::FilterQuality::kNone:
       return SkSamplingOptions(SkFilterMode::kNearest, SkMipmapMode::kNone);
-    default:
-      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -221,6 +242,23 @@ bool PaintFlags::HasDiscardableImages(
     has_discardable_images = true;
   }
   return has_discardable_images;
+}
+
+float PaintFlags::DynamicRangeLimitMixture::ComputeHdrHeadroom(
+    float target_hdr_headroom) const {
+  if (constrained_high_mix == 0.f && standard_mix == 0.f) {
+    return target_hdr_headroom;
+  }
+  const float high_mix = 1.f - constrained_high_mix - standard_mix;
+
+  // Average the headrooms in log-space.
+  const float log2_high_headroom = std::log2(target_hdr_headroom);
+  const float log2_constrained_high_headroom =
+      std::min(1.f, log2_high_headroom);
+  const float log2_standard_headroom = 0.f;
+  return std::exp2(standard_mix * log2_standard_headroom +
+                   constrained_high_mix * log2_constrained_high_headroom +
+                   high_mix * log2_high_headroom);
 }
 
 }  // namespace cc

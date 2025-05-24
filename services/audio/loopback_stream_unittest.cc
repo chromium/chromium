@@ -4,6 +4,7 @@
 
 #include "services/audio/loopback_stream.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -83,7 +83,7 @@ class MockClientAndObserver : public media::mojom::AudioInputStreamClient,
 
   MOCK_METHOD1(OnError, void(media::mojom::InputStreamErrorCode));
   MOCK_METHOD0(DidStartRecording, void());
-  void OnMutedStateChanged(bool) override { NOTREACHED_IN_MIGRATION(); }
+  void OnMutedStateChanged(bool) override { NOTREACHED(); }
 
  private:
   mojo::Receiver<media::mojom::AudioInputStreamClient> client_receiver_{this};
@@ -108,7 +108,6 @@ class FakeSyncWriter : public FakeConsumer, public InputController::SyncWriter {
   // media::AudioInputController::SyncWriter implementation.
   void Write(const media::AudioBus* data,
              double volume,
-             bool key_pressed,
              base::TimeTicks capture_time,
              const media::AudioGlitchInfo& audio_glitch_info) final {
     FakeConsumer::Consume(*data);
@@ -163,7 +162,7 @@ class LoopbackStreamTest : public testing::Test {
 
   void RemoveSource(FakeLoopbackGroupMember* source) {
     const auto it =
-        base::ranges::find_if(sources_, base::MatchesUniquePtr(source));
+        std::ranges::find_if(sources_, base::MatchesUniquePtr(source));
     if (it != sources_.end()) {
       coordinator_.UnregisterMember(group_id_, source);
       sources_.erase(it);
@@ -179,7 +178,7 @@ class LoopbackStreamTest : public testing::Test {
                  observer.InitWithNewPipeAndPassReceiver());
 
     stream_ = std::make_unique<LoopbackStream>(
-        base::BindOnce([](media::mojom::ReadOnlyAudioDataPipePtr pipe) {
+        base::BindOnce([](media::mojom::ReadWriteAudioDataPipePtr pipe) {
           EXPECT_TRUE(pipe->shared_memory.IsValid());
           EXPECT_TRUE(pipe->socket.is_valid());
         }),

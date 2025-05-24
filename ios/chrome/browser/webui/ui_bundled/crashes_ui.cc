@@ -16,7 +16,8 @@
 #include "base/values.h"
 #include "components/crash/core/browser/crashes_ui_util.h"
 #include "components/crash/core/common/reporter_running_ios.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/crashes_resources.h"
+#include "components/grit/crashes_resources_map.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
@@ -35,25 +36,21 @@ web::WebUIIOSDataSource* CreateCrashesUIHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUICrashesHost);
 
-  for (size_t i = 0; i < crash_reporter::kCrashesUILocalizedStringsCount; ++i) {
-    source->AddLocalizedString(
-        crash_reporter::kCrashesUILocalizedStrings[i].name,
-        crash_reporter::kCrashesUILocalizedStrings[i].resource_id);
+  for (const auto& [name, resource_id] :
+       crash_reporter::kCrashesUILocalizedStrings) {
+    source->AddLocalizedString(name, resource_id);
   }
 
   source->AddLocalizedString(crash_reporter::kCrashesUIShortProductName,
                              IDS_IOS_SHORT_PRODUCT_NAME);
 
   source->UseStringsJs();
-  source->AddResourcePath(crash_reporter::kCrashesUICrashesJS,
-                          IDR_CRASH_CRASHES_JS);
-  source->AddResourcePath(crash_reporter::kCrashesUICrashesCSS,
-                          IDR_CRASH_CRASHES_CSS);
-  source->AddResourcePath(crash_reporter::kCrashesUISadTabSVG,
-                          IDR_CRASH_SADTAB_SVG);
-  source->SetDefaultResource(IDR_CRASH_CRASHES_HTML);
+  source->AddResourcePaths(kCrashesResources);
+  source->AddResourcePath("", IDR_CRASHES_CRASHES_HTML);
   return source;
 }
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -73,7 +70,6 @@ class CrashesDOMHandler : public web::WebUIIOSMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
-
 
  private:
   // Crash UploadList callback.
@@ -118,8 +114,9 @@ void CrashesDOMHandler::RegisterMessages() {
 void CrashesDOMHandler::HandleRequestCrashes(const base::Value::List& args) {
   if (first_load_) {
     first_load_ = false;
-    if (list_available_)
+    if (list_available_) {
       UpdateUI();
+    }
   } else {
     list_available_ = false;
     upload_list_->Load(base::BindOnce(&CrashesDOMHandler::OnUploadListAvailable,
@@ -140,16 +137,18 @@ void CrashesDOMHandler::HandleRequestSingleCrashUpload(
 
 void CrashesDOMHandler::OnUploadListAvailable() {
   list_available_ = true;
-  if (!first_load_)
+  if (!first_load_) {
     UpdateUI();
+  }
 }
 
 void CrashesDOMHandler::UpdateUI() {
   bool crash_reporting_enabled =
       IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
   base::Value::List crash_list;
-  if (crash_reporting_enabled)
+  if (crash_reporting_enabled) {
     crash_reporter::UploadListToValue(upload_list_.get(), &crash_list);
+  }
 
   base::Value::Dict result;
   result.Set("enabled", crash_reporting_enabled);
@@ -165,8 +164,6 @@ void CrashesDOMHandler::UpdateUI() {
   base::ValueView args[] = {event_name, result};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
-
-}  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 //

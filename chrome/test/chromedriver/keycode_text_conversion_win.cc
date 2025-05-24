@@ -21,8 +21,7 @@ bool ConvertKeyCodeToText(
     ui::KeyboardCode key_code, int modifiers, std::string* text,
     std::string* error_msg) {
   UINT scan_code = ::MapVirtualKeyW(key_code, MAPVK_VK_TO_VSC);
-  BYTE keyboard_state[256];
-  memset(keyboard_state, 0, 256);
+  BYTE keyboard_state[256] = {};
   *error_msg = std::string();
   if (modifiers & kShiftKeyModifierMask)
     keyboard_state[VK_SHIFT] |= 0x80;

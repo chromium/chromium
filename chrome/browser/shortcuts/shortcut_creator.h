@@ -56,7 +56,7 @@ struct ShortcutMetadata {
 };
 
 // Path in user profile directory to store shortcut icons on Windows and Linux.
-inline constexpr base::FilePath::StringPieceType kWebShortcutsIconDirName =
+inline constexpr base::FilePath::StringViewType kWebShortcutsIconDirName =
     FILE_PATH_LITERAL("Web Shortcut Icons");
 
 // Creates a shortcut on the OS desktop with the given shortcut_metadata. When

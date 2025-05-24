@@ -149,10 +149,6 @@ bool ProcessLock::operator==(const ProcessLock& rhs) const {
   return site_info_->ProcessLockCompareTo(rhs.site_info_.value()) == 0;
 }
 
-bool ProcessLock::operator!=(const ProcessLock& rhs) const {
-  return !(*this == rhs);
-}
-
 bool ProcessLock::operator<(const ProcessLock& rhs) const {
   if (!site_info_.has_value() && !rhs.site_info_.has_value())
     return false;

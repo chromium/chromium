@@ -6,7 +6,6 @@
 
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/variant_stream.h"
 
@@ -63,7 +62,7 @@ void MultivariantPlaylistTestBuilder::VerifyExpectations(
 
   // Validate rendition group expectations
   // Begin by constructing a table of group_id -> group
-  base::flat_map<std::string, scoped_refptr<AudioRenditionGroup>>
+  base::flat_map<std::string, scoped_refptr<RenditionGroup>>
       audio_rendition_groups;
   for (const auto& variant : playlist.GetVariants()) {
     const auto& group = variant.GetAudioRenditionGroup();
@@ -95,8 +94,8 @@ void MultivariantPlaylistTestBuilder::VerifyExpectations(
         << expectation.from.ToString();
     const auto& group = *group_iter->second;
 
-    const auto rendition_iter = base::ranges::find(
-        group.GetRenditions(), expectation.name, &AudioRendition::GetName);
+    const auto rendition_iter = std::ranges::find(
+        group.GetRenditions(), expectation.name, &Rendition::GetName);
     ASSERT_NE(rendition_iter, group.GetRenditions().end())
         << expectation.from.ToString();
     expectation.func.Run(expectation.from, *rendition_iter);

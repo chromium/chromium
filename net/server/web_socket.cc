@@ -39,7 +39,7 @@ std::string ExtensionsHeaderString(
 
 std::string ValidResponseString(
     const std::string& accept_hash,
-    const std::vector<WebSocketExtension> extensions) {
+    const std::vector<WebSocketExtension>& extensions) {
   return base::StringPrintf(
       "HTTP/1.1 101 WebSocket Protocol Handshake\r\n"
       "Upgrade: WebSocket\r\n"
@@ -117,7 +117,7 @@ WebSocketParseResult WebSocket::Read(std::string* message) {
 
   WebSocketParseResult result = WebSocketParseResult::FRAME_OK_MIDDLE;
   HttpConnection::ReadIOBuffer* read_buf = connection_->read_buf();
-  std::string_view frame(read_buf->StartOfBuffer(), read_buf->GetSize());
+  std::string_view frame = base::as_string_view(read_buf->readable_bytes());
   int bytes_consumed = 0;
   result = encoder_->DecodeFrame(frame, &bytes_consumed, message);
   read_buf->DidConsume(bytes_consumed);
@@ -167,7 +167,7 @@ void WebSocket::Send(std::string_view message,
 
     default:
       // Only Pong and Text frame types are supported.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   server_->SendRaw(connection_->id(), encoded, traffic_annotation);
 }

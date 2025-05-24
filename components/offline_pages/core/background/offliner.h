@@ -98,8 +98,8 @@ class Offliner {
   // TODO(chili): make save operation cancellable.
   typedef base::OnceCallback<void(const SavePageRequest&)> CancelCallback;
 
-  Offliner() {}
-  virtual ~Offliner() {}
+  Offliner() = default;
+  virtual ~Offliner() = default;
 
   // Processes |request| to load and save an offline page.
   // Returns whether the request was accepted or not. |completion_callback| is

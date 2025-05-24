@@ -25,7 +25,7 @@ constexpr char kValidTriggerId[] = "1gksUIDXA0jBnuK8T6R0NfspWBvA";
 
 class HatsFinchHelperTest : public testing::Test {
  public:
-  HatsFinchHelperTest() {}
+  HatsFinchHelperTest() = default;
 
   HatsFinchHelperTest(const HatsFinchHelperTest&) = delete;
   HatsFinchHelperTest& operator=(const HatsFinchHelperTest&) = delete;

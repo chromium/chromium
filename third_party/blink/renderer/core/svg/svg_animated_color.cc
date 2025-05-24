@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 
@@ -78,8 +77,10 @@ mojom::blink::ColorScheme ColorSchemeForSVGElement(
 SVGColorProperty::SVGColorProperty(const String& color_string)
     : style_color_(StyleColor::CurrentColor()) {
   Color color;
-  if (CSSParser::ParseColor(color, color_string.StripWhiteSpace()))
+  if (CSSParser::ParseColor(color, color_string.StripWhiteSpace(),
+                            /*strict=*/false)) {
     style_color_ = StyleColor(color);
+  }
 }
 
 String SVGColorProperty::ValueAsString() const {
@@ -87,12 +88,6 @@ String SVGColorProperty::ValueAsString() const {
              ? "currentColor"
              : cssvalue::CSSColor::SerializeAsCSSComponentValue(
                    style_color_.GetColor());
-}
-
-SVGPropertyBase* SVGColorProperty::CloneForAnimation(const String&) const {
-  // SVGAnimatedColor is deprecated. So No SVG DOM animation.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
 }
 
 void SVGColorProperty::Add(const SVGPropertyBase* other,

@@ -179,7 +179,7 @@ public class NetLogsFragment extends DevUiBaseFragment {
 
     /** Adapter to create rows of toggleable Net Log Files. */
     private class NetLogListAdapter extends ArrayAdapter<File> {
-        private List<File> mItems;
+        private final List<File> mItems;
 
         public NetLogListAdapter(List<File> files) {
             super(mContext, 0);

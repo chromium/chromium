@@ -17,7 +17,8 @@ ${this.expanded ? html`
       <div id="attachmentList" class="${this.attachmentListClass_}">
         ${this.event.attachments.map((item, index) => html`
           <cr-chip data-index="${index}" @click="${this.openAttachment_}"
-              chip-role="link" class="attachment" title="${item.title}">
+              chip-role="link" class="attachment" title="${item.title}"
+              ?disabled="${this.isAttachmentDisabled_(index)}">
             <img is="cr-auto-img" auto-src="${item.iconUrl.url}" alt="">
             <div class="attachment-text">${item.title}</div>
           </cr-chip>
@@ -27,7 +28,9 @@ ${this.expanded ? html`
     <div id="conference" ?hidden="${!this.showConferenceButton_()}">
       <cr-button role="link"
           @click="${this.openVideoConference_}"
-          class="action-button">
+          class="action-button"
+          aria-label="${this.i18n('modulesCalendarJoinMeetingButtonAcc',
+              this.event.title)}">
         $i18n{modulesCalendarJoinMeetingButtonText}
       </cr-button>
     </div>

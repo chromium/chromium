@@ -19,8 +19,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -31,7 +31,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 
 /**
  * Dialog triggered by the user clicking on the "manage" button in the Messages 2.0 flavor of quiet
@@ -75,10 +75,10 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
             int start = fullString.length();
             fullString.append(learnMoreText);
             fullString.setSpan(
-                    new NoUnderlineClickableSpan(
+                    new ChromeClickableSpan(
                             mContext,
                             (v) -> {
-                              PermissionBlockedDialogJni.get()
+                                PermissionBlockedDialogJni.get()
                                         .onLearnMoreClicked(mNativeDialogController);
                             }),
                     start,
@@ -148,9 +148,9 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
         fragmentArguments.putString(
                 SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(preferenceKey));
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(
-                mContext, SingleCategorySettings.class, fragmentArguments);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(mContext, SingleCategorySettings.class, fragmentArguments);
     }
 
     @NativeMethods

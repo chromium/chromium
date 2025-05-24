@@ -32,13 +32,13 @@ namespace blink {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<ComponentTransferType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {FECOMPONENTTRANSFER_TYPE_IDENTITY, "identity"},
-      {FECOMPONENTTRANSFER_TYPE_TABLE, "table"},
-      {FECOMPONENTTRANSFER_TYPE_DISCRETE, "discrete"},
-      {FECOMPONENTTRANSFER_TYPE_LINEAR, "linear"},
-      {FECOMPONENTTRANSFER_TYPE_GAMMA, "gamma"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "identity",
+      "table",
+      "discrete",
+      "linear",
+      "gamma",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }
@@ -94,7 +94,6 @@ void SVGComponentTransferFunctionElement::SvgAttributeChanged(
       attr_name == svg_names::kAmplitudeAttr ||
       attr_name == svg_names::kExponentAttr ||
       attr_name == svg_names::kOffsetAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     InvalidateFilterPrimitiveParent(*this);
     return;
   }

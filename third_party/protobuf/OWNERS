@@ -1,2 +1,8 @@
-lgrey@chromium.org
-nyquist@chromium.org
+holte@chromium.org
+sophiechang@chromium.org
+wittman@chromium.org
+
+per-file BUILD.gn=agrieve@chromium.org # For GN templates.
+per-file *.gni=agrieve@chromium.org # For GN templates.
+
+evanstade@microsoft.com #{LAST_RESORT_SUGGESTION}

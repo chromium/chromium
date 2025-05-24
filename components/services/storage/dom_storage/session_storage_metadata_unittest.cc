@@ -37,7 +37,7 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
 }
 
 std::vector<uint8_t> SliceToVector(const leveldb::Slice& s) {
-  auto span = base::make_span(s);
+  base::span span(s);
   return std::vector<uint8_t>(span.begin(), span.end());
 }
 
@@ -69,7 +69,7 @@ class SessionStorageMetadataTest : public testing::Test {
         std::begin(SessionStorageMetadata::kNamespacePrefixBytes),
         std::end(SessionStorageMetadata::kNamespacePrefixBytes));
   }
-  ~SessionStorageMetadataTest() override {}
+  ~SessionStorageMetadataTest() override = default;
 
   void ReadMetadataFromDatabase(SessionStorageMetadata* metadata) {
     std::vector<uint8_t> version_value;
@@ -167,7 +167,7 @@ class SessionStorageMetadataTest : public testing::Test {
                 base::OnceCallback<void(leveldb::Status)> callback) {
     base::RunLoop loop;
     database_->RunBatchDatabaseTasks(
-        std::move(tasks),
+        RunBatchTasksContext::kTest, std::move(tasks),
         base::BindLambdaForTesting([&](leveldb::Status status) {
           std::move(callback).Run(status);
           loop.Quit();

@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<body>
+    <p>This HTML file contains two iframes:</p>
+    <ul>
+        <li>Iframe 1: Requests pointer lock when the "Request Pointer Lock in Frame 1" button is clicked.</li>
+        <li>Iframe 2: A dummy iframe that does not request pointer lock.</li>
+    </ul>
+    <p>We use <strong>sandbox</strong> to ensure that the iframes load with separate security contexts.</p>
+
+    <!-- Top-level button that will trigger the iframe's pointer lock request -->
+    <button id="pointer-lock">
+        Request Pointer Lock in Frame 1
+    </button>
+
+    <script>
+        document.querySelector("#pointer-lock").addEventListener("click",
+            () => {
+                const iframe = document.getElementById('frame1');
+                const lockButton = iframe.contentWindow.document.getElementById('lockButton');
+                lockButton.click();
+            });
+
+        function click(element) {
+            element.click();
+        }
+    </script>
+
+    <!-- Iframe 1 with a button that requests pointer lock -->
+    <iframe id="frame1" name="frame1" sandbox="allow-scripts allow-pointer-lock allow-same-origin"
+            title="Iframe 1: Requests Pointer Lock"
+            srcdoc="
+            <button id='lockButton' onclick='document.body.requestPointerLock()'>
+                Request Pointer Lock in Frame 1
+            </button>">
+    </iframe>
+
+    <!-- Iframe 2 is a dummy iframe that does not request pointer lock -->
+    <iframe id="frame2" name="frame2" sandbox="allow-scripts"
+            title="Iframe 2: Dummy Iframe"
+            srcdoc="iframe 2:">
+    </iframe>
+</body>
+</html>

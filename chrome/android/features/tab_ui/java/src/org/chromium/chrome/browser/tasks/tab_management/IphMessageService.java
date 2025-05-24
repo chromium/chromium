@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherIphController;
@@ -18,13 +19,14 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
 /** One of the concrete {@link MessageService} that only serves {@link MessageType.IPH}. */
+@NullMarked
 public class IphMessageService extends MessageService {
     private static boolean sSkipIphInTests = true;
 
     private final TabSwitcherIphController mIphController;
     private Tracker mTracker;
 
-    private Callback<Boolean> mInitializedCallback =
+    private final Callback<Boolean> mInitializedCallback =
             (result) -> {
                 if (wouldTriggerIph()) {
                     assert mTracker.isInitialized();
@@ -34,7 +36,7 @@ public class IphMessageService extends MessageService {
             };
 
     /** This is the data type that this MessageService is serving to its Observer. */
-    class IphMessageData implements MessageData {
+    static class IphMessageData implements MessageData {
         private final MessageCardView.ReviewActionProvider mReviewActionProvider;
         private final MessageCardView.DismissActionProvider mDismissActionProvider;
 
@@ -74,7 +76,7 @@ public class IphMessageService extends MessageService {
     @SuppressLint("CheckResult")
     @VisibleForTesting
     protected void dismiss() {
-        mTracker.shouldTriggerHelpUI(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
+        mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
         mTracker.dismissed(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
     }
 
@@ -98,7 +100,7 @@ public class IphMessageService extends MessageService {
      */
     private boolean wouldTriggerIph() {
         boolean wouldTriggerIph =
-                mTracker.wouldTriggerHelpUI(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
+                mTracker.wouldTriggerHelpUi(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
         boolean skipForTests = BuildConfig.IS_FOR_TEST && sSkipIphInTests;
         return wouldTriggerIph && !skipForTests;
     }

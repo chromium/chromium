@@ -41,6 +41,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main_FLP.h"
 #endif
 
+#ifdef ENABLE_DRED
+#include "dred_encoder.h"
+#endif
+
 /***************************************/
 /* Read control structure from encoder */
 /***************************************/
@@ -140,7 +144,7 @@ static opus_int silk_QueryEncoder(                      /* O    Returns error co
 opus_int silk_Encode(                                   /* O    Returns error code                              */
     void                            *encState,          /* I/O  State                                           */
     silk_EncControlStruct           *encControl,        /* I    Control status                                  */
-    const opus_int16                *samplesIn,         /* I    Speech sample input vector                      */
+    const opus_res                  *samplesIn,         /* I    Speech sample input vector                      */
     opus_int                        nSamplesIn,         /* I    Number of samples in input vector               */
     ec_enc                          *psRangeEnc,        /* I/O  Compressor data structure                       */
     opus_int32                      *nBytesOut,         /* I/O  Number of bytes in payload (input: Max bytes)   */
@@ -278,7 +282,7 @@ opus_int silk_Encode(                                   /* O    Returns error co
         if( encControl->nChannelsAPI == 2 && encControl->nChannelsInternal == 2 ) {
             opus_int id = psEnc->state_Fxx[ 0 ].sCmn.nFramesEncoded;
             for( n = 0; n < nSamplesFromInput; n++ ) {
-                buf[ n ] = samplesIn[ 2 * n ];
+                buf[ n ] = RES2INT16(samplesIn[ 2 * n ]);
             }
             /* Making sure to start both resamplers from the same state when switching from mono to stereo */
             if( psEnc->nPrevChannelsInternal == 1 && id==0 ) {
@@ -292,7 +296,7 @@ opus_int silk_Encode(                                   /* O    Returns error co
             nSamplesToBuffer  = psEnc->state_Fxx[ 1 ].sCmn.frame_length - psEnc->state_Fxx[ 1 ].sCmn.inputBufIx;
             nSamplesToBuffer  = silk_min( nSamplesToBuffer, 10 * nBlocksOf10ms * psEnc->state_Fxx[ 1 ].sCmn.fs_kHz );
             for( n = 0; n < nSamplesFromInput; n++ ) {
-                buf[ n ] = samplesIn[ 2 * n + 1 ];
+                buf[ n ] = RES2INT16(samplesIn[ 2 * n + 1 ]);
             }
             ret += silk_resampler( &psEnc->state_Fxx[ 1 ].sCmn.resampler_state,
                 &psEnc->state_Fxx[ 1 ].sCmn.inputBuf[ psEnc->state_Fxx[ 1 ].sCmn.inputBufIx + 2 ], buf, nSamplesFromInput );
@@ -301,7 +305,7 @@ opus_int silk_Encode(                                   /* O    Returns error co
         } else if( encControl->nChannelsAPI == 2 && encControl->nChannelsInternal == 1 ) {
             /* Combine left and right channels before resampling */
             for( n = 0; n < nSamplesFromInput; n++ ) {
-                sum = samplesIn[ 2 * n ] + samplesIn[ 2 * n + 1 ];
+                sum = RES2INT16(samplesIn[ 2 * n ] + samplesIn[ 2 * n + 1 ]);
                 buf[ n ] = (opus_int16)silk_RSHIFT_ROUND( sum,  1 );
             }
             ret += silk_resampler( &psEnc->state_Fxx[ 0 ].sCmn.resampler_state,
@@ -319,7 +323,9 @@ opus_int silk_Encode(                                   /* O    Returns error co
             psEnc->state_Fxx[ 0 ].sCmn.inputBufIx += nSamplesToBuffer;
         } else {
             celt_assert( encControl->nChannelsAPI == 1 && encControl->nChannelsInternal == 1 );
-            silk_memcpy(buf, samplesIn, nSamplesFromInput*sizeof(opus_int16));
+            for( n = 0; n < nSamplesFromInput; n++ ) {
+                buf[n] = RES2INT16(samplesIn[n]);
+            }
             ret += silk_resampler( &psEnc->state_Fxx[ 0 ].sCmn.resampler_state,
                 &psEnc->state_Fxx[ 0 ].sCmn.inputBuf[ psEnc->state_Fxx[ 0 ].sCmn.inputBufIx + 2 ], buf, nSamplesFromInput );
             psEnc->state_Fxx[ 0 ].sCmn.inputBufIx += nSamplesToBuffer;

@@ -14,6 +14,9 @@ struct HttpInterstitialState;
 }
 
 // Populates |load_time_data| for interstitial HTML.
+//
+// TODO(http://crbug.com/415341199): Remove `august2024_refresh_enabled`
+// parameter once iOS is switched over to the new UI.
 void PopulateHttpsOnlyModeStringsForBlockingPage(
     base::Value::Dict& load_time_data,
     const GURL& url,

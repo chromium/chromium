@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_no_creds_dialog_view.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -76,16 +77,19 @@ void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
   views::Widget* widget =
       constrained_window::ShowWebModalDialogViews(this, web_contents);
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
+  occlusion_observation_.Observe(widget);
 }
 
 void SecurePaymentConfirmationNoCredsDialogView::HideDialog() {
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->Close();
+  }
 }
 
 bool SecurePaymentConfirmationNoCredsDialogView::ClickOptOutForTesting() {
-  if (!model_->opt_out_visible())
+  if (!model_->opt_out_visible()) {
     return false;
+  }
   OnOptOutClicked();
   return true;
 }
@@ -101,14 +105,16 @@ SecurePaymentConfirmationNoCredsDialogView::GetWeakPtr() {
 
 void SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed() {
   auto callback = std::move(response_callback_);
-  if (!callback)
+  if (!callback) {
     return;
+  }
 
   std::move(callback).Run();
   HideDialog();
 
-  if (observer_for_test_)
+  if (observer_for_test_) {
     observer_for_test_->OnDialogClosed();
+  }
 }
 
 void SecurePaymentConfirmationNoCredsDialogView::OnOptOutClicked() {
@@ -166,6 +172,17 @@ SecurePaymentConfirmationNoCredsDialogView::CreateBodyView() {
   no_matching_creds_view->SetBorder(views::CreateEmptyBorder(kBodyExtraInset));
 
   return no_matching_creds_view;
+}
+
+void SecurePaymentConfirmationNoCredsDialogView::OnOcclusionStateChanged(
+    bool occluded) {
+  if (occluded) {
+    SetEnabled(false);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SecurePaymentConfirmationNoCredsDialogView::HideDialog,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 BEGIN_METADATA(SecurePaymentConfirmationNoCredsDialogView)

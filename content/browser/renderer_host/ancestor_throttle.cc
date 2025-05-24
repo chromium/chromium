@@ -4,10 +4,11 @@
 
 #include "content/browser/renderer_host/ancestor_throttle.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -39,7 +40,7 @@ namespace {
 
 bool HeadersContainFrameAncestorsCSP(
     const network::mojom::ParsedHeadersPtr& headers) {
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       headers->content_security_policy, [](const auto& csp) {
         return csp->header->type ==
                    network::mojom::ContentSecurityPolicyType::kEnforce &&
@@ -173,8 +174,8 @@ void AncestorThrottle::ParseXFrameOptionsError(
          disposition == network::mojom::XFrameOptionsValue::kInvalid);
   DCHECK(headers);
 
-  std::string value;
-  headers->GetNormalizedHeader("X-Frame-Options", &value);
+  std::string value =
+      headers->GetNormalizedHeader("X-Frame-Options").value_or(std::string());
 
   std::string message;
   if (disposition == network::mojom::XFrameOptionsValue::kConflict) {
@@ -374,11 +375,6 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
       GetContentClient()->browser()->LogWebFeatureForCurrentPage(
           parent,
           blink::mojom::WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs);
-    }
-    if (result.WouldBlockIfWildcardDoesNotMatchFtp()) {
-      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-          parent,
-          blink::mojom::WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp);
     }
     if (!result) {
       return CheckResult::BLOCK;

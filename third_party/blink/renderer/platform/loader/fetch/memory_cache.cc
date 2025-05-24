@@ -24,7 +24,6 @@
 
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -45,7 +44,22 @@ namespace blink {
 
 static Persistent<MemoryCache>* g_memory_cache;
 
-static const base::TimeDelta kCUnloadPageResourceSaveTime = base::Minutes(5);
+static constexpr base::TimeDelta kDefaultStrongReferencePruneDelay =
+    base::Minutes(5);
+
+// Feature to control the duration for which a strong reference may remain
+// in the MemoryCache after its last access.
+BASE_FEATURE(kMemoryCacheChangeStrongReferencePruneDelay,
+             "MemoryCacheChangeStrongReferencePruneDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Parameter defining the delay after which a strong reference is removed
+// from the MemoryCache after its last access.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kMemoryCacheStrongReferencePruneDelay,
+                   &kMemoryCacheChangeStrongReferencePruneDelay,
+                   "strong_reference_prune_delay",
+                   kDefaultStrongReferencePruneDelay);
 
 static constexpr char kPageSavedResourceStrongReferenceSize[] =
     "Blink.MemoryCache.PageSavedResourceStrongReferenceSize";
@@ -83,7 +97,8 @@ MemoryCache* MemoryCache::Get() {
 
 MemoryCache::MemoryCache(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : strong_references_prune_duration_(kCUnloadPageResourceSaveTime),
+    : strong_references_prune_duration_(
+          kMemoryCacheStrongReferencePruneDelay.Get()),
       task_runner_(std::move(task_runner)) {
   MemoryCacheDumpProvider::Instance()->SetMemoryCache(this);
   MemoryPressureListenerRegistry::Instance().RegisterClient(this);
@@ -334,24 +349,6 @@ void MemoryCache::EvictResources() {
   ClearStrongReferences();
 }
 
-void MemoryCache::PruneAll() {
-  base::AutoReset<bool> reentrancy_protector(&in_prune_resources_, true);
-
-  // Release the strong referenced cached objects
-  // TODO(crbug.com/1409349): Filter page loading metrics when prune happens.
-  ClearStrongReferences();
-
-  for (const auto& resource_map_iter : resource_maps_) {
-    for (const auto& resource_iter : *resource_map_iter.value) {
-      Resource* resource = resource_iter.value->GetResource();
-      DCHECK(resource);
-      if (resource->IsLoaded() && resource->DecodedSize()) {
-        resource->Prune();
-      }
-    }
-  }
-}
-
 bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
                                WebProcessMemoryDump* memory_dump) {
   if (level_of_detail == WebMemoryDumpLevelOfDetail::kBackground) {
@@ -404,10 +401,9 @@ bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
 
 void MemoryCache::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
-  ClearStrongReferences();
-  if (MemoryPressureListenerRegistry::
-          IsLowEndDeviceOrPartialLowEndModeEnabled()) {
-    PruneAll();
+  if (base::FeatureList::IsEnabled(
+          features::kReleaseResourceStrongReferencesOnMemoryPressure)) {
+    ClearStrongReferences();
   }
 }
 

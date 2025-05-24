@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_BIDDING_AND_AUCTION_SERIALIZER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_BIDDING_AND_AUCTION_SERIALIZER_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/cbor/values.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
@@ -28,7 +30,7 @@ struct CONTENT_EXPORT BiddingAndAuctionData {
 
   BiddingAndAuctionData& operator=(BiddingAndAuctionData&& other);
 
-  std::vector<uint8_t> request;
+  base::flat_map<url::Origin, std::vector<uint8_t>> requests;
   base::flat_map<url::Origin, std::vector<std::string>> group_names;
   base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
@@ -67,6 +69,7 @@ class CONTENT_EXPORT BiddingAndAuctionSerializer {
     void UpdateUnsizedGroupSizes(size_t remaining_size);
 
     const size_t total_size_before_groups_ = 0;
+    bool size_allocated_ = false;
 
     // Size to use for equally-sized buyers (without a targetSize). Set to
     // nullopt until calculated by `UpdateUnsizedGroupSizes`.
@@ -108,18 +111,28 @@ class CONTENT_EXPORT BiddingAndAuctionSerializer {
   void SetDebugReportInLockout(bool debug_report_in_lockout) {
     debug_report_in_lockout_ = debug_report_in_lockout;
   }
+  void SetDebugReportCooldownsMap(
+      std::map<url::Origin, DebugReportCooldown> cooldowns_map) {
+    debug_report_cooldown_map_ = std::move(cooldowns_map);
+  }
   void AddGroups(const url::Origin& owner,
                  scoped_refptr<StorageInterestGroups> groups);
-  BiddingAndAuctionData Build();
+  std::optional<BiddingAndAuctionData> Build();
+  std::optional<std::vector<uint8_t>> BuildRequestFromMessage(
+      const url::Origin& seller,
+      base::Time now);
 
  private:
   base::Uuid generation_id_;
   std::string publisher_;
   base::Time timestamp_;
   blink::mojom::AuctionDataConfigPtr config_;
-  bool debug_report_in_lockout_;
+  bool debug_report_in_lockout_ = false;
+  std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map_;
   std::vector<std::pair<url::Origin, std::vector<SingleStorageInterestGroup>>>
       accumulated_groups_;
+  cbor::Value::MapValue message_obj_;
+  base::CheckedNumeric<size_t> message_total_size_ = 0;
 };
 
 }  // namespace content

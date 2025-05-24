@@ -8,9 +8,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/trace_event/base_tracing.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 namespace {
 
@@ -36,8 +34,9 @@ void ThreadControllerPowerMonitor::BindToCurrentThread() {
   // ThreadController::SetDefaultTaskRunner() re-initializes the
   // ThreadController).
   auto* power_monitor = PowerMonitor::GetInstance();
-  if (is_observer_registered_)
+  if (is_observer_registered_) {
     power_monitor->RemovePowerSuspendObserver(this);
+  }
 
   // Register the observer to deliver notifications on the current thread.
   power_monitor->AddPowerSuspendObserver(this);
@@ -67,8 +66,9 @@ void ThreadControllerPowerMonitor::ResetForTesting() {
 }
 
 void ThreadControllerPowerMonitor::OnSuspend() {
-  if (!g_use_thread_controller_power_monitor_)
+  if (!g_use_thread_controller_power_monitor_) {
     return;
+  }
   DCHECK(!is_power_suspended_);
 
   TRACE_EVENT_BEGIN("base", "ThreadController::Suspended",
@@ -78,8 +78,9 @@ void ThreadControllerPowerMonitor::OnSuspend() {
 }
 
 void ThreadControllerPowerMonitor::OnResume() {
-  if (!g_use_thread_controller_power_monitor_)
+  if (!g_use_thread_controller_power_monitor_) {
     return;
+  }
 
   // It is possible a suspend was already happening before the observer was
   // added to the power monitor. Ignoring the resume notification in that case.
@@ -91,6 +92,4 @@ void ThreadControllerPowerMonitor::OnResume() {
   }
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

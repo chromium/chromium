@@ -29,7 +29,7 @@ namespace {
 
 class TestObserver : public ModelConfigLoader::Observer {
  public:
-  TestObserver() {}
+  TestObserver() = default;
 
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;

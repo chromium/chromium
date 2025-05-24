@@ -192,7 +192,6 @@ enum class EditingCommandType {
   // InsertInputText (not supported)
   // InsertMarquee (not supported)
   // InsertSelectDropDown (not supported)
-  // InsertSelectListBox (not supported)
   // InsertTextArea (not supported)
   // LiveResize (not supported)
   // MultipleSelection (not supported)

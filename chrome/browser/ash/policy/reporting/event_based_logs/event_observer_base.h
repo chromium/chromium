@@ -19,16 +19,26 @@
 
 namespace policy {
 
+extern const char kEventLogUploadTypeOsUpdateFailureHistogram[];
+extern const char kEventLogUploadTypeFatalCrashHistogram[];
+extern const char kEventLogUploadAllHistogram[];
+
+// This enum is emitted to Enterprise.EventBasedLogUpload histogram. Entries
+// should not be renumbered and numeric values should never be reused.
+//
+// LINT.IfChange(EventBasedUploadStatus)
 enum class EventBasedUploadStatus {
   // Upload triggered successfully.
-  kSuccess,
+  kSuccess = 0,
   // Upload can't be triggered. This failure can occur due to internal reporting
   // pipeline or log collection errors. Callers have option to retry triggering
   // the upload in this case.
-  kFailure,
+  kFailure = 1,
   // Upload is declined because upload wait period is not finished yet.
-  kDeclined,
+  kDeclined = 2,
+  kMaxValue = kDeclined,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseEventBasedLogUploadResult)
 
 // Base class that the event observers who want to upload event based logs needs
 // to implement. `EventObserverBase` gives the functionality that is needed to
@@ -114,6 +124,10 @@ class EventObserverBase {
   // service. It will record the upload time for the event type to local
   // settings prefs.
   void RecordUploadTime(base::Time timestamp);
+
+  // Emits metrics related to the event based log upload to
+  // "Enterprise.EventBasedLogUpload" histogram.
+  void EmitMetrics(EventBasedUploadStatus result_status);
 
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<EventBasedLogUploader> log_uploader_;

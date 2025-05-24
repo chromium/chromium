@@ -10,12 +10,12 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.function.Function;
 
 /** Helper methods for dealing with Files. */
+@NullMarked
 @JNINamespace("base::android")
 public class FileUtils {
     private static final String TAG = "FileUtils";
@@ -122,7 +123,6 @@ public class FileUtils {
     }
 
     /** Reads inputStream into a byte array. */
-    @NonNull
     public static byte[] readStream(InputStream inputStream) throws IOException {
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         FileUtils.copyStream(inputStream, data);
@@ -166,8 +166,7 @@ public class FileUtils {
     }
 
     /** Queries and decodes bitmap from content provider. */
-    @Nullable
-    public static Bitmap queryBitmapFromContentProvider(Context context, Uri uri) {
+    public static @Nullable Bitmap queryBitmapFromContentProvider(Context context, Uri uri) {
         try (ParcelFileDescriptor parcelFileDescriptor =
                 context.getContentResolver().openFileDescriptor(uri, "r")) {
             if (parcelFileDescriptor == null) {

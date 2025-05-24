@@ -1437,17 +1437,26 @@ methods:
 
 In order to define the mapping for `gfx::Rect`, we want the following
 `StructTraits` specialization, which we'll define in
-`//ui/gfx/geometry/mojo/geometry_mojom_traits.h`:
+`//ui/gfx/geometry/mojo/geometry_mojom_traits.h`.
 
-``` cpp
+*** note
+**NOTE**:  whereas in other usages of the mojom type in C++ we might directly
+use the mojom type `gfx::mojom::Rect`, our `StructTraits` template must use the
+[DataView](#using-generated-dataview-types) version (e.g.
+`gfx::mojom::RectDataView`), which exposes a direct view of the serialized Mojom
+structure within an incoming message's contents which we need in order to
+perform the serialization.
+***
+
+<pre><code>
 #include "mojo/public/cpp/bindings/mojom_traits.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/mojo/geometry.mojom.h"
 
 namespace mojo {
 
-template <>
-class StructTraits<gfx::mojom::RectDataView, gfx::Rect> {
+template &lt;>
+class StructTraits&lt;gfx::mojom::Rect<b>DataView</b>, gfx::Rect> {
  public:
   static int32_t x(const gfx::Rect& r) { return r.x(); }
   static int32_t y(const gfx::Rect& r) { return r.y(); }
@@ -1458,7 +1467,7 @@ class StructTraits<gfx::mojom::RectDataView, gfx::Rect> {
 };
 
 }  // namespace mojo
-```
+</code></pre>
 
 And in `//ui/gfx/geometry/mojo/geometry_mojom_traits.cc`:
 
@@ -1471,12 +1480,13 @@ namespace mojo {
 bool StructTraits<gfx::mojom::RectDataView, gfx::Rect>::Read(
     gfx::mojom::RectDataView data,
   gfx::Rect* out_rect) {
-  if (data.width() < 0 || data.height() < 0)
+  if (data.width() < 0 || data.height() < 0) {
     return false;
+  }
 
   out_rect->SetRect(data.x(), data.y(), data.width(), data.height());
   return true;
-};
+}
 
 }  // namespace mojo
 ```
@@ -1511,15 +1521,69 @@ struct StructTraits<url::mojom::UrlDataView, GURL> {
         !r.is_valid()) {
       return std::string_view();
     }
-    return std::string_view(r.possibly_invalid_spec().c_str(),
-                             r.possibly_invalid_spec().length());
+    return r.possibly_invalid_spec();
   }
+};
+
 }  // namespace mojo
+```
+
+### Defining `EnumTraits`
+
+Similar to `StructTraits`, you can specialize the
+[`mojo::EnumTraits`](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/enum_traits.h)
+to handle conversion between a Mojom enum and a native enum
+
+In general, it's better to just use the Mojom enum directly. However, in some circumstances this
+is impractical: perhaps the native enum is from a third-party library, or the value must be used
+by code that is not aware of Mojo (such as Cronet).
+
+A specialization typically uses simple `switch` statements to convert between the two enums:
+
+```cpp
+#include "mojo/public/cpp/bindings/enum_traits.h"
+
+template <>
+struct EnumTraits<mojom::MyEnum, MyEnum> {
+  static mojom::MyEnum ToMojom(MyEnum input);
+  static bool FromMojom(mojom::MyEnum input, MyEnum* output);
+};
+```
+
+```cpp
+#include "mojo/public/cpp/bindings/enum_traits.h"
+
+// static
+mojom::MyEnum
+EnumTraits<mojom::MyEnum, MyEnum>::ToMojom(MyEnum input) {
+  switch (input) {
+    case MyEnum::CUSTOM_VALUE_0:
+      return mojom::MyEnum::VALUE_0;
+    case MyEnum::CUSTOM_VALUE_1:
+      return mojom::MyEnum::VALUE_1;
+  };
+
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<mojom::MyEnum, MyEnum>::FromMojom(mojom::MyEnum input, MyEnum* output) {
+  switch (input) {
+    case mojom::MyEnum::VALUE_0:
+      *output = MyEnum::CUSTOM_VALUE_0;
+      return true;
+    case mojom::MyEnum::VALUE_1:
+      *output = MyEnum::CUSTOM_VALUE_1;
+      return true;
+  };
+
+  return false;
+}
 ```
 
 ### Enabling a New Type Mapping
 
-We've defined the `StructTraits` necessary, but we still need to teach the
+We've defined the `StructTraits` or `EnumTraits` necessary, but we still need to teach the
 bindings generator (and hence the build system) about the mapping. To do this we
 must add some more information to our `mojom` target in GN:
 
@@ -1548,6 +1612,10 @@ mojom("mojom") {
         {
           mojom = "gfx.mojom.Rect"
           cpp = "::gfx::Rect"
+        },
+        {
+          mojom = "mojom.MyEnum"
+          cpp = "::MyEnum"
         },
       ]
       traits_headers = [ "//ui/gfx/geometry/mojo/geometry_mojom_traits.h" ]

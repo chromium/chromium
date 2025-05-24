@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Plus address creation bottom sheet. -->
+    <dimen name="plus_address_title_icon_size">36dp</dimen>
+    <dimen name="plus_address_list_item_small_margin">8dp</dimen>
+    <dimen name="plus_address_rounded_corner_radius">4dp</dimen>
+    <dimen name="plus_address_logo_icon_size">24dp</dimen>
+    <dimen name="plus_address_logo_icon_padding">16dp</dimen>
+
+    <!-- All plus addresses bottom sheet. -->
+    <dimen name="all_plus_addresses_bottom_sheet_padding">20dp</dimen>
+    <dimen name="all_plus_addresses_sheet_divider_margin">24dp</dimen>
+    <dimen name="all_plus_addresses_chip_margin">24dp</dimen>
+
+    <dimen name="all_plus_addresses_favicon_side">20dp</dimen>
+</resources>

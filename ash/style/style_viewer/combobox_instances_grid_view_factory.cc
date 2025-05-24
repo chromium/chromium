@@ -7,6 +7,7 @@
 #include "ash/style/combobox.h"
 #include "ash/style/style_viewer/system_ui_components_grid_view.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/label.h"
 

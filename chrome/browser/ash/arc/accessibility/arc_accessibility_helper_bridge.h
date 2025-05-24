@@ -11,13 +11,13 @@
 #include <string>
 #include <tuple>
 
-#include "ash/components/arc/session/connection_observer.h"
-#include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_tree_tracker.h"
+#include "chromeos/ash/experiences/arc/message_center/arc_notification_surface_manager.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/accessibility/android/ax_tree_source_android.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-forward.h"

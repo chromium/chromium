@@ -4,11 +4,13 @@
 
 #include "ash/wm/workspace/workspace_window_resizer.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/metrics/pip_uma.h"
+#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -22,6 +24,8 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_window_resizer.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tile_group/window_splitter.h"
 #include "ash/wm/toplevel_window_event_handler.h"
@@ -36,7 +40,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -768,7 +771,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
   // continue performing any snap or maximize logic. Otherwise, resize top edge
   // to the top of display will fire maximize |dwell_countdown_timer_|
   // (crbug.com/1251859).
-  if (details().window_component != HTCAPTION) {
+  if (details().bounds_change != WindowResizer::kBoundsChange_Repositions) {
     return;
   }
 
@@ -937,6 +940,15 @@ void WorkspaceWindowResizer::CompleteDrag() {
       // window at the bounds that the user has moved/resized the
       // window to.
       window_state()->SaveCurrentBoundsForRestore();
+
+      // Break the Snap Group when dragging a window out of it. Check
+      // `window_resizer_` to avoid breaking the group if it is tab dragging.
+      if (auto* snap_group =
+              SnapGroupController::Get()->GetSnapGroupForGivenWindow(
+                  window_state()->window())) {
+        SnapGroupController::Get()->RemoveSnapGroup(
+            snap_group, SnapGroupExitPoint::kDragWindowOut);
+      }
 
       // Since we saved the current bounds to the restore bounds, the restore
       // animation will use the current bounds as the target bounds, so we can
@@ -1144,17 +1156,11 @@ WorkspaceWindowResizer::WorkspaceWindowResizer(
     window_splitter_ = std::make_unique<WindowSplitter>(window_state->window());
   }
 
-  std::unique_ptr<ash::PresentationTimeRecorder> recorder =
-      window_state->OnDragStarted(details().window_component);
-  if (recorder) {
-    SetPresentationTimeRecorder(std::move(recorder));
-  } else {
-    // Default to use compositor based recorder.
-    SetPresentationTimeRecorder(
-        PresentationTimeRecorder::CreateCompositorRecorder(
-            GetTarget(), "Ash.InteractiveWindowResize.TimeToPresent",
-            "Ash.InteractiveWindowResize.TimeToPresent.MaxLatency"));
-  }
+  window_state->OnDragStarted(details().window_component);
+  SetPresentationTimeRecorder(
+      PresentationTimeRecorder::CreateCompositorRecorder(
+          GetTarget(), "Ash.InteractiveWindowResize.TimeToPresent",
+          "Ash.InteractiveWindowResize.TimeToPresent.MaxLatency"));
 
   StartDragForAttachedWindows();
 
@@ -1306,7 +1312,9 @@ void WorkspaceWindowResizer::CreateBucketsForAttached(
     int min = PrimaryAxisSize(
         window_delegate ? window_delegate->GetMinimumSize() : gfx::Size());
     int max = PrimaryAxisSize(
-        window_delegate ? window_delegate->GetMaximumSize() : gfx::Size());
+        window_delegate
+            ? window_delegate->GetMaximumSize().value_or(gfx::Size())
+            : gfx::Size());
 
     sizes->push_back(WindowSize(initial_size, min, max));
   }
@@ -1647,13 +1655,13 @@ void WorkspaceWindowResizer::RestackWindows() {
   aura::Window* parent = GetTarget()->parent();
   const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows(
       parent->children());
-  map[base::ranges::find(windows, GetTarget()) - windows.begin()] = GetTarget();
+  map[std::ranges::find(windows, GetTarget()) - windows.begin()] = GetTarget();
   for (aura::Window* attached_window : attached_windows_) {
     if (attached_window->parent() != parent) {
       return;
     }
     size_t index =
-        base::ranges::find(windows, attached_window) - windows.begin();
+        std::ranges::find(windows, attached_window) - windows.begin();
     map[index] = attached_window;
   }
 

@@ -4,7 +4,7 @@
 
 // https://streams.spec.whatwg.org/#rbs-controller-class-definition
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=*
 ] interface ReadableByteStreamController {
     readonly attribute ReadableStreamBYOBRequest? byobRequest;
     readonly attribute double? desiredSize;

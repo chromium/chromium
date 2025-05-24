@@ -19,10 +19,6 @@
   #selectApp {
     width: 400px;
   }
-
-  #note-taking-app-lock-screen-settings {
-    padding: 0 var(--cr-section-padding);
-  }
 </style>
 
 <settings-toggle-button id="enableStylusToolsToggle"
@@ -75,40 +71,3 @@
     sub-label="$i18n{stylusFindMoreAppsSecondary}"
     external>
 </cr-link-row>
-
-<template is="dom-if" if="[[supportsLockScreen_(selectedApp_)]]">
-  <div id="note-taking-app-lock-screen-settings">
-    <h2>$i18n{stylusNoteTakingAppLockScreenSettingsHeader}</h2>
-
-    <div class="settings-box first">
-      <div id="lock-screen-toggle-label" class="start"
-          actionable$="[[!disallowedOnLockScreenByPolicy_(selectedApp_)]]"
-          on-click="toggleLockScreenSupport_">
-        $i18n{stylusNoteTakingAppEnabledOnLockScreen}
-      </div>
-      <template is="dom-if"
-          if="[[disallowedOnLockScreenByPolicy_(selectedApp_)]]">
-        <cr-policy-indicator
-            id="enable-app-on-lock-screen-policy-indicator"
-            indicator-type="[[userPolicyIndicator_]]">
-        </cr-policy-indicator>
-      </template>
-      <cr-toggle id="enable-app-on-lock-screen-toggle"
-          aria-labelledby="lock-screen-toggle-label"
-          disabled="[[disallowedOnLockScreenByPolicy_(selectedApp_)]]"
-          checked="[[lockScreenSupportEnabled_(selectedApp_)]]"
-          on-change="toggleLockScreenSupport_"
-          deep-link-focus-id$="[[Setting.kStylusNoteTakingFromLockScreen]]">
-      </cr-toggle>
-    </div>
-
-    <template is="dom-if" if="[[lockScreenSupportEnabled_(selectedApp_)]]">
-      <settings-toggle-button id="keep-last-note-on-lock-screen-toggle"
-          class="hr"
-          pref="{{prefs.settings.restore_last_lock_screen_note}}"
-          label="$i18n{stylusNoteTakingAppKeepsLastNoteOnLockScreen}"
-          deep-link-focus-id$="[[Setting.kStylusLatestNoteOnLockScreen]]">
-      </settings-toggle-button>
-    </template>
-  </div>
-</template>

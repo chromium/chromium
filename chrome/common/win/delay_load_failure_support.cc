@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
+#include "base/notreached.h"
 #include "base/process/memory.h"
 
 namespace chrome {
@@ -24,13 +25,12 @@ FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
 
   DEBUG_ALIAS_FOR_CSTR(dll_name, dll_info->szDll, 256);
   SCOPED_CRASH_KEY_STRING256("DelayLoad", "ModuleName", dll_name);
+  SCOPED_CRASH_KEY_NUMBER("DelayLoad", "LastError", dll_info->dwLastError);
 
   // Deterministically crash here. Returning 0 from the hook would likely result
   // in the process crashing anyway, but in a form that might trigger undefined
   // behavior or be hard to diagnose. See https://crbug.com/1320845.
-  CHECK(false);
-
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace chrome

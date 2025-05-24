@@ -235,4 +235,21 @@ TEST(NodeInlineDataTest, MixMultipleTypesDifferentStorage) {
   EXPECT_FALSE(SparseTestType::Exists(&test_supports_node_data));
 }
 
+TEST(NodeInlineDataTest, ConstAccessors) {
+  using NonSparseTestType = DataWithExplicitCtor<std::string>;
+  using SparseTestType = SparseDataWithExplicitCtor<std::string>;
+
+  TestSupportsNodeInlineData<NonSparseTestType, SparseTestType>
+      test_supports_node_data;
+  NonSparseTestType::Create(&test_supports_node_data, kTestStringValue1);
+  SparseTestType::Create(&test_supports_node_data, kTestStringValue2);
+
+  // Make sure getters compile when passed a const pointer.
+  const auto* const_ptr = &test_supports_node_data;
+  const auto& non_sparse_test_type = NonSparseTestType::Get(const_ptr);
+  const auto& sparse_test_type = SparseTestType::Get(const_ptr);
+  EXPECT_EQ(non_sparse_test_type.value, kTestStringValue1);
+  EXPECT_EQ(sparse_test_type.value, kTestStringValue2);
+}
+
 }  // namespace performance_manager

@@ -19,7 +19,7 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-ArcAppInstallEventLogUploader::Delegate::~Delegate() {}
+ArcAppInstallEventLogUploader::Delegate::~Delegate() = default;
 
 ArcAppInstallEventLogUploader::ArcAppInstallEventLogUploader(
     CloudPolicyClient* client,

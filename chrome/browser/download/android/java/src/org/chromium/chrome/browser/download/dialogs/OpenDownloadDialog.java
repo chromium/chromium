@@ -10,15 +10,16 @@ import android.view.LayoutInflater;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Dialog for confirming that the user wants to open a pdf download after download completion. */
+@NullMarked
 public class OpenDownloadDialog {
     /**
      * Events related to the open download dialog, used for UMA reporting. These values are
@@ -39,9 +40,6 @@ public class OpenDownloadDialog {
 
         int COUNT = 4;
     }
-
-    private PropertyModelChangeProcessor<PropertyModel, OpenDownloadCustomView, PropertyKey>
-            mPropertyModelChangeProcessor;
 
     /**
      * Called to show a dialog for opening a download.
@@ -107,12 +105,11 @@ public class OpenDownloadDialog {
                                 OpenDownloadDialogProperties.AUTO_OPEN_CHECKBOX_CHECKED,
                                 autoOpenEnabled)
                         .build();
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        propertyModel,
-                        customView,
-                        OpenDownloadDialogViewBinder::bind,
-                        /* performInitialBind= */ true);
+        PropertyModelChangeProcessor.create(
+                propertyModel,
+                customView,
+                OpenDownloadDialogViewBinder::bind,
+                /* performInitialBind= */ true);
 
         PropertyModel showPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

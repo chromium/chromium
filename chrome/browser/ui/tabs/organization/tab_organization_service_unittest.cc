@@ -37,7 +37,7 @@ constexpr char kInvalidURL[] = "chrome://page";
 
 class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
  public:
-  TabOrganizationServiceTest() {}
+  TabOrganizationServiceTest() = default;
   TabOrganizationServiceTest(const TabOrganizationServiceTest&) = delete;
   TabOrganizationServiceTest& operator=(const TabOrganizationServiceTest&) =
       delete;
@@ -59,22 +59,21 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
     return url;
   }
 
-  content::WebContents* AddValidTabToBrowser(Browser* browser, int index) {
+  tabs::TabInterface* AddValidTabToBrowser(Browser* browser, int index) {
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile_.get(),
                                                           nullptr);
     content::WebContentsTester::For(web_contents.get())
         ->NavigateAndCommit(GURL(kValidURL));
 
-    content::WebContents* web_contents_ptr = web_contents.get();
-    content::WebContentsTester::For(web_contents_ptr)
+    content::WebContentsTester::For(web_contents.get())
         ->NavigateAndCommit(GURL(GetUniqueTestURL()));
 
     browser->tab_strip_model()->AddWebContents(
         std::move(web_contents), index,
         ui::PageTransition::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
 
-    return web_contents_ptr;
+    return browser->tab_strip_model()->GetTabAtIndex(index);
   }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -210,8 +209,8 @@ TEST_F(TabOrganizationServiceTest,
   }
 
   // Add an invalid tab.
-  content::WebContents* invalid_web_contents = AddValidTabToBrowser(browser1, 0);
-  content::WebContentsTester::For(invalid_web_contents)
+  tabs::TabInterface* invalid_tab = AddValidTabToBrowser(browser1, 0);
+  content::WebContentsTester::For(invalid_tab->GetContents())
       ->NavigateAndCommit(GURL(kInvalidURL));
 
   std::unique_ptr<TabOrganizationSession> session =
@@ -284,7 +283,7 @@ TEST_F(TabOrganizationServiceTest, SecondRequestAfterStartingDoesntCrash) {
 TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
   Browser* browser1 = AddBrowser();
 
-  content::WebContents* base_tab = AddValidTabToBrowser(browser1, 0);
+  tabs::TabInterface* base_tab = AddValidTabToBrowser(browser1, 0);
   for (int i = 0; i < 4; i++) {
     AddValidTabToBrowser(browser1, 0);
   }
@@ -321,13 +320,13 @@ TEST_F(TabOrganizationServiceTest, TabStripAddRemoveDestroysSession) {
 
   service()->CreateSessionForBrowser(browser1,
                                      TabOrganizationEntryPoint::kNone);
-  content::WebContents* contents = AddValidTabToBrowser(browser1, 0);
+  tabs::TabInterface* tab = AddValidTabToBrowser(browser1, 0);
   EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
 
   service()->CreateSessionForBrowser(browser1,
                                      TabOrganizationEntryPoint::kNone);
   browser1->tab_strip_model()->CloseWebContentsAt(
-      browser1->tab_strip_model()->GetIndexOfWebContents(contents),
+      browser1->tab_strip_model()->GetIndexOfTab(tab),
       TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
 }
@@ -392,17 +391,13 @@ TEST_F(TabOrganizationServiceTest,
   // us match the observer registration order that actually triggers the crash.
   // The contents of the organizations doesn't matter.
   std::vector<std::unique_ptr<TabData>> tab_datas_1;
-  tab_datas_1.emplace_back(
-      std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
-  tab_datas_1.emplace_back(
-      std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
+  tab_datas_1.emplace_back(std::make_unique<TabData>(model->GetTabAtIndex(0)));
+  tab_datas_1.emplace_back(std::make_unique<TabData>(model->GetTabAtIndex(1)));
   TabOrganization org_1 = TabOrganization(std::move(tab_datas_1), names);
 
   std::vector<std::unique_ptr<TabData>> tab_datas_2;
-  tab_datas_2.emplace_back(
-      std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
-  tab_datas_2.emplace_back(
-      std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
+  tab_datas_2.emplace_back(std::make_unique<TabData>(model->GetTabAtIndex(0)));
+  tab_datas_2.emplace_back(std::make_unique<TabData>(model->GetTabAtIndex(1)));
   TabOrganization org_2 = TabOrganization(std::move(tab_datas_2), names);
 
   TestOrganizationObserver observer(&org_1, &org_2);

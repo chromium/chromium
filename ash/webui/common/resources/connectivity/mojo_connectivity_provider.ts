@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PasspointService, PasspointServiceInterface} from './passpoint.mojom-webui.js';
+import type {PasspointServiceInterface} from './passpoint.mojom-webui.js';
+import {PasspointService} from './passpoint.mojom-webui.js';
 
 /**
  * @fileoverview Wrapper for connectivity services that provides the ability to

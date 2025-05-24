@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_BASE_CHROMEOS_CROSIER_ASH_INTEGRATION_TEST_H_
 #define CHROME_TEST_BASE_CHROMEOS_CROSIER_ASH_INTEGRATION_TEST_H_
 
-#include "base/files/scoped_temp_dir.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
@@ -33,11 +32,6 @@ class AshIntegrationTest : public InteractiveAshTest {
   AshIntegrationTest(const AshIntegrationTest&) = delete;
   AshIntegrationTest& operator=(const AshIntegrationTest&) = delete;
   ~AshIntegrationTest() override;
-
-  // Waits for Ash to be ready for Lacros, including starting the "Exo" Wayland
-  // server. Call this method if your test starts Lacros, otherwise Exo may not
-  // be ready and Lacros may not start.
-  void WaitForAshFullyStarted();
 
   // MixinBasedInProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;

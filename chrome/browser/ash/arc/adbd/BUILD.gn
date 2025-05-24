@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("adbd") {
   sources = [
@@ -13,11 +13,11 @@ static_library("adbd") {
   ]
 
   deps = [
-    "//ash/components/arc",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/dbus/common",
     "//components/keyed_service/core",
   ]
@@ -30,8 +30,6 @@ source_set("unit_tests") {
 
   deps = [
     ":adbd",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base/test:test_support",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
@@ -41,6 +39,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/session_manager/core",
     "//components/user_manager",
     "//content/test:test_support",

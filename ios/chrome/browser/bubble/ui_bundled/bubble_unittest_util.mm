@@ -29,11 +29,6 @@ UILabel* GetTitleLabelFromBubbleView(BubbleView* bubble_view) {
       [UILabel class], kBubbleViewTitleLabelIdentifier, bubble_view));
 }
 
-UIImageView* GetImageViewFromBubbleView(BubbleView* bubble_view) {
-  return base::apple::ObjCCastStrict<UIImageView>(GetViewOfClassWithIdentifier(
-      [UIImageView class], kBubbleViewImageViewIdentifier, bubble_view));
-}
-
 UIButton* GetSnoozeButtonFromBubbleView(BubbleView* bubble_view) {
   return base::apple::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
       [UIButton class], kBubbleViewSnoozeButtonIdentifier, bubble_view));
@@ -42,4 +37,14 @@ UIButton* GetSnoozeButtonFromBubbleView(BubbleView* bubble_view) {
 UIView* GetArrowViewFromBubbleView(BubbleView* bubble_view) {
   return GetViewOfClassWithIdentifier(
       [UIView class], kBubbleViewArrowViewIdentifier, bubble_view);
+}
+
+UIButton* GetNextButtonFromBubbleView(BubbleView* bubble_view) {
+  return base::apple::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
+      [UIButton class], kBubbleViewNextButtonIdentifier, bubble_view));
+}
+
+UIStackView* GetPageControlPageBubbleView(BubbleView* bubble_view) {
+  return base::apple::ObjCCastStrict<UIStackView>(GetViewOfClassWithIdentifier(
+      [UIStackView class], kBubbleViewPageControlIdentifier, bubble_view));
 }

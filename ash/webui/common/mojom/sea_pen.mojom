@@ -114,7 +114,8 @@ enum MantaStatusCode {
   kRestrictedCountry = 9,
   kNoIdentityManager = 10,
   kPerUserQuotaExceeded = 11,
-  kMax = kPerUserQuotaExceeded,
+  kImageHasPerson = 12,
+  kMax = kImageHasPerson,
 };
 
 // An interface to provide SeaPen updates to the renderer process, e.g. when the
@@ -181,6 +182,14 @@ interface SeaPenProvider {
 
     // Called when the user close the introduction dialog for SeaPen feature.
     HandleSeaPenIntroductionDialogClosed();
+
+    // Determines whether to show the SeaPen freeform introduction dialog.
+    ShouldShowSeaPenFreeformIntroductionDialog() =>
+        (bool should_show_freeform_dialog);
+
+    // Called when the user close the introduction dialog for SeaPen freeform
+    // feature.
+    HandleSeaPenFreeformIntroductionDialogClosed();
 
     // Indicates whether the device is in tablet mode.
     IsInTabletMode() => (bool tablet_mode);

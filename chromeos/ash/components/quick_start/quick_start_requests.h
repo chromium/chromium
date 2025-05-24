@@ -9,7 +9,7 @@
 #include <string>
 
 #include "components/cbor/values.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "quick_start_message.h"
 
 namespace ash::quick_start::requests {
@@ -17,7 +17,7 @@ namespace ash::quick_start::requests {
 std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest();
 
 std::unique_ptr<QuickStartMessage> BuildAssertionRequestMessage(
-    std::array<uint8_t, crypto::kSHA256Length> client_data_hash);
+    base::span<const uint8_t, crypto::hash::kSha256Size> client_data_hash);
 
 std::unique_ptr<QuickStartMessage> BuildGetInfoRequestMessage();
 
@@ -28,11 +28,11 @@ std::unique_ptr<QuickStartMessage> BuildRequestWifiCredentialsMessage(
 std::vector<uint8_t> CBOREncodeGetAssertionRequest(const cbor::Value& request);
 
 cbor::Value GenerateGetAssertionRequest(
-    std::array<uint8_t, crypto::kSHA256Length> client_data_hash);
+    base::span<const uint8_t, crypto::hash::kSha256Size> client_data_hash);
 
 std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
     uint64_t session_id,
-    const base::span<uint8_t, 32> shared_secret);
+    base::span<const uint8_t, 32> shared_secret);
 
 std::unique_ptr<QuickStartMessage> BuildBootstrapStateCancelMessage();
 

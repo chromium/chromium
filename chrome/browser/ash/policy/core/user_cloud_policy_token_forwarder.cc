@@ -51,16 +51,16 @@ UserCloudPolicyTokenForwarder::UserCloudPolicyTokenForwarder(
   if (manager_->core()->service()->IsInitializationComplete()) {
     StartRequest();
   } else {
-    manager_->core()->service()->AddObserver(this);
+    cloud_policy_service_observation_.Observe(manager_->core()->service());
   }
 }
 
-UserCloudPolicyTokenForwarder::~UserCloudPolicyTokenForwarder() {}
+UserCloudPolicyTokenForwarder::~UserCloudPolicyTokenForwarder() = default;
 
 void UserCloudPolicyTokenForwarder::Shutdown() {
   access_token_fetcher_.reset();
   refresh_oauth_token_timer_.reset();
-  manager_->core()->service()->RemoveObserver(this);
+  cloud_policy_service_observation_.Reset();
 }
 
 void UserCloudPolicyTokenForwarder::
@@ -164,10 +164,6 @@ void UserCloudPolicyTokenForwarder::OnAccessTokenFetchCompleted(
       FROM_HERE, time_to_next_refresh,
       base::BindRepeating(&UserCloudPolicyTokenForwarder::StartRequest,
                           weak_ptr_factory_.GetWeakPtr()));
-}
-
-std::string_view UserCloudPolicyTokenForwarder::name() const {
-  return "UserCloudPolicyTokenForwarder";
 }
 
 }  // namespace policy

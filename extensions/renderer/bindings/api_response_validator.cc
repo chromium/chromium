@@ -4,10 +4,10 @@
 
 #include "extensions/renderer/bindings/api_response_validator.h"
 
+#include <algorithm>
 #include <ostream>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/bindings/api_type_reference_map.h"
@@ -91,8 +91,8 @@ void APIResponseValidator::ValidateResponse(
   if (g_handler_for_testing) {
     g_handler_for_testing->HandleFailure(method_name, error);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Error validating response to `" << method_name << "`: " << error;
+    NOTREACHED() << "Error validating response to `" << method_name
+                 << "`: " << error;
   }
 }
 
@@ -132,9 +132,10 @@ void APIResponseValidator::ValidateEvent(
       "downloads.onCreated",
   };
 
-  if (base::ranges::find(kBrokenSignaturesToIgnore, event_name) !=
-      std::end(kBrokenSignaturesToIgnore))
+  if (std::ranges::find(kBrokenSignaturesToIgnore, event_name) !=
+      std::end(kBrokenSignaturesToIgnore)) {
     return;
+  }
 
   std::string error;
   if (signature->ValidateCall(context, event_args, *type_refs_, &error)) {
@@ -147,8 +148,8 @@ void APIResponseValidator::ValidateEvent(
   if (g_handler_for_testing) {
     g_handler_for_testing->HandleFailure(event_name, error);
   } else {
-    NOTREACHED_IN_MIGRATION() << "Error validating event arguments to `"
-                              << event_name << "`: " << error;
+    NOTREACHED() << "Error validating event arguments to `" << event_name
+                 << "`: " << error;
   }
 }
 

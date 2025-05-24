@@ -43,6 +43,10 @@ class Label;
 class View;
 }  // namespace views
 
+namespace tabs {
+enum class TabAlert;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  A View that renders a Tab in a TabStrip.
@@ -89,8 +93,6 @@ class Tab : public gfx::AnimationDelegate,
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void PaintChildren(const views::PaintInfo& info) override;
@@ -102,6 +104,11 @@ class Tab : public gfx::AnimationDelegate,
   void OnThemeChanged() override;
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
+  void SetGroup(std::optional<tab_groups::TabGroupId> group) override;
+  void UpdateAccessibleName();
+
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
 
   TabSlotController* controller() const { return controller_; }
 
@@ -113,7 +120,7 @@ class Tab : public gfx::AnimationDelegate,
   std::optional<SkColor> GetGroupColor() const;
 
   // Returns the color used for the alert indicator icon.
-  ui::ColorId GetAlertIndicatorColor(TabAlertState state) const;
+  ui::ColorId GetAlertIndicatorColor(tabs::TabAlert state) const;
 
   // Returns true if this tab is the active tab.
   bool IsActive() const;
@@ -143,7 +150,7 @@ class Tab : public gfx::AnimationDelegate,
   const TabRendererData& data() const { return data_; }
 
   // Redraws the loading animation if one is visible. Otherwise, no-op. The
-  // |elapsed_time| parameter is shared between tabs and used to keep the
+  // `elapsed_time` parameter is shared between tabs and used to keep the
   // throbbers in sync.
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
@@ -161,6 +168,9 @@ class Tab : public gfx::AnimationDelegate,
 
   bool mouse_hovered() const { return mouse_hovered_; }
 
+  void ShowHover(TabStyle::ShowHoverStyle style);
+  void HideHover(TabStyle::HideHoverStyle style);
+
   // Returns the TabStyle associated with this tab.
   TabStyleViews* tab_style_views() { return tab_style_views_.get(); }
   const TabStyleViews* tab_style_views() const {
@@ -168,16 +178,16 @@ class Tab : public gfx::AnimationDelegate,
   }
   const TabStyle* tab_style() const { return tab_style_views_->tab_style(); }
 
-  // Returns the text to show in a tab's tooltip: The contents |title|, followed
-  // by a break, followed by a localized string describing the |alert_state|.
+  // Returns the text to show in a tab's tooltip: The contents `title`, followed
+  // by a break, followed by a localized string describing the `alert_state`.
   // Exposed publicly for tests.
   static std::u16string GetTooltipText(
       const std::u16string& title,
-      std::optional<TabAlertState> alert_state);
+      std::optional<tabs::TabAlert> alert_state);
 
   // Returns an alert state to be shown among given alert states.
-  static std::optional<TabAlertState> GetAlertStateToShow(
-      const std::vector<TabAlertState>& alert_states);
+  static std::optional<tabs::TabAlert> GetAlertStateToShow(
+      const std::vector<tabs::TabAlert>& alert_states);
 
   bool showing_close_button_for_testing() const {
     return showing_close_button_;
@@ -193,18 +203,26 @@ class Tab : public gfx::AnimationDelegate,
 
   void SetShouldShowDiscardIndicator(bool enabled);
 
+  void UpdateInsets();
+
  private:
   class TabCloseButtonObserver;
-  friend class AlertIndicatorButtonTest;
+  friend class TabContentsTest;
   friend class TabTest;
   friend class TabStripTestBase;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   FRIEND_TEST_ALL_PREFIXES(TabStripTest, CloseButtonHiddenWhenLockedForOnTask);
 #endif
   FRIEND_TEST_ALL_PREFIXES(TabStripTest, TabCloseButtonVisibility);
   FRIEND_TEST_ALL_PREFIXES(TabTest, TitleTextHasSufficientContrast);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
                            HoverCardVisibleOnTabCloseButtonFocusAfterTabFocus);
+  FRIEND_TEST_ALL_PREFIXES(TabContentsTest, AccessibleNameChanged);
+  FRIEND_TEST_ALL_PREFIXES(TabContentsTest,
+                           AccessibleNameChangesWithCollaborationMessages);
+
+  bool ShouldUpdateAccessibleName(TabRendererData& old_data,
+                                  TabRendererData& new_data);
 
   // Invoked from Layout to adjust the position of the favicon or alert
   // indicator for pinned tabs. The visual_width parameter is how wide the
@@ -219,7 +237,7 @@ class Tab : public gfx::AnimationDelegate,
   // pinned tab.
   bool ShouldRenderAsNormalTab() const;
 
-  // Updates the blocked attention state of the |icon_|. This only updates
+  // Updates the blocked attention state of the `icon_`. This only updates
   // state; it is the responsibility of the caller to request a paint.
   void UpdateTabIconNeedsAttentionBlocked();
 
@@ -285,12 +303,20 @@ class Tab : public gfx::AnimationDelegate,
   // the view bounds.
   bool mouse_hovered_ = false;
 
+  // Whether the shift key was pressed at the start of the click. Used on mouse
+  // up.
+  bool shift_pressed_on_mouse_down_ = false;
+
   std::unique_ptr<TabCloseButtonObserver> tab_close_button_observer_;
 
   // Freezing vote held while the tab is collapsed.
   std::optional<performance_manager::freezing::FreezingVote> freezing_vote_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
+
+  base::CallbackListSubscription root_name_changed_subscription_;
+
+  base::WeakPtrFactory<Tab> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_H_

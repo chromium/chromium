@@ -2,7 +2,7 @@ Name: Unicode Common Locale Data Repository
 Short Name: cldr
 URL: http://cldr.unicode.org/index/downloads
 Version: 45.0
-License: MIT-like
+License: Unicode-DFS-2016
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

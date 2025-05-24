@@ -30,7 +30,6 @@ class AppProvisioningComponentInstallerPolicy
       const AppProvisioningComponentInstallerPolicy&) = delete;
   AppProvisioningComponentInstallerPolicy& operator=(
       const AppProvisioningComponentInstallerPolicy&) = delete;
-  ~AppProvisioningComponentInstallerPolicy() override = default;
 
  private:
   // The following methods override ComponentInstallerPolicy.

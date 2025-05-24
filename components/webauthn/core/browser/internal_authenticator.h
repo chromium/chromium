@@ -26,6 +26,10 @@ using GetMatchingCredentialIdsCallback =
 // allowed to set its own effective origin.
 class InternalAuthenticator {
  public:
+  using GetAssertionCallback = base::OnceCallback<void(
+      blink::mojom::AuthenticatorStatus,
+      blink::mojom::GetAssertionAuthenticatorResponsePtr,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr)>;
   virtual ~InternalAuthenticator() = default;
 
   // Sets the effective origin of the caller. Since this may be a browser
@@ -49,7 +53,7 @@ class InternalAuthenticator {
   // was successful.
   virtual void GetAssertion(
       blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-      blink::mojom::Authenticator::GetAssertionCallback callback) = 0;
+      GetAssertionCallback callback) = 0;
 
   // Returns true if the user platform provides an authenticator. Relying
   // Parties use this method to determine whether they can create a new

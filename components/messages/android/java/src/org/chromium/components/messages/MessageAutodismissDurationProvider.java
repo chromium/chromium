@@ -4,7 +4,10 @@
 
 package org.chromium.components.messages;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface to provide a duration time for message. */
+@NullMarked
 public interface MessageAutodismissDurationProvider {
     /**
      * Provide a duration time based on given custom duration and whether a11y mode is on.

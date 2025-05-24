@@ -38,4 +38,4 @@ scoped_refptr<base::SingleThreadTaskRunner>
   return network_task_runner_;
 }
 
-URLRequestContextGetter::~URLRequestContextGetter() {}
+URLRequestContextGetter::~URLRequestContextGetter() = default;

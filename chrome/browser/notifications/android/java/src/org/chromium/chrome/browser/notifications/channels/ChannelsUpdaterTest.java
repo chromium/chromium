@@ -14,10 +14,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Looper;
-
-import androidx.annotation.RequiresApi;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +37,6 @@ import java.util.List;
 
 /** Tests that ChannelsUpdater correctly initializes channels on the notification manager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@RequiresApi(Build.VERSION_CODES.O)
 public class ChannelsUpdaterTest {
     private BaseNotificationManagerProxy mNotificationManagerProxy;
     private SharedPreferencesManager mSharedPreferences;
@@ -52,7 +48,7 @@ public class ChannelsUpdaterTest {
         MockitoAnnotations.initMocks(this);
 
         Context context = RuntimeEnvironment.getApplication();
-        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create(context);
+        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create();
 
         mMockResources = context.getResources();
 
@@ -104,7 +100,7 @@ public class ChannelsUpdaterTest {
         ChannelsUpdater updater = new ChannelsUpdater(mSharedPreferences, mChannelsInitializer, 21);
         updater.updateChannels();
 
-        assertThat(getChannelsIgnoringDefault(), hasSize((greaterThan(0))));
+        assertThat(getChannelsIgnoringDefault(), hasSize(greaterThan(0)));
         assertThat(
                 getChannelIds(getChannelsIgnoringDefault()),
                 containsInAnyOrder(

@@ -1,0 +1,62 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// These are taken from kColorSysOutline
+const float4 dark_color = vec4(142.0, 145.0, 143.0, 255.0) / 255.0;
+const float4 light_color = vec4(116.0, 119.0, 117.0, 255.0) / 255.0;
+
+const float max_extent = 25.0;
+const float border_width = 5.0;
+const float half_pixel = 0.5;
+uniform float u_time;
+uniform int u_dark;
+uniform float u_emphasis;
+uniform float u_progress;
+uniform float u_corner_radius;
+uniform float u_insets;
+uniform float2 u_resolution;
+
+// Applies a uniform insets to coords.
+float2 InsetsCoord(float2 coord, float2 resolution, float insets) {
+  return (1.0 - 2.0 * insets / resolution) * coord + insets;
+}
+
+void BorderDistance(float2 coord, out float delta, out float aa) {
+  float2 tl = vec2(border_width) + 2 * u_insets;
+  float2 br = u_resolution - tl;
+  float2 dtl = coord - tl;
+  float2 dbr = br - coord;
+
+  float extent = max_extent * u_emphasis;
+  float rounded_extent = extent + u_corner_radius - border_width - half_pixel;
+  if (dtl.y < extent && dtl.x < extent) {
+    delta = extent - distance(coord, tl + vec2(extent));
+  } else if (dtl.y < extent && dbr.x < extent) {
+    delta = extent - distance(coord, vec2(br.x - extent, tl.y + extent));
+  } else if (dbr.y < rounded_extent && dtl.x < rounded_extent) {
+    delta = rounded_extent -
+            distance(coord, vec2(tl.x + rounded_extent, br.y - rounded_extent));
+    aa = half_pixel;
+  } else if (dbr.y < rounded_extent && dbr.x < rounded_extent) {
+    delta = rounded_extent - distance(coord, br - vec2(rounded_extent));
+    aa = half_pixel;
+  } else {
+    delta = min(min(min(dtl.x, dtl.y), dbr.x), dbr.y);
+  }
+}
+
+vec4 main(float2 coord) {
+  coord = InsetsCoord(coord, u_resolution, u_insets);
+
+  float4 border_color = light_color;
+  if (u_dark > 0) {
+    border_color = dark_color;
+  }
+  float extent = max_extent * u_emphasis;
+  float delta = 0.0;
+  float aa = 0.0;
+  BorderDistance(coord, delta, aa);
+  float opacity = 1.0 - min(max(delta / (extent + aa), 0.0), 1.0);
+  return border_color * (opacity * opacity);
+}

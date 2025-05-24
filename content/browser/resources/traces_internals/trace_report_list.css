@@ -13,6 +13,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .header {
@@ -23,11 +24,7 @@
   border-bottom: var(--cr-separator-line);
 }
 
-.header h1 {
-  font-size: 2.7rem;
-}
-
-h1 > .trace-counter {
+.trace-counter {
   margin-inline-start: 14px;
 }
 
@@ -114,20 +111,6 @@ h1 > .trace-counter {
   --iron-icon-fill-color: rgb(34, 135, 211);
 }
 
-.traces-header h1 {
-  font-size: 3em;
-  color: var(--cr-primary-text-color);
-}
-
-.traces-header .traces-counter {
-  padding: 2px 8px;
-  height: fit-content;
-  margin-top: 16px;
-  margin-left: 4px;
-  font-weight: 800;
-  color: var(--cr-primary-text-color)
-}
-
 .empty-message {
   display: flex;
   flex-direction: column;
@@ -145,13 +128,12 @@ h1 > .trace-counter {
   display: flex;
   justify-content: end;
   margin: 0 12px 12px;
+  gap: 10px;
   align-items: flex-end;
 }
 
 .report-list-container {
   flex-direction: column;
   display: flex;
-  height: 100%;
   margin: 0 8px;
-  overflow-y: auto;
 }

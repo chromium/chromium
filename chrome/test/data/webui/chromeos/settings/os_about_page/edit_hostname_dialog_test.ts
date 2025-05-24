@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {EditHostnameDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {CrInputElement, DeviceNameBrowserProxyImpl, SetDeviceNameResult} from 'chrome://os-settings/os_settings.js';
+import type {EditHostnameDialogElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrInputElement} from 'chrome://os-settings/os_settings.js';
+import {DeviceNameBrowserProxyImpl, SetDeviceNameResult} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

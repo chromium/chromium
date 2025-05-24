@@ -46,8 +46,7 @@ BaseAudioContext* AudioWorklet::GetBaseAudioContext() const {
   return context_.Get();
 }
 
-const Vector<CrossThreadAudioParamInfo>
-    AudioWorklet::GetParamInfoListForProcessor(
+Vector<CrossThreadAudioParamInfo> AudioWorklet::GetParamInfoListForProcessor(
     const String& name) {
   DCHECK(IsMainThread());
   DCHECK(GetMessagingProxy());

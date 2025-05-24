@@ -4,34 +4,37 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 
 /**
  * The lifecycle for the virtual card number (VCN) enrollment bottom sheet. Notifies the caller when
  * a tab or layout changes (e.g., going into the "tab overview"), so the bottom sheet can be
  * dismissed. Ignores page navigations.
  */
+@NullMarked
 /*package*/ class AutofillVcnEnrollBottomSheetLifecycle
-        implements Callback<TabModelSelector>,
-                TabModelSelectorObserver,
-                TabModelObserver,
-                LayoutStateObserver {
+        implements Callback<TabModelSelector>, TabModelObserver, LayoutStateObserver {
+    private final Callback<TabModel> mCurrentTabModelObserver = this::onTabModelSelected;
     private final LayoutStateProvider mLayoutStateProvider;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private Runnable mOnEndOfLifecycle;
+    private @Nullable Runnable mOnEndOfLifecycle;
     private boolean mHasBegun;
-    private TabModelSelector mTabModelSelector;
-    private TabModel mTabModel;
+    private @Nullable TabModelSelector mTabModelSelector;
+    private @Nullable TabModel mTabModel;
 
     /**
      * Constructs the lifecycle for the virtual card number (VCN) enrollment bottom sheet.
@@ -81,7 +84,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
         mLayoutStateProvider.removeObserver(this);
         mTabModelSelectorSupplier.removeObserver(this);
 
-        if (mTabModelSelector != null) mTabModelSelector.removeObserver(this);
+        if (mTabModelSelector != null) {
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
+        }
         if (mTabModel != null) mTabModel.removeObserver(this);
 
         mHasBegun = false;
@@ -89,7 +94,22 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 
     private void endLifecycleAndNotifyCaller() {
         end();
+        assumeNonNull(mOnEndOfLifecycle);
         mOnEndOfLifecycle.run();
+    }
+
+    private void onTabModelSelected(@Nullable TabModel newModel) {
+        if (newModel == mTabModel) return;
+
+        if (mTabModel != null) {
+            endLifecycleAndNotifyCaller();
+            return;
+        }
+
+        if (newModel != null) {
+            mTabModel = newModel;
+            mTabModel.addObserver(this);
+        }
     }
 
     // Implements LayoutStateObserver for LayoutStateProvider.
@@ -104,25 +124,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
         mTabModelSelectorSupplier.removeObserver(this);
 
         mTabModelSelector = tabModelSelector;
-        mTabModelSelector.addObserver(this);
+        tabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
 
         TabModel currentTabModel = mTabModelSelector.getCurrentModel();
-        if (currentTabModel.index() >= 0) {
+        if (currentTabModel.index() != TabList.INVALID_TAB_INDEX) {
             mTabModel = currentTabModel;
-            mTabModel.addObserver(this);
-        }
-    }
-
-    // Implements TabModelSelectorObserver for TabModelSelector.
-    @Override
-    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-        if (mTabModel != null) {
-            endLifecycleAndNotifyCaller();
-            return;
-        }
-
-        if (newModel != null) {
-            mTabModel = newModel;
             mTabModel.addObserver(this);
         }
     }

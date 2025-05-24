@@ -1,0 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://immersive-web.github.io/webxr/#xrviewGeometry-mixin
+[
+    SecureContext,
+    Exposed=Window,
+    RuntimeEnabled=WebXR
+]
+interface mixin XRViewGeometry {
+  readonly attribute Float32Array projectionMatrix;
+  [SameObject, ImplementedAs=viewGeometryTransform] readonly attribute XRRigidTransform transform;
+};

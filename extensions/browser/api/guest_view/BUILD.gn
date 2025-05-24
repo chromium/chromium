@@ -1,0 +1,31 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_guest_view,
+       "Cannot depend on guest_view because enable_guest_view=false.")
+
+source_set("guest_view") {
+  sources = [
+    "guest_view_internal_api.cc",
+    "guest_view_internal_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//extensions/browser:browser_sources" ]
+
+  deps = [
+    "//base",
+    "//components/guest_view/browser",
+    "//components/guest_view/common",
+    "//content/public/browser",
+    "//extensions/browser/api:extensions_api_client",
+    "//extensions/common/api",
+  ]
+}

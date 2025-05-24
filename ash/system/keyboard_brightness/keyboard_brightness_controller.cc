@@ -170,6 +170,11 @@ KeyboardBrightnessController::KeyboardBrightnessController(
       &KeyboardBrightnessController::OnReceiveHasAmbientLightSensor,
       weak_ptr_factory_.GetWeakPtr()));
 
+  // Get the initial lid state.
+  power_manager_client->GetSwitchStates(
+      base::BindOnce(&KeyboardBrightnessController::OnReceiveSwitchStates,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   // Add LoginScreenController observer.
   Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(this);
 
@@ -213,6 +218,11 @@ void KeyboardBrightnessController::RegisterProfilePrefs(
 void KeyboardBrightnessController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
+
+  // Do not retrieve and save current brightness to pref if lid is closed.
+  if (lid_state_ == chromeos::PowerManagerClient::LidState::CLOSED) {
+    return;
+  }
 
   // On login, retrieve the current keyboard brightness and save it to prefs.
   HandleGetKeyboardBrightness(base::BindOnce(
@@ -322,6 +332,12 @@ void KeyboardBrightnessController::KeyboardBrightnessChanged(
     known_user.SetPath(*active_account_id_, prefs::kKeyboardBrightnessPercent,
                        std::make_optional<base::Value>(change.percent()));
   }
+}
+
+void KeyboardBrightnessController::LidEventReceived(
+    chromeos::PowerManagerClient::LidState state,
+    base::TimeTicks timestamp) {
+  lid_state_ = state;
 }
 
 // LoginDataDispatcher::Observer:
@@ -530,6 +546,13 @@ void KeyboardBrightnessController::OnReceiveKeyboardBrightnessAfterLogin(
   user_manager::KnownUser known_user(local_state_);
   known_user.SetPath(*active_account_id_, prefs::kKeyboardBrightnessPercent,
                      std::make_optional<base::Value>(*keyboard_brightness));
+}
+
+void KeyboardBrightnessController::OnReceiveSwitchStates(
+    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+  if (switch_states.has_value()) {
+    lid_state_ = switch_states->lid_state;
+  }
 }
 
 void KeyboardBrightnessController::RecordHistogramForBrightnessAction(

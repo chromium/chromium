@@ -45,8 +45,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForCheckUserAccount::HandleRequest(
   check_user_account_response.set_enrollment_nudge_type(
       GetEnrollmentNudgePolicy(check_user_account_request));
 
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 em::CheckUserAccountResponse::UserAccountType

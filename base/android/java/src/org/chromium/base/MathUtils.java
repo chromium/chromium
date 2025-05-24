@@ -4,7 +4,10 @@
 
 package org.chromium.base;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Contains various math utilities used throughout Chrome Mobile. */
+@NullMarked
 public class MathUtils {
     /** A minimum difference to use when comparing floats for equality. */
     public static final float EPSILON = 0.001f;

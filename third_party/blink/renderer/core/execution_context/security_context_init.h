@@ -8,10 +8,10 @@
 #include <optional>
 
 #include "base/types/optional_ref.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -47,20 +47,22 @@ class CORE_EXPORT SecurityContextInit {
       LocalFrame& frame,
       const ResourceResponse& response,
       const FramePolicy& frame_policy,
-      const std::optional<ParsedPermissionsPolicy>& isolated_app_policy,
+      const std::optional<network::ParsedPermissionsPolicy>&
+          isolated_app_policy,
       const base::optional_ref<const FencedFrame::RedactedFencedFrameProperties>
-          fenced_frame_properties);
+          fenced_frame_properties,
+      const KURL& document_url);
   void ApplyDocumentPolicy(
       DocumentPolicy::ParsedDocumentPolicy& document_policy,
       const String& report_only_document_policy_header);
 
-  const ParsedPermissionsPolicy& PermissionsPolicyHeader() const {
+  const network::ParsedPermissionsPolicy& PermissionsPolicyHeader() const {
     return permissions_policy_header_;
   }
 
  private:
   ExecutionContext* execution_context_ = nullptr;
-  ParsedPermissionsPolicy permissions_policy_header_;
+  network::ParsedPermissionsPolicy permissions_policy_header_;
 };
 
 }  // namespace blink

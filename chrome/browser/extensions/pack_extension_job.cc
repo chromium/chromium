@@ -31,7 +31,7 @@ PackExtensionJob::PackExtensionJob(Client* client,
   root_directory_ = root_directory.StripTrailingSeparators();
 }
 
-PackExtensionJob::~PackExtensionJob() {}
+PackExtensionJob::~PackExtensionJob() = default;
 
 void PackExtensionJob::Start() {
   if (run_mode_ == RunMode::ASYNCHRONOUS) {

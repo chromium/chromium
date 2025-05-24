@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
 
+#include <algorithm>
+
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -24,15 +25,14 @@ MultipartImageResourceParser::MultipartImageResourceParser(
     boundary_.push_front("--", 2);
 }
 
-void MultipartImageResourceParser::AppendData(const char* bytes,
-                                              wtf_size_t size) {
+void MultipartImageResourceParser::AppendData(base::span<const char> bytes) {
   DCHECK(!IsCancelled());
   // m_sawLastBoundary means that we've already received the final boundary
   // token. The server should stop sending us data at this point, but if it
   // does, we just throw it away.
   if (saw_last_boundary_)
     return;
-  data_.Append(bytes, size);
+  data_.AppendSpan(bytes);
 
   if (is_parsing_top_) {
     // Eat leading \r\n
@@ -48,7 +48,7 @@ void MultipartImageResourceParser::AppendData(const char* bytes,
 
     // Some servers don't send a boundary token before the first chunk of
     // data.  We handle this case anyway (Gecko does too).
-    if (0 != memcmp(data_.data(), boundary_.data(), boundary_.size())) {
+    if (base::span(data_).first(boundary_.size()) != base::span(boundary_)) {
       data_.push_front("\n", 1);
       data_.PrependVector(boundary_);
     }
@@ -168,11 +168,13 @@ bool MultipartImageResourceParser::ParseHeaders() {
 // doesn't require the dashes to exist.  See nsMultiMixedConv::FindToken.
 wtf_size_t MultipartImageResourceParser::FindBoundary(const Vector<char>& data,
                                                       Vector<char>* boundary) {
-  auto it = base::ranges::search(data, *boundary);
-  if (it == data.end())
+  auto found_boundary = std::ranges::search(data, *boundary);
+  if (found_boundary.begin() == data.end()) {
     return kNotFound;
+  }
 
-  wtf_size_t boundary_position = static_cast<wtf_size_t>(it - data.begin());
+  wtf_size_t boundary_position =
+      static_cast<wtf_size_t>(found_boundary.begin() - data.begin());
   // Back up over -- for backwards compat
   // TODO(tc): Don't we only want to do this once?  Gecko code doesn't seem to
   // care.

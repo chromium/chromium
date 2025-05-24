@@ -4,45 +4,31 @@
 
 #include "components/app_restore/window_info.h"
 
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
+#include <sstream>
+
+#include "base/values.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace app_restore {
 
 namespace {
 
-std::string ToPrefixedString(std::optional<int32_t> val,
-                             const std::string& prefix) {
-  return prefix + base::StringPrintf(": %d \n", val.value_or(-1));
+std::string WindowStateTypeToString(
+    std::optional<chromeos::WindowStateType> val) {
+  if (!val) {
+    return std::string();
+  }
+  std::stringstream stream;
+  stream << *val;
+  return stream.str();
 }
 
-std::string ToPrefixedString(std::optional<gfx::Rect> val,
-                             const std::string& prefix) {
-  return prefix + ": " + val.value_or(gfx::Rect()).ToString() + " \n";
-}
-
-std::string ToPrefixedString(std::optional<chromeos::WindowStateType> val,
-                             const std::string& prefix) {
-  std::optional<int> new_val =
-      val ? std::make_optional(static_cast<int32_t>(*val)) : std::nullopt;
-  return ToPrefixedString(new_val, prefix);
-}
-
-std::string ToPrefixedString(std::optional<ui::mojom::WindowShowState> val,
-                             const std::string& prefix) {
-  std::optional<int> new_val =
-      val ? std::make_optional(static_cast<int32_t>(*val)) : std::nullopt;
-  return ToPrefixedString(new_val, prefix);
-}
-
-std::string ToPrefixedString(std::optional<std::u16string> val,
-                             const std::string& prefix) {
-  return prefix + ": " + base::UTF16ToASCII(val.value_or(u""));
-}
-
-std::string ToPrefixedString(base::Uuid val, const std::string& prefix) {
-  return prefix + ": " + val.AsLowercaseString() + " \n";
+std::string WindowShowStateToString(
+    std::optional<ui::mojom::WindowShowState> val) {
+  if (!val) {
+    return std::string();
+  }
+  return WindowStateTypeToString(chromeos::ToWindowStateType(*val));
 }
 
 }  // namespace
@@ -79,16 +65,21 @@ WindowInfo::~WindowInfo() = default;
 bool WindowInfo::operator==(const WindowInfo& other) const = default;
 
 std::string WindowInfo::ToString() const {
-  return ToPrefixedString(activation_index, "Activation index") +
-         ToPrefixedString(desk_id, "Desk") +
-         ToPrefixedString(desk_guid, "Desk guid") +
-         ToPrefixedString(current_bounds, "Current bounds") +
-         ToPrefixedString(window_state_type, "Window state") +
-         ToPrefixedString(pre_minimized_show_state_type,
-                          "Pre minimized show state") +
-         ToPrefixedString(snap_percentage, "Snap percentage") +
-         ToPrefixedString(display_id, "Display id") +
-         ToPrefixedString(app_title, "App Title");
+  auto root = base::Value::Dict().Set(
+      "Window Info",
+      base::Value::Dict()
+          .Set("Activation index", activation_index.value_or(-1))
+          .Set("Desk", desk_id.value_or(-1))
+          .Set("Desk guid", desk_guid.AsLowercaseString())
+          .Set("Current bounds",
+               current_bounds.value_or(gfx::Rect()).ToString())
+          .Set("Window state type", WindowStateTypeToString(window_state_type))
+          .Set("Pre minimized show state",
+               WindowShowStateToString(pre_minimized_show_state_type))
+          .Set("Snap percentage", static_cast<int>(snap_percentage.value_or(0)))
+          .Set("Display id", static_cast<int>(display_id.value_or(-1)))
+          .Set("App title", app_title.value_or(std::u16string())));
+  return root.DebugString();
 }
 
 }  // namespace app_restore

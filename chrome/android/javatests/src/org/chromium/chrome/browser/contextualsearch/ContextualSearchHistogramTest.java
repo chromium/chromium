@@ -38,7 +38,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 public class ContextualSearchHistogramTest extends ContextualSearchInstrumentationBase {
     private HistogramWatcher mResultsSeenHistogramWatcher;
     private HistogramWatcher mAllSearchesHistogramWatcher;
-    private HistogramWatcher mTapResultsSeenHistogramWatcher;
     private HistogramWatcher mNumberOfSuggestionsClicked2HistogramWatcher;
     private HistogramWatcher mSelectedCarouselIndexHistogramWatcher;
     private HistogramWatcher mSelectedSuggestionIndexHistogramWatcher;
@@ -96,14 +95,6 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
                                 "Search.ContextualSearch.Tap.ResultsSeen", true, 1);
-        if (isUKMEnabled) {
-            histogramWatcherBuilder.expectBooleanRecordTimes(
-                    "Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen", true, 1);
-        } else {
-            histogramWatcherBuilder.expectNoRecords(
-                    "Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen");
-        }
-        mTapResultsSeenHistogramWatcher = histogramWatcherBuilder.build();
 
         if (relatedSearchesCount > 0) {
             mNumberOfSuggestionsClicked2HistogramWatcher =
@@ -183,9 +174,6 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
         mAllSearchesHistogramWatcher.assertExpected(
                 "Failed to log if a search was seen in the Search.ContextualSearch.All.Searches"
                         + " histogram!");
-        mTapResultsSeenHistogramWatcher.assertExpected(
-                "Some entry in the Search.ContextualSearch.Tap histograms was not logged as"
-                        + " expected!");
         mNumberOfSuggestionsClicked2HistogramWatcher.assertExpected(
                 "Failed to log the correct count of Related Searches suggestions clicked in the"
                         + " Search.RelatedSearches.NumberOfSuggestionsClicked2 histogram!");
@@ -214,7 +202,6 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testRelatedSearchesItemNotSelected() throws Exception {
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         createHistogramWatcherForPeekAndExpandForRSearches(/* isUKMEnabled= */ false);
@@ -237,7 +224,6 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testRelatedSearchesItemNotSelectedUKMEnabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

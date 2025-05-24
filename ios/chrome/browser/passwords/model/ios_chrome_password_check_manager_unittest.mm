@@ -118,7 +118,7 @@ void AddIssueToForm(PasswordForm* form,
 class IOSChromePasswordCheckManagerTest : public PlatformTest {
  public:
   IOSChromePasswordCheckManagerTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeBulkLeakCheckServiceFactory::GetInstance(),
         base::BindRepeating(&MakeMockPasswordCheckManagerObserver));
@@ -134,24 +134,23 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     bulk_leak_check_service_ = static_cast<MockBulkLeakCheckService*>(
-        IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
-            browser_state_.get()));
+        IOSChromeBulkLeakCheckServiceFactory::GetForProfile(profile_.get()));
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
-    manager_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-        browser_state_.get());
+    manager_ =
+        IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
   }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
   void FastForwardBy(base::TimeDelta time) { task_env_.FastForwardBy(time); }
 
-  ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
   TestPasswordStore& store() { return *store_; }
   MockBulkLeakCheckService* service() { return bulk_leak_check_service_; }
   IOSChromePasswordCheckManager& manager() { return *manager_; }
@@ -159,7 +158,7 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   raw_ptr<MockBulkLeakCheckService> bulk_leak_check_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<IOSChromePasswordCheckManager> manager_;

@@ -29,6 +29,8 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
   bool IsReadyForPixPayment();
 
   std::string risk_data_;
+  // A vector of bytes containing device information, which is needed to invoke
+  // payment server APIs.
   std::vector<uint8_t> client_token_;
   std::optional<int64_t> billing_customer_number_;
   std::optional<std::string> merchant_payment_page_hostname_;
@@ -36,6 +38,7 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
   // required field. Its type is optional to avoid its default value being 0.
   std::optional<int64_t> instrument_id_;
   std::optional<std::string> pix_code_;
+  std::string payment_link_;
 };
 
 }  // namespace payments::facilitated

@@ -95,6 +95,15 @@ class BuilderTest(LoggingTestCase):
                 'ABORT',
                 'expected':
                 True,
+            }, {
+                'name': ('invocations/task-chromium-swarm.appspot.com-6139bb/'
+                         'tests/ninja:%2F%2F:headless_shell_wpt%2F'
+                         'external%2Fwpt%2Fcrash.html/'
+                         'results/033e-cccc'),
+                'testId':
+                'ninja://:headless_shell_wpt/external/wpt/crash.html',
+                'status':
+                'CRASH',
             }],
         })
         self.fetcher.web.append_prpc_response({
@@ -127,6 +136,9 @@ class BuilderTest(LoggingTestCase):
         result = results.result_for_test('external/wpt/timeout.html')
         self.assertEqual(result.actual_results(), ['TIMEOUT'])
         self.assertTrue(result.did_run_as_expected())
+
+        result = results.result_for_test('external/wpt/crash.html')
+        self.assertEqual(result.actual_results(), ['CRASH'])
 
     def test_fetch_wpt_report_urls(self):
         self.fetcher.web.append_prpc_response({

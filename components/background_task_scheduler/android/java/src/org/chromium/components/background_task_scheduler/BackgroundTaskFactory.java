@@ -4,10 +4,13 @@
 
 package org.chromium.components.background_task_scheduler;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Generic factory interface to inject into {@link BackgroundTaskSchedulerFactory}.
  * Exposes the interface call for getting the BackgroundTask class instance from the task id.
  */
+@NullMarked
 public interface BackgroundTaskFactory {
     /**
      * Creates a BackgroundTask class instance for a given task id.

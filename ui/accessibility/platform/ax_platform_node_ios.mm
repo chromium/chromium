@@ -10,17 +10,20 @@
 namespace ui {
 
 // static
-AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
+AXPlatformNode::Pointer AXPlatformNode::Create(
+    AXPlatformNodeDelegate& delegate) {
   AXPlatformNode* node = new AXPlatformNodeIOS();
   node->Init(delegate);
-  return node;
+  return Pointer(node);
 }
 
 // static
 AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
     gfx::NativeViewAccessible accessible) {
-  if ([accessible isKindOfClass:[AXPlatformNodeUIKitElement class]]) {
-    return [accessible node];
+  if (AXPlatformNodeUIKitElement* node_ui_kit_element =
+          [AXPlatformNodeUIKitElement
+              elementFromNativeViewAccessible:accessible]) {
+    return node_ui_kit_element.node;
   }
   return nil;
 }
@@ -42,7 +45,7 @@ AXPlatformNodeIOSDelegate* AXPlatformNodeIOS::GetIOSDelegate() const {
   return ios_delegate_.get();
 }
 
-void AXPlatformNodeIOS::Init(AXPlatformNodeDelegate* delegate) {
+void AXPlatformNodeIOS::Init(AXPlatformNodeDelegate& delegate) {
   AXPlatformNodeBase::Init(delegate);
   CreateNativeWrapper();
 }
@@ -60,7 +63,7 @@ gfx::NativeViewAccessible AXPlatformNodeIOS::GetNativeViewAccessible() {
   if (!objc_storage_->native_node) {
     CreateNativeWrapper();
   }
-  return objc_storage_->native_node;
+  return gfx::NativeViewAccessible(objc_storage_->native_node);
 }
 
 void AXPlatformNodeIOS::CreateNativeWrapper() {

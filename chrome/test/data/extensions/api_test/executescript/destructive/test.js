@@ -121,7 +121,7 @@ function startTest() {
       if (maybeSkipPluginTest())
         return;
       testRemoveSelf(
-          'plugin_frame.html?end', /background-color: rgb\(82, 86, 89\)/);
+          'plugin_frame.html?end', /background-color: rgb\(40, 40, 40\)/);
     },
 
     // Plain text

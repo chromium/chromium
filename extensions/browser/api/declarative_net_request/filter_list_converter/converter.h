@@ -17,7 +17,7 @@ enum WriteType {
 };
 
 // Utility function to convert filter list files in the text format to a JSON
-// file in a format supported by the Declarative Net Request API. If |type| is
+// file in a format supported by the Declarative Net Request API. If `type` is
 // kExtension, output_path is treated as the extension directory and the ruleset
 // is written to "rules.json". Else it is treated as the json ruleset location.
 // Returns false if the conversion fails.

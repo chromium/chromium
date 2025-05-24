@@ -22,7 +22,7 @@ message UserEventSpecifics {
   // Time of event, as measured by client in microseconds since Windows epoch.
   optional int64 event_time_usec = 1;
 
-  // The |global_id| field of the associated navigation, if there is one.
+  // The `global_id` field of the associated navigation, if there is one.
   optional int64 navigation_id = 2;
 
   // On startup we generate a new random id to identify which FieldTrialEvents

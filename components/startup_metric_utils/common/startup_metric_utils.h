@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_STARTUP_METRIC_UTILS_COMMON_STARTUP_METRIC_UTILS_H_
 #define COMPONENTS_STARTUP_METRIC_UTILS_COMMON_STARTUP_METRIC_UTILS_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/dcheck_is_on.h"
@@ -91,7 +93,7 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   //         "Startup.LoadTime.ApplicationStartToChromeMain",
   //         GetCommon().application_start_ticks_,
   //         GetCommon().chrome_main_entry_ticks_);
-  using HistogramTimeFunction = void(const char* name, base::TimeDelta);
+  using HistogramTimeFunction = void(std::string_view name, base::TimeDelta);
   void EmitHistogramWithTraceEvent(HistogramTimeFunction* histogram_function,
                                    const char* name,
                                    base::TimeTicks begin_ticks,

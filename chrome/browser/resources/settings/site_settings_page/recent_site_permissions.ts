@@ -75,10 +75,10 @@ export class SettingsRecentSitePermissionsElement extends
     };
   }
 
-  noRecentPermissions: boolean;
-  private shouldFocusAfterPopulation_: boolean;
-  private recentSitePermissionsList_: RecentSitePermissions[];
-  focusConfig: FocusConfig;
+  declare noRecentPermissions: boolean;
+  declare private shouldFocusAfterPopulation_: boolean;
+  declare private recentSitePermissionsList_: RecentSitePermissions[];
+  declare focusConfig: FocusConfig;
   private lastSelected_: {origin: string, incognito: boolean, index: number}|
       null;
 
@@ -289,7 +289,7 @@ export class SettingsRecentSitePermissionsElement extends
       const icon = this.shadowRoot!.querySelector<CrTooltipIconElement>(
           `#incognitoInfoIcon_${index}`);
       assert(!!icon);
-      const toFocus = icon.getFocusableElement() as HTMLElement;
+      const toFocus = icon.getFocusableElement();
       assert(!!toFocus);
       focusWithoutInk(toFocus);
     } else {

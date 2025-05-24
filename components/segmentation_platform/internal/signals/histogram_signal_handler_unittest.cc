@@ -41,7 +41,7 @@ class MockObserver : public HistogramSignalHandler::Observer {
   ~MockObserver() override = default;
   MOCK_METHOD(void,
               OnHistogramSignalUpdated,
-              (const std::string&, base::HistogramBase::Sample),
+              (std::string_view, base::HistogramBase::Sample32),
               (override));
 };
 

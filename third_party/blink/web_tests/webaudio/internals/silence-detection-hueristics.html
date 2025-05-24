@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+  <title>Test silence detection heuristics</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+    // All other platforms pass within 20ms wait time, but macOS needs more
+    // time for unknown reason. This number is determined empirically.
+    const updateDelayInMS = 250;
+    const pollingIntervalInMS = 50;
+
+    promise_test(async t => {
+      const context = new AudioContext();
+      assert_equals(context.state, 'running');
+      assert_true(internals.isSilenceDetectionActive(context));
+
+      // APN (automatic pull node) #1: AnalyserNode - this node requires an
+      // active input connection (e.g. `source` below) to be registered as an
+      // APN.
+      const source = new OscillatorNode(context);
+      const analyser = new AnalyserNode(context);
+      source.connect(analyser);
+
+      await t.step_wait(
+          () => internals.isSilenceDetectionActive(context) === false,
+          'silence detection should NOT be active',
+          updateDelayInMS, pollingIntervalInMS);
+
+      return new Promise(resolve => resolve());
+    }, 'Test AnalyserNode');
+
+    promise_test(async t => {
+      const context = new AudioContext();
+      assert_equals(context.state, 'running');
+      assert_true(internals.isSilenceDetectionActive(context));
+
+      // APN (automatic pull node) #2: MediaStreamAudioDestinationNode - this
+      // node requires an active input connection (e.g. `source` below) to be
+      // registered as an APN.
+      const source = new OscillatorNode(context);
+      const mediaStreamDestination =
+          new MediaStreamAudioDestinationNode(context);
+      source.connect(mediaStreamDestination);
+
+      await t.step_wait(
+          () => internals.isSilenceDetectionActive(context) === false,
+          'silence detection should NOT be active',
+          updateDelayInMS, pollingIntervalInMS);
+
+      return new Promise(resolve => resolve());
+    }, 'Test MediaStreamAudioDestinationNode');
+
+    promise_test(async t => {
+      const context = new AudioContext();
+      const filePath = 'worklet-processors/empty-processor.js';
+      await context.audioWorklet.addModule(filePath);
+      assert_equals(context.state, 'running');
+      assert_true(internals.isSilenceDetectionActive(context));
+
+      // APN (automatic pull node) #3: AudioWorkletNode - when this node is
+      // not connected to anything, it is registered as an APN. However,
+      // it functions as a regular node when its output is connected therefore
+      // the silence detection becomes active.
+      let workletNode = new AudioWorkletNode(context, 'empty-processor');
+      workletNode.connect(context.destination);
+      await t.step_wait(
+          () => internals.isSilenceDetectionActive(context) === true,
+          'silence detection should be active',
+          updateDelayInMS, pollingIntervalInMS);
+
+      workletNode.disconnect();
+      await t.step_wait(
+          () => internals.isSilenceDetectionActive(context) === false,
+          'silence detection should NOT be active',
+          updateDelayInMS, pollingIntervalInMS);
+
+      return new Promise(resolve => resolve());
+    }, 'Test AudioWorkletNode');
+  </script>
+</body>
+</html>

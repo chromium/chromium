@@ -39,7 +39,7 @@ static float ExtractDecodedData(const AudioBuffer& buffer, int index) {
   std::unique_ptr<AudioBus> temp_bus =
       AudioBus::Create(buffer.channel_count(), 1);
   buffer.ReadFrames(1, index, 0, temp_bus.get());
-  return temp_bus->channel(0)[0] * std::numeric_limits<uint16_t>::max();
+  return temp_bus->channel_span(0)[0] * std::numeric_limits<uint16_t>::max();
 }
 
 TEST(AudioDiscardHelperTest, TimeDeltaToFrames) {
@@ -91,7 +91,7 @@ TEST(AudioDiscardHelperTest, BasicProcessBuffers) {
   ASSERT_FALSE(discard_helper.initialized());
 
   // Verify a NULL output buffer returns false.
-  ASSERT_FALSE(discard_helper.ProcessBuffers(time_info, NULL));
+  ASSERT_FALSE(discard_helper.ProcessBuffers(time_info, nullptr));
 }
 
 TEST(AudioDiscardHelperTest, NegativeTimestampClampsToZero) {
@@ -409,7 +409,7 @@ TEST(AudioDiscardHelperTest, DelayedDiscardInitialDiscardAndDiscardPadding) {
   discard_helper.Reset(kDiscardFrames);
 
   // Verify nothing is output for the first buffer, yet initialized is true.
-  ASSERT_FALSE(discard_helper.ProcessBuffers(time_info, NULL));
+  ASSERT_FALSE(discard_helper.ProcessBuffers(time_info, nullptr));
   ASSERT_TRUE(discard_helper.initialized());
 
   // Create an encoded buffer with no discard padding.
@@ -470,7 +470,7 @@ TEST(AudioDiscardHelperTest, CompleteDiscardWithDelayedDiscard) {
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Setup a delayed discard.
-  ASSERT_FALSE(discard_helper.ProcessBuffers(time_info, NULL));
+  ASSERT_FALSE(discard_helper.ProcessBuffers(time_info, nullptr));
   ASSERT_TRUE(discard_helper.initialized());
 
   // Verify the first output buffer is dropped.

@@ -217,4 +217,7 @@ interface AcceleratorConfigurationProvider {
 
   // Records the subactions done when adding or editing an accelerator.
   RecordAddOrEditSubactions(bool is_add, Subactions subactions);
+
+  // Checks if the user has any non-default accelerators.
+  HasCustomAccelerators() => (bool has_custom_accelerators);
 };

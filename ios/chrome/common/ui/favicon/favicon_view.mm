@@ -9,7 +9,7 @@
 namespace {
 // Default corner radius for the favicon image view.
 const CGFloat kDefaultCornerRadius = 3;
-}
+}  // namespace
 
 const CGFloat kFaviconMinSize = 16.0f;
 const CGFloat kFaviconPreferredSize = 24.0f;

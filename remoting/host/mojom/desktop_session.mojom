@@ -450,6 +450,9 @@ interface VideoCapturer {
   // request). This ensures the frames are correctly ordered relative to the
   // shared-memory events.
   CaptureFrame();
+
+  // Indicates whether the mouse cursor should be embedded in the video frame.
+  SetComposeEnabled(bool enabled);
 };
 
 // Enables receiving capture information (shared-memory, video-frames) from a
@@ -499,6 +502,9 @@ struct VideoTrackLayout {
 
   // DPI of the screen being captured.
   DesktopVector dpi;
+
+  // Display name. This is displayed in the client UI and is informational only.
+  string display_name;
 };
 
 // This struct mirrors the remoting::protocol::VideoLayout message.
@@ -539,6 +545,12 @@ interface DesktopSessionEventHandler {
 
   // Notifies the network process that the keyboard layout has changed.
   OnKeyboardLayoutChanged(KeyboardLayout keyboard_layout);
+
+  // Notifies the network process that local mouse movement was detected.
+  OnLocalMouseMoveDetected(DesktopVector new_position);
+
+  // Notifies the network process that local keyboard input was detected.
+  OnLocalKeyboardInputDetected(int32 usb_keycode);
 };
 
 // This enum mirrors the remoting::protocol::ErrorCode enum.
@@ -566,6 +578,19 @@ enum ProtocolErrorCode {
   kUnauthorizedAccount = 20,
   kReauthzPolicyCheckFailed = 21,
   kNoCommonAuthMethod = 22,
+  kLoginScreenNotSupported = 23,
+  kSessionPoliciesChanged = 24,
+  kUnexpectedAuthenticatorError = 25,
+  kInvalidState = 26,
+  kInvalidArgument = 27,
+  kNetworkFailure = 28,
+};
+
+// This struct mirrors remoting::SourceLocation.
+struct SourceLocation {
+  string? function_name;
+  string? file_name;
+  int32 line_number;
 };
 
 // Provides the desktop integration process with a mechanism for controlling the
@@ -574,12 +599,19 @@ enum ProtocolErrorCode {
 // integration process and the receiver is bound in the low-privilege network
 // process.
 interface DesktopSessionStateHandler {
-  // Disconnects the remote client from the host machine, |error_code| is
-  // passed to the remote client as the reason for the disconnection. An example
-  // usage is when the 'disconnect' button is clicked on the local disconnect
-  // window. The desktop process should expect to be terminated shortly after
-  // calling this method.
-  DisconnectSession(ProtocolErrorCode error_code);
+  // Disconnects the remote client from the host machine. All arguments will
+  // be passed to the website client as the reason for the disconnection.
+  // `error_code` is the general error category, while `error_details` is a
+  // human readable string without PII that provides details for
+  // troubleshooting. `error_location` has information about where the
+  // disconnection was initiated.
+  // An example usage is when the 'disconnect' button is clicked on the local
+  // disconnect window. The desktop process should expect to be terminated
+  // shortly after calling this method.
+  DisconnectSession(
+    ProtocolErrorCode error_code,
+    string error_details,
+    SourceLocation error_location);
 };
 
 // Allows the worker process launcher to send messages to a child process.

@@ -4,15 +4,38 @@
   }
 
   #regionSelectionCanvas {
-    top: 0;
+    background: transparent;
     left: 0;
     position: absolute;
+    top: 0;
+  }
+
+  /* Add a scrim, initially transparent, so that it can fade in when the
+   * user starts selecting. */
+  :host([border-glow-enabled]) #regionSelectionCanvas {
+    opacity: 0;
+    transition: opacity 166ms cubic-bezier(0.3, 0, 1, 1);
+  }
+
+  :host([border-glow-enabled][is-selecting]) #regionSelectionCanvas {
+    /* 30% scrim */
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 1;
+  }
+
+  :host([border-glow-enabled][has-selected]) #regionSelectionCanvas {
+    /* 20% scrim */
+    background: rgba(0, 0, 0, 0.1);
+    opacity: 1;
   }
 </style>
-<canvas id="regionSelectionCanvas" height="[[canvasPhysicalHeight]]"
+<canvas
+  id="regionSelectionCanvas"
+  height="[[canvasPhysicalHeight]]"
   width="[[canvasPhysicalWidth]]"
-  style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"></canvas>
+  style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"
+></canvas>
 <!-- Provides image source for canvas; element is not displayed. -->
 <div id="highlightImgContainer">
-  <canvas id="highlightImgCanvas">
+  <canvas id="highlightImgCanvas"></canvas>
 </div>

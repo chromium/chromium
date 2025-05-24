@@ -47,23 +47,25 @@ using testing::Invoke;
 namespace {
 
 constexpr char kPresentationId[] = "test_id";
-const base::FilePath::StringPieceType kResourcePath =
+const base::FilePath::StringViewType kResourcePath =
     FILE_PATH_LITERAL("media/router/");
 
 base::RepeatingCallback<void(const std::string&)> GetNoopTitleChangeCallback() {
   return base::BindRepeating([](const std::string& title) {});
 }
 
-base::FilePath GetResourceFile(base::FilePath::StringPieceType relative_path) {
+base::FilePath GetResourceFile(base::FilePath::StringViewType relative_path) {
   base::FilePath base_dir;
-  if (!base::PathService::Get(chrome::DIR_TEST_DATA, &base_dir))
+  if (!base::PathService::Get(chrome::DIR_TEST_DATA, &base_dir)) {
     return base::FilePath();
+  }
   base::FilePath full_path =
       base_dir.Append(kResourcePath).Append(relative_path);
   {
     base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-    if (!PathExists(full_path))
+    if (!PathExists(full_path)) {
       return base::FilePath();
+    }
   }
   return full_path;
 }
@@ -75,7 +77,7 @@ base::FilePath GetResourceFile(base::FilePath::StringPieceType relative_path) {
 class FakeControllerConnection final
     : public blink::mojom::PresentationConnection {
  public:
-  FakeControllerConnection() {}
+  FakeControllerConnection() = default;
 
   FakeControllerConnection(const FakeControllerConnection&) = delete;
   FakeControllerConnection& operator=(const FakeControllerConnection&) = delete;

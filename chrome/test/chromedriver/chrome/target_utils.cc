@@ -15,13 +15,20 @@
 #include "chrome/test/chromedriver/chrome/web_view_info.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 
-Status target_utils::GetWebViewsInfo(DevToolsClient& devtools_websocket_client,
-                                     const Timeout* timeout,
-                                     WebViewsInfo& views_info) {
+Status target_utils::GetTopLevelViewsInfo(
+    DevToolsClient& devtools_websocket_client,
+    const Timeout* timeout,
+    WebViewsInfo& views_info) {
   Status status{kOk};
-
   base::Value::Dict params;
   base::Value::Dict result;
+  params.Set(
+      "filter",
+      base::Value::List{}
+          .Append(
+              base::Value::Dict{}.Set("type", "browser").Set("exclude", true))
+          .Append(base::Value::Dict{}.Set("type", "page").Set("exclude", true))
+          .Append(base::Value::Dict{}.Set("exclude", false)));
   status = devtools_websocket_client.SendCommandAndGetResultWithTimeout(
       "Target.getTargets", params, timeout, &result);
   if (status.IsError()) {
@@ -40,15 +47,15 @@ Status target_utils::GetWebViewsInfo(DevToolsClient& devtools_websocket_client,
   return views_info.FillFromTargetsInfo(target_infos->GetList());
 }
 
-Status target_utils::WaitForPage(DevToolsClient& client,
-                                 const Timeout& timeout) {
+Status target_utils::WaitForTab(DevToolsClient& client,
+                                const Timeout& timeout) {
   do {
     WebViewsInfo views_info;
-    Status status = GetWebViewsInfo(client, &timeout, views_info);
+    Status status = GetTopLevelViewsInfo(client, &timeout, views_info);
     if (status.IsError()) {
       return status;
     }
-    if (views_info.ContainsTargetType(WebViewInfo::kPage)) {
+    if (views_info.ContainsTargetType(WebViewInfo::kTab)) {
       return Status(kOk);
     }
     base::PlatformThread::Sleep(base::Milliseconds(50));
@@ -56,11 +63,12 @@ Status target_utils::WaitForPage(DevToolsClient& client,
   return Status(kTimeout, "unable to discover open pages");
 }
 
-Status target_utils::AttachToPageTarget(
+Status target_utils::AttachToPageOrTabTarget(
     DevToolsClient& browser_client,
     const std::string& target_id,
     const Timeout* timeout,
-    std::unique_ptr<DevToolsClient>& target_client) {
+    std::unique_ptr<DevToolsClient>& target_client,
+    bool is_tab) {
   base::Value::Dict params;
   base::Value::Dict result;
   params.Set("targetId", target_id);
@@ -78,8 +86,10 @@ Status target_utils::AttachToPageTarget(
   }
 
   std::unique_ptr<DevToolsClientImpl> client =
-      std::make_unique<DevToolsClientImpl>(target_id, *session_id_ptr);
-  client->SetMainPage(true);
+      std::make_unique<DevToolsClientImpl>(target_id, *session_id_ptr, is_tab);
+  if (!is_tab) {
+    client->SetMainPage(true);
+  }
   target_client = std::move(client);
 
   return status;

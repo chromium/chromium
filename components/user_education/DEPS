@@ -9,4 +9,5 @@ include_rules = [
   "+ui/color",
   "+ui/events",
   "+ui/gfx",
+  "+ui/menus",
 ]

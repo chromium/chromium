@@ -10,7 +10,9 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/version_info/channel.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
@@ -41,11 +43,17 @@ base::Time GetTestFetchTime() {
 class FakeSeedStore : public VariationsSeedStore {
  public:
   explicit FakeSeedStore(TestingPrefServiceSimple* local_state)
-      : VariationsSeedStore(
-            local_state,
-            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)) {
-    VariationsSeedStore::RegisterPrefs(local_state->registry());
-  }
+      : VariationsSeedStore(local_state,
+                            /*initial_seed=*/nullptr,
+                            /*signature_verification_enabled=*/true,
+                            std::make_unique<VariationsSafeSeedStoreLocalState>(
+                                local_state,
+                                /*seed_file_dir=*/base::FilePath(),
+                                version_info::Channel::UNKNOWN,
+                                /*entropy_providers=*/nullptr),
+                            version_info::Channel::UNKNOWN,
+                            /*seed_file_dir=*/base::FilePath(),
+                            /*entropy_providers=*/nullptr) {}
 
   FakeSeedStore(const FakeSeedStore&) = delete;
   FakeSeedStore& operator=(const FakeSeedStore&) = delete;
@@ -133,10 +141,12 @@ class SafeSeedManagerTest : public ::testing::Test {
   SafeSeedManagerTest() {
     metrics::CleanExitBeacon::RegisterPrefs(prefs_.registry());
     SafeSeedManager::RegisterPrefs(prefs_.registry());
+    VariationsSeedStore::RegisterPrefs(prefs_.registry());
   }
   ~SafeSeedManagerTest() override = default;
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
 };
 

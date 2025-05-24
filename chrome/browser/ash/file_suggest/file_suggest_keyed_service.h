@@ -105,6 +105,12 @@ class FileSuggestKeyedService : public KeyedService {
   // Called whenever a suggestion provider updates.
   void OnSuggestionProviderUpdated(FileSuggestionType type);
 
+  // Filters `suggestions` so that any suggestons which have a duplicate file
+  // path will be removed. Then returns the filtered result through `callback`.
+  void FilterDuplicateSuggestions(
+      GetSuggestFileDataCallback callback,
+      const std::optional<std::vector<FileSuggestData>>& suggestions);
+
   // Filters `suggestions` so that the suggestions that were removed before do
   // not appear. Then returns the filtered result through `callback`.
   void FilterRemovedSuggestions(

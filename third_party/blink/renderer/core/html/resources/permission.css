@@ -11,16 +11,17 @@
 
 permission {
   background-color:#efefef;
-  box-sizing: border-box !important;
+  border: solid 1px #767676;
+  box-sizing: content-box !important;
   border-radius: 3px;
   color: #000000;
-  cursor: pointer !important;
+  cursor: pointer;
   display: inline-block;
   font-weight: normal;
   font-style: normal;
-  height: 1.2em;
-  outline: solid 1px #767676;
-  width: 188px;
+  padding: 8px 16px;
+  height: auto;
+  width: auto;
   word-spacing: normal;
  }
 
@@ -40,6 +41,7 @@ permission::-internal-permission-text {
   line-height: normal;
   margin: auto;
   min-height: inherit;
+  max-height: inherit;
   outline: none;
   user-select:none;
   white-space:nowrap;

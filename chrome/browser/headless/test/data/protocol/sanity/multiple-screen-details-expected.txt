@@ -1,0 +1,23 @@
+Tests multiple screen configuration.
+Screen
+ label='#1'
+ 0,0 800x600
+ avail=0,0 800x600
+ isPrimary=true
+ isExtended=true
+ isInternal=false
+ colorDepth=24
+ devicePixelRatio=1
+ orientation.type=landscape-primary
+ orientation.angle=0
+Screen
+ label='#2'
+ 800,0 600x800
+ avail=800,0 600x800
+ isPrimary=false
+ isExtended=true
+ isInternal=false
+ colorDepth=24
+ devicePixelRatio=1
+ orientation.type=landscape-primary
+ orientation.angle=0

@@ -8,8 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class GURL;
 
@@ -18,19 +17,11 @@ class SessionSyncService;
 }  // namespace sync_sessions
 
 // Singleton that owns all SessionSyncService and associates them with
-// ChromeBrowserState.
-class SessionSyncServiceFactory : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class SessionSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static sync_sessions::SessionSyncService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static sync_sessions::SessionSyncService* GetForProfile(ProfileIOS* profile);
   static SessionSyncServiceFactory* GetInstance();
-
-  SessionSyncServiceFactory(const SessionSyncServiceFactory&) = delete;
-  SessionSyncServiceFactory& operator=(const SessionSyncServiceFactory&) =
-      delete;
 
   static bool ShouldSyncURLForTesting(const GURL& url);
 

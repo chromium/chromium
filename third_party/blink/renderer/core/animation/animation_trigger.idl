@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://drafts.csswg.org/web-animations-2/#the-animationtrigger-interface
+
+enum AnimationTriggerType { "once", "repeat", "alternate", "state" };
+
+[
+    Exposed=Window,
+    RuntimeEnabled=AnimationTrigger
+] interface AnimationTrigger {
+  [CallWith=ExecutionContext, Measure, RaisesException] constructor(optional AnimationTriggerOptions options = {});
+  readonly attribute AnimationTimeline? timeline;
+  readonly attribute AnimationTriggerType type;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeStart;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeEnd;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeStart;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeEnd;
+};

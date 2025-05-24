@@ -3,18 +3,13 @@
     "os": [
       "linux"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "GSSAPILibraryName": "libwhatever.so"
-        },
-        "prefs": {
-          "auth.gssapi_library_name": {
-            "location": "local_state",
-            "value": "libwhatever.so"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "auth.gssapi_library_name",
+      "pref_location": "local_state",
+      "default_value": "",
+      "values_to_test": [
+        "libwhatever.so"
+      ]
+    }
   }
 ]

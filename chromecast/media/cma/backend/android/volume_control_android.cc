@@ -74,9 +74,7 @@ void VolumeControlAndroid::AddVolumeObserver(VolumeObserver* observer) {
 
 void VolumeControlAndroid::RemoveVolumeObserver(VolumeObserver* observer) {
   base::AutoLock lock(observer_lock_);
-  volume_observers_.erase(
-      std::remove(volume_observers_.begin(), volume_observers_.end(), observer),
-      volume_observers_.end());
+  std::erase(volume_observers_, observer);
 }
 
 float VolumeControlAndroid::GetVolume(AudioContentType type) {

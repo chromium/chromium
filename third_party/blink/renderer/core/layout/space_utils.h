@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class BoxFragmentBuilder;
 class ConstraintSpaceBuilder;
 struct BfcOffset;
 
@@ -48,6 +49,19 @@ inline void SetOrthogonalFallbackInlineSizeIfNeeded(
 // container. Return true if an auto inline-size means that the child should be
 // stretched (rather than being shrink-to-fit).
 bool ShouldBlockContainerChildStretchAutoInlineSize(const BlockNode&);
+
+// Set up box trimming state on a ConstraintSpaceBuilder for a child of the box
+// fragment builder. `known_to_have_successive_content` may have false
+// negatives.
+void SetTextBoxTrimOnChildSpaceBuilder(const BoxFragmentBuilder&,
+                                       bool known_to_have_successive_content,
+                                       ConstraintSpaceBuilder*);
+
+inline void SetTextBoxTrimOnChildSpaceBuilder(
+    const BoxFragmentBuilder& fragment_builder,
+    ConstraintSpaceBuilder* space_builder) {
+  SetTextBoxTrimOnChildSpaceBuilder(fragment_builder, false, space_builder);
+}
 
 }  // namespace blink
 

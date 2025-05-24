@@ -174,6 +174,37 @@ message AutofillRandomizedFieldMetadata {
 
   // Value of the autocomplete attribute. Example: <input autocomplete="XXX">
   optional AutofillRandomizedValue autocomplete = 10;
+
+  // Value of the pattern attribute. Example: <input pattern="XXXXX">
+  optional AutofillRandomizedValue pattern = 11;
+
+  // Value of the maxlength attribute. Example: <input maxlength=4>
+  optional AutofillRandomizedValue max_length = 12;
+
+  // Corresponds to a `autofill::SelectOption`.
+  message AutofillRandomizedSelectOption {
+    // The option's "value" attribute, or, if not present, its text content.
+    optional AutofillRandomizedValue value = 1;
+    // The option's "label" attribute, or, if not present, its text content.
+    // Emitted only if it is not the same as the "value" field above.
+    optional AutofillRandomizedValue text = 2;
+  }
+
+  // The <option>s if the field is a <select>. Note that if the <select>
+  // has more than 3 options, this only includes the first, the second, and the
+  // last option.
+  repeated AutofillRandomizedSelectOption select_option = 13;
+}
+
+// A format string describes a value pattern.
+message FormatString {
+  enum Type {
+    // The format string represents a date as documented
+    // autofill::data_util::IsValidDateFormat().
+    DATE = 0;
+  }
+  optional Type type = 49;
+  optional string format_string = 50;
 }
 
 // This message contains information about the field types in a single form.
@@ -334,6 +365,9 @@ message AutofillUploadContents {
     // between then and form submission. Set to `false` if the pre-filled value
     // wasn't changed. Not set if the field didn't have a pre-filled value.
     optional bool initial_value_changed = 47;
+
+    // List of format strings which match the field's value.
+    repeated FormatString format_string = 51;
   }
   repeated Field field_data = 48;
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
@@ -430,20 +464,6 @@ message AutofillUploadContents {
   // Captures whether or not this upload was a candidate for throttling.
   optional bool was_throttleable = 38 [deprecated = true];
 
-  // Type of the value seen in the potential single username field.
-  enum ValueType {
-    TYPE_UNSPECIFIED = 0;
-    NO_VALUE_TYPE = 1;
-    STORED_FOR_CURRENT_DOMAIN = 2;
-    // TODO(crbug.com/40626063) Not used yet. Check against all domains to be
-    // implemented.
-    STORED_FOR_ANOTHER_DOMAIN = 3;
-    EMAIL = 4;
-    PHONE = 5;
-    USERNAME_LIKE = 6;
-    VALUE_WITH_NO_WHITESPACE = 7;
-    VALUE_WITH_WHITESPACE = 8;
-  }
   // Information received from user interaction with the prompt.
   enum SingleUsernamePromptEdit {
     EDIT_UNSPECIFIED = 0;
@@ -452,16 +472,8 @@ message AutofillUploadContents {
     EDITED_POSITIVE = 3;
     EDITED_NEGATIVE = 4;
   }
-  message SingleUsernameData {
-    optional fixed64 username_form_signature = 1;
-    optional fixed32 username_field_signature = 2;
-    optional ValueType value_type = 3;
-    optional SingleUsernamePromptEdit prompt_edit = 4;
-  }
-  // This message is recorded on forms that do not have a username field.
-  // The message contains data on preceding forms with potential username
-  // fields.
-  repeated SingleUsernameData single_username_data = 42;
+
+  reserved 42;
 
   // The form signature of related forms, which were submitted on the same
   // origin shortly prior. If set, `last_address_form_submitted` or
@@ -472,25 +484,4 @@ message AutofillUploadContents {
 
   reserved 5;
   reserved "Field";
-}
-
-// This proto contains information about the validity of each field in an
-// autofill profile. It is used to transfer the results of running the profile
-// validation pipeline on the server side to the client via ChromeSync
-// PriorityPreferences. An identical copy of this proto is maintained in
-// the server code base.
-message ProfileValidityMap {
-  // Map from autofill type to the validity of its value in the profile.
-  //
-  // Key should be one of the enum values from FieldType. Values should be
-  // from the AutofillProfile::ValidityState. Plain integers are used
-  // instead of enums because proto2 treats unknown enum values as unknown
-  // fields, which is confusing when the enums are in maps.
-  map<int32, int32> field_validity_states = 1;
-}
-
-// Map from profile GUIDs to profile validity maps for that profile. Each
-// message should contain entries for all profiles from a single user.
-message UserProfileValidityMap {
-  map<string, ProfileValidityMap> profile_validity = 1;
 }

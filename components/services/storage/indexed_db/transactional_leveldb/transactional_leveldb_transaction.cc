@@ -110,10 +110,6 @@ TransactionalLevelDBTransaction::CreateIterator(leveldb::Status& s) {
   return it;
 }
 
-uint64_t TransactionalLevelDBTransaction::GetTransactionSize() const {
-  return scope_->GetMemoryUsage() + scope_->GetApproximateBytesWritten();
-}
-
 leveldb::Status TransactionalLevelDBTransaction::ForceWriteChangesAndUndoLog() {
   return scope_->WriteChangesAndUndoLog();
 }

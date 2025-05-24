@@ -15,9 +15,9 @@
 
 #include <sddl.h>
 
+#include <algorithm>
 #include <optional>
 
-#include "base/ranges/algorithm.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
@@ -30,8 +30,9 @@ namespace base::win {
 namespace {
 
 bool EqualSid(const std::optional<Sid>& sid, const ATL::CSid& compare_sid) {
-  if (!sid)
+  if (!sid) {
     return false;
+  }
   return sid->Equal(const_cast<SID*>(compare_sid.GetPSID()));
 }
 
@@ -45,22 +46,24 @@ bool EqualSid(const Sid& sid, const std::wstring& sddl_sid) {
 }
 
 bool EqualSid(const std::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
-  if (!sid)
+  if (!sid) {
     return false;
+  }
   char known_sid_buffer[SECURITY_MAX_SID_SIZE] = {};
   DWORD size = SECURITY_MAX_SID_SIZE;
-  if (!::CreateWellKnownSid(known_sid, nullptr, known_sid_buffer, &size))
+  if (!::CreateWellKnownSid(known_sid, nullptr, known_sid_buffer, &size)) {
     return false;
+  }
 
   return sid->Equal(known_sid_buffer);
 }
 
 bool TestSidVector(std::optional<std::vector<Sid>> sids,
                    const std::vector<std::wstring>& sddl) {
-  return sids && ranges::equal(*sids, sddl,
-                               [](const Sid& sid, const std::wstring& sddl) {
-                                 return EqualSid(sid, sddl);
-                               });
+  return sids && std::ranges::equal(
+                     *sids, sddl, [](const Sid& sid, const std::wstring& sddl) {
+                       return EqualSid(sid, sddl);
+                     });
 }
 
 bool TestFromSddlStringVector(const std::vector<std::wstring> sddl) {
@@ -306,8 +309,8 @@ TEST(SidTest, FromNamedCapabilityVector) {
                                             L"registryRead",
                                             L"lpacCryptoServices"};
 
-  ASSERT_TRUE(ranges::equal(Sid::FromNamedCapabilityVector(capabilities),
-                            capabilities, EqualNamedCapSid));
+  ASSERT_TRUE(std::ranges::equal(Sid::FromNamedCapabilityVector(capabilities),
+                                 capabilities, EqualNamedCapSid));
   EXPECT_EQ(Sid::FromNamedCapabilityVector({}).size(), 0U);
 }
 

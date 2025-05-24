@@ -7,7 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "chrome/browser/ash/child_accounts/time_limit_consistency_test/proto_matcher.h"
+#include "base/test/protobuf_matchers.h"
 #include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,7 +40,8 @@ TEST_F(ConsistencyGoldenLoaderTest, LoadTestGoldenCases) {
   ASSERT_EQ(goldens_list.size(), 1ul);
   EXPECT_EQ(goldens_list[0].suite_name, "test_golden");
   EXPECT_EQ(goldens_list[0].index, 0);
-  EXPECT_THAT(goldens_list[0].golden_case, EqualsProto(golden_case));
+  EXPECT_THAT(goldens_list[0].golden_case,
+              base::test::EqualsProto(golden_case));
 }
 
 }  // namespace time_limit_consistency

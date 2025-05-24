@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script src="./webgpu-helpers.js"></script>
+
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-enables-acceleration</h1>
+<p>Calling transferToGPUTexture() upgrades canvas from CPU to GPU.</p>
+
+<script>
+
+assert_true(!!self.internals, 'This test requires internal APIs.');
+
+runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
+
+/**
+ * Validates that CPU HTMLCanvasElement can upgrade to GPU when transferred to
+ * WebGPU.
+ */
+canvasPromiseTest(async (canvas, {canvasType} = {}) => {
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'green';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Wait a frame so the canvas creates GPU resources.
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  assert_true(
+      internals.isCanvasImageSourceAccelerated(canvas),
+      'Canvas should start accelerated.');
+
+  // Read back multiple times to trigger a downgrade to CPU.
+  ctx.getImageData(0, 0, 10, 10);
+  ctx.getImageData(0, 0, 10, 10);
+  ctx.getImageData(0, 0, 10, 10);
+
+  if (OFFSCREEN_CANVAS_TEST_TYPES.includes(canvasType)) {
+    assert_true(
+        internals.isCanvasImageSourceAccelerated(canvas),
+        'OffscreenCanvas should not automatically downgrade to CPU.');
+  } else {
+    assert_false(
+        internals.isCanvasImageSourceAccelerated(canvas),
+        'HTMLCanvasElement should downgrade to CPU after many getImageData.');
+  }
+
+  // Transferring to WebGPU should upgrade the canvas back to GPU.
+  const device = await getWebGPUDevice();
+  ctx.transferToGPUTexture({device: device});
+  ctx.transferBackFromGPUTexture();
+
+  assert_true(
+      internals.isCanvasImageSourceAccelerated(canvas),
+      'Canvas should upgrade to GPU when transferred to WebGPU.');
+}, 'CPU canvas should upgrade to GPU when calling transferToGPUTexture');
+
+</script>

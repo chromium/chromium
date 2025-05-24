@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sensitive_content/features.h"
 #include "components/viz/common/features.h"
+#include "content/public/common/content_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwFeatureMap_jni.h"
@@ -26,22 +27,17 @@ namespace {
 // (e.g. content/, components/, etc).
 const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewBackForwardCache,
-    &features::kWebViewDisplayCutout,
-    &features::kWebViewDragDropFiles,
-    &features::kWebViewExitReasonMetric,
-    &::features::kWebViewFrameRateHints,
+    &features::kWebViewDrainPrefetchQueueDuringInit,
+    &features::kWebViewFileSystemAccess,
     &features::kWebViewInvokeZoomPickerOnGSU,
+    &features::kWebViewLazyFetchHandWritingIcon,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,
     &features::kWebViewUseMetricsUploadService,
     &features::kWebViewUseMetricsUploadServiceOnlySdkRuntime,
     &features::kWebViewXRequestedWithHeaderControl,
-    &features::kWebViewRestrictSensitiveContent,
     &metrics::kAndroidMetricsAsyncMetricLogging,
-    &features::kWebViewZoomKeyboardShortcuts,
     &safe_browsing::kHashPrefixRealTimeLookups,
-    &features::kWebViewSupervisedUserSiteDetection,
-    &features::kWebViewSupervisedUserSiteBlock,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &features::kWebViewMediaIntegrityApiBlinkExtension,
     &features::kWebViewSeparateResourceContext,
@@ -50,17 +46,26 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewReduceUAAndroidVersionDeviceModel,
     &features::kWebViewEnableCrash,
     &features::kWebViewPreloadClasses,
+    &features::kWebViewPrefetchNativeLibrary,
     &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
     &features::kWebViewHyperlinkContextMenu,
+    &features::kWebViewDisableCHIPS,
+    &features::kWebViewSafeAreaIncludesSystemBars,
     &base::features::kPostGetMyMemoryStateToBackground,
     &sensitive_content::features::kSensitiveContent,
     &features::kWebViewWebauthn,
+    &::features::kPrefetchBrowserInitiatedTriggers,
+    &features::kWebViewShortCircuitShouldInterceptRequest,
+    &features::kWebViewUseStartupTasksLogic,
+    &features::kWebViewRecordAppCacheHistograms,
+    &features::kWebViewQuicConnectionTimeout,
+    &features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
 };
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 

@@ -112,6 +112,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
     // Called after EmitLoginPromptVisible is called.
     virtual void EmitLoginPromptVisibleCalled() {}
 
+    // Called after StartSessionEx is called.
+    virtual void StartSessionExCalled() {}
+
     // Called when the ARC instance is stopped after it had already started.
     virtual void ArcInstanceStopped(
         login_manager::ArcContainerStopReason reason) {}
@@ -270,17 +273,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   virtual void StartRemoteDeviceWipe(
       const enterprise_management::SignedData& signed_command) = 0;
 
-  // Set the block_demode and check_enrollment flags to 0 in the VPD.
-  virtual void ClearForcedReEnrollmentVpd(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void UnblockDevModeForEnrollment(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void UnblockDevModeForInitialStateDetermination(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void UnblockDevModeForCarrierLock(
+  // Set the block_demode flag to 0 in the VPD.
+  virtual void ClearBlockDevmodeVpd(
       chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Triggers a TPM firmware update.

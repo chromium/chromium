@@ -5,18 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_PAGE_VISIBILITY_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_PAGE_VISIBILITY_STATE_H_
 
-namespace blink {
-namespace scheduler {
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
+
+namespace blink::scheduler {
 
 // TODO(altimin): Move to core/.
 enum class PageVisibilityState { kVisible, kHidden };
 
-const char* PageVisibilityStateToString(PageVisibilityState visibility);
+perfetto::StaticString PageVisibilityStateToString(
+    PageVisibilityState visibility);
 
 constexpr PageVisibilityState kDefaultPageVisibility =
     PageVisibilityState::kVisible;
 
-}  // namespace scheduler
-}  // namespace blink
+}  // namespace blink::scheduler
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_PAGE_VISIBILITY_STATE_H_

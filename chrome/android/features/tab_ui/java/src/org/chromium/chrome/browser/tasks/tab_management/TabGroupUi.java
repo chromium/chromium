@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 
 /** Interface for the Tab Groups related UI. */
+@NullMarked
 public interface TabGroupUi extends BottomControlsContentDelegate {
     /**
      * @return Whether the TabGridDialog is visible.

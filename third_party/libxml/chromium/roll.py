@@ -74,6 +74,8 @@ import tempfile
 PATCHES = [
     'undo-sax-deprecation.patch',
     'remove-getentropy.patch',
+    'xml-attr-extra.patch',
+    'widen-extra-field-in-_xmlNode-to-an-int.patch',
 ]
 
 
@@ -116,6 +118,7 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--without-xinclude', 'xinclude=no'),
     ('--without-xptr', 'xptr=no'),
     ('--without-zlib', 'zlib=no'),
+    ('--without-relaxng', 'relaxng=no'),
 ]
 
 

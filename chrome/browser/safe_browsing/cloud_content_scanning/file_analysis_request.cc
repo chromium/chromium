@@ -4,12 +4,13 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/ranges/algorithm.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/file_util_service.h"
@@ -33,6 +34,7 @@ namespace safe_browsing {
 namespace {
 
 constexpr size_t kReadFileChunkSize = 4096;
+constexpr size_t kMaxUploadSizeMetricsKB = 500 * 1024;
 
 std::string GetFileMimeType(const base::FilePath& path,
                             std::string_view first_bytes) {
@@ -117,7 +119,7 @@ GetFileDataBlocking(const base::FilePath& path,
     }
 
     secure_hash->Update(
-        base::as_byte_span(buf).subspan(0, bytes_currently_read.value()));
+        base::as_byte_span(buf).first(bytes_currently_read.value()));
     bytes_read += bytes_currently_read.value();
   }
 
@@ -135,9 +137,14 @@ GetFileDataBlocking(const base::FilePath& path,
     auto overhead = obfuscator.CalculateDeobfuscationOverhead(file);
     if (overhead.has_value()) {
       file_data.size -= overhead.value();
+      file_data.is_obfuscated = true;
     }
   }
 
+  // Create a histogram to track the size of files being scanned up to 500MB.
+  base::UmaHistogramCustomCounts(
+      "Enterprise.FileAnalysisRequest.FileSize", file_data.size / 1024, 1,
+      kMaxUploadSizeMetricsKB, 50);
   return {file_data.size <= BinaryUploadService::kMaxUploadSizeBytes
               ? BinaryUploadService::Result::SUCCESS
               : BinaryUploadService::Result::FILE_TOO_LARGE,
@@ -241,7 +248,7 @@ void FileAnalysisRequest::OnGotFileData(
                                      ? result_and_data.second.mime_type
                                      : cached_data_.mime_type;
   base::FilePath::StringType ext(file_name_.FinalExtension());
-  base::ranges::transform(ext, ext.begin(), tolower);
+  std::ranges::transform(ext, ext.begin(), tolower);
   if (IsZipFile(ext, mime_type)) {
     zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
         path_,

@@ -47,6 +47,13 @@ struct CORE_EXPORT LogicalRect {
 
   constexpr bool IsEmpty() const { return size.IsEmpty(); }
 
+  constexpr LayoutUnit InlineStartOffset() const {
+    return offset.inline_offset;
+  }
+  constexpr LayoutUnit BlockStartOffset() const { return offset.block_offset; }
+  constexpr LayoutUnit InlineSize() const { return size.inline_size; }
+  constexpr LayoutUnit BlockSize() const { return size.block_size; }
+
   LayoutUnit InlineEndOffset() const {
     return offset.inline_offset + size.inline_size;
   }
@@ -55,9 +62,7 @@ struct CORE_EXPORT LogicalRect {
   }
   LogicalOffset EndOffset() const { return offset + size; }
 
-  constexpr bool operator==(const LogicalRect& other) const {
-    return other.offset == offset && other.size == size;
-  }
+  constexpr bool operator==(const LogicalRect& other) const = default;
 
   LogicalRect operator+(const LogicalOffset& additional_offset) const {
     return {offset + additional_offset, size};
@@ -107,6 +112,11 @@ struct CORE_EXPORT LogicalRect {
     LayoutUnit new_block_size = (BlockEndOffset() - edge).ClampNegativeToZero();
     offset.block_offset = edge;
     size.block_size = new_block_size;
+  }
+
+  // Update inline-end offset without changing the inline-start offset.
+  void ShiftInlineEndEdgeTo(LayoutUnit edge) {
+    size.inline_size = (edge - offset.inline_offset).ClampNegativeToZero();
   }
 
   // Update block-end offset without changing the block-start offset.

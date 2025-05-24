@@ -6,27 +6,19 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TIMER_QUERY_EXT_H_
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_context_object.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
-
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
-}
 
 namespace blink {
 
-class WebGLTimerQueryEXT : public WebGLContextObject {
+class WebGLTimerQueryEXT : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  WebGLTimerQueryEXT(WebGLRenderingContextBase*);
+  WebGLTimerQueryEXT(WebGLContextObjectSupport*);
   ~WebGLTimerQueryEXT() override;
 
   void SetTarget(GLenum target) { target_ = target; }
-
-  GLuint Object() const { return query_id_; }
   bool HasTarget() const { return target_ != 0; }
   GLenum Target() const { return target_; }
 
@@ -37,14 +29,12 @@ class WebGLTimerQueryEXT : public WebGLContextObject {
   GLuint64 GetQueryResult();
 
  private:
-  bool HasObject() const override { return query_id_ != 0; }
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
   void ScheduleAllowAvailabilityUpdate();
   void AllowAvailabilityUpdate();
 
   GLenum target_;
-  GLuint query_id_;
 
   bool can_update_availability_;
   bool query_result_available_;

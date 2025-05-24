@@ -123,7 +123,7 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
   // deallocated when unused.
   scoped_refptr<IOBuffer> read_buffer_;
   // The number of bytes of read_buffer_ consumed.
-  int read_offset_ = 0;
+  size_t read_offset_ = 0;
   // The result of the most recent socket Read(). If ERR_IO_PENDING, there is a
   // socket Read() in progress. If another error, Read() has failed. Otherwise,
   // it is the number of bytes in the buffer (zero if empty).
@@ -136,7 +136,7 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
   // Write(). The buffer is deallocated when unused.
   scoped_refptr<GrowableIOBuffer> write_buffer_;
   // The number of bytes of data in write_buffer_.
-  int write_buffer_used_ = 0;
+  size_t write_buffer_used_ = 0;
   // The most recent socket Write() error. If ERR_IO_PENDING, there is a socket
   // Write() in progress. If OK, there is no socket Write() in progress and none
   // have failed.

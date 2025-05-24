@@ -6,14 +6,8 @@ package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleMediator.FORCE_DEFAULT_BROWSER;
-import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleMediator.FORCE_QUICK_DELETE;
-import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleMediator.FORCE_TAB_GROUP;
-import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleMediator.FORCE_TAB_GROUP_SYNC;
 
 import android.content.Context;
 
@@ -24,17 +18,29 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -49,21 +55,46 @@ public class EducationalTipModuleMediatorUnitTest {
     @Mock private PropertyModel mModel;
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
+    @Mock private Profile mProfile;
+    @Mock private Tracker mTracker;
+    @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private SyncService mSyncService;
+    @Mock private IdentityManager mIdentityManager;
 
-    private FeatureList.TestValues mParamsTestValues;
+    @Captor
+    private ArgumentCaptor<DefaultBrowserPromoTriggerStateListener>
+            mDefaultBrowserPromoTriggerStateListener;
+
+    ObservableSupplierImpl<Profile> mProfileSupplier;
     private Context mContext;
-    private @ModuleType int mExpectedModuleType;
+    private @ModuleType int mDefaultModuleTypeForTesting;
     private EducationalTipModuleMediator mEducationalTipModuleMediator;
 
     @Before
     public void setUp() {
-        mParamsTestValues = new FeatureList.TestValues();
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(mContext);
-        mExpectedModuleType = ModuleType.EDUCATIONAL_TIP;
+        mDefaultModuleTypeForTesting = ModuleType.DEFAULT_BROWSER_PROMO;
+        TrackerFactory.setTrackerForTests(mTracker);
+        DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
+
+        // Setup for History sync promo
+        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfileSupplier.set(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
 
         mEducationalTipModuleMediator =
-                new EducationalTipModuleMediator(mModel, mModuleDelegate, mActionDelegate);
+                new EducationalTipModuleMediator(
+                        mDefaultModuleTypeForTesting,
+                        mModel,
+                        mModuleDelegate,
+                        mActionDelegate,
+                        mProfile);
     }
 
     @Test
@@ -72,53 +103,104 @@ public class EducationalTipModuleMediatorUnitTest {
     public void testShowModule() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
-        // Test when no card can be displayed.
-        mEducationalTipModuleMediator.showModule();
-        verify(mModuleDelegate).onDataFetchFailed(mExpectedModuleType);
-        verify(mModuleDelegate, never()).onDataReady(mExpectedModuleType, mModel);
-
         // Test showing default browser promo card.
         testShowModuleImpl(
-                FORCE_DEFAULT_BROWSER,
+                ModuleType.DEFAULT_BROWSER_PROMO,
                 R.string.educational_tip_default_browser_title,
                 R.string.educational_tip_default_browser_description,
-                R.drawable.default_browser_promo_logo,
-                /* timesOfCall= */ 1);
+                R.drawable.default_browser_promo_logo);
 
         // Test showing tab group promo card.
         testShowModuleImpl(
-                FORCE_TAB_GROUP,
+                ModuleType.TAB_GROUP_PROMO,
                 R.string.educational_tip_tab_group_title,
                 R.string.educational_tip_tab_group_description,
-                R.drawable.tab_group_promo_logo,
-                /* timesOfCall= */ 2);
+                R.drawable.tab_group_promo_logo);
 
         // Test showing tab group sync promo card.
         testShowModuleImpl(
-                FORCE_TAB_GROUP_SYNC,
+                ModuleType.TAB_GROUP_SYNC_PROMO,
                 R.string.educational_tip_tab_group_sync_title,
                 R.string.educational_tip_tab_group_sync_description,
-                R.drawable.tab_group_sync_promo_logo,
-                /* timesOfCall= */ 3);
+                R.drawable.tab_group_sync_promo_logo);
 
         // Test showing quick delete promo card.
         testShowModuleImpl(
-                FORCE_QUICK_DELETE,
+                ModuleType.QUICK_DELETE_PROMO,
                 R.string.educational_tip_quick_delete_title,
                 R.string.educational_tip_quick_delete_description,
-                R.drawable.quick_delete_promo_logo,
-                /* timesOfCall= */ 4);
+                R.drawable.quick_delete_promo_logo);
+
+        // Test showing history sync promo card.
+        testShowModuleImpl(
+                ModuleType.HISTORY_SYNC_PROMO,
+                R.string.educational_tip_history_sync_title,
+                R.string.educational_tip_history_sync_description,
+                R.drawable.history_sync_promo_logo);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
+    public void testOnViewCreated_DefaultBrowserPromo() {
+        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
+
+        mEducationalTipModuleMediator =
+                new EducationalTipModuleMediator(
+                        ModuleType.DEFAULT_BROWSER_PROMO,
+                        mModel,
+                        mModuleDelegate,
+                        mActionDelegate,
+                        mProfile);
+
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
+                .thenReturn(true);
+
+        mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.DEFAULT_BROWSER_PROMO);
+        mEducationalTipModuleMediator.showModule();
+        mEducationalTipModuleMediator.onViewCreated();
+        verify(mMockDefaultBrowserPromoUtils)
+                .removeListener(
+                        mEducationalTipModuleMediator
+                                .getDefaultBrowserPromoTriggerStateListenerForTesting());
+        verify(mMockDefaultBrowserPromoUtils).notifyDefaultBrowserPromoVisible();
+
+        mEducationalTipModuleMediator =
+                new EducationalTipModuleMediator(
+                        ModuleType.TAB_GROUP_PROMO,
+                        mModel,
+                        mModuleDelegate,
+                        mActionDelegate,
+                        mProfile);
+        mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.TAB_GROUP_PROMO);
+        mEducationalTipModuleMediator.showModule();
+        mEducationalTipModuleMediator.onViewCreated();
+        verify(mMockDefaultBrowserPromoUtils, never())
+                .removeListener(
+                        mEducationalTipModuleMediator
+                                .getDefaultBrowserPromoTriggerStateListenerForTesting());
+        verify(mMockDefaultBrowserPromoUtils).notifyDefaultBrowserPromoVisible();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
+    public void testRemoveModule() {
+        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
+        mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.DEFAULT_BROWSER_PROMO);
+        mEducationalTipModuleMediator.showModule();
+        verify(mMockDefaultBrowserPromoUtils)
+                .addListener(mDefaultBrowserPromoTriggerStateListener.capture());
+
+        mDefaultBrowserPromoTriggerStateListener.getValue().onDefaultBrowserPromoTriggered();
+        verify(mModuleDelegate).removeModule(mDefaultModuleTypeForTesting);
+        verify(mMockDefaultBrowserPromoUtils)
+                .removeListener(mDefaultBrowserPromoTriggerStateListener.capture());
     }
 
     private void testShowModuleImpl(
-            String enabledParam,
-            int titleId,
-            int descriptionId,
-            int imageResource,
-            int timesOfCall) {
-        mParamsTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.EDUCATIONAL_TIP_MODULE, enabledParam, "true");
-        FeatureList.setTestValues(mParamsTestValues);
+            @ModuleType int moduleType, int titleId, int descriptionId, int imageResource) {
+        mEducationalTipModuleMediator.setModuleTypeForTesting(moduleType);
         mEducationalTipModuleMediator.showModule();
 
         verify(mModel)
@@ -130,10 +212,7 @@ public class EducationalTipModuleMediatorUnitTest {
                         EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING,
                         mContext.getString(descriptionId));
         verify(mModel).set(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE, imageResource);
-        verify(mModuleDelegate, times(timesOfCall)).onDataReady(mExpectedModuleType, mModel);
-        verify(mModuleDelegate).onDataFetchFailed(mExpectedModuleType);
-
-        mParamsTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.EDUCATIONAL_TIP_MODULE, enabledParam, "false");
+        verify(mModuleDelegate).onDataReady(moduleType, mModel);
+        verify(mModuleDelegate, never()).onDataFetchFailed(moduleType);
     }
 }

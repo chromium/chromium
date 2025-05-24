@@ -12,7 +12,7 @@ namespace ash {
 // This structure encapsulates some specific parameters of signin flows that are
 // not general enough to be put to UserContext.
 struct SigninSpecifics {
-  SigninSpecifics() {}
+  SigninSpecifics() = default;
 
   // Specifies url that should be shown during Guest signin.
   std::string guest_mode_url;

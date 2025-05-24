@@ -6,7 +6,9 @@
 #define ASH_AUTH_VIEWS_AUTH_CONTAINER_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_common.h"
@@ -22,7 +24,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/box_layout.h"
@@ -46,8 +47,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
   // (e.g., password submission, PIN submission, etc.)
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnPasswordSubmit(const std::u16string& password) {}
-    virtual void OnPinSubmit(const std::u16string& pin) {}
+    virtual void OnPasswordSubmit(std::u16string_view password) {}
+    virtual void OnPinSubmit(std::u16string_view pin) {}
     // Escape key was pressed.
     virtual void OnEscape() {}
     // Something happened on the view e.g: the switch button was pressed or the
@@ -72,7 +73,7 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
     raw_ptr<FingerprintView> GetFingerprintView();
 
-    AuthInputType GetCurrentInputType();
+    std::optional<AuthInputType> GetCurrentInputType();
 
     raw_ptr<AuthContainerView> GetView();
 
@@ -90,7 +91,6 @@ class ASH_EXPORT AuthContainerView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::string GetObjectName() const override;
   void RequestFocus() override;
 
@@ -105,7 +105,7 @@ class ASH_EXPORT AuthContainerView : public views::View {
   void SetHasPin(bool has_pin);
   bool HasPin() const;
   void SetPinStatus(std::unique_ptr<cryptohome::PinStatus> pin_status);
-  const std::u16string& GetPinStatusMessage() const;
+  std::u16string_view GetPinStatusMessage() const;
 
   // Enables or disables the following UI elements:
   // - View
@@ -118,8 +118,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
   // Actions:
   void ToggleCurrentAuthType();
-  void PinSubmit(const std::u16string& pin) const;
-  void PasswordSubmit(const std::u16string& password) const;
+  void PinSubmit(std::u16string_view pin) const;
+  void PasswordSubmit(std::u16string_view password) const;
   void Escape() const;
   void ContentsChanged() const;
   // Reset the input fields text and visibility.
@@ -127,6 +127,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
   // FingerprintView actions:
   void SetFingerprintState(FingerprintState state);
+  void NotifyFingerprintAuthSuccess(
+      base::OnceClosure on_success_animation_finished);
   void NotifyFingerprintAuthFailure();
 
  private:
@@ -154,7 +156,7 @@ class ASH_EXPORT AuthContainerView : public views::View {
   raw_ptr<views::LabelButton> switch_button_ = nullptr;
 
   // State:
-  AuthInputType current_input_type_ = AuthInputType::kPassword;
+  std::optional<AuthInputType> current_input_type_;
 
   base::ObserverList<Observer> observers_;
 

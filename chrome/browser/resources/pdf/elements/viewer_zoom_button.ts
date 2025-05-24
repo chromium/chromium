@@ -58,13 +58,13 @@ export class ViewerZoomButtonElement extends CrLitElement {
     };
   }
 
-  activeIndex: number = 0;
-  disabled: boolean = false;
-  icons: string = '';
-  keyboardNavigationActive: boolean = false;
-  tooltips: string = '';
-  private icons_: string[] = [''];
-  private tooltips_: string[] = [];
+  accessor activeIndex: number = 0;
+  accessor disabled: boolean = false;
+  accessor icons: string = '';
+  accessor keyboardNavigationActive: boolean = false;
+  accessor tooltips: string = '';
+  private accessor icons_: string[] = [''];
+  private accessor tooltips_: string[] = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

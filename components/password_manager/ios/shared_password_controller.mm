@@ -14,31 +14,38 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/check_op.h"
+#import "base/containers/to_vector.h"
+#import "base/debug/crash_logging.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
-#import "base/ranges/algorithm.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/types/expected_macros.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/form_structure.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/core/common/password_form_generation_data.h"
 #import "components/autofill/core/common/password_generation_util.h"
 #import "components/autofill/core/common/signatures.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_manager_observer_bridge.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 #import "components/autofill/ios/browser/password_autofill_agent.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -49,6 +56,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/constants.h"
+#import "components/password_manager/ios/features.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
@@ -83,7 +91,6 @@ using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
 using password_manager::AccountSelectFillData;
 using password_manager::FillData;
-using password_manager::JsonStringToFormData;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManagerClient;
@@ -96,6 +103,10 @@ namespace {
 
 // Password is considered not generated when user edits it below 4 characters.
 constexpr int kMinimumLengthForEditedPassword = 4;
+
+// Histogram for recording the status of retrieving FillData.
+constexpr char kFillDataRetrievalStatusHistogram[] =
+    "PasswordManager.iOS.FillDataRetrievalStatus";
 
 class PasswordAutofillAgentDelegateImpl
     : public autofill::PasswordAutofillAgentDelegate {
@@ -116,12 +127,16 @@ class PasswordAutofillAgentDelegateImpl
     auto* driver = IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(
         web_state_, frame);
     CHECK(driver);
-    driver->GetPasswordManager()->UpdateStateOnUserInput(driver, form_id,
-                                                         field_id, field_value);
+
+    autofill::FieldDataManager* field_data_manager =
+        autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
+
+    driver->GetPasswordManager()->UpdateStateOnUserInput(
+        driver, *field_data_manager, form_id, field_id, field_value);
   }
 
  private:
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
 };
 
 AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
@@ -148,9 +163,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 // Tracks field when current password was generated.
 @property(nonatomic) FieldRendererId passwordGeneratedIdentifier;
-
-// Tracks current potential generated password until accepted or rejected.
-@property(nonatomic, copy) NSString* generatedPotentialPassword;
 
 - (BOOL)IsOffTheRecord;
 
@@ -447,22 +459,20 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 }
 
 - (void)onFieldTypesDetermined:(AutofillManager&)manager
-                       forForm:(FormGlobalId)form
+                       forForm:(FormGlobalId)formId
                     fromSource:
                         (AutofillManager::Observer::FieldTypeSource)source {
-  // Heuristics predictions are not relevant to PWM because it runs its own
-  // heuristics - only server predictions are.
-  if (source ==
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete) {
+  if (source != AutofillManager::Observer::FieldTypeSource::kAutofillServer &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormClientsideClassifier)) {
     return;
   }
 
-  autofill::FormStructure* form_structure = manager.FindCachedFormById(form);
+  autofill::FormStructure* form_structure = manager.FindCachedFormById(formId);
   if (!form_structure) {
     return;
   }
-  autofill::FormDataAndServerPredictions forms_and_predictions =
-      autofill::GetFormDataAndServerPredictions(*form_structure);
+  FormData form_data = form_structure->ToFormData();
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAcrossIframesIos)) {
@@ -470,10 +480,12 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     // form when Autofill across frames is enabled.
 
     // Split the browser form into renderer forms.
+    // The cast is safe: every AutofillClient on iOS is an AutofillClientIOS.
     const autofill::AutofillDriverRouter& router =
-        autofill::AutofillDriverIOSFactory::FromWebState(_webState)->router();
-    std::vector<FormData> renderer_forms =
-        router.GetRendererForms(forms_and_predictions.form_data);
+        static_cast<autofill::AutofillClientIOS&>(manager.client())
+            .GetAutofillDriverFactory()
+            .router();
+    std::vector<FormData> renderer_forms = router.GetRendererForms(form_data);
 
     // Process predictions for each renderer form.
     web::WebFramesManager* webFramesManager = [self webFramesManager];
@@ -483,24 +495,24 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       if (!child_frame) {
         continue;
       }
-      _passwordManager->ProcessAutofillPredictions(
-          IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
-                                                                   child_frame),
-          renderer_form, forms_and_predictions.predictions);
+      [self propagatePredictionsToPasswordManagerFrom:manager
+                                          forFormData:renderer_form
+                                         globalFormId:formId
+                                              inFrame:child_frame
+                                           fromSource:source];
     }
   } else {
-    auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
-    web::WebFrame* frame = driver.web_frame();
+    auto& autofill_driver =
+        static_cast<autofill::AutofillDriverIOS&>(manager.driver());
+    web::WebFrame* frame = autofill_driver.web_frame();
     if (!frame) {
       return;
     }
-    // `GetFormDataAndServerPredictions` returns the same number of `FormData`
-    // as `FormStructure` that are passed to it, i.e. one in this case.
-    // Therefore take the front.
-    _passwordManager->ProcessAutofillPredictions(
-        IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
-                                                                 frame),
-        forms_and_predictions.form_data, forms_and_predictions.predictions);
+    [self propagatePredictionsToPasswordManagerFrom:manager
+                                        forFormData:form_data
+                                       globalFormId:formId
+                                            inFrame:frame
+                                         fromSource:source];
   }
 }
 
@@ -545,8 +557,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                        }];
 
   if (self.isPasswordGenerated &&
-      ([formQuery.type isEqual:@"input"] ||
-       [formQuery.type isEqual:@"keyup"]) &&
+      ([formQuery.type isEqualToString:@"input"] ||
+       [formQuery.type isEqualToString:@"keyup"]) &&
       formQuery.fieldRendererID == self.passwordGeneratedIdentifier) {
     // On other platforms, when the user clicks on generation field, we show
     // password in clear text. And the user has the possibility to edit it. On
@@ -575,14 +587,17 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     _lastTypedfieldIdentifier = formQuery.fieldRendererID;
     _lastTypedValue = formQuery.typedValue;
 
-    if ([formQuery.type isEqual:@"input"] ||
-        [formQuery.type isEqual:@"keyup"]) {
+    if ([formQuery.type isEqualToString:@"input"] ||
+        [formQuery.type isEqualToString:@"keyup"]) {
       [self.formHelper updateFieldDataOnUserInput:formQuery.fieldRendererID
                                           inFrame:frame
                                        inputValue:formQuery.typedValue];
+      autofill::FieldDataManager* fieldDataManager =
+          autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
       _passwordManager->UpdateStateOnUserInput(
-          [_driverHelper PasswordManagerDriver:frame], formQuery.formRendererID,
-          formQuery.fieldRendererID, SysNSStringToUTF16(formQuery.typedValue));
+          [_driverHelper PasswordManagerDriver:frame], *fieldDataManager,
+          formQuery.formRendererID, formQuery.fieldRendererID,
+          SysNSStringToUTF16(formQuery.typedValue));
     }
   }
 }
@@ -630,14 +645,15 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                          displayDescription:rawSuggestion.displayDescription
                                        icon:nil
                                        type:rawSuggestion.type
-                          backendIdentifier:nil
+                                    payload:autofill::Suggestion::Payload()
                              requiresReauth:YES
                  acceptanceA11yAnnouncement:nil
                                    metadata:rawSuggestion.metadata];
     [suggestions addObject:suggestion];
   }
 
-  if ([self canGeneratePasswordForForm:formQuery.formRendererID
+  if (!formQuery.onlyPassword &&
+      [self canGeneratePasswordForForm:formQuery.formRendererID
                        fieldIdentifier:formQuery.fieldRendererID
                              fieldType:formQuery.fieldType
                                inFrame:frame]) {
@@ -647,7 +663,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
          displayDescription:nil
                        icon:nil
                        type:autofill::SuggestionType::kGeneratePasswordEntry
-          backendIdentifier:nil
+                    payload:autofill::Suggestion::Payload()
              requiresReauth:NO];
 
     [suggestions addObject:suggestion];
@@ -711,16 +727,37 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       NSString* username = [suggestion.value
           substringToIndex:suggestion.value.length -
                            kPasswordFormSuggestionSuffix.length];
-      std::unique_ptr<password_manager::FillData> fillData =
-          [self.suggestionHelper passwordFillDataForUsername:username
-                                                  forFrameId:frameId];
+      bool stateless = base::FeatureList::IsEnabled(
+          password_manager::features::kIOSStatelessFillDataFlow);
 
-      if (!fillData) {
-        completion();
-        return;
-      }
+      ASSIGN_OR_RETURN(
+          password_manager::FillDataRetrievalResult fill_data_result,
+          stateless
+              ? [self.suggestionHelper
+                    passwordFillDataForUsername:username
+                        likelyRealPasswordField:
+                            suggestion.metadata.likely_from_real_password_field
+                                 formIdentifier:suggestion.params
+                                                    ->form_renderer_id
+                                fieldIdentifier:suggestion.params
+                                                    ->field_renderer_id
+                                        frameId:suggestion.params->frame_id]
+              : [self.suggestionHelper passwordFillDataForUsername:username
+                                                        forFrameId:frameId],
+          [completion](auto e) {
+            base::UmaHistogramEnumeration(kFillDataRetrievalStatusHistogram, e);
+            SCOPED_CRASH_KEY_NUMBER("Bug6401794", "fill_data_status",
+                                    static_cast<int>(e));
+            DUMP_WILL_BE_NOTREACHED();
+            completion();
+            return;
+          });
 
-      [self.formHelper fillPasswordFormWithFillData:*fillData
+      base::UmaHistogramEnumeration(
+          kFillDataRetrievalStatusHistogram,
+          password_manager::FillDataRetrievalStatus::kSuccess);
+
+      [self.formHelper fillPasswordFormWithFillData:*fill_data_result.value()
                                             inFrame:frame
                                    triggeredOnField:fieldRendererID
                                   completionHandler:^(BOOL success) {
@@ -751,7 +788,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
             (const autofill::PasswordFormFillData&)formData
                          forFrameId:(const std::string&)frameId
                         isMainFrame:(BOOL)isMainFrame
-                  forSecurityOrigin:(const GURL&)origin {
+                  forSecurityOrigin:(const url::Origin&)origin {
   // Biometric auth is always enabled on iOS so wait_for_username is
   // specifically set to prevent filling without user confirmation.
   DCHECK(formData.wait_for_username);
@@ -872,7 +909,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
           /*log_debug_data*/ true)) {
     return NO;
   }
-  if (![fieldType isEqual:kObfuscatedFieldType]) {
+  if (![fieldType isEqualToString:kObfuscatedFieldType]) {
     return NO;
   }
   const PasswordFormGenerationData* generationData =
@@ -939,25 +976,33 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                               : PasswordGenerationType::kAutomatic,
           formSignature, fieldSignature, maxLength);
 
-  self.generatedPotentialPassword = SysUTF16ToNSString(generatedPassword);
+  base::UmaHistogramBoolean(
+      "PasswordGeneration.iOS.GeneratedPasswordIsEmpty.BeforeParsing",
+      generatedPassword.empty());
+
+  NSString* generatedPotentialPassword = SysUTF16ToNSString(generatedPassword);
 
   __weak SharedPasswordController* weakSelf = self;
   [self.delegate sharedPasswordController:self
-           showGeneratedPotentialPassword:self.generatedPotentialPassword
+           showGeneratedPotentialPassword:generatedPotentialPassword
                                 proactive:self.proactivePasswordGeneration
+                                    frame:weakFrame
                           decisionHandler:^(BOOL accept) {
                             [weakSelf
-                                onPasswordGenerationAccepted:accept
-                                         isManuallyTriggered:isManuallyTriggered
-                                              formIdentifier:formIdentifier
-                                                       frame:weakFrame];
+                                onGeneratedPasswordAccepted:
+                                    generatedPotentialPassword
+                                                 isAccepted:accept
+                                        isManuallyTriggered:isManuallyTriggered
+                                             formIdentifier:formIdentifier
+                                                      frame:weakFrame];
                           }];
 }
 
-- (void)onPasswordGenerationAccepted:(BOOL)accepted
-                 isManuallyTriggered:(BOOL)isManuallyTriggered
-                      formIdentifier:(FormRendererId)formIdentifier
-                               frame:(base::WeakPtr<web::WebFrame>)weakFrame {
+- (void)onGeneratedPasswordAccepted:(NSString*)generatedPassword
+                         isAccepted:(BOOL)accepted
+                isManuallyTriggered:(BOOL)isManuallyTriggered
+                     formIdentifier:(FormRendererId)formIdentifier
+                              frame:(base::WeakPtr<web::WebFrame>)weakFrame {
   if (!_webState) {
     // Stop here if the '_webState' was deleted before handling the decision for
     // the generated password. Doing anything further is unsafe.
@@ -973,28 +1018,29 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   [self logUserChoice:accepted
             proactive:self.proactivePasswordGeneration
                manual:isManuallyTriggered];
+  bool generatedPasswordEmpty = generatedPassword.length == 0;
   if (accepted) {
+    // Log "on accepted" metrics which doesn't necessarily mean that the generated
+    // password can be injected.
     LogPasswordGenerationEvent(
         autofill::password_generation::PASSWORD_ACCEPTED);
-
-    __weak SharedPasswordController* weakSelf = self;
+    base::UmaHistogramBoolean(
+        "PasswordGeneration.iOS.AcceptedGeneratedPasswordIsEmpty",
+        generatedPasswordEmpty);
+  }
+  if (accepted && !generatedPasswordEmpty) {
+    // Only inject the generated password if not empty, password manager will
+    // trigger a crash otherwise.
     [self injectGeneratedPasswordForFormId:formIdentifier
                                    inFrame:frame
-                         generatedPassword:self.generatedPotentialPassword
-                         completionHandler:^{
-                           [weakSelf clearGeneratedPotentialPassword];
-                         }];
+                         generatedPassword:generatedPassword
+                         completionHandler:nil];
   } else {
     [self cancelPasswordGeneration];
   }
 }
 
-- (void)clearGeneratedPotentialPassword {
-  self.generatedPotentialPassword = nil;
-}
-
 - (void)cancelPasswordGeneration {
-  [self clearGeneratedPotentialPassword];
   _passwordManager->OnPasswordNoLongerGenerated();
 }
 
@@ -1047,6 +1093,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                        completionHandler:(void (^)())completionHandler {
   const autofill::PasswordFormGenerationData* generationData =
       [self formForGenerationFromFormID:formIdentifier];
+  CHECK_GT(generatedPassword.length, 0u);
   if (!generationData) {
     return;
   }
@@ -1114,6 +1161,34 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 - (web::WebFramesManager*)webFramesManager {
   return password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->GetWebFramesManager(_webState);
+}
+
+- (void)propagatePredictionsToPasswordManagerFrom:(AutofillManager&)manager
+                                      forFormData:(FormData)form
+                                     globalFormId:(FormGlobalId)globalFormId
+                                          inFrame:(web::WebFrame*)frame
+                                       fromSource:(AutofillManager::Observer::
+                                                       FieldTypeSource)source {
+  PasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
+                                                               frame);
+  std::vector<autofill::FieldGlobalId> field_ids =
+      base::ToVector(form.fields(), &autofill::FormFieldData::global_id);
+  switch (source) {
+    case AutofillManager::Observer::FieldTypeSource::kAutofillServer:
+    case AutofillManager::Observer::FieldTypeSource::kAutofillAiModel:
+      _passwordManager->ProcessAutofillPredictions(
+          driver, form,
+          manager.GetServerPredictionsForForm(globalFormId, field_ids));
+      break;
+    case AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete:
+      _passwordManager->ProcessClassificationModelPredictions(
+          driver, form,
+          manager.GetHeursticPredictionForForm(
+              autofill::HeuristicSource::kPasswordManagerMachineLearning,
+              globalFormId, field_ids));
+      break;
+  }
 }
 
 #pragma mark - FormActivityObserver

@@ -4,6 +4,7 @@
         <script src="/w3c/resources/testharness.js"></script>
         <script src="/w3c/resources/testharnessreport.js"></script>
         <script src="mediasource-util.js"></script>
+        <script src="../../resources/quota-exceeded-helper.js"></script>
 
         <link rel='stylesheet' href='/w3c/resources/testharness.css'>
     </head>
@@ -21,8 +22,9 @@
               sourceBuffer.appendBuffer(mediaData);
               test.waitForExpectedEvents(function()
               {
-                  assert_throws_dom("QuotaExceededError",
+                  assert_throws_quota_exceeded(
                       function() { mediaSource.addSourceBuffer(MediaSourceUtil.AUDIO_VIDEO_TYPE); },
+                      /*quota=*/ null, /*requested=*/ null,
                       "addSourceBuffer must throw an exception if the MediaSource has already received init segments for all sourcebuffers added at the time");
                   test.done();
               });
@@ -51,8 +53,9 @@
               {
                   // MediaSource is fully initialized now, so adding new SourceBuffers is no longer possible.
                   assert_equals(mediaElement.readyState, HTMLMediaElement.HAVE_METADATA);
-                  assert_throws_dom("QuotaExceededError",
+                  assert_throws_quota_exceeded(
                       function() { mediaSource.addSourceBuffer(MediaSourceUtil.AUDIO_VIDEO_TYPE); },
+                      /*quota=*/ null, /*requested=*/ null,
                       "addSourceBuffer must throw an exception if the media element has already reached HAVE_METADATA");
                   test.done();
               });

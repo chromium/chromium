@@ -170,6 +170,11 @@ Authenticator::RejectionReason FakeAuthenticator::rejection_reason() const {
   return RejectionReason::INVALID_CREDENTIALS;
 }
 
+Authenticator::RejectionDetails FakeAuthenticator::rejection_details() const {
+  EXPECT_EQ(REJECTED, state());
+  return {};
+}
+
 void FakeAuthenticator::ProcessMessage(const jingle_xmpp::XmlElement* message,
                                        base::OnceClosure resume_callback) {
   EXPECT_EQ(WAITING_MESSAGE, state());

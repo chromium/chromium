@@ -4,7 +4,6 @@
       "win",
       "linux",
       "mac",
-      "chromeos_lacros",
       "fuchsia"
     ],
     "policy_pref_mapping_tests": [

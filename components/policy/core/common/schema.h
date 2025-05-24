@@ -7,9 +7,9 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
-#include "absl/types/variant.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/expected.h"
@@ -29,7 +29,7 @@ struct POLICY_EXPORT PropertiesNode;
 // The error path, which leads to an error occurred. Members of the
 // error path can either be ints in case of list items or strings in case of
 // dictionary keys.
-using PolicyErrorPath = std::vector<absl::variant<int, std::string>>;
+using PolicyErrorPath = std::vector<std::variant<int, std::string>>;
 
 // Returns a formatted string for a given error path |error_path|, consisting
 // of list indices and dict keys.

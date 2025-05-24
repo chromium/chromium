@@ -41,6 +41,6 @@ MockPasswordProtectionService::MockPasswordProtectionService(
                                 try_token_fetch,
                                 metrics_collector) {}
 
-MockPasswordProtectionService::~MockPasswordProtectionService() {}
+MockPasswordProtectionService::~MockPasswordProtectionService() = default;
 
 }  // namespace safe_browsing

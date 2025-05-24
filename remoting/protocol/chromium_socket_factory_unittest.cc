@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/chromium_socket_factory.h"
 
 #include <stddef.h>
@@ -42,10 +37,12 @@ constexpr int kMaxAttempts = 3;
 // The amount of time to wait for packets to be received for each attempt.
 constexpr base::TimeDelta kAttemptPeriod = base::Seconds(5);
 
-class ConstantScopedFakeClock : public rtc::ClockInterface {
+class ConstantScopedFakeClock : public webrtc::ClockInterface {
  public:
-  ConstantScopedFakeClock() { prev_clock_ = rtc::SetClockForTesting(this); }
-  ~ConstantScopedFakeClock() override { rtc::SetClockForTesting(prev_clock_); }
+  ConstantScopedFakeClock() { prev_clock_ = webrtc::SetClockForTesting(this); }
+  ~ConstantScopedFakeClock() override {
+    webrtc::SetClockForTesting(prev_clock_);
+  }
 
   int64_t TimeNanos() const override { return 1337L * 1000L * 1000L; }
 
@@ -62,22 +59,23 @@ class ChromiumSocketFactoryTest : public testing::Test,
     socket_factory_ = std::make_unique<ChromiumPacketSocketFactory>(nullptr);
 
     socket_.reset(socket_factory_->CreateUdpSocket(
-        rtc::SocketAddress("127.0.0.1", 0), 0, 0));
+        webrtc::SocketAddress("127.0.0.1", 0), 0, 0));
     ASSERT_TRUE(socket_.get() != nullptr);
-    EXPECT_EQ(socket_->GetState(), rtc::AsyncPacketSocket::STATE_BOUND);
+    EXPECT_EQ(socket_->GetState(), webrtc::AsyncPacketSocket::STATE_BOUND);
     socket_->RegisterReceivedPacketCallback(
-        [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+        [&](webrtc::AsyncPacketSocket* socket,
+            const webrtc::ReceivedIpPacket& packet) {
           OnPacket(socket, packet);
         });
   }
 
-  void OnPacket(rtc::AsyncPacketSocket* socket,
-                const rtc::ReceivedPacket& packet) {
+  void OnPacket(webrtc::AsyncPacketSocket* socket,
+                const webrtc::ReceivedIpPacket& packet) {
     EXPECT_EQ(socket, socket_.get());
 
     received_packets_.push_back(
-        {packet.payload().data(),
-         packet.payload().data() + packet.payload().size()});
+        std::string(reinterpret_cast<const char*>(packet.payload().data()),
+                    packet.payload().size()));
     last_address_ = packet.source_address();
     last_packet_time_ = packet.arrival_time()->us();
     if (received_packets_.size() >= expected_packet_count_) {
@@ -85,15 +83,15 @@ class ChromiumSocketFactoryTest : public testing::Test,
     }
   }
 
-  void OnSentPacket(rtc::AsyncPacketSocket* socket,
-                    const rtc::SentPacket& sent_packet) {
-    // It is expected that send_packet was set using rtc::TimeMillis(),
+  void OnSentPacket(webrtc::AsyncPacketSocket* socket,
+                    const webrtc::SentPacketInfo& sent_packet) {
+    // It is expected that send_packet was set using webrtc::TimeMillis(),
     // which will use the fake clock set above, so the times will be equal
-    int64_t fake_clock_ms = rtc::TimeMillis();
+    int64_t fake_clock_ms = webrtc::TimeMillis();
     EXPECT_EQ(fake_clock_ms, sent_packet.send_time_ms);
   }
 
-  void VerifyCanSendAndReceive(rtc::AsyncPacketSocket* sender,
+  void VerifyCanSendAndReceive(webrtc::AsyncPacketSocket* sender,
                                uint32_t packet_count = 1) {
     CHECK_GT(packet_count, 0U);
 
@@ -110,7 +108,7 @@ class ChromiumSocketFactoryTest : public testing::Test,
       expected_packet_count_ = packets_to_send.size();
       received_packets_.clear();
 
-      rtc::PacketOptions options;
+      webrtc::AsyncSocketPacketOptions options;
       LOG(INFO) << "packets_to_send: " << packets_to_send.size();
       for (const auto& test_packet : packets_to_send) {
         int result = sender->SendTo(test_packet.data(), test_packet.size(),
@@ -134,7 +132,7 @@ class ChromiumSocketFactoryTest : public testing::Test,
     EXPECT_EQ(sender->GetLocalAddress(), last_address_);
   }
 
-  void VerifyCanSendAndReceive(rtc::AsyncPacketSocket* sender,
+  void VerifyCanSendAndReceive(webrtc::AsyncPacketSocket* sender,
                                const std::string& packet_data) {
     // Reset members to prepare to send/receive the expected number of packets.
     expected_packet_count_ = 1;
@@ -142,7 +140,7 @@ class ChromiumSocketFactoryTest : public testing::Test,
 
     int attempts = 0;
     while (received_packets_.empty() && attempts++ < kMaxAttempts) {
-      rtc::PacketOptions options;
+      webrtc::AsyncSocketPacketOptions options;
       int result = sender->SendTo(packet_data.data(), packet_data.size(),
                                   socket_->GetLocalAddress(), options);
       PLOG_IF(WARNING, result < 0) << "Failed to send packet";
@@ -157,60 +155,60 @@ class ChromiumSocketFactoryTest : public testing::Test,
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   base::RunLoop run_loop_;
 
-  std::unique_ptr<rtc::PacketSocketFactory> socket_factory_;
-  std::unique_ptr<rtc::AsyncPacketSocket> socket_;
+  std::unique_ptr<webrtc::PacketSocketFactory> socket_factory_;
+  std::unique_ptr<webrtc::AsyncPacketSocket> socket_;
 
   uint32_t expected_packet_count_;
   std::vector<std::string> received_packets_;
-  rtc::SocketAddress last_address_;
+  webrtc::SocketAddress last_address_;
   int64_t last_packet_time_;
 
   ConstantScopedFakeClock fake_clock_;
 };
 
 TEST_F(ChromiumSocketFactoryTest, SendAndReceiveOnePacket) {
-  std::unique_ptr<rtc::AsyncPacketSocket> sending_socket(
-      socket_factory_->CreateUdpSocket(rtc::SocketAddress("127.0.0.1", 0), 0,
+  std::unique_ptr<webrtc::AsyncPacketSocket> sending_socket(
+      socket_factory_->CreateUdpSocket(webrtc::SocketAddress("127.0.0.1", 0), 0,
                                        0));
   ASSERT_TRUE(sending_socket.get() != nullptr);
-  EXPECT_EQ(sending_socket->GetState(), rtc::AsyncPacketSocket::STATE_BOUND);
+  EXPECT_EQ(sending_socket->GetState(), webrtc::AsyncPacketSocket::STATE_BOUND);
 
   VerifyCanSendAndReceive(sending_socket.get());
 }
 
 TEST_F(ChromiumSocketFactoryTest, SendAndReceiveOneLargePacket) {
-  std::unique_ptr<rtc::AsyncPacketSocket> sending_socket(
-      socket_factory_->CreateUdpSocket(rtc::SocketAddress("127.0.0.1", 0), 0,
+  std::unique_ptr<webrtc::AsyncPacketSocket> sending_socket(
+      socket_factory_->CreateUdpSocket(webrtc::SocketAddress("127.0.0.1", 0), 0,
                                        0));
   ASSERT_TRUE(sending_socket.get() != nullptr);
-  EXPECT_EQ(sending_socket->GetState(), rtc::AsyncPacketSocket::STATE_BOUND);
+  EXPECT_EQ(sending_socket->GetState(), webrtc::AsyncPacketSocket::STATE_BOUND);
 
   std::string packet_data(1000, 'a');
   VerifyCanSendAndReceive(sending_socket.get(), packet_data);
 }
 
 TEST_F(ChromiumSocketFactoryTest, SendAndReceiveManyPackets) {
-  std::unique_ptr<rtc::AsyncPacketSocket> sending_socket(
-      socket_factory_->CreateUdpSocket(rtc::SocketAddress("127.0.0.1", 0), 0,
+  std::unique_ptr<webrtc::AsyncPacketSocket> sending_socket(
+      socket_factory_->CreateUdpSocket(webrtc::SocketAddress("127.0.0.1", 0), 0,
                                        0));
   ASSERT_TRUE(sending_socket.get() != nullptr);
-  EXPECT_EQ(sending_socket->GetState(), rtc::AsyncPacketSocket::STATE_BOUND);
+  EXPECT_EQ(sending_socket->GetState(), webrtc::AsyncPacketSocket::STATE_BOUND);
 
   VerifyCanSendAndReceive(sending_socket.get(), 100);
 }
 
 TEST_F(ChromiumSocketFactoryTest, SetOptions) {
-  EXPECT_EQ(0, socket_->SetOption(rtc::Socket::OPT_SNDBUF, 4096));
-  EXPECT_EQ(0, socket_->SetOption(rtc::Socket::OPT_RCVBUF, 4096));
+  EXPECT_EQ(0, socket_->SetOption(webrtc::Socket::OPT_SNDBUF, 4096));
+  EXPECT_EQ(0, socket_->SetOption(webrtc::Socket::OPT_RCVBUF, 4096));
 }
 
 TEST_F(ChromiumSocketFactoryTest, PortRange) {
   constexpr uint16_t kMinPort = 12400;
   constexpr uint16_t kMaxPort = 12410;
   socket_.reset(socket_factory_->CreateUdpSocket(
-      rtc::SocketAddress("127.0.0.1", 0), kMinPort, kMaxPort));
+      webrtc::SocketAddress("127.0.0.1", 0), kMinPort, kMaxPort));
   ASSERT_TRUE(socket_.get() != nullptr);
-  EXPECT_EQ(socket_->GetState(), rtc::AsyncPacketSocket::STATE_BOUND);
+  EXPECT_EQ(socket_->GetState(), webrtc::AsyncPacketSocket::STATE_BOUND);
   EXPECT_GE(socket_->GetLocalAddress().port(), kMinPort);
   EXPECT_LE(socket_->GetLocalAddress().port(), kMaxPort);
 }
@@ -219,16 +217,16 @@ TEST_F(ChromiumSocketFactoryTest, CreateMultiplePortsFromPortRange) {
   constexpr uint16_t kPortCount = 5;
   constexpr uint16_t kMinPort = 12400;
   constexpr uint16_t kMaxPort = kMinPort + kPortCount - 1;
-  std::vector<std::unique_ptr<rtc::AsyncPacketSocket>> sockets;
+  std::vector<std::unique_ptr<webrtc::AsyncPacketSocket>> sockets;
   for (int i = 0; i < kPortCount; i++) {
-    sockets.push_back(std::unique_ptr<rtc::AsyncPacketSocket>(
-        socket_factory_->CreateUdpSocket(rtc::SocketAddress("127.0.0.1", 0),
+    sockets.push_back(std::unique_ptr<webrtc::AsyncPacketSocket>(
+        socket_factory_->CreateUdpSocket(webrtc::SocketAddress("127.0.0.1", 0),
                                          kMinPort, kMaxPort)));
   }
   base::flat_set<uint16_t> assigned_ports;
   for (auto& socket : sockets) {
     ASSERT_TRUE(socket.get() != nullptr);
-    EXPECT_EQ(socket->GetState(), rtc::AsyncPacketSocket::STATE_BOUND);
+    EXPECT_EQ(socket->GetState(), webrtc::AsyncPacketSocket::STATE_BOUND);
     uint16_t port = socket->GetLocalAddress().port();
     EXPECT_GE(port, kMinPort);
     EXPECT_LE(port, kMaxPort);
@@ -238,13 +236,13 @@ TEST_F(ChromiumSocketFactoryTest, CreateMultiplePortsFromPortRange) {
 
   // Create another socket should fail because no ports are available.
   auto* extra_socket = socket_factory_->CreateUdpSocket(
-      rtc::SocketAddress("127.0.0.1", 0), kMinPort, kMaxPort);
+      webrtc::SocketAddress("127.0.0.1", 0), kMinPort, kMaxPort);
   ASSERT_EQ(nullptr, extra_socket);
 }
 
 TEST_F(ChromiumSocketFactoryTest, TransientError) {
-  std::unique_ptr<rtc::AsyncPacketSocket> sending_socket(
-      socket_factory_->CreateUdpSocket(rtc::SocketAddress("127.0.0.1", 0), 0,
+  std::unique_ptr<webrtc::AsyncPacketSocket> sending_socket(
+      socket_factory_->CreateUdpSocket(webrtc::SocketAddress("127.0.0.1", 0), 0,
                                        0));
   std::string test_packet("TEST");
 
@@ -252,15 +250,16 @@ TEST_F(ChromiumSocketFactoryTest, TransientError) {
   // IPv4 address. This send is expected to fail, but the socket should still be
   // functional.
   sending_socket->SendTo(test_packet.data(), test_packet.size(),
-                         rtc::SocketAddress("::1", 0), rtc::PacketOptions());
+                         webrtc::SocketAddress("::1", 0),
+                         webrtc::AsyncSocketPacketOptions());
 
   // Verify that socket is still usable.
   VerifyCanSendAndReceive(sending_socket.get());
 }
 
 TEST_F(ChromiumSocketFactoryTest, CheckSendTime) {
-  std::unique_ptr<rtc::AsyncPacketSocket> sending_socket(
-      socket_factory_->CreateUdpSocket(rtc::SocketAddress("127.0.0.1", 0), 0,
+  std::unique_ptr<webrtc::AsyncPacketSocket> sending_socket(
+      socket_factory_->CreateUdpSocket(webrtc::SocketAddress("127.0.0.1", 0), 0,
                                        0));
   sending_socket->SignalSentPacket.connect(
       static_cast<ChromiumSocketFactoryTest*>(this),
@@ -268,7 +267,7 @@ TEST_F(ChromiumSocketFactoryTest, CheckSendTime) {
   VerifyCanSendAndReceive(sending_socket.get());
 
   // Check receive time is from rtc clock as well
-  ASSERT_EQ(last_packet_time_, rtc::TimeMicros());
+  ASSERT_EQ(last_packet_time_, webrtc::TimeMicros());
 }
 
 }  // namespace remoting::protocol

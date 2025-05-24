@@ -1,0 +1,41 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+namespace ip_protection.flat;
+
+// The top-level data structure.
+//
+// This structure contains a tree that is used to look up domains
+// by their reversed DNS. That is, `foo.example.co.uk` would begin with `uk`,
+// then `co`, and so on.
+table MaskedDomainList {
+  tree_node:TreeNode;
+}
+
+// A Tree node.
+table TreeNode {
+  // If true, this is a wildcard, meaning that it matches any domain with this suffix that
+  // is not matched by a more specific node.
+  is_wildcard:bool;
+
+  // If the owner_id is nonzero, this indicates that the domain is a resource belonging to the owner.
+  // If false, the domain is a property.
+  is_resource:bool;
+
+  // If nonzero, this is the resource owner ID for this domain. The ID carries no meaning except
+  // to correlate ownership of multiple domains.
+  owner_id:uint32;
+
+  // A vector of children of this node. This is sorted by name, and thus suitable for binary search.
+  children:[ChildNode];
+}
+
+// A child of a TreeNode.
+table ChildNode {
+  // The DNS atom for this child, such as `com` or `example` in `example.com`.
+  atom:string (key);
+  tree_node:TreeNode;
+}
+
+root_type MaskedDomainList;

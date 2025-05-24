@@ -38,7 +38,7 @@ source_set("impl") {
 
   sources = [
     "per_profile_webui_tracker.cc",
-    "preload_candidate_selector.h",
+    "preload_candidate_selector.cc",
     "preload_context.cc",
     "profile_preload_candidate_selector.cc",
     "top_chrome_web_ui_controller.cc",
@@ -57,6 +57,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/prefs",
     "//chrome/common",
     "//components/site_engagement/content:content",
     "//content/public/browser",

@@ -64,7 +64,7 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
         base::BindRepeating(
             &password_manager::BuildPasswordStoreInterface<
                 content::BrowserContext,
-                testing::StrictMock<
+                testing::NiceMock<
                     password_manager::MockPasswordStoreInterface>>));
     builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),

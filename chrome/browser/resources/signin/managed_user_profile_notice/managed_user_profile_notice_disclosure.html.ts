@@ -17,7 +17,7 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureElement) {
     </div>
   </div>
   <div id="text-container">
-    <h1 class="title">$i18n{profileDisclosureTitle}</h1>
+    <h1 class="title" tabindex="-1">${this.computeDisclosureTitle_()}</h1>
     <p class="subtitle">$i18n{profileDisclosureSubtitle}</p>
   </div>
   <div class="disclaimer-container">

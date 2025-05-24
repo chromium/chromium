@@ -39,8 +39,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForUnregister::HandleRequest(
 
   em::DeviceManagementResponse device_management_response;
   device_management_response.mutable_unregister_response();
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 }  // namespace policy

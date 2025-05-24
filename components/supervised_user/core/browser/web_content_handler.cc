@@ -7,40 +7,39 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace {
 
-constexpr char kLocalWebApprovalDurationHistogramName[] =
-    "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
-constexpr char kLocalWebApprovalResultHistogramName[] =
-    "FamilyLinkUser.LocalWebApprovalResult";
-
-// Records the outcome of the local web approval flow.
-void RecordLocalWebApprovalResultMetric(
-    supervised_user::WebContentHandler::LocalApprovalResult result) {
-  base::UmaHistogramEnumeration(kLocalWebApprovalResultHistogramName, result);
-}
-
 // Records the duration of a complete local web approval flow.
 void RecordTimeToApprovalDurationMetric(base::TimeDelta durationMs) {
-  base::UmaHistogramLongTimes(kLocalWebApprovalDurationHistogramName,
-                              durationMs);
+  base::UmaHistogramLongTimes(
+      supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName,
+      durationMs);
 }
 
 std::string LocalApprovalResultToString(
-    supervised_user::WebContentHandler::LocalApprovalResult value) {
+    supervised_user::LocalApprovalResult value) {
   switch (value) {
-    case supervised_user::WebContentHandler::LocalApprovalResult::kApproved:
+    case supervised_user::LocalApprovalResult::kApproved:
       return "Approved";
-    case supervised_user::WebContentHandler::LocalApprovalResult::kDeclined:
+    case supervised_user::LocalApprovalResult::kDeclined:
       return "Rejected";
-    case supervised_user::WebContentHandler::LocalApprovalResult::kCanceled:
+    case supervised_user::LocalApprovalResult::kCanceled:
       return "Incomplete";
-    case supervised_user::WebContentHandler::LocalApprovalResult::kError:
+    case supervised_user::LocalApprovalResult::kError:
       return "Error";
   }
 }
 
+void MaybeRecordLocalWebApprovalErrorTypeMetric(
+    std::optional<supervised_user::LocalWebApprovalErrorType> error_type) {
+  if (!error_type.has_value()) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, error_type.value());
+}
 }  // namespace
 
 namespace supervised_user {
@@ -49,11 +48,18 @@ WebContentHandler::WebContentHandler() = default;
 
 WebContentHandler::~WebContentHandler() = default;
 
+void WebContentHandler::RecordLocalWebApprovalResultMetric(
+    LocalApprovalResult result) {
+  base::UmaHistogramEnumeration(kLocalWebApprovalResultHistogramName, result);
+}
+
 void WebContentHandler::OnLocalApprovalRequestCompleted(
     supervised_user::SupervisedUserSettingsService& settings_service,
     const GURL& url,
     base::TimeTicks start_time,
-    LocalApprovalResult approval_result) {
+    LocalApprovalResult approval_result,
+    std::optional<supervised_user::LocalWebApprovalErrorType>
+        local_approval_error_type) {
   VLOG(0) << "Local URL approval final result: "
           << LocalApprovalResultToString(approval_result);
 
@@ -70,6 +76,7 @@ void WebContentHandler::OnLocalApprovalRequestCompleted(
     case LocalApprovalResult::kCanceled:
       break;
     case LocalApprovalResult::kError:
+      MaybeRecordLocalWebApprovalErrorTypeMetric(local_approval_error_type);
       break;
   }
   RecordLocalWebApprovalResultMetric(approval_result);
@@ -77,7 +84,7 @@ void WebContentHandler::OnLocalApprovalRequestCompleted(
 
 // static
 const char* WebContentHandler::GetLocalApprovalDurationMillisecondsHistogram() {
-  return kLocalWebApprovalDurationHistogramName;
+  return kLocalWebApprovalDurationMillisecondsHistogramName;
 }
 
 // static

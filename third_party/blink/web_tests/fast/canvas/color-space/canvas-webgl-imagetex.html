@@ -33,10 +33,10 @@ function render(gl, imageData) {
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
   {
-    // TODO(yiyix): Add test for imagedata with storageFormat uint16.
-    if (imageData.storageFormat == 'uint8') {
+    // TODO(yiyix): Add test for imagedata with pixelFormat uint16.
+    if (imageData.pixelFormat == 'rgba-unorm8') {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 64, 0, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
-    } else if (imageData.storageFormat == 'float32') {
+    } else if (imageData.pixelFormat == 'rgba-float16') {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, 64, 64, 0, gl.RGBA, gl.FLOAT, imageData);
     }
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -75,11 +75,11 @@ async_test(function(t) {
 
   var canvasGL = document.querySelector('#canvas-webgl-test0');
   var gl = canvasGL.getContext('webgl2');
-  render(gl, ctx.getImageData(0, 0, 64, 64, {storageFormat:'uint8'}));
+  render(gl, ctx.getImageData(0, 0, 64, 64, {pixelFormat:'rgba-unorm8'}));
 
   var canvasGL2 = document.querySelector('#canvas-webgl-test1');
   var gl2 = canvasGL2.getContext('webgl2');
-  render(gl2, ctx.getImageData(0, 0, 64, 64, {storageFormat:'float32'}));
+  render(gl2, ctx.getImageData(0, 0, 64, 64, {pixelFormat:'rgba-float16'}));
 
   var pixels = new Uint8Array(4);
   var pixels2 = new Uint8Array(4);
@@ -103,7 +103,7 @@ async_test(function(t) {
       }
     });
 
-}, "Webgl didn't render imagedata with format uint8 and float32 correctly.");
+}, "Webgl didn't render imagedata with format unorm8 and float32 correctly.");
 
 </script>
 </head>

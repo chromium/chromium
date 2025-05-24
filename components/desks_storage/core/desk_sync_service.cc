@@ -37,4 +37,9 @@ DeskSyncService::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }
 
+void DeskSyncService::RunWhenDesksTemplatesAreReadyOnFirstSync(
+    base::OnceClosure callback) {
+  bridge_->SetOnMergeFullSyncDataCallback(std::move(callback));
+}
+
 }  // namespace desks_storage

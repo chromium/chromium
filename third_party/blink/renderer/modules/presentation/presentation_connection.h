@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_binary_type.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -31,7 +32,7 @@ enum class FileErrorCode;
 class PresentationController;
 class PresentationReceiver;
 class PresentationRequest;
-class ScriptPromiseResolverBase;
+class V8PresentationConnectionState;
 class WebString;
 
 class MODULES_EXPORT PresentationConnection
@@ -51,7 +52,7 @@ class MODULES_EXPORT PresentationConnection
 
   const String& id() const { return id_; }
   const String& url() const { return url_; }
-  const WTF::AtomicString& state() const;
+  V8PresentationConnectionState state() const;
 
   void send(const String& message, ExceptionState&);
   void send(DOMArrayBuffer*, ExceptionState&);
@@ -65,8 +66,8 @@ class MODULES_EXPORT PresentationConnection
   // connected to.
   void terminate();
 
-  String binaryType() const;
-  void setBinaryType(const String&);
+  V8BinaryType binaryType() const;
+  void setBinaryType(const V8BinaryType&);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(message, kMessage)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connect, kConnect)
@@ -125,8 +126,6 @@ class MODULES_EXPORT PresentationConnection
     kMessageTypeBlob,
   };
 
-  enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
-
   class Message;
 
   // Implemented by controller/receiver subclasses to perform additional
@@ -157,7 +156,7 @@ class MODULES_EXPORT PresentationConnection
   Member<BlobLoader> blob_loader_;
   HeapDeque<Member<Message>> messages_;
 
-  BinaryType binary_type_;
+  V8BinaryType::Enum binary_type_ = V8BinaryType::Enum::kArraybuffer;
 
   scoped_refptr<base::SingleThreadTaskRunner> file_reading_task_runner_;
 };
@@ -167,12 +166,11 @@ class MODULES_EXPORT PresentationConnection
 class MODULES_EXPORT ControllerPresentationConnection final
     : public PresentationConnection {
  public:
-  // For CallbackPromiseAdapter.
-  static ControllerPresentationConnection* Take(
-      ScriptPromiseResolverBase*,
+  static ControllerPresentationConnection* Create(
+      ExecutionContext*,
       const mojom::blink::PresentationInfo&,
       PresentationRequest*);
-  static ControllerPresentationConnection* Take(
+  static ControllerPresentationConnection* Create(
       PresentationController*,
       const mojom::blink::PresentationInfo&,
       PresentationRequest*);
@@ -205,7 +203,7 @@ class MODULES_EXPORT ControllerPresentationConnection final
 // result of creating the controller side connection of a 1-UA presentation.
 class ReceiverPresentationConnection final : public PresentationConnection {
  public:
-  static ReceiverPresentationConnection* Take(
+  static ReceiverPresentationConnection* Create(
       PresentationReceiver*,
       const mojom::blink::PresentationInfo&,
       mojo::PendingRemote<mojom::blink::PresentationConnection>

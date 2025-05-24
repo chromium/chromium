@@ -316,15 +316,20 @@ bool UpgradeFromVersion3ToVersion4(sql::Database* db,
     return false;
   }
 
-  const char kSql[] = "ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
-                      " ADD COLUMN snippet VARCHAR NOT NULL DEFAULT ''; "
-                      "ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
-                      " ADD COLUMN attribution VARCHAR NOT NULL DEFAULT '';";
-  if (!db->Execute(kSql)) {
+  static constexpr char kAddSnippetColumnSql[] =
+      "ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
+      " ADD COLUMN snippet VARCHAR NOT NULL DEFAULT ''";
+
+  static constexpr char kAddAttributionColumnSql[] =
+      "ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
+      " ADD COLUMN attribution VARCHAR NOT NULL DEFAULT ''";
+
+  if (!db->Execute(kAddSnippetColumnSql) ||
+      !db->Execute(kAddAttributionColumnSql)) {
     return false;
   }
 
-  const char kUpgradeThumbnailsTableSql[] =
+  static constexpr char kUpgradeThumbnailsTableSql[] =
       "ALTER TABLE page_thumbnails"
       " ADD COLUMN favicon BLOB NOT NULL DEFAULT x''";
   if (!db->Execute(kUpgradeThumbnailsTableSql)) {

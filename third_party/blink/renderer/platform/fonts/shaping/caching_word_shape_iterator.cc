@@ -12,7 +12,7 @@ namespace blink {
 const ShapeResult* CachingWordShapeIterator::ShapeWordWithoutSpacing(
     const TextRun& word_run,
     const Font* font) {
-  ShapeCacheEntry* cache_entry = shape_cache_->Add(word_run, ShapeCacheEntry());
+  ShapeCacheEntry* cache_entry = shape_cache_->Add(word_run);
   if (cache_entry && *cache_entry)
     return *cache_entry;
 

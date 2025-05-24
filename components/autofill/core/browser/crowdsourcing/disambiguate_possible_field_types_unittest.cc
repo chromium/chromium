@@ -4,9 +4,11 @@
 
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -42,21 +44,21 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
           CreateTestFormField("", "", "", FormControlType::kInputText));
     }
     FormStructure form_structure(form);
-    for (size_t i = 0; i < test_fields.size(); ++i) {
-      AutofillField& field = *form_structure.field(i);
-      field.set_possible_types(test_fields[i].ambiguous_possible_field_types);
-      field.set_server_predictions({::autofill::test::CreateFieldPrediction(
-          test_fields[i].predicted_type)});
-      if (test_fields[i].is_autofilled) {
-        field.set_autofilled_type(test_fields[i].predicted_type);
-        field.set_is_autofilled(true);
+    for (auto [field, test_field] :
+         base::zip(form_structure.fields(), test_fields)) {
+      field->set_possible_types(test_field.ambiguous_possible_field_types);
+      field->set_server_predictions(
+          {::autofill::test::CreateFieldPrediction(test_field.predicted_type)});
+      if (test_field.is_autofilled) {
+        field->set_autofilled_type(test_field.predicted_type);
+        field->set_is_autofilled(true);
       }
     }
 
     DisambiguatePossibleFieldTypes(form_structure);
 
     std::vector<FieldTypeSet> disambiguated_possible_field_types;
-    base::ranges::transform(
+    std::ranges::transform(
         form_structure.fields(),
         std::back_inserter(disambiguated_possible_field_types),
         [](const std::unique_ptr<AutofillField>& field) {

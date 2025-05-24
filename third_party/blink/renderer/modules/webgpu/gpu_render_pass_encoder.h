@@ -29,7 +29,7 @@ class GPURenderPassEncoder : public DawnObject<wgpu::RenderPassEncoder>,
   GPURenderPassEncoder(const GPURenderPassEncoder&) = delete;
   GPURenderPassEncoder& operator=(const GPURenderPassEncoder&) = delete;
 
-  // gpu_render_pass_encoder.idl
+  // gpu_render_pass_encoder.idl {{{
   void setBindGroup(uint32_t index, DawnObject<wgpu::BindGroup>* bindGroup) {
     GetHandle().SetBindGroup(
         index, bindGroup ? bindGroup->GetHandle() : wgpu::BindGroup(nullptr));
@@ -55,7 +55,6 @@ class GPURenderPassEncoder : public DawnObject<wgpu::RenderPassEncoder>,
   void setPipeline(const DawnObject<wgpu::RenderPipeline>* pipeline) {
     GetHandle().SetPipeline(pipeline->GetHandle());
   }
-
   void setBlendConstant(const V8GPUColor* color,
                         ExceptionState& exception_state);
   void setStencilReference(uint32_t reference) {
@@ -160,8 +159,9 @@ class GPURenderPassEncoder : public DawnObject<wgpu::RenderPassEncoder>,
                       uint32_t queryIndex,
                       ExceptionState& exception_state);
   void end() { GetHandle().End(); }
+  // }}} End of WebIDL binding implementation.
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

@@ -270,7 +270,8 @@ class OSDevToolsTest : public testing::Test {
         fake_session_host_.receiver.BindNewEndpointAndPassRemote(),
         session_remote_.BindNewEndpointAndPassReceiver(),
         io_session_remote_.BindNewPipeAndPassReceiver(),
-        std::move(reattach_session_state_), /*client_expects_binary*/ true,
+        std::move(reattach_session_state_), /*script_to_evaluate_on_load=*/"",
+        /*client_expects_binary=*/true,
         /*client_is_trusted=*/true, /*session_id=*/"session",
         /*session_waits_for_debugger=*/false);
   }

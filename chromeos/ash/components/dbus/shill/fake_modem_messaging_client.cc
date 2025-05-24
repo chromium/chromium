@@ -58,8 +58,7 @@ FakeModemMessagingClient::GetTestInterface() {
 void FakeModemMessagingClient::ReceiveSms(const dbus::ObjectPath& object_path,
                                           const dbus::ObjectPath& sms_path) {
   if (message_paths_map_.find(object_path) == message_paths_map_.end()) {
-    NOTREACHED_IN_MIGRATION() << "object_path not found!";
-    return;
+    NOTREACHED() << "object_path not found!";
   }
 
   message_paths_map_[object_path].push_back(sms_path);

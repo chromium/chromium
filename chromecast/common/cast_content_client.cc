@@ -53,9 +53,6 @@
 #include "components/cdm/common/cdm_manifest.h"
 #include "media/base/cdm_capability.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
-// component updated CDM on all desktop platforms and remove this.
-// This file is In SHARED_INTERMEDIATE_DIR.
-#include "widevine_cdm_version.h"  // nogncheck
 #endif
 
 namespace chromecast {
@@ -66,13 +63,12 @@ namespace {
 #if BUILDFLAG(BUNDLE_WIDEVINE_CDM) && BUILDFLAG(IS_LINUX)
 // Copied from chrome_content_client.cc
 std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
-    const base::Version& version,
     const base::FilePath& cdm_library_path,
     media::CdmCapability capability) {
   return std::make_unique<content::CdmInfo>(
       kWidevineKeySystem, content::CdmInfo::Robustness::kSoftwareSecure,
       std::move(capability), /*supports_sub_key_systems=*/false,
-      kWidevineCdmDisplayName, kWidevineCdmType, version, cdm_library_path);
+      kWidevineCdmDisplayName, kWidevineCdmType, cdm_library_path);
 }
 
 // On desktop Linux, given |cdm_base_path| that points to a folder containing
@@ -94,13 +90,12 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoFromWidevineDirectory(
 
   // Manifest should be at the top level.
   auto manifest_path = cdm_base_path.Append(FILE_PATH_LITERAL("manifest.json"));
-  base::Version version;
   media::CdmCapability capability;
-  if (!ParseCdmManifestFromPath(manifest_path, &version, &capability))
+  if (!ParseCdmManifestFromPath(manifest_path, &capability)) {
     return nullptr;
+  }
 
-  return CreateWidevineCdmInfo(version, cdm_library_path,
-                               std::move(capability));
+  return CreateWidevineCdmInfo(cdm_library_path, std::move(capability));
 }
 
 // This code checks to see if the Widevine CDM was bundled with Chrome. If one

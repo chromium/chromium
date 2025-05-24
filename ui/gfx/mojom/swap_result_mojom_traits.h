@@ -27,8 +27,7 @@ struct EnumTraits<gfx::mojom::SwapResult, gfx::SwapResult> {
       case gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS:
         return gfx::mojom::SwapResult::NAK_RECREATE_BUFFERS;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gfx::mojom::SwapResult::FAILED;
+    NOTREACHED();
   }
 
   static bool FromMojom(gfx::mojom::SwapResult input, gfx::SwapResult* out) {
@@ -49,8 +48,7 @@ struct EnumTraits<gfx::mojom::SwapResult, gfx::SwapResult> {
         *out = gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

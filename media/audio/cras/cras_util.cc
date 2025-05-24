@@ -60,7 +60,7 @@ libcras_client* CrasConnect() {
     LOG(ERROR) << "Couldn't create CRAS client.\n";
     return nullptr;
   }
-  if (libcras_client_connect(client)) {
+  if (libcras_client_connect_timeout(client, kCrasConnectTimeoutMs)) {
     LOG(ERROR) << "Couldn't connect CRAS client.\n";
     libcras_client_destroy(client);
     return nullptr;
@@ -112,22 +112,27 @@ CrasDevice::CrasDevice(struct libcras_node_info* node, DeviceType type)
   rc = libcras_node_info_get_type(node, &type_str);
   if (rc) {
     LOG(ERROR) << "Failed to get the node type: " << rc;
-    node_type = nullptr;
+    node_type = "";
+  } else {
+    node_type = type_str;
   }
-  node_type = type_str;
 
   char* node_name;
   rc = libcras_node_info_get_node_name(node, &node_name);
   if (rc) {
     LOG(ERROR) << "Failed to get the node name: " << rc;
-    node_name = nullptr;
+    name = "";
+  } else {
+    name = node_name;
   }
 
   char* device_name;
   rc = libcras_node_info_get_dev_name(node, &device_name);
   if (rc) {
     LOG(ERROR) << "Failed to get the dev name: " << rc;
-    device_name = nullptr;
+    dev_name = "";
+  } else {
+    dev_name = device_name;
   }
 
   rc = libcras_node_info_get_max_supported_channels(node,
@@ -137,11 +142,9 @@ CrasDevice::CrasDevice(struct libcras_node_info* node, DeviceType type)
     max_supported_channels = 0;
   }
 
-  name = std::string(node_name);
   if (name.empty() || name == "(default)") {
-    name = device_name;
+    name = dev_name;
   }
-  dev_name = device_name;
 }
 
 CrasDevice::CrasDevice(DeviceType type,

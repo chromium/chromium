@@ -31,9 +31,9 @@ DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
 
 DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() = default;
 
-views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams(
+    views::Widget::InitParams::Ownership ownership) {
+  views::Widget::InitParams params(ownership);
   params.native_widget = this;
 
   // Set up a custom WM_CLASS for some sorts of window types. This allows
@@ -90,6 +90,11 @@ bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
 void DesktopBrowserFrameAuraLinux::TabDraggingKindChanged(
     TabDragKind tab_drag_kind) {
   host_->TabDraggingKindChanged(tab_drag_kind);
+}
+
+void DesktopBrowserFrameAuraLinux::ClientDestroyedWidget() {
+  use_custom_frame_pref_.Destroy();
+  DesktopBrowserFrameAura::ClientDestroyedWidget();
 }
 
 bool DesktopBrowserFrameAuraLinux::ShouldDrawRestoredFrameShadow() const {

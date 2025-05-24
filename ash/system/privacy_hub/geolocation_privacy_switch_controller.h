@@ -21,6 +21,8 @@ class PrefChangeRegistrar;
 
 namespace ash {
 
+class PrivacyHubDelegate;
+
 // Implements the logic for the geolocation privacy switch.
 class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
  public:
@@ -39,6 +41,10 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
 
   // Called when the preference value is changed.
   void OnPreferenceChanged();
+
+  // Notifies WebUI about the system geolocation access level change.
+  void NotifySystemGeolocationAccessLevelChanged(
+      GeolocationAccessLevel access_level);
 
   // Apps that want to actively use geolocation should register and deregister
   // using the following methods. They are used to decide whether a notification
@@ -82,14 +88,18 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
   // restore to the original state.
   void ApplyArcLocationUpdate(bool geolocation_enabled);
 
+  // Sets/unsets the UI frontend delegate.
+  void SetFrontend(PrivacyHubDelegate* frontend);
+
  private:
   int usage_cnt_{};
   std::map<std::string, int> usage_per_app_;
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> primary_user_pref_change_registrar_;
   base::ScopedObservation<ash::SessionController,
                           GeolocationPrivacySwitchController>
       session_observation_;
   std::optional<GeolocationAccessLevel> cached_access_level_;
+  raw_ptr<PrivacyHubDelegate> frontend_;
 };
 
 }  // namespace ash

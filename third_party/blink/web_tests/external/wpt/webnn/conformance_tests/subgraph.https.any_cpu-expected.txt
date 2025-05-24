@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] assert_implements(navigator.ml, 'missing navigator.ml')
-  assert_implements: missing navigator.ml undefined
-Harness: the test ran to completion.
-

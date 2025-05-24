@@ -19,7 +19,7 @@ source_set("browser") {
     ":injected_js",
     "//base",
     "//components/language/ios/browser",
-    "//components/language_detection/core:language_detection",
+    "//components/language_detection/core",
     "//components/language_detection/core/browser:language_detection_model_service",
     "//components/language_detection/ios/browser",
     "//components/prefs",

@@ -6,15 +6,14 @@
 
 #include "base/check_op.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -179,8 +178,6 @@ class VirtualCardEnrollBubbleControllerImplBubbleViewTest
             browser()->tab_strip_model()->GetActiveWebContents()));
   }
   gfx::ImageSkia card_art_image_;
-  base::test::ScopedFeatureList features_{
-      features::kAutofillEnableVcnEnrollLoadingAndConfirmation};
   VirtualCardEnrollmentFields virtual_card_enrollment_fields_;
 };
 
@@ -196,7 +193,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest, ShowBubble) {
   histogram_tester.ExpectTotalCount(
       "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow", 0);
 
-  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kAccepted);
+  controller()->OnBubbleClosed(PaymentsUiClosedReason::kAccepted);
   controller()->HideIconAndBubble();
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow",
@@ -226,7 +223,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
       1);
 
-  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+  controller()->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardEnrollBubble.LoadingResult",
       VirtualCardEnrollmentBubbleResult::VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED,
@@ -267,7 +264,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
       "Autofill.VirtualCardEnrollBubble.ConfirmationShown.CardEnrolled", true,
       1);
 
-  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+  controller()->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
   // Expect the metric for virtual card enroll bubble to not change after
   // showing the confirmation bubble.
   histogram_tester.ExpectTotalCount(
@@ -303,7 +300,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
   controller()->OnAcceptButton(/*did_switch_to_loading_state=*/true);
   controller()->ShowConfirmationBubbleView(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
-  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+  controller()->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardEnrollBubble.ConfirmationResult.CardNotEnrolled",

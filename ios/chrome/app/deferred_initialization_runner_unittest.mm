@@ -4,166 +4,155 @@
 
 #import "ios/chrome/app/deferred_initialization_runner.h"
 
-#import "base/test/ios/wait_util.h"
-#import "base/test/test_timeouts.h"
+#import "base/functional/callback_helpers.h"
+#import "base/run_loop.h"
+#import "base/test/task_environment.h"
 #import "base/time/time.h"
+#import "ios/chrome/app/deferred_initialization_queue.h"
 #import "testing/platform_test.h"
 
-using DeferredInitializationRunnerTest = PlatformTest;
+class DeferredInitializationRunnerTest : public PlatformTest {
+ public:
+  DeferredInitializationRunnerTest() {
+    _queue = [[DeferredInitializationQueue alloc]
+        initWithDelayBetweenBlocks:base::Milliseconds(10)
+             delayBeforeFirstBlock:base::Milliseconds(10)];
 
-TEST_F(DeferredInitializationRunnerTest, TestSharedInstance) {
-  EXPECT_TRUE([DeferredInitializationRunner sharedInstance]);
-  // Cancelling a non-existing block does nothing.
-  [[DeferredInitializationRunner sharedInstance]
-      cancelBlockNamed:@"Invalid Name"];
-}
+    _runner1 = [[DeferredInitializationRunner alloc] initWithQueue:_queue];
+    _runner2 = [[DeferredInitializationRunner alloc] initWithQueue:_queue];
+  }
+
+  DeferredInitializationQueue* queue() { return _queue; }
+
+  DeferredInitializationRunner* runner1() { return _runner1; }
+
+  DeferredInitializationRunner* runner2() { return _runner2; }
+
+ private:
+  base::test::TaskEnvironment _task_environment;
+  DeferredInitializationQueue* _queue;
+  DeferredInitializationRunner* _runner1;
+  DeferredInitializationRunner* _runner2;
+};
 
 // Tests that all blocks added on the queue are executed after a delay.
 TEST_F(DeferredInitializationRunnerTest, TestRunBlockSequentially) {
-  // Setup.
-  __block bool firstFlag = NO;
-  __block bool secondFlag = NO;
-  DeferredInitializationRunner* runner =
-      [DeferredInitializationRunner sharedInstance];
-  ProceduralBlock firstBlock = ^{
-    EXPECT_FALSE(firstFlag);
-    firstFlag = YES;
-  };
-  ProceduralBlock secondBlock = ^{
-    EXPECT_FALSE(secondFlag);
-    secondFlag = YES;
-  };
-  ConditionBlock secondBlockRun = ^bool {
-    return secondFlag;
-  };
-  runner.delayBetweenBlocks = 0.01;
-  runner.delayBeforeFirstBlock = 0.01;
+  base::RunLoop run_loop0;
+  [runner1() enqueueBlockNamed:@"block0"
+                         block:base::CallbackToBlock(run_loop0.QuitClosure())];
 
-  [runner enqueueBlockNamed:@"first block" block:firstBlock];
-  [runner enqueueBlockNamed:@"second block" block:secondBlock];
+  base::RunLoop run_loop1;
+  [runner1() enqueueBlockNamed:@"block1"
+                         block:base::CallbackToBlock(run_loop1.QuitClosure())];
 
-  ASSERT_FALSE(firstFlag);
-  ASSERT_FALSE(secondFlag);
-  EXPECT_EQ(2U, [runner numberOfBlocksRemaining]);
+  EXPECT_FALSE(run_loop0.AnyQuitCalled());
+  EXPECT_FALSE(run_loop1.AnyQuitCalled());
+  EXPECT_EQ(2U, [queue() length]);
 
-  // Action.
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      TestTimeouts::action_timeout(), secondBlockRun));
+  // Wait for the blocks to be executed.
+  run_loop0.Run();
+  run_loop1.Run();
 
-  // Test.
-  EXPECT_TRUE(firstFlag);
-  EXPECT_TRUE(secondFlag);
-  EXPECT_EQ(0U, [runner numberOfBlocksRemaining]);
+  EXPECT_TRUE(run_loop0.AnyQuitCalled());
+  EXPECT_TRUE(run_loop1.AnyQuitCalled());
+  EXPECT_EQ(0U, [queue() length]);
 }
 
 // Tests that runBlockIfNecessary does not execute the block if it has already
 // been executed and runs synchronously the one not executed.
-TEST_F(DeferredInitializationRunnerTest, TestRunBlock) {
-  // Setup.
-  __block bool quickFlag = NO;
-  __block bool slowFlag = NO;
-  DeferredInitializationRunner* runner =
-      [DeferredInitializationRunner sharedInstance];
-  ProceduralBlock quickBlock = ^{
-    EXPECT_FALSE(quickFlag);
-    quickFlag = YES;
-    // Make sure we have time to go back to this test before running the second
-    // task.
-    runner.delayBetweenBlocks = 1;
-  };
-  ConditionBlock quickBlockRun = ^bool {
-    return quickFlag;
-  };
-  ProceduralBlock slowBlock = ^{
-    EXPECT_FALSE(slowFlag);
-    slowFlag = YES;
-  };
-  runner.delayBeforeFirstBlock = 0.01;
+TEST_F(DeferredInitializationRunnerTest, TestRunBlockNamed) {
+  base::RunLoop run_loop0;
+  [runner1() enqueueBlockNamed:@"block0"
+                         block:base::CallbackToBlock(run_loop0.QuitClosure())];
 
-  // Action.
-  [runner enqueueBlockNamed:@"quick block" block:quickBlock];
-  [runner enqueueBlockNamed:@"slow block" block:slowBlock];
+  base::RunLoop run_loop1;
+  [runner1() enqueueBlockNamed:@"block1"
+                         block:base::CallbackToBlock(run_loop1.QuitClosure())];
 
-  // Test.
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      TestTimeouts::action_timeout(), quickBlockRun));
-  EXPECT_TRUE(quickFlag);
-  EXPECT_FALSE(slowFlag);
-  EXPECT_EQ(1U, [runner numberOfBlocksRemaining]);
-  [runner runBlockIfNecessary:@"quick block"];
-  [runner runBlockIfNecessary:@"slow block"];
-  EXPECT_TRUE(quickFlag);
-  EXPECT_TRUE(slowFlag);
-  EXPECT_EQ(0U, [runner numberOfBlocksRemaining]);
+  EXPECT_FALSE(run_loop0.AnyQuitCalled());
+  EXPECT_FALSE(run_loop1.AnyQuitCalled());
+  EXPECT_EQ(2U, [queue() length]);
+
+  // Wait for the first block to be executed.
+  run_loop0.Run();
+
+  EXPECT_TRUE(run_loop0.AnyQuitCalled());
+  EXPECT_FALSE(run_loop1.AnyQuitCalled());
+  EXPECT_EQ(1U, [queue() length]);
+
+  // Manually invoke the blocks.
+  [runner1() runBlockNamed:@"block0"];
+  [runner1() runBlockNamed:@"block1"];
+
+  EXPECT_TRUE(run_loop0.AnyQuitCalled());
+  EXPECT_TRUE(run_loop1.AnyQuitCalled());
+  EXPECT_EQ(0U, [queue() length]);
 }
 
 // Tests that a block is not executed when cancelled and it is removed from the
 // remaining blocks list.
-TEST_F(DeferredInitializationRunnerTest, TestCancelBlock) {
-  // Setup.
-  __block BOOL blockFinished = NO;
-  DeferredInitializationRunner* runner =
-      [DeferredInitializationRunner sharedInstance];
-  runner.delayBeforeFirstBlock = 0.01;
-  runner.delayBetweenBlocks = 0.01;
+TEST_F(DeferredInitializationRunnerTest, TestCancelAllBlocks) {
+  base::RunLoop run_loop0;
+  [runner1() enqueueBlockNamed:@"block0"
+                         block:base::CallbackToBlock(run_loop0.QuitClosure())];
 
-  [runner enqueueBlockNamed:@"cancel me"
-                      block:^{
-                        blockFinished = YES;
-                      }];
-  ASSERT_EQ(1U, [runner numberOfBlocksRemaining]);
+  base::RunLoop run_loop1;
+  [runner1() enqueueBlockNamed:@"block1"
+                         block:base::CallbackToBlock(run_loop1.QuitClosure())];
 
-  // Action.
-  [runner cancelBlockNamed:@"cancel me"];
+  base::RunLoop run_loop2;
+  [runner2() enqueueBlockNamed:@"block2"
+                         block:base::CallbackToBlock(run_loop2.QuitClosure())];
 
-  // Test.
-  EXPECT_FALSE(blockFinished);
-  EXPECT_EQ(0U, [runner numberOfBlocksRemaining]);
+  EXPECT_FALSE(run_loop0.AnyQuitCalled());
+  EXPECT_FALSE(run_loop1.AnyQuitCalled());
+  EXPECT_FALSE(run_loop2.AnyQuitCalled());
+  EXPECT_EQ(3U, [queue() length]);
+
+  [runner1() cancelAllBlocks];
+
+  EXPECT_FALSE(run_loop0.AnyQuitCalled());
+  EXPECT_FALSE(run_loop1.AnyQuitCalled());
+  EXPECT_FALSE(run_loop2.AnyQuitCalled());
+  EXPECT_EQ(1U, [queue() length]);
+
+  // Ensure that the blocks from the second runner are not cancelled.
+  run_loop2.Run();
+
+  EXPECT_FALSE(run_loop0.AnyQuitCalled());
+  EXPECT_FALSE(run_loop1.AnyQuitCalled());
+  EXPECT_TRUE(run_loop2.AnyQuitCalled());
+  EXPECT_EQ(0U, [queue() length]);
 }
 
-// Tests that a cancelled block will do nothing when run by name.
-TEST_F(DeferredInitializationRunnerTest, TestCancelledBlockDoNothing) {
-  // Setup.
-  __block BOOL blockFinished = NO;
-  DeferredInitializationRunner* runner =
-      [DeferredInitializationRunner sharedInstance];
-  runner.delayBeforeFirstBlock = 0.01;
-  runner.delayBetweenBlocks = 0.01;
-
-  [runner enqueueBlockNamed:@"cancel me"
-                      block:^{
-                        blockFinished = YES;
-                      }];
-
-  // Action.
-  [runner cancelBlockNamed:@"cancel me"];
-  [runner runBlockIfNecessary:@"cancel me"];
-
-  // Test: expect false, the block should never be executed because it was
-  // cancelled before it started running.
-  EXPECT_FALSE(blockFinished);
+// Tests that cancelling blocks with context does nothing if there are no
+// blocks registered .
+TEST_F(DeferredInitializationRunnerTest, TestCancelAllBlocks_Empty) {
+  [runner1() cancelAllBlocks];
 }
 
 // Tests that adding a block with the same name as an existing block will
 // override the existing one.
 TEST_F(DeferredInitializationRunnerTest, TestSecondBlockInvalidatesFirst) {
-  // Setup.
-  __block int blockRunCount = 0;
-  ProceduralBlock runBlock = ^{
-    ++blockRunCount;
-  };
-  DeferredInitializationRunner* runner =
-      [DeferredInitializationRunner sharedInstance];
-  runner.delayBeforeFirstBlock = 0.01;
-  runner.delayBetweenBlocks = 0.01;
+  base::RunLoop run_loop0;
+  [runner1() enqueueBlockNamed:@"block"
+                         block:base::CallbackToBlock(run_loop0.QuitClosure())];
 
-  // Action.
-  [runner enqueueBlockNamed:@"multiple" block:runBlock];
-  [runner enqueueBlockNamed:@"multiple" block:runBlock];
+  EXPECT_FALSE(run_loop0.AnyQuitCalled());
+  EXPECT_EQ(1U, [queue() length]);
 
-  // Test: `runBlock` was executed only once.
-  EXPECT_EQ(1U, [runner numberOfBlocksRemaining]);
-  [runner runBlockIfNecessary:@"multiple"];
-  EXPECT_EQ(0U, [runner numberOfBlocksRemaining]);
-  EXPECT_EQ(1, blockRunCount);
+  base::RunLoop run_loop1;
+  [runner1() enqueueBlockNamed:@"block"
+                         block:base::CallbackToBlock(run_loop1.QuitClosure())];
+
+  EXPECT_FALSE(run_loop0.AnyQuitCalled());
+  EXPECT_FALSE(run_loop1.AnyQuitCalled());
+  EXPECT_EQ(1U, [queue() length]);
+
+  // Wait for the block to be run.
+  run_loop1.Run();
+
+  EXPECT_FALSE(run_loop0.AnyQuitCalled());
+  EXPECT_TRUE(run_loop1.AnyQuitCalled());
+  EXPECT_EQ(0U, [queue() length]);
 }

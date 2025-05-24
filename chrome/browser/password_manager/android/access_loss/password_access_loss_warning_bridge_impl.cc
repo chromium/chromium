@@ -8,7 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "chrome/android/chrome_jni_headers/PasswordAccessLossWarningBridge_jni.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/android/window_android.h"
 
@@ -24,21 +24,25 @@ PasswordAccessLossWarningBridgeImpl::~PasswordAccessLossWarningBridgeImpl() =
 bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
     PrefService* pref_service,
     bool called_at_startup) {
-  // TODO: crbug.com/357063741 - Check all the criteria for showing the sheet.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
+  // The warning should not be shown on builds without UPM.
+  if (!GetUtilBridge().IsInternalBackendPresent()) {
     return false;
   }
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid)) {
+    // If the login DB is being deprecated, the warning is no longer relevant.
+    return false;
+  }
+
+  // The trigger point of showing the sheet on startup has to combine the
+  // warning type check with checking the number of passwords in the store. This
+  // can only be done async and should only be done if the other conditions in
+  // this function are met.
   if (password_manager_android_util::GetPasswordAccessLossWarningType(
           pref_service) ==
       password_manager_android_util::PasswordAccessLossWarningType::kNone) {
     return false;
-  }
-
-  if (password_manager::features::kIgnoreAccessLossWarningTimeout.Get()) {
-    return true;
   }
 
   base::Time last_shown_timestamp = pref_service->GetTime(
@@ -66,7 +70,9 @@ void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet(
     PrefService* pref_service,
     const gfx::NativeWindow window,
     Profile* profile,
-    bool called_at_startup) {
+    bool called_at_startup,
+    password_manager_android_util::PasswordAccessLossWarningTriggers
+        trigger_source) {
   if (profile == nullptr) {
     return;
   }
@@ -80,11 +86,15 @@ void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet(
   if (!java_bridge) {
     return;
   }
-  Java_PasswordAccessLossWarningBridge_show(
-      env, java_bridge,
-      static_cast<int>(
-          password_manager_android_util::GetPasswordAccessLossWarningType(
-              pref_service)));
+
+  password_manager_android_util::PasswordAccessLossWarningType warning_type =
+      password_manager_android_util::GetPasswordAccessLossWarningType(
+          pref_service);
+  Java_PasswordAccessLossWarningBridge_show(env, java_bridge,
+                                            static_cast<int>(warning_type));
+  password_manager_android_util::RecordPasswordAccessLossWarningTriggerSource(
+      trigger_source, warning_type);
+
   pref_service->SetTime(
       password_manager::prefs::kPasswordAccessLossWarningShownTimestamp,
       base::Time::Now());
@@ -93,4 +103,21 @@ void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet(
                               kPasswordAccessLossWarningShownAtStartupTimestamp,
                           base::Time::Now());
   }
+}
+
+void PasswordAccessLossWarningBridgeImpl::SetUtilBridgeForTesting(
+    std::unique_ptr<
+        password_manager_android_util::PasswordManagerUtilBridgeInterface>
+        util_bridge) {
+  CHECK(!util_bridge_);
+  util_bridge_ = std::move(util_bridge);
+}
+
+password_manager_android_util::PasswordManagerUtilBridgeInterface&
+PasswordAccessLossWarningBridgeImpl::GetUtilBridge() {
+  if (!util_bridge_) {
+    util_bridge_ = std::make_unique<
+        password_manager_android_util::PasswordManagerUtilBridge>();
+  }
+  return *util_bridge_;
 }

@@ -34,7 +34,7 @@ class SupervisedUserServiceFactory : public ProfileKeyedServiceFactory {
   static SupervisedUserServiceFactory* GetInstance();
 
   // Used to create instances for testing.
-  static KeyedService* BuildInstanceFor(Profile* profile);
+  static std::unique_ptr<KeyedService> BuildInstanceFor(Profile* profile);
 
  private:
   friend base::NoDestructor<SupervisedUserServiceFactory>;
@@ -43,7 +43,7 @@ class SupervisedUserServiceFactory : public ProfileKeyedServiceFactory {
   ~SupervisedUserServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

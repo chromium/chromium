@@ -9,13 +9,12 @@
 #include <queue>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/time/time.h"
 
 namespace updater {
 
-ProgressSampler::ProgressSampler(const base::TimeDelta& sample_time_range,
-                                 const base::TimeDelta& minimum_range_required)
+ProgressSampler::ProgressSampler(base::TimeDelta sample_time_range,
+                                 base::TimeDelta minimum_range_required)
     : sample_time_range_(sample_time_range),
       minimum_range_required_(minimum_range_required) {
   CHECK(minimum_range_required.is_positive());
@@ -49,8 +48,7 @@ std::optional<base::TimeDelta> ProgressSampler::GetRemainingTime(
   return base::Milliseconds((total - current + *per_ms - 1) / *per_ms);
 }
 
-void ProgressSampler::AddSample(const base::Time& timestamp,
-                                int64_t sample_value) {
+void ProgressSampler::AddSample(base::Time timestamp, int64_t sample_value) {
   // `Reset` if there is a value or clock regression.
   if (!samples_.empty() && (sample_value < samples_.back().value ||
                             timestamp < samples_.back().timestamp)) {

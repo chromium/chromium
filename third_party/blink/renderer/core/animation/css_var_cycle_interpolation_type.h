@@ -29,34 +29,37 @@ class CSSVarCycleInterpolationType : public InterpolationType {
   CSSVarCycleInterpolationType(const PropertyHandle&,
                                const PropertyRegistration&);
 
+  void Trace(Visitor* v) const override {
+    InterpolationType::Trace(v);
+    v->Trace(registration_);
+  }
+
  private:
   InterpolationValue MaybeConvertSingle(const PropertySpecificKeyframe&,
-                                        const InterpolationEnvironment&,
+                                        const CSSInterpolationEnvironment&,
                                         const InterpolationValue& underlying,
                                         ConversionCheckers&) const final;
 
   PairwiseInterpolationValue MaybeConvertPairwise(
       const PropertySpecificKeyframe& start_keyframe,
       const PropertySpecificKeyframe& end_keyframe,
-      const InterpolationEnvironment&,
+      const CSSInterpolationEnvironment&,
       const InterpolationValue& underlying,
       ConversionCheckers&) const final;
 
   InterpolationValue MaybeConvertUnderlyingValue(
-      const InterpolationEnvironment&) const final;
+      const CSSInterpolationEnvironment&) const final;
 
-  void Composite(UnderlyingValueOwner& underlying_value_owner,
+  void Composite(UnderlyingValueOwner&,
                  double underlying_fraction,
-                 const InterpolationValue& value,
-                 double interpolation_fraction) const final {
-    underlying_value_owner.Set(*this, value);
-  }
+                 const InterpolationValue&,
+                 double interpolation_fraction) const final;
 
   void Apply(const InterpolableValue&,
              const NonInterpolableValue*,
-             InterpolationEnvironment&) const final;
+             CSSInterpolationEnvironment&) const final;
 
-  WeakPersistent<const PropertyRegistration> registration_;
+  WeakMember<const PropertyRegistration> registration_;
 };
 
 }  // namespace blink

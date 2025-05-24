@@ -49,7 +49,7 @@ bool GetResponseForQuery(const ServerCache& cache,
 // using the cached responses from the wpr archive. The valid values match the
 // enum AutofillServerBehaviorType below. Options are:
 // SavedCache, ProductionServer, or OnlyLocalHeuristics.
-constexpr char kAutofillServerBehaviorParam[] = "autofill-server-type";
+inline constexpr char kAutofillServerBehaviorParam[] = "autofill-server-type";
 enum class AutofillServerBehaviorType {
   kSavedCache,          // Uses cached responses. This is the Default.
   kProductionServer,    // Connects to live Autofill Server for recommendations.

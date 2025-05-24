@@ -12,10 +12,10 @@ build_webui_tests("build") {
   files = [
     "app_management_test_support.ts",
     "app_test.ts",
-    "test_app_management_browser_proxy.ts",
     "file_handling_item_test.ts",
     "permission_item_test.ts",
     "supported_links_item_test.ts",
+    "test_app_management_browser_proxy.ts",
     "uninstall_button_test.ts",
     "window_mode_item_test.ts",
   ]
@@ -27,6 +27,7 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/app_settings:build_ts",
     "//chrome/test/data/webui:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

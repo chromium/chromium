@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.junit.Assert.assertTrue;
+
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.Criteria.checkThat;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
@@ -20,9 +22,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,19 +35,19 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestUtilsBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.payments.InputProtector;
+import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
-import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.concurrent.TimeoutException;
@@ -58,7 +58,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class TouchToFillCreditCardTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
@@ -91,16 +92,14 @@ public class TouchToFillCreditCardTest {
 
     private BottomSheetController mBottomSheetController;
     private WebContents mWebContents;
-    private EmbeddedTestServer mServer;
     TestInputMethodManagerWrapper mInputMethodWrapper;
 
     @Before
     public void setup() throws TimeoutException {
-        mServer =
-                EmbeddedTestServer.createAndStartHTTPSServer(
-                        InstrumentationRegistry.getInstrumentation().getContext(),
-                        ServerCertificate.CERT_OK);
-        mActivityTestRule.startMainActivityWithURL(mServer.getURL(FORM_URL));
+        EmbeddedTestServerRule embeddedTestServerRule =
+                mActivityTestRule.getEmbeddedTestServerRule();
+        embeddedTestServerRule.setServerUsesHttps(true);
+        mActivityTestRule.startOnTestServerUrl(FORM_URL);
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         new AutofillTestHelper().setCreditCard(VISA);
 
@@ -140,7 +139,7 @@ public class TouchToFillCreditCardTest {
                     View creditCardSuggestionItemLayout = getItemsList().getChildAt(1);
                     verifyCardSuggestionIsCorrectlyDisplayed(creditCardSuggestionItemLayout);
                     // Check that continue button is present
-                    Assert.assertTrue(getItemsList().getChildAt(2) instanceof ButtonCompat);
+                    assertTrue(getItemsList().getChildAt(2) instanceof ButtonCompat);
 
                     creditCardSuggestionItemLayout.performClick();
                 });

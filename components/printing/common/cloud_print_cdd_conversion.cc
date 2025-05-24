@@ -15,11 +15,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 #include "components/cloud_devices/common/printer_description.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "printing/printing_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace printer = cloud_devices::printer;
 
@@ -41,9 +44,8 @@ printer::DuplexType ToCloudDuplexType(printing::mojom::DuplexMode mode) {
     case printing::mojom::DuplexMode::kShortEdge:
       return printer::DuplexType::SHORT_EDGE;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return printer::DuplexType::NO_DUPLEX;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -59,9 +61,8 @@ printer::TypedValueVendorCapability::ValueType ToCloudValueType(
     case printing::AdvancedCapability::Type::kString:
       return printer::TypedValueVendorCapability::ValueType::STRING;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return printer::TypedValueVendorCapability::ValueType::STRING;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -259,6 +260,113 @@ printer::VendorCapabilities GetVendorCapabilities(
 
   return vendor_capabilities;
 }
+
+printer::FitToPageCapability GetFitToPageCapabilities(
+    const printing::PrinterSemanticCapsAndDefaults& semantic_info) {
+  auto ToFitToPageType = [](const printing::mojom::PrintScalingType& type) {
+    switch (type) {
+      case printing::mojom::PrintScalingType::kAuto:
+        return printer::FitToPageType::AUTO;
+      case printing::mojom::PrintScalingType::kAutoFit:
+        return printer::FitToPageType::AUTO_FIT;
+      case printing::mojom::PrintScalingType::kFit:
+        return printer::FitToPageType::FIT;
+      case printing::mojom::PrintScalingType::kFill:
+        return printer::FitToPageType::FILL;
+      case printing::mojom::PrintScalingType::kNone:
+        return printer::FitToPageType::NONE;
+      case printing::mojom::PrintScalingType::kUnknownPrintScalingType:
+        NOTREACHED();
+    }
+  };
+
+  printer::FitToPageCapability fit_to_page;
+  for (const auto& value : semantic_info.print_scaling_types) {
+    if (value == printing::mojom::PrintScalingType::kUnknownPrintScalingType) {
+      continue;
+    }
+    fit_to_page.AddOption(ToFitToPageType(value));
+  }
+
+  if (semantic_info.print_scaling_type_default !=
+      printing::mojom::PrintScalingType::kUnknownPrintScalingType) {
+    auto default_type =
+        ToFitToPageType(semantic_info.print_scaling_type_default);
+    // If default value is not among supported options, return empty options.
+    if (!fit_to_page.Contains(default_type)) {
+      return {};
+    }
+    fit_to_page.AddDefaultOption(default_type, true);
+  } else if (!fit_to_page.empty()) {
+    fit_to_page.AddDefaultOption(fit_to_page[0], true);
+  }
+
+  return fit_to_page;
+}
+
+// Helper that verifies if the margins are unique and stores them to the
+// supplied vector.
+void StoreMarginsUnique(const printing::PaperMargins& margins_um,
+                        std::vector<printer::Margins>& margins_storage) {
+  printer::Margins printer_margins(
+      margins_um.top_margin_um, margins_um.right_margin_um,
+      margins_um.bottom_margin_um, margins_um.left_margin_um);
+  if (!base::Contains(margins_storage, printer_margins)) {
+    margins_storage.emplace_back(std::move(printer_margins));
+  }
+}
+
+printer::MarginsCapability GetMarginsCapabilities(
+    const printing::PrinterSemanticCapsAndDefaults& semantic_info) {
+  std::optional<printer::Margins> default_margins = std::nullopt;
+  if (semantic_info.default_paper.supported_margins_um().has_value()) {
+    const auto& margins =
+        semantic_info.default_paper.supported_margins_um().value();
+    default_margins =
+        printer::Margins(margins.top_margin_um, margins.right_margin_um,
+                         margins.bottom_margin_um, margins.left_margin_um);
+  }
+
+  // Populate the `all_papers` with all the available papers.
+  printing::PrinterSemanticCapsAndDefaults::Papers all_papers;
+  all_papers.reserve(semantic_info.papers.size() +
+                     semantic_info.user_defined_papers.size());
+  all_papers.insert(all_papers.end(), semantic_info.papers.begin(),
+                    semantic_info.papers.end());
+  all_papers.insert(all_papers.end(), semantic_info.user_defined_papers.begin(),
+                    semantic_info.user_defined_papers.end());
+
+  // Stores all the available sets of margins from papers. This temporary
+  // container is used to avoid duplicates, which is then populated to the
+  // `margins_capabilites`.
+  std::vector<printer::Margins> available_margins_um;
+  for (const auto& paper : all_papers) {
+    if (!paper.supported_margins_um().has_value()) {
+      continue;
+    }
+    StoreMarginsUnique(paper.supported_margins_um().value(),
+                       available_margins_um);
+    if (paper.has_borderless_variant()) {
+      StoreMarginsUnique(printing::PaperMargins(), available_margins_um);
+    }
+  }
+
+  // Populate the `margins_capabilities` with the unique margins.
+  printer::MarginsCapability margins_capabilities;
+  bool default_margins_set = false;
+  for (const auto& margins : available_margins_um) {
+    if (!default_margins.has_value()) {
+      default_margins = margins;
+    }
+    margins_capabilities.AddDefaultOption(margins, default_margins == margins);
+    default_margins_set = default_margins_set || (default_margins == margins);
+  }
+  if (!default_margins_set && default_margins.has_value()) {
+    margins_capabilities.AddDefaultOption(default_margins.value(), true);
+  }
+  return margins_capabilities;
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -359,6 +467,25 @@ base::Value PrinterSemanticCapsAndDefaultsToCdd(
     printer::VendorCapabilities vendor_capabilities =
         GetVendorCapabilities(semantic_info);
     vendor_capabilities.SaveTo(&description);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          printing::features::kApiPrintingMarginsAndScale)) {
+    if (!semantic_info.print_scaling_types.empty()) {
+      printer::FitToPageCapability fit_to_page =
+          GetFitToPageCapabilities(semantic_info);
+      if (fit_to_page.IsValid()) {
+        fit_to_page.SaveTo(&description);
+      }
+    }
+
+    if (!semantic_info.papers.empty()) {
+      printer::MarginsCapability margins =
+          GetMarginsCapabilities(semantic_info);
+      if (margins.IsValid()) {
+        margins.SaveTo(&description);
+      }
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

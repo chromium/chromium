@@ -8,8 +8,6 @@
 {
   include: [
     "//fuchsia_web/webengine/web_instance-common.shard.cml",
-    "inspect/client.shard.cml",
-    "syslog/client.shard.cml",
   ],
 
   // These uses are based on https://fuchsia.dev/reference/fidl/fuchsia.web,
@@ -31,6 +29,13 @@
         "fuchsia.sysmem.Allocator",
         "fuchsia.sysmem2.Allocator",
       ],
+    },
+    {
+      protocol: [
+        "fuchsia.logger.LogSink",
+        "fuchsia.inspect.InspectSink"
+      ],
+      from: "parent/diagnostics",
     },
     {
       // Optional capabilities, dependent on `ContextFeatureFlags` and other

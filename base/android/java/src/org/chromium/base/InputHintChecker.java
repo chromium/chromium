@@ -8,12 +8,14 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** This class allows native code to discover the root view of the current Window. */
+@NullMarked
 @JNINamespace("base::android")
 public class InputHintChecker {
 
@@ -33,6 +35,17 @@ public class InputHintChecker {
         if (sAllowSetViewForTesting || Build.VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM) {
             InputHintCheckerJni.get().setView(view);
         }
+    }
+
+    /**
+     * Called when {@link org.chromium.chrome.browser.compositor.CompositorViewHolder} attempts to
+     * dispatch a touch event.
+     *
+     * <p>Records metrics about the relation between the provided input hints and the resulting
+     * dispatch of input events.
+     */
+    public static void onCompositorViewHolderTouchEvent() {
+        InputHintCheckerJni.get().onCompositorViewHolderTouchEvent();
     }
 
     public static void setAllowSetViewForTesting(boolean allow) {
@@ -80,9 +93,15 @@ public class InputHintChecker {
         InputHintCheckerJni.get().setView(new Object());
     }
 
+    public static void setIsAfterInputYieldForTesting(boolean after) {
+        InputHintCheckerJni.get().setIsAfterInputYieldForTesting(after); // IN-TEST
+    }
+
     @NativeMethods
-    interface Natives {
-        void setView(Object view);
+    public interface Natives {
+        void setView(@Nullable Object view);
+
+        void onCompositorViewHolderTouchEvent();
 
         boolean isInitializedForTesting(); // IN-TEST
 
@@ -91,5 +110,7 @@ public class InputHintChecker {
         boolean hasInputForTesting(); // IN-TEST
 
         boolean hasInputWithThrottlingForTesting(); // IN-TEST
+
+        void setIsAfterInputYieldForTesting(boolean after); // IN-TEST
     }
 }

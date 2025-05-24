@@ -15,10 +15,10 @@
 #include "ui/base/page_transition_types.h"
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-ReadAnythingSidePanelNavigationThrottle::CreateFor(
-    content::NavigationHandle* handle) {
-  return base::WrapUnique(new ReadAnythingSidePanelNavigationThrottle(handle));
+void ReadAnythingSidePanelNavigationThrottle::CreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  registry.AddThrottle(
+      base::WrapUnique(new ReadAnythingSidePanelNavigationThrottle(registry)));
 }
 
 ReadAnythingSidePanelNavigationThrottle::ThrottleCheckResult
@@ -32,8 +32,8 @@ const char* ReadAnythingSidePanelNavigationThrottle::GetNameForLogging() {
 
 ReadAnythingSidePanelNavigationThrottle::
     ReadAnythingSidePanelNavigationThrottle(
-        content::NavigationHandle* navigation_handle)
-    : NavigationThrottle(navigation_handle) {}
+        content::NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry) {}
 
 ReadAnythingSidePanelNavigationThrottle::ThrottleCheckResult
 ReadAnythingSidePanelNavigationThrottle::HandleSidePanelRequest() {

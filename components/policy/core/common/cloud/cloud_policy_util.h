@@ -52,6 +52,12 @@ POLICY_EXPORT std::string GetDeviceName();
 POLICY_EXPORT std::unique_ptr<enterprise_management::BrowserDeviceIdentifier>
 GetBrowserDeviceIdentifier();
 
+// Returns the fully qualified domain name of the device.
+POLICY_EXPORT std::string GetDeviceFqdn();
+
+// Returns the name of the network the device is connected to.
+POLICY_EXPORT std::string GetNetworkName();
+
 #if BUILDFLAG(IS_WIN)
 // Get browser device identifier for non-CrOS platforms, in a background thread.
 // It includes several identifiers we collect from the device.

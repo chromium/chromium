@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/zygote/zygote_linux.h"
 
 #include <errno.h>
@@ -23,6 +18,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -44,7 +40,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/zygote/zygote_commands_linux.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
@@ -116,7 +111,7 @@ bool Zygote::ProcessRequests() {
   // We need to accept SIGCHLD, even though our handler is a no-op because
   // otherwise we cannot wait on children. (According to POSIX 2001.)
   struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  UNSAFE_TODO(memset(&action, 0, sizeof(action)));
   action.sa_handler = &SIGCHLDHandler;
   PCHECK(sigaction(SIGCHLD, &action, nullptr) == 0);
 
@@ -134,7 +129,7 @@ bool Zygote::ProcessRequests() {
     bool r = base::UnixDomainSocket::SendMsg(
         kZygoteSocketPairFd, kZygoteHelloMessage, sizeof(kZygoteHelloMessage),
         std::vector<int>());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     LOG_IF(WARNING, !r) << "Sending zygote magic failed";
     // Exit normally on chromeos because session manager may send SIGTERM
     // right after the process starts and it may fail to send zygote magic
@@ -173,8 +168,7 @@ bool Zygote::ProcessRequests() {
     }
   }
   // The loop should not be exited unless a request was successfully processed.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool Zygote::ReapChild(const base::TimeTicks& now, ZygoteProcessInfo* child) {
@@ -253,7 +247,7 @@ bool Zygote::HandleRequestFromBrowser(int fd) {
   }
 
   base::Pickle pickle = base::Pickle::WithUnownedBuffer(
-      base::span(buf, base::checked_cast<size_t>(len)));
+      UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len))));
   base::PickleIterator iter(pickle);
 
   int kind;
@@ -280,15 +274,12 @@ bool Zygote::HandleRequestFromBrowser(int fd) {
         // This shouldn't happen in practice, but some failure paths in
         // HandleForkRequest (e.g., if ReadArgsAndFork fails during depickling)
         // could leave this command pending on the socket.
-        LOG(ERROR) << "Unexpected real PID message from browser";
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED() << "Unexpected real PID message from browser";
       case kZygoteCommandReinitializeLogging:
         HandleReinitializeLoggingRequest(iter, std::move(fds));
         return false;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -306,9 +297,7 @@ void Zygote::HandleReapRequest(int fd, base::PickleIterator iter) {
 
   ZygoteProcessInfo child_info;
   if (!GetProcessInfo(child, &child_info)) {
-    LOG(ERROR) << "Child not found!";
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "Child not found!";
   }
   child_info.time_of_reap_request = base::TimeTicks::Now();
 
@@ -334,9 +323,7 @@ bool Zygote::GetTerminationStatus(base::ProcessHandle real_pid,
                                   int* exit_code) {
   ZygoteProcessInfo child_info;
   if (!GetProcessInfo(real_pid, &child_info)) {
-    LOG(ERROR) << "Zygote::GetTerminationStatus for unknown PID " << real_pid;
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED() << "Zygote::GetTerminationStatus for unknown PID " << real_pid;
   }
   // We know about |real_pid|.
   const base::ProcessHandle child = child_info.internal_pid;
@@ -388,11 +375,7 @@ void Zygote::HandleGetTerminationStatus(int fd, base::PickleIterator iter) {
   bool got_termination_status =
       GetTerminationStatus(child_requested, known_dead, &status, &exit_code);
   if (!got_termination_status) {
-    // Assume that if we can't find the child in the sandbox, then
-    // it terminated normally.
-    NOTREACHED_IN_MIGRATION();
-    status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
-    exit_code = RESULT_CODE_NORMAL_EXIT;
+    NOTREACHED();
   }
 
   base::Pickle write_pickle;
@@ -517,7 +500,7 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
       CHECK(recv_fds.empty());
 
       base::Pickle pickle = base::Pickle::WithUnownedBuffer(
-          base::span(buf, base::checked_cast<size_t>(len)));
+          UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len))));
       base::PickleIterator iter(pickle);
 
       int kind;
@@ -546,8 +529,7 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
 
   // Now set-up this process to be tracked by the Zygote.
   if (base::Contains(process_info_map_, real_pid)) {
-    LOG(ERROR) << "Already tracking PID " << real_pid;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "Already tracking PID " << real_pid;
   }
   process_info_map_[real_pid].internal_pid = pid;
   process_info_map_[real_pid].started_from_helper = helper;
@@ -718,7 +700,7 @@ void Zygote::HandleReinitializeLoggingRequest(base::PickleIterator iter,
   }
 #else
   // This method should only be used in ChromeOS.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

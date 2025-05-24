@@ -94,8 +94,7 @@ function createRegistryEntries(queryParams) {
   boolGroup.addChild(boolTwoEntry);
   registry.register(boolTwoEntry);
 
-  buttonEntry =
-      new goog.tweak.ButtonAction('Button', 'The Btn', goog.nullFunction);
+  buttonEntry = new goog.tweak.ButtonAction('Button', 'The Btn', () => {});
   buttonEntry.label = '<btn>';
   registry.register(buttonEntry);
 

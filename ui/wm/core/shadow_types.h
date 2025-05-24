@@ -6,7 +6,6 @@
 #define UI_WM_CORE_SHADOW_TYPES_H_
 
 #include "base/component_export.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/window.h"
 
 namespace wm {
@@ -27,7 +26,7 @@ constexpr int kShadowElevationPopup = 4;
 // of the shadow style created by gfx::ShadowValue::MakeMdShadowValues() or
 // gfx::ShadowValue::MakeChromeOSSystemUIShadowValues().
 constexpr int kShadowElevationMenuOrTooltip = 6;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr int kShadowElevationInactiveWindow = 12;
 #else
 constexpr int kShadowElevationInactiveWindow = 8;

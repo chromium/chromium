@@ -4,22 +4,26 @@
 
 #include "chrome/browser/screen_ai/public/test/fake_optical_character_recognizer.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 
 namespace screen_ai {
 
 // static
-scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+scoped_refptr<screen_ai::FakeOpticalCharacterRecognizer>
 FakeOpticalCharacterRecognizer::Create(bool return_empty) {
   return base::MakeRefCounted<screen_ai::FakeOpticalCharacterRecognizer>(
       return_empty);
 }
 
 FakeOpticalCharacterRecognizer::FakeOpticalCharacterRecognizer(
-    bool return_empty)
+    bool empty_ax_tree_update_result)
     : OpticalCharacterRecognizer(/*profile=*/nullptr,
                                  mojom::OcrClientType::kTest),
-      return_empty_(return_empty) {
+      empty_ax_tree_update_result_(empty_ax_tree_update_result) {
   ready_ = true;
 }
 
@@ -28,16 +32,16 @@ FakeOpticalCharacterRecognizer::~FakeOpticalCharacterRecognizer() = default;
 void FakeOpticalCharacterRecognizer::PerformOCR(
     const ::SkBitmap& image,
     base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)> callback) {
-  CHECK(return_empty_)
-      << "Preset results not defined, please add them here needed.";
-  std::move(callback).Run(mojom::VisualAnnotation::New());
+  std::move(callback).Run(visual_annotation_result_
+                              ? std::move(visual_annotation_result_)
+                              : screen_ai::mojom::VisualAnnotation::New());
 }
 
 void FakeOpticalCharacterRecognizer::PerformOCR(
     const SkBitmap& image,
     base::OnceCallback<void(const ui::AXTreeUpdate&)> callback) {
   ui::AXTreeUpdate update;
-  if (!return_empty_) {
+  if (!empty_ax_tree_update_result_) {
     update.has_tree_data = true;
     // TODO(nektar): Add a tree ID as well and update tests.
     // update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();

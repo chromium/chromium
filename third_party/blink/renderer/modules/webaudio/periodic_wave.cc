@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "build/build_config.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)
 #include <xmmintrin.h>
@@ -270,15 +272,17 @@ void PeriodicWaveImpl::WaveDataForFundamentalFrequency(
 
   const float* ratio = reinterpret_cast<float*>(&v_ratio);
 
-  float cents_above_lowest_frequency[4] __attribute__((aligned(16)));
+  std::array<float, 4> cents_above_lowest_frequency
+      __attribute__((aligned(16)));
 
   for (int k = 0; k < 4; ++k) {
     cents_above_lowest_frequency[k] = log2f(ratio[k]) * 1200;
   }
 
-  __m128 v_pitch_range = _mm_add_ps(
-      _mm_set1_ps(1.0), _mm_div_ps(_mm_load_ps(cents_above_lowest_frequency),
-                                   _mm_set1_ps((cents_per_range_))));
+  __m128 v_pitch_range =
+      _mm_add_ps(_mm_set1_ps(1.0),
+                 _mm_div_ps(_mm_load_ps(cents_above_lowest_frequency.data()),
+                            _mm_set1_ps((cents_per_range_))));
   v_pitch_range = _mm_max_ps(v_pitch_range, _mm_set1_ps(0.0));
   v_pitch_range = _mm_min_ps(v_pitch_range, _mm_set1_ps(NumberOfRanges() - 1));
 
@@ -552,9 +556,7 @@ void PeriodicWaveImpl::GenerateBasicWaveform(int shape) {
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        b = 0;
-        break;
+        NOTREACHED();
     }
 
     real_p[n] = 0;

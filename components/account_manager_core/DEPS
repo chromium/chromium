@@ -1,6 +1,5 @@
 include_rules = [
   "+chromeos/crosapi/mojom/account_manager.mojom.h",
-  "+chromeos/lacros",
   "+components/prefs",
   "+google_apis/gaia",
   "+mojo/public",

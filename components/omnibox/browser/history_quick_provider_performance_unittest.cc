@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
+
 
 #include <algorithm>
 #include <memory>
@@ -37,8 +35,8 @@ namespace {
 
 // Not threadsafe.
 std::string GenerateFakeHashedString(size_t sym_count) {
-  static constexpr char kSyms[] =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,/=+?#";
+  constexpr static std::array<char, 69> kSyms{
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,/=+?#"};
   static std::mt19937 engine;
   std::uniform_int_distribution<size_t> index_distribution(
       0, std::size(kSyms) - 2 /* trailing \0 */);

@@ -34,6 +34,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_DOCUMENT_ISOLATION)
   std::optional<std::string> report_only_reporting_endpoint;
 };
 
+COMPONENT_EXPORT(NETWORK_CPP_DOCUMENT_ISOLATION)
+bool DIPCompatibleWithCrossOriginIsolated(const DocumentIsolationPolicy&);
+COMPONENT_EXPORT(NETWORK_CPP_DOCUMENT_ISOLATION)
+bool DIPCompatibleWithCrossOriginIsolated(mojom::DocumentIsolationPolicyValue);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_DOCUMENT_ISOLATION_POLICY_H_

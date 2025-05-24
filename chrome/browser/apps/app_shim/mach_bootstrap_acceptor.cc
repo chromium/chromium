@@ -13,17 +13,15 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "chrome/common/mac/app_mode_common.h"
 
 namespace apps {
 
 MachBootstrapAcceptor::MachBootstrapAcceptor(const std::string& name_fragment,
                                              Delegate* delegate)
-    : server_name_(base::StringPrintf("%s.%s",
-                                      base::apple::BaseBundleID(),
-                                      name_fragment.c_str())
-                       .c_str()),
+    : server_name_(
+          base::StrCat({base::apple::BaseBundleID(), ".", name_fragment})),
       delegate_(delegate) {
   DCHECK(delegate_);
 }
@@ -42,7 +40,7 @@ void MachBootstrapAcceptor::Start() {
     return;
   }
 
-  dispatch_source_ = std::make_unique<base::apple::DispatchSourceMach>(
+  dispatch_source_ = std::make_unique<base::apple::DispatchSource>(
       server_name_.c_str(), port(), ^{
         HandleRequest();
       });

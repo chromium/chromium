@@ -72,7 +72,7 @@ std::unique_ptr<SkCanvas> TransportDIB::GetPlatformCanvas(int w,
     return nullptr;
   return skia::CreatePlatformCanvasWithPixels(w, h, opaque,
                                               static_cast<uint8_t*>(memory()),
-                                              skia::RETURN_NULL_ON_FAILURE);
+                                              0, skia::RETURN_NULL_ON_FAILURE);
 #endif
 }
 
@@ -93,7 +93,7 @@ bool TransportDIB::Map() {
   return true;
 }
 
-void* TransportDIB::memory() const {
+const void* TransportDIB::memory() const {
   return shm_mapping_.IsValid() ? shm_mapping_.memory() : nullptr;
 }
 

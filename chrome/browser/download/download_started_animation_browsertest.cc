@@ -11,8 +11,7 @@
 
 class DownloadStartedAnimationTest : public InProcessBrowserTest {
  public:
-  DownloadStartedAnimationTest() {
-  }
+  DownloadStartedAnimationTest() = default;
 
   DownloadStartedAnimationTest(const DownloadStartedAnimationTest&) = delete;
   DownloadStartedAnimationTest& operator=(const DownloadStartedAnimationTest&) =

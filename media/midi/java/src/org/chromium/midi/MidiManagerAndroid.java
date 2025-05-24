@@ -18,6 +18,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import java.util.Set;
 
 /** A Java class implementing midi::MidiManagerAndroid functionality. */
 @JNINamespace("midi")
+@NullMarked
 class MidiManagerAndroid {
     private static final String TAG = "MidiManagerAndroid";
 

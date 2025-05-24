@@ -87,34 +87,34 @@ struct RenderFrameMetadata {
 
   // Used to position Android/iOS bottom bar, whose position is computed by the
   // renderer compositor.
-  [EnableIf=is_android_or_ios]
+  [EnableIf=is_android|is_ios]
   float bottom_controls_height;
 
-  [EnableIf=is_android_or_ios]
+  [EnableIf=is_android|is_ios]
   float bottom_controls_shown_ratio;
 
-  [EnableIf=is_android_or_ios]
+  [EnableIf=is_android|is_ios]
   float top_controls_min_height_offset;
 
-  [EnableIf=is_android_or_ios]
+  [EnableIf=is_android|is_ios]
   float bottom_controls_min_height_offset;
 
-  [EnableIf=is_android_or_ios]
+  [EnableIf=is_android|is_ios]
   float min_page_scale_factor;
 
-  [EnableIf=is_android_or_ios]
+  [EnableIf=is_android|is_ios]
   float max_page_scale_factor;
 
-  [EnableIf=is_android_or_ios]
+  [EnableIf=is_android|is_ios]
   bool root_overflow_y_hidden;
 
-  [EnableIf=is_android_or_ios]
+  [EnableIf=is_android|is_ios]
   gfx.mojom.SizeF scrollable_viewport_size;
 
-  [EnableIf=is_android_or_ios]
+  [EnableIf=is_android|is_ios]
   gfx.mojom.SizeF root_layer_size;
 
-  [EnableIf=is_android_or_ios]
+  [EnableIf=is_android|is_ios]
   bool has_transparent_background;
 };
 
@@ -168,8 +168,8 @@ interface RenderFrameMetadataObserver {
 // RenderFrameMetadataObserver::UpdateRootScrollOffsetUpdateFrequency.
 interface RenderFrameMetadataObserverClient {
   // Notified when RenderFrameMetadata has changed.
-  OnRenderFrameMetadataChanged(uint32 frame_token,
-                               RenderFrameMetadata metadata);
+  OnRenderFrameMetadataChanged(
+      uint32 frame_token, RenderFrameMetadata metadata);
 
   // Notified on all frame submissions.
   OnFrameSubmissionForTesting(uint32 frame_token);

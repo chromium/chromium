@@ -35,17 +35,18 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
@@ -111,16 +112,6 @@ void WebFormControlElement::SetUserHasEditedTheField(bool value) {
 
 void WebFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
   Unwrap<HTMLFormControlElement>()->SetAutofillState(autofill_state);
-}
-
-FormElementPiiType WebFormControlElement::GetFormElementPiiType() const {
-  return ConstUnwrap<HTMLFormControlElement>()->GetFormElementPiiType();
-}
-
-void WebFormControlElement::SetFormElementPiiType(
-    FormElementPiiType form_element_pii_type) {
-  Unwrap<HTMLFormControlElement>()->SetFormElementPiiType(
-      form_element_pii_type);
 }
 
 WebString WebFormControlElement::NameForAutofill() const {
@@ -217,15 +208,6 @@ void WebFormControlElement::SetAutofillValue(const WebString& value,
     select->SetAutofillValue(value, autofill_state);
     if (!Focused())
       DispatchBlurEvent();
-  } else if (auto* selectlist =
-                 ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    if (!Focused()) {
-      DispatchFocusEvent();
-    }
-    selectlist->SetAutofillValue(value, autofill_state);
-    if (!Focused()) {
-      DispatchBlurEvent();
-    }
   }
 }
 
@@ -236,9 +218,6 @@ WebString WebFormControlElement::Value() const {
     return textarea->Value();
   if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_))
     return select->Value();
-  if (auto* selectlist = ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    return selectlist->value();
-  }
   return WebString();
 }
 
@@ -250,9 +229,6 @@ void WebFormControlElement::SetSuggestedValue(const WebString& value) {
     textarea->SetSuggestedValue(value);
   } else if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_)) {
     select->SetSuggestedValue(value);
-  } else if (auto* selectlist =
-                 ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    selectlist->SetSuggestedValue(value);
   }
 }
 
@@ -263,9 +239,6 @@ WebString WebFormControlElement::SuggestedValue() const {
     return textarea->SuggestedValue();
   if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_))
     return select->SuggestedValue();
-  if (auto* selectlist = ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    return selectlist->SuggestedValue();
-  }
   return WebString();
 }
 
@@ -330,6 +303,11 @@ base::i18n::TextDirection WebFormControlElement::DirectionForFormData() const {
 
 WebFormElement WebFormControlElement::Form() const {
   return WebFormElement(ConstUnwrap<HTMLFormControlElement>()->Form());
+}
+
+WebFormElement WebFormControlElement::GetOwningFormForAutofill() const {
+  return WebFormElement(
+      ConstUnwrap<HTMLFormControlElement>()->GetOwningFormForAutofill());
 }
 
 int32_t WebFormControlElement::GetAxId() const {

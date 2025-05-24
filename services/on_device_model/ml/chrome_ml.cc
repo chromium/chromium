@@ -8,67 +8,69 @@
 #include <optional>
 #include <string_view>
 
-#include "base/base_paths.h"
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
-#include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/no_destructor.h"
-#include "base/path_service.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
+#include "services/on_device_model/ml/chrome_ml_holder.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
+#include "third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/llguidance.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_util.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "base/apple/bundle_locations.h"
-#include "base/apple/foundation_util.h"
-#endif
-
 namespace ml {
 
 namespace {
-
-constexpr std::string_view kChromeMLLibraryName = "optimization_guide_internal";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GpuErrorReason {
   kOther = 0,
   kDxgiErrorDeviceHung = 1,
-  kDxgiErrorDeviceRemoved = 2,
+  kDeviceRemoved = 2,
   kDeviceCreationFailed = 3,
-  kMaxValue = kDeviceCreationFailed,
+  kOutOfMemory = 4,
+  kMaxValue = kOutOfMemory,
 };
 
 void FatalGpuErrorFn(const char* msg) {
   SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg", msg);
   std::string msg_str(msg);
+  std::string msg_continued;
+  // The error message may be long, collect another 1k if needed.
+  if (msg_str.size() > 1024) {
+    msg_continued = msg_str.substr(1024);
+  }
+  SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg2", msg_continued);
   GpuErrorReason error_reason = GpuErrorReason::kOther;
   if (msg_str.find("DXGI_ERROR_DEVICE_HUNG") != std::string::npos) {
     error_reason = GpuErrorReason::kDxgiErrorDeviceHung;
-  } else if (msg_str.find("DXGI_ERROR_DEVICE_REMOVED") != std::string::npos) {
-    error_reason = GpuErrorReason::kDxgiErrorDeviceRemoved;
-  } else if (msg_str.find("Failed to create device.") != std::string::npos) {
+  } else if (msg_str.find("DXGI_ERROR_DEVICE_REMOVED") != std::string::npos ||
+             msg_str.find("VK_ERROR_DEVICE_LOST") != std::string::npos) {
+    error_reason = GpuErrorReason::kDeviceRemoved;
+  } else if (msg_str.find("Failed to create device") != std::string::npos) {
     error_reason = GpuErrorReason::kDeviceCreationFailed;
+  } else if (msg_str.find("VK_ERROR_OUT_OF_DEVICE_MEMORY") !=
+             std::string::npos) {
+    error_reason = GpuErrorReason::kOutOfMemory;
   }
   base::UmaHistogramEnumeration("OnDeviceModel.GpuErrorReason", error_reason);
   if (error_reason == GpuErrorReason::kOther) {
     // Collect crash reports on unknown errors.
-    CHECK(false) << "ChromeML(GPU) Error: " << msg;
+    NOTREACHED() << "ChromeML(GPU) Error: " << msg;
   } else {
     base::Process::TerminateCurrentProcessImmediately(0);
   }
@@ -76,7 +78,7 @@ void FatalGpuErrorFn(const char* msg) {
 
 void FatalErrorFn(const char* msg) {
   SCOPED_CRASH_KEY_STRING1024("ChromeML", "error_msg", msg);
-  CHECK(false) << "ChromeML Error: " << msg;
+  NOTREACHED() << "ChromeML Error: " << msg;
 }
 
 // Helpers to disabiguate overloads in base.
@@ -94,72 +96,11 @@ void RecordCustomCountsHistogram(const char* name,
   base::UmaHistogramCustomCounts(name, sample, min, exclusive_max, buckets);
 }
 
+void RecordMediumTimesHistogram(const char* name, int64_t milliseconds) {
+  base::UmaHistogramMediumTimes(name, base::Milliseconds(milliseconds));
+}
+
 }  // namespace
-
-base::FilePath GetChromeMLPath(const std::optional<std::string>& library_name) {
-  // TODO(https://crbug.com/366498630): Clean up the API to introduce dedicated
-  // ForTesting() methods for loading the library / querying its path.
-  if (library_name.has_value()) {
-    // Library name override should only be used in test code.
-    CHECK_IS_TEST();
-  }
-
-  base::FilePath base_dir;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
-#if BUILDFLAG(IS_MAC)
-  if (base::apple::AmIBundled()) {
-    base_dir = base::apple::FrameworkBundlePath().Append("Libraries");
-  } else {
-#endif  // BUILDFLAG(IS_MAC)
-    CHECK(base::PathService::Get(base::DIR_MODULE, &base_dir));
-#if BUILDFLAG(IS_MAC)
-  }
-#endif  // BUILDFLAG(IS_MAC)
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_FUCHSIA)
-
-  return base_dir.AppendASCII(base::GetNativeLibraryName(
-      library_name.value_or(std::string(kChromeMLLibraryName))));
-}
-
-ChromeMLHolder::ChromeMLHolder(base::PassKey<ChromeMLHolder>,
-                               base::ScopedNativeLibrary library,
-                               const ChromeMLAPI* api)
-    : library_(std::move(library)), api_(api) {
-  CHECK(api_);
-}
-
-ChromeMLHolder::~ChromeMLHolder() = default;
-
-// static
-DISABLE_CFI_DLSYM
-std::unique_ptr<ChromeMLHolder> ChromeMLHolder::Create(
-    const std::optional<std::string>& library_name) {
-  base::NativeLibraryLoadError error;
-  base::NativeLibrary library =
-      base::LoadNativeLibrary(GetChromeMLPath(library_name), &error);
-  if (!library) {
-    LOG(ERROR) << "Error loading native library: " << error.ToString();
-    return {};
-  }
-
-  base::ScopedNativeLibrary scoped_library(library);
-  auto get_api = reinterpret_cast<ChromeMLAPIGetter>(
-      scoped_library.GetFunctionPointer("GetChromeMLAPI"));
-  if (!get_api) {
-    LOG(ERROR) << "Unable to resolve GetChromeMLAPI() symbol.";
-    return {};
-  }
-
-  const ChromeMLAPI* api = get_api();
-  if (!api) {
-    LOG(ERROR) << "GetChromeMLAPI() returned null.";
-    return {};
-  }
-
-  return std::make_unique<ChromeMLHolder>(base::PassKey<ChromeMLHolder>(),
-                                          std::move(scoped_library), api);
-}
 
 ChromeML::ChromeML(const ChromeMLAPI* api) : api_(api) {}
 ChromeML::~ChromeML() = default;
@@ -170,6 +111,43 @@ ChromeML* ChromeML::Get(const std::optional<std::string>& library_name) {
       Create(library_name)};
   return chrome_ml->get();
 }
+
+#if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+void ConstraintDelete(ChromeMLConstraint constraint) {
+  llg_free_constraint(reinterpret_cast<LlgConstraint*>(constraint));
+}
+
+bool ConstraintComputeMask(ChromeMLConstraint constraint,
+                           ChromeMLConstraintMask& mask) {
+  LlgMaskResult res;
+  if (llg_compute_mask(reinterpret_cast<LlgConstraint*>(constraint), &res) !=
+      0) {
+    return false;
+  }
+  mask.sample_mask = res.sample_mask;
+  mask.is_stop = res.is_stop;
+  return true;
+}
+
+bool ConstraintCommitToken(ChromeMLConstraint constraint, uint32_t token) {
+  LlgCommitResult result;
+  return llg_commit_token(reinterpret_cast<LlgConstraint*>(constraint), token,
+                          &result) >= 0;
+}
+
+bool ConstraintIsStopped(ChromeMLConstraint constraint) {
+  return llg_is_stopped(reinterpret_cast<LlgConstraint*>(constraint));
+}
+
+const char* ConstraintGetError(ChromeMLConstraint constraint) {
+  return llg_get_error(reinterpret_cast<LlgConstraint*>(constraint));
+}
+
+ChromeMLConstraint ConstraintClone(ChromeMLConstraint constraint) {
+  return reinterpret_cast<ChromeMLConstraint>(
+      llg_clone_constraint(reinterpret_cast<LlgConstraint*>(constraint)));
+}
+#endif
 
 // static
 DISABLE_CFI_DLSYM
@@ -184,11 +162,12 @@ std::unique_ptr<ChromeML> ChromeML::Create(
 
   static base::NoDestructor<std::unique_ptr<ChromeMLHolder>> holder{
       ChromeMLHolder::Create(library_name)};
-  if (!holder.get()) {
+  ChromeMLHolder* holder_ptr = holder->get();
+  if (!holder_ptr) {
     return {};
   }
 
-  auto& api = (*holder)->api();
+  auto& api = holder_ptr->api();
 
   dawnProcSetProcs(&dawn::native::GetProcs());
   api.InitDawnProcs(dawn::native::GetProcs());
@@ -199,13 +178,33 @@ std::unique_ptr<ChromeML> ChromeML::Create(
     const ChromeMLMetricsFns metrics_fns{
         .RecordExactLinearHistogram = &RecordExactLinearHistogram,
         .RecordCustomCountsHistogram = &RecordCustomCountsHistogram,
+        .RecordMediumTimesHistogram = &RecordMediumTimesHistogram,
     };
     api.SetMetricsFns(&metrics_fns);
+  }
+  if (api.SetConstraintFns) {
+    api.SetConstraintFns(GetConstraintFns());
   }
   if (api.SetFatalErrorNonGpuFn) {
     api.SetFatalErrorNonGpuFn(&FatalErrorFn);
   }
   return base::WrapUnique(new ChromeML(&api));
+}
+
+const ChromeMLConstraintFns* GetConstraintFns() {
+#if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+  static constexpr ChromeMLConstraintFns kConstraintFns = {
+      .Delete = &ConstraintDelete,
+      .ComputeMask = &ConstraintComputeMask,
+      .CommitToken = &ConstraintCommitToken,
+      .IsStopped = &ConstraintIsStopped,
+      .GetError = &ConstraintGetError,
+      .Clone = &ConstraintClone,
+  };
+#else
+  static constexpr ChromeMLConstraintFns kConstraintFns = {};
+#endif
+  return &kConstraintFns;
 }
 
 }  // namespace ml

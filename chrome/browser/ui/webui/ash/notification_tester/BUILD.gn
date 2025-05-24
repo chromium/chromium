@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("notification_tester") {
   sources = [
@@ -30,12 +28,12 @@ static_library("notification_tester") {
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/notification_tester:resources",
-    "//chrome/browser/ui/webui:webui_util",
     "//chromeos/constants",
     "//ui/base",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/gfx",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
+    "//ui/webui",
   ]
 }

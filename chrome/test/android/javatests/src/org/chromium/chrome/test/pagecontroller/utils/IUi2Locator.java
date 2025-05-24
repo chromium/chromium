@@ -16,8 +16,7 @@ public interface IUi2Locator {
      * Locates a single node among all nodes found by the locator.
      *
      * @param device The device to search under.
-     * @return       The first node found by the locator, or null if none is found.
-     * @throws       androidx.test.uiautomator.StaleObjectException
+     * @return The first node found by the locator, or null if none is found.
      */
     @Nullable
     UiObject2 locateOne(UiDevice device);
@@ -26,8 +25,7 @@ public interface IUi2Locator {
      * Locates a single node among all nodes found by the locator.
      *
      * @param root The node to search under.
-     * @return     The first node found by the locator, or null if none is found.
-     * @throws     androidx.test.uiautomator.StaleObjectException
+     * @return The first node found by the locator, or null if none is found.
      */
     @Nullable
     UiObject2 locateOne(UiObject2 root);
@@ -36,8 +34,7 @@ public interface IUi2Locator {
      * Locates all nodes found by the locator.
      *
      * @param device The device to search under.
-     * @return       All nodes found, or an empty list of none are found.
-     * @throws       androidx.test.uiautomator.StaleObjectException
+     * @return All nodes found, or an empty list of none are found.
      */
     List<UiObject2> locateAll(UiDevice device);
 
@@ -45,8 +42,7 @@ public interface IUi2Locator {
      * Locates all nodes found by the locator.
      *
      * @param root The node to search under.
-     * @return     All nodes found, or an empty list of none are found.
-     * @throws     androidx.test.uiautomator.StaleObjectException
+     * @return All nodes found, or an empty list of none are found.
      */
     List<UiObject2> locateAll(UiObject2 root);
 }

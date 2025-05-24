@@ -54,9 +54,10 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
           AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES);
     }
 
-    if (new_mode_flags & AXMode::kScreenReader) {
-      RecordModeFlag(prefix,
-                     AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
+    if (new_mode_flags & AXMode::kExtendedProperties) {
+      RecordModeFlag(
+          prefix,
+          AXMode::ModeFlagHistogramValue::UMA_AX_MODE_EXTENDED_PROPERTIES);
     }
 
     if (new_mode_flags & AXMode::kHTML) {
@@ -82,12 +83,21 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
           prefix,
           AXMode::ModeFlagHistogramValue::UMA_AX_MODE_ANNOTATE_MAIN_NODE);
     }
+
+    // ui::AXMode::kFromPlatform is unconditionally filtered out and is
+    // therefore never present in `mode`.
+    CHECK(!mode.has_mode(ui::AXMode::kFromPlatform));
+
+    if (new_mode_flags & AXMode::kScreenReader) {
+      RecordModeFlag(prefix,
+                     AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
+    }
   }
 
   // Record forms control flag transitioning from unset to set.
-  int new_experimental_mode_flags =
-      mode.experimental_flags() & (~previous_mode.experimental_flags());
-  if (new_experimental_mode_flags & AXMode::kExperimentalFormControls) {
+  int new_filter_mode_flags =
+      mode.filter_flags() & (~previous_mode.filter_flags());
+  if (new_filter_mode_flags & AXMode::kFormsAndLabelsOnly) {
     switch (prefix) {
       case AXHistogramPrefix::kNone:
         base::UmaHistogramBoolean(
@@ -108,8 +118,6 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
     bundle = AXMode::BundleHistogramValue::kWebContentsOnly;
   } else if (mode == kAXModeComplete) {
     bundle = AXMode::BundleHistogramValue::kComplete;
-  } else if (mode == kAXModeCompleteNoHTML) {
-    bundle = AXMode::BundleHistogramValue::kCompleteNoHTML;
   } else if (mode == kAXModeFormControls) {
     bundle = AXMode::BundleHistogramValue::kFormControls;
   } else {

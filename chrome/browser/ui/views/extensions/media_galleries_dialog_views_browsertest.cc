@@ -43,14 +43,14 @@ MediaGalleryPrefInfo MakePrefInfo(
 
 class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
  public:
-  MediaGalleriesInteractiveDialogTest() {}
+  MediaGalleriesInteractiveDialogTest() = default;
 
   MediaGalleriesInteractiveDialogTest(
       const MediaGalleriesInteractiveDialogTest&) = delete;
   MediaGalleriesInteractiveDialogTest& operator=(
       const MediaGalleriesInteractiveDialogTest&) = delete;
 
-  ~MediaGalleriesInteractiveDialogTest() override {}
+  ~MediaGalleriesInteractiveDialogTest() override = default;
 
   void PreRunTestOnMainThread() override {
     DialogBrowserTest::PreRunTestOnMainThread();

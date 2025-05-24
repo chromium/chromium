@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 class GURL;
 
 namespace web {

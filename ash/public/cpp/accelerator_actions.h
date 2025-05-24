@@ -170,6 +170,11 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(TilingWindowResizeUp)                       \
   ACCELERATOR_ACTION_ENTRY(TilingWindowResizeDown)                     \
   ACCELERATOR_ACTION_ENTRY(ToggleMouseKeys)                            \
+  ACCELERATOR_ACTION_ENTRY(ResizePipWindow)                            \
+  ACCELERATOR_ACTION_ENTRY(ToggleGeminiApp)                            \
+  ACCELERATOR_ACTION_ENTRY(ToggleDoNotDisturb)                         \
+  ACCELERATOR_ACTION_ENTRY(ToggleCameraAllowed)                        \
+  ACCELERATOR_ACTION_ENTRY(StartSunfishSession)                        \
   /* Debug actions are kept at an offset.*/                            \
   /* This offset should be kept consistent with the enum*/             \
   /* `AcceleratorAction` in*/                                          \
@@ -206,6 +211,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(DevToggleUnifiedDesktop)                    \
   ACCELERATOR_ACTION_ENTRY(DebugToggleFocusModeState)                  \
   ACCELERATOR_ACTION_ENTRY(DebugStartSunfishSession)                   \
+  ACCELERATOR_ACTION_ENTRY(DebugShowTestWindow)                        \
   // LINT.ThenChange(//ash/public/mojom/accelerator_actions.mojom)
 
 enum AcceleratorAction {

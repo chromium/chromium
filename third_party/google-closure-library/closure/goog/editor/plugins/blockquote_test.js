@@ -38,6 +38,10 @@ function createPlugin(requireClassname, paragraphMode = undefined) {
 
 /** @suppress {checkTypes} suppression added to enable type checking */
 function execCommand() {
+  // Change events are stopped during the execution of execCommand because
+  // Blockquote.SPLIT_COMMAND is a silent command.
+  field.stopChangeEvents(true, true);
+  field.startChangeEvents(false, false);
   field.$replay();
 
   // With splitPoint we try to mimic the behavior of EnterHandler's

@@ -33,8 +33,7 @@ blink::ExecutionContextToken ToExecutionContextToken(
   // Unfortunately there's no enum of input types, so no way to ensure that
   // all types are handled at compile time. This at least ensures via the CQ
   // that all types are handled.
-  NOTREACHED_IN_MIGRATION();
-  return blink::ExecutionContextToken();
+  NOTREACHED();
 }
 
 FrameExecutionContext::FrameExecutionContext(const FrameNodeImpl* frame_node)
@@ -60,6 +59,11 @@ blink::ExecutionContextToken FrameExecutionContext::GetToken() const {
 Graph* FrameExecutionContext::GetGraph() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return frame_node_->graph();
+}
+
+NodeState FrameExecutionContext::GetNodeState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return frame_node_->GetNodeState();
 }
 
 const GURL& FrameExecutionContext::GetUrl() const {
@@ -112,6 +116,11 @@ blink::ExecutionContextToken WorkerExecutionContext::GetToken() const {
 Graph* WorkerExecutionContext::GetGraph() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return worker_node_->graph();
+}
+
+NodeState WorkerExecutionContext::GetNodeState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_node_->GetNodeState();
 }
 
 const GURL& WorkerExecutionContext::GetUrl() const {

@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
@@ -25,15 +24,13 @@
 namespace chromeos {
 
 namespace {
-
 namespace cx_telem = api::os_telemetry;
 namespace crosapi = ::crosapi::mojom;
-
 }  // namespace
 
 // TelemetryApiFunctionBase ----------------------------------------------------
 
-TelemetryApiFunctionBase::TelemetryApiFunctionBase() {}
+TelemetryApiFunctionBase::TelemetryApiFunctionBase() = default;
 
 TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
 
@@ -41,12 +38,6 @@ crosapi::TelemetryProbeService* TelemetryApiFunctionBase::GetRemoteService() {
   DCHECK(RemoteProbeServiceStrategy::Get()->GetRemoteProbeService());
   return RemoteProbeServiceStrategy::Get()->GetRemoteProbeService();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool TelemetryApiFunctionBase::IsCrosApiAvailable() {
-  return RemoteProbeServiceStrategy::Get()->GetRemoteProbeService() != nullptr;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // OsTelemetryGetAudioInfoFunction ---------------------------------------------
 

@@ -31,16 +31,11 @@ void AbortPaymentRespondWithObserver::OnResponseRejected(
       ->RespondToAbortPaymentEvent(event_id_, false);
 }
 
-void AbortPaymentRespondWithObserver::OnResponseFulfilled(
-    ScriptState* script_state,
-    const ScriptValue& value,
-    const ExceptionContext&) {
+void AbortPaymentRespondWithObserver::OnResponseFulfilled(ScriptState*,
+                                                          bool response) {
   DCHECK(GetExecutionContext());
-  bool response = ToBoolean(script_state->GetIsolate(), value.V8Value(),
-                            ASSERT_NO_EXCEPTION);
-
   if (response) {
-    UseCounter::Count(ExecutionContext::From(script_state),
+    UseCounter::Count(GetExecutionContext(),
                       WebFeature::kAbortPaymentRespondWithTrue);
   }
 

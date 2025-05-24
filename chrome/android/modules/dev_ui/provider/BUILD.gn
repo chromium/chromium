@@ -7,23 +7,20 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   deps = [
+    "//base:base_java",
     "//chrome/android/features/dev_ui/public:java",
     "//components/module_installer/android:module_installer_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]
-  sources = [
-    "java/src/org/chromium/chrome/modules/dev_ui/DevUiInstallListener.java",
-    "java/src/org/chromium/chrome/modules/dev_ui/DevUiModuleProvider.java",
-  ]
+  sources =
+      [ "java/src/org/chromium/chrome/modules/dev_ui/DevUiModuleProvider.java" ]
 }
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/modules/dev_ui/DevUiInstallListener.java",
-    "java/src/org/chromium/chrome/modules/dev_ui/DevUiModuleProvider.java",
-  ]
+  sources =
+      [ "java/src/org/chromium/chrome/modules/dev_ui/DevUiModuleProvider.java" ]
 }
 
 source_set("native") {
@@ -32,8 +29,6 @@ source_set("native") {
     "//base",
   ]
   sources = [
-    "dev_ui_install_listener.cc",
-    "dev_ui_install_listener.h",
     "dev_ui_module_provider.cc",
     "dev_ui_module_provider.h",
   ]

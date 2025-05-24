@@ -70,6 +70,7 @@ testSuite({
     menu.dispose();
   },
 
+  /** @suppress {missingProperties} 'getAccelerator' */
   testDecorate() {
     let menu = new FilteredMenu();
     menu.decorate(dom.getElement('testmenu'));

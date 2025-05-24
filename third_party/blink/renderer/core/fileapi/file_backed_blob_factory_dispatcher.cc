@@ -106,11 +106,6 @@ FileBackedBlobFactoryDispatcher* FileBackedBlobFactoryDispatcher::From(
 
 mojom::blink::FileBackedBlobFactory*
 FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kEnableFileBackedBlobFactory)) {
-    return nullptr;
-  }
-
   auto* execution_context = GetExecutionContext();
   if (!execution_context) {
     return nullptr;

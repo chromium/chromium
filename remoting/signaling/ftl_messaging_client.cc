@@ -12,10 +12,10 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
-#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/protobuf_http_stream_request.h"
 #include "remoting/signaling/ftl_message_reception_channel.h"
 #include "remoting/signaling/ftl_services_context.h"
@@ -271,7 +271,7 @@ void FtlMessagingClient::ExecuteRequest(
 
 void FtlMessagingClient::OnSendMessageResponse(
     DoneCallback on_done,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<ftl::InboxSendResponse> response) {
   std::move(on_done).Run(status);
 }
@@ -292,7 +292,7 @@ void FtlMessagingClient::BatchAckMessages(
 
 void FtlMessagingClient::OnBatchAckMessagesResponse(
     DoneCallback on_done,
-    const ProtobufHttpStatus& status,
+    const HttpStatus& status,
     std::unique_ptr<ftl::BatchAckMessagesResponse> response) {
   // TODO(yuweih): Handle failure.
   std::move(on_done).Run(status);
@@ -303,7 +303,7 @@ FtlMessagingClient::OpenReceiveMessagesStream(
     base::OnceClosure on_channel_ready,
     const base::RepeatingCallback<
         void(std::unique_ptr<ftl::ReceiveMessagesResponse>)>& on_incoming_msg,
-    base::OnceCallback<void(const ProtobufHttpStatus&)> on_channel_closed) {
+    base::OnceCallback<void(const HttpStatus&)> on_channel_closed) {
   auto request = std::make_unique<ftl::ReceiveMessagesRequest>();
   *request->mutable_header() = FtlServicesContext::CreateRequestHeader(
       registration_manager_->GetFtlAuthToken());

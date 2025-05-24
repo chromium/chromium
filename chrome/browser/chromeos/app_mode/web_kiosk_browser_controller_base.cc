@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
@@ -39,11 +38,9 @@ bool WebKioskBrowserControllerBase::HasReloadButton() const {
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool WebKioskBrowserControllerBase::ShouldShowCustomTabBar() const {
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ui::ImageModel WebKioskBrowserControllerBase::GetWindowAppIcon() const {
   if (app_icon_) {
@@ -78,19 +75,24 @@ bool WebKioskBrowserControllerBase::CanUserUninstall() const {
 }
 
 bool WebKioskBrowserControllerBase::IsInstalled() const {
-  return registrar().IsInstalled(app_id());
+  return registrar().IsInstallState(
+      app_id(), {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                 web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                 web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
 }
 
 void WebKioskBrowserControllerBase::OnTabInserted(
     content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);
-  web_app::WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(true);
+  web_app::WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(
+      app_id());
 }
 
 void WebKioskBrowserControllerBase::OnTabRemoved(
     content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
-  web_app::WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(false);
+  web_app::WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(
+      /*window_app_id=*/std::nullopt);
 }
 
 web_app::WebAppRegistrar& WebKioskBrowserControllerBase::registrar() const {

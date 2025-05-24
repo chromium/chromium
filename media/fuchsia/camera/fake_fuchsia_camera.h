@@ -14,6 +14,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/run_loop.h"
 #include "ui/gfx/geometry/size.h"
@@ -238,7 +239,7 @@ class FakeCameraDeviceWatcher {
     std::vector<fuchsia::camera3::WatchDevicesEvent> event_queue_;
 
     WatchDevicesCallback watch_devices_callback_;
-    FakeCameraDeviceWatcher* const device_watcher_;
+    const raw_ptr<FakeCameraDeviceWatcher> device_watcher_;
   };
 
   fidl::BindingSet<fuchsia::camera3::DeviceWatcher, std::unique_ptr<Client>>

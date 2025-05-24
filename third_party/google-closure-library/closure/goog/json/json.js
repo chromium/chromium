@@ -24,15 +24,6 @@ goog.provide('goog.json.Serializer');
  */
 goog.json.USE_NATIVE_JSON = goog.define('goog.json.USE_NATIVE_JSON', false);
 
-/**
- * @define {boolean} If true, try the native JSON parsing API first. If it
- * fails, log an error and use `eval` instead. This is useful when
- * transitioning to `goog.json.USE_NATIVE_JSON`. The error logger needs to
- * be set by `goog.json.setErrorLogger`. If it is not set then the error
- * is ignored.
- */
-goog.json.TRY_NATIVE_JSON = goog.define('goog.json.TRY_NATIVE_JSON', true);
-
 
 /**
  * Tests if a string is an invalid JSON string. This only ensures that we are
@@ -85,17 +76,15 @@ goog.json.isValid = function(s) {
 };
 
 /**
- * Logs a parsing error in `JSON.parse` solvable by using `eval`
- * if `goog.json.TRY_NATIVE_JSON` is enabled.
+ * Logs a parsing error in `JSON.parse` solvable by using `eval`.
  * @private {function(string, !Error)} The first parameter is the error message,
  *     the second is the exception thrown by `JSON.parse`.
  */
-goog.json.errorLogger_ = goog.nullFunction;
+goog.json.errorLogger_ = () => {};
 
 
 /**
- * Sets an error logger to use if there's a recoverable parsing error and
- * `goog.json.TRY_NATIVE_JSON` is enabled.
+ * Sets an error logger to use if there's a recoverable parsing error.
  * @param {function(string, !Error)} errorLogger The first parameter is the
  *     error message, the second is the exception thrown by `JSON.parse`.
  */
@@ -121,12 +110,10 @@ goog.json.parse = goog.json.USE_NATIVE_JSON ?
     function(s) {
       'use strict';
       let error;
-      if (goog.json.TRY_NATIVE_JSON) {
-        try {
-          return goog.global['JSON']['parse'](s);
-        } catch (ex) {
-          error = ex;
-        }
+      try {
+        return goog.global['JSON']['parse'](s);
+      } catch (ex) {
+        error = ex;
       }
       const o = String(s);
       if (goog.json.isValid(o)) {
@@ -320,7 +307,7 @@ goog.json.Serializer.prototype.serializeString_ = function(s, sb) {
     // caching the result improves performance by a factor 2-3
     let rv = goog.json.Serializer.charToJsonCharCache_[c];
     if (!rv) {
-      rv = '\\u' + (c.charCodeAt(0) | 0x10000).toString(16).substr(1);
+      rv = '\\u' + (c.charCodeAt(0) | 0x10000).toString(16).slice(1);
       goog.json.Serializer.charToJsonCharCache_[c] = rv;
     }
     return rv;

@@ -11,20 +11,53 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
+#import "components/metrics/metrics_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_coordinator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_coordinator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/interactive_lens/coordinator/interactive_lens_promo_coordinator.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
-#import "ios/chrome/browser/ui/screen/screen_provider.h"
-#import "ios/chrome/browser/ui/screen/screen_type.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
+
+namespace first_run {
+
+// Helper class used to access the passkey needed to call
+// MetricsService::StartOutOfBandUploadIfPossible().
+class FirstRunCoordinatorMetricsHelper final {
+ public:
+  FirstRunCoordinatorMetricsHelper() {
+    metrics_service_ = GetApplicationContext()->GetMetricsService();
+  }
+  ~FirstRunCoordinatorMetricsHelper() {}
+
+  // Triggers an UMA metrics log upload.
+  void StartOutOfBandUploadIfPossible() {
+    metrics_service_->StartOutOfBandUploadIfPossible(
+        metrics::MetricsService::OutOfBandUploadPasskey());
+  }
+
+ private:
+  raw_ptr<metrics::MetricsService> metrics_service_;
+};
+
+}  // namespace first_run
 
 @interface FirstRunCoordinator () <FirstRunScreenDelegate,
                                    HistorySyncCoordinatorDelegate>
@@ -40,7 +73,6 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                             screenProvider:(ScreenProvider*)screenProvider {
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _screenProvider = screenProvider;
@@ -64,30 +96,40 @@
                                       completion:completion];
 }
 
-- (void)stop {
+- (void)stopWithCompletion:(ProceduralBlock)completionHandler {
   if (self.childCoordinator) {
     // If the child coordinator is not nil, then the FRE is stopped because
     // Chrome is being shutdown.
-    InterruptibleChromeCoordinator* interruptibleChildCoordinator =
-        base::apple::ObjCCast<InterruptibleChromeCoordinator>(
-            self.childCoordinator);
-    [interruptibleChildCoordinator
-        interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-                 completion:nil];
-    [self.childCoordinator stop];
-    self.childCoordinator = nil;
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kFirstRunInterrupted);
+    [self stopChildCoordinator];
   }
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  [self.baseViewController dismissViewControllerAnimated:YES
+                                              completion:completionHandler];
   _navigationController = nil;
   [super stop];
+}
+
+- (void)stop {
+  [self stopWithCompletion:nil];
 }
 
 #pragma mark - FirstRunScreenDelegate
 
 - (void)screenWillFinishPresenting {
-  [self.childCoordinator stop];
-  self.childCoordinator = nil;
+  [self stopChildCoordinator];
   [self presentScreen:[self.screenProvider nextScreenType]];
+
+  if (base::FeatureList::IsEnabled(first_run::kManualLogUploadsInTheFRE)) {
+    // Trigger a metrics log upload with the MetricsService.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          std::unique_ptr<first_run::FirstRunCoordinatorMetricsHelper>
+              metricsHelper = std::make_unique<
+                  first_run::FirstRunCoordinatorMetricsHelper>();
+          metricsHelper->StartOutOfBandUploadIfPossible();
+        }));
+  }
 }
 
 #pragma mark - Helper
@@ -102,6 +144,11 @@
                                   first_run::kComplete);
     WriteFirstRunSentinel();
     [self.delegate didFinishFirstRun];
+
+    // Present feed swipe IPH.
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                        NewTabPageCommands) presentFeedSwipeFirstRunBubble];
+
     return;
   }
   self.childCoordinator = [self createChildCoordinatorWithScreenType:type];
@@ -112,14 +159,16 @@
 - (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
   switch (type) {
     case kSignIn:
-      return [[SigninScreenCoordinator alloc]
-          initWithBaseNavigationController:self.navigationController
-                                   browser:self.browser
-                                  delegate:self
-                               accessPoint:signin_metrics::AccessPoint::
-                                               ACCESS_POINT_START_PAGE
-                               promoAction:signin_metrics::PromoAction::
-                                               PROMO_ACTION_NO_SIGNIN_PROMO];
+      return [[FullscreenSigninScreenCoordinator alloc]
+           initWithBaseNavigationController:self.navigationController
+                                    browser:self.browser
+                                   delegate:self
+                               contextStyle:SigninContextStyle::kDefault
+                                accessPoint:signin_metrics::AccessPoint::
+                                                kStartPage
+                                promoAction:signin_metrics::PromoAction::
+                                                PROMO_ACTION_NO_SIGNIN_PROMO
+          changeProfileContinuationProvider:DoNothingContinuationProvider()];
     case kHistorySync:
       return [[HistorySyncCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
@@ -128,8 +177,9 @@
                                   firstRun:YES
                              showUserEmail:NO
                                 isOptional:YES
+                              contextStyle:SigninContextStyle::kDefault
                                accessPoint:signin_metrics::AccessPoint::
-                                               ACCESS_POINT_START_PAGE];
+                                               kStartPage];
     case kDefaultBrowserPromo:
       return [[DefaultBrowserScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
@@ -145,20 +195,38 @@
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self];
+    case kBestFeatures:
+      return [[BestFeaturesScreenCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
+    case kLensInteractivePromo: {
+      InteractiveLensPromoCoordinator* lensInteractivePromoCoordinator =
+          [[InteractiveLensPromoCoordinator alloc]
+              initWithBaseNavigationController:self.navigationController
+                                       browser:self.browser];
+      lensInteractivePromoCoordinator.firstRunDelegate = self;
+      return lensInteractivePromoCoordinator;
+    }
     case kStepsCompleted:
-      NOTREACHED_IN_MIGRATION() << "Reaches kStepsCompleted unexpectedly.";
-      break;
+      NOTREACHED() << "Reaches kStepsCompleted unexpectedly.";
   }
   return nil;
 }
 
 #pragma mark - HistorySyncCoordinatorDelegate
 
-- (void)closeHistorySyncCoordinator:
-            (HistorySyncCoordinator*)historySyncCoordinator
-                     declinedByUser:(BOOL)declined {
+- (void)historySyncCoordinator:(HistorySyncCoordinator*)historySyncCoordinator
+                    withResult:(HistorySyncResult)result {
   CHECK_EQ(self.childCoordinator, historySyncCoordinator);
   [self screenWillFinishPresenting];
+}
+
+#pragma mark - Private
+
+- (void)stopChildCoordinator {
+  [self.childCoordinator stop];
+  self.childCoordinator = nil;
 }
 
 @end

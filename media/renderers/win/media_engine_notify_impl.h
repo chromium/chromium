@@ -8,10 +8,14 @@
 #include <mfmediaengine.h>
 #include <wrl.h>
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
+#include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
 #include "media/base/pipeline_status.h"
+#include "media/base/video_decoder_config.h"
 
 namespace media {
 
@@ -33,21 +37,22 @@ class MediaEngineNotifyImpl
   using LoadedDataCB = base::RepeatingClosure;
   using CanPlayThroughCB = base::RepeatingClosure;
   using PlayingCB = base::RepeatingClosure;
-  using FirstFrameReadyCB = base::RepeatingClosure;
   using WaitingCB = base::RepeatingClosure;
   using FrameStepCompletedCB = base::RepeatingClosure;
   using TimeUpdateCB = base::RepeatingClosure;
 
-  HRESULT RuntimeClassInitialize(ErrorCB error_cb,
-                                 EndedCB ended_cb,
-                                 FormatChangeCB format_change_cb,
-                                 LoadedDataCB loaded_data_cb,
-                                 CanPlayThroughCB can_play_through_cb,
-                                 PlayingCB playing_cb,
-                                 FirstFrameReadyCB first_frame_ready_cb,
-                                 WaitingCB waiting_cb,
-                                 FrameStepCompletedCB frame_step_completed_cb,
-                                 TimeUpdateCB time_update_cb);
+  HRESULT RuntimeClassInitialize(
+      ErrorCB error_cb,
+      EndedCB ended_cb,
+      FormatChangeCB format_change_cb,
+      LoadedDataCB loaded_data_cb,
+      CanPlayThroughCB can_play_through_cb,
+      PlayingCB playing_cb,
+      WaitingCB waiting_cb,
+      FrameStepCompletedCB frame_step_completed_cb,
+      TimeUpdateCB time_update_cb,
+      std::optional<VideoDecoderConfig> video_decoder_config,
+      std::optional<AudioDecoderConfig> audio_decoder_config);
 
   // IMFMediaEngineNotify implementation.
   IFACEMETHODIMP EventNotify(DWORD event_code,
@@ -66,10 +71,11 @@ class MediaEngineNotifyImpl
   LoadedDataCB loaded_data_cb_;
   CanPlayThroughCB can_play_through_cb_;
   PlayingCB playing_cb_;
-  FirstFrameReadyCB first_frame_ready_cb_;
   WaitingCB waiting_cb_;
   FrameStepCompletedCB frame_step_completed_cb_;
   TimeUpdateCB time_update_cb_;
+  std::optional<AudioDecoderConfig> audio_decoder_config_;
+  std::optional<VideoDecoderConfig> video_decoder_config_;
 
   // EventNotify is invoked from MF threadpool thread where the callbacks are
   // called.

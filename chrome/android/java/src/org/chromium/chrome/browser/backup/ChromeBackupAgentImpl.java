@@ -9,6 +9,7 @@ import android.app.backup.BackupDataOutput;
 import android.app.backup.BackupManager;
 import android.content.SharedPreferences;
 import android.os.ParcelFileDescriptor;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
@@ -28,7 +29,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -40,9 +40,9 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -76,18 +76,28 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     @VisibleForTesting
     static final String HISTOGRAM_ANDROID_RESTORE_RESULT = "Android.RestoreResult";
 
-    // Restore status is used to pass the result of any restore to Chrome's first run, so that
-    // it can be recorded as a histogram.
+    /**
+     * Restore status is used to pass the result of any restore to Chrome's first run, so that it
+     * can be recorded as a histogram.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused.
+     *
+     * <p>Used to record Android.RestoreResult histogram.
+     */
+
+    // LINT.IfChange(RestoreStatus)
     @IntDef({
         RestoreStatus.NO_RESTORE,
         RestoreStatus.RESTORE_COMPLETED,
         RestoreStatus.RESTORE_AFTER_FIRST_RUN,
         RestoreStatus.BROWSER_STARTUP_FAILED,
-        RestoreStatus.NOT_SIGNED_IN,
+        RestoreStatus.ACCOUNT_NOT_FOUND,
         RestoreStatus.DEPRECATED_SIGNIN_TIMED_OUT,
         RestoreStatus.DEPRECATED_RESTORE_STATUS_RECORDED,
         RestoreStatus.SIGNIN_TIMED_OUT,
         RestoreStatus.RESTORE_STARTED_NOT_FINISHED,
+        RestoreStatus.NO_SIGNED_IN_ACCOUNT_IN_BACKUP,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RestoreStatus {
@@ -96,7 +106,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         int RESTORE_COMPLETED = 1;
         int RESTORE_AFTER_FIRST_RUN = 2;
         int BROWSER_STARTUP_FAILED = 3;
-        int NOT_SIGNED_IN = 4;
+
+        // Recorded if the backup contains a signed-in account record, but the corresponding account
+        //  is not found on the device being restored.
+        int ACCOUNT_NOT_FOUND = 4;
+
         // This enum value has taken the previous value indicating that the histogram has been
         // recorded, when it was introduced. Deprecating since the metric is polluted consequently.
         int DEPRECATED_SIGNIN_TIMED_OUT = 5;
@@ -111,8 +125,13 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         // record a more specific result.
         int RESTORE_STARTED_NOT_FINISHED = 8;
 
-        int NUM_ENTRIES = RESTORE_STARTED_NOT_FINISHED;
+        // No record found in the backup for the previous signed-in account.
+        int NO_SIGNED_IN_ACCOUNT_IN_BACKUP = 9;
+
+        int NUM_ENTRIES = NO_SIGNED_IN_ACCOUNT_IN_BACKUP;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidRestoreResult)
 
     @VisibleForTesting static final String RESTORE_STATUS = "android_restore_status";
     private static final String RESTORE_STATUS_RECORDED = "android_restore_status_recorded";
@@ -123,7 +142,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
 
     // Bool entries from SharedPreferences that should be backed up / restored.
     static final String[] BACKUP_ANDROID_BOOL_PREFS = {
-        ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED,
         ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
         ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
         ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
@@ -138,6 +156,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     new DictPrefBackupSerializer(),
                     new IntPrefBackupSerializer());
 
+    // TODO(crbug.com/40066949): Remove key once all sync users are migrated to signed-in users.
     // Key used to store the email of the syncing account. This email is obtained from
     // IdentityManager during the backup.
     static final String SYNCING_ACCOUNT_KEY = "google.services.username";
@@ -226,9 +245,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
-        // TODO(crbug.com/40066949): Remove syncAccount once UNO is launched, given the sync feature
-        // and consent will disappear.
-        final AtomicReference<CoreAccountInfo> syncAccount = new AtomicReference<>();
         final AtomicReference<CoreAccountInfo> signedInAccount = new AtomicReference<>();
 
         // The native preferences can only be read on the UI thread.
@@ -244,16 +260,8 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             IdentityManager identityManager =
                                     IdentityServicesProvider.get().getIdentityManager(profile);
-                            syncAccount.set(
-                                    identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
                             signedInAccount.set(
                                     identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-
-                            if (syncAccount.get() != null
-                                    && !syncAccount.get().equals(signedInAccount.get())) {
-                                throw new IllegalStateException(
-                                        "Recorded signed in account differs from syncing account");
-                            }
 
                             PrefService prefService = UserPrefs.get(profile);
                             for (PrefBackupSerializer serializer : NATIVE_PREFS_SERIALIZERS) {
@@ -305,15 +313,12 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        // Finally add the signed-in/syncing user ids.
-        backupNames.add(ANDROID_DEFAULT_PREFIX + SYNCING_ACCOUNT_KEY);
-        backupValues.add(
-                ApiCompatibilityUtils.getBytesUtf8(
-                        syncAccount.get() == null ? "" : syncAccount.get().getEmail()));
         backupNames.add(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_ID_KEY);
         backupValues.add(
                 ApiCompatibilityUtils.getBytesUtf8(
-                        signedInAccount.get() == null ? "" : signedInAccount.get().getGaiaId()));
+                        signedInAccount.get() == null
+                                ? ""
+                                : signedInAccount.get().getGaiaId().toString()));
 
         BackupState newBackupState = new BackupState(backupNames, backupValues);
 
@@ -370,7 +375,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
         @Nullable String restoredSyncUserEmail = null;
-        @Nullable String restoredSignedInUserID = null;
+        @Nullable GaiaId restoredSignedInUserID = null;
         while (data.readNextHeader()) {
             String key = data.getKey();
             int dataSize = data.getDataSize();
@@ -379,11 +384,20 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             if (key.equals(ANDROID_DEFAULT_PREFIX + SYNCING_ACCOUNT_KEY)) {
                 restoredSyncUserEmail = new String(buffer);
             } else if (key.equals(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_ID_KEY)) {
-                restoredSignedInUserID = new String(buffer);
+                String signedInUserId = new String(buffer);
+                restoredSignedInUserID =
+                        TextUtils.isEmpty(signedInUserId) ? null : new GaiaId(signedInUserId);
             } else {
                 backupNames.add(key);
                 backupValues.add(buffer);
             }
+        }
+
+        // If the backup contains no signed-in user, then don't restore anything.
+        if (restoredSignedInUserID == null && TextUtils.isEmpty(restoredSyncUserEmail)) {
+            setRestoreStatus(RestoreStatus.NO_SIGNED_IN_ACCOUNT_IN_BACKUP);
+            Log.i(TAG, "The backup doesn't contain any signed-in user, not restoring");
+            return;
         }
 
         PostTask.runSynchronously(
@@ -445,34 +459,29 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             return;
         }
 
-        if (SigninFeatureMap.isEnabled(
-                        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            final CountDownLatch accountsLatch = new CountDownLatch(1);
-            PostTask.runSynchronously(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        AccountManagerFacadeProvider.getInstance()
-                                .getCoreAccountInfos()
-                                .then(
-                                        (ignored) -> {
-                                            accountsLatch.countDown();
-                                        });
-                    });
-            try {
-                // Explicit timeout is not needed here. In the scenario where accounts are not
-                // available - the restore flow will be stopped several lines below. So, having an
-                // explicit timeout would still result in the state not getting restored. Thus, it
-                // is cleaner to just wait without an explicit timeout and rely on the BackupManager
-                // killing the process if accounts never become available.
-                accountsLatch.await();
-            } catch (InterruptedException e) {
-                // Normally, this shouldn't happen (Chrome process will just get killed). Use
-                // `RESTORE_STARTED_NOT_FINISHED` as fallback in the unlikely scenario it happens.
-                setRestoreStatus(RestoreStatus.RESTORE_STARTED_NOT_FINISHED);
-                return;
-            }
+        final CountDownLatch accountsLatch = new CountDownLatch(1);
+        PostTask.runSynchronously(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    AccountManagerFacadeProvider.getInstance()
+                            .getAccounts()
+                            .then(
+                                    (ignored) -> {
+                                        accountsLatch.countDown();
+                                    });
+                });
+        try {
+            // Explicit timeout is not needed here. In the scenario where accounts are not
+            // available - the restore flow will be stopped several lines below. So, having an
+            // explicit timeout would still result in the state not getting restored. Thus, it
+            // is cleaner to just wait without an explicit timeout and rely on the BackupManager
+            // killing the process if accounts never become available.
+            accountsLatch.await();
+        } catch (InterruptedException e) {
+            // Normally, this shouldn't happen (Chrome process will just get killed). Use
+            // `RESTORE_STARTED_NOT_FINISHED` as fallback in the unlikely scenario it happens.
+            setRestoreStatus(RestoreStatus.RESTORE_STARTED_NOT_FINISHED);
+            return;
         }
 
         @Nullable
@@ -480,14 +489,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         @Nullable
         CoreAccountInfo syncAccountInfo = getDeviceAccountWithEmail(restoredSyncUserEmail);
 
-        // If the user hasn't signed in, or can't sign in, then don't restore anything.
-        if (syncAccountInfo == null
-                && (signedInAccountInfo == null
-                        || !SigninFeatureMap.isEnabled(
-                                SigninFeatures
-                                        .RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP))) {
-            setRestoreStatus(RestoreStatus.NOT_SIGNED_IN);
-            Log.i(TAG, "Chrome was not signed in with a known account name, not restoring");
+        // If the previously signed-in account not found on the device, then don't restore
+        // anything.
+        if (syncAccountInfo == null && signedInAccountInfo == null) {
+            setRestoreStatus(RestoreStatus.ACCOUNT_NOT_FOUND);
+            Log.i(TAG, "Previously signed-in account is not found on the device, not restoring");
             return;
         }
 
@@ -511,20 +517,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     // It should be done after the restoration of the existing per-account settings
                     // from the backup to avoid override, as mentioned above.
                     final boolean shouldRestoreSelectedTypesAsAccountSettings =
-                            syncAccountInfo != null
-                                    && SigninFeatureMap.isEnabled(
-                                            SigninFeatures
-                                                    .RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)
-                                    && ChromeFeatureList.isEnabled(
-                                            ChromeFeatureList
-                                                    .REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
+                            syncAccountInfo != null;
                     if (shouldRestoreSelectedTypesAsAccountSettings) {
-                        final String gaiaID =
-                                syncAccountInfo != null
-                                        ? syncAccountInfo.getGaiaId()
-                                        : signedInAccountInfo.getGaiaId();
                         ChromeBackupAgentImplJni.get()
-                                .migrateGlobalDataTypePrefsToAccount(prefService, gaiaID);
+                                .migrateGlobalDataTypePrefsToAccount(
+                                        prefService, syncAccountInfo.getGaiaId());
                     }
 
                     // TODO(crbug.com/332710541): Another commit is done for signed-in users in
@@ -547,44 +544,13 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        if (syncAccountInfo != null) {
-            // Both accounts are recorded at the same time. Since only one account is in signed-in
-            // state at a given time, they should be identical if both are valid.
-            if (signedInAccountInfo != null && !signedInAccountInfo.equals(syncAccountInfo)) {
-                throw new IllegalStateException(
-                        "Recorded signed in account differs from syncing account");
-            }
-
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                editor.apply();
-                signInAndWaitForResult(syncAccountInfo);
-            } else {
-                // This will sign in the user on first run to the account in
-                // BACKUP_FLOW_SIGNIN_ACCOUNT_NAME if any.
-                editor.putString(
-                        ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME,
-                        restoredSyncUserEmail);
-                editor.apply();
-
-                // The silent first run will change things, so there is no point in trying to
-                // prevent
-                // additional backups at this stage. Don't write anything to |newState|.
-                setRestoreStatus(RestoreStatus.RESTORE_COMPLETED);
-            }
-        } else {
+        if (signedInAccountInfo != null) {
             editor.apply();
-
-            // signedInAccountInfo and syncAccountInfo should not be null at the same at this point.
-            // If there's no valid syncing account and the signed-in account restore is disabled,
-            // the restore should already be stopped and the restore state set to `NOT_SIGNED_IN`.
-            if (signedInAccountInfo == null
-                    || !SigninFeatureMap.isEnabled(
-                            SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)) {
-                throw new IllegalStateException("No valid account can be signed-in");
-            }
-
             signInAndWaitForResult(signedInAccountInfo);
+        } else {
+            // syncAccountInfo must be non-null at this point.
+            editor.apply();
+            signInAndWaitForResult(syncAccountInfo);
         }
         Log.i(TAG, "Restore complete");
     }
@@ -676,11 +642,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         return PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    return AccountUtils.findCoreAccountInfoByEmail(getAccountInfos(), accountEmail);
+                    return AccountUtils.findAccountByEmail(getAccounts(), accountEmail);
                 });
     }
 
-    private @Nullable CoreAccountInfo getDeviceAccountWithGaiaId(@Nullable String accountGaiaId) {
+    private @Nullable CoreAccountInfo getDeviceAccountWithGaiaId(@Nullable GaiaId accountGaiaId) {
         if (accountGaiaId == null) {
             return null;
         }
@@ -688,13 +654,12 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         return PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    return AccountUtils.findCoreAccountInfoByGaiaId(
-                            getAccountInfos(), accountGaiaId);
+                    return AccountUtils.findAccountByGaiaId(getAccounts(), accountGaiaId);
                 });
     }
 
-    private static List<CoreAccountInfo> getAccountInfos() {
-        return AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().getResult();
+    private static List<AccountInfo> getAccounts() {
+        return AccountManagerFacadeProvider.getInstance().getAccounts().getResult();
     }
 
     private static void signInAndWaitForResult(CoreAccountInfo accountInfo) {
@@ -776,8 +741,8 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                 signinManager.isAccountManaged(accountInfo, accountManagedCallback);
                             };
 
-                    AccountUtils.checkChildAccountStatus(
-                            accountManagerFacade, getAccountInfos(), listener);
+                    AccountUtils.checkIsSubjectToParentalControls(
+                            accountManagerFacade, getAccounts(), listener);
                 });
     }
 
@@ -857,7 +822,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         // Calls syncer::MigrateGlobalDataTypePrefsToAccount() to migrate global boolean sync prefs
         // to account settings.
         void migrateGlobalDataTypePrefsToAccount(
-                @JniType("PrefService*") PrefService prefService,
-                @JniType("std::string") String gaiaId);
+                @JniType("PrefService*") PrefService prefService, GaiaId gaiaId);
     }
 }

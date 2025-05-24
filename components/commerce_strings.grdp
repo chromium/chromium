@@ -329,6 +329,9 @@
     <message name="IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT_WITH_EXPIRATION_DATE" desc="Text shown in the discount dialog to tell users where to use the discount code and the discount expiration date.">
       Use this code at checkout. Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>.
     </message>
+    <message name="IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT" desc="Text shown in the discount dialog to tell users where to use the discount code.">
+      Use this code at checkout.
+    </message>
     <message name="IDS_DISCOUNT_EXPIRATION_DATE" desc="Text shown in the discount dialog to tell users the discount expiration date.">
       Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>.
     </message>
@@ -521,7 +524,7 @@
   </message>
 
   <!-- For Discounts -->
-  <message name="IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout.">
+  <message name="IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout." formatter_data="android_java" translateable="false">
       Copy
   </message>
   <if expr="use_titlecase">
@@ -539,8 +542,14 @@
     <message name="IDS_DISCOUNT_CODE_COPIED_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout. This text will show on the button after user has clicked on the copy button to indicate that the discount code has been copied." formatter_data="android_java">
       Copied
     </message>
-    <message name="IDS_DISCOUNT_EXPIRATION_DATE_ANDROID" desc="Text shown in the discount dialog to tell users the discount expiration date." formatter_data="android_java">
-      Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>
+    <message name="IDS_DISCOUNT_COPY_BUTTON_ACTION_DESCRIPTION" desc="Accessibility string that describes the copy button action to copy discount code." formatter_data="android_java" translateable="false">
+      Copy discount code
+    </message>
+    <message name="IDS_DISCOUNT_CONTAINER_TITLE" desc="The title of the discount container, indicating the discount section in the commerce bottom sheet." formatter_data="android_java" translateable="false">
+      Discounts
+    </message>
+    <message name="IDS_DISCOUNT_EXPIRATION_DATE_ANDROID" desc="Text shown in the discount dialog to tell users the discount expiration date." formatter_data="android_java" translateable="false">
+      Valid until <ph name="DATE">%1$s<ex>2023-01-01</ex></ph>
     </message>
     <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the commerce bottom sheet." formatter_data="android_java">
       Commerce bottom sheet
@@ -560,8 +569,11 @@
   <message name="IDS_COMPARE_ADD_NEW_COLUMN" translateable="false" desc="Label shown on hover for the button for adding a new column in comparison table.">
     Add similar products you want to compare
   </message>
+  <message name="IDS_COMPARE_ADDED_TO_TABLE_TOAST_ACTION_BUTTON" translateable="false" desc="The text for the action button on the added to comparison table confirmation toast. User uses this button to go to comparison table.">
+    Open
+  </message>
   <message name="IDS_COMPARE_CITATION_A11Y_LABEL" desc="The accessibility label for a citation in the compare feature's UI.">
-    Citation <ph name="CURRENT_CITATION">$1<ex>1</ex></ph> of <ph name="MAX_CITATIONS">$2<ex>3</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Laptop</ex></ph>, <ph name="URL">$4<ex>http://example.com</ex></ph>
+    Citation <ph name="CURRENT_CITATION">$1<ex>1</ex></ph> of <ph name="MAX_CITATIONS">$2<ex>3</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Laptop</ex></ph>, <ph name="URL">$4<ex>http://example.com</ex></ph>. <ph name="PAGE_TITLE">$5<ex>Review for Product</ex></ph>. <ph name="PAGE_PREVIEW">$6<ex>This is a brief summary of the page</ex></ph>.
   </message>
   <message name="IDS_COMPARE_DEFAULT_PAGE_TITLE" desc="The default page title for the tab compare feature.">
     Compare
@@ -641,6 +653,9 @@
   <message name="IDS_COMPARE_SUGGESTIONS_SECTION" desc="The title of the section in the product selection drop-down in the tab compare UI that shows a list of tabs suggested by the browser to be put into the table.">
     Suggestions
   </message>
+  <message name="IDS_COMPARE_TABLE_FULL_MESSAGE" desc="The message shown to the user when they've added the maximum number of columns to a comparison table.">
+    Your comparison table is full. Remove columns to add new ones.
+  </message>
   <message name="IDS_COMPARE_TABLE_MENU_A11Y_LABEL" desc="The accessibility label for the 3-dot menu containing actions for the table in the compare UI.">
     More actions for Compare table
   </message>
@@ -664,6 +679,52 @@
   </message>
   <message name="IDS_COMPARE_ERROR_DESCRIPTION" desc="The description in the compare UI when data cannot be loaded.">
     Something went wrong. Try again later.
+  </message>
+  <message name="IDS_COMPARE_TABLE_LIST_ITEM_TITLE" desc="The title shown for an individual comparison table item in the list of available comparison tables in the compare UI.">
+    Compare <ph name="TABLE_NAME">$1<ex>e-bikes</ex></ph>
+  </message>
+  <message name="IDS_COMPARE_NUM_ITEMS" desc="The number of items in a comparison table, shown beneath the table's name in a list of all comparison tables.">
+    {ITEMS, plural,
+      =1 {{ITEMS} item}
+      other {{ITEMS} items}}
+  </message>
+  <message name="IDS_COMPARE_YOUR_COMPARISON_TABLES" desc="The header above the list of a user's existing comparison tables in the compare UI">
+    Your comparison tables
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_TAB" desc="The label for the comparison table list dropdown menu item for opening a comparison table in a new tab.">
+    Open in new tab
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_WINDOW" desc="The label for the comparison table list dropdown menu item for opening a comparison table in a new window.">
+    Open in new window
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_WITH_COUNT" desc="The label for the comparison table list dropdown menu item for opening comparison table(s) in new tab(s).">
+    Open all (<ph name="ITEMS">$1<ex>3</ex></ph>)
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_IN_NEW_WINDOW_WITH_COUNT" desc="The label for the comparison table list dropdown menu item for opening comparison table(s) in a new window.">
+    Open all (<ph name="ITEMS">$1<ex>3</ex></ph>) in new window
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_RENAME" desc="The label for the comparison table list dropdown menu item for renaming a comparison table.">
+    Rename
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_DELETE" desc="The label for the comparison table list dropdown menu item for deleting a comparison table.">
+    Delete
+  </message>
+  <message name="IDS_COMPARE_NUM_ITEMS_SELECTED" desc="The number of selected items in the comparison table list when editing it.">
+    <ph name="ITEMS">$1<ex>3</ex></ph> selected
+  </message>
+  <message name="IDS_COMPARE_EDIT_MORE" desc="The tooltip for the menu button in the comparison table list bulk edit mode that shows more actions the user can take on selected comparison tables.">
+    More
+  </message>
+  <message name="IDS_COMPARE_TABLE_DELETION_TOAST_MESSAGE" desc="The message that shows when one or more comparison tables are deleted from the comparison table list.">
+    {COUNT, plural,
+      =1 {{COUNT} table deleted}
+      other {{COUNT} tables deleted}}
+  </message>
+  <message name="IDS_COMPARE_UNDO_TABLE_DELETION" desc="Label for the undo button displayed after deleting one or more comparison tables.">
+    Undo
+  </message>
+  <message name="IDS_COMPARE_DESCRIPTION_NOT_AVAILABLE" desc="The tooltip displayed when a description or value is not available for an attribute for a product.">
+    Not available
   </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
@@ -700,4 +761,35 @@
       No thanks
     </message>
   </if> <!-- not use_titlecase -->
+  <!-- For Comparison tables app menu -->
+  <if expr="use_titlecase">
+    <then>
+      <message name="IDS_COMPARE_MENU_LABEL" desc="The label for the comparison tables submenu item under the bookmarks and lists app menu.">
+        Comparison Tables
+      </message>
+      <message name="IDS_COMPARE_SHOW_ALL_COMPARISON_TABLES" desc="The label for the menu option for showing all of a user's existing comparison tables.">
+        Show All Comparison Tables
+      </message>
+      <message name="IDS_COMPARE_ADD_TAB_TO_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a comparison table.">
+        Add Tab to Comparison Table
+      </message>
+      <message name="IDS_COMPARE_NEW_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a new comparison table.">
+        New Comparison Table
+      </message>
+    </then>
+    <else>
+      <message name="IDS_COMPARE_MENU_LABEL" desc="The label for the comparison tables submenu item under the bookmarks and lists app menu.">
+        Comparison tables
+      </message>
+      <message name="IDS_COMPARE_SHOW_ALL_COMPARISON_TABLES" desc="The label for the menu option for showing all of a user's existing comparison tables.">
+        Show all comparison tables
+      </message>
+      <message name="IDS_COMPARE_ADD_TAB_TO_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a comparison table.">
+        Add tab to comparison table
+      </message>
+      <message name="IDS_COMPARE_NEW_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a new comparison table.">
+        New comparison table
+      </message>
+    </else>
+  </if> <!-- use_titlecase -->
 </grit-part>

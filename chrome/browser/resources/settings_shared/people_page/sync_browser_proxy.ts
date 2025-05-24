@@ -45,6 +45,7 @@ export interface SyncStatus {
   signedInState?: SignedInState;
   signedInUsername?: string;
   statusActionText?: string;
+  secondaryButtonActionText?: string;
   statusText?: string;
   supervisedUser?: boolean;
   syncCookiesSupported?: boolean;
@@ -176,11 +177,6 @@ export interface ChromeSigninUserChoiceInfo {
   signedInEmail: string;
 }
 
-/**
- * Key to be used with localStorage.
- */
-const PROMO_IMPRESSION_COUNT_KEY: string = 'signin-promo-count';
-
 export interface SyncBrowserProxy {
   // <if expr="not chromeos_ash">
   /**
@@ -199,16 +195,6 @@ export interface SyncBrowserProxy {
    */
   pauseSync(): void;
   // </if>
-
-  /**
-   * @return the number of times the sync account promo was shown.
-   */
-  getPromoImpressionCount(): number;
-
-  /**
-   * Increment the number of times the sync account promo was shown.
-   */
-  incrementPromoImpressionCount(): void;
 
   // <if expr="chromeos_ash">
   /**
@@ -234,6 +220,12 @@ export interface SyncBrowserProxy {
   startKeyRetrieval(): void;
 
   /**
+   * Displays the sync passphrase dialog for users to enter passphrase to enable
+   * sync.
+   */
+  showSyncPassphraseDialog(): void;
+
+  /**
    * Gets the current sync status.
    */
   getSyncStatus(): Promise<SyncStatus>;
@@ -242,6 +234,11 @@ export interface SyncBrowserProxy {
    * Gets a list of stored accounts.
    */
   getStoredAccounts(): Promise<StoredAccount[]>;
+
+  /**
+   * Gets the current profile avatar.
+   */
+  getProfileAvatar(): Promise<string>;
 
   /**
    * Function to invoke when the sync page has been navigated to. This
@@ -327,18 +324,6 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
   }
   // </if>
 
-  getPromoImpressionCount() {
-    return parseInt(
-               window.localStorage.getItem(PROMO_IMPRESSION_COUNT_KEY)!, 10) ||
-        0;
-  }
-
-  incrementPromoImpressionCount() {
-    window.localStorage.setItem(
-        PROMO_IMPRESSION_COUNT_KEY,
-        (this.getPromoImpressionCount() + 1).toString());
-  }
-
   // <if expr="chromeos_ash">
   attemptUserExit() {
     chrome.send('AttemptUserExit');
@@ -357,12 +342,20 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
     chrome.send('SyncStartKeyRetrieval');
   }
 
+  showSyncPassphraseDialog() {
+    chrome.send('SyncShowSyncPassphraseDialog');
+  }
+
   getSyncStatus() {
     return sendWithPromise('SyncSetupGetSyncStatus');
   }
 
   getStoredAccounts() {
     return sendWithPromise('SyncSetupGetStoredAccounts');
+  }
+
+  getProfileAvatar() {
+    return sendWithPromise('SyncSetupGetProfileAvatar');
   }
 
   didNavigateToSyncPage() {

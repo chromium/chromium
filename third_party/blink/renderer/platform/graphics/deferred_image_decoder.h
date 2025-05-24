@@ -81,6 +81,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   gfx::Size FrameSizeAtIndex(wtf_size_t index) const;
   wtf_size_t FrameCount();
   bool ImageIsHighBitDepth() const { return image_is_high_bit_depth_; }
+  bool HasC2PAManifest() const;
   int RepetitionCount() const;
   bool FrameIsReceivedAtIndex(wtf_size_t index) const;
   base::TimeDelta FrameDurationAtIndex(wtf_size_t index) const;
@@ -129,6 +130,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   bool can_yuv_decode_;
   bool has_hot_spot_;
   bool image_is_high_bit_depth_;
+  bool has_c2pa_manifest_;
   sk_sp<SkColorSpace> color_space_for_sk_images_;
   gfx::Point hot_spot_;
   const PaintImage::ContentId complete_frame_content_id_;

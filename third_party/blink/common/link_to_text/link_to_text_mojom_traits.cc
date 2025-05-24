@@ -45,8 +45,7 @@ EnumTraits<blink::mojom::LinkGenerationError,
       return blink::mojom::LinkGenerationError::kNotGenerated;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::LinkGenerationError::kNone;
+  NOTREACHED();
 }
 
 bool EnumTraits<blink::mojom::LinkGenerationError,
@@ -104,8 +103,7 @@ bool EnumTraits<blink::mojom::LinkGenerationError,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 blink::mojom::LinkGenerationReadyStatus
@@ -119,8 +117,7 @@ EnumTraits<blink::mojom::LinkGenerationReadyStatus,
       return blink::mojom::LinkGenerationReadyStatus::kRequestedAfterReady;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::LinkGenerationReadyStatus::kRequestedBeforeReady;
+  NOTREACHED();
 }
 
 bool EnumTraits<blink::mojom::LinkGenerationReadyStatus,
@@ -138,8 +135,7 @@ bool EnumTraits<blink::mojom::LinkGenerationReadyStatus,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

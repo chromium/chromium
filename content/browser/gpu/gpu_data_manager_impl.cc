@@ -150,6 +150,11 @@ bool GpuDataManagerImpl::HardwareAccelerationEnabled() {
   return private_->HardwareAccelerationEnabled();
 }
 
+bool GpuDataManagerImpl::IsGpuRasterizationForUIEnabled() {
+  base::AutoLock auto_lock(lock_);
+  return private_->IsGpuRasterizationForUIEnabled();
+}
+
 void GpuDataManagerImpl::AppendGpuCommandLine(base::CommandLine* command_line,
                                               GpuProcessKind kind) {
   base::AutoLock auto_lock(lock_);
@@ -369,6 +374,11 @@ void GpuDataManagerImpl::FallBackToNextGpuMode() {
   private_->FallBackToNextGpuMode();
 }
 
+void GpuDataManagerImpl::FallBackToNextGpuModeDueToCrash() {
+  base::AutoLock auto_lock(lock_);
+  private_->FallBackToNextGpuModeDueToCrash();
+}
+
 bool GpuDataManagerImpl::CanFallback() const {
   base::AutoLock auto_lock(lock_);
   return private_->CanFallback();
@@ -406,10 +416,6 @@ void GpuDataManagerImpl::OnDisplayMetricsChanged(
 bool GpuDataManagerImpl::IsGpuMemoryBufferNV12Supported() {
   base::AutoLock auto_lock(lock_);
   return private_->IsGpuMemoryBufferNV12Supported();
-}
-void GpuDataManagerImpl::SetGpuMemoryBufferNV12Supported(bool supported) {
-  base::AutoLock auto_lock(lock_);
-  private_->SetGpuMemoryBufferNV12Supported(supported);
 }
 #endif  // BUILDFLAG(IS_LINUX)
 

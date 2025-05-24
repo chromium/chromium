@@ -79,10 +79,9 @@ class BLINK_MODULES_EXPORT AudioRendererMixerInput
   // Called by AudioRendererMixer when an error occurs.
   void OnRenderError();
 
- protected:
+ private:
   ~AudioRendererMixerInput() override;
 
- private:
   friend class AudioRendererMixerInputTest;
 
   // Pool to obtain mixers from / return them to.

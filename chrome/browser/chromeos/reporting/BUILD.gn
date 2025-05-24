@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos)
 
 static_library("reporting") {
@@ -21,19 +19,6 @@ static_library("reporting") {
     "user_reporting_settings.cc",
     "user_reporting_settings.h",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "device_reporting_settings_lacros.cc",
-      "device_reporting_settings_lacros.h",
-      "metric_reporting_manager_lacros.cc",
-      "metric_reporting_manager_lacros.h",
-      "metric_reporting_manager_lacros_factory.cc",
-      "metric_reporting_manager_lacros_factory.h",
-      "metric_reporting_manager_lacros_shutdown_notifier_factory.cc",
-      "metric_reporting_manager_lacros_shutdown_notifier_factory.h",
-    ]
-  }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
@@ -57,14 +42,6 @@ static_library("reporting") {
 
   allow_circular_includes_from =
       [ "//chrome/browser/chromeos/reporting/websites" ]
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chrome/browser/chromeos/reporting/network",
-      "//chromeos/lacros",
-      "//components/keyed_service/content",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -76,15 +53,6 @@ source_set("unit_tests") {
     "usage_telemetry_periodic_collector_base_unittest.cc",
     "user_reporting_settings_unittest.cc",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "device_reporting_settings_lacros_unittest.cc",
-      "metric_reporting_manager_lacros_factory_unittest.cc",
-      "metric_reporting_manager_lacros_shutdown_notifier_factory_unittest.cc",
-      "metric_reporting_manager_lacros_unittest.cc",
-    ]
-  }
 
   deps = [
     ":reporting",
@@ -100,14 +68,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chrome/browser/apps/app_service",
-      "//components/reporting/client:report_queue_configuration",
-      "//components/reporting/metrics:metrics_data_collection",
-      "//components/reporting/util:rate_limiter_interface",
-      "//components/reporting/util:rate_limiter_slide_window",
-    ]
-  }
 }

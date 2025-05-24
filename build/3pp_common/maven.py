@@ -84,7 +84,8 @@ def _install(output_prefix,
              maven_url,
              package,
              version,
-             jar_name=None):
+             jar_name=None,
+             post_process_func=None):
     # Runs in a docker container.
     group_id, artifact_id = package.split(':')
     if not jar_name:
@@ -108,16 +109,19 @@ def _install(output_prefix,
                    check=True,
                    env=env)
 
-    # Move and rename output to the upload directory. Moving only the jar avoids
-    # polluting the output directory with maven intermediate outputs.
-    shutil.move('target/artifact-1-jar-with-dependencies.jar',
-                os.path.join(output_prefix, jar_name))
+    src_jar_path = 'target/artifact-1-jar-with-dependencies.jar'
+    dst_jar_path = os.path.join(output_prefix, jar_name)
+    if post_process_func:
+        post_process_func(src_jar_path, dst_jar_path)
+    else:
+        shutil.move(src_jar_path, dst_jar_path)
 
 
 def main(*,
          package,
          jar_name=None,
          maven_url='https://dl.google.com/android/maven2',
+         post_process_func=None,
          version_override=None):
     """3pp entry point for fetch.py.
 
@@ -125,6 +129,7 @@ def main(*,
       package: E.g.: some.package:some-thing
       jar_name: Name of .jar. Defaults to |some-thing|.jar
       maven_url: URL of Maven repository.
+      post_process_func: Called to finish. Args: src_jar_path, dst_jar_path
       version_override: Use this version instead of the latest one.
     """
 
@@ -133,7 +138,7 @@ def main(*,
 
     def do_install(args):
         _install(args.output_prefix, args.deps_prefix, maven_url, package,
-                 args.version, jar_name)
+                 args.version, jar_name, post_process_func)
 
     common.main(do_latest=do_latest,
                 do_install=do_install,

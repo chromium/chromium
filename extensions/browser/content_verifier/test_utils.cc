@@ -203,9 +203,8 @@ bool TestContentVerifyJobObserver::ObserverClient::WaitForExpectedJobs() {
 
 // MockContentVerifierDelegate ------------------------------------------------
 MockContentVerifierDelegate::MockContentVerifierDelegate()
-    : verifier_key_(
-          kWebstoreSignaturesPublicKey,
-          kWebstoreSignaturesPublicKey + kWebstoreSignaturesPublicKeySize) {}
+    : verifier_key_(kWebstoreSignaturesPublicKey.begin(),
+                    kWebstoreSignaturesPublicKey.end()) {}
 
 MockContentVerifierDelegate::~MockContentVerifierDelegate() = default;
 

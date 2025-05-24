@@ -33,6 +33,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeChecked {
 
   // Explicit numbering because we map 1-to-1 with `WeekDay` from
   // `common_schemas.yaml`.
+  // TODO(b/345186543, isandrk): Consider separating `Day` into its own class in
+  // a separate file. More type safety and better logical encapsulation.
   enum class Day {
     kMonday = 1,
     kTuesday = 2,
@@ -42,6 +44,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeChecked {
     kSaturday = 6,
     kSunday = 7,
   };
+
+  static Day NextDay(Day day);
 
   WeeklyTimeChecked(Day day_of_week, int milliseconds_since_midnight);
   WeeklyTimeChecked(const WeeklyTimeChecked&);

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_SCHEDULER_IMPL_H_
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_SCHEDULER_IMPL_H_
 
-#include <deque>
 #include <map>
 
 #include "base/containers/linked_list.h"

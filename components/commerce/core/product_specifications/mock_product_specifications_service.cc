@@ -9,6 +9,12 @@
 
 namespace commerce {
 
+// static
+std::unique_ptr<KeyedService> MockProductSpecificationsService::Build() {
+  return std::make_unique<
+      testing::NiceMock<MockProductSpecificationsService>>();
+}
+
 MockProductSpecificationsService::MockProductSpecificationsService()
     : ProductSpecificationsService(
           base::DoNothing(),

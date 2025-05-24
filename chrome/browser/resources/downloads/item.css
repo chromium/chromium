@@ -187,16 +187,25 @@ cr-button {
   }
 }
 
+#title-area {
+  display: flex;
+  flex-direction: row;
+}
+
 #name,
 #file-link,
 #url {
   max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #name,
 #file-link {
   font-weight: 500;
   word-break: break-all;
+  text-align: start;
 }
 
 @media (prefers-color-scheme: light) {
@@ -209,13 +218,10 @@ cr-button {
   }
 }
 
-#name {
-  margin-inline-end: 12px;  /* Only really affects #tag. */
-}
-
 #tag {
   color: #5a5a5a;
   font-weight: 500;
+  margin-inline-start: 12px;
 }
 
 #url {
@@ -223,10 +229,7 @@ cr-button {
   display: block;
   margin-top: 6px;
   min-height: 0;
-  overflow: hidden;
   text-decoration: none;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   /* Ellipsize beginning and preserve the end to always display the eTLD+1. */
   direction: rtl;
   text-align: end;
@@ -254,6 +257,14 @@ cr-button {
 }
 
 :host-context([dir=rtl]) #url {
+  direction: ltr;
+}
+
+:host-context([dir=rtl]) #name {
+  direction: ltr;
+}
+
+:host-context([dir=rtl]) #file-link {
   direction: ltr;
 }
 

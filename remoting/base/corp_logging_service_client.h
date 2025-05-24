@@ -6,8 +6,10 @@
 #define REMOTING_BASE_CORP_LOGGING_SERVICE_CLIENT_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
+#include "net/ssl/client_cert_store.h"
 #include "remoting/base/logging_service_client.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/protobuf_http_client.h"
@@ -22,7 +24,9 @@ class CorpLoggingServiceClient : public LoggingServiceClient {
  public:
   CorpLoggingServiceClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<OAuthTokenGetter> oauth_token_getter);
+      std::unique_ptr<net::ClientCertStore> client_cert_store,
+      std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
+      std::string_view logging_path);
   ~CorpLoggingServiceClient() override;
 
   CorpLoggingServiceClient(const CorpLoggingServiceClient&) = delete;
@@ -35,6 +39,7 @@ class CorpLoggingServiceClient : public LoggingServiceClient {
  private:
   std::unique_ptr<OAuthTokenGetter> oauth_token_getter_;
   ProtobufHttpClient http_client_;
+  std::string_view logging_path_;
 };
 
 }  // namespace remoting

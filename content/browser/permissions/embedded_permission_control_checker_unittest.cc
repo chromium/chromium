@@ -33,7 +33,7 @@ namespace content {
 
 namespace {
 
-constexpr static int kMaxPEPCPerPage = 2;
+constexpr static int kMaxPEPCPerPage = 3;
 
 class MockEmbeddedPermissionControlClient
     : public EmbeddedPermissionControlClient {
@@ -99,13 +99,13 @@ class EmbeddedPermissionControlCheckerTest
 
     std::vector<PermissionDescriptorPtr> permission_descriptors;
     permission_descriptors.reserve(permissions.size());
-    base::ranges::transform(permissions,
-                            std::back_inserter(permission_descriptors),
-                            [](const auto& permission) {
-                              auto descriptor = PermissionDescriptor::New();
-                              descriptor->name = permission;
-                              return descriptor;
-                            });
+    std::ranges::transform(permissions,
+                           std::back_inserter(permission_descriptors),
+                           [](const auto& permission) {
+                             auto descriptor = PermissionDescriptor::New();
+                             descriptor->name = permission;
+                             return descriptor;
+                           });
 
     permission_service()->RegisterPageEmbeddedPermissionControl(
         std::move(permission_descriptors), std::move(mojo_client));
@@ -116,6 +116,22 @@ class EmbeddedPermissionControlCheckerTest
   mojo::Remote<PermissionService> permission_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_F(EmbeddedPermissionControlCheckerTest,
+       IgnoreRegisteregisterPageEmbeddedPermissionCheck) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kBypassPepcSecurityForTesting);
+  for (PermissionName name :
+       {PermissionName::AUDIO_CAPTURE, PermissionName::VIDEO_CAPTURE,
+        PermissionName::GEOLOCATION}) {
+    std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>> clients(
+        kMaxPEPCPerPage + 3);
+    for (size_t i = 0; i < kMaxPEPCPerPage + 3; ++i) {
+      clients[i] = CreateEmbeddedPermissionControlClient({name});
+      clients[i]->ExpectEmbeddedPermissionControlRegistered();
+    }
+  }
+}
 
 TEST_F(EmbeddedPermissionControlCheckerTest,
        RegisterPageEmbeddedPermissionSinglePermission) {

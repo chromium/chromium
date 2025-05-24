@@ -5,7 +5,7 @@
 import 'chrome://chrome-signin/edu_coexistence/edu_coexistence_ui.js';
 
 import {EduCoexistenceBrowserProxyImpl} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_browser_proxy.js';
-import {EduCoexistenceButton} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_button.js';
+import type {EduCoexistenceButton} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_button.js';
 import {EduCoexistenceUi} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_ui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -40,8 +40,10 @@ suite('EduCoexistenceUiTest', function() {
       backCalled = true;
     };
 
-    const backButton = coexistenceUi.shadowRoot!.querySelector(
-                           '#gaia-back-button')! as EduCoexistenceButton;
+    const backButton =
+        coexistenceUi.shadowRoot!.querySelector<EduCoexistenceButton>(
+            '#gaia-back-button');
+    assertTrue(!!backButton);
     // Simulate being on the Gaia signin page by enabling the
     // Gaia back button
     backButton.disabled = false;

@@ -51,10 +51,9 @@ TEST_F(BookmarkTest, BookmarkBarOnCustomNTP) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->profile()));
-  web_contents->GetController().LoadURL(GURL(url::kAboutBlankURL),
-                                        content::Referrer(),
-                                        ui::PAGE_TRANSITION_LINK,
-                                        std::string());
+  web_contents->GetController().LoadURL(
+      GURL(url::kAboutBlankURL), content::Referrer(), ui::PAGE_TRANSITION_LINK,
+      std::string());
 
   // Give it a NTP virtual URL.
   content::NavigationController* controller = &web_contents->GetController();

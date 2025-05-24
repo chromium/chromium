@@ -58,9 +58,7 @@ void WaylandBufferManagerConnector::OnGpuServiceLaunched(
       supports_dma_buf, buffer_manager_host_->SupportsViewporter(),
       buffer_manager_host_->SupportsAcquireFence(),
       buffer_manager_host_->SupportsOverlays(),
-      buffer_manager_host_->GetSurfaceAugmentorVersion(),
-      buffer_manager_host_->SupportsSinglePixelBuffer(),
-      buffer_manager_host_->GetServerVersion());
+      buffer_manager_host_->SupportsSinglePixelBuffer());
 }
 
 void WaylandBufferManagerConnector::OnTerminateGpuProcess(std::string message) {

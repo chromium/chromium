@@ -37,6 +37,8 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
  public:
   using PresentationCallback =
       base::RepeatingCallback<void(const gfx::PresentationFeedback&)>;
+  using FrameSinkFactory =
+      base::RepeatingCallback<std::unique_ptr<cc::LayerTreeFrameSink>()>;
 
   FrameSinkHost();
 
@@ -53,9 +55,8 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   // Initializes the FrameSinkHost on the host_window.
   virtual void Init(aura::Window* host_window);
 
-  virtual void InitForTesting(
-      aura::Window* host_window,
-      std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink);
+  virtual void InitForTesting(aura::Window* host_window,
+                              FrameSinkFactory frame_sink_factory);
 
   // Updates the surface by submitting a compositor frame. With
   // synchronous_draw as true, we send a compositor frame as soon as we call the
@@ -77,6 +78,10 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   // Overridden from aura::WindowObserver
   void OnWindowDestroying(aura::Window* window) override;
 
+  FrameSinkHolder* frame_sink_holder_for_testing() {
+    return frame_sink_holder_.get();
+  }
+
  protected:
   // Creates a compositor frame that can be sent to the display compositor.
   // `begin_frame_ack` is a token that needs to be attached to the compositor
@@ -96,10 +101,16 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
       const gfx::Size& last_submitted_frame_size,
       float last_submitted_frame_dsf) = 0;
 
-  // Callback invoked when underlying frame sink holder gets the first begin
-  // frame from viz. This signifies that the gpu process has been fully
-  // initialized.
+  // Callback invoked when frame sink gets the first begin from the display
+  // compositor for existing FrameSink. This signifies that the gpu process has
+  // been fully initialized.
+  // Note: This method will be reinvoked when a new FrameSink is created in the
+  // event of losing the old FrameSink. (See `OnFrameSinkLost()`)
   virtual void OnFirstFrameRequested();
+
+  // Callback invoked when the connection to `LayerTreeFrameSink` is lost. (i.e
+  // gpu crashed, host_window closes etc)
+  virtual void OnFrameSinkLost();
 
   const gfx::Rect& GetTotalDamage() const { return total_damage_rect_; }
 
@@ -120,9 +131,7 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
 
   void SetHostWindow(aura::Window* host_window);
 
-  void InitInternal(
-      aura::Window* host_window,
-      std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink);
+  std::unique_ptr<cc::LayerTreeFrameSink> CreateLayerTreeFrameSink();
 
   // Observation to track the lifetime of `host_window_`.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
@@ -136,6 +145,8 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
 
   // The damage rect in host window coordinates.
   gfx::Rect total_damage_rect_;
+
+  FrameSinkFactory frame_sink_factory_;
 
   // Holds the LayerTreeFrameSink. For proper deletion of in flight
   // resources, lifetime of the FrameSinkHolder is extended to either the root

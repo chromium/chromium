@@ -42,15 +42,22 @@ void ChromeVisibilityObserver::OnBrowserSetLastActive(Browser* browser) {
 }
 
 void ChromeVisibilityObserver::OnBrowserNoLongerActive(Browser* browser) {
-  if (visibility_gap_timeout_.InMicroseconds() == 0) {
-    SendVisibilityChangeEvent(false, base::TimeDelta());
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ChromeVisibilityObserver::SendVisibilityChangeEvent,
-                       weak_factory_.GetWeakPtr(), false,
-                       visibility_gap_timeout_),
-        visibility_gap_timeout_);
+  // Check if there is an active browser instead of assuming ordering of the
+  // observation calls when we are switching between browsers.
+  const auto* last_active_browser = BrowserList::GetInstance()->GetLastActive();
+  bool is_active = last_active_browser && last_active_browser->IsActive();
+
+  if (!is_active) {
+    if (visibility_gap_timeout_.InMicroseconds() == 0) {
+      SendVisibilityChangeEvent(false, base::TimeDelta());
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&ChromeVisibilityObserver::SendVisibilityChangeEvent,
+                         weak_factory_.GetWeakPtr(), false,
+                         visibility_gap_timeout_),
+          visibility_gap_timeout_);
+    }
   }
 }
 

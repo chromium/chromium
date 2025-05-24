@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 #if DCHECK_IS_ON()
@@ -29,8 +30,15 @@ ScriptPromiseResolverBase::ScriptPromiseResolverBase(
                     .ToLocalChecked()),
       state_(kPending),
       script_state_(script_state),
-      exception_context_(exception_context),
-      script_url_(GetCurrentScriptUrl(script_state->GetIsolate())) {}
+      exception_context_(exception_context) {
+  if (RuntimeEnabledFeatures::LongAnimationFrameSourceCharPositionEnabled()) {
+    source_location_ =
+        CapturePartialSourceLocationFromStack(script_state->GetIsolate());
+  } else {
+    source_location_ = std::make_unique<SourceLocation>(
+        CaptureCurrentScriptUrl(script_state->GetIsolate()), -1);
+  }
+}
 
 ScriptPromiseResolverBase::~ScriptPromiseResolverBase() = default;
 
@@ -102,26 +110,29 @@ void ScriptPromiseResolverBase::RejectWithSecurityError(
   Reject(exception);
 }
 
+String AddContext(const ExceptionContext& context, const String& message) {
+  return ExceptionMessages::AddContextToMessage(
+      context.GetType(), context.GetClassName(), context.GetPropertyName(),
+      message);
+}
+
 void ScriptPromiseResolverBase::RejectWithTypeError(const String& message) {
   ScriptState::Scope scope(script_state_.Get());
   Reject(V8ThrowException::CreateTypeError(
-      script_state_->GetIsolate(),
-      ExceptionMessages::AddContextToMessage(exception_context_, message)));
+      script_state_->GetIsolate(), AddContext(exception_context_, message)));
 }
 
 void ScriptPromiseResolverBase::RejectWithRangeError(const String& message) {
   ScriptState::Scope scope(script_state_.Get());
   Reject(V8ThrowException::CreateRangeError(
-      script_state_->GetIsolate(),
-      ExceptionMessages::AddContextToMessage(exception_context_, message)));
+      script_state_->GetIsolate(), AddContext(exception_context_, message)));
 }
 
 void ScriptPromiseResolverBase::RejectWithWasmCompileError(
     const String& message) {
   ScriptState::Scope scope(script_state_.Get());
   Reject(V8ThrowException::CreateWasmCompileError(
-      script_state_->GetIsolate(),
-      ExceptionMessages::AddContextToMessage(exception_context_, message)));
+      script_state_->GetIsolate(), AddContext(exception_context_, message)));
 }
 
 void ScriptPromiseResolverBase::Detach() {
@@ -157,8 +168,8 @@ void ScriptPromiseResolverBase::ResolveOrRejectImmediately() {
 
   probe::WillHandlePromise(
       GetExecutionContext(), script_state_, state_ == kResolving,
-      exception_context_.GetClassName(),
-      exception_context_.GetPropertyNameVariant(), script_url_);
+      exception_context_.GetClassName(), exception_context_.GetPropertyName(),
+      source_location_.get());
 
   v8::MicrotasksScope microtasks_scope(
       script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),

@@ -70,8 +70,7 @@ class CC_EXPORT ImageDecodeCache {
       case TaskType::kOutOfRaster:
         return ScopedTaskType::kOutOfRaster;
     }
-    NOTREACHED_IN_MIGRATION();
-    return ScopedTaskType::kInRaster;
+    NOTREACHED();
   }
 
   static devtools_instrumentation::ScopedImageDecodeTask::ImageType
@@ -137,7 +136,8 @@ class CC_EXPORT ImageDecodeCache {
   // worker thread which may not have the right GPU context for upload.
   virtual TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
       ClientId client_id,
-      const DrawImage& image) = 0;
+      const DrawImage& image,
+      bool speculative = false) = 0;
 
   // Unrefs an image. When the tile is finished, this should be called for every
   // GetTaskForImageAndRef call that returned true.
@@ -166,8 +166,7 @@ class CC_EXPORT ImageDecodeCache {
   // retaining cached resources longer than needed. If |context_lock_acquired|
   // is true, the caller has already acquired the context lock.
   virtual void SetShouldAggressivelyFreeResources(
-      bool aggressively_free_resources,
-      bool context_lock_acquired) = 0;
+      bool aggressively_free_resources) = 0;
 
   // Clears all elements from the cache.
   virtual void ClearCache() = 0;

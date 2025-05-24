@@ -43,7 +43,7 @@ class AppShimTerminationManagerImpl : public AppShimTerminationManager,
   AppShimTerminationManagerImpl(const AppShimTerminationManagerImpl&) = delete;
   AppShimTerminationManagerImpl& operator=(
       const AppShimTerminationManagerImpl&) = delete;
-  ~AppShimTerminationManagerImpl() override { NOTREACHED_IN_MIGRATION(); }
+  ~AppShimTerminationManagerImpl() override { NOTREACHED(); }
 
   // AppShimTerminationManager:
   void MaybeTerminate() override {

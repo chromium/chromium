@@ -10,6 +10,7 @@
 
 #include "ios/web/common/user_agent.h"
 
+@protocol CRWEditMenuBuilder;
 @protocol CRWInputViewProvider;
 
 // This file is a collection of functions that vend web views.
@@ -34,14 +35,8 @@ WKWebView* BuildWKWebView(CGRect frame,
                           WKWebViewConfiguration* configuration,
                           BrowserState* browser_state,
                           UserAgentType user_agent_type,
-                          id<CRWInputViewProvider> input_view_provider);
-
-// Creates and returns a new WKWebView for displaying regular web content.
-// The preconditions for the creation of a WKWebView are the same as the
-// previous method.
-WKWebView* BuildWKWebView(CGRect frame,
-                          WKWebViewConfiguration* configuration,
-                          BrowserState* browser_state);
+                          id<CRWInputViewProvider> input_view_provider,
+                          id<CRWEditMenuBuilder> edit_menu_builder);
 
 }  // namespace web
 

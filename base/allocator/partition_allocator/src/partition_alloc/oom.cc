@@ -15,6 +15,7 @@
 
 #include <array>
 #include <cstdlib>
+#include <limits>
 #endif  // PA_BUILDFLAG(IS_WIN)
 
 namespace partition_alloc {
@@ -26,7 +27,8 @@ namespace internal {
 // Crash server classifies base::internal::OnNoMemoryInternal as OOM.
 // TODO(crbug.com/40158212): Update to
 // partition_alloc::internal::base::internal::OnNoMemoryInternal
-PA_NOINLINE void OnNoMemoryInternal(size_t size) {
+[[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void OnNoMemoryInternal(
+    size_t size) {
   g_oom_size = size;
   size_t tmp_size = size;
   internal::base::debug::Alias(&tmp_size);
@@ -98,6 +100,12 @@ namespace internal {
 [[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void OnNoMemory(size_t size) {
   RunPartitionAllocOomCallback();
   TerminateBecauseOutOfMemory(size);
+  PA_IMMEDIATE_CRASH();
+}
+
+[[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void OnErrnoNoMem() {
+  RunPartitionAllocOomCallback();
+  TerminateBecauseOutOfMemory(0u);
   PA_IMMEDIATE_CRASH();
 }
 

@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 
+#include <string_view>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,6 +20,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/window_properties.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "ui/aura/env.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -31,8 +34,8 @@ namespace {
 
 constexpr int kUnsupportedAppsViewSpacing = 8;
 
-std::u16string GetStringWithQuotes(const std::u16string& str) {
-  return u"\"" + str + u"\"";
+std::u16string GetStringWithQuotes(std::u16string_view str) {
+  return base::StrCat({u"\"", str, u"\""});
 }
 
 }  // namespace
@@ -85,7 +88,7 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
   label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *label_view);
-  label_view->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label_view->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   label_view->SetText(l10n_util::GetStringUTF16(
       IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER));
   unsupported_apps_view->AddChildView(std::move(label_view));
@@ -121,7 +124,7 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
 
 void SavedDeskDialogController::ShowReplaceDialog(
     aura::Window* root_window,
-    const std::u16string& template_name,
+    std::u16string_view template_name,
     DeskTemplateType template_type,
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback) {
@@ -145,7 +148,7 @@ void SavedDeskDialogController::ShowReplaceDialog(
               template_type == DeskTemplateType::kTemplate
                   ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
                   : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
-              template_name))
+              std::u16string(template_name)))
           .SetAcceptCallback(std::move(on_accept_callback))
           .SetCancelCallback(std::move(on_cancel_callback))
           .Build();
@@ -154,7 +157,7 @@ void SavedDeskDialogController::ShowReplaceDialog(
 
 void SavedDeskDialogController::ShowDeleteDialog(
     aura::Window* root_window,
-    const std::u16string& template_name,
+    std::u16string_view template_name,
     DeskTemplateType template_type,
     base::OnceClosure on_accept_callback) {
   if (!CanShowDialog()) {
@@ -172,7 +175,8 @@ void SavedDeskDialogController::ShowDeleteDialog(
           .SetAcceptButtonText(l10n_util::GetStringUTF16(
               IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON))
           .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
-              IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION, template_name))
+              IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION,
+              std::u16string(template_name)))
           .SetAcceptCallback(std::move(on_accept_callback))
           .Build();
   CreateDialogWidget(std::move(dialog), root_window);

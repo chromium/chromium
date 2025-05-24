@@ -6,9 +6,10 @@ import {EventGenerator} from '../../event_generator.js';
 import {KeyCode} from '../../key_code.js';
 import {TestImportManager} from '../../testing/test_import_manager.js';
 import {Context, ContextChecker} from '../context_checker.js';
-import {InputController} from '../input_controller.js';
+import type {InputController} from '../input_controller.js';
 
-import {CheckContextResult, Macro, MacroError, RunMacroResult} from './macro.js';
+import type {CheckContextResult, RunMacroResult} from './macro.js';
+import {Macro, MacroError} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /**

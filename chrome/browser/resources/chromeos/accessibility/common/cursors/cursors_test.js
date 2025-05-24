@@ -22,17 +22,7 @@ AccessibilityExtensionCursorsTest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await Promise.all([
-      importModule('CursorRange', '/common/cursors/range.js'),
-      importModule(
-          ['Cursor', 'CursorMovement', 'CursorUnit', 'WrappingCursor'],
-          '/common/cursors/cursor.js'),
 
-      importModule('AutomationUtil', '/common/automation_util.js'),
-      importModule('AutomationPredicate', '/common/automation_predicate.js'),
-      importModule('constants', '/common/constants.js'),
-      importModule('createMockNode', '/common/testing/test_node_generator.js'),
-    ]);
     // Various aliases
     globalThis.CHARACTER = CursorUnit.CHARACTER;
     globalThis.WORD = CursorUnit.WORD;

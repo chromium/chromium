@@ -34,8 +34,12 @@ void FakeWebrtcConnection::OnWebrtcTransportConnected() {
   std::move(on_closed_).Run();
 }
 
-void FakeWebrtcConnection::OnWebrtcTransportError(protocol::ErrorCode error) {
-  LOG(ERROR) << "Webrtc transport error: " << ErrorCodeToString(error);
+void FakeWebrtcConnection::OnWebrtcTransportError(
+    protocol::ErrorCode error,
+    std::string_view error_details,
+    const base::Location& error_location) {
+  LOG(ERROR) << "Webrtc transport error: " << ErrorCodeToString(error) << ", "
+             << error_details << ", location: " << error_location.ToString();
   std::move(on_closed_).Run();
 }
 
@@ -46,10 +50,10 @@ void FakeWebrtcConnection::OnWebrtcTransportIncomingDataChannel(
     std::unique_ptr<protocol::MessagePipe> pipe) {}
 
 void FakeWebrtcConnection::OnWebrtcTransportMediaStreamAdded(
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {}
+    webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {}
 
 void FakeWebrtcConnection::OnWebrtcTransportMediaStreamRemoved(
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {}
+    webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {}
 
 void FakeWebrtcConnection::OnWebrtcTransportRouteChanged(
     const protocol::TransportRoute& route) {}

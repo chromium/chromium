@@ -111,7 +111,8 @@ void RTCRtpScriptTransformer::Trace(Visitor* visitor) const {
 //  Relies on [CachedAttribute] to ensure it isn't run more than once.
 ScriptValue RTCRtpScriptTransformer::options(ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MessagePortArray message_ports = ports_ ? *ports_ : MessagePortArray();
+  MessagePortArray message_ports =
+      ports_ ? MessagePortArray(*ports_) : MessagePortArray();
   SerializedScriptValue::DeserializeOptions options;
   options.message_ports = &message_ports;
   v8::Isolate* isolate = script_state->GetIsolate();

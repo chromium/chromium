@@ -20,10 +20,12 @@ ui::WindowFrameProvider* BrowserFrameViewLayoutLinuxNative::GetFrameProvider()
     const {
 #if BUILDFLAG(IS_LINUX)
   const bool tiled = delegate_->IsTiled();
+  const bool maximized = delegate_->IsMaximized();
 #else
   const bool tiled = false;
+  const bool maximized = false;
 #endif
-  return frame_provider_getter_.Run(tiled);
+  return frame_provider_getter_.Run(tiled, maximized);
 }
 
 int BrowserFrameViewLayoutLinuxNative::CaptionButtonY(

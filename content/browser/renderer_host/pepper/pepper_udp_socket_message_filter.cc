@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_socket_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -99,7 +98,7 @@ PepperUDPSocketMessageFilter::PepperUDPSocketMessageFilter(
 
   if (!host->GetRenderFrameIDsForInstance(instance, &render_process_id_,
                                           &render_frame_id_)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -306,8 +305,7 @@ int32_t PepperUDPSocketMessageFilter::OnMsgSetOption(
       return PP_OK;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return PP_ERROR_BADARGUMENT;
+      NOTREACHED();
     }
   }
 }
@@ -448,8 +446,7 @@ int32_t PepperUDPSocketMessageFilter::OnMsgSendTo(
       num_bytes >
           static_cast<size_t>(UDPSocketResourceConstants::kMaxWriteSize)) {
     // Size of |data| is checked on the plugin side.
-    NOTREACHED_IN_MIGRATION();
-    return PP_ERROR_BADARGUMENT;
+    NOTREACHED();
   }
 
   net::IPAddressBytes address;

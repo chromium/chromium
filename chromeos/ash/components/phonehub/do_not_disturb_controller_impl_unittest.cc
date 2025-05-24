@@ -10,8 +10,8 @@
 #include "chromeos/ash/components/phonehub/fake_user_action_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
+
 namespace {
 
 class FakeObserver : public DoNotDisturbController::Observer {
@@ -153,5 +153,4 @@ TEST_F(DoNotDisturbControllerImplTest, RequestNewDoNotDisturbState) {
   EXPECT_EQ(2u, GetUpdateNotificationModeRequestCallCount());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

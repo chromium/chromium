@@ -156,11 +156,12 @@ TEST_P(RecentAppsViewTest, CreatesIconsForApps) {
   AddAppListItem("id3");
   AddSearchResult("id3", AppListSearchResultType::kInstantApp);
   AddAppListItem("id4");
-  AddSearchResult("id4", AppListSearchResultType::kInternalApp);
+  AddSearchResult("id4", AppListSearchResultType::kInstantApp);
 
   ShowAppList();
 
-  EXPECT_EQ(GetAppListItemViews().size(), 4u);
+  EXPECT_EQ(std::vector<std::string>({"id1", "id2", "id3", "id4"}),
+            GetRecentAppsIds());
 }
 
 TEST_P(RecentAppsViewTest, IgnoreResultsNotInAppListModel) {
@@ -172,11 +173,11 @@ TEST_P(RecentAppsViewTest, IgnoreResultsNotInAppListModel) {
   AddAppListItem("id3");
   AddSearchResult("id3", AppListSearchResultType::kInstantApp);
   AddAppListItem("id4");
-  AddSearchResult("id4", AppListSearchResultType::kInternalApp);
+  AddSearchResult("id4", AppListSearchResultType::kInstantApp);
   AddAppListItem("id5");
-  AddSearchResult("id5", AppListSearchResultType::kInternalApp);
+  AddSearchResult("id5", AppListSearchResultType::kInstantApp);
   AddAppListItem("id6");
-  AddSearchResult("id6", AppListSearchResultType::kInternalApp);
+  AddSearchResult("id6", AppListSearchResultType::kInstantApp);
 
   // Verify that recent apps UI does not leave an empty space for results that
   // are not present in app list model.

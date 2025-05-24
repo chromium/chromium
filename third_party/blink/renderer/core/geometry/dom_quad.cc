@@ -117,13 +117,13 @@ DOMQuad::DOMQuad(double x, double y, double width, double height)
       p4_(DOMQuadPoint::Create(x, y + height, 0, 1, this)),
       needs_bounds_calculation_(true) {}
 
-ScriptValue DOMQuad::toJSONForBinding(ScriptState* script_state) const {
+ScriptObject DOMQuad::toJSONForBinding(ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.Add("p1", p1());
   result.Add("p2", p2());
   result.Add("p3", p3());
   result.Add("p4", p4());
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 }  // namespace blink

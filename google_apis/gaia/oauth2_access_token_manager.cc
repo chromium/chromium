@@ -736,18 +736,23 @@ void OAuth2AccessTokenManager::ProcessOnFetchComplete(
     error = std::move(response).error();
   }
 
+  // Save consumer ids before as delegate callback may make consumers delete
+  // their requests.
+  std::vector<std::string> consumer_ids;
+  for (const base::WeakPtr<RequestImpl>& request : waiting_requests) {
+    if (request) {
+      consumer_ids.push_back(request->GetConsumerId());
+    }
+  }
   delegate_->OnAccessTokenFetched(request_parameters.account_id, error);
 
   const OAuth2AccessTokenConsumer::TokenResponse* entry =
       GetCachedTokenResponse(request_parameters);
-  for (const base::WeakPtr<RequestImpl>& req : waiting_requests) {
-    if (req) {
-      for (auto& observer : diagnostics_observer_list_) {
-        observer.OnFetchAccessTokenComplete(
-            request_parameters.account_id, req->GetConsumerId(),
-            request_parameters.scopes, error,
-            entry ? entry->expiration_time : base::Time());
-      }
+  for (const std::string& consumer_id : consumer_ids) {
+    for (auto& observer : diagnostics_observer_list_) {
+      observer.OnFetchAccessTokenComplete(
+          request_parameters.account_id, consumer_id, request_parameters.scopes,
+          error, entry ? entry->expiration_time : base::Time());
     }
   }
 

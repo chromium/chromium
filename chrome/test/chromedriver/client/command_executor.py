@@ -122,6 +122,10 @@ class Command(object):
       _Method.POST, '/session/:sessionId/deviceposture')
   CLEAR_DEVICE_POSTURE = (
       _Method.DELETE, '/session/:sessionId/deviceposture')
+  SET_DISPLAY_FEATURES = (
+      _Method.POST, '/session/:sessionId/displayfeatures')
+  CLEAR_DISPLAY_FEATURES = (
+      _Method.DELETE, '/session/:sessionId/displayfeatures')
   CLOSE = (_Method.DELETE, '/session/:sessionId/window')
   DRAG_ELEMENT = (_Method.POST, '/session/:sessionId/element/:id/drag')
   GET_ELEMENT_VALUE_OF_CSS_PROPERTY = (
@@ -270,6 +274,8 @@ class Command(object):
       _Method.POST, '/session/:sessionId/pressuresource/:type')
   REMOVE_VIRTUAL_PRESSURE_SOURCE = (
       _Method.DELETE, '/session/:sessionId/pressuresource/:type')
+  SET_PROTECTED_AUDIENCE_KANONYMITY = (
+      _Method.POST, '/session/:sessionId/protected_audience/set_k_anonymity')
 
   # Custom Chrome commands.
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')

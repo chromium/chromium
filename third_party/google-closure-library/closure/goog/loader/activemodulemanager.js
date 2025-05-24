@@ -14,12 +14,28 @@ goog.module.declareLegacyNamespace();
 const AbstractModuleManager = goog.require('goog.loader.AbstractModuleManager');
 const asserts = goog.require('goog.asserts');
 
-
 /** @type {?AbstractModuleManager} */
 let moduleManager = null;
 
 /** @type {?function(): !AbstractModuleManager} */
 let getDefault = null;
+
+/** @type {!Array<function(!AbstractModuleManager)>} */
+let configureFunctions = [];
+
+/**
+ * Applys a configuration function on moduleManager if it exists. Otherwise
+ * store the configuration function inside of configureFunctions list so
+ * that they can be applied when moduleManager is instantiated.
+ * @param {function(!AbstractModuleManager)} configureFn
+ */
+function configure(configureFn) {
+  if (moduleManager) {
+    configureFn(moduleManager);
+  } else {
+    configureFunctions.push(configureFn);
+  }
+}
 
 /**
  * Gets the active module manager, instantiating one if necessary.
@@ -27,7 +43,7 @@ let getDefault = null;
  */
 function get() {
   if (!moduleManager && getDefault) {
-    moduleManager = getDefault();
+    set(getDefault());
   }
   asserts.assert(
       moduleManager != null, 'The module manager has not yet been set.');
@@ -44,6 +60,10 @@ function set(newModuleManager) {
   asserts.assert(
       moduleManager == null, 'The module manager cannot be redefined.');
   moduleManager = newModuleManager;
+  configureFunctions.forEach(configureFn => {
+    configureFn(/** @type {!AbstractModuleManager} */ (moduleManager));
+  });
+  configureFunctions = [];
 }
 
 /**
@@ -88,7 +108,7 @@ function setLoaded() {
 function maybeInitialize(info, loadingModuleIds) {
   if (!moduleManager) {
     if (!getDefault) return;
-    moduleManager = getDefault();
+    set(getDefault());
   }
   moduleManager.setAllModuleInfoString(info, loadingModuleIds);
 }
@@ -96,6 +116,7 @@ function maybeInitialize(info, loadingModuleIds) {
 /** Test-only method for removing the active module manager. */
 const reset = function() {
   moduleManager = null;
+  configureFunctions = [];
 };
 
 exports = {
@@ -106,4 +127,5 @@ exports = {
   setLoaded,
   maybeInitialize,
   reset,
+  configure,
 };

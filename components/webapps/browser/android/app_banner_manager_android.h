@@ -188,8 +188,6 @@ class AppBannerManagerAndroid
   void InvalidateWeakPtrsForThisNavigation() override;
   void ResetCurrentPageData() override;
 
-  void CheckEngagementForAmbientBadge();
-
   // Use as a callback to notify |this| after an install event such as a dialog
   // being cancelled or an app being installed has occurred.
   void OnInstallEvent(GURL validated_url,

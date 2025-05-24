@@ -123,11 +123,7 @@ public class RestoreHistogramTest {
         Assert.assertEquals(true, ChromeBackupAgentImpl.isRestoreStatusRecorded());
     }
 
-    /**
-     * Test that the histogram is written during Chrome first run.
-     *
-     * @throws InterruptedException
-     */
+    /** Test that the histogram is written during Chrome first run. */
     @Test
     @SmallTest
     public void testWritingHistogramAtStartup() throws InterruptedException {

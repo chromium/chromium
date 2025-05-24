@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/containers/circular_deque.h"
@@ -327,7 +327,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
       ui::mojom::WindowShowState::kDefault;
   bool notify_bounds_changes_ = true;
   bool window_state_is_changing_ = false;
-  float pending_raster_scale_ = 1.0;
 
   struct InflightFocusRotateRequest {
     uint32_t serial;

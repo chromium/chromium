@@ -217,7 +217,7 @@ void AutoclickScrollBubbleController::ShowBubble(
   scroll_view_ = new AutoclickScrollView();
   scroll_view_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kUnifiedTopShortcutSpacing, 0, 0, 0)));
-  bubble_view_->AddChildView(scroll_view_.get());
+  bubble_view_->AddChildViewRaw(scroll_view_.get());
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);

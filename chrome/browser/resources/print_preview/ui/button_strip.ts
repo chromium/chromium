@@ -3,120 +3,77 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
-// <if expr="is_chromeos">
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-// </if>
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// <if expr="is_chromeos">
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-// </if>
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination} from '../data/destination.js';
 import {PrinterType} from '../data/destination.js';
 import {State} from '../data/state.js';
 
-import {getTemplate} from './button_strip.html.js';
+import {getCss} from './button_strip.css.js';
+import {getHtml} from './button_strip.html.js';
 
 
-export class PrintPreviewButtonStripElement extends PolymerElement {
+export class PrintPreviewButtonStripElement extends CrLitElement {
   static get is() {
     return 'print-preview-button-strip';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      destination: Object,
-
-      firstLoad: Boolean,
-
-      maxSheets: Number,
-
-      sheetCount: Number,
-
-      state: Number,
-
-      printButtonEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      printButtonLabel_: {
-        type: String,
-        value() {
-          return loadTimeData.getString('printButton');
-        },
-      },
-
-      // <if expr="is_chromeos">
-      errorMessage_: {
-        type: String,
-        observer: 'errorMessageChanged_',
-      },
-
-      isPinValid: Boolean,
-      // </if>
+      destination: {type: Object},
+      firstLoad: {type: Boolean},
+      state: {type: Number},
+      printButtonEnabled_: {type: Boolean},
+      printButtonLabel_: {type: String},
     };
   }
 
-  static get observers() {
-    return [
-      'updatePrintButtonLabel_(destination.id)',
-      'updatePrintButtonEnabled_(state, destination.id, maxSheets, sheetCount)',
-      // <if expr="is_chromeos">
-      'updatePrintButtonEnabled_(isPinValid)',
-      'updateErrorMessage_(state, destination.id, maxSheets, sheetCount)',
-      // </if>
-
-    ];
-  }
-
-  destination: Destination;
-  firstLoad: boolean;
-  maxSheets: number;
-  sheetCount: number;
-  state: State;
-  // <if expr="is_chromeos">
-  isPinValid: boolean;
-  // </if>
-  private printButtonEnabled_: boolean;
-  private printButtonLabel_: string;
-  // <if expr="is_chromeos">
-  private errorMessage_: string;
-  // </if>
-
+  accessor destination: Destination|null = null;
+  accessor firstLoad: boolean = false;
+  accessor state: State = State.NOT_READY;
+  protected accessor printButtonEnabled_: boolean = false;
+  protected accessor printButtonLabel_: string =
+      loadTimeData.getString('printButton');
   private lastState_: State = State.NOT_READY;
 
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('destination')) {
+      this.printButtonLabel_ =
+          loadTimeData.getString(this.isPdf_() ? 'saveButton' : 'printButton');
+    }
+
+    if (changedProperties.has('state')) {
+      this.updatePrintButtonEnabled_();
+    }
   }
 
-  private onPrintClick_() {
-    this.fire_('print-requested');
+  protected onPrintClick_() {
+    this.fire('print-requested');
   }
 
-  private onCancelClick_() {
-    this.fire_('cancel-requested');
+  protected onCancelClick_() {
+    this.fire('cancel-requested');
   }
 
   private isPdf_(): boolean {
-    return this.destination &&
+    return !!this.destination &&
         this.destination.type === PrinterType.PDF_PRINTER;
-  }
-
-  private updatePrintButtonLabel_() {
-    this.printButtonLabel_ =
-        loadTimeData.getString(this.isPdf_() ? 'saveButton' : 'printButton');
   }
 
   private updatePrintButtonEnabled_() {
@@ -125,17 +82,12 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
         this.printButtonEnabled_ = false;
         break;
       case (State.READY):
-        // <if expr="is_chromeos">
-        this.printButtonEnabled_ = !this.printButtonDisabled_();
-        // </if>
-        // <if expr="not is_chromeos">
         this.printButtonEnabled_ = true;
-        // </if>
         if (this.firstLoad || this.lastState_ === State.PRINTING) {
-          this.shadowRoot!
+          this.shadowRoot
               .querySelector<CrButtonElement>(
                   'cr-button.action-button')!.focus();
-          this.fire_('print-button-focused');
+          this.fire('print-button-focused');
         }
         break;
       default:
@@ -144,59 +96,9 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     }
     this.lastState_ = this.state;
   }
-
-  // <if expr="is_chromeos">
-
-  /**
-   * This disables the print button if the sheets limit policy is violated or
-   * pin printing is enabled and the pin is invalid.
-   */
-  private printButtonDisabled_(): boolean {
-    return this.isSheetsLimitPolicyViolated_() || !this.isPinValid;
-  }
-
-  /**
-   * The sheets policy is violated if 3 conditions are met:
-   * * This is "real" printing, i.e. not saving to PDF/Drive.
-   * * Sheets policy is present.
-   * * Either number of sheets is not calculated or exceeds policy limit.
-   */
-  private isSheetsLimitPolicyViolated_(): boolean {
-    return !this.isPdf_() && this.maxSheets > 0 &&
-        (this.sheetCount === 0 || this.sheetCount > this.maxSheets);
-  }
-
-  /**
-   * @return Whether to show the "Too many sheets" error.
-   */
-  private showSheetsError_(): boolean {
-    // The error is shown if the number of sheets is already calculated and the
-    // print button is disabled.
-    return this.sheetCount > 0 && this.isSheetsLimitPolicyViolated_();
-  }
-
-  private updateErrorMessage_() {
-    if (!this.showSheetsError_()) {
-      this.errorMessage_ = '';
-      return;
-    }
-    PluralStringProxyImpl.getInstance()
-        .getPluralString('sheetsLimitErrorMessage', this.maxSheets)
-        .then(label => {
-          this.errorMessage_ = label;
-        });
-  }
-
-  /**
-   * Uses CrA11yAnnouncer to notify screen readers that an error is set.
-   */
-  private errorMessageChanged_() {
-    if (this.errorMessage_ !== '') {
-      getAnnouncerInstance().announce(this.errorMessage_);
-    }
-  }
-  // </if>
 }
+
+export type ButtonStripElement = PrintPreviewButtonStripElement;
 
 declare global {
   interface HTMLElementTagNameMap {

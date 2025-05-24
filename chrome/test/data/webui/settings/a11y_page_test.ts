@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 // <if expr="is_win or is_linux or is_macosx">
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsAxAnnotationsSectionElement} from 'chrome://settings/lazy_load.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import { assertFalse, assertTrue, assertEquals } from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // </if>
@@ -17,9 +17,11 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AccessibilityBrowserProxy, LanguageHelper, SettingsA11yPageElement} from 'chrome://settings/lazy_load.js';
 import {AccessibilityBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, ToastAlertLevel} from 'chrome://settings/settings.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -55,14 +57,15 @@ suite('A11yPage', () => {
   let settingsPrefs: SettingsPrefsElement;
   let browserProxy: TestAccessibilityBrowserProxy;
   let languageHelper: LanguageHelper;
+  let metrics: MetricsTracker;
 
-  suiteSetup(function() {
+  setup(function() {
     loadTimeData.overrideValues({
+      axTreeFixingEnabled: true,
       mainNodeAnnotationsEnabled: true,
     });
-  });
 
-  setup(async function() {
+    metrics = fakeMetricsPrivate();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
@@ -95,6 +98,26 @@ suite('A11yPage', () => {
     });
   });
 
+  test('test ax tree fixing toggle and pref', async () => {
+    assertTrue(loadTimeData.getBoolean('axTreeFixingEnabled'));
+
+    const toggle =
+        a11yPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#axTreeFixing');
+    assertTrue(!!toggle);
+    await flushTasks();
+
+    // The AX Tree Fixing pref is off by default, so the button should be
+    // toggled off.
+    assertFalse(a11yPage.getPref('settings.a11y.enable_ax_tree_fixing').value);
+    assertFalse(toggle.checked);
+
+    toggle.click();
+    await flushTasks();
+    assertTrue(a11yPage.getPref('settings.a11y.enable_ax_tree_fixing').value);
+    assertTrue(toggle.checked);
+  });
+
   // <if expr="is_win or is_linux or is_macosx">
   test('check ax annotations subpage visibility', async () => {
     assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
@@ -119,6 +142,28 @@ suite('A11yPage', () => {
             '#AxAnnotationsSection');
     assertTrue(!!axAnnotationsSection);
     assertTrue(isVisible(axAnnotationsSection));
+  });
+
+  test('toast toggle mapping from enum', () => {
+    const toastToggle =
+        a11yPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#toastToggle');
+    assertTrue(!!toastToggle);
+
+    toastToggle.click();
+    assertEquals(
+        ToastAlertLevel.ACTIONABLE,
+        a11yPage.getPref('settings.toast.alert_level').value);
+    assertFalse(toastToggle.checked);
+
+    toastToggle.click();
+    assertEquals(
+        ToastAlertLevel.ALL,
+        a11yPage.getPref('settings.toast.alert_level').value);
+    assertTrue(toastToggle.checked);
+
+    // Logged metrics for both pref changes.
+    assertEquals(2, metrics.count('Toast.FrequencyPrefChanged'));
   });
   // </if>
 

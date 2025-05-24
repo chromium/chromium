@@ -20,7 +20,6 @@
 class NearbyShareClientFactory;
 class NearbyShareContactDownloader;
 class NearbyShareLocalDeviceDataManager;
-class NearbyShareProfileInfoProvider;
 class PrefService;
 
 namespace ash::nearby {
@@ -50,19 +49,19 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
   class Factory {
    public:
     static std::unique_ptr<NearbyShareContactManager> Create(
+        std::string user_email,
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
-        NearbyShareLocalDeviceDataManager* local_device_data_manager,
-        NearbyShareProfileInfoProvider* profile_info_provider);
+        NearbyShareLocalDeviceDataManager* local_device_data_manager);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<NearbyShareContactManager> CreateInstance(
+        std::string user_email,
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
-        NearbyShareLocalDeviceDataManager* local_device_data_manager,
-        NearbyShareProfileInfoProvider* profile_info_provider) = 0;
+        NearbyShareLocalDeviceDataManager* local_device_data_manager) = 0;
 
    private:
     static Factory* test_factory_;
@@ -72,10 +71,10 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
 
  private:
   NearbyShareContactManagerImpl(
+      std::string user_email,
       PrefService* pref_service,
       NearbyShareClientFactory* http_client_factory,
-      NearbyShareLocalDeviceDataManager* local_device_data_manager,
-      NearbyShareProfileInfoProvider* profile_info_provider);
+      NearbyShareLocalDeviceDataManager* local_device_data_manager);
 
   // NearbyShareContactsManager:
   void DownloadContacts() override;
@@ -110,11 +109,11 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
       const std::vector<nearby::sharing::proto::ContactRecord>& contacts,
       uint32_t num_unreachable_contacts_filtered_out);
 
+  std::string user_email_;
   raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<NearbyShareClientFactory> http_client_factory_ = nullptr;
   raw_ptr<NearbyShareLocalDeviceDataManager> local_device_data_manager_ =
       nullptr;
-  raw_ptr<NearbyShareProfileInfoProvider> profile_info_provider_ = nullptr;
   std::unique_ptr<ash::nearby::NearbyScheduler>
       periodic_contact_upload_scheduler_;
   std::unique_ptr<ash::nearby::NearbyScheduler>

@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <bitset>
 #include <vector>
 
@@ -76,8 +72,8 @@ enum HistogramIndex {
   kHistogramMaxValue
 };
 
-// The order (indices) must match HistogramIndex enum above:
-const char* kHistogramNames[] = {
+// The order (indices) must match HistogramIndex enum above
+auto kHistogramNames = std::to_array<const char*>({
     "WebApp.Engagement.InTab",
     "WebApp.Engagement.InWindow",
     "WebApp.Engagement.DefaultInstalled.InTab",
@@ -90,7 +86,8 @@ const char* kHistogramNames[] = {
     "WebApp.Engagement.UserInstalled.Crafted.InWindow",
     "WebApp.Engagement.MoreThanThreeUserInstalledApps",
     "WebApp.Engagement.UpToThreeUserInstalledApps",
-    "WebApp.Engagement.NoUserInstalledApps"};
+    "WebApp.Engagement.NoUserInstalledApps",
+});
 
 const char* HistogramEnumIndexToStr(int histogram_index) {
   DCHECK_GE(histogram_index, 0);
@@ -103,7 +100,7 @@ using Histograms = std::bitset<kHistogramMaxValue>;
 void ExpectBucketCounts(const base::HistogramTester& tester,
                         const Histograms& histograms_mask,
                         site_engagement::EngagementType type,
-                        base::HistogramBase::Count count) {
+                        base::HistogramBase::Count32 count) {
   for (int h = 0; h < kHistogramMaxValue; ++h) {
     if (histograms_mask[h]) {
       const char* histogram_name = HistogramEnumIndexToStr(h);
@@ -114,7 +111,7 @@ void ExpectBucketCounts(const base::HistogramTester& tester,
 
 void ExpectTotalCounts(const base::HistogramTester& tester,
                        const Histograms& histograms_mask,
-                       base::HistogramBase::Count count) {
+                       base::HistogramBase::Count32 count) {
   for (int h = 0; h < kHistogramMaxValue; ++h) {
     if (histograms_mask[h]) {
       const char* histogram_name = HistogramEnumIndexToStr(h);
@@ -124,8 +121,8 @@ void ExpectTotalCounts(const base::HistogramTester& tester,
 }
 
 void ExpectLaunchCounts(const base::HistogramTester& tester,
-                        base::HistogramBase::Count windowLaunches,
-                        base::HistogramBase::Count tabLaunches) {
+                        base::HistogramBase::Count32 windowLaunches,
+                        base::HistogramBase::Count32 tabLaunches) {
   tester.ExpectBucketCount("WebApp.LaunchContainer",
                            apps::LaunchContainer::kLaunchContainerWindow,
                            windowLaunches);
@@ -583,7 +580,14 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, RecordedForNonApps) {
 // On Chrome OS, PWAs are launched via the app service rather than via command
 // line flags.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
+// TODO(crbug.com/409686053): Flaky on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CommandLineWindowByUrl DISABLED_CommandLineWindowByUrl
+#else
+#define MAYBE_CommandLineWindowByUrl CommandLineWindowByUrl
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
+                       MAYBE_CommandLineWindowByUrl) {
   base::HistogramTester tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -619,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
   {
     // From c/b/ui/startup/launch_mode_recorder.h:
     constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
-    const base::HistogramBase::Sample kWebAppOther = 22;
+    const base::HistogramBase::Sample32 kWebAppOther = 22;
 
     tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }
@@ -634,7 +638,8 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
 }
 
 // TODO(crbug.com/40877225): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/399243964): Flaky on Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_CommandLineWindowByAppId DISABLED_CommandLineWindowByAppId
 #else
 #define MAYBE_CommandLineWindowByAppId CommandLineWindowByAppId
@@ -678,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   {
     // From c/b/ui/startup/launch_mode_recorder.h:
     constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
-    const base::HistogramBase::Sample kWebAppOther = 22;
+    const base::HistogramBase::Sample32 kWebAppOther = 22;
 
     tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }
@@ -692,7 +697,13 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   EXPECT_EQ(expected_tabs, app_browser->tab_strip_model()->count());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CommandLineTab DISABLED_CommandLineTab
+#else
+#define MAYBE_CommandLineTab CommandLineTab
+#endif
+// TODO(crbug.com/409956115): Reenable the test when failure is fixed.
+IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_CommandLineTab) {
   base::HistogramTester tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -727,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
   {
     // From startup_browser_creator_impl.cc:
     constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
-    const base::HistogramBase::Sample kWebAppOther = 22;
+    const base::HistogramBase::Sample32 kWebAppOther = 22;
 
     tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }

@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] AsyncFunction constructor of string works.
+  Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
+[FAIL] AsyncFunction constructor of all strings works.
+  Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
+[FAIL] AsyncFunction constructor of string and TrustedScript works.
+  Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
+[FAIL] GeneratorFunction constructor of string works.
+  Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
+[FAIL] GeneratorFunction constructor of all strings works.
+  Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
+[FAIL] GeneratorFunction constructor of string and TrustedScript works.
+  Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
+[FAIL] AsyncGeneratorFunction constructor of string works.
+  Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
+[FAIL] AsyncGeneratorFunction constructor of all strings works.
+  Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
+[FAIL] AsyncGeneratorFunction constructor of string and TrustedScript works.
+  Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
+Harness: the test ran to completion.
+

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google Inc.
+ * Copyright 2019 Google LLC.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,15 @@
 #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
 
 #include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <utility>
 
+#include "third_party/abseil-cpp/absl/strings/str_cat.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
+#include "third_party/private-join-and-compute/src/crypto/big_num.h"
+#include "third_party/private-join-and-compute/src/crypto/context.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_point.h"
 #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
 #include "third_party/private-join-and-compute/src/util/status.inc"
@@ -33,8 +40,8 @@ StatusOr<ECGroup::ECGroupPtr> CreateGroup(int curve_id) {
   // If this fails, this is usually due to an invalid curve id.
   if (ec_group_ptr == nullptr) {
     return InvalidArgumentError(
-        "ECGroup::CreateGroup() - Could not create group. " +
-                     OpenSSLErrorString());
+        absl::StrCat("ECGroup::CreateGroup() - Could not create group. ",
+                     OpenSSLErrorString()));
   }
   return ECGroup::ECGroupPtr(ec_group_ptr);
 }
@@ -45,13 +52,13 @@ StatusOr<BigNum> CreateOrder(const EC_GROUP* group, Context* context) {
   BIGNUM* bn = BN_new();
   if (bn == nullptr) {
     return InternalError(
-        "ECGroup::CreateOrder - Could not create BIGNUM. " +
-                     OpenSSLErrorString());
+        absl::StrCat("ECGroup::CreateOrder - Could not create BIGNUM. ",
+                     OpenSSLErrorString()));
   }
   BigNum::BignumPtr order = BigNum::BignumPtr(bn);
   if (EC_GROUP_get_order(group, order.get(), context->GetBnCtx()) != 1) {
-    return InternalError(
-        "ECGroup::CreateOrder - Could not get order. " + OpenSSLErrorString());
+    return InternalError(absl::StrCat(
+        "ECGroup::CreateOrder - Could not get order. ", OpenSSLErrorString()));
   }
   return context->CreateBigNum(std::move(order));
 }
@@ -61,14 +68,14 @@ StatusOr<BigNum> CreateCofactor(const EC_GROUP* group, Context* context) {
   BIGNUM* bn = BN_new();
   if (bn == nullptr) {
     return InternalError(
-        "ECGroup::CreateCofactor - Could not create BIGNUM. " +
-                     OpenSSLErrorString());
+        absl::StrCat("ECGroup::CreateCofactor - Could not create BIGNUM. ",
+                     OpenSSLErrorString()));
   }
   BigNum::BignumPtr cofactor = BigNum::BignumPtr(bn);
   if (EC_GROUP_get_cofactor(group, cofactor.get(), context->GetBnCtx()) != 1) {
     return InternalError(
-        "ECGroup::CreateCofactor - Could not get cofactor. " +
-                     OpenSSLErrorString());
+        absl::StrCat("ECGroup::CreateCofactor - Could not get cofactor. ",
+                     OpenSSLErrorString()));
   }
   return context->CreateBigNum(std::move(cofactor));
 }
@@ -82,8 +89,8 @@ StatusOr<ECGroup::CurveParams> CreateCurveParams(const EC_GROUP* group,
   BIGNUM* bn3 = BN_new();
   if (bn1 == nullptr || bn2 == nullptr || bn3 == nullptr) {
     return InternalError(
-        "ECGroup::CreateCurveParams - Could not create BIGNUM. " +
-                     OpenSSLErrorString());
+        absl::StrCat("ECGroup::CreateCurveParams - Could not create BIGNUM. ",
+                     OpenSSLErrorString()));
   }
   BigNum::BignumPtr p = BigNum::BignumPtr(bn1);
   BigNum::BignumPtr a = BigNum::BignumPtr(bn2);
@@ -91,13 +98,13 @@ StatusOr<ECGroup::CurveParams> CreateCurveParams(const EC_GROUP* group,
   if (EC_GROUP_get_curve_GFp(group, p.get(), a.get(), b.get(),
                              context->GetBnCtx()) != 1) {
     return InternalError(
-        "ECGroup::CreateCurveParams - Could not get params. " +
-                     OpenSSLErrorString());
+        absl::StrCat("ECGroup::CreateCurveParams - Could not get params. ",
+                     OpenSSLErrorString()));
   }
   BigNum p_bn = context->CreateBigNum(std::move(p));
   if (!p_bn.IsPrime()) {
-    return InternalError(
-        "ECGroup::CreateCurveParams - p is not prime. " + OpenSSLErrorString());
+    return InternalError(absl::StrCat(
+        "ECGroup::CreateCurveParams - p is not prime. ", OpenSSLErrorString()));
   }
   return ECGroup::CurveParams{std::move(p_bn),
                               context->CreateBigNum(std::move(a)),
@@ -123,13 +130,26 @@ ECGroup::ECGroup(Context* context, ECGroupPtr group, BigNum order,
       p_minus_one_over_two_(std::move(p_minus_one_over_two)) {}
 
 StatusOr<ECGroup> ECGroup::Create(int curve_id, Context* context) {
-  ASSIGN_OR_RETURN(ECGroupPtr g, CreateGroup(curve_id));
-  ASSIGN_OR_RETURN(BigNum order, CreateOrder(g.get(), context));
-  ASSIGN_OR_RETURN(BigNum cofactor, CreateCofactor(g.get(), context));
-  ASSIGN_OR_RETURN(CurveParams params, CreateCurveParams(g.get(), context));
-  BigNum p_minus_one_over_two = GetPMinusOneOverTwo(params, context);
-  return ECGroup(context, std::move(g), std::move(order), std::move(cofactor),
-                 std::move(params), std::move(p_minus_one_over_two));
+  StatusOr<ECGroupPtr> g = CreateGroup(curve_id);
+  if (!g.ok()) {
+    return g.status();
+  }
+  StatusOr<BigNum> order = CreateOrder(g->get(), context);
+  if (!order.ok()) {
+    return order.status();
+  }
+  StatusOr<BigNum> cofactor = CreateCofactor(g->get(), context);
+  if (!cofactor.ok()) {
+    return cofactor.status();
+  }
+  StatusOr<CurveParams> params = CreateCurveParams(g->get(), context);
+  if (!params.ok()) {
+    return params.status();
+  }
+  BigNum p_minus_one_over_two = GetPMinusOneOverTwo(*params, context);
+  return ECGroup(context, *std::move(g), *std::move(order),
+                 *std::move(cofactor), *std::move(params),
+                 std::move(p_minus_one_over_two));
 }
 
 BigNum ECGroup::GeneratePrivateKey() const {
@@ -159,27 +179,100 @@ StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveInternal(
 }
 
 StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSha256(
-    const std::string& m) const {
+    absl::string_view m) const {
   BigNum x = context_->RandomOracleSha256(m, curve_params_.p);
   while (true) {
-    auto status_or_point = GetPointByHashingToCurveInternal(x);
-    if (status_or_point.ok()) {
-      return status_or_point;
+    StatusOr<ECPoint> point = GetPointByHashingToCurveInternal(x);
+    if (point.ok()) {
+      return point;
     }
     x = context_->RandomOracleSha256(x.ToBytes(), curve_params_.p);
   }
 }
 
+StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSha384(
+    absl::string_view m) const {
+  BigNum x = context_->RandomOracleSha384(m, curve_params_.p);
+  while (true) {
+    StatusOr<ECPoint> point = GetPointByHashingToCurveInternal(x);
+    if (point.ok()) {
+      return point;
+    }
+    x = context_->RandomOracleSha384(x.ToBytes(), curve_params_.p);
+  }
+}
+
 StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSha512(
-    const std::string& m) const {
+    absl::string_view m) const {
   BigNum x = context_->RandomOracleSha512(m, curve_params_.p);
   while (true) {
-    auto status_or_point = GetPointByHashingToCurveInternal(x);
-    if (status_or_point.ok()) {
-      return status_or_point;
+    StatusOr<ECPoint> point = GetPointByHashingToCurveInternal(x);
+    if (point.ok()) {
+      return point;
     }
     x = context_->RandomOracleSha512(x.ToBytes(), curve_params_.p);
   }
+}
+
+StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSswuRo(
+    absl::string_view m,
+    absl::string_view dst) const {
+  StatusOr<ECPoint> out = GetPointAtInfinity();
+  if (!out.ok()) {
+    return out.status();
+  }
+  int curve_id = GetCurveId();
+  if (curve_id == NID_X9_62_prime256v1) {
+    if (EC_hash_to_curve_p256_xmd_sha256_sswu(
+            group_.get(), out->point_.get(),
+            reinterpret_cast<const uint8_t*>(dst.data()), dst.length(),
+            reinterpret_cast<const uint8_t*>(m.data()), m.length()) != 1) {
+      return InternalError(OpenSSLErrorString());
+    }
+  } else if (curve_id == NID_secp384r1) {
+    if (EC_hash_to_curve_p384_xmd_sha384_sswu(
+            group_.get(), out->point_.get(),
+            reinterpret_cast<const uint8_t*>(dst.data()), dst.length(),
+            reinterpret_cast<const uint8_t*>(m.data()), m.length()) != 1) {
+      return InternalError(OpenSSLErrorString());
+    }
+  } else {
+    return InvalidArgumentError("Curve does not support HashToCurveSswuRo.");
+  }
+  return out;
+}
+
+StatusOr<ECPoint> ECGroup::GetPointByPaddingX(const BigNum& m,
+                                              size_t padding_bit_count) const {
+  BigNum x_padded = m.Lshift(padding_bit_count);
+  BigNum x_max =
+      x_padded + context_->CreateBigNum(pow(2, padding_bit_count) - 1);
+  if (x_max > curve_params_.p) {
+    return InvalidArgumentError(
+        "The message plus padding exceeds the order of the curve.");
+  }
+  for (size_t i = 1; i < pow(2, padding_bit_count); ++i) {
+    StatusOr<ECPoint> point =
+        GetPointByHashingToCurveInternal(x_padded + context_->CreateBigNum(i));
+    if (point.ok()) {
+      return point;
+    }
+  }
+  return absl::NotFoundError("Could not find a point on the curve.");
+}
+
+StatusOr<BigNum> ECGroup::RecoverXFromPaddedPoint(
+    const ECPoint& point,
+    size_t padding_bit_count) const {
+  auto affine_coordinates = point.GetAffineCoordinates();
+  if (!affine_coordinates.ok()) {
+    return InvalidArgumentError(
+        absl::StrCat("Failed to recover X from point: ",
+                     affine_coordinates.status().message()));
+  }
+  BigNum x_padded =
+      context_->CreateBigNum(std::move(affine_coordinates->first));
+  return x_padded.Rshift(padding_bit_count);
 }
 
 BigNum ECGroup::ComputeYSquare(const BigNum& x) const {
@@ -218,8 +311,11 @@ StatusOr<ECPoint> ECGroup::GetFixedGenerator() const {
 }
 
 StatusOr<ECPoint> ECGroup::GetRandomGenerator() const {
-  ASSIGN_OR_RETURN(ECPoint generator, GetFixedGenerator());
-  return generator.Mul(context_->GenerateRandBetween(context_->One(), order_));
+  StatusOr<ECPoint> generator = GetFixedGenerator();
+  if (!generator.ok()) {
+    return generator.status();
+  }
+  return generator->Mul(context_->GenerateRandBetween(context_->One(), order_));
 }
 
 StatusOr<ECPoint> ECGroup::CreateECPoint(const BigNum& x,
@@ -232,7 +328,7 @@ StatusOr<ECPoint> ECGroup::CreateECPoint(const BigNum& x,
   return std::move(point);
 }
 
-StatusOr<ECPoint> ECGroup::CreateECPoint(const std::string& bytes) const {
+StatusOr<ECPoint> ECGroup::CreateECPoint(absl::string_view bytes) const {
   auto raw_ec_point_ptr = EC_POINT_new(group_.get());
   if (raw_ec_point_ptr == nullptr) {
     return InternalError("ECGroup::CreateECPoint: Failed to create point.");
@@ -242,7 +338,8 @@ StatusOr<ECPoint> ECGroup::CreateECPoint(const std::string& bytes) const {
                          reinterpret_cast<const unsigned char*>(bytes.data()),
                          bytes.size(), context_->GetBnCtx()) != 1) {
     return InvalidArgumentError(
-        "ECGroup::CreateECPoint(string) - Could not decode point.\n" + OpenSSLErrorString());
+        absl::StrCat("ECGroup::CreateECPoint(string) - Could not decode point.",
+                     "\n", OpenSSLErrorString()));
   }
 
   ECPoint ec_point(group_.get(), context_->GetBnCtx(), std::move(point));

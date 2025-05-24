@@ -15,10 +15,6 @@
 // This makes it possible to export symbols only when *building* the dynamic
 // library (by checking CWV_IMPLEMENTATION), not when *using* the dynamic
 // library.
-#if defined(CWV_IMPLEMENTATION)
 #define CWV_EXPORT __attribute__((visibility("default")))
-#else
-#define CWV_EXPORT
-#endif
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_EXPORT_H_

@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SETTINGS_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SETTINGS_COMMANDS_H_
 
+#import <UIKit/UIKit.h>
+
+#import <optional>
+
 namespace autofill {
 class AutofillProfile;
 class CreditCard;
@@ -14,6 +18,7 @@ namespace password_manager {
 struct CredentialUIEntry;
 enum class PasswordCheckReferrer;
 }  // namespace password_manager
+enum class PushNotificationClientId;
 
 @protocol SettingsCommands
 
@@ -41,15 +46,13 @@ enum class PasswordCheckReferrer;
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the sync encryption passphrase UI, presenting from
 // `baseViewController`.
+// Does nothing if the current scene is blocked.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController;
 
-// Shows the list of saved passwords in the settings. `showCancelButton`
-// indicates whether a cancel button should be added as the left navigation item
-// of the saved passwords view.
+// Shows the list of saved passwords in the settings.
 - (void)showSavedPasswordsSettingsFromViewController:
-            (UIViewController*)baseViewController
-                                    showCancelButton:(BOOL)showCancelButton;
+    (UIViewController*)baseViewController;
 
 // Shows the password details page for a credential. `editMode` indicates
 // whether the details page should be opened in edit mode.
@@ -107,6 +110,11 @@ enum class PasswordCheckReferrer;
 
 // Shows the Notifications Settings page in the settings.
 - (void)showNotificationsSettings;
+
+// Shows the Notification Settings page and highlights the row for the push
+// notification client with the given `clientID`.
+- (void)showNotificationsSettingsAndHighlightClient:
+    (std::optional<PushNotificationClientId>)clientID;
 
 @end
 

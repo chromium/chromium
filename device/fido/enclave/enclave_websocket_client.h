@@ -34,14 +34,13 @@ class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
   };
 
   using OnResponseCallback =
-      base::RepeatingCallback<void(SocketStatus,
-                                   std::optional<std::vector<uint8_t>>)>;
+      base::RepeatingCallback<void(SocketStatus, std::vector<uint8_t>)>;
 
   EnclaveWebSocketClient(const GURL& service_url,
                          std::string access_token,
                          std::optional<std::string> reauthentication_token,
                          NetworkContextFactory network_context_factory,
-                         OnResponseCallback on_reponse);
+                         OnResponseCallback on_response);
   ~EnclaveWebSocketClient() override;
 
   EnclaveWebSocketClient(const EnclaveWebSocketClient&) = delete;
@@ -82,6 +81,10 @@ class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
   };
 
   void Connect();
+
+  // All of the methods below have the potential to invoke the response
+  // callback, which can destroy this object. No data members should be
+  // accessed after calling one.
   void InternalWrite(base::span<const uint8_t> data);
   void ReadFromDataPipe(MojoResult, const mojo::HandleSignalsState&);
   void ProcessCompletedResponse();

@@ -1,0 +1,24 @@
+Test creating hidden targets with invalid params
+Create hidden target
+{
+    error : {
+        code : -32602
+        message : Hidden target can be created only in background
+    }
+    id : <number>
+}
+{
+    error : {
+        code : -32602
+        message : Hidden target cannot be created in a new window
+    }
+    id : <number>
+}
+{
+    error : {
+        code : -32602
+        message : Hidden target cannot be created for tab
+    }
+    id : <number>
+}
+

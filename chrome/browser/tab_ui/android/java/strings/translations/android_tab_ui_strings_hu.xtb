@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="hu">
+<translation id="1293272072740285747">Tartsa meg ezt a csoportot, ha később szeretne hozzáadni lapokat, vagy törölje, ha már nem lesz rá szüksége.
+
+Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name="TITLE_OF_GROUP" />” lapcsoporthoz, és a lapcsoport az összes eszközről törlődik.</translation>
+<translation id="1340839264183302272">Kilépés a csoportból</translation>
+<translation id="1419023007528516122">Ezzel véglegesen törli a csoportot az eszközről.</translation>
+<translation id="1501480321619201731">Csoport törlése</translation>
+<translation id="2677748264148917807">Lap elhagyása</translation>
+<translation id="3547352561153509682">Ezzel törli a csoportot minden olyan eszközről, amelyen be van jelentkezve a(z) <ph name="USER_EMAIL" /> fiókba.</translation>
+<translation id="381219490185664296">Megszünteti a lapcsoport csoportosítását?</translation>
+<translation id="4139634748112164403">A lapok nyitva maradnak ezen az eszközön, de a csoport véglegesen törlődni fog.</translation>
+<translation id="4431937619879060901">Azonnal elveszíti a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz való hozzáférését, és a lapcsoport az összes eszközéről törlődik.</translation>
+<translation id="4460014764210899310">Csoportosítás megszüntetése</translation>
+<translation id="4777866634702576038">Törli a lapcsoportot?</translation>
+<translation id="5094423602314093681">Eltávolítja a lapokat, valamint törli a csoportot?</translation>
+<translation id="5647702255748985085">Elhagyja a csoportot?</translation>
+<translation id="742664698522525515">Megtartja a csoportot?</translation>
+<translation id="750886945254958667">Megtarthatja a csoportot, ha később szeretne lapokat hozzáadni, de ki is léphet belőle, ha a továbbiakban nem kíván hozzáférni.</translation>
+<translation id="8261506727792406068">Törlés</translation>
+<translation id="870736955561925754">Bezárja a lapot, és törli a csoportot?</translation>
+<translation id="8804742093141782941">Csoport megtartása</translation>
+<translation id="9169141410816678175">Mindenki azonnal elveszíti a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz való hozzáférését, és a lapcsoport az összes eszközről törlődik.</translation>
+<translation id="9216898458513705996">A lapok nyitva maradnak ezen az eszközön, de a csoport törlődni fog minden olyan eszközről, amelyen be van jelentkezve a(z) <ph name="USER_EMAIL" /> fiókba.</translation>
+<translation id="94870150074703282">Törli a csoportot?</translation>
+</translationbundle>

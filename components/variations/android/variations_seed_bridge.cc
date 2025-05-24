@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/variations/android/variations_jni/VariationsSeedBridge_jni.h"
+#include "components/variations/android/variations_seed_jni/VariationsSeedBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

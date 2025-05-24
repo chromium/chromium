@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/ime/input_method_minimal.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -26,8 +25,8 @@
 #include "ui/ozone/platform/headless/headless_window_manager.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
+#include "ui/ozone/public/stub_input_controller.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -53,16 +52,22 @@ class HeadlessPlatformEventSource : public PlatformEventSource {
   ~HeadlessPlatformEventSource() override = default;
 };
 
-// OzonePlatform for headless mode
-class OzonePlatformHeadless : public OzonePlatform {
+// OzonePlatform for headless mode.
+class OzonePlatformHeadlessImpl : public OzonePlatformHeadless {
  public:
-  explicit OzonePlatformHeadless(const base::FilePath& dump_file)
+  explicit OzonePlatformHeadlessImpl(const base::FilePath& dump_file)
       : file_path_(dump_file) {}
 
-  OzonePlatformHeadless(const OzonePlatformHeadless&) = delete;
-  OzonePlatformHeadless& operator=(const OzonePlatformHeadless&) = delete;
+  OzonePlatformHeadlessImpl(const OzonePlatformHeadlessImpl&) = delete;
+  OzonePlatformHeadlessImpl& operator=(const OzonePlatformHeadlessImpl&) =
+      delete;
 
-  ~OzonePlatformHeadless() override = default;
+  ~OzonePlatformHeadlessImpl() override = default;
+
+  // OzonePlatformHeadless:
+  HeadlessWindowManager* GetHeadlessWindowManager() override {
+    return window_manager_.get();
+  }
 
   // OzonePlatform:
   ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() override {
@@ -125,7 +130,7 @@ class OzonePlatformHeadless : public OzonePlatform {
         keyboard_layout_engine_.get());
 
     overlay_manager_ = std::make_unique<StubOverlayManager>();
-    input_controller_ = CreateStubInputController();
+    input_controller_ = std::make_unique<StubInputController>();
     cursor_factory_ = std::make_unique<BitmapCursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
 
@@ -156,7 +161,7 @@ OzonePlatform* CreateOzonePlatformHeadless() {
   base::FilePath location;
   if (cmd->HasSwitch(switches::kOzoneDumpFile))
     location = cmd->GetSwitchValuePath(switches::kOzoneDumpFile);
-  return new OzonePlatformHeadless(location);
+  return new OzonePlatformHeadlessImpl(location);
 }
 
 }  // namespace ui

@@ -14,6 +14,8 @@ import android.util.SparseArray;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,6 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * This class is *not* thread-safe.
  */
+@NullMarked
 class RequestThrottler {
     // These are for (a).
     private static final long MIN_DELAY = 100;
@@ -47,14 +50,14 @@ class RequestThrottler {
     private static final String BANNED_UNTIL = "banned_until_";
 
     private static final AtomicBoolean sAccessedSharedPreferences = new AtomicBoolean();
-    private static SparseArray<RequestThrottler> sUidToThrottler;
+    private static @Nullable SparseArray<RequestThrottler> sUidToThrottler;
 
     private final SharedPreferences mSharedPreferences;
     private final int mUid;
     private float mScore;
     private long mLastPrerenderRequestMs;
     private long mBannedUntilMs;
-    private String mUrl;
+    private @Nullable String mUrl;
 
     /**
      * Updates the prediction stats and returns whether prediction is allowed.

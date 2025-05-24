@@ -64,7 +64,7 @@ class JniIdentityMutator {
 
   void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& j_core_account_infos,
+      const base::android::JavaParamRef<jobjectArray>& j_account_infos,
       const base::android::JavaParamRef<jobject>& j_primary_account_id);
 
  private:

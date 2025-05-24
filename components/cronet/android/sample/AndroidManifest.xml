@@ -13,7 +13,7 @@ found in the LICENSE file.
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application android:name="CronetSampleApplication"
-            android:label="Cronet Sample">
+            android:label="Cronet Sample" android:debuggable="true">
         <activity android:name="CronetSampleActivity"
                   android:launchMode="singleTask"
                   android:theme="@style/Theme.AppCompat.Light"

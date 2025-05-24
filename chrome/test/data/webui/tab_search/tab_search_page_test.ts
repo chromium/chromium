@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://tab-search.top-chrome/tab_search.js';
+
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import type {ProfileData, RecentlyClosedTab, Tab, TabSearchItemElement, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {SEARCH_QUERY_MAX_LENGTH, TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
@@ -58,6 +60,7 @@ suite('TabSearchAppTest', () => {
     TabSearchApiProxyImpl.setInstance(testProxy);
 
     tabSearchPage = document.createElement('tab-search-page');
+    tabSearchPage.availableHeight = 500;
 
     document.body.appendChild(tabSearchPage);
     await eventToPromise('viewport-filled', tabSearchPage.$.tabsList);
@@ -142,6 +145,16 @@ suite('TabSearchAppTest', () => {
         'No default selection in the presence of data');
   });
 
+  test('Search text has an upper limit', async () => {
+    await setupTest(createProfileData());
+    // Ensure an upper limit exists, to prevent errors like
+    // "SyntaxError: Invalid regular expression: ..."
+    assertEquals(
+        SEARCH_QUERY_MAX_LENGTH,
+        Number.parseInt(
+            tabSearchPage.getSearchInput().getAttribute('maxlength')!, 10));
+  });
+
   test('Search text changes tab items', async () => {
     await setupTest(createProfileData({
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
@@ -219,7 +232,7 @@ suite('TabSearchAppTest', () => {
     assertEquals(tabData.tabId, tabInfo.tabId);
 
     const tabSearchItemCloseButton =
-        tabSearchItem.shadowRoot!.querySelector('cr-icon-button')!;
+        tabSearchItem.shadowRoot.querySelector('cr-icon-button')!;
     tabSearchItemCloseButton.click();
     const [tabId] = await testProxy.whenCalled('closeTab');
     assertEquals(tabData.tabId, tabId);
@@ -486,7 +499,7 @@ suite('TabSearchAppTest', () => {
         {tabIds: [3, 4, 5, 6], recentlyClosedTabs: []});
     await microtasksFinished();
     assertNotEquals(
-        null, tabSearchPage.shadowRoot!.querySelector('#no-results'));
+        null, tabSearchPage.shadowRoot.querySelector('#no-results'));
   });
 
   test('Closed tab appears in recently closed section', async () => {
@@ -710,7 +723,7 @@ suite('TabSearchAppTest', () => {
     assertTrue(!!recentlyClosedTitleItem);
 
     const recentlyClosedTitleExpandButton =
-        recentlyClosedTitleItem!.querySelector('cr-expand-button');
+        recentlyClosedTitleItem.querySelector('cr-expand-button');
     assertTrue(!!recentlyClosedTitleExpandButton);
 
     // Collapse the `Recently Closed` section and assert item count.
@@ -728,33 +741,6 @@ suite('TabSearchAppTest', () => {
     assertEquals(2, testProxy.getCallCount('saveRecentlyClosedExpandedPref'));
     await microtasksFinished();
     assertEquals(3, queryRows().length);
-  });
-
-  [true, false].forEach((windowActive) => {
-    test(
-        `Available height set correctly when the window's active state is ${
-            windowActive}`,
-        async () => {
-          await setupTest(
-              createProfileData({
-                windows: [{
-                  active: windowActive,
-                  height: SAMPLE_WINDOW_HEIGHT,
-                  tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
-                }],
-                recentlyClosedTabs:
-                    generateSampleRecentlyClosedTabsFromSiteNames(
-                        ['RecentlyClosedTab1', 'RecentlyClosedTab2']),
-                recentlyClosedSectionExpanded: true,
-              }),
-              {
-                recentlyClosedDefaultItemDisplayCount: 1,
-              });
-
-          assertEquals(
-              SAMPLE_WINDOW_HEIGHT,
-              tabSearchPage.getAvailableHeightForTesting());
-        });
   });
 
   test('Changing active does not render extra tabs', async () => {

@@ -18,9 +18,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -438,8 +437,8 @@ CookiePartitionKeyCollectionFromApiPartitionKey(
     return net::CookiePartitionKeyCollection();
   }
 
-  return net::CookiePartitionKeyCollection::FromOptional(
-      net_partition_key.value());
+  return net::CookiePartitionKeyCollection(
+      std::move(net_partition_key).value());
 }
 
 MatchFilter::MatchFilter(GetAll::Params::Details* details) : details_(details) {

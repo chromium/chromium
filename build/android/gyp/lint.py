@@ -200,6 +200,7 @@ def _RunLint(custom_lint_jar_path,
              android_sdk_root,
              lint_gen_dir,
              baseline,
+             create_cache,
              warnings_as_errors=False):
   logging.info('Lint starting')
   if not cache_dir:
@@ -246,9 +247,16 @@ def _RunLint(custom_lint_jar_path,
       '--offline',
       '--quiet',  # Silences lint's "." progress updates.
       '--stacktrace',  # Prints full stacktraces for internal lint errors.
-      '--disable',
-      ','.join(_DISABLED_ALWAYS),
   ]
+
+  # Only disable for real runs since otherwise you get UnknownIssueId warnings
+  # when disabling custom lint checks since they are not passed during cache
+  # creation.
+  if not create_cache:
+    cmd += [
+        '--disable',
+        ','.join(_DISABLED_ALWAYS),
+    ]
 
   if not manifest_path:
     manifest_path = os.path.join(build_utils.DIR_SOURCE_ROOT, 'build',
@@ -273,19 +281,20 @@ def _RunLint(custom_lint_jar_path,
   _WriteXmlFile(android_manifest_tree.getroot(), lint_android_manifest_path)
 
   resource_root_dir = os.path.join(lint_gen_dir, _RES_ZIP_DIR)
+  shutil.rmtree(resource_root_dir, True)
   # These are zip files with generated resources (e. g. strings from GRD).
   logging.info('Extracting resource zips')
   for resource_zip in resource_zips:
     # Use a consistent root and name rather than a temporary file so that
     # suppressions can be local to the lint target and the resource target.
     resource_dir = os.path.join(resource_root_dir, resource_zip)
-    shutil.rmtree(resource_dir, True)
     os.makedirs(resource_dir)
     resource_sources.extend(
         build_utils.ExtractAll(resource_zip, path=resource_dir))
 
   logging.info('Extracting aars')
   aar_root_dir = os.path.join(lint_gen_dir, _AAR_DIR)
+  shutil.rmtree(aar_root_dir, True)
   custom_lint_jars = []
   custom_annotation_zips = []
   if aars:
@@ -293,7 +302,6 @@ def _RunLint(custom_lint_jar_path,
       # Use relative source for aar files since they are not generated.
       aar_dir = os.path.join(aar_root_dir,
                              os.path.splitext(_SrcRelative(aar))[0])
-      shutil.rmtree(aar_dir, True)
       os.makedirs(aar_dir)
       aar_files = build_utils.ExtractAll(aar, path=aar_dir)
       for f in aar_files:
@@ -304,13 +312,13 @@ def _RunLint(custom_lint_jar_path,
 
   logging.info('Extracting srcjars')
   srcjar_root_dir = os.path.join(lint_gen_dir, _SRCJAR_DIR)
+  shutil.rmtree(srcjar_root_dir, True)
   srcjar_sources = []
   if srcjars:
     for srcjar in srcjars:
       # Use path without extensions since otherwise the file name includes
       # .srcjar and lint treats it as a srcjar.
       srcjar_dir = os.path.join(srcjar_root_dir, os.path.splitext(srcjar)[0])
-      shutil.rmtree(srcjar_dir, True)
       os.makedirs(srcjar_dir)
       # Sadly lint's srcjar support is broken since it only considers the first
       # srcjar. Until we roll a lint version with that fixed, we need to extract
@@ -327,8 +335,19 @@ def _RunLint(custom_lint_jar_path,
   _WriteXmlFile(project_file_root, project_xml_path)
   cmd += ['--project', project_xml_path]
 
-  # This filter is necessary for JDK11.
-  stdout_filter = lambda x: build_utils.FilterLines(x, 'No issues found')
+  def stdout_filter(output):
+    filter_patterns = [
+        # This filter is necessary for JDK11.
+        'No issues found',
+        # Custom checks are not always available in every lint run so an
+        # UnknownIssueId warning is sometimes printed for custom checks in the
+        # _DISABLED_ALWAYS list.
+        r'\[UnknownIssueId\]',
+        # If all the warnings are filtered, we should not fail on the final
+        # summary line.
+        r'\d+ errors?, \d+ warnings?',
+    ]
+    return build_utils.FilterLines(output, '|'.join(filter_patterns))
 
   def stderr_filter(output):
     output = build_utils.FilterReflectiveAccessJavaWarnings(output)
@@ -369,7 +388,8 @@ def _RunLint(custom_lint_jar_path,
       shutil.rmtree(aar_root_dir, ignore_errors=True)
       shutil.rmtree(resource_root_dir, ignore_errors=True)
       shutil.rmtree(srcjar_root_dir, ignore_errors=True)
-      os.unlink(project_xml_path)
+      if os.path.exists(project_xml_path):
+        os.unlink(project_xml_path)
       shutil.rmtree(partials_dir, ignore_errors=True)
 
     if failed:
@@ -501,7 +521,7 @@ def main():
       and server_utils.MaybeRunCommand(name=args.target_name,
                                        argv=sys.argv,
                                        stamp_file=args.stamp,
-                                       force=args.use_build_server)):
+                                       use_build_server=args.use_build_server)):
     return
 
   _RunLint(args.custom_lint_jar_path,
@@ -522,9 +542,10 @@ def main():
            args.android_sdk_root,
            args.lint_gen_dir,
            args.baseline,
+           args.create_cache,
            warnings_as_errors=args.warnings_as_errors)
   logging.info('Creating stamp file')
-  build_utils.Touch(args.stamp)
+  server_utils.MaybeTouch(args.stamp)
 
 
 if __name__ == '__main__':

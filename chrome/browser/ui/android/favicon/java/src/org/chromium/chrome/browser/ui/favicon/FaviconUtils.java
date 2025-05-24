@@ -13,15 +13,18 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 
 /** Utilities to deal with favicons. */
+@NullMarked
 public class FaviconUtils {
     /**
      * Creates a {@link RoundedIconGenerator} to generate circular {@link Bitmap}s of favicons.
@@ -157,6 +160,7 @@ public class FaviconUtils {
      * @param iconSize Width and height of the returned icon.
      * @return A {@link Drawable} to be displayed as the favicon.
      */
+    @NullUnmarked
     public static Drawable getIconDrawableWithFilter(
             @Nullable Bitmap icon,
             @Nullable GURL url,

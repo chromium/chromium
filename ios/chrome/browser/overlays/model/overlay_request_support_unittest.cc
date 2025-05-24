@@ -4,14 +4,14 @@
 
 #include "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 
-#include "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #include "testing/platform_test.h"
 
 namespace {
 // Fake request config types for use in tests.
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(FirstConfig);
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(SecondConfig);
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(ThirdConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(FirstConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(SecondConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(ThirdConfig);
 }  // namespace
 
 using OverlayRequestSupportTest = PlatformTest;

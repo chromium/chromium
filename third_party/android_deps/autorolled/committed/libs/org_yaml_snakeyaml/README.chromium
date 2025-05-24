@@ -1,0 +1,15 @@
+Name: SnakeYAML
+Short Name: snakeyaml
+URL: https://bitbucket.org/snakeyaml/snakeyaml
+Version: 2.3
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+YAML 1.1 parser and emitter for Java
+
+Local Modifications:
+No modifications.

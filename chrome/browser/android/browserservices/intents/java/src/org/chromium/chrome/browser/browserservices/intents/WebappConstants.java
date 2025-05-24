@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.common.ScreenOrientationConstants;
 
 /**
@@ -11,6 +12,7 @@ import org.chromium.content_public.common.ScreenOrientationConstants;
  * screen.  These shortcuts are used to either open a page in the main browser
  * or open a web app.
  */
+@NullMarked
 public class WebappConstants {
     public static final String EXTRA_ICON = "org.chromium.chrome.browser.webapp_icon";
     public static final String EXTRA_ID = "org.chromium.chrome.browser.webapp_id";

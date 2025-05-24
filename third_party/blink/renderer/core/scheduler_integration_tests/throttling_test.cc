@@ -176,12 +176,8 @@ TEST_F(BackgroundPageThrottlingTest, WithoutNesting) {
 
 // Verify that on a hidden page, a timer created with setTimeout(..., 0) is
 // throttled after 5 nesting levels.
-TEST_F(BackgroundPageThrottlingTest, NestedSetTimeoutZero) {
-  // Disable this test when setTimeoutWithoutClamp feature is enabled.
-  // TODO(crbug.com/1303275): Investigate the failure reason.
-  if (blink::features::IsSetTimeoutWithoutClampEnabled())
-    GTEST_SKIP() << "Skipping test for setTimeoutWithoutClamp feature enabled";
-
+// TODO(crbug.com/40217322): Investigate the failure reason.
+TEST_F(BackgroundPageThrottlingTest, DISABLED_NestedSetTimeoutZero) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
 
@@ -213,7 +209,7 @@ TEST_F(BackgroundPageThrottlingTest, NestedSetTimeoutZero) {
 }
 
 // Verify that in a hidden page, a timer created with setInterval(..., 0) is
-// throttled after 5 nesting levels.
+// throttled after 7 nesting levels (per spec).
 TEST_F(BackgroundPageThrottlingTest, NestedSetIntervalZero) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -232,18 +228,13 @@ TEST_F(BackgroundPageThrottlingTest, NestedSetIntervalZero) {
                      console_message.Utf8().c_str()));
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
+  // Immediate tasks are not throttled until reaching the nesting level
+  // threshold.
   platform_->RunForPeriod(base::Milliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(1, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(2, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(3, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(4, console_message));
-  platform_->RunForPeriod(base::Milliseconds(995));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(4, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
-  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(5, console_message));
+  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(6, console_message));
+  // But once that threshold is reached, throttling should kick in.
+  platform_->RunForPeriod(base::Seconds(1));
+  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(7, console_message));
 }
 
 class AbortSignalTimeoutThrottlingTest : public BackgroundPageThrottlingTest {
@@ -310,7 +301,7 @@ class IntensiveWakeUpThrottlingTest : public ThrottlingTestBase {
   IntensiveWakeUpThrottlingTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kIntensiveWakeUpThrottling, {}},
-         {features::kSetTimeoutWithoutClamp, {}}},
+         {features::kSetIntervalWithoutClamp, {}}},
         // Disable freezing because it hides the effect of intensive throttling.
         {features::kStopInBackground});
   }
@@ -391,7 +382,7 @@ constexpr char kLongUnalignedTimerScriptTemplate[] =
     "     console.log('%s');"
     "  }"
     "  function onTimerWithLowNestingLevel(nesting_level) {"
-    "    if (nesting_level == 4) {"
+    "    if (nesting_level == 6) {"
     "      setTimeout(onTimerWithHighNestingLevel, 338 * 1000);"
     "    } else {"
     "      setTimeout(onTimerWithLowNestingLevel, 1000, nesting_level + 1);"
@@ -401,7 +392,7 @@ constexpr char kLongUnalignedTimerScriptTemplate[] =
     "</script>";
 
 // A time delta that matches the delay in the above script.
-constexpr base::TimeDelta kLongUnalignedTimerDelay = base::Seconds(342);
+constexpr base::TimeDelta kLongUnalignedTimerDelay = base::Seconds(344);
 
 // Builds a page that waits 5 minutes and then creates a timer that reschedules
 // itself 50 times with 10 ms delay. The timer task logs |console_message| to
@@ -443,7 +434,6 @@ String BuildRepeatingTimerPage(const char* console_message,
 TEST_F(IntensiveWakeUpThrottlingTest, MainFrameTimer_ShortTimeout) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
-
   // Page does not communicate with the user. Normal intensive throttling
   // applies.
   main_resource.Complete(BuildRepeatingTimerPage(
@@ -461,14 +451,16 @@ TEST_F(IntensiveWakeUpThrottlingTest, MainFrameTimer_ShortTimeout) {
   // t = 5min 1s : onTimer             nesting=2 (low)     <
   // t = 5min 2s : onTimer             nesting=3 (low)     < 4 seconds at 1 Hz
   // t = 5min 3s : onTimer             nesting=4 (low)     <
-  // t = 5min 4s : onTimer             nesting=5 (high) ** <
-  // t = 6min    : onTimer             nesting=6 (high)
-  // t = 7min    : onTimer             nesting=7 (high)
+  // t = 5min 4s : onTimer             nesting=5 (low)     <
+  // t = 5min 5s : onTimer             nesting=6 (low)     <
+  // t = 5min 6s : onTimer             nesting=7 (high) ** <
+  // t = 6min    : onTimer             nesting=8 (high)
+  // t = 7min    : onTimer             nesting=9 (high)
   // ...
   //
   // ** In a main frame, a task with high nesting level is 1-second aligned
   //    when no task with high nesting level ran in the last minute.
-  ExpectRepeatingTimerConsoleMessages(4);
+  ExpectRepeatingTimerConsoleMessages(6);
 }
 
 // Verify that a main frame timer that reposts itself with a 10 ms timeout runs
@@ -530,14 +522,16 @@ TEST_F(IntensiveWakeUpThrottlingTest, SameOriginSubFrameTimer_ShortTimeout) {
   // t = 5min 1s : onTimer             nesting=2 (low)     <
   // t = 5min 2s : onTimer             nesting=3 (low)     < 4 seconds at 1 Hz
   // t = 5min 3s : onTimer             nesting=4 (low)     <
-  // t = 5min 4s : onTimer             nesting=5 (high) ** <
-  // t = 6min    : onTimer             nesting=6 (high)
-  // t = 7min    : onTimer             nesting=7 (high)
+  // t = 5min 4s : onTimer             nesting=5 (low)     <
+  // t = 5min 5s : onTimer             nesting=6 (low)     <
+  // t = 5min 6s : onTimer             nesting=7 (high) ** <
+  // t = 6min    : onTimer             nesting=8 (high)
+  // t = 7min    : onTimer             nesting=9 (high)
   // ...
   //
   // ** In a same-origin frame, a task with high nesting level is 1-second
   //    aligned when no task with high nesting level ran in the last minute.
-  ExpectRepeatingTimerConsoleMessages(4);
+  ExpectRepeatingTimerConsoleMessages(6);
 }
 
 // Verify that a cross-origin subframe timer that reposts itself with a 10 ms
@@ -568,11 +562,13 @@ TEST_F(IntensiveWakeUpThrottlingTest, CrossOriginSubFrameTimer_ShortTimeout) {
   // t = 5min 1s : onTimer             nesting=2 (low)  <
   // t = 5min 2s : onTimer             nesting=3 (low)  < 3 seconds at 1 Hz
   // t = 5min 3s : onTimer             nesting=4 (low)  <
+  // t = 5min 4s : onTimer             nesting=4 (low)  <
+  // t = 5min 5s : onTimer             nesting=4 (low)  <
   // t = 6min    : onTimer             nesting=5 (high)
   // t = 7min    : onTimer             nesting=6 (high)
   // t = 8min    : onTimer             nesting=7 (high)
   // ...
-  ExpectRepeatingTimerConsoleMessages(3);
+  ExpectRepeatingTimerConsoleMessages(5);
 }
 
 // Verify that a main frame timer with a long timeout runs at the desired run
@@ -673,7 +669,7 @@ TEST_F(IntensiveWakeUpThrottlingTest,
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  platform_->RunForPeriod(base::Seconds(342));
+  platform_->RunForPeriod(kLongUnalignedTimerDelay);
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
 
   // Fast-forward to the next aligned time.

@@ -6,24 +6,28 @@ import 'chrome://compare/table.js';
 
 import type {TableElement} from 'chrome://compare/table.js';
 import {WindowProxy} from 'chrome://compare/window_proxy.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle, installMock} from './test_support.js';
 
 suite('ProductSpecificationsTableTest', () => {
   let tableElement: TableElement;
   let windowProxy: TestMock<WindowProxy>;
-  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
+  let metrics: MetricsTracker;
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
 
-  setup(async () => {
+  setup(() => {
+    metrics = fakeMetricsPrivate();
     shoppingServiceApi.reset();
-    BrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('onLine', true);
@@ -46,15 +50,15 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
-    const columns = tableElement.shadowRoot!.querySelectorAll('.col');
+    const columns = tableElement.shadowRoot.querySelectorAll('.col');
     assertEquals(2, columns.length);
     assertEquals('2', tableElement.style.getPropertyValue('--num-columns'));
 
     const detailContainers =
-        tableElement.shadowRoot!.querySelectorAll('.detail-container');
+        tableElement.shadowRoot.querySelectorAll('.detail-container');
     assertEquals(0, detailContainers.length);
   });
 
@@ -78,11 +82,11 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const images =
-        tableElement.shadowRoot!.querySelectorAll<CrAutoImgElement>('.col img');
+        tableElement.shadowRoot.querySelectorAll<CrAutoImgElement>('.col img');
     assertEquals(2, images.length);
     assertEquals(
         tableElement.columns[0]!.selectedItem.imageUrl, images[0]!.autoSrc);
@@ -107,7 +111,7 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const faviconMainImage = $$<HTMLElement>(tableElement, '.favicon');
@@ -136,12 +140,14 @@ suite('ProductSpecificationsTableTest', () => {
                 title: '',
                 faviconUrl: {url: ''},
                 thumbnailUrl: {url: ''},
+                previewText: '',
               },
               {
                 url: {url: 'http://example.com/citation2'},
                 title: '',
                 faviconUrl: {url: ''},
                 thumbnailUrl: {url: ''},
+                previewText: '',
               },
             ],
           }],
@@ -171,6 +177,7 @@ suite('ProductSpecificationsTableTest', () => {
                 title: '',
                 faviconUrl: {url: ''},
                 thumbnailUrl: {url: ''},
+                previewText: '',
               },
             ],
           }],
@@ -198,11 +205,11 @@ suite('ProductSpecificationsTableTest', () => {
         selectedItem: {title: '', url: 'https://bar.com', imageUrl: ''},
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const titles =
-        tableElement.shadowRoot!.querySelectorAll('.detail-title span');
+        tableElement.shadowRoot.querySelectorAll('.detail-title span');
     assertEquals(4, titles.length);
     // Titles should only show in the first column.
     assertNotStyle(titles[0]!, 'visibility', 'hidden');
@@ -215,7 +222,7 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals(productDetails1[1]!.title, titles[1]!.textContent.trim());
 
     const descriptions =
-        tableElement.shadowRoot!.querySelectorAll('description-section');
+        tableElement.shadowRoot.querySelectorAll('description-section');
     assertEquals(4, descriptions.length);
     assertDeepEquals(productDetails1[0]!.content, descriptions[0]!.description);
     assertDeepEquals(productDetails1[1]!.content, descriptions[1]!.description);
@@ -238,15 +245,15 @@ suite('ProductSpecificationsTableTest', () => {
         selectedItem: {title: '', url: 'https://foo.com', imageUrl: ''},
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const text = $$(tableElement, '.detail-text');
     assertTrue(!!text);
     // Titles should only show in the first column.
     assertNotStyle(text, 'visibility', 'hidden');
-    assertTrue(!!text!.textContent);
-    assertEquals(productDetails[0]!.content, text!.textContent.trim());
+    assertTrue(!!text.textContent);
+    assertEquals(productDetails[0]!.content, text.textContent.trim());
   });
 
   test('fires url change event', async () => {
@@ -261,13 +268,13 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Act
     const productSelector = $$(tableElement, 'product-selector');
     assertTrue(!!productSelector);
     const eventPromise = eventToPromise('url-change', tableElement);
-    productSelector!.dispatchEvent(new CustomEvent('selected-url-change', {
+    productSelector.dispatchEvent(new CustomEvent('selected-url-change', {
       detail: {
         url: 'https://foo.com',
       },
@@ -292,11 +299,11 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
     const productSelector = $$(tableElement, 'product-selector');
     assertTrue(!!productSelector);
     const eventPromise = eventToPromise('url-remove', tableElement);
-    productSelector!.dispatchEvent(new CustomEvent('remove-url'));
+    productSelector.dispatchEvent(new CustomEvent('remove-url'));
 
     // Assert.
     const event = await eventPromise;
@@ -325,12 +332,39 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Act
     const openTabButton = $$<HTMLElement>(tableElement, '.open-tab-button');
     assertTrue(!!openTabButton);
-    openTabButton!.click();
+    openTabButton.click();
+
+    // Assert.
+    assertEquals(1, shoppingServiceApi.getCallCount('switchToOrOpenTab'));
+    assertEquals(
+        testUrl, shoppingServiceApi.getArgs('switchToOrOpenTab')[0].url);
+    assertEquals(1, metrics.count('Commerce.Compare.ReopenedProductPage'));
+  });
+
+  test('opens tab when product image is clicked', async () => {
+    // Arrange
+    const testUrl = 'https://example.com';
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'title',
+          url: testUrl,
+          imageUrl: 'https://example.com/image',
+        },
+        productDetails: [],
+      },
+    ];
+    await microtasksFinished();
+
+    // Act
+    const productImage = $$<HTMLElement>(tableElement, '.main-image');
+    assertTrue(!!productImage);
+    productImage.click();
 
     // Assert.
     assertEquals(1, shoppingServiceApi.getCallCount('switchToOrOpenTab'));
@@ -390,8 +424,8 @@ suite('ProductSpecificationsTableTest', () => {
         ],
       },
     ];
-    await flushTasks();
-    const columns = tableElement.shadowRoot!.querySelectorAll('.col');
+    await microtasksFinished();
+    const columns = tableElement.shadowRoot.querySelectorAll('.col');
     assertEquals(2, columns.length);
     const openTabButton1 =
         columns[0]!.querySelector<HTMLElement>('.open-tab-button');
@@ -400,19 +434,23 @@ suite('ProductSpecificationsTableTest', () => {
     assertTrue(!!openTabButton1);
     assertTrue(!!openTabButton2);
     tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
+    await microtasksFinished();
     assertFalse(isVisible(openTabButton1));
     assertFalse(isVisible(openTabButton2));
 
     // Act/Assert
     columns[0]!.dispatchEvent(new PointerEvent('pointerenter'));
+    await microtasksFinished();
     assertTrue(isVisible(openTabButton1));
     assertFalse(isVisible(openTabButton2));
 
     columns[1]!.dispatchEvent(new PointerEvent('pointerenter'));
+    await microtasksFinished();
     assertFalse(isVisible(openTabButton1));
     assertTrue(isVisible(openTabButton2));
 
     tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
+    await microtasksFinished();
     assertFalse(isVisible(openTabButton1));
     assertFalse(isVisible(openTabButton2));
   });
@@ -440,7 +478,7 @@ suite('ProductSpecificationsTableTest', () => {
             productDetails: [],
           },
         ];
-        await waitAfterNextRender(tableElement);
+        await microtasksFinished();
 
         // Act
         windowProxy.setResultFor('onLine', false);
@@ -494,9 +532,9 @@ suite('ProductSpecificationsTableTest', () => {
         }],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
     const descriptions =
-        tableElement.shadowRoot!.querySelectorAll('description-text');
+        tableElement.shadowRoot.querySelectorAll('description-text');
     assertEquals(0, descriptions.length);
   });
 
@@ -535,9 +573,9 @@ suite('ProductSpecificationsTableTest', () => {
         }],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
     const descriptions =
-        tableElement.shadowRoot!.querySelectorAll('description-section');
+        tableElement.shadowRoot.querySelectorAll('description-section');
     descriptions.forEach(description => {
       assertEquals(0, description.description.summary.length);
     });
@@ -581,13 +619,52 @@ suite('ProductSpecificationsTableTest', () => {
         }],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
     const details =
-        tableElement.shadowRoot!.querySelectorAll('.detail-container');
+        tableElement.shadowRoot.querySelectorAll('.detail-container');
     assertEquals(2, details.length);
     assertFalse(isVisible((details[0]!)));
     assertFalse(isVisible((details[1]!)));
   });
+
+  test(
+      'empty section displayed for null content if other columns are populated',
+      async () => {
+        tableElement.columns = [
+          {
+            selectedItem: {
+              title: 'title',
+              url: 'https://example.com',
+              imageUrl: 'https://example.com/image',
+            },
+            productDetails: [{
+              title: 'foo',
+              content: {
+                attributes: [{label: '', value: 'foo1'}],
+                summary: [{
+                  text: 'bar',
+                  urls: [],
+                }],
+              },
+            }],
+          },
+          {
+            selectedItem: {
+              title: 'title2',
+              url: 'https://example.com/2',
+              imageUrl: 'https://example.com/2/image',
+            },
+            productDetails: [{
+              title: 'foo',
+              content: null,
+            }],
+          },
+        ];
+        await microtasksFinished();
+        const emptySections =
+            tableElement.shadowRoot.querySelectorAll('empty-section');
+        assertEquals(1, emptySections.length);
+      });
 
   suite('Buying options', () => {
     setup(async () => {
@@ -600,10 +677,17 @@ suite('ProductSpecificationsTableTest', () => {
           },
           productDetails: [
             {
+              title: 'price',
+              content: {
+                price: '$123.45',
+                jackpotUrl: 'https://example.com/jackpot',
+              },
+            },
+            {
               title: 'foo',
               content: 'summary1',
             },
-            {title: null, content: {jackpotUrl: 'https://example.com/jackpot'}},
+            {title: null, content: 'bar1'},
           ],
         },
         {
@@ -613,89 +697,94 @@ suite('ProductSpecificationsTableTest', () => {
             imageUrl: 'https://example.com/2/image',
           },
           productDetails: [
+            // These buying options only include the jackpot URL and should not
+            // be displayed.
+            {
+              title: 'price',
+              content: {price: '', jackpotUrl: 'https://example.com/jackpot'},
+            },
             {title: 'foo', content: 'summary2'},
-            {title: null, content: {jackpotUrl: ''}},
+            {title: null, content: 'bar2'},
+          ],
+        },
+        {
+          selectedItem: {
+            title: 'title3',
+            url: 'https://example.com/3',
+            imageUrl: 'https://example.com/3/image',
+          },
+          productDetails: [
+            // These buying options only include the price but should still be
+            // displayed.
+            {title: 'price', content: {price: '$234.56', jackpotUrl: ''}},
+            {title: 'foo', content: 'summary3'},
+            {title: null, content: 'bar3'},
+          ],
+        },
+        {
+          selectedItem: {
+            title: 'title4',
+            url: 'https://example.com/4',
+            imageUrl: 'https://example.com/4/image',
+          },
+          productDetails: [
+            // These buying options don't include the price or jackpot URL and
+            // should not be displayed.
+            {title: 'price', content: {price: '', jackpotUrl: ''}},
+            {title: 'foo', content: 'summary4'},
+            {title: null, content: 'bar4'},
           ],
         },
       ];
-      await waitAfterNextRender(tableElement);
+      await microtasksFinished();
     });
 
-    test('detail title is hidden if it is `null`', async () => {
-      const titles = tableElement.shadowRoot!.querySelectorAll('.detail-title');
-      assertEquals(2, titles.length);
+    test('detail title is hidden if it is `null`', () => {
+      const titles = tableElement.shadowRoot.querySelectorAll('.detail-title');
+      assertEquals(8, titles.length);
     });
 
-    test('buying options are visible if any are available', async () => {
+    test('buying options are visible if price is available', () => {
       const buyingOptions =
-          tableElement.shadowRoot!.querySelectorAll('buying-options-section');
-      assertEquals(1, buyingOptions.length);
+          tableElement.shadowRoot.querySelectorAll('buying-options-section');
+      assertEquals(2, buyingOptions.length);
+      assertEquals('$123.45', buyingOptions[0]!.price);
       assertEquals('https://example.com/jackpot', buyingOptions[0]!.jackpotUrl);
+      assertEquals('$234.56', buyingOptions[1]!.price);
     });
+  });
 
-    test('buying options are hidden if none are available', async () => {
-      assertTrue(!!tableElement.columns[0]);
-      tableElement.columns = [
-        {
-          selectedItem: {
-            title: 'title',
-            url: 'https://example.com',
-            imageUrl: 'https://example.com/image',
-          },
-          productDetails: [
-            {title: null, content: {jackpotUrl: ''}},
-          ],
+  test('`grid-row` populates correctly', async () => {
+    // Arrange
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'title',
+          url: 'https://example.com',
+          imageUrl: 'https://example.com/image',
         },
-        {
-          selectedItem: {
-            title: 'title2',
-            url: 'https://example.com/2',
-            imageUrl: 'https://example.com/2/image',
-          },
-          productDetails: [
-            {title: null, content: {jackpotUrl: ''}},
-          ],
+        productDetails: [{
+          title: 'foo',
+          content: {attributes: [{label: '', value: 'foo1'}], summary: []},
+        }],
+      },
+      {
+        selectedItem: {
+          title: 'title2',
+          url: 'https://example.com/2',
+          imageUrl: 'https://example.com/2/image',
         },
-      ];
-      await flushTasks();
-
-      const buyingOptions =
-          tableElement.shadowRoot!.querySelectorAll('buying-options-section');
-      assertEquals(0, buyingOptions.length);
-    });
-
-    test('`grid-row` populates correctly', async () => {
-      // Arrange
-      tableElement.columns = [
-        {
-          selectedItem: {
-            title: 'title',
-            url: 'https://example.com',
-            imageUrl: 'https://example.com/image',
-          },
-          productDetails: [{
-            title: 'foo',
-            content: {attributes: [{label: '', value: 'foo1'}], summary: []},
-          }],
-        },
-        {
-          selectedItem: {
-            title: 'title2',
-            url: 'https://example.com/2',
-            imageUrl: 'https://example.com/2/image',
-          },
-          productDetails: [{
-            title: 'foo',
-            content: {attributes: [{label: '', value: 'foo2'}], summary: []},
-          }],
-        },
-      ];
-      await waitAfterNextRender(tableElement);
-      const columns = tableElement.shadowRoot!.querySelectorAll('.col');
-      assertEquals(2, columns.length);
-      assertStyle(columns[0]!, 'grid-row', 'span 3');
-      assertStyle(columns[1]!, 'grid-row', 'span 3');
-    });
+        productDetails: [{
+          title: 'foo',
+          content: {attributes: [{label: '', value: 'foo2'}], summary: []},
+        }],
+      },
+    ];
+    await microtasksFinished();
+    const columns = tableElement.shadowRoot.querySelectorAll('.col');
+    assertEquals(2, columns.length);
+    assertStyle(columns[0]!, 'grid-row', 'span 3');
+    assertStyle(columns[1]!, 'grid-row', 'span 3');
   });
 
   suite('DragAndDrop', () => {
@@ -719,20 +808,23 @@ suite('ProductSpecificationsTableTest', () => {
           ],
         },
       ];
-      await flushTasks();
+      await microtasksFinished();
       const column = $$<HTMLElement>(tableElement, '.col');
       assertTrue(!!column);
       const openTabButton =
-          column!.querySelector<HTMLElement>('.open-tab-button');
+          column.querySelector<HTMLElement>('.open-tab-button');
       assertTrue(!!openTabButton);
       tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
+      await microtasksFinished();
       assertFalse(isVisible(openTabButton));
 
       // Act/Assert
-      column!.dispatchEvent(new PointerEvent('pointerenter'));
+      column.dispatchEvent(new PointerEvent('pointerenter'));
+      await microtasksFinished();
       assertTrue(isVisible(openTabButton));
 
       tableElement.draggingColumn = column!;
+      await microtasksFinished();
       assertFalse(isVisible(openTabButton));
     });
 
@@ -760,16 +852,18 @@ suite('ProductSpecificationsTableTest', () => {
           ],
         },
       ];
-      await waitAfterNextRender(tableElement);
+      await microtasksFinished();
 
       // Assert.
       const columns =
-          tableElement.shadowRoot!.querySelectorAll<HTMLElement>('.col');
+          tableElement.shadowRoot.querySelectorAll<HTMLElement>('.col');
+      await microtasksFinished();
       assertEquals(2, columns.length);
       assertTrue(columns[0]!.hasAttribute('is-first-column'));
       assertFalse(columns[1]!.hasAttribute('is-first-column'));
 
       tableElement.draggingColumn = columns[0]!;
+      await microtasksFinished();
       // Attribute toggling should be handled by drag and drop manager.
       assertFalse(columns[0]!.hasAttribute('is-first-column'));
       assertFalse(columns[1]!.hasAttribute('is-first-column'));
@@ -800,16 +894,18 @@ suite('ProductSpecificationsTableTest', () => {
         ],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const columns =
-        tableElement.shadowRoot!.querySelectorAll<HTMLElement>('.col');
+        tableElement.shadowRoot.querySelectorAll<HTMLElement>('.col');
+    await microtasksFinished();
     assertEquals(2, columns.length);
     assertStyle(columns[0]!, 'scroll-snap-align', 'start');
     assertStyle(columns[1]!, 'scroll-snap-align', 'start');
 
     tableElement.draggingColumn = columns[0]!;
+    await microtasksFinished();
     assertStyle(columns[0]!, 'scroll-snap-align', 'none');
     assertStyle(columns[1]!, 'scroll-snap-align', 'none');
   });

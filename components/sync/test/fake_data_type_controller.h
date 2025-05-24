@@ -29,8 +29,8 @@ class FakeDataTypeController : public DataTypeController {
 
   void SetPreconditionState(PreconditionState state);
 
-  // Access to the fake underlying model. |kTransportOnly] only exists if
-  // |enable_transport_mode| is set upon construction.
+  // Access to the fake underlying model. `kTransportOnly] only exists if
+  // `enable_transport_mode` is set upon construction.
   FakeDataTypeControllerDelegate* model(SyncMode sync_mode = SyncMode::kFull);
 
   int activate_call_count() const { return activate_call_count_; }

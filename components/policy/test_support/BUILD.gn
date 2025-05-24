@@ -102,7 +102,11 @@ if (is_chromeos) {
   cast_core_grpc_library("remote_commands_service") {
     testonly = true
     sources = [ "remote_commands_service.proto" ]
-    deps = [ "//third_party/private_membership:private_membership_proto" ]
+    deps = [
+      "//components/policy/proto:proto_internal",
+      "//third_party/private_membership:private_membership_proto",
+    ]
+
     extra_configs =
         [ "//third_party/private_membership:private_membership_config" ]
     import_dirs = [
@@ -110,7 +114,6 @@ if (is_chromeos) {
       "//third_party/private_membership/src",
       "//third_party/shell-encryption/src",
     ]
-    proto_deps = [ "//components/policy/proto" ]
     generate_castcore_stubs = true
   }
 

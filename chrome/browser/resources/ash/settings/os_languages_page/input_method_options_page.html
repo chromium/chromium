@@ -35,7 +35,15 @@
             [[option.label]]
           </cr-button>
         </template>
-        <template is="dom-if" if="[[!isSubmenuButton_(option.uiType)]]">
+        <template is="dom-if" if="[[isLink_(option.uiType)]]">
+          <cr-link-row
+              on-click="navigateToOtherPageInSettings_"
+              label="[[option.label]]"
+              sub-label="[[option.subtitle]]"
+            >
+          </cr-link-row>
+        </template>
+        <template is="dom-if" if="[[shouldShowLabel_(option.uiType)]]">
           <div class="start" id="option-label" role="heading" aria-level="2"
               aria-hidden="[[shouldShowTitle(section)]]">
             [[option.label]]
@@ -68,12 +76,6 @@
               </option>
             </template>
           </select>
-        </template>
-        <template is="dom-if" if="[[isLink_(option.uiType)]]">
-          <cr-icon-button iron-icon="cr:arrow-right"
-              on-click="navigateToOtherPageInSettings_"
-              aria-label="[[option.label]]" role="link">
-          </cr-icon-button>
         </template>
       </div>
       <!--TODO(b/189280771): Reduce this duplication.-->

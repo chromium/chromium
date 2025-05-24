@@ -4,12 +4,16 @@
 
 package org.chromium.ui.display;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Insets;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.hardware.display.DeviceProductInfo;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
@@ -17,31 +21,42 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.os.BuildCompat;
+import androidx.core.view.WindowInsetsCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.util.XrUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
 /** A DisplayAndroid implementation tied to a physical Display. */
+@NullMarked
 /* package */ class PhysicalDisplayAndroid extends DisplayAndroid {
     private static final String TAG = "DisplayAndroid";
 
     // The behavior of observing window configuration changes using ComponentCallbacks is new in S.
     private static final boolean USE_CONFIGURATION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
 
+    // Insets that define the area where content can't be displayed.
+    protected static final int WINDOW_INSETS_TYPE =
+            WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
+
     // When this object exists, a positive value means that the forced DIP scale is set and
     // the zero means it is not. The non existing object (i.e. null reference) means that
     // the existence and value of the forced DIP scale has not yet been determined.
-    private static Float sForcedDIPScale;
+    private static @Nullable Float sForcedDIPScale;
 
-    private static Float getHdrSdrRatio(Display display) {
+    private static @Nullable Float getHdrSdrRatio(Display display) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return null;
         return display.getHdrSdrRatio();
     }
@@ -51,29 +66,26 @@ import java.util.function.Consumer;
         return display.isHdr() && display.isHdrSdrRatioAvailable();
     }
 
+    @EnsuresNonNull("sForcedDIPScale")
     private static boolean hasForcedDIPScale() {
         if (sForcedDIPScale == null) {
+            float value = 0.0f;
             String forcedScaleAsString =
                     CommandLine.getInstance()
                             .getSwitchValue(DisplaySwitches.FORCE_DEVICE_SCALE_FACTOR);
-            if (forcedScaleAsString == null) {
-                sForcedDIPScale = Float.valueOf(0.0f);
-            } else {
-                boolean isInvalid = false;
+            if (forcedScaleAsString != null) {
                 try {
-                    sForcedDIPScale = Float.valueOf(forcedScaleAsString);
-                    // Negative values are discarded.
-                    if (sForcedDIPScale.floatValue() <= 0.0f) isInvalid = true;
+                    value = Float.valueOf(forcedScaleAsString);
                 } catch (NumberFormatException e) {
-                    // Strings that do not represent numbers are discarded.
-                    isInvalid = true;
                 }
 
-                if (isInvalid) {
-                    Log.w(TAG, "Ignoring invalid forced DIP scale '" + forcedScaleAsString + "'");
-                    sForcedDIPScale = Float.valueOf(0.0f);
+                if (value <= 0.0f) {
+                    // Strings that do not represent numbers are discarded.
+                    Log.w(TAG, "Ignoring invalid forced DIP scale: %s", forcedScaleAsString);
+                    value = 0.0f;
                 }
             }
+            sForcedDIPScale = value;
         }
         return sForcedDIPScale.floatValue() > 0;
     }
@@ -144,17 +156,20 @@ import java.util.function.Consumer;
         }
     }
 
-    private final Context mWindowContext;
-    private final ComponentCallbacks mComponentCallbacks;
+    private final @Nullable Context mWindowContext;
+    private final @Nullable WindowManager mWindowManager;
+    private final @Nullable ComponentCallbacks mComponentCallbacks;
     private final Display mDisplay;
-    private Consumer<Display> mHdrSdrRatioCallback;
+    private @Nullable Consumer<Display> mHdrSdrRatioCallback;
 
     /* package */ PhysicalDisplayAndroid(Display display, boolean disableHdrSdkRatioCallback) {
         super(display.getDisplayId());
         if (USE_CONFIGURATION) {
             Context appContext = ContextUtils.getApplicationContext();
             // `createWindowContext` on some devices writes to disk. See crbug.com/1408587.
-            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
+            try (@SuppressWarnings("unused")
+                    StrictModeContext strictModeContext =
+                            StrictModeContext.allowAllThreadPolicies()) {
                 mWindowContext =
                         appContext.createWindowContext(
                                 display, WindowManager.LayoutParams.TYPE_APPLICATION, null);
@@ -171,10 +186,12 @@ import java.util.function.Consumer;
                         }
                     };
             mWindowContext.registerComponentCallbacks(mComponentCallbacks);
+            mWindowManager = mWindowContext.getSystemService(WindowManager.class);
             mDisplay = mWindowContext.getDisplay();
             updateFromConfiguration();
         } else {
             mWindowContext = null;
+            mWindowManager = null;
             mComponentCallbacks = null;
             mDisplay = display;
         }
@@ -194,26 +211,43 @@ import java.util.function.Consumer;
     }
 
     @Override
-    public Context getWindowContext() {
+    public @Nullable Context getWindowContext() {
         return mWindowContext;
     }
 
-    @RequiresApi(api = VERSION_CODES.R)
+    @RequiresApi(VERSION_CODES.R)
+    private Insets getWindowInsets() {
+        return assumeNonNull(mWindowManager)
+                .getCurrentWindowMetrics()
+                .getWindowInsets()
+                .getInsetsIgnoringVisibility(WINDOW_INSETS_TYPE);
+    }
+
+    @RequiresApi(VERSION_CODES.R)
     private void updateFromConfiguration() {
-        Point size = new Point();
-        WindowManager windowManager = mWindowContext.getSystemService(WindowManager.class);
-        Rect rect = windowManager.getMaximumWindowMetrics().getBounds();
-        size.set(rect.width(), rect.height());
+        assumeNonNull(mWindowContext);
+        assumeNonNull(mWindowManager);
+
+        Rect bounds = mWindowManager.getMaximumWindowMetrics().getBounds();
+        Insets insets = getWindowInsets();
+
         DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
 
-        if (BuildInfo.getInstance().isAutomotive
+        if (DeviceInfo.isAutomotive()
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             mDisplay.getRealMetrics(displayMetrics);
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(mWindowContext, displayMetrics);
+        } else if (XrUtils.isXrDevice()
+                && CommandLine.getInstance()
+                        .hasSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED)) {
+            mDisplay.getRealMetrics(displayMetrics);
+            DisplayUtil.scaleUpDisplayMetricsForXr(mWindowContext, displayMetrics);
         }
+
         updateCommon(
-                size,
+                bounds,
+                insets,
                 displayMetrics.density,
                 displayMetrics.xdpi,
                 displayMetrics.ydpi,
@@ -222,6 +256,8 @@ import java.util.function.Consumer;
 
     /* package */ void onDisplayRemoved() {
         if (USE_CONFIGURATION) {
+            assumeNonNull(mWindowContext);
+            assumeNonNull(mComponentCallbacks);
             mWindowContext.unregisterComponentCallbacks(mComponentCallbacks);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
@@ -239,41 +275,63 @@ import java.util.function.Consumer;
             updateFromConfiguration();
             return;
         }
+
         Point size = new Point();
         DisplayMetrics displayMetrics = new DisplayMetrics();
         display.getRealSize(size);
         display.getRealMetrics(displayMetrics);
 
-        if (BuildInfo.getInstance().isAutomotive
+        if (DeviceInfo.isAutomotive()
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(
                     ContextUtils.getApplicationContext(), displayMetrics);
+        } else if (XrUtils.isXrDevice()
+                && CommandLine.getInstance()
+                        .hasSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED)) {
+            DisplayUtil.scaleUpDisplayMetricsForXr(
+                    ContextUtils.getApplicationContext(), displayMetrics);
         }
+
         updateCommon(
-                size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi, display);
+                new Rect(0, 0, size.x, size.y),
+                null,
+                displayMetrics.density,
+                displayMetrics.xdpi,
+                displayMetrics.ydpi,
+                display);
     }
 
     private void hdrSdrRatioChanged(Display display) {
         assert display.getDisplayId() == mDisplay.getDisplayId();
         super.update(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
+                /* name= */ null,
+                /* bounds= */ null,
+                /* insets= */ null,
+                /* dipScale= */ null,
+                /* xdpi= */ null,
+                /* ydpi= */ null,
+                /* bitsPerPixel= */ null,
+                /* bitsPerComponent= */ null,
+                /* rotation= */ null,
+                /* isDisplayWideColorGamut= */ null,
+                /* isDisplayServerWideColorGamut= */ null,
+                /* refreshRate= */ null,
+                /* currentMode= */ null,
+                /* supportedModes= */ null,
                 isHdr(mDisplay),
-                getHdrSdrRatio(mDisplay));
+                getHdrSdrRatio(mDisplay),
+                /* isInternal= */ null,
+                /* arrInfo= */ null);
     }
 
-    private void updateCommon(Point size, float density, float xdpi, float ydpi, Display display) {
+    private void updateCommon(
+            Rect bounds,
+            @Nullable Insets insets,
+            float density,
+            float xdpi,
+            float ydpi,
+            Display display) {
         if (hasForcedDIPScale()) density = sForcedDIPScale.floatValue();
         boolean isWideColorGamut = false;
         // Although this API was added in Android O, it was buggy.
@@ -293,8 +351,31 @@ import java.util.function.Consumer;
             supportedModes = Arrays.asList(modes);
         }
 
+        boolean isInternal = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            DeviceProductInfo deviceProductInfo = display.getDeviceProductInfo();
+            if (deviceProductInfo != null) {
+                isInternal =
+                        deviceProductInfo.getConnectionToSinkType()
+                                == DeviceProductInfo.CONNECTION_TO_SINK_BUILT_IN;
+            }
+        }
+
+        AdaptiveRefreshRateInfo arrInfo = null;
+        if (BuildCompat.isAtLeastB()) {
+            boolean hasArrSupport = display.hasArrSupport();
+            float suggestedFrameRateHigh = 0.0f;
+            if (hasArrSupport) {
+                suggestedFrameRateHigh =
+                        display.getSuggestedFrameRate(Display.FRAME_RATE_CATEGORY_HIGH);
+            }
+            arrInfo = new AdaptiveRefreshRateInfo(hasArrSupport, suggestedFrameRateHigh);
+        }
+
         super.update(
-                size,
+                display.getName(),
+                bounds,
+                insets,
                 density,
                 xdpi,
                 ydpi,
@@ -307,6 +388,8 @@ import java.util.function.Consumer;
                 currentMode,
                 supportedModes,
                 isHdr(display),
-                getHdrSdrRatio(display));
+                getHdrSdrRatio(display),
+                isInternal,
+                arrInfo);
     }
 }

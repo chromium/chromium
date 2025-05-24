@@ -87,8 +87,9 @@ gfx::Point EventMonitorAura::GetLastMouseLocation() {
 }
 
 void EventMonitorAura::TearDown() {
-  if (event_observer_)
+  if (event_observer_) {
     aura::Env::GetInstance()->RemoveEventObserver(event_observer_);
+  }
   event_observer_ = nullptr;
 }
 

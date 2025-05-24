@@ -1,0 +1,49 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelExecutionProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/descriptors.proto";
+
+// FieldExtractor defines a method for extracting information from model output
+// and storing it in a proto field of bool, numeric, enum, or string type. The
+// following algorithm is applied to extract to the field:
+//   1. capturing_regex is executed against the model output to produce a
+//     string value. If the regex fails to match, the field is not written and
+//     no error is generated.
+//   2. The string value is replaced by the result of looking up the string
+//     value in the translation_map, if the value exists in the map.
+//   3. A conversion may be applied to the string value based on the type of
+//     the specified proto field.
+//       - String values are retained as-is.
+//       - Enum values are converted from an "ENUM_NAME" string to the enum
+//         value.
+//       - Boolean values are converted from the case-insensitive strings
+//         "true" and "false".
+//       - Numeric conversions use the relevant StringTo* function for the
+//         type as defined in //base/strings/string_number_conversions.h.
+//   4. The value is saved in output_field if the field was found, is a
+//      supported type, and the conversion succeeded. Otherwise an error is
+//      generated.
+message FieldExtractor {
+  // The field to fill with the extracted value.
+  optional ProtoField output_field = 1;
+
+  // A regex that captures the relevant content from the model output in the
+  // first capturing group.
+  optional string capturing_regex = 2;
+
+  // An optional map to translate from captured strings to strings
+  // convertible to the proto field type.
+  map<string, string> translation_map = 3;
+}
+
+message FieldwiseParserConfig {
+  repeated FieldExtractor field_extractors = 1;
+}

@@ -31,7 +31,6 @@ struct SpellCheckResult;
 namespace blink {
 class WebTextCheckingCompletion;
 struct WebTextCheckingResult;
-template <typename T> class WebVector;
 class WebString;
 }
 
@@ -45,7 +44,7 @@ class DictionaryUpdateObserver {
   // |words_added| is newly added words to dictionary as correct words.
   // OnDictionaryUpdated should be called even if |words_added| empty.
   virtual void OnDictionaryUpdated(
-      const blink::WebVector<blink::WebString>& words_added) = 0;
+      const std::vector<blink::WebString>& words_added) = 0;
 };
 
 // TODO(morrita): Needs reorg with SpellCheckProvider.
@@ -127,10 +126,9 @@ class SpellCheck : public spellcheck::mojom::SpellChecker {
   // SpellCheck a paragraph.
   // Returns true if |text| is correctly spelled, false otherwise.
   // If the spellchecker failed to initialize, always returns true.
-  bool SpellCheckParagraph(
-      const std::u16string& text,
-      spellcheck::mojom::SpellCheckHost& host,
-      blink::WebVector<blink::WebTextCheckingResult>* results);
+  bool SpellCheckParagraph(const std::u16string& text,
+                           spellcheck::mojom::SpellCheckHost& host,
+                           std::vector<blink::WebTextCheckingResult>* results);
 
   // Requests to spellcheck the specified text in the background. This function
   // posts a background task and calls SpellCheckParagraph() in the task.
@@ -150,7 +148,7 @@ class SpellCheck : public spellcheck::mojom::SpellChecker {
       int line_offset,
       const std::u16string& line_text,
       const std::vector<SpellCheckResult>& spellcheck_results,
-      blink::WebVector<blink::WebTextCheckingResult>* textcheck_results);
+      std::vector<blink::WebTextCheckingResult>* textcheck_results);
 
   bool IsSpellcheckEnabled();
 
@@ -194,7 +192,7 @@ class SpellCheck : public spellcheck::mojom::SpellChecker {
 
    // Performs dictionary update notification.
    void NotifyDictionaryObservers(
-       const blink::WebVector<blink::WebString>& words_added);
+       const std::vector<blink::WebString>& words_added);
 
    // Returns whether a word is in the script of one of the enabled spellcheck
    // languages.

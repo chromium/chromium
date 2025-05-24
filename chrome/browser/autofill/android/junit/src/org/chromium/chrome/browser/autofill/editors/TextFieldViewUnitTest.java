@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -17,7 +20,9 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import android.app.Activity;
 import android.text.Editable;
 import android.view.View;
+import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 
@@ -30,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -41,6 +47,8 @@ public final class TextFieldViewUnitTest {
     private ViewGroup mContentView;
     private View mOtherFocusableField;
 
+    private static final String FIELD_LABEL = "label";
+
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
@@ -51,7 +59,7 @@ public final class TextFieldViewUnitTest {
 
     private PropertyModel buildDefaultPropertyModel() {
         return new PropertyModel.Builder(TEXT_ALL_KEYS)
-                .with(LABEL, "label")
+                .with(LABEL, FIELD_LABEL)
                 .with(VALUE, "value")
                 .build();
     }
@@ -342,5 +350,55 @@ public final class TextFieldViewUnitTest {
         TextFieldView field = attachTextFieldView(model);
 
         assertTrue(field.validate());
+    }
+
+    /**
+     * Test that "required" string is announced and "*" is added to the hint when field is marked as
+     * required.
+     */
+    @Test
+    public void testRequiredFieldHasCorrectLabelAndAccessibility() {
+        PropertyModel model = buildDefaultPropertyModel();
+        model.set(IS_REQUIRED, true);
+
+        TextInputLayout inputLayout = attachTextFieldView(model).getInputLayoutForTesting();
+        AccessibilityDelegate delegate = inputLayout.getEditText().getAccessibilityDelegate();
+        assertNotNull(delegate);
+
+        AccessibilityNodeInfo infoNode = AccessibilityNodeInfo.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(inputLayout, infoNode);
+
+        assertEquals(
+                infoNode.getText().toString(),
+                mActivity.getString(
+                        R.string.autofill_address_edit_dialog_required_field_content_description,
+                        FIELD_LABEL));
+        assertTrue(
+                inputLayout.getHint().toString().contains(TextFieldView.REQUIRED_FIELD_INDICATOR));
+    }
+
+    /**
+     * Test that "required" string is not announced and "*" is not added to the hint when field is
+     * not marked as required.
+     */
+    @Test
+    public void testNonRequiredFieldHasCorrectLabelAndAccessibility() {
+        PropertyModel model = buildDefaultPropertyModel();
+        model.set(IS_REQUIRED, false);
+
+        TextInputLayout inputLayout = attachTextFieldView(model).getInputLayoutForTesting();
+        AccessibilityDelegate delegate = inputLayout.getEditText().getAccessibilityDelegate();
+        assertNotNull(delegate);
+
+        AccessibilityNodeInfo infoNode = AccessibilityNodeInfo.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(inputLayout, infoNode);
+
+        assertNotEquals(
+                infoNode.getText().toString(),
+                mActivity.getString(
+                        R.string.autofill_address_edit_dialog_required_field_content_description,
+                        FIELD_LABEL));
+        assertFalse(
+                inputLayout.getHint().toString().contains(TextFieldView.REQUIRED_FIELD_INDICATOR));
     }
 }

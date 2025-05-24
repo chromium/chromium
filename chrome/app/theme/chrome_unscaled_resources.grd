@@ -5,7 +5,7 @@
      it is the caller's responsibility to do the right thing when the
      display is not at 100P device scale factor.
   -->
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/chrome_unscaled_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -48,7 +48,7 @@
           <include name="IDR_CHROME_PASSWORD_MANAGER_PWA_ICON" file="${branding_path_component}/google_password_manager_pwa_icon.svg" type="BINDATA" />
           <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="${branding_path_component}/chrome_128px.svg" type="BINDATA" />
           <include name="IDR_GSHIELD_ICON_SVG" file="${branding_path_component}/gshield.svg" type="BINDATA" />
-          <if expr="chromeos_ash">
+          <if expr="is_chromeos">
             <include name="IDR_PRODUCT_LOGO_24PX_1X" file="${branding_path_component}/chromeos/chrome_24px_1x.svg" type="BINDATA" />
             <include name="IDR_PRODUCT_LOGO_24PX_2X" file="${branding_path_component}/chromeos/chrome_24px_2x.svg" type="BINDATA" />
             <!-- Used by lacros. -->
@@ -98,11 +98,9 @@
       <!-- NOTE: product_logo_*.* files beyond what's listed above are
           referenced by installer code; don't remove them unless you know
           what you're doing! -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <include name="IDR_CHROME_APP_ICON_32" file="${branding_path_component}/chromeos/chrome_app_icon_32.png" type="BINDATA" />
         <include name="IDR_CHROME_APP_ICON_192" file="${branding_path_component}/chromeos/chrome_app_icon_192.png" type="BINDATA" />
-        <include name="IDR_DEBUG_CHROME_APP_ICON_32" file="${branding_path_component}/chromeos/debug_chrome_app_icon_32.png" type="BINDATA" />
-        <include name="IDR_DEBUG_CHROME_APP_ICON_192" file="${branding_path_component}/chromeos/debug_chrome_app_icon_192.png" type="BINDATA" />
         <include name="IDR_WEBSTORE_APP_ICON_16" file="${branding_path_component}/chromeos/webstore_app_icon_16.png" type="BINDATA" />
         <include name="IDR_WEBSTORE_APP_ICON_128" file="${branding_path_component}/chromeos/webstore_app_icon_128.png" type="BINDATA" />
       </if>
@@ -145,7 +143,7 @@
         <include name="IDR_APPS_FOLDER_OVERLAY_128" file="mac/apps_folder_overlay_128.png" type="BINDATA" />
         <include name="IDR_APPS_FOLDER_OVERLAY_512" file="mac/apps_folder_overlay_512.png" type="BINDATA" />
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <include name="IDR_LOGO_CROSH" file="chromium/chromeos/crosh_app_icon_256.png" type="BINDATA" />
         <!-- Borealis icons -->
         <include name="IDR_LOGO_BOREALIS_DEFAULT_192" file="borealis/logo_borealis_default_192.png" type="BINDATA" />

@@ -4,11 +4,18 @@
 
 #import "ios/chrome/browser/accessibility/model/window_accessibility_change_notifier_app_agent.h"
 
+#import <optional>
+
 #import "base/check.h"
 #import "base/i18n/message_formatter.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -17,50 +24,42 @@
 namespace {
 
 // Delay between events and notification.
-const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
+const base::TimeDelta kWindowNotifcationDelay = base::Seconds(0.5);
 
 }  // namespace
 
-@interface WindowAccessibilityChangeNotifierAppAgent () <AppStateObserver,
-                                                         SceneStateObserver>
-// Observed app state.
-@property(nonatomic, weak) AppState* appState;
-
-@property(nonatomic, assign) NSUInteger visibleWindowCount;
-
-// If an update is pending, `lastUpdateTime` is the last time that an event
-// occurred that might cause the window count to change. If no update is pending
-// `lastUpdateTime` is nil.
-@property(nonatomic, strong) NSDate* lastUpdateTime;
-
+@interface WindowAccessibilityChangeNotifierAppAgent () <ProfileStateObserver>
 @end
 
-@implementation WindowAccessibilityChangeNotifierAppAgent
+@implementation WindowAccessibilityChangeNotifierAppAgent {
+  // The timer used to delay the notifications.
+  base::OneShotTimer _timer;
 
-#pragma mark - AppStateAgent
-
-- (void)setAppState:(AppState*)appState {
-  // This should only be called once!
-  DCHECK(!_appState);
-
-  _appState = appState;
-  [appState addObserver:self];
-  [self updateWindowCount];
+  // The number of visible scenes.
+  int _visibleWindowCount;
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
-- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
-  [sceneState addObserver:self];
+// Profile init stage changes are potential opportunities for dictating the
+// window count to Voiceover users.
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage == ProfileInitStage::kFinal) {
+    [self maybeScheduleWindowCountWithDelay];
+    [profileState removeObserver:self];
+  }
 }
 
 #pragma mark - SceneStateObserver
 
-// Init stage changes are potential opportunities for dictating the window count
-// to Voiceover users.
+// App init stage changes are potential opportunities for dictating the window
+// count to Voiceover users.
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  [self maybeScheduleWindowCountWithDelay:kWindowNotifcationDelay];
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  [super appState:appState didTransitionFromInitStage:previousInitStage];
+  [self maybeScheduleWindowCountWithDelay];
 }
 
 // Changes in the activation level of scene states will indicate that the count
@@ -73,84 +72,90 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
 // skipped.
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.lastUpdateTime == nil) {
-    [self maybeScheduleWindowCountWithDelay:kWindowNotifcationDelay];
-  }
-  self.lastUpdateTime = [NSDate date];
+  [super sceneState:sceneState transitionedToActivationLevel:level];
+  [self maybeScheduleWindowCountWithDelay];
 }
 
-#pragma mark - private
+// If the SceneState reaches SceneActivationLevelForegroundActive before the
+// ProfileState is set, it would not have been possible to observe it in the
+// -visibleWindowCount method (as it would be nil). Listening to this method
+// allow to deal with this rare occurrence.
+- (void)sceneState:(SceneState*)sceneState
+    profileStateConnected:(ProfileState*)profileState {
+  [self maybeScheduleWindowCountWithDelay];
+}
 
-- (void)maybeScheduleWindowCountWithDelay:(NSTimeInterval)delay {
+#pragma mark - Private methods
+
+- (void)maybeScheduleWindowCountWithDelay {
+  if (self.appState.initStage != AppInitStage::kFinal) {
+    return;
+  }
+
+  // The resources have not yet been initialized. Ignore the notification.
+  if (!ui::ResourceBundle::HasSharedInstance()) {
+    return;
+  }
+
+  // If there is already an update in-flight, ignore the current one.
+  if (_timer.IsRunning()) {
+    return;
+  }
+
   // Weakify, since the window count can change in shutdown, so there are
   // likely to be pending notifications that would otherwise keep this object
   // alive.
-  if (self.appState.initStage == InitStageFinal) {
-    __weak WindowAccessibilityChangeNotifierAppAgent* weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                 static_cast<int64_t>(delay * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(), ^{
-                     [weakSelf notifyWindowCount];
-                   });
-  }
+  __weak WindowAccessibilityChangeNotifierAppAgent* weakSelf = self;
+  _timer.Start(FROM_HERE, kWindowNotifcationDelay, base::BindOnce(^{
+                 [weakSelf notifyWindowCount];
+               }));
 }
 
 // Performs the notification, if enough time has passed since the last update.
 // If the last update was more recent than the notification delay, then the
 // notification is re-posted to happen after the delay has elapsed.
 - (void)notifyWindowCount {
-  NSDate* now = [NSDate date];
-  NSTimeInterval delta = [now timeIntervalSinceDate:self.lastUpdateTime];
-  if (delta < kWindowNotifcationDelay) {
-    // Repost with a delay sufficient to be `kWindowNotifcationDelay` after
-    // the last update time.
-    NSTimeInterval newDelta = kWindowNotifcationDelay - delta;
-    [self maybeScheduleWindowCountWithDelay:newDelta];
-    return;
-  }
-
-  if (!ui::ResourceBundle::HasSharedInstance()) {
-    // The resources have not yet been initialized. Delay the notification.
-    [self maybeScheduleWindowCountWithDelay:kWindowNotifcationDelay];
-    return;
-  }
-
-  self.lastUpdateTime = nil;
-
-  NSUInteger previousWindowCount = self.visibleWindowCount;
-  [self updateWindowCount];
-
   // Only notify the user if (a) the window count has changed, and (b) it's
   // non-zero. A zero window count would occur, for example, when the user
   // enters the system app switcher. Other accessibility systems will notify
   // them of that change; it isn't necessary to tell them that no Chrome windows
   // are showing.
-  if (previousWindowCount != self.visibleWindowCount &&
-      self.visibleWindowCount > 0) {
-    std::u16string pattern =
-        l10n_util::GetStringUTF16(IDS_IOS_WINDOW_COUNT_CHANGE);
-    int numberOfWindows = static_cast<int>(self.visibleWindowCount);
-    std::u16string formattedMessage =
-        base::i18n::MessageFormatter::FormatWithNamedArgs(pattern, "count",
-                                                          numberOfWindows);
-
-    NSString* windowCountNotification =
-        base::SysUTF16ToNSString(formattedMessage);
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
-                                    windowCountNotification);
+  const int visibleWindowCount = [self visibleWindowCount];
+  if (visibleWindowCount <= 0 || visibleWindowCount == _visibleWindowCount) {
+    return;
   }
+
+  _visibleWindowCount = visibleWindowCount;
+  std::u16string formattedMessage =
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(IDS_IOS_WINDOW_COUNT_CHANGE), "count",
+          _visibleWindowCount);
+
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  base::SysUTF16ToNSString(formattedMessage));
 }
 
-// Update `self.visibleWindowCount` with the total number of foregrounded
-// connected scenes.
-- (void)updateWindowCount {
-  NSUInteger windowCount = 0;
-  for (SceneState* scene in [self.appState connectedScenes]) {
-    if (scene.activationLevel >= SceneActivationLevelForegroundInactive) {
-      windowCount++;
+// Counts the number of foregrounded fully connected scenes (i.e. whose
+// profile is fully initialized).
+- (int)visibleWindowCount {
+  int windowCount = 0;
+  for (SceneState* scene in self.appState.connectedScenes) {
+    // Window is in background.
+    if (scene.activationLevel < SceneActivationLevelForegroundInactive) {
+      continue;
     }
+
+    // Window's profile has not been fully initialized yet, skip it, but
+    // observe the ProfileState to detect when its initialisation is over.
+    if (scene.profileState.initStage < ProfileInitStage::kFinal) {
+      [scene.profileState addObserver:self];
+      continue;
+    }
+
+    ++windowCount;
   }
-  self.visibleWindowCount = windowCount;
+
+  return windowCount;
 }
 
 @end

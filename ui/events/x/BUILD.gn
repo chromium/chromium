@@ -17,7 +17,6 @@ component("x") {
   defines = [ "EVENTS_X_IMPLEMENTATION" ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//skia",
     "//ui/base:features",
     "//ui/display",

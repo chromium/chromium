@@ -124,7 +124,7 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
   else if (*type_string == "function")
     type_ = ArgumentType::FUNCTION;
   else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 
   if (std::optional<int> minimum = dict.FindInt("minimum")) {
     minimum_ = *minimum;
@@ -323,8 +323,7 @@ bool ArgumentSpec::ParseArgument(v8::Local<v8::Context> context,
       return ParseArgumentToAny(context, value, out_value, v8_out_value, error);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 const std::string& ArgumentSpec::GetTypeName() const {
@@ -462,9 +461,8 @@ bool ArgumentSpec::ParseArgumentToFundamental(
       return true;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 bool ArgumentSpec::ParseArgumentToObject(

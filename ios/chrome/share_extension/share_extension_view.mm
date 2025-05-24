@@ -37,10 +37,11 @@ const CGFloat kButtonFontSize = 17;
 - (void)setHighlighted:(BOOL)highlighted {
   [super setHighlighted:highlighted];
 
-  if (highlighted)
+  if (highlighted) {
     self.backgroundColor = [UIColor colorNamed:kTableViewRowHighlightColor];
-  else
+  } else {
     self.backgroundColor = UIColor.clearColor;
+  }
 }
 
 @end

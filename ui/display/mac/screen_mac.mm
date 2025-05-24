@@ -21,6 +21,8 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/check_deref.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
@@ -32,10 +34,13 @@
 #include "components/device_event_log/device_event_log.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
+#include "ui/display/mac/screen_mac_headless.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/switches.h"
 
 extern "C" {
 Boolean CGDisplayUsesForceToGray(void);
@@ -69,7 +74,7 @@ NSScreen* GetMatchingScreen(const gfx::Rect& match_rect) {
 }
 
 const std::vector<Display> DisplaysFromDisplaysMac(
-    const std::vector<DisplayMac> displays_mac) {
+    const std::vector<DisplayMac>& displays_mac) {
   std::vector<Display> displays;
 
   for (auto const& display_mac : displays_mac) {
@@ -339,10 +344,11 @@ class ScreenMac : public Screen {
       const std::set<gfx::NativeWindow>& ignore) override {
     const NSPoint ns_point = gfx::ScreenPointToNSPoint(point);
 
-    // Note: [NSApp orderedWindows] doesn't include NSPanels.
+    // Note: NSApp.orderedWindows doesn't include NSPanels.
     for (NSWindow* window in NSApp.orderedWindows) {
-      if (ignore.count(window))
+      if (ignore.count(gfx::NativeWindow(window))) {
         continue;
+      }
 
       if (!window.onActiveSpace) {
         continue;
@@ -355,11 +361,11 @@ class ScreenMac : public Screen {
       }
 
       if (NSPointInRect(ns_point, window.frame)) {
-        return window;
+        return gfx::NativeWindow(window);
       }
     }
 
-    return nil;
+    return gfx::NativeWindow();
   }
 
   int GetNumDisplays() const override { return displays_mac_.size(); }
@@ -391,9 +397,10 @@ class ScreenMac : public Screen {
   Display GetDisplayNearestView(gfx::NativeView native_view) const override {
     NSView* view = native_view.GetNativeNSView();
     NSWindow* window = view.window;
-    if (!window)
+    if (!window) {
       return GetPrimaryDisplay();
-    return GetDisplayNearestWindow(window);
+    }
+    return GetDisplayNearestWindow(gfx::NativeWindow(window));
   }
 
   Display GetDisplayNearestPoint(const gfx::Point& point) const override {
@@ -532,6 +539,11 @@ class ScreenMac : public Screen {
       }
     }
 
+    if (NSScreen.screens.firstObject != primary_ns_screen_) {
+      primary_ns_screen_ = NSScreen.screens.firstObject;
+      change_notifier_.NotifyPrimaryDisplayChanged();
+    }
+
     // If nothing changed, do no notifications.
     if (all_displays_equal) {
       return;
@@ -576,6 +588,8 @@ class ScreenMac : public Screen {
 
   std::vector<Display> displays_;
 
+  NSScreen* __weak primary_ns_screen_ = nil;
+
   // The observers notified by NSScreenColorSpaceDidChangeNotification and
   // NSApplicationDidChangeScreenParametersNotification.
   id __strong screen_color_change_observer_;
@@ -597,10 +611,17 @@ class ScreenMac : public Screen {
 // static
 gfx::NativeWindow Screen::GetWindowForView(gfx::NativeView native_view) {
   NSView* view = native_view.GetNativeNSView();
-  return view.window;
+  return gfx::NativeWindow(view.window);
 }
 
 Screen* CreateNativeScreen() {
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+
+  if (command_line.HasSwitch(switches::kHeadless)) {
+    return new ScreenMacHeadless;
+  }
+
   return new ScreenMac;
 }
 

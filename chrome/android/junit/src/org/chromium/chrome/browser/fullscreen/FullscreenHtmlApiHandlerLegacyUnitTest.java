@@ -16,20 +16,25 @@ import android.view.View.OnLayoutChangeListener;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -37,12 +42,14 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for {@link FullscreenHtmlApiHandlerLegacy}. */
+@Features.EnableFeatures({ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN})
 @RunWith(BaseRobolectricTestRunner.class)
 public class FullscreenHtmlApiHandlerLegacyUnitTest {
     private static final int DEVICE_WIDTH = 900;
     private static final int DEVICE_HEIGHT = 1600;
     private static final int SYSTEM_UI_HEIGHT = 100;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     @Mock private TabBrowserControlsConstraintsHelper mTabBrowserControlsConstraintsHelper;
     @Mock private Tab mTab;
@@ -50,6 +57,7 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
     @Mock private ContentView mContentView;
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
     private FullscreenHtmlApiHandlerLegacy mFullscreenHtmlApiHandlerLegacy;
     private ObservableSupplierImpl<Boolean> mAreControlsHidden;
@@ -57,14 +65,14 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mHost = new UserDataHost();
         doReturn(mHost).when(mTab).getUserDataHost();
 
         mAreControlsHidden = new ObservableSupplierImpl<Boolean>();
         mFullscreenHtmlApiHandlerLegacy =
-                new FullscreenHtmlApiHandlerLegacy(mActivity, mAreControlsHidden, false) {
+                new FullscreenHtmlApiHandlerLegacy(
+                        mActivity, mAreControlsHidden, false, mMultiWindowModeStateDispatcher) {
                     // This needs a PopupController, which isn't available in the test since we
                     // can't mock statics in this version of mockito.  Even if we could mock it, it
                     // casts to WebContentsImpl and other things that we can't reference due to
@@ -372,7 +380,8 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
     @Test
     public void testFullscreenObserverNotifiedWhenActivityStopped() {
         mFullscreenHtmlApiHandlerLegacy =
-                new FullscreenHtmlApiHandlerLegacy(mActivity, mAreControlsHidden, true) {
+                new FullscreenHtmlApiHandlerLegacy(
+                        mActivity, mAreControlsHidden, true, mMultiWindowModeStateDispatcher) {
                     @Override
                     public void destroySelectActionMode(Tab tab) {}
                 };

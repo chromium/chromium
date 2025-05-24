@@ -27,6 +27,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
+#include "content/browser/renderer_host/media/preferred_audio_output_device_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -117,9 +118,11 @@ class RenderFrameAudioOutputStreamFactory::Core final
       base::WeakPtr<ForwardingAudioStreamFactory::Core> factory =
           owner_->forwarding_factory_;
       if (factory) {
-        factory->CreateOutputStream(owner_->process_id_, owner_->frame_id_,
-                                    device_id_, params,
-                                    std::move(provider_client));
+        factory->CreateOutputStream(
+            owner_->process_id_,
+            owner_->global_render_frame_host_id_.frame_routing_id,
+            owner_->main_frame_token_, device_id_, params,
+            std::move(provider_client));
       }
 
       // Since the stream creation has been propagated, |this| is no longer
@@ -167,7 +170,8 @@ class RenderFrameAudioOutputStreamFactory::Core final
   void SendLogMessage(const std::string& message) const;
 
   const int process_id_;
-  const int frame_id_;
+  const GlobalRenderFrameHostId global_render_frame_host_id_;
+  const GlobalRenderFrameHostToken main_frame_token_;
   AudioOutputAuthorizationHandler authorization_handler_;
 
   mojo::Receiver<blink::mojom::RendererAudioOutputStreamFactory> receiver_{
@@ -226,8 +230,9 @@ RenderFrameAudioOutputStreamFactory::Core::Core(
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<blink::mojom::RendererAudioOutputStreamFactory>
         receiver)
-    : process_id_(frame->GetProcess()->GetID()),
-      frame_id_(frame->GetRoutingID()),
+    : process_id_(frame->GetProcess()->GetDeprecatedID()),
+      global_render_frame_host_id_(frame->GetGlobalId()),
+      main_frame_token_(frame->GetMainFrame()->GetGlobalFrameToken()),
       authorization_handler_(audio_system, media_stream_manager, process_id_) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -288,7 +293,8 @@ void RenderFrameAudioOutputStreamFactory::Core::RequestDeviceAuthorization(
           std::move(provider_receiver), std::move(callback));
 
   authorization_handler_.RequestDeviceAuthorization(
-      frame_id_, session_id.value_or(base::UnguessableToken()), device_id,
+      global_render_frame_host_id_.frame_routing_id,
+      session_id.value_or(base::UnguessableToken()), device_id,
       std::move(completed_callback));
 }
 
@@ -340,7 +346,7 @@ void RenderFrameAudioOutputStreamFactory::Core::SendLogMessage(
   MediaStreamManager::SendMessageToNativeLog(
       "RFAOSF::" + message +
       base::StringPrintf(" [process_id=%d, frame_id=%d]", process_id_,
-                         frame_id_));
+                         global_render_frame_host_id_.frame_routing_id));
 }
 
 }  // namespace content

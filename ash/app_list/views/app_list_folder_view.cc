@@ -38,7 +38,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -384,7 +383,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
   void OnTopIconAnimationsComplete(TopIconAnimationView* view) override {
     // Clean up the transitional view for which the animation completes.
     view->RemoveObserver(this);
-    auto to_delete = base::ranges::find(top_icon_views_, view);
+    auto to_delete = std::ranges::find(top_icon_views_, view);
     DCHECK(to_delete != top_icon_views_.end());
     top_icon_views_.erase(to_delete);
 
@@ -662,28 +661,38 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   // such changes.
   background_view_ = AddChildView(std::make_unique<views::View>());
   background_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
-  background_view_->layer()->SetFillsBoundsOpaquely(false);
-  background_view_->layer()->SetBackgroundBlur(
-      ColorProvider::kBackgroundBlurSigma);
-  background_view_->layer()->SetBackdropFilterQuality(
-      ColorProvider::kBackgroundBlurQuality);
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    background_view_->layer()->SetFillsBoundsOpaquely(false);
+    background_view_->layer()->SetBackgroundBlur(
+        ColorProvider::kBackgroundBlurSigma);
+    background_view_->layer()->SetBackdropFilterQuality(
+        ColorProvider::kBackgroundBlurQuality);
+  }
+
   background_view_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kFolderBackgroundRadius));
   background_view_->layer()->SetIsFastRoundedCorner(true);
   background_view_->SetBorder(std::make_unique<views::HighlightBorder>(
       kFolderBackgroundRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  background_view_->SetBackground(views::CreateThemedSolidBackground(
-      cros_tokens::kCrosSysSystemBaseElevated));
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+  background_view_->SetBackground(
+      views::CreateSolidBackground(background_color_id));
   background_view_->SetVisible(false);
 
   animating_background_ = AddChildView(std::make_unique<views::View>());
   animating_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  animating_background_->layer()->SetBackgroundBlur(
-      ColorProvider::kBackgroundBlurSigma);
-  animating_background_->layer()->SetBackdropFilterQuality(
-      ColorProvider::kBackgroundBlurQuality);
-  animating_background_->layer()->SetFillsBoundsOpaquely(false);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    animating_background_->layer()->SetBackgroundBlur(
+        ColorProvider::kBackgroundBlurSigma);
+    animating_background_->layer()->SetBackdropFilterQuality(
+        ColorProvider::kBackgroundBlurQuality);
+  }
+
   animating_background_->SetVisible(false);
 
   contents_container_ = AddChildView(std::make_unique<views::View>());
@@ -809,7 +818,7 @@ void AppListFolderView::ConfigureForFolderItemView(
 void AppListFolderView::ScheduleShowHideAnimation(bool show,
                                                   bool hide_for_reparent) {
   show_hide_metrics_tracker_ =
-      GetWidget()->GetCompositor()->RequestNewThroughputTracker();
+      GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker();
   show_hide_metrics_tracker_->Start(
       metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(
@@ -821,8 +830,6 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   shown_ = show;
   UpdateExpandedCollapsedAccessibleState();
   if (show) {
-    // TODO(crbug.com/325137417): Investigate whether this line is necessary. It
-    // probably isn't.
     GetViewAccessibility().SetName(
         folder_item_view_->GetViewAccessibility().GetCachedName(),
         ax::mojom::NameFrom::kAttribute);

@@ -31,7 +31,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/storage_partition.h"
@@ -118,15 +117,17 @@ class UnittestProfileManager : public FakeProfileManager {
 // Testing params:
 // - bool enable_third_party_management_feature
 // - bool setup_cookies_to_move
-// - bool explicit_browser_signin_enabled
 class DiceSignedInProfileCreatorTest
     : public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>>,
+      public testing::WithParamInterface<std::tuple<bool, bool>>,
       public ProfileManagerObserver {
  public:
   DiceSignedInProfileCreatorTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {
-    InitFeatures();
+    scoped_feature_list_.InitWithFeatureState(
+        profile_management::features::kThirdPartyProfileManagement,
+        enable_third_party_management_feature());
+
     auto profile_manager_unique = std::make_unique<UnittestProfileManager>(
         base::CreateUniqueTempDirectoryScopedToTest());
     profile_manager_ = profile_manager_unique.get();
@@ -140,25 +141,6 @@ class DiceSignedInProfileCreatorTest
     profile_manager()->AddObserver(this);
   }
 
-  void InitFeatures() {
-    std::vector<base::test::FeatureRef> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-    if (enable_third_party_management_feature()) {
-      enabled.push_back(
-          profile_management::features::kThirdPartyProfileManagement);
-    } else {
-      disabled.push_back(
-          profile_management::features::kThirdPartyProfileManagement);
-    }
-
-    if (explicit_browser_signin_enabled()) {
-      enabled.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
-    } else {
-      disabled.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled, disabled);
-  }
 
   ~DiceSignedInProfileCreatorTest() override { DeleteProfiles(); }
 
@@ -167,8 +149,6 @@ class DiceSignedInProfileCreatorTest
   }
 
   bool setup_cookies_to_move() { return std::get<1>(GetParam()); }
-
-  bool explicit_browser_signin_enabled() { return std::get<2>(GetParam()); }
 
   UnittestProfileManager* profile_manager() { return profile_manager_; }
 
@@ -331,10 +311,8 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   EXPECT_EQ(1u, new_identity_manager->GetAccountsWithRefreshTokens().size());
   EXPECT_TRUE(IdentityManagerFactory::GetForProfile(signed_in_profile())
                   ->HasAccountWithRefreshToken(account_info.account_id));
-  if (explicit_browser_signin_enabled()) {
-    EXPECT_TRUE(
-        new_identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  }
+  EXPECT_TRUE(
+      new_identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   // Check profile type
   ASSERT_FALSE(signed_in_profile()->IsGuestSession());
@@ -442,5 +420,4 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
 INSTANTIATE_TEST_SUITE_P(All,
                          DiceSignedInProfileCreatorTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool()));

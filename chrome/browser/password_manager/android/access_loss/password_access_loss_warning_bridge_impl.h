@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
+#include "chrome/browser/password_manager/android/password_manager_util_bridge_interface.h"
 
 class PasswordAccessLossWarningBridgeImpl
     : public PasswordAccessLossWarningBridge {
@@ -21,10 +22,26 @@ class PasswordAccessLossWarningBridgeImpl
 
   bool ShouldShowAccessLossNoticeSheet(PrefService* pref_service,
                                        bool called_at_startup) override;
-  void MaybeShowAccessLossNoticeSheet(PrefService* pref_service,
-                                      const gfx::NativeWindow window,
-                                      Profile* profile,
-                                      bool called_at_startup) override;
+  void MaybeShowAccessLossNoticeSheet(
+      PrefService* pref_service,
+      const gfx::NativeWindow window,
+      Profile* profile,
+      bool called_at_startup,
+      password_manager_android_util::PasswordAccessLossWarningTriggers
+          trigger_source) override;
+
+  void SetUtilBridgeForTesting(
+      std::unique_ptr<
+          password_manager_android_util::PasswordManagerUtilBridgeInterface>
+          util_bridge);
+
+ private:
+  std::unique_ptr<
+      password_manager_android_util::PasswordManagerUtilBridgeInterface>
+      util_bridge_;
+
+  password_manager_android_util::PasswordManagerUtilBridgeInterface&
+  GetUtilBridge();
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCESS_LOSS_PASSWORD_ACCESS_LOSS_WARNING_BRIDGE_IMPL_H_

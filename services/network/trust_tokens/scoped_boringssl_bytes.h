@@ -44,7 +44,7 @@ class ScopedBoringsslBytes {
 
   base::span<const uint8_t> as_span() const {
     CHECK(ptr_);
-    return base::make_span(ptr_.get(), len_);
+    return base::span(ptr_.get(), len_);
   }
 
  private:

@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_TEST_NETWORK_CONNECTION_CHANGE_SIMULATOR_H_
 #define CONTENT_PUBLIC_TEST_NETWORK_CONNECTION_CHANGE_SIMULATOR_H_
 
-#include "build/chromeos_buildflags.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace base {

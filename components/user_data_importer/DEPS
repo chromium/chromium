@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/password_manager/core/browser",
+]
+

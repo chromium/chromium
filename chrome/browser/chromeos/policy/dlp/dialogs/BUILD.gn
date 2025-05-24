@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos)
 
 static_library("dialogs") {
@@ -17,8 +15,8 @@ static_library("dialogs") {
   ]
 
   deps = [
+    "//ash/public/cpp",
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser:browser_public_dependencies",
     "//components/strings:components_strings",
     "//components/vector_icons",
@@ -32,10 +30,6 @@ static_library("dialogs") {
     "//ui/gfx/geometry",
     "//ui/views",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//ash/public/cpp" ]
-  }
 }
 
 static_library("test_support") {

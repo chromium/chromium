@@ -5,10 +5,20 @@
 #ifndef CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 #define CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 
+#include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace autofill {
+class BankAccount;
+class Ewallet;
+class StrikeDatabase;
+}  // namespace autofill
 
 namespace content {
 class WebContents;
@@ -37,7 +47,7 @@ class ChromeFacilitatedPaymentsClient
 
   // RiskDataLoader:
   void LoadRiskData(base::OnceCallback<void(const std::string&)>
-                        on_risk_data_loaded_callback) override;
+                        on_risk_data_loaded_callback) final;
 
   payments::facilitated::ContentFacilitatedPaymentsDriver*
   GetFacilitatedPaymentsDriverForFrame(
@@ -51,29 +61,54 @@ class ChromeFacilitatedPaymentsClient
 
   // FacilitatedPaymentsClient:
   // This returns nullptr if the `Profile` associated is null.
-  autofill::PaymentsDataManager* GetPaymentsDataManager() override;
+  autofill::PaymentsDataManager* GetPaymentsDataManager() final;
   // This returns nullptr if the `Profile` associated is null.
   payments::facilitated::FacilitatedPaymentsNetworkInterface*
-  GetFacilitatedPaymentsNetworkInterface() override;
+  GetFacilitatedPaymentsNetworkInterface() final;
+  payments::facilitated::MultipleRequestFacilitatedPaymentsNetworkInterface*
+  GetMultipleRequestFacilitatedPaymentsNetworkInterface() final;
   // This returns std::nullopt if the `Profile` associated is null.
-  std::optional<CoreAccountInfo> GetCoreAccountInfo() override;
-  bool IsInLandscapeMode() override;
-  bool ShowPixPaymentPrompt(
+  std::optional<CoreAccountInfo> GetCoreAccountInfo() final;
+  bool IsInLandscapeMode() final;
+  bool IsFoldable() final;
+  optimization_guide::OptimizationGuideDecider* GetOptimizationGuideDecider()
+      final;
+  void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
-      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
-      override;
-  void ShowProgressScreen() override;
-  void ShowErrorScreen() override;
-  void DismissPrompt() override;
+      base::OnceCallback<void(int64_t)> on_payment_account_selected) final;
+  void ShowEwalletPaymentPrompt(
+      base::span<const autofill::Ewallet> ewallet_suggestions,
+      base::OnceCallback<void(int64_t)> on_payment_account_selected) final;
+  void ShowProgressScreen() final;
+  void ShowErrorScreen() final;
+  void DismissPrompt() final;
+  void SetUiEventListener(
+      base::RepeatingCallback<void(payments::facilitated::UiEvent)>
+          ui_event_listener) final;
+  autofill::StrikeDatabase* GetStrikeDatabase() final;
+  bool IsPixAccountLinkingSupported() const final;
+
+  // Register any allowlists with the OptimizationGuide framework, so that
+  // individual features can later request to check whether the current main
+  // frame URL is eligible for that feature.
+  void RegisterAllowlists();
 
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;
 
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsNetworkInterface>
       facilitated_payments_network_interface_;
+  std::unique_ptr<
+      payments::facilitated::MultipleRequestFacilitatedPaymentsNetworkInterface>
+      multiple_request_facilitated_payments_network_interface_;
 
   std::unique_ptr<FacilitatedPaymentsController>
       facilitated_payments_controller_;
+
+  // The optimization guide decider to help determine whether the current main
+  // frame URL is eligible for facilitated payments.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

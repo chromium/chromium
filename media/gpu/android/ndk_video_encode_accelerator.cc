@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
 #include <optional>
@@ -15,14 +10,12 @@
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
-#include "media/base/media_switches.h"
-#include "media/base/video_codecs.h"
+#include "media/base/media_serializers_base.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/video_accelerator_util.h"
 #include "media/parsers/h264_level_limits.h"
@@ -337,7 +330,13 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_COLOR_FORMAT, format);
 
   if (config.require_low_delay) {
-    AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_LATENCY, 1);
+    // Android docs recommend not setting the latency key with H264 baseline
+    // profile since some devices will fail configure. Since latency=1 means
+    // no b-frames for h.264 and baseline doesn't support b-frames, this should
+    // be okay. See https://crbug.com/409110228
+    if (config.output_profile != H264PROFILE_BASELINE) {
+      AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_LATENCY, 1);
+    }
     // MediaCodec supports two priorities: 0 - realtime, 1 - best effort
     AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PRIORITY, 0);
   }
@@ -354,7 +353,7 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
                             BITRATE_MODE_VBR);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_BIT_RATE,
@@ -377,6 +376,16 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
   }
 
   return result;
+}
+
+bool IsHardwareCodec(const std::string& codec_name) {
+  for (const auto& info : GetEncoderInfoCache()) {
+    if (info.name == codec_name) {
+      return !info.profile.is_software_codec;
+    }
+  }
+  LOG(ERROR) << "Unknown codec name: " << codec_name;
+  return false;
 }
 
 std::optional<std::string> FindMediaCodecFor(
@@ -434,6 +443,30 @@ std::optional<std::string> FindMediaCodecFor(
   return encoder_name;
 }
 
+// AVC and HEVC encoders produce parameters sets as a separate buffers
+// with BUFFER_FLAG_CODEC_CONFIG flag, these parameters sets need to be
+// preserved and appended at the beginning of the bitstream.
+// Av1, Vp9 encoders produce extra data describing the stream, but this data
+// is already known via other channels and is not expected by decoders.
+// For such encoders we don't put it into the bitstream.
+// Vp8 doesn't produce configuration buffers.
+// More Info:
+// https://developer.android.com/reference/android/media/MediaCodec#CSD
+bool ProfileNeedsConfigDataInBitstream(VideoCodecProfile profile) {
+  switch (VideoCodecProfileToVideoCodec(profile)) {
+    case VideoCodec::kH264:
+    case VideoCodec::kHEVC:
+      return true;
+    case VideoCodec::kAV1:
+    case VideoCodec::kVP9:
+    case VideoCodec::kVP8:
+      return false;
+    default:
+      NOTREACHED()
+          << "Configuration for unsupported codecs shouldn't come this far.";
+  }
+}
+
 }  // namespace
 
 NdkVideoEncodeAccelerator::NdkVideoEncodeAccelerator(
@@ -452,31 +485,12 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
 
   SupportedProfiles profiles;
   for (auto& info : GetEncoderInfoCache()) {
-    const auto codec = VideoCodecProfileToVideoCodec(info.profile.profile);
-    switch (codec) {
-      case VideoCodec::kHEVC:
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-        if (base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport) &&
-            // Currently only 8bit NV12 and I420 encoding is supported, so limit
-            // this to main profile only just like other platforms.
-            info.profile.profile == VideoCodecProfile::HEVCPROFILE_MAIN &&
-            // Some devices may report to have a software HEVC encoder,
-            // however based on tests, they are not always working well,
-            // so limit the support to HW only for now.
-            !info.profile.is_software_codec) {
-          profiles.push_back(info.profile);
-        }
-#endif
-        break;
-      default:
-        profiles.push_back(info.profile);
-        break;
-    }
+    profiles.push_back(info.profile);
   }
   return profiles;
 }
 
-bool NdkVideoEncodeAccelerator::Initialize(
+EncoderStatus NdkVideoEncodeAccelerator::Initialize(
     const Config& config,
     VideoEncodeAccelerator::Client* client,
     std::unique_ptr<MediaLog> media_log) {
@@ -493,7 +507,7 @@ bool NdkVideoEncodeAccelerator::Initialize(
   VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
 
   // These should already be filtered out by VideoEncodeAcceleratorUtil.
-  if (codec != VideoCodec::kH264 && codec == VideoCodec::kHEVC) {
+  if (codec != VideoCodec::kH264) {
     config_.required_encoder_type = EncoderType::kHardware;
   }
 
@@ -501,7 +515,7 @@ bool NdkVideoEncodeAccelerator::Initialize(
       config.input_format != PIXEL_FORMAT_NV12) {
     MEDIA_LOG(ERROR, log_) << "Unexpected combo: " << config.input_format
                            << ", " << GetProfileName(config.output_profile);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   effective_framerate_ = config.framerate;
@@ -514,24 +528,60 @@ bool NdkVideoEncodeAccelerator::Initialize(
         codec, num_temporal_layers_);
   }
 
-  if (!ResetMediaCodec()) {
-    return false;
+  const EncoderStatus status = ResetMediaCodec();
+  if (!status.is_ok()) {
+    return status;
   }
 
-  // Conservative upper bound for output buffer size: decoded size + 2KB.
-  // Adding 2KB just in case the frame is really small, we don't want to
-  // end up with no space for a video codec's headers.
-  const size_t output_buffer_capacity =
-      VideoFrame::AllocationSize(config.input_format,
-                                 config.input_visible_size) +
-      2048;
+  const size_t bitstream_buffer_size = EstimateBitstreamBufferSize(
+      config_.bitrate, config_.framerate, config.input_visible_size);
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::RequireBitstreamBuffers,
                      client_ptr_factory_->GetWeakPtr(), 1,
-                     config.input_visible_size, output_buffer_capacity));
+                     config.input_visible_size, bitstream_buffer_size));
 
-  return true;
+  NotifyEncoderInfo();
+  return {EncoderStatus::Codes::kOk};
+}
+
+void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
+  CHECK(media_codec_);
+  std::string codec_name = "unknown";
+  char* name_ptr = nullptr;
+  media_status_t status = AMediaCodec_getName(media_codec_->codec(), &name_ptr);
+  if (status == AMEDIA_OK && name_ptr) {
+    codec_name = std::string(name_ptr);
+    AMediaCodec_releaseName(media_codec_->codec(), name_ptr);
+  }
+
+  for (const auto& info : GetEncoderInfoCache()) {
+    if (info.name == codec_name) {
+      // TODO(crbug.com/382015342): Set the bitrate limits when we can get them
+      // through MediaCodec API.
+      encoder_info_.resolution_rate_limits.emplace_back(
+          info.profile.max_resolution, /*min_start_bitrate_bps=*/0,
+          /*min_bitrate_bps=*/0, /*max_bitrate_bps=*/0,
+          info.profile.max_framerate_numerator,
+          info.profile.max_framerate_denominator);
+    }
+  }
+
+  encoder_info_.implementation_name =
+      "NdkVideoEncodeAccelerator(" + codec_name + ")";
+  encoder_info_.supports_native_handle = false;
+  encoder_info_.has_trusted_rate_controller = false;
+  encoder_info_.is_hardware_accelerated = IsHardwareCodec(codec_name);
+  encoder_info_.supports_simulcast = false;
+  encoder_info_.reports_average_qp = true;
+  if (codec_name == "c2.cr52.avc.encoder") {
+    encoder_info_.reports_average_qp = false;
+  }
+  encoder_info_.supports_frame_size_change = false;
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
+                     client_ptr_factory_->GetWeakPtr(), encoder_info_));
 }
 
 void NdkVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
@@ -748,10 +798,8 @@ void NdkVideoEncodeAccelerator::FeedInput() {
     }
   }
 
-  size_t capacity = 0;
-  uint8_t* buffer_ptr =
-      AMediaCodec_getInputBuffer(media_codec_->codec(), buffer_idx, &capacity);
-  if (!buffer_ptr) {
+  auto mc_input_buffer = media_codec_->GetInputBuffer(buffer_idx);
+  if (mc_input_buffer.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                        "Can't obtain input buffer from media codec"});
     return;
@@ -760,49 +808,52 @@ void NdkVideoEncodeAccelerator::FeedInput() {
   const auto visible_size =
       aligned_size_.value_or(frame->visible_rect().size());
 
-  uint8_t* dst_y = buffer_ptr;
   const int dst_stride_y = input_buffer_stride_;
-  const int uv_plane_offset =
-      input_buffer_yplane_height_ * input_buffer_stride_;
-  uint8_t* dst_uv = buffer_ptr + uv_plane_offset;
   const int dst_stride_uv = input_buffer_stride_;
-
   const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
       PIXEL_FORMAT_NV12, VideoFrame::Plane::kUV, visible_size);
-  const size_t queued_size =
-      // size of Y-plane plus padding till UV-plane
-      uv_plane_offset +
+
+  const size_t y_plane_len = input_buffer_yplane_height_ * input_buffer_stride_;
+  const size_t uv_plane_len =
       // size of all UV-plane lines but the last one
       (uv_plane_size.height() - 1) * dst_stride_uv +
       // size of the very last line in UV-plane (it's not padded to full stride)
       uv_plane_size.width() * 2;
 
-  if (queued_size > capacity) {
-    NotifyErrorStatus({EncoderStatus::Codes::kInvalidInputFrame,
-                       base::StringPrintf("Frame doesn't fit into the input "
-                                          "buffer. queued_size: %zu capacity: "
-                                          "%zu",
-                                          queued_size, capacity)});
+  const size_t queued_size = y_plane_len + uv_plane_len;
+
+  if (queued_size > mc_input_buffer.size()) {
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kInvalidInputFrame,
+         base::StringPrintf("Frame doesn't fit into the input "
+                            "buffer. queued_size: %zu capacity: "
+                            "%zu",
+                            queued_size, mc_input_buffer.size())});
     return;
   }
 
+  auto dst_y = mc_input_buffer.first(y_plane_len);
+  auto dst_uv = mc_input_buffer.subspan(y_plane_len, uv_plane_len);
+
   bool converted = false;
   if (frame->format() == PIXEL_FORMAT_I420) {
-    converted = !libyuv::I420ToNV12(
-        frame->visible_data(VideoFrame::Plane::kY),
-        frame->stride(VideoFrame::Plane::kY),
-        frame->visible_data(VideoFrame::Plane::kU),
-        frame->stride(VideoFrame::Plane::kU),
-        frame->visible_data(VideoFrame::Plane::kV),
-        frame->stride(VideoFrame::Plane::kV), dst_y, dst_stride_y, dst_uv,
-        dst_stride_uv, visible_size.width(), visible_size.height());
+    converted =
+        !libyuv::I420ToNV12(frame->visible_data(VideoFrame::Plane::kY),
+                            frame->stride(VideoFrame::Plane::kY),
+                            frame->visible_data(VideoFrame::Plane::kU),
+                            frame->stride(VideoFrame::Plane::kU),
+                            frame->visible_data(VideoFrame::Plane::kV),
+                            frame->stride(VideoFrame::Plane::kV), dst_y.data(),
+                            dst_stride_y, dst_uv.data(), dst_stride_uv,
+                            visible_size.width(), visible_size.height());
   } else if (frame->format() == PIXEL_FORMAT_NV12) {
-    converted = !libyuv::NV12Copy(frame->visible_data(VideoFrame::Plane::kY),
-                                  frame->stride(VideoFrame::Plane::kY),
-                                  frame->visible_data(VideoFrame::Plane::kUV),
-                                  frame->stride(VideoFrame::Plane::kUV), dst_y,
-                                  dst_stride_y, dst_uv, dst_stride_uv,
-                                  visible_size.width(), visible_size.height());
+    converted =
+        !libyuv::NV12Copy(frame->visible_data(VideoFrame::Plane::kY),
+                          frame->stride(VideoFrame::Plane::kY),
+                          frame->visible_data(VideoFrame::Plane::kUV),
+                          frame->stride(VideoFrame::Plane::kUV), dst_y.data(),
+                          dst_stride_y, dst_uv.data(), dst_stride_uv,
+                          visible_size.width(), visible_size.height());
   } else {
     NotifyErrorStatus({EncoderStatus::Codes::kUnsupportedFrameFormat,
                        "Unexpected frame format: " +
@@ -851,7 +902,10 @@ void NdkVideoEncodeAccelerator::NotifyErrorStatus(EncoderStatus status) {
              << static_cast<int>(status.code())
              << ", message=" << status.message();
   if (!error_occurred_) {
-    client_ptr_factory_->GetWeakPtr()->NotifyErrorStatus(status);
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VideoEncodeAccelerator::Client::NotifyErrorStatus,
+                       client_ptr_factory_->GetWeakPtr(), status));
     error_occurred_ = true;
   }
 }
@@ -879,7 +933,6 @@ bool NdkVideoEncodeAccelerator::DrainConfig() {
 
   NdkMediaCodecWrapper::OutputInfo output_buffer = media_codec_->PeekOutput();
   AMediaCodecBufferInfo& mc_buffer_info = output_buffer.info;
-  const size_t mc_buffer_size = static_cast<size_t>(mc_buffer_info.size);
 
   // Check that the first buffer in the queue contains config data.
   if ((mc_buffer_info.flags & AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG) == 0)
@@ -888,27 +941,16 @@ bool NdkVideoEncodeAccelerator::DrainConfig() {
   // We already have the info we need from `output_buffer`
   std::ignore = media_codec_->TakeOutput();
 
-  size_t capacity = 0;
-  uint8_t* buf_data = AMediaCodec_getOutputBuffer(
-      media_codec_->codec(), output_buffer.buffer_index, &capacity);
-
-  if (!buf_data) {
+  auto out_buffer_data = media_codec_->GetOutputBuffer(output_buffer);
+  if (out_buffer_data.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "Can't obtain output buffer from media codec"});
     return false;
   }
 
-  if (mc_buffer_info.offset + mc_buffer_size > capacity) {
-    NotifyErrorStatus(
-        {EncoderStatus::Codes::kEncoderFailedEncode,
-         base::StringPrintf("Invalid output buffer layout."
-                            "offset: %d size: %zu capacity: %zu",
-                            mc_buffer_info.offset, mc_buffer_size, capacity)});
-    return false;
+  if (ProfileNeedsConfigDataInBitstream(config_.output_profile)) {
+    config_data_.assign(out_buffer_data.begin(), out_buffer_data.end());
   }
-
-  config_data_.resize(mc_buffer_size);
-  memcpy(config_data_.data(), buf_data + mc_buffer_info.offset, mc_buffer_size);
   AMediaCodec_releaseOutputBuffer(media_codec_->codec(),
                                   output_buffer.buffer_index, false);
   return true;
@@ -937,7 +979,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
       DCHECK_EQ(mc_buffer_size, 0u);
       encoder_color_space_ = pending_color_space_;
       pending_color_space_.reset();
-      if (!ResetMediaCodec()) {
+      if (!ResetMediaCodec().is_ok()) {
         NotifyErrorStatus(
             {EncoderStatus::Codes::kEncoderFailedEncode,
              "Failed to recreate media codec for color space change."});
@@ -966,22 +1008,10 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     return;
   }
 
-  size_t capacity = 0;
-  uint8_t* buf_data = AMediaCodec_getOutputBuffer(
-      media_codec_->codec(), output_buffer.buffer_index, &capacity);
-
-  if (!buf_data) {
+  auto out_buffer_data = media_codec_->GetOutputBuffer(output_buffer);
+  if (out_buffer_data.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "Can't obtain output buffer from media codec"});
-    return;
-  }
-
-  if (mc_buffer_info.offset + mc_buffer_size > capacity) {
-    NotifyErrorStatus(
-        {EncoderStatus::Codes::kEncoderFailedEncode,
-         base::StringPrintf("Invalid output buffer layout."
-                            "offset: %d size: %zu capacity: %zu",
-                            mc_buffer_info.offset, mc_buffer_size, capacity)});
     return;
   }
 
@@ -994,13 +1024,13 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     return;
   }
 
-  uint8_t* output_dst = mapping.GetMemoryAs<uint8_t>();
+  auto output_dst = mapping.GetMemoryAsSpan<uint8_t>();
   if (config_size > 0) {
-    memcpy(output_dst, config_data_.data(), config_size);
-    output_dst += config_size;
+    output_dst.copy_prefix_from(config_data_);
+    output_dst = output_dst.subspan(config_size);
   }
-  memcpy(output_dst, buf_data, mc_buffer_size);
 
+  output_dst.copy_prefix_from(out_buffer_data);
   auto timestamp = RetrieveRealTimestamp(
       base::Microseconds(mc_buffer_info.presentationTimeUs));
   auto metadata = BitstreamBufferMetadata(mc_buffer_size + config_size,
@@ -1019,7 +1049,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     }
 
     TemporalScalabilityIdExtractor::BitstreamMetadata bits_md;
-    if (!svc_parser_->ParseChunk(base::span(output_dst, mc_buffer_size),
+    if (!svc_parser_->ParseChunk(output_dst.first(mc_buffer_size),
                                  input_since_keyframe_count_, bits_md)) {
       NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                          "Parse bitstream failed"});
@@ -1046,7 +1076,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
                                   output_buffer.buffer_index, false);
 }
 
-bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
+EncoderStatus NdkVideoEncodeAccelerator::ResetMediaCodec() {
   DCHECK(!pending_color_space_);
 
   have_encoded_frames_ = false;
@@ -1060,7 +1090,7 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
   if (!name) {
     MEDIA_LOG(ERROR, log_) << "No suitable MedicCodec found for: "
                            << config_.AsHumanReadableString();
-    return false;
+    return {EncoderStatus::Codes::kEncoderUnsupportedCodec};
   }
 
   auto configured_size = aligned_size_.value_or(config_.input_visible_size);
@@ -1071,7 +1101,7 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
   if (!media_format) {
     MEDIA_LOG(ERROR, log_) << "Fail to create media format for: "
                            << config_.AsHumanReadableString();
-    return false;
+    return {EncoderStatus::Codes::kEncoderUnsupportedConfig};
   }
 
   // We do the following in a loop since we may need to recreate the MediaCodec
@@ -1083,7 +1113,7 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
       MEDIA_LOG(ERROR, log_)
           << "Can't create media codec (" << name.value()
           << ") for config: " << config_.AsHumanReadableString();
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
     media_status_t status = AMediaCodec_configure(
         media_codec_->codec(), media_format.get(), nullptr, nullptr,
@@ -1091,24 +1121,23 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
 
     if (status != AMEDIA_OK) {
       MEDIA_LOG(ERROR, log_) << "Can't configure media codec. Error " << status;
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
 
     if (!SetInputBufferLayout(configured_size)) {
       MEDIA_LOG(ERROR, log_) << "Can't get input buffer layout from MediaCodec";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
 
     if (aligned_size_.value_or(configured_size) != configured_size) {
       // Give the client a chance to handle realignment itself.
-      VideoEncoderInfo encoder_info;
-      encoder_info.requested_resolution_alignment = 16;
-      encoder_info.apply_alignment_to_all_simulcast_layers = true;
+      encoder_info_.requested_resolution_alignment = 16;
+      encoder_info_.apply_alignment_to_all_simulcast_layers = true;
       task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
               &VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
-              client_ptr_factory_->GetWeakPtr(), encoder_info));
+              client_ptr_factory_->GetWeakPtr(), encoder_info_));
 
       // We must recreate the MediaCodec now since setParameters() doesn't work
       // consistently across devices and versions of Android.
@@ -1124,15 +1153,19 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
   } while (!media_codec_);
 
   media_status_t status = media_codec_->Start();
+  if (status == AMEDIACODEC_ERROR_INSUFFICIENT_RESOURCE) {
+    MEDIA_LOG(ERROR, log_) << "No more encoders available. Error " << status;
+    return {EncoderStatus::Codes::kOutOfPlatformEncoders};
+  }
   if (status != AMEDIA_OK) {
     MEDIA_LOG(ERROR, log_) << "Can't start media codec. Error " << status;
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   MEDIA_LOG(INFO, log_) << "Created MediaCodec (" << name.value()
                         << ") for config: " << config_.AsHumanReadableString();
 
-  return true;
+  return {EncoderStatus::Codes::kOk};
 }
 
 void NdkVideoEncodeAccelerator::SetEncoderColorSpace() {

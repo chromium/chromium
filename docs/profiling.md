@@ -184,7 +184,9 @@ Here's an example:
     [ perf record: Captured and wrote 100.797 MB perf.data (489478 samples) ]
     localhost /tmp/perf # exit
     $ scp root@chromeos-box:/tmp/perf/perf.data .
-    $ pprof -web out_${SDK_BOARD}/Release/chrome perf.data
+    $ PPROF_BINARY_PATH=out_${BOARD}/Release pprof -web perf.data
+    or
+    $ PPROF_BINARY_PATH=out_${BOARD}/Release pprof -flame perf.data
 
 Note: this will complain about missing chromeos symbols.  Even pointing
 PPROF\_BINARY\_PATH at the expanded `debug-board.tgz` file that came along with

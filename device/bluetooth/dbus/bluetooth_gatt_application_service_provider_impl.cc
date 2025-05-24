@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -14,8 +15,9 @@ BluetoothGattApplicationServiceProviderImpl::
     BluetoothGattApplicationServiceProviderImpl(
         dbus::Bus* bus,
         const dbus::ObjectPath& object_path,
-        const std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>&
-            services)
+        const std::map<
+            dbus::ObjectPath,
+            raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>& services)
     : origin_thread_id_(base::PlatformThread::CurrentId()),
       bus_(bus),
       object_path_(object_path) {

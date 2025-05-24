@@ -356,8 +356,7 @@ class PaintOpHelper {
       case SkColorChannel::kA:
         return "kA";
     }
-    NOTREACHED_IN_MIGRATION();
-    return "unknown";
+    NOTREACHED();
   }
 
   static std::string ToString(const SkBlendMode& mode) {
@@ -599,6 +598,8 @@ class PaintOpHelper {
         return "kImage";
       case PaintShader::Type::kPaintRecord:
         return "kPaintRecord";
+      case PaintShader::Type::kSkSLCommand:
+        return "kSkSLCommand";
       case PaintShader::Type::kShaderCount:
         return "kShaderCount";
     }

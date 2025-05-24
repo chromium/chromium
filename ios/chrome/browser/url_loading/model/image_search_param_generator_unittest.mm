@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
@@ -18,14 +18,14 @@ class ImageSearchParamGeneratorTest : public PlatformTest {
  protected:
   void SetUp() override {
     // Set up a TestProfileIOS instance.
-    TestProfileIOS::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    profile_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

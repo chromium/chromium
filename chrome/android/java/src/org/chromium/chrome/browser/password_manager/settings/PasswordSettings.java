@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
@@ -31,8 +30,9 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SearchUtils;
@@ -64,6 +63,8 @@ import java.util.Locale;
 /**
  * The "Passwords" screen in Settings, which allows the user to enable or disable password saving,
  * to view saved passwords (just the username and URL), and to delete saved passwords.
+ *
+ * <p>TODO: crbug.com/372657804 - Make sure that the PasswordSettings is not created in UPM M4.1
  */
 public class PasswordSettings extends ChromeBaseSettingsFragment
         implements PasswordListObserver,
@@ -132,18 +133,17 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
 
     private @Nullable PasswordCheck mPasswordCheck;
     private @ManagePasswordsReferrer int mManagePasswordsReferrer;
-    private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     /** For controlling the UX flow of exporting passwords. */
-    private ExportFlow mExportFlow = new ExportFlow();
+    private final ExportFlow mExportFlow = new ExportFlow(PasswordAccessLossWarningType.NONE);
 
     public ExportFlow getExportFlowForTesting() {
         return mExportFlow;
     }
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mExportFlow.onCreate(
                 savedInstanceState,
                 new ExportFlow.Delegate() {
@@ -219,7 +219,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Disable animations of preference changes.
@@ -410,8 +410,10 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         }
         mNoPasswords = passwordParent.getPreferenceCount() == 0;
         if (mMenu != null) {
-            mMenu.findItem(R.id.export_passwords)
-                    .setEnabled(!mNoPasswords && !mExportFlow.isActive());
+            MenuItem menuItem = mMenu.findItem(R.id.export_passwords);
+            if (menuItem != null) {
+                menuItem.setEnabled(!mNoPasswords && !mExportFlow.isActive());
+            }
         }
         if (mNoPasswords) {
             if (count == 0) displayEmptyScreenMessage(); // Show if the list was already empty.
@@ -424,12 +426,6 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                         .announceForAccessibility(
                                 getString(R.string.accessible_find_in_page_no_results));
             }
-        }
-
-        if (!mNoPasswords) {
-            PasswordManagerHandlerProvider.getForProfile(getProfile())
-                    .getPasswordManagerHandler()
-                    .showMigrationWarning(getActivity(), mBottomSheetControllerSupplier.get());
         }
     }
 
@@ -484,10 +480,15 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        rebuildPasswordLists();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mExportFlow.onResume();
-        rebuildPasswordLists();
     }
 
     @Override
@@ -538,7 +539,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         if (preference == mLinkPref) {
             Intent intent =
                     new Intent(
-                            Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getAccountDashboardURL()));
+                            Intent.ACTION_VIEW, Uri.parse(PasswordUiView.getAccountDashboardURL()));
             intent.setPackage(getActivity().getPackageName());
             getActivity().startActivity(intent);
         } else {
@@ -739,16 +740,11 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         Intent intent =
                 new Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse(PasswordUIView.getTrustedVaultLearnMoreURL()));
+                        Uri.parse(PasswordUiView.getTrustedVaultLearnMoreURL()));
         intent.setPackage(getActivity().getPackageName());
         getActivity().startActivity(intent);
         // Return true to notify the click was handled.
         return true;
-    }
-
-    public void setBottomSheetControllerSupplier(
-            OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier) {
-        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
     }
 
     Menu getMenuForTesting() {
@@ -757,5 +753,10 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
 
     Toolbar getToolbarForTesting() {
         return getActivity().findViewById(R.id.action_bar);
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

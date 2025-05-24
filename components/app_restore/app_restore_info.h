@@ -62,9 +62,6 @@ class COMPONENT_EXPORT(APP_RESTORE) AppRestoreInfo {
 
     // Called when `window` is ready to be parented to a valid desk container.
     //
-    // For Lacros windows, called when `window` is associated with a Lacros
-    // window id.
-    //
     // For ARC app windows, called once a window which was created without an
     // associated task is now associated with a ARC task.
     virtual void OnParentWindowToValidContainer(aura::Window* window) {}

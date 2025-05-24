@@ -4,29 +4,44 @@
 
 #include "remoting/host/ipc_desktop_environment.h"
 
+#include <cstdint>
+#include <memory>
+#include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
-#include "base/process/process_handle.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+#include "remoting/base/errors.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_display_info_monitor.h"
+#include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/desktop_session_proxy.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/protocol/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace remoting {
@@ -112,7 +127,7 @@ void IpcDesktopEnvironment::SetCapabilities(const std::string& capabilities) {
   return desktop_session_proxy_->SetCapabilities(capabilities);
 }
 
-uint32_t IpcDesktopEnvironment::GetDesktopSessionId() const {
+std::uint32_t IpcDesktopEnvironment::GetDesktopSessionId() const {
   return desktop_session_proxy_->desktop_session_id();
 }
 
@@ -142,16 +157,20 @@ IpcDesktopEnvironmentFactory::~IpcDesktopEnvironmentFactory() {
           std::move(desktop_session_manager_)));
 }
 
-std::unique_ptr<DesktopEnvironment> IpcDesktopEnvironmentFactory::Create(
+void IpcDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,
     base::WeakPtr<ClientSessionEvents> client_session_events,
-    const DesktopEnvironmentOptions& options) {
+    const DesktopEnvironmentOptions& options,
+    CreateCallback callback) {
   DCHECK(network_task_runner_->BelongsToCurrentThread());
 
-  return std::make_unique<IpcDesktopEnvironment>(
-      audio_task_runner_, network_task_runner_, io_task_runner_,
-      client_session_control, client_session_events,
-      connector_factory_.GetWeakPtr(), options);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                std::make_unique<IpcDesktopEnvironment>(
+                                    audio_task_runner_, network_task_runner_,
+                                    io_task_runner_, client_session_control,
+                                    client_session_events,
+                                    connector_factory_.GetWeakPtr(), options)));
 }
 
 bool IpcDesktopEnvironmentFactory::SupportsAudioCapture() const {
@@ -264,7 +283,8 @@ void IpcDesktopEnvironmentFactory::OnTerminalDisconnected(int terminal_id) {
     active_connections_.erase(i);
 
     // Disconnect the client session.
-    desktop_session_proxy->DisconnectSession(ErrorCode::OK);
+    desktop_session_proxy->DisconnectSession(
+        ErrorCode::OK, "Terminal disconnected.", FROM_HERE);
   }
 }
 

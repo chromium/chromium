@@ -33,7 +33,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForUploadEuiccInfo::HandleRequest(
   em::DeviceManagementResponse response;
   response.mutable_device_status_report_response();
   response.mutable_session_status_report_response();
-  return CreateHttpResponse(net::HTTP_OK, response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, response);
 }
 
 }  // namespace policy

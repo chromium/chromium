@@ -7,6 +7,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_list/search/common/file_util.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
@@ -58,8 +59,11 @@ void LocalImageSearchService::Search(
 }
 
 void LocalImageSearchService::Insert(const ImageInfo& image_info) {
+  // TODO(b:343320265): This function is used in unit tests on at the moment,
+  // update it set up the proper indexing source if we want to use it in
+  // production.
   annotation_storage_.AsyncCall(&AnnotationStorage::Insert)
-      .WithArgs(image_info);
+      .WithArgs(image_info, IndexingSource::kOcr);
 }
 
 }  // namespace app_list

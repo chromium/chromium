@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] RTCInboundRtpStreamStats's remoteId
   assert_true: Is remoteId present expected true got false
 [FAIL] RTCRemoteInboundRtpStreamStats's localId
@@ -36,7 +36,5 @@ Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: Is responsesReceived present expected true got false
 [FAIL] RTCIceCandidatePairStats's currentRoundTripTime
   assert_true: Is currentRoundTripTime present expected true got false
-[FAIL] RTCIceCandidateStats's url
-  assert_true: Is url present expected true got false
 Harness: the test ran to completion.
 

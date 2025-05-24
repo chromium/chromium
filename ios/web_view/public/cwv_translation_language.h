@@ -17,6 +17,12 @@ CWV_EXPORT
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// The automatic language to be used when a source/page language for a
+// translation is not determined.
+// Note that this language code will map to 'auto'.
++ (instancetype)autoLanguageWithLocalizedName:(NSString*)localizedName
+                                   nativeName:(NSString*)nativeName;
+
 // The ISO language code. en for English, es for Spanish, etc...
 // https://cloud.google.com/translate/docs/languages
 @property(nonatomic, copy, readonly) NSString* languageCode;

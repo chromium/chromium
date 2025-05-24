@@ -4,7 +4,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 proto_library("removed_items_proto") {
   sources = [ "removed_items.proto" ]

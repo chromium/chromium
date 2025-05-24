@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Layout used by CardWithButtonPreference for the widget style. -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!--
+    We use a nested layout in order to have a background on the preference with correct margin.
+    -->
+    <LinearLayout style="@style/PreferenceLayout"
+        android:id="@+id/card_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/card_with_button_pref_vertical_padding"
+        android:layout_marginHorizontal="@dimen/card_with_button_pref_horizontal_padding"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_corner_card">
+
+        <TextView
+            android:id="@android:id/title"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="@dimen/card_with_button_pref_title_padding_bottom"
+            style="@style/PreferenceTitle" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@android:id/summary"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="@dimen/card_with_button_pref_summary_padding_bottom"
+            style="@style/PreferenceSummary" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/card_button"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="end"
+            android:focusable="true"
+            style="@style/FilledButton" />
+
+    </LinearLayout>
+</FrameLayout>

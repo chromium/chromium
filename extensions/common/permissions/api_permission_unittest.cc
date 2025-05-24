@@ -65,7 +65,7 @@ TEST(ExtensionAPIPermissionTest, ManagedSessionLoginWarningFlag) {
            APIPermissionInfo::
                kFlagDoesNotRequireManagedSessionFullLoginWarning}};
 
-  info->RegisterPermissions(base::make_span(init_info),
+  info->RegisterPermissions(base::span(init_info),
                             base::span<const extensions::Alias>());
 
   EXPECT_FALSE(info->GetByID(mojom::APIPermissionID::kUnknown)

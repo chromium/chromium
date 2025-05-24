@@ -141,18 +141,19 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     };
   }
 
-  private headerString_: string;
-  private subheaderString_: string|null;
-  private headerIconString_: string;
-  private toastText_: string|null;
-  private sites_: UnusedSitePermissionsDisplay[]|null;
-  private shouldShowCompletionInfo_: boolean;
-  private safetyHubAbusiveNotificationRevocationEnabled_: boolean;
-  private lastUnusedSitePermissionsAllowedAgain_: UnusedSitePermissions|null;
-  private lastUnusedSitePermissionsListAcknowledged_: UnusedSitePermissions[]|
+  declare private headerString_: string;
+  declare private subheaderString_: string|null;
+  declare private headerIconString_: string;
+  declare private toastText_: string|null;
+  declare private sites_: UnusedSitePermissionsDisplay[]|null;
+  declare private shouldShowCompletionInfo_: boolean;
+  declare private safetyHubAbusiveNotificationRevocationEnabled_: boolean;
+  declare private lastUnusedSitePermissionsAllowedAgain_: UnusedSitePermissions|
       null;
-  private renderedOrigins_: string[];
-  private lastUserAction_: Action|null;
+  declare private lastUnusedSitePermissionsListAcknowledged_:
+      UnusedSitePermissions[]|null;
+  declare private renderedOrigins_: string[];
+  declare private lastUserAction_: Action|null;
   private eventTracker_: EventTracker = new EventTracker();
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
@@ -274,7 +275,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     // Update the toastText_ that isused both as an undo toast text and as a
     // header text.
     this.toastText_ =
-        this.i18n('safetyCheckUnusedSitePermissionsToastLabel', item.origin);
+        this.i18n('safetyHubUnusedSitePermissionsToastLabel', item.origin);
     // Only show Undo toast if there are multiple sites to review. Otherwise,
     // once the single site is reviewed, the completion state with a permanent
     // Undo button in the header will be shown.
@@ -309,7 +310,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
 
     // Update the toastText_ that is also used as a header text.
     this.toastText_ = await PluralStringProxyImpl.getInstance().getPluralString(
-        'safetyCheckUnusedSitePermissionsToastBulkLabel', this.sites_.length);
+        'safetyHubUnusedSitePermissionsToastBulkLabel', this.sites_.length);
 
     this.$.module.animateHide(
         /* all origins */ null,
@@ -387,12 +388,12 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
 
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckUnusedSitePermissionsPrimaryLabel', this.sites_.length);
+            'safetyHubUnusedSitePermissionsPrimaryLabel', this.sites_.length);
     this.subheaderString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             this.safetyHubAbusiveNotificationRevocationEnabled_ ?
                 'safetyHubRevokedPermissionsSecondaryLabel' :
-                'safetyCheckUnusedSitePermissionsSecondaryLabel',
+                'safetyHubUnusedSitePermissionsSecondaryLabel',
             this.sites_.length);
     this.headerIconString_ = 'privacy:page-info';
   }
@@ -478,7 +479,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
                                                       UnusedSitePermissions[]) {
     // Convert the permission type lists to i18n versions and check if each list
     // includes notifications.
-    const listOfPermissionTypes = sites!.map(site => site.permissions);
+    const listOfPermissionTypes = sites.map(site => site.permissions);
     const listPermissionsIncludeNotifications = listOfPermissionTypes.map(
         permissions =>
             permissions

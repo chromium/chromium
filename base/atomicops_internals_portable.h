@@ -52,9 +52,7 @@ inline Atomic32 NoBarrier_CompareAndSwap(volatile Atomic32* ptr,
                                          Atomic32 old_value,
                                          Atomic32 new_value) {
   ((AtomicLocation32)ptr)
-      ->compare_exchange_strong(old_value,
-                                new_value,
-                                std::memory_order_relaxed,
+      ->compare_exchange_strong(old_value, new_value, std::memory_order_relaxed,
                                 std::memory_order_relaxed);
   return old_value;
 }
@@ -82,9 +80,7 @@ inline Atomic32 Acquire_CompareAndSwap(volatile Atomic32* ptr,
                                        Atomic32 old_value,
                                        Atomic32 new_value) {
   ((AtomicLocation32)ptr)
-      ->compare_exchange_strong(old_value,
-                                new_value,
-                                std::memory_order_acquire,
+      ->compare_exchange_strong(old_value, new_value, std::memory_order_acquire,
                                 std::memory_order_acquire);
   return old_value;
 }
@@ -93,9 +89,7 @@ inline Atomic32 Release_CompareAndSwap(volatile Atomic32* ptr,
                                        Atomic32 old_value,
                                        Atomic32 new_value) {
   ((AtomicLocation32)ptr)
-      ->compare_exchange_strong(old_value,
-                                new_value,
-                                std::memory_order_release,
+      ->compare_exchange_strong(old_value, new_value, std::memory_order_release,
                                 std::memory_order_relaxed);
   return old_value;
 }
@@ -128,9 +122,7 @@ inline Atomic64 NoBarrier_CompareAndSwap(volatile Atomic64* ptr,
                                          Atomic64 old_value,
                                          Atomic64 new_value) {
   ((AtomicLocation64)ptr)
-      ->compare_exchange_strong(old_value,
-                                new_value,
-                                std::memory_order_relaxed,
+      ->compare_exchange_strong(old_value, new_value, std::memory_order_relaxed,
                                 std::memory_order_relaxed);
   return old_value;
 }
@@ -158,9 +150,7 @@ inline Atomic64 Acquire_CompareAndSwap(volatile Atomic64* ptr,
                                        Atomic64 old_value,
                                        Atomic64 new_value) {
   ((AtomicLocation64)ptr)
-      ->compare_exchange_strong(old_value,
-                                new_value,
-                                std::memory_order_acquire,
+      ->compare_exchange_strong(old_value, new_value, std::memory_order_acquire,
                                 std::memory_order_acquire);
   return old_value;
 }
@@ -169,9 +159,7 @@ inline Atomic64 Release_CompareAndSwap(volatile Atomic64* ptr,
                                        Atomic64 old_value,
                                        Atomic64 new_value) {
   ((AtomicLocation64)ptr)
-      ->compare_exchange_strong(old_value,
-                                new_value,
-                                std::memory_order_release,
+      ->compare_exchange_strong(old_value, new_value, std::memory_order_release,
                                 std::memory_order_relaxed);
   return old_value;
 }

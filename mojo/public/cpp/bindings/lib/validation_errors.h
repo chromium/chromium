@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "mojo/public/cpp/bindings/lib/send_validation_type.h"
 
 namespace mojo {
 
@@ -140,7 +141,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 // The function returns true if the error is recorded (by a
 // SerializationWarningObserverForTesting object), false otherwise.
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-bool ReportSerializationWarning(ValidationError error);
+bool ReportSerializationWarning(ValidationError error,
+                                SendValidation validation_type);
 
 // Only used by serialization tests and when there is only one thread doing
 // message serialization.
@@ -157,19 +159,26 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
   ~SerializationWarningObserverForTesting();
 
   ValidationError last_warning() const { return last_warning_; }
+  std::optional<SendValidation> send_side_validation() const {
+    return send_validation_type_;
+  }
   void set_last_warning(ValidationError error) { last_warning_ = error; }
+  void set_send_validation_type(SendValidation send_side_validation_type) {
+    send_validation_type_ = send_side_validation_type;
+  }
+  void clear_send_validation() { send_validation_type_ = std::nullopt; }
 
  private:
   ValidationError last_warning_;
+  std::optional<SendValidation> send_validation_type_;
 };
 
-// Used to record that Deserialize() of a Mojo string failed because it was not
-// valid UTF-8.
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-void RecordInvalidStringDeserialization();
-
-}  // namespace internal
-}  // namespace mojo
+// Adds in the error message so there's consistent formatting between the
+// warning and the error
+#define MOJO_INTERNAL_VALIDATION_ERROR_MESSAGE(error, description)       \
+  "The outgoing message will trigger " << ValidationErrorToString(error) \
+                                       << " at the receiving side ("     \
+                                       << description << ")."
 
 // In debug build, logs a serialization warning if |condition| evaluates to
 // true:
@@ -177,14 +186,49 @@ void RecordInvalidStringDeserialization();
 //     records |error| in it;
 //   - otherwise, logs a fatal-level message.
 // |error| is the validation error that will be triggered by the receiver
-// of the serialzation result.
+// of the serialization result.
 //
 // In non-debug build, does nothing (not even compiling |condition|).
-#define MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(condition, error,    \
-                                                 description)         \
-  DLOG_IF(FATAL, (condition) && !ReportSerializationWarning(error))   \
-      << "The outgoing message will trigger "                         \
-      << ValidationErrorToString(error) << " at the receiving side (" \
-      << description << ")."
+#define MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(condition, error,         \
+                                                 description)              \
+  DLOG_IF(FATAL, !(condition) &&                                           \
+                     !ReportSerializationWarning(                          \
+                         error, mojo::internal::SendValidation::kWarning)) \
+      << MOJO_INTERNAL_VALIDATION_ERROR_MESSAGE(error, description);
+
+// If |condition| evaluates to true:
+//   - if there is a SerializationWarningObserverForTesting object alive,
+//     records |error| in it;
+//   - if there is no SerializationWarningObserverForTesting, then it will CHECK
+// |error| is the validation error that will be triggered by the receiver
+// of the serialization result.
+//
+// By checking the condition first, we delay executing the description.
+#define MOJO_INTERNAL_CHECK_SERIALIZATION_ERROR(condition, error, description) \
+  if (!(condition) && !ReportSerializationWarning(                             \
+                          error, mojo::internal::SendValidation::kFatal)) {    \
+    CHECK(false) << MOJO_INTERNAL_VALIDATION_ERROR_MESSAGE(error,              \
+                                                           description);       \
+  }
+
+#define RUNTIME_MOJO_INTERNAL_CHECK_SERIALIZATION(send_validation, condition, \
+                                                  error, description)         \
+  if (send_validation == mojo::internal::SendValidation::kFatal) {            \
+    MOJO_INTERNAL_CHECK_SERIALIZATION_ERROR(condition, error, description);   \
+  } else if (send_validation == mojo::internal::SendValidation::kWarning) {   \
+    MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(condition, error, description);  \
+  }
+
+#define MOJO_INTERNAL_CHECK_SERIALIZATION(send_validation, condition, error, \
+                                          description)                       \
+  if constexpr (send_validation == mojo::internal::SendValidation::kFatal) { \
+    MOJO_INTERNAL_CHECK_SERIALIZATION_ERROR(condition, error, description);  \
+  } else if constexpr (send_validation ==                                    \
+                       mojo::internal::SendValidation::kWarning) {           \
+    MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(condition, error, description); \
+  }
+
+}  // namespace internal
+}  // namespace mojo
 
 #endif  // MOJO_PUBLIC_CPP_BINDINGS_LIB_VALIDATION_ERRORS_H_

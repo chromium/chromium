@@ -21,6 +21,14 @@ const CGFloat kSettingsRootSymbolImagePointSize = 18;
 
 const CGFloat kCloudSlashSymbolPointSize = 20;
 
+UIColor* LargeIncognitoBackgroundColor() {
+  return [UIColor colorNamed:kGrey700Color];
+}
+
+UIColor* LargeIncognitoForegroundColor() {
+  return [UIColor colorNamed:kGrey100Color];
+}
+
 NSArray<UIColor*>* SmallIncognitoPalette() {
   return @[
     [UIColor colorNamed:kGrey400Color], [UIColor colorNamed:kGrey100Color]
@@ -28,9 +36,7 @@ NSArray<UIColor*>* SmallIncognitoPalette() {
 }
 
 NSArray<UIColor*>* LargeIncognitoPalette() {
-  return @[
-    [UIColor colorNamed:kGrey100Color], [UIColor colorNamed:kGrey700Color]
-  ];
+  return @[ LargeIncognitoForegroundColor(), LargeIncognitoBackgroundColor() ];
 }
 
 UIColor* CloudSlashTintColor() {

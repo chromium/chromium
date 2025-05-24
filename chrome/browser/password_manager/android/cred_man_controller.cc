@@ -14,7 +14,6 @@
 
 namespace password_manager {
 
-using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
 using webauthn::WebAuthnCredManDelegate;
 
 CredManController::CredManController(
@@ -45,7 +44,6 @@ bool CredManController::Show(
           WebAuthnCredManDelegate::CredManEnabledMode::kAllCredMan ||
       cred_man_delegate->HasPasskeys() !=
           WebAuthnCredManDelegate::State::kHasPasskeys) {
-    filler->Dismiss(ToShowVirtualKeyboard(false));
     return false;
   }
   visibility_controller_->SetVisible(std::move(frame_driver));
@@ -62,11 +60,6 @@ bool CredManController::Show(
 void CredManController::Dismiss(bool success) {
   if (visibility_controller_) {
     visibility_controller_->SetShown();
-  }
-  if (filler_) {
-    // If |success|, we do not need to show the keyboard. Request to show the
-    // keyboard for user convenience.
-    filler_->Dismiss(ToShowVirtualKeyboard(!success));
   }
 }
 
@@ -88,10 +81,13 @@ void CredManController::TriggerFilling(const std::u16string& username,
 void CredManController::FillUsernameAndPassword(
     const std::u16string& username,
     const std::u16string& password) {
-  filler_->FillUsernameAndPassword(username, password);
-  base::UmaHistogramBoolean(
-      "PasswordManager.CredMan.PasswordFormSubmissionTriggered",
-      filler_->ShouldTriggerSubmission());
+  filler_->FillUsernameAndPassword(
+      username, password,
+      base::BindOnce(base::BindOnce([](bool triggered_submission) {
+        base::UmaHistogramBoolean(
+            "PasswordManager.CredMan.PasswordFormSubmissionTriggered",
+            triggered_submission);
+      })));
 }
 
 void CredManController::OnReauthCompleted(const std::u16string& username,

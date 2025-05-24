@@ -18,12 +18,14 @@ _proto_files = [
   "rich_answer_template.proto",
   "rich_suggest_template.proto",
   "search_context.proto",
+  "suggest_template_info.proto",
   "types.proto",
 ]
 
 proto_library("omnibox_proto") {
   sources = _proto_files
   proto_in_dir = "."
+  generate_py_runtime = true
 }
 
 if (is_android) {

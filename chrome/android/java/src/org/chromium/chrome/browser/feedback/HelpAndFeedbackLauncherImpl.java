@@ -14,6 +14,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -51,16 +52,22 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
 
     private HelpAndFeedbackLauncherImpl(Profile profile) {
         mProfile = profile;
-        mDelegate = new HelpAndFeedbackLauncherDelegateImpl();
+
+        HelpAndFeedbackLauncherDelegate delegate =
+                ServiceLoaderUtil.maybeCreate(HelpAndFeedbackLauncherDelegate.class);
+        if (delegate == null) {
+            delegate = new FallbackHelpAndFeedbackLauncherDelegate();
+        }
+        mDelegate = delegate;
     }
 
     /**
      * Starts an activity showing a help page for the specified context ID.
      *
-     * @param activity The activity to use for starting the help activity and to take a
-     *                 screenshot of.
+     * @param activity The activity to use for starting the help activity and to take a screenshot
+     *     of.
      * @param helpContext One of the CONTEXT_* constants. This should describe the user's current
-     *                    context and will be used to show a more relevant help page.
+     *     context and will be used to show a more relevant help page.
      * @param url the current URL. May be null.
      */
     @Override

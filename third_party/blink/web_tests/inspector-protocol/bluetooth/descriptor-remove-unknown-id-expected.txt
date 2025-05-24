@@ -1,0 +1,9 @@
+Tests Bluetooth removing an unknown descriptor id
+{
+    error : {
+        code : -32000
+        message : Failed to remove descriptor represented by unknown descriptor id
+    }
+    id : <number>
+}
+

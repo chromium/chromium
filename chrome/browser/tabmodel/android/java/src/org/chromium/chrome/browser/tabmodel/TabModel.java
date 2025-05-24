@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -18,22 +17,23 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
  * TabModel organizes all the open tabs and allows you to create new ones. Regular and Incognito
  * tabs are kept in different TabModels.
  */
-public interface TabModel extends TabList {
+@NullMarked
+public interface TabModel extends SupportsTabModelObserver, TabList {
     /** Returns the profile associated with the current model. */
-    Profile getProfile();
+    @Nullable Profile getProfile();
 
     /** Returns the matching tab that has the given id, or null if there is none. */
-    @Nullable
-    Tab getTabById(int tabId);
+    @Nullable Tab getTabById(int tabId);
 
-    /**
-     * Closes tabs based on the provided parameters. Refer to {@link TabClosureParams} for different
-     * ways to close tabs.
-     *
-     * @param tabClosureParams The parameters to follow when closing tabs.
-     * @return Whether the tab closure succeeded (only possibly false for single tab closure).
-     */
-    boolean closeTabs(TabClosureParams tabClosureParams);
+    /** Returns the matching tab that has the given id, or null if there is none. */
+    default Tab getTabByIdChecked(int tabId) {
+        Tab t = getTabById(tabId);
+        assert t != null;
+        return t;
+    }
+
+    /** Returns the tab remover for this tab model. */
+    TabRemover getTabRemover();
 
     /**
      * Returns which tab would be selected if the specified tab {@code id} were closed.
@@ -42,7 +42,7 @@ public interface TabModel extends TabList {
      * @param uponExit If the next tab is being selected upon exit or backgrounding of the app.
      * @return The id of the next tab that would be visible.
      */
-    Tab getNextTabIfClosed(int id, boolean uponExit);
+    @Nullable Tab getNextTabIfClosed(int id, boolean uponExit);
 
     /**
      * @return Whether or not this model supports pending closures.
@@ -74,12 +74,6 @@ public interface TabModel extends TabList {
     void cancelTabClosure(int tabId);
 
     /**
-     * Notifies observers that all tabs closure action has been completed and tabs have been
-     * restored.
-     */
-    void notifyAllTabsClosureUndone();
-
-    /**
      * Restores the most recent closure, bringing the tab(s) back into their original tab model or
      * this model if the original model no longer exists.
      */
@@ -97,8 +91,7 @@ public interface TabModel extends TabList {
      * the model or selected. The contained tab should always match the result of {@code
      * getTabAt(index())}.
      */
-    @NonNull
-    ObservableSupplier<Tab> getCurrentTabSupplier();
+    ObservableSupplier<@Nullable Tab> getCurrentTabSupplier();
 
     /**
      * Selects a tab by its index.
@@ -123,19 +116,13 @@ public interface TabModel extends TabList {
     void moveTab(int id, int newIndex);
 
     /**
-     * To be called when this model should be destroyed. The model should no longer be used after
-     * this.
-     *
-     * <p>As a result of this call, all {@link Tab}s owned by this model should be destroyed.
-     */
-    void destroy();
-
-    /**
      * Returns a supplier for the number of tabs in this tab model. This does not count tabs that
      * are pending closure.
      */
-    @NonNull
     ObservableSupplier<Integer> getTabCountSupplier();
+
+    /** Returns the tab creator for this tab model. */
+    TabCreator getTabCreator();
 
     /**
      * Adds a newly created tab to this model.
@@ -146,47 +133,4 @@ public interface TabModel extends TabList {
      * @param creationState How the tab was created.
      */
     void addTab(Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState);
-
-    /**
-     * Removes the given tab from the model without destroying it. The tab should be inserted into
-     * another model to avoid leaking as after this the link to the old Activity will be broken.
-     * @param tab The tab to remove.
-     */
-    void removeTab(Tab tab);
-
-    /**
-     * Subscribes a {@link TabModelObserver} to be notified about changes to this model.
-     * @param observer The observer to be subscribed.
-     */
-    void addObserver(TabModelObserver observer);
-
-    /**
-     * Unsubscribes a previously subscribed {@link TabModelObserver}.
-     * @param observer The observer to be unsubscribed.
-     */
-    void removeObserver(TabModelObserver observer);
-
-    /**
-     * Set when tab model become active and inactive.
-     *
-     * @param active Whether the tab model is active.
-     *     <p>TODO(crbug.com/40726458): This function is only called by TabModelSelectorBase class,
-     *     so we should create a package private TabModelInternal interface which inherits from
-     *     TabModel. TabModelInternal interface should have this method and change
-     *     TabModelSelectorBase#mTabModels to hold the impls.
-     */
-    void setActive(boolean active);
-
-    /**
-     * Returns the count of non-custom tabs that have a {@link
-     * Tab#getLastNavigationCommittedTimestampMillis()} within the time range [beginTimeMs,
-     * endTimeMs).
-     */
-    int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
-
-    /**
-     * Closes non-custom tabs that have a {@link Tab#getLastNavigationCommittedTimestampMillis()}
-     * within the time range [beginTimeMs, endTimeMs).
-     */
-    void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
 }

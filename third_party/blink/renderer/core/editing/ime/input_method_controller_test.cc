@@ -119,7 +119,7 @@ void InputMethodControllerTest::CreateHTMLWithCompositionEndEventListener(
           "});");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
@@ -219,7 +219,7 @@ TEST_F(InputMethodControllerTest, AddImeTextSpansToExistingText) {
 TEST_F(InputMethodControllerTest, AddGrammarCheckSpans) {
   InsertHTMLElement("<div id='sample' contenteditable>hello world</div>",
                     "sample");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -274,7 +274,7 @@ TEST_F(InputMethodControllerTest, GetImeTextSpans) {
                                              10);
   Controller().SetEditableSelectionOffsets(PlainTextRange(1, 1));
 
-  const WebVector<ui::ImeTextSpan>& ime_text_spans =
+  const std::vector<ui::ImeTextSpan>& ime_text_spans =
       Controller().TextInputInfo().ime_text_spans;
 
   EXPECT_EQ(2u, ime_text_spans.size());

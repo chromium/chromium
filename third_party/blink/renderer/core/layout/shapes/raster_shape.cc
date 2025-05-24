@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -125,7 +126,9 @@ void RasterShapeIntervals::InitializeBounds() {
   }
 }
 
-void RasterShapeIntervals::BuildBoundsPath(Path& path) const {
+Path RasterShapeIntervals::BuildBoundsPath() const {
+  PathBuilder builder;
+
   int max_y = Bounds().bottom();
   for (int y = Bounds().y(); y < max_y; y++) {
     if (IntervalAt(y).IsEmpty())
@@ -137,9 +140,12 @@ void RasterShapeIntervals::BuildBoundsPath(Path& path) const {
       if (IntervalAt(end_y).IsEmpty() || IntervalAt(end_y) != extent)
         break;
     }
-    path.AddRect(gfx::PointF(extent.X1(), y), gfx::PointF(extent.X2(), end_y));
+    builder.AddRect(gfx::PointF(extent.X1(), y),
+                    gfx::PointF(extent.X2(), end_y));
     y = end_y - 1;
   }
+
+  return builder.Finalize();
 }
 
 const RasterShapeIntervals& RasterShape::MarginIntervals() const {

@@ -75,7 +75,7 @@ class WebRtcAudioDeviceImplTest : public testing::Test {
  public:
   WebRtcAudioDeviceImplTest()
       : audio_device_(
-            new rtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>()),
+            new webrtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>()),
         audio_transport_(new MockAudioTransport()) {
     audio_device_module()->Init();
     audio_device_module()->RegisterAudioCallback(audio_transport_.get());

@@ -14,8 +14,8 @@
 namespace prerender {
 
 NoStatePrefetchNavigationThrottle::NoStatePrefetchNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 NoStatePrefetchNavigationThrottle::~NoStatePrefetchNavigationThrottle() =
     default;
@@ -49,23 +49,22 @@ const char* NoStatePrefetchNavigationThrottle::GetNameForLogging() {
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-NoStatePrefetchNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle) {
+void NoStatePrefetchNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-          navigation_handle->GetWebContents()->GetBrowserContext());
+          navigation_handle.GetWebContents()->GetBrowserContext());
   if (no_state_prefetch_manager) {
     auto* no_state_prefetch_contents =
         no_state_prefetch_manager->GetNoStatePrefetchContents(
-            navigation_handle->GetWebContents());
+            navigation_handle.GetWebContents());
     if (no_state_prefetch_contents && no_state_prefetch_contents->origin() ==
                                           ORIGIN_SAME_ORIGIN_SPECULATION) {
-      return std::make_unique<NoStatePrefetchNavigationThrottle>(
-          navigation_handle);
+      registry.AddThrottle(
+          std::make_unique<NoStatePrefetchNavigationThrottle>(registry));
     }
   }
-  return nullptr;
 }
 
 }  // namespace prerender

@@ -60,8 +60,7 @@ class TopLevelTpcdTrialBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(
-        {{::features::kPersistentOriginTrials, {}},
-         {net::features::kTopLevelTpcdTrialSettings, {}},
+        {{net::features::kTopLevelTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 
@@ -521,15 +520,6 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
   // update content settings and then emit this UMA metric, which is why we need
   // the `RunLoop` here:
   base::RunLoop().RunUntilIdle();
-  ASSERT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange"),
-      BucketsAre(
-          base::Bucket(OriginTrialStatusChange::kDisabled, 0),
-          base::Bucket(OriginTrialStatusChange::kDisabled_MatchesSubdomains, 0),
-          base::Bucket(OriginTrialStatusChange::kEnabled, 1),
-          base::Bucket(OriginTrialStatusChange::kEnabled_MatchesSubdomains,
-                       0)));
 
   // Check the TopLevelTpcd origin trial itself is enabled for
   // `kTrialEnabledSite` embedded under `embedding_site`.
@@ -595,15 +585,6 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
   // update content settings and then emit this UMA metric, which is why we need
   // the `RunLoop` here:
   base::RunLoop().RunUntilIdle();
-  ASSERT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange"),
-      BucketsAre(
-          base::Bucket(OriginTrialStatusChange::kDisabled, 0),
-          base::Bucket(OriginTrialStatusChange::kDisabled_MatchesSubdomains, 0),
-          base::Bucket(OriginTrialStatusChange::kEnabled, 1),
-          base::Bucket(OriginTrialStatusChange::kEnabled_MatchesSubdomains,
-                       0)));
 
   // Check the TopLevelTpcd origin trial itself is enabled for
   // `kTrialEnabledSite` embedded under `embedding_site`.
@@ -627,15 +608,6 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
   // update content settings and then emit this UMA metric, which is why we need
   // the `RunLoop` here:
   base::RunLoop().RunUntilIdle();
-  ASSERT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange"),
-      BucketsAre(
-          base::Bucket(OriginTrialStatusChange::kDisabled, 1),
-          base::Bucket(OriginTrialStatusChange::kDisabled_MatchesSubdomains, 0),
-          base::Bucket(OriginTrialStatusChange::kEnabled, 1),
-          base::Bucket(OriginTrialStatusChange::kEnabled_MatchesSubdomains,
-                       0)));
 
   // Check the TopLevelTpcd origin trial itself is now disabled for
   // `kTrialEnabledSite` embedded under `embedding_site`.

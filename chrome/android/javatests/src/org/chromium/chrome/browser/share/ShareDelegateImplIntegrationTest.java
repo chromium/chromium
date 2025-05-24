@@ -8,7 +8,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,11 +24,12 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
+import org.chromium.chrome.browser.share.android_share_sheet.TabGroupSharingController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.ui_metrics.CanonicalURLResult;
@@ -51,13 +51,9 @@ public class ShareDelegateImplIntegrationTest {
     private static final String PAGE_WITH_NO_CANONICAL_URL =
             "/chrome/test/data/android/share/link_share_no_canonical.html";
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Test
     @SmallTest
@@ -107,7 +103,7 @@ public class ShareDelegateImplIntegrationTest {
     private void verifyShareUrl(
             String pageUrl, String expectedShareUrl, @CanonicalURLResult int expectedUrlResult)
             throws IllegalArgumentException, TimeoutException {
-        sActivityTestRule.loadUrl(pageUrl);
+        mActivityTestRule.loadUrl(pageUrl);
         var urlResultHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         ShareDelegateImpl.CANONICAL_URL_RESULT_HISTOGRAM, expectedUrlResult);
@@ -133,6 +129,7 @@ public class ShareDelegateImplIntegrationTest {
                                         Supplier<TabModelSelector> tabModelSelectorProvider,
                                         Supplier<Profile> profileSupplier,
                                         Callback<Tab> printCallback,
+                                        TabGroupSharingController tabGroupSharingController,
                                         int shareOrigin,
                                         long shareStartTime,
                                         boolean sharingHubEnabled) {
@@ -142,18 +139,23 @@ public class ShareDelegateImplIntegrationTest {
                             };
 
                     new ShareDelegateImpl(
-                                    sActivityTestRule
+                                    mActivityTestRule.getActivity(),
+                                    mActivityTestRule
                                             .getActivity()
                                             .getRootUiCoordinatorForTesting()
                                             .getBottomSheetController(),
-                                    sActivityTestRule.getActivity().getLifecycleDispatcher(),
-                                    sActivityTestRule.getActivity().getActivityTabProvider(),
-                                    sActivityTestRule.getActivity().getTabModelSelectorSupplier(),
+                                    mActivityTestRule.getActivity().getLifecycleDispatcher(),
+                                    mActivityTestRule.getActivity().getActivityTabProvider(),
+                                    mActivityTestRule.getActivity().getTabModelSelectorSupplier(),
                                     new ObservableSupplierImpl<>(),
                                     delegate,
-                                    false)
+                                    false,
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getRootUiCoordinatorForTesting()
+                                            .getDataSharingTabManager())
                             .share(
-                                    sActivityTestRule.getActivity().getActivityTab(),
+                                    mActivityTestRule.getActivity().getActivityTab(),
                                     false,
                                     /* shareOrigin= */ 0);
                 });

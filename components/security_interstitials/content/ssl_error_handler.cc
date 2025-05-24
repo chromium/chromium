@@ -60,10 +60,6 @@ BASE_FEATURE(kMITMSoftwareInterstitial,
              "MITMSoftwareInterstitial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCaptivePortalInterstitial,
-             "CaptivePortalInterstitial",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 BASE_FEATURE(kSSLCommonNameMismatchHandling,
@@ -92,7 +88,7 @@ class CommonNameMismatchRedirectObserver
   CommonNameMismatchRedirectObserver& operator=(
       const CommonNameMismatchRedirectObserver&) = delete;
 
-  ~CommonNameMismatchRedirectObserver() override {}
+  ~CommonNameMismatchRedirectObserver() override = default;
 
   static void AddToConsoleAfterNavigation(
       content::WebContents* web_contents,
@@ -150,10 +146,6 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(CommonNameMismatchRedirectObserver);
 void RecordUMA(SSLErrorHandler::UMAEvent event) {
   UMA_HISTOGRAM_ENUMERATION(kHistogram, event,
                             SSLErrorHandler::SSL_ERROR_HANDLER_EVENT_COUNT);
-}
-
-bool IsCaptivePortalInterstitialEnabled() {
-  return base::FeatureList::IsEnabled(kCaptivePortalInterstitial);
 }
 
 bool IsMITMSoftwareInterstitialEnabled() {
@@ -419,7 +411,7 @@ void SSLErrorHandlerDelegateImpl::CheckForCaptivePortal() {
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   captive_portal_service_->DetectCaptivePortal();
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -689,8 +681,7 @@ void SSLErrorHandler::StartHandlingError() {
   // opens a new tab if it detects a portal ignoring the types of SSL errors. To
   // be consistent with captive portal detector, use the result of OS detection
   // without checking only_error_is_name_mismatch.
-  if (IsCaptivePortalInterstitialEnabled() &&
-      (g_config.Pointer()->DoesOSReportCaptivePortalForTesting() ||
+  if ((g_config.Pointer()->DoesOSReportCaptivePortalForTesting() ||  // IN-TEST
        delegate_->DoesOSReportCaptivePortal())) {
     delegate_->ReportNetworkConnectivity(
         g_config.Pointer()->report_network_connectivity_callback());
@@ -772,7 +763,7 @@ void SSLErrorHandler::StartHandlingError() {
     captive_portal_tab_helper->OnSSLCertError(ssl_info_);
   }
 
-  if (IsCaptivePortalInterstitialEnabled() && !is_captive_portal_login_tab) {
+  if (!is_captive_portal_login_tab) {
     delegate_->CheckForCaptivePortal();
     timer_.Start(FROM_HERE, g_config.Pointer()->interstitial_delay(), this,
                  &SSLErrorHandler::ShowSSLInterstitial);
@@ -808,15 +799,11 @@ void SSLErrorHandler::ShowMITMSoftwareInterstitial(
 }
 
 void SSLErrorHandler::ShowSSLInterstitial() {
-  GURL support_url = (cert_error_ == net::ERR_CERT_SYMANTEC_LEGACY)
-                         ? GURL(kSymantecSupportUrl)
-                         : GURL();
-
   // Show SSL blocking page. The interstitial owns the blocking page.
   RecordUMA(delegate_->IsErrorOverridable()
                 ? SHOW_SSL_INTERSTITIAL_OVERRIDABLE
                 : SHOW_SSL_INTERSTITIAL_NONOVERRIDABLE);
-  delegate_->ShowSSLInterstitial(support_url);
+  delegate_->ShowSSLInterstitial(/*support_url=*/GURL());
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this".
   web_contents()->RemoveUserData(UserDataKey());
@@ -836,8 +823,7 @@ void SSLErrorHandler::ShowDynamicInterstitial(
     const DynamicInterstitialInfo dynamic_interstitial) {
   switch (dynamic_interstitial.interstitial_type) {
     case chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_NONE:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL:
       delegate_->ShowSSLInterstitial(dynamic_interstitial.support_url);
       return;
@@ -888,7 +874,7 @@ void SSLErrorHandler::Observe(
   else
     ShowSSLInterstitial();
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 

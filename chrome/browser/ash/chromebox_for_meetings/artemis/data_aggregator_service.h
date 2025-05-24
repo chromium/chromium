@@ -88,8 +88,11 @@ class DataAggregatorService : public CfmObserver,
   void OnRequestBindDeviceInfoService(const std::string& interface_name,
                                       size_t num_tries,
                                       bool success);
-  void RequestDeviceId();
-  void StoreDeviceId(chromeos::cfm::mojom::PolicyInfoPtr policy_info);
+  void RequestDeviceInfo();
+  void StorePolicyInfo(chromeos::cfm::mojom::PolicyInfoPtr policy_info);
+  void StoreSysInfo(chromeos::cfm::mojom::SysInfoPtr sys_info);
+  void StoreMachineStatisticsInfo(
+      chromeos::cfm::mojom::MachineStatisticsInfoPtr stat_info);
   void StartFetchTimer();
   void FetchFromAllSourcesAndEnqueue();
   void AppendEntriesToActivePayload(
@@ -98,6 +101,7 @@ class DataAggregatorService : public CfmObserver,
   bool IsPayloadReadyForUpload() const;
   void AddActivePayloadToPendingQueue();
   void EnqueueNextPendingTransportPayload();
+  void InitiateEnqueueRequest();
   void HandleEnqueueResponse(chromeos::cfm::mojom::LoggerStatusPtr status);
 
   chromeos::cfm::ServiceAdaptor service_adaptor_;
@@ -125,6 +129,9 @@ class DataAggregatorService : public CfmObserver,
   // to be enqueued. Payloads are only popped off the queue if they
   // are uploaded successfully, or if the queue grows too large.
   std::queue<proto::TransportPayload> pending_transport_payloads_;
+
+  // Common labels that will be attached to every LogSet
+  std::map<std::string, std::string> shared_labels_;
 
   // Used to track the time since we last pushed a payload to the wire.
   // Will be used as a timeout of sorts for the next push.

@@ -9,6 +9,7 @@
 
 #include "chrome/browser/devtools/device/usb/android_usb_device.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -199,7 +199,7 @@ AdbMessage::AdbMessage(uint32_t command,
                        const std::string& body)
     : command(command), arg0(arg0), arg1(arg1), body(body) {}
 
-AdbMessage::~AdbMessage() {}
+AdbMessage::~AdbMessage() = default;
 
 // static
 void AndroidUsbDevice::Enumerate(crypto::RSAPrivateKey* rsa_key,
@@ -489,7 +489,7 @@ void AndroidUsbDevice::Terminate() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   // Remove this AndroidUsbDevice from |g_devices|.
-  auto it = base::ranges::find(g_devices.Get(), this);
+  auto it = std::ranges::find(g_devices.Get(), this);
   if (it != g_devices.Get().end())
     g_devices.Get().erase(it);
 

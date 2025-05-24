@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {MultiDeviceBrowserProxyImpl, NotificationAccessSetupOperationStatus, SettingsMultideviceNotificationAccessSetupDialogElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsMultideviceNotificationAccessSetupDialogElement} from 'chrome://os-settings/os_settings.js';
+import {MultiDeviceBrowserProxyImpl, NotificationAccessSetupOperationStatus} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -65,7 +66,7 @@ suite('<settings-multidevice-notification-access-setup-dialog>', () => {
     buttonContainer = container;
   });
 
-  test('Test success flow', async () => {
+  test('Test success flow', () => {
     assertTrue(isSetupInstructionsShownSeparately());
     assertTrue(!!queryCancelButton());
     const getStartedButton = queryGetStartedButton();
@@ -121,7 +122,7 @@ suite('<settings-multidevice-notification-access-setup-dialog>', () => {
     assertFalse(dialog.open);
   });
 
-  test('Test cancel during connecting flow', async () => {
+  test('Test cancel during connecting flow', () => {
     assertTrue(!!queryCancelButton());
     const getStartedButton = queryGetStartedButton();
     assertTrue(!!getStartedButton);
@@ -147,7 +148,7 @@ suite('<settings-multidevice-notification-access-setup-dialog>', () => {
     assertFalse(dialog.open);
   });
 
-  test('Test failure during connecting flow', async () => {
+  test('Test failure during connecting flow', () => {
     assertTrue(!!queryCancelButton());
     const getStartedButton = queryGetStartedButton();
     assertTrue(!!getStartedButton);
@@ -193,7 +194,7 @@ suite('<settings-multidevice-notification-access-setup-dialog>', () => {
     assertFalse(dialog.open);
   });
 
-  test('Test notification access prohibited', async () => {
+  test('Test notification access prohibited', () => {
     assertTrue(!!queryCancelButton());
     const getStartedButton = queryGetStartedButton();
     assertTrue(!!getStartedButton);

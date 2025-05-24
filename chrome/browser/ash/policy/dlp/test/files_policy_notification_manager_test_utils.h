@@ -18,7 +18,7 @@
 namespace policy {
 
 // The id of the first notification FPNM shows.
-constexpr char kNotificationId[] = "dlp_files_0";
+inline constexpr char kNotificationId[] = "dlp_files_0";
 
 // Creates a dummy file in `path`. Returns whether it was created successfully.
 bool CreateDummyFile(const base::FilePath& path);

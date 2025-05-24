@@ -242,8 +242,7 @@ class Comparator {
         return kAIsAfterB;
       ++offset;
     }
-    NOTREACHED_IN_MIGRATION();
-    return result_of_a_is_equal_to_b;
+    NOTREACHED();
   }
 
   static int16_t CompareNodesInSameParent(
@@ -334,8 +333,7 @@ class Comparator {
         return kAIsAfterB;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return result_of_a_is_equal_to_b;
+    NOTREACHED();
   }
 
   // Returns the child node in `parent` if `parent` is one of inclusive

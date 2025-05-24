@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 
@@ -36,6 +37,10 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
 
   extensions::ExtensionService* extension_service() {
     return extension_service_;
+  }
+
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(profile());
   }
 
   ExtensionsToolbarContainer* extensions_container() {
@@ -114,14 +119,14 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
 
   // Adds a site access request with an optional `filter` for `extension` in
   // `web_contents`.
-  void AddSiteAccessRequest(
+  void AddHostAccessRequest(
       const extensions::Extension& extension,
       content::WebContents* web_contents,
       const std::optional<URLPattern>& filter = std::nullopt);
 
   // Removes the site access request for `extension` in `web_contents`, if
   // existent.
-  void RemoveSiteAccessRequest(const extensions::Extension& extension,
+  void RemoveHostAccessRequest(const extensions::Extension& extension,
                                content::WebContents* web_contents);
 
   // Returns the user's site setting for `url`.
@@ -163,6 +168,7 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   void TearDown() override;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
       nullptr;
   raw_ptr<extensions::PermissionsManager, DanglingUntriaged>

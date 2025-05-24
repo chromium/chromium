@@ -101,7 +101,7 @@ typedef void (^LogLaunchMetricsBlock)(id, const char*, int);
 class MetricsMediatorLogLaunchTest : public PlatformTest {
  protected:
   MetricsMediatorLogLaunchTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
+      : profile_(TestProfileIOS::Builder().Build()),
         num_tabs_has_been_called_(FALSE),
         num_ntp_tabs_has_been_called_(FALSE),
         num_live_ntp_tabs_has_been_called_(FALSE) {}
@@ -141,6 +141,9 @@ class MetricsMediatorLogLaunchTest : public PlatformTest {
   }
 
   void TearDown() override {
+    for (FakeSceneState* scene_state in connected_scenes_) {
+      [scene_state shutdown];
+    }
     connected_scenes_ = nil;
     PlatformTest::TearDown();
   }
@@ -150,9 +153,19 @@ class MetricsMediatorLogLaunchTest : public PlatformTest {
     EXPECT_TRUE(num_ntp_tabs_has_been_called_);
   }
 
+  NSArray<FakeSceneState*>* SceneArrayWithCount(int count) {
+    NSMutableArray<SceneState*>* scenes = [NSMutableArray array];
+    for (int i = 0; i < count; i++) {
+      [scenes
+          addObject:[[FakeSceneState alloc] initWithAppState:nil
+                                                     profile:profile_.get()]];
+    }
+    return [scenes copy];
+  }
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   NSArray<FakeSceneState*>* connected_scenes_;
   __block BOOL num_tabs_has_been_called_;
   __block BOOL num_ntp_tabs_has_been_called_;
@@ -172,8 +185,7 @@ TEST_F(MetricsMediatorLogLaunchTest,
   BOOL coldStart = YES;
   initiateMetricsMediator(coldStart, 23);
   // 23 tabs across three scenes.
-  connected_scenes_ = [FakeSceneState sceneArrayWithCount:3
-                                             browserState:browser_state_.get()];
+  connected_scenes_ = SceneArrayWithCount(3);
   [connected_scenes_[0] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
                                          count:9];
   [connected_scenes_[1] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
@@ -214,8 +226,7 @@ TEST_F(MetricsMediatorLogLaunchTest, logLaunchMetricsNoBackgroundDate) {
   BOOL coldStart = NO;
   initiateMetricsMediator(coldStart, 32);
   // 32 tabs across five scenes.
-  connected_scenes_ = [FakeSceneState sceneArrayWithCount:5
-                                             browserState:browser_state_.get()];
+  connected_scenes_ = SceneArrayWithCount(5);
   [connected_scenes_[0] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
                                          count:8];
   [connected_scenes_[1] appendWebStatesWithURL:GURL(kChromeUINewTabURL)

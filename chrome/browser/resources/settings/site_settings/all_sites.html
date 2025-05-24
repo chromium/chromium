@@ -39,28 +39,40 @@
         width: 60%;
       }
 
+      #relatedWebsiteSetsDescription {
+        margin: 0 var(--cr-icon-button-margin-start);
+        padding-bottom: 8px;
+        padding-inline-end: var(--cr-section-padding);
+        padding-inline-start: var(--cr-section-padding);
+      }
+
       #clearAllButton cr-button {
         white-space: nowrap;
       }
     </style>
-    <div id="sort">
+    <div id="sort"
+        hidden$="[[hasFilteredRwsSitesV2Ui_(filter, filteredList_)]]">
       <label id="sortLabel">$i18n{siteSettingsAllSitesSort}</label>
       <select id="sortMethod" class="md-select" aria-labelledby="sortLabel"
           on-change="onSortMethodChanged_">
-        <option value="[[sortMethods_.MOST_VISITED]]">
+        <option value="[[sortMethodEnum_.MOST_VISITED]]">
           $i18n{siteSettingsAllSitesSortMethodMostVisited}
         </option>
-        <option value="[[sortMethods_.STORAGE]]">
+        <option value="[[sortMethodEnum_.STORAGE]]">
           $i18n{siteSettingsAllSitesSortMethodStorage}
         </option>
-        <option value="[[sortMethods_.NAME]]">
+        <option value="[[sortMethodEnum_.NAME]]">
           $i18n{siteSettingsAllSitesSortMethodName}
         </option>
       </select>
     </div>
+    <div id="relatedWebsiteSetsDescription"
+        hidden$="[[!hasFilteredRwsSitesV2Ui_(filter, filteredList_)]]">
+      $i18nRaw{allSitesRwsFilterViewDescription}
+    </div>
     <div id="clearAllContainer">
       <div id="clearLabel">
-          [[getClearStorageDescription_(totalUsage_, filter)]]
+          [[getClearStorageDescription_(totalUsage_, filter, filteredList_)]]
       </div>
       <div id="clearAllButton"
           hidden$="[[!shouldShowClearAllButton_(filteredList_.length)]]">
@@ -70,7 +82,7 @@
       </div>
     </div>
     <div id="relatedWebsiteSetsLearnMore"
-        hidden$="[[!shouldShowRwsLearnMore_(filter, filteredList_)]]">
+        hidden$="[[!shouldShowRwsV1LearnMore_(filter, filteredList_)]]">
       [[getRwsLearnMoreLabel_(filter)]]
       <a href="$i18n{relatedWebsiteSetsLearnMoreURL}"
           aria-label="$i18n{siteSettingsRelatedWebsiteSetsLearnMoreAccessibility}">
@@ -81,7 +93,7 @@
       <div class="list-item secondary">$i18n{emptyAllSitesPage}</div>
     </div>
     <div id="noSitesFoundText" class="list-frame"
-     hidden$="[[!noSearchResultFound_(filteredList_)]]">
+        hidden$="[[!noSearchResultFound_(filteredList_)]]">
       <div class="list-item secondary">$i18n{noSitesFound}</div>
     </div>
     <div class="list-frame without-heading" id="listContainer">
@@ -96,7 +108,7 @@
               last-focused="{{lastFocused_}}"
               list-blurred="{{listBlurred_}}"
               sort-method="[[sortMethod_]]"
-              is-fps-filtered="[[isRwsFiltered_(filter)]]">
+              is-rws-filtered="[[isRwsFiltered_(filter)]]">
           </site-entry>
         </template>
       </iron-list>
@@ -108,7 +120,7 @@
         <cr-action-menu role-description="$i18n{menu}">
           <button class="dropdown-item" role="menuitem"
               on-click="onShowRelatedSites_">
-            $i18n{relatedWebsiteSetsShowRelatedSitesButton}
+            [[getShowRwsButtonLabel_()]]
           </button>
           <button class="dropdown-item" role="menuitem" on-click="onRemove_">
             $i18n{relatedWebsiteSetsSiteDeleteStorageButton}

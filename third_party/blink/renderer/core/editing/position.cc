@@ -194,8 +194,7 @@ Node* PositionTemplate<Strategy>::ComputeContainerNode() const {
       return parent;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 template <typename Strategy>
@@ -226,8 +225,7 @@ int PositionTemplate<Strategy>::ComputeOffsetInContainerNode() const {
     case PositionAnchorType::kAfterAnchor:
       return Strategy::Index(*anchor_node_) + 1;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // Neighbor-anchored positions are invalid DOM positions, so they need to be
@@ -291,8 +289,7 @@ Node* PositionTemplate<Strategy>::ComputeNodeBeforePosition() const {
     case PositionAnchorType::kAfterAnchor:
       return anchor_node_.Get();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 template <typename Strategy>
@@ -310,8 +307,7 @@ Node* PositionTemplate<Strategy>::ComputeNodeAfterPosition() const {
     case PositionAnchorType::kAfterAnchor:
       return Strategy::NextSibling(*anchor_node_);
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // An implementation of |Range::firstNode()|.
@@ -452,8 +448,7 @@ bool PositionTemplate<Strategy>::AtFirstEditingPositionForNode() const {
       // of DOM tree version.
       return !EditingStrategy::LastOffsetForEditing(AnchorNode());
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 template <typename Strategy>
@@ -648,8 +643,7 @@ Position ToPositionInDOMTree(const PositionInFlatTree& position) {
       return Position::LastPositionInNode(*anchor_node);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Position();
+      NOTREACHED();
   }
 }
 
@@ -670,8 +664,7 @@ String PositionTemplate<Strategy>::ToAnchorTypeAndOffsetString() const {
     case PositionAnchorType::kAfterAnchor:
       return "afterAnchor";
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
 #if DCHECK_IS_ON()
@@ -721,8 +714,7 @@ std::ostream& operator<<(std::ostream& ostream,
     case PositionAnchorType::kOffsetInAnchor:
       return ostream << "offsetInAnchor";
   }
-  NOTREACHED_IN_MIGRATION();
-  return ostream << "anchorType=" << static_cast<int>(anchor_type);
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& ostream, const Position& position) {

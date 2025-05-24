@@ -10,9 +10,9 @@ source_set("instance_id") {
   deps = [
     "//base",
     "//components/gcm_driver",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web",
   ]
 }

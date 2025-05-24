@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 
 #include <stddef.h>
 
-#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -79,7 +83,7 @@ class WebAudioSourceProviderImplTest : public testing::Test,
     testing::InSequence s;
 
     if (client) {
-      EXPECT_CALL(*mock_sink_, Stop());
+      EXPECT_CALL(*mock_sink_, Stop()).Times(0);
       EXPECT_CALL(*this, SetFormat(params_.channels(), params_.sample_rate()));
     }
     wasp_impl_->SetClient(client);
@@ -130,9 +134,9 @@ TEST_F(WebAudioSourceProviderImplTest, SetClientBeforeInitialize) {
   // setClient() with a nullptr client should do nothing if no client is set.
   wasp_impl_->SetClient(nullptr);
 
-  // If |mock_sink_| is not null, it should be stopped during setClient(this).
+  // `mock_sink_` should not be stopped during setClient(this).
   if (mock_sink_)
-    EXPECT_CALL(*mock_sink_.get(), Stop());
+    EXPECT_CALL(*mock_sink_.get(), Stop()).Times(0);
 
   wasp_impl_->SetClient(this);
   base::RunLoop().RunUntilIdle();
@@ -166,10 +170,9 @@ TEST_F(WebAudioSourceProviderImplTest, SinkMethods) {
   SetClient(this);
   CallAllSinkMethodsAndVerify(false);
 
-  // Removing the client should cause WASP to revert to the underlying sink;
-  // this shouldn't crash, but shouldn't do anything either.
+  // Removing the client should cause WASP to revert to the underlying sink.
   SetClient(nullptr);
-  CallAllSinkMethodsAndVerify(false);
+  CallAllSinkMethodsAndVerify(true);
 }
 
 // Test tainting effects on Render().
@@ -177,8 +180,8 @@ TEST_F(WebAudioSourceProviderImplTest, RenderTainted) {
   auto bus = media::AudioBus::Create(params_);
   bus->Zero();
 
-  // Point the WebVector into memory owned by |bus|.
-  WebVector<float*> audio_data(static_cast<size_t>(bus->channels()));
+  // Point the std::vector into memory owned by |bus|.
+  std::vector<float*> audio_data(static_cast<size_t>(bus->channels()));
   for (size_t i = 0; i < audio_data.size(); ++i)
     audio_data[i] = bus->channel(static_cast<int>(i));
 
@@ -206,8 +209,8 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
   auto bus1 = media::AudioBus::Create(params_);
   auto bus2 = media::AudioBus::Create(params_);
 
-  // Point the WebVector into memory owned by |bus1|.
-  WebVector<float*> audio_data(static_cast<size_t>(bus1->channels()));
+  // Point the std::vector into memory owned by |bus1|.
+  std::vector<float*> audio_data(static_cast<size_t>(bus1->channels()));
   for (size_t i = 0; i < audio_data.size(); ++i)
     audio_data[i] = bus1->channel(static_cast<int>(i));
 
@@ -292,8 +295,8 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputTainted) {
   auto bus = media::AudioBus::Create(params_);
   bus->Zero();
 
-  // Point the WebVector into memory owned by |bus|.
-  WebVector<float*> audio_data(static_cast<size_t>(bus->channels()));
+  // Point the std::vector into memory owned by |bus|.
+  std::vector<float*> audio_data(static_cast<size_t>(bus->channels()));
   for (size_t i = 0; i < audio_data.size(); ++i)
     audio_data[i] = bus->channel(static_cast<int>(i));
 
@@ -317,7 +320,7 @@ TEST_F(WebAudioSourceProviderImplTest, CopyAudioCB) {
   testing::InSequence s;
   wasp_impl_->Initialize(params_, &fake_callback_);
   wasp_impl_->SetCopyAudioCallback(WTF::BindRepeating(
-      &WebAudioSourceProviderImplTest::DoCopyAudioCB, base::Unretained(this)));
+      &WebAudioSourceProviderImplTest::DoCopyAudioCB, WTF::Unretained(this)));
 
   const auto bus1 = media::AudioBus::Create(params_);
   EXPECT_CALL(*this, DoCopyAudioCB(_, 0, params_.sample_rate())).Times(1);
@@ -335,7 +338,7 @@ TEST_F(WebAudioSourceProviderImplTest, CopyAudioCBTainted) {
   testing::InSequence s;
   wasp_impl_->Initialize(params_, &fake_callback_);
   wasp_impl_->SetCopyAudioCallback(WTF::BindRepeating(
-      &WebAudioSourceProviderImplTest::DoCopyAudioCB, base::Unretained(this)));
+      &WebAudioSourceProviderImplTest::DoCopyAudioCB, WTF::Unretained(this)));
 
   const auto bus1 = media::AudioBus::Create(params_);
   EXPECT_CALL(*this,
@@ -362,9 +365,9 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
   wasp_impl_->Initialize(params_, &fake_callback_);
   base::RunLoop().RunUntilIdle();
 
-  // If |mock_sink_| is not null, it should be stopped during setClient(this).
+  // `mock_sink_` should not be stopped during setClient(this).
   if (mock_sink_)
-    EXPECT_CALL(*mock_sink_.get(), Stop());
+    EXPECT_CALL(*mock_sink_.get(), Stop()).Times(0);
 
   // setClient() with the same client should do nothing.
   wasp_impl_->SetClient(this);
@@ -392,8 +395,8 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
   auto bus1 = media::AudioBus::Create(stream_params);
   auto bus2 = media::AudioBus::Create(stream_params);
 
-  // Point the WebVector into memory owned by |bus1|.
-  WebVector<float*> audio_data(static_cast<size_t>(bus1->channels()));
+  // Point the std::vector into memory owned by |bus1|.
+  std::vector<float*> audio_data(static_cast<size_t>(bus1->channels()));
   for (size_t i = 0; i < audio_data.size(); ++i)
     audio_data[i] = bus1->channel(static_cast<int>(i));
 
@@ -428,8 +431,8 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
 
   auto bus = media::AudioBus::Create(mono_params);
 
-  // Point the WebVector into memory owned by |bus|.
-  WebVector<float*> audio_data(static_cast<size_t>(bus->channels()));
+  // Point the std::vector into memory owned by |bus|.
+  std::vector<float*> audio_data(static_cast<size_t>(bus->channels()));
   for (size_t i = 0; i < audio_data.size(); ++i)
     audio_data[i] = bus->channel(static_cast<int>(i));
 
@@ -445,8 +448,8 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
 TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
   wasp_impl_ = base::MakeRefCounted<WebAudioSourceProviderImpl>(
       mock_sink_, &media_log_,
-      base::BindOnce(&WebAudioSourceProviderImplTest::OnClientSet,
-                     weak_factory_.GetWeakPtr()));
+      WTF::BindOnce(&WebAudioSourceProviderImplTest::OnClientSet,
+                    weak_factory_.GetWeakPtr()));
   // SetClient with a nullptr client should not trigger the callback if no
   // client is set.
   EXPECT_CALL(*this, OnClientSet()).Times(0);
@@ -455,7 +458,7 @@ TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
 
   // SetClient when called with a valid client should trigger the callback once.
   EXPECT_CALL(*this, OnClientSet()).Times(1);
-  EXPECT_CALL(*mock_sink_, Stop());
+  EXPECT_CALL(*mock_sink_, Stop()).Times(0);
   wasp_impl_->SetClient(this);
   base::RunLoop().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(this);
@@ -468,6 +471,35 @@ TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
   base::RunLoop().RunUntilIdle();
   wasp_impl_->SetClient(this);
   base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(this);
+}
+
+TEST_F(WebAudioSourceProviderImplTest, ConnectToDestinationReadyCallStop) {
+  wasp_impl_ = base::MakeRefCounted<WebAudioSourceProviderImpl>(
+      mock_sink_, &media_log_,
+      WTF::BindOnce(&WebAudioSourceProviderImplTest::OnClientSet,
+                    weak_factory_.GetWeakPtr()));
+
+  // ConnectToDestinationReady call without client does not call stop().
+  EXPECT_CALL(*mock_sink_, Stop()).Times(0);
+  wasp_impl_->ConnectToDestinationReady();
+
+  EXPECT_CALL(*this, OnClientSet()).Times(1);
+  EXPECT_CALL(*mock_sink_, Stop()).Times(0);
+  wasp_impl_->SetClient(this);
+  base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(this);
+
+  // ConnectToDestinationReady after client calls sink stop()
+  EXPECT_CALL(*mock_sink_, Stop()).Times(1);
+  wasp_impl_->ConnectToDestinationReady();
+  base::RunLoop().RunUntilIdle();
+
+  // ConnectToDestinationReady again after Stop() does not call stop() again.
+  EXPECT_CALL(*mock_sink_, Stop()).Times(0);
+  wasp_impl_->ConnectToDestinationReady();
+  base::RunLoop().RunUntilIdle();
+
   ::testing::Mock::VerifyAndClearExpectations(this);
 }
 

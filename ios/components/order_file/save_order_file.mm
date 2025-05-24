@@ -70,7 +70,7 @@ BOOL CRWDedupAndSaveOrderFile(NSString* fileName,
     if (uniqueFunctionCalls.count % 1000 == 0) {
       // Print once every 1000 times to save some time while de-queuing.
       LOG(WARNING) << "Reordering and deduping functions: "
-                    << uniqueFunctionCalls.count << " unique\n";
+                   << uniqueFunctionCalls.count << " unique\n";
     }
 
     if (![storedFunctionCalls containsObject:functionName]) {
@@ -80,8 +80,8 @@ BOOL CRWDedupAndSaveOrderFile(NSString* fileName,
   }
 
   LOG(WARNING) << "Saving order file for " << base::SysNSStringToUTF8(fileName)
-                << ". " << uniqueFunctionCalls.count
-                << " unique function calls recorded.\n";
+               << ". " << uniqueFunctionCalls.count
+               << " unique function calls recorded.\n";
 
   [uniqueFunctionCalls addObject:@""];  // Adding a new line to end of the file.
   NSString* output = [uniqueFunctionCalls componentsJoinedByString:@"\n"];
@@ -97,11 +97,11 @@ BOOL CRWDedupAndSaveOrderFile(NSString* fileName,
                                      error:&error];
   if (success) {
     LOG(WARNING) << "Order file saved to path: "
-                  << base::SysNSStringToUTF8(filePath) << "\n";
+                 << base::SysNSStringToUTF8(filePath) << "\n";
   } else {
     LOG(WARNING) << "Order file save failed. Path: "
-                  << base::SysNSStringToUTF8(filePath) << "\n, Error: "
-                  << base::SysNSStringToUTF8(error.debugDescription) << "\n";
+                 << base::SysNSStringToUTF8(filePath) << "\n, Error: "
+                 << base::SysNSStringToUTF8(error.debugDescription) << "\n";
   }
   return success;
 }
@@ -128,7 +128,7 @@ void CRWSaveOrderFile() {
     if (procedureCallCount % 1000 == 0) {
       // Print once every 1000 times to save some time while de-queuing.
       LOG(WARNING) << "Dequeuing functions: " << allFunctions.count
-                    << " valid / " << procedureCallCount << " total\n";
+                   << " valid / " << procedureCallCount << " total\n";
     }
     CRWProcedureCallNode* node = (CRWProcedureCallNode*)OSAtomicDequeue(
         &gCRWSanitizerQueue, offsetof(CRWProcedureCallNode, next));
@@ -152,8 +152,8 @@ void CRWSaveOrderFile() {
 
   if (allFunctions.count > 0) {
     LOG(WARNING) << "Out of " << procedureCallCount
-                  << " recorded function calls, " << allFunctions.count
-                  << " had a valid function name.\n";
+                 << " recorded function calls, " << allFunctions.count
+                 << " had a valid function name.\n";
   } else {
     LOG(WARNING) << "No functions found in order file generation.\n";
     return;

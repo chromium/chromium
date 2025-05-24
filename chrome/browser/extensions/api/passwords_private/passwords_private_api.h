@@ -374,18 +374,6 @@ class PasswordsPrivateGetPasswordCheckStatusFunction
   ResponseAction Run() override;
 };
 
-class PasswordsPrivateIsAccountStoreDefaultFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.isAccountStoreDefault",
-                             PASSWORDSPRIVATE_ISACCOUNTSTOREDEFAULT)
-
- protected:
-  ~PasswordsPrivateIsAccountStoreDefaultFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class PasswordsPrivateGetUrlCollectionFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.getUrlCollection",

@@ -16,13 +16,13 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_queue.h"
@@ -30,6 +30,7 @@
 #include "components/sync/engine/data_type_processor_metrics.h"
 #include "components/sync/engine/data_type_processor_proxy.h"
 #include "components/sync/model/client_tag_based_remote_update_handler.h"
+#include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
@@ -40,11 +41,64 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 namespace {
 
 const char kErrorSiteHistogramPrefix[] = "Sync.DataTypeErrorSite.";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SyncMetadataConsistency)
+enum class SyncMetadataConsistency {
+  // Stored metadata is consistent with the activation request.
+  kMetadataConsistent = 0,
+
+  // The following cases will result in metadata being cleared.
+  kCacheGuidMismatch = 1,
+  kDataTypeIdMismatch = 2,
+
+  // The following cases won't result in metadata being cleared.
+  kEmptyPersistedAuthenticatedGaiaId = 3,
+  kAuthenticatedGaiaIdMismatch = 4,
+
+  kMaxValue = kAuthenticatedGaiaIdMismatch,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncMetadataConsistency)
+
+SyncMetadataConsistency GetSyncMetadataConsistency(
+    const sync_pb::DataTypeState& data_type_state,
+    const DataTypeActivationRequest& activation_request,
+    DataType type) {
+  // Check for a mismatch between the cache guid or the data type id stored
+  // in `data_type_state` and the one received from sync. A mismatch indicates
+  // that the stored metadata are invalid (e.g. has been manipulated) and
+  // don't belong to the current syncing client.
+  if (data_type_state.cache_guid() != activation_request.cache_guid) {
+    return SyncMetadataConsistency::kCacheGuidMismatch;
+  }
+
+  if (data_type_state.progress_marker().data_type_id() !=
+      GetSpecificsFieldNumberFromDataType(type)) {
+    return SyncMetadataConsistency::kDataTypeIdMismatch;
+  }
+
+  // Check for a mismatch in authenticated account id. The id can change after
+  // restart (and this does not mean the account has changed, this is checked
+  // above by cache_guid mismatch).
+  if (data_type_state.authenticated_obfuscated_gaia_id().empty()) {
+    return SyncMetadataConsistency::kEmptyPersistedAuthenticatedGaiaId;
+  }
+
+  if (data_type_state.authenticated_obfuscated_gaia_id() !=
+      activation_request.authenticated_gaia_id.ToString()) {
+    return SyncMetadataConsistency::kAuthenticatedGaiaIdMismatch;
+  }
+
+  return SyncMetadataConsistency::kMetadataConsistent;
+}
 
 size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
   size_t count = 0u;
@@ -62,15 +116,9 @@ size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
 void RecordDataTypeNumUnsyncedEntitiesOnModelReady(
     DataType data_type,
     const ProcessorEntityTracker& entity_tracker) {
-  size_t num_unsynced_entities = 0;
-  for (const auto* entity :
-       entity_tracker.GetAllEntitiesIncludingTombstones()) {
-    if (entity->IsUnsynced()) {
-      num_unsynced_entities++;
-    }
-  }
-  SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(data_type,
-                                                    num_unsynced_entities);
+  SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
+      UnsyncedDataRecordingEvent::kOnModelReady,
+      {{data_type, entity_tracker.GetUnsyncedDataCount()}});
 }
 
 // Returns true if the unique position for the `target_entity` should be reused.
@@ -131,7 +179,7 @@ void ClientTagBasedDataTypeProcessor::OnSyncStarting(
   start_callback_ = std::move(start_callback);
   activation_request_ = request;
 
-  // Notify the bridge sync is starting before calling the |start_callback_|
+  // Notify the bridge sync is starting before calling the `start_callback_`
   // which in turn creates the worker.
   bridge_->OnSyncStarting(request);
 
@@ -166,7 +214,7 @@ void ClientTagBasedDataTypeProcessor::ModelReadyToSync(
     if (IsInitialSyncAtLeastPartiallyDone(
             data_type_state.initial_sync_state())) {
       entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
-          data_type_state, batch->TakeAllMetadata());
+          type_, data_type_state, batch->TakeAllMetadata());
       RecordDataTypeNumUnsyncedEntitiesOnModelReady(type_, *entity_tracker_);
     } else {
       // If initial sync isn't done, there must be no entity metadata (if there
@@ -208,8 +256,8 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
     data_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromDataType(type_));
     data_type_state.set_cache_guid(activation_request_.cache_guid);
-    data_type_state.set_authenticated_account_id(
-        activation_request_.authenticated_account_id.ToString());
+    data_type_state.set_authenticated_obfuscated_gaia_id(
+        activation_request_.authenticated_gaia_id.ToString());
     // For passwords, the bridge re-downloads all passwords to obtain any
     // potential notes from the sync server that were ignored by earlier
     // versions of the browser that didn't support notes. This should be done
@@ -244,8 +292,8 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
           weak_ptr_factory_for_worker_.GetWeakPtr(),
           base::SequencedTaskRunner::GetCurrentDefault());
 
-  // Defer invoking of |start_callback_| to avoid synchronous call from the
-  // |bridge_|. It might cause a situation when inside the ModelReadyToSync()
+  // Defer invoking of `start_callback_` to avoid synchronous call from the
+  // `bridge_`. It might cause a situation when inside the ModelReadyToSync()
   // another methods of the bridge eventually were called. This behavior would
   // be complicated and be unexpected in some bridges.
   // See crbug.com/1055584 for more details.
@@ -274,7 +322,7 @@ void ClientTagBasedDataTypeProcessor::OnSyncStopping(
   switch (metadata_fate) {
     case KEEP_METADATA: {
       bridge_->OnSyncPaused();
-      // The model is still ready to sync (with the same |bridge_|) and same
+      // The model is still ready to sync (with the same `bridge_`) and same
       // sync metadata.
       ResetState(KEEP_METADATA);
       DUMP_WILL_BE_CHECK(model_ready_to_sync_);
@@ -350,16 +398,17 @@ bool ClientTagBasedDataTypeProcessor::IsTrackingMetadata() const {
   return entity_tracker_ != nullptr;
 }
 
-std::string ClientTagBasedDataTypeProcessor::TrackedAccountId() const {
+GaiaId ClientTagBasedDataTypeProcessor::TrackedGaiaId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Returning non-empty here despite !IsTrackingMetadata() has weird semantics,
   // e.g. initial updates are being fetched but we haven't received the response
   // (i.e. prior to exercising MergeFullSyncData()). Let's be cautious and hide
   // the account ID.
   if (!IsTrackingMetadata()) {
-    return "";
+    return GaiaId();
   }
-  return entity_tracker_->data_type_state().authenticated_account_id();
+  return GaiaId(
+      entity_tracker_->data_type_state().authenticated_obfuscated_gaia_id());
 }
 
 std::string ClientTagBasedDataTypeProcessor::TrackedCacheGuid() const {
@@ -479,7 +528,7 @@ void ClientTagBasedDataTypeProcessor::Put(
                                   DataTypeHistogramValue(type_));
   }
 
-  // |data->specifics| is about to be committed, and therefore represents the
+  // `data->specifics` is about to be committed, and therefore represents the
   // imminent server-side state in most cases.
   sync_pb::EntitySpecifics trimmed_specifics =
       bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(data->specifics);
@@ -494,7 +543,7 @@ void ClientTagBasedDataTypeProcessor::Put(
       entity_tracker_->GetEntityForStorageKey(storage_key);
   if (entity == nullptr) {
     // The bridge is creating a new entity. The bridge may or may not populate
-    // |data->client_tag_hash|, so let's ask for the client tag if needed.
+    // `data->client_tag_hash`, so let's ask for the client tag if needed.
     if (data->client_tag_hash.value().empty()) {
       DUMP_WILL_BE_CHECK(bridge_->SupportsGetClientTag());
       data->client_tag_hash =
@@ -759,7 +808,7 @@ void ClientTagBasedDataTypeProcessor::OnCommitCompleted(
   const DataType data_type = type_;
   base::debug::Alias(&data_type);
 
-  // |error_response_list| is ignored, because all errors are treated as
+  // `error_response_list` is ignored, because all errors are treated as
   // transientand the processor with eventually retry.
 
   std::unique_ptr<MetadataChangeList> metadata_change_list =
@@ -787,8 +836,10 @@ void ClientTagBasedDataTypeProcessor::OnCommitCompleted(
 
     if (CommitOnlyTypes().Has(type_)) {
       if (!entity->IsUnsynced()) {
+        // EntityData() is not used for commit-only types although it could be
+        // created from the entity metadata.
         entity_change_list.push_back(
-            EntityChange::CreateDelete(entity->storage_key()));
+            EntityChange::CreateDelete(entity->storage_key(), EntityData()));
         RemoveEntity(entity->storage_key(), metadata_change_list.get());
       }
       // If unsynced, we could theoretically update persisted metadata to have
@@ -848,7 +899,7 @@ void ClientTagBasedDataTypeProcessor::OnCommitFailed(
     case DataTypeSyncBridge::CommitAttemptFailedBehavior::
         kShouldRetryOnNextCycle:
       // Entities weren't committed. Reset their
-      // |commit_requested_sequence_number| to commit them again on next sync
+      // `commit_requested_sequence_number` to commit them again on next sync
       // cycle.
       entity_tracker_->ClearTransientSyncState();
       break;
@@ -1008,7 +1059,7 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
 
   if (!entity_tracker_) {
     entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
-        data_type_state, EntityMetadataMap());
+        type_, data_type_state, EntityMetadataMap());
   }
 
   // TODO(crbug.com/40668179): the comment below may be wrong in case where a
@@ -1282,23 +1333,26 @@ void ClientTagBasedDataTypeProcessor::ResetState(
   }
 }
 
-void ClientTagBasedDataTypeProcessor::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
+void ClientTagBasedDataTypeProcessor::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  size_t num_unsynced_entities = 0;
+
   // Note that if there's a `model_error_`, there might be unsynced data that
   // remains unsynced indefinitely (at least until the next browser restart).
-  std::move(callback).Run(entity_tracker_ &&
-                          entity_tracker_->HasLocalChanges());
+  if (entity_tracker_) {
+    num_unsynced_entities = entity_tracker_->GetUnsyncedDataCount();
+  }
+  std::move(callback).Run(num_unsynced_entities);
 }
 
 void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
-  if (!bridge_) {
-    return;
-  }
+  CHECK(bridge_);
+  CHECK(model_ready_to_sync_);
 
   std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
   if (!batch) {
-    std::move(callback).Run(type_, base::Value::List());
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
@@ -1313,7 +1367,7 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
     // the authoritative source of truth.
     const ProcessorEntity* entity =
         entity_tracker_->GetEntityForStorageKey(storage_key);
-    // |entity| could be null if there are some unapplied changes.
+    // `entity` could be null if there are some unapplied changes.
     if (entity != nullptr) {
       const sync_pb::EntityMetadata& metadata = entity->metadata();
       // Set id value as the legacy Directory implementation, "s" means server.
@@ -1349,7 +1403,7 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
                       .Set("NON_UNIQUE_NAME", type_string);
   all_nodes.Append(std::move(rootnode));
 
-  std::move(callback).Run(type_, std::move(all_nodes));
+  std::move(callback).Run(std::move(all_nodes));
 }
 
 bool ClientTagBasedDataTypeProcessor::ClearPersistedMetadataIfInvalid(
@@ -1385,10 +1439,6 @@ bool ClientTagBasedDataTypeProcessor::ClearPersistedMetadataIfInvalid(
   if (!IsInitialSyncAtLeastPartiallyDone(
           data_type_state.initial_sync_state()) &&
       !metadata_map.empty()) {
-    base::UmaHistogramEnumeration(
-        "Sync.DataTypeEntityMetadataWithoutInitialSync",
-        DataTypeHistogramValue(type_));
-
     ClearAllProvidedMetadataAndResetState(metadata_map);
     // Not having `entity_tracker_` results in doing the initial sync again.
     CHECK(!entity_tracker_);
@@ -1420,39 +1470,38 @@ void ClientTagBasedDataTypeProcessor::
   if (!entity_tracker_) {
     return;
   }
-  const sync_pb::DataTypeState& data_type_state =
-      entity_tracker_->data_type_state();
 
-  // Check for a mismatch in authenticated account id. The id can change after
-  // restart (and this does not mean the account has changed, this is checked
-  // later here by cache_guid mismatch). Easy to fix in place.
-  // TODO(crbug.com/40897441): This doesn't fit the method name. It's also not
-  // clear if this codepath is even required
-  if (data_type_state.authenticated_account_id() !=
-      activation_request_.authenticated_account_id.ToString()) {
-    sync_pb::DataTypeState update_data_type_state = data_type_state;
-    update_data_type_state.set_authenticated_account_id(
-        activation_request_.authenticated_account_id.ToString());
-    entity_tracker_->set_data_type_state(update_data_type_state);
+  const SyncMetadataConsistency sync_metadata_consistency =
+      GetSyncMetadataConsistency(entity_tracker_->data_type_state(),
+                                 activation_request_, type_);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Sync.DataTypeMetadataConsistency.",
+                    DataTypeToHistogramSuffix(type_)}),
+      sync_metadata_consistency);
+
+  switch (sync_metadata_consistency) {
+    case SyncMetadataConsistency::kMetadataConsistent:
+      break;
+    case SyncMetadataConsistency::kEmptyPersistedAuthenticatedGaiaId:
+    case SyncMetadataConsistency::kAuthenticatedGaiaIdMismatch: {
+      // Fix the field in place.
+      // TODO(crbug.com/40897441): This doesn't fit the method name. It's also
+      // not clear if this codepath is even required.
+      sync_pb::DataTypeState update_data_type_state =
+          entity_tracker_->data_type_state();
+      update_data_type_state.set_authenticated_obfuscated_gaia_id(
+          activation_request_.authenticated_gaia_id.ToString());
+      entity_tracker_->set_data_type_state(update_data_type_state);
+      break;
+    }
+    // Deeper issues where we need to restart sync for this type.
+    case SyncMetadataConsistency::kCacheGuidMismatch:
+    case SyncMetadataConsistency::kDataTypeIdMismatch:
+      ClearAllTrackedMetadataAndResetState();
+      // Not having `entity_tracker_` results in doing the initial sync again.
+      DUMP_WILL_BE_CHECK(!entity_tracker_);
+      break;
   }
-
-  // Check for deeper issues where we need to restart sync for this type.
-  const bool valid_cache_guid =
-      data_type_state.cache_guid() == activation_request_.cache_guid;
-  // Check for a mismatch between the cache guid or the data type id stored
-  // in |data_type_state_| and the one received from sync. A mismatch indicates
-  // that the stored metadata are invalid (e.g. has been manipulated) and
-  // don't belong to the current syncing client.
-  const bool valid_data_type_id =
-      data_type_state.progress_marker().data_type_id() ==
-      GetSpecificsFieldNumberFromDataType(type_);
-  if (valid_cache_guid && valid_data_type_id) {
-    return;
-  }
-
-  ClearAllTrackedMetadataAndResetState();
-  // Not having `entity_tracker_` results in doing the initial sync again.
-  DUMP_WILL_BE_CHECK(!entity_tracker_);
 }
 
 void ClientTagBasedDataTypeProcessor::GetTypeEntitiesCountForDebugging(
@@ -1496,12 +1545,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionAfter(
   UniquePosition position_before = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_before));
   if (!position_before.IsValid()) {
-    DVLOG(1) << "Invalid unique position";
-    // TODO(crbug.com/351357559): add a metric or report a model error.
-    // Do not CHECK because the metadata is loaded from the disk and might
-    // contain corrupted data. Generate some consistent unique position on best
-    // effort.
-    return UniquePositionForInitialEntity(target_client_tag_hash);
+    return GenerateFallbackUniquePosition(target_client_tag_hash);
   }
 
   const ProcessorEntity* target_entity =
@@ -1512,7 +1556,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionAfter(
     return target_entity->metadata().unique_position();
   }
 
-  return UniquePosition::After(position_before, GenerateUniquePositionSuffix(
+  return UniquePosition::After(position_before, UniquePosition::GenerateSuffix(
                                                     target_client_tag_hash))
       .ToProto();
 }
@@ -1526,12 +1570,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBefore(
   UniquePosition position_after = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_after));
   if (!position_after.IsValid()) {
-    DVLOG(1) << "Invalid unique position";
-    // TODO(crbug.com/351357559): add a metric or report a model error.
-    // Do not CHECK because the metadata is loaded from the disk and might
-    // contain corrupted data. Generate some consistent unique position on best
-    // effort.
-    return UniquePositionForInitialEntity(target_client_tag_hash);
+    return GenerateFallbackUniquePosition(target_client_tag_hash);
   }
 
   const ProcessorEntity* target_entity =
@@ -1542,7 +1581,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBefore(
     return target_entity->metadata().unique_position();
   }
 
-  return UniquePosition::Before(position_after, GenerateUniquePositionSuffix(
+  return UniquePosition::Before(position_after, UniquePosition::GenerateSuffix(
                                                     target_client_tag_hash))
       .ToProto();
 }
@@ -1559,24 +1598,19 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBetween(
   UniquePosition position_after = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_after));
   if (!position_after.IsValid() || !position_before.IsValid()) {
-    DVLOG(1) << "Invalid unique position";
-    // TODO(crbug.com/351357559): add a metric or report a model error.
-    // Do not CHECK because the metadata is loaded from the disk and might
-    // contain corrupted data. Generate some consistent unique position on best
-    // effort.
-    return UniquePositionForInitialEntity(target_client_tag_hash);
+    return GenerateFallbackUniquePosition(target_client_tag_hash);
   }
 
   if (!position_before.LessThan(position_after)) {
-    DVLOG(1) << "Error while generating unique position between positions"
-             << " which are in an unxepected order";
-    // TODO(crbug.com/351357559): add a metric or report a model error.
     // The order in sync metadata is incorrect due to inconsistency with the
     // model. This normally should not happen but generate some meaningful
     // unique position to prevent data loss (in case the bridge verifies unique
     // position validness).
-    return UniquePosition::After(position_before, GenerateUniquePositionSuffix(
-                                                      target_client_tag_hash))
+    base::UmaHistogramEnumeration("Sync.DataTypeUniquePositionIncorrectOrder",
+                                  DataTypeHistogramValue(type_));
+    return UniquePosition::After(
+               position_before,
+               UniquePosition::GenerateSuffix(target_client_tag_hash))
         .ToProto();
   }
 
@@ -1590,7 +1624,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBetween(
 
   return UniquePosition::Between(
              position_before, position_after,
-             GenerateUniquePositionSuffix(target_client_tag_hash))
+             UniquePosition::GenerateSuffix(target_client_tag_hash))
       .ToProto();
 }
 
@@ -1609,7 +1643,7 @@ ClientTagBasedDataTypeProcessor::UniquePositionForInitialEntity(
   }
 
   return UniquePosition::InitialPosition(
-             GenerateUniquePositionSuffix(target_client_tag_hash))
+             UniquePosition::GenerateSuffix(target_client_tag_hash))
       .ToProto();
 }
 
@@ -1669,6 +1703,14 @@ void ClientTagBasedDataTypeProcessor::ReportBridgeErrorForTest() {
 
   CHECK(!model_error_.has_value());
   ReportError(ModelError(FROM_HERE, "Reported error from test"));
+}
+
+sync_pb::UniquePosition
+ClientTagBasedDataTypeProcessor::GenerateFallbackUniquePosition(
+    const ClientTagHash& client_tag_hash) const {
+  base::UmaHistogramEnumeration("Sync.DataTypeUniquePositionError",
+                                DataTypeHistogramValue(type_));
+  return UniquePositionForInitialEntity(client_tag_hash);
 }
 
 }  // namespace syncer

@@ -6,8 +6,8 @@
 
 namespace gcm {
 
-GCMConnectionObserver::GCMConnectionObserver() {}
-GCMConnectionObserver::~GCMConnectionObserver() {}
+GCMConnectionObserver::GCMConnectionObserver() = default;
+GCMConnectionObserver::~GCMConnectionObserver() = default;
 
 void GCMConnectionObserver::OnConnected(const net::IPEndPoint& ip_endpoint) {
 }

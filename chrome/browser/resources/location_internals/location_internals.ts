@@ -57,7 +57,7 @@ export function initializeMojo() {
 
   geolocationInternalsObserver = new GeolocationInternalsObserverReceiver(
       new GeolocationInternalsObserver());
-  geolocationInternals!
+  geolocationInternals
       .addInternalsObserver(
           geolocationInternalsObserver.$.bindNewPipeAndPassRemote())
       .then(data => {

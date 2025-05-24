@@ -74,7 +74,7 @@ std::unordered_set<uint64_t> ProcessStack(
   };
   auto write_shared_element_quad = [&str](const SharedElementDrawQuad* quad) {
     str << "(" << quad << ") SharedElementDrawQuad "
-        << quad->resource_id.ToString() << "\n";
+        << quad->element_resource_id.ToString() << "\n";
   };
   auto write_solid_color_quad = [&str](const SolidColorDrawQuad* quad) {
     str << "(" << quad

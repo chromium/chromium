@@ -107,10 +107,11 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case WEBAUTHN_CREDENTIAL:
     case PLUS_ADDRESS:
     case PLUS_ADDRESS_SETTING:
+    case AUTOFILL_VALUABLE:
+    case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return base::TimeDelta();
+      NOTREACHED();
   }
 }
 
@@ -176,10 +177,11 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case PLUS_ADDRESS_SETTING:
     case PRODUCT_COMPARISON:
     case COOKIES:
+    case AUTOFILL_VALUABLE:
+    case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return false;
     case UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -228,10 +230,6 @@ void DataTypeTracker::RecordSuccessfulCommitMessage() {
       base::UmaHistogramEnumeration(
           "Sync.DataTypeCommitMessageHasDepletedQuota",
           DataTypeHistogramValue(type_));
-      // Legacy equivalent, before the metric was renamed.
-      base::UmaHistogramEnumeration(
-          "Sync.ModelTypeCommitMessageHasDepletedQuota",
-          DataTypeHistogramValue(type_));
     }
   }
 }
@@ -259,7 +257,7 @@ void DataTypeTracker::RecordSuccessfulSyncCycleIfNotBlocked() {
   // sync cycle, before this method gets called (i.e. after a successful
   // "normal" sync cycle). However, in some cases the initial sync might not
   // have happened, e.g. if this one data type got blocked or throttled during
-  // the configure cycle. For those cases, also clear |initial_sync_required_|
+  // the configure cycle. For those cases, also clear `initial_sync_required_`
   // here.
   initial_sync_required_ = false;
 
@@ -332,8 +330,7 @@ base::TimeDelta DataTypeTracker::GetTimeUntilUnblock() const {
 base::TimeDelta DataTypeTracker::GetLastBackoffInterval() const {
   if (GetBlockingMode() !=
       WaitInterval::BlockingMode::kExponentialBackoffRetrying) {
-    NOTREACHED_IN_MIGRATION();
-    return base::Seconds(0);
+    NOTREACHED();
   }
   return wait_interval_->length;
 }
@@ -384,9 +381,6 @@ base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay(
     bool is_single_client) const {
   if (quota_ && !quota_->HasTokensAvailable()) {
     base::UmaHistogramEnumeration("Sync.DataTypeCommitWithDepletedQuota",
-                                  DataTypeHistogramValue(type_));
-    // Legacy equivalent, before the metric was renamed.
-    base::UmaHistogramEnumeration("Sync.ModelTypeCommitWithDepletedQuota",
                                   DataTypeHistogramValue(type_));
     return depleted_quota_nudge_delay_;
   }

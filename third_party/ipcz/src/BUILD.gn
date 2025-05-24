@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build_overrides/ipcz.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 enable_multiprocess_tests = is_linux
@@ -442,6 +443,34 @@ test("ipcz_tests") {
     "//testing/gtest",
   ]
   configs += [ ":ipcz_include_src_dir" ]
+}
+
+ipcz_source_set("fuzzer_sources") {
+  testonly = true
+  sources = [
+    "fuzzer/driver.cc",
+    "fuzzer/driver.h",
+    "fuzzer/fuzzer.cc",
+    "fuzzer/fuzzer.h",
+    "fuzzer/ipcz_fuzzer_testcase.cc",
+    "fuzzer/ipcz_fuzzer_testcase.h",
+  ]
+  ipcz_deps = [
+    ":ipcz",
+    ":reference_drivers",
+    ":util",
+  ]
+  deps = [ "//third_party/abseil-cpp:absl" ]
+  public_configs = [
+    ":ipcz_include_dir",
+    ":ipcz_include_src_dir",
+  ]
+}
+
+fuzzer_test("ipcz_fuzzer") {
+  sources = [ "fuzzer/ipcz_fuzzer.cc" ]
+  deps = [ ":fuzzer_sources_standalone" ]
+  defines = [ "IPCZ_STANDALONE" ]
 }
 
 group("all") {

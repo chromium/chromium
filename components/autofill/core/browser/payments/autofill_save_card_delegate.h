@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_SAVE_CARD_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_SAVE_CARD_DELEGATE_H_
 
+#include <variant>
+
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
@@ -17,7 +18,7 @@ class AutofillSaveCardInfoBarDelegateMobileTest;
 class AutofillSaveCardDelegate {
  public:
   AutofillSaveCardDelegate(
-      absl::variant<
+      std::variant<
           payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
           payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
           save_card_callback,
@@ -26,7 +27,7 @@ class AutofillSaveCardDelegate {
   virtual ~AutofillSaveCardDelegate();
 
   bool is_for_upload() const {
-    return absl::holds_alternative<
+    return std::holds_alternative<
         payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>(
         save_card_callback_);
   }
@@ -45,11 +46,13 @@ class AutofillSaveCardDelegate {
   // finished.
   virtual void OnUiAccepted(
       base::OnceClosure on_save_card_completed = base::NullCallback());
-  void OnUiUpdatedAndAccepted(
+  virtual void OnUiUpdatedAndAccepted(
       payments::PaymentsAutofillClient::UserProvidedCardDetails
           user_provided_details);
   virtual void OnUiCanceled();
   virtual void OnUiIgnored();
+  const payments::PaymentsAutofillClient::SaveCreditCardOptions&
+  GetSaveCreditCardOptions() const;
 
  protected:
   // Called when all of the prerequisites for saving a card have been met.
@@ -94,8 +97,8 @@ class AutofillSaveCardDelegate {
 
   // The callback to run once the user makes a decision with respect to the
   // credit card offer-to-save prompt.
-  absl::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-                payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
+  std::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+               payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
       save_card_callback_;
 
   // Callback to run immediately after `save_card_callback_`. An example of a

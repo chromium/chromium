@@ -8,6 +8,7 @@
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -63,8 +65,7 @@ String DeprecatedFencedFrameModeToString(
       return "opaque-ads";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Helper function that returns whether the mode of the parent tree is different
@@ -174,10 +175,10 @@ void HTMLFencedFrameElement::DisconnectContentFrame() {
   HTMLFrameOwnerElement::DisconnectContentFrame();
 }
 
-ParsedPermissionsPolicy HTMLFencedFrameElement::ConstructContainerPolicy()
-    const {
+network::ParsedPermissionsPolicy
+HTMLFencedFrameElement::ConstructContainerPolicy() const {
   if (!GetExecutionContext()) {
-    return ParsedPermissionsPolicy();
+    return network::ParsedPermissionsPolicy();
   }
 
   scoped_refptr<const SecurityOrigin> src_origin =
@@ -187,7 +188,7 @@ ParsedPermissionsPolicy HTMLFencedFrameElement::ConstructContainerPolicy()
 
   PolicyParserMessageBuffer logger;
 
-  ParsedPermissionsPolicy container_policy =
+  network::ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(allow_, self_origin, src_origin,
                                               logger, GetExecutionContext());
 
@@ -344,8 +345,8 @@ void HTMLFencedFrameElement::ParseAttribute(
         GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kError,
-            "Error while parsing the 'sandbox' attribute: " +
-                String::FromUTF8(parsed.error_message)));
+            WTF::StrCat({"Error while parsing the 'sandbox' attribute: ",
+                         String::FromUTF8(parsed.error_message)})));
       }
     }
     SetSandboxFlags(current_flags);
@@ -373,7 +374,7 @@ bool HTMLFencedFrameElement::IsPresentationAttribute(
 void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
   } else if (name == html_names::kHeightAttr) {
@@ -440,10 +441,10 @@ void HTMLFencedFrameElement::Navigate(
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Cannot create a fenced frame with mode '" +
-            DeprecatedFencedFrameModeToString(GetDeprecatedMode()) +
-            "' nested in a fenced frame with mode '" +
-            DeprecatedFencedFrameModeToString(parent_mode) + "'."));
+        WTF::StrCat({"Cannot create a fenced frame with mode '",
+                     DeprecatedFencedFrameModeToString(GetDeprecatedMode()),
+                     "' nested in a fenced frame with mode '",
+                     DeprecatedFencedFrameModeToString(parent_mode), "'."})));
     RecordFencedFrameCreationOutcome(
         FencedFrameCreationOutcome::kIncompatibleMode);
     return;
@@ -750,10 +751,10 @@ void HTMLFencedFrameElement::FreezeCurrentFrameSize() {
 }
 
 void HTMLFencedFrameElement::SetContainerSize(const gfx::Size& size) {
-  setAttribute(html_names::kWidthAttr, String::Format("%dpx", size.width()),
-               ASSERT_NO_EXCEPTION);
-  setAttribute(html_names::kHeightAttr, String::Format("%dpx", size.height()),
-               ASSERT_NO_EXCEPTION);
+  setAttribute(html_names::kWidthAttr,
+               AtomicString(String::Format("%dpx", size.width())));
+  setAttribute(html_names::kHeightAttr,
+               AtomicString(String::Format("%dpx", size.height())));
 
   frame_delegate_->MarkContainerSizeStale();
 }

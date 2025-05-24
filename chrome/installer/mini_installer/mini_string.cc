@@ -72,7 +72,7 @@ bool SafeStrCopy(wchar_t* dest, size_t dest_size, const wchar_t* src) {
   // want to mutate the string in case the caller handles the error of a
   // failed concatenation.  For example:
   //
-  // wchar_t buf[5] = {0};
+  // wchar_t buf[5] = {};
   // if (!SafeStrCat(buf, _countof(buf), kLongName))
   //   SafeStrCat(buf, _countof(buf), kShortName);
   //

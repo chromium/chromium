@@ -133,7 +133,10 @@ class CONTENT_EXPORT ClipboardEndpoint {
 // Struct that holds metadata for data being copied or pasted that is relevant
 // to evaluating enterprise policies.
 struct ClipboardMetadata {
-  // Size of the clipboard data. null when files are copied.
+  // Size of the clipboard data. null when files are copied, or sometimes when
+  // created from Android JNI.
+  // TODO(crbug.com/344593255): Ensure that Android JNI consistently passes in
+  //  non-null size.
   std::optional<size_t> size;
 
   // Format type of clipboard data.
@@ -142,6 +145,11 @@ struct ClipboardMetadata {
   // Sequence number of the clipboard interaction.
   ui::ClipboardSequenceNumberToken seqno;
 };
+
+// Chromium-only type to associate clipboard data to the RFH it originated from.
+// This should only be used internally by the browser process to retrieve RFHs,
+// renderers should never have access to a serialized token.
+const ui::ClipboardFormatType& SourceRFHTokenType();
 
 }  // namespace content
 

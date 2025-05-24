@@ -55,12 +55,12 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
     // For keyboard/pointer combo devices. Sets a callback that will be called
     // whenever the device registers valid keyboard input.
     virtual void SetReceivedValidKeyboardInputCallback(
-        base::RepeatingCallback<void(uint64_t)> callback) = 0;
+        base::RepeatingCallback<void(uint64_t, double)> callback) = 0;
 
     // For keyboard/pointer combo devices. Sets a callback that will be called
     // whenever the device registers valid mouse input.
     virtual void SetReceivedValidMouseInputCallback(
-        base::RepeatingCallback<void(int)> callback) = 0;
+        base::RepeatingCallback<void(int, double)> callback) = 0;
 
     // Sets whether modifier events should be blocked when coming from this
     // device.
@@ -80,11 +80,11 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
 
   // Used as a callback for `Delegate` to call when the device registers valid
   // keyboard input.
-  void ReceivedKeyboardInput(uint64_t key);
+  void ReceivedKeyboardInput(uint64_t key, double timestamp_in_seconds);
 
   // Used as a callback for `Delegate` to call when the device registers valid
   // mouse input.
-  void ReceivedMouseInput(int rel_value);
+  void ReceivedMouseInput(int rel_value, double timestamp_in_seconds);
 
   // EventConverterEvdev:
   void OnFileCanReadWithoutBlocking(int fd) override;

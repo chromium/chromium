@@ -32,12 +32,13 @@
 namespace ash {
 namespace {
 
-const char kPrimaryProfileName[] = "primary_profile";
-const char kSecondaryProfileName[] = "secondary_profile";
-const char kTestGroupCalendarId[] =
+constexpr char kPrimaryProfileName[] = "primary_profile";
+constexpr char kSecondaryProfileName[] = "secondary_profile";
+constexpr GaiaId::Literal kFakeGaia2("fakegaia2");
+constexpr char kTestGroupCalendarId[] =
     "oz2iwbysdg20tn8zdjvtqnkj12test@group.calendar.google.com";
-const char kTestGroupCalendarColorId[] = "3";
-const char kTestUserAgent[] = "test-user-agent";
+constexpr char kTestGroupCalendarColorId[] = "3";
+constexpr char kTestUserAgent[] = "test-user-agent";
 
 }  // namespace
 
@@ -59,10 +60,12 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
     ProfileHelper::SetProfileToUserForTestingEnabled(false);
   }
 
-  std::string GetDefaultProfileName() override { return kPrimaryProfileName; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kPrimaryProfileName;
+  }
 
   TestingProfile* CreateSecondaryProfile() {
-    LogIn(kSecondaryProfileName);
+    LogIn(kSecondaryProfileName, kFakeGaia2);
     return CreateProfile(kSecondaryProfileName);
   }
 };
@@ -134,8 +137,23 @@ class CalendarKeyedServiceIOTest : public testing::Test {
       test_shared_loader_factory_;
 };
 
+class NoProfileCalendarKeyedServiceTest : public CalendarKeyedServiceTest {
+ public:
+  NoProfileCalendarKeyedServiceTest() = default;
+  NoProfileCalendarKeyedServiceTest(
+      const NoProfileCalendarKeyedServiceTest& other) = delete;
+  NoProfileCalendarKeyedServiceTest& operator=(
+      const NoProfileCalendarKeyedServiceTest& other) = delete;
+  ~NoProfileCalendarKeyedServiceTest() override = default;
+
+  // CalendarKeyedServiceTest:
+  std::optional<std::string> GetDefaultProfileName() override {
+    return std::nullopt;
+  }
+};
+
 // Calendar service does not support guest user.
-TEST_F(CalendarKeyedServiceTest, GuestUserProfile) {
+TEST_F(NoProfileCalendarKeyedServiceTest, GuestUserProfile) {
   // Construct a guest session profile.
   TestingProfile::Builder guest_profile_builder;
   guest_profile_builder.SetGuestSession();

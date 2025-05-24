@@ -16,9 +16,6 @@
 
 namespace translate {
 
-class TranslateManager;
-class TranslatePrefs;
-
 // Handles index management and querying functions for language lists used in
 // the Full Page Translate and Partial Translate UIs.
 
@@ -33,7 +30,6 @@ class TranslateUILanguagesManager {
   static const size_t kNoIndex = static_cast<size_t>(-1);
 
   TranslateUILanguagesManager(
-      const base::WeakPtr<TranslateManager>& translate_manager,
       const std::vector<std::string>& language_codes,
       const std::string& source_language,
       const std::string& target_language);
@@ -94,8 +90,6 @@ class TranslateUILanguagesManager {
   // TODO(hajimehoshi): Write a test for icu::Collator::createInstance.
   std::unique_ptr<icu::Collator> CreateCollator(const std::string& locale);
 
-  base::WeakPtr<TranslateManager> translate_manager_;
-
   // ISO code (en, fr...) -> displayable name in the current locale
   typedef std::pair<std::string, std::u16string> LanguageNamePair;
 
@@ -116,9 +110,6 @@ class TranslateUILanguagesManager {
 
   // The index of the language selected as the target language for translation.
   size_t target_language_index_;
-
-  // Translate related preferences.
-  std::unique_ptr<TranslatePrefs> prefs_;
 };
 
 }  // namespace translate

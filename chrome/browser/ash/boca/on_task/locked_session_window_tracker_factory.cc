@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 
+#include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -28,7 +29,12 @@ LockedSessionWindowTrackerFactory::GetForBrowserContext(
 LockedSessionWindowTrackerFactory::LockedSessionWindowTrackerFactory()
     : BrowserContextKeyedServiceFactory(
           "LockedSessionWindowTracker",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  // Add an explicit dependency on `BocaManagerFactory` to ensure the window
+  // tracker is destroyed before its observers that are managed by the
+  // `BocaManager`.
+  DependsOn(ash::BocaManagerFactory::GetInstance());
+}
 
 LockedSessionWindowTrackerFactory::~LockedSessionWindowTrackerFactory() =
     default;
@@ -43,7 +49,7 @@ LockedSessionWindowTrackerFactory::BuildServiceInstanceForBrowserContext(
   auto on_task_blocklist =
       std::make_unique<OnTaskBlocklist>(std::move(url_blocklist_manager));
   return std::make_unique<LockedSessionWindowTracker>(
-      std::move(on_task_blocklist));
+      std::move(on_task_blocklist), context);
 }
 
 content::BrowserContext*

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/autofill/ui_bundled/card_name_fix_flow_view_bridge.h"
+
 #import <memory>
 #import <string>
 
@@ -15,7 +17,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -37,8 +38,9 @@ CardNameFixFlowViewBridge::CardNameFixFlowViewBridge(
 }
 
 CardNameFixFlowViewBridge::~CardNameFixFlowViewBridge() {
-  if (controller_)
+  if (controller_) {
     controller_->OnConfirmNameDialogClosed();
+  }
 }
 
 void CardNameFixFlowViewBridge::Show() {

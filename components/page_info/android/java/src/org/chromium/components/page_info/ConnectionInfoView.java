@@ -4,6 +4,8 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Browser;
@@ -26,6 +28,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -36,6 +40,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Java side of Android implementation of the page info UI. */
+@NullMarked
 public class ConnectionInfoView implements OnClickListener {
     private static final String TAG = "ConnectionInfoView";
 
@@ -43,23 +48,23 @@ public class ConnectionInfoView implements OnClickListener {
             "https://support.google.com/chrome?p=android_connection_info";
 
     private final Context mContext;
-    private ConnectionInfoDelegate mDelegate;
+    private final ConnectionInfoDelegate mDelegate;
     private final LinearLayout mContainer;
     private final WebContents mWebContents;
     private final int mPaddingSides;
     private final int mPaddingVertical;
     private final long mNativeConnectionInfoView;
     private final CertificateViewer mCertificateViewer;
-    private TextView mCertificateViewerTextView;
-    private TextView mMoreInfoLink;
-    private ViewGroup mCertificateLayout;
-    private ViewGroup mDescriptionLayout;
-    private Button mResetCertDecisionsButton;
-    private String mLinkUrl;
+    private @Nullable TextView mCertificateViewerTextView;
+    private @Nullable TextView mMoreInfoLink;
+    private @Nullable ViewGroup mCertificateLayout;
+    private @Nullable ViewGroup mDescriptionLayout;
+    private @Nullable Button mResetCertDecisionsButton;
+    private @Nullable String mLinkUrl;
 
     /**
-     * Delegate that embeds the ConnectionInfoView. Must call ConnectionInfoView::onDismiss when
-     * the embedding view is removed.
+     * Delegate that embeds the ConnectionInfoView. Must call ConnectionInfoView::onDismiss when the
+     * embedding view is removed.
      */
     interface ConnectionInfoDelegate {
         /** Called when the ConnectionInfoView is initialized */
@@ -91,13 +96,13 @@ public class ConnectionInfoView implements OnClickListener {
     }
 
     /**
-     * Adds certificate section, which contains an icon, a headline, a
-     * description and a label for certificate info link.
+     * Adds certificate section, which contains an icon, a description and a label for certificate
+     * info link.
      */
     @CalledByNative
     private void addCertificateSection(
-            int iconId, String headline, String description, String label, int iconColorId) {
-        View section = addSection(iconId, headline, description, iconColorId);
+            int iconId, String description, String label, int iconColorId) {
+        View section = addSection(iconId, description, iconColorId);
         assert mCertificateLayout == null;
         mCertificateLayout = (ViewGroup) section.findViewById(R.id.connection_info_text_layout);
         if (label != null && !label.isEmpty()) {
@@ -106,18 +111,17 @@ public class ConnectionInfoView implements OnClickListener {
     }
 
     /**
-     * Adds Description section, which contains an icon, a headline, and a
-     * description. Most likely headline for description is empty
+     * Adds Description section, which contains an icon, and a description. Most likely headline for
+     * description is empty
      */
     @CalledByNative
-    private void addDescriptionSection(
-            int iconId, String headline, String description, int iconColorId) {
-        View section = addSection(iconId, headline, description, iconColorId);
+    private void addDescriptionSection(int iconId, String description, int iconColorId) {
+        View section = addSection(iconId, description, iconColorId);
         assert mDescriptionLayout == null;
         mDescriptionLayout = section.findViewById(R.id.connection_info_text_layout);
     }
 
-    private View addSection(int iconId, String headline, String description, int iconColorId) {
+    private View addSection(int iconId, String description, int iconColorId) {
         View section = LayoutInflater.from(mContext).inflate(R.layout.connection_info, null);
         ImageView i = section.findViewById(R.id.connection_info_icon);
         if (iconId == 0) {
@@ -144,6 +148,7 @@ public class ConnectionInfoView implements OnClickListener {
         mCertificateViewerTextView.setTextAppearance(R.style.TextAppearance_TextMedium_Link);
         mCertificateViewerTextView.setOnClickListener(this);
         mCertificateViewerTextView.setPadding(0, mPaddingVertical, 0, 0);
+        assumeNonNull(mCertificateLayout);
         mCertificateLayout.addView(mCertificateViewerTextView);
     }
 
@@ -170,6 +175,7 @@ public class ConnectionInfoView implements OnClickListener {
         mMoreInfoLink.setTextAppearance(R.style.TextAppearance_TextMedium_Link);
         mMoreInfoLink.setPadding(0, mPaddingVertical, 0, 0);
         mMoreInfoLink.setOnClickListener(this);
+        assumeNonNull(mDescriptionLayout);
         mDescriptionLayout.addView(mMoreInfoLink);
     }
 
@@ -227,10 +233,10 @@ public class ConnectionInfoView implements OnClickListener {
 
     static class ConnectionInfoDialogDelegate
             implements ConnectionInfoDelegate, ModalDialogProperties.Controller {
-        private ConnectionInfoView mPopup;
-        private PropertyModel mDialogModel;
+        private @Nullable ConnectionInfoView mPopup;
+        private @Nullable PropertyModel mDialogModel;
         private final ModalDialogManager mModalDialogManager;
-        private WebContents mWebContents;
+        private final WebContents mWebContents;
         private final WebContentsObserver mWebContentsObserver;
 
         ConnectionInfoDialogDelegate(
@@ -247,8 +253,7 @@ public class ConnectionInfoView implements OnClickListener {
                         }
 
                         @Override
-                        public void destroy() {
-                            super.destroy();
+                        public void webContentsDestroyed() {
                             dismiss(DialogDismissalCause.UNKNOWN);
                         }
                     };
@@ -264,8 +269,9 @@ public class ConnectionInfoView implements OnClickListener {
 
         @Override
         public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
+            assumeNonNull(mPopup);
             mPopup.onDismiss();
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mDialogModel = null;
         }
 

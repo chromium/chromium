@@ -17,7 +17,8 @@
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/models/image_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -156,6 +157,26 @@ class ASH_PUBLIC_EXPORT AppListClient {
 
   // Whether the app list was reordered locally.
   virtual bool HasReordered() = 0;
+
+  // Callback for reading Assistant new entry point eligibility.
+  using GetAssistantNewEntryPointEligibilityCallback =
+      base::OnceCallback<void(bool)>;
+
+  // Read Assistant new entry point eligibility from Assistant delegate as an
+  // async operation.
+  // TODO(crbug.com/388361414): rename to GetGeminiEligibility. Same for other
+  // methods in this file.
+  virtual void GetAssistantNewEntryPointEligibility(
+      GetAssistantNewEntryPointEligibilityCallback callback) = 0;
+
+  // Queries the name of Assistant new entry point, which can be used as tooltip
+  // text or a11y name. Returns `std::nullptr` for any error case, e.g., profile
+  // is not eligible, new entry point not installed. You should query the name
+  // only if `GetAssistantNewEntryPointEligibility` returns eligible.
+  virtual std::optional<std::string> GetAssistantNewEntryPointName() = 0;
+
+  // Returns a Gemini icon.
+  virtual ui::ImageModel GetGeminiIcon() = 0;
 
  protected:
   virtual ~AppListClient() = default;

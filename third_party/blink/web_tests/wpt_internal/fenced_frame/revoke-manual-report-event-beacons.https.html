@@ -19,7 +19,8 @@
       // This fenced frame will not have its network revoked. This is done to
       // check that popup navigations do not work regardless of the network status
       // of a frame's descendants.
-      await attachFencedFrameContext({generator_api: 'sharedstorage'});
+      await attachFencedFrameContext({
+          generator_api: 'sharedstorage', register_beacon: true});
 
       let timeout_promise = new Promise(
           resolve => setTimeout(() => {resolve('timeout')}, 500));

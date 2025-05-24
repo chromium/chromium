@@ -12,8 +12,12 @@
 
 namespace remoting::protocol {
 
-RejectingAuthenticator::RejectingAuthenticator(RejectionReason rejection_reason)
-    : rejection_reason_(rejection_reason) {}
+RejectingAuthenticator::RejectingAuthenticator(
+    RejectionReason rejection_reason,
+    std::string_view rejection_message,
+    const base::Location& rejection_location)
+    : rejection_reason_(rejection_reason),
+      rejection_details_{std::string(rejection_message), rejection_location} {}
 
 RejectingAuthenticator::~RejectingAuthenticator() = default;
 
@@ -37,6 +41,12 @@ Authenticator::RejectionReason RejectingAuthenticator::rejection_reason()
     const {
   DCHECK_EQ(state_, REJECTED);
   return rejection_reason_;
+}
+
+Authenticator::RejectionDetails RejectingAuthenticator::rejection_details()
+    const {
+  DCHECK_EQ(state_, REJECTED);
+  return rejection_details_;
 }
 
 void RejectingAuthenticator::ProcessMessage(

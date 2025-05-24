@@ -22,6 +22,7 @@ class BASE_EXPORT TimerSamplingEventSource : public SamplingEventSource {
 
   // SamplingEventSource:
   bool Start(SamplingEventCallback callback) override;
+  TimeDelta GetSampleInterval() override;
 
  private:
   const TimeDelta interval_;

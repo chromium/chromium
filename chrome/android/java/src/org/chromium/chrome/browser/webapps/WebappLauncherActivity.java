@@ -26,7 +26,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
@@ -70,13 +69,6 @@ public class WebappLauncherActivity extends Activity {
     private static final int WEBAPK_LAUNCH_DELAY_MS = 20;
 
     private static final String TAG = "webapps";
-
-    private static final int DEFAULT_WEBAPK_MIN_VERSION = 146;
-    public static final IntCachedFieldTrialParameter MIN_SHELL_APK_VERSION =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.WEB_APK_MIN_SHELL_APK_VERSION,
-                    "version",
-                    DEFAULT_WEBAPK_MIN_VERSION);
 
     /** Extracted parameters from the launch intent. */
     @VisibleForTesting
@@ -230,7 +222,7 @@ public class WebappLauncherActivity extends Activity {
                             appContext,
                             launchData.webApkPackageName,
                             launchData.url,
-                            MIN_SHELL_APK_VERSION.getValue())) {
+                            ChromeFeatureList.sWebApkMinShellApkVersionValue.getValue())) {
                 return true;
             }
 

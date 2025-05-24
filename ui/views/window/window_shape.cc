@@ -9,8 +9,7 @@
 
 namespace views {
 
-void GetDefaultWindowMask(const gfx::Size& size,
-                          SkPath* window_mask) {
+void GetDefaultWindowMask(const gfx::Size& size, SkPath* window_mask) {
   const SkScalar width = SkIntToScalar(size.width());
   const SkScalar height = SkIntToScalar(size.height());
 

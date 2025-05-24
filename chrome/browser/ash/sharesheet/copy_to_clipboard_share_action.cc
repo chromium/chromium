@@ -11,6 +11,7 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/flat_set.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"

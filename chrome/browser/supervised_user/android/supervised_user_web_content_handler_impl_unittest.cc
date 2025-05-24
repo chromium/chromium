@@ -13,6 +13,7 @@
 #include "chrome/browser/supervised_user/android/website_parent_approval.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -81,7 +82,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
 
   histogram_tester.ExpectBucketCount(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kDeclined, 1);
+      supervised_user::LocalApprovalResult::kDeclined, 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::WebContentHandler::
           GetLocalApprovalDurationMillisecondsHistogram(),
@@ -120,7 +121,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
 
   histogram_tester.ExpectBucketCount(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kCanceled, 1);
+      supervised_user::LocalApprovalResult::kCanceled, 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::WebContentHandler::
           GetLocalApprovalDurationMillisecondsHistogram(),
@@ -157,7 +158,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
 
   histogram_tester.ExpectBucketCount(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kApproved, 1);
+      supervised_user::LocalApprovalResult::kApproved, 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 1);
   histogram_tester.ExpectTotalCount(

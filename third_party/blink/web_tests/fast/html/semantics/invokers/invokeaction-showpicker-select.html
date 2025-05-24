@@ -9,7 +9,7 @@
 <select id="invokee">
   <option>1</option>
 </select>
-<button id="invokerbutton" commandfor="invokee" command="showpicker"></button>
+<button id="invokerbutton" commandfor="invokee" command="show-picker"></button>
 </body>
 <script>
 promise_test(async (t) => {
@@ -19,5 +19,5 @@ promise_test(async (t) => {
   });
   assert_true(internals.isSelectPopupVisible(invokee), "Picker is opened.");
   invokee.remove();
-}, `invoking select with showPicker action should show picker`)
+}, `invoking select with showPicker command should show picker`)
 </script>

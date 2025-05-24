@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvoker final {
   // Single target version, all calls are executed in the context of the given
   // target node.
   // Note: |indexer| must outlive this object.
-  AXCallStatementInvoker(const id node, const AXTreeIndexerMac* indexer);
+  AXCallStatementInvoker(id node, const AXTreeIndexerMac* indexer);
 
   // Invokes an attribute matching a property filter.
   AXOptionalNSObject Invoke(const AXPropertyNode& property_node,
@@ -38,12 +38,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvoker final {
   bool IsDumpingTree() const { return !!node; }
 
   // Invokes a property node for a given target.
-  AXOptionalNSObject InvokeFor(const id target,
+  AXOptionalNSObject InvokeFor(id target,
                                const AXPropertyNode& property_node) const;
 
   // Invoke a property node for a given AXCustomContent.
   AXOptionalNSObject InvokeForAXCustomContent(
-      const id target,
+      id target,
       const AXPropertyNode& property_node) const;
 
   // Invokes a property node for a given AXElement.
@@ -53,16 +53,16 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvoker final {
 
   // Invokes a property node for a given AXTextMarkerRange.
   AXOptionalNSObject InvokeForAXTextMarkerRange(
-      const id target,
+      id target,
       const AXPropertyNode& property_node) const;
 
   // Invokes a property node for a given array.
-  AXOptionalNSObject InvokeForArray(const id target,
+  AXOptionalNSObject InvokeForArray(id target,
                                     const AXPropertyNode& property_node) const;
 
   // Invokes a property node for a given dictionary.
   AXOptionalNSObject InvokeForDictionary(
-      const id target,
+      id target,
       const AXPropertyNode& property_node) const;
 
   // Invokes setAccessibilityFocused method.

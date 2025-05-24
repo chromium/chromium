@@ -20,8 +20,9 @@ class GPUError : public ScriptWrappable {
   GPUError(const GPUError&) = delete;
   GPUError& operator=(const GPUError&) = delete;
 
-  // gpu_error.idl
+  // gpu_error.idl {{{
   const String& message() const;
+  // }}} End of WebIDL binding implementation.
 
  private:
   String message_;

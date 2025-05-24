@@ -57,23 +57,8 @@ class PasswordManualFallbackMetricsRecorder {
   // If the context menu was used according to the `state`, emits whether the
   // entry was accepted or not into the explicit triggering metric of the given
   // `bucket` (classified or not classified as target filling password).
-  // `record_to_total_not_classified_as_target_filling_bucket` decides whether
-  // to record a "Total" variant of the metric. Only
-  // "NotClassifiedAsTargetFilling" metrics have a "Total" variant.
-  // Classified password fields don't have a "Total" variant, because only
-  // passwords record the "ClassifiedAsTargetFilling" metric variant. I.e. The
-  // other filling products (addresses and credit cards), do not record the
-  // "ClassifiedAsTargetFilling" metric variant. This is because classified
-  // address fields fall into the autocomplete recognized/unrecognized metrics,
-  // while classified credit card fields do not trigger any different behaviour
-  // and work the same as regular left click (therefore, no specific metric is
-  // emitted for them). On the other hand, password manual fallback always
-  // triggers a different behavior on right-click (suggestions have a search
-  // bar).
-  void EmitExplicitlyTriggeredMetric(
-      ContextMenuEntryState state,
-      std::string_view bucket,
-      bool record_to_total_not_classified_as_target_filling_bucket);
+  void EmitExplicitlyTriggeredMetric(ContextMenuEntryState state,
+                                     std::string_view bucket);
 
   // If suggestions were shown, emits whether the entry was accepted or not into
   // the explicit triggering metric of the given `bucket` (classified or not

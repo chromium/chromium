@@ -5,11 +5,9 @@
 #include "chrome/browser/ui/ash/birch/birch_most_visited_provider.h"
 
 #include "ash/birch/birch_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -29,7 +27,9 @@ class TestHistoryService : public history::HistoryService {
   base::CancelableTaskTracker::TaskId QueryMostVisitedURLs(
       int result_count,
       QueryMostVisitedURLsCallback callback,
-      base::CancelableTaskTracker* tracker) override {
+      base::CancelableTaskTracker* tracker,
+      const std::optional<std::string>& recency_factor_name,
+      std::optional<size_t> recency_window_days) override {
     did_query_most_visited_urls_ = true;
     return base::CancelableTaskTracker::TaskId();
   }
@@ -39,14 +39,7 @@ class TestHistoryService : public history::HistoryService {
 
 // BrowserWithTestWindowTest provides a Profile and ash::Shell (which provides
 // a BirchModel) needed by the test.
-class BirchMostVisitedProviderTest : public BrowserWithTestWindowTest {
- public:
-  BirchMostVisitedProviderTest() = default;
-  ~BirchMostVisitedProviderTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
-};
+using BirchMostVisitedProviderTest = BrowserWithTestWindowTest;
 
 TEST_F(BirchMostVisitedProviderTest, RequestBirchDataFetch) {
   BirchMostVisitedProvider provider(profile());

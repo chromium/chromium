@@ -13,17 +13,20 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/time/time.h"
+#include "base/version_info/channel.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/metrics.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/seed_response.h"
 #include "components/variations/variations_safe_seed_store.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class PrefService;
 class PrefRegistrySimple;
@@ -35,8 +38,20 @@ class VariationsSeed;
 
 // A seed that has passed validation.
 struct ValidatedSeed {
+  ValidatedSeed();
+  ~ValidatedSeed();
+
+  // Move-only to avoid expensive copies of seed data.
+  ValidatedSeed(ValidatedSeed&& other);
+  ValidatedSeed& operator=(ValidatedSeed&& other);
+
+  // Returns whether a seed matches an already stored seed.
+  bool MatchesStoredSeed(const StoredSeed& stored_seed) const;
+
   // Gzipped and base-64 encoded serialized VariationsSeed.
   std::string base64_seed_data;
+  // Gzipped serialized VariationsSeed.
+  std::string compressed_seed_data;
   // A cryptographic signature on the seed_data.
   std::string base64_seed_signature;
   // The seed data parsed as a proto.
@@ -47,25 +62,28 @@ struct ValidatedSeed {
 // seed from Local State.
 class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
  public:
-  // Standard constructor. Enables signature verification.
-  // |safe_seed_store| controls how to load and store the safe seed data.
-  // TODO(crbug.com/40935052): Remove this constructor and migrate
-  // callers to the more-verbose version.
-  VariationsSeedStore(PrefService* local_state,
-                      std::unique_ptr<VariationsSafeSeedStore> safe_seed_store);
-
-  // |initial_seed| may be null. If not null, then it will be stored in this
-  // seed store. This is used by Android Chrome to supply the first run seed,
-  // and by Android WebView to supply the seed on every run.
+  // |local_state| provides access to Local State prefs. Must not be null.
+  // |initial_seed|, if not null, is stored in this seed store. It is used (A)
+  // by Android Chrome and iOS to supply a first-run seed and (B) by Android
+  // WebView to supply a seed on every run.
   // |signature_verification_enabled| can be used in unit tests to disable
-  // signature checks on the seed. If |use_first_run_prefs| is true (default),
-  // then this VariationsSeedStore may modify the Java SharedPreferences ("first
-  // run prefs") which are set during first run; otherwise this will not access
-  // SharedPreferences at all.
+  // signature checks on the seed.
+  // |safe_seed_store| controls loading and storing safe seed data.
+  // |channel| describes the release channel of the browser.
+  // |seed_file_dir| is the file path to the seed file directory. If empty, the
+  // seed is not stored in a separate seed file, only in |local_state_|.
+  // |entropy_providers| used to provide entropy when setting up the seed file
+  // field trial. If null, the client will not participate in the experiment.
+  // |use_first_run_prefs|, if true (default), facilitates modifying Java
+  // SharedPreferences ("first run prefs") on Android. If false,
+  // SharedPreferences are not accessed.
   VariationsSeedStore(PrefService* local_state,
                       std::unique_ptr<SeedResponse> initial_seed,
                       bool signature_verification_enabled,
                       std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,
+                      version_info::Channel channel,
+                      const base::FilePath& seed_file_dir,
+                      const EntropyProviders* entropy_providers = nullptr,
                       bool use_first_run_prefs = true);
 
   VariationsSeedStore(const VariationsSeedStore&) = delete;
@@ -206,6 +224,20 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   static std::optional<std::string> SeedBytesToCompressedBase64Seed(
       const std::string& seed_bytes);
 
+  // Gets |seed_reader_writer_| for testing.
+  SeedReaderWriter* GetSeedReaderWriterForTesting();
+
+  // Sets |seed_reader_writer_| to the given SeedReaderWriter for testing.
+  void SetSeedReaderWriterForTesting(
+      std::unique_ptr<SeedReaderWriter> seed_reader_writer);
+
+  // Gets |safe_seed_store_| SeedReaderWriter for testing.
+  SeedReaderWriter* GetSafeSeedReaderWriterForTesting();
+
+  // Sets |safe_seed_store_| SeedReaderWriter to the given one for testing.
+  void SetSafeSeedReaderWriterForTesting(
+      std::unique_ptr<SeedReaderWriter> seed_reader_writer);
+
  protected:
   // Verify an already-loaded |seed_data| along with its |base64_seed_signature|
   // and, if verification passes, parse it into |*seed|.
@@ -291,12 +323,15 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
                                             std::string* base64_seed_signature);
 
   // Reads the variations seed data from prefs into |seed_data|, and returns the
-  // result of the load. The value stored into |seed_data| should only be used
-  // if the result is SUCCESS. Reads either the latest or the safe seed,
-  // according to the specified |seed_type|.
+  // result of the load. If a pointer for the signature is provided, the
+  // signature will be read and stored into |base64_seed_signature|. The value
+  // stored into |seed_data| should only be used if the result is SUCCESS. Reads
+  // either the latest or the safe seed, according to the specified |seed_type|.
   // Side-effect: If the read fails, clears the prefs associated with the seed.
-  [[nodiscard]] LoadSeedResult ReadSeedData(SeedType seed_type,
-                                            std::string* seed_data);
+  [[nodiscard]] LoadSeedResult ReadSeedData(
+      SeedType seed_type,
+      std::string* seed_data,
+      std::string* base64_seed_signature = nullptr);
 
   // Resolves a |delta_bytes| against the latest seed.
   // Returns success or an error, populating |seed_bytes| on success.
@@ -367,7 +402,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Whether this may read or write to Java "first run" SharedPreferences.
   const bool use_first_run_prefs_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Handles reads and writes to seed files.
+  std::unique_ptr<SeedReaderWriter> seed_reader_writer_;
+
+#if BUILDFLAG(IS_CHROMEOS)
   // Gets the combined server and client state used for early boot variations
   // platform disaster recovery.
   featured::SeedDetails GetSafeSeedStateForPlatform(
@@ -387,7 +425,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // A counter that keeps track of how many times the current safe seed is sent
   // to platform.
   size_t send_seed_to_platform_attempts_ = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

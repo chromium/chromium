@@ -14,7 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
-#include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
+#include "components/media_router/common/discovery/media_sink_service_base.h"
+#include "components/media_router/common/mojom/debugger.mojom.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -79,7 +80,6 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   void StopObservingMediaSinks(const std::string& media_source) override;
   void StartObservingMediaRoutes() override;
   void DetachRoute(const std::string& route_id) override;
-  void EnableMdnsDiscovery() override;
   void DiscoverSinksNow() override;
   void BindMediaController(
       const std::string& route_id,
@@ -114,6 +114,9 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
 
   // Mojo remote to the logger owned by the Media Router.
   mojo::Remote<mojom::Logger> logger_;
+
+  // Mojo remote to the debugger owned by the Media Router.
+  mojo::Remote<mojom::Debugger> debugger_;
 
   // Non-owned pointer to the Cast MediaSinkServiceBase instance.
   const raw_ptr<MediaSinkServiceBase> media_sink_service_;

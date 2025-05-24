@@ -37,20 +37,25 @@ class FakeCalculator : public Calculator {
 
   void EmitResponsiveness(CongestionType congestion_type,
                           size_t congested_slices,
-                          StartupStage startup_stage) override {
+                          StartupStage startup_stage,
+                          uint64_t event_id) override {
     EmitResponsivenessMock(congestion_type, congested_slices, startup_stage);
     // Emit the histograms anyways for verification in some tests.
     Calculator::EmitResponsiveness(congestion_type, congested_slices,
-                                   startup_stage);
+                                   startup_stage, event_id);
   }
 
-  MOCK_METHOD3(EmitCongestedIntervalsMeasurementTraceEvent,
-               void(base::TimeTicks start_time,
+  MOCK_METHOD5(EmitCongestedIntervalsMeasurementTraceEvent,
+               void(StartupStage startup_stage,
+                    base::TimeTicks start_time,
                     base::TimeTicks end_time,
-                    size_t amount_of_slices));
+                    size_t num_congested_slices,
+                    uint64_t event_id));
 
-  MOCK_METHOD2(EmitCongestedIntervalTraceEvent,
-               void(base::TimeTicks start_time, base::TimeTicks end_time));
+  MOCK_METHOD3(EmitCongestedIntervalTraceEvent,
+               void(CongestionType congestion_type,
+                    base::TimeTicks start_time,
+                    base::TimeTicks end_time));
 
   using Calculator::EmitResponsivenessTraceEvents;
   using Calculator::GetLastCalculationTime;
@@ -749,28 +754,38 @@ TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsEmpty) {
       kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
   const std::set<int> congested_slices;
 
-  EXPECT_CALL(*calculator_,
-              EmitCongestedIntervalsMeasurementTraceEvent(_, _, _))
+  uint64_t event_id = 42;
+  EXPECT_CALL(*calculator_, EmitCongestedIntervalsMeasurementTraceEvent(
+                                StartupStage::kPeriodic, _, _, _, event_id))
       .Times(0);
 
-  calculator_->EmitResponsivenessTraceEvents(CongestionType::kQueueAndExecution,
-                                             kStartTime, kFinishTime,
-                                             congested_slices);
+  calculator_->EmitResponsivenessTraceEvents(
+      CongestionType::kQueueAndExecution, StartupStage::kPeriodic, kStartTime,
+      kFinishTime, congested_slices, event_id);
 }
 
-TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsWrongMetric) {
+TEST_F(ResponsivenessCalculatorTest,
+       EmitResponsivenessTraceEventsExecutionOnly) {
+  constexpr base::TimeDelta kSliceInterval =
+      base::Milliseconds(kCongestionThresholdInMs);
   constexpr base::TimeTicks kStartTime = base::TimeTicks();
   constexpr base::TimeTicks kFinishTime =
       kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
   const std::set<int> congested_slices = {1};
 
-  EXPECT_CALL(*calculator_,
-              EmitCongestedIntervalsMeasurementTraceEvent(_, _, _))
+  uint64_t event_id = 42;
+  EXPECT_CALL(*calculator_, EmitCongestedIntervalsMeasurementTraceEvent(
+                                StartupStage::kPeriodic, _, _, _, event_id))
       .Times(0);
 
-  calculator_->EmitResponsivenessTraceEvents(CongestionType::kExecutionOnly,
-                                             kStartTime, kFinishTime,
-                                             congested_slices);
+  EXPECT_CALL(*calculator_,
+              EmitCongestedIntervalTraceEvent(CongestionType::kExecutionOnly,
+                                              kStartTime + 1 * kSliceInterval,
+                                              kStartTime + 2 * kSliceInterval));
+
+  calculator_->EmitResponsivenessTraceEvents(
+      CongestionType::kExecutionOnly, StartupStage::kPeriodic, kStartTime,
+      kFinishTime, congested_slices, event_id);
 }
 
 TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEvents) {
@@ -782,23 +797,27 @@ TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEvents) {
 
   const std::set<int> congested_slices = {3, 4, 5, 12, 15};
 
+  uint64_t event_id = 42;
   EXPECT_CALL(*calculator_,
               EmitCongestedIntervalsMeasurementTraceEvent(
-                  kStartTime, kFinishTime, congested_slices.size()));
+                  StartupStage::kPeriodic, kStartTime, kFinishTime, 5, 42));
 
-  EXPECT_CALL(*calculator_,
-              EmitCongestedIntervalTraceEvent(kStartTime + 3 * kSliceInterval,
-                                              kStartTime + 6 * kSliceInterval));
   EXPECT_CALL(*calculator_, EmitCongestedIntervalTraceEvent(
+                                CongestionType::kQueueAndExecution,
+                                kStartTime + 3 * kSliceInterval,
+                                kStartTime + 6 * kSliceInterval));
+  EXPECT_CALL(*calculator_, EmitCongestedIntervalTraceEvent(
+                                CongestionType::kQueueAndExecution,
                                 kStartTime + 12 * kSliceInterval,
                                 kStartTime + 13 * kSliceInterval));
   EXPECT_CALL(*calculator_, EmitCongestedIntervalTraceEvent(
+                                CongestionType::kQueueAndExecution,
                                 kStartTime + 15 * kSliceInterval,
                                 kStartTime + 16 * kSliceInterval));
 
-  calculator_->EmitResponsivenessTraceEvents(CongestionType::kQueueAndExecution,
-                                             kStartTime, kFinishTime,
-                                             congested_slices);
+  calculator_->EmitResponsivenessTraceEvents(
+      CongestionType::kQueueAndExecution, StartupStage::kPeriodic, kStartTime,
+      kFinishTime, congested_slices, event_id);
 }
 
 TEST_F(ResponsivenessCalculatorTest, Delegate) {

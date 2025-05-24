@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/obsolete/md5.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -32,6 +32,16 @@
 #include "url/gurl.h"
 
 namespace ash {
+
+namespace printing {
+
+// Not in namespace {} so it can be friended by crypto/obsolete/md5.
+std::string ServerPrinterId(const std::string& url) {
+  return "server-" +
+         base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(url)));
+}
+
+}  // namespace printing
 
 namespace {
 
@@ -60,15 +70,6 @@ constexpr net::NetworkTrafficAnnotationTag kServerPrintersFetcherNetworkTag =
         }
       }
     })");
-
-std::string ServerPrinterId(const std::string& url) {
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
-  base::MD5Update(&ctx, url);
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-  return "server-" + base::MD5DigestToBase16(digest);
-}
 
 }  // namespace
 
@@ -256,7 +257,7 @@ class ServerPrintersFetcher::PrivateImplementation
     // Complete building the printer's URI.
     url.SetPath({"printers", name});
     printer->SetUri(url);
-    printer->set_id(ServerPrinterId(url.GetNormalized()));
+    printer->set_id(printing::ServerPrinterId(url.GetNormalized()));
   }
 
   raw_ptr<const ServerPrintersFetcher, DanglingUntriaged> owner_;

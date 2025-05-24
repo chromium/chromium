@@ -25,14 +25,43 @@ struct SearchWidget: Widget {
   }
 }
 
+@available(iOS 17, *)
+struct SearchWidgetConfigurable: Widget {
+  // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
+  // stop updating and show the placeholder state.
+  let kind: String = "SearchWidget"
+  var body: some WidgetConfiguration {
+    AppIntentConfiguration(
+      kind: kind, intent: SelectAccountIntent.self, provider: ConfigurableProvider()
+    ) { entry in
+      SearchWidgetEntryView(entry: entry)
+    }
+    .configurationDisplayName(
+      Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DISPLAY_NAME")
+    )
+    .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DESCRIPTION"))
+    .supportedFamilies([.systemSmall])
+    .crDisfavoredLocations()
+    .crContentMarginsDisabled()
+    .crContainerBackgroundRemovable(false)
+  }
+}
+
 struct SearchWidgetEntryView: View {
-  var entry: Provider.Entry
+  var entry: ConfigureWidgetEntry
 
   var body: some View {
-    SearchWidgetEntryViewTemplate(
-      destinationURL: WidgetConstants.SearchWidget.url, imageName: "widget_chrome_logo",
-      title: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE",
-      accessibilityLabel: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL", entry: entry)
+    // The account to display was deleted (entry.deleted can only be true if
+    // WidgetForMIMAvailable is true).
+    if entry.deleted && !entry.isPreview {
+      SmallWidgetDeletedAccountView()
+    } else {
+      SearchWidgetEntryViewTemplate(
+        destinationURL: destinationURL(url: WidgetConstants.SearchWidget.url, gaia: entry.gaiaID),
+        imageName: "widget_chrome_logo",
+        title: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE",
+        accessibilityLabel: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL", entry: entry)
+    }
   }
 }
 
@@ -41,7 +70,7 @@ struct SearchWidgetEntryViewTemplate: View {
   let imageName: String
   let title: LocalizedStringKey
   let accessibilityLabel: LocalizedStringKey
-  var entry: Provider.Entry
+  var entry: ConfigureWidgetEntry
 
   var body: some View {
     // We wrap this widget in a link on top of using `widgetUrl` so that the voice over will treat
@@ -66,11 +95,17 @@ struct SearchWidgetEntryViewTemplate: View {
           .padding([.leading, .trailing], 11)
           .padding(.top, 16)
           Spacer()
-          Text(title)
-            .foregroundColor(Color("widget_text_color"))
-            .fontWeight(.semibold)
-            .font(.subheadline)
-            .padding([.leading, .bottom, .trailing], 16)
+          HStack {
+            Text(title)
+              .foregroundColor(Color("widget_text_color"))
+              .fontWeight(.semibold)
+              .font(.subheadline)
+              .padding([.leading, .bottom], 16)
+            Spacer()
+            if ChromeWidgetsMain.WidgetForMIMAvailable {
+              AvatarForSearch(entry: entry)
+            }
+          }
         }
       }
     }
@@ -81,5 +116,26 @@ struct SearchWidgetEntryViewTemplate: View {
     .crContainerBackground(
       Color("widget_background_color")
         .unredacted())
+  }
+}
+
+struct AvatarForSearch: View {
+  var entry: ConfigureWidgetEntry
+  var body: some View {
+    if entry.isPreview {
+      Circle()
+        .foregroundColor(Color("widget_text_color"))
+        .opacity(0.2)
+        .frame(width: 25, height: 25)
+        .padding([.bottom, .trailing], 16)
+    } else if let avatar = entry.avatar {
+      avatar
+        .resizable()
+        .clipShape(Circle())
+        .unredacted()
+        .scaledToFill()
+        .frame(width: 25, height: 25)
+        .padding([.bottom, .trailing], 16)
+    }
   }
 }

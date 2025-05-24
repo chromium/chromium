@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/device_posture/testing/internals_device_posture.h"
 
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/device_posture/device_posture_provider_automation.mojom-blink.h"
+#include "third_party/blink/public/test/mojom/device_posture/device_posture_provider_automation.test-mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

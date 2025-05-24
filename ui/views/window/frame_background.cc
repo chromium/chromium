@@ -134,8 +134,9 @@ void FrameBackground::PaintMaximized(gfx::Canvas* canvas,
                          top_area_height_, 1.0f, SkTileMode::kRepeat,
                          SkTileMode::kMirror);
   }
-  if (!theme_overlay_image_.isNull())
+  if (!theme_overlay_image_.isNull()) {
     canvas->DrawImageInt(theme_overlay_image_, x, y - maximized_top_inset_);
+  }
 }
 
 void FrameBackground::FillFrameBorders(gfx::Canvas* canvas,
@@ -145,8 +146,9 @@ void FrameBackground::FillFrameBorders(gfx::Canvas* canvas,
                                        int bottom_edge_height) const {
   // If the window is very short, we don't need to fill any borders.
   int remaining_height = view->height() - top_area_height_;
-  if (remaining_height <= 0)
+  if (remaining_height <= 0) {
     return;
+  }
 
   // Fill down the sides.
   canvas->FillRect(
@@ -158,8 +160,9 @@ void FrameBackground::FillFrameBorders(gfx::Canvas* canvas,
 
   // If the window is very narrow, we're done.
   int center_width = view->width() - left_edge_width - right_edge_width;
-  if (center_width <= 0)
+  if (center_width <= 0) {
     return;
+  }
 
   // Fill the bottom area.
   canvas->FillRect(

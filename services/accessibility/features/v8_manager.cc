@@ -60,6 +60,7 @@
 #include "v8-value.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-template.h"
 
@@ -165,16 +166,20 @@ V8Environment::~V8Environment() {
     return;
   }
 
-  NotifyIsolateWillDestroy();
-  isolate_holder_->isolate()->TerminateExecution();
+  {
+    v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
+    v8::HandleScope handle_scope(isolate_holder_->isolate());
+    NotifyIsolateWillDestroy();
+    isolate_holder_->isolate()->TerminateExecution();
 
-  // These maps must be destroyed before context and isolate because they hold
-  // references to global objects.
-  devtools_agent_.reset();
-  identifier_to_module_map_.clear();
-  module_to_identifier_map_.reset();
+    // These maps must be destroyed before context and isolate because they hold
+    // references to global objects.
+    devtools_agent_.reset();
+    identifier_to_module_map_.clear();
+    module_to_identifier_map_.reset();
 
-  context_holder_.reset();
+    context_holder_.reset();
+  }
   isolate_holder_.reset();
 }
 
@@ -229,6 +234,7 @@ void V8Environment::RequestModuleContents(base::FilePath file_path) {
 
 void V8Environment::OnFileLoaded(std::string module_identifier,
                                  base::File file) {
+  v8::Isolate::Scope isolate_scope(GetIsolate());
   v8::HandleScope handle_scope(GetIsolate());
   Local<Context> context = GetContext();
   Context::Scope context_scope(context);

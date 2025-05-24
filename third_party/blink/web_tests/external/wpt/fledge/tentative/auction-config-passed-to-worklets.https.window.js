@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -7,9 +8,11 @@
 // META: variant=?6-10
 // META: variant=?11-15
 // META: variant=?16-20
-// META: variant=?21-last
+// META: variant=?21-25
+// META: variant=?26-30
+// META: variant=?30-35
 
-"use strict;"
+"use strict";
 
 // These tests focus on making sure AuctionConfig fields are passed to seller worklets,
 // and are normalized if necessary. This test does not check the behaviors of the
@@ -238,4 +241,62 @@ makeTest({
   fieldName: 'reportingTimeout',
   fieldValue: 50,
   auctionConfigOverrides: {fieldValue: undefined}
+});
+
+makeTest({
+  name: 'AuctionConfig.sellerSignals is null',
+  fieldName: 'sellerSignals',
+  fieldValue: undefined,
+  auctionConfigOverrides: {sellerSignals: null}
+});
+
+makeTest({
+  name: 'AuctionConfig.sellerSignals is explicit undefined',
+  fieldName: 'sellerSignals',
+  fieldValue: undefined,
+  auctionConfigOverrides: {sellerSignals: Promise.resolve(undefined)}
+});
+
+makeTest({
+  name: 'AuctionConfig.sellerSignals is "null"',
+  fieldName: 'sellerSignals',
+  fieldValue: 'null',
+});
+
+makeTest({
+  name: 'AuctionConfig.auctionSignals is null',
+  fieldName: 'auctionSignals',
+  fieldValue: undefined,
+  auctionConfigOverrides: {sellerSignals: null}
+});
+
+makeTest({
+  name: 'AuctionConfig.auctionSignals is explicit undefined',
+  fieldName: 'auctionSignals',
+  fieldValue: undefined,
+  auctionConfigOverrides: {auctionSignals: Promise.resolve(undefined)}
+});
+
+makeTest({
+  name: 'AuctionConfig.auctionSignals is "null"',
+  fieldName: 'auctionSignals',
+  fieldValue: 'null',
+});
+
+makeTest({
+  name: 'AuctionConfig.sendCreativeScanningMetadata is explicit undefined',
+  fieldName: 'sendCreativeScanningMetadata',
+  fieldValue: undefined
+});
+
+makeTest({
+  name: 'AuctionConfig.sendCreativeScanningMetadata is true',
+  fieldName: 'sendCreativeScanningMetadata',
+  fieldValue: true
+});
+
+makeTest({
+  name: 'AuctionConfig.sendCreativeScanningMetadata is false',
+  fieldName: 'sendCreativeScanningMetadata',
+  fieldValue: false
 });

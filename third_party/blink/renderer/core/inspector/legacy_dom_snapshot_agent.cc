@@ -45,7 +45,6 @@
 namespace blink {
 
 using mojom::blink::FormControlType;
-using protocol::Maybe;
 
 namespace {
 
@@ -98,8 +97,8 @@ struct LegacyDOMSnapshotAgent::VectorStringHashTraits
 
 LegacyDOMSnapshotAgent::LegacyDOMSnapshotAgent(
     InspectorDOMDebuggerAgent* dom_debugger_agent,
-    OriginUrlMap* origin_url_map)
-    : origin_url_map_(origin_url_map),
+    base::WeakPtr<OriginUrlMap> origin_url_map)
+    : origin_url_map_(std::move(origin_url_map)),
       dom_debugger_agent_(dom_debugger_agent) {}
 
 LegacyDOMSnapshotAgent::~LegacyDOMSnapshotAgent() = default;
@@ -107,9 +106,9 @@ LegacyDOMSnapshotAgent::~LegacyDOMSnapshotAgent() = default;
 protocol::Response LegacyDOMSnapshotAgent::GetSnapshot(
     Document* document,
     std::unique_ptr<protocol::Array<String>> style_filter,
-    protocol::Maybe<bool> include_event_listeners,
-    protocol::Maybe<bool> include_paint_order,
-    protocol::Maybe<bool> include_user_agent_shadow_tree,
+    std::optional<bool> include_event_listeners,
+    std::optional<bool> include_paint_order,
+    std::optional<bool> include_user_agent_shadow_tree,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DOMNode>>* dom_nodes,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::LayoutTreeNode>>*
         layout_tree_nodes,
@@ -187,16 +186,18 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
           .setBackendNodeId(IdentifiersFactory::IntIdForNode(node))
           .build();
   if (origin_url_map_ &&
-      origin_url_map_->Contains(owned_value->getBackendNodeId())) {
-    String origin_url = origin_url_map_->at(owned_value->getBackendNodeId());
+      origin_url_map_->map.Contains(owned_value->getBackendNodeId())) {
+    String origin_url =
+        origin_url_map_->map.at(owned_value->getBackendNodeId());
     // In common cases, it is implicit that a child node would have the same
     // origin url as its parent, so no need to mark twice.
     if (!node->parentNode()) {
       owned_value->setOriginURL(std::move(origin_url));
     } else {
       DOMNodeId parent_id = node->parentNode()->GetDomNodeId();
-      auto it = origin_url_map_->find(parent_id);
-      String parent_url = it != origin_url_map_->end() ? it->value : String();
+      auto it = origin_url_map_->map.find(parent_id);
+      String parent_url =
+          it != origin_url_map_->map.end() ? it->value : String();
       if (parent_url != origin_url)
         owned_value->setOriginURL(std::move(origin_url));
     }
@@ -337,14 +338,17 @@ LegacyDOMSnapshotAgent::VisitPseudoElements(
     bool include_event_listeners,
     bool include_user_agent_shadow_tree) {
   if (!parent->GetPseudoElement(kPseudoIdFirstLetter) &&
+      !parent->GetPseudoElement(kPseudoIdCheckMark) &&
       !parent->GetPseudoElement(kPseudoIdBefore) &&
-      !parent->GetPseudoElement(kPseudoIdAfter)) {
+      !parent->GetPseudoElement(kPseudoIdAfter) &&
+      !parent->GetPseudoElement(kPseudoIdPickerIcon)) {
     return nullptr;
   }
 
   auto pseudo_elements = std::make_unique<protocol::Array<int>>();
   for (PseudoId pseudo_id :
-       {kPseudoIdFirstLetter, kPseudoIdBefore, kPseudoIdAfter}) {
+       {kPseudoIdFirstLetter, kPseudoIdCheckMark, kPseudoIdBefore,
+        kPseudoIdAfter, kPseudoIdPickerIcon}) {
     if (Node* pseudo_node = parent->GetPseudoElement(pseudo_id)) {
       pseudo_elements->emplace_back(VisitNode(pseudo_node,
                                               include_event_listeners,

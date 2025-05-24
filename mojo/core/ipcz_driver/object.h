@@ -62,6 +62,13 @@ class MOJO_SYSTEM_IMPL_EXPORT ObjectBase
     // An Invitation instance used to emulate Mojo process invitations. These
     // objects are not serializable and cannot be transmitted over a Transport.
     kInvitation,
+
+    // See Envelope for details.
+    kEnvelope,
+
+    // For ValidateEnum().
+    kMinValue = kTransport,
+    kMaxValue = kEnvelope,
   };
 
   explicit ObjectBase(Type type);

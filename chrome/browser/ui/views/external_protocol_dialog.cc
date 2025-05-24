@@ -9,7 +9,6 @@
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
@@ -40,8 +39,9 @@ namespace {
 
 std::u16string GetMessageTextForOrigin(
     const std::optional<url::Origin>& origin) {
-  if (!origin || origin->opaque())
+  if (!origin || origin->opaque()) {
     return l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_MESSAGE);
+  }
   return l10n_util::GetStringFUTF16(
       IDS_EXTERNAL_PROTOCOL_MESSAGE_WITH_INITIATING_ORIGIN,
       url_formatter::FormatOriginForSecurityDisplay(*origin));

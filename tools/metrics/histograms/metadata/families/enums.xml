@@ -40,6 +40,21 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has conflict"/>
 </enum>
 
+<!-- LINT.IfChange(ClassifyUrlThrottleFinalStatus) -->
+
+<enum name="ClassifyUrlThrottleFinalStatus">
+  <int value="0" label="Allowed">
+    The navigation is allowed as a result of aggregating filtering results from
+    SupervisedUserURLFilter
+  </int>
+  <int value="1" label="Blocked">
+    The navigation is denied as a result of aggregating filtering results from
+    SupervisedUserURLFilter, and an interstitial is scheduled.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.h:ClassifyUrlThrottleFinalStatus) -->
+
 <!-- LINT.IfChange(ClassifyUrlThrottleStatus) -->
 
 <enum name="ClassifyUrlThrottleStatus">
@@ -73,6 +88,21 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.h:ClassifyUrlThrottleStatus) -->
+
+<!-- LINT.IfChange(ClassifyUrlThrottleUseCase) -->
+
+<enum name="ClassifyUrlThrottleUseCase">
+  <int value="0" label="Not allowed">
+    Throttling that classifies URLs was not applicable to the navigation
+    request.
+  </int>
+  <int value="1" label="Family Link supervised user">
+    Throttling was requested because the profile was Family Link supervised.
+    Includes Safe Sites requests.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.h:ClassifyUrlThrottleUseCase) -->
 
 <!-- LINT.IfChange(FamilyInfoLogSourceFetchStatus) -->
 
@@ -146,6 +176,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(FamilyLinkUserLocalWebApprovalResult) -->
+
 <enum name="FamilyLinkUserLocalWebApprovalResult">
   <summary>
     The result of local web approval request. Reported by the browser once
@@ -161,29 +193,41 @@ chromium-metrics-reviews@google.com.
     Request was canceled at any point (before, during or after parent
     verification).
   </int>
-  <int value="3" label="Error">An error occured during the request flow.</int>
+  <int value="3" label="Error">
+    An error occured during the request flows, including malformed requests and
+    server-client connection errors.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalApprovalResult) -->
 
 <enum name="FamilyLinkUserLogSegment">
   <summary>
     Filters family link user metrics into categories of interest.
   </summary>
   <int value="0" label="Other Not Supervised">
-    None of the users are supervised. This includes signed out users, and where
-    a secondary account is supervised.
+    None of the users are supervised or parents. This includes signed out users,
+    and where a secondary account is supervised.
   </int>
   <int value="1" label="Policy Enabled Supervision">
-    Users under the age of consent automatically have supervision applied to
+    All profiles are under the age of consent and have supervision applied to
     their accounts.
   </int>
   <int value="2" label="User Enabled Supervision">
-    Users over the age of consent can opt into supervision.
+    All profiles are over the age of consent and have opted in to supervision.
   </int>
-  <int value="3" label="Mixed Profile">
+  <int value="3" label="Mixed Profile With Supervision">
     Profiles with different supervision types were in use during the reporting
-    window.
+    window. At least one profile must be supervised.
+  </int>
+  <int value="4" label="Parent">
+    Users that have parent accounts (family manager or parent) in Family Link.
+    There must be at least one profile with a parent and no supervision across
+    the profiles.
   </int>
 </enum>
+
+<!-- LINT.IfChange(FamilyLinkUserParentAccessWidgetError) -->
 
 <enum name="FamilyLinkUserParentAccessWidgetError">
   <summary>
@@ -208,6 +252,8 @@ chromium-metrics-reviews@google.com.
     ParentAccessHandler::OnParentAccessCallback.
   </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:ParentAccessWidgetError) -->
 
 <enum name="FamilyLinkUserParentAccessWidgetShowDialogError">
   <summary>
@@ -263,6 +309,31 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Hidden on login screen"/>
   <int value="2" label="Attempted cryptohome deletion"/>
 </enum>
+
+<!-- LINT.IfChange(LocalWebApprovalErrorType) -->
+
+<enum name="LocalWebApprovalErrorType">
+  <summary>Error type that occurs during the local web approval flow.</summary>
+  <int value="0" label="Failure to decode PACP response">
+    The response provided by the PACP widget does not have valid url base 64
+    encoding
+  </int>
+  <int value="1" label="Failure to parse PACP response">
+    The response provided by the PACP widget could not be parsed in the expected
+    format provided by the PACP contract
+  </int>
+  <int value="2" label="Unexpected PACP response">
+    The response provided by the PACP does not apply to the parent approval flow
+  </int>
+  <int value="3" label="PACP timeout exceeded">
+    Failed to connect to the PACP widget within the provided timeout
+  </int>
+  <int value="4" label="Empty PACP response">
+    The response provided by the PACP was empty
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalWebApprovalErrorType) -->
 
 <enum name="ManagedModeBlockingCommand">
   <int value="0" label="Preview"/>
@@ -458,6 +529,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Favicon Unavailable"/>
 </enum>
 
+<!-- LINT.IfChange(top_level_filtering_result) -->
+
 <enum name="SupervisedUserFilterTopLevelResult">
   <int value="0" label="ALLOWED">
     Records sites that have been allowed explicitly through the allowlist; when
@@ -476,6 +549,8 @@ chromium-metrics-reviews@google.com.
     turned on
   </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:top_level_filtering_result) -->
 
 <!-- LINT.IfChange(SupervisedUserImplicitParentApprovalGrantEntryPoint) -->
 

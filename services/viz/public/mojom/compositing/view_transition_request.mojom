@@ -1,0 +1,28 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom";
+import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+struct ViewTransitionRequest {
+  // The type of this view transition request.
+  CompositorFrameTransitionDirectiveType type;
+
+  // It is an identifier that uniquely identifies each
+  // transition.
+  blink.mojom.ViewTransitionToken transition_token;
+
+  // Indicate if this transition can start and animate on different
+  // CompositorFrameSink instances (i.e. cross-document navigations).
+  bool maybe_cross_frame_sink;
+
+  // The sequence id for this request.
+  uint32 sequence_id;
+
+  // The snapshot resource ids.
+  array<ViewTransitionElementResourceId> capture_resource_ids;
+};

@@ -58,8 +58,7 @@ size_t AlphaBitsForBufferFormat(BufferFormat format) {
     case BufferFormat::P010:
       return 0;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format) {
@@ -85,8 +84,7 @@ size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format) {
     case BufferFormat::YUVA_420_TRIPLANAR:
       return 3;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool BufferFormatIsMultiplanar(BufferFormat format) {
@@ -126,8 +124,7 @@ size_t SubsamplingFactorForBufferFormat(BufferFormat format, size_t plane) {
       return factor[plane];
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 base::CheckedNumeric<size_t> PlaneWidthForBufferFormatChecked(
@@ -139,7 +136,7 @@ base::CheckedNumeric<size_t> PlaneWidthForBufferFormatChecked(
                         subsample);
 }
 
-base::CheckedNumeric<size_t> PlaneHeightForBufferFormatChecked(
+base::CheckedNumeric<size_t> PlaneHeightForBufferFormatCheckedInternal(
     size_t height,
     BufferFormat format,
     size_t plane) {
@@ -175,8 +172,7 @@ size_t BytesPerPixelForBufferFormat(BufferFormat format, size_t plane) {
     case BufferFormat::P010:
       return 2 * SubsamplingFactorForBufferFormat(format, plane);
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 size_t RowByteAlignmentForBufferFormat(BufferFormat format, size_t plane) {
@@ -203,8 +199,7 @@ size_t RowByteAlignmentForBufferFormat(BufferFormat format, size_t plane) {
     case BufferFormat::P010:
       return BytesPerPixelForBufferFormat(format, plane);
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 size_t RowSizeForBufferFormat(size_t width, BufferFormat format, size_t plane) {
@@ -230,6 +225,20 @@ bool RowSizeForBufferFormatChecked(size_t width,
   return true;
 }
 
+bool PlaneHeightForBufferFormatChecked(size_t height,
+                                       BufferFormat format,
+                                       size_t plane,
+                                       size_t* height_in_pixels) {
+  base::CheckedNumeric<size_t> checked_height =
+      PlaneHeightForBufferFormatCheckedInternal(height, format, plane);
+  if (!checked_height.IsValid()) {
+    return false;
+  }
+
+  *height_in_pixels = checked_height.ValueOrDie();
+  return true;
+}
+
 size_t PlaneSizeForBufferFormat(const Size& size,
                                 BufferFormat format,
                                 size_t plane) {
@@ -250,7 +259,7 @@ bool PlaneSizeForBufferFormatChecked(const Size& size,
     return false;
   }
   base::CheckedNumeric<size_t> checked_plane_size = row_size;
-  checked_plane_size *= PlaneHeightForBufferFormatChecked(
+  checked_plane_size *= PlaneHeightForBufferFormatCheckedInternal(
       base::checked_cast<size_t>(size.height()), format, plane);
   if (!checked_plane_size.IsValid())
     return false;
@@ -315,8 +324,7 @@ size_t BufferOffsetForBufferFormat(const Size& size,
       return offset;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 const char* BufferFormatToString(BufferFormat format) {
@@ -356,9 +364,7 @@ const char* BufferFormatToString(BufferFormat format) {
     case BufferFormat::P010:
       return "P010";
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid BufferFormat: " << base::to_underlying(format);
-  return "Invalid Format";
+  NOTREACHED() << "Invalid BufferFormat: " << base::to_underlying(format);
 }
 
 bool IsOddHeightMultiPlanarBuffersAllowed() {

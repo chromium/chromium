@@ -6,6 +6,7 @@
 #define REMOTING_HOST_DESKTOP_DISPLAY_INFO_H_
 
 #include <stddef.h>
+
 #include <iosfwd>
 #include <memory>
 
@@ -20,12 +21,27 @@ class VideoLayout;
 }  // namespace protocol
 
 struct DisplayGeometry {
+  DisplayGeometry();
+  DisplayGeometry(webrtc::ScreenId id,
+                  int32_t x,
+                  int32_t y,
+                  uint32_t width,
+                  uint32_t height,
+                  uint32_t dpi,
+                  uint32_t bpp,
+                  bool is_default,
+                  const std::string& display_name);
+  DisplayGeometry(const DisplayGeometry&);
+  DisplayGeometry& operator=(const DisplayGeometry&);
+  ~DisplayGeometry();
+
   webrtc::ScreenId id;
   int32_t x, y;
   uint32_t width, height;
   uint32_t dpi;     // Number of pixels per logical inch.
   uint32_t bpp;     // Number of bits per pixel.
   bool is_default;  // True if this is the default display.
+  std::string display_name;  // Sent to the client, informational only.
 };
 
 class DesktopDisplayInfo {

@@ -4,6 +4,7 @@
 
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
@@ -47,12 +47,10 @@ std::string GetNormalizedLocale(const std::string& raw_locale) {
   }
 
   locale = raw_locale;
-  for (const auto c : "-_") {
-    locale.erase(std::remove(locale.begin(), locale.end(), c), locale.end());
-  }
+  std::erase_if(locale, [](const auto c) { return base::Contains("-_", c); });
 
-  base::ranges::transform(locale, locale.begin(),
-                          [](char c) { return base::ToUpperASCII(c); });
+  std::ranges::transform(locale, locale.begin(),
+                         [](char c) { return base::ToUpperASCII(c); });
 
   if (!locale_constraint.empty()) {
     locale += locale_constraint;

@@ -91,7 +91,8 @@ void TestOAuthTokenGetter::Initialize(base::OnceClosure on_done) {
   } else {
     VLOG(0) << "Reusing access token: " << access_token;
     token_getter_ = std::make_unique<FakeOAuthTokenGetter>(
-        OAuthTokenGetter::Status::SUCCESS, user_email, access_token, "");
+        OAuthTokenGetter::Status::SUCCESS,
+        OAuthTokenInfo(access_token, user_email));
   }
   std::move(on_done).Run();
 }
@@ -129,10 +130,9 @@ void TestOAuthTokenGetter::InvalidateCache() {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(kSwitchNameAuthCode);
 }
 
-base::WeakPtr<TestOAuthTokenGetter> TestOAuthTokenGetter::GetWeakPtr() {
+base::WeakPtr<OAuthTokenGetter> TestOAuthTokenGetter::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
-
 
 std::unique_ptr<OAuthTokenGetter> TestOAuthTokenGetter::CreateWithRefreshToken(
     const std::string& refresh_token,

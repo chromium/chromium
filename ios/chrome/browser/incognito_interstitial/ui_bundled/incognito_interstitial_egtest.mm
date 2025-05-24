@@ -32,7 +32,7 @@ using chrome_test_util::NTPIncognitoView;
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kIncognitoInterstitialEnabled];
+             forLocalStatePref:prefs::kIncognitoInterstitialEnabled];
 
   // Set Incognito Mode to "available",
   // as this is an assumption for most of these tests.
@@ -42,11 +42,11 @@ using chrome_test_util::NTPIncognitoView;
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   scopedPolicies.Reset();
   [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:prefs::kIncognitoInterstitialEnabled];
-  [super tearDown];
+             forLocalStatePref:prefs::kIncognitoInterstitialEnabled];
+  [super tearDownHelper];
 }
 
 // Test the "Open in Chrome Incognito" journey through the Incognito
@@ -245,10 +245,7 @@ using chrome_test_util::NTPIncognitoView;
   GURL destinationURL = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey sceneOpenURL:destinationURL];
   // Wait for the expected page content to be displayed.
-  base::TimeDelta timeout = base::Seconds(10);
-  if (@available(iOS 16.0, *)) {
-    timeout = base::Seconds(20);
-  }
+  base::TimeDelta timeout = base::Seconds(20);
   [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"
                                         timeout:timeout];
   // Wait for the Incognito tab count to be one, as expected.
@@ -271,10 +268,7 @@ using chrome_test_util::NTPIncognitoView;
   GURL destinationURL = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey sceneOpenURL:destinationURL];
   // Wait for the expected page content to be displayed.
-  base::TimeDelta timeout = base::Seconds(10);
-  if (@available(iOS 16.0, *)) {
-    timeout = base::Seconds(20);
-  }
+  base::TimeDelta timeout = base::Seconds(20);
   [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"
                                         timeout:timeout];
   // Wait for the Incognito tab count to be one, as expected.

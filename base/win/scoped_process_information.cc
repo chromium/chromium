@@ -16,8 +16,9 @@ namespace {
 // guaranteed to be untouched in case of failure. Succeeds with no side-effects
 // if source is NULL.
 bool CheckAndDuplicateHandle(HANDLE source, ScopedHandle* target) {
-  if (!source)
+  if (!source) {
     return true;
+  }
 
   HANDLE temp = nullptr;
   if (!::DuplicateHandle(::GetCurrentProcess(), source, ::GetCurrentProcess(),
@@ -40,6 +41,12 @@ ScopedProcessInformation::ScopedProcessInformation(
   Set(process_info);
 }
 
+ScopedProcessInformation::ScopedProcessInformation(ScopedProcessInformation&&) =
+    default;
+
+ScopedProcessInformation& ScopedProcessInformation::operator=(
+    ScopedProcessInformation&&) = default;
+
 ScopedProcessInformation::~ScopedProcessInformation() {
   Close();
 }
@@ -57,8 +64,9 @@ void ScopedProcessInformation::Close() {
 }
 
 void ScopedProcessInformation::Set(const PROCESS_INFORMATION& process_info) {
-  if (IsValid())
+  if (IsValid()) {
     Close();
+  }
 
   process_handle_.Set(process_info.hProcess);
   thread_handle_.Set(process_info.hThread);

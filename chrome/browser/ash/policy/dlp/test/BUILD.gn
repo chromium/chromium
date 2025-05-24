@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("test_support") {
   testonly = true
@@ -41,8 +41,8 @@ static_library("test_support") {
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/dbus/dlp",
     "//components/drive",
+    "//components/enterprise/common/proto:dlp_policy_event_proto",
     "//components/enterprise/data_controls/core/browser",
-    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
     "//storage/browser",
     "//storage/browser:test_support",
     "//testing/gmock",

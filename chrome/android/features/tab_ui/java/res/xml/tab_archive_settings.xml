@@ -13,6 +13,11 @@ found in the LICENSE file.
         android:key="tab_archive_time_delta" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="tab_archive_include_duplicate_tabs"
+        android:summary="@string/archive_settings_archive_duplicate_tabs_summary"
+        app:allowDividerAbove="true"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="tab_archive_allow_autodelete"
         android:summary="@string/archive_settings_allow_autodelete_summary"
         app:allowDividerAbove="true"/>

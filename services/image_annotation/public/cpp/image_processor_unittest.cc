@@ -83,12 +83,11 @@ void OutputImageError(double* const error,
                       const std::vector<uint8_t>& result,
                       const int32_t width,
                       const int32_t height) {
-  const std::unique_ptr<SkBitmap> comp =
-      gfx::JPEGCodec::Decode(result.data(), result.size());
-  CHECK(comp);
+  SkBitmap comp = gfx::JPEGCodec::Decode(result);
+  CHECK(!comp.isNull());
 
   *error = width == expected.width() && height == expected.height()
-               ? CalcImageError(expected, *comp)
+               ? CalcImageError(expected, comp)
                : std::numeric_limits<double>::infinity();
 }
 

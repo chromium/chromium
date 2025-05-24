@@ -22,7 +22,7 @@ class UnderlyingLengthChecker : public InterpolationType::ConversionChecker {
     return To<InterpolableList>(*underlying.interpolable_value).length();
   }
 
-  bool IsValid(const InterpolationEnvironment&,
+  bool IsValid(const CSSInterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
     return underlying_length_ == GetUnderlyingLength(underlying);
   }

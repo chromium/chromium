@@ -86,6 +86,11 @@ const char kWebViewTpcdMetadaComponent[] = "webview-tpcd-metadata-component";
 // updater downloading service in nonembedded WebView.
 const char kWebViewFpsComponent[] = "webview-fps-component";
 
+// Enables downloading MaskedDomainListComponentInstallerPolicy by the component
+// updater downloading service in nonembedded WebView.
+const char kWebViewMaskedDomainListComponent[] =
+    "webview-masked-domain-list-component";
+
 // Force disables 3rd party cookie for all apps.
 const char kWebViewForceDisable3pcs[] = "webview-force-disable-3pcs";
 
@@ -102,9 +107,11 @@ const char kWebViewUseSeparateResourceContext[] =
 // Override and enable features useful for BSA library testing/debugging.
 const char kDebugBsa[] = "debug-bsa";
 
-// When enabled, the cookie header will be included in the request headers
-// for shouldInterceptRequest.
-const char kWebViewInterceptedCookieHeader[] =
-    "webview-intercepted-cookie-header";
+// Enables using startup tasks logic for webview chromium initialization which
+// - runs the startup tasks asynchronously if startup is triggered from a
+// background thread. Otherwise runs startup synchronously.
+// - caches any chromium startup exception and rethrows it if startup is retried
+// without a restart.
+const char kWebViewUseStartupTasksLogic[] = "webview-use-startup-tasks-logic";
 
 }  // namespace switches

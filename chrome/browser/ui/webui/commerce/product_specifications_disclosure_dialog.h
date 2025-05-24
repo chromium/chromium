@@ -17,10 +17,14 @@ namespace commerce {
 
 inline constexpr char kDialogArgsName[] = "name";
 inline constexpr char kDialogArgsUrls[] = "urls";
+inline constexpr char kDialogArgsSetId[] = "set_id";
 inline constexpr char kDialogArgsInNewTab[] = "in_new_tab";
 
 struct DialogArgs {
-  DialogArgs(std::vector<GURL> urls, std::string name, bool in_new_tab);
+  DialogArgs(std::vector<GURL> urls,
+             std::string name,
+             std::string set_id,
+             bool in_new_tab);
   ~DialogArgs();
   DialogArgs(const DialogArgs&);
   DialogArgs& operator=(const DialogArgs&);
@@ -29,6 +33,7 @@ struct DialogArgs {
 
   std::vector<GURL> urls;
   std::string name;
+  std::string set_id;
   bool in_new_tab;
 };
 

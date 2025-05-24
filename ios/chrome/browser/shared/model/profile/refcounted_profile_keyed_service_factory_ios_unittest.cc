@@ -9,9 +9,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/test/task_environment.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -122,26 +122,36 @@ class RefcountedProfileKeyedServiceFactoryIOSTest
   ProfileIOS* GetRegularProfile() { return test_profile_.get(); }
 
   ProfileIOS* GetOffTheRecordProfile() {
-    return test_profile_->GetOffTheRecordChromeBrowserState();
+    return test_profile_->GetOffTheRecordProfile();
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   DummyServiceFactory dummy_service_factory_;
   std::unique_ptr<TestProfileIOS> test_profile_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    ,
+    CreateLazily,
     RefcountedProfileKeyedServiceFactoryIOSTest,
     ::testing::Combine(
         ::testing::Values(ProfileSelection::kNoInstanceInIncognito,
                           ProfileSelection::kRedirectedInIncognito,
                           ProfileSelection::kOwnInstanceInIncognito),
-        ::testing::Values(ServiceCreation::kCreateLazily,
-                          ServiceCreation::kCreateWithProfile),
+        ::testing::Values(ServiceCreation::kCreateLazily),
         ::testing::Values(TestingCreation::kCreateService,
                           TestingCreation::kNoServiceForTests)),
+    PrintToStringParamName());
+
+INSTANTIATE_TEST_SUITE_P(
+    CreateWithProfile,
+    RefcountedProfileKeyedServiceFactoryIOSTest,
+    ::testing::Combine(
+        ::testing::Values(ProfileSelection::kNoInstanceInIncognito,
+                          ProfileSelection::kRedirectedInIncognito,
+                          ProfileSelection::kOwnInstanceInIncognito),
+        ::testing::Values(ServiceCreation::kCreateWithProfile),
+        ::testing::Values(TestingCreation::kNoServiceForTests)),
     PrintToStringParamName());
 
 // Tests that RefcountedProfileKeyedServiceFactoryIOS behaves correctly for

@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 
 namespace arc::mojom {
 class AppInstance;

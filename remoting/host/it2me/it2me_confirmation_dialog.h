@@ -6,9 +6,11 @@
 #define REMOTING_HOST_IT2ME_IT2ME_CONFIRMATION_DIALOG_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 
 namespace remoting {
 
@@ -38,6 +40,11 @@ class It2MeConfirmationDialogFactory {
   explicit It2MeConfirmationDialogFactory(
       It2MeConfirmationDialog::DialogStyle dialog_style)
       : dialog_style_(dialog_style) {}
+  It2MeConfirmationDialogFactory(
+      It2MeConfirmationDialog::DialogStyle dialog_style,
+      base::TimeDelta auto_accept_timeout)
+      : dialog_style_(dialog_style),
+        auto_accept_timeout_(auto_accept_timeout) {}
 
   It2MeConfirmationDialogFactory(const It2MeConfirmationDialogFactory&) =
       delete;
@@ -52,6 +59,9 @@ class It2MeConfirmationDialogFactory {
   // This field is only used on ChromeOS.
   [[maybe_unused]] It2MeConfirmationDialog::DialogStyle dialog_style_ =
       It2MeConfirmationDialog::DialogStyle::kConsumer;
+
+  // This field is only used on ChromeOS.
+  [[maybe_unused]] base::TimeDelta auto_accept_timeout_;
 };
 
 }  // namespace remoting

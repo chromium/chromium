@@ -56,8 +56,8 @@ class LoginPublicAccountUserViewTest : public LoginTestBase {
     auto* container = new views::View();
     container->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    container->AddChildView(public_account_view_.get());
-    container->AddChildView(focusable_view_.get());
+    container->AddChildViewRaw(public_account_view_.get());
+    container->AddChildViewRaw(focusable_view_.get());
     SetWidget(CreateWidgetWithContent(container));
   }
 

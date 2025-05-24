@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tab_strip_tooltip_holder"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:visibility="gone" >
+
+    <TextView
+        android:id="@+id/tooltip_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/tab_strip_tooltip_margin"
+        android:paddingHorizontal="@dimen/tab_strip_tooltip_label_horizontal_padding"
+        android:paddingVertical="@dimen/tab_strip_tooltip_label_vertical_padding"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary.OnAccent1"
+        android:background="@drawable/tab_strip_tooltip_background" />
+</FrameLayout>

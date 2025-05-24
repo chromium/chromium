@@ -26,6 +26,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -171,6 +172,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<AVStream> stream_;
   base::TimeDelta start_time_;
+  std::optional<base::TimeDelta> initial_start_padding_;
   std::unique_ptr<AudioDecoderConfig> audio_config_;
   std::unique_ptr<VideoDecoderConfig> video_config_;
   raw_ptr<MediaLog> media_log_;
@@ -248,13 +250,10 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // Allow FFmpegDemxuerStream to notify us about an error.
   void NotifyDemuxerError(PipelineStatus error);
 
-  void OnEnabledAudioTracksChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
-
-  void OnSelectedVideoTrackChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       const std::vector<MediaTrack::Id>& track_ids,
+                       base::TimeDelta curr_time,
+                       TrackChangeCB change_completed_cb) override;
   void SetPlaybackRate(double rate) override {}
 
   // The lowest demuxed timestamp.  If negative, DemuxerStreams must use this to
@@ -275,14 +274,6 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
  private:
   // To allow tests access to privates.
   friend class FFmpegDemuxerTest;
-
-  // Helper for video and audio track changing. For the `track_type`, enables
-  // tracks associated with `track_ids` and disables the rest. Fires
-  // `change_completed_cb` when the operation is completed.
-  void FindAndEnableProperTracks(const std::vector<MediaTrack::Id>& track_ids,
-                                 base::TimeDelta curr_time,
-                                 DemuxerStream::Type track_type,
-                                 TrackChangeCB change_completed_cb);
 
   // FFmpeg callbacks during initialization.
   void OnOpenContextDone(bool result);
@@ -330,12 +321,9 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   void SeekInternal(base::TimeDelta time,
                     base::OnceCallback<void(int)> seek_cb);
-  void OnVideoSeekedForTrackChange(DemuxerStream* video_stream,
-                                   base::OnceClosure seek_completed_cb,
-                                   int result);
-  void SeekOnVideoTrackChange(base::TimeDelta seek_to_time,
-                              TrackChangeCB seek_completed_cb,
-                              const std::vector<DemuxerStream*>& streams);
+  void OnTrackChangeSeekComplete(base::OnceClosure seek_completed_cb,
+                                 std::vector<FFmpegDemuxerStream*> needs_flush,
+                                 int result);
 
   // Executes |init_cb_| with |status| and closes out the async trace.
   void RunInitCB(PipelineStatus status);
@@ -409,7 +397,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   const MediaTracksUpdatedCB media_tracks_updated_cb_;
 
-  base::flat_map<MediaTrack::Id, FFmpegDemuxerStream*>
+  base::flat_map<MediaTrack::Id, raw_ptr<FFmpegDemuxerStream, CtnExperimental>>
       track_id_to_demux_stream_map_;
 
   const bool is_local_file_;

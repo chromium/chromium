@@ -6,6 +6,7 @@
 #define ASH_AUTH_VIEWS_AUTH_HEADER_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
@@ -34,7 +35,7 @@ class ASH_EXPORT AuthHeaderView : public views::View {
     TestApi(const TestApi&) = delete;
     TestApi& operator=(const TestApi&) = delete;
 
-    const std::u16string& GetCurrentTitle() const;
+    std::u16string_view GetCurrentTitle() const;
 
     raw_ptr<AuthHeaderView> GetView();
 

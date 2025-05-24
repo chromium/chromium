@@ -12,7 +12,7 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrRadioButtonElement} from '../cr_radio_button/cr_radio_button.js';
+import type {CrRadioButtonElement} from '../cr_radio_button/cr_radio_button.js';
 
 import {getTemplate} from './cr_radio_group.html.js';
 
@@ -174,7 +174,7 @@ export class CrRadioGroupElement extends PolymerElement {
       return;
     }
 
-    const radio = enabledRadios[selectedIndex]!;
+    const radio = enabledRadios[selectedIndex];
     const name = `${radio.name}`;
     if (this.selected !== name) {
       event.preventDefault();
@@ -224,10 +224,10 @@ export class CrRadioGroupElement extends PolymerElement {
       return result;
     }) as CrRadioButtonElement[];
     this.buttonEventTracker_.removeAll();
-    this.buttons_!.forEach(el => {
-      this.buttonEventTracker_!.add(
+    this.buttons_.forEach(el => {
+      this.buttonEventTracker_.add(
           el, 'disabled-changed', () => this.populate_());
-      this.buttonEventTracker_!.add(el, 'name-changed', () => this.populate_());
+      this.buttonEventTracker_.add(el, 'name-changed', () => this.populate_());
     });
     this.update_();
   }

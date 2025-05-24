@@ -14,98 +14,49 @@ import org.chromium.net.test.EmbeddedTestServer;
 public class WebappTestPage {
     public static final String PAGE_TITLE = "Web app banner test page";
 
-    private static final String SERVICE_WORKER_PAGE_PATH =
+    private static final String WEB_APP_TEST_PAGE =
             "/chrome/test/data/banners/manifest_test_page.html";
 
-    private static final String NO_SERVICE_WORKER_PAGE_PATH =
-            "/chrome/test/data/banners/manifest_no_service_worker.html";
-
-    /** Returns the URL of a page with a service worker and an installable Web App Manifest. */
-    public static String getServiceWorkerUrl(EmbeddedTestServer testServer) {
-        String url = testServer.getURL(SERVICE_WORKER_PAGE_PATH);
-        Uri.Builder builder = Uri.parse(url).buildUpon();
-        return builder.build().toString();
+    /** Returns the URL of a page with an installable Web App Manifest. */
+    public static String getTestUrl(EmbeddedTestServer testServer) {
+        return testServer.getURL(WEB_APP_TEST_PAGE);
     }
 
-    /** Returns the URL of a page with no service worker and a Web App Manifest. */
-    public static String getNonServiceWorkerUrl(EmbeddedTestServer testServer) {
-        String url = testServer.getURL(NO_SERVICE_WORKER_PAGE_PATH);
-        Uri.Builder builder = Uri.parse(url).buildUpon();
-        return builder.build().toString();
-    }
-
-    /** Returns the URL of a page with no service worker and the specified Web App Manifest URL. */
-    public static String getNonServiceWorkerUrlWithManifest(
-            EmbeddedTestServer testServer, String manifestUrl) {
-        String url = testServer.getURL(NO_SERVICE_WORKER_PAGE_PATH);
+    /** Returns the URL of a page with the specified Web App Manifest URL. */
+    public static String getTestUrlWithManifest(EmbeddedTestServer testServer, String manifestUrl) {
+        String url = testServer.getURL(WEB_APP_TEST_PAGE);
         Uri.Builder builder = Uri.parse(url).buildUpon();
         builder.appendQueryParameter("manifest", manifestUrl);
         return builder.build().toString();
     }
 
     /**
-     * Returns the URL of a page with no service worker, an installable Web App Manifest, and the
-     * specified action query parameter.
+     * Returns the URL of a page with an installable Web App Manifest, and the specified action
+     * query parameter.
      */
-    public static String getNonServiceWorkerUrlWithAction(
-            EmbeddedTestServer testServer, String action) {
-        String url = testServer.getURL(NO_SERVICE_WORKER_PAGE_PATH);
+    public static String getTestUrlWithAction(EmbeddedTestServer testServer, String action) {
+        String url = testServer.getURL(WEB_APP_TEST_PAGE);
         Uri.Builder builder = Uri.parse(url).buildUpon();
         builder.appendQueryParameter("action", action);
         return builder.build().toString();
     }
 
     /**
-     * Returns the URL of a page with no service worker and the specified Web App Manifest URL and
-     * action query parameter.
+     * Returns the URL of a page with the specified Web App Manifest URL and action query parameter.
      */
-    public static String getNonServiceWorkerUrlWithManifestAndAction(
+    public static String getTestUrlWithManifestAndAction(
             EmbeddedTestServer testServer, String manifestUrl, String action) {
-        String url = testServer.getURL(NO_SERVICE_WORKER_PAGE_PATH);
+        String url = testServer.getURL(WEB_APP_TEST_PAGE);
         Uri.Builder builder = Uri.parse(url).buildUpon();
         builder.appendQueryParameter("manifest", manifestUrl);
-        builder.appendQueryParameter("action", action);
-        return builder.build().toString();
-    }
-
-    /** Returns the URL of a page with a service worker and the specified Web App Manifest URL. */
-    public static String getServiceWorkerUrlWithManifest(
-            EmbeddedTestServer testServer, String manifestUrl) {
-        String url = testServer.getURL(SERVICE_WORKER_PAGE_PATH);
-        Uri.Builder builder = Uri.parse(url).buildUpon();
-        builder.appendQueryParameter("manifest", manifestUrl);
-        return builder.build().toString();
-    }
-
-    /**
-     * Returns the URL of a page with a service worker and the specified Web App Manifest URL and
-     * action query parameter.
-     */
-    public static String getServiceWorkerUrlWithManifestAndAction(
-            EmbeddedTestServer testServer, String manifestUrl, String action) {
-        String url = testServer.getURL(SERVICE_WORKER_PAGE_PATH);
-        Uri.Builder builder = Uri.parse(url).buildUpon();
-        builder.appendQueryParameter("manifest", manifestUrl);
-        builder.appendQueryParameter("action", action);
-        return builder.build().toString();
-    }
-
-    /**
-     * Returns the URL of a page with a service worker, an installable Web App Manifest, and the
-     * specified action query parameter.
-     */
-    public static String getServiceWorkerUrlWithAction(
-            EmbeddedTestServer testServer, String action) {
-        String url = testServer.getURL(SERVICE_WORKER_PAGE_PATH);
-        Uri.Builder builder = Uri.parse(url).buildUpon();
         builder.appendQueryParameter("action", action);
         return builder.build().toString();
     }
 
     /** Navigates to a page with a service worker and the specified Web App Manifest URL. */
-    public static void navigateToServiceWorkerPageWithManifest(
+    public static void navigateToPageWithManifest(
             EmbeddedTestServer testServer, Tab tab, String manifestUrl) throws Exception {
         TabLoadObserver observer = new TabLoadObserver(tab, PAGE_TITLE, null);
-        observer.fullyLoadUrl(getServiceWorkerUrlWithManifest(testServer, manifestUrl));
+        observer.fullyLoadUrl(getTestUrlWithManifest(testServer, manifestUrl));
     }
 }

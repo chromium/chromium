@@ -68,6 +68,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const std::vector<AudioDevice>& connected_devices,
       size_t keep_devices) override;
 
+  bool GetVoiceIsolationState() const override;
+  void SetVoiceIsolationState(bool voice_isolation_state) override;
+
+  uint32_t GetVoiceIsolationPreferredEffect() const override;
+  void SetVoiceIsolationPreferredEffect(uint32_t effect) override;
+
   bool GetNoiseCancellationState() override;
   void SetNoiseCancellationState(bool noise_cancellation_state) override;
 
@@ -84,6 +90,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   bool GetHfpMicSrState() override;
   void SetHfpMicSrState(bool hfp_mic_sr_state) override;
+
+  bool GetSpatialAudioState() override;
+  void SetSpatialAudioState(bool spatial_audio) override;
 
   // Registers volume and mute preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -169,6 +178,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   // Notifies the AudioPrefObserver for audio policy pref changes.
   void NotifyAudioPolicyChange();
+  void NotifyVoiceIsolationChange();
 
   base::Value::Dict device_mute_settings_;
   base::Value::Dict device_volume_settings_;

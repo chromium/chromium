@@ -1,21 +1,5 @@
 [
-  {
-    "official_only": true,
-    "os": [
-      "win"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ThirdPartyBlockingEnabled": false
-        },
-        "prefs": {
-          "third_party_blocking_enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+   {
+    "reason_for_missing_test": "Policy was removed"
   }
 ]

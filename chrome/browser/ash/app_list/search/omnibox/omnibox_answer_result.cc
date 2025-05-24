@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/app_list/search/common/search_result_util.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
-#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -162,10 +161,10 @@ OmniboxAnswerResult::~OmniboxAnswerResult() {
 
 void OmniboxAnswerResult::Open(int event_flags) {
   DCHECK(search_result_->destination_url.has_value());
-  list_controller_->OpenURL(profile_, *search_result_->destination_url,
-                            crosapi::PageTransitionToUiPageTransition(
-                                search_result_->page_transition),
-                            ui::DispositionFromEventFlags(event_flags));
+  list_controller_->OpenURL(
+      profile_, *search_result_->destination_url,
+      PageTransitionToUiPageTransition(search_result_->page_transition),
+      ui::DispositionFromEventFlags(event_flags));
 }
 
 void OmniboxAnswerResult::OnColorModeChanged(bool dark_mode_enabled) {

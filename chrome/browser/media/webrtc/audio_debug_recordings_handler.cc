@@ -76,7 +76,7 @@ void AudioDebugRecordingsHandler::StartAudioDebugRecordings(
       base::BindOnce(&GetLogDirectoryAndEnsureExists,
                      browser_context_->GetPath()),
       base::BindOnce(&AudioDebugRecordingsHandler::DoStartAudioDebugRecordings,
-                     this, host->GetID(), delay, std::move(callback),
+                     this, host->GetDeprecatedID(), delay, std::move(callback),
                      std::move(error_callback)));
 }
 
@@ -93,7 +93,7 @@ void AudioDebugRecordingsHandler::StopAudioDebugRecordings(
       base::BindOnce(&GetLogDirectoryAndEnsureExists,
                      browser_context_->GetPath()),
       base::BindOnce(&AudioDebugRecordingsHandler::DoStopAudioDebugRecordings,
-                     this, host->GetID(), is_manual_stop,
+                     this, host->GetDeprecatedID(), is_manual_stop,
                      current_audio_debug_recordings_id_, std::move(callback),
                      std::move(error_callback)));
 }

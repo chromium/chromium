@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -23,8 +24,8 @@ namespace media {
 // logic common to all decoders. It manages interactions with Starboard and the
 // lifetime of buffers.
 //
-// This is an abstract class; child classes can implement InitializeInternal to
-// perform any necessary initialization logic.
+// This is an abstract class; child classes must implement InitializeInternal
+// and GetEncryptionScheme (see the function declarations for more information).
 //
 // All functions, including the constructor and destructor, must be called on
 // the same sequence (the media thread).
@@ -50,6 +51,12 @@ class StarboardDecoder {
   // Returns true if the decoder is initialized, false otherwise. After Stop(),
   // the decoder is no longer initialized.
   bool IsInitialized();
+
+  // Returns the encryption scheme for this decoder, or nullopt if the
+  // encryption scheme is not yet known.
+  //
+  // kUnencrypted will be returned if the content is known to not be encrypted.
+  virtual std::optional<EncryptionScheme> GetEncryptionScheme() = 0;
 
   // Called when a buffer has been processed by Starboard.
   void OnBufferWritten();
@@ -89,8 +96,7 @@ class StarboardDecoder {
   MediaPipelineBackend::BufferStatus PushBufferInternal(
       StarboardSampleInfo sample_info,
       DrmInfoWrapper drm_info,
-      std::unique_ptr<uint8_t[]> buffer_data,
-      size_t buffer_data_size);
+      base::HeapArray<uint8_t> buffer_data);
 
   // Sends an "end of stream" signal to starboard.
   MediaPipelineBackend::BufferStatus PushEndOfStream();
@@ -127,8 +133,9 @@ class StarboardDecoder {
   base::OnceCallback<MediaPipelineBackend::BufferStatus()> pending_first_push_;
   // This map is expected to be small (likely only one or two elements), hence
   // the use of a flat_map.
-  // Maps from the array address to the unique_ptr that manages the array.
-  base::flat_map<const uint8_t*, std::unique_ptr<uint8_t[]>> copied_buffers_;
+  // Maps from the array address to the HeapArray that manages the array's
+  // lifetime.
+  base::flat_map<const uint8_t*, base::HeapArray<uint8_t>> copied_buffers_;
   // A callback to be run once the necessary DRM key is available. The callback
   // will push a pending buffer.
   base::OnceCallback<MediaPipelineBackend::BufferStatus()> pending_drm_key_;

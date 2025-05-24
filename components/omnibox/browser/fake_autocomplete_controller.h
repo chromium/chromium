@@ -20,8 +20,11 @@ class FakeAutocompleteControllerObserver
  public:
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
+  void OnAutocompleteStopTimerTriggered(
+      const AutocompleteInput& input) override;
   int on_result_changed_call_count_ = 0;
   bool last_default_match_changed = false;
+  int on_autocomplete_stop_timer_stopped_call_count = 0;
 };
 
 class FakeAutocompleteController : public AutocompleteController {
@@ -83,7 +86,9 @@ class FakeAutocompleteController : public AutocompleteController {
       AutocompleteController::UpdateType last_update_type);
 
   // Verifies the controller stops after `delay_ms` with no notification.
-  void ExpectStopAfter(int delay_ms);
+  // `explicit_stop` is whether the stop was user triggered, rather than the
+  // stop timer triggering `Stop()`.
+  void ExpectStopAfter(int delay_ms, bool explicit_stop = false);
 
   // Verifies neither a notification nor stop occur.
   void ExpectNoNotificationOrStop();
@@ -92,13 +97,19 @@ class FakeAutocompleteController : public AutocompleteController {
   using AutocompleteController::OldResult;
 
   // AutocompleteController (methods):
+  using AutocompleteController::CheckWhetherDefaultMatchChanged;
   using AutocompleteController::MaybeRemoveCompanyEntityImages;
   using AutocompleteController::ShouldRunProvider;
+  using AutocompleteController::UpdateAssociatedKeywords;
   using AutocompleteController::UpdateResult;
+  using AutocompleteController::UpdateSearchboxStats;
+  using AutocompleteController::UpdateShownInSession;
 
   // AutocompleteController (fields):
   using AutocompleteController::input_;
   using AutocompleteController::internal_result_;
+  using AutocompleteController::keyword_provider_;
+  using AutocompleteController::last_time_default_match_changed_;
   using AutocompleteController::last_update_type_;
   using AutocompleteController::metrics_;
   using AutocompleteController::providers_;

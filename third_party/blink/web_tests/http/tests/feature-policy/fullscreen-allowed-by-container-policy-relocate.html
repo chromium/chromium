@@ -2,9 +2,9 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="resources/helper.js"></script>
-<iframe src="about:blank" allow="fullscreen"></iframe>
-<iframe src="about:blank" allow="fullscreen" allowfullscreen></iframe>
-<iframe src="about:blank" allowfullscreen></iframe>
+<iframe src="about:blank" allow="fullscreen; focus-without-user-activation *"></iframe>
+<iframe src="about:blank" allow="fullscreen; focus-without-user-activation *" allowfullscreen></iframe>
+<iframe src="about:blank" allow="focus-without-user-activation *" allowfullscreen></iframe>
 <script>
 var srcs = [
   "http://localhost:8000/feature-policy/resources/feature-policy-fullscreen.html",
@@ -13,7 +13,7 @@ var srcs = [
 
 function loadFrame(iframe, src) {
   var allowFullscreen = iframe.allowFullscreen;
-  var allow = iframe.hasAttribute('allow');
+  var allow = hasAllowAttributeWithValue(iframe, 'fullscreen');
   // fullscreen is enabled if:
   //     a. relocating within the same origin; or
   //     b. relocating across origin, with allowfullscreen not overriden by

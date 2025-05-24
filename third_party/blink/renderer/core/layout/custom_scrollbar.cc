@@ -232,8 +232,7 @@ static PseudoId PseudoForScrollbarPart(ScrollbarPart part) {
     case kAllParts:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kPseudoIdScrollbar;
+  NOTREACHED();
 }
 
 void CustomScrollbar::UpdateScrollbarPart(ScrollbarPart part_type) {
@@ -318,7 +317,7 @@ gfx::Rect CustomScrollbar::ButtonRect(ScrollbarPart part_type) const {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return button_rect;
 }
@@ -411,7 +410,7 @@ void CustomScrollbar::PositionScrollbarParts() {
         part_rect = FrameRect();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     part.value->ClearNeedsLayoutWithoutPaintInvalidation();
     // The part's paint offset is relative to the box.

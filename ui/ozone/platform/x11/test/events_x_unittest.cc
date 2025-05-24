@@ -11,15 +11,16 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/features.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/test/events_test_utils.h"
@@ -54,7 +55,7 @@ void InitButtonEvent(x11::Event* event,
                              });
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Initializes the passed-in x11::Event.
 void InitKeyEvent(x11::Event* event,
                   bool is_press,
@@ -494,7 +495,7 @@ TEST_F(EventsXTest, DisableMouse) {
   EXPECT_EQ(ui::EventType::kMousePressed, ui::EventTypeFromXEvent(*xev));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(EventsXTest, ImeFabricatedKeyEvents) {
   x11::KeyButMask state_to_be_fabricated[] = {
       {},
@@ -690,6 +691,10 @@ void AdvanceKeyEventTimestamp(x11::Event* event) {
 }  // namespace
 
 TEST_F(EventsXTest, AutoRepeat) {
+  // Ensure legacy key repeat synthesis is enabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLegacyKeyRepeatSynthesis);
+
   const uint16_t kNativeCodeA =
       ui::KeycodeConverter::DomCodeToNativeKeycode(DomCode::US_A);
   const uint16_t kNativeCodeB =

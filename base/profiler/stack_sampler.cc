@@ -4,6 +4,7 @@
 
 #include "base/profiler/stack_sampler.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -15,13 +16,17 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/profile_builder.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/profiler/unwinder.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/tagging.h"  // nogncheck
+#endif
 
 // IMPORTANT NOTE: Some functions within this implementation are invoked while
 // the target thread is suspended so it must not do any allocation from the
@@ -168,6 +173,14 @@ void StackSampler::RecordStackFrames(StackBuffer* stack_buffer,
                                      PlatformThreadId thread_id,
                                      base::OnceClosure done_callback) {
   DCHECK(stack_buffer);
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+  // Disable MTE during this function because this function indiscriminately
+  // reads stack frames, some of which belong to system libraries, not Chrome
+  // itself. With stack tagging, some bytes on the stack have MTE tags different
+  // from the stack pointer tag.
+  partition_alloc::SuspendTagCheckingScope suspend_tag_checking_scope;
+#endif
 
   if (record_sample_callback_) {
     record_sample_callback_.Run();
@@ -338,8 +351,8 @@ std::vector<Frame> StackSampler::WalkStack(
   do {
     // Choose an authoritative unwinder for the current module. Use the first
     // unwinder that thinks it can unwind from the current frame.
-    auto unwinder =
-        ranges::find_if(unwinders, [&stack](const UnwinderCapture& unwinder) {
+    auto unwinder = std::ranges::find_if(
+        unwinders, [&stack](const UnwinderCapture& unwinder) {
           return GetUnwinder(unwinder)->CanUnwindFrom(stack.back());
         });
     if (unwinder == unwinders.end()) {

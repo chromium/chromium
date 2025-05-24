@@ -129,6 +129,8 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
 
   HttpStreamParser* parser() const { return state_.parser(); }
 
+  void OnHandshakeConfirmed(CompletionOnceCallback callback, int rv);
+
   HandshakeResult result_ = HandshakeResult::INCOMPLETE;
 
   // The request URL.

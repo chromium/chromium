@@ -114,9 +114,6 @@ namespace syncFileSystem {
   // A callback type for getUsageAndQuota.
   callback QuotaAndUsageCallback = void (StorageInfo info);
 
-  // Returns true if operation was successful.
-  callback DeleteFileSystemCallback = void (boolean result);
-
   // A callback type for getFileStatus.
   callback GetFileStatusCallback = void (FileStatus status);
 

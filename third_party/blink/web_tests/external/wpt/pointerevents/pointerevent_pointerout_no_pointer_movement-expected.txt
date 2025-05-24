@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] The pointerout event should not be fired if the pointer doesn't move
-  assert_equals: The pointerout event should not be fired expected 0 but got 1
-Harness: the test ran to completion.
-

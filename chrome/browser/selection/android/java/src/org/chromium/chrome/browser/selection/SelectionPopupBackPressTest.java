@@ -16,14 +16,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -56,7 +54,7 @@ public class SelectionPopupBackPressTest {
     @Test
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    @DisabledTest(message = "flaky, see crbug.com/406312249")
     public void testBackPressClearSelection() throws TimeoutException {
         testBackPressClearSelectionInternal();
     }
@@ -64,15 +62,6 @@ public class SelectionPopupBackPressTest {
     @Test
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testBackPressClearSelection_BackPressRefactor() throws TimeoutException {
-        testBackPressClearSelectionInternal();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"TextInput", "SmartSelection"})
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressHandlerOnTabSwitched() {
         mActivityTestRule.startMainActivityOnBlankPage();
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
@@ -102,7 +91,6 @@ public class SelectionPopupBackPressTest {
     @Test
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressHandlerOnWebContentChanged() {
         mActivityTestRule.startMainActivityOnBlankPage();
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();

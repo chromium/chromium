@@ -52,7 +52,7 @@ class AcceleratorCommandsFullscreenBrowserTest
   AcceleratorCommandsFullscreenBrowserTest& operator=(
       const AcceleratorCommandsFullscreenBrowserTest&) = delete;
 
-  virtual ~AcceleratorCommandsFullscreenBrowserTest() {}
+  virtual ~AcceleratorCommandsFullscreenBrowserTest() = default;
 
   // Sets |widget|'s show state to |initial_show_state_|.
   void SetToInitialShowState(views::Widget* widget) {
@@ -148,7 +148,8 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
   // 5) Miscellaneous windows (e.g. task manager).
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-  params.delegate = new views::WidgetDelegateView;
+  params.delegate =
+      new views::WidgetDelegateView(views::WidgetDelegateView::CreatePassKey());
   params.delegate->SetCanMaximize(true);
   params.delegate->SetCanFullscreen(true);
   views::Widget misc_widget;
@@ -192,7 +193,7 @@ class AcceleratorCommandsPlatformAppFullscreenBrowserTest
   AcceleratorCommandsPlatformAppFullscreenBrowserTest& operator=(
       const AcceleratorCommandsPlatformAppFullscreenBrowserTest&) = delete;
 
-  virtual ~AcceleratorCommandsPlatformAppFullscreenBrowserTest() {}
+  virtual ~AcceleratorCommandsPlatformAppFullscreenBrowserTest() = default;
 
   // Sets |app_window|'s show state to |initial_show_state_|.
   void SetToInitialShowState(extensions::AppWindow* app_window) {

@@ -1,0 +1,301 @@
+# Copyright (C) 2024 The Chromium Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Copybara config for Cronet to AOSP import.
+
+# The set of files to be read from the origin (Chromium src/).
+origin_files = glob([
+    "chrome/VERSION",
+    "components/metrics/**",
+    # See https://chromium-review.googlesource.com/c/chromium/src/+/4896104
+    "components/miracle_parameter/**",
+    "components/nacl/**",
+    "components/prefs/**",
+    "components/unexportable_keys/**",
+    "crypto/**",
+    "ipc/**",
+    "net/**",
+    "url/**",
+    # https://crrev.com/c/5800287
+    "components/network_time/**",
+  ]) + glob(["base/**"]) - glob([
+    # Exclude test files to reduce the number of gn2bp files
+    "base/tracing/test/**",
+  ]) + glob(["build/**"]) - glob([
+    # Per aosp/2367109
+    "build/android/CheckInstallApk-debug.apk",
+    "build/android/unused_resources/**",
+    "build/linux/**",
+    "build/win/**",
+    # We don't care about siso, and the contents of the .sisoenv file tend to be
+    # non-deterministic, causing spurious diffs.
+    "build/config/siso/**",
+  ]) + glob(["components/cronet/**"]) - glob([
+    # Per aosp/2374766
+    "components/cronet/native/**",
+  ]) + glob(["testing/**"]) - glob([
+    # Per aosp/2399270
+    "testing/buildbot/**",
+    # Exclude test files to reduce the number of gn2bp files
+    "testing/fuzzer/**",
+    "testing/libfuzzer/fuzzers/wasm_corpus/**",
+  ]) - glob(["**/third_party/**"]) + glob([
+    "base/third_party/cityhash/**",
+    "base/third_party/cityhash_v103/**",
+    "base/third_party/double_conversion/**",
+    "base/third_party/dynamic_annotations/**",
+    "base/third_party/icu/**",
+    "base/third_party/nspr/**",
+    "base/third_party/superfasthash/**",
+    # Those are temporarily needed until Chromium finish the migration
+    # of libc++[abi]
+    "buildtools/third_party/libc++/**",
+    "buildtools/third_party/libc++abi/**",
+    "net/third_party/quiche/**",
+    "net/third_party/uri_template/**",
+    "third_party/abseil-cpp/**",
+    "third_party/android_ndk/sources/android/cpufeatures/**",
+    # See https://chromium-review.googlesource.com/c/chromium/src/+/4885470
+    # Note: Only used for tests.
+    "third_party/anonymous_tokens/**",
+    "third_party/ashmem/**",
+    # Note: Only used for tests.
+    "third_party/apache-portable-runtime/**",
+    "third_party/brotli/**",
+    # Note: Only used for tests.
+    "third_party/ced/**",
+    "third_party/cpu_features/**",
+    # Note: Only used for tests.
+    "third_party/fuzztest/**",
+    # Note: Only used for tests.
+    "third_party/google_benchmark/**",
+    # Note: Only used for tests.
+    "third_party/googletest/**",
+    "third_party/icu/**",
+    "third_party/jni_zero/**",
+    "third_party/libc++abi/**",
+    # Note: Only used for tests.
+    "third_party/libxml/**",
+    # Note: Only used for tests.
+    "third_party/lss/**",
+    "third_party/metrics_proto/**",
+    "third_party/modp_b64/**",
+    # Note: Only used for tests.
+    "third_party/netty4/**",
+    # Note: Only used for tests.
+    "third_party/netty-tcnative/**",
+    "third_party/protobuf/**",
+    # Note: Only used for tests.
+    "third_party/re2/**",
+    # Note: Cronet currently uses Android's zlib
+    # "third_party/zlib/**",
+    "url/third_party/mozilla/**",
+    "third_party/simdutf/**",
+    "third_party/perfetto/**",
+    "third_party/zstd/**",
+  ]) + glob([
+    "third_party/compiler-rt/**",
+  ]) - glob([
+    # This is not used, and contains a large number of files that slows down
+    # imports and checkouts.
+    "third_party/compiler-rt/src/test/**",
+  ]) + glob([
+    "third_party/libc++/**",
+  ]) - glob([
+    # This is not used, and contains a huge number of files (~10k) that slows
+    # down imports and checkouts.
+    "third_party/libc++/src/test/**",
+  ]) + glob([
+    "third_party/llvm-libc/**",
+  ]) - glob([
+    # This is not used, and contains a large number of files that slows down
+    # imports and checkouts.
+    "third_party/llvm-libc/src/test/**"
+  ]) + glob([
+    "third_party/boringssl/**",
+  ]) - glob([
+    # This is not used, and contains a large number of files that slows down
+    # imports and checkouts.
+    "third_party/boringssl/src/fuzz/**",
+    "third_party/boringssl/src/pki/testdata/**",
+  ]) + glob([
+    # Note: Only used for tests.
+    "third_party/quic_trace/**"
+  ]) - glob([
+    # This is not used and it doesn't have a README.chromium for us to generate
+    # a license.
+    "third_party/quic_trace/src/third_party/glew/**"
+  ]) + glob(["third_party/rust/**"]) - glob([
+    # Those crates are missing README.chromium and LICENSE files.
+    # See crbug.com/369505588 and crbug.com/369075726
+    "third_party/rust/chromium_crates_io/vendor/cc-*/**",
+    "third_party/rust/cc/**",
+    "third_party/rust/chromium_crates_io/vendor/codespan-reporting-*/**",
+    "third_party/rust/codespan_reporting/**",
+    "third_party/rust/chromium_crates_io/vendor/link-cplusplus-*/**",
+    "third_party/rust/chromium_crates_io/vendor/minimal-lexical-*/**",
+    "third_party/rust/chromium_crates_io/vendor/rstest_macros-*/**",
+    "third_party/rust/rstest_macros/**",
+    "third_party/rust/chromium_crates_io/vendor/rstest-*/**",
+    "third_party/rust/rstest/**",
+    "third_party/rust/chromium_crates_io/vendor/rstest_reuse-*/**",
+    "third_party/rust/rstest_reuse/**",
+    "third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-*/**",
+    "third_party/rust/rustc_demangle_capi/**",
+    "third_party/rust/chromium_crates_io/vendor/wasi-*+wasi-snapshot-preview1/**",
+    "third_party/rust/chromium_crates_io/vendor/winapi-i686-pc-windows-gnu-*/**",
+    "third_party/rust/chromium_crates_io/vendor/winapi-x86_64-pc-windows-gnu-*/**",
+    "third_party/rust/chromium_crates_io/vendor/winapi-0.*/**",
+    "third_party/rust/winapi/**",
+  ]) + glob([
+    # Top-level build files generated by gen_android_bp.py
+    "Android.bp.gn2bp",
+    "Android.extras.bp.gn2bp",
+    # Top-level license file generated by create_android_metadata_license.py
+    "LICENSE",
+  ]) - glob([
+    # We only want to import the Android.bp.gn2bp build files that we generated
+    # ourselves; get rid of any spurious Android build files that may also be
+    # present in the origin
+    "**/Android.bp",
+    "**/Android.mk",
+    # Remove Bazel BUILD files as they are recognized in AOSP (roboleaf).
+    "**/BUILD",
+
+    "**/*OWNERS",
+    "**/.git/**",
+    "**/.gitignore",
+    "**/.gitmodules",
+    "**/.github/**",
+    "**/MODULE.bazel.lock",
+
+    # Exclude GN-specific files to reduce the number of gn2bp files
+    "**/BUILD.gn",
+    "**/*.gni",
+
+    # These files may be generated when running local Python scripts locally -
+    # make sure we don't accidentally import them.
+    "**/__pycache__/**",
+
+    # These files accidentally trigger the "NDK-API-Review" submit requirement
+    # in Android Gerrit. See https://crbug.com/411039623.
+    "**/*.map.txt",
+  ]) - glob([
+    # https://crbug.com/404202679: last, to make sure we never upload internal code.
+    # Cronet does not bundle/depend on any internal code. Having said that, the
+    # internal builder that takes care of importing code in Android requires access
+    # to //internal; so that it can access its own configuration at runtime. To
+    # make sure we don't import any internal code to Android, we do the following:
+    # 1. Set the checkout_src_internal_infra gclient var - this lets the bot checkout
+    #    //internal, but not any other internal-src code.
+    # 2. Explicitly exclude //internal via this exclude glob.
+    # This way, //internal is available to the bot at runtime, but copybara will not
+    # import it into Android.
+    "internal/**",
+  ])
+
+def destination_files_for_channel(import_channel):
+  # These files are manually maintained in the destination and do not
+  # exist in the origin.
+  destination_files_to_exclude_per_channel = [
+      "METADATA",
+      "MODULE_LICENSE_BSD",
+
+      "third_party/zlib/**",
+      # TODO: https://crbug.com/387975197 - we shouldn't have to manually
+      # maintain this list; ideally Copybara should handle this automatically
+      # through the consistency file just like it does for partial file diffs.
+      "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml",
+  ]
+  # The scope of the import in the destination (AOSP //external/cronet/channel).
+  #
+  # Each destination file in this set will be 3-way-merged with its counterpart
+  # file from the filtered and transformed origin.
+  #
+  # If a destination file in this set had a counterpart in the last import origin
+  # (the "baseline" - as evidenced by the file being listed in the consistency
+  # file), but that file was deleted in the mean time and does not exist in the
+  # current origin, the file will be deleted in the destination.
+  #
+  # If a destination file in this set has no counterpart in the last import
+  # origin nor the current origin, copybara will fail with a "Detected full-file
+  # diffs when generating consistency file" error. This can happen if this set is
+  # expanded or if new files have been created in the destination. See
+  # https://crbug.com/387975197.
+  #
+  # Note: These are post-transformation files. As such, we have to be aware of
+  # which channel we're importing, since we must consider the files within that
+  # channel subdirectory.
+  return glob([import_channel + "/**"]) - glob(
+    [import_channel + "/" + file for file in destination_files_to_exclude_per_channel]
+  )
+
+def workflow(name, destination, destination_files, mode, additional_transform, consistency_file_path):
+  core.workflow(
+      name = name,
+      authoring = authoring.overwrite("Cronet Mainline Eng <cronet-mainline-eng+copybara@google.com>"),
+      # Origin folder is specified via source_ref argument, see import_cronet.sh
+      origin = folder.origin(),
+      origin_files = origin_files,
+      destination = destination,
+      destination_files = destination_files,
+      mode = mode,
+      transformations = [
+        core.rename("Android.bp.gn2bp", "Android.bp"),
+        core.rename("Android.extras.bp.gn2bp", "Android.extras.bp"),
+        additional_transform,
+      ],
+      consistency_file_path = consistency_file_path,
+      merge_import = core.merge_import_config(
+          package_path = "",
+          use_consistency_file = True,
+      ),
+  )
+
+def per_channel_workflow(name, destination, mode):
+  for import_channel in ["tot", "stable"]:
+    workflow(
+      name = import_channel + "_" + name,
+      destination = destination,
+      destination_files = destination_files_for_channel(import_channel),
+      mode = mode,
+      additional_transform = core.move("", import_channel),
+      consistency_file_path = import_channel + "/chromium.bara.consistency"
+    )
+
+# Workflow for importing code from Chromium to AOSP Gerrit via a Chromium CI
+# as a pending CL, including Android build files generated by gn2bp.
+per_channel_workflow(
+  name = "import_cronet_to_aosp_gerrit",
+  destination = git.gerrit_destination(
+      url = "https://googleplex-android.googlesource.com/platform/external/cronet",
+      fetch = "main",
+      push_to_refs_for = "main",
+      # TODO(crbug.com/372534509): Replace reviewer with team-based Gerrit
+      # account once it is set up.
+      labels = ["Presubmit-Ready+1"]
+  ),
+  mode = "SQUASH",
+)
+
+# Same as above, but importing to some git branch. Used for manual testing.
+per_channel_workflow(
+  name = "import_cronet_to_git_branch",
+  destination = git.destination(
+    # Parameters intentionally left blank, to be filled out through the copybara
+    # command line.
+    url = "Git destination to be passed through command line",
+  ),
+  mode = "SQUASH",
+)

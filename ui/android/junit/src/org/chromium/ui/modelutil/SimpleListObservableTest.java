@@ -29,7 +29,7 @@ import java.util.Arrays;
 public class SimpleListObservableTest {
     @Mock private ListObserver<Integer> mObserver;
 
-    private ListModelBase<Integer, Integer> mIntegerList = new ListModelBase<>();
+    private final ListModelBase<Integer, Integer> mIntegerList = new ListModelBase<>();
 
     @Before
     public void setUp() {

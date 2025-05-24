@@ -8,13 +8,16 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 
 /** Chrome Preference that enables selecting a single LanguageItem. */
+@NullMarked
 public class LanguageItemPickerPreference extends ChromeBasePreference {
-    private LanguageItem mLanguageItem;
+    private @Nullable LanguageItem mLanguageItem;
     private boolean mUseLanguageItemForTitle;
 
     public LanguageItemPickerPreference(Context context, AttributeSet attrs) {
@@ -26,6 +29,7 @@ public class LanguageItemPickerPreference extends ChromeBasePreference {
      * @return LanguageItem saved to this preference.
      */
     public LanguageItem getLanguageItem() {
+        assert mLanguageItem != null : "Attempting to use the languageItem before initialization.";
         return mLanguageItem;
     }
 
@@ -33,7 +37,7 @@ public class LanguageItemPickerPreference extends ChromeBasePreference {
      * Set the LanguageItem value.
      * @param LanguageItem The LanguageItem to use for this preference
      */
-    public void setLanguageItem(LanguageItem languageItem) {
+    public void setLanguageItem(@Nullable LanguageItem languageItem) {
         mLanguageItem = languageItem;
         updateDisplay();
     }
@@ -45,7 +49,7 @@ public class LanguageItemPickerPreference extends ChromeBasePreference {
      * @param profile The Profile for the current session.
      * @param languageCode The iso639 languageCode for LanguageItem
      */
-    public void setLanguageItem(Profile profile, String languageCode) {
+    public void setLanguageItem(Profile profile, @Nullable String languageCode) {
         LanguageItem languageItem;
         if (AppLocaleUtils.isFollowSystemLanguage(languageCode)) {
             languageItem = LanguageItem.makeFollowSystemLanguageItem();

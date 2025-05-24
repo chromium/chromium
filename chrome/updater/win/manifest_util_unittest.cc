@@ -11,7 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/update_client/protocol_parser.h"
+#include "chrome/updater/win/protocol_parser_xml.h"
 #include "components/update_client/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +39,7 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
   test_manifest = test_manifest.Append(L"updater").Append(manifest_filename);
   ASSERT_TRUE(base::PathExists(test_manifest));
 
-  const base::FilePath offline_app_dir(offline_dir.AppendASCII(app_id));
+  const base::FilePath offline_app_dir(offline_dir.AppendUTF8(app_id));
   ASSERT_TRUE(base::CreateDirectory(offline_app_dir));
   ASSERT_TRUE(
       base::CopyFile(test_manifest, offline_dir.Append(manifest_filename)));
@@ -49,15 +49,15 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
       offline_app_dir.Append(executable_name));
   ASSERT_TRUE(base::WriteFile(expected_installer_path, dummy_file_contents));
 
-  update_client::ProtocolParser::Results results;
+  OfflineManifestSystemRequirements requirements;
   std::string installer_version;
   base::FilePath installer_path;
   std::string install_args;
   std::string install_data;
 
   ReadInstallCommandFromManifest(offline_dir_guid, app_id, "verboselogging",
-                                 results, installer_version, installer_path,
-                                 install_args, install_data);
+                                 requirements, installer_version,
+                                 installer_path, install_args, install_data);
   EXPECT_EQ(installer_version, "1.2.3.4");
   EXPECT_EQ(installer_path, expected_installer_path);
   EXPECT_EQ(install_args, "-baz");
@@ -73,8 +73,8 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
   ASSERT_TRUE(base::Move(expected_installer_path, expected_installer_path_v2));
 
   ReadInstallCommandFromManifest(offline_dir_guid, app_id, "verboselogging",
-                                 results, installer_version, installer_path,
-                                 install_args, install_data);
+                                 requirements, installer_version,
+                                 installer_path, install_args, install_data);
   EXPECT_EQ(installer_version, "1.2.3.4");
   EXPECT_EQ(installer_path, expected_installer_path_v2);
   EXPECT_EQ(install_args, "-baz");
@@ -220,14 +220,12 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(ManifestUtilIsOsSupportedTest, TestCases) {
-  update_client::ProtocolParser::Results results;
-  update_client::ProtocolParser::SystemRequirements& system_requirements =
-      results.system_requirements;
+  OfflineManifestSystemRequirements system_requirements;
   system_requirements.platform = GetParam().platform;
   system_requirements.arch = GetParam().arch_list;
   system_requirements.min_os_version = GetParam().min_os_version;
 
-  EXPECT_EQ(IsOsSupported(results), GetParam().expected_result)
+  EXPECT_EQ(IsOsSupported(system_requirements), GetParam().expected_result)
       << GetParam().platform << ": " << GetParam().arch_list << ": "
       << GetParam().min_os_version << ": " << update_client::GetArchitecture()
       << ": " << GetParam().expected_result;

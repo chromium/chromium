@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import './tab.js';
 import './tab_group.js';
 
@@ -551,6 +551,16 @@ export class TabListElement extends CustomElement implements
     if (!tabGroupElement) {
       return;
     }
+
+    this.$all<TabElement>('tabstrip-tab').forEach(tabElement => {
+      if (tabElement.tab.groupId === groupId) {
+        tabElement.tab = {
+          ...tabElement.tab,
+          groupId: null,
+        };
+      }
+    });
+
     tabGroupElement.remove();
   }
 

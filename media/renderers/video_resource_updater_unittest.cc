@@ -17,12 +17,12 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/test/task_environment.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/client/shared_bitmap_reporter.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_shared_image_interface_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
@@ -33,30 +33,6 @@
 
 namespace media {
 namespace {
-
-class FakeSharedBitmapReporter : public viz::SharedBitmapReporter {
- public:
-  FakeSharedBitmapReporter() = default;
-  ~FakeSharedBitmapReporter() override = default;
-
-  // viz::SharedBitmapReporter implementation.
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override {
-    DCHECK_EQ(shared_bitmaps_.count(id), 0u);
-    shared_bitmaps_.insert(id);
-  }
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {
-    DCHECK_EQ(shared_bitmaps_.count(id), 1u);
-    shared_bitmaps_.erase(id);
-  }
-
-  const base::flat_set<viz::SharedBitmapId> shared_bitmaps() const {
-    return shared_bitmaps_;
-  }
-
- private:
-  base::flat_set<viz::SharedBitmapId> shared_bitmaps_;
-};
 
 class UploadCounterGLES2Interface : public viz::TestGLES2Interface {
  public:
@@ -100,20 +76,18 @@ class VideoResourceUpdaterTest : public testing::Test {
     resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
   }
 
-  std::unique_ptr<VideoResourceUpdater> CreateUpdaterForHardware(
-      bool use_stream_video_draw_quad = false) {
+  std::unique_ptr<VideoResourceUpdater> CreateUpdaterForHardware() {
     return std::make_unique<VideoResourceUpdater>(
-        context_provider_.get(), nullptr, resource_provider_.get(),
-        /*shared_image_interface=*/nullptr, use_stream_video_draw_quad,
+        context_provider_.get(), resource_provider_.get(),
+        /*shared_image_interface=*/nullptr,
         /*use_gpu_memory_buffer_resources=*/false,
         /*max_resource_size=*/10000);
   }
 
   std::unique_ptr<VideoResourceUpdater> CreateUpdaterForSoftware() {
     return std::make_unique<VideoResourceUpdater>(
-        /*context_provider=*/nullptr, &shared_bitmap_reporter_,
-        resource_provider_.get(), /*shared_image_interface=*/nullptr,
-        /*use_stream_video_draw_quad=*/false,
+        /*context_provider=*/nullptr, resource_provider_.get(),
+        shared_image_interface_provider_.GetSharedImageInterface(),
         /*use_gpu_memory_buffer_resources=*/false, /*max_resource_size=*/10000);
   }
 
@@ -122,9 +96,9 @@ class VideoResourceUpdaterTest : public testing::Test {
   scoped_refptr<VideoFrame> CreateTestYUVVideoFrame(
       const gfx::Size& size = gfx::Size(10, 10)) {
     constexpr int kMaxDimension = 100;
-    static uint8_t y_data[kMaxDimension * kMaxDimension] = {0};
-    static uint8_t u_data[kMaxDimension * kMaxDimension / 2] = {0};
-    static uint8_t v_data[kMaxDimension * kMaxDimension / 2] = {0};
+    static uint8_t y_data[kMaxDimension * kMaxDimension] = {};
+    static uint8_t u_data[kMaxDimension * kMaxDimension / 2] = {};
+    static uint8_t v_data[kMaxDimension * kMaxDimension / 2] = {};
 
     CHECK_LE(size.width() * size.height(), kMaxDimension * kMaxDimension);
 
@@ -149,9 +123,9 @@ class VideoResourceUpdaterTest : public testing::Test {
     const int kYWidth = kDimension + 5;
     const int kUWidth = (kYWidth + 1) / 2 + 200;
     const int kVWidth = (kYWidth + 1) / 2 + 1;
-    static uint8_t y_data[kYWidth * kDimension] = {0};
-    static uint8_t u_data[kUWidth * kDimension] = {0};
-    static uint8_t v_data[kVWidth * kDimension] = {0};
+    static uint8_t y_data[kYWidth * kDimension] = {};
+    static uint8_t u_data[kUWidth * kDimension] = {};
+    static uint8_t v_data[kVWidth * kDimension] = {};
 
     scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalYuvData(
         PIXEL_FORMAT_I422,                        // format
@@ -172,7 +146,7 @@ class VideoResourceUpdaterTest : public testing::Test {
   scoped_refptr<VideoFrame> CreateTestRGBVideoFrame(VideoPixelFormat format) {
     constexpr int kMaxDimension = 10;
     constexpr gfx::Size kSize = gfx::Size(kMaxDimension, kMaxDimension);
-    static uint32_t rgb_data[kMaxDimension * kMaxDimension] = {0};
+    static uint32_t rgb_data[kMaxDimension * kMaxDimension] = {};
     scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
         format,                                // format
         kSize,                                 // coded_size
@@ -272,15 +246,16 @@ class VideoResourceUpdaterTest : public testing::Test {
   }
 
   scoped_refptr<VideoFrame> CreateTestHardwareVideoFrame(
+      viz::SharedImageFormat si_format,
       VideoPixelFormat format,
       unsigned target) {
     const int kDimension = 10;
     gfx::Size size(kDimension, kDimension);
 
     scoped_refptr<gpu::ClientSharedImage> shared_image =
-        gpu::ClientSharedImage::CreateForTesting(target);
+        gpu::ClientSharedImage::CreateForTesting(si_format, target);
     scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImage(
-        format, shared_image, kMailboxSyncToken, target,
+        format, shared_image, kMailboxSyncToken,
         base::BindOnce(&VideoResourceUpdaterTest::SetReleaseSyncToken,
                        base::Unretained(this)),
         size,                // coded_size
@@ -292,13 +267,15 @@ class VideoResourceUpdaterTest : public testing::Test {
   }
 
   scoped_refptr<VideoFrame> CreateTestRGBAHardwareVideoFrame() {
-    return CreateTestHardwareVideoFrame(PIXEL_FORMAT_ARGB, GL_TEXTURE_2D);
+    return CreateTestHardwareVideoFrame(viz::SinglePlaneFormat::kRGBA_8888,
+                                        PIXEL_FORMAT_ARGB, GL_TEXTURE_2D);
   }
 
   scoped_refptr<VideoFrame> CreateTestStreamTextureHardwareVideoFrame(
       bool needs_copy) {
     scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
-        PIXEL_FORMAT_ARGB, GL_TEXTURE_EXTERNAL_OES);
+        viz::SinglePlaneFormat::kRGBA_8888, PIXEL_FORMAT_ARGB,
+        GL_TEXTURE_EXTERNAL_OES);
     video_frame->metadata().copy_required = needs_copy;
     return video_frame;
   }
@@ -306,31 +283,12 @@ class VideoResourceUpdaterTest : public testing::Test {
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<VideoFrame> CreateTestDCompSurfaceVideoFrame() {
     scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
-        PIXEL_FORMAT_ARGB, GL_TEXTURE_EXTERNAL_OES);
+        viz::SinglePlaneFormat::kRGBA_8888, PIXEL_FORMAT_ARGB,
+        GL_TEXTURE_EXTERNAL_OES);
     video_frame->metadata().dcomp_surface = true;
     return video_frame;
   }
 #endif
-
-  scoped_refptr<VideoFrame> CreateTestYuvHardwareVideoFrame(
-      VideoPixelFormat format,
-      unsigned target) {
-    const int kDimension = 10;
-    gfx::Size size(kDimension, kDimension);
-
-    scoped_refptr<gpu::ClientSharedImage> shared_image =
-        gpu::ClientSharedImage::CreateForTesting(target);
-    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImage(
-        format, shared_image, kMailboxSyncToken, target,
-        base::BindOnce(&VideoResourceUpdaterTest::SetReleaseSyncToken,
-                       base::Unretained(this)),
-        size,                // coded_size
-        gfx::Rect(size),     // visible_rect
-        size,                // natural_size
-        base::TimeDelta());  // timestamp
-    EXPECT_TRUE(video_frame);
-    return video_frame;
-  }
 
   size_t GetSharedImageCount() {
     return context_provider_->SharedImageInterface()->shared_image_count();
@@ -343,8 +301,8 @@ class VideoResourceUpdaterTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   raw_ptr<UploadCounterGLES2Interface, DanglingUntriaged> gl_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
-  FakeSharedBitmapReporter shared_bitmap_reporter_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
+  viz::TestSharedImageInterfaceProvider shared_image_interface_provider_;
   gpu::SyncToken release_sync_token_;
 };
 
@@ -363,9 +321,8 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrame) {
   // a YUVDrawQuad.
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
 
-  // Setting to kSharedImageFormat, resource type should not change.
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
+  // Create the resource again, to test the path where the
+  // resource are cached.
   resource = updater->CreateExternalResourceFromVideoFrame(video_frame);
   // With multiplanar shared images, a TextureDrawQuad is created instead of
   // a YUVDrawQuad.
@@ -377,7 +334,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameNV12) {
 
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(CreateNV12TestFrame());
-  EXPECT_EQ(VideoFrameResourceType::RGBA, resource.type);
+  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
 
   // Use a different frame for this test since frames with the same unique_id()
   // expect to use the same resource.
@@ -388,9 +345,6 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameNV12) {
   // a YUVDrawQuad.
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
 
-  // Setting to kSharedImageFormat, resource type should not change.
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
   resource = updater->CreateExternalResourceFromVideoFrame(video_frame);
   // With multiplanar shared images, a TextureDrawQuad is created instead of
   // a YUVDrawQuad.
@@ -405,7 +359,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
     scoped_refptr<VideoFrame> video_frame = CreateTestRGBVideoFrame(fmt);
     VideoFrameExternalResource resource =
         updater->CreateExternalResourceFromVideoFrame(video_frame);
-    EXPECT_EQ(VideoFrameResourceType::RGBA, resource.type);
+    EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
 #if BUILDFLAG(IS_MAC)
     EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kBGRA_8888);
 #else
@@ -434,7 +388,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBNonOrigin) {
     auto video_frame = CreateTestRGBVideoFrameWithVisibleRect(fmt);
     VideoFrameExternalResource resource =
         updater->CreateExternalResourceFromVideoFrame(video_frame);
-    EXPECT_EQ(VideoFrameResourceType::RGBA, resource.type);
+    EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
     EXPECT_EQ(resource.resource.size, video_frame->coded_size());
 
     auto rect = video_frame->visible_rect();
@@ -463,7 +417,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameY16NonOrigin) {
   auto video_frame = CreateTestY16VideoFrameWithVisibleRect();
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::RGBA, resource.type);
+  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
   EXPECT_EQ(resource.resource.size, video_frame->coded_size());
 
   auto rect = video_frame->visible_rect();
@@ -498,9 +452,8 @@ TEST_F(VideoResourceUpdaterTest, HighBitFrameNoF16) {
   // a YUVDrawQuad.
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
 
-  // Setting to kSharedImageFormat, resource type should not change.
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
+  // Create the resource again, to test the path where the
+  // resource are cached.
   resource = updater->CreateExternalResourceFromVideoFrame(video_frame);
   // With multiplanar shared images, a TextureDrawQuad is created instead of
   // a YUVDrawQuad.
@@ -554,7 +507,6 @@ TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   // With multiplanar shared images, a TextureDrawQuad is created instead of
   // a YUVDrawQuad.
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-  EXPECT_EQ(resource.bits_per_channel, 10u);
 
   // Create the resource again, to test the path where the
   // resource are cached.
@@ -562,8 +514,7 @@ TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
       updater->CreateExternalResourceFromVideoFrame(video_frame);
   // With multiplanar shared images, a TextureDrawQuad is created instead of
   // a YUVDrawQuad.
-  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-  EXPECT_EQ(resource2.bits_per_channel, 10u);
+  EXPECT_EQ(VideoFrameResourceType::RGB, resource2.type);
 }
 
 TEST_F(VideoResourceUpdaterTest, NV12FrameSoftwareCompositor) {
@@ -587,34 +538,6 @@ TEST_F(VideoResourceUpdaterTest, P010FrameSoftwareCompositor) {
 TEST_F(VideoResourceUpdaterTest, HighBitFrameSoftwareCompositor) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForSoftware();
   scoped_refptr<VideoFrame> video_frame = CreateTestHighBitFrame();
-
-  VideoFrameExternalResource resource =
-      updater->CreateExternalResourceFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resource.type);
-}
-
-TEST_F(VideoResourceUpdaterTest, WonkySoftwareFrame) {
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
-  scoped_refptr<VideoFrame> video_frame = CreateWonkyTestYUVVideoFrame();
-
-  VideoFrameExternalResource resource =
-      updater->CreateExternalResourceFromVideoFrame(video_frame);
-  // With multiplanar shared images, a TextureDrawQuad is created instead of
-  // a YUVDrawQuad.
-  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-
-  // Setting to kSharedImageFormat, resource type should not change.
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
-  resource = updater->CreateExternalResourceFromVideoFrame(video_frame);
-  // With multiplanar shared images, a TextureDrawQuad is created instead of
-  // a YUVDrawQuad.
-  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-}
-
-TEST_F(VideoResourceUpdaterTest, WonkySoftwareFrameSoftwareCompositor) {
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForSoftware();
-  scoped_refptr<VideoFrame> video_frame = CreateWonkyTestYUVVideoFrame();
 
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
@@ -732,7 +655,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBSoftwareCompositor) {
     VideoFrameExternalResource resource =
         updater->CreateExternalResourceFromVideoFrame(video_frame);
     EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resource.type);
-    EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kRGBA_8888);
+    EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kBGRA_8888);
   }
 }
 
@@ -746,9 +669,6 @@ TEST_F(VideoResourceUpdaterTest, ReuseResourceoftwareCompositor) {
       updater->CreateExternalResourceFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resource.type);
   EXPECT_TRUE(resource.release_callback);
-  // Expect exactly one allocated shared bitmap.
-  EXPECT_EQ(1u, shared_bitmap_reporter_.shared_bitmaps().size());
-  auto shared_bitmaps_copy = shared_bitmap_reporter_.shared_bitmaps();
 
   // Simulate the ResourceProvider releasing the resource back to the video
   // updater.
@@ -758,9 +678,6 @@ TEST_F(VideoResourceUpdaterTest, ReuseResourceoftwareCompositor) {
   resource = updater->CreateExternalResourceFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resource.type);
   EXPECT_TRUE(resource.release_callback);
-
-  // Ensure that the same shared bitmap was reused.
-  EXPECT_EQ(shared_bitmap_reporter_.shared_bitmaps(), shared_bitmaps_copy);
 }
 
 TEST_F(VideoResourceUpdaterTest, ReuseResourceNoDeleteSoftwareCompositor) {
@@ -773,17 +690,11 @@ TEST_F(VideoResourceUpdaterTest, ReuseResourceNoDeleteSoftwareCompositor) {
       updater->CreateExternalResourceFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resource.type);
   EXPECT_TRUE(resource.release_callback);
-  // Expect exactly one allocated shared bitmap.
-  EXPECT_EQ(1u, shared_bitmap_reporter_.shared_bitmaps().size());
-  auto shared_bitmaps_copy = shared_bitmap_reporter_.shared_bitmaps();
 
   // Allocate resource for the same frame.
   resource = updater->CreateExternalResourceFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resource.type);
   EXPECT_TRUE(resource.release_callback);
-
-  // Ensure that the same shared bitmap was reused.
-  EXPECT_EQ(shared_bitmap_reporter_.shared_bitmaps(), shared_bitmaps_copy);
 }
 
 TEST_F(VideoResourceUpdaterTest, ChangeResourceizeSoftwareCompositor) {
@@ -796,9 +707,6 @@ TEST_F(VideoResourceUpdaterTest, ChangeResourceizeSoftwareCompositor) {
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(
           CreateTestYUVVideoFrame(kSize1));
-  // Expect exactly one allocated shared bitmap.
-  EXPECT_EQ(1u, shared_bitmap_reporter_.shared_bitmaps().size());
-  auto shared_bitmaps_copy = shared_bitmap_reporter_.shared_bitmaps();
 
   // Simulate the ResourceProvider releasing the resource back to the video
   // updater.
@@ -807,21 +715,13 @@ TEST_F(VideoResourceUpdaterTest, ChangeResourceizeSoftwareCompositor) {
   // Allocate resource for the next frame with a different size.
   resource = updater->CreateExternalResourceFromVideoFrame(
       CreateTestYUVVideoFrame(kSize2));
-
-  // The first resource was released, so it can be reused but it's the wrong
-  // size. We should expect the first shared bitmap to be deleted and a new
-  // shared bitmap to be allocated.
-  EXPECT_EQ(1u, shared_bitmap_reporter_.shared_bitmaps().size());
-  EXPECT_NE(shared_bitmap_reporter_.shared_bitmaps(), shared_bitmaps_copy);
 }
 
 TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
-  scoped_refptr<VideoFrame> video_frame = CreateTestYuvHardwareVideoFrame(
-      PIXEL_FORMAT_I420, GL_TEXTURE_RECTANGLE_ARB);
-  // Setting to kSharedImageFormat, resource type should change to RGB.
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
+  scoped_refptr<VideoFrame> video_frame =
+      CreateTestHardwareVideoFrame(viz::MultiPlaneFormat::kI420,
+                                   PIXEL_FORMAT_I420, GL_TEXTURE_RECTANGLE_ARB);
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
@@ -830,10 +730,9 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
   EXPECT_EQ(resource.resource.synchronization_type,
             viz::TransferableResource::SynchronizationType::kSyncToken);
 
-  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_I420,
-                                                GL_TEXTURE_RECTANGLE_ARB);
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
+  video_frame =
+      CreateTestHardwareVideoFrame(viz::MultiPlaneFormat::kI420,
+                                   PIXEL_FORMAT_I420, GL_TEXTURE_RECTANGLE_ARB);
   video_frame->metadata().read_lock_fences_enabled = true;
 
   resource = updater->CreateExternalResourceFromVideoFrame(video_frame);
@@ -842,18 +741,17 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(VideoResourceUpdaterTest,
        CreateForHardwarePlanes_StreamTexture_CopyToNewTexture) {
-  // Note that |use_stream_video_draw_quad| is true for this test.
-  std::unique_ptr<VideoResourceUpdater> updater =
-      CreateUpdaterForHardware(true);
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame =
       CreateTestStreamTextureHardwareVideoFrame(/*needs_copy=*/false);
 
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::STREAM_TEXTURE, resource.type);
+  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
   EXPECT_TRUE(resource.release_callback);
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resource.resource.texture_target());
@@ -868,6 +766,7 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ((GLenum)GL_TEXTURE_2D, resource.resource.texture_target());
   EXPECT_EQ(1u, GetSharedImageCount());
 }
+#endif
 
 TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_TextureQuad) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
@@ -893,7 +792,6 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DCompSurface) {
 
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::STREAM_TEXTURE, resource.type);
   EXPECT_TRUE(resource.release_callback);
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resource.resource.texture_target());
@@ -921,7 +819,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DCompSurface) {
   const viz::TextureDrawQuad* quad =
       pass->quad_list.ElementAt(0)->DynamicCast<viz::TextureDrawQuad>();
   EXPECT_NE(nullptr, quad);
-  EXPECT_EQ(true, quad->is_stream_video);
+  EXPECT_EQ(gfx::ProtectedVideoType::kHardwareProtected,
+            quad->protected_video_type);
   EXPECT_EQ(viz::OverlayPriority::kRequired, quad->overlay_priority_hint);
 
   updater->ReleaseFrameResource();
@@ -1015,15 +914,8 @@ TEST_F(VideoResourceUpdaterTest, GenerateSyncTokenOnTextureCopy) {
 TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleNV12) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
-  scoped_refptr<VideoFrame> video_frame =
-      CreateTestHardwareVideoFrame(PIXEL_FORMAT_NV12, GL_TEXTURE_EXTERNAL_OES);
-#if BUILDFLAG(IS_OZONE)
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormatExternalSampler);
-#else
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
-#endif
+  scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
+      viz::MultiPlaneFormat::kNV12, PIXEL_FORMAT_NV12, GL_TEXTURE_EXTERNAL_OES);
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
@@ -1037,10 +929,9 @@ TEST_F(VideoResourceUpdaterTest,
        CreateForHardwarePlanes_DualNV12_SharedImageFormat) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
-  scoped_refptr<VideoFrame> video_frame = CreateTestYuvHardwareVideoFrame(
-      PIXEL_FORMAT_NV12, GL_TEXTURE_RECTANGLE_ARB);
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
+  scoped_refptr<VideoFrame> video_frame =
+      CreateTestHardwareVideoFrame(viz::MultiPlaneFormat::kNV12,
+                                   PIXEL_FORMAT_NV12, GL_TEXTURE_RECTANGLE_ARB);
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
   // Setting to kSharedImageFormat, resource type should bo RGB.
@@ -1050,10 +941,8 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resource.resource.format);
   EXPECT_EQ(0u, GetSharedImageCount());
 
-  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_NV12,
-                                                GL_TEXTURE_EXTERNAL_OES);
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
+  video_frame = CreateTestHardwareVideoFrame(
+      viz::MultiPlaneFormat::kNV12, PIXEL_FORMAT_NV12, GL_TEXTURE_EXTERNAL_OES);
 
   resource = updater->CreateExternalResourceFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
@@ -1075,14 +964,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP010HDR) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
-      PIXEL_FORMAT_P010LE, GL_TEXTURE_EXTERNAL_OES);
-#if BUILDFLAG(IS_OZONE)
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormatExternalSampler);
-#else
-  video_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
-#endif
+      viz::MultiPlaneFormat::kP010, PIXEL_FORMAT_P010LE,
+      GL_TEXTURE_EXTERNAL_OES);
   video_frame->set_color_space(kHDR10ColorSpace);
   video_frame->set_hdr_metadata(hdr_metadata);
 

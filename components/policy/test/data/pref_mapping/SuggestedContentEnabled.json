@@ -2,7 +2,7 @@
   {
     "can_be_recommended": true,
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {

@@ -53,7 +53,7 @@ void ScanFile(
 
 }  // namespace
 
-AVScanningFileValidator::~AVScanningFileValidator() {}
+AVScanningFileValidator::~AVScanningFileValidator() = default;
 
 void AVScanningFileValidator::StartPostWriteValidation(
     const base::FilePath& dest_platform_path,

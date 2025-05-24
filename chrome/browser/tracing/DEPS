@@ -1,0 +1,4 @@
+include_rules = [
+  "+chrome/windows_services/elevated_tracing_service/tracing_service_idl.h",
+  "+services/tracing/public/mojom",
+]

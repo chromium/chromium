@@ -13,12 +13,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
-#include "components/bookmarks/browser/base_bookmark_model_observer.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class BookmarkMenuDelegate;
@@ -28,11 +29,13 @@ namespace views {
 class MenuButtonController;
 class MenuItemView;
 class MenuRunner;
-}
+}  // namespace views
+
+struct BookmarkParentFolder;
 
 // AppMenu adapts the AppMenuModel to view's menu related classes.
 class AppMenu final : public views::MenuDelegate,
-                      public bookmarks::BaseBookmarkModelObserver,
+                      public BookmarkMergedSurfaceServiceObserver,
                       public GlobalErrorObserver {
  public:
   AppMenu(Browser* browser, ui::MenuModel* model, int run_types);
@@ -82,7 +85,7 @@ class AppMenu final : public views::MenuDelegate,
   bool ShowContextMenu(views::MenuItemView* source,
                        int command_id,
                        const gfx::Point& p,
-                       ui::MenuSourceType source_type) override;
+                       ui::mojom::MenuSourceType source_type) override;
   bool CanDrag(views::MenuItemView* menu) override;
   void WriteDragData(views::MenuItemView* sender,
                      ui::OSExchangeData* data) override;
@@ -99,9 +102,26 @@ class AppMenu final : public views::MenuDelegate,
   void OnMenuClosed(views::MenuItemView* menu) override;
   bool ShouldExecuteCommandWithoutClosingMenu(int command_id,
                                               const ui::Event& event) override;
+  bool ShouldTryPositioningBesideAnchor() const override;
 
-  // bookmarks::BaseBookmarkModelObserver overrides:
-  void BookmarkModelChanged() override;
+  // BookmarkMergedSurfaceServiceObserver overrides:
+  void BookmarkMergedSurfaceServiceLoaded() override;
+  void BookmarkMergedSurfaceServiceBeingDeleted() override;
+  void BookmarkNodeAdded(const BookmarkParentFolder& parent,
+                         size_t index) override;
+  void BookmarkNodesRemoved(
+      const BookmarkParentFolder& parent,
+      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override;
+  void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
+                         size_t old_index,
+                         const BookmarkParentFolder& new_parent,
+                         size_t new_index) override;
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeFaviconChanged(
+      const bookmarks::BookmarkNode* node) override {}
+  void BookmarkParentFolderChildrenReordered(
+      const BookmarkParentFolder& folder) override;
+  void BookmarkAllUserNodesRemoved() override;
 
   // GlobalErrorObserver:
   void OnGlobalErrorsChanged() override;
@@ -114,12 +134,13 @@ class AppMenu final : public views::MenuDelegate,
   class ZoomView;
 
   typedef std::pair<ui::MenuModel*, size_t> Entry;
-  typedef std::map<int,Entry> CommandIDToEntry;
+  typedef std::map<int, Entry> CommandIDToEntry;
+
+  void BookmarkMergedSurfaceServiceChanged();
 
   // Populates |parent| with all the child menus in |model|. Recursively invokes
   // |PopulateMenu| for any submenu.
-  void PopulateMenu(views::MenuItemView* parent,
-                    ui::MenuModel* model);
+  void PopulateMenu(views::MenuItemView* parent, ui::MenuModel* model);
 
   // Adds a new menu item to |parent| at |menu_index| to represent the item in
   // |model| at |model_index|:

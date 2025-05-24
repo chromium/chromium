@@ -38,5 +38,6 @@
     [CEReactions, Reflect] attribute boolean noHref;
 };
 
+HTMLAreaElement includes HTMLAttributionSrcElementUtils;
 HTMLAreaElement includes HTMLHyperlinkElementUtils;
 HTMLAreaElement includes InterestInvokerElement;

@@ -7,7 +7,6 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
@@ -65,7 +64,7 @@ class DrmGpuUtilTest : public testing::Test {
 };
 
 // TODO(b/322831691): Deterministic failure.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_EmptyPossibleCrtcsForConnector \
   DISABLED_EmptyPossibleCrtcsForConnector
 #else

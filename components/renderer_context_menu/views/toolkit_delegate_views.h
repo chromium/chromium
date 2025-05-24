@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace gfx {
 class Point;
@@ -37,7 +37,7 @@ class ToolkitDelegateViews : public RenderViewContextMenuBase::ToolkitDelegate {
 
   void RunMenuAt(views::Widget* parent,
                  const gfx::Point& point,
-                 ui::MenuSourceType type);
+                 ui::mojom::MenuSourceType type);
   views::MenuItemView* menu_view() { return menu_view_; }
 
  protected:

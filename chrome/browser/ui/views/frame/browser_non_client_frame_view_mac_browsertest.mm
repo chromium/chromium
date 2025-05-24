@@ -58,8 +58,9 @@ class TextChangeWaiter {
   // Runs a loop until a text change is observed (unless one has
   // already been observed, in which case it returns immediately).
   void Wait() {
-    if (observed_change_)
+    if (observed_change_) {
       return;
+    }
 
     run_loop_.Run();
   }
@@ -67,8 +68,9 @@ class TextChangeWaiter {
  private:
   void OnTextChanged() {
     observed_change_ = true;
-    if (run_loop_.running())
+    if (run_loop_.running()) {
       run_loop_.Quit();
+    }
   }
 
   bool observed_change_ = false;

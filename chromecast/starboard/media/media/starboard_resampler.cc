@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "starboard_resampler.h"
+#include "chromecast/starboard/media/media/starboard_resampler.h"
 
+#include <array>
 #include <cmath>
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "chromecast/starboard/chromecast/starboard_cast_api/cast_starboard_api_types.h"
 
 namespace chromecast {
@@ -16,84 +18,81 @@ namespace media {
 namespace {
 
 // A function type for converting an input sample to a double.
-using ToDoubleFn = double (*)(const uint8_t* in_iter);
+using ToDoubleFn = double (*)(base::span<const uint8_t> in);
 
 // A function type for converting the double specified by `in` to an output
-// sample, written to `out_iter`.
-using ToOutputFn = void (*)(double in, uint8_t* out_iter);
+// sample, written to `out`.
+using ToOutputFn = void (*)(double in, base::span<uint8_t> out);
 
 // Converts an unsigned 8-bit audio sample to a double.
-double U8ToDouble(const uint8_t* in) {
+double U8ToDouble(base::span<const uint8_t> in) {
   constexpr int16_t kUnsignedInt8Offset = 0x80;
   // After being shifted to signed 8 bit,the values are in [-128, 127].
-  const double max_value = *in > kUnsignedInt8Offset ? 0x7F : 0x80;
-  return (*in - kUnsignedInt8Offset) / max_value;
+  const double max_value = in[0] > kUnsignedInt8Offset ? 0x7F : 0x80;
+  return (in[0] - kUnsignedInt8Offset) / max_value;
 }
 
 // Converts a signed 16-bit audio sample to a double.
-double S16ToDouble(const uint8_t* in) {
-  const int16_t in_s16 = *reinterpret_cast<const int16_t*>(in);
+double S16ToDouble(base::span<const uint8_t> in) {
+  const int16_t in_s16 = base::I16FromLittleEndian(in.first<2>());
   const double max_value = in_s16 > 0 ? 0x7FFF : 0x8000;
   return in_s16 / max_value;
 }
 
 // Converts a Big Endian signed 16-bit audio sample to a double.
-double S16BEToDouble(const uint8_t* in) {
-  // Reverse the bytes.
-  uint8_t data[2];
-  data[0] = in[1];
-  data[1] = in[0];
-
-  // Now `data` holds an S16 in little endian byte order, so we can reuse the
-  // logic of S16ToDouble.
-  return S16ToDouble(data);
+double S16BEToDouble(base::span<const uint8_t> in) {
+  const int16_t in_s16 = base::I16FromBigEndian(in.first<2>());
+  const double max_value = in_s16 > 0 ? 0x7FFF : 0x8000;
+  return in_s16 / max_value;
 }
 
 // Converts a signed 24-bit audio sample to a double.
-double S24ToDouble(const uint8_t* in) {
+double S24ToDouble(base::span<const uint8_t> in) {
   // Note: we avoid bit shifting here, since bit shifting signed types is
   // undefined behavior, and converting from signed to unsigned types can be
   // implementation-defined.
-  uint8_t data[4];
+  std::array<uint8_t, 4> data;
   data[0] = in[0];
   data[1] = in[1];
   data[2] = in[2];
   // The highest byte of the int32_t is filled with the same value as the
   // highest bit of the int24, to properly account for the sign.
   data[3] = ((in[2] & 0x80) == 0) ? 0x00 : ~0x00;
-  const int32_t in_s24 = *reinterpret_cast<int32_t*>(data);
+  const int32_t in_s24 = base::I32FromLittleEndian(data);
   const double max_value = in_s24 > 0 ? 0x7FFFFF : 0x800000;
   return in_s24 / max_value;
 }
 
 // Converts a signed 32-bit audio sample to a double.
-double S32ToDouble(const uint8_t* in) {
-  const int32_t in_s32 = *reinterpret_cast<const int32_t*>(in);
+double S32ToDouble(base::span<const uint8_t> in) {
+  const int32_t in_s32 = base::I32FromLittleEndian(in.first<4>());
   const double max_value = in_s32 > 0 ? 0x7FFFFFFF : 0x80000000;
   return in_s32 / max_value;
 }
 
 // Converts a float audio sample to a double.
-double FloatToDouble(const uint8_t* in) {
-  return *reinterpret_cast<const float*>(in);
+double FloatToDouble(base::span<const uint8_t> in) {
+  return base::FloatFromLittleEndian(in.first<4>());
 }
 
 // Converts a double audio sample to S16, writing it to `out`.
-void WriteDoubleToS16(double in, uint8_t* out) {
+void WriteDoubleToS16(double in, base::span<uint8_t> out) {
   const int32_t max_value = in > 0 ? 0x7FFF : 0x8000;
-  *reinterpret_cast<int16_t*>(out) = std::round(in * max_value);
+  out.take_first<2>().copy_from(base::byte_span_from_ref(
+      static_cast<int16_t>(std::round(in * max_value))));
 }
 
 // Converts a double audio sample to S32, writing it to `out`.
-void WriteDoubleToS32(double in, uint8_t* out) {
+void WriteDoubleToS32(double in, base::span<uint8_t> out) {
   const int64_t max_value = in > 0 ? 0x7FFFFFFF : 0x80000000;
-  *reinterpret_cast<int32_t*>(out) =
-      std::round(static_cast<double>(in) * max_value);
+  out.take_first<4>().copy_from(base::byte_span_from_ref(
+      static_cast<int32_t>(std::round(in * max_value))));
 }
 
 // Converts a double audio sample to float, writing it to `out`.
-void WriteDoubleToFloat(double in, uint8_t* out) {
-  *reinterpret_cast<float*>(out) = in;
+void WriteDoubleToFloat(double in, base::span<uint8_t> out) {
+  out.take_first<4>().copy_from(base::byte_span_from_ref(
+      base::allow_nonunique_obj, static_cast<float>(in)));
 }
 
 // Returns the number of bytes per channel for `format`. `format` must not be
@@ -102,23 +101,23 @@ void WriteDoubleToFloat(double in, uint8_t* out) {
 // Note that this is different from the implementation of
 // ::media::SampleFormatToBitsPerChannel(). That one maps S24 to 4 bytes instead
 // of 3.
-int BytesPerChannel(SampleFormat format) {
+size_t BytesPerChannel(SampleFormat format) {
   switch (format) {
     case chromecast::media::kSampleFormatU8: {
-      return 1;
+      return 1u;
     }
     case chromecast::media::kSampleFormatPlanarS16:
     case chromecast::media::kSampleFormatS16: {
-      return 2;
+      return 2u;
     }
     case chromecast::media::kSampleFormatS24: {
-      return 3;
+      return 3u;
     }
     case chromecast::media::kSampleFormatPlanarS32:
     case chromecast::media::kSampleFormatS32:
     case chromecast::media::kSampleFormatF32:
     case chromecast::media::kSampleFormatPlanarF32: {
-      return 4;
+      return 4u;
     }
     default: {
       LOG(FATAL) << "Unsupported sample format: " << format;
@@ -184,28 +183,27 @@ ToOutputFn GetOutputConversionFunction(
     case kStarboardPcmSampleFormatF32: {
       return &WriteDoubleToFloat;
     }
+    default: {
+      LOG(FATAL) << "Unsupported output format: " << out_sample_format;
+    }
   }
 }
 
 // Resamples the PCM data in `buffer` from `in_sample_format` to
-// `out_sample_format`. `out_size` is the size of the returned buffer, in bytes.
-// `in_audio_codec` is needed because S16BE is treated as its own codec.
-std::unique_ptr<uint8_t[]> ResamplePCM(
-    const CastDecoderBuffer& buffer,
-    int num_channels,
-    SampleFormat in_sample_format,
-    StarboardPcmSampleFormat out_sample_format,
-    AudioCodec in_audio_codec,
-    size_t& out_size) {
+// `out_sample_format`. `in_audio_codec` is needed because S16BE is treated as
+// its own codec.
+base::HeapArray<uint8_t> ResamplePCM(base::span<const uint8_t> in_data,
+                                     int num_channels,
+                                     SampleFormat in_sample_format,
+                                     StarboardPcmSampleFormat out_sample_format,
+                                     AudioCodec in_audio_codec) {
   DCHECK_GT(num_channels, 0);
 
-  const int in_bytes_per_channel = BytesPerChannel(in_sample_format);
-  const int out_bytes_per_channel = BytesPerChannel(out_sample_format);
+  const size_t in_bytes_per_channel = BytesPerChannel(in_sample_format);
+  const size_t out_bytes_per_channel = BytesPerChannel(out_sample_format);
 
-  const uint8_t* in_data = buffer.data();
-  out_size =
-      (buffer.data_size() * out_bytes_per_channel) / in_bytes_per_channel;
-  auto out_data = std::make_unique<uint8_t[]>(out_size);
+  auto out_data = base::HeapArray<uint8_t>::WithSize(
+      (in_data.size() * out_bytes_per_channel) / in_bytes_per_channel);
 
   // These two functions are used to convert any input type to any output type.
   // The conversion goes:
@@ -222,11 +220,12 @@ std::unique_ptr<uint8_t[]> ResamplePCM(
       in_sample_format == chromecast::media::kSampleFormatPlanarS32 ||
       in_sample_format == chromecast::media::kSampleFormatPlanarF32;
 
-  const int num_planes = is_input_planar ? num_channels : 1;
+  const size_t num_planes =
+      is_input_planar ? static_cast<size_t>(num_channels) : 1u;
 
-  std::vector<int> plane_offsets;
-  for (int plane = 0; plane < num_planes; ++plane) {
-    plane_offsets.push_back(plane * (buffer.data_size() / num_planes));
+  std::vector<size_t> plane_offsets;
+  for (size_t plane = 0; plane < num_planes; ++plane) {
+    plane_offsets.push_back(plane * (in_data.size() / num_planes));
   }
 
   // For each input sample, this loop converts it to double and then to the
@@ -240,15 +239,16 @@ std::unique_ptr<uint8_t[]> ResamplePCM(
   //   AAAABBBB
   // whereas 4 samples of interleaved data would be:
   //   ABABABAB
-  for (int i = 0;
-       i * static_cast<size_t>(in_bytes_per_channel) < buffer.data_size();
-       ++i) {
-    const int plane = i % num_planes;
-    const int index_by_plane = i / num_planes;
+  for (size_t i = 0;
+       i * static_cast<size_t>(in_bytes_per_channel) < in_data.size(); ++i) {
+    const size_t plane = i % num_planes;
+    const size_t index_by_plane = i / num_planes;
 
-    write_output_type(convert_to_double(in_data + plane_offsets[plane] +
-                                        index_by_plane * in_bytes_per_channel),
-                      &out_data[i * out_bytes_per_channel]);
+    write_output_type(
+        convert_to_double(in_data.subspan(
+            plane_offsets[plane] + index_by_plane * in_bytes_per_channel,
+            in_bytes_per_channel)),
+        out_data.subspan(i * out_bytes_per_channel, out_bytes_per_channel));
   }
 
   return out_data;
@@ -269,13 +269,12 @@ bool RequiresResampling(StarboardPcmSampleFormat format_to_decode_to,
 }
 }  // namespace
 
-std::unique_ptr<uint8_t[]> ResamplePCMAudioDataForStarboard(
+base::HeapArray<uint8_t> ResamplePCMAudioDataForStarboard(
     StarboardPcmSampleFormat format_to_decode_to,
     SampleFormat format_to_decode_from,
     AudioCodec audio_codec,
     int audio_channels,
-    const CastDecoderBuffer& buffer,
-    size_t& buffer_out_size) {
+    base::span<const uint8_t> in_data) {
   // The check for kCodecPCM is necessary because there is a separate codec,
   // kCodecPCM_S16BE, which is in Big Endian format instead of Little Endian
   // like all the other formats. In that case, at minimum we need to change the
@@ -284,15 +283,11 @@ std::unique_ptr<uint8_t[]> ResamplePCMAudioDataForStarboard(
   if (audio_codec == AudioCodec::kCodecPCM &&
       !RequiresResampling(format_to_decode_to, format_to_decode_from)) {
     // No resampling is necessary; return a copy of the data.
-    const size_t size_of_buffer = buffer.data_size();
-    buffer_out_size = size_of_buffer;
-    auto data_copy = std::make_unique<uint8_t[]>(size_of_buffer);
-    memcpy(data_copy.get(), buffer.data(), size_of_buffer);
-    return data_copy;
+    return base::HeapArray<uint8_t>::CopiedFrom(in_data);
   }
 
-  return ResamplePCM(buffer, audio_channels, format_to_decode_from,
-                     format_to_decode_to, audio_codec, buffer_out_size);
+  return ResamplePCM(in_data, audio_channels, format_to_decode_from,
+                     format_to_decode_to, audio_codec);
 }
 
 }  // namespace media

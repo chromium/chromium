@@ -29,6 +29,9 @@ class ExceptionState;
 class IceTransportAdapterCrossThreadFactory;
 class RTCIceCandidate;
 class RTCPeerConnection;
+class V8RTCIceGatheringState;
+class V8RTCIceRole;
+class V8RTCIceTransportState;
 
 // Blink bindings for the RTCIceTransport JavaScript object.
 //
@@ -59,7 +62,8 @@ class MODULES_EXPORT RTCIceTransport final
 
   static RTCIceTransport* Create(
       ExecutionContext* context,
-      rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_channel,
+      webrtc::scoped_refptr<webrtc::IceTransportInterface>
+          ice_transport_channel,
       RTCPeerConnection* peer_connection);
 
   RTCIceTransport(
@@ -71,10 +75,10 @@ class MODULES_EXPORT RTCIceTransport final
   ~RTCIceTransport() override;
 
   // Returns true if start() has been called.
-  bool IsStarted() const { return role_ != cricket::ICEROLE_UNKNOWN; }
+  bool IsStarted() const { return role_ != webrtc::ICEROLE_UNKNOWN; }
 
   // Returns the role specified in start().
-  cricket::IceRole GetRole() const { return role_; }
+  webrtc::IceRole GetRole() const { return role_; }
 
   webrtc::IceTransportState GetState() const { return state_; }
 
@@ -83,9 +87,9 @@ class MODULES_EXPORT RTCIceTransport final
   void Stop() { Close(CloseReason::kStopped); }
 
   // rtc_ice_transport.idl
-  String role() const;
-  String state() const;
-  String gatheringState() const;
+  std::optional<V8RTCIceRole> role() const;
+  V8RTCIceTransportState state() const;
+  V8RTCIceGatheringState gatheringState() const;
   const HeapVector<Member<RTCIceCandidate>>& getLocalCandidates() const;
   const HeapVector<Member<RTCIceCandidate>>& getRemoteCandidates() const;
   RTCIceCandidatePair* getSelectedCandidatePair() const;
@@ -111,11 +115,11 @@ class MODULES_EXPORT RTCIceTransport final
 
  private:
   // IceTransportProxy::Delegate overrides.
-  void OnGatheringStateChanged(cricket::IceGatheringState new_state) override;
-  void OnCandidateGathered(const cricket::Candidate& candidate) override;
+  void OnGatheringStateChanged(webrtc::IceGatheringState new_state) override;
+  void OnCandidateGathered(const webrtc::Candidate& candidate) override;
   void OnStateChanged(webrtc::IceTransportState new_state) override;
   void OnSelectedCandidatePairChanged(
-      const std::pair<cricket::Candidate, cricket::Candidate>&
+      const std::pair<webrtc::Candidate, webrtc::Candidate>&
           selected_candidate_pair) override;
 
   // Permenantly closes the RTCIceTransport with the given reason.
@@ -126,9 +130,9 @@ class MODULES_EXPORT RTCIceTransport final
   bool RaiseExceptionIfClosed(ExceptionState& exception_state) const;
   void Dispose();
 
-  cricket::IceRole role_ = cricket::ICEROLE_UNKNOWN;
+  webrtc::IceRole role_ = webrtc::ICEROLE_UNKNOWN;
   webrtc::IceTransportState state_ = webrtc::IceTransportState::kNew;
-  cricket::IceGatheringState gathering_state_ = cricket::kIceGatheringNew;
+  webrtc::IceGatheringState gathering_state_ = webrtc::kIceGatheringNew;
 
   HeapVector<Member<RTCIceCandidate>> local_candidates_;
   HeapVector<Member<RTCIceCandidate>> remote_candidates_;

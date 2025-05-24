@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
@@ -43,19 +44,15 @@ struct InlineBoxState {
 
  public:
   unsigned fragment_start = 0;
-  const InlineItem* item = nullptr;
+  Member<const InlineItem> item;
   Member<const ComputedStyle> style;
 
-  // Points to style->GetFont(), or |scaled_font| in an SVG <text>.
-  const Font* font = nullptr;
+  // Equal to style->GetFont(), or to |scaled_font| in an SVG <text>.
+  Member<const Font> font;
 
   // A storage of SVG scaled font. Do not touch this outside of
   // ResetStyle().
-  //
-  // NOTE: This doesn't use a std::optional to avoid a potentially racy branch
-  // within the Trace method.
-  Font scaled_font;
-  bool has_scaled_font = false;
+  Member<const Font> scaled_font;
 
   // SVG scaling factor for this box. We use a font of which size is
   // css-specified-size * scaling_factor.
@@ -103,7 +100,9 @@ struct InlineBoxState {
   InlineBoxState& operator=(const InlineBoxState&) = delete;
 
   void Trace(Visitor* visitor) const {
+    visitor->Trace(item);
     visitor->Trace(style);
+    visitor->Trace(font);
     visitor->Trace(scaled_font);
   }
 
@@ -251,6 +250,7 @@ class CORE_EXPORT InlineLayoutStateStack {
   // a box tree.
   void CreateBoxFragments(const ConstraintSpace&,
                           LogicalLineItems*,
+                          LayoutUnit line_box_line_height,
                           bool is_opaque);
 
 #if DCHECK_IS_ON()
@@ -322,9 +322,9 @@ class CORE_EXPORT InlineLayoutStateStack {
     unsigned fragment_start;
     unsigned fragment_end;
     // Ruby columns in the above range.
-    Member<HeapVector<Member<LogicalRubyColumn>>> ruby_column_list;
+    Member<GCedHeapVector<Member<LogicalRubyColumn>>> ruby_column_list;
 
-    const InlineItem* item;
+    Member<const InlineItem> item;
     LogicalRect rect;
 
     bool has_line_left_edge = false;
@@ -346,6 +346,7 @@ class CORE_EXPORT InlineLayoutStateStack {
 
     const LayoutResult* CreateBoxFragment(const ConstraintSpace&,
                                           LogicalLineItems*,
+                                          LayoutUnit line_box_line_height,
                                           bool is_opaque = false);
     void Trace(Visitor* visitor) const;
   };

@@ -44,7 +44,7 @@ const int kOverMaxCacheSize = 65 * 1024 * 1024;
 
 class CachedImageFetcherImageCacheTest : public testing::Test {
  public:
-  CachedImageFetcherImageCacheTest() {}
+  CachedImageFetcherImageCacheTest() = default;
 
   CachedImageFetcherImageCacheTest(const CachedImageFetcherImageCacheTest&) =
       delete;
@@ -178,7 +178,7 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
   FakeDB<CachedImageMetadataProto>* db() { return db_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  MOCK_METHOD2(DataCallback, void(bool, std::string));
+  MOCK_METHOD(void, DataCallback, (bool, std::string), ());
 
  private:
   scoped_refptr<ImageCache> image_cache_;
@@ -307,7 +307,7 @@ TEST_F(CachedImageFetcherImageCacheTest, EvictionHoldUtilExpires) {
                            base::Hours(1));
   RunUntilIdle();
 
-  // Forward the clock to make image with |kOtherImageUrl| expired.
+  // Forward the clock to make image with `kOtherImageUrl` expired.
   clock()->SetNow(clock()->Now() + base::Hours(3));
   RunEvictionOnStartup(/* success */ true);
   LoadImage(kImageUrl, "image_data");

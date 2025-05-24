@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/installer/util/google_update_settings.h"
+
 #include <string>
 
-#include "chrome/installer/util/google_update_settings.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -113,7 +113,8 @@ TEST_F(GoogleUpdateTest, IsEnterpriseBrandCodes) {
     EXPECT_EQ(google_brand::IsEnterprise(gce_prefix + ch), ch != 'L');
   }
   for (const std::string prefix :
-       {"GCC", "GCF", "GCG", "GCH", "GCK", "GCL", "GCM"}) {
+       {"GCC", "GCF", "GCG", "GCH", "GCK", "GCL", "GCM", "GCO", "GCP", "GCQ",
+        "GCS", "GCT", "GCU", "GCV", "GCW"}) {
     for (char ch = 'A'; ch <= 'Z'; ++ch) {
       EXPECT_TRUE(google_brand::IsEnterprise(prefix + ch));
     }
@@ -129,7 +130,7 @@ TEST_F(GoogleUpdateTest, IsEnterpriseBrandCodes) {
   EXPECT_FALSE(google_brand::IsEnterprise(""));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test for http://crbug.com/383003
 TEST_F(GoogleUpdateTest, ConsentFileIsWorldReadable) {
   // Turn on stats reporting.

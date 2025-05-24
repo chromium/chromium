@@ -6,7 +6,7 @@ import './app_management_cros_shared_style.css.js';
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 
-import {App} from '//resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from '//resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from '//resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction, InstallReason} from '//resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from '//resources/cr_components/app_management/util.js';

@@ -31,8 +31,7 @@ WebGPUDecoder* WebGPUDecoder::Create(
       outputter, gpu_preferences, std::move(shared_context_state),
       dawn_cache_options, isolation_key_provider);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 

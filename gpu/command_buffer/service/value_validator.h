@@ -12,10 +12,10 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_VALUE_VALIDATOR_H_
 #define GPU_COMMAND_BUFFER_SERVICE_VALUE_VALIDATOR_H_
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 
 namespace gpu {
 
@@ -43,7 +43,7 @@ class ValueValidator {
 
   void RemoveValues(const T* invalid_values, int num_values) {
     for (int ii = 0; ii < num_values; ++ii) {
-      auto iter = base::ranges::find(valid_values_, invalid_values[ii]);
+      auto iter = std::ranges::find(valid_values_, invalid_values[ii]);
       if (iter != valid_values_.end()) {
         valid_values_.erase(iter);
         DCHECK(!IsValid(invalid_values[ii]));

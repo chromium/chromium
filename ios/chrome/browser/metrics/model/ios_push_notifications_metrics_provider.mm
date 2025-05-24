@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -20,13 +21,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace {
-
-// List of ConsentLevel in order of consideration when getting the gaia
-// id of the signed-in identity.
-constexpr signin::ConsentLevel kConsentLevels[] = {
-    signin::ConsentLevel::kSync,
-    signin::ConsentLevel::kSignin,
-};
 
 // Stores PushNotificationClientId and the associated histogram name for
 // use by the IOSPushNotificationsMetricsProvider.
@@ -63,12 +57,17 @@ constexpr PushNotificationReportInfo kPushNotificationReportInfos[] = {
         .client_id = PushNotificationClientId::kSendTab,
         .requires_signed_in_identity = true,
     },
+    {
+        .histogram_name = kPriceTrackingClientStatusByProviderHistogram,
+        .client_id = PushNotificationClientId::kCommerce,
+        .requires_signed_in_identity = true,
+    },
 };
 
 // Records for histogram for `info` for an user signed-in with `gaia_id`.
 void RecordHistogramForPushNotificationReportInfo(
     const PushNotificationReportInfo& info,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   if (info.requires_signed_in_identity && gaia_id.empty()) {
     return;
   }
@@ -79,20 +78,18 @@ void RecordHistogramForPushNotificationReportInfo(
                                     info.client_id, gaia_id));
 }
 
-// Returns the signed-in `gaia_id` or an empty string if not signed-in.
-std::string GetSignedInGaiaId(ChromeBrowserState* browser_state) {
+// Returns the signed-in `gaia_id` or an empty value if not signed-in.
+GaiaId GetSignedInGaiaId(ProfileIOS* profile) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
 
-  for (signin::ConsentLevel consent_level : kConsentLevels) {
-    if (!identity_manager->HasPrimaryAccount(consent_level)) {
-      continue;
-    }
-
-    return identity_manager->GetPrimaryAccountInfo(consent_level).gaia;
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager
+        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+        .gaia;
   }
 
-  return std::string();
+  return GaiaId();
 }
 
 }  // namespace
@@ -112,10 +109,10 @@ void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
                                   settings.authorizationStatus, 5);
   }];
 
-  // Report the enabled client IDs for each loaded BrowserState.
-  for (ChromeBrowserState* browser_state :
+  // Report the enabled client IDs for each loaded profile.
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    const std::string gaia_id = GetSignedInGaiaId(browser_state);
+    const GaiaId gaia_id = GetSignedInGaiaId(profile);
     for (const auto& info : kPushNotificationReportInfos) {
       RecordHistogramForPushNotificationReportInfo(info, gaia_id);
     }

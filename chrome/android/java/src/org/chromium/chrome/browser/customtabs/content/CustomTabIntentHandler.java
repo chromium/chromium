@@ -4,54 +4,44 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
-
 import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.net.NetworkChangeNotifier;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Handles the incoming intents: the one that starts the activity, as well as subsequent intents
  * received in onNewIntent.
  */
-@ActivityScope
 public class CustomTabIntentHandler {
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabIntentHandlingStrategy mHandlingStrategy;
-    private final IntentIgnoringCriterion mIntentIgnoringCriterion;
     private final Context mContext;
     @Nullable private Runnable mOnTabCreatedRunnable;
     private final CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
 
-    @Inject
     public CustomTabIntentHandler(
             CustomTabActivityTabProvider tabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabIntentHandlingStrategy handlingStrategy,
-            IntentIgnoringCriterion intentIgnoringCriterion,
-            @Named(ACTIVITY_CONTEXT) Context context,
+            Context context,
             CustomTabMinimizationManagerHolder minimizationManagerHolder) {
         mTabProvider = tabProvider;
         mIntentDataProvider = intentDataProvider;
         mHandlingStrategy = handlingStrategy;
-        mIntentIgnoringCriterion = intentIgnoringCriterion;
         mContext = context;
         mMinimizationManagerHolder = minimizationManagerHolder;
 
@@ -93,13 +83,13 @@ public class CustomTabIntentHandler {
     /**
      * Called from Activity#onNewIntent.
      *
-     * @param intentDataProvider Data provider built from the new intent. It's different from
-     * the injectable instance of {@link BrowserServicesIntentDataProvider} - that one is always
-     * built from the initial intent.
+     * @param intentDataProvider Data provider built from the new intent. It's different from the
+     *     injectable instance of {@link BrowserServicesIntentDataProvider} - that one is always
+     *     built from the initial intent.
      */
     public boolean onNewIntent(BrowserServicesIntentDataProvider intentDataProvider) {
         Intent intent = intentDataProvider.getIntent();
-        CustomTabsSessionToken session = intentDataProvider.getSession();
+        SessionHolder<?> session = intentDataProvider.getSession();
         WebappExtras webappExtras = intentDataProvider.getWebappExtras();
         if (webappExtras != null) {
             // Don't navigate if the purpose of the intent was to bring the webapp to the
@@ -113,7 +103,7 @@ public class CustomTabIntentHandler {
             return false;
         }
 
-        if (mIntentIgnoringCriterion.shouldIgnoreIntent(intent)) {
+        if (IntentHandler.shouldIgnoreIntent(intent, mContext, true)) {
             return false;
         }
 
@@ -145,11 +135,5 @@ public class CustomTabIntentHandler {
         } else {
             mOnTabCreatedRunnable = runnable;
         }
-    }
-
-    /** Represents Chrome-wide rules for ignoring Intents. */
-    public interface IntentIgnoringCriterion {
-        /** Returns whether given intent should be ignored. */
-        boolean shouldIgnoreIntent(Intent intent);
     }
 }

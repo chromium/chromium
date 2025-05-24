@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -23,11 +22,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
+import org.chromium.components.content_settings.CookieControlsState;
 
 /** Test for Tracking Protection Snackbar controller for WebApk. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,15 +37,13 @@ public class TrackingProtectionSnackbarControllerTest {
 
     @Mock private SnackbarManager mSnackbarManagerMock;
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     private FakeCookieControlsBridge mFakeCookieControlsBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mFakeCookieControlsBridge = new FakeCookieControlsBridge();
-        mocker.mock(CookieControlsBridgeJni.TEST_HOOKS, mFakeCookieControlsBridge);
+        CookieControlsBridgeJni.setInstanceForTesting(mFakeCookieControlsBridge);
     }
 
     @Test
@@ -57,9 +54,14 @@ public class TrackingProtectionSnackbarControllerTest {
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
         TrackingProtectionSnackbarController controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+                        null,
+                        mSnackbarManagerSupplierMock,
+                        null,
+                        null,
+                        ActivityType.WEB_APK,
+                        false);
 
-        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.onStatusChanged(CookieControlsState.ALLOWED3PC, 0, 0, 0);
         controller.maybeTriggerSnackbar();
         verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
     }
@@ -72,9 +74,14 @@ public class TrackingProtectionSnackbarControllerTest {
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
         TrackingProtectionSnackbarController controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+                        null,
+                        mSnackbarManagerSupplierMock,
+                        null,
+                        null,
+                        ActivityType.WEB_APK,
+                        false);
 
-        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.onStatusChanged(CookieControlsState.ALLOWED3PC, 0, 0, 0);
         controller.onHighlightPwaCookieControl();
         verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
     }
@@ -87,9 +94,14 @@ public class TrackingProtectionSnackbarControllerTest {
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
         TrackingProtectionSnackbarController controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+                        null,
+                        mSnackbarManagerSupplierMock,
+                        null,
+                        null,
+                        ActivityType.WEB_APK,
+                        false);
 
-        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.onStatusChanged(CookieControlsState.ALLOWED3PC, 0, 0, 0);
         controller.onHighlightPwaCookieControl();
         verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
 
@@ -103,11 +115,17 @@ public class TrackingProtectionSnackbarControllerTest {
     public void testShowSnackbarTriggeredByReloadEventsWithoutTrackingProtection() {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
+
         TrackingProtectionSnackbarController controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+                        null,
+                        mSnackbarManagerSupplierMock,
+                        null,
+                        null,
+                        ActivityType.WEB_APK,
+                        false);
 
-        controller.onStatusChanged(false, false, 0, 0, 0);
+        controller.onStatusChanged(CookieControlsState.HIDDEN, 0, 0, 0);
         controller.onHighlightPwaCookieControl();
         verifyNoInteractions(mSnackbarManagerMock);
     }
@@ -120,9 +138,14 @@ public class TrackingProtectionSnackbarControllerTest {
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
         TrackingProtectionSnackbarController controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+                        null,
+                        mSnackbarManagerSupplierMock,
+                        null,
+                        null,
+                        ActivityType.WEB_APK,
+                        false);
 
-        controller.onStatusChanged(false, true, 0, 0, 0);
+        controller.onStatusChanged(CookieControlsState.HIDDEN, 0, 0, 0);
         controller.onHighlightPwaCookieControl();
         verifyNoInteractions(mSnackbarManagerMock);
     }
@@ -140,28 +163,39 @@ public class TrackingProtectionSnackbarControllerTest {
                         mSnackbarManagerSupplierMock,
                         null,
                         null,
-                        ActivityType.TRUSTED_WEB_ACTIVITY);
-        controller.onStatusChanged(true, false, 0, 0, 0);
+                        ActivityType.TRUSTED_WEB_ACTIVITY,
+                        false);
+        controller.onStatusChanged(CookieControlsState.ALLOWED3PC, 0, 0, 0);
         controller.maybeTriggerSnackbar();
         controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.CUSTOM_TAB);
-        controller.onStatusChanged(true, false, 0, 0, 0);
+                        null,
+                        mSnackbarManagerSupplierMock,
+                        null,
+                        null,
+                        ActivityType.CUSTOM_TAB,
+                        false);
+        controller.onStatusChanged(CookieControlsState.ALLOWED3PC, 0, 0, 0);
         controller.maybeTriggerSnackbar();
         controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.PRE_FIRST_TAB);
-        controller.onStatusChanged(true, false, 0, 0, 0);
+                        null,
+                        mSnackbarManagerSupplierMock,
+                        null,
+                        null,
+                        ActivityType.PRE_FIRST_TAB,
+                        false);
+        controller.onStatusChanged(CookieControlsState.ALLOWED3PC, 0, 0, 0);
         controller.maybeTriggerSnackbar();
         controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.TABBED);
-        controller.onStatusChanged(true, false, 0, 0, 0);
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.TABBED, false);
+        controller.onStatusChanged(CookieControlsState.ALLOWED3PC, 0, 0, 0);
         controller.maybeTriggerSnackbar();
         controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEBAPP);
-        controller.onStatusChanged(true, false, 0, 0, 0);
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEBAPP, false);
+        controller.onStatusChanged(CookieControlsState.ALLOWED3PC, 0, 0, 0);
         controller.maybeTriggerSnackbar();
 
         verifyNoInteractions(mSnackbarManagerMock);
@@ -178,7 +212,12 @@ public class TrackingProtectionSnackbarControllerTest {
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
         TrackingProtectionSnackbarController controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+                        null,
+                        mSnackbarManagerSupplierMock,
+                        null,
+                        null,
+                        ActivityType.WEB_APK,
+                        false);
 
         controller.maybeTriggerSnackbar();
 
@@ -196,7 +235,12 @@ public class TrackingProtectionSnackbarControllerTest {
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
         TrackingProtectionSnackbarController controller =
                 new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+                        null,
+                        mSnackbarManagerSupplierMock,
+                        null,
+                        null,
+                        ActivityType.WEB_APK,
+                        false);
 
         controller.maybeTriggerSnackbar();
         verify(mSnackbarManagerMock, times(1)).showSnackbar(any());

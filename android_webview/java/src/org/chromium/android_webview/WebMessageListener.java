@@ -6,14 +6,15 @@ package org.chromium.android_webview;
 
 import android.net.Uri;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 
 /**
- * WebMessageListener interface, which is used to listen {@link AwContents#onPostMessage}
- * callback in app. See also {@link AwContents#setWebMessageListener}.
- *
+ * WebMessageListener interface, which is used to listen {@link AwContents#onPostMessage} callback
+ * in app. See also {@link AwContents#setWebMessageListener}.
  */
+@NullMarked
 public interface WebMessageListener {
     /**
      * Receives postMessage information.

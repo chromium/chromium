@@ -6,9 +6,10 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_attribution_reporting_request_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
@@ -23,15 +24,15 @@ namespace {
 using ::network::mojom::AttributionReportingEligibility;
 
 ScopedNullExecutionContext MakeExecutionContext(bool has_permission) {
-  ParsedPermissionsPolicy parsed_policy;
+  network::ParsedPermissionsPolicy parsed_policy;
 
   if (has_permission) {
     AllowFeatureEverywhere(
-        mojom::blink::PermissionsPolicyFeature::kAttributionReporting,
+        network::mojom::PermissionsPolicyFeature::kAttributionReporting,
         parsed_policy);
   } else {
     DisallowFeature(
-        mojom::blink::PermissionsPolicyFeature::kAttributionReporting,
+        network::mojom::PermissionsPolicyFeature::kAttributionReporting,
         parsed_policy);
   }
 
@@ -41,8 +42,8 @@ ScopedNullExecutionContext MakeExecutionContext(bool has_permission) {
 
   execution_context.GetExecutionContext()
       .GetSecurityContext()
-      .SetPermissionsPolicy(PermissionsPolicy::CreateFromParsedPolicy(
-          parsed_policy, /*base_plicy=*/std::nullopt, origin->ToUrlOrigin()));
+      .SetPermissionsPolicy(network::PermissionsPolicy::CreateFromParsedPolicy(
+          parsed_policy, /*base_policy=*/std::nullopt, origin->ToUrlOrigin()));
 
   return execution_context;
 }

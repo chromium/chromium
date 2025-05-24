@@ -20,7 +20,7 @@ namespace syncer {
 class ForwardingDataTypeLocalChangeProcessor
     : public DataTypeLocalChangeProcessor {
  public:
-  // |other| must not be nullptr and must outlive this object.
+  // `other` must not be nullptr and must outlive this object.
   explicit ForwardingDataTypeLocalChangeProcessor(
       DataTypeLocalChangeProcessor* other);
   ~ForwardingDataTypeLocalChangeProcessor() override;
@@ -46,7 +46,7 @@ class ForwardingDataTypeLocalChangeProcessor
   void OnModelStarting(DataTypeSyncBridge* bridge) override;
   void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) override;
   bool IsTrackingMetadata() const override;
-  std::string TrackedAccountId() const override;
+  GaiaId TrackedGaiaId() const override;
   std::string TrackedCacheGuid() const override;
   void ReportError(const ModelError& error) override;
   std::optional<ModelError> GetError() const override;

@@ -29,14 +29,14 @@ suite('<history-item> focus test', function() {
   test('refocus checkbox on click', async () => {
     await flushTasks();
     item.$['menu-button'].focus();
-    assertEquals(item.$['menu-button'], item.shadowRoot!.activeElement);
+    assertEquals(item.$['menu-button'], item.shadowRoot.activeElement);
 
     const whenCheckboxSelected =
         eventToPromise('history-checkbox-select', item);
     item.$['time-accessed'].click();
 
     await whenCheckboxSelected;
-    assertEquals(item.$.checkbox, item.shadowRoot!.activeElement);
+    assertEquals(item.$.checkbox, item.shadowRoot.activeElement);
   });
 
   test('RemovingBookmarkMovesFocus', async () => {
@@ -50,12 +50,12 @@ suite('<history-item> focus test', function() {
     // the bookmark star is not in the focus order.
     item.$.checkbox.focus();
     item.$.link.focus();
-    const star = item.shadowRoot!.querySelector<HTMLElement>('#bookmark-star');
+    const star = item.shadowRoot.querySelector<HTMLElement>('#bookmark-star');
     assertTrue(!!star);
     star.focus();
     star.click();
 
     // Check that focus is shifted to overflow menu icon.
-    assertEquals(item.shadowRoot!.activeElement, item.$['menu-button']);
+    assertEquals(item.shadowRoot.activeElement, item.$['menu-button']);
   });
 });

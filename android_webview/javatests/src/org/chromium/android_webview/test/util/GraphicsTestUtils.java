@@ -106,7 +106,7 @@ public class GraphicsTestUtils {
         if (dx != null && dy != null) {
             canvas.translate(dx, dy);
         }
-        awContents.onDraw(canvas);
+        awContents.getViewMethods().onDraw(canvas);
         return bitmap;
     }
 

@@ -26,6 +26,11 @@
  * To restore focus to a specific item if it is focused when the items
  * array changes, set `restoreFocusItem` to that HTMLElement. If the element
  * is focused when the items array is updated, focus will be restored.
+ * To set content-visibility on chunks of elements rather than on individual
+ * elements, use the `chunkSize` property and specify the number of elements
+ * to group. This is useful when rendering large numbers of short items, as
+ * the intersection observers added by content-visibility: auto can slow down
+ * the UI for very large numbers of elements.
  */
 
 import {assert} from '//resources/js/assert.js';
@@ -57,13 +62,37 @@ export class CrLazyListElement<T = object> extends CrLitElement {
         this.listItemHost;
 
     // Render items into light DOM using the client provided template
-    render(
-        this.items.slice(0, this.numItemsDisplayed_).map((item, index) => {
-          return this.template(item, index);
-        }),
-        this, {
-          host: host,
-        });
+    if (this.chunkSize === 0) {
+      render(
+          this.items.slice(0, this.numItemsDisplayed_).map((item, index) => {
+            return this.template(item, index);
+          }),
+          this, {host});
+    } else {
+      const chunks = Math.ceil(this.numItemsDisplayed_ / this.chunkSize);
+      const chunkArray = new Array(chunks).fill(0);
+
+      // Render chunk divs.
+      render(
+          chunkArray.map(
+              (_item, index) => html`<div id="chunk-${index}" class="chunk">
+                                     </div>`),
+          this, {host});
+
+      // Render items into chunk divs.
+      for (let chunkIndex = 0; chunkIndex < chunks; chunkIndex++) {
+        const start = chunkIndex * this.chunkSize;
+        const end = Math.min(
+            this.numItemsDisplayed_, (chunkIndex + 1) * this.chunkSize);
+        const chunk = this.querySelector<HTMLElement>(`#chunk-${chunkIndex}`);
+        assert(chunk);
+        render(
+            this.items.slice(start, end).map((item, index) => {
+              return this.template(item, start + index);
+            }),
+            chunk, {host});
+      }
+    }
 
     // Render container + slot into shadow DOM
     return html`<div id="container"><slot id="slot"></slot></div>`;
@@ -71,6 +100,10 @@ export class CrLazyListElement<T = object> extends CrLitElement {
 
   static override get properties() {
     return {
+      chunkSize: {
+        type: Number,
+        reflect: true,
+      },
       items: {type: Array},
       itemSize: {type: Number},
       listItemHost: {type: Object},
@@ -86,17 +119,19 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     };
   }
 
-  items: T[] = [];
-  itemSize: number = 100;
-  listItemHost?: Node;
-  minViewportHeight?: number;
-  scrollOffset: number = 0;
-  scrollTarget: HTMLElement = document.documentElement;
-  restoreFocusElement: Element|null = null;
-  template: (item: T, index: number) => TemplateResult = () => html``;
-  private numItemsDisplayed_: number = 0;
+  accessor items: T[] = [];
+  accessor itemSize: number|undefined = undefined;
+  accessor listItemHost: Node|undefined;
+  accessor minViewportHeight: number|undefined;
+  accessor scrollOffset: number = 0;
+  accessor scrollTarget: HTMLElement = document.documentElement;
+  accessor restoreFocusElement: Element|null = null;
+  accessor template: (item: T, index: number) => TemplateResult = () => html``;
+  accessor chunkSize: number = 0;
+  private accessor numItemsDisplayed_: number = 0;
 
   // Internal state
+  private lastItemsLength_: number = 0;
   private lastRenderedHeight_: number = 0;
   private resizeObserver_: ResizeObserver|null = null;
   private scrollListener_: EventListener = () => this.onScroll_();
@@ -105,13 +140,22 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('items')) {
+      this.lastItemsLength_ = this.items.length;
       this.numItemsDisplayed_ = this.items.length === 0 ?
           0 :
           Math.min(this.numItemsDisplayed_, this.items.length);
+    } else {
+      assert(
+          this.items.length === this.lastItemsLength_,
+          'Items array changed in place; rendered result may be incorrect.');
     }
 
     if (changedProperties.has('itemSize')) {
       this.style.setProperty('--list-item-size', `${this.itemSize}px`);
+    }
+
+    if (changedProperties.has('chunkSize')) {
+      this.style.setProperty('--chunk-size', `${this.chunkSize}`);
     }
   }
 
@@ -158,23 +202,28 @@ export class CrLazyListElement<T = object> extends CrLitElement {
   // rendered, this is a no-op.
   async ensureItemRendered(index: number): Promise<HTMLElement> {
     if (index < this.numItemsDisplayed_) {
-      return this.$.slot.assignedElements()[index] as HTMLElement;
+      return this.domItems()[index] as HTMLElement;
     }
     assert(index < this.items.length);
     await this.updateNumItemsDisplayed_(index + 1);
-    return this.$.slot.assignedElements()[index] as HTMLElement;
+    return this.domItems()[index] as HTMLElement;
   }
 
   // Private methods
 
   private addRemoveScrollTargetListeners_(oldTarget: HTMLElement|null) {
     if (oldTarget) {
-      oldTarget.removeEventListener('scroll', this.scrollListener_);
+      const target =
+          oldTarget === document.documentElement ? window : oldTarget;
+      target.removeEventListener('scroll', this.scrollListener_);
       assert(this.resizeObserver_);
       this.resizeObserver_.disconnect();
     }
     if (this.scrollTarget) {
-      this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+      const target = this.scrollTarget === document.documentElement ?
+          window :
+          this.scrollTarget;
+      target.addEventListener('scroll', this.scrollListener_);
       this.resizeObserver_ = new ResizeObserver(() => {
         requestAnimationFrame(() => {
           const newHeight = this.getViewHeight_();
@@ -205,6 +254,10 @@ export class CrLazyListElement<T = object> extends CrLitElement {
       if (restoreFocus) {
         // Async to allow clients to update in response to viewport-filled.
         setTimeout(() => {
+          // The element may have been removed from the DOM by the client.
+          if (!this.restoreFocusElement) {
+            return;
+          }
           (this.restoreFocusElement as HTMLElement).focus();
           this.fire('focus-restored-for-test');
         }, 0);
@@ -212,13 +265,23 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     } else {
       // Update the container height to 0 since there are no items.
       this.$.container.style.height = '0px';
+      this.fire('items-rendered');
       this.fire('viewport-filled');
     }
   }
 
+  private getScrollTop_(): number {
+    return this.scrollTarget === document.documentElement ?
+        window.pageYOffset :
+        this.scrollTarget.scrollTop;
+  }
+
   private getViewHeight_() {
-    return this.scrollTarget.scrollTop - this.scrollOffset +
-        Math.max(this.minViewportHeight || 0, this.scrollTarget.offsetHeight);
+    const offsetHeight = this.scrollTarget === document.documentElement ?
+        window.innerHeight :
+        this.scrollTarget.offsetHeight;
+    return this.getScrollTop_() - this.scrollOffset +
+        Math.max(this.minViewportHeight || 0, offsetHeight);
   }
 
   private async update_(forceUpdateHeight: boolean): Promise<void> {
@@ -232,6 +295,8 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     }
 
     const added = await this.fillViewHeight_(height);
+    this.fire('items-rendered');
+
     if (added || forceUpdateHeight) {
       await this.updateHeight_();
       this.fire('viewport-filled');
@@ -248,7 +313,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     // Ensure we have added enough DOM items so that we are able to estimate
     // item average height.
     assert(this.items.length);
-    const initialDomItemCount = this.$.slot.assignedElements().length;
+    const initialDomItemCount = this.domItems().length;
     if (initialDomItemCount === 0) {
       await this.updateNumItemsDisplayed_(1);
     }
@@ -276,7 +341,23 @@ export class CrLazyListElement<T = object> extends CrLitElement {
 
   private async updateNumItemsDisplayed_(itemsToDisplay: number) {
     this.numItemsDisplayed_ = itemsToDisplay;
+    if (this.numItemsDisplayed_ > 200 && this.chunkSize < 2) {
+      console.warn(
+          `cr-lazy-list: ${this.numItemsDisplayed_} list items rendered. ` +
+          'If this is expected, consider chunking mode (chunkSize > 1) ' +
+          'to improve scrolling performance.');
+    }
     await this.updateComplete;
+  }
+
+  /**
+   * @return The currently rendered list items, particularly useful for clients
+   *     using chunking mode.
+   */
+  domItems(): Element[] {
+    return this.chunkSize === 0 ?
+        this.$.slot.assignedElements() :
+        Array.from(this.querySelectorAll('.chunk > *'));
   }
 
   /**
@@ -287,10 +368,32 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     // one DOM item has been rendered so that an item average height can be
     // estimated. This is ensured by the callers.
     assert(this.items.length > 0);
-    const domItems = this.$.slot.assignedElements();
+    const domItems = this.domItems();
     assert(domItems.length > 0);
+    const firstDomItem = domItems.at(0) as HTMLElement;
     const lastDomItem = domItems.at(-1) as HTMLElement;
-    return (lastDomItem.offsetTop + lastDomItem.offsetHeight) / domItems.length;
+    const lastDomItemHeight = lastDomItem.offsetHeight;
+    if (firstDomItem === lastDomItem && lastDomItemHeight === 0) {
+      // If there is only 1 item and it has a height of 0, return early. This
+      // likely means the UI is still hidden or there is no content.
+      return 0;
+    } else if (this.itemSize) {
+      // Once items are actually visible and have a height > 0, assume that it
+      // is an accurate representation of the average item size.
+      return this.itemSize;
+    }
+    let totalHeight = lastDomItem.offsetTop + lastDomItemHeight;
+    if (this.chunkSize > 0) {
+      // Add the parent's offsetTop. The offsetParent will be the chunk div.
+      // Subtract the offsetTop of the first chunk div to avoid counting any
+      // padding.
+      totalHeight += (lastDomItem.offsetParent as HTMLElement).offsetTop -
+          (firstDomItem.offsetParent as HTMLElement).offsetTop;
+    } else {
+      // Subtract the offsetTop of the first item to avoid counting any padding.
+      totalHeight -= firstDomItem.offsetTop;
+    }
+    return totalHeight / domItems.length;
   }
 
   /**
@@ -312,7 +415,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
    * interactions.
    */
   private async onScroll_() {
-    const scrollTop = this.scrollTarget.scrollTop;
+    const scrollTop = this.getScrollTop_();
     if (scrollTop <= 0 || this.numItemsDisplayed_ === this.items.length) {
       return;
     }

@@ -22,6 +22,10 @@ struct BLINK_COMMON_EXPORT
     return r.attribution_src_token;
   }
 
+  static bool is_empty_attribution_src_tag(const blink::Impression& r) {
+    return r.is_empty_attribution_src_tag;
+  }
+
   static bool Read(blink::mojom::ImpressionDataView r, blink::Impression* out);
 };
 

@@ -10,16 +10,17 @@
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {afterNextRender, Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SeaPenOption} from './constants.js';
-import {SeaPenTemplateChip} from './sea_pen_generated.mojom-webui.js';
+import type {SeaPenOption} from './constants.js';
+import type {SeaPenTemplateChip} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_options_element.html.js';
-import {ChipToken, isNonEmptyArray} from './sea_pen_utils.js';
+import type {ChipToken} from './sea_pen_utils.js';
+import {isNonEmptyArray} from './sea_pen_utils.js';
 
 const SeaPenOptionsElementBase = I18nMixin(PolymerElement);
 
@@ -152,7 +153,7 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
         } else if (this.isHiddenChipOptionSelected_()) {
           // If the next option is hidden, select and focus the expand button.
           const expandButton = selector.querySelector('#expandButton');
-          selector.selectIndex(selector.indexOf(expandButton!));
+          selector.selectIndex(selector.indexOf(expandButton));
         }
         break;
       case 'esc':

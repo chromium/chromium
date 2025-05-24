@@ -6,7 +6,11 @@ package org.chromium.chrome.browser.util;
 
 import android.view.KeyEvent;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.base.LocalizationUtils;
+
 /** This is a helper class to handle navigation related checks for key events. */
+@NullMarked
 public class KeyNavigationUtil {
     /** This is a helper class with no instance. */
     private KeyNavigationUtil() {}
@@ -60,7 +64,45 @@ public class KeyNavigationUtil {
     }
 
     /**
+     * Whether this event should move keyboard focus in the forward direction.
+     *
+     * @param event The {@link KeyEvent} to analyze.
+     * @return Whether this event should move keyboard focus in the forward direction.
+     */
+    public static boolean isMoveFocusForward(KeyEvent event) {
+        return isActionDown(event)
+                && ((isGoRight(event) && !LocalizationUtils.isLayoutRtl())
+                        || (isGoLeft(event) && LocalizationUtils.isLayoutRtl())
+                        || (event.getKeyCode() == KeyEvent.KEYCODE_TAB && !event.isShiftPressed()));
+    }
+
+    /**
+     * Whether this event should move keyboard focus in the backward direction.
+     *
+     * @param event The {@link KeyEvent} to analyze.
+     * @return Whether this event should move keyboard focus in the backward direction.
+     */
+    public static boolean isMoveFocusBackward(KeyEvent event) {
+        return isActionDown(event)
+                && ((isGoLeft(event) && !LocalizationUtils.isLayoutRtl())
+                        || (isGoRight(event) && LocalizationUtils.isLayoutRtl())
+                        || (event.getKeyCode() == KeyEvent.KEYCODE_TAB && event.isShiftPressed()));
+    }
+
+    /**
+     * Whether this event should trigger the keyboard-focused button.
+     *
+     * @param event The {@link KeyEvent} to analyze.
+     * @return Whether this event should trigger the keyboard-focused button.
+     */
+    public static boolean isButtonActivate(KeyEvent event) {
+        return isActionDown(event)
+                && (isEnter(event) || event.getKeyCode() == KeyEvent.KEYCODE_SPACE);
+    }
+
+    /**
      * Checks whether the given event is any of DPAD down, DPAD up, NUMPAD down or NUMPAD up.
+     *
      * @param event Event to be checked.
      * @return Whether the event should be processed as any of navigation up or navigation down.
      */
@@ -103,5 +145,29 @@ public class KeyNavigationUtil {
      */
     public static boolean isActionUp(KeyEvent event) {
         return event.getAction() == KeyEvent.ACTION_UP;
+    }
+
+    /**
+     * Checks whether the given event is a TAB event.
+     *
+     * @param event Event to be checked.
+     * @return Whether the event is a TAB event.
+     */
+    public static boolean isTab(KeyEvent event) {
+        return isActionDown(event)
+                && event.getKeyCode() == KeyEvent.KEYCODE_TAB
+                && event.hasNoModifiers();
+    }
+
+    /**
+     * Checks whether the given event is a TAB+SHIFT event.
+     *
+     * @param event Event to be checked.
+     * @return Whether the event is a TAB +SHIFT event.
+     */
+    public static boolean isBackwardTab(KeyEvent event) {
+        return isActionDown(event)
+                && event.getKeyCode() == KeyEvent.KEYCODE_TAB
+                && event.isShiftPressed();
     }
 }

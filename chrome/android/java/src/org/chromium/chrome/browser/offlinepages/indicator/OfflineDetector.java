@@ -68,9 +68,9 @@ class OfflineDetector
     // True if the network is offline as detected by the connectivity detector.
     private boolean mIsOfflineLastReportedByConnectivityDetector;
 
-    private Context mContext;
+    private final Context mContext;
     private Handler mHandler;
-    private Runnable mUpdateOfflineStatusIndicatorDelayedRunnable;
+    private final Runnable mUpdateOfflineStatusIndicatorDelayedRunnable;
 
     // Used to inform the client when the system changes between online and offline. A value of true
     // is given when the system is offline, and a value of false is given when the system is online.

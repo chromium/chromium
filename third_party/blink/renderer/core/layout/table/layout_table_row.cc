@@ -173,8 +173,7 @@ unsigned LayoutTableRow::RowIndex() const {
       return index;
     ++index;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace blink

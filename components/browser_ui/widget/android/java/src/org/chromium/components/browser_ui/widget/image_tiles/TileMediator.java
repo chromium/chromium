@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.image_tiles.ImageTileCoordinator.TileVisualsProvider;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
  * The mediator for the tiles UI, responsible for reacting to events from outside world, and
  * interacting with other coordinators.
  */
+@NullMarked
 class TileMediator {
     private final TileListModel mModel;
     private final TileConfig mConfig;

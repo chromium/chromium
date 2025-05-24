@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
 import './viewer_zoom_button.js';
 
@@ -41,8 +41,6 @@ export class ViewerZoomToolbarElement extends CrLitElement {
     return {
       keyboardNavigationActive_: {type: Boolean},
 
-      pdfCr23Enabled: {type: Boolean},
-
       visible_: {
         type: Boolean,
         reflect: true,
@@ -50,9 +48,8 @@ export class ViewerZoomToolbarElement extends CrLitElement {
     };
   }
 
-  protected keyboardNavigationActive_: boolean = false;
-  protected pdfCr23Enabled: boolean = false;
-  private visible_: boolean = false;
+  protected accessor keyboardNavigationActive_: boolean = false;
+  private accessor visible_: boolean = false;
 
   override firstUpdated() {
     this.addEventListener('focus', this.onFocus_);
@@ -62,10 +59,6 @@ export class ViewerZoomToolbarElement extends CrLitElement {
 
   isVisible(): boolean {
     return this.visible_;
-  }
-
-  protected iconsetName_(): string {
-    return this.pdfCr23Enabled ? 'pdf-cr23' : 'pdf';
   }
 
   private onFocus_(): void {

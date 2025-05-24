@@ -14,15 +14,12 @@ ExclusiveAccessControllerBase::ExclusiveAccessControllerBase(
     ExclusiveAccessManager* manager)
     : manager_(manager) {}
 
-ExclusiveAccessControllerBase::~ExclusiveAccessControllerBase() {
-}
+ExclusiveAccessControllerBase::~ExclusiveAccessControllerBase() = default;
 
-GURL ExclusiveAccessControllerBase::GetExclusiveAccessBubbleURL() const {
-  return manager_->GetExclusiveAccessBubbleURL();
-}
-
-GURL ExclusiveAccessControllerBase::GetURLForExclusiveAccessBubble() const {
-  return exclusive_access_tab() ? exclusive_access_tab()->GetURL() : GURL();
+url::Origin ExclusiveAccessControllerBase::GetOriginForExclusiveAccessBubble()
+    const {
+  return url::Origin::Create(
+      exclusive_access_tab() ? exclusive_access_tab()->GetURL() : GURL());
 }
 
 void ExclusiveAccessControllerBase::OnTabDeactivated(

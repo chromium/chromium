@@ -7,7 +7,7 @@
 -->
 
 <grit latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/extensions_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -217,6 +217,12 @@
       <message name="IDS_EXTENSION_CONTENT_SCRIPT_FILE_TOO_LARGE" desc="Install warning displayed when a content script's size would exceed the per-file or per-extension maximum size.">
         Could not load file '<ph name="RELATIVE_PATH">$1<ex>file.js</ex></ph>' for content script as it would exceed the maximum script size or the extension's maximum total content script size.
       </message>
+      <message name="IDS_EXTENSION_CONTENT_SCRIPT_FILE_BAD_JS_MIME_TYPE" desc="Install warning displayed when a content script's JavaScript file type is unsupported.">
+        Could not load file '<ph name="RELATIVE_PATH">$1<ex>file.js</ex></ph>' for content script, content scripts can only be loaded from supported JavaScript files such as .js files.
+      </message>
+      <message name="IDS_EXTENSION_CONTENT_SCRIPT_FILE_BAD_CSS_MIME_TYPE" desc="Install warning displayed when a content script's style sheet file type is unsupported.">
+        Could not load file '<ph name="RELATIVE_PATH">$1<ex>file.css</ex></ph>' for content script, content script style sheets can only be loaded from supported style sheet files such as .css files.
+      </message>
       <message name="IDS_EXTENSION_DIRECTORY_NO_EXISTS" desc="Warning displayed in pack dialog when the extension directory does not exist.">
         Input directory must exist.
       </message>
@@ -302,12 +308,6 @@
       </message>
       <message name="IDS_EXTENSION_CANT_UNINSTALL_POLICY_REQUIRED" desc="Error message when a user tries to uninstall an extension that is required by administrator policy.">
         The administrator of this machine requires <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> to be installed. It cannot be uninstalled.
-      </message>
-      <message name="IDS_EXTENSION_DISABLED_UPDATE_REQUIRED_BY_POLICY" desc="Error message when an extension doesn't meet minimum version required by administrator policy.">
-        The administrator of this machine requires <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> to have a minimum version of <ph name="EXTENSION_VERSION">$2<ex>1.1.0</ex></ph>. It cannot be enabled until it has updated to that version (or higher).
-      </message>
-      <message name="IDS_EXTENSION_DISABLED_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY" desc="Error message when an extension is no longer published and available on the Chrome Web Store as required by administrator policy." translateable="false">
-         (Placeholder, not used currently) The administrator of this machine requires <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> to be available on the Chrome Web Store.
       </message>
       <message name="IDS_EXTENSION_MANIFEST_VERSION_NOT_SUPPORTED" desc="Error message when an extension doesn't meet minimum manifest version required by administrator policy.">
         The administrator of this machine requires <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> to have a minimum manifest version of 3.

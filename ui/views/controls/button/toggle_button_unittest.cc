@@ -152,8 +152,13 @@ TEST_F(ToggleButtonTest, AcceptEvents) {
 }
 
 TEST_F(ToggleButtonTest, AccessibleCheckedStateChange) {
-  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
   ui::AXNodeData data;
+  EXPECT_EQ(
+      ax_counter.GetCount(ax::mojom::Event::kCheckedStateChanged, button()), 0);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
   EXPECT_EQ(
       ax_counter.GetCount(ax::mojom::Event::kCheckedStateChanged, button()), 0);
   button()->SetIsOn(true);

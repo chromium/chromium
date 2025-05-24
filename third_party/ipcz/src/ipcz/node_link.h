@@ -345,8 +345,8 @@ class NodeLink : public msg::NodeMessageListener {
 
   // Tracks pending referrals sent to the broker.
   uint64_t next_referral_id_ = 0;
-  absl::flat_hash_map<uint64_t, ReferralCallback> pending_referrals_
-      ABSL_GUARDED_BY(mutex_);
+  using ReferralCallbackMap = absl::flat_hash_map<uint64_t, ReferralCallback>;
+  ReferralCallbackMap pending_referrals_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace ipcz

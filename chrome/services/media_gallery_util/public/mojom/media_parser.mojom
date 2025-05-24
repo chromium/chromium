@@ -5,7 +5,7 @@
 module chrome.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -18,7 +18,7 @@ union VideoFrameData {
   media.mojom.VideoFrame? decoded_frame;
 };
 
-[EnableIf=is_android]
+[EnableIf=is_android_and_media_use_ffmpeg]
 struct ExtractVideoFrameResult {
   VideoFrameData frame_data;
   media.mojom.VideoDecoderConfig config;
@@ -41,7 +41,7 @@ interface MediaParser {
   // result on failure; on success, the result will contain:
   // - the decoded frame if the decoding can be done in the utility process or
   // - an encoded frame if decoding needs to happen in another process
-  [EnableIf=is_android]
+  [EnableIf=is_android_and_media_use_ffmpeg]
   ExtractVideoFrame(string mime_type,
                     uint32 total_size,
                     pending_remote<MediaDataSource> media_data_source)
@@ -53,8 +53,7 @@ interface MediaParser {
   // Note: it is still not safe to decode the file in the calling process after
   // this check.
   CheckMediaFile(mojo_base.mojom.TimeDelta decode_time,
-                 mojo_base.mojom.ReadOnlyFile file)
-      => (bool success);
+                 mojo_base.mojom.ReadOnlyFile file) => (bool success);
 
   // Used by tests to validate the right CPU information is set on third-party
   // libraries.
@@ -87,8 +86,10 @@ struct MediaStreamInfo {
   mojo_base.mojom.DictionaryValue additional_properties;
 };
 
-// All data are parsed from user-defined media data. The consumer of this API should filter special
-// characters if needed. The encoding of strings may be UTF-8 that ffmpeg library assumes strings to
+// All data are parsed from user-defined media data. The consumer of this API
+// should filter special
+// characters if needed. The encoding of strings may be UTF-8 that ffmpeg
+// library assumes strings to
 // be UTF-8 but does not validate the encoding.
 struct MediaMetadata {
   string mime_type;

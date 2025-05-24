@@ -26,11 +26,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -41,6 +40,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Instrumentation tests for {@link LogoView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LogoViewTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -60,7 +61,6 @@ public class LogoViewTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mBitmap = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
@@ -159,14 +159,12 @@ public class LogoViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.LOGO_POLISH})
     public void testDoodleAnimation() {
-        mView.setIsLogoPolishFlagEnabledForTesting(true);
         Resources res = mView.getResources();
-        int normalLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
-        int normalLogoTopMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
-        int logoHeightForLogoPolish = LogoUtils.getLogoHeightForLogoPolishWithSmallSize(res);
-        int logoTopMarginForLogoPolish = LogoUtils.getTopMarginForLogoPolish(res);
+        int logoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
+        int logoTopMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        int doodleHeight = LogoUtils.getDoodleHeightInTabletSplitScreen(res);
+        int doodleTopMargin = LogoUtils.getTopMarginForDoodle(res);
 
         MarginLayoutParams logoLayoutParams = (MarginLayoutParams) mView.getLayoutParams();
 
@@ -177,8 +175,8 @@ public class LogoViewTest {
                         .getBitmap(mView.getContext()));
         mView.updateLogo(null);
         mView.endAnimationsForTesting();
-        Assert.assertEquals(normalLogoHeight, logoLayoutParams.height);
-        Assert.assertEquals(normalLogoTopMargin, logoLayoutParams.topMargin);
+        Assert.assertEquals(logoHeight, logoLayoutParams.height);
+        Assert.assertEquals(logoTopMargin, logoLayoutParams.topMargin);
 
         // Test doodle animation.
         Logo logo = new Logo(mBitmap, null, ALT_TEXT, null);
@@ -189,37 +187,32 @@ public class LogoViewTest {
         fadeAnimation.pause();
 
         fadeAnimation.setCurrentFraction(0);
-        Assert.assertEquals(normalLogoHeight, logoLayoutParams.height);
-        Assert.assertEquals(normalLogoTopMargin, logoLayoutParams.topMargin);
+        Assert.assertEquals(logoHeight, logoLayoutParams.height);
+        Assert.assertEquals(logoTopMargin, logoLayoutParams.topMargin);
 
         fadeAnimation.setCurrentFraction(0.3F);
-        Assert.assertEquals(normalLogoHeight, logoLayoutParams.height);
-        Assert.assertEquals(normalLogoTopMargin, logoLayoutParams.topMargin);
+        Assert.assertEquals(logoHeight, logoLayoutParams.height);
+        Assert.assertEquals(logoTopMargin, logoLayoutParams.topMargin);
 
         fadeAnimation.setCurrentFraction(0.5F);
-        Assert.assertEquals(normalLogoHeight, logoLayoutParams.height);
-        Assert.assertEquals(normalLogoTopMargin, logoLayoutParams.topMargin);
+        Assert.assertEquals(logoHeight, logoLayoutParams.height);
+        Assert.assertEquals(logoTopMargin, logoLayoutParams.topMargin);
 
         fadeAnimation.setCurrentFraction(0.65F);
         Assert.assertEquals(
-                Math.round((normalLogoHeight + (logoHeightForLogoPolish - normalLogoHeight) * 0.3)),
+                Math.round((logoHeight + (doodleHeight - logoHeight) * 0.3)),
                 logoLayoutParams.height);
         Assert.assertEquals(
-                Math.round(
-                        (normalLogoTopMargin
-                                + (logoTopMarginForLogoPolish - normalLogoTopMargin) * 0.3)),
+                Math.round((logoTopMargin + (doodleTopMargin - logoTopMargin) * 0.3)),
                 logoLayoutParams.topMargin);
 
         fadeAnimation.setCurrentFraction(0.75F);
+        Assert.assertEquals(Math.round((logoHeight + doodleHeight) * 0.5), logoLayoutParams.height);
         Assert.assertEquals(
-                Math.round((normalLogoHeight + logoHeightForLogoPolish) * 0.5),
-                logoLayoutParams.height);
-        Assert.assertEquals(
-                Math.round((normalLogoTopMargin + logoTopMarginForLogoPolish) * 0.5),
-                logoLayoutParams.topMargin);
+                Math.round((logoTopMargin + doodleTopMargin) * 0.5), logoLayoutParams.topMargin);
 
         fadeAnimation.setCurrentFraction(1);
-        Assert.assertEquals(logoHeightForLogoPolish, logoLayoutParams.height);
-        Assert.assertEquals(logoTopMarginForLogoPolish, logoLayoutParams.topMargin);
+        Assert.assertEquals(doodleHeight, logoLayoutParams.height);
+        Assert.assertEquals(doodleTopMargin, logoLayoutParams.topMargin);
     }
 }

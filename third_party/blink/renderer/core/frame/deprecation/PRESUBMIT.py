@@ -17,8 +17,6 @@ import sys
 # add more formal support.
 EXEMPTED_FROM_RENDERER_GENERATION = {
     "PrivacySandboxExtensionsAPI": True,
-    "ThirdPartyCookieAccessWarning": True,
-    "ThirdPartyCookieAccessError": True,
 }
 
 # pyright: reportMissingImports=false

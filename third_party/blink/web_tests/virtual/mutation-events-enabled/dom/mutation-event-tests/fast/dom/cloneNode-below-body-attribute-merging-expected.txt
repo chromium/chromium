@@ -1,0 +1,9 @@
+CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+Tests that cloning the body node in response to a DOMSubtreeModified event doesn't crash.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

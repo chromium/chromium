@@ -38,6 +38,7 @@ class VIEWS_EXPORT MenuRunnerImplMac : public MenuRunnerImplInterface {
       MenuButtonController* button_controller,
       const gfx::Rect& bounds,
       MenuAnchorPosition anchor,
+      ui::mojom::MenuSourceType source_type,
       int32_t run_types,
       gfx::NativeView native_view_for_gestures,
       std::optional<gfx::RoundedCornersF> corners,

@@ -201,7 +201,8 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseContent() {
   const size_t available_bytes = buffer_.size() - buffer_position_;
   if (chunked_decoder_.get()) {
     int bytes_written = chunked_decoder_->FilterBuf(
-        const_cast<char*>(buffer_.data()) + buffer_position_, available_bytes);
+        base::as_writable_byte_span(buffer_).subspan(buffer_position_,
+                                                     available_bytes));
     http_request_->content.append(buffer_.data() + buffer_position_,
                                   bytes_written);
 

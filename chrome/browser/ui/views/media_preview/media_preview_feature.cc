@@ -10,25 +10,29 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace media_preview_feature {
 
+namespace {
+
+bool IsCameraMicPreviewFlagEnabled() {
+  return base::FeatureList::IsEnabled(blink::features::kCameraMicPreview);
+}
+
+}  // namespace
+
 bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
                             const GURL& requesting_origin_url,
                             const GURL& embedding_origin_url,
                             media_preview_metrics::UiLocation ui_location) {
-  if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
-    return false;
-  }
-
   // If we somehow get invalid or opaque origins, it's a corner case like a
   // data:, srcdoc:, or about: document that can't be part of the OT.
   if (!embedding_origin_url.is_valid() && !requesting_origin_url.is_valid()) {
     media_preview_metrics::RecordOriginTrialAllowed(ui_location, true);
-    return true;
+    return IsCameraMicPreviewFlagEnabled();
   }
 
   content::OriginTrialsControllerDelegate* origin_trials =
@@ -38,7 +42,7 @@ bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
   // they will just depend on the feature flag.
   if (!origin_trials) {
     media_preview_metrics::RecordOriginTrialAllowed(ui_location, true);
-    return true;
+    return IsCameraMicPreviewFlagEnabled();
   }
 
   // The URLs passed in originate a url::Origin, so this is safe.
@@ -62,7 +66,7 @@ bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
   }
 
   media_preview_metrics::RecordOriginTrialAllowed(ui_location, true);
-  return true;
+  return IsCameraMicPreviewFlagEnabled();
 }
 
 }  // namespace media_preview_feature

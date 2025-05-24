@@ -10,10 +10,13 @@ import org.chromium.base.Promise;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omaha.OmahaPrefUtils;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
 
 /** A helper class to manage retrieving and storing a persisted instance of {@link Tracking}. */
+@NullMarked
 class TrackingProvider {
     private static final String TRACKING_PERSISTENT_KEY = "UpdateProtos_Tracking";
 
@@ -25,8 +28,8 @@ class TrackingProvider {
     }
 
     /** @return The persisted instance of {@link Tracking} or {@code null} if none is saved. */
-    public Promise<Tracking> get() {
-        final Promise<Tracking> promise = new Promise<>();
+    public Promise<@Nullable Tracking> get() {
+        final Promise<@Nullable Tracking> promise = new Promise<>();
 
         mTaskRunner.execute(
                 () -> {

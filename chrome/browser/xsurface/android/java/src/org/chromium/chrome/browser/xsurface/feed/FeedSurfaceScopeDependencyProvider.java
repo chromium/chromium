@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.xsurface.feed;
 
 import android.graphics.Rect;
 
-import androidx.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
  *
  * Should only be called on the UI thread.
  */
+@NullMarked
 public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependencyProvider {
     /** User-set preference for when videos are eligible to autoplay. */
     public enum AutoplayPreference {
@@ -125,7 +127,6 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
      * Adds a header offset observer to the surface this scope is associated with.
      *
      * @param observer The observer to add.
-     * @return a reference to be used when removing the observer, or null if not successful.
      */
     default void addHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
 
@@ -146,8 +147,7 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
      * Returns a {@link PersistentKeyValueCache}. This value will be cached as an account-level
      * dependency, and only cleared after {@link ProcessScope#resetAccount()} is called.
      */
-    @Nullable
-    default PersistentKeyValueCache getPersistentKeyValueCache() {
+    default @Nullable PersistentKeyValueCache getPersistentKeyValueCache() {
         return null;
     }
 

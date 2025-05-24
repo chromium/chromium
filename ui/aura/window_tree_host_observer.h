@@ -50,6 +50,11 @@ class AURA_EXPORT WindowTreeHostObserver {
   virtual void OnSetPreferredRefreshRate(WindowTreeHost* host,
                                          float preferred_refresh_rate) {}
 
+  // Called when the local surface id of the frame sink embedded in `host` has
+  // changed.
+  virtual void OnLocalSurfaceIdChanged(WindowTreeHost* host,
+                                       const viz::LocalSurfaceId& id) {}
+
  protected:
   virtual ~WindowTreeHostObserver() {}
 };

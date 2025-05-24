@@ -52,23 +52,24 @@ class CliOptions:
     self.output_files = None if is_final else []
     self.header_path = None
     self.enable_jni_multiplexing = False
+    self.enable_definition_macros = False
     self.package_prefix = None
     self.package_prefix_filter = None
     self.use_proxy_hash = False
     self.extra_include = None if is_final else _EXTRA_INCLUDES
     self.module_name = None
     self.add_stubs_for_missing_native = False
-    self.enable_proxy_mocks = False
     self.include_test_only = False
     self.manual_jni_registration = False
     self.remove_uncalled_methods = False
-    self.require_mocks = False
     self.__dict__.update(kwargs)
 
   def to_args(self):
     ret = [os.path.join(_SCRIPT_DIR, os.pardir, 'jni_zero.py'), self.action]
     if self.enable_jni_multiplexing:
       ret.append('--enable-jni-multiplexing')
+    if self.enable_definition_macros:
+      ret.append('--enable-definition-macros')
     if self.package_prefix:
       ret += ['--package-prefix', self.package_prefix]
     if self.package_prefix_filter:
@@ -89,8 +90,6 @@ class CliOptions:
       ret += ['--extra-include', self.extra_include]
     if self.add_stubs_for_missing_native:
       ret.append('--add-stubs-for-missing-native')
-    if self.enable_proxy_mocks:
-      ret.append('--enable-proxy-mocks')
     if self.header_path:
       ret += ['--header-path', self.header_path]
     if self.include_test_only:
@@ -101,8 +100,6 @@ class CliOptions:
       ret += ['--module-name', self.module_name]
     if self.remove_uncalled_methods:
       ret.append('--remove-uncalled-methods')
-    if self.require_mocks:
-      ret.append('--require-mocks')
     return ret
 
 
@@ -144,6 +141,7 @@ class BaseTest(unittest.TestCase):
                               *,
                               srcjar=False,
                               generate_placeholders=False,
+                              enable_jni_multiplexing=False,
                               per_file_natives=False,
                               **kwargs):
     is_javap = input_files[0].endswith('.class')
@@ -188,6 +186,8 @@ class BaseTest(unittest.TestCase):
       if generate_placeholders:
         placeholder_srcjar_path = os.path.join(tdir, 'placeholders.srcjar')
         cmd += ['--placeholder-srcjar-path', placeholder_srcjar_path]
+      if enable_jni_multiplexing:
+        cmd += ['--enable-jni-multiplexing']
       if per_file_natives:
         cmd += ['--per-file-natives']
 
@@ -257,6 +257,8 @@ class BaseTest(unittest.TestCase):
         priority_java_file = pathlib.Path(tdir) / 'java_priority_sources.txt'
         priority_java_file.write_text('\n'.join(priority_java_sources))
         cmd += ['--priority-java-sources-file', str(priority_java_file)]
+      if priority_java_files is not None:
+        cmd += ['--never-omit-switch-num']
 
       srcjar_path = os.path.join(tdir, 'srcjar.jar')
       cmd += ['--srcjar-path', srcjar_path]
@@ -355,7 +357,8 @@ class Tests(BaseTest):
     self._TestEndToEndGeneration(['SampleNonProxy.java'])
 
   def testBirectionalNonProxy(self):
-    self._TestEndToEndGeneration(['SampleBidirectionalNonProxy.java'])
+    self._TestEndToEndGeneration(['SampleBidirectionalNonProxy.java'],
+                                 enable_definition_macros=True)
 
   def testBidirectionalClass(self):
     self._TestEndToEndGeneration(['SampleForTests.java'], srcjar=True)
@@ -466,7 +469,7 @@ class Tests(BaseTest):
 
   def testForTestingKeptMultiplexing(self):
     input_java_file = 'SampleProxyEdgeCases.java'
-    self._TestEndToEndGeneration([input_java_file], srcjar=True)
+    self._TestEndToEndGeneration([input_java_file], enable_jni_multiplexing=True, srcjar=True)
     self._TestEndToEndRegistration([input_java_file],
                                    enable_jni_multiplexing=True,
                                    include_test_only=True)
@@ -476,18 +479,11 @@ class Tests(BaseTest):
                                    enable_jni_multiplexing=True,
                                    include_test_only=False)
 
-  def testProxyMocks(self):
-    self._TestEndToEndRegistration(['TinySample.java'], enable_proxy_mocks=True)
-
-  def testRequireProxyMocks(self):
-    self._TestEndToEndRegistration(['TinySample.java'],
-                                   enable_proxy_mocks=True,
-                                   require_mocks=True)
-
   def testPackagePrefixGenerator(self):
     self._TestEndToEndGeneration(['SampleForTests.java'],
                                  srcjar=True,
-                                 package_prefix='this.is.a.package.prefix')
+                                 package_prefix='this.is.a.package.prefix',
+                                 generate_placeholders=True)
 
   def testPackagePrefixWithFilter(self):
     self._TestEndToEndGeneration(['SampleForTests.java'],

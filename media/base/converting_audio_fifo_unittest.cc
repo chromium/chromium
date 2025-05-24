@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/converting_audio_fifo.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "media/base/audio_bus.h"
@@ -72,10 +68,7 @@ class ConvertingAudioFifoTest
 
   void PushFramesWithValue(AudioParameters params, float value) {
     auto audio_bus = AudioBus::Create(params);
-    float* channel = audio_bus->channel(0);
-    for (int i = 0; i < audio_bus->frames(); ++i) {
-      channel[i] = value;
-    }
+    std::ranges::fill(audio_bus->channel_span(0), value);
   }
 
   int min_number_input_frames_needed() {
@@ -281,7 +274,7 @@ TEST_F(ConvertingAudioFifoTest, Push_MoreThanEnoughFrames_IsFifoOrder) {
   while (fifo()->HasOutput()) {
     // Get the first value of the output.
     auto* output = fifo()->PeekOutput();
-    float current_value = output->channel(0)[0];
+    float current_value = output->channel_span(0)[0];
     EXPECT_GT(current_value, last_value);
     last_value = current_value;
   }

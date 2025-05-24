@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/csp_validator.h"
@@ -45,11 +46,21 @@ static const char kDefaultMV3CSP[] = "script-src 'self';";
 static const char kMinimumMV3CSP[] =
     "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules'; "
     "object-src 'self';";
+// The minimum CSP to be used in isolated worlds. The placeholder is for the
+// extension's dynamic URL.
+constexpr char kMinimumMV3IsolatedWorldCSPTemplate[] =
+    "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' %s; "
+    "object-src 'self';";
 // For unpacked extensions, we additionally allow the use of localhost files to
 // aid in rapid local development.
 static const char kMinimumUnpackedMV3CSP[] =
     "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' "
     "http://localhost:* http://127.0.0.1:*; object-src 'self';";
+// The minimum CSP to be used in isolated worlds for unpacked extensions. The
+// placeholder is for the extension's dynamic URL.
+constexpr char kMinimumUnpackedMV3IsolatedWorldCSPTemplate[] =
+    "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' "
+    "http://localhost:* http://127.0.0.1:* %s; object-src 'self';";
 
 #define PLATFORM_APP_LOCAL_CSP_SOURCES "'self' blob: filesystem: data:"
 
@@ -109,11 +120,13 @@ const base::Value* GetManifestPath(const Extension* extension,
 }
 
 const char* GetDefaultExtensionPagesCSP(Extension* extension) {
-  if (extension->manifest_version() >= 3)
+  if (extension->manifest_version() >= 3) {
     return kDefaultMV3CSP;
+  }
 
-  if (extension->GetType() == Manifest::TYPE_PLATFORM_APP)
+  if (extension->GetType() == Manifest::TYPE_PLATFORM_APP) {
     return kDefaultPlatformAppContentSecurityPolicy;
+  }
 
   return kDefaultContentSecurityPolicy;
 }
@@ -136,8 +149,7 @@ const std::string* GetMinimumMV3CSPForExtension(const Extension& extension) {
 CSPInfo::CSPInfo(std::string extension_pages_csp)
     : extension_pages_csp(std::move(extension_pages_csp)) {}
 
-CSPInfo::~CSPInfo() {
-}
+CSPInfo::~CSPInfo() = default;
 
 // static
 const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
@@ -150,17 +162,20 @@ const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
 const std::string* CSPInfo::GetMinimumCSPToAppend(
     const Extension& extension,
     const std::string& relative_path) {
-  if (!extension.is_extension())
+  if (!extension.is_extension()) {
     return nullptr;
+  }
 
   // For sandboxed pages and manifest V2 extensions, append the parsed CSP. This
   // helps ensure that extension's can't get around our parsing rules by CSP
   // modifications through, say service workers.
-  if (SandboxedPageInfo::IsSandboxedPage(&extension, relative_path))
+  if (SandboxedPageInfo::IsSandboxedPage(&extension, relative_path)) {
     return &GetSandboxContentSecurityPolicy(&extension);
+  }
 
-  if (extension.manifest_version() <= 2)
+  if (extension.manifest_version() <= 2) {
     return &GetExtensionPagesCSP(&extension);
+  }
 
   // For manifest V3 extensions, append the minimum secure CSP. This
   // additionally helps protect against bugs in our CSP parsing code which may
@@ -171,11 +186,23 @@ const std::string* CSPInfo::GetMinimumCSPToAppend(
 }
 
 // static
-const std::string* CSPInfo::GetIsolatedWorldCSP(const Extension& extension) {
+std::optional<std::string> CSPInfo::GetIsolatedWorldCSP(
+    const Extension& extension) {
   if (extension.manifest_version() >= 3) {
-    // The isolated world will use its own CSP which blocks remotely hosted
-    // code.
-    return GetMinimumMV3CSPForExtension(extension);
+    std::string isolated_world_csp;
+    // Note: base::StringPrintf() requires the template string to be constexpr,
+    // so we can't put the template in a temporary const char* with a ternary
+    // to avoid the repeated StringPrintf() calls.
+    if (Manifest::IsUnpackedLocation(extension.location())) {
+      isolated_world_csp =
+          base::StringPrintf(kMinimumUnpackedMV3IsolatedWorldCSPTemplate,
+                             extension.dynamic_url().spec().c_str());
+    } else {
+      isolated_world_csp =
+          base::StringPrintf(kMinimumMV3IsolatedWorldCSPTemplate,
+                             extension.dynamic_url().spec().c_str());
+    }
+    return isolated_world_csp;
   }
 
   Manifest::Type type = extension.GetType();
@@ -184,11 +211,11 @@ const std::string* CSPInfo::GetIsolatedWorldCSP(const Extension& extension) {
                                type == Manifest::TYPE_LEGACY_PACKAGED_APP;
   if (!bypass_main_world_csp) {
     // The isolated world will use the main world CSP.
-    return nullptr;
+    return std::nullopt;
   }
 
   // The isolated world will bypass the main world CSP.
-  return &base::EmptyString();
+  return std::string();
 }
 
 // static

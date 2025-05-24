@@ -4,10 +4,21 @@ AXWebArea
 ++++++AXStaticText AXValue='Static fallback'
 ++++AXGroup
 ++++++AXStaticText AXValue='<newline>    '
-++++++AXGroup accessibilityCustomContent=[{label: 'description', value: 'Aria hidden paragraph in fallback content'}]
+++++++AXGroup AXCustomContent=[{label: 'description', value: 'Aria hidden paragraph in fallback content'}]
 ++++++++AXStaticText AXValue='Line breaking content in a fallback'
 ++++++AXStaticText AXValue='<newline>    '
-++++++AXGroup accessibilityCustomContent=[{label: 'description', value: 'Visibility hidden paragraph in fallback content'}]
+++++++AXGroup AXCustomContent=[{label: 'description', value: 'Visibility hidden paragraph in fallback content'}]
+++++++++AXStaticText AXValue='This is another paragraph in fallback'
+++++++AXStaticText AXValue='<newline>    '
+++++++AXStaticText AXValue='<newline>    '
+++++++AXStaticText AXValue='<newline>    '
+++++++AXStaticText AXValue='<newline>  '
+++++AXGroup
+++++++AXStaticText AXValue='<newline>    '
+++++++AXGroup AXCustomContent=[{label: 'description', value: 'Aria hidden paragraph in fallback content'}]
+++++++++AXStaticText AXValue='Line breaking content in a fallback'
+++++++AXStaticText AXValue='<newline>    '
+++++++AXGroup AXCustomContent=[{label: 'description', value: 'Visibility hidden paragraph in fallback content'}]
 ++++++++AXStaticText AXValue='This is another paragraph in fallback'
 ++++++AXStaticText AXValue='<newline>    '
 ++++++AXStaticText AXValue='<newline>    '

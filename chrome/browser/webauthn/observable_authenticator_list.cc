@@ -4,10 +4,11 @@
 
 #include "chrome/browser/webauthn/observable_authenticator_list.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
+#include "base/check.h"
 #include "chrome/browser/webauthn/authenticator_list_observer.h"
 
 ObservableAuthenticatorList::ObservableAuthenticatorList() = default;
@@ -70,6 +71,6 @@ void ObservableAuthenticatorList::RemoveObserver() {
 ObservableAuthenticatorList::AuthenticatorListIterator
 ObservableAuthenticatorList::GetAuthenticatorIterator(
     std::string_view authenticator_id) {
-  return base::ranges::find(authenticator_list_, authenticator_id,
-                            &AuthenticatorReference::authenticator_id);
+  return std::ranges::find(authenticator_list_, authenticator_id,
+                           &AuthenticatorReference::authenticator_id);
 }

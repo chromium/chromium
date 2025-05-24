@@ -7,9 +7,12 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -19,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -45,13 +49,13 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -62,9 +66,8 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -104,6 +107,8 @@ static_assert(kAutofillPopupMinWidth > 128);
 // TODO(crbug.com/41382463): move handling the max width to the base class.
 constexpr int kAutofillPopupMaxWidth = 456;
 
+constexpr int kMaxPopupWithSearchBarHeight = 400;
+
 // Preferred position relative to the control sides of the sub-popup.
 constexpr std::array<views::BubbleArrowSide, 2> kDefaultSubPopupSides = {
     views::BubbleArrowSide::kLeft, views::BubbleArrowSide::kRight};
@@ -139,13 +144,8 @@ bool CanShowRootPopup(AutofillSuggestionController& controller) {
 // when hovering the content area. This is used for manual fallback
 // suggestions.
 bool ContentCellShouldOpenSubPopupSuggestion(const Suggestion& suggestion) {
-  return !suggestion.is_acceptable && !suggestion.apply_deactivated_style &&
+  return !suggestion.IsAcceptable() && !suggestion.HasDeactivatedStyle() &&
          !suggestion.children.empty();
-}
-
-BrowserView* GetLastActiveBrowserView() {
-  Browser* browser = chrome::FindLastActive();
-  return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
 }
 
 // If `is_root_popup` is `true`, the result list corresponds to sides defined in
@@ -180,6 +180,23 @@ std::vector<views::BubbleArrowSide> GetPreferredPopupSides(
   }
   return base::ToVector(base::i18n::IsRTL() ? kDefaultSubPopupSidesRTL
                                             : kDefaultSubPopupSides);
+}
+
+void DefaultA11yAnnouncer(const std::u16string& message, bool polite) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view) {
+    return;
+  }
+
+  if (polite) {
+    browser_view->GetViewAccessibility().AnnouncePolitely(message);
+  } else {
+    browser_view->GetViewAccessibility().AnnounceText(message);
+  }
 }
 
 }  // namespace
@@ -223,12 +240,6 @@ PopupViewViews::PopupViewViews(
 
 PopupViewViews::~PopupViewViews() = default;
 
-void PopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (!controller_) {
-    node_data->AddState(ax::mojom::State::kInvisible);
-  }
-}
-
 void PopupViewViews::OnMouseEntered(const ui::MouseEvent& event) {
   OnMouseEnteredInChildren();
 }
@@ -248,7 +259,7 @@ bool PopupViewViews::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   base::AutoReset show_in_progress_reset(&show_in_progress_, !!search_bar_);
 
-  UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleStates();
   if (!DoShow()) {
     return false;
   }
@@ -267,7 +278,7 @@ bool PopupViewViews::Show(
     // Selecting first selectable row.
     // TODO(crbug.com/327931044): Remove the if condition and make the else as
     // the default as part of cleanup.
-    if (!controller_->GetSuggestionAt(0).apply_deactivated_style) {
+    if (!controller_->GetSuggestionAt(0).HasDeactivatedStyle()) {
       SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
                       PopupCellSelectionSource::kNonUserInput);
     } else {
@@ -276,42 +287,21 @@ bool PopupViewViews::Show(
     }
   }
 
-  // Check for the special "warning bubble" mode: single warning suggestion
-  // which content should be just announced to the user. Triggering
-  // Event::kAlert on such a row makes screen readers read its content out.
-  // TODO(crbug.com/40281426): Consider supporting "warning mode" explicitly.
-  if (rows_.size() == 1 &&
-      absl::holds_alternative<PopupWarningView*>(rows_[0])) {
-    absl::get<PopupWarningView*>(rows_[0])->NotifyAccessibilityEvent(
-        ax::mojom::Event::kAlert, true);
-  }
-
   // Compose has separate on show announcements.
   // TODO(crbug.com/340359989): Replace with AutofillComposeDelegate::OnShow
   if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
-    const bool announce_politely =
-        base::FeatureList::IsEnabled(features::kComposePopupAnnouncePolitely);
-
     switch (controller_->GetSuggestionAt(0).type) {
       case SuggestionType::kComposeResumeNudge:
       case SuggestionType::kComposeSavedStateNotification: {
         const std::u16string saved_state_message = l10n_util::GetStringUTF16(
             IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_RESUME);
-        if (announce_politely) {
-          AnnouncePolitely(saved_state_message);
-        } else {
-          AxAnnounce(saved_state_message);
-        }
+        a11y_announcer_.Run(saved_state_message, /*polite=*/true);
         break;
       }
       case SuggestionType::kComposeProactiveNudge: {
         const std::u16string proactive_message = l10n_util::GetStringUTF16(
             IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_PROACTIVE);
-        if (announce_politely) {
-          AnnouncePolitely(proactive_message);
-        } else {
-          AxAnnounce(proactive_message);
-        }
+        a11y_announcer_.Run(proactive_message, /*polite=*/true);
         break;
       }
       case SuggestionType::kComposeDisable:
@@ -324,6 +314,8 @@ bool PopupViewViews::Show(
     }
   }
 
+  MaybeA11yFocusInformationalSuggestion();
+
   return !CanActivate() || (GetWidget() && GetWidget()->IsActive());
 }
 
@@ -333,7 +325,7 @@ void PopupViewViews::Hide() {
 
   // The controller is no longer valid after it hides us.
   controller_ = nullptr;
-  UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleStates();
   DoHide();
 }
 
@@ -587,12 +579,12 @@ void PopupViewViews::SelectPreviousRow() {
   // `kControl` is used to show a sub-popup with child suggestions. It can
   // only be selected on a new row if the corresponding suggestion has
   // children.
-  const PopupRowView::CellType kNewCellType =
+  const PopupRowView::CellType new_cell_type =
       (old_index && old_index->second == PopupRowView::CellType::kControl &&
        GetPopupRowViewAt(new_row).GetExpandChildSuggestionsView())
           ? PopupRowView::CellType::kControl
           : PopupRowView::CellType::kContent;
-  SetSelectedCell(CellIndex{new_row, kNewCellType},
+  SetSelectedCell(CellIndex{new_row, new_cell_type},
                   PopupCellSelectionSource::kKeyboard);
 }
 
@@ -612,12 +604,12 @@ void PopupViewViews::SelectNextRow(PopupCellSelectionSource source) {
   // `kControl` is used to show a sub-popup with child suggestions. It can
   // only be selected on a new row if the corresponding suggestion has
   // children.
-  const PopupRowView::CellType kNewCellType =
+  const PopupRowView::CellType new_cell_type =
       (old_index && old_index->second == PopupRowView::CellType::kControl &&
        GetPopupRowViewAt(new_row).GetExpandChildSuggestionsView())
           ? PopupRowView::CellType::kControl
           : PopupRowView::CellType::kContent;
-  SetSelectedCell(CellIndex{new_row, kNewCellType}, source);
+  SetSelectedCell(CellIndex{new_row, new_cell_type}, source);
 }
 
 bool PopupViewViews::SelectNextHorizontalCell() {
@@ -691,7 +683,13 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
   SetRowWithOpenSubPopup(std::nullopt);
 
   CreateSuggestionViews();
-  DoUpdateBoundsAndRedrawPopup(prefer_prev_arrow_side);
+  // Updating bounds and redrawing popup can cause the popup to hide.
+  if (!DoUpdateBoundsAndRedrawPopup(prefer_prev_arrow_side)) {
+    return;
+  }
+
+  MaybeA11yFocusInformationalSuggestion();
+  ShowIPHFeaturePromos();
 }
 
 bool PopupViewViews::OverlapsWithPictureInPictureWindow() const {
@@ -704,19 +702,7 @@ std::optional<int32_t> PopupViewViews::GetAxUniqueId() {
 }
 
 void PopupViewViews::AxAnnounce(const std::u16string& text) {
-  BrowserView* browser_view = GetLastActiveBrowserView();
-  if (!browser_view) {
-    return;
-  }
-  browser_view->GetViewAccessibility().AnnounceText(text);
-}
-
-void PopupViewViews::AnnouncePolitely(const std::u16string& text) {
-  BrowserView* browser_view = GetLastActiveBrowserView();
-  if (!browser_view) {
-    return;
-  }
-  browser_view->GetViewAccessibility().AnnouncePolitely(text);
+  a11y_announcer_.Run(text, /*polite=*/false);
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::CreateSubPopupView(
@@ -780,12 +766,7 @@ bool PopupViewViews::HasFocus() const {
 
 void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
                                                bool visible) {
-  if (!visible || !controller_) {
-    return;
-  }
-
-  Browser* browser = GetBrowser();
-  if (!browser) {
+  if (!visible) {
     return;
   }
 
@@ -794,21 +775,15 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
   // educational messages. The promo bubble should only be shown once in one
   // session and has a limit for how many times it can be shown at most in a
   // period of time.
-  for (auto feature : base::MakeFlatSet<raw_ptr<const base::Feature>>(
-           controller_->GetSuggestions(), /*comp=*/{},
-           &Suggestion::feature_for_iph)) {
-    if (feature) {
-      browser->window()->MaybeShowFeaturePromo(*feature);
-    }
-  }
+  ShowIPHFeaturePromos();
 }
 
-void PopupViewViews::SearchBarOnInputChanged(const std::u16string& query) {
+void PopupViewViews::SearchBarOnInputChanged(std::u16string_view query) {
   if (controller_) {
     controller_->SetFilter(
-        query.empty()
-            ? std::nullopt
-            : std::optional(AutofillPopupController::SuggestionFilter(query)));
+        query.empty() ? std::nullopt
+                      : std::optional(AutofillPopupController::SuggestionFilter(
+                            std::u16string(query))));
   }
 }
 
@@ -902,21 +877,52 @@ void PopupViewViews::SetSelectedCell(
   }
 }
 
-void PopupViewViews::UpdateExpandedCollapsedAccessibleState() const {
+void PopupViewViews::ShowIPHFeaturePromos() {
+  Browser* browser = GetBrowser();
+  if (!browser) {
+    return;
+  }
+
+  if (!GetWidget() || !GetWidget()->IsVisible() || !controller_) {
+    return;
+  }
+
+  for (const auto& iph_metadata : base::MakeFlatSet<Suggestion::IPHMetadata>(
+           controller_->GetSuggestions(), /*comp=*/{},
+           &Suggestion::iph_metadata)) {
+    if (iph_metadata.feature) {
+      user_education::FeaturePromoParams params(*iph_metadata.feature);
+      // Setting the params to a `std::vector` (even if it is empty), indicates
+      // to the framework that a substitution should be made. Therefore only
+      // set it if `iph_params` is non-empty.
+      if (!iph_metadata.iph_params.empty()) {
+        params.body_params = iph_metadata.iph_params;
+        params.screen_reader_params = iph_metadata.iph_params;
+      }
+      browser->window()->MaybeShowFeaturePromo(std::move(params));
+    }
+  }
+}
+
+void PopupViewViews::UpdateAccessibleStates() const {
   if (controller_) {
     GetViewAccessibility().SetIsExpanded();
+    GetViewAccessibility().SetIsInvisible(false);
   } else {
     GetViewAccessibility().SetIsCollapsed();
+    GetViewAccessibility().SetIsInvisible(true);
   }
 }
 
 bool PopupViewViews::HasSelectablePopupRowViewAt(size_t index) const {
   return index < rows_.size() &&
-         absl::holds_alternative<PopupRowView*>(rows_[index]) &&
+         std::holds_alternative<PopupRowView*>(rows_[index]) &&
          GetPopupRowViewAt(index).IsSelectable();
 }
 
 void PopupViewViews::InitViews() {
+  a11y_announcer_ = base::BindRepeating(&DefaultA11yAnnouncer);
+
   SetNotifyEnterExitOnChild(true);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -947,7 +953,7 @@ void PopupViewViews::InitViews() {
   }
 
   CreateSuggestionViews();
-  UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleStates();
 }
 
 void PopupViewViews::CreateSuggestionViews() {
@@ -962,19 +968,18 @@ void PopupViewViews::CreateSuggestionViews() {
   suggestions_container_->RemoveAllChildViews();
 
   const int kInterItemsPadding = GetContentsVerticalPadding();
-  const std::vector<Suggestion> kSuggestions = controller_->GetSuggestions();
+  const std::vector<Suggestion> suggestions = controller_->GetSuggestions();
 
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
-  rows_.reserve(kSuggestions.size());
+  rows_.reserve(suggestions.size());
   size_t current_line_number = 0u;
 
   // No suggestions (or only footer ones, which are not filterable) with
   // a non-empty filter query means that there are no results matching
   // the query. Show a corresponding message.
-  if ((kSuggestions.empty() ||
-       std::ranges::all_of(kSuggestions,
+  if ((suggestions.empty() ||
+       std::ranges::all_of(suggestions,
                            [](const Suggestion& suggestion) {
                              return suggestion.filtration_policy ==
                                     Suggestion::FiltrationPolicy::kStatic;
@@ -986,7 +991,7 @@ void PopupViewViews::CreateSuggestionViews() {
   }
 
   // Add the body rows, if there are any.
-  if (!kSuggestions.empty() && !IsFooterItem(kSuggestions, 0u)) {
+  if (!suggestions.empty() && !IsFooterItem(suggestions, 0u)) {
     // Create a container to wrap the "regular" (non-footer) rows.
     std::unique_ptr<views::BoxLayoutView> body_container =
         views::Builder<views::BoxLayoutView>()
@@ -994,28 +999,25 @@ void PopupViewViews::CreateSuggestionViews() {
             .SetInsideBorderInsets(gfx::Insets::VH(kInterItemsPadding, 0))
             .Build();
 
-    for (; current_line_number < kSuggestions.size() &&
-           !IsFooterItem(kSuggestions, current_line_number);
+    for (; current_line_number < suggestions.size() &&
+           !IsFooterItem(suggestions, current_line_number);
          ++current_line_number) {
-      switch (kSuggestions[current_line_number].type) {
+      switch (suggestions[current_line_number].type) {
         case SuggestionType::kSeparator:
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupSeparatorView>(kInterItemsPadding)));
           break;
-
         case SuggestionType::kTitle:
           rows_.push_back(
               body_container->AddChildView(std::make_unique<PopupTitleView>(
-                  kSuggestions[current_line_number].main_text.value)));
+                  suggestions[current_line_number].main_text.value)));
           break;
-
         case SuggestionType::kMixedFormMessage:
         case SuggestionType::kInsecureContextPaymentDisabledMessage:
           rows_.push_back(
               body_container->AddChildView(std::make_unique<PopupWarningView>(
-                  kSuggestions[current_line_number])));
+                  suggestions[current_line_number])));
           break;
-
         // The default section contains all selectable rows and includes
         // autocomplete, address, credit cards and passwords.
         default:
@@ -1032,46 +1034,58 @@ void PopupViewViews::CreateSuggestionViews() {
                   std::move(filter_match), password_favicon_loader_.get()));
           rows_.push_back(row_view);
 
-          const base::Feature* const feature_for_iph =
-              kSuggestions[current_line_number].feature_for_iph;
-
+          const base::Feature* const feature =
+              suggestions[current_line_number].iph_metadata.feature;
           // Set appropriate element ids for IPH targets, it is important to
           // set them earlier to make sure the elements are discoverable later
           // during popup's visibility change and the promo bubble showing.
-          if (feature_for_iph == &feature_engagement::
-                                     kIPHAutofillVirtualCardSuggestionFeature ||
-              feature_for_iph ==
-                  &feature_engagement::
-                      kIPHAutofillDisabledVirtualCardSuggestionFeature) {
+          if (feature == &feature_engagement::
+                             kIPHAutofillVirtualCardSuggestionFeature ||
+              feature == &feature_engagement::
+                             kIPHAutofillDisabledVirtualCardSuggestionFeature ||
+              feature == &feature_engagement::
+                             kIPHAutofillCardInfoRetrievalSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardSuggestionEntryElementId);
-          } else if (feature_for_iph ==
+          } else if (feature ==
                      &feature_engagement::
                          kIPHAutofillVirtualCardCVCSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillStandaloneCvcSuggestionElementId);
-          } else if (feature_for_iph ==
+          } else if (feature ==
                      &feature_engagement::
                          kIPHAutofillExternalAccountProfileSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillSuggestionElementId);
-          } else if (feature_for_iph ==
-                     &feature_engagement::
-                         kIPHAutofillCreditCardBenefitFeature) {
+          } else if (feature == &feature_engagement::
+                                    kIPHAutofillCreditCardBenefitFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardBenefitElementId);
-          } else if (feature_for_iph ==
-                     &feature_engagement::
-                         kIPHPlusAddressCreateSuggestionFeature) {
+          } else if (feature == &feature_engagement::
+                                    kIPHPlusAddressCreateSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kPlusAddressCreateSuggestionElementId);
+          } else if (feature ==
+                     &feature_engagement::
+                         kIPHAutofillBnplAffirmOrZipSuggestionFeature) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillBnplAffirmOrZipSuggestionElementId);
+          } else if (feature ==
+                     &feature_engagement::
+                         kIPHAutofillHomeWorkProfileSuggestionFeature) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillHomeWorkSuggestionElementId);
+          } else if (feature == &feature_engagement::
+                                    kIPHAutofillEnableLoyaltyCardsFeature) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillEnableLoyaltyCardsElementId);
           }
       }
     }
 
     std::unique_ptr<views::ScrollView> scroll_view =
         views::Builder<views::ScrollView>()
-            .SetBackgroundThemeColorId(ui::kColorDropdownBackground)
+            .SetBackgroundColor(ui::kColorDropdownBackground)
             .SetHorizontalScrollBarMode(
                 views::ScrollView::ScrollBarMode::kDisabled)
             .SetDrawOverflowIndicator(false)
@@ -1093,7 +1107,7 @@ void PopupViewViews::CreateSuggestionViews() {
     suggestions_container_->SetFlexForView(scroll_view_.get(), 1);
   }
 
-  if (current_line_number >= kSuggestions.size()) {
+  if (current_line_number >= suggestions.size()) {
     return;
   }
 
@@ -1101,7 +1115,7 @@ void PopupViewViews::CreateSuggestionViews() {
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBackground(
-              views::CreateThemedSolidBackground(ui::kColorDropdownBackground))
+              views::CreateSolidBackground(ui::kColorDropdownBackground))
           .Build();
 
   if (IsFooterScrollable()) {
@@ -1110,7 +1124,7 @@ void PopupViewViews::CreateSuggestionViews() {
   } else {
     // Add a separator between the main list of suggestions and the footer with
     // no vertical padding as these elements have their own top/bottom paddings.
-    if (kSuggestions[current_line_number].type == SuggestionType::kSeparator) {
+    if (suggestions[current_line_number].type == SuggestionType::kSeparator) {
       rows_.push_back(suggestions_container_->AddChildView(
           std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0)));
       ++current_line_number;
@@ -1123,10 +1137,10 @@ void PopupViewViews::CreateSuggestionViews() {
     suggestions_container_->SetFlexForView(footer_container_, 0);
   }
 
-  for (; current_line_number < kSuggestions.size(); ++current_line_number) {
-    DCHECK(IsFooterItem(kSuggestions, current_line_number));
+  for (; current_line_number < suggestions.size(); ++current_line_number) {
+    DCHECK(IsFooterItem(suggestions, current_line_number));
     // The footer can contain either footer views or separator lines.
-    if (kSuggestions[current_line_number].type == SuggestionType::kSeparator) {
+    if (suggestions[current_line_number].type == SuggestionType::kSeparator) {
       rows_.push_back(footer_container_->AddChildView(
           std::make_unique<PopupSeparatorView>(kInterItemsPadding)));
     } else {
@@ -1157,6 +1171,13 @@ gfx::Size PopupViewViews::CalculatePreferredSize(
     size = views::View::CalculatePreferredSize(
         views::SizeBounds(kAutofillPopupMaxWidth, {}));
     size.set_width(kAutofillPopupMaxWidth);
+  }
+
+  // This popup height limiting for popups with a search bar addresses a minor
+  // UX concern when a potentially long list makes the search bar appear far
+  // away from the field and thus less obvious what the search bar belongs to.
+  if (search_bar_) {
+    size.set_height(std::min(kMaxPopupWithSearchBarHeight, size.height()));
   }
 
   return size;
@@ -1387,12 +1408,45 @@ bool PopupViewViews::SelectParentPopupContentCell() {
   return true;
 }
 
+void PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
+  if (rows_.size() != 1) {
+    return;
+  }
+
+  if (auto* warning_view = std::get_if<PopupWarningView*>(&rows_[0]);
+      warning_view && *warning_view) {
+    NotifyAXSelection(**warning_view);
+    (*warning_view)
+        ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
+  }
+}
+
 base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 BEGIN_METADATA(PopupViewViews)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    PopupViewViews,
+    kAutofillBnplAffirmOrZipSuggestionElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
+                                      kAutofillCreditCardBenefitElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    PopupViewViews,
+    kAutofillCreditCardSuggestionEntryElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
+                                      kAutofillAiOptInIphElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    PopupViewViews,
+    kAutofillStandaloneCvcSuggestionElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
+                                      kAutofillSuggestionElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
+                                      kAutofillHomeWorkSuggestionElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
+                                      kAutofillEnableLoyaltyCardsElementId);
 
 // static
 base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(

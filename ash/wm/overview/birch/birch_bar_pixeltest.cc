@@ -12,7 +12,6 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -115,19 +114,7 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*activation_callback=*/base::DoNothing()));
       break;
     case BirchItemType::kCoral: {
-      std::vector<GURL> page_urls;
-      page_urls.emplace_back(("https://www.reddit.com/"));
-      page_urls.emplace_back(("https://www.figma.com/"));
-      page_urls.emplace_back(("https://www.notion.so/"));
-
-      std::vector<std::string> app_ids;
-      app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
-
-      items.push_back(std::make_unique<BirchCoralItem>(
-          /*coral_title=*/u"coral_title",
-          /*coral_text=*/u"coral_text",
-          /*page_urls=*/page_urls,
-          /*app_ids=*/app_ids));
+      // TODO(zxdan): Create coral pixel tests in a separate test set.
       break;
     }
     case BirchItemType::kTest:
@@ -146,11 +133,6 @@ struct TestParams {
 class BirchBarPixelTest : public AshTestBase,
                           public testing::WithParamInterface<TestParams> {
  public:
-  BirchBarPixelTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather}, {});
-  }
-
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
@@ -170,7 +152,6 @@ class BirchBarPixelTest : public AshTestBase,
 
  private:
   StubBirchClient stub_birch_client_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestImageDownloader> image_downloader_;
 };
 

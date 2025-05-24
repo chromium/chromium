@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Pasting text in <b>
+  promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
+[FAIL] Pasting text in <span>
+  promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
+[FAIL] Pasting text into editable <b>
+  promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
+[FAIL] Pasting text in <i> into editable <b>
+  promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
+[FAIL] Pasting 2 paragraphs
+  promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
+[FAIL] Pasting 2 paragraphs into <b>
+  promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
+[FAIL] Pasting 2 paragraphs whose text is bold
+  promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
+Harness: the test ran to completion.
+

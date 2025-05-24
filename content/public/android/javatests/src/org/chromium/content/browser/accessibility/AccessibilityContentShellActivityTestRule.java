@@ -36,6 +36,7 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -102,7 +103,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-                    AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+                    AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
                     AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
                 });
 
@@ -113,11 +114,14 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mWcax.setAccessibilityTrackerForTesting(mTracker);
     }
 
-    public void setupTestFrameworkForBasicMode() {
+    public void setupTestFrameworkForBasicMode(boolean includeEventMaskByDefault) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-                    AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                    if (includeEventMaskByDefault) {
+                        AccessibilityState.setStateMaskForTesting(
+                                EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                    }
                 });
 
         mWcax = getWebContentsAccessibility();
@@ -127,12 +131,33 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mWcax.setAccessibilityTrackerForTesting(mTracker);
     }
 
-    public void setupTestFrameworkForFormControlsMode() {
+    public void setupTestFrameworkForFormControlsMode(boolean includeEventMaskByDefault) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
                     AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
-                    AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                    if (includeEventMaskByDefault) {
+                        AccessibilityState.setStateMaskForTesting(
+                                EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                    }
+                });
+
+        mWcax = getWebContentsAccessibility();
+        mNodeProvider = getAccessibilityNodeProvider();
+
+        mTracker = new AccessibilityActionAndEventTracker();
+        mWcax.setAccessibilityTrackerForTesting(mTracker);
+    }
+
+    public void setupTestFrameworkForCompleteMode(boolean includeEventMaskByDefault) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(true);
+                    if (includeEventMaskByDefault) {
+                        AccessibilityState.setStateMaskForTesting(
+                                EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                    }
                 });
 
         mWcax = getWebContentsAccessibility();
@@ -172,17 +197,18 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
             // The methods found through reflection are only available in |AccessibilityNodeInfo|,
             // so we will unwrap |node| to perform the calls.
             AccessibilityNodeInfo nodeInfo = (AccessibilityNodeInfo) node.getInfo();
-            Method getChildIdMethod =
-                    AccessibilityNodeInfo.class.getMethod("getChildId", int.class);
-            long childId = (long) getChildIdMethod.invoke(nodeInfo, Integer.valueOf(index));
-            Method getVirtualDescendantIdMethod =
-                    AccessibilityNodeInfo.class.getMethod("getVirtualDescendantId", long.class);
-            int virtualViewId =
-                    (int) getVirtualDescendantIdMethod.invoke(null, Long.valueOf(childId));
-            return virtualViewId;
+            // mChildNodeIds contains the IDs of all the children but is private so we need to use
+            // setAccessible to access it.
+            Field childNodeIdsField = nodeInfo.getClass().getDeclaredField("mChildNodeIds");
+            childNodeIdsField.setAccessible(true);
+            // Get the ID of the child at the correct index.
+            Object childNodeIds = childNodeIdsField.get(nodeInfo);
+            Method get = childNodeIds.getClass().getMethod("get", int.class);
+            Long childId = (Long) get.invoke(childNodeIds, index);
+            // The virtual view ID is stored in the left half of the source node ID.
+            return (int) (childId.longValue() >> 32);
         } catch (Exception ex) {
-            Assert.fail(
-                    "Unable to call hidden AccessibilityNodeInfoCompat method: " + ex.toString());
+            Assert.fail("Unable to get AccessibilityNodeInfoCompat child ID: " + ex.toString());
             return 0;
         }
     }

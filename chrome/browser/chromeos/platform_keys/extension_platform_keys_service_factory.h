@@ -34,7 +34,7 @@ class ExtensionPlatformKeysServiceFactory : public ProfileKeyedServiceFactory {
   ~ExtensionPlatformKeysServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

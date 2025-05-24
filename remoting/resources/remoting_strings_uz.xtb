@@ -28,6 +28,7 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="2329392777730037872"><ph name="URL" /> mijoz qurilmasida ochilmadi.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2366718077645204424">Hostga ulanib bo‘lmadi. Buning sababi - siz foydalanayotgan tarmog sozlamalari bo‘lishi mumkin.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Barcha huquqlar himoyalangan.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> dasturiga “Qulayliklar” ruxsatini bering</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> qurilmasiga ulandi</translation>
 <translation id="2540992418118313681">Ushbu kompyuterni boshqarish ruxsati boshqa foydalanuvchi bilan ulashilsinmi?</translation>
@@ -39,6 +40,7 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="2758123043070977469">Hisobingizni autentifikatsiya qilishda xatolik yuz berdi. Keyinroq qaytadan urining.</translation>
 <translation id="2803375539583399270">PIN kodni kiriting</translation>
 <translation id="2919669478609886916">Siz hozirda bu kompyuterni boshqa foydalanuvchi bilan ulashmoqdasiz. Ulashishni davom ettirasizmi?</translation>
+<translation id="2929683002824598593">Qurilmani ulashish</translation>
 <translation id="2939145106548231838">Hostdagi haqiqiylik tekshiruvi</translation>
 <translation id="3027681561976217984">Sensorli rejim</translation>
 <translation id="3106379468611574572">Masofaviy kompyuter ulanish so‘roviga javob bermayapti.Uning internetga ulanganligini tekshiring va qaytadan urinib ko‘ring.</translation>
@@ -91,6 +93,7 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="4987330545941822761">Chrome Remote Desktop URL manzillarni qurilmada ochish uchun brauzer topa olmaydi. Kerakli ilovani quyidagi roʻyxatdan tanlang.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (oflayn)</translation>
 <translation id="507204348399810022"><ph name="HOSTNAME" /> kompyuteriga masofadan ulanishlar o‘chirib qo‘yilsinmi?</translation>
+<translation id="5095424396646120601">Ishdan chiqishlar hisoboti</translation>
 <translation id="5170982930780719864">Yaroqsiz host identifikatori</translation>
 <translation id="5204575267916639804">Savol-javob</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
@@ -116,10 +119,12 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="6178645564515549384">Masofaviy yordam uchun shaxsiy xabarlashuv hosti</translation>
 <translation id="618120821413932081">Masofaviy ish stolini oynaga moslash</translation>
 <translation id="6223301979382383752">Ekranni yozib olish sozlamalarini ochish</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> ekran, klaviatura va sichqonchadan foydalanishga ruxsat olmoqchi. Ruxsat berilsinmi?</translation>
 <translation id="6284412385303060032">Kirish ekrani host konsoli hosti Curtain rejimini qo‘llab-quvvatlamaydi (foydalanuvchi seansiga almashilmoqda).</translation>
 <translation id="6542902059648396432">Muammo haqida xabar yuborish...</translation>
 <translation id="6583902294974160967">Yordam</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del yuborish</translation>
+<translation id="6625262630437221505">{0,plural, =1{Hech qanday chora koʻrilmasa, qurilma # soniyadan avtomatik axborot ulasha boshlaydi.}other{Hech qanday chora koʻrilmasa, qurilma # soniyadan avtomatik axborot ulasha boshlaydi.}}</translation>
 <translation id="6654753848497929428">Ruxsat</translation>
 <translation id="677755392401385740"><ph name="HOST_USERNAME" /> uchun host ishga tushdi.</translation>
 <translation id="6902524959760471898">URL manzilni <ph name="PRODUCT_NAME" /> mijozda ochish uchun yordamchi ilova</translation>
@@ -133,6 +138,7 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="7067321367069083429">Ekran sensorli rejimda ishlaydi</translation>
 <translation id="7116737094673640201">Chrome masofaviy ish stoliga xush kelibsiz</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
+<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Barcha huquqlar himoyalangan.</translation>
 <translation id="7312846573060934304">Host tarmoqqa ulanmagan.</translation>
 <translation id="7319983568955948908">Ruxsatni yopish</translation>
 <translation id="7359298090707901886">Tanlangan brauzer yordamida mahalliy kompyuterda URL manzilni ocholmaysiz.</translation>
@@ -149,7 +155,6 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="7693372326588366043">Hostlar ro‘yxatini yangilang</translation>
 <translation id="7714222945760997814">Bu muammo haqida xabar yuborish</translation>
 <translation id="7868137160098754906">Masofadagi kompyuterga ulanish uchun PIN-kod kiriting.</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Barcha huquqlar himoyalangan.</translation>
 <translation id="7895403300744144251">Hisobingizdan aloqa o‘rnatish imkoniyati masofaviy kompyuterdagi xavfsizlik qoidalari tomonidan taqiqlangan.</translation>
 <translation id="7936528439960309876">O‘ngga qadash</translation>
 <translation id="7970576581263377361">Haqiqiylik tekshiruvida xatolik yuz berdi. Chromium hisobiga qaytadan kiring.</translation>
@@ -180,7 +185,6 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="8747048596626351634">Seans ishdan chiqdi yoki ishga tushirilishida xatolik yuz berdi. Agar ~/.chrome-remote-desktop-session seansi masofaviy kompyuterda bo‘lsa, ish stoli yoki oynalar menejeri asosiy jarayonda ishga tushganligini tekshiring.</translation>
 <translation id="8804164990146287819">Maxfiylik siyosati</translation>
 <translation id="8906511416443321782">Audioni yozib olish va uni Chrome Remote Desktop mijoziga uzatish uchun mikrofondan foydalanishga ruxsat berish.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Barcha huquqlar himoyalangan.</translation>
 <translation id="9111855907838866522">Siz masofaviy qurilmaga ulandingiz. Menyuni ochish uchun ekranga to‘rt barmoq bilan bosing.</translation>
 <translation id="9126115402994542723">Bu hostga ushbu qurilmadan ulanish vaqtida PIN-kod boshqa so‘ralmasin.</translation>
 <translation id="916856682307586697">Standart XSession seansini ishga tushirish</translation>

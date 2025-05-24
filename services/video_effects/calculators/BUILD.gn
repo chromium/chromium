@@ -1,0 +1,114 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/mediapipe/features.gni")
+
+assert(build_with_mediapipe_lib)
+assert(mediapipe_build_with_gpu_support)
+
+source_set("mediapipe_webgpu_utils") {
+  visibility = [ ":graph" ]
+
+  sources = [ "mediapipe_webgpu_utils.h" ]
+
+  public_deps = [
+    "//third_party/dawn/include/dawn:cpp_headers",
+    "//third_party/mediapipe",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("graph_config") {
+  sources = [
+    "video_effects_graph_config.cc",
+    "video_effects_graph_config.h",
+  ]
+
+  public_deps = [ "//third_party/dawn/include/dawn:cpp_headers" ]
+}
+
+source_set("blur") {
+  visibility = [ ":graph" ]
+
+  sources = [
+    "background_blur_calculator_webgpu.cc",
+    "background_blur_calculator_webgpu.h",
+  ]
+
+  deps = [
+    ":graph_config",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/mediapipe",
+  ]
+}
+
+source_set("downscale") {
+  visibility = [ ":graph" ]
+
+  sources = [
+    "downscale_calculator_webgpu.cc",
+    "downscale_calculator_webgpu.h",
+  ]
+
+  deps = [
+    ":graph_config",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/mediapipe",
+  ]
+}
+
+source_set("inference") {
+  visibility = [ ":graph" ]
+
+  sources = [
+    "inference_calculator_webgpu.cc",
+    "inference_calculator_webgpu.h",
+  ]
+
+  deps = [
+    ":graph_config",
+    "//services/on_device_model/ml:ml_holder",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/dawn/src/dawn:proc",
+    "//third_party/dawn/src/dawn/wire:headers",
+    "//third_party/mediapipe",
+  ]
+}
+
+source_set("in_place_copy") {
+  visibility = [ ":graph" ]
+
+  sources = [
+    "in_place_copy_calculator_webgpu.cc",
+    "in_place_copy_calculator_webgpu.h",
+  ]
+
+  deps = [
+    ":graph_config",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/mediapipe",
+  ]
+}
+
+source_set("graph") {
+  sources = [
+    "video_effects_graph_webgpu.cc",
+    "video_effects_graph_webgpu.h",
+  ]
+
+  deps = [
+    ":blur",
+    ":downscale",
+    ":graph_config",
+    ":in_place_copy",
+    ":inference",
+    ":mediapipe_webgpu_utils",
+    "//base",
+    "//third_party/mediapipe",
+  ]
+}

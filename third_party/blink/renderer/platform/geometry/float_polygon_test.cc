@@ -27,15 +27,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/geometry/float_polygon.h"
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -45,11 +41,12 @@ class FloatPolygonTestValue {
   STACK_ALLOCATED();
 
  public:
-  FloatPolygonTestValue(const float* coordinates, unsigned coordinates_length) {
-    DCHECK(!(coordinates_length % 2));
-    Vector<gfx::PointF> vertices(coordinates_length / 2);
-    for (unsigned i = 0; i < coordinates_length; i += 2)
+  explicit FloatPolygonTestValue(base::span<const float> coordinates) {
+    DCHECK_EQ(coordinates.size() % 2, 0u);
+    Vector<gfx::PointF> vertices(coordinates.size() / 2);
+    for (size_t i = 0; i < coordinates.size(); i += 2) {
       vertices[i / 2] = gfx::PointF(coordinates[i], coordinates[i + 1]);
+    }
     polygon_ = std::make_unique<FloatPolygon>(std::move(vertices));
   }
 
@@ -91,8 +88,7 @@ SortedOverlappingEdges(const FloatPolygon& polygon, float min_y, float max_y) {
  */
 TEST(FloatPolygonTest, basics) {
   const float kTriangleCoordinates[] = {200, 100, 200, 200, 100, 200};
-  FloatPolygonTestValue triangle_test_value(kTriangleCoordinates,
-                                            SIZEOF_ARRAY(kTriangleCoordinates));
+  FloatPolygonTestValue triangle_test_value(kTriangleCoordinates);
   const FloatPolygon& triangle = triangle_test_value.Polygon();
 
   EXPECT_FALSE(triangle.IsEmpty());
@@ -179,12 +175,11 @@ TEST(FloatPolygonTest, basics) {
   EXPECT_EQ(0u, result_e.size());
 }
 
-#define TEST_EMPTY(coordinates)                                                \
-  {                                                                            \
-    FloatPolygonTestValue empty_polygon_test_value(coordinates,                \
-                                                   SIZEOF_ARRAY(coordinates)); \
-    const FloatPolygon& empty_polygon = empty_polygon_test_value.Polygon();    \
-    EXPECT_TRUE(empty_polygon.IsEmpty());                                      \
+#define TEST_EMPTY(coordinates)                                             \
+  {                                                                         \
+    FloatPolygonTestValue empty_polygon_test_value(coordinates);            \
+    const FloatPolygon& empty_polygon = empty_polygon_test_value.Polygon(); \
+    EXPECT_TRUE(empty_polygon.IsEmpty());                                   \
   }
 
 TEST(FloatPolygonTest, emptyPolygons) {

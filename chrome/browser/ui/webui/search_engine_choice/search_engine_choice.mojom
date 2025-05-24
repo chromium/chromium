@@ -22,7 +22,7 @@ interface PageHandler {
     kNotAtTheBottom = 2,
   };
 
-  // LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchEngineChoiceScrollState)
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceScrollState)
 
   // Displays the Search Engine Choice dialog.
   // Triggered by the `displayDialog()` call in

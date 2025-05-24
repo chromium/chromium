@@ -7,9 +7,12 @@ package org.chromium.android_webview.common;
 import android.os.Handler;
 import android.os.HandlerThread;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.concurrent.Executor;
 
 /** A helper class which creates a background thread to run tasks on. */
+@NullMarked
 public class BackgroundThreadExecutor implements Executor {
     private final HandlerThread mHandlerThread;
     private final Handler mHandler;

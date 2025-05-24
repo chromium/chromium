@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Ханғыл (Ahnmatae)</translation>
 <translation id="1155759005174418845">каталан</translation>
 <translation id="1168100932582989117">Google ат серверлері</translation>
+<translation id="1170788066030116158">Түсірілген уақыты</translation>
 <translation id="1172970565351728681">Шамамен <ph name="REMAINING_TIME" /> қалды.</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, мәліметтер</translation>
@@ -72,6 +73,7 @@
 <translation id="1577977504532381335">Әкімші саясатын қарау</translation>
 <translation id="158849752021629804">Үй желісі қажет</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">Португал (АҚШ), халықаралық пернетақтасымен</translation>
 <translation id="1629521517399325891">Желі аутентификациясы үшін пайдаланушы сертификаты қолжетімді емес.</translation>
@@ -105,6 +107,7 @@
 <translation id="1810764548349082891">Алдын ала қаралмайды</translation>
 <translation id="1812302367230252929">Амхар (транслитерация)</translation>
 <translation id="1813278315230285598">Қызметтер</translation>
+<translation id="181434555916624618">Әзірше адамдар қамтылған нәтижелер көрсетілмейді. Басқа нұсқауды пайдаланып көріңіз.</translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Ақпарат жүктелуде…</translation>
 <translation id="1832073788765803750">Жарты енді катакана</translation>
@@ -135,7 +138,6 @@
 <translation id="2084809735218147718">Рақмет деп ымдап жатқан адам</translation>
 <translation id="2088690981887365033">VPN желісі</translation>
 <translation id="209653272837065803">Файлдарды синхрондауды жалғастыру үшін жад көлемі жеткіліксіз.</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Инкогнито режимінде рұқсат беру<ph name="END_BOLD" /> мүмкіндігін қосу</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> элемент жойылады және оларды қалпына келтіре алмайсыз.</translation>
 <translation id="2122305276694332719">Жасырын желіге автоматты түрде қосылсаңыз, басқалар сіздің құрылғыңызды және кейбір желілік параметрлеріңізді көре алады. Сондықтан жасырын желіге автоматты түрде қосылмағаныңыз жөн.</translation>
 <translation id="2125607626296734455">Кхмер</translation>
@@ -166,7 +168,6 @@
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> шығарылды.</translation>
 <translation id="2307462900900812319">Желіні реттеу</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> идентификаторы бар кеңейтімді табу мүмкін емес. Әкімшіңізге хабарласыңыз.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> идентификаторлары бар кеңейтімдерді табу мүмкін емес Әкімшіңізге хабарласыңыз.}}</translation>
 <translation id="2325650632570794183">Бұл файл түріне қолдау көрсетілмеген. Бұл файл түрін ашатын қолданбаны табу үшін Chrome веб-дүкеніне кіріңіз.</translation>
 <translation id="2326539130272988168">Болгар</translation>
 <translation id="233822363739146957">Барлық файлды синхрондау үшін жад көлемі жеткіліксіз.</translation>
@@ -238,7 +239,6 @@
 <translation id="290843123675549676">Маратхи</translation>
 <translation id="2923240520113693977">эстон</translation>
 <translation id="2938685643439809023">монғол</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Кеңейтімді табу мүмкін емес}other{Кеңейтімдерді табу мүмкін емес}}</translation>
 <translation id="2943503720238418293">Қысқарақ атау енгізіңіз</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> форматталуда...</translation>
 <translation id="2951236788251446349">Медуза</translation>
@@ -295,7 +295,6 @@
 <translation id="3356580349448036450">Аяқталған</translation>
 <translation id="3358452157379365236">Гитара</translation>
 <translation id="3368922792935385530">Қосылған</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />Мәліметтер<ph name="END_BOLD" /> түймесін басыңыз</translation>
 <translation id="3382143449143186018">Непал (InScript пернетақтасымен)</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, қосылу</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> іске қосу</translation>
@@ -385,7 +384,6 @@
 <translation id="4124935795427217608">Пырақ</translation>
 <translation id="4131235941541910880">Қажетсіз элементтерді себетке жіберіңіз.</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Құрылғыны орнатудан кейін белсендіру</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Инкогнито режимінде келесі кеңейтімді қосу:}other{Инкогнито режимінде келесі кеңейтімдерді қосу:}}</translation>
 <translation id="4153015322587141338">Сөредегі файлдарға жылдам кіру үшін файлды тінтуірдің оң жақ түймесімен басып, "<ph name="PIN_COMMAND" />" пәрменін таңдаңыз.</translation>
 <translation id="4157569377477607576">Әкімші саясаты бойынша ұсынылмайды:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> жылжытылды.</translation>
@@ -393,7 +391,6 @@
 <translation id="4179621117429069925">Бұл элемент себетте</translation>
 <translation id="4186579485882418952">Офлайн режимде қолдану мүмкіндігін қосу</translation>
 <translation id="4193154014135846272">Google құжаты</translation>
-<translation id="4197674956721858839">Таңдалған файлдарды мұрағаттау</translation>
 <translation id="4202378258276439759">Испан (Латын Америкасы)</translation>
 <translation id="4202977638116331303">Грузин</translation>
 <translation id="421017592316736757">Бұл файлға кіру үшін желіде болуыңыз керек.</translation>
@@ -421,6 +418,7 @@
 <translation id="4387004326333427325">Аутентификация сертификаты қашықтағы негізде қабылданбады</translation>
 <translation id="4394214039309501350">Сыртқы сілтеме</translation>
 <translation id="4394980935660306080">Осы аптаның басында</translation>
+<translation id="4397435965699247285">OneDrive офлайн режимде қолжетімді емес</translation>
 <translation id="4398096759193130964">Элементтерді қалпына келтіріңіз не себеттен жаңа қалтаға сүйреп апарыңыз.</translation>
 <translation id="4401287888955153199">Барлығын шығарып алу</translation>
 <translation id="4410695710508688828">Шығару мүмкін болмады. <ph name="ERROR_MESSAGE" /></translation>
@@ -483,9 +481,7 @@
 <translation id="4801956050125744859">Екеуін де сақтау</translation>
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> элемент қалпына келтірілуде…</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Инкогнито режимін пайдалану үшін ұйымыңыз кеңейтімді қажет етеді}other{Инкогнито режимін пайдалану үшін ұйымыңыз кейбір кеңейтімдерді қажет етеді}}</translation>
 <translation id="4826849268470072925">Тамиль (ITRANS)</translation>
-<translation id="482932175346970750">Браузеріңізге <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> деп теріңіз</translation>
 <translation id="4843566743023903107">Chromebase құрылғылары</translation>
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="485316830061041779">неміс</translation>
@@ -517,7 +513,7 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Операция күтілгеннен көбірек уақыт алады. Оны доғаруды қалайсыз ба?</translation>
 <translation id="5036159836254554629">Parallels Desktop арқылы бөлісуді басқару</translation>
-<translation id="5038625366300922036">Толығырақ…</translation>
+<translation id="5038625366300922036">Толық ақпарат…</translation>
 <translation id="5044852990838351217">Армян</translation>
 <translation id="5045550434625856497">Құпия сөз дұрыс емес</translation>
 <translation id="5059127710849015030">Непал (транслитерация)</translation>
@@ -558,7 +554,6 @@
     басқалармен бірлесіп жұмыс істеңіз.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive жүйесінен қалпына келтірілген файлдар</translation>
 <translation id="5278111733643988471">Бұл элементті қалпына келтіру үшін оны себеттен жаңа қалтаға сүйреңіз. Элементке арналған "<ph name="PARENT_FOLDER_NAME" />" деп аталатын бастапқы қалта жойылған.</translation>
-<translation id="5283101102242354279">Инкогнито режимінде кеңейтімді қосу:</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5293615890992542006">Әкімші саясаты бұл файлды тасымалдауға тыйым салды.</translation>
 <translation id="5305688511332277257">Ешбірі орнатылмаған</translation>
@@ -670,7 +665,7 @@
 <translation id="6146563240635539929">Бейнелер</translation>
 <translation id="6150853954427645995">Файлды желіден тыс пайдалану үшін желіге қосылып, файлды тінтуірдің оң түймесімен басыңыз және <ph name="OFFLINE_CHECKBOX_NAME" /> опциясын таңдаңыз.</translation>
 <translation id="6164412158936057769">Көбелектер</translation>
-<translation id="6165508094623778733">Толығырақ</translation>
+<translation id="6165508094623778733">Толық ақпарат</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6177854567773392726">Жад көлемі тексеріліп жатыр… <ph name="ITEMS_FOUND" /> элемент табылды.</translation>
 <translation id="6181912134988520389"><ph name="VM_NAME" /> құрылғысының Google Drive дискісіндегі файлдарды пайдалануына рұқсат беріңіз. Өзгертулер барлық құрылғыда болады.</translation>
@@ -812,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Мәліметтер</translation>
 <translation id="7246947237293279874">FTP прокси-сервері</translation>
 <translation id="7248671827512403053">Қолданба</translation>
-<translation id="7252604552361840748">Жоғарыдағы кеңейтімді табу</translation>
 <translation id="7256405249507348194">Танылмаған қате: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Қолжетімді қызметтер</translation>
 <translation id="7291818353625820805">Таңбалар қайталанып енгізілуі керек пе? Пернетақта параметрлерінде екпін белгілерін өшіріңіз.</translation>

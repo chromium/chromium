@@ -1,0 +1,552 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!doctype html>
+<meta charset="utf-8" />
+
+<style>
+  html {
+    height: 100%;
+    background-color: #00ff00;
+  }
+  body {
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+  #pageHeader.connected {
+    background-color: green;
+  }
+  #pageHeader {
+    background-color: blue;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    height: 2em;
+    margin: 0;
+  }
+  #pageHeader h1 {
+    margin: 0;
+    user-select: none;
+  }
+  .section h1 {
+    text-align: center;
+    font-size: 14pt;
+    user-select: none;
+    margin: 0.2em;
+  }
+  .section h2 {
+    font-size: 12pt;
+    user-select: none;
+    margin: 0.2em;
+  }
+  .section {
+    background-color: #eee;
+    box-shadow: 0 0 0.5em #999;
+    border: 1px solid black;
+    padding: 3px;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+  .permission-switch {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.3em;
+  }
+  .permission-switch label {
+    margin-right: 0.5em;
+  }
+  input[type="text"] {
+    width: 300px;
+  }
+  img {
+    border: thick double black;
+    background-image: linear-gradient(cyan, fuchsia);
+  }
+  .favicon {
+    width: 16px;
+    height: 16px;
+  }
+  #content {
+    overflow-y: scroll;
+    position: absolute;
+    top: 2em;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  #fileDrop {
+    border: double black;
+  }
+  #status {
+    font-size: smaller;
+  }
+  #successUI, #localDenialUI, #osDenialUI {
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+  }
+
+  #localDenialUI {
+    border-color: orange;
+  }
+
+  #osDenialUI {
+    border-color: red;
+  }
+
+  #screenWakeLockStatus::before {
+    content: "Can sleep normally.";
+  }
+  #screenWakeLockStatus[lockStatus*="acquired"]::before {
+    content: "Locked in awake state!";
+    background-color: fuchsia;
+  }
+  #screenWakeLockStatus[lockStatus*="unexpectedRelease"]::before {
+    content: "Awake lock was released unexpectedly.";
+    background-color: yellow;
+  }
+  #screenWakeLockStatus[lockStatus*="error"]::before {
+    content: "Error acquiring awake lock! (can still sleep)";
+    background-color: red;
+  }
+
+  #successUI {
+    border-color: green;
+  }
+
+  .fitWindow html {
+    height: unset;
+  }
+
+  .fitWindow body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fitWindow #contentSizingTest {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+
+  .fitWindow #contentSizingTest .section {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .fitWindow #dump {
+    overflow-y: scroll;
+    flex-grow: 1;
+  }
+
+  *:disabled {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  fieldset:disabled :is(h1, h2, h3, h4, h5, h6) {
+    text-decoration: line-through;
+  }
+
+  /* Dark Mode Styles */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #121212;
+      color: #eee;
+    }
+
+    .section {
+      background-color: #2a2a2a;
+      box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
+      border: 1px solid #444;
+    }
+
+    a {
+      color: #99ccff;
+    }
+
+    a:hover {
+      color: #66b3ff;
+    }
+
+    a:visited{
+      color: #c8a2c8;
+    }
+  }
+
+  .scrollToSelector {
+    margin-top: 16px;
+  }
+
+  select.scrollToNodeSelect {
+    width: 300px;
+    margin-left: 4px;
+  }
+</style>
+<div id="pageHeader">
+  <h1>Test Web Client</h1>
+  <button id="refreshbn">🔄</button>
+  <button id="closebn">❌</button>
+  <button id="shutdownbn">⏻</button>
+</div>
+<div id="content">
+<div class="section">
+  <h1>Initialization</h1>
+  <label>Fail Initialization next time:
+    <input id="failInitializationCheckbox" type="checkbox">
+    </input>
+  </label>
+</div>
+<div class="section">
+  <h1>Closed Captions Setting</h1>
+  <div class="permission-switch">
+    <label for="closedCaptioningSwitch">Closed Captioning:</label>
+    <input type="checkbox" id="closedCaptioningSwitch" disabled />
+    <button id="setClosedCaptioningTrue" style="margin-left: 1em;">Set True</button>
+    <button id="setClosedCaptioningFalse">Set False</button>
+  </div>
+  </div>
+  <div class="section">
+  <h1>Chrome Permissions</h1>
+  <div class="permission-switch">
+    <label for="microphoneSwitch">Microphone:</label>
+    <input type="checkbox" id="microphoneSwitch" disabled />
+  </div>
+  <div class="permission-switch">
+    <label for="geolocationSwitch">Geolocation:</label>
+    <input type="checkbox" id="geolocationSwitch" disabled />
+  </div>
+  <div class="permission-switch">
+    <label for="tabContextSwitch">Tab Context:</label>
+    <input type="checkbox" id="tabContextSwitch" disabled />
+  </div>
+  <select id="permissionSelect">
+    <option value="geolocation">Geolocation</option>
+    <option value="microphone">Microphone</option>
+    <option value="tabContext">Tab Context</option>
+  </select>
+  <select id="enabledSelect">
+    <option value="true">True</option>
+    <option value="false">False</option>
+  </select>
+  <button id="testPermissionSwitch">Simulate External Permission
+    Update</button>
+</div>
+<div class="section">
+  <fieldset id="macOsPermissionsFieldset">
+    <h1>MacOS Permissions</h1>
+    <button id="getOsMicrophonePermissionButton">Get OS Microphone permission state</button>
+    <span id="osMicrophonePermissionResult"></span>
+    <div>
+      <div class="permission-switch">
+        <label for="osGeolocationPermissionSwitch">OS Geolocation:</label>
+        <input type="checkbox" id="osGeolocationPermissionSwitch" disabled />
+      </div>
+      <button id="openOsLocationSettings">Open OS Location settings</button>
+      <button id="openOsMicrophoneSettings">Open OS Microphone settings</button>
+    </div>
+  </fieldset>
+</div>
+<div class="section">
+  <h1>Glic Settings</h1>
+  <div>
+    <label for="osGlicHotkey">Current keyboard shortcut:</label>
+    <input type="text" id="osGlicHotkey" name="osGlicHotkey" readonly>
+    <div>
+      <button id="openGlicSettings">Open Glic Settings</button>
+      <br/>
+      <label for="openGlicSettingsHighlight">And highlight field:</label>
+      <select id="openGlicSettingsHighlight">
+        <option value="none">None</option>
+        <option value="osHotkey">Keyboard shortcut</option>
+        <option value="osEntrypointToggle">OS Entrypoint</option>
+      </select>
+    </div>
+  </div>
+</div>
+<div class="section">
+  <h1>Sizing</h1>
+  <button id="enableTestSizingMode">Test Sizing</button>
+  <input id="enableDragResizeCheckbox" type="checkbox">Enable drag resizing</input>
+</div>
+<div class="section">
+  <h1>State</h1>
+  <label>panelActive
+    <input id="panelActiveCheckbox" type="checkbox" disabled />
+  </label>
+  <div>
+    <h4>Focused Tab V1</h4>
+    <label>Focused Tab Url: </label><input id="focusedUrl" type="text" /> <br />
+    <label>Favicon: </label><img class="favicon" id="focusedFavicon" />
+    <span id="focusedTabLogs"></span>
+    <div>
+      <label>Enable setContextAccessIndicator
+        <input id="contextAccessIndicator" type="checkbox">
+      </label>
+    </div>
+  </div>
+  <div>
+    <h4>Focused Tab V2</h4>
+    <label>Focused Tab Url: </label><input id="focusedUrlV2" type="text" /> <br />
+    <label>Favicon: </label><img class="favicon" id="focusedFaviconV2" />
+    <span id="focusedTabLogsV2"></span>
+    <div>
+      <label>Enable setContextAccessIndicator
+        <input id="contextAccessIndicatorV2" type="checkbox">
+      </label>
+    </div>
+  </div>
+</div>
+<div class="section">
+  <h1>Test createTab()</h1>
+  <label>Url: </label><input id="URL" type="text"
+      value="https://news.ycombinator.com" />
+  <br />
+  <label>In Background?
+    <input id="createTabInBackground" type="checkbox">
+  </label>
+  <br />
+  <button id="newtabbn">Create New Tab</button>
+  <br />
+</div>
+<div class="section">
+  <fieldset id="attachmentControlsFieldset">
+    <h1>Attachment Controls</h1>
+    <div>
+      <label>Can Attach:
+        <input id="canAttachCheckbox" type="checkbox" disabled>
+      </label>
+    </div>
+    <button id="attachpanelbn">Attach Panel</button>
+    &nbsp;
+    <button id="detachpanelbn">Detach Panel</button>
+  </fieldset>
+</div>
+<div class="section">
+  <h1>Test getContextFromFocusedTab()</h1>
+  <div>
+    <button id="getpagecontext">Get page Context</button>
+    <div>
+    <label> <input type="checkbox" id="innerTextCheckbox" /> Inner Text </label>
+    <br />
+    <label> innerTextBytesLimit: <input id="innerTextBytesLimit" value="100">
+    </label>
+    </div>
+    <label> <input type="checkbox"
+        id="viewportScreenshotCheckbox" /> Viewport Screenshot </label>
+    <label> <input type="checkbox" id="pdfDataCheckbox" /> PDF Data </label>
+    <label> <input type="checkbox" id="annotatedPageContentCheckbox" />
+      Annotated Page Content
+    </label>
+  </div>
+  <div>
+    <img class="favicon" id="faviconImg" />
+  </div>
+  <div id="screenshot">
+    <img id="screenshotImg" />
+  </div>
+  <span id="getPageContextResult"></span>
+  <span id="getPageContextStatus"></span>
+</div>
+<div class="section">
+  <h1>Test Location Access</h1>
+  <button id="getlocation">Get Location</button> <br />
+  <div id="location"></div>
+  <div id="locationStatus"></div>
+  <div id="locationOsErrorUI" style="display: none;">
+    <button id="openOsLocationSettingsButton">Open OS Settings</button>
+  </div>
+  <div id="locationGlicErrorUI" style="display: none;">
+    <button id="openGlicLocationSettingsButton">Open Glic Settings</button>
+  </div>
+</div>
+<div class="section">
+  <h1>Test Link Out Behavior</h1>
+  <a href="https://www.example.com" id="link" target="_blank"
+    rel="noopener noreferrer"
+    >https://www.example.com
+  </a>
+</div>
+<div class="section">
+  <h1>UserProfile</h1>
+  <div>
+    <button id="getUserProfileInfoBn">getUserProfileInfo()</button> Status:
+    <span id="getUserProfileInfoStatus"></span>
+    <img id="getUserProfileInfoImg" />
+  </div>
+  <div>
+    <button id="changeProfileBn">showProfilePicker()</button>
+  </div>
+</div>
+<div class="section">
+  <h1>Misc</h1>
+  <button id="syncCookiesBn">refreshSignInCookies()</button> Status:
+  <span id="syncCookieStatus"></span>
+  <button id="testLogsBn">test logs</button>
+  <button id="testClipboardSave">Save Junk To Clipboard</button>
+</div>
+<div class="section">
+  <h1>Demo Test Utils</h1>
+  <button id="reloadpage">Reload page</button>
+  <div>
+    Navigate webview to <input id="navigateWebviewUrl" type="text"
+      value="https://www.google.com" />
+  </div>
+</div>
+<div class="section">
+  <h1>File</h1>
+  <div id="fileDrop">
+    <button id="showDirectoryPicker">show directory picker</button>
+    <p>Drag files here</p>
+    <div id="fileDropList"></div>
+  </div>
+</div>
+<div class="section">
+  <h1>Audio Output</h1>
+  <audio controls src="./bear-opus.ogg"></audio>
+  <div>
+    <button id="audioDuckingOn">Ducking On</button>
+    <button id="audioDuckingOff">Ducking Off</button>
+  </div>
+</div>
+<div class="section">
+  <h1>Audio Capture</h1>
+  <button id="audioCapStart">START</button>
+  <button id="audioCapStop">STOP</button>
+
+  After pressing STOP, this will play recorded sound.
+  <br />
+  <audio id="mic" controls></audio><br />
+  <div></div>
+  <div id="audioStatus"></div>
+</div>
+<div class="section">
+  <h1>Screen Wake Lock</h1>
+  <label for="screenWakeLockSwitch">Keep screen awake:
+    <input type="checkbox" id="screenWakeLockSwitch" />
+  </label>
+  <br />
+  <label id="screenWakeLockStatus" lockStatus="released"/>
+</div>
+<div class="section">
+  <h1>Desktop Screenshot</h1>
+  <button id="desktopScreenshot">Capture</button>
+  <button id="panelScreenshot">Capture Panel</button>
+  <span id="desktopScreenshotErrorReason"></span>
+  <img id="desktopScreenshotImg" />
+</div>
+<div class="section">
+  <h1>Scroll-To and Highlight</h1>
+  <div>
+    <button id="scrollToFetchAPCBn">Fetch AnnotatedPageContent</button>
+    <div style="margin-top:4px;">Document ID: <span id="scrollToDocumentId">null</span></div>
+  </div>
+  <div class="scrollToSelector">
+    <h2>
+      Exact Text Selector
+    </h2>
+    <input id="scrollToExactText" type="text" placeholder="Add exact text to scroll to and highlight">
+    <div><label>Search Range Start Node</label><select disabled id="scrollToExactTextSearchStart"
+        class="scrollToNodeSelect"></select></div>
+  </div>
+  <div class="scrollToSelector">
+    <h2>
+      Text Fragment Selector
+    </h2>
+    <input id="scrollToTextFragmentTextStart" type="text" placeholder="textStart">
+    <input id="scrollToTextFragmentTextEnd" type="text" placeholder="textEnd">
+    <div><label>Search Range Start Node</label><select disabled id="scrollToTextFragmentSearchStart"
+        class="scrollToNodeSelect"></select></div>
+  </div>
+  <div class="scrollToSelector">
+    <h2>Node Selector</h2>
+    <div><label>Node</label><select disabled id="scrollToNode" class="scrollToNodeSelect"></select></div>
+  </div>
+  <button id="scrollToBn" style="margin-top: 12px;">Scroll!</button>
+  <div>
+    <h2>Test dropScrollToHighlight()</h2>
+    <button id="dropScrollToHighlightBtn">Drop Highlight</button>
+  </div>
+</div>
+<div class="section">
+  <h1>Set Synthetic Experiment</h1>
+  <label for="trialName">Trial Name:</label>
+  <input type="text" id="trialName" name="trialName"><br><br>
+  <label for="groupName">Group Name:</label>
+  <input type="text" id="groupName" name="groupName"><br><br>
+  <button id="setExperiment">Set Experiment</button>
+  <span id="setExperimentStatus"></span>
+</div>
+<div class="section">
+  <h1>Responsiveness Check</h1>
+  <label for="hangDuration">Hang Duration (seconds):</label>
+  <input type="number" id="hangDuration" value="11" step="any" min="0">
+  <button id="hang">Hang</button>
+
+</div>
+<div class="section">
+  <h1>Mic Start Permissions Flow Demo</h1>
+  <button id="startMic">Start Mic</button>
+  <!-- Initially hidden UI elements -->
+  <div id="successUI" style="display: none;">
+    <p>Microphone access granted!</p>
+  </div>
+
+  <div id="localDenialUI" style="display: none;">
+    <p>Microphone access denied locally. Please enable in settings.</p>
+    <button id="openLocalSettingsButton">Open Local Settings</button>
+  </div>
+
+  <div id="osDenialUI" style="display: none;">
+    <p>Microphone access denied by OS. Please enable in OS settings.</p>
+    <button id="openOsSettingsButton">Open OS Settings</button>
+  </div>
+</div>
+<div class="section">
+  <h1>Test actInFocusedTab()</h1>
+  <div>
+    <button id="executeAction">Execute Action</button>
+    <label> <input type="text" id="actionProtoEncodedText" />
+      Action Proto, base64-encoded from http://shortn/_Iyf96Pob5S
+    </label>
+  </div>
+  <div id="actionUpdatedScreenshot">
+    <img id="actionUpdatedScreenshotImg" />
+  </div>
+  <span id="actionUpdatedContextResult"></span>
+  <span id="actionStatus"></span>
+</div>
+<br />
+<div id="status"></div>
+</div>
+<div id="contentSizingTest" hidden>
+<div class="section">
+  <h1>Sizing</h1>
+  <button id="disableTestSizingMode">Exit Test Sizing</button>
+  <br />
+  <form>
+    <fieldset>
+      <legend>Sizing mode:</legend>
+      <div>
+        <input type="radio" id="fitWindow" name="resizeOption" value="fitWindow" checked disabled>
+        <label for="fitWindow">Content fits window</label>
+      </div>
+      <div>
+        <input type="radio" id="naturalSizing" name="resizeOption" value="naturalSizing" disabled>
+        <label for="naturalSize">Content uses natural size</label>
+      </div>
+    </fieldset>
+  </form>
+  <button id="growHeight">Grow height</button>
+  <button id="resetHeight">Reset height</button>
+  <div id="dump"></div>
+</div>
+</div>
+<script src="./test_client.js" type="module">
+</script>

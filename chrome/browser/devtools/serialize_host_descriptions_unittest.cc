@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/devtools/serialize_host_descriptions.h"
 
+#include <array>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -132,7 +128,7 @@ MATCHER(Node0, "") {
 
 TEST(SerializeHostDescriptionTest, Forest) {
   std::vector<HostDescriptionNode> nodes(7);
-  const char* kNames[] = {"0", "1", "2", "3", "4", "5", "6"};
+  auto kNames = std::to_array<const char*>({"0", "1", "2", "3", "4", "5", "6"});
   for (size_t i = 0; i < 7; ++i) {
     nodes[i] = GetNodeWithLabel(kNames[i], i);
   }

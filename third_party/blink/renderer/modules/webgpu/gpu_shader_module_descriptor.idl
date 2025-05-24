@@ -7,4 +7,5 @@
 dictionary GPUShaderModuleDescriptor : GPUObjectDescriptorBase {
     required USVString code;
     sequence<GPUShaderModuleCompilationHint> compilationHints = [];
+    [RuntimeEnabled=WebGPUDeveloperFeatures] boolean strictMath;
 };

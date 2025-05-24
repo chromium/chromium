@@ -200,34 +200,6 @@ class BlobRegistryImplTest : public testing::Test {
   std::vector<std::string> bad_messages_;
 };
 
-TEST_F(BlobRegistryImplTest, GetBlobFromUUID) {
-  const std::string kId = "id";
-  std::unique_ptr<BlobDataHandle> handle =
-      CreateBlobFromString(kId, "hello world");
-
-  {
-    mojo::Remote<blink::mojom::Blob> blob;
-    registry_->GetBlobFromUUID(blob.BindNewPipeAndPassReceiver(), kId);
-    EXPECT_EQ(kId, UUIDFromBlob(blob.get()));
-    EXPECT_TRUE(blob.is_connected());
-  }
-
-  {
-    mojo::Remote<blink::mojom::Blob> blob;
-    registry_->GetBlobFromUUID(blob.BindNewPipeAndPassReceiver(), "invalid id");
-    blob.FlushForTesting();
-    EXPECT_FALSE(blob.is_connected());
-  }
-}
-
-TEST_F(BlobRegistryImplTest, GetBlobFromEmptyUUID) {
-  mojo::Remote<blink::mojom::Blob> blob;
-  registry_->GetBlobFromUUID(blob.BindNewPipeAndPassReceiver(), "");
-  blob.FlushForTesting();
-  EXPECT_EQ(1u, bad_messages_.size());
-  EXPECT_FALSE(blob.is_connected());
-}
-
 TEST_F(BlobRegistryImplTest, Register_EmptyUUID) {
   mojo::Remote<blink::mojom::Blob> blob;
   EXPECT_FALSE(
@@ -552,7 +524,7 @@ TEST_F(BlobRegistryImplTest, Register_BlobReferencingPendingBlob) {
   base::RunLoop().RunUntilIdle();
 
   // Populate the data for the first blob.
-  future_data.Populate(base::as_bytes(base::make_span(kBlob1Data)));
+  future_data.Populate(base::as_byte_span(kBlob1Data));
   context_->NotifyTransportComplete(kId1);
 
   // Wait for kId2 to also complete.

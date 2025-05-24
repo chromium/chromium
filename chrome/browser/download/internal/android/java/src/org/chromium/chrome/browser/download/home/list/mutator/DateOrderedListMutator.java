@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.list.mutator;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.JustNowProvider;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
@@ -15,6 +17,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * A class responsible for turning a {@link Collection} of {@link OfflineItem}s into a list meant
@@ -22,6 +25,7 @@ import java.util.Collections;
  * - Converts changes in the form of {@link Collection}s to delta changes on the list.
  * - Sorting, and adding headers is done by the downstream {@link ListConsumer}s.
  */
+@NullMarked
 public class DateOrderedListMutator implements OfflineItemFilterObserver {
     /**
      * Handles pagination for the list and adds a pagination header at the end, if the list is
@@ -44,8 +48,8 @@ public class DateOrderedListMutator implements OfflineItemFilterObserver {
     private final OfflineItemFilterSource mSource;
     private final JustNowProvider mJustNowProvider;
     private final ListItemModel mModel;
-    private ListConsumer mListConsumer;
-    private ArrayList<ListItem> mSortedItems = new ArrayList<>();
+    private @Nullable ListConsumer mListConsumer;
+    private final ArrayList<ListItem> mSortedItems = new ArrayList<>();
 
     /**
      * Creates an DateOrderedList instance that will reflect {@code source}.
@@ -90,7 +94,7 @@ public class DateOrderedListMutator implements OfflineItemFilterObserver {
         for (OfflineItem itemToRemove : items) {
             for (int i = 0; i < mSortedItems.size(); i++) {
                 OfflineItem offlineItem = ((OfflineItemListItem) mSortedItems.get(i)).item;
-                if (itemToRemove.id.equals(offlineItem.id)) mSortedItems.remove(i);
+                if (Objects.equals(itemToRemove.id, offlineItem.id)) mSortedItems.remove(i);
             }
         }
 
@@ -99,7 +103,7 @@ public class DateOrderedListMutator implements OfflineItemFilterObserver {
 
     @Override
     public void onItemUpdated(OfflineItem oldItem, OfflineItem item) {
-        assert oldItem.id.equals(item.id);
+        assert Objects.equals(oldItem.id, item.id);
 
         // If the update changed the creation time or filter type, remove and add the element to get
         // it positioned.
@@ -112,7 +116,7 @@ public class DateOrderedListMutator implements OfflineItemFilterObserver {
             onItemsAdded(Collections.singletonList(item));
         } else {
             for (int i = 0; i < mSortedItems.size(); i++) {
-                if (item.id.equals(((OfflineItemListItem) mSortedItems.get(i)).item.id)) {
+                if (Objects.equals(item.id, ((OfflineItemListItem) mSortedItems.get(i)).item.id)) {
                     mSortedItems.set(i, new OfflineItemListItem(item));
                 }
             }
@@ -128,7 +132,7 @@ public class DateOrderedListMutator implements OfflineItemFilterObserver {
             if (!(listItem instanceof OfflineItemListItem)) continue;
 
             OfflineItemListItem existingItem = (OfflineItemListItem) listItem;
-            if (item.id.equals(existingItem.item.id)) {
+            if (Objects.equals(item.id, existingItem.item.id)) {
                 existingItem.item = item;
                 mModel.update(i, existingItem);
                 break;

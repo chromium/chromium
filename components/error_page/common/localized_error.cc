@@ -28,7 +28,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/error_page/common/alt_game_images.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/error_page_switches.h"
@@ -512,6 +511,42 @@ const LocalizedErrorMap link_preview_error_options[] = {
     },
 };
 
+std::u16string GetStringWithPlaceholder(int resource_id,
+                                        std::u16string host_name,
+                                        std::u16string failed_url_string) {
+  switch (resource_id) {
+    case IDS_ERRORPAGES_CHECK_TYPO_SUMMARY:
+    case IDS_ERRORPAGES_HEADING_ACCESS_DENIED:
+    case IDS_ERRORPAGES_HEADING_BLOCKED:
+    case IDS_ERRORPAGES_HEADING_BLOCKED_SCHEME:
+    case IDS_ERRORPAGES_HEADING_NOT_FOUND:
+    case IDS_ERRORPAGES_SUMMARY_BAD_SSL_CLIENT_AUTH_CERT:
+    case IDS_ERRORPAGES_SUMMARY_CONNECTION_CLOSED:
+    case IDS_ERRORPAGES_SUMMARY_CONNECTION_FAILED:
+    case IDS_ERRORPAGES_SUMMARY_CONNECTION_REFUSED:
+    case IDS_ERRORPAGES_SUMMARY_DNS_PROBE_RUNNING:
+    case IDS_ERRORPAGES_SUMMARY_EMPTY_RESPONSE:
+    case IDS_ERRORPAGES_SUMMARY_GATEWAY_TIMEOUT:
+    case IDS_ERRORPAGES_SUMMARY_INVALID_RESPONSE:
+    case IDS_ERRORPAGES_SUMMARY_NAME_NOT_RESOLVED:
+    case IDS_ERRORPAGES_SUMMARY_SSL_SECURITY_ERROR:
+    case IDS_ERRORPAGES_SUMMARY_SSL_VERSION_OR_CIPHER_MISMATCH:
+    case IDS_ERRORPAGES_SUMMARY_TIMED_OUT:
+    case IDS_ERRORPAGES_SUMMARY_TOO_MANY_REDIRECTS:
+    case IDS_ERRORPAGES_SUMMARY_WEBSITE_CANNOT_HANDLE_REQUEST:
+      return l10n_util::GetStringFUTF16(resource_id, host_name);
+    case IDS_ERRORPAGES_SUMMARY_ADDRESS_UNREACHABLE:
+    case IDS_ERRORPAGES_SUMMARY_FILE_ACCESS_DENIED:
+    case IDS_ERRORPAGES_SUMMARY_NOT_AVAILABLE:
+    case IDS_ERRORPAGES_SUMMARY_NOT_FOUND: {
+      return l10n_util::GetStringFUTF16(resource_id,
+                                        base::EscapeForHTML(failed_url_string));
+    }
+    default:
+      return l10n_util::GetStringUTF16(resource_id);
+  }
+}
+
 const LocalizedErrorMap* FindErrorMapInArray(const LocalizedErrorMap* maps,
                                                    size_t num_maps,
                                                    int error_code) {
@@ -563,18 +598,6 @@ const LocalizedErrorMap* LookupErrorMap(const std::string& error_domain,
   }
 }
 
-// Returns a dictionary containing the strings for the settings menu under the
-// app menu, and the advanced settings button.
-base::Value::Dict GetStandardMenuItemsText() {
-  base::Value::Dict standard_menu_items_text;
-  standard_menu_items_text.Set("settingsTitle",
-                               l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE));
-  standard_menu_items_text.Set(
-      "advancedTitle",
-      l10n_util::GetStringUTF16(IDS_SETTINGS_SHOW_ADVANCED_SETTINGS));
-  return standard_menu_items_text;
-}
-
 // Gets the icon class for a given |error_domain| and |error_code|.
 const char* GetIconClassForError(const std::string& error_domain,
                                  int error_code) {
@@ -593,27 +616,8 @@ base::Value::Dict SingleEntryDictionary(std::string_view path, int message_id) {
 // Adds a linked suggestion dictionary entry to the suggestions list.
 void AddLinkedSuggestionToList(const int error_code,
                                const std::string& locale,
-                               base::Value::List& suggestions_summary_list,
-                               bool standalone_suggestion) {
-  GURL learn_more_url;
-  std::u16string suggestion_string =
-      standalone_suggestion
-          ? l10n_util::GetStringUTF16(
-                IDS_ERRORPAGES_SUGGESTION_LEARNMORE_SUMMARY_STANDALONE)
-          : l10n_util::GetStringUTF16(
-                IDS_ERRORPAGES_SUGGESTION_LEARNMORE_SUMMARY);
-
-  switch (error_code) {
-    case net::ERR_TOO_MANY_REDIRECTS:
-      learn_more_url = GURL(kRedirectLoopLearnMoreUrl);
-      suggestion_string = l10n_util::GetStringUTF16(
-          IDS_ERRORPAGES_SUGGESTION_DELETE_COOKIES_SUMMARY);
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      break;
-  }
-
+                               base::Value::List& suggestions_summary_list) {
+  GURL learn_more_url(kRedirectLoopLearnMoreUrl);
   DCHECK(learn_more_url.is_valid());
   // Add the language parameter to the URL.
   std::string query = learn_more_url.query() + "&hl=" + locale;
@@ -621,9 +625,14 @@ void AddLinkedSuggestionToList(const int error_code,
   repl.SetQueryStr(query);
   GURL learn_more_url_with_locale = learn_more_url.ReplaceComponents(repl);
 
+  CHECK_EQ(error_code, net::ERR_TOO_MANY_REDIRECTS);
+  std::u16string suggestion_string = l10n_util::GetStringFUTF16(
+      IDS_ERRORPAGES_SUGGESTION_DELETE_COOKIES_SUMMARY,
+      base::UTF8ToUTF16(
+          base::EscapeForHTML(learn_more_url_with_locale.spec())));
+
   base::Value::Dict suggestion_list_item;
   suggestion_list_item.Set("summary", suggestion_string);
-  suggestion_list_item.Set("learnMoreUrl", learn_more_url_with_locale.spec());
   suggestions_summary_list.Append(std::move(suggestion_list_item));
 }
 
@@ -700,10 +709,12 @@ void GetSuggestionsSummaryList(int error_code,
       return;
 
     base::Value::Dict suggestion;
-    suggestion.Set("summary",
-                   l10n_util::GetStringUTF16(
-                       IDS_ERRORPAGES_SUGGESTION_NAVIGATE_TO_ORIGIN));
-    suggestion.Set("originURL", failed_origin.Serialize());
+    std::string failed_origin_string(failed_origin.Serialize());
+    suggestion.Set(
+        "summary",
+        l10n_util::GetStringFUTF16(
+            IDS_ERRORPAGES_SUGGESTION_NAVIGATE_TO_ORIGIN,
+            base::UTF8ToUTF16(base::EscapeForHTML(failed_origin_string))));
     suggestions_summary_list.Append(std::move(suggestion));
     return;
   }
@@ -711,13 +722,11 @@ void GetSuggestionsSummaryList(int error_code,
 
   if (IsOnlySuggestion(suggestions, SUGGEST_LEARNMORE)) {
     DCHECK(suggestions_summary_list.empty());
-    AddLinkedSuggestionToList(error_code, locale, suggestions_summary_list,
-                              true);
+    AddLinkedSuggestionToList(error_code, locale, suggestions_summary_list);
     return;
   }
   if (IsSuggested(suggestions, SUGGEST_LEARNMORE)) {
-    AddLinkedSuggestionToList(error_code, locale, suggestions_summary_list,
-                              false);
+    AddLinkedSuggestionToList(error_code, locale, suggestions_summary_list);
   }
 
   if (suggestions & SUGGEST_CAPTIVE_PORTAL_SIGNIN) {
@@ -820,12 +829,8 @@ void GetSuggestionsSummaryList(int error_code,
 // Creates a dictionary with "header" and "body" entries and adds it to `list`.
 void AddSuggestionDetailDictionaryToList(base::Value::List& list,
                                          int header_message_id,
-                                         int body_message_id,
-                                         bool append_standard_menu_items) {
+                                         int body_message_id) {
   base::Value::Dict suggestion_list_item;
-  if (append_standard_menu_items)
-    suggestion_list_item = GetStandardMenuItemsText();
-
   if (header_message_id) {
     suggestion_list_item.Set("header",
                              l10n_util::GetStringUTF16(header_message_id));
@@ -837,77 +842,97 @@ void AddSuggestionDetailDictionaryToList(base::Value::List& list,
   list.Append(std::move(suggestion_list_item));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Creates a dictionary with "header" and "body" entries and adds it to `list`.
+void AddSuggestionDetailDictionaryToList(base::Value::List& list,
+                                         std::u16string header_message,
+                                         std::u16string body_message) {
+  list.Append(base::Value::Dict()
+                  .Set("header", header_message)
+                  .Set("body", body_message));
+}
+#endif
+
 // Certain suggestions have supporting details which get displayed under
 // the "Details" button.
 void AddSuggestionsDetails(int error_code,
                            int suggestions,
                            base::Value::List& suggestions_details) {
   if (suggestions & SUGGEST_CHECK_CONNECTION) {
-    AddSuggestionDetailDictionaryToList(suggestions_details,
-          IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_HEADER,
-          IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY, false);
+    AddSuggestionDetailDictionaryToList(
+        suggestions_details, IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_HEADER,
+        IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY);
   }
 
 #if !BUILDFLAG(IS_IOS)
   if (suggestions & SUGGEST_SECURE_DNS_CONFIG) {
     AddSuggestionDetailDictionaryToList(
         suggestions_details, IDS_ERRORPAGES_SUGGESTION_SECURE_DNS_CONFIG_HEADER,
-        IDS_ERRORPAGES_SUGGESTION_SECURE_DNS_CONFIG_BODY, true);
+        IDS_ERRORPAGES_SUGGESTION_SECURE_DNS_CONFIG_BODY);
   }
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (suggestions & SUGGEST_DNS_CONFIG) {
-    AddSuggestionDetailDictionaryToList(suggestions_details,
-          IDS_ERRORPAGES_SUGGESTION_DNS_CONFIG_HEADER,
-          IDS_ERRORPAGES_SUGGESTION_DNS_CONFIG_BODY, false);
+    AddSuggestionDetailDictionaryToList(
+        suggestions_details, IDS_ERRORPAGES_SUGGESTION_DNS_CONFIG_HEADER,
+        IDS_ERRORPAGES_SUGGESTION_DNS_CONFIG_BODY);
 
     AddSuggestionDetailDictionaryToList(
         suggestions_details,
-        IDS_ERRORPAGES_SUGGESTION_NETWORK_PREDICTION_HEADER,
-        IDS_ERRORPAGES_SUGGESTION_NETWORK_PREDICTION_BODY, true);
-    suggestions_details.back().GetDict().Set(
-        "noNetworkPredictionTitle",
-        l10n_util::GetStringUTF16(IDS_NETWORK_PREDICTION_ENABLED_DESCRIPTION));
+        l10n_util::GetStringUTF16(
+            IDS_ERRORPAGES_SUGGESTION_NETWORK_PREDICTION_HEADER),
+        l10n_util::GetStringFUTF16(
+            IDS_ERRORPAGES_SUGGESTION_NETWORK_PREDICTION_BODY,
+            l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE),
+            l10n_util::GetStringUTF16(IDS_SETTINGS_SHOW_ADVANCED_SETTINGS),
+            l10n_util::GetStringUTF16(
+                IDS_NETWORK_PREDICTION_ENABLED_DESCRIPTION)));
   }
 
   if (suggestions & SUGGEST_FIREWALL_CONFIG) {
-    AddSuggestionDetailDictionaryToList(suggestions_details,
-        IDS_ERRORPAGES_SUGGESTION_FIREWALL_CONFIG_HEADER,
-        IDS_ERRORPAGES_SUGGESTION_FIREWALL_CONFIG_BODY, false);
+    AddSuggestionDetailDictionaryToList(
+        suggestions_details, IDS_ERRORPAGES_SUGGESTION_FIREWALL_CONFIG_HEADER,
+        IDS_ERRORPAGES_SUGGESTION_FIREWALL_CONFIG_BODY);
   }
 
   // TODO(crbug.com/40199702): Provide meaningful strings for Fuchsia.
 #if !BUILDFLAG(IS_FUCHSIA)
   if (suggestions & SUGGEST_PROXY_CONFIG) {
-    AddSuggestionDetailDictionaryToList(
-        suggestions_details, IDS_ERRORPAGES_SUGGESTION_PROXY_CONFIG_HEADER, 0,
-        true);
-
     // Custom body string.
-    suggestions_details.back().GetDict().Set(
-        "body", l10n_util::GetStringFUTF16(
-                    IDS_ERRORPAGES_SUGGESTION_PROXY_CONFIG_BODY,
-                    l10n_util::GetStringUTF16(
-                        IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM)));
-    suggestions_details.back().GetDict().Set(
-        "proxyTitle",
-        l10n_util::GetStringUTF16(IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON));
+    std::u16string inner =
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+        l10n_util::GetStringFUTF16(
+            IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM,
+            l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE),
+            l10n_util::GetStringUTF16(IDS_SETTINGS_SHOW_ADVANCED_SETTINGS),
+            l10n_util::GetStringUTF16(IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON));
+#else
+        l10n_util::GetStringUTF16(
+            IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM);
+#endif  // if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
+    AddSuggestionDetailDictionaryToList(
+        suggestions_details,
+        l10n_util::GetStringUTF16(
+            IDS_ERRORPAGES_SUGGESTION_PROXY_CONFIG_HEADER),
+        inner);
   }
 #endif  //  !BUILDFLAG(IS_FUCHSIA)
 #endif
 
   if (suggestions & SUGGEST_CONTACT_ADMINISTRATOR &&
       error_code == net::ERR_BLOCKED_BY_ADMINISTRATOR) {
-    AddSuggestionDetailDictionaryToList(suggestions_details,
-        IDS_ERRORPAGES_SUGGESTION_VIEW_POLICIES_HEADER,
-        IDS_ERRORPAGES_SUGGESTION_VIEW_POLICIES_BODY, false);
+    AddSuggestionDetailDictionaryToList(
+        suggestions_details, IDS_ERRORPAGES_SUGGESTION_VIEW_POLICIES_HEADER,
+        IDS_ERRORPAGES_SUGGESTION_VIEW_POLICIES_BODY);
   }
 
   if (suggestions & SUGGEST_UNSUPPORTED_CIPHER) {
-    AddSuggestionDetailDictionaryToList(suggestions_details,
+    AddSuggestionDetailDictionaryToList(
+        suggestions_details,
         IDS_ERRORPAGES_SUGGESTION_UNSUPPORTED_CIPHER_HEADER,
-        IDS_ERRORPAGES_SUGGESTION_UNSUPPORTED_CIPHER_BODY, false);
+        IDS_ERRORPAGES_SUGGESTION_UNSUPPORTED_CIPHER_BODY);
   }
 }
 
@@ -932,7 +957,6 @@ LocalizedError::PageState LocalizedError::GetPageState(
     bool stale_copy_in_cache,
     bool can_show_network_diagnostics_dialog,
     bool is_incognito,
-    bool offline_content_feature_enabled,
     bool auto_fetch_feature_enabled,
     bool is_kiosk_mode,
     const std::string& locale,
@@ -1045,8 +1069,8 @@ LocalizedError::PageState LocalizedError::GetPageState(
 
   int msg_id = show_game_instructions ? IDS_ERRORPAGES_GAME_INSTRUCTIONS
                                       : options.heading_resource_id;
-  heading.Set("msg", l10n_util::GetStringUTF16(msg_id));
-  heading.Set("hostName", host_name);
+  heading.Set("msg",
+              GetStringWithPlaceholder(msg_id, host_name, failed_url_string));
   result.strings.Set("heading", std::move(heading));
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -1076,13 +1100,11 @@ LocalizedError::PageState LocalizedError::GetPageState(
         l10n_util::GetStringUTF16(IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_EXTENSION);
     options.suggestions = SUGGEST_DISABLE_EXTENSION;
   } else {
-    message = l10n_util::GetStringUTF16(options.summary_resource_id);
+    message = GetStringWithPlaceholder(options.summary_resource_id, host_name,
+                                       failed_url_string);
   }
 
   summary.Set("msg", std::move(message));
-
-  summary.Set("failedUrl", failed_url_string);
-  summary.Set("hostName", host_name);
 
   result.strings.Set(
       "details", l10n_util::GetStringUTF16(IDS_ERRORPAGE_NET_BUTTON_DETAILS));
@@ -1124,11 +1146,11 @@ LocalizedError::PageState LocalizedError::GetPageState(
     result.strings.Set("reloadButton", std::move(reload_button));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS has its own diagnostics extension, which doesn't rely on a
   // browser-initiated dialog.
   can_show_network_diagnostics_dialog = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Add default suggestions and any relevant supporting details.
   GetSuggestionsSummaryList(error_code, result.strings, options.suggestions,
@@ -1151,38 +1173,12 @@ LocalizedError::PageState LocalizedError::GetPageState(
           l10n_util::GetStringUTF16(IDS_ERRORPAGES_BUTTON_DOWNLOADING));
     } else {
       result.auto_fetch_allowed = true;
-      result.strings.Set("attemptAutoFetch", "true");
       result.strings.SetByDottedPath(
           "savePageLater.savePageMsg",
           l10n_util::GetStringUTF16(IDS_ERRORPAGES_SAVE_PAGE_BUTTON));
       result.strings.SetByDottedPath(
           "savePageLater.cancelMsg",
           l10n_util::GetStringUTF16(IDS_ERRORPAGES_CANCEL_SAVE_PAGE_BUTTON));
-    }
-  }
-
-  result.strings.Set(
-      "closeDescriptionPopup",
-      l10n_util::GetStringUTF16(IDS_ERRORPAGES_SUGGESTION_CLOSE_POPUP_BUTTON));
-
-  if (LocalizedError::IsOfflineError(error_domain, error_code) &&
-      !is_incognito) {
-    result.offline_content_feature_enabled = offline_content_feature_enabled;
-    if (offline_content_feature_enabled) {
-      result.strings.Set("suggestedOfflineContentPresentation", "on");
-      result.strings.SetByDottedPath(
-          "offlineContentList.title",
-          l10n_util::GetStringUTF16(IDS_ERRORPAGES_OFFLINE_CONTENT_LIST_TITLE));
-      result.strings.SetByDottedPath(
-          "offlineContentList.actionText",
-          l10n_util::GetStringUTF16(
-              IDS_ERRORPAGES_OFFLINE_CONTENT_LIST_OPEN_ALL_BUTTON));
-      result.strings.SetByDottedPath(
-          "offlineContentList.showText",
-          l10n_util::GetStringUTF16(IDS_SHOW_CONTENT));
-      result.strings.SetByDottedPath(
-          "offlineContentList.hideText",
-          l10n_util::GetStringUTF16(IDS_HIDE_CONTENT));
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -61,7 +61,7 @@ BOOL IsCompact(UITraitCollection* traitCollection) {
 
     if (@available(iOS 17, *)) {
       [self registerForTraitChanges:@[
-        UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self
+        UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
       ]
                          withAction:@selector(updateImagesOnNextFrame)];
     }

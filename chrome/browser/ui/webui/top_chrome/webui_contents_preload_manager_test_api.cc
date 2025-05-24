@@ -22,6 +22,11 @@ std::optional<GURL> WebUIContentsPreloadManagerTestAPI::GetPreloadedURL() {
   return std::nullopt;
 }
 
+content::WebContents*
+WebUIContentsPreloadManagerTestAPI::GetPreloadedWebContents() {
+  return preload_manager()->preloaded_web_contents();
+}
+
 std::optional<GURL>
 WebUIContentsPreloadManagerTestAPI::GetNextWebUIURLToPreload(
     content::BrowserContext* browser_context) {
@@ -41,9 +46,21 @@ void WebUIContentsPreloadManagerTestAPI::MaybePreloadForBrowserContextLater(
       browser_context, busy_web_contents_to_watch, deadline);
 }
 
-void WebUIContentsPreloadManagerTestAPI::SetPreloadedContents(
+void WebUIContentsPreloadManagerTestAPI::PreloadUrl(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  SetPreloadedContents(
+      preload_manager()->CreateNewContents(browser_context, url));
+}
+
+std::unique_ptr<content::WebContents>
+WebUIContentsPreloadManagerTestAPI::SetPreloadedContents(
     std::unique_ptr<content::WebContents> web_contents) {
-  preload_manager()->SetPreloadedContents(std::move(web_contents));
+  return preload_manager()->SetPreloadedContents(std::move(web_contents));
+}
+
+void WebUIContentsPreloadManagerTestAPI::DisableDelayPreload(bool disable) {
+  preload_manager()->is_delay_preload_disabled_for_test_ = disable;
 }
 
 void WebUIContentsPreloadManagerTestAPI::SetPreloadCandidateSelector(

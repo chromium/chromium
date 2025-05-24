@@ -4,8 +4,9 @@
 
 #include "ui/shell_dialogs/selected_file_info.h"
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
-#include "base/ranges/algorithm.h"
 
 namespace ui {
 

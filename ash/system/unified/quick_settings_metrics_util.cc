@@ -5,6 +5,9 @@
 #include "ash/system/unified/quick_settings_metrics_util.h"
 
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/metrics/demo_session_metrics_recorder.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 
 namespace ash {
@@ -36,6 +39,14 @@ constexpr char kQuickSettingsSliderDisable[] =
 namespace quick_settings_metrics_util {
 
 void RecordQsButtonActivated(QsButtonCatalogName button_catalog_name) {
+  if (Shell::Get()->session_controller()->IsDemoSession()) {
+    // Either "Sign out" or "Restart" button can sign out the session.
+    if (button_catalog_name == QsButtonCatalogName::kPowerSignoutMenuButton ||
+        button_catalog_name == QsButtonCatalogName::kPowerRestartMenuButton) {
+      DemoSessionMetricsRecorder::RecordExitSessionAction(
+          DemoSessionMetricsRecorder::ExitSessionFrom::kSystemTrayPowerButton);
+    }
+  }
   base::UmaHistogramEnumeration(kQuickSettingsButton, button_catalog_name);
 }
 

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BundleUtils;
@@ -18,6 +17,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionConstants;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
@@ -26,9 +27,10 @@ import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 /** Implementation of {@link ProcessScopeDependencyProvider}. */
 // TODO(b/286003870): Stop extending FeedProcessScopeDependencyProvider, and
 // remove all dependencies on Feed library.
+@NullMarked
 public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependencyProvider {
 
-    private static final String XSURFACE_SPLIT_NAME = "feedv2";
+    private static final String XSURFACE_SPLIT_NAME = "google3";
 
     private final Context mContext;
     private final @Nullable LibraryResolver mLibraryResolver;
@@ -88,7 +90,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
     }
 
     @Override
-    public LibraryResolver getLibraryResolver() {
+    public @Nullable LibraryResolver getLibraryResolver() {
         return mLibraryResolver;
     }
 
@@ -122,7 +124,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
                 "image_memory_cache_size_percentage",
-                /* default= */ 100);
+                /* defaultValue= */ 100);
     }
 
     @Override
@@ -130,7 +132,7 @@ public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependen
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
                 "bitmap_pool_size_percentage",
-                /* default= */ 100);
+                /* defaultValue= */ 100);
     }
 
     @Override

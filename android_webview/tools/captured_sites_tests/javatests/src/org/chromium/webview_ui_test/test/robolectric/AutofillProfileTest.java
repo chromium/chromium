@@ -47,9 +47,9 @@ public final class AutofillProfileTest {
         test.put("autofillProfile", profile);
 
         AutofillProfile johnProfile = new AutofillProfile(test);
-        assertEquals(johnProfile.profileMap.get("name"), "John");
-        assertEquals(johnProfile.profileMap.get("age"), "30");
-        assertEquals(johnProfile.profileMap.get("job"), "Professor");
+        assertEquals("John", johnProfile.profileMap.get("name"));
+        assertEquals("30", johnProfile.profileMap.get("age"));
+        assertEquals("Professor", johnProfile.profileMap.get("job"));
     }
 
     @Test

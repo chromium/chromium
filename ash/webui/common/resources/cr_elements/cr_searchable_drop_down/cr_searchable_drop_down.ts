@@ -27,10 +27,11 @@ import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {IronDropdownElement} from '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
-import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {IronDropdownElement} from '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
+import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrInputElement} from '../cr_input/cr_input.js';
+import type {CrInputElement} from '../cr_input/cr_input.js';
 
 import {getTemplate} from './cr_searchable_drop_down.html.js';
 
@@ -386,12 +387,12 @@ export class CrSearchableDropDownElement extends PolymerElement {
     } else {
       const delta = moveDown ? 1 : -1;
       nextIndex = (numItems + currentIndex + delta) % numItems;
-      items[currentIndex]!.removeAttribute('selected_');
+      items[currentIndex].removeAttribute('selected_');
     }
-    items[nextIndex]!.setAttribute('selected_', '');
+    items[nextIndex].setAttribute('selected_', '');
     // The newly selected item might not be visible because the dropdown needs
     // to be scrolled. So scroll the dropdown if necessary.
-    items[nextIndex]!.scrollIntoViewIfNeeded();
+    items[nextIndex].scrollIntoViewIfNeeded();
   }
 
   private onInput_() {

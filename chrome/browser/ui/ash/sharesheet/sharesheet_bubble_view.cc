@@ -35,6 +35,8 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -49,6 +51,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -124,39 +127,6 @@ void RecordMimeTypeMetric(const apps::IntentPtr& intent) {
 namespace ash {
 namespace sharesheet {
 
-class SharesheetBubbleView::SharesheetParentWidgetObserver
-    : public views::WidgetObserver {
- public:
-  SharesheetParentWidgetObserver(SharesheetBubbleView* owner,
-                                 views::Widget* widget)
-      : owner_(owner) {
-    observer_.Observe(widget);
-  }
-  ~SharesheetParentWidgetObserver() override = default;
-
-  // WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override {
-    DCHECK(observer_.IsObservingSource(widget));
-    observer_.Reset();
-    // |this| may be destroyed here!
-
-    // TODO(crbug.com/40173521) Code clean up.
-    // There should be something here telling SharesheetBubbleView
-    // that its parent widget is closing and therefore it should
-    // also close. Or we should try to inherit the widget changes from
-    // BubbleDialogDelegate and not have this class here at all.
-  }
-
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& bounds) override {
-    owner_->UpdateAnchorPosition();
-  }
-
- private:
-  raw_ptr<SharesheetBubbleView> owner_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observer_{this};
-};
-
 SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
     ::sharesheet::SharesheetServiceDelegator* delegator)
@@ -181,8 +151,10 @@ SharesheetBubbleView::SharesheetBubbleView(
       views::Widget::GetWidgetForNativeWindow(native_window);
   CHECK(widget);
   parent_view_ = widget->GetRootView();
-  parent_widget_observer_ =
-      std::make_unique<SharesheetParentWidgetObserver>(this, widget);
+  SetAnchorWidget(widget);
+
+  set_desired_bounds_delegate(base::BindRepeating(
+      &SharesheetBubbleView::GetDesiredBubbleBounds, base::Unretained(this)));
 
   InitBubble();
 }
@@ -465,7 +437,7 @@ void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
   layer->GetAnimator()->SchedulePauseForProperties(
       kAnimateDelay, ui::LayerAnimationElement::TRANSFORM);
 
-  UpdateAnchorPosition();
+  OnAnchorBoundsChanged();
 
   layer->SetTransform(gfx::Transform());
 }
@@ -531,8 +503,7 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
       delta = base::i18n::IsRTL() ? -1 : 1;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   const size_t default_views = default_view_->children().size();
@@ -560,8 +531,8 @@ SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
   // TODO(crbug.com/40136695) Replace this with layer->SetRoundedCornerRadius.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
-  bubble_border->SetColor(color());
-  bubble_border->SetCornerRadius(kCornerRadius);
+  bubble_border->SetColor(background_color());
+  bubble_border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
   auto frame =
       views::BubbleDialogDelegateView::CreateNonClientFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
@@ -576,6 +547,11 @@ gfx::Size SharesheetBubbleView::CalculatePreferredSize(
 
 void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
                                                      bool active) {
+  if (GetWidget() != widget) {
+    views::BubbleDialogDelegateView::OnWidgetActivationChanged(widget, active);
+    return;
+  }
+
   // Catch widgets that are closing due to the user clicking out of the bubble.
   // If |close_on_deactivate_| we should close the bubble here.
   if (!active && close_on_deactivate_ && !is_bubble_closing_) {
@@ -603,7 +579,7 @@ void SharesheetBubbleView::OnDisplayTabletStateChanged(
     return;
   }
 
-  UpdateAnchorPosition();
+  OnAnchorBoundsChanged();
 }
 
 void SharesheetBubbleView::InitBubble() {
@@ -637,8 +613,36 @@ void SharesheetBubbleView::SetUpAndShowBubble() {
   RecordMimeTypeMetric(intent_);
   ShowWidgetWithAnimateFadeIn();
 
-  UpdateAnchorPosition();
+  OnAnchorBoundsChanged();
   display::Screen::GetScreen()->AddObserver(this);
+}
+
+gfx::Rect SharesheetBubbleView::GetDesiredBubbleBounds() {
+  // If |width_| is not set, set to default value.
+  if (width_ == 0) {
+    SetToDefaultBubbleSizing();
+  }
+
+  // Horizontally centered
+  int x_within_parent_view = parent_view_->GetMirroredXInView(
+      (parent_view_->bounds().width() - width_) / 2);
+  // Get position in screen, taking parent view origin into account. This is
+  // 0,0 in fullscreen on the primary display, but not on secondary displays, or
+  // in Hosted App windows.
+  gfx::Point origin = parent_view_->GetBoundsInScreen().origin();
+  origin += gfx::Vector2d(x_within_parent_view, kBubbleTopPaddingFromWindow);
+
+  // GetBoundsInScreen returns values that take anchor widget's translation into
+  // account, so undo that here. Without this, features which apply transforms
+  // on windows such overview mode will see bubbles offset.
+  gfx::Transform transform =
+      anchor_widget()->GetNativeWindow()->layer()->GetTargetTransform();
+  if (!transform.IsIdentity()) {
+    origin -= gfx::ToRoundedVector2d(transform.To2dTranslation());
+  }
+  gfx::Rect bubble_bounds = GetBubbleBounds();
+  bubble_bounds.set_origin(origin);
+  return bubble_bounds;
 }
 
 void SharesheetBubbleView::ExpandButtonPressed() {
@@ -647,8 +651,9 @@ void SharesheetBubbleView::ExpandButtonPressed() {
   // Scrollview has separators that overlaps with |header_body_separator_| and
   // |body_footer_separator_| to create a double line when both are visible, so
   // when scrollview is expanded we hide our separators.
-  if (header_body_separator_)
+  if (header_body_separator_) {
     header_body_separator_->SetVisible(!show_expanded_view_);
+  }
   body_footer_separator_->SetVisible(!show_expanded_view_);
 
   expanded_view_->SetVisible(show_expanded_view_);
@@ -703,25 +708,6 @@ void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
     std::move(delivered_callback_)
         .Run(::sharesheet::SharesheetResult::kSuccess);
   }
-}
-
-void SharesheetBubbleView::UpdateAnchorPosition() {
-  // If |width_| is not set, set to default value.
-  if (width_ == 0) {
-    SetToDefaultBubbleSizing();
-  }
-
-  // Horizontally centered
-  int x_within_parent_view = parent_view_->GetMirroredXInView(
-      (parent_view_->bounds().width() - width_) / 2);
-  // Get position in screen, taking parent view origin into account. This is
-  // 0,0 in fullscreen on the primary display, but not on secondary displays, or
-  // in Hosted App windows.
-  gfx::Point origin = parent_view_->GetBoundsInScreen().origin();
-  origin += gfx::Vector2d(x_within_parent_view, kBubbleTopPaddingFromWindow);
-
-  // SetAnchorRect will CalculatePreferredSize when called.
-  SetAnchorRect(gfx::Rect(origin, gfx::Size()));
 }
 
 void SharesheetBubbleView::SetToDefaultBubbleSizing() {

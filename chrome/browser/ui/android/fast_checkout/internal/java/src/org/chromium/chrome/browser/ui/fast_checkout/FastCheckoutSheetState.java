@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
 
 /** Provides read-only information about the state of the Fast Checkout bottomsheet. */
+@NullMarked
 public interface FastCheckoutSheetState {
     /** Returns the current screen type of the bottomsheet. */
     @ScreenType

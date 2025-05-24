@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/gtest_prod_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -65,6 +66,8 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
 
  private:
   friend class ::TabRestoreServiceImplTest;
+  FRIEND_TEST_ALL_PREFIXES(TabRestoreTest,
+                           RestoreGroupInBrowserThatDoesNotSupportGroups);
 
   class PersistenceDelegate;
   void UpdatePersistenceDelegate();

@@ -26,7 +26,7 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/container_names.h"
 #include "media/base/media_export.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
@@ -67,10 +67,6 @@ class MEDIA_EXPORT FFmpegGlue {
 
   ~FFmpegGlue();
 
-  // Returns the list of allowed decoders for audio/video respectively.
-  static const char* GetAllowedAudioDecoders();
-  static const char* GetAllowedVideoDecoders();
-
   // Opens an AVFormatContext specially prepared to process reads and seeks
   // through the FFmpegURLProtocol provided during construction.
   // |is_local_file| is an optional parameter used for metrics reporting.
@@ -90,9 +86,10 @@ class MEDIA_EXPORT FFmpegGlue {
   bool open_called_ = false;
   bool detected_hls_ = false;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AVFormatContext* format_context_ = nullptr;
+  // DanglingUntriaged: We seem to get a dangling pointer warning
+  // if avformat_open_input fails. It seems spurious, possibly this pointer
+  // is meant to be owning?
+  raw_ptr<AVFormatContext, DanglingUntriaged> format_context_ = nullptr;
   std::unique_ptr<AVIOContext, ScopedPtrAVFree> avio_context_;
   container_names::MediaContainerName container_ =
       container_names::MediaContainerName::kContainerUnknown;

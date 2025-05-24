@@ -13,7 +13,6 @@ const Sha512_256 = goog.require('goog.crypt.Sha512_256');
 const crypt = goog.require('goog.crypt');
 const hashTester = goog.require('goog.crypt.hashTester');
 const testSuite = goog.require('goog.testing.testSuite');
-const userAgent = goog.require('goog.userAgent');
 
 /**
  * Each object in the test vector array is a source text and one or more
@@ -163,16 +162,13 @@ testSuite({
 
   /** Test one really large string using SHA512 */
   testHashing512Large() {
-    // This test tends to time out on IE7 and IE8. See b/22873770.
-    if (!userAgent.IE || userAgent.isVersionOrHigher('9')) {
-      const hasher = new Sha512();
-      hasher.update((new Array(1000000)).fill(0));
-      const digest = hasher.digest();
-      const expected = crypt.hexToByteArray(
-          'ce044bc9fd43269d5bbc946cbebc3bb711341115cc4abdf2edbc3ff2c57ad4b1' +
-          '5deb699bda257fea5aef9c6e55fcf4cf9dc25a8c3ce25f2efe90908379bff7ed');
-      assertElementsEquals(expected, digest);
-    }
+    const hasher = new Sha512();
+    hasher.update((new Array(1000000)).fill(0));
+    const digest = hasher.digest();
+    const expected = crypt.hexToByteArray(
+        'ce044bc9fd43269d5bbc946cbebc3bb711341115cc4abdf2edbc3ff2c57ad4b1' +
+        '5deb699bda257fea5aef9c6e55fcf4cf9dc25a8c3ce25f2efe90908379bff7ed');
+    assertElementsEquals(expected, digest);
   },
 
   /** Check that the code throws an error for bad input */

@@ -10,17 +10,12 @@
 #ifndef COMPONENTS_STORAGE_MONITOR_STORAGE_MONITOR_LINUX_H_
 #define COMPONENTS_STORAGE_MONITOR_STORAGE_MONITOR_LINUX_H_
 
-#include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#error "Use the ChromeOS-specific implementation instead."
-#endif
-
 #include <map>
 #include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -29,13 +24,18 @@
 #include "components/storage_monitor/mtab_watcher_linux.h"
 #include "components/storage_monitor/storage_monitor.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#error "Use the ChromeOS-specific implementation instead."
+#endif
+
 namespace base {
 class SequencedTaskRunner;
 }
 
 namespace storage_monitor {
 
-class StorageMonitorLinux : public StorageMonitor {
+class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorLinux
+    : public StorageMonitor {
  public:
   // Should only be called by browser start up code.
   // Use StorageMonitor::GetInstance() instead.

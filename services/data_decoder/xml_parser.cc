@@ -100,9 +100,9 @@ void PopulateNamespaces(base::Value::Dict& node_value, XmlReader* xml_reader) {
     return;
 
   base::Value::Dict namespace_dict;
-  for (auto ns : namespaces)
+  for (const auto& ns : namespaces) {
     namespace_dict.Set(ns.first, ns.second);
-
+  }
   node_value.Set(mojom::XmlParser::kNamespacesKey, std::move(namespace_dict));
 }
 
@@ -112,9 +112,9 @@ void PopulateAttributes(base::Value::Dict& node_value, XmlReader* xml_reader) {
     return;
 
   base::Value::Dict attribute_dict;
-  for (auto attribute : attributes)
+  for (const auto& attribute : attributes) {
     attribute_dict.Set(attribute.first, base::Value(attribute.second));
-
+  }
   node_value.Set(mojom::XmlParser::kAttributesKey, std::move(attribute_dict));
 }
 

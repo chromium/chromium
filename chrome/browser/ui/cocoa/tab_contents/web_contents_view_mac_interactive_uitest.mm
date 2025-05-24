@@ -42,8 +42,9 @@ class TabRemovedWaiter : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() == TabStripModelChange::kRemoved)
+    if (change.type() == TabStripModelChange::kRemoved) {
       run_loop_.Quit();
+    }
   }
 
  private:

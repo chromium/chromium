@@ -154,6 +154,21 @@ Node* NodeTraversal::NextPostOrder(const Node& current,
   return next;
 }
 
+Node* NodeTraversal::PreviousAncestorSibling(const Node& current,
+                                             const Node* stay_within) {
+  DCHECK(!current.HasPreviousSibling());
+  DCHECK_NE(current, stay_within);
+  for (Node& parent : AncestorsOf(current)) {
+    if (parent == stay_within) {
+      return nullptr;
+    }
+    if (parent.HasPreviousSibling()) {
+      return parent.previousSibling();
+    }
+  }
+  return nullptr;
+}
+
 Node* NodeTraversal::PreviousAncestorSiblingPostOrder(const Node& current,
                                                       const Node* stay_within) {
   DCHECK(!current.HasPreviousSibling());

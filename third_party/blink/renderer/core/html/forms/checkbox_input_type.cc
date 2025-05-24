@@ -47,8 +47,8 @@ void CheckboxInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeCheckbox);
 }
 
-ControlPart CheckboxInputType::AutoAppearance() const {
-  return kCheckboxPart;
+AppearanceValue CheckboxInputType::AutoAppearance() const {
+  return AppearanceValue::kCheckbox;
 }
 
 bool CheckboxInputType::ValueMissing(const String&) const {

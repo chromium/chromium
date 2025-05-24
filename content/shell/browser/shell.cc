@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/shell/browser/shell.h"
 
 #include <stddef.h>
@@ -123,8 +128,8 @@ Shell* Shell::CreateShell(std::unique_ptr<WebContents> web_contents,
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kForceWebRtcIPHandlingPolicy)) {
     raw_web_contents->GetMutableRendererPrefs()->webrtc_ip_handling_policy =
-        command_line->GetSwitchValueASCII(
-            switches::kForceWebRtcIPHandlingPolicy);
+        blink::ToWebRTCIPHandlingPolicy(command_line->GetSwitchValueASCII(
+            switches::kForceWebRtcIPHandlingPolicy));
   }
 
   g_platform->SetContents(shell);
@@ -318,10 +323,11 @@ WebContents* Shell::AddNewContents(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  WebContents* result = new_contents.get();
   CreateShell(
       std::move(new_contents), AdjustWindowSize(window_features.bounds.size()),
       !delay_popup_contents_delegate_for_testing_ /* should_set_delegate */);
-  return nullptr;
+  return result;
 }
 
 void Shell::GoBackOrForward(int offset) {
@@ -574,6 +580,25 @@ void Shell::RegisterProtocolHandler(RenderFrameHost* requesting_frame,
     registry->OnAcceptRegisterProtocolHandler(handler);
   }
 }
+
+void Shell::UnregisterProtocolHandler(RenderFrameHost* requesting_frame,
+                                      const std::string& protocol,
+                                      const GURL& url,
+                                      bool user_gesture) {
+  BrowserContext* context = requesting_frame->GetBrowserContext();
+  if (context->IsOffTheRecord()) {
+    return;
+  }
+
+  custom_handlers::ProtocolHandler handler =
+      custom_handlers::ProtocolHandler::CreateProtocolHandler(
+          protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
+  custom_handlers::ProtocolHandlerRegistry* registry = custom_handlers::
+      SimpleProtocolHandlerRegistryFactory::GetForBrowserContext(context, true);
+  CHECK(registry);
+
+  registry->RemoveHandler(handler);
+}
 #endif
 
 void Shell::RequestPointerLock(WebContents* web_contents,
@@ -697,7 +722,9 @@ bool Shell::IsBackForwardCacheSupported(WebContents& web_contents) {
   return true;
 }
 
-PreloadingEligibility Shell::IsPrerender2Supported(WebContents& web_contents) {
+PreloadingEligibility Shell::IsPrerender2Supported(
+    WebContents& web_contents,
+    PreloadingTriggerType trigger_type) {
   return PreloadingEligibility::kEligible;
 }
 

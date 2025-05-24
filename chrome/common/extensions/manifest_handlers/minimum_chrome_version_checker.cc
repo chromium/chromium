@@ -19,11 +19,9 @@ namespace extensions {
 namespace keys = manifest_keys;
 namespace errors = manifest_errors;
 
-MinimumChromeVersionChecker::MinimumChromeVersionChecker() {
-}
+MinimumChromeVersionChecker::MinimumChromeVersionChecker() = default;
 
-MinimumChromeVersionChecker::~MinimumChromeVersionChecker() {
-}
+MinimumChromeVersionChecker::~MinimumChromeVersionChecker() = default;
 
 bool MinimumChromeVersionChecker::Parse(Extension* extension,
                                         std::u16string* error) {
@@ -42,8 +40,7 @@ bool MinimumChromeVersionChecker::Parse(Extension* extension,
 
   const base::Version& current_version = version_info::GetVersion();
   if (!current_version.IsValid()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   if (current_version.CompareTo(minimum_version) < 0) {

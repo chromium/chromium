@@ -11,23 +11,18 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:baselineAligned="false" >
 
     <!-- These layout params are overwritten in DropdownAdapter.java -->
-    <ImageView
-        android:id="@+id/start_dropdown_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/autofill_dropdown_icon_margin"
-        tools:ignore="ContentDescription" />
-
     <LinearLayout
         android:id="@+id/dropdown_label_wrapper"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -88,25 +83,5 @@ found in the LICENSE file.
                 android:textAlignment="viewStart"
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/dropdown_item_tag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/autofill_dropdown_item_label_margin"
-            android:layout_marginStart="@dimen/autofill_dropdown_item_label_margin"
-            android:ellipsize="end"
-            android:includeFontPadding="false"
-            android:singleLine="true"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/end_dropdown_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        tools:ignore="ContentDescription" />
-
 </LinearLayout>

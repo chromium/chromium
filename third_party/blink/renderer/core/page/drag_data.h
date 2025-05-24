@@ -71,6 +71,8 @@ class CORE_EXPORT DragData {
   WTF::String AsURL(
       FilenameConversionPolicy filename_policy = kConvertFilenames,
       WTF::String* title = nullptr) const;
+  Vector<WTF::String> AsURLs(
+      FilenameConversionPolicy filename_policy = kConvertFilenames) const;
   WTF::String AsPlainText() const;
   void AsFilePaths(Vector<WTF::String>&) const;
   unsigned NumberOfFiles() const;

@@ -10,11 +10,13 @@
 #include <tuple>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/fake_local_frame.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/source_location.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -619,6 +621,85 @@ TEST_P(MixedContentCheckerShouldBlockFetchKeepAliveTest,
 
     ExpectNoReportToRenderer(inspector.get());
   }
+}
+
+using MixedContentCheckerShouldBlockLNATest =
+    MixedContentCheckerShouldBlockNavigationTestBase;
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MixedContentCheckerShouldBlockLNATest,
+    ::testing::Values(false, true),
+    [](const testing::TestParamInfo<
+        MixedContentCheckerShouldBlockNavigationTest::ParamType>& info) {
+      return info.param ? "ForRedirect" : "ForNonRedirect";
+    });
+
+// Local Network Access(LNA) request should not block before LNA checks.
+TEST_P(MixedContentCheckerShouldBlockLNATest,
+       ShouldNotBlockNavigationFromLocalHostname) {
+  base::test::ScopedFeatureList feature_list(
+      network::features::kLocalNetworkAccessChecks);
+  const bool from_subframe = true;
+  const auto [nav, inspector] = StartNavigation(
+      "https://source.com", "http://target.local", from_subframe);
+  auto checker = MixedContentChecker();
+
+  EXPECT_FALSE(checker.ShouldBlockNavigation(*nav->GetNavigationHandle(),
+                                             for_redirect()));
+  inspector->FlushLocalFrameMessages();
+  EXPECT_THAT(inspector->mixed_content_result(),
+              Optional(FieldsAre(GURL("https://source.com"),
+                                 GURL("http://target.local"),
+                                 /*was_allowed=*/true, for_redirect())));
+  EXPECT_THAT(
+      inspector->reported_web_features(),
+      UnorderedElementsAre(blink::mojom::WebFeature::kMixedContentPresent,
+                           blink::mojom::WebFeature::kMixedContentBlockable));
+}
+
+TEST_P(MixedContentCheckerShouldBlockLNATest,
+       ShouldNotBlockNavigationFromLocalIP) {
+  base::test::ScopedFeatureList feature_list(
+      network::features::kLocalNetworkAccessChecks);
+  const bool from_subframe = true;
+  const auto [nav, inspector] = StartNavigation(
+      "https://source.com", "http://192.168.1.1", from_subframe);
+  auto checker = MixedContentChecker();
+
+  EXPECT_FALSE(checker.ShouldBlockNavigation(*nav->GetNavigationHandle(),
+                                             for_redirect()));
+  inspector->FlushLocalFrameMessages();
+  EXPECT_THAT(
+      inspector->mixed_content_result(),
+      Optional(FieldsAre(GURL("https://source.com"), GURL("http://192.168.1.1"),
+                         /*was_allowed=*/true, for_redirect())));
+  EXPECT_THAT(
+      inspector->reported_web_features(),
+      UnorderedElementsAre(blink::mojom::WebFeature::kMixedContentPresent,
+                           blink::mojom::WebFeature::kMixedContentBlockable));
+}
+
+// Non-LNA requests should be blocked as normal.
+TEST_P(MixedContentCheckerShouldBlockLNATest, ShouldBlockNonLNARequest) {
+  base::test::ScopedFeatureList feature_list(
+      network::features::kLocalNetworkAccessChecks);
+  const bool from_subframe = true;
+  const auto [nav, inspector] =
+      StartNavigation("https://source.com", "http://target.com", from_subframe);
+  auto checker = MixedContentChecker();
+
+  EXPECT_TRUE(checker.ShouldBlockNavigation(*nav->GetNavigationHandle(),
+                                            for_redirect()));
+  inspector->FlushLocalFrameMessages();
+  EXPECT_THAT(
+      inspector->mixed_content_result(),
+      Optional(FieldsAre(GURL("https://source.com"), GURL("http://target.com"),
+                         /*was_allowed=*/false, for_redirect())));
+  EXPECT_THAT(
+      inspector->reported_web_features(),
+      UnorderedElementsAre(blink::mojom::WebFeature::kMixedContentPresent,
+                           blink::mojom::WebFeature::kMixedContentBlockable));
 }
 
 }  // namespace content

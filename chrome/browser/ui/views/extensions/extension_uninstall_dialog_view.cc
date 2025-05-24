@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -61,8 +62,9 @@ ExtensionUninstallDialogViews::ExtensionUninstallDialogViews(
     : extensions::ExtensionUninstallDialog(profile, parent, delegate) {}
 
 ExtensionUninstallDialogViews::~ExtensionUninstallDialogViews() {
-  if (dialog_model_)
+  if (dialog_model_) {
     dialog_model_->host()->Close();
+  }
   DCHECK(!dialog_model_);
 }
 
@@ -86,10 +88,13 @@ void ExtensionUninstallDialogViews::Show() {
       .AddOkButton(
           base::BindOnce(&ExtensionUninstallDialogViews::DialogAccepted,
                          weak_ptr_factory_.GetWeakPtr()),
-          ui::DialogModel::Button::Params().SetLabel(
-              l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON)))
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON))
+              .SetId(kOkButtonElementId))
       .AddCancelButton(
-          base::DoNothing() /* Cancel is covered by WindowClosingCallback */);
+          base::DoNothing() /* Cancel is covered by WindowClosingCallback */,
+          ui::DialogModel::Button::Params().SetId(kCancelButtonElementId));
 
   if (triggering_extension()) {
     dialog_builder.AddParagraph(
@@ -139,13 +144,19 @@ void ExtensionUninstallDialogViews::DialogAccepted() {
 }
 
 void ExtensionUninstallDialogViews::DialogClosing() {
-  if (!dialog_model_)
+  if (!dialog_model_) {
     return;
+  }
   dialog_model_ = nullptr;
   OnDialogClosed(CLOSE_ACTION_CANCELED);
 }
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(extensions::ExtensionUninstallDialog,
+                                      kCancelButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(extensions::ExtensionUninstallDialog,
+                                      kOkButtonElementId);
 
 // static
 std::unique_ptr<extensions::ExtensionUninstallDialog>

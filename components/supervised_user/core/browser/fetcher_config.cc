@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -156,19 +157,19 @@ std::string FetcherConfig::GetHttpMethod() const {
 }
 
 std::string_view FetcherConfig::StaticServicePath() const {
-  return absl::get<std::string_view>(service_path);
+  return std::get<std::string_view>(service_path);
 }
 
 std::string FetcherConfig::ServicePath(const PathArgs& args) const {
   const std::string_view* static_path =
-      absl::get_if<std::string_view>(&service_path);
+      std::get_if<std::string_view>(&service_path);
   if (static_path != nullptr) {
     CHECK(args.empty()) << "Args are not empty but service_path type variant "
                            "is not FetcherConfig::PathTemplate.";
     return std::string(*static_path);
   }
 
-  const PathTemplate path_template = absl::get<PathTemplate>(service_path);
+  const PathTemplate path_template = std::get<PathTemplate>(service_path);
   CHECK(!path_template.value().empty()) << "Service path is required";
 
   // Implementation detail: Placeholders are not substituted, but used to split

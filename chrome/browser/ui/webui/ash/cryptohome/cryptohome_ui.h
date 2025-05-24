@@ -30,7 +30,7 @@ class CryptohomeUI : public content::WebUIController {
   CryptohomeUI(const CryptohomeUI&) = delete;
   CryptohomeUI& operator=(const CryptohomeUI&) = delete;
 
-  ~CryptohomeUI() override {}
+  ~CryptohomeUI() override = default;
 };
 
 }  // namespace ash

@@ -15,6 +15,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
@@ -25,13 +27,14 @@ import org.chromium.ui.base.WindowAndroid;
  * and the ResumeListener in ArCoreInstallUtils.
  */
 @JNINamespace("webxr")
+@NullMarked
 public class XrActivityListener implements ActivityLifecycleCallbacks {
     private static final String TAG = "XrActivityListener";
     private static final boolean DEBUG_LOGS = false;
 
     private long mNativeXrActivityListener;
-    private ImmutableWeakReference<Activity> mWeakActivity;
-    private ImmutableWeakReference<Application> mWeakApplication;
+    private final ImmutableWeakReference<Activity> mWeakActivity;
+    private final ImmutableWeakReference<Application> mWeakApplication;
 
     /**
      * Constructs a new XrActivityListener. This listener will listen for events on the Activity
@@ -81,7 +84,7 @@ public class XrActivityListener implements ActivityLifecycleCallbacks {
     // Unfortunately, ActivityLifecycleCallbacks force us to implement all of the methods, but
     // we only really care about onActivityResumed for our purposes.
     @Override
-    public void onActivityCreated(final Activity activity, Bundle savedInstanceState) {}
+    public void onActivityCreated(final Activity activity, @Nullable Bundle savedInstanceState) {}
 
     @Override
     public void onActivityDestroyed(Activity activity) {}

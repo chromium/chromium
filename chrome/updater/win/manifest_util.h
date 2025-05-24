@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/update_client/protocol_parser.h"
+#include "chrome/updater/win/protocol_parser_xml.h"
 
 namespace base {
 class FilePath;
@@ -39,7 +39,7 @@ namespace updater {
 //
 // The function extracts the values from the manifest using a best-effort
 // approach. If matching values are found, then:
-//   `results`: contains the protocol parser results.
+//   `requirements`: contains the system requirements for the app.
 //   `installer_version`: contains the version of the app installer.
 //   `installer_path`: contains the full path to the app installer.
 //   `install_args`: the command line arguments for the app installer.
@@ -51,7 +51,7 @@ void ReadInstallCommandFromManifest(
     const std::wstring& offline_dir_guid,
     const std::string& app_id,
     const std::string& install_data_index,
-    update_client::ProtocolParser::Results& results,
+    OfflineManifestSystemRequirements& requirements,
     std::string& installer_version,
     base::FilePath& installer_path,
     std::string& install_args,
@@ -111,8 +111,8 @@ bool IsArchitectureCompatible(const std::string& arch_list,
 bool IsOSVersionCompatible(const std::string& min_os_version);
 
 // Returns `true` if the platform, architecture, and OS within the parser
-// `results` are all compatible with the current OS.
-bool IsOsSupported(const update_client::ProtocolParser::Results& results);
+// `requirements` are all compatible with the current OS.
+bool IsOsSupported(const OfflineManifestSystemRequirements& requirements);
 
 }  // namespace updater
 

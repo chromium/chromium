@@ -31,12 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_CLIPBOARD_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_CLIPBOARD_UTILITIES_H_
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace blink {
 
@@ -46,7 +45,7 @@ CORE_EXPORT void ReplaceNewlinesWithWindowsStyleNewlines(String&);
 CORE_EXPORT void ReplaceNBSPWithSpace(String&);
 CORE_EXPORT String ConvertURIListToURL(const String& uri_list);
 CORE_EXPORT String URLToImageMarkup(const KURL&, const String& title);
-CORE_EXPORT String PNGToImageMarkup(const mojo_base::BigBuffer& png_data);
+CORE_EXPORT String PNGToImageMarkup(const base::span<const uint8_t> png_data);
 
 }  // namespace blink
 

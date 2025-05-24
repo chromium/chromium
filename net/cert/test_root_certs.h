@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
@@ -25,6 +26,24 @@ namespace net {
 
 class X509Certificate;
 typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
+
+class ThreadSafeTrustStoreInMemory : public bssl::TrustStore {
+ public:
+  // TrustStoreInMemory wrappers:
+  bool IsEmpty() const;
+  void Clear();
+  void AddCertificate(std::shared_ptr<const bssl::ParsedCertificate> cert,
+                      const bssl::CertificateTrust& trust);
+
+  // TrustStore implementation:
+  void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                        bssl::ParsedCertificateList* issuers) override;
+  bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
+
+ private:
+  mutable base::Lock lock_;
+  bssl::TrustStoreInMemory impl_ GUARDED_BY(lock_);
+};
 
 // TestRootCerts is a helper class for unit tests that is used to
 // artificially mark a certificate as trusted, independent of the local
@@ -54,8 +73,6 @@ class NET_EXPORT TestRootCerts {
   bool IsKnownRoot(base::span<const uint8_t> der_cert) const;
 
 #if BUILDFLAG(IS_IOS)
-  CFArrayRef temporary_roots() const { return temporary_roots_.get(); }
-
   // Modifies the root certificates of |trust_ref| to include the
   // certificates stored in |temporary_roots_|. If IsEmpty() is true, this
   // does not modify |trust_ref|.
@@ -81,17 +98,24 @@ class NET_EXPORT TestRootCerts {
   void AddKnownRoot(base::span<const uint8_t> der_cert);
 
   // Performs platform-dependent operations.
-  void Init();
-  bool AddImpl(X509Certificate* certificate);
-  void ClearImpl();
+  void Init() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  bool AddImpl(X509Certificate* certificate) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void ClearImpl() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // `test_trust_store_` uses its own internal lock rather than the
+  // TestRootCerts::lock_, since a pointer to the trust store is returned by
+  // `test_trust_store` the methods on the trust store must themselves be
+  // thread-safe.
+  ThreadSafeTrustStoreInMemory test_trust_store_;
+
+  mutable base::Lock lock_;
 
 #if BUILDFLAG(IS_IOS)
-  base::apple::ScopedCFTypeRef<CFMutableArrayRef> temporary_roots_;
+  base::apple::ScopedCFTypeRef<CFMutableArrayRef> temporary_roots_
+      GUARDED_BY(lock_);
 #endif
 
-  bssl::TrustStoreInMemory test_trust_store_;
-
-  std::set<std::string, std::less<>> test_known_roots_;
+  std::set<std::string, std::less<>> test_known_roots_ GUARDED_BY(lock_);
 };
 
 // Scoped helper for unittests to handle safely managing trusted roots.

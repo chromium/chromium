@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DOM_WINDOW_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -28,6 +29,7 @@ class DOMWrapperWorld;
 class InputDeviceCapabilitiesConstants;
 class LocalDOMWindow;
 class Location;
+class ScriptObject;
 class ScriptValue;
 class SecurityOrigin;
 class SerializedScriptValue;
@@ -113,7 +115,7 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
   void postMessage(v8::Isolate*,
                    const ScriptValue& message,
                    const String& target_origin,
-                   HeapVector<ScriptValue>& transfer,
+                   HeapVector<ScriptObject> transfer,
                    ExceptionState&);
 
   void postMessage(v8::Isolate*,
@@ -156,8 +158,7 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
   void InstallCoopAccessMonitor(
       LocalFrame* accessing_frame,
       network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-          coop_reporter_params,
-      bool is_in_same_virtual_coop_related_group);
+          coop_reporter_params);
   // Whenever we detect that the enforcement of a report-only COOP policy would
   // have resulted in preventing access to this window, a report is potentially
   // sent when calling this function.
@@ -166,10 +167,8 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
   // marked as "CrossOrigin" in the window.idl.
   void ReportCoopAccess(const char* property_name);
 
-  // Records metrics for cross-origin access to the WindowProxy properties,
+  // Records metrics for access to the cross-origin WindowProxy properties.
   void RecordWindowProxyAccessMetrics(
-      mojom::blink::WebFeature property_access,
-      mojom::blink::WebFeature property_access_from_other_page,
       mojom::blink::WindowProxyAccessType access_type) const;
 
   // We need to check proxy access to see if it's blocked, and if so whether
@@ -241,9 +240,10 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
         reporter;
     bool endpoint_defined;
     WTF::String reported_window_url;
-    bool is_in_same_virtual_coop_related_group = false;
   };
   HeapVector<Member<CoopAccessMonitor>> coop_access_monitor_;
+  // Mutable: only used to downsample metrics, no change to observable state.
+  mutable base::MetricsSubSampler metrics_sub_sampler_;
 };
 
 }  // namespace blink

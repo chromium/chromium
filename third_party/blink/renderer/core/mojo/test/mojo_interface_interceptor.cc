@@ -40,7 +40,7 @@ MojoInterfaceInterceptor* MojoInterfaceInterceptor::Create(
   }
 
   if (scope == Scope::Enum::kContextJs &&
-      !context->use_mojo_js_interface_broker()) {
+      !context->ShouldUseMojoJSInterfaceBroker()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "\"context_js\" scope interception is unavailable unless MojoJS "
@@ -82,7 +82,7 @@ void MojoInterfaceInterceptor::start(ExceptionState& exception_state) {
 
   started_ = true;
   if (scope_ == Scope::Enum::kContextJs) {
-    DCHECK(context->use_mojo_js_interface_broker());
+    DCHECK(context->ShouldUseMojoJSInterfaceBroker());
     if (!context->GetMojoJSInterfaceBroker().SetBinderForTesting(
             interface_name,
             WTF::BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
@@ -123,7 +123,7 @@ void MojoInterfaceInterceptor::stop() {
   DCHECK(context);
 
   if (scope_ == Scope::Enum::kContextJs) {
-    DCHECK(context->use_mojo_js_interface_broker());
+    DCHECK(context->ShouldUseMojoJSInterfaceBroker());
     context->GetMojoJSInterfaceBroker().SetBinderForTesting(interface_name, {});
     return;
   }

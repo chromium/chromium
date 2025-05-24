@@ -28,8 +28,8 @@ std::vector<uint8_t> GetIntroductionFrame() {
   v1frame->mutable_introduction();
 
   std::vector<uint8_t> data;
-  data.resize(frame.ByteSize());
-  EXPECT_TRUE(frame.SerializeToArray(&data[0], frame.ByteSize()));
+  data.resize(frame.ByteSizeLong());
+  EXPECT_TRUE(frame.SerializeToArray(&data[0], frame.ByteSizeLong()));
 
   return data;
 }
@@ -40,8 +40,8 @@ std::vector<uint8_t> GetCancelFrame() {
   v1frame->set_type(sharing::nearby::V1Frame_FrameType_CANCEL);
 
   std::vector<uint8_t> data;
-  data.resize(frame.ByteSize());
-  EXPECT_TRUE(frame.SerializeToArray(&data[0], frame.ByteSize()));
+  data.resize(frame.ByteSizeLong());
+  EXPECT_TRUE(frame.SerializeToArray(&data[0], frame.ByteSizeLong()));
 
   return data;
 }

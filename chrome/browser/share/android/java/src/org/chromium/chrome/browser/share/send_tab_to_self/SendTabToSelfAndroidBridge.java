@@ -24,7 +24,7 @@ import java.util.Optional;
 @JNINamespace("send_tab_to_self")
 public class SendTabToSelfAndroidBridge {
     // TODO(crbug.com/40618597): Add logic back in to track whether model is loaded.
-    private boolean mIsNativeSendTabToSelfModelLoaded;
+    // private boolean mIsNativeSendTabToSelfModelLoaded;
 
     /**
      * Creates a new entry to be persisted to the sync backend.
@@ -75,7 +75,6 @@ public class SendTabToSelfAndroidBridge {
 
     /**
      * @param webContents WebContents where a navigation was just completed.
-     * @param profile Profile to which |webContents| belongs.
      */
     public static void updateActiveWebContents(WebContents webContents) {
         SendTabToSelfAndroidBridgeJni.get().updateActiveWebContents(webContents);

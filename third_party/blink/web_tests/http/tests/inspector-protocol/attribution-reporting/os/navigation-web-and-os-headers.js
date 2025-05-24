@@ -3,21 +3,17 @@
 // found in the LICENSE file.
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const { dp } = await testRunner.startHTML(
-    '<a href="/inspector-protocol/attribution-reporting/resources/register-web-and-os-source.php" attributionsrc target="_blank">Link</a>',
-    "Test that clicking an attributionsrc anchor triggers an issue when it tries to register a web trigger and an OS trigger together."
-  );
+  const {dp, session} = await testRunner.startHTML(
+      '<a href="/inspector-protocol/attribution-reporting/resources/register-web-and-os-source.php" attributionsrc target="_blank">Link</a>',
+      'Test that clicking an attributionsrc anchor triggers an issue when it tries to register a web trigger and an OS trigger together.');
 
   await dp.Audits.enable();
 
-  const issue = dp.Audits.onceIssueAdded();
+  session.evaluateAsyncWithUserGesture(`document.querySelector('a').click()`);
 
-  await dp.Runtime.evaluate({
-    expression: `document.querySelector('a').click()`,
-    userGesture: true,
-  });
+  const issue = await dp.Audits.onceIssueAdded();
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
 
   testRunner.completeTest();
 });

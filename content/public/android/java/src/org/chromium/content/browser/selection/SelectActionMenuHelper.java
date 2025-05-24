@@ -21,8 +21,6 @@ import android.view.textclassifier.TextClassification;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
@@ -31,14 +29,14 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionClient.Result;
 import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
-import org.chromium.content_public.common.ContentFeatures;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -52,6 +50,7 @@ import java.util.TreeSet;
  * This was created (as opposed to using a menu.xml) because we have multiple ways of rendering the
  * menu that cannot necessarily leverage the {@link android.view.Menu} & {@link MenuItem} APIs.
  */
+@NullMarked
 public class SelectActionMenuHelper {
     private static final String TAG = "SelectActionMenu"; // 20 char limit.
 
@@ -148,7 +147,7 @@ public class SelectActionMenuHelper {
     public static SortedSet<SelectionMenuGroup> getMenuItems(
             SelectActionMenuDelegate delegate,
             Context context,
-            @Nullable SelectionClient.Result classificationResult,
+            SelectionClient.@Nullable Result classificationResult,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             String selectedText,
@@ -162,6 +161,7 @@ public class SelectActionMenuHelper {
                         delegate,
                         selectionActionMenuDelegate,
                         isSelectionPassword,
+                        isSelectionReadOnly,
                         selectedText));
 
         SelectionMenuGroup primaryAssistItems =
@@ -184,13 +184,11 @@ public class SelectActionMenuHelper {
         return itemGroups;
     }
 
-    @Nullable
-    @RequiresApi(Build.VERSION_CODES.O)
-    private static SelectionMenuGroup getPrimaryAssistItems(
+    private static @Nullable SelectionMenuGroup getPrimaryAssistItems(
             Context context,
             String selectedText,
-            @Nullable SelectionClient.Result classificationResult) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || selectedText.isEmpty()) {
+            SelectionClient.@Nullable Result classificationResult) {
+        if (selectedText.isEmpty()) {
             return null;
         }
         if (classificationResult == null || !classificationResult.hasNamedAction()) {
@@ -221,6 +219,7 @@ public class SelectActionMenuHelper {
             SelectActionMenuDelegate delegate,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate,
             boolean isSelectionPassword,
+            boolean isSelectionReadOnly,
             String selectedText) {
         SelectionMenuGroup defaultGroup =
                 new SelectionMenuGroup(
@@ -232,13 +231,10 @@ public class SelectActionMenuHelper {
         menuItemBuilders.add(share(context, delegate.canShare()));
         menuItemBuilders.add(selectAll(delegate.canSelectAll()));
         menuItemBuilders.add(webSearch(context, delegate.canWebSearch()));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            menuItemBuilders.add(pasteAsPlainText(context, delegate.canPasteAsPlainText()));
-        }
-        if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)
-                && selectionActionMenuDelegate != null) {
+        menuItemBuilders.add(pasteAsPlainText(context, delegate.canPasteAsPlainText()));
+        if (selectionActionMenuDelegate != null) {
             selectionActionMenuDelegate.modifyDefaultMenuItems(
-                    menuItemBuilders, isSelectionPassword, selectedText);
+                    menuItemBuilders, isSelectionPassword, isSelectionReadOnly, selectedText);
         }
         for (SelectionMenuItem.Builder builder : menuItemBuilders) {
             defaultGroup.addItem(builder.build());
@@ -246,8 +242,7 @@ public class SelectActionMenuHelper {
         return defaultGroup;
     }
 
-    @Nullable
-    private static SelectionMenuGroup getSecondaryAssistItems(
+    private static @Nullable SelectionMenuGroup getSecondaryAssistItems(
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate,
             @Nullable Result classificationResult,
             String selectedText) {
@@ -325,8 +320,7 @@ public class SelectActionMenuHelper {
         }
         List<ResolveInfo> supportedActivities =
                 PackageManagerUtils.queryIntentActivities(createProcessTextIntent(), 0);
-        if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION) &&
-                selectionActionMenuDelegate != null) {
+        if (selectionActionMenuDelegate != null) {
             supportedActivities =
                     selectionActionMenuDelegate.filterTextProcessingActivities(supportedActivities);
         }
@@ -362,9 +356,8 @@ public class SelectActionMenuHelper {
 
     private static void addAdditionalTextProcessingItems(
             SelectionMenuGroup textProcessingItems,
-            SelectionActionMenuDelegate selectionActionMenuDelegate) {
-        if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)
-                && selectionActionMenuDelegate != null) {
+            @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
+        if (selectionActionMenuDelegate != null) {
             textProcessingItems.addItems(
                     selectionActionMenuDelegate.getAdditionalTextProcessingItems());
         }
@@ -381,8 +374,7 @@ public class SelectActionMenuHelper {
         return new Intent().setAction(Intent.ACTION_PROCESS_TEXT).setType("text/plain");
     }
 
-    @Nullable
-    private static Drawable getPrimaryActionIconForClassificationResult(
+    private static @Nullable Drawable getPrimaryActionIconForClassificationResult(
             SelectionClient.Result classificationResult) {
         final List<Drawable> additionalIcons = classificationResult.additionalIcons;
         Drawable icon;
@@ -395,16 +387,14 @@ public class SelectActionMenuHelper {
         return icon;
     }
 
-    @Nullable
-    @RequiresApi(Build.VERSION_CODES.O)
-    private static View.OnClickListener getActionClickListener(RemoteAction action) {
+    private static View.@Nullable OnClickListener getActionClickListener(RemoteAction action) {
         if (TextUtils.isEmpty(action.getTitle()) || action.getActionIntent() == null) {
             return null;
         }
         return v -> {
             try {
                 ActivityOptions options = ActivityOptions.makeBasic();
-                ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+                ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
                 action.getActionIntent()
                         .send(
                                 ContextUtils.getApplicationContext(),
@@ -482,7 +472,6 @@ public class SelectActionMenuHelper {
                 .setIsIconTintable(true);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private static SelectionMenuItem.Builder pasteAsPlainText(
             @Nullable Context context, boolean isEnabled) {
         SelectionMenuItem.Builder builder =

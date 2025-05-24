@@ -45,21 +45,19 @@
         }
       ],
       "retry_failed_shards": false,
-      "retry_without_patch": false
+      "retry_without_patch": false,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-chromium-presubmit/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 150
   },

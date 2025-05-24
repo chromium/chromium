@@ -9,8 +9,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 SubmittableExecutor::SubmittableExecutor(
     scoped_refptr<base::TaskRunner> task_runner)
@@ -91,5 +90,4 @@ void SubmittableExecutor::RunTask(Runnable&& runnable) {
     last_task_completed_.Signal();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

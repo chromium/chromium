@@ -7,13 +7,14 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/types/strong_alias.h"
 #include "components/attribution_reporting/os_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 
@@ -26,10 +27,10 @@ using OsTriggerRegistrationError =
                       mojom::OsRegistrationError>;
 
 using RegistrationHeaderErrorDetails =
-    absl::variant<mojom::SourceRegistrationError,
-                  mojom::TriggerRegistrationError,
-                  OsSourceRegistrationError,
-                  OsTriggerRegistrationError>;
+    std::variant<mojom::SourceRegistrationError,
+                 mojom::TriggerRegistrationError,
+                 OsSourceRegistrationError,
+                 OsTriggerRegistrationError>;
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationHeaderError {
   std::string header_value;
@@ -37,7 +38,15 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationHeaderError {
 
   RegistrationHeaderError() = default;
 
+  RegistrationHeaderError(std::string header_value,
+                          RegistrationHeaderErrorDetails error_details)
+      : header_value(std::move(header_value)), error_details(error_details) {}
+
   RegistrationHeaderError(std::string_view header_value,
+                          RegistrationHeaderErrorDetails error_details)
+      : header_value(header_value), error_details(error_details) {}
+
+  RegistrationHeaderError(const char* header_value,
                           RegistrationHeaderErrorDetails error_details)
       : header_value(header_value), error_details(error_details) {}
 

@@ -12,12 +12,12 @@
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "net/base/net_errors.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"          // nogncheck
 #include "components/user_manager/user_manager.h"  // nogncheck
 #include "components/user_manager/user_type.h"     // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -39,7 +39,7 @@ bool ShouldOverrideCurrentStage(
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 InstallStageTracker::UserInfo::UserInfo() = default;
 InstallStageTracker::UserInfo::UserInfo(const UserInfo&) = default;
 InstallStageTracker::UserInfo::UserInfo(user_manager::UserType user_type,
@@ -48,7 +48,7 @@ InstallStageTracker::UserInfo::UserInfo(user_manager::UserType user_type,
     : user_type(user_type),
       is_new_user(is_new_user),
       is_user_present(is_user_present) {}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // InstallStageTracker::InstallationData implementation.
 
@@ -134,7 +134,7 @@ InstallStageTracker* InstallStageTracker::Get(
   return InstallStageTrackerFactory::GetForBrowserContext(context);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 InstallStageTracker::UserInfo InstallStageTracker::GetUserInfo(
     Profile* profile) {
   const user_manager::User* user =
@@ -147,7 +147,7 @@ InstallStageTracker::UserInfo InstallStageTracker::GetUserInfo(
   UserInfo current_user(user->GetType(), is_new_user, /*is_user_present=*/true);
   return current_user;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void InstallStageTracker::ReportInfoOnNoUpdatesFailure(
     const ExtensionId& id,

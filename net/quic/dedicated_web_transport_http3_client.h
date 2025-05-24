@@ -63,6 +63,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   // OnConnected() or OnConnectionFailed() is called on the Visitor.
   void Connect() override;
   void Close(const std::optional<WebTransportCloseInfo>& close_info) override;
+  void CloseIfNonceMatches(base::UnguessableToken nonce) override;
 
   quic::WebTransportSession* session() override;
 
@@ -149,6 +150,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   const GURL url_;
   const url::Origin origin_;
   const NetworkAnonymizationKey anonymization_key_;
+  const std::vector<std::string> application_protocols_;
   const raw_ptr<URLRequestContext> context_;          // Unowned.
   const raw_ptr<WebTransportClientVisitor> visitor_;  // Unowned.
 

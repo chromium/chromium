@@ -27,11 +27,12 @@ namespace {
 /******** Helper Functions ********/
 
 // Uses |detector| to find embedded executables inside |image|, and returns the
-// result on success, or std::nullopt on failure,  which occurs if too many (>
-// |kElementLimit|) elements are found.
+// result on success, or std::nullopt on failure, which occurs if too many
+// (> |kElementLimit|) elements are found.
 std::optional<std::vector<Element>> FindEmbeddedElements(
     ConstBufferView image,
     const std::string& name,
+    offset_t start_scan_at,
     ElementDetector&& detector) {
   // Maximum number of Elements in a file. This is enforced because our matching
   // algorithm is O(n^2), which suffices for regular archive files that should
@@ -39,10 +40,12 @@ std::optional<std::vector<Element>> FindEmbeddedElements(
   // executables is likely pathological, and is rejected to prevent exploits.
   static constexpr size_t kElementLimit = 256;
   std::vector<Element> elements;
-  ElementFinder element_finder(image, std::move(detector));
-  for (auto element = element_finder.GetNext();
+  std::unique_ptr<ElementFinder> element_finder =
+      std::make_unique<ElementFinder>(image, std::move(detector),
+                                      start_scan_at);
+  for (auto element = element_finder->GetNext();
        element.has_value() && elements.size() <= kElementLimit;
-       element = element_finder.GetNext()) {
+       element = element_finder->GetNext()) {
     elements.push_back(*element);
   }
   if (elements.size() >= kElementLimit) {
@@ -234,8 +237,9 @@ class MatchingInfoOutVerbose : public MatchingInfoOut {
 
 /******** HeuristicEnsembleMatcher ********/
 
-HeuristicEnsembleMatcher::HeuristicEnsembleMatcher(std::ostream* out)
-    : out_(out) {}
+HeuristicEnsembleMatcher::HeuristicEnsembleMatcher(offset_t start_scan_at,
+                                                   std::ostream* out)
+    : start_scan_at_(start_scan_at), out_(out) {}
 
 HeuristicEnsembleMatcher::~HeuristicEnsembleMatcher() = default;
 
@@ -246,12 +250,12 @@ bool HeuristicEnsembleMatcher::RunMatch(ConstBufferView old_image,
 
   // Find all elements in "old" and "new".
   std::optional<std::vector<Element>> old_elements =
-      FindEmbeddedElements(old_image, "Old file",
+      FindEmbeddedElements(old_image, "Old file", start_scan_at_,
                            base::BindRepeating(DetectElementFromDisassembler));
   if (!old_elements.has_value())
     return false;
   std::optional<std::vector<Element>> new_elements =
-      FindEmbeddedElements(new_image, "New file",
+      FindEmbeddedElements(new_image, "New file", start_scan_at_,
                            base::BindRepeating(DetectElementFromDisassembler));
   if (!new_elements.has_value())
     return false;

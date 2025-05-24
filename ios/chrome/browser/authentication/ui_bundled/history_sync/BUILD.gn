@@ -1,0 +1,113 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("history_sync") {
+  sources = [
+    "history_sync_constants.h",
+    "history_sync_coordinator.h",
+    "history_sync_coordinator.mm",
+    "history_sync_mediator.h",
+    "history_sync_mediator.mm",
+    "history_sync_popup_coordinator.h",
+    "history_sync_popup_coordinator.mm",
+    "history_sync_utils.h",
+    "history_sync_utils.mm",
+  ]
+  deps = [
+    ":capabilities_fetcher",
+    ":pref_names",
+    ":ui",
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/service",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/history_sync/resources",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator:animated_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "history_sync_consumer.h",
+    "history_sync_view_controller.h",
+    "history_sync_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements:elements_internal",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("capabilities_fetcher") {
+  sources = [
+    "history_sync_capabilities_fetcher.h",
+    "history_sync_capabilities_fetcher.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+  ]
+}
+
+source_set("pref_names") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "history_sync_capabilities_fetcher_unittest.mm" ]
+  deps = [
+    ":capabilities_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

@@ -26,15 +26,13 @@ interface DataHost {
   // Called when OS source data from the renderer is available for a given
   // attributionsrc request. The OS will make subsequent requests to
   // to obtain the actual registration.
-  OsSourceDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,
-                        attribution_reporting.mojom.OsRegistration registration,
+  OsSourceDataAvailable(attribution_reporting.mojom.OsRegistration registration,
                         bool was_fetched_via_service_worker);
 
   // Called when OS trigger data from the renderer is available for a given
   // attributionsrc request. The OS will make subsequent requests to
   // to obtain the actual registration.
-  OsTriggerDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,
-                         attribution_reporting.mojom.OsRegistration registration,
+  OsTriggerDataAvailable(attribution_reporting.mojom.OsRegistration registration,
                          bool was_fetched_via_service_worker);
 
   // Called when an error occurs during header validation in the renderer for
@@ -43,3 +41,15 @@ interface DataHost {
     attribution_reporting.mojom.SuitableOrigin reporting_origin,
     attribution_reporting.mojom.RegistrationHeaderError error);
 };
+
+// Enum to log the number of calls to OsSourceDataAvailable in Blink and the
+// number of calls received in the Browser process.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DataAvailableCallsite)
+enum DataAvailableCallsite {
+  kBlink = 0,
+  kBrowser,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:DataAvailableCallsite)

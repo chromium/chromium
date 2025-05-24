@@ -4,11 +4,15 @@
 
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 
+#include <array>
+#include <string>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -121,14 +125,12 @@ TEST_F(DependencyParserModelValidTest, GetDependencyHeads) {
   // #             - cream(11)
   // #               children:
   // #                 - or(10)
-  std::vector<std::string> input = {"Ice",    "cream",   "is",        "a",
-                                    "frozen", "dessert", "typically", "made",
-                                    "from",   "milk",    "or",        "cream"};
+  static const auto input = std::to_array<std::string>(
+      {"Ice", "cream", "is", "a", "frozen", "dessert", "typically", "made",
+       "from", "milk", "or", "cream"});
   auto prediction = dependency_parser_model_->GetDependencyHeads(input);
-  std::vector<unsigned int> expected_result = {1, 5, 5, 5, 5,  5,
-                                               7, 5, 9, 7, 11, 9};
-  EXPECT_EQ(expected_result.size(), prediction.size());
-  EXPECT_EQ(expected_result, prediction);
+  EXPECT_THAT(prediction,
+              ::testing::ElementsAre(1, 5, 5, 5, 5, 5, 7, 5, 9, 7, 11, 9));
 
   histogram_tester_.ExpectUniqueSample(
       "Accessibility.DependencyParserModel.Inference.LengthInTokens",

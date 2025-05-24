@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/web/public/annotations/annotations_text_manager.h"
+
 #import "ios/web/annotations/annotations_java_script_feature.h"
 #import "ios/web/annotations/annotations_text_manager_impl.h"
 

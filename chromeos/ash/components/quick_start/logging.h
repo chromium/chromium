@@ -23,7 +23,7 @@ namespace ash::quick_start {
 // be logged with the standard logging system.
 class ScopedLogMessage {
  public:
-  ScopedLogMessage(const std::string_view file,
+  ScopedLogMessage(std::string_view file,
                    int line,
                    logging::LogSeverity severity);
   ScopedLogMessage(const ScopedLogMessage&) = delete;

@@ -29,6 +29,10 @@
 #include "ui/gfx/surface_origin.h"
 #include "ui/latency/latency_info.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gfx/android/surface_control_frame_rate.h"
+#endif
+
 namespace gfx {
 namespace mojom {
 class DelegatedInkPointRenderer;
@@ -264,8 +268,10 @@ class VIZ_SERVICE_EXPORT OutputSurface {
       const gfx::SwapResponse& response,
       std::vector<ui::LatencyInfo>* latency_info);
 
+#if BUILDFLAG(IS_ANDROID)
   // Notifies the OutputSurface of rate of content updates in frames per second.
-  virtual void SetFrameRate(float frame_rate) {}
+  virtual void SetFrameRate(gfx::SurfaceControlFrameRate frame_rate) {}
+#endif
 
   // Sends the pending delegated ink renderer receiver to GPU Main to allow the
   // browser process to send points directly there.
@@ -288,6 +294,13 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   std::unique_ptr<SoftwareOutputDevice> software_device_;
   SkM44 color_matrix_;
 };
+
+#if BUILDFLAG(IS_WIN)
+// Helper to check that DComp textures are supported before checking for
+// `features::IsDelegatedCompositingEnabled()`.
+bool IsDelegatedCompositingSupportedAndEnabled(
+    OutputSurface::DCSupportLevel support_level);
+#endif
 
 }  // namespace viz
 

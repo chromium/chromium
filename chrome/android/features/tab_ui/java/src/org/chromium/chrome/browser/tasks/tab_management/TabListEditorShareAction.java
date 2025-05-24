@@ -23,12 +23,14 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
@@ -47,9 +49,9 @@ public class TabListEditorShareAction extends TabListEditorAction {
                             UrlConstants.CHROME_NATIVE_SCHEME,
                             ContentUrlConstants.ABOUT_SCHEME));
     private static Callback<Intent> sIntentCallbackForTesting;
-    private Context mContext;
+    private final Context mContext;
     private boolean mSkipUrlCheckForTesting;
-    private BroadcastReceiver mBroadcastReceiver;
+    private final BroadcastReceiver mBroadcastReceiver;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -115,7 +117,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> tabIds) {
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
         boolean enableShare = false;
         List<Tab> selectedTabs = getTabsOrTabsAndRelatedTabsFromSelection();
 
@@ -126,12 +128,15 @@ public class TabListEditorShareAction extends TabListEditorAction {
             }
         }
 
-        int size = editorSupportsActionOnRelatedTabs() ? selectedTabs.size() : tabIds.size();
+        int size = editorSupportsActionOnRelatedTabs() ? selectedTabs.size() : itemIds.size();
         setEnabledAndItemCount(enableShare, size);
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion) {
         assert !tabs.isEmpty() : "Share action should not be enabled for no tabs.";
 
         TabList tabList = getTabGroupModelFilter().getTabModel();
@@ -223,10 +228,8 @@ public class TabListEditorShareAction extends TabListEditorAction {
                     drawable.draw(canvas);
 
                     ShareImageFileUtils.generateTemporaryUriFromBitmap(
-                            mContext.getResources()
-                                    .getString(
-                                            R.string
-                                                    .tab_selection_editor_share_sheet_preview_thumbnail),
+                            mContext.getString(
+                                    R.string.tab_selection_editor_share_sheet_preview_thumbnail),
                             bitmap,
                             uri -> {
                                 bitmap.recycle();
@@ -243,11 +246,10 @@ public class TabListEditorShareAction extends TabListEditorAction {
                                                     actionId);
                                             TabUiMetricsHelper.recordShareStateHistogram(
                                                     TabListEditorShareActionState.SUCCESS);
+                                            if (sIntentCallbackForTesting != null) {
+                                                sIntentCallbackForTesting.onResult(shareIntent);
+                                            }
                                         });
-
-                                if (sIntentCallbackForTesting != null) {
-                                    sIntentCallbackForTesting.onResult(shareIntent);
-                                }
                             });
                 });
     }

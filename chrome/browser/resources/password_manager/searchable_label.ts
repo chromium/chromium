@@ -24,7 +24,8 @@ export class SearchableLabelElement extends PolymerElement {
     };
   }
 
-  searchTerm: string;
+  declare title: string;
+  declare searchTerm: string;
 
   static get observers() {
     return ['setSearchedTextToBold_(title, searchTerm)'];

@@ -22,8 +22,8 @@
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/mock_touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
@@ -173,8 +173,8 @@ class PasswordGenerationControllerTest
                 OnAccessoryActionAvailabilityChanged(
                     ShouldShowAction(false),
                     autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
-    controller()->FocusedInputChanged(FocusedFieldType::kFillablePasswordField,
-                                      active_driver());
+    controller()->FocusedInputChanged(
+        /*is_field_eligible_for_generation=*/true, active_driver());
   }
 
   PasswordGenerationController* controller() {
@@ -365,8 +365,8 @@ TEST_F(PasswordGenerationControllerTest,
                   ShouldShowAction(false),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
 
-  controller()->FocusedInputChanged(FocusedFieldType::kFillableUsernameField,
-                                    active_driver());
+  controller()->FocusedInputChanged(
+      /*is_field_eligible_for_generation=*/false, active_driver());
   EXPECT_FALSE(controller()->GetActiveFrameDriver());
 }
 
@@ -377,8 +377,8 @@ TEST_F(PasswordGenerationControllerTest,
                   ShouldShowAction(false),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
 
-  controller()->FocusedInputChanged(FocusedFieldType::kFillablePasswordField,
-                                    non_active_driver());
+  controller()->FocusedInputChanged(
+      /*is_field_eligible_for_generation=*/true, non_active_driver());
   EXPECT_EQ(another_password_manager_driver_.get(),
             controller()->GetActiveFrameDriver().get());
 }
@@ -397,8 +397,8 @@ TEST_F(PasswordGenerationControllerTest, DontShowManualDialogIfFocusChanged) {
               OnAccessoryActionAvailabilityChanged(
                   ShouldShowAction(false),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
-  controller()->FocusedInputChanged(FocusedFieldType::kFillablePasswordField,
-                                    non_active_driver());
+  controller()->FocusedInputChanged(
+      /*is_field_eligible_for_generation=*/true, non_active_driver());
   EXPECT_CALL(create_ttf_generation_controller_, Run).Times(0);
   controller()->ShowManualGenerationDialog(password_manager_driver_.get(),
                                            GetTestGenerationUIData1());

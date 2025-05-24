@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "chrome/updater/certificate_tag.h"
@@ -16,6 +16,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -32,17 +33,14 @@ TEST(CertificateTag, RoundTrip) {
   ASSERT_TRUE(base::ReadFileToString(
       updater::test::GetTestFilePath("signed.exe.gz"), &exe));
   ASSERT_TRUE(compression::GzipUncompress(exe, &exe));
-  const base::span<const uint8_t> exe_span(
-      reinterpret_cast<const uint8_t*>(exe.data()), exe.size());
-
-  std::unique_ptr<BinaryInterface> bin(CreatePEBinary(exe_span));
+  std::unique_ptr<BinaryInterface> bin(CreatePEBinary(base::as_byte_span(exe)));
   ASSERT_TRUE(bin);
 
   // Binary should be untagged on disk.
   std::optional<std::vector<uint8_t>> orig_tag(bin->tag());
   EXPECT_FALSE(orig_tag);
 
-  constexpr uint8_t kTag[] = {1, 2, 3, 4, 5};
+  static constexpr uint8_t kTag[] = {1, 2, 3, 4, 5};
   std::optional<std::vector<uint8_t>> updated_exe(bin->SetTag(kTag));
   ASSERT_TRUE(updated_exe);
 
@@ -54,7 +52,7 @@ TEST(CertificateTag, RoundTrip) {
   EXPECT_TRUE(memcmp(kTag, parsed_tag->data(), sizeof(kTag)) == 0);
 
   // Update an existing tag.
-  constexpr uint8_t kTag2[] = {1, 2, 3, 4, 6};
+  static constexpr uint8_t kTag2[] = {1, 2, 3, 4, 6};
   std::optional<std::vector<uint8_t>> updated_again_exe(bin2->SetTag(kTag2));
   ASSERT_TRUE(updated_again_exe);
 
@@ -491,8 +489,10 @@ void Validate(const MSIBinary& bin,
       std::memcpy(&entry, &bin.contents_[offset], sizeof(MSIDirEntry));
 
       // Skip the mini stream and signature entries.
+      // SAFETY: byte manipulation of a C data structure.
       if (entry.stream_size < kMiniStreamCutoffSize ||
-          std::equal(entry.name, entry.name + entry.num_name_bytes,
+          std::equal(entry.name,
+                     UNSAFE_BUFFERS(entry.name + entry.num_name_bytes),
                      std::begin(kSignatureName))) {
         continue;
       }
@@ -551,9 +551,9 @@ INSTANTIATE_TEST_SUITE_P(
         {"GUH-multiple.msi",
          [] {
            std::vector<uint8_t> expected_tag(8632);
-           constexpr char magic[] = "Gact2.0Omaha";
+           static constexpr char magic[] = "Gact2.0Omaha";
            std::memcpy(&expected_tag[0], magic, sizeof(magic));
-           constexpr char tag[] =
+           static constexpr char tag[] =
                "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-"
                "8D3A-4EFC-6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&"
                "appname=Google%20Chrome&needsadmin=prefers&brand=CHMB&"
@@ -575,7 +575,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(CertificateTagMsiValidateTest, TestCases) {
   base::MemoryMappedFile mapped_file;
   ASSERT_TRUE(mapped_file.Initialize(
-      test::GetTestFilePath("tagged_msi").AppendASCII(GetParam().infile)));
+      test::GetTestFilePath("tagged_msi").AppendUTF8(GetParam().infile)));
   const std::unique_ptr<MSIBinary> bin = MSIBinary::Parse(mapped_file.bytes());
   ASSERT_TRUE(bin);
 

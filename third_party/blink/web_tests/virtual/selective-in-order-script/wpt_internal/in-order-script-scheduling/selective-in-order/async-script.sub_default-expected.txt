@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] InOrder Script Execution Order with allowlist
-  Uncaught Error: assert_array_equals: Execution order expected property 1 to be "Sync1" but got "Sync2" (expected array ["Inline1", "Sync1", "Sync2", "EndOfBody"] got ["Inline1", "Sync2", "EndOfBody", "Sync1"])
-Harness: the test ran to completion.
-

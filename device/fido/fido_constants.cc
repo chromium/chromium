@@ -203,8 +203,7 @@ const char* CredentialTypeToString(CredentialType type) {
     case CredentialType::kPublicKey:
       return kPublicKey;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kPublicKey;
+  NOTREACHED();
 }
 
 const char kCableHandshakeKeyInfo[] = "FIDO caBLE v1 handshakeKey";

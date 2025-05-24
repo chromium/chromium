@@ -65,7 +65,7 @@ TEST_F(LoginRemoveAccountDialogTest, RemoveUserRequiresTwoActivations) {
                           &remove_warning_called),
       base::BindRepeating([](bool* remove_called) { *remove_called = true; },
                           &remove_called));
-  anchor->AddChildView(bubble);
+  anchor->AddChildViewRaw(bubble);
 
   bubble->Show();
 
@@ -180,7 +180,7 @@ TEST_F(LoginRemoveAccountDialogTest, LongUserNameAndEmailLaidOutCorrectly) {
       login_user_info, anchor->AsWeakPtr(), nullptr /*bubble_opener*/,
       base::DoNothing(), base::DoNothing());
 
-  anchor->AddChildView(bubble);
+  anchor->AddChildViewRaw(bubble);
   bubble->Show();
 
   EXPECT_TRUE(bubble->GetVisible());
@@ -219,7 +219,7 @@ TEST_F(LoginRemoveAccountDialogTest, LoginButtonRipple) {
   bubble_opener->SetPreferredSize(
       gfx::Size(kBubbleAnchorViewSizeDp, kBubbleAnchorViewSizeDp));
 
-  container->AddChildView(bubble_opener);
+  container->AddChildViewRaw(bubble_opener);
   SetWidget(CreateWidgetWithContent(container));
 
   views::test::InkDropHostTestApi ink_drop_api(
@@ -231,7 +231,7 @@ TEST_F(LoginRemoveAccountDialogTest, LoginButtonRipple) {
       LoginUserInfo(), container->AsWeakPtr() /*anchor*/, bubble_opener,
       base::DoNothing(), base::DoNothing());
 
-  container->AddChildView(bubble);
+  container->AddChildViewRaw(bubble);
 
   bubble->Show();
   EXPECT_TRUE(bubble->GetVisible());
@@ -258,7 +258,7 @@ TEST_F(LoginRemoveAccountDialogTest, ResetStateHidesConfirmData) {
   auto* bubble = new LoginRemoveAccountDialog(
       login_user_info, nullptr /*anchor*/, nullptr /*bubble_opener*/,
       base::DoNothing(), base::DoNothing());
-  container->AddChildView(bubble);
+  container->AddChildViewRaw(bubble);
 
   bubble->Show();
 
@@ -281,7 +281,7 @@ TEST_F(LoginRemoveAccountDialogTest, AccessibleRole) {
   auto* dialog = new LoginRemoveAccountDialog(
       login_user_info, nullptr /*anchor*/, nullptr /*bubble_opener*/,
       base::DoNothing(), base::DoNothing());
-  container->AddChildView(dialog);
+  container->AddChildViewRaw(dialog);
   ui::AXNodeData data;
 
   dialog->GetViewAccessibility().GetAccessibleNodeData(&data);

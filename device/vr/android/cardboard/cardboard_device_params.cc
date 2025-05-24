@@ -5,8 +5,10 @@
 #include "device/vr/android/cardboard/cardboard_device_params.h"
 
 #include <stdint.h>
+
 #include <cstdint>
 #include <utility>
+#include <variant>
 
 #include "base/notreached.h"
 #include "third_party/cardboard/src/sdk/include/cardboard.h"
@@ -98,11 +100,11 @@ bool CardboardDeviceParams::IsValid() {
 }
 
 const uint8_t* CardboardDeviceParams::encoded_device_params() {
-  if (absl::holds_alternative<uint8_t*>(encoded_device_params_)) {
-    return absl::get<uint8_t*>(encoded_device_params_);
-  } else if (absl::holds_alternative<OwnedCardboardParams>(
+  if (std::holds_alternative<uint8_t*>(encoded_device_params_)) {
+    return std::get<uint8_t*>(encoded_device_params_);
+  } else if (std::holds_alternative<OwnedCardboardParams>(
                  encoded_device_params_)) {
-    return absl::get<OwnedCardboardParams>(encoded_device_params_).get();
+    return std::get<OwnedCardboardParams>(encoded_device_params_).get();
   }
 
   NOTREACHED();

@@ -1,0 +1,22 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer
+++++++++++staticText name='Favorite Fruit'
+++++++++++++inlineTextBox name='Favorite Fruit'
+++++++++comboBoxMenuButton collapsed name='Favorite Fruit' role='combobox' value='Choose a Fruit' restriction=disabled
+++++++++++staticText name='Choose a Fruit'
+++++++++++++inlineTextBox name='Choose a Fruit'
+++++++labelText
+++++++++staticText name='Choose a pet:'
+++++++++++inlineTextBox name='Choose a pet:'
+++++++comboBoxSelect collapsed name='Choose a pet:' value='--Please choose an option--' restriction=disabled
+++++++++menuListPopup invisible ispopup=auto
+++++++++++menuListOption invisible name='--Please choose an option--' restriction=disabled
+++++++++++menuListOption invisible name='Dog' restriction=disabled
+++++++++++menuListOption invisible name='Cat' restriction=disabled
+++++++++++menuListOption invisible name='Hamster' restriction=disabled
+++++++++++menuListOption invisible name='Parrot' restriction=disabled
+++++++++++menuListOption invisible name='Spider' restriction=disabled
+++++++++++menuListOption invisible name='Goldfish' restriction=disabled

@@ -1,0 +1,6 @@
+{
+  "name": "Extension Tab Groups API Test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": ["tabGroups", "tabs"]
+}

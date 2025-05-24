@@ -27,11 +27,6 @@ PasswordAffiliationSourceAdapter::~PasswordAffiliationSourceAdapter() = default;
 
 void PasswordAffiliationSourceAdapter::GetFacets(
     AffiliationSource::ResultCallback response_callback) {
-  if (is_fetching_canceled_) {
-    std::move(response_callback).Run({});
-    return;
-  }
-
   on_password_forms_received_callback_ = std::move(response_callback);
   store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
 }
@@ -46,16 +41,6 @@ void PasswordAffiliationSourceAdapter::StartObserving(
 void PasswordAffiliationSourceAdapter::RegisterPasswordStore(
     PasswordStoreInterface* store) {
   store_ = store;
-}
-
-void PasswordAffiliationSourceAdapter::DisableSource() {
-  // Don't do anything if fetching was canceled already.
-  if (is_fetching_canceled_) {
-    return;
-  }
-
-  is_fetching_canceled_ = true;
-  scoped_observation_.Reset();
 }
 
 void PasswordAffiliationSourceAdapter::OnLoginsChanged(

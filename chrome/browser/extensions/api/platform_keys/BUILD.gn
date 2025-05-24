@@ -12,8 +12,13 @@ source_set("platform_keys") {
   sources = [
     "platform_keys_api.cc",
     "platform_keys_api.h",
-    "verify_trust_api.cc",
-    "verify_trust_api.h",
+    "verify_trust_api_base.h",
+    "verify_trust_api_service.cc",
+    "verify_trust_api_service.h",
+    "verify_trust_api_v1.cc",
+    "verify_trust_api_v1.h",
+    "verify_trust_api_v2.cc",
+    "verify_trust_api_v2.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -30,6 +35,7 @@ source_set("platform_keys") {
   ]
 
   deps = [
+    "//chrome/browser/ash/crosapi",
     "//chrome/browser/profiles:profile",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom:mojom_shared",
@@ -37,12 +43,4 @@ source_set("platform_keys") {
     "//components/web_modal",
     "//net",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/crosapi" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:lacros" ]
-  }
 }

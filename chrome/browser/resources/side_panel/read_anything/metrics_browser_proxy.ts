@@ -8,6 +8,8 @@ enum UmaName {
   VOICE = 'Accessibility.ReadAnything.ReadAloud.Voice',
   TEXT_SETTINGS_CHANGE = 'Accessibility.ReadAnything.SettingsChange',
   HIGHLIGHT_STATE = 'Accessibility.ReadAnything.ReadAloud.HighlightState',
+  HIGHLIGHT_GRANULARITY =
+      'Accessibility.ReadAnything.ReadAloud.HighlightGranularity',
   VOICE_SPEED = 'Accessibility.ReadAnything.ReadAloud.VoiceSpeed',
   SPEECH_SETTINGS_CHANGE =
       'Accessibility.ReadAnything.ReadAloud.SettingsChange',
@@ -38,11 +40,12 @@ export enum ReadAnythingVoiceType {
   NATURAL = 0,
   ESPEAK = 1,
   CHROMEOS = 2,
+  SYSTEM,
 
   // Must be last.
-  COUNT = 3,
+  COUNT = 4,
 }
-// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingReadAloudVoice)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingReadAloudVoice2)
 
 // Enum for logging when a text style setting is changed.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -76,6 +79,24 @@ export enum ReadAloudHighlightState {
   COUNT = 2,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingHighlightState)
+
+
+// Enum for logging the reading highlight granularity.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ReadAloudHighlightGranularity)
+export enum ReadAloudHighlightGranularity {
+  HIGHLIGHT_AUTO = 0,
+  HIGHLIGHT_OFF = 1,
+  HIGHLIGHT_WORD = 2,
+  HIGHLIGHT_PHRASE = 3,
+  HIGHLIGHT_SENTENCE = 4,
+
+  // Must be last.
+  COUNT = 5,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingHighlightGranularity)
 
 // Enum for logging when a read aloud speech setting is changed.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -119,12 +140,14 @@ export interface MetricsBrowserProxy {
   incrementMetricCount(action: string): void;
   recordHighlightOff(): void;
   recordHighlightOn(): void;
+  recordHighlightGranularity(highlight: number): void;
   recordLanguage(lang: string): void;
   recordNewPage(): void;
   recordNewPageWithSpeech(): void;
   recordSpeechError(error: ReadAnythingSpeechError): void;
   recordSpeechPlaybackLength(time: number): void;
   recordSpeechSettingsChange(settingsChange: ReadAloudSettingsChange): void;
+  recordSpeechStopSource(source: number): void;
   recordTextSettingsChange(settingsChange: ReadAnythingSettingsChange): void;
   recordTime(umaName: string, time: number): void;
   recordVoiceSpeed(index: number): void;
@@ -134,6 +157,10 @@ export interface MetricsBrowserProxy {
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   incrementMetricCount(umaName: string) {
     chrome.readingMode.incrementMetricCount(umaName);
+  }
+
+  recordSpeechStopSource(source: number) {
+    chrome.readingMode.logSpeechStop(source);
   }
 
   recordSpeechError(error: ReadAnythingSpeechError) {
@@ -167,6 +194,12 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.metricsPrivate.recordEnumerationValue(
         UmaName.HIGHLIGHT_STATE, ReadAloudHighlightState.HIGHLIGHT_OFF,
         ReadAloudHighlightState.COUNT);
+  }
+
+  recordHighlightGranularity(highlight: ReadAloudHighlightGranularity): void {
+    chrome.metricsPrivate.recordEnumerationValue(
+        UmaName.HIGHLIGHT_GRANULARITY, highlight,
+        ReadAloudHighlightGranularity.COUNT);
   }
 
   recordVoiceType(voiceType: ReadAnythingVoiceType) {

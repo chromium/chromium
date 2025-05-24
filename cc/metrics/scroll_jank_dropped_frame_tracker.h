@@ -23,6 +23,7 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   ScrollJankDroppedFrameTracker(const ScrollJankDroppedFrameTracker&) = delete;
 
   void ReportLatestPresentationData(ScrollUpdateEventMetrics& earliest_event,
+                                    ScrollUpdateEventMetrics& latest_event,
                                     base::TimeTicks last_input_generation_ts,
                                     base::TimeTicks presentation_ts,
                                     base::TimeDelta vsync_interval);
@@ -36,16 +37,26 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   static constexpr int kHistogramEmitFrequency = 64;
   static constexpr const char* kDelayedFramesWindowHistogram =
       "Event.ScrollJank.DelayedFramesPercentage.FixedWindow";
+  static constexpr const char* kDelayedFramesWindowV3Histogram =
+      "Event.ScrollJank.DelayedFramesPercentage.FixedWindow3";
   static constexpr const char* kMissedVsyncsWindowHistogram =
       "Event.ScrollJank.MissedVsyncsPercentage.FixedWindow";
+  static constexpr const char* kMissedVsyncsWindowV3Histogram =
+      "Event.ScrollJank.MissedVsyncsPercentage.FixedWindow3";
   static constexpr const char* kDelayedFramesPerScrollHistogram =
       "Event.ScrollJank.DelayedFramesPercentage.PerScroll";
+  static constexpr const char* kDelayedFramesPerScrollV3Histogram =
+      "Event.ScrollJank.DelayedFramesPercentage.PerScroll3";
   static constexpr const char* kMissedVsyncsPerScrollHistogram =
       "Event.ScrollJank.MissedVsyncsPercentage.PerScroll";
+  static constexpr const char* kMissedVsyncsPerScrollV3Histogram =
+      "Event.ScrollJank.MissedVsyncsPercentage.PerScroll3";
   static constexpr const char* kMissedVsyncsSumInWindowHistogram =
       "Event.ScrollJank.MissedVsyncsSum.FixedWindow";
   static constexpr const char* kMissedVsyncsSumInVsyncWindowHistogram =
       "Event.ScrollJank.MissedVsyncsSum.FixedWindow2";
+  static constexpr const char* kMissedVsyncsSumInWindowV3Histogram =
+      "Event.ScrollJank.MissedVsyncsSum.FixedWindow3";
   static constexpr const char* kMissedVsyncsMaxInWindowHistogram =
       "Event.ScrollJank.MissedVsyncsMax.FixedWindow";
   static constexpr const char* kMissedVsyncsMaxInVsyncWindowHistogram =
@@ -54,6 +65,8 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
       "Event.ScrollJank.MissedVsyncsMax.PerScroll";
   static constexpr const char* kMissedVsyncsSumPerScrollHistogram =
       "Event.ScrollJank.MissedVsyncsSum.PerScroll";
+  static constexpr const char* kMissedVsyncsSumPerScrollV3Histogram =
+      "Event.ScrollJank.MissedVsyncsSum.PerScroll3";
   static constexpr const char* kMissedVsyncsPerFrameHistogram =
       "Event.ScrollJank.MissedVsyncs.PerFrame";
 
@@ -62,6 +75,13 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   void EmitPerScrollHistogramsAndResetCounters();
   void EmitPerVsyncWindowHistogramsAndResetCounters();
   void EmitPerScrollVsyncHistogramsAndResetCounters();
+  void EmitPerWindowV3HistogramsAndResetCounters();
+  void EmitPerScrollV3HistogramsAndResetCounters();
+  void ReportLatestPresentationDataV3(
+      ScrollUpdateEventMetrics& earliest_event,
+      base::TimeTicks first_input_generation_v3_ts,
+      base::TimeTicks presentation_ts,
+      base::TimeDelta vsync_interval);
 
   // We could have two different frames with same presentation time and due to
   // this just having previous frame's data is not enough for calculating the
@@ -81,12 +101,25 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
     int num_past_vsyncs = 0;
   };
 
+  struct JankDataV3 {
+    // Number of frames which were deemed janky.
+    int missed_frames = 0;
+    // Number of vsyncs the frames were delayed by. Whenever a frame is missed
+    // it could be delayed >=1 vsyncs, this helps us track how "long" the janks
+    // are.
+    int missed_vsyncs = 0;
+    int num_presented_frames = 0;
+    int num_past_vsyncs = 0;
+  };
+
   JankData fixed_window_;
   // TODO(b/306611560): Cleanup experimental per vsync metric or promote to
   // default.
   JankData experimental_vsync_fixed_window_;
+  JankDataV3 fixed_window_v3_;
   std::optional<JankData> per_scroll_;
   std::optional<JankData> experimental_per_scroll_vsync_;
+  std::optional<JankDataV3> per_scroll_v3_;
 
   raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_ = nullptr;
 };

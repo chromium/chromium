@@ -31,9 +31,9 @@ public class OmniboxLoadUrlParamsUnitTest {
         OmniboxLoadUrlParams params =
                 new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED).build();
 
-        assertEquals(params.url, TEST_URL);
-        assertEquals(params.transitionType, PageTransition.TYPED);
-        assertEquals(params.inputStartTimestamp, 0L);
+        assertEquals(TEST_URL, params.url);
+        assertEquals(PageTransition.TYPED, params.transitionType);
+        assertEquals(0L, params.inputStartTimestamp);
         assertFalse(params.openInNewTab);
         assertNull(params.postDataType);
         assertNull(params.postData);
@@ -58,9 +58,9 @@ public class OmniboxLoadUrlParamsUnitTest {
                         .setAutocompleteLoadCallback(callback)
                         .build();
 
-        assertEquals(params.url, TEST_URL);
-        assertEquals(params.transitionType, PageTransition.TYPED);
-        assertEquals(params.inputStartTimestamp, 100L);
+        assertEquals(TEST_URL, params.url);
+        assertEquals(PageTransition.TYPED, params.transitionType);
+        assertEquals(100L, params.inputStartTimestamp);
         assertTrue(params.openInNewTab);
         assertEquals(params.postDataType, text);
         assertEquals(params.postData, data);

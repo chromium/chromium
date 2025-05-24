@@ -30,10 +30,6 @@ struct DispatchFetchEventParams {
   // FetchEvent#preloadResponse.
   pending_receiver<network.mojom.URLLoaderClient>? preload_url_loader_client_receiver;
 
-  // Whether this is a "fake" fetch event used to detect the offline capability
-  // of the service worker. See more details at https://crbug.com/965802.
-  bool is_offline_capability_check = false;
-
   // Used for BestEffortServiceWorker(crbug.com/1420517). Specifies the cusotm
   // URLLoaderFactory if the RaceNetworkRequest is triggered. This value is
   // referred by the fetch process in blink, in order to detect and dedupe

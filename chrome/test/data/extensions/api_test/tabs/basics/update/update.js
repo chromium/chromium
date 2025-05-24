@@ -80,5 +80,21 @@ chrome.test.runTests([
       undefined, {"url": pageUrl("neutrinos")}, pass(function(tab) {
         assertEq(pageUrl("neutrinos"), tab.pendingUrl);
     }));
-  }
+  },
+
+  function testUpdatingToUrlThatWillBeRejectedDuringNavigation() {
+    // We have a maximum length on URLs that we support. Today, this is
+    // 2 * 1024 * 1024. Pick a URL significantly longer than that.
+    const url = 'http://example.com/' + 'a'.repeat(10 * 1024 * 1024);
+
+    // Try to update the tab to that URL. This will result in the navigation
+    // failing, but shouldn't result in any browser crashes.
+    // See https://crbug.com/373838227.
+    chrome.tabs.update(
+        tabIds[2], {url},
+        () => {
+          chrome.test.assertLastError('Navigation rejected.');
+          chrome.test.succeed();
+        });
+  },
 ])});

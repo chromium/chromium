@@ -9,6 +9,7 @@ alignSelf
 alignmentBaseline
 all
 anchorName
+anchorScope
 animation
 animationComposition
 animationDelay
@@ -159,6 +160,7 @@ descentOverride
 direction
 display
 dominantBaseline
+dynamicRangeLimit
 emptyCells
 fallback
 fieldSizing
@@ -195,6 +197,7 @@ fontVariant
 fontVariantAlternates
 fontVariantCaps
 fontVariantEastAsian
+fontVariantEmoji
 fontVariantLigatures
 fontVariantNumeric
 fontVariantPosition
@@ -233,13 +236,13 @@ initialLetter
 initialValue
 inlineSize
 inset
-insetArea
 insetBlock
 insetBlockEnd
 insetBlockStart
 insetInline
 insetInlineEnd
 insetInlineStart
+interactivity
 interpolateSize
 isolation
 item
@@ -315,7 +318,9 @@ outlineStyle
 outlineWidth
 overflow
 overflowAnchor
+overflowBlock
 overflowClipMargin
+overflowInline
 overflowWrap
 overflowX
 overflowY
@@ -359,9 +364,12 @@ positionTryFallbacks
 positionTryOrder
 positionVisibility
 prefix
+printColorAdjust
 quotes
 r
 range
+readingFlow
+readingOrder
 removeProperty
 resize
 right
@@ -373,6 +381,7 @@ rx
 ry
 scale
 scrollBehavior
+scrollInitialTarget
 scrollMargin
 scrollMarginBlock
 scrollMarginBlockEnd
@@ -384,6 +393,7 @@ scrollMarginInlineStart
 scrollMarginLeft
 scrollMarginRight
 scrollMarginTop
+scrollMarkerGroup
 scrollPadding
 scrollPaddingBlock
 scrollPaddingBlockEnd
@@ -433,6 +443,9 @@ tableLayout
 textAlign
 textAlignLast
 textAnchor
+textBox
+textBoxEdge
+textBoxTrim
 textCombineUpright
 textDecoration
 textDecorationColor

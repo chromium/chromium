@@ -8,23 +8,26 @@ import json
 import os
 import sys
 
-import gpu_project_config
-import gpu_path_util
+# This needs to be before the Telemetry imports for importing to work correctly.
+# pylint: disable=wrong-import-order
 from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
-
+# pylint: enable=wrong-import-order
 from telemetry.testing import browser_test_runner
 from telemetry.testing import serially_executed_browser_test_case
 from py_utils import discover
+
+import gpu_project_config
+import gpu_path_util
 
 
 def PostprocessJSON(file_name, run_test_args):
   # The file is not necessarily written depending on the arguments - only
   # postprocess it in case it is.
   if os.path.isfile(file_name):
-    with open(file_name) as f:
+    with open(file_name, encoding='utf-8') as f:
       test_result = json.load(f)
     test_result['run_test_args'] = run_test_args
-    with open(file_name, 'w') as f:
+    with open(file_name, 'w', encoding='utf-8') as f:
       json.dump(test_result, f, indent=2)
 
 
@@ -64,7 +67,7 @@ def ProcessArgs(args, parser=None):
   parser.add_argument(
       '--write-run-test-arguments',
       action='store_true',
-      help=('Write the test script arguments to the results file.'))
+      help='Write the test script arguments to the results file.')
   option, rest_args_filtered = parser.parse_known_args(args)
 
   parser.add_argument('test', nargs='*', type=str, help=argparse.SUPPRESS)
@@ -77,8 +80,7 @@ def ProcessArgs(args, parser=None):
 
   if test_class:
     rest_args_filtered.extend([
-        '--test-name-prefix=%s.%s.' % (test_class.__module__,
-                                       test_class.__name__)
+        f'--test-name-prefix={test_class.__module__}.{test_class.__name__}.',
     ])
 
   if not any(arg.startswith('--retry-limit') for arg in rest_args_filtered):
@@ -114,7 +116,7 @@ def main():
       '--write-full-results-to',
       metavar='FILENAME',
       action='store',
-      help=('If specified, writes the full results to that path.'))
+      help='If specified, writes the full results to that path.')
 
   option, _ = parser.parse_known_args(rest_args)
 

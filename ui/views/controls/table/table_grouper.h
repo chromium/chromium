@@ -12,6 +12,8 @@ namespace views {
 struct VIEWS_EXPORT GroupRange {
   size_t start;
   size_t length;
+
+  friend bool operator==(const GroupRange&, const GroupRange&) = default;
 };
 
 // TableGrouper is used by TableView to group a set of rows and treat them

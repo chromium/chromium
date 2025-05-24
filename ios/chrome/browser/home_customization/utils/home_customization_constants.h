@@ -10,6 +10,9 @@
 // Represents the section identifiers of the customization menu as an NSString.
 typedef NSString CustomizationSection;
 
+// The section identifier for the main menu's background customizations.
+extern CustomizationSection* const kCustomizationSectionBackground;
+
 // The section identifier for the main menu's visibility toggles.
 extern CustomizationSection* const kCustomizationSectionMainToggles;
 
@@ -38,6 +41,9 @@ extern NSString* const kCustomizationToggleSetUpListIdentifier;
 extern NSString* const kCustomizationToggleSafetyCheckIdentifier;
 extern NSString* const kCustomizationToggleTabResumptionIdentifier;
 extern NSString* const kCustomizationToggleParcelTrackingIdentifier;
+extern NSString* const kCustomizationToggleShopCardPriceTrackingIdentifier;
+extern NSString* const kCustomizationToggleShopCardReviewsIdentifier;
+extern NSString* const kCustomizationToggleTipsIdentifier;
 
 // The identifiers for the navigable portions of the main page toggle cells.
 extern NSString* const kCustomizationToggleMostVisitedNavigableIdentifier;
@@ -55,11 +61,20 @@ extern NSString* const kCustomizationCollectionMainIdentifier;
 extern NSString* const kCustomizationCollectionMagicStackIdentifier;
 extern NSString* const kCustomizationCollectionDiscoverIdentifier;
 
+// The identifiers for the background cells.
+extern NSString* const kBackgroundCellIdentifier;
+
+// The identifier for the background picker cell.
+extern NSString* const kBackgroundPickerCellIdentifier;
+
 // The URLs for the links in the Discover submenu.
 extern const char kDiscoverFollowingURL[];
 extern const char kDiscoverHiddenURL[];
 extern const char kDiscoverActivityURL[];
 extern const char kDiscoverLearnMoreURL[];
+
+// The number of recent backgrounds to show.
+extern const NSInteger kNumberOfRecentBackgrounds;
 
 // The size of the toggle cell's icon.
 extern const CGFloat kToggleIconPointSize;
@@ -80,10 +95,12 @@ enum class CustomizationToggleType : NSInteger {
   kDiscover,
 
   // Magic Stack page toggles.
+  kTips,
   kSetUpList,
   kSafetyCheck,
   kTapResumption,
   kParcelTracking,
+  kShopCard,
 };
 
 // Enum representing the link cells to navigate to external URLs.

@@ -25,10 +25,11 @@ using content::BrowserThread;
 
 namespace android_webview {
 
-AwHttpAuthHandler::AwHttpAuthHandler(const net::AuthChallengeInfo& auth_info,
-                                     content::WebContents* web_contents,
-                                     bool first_auth_attempt,
-                                     LoginAuthRequiredCallback callback)
+AwHttpAuthHandler::AwHttpAuthHandler(
+    const net::AuthChallengeInfo& auth_info,
+    content::WebContents* web_contents,
+    bool first_auth_attempt,
+    content::LoginDelegate::LoginAuthRequiredCallback callback)
     : host_(auth_info.challenger.host()),
       realm_(auth_info.realm),
       callback_(std::move(callback)) {

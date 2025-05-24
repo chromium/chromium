@@ -39,7 +39,6 @@ source_set("service_manager") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/services/filesystem:lib",
     "//components/services/filesystem/public/mojom",
     "//sandbox/policy",

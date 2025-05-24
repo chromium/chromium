@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -96,9 +96,6 @@ export class ErrorMessageElement extends PolymerElement {
   private static readonly CAST_RESULT_MESSAGE_MAP =
       new Map(ErrorMessageElement.CAST_RESULT_MESSAGE_CODES);
 
-  // Needed for Polymer data binding
-  private errorMessageEnum = ErrorMessage;
-
   static get is() {
     return 'c2c-error-message';
   }
@@ -107,7 +104,23 @@ export class ErrorMessageElement extends PolymerElement {
     return getTemplate();
   }
 
-  private messageCode = ErrorMessage.NO_ERROR;
+  static get properties() {
+    return {
+      errorMessageEnum: {
+        type: Object,
+        value: ErrorMessage,
+      },
+
+      messageCode: {
+        type: Number,
+        value: ErrorMessage.NO_ERROR,
+      },
+    };
+  }
+
+  // Needed for Polymer data binding
+  declare private errorMessageEnum;
+  declare private messageCode;
 
   setAddSinkError(resultCode: AddSinkResultCode) {
     this.messageCode = this.findErrorMessage(resultCode,

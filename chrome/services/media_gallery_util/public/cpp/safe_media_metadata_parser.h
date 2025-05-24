@@ -42,7 +42,7 @@ class SafeMediaMetadataParser : public MediaParserProvider {
     CreateMediaDataSource(
         mojo::PendingReceiver<chrome::mojom::MediaDataSource> receiver,
         MediaDataCallback media_data_callback) = 0;
-    virtual ~MediaDataSourceFactory() {}
+    virtual ~MediaDataSourceFactory() = default;
   };
 
   SafeMediaMetadataParser(

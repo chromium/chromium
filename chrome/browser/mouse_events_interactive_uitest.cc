@@ -82,7 +82,7 @@ class MouseEventsTest : public InProcessBrowserTest {
   }
 };
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Flaky; http://crbug.com/133361.
 #define MAYBE_MouseOver DISABLED_MouseOver
 #else

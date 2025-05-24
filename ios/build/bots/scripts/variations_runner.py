@@ -135,10 +135,7 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     seed, signature = seed_helper.load_test_seed_from_file(
         self.variations_seed_path)
     if not seed or not signature:
-      log = ('Ill-formed test seed json file: "%s" and "%s" are required',
-             seed_helper.LOCAL_STATE_SEED_NAME,
-             seed_helper.LOCAL_STATE_SEED_SIGNATURE_NAME)
-      return False, log
+      return False, seed_helper.ILL_FORMED_TEST_SEED_ERROR_MESSAGE
     if not seed_helper.inject_test_seed(seed, signature, self._user_data_dir()):
       log = 'Failed to inject test seed.'
       LOGGER.error(log)

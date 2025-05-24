@@ -51,8 +51,5 @@ bool operator<(const PartitionedLock& x, const PartitionedLock& y) {
 bool operator==(const PartitionedLock& x, const PartitionedLock& y) {
   return x.lock_id() == y.lock_id();
 }
-bool operator!=(const PartitionedLock& x, const PartitionedLock& y) {
-  return !(x == y);
-}
 
 }  // namespace content::indexed_db

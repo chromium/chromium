@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test that slotted-in selected-value part is updated to value of select
+  assert_equals: Custom selected value part should be set to initial value of select expected "one" but got "Default custom selected-value text"
+[FAIL] Test that option parts in a slotted-in listbox are reflected in the value property
+  assert_equals: Custom selected value part should be set to initial value of select expected "one" but got "Default custom selected-value text"
+Harness: the test ran to completion.
+

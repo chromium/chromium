@@ -1,0 +1,15 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+java_cpp_enum("net_log_capture_mode_srcjar") {
+  visibility = [ ":*" ]
+  sources = [ "net_log_capture_mode.h" ]
+}
+
+android_library("net_log_capture_mode_java") {
+  srcjar_deps = [ ":net_log_capture_mode_srcjar" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}

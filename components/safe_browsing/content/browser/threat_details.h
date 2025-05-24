@@ -74,9 +74,7 @@ using KeyToFrameTreeIdMap =
 // Maps a FrameTreeNode ID of a frame to a set of child IDs. The child IDs are
 // the Element IDs of the top-level HTML Elements in this frame.
 using FrameTreeIdToChildIdsMap =
-    std::unordered_map<content::FrameTreeNodeId,
-                       std::unordered_set<int>,
-                       content::FrameTreeNodeId::Hasher>;
+    std::unordered_map<content::FrameTreeNodeId, std::unordered_set<int>>;
 
 // Callback used to notify a caller that ThreatDetails has finished creating and
 // sending a report.
@@ -345,7 +343,7 @@ class ThreatDetails {
 // Factory for creating ThreatDetails.  Useful for tests.
 class ThreatDetailsFactory {
  public:
-  virtual ~ThreatDetailsFactory() {}
+  virtual ~ThreatDetailsFactory() = default;
 
   virtual std::unique_ptr<ThreatDetails> CreateThreatDetails(
       BaseUIManager* ui_manager,

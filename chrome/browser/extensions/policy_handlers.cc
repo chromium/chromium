@@ -39,11 +39,6 @@
 #include "base/enterprise_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace extensions {
 namespace {
 // Returns true if extensions_ids contains a list of valid extension ids,
@@ -72,26 +67,8 @@ bool IsValidUpdateUrl(const std::string& update_url) {
   return update_gurl.SchemeIsHTTPOrHTTPS() || update_gurl.SchemeIsFile();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// If Ash Chrome is no longer functioning as a browser and the extension is not
-// meant to run in Ash, do not load the extension.
-void FilterOutExtensionsMeantToRunInLacros(base::Value::Dict& extensions) {
-  auto iterator = extensions.begin();
-
-  while (iterator != extensions.end()) {
-    const std::string& extension_id = iterator->first;
-    if (ExtensionRunsInOS(extension_id) || ExtensionAppRunsInOS(extension_id)) {
-      // Keep extension meant to run in Ash
-      iterator++;
-    } else {
-      // Remove extension meant to run in Lacros
-      iterator = extensions.erase(iterator);
-    }
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 }  // namespace
+
 // ExtensionListPolicyHandler implementation -----------------------------------
 
 ExtensionListPolicyHandler::ExtensionListPolicyHandler(const char* policy_name,
@@ -135,13 +112,7 @@ bool ExtensionInstallForceListPolicyHandler::CheckPolicySettings(
 void ExtensionInstallForceListPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto dict = GetAshPolicyDict(policies);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto dict = GetLacrosPolicyDict(policies);
-#else
   auto dict = GetPolicyDict(policies);
-#endif
 
   if (dict.has_value()) {
     prefs->SetValue(pref_names::kInstallForceList,
@@ -159,8 +130,7 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
 
   if (!policy_value->is_list()) {
     // This should have been caught in CheckPolicySettings.
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   int index = -1;
@@ -217,29 +187,6 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-std::optional<base::Value::Dict>
-ExtensionInstallForceListPolicyHandler::GetAshPolicyDict(
-    const policy::PolicyMap& policies) {
-  std::optional<base::Value::Dict> dict = GetPolicyDict(policies);
-  if (dict.has_value() && crosapi::browser_util::IsLacrosEnabled()) {
-    FilterOutExtensionsMeantToRunInLacros(dict.value());
-  }
-  return dict;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-std::optional<base::Value::Dict>
-ExtensionInstallForceListPolicyHandler::GetLacrosPolicyDict(
-    const policy::PolicyMap& policies) {
-  // TODO(b/335121961): Currently always returns all extensions on Lacros,
-  // even the ones that run in Ash. This is consistent with the pre-existing
-  // behavior but it should be investigated if this is the correct behavior.
-  return GetPolicyDict(policies);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 std::optional<base::Value::Dict>
 ExtensionInstallForceListPolicyHandler::GetPolicyDict(
     const policy::PolicyMap& policies) {
@@ -271,18 +218,12 @@ bool ExtensionInstallBlockListPolicyHandler::CheckPolicySettings(
 void ExtensionInstallBlockListPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    // When Lacros is enabled extensions are managed by Lacros, not Ash
-    // (except for some very specific extensions, see `ExtensionsAppRunsInOS`
-    // and `ExtensionsRunsInOS`), so keep the block list empty on the Ash side.
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   list_handler_.ApplyPolicySettings(policies, prefs);
 }
 
+// TODO(crbug.com/394876083): Support more extension policy handlers on desktop
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
 // ExtensionURLPatternListPolicyHandler implementation -------------------------
 
 ExtensionURLPatternListPolicyHandler::ExtensionURLPatternListPolicyHandler(
@@ -307,8 +248,7 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
   }
 
   if (!value->is_list()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Check that the list contains valid URLPattern strings only.
@@ -347,6 +287,7 @@ void ExtensionURLPatternListPolicyHandler::ApplyPolicySettings(
     prefs->SetValue(pref_path_, value->Clone());
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // ExtensionSettingsPolicyHandler implementation  ------------------------------
 

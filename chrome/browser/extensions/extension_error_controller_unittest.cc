@@ -15,6 +15,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
@@ -137,7 +138,7 @@ ExtensionErrorControllerUnitTest::AddBlocklistedExtension(
     const Extension* extension) {
   blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
       extension->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, GetPrefs());
-  service_->AddExtension(extension);
+  registrar()->AddExtension(extension);
 
   // Make sure the extension is added to the blocklisted set.
   if (!ExtensionRegistry::Get(profile())->blocklisted_extensions().Contains(
@@ -233,17 +234,17 @@ TEST_F(ExtensionErrorControllerUnitTest,
        ExtensionIsNotBlockedByEnterprisePolicy) {
   scoped_refptr<const Extension> extension = BuildExtension();
   service_->Init();
-  service_->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   EXPECT_FALSE(g_error_ui);
 }
 
-// Test error ui is presented and acknowledged whe an extension is blocked by
+// Test error ui is presented and acknowledged when an extension is blocked by
 // policy.
 TEST_F(ExtensionErrorControllerUnitTest, ExtensionIsBlockedByEnterprisePolicy) {
   scoped_refptr<const Extension> extension = BuildExtension();
   service_->Init();
-  service_->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
   SetBlockExtensionPolicy(extension.get());
 
   ASSERT_TRUE(g_error_ui);
@@ -259,7 +260,7 @@ TEST_F(ExtensionErrorControllerUnitTest, ExtensionIsBlockedByEnterprisePolicy) {
 TEST_F(ExtensionErrorControllerUnitTest, ExtensionIsUnblockedBeforeUIAccepted) {
   scoped_refptr<const Extension> extension = BuildExtension();
   service_->Init();
-  service_->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
   SetBlockExtensionPolicy(extension.get());
 
   ASSERT_TRUE(g_error_ui);

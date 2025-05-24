@@ -62,8 +62,8 @@ std::unique_ptr<KeyedService> BuildEventRouter(
 
 class StorageApiUnittest : public ApiUnitTest {
  public:
-  StorageApiUnittest() {}
-  ~StorageApiUnittest() override {}
+  StorageApiUnittest() = default;
+  ~StorageApiUnittest() override = default;
 
  protected:
   void SetUp() override {
@@ -240,48 +240,34 @@ TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
 
     size_t GetBytesInUse() override { return bytes_in_use_; }
 
-    ReadResult Get(const std::string& key) override {
-      NOTREACHED_IN_MIGRATION();
-      return ReadResult(Status());
-    }
+    ReadResult GetKeys() override { NOTREACHED(); }
+
+    ReadResult Get(const std::string& key) override { NOTREACHED(); }
 
     ReadResult Get(const std::vector<std::string>& keys) override {
-      NOTREACHED_IN_MIGRATION();
-      return ReadResult(Status());
+      NOTREACHED();
     }
 
-    ReadResult Get() override {
-      NOTREACHED_IN_MIGRATION();
-      return ReadResult(Status());
-    }
+    ReadResult Get() override { NOTREACHED(); }
 
     WriteResult Set(WriteOptions options,
                     const std::string& key,
                     const base::Value& value) override {
-      NOTREACHED_IN_MIGRATION();
-      return WriteResult(Status());
+      NOTREACHED();
     }
 
     WriteResult Set(WriteOptions options,
                     const base::Value::Dict& values) override {
-      NOTREACHED_IN_MIGRATION();
-      return WriteResult(Status());
+      NOTREACHED();
     }
 
-    WriteResult Remove(const std::string& key) override {
-      NOTREACHED_IN_MIGRATION();
-      return WriteResult(Status());
-    }
+    WriteResult Remove(const std::string& key) override { NOTREACHED(); }
 
     WriteResult Remove(const std::vector<std::string>& keys) override {
-      NOTREACHED_IN_MIGRATION();
-      return WriteResult(Status());
+      NOTREACHED();
     }
 
-    WriteResult Clear() override {
-      NOTREACHED_IN_MIGRATION();
-      return WriteResult(Status());
-    }
+    WriteResult Clear() override { NOTREACHED(); }
 
    private:
     size_t bytes_in_use_ = 0;

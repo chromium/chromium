@@ -165,9 +165,8 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
       dxgi_format = DXGI_FORMAT_NV12;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "invalid buffer format, format="
-                                << gfx::BufferFormatToString(format);
-      return handle;
+      NOTREACHED() << "invalid buffer format, format="
+                   << gfx::BufferFormatToString(format);
   }
 
   size_t buffer_size;
@@ -213,9 +212,8 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
     return handle;
   }
 
-  handle.dxgi_handle.Set(texture_handle);
-  handle.dxgi_token = gfx::DXGIHandleToken();
-  handle.type = gfx::DXGI_SHARED_HANDLE;
+  handle = gfx::GpuMemoryBufferHandle(
+      gfx::DXGIHandle(base::win::ScopedHandle(texture_handle)));
   handle.id = id;
 
   return handle;
@@ -240,7 +238,7 @@ bool GpuMemoryBufferFactoryDXGI::FillSharedMemoryRegionWithBufferContents(
     return false;
   }
 
-  return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle.Get(),
+  return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle().buffer_handle(),
                                mapping.GetMemoryAsSpan<uint8_t>(),
                                d3d11_device.Get(), &staging_texture_);
 }

@@ -101,8 +101,22 @@ class Lexer:
       'RANGLE',  # < >
       'SEMI',  # ;
       'COMMA',
-      'DOT'  # , .
+      'PIPE',  # |
+      'AMPERSAND',  # &
+      'DOT',  # , .
+
+      # Conditional keywords
+      'RESULT',
   )
+
+  states = [
+      # Lex state to parse method response type. This is because we use
+      # 'result' as a keyword when declaring the return type of a method.
+      # E.g.: FooMethod() => result<T, E>
+      # This state is needed to disambiguate the keyword from an identifier in
+      # the context of a response return type.
+      ('responsetype', 'inclusive'),
+  ]
 
   ##
   ## Regexes for use in tokens
@@ -190,8 +204,13 @@ class Lexer:
   t_COMMA = r','
   t_DOT = r'\.'
   t_SEMI = r';'
+  t_PIPE = r'\|'
+  t_AMPERSAND = r'&'
 
   t_STRING_LITERAL = string_literal
+
+  # Conditional keywords
+  t_responsetype_RESULT = r'result'
 
   # The following floating and integer constants are defined as
   # functions to impose a strict order (otherwise, decimal

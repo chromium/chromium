@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
 /** Applied to fields that are accessed from native via JNI. Causes R8 to not rename them. */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.CLASS)
+@UsedReflectively
 public @interface AccessedByNative {
     public String value() default "";
 }

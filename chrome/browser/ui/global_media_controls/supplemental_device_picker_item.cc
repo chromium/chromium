@@ -11,7 +11,6 @@
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "components/media_message_center/media_notification_view.h"
-#include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "content/public/browser/media_session.h"
 #include "services/media_session/public/cpp/media_image_manager.h"
 #include "services/media_session/public/cpp/media_metadata.h"

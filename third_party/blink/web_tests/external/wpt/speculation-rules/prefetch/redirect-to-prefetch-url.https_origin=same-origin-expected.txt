@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] redirect-received-before-navigation-start
+  assert_equals: Prefetched response should not be used by navigation. expected (undefined) undefined but got (string) "prefetch"
+[FAIL] redirect-received-after-navigation-start
+  assert_equals: Prefetched response should not be used by navigation. expected (undefined) undefined but got (string) "prefetch"
+Harness: the test ran to completion.
+

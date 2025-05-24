@@ -50,8 +50,9 @@ const CGFloat kFindBarLeftPadding = 16;
   bounds.origin.x += kFindBarLeftPadding;
 
   // Shift the text to the right side of the overlay for RTL languages.
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     bounds.origin.x += _overlayWidth;
+  }
   return bounds;
 }
 

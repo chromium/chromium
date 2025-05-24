@@ -43,8 +43,6 @@ class StringSplitter {
       return current_.data() == rhs.current_.data();
     }
 
-    bool operator!=(const Iterator& rhs) const { return !operator==(rhs); }
-
     std::string_view operator*() const { return current_; }
     const std::string_view* operator->() const { return &current_; }
 

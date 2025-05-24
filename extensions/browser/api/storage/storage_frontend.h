@@ -64,35 +64,36 @@ class StorageFrontend : public BrowserContextKeyedAPI {
     std::optional<base::Value::Dict> data;
   };
 
-  // Returns the current instance for |context|.
+  // Returns the current instance for `context`.
   static StorageFrontend* Get(content::BrowserContext* context);
 
-  // Creates with a specific |storage_factory|.
+  // Creates with a specific `storage_factory`.
   static std::unique_ptr<StorageFrontend> CreateForTesting(
       scoped_refptr<value_store::ValueStoreFactory> storage_factory,
       content::BrowserContext* context);
 
+  explicit StorageFrontend(content::BrowserContext* context);
   StorageFrontend(const StorageFrontend&) = delete;
   StorageFrontend& operator=(const StorageFrontend&) = delete;
 
   // Public so tests can create and delete their own instances.
   ~StorageFrontend() override;
 
-  // Returns the value store cache for |settings_namespace|.
+  // Returns the value store cache for `settings_namespace`.
   ValueStoreCache* GetValueStoreCache(
       settings_namespace::Namespace settings_namespace) const;
 
-  // Returns true if |settings_namespace| is a valid namespace.
+  // Returns true if `settings_namespace` is a valid namespace.
   bool IsStorageEnabled(settings_namespace::Namespace settings_namespace) const;
 
-  // Runs |callback| with the storage area of the given |settings_namespace|
-  // for the |extension|.
+  // Runs `callback` with the storage area of the given `settings_namespace`
+  // for the `extension`.
   void RunWithStorage(scoped_refptr<const Extension> extension,
                       settings_namespace::Namespace settings_namespace,
                       ValueStoreCache::StorageCallback callback);
 
-  // Deletes the settings for the given |extension_id| and synchronously invokes
-  // |done_callback| once the settings are deleted.
+  // Deletes the settings for the given `extension_id` and synchronously invokes
+  // `done_callback` once the settings are deleted.
   void DeleteStorageSoon(const ExtensionId& extension_id,
                          base::OnceClosure done_callback);
 
@@ -158,10 +159,9 @@ class StorageFrontend : public BrowserContextKeyedAPI {
  private:
   friend class BrowserContextKeyedAPIFactory<StorageFrontend>;
 
-  typedef std::map<settings_namespace::Namespace, ValueStoreCache*> CacheMap;
-
-  // Constructor for normal BrowserContextKeyedAPI usage.
-  explicit StorageFrontend(content::BrowserContext* context);
+  typedef std::map<settings_namespace::Namespace,
+                   raw_ptr<ValueStoreCache, CtnExperimental>>
+      CacheMap;
 
   // Constructor for tests.
   StorageFrontend(scoped_refptr<value_store::ValueStoreFactory> storage_factory,
@@ -170,9 +170,9 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   void Init(scoped_refptr<value_store::ValueStoreFactory> storage_factory);
 
   // Should be called on the UI thread after a read has been performed in
-  // `storage_area`. Fires `callback` with the keys from `get_result`.
+  // `storage_area`. Fires `callback` with the keys from `result`.
   void OnReadKeysFinished(base::OnceCallback<void(GetKeysResult)> callback,
-                          GetResult get_result);
+                          value_store::ValueStore::ReadResult result);
 
   // Should be called on the UI thread after a read has been performed in
   // `storage_area`. Fires `callback` with the `result` from the read

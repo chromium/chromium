@@ -4,17 +4,22 @@
 
 package org.chromium.components.segmentation_platform;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 
 import java.util.List;
 
+@NullMarked
 public class ClassificationResult {
     public final @PredictionStatus int status;
 
     public final List<String> orderedLabels;
 
-    public ClassificationResult(int status, String[] orderedLabels) {
+    public final long requestId;
+
+    public ClassificationResult(int status, String[] orderedLabels, long requestId) {
         this.status = status;
-        this.orderedLabels = orderedLabels == null ? null : List.of(orderedLabels);
+        this.orderedLabels = List.of(orderedLabels);
+        this.requestId = requestId;
     }
 }

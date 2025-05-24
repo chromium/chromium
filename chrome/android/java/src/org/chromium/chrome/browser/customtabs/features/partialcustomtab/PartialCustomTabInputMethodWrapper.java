@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
@@ -20,8 +21,8 @@ import org.chromium.ui.base.WindowAndroid;
  * trigger PCCT height change when the soft keyboard appears.
  */
 public class PartialCustomTabInputMethodWrapper implements InputMethodManagerWrapper {
-    private InputMethodManagerWrapper mWrapper;
-    private Callback<Runnable> mShowSoftKeyInputCallback;
+    private final InputMethodManagerWrapper mWrapper;
+    private final Callback<Runnable> mShowSoftKeyInputCallback;
 
     public PartialCustomTabInputMethodWrapper(
             Context context, WindowAndroid window, Callback<Runnable> softKeyInputCallback) {
@@ -69,7 +70,7 @@ public class PartialCustomTabInputMethodWrapper implements InputMethodManagerWra
     }
 
     @Override
-    public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
+    public void onWindowAndroidChanged(@Nullable WindowAndroid newWindowAndroid) {
         mWrapper.onWindowAndroidChanged(newWindowAndroid);
     }
 

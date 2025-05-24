@@ -11,6 +11,8 @@
 
 #include <Windows.h>
 
+#include <dxva.h>
+
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -371,10 +373,15 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
       GetD3D12VideoDecodeGUID(config.profile(), bit_depth, chroma_sampling);
   DXGI_FORMAT decode_format = GetOutputDXGIFormat(bit_depth, chroma_sampling);
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  // For D3D11/D3D12, 8b/10b-422 HEVC will share 10b-422 GUID no matter
-  // it is defined by Intel or DXVA spec(as part of Windows SDK).
-  if (guid == DXVA_ModeHEVC_VLD_Main422_10_Intel) {
-    decode_format = DXGI_FORMAT_Y210;
+  if (guid == DXVA_ModeHEVC_VLD_Main12) {
+    constexpr UINT kNVIDIADeviceId = 0x10DE;
+    ComDXGIDevice dxgi_device;
+    if (SUCCEEDED(video_device.As(&dxgi_device)) &&
+        GetGPUVendorID(dxgi_device) == kNVIDIADeviceId) {
+      // NVIDIA driver requires output format to be P010 for HEVC 12b420 range
+      // extension profile.
+      decode_format = DXGI_FORMAT_P010;
+    }
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 

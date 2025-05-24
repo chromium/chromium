@@ -4,10 +4,11 @@
 
 #include "chrome/browser/extensions/api/identity/identity_token_cache.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
+#include <variant>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 
 namespace extensions {
@@ -73,14 +74,14 @@ IdentityTokenCacheValue::CacheValueStatus IdentityTokenCacheValue::status()
 
 IdentityTokenCacheValue::CacheValueStatus
 IdentityTokenCacheValue::GetStatusInternal() const {
-  if (absl::holds_alternative<RemoteConsentResolutionData>(value_)) {
+  if (std::holds_alternative<RemoteConsentResolutionData>(value_)) {
     return CACHE_STATUS_REMOTE_CONSENT;
-  } else if (absl::holds_alternative<std::string>(value_)) {
+  } else if (std::holds_alternative<std::string>(value_)) {
     return CACHE_STATUS_REMOTE_CONSENT_APPROVED;
-  } else if (absl::holds_alternative<TokenValue>(value_)) {
+  } else if (std::holds_alternative<TokenValue>(value_)) {
     return CACHE_STATUS_TOKEN;
   } else {
-    DCHECK(absl::holds_alternative<absl::monostate>(value_));
+    DCHECK(std::holds_alternative<std::monostate>(value_));
     return CACHE_STATUS_NOTFOUND;
   }
 }
@@ -96,19 +97,19 @@ const base::Time& IdentityTokenCacheValue::expiration_time() const {
 
 const RemoteConsentResolutionData& IdentityTokenCacheValue::resolution_data()
     const {
-  return absl::get<RemoteConsentResolutionData>(value_);
+  return std::get<RemoteConsentResolutionData>(value_);
 }
 
 const std::string& IdentityTokenCacheValue::consent_result() const {
-  return absl::get<std::string>(value_);
+  return std::get<std::string>(value_);
 }
 
 const std::string& IdentityTokenCacheValue::token() const {
-  return absl::get<TokenValue>(value_).token;
+  return std::get<TokenValue>(value_).token;
 }
 
 const std::set<std::string>& IdentityTokenCacheValue::granted_scopes() const {
-  return absl::get<TokenValue>(value_).granted_scopes;
+  return std::get<TokenValue>(value_).granted_scopes;
 }
 
 IdentityTokenCacheValue::TokenValue::TokenValue(
@@ -225,10 +226,10 @@ const IdentityTokenCacheValue& IdentityTokenCache::GetToken(
   if (find_tokens_it != access_tokens_cache_.end()) {
     const AccessTokensValue& cached_tokens = find_tokens_it->second;
     auto matched_token_it =
-        base::ranges::find_if(cached_tokens, [&key](const auto& cached_token) {
+        std::ranges::find_if(cached_tokens, [&key](const auto& cached_token) {
           return key.scopes.size() <= cached_token.granted_scopes().size() &&
-                 base::ranges::includes(cached_token.granted_scopes(),
-                                        key.scopes);
+                 std::ranges::includes(cached_token.granted_scopes(),
+                                       key.scopes);
         });
 
     if (matched_token_it != cached_tokens.end()) {

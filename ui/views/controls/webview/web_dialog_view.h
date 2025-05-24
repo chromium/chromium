@@ -164,6 +164,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
                          bool proceed,
                          bool* proceed_to_fire_unload) override;
   bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,
@@ -190,6 +191,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   ObservableWebView* GetWebView() const { return web_view_; }
 
   void NotifyDialogWillClose();
+
+  void UpdateAccessibleNameForRootView();
 
   // This view is a delegate to the HTML content since it needs to get notified
   // about when the dialog is closing. For all other actions (besides dialog
@@ -226,6 +229,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   bool disable_url_load_for_test_ = false;
+
+  base::WeakPtrFactory<WebDialogView> weak_ptr_factory_{this};
 };
 
 }  // namespace views

@@ -1,0 +1,13 @@
+# v8 depends on temporal_capi, which may occasionally update in ways that
+# change its API. Since temporal_capi lives in the chromium repo, v8 cannot
+# be atomically upgraded alongside temporal_capi changes. Instead, we have some
+# defines here that let v8 detect which version of temporal_capi is vendored.
+#
+# In case we are vendoring multiple versions of temporal_capi, it is acceptable
+# for this array to contain multiple defines.
+#
+# It is not mandatory to update this array every time temporal_capi updates; it
+# is just a convenient tool to use as needed.
+config("temporal_capi_versioning_defines") {
+  defines = [ "TEMPORAL_CAPI_VERSION_0_0_7" ]
+}

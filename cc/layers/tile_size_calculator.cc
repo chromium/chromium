@@ -46,7 +46,7 @@ gfx::Size AdjustGpuTileSize(int tile_width,
   tile_width += 2 * PictureLayerTiling::kBorderTexels;
   tile_height += 2 * PictureLayerTiling::kBorderTexels;
 
-  // Round GPU default tile sizes to a multiple of kGpuDefaultTileAlignment.
+  // Round GPU default tile sizes to a multiple of |kGpuDefaultTileRoundUp|.
   // This helps prevent rounding errors in our CA path. https://crbug.com/632274
   tile_width = MathUtil::UncheckedRoundUp(tile_width, kGpuDefaultTileRoundUp);
   tile_height = MathUtil::UncheckedRoundUp(tile_height, kGpuDefaultTileRoundUp);

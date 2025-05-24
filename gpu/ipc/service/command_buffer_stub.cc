@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
@@ -31,6 +32,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_crash_keys.h"
+#include "gpu/ipc/common/command_buffer_trace_utils.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
@@ -112,10 +114,8 @@ CommandBufferStub::CommandBufferStub(
     : channel_(channel),
       context_type_(init_params.attribs.context_type),
       active_url_(init_params.active_url),
+      context_label_(init_params.label),
       initialized_(false),
-#if BUILDFLAG(IS_ANDROID)
-      offscreen_(init_params.surface_handle == kNullSurfaceHandle),
-#endif
       use_virtualized_gl_context_(false),
       command_buffer_id_(command_buffer_id),
       sequence_id_(sequence_id),
@@ -135,9 +135,15 @@ CommandBufferStub::~CommandBufferStub() {
 }
 
 void CommandBufferStub::ExecuteDeferredRequest(
-    mojom::DeferredCommandBufferRequestParams& params) {
+    mojom::DeferredCommandBufferRequestParams& params,
+    FenceSyncReleaseDelegate* release_delegate) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "GPUTask",
                "data", DevToolsChannelData::CreateForChannel(channel()));
+
+  // Reentrant call is not supported.
+  CHECK(!release_delegate_);
+  base::AutoReset<raw_ptr<FenceSyncReleaseDelegate>> auto_reset(
+      &release_delegate_, release_delegate);
 
   // Ensure the appropriate GL context is current before handling any IPC
   // messages directed at the command buffer. This ensures that the message
@@ -146,6 +152,10 @@ void CommandBufferStub::ExecuteDeferredRequest(
   ScopedContextOperation operation(*this);
   if (!operation.is_context_current())
     return;
+
+  if (!context_label_.empty()) {
+    TRACE_EVENT_BEGIN0("gpu", TRACE_STR_COPY(context_label_.c_str()));
+  }
 
   switch (params.which()) {
     case mojom::DeferredCommandBufferRequestParams::Tag::kAsyncFlush: {
@@ -168,6 +178,10 @@ void CommandBufferStub::ExecuteDeferredRequest(
           params.get_set_default_framebuffer_shared_image()->needs_stencil);
       break;
     }
+  }
+
+  if (!context_label_.empty()) {
+    TRACE_EVENT_END0("gpu", TRACE_STR_COPY(context_label_.c_str()));
   }
 }
 
@@ -304,21 +318,14 @@ void CommandBufferStub::Destroy() {
 
   if (initialized_) {
     GpuChannelManager* gpu_channel_manager = channel_->gpu_channel_manager();
-    // If we are currently shutting down the GPU process to help with recovery
-    // (exit_on_context_lost workaround), then don't tell the browser about
-    // offscreen context destruction here since it's not client-invoked, and
-    // might bypass the 3D API blocking logic.
-    if (offscreen() && !active_url_.is_empty() &&
+    if (!active_url_.is_empty() &&
         !gpu_channel_manager->delegate()->IsExiting()) {
       gpu_channel_manager->delegate()->DidDestroyOffscreenContext(
           active_url_.url());
     }
   }
 
-  if (sync_point_client_state_) {
-    sync_point_client_state_->Destroy();
-    sync_point_client_state_ = nullptr;
-  }
+  scoped_sync_point_client_state_.Reset();
 
   // Try to make the context current regardless of whether it was lost, so we
   // don't leak resources. Don't use GetGLContext()->MakeCurrent() since that
@@ -472,18 +479,21 @@ void CommandBufferStub::OnAsyncFlush(
     int32_t put_offset,
     uint32_t flush_id,
     const std::vector<SyncToken>& sync_token_fences) {
-  TRACE_EVENT1("gpu", "CommandBufferStub::OnAsyncFlush", "put_offset",
-               put_offset);
   DCHECK(command_buffer_);
   // We received this message out-of-order. This should not happen but is here
   // to catch regressions. Ignore the message.
   DVLOG_IF(0, flush_id - last_flush_id_ >= 0x8000000U)
       << "Received a Flush message out-of-order";
-  // Check if sync token waits are invalid or already complete. Do not use
-  // SyncPointManager::IsSyncTokenReleased() as it can't say if the wait is
-  // invalid.
-  for (const auto& sync_token : sync_token_fences)
-    DCHECK(!sync_point_client_state_->Wait(sync_token, base::DoNothing()));
+
+  const uint64_t global_flush_id =
+      GlobalFlushTracingId(channel_->client_id(), flush_id);
+  TRACE_EVENT_WITH_FLOW0(
+      "gpu,toplevel.flow", "CommandBuffer::Flush",
+      TRACE_ID_WITH_SCOPE("CommandBuffer::Flush", global_flush_id),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+
+  TRACE_EVENT1("gpu", "CommandBufferStub::OnAsyncFlush", "put_offset",
+               put_offset);
 
   last_flush_id_ = flush_id;
   gpu::CommandBuffer::State pre_state = command_buffer_->GetState();
@@ -503,9 +513,15 @@ void CommandBufferStub::OnAsyncFlush(
     ReportState();
 
 #if BUILDFLAG(IS_ANDROID)
-  GpuChannelManager* manager = channel_->gpu_channel_manager();
-  manager->DidAccessGpu();
+  channel_->gpu_channel_manager()->DidAccessGpu();
 #endif
+
+  if (!HasUnprocessedCommands()) {
+    TRACE_EVENT_WITH_FLOW0(
+        "gpu,toplevel.flow", "CommandBuffer::FlushComplete",
+        TRACE_ID_WITH_SCOPE("CommandBuffer::Flush", global_flush_id),
+        TRACE_EVENT_FLAG_FLOW_IN);
+  }
 }
 
 void CommandBufferStub::RegisterTransferBuffer(
@@ -556,12 +572,19 @@ void CommandBufferStub::ReportState() {
 void CommandBufferStub::SignalSyncToken(const SyncToken& sync_token,
                                         uint32_t id) {
   UpdateActiveUrl();
+
+  if (channel_->scheduler()
+          ->task_graph()
+          ->sync_point_manager()
+          ->IsSyncTokenReleased(sync_token)) {
+    OnSignalAck(id);
+    return;
+  }
+
   auto callback =
       base::BindOnce(&CommandBufferStub::OnSignalAck, this->AsWeakPtr(), id);
-  if (!sync_point_client_state_->WaitNonThreadSafe(
-          sync_token, channel_->task_runner(), std::move(callback))) {
-    OnSignalAck(id);
-  }
+  channel_->scheduler()->ScheduleTask(Scheduler::Task(
+      sequence_id_, std::move(callback), {sync_token}, SyncToken()));
 }
 
 void CommandBufferStub::OnSignalAck(uint32_t id) {
@@ -585,10 +608,10 @@ void CommandBufferStub::SignalQuery(uint32_t query_id, uint32_t id) {
 }
 
 void CommandBufferStub::OnFenceSyncRelease(uint64_t release) {
-  SyncToken sync_token(CommandBufferNamespace::GPU_IO, command_buffer_id_,
-                       release);
   command_buffer_->SetReleaseCount(release);
-  sync_point_client_state_->ReleaseFenceSync(release);
+
+  CHECK(release_delegate_);
+  release_delegate_->Release(release);
 }
 
 void CommandBufferStub::OnDescheduleUntilFinished() {

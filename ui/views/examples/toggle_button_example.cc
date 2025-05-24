@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
@@ -35,7 +36,8 @@ void ToggleButtonExample::CreateExampleView(View* container) {
   container
       ->AddChildView(std::make_unique<ToggleButton>(base::BindRepeating(
           [](ToggleButtonExample* example) {
-            PrintStatus("Pressed 1! count: %d", ++example->count_1_);
+            PrintStatus(base::StringPrintf("Pressed 1! count: %d",
+                                           ++example->count_1_));
           },
           base::Unretained(this))))
       ->GetViewAccessibility()
@@ -43,7 +45,8 @@ void ToggleButtonExample::CreateExampleView(View* container) {
   auto* button = container->AddChildView(
       std::make_unique<ToggleButton>(base::BindRepeating(
           [](ToggleButtonExample* example) {
-            PrintStatus("Pressed 2! count: %d", ++example->count_2_);
+            PrintStatus(base::StringPrintf("Pressed 2! count: %d",
+                                           ++example->count_2_));
           },
           base::Unretained(this))));
   button->GetViewAccessibility().SetName(
@@ -52,7 +55,8 @@ void ToggleButtonExample::CreateExampleView(View* container) {
   button = container->AddChildView(
       std::make_unique<ToggleButton>(base::BindRepeating(
           [](ToggleButtonExample* example) {
-            PrintStatus("Pressed 3! count: %d", ++example->count_2_);
+            PrintStatus(base::StringPrintf("Pressed 3! count: %d",
+                                           ++example->count_2_));
           },
           base::Unretained(this))));
   button->GetViewAccessibility().SetName(

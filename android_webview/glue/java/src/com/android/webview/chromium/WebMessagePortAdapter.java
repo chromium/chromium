@@ -16,7 +16,7 @@ import org.chromium.content_public.browser.MessagePort;
  * world.
  */
 public class WebMessagePortAdapter extends WebMessagePort {
-    private MessagePort mPort;
+    private final MessagePort mPort;
 
     public WebMessagePortAdapter(MessagePort port) {
         mPort = port;

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -13,18 +15,19 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 
 import java.util.Locale;
 
 /** Circle pager indicator for recyclerview. */
+@NullMarked
 public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration {
     private final @ColorInt int mColorActive;
     private final @ColorInt int mColorInactive;
@@ -60,7 +63,7 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
      * @param startMarginPx The start margin of the first item of the recyclerview.
      */
     public CirclePagerIndicatorDecoration(
-            @NonNull Context context,
+            Context context,
             int startMarginPx,
             int colorActive,
             int colorInactive,
@@ -94,6 +97,9 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
     public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         super.onDrawOver(canvas, parent, state);
 
+        assumeNonNull(parent.getAdapter());
+        assumeNonNull(parent.getLayoutManager());
+
         int itemCount = parent.getAdapter().getItemCount();
         // Don't draw a page indicator if all of the items can fit in one screen.
         if (itemCount <= mItemPerScreen) return;
@@ -113,9 +119,18 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         LinearLayoutManager layoutManager = (LinearLayoutManager) parent.getLayoutManager();
         int activePosition = layoutManager.findFirstVisibleItemPosition();
         int dotHighlightPosition = activePosition;
-        assert activePosition != RecyclerView.NO_POSITION;
+        if (activePosition == RecyclerView.NO_POSITION) {
+            assertWithMessage(parent, activePosition, itemCount);
+            return;
+        }
 
         final View activeChild = layoutManager.findViewByPosition(activePosition);
+        // It is possible that the activeChild is null, see b/363959953.
+        if (activeChild == null) {
+            assertWithMessage(parent, activePosition, itemCount);
+            return;
+        }
+
         // The left offset of the first visible view. We always track the first visible view to get
         // a consistent offset.
         int left = activeChild.getLeft() - mStartMarginPx;
@@ -131,6 +146,19 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         // animation when scrolling.
         boolean showDot = isMultiItemPerScreen() ? true : left == 0;
         drawHighlights(canvas, indicatorStartX, indicatorPosY, dotHighlightPosition, showDot);
+    }
+
+    private void assertWithMessage(RecyclerView parent, int activePosition, int itemCount) {
+        assumeNonNull(parent.getAdapter());
+
+        StringBuilder message = new StringBuilder("The activePosition of the RecyclerView is :");
+        message.append(activePosition);
+        message.append(", the original item count is :");
+        message.append(itemCount);
+        message.append(", the current item count is:");
+        message.append(parent.getAdapter().getItemCount());
+
+        assert false : message.toString();
     }
 
     /** Draws the inactive indicator dots. */
@@ -193,6 +221,8 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
     @VisibleForTesting
     void getItemOffsetsImpl(
             Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        assumeNonNull(parent.getAdapter());
+
         int itemCount = parent.getAdapter().getItemCount();
         // If all of the items can fit in one screen, remove the space for page indicators since
         // they are hidden.

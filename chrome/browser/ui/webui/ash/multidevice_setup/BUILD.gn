@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("multidevice_setup") {
   sources = [
@@ -43,7 +41,6 @@ static_library("multidevice_setup") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos:multidevice_setup_resources",
     "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/user_image",
     "//chromeos/ash/services/multidevice_setup",

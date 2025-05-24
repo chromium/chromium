@@ -275,6 +275,7 @@ goog.ui.editor.Bubble.prototype.addPanel = function(
   for (let i = 0, len = this.bubbleContents_.childNodes.length - 1; i < len;
        i++) {
     const otherChild = this.bubbleContents_.childNodes[i];
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     const otherPanel = this.panels_[otherChild.id];
     if (otherPanel.type > type) {
       nextElement = otherChild;

@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "extensions/buildflags/buildflags.h"
@@ -31,7 +30,7 @@ class WebContents;
 namespace ui {
 class MenuModel;
 }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace policy {
 class DlpRulesManager;
 }
@@ -63,6 +62,10 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
       const GURL& frame_url,
       const GURL& link_url = GURL(),
       bool is_subframe = false);
+
+  static constexpr auto GetFencedFrameUntrustedNetworkStatusGatedCommands() {
+    return kFencedFrameUntrustedNetworkStatusGatedCommands;
+  }
 
   // Returns true if the command specified by |command_id| is present
   // in the menu.

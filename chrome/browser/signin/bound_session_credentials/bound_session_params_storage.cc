@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
@@ -22,6 +23,44 @@ namespace {
 
 const char kBoundSessionParamsPref[] =
     "bound_session_credentials_bound_session_params";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(BoundSessionParamsReadError)
+enum class ReadError {
+  kNone = 0,
+  kNoSessionsDict = 1,
+  kSessionsDictEmpty = 2,
+  kNoEncodedParams = 3,
+  kBase64DecodeFailed = 4,
+  kProtoParseFailed = 5,
+  kSiteDoesNotMatch = 6,
+  kInvalidParams = 7,
+  kMaxValue = kInvalidParams,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:BoundSessionParamsReadError)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(BoundSessionParamsWriteError)
+enum class WriteError {
+  kNone = 0,
+  kParamsInvalid = 1,
+  kProtoSerializeFailed = 2,
+  kProtoSerializeFailedAfterCleanUp = 3,
+  kMaxValue = kProtoSerializeFailedAfterCleanUp
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:BoundSessionParamsWriteError)
+
+void RecordReadError(ReadError error) {
+  base::UmaHistogramEnumeration(
+      "Signin.BoundSessionCredentials.StorageReadError", error);
+}
+
+void RecordWriteError(WriteError error) {
+  base::UmaHistogramEnumeration(
+      "Signin.BoundSessionCredentials.StorageWriteError", error);
+}
 
 class BoundSessionParamsPrefsStorage : public BoundSessionParamsStorage {
  public:
@@ -52,11 +91,13 @@ bool BoundSessionParamsPrefsStorage::SaveParams(
     const bound_session_credentials::BoundSessionParams& params) {
   // TODO(b/300627729): limit the maximum number of saved sessions.
   if (!bound_session_credentials::AreParamsValid(params)) {
+    RecordWriteError(WriteError::kParamsInvalid);
     return false;
   }
 
   std::string serialized_params = params.SerializeAsString();
   if (serialized_params.empty()) {
+    RecordWriteError(WriteError::kProtoSerializeFailed);
     return false;
   }
 
@@ -64,6 +105,7 @@ bool BoundSessionParamsPrefsStorage::SaveParams(
   base::Value::Dict* site_dict = update->EnsureDict(params.site());
   CHECK(site_dict);
   site_dict->Set(params.session_id(), base::Base64Encode(serialized_params));
+  RecordWriteError(WriteError::kNone);
   return true;
 }
 
@@ -77,11 +119,13 @@ BoundSessionParamsPrefsStorage::ReadAllParamsAndCleanStorageIfNecessary() {
   for (const auto [site, sessions] : root) {
     const base::Value::Dict* sessions_dict = sessions.GetIfDict();
     if (!sessions_dict) {
+      RecordReadError(ReadError::kNoSessionsDict);
       clean_up_needed = true;
       continue;
     }
 
     if (sessions_dict->empty()) {
+      RecordReadError(ReadError::kSessionsDictEmpty);
       clean_up_needed = true;
       continue;
     }
@@ -89,20 +133,24 @@ BoundSessionParamsPrefsStorage::ReadAllParamsAndCleanStorageIfNecessary() {
     for (const auto [session_id, encoded_params] : *sessions_dict) {
       const std::string* encoded_params_str = encoded_params.GetIfString();
       if (!encoded_params_str) {
+        RecordReadError(ReadError::kNoEncodedParams);
         clean_up_needed = true;
         continue;
       }
       std::string params_str;
       if (!base::Base64Decode(*encoded_params_str, &params_str)) {
+        RecordReadError(ReadError::kBase64DecodeFailed);
         clean_up_needed = true;
         continue;
       }
       bound_session_credentials::BoundSessionParams params;
       if (!params.ParseFromString(params_str)) {
+        RecordReadError(ReadError::kProtoParseFailed);
         clean_up_needed = true;
         continue;
       }
       if (site != params.site()) {
+        RecordReadError(ReadError::kSiteDoesNotMatch);
         clean_up_needed = true;
         continue;
       }
@@ -122,8 +170,10 @@ BoundSessionParamsPrefsStorage::ReadAllParamsAndCleanStorageIfNecessary() {
       }
 
       if (bound_session_credentials::AreParamsValid(params)) {
+        RecordReadError(ReadError::kNone);
         result.push_back(std::move(params));
       } else {
+        RecordReadError(ReadError::kInvalidParams);
         clean_up_needed = true;
       }
     }
@@ -140,6 +190,7 @@ BoundSessionParamsPrefsStorage::ReadAllParamsAndCleanStorageIfNecessary() {
         // Valid entries should be serializable. If this case is hit (which
         // shouldn't normally happen), the session data will be lost at the next
         // startup.
+        RecordWriteError(WriteError::kProtoSerializeFailedAfterCleanUp);
         continue;
       }
 
@@ -147,6 +198,7 @@ BoundSessionParamsPrefsStorage::ReadAllParamsAndCleanStorageIfNecessary() {
       CHECK(site_dict);
       site_dict->Set(params.session_id(),
                      base::Base64Encode(serialized_params));
+      RecordWriteError(WriteError::kNone);
     }
   }
 

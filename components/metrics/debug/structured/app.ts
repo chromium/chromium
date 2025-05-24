@@ -154,13 +154,13 @@ export class StructuredMetricsInternalsAppElement extends CustomElement {
       this.hideSearchErrorMessage_();
     }
 
-    if (text.length == 0) {
+    if (text.length === 0) {
       return null;
     }
 
     // If an ':' is not found then we are doing a full text search. The string
     // is the query as is.
-    if (text.indexOf(':') == -1) {
+    if (text.indexOf(':') === -1) {
       return null;
     }
 

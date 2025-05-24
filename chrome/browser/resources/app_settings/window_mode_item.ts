@@ -58,9 +58,9 @@ export class WindowModeItemElement extends CrLitElement {
     };
   }
 
-  windowModeLabel: string = '';
-  app: App = createDummyApp();
-  override hidden: boolean = false;
+  accessor windowModeLabel: string = '';
+  accessor app: App = createDummyApp();
+  override accessor hidden: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -80,7 +80,7 @@ export class WindowModeItemElement extends CrLitElement {
   }
 
   private onClick_() {
-    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.click();
+    this.shadowRoot.querySelector<ToggleRowElement>('#toggle-row')!.click();
   }
 
   private toggleWindowMode_() {

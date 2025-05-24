@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/profile_picker_view.h"
-
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -19,8 +16,10 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -304,7 +303,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, FullscreenWithKeyboard) {
   EXPECT_TRUE(widget()->IsFullscreen());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                        CloseDiceSigninWithKeyboard) {
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
@@ -394,7 +392,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
       WithoutDelay(CheckResult(HasPendingNav(), IsFalse())));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                        NavigateBackFromProfileTypeChoiceWithKeyboard) {

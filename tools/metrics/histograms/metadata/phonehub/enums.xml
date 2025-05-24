@@ -26,6 +26,8 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(MoreAppsButtonLoadingState) -->
+
 <enum name="MoreAppsButtonLoadingState">
   <summary>
     When the Phone Hub bubble is opened, this enum denotes when either the
@@ -36,10 +38,14 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="More apps button was loaded immediately."/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:MoreAppsButtonLoadingState) -->
+
 <enum name="PhoneHubCameraRollBooleanStorageAccessPermission">
   <int value="0" label="No storage access permission on Android device"/>
   <int value="1" label="Android device has storage access permission"/>
 </enum>
+
+<!-- LINT.IfChange(PhoneHubCameraRollContentClicked) -->
 
 <enum name="PhoneHubCameraRollContentClicked">
   <int value="11" label="Single Click to context menu media 1"/>
@@ -49,6 +55,10 @@ chromium-metrics-reviews@google.com.
   <int value="51" label="Single Click to context menu media &gt;=5"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:PhoneHubCameraRollContentClicked) -->
+
+<!-- LINT.IfChange(PhoneHubCameraRollContentShown) -->
+
 <enum name="PhoneHubCameraRollContentShown">
   <int value="1" label="Content Shown : media 1"/>
   <int value="2" label="Content Shown : media 2"/>
@@ -57,6 +67,10 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Content Shown : media &gt;=5"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:PhoneHubCameraRollContentShown) -->
+
+<!-- LINT.IfChange(PhoneHubCameraRollContextMenuDownload) -->
+
 <enum name="PhoneHubCameraRollContextMenuDownload">
   <int value="111" label="Click on download in context menu media 1"/>
   <int value="211" label="Click on download in context menu media 2"/>
@@ -64,6 +78,10 @@ chromium-metrics-reviews@google.com.
   <int value="411" label="Click on download in context menu media 4"/>
   <int value="511" label="Click on download in context menu media &gt;=5"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:PhoneHubCameraRollContextMenuDownload) -->
+
+<!-- LINT.IfChange(PhoneHubCameraRollDownloadResult) -->
 
 <enum name="PhoneHubCameraRollDownloadResult">
   <int value="0" label="The download was successful"/>
@@ -88,11 +106,19 @@ chromium-metrics-reviews@google.com.
              could not be opened for I/O"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/util/histogram_util.h:PhoneHubCameraRollDownloadResult) -->
+
+<!-- LINT.IfChange(PhoneHubCameraRollOptInEntryPoint) -->
+
 <enum name="PhoneHubCameraRollOptInEntryPoint">
   <int value="0" label="New user opted in via multidevice setup flow"/>
   <int value="1" label="User opted in via onboarding dialog in phonehub view"/>
   <int value="2" label="User opted in via Settings page"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/util/histogram_util.h:PhoneHubCameraRollOptInEntryPoint) -->
+
+<!-- LINT.IfChange(PhoneHubFeatureStatus) -->
 
 <enum name="PhoneHubFeatureStatus">
   <int value="0" label="Not eligible for feature"/>
@@ -106,6 +132,10 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Unavailable screen locked or suspended"/>
 </enum>
 
+<!-- LINT.ThenChange(//chormeos/ash/components/phonehub/feature_status.h:PhoneHubFeatureStatus) -->
+
+<!-- LINT.IfChange(PhoneHubInterstitialScreenEvent) -->
+
 <enum name="PhoneHubInterstitialScreenEvent">
   <int value="0" label="Screen Shown"/>
   <int value="1" label="Learn More Clicked"/>
@@ -113,10 +143,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Confirm Clicked"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:PhoneHubInterstitialScreenEvent) -->
+
+<!-- LINT.IfChange(PhoneHubMessageResult) -->
+
 <enum name="PhoneHubMessageResult">
   <int value="0" label="Request message was sent"/>
   <int value="1" label="Response was sent back"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/util/histogram_util.h:PhoneHubMessageResult) -->
+
+<!-- LINT.IfChange(PhoneHubMessageType) -->
 
 <enum name="PhoneHubMessageType">
   <int value="0" label="Provide CrOS State"/>
@@ -152,6 +190,8 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="App list incremental update"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/proto/phonehub_api.proto:PhoneHubMessageType) -->
+
 <enum name="PhoneHubNotificationAccessSetupStatus">
   <int value="1" label="Connecting to phone"/>
   <int value="2" label="Timed out connecting to phone"/>
@@ -161,16 +201,26 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Phone is prohibited from granting access"/>
 </enum>
 
+<!-- LINT.IfChange(PhoneHubNotificationInteraction) -->
+
 <enum name="PhoneHubNotificationInteraction">
   <int value="0" label="User sent an inline reply from notification"/>
   <int value="1" label="User dismissed notification"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:PhoneHubNotificationInteraction) -->
+
+<!-- LINT.IfChange(PhoneHubOptInEntryPoint) -->
 
 <enum name="PhoneHubOptInEntryPoint">
   <int value="0" label="New user opted in via multidevice setup flow"/>
   <int value="1" label="User opted in via onboarding promotion"/>
   <int value="2" label="User opted in via Settings page"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/util/histogram_util.h:PhoneHubOptInEntryPoint) -->
+
+<!-- LINT.IfChange(PhoneHubPermissionsOnboardingScreenEvent) -->
 
 <enum name="PhoneHubPermissionsOnboardingScreenEvent">
   <int value="0" label="Unknown"/>
@@ -180,6 +230,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Set Up Or Done Clicked"/>
   <int value="5" label="Next Or Try Again Clicked"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts:PhoneHubPermissionsOnboardingScreenEvent) -->
+
+<!-- LINT.IfChange(PhoneHubPermissionsOnboardingSetUpMode) -->
 
 <enum name="PhoneHubPermissionsOnboardingSetUpMode">
   <int value="0" label="Set Up mode is irrelivant"/>
@@ -203,6 +257,10 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="All permissions"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts:PhoneHubPermissionsOnboardingSetUpMode) -->
+
+<!-- LINT.IfChange(PhoneHubQuickAction) -->
+
 <enum name="PhoneHubQuickAction">
   <int value="0" label="Toggle Hotspot On"/>
   <int value="1" label="Toggle Hotspot Off"/>
@@ -211,6 +269,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Toggle Locate Phone On"/>
   <int value="5" label="Toggle Locate Phone Off"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:PhoneHubQuickAction) -->
+
+<!-- LINT.IfChange(PhoneHubScreen) -->
 
 <enum name="PhoneHubScreen">
   <int value="0" label="BluetoothOrWifiDisabled"/>
@@ -226,10 +288,18 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="PhoneTetherConnectionPending"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:PhoneHubScreen) -->
+
+<!-- LINT.IfChange(PhoneHubTetherConnectionResult) -->
+
 <enum name="PhoneHubTetherConnectionResult">
   <int value="0" label="Started a tether connection attempt"/>
   <int value="1" label="Attempt was successful"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/util/histogram_util.h:PhoneHubTetherConnectionResult) -->
+
+<!-- LINT.IfChange(PhoneHubUiResult) -->
 
 <enum name="PhoneHubUiResult">
   <int value="0" label="Secure Channel is not connected"/>
@@ -241,6 +311,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Connected Phone Hub UI is ready"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h:PhoneHubUiResult) -->
+
+<!-- LINT.IfChange(PhoneHubUserAction) -->
+
 <enum name="PhoneHubUserAction">
   <int value="0" label="UI opened while connected"/>
   <int value="1" label="Tether connection attempted"/>
@@ -250,13 +324,20 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Notification dismissed"/>
   <int value="6" label="Notification inline reply attempted"/>
   <int value="7" label="Camera Roll download attempted"/>
+  <int value="8" label="App stream launcher opened"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/user_action_recorder_impl.h:PhoneHubUserAction) -->
+
+<!-- LINT.IfChange(RecentAppsViewUiState) -->
 
 <enum name="RecentAppsViewUiState">
   <int value="0" label="Loading"/>
   <int value="1" label="Error"/>
   <int value="2" label="Apps"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:RecentAppsViewUiState) -->
 
 </enums>
 

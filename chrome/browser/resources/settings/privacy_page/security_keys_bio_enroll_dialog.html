@@ -1,4 +1,4 @@
-    <style include="settings-shared">
+    <style include="settings-shared cr-spinner-style">
       div[slot='body'] {
         /* Make the secondary 'Add' button in the body to align with the
            primary 'Done' button in the body-container. */
@@ -37,6 +37,10 @@
         padding-inline-start: var(--cr-section-padding);
       }
 
+      .spinner {
+        padding-bottom: 16px;
+      }
+
       @media (prefers-color-scheme: dark) {
         #lightIcon {
           display: none;
@@ -59,8 +63,7 @@
             on-iron-select="onIronSelect_">
           <div id="initial">
             <p>$i18n{securityKeysTouchToContinue}</p>
-            <paper-spinner-lite style="padding-bottom: 16px;" active>
-            </paper-spinner-lite>
+            <div class="spinner"></div>
           </div>
 
           <div id="pinPrompt">

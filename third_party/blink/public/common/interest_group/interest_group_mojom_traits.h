@@ -64,6 +64,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::InterestGroupAdDataView,
     return ad.allowed_reporting_origins;
   }
 
+  static const std::optional<std::string>& creative_scanning_metadata(
+      const blink::InterestGroup::Ad& ad) {
+    return ad.creative_scanning_metadata;
+  }
+
   static bool Read(blink::mojom::InterestGroupAdDataView data,
                    blink::InterestGroup::Ad* out);
 };
@@ -199,6 +204,11 @@ struct BLINK_COMMON_EXPORT
   static const std::optional<url::Origin>& trusted_bidding_signals_coordinator(
       const blink::InterestGroup& interest_group) {
     return interest_group.trusted_bidding_signals_coordinator;
+  }
+
+  static const std::optional<std::vector<url::Origin>>&
+  view_and_click_counts_providers(const blink::InterestGroup& interest_group) {
+    return interest_group.view_and_click_counts_providers;
   }
 
   static const std::optional<std::string>& user_bidding_signals(

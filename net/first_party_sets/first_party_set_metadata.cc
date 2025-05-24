@@ -5,6 +5,7 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 
 #include <tuple>
+#include <utility>
 
 #include "base/types/optional_util.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -13,10 +14,10 @@ namespace net {
 
 FirstPartySetMetadata::FirstPartySetMetadata() = default;
 FirstPartySetMetadata::FirstPartySetMetadata(
-    const FirstPartySetEntry* frame_entry,
-    const FirstPartySetEntry* top_frame_entry)
-    : frame_entry_(base::OptionalFromPtr(frame_entry)),
-      top_frame_entry_(base::OptionalFromPtr(top_frame_entry)) {}
+    std::optional<FirstPartySetEntry> frame_entry,
+    std::optional<FirstPartySetEntry> top_frame_entry)
+    : frame_entry_(std::move(frame_entry)),
+      top_frame_entry_(std::move(top_frame_entry)) {}
 
 FirstPartySetMetadata::FirstPartySetMetadata(FirstPartySetMetadata&&) = default;
 FirstPartySetMetadata& FirstPartySetMetadata::operator=(

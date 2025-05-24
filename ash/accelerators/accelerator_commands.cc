@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "ash/accelerators/accelerator_lookup.h"
@@ -22,22 +23,24 @@
 #include "ash/display/display_move_window_util.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
-#include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/annotator/annotator_controller_base.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system/toast_data.h"
+#include "ash/quick_insert/quick_insert_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/window_rotation.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_focus_cycler.h"
@@ -51,6 +54,8 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/power/power_button_controller.h"
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_model.h"
@@ -68,6 +73,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
@@ -88,7 +94,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
@@ -116,6 +121,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/message_center/message_center.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_animations.h"
@@ -127,7 +133,7 @@ namespace ash {
 const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
 const char kAccelRotation[] = "Ash.Accelerators.Rotation.Usage";
 const char kAccelActivateDeskByIndex[] = "Ash.Accelerators.ActivateDeskByIndex";
-const char kAccelTogglePicker[] = "Ash.Accelerators.TogglePicker.Action";
+const char kAccelToggleQuickInsert[] = "Ash.Accelerators.TogglePicker.Action";
 
 namespace accelerators {
 
@@ -144,6 +150,9 @@ constexpr char kAssistantErrorToastId[] = "assistant_error";
 // Toast ID for the notification center tray "No notifications" toast.
 constexpr char kNotificationCenterTrayNoNotificationsToastId[] =
     "notification_center_tray_toast_ids.no_notifications";
+// Toast IDs for the Toggle Camera Allowed shortcut.
+constexpr char kToggleCameraToastId[] = "toggle_camera_toast";
+constexpr char kCameraForceDisabledToastId[] = "camera_force_disabled_toast";
 
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
@@ -168,12 +177,12 @@ enum class ActivateDeskAcceleratorAction {
   kMaxValue = kDesk8,
 };
 
-// Record what action is triggered by pressing toggle picker.
+// Record what action is triggered by pressing toggle Quick Insert.
 // The enum value is 1:1 mapped to what's defined in enums.xml.
-enum class TogglePickerAction {
+enum class ToggleQuickInsertAction {
   kToggleCapsLock = 0,
-  kTogglePicker = 1,
-  kMaxValue = kTogglePicker,
+  kToggleQuickInsert = 1,
+  kMaxValue = kToggleQuickInsert,
 };
 
 void RecordRotationAcceleratorAction(const RotationAcceleratorAction& action) {
@@ -190,8 +199,9 @@ void RecordWindowSnapAcceleratorAction(
   UMA_HISTOGRAM_ENUMERATION(kAccelWindowSnap, action);
 }
 
-void RecordTogglePickerAcceleratorAction(const TogglePickerAction& action) {
-  UMA_HISTOGRAM_ENUMERATION(kAccelTogglePicker, action);
+void RecordToggleQuickInsertAcceleratorAction(
+    const ToggleQuickInsertAction& action) {
+  UMA_HISTOGRAM_ENUMERATION(kAccelToggleQuickInsert, action);
 }
 
 display::Display::Rotation GetNextRotationInClamshell(
@@ -652,6 +662,14 @@ bool CanPerformMagnifierZoom() {
          Shell::Get()->docked_magnifier_controller()->GetEnabled();
 }
 
+bool CanResizePipWindow() {
+  return Shell::Get()->pip_controller()->CanResizePip();
+}
+
+bool CanToggleGeminiApp() {
+  return features::IsAppLaunchShortcutEnabled();
+}
+
 bool CanScreenshot(bool take_screenshot) {
   // |AcceleratorAction::kTakeScreenshot| is allowed when user session is
   // blocked.
@@ -665,6 +683,11 @@ bool CanShowStylusTools() {
 
 bool CanStopScreenRecording() {
   return CaptureModeController::Get()->is_recording_in_progress();
+}
+
+bool CanStartSunfishSession() {
+  return CanShowSunfishOrScannerUi() &&
+         !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
 
 bool CanSwapPrimaryDisplay() {
@@ -688,9 +711,6 @@ bool CanToggleFloatingWindow() {
 }
 
 bool CanToggleGameDashboard() {
-  if (!features::IsGameDashboardEnabled()) {
-    return false;
-  }
   aura::Window* window = GetTargetWindow();
   return window && GameDashboardController::ReadyForAccelerator(window);
 }
@@ -725,12 +745,6 @@ bool CanToggleOverview() {
       return false;
   }
   return true;
-}
-
-bool CanTogglePicker() {
-  CHECK(Shell::HasInstance());
-  return features::IsPickerUpdateEnabled() &&
-         Shell::Get()->picker_controller()->IsFeatureEnabled();
 }
 
 bool CanTogglePrivacyScreen() {
@@ -1090,6 +1104,12 @@ void OpenHelp() {
   NewWindowDelegate::GetInstance()->OpenGetHelp();
 }
 
+void ToggleGeminiApp() {
+  if (ash::features::IsAppLaunchShortcutEnabled()) {
+    NewWindowDelegate::GetInstance()->ToggleGeminiApp();
+  }
+}
+
 void PerformTilingWindowResize(AcceleratorAction action) {
   if (!features::IsTilingWindowResizeEnabled()) {
     return;
@@ -1155,6 +1175,10 @@ void ResetDisplayZoom() {
   display_manager->ResetDisplayZoom(display.id());
 }
 
+void ResizePipWindow() {
+  Shell::Get()->pip_controller()->HandleKeyboardShortcut();
+}
+
 void RestoreTab() {
   NewWindowDelegate::GetPrimary()->RestoreTab();
 }
@@ -1215,7 +1239,7 @@ void ShiftPrimaryDisplay() {
   const display::Displays& active_display_list =
       display_manager->active_display_list();
 
-  auto primary_display_iter = base::ranges::find(
+  auto primary_display_iter = std::ranges::find(
       active_display_list, primary_display_id, &display::Display::id);
 
   DCHECK(primary_display_iter != active_display_list.end());
@@ -1241,6 +1265,12 @@ void ShowShortcutCustomizationApp() {
 
 void ShowTaskManager() {
   NewWindowDelegate::GetInstance()->ShowTaskManager();
+}
+
+void StartSunfishSession() {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kSunfishSessionStartedFromKeyboardShortcut);
+  CaptureModeController::Get()->StartSunfishSession();
 }
 
 void StopScreenRecording() {
@@ -1373,6 +1403,11 @@ void ToggleAssistant() {
     case AssistantAllowedState::DISALLOWED_BY_NO_BINARY:
       // No need to show toast.
       return;
+    case AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT:
+      // Showing new entry point instead.
+      AssistantUiController::Get()->ShowUi(
+          assistant::AssistantEntryPoint::kHotkey);
+      return;
     case AssistantAllowedState::ALLOWED:
       // Nothing need to do if allowed.
       break;
@@ -1421,6 +1456,54 @@ void ToggleCalendar() {
       calendar_metrics::CalendarEventSource::kKeyboard);
 }
 
+void ToggleCameraAllowed() {
+  if (!features::IsToggleCameraShortcutEnabled()) {
+    return;
+  }
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service) {
+    return;
+  }
+
+  PrivacyHubController* privacy_hub_controller =
+      Shell::Get()->privacy_hub_controller();
+  if (!privacy_hub_controller) {
+    return;
+  }
+
+  CameraPrivacySwitchController* camera_privacy_switch_controller =
+      privacy_hub_controller->camera_controller();
+  if (!camera_privacy_switch_controller) {
+    return;
+  }
+
+  // Camera access may be force-disabled in cases where an admin is using Remote
+  // Desktop to control a user's device. This shortcut should respect that
+  // setting and should not enable the camera in such situations.
+  if (camera_privacy_switch_controller->IsCameraAccessForceDisabled()) {
+    ShowToast(kCameraForceDisabledToastId,
+              ToastCatalogName::kCameraForceDisabled,
+              l10n_util::GetStringUTF16(IDS_ASH_CAMERA_ACCESS_DISABLED));
+    return;
+  }
+
+  // Toggle the value of the pref.
+  const bool wasCameraPreviouslyAllowed =
+      pref_service->GetBoolean(prefs::kUserCameraAllowed);
+  const bool isCameraNowAllowed = !wasCameraPreviouslyAllowed;
+  pref_service->SetBoolean(prefs::kUserCameraAllowed, isCameraNowAllowed);
+
+  if (isCameraNowAllowed) {
+    ShowToast(kToggleCameraToastId, ToastCatalogName::kCameraNowAllowed,
+              l10n_util::GetStringUTF16(IDS_ASH_CAMERA_NOW_ALLOWED));
+  } else {
+    ShowToast(kToggleCameraToastId, ToastCatalogName::kCameraNowAllowed,
+              l10n_util::GetStringUTF16(IDS_ASH_CAMERA_NOW_DISALLOWED));
+  }
+}
+
 void ToggleCapsLock() {
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
   ime_controller->SetCapsLockEnabled(!ime_controller->IsCapsLockEnabled());
@@ -1432,7 +1515,15 @@ void ToggleClipboardHistory(bool is_plain_text_paste) {
       is_plain_text_paste);
 }
 
-void TogglePicker(base::TimeTicks accelerator_timestamp) {
+void ToggleDoNotDisturb() {
+  message_center::MessageCenter* message_center =
+      message_center::MessageCenter::Get();
+  CHECK(message_center);
+  const bool is_quiet_mode = message_center->IsQuietMode();
+  message_center->SetQuietMode(!is_quiet_mode);
+}
+
+void ToggleQuickInsert(base::TimeTicks accelerator_timestamp) {
   const bool outside_user_session =
       !Shell::Get()->session_controller()->IsActiveUserSessionStarted();
   const bool is_oobe = Shell::Get()->session_controller()->GetSessionState() ==
@@ -1440,15 +1531,15 @@ void TogglePicker(base::TimeTicks accelerator_timestamp) {
   const bool is_modal_window = Shell::IsSystemModalWindowOpen();
   if (outside_user_session || is_oobe || is_modal_window) {
     ToggleCapsLock();
-    RecordTogglePickerAcceleratorAction(TogglePickerAction::kToggleCapsLock);
+    RecordToggleQuickInsertAcceleratorAction(
+        ToggleQuickInsertAction::kToggleCapsLock);
     return;
   }
 
-  CHECK(Shell::Get()->picker_controller());
-  if (auto* picker_controller = Shell::Get()->picker_controller()) {
-    picker_controller->ToggleWidget(accelerator_timestamp);
-    RecordTogglePickerAcceleratorAction(TogglePickerAction::kTogglePicker);
-  }
+  CHECK(Shell::Get()->quick_insert_controller());
+  Shell::Get()->quick_insert_controller()->ToggleWidget(accelerator_timestamp);
+  RecordToggleQuickInsertAcceleratorAction(
+      ToggleQuickInsertAction::kToggleQuickInsert);
 }
 
 void EnableSelectToSpeak() {
@@ -1554,14 +1645,11 @@ void ToggleFullscreenMagnifier() {
   if (!current_enabled && !dialog_ever_accepted) {
     // Enable fullscreen magnifier before showing the dialog, so that users
     // can see the dialog more clearly.
-    bool magnify_dialog =
-        ::features::IsAccessibilityMagnifyAcceleratorDialogEnabled();
     int title = IDS_ASH_SCREEN_MAGNIFIER_TITLE;
     std::u16string body =
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_BODY);
     int cancel = IDS_APP_CANCEL;
     int confirm = IDS_ASH_CONTINUE_BUTTON;
-    if (magnify_dialog) {
       Shell::Get()->fullscreen_magnifier_controller()->SetEnabled(true);
       title = IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TITLE;
       cancel = IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TURN_OFF_BUTTON;
@@ -1575,15 +1663,6 @@ void ToggleFullscreenMagnifier() {
               AcceleratorAction::kMagnifierZoomOut);
       if (zoom_in_details.empty() || zoom_out_details.empty()) {
         body = l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY);
-      } else {
-        std::u16string zoom_in_text =
-            AcceleratorLookup::GetAcceleratorDetailsText(zoom_in_details[0]);
-        std::u16string zoom_out_text =
-            AcceleratorLookup::GetAcceleratorDetailsText(zoom_out_details[0]);
-        body = l10n_util::GetStringFUTF16(
-            IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY_DYNAMIC, zoom_in_text,
-            zoom_out_text);
-      }
     }
     accessibility_controller->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(title), body,
@@ -1612,7 +1691,6 @@ void ToggleFullscreenMagnifier() {
 }
 
 void ToggleGameDashboard() {
-  DCHECK(features::IsGameDashboardEnabled());
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
   if (auto* context =

@@ -4,11 +4,12 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_overlay_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -217,7 +218,7 @@ void DrmOverlayManager::CheckOverlaySupport(
   auto iter = cache.Get(cache_key);
   if (iter == cache.end()) {
     // We can skip GPU side validation in case all candidates are invalid.
-    bool needs_gpu_validation = base::ranges::any_of(
+    bool needs_gpu_validation = std::ranges::any_of(
         result_candidates,
         [](OverlaySurfaceCandidate& c) { return c.overlay_handled; });
     OverlayValidationCacheValue value;
@@ -315,12 +316,16 @@ void DrmOverlayManager::OnPromotedOverlayTypes(
 bool DrmOverlayManager::CanHandleCandidate(
     const OverlaySurfaceCandidate& candidate,
     gfx::AcceleratedWidget widget) const {
-  if (candidate.buffer_size.IsEmpty())
+  if (candidate.buffer_size.IsEmpty()) {
+    VLOG(3) << "Overlay Rejected: buffer_size="
+            << candidate.buffer_size.ToString();
     return false;
+  }
 
-  if (!absl::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
-      absl::get<gfx::OverlayTransform>(candidate.transform) ==
+  if (!std::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
+      std::get<gfx::OverlayTransform>(candidate.transform) ==
           gfx::OVERLAY_TRANSFORM_INVALID) {
+    VLOG(3) << "Overlay Rejected: invalid transform";
     return false;
   }
 
@@ -369,7 +374,7 @@ bool DrmOverlayManager::IsBufferFormatSupported(
     return false;
   }
 
-  auto format_it = base::ranges::find_if(
+  auto format_it = std::ranges::find_if(
       supported_formats_it->second,
       [required_overlay_buffer_format](const auto& supported_format) {
         return required_overlay_buffer_format == supported_format;

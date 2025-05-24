@@ -20,6 +20,7 @@
 #include "net/base/io_buffer.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
+#include "services/network/shared_dictionary/shared_dictionary_cache.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
@@ -27,6 +28,9 @@
 #include "url/scheme_host_port.h"
 
 namespace network {
+
+constexpr char kCacheResultHistogramName[] =
+    "Network.SharedDictionary.DocumentRequestCacheResult";
 
 namespace {
 
@@ -84,10 +88,16 @@ SharedDictionaryStorageOnDisk::WrappedDictionaryInfo::operator=(
 SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
     base::WeakPtr<SharedDictionaryManagerOnDisk> manager,
     const net::SharedDictionaryIsolationKey& isolation_key,
-    base::ScopedClosureRunner on_deleted_closure_runner)
+    base::ScopedClosureRunner on_deleted_closure_runner,
+    scoped_refptr<SharedDictionaryCache> dictionary_cache)
     : manager_(manager),
       isolation_key_(isolation_key),
-      on_deleted_closure_runner_(std::move(on_deleted_closure_runner)) {
+      on_deleted_closure_runner_(std::move(on_deleted_closure_runner)),
+      dictionary_cache_(dictionary_cache) {
+  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+      FROM_HERE,
+      base::BindRepeating(&SharedDictionaryStorageOnDisk::OnMemoryPressure,
+                          weak_factory_.GetWeakPtr()));
   manager_->metadata_store().GetDictionaries(
       isolation_key_,
       base::BindOnce(
@@ -133,11 +143,34 @@ SharedDictionaryStorageOnDisk::GetDictionarySync(
 
   manager_->UpdateDictionaryLastUsedTime(*info);
 
+  // Use the LRU cache before the active-dictionary cache so that the
+  // recentness of the hit will be counted for currently-active dictionaries.
+  scoped_refptr<net::SharedDictionary> dictionary =
+      dictionary_cache_->Get(info->disk_cache_key_token());
+  if (dictionary) {
+    CHECK_EQ(info->size(), dictionary->size());
+    CHECK(info->hash() == dictionary->hash());
+    if (destination == mojom::RequestDestination::kDocument) {
+      base::UmaHistogramEnumeration(kCacheResultHistogramName,
+                                    CacheResult::kCacheHitLRU);
+    }
+    return dictionary;
+  }
+
   auto it = dictionaries_.find(info->disk_cache_key_token());
   if (it != dictionaries_.end()) {
     CHECK_EQ(info->size(), it->second->size());
     CHECK(info->hash() == it->second->hash());
+    if (destination == mojom::RequestDestination::kDocument) {
+      base::UmaHistogramEnumeration(kCacheResultHistogramName,
+                                    CacheResult::kCacheHitActive);
+    }
     return it->second.get();
+  }
+
+  if (destination == mojom::RequestDestination::kDocument) {
+    base::UmaHistogramEnumeration(kCacheResultHistogramName,
+                                  CacheResult::kCacheMiss);
   }
 
   auto shared_dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
@@ -150,6 +183,13 @@ SharedDictionaryStorageOnDisk::GetDictionarySync(
           &SharedDictionaryStorageOnDisk::OnSharedDictionaryDeleted,
           weak_factory_.GetWeakPtr(), info->disk_cache_key_token())));
   dictionaries_.emplace(info->disk_cache_key_token(), shared_dictionary.get());
+
+  if (memory_pressure_level_ ==
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+    dictionary_cache_->Put(info->disk_cache_key_token(), destination,
+                           shared_dictionary);
+  }
+
   return shared_dictionary;
 }
 
@@ -270,6 +310,11 @@ void SharedDictionaryStorageOnDisk::OnDictionaryDeleted(
   }
   std::erase_if(dictionary_info_map_,
                 [](const auto& it) { return it.second.empty(); });
+}
+
+void SharedDictionaryStorageOnDisk::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel level) {
+  memory_pressure_level_ = level;
 }
 
 }  // namespace network

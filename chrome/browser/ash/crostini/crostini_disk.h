@@ -33,21 +33,21 @@ struct CrostiniDiskInfo {
 
 namespace disk {
 
-constexpr int64_t kGiB = 1024 * 1024 * 1024;
-constexpr int64_t kDiskHeadroomBytes = 1 * kGiB;
-constexpr int64_t kMinimumDiskSizeBytes = 2 * kGiB;
-constexpr int64_t kRecommendedDiskSizeBytes = 10 * kGiB;
+inline constexpr int64_t kGiB = 1024 * 1024 * 1024;
+inline constexpr int64_t kDiskHeadroomBytes = 1 * kGiB;
+inline constexpr int64_t kMinimumDiskSizeBytes = 2 * kGiB;
+inline constexpr int64_t kRecommendedDiskSizeBytes = 10 * kGiB;
 
 // A number which influences the interval size and number of ticks selected for
 // a given range. At 400 >400 GiB gets 1 GiB ticks, smaller sizes get smaller
 // intervals. 400 is arbitrary, chosen because it keeps ticks at least 1px each
 // on sliders and feels nice.
-constexpr int kGranularityFactor = 400;
+inline constexpr int kGranularityFactor = 400;
 
 // The size of the download for the VM image.
 // As of 2020-01-10 the Termina files.zip is ~90MiB and the squashfs container
 // is ~330MiB.
-constexpr int64_t kDownloadSizeBytes = 450ll * 1024 * 1024;  // 450 MiB
+inline constexpr int64_t kDownloadSizeBytes = 450ll * 1024 * 1024;  // 450 MiB
 
 using OnceDiskInfoCallback =
     base::OnceCallback<void(std::unique_ptr<CrostiniDiskInfo> info)>;

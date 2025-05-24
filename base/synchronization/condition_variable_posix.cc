@@ -26,23 +26,13 @@
 #define HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC 1
 #endif
 
-namespace {
-#if BUILDFLAG(IS_APPLE)
-// Under this feature a hack that was introduced to avoid crashes is skipped.
-// Use to evaluate if the hack is still needed. See https://crbug.com/517681.
-BASE_FEATURE(kSkipConditionVariableWakeupHack,
-             "SkipConditionVariableWakeupHack",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-std::atomic_bool g_skip_wakeup_hack = true;
-#endif
-}  // namespace
-
 namespace base {
 
 ConditionVariable::ConditionVariable(Lock* user_lock)
     : user_mutex_(user_lock->lock_.native_handle())
 #if DCHECK_IS_ON()
-    , user_lock_(user_lock)
+      ,
+      user_lock_(user_lock)
 #endif
 {
   int rv = 0;
@@ -67,38 +57,16 @@ ConditionVariable::ConditionVariable(Lock* user_lock)
 }
 
 ConditionVariable::~ConditionVariable() {
-#if BUILDFLAG(IS_APPLE)
-  // This hack is necessary to avoid a fatal pthreads subsystem bug in the
-  // Darwin kernel. http://crbug.com/517681.
-  if (!g_skip_wakeup_hack.load(std::memory_order_relaxed)) {
-    base::Lock lock;
-    base::AutoLock l(lock);
-    struct timespec ts;
-    ts.tv_sec = 0;
-    ts.tv_nsec = 1;
-    pthread_cond_timedwait_relative_np(&condition_, lock.lock_.native_handle(),
-                                       &ts);
-  }
-#endif
-
   int rv = pthread_cond_destroy(&condition_);
   DCHECK_EQ(0, rv);
 }
 
-#if BUILDFLAG(IS_APPLE)
-// static
-void ConditionVariable::InitializeFeatures() {
-  g_skip_wakeup_hack.store(
-      base::FeatureList::IsEnabled(kSkipConditionVariableWakeupHack),
-      std::memory_order_relaxed);
-}
-#endif
-
 void ConditionVariable::Wait() {
   std::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
-  if (waiting_is_blocking_)
+  if (waiting_is_blocking_) {
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
+  }
 
 #if DCHECK_IS_ON()
   user_lock_->CheckHeldAndUnmark();
@@ -113,8 +81,9 @@ void ConditionVariable::Wait() {
 void ConditionVariable::TimedWait(const TimeDelta& max_time) {
   std::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
-  if (waiting_is_blocking_)
+  if (waiting_is_blocking_) {
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
+  }
 
   int64_t usecs = max_time.InMicroseconds();
   struct timespec relative_time;
@@ -128,8 +97,8 @@ void ConditionVariable::TimedWait(const TimeDelta& max_time) {
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-  int rv = pthread_cond_timedwait_relative_np(
-      &condition_, user_mutex_, &relative_time);
+  int rv = pthread_cond_timedwait_relative_np(&condition_, user_mutex_,
+                                              &relative_time);
 #else
   // The timeout argument to pthread_cond_timedwait is in absolute time.
   struct timespec absolute_time;
@@ -153,8 +122,8 @@ void ConditionVariable::TimedWait(const TimeDelta& max_time) {
   DCHECK_GE(absolute_time.tv_sec, now.tv_sec);  // Overflow paranoia
 
 #if defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC)
-  int rv = pthread_cond_timedwait_monotonic_np(
-      &condition_, user_mutex_, &absolute_time);
+  int rv = pthread_cond_timedwait_monotonic_np(&condition_, user_mutex_,
+                                               &absolute_time);
 #else
   int rv = pthread_cond_timedwait(&condition_, user_mutex_, &absolute_time);
 #endif  // HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC

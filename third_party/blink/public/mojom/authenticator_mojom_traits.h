@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_tree.h"
+#include "base/notreached.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"
@@ -198,8 +199,7 @@ struct BLINK_COMMON_EXPORT
       case device::CableDiscoveryData::Version::V2:
         return 2;
       case device::CableDiscoveryData::Version::INVALID:
-        CHECK(false);
-        return 0;
+        NOTREACHED();
     }
   }
 

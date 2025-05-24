@@ -30,7 +30,7 @@ class TestLoaderTestCase(unittest.TestCase):
         self.fs.write_text_file(
             self.finder.path_from_wpt_tests('MANIFEST.json'),
             json.dumps({
-                'version': 8,
+                'version': 9,
                 'items': {
                     'testharness': {
                         'variant.html': [
@@ -59,6 +59,7 @@ class TestLoaderTestCase(unittest.TestCase):
     @contextlib.contextmanager
     def _make_loader(self, **kwargs):
         port = self.host.port_factory.get('test-linux-trusty')
+        port.set_option_default('no_expectations', False)
         with self.fs.patch_builtins():
             manifest = load_and_update(
                 self.finder.path_from_wpt_tests(),

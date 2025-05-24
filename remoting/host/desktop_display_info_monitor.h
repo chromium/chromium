@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/desktop_display_info_loader.h"
@@ -35,7 +36,8 @@ class DesktopDisplayInfoMonitor {
   using Callback = base::RepeatingCallback<CallbackSignature>;
 
   explicit DesktopDisplayInfoMonitor(
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      std::unique_ptr<DesktopDisplayInfoLoader> info_loader);
 
   DesktopDisplayInfoMonitor(const DesktopDisplayInfoMonitor&) = delete;
   DesktopDisplayInfoMonitor& operator=(const DesktopDisplayInfoMonitor&) =

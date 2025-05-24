@@ -78,7 +78,7 @@ base::Value::Dict HttpStreamKey::ToValue() const {
   return dict;
 }
 
-SpdySessionKey HttpStreamKey::ToSpdySessionKey() const {
+SpdySessionKey HttpStreamKey::CalculateSpdySessionKey() const {
   HostPortPair host_port = GURL::SchemeIsCryptographic(destination().scheme())
                                ? HostPortPair::FromSchemeHostPort(destination())
                                : HostPortPair();
@@ -88,14 +88,21 @@ SpdySessionKey HttpStreamKey::ToSpdySessionKey() const {
                         secure_dns_policy(), disable_cert_network_fetches());
 }
 
-QuicSessionKey HttpStreamKey::ToQuicSessionKey() const {
-  HostPortPair host_port = GURL::SchemeIsCryptographic(destination().scheme())
-                               ? HostPortPair::FromSchemeHostPort(destination())
-                               : HostPortPair();
-  return QuicSessionKey(std::move(host_port), privacy_mode(),
-                        ProxyChain::Direct(), SessionUsage::kDestination,
-                        socket_tag(), network_anonymization_key(),
-                        secure_dns_policy(), /*require_dns_https_alpn=*/false);
+QuicSessionAliasKey HttpStreamKey::CalculateQuicSessionAliasKey(
+    std::optional<url::SchemeHostPort> optional_alias_name) const {
+  url::SchemeHostPort destination_for_name_resolution =
+      optional_alias_name.value_or(destination_);
+  CHECK_EQ(destination_for_name_resolution.scheme(), destination_.scheme());
+  if (!GURL::SchemeIsCryptographic(destination_for_name_resolution.scheme())) {
+    return QuicSessionAliasKey();
+  }
+  QuicSessionKey quic_session_key(
+      destination_.host(), destination_.port(), privacy_mode(),
+      ProxyChain::Direct(), SessionUsage::kDestination, socket_tag(),
+      network_anonymization_key(), secure_dns_policy(),
+      /*require_dns_https_alpn=*/false);
+  return QuicSessionAliasKey(std::move(destination_for_name_resolution),
+                             std::move(quic_session_key));
 }
 
 }  // namespace net

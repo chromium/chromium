@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/dbus/xdg/request.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 
 class CookieEncryptionProviderBrowserTest;
@@ -25,10 +26,13 @@ class PrefService;
 
 namespace dbus {
 class Bus;
-class ObjectPath;
 class Response;
-class Signal;
 }  // namespace dbus
+
+namespace dbus_xdg {
+class Request;
+enum class SystemdUnitStatus;
+}  // namespace dbus_xdg
 
 namespace os_crypt_async {
 
@@ -55,7 +59,9 @@ class SecretPortalKeyProvider : public KeyProvider {
     // kDestructedBeforeComplete = 10,
     kSignalConnectFailed = 11,
     kSignalParseFailed = 12,
-    kMaxValue = kSignalParseFailed,
+    kOtherCancelledUnlock = 13,
+    kInvalidResponseCode = 14,
+    kMaxValue = kInvalidResponseCode,
   };
 
   static void RegisterLocalPrefs(PrefRegistrySimple* registry);
@@ -84,8 +90,6 @@ class SecretPortalKeyProvider : public KeyProvider {
   static constexpr char kOsCryptPrevInitSuccessPrefName[] =
       "os_crypt.portal.prev_init_success";
 
-  static constexpr char kHandleToken[] = "cr_secret_portal_response_token";
-
   static constexpr char kKeyTag[] = "v12";
 
   static constexpr char kUmaInitStatusEnum[] =
@@ -104,15 +108,16 @@ class SecretPortalKeyProvider : public KeyProvider {
   bool UseForEncryption() override;
   bool IsCompatibleWithOsCryptSync() override;
 
-  void OnNameHasOwnerResponse(std::optional<bool> name_has_owner);
+  void OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus status);
 
-  void OnRetrieveSecretResponse(dbus::Response* response);
+  void OnPortalServiceStarted(std::optional<bool> service_started);
+
+  void OnRetrieveSecret(
+      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
 
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
                          bool connected);
-
-  void OnResponseSignal(dbus::Signal* signal);
 
   void OnFdReadable();
 
@@ -135,8 +140,8 @@ class SecretPortalKeyProvider : public KeyProvider {
 
   scoped_refptr<dbus::Bus> bus_;
 
+  std::unique_ptr<dbus_xdg::Request> request_;
   KeyCallback key_callback_;
-  std::unique_ptr<dbus::ObjectPath> response_path_;
   base::ScopedFD read_fd_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> read_watcher_;
   std::vector<uint8_t> secret_;

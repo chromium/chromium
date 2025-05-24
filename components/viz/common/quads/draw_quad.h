@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_DRAW_QUAD_H_
 
@@ -39,8 +34,6 @@ namespace viz {
 // quad's transform maps the content space to the target space.
 class VIZ_COMMON_EXPORT DrawQuad {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
   enum class Material {
     kInvalid = 0,
     kDebugBorder = 1,
@@ -85,6 +78,10 @@ class VIZ_COMMON_EXPORT DrawQuad {
   // Graphics.Smoothness, see crbug.com/345298647)
   RAW_PTR_EXCLUSION const SharedQuadState* shared_quad_state;
 
+  // A resource defined by `TransferableResource` with the same `ResourceId`. If
+  // set to `kInvalidResourceId` then the quad is resourceless.
+  ResourceId resource_id = kInvalidResourceId;
+
   bool IsDebugQuad() const { return material == Material::kDebugBorder; }
 
   bool ShouldDrawWithBlendingForReasonOtherThanMaskFilter() const {
@@ -128,30 +125,6 @@ class VIZ_COMMON_EXPORT DrawQuad {
   }
 
   void AsValueInto(base::trace_event::TracedValue* value) const;
-
-  struct VIZ_COMMON_EXPORT Resources {
-    enum : size_t { kMaxResourceIdCount = 1 };
-    Resources();
-
-    ResourceId* begin() { return ids; }
-    ResourceId* end() {
-      DCHECK_LE(count, kMaxResourceIdCount);
-      return ids + count;
-    }
-
-    const ResourceId* begin() const { return ids; }
-    const ResourceId* end() const {
-      DCHECK_LE(count, kMaxResourceIdCount);
-      return ids + count;
-    }
-
-    uint32_t count;
-    ResourceId ids[kMaxResourceIdCount];
-  };
-
-  // TODO(crbug.com/332564976): Change this to be one ResourceId since there is
-  // now max one resource per quad.
-  Resources resources;
 
   template <typename T>
   const T* DynamicCast() const {

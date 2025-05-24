@@ -68,8 +68,6 @@ class ExtensionProvider : public ProviderInterface,
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  void OnLacrosOperationForwarded(int request_id, base::File::Error error);
-
   ProviderId provider_id_;
   Capabilities capabilities_;
   std::string name_;

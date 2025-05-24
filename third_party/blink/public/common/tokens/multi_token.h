@@ -15,10 +15,10 @@
 #include <compare>
 #include <limits>
 #include <type_traits>
+#include <variant>
 
 #include "base/types/variant_util.h"
 #include "base/unguessable_token.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/multi_token_internal.h"
 
 namespace blink {
@@ -51,7 +51,7 @@ template <typename... Tokens>
            internal::AreAllUnique<Tokens...>)
 class MultiToken {
  public:
-  using Storage = absl::variant<Tokens...>;
+  using Storage = std::variant<Tokens...>;
 
   // In an ideal world, this would use StrongAlias, but a StrongAlias is not
   // usable in a switch statement, even when the underlying type is integral.
@@ -96,7 +96,7 @@ class MultiToken {
   template <typename T>
     requires(internal::IsBaseToken<T> && internal::IsCompatible<T, Tokens...>)
   bool Is() const {
-    return absl::holds_alternative<T>(storage_);
+    return std::holds_alternative<T>(storage_);
   }
 
   // Returns `T` if `this` currently holds a token of type `T`; otherwise,
@@ -104,34 +104,22 @@ class MultiToken {
   template <typename T>
     requires(internal::IsBaseToken<T> && internal::IsCompatible<T, Tokens...>)
   const T& GetAs() const {
-    return absl::get<T>(storage_);
+    return std::get<T>(storage_);
   }
 
-  // Wrapper around absl::visit() which invokes the provided functor on this
+  // Wrapper around std::visit() which invokes the provided functor on this
   // MultiToken. The functor must return the same type when called with any of
   // the MultiToken's alternatives.
   template <typename Visitor>
   decltype(auto) Visit(Visitor&& visitor) const {
-    return absl::visit(std::forward<Visitor>(visitor), this->storage_);
+    return std::visit(std::forward<Visitor>(visitor), this->storage_);
   }
 
   // Comparison operators
-  constexpr friend std::weak_ordering operator<=>(const MultiToken& lhs,
-                                                  const MultiToken& rhs) {
-    // absl::variant doesn't define <=>.
-    if (lhs.storage_ < rhs.storage_) {
-      return std::weak_ordering::less;
-    }
-    if (lhs.storage_ == rhs.storage_) {
-      return std::weak_ordering::equivalent;
-    }
-    return std::weak_ordering::greater;
-  }
-
+  constexpr friend auto operator<=>(const MultiToken& lhs,
+                                    const MultiToken& rhs) = default;
   constexpr friend bool operator==(const MultiToken& lhs,
-                                   const MultiToken& rhs) {
-    return lhs.storage_ == rhs.storage_;
-  }
+                                   const MultiToken& rhs) = default;
 
   template <typename T>
     requires(internal::IsBaseToken<T> && internal::IsCompatible<T, Tokens...>)

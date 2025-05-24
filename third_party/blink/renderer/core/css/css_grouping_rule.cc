@@ -32,12 +32,14 @@
 
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
+#include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -50,6 +52,46 @@ StyleRule* FindClosestParentStyleRuleOrNull(CSSRule* parent) {
     return To<CSSStyleRule>(parent)->GetStyleRule();
   }
   return FindClosestParentStyleRuleOrNull(parent->parentRule());
+}
+
+const CSSRule* FindClosestStyleOrScopeRule(const CSSRule* parent) {
+  if (parent == nullptr) {
+    return nullptr;
+  }
+  if (IsA<CSSStyleRule>(parent) || IsA<CSSScopeRule>(parent)) {
+    return parent;
+  }
+  return FindClosestStyleOrScopeRule(parent->parentRule());
+}
+
+// Parsing child rules is highly dependent on the ancestor rules.
+// Under normal, full-stylesheet parsing, this information is available
+// on the stack, but for rule insertion we need to traverse and inspect
+// the ancestor chain.
+//
+// [1] https://drafts.csswg.org/css-nesting-1/#nested-group-rules
+NestingContext CalculateNestingContext(const CSSRule* parent_rule) {
+  if (const CSSRule* closest_style_or_scope_rule =
+          FindClosestStyleOrScopeRule(parent_rule)) {
+    if (const auto* style_rule =
+            DynamicTo<CSSStyleRule>(closest_style_or_scope_rule)) {
+      return {.nesting_type = CSSNestingType::kNesting,
+              .parent_rule_for_nesting = style_rule->GetStyleRule()};
+    } else if (const auto* scope_rule =
+                   DynamicTo<CSSScopeRule>(closest_style_or_scope_rule)) {
+      // The <scope-start> selector acts as the parent style rule.
+      // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
+      return {
+          .nesting_type = CSSNestingType::kScope,
+          .parent_rule_for_nesting =
+              scope_rule->GetStyleRuleScope().GetStyleScope().RuleForNesting()};
+    } else {
+      NOTREACHED();
+    }
+  }
+
+  return {.nesting_type = CSSNestingType::kNone,
+          .parent_rule_for_nesting = nullptr};
 }
 
 StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
@@ -75,21 +117,21 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
     new_rule = CSSParser::ParseMarginRule(
         context, style_sheet ? style_sheet->Contents() : nullptr, rule_string);
   } else {
-    StyleRule* parent_rule_for_nesting =
-        FindClosestParentStyleRuleOrNull(&parent_rule);
-    CSSNestingType nesting_type = parent_rule_for_nesting
-                                      ? CSSNestingType::kNesting
-                                      : CSSNestingType::kNone;
-    new_rule = CSSParser::ParseRule(
-        context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
-        parent_rule_for_nesting, rule_string);
+    NestingContext nesting_context = CalculateNestingContext(&parent_rule);
 
-    if (!new_rule && parent_rule_for_nesting &&
-        RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
+    new_rule = CSSParser::ParseRule(
+        context, style_sheet ? style_sheet->Contents() : nullptr,
+        nesting_context.nesting_type, nesting_context.parent_rule_for_nesting,
+        rule_string);
+
+    bool allow_nested_declarations =
+        nesting_context.nesting_type != CSSNestingType::kNone;
+    if (!new_rule && allow_nested_declarations) {
       // Retry as a CSSNestedDeclarations rule.
       // https://drafts.csswg.org/cssom/#insert-a-css-rule
       new_rule = CSSParser::ParseNestedDeclarationsRule(
-          context, nesting_type, parent_rule_for_nesting, rule_string);
+          context, nesting_context.nesting_type,
+          nesting_context.parent_rule_for_nesting, rule_string);
     }
   }
 
@@ -117,8 +159,8 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
     return nullptr;
   }
 
-  if (!new_rule->IsConditionRule() && !new_rule->IsStyleRule() &&
-      !new_rule->IsNestedDeclarationsRule()) {
+  if (!new_rule->IsConditionRule() && !new_rule->IsScopeRule() &&
+      !new_rule->IsStyleRule() && !new_rule->IsNestedDeclarationsRule()) {
     for (const CSSRule* current = &parent_rule; current != nullptr;
          current = current->parentRule()) {
       if (IsA<CSSStyleRule>(current)) {
@@ -126,14 +168,42 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
         // so inserting this rule is not allowed.
         exception_state.ThrowDOMException(
             DOMExceptionCode::kHierarchyRequestError,
-            "Only conditional nested group rules, style rules, and nested "
-            "declaration rules may be nested.");
+            "Only conditional nested group rules, style rules, @scope rules,"
+            "and nested declaration rules may be nested.");
         return nullptr;
       }
     }
   }
 
   return new_rule;
+}
+
+void ParseAndQuietlyInsertRule(
+    const ExecutionContext* execution_context,
+    const String& rule_string,
+    unsigned index,
+    CSSRule& parent_rule,
+    HeapVector<Member<StyleRuleBase>>& child_rules,
+    HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers) {
+  CHECK_EQ(child_rule_cssom_wrappers.size(), child_rules.size());
+  StyleRuleBase* new_rule =
+      ParseRuleForInsert(execution_context, rule_string, index,
+                         child_rules.size(), parent_rule, ASSERT_NO_EXCEPTION);
+  CHECK(new_rule);
+  child_rules.insert(index, new_rule);
+  child_rule_cssom_wrappers.insert(index, Member<CSSRule>(nullptr));
+}
+
+void QuietlyDeleteRule(unsigned index,
+                       HeapVector<Member<StyleRuleBase>>& child_rules,
+                       HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers) {
+  CHECK_EQ(child_rule_cssom_wrappers.size(), child_rules.size());
+  CHECK_LT(index, child_rules.size());
+  child_rules.EraseAt(index);
+  if (child_rule_cssom_wrappers[index]) {
+    child_rule_cssom_wrappers[index]->SetParentRule(nullptr);
+  }
+  child_rule_cssom_wrappers.EraseAt(index);
 }
 
 CSSGroupingRule::CSSGroupingRule(StyleRuleGroup* group_rule,
@@ -174,8 +244,8 @@ void CSSGroupingRule::deleteRule(unsigned index,
   if (index >= group_rule_->ChildRules().size()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "the index " + String::Number(index) +
-            " is greated than the length of the rule list.");
+        WTF::StrCat({"the index ", String::Number(index),
+                     " is greated than the length of the rule list."}));
     return;
   }
 
@@ -187,6 +257,20 @@ void CSSGroupingRule::deleteRule(unsigned index,
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
   }
   child_rule_cssom_wrappers_.EraseAt(index);
+}
+
+void CSSGroupingRule::QuietlyInsertRule(
+    const ExecutionContext* execution_context,
+    const String& rule,
+    unsigned index) {
+  ParseAndQuietlyInsertRule(execution_context, rule, index,
+                            /*parent_rule=*/*this, group_rule_->ChildRules(),
+                            child_rule_cssom_wrappers_);
+}
+
+void CSSGroupingRule::QuietlyDeleteRule(unsigned index) {
+  blink::QuietlyDeleteRule(index, group_rule_->ChildRules(),
+                           child_rule_cssom_wrappers_);
 }
 
 void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
@@ -204,12 +288,16 @@ void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
   result.Append(" {\n");
 
   // 4. The result of performing serialize a CSS rule on each rule in the rule’s
-  //    cssRules list, separated by a newline and indented by two spaces.
+  //    cssRules list, filtering out empty strings, indenting each item
+  //    with two spaces, all joined with newline.
   for (unsigned i = 0; i < length(); ++i) {
     CSSRule* child = ItemInternal(i);
-    result.Append("  ");
-    result.Append(child->cssText());
-    result.Append('\n');
+    String child_text = child->cssText();
+    if (!child_text.empty()) {
+      result.Append("  ");
+      result.Append(child_text);
+      result.Append('\n');
+    }
   }
 
   // A newline, followed by the string "}", i.e., RIGHT CURLY BRACKET (U+007D)

@@ -32,6 +32,15 @@ message ConstraintSet {
   // For example, max_version_exclusive="122" will match any M-121 or earlier
   // version, and will not match any M-122 version.
   optional string max_version_exclusive = 4;
+
+  // All DNS names in the leaf certificate subjectAltNames must fall within the
+  // subtrees defined by `permitted_dns_names`. The constraints are interpereted
+  // as described in RFC 5280 section 4.2.1.10.
+  repeated string permitted_dns_names = 5;
+
+  // `enforce_anchor_expiry` and `enforce_anchor_constraints` were briefly
+  // represented in this message, but moved to TrustAnchor.
+  reserved 6, 7;
 }
 
 message TrustAnchor {
@@ -52,14 +61,48 @@ message TrustAnchor {
 
   // Human-readable display name used to identify the certificate.
   optional string display_name = 5;
+
+  // If true, indicates that this certificate is trusted to issue QWACs.
+  optional bool eutl = 6;
+
+  reserved 7;
+
+  // When set to true, Chrome will enforce certificate expiry for this
+  // TrustAnchor using the notBefore and notAfter from the corresponding
+  // certificate.
+  optional bool enforce_anchor_expiry = 8;
+
+  // When set to true, Chrome will enforce X.509 constraints for this
+  // TrustAnchor using the constraints expressed in the corresponding
+  // certificate.
+  optional bool enforce_anchor_constraints = 9;
+
+  // If true, indicates that this certificate is a trust anchor for TLS
+  // connections.
+  optional bool tls_trust_anchor = 10;
+
+  // A unique identifier for a trust anchor, in binary representation.
+  // Specified in
+  // https://www.ietf.org/archive/id/draft-ietf-tls-trust-anchor-ids-00.html,
+  // Trust Anchor IDs are represented as relative OID suffixes of the Private
+  // Enterprise Number (PEN) OID prefix of "1.3.6.1.4.1.".
+  optional bytes trust_anchor_id = 11;
 }
 
 // Message storing a complete Chrome Root Store.
 message RootStore {
+  // Certificates in this list are expected to have |tls_trust_anchor| unset,
+  // because all |trust_anchors| are TLS trust anchors. This field exists as a
+  // separate, TLS-trust-anchor-only list from |additional_certs| just for
+  // historical reasons.
   repeated TrustAnchor trust_anchors = 1;
 
   // Major version # of the Chrome Root Store. It is assumed that if
   // root_store_1.version_major > root_store_2.version_major, then root_store_1
   // is newer and should be preferred over root_store_2.
   int64 version_major = 2;
+
+  // Additional certificates that are shipped as part of the Chrome Root Store
+  // but convey different trust information than those in trust_anchors.
+  repeated TrustAnchor additional_certs = 3;
 }

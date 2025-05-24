@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/metrics/statistics_recorder.h"
-
 #include <atomic>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/persistent_histogram_allocator.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -36,7 +36,7 @@ class BaseThread : public SimpleThread {
 
   ~BaseThread() override = default;
 
-  const std::string& thread_name() { return thread_name_; }
+  const std::string& thread_name() const LIFETIME_BOUND { return thread_name_; }
   void SetStartTime() { start_time_ = Time::Now(); }
   bool ShouldStop() { return stop_.load(std::memory_order_relaxed); }
   void Stop() {

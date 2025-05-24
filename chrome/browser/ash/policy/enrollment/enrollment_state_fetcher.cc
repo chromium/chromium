@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <variant>
 
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
@@ -19,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
@@ -31,7 +33,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -40,7 +41,6 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 
 using private_membership::rlwe::RlwePlaintextId;
@@ -50,10 +50,8 @@ namespace {
 
 namespace em = enterprise_management;
 
-// TODO(b/265923216): Wrap callbacks into an object ensuring they are called.
-
-RlwePlaintextId ConstructPlainttextId(const std::string& rlz_brand_code,
-                                      const std::string& serial_number) {
+RlwePlaintextId ConstructPlaintextId(const std::string& rlz_brand_code,
+                                     const std::string& serial_number) {
   RlwePlaintextId rlwe_id;
   // See http://shortn/_tkT6f7xV0F for format specification.
   const std::string rlz_brand_code_hex = base::HexEncode(rlz_brand_code);
@@ -80,13 +78,9 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
     }
   }
 
-  // TODO(b/309921228): Add more suffixes.
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](AutoEnrollmentSafeguardTimeoutError) {
-            return kUMASuffixConnectionError;
-          },
-          [](AutoEnrollmentSystemClockSyncError) {
             return kUMASuffixConnectionError;
           },
           [](AutoEnrollmentStateKeysRetrievalError) {
@@ -262,7 +256,7 @@ class RlweOprf {
 
     context.psm_rlwe_client = context.rlwe_client_factory.Run(
         private_membership::rlwe::CROS_DEVICE_STATE_UNIFIED,
-        ConstructPlainttextId(context.rlz_brand_code, context.serial_number));
+        ConstructPlaintextId(context.rlz_brand_code, context.serial_number));
     const auto oprf_request = context.psm_rlwe_client->CreateOprfRequest();
     if (!oprf_request.ok()) {
       LOG(ERROR) << "Failed to create PSM RLWE OPRF request: "
@@ -288,7 +282,7 @@ class RlweOprf {
          ->mutable_rlwe_request()
          ->mutable_oprf_request() = *oprf_request;
 
-    VLOG(1) << "Send PSM RLWE OPRF request";
+    LOG(WARNING) << "Send PSM RLWE OPRF request";
     job_ = context.device_management_service->CreateJob(std::move(config));
   }
 
@@ -328,7 +322,7 @@ class RlweOprf {
     }
 
     // Handle success
-    VLOG(1) << "PSM RLWE OPRF request completed successfully";
+    LOG(WARNING) << "PSM RLWE OPRF request completed successfully";
     return std::move(completion_callback)
         .Run(result.response.private_set_membership_response()
                  .rlwe_response()
@@ -386,7 +380,7 @@ class RlweQuery {
          ->mutable_rlwe_request()
          ->mutable_query_request() = *query_request;
 
-    VLOG(1) << "Send PSM RLWE query request";
+    LOG(WARNING) << "Send PSM RLWE query request";
     job_ = context.device_management_service->CreateJob(std::move(config));
   }
 
@@ -551,7 +545,6 @@ class EnrollmentState {
 
   void Request(DeterminationContext& context,
                CompletionCallback completion_callback) {
-    // TODO(b/265923216): Replace this with unified request type.
     auto config = std::make_unique<DMServerJobConfiguration>(
         context.device_management_service,
         DeviceManagementService::JobConfiguration::TYPE_DEVICE_STATE_RETRIEVAL,
@@ -567,13 +560,13 @@ class EnrollmentState {
       request->set_server_backed_state_key(context.state_key.value());
     }
     if (context.enrollment_token.has_value()) {
-      VLOG(1) << "Setting enrollment token on DeviceStateRetrievalRequest";
+      LOG(WARNING) << "Setting enrollment token on DeviceStateRetrievalRequest";
       request->set_enrollment_token(context.enrollment_token.value());
     }
     request->set_brand_code(std::string(context.rlz_brand_code));
     request->set_serial_number(std::string(context.serial_number));
 
-    VLOG(1) << "Send unified enrollment state retrieval request";
+    LOG(WARNING) << "Send unified enrollment state retrieval request";
     job_ = context.device_management_service->CreateJob(std::move(config));
   }
 
@@ -656,10 +649,10 @@ class EnrollmentState {
                       state_response.disabled_state().message());
     }
 
-    VLOG(1) << "Initial enrollment mode = '" << mode << "', "
-            << (state_response.is_license_packaged_with_device() ? "with"
-                                                                 : "no")
-            << " packaged license.";
+    LOG(WARNING) << "Initial enrollment mode = '" << mode << "', "
+                 << (state_response.is_license_packaged_with_device() ? "with"
+                                                                      : "no")
+                 << " packaged license.";
 
     base::UmaHistogramBoolean(
         base::StrCat({kUMAStateDeterminationIsInitialByState,
@@ -695,7 +688,7 @@ class EnrollmentState {
                           state_response.license_type().license_type()));
     }
 
-    VLOG(1) << "Received restore mode " << mode;
+    LOG(WARNING) << "Received restore mode " << mode;
     base::UmaHistogramBoolean(
         base::StrCat({kUMAStateDeterminationIsInitialByState,
                       AutoEnrollmentStateToUmaSuffix(result.state)}),
@@ -704,7 +697,7 @@ class EnrollmentState {
   }
 
   void StoreResponse(PrefService* local_state, const base::Value::Dict& dict) {
-    VLOG(1) << "ServerBackedDeviceState pref: " << dict;
+    LOG(WARNING) << "ServerBackedDeviceState pref: " << dict;
     local_state->SetDict(prefs::kServerBackedDeviceState, dict.Clone());
   }
 
@@ -853,8 +846,6 @@ class EnrollmentStateFetcherImpl : public EnrollmentStateFetcher {
 };
 
 // This implements a strict sequence of asynchronous calls:
-//   - synchronize clock
-//   - check embargo date
 //   - retrieve device identifiers (brand code and serial number)
 //   - PSM OPRF
 //   - PSM Query
@@ -875,7 +866,7 @@ class EnrollmentStateFetcherImpl::Sequence {
         AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
     base::UmaHistogramBoolean(kUMAStateDeterminationEnabled, enabled);
     if (!enabled) {
-      VLOG(1) << "Unified state determination is disabled";
+      LOG(WARNING) << "Unified state determination is disabled";
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
 
@@ -883,12 +874,12 @@ class EnrollmentStateFetcherImpl::Sequence {
     base::UmaHistogramBoolean(kUMAStateDeterminationOnFlex,
                               ash::switches::IsRevenBranding());
 
-    // TODO(b/265923216): Investigate the possibility of using bypassing PSM and
-    // using state key to directly request state when identifiers are missing.
     if (!device_identifiers_.Retrieve(context_.statistics_provider,
                                       context_.rlz_brand_code,
                                       context_.serial_number)) {
       // Skip enrollment if serial number or brand code are missing.
+      // This is expected to happen for prototype devices, for instance.
+      // See crbug.com/376581659.
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
 
@@ -903,6 +894,11 @@ class EnrollmentStateFetcherImpl::Sequence {
     ReportStepDurationAndResetTimer(kUMASuffixOwnershipCheck);
     base::UmaHistogramEnumeration(kUMAStateDeterminationOwnershipStatus,
                                   status);
+    if (local_state_->GetBoolean(prefs::kEnrollmentRecoveryRequired)) {
+      base::UmaHistogramEnumeration(
+          kUMAStateDeterminationOwnershipStatusDuringEnrollmentRecovery,
+          status);
+    }
     if (status ==
         ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown) {
       LOG(ERROR) << "Device ownership is unknown. Skipping enrollment";
@@ -911,7 +907,7 @@ class EnrollmentStateFetcherImpl::Sequence {
 
     if (status ==
         ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
-      VLOG(1) << "Device ownership is already taken. Skipping enrollment";
+      LOG(WARNING) << "Device ownership is already taken. Skipping enrollment";
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
 
@@ -923,7 +919,7 @@ class EnrollmentStateFetcherImpl::Sequence {
     ReportStepDurationAndResetTimer(kUMASuffixOPRFRequest);
     if (!result.has_value()) {
       StorePsmError(local_state_);
-      if (absl::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
+      if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
         return ReportResult(AutoEnrollmentResult::kNoEnrollment);
       }
 
@@ -939,7 +935,7 @@ class EnrollmentStateFetcherImpl::Sequence {
 
     if (!result.has_value()) {
       StorePsmError(local_state_);
-      if (absl::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
+      if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
         return ReportResult(AutoEnrollmentResult::kNoEnrollment);
       }
 
@@ -947,7 +943,7 @@ class EnrollmentStateFetcherImpl::Sequence {
     }
 
     RlwePlaintextId psm_id =
-        ConstructPlainttextId(context_.rlz_brand_code, context_.serial_number);
+        ConstructPlaintextId(context_.rlz_brand_code, context_.serial_number);
     // Use WARNING level to preserve PSM ID in the logs.
     LOG(WARNING) << "PSM determination successful. Identifier "
                  << psm_id.sensitive_id() << " is"
@@ -968,13 +964,13 @@ class EnrollmentStateFetcherImpl::Sequence {
       query_.StoreResponse(local_state_, result.value());
     }
 
-    if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+    if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
       state_keys_.Retrieve(context_.state_key_broker,
                            base::BindOnce(&Sequence::OnStateKeyRetrieved,
                                           weak_factory_.GetWeakPtr()));
     } else {
-      LOG(WARNING) << "Forced re-enrollment is not enabled. No need to "
-                      "retrieve a re-enrollment (a.k.a. state) key.";
+      LOG(WARNING)
+          << "State keys are not supported, this is expected on ChromeOS Flex.";
       OnStateKeyRetrieved(std::nullopt);
     }
   }
@@ -989,26 +985,12 @@ class EnrollmentStateFetcherImpl::Sequence {
     if (state_key.has_value()) {
       context_.state_key = state_key.value();
     } else {
-      switch (state_key.error()) {
-        case ServerBackedStateKeysBroker::ErrorType::kMissingIdentifiers:
-          // Missing identifiers is typically a permanent error, hence we
-          // proceed to attempt state retrieval with just serial number
-          // and brand code.
-          LOG(WARNING)
-              << "Failed to obtain state keys due to missing identifiers";
-          context_.state_key.reset();
-          break;
-        case ServerBackedStateKeysBroker::ErrorType::kCommunicationError:
-        case ServerBackedStateKeysBroker::ErrorType::kInvalidResponse:
-          LOG(ERROR) << "Failed to obtain state keys. Error: "
-                     << static_cast<int>(state_key.error());
-          // These errors are typically transient, hence we block here to
-          // enforce a retry and avoid potential FRE escapes.
-          return ReportResult(
-              base::unexpected(AutoEnrollmentStateKeysRetrievalError{}));
-        case ServerBackedStateKeysBroker::ErrorType::kNoError:
-          NOTREACHED_IN_MIGRATION();
-      }
+      CHECK(state_key.error() !=
+            ServerBackedStateKeysBroker::ErrorType::kNoError);
+      LOG(ERROR) << "Failed to obtain state keys. Error: "
+                 << static_cast<int>(state_key.error());
+      return ReportResult(
+          base::unexpected(AutoEnrollmentStateKeysRetrievalError{}));
     }
     state_.Request(context_, base::BindOnce(&Sequence::OnStateRequestDone,
                                             weak_factory_.GetWeakPtr()));

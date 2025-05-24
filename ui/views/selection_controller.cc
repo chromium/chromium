@@ -37,13 +37,15 @@ bool SelectionController::OnMousePressed(
   DCHECK(render_text);
 
   TrackMouseClicks(event);
-  if (handled)
+  if (handled) {
     return true;
+  }
 
   if (event.IsOnlyLeftMouseButton()) {
     first_drag_location_ = event.location();
-    if (delegate_->SupportsDrag())
+    if (delegate_->SupportsDrag()) {
       delegate_->SetTextBeingDragged(false);
+    }
 
     switch (aggregated_clicks_) {
       case 0:
@@ -104,8 +106,9 @@ bool SelectionController::OnMouseDragged(const ui::MouseEvent& event) {
   last_drag_location_ = event.location();
 
   // Don't adjust the cursor on a potential drag and drop.
-  if (delegate_->HasTextBeingDragged() || !event.IsOnlyLeftMouseButton())
+  if (delegate_->HasTextBeingDragged() || !event.IsOnlyLeftMouseButton()) {
     return true;
+  }
 
   // A timer is used to continuously scroll while selecting beyond side edges.
   const int x = event.location().x();
@@ -141,11 +144,13 @@ void SelectionController::OnMouseReleased(const ui::MouseEvent& event) {
     delegate_->OnAfterPointerAction(false, selection_changed);
   }
 
-  if (delegate_->SupportsDrag())
+  if (delegate_->SupportsDrag()) {
     delegate_->SetTextBeingDragged(false);
+  }
 
-  if (handles_selection_clipboard_ && !render_text->selection().is_empty())
+  if (handles_selection_clipboard_ && !render_text->selection().is_empty()) {
     delegate_->UpdateSelectionClipboard();
+  }
 }
 
 void SelectionController::OnMouseCaptureLost() {
@@ -154,8 +159,9 @@ void SelectionController::OnMouseCaptureLost() {
 
   drag_selection_timer_.Stop();
 
-  if (handles_selection_clipboard_ && !render_text->selection().is_empty())
+  if (handles_selection_clipboard_ && !render_text->selection().is_empty()) {
     delegate_->UpdateSelectionClipboard();
+  }
 }
 
 void SelectionController::OffsetDoubleClickWord(size_t offset) {
@@ -235,9 +241,11 @@ bool SelectionController::IsInsideText(const gfx::Point& point) {
   std::vector<gfx::Rect> bounds_rects = render_text->GetSubstringBounds(
       gfx::Range(0, render_text->text().length()));
 
-  for (const auto& bounds : bounds_rects)
-    if (bounds.Contains(point))
+  for (const auto& bounds : bounds_rects) {
+    if (bounds.Contains(point)) {
       return true;
+    }
+  }
 
   return false;
 }

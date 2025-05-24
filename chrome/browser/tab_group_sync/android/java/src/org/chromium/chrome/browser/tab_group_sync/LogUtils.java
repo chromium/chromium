@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import org.chromium.base.Log;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 
 /** Utility methods for logging. All logs should be removed before launch. */
+@NullMarked
 public final class LogUtils {
     /**
      * Called to log a message.

@@ -19,6 +19,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -102,22 +103,25 @@ gl::ScopedJavaSurface SurfaceTextureGLOwner::CreateJavaSurface() const {
   return gl::ScopedJavaSurface(surface_texture_.get());
 }
 
-void SurfaceTextureGLOwner::UpdateTexImage() {
+bool SurfaceTextureGLOwner::UpdateTexImage(bool discard) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (surface_texture_) {
-    // UpdateTexImage bounds texture to the SurfaceTexture context, so make it
-    // current.
-    auto scoped_make_current = MakeCurrentIfNeeded(this);
-    if (scoped_make_current && !scoped_make_current->IsContextCurrent())
-      return;
-
-    // UpdateTexImage might change gl binding and we never should alter gl
-    // binding without updating state tracking, which we can't do here, so
-    // restore previous after we done.
-    gl::ScopedRestoreTexture scoped_restore_texture(gl::g_current_gl_context,
-                                                    GL_TEXTURE_EXTERNAL_OES);
-    surface_texture_->UpdateTexImage();
+  if (!surface_texture_) {
+    return false;
   }
+  // UpdateTexImage bounds texture to the SurfaceTexture context, so make it
+  // current.
+  auto scoped_make_current = MakeCurrentIfNeeded(this);
+  if (scoped_make_current && !scoped_make_current->IsContextCurrent()) {
+    return false;
+  }
+
+  // UpdateTexImage might change gl binding and we never should alter gl
+  // binding without updating state tracking, which we can't do here, so
+  // restore previous after we done.
+  gl::ScopedRestoreTexture scoped_restore_texture(gl::g_current_gl_context,
+                                                  GL_TEXTURE_EXTERNAL_OES);
+  surface_texture_->UpdateTexImage();
+  return true;
 }
 
 void SurfaceTextureGLOwner::ReleaseBackBuffers() {
@@ -140,9 +144,7 @@ gl::GLSurface* SurfaceTextureGLOwner::GetSurface() const {
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 SurfaceTextureGLOwner::GetAHardwareBuffer() {
-  NOTREACHED_IN_MIGRATION()
-      << "Don't use AHardwareBuffers with SurfaceTextureGLOwner";
-  return nullptr;
+  NOTREACHED() << "Don't use AHardwareBuffers with SurfaceTextureGLOwner";
 }
 
 bool SurfaceTextureGLOwner::GetCodedSizeAndVisibleRect(
@@ -302,8 +304,7 @@ bool SurfaceTextureGLOwner::DecomposeTransform(float mtx[16],
 bool SurfaceTextureGLOwner::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  auto dump_name =
-      base::StringPrintf("gpu/media_texture_owner_%d", tracing_id());
+  auto dump_name = base::StringPrintf(kMemoryDumpPrefix, tracing_id());
 
   // We don't know the exact format of the image so we use NV12 as approximation
   // as the most popular format.

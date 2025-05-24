@@ -41,6 +41,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -49,8 +50,6 @@
 #include "base/test/scoped_locale.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
@@ -116,7 +115,7 @@ using ::testing::Property;
 // Matchers --------------------------------------------------------------------
 
 MATCHER_P(EnabledColorId, matcher, "") {
-  return Matches(matcher)(arg->GetEnabledColorId());
+  return Matches(matcher)(arg->GetRequestedEnabledColor());
 }
 
 // Helpers ---------------------------------------------------------------------
@@ -224,16 +223,51 @@ void MouseDrag(const views::View* from,
 
 // Waits for the specified `label` to have the desired `text`.
 void WaitForText(views::Label* label, const std::u16string& text) {
-  if (label->GetText() == text)
+  if (label->GetText() == text) {
     return;
+  }
   base::RunLoop run_loop;
   auto subscription =
       label->AddTextChangedCallback(base::BindLambdaForTesting([&]() {
-        if (label->GetText() == text)
+        if (label->GetText() == text) {
           run_loop.Quit();
+        }
       }));
   run_loop.Run();
 }
+
+// NextMainFrameWaiter ---------------------------------------------------------
+
+// A helper class that waits until the next main frame is processed.
+class NextMainFrameWaiter : public ui::CompositorObserver {
+ public:
+  explicit NextMainFrameWaiter(ui::Compositor* compositor) {
+    observation_.Observe(compositor);
+  }
+
+  void Wait() {
+    CHECK(!run_loop_.running());
+    run_loop_.Run();
+  }
+
+ private:
+  // ui::CompositorObserver:
+  void OnDidBeginMainFrame(ui::Compositor* compositor) override {
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<ui::Compositor, ui::CompositorObserver> observation_{
+      this};
+};
+
+// HoldingSpaceUiBrowserTest ---------------------------------------------------
+
+using HoldingSpaceUiBrowserTest = HoldingSpaceUiBrowserTestBase;
+
+}  // namespace
 
 // DropSenderView --------------------------------------------------------------
 
@@ -252,8 +286,9 @@ class DropSenderView : public views::WidgetDelegateView,
 
   void SetFilenamesData(const std::vector<base::FilePath> file_paths) {
     std::vector<ui::FileInfo> filenames;
-    for (const base::FilePath& file_path : file_paths)
+    for (const base::FilePath& file_path : file_paths) {
       filenames.emplace_back(file_path, /*display_name=*/base::FilePath());
+    }
     filenames_data_.emplace(std::move(filenames));
   }
 
@@ -263,8 +298,9 @@ class DropSenderView : public views::WidgetDelegateView,
     constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
 
     std::stringstream file_system_sources;
-    for (const GURL& file_system_url : file_system_urls)
+    for (const GURL& file_system_url : file_system_urls) {
       file_system_sources << file_system_url.spec() << "\n";
+    }
 
     base::Pickle pickle;
     ui::WriteCustomDataToPickle(
@@ -306,8 +342,9 @@ class DropSenderView : public views::WidgetDelegateView,
         /*cursor_offset=*/gfx::Vector2d());
 
     // Payload.
-    if (filenames_data_)
+    if (filenames_data_) {
       data->provider().SetFilenames(filenames_data_.value());
+    }
     if (file_system_sources_data_) {
       data->provider().SetPickledData(
           ui::ClipboardFormatType::DataTransferCustomType(),
@@ -323,7 +360,6 @@ class DropSenderView : public views::WidgetDelegateView,
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.context = context;
     params.delegate = this;
-    params.wants_mouse_events_when_inactive = true;
 
     views::Widget* widget = new views::Widget();
     widget->Init(std::move(params));
@@ -387,7 +423,6 @@ class DropTargetView : public views::WidgetDelegateView {
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.context = context;
     params.delegate = this;
-    params.wants_mouse_events_when_inactive = true;
 
     views::Widget* widget = new views::Widget();
     widget->Init(std::move(params));
@@ -395,39 +430,6 @@ class DropTargetView : public views::WidgetDelegateView {
 
   base::FilePath copied_file_path_;
 };
-
-// NextMainFrameWaiter ---------------------------------------------------------
-
-// A helper class that waits until the next main frame is processed.
-class NextMainFrameWaiter : public ui::CompositorObserver {
- public:
-  explicit NextMainFrameWaiter(ui::Compositor* compositor) {
-    observation_.Observe(compositor);
-  }
-
-  void Wait() {
-    CHECK(!run_loop_.running());
-    run_loop_.Run();
-  }
-
- private:
-  // ui::CompositorObserver:
-  void OnDidBeginMainFrame(ui::Compositor* compositor) override {
-    if (run_loop_.running()) {
-      run_loop_.Quit();
-    }
-  }
-
-  base::RunLoop run_loop_;
-  base::ScopedObservation<ui::Compositor, ui::CompositorObserver> observation_{
-      this};
-};
-
-// HoldingSpaceUiBrowserTest ---------------------------------------------------
-
-using HoldingSpaceUiBrowserTest = HoldingSpaceUiBrowserTestBase;
-
-}  // namespace
 
 // Tests -----------------------------------------------------------------------
 
@@ -521,10 +523,11 @@ class HoldingSpaceUiDragAndDropBrowserTest
 
   // Sets data on `sender()` at the storage location specified by test params.
   void SetSenderData(const std::vector<base::FilePath>& file_paths) {
-    if (ShouldStoreDataIn(StorageLocationFlag::kFilenames))
+    if (ShouldStoreDataIn(StorageLocationFlag::kFilenames)) {
       sender()->SetFilenamesData(file_paths);
-    else
+    } else {
       sender()->ClearFilenamesData();
+    }
 
     if (!ShouldStoreDataIn(StorageLocationFlag::kFileSystemSources)) {
       sender()->ClearFileSystemSourcesData();
@@ -929,8 +932,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
   user_interactions.push_back(base::BindOnce(&DoubleClick));
   user_interactions.push_back(base::BindOnce(&GestureTap));
   user_interactions.push_back(base::BindOnce([](const views::View* view) {
-    while (!view->HasFocus())
+    while (!view->HasFocus()) {
       PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+    }
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   }));
 
@@ -952,8 +956,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
         .WillRepeatedly(
             [&](wm::ActivationChangeObserver::ActivationReason reason,
                 aura::Window* gained_active, aura::Window* lost_active) {
-              if (gained_active->GetTitle() == u"Gallery")
+              if (gained_active->GetTitle() == u"Gallery") {
                 run_loop.Quit();
+              }
             });
     run_loop.Run();
 
@@ -1162,8 +1167,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, UnpinItem) {
 
   // Add enough pinned items for there to be multiple rows in the section.
   constexpr size_t kNumPinnedItems = 3u;
-  for (size_t i = 0; i < kNumPinnedItems; ++i)
+  for (size_t i = 0; i < kNumPinnedItems; ++i) {
     AddPinnedFile();
+  }
 
   test_api().Show();
   ASSERT_TRUE(test_api().IsShowing());
@@ -1366,8 +1372,9 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
   void TearDownOnMainThread() override {
     HoldingSpaceUiBrowserTest::TearDownOnMainThread();
 
-    for (auto& observer : download_manager_observers_)
+    for (auto& observer : download_manager_observers_) {
       observer.ManagerGoingDown(download_manager_);
+    }
   }
 
   using AshDownload = testing::NiceMock<download::MockDownloadItem>;
@@ -1656,8 +1663,9 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
             });
 
     // Notify observers of the created download.
-    for (auto& observer : download_manager_observers_)
+    for (auto& observer : download_manager_observers_) {
       observer.OnDownloadCreated(download_manager_, ash_download_item.get());
+    }
 
     return ash_download_item;
   }
@@ -1733,8 +1741,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // `0 B` as there is no knowledge of the total number of bytes expected.
   EXPECT_TRUE(secondary_label->GetVisible());
   EXPECT_EQ(secondary_label->GetText(), u"0 B");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(kColorAshTextColorSecondary)));
+  EXPECT_THAT(secondary_label, EnabledColorId(kColorAshTextColorSecondary));
 
   // The accessible name should indicate that the download is in progress.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -1752,8 +1759,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 0 B");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(kColorAshTextColorSecondary)));
+  EXPECT_THAT(secondary_label, EnabledColorId(kColorAshTextColorSecondary));
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -1771,8 +1777,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 1,024 KB");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(kColorAshTextColorSecondary)));
+  EXPECT_THAT(secondary_label, EnabledColorId(kColorAshTextColorSecondary));
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -1790,8 +1795,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"1,024 KB");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(kColorAshTextColorSecondary)));
+  EXPECT_THAT(secondary_label, EnabledColorId(kColorAshTextColorSecondary));
 
   // The accessible name should indicate that the download is in progress.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -1809,8 +1813,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"1.0/2.0 MB");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(kColorAshTextColorSecondary)));
+  EXPECT_THAT(secondary_label, EnabledColorId(kColorAshTextColorSecondary));
 
   // The accessible name should indicate that the download is in progress.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -1828,8 +1831,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 1.0/2.0 MB");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(kColorAshTextColorSecondary)));
+  EXPECT_THAT(secondary_label, EnabledColorId(kColorAshTextColorSecondary));
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -1850,8 +1852,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(kColorAshTextColorSecondary)));
+  EXPECT_THAT(secondary_label, EnabledColorId(kColorAshTextColorSecondary));
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -1871,8 +1872,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Dangerous file");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(cros_tokens::kTextColorAlert)));
+  EXPECT_THAT(secondary_label, EnabledColorId(cros_tokens::kTextColorAlert));
 
   // The accessible name should indicate that the download is dangerous.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -1888,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Scanning");
   EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(cros_tokens::kTextColorProminent)));
+              EnabledColorId(cros_tokens::kTextColorProminent));
 
   // The accessible name should indicate that the download is being scanning.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -1906,8 +1906,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Confirm download");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(cros_tokens::kTextColorWarning)));
+  EXPECT_THAT(secondary_label, EnabledColorId(cros_tokens::kTextColorWarning));
 
   // The accessible name should indicate that the download must be confirmed.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -1926,8 +1925,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(kColorAshTextColorSecondary)));
+  EXPECT_THAT(secondary_label, EnabledColorId(kColorAshTextColorSecondary));
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -1947,8 +1945,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Dangerous file");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(cros_tokens::kTextColorAlert)));
+  EXPECT_THAT(secondary_label, EnabledColorId(cros_tokens::kTextColorAlert));
 
   // The accessible name should indicate that the download is dangerous.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -1967,8 +1964,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(kColorAshTextColorSecondary)));
+  EXPECT_THAT(secondary_label, EnabledColorId(kColorAshTextColorSecondary));
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -1982,8 +1978,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(primary_label->GetVisible());
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_FALSE(secondary_label->GetVisible());
-  EXPECT_THAT(secondary_label,
-              EnabledColorId(Optional(kColorAshTextColorSecondary)));
+  EXPECT_THAT(secondary_label, EnabledColorId(kColorAshTextColorSecondary));
 
   // The accessible name should indicate the target file name.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),

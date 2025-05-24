@@ -26,7 +26,7 @@ class ShellDesktopControllerAura;
 class ShellScreen : public display::ScreenBase,
                     public aura::WindowTreeHostObserver {
  public:
-  // Creates a screen occupying |size| physical pixels. |desktop_controller|
+  // Creates a screen occupying `size` physical pixels. `desktop_controller`
   // can be null in tests.
   ShellScreen(ShellDesktopControllerAura* desktop_controller,
               const gfx::Size& size);

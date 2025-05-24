@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../controls/settings_radio_group.js';
 import '../privacy_page/collapse_radio_button.js';
 import './site_list.js';
+import './site_settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -46,11 +47,6 @@ export class SettingsSiteDataElement extends SettingsSiteDataElementBase {
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /** Current search term. */
       searchTerm: {
         type: String,
@@ -83,10 +79,10 @@ export class SettingsSiteDataElement extends SettingsSiteDataElementBase {
         prefs.generated.cookie_default_content_setting)`];
   }
 
-  searchTerm: string;
-  private cookiesContentSettingType_: ContentSettingsTypes;
-  private exceptionListsReadOnly_: boolean;
-  private showDefaultBlockDialog_: boolean;
+  declare searchTerm: string;
+  declare private cookiesContentSettingType_: ContentSettingsTypes;
+  declare private exceptionListsReadOnly_: boolean;
+  declare private showDefaultBlockDialog_: boolean;
 
   private onGeneratedPrefsUpdated_() {
     const pref = this.getPref('generated.cookie_default_content_setting');

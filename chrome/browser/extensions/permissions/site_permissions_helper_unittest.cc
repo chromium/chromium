@@ -4,24 +4,29 @@
 
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/permissions_manager_waiter.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -37,11 +42,9 @@ class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
       const std::vector<std::string>& host_permissions,
       const std::vector<std::string>& permissions = {});
 
-  // Adds a new tab with `url` to the tab strip, and returns the WebContents
-  // associated with it.
+  // Adds a new tab with `url` to the simulated tab strip, and returns the
+  // WebContents associated with it.
   content::WebContents* AddTab(const GURL& url);
-
-  Browser* browser();
 
   SitePermissionsHelper* permissions_helper() {
     return permissions_helper_.get();
@@ -53,9 +56,8 @@ class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
   void TearDown() override;
 
  private:
-  // The browser and accompaying window.
-  std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestBrowserWindow> browser_window_;
+  // A simulated tab strip that just owns WebContents.
+  std::vector<std::unique_ptr<content::WebContents>> tabs_;
 
   // Site permissions helper being tested.
   std::unique_ptr<SitePermissionsHelper> permissions_helper_;
@@ -79,7 +81,7 @@ SitePermissionsHelperUnitTest::InstallExtensionWithPermissions(
                        .AddAPIPermissions(permissions)
                        .SetID(crx_file::id_util::GenerateId(name))
                        .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   return extension;
 }
@@ -88,25 +90,14 @@ content::WebContents* SitePermissionsHelperUnitTest::AddTab(const GURL& url) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   content::WebContents* raw_contents = web_contents.get();
+  TabHelper::CreateForWebContents(raw_contents);
 
-  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                  true);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+  tabs_.push_back(std::move(web_contents));
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(raw_contents, url);
   EXPECT_EQ(url, raw_contents->GetLastCommittedURL());
 
   return raw_contents;
-}
-
-Browser* SitePermissionsHelperUnitTest::browser() {
-  if (!browser_) {
-    Browser::CreateParams params(profile(), true);
-    browser_window_ = std::make_unique<TestBrowserWindow>();
-    params.window = browser_window_.get();
-    browser_.reset(Browser::Create(params));
-  }
-  return browser_.get();
 }
 
 void SitePermissionsHelperUnitTest::SetUp() {
@@ -118,12 +109,10 @@ void SitePermissionsHelperUnitTest::SetUp() {
 }
 
 void SitePermissionsHelperUnitTest::TearDown() {
-  // Remove any tabs in the tab strip; else the test crashes.
-  if (browser_) {
-    while (!browser_->tab_strip_model()->empty()) {
-      browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
-    }
-  }
+  // Delete the WebContents in the simulated tab strip.
+  tabs_.clear();
+  permissions_manager_ = nullptr;
+  permissions_helper_.reset();
 
   ExtensionServiceTestBase::TearDown();
 }
@@ -281,38 +270,80 @@ TEST_F(SitePermissionsHelperUnitTest,
             SiteInteraction::kNone);
 }
 
-// Tests that updating permission only applies the permission to the upgraded
-// site and not others.
+// Tests that updating site access only applies to the specified extensions for
+// the current site.
 TEST_F(SitePermissionsHelperUnitTest, UpdateSiteAccess_OnlySiteSelected) {
-  const GURL site("https://allowed.example");
-  auto extension = InstallExtensionWithPermissions(
-      "extension", /*host_permissions=*/{site.spec()});
-  const GURL site_without_permission("https://disallowed.com");
-  auto* site_contents = AddTab(site);
+  auto extensionA =
+      InstallExtensionWithPermissions("Extension A", {"*://requested.com/*"});
+  auto extensionB =
+      InstallExtensionWithPermissions("Extension b", {"<all_urls>"});
 
-  // Extension should only have on-click access to both sites.
-  ASSERT_EQ(PermissionsManager::UserSiteAccess::kOnSite,
-            permissions_manager()->GetUserSiteAccess(*extension, site));
-  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
-            permissions_manager()->GetUserSiteAccess(*extension,
-                                                     site_without_permission));
+  const GURL requested_site("https://requested.com");
+  const GURL other_site("https://other.com");
 
-  // Switch the extension from on-click to always on site.
+  // Open a site requested by both extensions.
+  content::WebContents* site_contents = AddTab(requested_site);
   ExtensionActionRunner* action_runner =
       ExtensionActionRunner::GetForWebContents(site_contents);
   ASSERT_TRUE(action_runner);
   action_runner->accept_bubble_for_testing(false);
+
+  // Extension A should have 'on site' access for the site it requested and 'on
+  // click' for a site it didn't request. Extension A should have 'on all sites'
+  // access for both sites.
+  // TODO(emiliapaz): Technically, extensionA has 'never' site access. However,
+  // there is not that option in UserSiteAccess. Thus we default to the 'lower
+  // tier' access which is 'on click'. Separately, we compute whether the
+  // extension requested access. Access is granted iff extension requested
+  // access and user granted it, thus it doesn't matter that user access is
+  // 'on click' if extension didn't request access; access won't be granted.
+  // We should consider adding a CHECK in GetUserSiteAccess() so it's only
+  // called when user can select site access.
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnSite,
+      permissions_manager()->GetUserSiteAccess(*extensionA, requested_site));
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
+            permissions_manager()->GetUserSiteAccess(*extensionA, other_site));
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnAllSites,
+      permissions_manager()->GetUserSiteAccess(*extensionB, requested_site));
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnAllSites,
+            permissions_manager()->GetUserSiteAccess(*extensionB, other_site));
+
+  // Update extension A site access to be 'on click' for requested.com.
   permissions_helper()->UpdateSiteAccess(
-      *extension, site_contents, PermissionsManager::UserSiteAccess::kOnClick);
+      *extensionA, site_contents, PermissionsManager::UserSiteAccess::kOnClick);
 
-  // Confirm always on site permission applied.
+  // Extension A should have 'on click' access for both sites. Extension B
+  // should still have 'on all sites' for both sites.
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnClick,
+      permissions_manager()->GetUserSiteAccess(*extensionA, requested_site));
   EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
-            permissions_manager()->GetUserSiteAccess(*extension, site));
+            permissions_manager()->GetUserSiteAccess(*extensionA, other_site));
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnAllSites,
+      permissions_manager()->GetUserSiteAccess(*extensionB, requested_site));
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnAllSites,
+            permissions_manager()->GetUserSiteAccess(*extensionB, other_site));
 
-  // Site without permission should remain without access.
+  // Update extension A and B site access to be 'on site' for requested.com.
+  permissions_helper()->UpdateSiteAccess(
+      {extensionA.get(), extensionB.get()}, site_contents,
+      PermissionsManager::UserSiteAccess::kOnSite);
+
+  // Extension A and B should have 'on site' access for requested.com and 'on
+  // click' access for other.com.
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnSite,
+      permissions_manager()->GetUserSiteAccess(*extensionA, requested_site));
   EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
-            permissions_manager()->GetUserSiteAccess(*extension,
-                                                     site_without_permission));
+            permissions_manager()->GetUserSiteAccess(*extensionA, other_site));
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnSite,
+      permissions_manager()->GetUserSiteAccess(*extensionB, requested_site));
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
+            permissions_manager()->GetUserSiteAccess(*extensionB, other_site));
 }
 
 class SitePermissionsHelperWithUserHostControlsUnitTest

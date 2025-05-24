@@ -19,14 +19,14 @@ TEST(MachineIdProviderNonWinTest, GetId) {
 
   // Should only return a machine ID if the hardware model name is available.
   if (has_machine_name) {
-    const std::string id1 = MachineIdProvider::GetMachineId();
-    EXPECT_TRUE(MachineIdProvider::HasId());
+    const std::string id1 = MachineIdProvider().GetMachineId();
+    EXPECT_TRUE(MachineIdProvider().HasId());
     EXPECT_NE(std::string(), id1);
 
-    const std::string id2 = MachineIdProvider::GetMachineId();
+    const std::string id2 = MachineIdProvider().GetMachineId();
     EXPECT_EQ(id1, id2);
   } else {
-    EXPECT_FALSE(MachineIdProvider::HasId());
+    EXPECT_FALSE(MachineIdProvider().HasId());
   }
 }
 

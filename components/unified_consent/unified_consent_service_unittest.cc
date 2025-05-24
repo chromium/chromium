@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -91,7 +90,7 @@ class UnifiedConsentServiceTest : public testing::Test {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   unified_consent::MigrationState GetMigrationState() {
     int migration_state_int =
         pref_service_.GetInteger(prefs::kUnifiedConsentMigrationState);
@@ -199,7 +198,7 @@ TEST_F(UnifiedConsentServiceTest, ReplaceSync_HistorySyncIgnoredForSyncUsers) {
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Tests that kUrlKeyedAnonymizedDataCollectionEnabled is enabled after
 // syncing user signs out, then in again and enabled history sync opt-in.
 TEST_F(UnifiedConsentServiceTest,
@@ -238,7 +237,7 @@ TEST_F(UnifiedConsentServiceTest,
   EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that any change to history sync opt-in, is reflected in the state
 // of `kUrlKeyedAnonymizedDataCollectionEnabled`.
@@ -361,7 +360,7 @@ TEST_F(UnifiedConsentServiceTest, ReplaceSync_StateTransitions) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(UnifiedConsentServiceTest, Migration_UpdateSettings) {
   // Create user that syncs history and has no custom passphrase.
   SignIn(signin::ConsentLevel::kSync);
@@ -402,6 +401,6 @@ TEST_F(UnifiedConsentServiceTest, ClearPrimaryAccountDisablesSomeServices) {
   EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace unified_consent

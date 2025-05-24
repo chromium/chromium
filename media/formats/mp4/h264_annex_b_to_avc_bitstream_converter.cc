@@ -11,7 +11,9 @@
 
 namespace media {
 
-H264AnnexBToAvcBitstreamConverter::H264AnnexBToAvcBitstreamConverter() {
+H264AnnexBToAvcBitstreamConverter::H264AnnexBToAvcBitstreamConverter(
+    bool add_parameter_sets_in_bitstream)
+    : add_parameter_sets_in_bitstream_(add_parameter_sets_in_bitstream) {
   // These parts of configuration never change.
   config_.version = 1;
   config_.length_size = 4;
@@ -30,7 +32,7 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
     base::span<uint8_t> output,
     bool* config_changed_out,
     size_t* size_out) {
-  std::vector<H264NALU> slice_units;
+  std::vector<base::span<const uint8_t>> slice_units;
   size_t data_size = 0;
   bool config_changed = false;
   H264NALU nalu;
@@ -46,8 +48,9 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
   base::flat_set<int> pps_to_include;
 
   // Scan input buffer looking for two main types of NALUs
-  //  1. SPS and PPS. They'll be added to the AVC configuration |config_|
-  //     and will *not* be copied to |output|.
+  //  1. SPS and PPS. They'll be added to the AVC configuration `config_`
+  //     and maybe be copied to `output` based on
+  //     `add_parameter_sets_in_bitstream_`.
   //  2. Slices. They'll being copied into the output buffer, but also affect
   //     what configuration (profile and level) is active now.
   parser_.SetStream(input.data(), input.size());
@@ -146,9 +149,36 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
       }
         [[fallthrough]];
       default:
-        slice_units.push_back(nalu);
+        // TODO(crbug.com/40284755): The `nalu.data` should hold a span instead
+        // of a pointer.
+        slice_units.emplace_back(nalu.data.get(),
+                                 base::checked_cast<size_t>(nalu.size));
         data_size += config_.length_size + nalu.size;
         break;
+    }
+  }
+
+  if (config_changed && add_parameter_sets_in_bitstream_) {
+    // Insert parameter sets, in the order of PPS, SPS Extension, SPS.
+    for (auto& id : pps_to_include) {
+      auto it = id2pps_.find(id);
+      if (it == id2pps_.end()) {
+        return MP4Status::Codes::kFailedToLookupPPS;
+      }
+      slice_units.insert(slice_units.begin(), it->second);
+      data_size += config_.length_size + it->second.size();
+    }
+    for (auto& id : sps_to_include) {
+      auto it = id2sps_.find(id);
+      if (it == id2sps_.end()) {
+        return MP4Status::Codes::kFailedToLookupSPS;
+      }
+      if (id2sps_ext_.contains(id)) {
+        slice_units.insert(slice_units.begin(), id2sps_ext_[id]);
+        data_size += config_.length_size + id2sps_ext_[id].size();
+      }
+      slice_units.insert(slice_units.begin(), it->second);
+      data_size += config_.length_size + it->second.size();
     }
   }
 
@@ -163,15 +193,7 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
   base::SpanWriter writer(output);
   for (auto& unit : slice_units) {
     bool written_ok =
-        writer.WriteU32BigEndian(unit.size) &&
-        writer.Write(
-            // SAFETY: `unit` is constructed with a size that is the number of
-            // elements at the data pointer.
-            //
-            // TODO(crbug.com/40284755): The `unit` should hold a span instead
-            // of a pointer.
-            UNSAFE_TODO(base::span(unit.data.get(),
-                                   base::checked_cast<size_t>(unit.size))));
+        writer.WriteU32BigEndian(unit.size()) && writer.Write(unit);
     if (!written_ok) {
       return MP4Status::Codes::kBufferTooSmall;
     }
@@ -180,7 +202,7 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
   DCHECK_EQ(writer.num_written(), data_size);
 
   // Now when we are sure that everything is written and fits nicely,
-  // we can update parts of the |config_| that were changed by this data chunk.
+  // we can update parts of the `config_` that were changed by this data chunk.
   if (config_changed) {
     if (new_active_sps_id < 0)
       new_active_sps_id = active_sps_id_;
@@ -201,14 +223,23 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
 
     // flat_set is iterated in key-order
     for (int id : sps_to_include) {
-      config_.sps_list.push_back(id2sps_[id]);
+      auto it = id2sps_.find(id);
+      if (it == id2sps_.end()) {
+        return MP4Status::Codes::kFailedToLookupSPS;
+      }
+      config_.sps_list.push_back(it->second);
       if (id2sps_ext_.contains(id)) {
         config_.sps_ext_list.push_back(id2sps_ext_[id]);
       }
     }
 
-    for (int id : pps_to_include)
-      config_.pps_list.push_back(id2pps_[id]);
+    for (int id : pps_to_include) {
+      auto it = id2pps_.find(id);
+      if (it == id2pps_.end()) {
+        return MP4Status::Codes::kFailedToLookupPPS;
+      }
+      config_.pps_list.push_back(it->second);
+    }
 
     config_.profile_indication = active_sps->profile_idc;
 

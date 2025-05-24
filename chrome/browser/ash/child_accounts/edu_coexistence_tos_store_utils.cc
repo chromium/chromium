@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -18,7 +19,7 @@ namespace edu_coexistence {
 
 const char kMinTOSVersionNumber[] = "337351677";
 
-UserConsentInfo::UserConsentInfo(const std::string& gaia_id,
+UserConsentInfo::UserConsentInfo(const GaiaId& gaia_id,
                                  const std::string& version)
     : edu_account_gaia_id(gaia_id), edu_coexistence_tos_version(version) {}
 
@@ -46,7 +47,7 @@ void UpdateAcceptedToSVersionPref(Profile* profile,
   ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kEduCoexistenceToSAcceptedVersion);
 
-  update->SetByDottedPath(user_consent_info.edu_account_gaia_id,
+  update->SetByDottedPath(user_consent_info.edu_account_gaia_id.ToString(),
                           user_consent_info.edu_coexistence_tos_version);
 }
 
@@ -56,7 +57,7 @@ void SetUserConsentInfoListForProfile(
   base::Value::Dict user_consent_info_list_value;
   for (const auto& info : user_consent_info_list) {
     user_consent_info_list_value.SetByDottedPath(
-        info.edu_account_gaia_id, info.edu_coexistence_tos_version);
+        info.edu_account_gaia_id.ToString(), info.edu_coexistence_tos_version);
   }
 
   profile->GetPrefs()->SetDict(prefs::kEduCoexistenceToSAcceptedVersion,
@@ -71,7 +72,7 @@ std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(
   std::vector<UserConsentInfo> info_list;
 
   for (const auto entry : user_consent_info_dict) {
-    const std::string& gaia_id = entry.first;
+    const GaiaId gaia_id(entry.first);
     const std::string& accepted_tos_version = entry.second.GetString();
     info_list.push_back(UserConsentInfo(gaia_id, accepted_tos_version));
   }
@@ -80,10 +81,11 @@ std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(
 }
 
 std::string GetAcceptedToSVersion(Profile* profile,
-                                  const std::string& secondary_edu_gaia_id) {
+                                  const GaiaId& secondary_edu_gaia_id) {
   const base::Value::Dict& accepted_dict =
       profile->GetPrefs()->GetDict(prefs::kEduCoexistenceToSAcceptedVersion);
-  const std::string* entry = accepted_dict.FindString(secondary_edu_gaia_id);
+  const std::string* entry =
+      accepted_dict.FindString(secondary_edu_gaia_id.ToString());
   return entry ? *entry : std::string();
 }
 

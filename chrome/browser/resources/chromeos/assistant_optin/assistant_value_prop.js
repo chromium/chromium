@@ -22,14 +22,14 @@ import './assistant_icons.html.js';
 import './setting_zippy.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeDialogHostMixin} from '../components/mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
+import {getTemplate} from './assistant_value_prop.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {HtmlSanitizer, webviewStripLinksContentScript} from './utils.js';
-
 
 /**
  * Name of the screen.
@@ -53,7 +53,7 @@ class AssistantValueProp extends AssistantValuePropBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -387,22 +387,8 @@ class AssistantValueProp extends AssistantValuePropBase {
       for (const j in zippy_data[i]) {
         const data = zippy_data[i][j];
         const zippy = document.createElement('setting-zippy');
-        if (data['useNativeIcons']) {
-          zippy.nativeIconType = data['nativeIconType'];
-          zippy.setAttribute('nativeIconLabel', data['title']);
-        } else {
-          // TODO(crbug.com/1313994) - Remove hard coded colors in OOBE
-          const background = this.isMinorMode_ ?
-              getComputedStyle(document.body)
-                  .getPropertyValue('--cros-highlight-color' /* gblue50 */) :
-              getComputedStyle(document.body)
-                  .getPropertyValue('--cros-bg-color');
-          zippy.setAttribute(
-              'icon-src',
-              'data:text/html;charset=utf-8,' +
-                  encodeURIComponent(zippy.getWrappedIcon(
-                      data['iconUri'], data['title'], background)));
-        }
+        zippy.nativeIconType = data['nativeIconType'];
+        zippy.setAttribute('nativeIconLabel', data['title']);
         zippy.setAttribute('step', i);
         zippy.hideLine = this.isMinorMode_;
         zippy.cardStyle = this.isMinorMode_;
@@ -410,6 +396,7 @@ class AssistantValueProp extends AssistantValuePropBase {
         const title = document.createElement('div');
         title.slot = 'title';
         title.innerHTML = this.sanitizer_.sanitizeHtml(data['name']);
+        title.setAttribute('id', 'title-' + i);
         zippy.appendChild(title);
 
         const content = document.createElement('div');
@@ -418,6 +405,7 @@ class AssistantValueProp extends AssistantValuePropBase {
         const description = document.createElement('div');
         description.innerHTML =
             this.sanitizer_.sanitizeHtml(data['description'] + '&ensp;');
+        description.setAttribute('id', 'description-' + i);
 
         const learnMoreLink = document.createElement('a');
         learnMoreLink.textContent = data['popupLink'];
@@ -436,6 +424,7 @@ class AssistantValueProp extends AssistantValuePropBase {
           const additionalInfo = document.createElement('div');
           additionalInfo.innerHTML =
               this.sanitizer_.sanitizeHtml(data['additionalInfo']);
+          additionalInfo.setAttribute('id', 'additional-info-' + i);
           content.appendChild(document.createElement('br'));
           content.appendChild(additionalInfo);
         }

@@ -44,6 +44,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -450,7 +451,7 @@ class LoginApitestWithEnterpriseUser : public LoginApitest {
         user_policy_builder_->policy_data();
     policy_data.set_policy_type(policy::dm_protocol::kChromeUserPolicyType);
     policy_data.set_username(account_id.GetUserEmail());
-    policy_data.set_gaia_id(account_id.GetGaiaId());
+    policy_data.set_gaia_id(account_id.GetGaiaId().ToString());
     user_policy_builder_->Build();
 
     auto registry_observer =

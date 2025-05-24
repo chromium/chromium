@@ -49,7 +49,6 @@ class SVGColorProperty final : public SVGPropertyBase {
     SVGPropertyBase::Trace(visitor);
   }
 
-  SVGPropertyBase* CloneForAnimation(const WTF::String&) const override;
   WTF::String ValueAsString() const override;
 
   void Add(const SVGPropertyBase*, const SVGElement*) override;

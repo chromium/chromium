@@ -229,8 +229,7 @@ SimpleBackendImpl::SimpleBackendImpl(
       post_open_by_hash_waiting_(
           base::MakeRefCounted<SimplePostOperationWaiterTable>()),
       net_log_(net_log) {
-  // Treat negative passed-in sizes same as SetMaxSize would here and in other
-  // backends, as default (if first call).
+  // Treat negative passed-in sizes same as in other backends, as default.
   if (orig_max_size_ < 0)
     orig_max_size_ = 0;
 }
@@ -276,14 +275,6 @@ void SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
       base::BindOnce(&SimpleBackendImpl::InitializeIndex,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(completion_callback)));
-}
-
-bool SimpleBackendImpl::SetMaxSize(int64_t max_bytes) {
-  if (max_bytes < 0)
-    return false;
-  orig_max_size_ = max_bytes;
-  index_->SetMaxSize(max_bytes);
-  return true;
 }
 
 int64_t SimpleBackendImpl::MaxFileSize() const {

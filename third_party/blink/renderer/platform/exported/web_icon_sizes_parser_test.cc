@@ -15,7 +15,7 @@ class WebIconSizesParserTest : public testing::Test {};
 
 TEST(WebIconSizesParserTest, parseSizes) {
   WebString sizes_attribute = "32x33";
-  WebVector<gfx::Size> sizes;
+  std::vector<gfx::Size> sizes;
   sizes = WebIconSizesParser::ParseIconSizes(sizes_attribute);
   ASSERT_EQ(1U, sizes.size());
   EXPECT_EQ(32, sizes[0].width());

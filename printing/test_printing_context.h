@@ -42,7 +42,8 @@ class TestPrintingContext : public PrintingContext {
 #endif
       const PrintSettings&)>;
 
-  TestPrintingContext(Delegate* delegate, ProcessBehavior process_behavior);
+  TestPrintingContext(Delegate* delegate,
+                      OutOfProcessBehavior out_of_process_behavior);
   TestPrintingContext(const TestPrintingContext&) = delete;
   TestPrintingContext& operator=(const TestPrintingContext&) = delete;
   ~TestPrintingContext() override;

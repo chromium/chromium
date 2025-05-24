@@ -197,15 +197,6 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
       is_new_password_local != is_old_password_local;
 
   if (is_label_update_required) {
-    if (!features::IsChangePasswordFactorSetupEnabled()) {
-      LOG(ERROR)
-          << "Switching between online and local password is not supported";
-      auth_factor_config_->NotifyFactorObserversAfterFailure(
-          auth_token, std::move(user_context),
-          base::BindOnce(std::move(callback),
-                         mojom::ConfigureResult::kFatalError));
-      return;
-    }
     if (!is_new_password_local) {
       LOG(ERROR) << "Switching from local to online password is not supported";
       auth_factor_config_->NotifyFactorObserversAfterFailure(
@@ -298,6 +289,85 @@ void PasswordFactorEditor::OnPasswordConfigured(
   }
 
   auth_factor_config_->OnUserHasKnowledgeFactor(*context);
+
+  auth_factor_config_->NotifyFactorObserversAfterSuccess(
+      {mojom::AuthFactor::kGaiaPassword, mojom::AuthFactor::kLocalPassword},
+      auth_token, std::move(context), std::move(callback));
+}
+
+void PasswordFactorEditor::RemovePassword(
+    const std::string& auth_token,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback) {
+  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
+  }
+
+  ash::AuthSessionStorage::Get()->BorrowAsync(
+      FROM_HERE, auth_token,
+      base::BindOnce(&PasswordFactorEditor::RemovePasswordWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token,
+                     std::move(callback)));
+}
+
+void PasswordFactorEditor::RemovePasswordWithContext(
+    const std::string& auth_token,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
+  }
+
+  const cryptohome::AuthFactor* password_factor =
+      context->GetAuthFactorsConfiguration().FindFactorByType(
+          cryptohome::AuthFactorType::kPassword);
+  if (!password_factor) {
+    // The user doesn't have a password yet (neither Gaia nor local).
+    LOG(ERROR) << "No existing password, will not remove password.";
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    return;
+  }
+
+  const cryptohome::AuthFactor* pin_factor =
+      context->GetAuthFactorsConfiguration().FindFactorByType(
+          cryptohome::AuthFactorType::kPin);
+
+  if (!pin_factor) {
+    // The user doesn't have a password to remove.
+    LOG(ERROR) << "No existing pin, will not remove password.";
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    return;
+  } else if (pin_factor->GetCommonMetadata().lockout_policy() !=
+             cryptohome::LockoutPolicy::kTimeLimited) {
+    LOG(ERROR) << "Cannot remove password, pin is not modern pin";
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    return;
+  }
+
+  auth_factor_editor_.RemovePasswordFactor(
+      std::move(context), password_factor->ref().label(),
+      base::BindOnce(&PasswordFactorEditor::OnPasswordRemoved,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     auth_token));
+}
+
+void PasswordFactorEditor::OnPasswordRemoved(
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    const std::string& auth_token,
+    std::unique_ptr<UserContext> context,
+    std::optional<AuthenticationError> error) {
+  if (error) {
+    LOG(ERROR) << "Failed to remove password, code "
+               << error->get_cryptohome_code();
+    auth_factor_config_->NotifyFactorObserversAfterFailure(
+        auth_token, std::move(context),
+        base::BindOnce(std::move(callback),
+                       mojom::ConfigureResult::kFatalError));
+    return;
+  }
 
   auth_factor_config_->NotifyFactorObserversAfterSuccess(
       {mojom::AuthFactor::kGaiaPassword, mojom::AuthFactor::kLocalPassword},

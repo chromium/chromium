@@ -1,0 +1,53 @@
+caption: Choose whether Blob URLs are partitioned during fetching and navigations
+
+default: true
+
+desc: |-
+  This policy controls whether Blob URLs are partitioned during fetching and navigation.
+  If this policy is set to Enabled or not set, Blob URLs will be partitioned.
+  If this policy is set to Disabled, Blob URLs won't be partitioned.
+
+  If storage partitioning is disabled for a given top-level origin by either
+  <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME">ThirdPartyStoragePartitioningBlockedForOrigins</ph>
+  or <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME">DefaultThirdPartyStoragePartitioningSetting</ph>,
+  then Blob URLs will also not be partitioned.
+
+  If you must use the policy, please file a bug at
+  <ph name="BUG_URL">$1<ex>https://crbug.com/new?component=1779870&amp;cc=awillia@chromium.org&amp;priority=p1&amp;type=bug&amp;noWizard=true</ex></ph>
+  explaining your use case. The policy is scheduled to be offered through
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 143, after which
+  the old implementation will be removed.
+
+  NOTE: Only newly-started renderer processes will reflect changes to this
+  policy while the browser is running.
+
+  For detailed information on third-party storage partitioning, please see
+  https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+example_value: false
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+items:
+- caption: Partition Blob URLs during fetching and navigation.
+  value: true
+- caption: Do not partition Blob URLs during fetching and navigation.
+  value: false
+
+owners:
+- awillia@chromium.org
+- potassium-katabolism@google.com
+
+schema:
+  type: boolean
+
+supported_on:
+- chrome.*:135-
+- chrome_os:135-
+- android:135-
+
+tags: []
+
+type: main

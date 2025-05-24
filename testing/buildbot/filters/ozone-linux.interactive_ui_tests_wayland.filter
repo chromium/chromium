@@ -11,6 +11,9 @@
 # implementation similar to what was introduced in https://crrev.com/c/4738688.
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDirectlyToSecondWindow/*
 
+# TODO(crbug.com/373738727): Extremely flaky on the bot, locally only sometimes times out.
+-BookmarkBarViewTest4.ContextMenus
+
 # Failing interactive ui tests
 -BookmarkBarViewTest12.CloseWithModalDialog
 -BookmarkBarViewTest13.ClickOnContextMenuSeparator
@@ -42,7 +45,11 @@
 -WidgetInputMethodInteractiveTest.OneWindow
 -WidgetInputMethodInteractiveTest.TwoWindows
 
-# TODO(crbug.com/523255,crbug.com/1192997): Fix flaky MenuItemView tests.
+# TODO(crbug.com/40175111): Fix flaky MenuItemView tests.
+# Flakiness likely caused by bug in Weston, making popups spawn offscreen
+# (https://gitlab.freedesktop.org/wayland/weston/-/issues/816).
+# Re-enable once `xdg_positioner` is properly implemented (planned for
+# Weston 15).
 -MenuItemViewTestBasic2.SelectItem2
 -MenuItemViewTestInsert20.InsertItem20
 -MenuItemViewTestInsert00.InsertItem00

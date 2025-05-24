@@ -1,0 +1,57 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("fullscreen") {
+  sources = [
+    "toolbars_size.h",
+    "toolbars_size.mm",
+    "toolbars_size_observer.h",
+    "toolbars_size_observer.mm",
+    "toolbars_size_observer_bridge.h",
+    "toolbars_size_observer_bridge.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/web",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("fullscreen_broadcasting_util") {
+  sources = [
+    "toolbars_size_broadcasting_util.h",
+    "toolbars_size_broadcasting_util.mm",
+  ]
+  deps = [
+    ":fullscreen",
+    "//ios/chrome/browser/broadcaster/ui_bundled",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "toolbars_size_broadcasting_util_unittest.mm" ]
+  deps = [
+    ":fullscreen",
+    ":fullscreen_broadcasting_util",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/omnibox/browser:test_support",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/broadcaster/ui_bundled",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/toolbar/ui_bundled/test",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:ocmock_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -38,8 +40,8 @@ class CrostiniAnsibleSoftwareConfigView
   bool Accept() override;
   bool Cancel() override;
 
-  std::u16string GetSubtextLabelStringForTesting();
-  std::u16string GetProgressLabelStringForTesting();
+  std::u16string_view GetSubtextLabelStringForTesting();
+  std::u16string_view GetProgressLabelStringForTesting();
 
   // AnsibleManagementService::Observer
   void OnAnsibleSoftwareConfigurationStarted(

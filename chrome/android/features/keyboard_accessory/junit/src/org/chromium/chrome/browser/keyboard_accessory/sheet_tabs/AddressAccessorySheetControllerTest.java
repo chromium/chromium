@@ -24,16 +24,19 @@ import android.graphics.drawable.Drawable;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
@@ -51,6 +54,7 @@ import org.chromium.ui.modelutil.ListObservable;
         manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class})
 public class AddressAccessorySheetControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
     @Mock private AccessorySheetTabView mMockView;
@@ -61,7 +65,6 @@ public class AddressAccessorySheetControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mMockView.getContext()).thenReturn(ContextUtils.getApplicationContext());
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
         mCoordinator =
@@ -156,19 +159,31 @@ public class AddressAccessorySheetControllerTest {
                 .add(
                         new PlusAddressInfo(
                                 "google.com",
-                                new UserInfoField(
-                                        "example@gmail.com",
-                                        "example@gmail.com",
-                                        "",
-                                        false,
-                                        field -> {})));
+                                new UserInfoField.Builder()
+                                        .setSuggestionType(AccessorySuggestionType.PLUS_ADDRESS)
+                                        .setDisplayText("example@gmail.com")
+                                        .setA11yDescription("example@gmail.com")
+                                        .setCallback(field -> {})
+                                        .build()));
         testData.getUserInfoList().add(new UserInfo("", false));
         testData.getUserInfoList()
                 .get(0)
-                .addField(new UserInfoField("Name", "Name", "", false, null));
+                .addField(
+                        new UserInfoField.Builder()
+                                .setSuggestionType(AccessorySuggestionType.NAME_FULL)
+                                .setDisplayText("Name")
+                                .setA11yDescription("Name")
+                                .build());
         testData.getUserInfoList()
                 .get(0)
-                .addField(new UserInfoField("Street", "Street", "", true, field -> {}));
+                .addField(
+                        new UserInfoField.Builder()
+                                .setSuggestionType(AccessorySuggestionType.ADDRESS_LINE1)
+                                .setDisplayText("Street")
+                                .setA11yDescription("Street")
+                                .setIsObfuscated(true)
+                                .setCallback(field -> {})
+                                .build());
 
         mCoordinator.registerDataProvider(testProvider);
         testProvider.notifyObservers(testData);

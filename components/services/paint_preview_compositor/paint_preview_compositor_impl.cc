@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/memory/memory_pressure_listener.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -470,17 +469,17 @@ sk_sp<SkPicture> PaintPreviewCompositorImpl::DeserializeFrameRecursive(
     // Try and find the subframe's proto based on its embedding token.
     auto& subframes = proto.subframes();
     auto subframe_proto_it =
-        base::ranges::find(subframes, subframe_embedding_token,
-                           [](const PaintPreviewFrameProto& frame_proto) {
-                             std::optional<base::UnguessableToken> token =
-                                 base::UnguessableToken::Deserialize(
-                                     frame_proto.embedding_token_high(),
-                                     frame_proto.embedding_token_low());
-                             if (!token.has_value()) {
-                               return base::UnguessableToken::Create();
-                             }
-                             return token.value();
-                           });
+        std::ranges::find(subframes, subframe_embedding_token,
+                          [](const PaintPreviewFrameProto& frame_proto) {
+                            std::optional<base::UnguessableToken> token =
+                                base::UnguessableToken::Deserialize(
+                                    frame_proto.embedding_token_high(),
+                                    frame_proto.embedding_token_low());
+                            if (!token.has_value()) {
+                              return base::UnguessableToken::Create();
+                            }
+                            return token.value();
+                          });
     if (subframe_proto_it == subframes.end()) {
       DVLOG(1) << "Frame embeds subframe that does not exist: "
                << subframe_embedding_token;

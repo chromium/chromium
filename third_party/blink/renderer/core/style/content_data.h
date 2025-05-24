@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CONTENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CONTENT_DATA_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
@@ -35,23 +36,28 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-#include <iosfwd>
-
 namespace blink {
 
 class LayoutObject;
 class TreeScope;
+class StyleEngine;
+class CountersAttachmentContext;
 
 class ContentData : public GarbageCollected<ContentData> {
  public:
   virtual ~ContentData() = default;
 
   virtual bool IsCounter() const { return false; }
+  virtual bool IsAltCounter() const { return false; }
   virtual bool IsImage() const { return false; }
   virtual bool IsQuote() const { return false; }
   virtual bool IsText() const { return false; }
   virtual bool IsAltText() const { return false; }
   virtual bool IsNone() const { return false; }
+  virtual bool IsAlt() const { return IsAltText() || IsAltCounter(); }
+
+  CORE_EXPORT static String ConcatenateAltText(
+      const ContentData& first_alt_data);
 
   // Create a layout object for this piece of content. `owner` is the layout
   // object that has the content property, e.g. a pseudo element, or an @page
@@ -96,8 +102,6 @@ inline std::ostream& operator<<(std::ostream& stream,
 }
 
 class ImageContentData final : public ContentData {
-  friend class ContentData;
-
  public:
   explicit ImageContentData(StyleImage* image) : image_(image) {
     DCHECK(image_);
@@ -167,8 +171,6 @@ struct DowncastTraits<ImageContentData> {
 };
 
 class TextContentData final : public ContentData {
-  friend class ContentData;
-
  public:
   explicit TextContentData(const String& text) : text_(text) {}
 
@@ -201,20 +203,10 @@ struct DowncastTraits<TextContentData> {
 };
 
 class AltTextContentData final : public ContentData {
-  friend class ContentData;
-
  public:
   explicit AltTextContentData(const String& text) : text_(text) {}
 
   String GetText() const { return text_; }
-  String ConcatenateAltText() const {
-    StringBuilder alt_text;
-    for (const ContentData* content_data = this; content_data;
-         content_data = content_data->Next()) {
-      alt_text.Append(To<AltTextContentData>(content_data)->GetText());
-    }
-    return alt_text.ToString();
-  }
   void SetText(const String& text) { text_ = text; }
 
   bool IsAltText() const override { return true; }
@@ -243,26 +235,47 @@ struct DowncastTraits<AltTextContentData> {
   }
 };
 
-class CounterContentData final : public ContentData {
+struct CounterData {
+  DISALLOW_NEW();
+
+ public:
+  CounterData(const AtomicString& identifier,
+              const AtomicString& style,
+              const AtomicString& separator,
+              const TreeScope* tree_scope)
+      : identifier(identifier),
+        list_style(style),
+        separator(separator),
+        tree_scope(tree_scope) {}
+
+  void Trace(Visitor* v) const { v->Trace(tree_scope); }
+
+  AtomicString identifier;
+  AtomicString list_style;
+  AtomicString separator;
+  Member<const TreeScope> tree_scope;
+};
+
+class CounterContentData : public ContentData {
   friend class ContentData;
 
  public:
-  explicit CounterContentData(const AtomicString& identifier,
-                              const AtomicString& style,
-                              const AtomicString& separator,
-                              const TreeScope* tree_scope)
-      : identifier_(identifier),
-        list_style_(style),
-        separator_(separator),
-        tree_scope_(tree_scope) {}
+  CounterContentData(const AtomicString& identifier,
+                     const AtomicString& style,
+                     const AtomicString& separator,
+                     const TreeScope* tree_scope)
+      : counter_data_(identifier, style, separator, tree_scope) {}
+
+  explicit CounterContentData(CounterData counter_data)
+      : counter_data_(std::move(counter_data)) {}
 
   bool IsCounter() const override { return true; }
   LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
-  const AtomicString& Identifier() const { return identifier_; }
-  const AtomicString& ListStyle() const { return list_style_; }
-  const AtomicString& Separator() const { return separator_; }
-  const TreeScope* GetTreeScope() const { return tree_scope_.Get(); }
+  const AtomicString& Identifier() const { return counter_data_.identifier; }
+  const AtomicString& ListStyle() const { return counter_data_.list_style; }
+  const AtomicString& Separator() const { return counter_data_.separator; }
+  const TreeScope* GetTreeScope() const { return counter_data_.tree_scope; }
 
   void Trace(Visitor*) const override;
 
@@ -270,10 +283,10 @@ class CounterContentData final : public ContentData {
 
  private:
   ContentData* CloneInternal() const override {
-    return MakeGarbageCollected<CounterContentData>(identifier_, list_style_,
-                                                    separator_, tree_scope_);
+    return MakeGarbageCollected<CounterContentData>(counter_data_);
   }
 
+ protected:
   bool Equals(const ContentData& data) const override {
     if (!data.IsCounter()) {
       return false;
@@ -286,10 +299,7 @@ class CounterContentData final : public ContentData {
            GetTreeScope() == other.GetTreeScope();
   }
 
-  AtomicString identifier_;
-  AtomicString list_style_;
-  AtomicString separator_;
-  Member<const TreeScope> tree_scope_;
+  CounterData counter_data_;
 };
 
 template <>
@@ -299,9 +309,51 @@ struct DowncastTraits<CounterContentData> {
   }
 };
 
-class QuoteContentData final : public ContentData {
-  friend class ContentData;
+class AltCounterContentData : public CounterContentData {
+  using CounterContentData::CounterContentData;
 
+ public:
+  bool IsAltCounter() const override { return true; }
+
+  LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
+
+  const String& GetText() const { return counter_value_text_; }
+  void UpdateText(CountersAttachmentContext& context,
+                  const StyleEngine& style_engine,
+                  const LayoutObject& content_generating_object);
+
+  String DebugString() const override { return "<alt-counter>"; }
+
+ private:
+  void SetText(const String& text) { counter_value_text_ = text; }
+
+  ContentData* CloneInternal() const override {
+    auto* data = MakeGarbageCollected<AltCounterContentData>(counter_data_);
+    data->SetText(GetText());
+    return data;
+  }
+
+  bool Equals(const ContentData& data) const override {
+    if (!data.IsAltCounter()) {
+      return false;
+    }
+    const AltCounterContentData& other =
+        static_cast<const AltCounterContentData&>(data);
+    return CounterContentData::Equals(other) && GetText() == other.GetText();
+  }
+
+  // Text value of counter() or counters() to be used in ax object.
+  String counter_value_text_;
+};
+
+template <>
+struct DowncastTraits<AltCounterContentData> {
+  static bool AllowFrom(const ContentData& content) {
+    return content.IsAltCounter();
+  }
+};
+
+class QuoteContentData final : public ContentData {
  public:
   explicit QuoteContentData(QuoteType quote) : quote_(quote) {}
 
@@ -336,8 +388,6 @@ struct DowncastTraits<QuoteContentData> {
 };
 
 class NoneContentData final : public ContentData {
-  friend class ContentData;
-
  public:
   explicit NoneContentData() {}
 
@@ -381,7 +431,7 @@ inline bool ShouldUseContentDataForElement(const ContentData* content_data) {
   if (!content_data->IsImage()) {
     return false;
   }
-  if (content_data->Next() && !content_data->Next()->IsAltText()) {
+  if (content_data->Next() && !content_data->Next()->IsAlt()) {
     return false;
   }
 

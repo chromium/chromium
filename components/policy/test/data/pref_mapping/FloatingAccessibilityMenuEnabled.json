@@ -1,28 +1,15 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set).",
-        "prefs": {
-          "settings.a11y.floating_menu": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "FloatingAccessibilityMenuEnabled": true
-        },
-        "prefs": {
-          "settings.a11y.floating_menu": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.a11y.floating_menu",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

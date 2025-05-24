@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/scheduler/dom_scheduler.h"
 #include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
+#include "third_party/blink/renderer/core/scheduler/scheduler_task_context.h"
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -29,17 +30,26 @@ namespace {
 // `V8IdleRequestCallback` to `IdleTask`.
 class V8IdleTask : public IdleTask {
  public:
-  static V8IdleTask* Create(V8IdleRequestCallback* callback) {
-    return MakeGarbageCollected<V8IdleTask>(callback);
+  static V8IdleTask* Create(V8IdleRequestCallback* callback,
+                            ExecutionContext* scheduling_context) {
+    return MakeGarbageCollected<V8IdleTask>(callback, scheduling_context);
   }
 
-  explicit V8IdleTask(V8IdleRequestCallback* callback) : callback_(callback) {
+  V8IdleTask(V8IdleRequestCallback* callback,
+             ExecutionContext* scheduling_context)
+      : callback_(callback) {
     ScriptState* script_state = callback_->CallbackRelevantScriptState();
     auto* tracker =
         scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
     if (tracker && script_state->World().IsMainWorld()) {
       parent_task_ = tracker->RunningTask();
     }
+    auto* signal =
+        DOMScheduler::scheduler(*scheduling_context)
+            ->GetFixedPriorityTaskSignal(
+                script_state, WebSchedulingPriority::kBackgroundPriority);
+    task_context_ = MakeGarbageCollected<SchedulerTaskContext>(
+        scheduling_context, /*abort_source=*/nullptr, signal);
   }
 
   ~V8IdleTask() override = default;
@@ -50,19 +60,11 @@ class V8IdleTask : public IdleTask {
         task_attribution_scope;
     if (auto* tracker = scheduler::TaskAttributionTracker::From(
             script_state->GetIsolate())) {
-      DOMTaskSignal* signal = nullptr;
-      if (RuntimeEnabledFeatures::SchedulerYieldEnabled(
-              ExecutionContext::From(script_state))) {
-        auto* context = ExecutionContext::From(script_state);
-        CHECK(context);
-        signal = DOMScheduler::scheduler(*context)->GetFixedPriorityTaskSignal(
-            script_state, WebSchedulingPriority::kBackgroundPriority);
-      }
       task_attribution_scope =
           tracker->CreateTaskScope(script_state, parent_task_,
                                    scheduler::TaskAttributionTracker::
                                        TaskScopeType::kRequestIdleCallback,
-                                   /*abort_source=*/nullptr, signal);
+                                   task_context_);
     }
     callback_->InvokeAndReportException(nullptr, deadline);
   }
@@ -70,12 +72,14 @@ class V8IdleTask : public IdleTask {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(callback_);
     visitor->Trace(parent_task_);
+    visitor->Trace(task_context_);
     IdleTask::Trace(visitor);
   }
 
  private:
   Member<V8IdleRequestCallback> callback_;
   Member<scheduler::TaskAttributionInfo> parent_task_;
+  Member<SchedulerTaskContext> task_context_;
 };
 
 }  // namespace
@@ -84,7 +88,7 @@ int WindowIdleTasks::requestIdleCallback(LocalDOMWindow& window,
                                          V8IdleRequestCallback* callback,
                                          const IdleRequestOptions* options) {
   return ScriptedIdleTaskController::From(window).RegisterCallback(
-      V8IdleTask::Create(callback), options);
+      V8IdleTask::Create(callback, &window), options);
 }
 
 void WindowIdleTasks::cancelIdleCallback(LocalDOMWindow& window, int id) {

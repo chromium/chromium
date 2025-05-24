@@ -73,20 +73,14 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(bool loading) {
           features::kIntensiveWakeUpThrottling_GracePeriodSeconds_Name,
           kIntensiveWakeUpThrottling_GracePeriodSeconds_Default};
 
-  // Controls the grace period for loaded pages.
-  static const base::FeatureParam<int>
-      kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded{
-          &features::kQuickIntensiveWakeUpThrottlingAfterLoading,
-          "grace_period_seconds_loaded",
-          kIntensiveWakeUpThrottling_GracePeriodSecondsLoaded_Default};
-
   int seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds_Default;
   if (GetIntensiveWakeUpThrottlingPolicyOverride() ==
       PolicyOverride::kNoOverride) {
-    seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds.Get();
-    if (!loading && base::FeatureList::IsEnabled(
-                        features::kQuickIntensiveWakeUpThrottlingAfterLoading))
-      seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded.Get();
+    if (loading) {
+      seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds.Get();
+    } else {
+      seconds = kIntensiveWakeUpThrottling_GracePeriodSecondsLoaded_Default;
+    }
   }
   return base::Seconds(seconds);
 }
@@ -104,25 +98,9 @@ base::TimeDelta GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint() {
       GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis());
 }
 
-BASE_FEATURE(kThreadedScrollPreventRenderingStarvation,
-             "ThreadedScrollPreventRenderingStarvation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-base::TimeDelta GetThreadedScrollRenderingStarvationThreshold() {
-  static const base::FeatureParam<int>
-      kThreadedScrollRenderingStarvationThreshold{
-          &kThreadedScrollPreventRenderingStarvation, "threshold_ms", 100};
-  if (base::FeatureList::IsEnabled(kThreadedScrollPreventRenderingStarvation)) {
-    return base::Milliseconds(
-        kThreadedScrollRenderingStarvationThreshold.Get());
-  }
-  return base::TimeDelta::Max();
-}
-
-BASE_FEATURE(kPrioritizeCompositingAfterDelayTrials,
-             "PrioritizeCompositingAfterDelayTrials",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
+BASE_FEATURE(kThrottleTimedOutIdleTasks,
+             "ThrottleTimedOutIdleTasks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace scheduler
 }  // namespace blink

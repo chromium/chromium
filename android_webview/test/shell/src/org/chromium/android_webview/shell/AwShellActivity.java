@@ -107,25 +107,24 @@ public class AwShellActivity extends Activity {
         AwContents.setShouldDownloadFavicons();
         mUrlTextView.setText(startupUrl);
 
-        mWebContents.addObserver(
-                new WebContentsObserver() {
-                    @Override
-                    public void navigationEntriesChanged() {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            if (mNavigationController.canGoBack()) {
-                                AwShellActivity.this
-                                        .getOnBackInvokedDispatcher()
-                                        .registerOnBackInvokedCallback(
-                                                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
-                                                mOnBackInvokedCallback);
-                            } else if (!mNavigationController.canGoBack()) {
-                                AwShellActivity.this
-                                        .getOnBackInvokedDispatcher()
-                                        .unregisterOnBackInvokedCallback(mOnBackInvokedCallback);
-                            }
-                        }
+        new WebContentsObserver(mWebContents) {
+            @Override
+            public void navigationEntriesChanged() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (mNavigationController.canGoBack()) {
+                        AwShellActivity.this
+                                .getOnBackInvokedDispatcher()
+                                .registerOnBackInvokedCallback(
+                                        OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                                        mOnBackInvokedCallback);
+                    } else if (!mNavigationController.canGoBack()) {
+                        AwShellActivity.this
+                                .getOnBackInvokedDispatcher()
+                                .unregisterOnBackInvokedCallback(mOnBackInvokedCallback);
                     }
-                });
+                }
+            }
+        };
     }
 
     @Override
@@ -138,12 +137,12 @@ public class AwShellActivity extends Activity {
     }
 
     private AwTestContainerView createAwTestContainerView() {
-        final String supportedModels[] = {
+        final String[] supportedModels = {
             "Pixel 6", "Pixel 6 Pro",
         };
         boolean useVulkan = Arrays.asList(supportedModels).contains(Build.MODEL);
         AwTestContainerView.installDrawFnFunctionTable(useVulkan);
-        AwBrowserProcess.start();
+        AwBrowserProcess.startForTesting();
         AwTestContainerView testContainerView = new AwTestContainerView(this, true);
         AwContentsClient awContentsClient =
                 new NullContentsClient() {
@@ -244,7 +243,7 @@ public class AwShellActivity extends Activity {
         final AwSettings awSettings =
                 new AwSettings(
                         /* context= */ this,
-                        /* isAccessFromFileURLsGrantedByDefault= */ false,
+                        /* isAccessFromFileUrlsGrantedByDefault= */ false,
                         /* supportsLegacyQuirks= */ false,
                         /* allowEmptyDocumentPersistence= */ false,
                         /* allowGeolocationOnInsecureOrigins= */ true,

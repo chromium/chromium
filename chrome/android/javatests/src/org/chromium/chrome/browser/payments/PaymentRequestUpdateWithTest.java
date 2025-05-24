@@ -69,7 +69,7 @@ public class PaymentRequestUpdateWithTest {
     @MediumTest
     @Feature({"Payments"})
     public void testUpdateWithEmpty() throws Throwable {
-        mRule.runJavaScriptAndWaitForUIEvent(
+        mRule.runJavaScriptAndWaitForUiEvent(
                 "updateWithEmpty('https://bobpay.test');", mRule.getReadyToPay());
         mRule.clickInOrderSummaryAndWait(mRule.getReadyToPay());
         Assert.assertEquals("USD $5.00", mRule.getOrderSummaryTotal());
@@ -89,7 +89,7 @@ public class PaymentRequestUpdateWithTest {
     @MediumTest
     @Feature({"Payments"})
     public void testUpdateWithTotal() throws Throwable {
-        mRule.runJavaScriptAndWaitForUIEvent(
+        mRule.runJavaScriptAndWaitForUiEvent(
                 "updateWithTotal('https://bobpay.test');", mRule.getReadyToPay());
         mRule.clickInOrderSummaryAndWait(mRule.getReadyToPay());
         Assert.assertEquals("USD $5.00", mRule.getOrderSummaryTotal());
@@ -112,7 +112,7 @@ public class PaymentRequestUpdateWithTest {
     @MediumTest
     @Feature({"Payments"})
     public void testUpdateWithDisplayItems() throws Throwable {
-        mRule.runJavaScriptAndWaitForUIEvent(
+        mRule.runJavaScriptAndWaitForUiEvent(
                 "updateWithDisplayItems('https://bobpay.test');", mRule.getReadyToPay());
         mRule.clickInOrderSummaryAndWait(mRule.getReadyToPay());
         Assert.assertEquals("USD $5.00", mRule.getOrderSummaryTotal());
@@ -135,7 +135,7 @@ public class PaymentRequestUpdateWithTest {
     @MediumTest
     @Feature({"Payments"})
     public void testUpdateWithShippingOptions() throws Throwable {
-        mRule.runJavaScriptAndWaitForUIEvent(
+        mRule.runJavaScriptAndWaitForUiEvent(
                 "updateWithShippingOptions('https://bobpay.test');", mRule.getReadyToPay());
         mRule.clickInOrderSummaryAndWait(mRule.getReadyToPay());
         Assert.assertEquals("USD $5.00", mRule.getOrderSummaryTotal());
@@ -158,7 +158,7 @@ public class PaymentRequestUpdateWithTest {
     @MediumTest
     @Feature({"Payments"})
     public void testUpdateWithModifiers() throws Throwable {
-        mRule.runJavaScriptAndWaitForUIEvent(
+        mRule.runJavaScriptAndWaitForUiEvent(
                 "updateWithModifiers('https://bobpay.test');", mRule.getReadyToPay());
         mRule.clickInOrderSummaryAndWait(mRule.getReadyToPay());
         Assert.assertEquals("USD $5.00", mRule.getOrderSummaryTotal());
@@ -184,7 +184,7 @@ public class PaymentRequestUpdateWithTest {
     @MediumTest
     @Feature({"Payments"})
     public void testUpdateWithError() throws Throwable {
-        mRule.runJavaScriptAndWaitForUIEvent(
+        mRule.runJavaScriptAndWaitForUiEvent(
                 "updateWithError('https://bobpay.test');", mRule.getReadyToPay());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyToPay());
         mRule.clickOnShippingAddressSuggestionOptionAndWait(1, mRule.getReadyForInput());

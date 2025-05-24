@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Default view-timeline
+  assert_equals: expected "100" but got "-1"
+[FAIL] Horizontal view-timeline
+  assert_equals: expected "100" but got "-1"
+[FAIL] Multiple view-timelines on the same element
+  assert_equals: expected "100" but got "-1"
+Harness: the test ran to completion.
+

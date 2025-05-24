@@ -341,12 +341,11 @@ class DeleteStreamDelegate : public TestDelegateBase {
     }
   }
 
-  void OnDataSent() override { NOTREACHED_IN_MIGRATION(); }
+  void OnDataSent() override { NOTREACHED(); }
 
   void OnDataRead(int bytes_read) override {
     if (phase_ == ON_HEADERS_RECEIVED) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     TestDelegateBase::OnDataRead(bytes_read);
     if (phase_ == ON_DATA_READ) {
@@ -357,8 +356,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
 
   void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {
     if (phase_ == ON_HEADERS_RECEIVED || phase_ == ON_DATA_READ) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     TestDelegateBase::OnTrailersReceived(trailers);
     if (phase_ == ON_TRAILERS_RECEIVED) {
@@ -369,8 +367,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
 
   void OnFailed(int error) override {
     if (phase_ != ON_FAILED) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     TestDelegateBase::OnFailed(error);
     DeleteStream();
@@ -416,7 +413,7 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
     // TODO(crbug.com/346835898): Support bidirectional streams in
     // HappyEyeballsV3.
     feature_list_.InitAndDisableFeature(features::kHappyEyeballsV3);
-    ssl_data_.next_proto = kProtoHTTP2;
+    ssl_data_.next_proto = NextProto::kProtoHTTP2;
     ssl_data_.ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
     net_log_observer_.SetObserverCaptureMode(NetLogCaptureMode::kEverything);
@@ -523,7 +520,7 @@ TEST_F(BidirectionalStreamTest, SimplePostRequest) {
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(1, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
@@ -605,7 +602,7 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
 
   // First attempt receives client auth request.
   SSLSocketDataProvider ssl_data1(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-  ssl_data1.next_proto = kProtoHTTP2;
+  ssl_data1.next_proto = NextProto::kProtoHTTP2;
   ssl_data1.cert_request_info = cert_request;
 
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
@@ -629,7 +626,7 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   };
 
   SSLSocketDataProvider ssl_data2(ASYNC, OK);
-  ssl_data2.next_proto = kProtoHTTP2;
+  ssl_data2.next_proto = NextProto::kProtoHTTP2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data2);
   SequencedSocketData socket_data2(reads, writes);
   session_deps_.socket_factory->AddSocketDataProvider(&socket_data2);
@@ -666,7 +663,7 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
 }
 
 // Simulates user calling ReadData after END_STREAM has been received in
@@ -747,7 +744,7 @@ TEST_F(BidirectionalStreamTest, TestReadDataAfterClose) {
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
@@ -832,7 +829,7 @@ TEST_F(BidirectionalStreamTest, TestNetLogContainEntries) {
   EXPECT_EQ("200", delegate->response_headers().find(":status")->second);
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(1, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ("bar", delegate->trailers().find("foo")->second);
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
@@ -985,7 +982,7 @@ TEST_F(BidirectionalStreamTest, TestInterleaveReadDataAndSendData) {
   EXPECT_EQ("200", delegate->response_headers().find(":status")->second);
   EXPECT_EQ(2, delegate->on_data_read_count());
   EXPECT_EQ(3, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
@@ -1047,7 +1044,7 @@ TEST_F(BidirectionalStreamTest, TestCoalesceSmallDataBuffers) {
   EXPECT_EQ("200", delegate->response_headers().find(":status")->second);
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(1, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 
@@ -1132,7 +1129,7 @@ TEST_F(BidirectionalStreamTest, TestCompleteAsyncRead) {
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(0u, delegate->data_received().size());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
@@ -1207,7 +1204,7 @@ TEST_F(BidirectionalStreamTest, TestBuffering) {
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
@@ -1281,7 +1278,7 @@ TEST_F(BidirectionalStreamTest, TestBufferingWithTrailers) {
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ("bar", delegate->trailers().find("foo")->second);
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
@@ -1325,7 +1322,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamAfterSendData) {
   delegate->Start(std::move(request_info), http_session_.get());
   // Send the request and receive response headers.
   sequenced_data_->RunUntilPaused();
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
 
   // Send a DATA frame.
   scoped_refptr<StringIOBuffer> buf =
@@ -1341,11 +1338,10 @@ TEST_F(BidirectionalStreamTest, DeleteStreamAfterSendData) {
   EXPECT_EQ("200", delegate->response_headers().find(":status")->second);
   EXPECT_EQ(0, delegate->on_data_read_count());
   // OnDataSent may or may not have been invoked.
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   // Bytes sent excludes the RST frame.
-  EXPECT_EQ(
-      CountWriteBytes(base::make_span(writes).first(std::size(writes) - 1)),
-      delegate->GetTotalSentBytes());
+  EXPECT_EQ(CountWriteBytes(base::span(writes).first(std::size(writes) - 1)),
+            delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
 
@@ -1391,7 +1387,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringReadData) {
   EXPECT_EQ("200", delegate->response_headers().find(":status")->second);
   // Delete the stream after ReadData returns ERR_IO_PENDING.
   int rv = delegate->ReadData();
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   delegate->DeleteStream();
   sequenced_data_->Resume();
@@ -1399,14 +1395,13 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringReadData) {
 
   EXPECT_EQ(0, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   // Bytes sent excludes the RST frame.
-  EXPECT_EQ(
-      CountWriteBytes(base::make_span(writes).first(std::size(writes) - 1)),
-      delegate->GetTotalSentBytes());
-  // Response body frame isn't read becase stream is deleted once read returns
-  // ERR_IO_PENDING.
-  EXPECT_EQ(CountReadBytes(base::make_span(reads).first(std::size(reads) - 2)),
+  EXPECT_EQ(CountWriteBytes(base::span(writes).first(std::size(writes) - 1)),
+            delegate->GetTotalSentBytes());
+  // Response body frame isn't read because the stream is deleted once read
+  // returns ERR_IO_PENDING.
+  EXPECT_EQ(CountReadBytes(base::span(reads).first(std::size(reads) - 2)),
             delegate->GetTotalReceivedBytes());
 }
 
@@ -1451,10 +1446,10 @@ TEST_F(BidirectionalStreamTest, PropagateProtocolError) {
             delegate->response_headers().find(":status"));
   EXPECT_EQ(0, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   // BidirectionalStreamSpdyStreamJob does not count the bytes sent for |rst|
   // because it is sent after SpdyStream::Delegate::OnClose is called.
-  EXPECT_EQ(CountWriteBytes(base::make_span(writes, 1u)),
+  EXPECT_EQ(CountWriteBytes(base::span(writes, 1u)),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(0, delegate->GetTotalReceivedBytes());
 
@@ -1515,11 +1510,10 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnHeadersReceived) {
   EXPECT_EQ(0, delegate->on_data_sent_count());
   EXPECT_EQ(0, delegate->on_data_read_count());
 
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   // Bytes sent excludes the RST frame.
-  EXPECT_EQ(
-      CountWriteBytes(base::make_span(writes).first(std::size(writes) - 1)),
-      delegate->GetTotalSentBytes());
+  EXPECT_EQ(CountWriteBytes(base::span(writes).first(std::size(writes) - 1)),
+            delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
 
@@ -1569,11 +1563,10 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnDataRead) {
             static_cast<int>(delegate->data_received().size()));
   EXPECT_EQ(0, delegate->on_data_sent_count());
 
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   // Bytes sent excludes the RST frame.
-  EXPECT_EQ(
-      CountWriteBytes(base::make_span(writes).first(std::size(writes) - 1)),
-      delegate->GetTotalSentBytes());
+  EXPECT_EQ(CountWriteBytes(base::span(writes).first(std::size(writes) - 1)),
+            delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
 
@@ -1628,11 +1621,10 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnTrailersReceived) {
   EXPECT_EQ(0, delegate->on_data_sent_count());
   // OnDataRead may or may not have been fired before the stream is
   // deleted.
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   // Bytes sent excludes the RST frame.
-  EXPECT_EQ(
-      CountWriteBytes(base::make_span(writes).first(std::size(writes) - 1)),
-      delegate->GetTotalSentBytes());
+  EXPECT_EQ(CountWriteBytes(base::span(writes).first(std::size(writes) - 1)),
+            delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
 
@@ -1677,11 +1669,10 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnFailed) {
   EXPECT_EQ(0, delegate->on_data_read_count());
   EXPECT_THAT(delegate->error(), IsError(ERR_HTTP2_PROTOCOL_ERROR));
 
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   // Bytes sent excludes the RST frame.
-  EXPECT_EQ(
-      CountWriteBytes(base::make_span(writes).first(std::size(writes) - 1)),
-      delegate->GetTotalSentBytes());
+  EXPECT_EQ(CountWriteBytes(base::span(writes).first(std::size(writes) - 1)),
+            delegate->GetTotalSentBytes());
   EXPECT_EQ(0, delegate->GetTotalReceivedBytes());
 }
 
@@ -1728,7 +1719,7 @@ TEST_F(BidirectionalStreamTest, TestHonorAlternativeServiceHeader) {
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ(alt_svc_header_value, response_headers.find("alt-svc")->second);
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   EXPECT_EQ(kUploadData, delegate->data_received());
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
@@ -1737,7 +1728,8 @@ TEST_F(BidirectionalStreamTest, TestHonorAlternativeServiceHeader) {
       http_session_->http_server_properties()->GetAlternativeServiceInfos(
           url::SchemeHostPort(default_url_), NetworkAnonymizationKey());
   ASSERT_EQ(1u, alternative_service_info_vector.size());
-  AlternativeService alternative_service(kProtoQUIC, "www.example.org", 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "www.example.org", 443);
   EXPECT_EQ(alternative_service,
             alternative_service_info_vector[0].alternative_service());
 }

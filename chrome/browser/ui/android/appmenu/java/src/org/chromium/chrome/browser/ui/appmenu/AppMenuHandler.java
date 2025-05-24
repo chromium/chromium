@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.appmenu;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -14,13 +16,13 @@ import java.lang.annotation.RetentionPolicy;
  * AppMenuObservers about these actions. This interface may be used by classes outside of app_menu
  * to interact with the app menu.
  */
+@NullMarked
 public interface AppMenuHandler {
     @IntDef({
         AppMenuItemType.STANDARD,
         AppMenuItemType.TITLE_BUTTON,
-        AppMenuItemType.THREE_BUTTON_ROW,
-        AppMenuItemType.FOUR_BUTTON_ROW,
-        AppMenuItemType.FIVE_BUTTON_ROW
+        AppMenuItemType.BUTTON_ROW,
+        AppMenuItemType.DIVIDER
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AppMenuItemType {
@@ -33,20 +35,20 @@ public interface AppMenuHandler {
          */
         int TITLE_BUTTON = 1;
 
-        /** Menu item that has three buttons. Every one of these buttons is displayed as an icon. */
-        int THREE_BUTTON_ROW = 2;
+        /**
+         * Menu item that has multiple buttons (no more than 5). Every one of these buttons is
+         * displayed as an icon.
+         */
+        int BUTTON_ROW = 2;
 
-        /** Menu item that has four buttons. Every one of these buttons is displayed as an icon. */
-        int FOUR_BUTTON_ROW = 3;
-
-        /** Menu item that has five buttons. Every one of these buttons is displayed as an icon. */
-        int FIVE_BUTTON_ROW = 4;
+        /** A divider item to distinguish between menu item groupings. */
+        int DIVIDER = 3;
 
         /**
          * The number of menu item types specified above. If you add a menu item type you MUST
          * increment this.
          */
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 4;
     }
 
     /**

@@ -13,7 +13,7 @@ export function installMock<T extends object>(clazz: Constructor<T>):
   const installer =
       (clazz as unknown as {setInstance: Installer<T>}).setInstance;
   const mock = TestMock.fromClass(clazz);
-  installer!(mock);
+  installer(mock);
   return mock;
 }
 

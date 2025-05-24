@@ -1,7 +1,6 @@
 include_rules = [
   "+net",
   "+third_party/angle",
-  "+third_party/amd",
   "+third_party/blink/public/common/tokens",
   "+third_party/nvml",
   "+third_party/re2",

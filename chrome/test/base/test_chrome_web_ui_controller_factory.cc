@@ -16,14 +16,11 @@ using content::WebContents;
 using content::WebUI;
 using content::WebUIController;
 
-TestChromeWebUIControllerFactory::WebUIProvider::~WebUIProvider() {
-}
+TestChromeWebUIControllerFactory::WebUIProvider::~WebUIProvider() = default;
 
-TestChromeWebUIControllerFactory::TestChromeWebUIControllerFactory() {
-}
+TestChromeWebUIControllerFactory::TestChromeWebUIControllerFactory() = default;
 
-TestChromeWebUIControllerFactory::~TestChromeWebUIControllerFactory() {
-}
+TestChromeWebUIControllerFactory::~TestChromeWebUIControllerFactory() = default;
 
 void TestChromeWebUIControllerFactory::set_webui_host(
     const std::string& webui_host) {

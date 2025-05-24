@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -194,7 +193,6 @@ void CrxDownloader::HandleDownloadError(
 
   // Try downloading using the next downloader.
   if (successor_ && !urls_.empty()) {
-    metrics::RecordCRXDownloaderFallback();
     successor_->StartDownload(urls_, expected_hash_,
                               std::move(download_callback_));
     return;

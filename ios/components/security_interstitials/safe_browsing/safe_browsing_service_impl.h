@@ -36,10 +36,11 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   SafeBrowsingServiceImpl& operator=(const SafeBrowsingServiceImpl&) = delete;
 
   // SafeBrowsingService:
-  void Initialize(PrefService* prefs,
-                  const base::FilePath& user_data_path,
-                  safe_browsing::SafeBrowsingMetricsCollector*
-                      safe_browsing_metrics_collector) override;
+  void Initialize(const base::FilePath& user_data_path) override;
+  void OnBrowserStateCreated(
+      PrefService* prefs,
+      safe_browsing::SafeBrowsingMetricsCollector* metrics_collector) override;
+  void OnBrowserStateDestroyed(PrefService* prefs) override;
   void ShutDown() override;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> CreateUrlChecker(
       network::mojom::RequestDestination request_destination,
@@ -79,7 +80,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
     // SafeBrowsingDatabaseManager.
     void Initialize(mojo::PendingReceiver<network::mojom::NetworkContext>
                         network_context_receiver,
-                    const base::FilePath& safe_browsing_data_path);
+                    const base::FilePath& safe_browsing_data_path,
+                    const std::string& user_agent);
 
     // Disables Safe Browsing, and destroys the network context and URL loader
     // factory used by the SafeBrowsingDatabaseManager.
@@ -94,7 +96,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
 
     // Constructs a URLRequestContext, using the given path as the location for
     // the cookie store.
-    void SetUpURLRequestContext(const base::FilePath& safe_browsing_data_path);
+    void SetUpURLRequestContext(const base::FilePath& safe_browsing_data_path,
+                                const std::string& user_agent);
 
     // This is wrapped by `network_context`.
     std::unique_ptr<net::URLRequestContext> url_request_context_;
@@ -137,8 +140,9 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   // This tracks whether the service is running.
   bool enabled_ = false;
 
-  // This watches for changes to the Safe Browsing opt-out preference.
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  // Holds the preferences watchers for the BrowserStates.
+  std::map<PrefService*, std::unique_ptr<PrefChangeRegistrar>>
+      pref_change_registrars_;
 
   // Encapsulates methods and objects that are used on the IO thread.
   scoped_refptr<IOThreadEnabler> io_thread_enabler_;

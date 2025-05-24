@@ -107,10 +107,10 @@ bool HardwareVideoEncodingPreSandboxHook(
   // sandbox type to exist only in those configurations so that the presandbox
   // hook is only reached in those scenarios. As it is now,
   // kHardwareVideoEncoding exists for all ash-chrome builds because
-  // chrome/browser/ash/arc/video/gpu_arc_video_service_host.cc is expected to
-  // depend on it eventually and that file is built for ash-chrome regardless
-  // of VA-API/V4L2. That means that bots like linux-chromeos-rel would end up
-  // reaching this presandbox hook.
+  // chromeos/ash/experiences/arc/video/gpu_arc_video_service_host.cc is
+  // expected to depend on it eventually and that file is built for ash-chrome
+  // regardless of VA-API/V4L2. That means that bots like linux-chromeos-rel
+  // would end up reaching this presandbox hook.
 #if BUILDFLAG(USE_VAAPI)
   VaapiWrapper::PreSandboxInitialization(/*allow_disabling_global_lock=*/true);
 

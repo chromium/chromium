@@ -141,6 +141,54 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
     return SnappedFlags() !=
            static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
   }
+  // For evaluating scroll-state(scrollable: left/right)
+  virtual ContainerScrollableFlags ScrollableHorizontal() const {
+    return static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
+  }
+  // For evaluating scroll-state(scrollable: top/bottom)
+  virtual ContainerScrollableFlags ScrollableVertical() const {
+    return static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
+  }
+  // For evaluating scroll-state(scrollable: inline-start/inline-end)
+  virtual ContainerScrollableFlags ScrollableInline() const {
+    return static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
+  }
+  // For evaluating scroll-state(scrollable: block-start/block-end)
+  virtual ContainerScrollableFlags ScrollableBlock() const {
+    return static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
+  }
+  // For boolean context evaluation
+  bool Scrollable() const {
+    return ScrollableHorizontal() != static_cast<ContainerScrollableFlags>(
+                                         ContainerScrollable::kNone) ||
+           ScrollableVertical() != static_cast<ContainerScrollableFlags>(
+                                       ContainerScrollable::kNone);
+  }
+  // For evaluating scroll-state(scroll-direction: left/right)
+  virtual ContainerScrollDirection ScrollDirectionHorizontal() const {
+    return ContainerScrollDirection::kNone;
+  }
+  // For evaluating scroll-state(scroll-direction: up/down)
+  virtual ContainerScrollDirection ScrollDirectionVertical() const {
+    return ContainerScrollDirection::kNone;
+  }
+  // For evaluating scroll-state(scroll-direction: inline-start/inline-end)
+  virtual ContainerScrollDirection ScrollDirectionInline() const {
+    return ContainerScrollDirection::kNone;
+  }
+  // For evaluating scroll-state(scroll-direction: block-start/block-end)
+  virtual ContainerScrollDirection ScrollDirectionBlock() const {
+    return ContainerScrollDirection::kNone;
+  }
+  // For boolean context evaluation
+  bool ScrollDirection() const {
+    return ScrollDirectionHorizontal() != ContainerScrollDirection::kNone ||
+           ScrollDirectionVertical() != ContainerScrollDirection::kNone;
+  }
+  // Return the currently applied position-try-fallback for an anchored element.
+  // 0 means no position-try-fallback is applied. Otherwise a 1-based index into
+  // the list of fallbacks of the computed position-try-fallbacks property.
+  virtual int AnchoredFallback() const { NOTREACHED(); }
   // Returns the container element used to retrieve base style and parent style
   // when computing the computed value of a style() container query.
   virtual Element* ContainerElement() const { return nullptr; }
@@ -150,6 +198,9 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   // CSSLengthResolver override.
   void ReferenceTreeScope() const override {}
   void ReferenceAnchor() const override {}
+  void ReferenceSibling() const override {}
+
+  Element* GetElement() const override { NOTREACHED(); }
 
  protected:
   static double CalculateViewportWidth(LocalFrame*);

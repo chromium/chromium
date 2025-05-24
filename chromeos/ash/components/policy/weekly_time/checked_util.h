@@ -31,6 +31,16 @@ bool IntervalsContainTime(
     const std::vector<WeeklyTimeIntervalChecked>& intervals,
     const WeeklyTimeChecked& time);
 
+// Returns a `WeeklyTimeChecked` that corresponds to the first next interval
+// start or end time that comes after `time`, or std::nullopt in case intervals
+// is empty.
+// NB: If there's an event at the exact same time as `time`, it is ignored, and
+// the one after that is used for the calculation.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
+std::optional<WeeklyTimeChecked> GetNextEvent(
+    const std::vector<WeeklyTimeIntervalChecked>& intervals,
+    const WeeklyTimeChecked& time);
+
 // Returns a TimeDelta from `time` until the first next interval start or end
 // time, or std::nullopt in case intervals is empty.
 // NB: If there's an event at the exact same time as `time`, it is ignored, and
@@ -40,6 +50,15 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 std::optional<base::TimeDelta> GetDurationToNextEvent(
     const std::vector<WeeklyTimeIntervalChecked>& intervals,
     const WeeklyTimeChecked& time);
+
+// Adds the `offset` to the passed in `utc` time, but the calculation is done in
+// local time (result = UTC(Local(utc) + offset)). This is to properly handle
+// any DST changes that might occur.
+// In case of any errors (eg. in Germany "Sun, 31 Mar 2024 02:00:00" local time
+// doesn't exist because of DST; at 2:00 the clock is moved to 3:00), does the
+// calculation in UTC time.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
+base::Time AddOffsetInLocalTime(base::Time utc, base::TimeDelta offset);
 
 }  // namespace policy::weekly_time
 

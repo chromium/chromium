@@ -9,7 +9,7 @@
 import {IdleTaskTracker} from '//ios/web/annotations/resources/text_tasks.js';
 import {expectEq, fail, FakeTaskTimer, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
-class TestTextTasks extends TestSuite {
+export class TestTextTasks extends TestSuite {
   // Checks for proper task timing when there's no user activity recorded.
   testIdleTaskTrackerNoActivity() {
     const timer = new FakeTaskTimer();
@@ -126,5 +126,3 @@ class TestTextTasks extends TestSuite {
     expectEq(timer.timers.size, 0, 'number of timers :');
   }
 }
-
-export {TestTextTasks}

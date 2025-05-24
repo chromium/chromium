@@ -4,12 +4,16 @@
 
 package org.chromium.base.task;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayDeque;
 import java.util.concurrent.Executor;
 
+@NullMarked
 class SerialExecutor implements Executor {
     final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
-    Runnable mActive;
+    @Nullable Runnable mActive;
 
     @Override
     public synchronized void execute(final Runnable r) {

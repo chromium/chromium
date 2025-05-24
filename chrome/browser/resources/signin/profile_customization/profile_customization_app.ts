@@ -8,8 +8,9 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
-import './strings.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import '/strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -81,14 +82,15 @@ export class ProfileCustomizationAppElement extends
     };
   }
 
-  protected isManaged_: boolean = false;
-  protected profileName_: string = '';
-  protected pictureUrl_: string;
-  protected welcomeTitle_: string;
-  protected availableIcons_: AvatarIcon[] = [];
-  protected selectedAvatar_: AvatarIcon;
-  private confirmedAvatar_: AvatarIcon;
-  protected isLocalProfileCreation_: boolean =
+  protected accessor isManaged_: boolean = false;
+  protected hasEnterpriseLabel: boolean = false;
+  protected accessor profileName_: string = '';
+  protected accessor pictureUrl_: string = '';
+  protected accessor welcomeTitle_: string = '';
+  protected accessor availableIcons_: AvatarIcon[] = [];
+  protected accessor selectedAvatar_: AvatarIcon|null = null;
+  private confirmedAvatar_: AvatarIcon|null = null;
+  protected accessor isLocalProfileCreation_: boolean =
       loadTimeData.getBoolean('isLocalProfileCreation');
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
       ProfileCustomizationBrowserProxyImpl.getInstance();
@@ -130,6 +132,7 @@ export class ProfileCustomizationAppElement extends
         '--header-background-color', profileInfo.backgroundColor);
     this.pictureUrl_ = profileInfo.pictureUrl;
     this.isManaged_ = profileInfo.isManaged;
+    this.hasEnterpriseLabel = profileInfo.hasEnterpriseLabel;
     this.welcomeTitle_ = this.isLocalProfileCreation_ ?
         this.i18n('localProfileCreationTitle') :
         this.i18n('profileCustomizationTitle');
@@ -159,10 +162,10 @@ export class ProfileCustomizationAppElement extends
     // there is only one icon marked as selected.
     icons.forEach((icon, index) => {
       if (icon.selected) {
-        icons[index].selected = false;
-        this.confirmedAvatar_ = icons[index];
+        icons[index]!.selected = false;
+        this.confirmedAvatar_ = icons[index]!;
         if (!this.selectedAvatar_) {
-          this.selectedAvatar_ = icons[index];
+          this.selectedAvatar_ = icons[index]!;
         }
       }
     });
@@ -171,6 +174,7 @@ export class ProfileCustomizationAppElement extends
 
   protected onSelectAvatarConfirmClicked_() {
     assert(this.isLocalProfileCreation_);
+    assert(this.selectedAvatar_);
     this.profileCustomizationBrowserProxy_.setAvatarIcon(
         this.selectedAvatar_.index);
     this.confirmedAvatar_ = this.selectedAvatar_;

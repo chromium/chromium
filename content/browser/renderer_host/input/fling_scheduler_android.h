@@ -67,8 +67,10 @@ class CONTENT_EXPORT FlingSchedulerAndroid
   void OnViewAndroidDestroyed() override;
 
   // ui::HostBeginFrameObserver::SimpleBeginFrameObserver implementation.
-  void OnBeginFrame(base::TimeTicks frame_begin_time,
-                    base::TimeDelta frame_interval) override;
+  void OnBeginFrame(
+      base::TimeTicks frame_begin_time,
+      base::TimeDelta frame_interval,
+      std::optional<base::TimeTicks> first_coalesced_frame_begin_time) override;
   void OnBeginFrameSourceShuttingDown() override;
 
   raw_ptr<ui::ViewAndroid> observed_view_ = nullptr;

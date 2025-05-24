@@ -1,3 +1,5 @@
+# Placeholder: load proto_library
+
 package(
     default_visibility = [
         "//visibility:public",

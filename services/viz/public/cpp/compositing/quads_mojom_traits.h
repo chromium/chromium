@@ -13,6 +13,7 @@
 #include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
+#include "cc/mojom/paint_flags_mojom_traits.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
@@ -56,8 +57,7 @@ struct EnumTraits<viz::mojom::ProtectedVideoState, gfx::ProtectedVideoType> {
       case gfx::ProtectedVideoType::kSoftwareProtected:
         return viz::mojom::ProtectedVideoState::kSoftwareProtected;
     }
-    NOTREACHED_IN_MIGRATION();
-    return viz::mojom::ProtectedVideoState::kClear;
+    NOTREACHED();
   }
 
   static bool FromMojom(viz::mojom::ProtectedVideoState input,
@@ -73,8 +73,7 @@ struct EnumTraits<viz::mojom::ProtectedVideoState, gfx::ProtectedVideoType> {
         *out = gfx::ProtectedVideoType::kSoftwareProtected;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -89,8 +88,7 @@ struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
       case viz::OverlayPriority::kRequired:
         return viz::mojom::OverlayPriority::kRequired;
     }
-    NOTREACHED_IN_MIGRATION();
-    return viz::mojom::OverlayPriority::kLow;
+    NOTREACHED();
   }
 
   static bool FromMojom(viz::mojom::OverlayPriority input,
@@ -106,8 +104,7 @@ struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
         *out = viz::OverlayPriority::kRequired;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -156,8 +153,7 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
       case viz::DrawQuad::Material::kSharedElement:
         return viz::mojom::DrawQuadStateDataView::Tag::kSharedElementQuadState;
     }
-    NOTREACHED_IN_MIGRATION();
-    return viz::mojom::DrawQuadStateDataView::Tag::kDebugBorderQuadState;
+    NOTREACHED();
   }
 
   static const viz::DrawQuad& debug_border_quad_state(
@@ -220,18 +216,17 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
       case viz::mojom::DrawQuadStateDataView::Tag::kSharedElementQuadState:
         return data.ReadSharedElementQuadState(out);
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
 template <>
 struct StructTraits<viz::mojom::SharedElementQuadStateDataView, viz::DrawQuad> {
-  static const viz::ViewTransitionElementResourceId& resource_id(
+  static const viz::ViewTransitionElementResourceId& element_resource_id(
       const viz::DrawQuad& input) {
     const viz::SharedElementDrawQuad* quad =
         viz::SharedElementDrawQuad::MaterialCast(&input);
-    return quad->resource_id;
+    return quad->element_resource_id;
   }
 
   static bool Read(viz::mojom::SharedElementQuadStateDataView data,
@@ -388,6 +383,20 @@ struct StructTraits<viz::mojom::SurfaceQuadStateDataView, viz::DrawQuad> {
     return quad->allow_merge;
   }
 
+  static std::optional<cc::PaintFlags::FilterQuality>
+  override_child_filter_quality(const viz::DrawQuad& input) {
+    const viz::SurfaceDrawQuad* quad =
+        viz::SurfaceDrawQuad::MaterialCast(&input);
+    return quad->override_child_filter_quality;
+  }
+
+  static std::optional<cc::PaintFlags::DynamicRangeLimitMixture>
+  override_child_dynamic_range_limit(const viz::DrawQuad& input) {
+    const viz::SurfaceDrawQuad* quad =
+        viz::SurfaceDrawQuad::MaterialCast(&input);
+    return quad->override_child_dynamic_range_limit;
+  }
+
   static bool Read(viz::mojom::SurfaceQuadStateDataView data,
                    viz::DrawQuad* out);
 };
@@ -397,13 +406,7 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
   static viz::ResourceId resource_id(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->resource_id();
-  }
-
-  static const gfx::Size& resource_size_in_pixels(const viz::DrawQuad& input) {
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->resource_size_in_pixels();
+    return quad->resource_id;
   }
 
   static viz::TextureDrawQuad::RoundedDisplayMasksInfo
@@ -411,12 +414,6 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
     return quad->rounded_display_masks_info;
-  }
-
-  static bool premultiplied_alpha(const viz::DrawQuad& input) {
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->premultiplied_alpha;
   }
 
   static const gfx::PointF& uv_top_left(const viz::DrawQuad& input) {
@@ -437,12 +434,6 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->background_color;
   }
 
-  static bool y_flipped(const viz::DrawQuad& input) {
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->y_flipped;
-  }
-
   static bool force_rgbx(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
@@ -455,16 +446,17 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->nearest_neighbor;
   }
 
+  static cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit(
+      const viz::DrawQuad& input) {
+    const viz::TextureDrawQuad* quad =
+        viz::TextureDrawQuad::MaterialCast(&input);
+    return quad->dynamic_range_limit;
+  }
+
   static bool secure_output_only(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
     return quad->secure_output_only;
-  }
-
-  static bool is_stream_video(const viz::DrawQuad& input) {
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->is_stream_video;
   }
 
   static bool is_video_frame(const viz::DrawQuad& input) {
@@ -510,11 +502,6 @@ struct StructTraits<viz::mojom::TileQuadStateDataView, viz::DrawQuad> {
     return quad->texture_size;
   }
 
-  static bool is_premultiplied(const viz::DrawQuad& input) {
-    const viz::TileDrawQuad* quad = viz::TileDrawQuad::MaterialCast(&input);
-    return quad->is_premultiplied;
-  }
-
   static bool nearest_neighbor(const viz::DrawQuad& input) {
     const viz::TileDrawQuad* quad = viz::TileDrawQuad::MaterialCast(&input);
     return quad->nearest_neighbor;
@@ -522,7 +509,7 @@ struct StructTraits<viz::mojom::TileQuadStateDataView, viz::DrawQuad> {
 
   static viz::ResourceId resource_id(const viz::DrawQuad& input) {
     const viz::TileDrawQuad* quad = viz::TileDrawQuad::MaterialCast(&input);
-    return quad->resource_id();
+    return quad->resource_id;
   }
 
   static bool force_anti_aliasing_off(const viz::DrawQuad& input) {

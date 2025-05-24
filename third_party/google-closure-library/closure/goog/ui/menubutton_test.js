@@ -68,7 +68,7 @@ function MyFakeEvent(keyCode, eventType = KeyHandler.EventType.KEY) {
   /** @suppress {globalThis} suppression added to enable type checking */
   this.propagationStopped = false;
   /** @suppress {globalThis} suppression added to enable type checking */
-  this.preventDefault = goog.nullFunction;
+  this.preventDefault = () => {};
   /** @suppress {globalThis} suppression added to enable type checking */
   this.stopPropagation = function() {
     /** @suppress {globalThis} suppression added to enable type checking */
@@ -490,7 +490,7 @@ testSuite({
     button.decorate(node);
     const mockTimer = new Timer();
     // Don't start the timer.  We manually dispatch the Tick event.
-    mockTimer.start = goog.nullFunction;
+    mockTimer.start = () => {};
     /** @suppress {visibility} suppression added to enable type checking */
     button.timer_ = mockTimer;
 
@@ -603,7 +603,7 @@ testSuite({
     button.decorate(node);
     const mockTimer = new Timer();
     // Don't start the timer.  We manually dispatch the Tick event.
-    mockTimer.start = goog.nullFunction;
+    mockTimer.start = () => {};
     /** @suppress {visibility} suppression added to enable type checking */
     button.timer_ = mockTimer;
 

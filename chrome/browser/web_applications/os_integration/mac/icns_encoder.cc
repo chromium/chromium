@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -95,8 +94,8 @@ bool IcnsEncoder::AddImage(const gfx::Image& image) {
       bitmap.width() != bitmap.height())
     return false;
 
-  const IcnsBlockTypes* block_types = base::ranges::find(
-      kIcnsBlockTypes, bitmap.width(), &IcnsBlockTypes::size);
+  const IcnsBlockTypes* block_types =
+      std::ranges::find(kIcnsBlockTypes, bitmap.width(), &IcnsBlockTypes::size);
   if (block_types == std::end(kIcnsBlockTypes))
     return false;
 
@@ -114,12 +113,13 @@ bool IcnsEncoder::AddImage(const gfx::Image& image) {
     AppendBlock(block_types->mask_type, std::move(bytes.a));
   } else {
     DCHECK(block_types->png_type != 0);
-    std::vector<uint8_t> png_data;
-    if (!gfx::PNGCodec::EncodeBGRASkBitmap(
-            bitmap, /*discard_transparancy=*/false, &png_data)) {
+    std::optional<std::vector<uint8_t>> png_data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                          /*discard_transparency=*/false);
+    if (!png_data) {
       return false;
     }
-    AppendBlock(block_types->png_type, std::move(png_data));
+    AppendBlock(block_types->png_type, std::move(png_data).value());
   }
   return true;
 }

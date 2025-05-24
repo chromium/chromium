@@ -4,11 +4,14 @@
 
 #include "services/network/test/trust_token_request_handler.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -146,8 +149,6 @@ TrustTokenRequestHandler::~TrustTokenRequestHandler() = default;
 std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   base::AutoLock lock(mutex_);
 
-  std::string ret;
-  JSONStringValueSerializer serializer(&ret);
 
   base::Value::Dict dict;
   const std::string protocol_string = internal::ProtocolVersionToString(
@@ -160,8 +161,7 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   for (size_t i = 0; i < rep_->issuance_keys.size(); ++i) {
     dict.SetByDottedPath(
         protocol_string + ".keys." + base::NumberToString(i) + ".Y",
-        base::Base64Encode(
-            base::make_span(rep_->issuance_keys[i].verification)));
+        base::Base64Encode(base::span(rep_->issuance_keys[i].verification)));
     dict.SetByDottedPath(
         protocol_string + ".keys." + base::NumberToString(i) + ".expiry",
         base::NumberToString(
@@ -172,8 +172,9 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   // It's OK to be a bit crashy in exceptional failure cases because it
   // indicates a serious coding error in this test-only code; we'd like to find
   // this out sooner rather than later.
-  CHECK(serializer.Serialize(dict));
-  return ret;
+  std::optional<std::string> ret = base::WriteJson(dict);
+  CHECK(ret);
+  return *ret;
 }
 
 std::optional<std::string> TrustTokenRequestHandler::Issue(
@@ -208,7 +209,7 @@ std::optional<std::string> TrustTokenRequestHandler::Issue(
             issuer_ctx.get(),
             &decoded_issuance_response.mutable_ptr()->AsEphemeralRawAddr(),
             decoded_issuance_response.mutable_len(), &num_tokens_issued,
-            base::as_bytes(base::make_span(decoded_issuance_request)).data(),
+            base::as_byte_span(decoded_issuance_request).data(),
             decoded_issuance_request.size(),
             /*public_metadata=*/static_cast<uint32_t>(i), kPrivateMetadata,
             rep_->batch_size)) {
@@ -250,7 +251,7 @@ std::optional<std::string> TrustTokenRequestHandler::Redeem(
           &received_private_metadata, &redeemed_token,
           &redeemed_client_data.mutable_ptr()->AsEphemeralRawAddr(),
           redeemed_client_data.mutable_len(),
-          base::as_bytes(base::make_span(decoded_redemption_request)).data(),
+          base::as_byte_span(decoded_redemption_request).data(),
           decoded_redemption_request.size())) {
     return std::nullopt;
   }
@@ -259,8 +260,8 @@ std::optional<std::string> TrustTokenRequestHandler::Redeem(
   // leaving scope.
   bssl::UniquePtr<TRUST_TOKEN> redeemed_token_scoper(redeemed_token);
 
-  return base::Base64Encode(base::as_bytes(base::make_span(base::StringPrintf(
-      "%d:%d", received_public_metadata, received_private_metadata))));
+  return base::Base64Encode(base::as_byte_span(base::StringPrintf(
+      "%d:%d", received_public_metadata, received_private_metadata)));
 }
 
 void TrustTokenRequestHandler::RecordSignedRequest(

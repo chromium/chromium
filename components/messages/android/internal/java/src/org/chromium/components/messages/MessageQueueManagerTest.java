@@ -47,7 +47,7 @@ import org.chromium.ui.base.WindowAndroid;
 @EnableFeatures({MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS})
 public class MessageQueueManagerTest {
 
-    private MessageQueueDelegate mEmptyDelegate =
+    private final MessageQueueDelegate mEmptyDelegate =
             new MessageQueueDelegate() {
                 boolean mIsReadyForShowing;
 
@@ -89,7 +89,7 @@ public class MessageQueueManagerTest {
                 }
             };
 
-    private class EmptyMessageStateHandler implements MessageStateHandler {
+    private static class EmptyMessageStateHandler implements MessageStateHandler {
 
         private int mId = MessageIdentifier.TEST_MESSAGE;
 

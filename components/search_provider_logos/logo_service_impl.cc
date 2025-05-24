@@ -249,7 +249,9 @@ void LogoServiceImpl::GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) {
   const bool is_google = template_url->url_ref().HasGoogleBaseURLs(
       template_url_service_->search_terms_data());
   if (is_google) {
-    // TODO(treib): Put the Google doodle URL into prepopulated_engines.json.
+    // Note: Ideally the Google doodle URL would be specified in
+    // prepopulated_engines.json, but there is some custom logic in
+    // `GetGoogleDoodleURL()` that can't be represented in the static file.
     base_url =
         GURL(template_url_service_->search_terms_data().GoogleBaseURLValue());
     doodle_url = search_provider_logos::GetGoogleDoodleURL(base_url);
@@ -503,6 +505,7 @@ void LogoServiceImpl::FetchLogo() {
         })");
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
+  request->site_for_cookies = net::SiteForCookies::FromUrl(url);
   loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader_->DownloadToString(
@@ -678,8 +681,7 @@ void LogoServiceImpl::OnFreshLogoAvailable(
       break;
 
     case DOWNLOAD_OUTCOME_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   NotifyAndClear(&on_fresh_encoded_logo_, &on_fresh_decoded_logo_,

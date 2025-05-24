@@ -7,8 +7,10 @@ package org.chromium.chrome.test.transit.tabmodel;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,19 +35,22 @@ public class TabGroupExistsCondition extends UiThreadCondition {
     @Override
     protected ConditionStatus checkWithSuppliers() {
         TabGroupModelFilter groupFilter =
-                (TabGroupModelFilter)
-                        mTabModelSelectorSupplier
-                                .get()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(mIncognito);
-        List<Integer> relatedTabIds =
-                new ArrayList<>(groupFilter.getRelatedTabIds(mTabIdsToGroup.get(0)));
-        if (relatedTabIds.isEmpty()) {
+                mTabModelSelectorSupplier
+                        .get()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(mIncognito);
+        List<Tab> relatedTabs = groupFilter.getRelatedTabList(mTabIdsToGroup.get(0));
+        if (relatedTabs.isEmpty()) {
             return notFulfilled("relatedTabIds is empty");
         }
 
-        Collections.sort(relatedTabIds);
-        return whether(mTabIdsToGroup.equals(relatedTabIds), "relatedTabIds: %s", relatedTabIds);
+        List<@TabId Integer> tabIds = new ArrayList<>(relatedTabs.size());
+        for (Tab tab : relatedTabs) {
+            tabIds.add(tab.getId());
+        }
+
+        Collections.sort(tabIds);
+        return whether(mTabIdsToGroup.equals(tabIds), "tabIds: %s", tabIds);
     }
 
     @Override

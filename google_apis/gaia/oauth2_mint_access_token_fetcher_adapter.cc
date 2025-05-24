@@ -12,42 +12,58 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+#include "google_apis/gaia/token_binding_response_encryption_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
-constexpr char kTokenBindingAssertionSentinel[] = "DBSC_CHALLENGE_IF_REQUIRED";
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(EncryptionError)
-enum class EncryptionError {
-  kResponseUnexpectedlyEncrypted = 0,
-  kDecryptionFailed = 1,
-  kMaxValue = kDecryptionFailed
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:BoundOAuth2TokenFetchEncryptionError)
-
-void RecordEncryptionError(EncryptionError error) {
+void RecordEncryptionError(TokenBindingResponseEncryptionError error) {
   base::UmaHistogramEnumeration(
       "Signin.OAuth2MintToken.BoundFetchEncryptionError", error);
 }
 
-void RecordFetchAuthError(const GoogleServiceAuthError& error) {
-  base::UmaHistogramEnumeration("Signin.OAuth2MintToken.BoundFetchAuthError",
-                                error.state(),
+std::string_view GetAssertionTypeHistogramSuffix(
+    const std::string& binding_key_assertion) {
+  if (binding_key_assertion.empty()) {
+    return ".NoAssertion";
+  }
+
+  if (binding_key_assertion == GaiaConstants::kTokenBindingAssertionSentinel) {
+    return ".ChallengeSentinel";
+  }
+
+  if (binding_key_assertion ==
+      GaiaConstants::kTokenBindingAssertionFailedPlaceholder) {
+    return ".AssertionFailed";
+  }
+
+  return ".SignedAssertion";
+}
+
+void RecordFetchAuthError(const GoogleServiceAuthError& error,
+                          const std::string& binding_key_assertion) {
+  static constexpr std::string_view kFetchAuthErrorHistogram =
+      "Signin.OAuth2MintToken.BoundFetchAuthError";
+  base::UmaHistogramEnumeration(kFetchAuthErrorHistogram, error.state(),
                                 GoogleServiceAuthError::NUM_STATES);
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({kFetchAuthErrorHistogram,
+                    GetAssertionTypeHistogramSuffix(binding_key_assertion)}),
+      error.state(), GoogleServiceAuthError::NUM_STATES);
 }
-}
+}  // namespace
 
 OAuth2MintAccessTokenFetcherAdapter::OAuth2MintAccessTokenFetcherAdapter(
     OAuth2AccessTokenConsumer* consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::string& user_gaia_id,
+    const GaiaId& user_gaia_id,
     const std::string& refresh_token,
     const std::string& device_id,
     const std::string& client_version,
@@ -72,7 +88,7 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
     // For now, `OAuth2MintAccessTokenFetcherAdapter` is only used with bound
     // tokens, so we can attach it unconditionally. This needs to be revised in
     // the future.
-    binding_key_assertion_ = kTokenBindingAssertionSentinel;
+    binding_key_assertion_ = GaiaConstants::kTokenBindingAssertionSentinel;
   }
   std::string bound_oauth_token = gaia::CreateBoundOAuthToken(
       user_gaia_id_, refresh_token_, binding_key_assertion_);
@@ -116,7 +132,8 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
   std::string decrypted_token;
   if (result.is_token_encrypted) {
     if (token_decryptor_.is_null()) {
-      RecordEncryptionError(EncryptionError::kResponseUnexpectedlyEncrypted);
+      RecordEncryptionError(
+          TokenBindingResponseEncryptionError::kResponseUnexpectedlyEncrypted);
       RecordMetricsAndFireError(
           GoogleServiceAuthError::FromUnexpectedServiceResponse(
               "Unexpectedly received an encrypted token"));
@@ -124,14 +141,20 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
     }
     std::string decryption_result = token_decryptor_.Run(result.access_token);
     if (decryption_result.empty()) {
-      RecordEncryptionError(EncryptionError::kDecryptionFailed);
+      RecordEncryptionError(
+          TokenBindingResponseEncryptionError::kDecryptionFailed);
       RecordMetricsAndFireError(
           GoogleServiceAuthError::FromUnexpectedServiceResponse(
               "Failed to decrypt token"));
       return;
+    } else {
+      RecordEncryptionError(
+          TokenBindingResponseEncryptionError::kSuccessfullyDecrypted);
     }
     decrypted_token = std::move(decryption_result);
   } else {
+    RecordEncryptionError(
+        TokenBindingResponseEncryptionError::kSuccessNoEncryption);
     decrypted_token = std::move(result.access_token);
   }
   // The token will expire in `time_to_live` seconds. Take a 10% error margin to
@@ -140,7 +163,8 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
   OAuth2AccessTokenConsumer::TokenResponse::Builder response_builder;
   response_builder.WithAccessToken(decrypted_token)
       .WithExpirationTime(expiration_time);
-  RecordFetchAuthError(GoogleServiceAuthError::AuthErrorNone());
+  RecordFetchAuthError(GoogleServiceAuthError::AuthErrorNone(),
+                       binding_key_assertion_);
   FireOnGetTokenSuccess(response_builder.build());
 }
 void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenFailure(
@@ -150,12 +174,13 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenFailure(
 void OAuth2MintAccessTokenFetcherAdapter::OnRemoteConsentSuccess(
     const RemoteConsentResolutionData& resolution_data) {
   RecordMetricsAndFireError(
-      GoogleServiceAuthError::FromUnexpectedServiceResponse(
-          "Unexpected remote consent response received."));
+      GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kRemoteConsentResolutionRequired));
 }
 
 void OAuth2MintAccessTokenFetcherAdapter::RecordMetricsAndFireError(
     const GoogleServiceAuthError& error) {
-  RecordFetchAuthError(error);
+  RecordFetchAuthError(error, binding_key_assertion_);
   FireOnGetTokenFailure(error);
 }

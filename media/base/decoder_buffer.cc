@@ -5,9 +5,13 @@
 #include "media/base/decoder_buffer.h"
 
 #include <sstream>
+#include <variant>
 
 #include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
+#include "base/types/pass_key.h"
 #include "media/base/subsample_entry.h"
 
 namespace media {
@@ -53,18 +57,37 @@ DecoderBuffer::DecoderBuffer(DecoderBufferType decoder_buffer_type,
   }
 }
 
+DecoderBuffer::DecoderBuffer(base::PassKey<DecoderBuffer>,
+                             base::span<const uint8_t> data)
+    : DecoderBuffer(std::move(data)) {}
+
+DecoderBuffer::DecoderBuffer(base::PassKey<DecoderBuffer>,
+                             base::HeapArray<uint8_t> data)
+    : DecoderBuffer(std::move(data)) {}
+
+DecoderBuffer::DecoderBuffer(base::PassKey<DecoderBuffer>,
+                             std::unique_ptr<ExternalMemory> external_memory)
+    : DecoderBuffer(std::move(external_memory)) {}
+
+DecoderBuffer::DecoderBuffer(base::PassKey<DecoderBuffer>,
+                             DecoderBufferType decoder_buffer_type,
+                             std::optional<ConfigVariant> next_config)
+    : DecoderBuffer(decoder_buffer_type, std::move(next_config)) {}
+
 DecoderBuffer::~DecoderBuffer() = default;
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::CopyFrom(
     base::span<const uint8_t> data) {
-  return base::WrapRefCounted(new DecoderBuffer(data));
+  return base::MakeRefCounted<DecoderBuffer>(base::PassKey<DecoderBuffer>(),
+                                             data);
 }
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::FromArray(
     base::HeapArray<uint8_t> data) {
-  return base::WrapRefCounted(new DecoderBuffer(std::move(data)));
+  return base::MakeRefCounted<DecoderBuffer>(base::PassKey<DecoderBuffer>(),
+                                             std::move(data));
 }
 
 // static
@@ -113,14 +136,16 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromExternalMemory(
   if (external_memory->Span().empty()) {
     return nullptr;
   }
-  return base::WrapRefCounted(new DecoderBuffer(std::move(external_memory)));
+  return base::MakeRefCounted<DecoderBuffer>(base::PassKey<DecoderBuffer>(),
+                                             std::move(external_memory));
 }
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer(
     std::optional<ConfigVariant> next_config) {
-  return base::WrapRefCounted(new DecoderBuffer(DecoderBufferType::kEndOfStream,
-                                                std::move(next_config)));
+  return base::MakeRefCounted<DecoderBuffer>(base::PassKey<DecoderBuffer>(),
+                                             DecoderBufferType::kEndOfStream,
+                                             std::move(next_config));
 }
 
 // static
@@ -142,11 +167,6 @@ bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& buffer) {
   return VerifySubsamplesMatchSize(subsamples, buffer.size());
 }
 
-base::span<const uint8_t> DecoderBuffer::AsSpan() const {
-  DCHECK(!end_of_stream());
-  return external_memory_ ? external_memory_->Span() : data_;
-}
-
 void DecoderBuffer::set_discard_padding(const DiscardPadding& discard_padding) {
   DCHECK(!end_of_stream());
   if (!side_data_ && discard_padding == DiscardPadding()) {
@@ -157,20 +177,16 @@ void DecoderBuffer::set_discard_padding(const DiscardPadding& discard_padding) {
 
 DecoderBufferSideData& DecoderBuffer::WritableSideData() {
   DCHECK(!end_of_stream());
-  if (!has_side_data()) {
+  if (!side_data()) {
     side_data_ = std::make_unique<DecoderBufferSideData>();
   }
   return *side_data_;
 }
 
 void DecoderBuffer::set_side_data(
-    std::optional<DecoderBufferSideData> side_data) {
+    std::unique_ptr<DecoderBufferSideData> side_data) {
   DCHECK(!end_of_stream());
-  if (!side_data) {
-    side_data_.reset();
-    return;
-  }
-  WritableSideData() = *side_data;
+  side_data_ = std::move(side_data);
 }
 
 bool DecoderBuffer::MatchesMetadataForTesting(
@@ -179,12 +195,8 @@ bool DecoderBuffer::MatchesMetadataForTesting(
     return false;
   }
 
-  if (has_side_data() != buffer.has_side_data()) {
-    return false;
-  }
-
   // Note: We use `side_data_` directly to avoid DCHECKs for EOS buffers.
-  if (has_side_data() && !side_data_->Matches(*buffer.side_data_)) {
+  if (side_data_ && !side_data_->Matches(*buffer.side_data_)) {
     return false;
   }
 
@@ -218,8 +230,21 @@ bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
 }
 
 std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
-  if (end_of_stream())
-    return "EOS";
+  if (end_of_stream()) {
+    if (!next_config()) {
+      return "EOS";
+    }
+
+    std::string config;
+    const auto nc = next_config().value();
+    if (const auto* ac = std::get_if<media::AudioDecoderConfig>(&nc)) {
+      config = ac->AsHumanReadableString();
+    } else {
+      config = std::get<media::VideoDecoderConfig>(nc).AsHumanReadableString();
+    }
+
+    return base::StringPrintf("EOS config=(%s)", config.c_str());
+  }
 
   std::ostringstream s;
 
@@ -229,8 +254,8 @@ std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
     << " encrypted=" << (decrypt_config_ != nullptr);
 
   if (verbose) {
-    s << " has_side_data=" << has_side_data();
-    if (has_side_data()) {
+    s << " side_data=" << !!side_data();
+    if (side_data()) {
       s << " discard_padding (us)=("
         << side_data_->discard_padding.first.InMicroseconds() << ", "
         << side_data_->discard_padding.second.InMicroseconds() << ")";
@@ -260,11 +285,10 @@ size_t DecoderBuffer::GetMemoryUsage() const {
   memory_usage += size();
 
   // Side data and decrypt config would not change after construction.
-  if (has_side_data()) {
+  if (side_data()) {
     memory_usage += sizeof(decltype(side_data_->spatial_layers)::value_type) *
                     side_data_->spatial_layers.capacity();
-    memory_usage += sizeof(decltype(side_data_->alpha_data)::value_type) *
-                    side_data_->alpha_data.capacity();
+    memory_usage += side_data_->alpha_data.size();
   }
   if (decrypt_config_) {
     memory_usage += sizeof(DecryptConfig);

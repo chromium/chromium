@@ -12,6 +12,7 @@
 #include <optional>
 
 #include "base/fuchsia/process_context.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -51,7 +52,7 @@ class WEB_ENGINE_EXPORT ThemeManager {
   bool did_receive_first_watch_result_ = false;
   std::optional<fuchsia::settings::ThemeType> requested_theme_;
   std::optional<fuchsia::settings::ThemeType> system_theme_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   fuchsia::settings::DisplayPtr display_service_;
   base::OnceClosure on_display_error_;
 };

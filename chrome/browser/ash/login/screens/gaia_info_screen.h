@@ -67,6 +67,10 @@ class GaiaInfoScreen
 
   void SetQuickStartButtonVisibility(bool visible);
 
+  // Whether the QuickStart entry point visibility has already been determined.
+  // This flag prevents duplicate histogram entries.
+  bool has_emitted_quick_start_visible = false;
+
   base::WeakPtr<GaiaInfoScreenView> view_;
   ScreenExitCallback exit_callback_;
 

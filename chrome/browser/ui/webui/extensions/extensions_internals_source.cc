@@ -60,8 +60,7 @@ const char* TypeToString(extensions::Manifest::Type type) {
     case extensions::Manifest::NUM_LOAD_TYPES:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* LocationToString(ManifestLocation loc) {
@@ -89,112 +88,139 @@ const char* LocationToString(ManifestLocation loc) {
     case ManifestLocation::kExternalComponent:
       return "EXTERNAL_COMPONENT";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 base::Value::List CreationFlagsToList(int creation_flags) {
   base::Value::List flags_value;
-  if (creation_flags == extensions::Extension::NO_FLAGS)
+  if (creation_flags == extensions::Extension::NO_FLAGS) {
     flags_value.Append("NO_FLAGS");
-  if (creation_flags & extensions::Extension::REQUIRE_KEY)
+  }
+  if (creation_flags & extensions::Extension::REQUIRE_KEY) {
     flags_value.Append("REQUIRE_KEY");
-  if (creation_flags & extensions::Extension::REQUIRE_MODERN_MANIFEST_VERSION)
+  }
+  if (creation_flags & extensions::Extension::REQUIRE_MODERN_MANIFEST_VERSION) {
     flags_value.Append("REQUIRE_MODERN_MANIFEST_VERSION");
-  if (creation_flags & extensions::Extension::ALLOW_FILE_ACCESS)
+  }
+  if (creation_flags & extensions::Extension::ALLOW_FILE_ACCESS) {
     flags_value.Append("ALLOW_FILE_ACCESS");
-  if (creation_flags & extensions::Extension::FROM_WEBSTORE)
+  }
+  if (creation_flags & extensions::Extension::FROM_WEBSTORE) {
     flags_value.Append("FROM_WEBSTORE");
-  if (creation_flags & extensions::Extension::FOLLOW_SYMLINKS_ANYWHERE)
+  }
+  if (creation_flags & extensions::Extension::FOLLOW_SYMLINKS_ANYWHERE) {
     flags_value.Append("FOLLOW_SYMLINKS_ANYWHERE");
-  if (creation_flags & extensions::Extension::ERROR_ON_PRIVATE_KEY)
+  }
+  if (creation_flags & extensions::Extension::ERROR_ON_PRIVATE_KEY) {
     flags_value.Append("ERROR_ON_PRIVATE_KEY");
-  if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_DEFAULT)
+  }
+  if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_DEFAULT) {
     flags_value.Append("WAS_INSTALLED_BY_DEFAULT");
-  if (creation_flags & extensions::Extension::REQUIRE_PERMISSIONS_CONSENT)
+  }
+  if (creation_flags & extensions::Extension::REQUIRE_PERMISSIONS_CONSENT) {
     flags_value.Append("REQUIRE_PERMISSIONS_CONSENT");
-  if (creation_flags & extensions::Extension::IS_EPHEMERAL)
+  }
+  if (creation_flags & extensions::Extension::IS_EPHEMERAL) {
     flags_value.Append("IS_EPHEMERAL");
-  if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_OEM)
+  }
+  if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_OEM) {
     flags_value.Append("WAS_INSTALLED_BY_OEM");
-  if (creation_flags & extensions::Extension::MAY_BE_UNTRUSTED)
+  }
+  if (creation_flags & extensions::Extension::MAY_BE_UNTRUSTED) {
     flags_value.Append("MAY_BE_UNTRUSTED");
-  if (creation_flags & extensions::Extension::WITHHOLD_PERMISSIONS)
+  }
+  if (creation_flags & extensions::Extension::WITHHOLD_PERMISSIONS) {
     flags_value.Append("WITHHOLD_PERMISSIONS");
+  }
   return flags_value;
 }
 
-base::Value::List DisableReasonsToList(int disable_reasons) {
-  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == 1 << 24,
+base::Value::List DisableReasonsToList(
+    const extensions::DisableReasonSet& disable_reasons) {
+  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == 1 << 26,
                 "Please add your new disable reason here.");
 
   base::Value::List disable_reasons_value;
-  if (disable_reasons & extensions::disable_reason::DISABLE_USER_ACTION) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_USER_ACTION)) {
     disable_reasons_value.Append("DISABLE_USER_ACTION");
   }
-  if (disable_reasons &
-      extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE)) {
     disable_reasons_value.Append("DISABLE_PERMISSIONS_INCREASE");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_RELOAD) {
+  if (disable_reasons.contains(extensions::disable_reason::DISABLE_RELOAD)) {
     disable_reasons_value.Append("DISABLE_RELOAD");
   }
-  if (disable_reasons &
-      extensions::disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT)) {
     disable_reasons_value.Append("DISABLE_UNSUPPORTED_REQUIREMENT");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT)) {
     disable_reasons_value.Append("DISABLE_SIDELOAD_WIPEOUT");
   }
-  if (disable_reasons &
-      extensions::disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC)) {
     disable_reasons_value.Append("DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_NOT_VERIFIED) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_NOT_VERIFIED)) {
     disable_reasons_value.Append("DISABLE_NOT_VERIFIED");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_GREYLIST) {
+  if (disable_reasons.contains(extensions::disable_reason::DISABLE_GREYLIST)) {
     disable_reasons_value.Append("DISABLE_GREYLIST");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_CORRUPTED) {
+  if (disable_reasons.contains(extensions::disable_reason::DISABLE_CORRUPTED)) {
     disable_reasons_value.Append("DISABLE_CORRUPTED");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_REMOTE_INSTALL) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_REMOTE_INSTALL)) {
     disable_reasons_value.Append("DISABLE_REMOTE_INSTALL");
   }
-  if (disable_reasons &
-      extensions::disable_reason::DISABLE_EXTERNAL_EXTENSION) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_EXTERNAL_EXTENSION)) {
     disable_reasons_value.Append("DISABLE_EXTERNAL_EXTENSION");
   }
-  if (disable_reasons &
-      extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY)) {
     disable_reasons_value.Append("DISABLE_UPDATE_REQUIRED_BY_POLICY");
   }
-  if (disable_reasons &
-      extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED)) {
     disable_reasons_value.Append("DISABLE_CUSTODIAN_APPROVAL_REQUIRED");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY)) {
     disable_reasons_value.Append("DISABLE_BLOCKED_BY_POLICY");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_REINSTALL) {
+  if (disable_reasons.contains(extensions::disable_reason::DISABLE_REINSTALL)) {
     disable_reasons_value.Append("DISABLE_REINSTALL");
   }
-  if (disable_reasons & extensions::disable_reason::DISABLE_NOT_ALLOWLISTED) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_NOT_ALLOWLISTED)) {
     disable_reasons_value.Append("DISABLE_NOT_ALLOWLISTED");
   }
-  if (disable_reasons &
-      extensions::disable_reason::DISABLE_NOT_ASH_KEEPLISTED) {
-    disable_reasons_value.Append("DISABLE_NOT_ASH_KEEPLISTED");
+  if (disable_reasons.contains(
+          extensions::disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED)) {
+    disable_reasons_value.Append("DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED");
   }
-  if (disable_reasons & extensions::disable_reason::
-                            DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::
+              DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY)) {
     disable_reasons_value.Append(
         "DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY");
   }
-  if (disable_reasons &
-      extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION) {
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION)) {
     disable_reasons_value.Append("DISABLE_UNSUPPORTED_MANIFEST_VERSION");
+  }
+  if (disable_reasons.contains(extensions::disable_reason::
+                                   DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION)) {
+    disable_reasons_value.Append("DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION");
+  }
+  if (disable_reasons.contains(extensions::disable_reason::DISABLE_UNKNOWN)) {
+    disable_reasons_value.Append("DISABLE_UNKNOWN");
   }
 
   return disable_reasons_value;

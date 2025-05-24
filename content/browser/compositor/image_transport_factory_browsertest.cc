@@ -6,7 +6,6 @@
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/browser/gpu/browser_gpu_channel_host_factory.h"
@@ -30,8 +29,7 @@ class MockContextLostObserver : public viz::ContextLostObserver {
 
 // TODO(crbug.com/394083, crbug.com/1305007, crbug.com/1302879): Flaky on
 // ChromeOS, Linux, and Windows.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_TestLostContext DISABLED_TestLostContext
 #else
 #define MAYBE_TestLostContext TestLostContext

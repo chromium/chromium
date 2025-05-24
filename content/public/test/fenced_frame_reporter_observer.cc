@@ -14,7 +14,6 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 

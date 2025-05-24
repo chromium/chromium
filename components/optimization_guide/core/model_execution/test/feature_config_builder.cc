@@ -6,11 +6,15 @@
 
 #include <initializer_list>
 
+#include "base/strings/string_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
+#include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 
 namespace optimization_guide {
@@ -27,14 +31,6 @@ proto::SafetyCategoryThreshold RequireReasonable() {
   result.set_output_index(1);  // FakeOnDeviceModel's "REASONABLE" category.
   result.set_threshold(0.5);
   return result;
-}
-
-proto::ProtoField ProtoField(std::initializer_list<int32_t> tags) {
-  proto::ProtoField f;
-  for (int32_t tag : tags) {
-    f.add_proto_descriptors()->set_tag_number(tag);
-  }
-  return f;
 }
 
 proto::ProtoField PageUrlField() {
@@ -55,14 +51,6 @@ proto::ProtoField OutputField() {
 
 proto::ProtoField StringValueField() {
   return ProtoField({1});
-}
-
-proto::SubstitutedString FieldSubstitution(const std::string& tmpl,
-                                           proto::ProtoField&& field) {
-  proto::SubstitutedString result;
-  result.set_string_template(tmpl);
-  *result.add_substitutions()->add_candidates()->mutable_proto_field() = field;
-  return result;
 }
 
 proto::SubstitutedString PageUrlSubstitution() {
@@ -124,6 +112,38 @@ proto::TextSafetyModelMetadata SafetyMetadata(
     *metadata.add_feature_text_safety_configurations() = std::move(cfg);
   }
   return metadata;
+}
+
+proto::OnDeviceModelExecutionInputConfig TestInputConfig(
+    proto::SubstitutedString context_template,
+    proto::SubstitutedString execution_template) {
+  proto::OnDeviceModelExecutionInputConfig input_config;
+  input_config.set_request_base_name(
+      proto::ExampleForTestingRequest().GetTypeName());
+  *input_config.add_input_context_substitutions() = std::move(context_template);
+  *input_config.add_execute_substitutions() = std::move(execution_template);
+  return input_config;
+}
+
+proto::OnDeviceModelExecutionOutputConfig ResponseHolderOutputConfig() {
+  proto::OnDeviceModelExecutionOutputConfig output_config;
+  output_config.set_proto_type(proto::ComposeResponse().GetTypeName());
+  *output_config.mutable_proto_field() =
+      ProtoField({proto::ComposeResponse::kOutputFieldNumber});
+  return output_config;
+}
+
+proto::SubstitutedString FormatTestMessage() {
+  using Msg = proto::ExampleForTestingMessage;
+  proto::SubstitutedString result;
+  result.set_string_template("%s%s");
+  *result.add_substitutions()->add_candidates()->mutable_proto_field() =
+      ProtoField({Msg::kStringValueFieldNumber});
+  *result.add_substitutions()
+       ->add_candidates()
+       ->mutable_media_field()
+       ->mutable_proto_field() = ProtoField({Msg::kMediaFieldNumber});
+  return result;
 }
 
 }  // namespace optimization_guide

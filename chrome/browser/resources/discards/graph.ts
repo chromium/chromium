@@ -4,6 +4,8 @@
 
 import 'chrome://resources/d3/d3.min.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 import type {FavIconInfo, FrameInfo, GraphChangeStreamInterface, PageInfo, ProcessInfo, WorkerInfo} from './discards.mojom-webui.js';
 
 // Radius of a node circle.
@@ -65,7 +67,7 @@ function toggleTooltipRows(clickedRow: HTMLElement, objectIndex: number) {
   tooltip.selectAll(valueClasses).classed('collapsed', !isCollapsed);
 }
 
-class ToolTipRowData {
+interface ToolTipRowData {
   // The contents of each cell in the row.
   contents: [string, string];
 
@@ -337,8 +339,8 @@ class GraphNode implements d3.SimulationNodeDatum {
    * See https://github.com/d3/d3-force#simulation_nodes.
    */
   index?: number;
-  x: number;
-  y: number;
+  x: number = 0;
+  y: number = 0;
   vx?: number;
   vy?: number;
   fx: number|null = null;
@@ -427,7 +429,9 @@ class GraphNode implements d3.SimulationNodeDatum {
     if (id < 0) {
       id = -id;
     }
-    return d3.schemeSet3[Number(id % BigInt(12))];
+    const color = d3.schemeSet3[Number(id % BigInt(12))];
+    assert(color);
+    return color;
   }
 }
 
@@ -603,6 +607,8 @@ function boundingForce(graphHeight: number, graphWidth: number) {
     for (let i = 0; i < n; ++i) {
       const bound = bounds[i];
       const node = nodes[i];
+      assert(bound);
+      assert(node);
 
       // Calculate where the node will end up after movement. If it will be out
       // of bounds apply a counter-force to bring it back in.
@@ -665,7 +671,6 @@ export class Graph implements GraphChangeStreamInterface {
   private nodes_: Map<bigint, GraphNode> = new Map();
   private links_: Array<d3.SimulationLinkDatum<GraphNode>> = [];
   private dashedLinks_: Array<d3.SimulationLinkDatum<GraphNode>> = [];
-  private hostWindow_: Window|null = null;
   /** The interval timer used to poll for node descriptions. */
   private pollDescriptionsInterval_: number = 0;
   /** The d3.drag instance applied to nodes. */
@@ -679,14 +684,13 @@ export class Graph implements GraphChangeStreamInterface {
   initialize() {
 
     // Create the simulation and set up the permanent forces.
-    const simulation =
-        d3.forceSimulation() as d3.Simulation<GraphNode, undefined>;
+    const simulation: d3.Simulation<GraphNode, undefined> =
+        d3.forceSimulation();
     simulation.on('tick', this.onTick_.bind(this));
 
     const linkForce =
-        (d3.forceLink() as
-         d3.ForceLink<GraphNode, d3.SimulationLinkDatum<GraphNode>>)
-            .id(d => d.id.toString());
+        d3.forceLink<GraphNode, d3.SimulationLinkDatum<GraphNode>>().id(
+            d => d.id.toString());
     const defaultStrength = linkForce.strength();
 
     // Override the default link strength function to apply scaling factors
@@ -704,8 +708,8 @@ export class Graph implements GraphChangeStreamInterface {
     // negative number is repulsion).
     simulation.force(
         'charge',
-        (d3.forceManyBody() as d3.ForceManyBody<GraphNode>)
-            .strength(this.getManyBodyStrength_.bind(this)));
+        d3.forceManyBody<GraphNode>().strength(
+            this.getManyBodyStrength_.bind(this)));
 
     this.simulation_ = simulation;
 
@@ -933,9 +937,9 @@ export class Graph implements GraphChangeStreamInterface {
 
     // Select the nodes, except for any dead ones that are still transitioning.
     const nodes = Array.from(this.nodes_.values());
-    const node = (this.nodeGroup_!.selectAll('g:not(.dead)') as
-                  d3.Selection<any, GraphNode, SVGGElement, unknown>)
-                     .data(nodes, d => d.id as unknown as number);
+    const node =
+        this.nodeGroup_!.selectAll<SVGGElement, GraphNode>('g:not(.dead)')
+            .data(nodes, d => d.id as unknown as number);
 
     // Add new nodes, if any.
     if (!node.enter().empty()) {
@@ -974,7 +978,7 @@ export class Graph implements GraphChangeStreamInterface {
       // Turn down the node associated tooltips.
       deletedNodes.each(d => {
         if (d.tooltip) {
-          d.tooltip!.goAway();
+          d.tooltip.goAway();
         }
       });
 
@@ -1002,8 +1006,8 @@ export class Graph implements GraphChangeStreamInterface {
         !dashedLink.enter().empty() || !dashedLink.exit().empty()) {
       this.simulation_!.nodes(nodes);
       const links = this.links_.concat(this.dashedLinks_);
-      (this.simulation_!.force('link')! as d3.ForceLink<GraphNode, any>)
-          .links(links);
+      this.simulation_!.force<d3.ForceLink<GraphNode, any>>('link')!.links(
+          links);
 
       this.restartSimulation_();
     }
@@ -1146,19 +1150,21 @@ export class Graph implements GraphChangeStreamInterface {
 
       group.each(function(d: unknown) {
         const parentGroup = d3.select(this);
-        if ((d as Array<string|number>)[0]) {
+        const aboveLabel = (d as Array<string|number>)[0];
+        const belowLabel = (d as Array<string|number>)[1];
+        if (aboveLabel) {
           parentGroup.append('text')
               .attr('x', 20)
               .attr('y', kAboveLabelOffset)
               .attr('class', 'separator')
-              .text(d => (d as Array<string|number>)[0]);
+              .text(aboveLabel);
         }
-        if ((d as Array<string|number>)[1]) {
+        if (belowLabel) {
           parentGroup.append('text')
               .attr('x', 20)
               .attr('y', kBelowLabelOffset)
               .attr('class', 'separator')
-              .text(d => (d as Array<string|number>)[1]);
+              .text(belowLabel);
         }
       });
     }
@@ -1186,7 +1192,7 @@ export class Graph implements GraphChangeStreamInterface {
 
     // Reset both X and Y attractive forces, as they're cached.
     const xForce = d3.forceX().x(this.width_ / 2).strength(0.1);
-    const yForce = (d3.forceY() as d3.ForceY<GraphNode>)
+    const yForce = d3.forceY<GraphNode>()
                        .y(this.getTargetPositionY_.bind(this))
                        .strength(this.getTargetPositionStrengthY_.bind(this));
     this.simulation_!.force('x_pos', xForce);

@@ -5,6 +5,7 @@
 #ifndef NET_HTTP_HTTP_STREAM_KEY_H_
 #define NET_HTTP_HTTP_STREAM_KEY_H_
 
+#include <optional>
 #include <string>
 
 #include "base/values.h"
@@ -12,6 +13,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/socket/socket_tag.h"
 #include "net/spdy/spdy_session_key.h"
@@ -60,13 +62,24 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
 
   base::Value::Dict ToValue() const;
 
-  // Creates a SpdySessionKey from `this`. Returns a key with an empty host
-  // when the scheme is not cryptgraphic.
-  SpdySessionKey ToSpdySessionKey() const;
+  // Calculate a SpdySessionKey from `this`. Unlike
+  // CalculateQuicSessionAliasKey(), this method doesn't take an optional
+  // destination because we don't use a different destination for
+  // SpdySessionKey.
+  // TODO(crbug.com/346835898): We may need to create SpdySessionAliasKey and
+  // use a different destination to support H2 alternative endpoints that have
+  // different destinations. Returns a key with an empty host when the scheme is
+  // not cryptographic.
+  SpdySessionKey CalculateSpdySessionKey() const;
 
-  // Creates a QuicSessionKey from `this`. Returns a key with an empty host
-  // when the scheme is not cryptgraphic.
-  QuicSessionKey ToQuicSessionKey() const;
+  // Calculates a QuicSessionAliasKey from `this`. When
+  // `optional_alias_name` is provided, use the destination as the destination
+  // of QuicSessionAliasKey. See the comment of QuicSessionAliasKey about the
+  // difference between the server id and the destination. Returns a key with
+  // empty server_id/destination when the scheme is not cryptographic.
+  QuicSessionAliasKey CalculateQuicSessionAliasKey(
+      std::optional<url::SchemeHostPort> optional_alias_name =
+          std::nullopt) const;
 
  private:
   url::SchemeHostPort destination_;

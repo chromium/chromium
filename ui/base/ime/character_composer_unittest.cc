@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
@@ -454,8 +455,7 @@ TEST_F(CharacterComposerTest, HexadecimalComposition) {
   ExpectUnicodeKeyFiltered(VKEY_9, DomCode::DIGIT9, EF_NONE, '9');
   ExpectUnicodeKeyComposed(
       VKEY_RETURN, DomCode::ENTER, EF_NONE, '\r',
-      std::u16string(kMusicalKeyboard,
-                     kMusicalKeyboard + std::size(kMusicalKeyboard)));
+      std::u16string(std::begin(kMusicalKeyboard), std::end(kMusicalKeyboard)));
 }
 
 TEST_F(CharacterComposerTest, HexadecimalCompositionPreedit) {

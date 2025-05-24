@@ -7,7 +7,7 @@
     passkeys on their computer.
  */
 import '../settings_shared.css.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
@@ -61,6 +61,10 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
         type: String,
         value: '',
       },
+      passkeys_: Array,
+      showDeleteConfirmationDialog_: Boolean,
+      noManagement_: Boolean,
+
       // <if expr="is_macosx">
       showEditDialog_: Boolean,
       username_: String,
@@ -70,17 +74,17 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
   }
 
   // <if expr="is_macosx">
-  private showEditDialog_: boolean;
-  private username_: string;
-  private relyingPartyId_: string;
+  declare private showEditDialog_: boolean;
+  declare private username_: string;
+  declare private relyingPartyId_: string;
   // </if>
 
-  private filter: string;
-  private passkeys_: Passkey[];
-  private showDeleteConfirmationDialog_: boolean;
+  declare private filter: string;
+  declare private passkeys_: Passkey[];
+  declare private showDeleteConfirmationDialog_: boolean;
   // Set if the current platform doesn't support passkey management.
   // (E.g. Windows prior to 2022H2.)
-  private noManagement_: boolean;
+  declare private noManagement_: boolean;
   // Contains the credentialId of the passkey that the action menu was opened
   // for.
   private credentialIdForActionMenu_: string|null;

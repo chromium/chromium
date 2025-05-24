@@ -131,14 +131,15 @@ String DOMURL::CreatePublicURL(ExecutionContext* execution_context,
 }
 
 URLSearchParams* DOMURL::searchParams() {
-  if (!search_params_)
-    search_params_ = URLSearchParams::Create(Url().Query(), this);
+  if (!search_params_) {
+    search_params_ = URLSearchParams::Create(Url().Query().ToString(), this);
+  }
 
   return search_params_.Get();
 }
 
 void DOMURL::Update() {
-  UpdateSearchParams(Url().Query());
+  UpdateSearchParams(Url().Query().ToString());
 }
 
 void DOMURL::UpdateSearchParams(const String& query_string) {

@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import static org.chromium.chrome.browser.recent_tabs.CrossDeviceListProperties.EMPTY_STATE_VISIBLE;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.recent_tabs.ui.CrossDevicePaneView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Forwards changed property values to the view. */
+@NullMarked
 public class CrossDeviceListViewBinder {
     /** Stateless propagation of properties. */
     public static void bind(

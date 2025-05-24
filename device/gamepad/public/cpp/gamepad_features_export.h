@@ -17,11 +17,7 @@
 
 #else  // !defined(WIN32)
 
-#if defined(GAMEPAD_FEATURES_IMPLEMENTATION)
 #define GAMEPAD_FEATURES_EXPORT __attribute__((visibility("default")))
-#else
-#define GAMEPAD_FEATURES_EXPORT
-#endif
 
 #endif
 

@@ -17,8 +17,7 @@ const char* SchedulingPriorityToString(SchedulingPriority priority) {
     case SchedulingPriority::kLow:
       return "Low";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace gpu

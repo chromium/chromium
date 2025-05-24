@@ -87,7 +87,7 @@ MrfuCache::MrfuCache(MrfuCache::Proto proto, const Params& params)
   min_score_ = params.min_score;
 }
 
-MrfuCache::~MrfuCache() {}
+MrfuCache::~MrfuCache() = default;
 
 void MrfuCache::Sort(Items& items) {
   std::sort(items.begin(), items.end(),

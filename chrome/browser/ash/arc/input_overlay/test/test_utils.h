@@ -36,7 +36,7 @@ class Widget;
 namespace arc::input_overlay {
 
 // I/O time to wait.
-constexpr base::TimeDelta kIORead = base::Milliseconds(50);
+inline constexpr base::TimeDelta kIORead = base::Milliseconds(50);
 
 inline constexpr char kEnabledPackageName[] =
     "org.chromium.arc.testapp.inputoverlay";
@@ -112,6 +112,10 @@ void VerifyHistogramValues(const base::HistogramTester& histograms,
     histograms.ExpectBucketCount(histogram_name, value.first, value.second);
   }
 }
+
+void VerifyPlayWithGameControlsHistogram(
+    const base::HistogramTester& histograms,
+    const std::vector<int>& histograms_values);
 
 }  // namespace arc::input_overlay
 

@@ -29,7 +29,20 @@ DEFAULT_IGNORE_WARNINGS = (
     # any known version for selecting Proguard configurations embedded under
     # META-INF/. This means that all rules with a '-upto-' qualifier will be
     # excluded and all rules with a -from- qualifier will be included.
-    r'Running R8 version main', )
+    r'Running R8 version main',
+    # https://issuetracker.google.com/327611582
+    r'The companion object Companion could not be found',
+    # https://crbug.com/408280256
+    r'MethodHandle.invoke',
+)
+
+_MERGE_SERVICE_ENTRIES = (
+    # Uses ServiceLoader to find all implementing classes, so multiple are
+    # expected.
+    'META-INF/services/androidx.appsearch.app.AppSearchDocumentClassMap',
+    'META-INF/services/kotlinx.coroutines.CoroutineExceptionHandler',
+    'META-INF/services/kotlinx.coroutines.internal.MainDispatcherFactory',
+)
 
 _IGNORE_SERVICE_ENTRIES = (
     # ServiceLoader call is used only for ProtoBuf full (non-lite).
@@ -228,8 +241,11 @@ def _CreateServicesMap(service_jars):
         if n.startswith('META-INF/services/') and not n.endswith('/'):
           if n in _IGNORE_SERVICE_ENTRIES:
             continue
-          data = z.read(n)
-          if ret.get(n, data) == data:
+          old_lines = ret.get(n, '').splitlines()
+          new_lines = z.read(n).decode('utf8').splitlines()
+          old_lines.extend(l for l in new_lines if l not in old_lines)
+          data = '\n'.join(old_lines) + '\n'
+          if _MERGE_SERVICE_ENTRIES or ret.get(n, data) == data:
             ret[n] = data
             origins[n] = jar_path
           else:
@@ -244,6 +260,9 @@ Conflicting contents for: {n}
 
 If this entry can be safely ignored (because the ServiceLoader.load() call is \
 never hit), update _IGNORE_SERVICE_ENTRIES in dex.py.
+
+If this service is meant to allow multiple implementations, update \
+_MERGE_SERVICE_ENTRIES in dex.py.
 """)
   return ret
 

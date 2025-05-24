@@ -21,6 +21,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
@@ -32,6 +33,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -80,12 +82,21 @@
 #include <zircon/process.h>
 #include <zircon/processargs.h>
 #include <zircon/syscalls.h>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/test/bind.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include <mach/mach.h>
+
+#include "base/apple/mach_port_rendezvous_mac.h"
+#include "base/apple/scoped_mach_port.h"
+#include "base/mac/process_requirement.h"
 #endif
 
 namespace base {
@@ -387,8 +398,7 @@ TEST_F(ProcessUtilTest, CloneTmp) {
 }
 
 MULTIPROCESS_TEST_MAIN(NeverCalled) {
-  CHECK(false) << "Process should not have been launched.";
-  return 99;
+  NOTREACHED() << "Process should not have been launched.";
 }
 
 TEST_F(ProcessUtilTest, TransferInvalidHandleFails) {
@@ -839,8 +849,9 @@ MULTIPROCESS_TEST_MAIN(ChildVerifiesCetDisabled) {
   if (GetProcessMitigationPolicy(GetCurrentProcess(),
                                  ProcessUserShadowStackPolicy, &policy,
                                  sizeof(policy))) {
-    if (policy.EnableUserShadowStack)
+    if (policy.EnableUserShadowStack) {
       return 1;
+    }
   }
   return kSuccess;
 }
@@ -934,13 +945,7 @@ TEST_F(ProcessUtilTest, GetAppOutputWithExitCode) {
   command.AppendArg("-x");
   command.AppendArg(NumberToString(kExpectedExitCode));
   command.AppendArg(kEchoMessage2);
-#if BUILDFLAG(IS_WIN)
-  // On Windows, anything that quits with a nonzero status code is handled as a
-  // "crash", so just ignore GetAppOutputWithExitCode's return value.
-  GetAppOutputWithExitCode(command, &output, &exit_code);
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   EXPECT_TRUE(GetAppOutputWithExitCode(command, &output, &exit_code));
-#endif
   EXPECT_EQ(kEchoMessage2, output);
   EXPECT_EQ(kExpectedExitCode, exit_code);
 }
@@ -1012,8 +1017,9 @@ bool CanGuardFd(int fd) {
   // descriptor is bad, or EINVAL if the fd already has a guard set.
   int ret =
       change_fdguard_np(fd, NULL, 0, &kGuard, GUARD_DUP, &original_fdflags);
-  if (ret == -1)
+  if (ret == -1) {
     return false;
+  }
 
   // Remove the guard.  It should not be possible to fail in removing the guard
   // just added.
@@ -1035,8 +1041,9 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsLeakFDChildProcess) {
   for (int i = STDERR_FILENO + 1; i < max_files; i++) {
 #if BUILDFLAG(IS_APPLE)
     // Ignore guarded or invalid file descriptors.
-    if (!CanGuardFd(i))
+    if (!CanGuardFd(i)) {
       continue;
+    }
 #endif
 
     if (i != kChildPipe) {
@@ -1059,8 +1066,9 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsLeakFDChildProcess) {
 
 int ProcessUtilTest::CountOpenFDsInChild() {
   int fds[2];
-  if (pipe(fds) < 0)
+  if (pipe(fds) < 0) {
     NOTREACHED();
+  }
 
   LaunchOptions options;
   options.fds_to_remap.emplace_back(fds[1], kChildPipe);
@@ -1231,7 +1239,7 @@ TEST_F(ProcessUtilTest, LaunchWithHandleTransfer) {
   ASSERT_TRUE(signals & ZX_SOCKET_READABLE);
 
   size_t bytes_read = 0;
-  char buf[16] = {0};
+  char buf[16] = {};
   result = zx_socket_read(handles[1], 0, buf, sizeof(buf), &bytes_read);
   EXPECT_EQ(ZX_OK, result);
   EXPECT_EQ(1u, bytes_read);
@@ -1485,5 +1493,56 @@ TEST_F(ProcessUtilTest, InvalidCurrentDirectory) {
   EXPECT_NE(kSuccess, exit_code);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_MAC)
+
+constexpr MachPortsForRendezvous::key_type kTestChildRendezvousKey = 'test';
+
+MULTIPROCESS_TEST_MAIN(
+    ProcessUtilTest_ProcessRequirement_ChildFailedValidation) {
+  auto* rendezvous_client = MachPortRendezvousClient::GetInstance();
+  CHECK(rendezvous_client);
+  // The parent process specifies a requirement that does not matchy any
+  // process. No ports will be available to this process.
+  CHECK_EQ(0u, rendezvous_client->GetPortCount());
+  return 0;
+}
+
+// Tests that a `ProcessRequirement` passed via `LaunchOptions` is applied
+// during Mach port rendezvous with a child process. Tests of the validation
+// behavior can be found in //base/apple/mach_port_rendezvous_unittest.cc.
+TEST_F(ProcessUtilTest, ProcessRequirement) {
+  // TODO(crbug.com/362302761): Remove once peer validation is enforced by
+  // default.
+  test::ScopedFeatureList scoped_feature_list(
+      kMachPortRendezvousEnforcePeerRequirements);
+
+  apple::ScopedMachReceiveRight port;
+  kern_return_t kr =
+      mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE,
+                         apple::ScopedMachReceiveRight::Receiver(port).get());
+  ASSERT_EQ(kr, KERN_SUCCESS);
+  MachRendezvousPort rendezvous_port(port.get(), MACH_MSG_TYPE_MAKE_SEND);
+
+  // One Mach port is registered, but the process requirement should prevent
+  // the child from retrieving it. Test assertions are in the child process,
+  // above.
+  LaunchOptions options;
+  options.mach_ports_for_rendezvous[kTestChildRendezvousKey] = rendezvous_port;
+  options.process_requirement =
+      mac::ProcessRequirement::NeverMatchesForTesting();
+
+  Process child = SpawnChildWithOptions(
+      "ProcessUtilTest_ProcessRequirement_ChildFailedValidation", options);
+
+  int exit_code;
+  ASSERT_TRUE(WaitForMultiprocessTestChildExit(
+      child, TestTimeouts::action_timeout(), &exit_code));
+
+  // The child exiting successfully indicates that its test assertions held.
+  EXPECT_EQ(0, exit_code);
+}
+
+#endif
 
 }  // namespace base

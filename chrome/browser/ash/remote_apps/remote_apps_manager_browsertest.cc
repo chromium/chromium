@@ -69,6 +69,7 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {

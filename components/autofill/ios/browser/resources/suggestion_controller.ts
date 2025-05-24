@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * @fileoverview Installs suggestion management functions on the
@@ -294,7 +294,7 @@ function getTabOrder(element: Element): number {
  * @return The element if found, otherwise null.
  */
 function getFormElement(formName: string, fieldName: string): Element|null {
-  const form = gCrWeb.form.getFormElementFromIdentifier(formName);
+  const form = gCrWebLegacy.form.getFormElementFromIdentifier(formName);
   if (!form) {
     return null;
   }
@@ -387,7 +387,7 @@ function hasPreviousNextElements(
   };
 }
 
-gCrWeb.suggestion = {
+gCrWebLegacy.suggestion = {
   getNextElementInTabOrder,
   getPreviousElementInTabOrder,
   selectNextElement,

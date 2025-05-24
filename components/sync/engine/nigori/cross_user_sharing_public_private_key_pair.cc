@@ -102,7 +102,7 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthEncrypt(
                         EVP_HPKE_CTX_max_overhead(sender_context.get()));
 
   base::span<uint8_t> ciphertext =
-      base::make_span(encrypted_data).subspan(encapsulated_shared_secret_len);
+      base::span(encrypted_data).subspan(encapsulated_shared_secret_len);
   size_t ciphertext_len;
 
   if (!EVP_HPKE_CTX_seal(
@@ -148,8 +148,7 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
     return std::nullopt;
   }
 
-  base::span<const uint8_t> ciphertext =
-      encrypted_data.subspan(X25519_PUBLIC_VALUE_LEN);
+  auto ciphertext = encrypted_data.subspan<X25519_PUBLIC_VALUE_LEN>();
   std::vector<uint8_t> plaintext(ciphertext.size());
   size_t plaintext_len;
 

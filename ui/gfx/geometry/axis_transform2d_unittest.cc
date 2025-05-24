@@ -9,6 +9,7 @@
 
 #include "ui/gfx/geometry/axis_transform2d.h"
 
+#include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/test/geometry_util.h"

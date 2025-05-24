@@ -17,7 +17,7 @@ constexpr char kBluetoothFlossLogEntry[] = "CHROMEOS_BLUETOOTH_FLOSS";
 
 BluetoothLogSource::BluetoothLogSource() : SystemLogsSource("BluetoothLog") {}
 
-BluetoothLogSource::~BluetoothLogSource() {}
+BluetoothLogSource::~BluetoothLogSource() = default;
 
 void BluetoothLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

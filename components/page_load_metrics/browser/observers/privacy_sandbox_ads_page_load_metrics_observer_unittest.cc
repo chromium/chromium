@@ -4,13 +4,13 @@
 
 #include "components/page_load_metrics/browser/observers/privacy_sandbox_ads_page_load_metrics_observer.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
@@ -98,7 +98,7 @@ class PrivacySandboxAdsPageLoadMetricsObserverTest
     for (auto api :
          base::EnumSet<PrivacySandboxAdsApi, PrivacySandboxAdsApi::kMinValue,
                        PrivacySandboxAdsApi::kMaxValue>::All()) {
-      int expected_count = base::ranges::any_of(
+      int expected_count = std::ranges::any_of(
           kFeaturesMap.at(api), [&](WebFeature web_feature) {
             return web_features.contains(web_feature);
           });

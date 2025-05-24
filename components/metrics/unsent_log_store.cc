@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/metrics/unsent_log_store.h"
 
 #include <cmath>
@@ -108,7 +103,7 @@ class LogsPrefWriter {
     std::reverse(list_value_->begin(), list_value_->end());
   }
 
-  base::HistogramBase::Count unsent_samples_count() const {
+  base::HistogramBase::Count32 unsent_samples_count() const {
     return unsent_samples_count_;
   }
 
@@ -124,7 +119,7 @@ class LogsPrefWriter {
   bool finished_ = false;
 
   // The total number of histogram samples written so far.
-  base::HistogramBase::Count unsent_samples_count_ = 0;
+  base::HistogramBase::Count32 unsent_samples_count_ = 0;
 
   // The total size of logs written so far.
   size_t unsent_persisted_size_ = 0;
@@ -160,13 +155,10 @@ void UnsentLogStore::LogInfo::Init(const std::string& log_data,
   }
 
   hash = base::SHA1HashString(log_data);
-
-  if (!ComputeHMACForLog(log_data, signing_key, &signature)) {
-    NOTREACHED_IN_MIGRATION() << "HMAC signing failed";
-  }
+  signature = ComputeHMACForLog(log_data, signing_key);
 
   timestamp = log_timestamp;
-  this->log_metadata = optional_log_metadata;
+  log_metadata = optional_log_metadata;
 }
 
 void UnsentLogStore::LogInfo::Init(const std::string& log_data,
@@ -244,15 +236,13 @@ const LogMetadata UnsentLogStore::staged_log_metadata() const {
 }
 
 // static
-bool UnsentLogStore::ComputeHMACForLog(const std::string& log_data,
-                                       const std::string& signing_key,
-                                       std::string* signature) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  const size_t digest_length = hmac.DigestLength();
-  unsigned char* hmac_data = reinterpret_cast<unsigned char*>(
-      base::WriteInto(signature, digest_length + 1));
-  return hmac.Init(signing_key) &&
-         hmac.Sign(log_data, hmac_data, digest_length);
+std::string UnsentLogStore::ComputeHMACForLog(std::string_view log_data,
+                                              std::string_view signing_key) {
+  auto data = base::as_byte_span(log_data);
+  auto key = base::as_byte_span(signing_key);
+  std::array<uint8_t, crypto::hash::kSha256Size> hmac =
+      crypto::hmac::SignSha256(key, data);
+  return std::string(base::as_string_view(hmac));
 }
 
 void UnsentLogStore::StageNextLog() {
@@ -312,8 +302,7 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
           writer.unsent_logs_count() >= log_store_limits_.min_log_count) {
         // The rest of the logs (including the current one) are trimmed.
         if (overwrite_in_memory_store) {
-          NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>>(
-                              list_.begin(), list_.begin() + i + 1),
+          NotifyLogsEvent(base::span(list_).first(static_cast<size_t>(i + 1)),
                           MetricsLogsEventManager::LogEvent::kLogTrimmed);
         }
         break;
@@ -516,8 +505,8 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
 }
 
 void UnsentLogStore::WriteToMetricsPref(
-    base::HistogramBase::Count unsent_samples_count,
-    base::HistogramBase::Count sent_samples_count,
+    base::HistogramBase::Count32 unsent_samples_count,
+    base::HistogramBase::Count32 sent_samples_count,
     size_t unsent_persisted_size) const {
   if (metadata_pref_name_ == nullptr)
     return;

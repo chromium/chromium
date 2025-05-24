@@ -49,6 +49,10 @@ template("css_to_wrapper") {
              "--in_files",
            ] + invoker.in_files
 
+    if (is_ios) {
+      args += [ "--is_ios" ]
+    }
+
     if (defined(invoker.use_js) && invoker.use_js) {
       args += [ "--use_js" ]
     }

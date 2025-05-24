@@ -1,0 +1,60 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
+
+template("generate_code_cache") {
+  action(target_name) {
+    script = "//ui/webui/resources/tools/generate_code_cache.py"
+
+    forward_variables_from(invoker,
+                           [
+                             "visibility",
+                             "in_folder",
+                             "in_files",
+                             "out_folder",
+                             "out_manifest",
+                           ])
+    deps = [ "//tools/code_cache_generator" ]
+    inputs = []
+    if (v8_use_external_startup_data) {
+      if (use_v8_context_snapshot) {
+        deps += [ "//tools/v8_context_snapshot" ]
+        inputs += [ "$root_out_dir/$v8_context_snapshot_filename" ]
+      }
+      if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+        deps += [ "//v8:run_mksnapshot_default" ]
+        inputs += [ "$root_out_dir/snapshot_blob.bin" ]
+      }
+    }
+
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+
+    # Filter .html.js files out of in_files to avoid attempting to generate
+    # code cache for templatized modules.
+    in_files_filtered = filter_exclude(in_files, [ "*.html.js" ])
+
+    outputs = [ out_manifest ]
+    foreach(f, in_files_filtered) {
+      extension = get_path_info(f, "extension")
+      assert(extension == "js")
+      inputs += [ "${in_folder}/${f}" ]
+      outputs += [ "${out_folder}/${f}.code_cache" ]
+    }
+
+    args = [
+             "--util_path",
+             "./code_cache_generator",
+             "--in_folder",
+             rebase_path(in_folder, root_build_dir),
+             "--out_folder",
+             rebase_path(out_folder, root_build_dir),
+             "--out_manifest",
+             rebase_path(out_manifest, root_build_dir),
+             "--in_files",
+           ] + in_files_filtered
+  }
+}

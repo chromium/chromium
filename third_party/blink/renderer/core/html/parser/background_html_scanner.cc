@@ -48,11 +48,11 @@ CompileOptions GetCompileOptions(bool first_script_in_scan) {
           {CompileStrategy::kEager, "eager"},
       };
 
-  static const base::FeatureParam<CompileStrategy> kCompileStrategyParam{
-      &features::kPrecompileInlineScripts, "compile-strategy",
-      CompileStrategy::kLazy, &kCompileStrategyOptions};
-
-  switch (kCompileStrategyParam.Get()) {
+  static const CompileStrategy strategy =
+      base::GetFieldTrialParamByFeatureAsEnum(
+          features::kPrecompileInlineScripts, "compile-strategy",
+          CompileStrategy::kLazy, kCompileStrategyOptions);
+  switch (strategy) {
     case CompileStrategy::kLazy:
       return CompileOptions::kNoCompileOptions;
     case CompileStrategy::kFirstScriptLazy:
@@ -162,10 +162,7 @@ void BackgroundHTMLScanner::ScriptTokenScanner::ScanToken(
   switch (token.GetType()) {
     case HTMLToken::kCharacter: {
       if (in_script_) {
-        if (token.IsAll8BitData())
-          script_builder_.Append(token.Data().AsString8());
-        else
-          script_builder_.Append(token.Data().AsString());
+        script_builder_.Append(token.Data().AsString());
       }
       return;
     }

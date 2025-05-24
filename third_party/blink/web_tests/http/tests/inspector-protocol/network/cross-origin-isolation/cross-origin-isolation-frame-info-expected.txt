@@ -12,6 +12,9 @@ Frame: {
     mimeType : text/html
     secureContextType : Secure
     securityOrigin : https://devtools.oopif.test:8443
+    securityOriginDetails : {
+        isLocalhost : false
+    }
     url : https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep&corp=same-site&coop
 }
 

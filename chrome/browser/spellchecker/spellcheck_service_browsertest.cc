@@ -27,7 +27,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spell_check_host_chrome_impl.h"
@@ -55,7 +54,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -256,9 +255,9 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
   // Quits the RunLoop on Mojo request flow completion.
   base::OnceClosure quit_;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list_;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
  private:
 #if BUILDFLAG(IS_WIN)
@@ -328,7 +327,7 @@ class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
  private:
   void RequestSpellCheckHost(
       mojo::Remote<spellcheck::mojom::SpellCheckHost>* interface) {
-    SpellCheckHostChromeImpl::Create(GetRenderer()->GetID(),
+    SpellCheckHostChromeImpl::Create(GetRenderer()->GetDeprecatedID(),
                                      interface->BindNewPipeAndPassReceiver());
   }
 
@@ -336,7 +335,8 @@ class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
       mojo::Remote<spellcheck::mojom::SpellCheckInitializationHost>*
           interface) {
     SpellCheckInitializationHostImpl::Create(
-        GetRenderer()->GetID(), interface->BindNewPipeAndPassReceiver());
+        GetRenderer()->GetDeprecatedID(),
+        interface->BindNewPipeAndPassReceiver());
   }
 
   void SpellingServiceDone(bool success,
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Removing a spellcheck language from accept languages should not remove it
 // from spellcheck languages list on CrOS.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
   SetAcceptLanguages("en-US,es,ru");
   EXPECT_EQ("en-US", GetMultilingualDictionaries());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Keeping spellcheck languages in accept languages should not alter spellcheck
 // languages list.
@@ -559,8 +559,8 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, DeleteCorruptedBDICT) {
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    bool success = base::WriteFile(
-        bdict_path, base::as_bytes(base::make_span(kCorruptedBDICT)));
+    bool success =
+        base::WriteFile(bdict_path, base::as_byte_span(kCorruptedBDICT));
     EXPECT_TRUE(success);
   }
 

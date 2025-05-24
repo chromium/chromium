@@ -6,14 +6,17 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -519,7 +522,7 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
   NavigateAndCommit(GURL("http://google.com"));
   auto* rfh = web_contents()->GetPrimaryMainFrame();
   MockSiteDataObserver mock_observer(web_contents());
-  EXPECT_CALL(mock_observer, OnSiteDataAccessed).Times(6);
+  EXPECT_CALL(mock_observer, OnSiteDataAccessed).Times(5);
 
   bool blocked_by_policy = false;
   GURL origin("http://google.com");
@@ -555,9 +558,6 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
       blocked_by_policy);
   PageSpecificContentSettings::StorageAccessed(
       StorageType::LOCAL_STORAGE, rfh->GetGlobalId(), google_storage_key,
-      blocked_by_policy);
-  PageSpecificContentSettings::StorageAccessed(
-      StorageType::DATABASE, rfh->GetGlobalId(), google_storage_key,
       blocked_by_policy);
 }
 
@@ -639,7 +639,7 @@ TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelSharedDictionary) {
   EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, allowed_browsing_data_model->size());
   EXPECT_EQ("google.com",
-            *absl::get_if<std::string>(
+            *std::get_if<std::string>(
                 &*(*allowed_browsing_data_model->begin()).data_owner));
 }
 
@@ -671,7 +671,7 @@ TEST_F(PageSpecificContentSettingsTest,
   EXPECT_EQ(1, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, blocked_browsing_data_model->size());
   EXPECT_EQ("google.com",
-            *absl::get_if<std::string>(
+            *std::get_if<std::string>(
                 &*(*blocked_browsing_data_model->begin()).data_owner));
 }
 
@@ -707,7 +707,7 @@ TEST_F(PageSpecificContentSettingsTest,
   EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, allowed_browsing_data_model->size());
   EXPECT_EQ("google.com",
-            *absl::get_if<std::string>(
+            *std::get_if<std::string>(
                 &*(*allowed_browsing_data_model->begin()).data_owner));
 }
 
@@ -743,7 +743,7 @@ TEST_F(PageSpecificContentSettingsTest,
   EXPECT_EQ(1, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, blocked_browsing_data_model->size());
   EXPECT_EQ("google.com",
-            *absl::get_if<std::string>(
+            *std::get_if<std::string>(
                 &*(*blocked_browsing_data_model->begin()).data_owner));
 }
 
@@ -1380,8 +1380,7 @@ TEST_F(PageSpecificContentSettingsTest, GetLastUsedReturnCorrectTimeTest) {
 TEST_F(PageSpecificContentSettingsTest, MediaBlockedIndicatorsDismissDelay) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      {content_settings::features::kImprovedSemanticsActivityIndicators},
-      {content_settings::features::kLeftHandSideActivityIndicators});
+      {}, {content_settings::features::kLeftHandSideActivityIndicators});
 
   NavigateAndCommit(GURL("http://google.com"));
 
@@ -1421,9 +1420,6 @@ TEST_F(PageSpecificContentSettingsTest, MediaBlockedIndicatorsDismissDelay) {
 TEST_F(PageSpecificContentSettingsTest,
        MediaIndicatorsDoNotDismissIfOpenedDelay) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      content_settings::features::kImprovedSemanticsActivityIndicators);
-
   NavigateAndCommit(GURL("http://google.com"));
 
   PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
@@ -1514,10 +1510,45 @@ TEST_F(PageSpecificContentSettingsTest, MediaBlockedStateIsResetIfMediaUsed) {
       PageSpecificContentSettings::kMicrophoneBlocked));
 }
 
+// The only currently implemented object-based type is for now ChromeOS only
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(PageSpecificContentSettingsTest, ObjectBasedInUseIndicator) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  // Initially, no indicator should be visible and `IsInUse` should be false.
+  EXPECT_FALSE(pscs->ShouldShowDeviceInUseIndicator(
+      ContentSettingsType::SMART_CARD_GUARD));
+  EXPECT_FALSE(pscs->IsInUse(ContentSettingsType::SMART_CARD_GUARD));
+
+  // When the first connection is used, indicator should start appearing and
+  // `IsInUse` should return `true`.
+  pscs->OnDeviceUsed(ContentSettingsType::SMART_CARD_GUARD);
+  EXPECT_TRUE(pscs->ShouldShowDeviceInUseIndicator(
+      ContentSettingsType::SMART_CARD_GUARD));
+  EXPECT_TRUE(pscs->IsInUse(ContentSettingsType::SMART_CARD_GUARD));
+
+  // When the last connection closes, the indicator should still be visible
+  // initially, even though `IsInUse` should be false already...
+  pscs->OnLastDeviceConnectionLost(ContentSettingsType::SMART_CARD_GUARD);
+  EXPECT_TRUE(pscs->ShouldShowDeviceInUseIndicator(
+      ContentSettingsType::SMART_CARD_GUARD));
+  EXPECT_FALSE(pscs->IsInUse(ContentSettingsType::SMART_CARD_GUARD));
+
+  // ...but 15 seconds later it should disappear.
+  task_environment()->AdvanceClock(base::Seconds(15));
+  EXPECT_FALSE(pscs->ShouldShowDeviceInUseIndicator(
+      ContentSettingsType::SMART_CARD_GUARD));
+}
+#endif
+
 class PageSpecificContentSettingsIframeTest
     : public PageSpecificContentSettingsTest {
  public:
-  PageSpecificContentSettingsIframeTest() {}
+  PageSpecificContentSettingsIframeTest() = default;
 
   void SetUp() override { PageSpecificContentSettingsTest::SetUp(); }
 
@@ -1570,7 +1601,7 @@ TEST_F(PageSpecificContentSettingsIframeTest, UnrelatedSecondaryUrlBlocked) {
   EXPECT_TRUE(content_settings->allow_script);
 }
 
-// Tests that the content settings are correctly set if the primary and
+// Tests that the image content settings are correctly set if the primary and
 // secondary urls are identical.
 TEST_F(PageSpecificContentSettingsIframeTest, PrimarySecondaryIdentical) {
   GURL parent_url("https://parent.com");
@@ -1589,4 +1620,109 @@ TEST_F(PageSpecificContentSettingsIframeTest, PrimarySecondaryIdentical) {
   EXPECT_FALSE(content_settings->allow_script);
 }
 
+#if !BUILDFLAG(IS_IOS)
+// Tests that the image content settings are correctly set if a secondary url is
+// blocked.
+TEST_F(PageSpecificContentSettingsIframeTest, SecondaryUrlBlockedForImages) {
+  GURL parent_url("https://parent.com");
+  GURL child_url("https://child.com");
+
+  settings_map()->SetContentSettingDefaultScope(parent_url, child_url,
+                                                ContentSettingsType::IMAGES,
+                                                CONTENT_SETTING_BLOCK);
+
+  blink::mojom::RendererContentSettingsPtr content_settings =
+      NavigateAndGetContentSettings(parent_url, child_url);
+  EXPECT_FALSE(content_settings->allow_image);
+}
+
+// Tests that the image content settings are correctly set if an unrelated
+// secondary url is blocked.
+TEST_F(PageSpecificContentSettingsIframeTest,
+       UnrelatedSecondaryUrlBlockedForImages) {
+  GURL other_url("https://other.com");
+  GURL parent_url("https://parent.com");
+  GURL child_url("https://child.com");
+
+  settings_map()->SetContentSettingDefaultScope(
+      other_url, child_url, ContentSettingsType::IMAGES, CONTENT_SETTING_BLOCK);
+
+  blink::mojom::RendererContentSettingsPtr content_settings =
+      NavigateAndGetContentSettings(parent_url, child_url);
+  EXPECT_TRUE(content_settings->allow_image);
+}
+
+// Tests that the content settings are correctly set if the primary and
+// secondary urls are identical.
+TEST_F(PageSpecificContentSettingsIframeTest,
+       PrimarySecondaryIdenticalForImages) {
+  GURL parent_url("https://parent.com");
+  GURL child_url = parent_url;
+  GURL other_url("https://other.com");
+
+  // All content settings that are sent to the renderer are top-origin scoped.
+  // Secondary_url is ignored. This call is functionally equivalent to setting
+  // secondary_url = wildcard.
+  settings_map()->SetContentSettingDefaultScope(parent_url, other_url,
+                                                ContentSettingsType::IMAGES,
+                                                CONTENT_SETTING_BLOCK);
+
+  blink::mojom::RendererContentSettingsPtr content_settings =
+      NavigateAndGetContentSettings(parent_url, child_url);
+  EXPECT_FALSE(content_settings->allow_image);
+}
+
+// Tests that the mixed content settings are correctly set if a secondary
+// url is allowed.
+TEST_F(PageSpecificContentSettingsIframeTest,
+       SecondaryUrlBlockedForMixedScript) {
+  GURL parent_url("https://parent.com");
+  GURL child_url("https://child.com");
+
+  settings_map()->SetContentSettingDefaultScope(
+      parent_url, child_url, ContentSettingsType::MIXEDSCRIPT,
+      CONTENT_SETTING_ALLOW);
+
+  blink::mojom::RendererContentSettingsPtr content_settings =
+      NavigateAndGetContentSettings(parent_url, child_url);
+  EXPECT_TRUE(content_settings->allow_mixed_content);
+}
+
+// Tests that the mixed content settings are correctly set if an unrelated
+// secondary url is allowed.
+TEST_F(PageSpecificContentSettingsIframeTest,
+       UnrelatedSecondaryUrlBlockedForMixedScript) {
+  GURL other_url("https://other.com");
+  GURL parent_url("https://parent.com");
+  GURL child_url("https://child.com");
+
+  settings_map()->SetContentSettingDefaultScope(
+      other_url, child_url, ContentSettingsType::MIXEDSCRIPT,
+      CONTENT_SETTING_ALLOW);
+
+  blink::mojom::RendererContentSettingsPtr content_settings =
+      NavigateAndGetContentSettings(parent_url, child_url);
+  EXPECT_FALSE(content_settings->allow_mixed_content);
+}
+
+// Tests that the content settings are correctly set if the primary and
+// secondary urls are identical.
+TEST_F(PageSpecificContentSettingsIframeTest,
+       PrimarySecondaryIdenticalForMixedScript) {
+  GURL parent_url("https://parent.com");
+  GURL child_url = parent_url;
+  GURL other_url("https://other.com");
+
+  // All content settings that are sent to the renderer are top-origin scoped.
+  // Secondary_url is ignored. This call is functionally equivalent to setting
+  // secondary_url = wildcard.
+  settings_map()->SetContentSettingDefaultScope(
+      parent_url, other_url, ContentSettingsType::MIXEDSCRIPT,
+      CONTENT_SETTING_ALLOW);
+
+  blink::mojom::RendererContentSettingsPtr content_settings =
+      NavigateAndGetContentSettings(parent_url, child_url);
+  EXPECT_TRUE(content_settings->allow_mixed_content);
+}
+#endif  // !BUILDFLAG(IS_IOS)
 }  // namespace content_settings

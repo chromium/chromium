@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -18,8 +18,8 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 /** Handles initializing an Activity appropriate ProfileProvider. */
 public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider>
         implements ProfileManager.Observer, DestroyObserver {
-    private OTRProfileID mOTRProfileID;
-    private boolean mHasCreatedOTRProfileID;
+    private OtrProfileId mOtrProfileId;
+    private boolean mHasCreatedOtrProfileId;
 
     /**
      * Handles initialization of a ProfileProvider for a given Activity.
@@ -59,39 +59,39 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
                     @Override
                     public Profile getOffTheRecordProfile(boolean createIfNeeded) {
                         Profile originalProfile = getOriginalProfile();
-                        OTRProfileID otrProfileID = getOrCreateOTRProfileID();
-                        return otrProfileID == null
-                                ? originalProfile.getPrimaryOTRProfile(createIfNeeded)
+                        OtrProfileId otrProfileId = getOrCreateOtrProfileId();
+                        return otrProfileId == null
+                                ? originalProfile.getPrimaryOtrProfile(createIfNeeded)
                                 : originalProfile.getOffTheRecordProfile(
-                                        otrProfileID, createIfNeeded);
+                                        otrProfileId, createIfNeeded);
                     }
 
                     @Override
                     public boolean hasOffTheRecordProfile() {
                         Profile originalProfile = getOriginalProfile();
-                        OTRProfileID otrProfileID = getOrCreateOTRProfileID();
-                        return otrProfileID == null
-                                ? originalProfile.hasPrimaryOTRProfile()
-                                : originalProfile.hasOffTheRecordProfile(otrProfileID);
+                        OtrProfileId otrProfileId = getOrCreateOtrProfileId();
+                        return otrProfileId == null
+                                ? originalProfile.hasPrimaryOtrProfile()
+                                : originalProfile.hasOffTheRecordProfile(otrProfileId);
                     }
                 });
     }
 
     @Nullable
-    private OTRProfileID getOrCreateOTRProfileID() {
-        if (!mHasCreatedOTRProfileID) {
-            mOTRProfileID = createOffTheRecordProfileID();
-            mHasCreatedOTRProfileID = true;
+    private OtrProfileId getOrCreateOtrProfileId() {
+        if (!mHasCreatedOtrProfileId) {
+            mOtrProfileId = createOffTheRecordProfileId();
+            mHasCreatedOtrProfileId = true;
         }
-        return mOTRProfileID;
+        return mOtrProfileId;
     }
 
     /**
-     * Create the OTRProfileID that should be used for the incognito profile of this provider. If
+     * Create the OtrProfileId that should be used for the incognito profile of this provider. If
      * null, the default OffTheRecord profile will be used.
      */
     @Nullable
-    protected OTRProfileID createOffTheRecordProfileID() {
+    protected OtrProfileId createOffTheRecordProfileId() {
         return null;
     }
 

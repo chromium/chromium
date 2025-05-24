@@ -175,8 +175,9 @@ void CenterVertically(NSView* view) {
   [startChromeButton sizeToFit];
   NSRect frame = [startChromeButton frame];
   frame.origin.x += oldWidth - NSWidth([startChromeButton frame]);
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     frame.origin.x = kDialogWidth - NSMaxX(frame);
+  }
   [startChromeButton setFrame:frame];
 }
 

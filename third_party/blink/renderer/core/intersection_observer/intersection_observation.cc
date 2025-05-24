@@ -20,16 +20,6 @@
 
 namespace blink {
 
-namespace {
-
-Document& TrackingDocument(const IntersectionObservation* observation) {
-  if (observation->Observer()->RootIsImplicit())
-    return observation->Target()->GetDocument();
-  return (observation->Observer()->root()->GetDocument());
-}
-
-}  // namespace
-
 IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
                                                  Element& target)
     : observer_(observer), target_(&target) {}
@@ -74,8 +64,7 @@ int64_t IntersectionObservation::ComputeIntersection(
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
 #endif
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-      !has_pending_update && (compute_flags & kScrollAndVisibilityOnly) &&
+  if (!has_pending_update && (compute_flags & kScrollAndVisibilityOnly) &&
       cached_rects_.min_scroll_delta_to_update.x() > 0 &&
       cached_rects_.min_scroll_delta_to_update.y() > 0) {
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
@@ -190,11 +179,14 @@ bool IntersectionObservation::ShouldCompute(unsigned flags) const {
       Observer()->trackVisibility()) {
     mojom::blink::FrameOcclusionState occlusion_state =
         target_->GetDocument().GetFrame()->GetOcclusionState();
-    // If we're tracking visibility, and we don't have occlusion information
-    // from our parent frame, then postpone computing intersections until a
-    // later lifecycle when the occlusion information is known.
-    if (occlusion_state == mojom::blink::FrameOcclusionState::kUnknown)
+    // If we're tracking visibility, and we aren't currently reporting the
+    // target visible, and we don't have occlusion information from our parent
+    // frame, then postpone computing intersections until a later lifecycle when
+    // the occlusion information is known.
+    if (!last_is_visible_ &&
+        occlusion_state == mojom::blink::FrameOcclusionState::kUnknown) {
       return false;
+    }
   }
   return true;
 }
@@ -211,13 +203,7 @@ bool IntersectionObservation::MaybeDelayAndReschedule(
   base::TimeDelta delay = observer_->GetEffectiveDelay() -
                           (context.GetMonotonicTime() - last_run_time_);
   if (delay.is_positive()) {
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-      context.UpdateNextRunDelay(delay);
-    } else {
-      // TODO(crbug.com/40873583): Handle the case that the frame becomes
-      // throttled during the delay,
-      TrackingDocument(this).View()->ScheduleAnimation(delay);
-    }
+    context.UpdateNextRunDelay(delay);
     return true;
   }
   return false;
@@ -233,6 +219,9 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
     geometry_flags |= IntersectionGeometry::kShouldReportRootBounds;
   if (Observer()->trackVisibility())
     geometry_flags |= IntersectionGeometry::kShouldComputeVisibility;
+  if (Observer()->ShouldExposeOccluderNodeId()) {
+    geometry_flags |= IntersectionGeometry::kShouldExposeOccluderNodeId;
+  }
   if (Observer()->trackFractionOfRoot())
     geometry_flags |= IntersectionGeometry::kShouldTrackFractionOfRoot;
   if (Observer()->UseOverflowClipEdge())

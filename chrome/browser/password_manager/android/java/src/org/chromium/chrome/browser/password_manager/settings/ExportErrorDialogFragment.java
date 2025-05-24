@@ -10,16 +10,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.R;
 
 /**
  * Shows the dialog that explains to the user the error which just happened during exporting and
  * optionally helps them to take actions to fix that (learning more, retrying export).
  */
+@NullMarked
 public class ExportErrorDialogFragment extends DialogFragment {
     /** Parameters to fill in the strings in the dialog. Pass them through {@link #initialize()}. */
     public static class ErrorDialogParams {
@@ -30,20 +32,20 @@ public class ExportErrorDialogFragment extends DialogFragment {
         public int positiveButtonLabelId;
 
         /** The main description of the error. Required. */
-        public String description;
+        public @Nullable String description;
 
         /**
          * An optional detailed description. Will be prefixed with "Details:" and displayed below
          * the main one.
          */
-        @Nullable public String detailedDescription;
+        public @Nullable String detailedDescription;
     }
 
     // This handler is used to answer the user actions on the dialog.
-    private DialogInterface.OnClickListener mHandler;
+    private DialogInterface.@Nullable OnClickListener mHandler;
 
     /** Defines the strings to be shown. Set in {@link #initialize()}. */
-    private ErrorDialogParams mParams;
+    private @Nullable ErrorDialogParams mParams;
 
     /**
      * Sets the click handler for the dialog buttons.
@@ -58,7 +60,7 @@ public class ExportErrorDialogFragment extends DialogFragment {
      * passed in arguments.
      */
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         assert mParams != null;
         final View dialog =
                 getActivity().getLayoutInflater().inflate(R.layout.passwords_error_dialog, null);
@@ -85,7 +87,7 @@ public class ExportErrorDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // If there is savedInstanceState, then the dialog is being recreated by Android and will
         // lack the necessary callbacks. The user likely already saw it first and then replaced the

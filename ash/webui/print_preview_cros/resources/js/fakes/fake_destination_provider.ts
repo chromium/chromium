@@ -6,10 +6,11 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {DestinationProviderInterface} from '../../destination_provider.mojom-webui.js';
-import {PrinterType} from '../../print.mojom-webui.js';
-import {Capabilities, CollateCapability, ColorCapability, ColorOption, ColorType, CopiesCapability, DpiCapability, DpiOption, DuplexCapability, DuplexOption, DuplexType, MediaSizeCapability, MediaSizeOption, MediaTypeCapability, MediaTypeOption, PageOrientation, PageOrientationCapability, PageOrientationOption, PinCapability} from '../../printer_capabilities.mojom-webui.js';
-import {Destination, DestinationProvider, FakeDestinationObserverInterface} from '../utils/print_preview_cros_app_types.js';
+import type {DestinationProviderInterface} from '../../destination_provider.mojom-webui.js';
+import type {PrinterType} from '../../print.mojom-webui.js';
+import type {Capabilities, CollateCapability, ColorCapability, ColorOption, CopiesCapability, DpiCapability, DpiOption, DuplexCapability, DuplexOption, MediaSizeCapability, MediaSizeOption, MediaTypeCapability, MediaTypeOption, PageOrientationCapability, PageOrientationOption, PinCapability} from '../../printer_capabilities.mojom-webui.js';
+import {ColorType, DuplexType, PageOrientation} from '../../printer_capabilities.mojom-webui.js';
+import type {Destination, DestinationProvider, FakeDestinationObserverInterface} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview

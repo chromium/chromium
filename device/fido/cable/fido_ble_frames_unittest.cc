@@ -4,9 +4,9 @@
 
 #include "device/fido/cable/fido_ble_frames.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -26,8 +26,8 @@ TEST(FidoBleFramesTest, InitializationFragment) {
   const std::vector<uint8_t> data = GetSomeData(25);
   constexpr uint16_t kDataLength = 21123;
 
-  FidoBleFrameInitializationFragment fragment(
-      FidoBleDeviceCommand::kMsg, kDataLength, base::make_span(data));
+  FidoBleFrameInitializationFragment fragment(FidoBleDeviceCommand::kMsg,
+                                              kDataLength, base::span(data));
   std::vector<uint8_t> buffer;
   const size_t binary_size = fragment.Serialize(&buffer);
   EXPECT_EQ(buffer.size(), binary_size);
@@ -39,7 +39,7 @@ TEST(FidoBleFramesTest, InitializationFragment) {
       FidoBleFrameInitializationFragment::Parse(buffer, &parsed_fragment));
 
   EXPECT_EQ(kDataLength, parsed_fragment.data_length());
-  EXPECT_TRUE(base::ranges::equal(data, parsed_fragment.fragment()));
+  EXPECT_TRUE(std::ranges::equal(data, parsed_fragment.fragment()));
   EXPECT_EQ(FidoBleDeviceCommand::kMsg, parsed_fragment.command());
 }
 
@@ -47,7 +47,7 @@ TEST(FidoBleFramesTest, ContinuationFragment) {
   const auto data = GetSomeData(25);
   constexpr uint8_t kSequence = 61;
 
-  FidoBleFrameContinuationFragment fragment(base::make_span(data), kSequence);
+  FidoBleFrameContinuationFragment fragment(base::span(data), kSequence);
 
   std::vector<uint8_t> buffer;
   const size_t binary_size = fragment.Serialize(&buffer);
@@ -59,7 +59,7 @@ TEST(FidoBleFramesTest, ContinuationFragment) {
   ASSERT_TRUE(
       FidoBleFrameContinuationFragment::Parse(buffer, &parsed_fragment));
 
-  EXPECT_TRUE(base::ranges::equal(data, parsed_fragment.fragment()));
+  EXPECT_TRUE(std::ranges::equal(data, parsed_fragment.fragment()));
   EXPECT_EQ(kSequence, parsed_fragment.sequence());
 }
 

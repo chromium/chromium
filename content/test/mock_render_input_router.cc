@@ -41,6 +41,7 @@ void MockRenderInputRouter::ForwardTouchEventWithLatencyInfo(
     const ui::LatencyInfo& ui_latency) {
   RenderInputRouter::ForwardTouchEventWithLatencyInfo(touch_event, ui_latency);
   SetLastWheelOrTouchEventLatencyInfo(ui::LatencyInfo(ui_latency));
+  last_forwarded_touch_event_ = touch_event;
 }
 
 void MockRenderInputRouter::ForwardGestureEventWithLatencyInfo(
@@ -55,6 +56,13 @@ std::optional<WebGestureEvent>
 MockRenderInputRouter::GetAndResetLastForwardedGestureEvent() {
   std::optional<WebGestureEvent> ret;
   last_forwarded_gesture_event_.swap(ret);
+  return ret;
+}
+
+std::optional<WebTouchEvent>
+MockRenderInputRouter::GetAndResetLastForwardedTouchEvent() {
+  std::optional<WebTouchEvent> ret;
+  last_forwarded_touch_event_.swap(ret);
   return ret;
 }
 

@@ -30,8 +30,6 @@
 
 namespace payments {
 
-using features::SecurePaymentConfirmationNetworkAndIssuerIconsTreatment;
-
 namespace {
 
 const gfx::VectorIcon& GetPlatformVectorIcon(bool dark_mode) {

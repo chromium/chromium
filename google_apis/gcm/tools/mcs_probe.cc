@@ -407,7 +407,6 @@ void MCSProbe::CheckIn() {
   chrome_build_proto.set_chrome_version(kChromeVersion);
 
   CheckinRequest::RequestInfo request_info(0, 0,
-                                           std::map<std::string, std::string>(),
                                            std::string(), chrome_build_proto);
 
   checkin_request_ = std::make_unique<CheckinRequest>(

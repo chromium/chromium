@@ -61,6 +61,7 @@
 #define DEVICE_TRUST ::policy::PolicyLogger::Log::Source::kDeviceTrust
 #define OIDC_ENROLLMENT ::policy::PolicyLogger::Log::Source::kOidcEnrollment
 #define EXTENSIBLE_SSO ::policy::PolicyLogger::Log::Source::kExtensibleSSO
+#define REPORTING ::policy::PolicyLogger::Log::Source::kReporting
 
 namespace policy {
 
@@ -79,14 +80,15 @@ class POLICY_EXPORT PolicyLogger {
       kRemoteCommands,
       kDeviceTrust,
       kOidcEnrollment,
-      kExtensibleSSO
+      kExtensibleSSO,
+      kReporting,
     };
     enum class Severity { kInfo, kWarning, kError, kVerbose };
 
     Log(const Severity log_severity,
         const Source log_source,
         const std::string& message,
-        const std::string_view file,
+        std::string_view file,
         const int line);
     Log(const Log&) = delete;
     Log& operator=(const Log&) = delete;
@@ -126,7 +128,7 @@ class POLICY_EXPORT PolicyLogger {
               const PolicyLogger::Log::Severity log_severity,
               const int log_verbosity,
               const PolicyLogger::Log::Source log_source,
-              const std::string_view file,
+              std::string_view file,
               const int line);
     LogHelper(const LogHelper&) = delete;
     LogHelper& operator=(const LogHelper&) = delete;
@@ -136,7 +138,7 @@ class POLICY_EXPORT PolicyLogger {
     ~LogHelper();
 
     template <typename T>
-    LogHelper& operator<<(T message) {
+    LogHelper& operator<<(const T& message) {
       message_buffer_ << message;
       return *this;
     }

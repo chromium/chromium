@@ -67,7 +67,10 @@ DeviceStatusIconRenderer::~DeviceStatusIconRenderer() {
   if (status_icon_) {
     auto* status_tray = g_browser_process->status_tray();
     DCHECK(status_tray);
-    status_tray->RemoveStatusIcon(status_icon_);
+    std::unique_ptr<StatusIcon> removed_icon =
+        status_tray->RemoveStatusIcon(status_icon_);
+    status_icon_ = nullptr;
+    removed_icon.reset();
   }
 }
 
@@ -136,16 +139,18 @@ void DeviceStatusIconRenderer::RefreshIcon() {
   DCHECK(status_tray);
   if (device_system_tray_icon_->profiles().empty()) {
     if (status_icon_) {
-      status_tray->RemoveStatusIcon(status_icon_);
+      std::unique_ptr<StatusIcon> removed_icon =
+          status_tray->RemoveStatusIcon(status_icon_);
       status_icon_ = nullptr;
+      removed_icon.reset();
     }
     return;
   }
 
   // This tries to construct this:
   // ------------------------------------------------
-  // |Google Chrome is accessing Device device(s)      |
-  // |About Device device                              |
+  // |Google Chrome is accessing Device device(s)   |
+  // |About Device device                           |
   // |---------------Separator----------------------|
   // |Profile1 section (see below profile for loop) |
   // |...                                           |
@@ -155,9 +160,7 @@ void DeviceStatusIconRenderer::RefreshIcon() {
   int total_connection_count = 0;
   int total_origin_count = 0;
   // Title will be updated after looping through profiles below.
-#if !BUILDFLAG(IS_MAC)
   menu->AddTitle(u"");
-#endif  //! BUILDFLAG(IS_MAC)
   AddItem(menu.get(), GetAboutDeviceLabel(),
           base::BindRepeating(&DeviceStatusIconRenderer::ShowHelpCenterUrl,
                               weak_factory_.GetWeakPtr()));
@@ -194,9 +197,7 @@ void DeviceStatusIconRenderer::RefreshIcon() {
   }
   auto title_label = device_system_tray_icon_->GetTitleLabel(
       total_origin_count, total_connection_count);
-#if !BUILDFLAG(IS_MAC)
   menu->SetLabel(0, title_label);
-#endif  //! BUILDFLAG(IS_MAC)
 
   if (!status_icon_) {
     status_icon_ = status_tray->CreateStatusIcon(

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("virtual_tasks") {
   sources = [
@@ -61,6 +61,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/file_manager:constants",
     "//content/test:test_support",
     "//storage/browser",
     "//testing/gmock",

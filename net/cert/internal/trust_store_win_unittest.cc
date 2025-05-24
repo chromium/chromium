@@ -4,13 +4,14 @@
 
 #include "net/cert/internal/trust_store_win.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/wincrypt_shim.h"
@@ -101,7 +102,7 @@ class TrustStoreWinTest : public testing::Test {
         CRYPTO_BUFFER_len(cert->cert_buffer())));
 
     CERT_ENHKEY_USAGE usage;
-    memset(&usage, 0, sizeof(usage));
+    UNSAFE_TODO(memset(&usage, 0, sizeof(usage)));
     if (!CertSetEnhancedKeyUsage(os_cert.get(), &usage)) {
       return false;
     }
@@ -305,7 +306,7 @@ TEST_F(TrustStoreWinTest, GetTrustDisallowedCerts) {
 
 MATCHER_P(ParsedCertEq, expected_cert, "") {
   return arg && expected_cert &&
-         base::ranges::equal(arg->der_cert(), expected_cert->der_cert());
+         std::ranges::equal(arg->der_cert(), expected_cert->der_cert());
 }
 
 TEST_F(TrustStoreWinTest, GetIssuersInitializationError) {

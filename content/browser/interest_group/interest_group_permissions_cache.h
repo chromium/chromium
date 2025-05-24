@@ -64,14 +64,7 @@ class CONTENT_EXPORT InterestGroupPermissionsCache {
 
     // Comparison operators are only useful for testing.
 
-    bool operator==(Permissions permissions) const {
-      return can_join == permissions.can_join &&
-             can_leave == permissions.can_leave;
-    }
-
-    bool operator!=(Permissions permissions) const {
-      return !(*this == permissions);
-    }
+    friend bool operator==(const Permissions&, const Permissions&) = default;
   };
 
   InterestGroupPermissionsCache();

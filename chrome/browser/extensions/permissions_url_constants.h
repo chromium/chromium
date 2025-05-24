@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_PERMISSIONS_URL_CONSTANTS_H_
 #define CHROME_BROWSER_EXTENSIONS_PERMISSIONS_URL_CONSTANTS_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 // Constants that are only needed by the //chrome/browser layer, and thus
 // don't need to be in //extensions/permissions.
 namespace extension_permissions_constants {

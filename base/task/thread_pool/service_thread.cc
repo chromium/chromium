@@ -6,8 +6,7 @@
 
 #include "base/debug/alias.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 ServiceThread::ServiceThread() : Thread("ThreadPoolServiceThread") {}
 
@@ -16,5 +15,4 @@ NOINLINE void ServiceThread::Run(RunLoop* run_loop) {
   NO_CODE_FOLDING();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

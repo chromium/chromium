@@ -25,15 +25,14 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.autofill.AuthenticatorOptionsAdapter.AuthenticatorOptionViewHolder;
 import org.chromium.chrome.browser.ui.autofill.data.AuthenticatorOption;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
@@ -47,7 +46,6 @@ import java.util.ArrayList;
 
 /** Unit tests for {@link AuthenticatorSelectionDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
 public class AuthenticatorSelectionDialogTest {
     // The icon set on the AuthenticatorOption is not important and any icon would do.
     private static final AuthenticatorOption OPTION_1 =
@@ -89,11 +87,11 @@ public class AuthenticatorSelectionDialogTest {
     private FakeModalDialogManager mModalDialogManager;
     private AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;
     private Resources mResources;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AuthenticatorSelectionDialog.Listener mAuthenticatorSelectedListener;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
         mResources = ApplicationProvider.getApplicationContext().getResources();
         mAuthenticatorSelectionDialog =
@@ -116,7 +114,7 @@ public class AuthenticatorSelectionDialogTest {
         forceAuthenticatorOptionsViewLayout(model);
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
         RecyclerView authenticatorOptionsView =
-                (RecyclerView) customView.findViewById(R.id.authenticator_options_view);
+                customView.findViewById(R.id.authenticator_options_view);
         assertThat(authenticatorOptionsView.getAdapter().getItemCount()).isEqualTo(1);
         // Verify that radio button is not shown for a single authenticator option and instead the
         // icon image is shown.
@@ -280,79 +278,7 @@ public class AuthenticatorSelectionDialogTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
-    public void testSingleAuthenticatorOption_defaultTitleView() throws Exception {
-        ArrayList<AuthenticatorOption> options = new ArrayList<>();
-        options.add(OPTION_1);
-
-        mAuthenticatorSelectionDialog.show(options);
-
-        PropertyModel model = mModalDialogManager.getShownDialogModel();
-        assertThat(model).isNotNull();
-
-        forceAuthenticatorOptionsViewLayout(model);
-
-        // Verify that the title set by modal dialog is correct.
-        assertThat(model.get(ModalDialogProperties.TITLE))
-                .isEqualTo(mResources.getString(R.string.autofill_card_unmask_verification_title));
-
-        // Verify that the title icon set by modal dialog is correct.
-        Drawable expectedDrawable =
-                ResourcesCompat.getDrawable(
-                        mResources,
-                        R.drawable.google_pay_with_divider,
-                        ApplicationProvider.getApplicationContext().getTheme());
-        assertTrue(
-                getBitmap(expectedDrawable)
-                        .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
-
-        // Verify that title and title icon is not set by custom view.
-        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
-        assertThat((TextView) customView.findViewById(R.id.title)).isNull();
-        assertThat((ImageView) customView.findViewById(R.id.title_icon)).isNull();
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
-    public void testMultipleAuthenticatorOption_defaultTitleView() throws Exception {
-        ArrayList<AuthenticatorOption> options = new ArrayList<>();
-        options.add(OPTION_1);
-        options.add(OPTION_2);
-
-        mAuthenticatorSelectionDialog.show(options);
-
-        PropertyModel model = mModalDialogManager.getShownDialogModel();
-        assertThat(model).isNotNull();
-
-        forceAuthenticatorOptionsViewLayout(model);
-
-        // Verify that the title set by modal dialog is correct.
-        assertThat(model.get(ModalDialogProperties.TITLE))
-                .isEqualTo(
-                        mResources.getString(
-                                R.string
-                                        .autofill_card_auth_selection_dialog_title_multiple_options));
-
-        // Verify that the title icon set by modal dialog is correct.
-        Drawable expectedDrawable =
-                ResourcesCompat.getDrawable(
-                        mResources,
-                        R.drawable.google_pay_with_divider,
-                        ApplicationProvider.getApplicationContext().getTheme());
-        assertTrue(
-                getBitmap(expectedDrawable)
-                        .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
-
-        // Verify that title and title icon is not set by custom view.
-        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
-        assertThat((TextView) customView.findViewById(R.id.title)).isNull();
-        assertThat((ImageView) customView.findViewById(R.id.title_icon)).isNull();
-    }
-
-    @Test
-    @SmallTest
-    public void testSingleAuthenticatorOption_customTitleView() throws Exception {
+    public void testSingleAuthenticatorOption_titleView() throws Exception {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);
 
@@ -366,13 +292,13 @@ public class AuthenticatorSelectionDialogTest {
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
 
         // Verify that the title set by custom view is correct.
-        TextView title = (TextView) customView.findViewById(R.id.title);
+        TextView title = customView.findViewById(R.id.title);
         assertThat(title.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(title.getText())
                 .isEqualTo(mResources.getString(R.string.autofill_card_unmask_verification_title));
 
         // Verify that the title icon set by custom view is correct.
-        ImageView title_icon = (ImageView) customView.findViewById(R.id.title_icon);
+        ImageView title_icon = customView.findViewById(R.id.title_icon);
         Drawable expectedDrawable =
                 ResourcesCompat.getDrawable(
                         mResources,
@@ -380,15 +306,11 @@ public class AuthenticatorSelectionDialogTest {
                         ApplicationProvider.getApplicationContext().getTheme());
         assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
         assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
-
-        // Verify that title and title icon is not set by modal dialog.
-        assertThat(model.get(ModalDialogProperties.TITLE)).isNull();
-        assertThat(model.get(ModalDialogProperties.TITLE_ICON)).isNull();
     }
 
     @Test
     @SmallTest
-    public void testMultipleAuthenticatorOption_customTitleView() throws Exception {
+    public void testMultipleAuthenticatorOption_titleView() throws Exception {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);
         options.add(OPTION_2);
@@ -403,7 +325,7 @@ public class AuthenticatorSelectionDialogTest {
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
 
         // Verify that the title set by custom view is correct.
-        TextView title = (TextView) customView.findViewById(R.id.title);
+        TextView title = customView.findViewById(R.id.title);
         assertThat(title.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(title.getText())
                 .isEqualTo(
@@ -412,7 +334,7 @@ public class AuthenticatorSelectionDialogTest {
                                         .autofill_card_auth_selection_dialog_title_multiple_options));
 
         // Verify that the title icon set by custom view is correct.
-        ImageView title_icon = (ImageView) customView.findViewById(R.id.title_icon);
+        ImageView title_icon = customView.findViewById(R.id.title_icon);
         Drawable expectedDrawable =
                 ResourcesCompat.getDrawable(
                         mResources,
@@ -420,10 +342,6 @@ public class AuthenticatorSelectionDialogTest {
                         ApplicationProvider.getApplicationContext().getTheme());
         assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
         assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
-
-        // Verify that title and title icon is not set by modal dialog.
-        assertThat(model.get(ModalDialogProperties.TITLE)).isNull();
-        assertThat(model.get(ModalDialogProperties.TITLE_ICON)).isNull();
     }
 
     private PropertyModel createAndShowModelForChangeSelectedOptionTest() {
@@ -445,7 +363,7 @@ public class AuthenticatorSelectionDialogTest {
             PropertyModel model, int position) {
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
         RecyclerView authenticatorOptionsView =
-                (RecyclerView) customView.findViewById(R.id.authenticator_options_view);
+                customView.findViewById(R.id.authenticator_options_view);
         return (AuthenticatorOptionViewHolder)
                 authenticatorOptionsView.findViewHolderForAdapterPosition(position);
     }
@@ -462,7 +380,7 @@ public class AuthenticatorSelectionDialogTest {
     private void forceAuthenticatorOptionsViewLayout(PropertyModel model) {
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
         RecyclerView authenticatorOptionsView =
-                (RecyclerView) customView.findViewById(R.id.authenticator_options_view);
+                customView.findViewById(R.id.authenticator_options_view);
         authenticatorOptionsView.measure(0, 0);
         authenticatorOptionsView.layout(0, 0, 100, 1000);
     }

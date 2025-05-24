@@ -24,6 +24,64 @@
 
 namespace blink {
 
+void BoxFragmentBuilder::SetInitialTextBoxTrim() {
+  should_text_box_trim_node_start_ = space_.ShouldTextBoxTrimNodeStart();
+  should_text_box_trim_node_end_ = space_.ShouldTextBoxTrimNodeEnd();
+  should_text_box_trim_fragmentainer_start_ =
+      space_.ShouldTextBoxTrimFragmentainerStart();
+  should_text_box_trim_fragmentainer_end_ =
+      space_.ShouldTextBoxTrimFragmentainerEnd();
+
+  // Disable text box trimming if there's intervening border / padding.
+  if (should_text_box_trim_node_start_ &&
+      BorderPadding().block_start != LayoutUnit()) {
+    should_text_box_trim_node_start_ = false;
+  }
+  if (should_text_box_trim_node_end_ &&
+      BorderPadding().block_end != LayoutUnit()) {
+    should_text_box_trim_node_end_ = false;
+  }
+
+  // Initialize `text-box-trim` flags from `ComputedStyle`.
+  const ComputedStyle& style = Style();
+  if (style.TextBoxTrim() == ETextBoxTrim::kNone) {
+    return;
+  }
+
+  if (!space_.IsAnonymous()) {
+    should_text_box_trim_node_start_ |= style.ShouldTextBoxTrimStart();
+    should_text_box_trim_node_end_ |= style.ShouldTextBoxTrimEnd();
+  }
+
+  // Unless box-decoration-break is 'clone', box trimming specified inside a
+  // fragmentation context will not apply at fragmentainer breaks in that
+  // fragmentation context. Additionally, this is always disabled for
+  // pagination, since our implementation is not able to paint outside the page
+  // area.
+  if (!space_.HasBlockFragmentation() || space_.IsPaginated()) {
+    should_text_box_trim_fragmentainer_start_ = false;
+    should_text_box_trim_fragmentainer_end_ = false;
+  } else {
+    // Should only trim block-start at fragmentainer start if this node is
+    // resumed after a break.
+    if (IsBreakInside(PreviousBreakToken())) {
+      should_text_box_trim_fragmentainer_start_ |=
+          should_text_box_trim_node_start_;
+    } else {
+      should_text_box_trim_fragmentainer_start_ = false;
+    }
+
+    should_text_box_trim_fragmentainer_end_ |= should_text_box_trim_node_end_;
+
+    if (!space_.IsAnonymous() &&
+        style.BoxDecorationBreak() != EBoxDecorationBreak::kClone) {
+      should_text_box_trim_fragmentainer_start_ &=
+          !style.ShouldTextBoxTrimStart();
+      should_text_box_trim_fragmentainer_end_ &= !style.ShouldTextBoxTrimEnd();
+    }
+  }
+}
+
 void BoxFragmentBuilder::UpdateBorderPaddingForClonedBoxDecorations() {
   const BlockBreakToken* break_token = PreviousBreakToken();
   if (!IsBreakInside(break_token)) {
@@ -350,6 +408,10 @@ void BoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   for (auto& child : children_)
     child.offset.block_offset += delta;
 
+  for (auto& child : children_with_size_dependent_propagation_) {
+    child.offset.block_offset += delta;
+  }
+
   for (auto& candidate : oof_positioned_candidates_)
     candidate.static_position.offset.block_offset += delta;
   for (auto& descendant : oof_positioned_fragmentainer_descendants_) {
@@ -544,6 +606,12 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
 }
 
 void BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {
+  has_final_size_ = true;
+
+  // There may be OOFs with anchor queries. So be sure to propagate any anchors
+  // that we've found so far.
+  PropagateSizeDependentData();
+
   OutOfFlowLayoutPart(this).Run();
   if (Style().ScrollMarkerGroup() != EScrollMarkerGroup::kNone &&
       !GetConstraintSpace().IsAnonymous()) {
@@ -564,6 +632,8 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
     }
   }
 #endif
+
+  Finalize();
 
   if (box_type_ == PhysicalFragment::kNormalBox && node_ &&
       node_.IsBlockInInline()) [[unlikely]] {

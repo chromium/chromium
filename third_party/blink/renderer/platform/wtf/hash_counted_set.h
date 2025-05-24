@@ -94,7 +94,10 @@ class HashCountedSet {
   // Clears the whole set.
   void clear() { impl_.clear(); }
 
-  Vector<Value> AsVector() const;
+  const auto& Values() const {
+    // The values (vs counts) are the keys of ImplType.
+    return impl_.Keys();
+  }
 
   void Trace(auto visitor) const
     requires Allocator::kIsGarbageCollected
@@ -112,9 +115,9 @@ class HashCountedSet {
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(!IsStackAllocatedType<Value>);
+      static_assert(!IsStackAllocatedTypeV<Value>);
       static_assert(Allocator::kIsGarbageCollected ||
-                        !IsPointerToGarbageCollectedType<Value>::value,
+                        !IsPointerToGarbageCollectedType<Value>,
                     "Cannot put raw pointers to garbage-collected classes into "
                     "an off-heap HashCountedSet. Use "
                     "HeapHashCountedSet<Member<T>> instead.");
@@ -161,32 +164,6 @@ inline void HashCountedSet<T, U, V>::RemoveAll(iterator it) {
     return;
 
   impl_.erase(it);
-}
-
-template <typename Value,
-          typename Traits,
-          typename Allocator,
-          typename VectorType>
-inline void CopyToVector(
-    const HashCountedSet<Value, Traits, Allocator>& collection,
-    VectorType& vector) {
-  {
-    // Disallow GC across resize allocation, see crbug.com/568173
-    typename VectorType::GCForbiddenScope scope;
-    vector.resize(collection.size());
-  }
-
-  auto it = collection.begin();
-  auto end = collection.end();
-  for (unsigned i = 0; it != end; ++it, ++i)
-    vector[i] = (*it).key;
-}
-
-template <typename T, typename U, typename V>
-inline Vector<T> HashCountedSet<T, U, V>::AsVector() const {
-  Vector<T> vector;
-  CopyToVector(*this, vector);
-  return vector;
 }
 
 }  // namespace WTF

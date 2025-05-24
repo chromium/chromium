@@ -23,7 +23,7 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Creates an instance of TlsProber.
     virtual std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(

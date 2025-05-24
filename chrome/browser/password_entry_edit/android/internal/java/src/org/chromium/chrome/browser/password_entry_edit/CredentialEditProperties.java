@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.password_entry_edit;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase.UiActionHandler;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties defined here reflect the visible state of the credential edit UI. */
+@NullMarked
 class CredentialEditProperties {
     static final PropertyModel.WritableObjectPropertyKey<UiActionHandler> UI_ACTION_HANDLER =
             new PropertyModel.WritableObjectPropertyKey<>("ui action handler");

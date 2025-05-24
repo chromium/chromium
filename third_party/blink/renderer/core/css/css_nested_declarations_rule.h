@@ -17,7 +17,7 @@ class StyleRuleNestedDeclarations;
 class StyleRuleCSSStyleDeclaration;
 
 // https://drafts.csswg.org/css-nesting-1/#the-cssnestrule
-class CSSNestedDeclarationsRule final : public CSSRule {
+class CORE_EXPORT CSSNestedDeclarationsRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

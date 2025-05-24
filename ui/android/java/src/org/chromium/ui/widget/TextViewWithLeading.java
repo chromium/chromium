@@ -9,11 +9,12 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.annotation.StyleableRes;
 import androidx.appcompat.widget.AppCompatTextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.base.UiAndroidFeatureList;
 
@@ -23,22 +24,23 @@ import org.chromium.ui.base.UiAndroidFeatureList;
  * calculation to set up leading correctly and allows it to be set in XML. It overwrites
  * android:lineSpacingExtra and android:lineSpacingMultiplier.
  */
+@NullMarked
 public class TextViewWithLeading extends AppCompatTextView {
     /**
-     * Constructing TextViewWithLeading programmatically without an {@link AttributeSet} will render
-     * it functionally equivalent to a TextView - that is no leading will be applied. This method is
-     * provided for use from subclasses.
+     * If the {@link AttributeSet} is not provided, this will be functionally equivalent to a
+     * TextView - that is no leading will be applied. This method is also available for use from
+     * subclasses besides inflation from XML.
      */
-    protected TextViewWithLeading(Context context) {
-        super(context);
+    public TextViewWithLeading(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        applySpacingAttributes(attrs);
     }
 
-    /** Constructor for use from XML with checkForLineSpacingAttributes assertion. */
-    public TextViewWithLeading(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    private void applySpacingAttributes(@Nullable AttributeSet attrs) {
+        if (attrs == null) return;
         checkForLineSpacingAttributes(attrs);
         Float nullableLeading = getLeadingDimen(attrs);
-        // TODO(https://crbug.com:1499069): Remove feature/kill switch once certain this is safe.
+        // TODO(crbug.com/40287683): Remove feature/kill switch once certain this is safe.
         if (UiAndroidFeatureList.sRequireLeadingInTextViewWithLeading.isEnabled()) {
             assert nullableLeading != null : "Couldn't find leading for TextViewWithLeading";
             applyLeading(nullableLeading);

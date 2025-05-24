@@ -191,8 +191,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_PROTECTED_PREF_STORE:
         return !unprotected_store_successful_write_callback_.is_null();
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Verifies that the (key, value) pairs in |expected_prefs_in_store| are found
@@ -270,8 +269,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_PROTECTED_PREF_STORE:
         return !!protected_prefs_;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   bool StoreModifiedByMigration(MockPrefStoreID store_id) {
@@ -281,8 +279,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_PROTECTED_PREF_STORE:
         return migration_modified_protected_store_;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   bool MigrationCompleted() {

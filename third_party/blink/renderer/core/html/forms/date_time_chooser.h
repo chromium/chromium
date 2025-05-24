@@ -89,6 +89,8 @@ class CORE_EXPORT DateTimeChooser : public GarbageCollected<DateTimeChooser> {
   virtual void EndChooser() = 0;
   // Returns a root AXObject in the DateTimeChooser if it's available.
   virtual AXObject* RootAXObject(Element* popup_owner) = 0;
+  // Returns true if picker UI is currently showing.
+  virtual bool IsPickerVisible() const = 0;
 
   virtual void Trace(Visitor* visitor) const {}
 };

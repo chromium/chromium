@@ -17,8 +17,9 @@ bool FixupAndValidateStartupPage(const std::string& url_string,
                                  GURL* fixed_url) {
   GURL url = url_formatter::FixupURL(url_string, std::string());
   bool valid = url.is_valid() && !extensions::ExtensionTabUtil::IsKillURL(url);
-  if (valid && fixed_url)
+  if (valid && fixed_url) {
     fixed_url->Swap(&url);
+  }
   return valid;
 }
 

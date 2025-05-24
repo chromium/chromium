@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -15,15 +18,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DISPLAY_AS_SHARED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ROW_CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
 import android.app.Activity;
@@ -33,9 +36,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Space;
 import android.widget.TextView;
 
-import androidx.core.util.Pair;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -48,8 +51,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
-import org.chromium.chrome.tab_ui.R;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -59,6 +64,8 @@ import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.time.Clock;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,24 +79,24 @@ public class TabGroupRowViewUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock TabGroupTimeAgoResolver mTimeAgoResolver;
     @Mock Runnable mRunnable;
     @Mock Drawable mDrawable;
     @Mock FaviconResolver mFaviconResolver;
-    @Mock Callback<FrameLayout> mFrameLayoutCallback;
+    @Mock SharedImageTilesView mSharedImageTilesView;
 
     private Activity mActivity;
     private TabGroupRowView mTabGroupRowView;
     private ViewGroup mTabGroupFaviconCluster;
     private TextView mTitleTextView;
     private TextView mSubtitleTextView;
+    private Space mTextSpace;
     private FrameLayout mImageTilesContainer;
     private ListMenuButton mListMenuButton;
     private PropertyModel mPropertyModel;
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity((activity -> mActivity = activity));
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         MockitoHelper.doCallback(1, (Callback<Drawable> callback) -> callback.onResult(mDrawable))
                 .when(mFaviconResolver)
                 .resolve(any(), any());
@@ -107,12 +114,12 @@ public class TabGroupRowViewUnitTest {
         mTabGroupFaviconCluster = mTabGroupRowView.findViewById(R.id.tab_group_favicon_cluster);
         mTitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_title);
         mSubtitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_subtitle);
+        mTextSpace = mTabGroupRowView.findViewById(R.id.tab_group_text_space);
         mImageTilesContainer = mTabGroupRowView.findViewById(R.id.image_tiles_container);
-        mListMenuButton = mTabGroupRowView.findViewById(R.id.more);
-        mTabGroupRowView.setTimeAgoResolverForTesting(mTimeAgoResolver);
+        mListMenuButton = mTabGroupRowView.findViewById(R.id.tab_group_menu);
 
         PropertyModelChangeProcessor.create(
-                mPropertyModel, mTabGroupRowView, new TabGroupRowViewBinder());
+                mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
 
         mActivity.setContentView(mTabGroupRowView);
     }
@@ -143,42 +150,81 @@ public class TabGroupRowViewUnitTest {
 
     @Test
     public void testSetTitleData() {
-        remakeWithProperty(TITLE_DATA, new Pair<>("Title", 3));
+        remakeWithProperty(
+                TITLE_DATA,
+                new TabGroupRowViewTitleData(
+                        "Title", 3, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals("Title", mTitleTextView.getText());
 
-        remakeWithProperty(TITLE_DATA, new Pair<>(" ", 3));
+        remakeWithProperty(
+                TITLE_DATA,
+                new TabGroupRowViewTitleData(
+                        " ", 3, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals(" ", mTitleTextView.getText());
 
-        remakeWithProperty(TITLE_DATA, new Pair<>("", 3));
+        remakeWithProperty(
+                TITLE_DATA,
+                new TabGroupRowViewTitleData(
+                        "", 3, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals("3 tabs", mTitleTextView.getText());
 
-        remakeWithProperty(TITLE_DATA, new Pair<>(null, 3));
+        remakeWithProperty(
+                TITLE_DATA,
+                new TabGroupRowViewTitleData(
+                        null, 3, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals("3 tabs", mTitleTextView.getText());
 
-        remakeWithProperty(TITLE_DATA, new Pair<>("", 1));
+        remakeWithProperty(
+                TITLE_DATA,
+                new TabGroupRowViewTitleData(
+                        "", 1, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals("1 tab", mTitleTextView.getText());
     }
 
     @Test
-    public void testSetCreationMillis() {
-        long creationMillis = 123L;
-        String timeAgo = "Created just now";
-        when(mTimeAgoResolver.resolveTimeAgoText(creationMillis)).thenReturn(timeAgo);
-
-        remakeWithProperty(TabGroupRowProperties.CREATION_MILLIS, creationMillis);
-
-        verify(mTimeAgoResolver).resolveTimeAgoText(creationMillis);
-        assertEquals(timeAgo, mSubtitleTextView.getText());
+    public void testSubtitleGoneWhenNull() {
+        remakeWithProperty(
+                TITLE_DATA,
+                new TabGroupRowViewTitleData(
+                        "", 1, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
+        assertEquals(GONE, mTextSpace.getVisibility());
+        assertEquals(GONE, mSubtitleTextView.getVisibility());
     }
 
     @Test
-    public void testSetOpenRunnable() {
-        remakeWithProperty(OPEN_RUNNABLE, mRunnable);
+    public void testSetCreationMillis() {
+        long creationMillis = Clock.system(ZoneId.systemDefault()).millis();
+        String timeAgoText = "Created just now";
+
+        TabGroupTimeAgo timeAgo = new TabGroupTimeAgo(creationMillis, TimestampEvent.CREATED);
+        remakeWithProperty(TabGroupRowProperties.TIMESTAMP_EVENT, timeAgo);
+
+        assertEquals(VISIBLE, mTextSpace.getVisibility());
+        assertEquals(VISIBLE, mSubtitleTextView.getVisibility());
+        assertEquals(timeAgoText, mSubtitleTextView.getText());
+    }
+
+    @Test
+    public void testSetUpdateMillis() {
+        long creationMillis = Clock.system(ZoneId.systemDefault()).millis();
+        String timeAgoText = "Updated just now";
+
+        TabGroupTimeAgo timeAgo = new TabGroupTimeAgo(creationMillis, TimestampEvent.UPDATED);
+        remakeWithProperty(TabGroupRowProperties.TIMESTAMP_EVENT, timeAgo);
+
+        assertEquals(VISIBLE, mTextSpace.getVisibility());
+        assertEquals(VISIBLE, mSubtitleTextView.getVisibility());
+        assertEquals(timeAgoText, mSubtitleTextView.getText());
+    }
+
+    @Test
+    public void testSetRowClickRunnable() {
+        remakeWithProperty(ROW_CLICK_RUNNABLE, mRunnable);
         mTabGroupRowView.performClick();
         verify(mRunnable).run();
 
         reset(mRunnable);
-        remakeWithProperty(OPEN_RUNNABLE, null);
+        remakeWithProperty(ROW_CLICK_RUNNABLE, null);
         mTabGroupRowView.performClick();
         verifyNoInteractions(mRunnable);
     }
@@ -263,8 +309,11 @@ public class TabGroupRowViewUnitTest {
 
     @Test
     public void testContentDescriptions() {
-        remakeWithProperty(TITLE_DATA, new Pair<>("Title", 3));
-        assertEquals("Open Title", mTitleTextView.getContentDescription());
+        remakeWithProperty(
+                TITLE_DATA,
+                new TabGroupRowViewTitleData(
+                        "Title", 3, R.plurals.tab_group_row_accessibility_text));
+        assertEquals("Open Title with 3 tabs", mTitleTextView.getContentDescription());
         assertEquals("Title tab group options", mListMenuButton.getContentDescription());
     }
 
@@ -273,12 +322,26 @@ public class TabGroupRowViewUnitTest {
         remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(DISPLAY_AS_SHARED, true).build());
         assertEquals(View.VISIBLE, mImageTilesContainer.getVisibility());
         remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(DISPLAY_AS_SHARED, false).build());
-        assertEquals(View.GONE, mImageTilesContainer.getVisibility());
+        assertEquals(GONE, mImageTilesContainer.getVisibility());
     }
 
     @Test
     public void testImageTileContainerCallback() {
-        remakeWithProperty(GET_IMAGE_TILE_CONTAINER_CALLBACK, mFrameLayoutCallback);
-        verify(mFrameLayoutCallback).onResult(any());
+        remakeWithProperty(SHARED_IMAGE_TILES_VIEW, mSharedImageTilesView);
+        assertEquals(1, mImageTilesContainer.getChildCount());
+        remakeWithProperty(SHARED_IMAGE_TILES_VIEW, null);
+        assertEquals(0, mImageTilesContainer.getChildCount());
+    }
+
+    @Test
+    public void testDisableMenu() {
+        remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(OPEN_RUNNABLE, null).build());
+        assertEquals(GONE, mListMenuButton.getVisibility());
+    }
+
+    @Test
+    public void testEnableMenu() {
+        remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(OPEN_RUNNABLE, () -> {}).build());
+        assertEquals(View.VISIBLE, mListMenuButton.getVisibility());
     }
 }

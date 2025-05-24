@@ -41,7 +41,7 @@ class MimeHandlerStreamManager : public KeyedService,
   ~MimeHandlerStreamManager() override;
   static MimeHandlerStreamManager* Get(content::BrowserContext* context);
 
-  // The |frame_tree_node_id| parameter is used for the top level plugins case
+  // The `frame_tree_node_id` parameter is used for the top level plugins case
   // (PDF, etc).
   void AddStream(const std::string& stream_id,
                  std::unique_ptr<StreamContainer> stream,

@@ -54,7 +54,7 @@ using KeywordExtractedInfoList = std::vector<KeywordInfo>;
 KeywordExtractedInfoList ExtractKeywords(const std::u16string& query);
 
 // Strips the user query from the keyword.
-const std::u16string StripQuery(const std::u16string query);
+const std::u16string StripQuery(const std::u16string& query);
 
 }  // namespace app_list
 

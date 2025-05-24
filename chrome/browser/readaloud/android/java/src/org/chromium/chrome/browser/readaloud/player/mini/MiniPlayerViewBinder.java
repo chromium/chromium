@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * View binder as described in //docs/ui/android/mvc_overview.md. Updates views
- * based on model state.
+ * View binder as described in //docs/ui/android/mvc_overview.md. Updates views based on model
+ * state.
  */
+@NullMarked
 public class MiniPlayerViewBinder {
     static class ViewHolder {
         public MiniPlayerLayout view;
@@ -33,9 +36,8 @@ public class MiniPlayerViewBinder {
         if (key == PlayerProperties.TITLE) {
             view.setTitle(model.get(PlayerProperties.TITLE));
 
-        } else if (key == PlayerProperties.PUBLISHER) {
-            view.setPublisher(model.get(PlayerProperties.PUBLISHER));
-
+        } else if (key == PlayerProperties.PLAYBACK_MODE) {
+            view.setPlaybackMode(PlaybackMode.fromValue(model.get(PlayerProperties.PLAYBACK_MODE)));
         } else if (key == PlayerProperties.PLAYBACK_STATE) {
             view.onPlaybackStateChanged(model.get(PlayerProperties.PLAYBACK_STATE));
 
@@ -44,6 +46,9 @@ public class MiniPlayerViewBinder {
 
         } else if (key == PlayerProperties.INTERACTION_HANDLER) {
             view.setInteractionHandler(model.get(PlayerProperties.INTERACTION_HANDLER));
+        } else if (key == PlayerProperties.REQUESTED_PLAYBACK_MODE) {
+            view.setRequestedPlaybackMode(
+                    PlaybackMode.fromValue(model.get(PlayerProperties.REQUESTED_PLAYBACK_MODE)));
         }
     }
 

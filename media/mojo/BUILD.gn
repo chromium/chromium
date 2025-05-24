@@ -66,6 +66,7 @@ source_set("test_support") {
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//media/mojo/mojom:test_interfaces",
+    "//media/mojo/mojom:test_support",
     "//media/mojo/services",
   ]
 }
@@ -77,10 +78,13 @@ source_set("unit_tests") {
     "//media/mojo/clients:unit_tests",
     "//media/mojo/common:unit_tests",
     "//media/mojo/mojom:unit_tests",
-    "//media/mojo/mojom/stable:unit_tests",
     "//media/mojo/services:unit_tests",
     "//media/mojo/test:unit_tests",
   ]
+
+  if (is_linux || is_chromeos) {
+    deps += [ "//media/mojo/mojom/stable:unit_tests" ]
+  }
 }
 
 test("media_mojo_unittests") {

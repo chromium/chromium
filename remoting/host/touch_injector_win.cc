@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/native_library.h"
@@ -231,7 +232,7 @@ void TouchInjectorWin::AddNewTouchPoints(const TouchEvent& event) {
 
   for (const TouchEventPoint& touch_point : event.touch_points()) {
     POINTER_TOUCH_INFO pointer_touch_info;
-    memset(&pointer_touch_info, 0, sizeof(pointer_touch_info));
+    UNSAFE_TODO(memset(&pointer_touch_info, 0, sizeof(pointer_touch_info)));
     pointer_touch_info.pointerInfo.pointerFlags =
         POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT | POINTER_FLAG_DOWN;
     ConvertToPointerTouchInfo(touch_point, &pointer_touch_info);
@@ -254,7 +255,7 @@ void TouchInjectorWin::MoveTouchPoints(const TouchEvent& event) {
   for (const TouchEventPoint& touch_point : event.touch_points()) {
     POINTER_TOUCH_INFO* pointer_touch_info =
         &touches_in_contact_[touch_point.id()];
-    memset(pointer_touch_info, 0, sizeof(*pointer_touch_info));
+    UNSAFE_TODO(memset(pointer_touch_info, 0, sizeof(*pointer_touch_info)));
     pointer_touch_info->pointerInfo.pointerFlags =
         POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT | POINTER_FLAG_UPDATE;
     ConvertToPointerTouchInfo(touch_point, pointer_touch_info);

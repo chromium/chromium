@@ -16,12 +16,14 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/scrollable_shelf_constants.h"
 #include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_test_util.h"
 #include "ash/shelf/shelf_tooltip_manager.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shelf/test/shelf_test_base.h"
 #include "ash/shell.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -31,12 +33,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 
 namespace ash {
@@ -251,6 +252,18 @@ class ScrollableShelfViewRTLTest : public ScrollableShelfViewTest,
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL, ScrollableShelfViewRTLTest, testing::Bool());
+
+TEST_F(ScrollableShelfViewTest, AccessiblePreviousAndNextFocus) {
+  Shelf* shelf = shelf_view_->shelf();
+
+  ui::AXNodeData data;
+  scrollable_shelf_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(scrollable_shelf_view_->GetViewAccessibility().GetNextWindowFocus(),
+            shelf->GetStatusAreaWidget());
+  EXPECT_EQ(
+      scrollable_shelf_view_->GetViewAccessibility().GetPreviousWindowFocus(),
+      shelf->shelf_widget()->navigation_widget());
+}
 
 // Verifies that the display rotation from the short side to the long side
 // should not break the scrollable shelf's UI
@@ -1576,11 +1589,6 @@ class ScrollableShelfViewDeskButtonTest : public ScrollableShelfViewTest {
 
   // ScrollableShelfViewTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDeskButton,
-                              chromeos::features::kJellyroll},
-        /*disabled_features=*/{});
-
     // Shelf overflow can be influenced by system time (i.e. if the date is
     // slightly longer or the clock has four digits instead of three, this can
     // cause overflow). We set the timer to be a consistent time so that the
@@ -1592,9 +1600,6 @@ class ScrollableShelfViewDeskButtonTest : public ScrollableShelfViewTest {
     SetShowDeskButtonInShelfPref(
         Shell::Get()->session_controller()->GetPrimaryUserPrefService(), true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

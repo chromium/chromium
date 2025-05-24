@@ -4,10 +4,6 @@
 
 #include "chrome/browser/resource_coordinator/decision_details.h"
 
-#include "components/ukm/test_ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace resource_coordinator {
@@ -175,96 +171,6 @@ TEST(DecisionDetailsTest, DecisionDetails) {
             details.reasons()[1]);
   EXPECT_TRUE(details.GetFailureReasonStrings().empty());
   EXPECT_TRUE(details.toggled());
-}
-
-TEST(DecisionDetailsTest, TabManagerLifecycleStateChangeUkm) {
-  DecisionDetails details;
-
-  // Make details with every possible failure reason except one, followed by a
-  // single success reason.
-  EXPECT_FALSE(details.AddReason(
-      DecisionFailureReason::LIFECYCLES_ENTERPRISE_POLICY_OPT_OUT));
-  EXPECT_FALSE(details.AddReason(DecisionFailureReason::ORIGIN_TRIAL_OPT_OUT));
-  EXPECT_FALSE(details.AddReason(DecisionFailureReason::GLOBAL_DISALLOWLIST));
-  EXPECT_FALSE(details.AddReason(DecisionFailureReason::HEURISTIC_AUDIO));
-  EXPECT_FALSE(details.AddReason(DecisionFailureReason::HEURISTIC_FAVICON));
-  EXPECT_FALSE(details.AddReason(
-      DecisionFailureReason::HEURISTIC_INSUFFICIENT_OBSERVATION));
-  EXPECT_FALSE(details.AddReason(DecisionFailureReason::HEURISTIC_TITLE));
-  EXPECT_FALSE(details.AddReason(DecisionFailureReason::LIVE_STATE_CAPTURING));
-  // Skipping LIVE_STATE_EXTENSION_DISALLOWED here.
-  EXPECT_FALSE(details.AddReason(DecisionFailureReason::LIVE_STATE_FORM_ENTRY));
-  EXPECT_FALSE(details.AddReason(DecisionFailureReason::LIVE_STATE_IS_PDF));
-  EXPECT_FALSE(details.AddReason(DecisionFailureReason::LIVE_STATE_MIRRORING));
-  EXPECT_FALSE(
-      details.AddReason(DecisionFailureReason::LIVE_STATE_PLAYING_AUDIO));
-  EXPECT_FALSE(
-      details.AddReason(DecisionFailureReason::LIVE_STATE_USING_WEB_SOCKETS));
-  EXPECT_FALSE(
-      details.AddReason(DecisionFailureReason::LIVE_STATE_USING_WEB_USB));
-  EXPECT_FALSE(details.AddReason(DecisionFailureReason::LIVE_STATE_VISIBLE));
-  EXPECT_FALSE(
-      details.AddReason(DecisionFailureReason::LIVE_STATE_DEVTOOLS_OPEN));
-  EXPECT_FALSE(
-      details.AddReason(DecisionFailureReason::LIVE_STATE_DESKTOP_CAPTURE));
-  EXPECT_FALSE(
-      details.AddReason(DecisionFailureReason::LIVE_STATE_USING_BLUETOOTH));
-  EXPECT_TRUE(details.AddReason(DecisionSuccessReason::ORIGIN_TRIAL_OPT_IN));
-
-  // Dump the data to a UKM builder.
-  ukm::TestUkmRecorder ukm_recorder;
-  ukm::SourceId ukm_source_id = ukm::UkmRecorder::GetNewSourceID();
-  ukm::builders::TabManager_LifecycleStateChange ukm_builder(ukm_source_id);
-  details.Populate(&ukm_builder);
-  ukm_builder.Record(&ukm_recorder);
-
-  // Validate the output.
-  EXPECT_EQ(1u, ukm_recorder.entries_count());
-  auto entries = ukm_recorder.GetEntriesByName(ukm_builder.kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0].get();
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm_builder.kFailureLifecyclesEnterprisePolicyOptOutName, 1);
-  ukm_recorder.ExpectEntryMetric(entry,
-                                 ukm_builder.kFailureOriginTrialOptOutName, 1);
-  ukm_recorder.ExpectEntryMetric(entry,
-                                 ukm_builder.kFailureGlobalDisallowlistName, 1);
-  ukm_recorder.ExpectEntryMetric(entry, ukm_builder.kFailureHeuristicAudioName,
-                                 1);
-  ukm_recorder.ExpectEntryMetric(entry,
-                                 ukm_builder.kFailureHeuristicFaviconName, 1);
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm_builder.kFailureHeuristicInsufficientObservationName, 1);
-  ukm_recorder.ExpectEntryMetric(entry, ukm_builder.kFailureHeuristicTitleName,
-                                 1);
-  ukm_recorder.ExpectEntryMetric(entry,
-                                 ukm_builder.kFailureLiveStateCapturingName, 1);
-  EXPECT_FALSE(ukm_recorder.EntryHasMetric(
-      entry, ukm_builder.kFailureLiveStateExtensionDisallowedName));
-  ukm_recorder.ExpectEntryMetric(entry,
-                                 ukm_builder.kFailureLiveStateFormEntryName, 1);
-  ukm_recorder.ExpectEntryMetric(entry, ukm_builder.kFailureLiveStateIsPDFName,
-                                 1);
-  ukm_recorder.ExpectEntryMetric(entry,
-                                 ukm_builder.kFailureLiveStateMirroringName, 1);
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm_builder.kFailureLiveStatePlayingAudioName, 1);
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm_builder.kFailureLiveStateUsingWebSocketsName, 1);
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm_builder.kFailureLiveStateUsingWebUSBName, 1);
-  ukm_recorder.ExpectEntryMetric(entry,
-                                 ukm_builder.kFailureLiveStateVisibleName, 1);
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm_builder.kFailureLiveStateDevToolsOpenName, 1);
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm_builder.kFailureLiveStateDesktopCaptureName, 1);
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm_builder.kFailureLiveStateUsingBluetoothName, 1);
-  EXPECT_FALSE(ukm_recorder.EntryHasMetric(
-      entry, ukm_builder.kSuccessOriginTrialOptInName));
-  EXPECT_FALSE(ukm_recorder.EntryHasMetric(
-      entry, ukm_builder.kSuccessGlobalAllowlistName));
 }
 
 }  // namespace resource_coordinator

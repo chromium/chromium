@@ -66,8 +66,9 @@ class ApplicationStatusListenerImpl : public ApplicationStatusListener {
   }
 
   void Notify(ApplicationState state) override {
-    if (callback_)
+    if (callback_) {
       callback_.Run(state);
+    }
   }
 
  private:
@@ -113,9 +114,8 @@ ApplicationState ApplicationStatusListener::GetState() {
       Java_ApplicationStatus_getStateForApplication(AttachCurrentThread()));
 }
 
-static void JNI_ApplicationStatus_OnApplicationStateChange(
-    JNIEnv* env,
-    jint new_state) {
+static void JNI_ApplicationStatus_OnApplicationStateChange(JNIEnv* env,
+                                                           jint new_state) {
   ApplicationState application_state = static_cast<ApplicationState>(new_state);
   ApplicationStatusListener::NotifyApplicationStateChange(application_state);
 }

@@ -32,13 +32,16 @@ namespace printing {
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
-    ProcessBehavior process_behavior) {
-  return std::make_unique<PrintingContextLinux>(delegate, process_behavior);
+    OutOfProcessBehavior out_of_process_behavior) {
+  return std::make_unique<PrintingContextLinux>(delegate,
+                                                out_of_process_behavior);
 }
 
-PrintingContextLinux::PrintingContextLinux(Delegate* delegate,
-                                           ProcessBehavior process_behavior)
-    : PrintingContext(delegate, process_behavior), print_dialog_(nullptr) {}
+PrintingContextLinux::PrintingContextLinux(
+    Delegate* delegate,
+    OutOfProcessBehavior out_of_process_behavior)
+    : PrintingContext(delegate, out_of_process_behavior),
+      print_dialog_(nullptr) {}
 
 PrintingContextLinux::~PrintingContextLinux() {
   ReleaseContext();
@@ -128,11 +131,13 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
   document_name_ = document_name;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
+  if (out_of_process_behavior() ==
+      OutOfProcessBehavior::kEnabledSkipSystemCalls) {
     return mojom::ResultCode::kSuccess;
   }
 
-  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls &&
+  if (out_of_process_behavior() ==
+          OutOfProcessBehavior::kEnabledPerformSystemCalls &&
       !settings_->system_print_dialog_data().empty()) {
     // Take the settings captured by the browser process from the system print
     // dialog and apply them to this printing context in the PrintBackend

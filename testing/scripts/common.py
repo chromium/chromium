@@ -197,7 +197,20 @@ def record_local_script_results(name, output_fd, failures, valid):
   elif failures:
     status = result_types.FAIL
   test_log = '\n'.join(failures)
-  result_sink_client.Post(name, status, None, test_log, None)
+
+  # Source comes from:
+  # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
+  struct_test_dict = {
+      'coarseName': None,  # Not used for single tests.
+      'fineName': None,  # Not used for single tests.
+      'caseNameComponents': ['*fixture'],
+  }
+  result_sink_client.Post(name,
+                          status,
+                          None,
+                          test_log,
+                          None,
+                          test_id_structured=struct_test_dict)
 
 
 def parse_common_test_results(json_results, test_separator='/'):
@@ -384,31 +397,52 @@ class BaseIsolatedScriptArgsAdapter:
   def rest_args(self):
     return self._rest_args
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def generate_test_output_args(self, output):
     del output  # unused
     return []
+  # pylint: enable=no-self-use
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def generate_test_filter_args(self, test_filter_str):
     del test_filter_str  # unused
     raise RuntimeError('Flag not supported.')
+  # pylint: enable=no-self-use
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def generate_test_repeat_args(self, repeat_count):
     del repeat_count  # unused
     raise RuntimeError('Flag not supported.')
+  # pylint: enable=no-self-use
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def generate_test_launcher_retry_limit_args(self, retry_limit):
     del retry_limit  # unused
     raise RuntimeError('Flag not supported.')
+  # pylint: enable=no-self-use
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def generate_sharding_args(self, total_shards, shard_index):
     del total_shards, shard_index  # unused
     raise RuntimeError('Flag not supported.')
+  # pylint: enable=no-self-use
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def generate_test_also_run_disabled_tests_args(self):
     raise RuntimeError('Flag not supported.')
+  # pylint: enable=no-self-use
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def select_python_executable(self):
     return sys.executable
+  # pylint: enable=no-self-use
 
   def generate_isolated_script_cmd(self):
     isolated_script_cmd = [self.select_python_executable()] + self.rest_args

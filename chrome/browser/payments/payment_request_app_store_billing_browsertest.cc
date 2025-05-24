@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
@@ -76,11 +75,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestTwaBillingTest,
       "NotSupportedError: The payment method "
       "\"https://play.google.com/billing\" is not supported.";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   expected_error = expected_error + " Unable to invoke Android apps.";
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  expected_error =
-      expected_error + " Cannot connect to the OS from Lacros browser.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // We expect the standard NotSupportedError inside a TWA because Play Billing

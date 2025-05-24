@@ -1,0 +1,23 @@
+This is a wdspec test.
+[FAIL] test_page_ranges_document[ranges0-expected0]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page_ranges_document[ranges1-expected1]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page_ranges_document[ranges2-expected2]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page_ranges_document[ranges3-expected3]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page_ranges_document[ranges4-expected4]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page_ranges_document[ranges5-expected5]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page_ranges_document[ranges6-expected6]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page_ranges_document[ranges7-expected7]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page_ranges_document[ranges8-expected8]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page_ranges_document[ranges9-expected9]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+Harness: the test ran to completion.
+

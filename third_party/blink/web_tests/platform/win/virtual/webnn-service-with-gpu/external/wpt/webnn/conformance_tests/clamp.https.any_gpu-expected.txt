@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] clamp int32 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp int32 actual 2147483647 should be close enough to expected 2147483645 by ULP distance: expected a number less than or equal to 0 but got 2
+[FAIL] clamp uint32 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp uint32 actual 4294967295 should be close enough to expected 4294967290 by ULP distance: expected a number less than or equal to 0 but got 5
+[FAIL] clamp int64 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp int64 actual -4147483648 should be close enough to expected -2 by ULP distance: expected a number less than or equal to 0n but got 4147483646n
+[FAIL] clamp uint64 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp uint64 actual 5294967295 should be close enough to expected 5294967290 by ULP distance: expected a number less than or equal to 0n but got 5n
+Harness: the test ran to completion.
+

@@ -14,7 +14,7 @@
 #include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/global_media_controls/public/views/chapter_item_view.h"
 #endif
 
@@ -120,12 +120,13 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   MediaItemUIFooter* GetFooterForTesting();
   MediaItemUIDeviceSelector* GetDeviceSelectorForTesting();
   views::View* GetDeviceSelectorSeparatorForTesting();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   views::Button* GetChapterListButtonForTesting();
   views::View* GetChapterListViewForTesting();
   views::Label* GetCurrentTimestampViewForTesting();
   views::Label* GetTotalDurationViewForTesting();
-  base::flat_map<int, ChapterItemView*> GetChaptersForTesting();
+  base::flat_map<int, raw_ptr<ChapterItemView, CtnExperimental>>
+  GetChaptersForTesting();
 #endif
 
  private:
@@ -217,7 +218,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> device_selector_view_separator_ = nullptr;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
   // Callback for when the chapter list button is clicked by user.
   void ToggleChapterListView();
@@ -240,7 +241,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
 
   // The current `ChapterItemView` for the chapter at the index of the chapter
   // list.
-  base::flat_map<int, ChapterItemView*> chapters_;
+  base::flat_map<int, raw_ptr<ChapterItemView, CtnExperimental>> chapters_;
 
   base::WeakPtrFactory<MediaItemUIDetailedView> weak_factory_{this};
 #endif

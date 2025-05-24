@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
-import os
 import time
 
 from absl import app, flags
@@ -11,7 +9,7 @@ from selenium import webdriver
 from pywinauto.application import Application
 from pywinauto.findwindows import ElementNotFoundError
 
-from test_util import create_chrome_webdriver
+from test_util import create_chrome_webdriver, fetch_policies
 
 # A URL that is in a different language than our Chrome language.
 URL = "https://zh.wikipedia.org/wiki/Chromium"
@@ -23,16 +21,17 @@ flags.DEFINE_bool('incognito', False,
 
 
 def main(argv):
-  os.system('start chrome --remote-debugging-port=9222')
   options = webdriver.ChromeOptions()
-  # Add option for connecting chromedriver with Chrome
-  options.add_experimental_option("debuggerAddress", "localhost:9222")
+  # By default, `chromedriver` sets a pref to disable translation. Override
+  # that so that the policy alone decides the feature's enablement.
+  prefs = {"translate": {"enabled": True}}
   driver = create_chrome_webdriver(
-      chrome_options=options, incognito=FLAGS.incognito)
+      chrome_options=options, incognito=FLAGS.incognito, prefs=prefs)
+
+  fetch_policies(driver)
   driver.get(URL)
+  # Wait for UI to update
   time.sleep(10)
-  # Refresh the tab so the TranslateEnabled policy can apply
-  driver.refresh()
   translatePopupVisible = None
 
   try:
@@ -42,11 +41,10 @@ def main(argv):
        .child_window(title="Translate this page?", control_type="Pane") \
        .print_control_identifiers()
     translatePopupVisible = True
-  except ElementNotFoundError as error:
+  except ElementNotFoundError:
     translatePopupVisible = False
   finally:
     driver.quit()
-    os.system('taskkill /f /im chrome.exe')
 
   if translatePopupVisible:
     print("TRUE")

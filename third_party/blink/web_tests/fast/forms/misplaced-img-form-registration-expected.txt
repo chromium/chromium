@@ -1,3 +1,0 @@
-Test for bug 34488: Crash in mangleme in WebCore::Element::getAttribute.
-
-Pass if no crash or assertion failure.

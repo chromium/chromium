@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/net/network_diagnostics/arc_http_routine.h"
+
 #include <memory>
 
-#include "ash/components/arc/test/fake_net_instance.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/net/network_diagnostics/arc_http_routine.h"
+#include "chromeos/ash/experiences/arc/test/fake_net_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +27,7 @@ const int kVeryHighLatencyDelayMs = 1050;
 
 class ArcHttpRoutineTest : public ::testing::Test {
  public:
-  ArcHttpRoutineTest() {}
+  ArcHttpRoutineTest() = default;
 
   ArcHttpRoutineTest(const ArcHttpRoutineTest&) = delete;
   ArcHttpRoutineTest& operator=(const ArcHttpRoutineTest&) = delete;

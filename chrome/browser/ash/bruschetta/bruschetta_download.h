@@ -11,6 +11,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
+class PrefService;
 class Profile;
 namespace network {
 class SimpleURLLoader;
@@ -47,7 +48,7 @@ class BruschettaDownload {
 // downloading files.
 class SimpleURLLoaderDownload : public BruschettaDownload {
  public:
-  SimpleURLLoaderDownload();
+  explicit SimpleURLLoaderDownload(PrefService& local_state);
   // Starts downloading the file at `url`, will invoke `callback` upon
   // completion. Either with the path to the downloaded file and a sha256 hash
   // of its contents, or in case of error will run `callback` with an empty
@@ -66,14 +67,10 @@ class SimpleURLLoaderDownload : public BruschettaDownload {
   ~SimpleURLLoaderDownload() override;
 
  private:
-  SimpleURLLoaderDownload(
-      Profile* profile,
-      GURL url,
-      base::OnceCallback<void(base::FilePath path, std::string sha256)>
-          callback);
   void Download(Profile* profile, std::unique_ptr<base::ScopedTempDir> dir);
   void Finished(base::FilePath path);
 
+  const raw_ref<PrefService> local_state_;
   GURL url_;
   std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
   base::OnceCallback<void(base::FilePath path, std::string sha256)> callback_;

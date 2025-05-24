@@ -8,11 +8,11 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/win/access_control_list.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
@@ -209,7 +209,7 @@ void CompareDenyOnly(
         groups[i].IsDenyOnly() || compare_groups[i].IsDenyOnly() || allow_all) {
       continue;
     }
-    EXPECT_NE(base::ranges::find(exceptions, group_sid), exceptions.end());
+    EXPECT_NE(std::ranges::find(exceptions, group_sid), exceptions.end());
   }
   EXPECT_EQ(user, token->UserGroup().IsDenyOnly());
 }

@@ -105,8 +105,7 @@ class OneShotDelayedBackgroundTimer::TaskImpl final
       Stop();
     }
     DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
-    base::AutoLock locker(
-        android::PreFreezeBackgroundMemoryTrimmer::Instance().lock_);
+    base::AutoLock locker(android::PreFreezeBackgroundMemoryTrimmer::lock());
     task_ = android::PreFreezeBackgroundMemoryTrimmer::Instance()
                 .PostDelayedBackgroundTaskModernHelper(
                     GetTaskRunner(), from_here, std::move(task), delay);

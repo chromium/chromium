@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/webauthn/enclave_manager.h"
 
+#include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <deque>
 #include <memory>
@@ -18,10 +15,12 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -37,10 +36,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
@@ -50,17 +49,18 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/os_crypt/sync/os_crypt.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -95,6 +95,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -102,21 +103,18 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "crypto/scoped_lacontext.h"
-#include "device/fido/enclave/icloud_recovery_key_mac.h"
-#include "device/fido/mac/util.h"
+#include "components/trusted_vault/icloud_recovery_key_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace enclave = device::enclave;
@@ -125,7 +123,7 @@ using webauthn_pb::EnclaveLocalState;
 // Holds the arguments to `StoreKeys` so that they can be processed when the
 // state machine is ready for them.
 struct EnclaveManager::StoreKeysArgs {
-  std::string gaia_id;
+  GaiaId gaia_id;
   std::vector<std::vector<uint8_t>> keys;
   int last_key_version;
 };
@@ -136,15 +134,15 @@ struct EnclaveManager::PendingAction {
   bool renew_pin = false;
   std::unique_ptr<StoreKeysArgs> store_keys_args;
   bool setup_account = false;
-  std::string pin;          // the PIN to add to an account.
+  std::string pin;          // the PIN to add to set up an account with.
+  std::string set_pin;      // the PIN to set on an existing account.
   std::string updated_pin;  // a new PIN, to replace the current PIN.
   std::string rapt;         // ReAuthentication Proof Token.
-  bool update_wrapped_pin;  // copy `wrapped_pin` and `pin_public_key` to the
-                            // state.
+  bool update_wrapped_pin;  // copy `wrapped_pin` to the state.
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
-  std::optional<std::string> pin_public_key;
+  std::optional<std::string> pin_public_key;  // the current PIN PK in the SDS.
 #if BUILDFLAG(IS_MAC)
-  std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key;
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_recovery_key;
 #endif                      // BUILDFLAG(IS_MAC)
   bool unregister = false;  // whether to unregister from the enclave.
 };
@@ -206,40 +204,36 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // This prefix is the protobuf encoding for a 32-byte value with tag 1024.
 // This means that, with the hash appended, the serialised state file is still a
-// valid protobuf, which is handly for debugging.
+// valid protobuf, which is handy for debugging.
 static const uint8_t kHashPrefix[] = {0x82, 0x40, 32};
+
+static const char kPinRenewalFailureHistogram[] =
+    "WebAuthentication.PinRenewalFailureCause";
 
 // Since protobuf maps `bytes` to `std::string` (rather than
 // `std::vector<uint8_t>`), functions for jumping between these representations
 // are needed.
 
-base::span<const uint8_t> ToSpan(const std::string& s) {
-  const uint8_t* data = reinterpret_cast<const uint8_t*>(s.data());
-  return base::span<const uint8_t>(data, s.size());
-}
-
 template <size_t N>
 base::span<const uint8_t, N> ToSizedSpan(const std::string& s) {
   CHECK_EQ(s.size(), N);
-  const uint8_t* data = reinterpret_cast<const uint8_t*>(s.data());
-  return base::span<const uint8_t, N>(data, N);
+  return base::span<const uint8_t, N>(base::as_byte_span(s));
 }
 
 template <size_t N>
 std::array<uint8_t, N> ToArray(base::span<const uint8_t, N> in) {
   std::array<uint8_t, N> ret;
-  base::ranges::copy(in, ret.begin());
+  std::ranges::copy(in, ret.begin());
   return ret;
 }
 
 std::vector<uint8_t> ToVector(const std::string& s) {
-  const auto span = ToSpan(s);
+  const auto span = base::as_byte_span(s);
   return std::vector<uint8_t>(span.begin(), span.end());
 }
 
 std::string VecToString(base::span<const uint8_t> v) {
-  const char* data = reinterpret_cast<const char*>(v.data());
-  return std::string(data, data + v.size());
+  return std::string(base::as_string_view(v));
 }
 
 bool IsValidSubjectPublicKeyInfo(base::span<const uint8_t> spki) {
@@ -299,7 +293,8 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
   if (!user.identity_public_key().empty() &&
-      !IsValidSubjectPublicKeyInfo(ToSpan(user.identity_public_key()))) {
+      !IsValidSubjectPublicKeyInfo(
+          base::as_byte_span(user.identity_public_key()))) {
     return __LINE__;
   }
   if (user.wrapped_identity_private_key().empty() != user.device_id().empty()) {
@@ -310,7 +305,7 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
   if (!user.uv_public_key().empty() &&
-      !IsValidSubjectPublicKeyInfo(ToSpan(user.uv_public_key()))) {
+      !IsValidSubjectPublicKeyInfo(base::as_byte_span(user.uv_public_key()))) {
     return __LINE__;
   }
 
@@ -325,7 +320,8 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
   if (!user.member_public_key().empty() &&
-      !IsValidUncompressedP256X962(ToSpan(user.member_public_key()))) {
+      !IsValidUncompressedP256X962(
+          base::as_byte_span(user.member_public_key()))) {
     return __LINE__;
   }
 
@@ -336,9 +332,6 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
 
-  if (user.has_wrapped_pin() != user.has_pin_public_key()) {
-    return __LINE__;
-  }
   if (user.has_wrapped_pin()) {
     return CheckPINInvariants(user.wrapped_pin());
   }
@@ -411,7 +404,7 @@ cbor::Value BuildUnregisterMessage(const std::string& device_id) {
 
 EnclaveLocalState::User* StateForUser(EnclaveLocalState* local_state,
                                       const CoreAccountInfo& account) {
-  auto it = local_state->mutable_users()->find(account.gaia);
+  auto it = local_state->mutable_users()->find(account.gaia.ToString());
   if (it == local_state->mutable_users()->end()) {
     return nullptr;
   }
@@ -421,7 +414,7 @@ EnclaveLocalState::User* StateForUser(EnclaveLocalState* local_state,
 EnclaveLocalState::User* CreateStateForUser(EnclaveLocalState* local_state,
                                             const CoreAccountInfo& account) {
   auto pair = local_state->mutable_users()->insert(
-      {account.gaia, EnclaveLocalState::User()});
+      {account.gaia.ToString(), EnclaveLocalState::User()});
   CHECK(pair.second);
   return &(pair.first->second);
 }
@@ -648,7 +641,7 @@ std::unique_ptr<EnclaveLocalState> ParseStateFile(
     const std::string& contents_str) {
   auto ret = std::make_unique<EnclaveLocalState>();
 
-  const base::span<const uint8_t> contents = ToSpan(contents_str);
+  const base::span<const uint8_t> contents = base::as_byte_span(contents_str);
   if (contents.size() < crypto::kSHA256Length + sizeof(kHashPrefix)) {
     FIDO_LOG(ERROR) << "Enclave state too small to be valid";
     return ret;
@@ -659,7 +652,8 @@ std::unique_ptr<EnclaveLocalState> ParseStateFile(
       contents.size() - crypto::kSHA256Length - sizeof(kHashPrefix));
   const std::array<uint8_t, crypto::kSHA256Length> calculated =
       crypto::SHA256Hash(payload);
-  if (memcmp(calculated.data(), digest.data(), crypto::kSHA256Length) != 0) {
+  if (UNSAFE_TODO(memcmp(calculated.data(), digest.data(),
+                         crypto::kSHA256Length)) != 0) {
     FIDO_LOG(ERROR) << "Checksum mismatch. Discarding state.";
     return ret;
   }
@@ -673,27 +667,27 @@ std::unique_ptr<EnclaveLocalState> ParseStateFile(
   return ret;
 }
 
-base::flat_set<std::string> GetGaiaIDs(
+base::flat_set<GaiaId> GetGaiaIDs(
     const std::vector<gaia::ListedAccount>& listed_accounts) {
-  base::flat_set<std::string> result;
+  base::flat_set<GaiaId> result;
   for (const gaia::ListedAccount& listed_account : listed_accounts) {
     result.insert(listed_account.gaia_id);
   }
   return result;
 }
 
-base::flat_set<std::string> GetGaiaIDs(
+base::flat_set<GaiaId> GetGaiaIDs(
     const google::protobuf::Map<std::string, EnclaveLocalState::User>& users) {
-  base::flat_set<std::string> result;
+  base::flat_set<GaiaId> result;
   for (const auto& it : users) {
-    result.insert(it.first);
+    result.insert(GaiaId(it.first));
   }
   return result;
 }
 
 std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
   return label;
 #else
   return std::string("placeholder");
@@ -703,7 +697,7 @@ std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {
 std::optional<crypto::UserVerifyingKeyLabel> UserVerifyingKeyLabelFromString(
     std::string saved_label) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
   return saved_label;
 #else
   return std::nullopt;
@@ -898,7 +892,7 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
   return new_secrets;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 UserVerifyingKeyProviderConfigChromeos MakeUserVerifyingKeyConfig(
     EnclaveManager::UVKeyOptions options) {
   UserVerifyingKeyProviderConfigChromeos config{options.dialog_controller,
@@ -920,7 +914,7 @@ crypto::UserVerifyingKeyProvider::Config MakeUserVerifyingKeyConfig(
 #if BUILDFLAG(IS_MAC)
   config.keychain_access_group =
       EnclaveManager::kEnclaveKeysKeychainAccessGroup;
-  config.lacontext = std::move(options.lacontext);
+  config.lacontext = std::move(options.local_auth_token);
 #endif  // BUILDFLAG(IS_MAC)
   return config;
 }
@@ -942,7 +936,7 @@ GetUserVerifyingKeyProviderForCreateAndDeleteOnly() {
 }
 
 struct HashedPIN {
-  ~HashedPIN() { memset(hashed, 0, sizeof(hashed)); }
+  ~HashedPIN() { std::ranges::fill(hashed, 0); }
 
   // Copies the values of this structure into a `WrappedPIN` protobuf with a
   // random claim key. The inner `wrapped_pin` member is not set and needs to be
@@ -979,7 +973,7 @@ std::unique_ptr<HashedPIN> HashPINSlowly(std::string_view pin) {
   // with this norm.
   hashed->metadata.n = 16384;
   hashed->metadata.is_six_digits =
-      pin.size() == 6 && base::ranges::all_of(pin, [](char c) -> bool {
+      pin.size() == 6 && std::ranges::all_of(pin, [](char c) -> bool {
         return c >= '0' && c <= '9';
       });
   CHECK(EVP_PBE_scrypt(pin.data(), pin.size(), hashed->metadata.salt.data(),
@@ -1013,9 +1007,9 @@ std::vector<uint8_t> EncryptWrappedPIN(
       0x3a, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x3a, 0x47, 0x50, 0x4d,
       0x20, 0x50, 0x49, 0x4e, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x77,
       0x72, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x20, 0x6b, 0x65, 0x79};
-  const std::vector<uint8_t> derived_key = crypto::HkdfSha256(
+  const std::array<uint8_t, 32> derived_key = crypto::HkdfSha256<32>(
       security_domain_secret, /*salt=*/base::span<const uint8_t>(),
-      kKeyPurposePinDataKey, 32);
+      kKeyPurposePinDataKey);
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(derived_key);
   uint8_t nonce[12];
@@ -1112,14 +1106,14 @@ class EnclaveManager::StateMachine {
     kHashingPIN,
     kDownloadingRecoveryKeyStoreKeys,
     kWaitingForEnclaveTokenForPINWrapping,
-    kWrappingPIN,
+    kWrappingPINAndSecret,
     kWaitingForRecoveryKeyStore,
     kJoiningPINToDomain,
     kJoiningUpdatedPINToDomain,
 #if BUILDFLAG(IS_MAC)
     kJoiningICloudKeychainToDomain,
 #endif  // BUILDFLAG(IS_MAC)
-    kChangingPIN,
+    kSettingPIN,
     kRenewingPIN,
     kWaitingForEnclaveTokenForUnregister,
     kUnregistering,
@@ -1132,14 +1126,13 @@ class EnclaveManager::StateMachine {
   };
 
   using DeferredUVKeyCreation =
-      base::StrongAlias<class DeferredUVKeyCreation, absl::monostate>;
+      base::StrongAlias<class DeferredUVKeyCreation, std::monostate>;
   using MaybeUVKey =
-      absl::variant<DeferredUVKeyCreation,
-                    std::unique_ptr<crypto::UserVerifyingSigningKey>>;
+      std::variant<DeferredUVKeyCreation,
+                   std::unique_ptr<crypto::UserVerifyingSigningKey>>;
 
-  using None = base::StrongAlias<class None, absl::monostate>;
-  using Failure =
-      base::StrongAlias<class KeyGenerationFailure, absl::monostate>;
+  using None = base::StrongAlias<class None, std::monostate>;
+  using Failure = base::StrongAlias<class KeyGenerationFailure, std::monostate>;
   using FileContents = base::StrongAlias<class FileContents, std::string>;
   using KeyReady = base::StrongAlias<
       class KeyGenerated,
@@ -1156,7 +1149,7 @@ class EnclaveManager::StateMachine {
   using PINHashed =
       base::StrongAlias<class PINHashed, std::unique_ptr<HashedPIN>>;
   using Response = base::StrongAlias<class Response, std::string>;
-  using Event = absl::variant<
+  using Event = std::variant<
       None,
       Failure,
       FileContents,
@@ -1167,7 +1160,7 @@ class EnclaveManager::StateMachine {
       FileFetched,
       PINHashed,
       Response,
-      trusted_vault::UpdateRecoveryKeyStoreStatus,
+      trusted_vault::RecoveryKeyStoreStatus,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>;
 
   void Process(Event event) {
@@ -1183,11 +1176,10 @@ class EnclaveManager::StateMachine {
       case State::kStop:
         // This should never be observed here as this special case is handled
         // below.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
 
       case State::kNextAction:
-        CHECK(absl::holds_alternative<None>(event)) << ToString(event);
+        CHECK(std::holds_alternative<None>(event)) << ToString(event);
         DoNextAction();
         break;
 
@@ -1227,8 +1219,8 @@ class EnclaveManager::StateMachine {
         DoWaitingForEnclaveTokenForPINWrapping(std::move(event));
         break;
 
-      case State::kWrappingPIN:
-        DoWrappingPIN(std::move(event));
+      case State::kWrappingPINAndSecret:
+        DoWrappingPINAndSecret(std::move(event));
         break;
 
       case State::kWaitingForRecoveryKeyStore:
@@ -1239,8 +1231,8 @@ class EnclaveManager::StateMachine {
         DoJoiningPINToDomain(std::move(event));
         break;
 
-      case State::kChangingPIN:
-        DoChangingPIN(std::move(event));
+      case State::kSettingPIN:
+        DoSettingPIN(std::move(event));
         break;
 
       case State::kJoiningUpdatedPINToDomain:
@@ -1325,14 +1317,14 @@ class EnclaveManager::StateMachine {
         return "DownloadingRecoveryKeyStoreKeys";
       case State::kWaitingForEnclaveTokenForPINWrapping:
         return "WaitingForEnclaveTokenForPINWrapping";
-      case State::kWrappingPIN:
-        return "WrappingPIN";
+      case State::kWrappingPINAndSecret:
+        return "WrappingPINAndSecret";
       case State::kWaitingForRecoveryKeyStore:
         return "WaitingForRecoveryKeyStore";
       case State::kJoiningPINToDomain:
         return "JoiningPINToDomain";
-      case State::kChangingPIN:
-        return "ChangingPIN";
+      case State::kSettingPIN:
+        return "SettingPIN";
       case State::kJoiningUpdatedPINToDomain:
         return "JoiningUpdatedPINToDomain";
       case State::kRenewingPIN:
@@ -1350,23 +1342,22 @@ class EnclaveManager::StateMachine {
     }
   }
 
-  static const char* ToString(
-      trusted_vault::UpdateRecoveryKeyStoreStatus status) {
+  static const char* ToString(trusted_vault::RecoveryKeyStoreStatus status) {
     switch (status) {
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::kSuccess:
+      case trusted_vault::RecoveryKeyStoreStatus::kSuccess:
         return "Success";
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::
+      case trusted_vault::RecoveryKeyStoreStatus::
           kTransientAccessTokenFetchError:
         return "TransientError";
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::
+      case trusted_vault::RecoveryKeyStoreStatus::
           kPersistentAccessTokenFetchError:
         return "AccessTokenError";
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::
+      case trusted_vault::RecoveryKeyStoreStatus::
           kPrimaryAccountChangeAccessTokenFetchError:
         return "AccountChangedError";
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::kNetworkError:
+      case trusted_vault::RecoveryKeyStoreStatus::kNetworkError:
         return "NetworkError";
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::kOtherError:
+      case trusted_vault::RecoveryKeyStoreStatus::kOtherError:
         return "OtherError";
     }
   }
@@ -1391,7 +1382,7 @@ class EnclaveManager::StateMachine {
   }
 
   static std::string ToString(const Event& event) {
-    return absl::visit(
+    return std::visit(
         base::Overloaded{
             [](const None&) { return std::string(); },
             [](const Failure&) { return std::string("Failure"); },
@@ -1423,7 +1414,7 @@ class EnclaveManager::StateMachine {
               return base::StringPrintf("Response(%zu bytes)",
                                         response_str.size());
             },
-            [](const trusted_vault::UpdateRecoveryKeyStoreStatus& status) {
+            [](const trusted_vault::RecoveryKeyStoreStatus& status) {
               return base::StrCat(
                   {"UpdateRecoveryKeyStoreStatus(", ToString(status), ")"});
             },
@@ -1510,13 +1501,15 @@ class EnclaveManager::StateMachine {
     }
 #endif  // BUILDFLAG(IS_MAC)
 
-    if (!action_->updated_pin.empty()) {
+    if (!action_->set_pin.empty() || !action_->updated_pin.empty()) {
       if (!user_->registered()) {
         state_ = State::kStop;
         return;
       }
 
-      is_pin_update_ = true;
+      is_set_pin_ = !action_->set_pin.empty();
+      is_pin_update_ = !action_->updated_pin.empty();
+      CHECK(is_set_pin_ ^ is_pin_update_);
       rapt_ = std::move(action_->rapt);
       SyncWithSecurityDomain();
       return;
@@ -1529,8 +1522,12 @@ class EnclaveManager::StateMachine {
       }
 
       is_pin_renewal_ = true;
-      state_ = State::kDownloadingRecoveryKeyStoreKeys;
-      DownloadRecoveryKeyStoreKeys();
+      if (base::FeatureList::IsEnabled(
+              device::kSyncSecurityDomainBeforePINRenewal)) {
+        SyncWithSecurityDomain();
+      } else {
+        DownloadRecoveryKeyStoreKeys();
+      }
       return;
     }
 
@@ -1548,7 +1545,6 @@ class EnclaveManager::StateMachine {
 
     if (action_->update_wrapped_pin) {
       *user_->mutable_wrapped_pin() = std::move(*action_->wrapped_pin);
-      user_->set_pin_public_key(std::move(*action_->pin_public_key));
       manager_->WriteState(&local_state_);
     }
 
@@ -1681,22 +1677,22 @@ class EnclaveManager::StateMachine {
   void DoGeneratingKeys(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
       state_ = State::kStop;
       return;
     }
-    CHECK(absl::holds_alternative<KeyReady>(event)) << ToString(event);
+    CHECK(std::holds_alternative<KeyReady>(event)) << ToString(event);
 
     bool state_dirty = false;
 
     MaybeUVKey maybe_uv_key =
-        std::move(absl::get_if<KeyReady>(&event)->value().first);
+        std::move(std::get_if<KeyReady>(&event)->value().first);
     // TODO(crbug.com/40253837): There is a presubmit bug that makes the script
     // complain about the unique_ptr within the holds_alternative if they are
     // on different lines. The type alias is just to work around that.
     using UVSigningKey = std::unique_ptr<crypto::UserVerifyingSigningKey>;
-    if (absl::holds_alternative<UVSigningKey>(maybe_uv_key)) {
-      auto uv_key = std::move(absl::get<UVSigningKey>(maybe_uv_key));
+    if (std::holds_alternative<UVSigningKey>(maybe_uv_key)) {
+      auto uv_key = std::move(std::get<UVSigningKey>(maybe_uv_key));
       if (uv_key) {
         manager_->user_verifying_key_ =
             base::MakeRefCounted<crypto::RefCountedUserVerifyingSigningKey>(
@@ -1704,13 +1700,13 @@ class EnclaveManager::StateMachine {
         user_->set_deferred_uv_key_creation(false);
       }
     } else {
-      CHECK(absl::holds_alternative<DeferredUVKeyCreation>(maybe_uv_key));
+      CHECK(std::holds_alternative<DeferredUVKeyCreation>(maybe_uv_key));
       user_->set_deferred_uv_key_creation(true);
     }
 
     manager_->identity_key_ = base::MakeRefCounted<
         unexportable_keys::RefCountedUnexportableSigningKey>(
-        std::move(absl::get_if<KeyReady>(&event)->value().second),
+        std::move(std::get_if<KeyReady>(&event)->value().second),
         unexportable_keys::UnexportableKeyId());
 
     if (manager_->user_verifying_key_) {
@@ -1752,15 +1748,15 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     access_token_fetcher_.reset();
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to get access token for enclave";
       state_ = State::kStop;
       return;
     }
-    CHECK(absl::holds_alternative<AccessToken>(event)) << ToString(event);
+    CHECK(std::holds_alternative<AccessToken>(event)) << ToString(event);
 
     state_ = State::kRegisteringWithEnclave;
-    std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
+    std::string token = std::move(std::get_if<AccessToken>(&event)->value());
     enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
@@ -1776,13 +1772,13 @@ class EnclaveManager::StateMachine {
   void DoRegisteringWithEnclave(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
       state_ = State::kStop;
       return;
     }
 
     cbor::Value response =
-        std::move(absl::get_if<EnclaveResponse>(&event)->value());
+        std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 2)) {
       FIDO_LOG(ERROR) << "Registration resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
@@ -1810,14 +1806,14 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     access_token_fetcher_.reset();
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to get access token for enclave";
       state_ = State::kStop;
       return;
     }
 
     state_ = State::kWrappingSecrets;
-    std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
+    std::string token = std::move(std::get_if<AccessToken>(&event)->value());
     enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
@@ -1827,14 +1823,14 @@ class EnclaveManager::StateMachine {
         manager_->IdentityKeySigningCallback(),
         base::BindOnce(
             [](base::WeakPtr<StateMachine> machine,
-               std::optional<cbor::Value> response) {
+               base::expected<cbor::Value, enclave::TransactError> response) {
               if (!machine) {
                 return;
               }
-              if (!response) {
+              if (!response.has_value()) {
                 machine->Process(Failure());
               } else {
-                machine->Process(EnclaveResponse(std::move(*response)));
+                machine->Process(EnclaveResponse(std::move(response.value())));
               }
             },
             weak_ptr_factory_.GetWeakPtr()));
@@ -1847,14 +1843,14 @@ class EnclaveManager::StateMachine {
         std::move(new_security_domain_secrets_);
     new_security_domain_secrets_.clear();
 
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to wrap security domain secrets";
       state_ = State::kStop;
       return;
     }
 
     cbor::Value response =
-        std::move(absl::get_if<EnclaveResponse>(&event)->value());
+        std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, new_security_domain_secrets.size())) {
       FIDO_LOG(ERROR) << "Wrapping resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
@@ -1871,7 +1867,6 @@ class EnclaveManager::StateMachine {
 
     if (action_->wrapped_pin) {
       *user_->mutable_wrapped_pin() = std::move(*action_->wrapped_pin);
-      user_->set_pin_public_key(std::move(*action_->pin_public_key));
       action_->wrapped_pin.reset();
     }
 
@@ -1892,26 +1887,21 @@ class EnclaveManager::StateMachine {
                         *store_keys_args_for_joining_->keys.rbegin());
     store_keys_args_for_joining_.reset();
 
-    CHECK(absl::holds_alternative<JoinStatus>(event));
+    CHECK(std::holds_alternative<JoinStatus>(event));
     const trusted_vault::TrustedVaultRegistrationStatus status =
-        absl::get_if<JoinStatus>(&event)->value().first;
+        std::get_if<JoinStatus>(&event)->value().first;
 
     switch (status) {
       case trusted_vault::TrustedVaultRegistrationStatus::kSuccess:
       case trusted_vault::TrustedVaultRegistrationStatus::kAlreadyRegistered:
         user_->set_joined(true);
+        manager_->WriteState(&local_state_);
+        state_ = State::kNextAction;
         break;
       default:
-        user_->mutable_wrapped_security_domain_secrets()->clear();
+        manager_->ClearRegistration();
+        state_ = State::kStop;
         break;
-    }
-
-    manager_->WriteState(&local_state_);
-
-    if (user_->joined()) {
-      state_ = State::kNextAction;
-    } else {
-      state_ = State::kStop;
     }
   }
 
@@ -1931,16 +1921,17 @@ class EnclaveManager::StateMachine {
                       }
                       machine->Process(std::move(result));
                     },
-                    weak_ptr_factory_.GetWeakPtr()));
+                    weak_ptr_factory_.GetWeakPtr()),
+                /*keep_alive_callback=*/base::DoNothing());
   }
 
   void DoSyncingWithSecurityDomain(Event event) {
-    CHECK(absl::holds_alternative<
+    CHECK(std::holds_alternative<
           trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
         event));
 
     const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult*
-        result = absl::get_if<
+        result = std::get_if<
             trusted_vault::
                 DownloadAuthenticationFactorsRegistrationStateResult>(&event);
     if (result->state ==
@@ -1949,30 +1940,82 @@ class EnclaveManager::StateMachine {
       state_ = State::kStop;
       return;
     }
+
+    if (manager_->IsSecurityDomainReset(*result)) {
+      // The security domain has been reset. Clear the registration and bail
+      // out.
+      manager_->ClearRegistration();
+      FIDO_LOG(ERROR) << "The security domain has been reset.";
+      state_ = State::kStop;
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(
+            kPinRenewalFailureHistogram,
+            PinRenewalFailureCause::kSecurityDomainReset);
+      }
+      return;
+    }
+
+    if (!result->gpm_pin_metadata && (is_pin_renewal_ || is_pin_update_)) {
+      // Chrome is trying to renew or update a PIN but the security domain
+      // reports there is no PIN. Don't delete the local PIN state in case
+      // there's a bug in the server, but also don't try renewing or updating it
+      // as this risks joining to an out of date PIN.
+      FIDO_LOG(ERROR) << "Tried to change the PIN, but SDS repots no PIN";
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(
+            kPinRenewalFailureHistogram,
+            PinRenewalFailureCause::kSecurityDomainReportsNoPin);
+      }
+      state_ = State::kStop;
+      return;
+    }
     if (result->gpm_pin_metadata) {
-      auto& metadata = *result->gpm_pin_metadata;
-      auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
-      if (wrapped_pin->ParseFromString(metadata.wrapped_pin) &&
-          !CheckPINInvariants(*wrapped_pin).has_value()) {
-        if (metadata.public_key.has_value() &&
-            (!user_->has_wrapped_pin() ||
-             user_->wrapped_pin().generation() != wrapped_pin->generation())) {
-          FIDO_LOG(EVENT) << "GPM PIN updated prior to change";
+      // This code saves the PIN public key even if the security domain reports
+      // it is not usable or if it is invalid. This is necessary because the
+      // security domain requires the current PIN public key to be set when
+      // joining a PIN, which Chrome will do later during processing.
+      if (result->gpm_pin_metadata->public_key) {
+        FIDO_LOG(EVENT) << "GPM PIN public key updated";
+        action_->pin_public_key =
+            std::move(*result->gpm_pin_metadata->public_key);
+      }
+      if (result->gpm_pin_metadata->usable_pin_metadata) {
+        const auto& metadata = *result->gpm_pin_metadata->usable_pin_metadata;
+        auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
+        if (wrapped_pin->ParseFromString(metadata.wrapped_pin) &&
+            !CheckPINInvariants(*wrapped_pin).has_value()) {
+          FIDO_LOG(EVENT) << "Updating wrapped GPM PIN";
           *user_->mutable_wrapped_pin() = std::move(*wrapped_pin);
-          user_->set_pin_public_key(std::move(*metadata.public_key));
+        } else {
+          FIDO_LOG(ERROR)
+              << "Wrapped PIN from security domain update is invalid: "
+              << base::HexEncode(base::as_byte_span(metadata.wrapped_pin));
         }
       }
     }
 
+    if (is_set_pin_ && result->gpm_pin_metadata) {
+      // There is already a PIN.
+      state_ = State::kStop;
+      return;
+    }
+
+    if (is_pin_renewal_) {
+      // The PIN isn't being changed, so no need to hash.
+      DownloadRecoveryKeyStoreKeys();
+      return;
+    }
+
     state_ = State::kHashingPIN;
-    HashPIN(std::move(action_->updated_pin));
+    HashPIN(action_->set_pin.empty() ? std::move(action_->updated_pin)
+                                     : std::move(action_->set_pin));
   }
 
   void DoHashingPIN(Event event) {
     // The new PIN has been hashed. Next we fetch the public keys of the
     // recovery key store.
-    CHECK(absl::holds_alternative<PINHashed>(event));
-    hashed_pin_ = std::move(absl::get_if<PINHashed>(&event)->value());
+    CHECK(std::holds_alternative<PINHashed>(event));
+    hashed_pin_ = std::move(std::get_if<PINHashed>(&event)->value());
 
     int64_t generation = 0;
     if (is_pin_update_) {
@@ -1980,15 +2023,14 @@ class EnclaveManager::StateMachine {
     }
     wrapped_pin_proto_ = hashed_pin_->ToWrappedPIN(generation);
 
-    state_ = State::kDownloadingRecoveryKeyStoreKeys;
     DownloadRecoveryKeyStoreKeys();
   }
 
   void DoDownloadingRecoveryKeyStoreKeys(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    CHECK(absl::holds_alternative<FileFetched>(event)) << ToString(event);
-    auto& file_fetched = absl::get_if<FileFetched>(&event)->value();
+    CHECK(std::holds_alternative<FileFetched>(event)) << ToString(event);
+    auto& file_fetched = std::get_if<FileFetched>(&event)->value();
     const FetchedFile fetched_file = file_fetched.first;
     std::optional<std::string>& contents = file_fetched.second;
 
@@ -2012,6 +2054,10 @@ class EnclaveManager::StateMachine {
     if (!cert_xml_ || !sig_xml_) {
       // One (or both) fetches failed.
       state_ = State::kStop;
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
+                                      PinRenewalFailureCause::kDuringDownload);
+      }
       return;
     }
 
@@ -2023,25 +2069,30 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     access_token_fetcher_.reset();
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to get access token for enclave";
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(
+            kPinRenewalFailureHistogram,
+            PinRenewalFailureCause::kGettingAccessToken);
+      }
       state_ = State::kStop;
       return;
     }
-    CHECK(absl::holds_alternative<AccessToken>(event)) << ToString(event);
-    std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
+    CHECK(std::holds_alternative<AccessToken>(event)) << ToString(event);
+    std::string token = std::move(std::get_if<AccessToken>(&event)->value());
 
-    if (is_pin_update_) {
-      SendPINChangeRequest(std::move(token));
+    if (is_set_pin_ || is_pin_update_) {
+      SendPINSetRequest(std::move(token));
     } else if (is_pin_renewal_) {
       SendPINRenewalRequest(std::move(token));
     } else {
-      SendPINWrappingRequest(std::move(token));
+      SendPINAndSecretWrappingRequest(std::move(token));
     }
   }
 
-  void SendPINWrappingRequest(std::string token) {
-    state_ = State::kWrappingPIN;
+  void SendPINAndSecretWrappingRequest(std::string token) {
+    state_ = State::kWrappingPINAndSecret;
     enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
@@ -2057,13 +2108,13 @@ class EnclaveManager::StateMachine {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void SendPINChangeRequest(std::string token) {
+  void SendPINSetRequest(std::string token) {
     uint8_t counter_id[enclave::kCounterIDLen];
     crypto::RandBytes(counter_id);
     uint8_t vault_handle_without_type[enclave::kVaultHandleLen - 1];
     crypto::RandBytes(vault_handle_without_type);
 
-    state_ = State::kChangingPIN;
+    state_ = State::kSettingPIN;
     std::vector<uint8_t> wrapped_secret =
         GetCurrentWrappedSecretForUser(user_).second;
     enclave::Transact(
@@ -2094,24 +2145,25 @@ class EnclaveManager::StateMachine {
     enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token), std::nullopt,
-        BuildPINRenewalRequest(std::move(*cert_xml_), std::move(*sig_xml_),
-                               GetCurrentWrappedSecretForUser(user_).second,
-                               ToSpan(user_->wrapped_pin().wrapped_pin())),
+        BuildPINRenewalRequest(
+            std::move(*cert_xml_), std::move(*sig_xml_),
+            GetCurrentWrappedSecretForUser(user_).second,
+            base::as_byte_span(user_->wrapped_pin().wrapped_pin())),
         manager_->IdentityKeySigningCallback(),
         base::BindOnce(&StateMachine::OnEnclaveResponse,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void DoWrappingPIN(Event event) {
+  void DoWrappingPINAndSecret(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
       state_ = State::kStop;
       return;
     }
 
     cbor::Value response =
-        std::move(absl::get_if<EnclaveResponse>(&event)->value());
+        std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 2)) {
       FIDO_LOG(ERROR) << "PIN wrapping resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
@@ -2144,7 +2196,7 @@ class EnclaveManager::StateMachine {
             *primary_account_info_, *vault_,
             base::BindOnce(
                 [](base::WeakPtr<StateMachine> machine,
-                   trusted_vault::UpdateRecoveryKeyStoreStatus status) {
+                   trusted_vault::RecoveryKeyStoreStatus status) {
                   if (!machine) {
                     return;
                   }
@@ -2157,20 +2209,23 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     recovery_key_store_request_.reset();
-    CHECK(absl::holds_alternative<trusted_vault::UpdateRecoveryKeyStoreStatus>(
-        event))
+    CHECK(std::holds_alternative<trusted_vault::RecoveryKeyStoreStatus>(event))
         << ToString(event);
 
     const auto* status =
-        absl::get_if<trusted_vault::UpdateRecoveryKeyStoreStatus>(&event);
-    if (*status != trusted_vault::UpdateRecoveryKeyStoreStatus::kSuccess) {
+        std::get_if<trusted_vault::RecoveryKeyStoreStatus>(&event);
+    if (*status != trusted_vault::RecoveryKeyStoreStatus::kSuccess) {
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
+                                      PinRenewalFailureCause::kRKSUpload);
+      }
       FIDO_LOG(ERROR) << "Failed to upload to recovery key store";
       state_ = State::kStop;
       return;
     }
 
     const bool updating_pin_member = is_pin_update_ || is_pin_renewal_;
-    if (!updating_pin_member) {
+    if (!updating_pin_member && !is_set_pin_) {
       CHECK(wrapped_pin_proto_->wrapped_pin().empty());
       wrapped_pin_proto_->set_wrapped_pin(BuildWrappedPIN(
           *hashed_pin_, /*generation=*/0,
@@ -2181,26 +2236,28 @@ class EnclaveManager::StateMachine {
         vault_->application_keys()[0].asymmetric_key_pair().public_key();
     const auto secure_box_pub_key =
         trusted_vault::SecureBoxPublicKey::CreateByImport(
-            ToSpan(vault_public_key));
+            base::as_byte_span(vault_public_key));
 
     std::string wrapped_pin_proto_serialized =
         wrapped_pin_proto_->SerializeAsString();
     *user_->mutable_wrapped_pin() = std::move(*wrapped_pin_proto_);
-    const std::string previous_pin_public_key = user_->pin_public_key();
     // If changing the PIN, there must be a previous PIN member public key.
-    // If setting a first PIN, there must not be one.
-    CHECK_EQ(!previous_pin_public_key.empty(), updating_pin_member);
-    user_->set_pin_public_key(vault_public_key);
+    // If enrolling with a PIN, it's possible Chrome is replacing an existing
+    // PIN that cannot be used, in which case we also need to set the previous
+    // PIN member public key.
+    CHECK(!updating_pin_member || action_->pin_public_key);
 
-    state_ = updating_pin_member ? State::kJoiningUpdatedPINToDomain
-                                 : State::kJoiningPINToDomain;
+    state_ = (updating_pin_member || is_set_pin_)
+                 ? State::kJoiningUpdatedPINToDomain
+                 : State::kJoiningPINToDomain;
     std::optional<trusted_vault::MemberKeysSource> member_keys_source =
         std::move(member_keys_source_);
-    // If changing or renewing a PIN then `member_keys_source` will have been
-    // populated by the enclave. Otherwise a new PIN is being set and
+    // If changing, renewing, or setting a PIN then `member_keys_source` will
+    // have been populated by the enclave. Otherwise a new PIN is being set and
     // `store_keys_args_for_joining_` will contain the security domain secret,
     // which is sufficient for calculating the member keys.
-    CHECK_EQ(member_keys_source.has_value(), updating_pin_member);
+    CHECK_EQ(member_keys_source.has_value(),
+             updating_pin_member || is_set_pin_);
     if (!member_keys_source) {
       member_keys_source = trusted_vault::GetTrustedVaultKeysWithVersions(
           store_keys_args_for_joining_->keys,
@@ -2209,19 +2266,21 @@ class EnclaveManager::StateMachine {
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
         *primary_account_info_, std::move(*member_keys_source),
         *secure_box_pub_key,
-        trusted_vault::GpmPinMetadata(previous_pin_public_key,
-                                      std::move(wrapped_pin_proto_serialized),
-                                      /*expiry=*/base::Time()),
+        trusted_vault::GpmPinMetadata(
+            action_->pin_public_key,
+            trusted_vault::UsableRecoveryPinMetadata(
+                std::move(wrapped_pin_proto_serialized),
+                /*expiry=*/base::Time())),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoJoiningPINToDomain(Event event) {
-    CHECK(absl::holds_alternative<JoinStatus>(event)) << ToString(event);
+    CHECK(std::holds_alternative<JoinStatus>(event)) << ToString(event);
 
     wrapped_pin_proto_.reset();
 
-    const auto& join_status = absl::get_if<JoinStatus>(&event)->value();
+    const auto& join_status = std::get_if<JoinStatus>(&event)->value();
     const trusted_vault::TrustedVaultRegistrationStatus status =
         join_status.first;
     const int key_version = join_status.second;
@@ -2231,13 +2290,19 @@ class EnclaveManager::StateMachine {
       return;
     }
 
+    if (is_set_pin_) {
+      // If adding a PIN to an existing account, then we're done.
+      success_ = true;
+      state_ = State::kStop;
+      return;
+    }
+
     store_keys_args_for_joining_->last_key_version = key_version;
 
     if (!StoreWrappedSecrets(
             user_, GetNewSecretsToStore(*user_, *store_keys_args_for_joining_),
-            base::span<const cbor::Value>(&wrapping_response_->GetArray()[1],
-                                          1ul))) {
-      FIDO_LOG(ERROR) << "Secret wrapping resulted in malformed resposne: "
+            base::span_from_ref(wrapping_response_->GetArray()[1]))) {
+      FIDO_LOG(ERROR) << "Secret wrapping resulted in malformed response: "
                       << cbor::DiagnosticWriter::Write(*wrapping_response_);
       state_ = State::kStop;
       return;
@@ -2250,11 +2315,11 @@ class EnclaveManager::StateMachine {
   }
 
   void DoJoiningUpdatedPINToDomain(Event event) {
-    CHECK(absl::holds_alternative<JoinStatus>(event)) << ToString(event);
+    CHECK(std::holds_alternative<JoinStatus>(event)) << ToString(event);
 
     wrapped_pin_proto_.reset();
 
-    const auto& join_status = absl::get_if<JoinStatus>(&event)->value();
+    const auto& join_status = std::get_if<JoinStatus>(&event)->value();
     const trusted_vault::TrustedVaultRegistrationStatus status =
         join_status.first;
 
@@ -2262,6 +2327,10 @@ class EnclaveManager::StateMachine {
     success_ =
         status == trusted_vault::TrustedVaultRegistrationStatus::kSuccess;
     if (!success_) {
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
+                                      PinRenewalFailureCause::kJoiningToDomain);
+      }
       return;
     }
 
@@ -2272,8 +2341,8 @@ class EnclaveManager::StateMachine {
 
 #if BUILDFLAG(IS_MAC)
   void DoJoiningICloudKeychainToDomain(Event event) {
-    CHECK(absl::holds_alternative<JoinStatus>(event)) << ToString(event);
-    const auto& join_status = absl::get_if<JoinStatus>(&event)->value();
+    CHECK(std::holds_alternative<JoinStatus>(event)) << ToString(event);
+    const auto& join_status = std::get_if<JoinStatus>(&event)->value();
     const trusted_vault::TrustedVaultRegistrationStatus status =
         join_status.first;
     FIDO_LOG(EVENT) << "iCloud recovery key registration status: "
@@ -2282,16 +2351,16 @@ class EnclaveManager::StateMachine {
   }
 #endif  // BUILDFLAG(IS_MAC)
 
-  void DoChangingPIN(Event event) {
+  void DoSettingPIN(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     state_ = State::kStop;
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
       return;
     }
 
     cbor::Value response =
-        std::move(absl::get_if<EnclaveResponse>(&event)->value());
+        std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 2)) {
       FIDO_LOG(ERROR) << "PIN change resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
@@ -2318,13 +2387,17 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     state_ = State::kStop;
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
+      base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
+                                    PinRenewalFailureCause::kEnclaveRequest1);
       return;
     }
 
     cbor::Value response =
-        std::move(absl::get_if<EnclaveResponse>(&event)->value());
+        std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 1)) {
+      base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
+                                    PinRenewalFailureCause::kEnclaveRequest2);
       FIDO_LOG(ERROR) << "PIN renewal resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
       return;
@@ -2342,14 +2415,14 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     access_token_fetcher_.reset();
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to get access token for enclave";
       state_ = State::kStop;
       return;
     }
 
     state_ = State::kUnregistering;
-    std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
+    std::string token = std::move(std::get_if<AccessToken>(&event)->value());
     enclave::Transact(manager_->network_context_factory_,
                       enclave::GetEnclaveIdentity(), std::move(token),
                       /*reauthentication_token=*/std::nullopt,
@@ -2361,12 +2434,12 @@ class EnclaveManager::StateMachine {
 
   void DoUnregistering(Event event) {
     state_ = State::kStop;
-    if (absl::holds_alternative<Failure>(event)) {
+    if (std::holds_alternative<Failure>(event)) {
       return;
     }
 
     cbor::Value response =
-        std::move(absl::get_if<EnclaveResponse>(&event)->value());
+        std::move(std::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 1)) {
       FIDO_LOG(ERROR) << "Unregister request resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
@@ -2389,6 +2462,11 @@ class EnclaveManager::StateMachine {
             .find(cbor::Value(enclave::kResponseSuccessKey))
             ->second;
     if (!response_value.is_map()) {
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(
+            kPinRenewalFailureHistogram,
+            PinRenewalFailureCause::kEnclaveResponse1);
+      }
       FIDO_LOG(ERROR) << "response was not a map";
       return false;
     }
@@ -2398,6 +2476,11 @@ class EnclaveManager::StateMachine {
         result = ParseVaultAndMemberResponse(key_version, pin_metadata,
                                              response_value.GetMap());
     if (!result) {
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(
+            kPinRenewalFailureHistogram,
+            PinRenewalFailureCause::kEnclaveResponse2);
+      }
       return false;
     }
     std::tie(vault_, member_keys_source_) = std::move(*result);
@@ -2408,7 +2491,7 @@ class EnclaveManager::StateMachine {
             *primary_account_info_, *vault_,
             base::BindOnce(
                 [](base::WeakPtr<StateMachine> machine,
-                   trusted_vault::UpdateRecoveryKeyStoreStatus status) {
+                   trusted_vault::RecoveryKeyStoreStatus status) {
                   if (!machine) {
                     return;
                   }
@@ -2422,7 +2505,7 @@ class EnclaveManager::StateMachine {
     state_ = State::kJoiningDomain;
     const auto secure_box_pub_key =
         trusted_vault::SecureBoxPublicKey::CreateByImport(
-            ToSpan(user_->member_public_key()));
+            base::as_byte_span(user_->member_public_key()));
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
         *primary_account_info_,
         trusted_vault::GetTrustedVaultKeysWithVersions(
@@ -2456,11 +2539,12 @@ class EnclaveManager::StateMachine {
             signin::ConsentLevel::kSignin);
   }
 
-  void OnEnclaveResponse(std::optional<cbor::Value> response) {
-    if (!response) {
+  void OnEnclaveResponse(
+      base::expected<cbor::Value, enclave::TransactError> response) {
+    if (!response.has_value()) {
       Process(Failure());
     } else {
-      Process(EnclaveResponse(std::move(*response)));
+      Process(EnclaveResponse(std::move(response.value())));
     }
   }
 
@@ -2487,7 +2571,7 @@ class EnclaveManager::StateMachine {
 
 #if BUILDFLAG(IS_MAC)
   void JoinICloudKeychainToDomain(
-      std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key) {
+      std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_recovery_key) {
     std::vector<trusted_vault::TrustedVaultKeyAndVersion> member_keys_source =
         trusted_vault::GetTrustedVaultKeysWithVersions(
             {manager_->secret_}, manager_->secret_version_);
@@ -2514,16 +2598,18 @@ class EnclaveManager::StateMachine {
     map.emplace(1, base::span<const uint8_t>(hashed_pin.hashed));
     map.emplace(2, generation);
     map.emplace(3, claim_key);
-    map.emplace(4, ToSpan(vault->vault_parameters().counter_id()));
+    map.emplace(4, base::as_byte_span(vault->vault_parameters().counter_id()));
     // The vault handle in the wrapped PIN doesn't include the first byte,
     // which is the type of the vault entry.
-    map.emplace(5, ToSpan(vault->vault_parameters().vault_handle()).subspan(1));
+    map.emplace(5, base::as_byte_span(vault->vault_parameters().vault_handle())
+                       .subspan<1>());
     const std::vector<uint8_t> cbor_bytes =
         cbor::Writer::Write(cbor::Value(std::move(map))).value();
     return VecToString(EncryptWrappedPIN(security_domain_secret, cbor_bytes));
   }
 
   void DownloadRecoveryKeyStoreKeys() {
+    state_ = State::kDownloadingRecoveryKeyStoreKeys;
     cert_xml_loader_ = FetchURL(
         manager_->url_loader_factory_.get(),
         device::enclave::kRecoveryKeyStoreCertFileURL,
@@ -2568,6 +2654,8 @@ class EnclaveManager::StateMachine {
   std::unique_ptr<trusted_vault::RecoveryKeyStoreConnection::Request>
       recovery_key_store_request_;
   std::optional<cbor::Value> wrapping_response_;
+  // True if a PIN is being hashed in order to add to an existing account.
+  bool is_set_pin_ = false;
   // True if a PIN is being hashed in order to change it, rather than to set
   // a new PIN on an account.
   bool is_pin_update_ = false;
@@ -2615,6 +2703,15 @@ EnclaveManager::EnclaveManager(
               trusted_vault_access_token_fetcher_frontend_->GetWeakPtr()))),
       identity_observer_(
           std::make_unique<IdentityObserver>(identity_manager_, this)) {
+  // Automatically load the enclave state shortly after startup so that any
+  // renewals will be considered without the user having to do something to
+  // trigger a WebAuthn operation.
+  load_timer_.Start(
+      FROM_HERE, base::Minutes(4),
+      base::BindOnce(&EnclaveManager::Load, weak_ptr_factory_.GetWeakPtr(),
+                     base::DoNothing()));
+  // Also consider renewing the PIN every day, for users who keep Chrome open
+  // for long periods.
   renewal_timer_.Start(FROM_HERE, base::Hours(24),
                        base::BindRepeating(&EnclaveManager::ConsiderPinRenewal,
                                            weak_ptr_factory_.GetWeakPtr()));
@@ -2663,6 +2760,9 @@ void EnclaveManager::Load(base::OnceClosure closure) {
         FROM_HERE, std::move(closure));
     return;
   }
+
+  load_duration_timer_ = std::make_unique<base::ElapsedTimer>();
+
   load_callbacks_.emplace_back(std::move(closure));
   Act();
 }
@@ -2702,9 +2802,10 @@ bool EnclaveManager::AddDeviceToAccount(
   CHECK(has_pending_keys());
 
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
-  if (pin_metadata.has_value()) {
+  if (pin_metadata.has_value() && pin_metadata->usable_pin_metadata) {
     wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
-    if (!wrapped_pin->ParseFromString(pin_metadata->wrapped_pin) ||
+    if (!wrapped_pin->ParseFromString(
+            pin_metadata->usable_pin_metadata->wrapped_pin) ||
         CheckPINInvariants(*wrapped_pin).has_value()) {
       return false;
     }
@@ -2724,13 +2825,29 @@ bool EnclaveManager::AddDeviceToAccount(
 
 void EnclaveManager::AddDeviceAndPINToAccount(
     std::string pin,
+    std::optional<std::string> previous_pin_public_key,
     EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto action = std::make_unique<PendingAction>();
+  action->pin_public_key = std::move(previous_pin_public_key);
   action->callback = std::move(callback);
   action->store_keys_args = std::move(pending_keys_);
   action->pin = std::move(pin);
+  pending_actions_.emplace_back(std::move(action));
+  Act();
+}
+
+void EnclaveManager::SetPIN(std::string pin,
+                            std::string rapt,
+                            EnclaveManager::Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(user_->registered());
+
+  auto action = std::make_unique<PendingAction>();
+  action->callback = std::move(callback);
+  action->set_pin = std::move(pin);
+  action->rapt = std::move(rapt);
   pending_actions_.emplace_back(std::move(action));
   Act();
 }
@@ -2763,7 +2880,7 @@ void EnclaveManager::RenewPIN(EnclaveManager::Callback callback) {
 
 #if BUILDFLAG(IS_MAC)
 void EnclaveManager::AddICloudRecoveryKey(
-    std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key,
+    std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_recovery_key,
     EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user_->registered());
@@ -2805,14 +2922,7 @@ bool EnclaveManager::ConsiderSecurityDomainState(
   CHECK(user_);
   bool ret = is_ready();
 
-  if (user_->joined() &&
-      state.state !=
-          trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
-              State::kError &&
-      (!state.key_version.has_value() ||
-       user_->wrapped_security_domain_secrets().find(*state.key_version) ==
-           user_->wrapped_security_domain_secrets().end())) {
-    // The security domain has been reset.
+  if (IsSecurityDomainReset(state)) {
     ClearRegistration();
     FIDO_LOG(EVENT) << "The security domain has been reset.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -2820,14 +2930,16 @@ bool EnclaveManager::ConsiderSecurityDomainState(
     return false;
   }
 
-  if (ret && state.gpm_pin_metadata.has_value()) {
+  if (ret && state.gpm_pin_metadata.has_value() &&
+      state.gpm_pin_metadata->usable_pin_metadata) {
     const auto& metadata = *state.gpm_pin_metadata;
     auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
-    if (wrapped_pin->ParseFromString(metadata.wrapped_pin) &&
+    if (wrapped_pin->ParseFromString(
+            metadata.usable_pin_metadata->wrapped_pin) &&
         !CheckPINInvariants(*wrapped_pin).has_value()) {
       if (metadata.public_key.has_value() &&
           (!user_->has_wrapped_pin() ||
-           user_->wrapped_pin().generation() != wrapped_pin->generation())) {
+           user_->wrapped_pin().wrapped_pin() != wrapped_pin->wrapped_pin())) {
         std::unique_ptr<PendingAction> action =
             std::make_unique<PendingAction>();
         action->callback = std::move(callback);
@@ -2840,8 +2952,8 @@ bool EnclaveManager::ConsiderSecurityDomainState(
       }
     } else {
       FIDO_LOG(ERROR) << "Wrapped PIN from security domain update is invalid: "
-                      << base::HexEncode(base::as_bytes(
-                             base::make_span(metadata.wrapped_pin)));
+                      << base::HexEncode(base::as_byte_span(
+                             metadata.usable_pin_metadata->wrapped_pin));
     }
   }
 
@@ -3281,7 +3393,7 @@ void EnclaveManager::AreUserVerifyingKeysSupported(Callback callback) {
         FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS doesn't have HW-backed UV keys, but uses a software provider.
   std::move(callback).Run(true);
 #else
@@ -3323,7 +3435,7 @@ void EnclaveManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void EnclaveManager::StoreKeys(const std::string& gaia_id,
+void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
                                std::vector<std::vector<uint8_t>> keys,
                                int last_key_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -3353,7 +3465,7 @@ std::unique_ptr<enclave::ClaimedPIN> EnclaveManager::MakeClaimedPINSlowly(
   static constexpr uint8_t kAAD[] = {'P', 'I', 'N', ' ', 'c',
                                      'l', 'a', 'i', 'm'};
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(ToSpan(wrapped_pin->claim_key()));
+  aead.Init(base::as_byte_span(wrapped_pin->claim_key()));
   uint8_t nonce[12];
   crypto::RandBytes(nonce);
   std::vector<uint8_t> ciphertext = aead.Seal(hashed, nonce, kAAD);
@@ -3373,7 +3485,7 @@ bool EnclaveManager::RunWhenStoppedForTesting(base::OnceClosure on_stop) {
   return true;
 }
 
-EnclaveLocalState& EnclaveManager::local_state_for_testing() const {
+EnclaveLocalState& EnclaveManager::local_state_for_testing() {
   return *local_state_;
 }
 
@@ -3410,6 +3522,10 @@ void EnclaveManager::EnableInvariantChecksForTesting(bool enabled) {
   g_invariant_override_ = !enabled;
 }
 
+void EnclaveManager::ConsiderPinRenewalForTesting() {
+  ConsiderPinRenewal();
+}
+
 unsigned EnclaveManager::renewal_checks_for_testing() const {
   return renewal_checks_;
 }
@@ -3427,8 +3543,8 @@ std::string EnclaveManager::MakeWrappedPINForTesting(
   std::unique_ptr<HashedPIN> hashed = HashPINSlowly(pin);
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin =
       hashed->ToWrappedPIN(kGeneration);
-  const uint8_t kFakeCounterId[8] = {0};
-  const uint8_t kFakeVaultHandle[16] = {0};
+  const uint8_t kFakeCounterId[8] = {};
+  const uint8_t kFakeVaultHandle[16] = {};
 
   cbor::Value::MapValue map;
   map.emplace(1, base::span<const uint8_t>(hashed->hashed));
@@ -3494,21 +3610,44 @@ void EnclaveManager::Act() {
     }
 
     loading_ = true;
+
+    if (!encryptor_.has_value()) {
+      os_crypt_subscription_ =
+          g_browser_process->os_crypt_async()->GetInstance(base::BindOnce(
+              &EnclaveManager::OnOsCryptReady, weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
+    base::OnceCallback<void(std::optional<std::string>)> decryption_callback =
+        base::BindOnce(
+            [](base::WeakPtr<EnclaveManager> manager,
+               std::optional<std::string> contents) {
+              if (!manager) {
+                return;
+              }
+              std::string decrypted;
+              if (!contents.has_value() ||
+                  !manager->encryptor_->DecryptString(*contents, &decrypted)) {
+                manager->LoadComplete(std::nullopt);
+                return;
+              }
+              manager->LoadComplete(std::move(decrypted));
+            },
+            weak_ptr_factory_.GetWeakPtr());
+
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
         base::BindOnce(
             [](base::FilePath path) -> std::optional<std::string> {
-              std::string contents, decrypted;
-              if (!base::ReadFileToString(path, &contents) ||
-                  !OSCrypt::DecryptString(contents, &decrypted)) {
+              std::string contents;
+              if (!base::ReadFileToString(path, &contents)) {
                 return std::nullopt;
               }
 
-              return std::move(decrypted);
+              return std::move(contents);
             },
             file_path_),
-        base::BindOnce(&EnclaveManager::LoadComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
+        std::move(decryption_callback));
     return;
   }
 
@@ -3544,6 +3683,12 @@ void EnclaveManager::Act() {
 
 void EnclaveManager::LoadComplete(std::optional<std::string> contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (load_duration_timer_) {
+    base::UmaHistogramTimes("WebAuthentication.EnclaveLoadDuration",
+                            load_duration_timer_->Elapsed());
+    load_duration_timer_.reset();
+  }
 
   loading_ = false;
   if (contents) {
@@ -3612,18 +3757,18 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
 
   const signin::AccountsInCookieJarInfo in_jar =
       identity_manager_->GetAccountsInCookieJar();
-  if (in_jar.accounts_are_fresh) {
+  if (in_jar.AreAccountsFresh()) {
     // If the user has signed out of any non-primary accounts, erase their
     // enclave state.
-    const base::flat_set<std::string> gaia_ids_in_cookie_jar =
-        base::STLSetUnion<base::flat_set<std::string>>(
-            GetGaiaIDs(in_jar.signed_in_accounts),
-            GetGaiaIDs(in_jar.signed_out_accounts));
-    const base::flat_set<std::string> gaia_ids_in_state =
+    const base::flat_set<GaiaId> gaia_ids_in_cookie_jar =
+        base::STLSetUnion<base::flat_set<GaiaId>>(
+            GetGaiaIDs(in_jar.GetPotentiallyInvalidSignedInAccounts()),
+            GetGaiaIDs(in_jar.GetSignedOutAccounts()));
+    const base::flat_set<GaiaId> gaia_ids_in_state =
         GetGaiaIDs(local_state_->users());
-    base::flat_set<std::string> to_remove =
-        base::STLSetDifference<base::flat_set<std::string>>(
-            gaia_ids_in_state, gaia_ids_in_cookie_jar);
+    base::flat_set<GaiaId> to_remove =
+        base::STLSetDifference<base::flat_set<GaiaId>>(gaia_ids_in_state,
+                                                       gaia_ids_in_cookie_jar);
     if (primary_account_info_) {
       to_remove.erase(primary_account_info_->gaia);
     }
@@ -3632,7 +3777,7 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
     // stopped and thus cannot overwrite these changes.
     CHECK(need_to_stop);
     for (const auto& gaia_id : to_remove) {
-      CHECK(local_state_->mutable_users()->erase(gaia_id));
+      CHECK(local_state_->mutable_users()->erase(gaia_id.ToString()));
     }
     WriteState(local_state_.get());
   }
@@ -3682,7 +3827,7 @@ void EnclaveManager::WriteState(EnclaveLocalState* new_state) {
   }
 
   const std::array<uint8_t, crypto::kSHA256Length> digest =
-      crypto::SHA256Hash(base::as_bytes(base::make_span(serialized)));
+      crypto::SHA256Hash(base::as_byte_span(serialized));
   serialized.append(std::begin(kHashPrefix), std::end(kHashPrefix));
   serialized.append(digest.begin(), digest.end());
 
@@ -3696,18 +3841,23 @@ void EnclaveManager::WriteState(EnclaveLocalState* new_state) {
 
 void EnclaveManager::DoWriteState(std::string serialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(encryptor_.has_value());
 
   currently_writing_ = true;
+
+  std::string encrypted;
+  if (!encryptor_->EncryptString(serialized, &encrypted)) {
+    WriteStateComplete(false);
+    return;
+  }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
-          [](base::FilePath path, std::string contents) -> bool {
-            std::string encrypted;
-            return OSCrypt::EncryptString(contents, &encrypted) &&
-                   base::ImportantFileWriter::WriteFileAtomically(path,
+          [](base::FilePath path, std::string encrypted) -> bool {
+            return base::ImportantFileWriter::WriteFileAtomically(path,
                                                                   encrypted);
           },
-          file_path_, std::move(serialized)),
+          file_path_, std::move(encrypted)),
       base::BindOnce(&EnclaveManager::WriteStateComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -3766,7 +3916,8 @@ void EnclaveManager::ClearRegistration() {
   }
 
   user_ = nullptr;  // Prevent dangling raw_ptr error on next line.
-  CHECK(local_state_->mutable_users()->erase(primary_account_info_->gaia));
+  CHECK(local_state_->mutable_users()->erase(
+      primary_account_info_->gaia.ToString()));
   user_ = CreateStateForUser(local_state_.get(), *primary_account_info_);
   WriteState(local_state_.get());
 
@@ -3787,12 +3938,37 @@ void EnclaveManager::SetSecret(int32_t key_version,
   secret_ = std::vector<uint8_t>(secret.begin(), secret.end());
 }
 
+// A list of PIN-renewal events that are reported to UMA. Do not renumber
+// as the values are persisted.
+enum class PinRenewalEvent {
+  kConsidered = 0,
+  kNothingToRenew = 1,
+  kConcurrentRenewal = 2,
+  kNotYetTime = 3,
+  kStarted = 4,
+  kSuccess = 5,
+  kFailure = 6,
+
+  kMaxValue = kFailure,
+};
+
+static const char kPinRenewalHistogram[] = "WebAuthentication.PinRenewalEvent";
+
 void EnclaveManager::ConsiderPinRenewal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                PinRenewalEvent::kConsidered);
 
   renewal_checks_++;
-  if (!user_ || !user_->registered() || !user_->has_wrapped_pin() ||
-      is_renewing_) {
+  if (!user_ || !is_ready() || !user_->has_wrapped_pin()) {
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kNothingToRenew);
+    return;
+  }
+
+  if (is_renewing_) {
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kConcurrentRenewal);
     return;
   }
 
@@ -3803,13 +3979,46 @@ void EnclaveManager::ConsiderPinRenewal() {
     FIDO_LOG(EVENT) << "Renewing GPM PIN based on time since last renewal";
     renewal_attempts_++;
     is_renewing_ = true;
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kStarted);
     RenewPIN(base::BindOnce(&EnclaveManager::OnRenewalComplete,
                             weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kNotYetTime);
   }
 }
 
 void EnclaveManager::OnRenewalComplete(bool success) {
+  base::UmaHistogramEnumeration(
+      kPinRenewalHistogram,
+      success ? PinRenewalEvent::kSuccess : PinRenewalEvent::kFailure);
+
   is_renewing_ = false;
+}
+
+bool EnclaveManager::IsSecurityDomainReset(
+    const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
+        state) {
+  // If the local state indicates that the user has joined the security domain,
+  // but the security domain is not initialized or does not match the key
+  // version, assume the security domain has been reset by another client.
+  return user_->joined() &&
+         state.state !=
+             trusted_vault::
+                 DownloadAuthenticationFactorsRegistrationStateResult::State::
+                     kError &&
+         (!state.key_version.has_value() ||
+          user_->wrapped_security_domain_secrets().find(*state.key_version) ==
+              user_->wrapped_security_domain_secrets().end());
+}
+
+void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor,
+                                    bool result) {
+  CHECK(!encryptor_.has_value());
+  encryptor_.emplace(std::move(encryptor));
+  loading_ = false;
+  Act();
 }
 
 base::WeakPtr<EnclaveManager> EnclaveManager::GetWeakPtr() {

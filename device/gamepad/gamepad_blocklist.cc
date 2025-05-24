@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 
 namespace device {
 namespace {
@@ -72,6 +72,8 @@ constexpr struct VendorProductPair {
     {kVendorMicrosoft, 0x09af},
     // Surface Type Cover.
     {kVendorMicrosoft, 0x09c0},
+    // Surface Pro Signature Keyboard.
+    {kVendorMicrosoft, 0x09cb},
 };
 
 // Devices from these vendors are always blocked.
@@ -97,7 +99,7 @@ constexpr uint16_t kBlockedVendors[] = {
 
 bool GamepadIsExcluded(uint16_t vendor_id, uint16_t product_id) {
   return base::Contains(kBlockedVendors, vendor_id) ||
-         base::ranges::any_of(
+         std::ranges::any_of(
              kBlockedDevices, [=](const VendorProductPair& item) {
                return vendor_id == item.vendor && product_id == item.product;
              });

@@ -1,0 +1,16 @@
+Name: Compose Testing
+Short Name: ui-test-android
+URL: https://developer.android.com/jetpack/androidx/releases/compose-ui#1.9.0-SNAPSHOT
+Version: 1.9.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+Compose testing library
+
+Local Modifications:
+No modifications.

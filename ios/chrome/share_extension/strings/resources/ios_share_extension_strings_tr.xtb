@@ -2,9 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1613742542373525524">APPLICATION_NAME bu bağlantıyı işleyemiyor.</translation>
+<translation id="3086502722585482455">Şurada aç:</translation>
 <translation id="4655616150233109325">Chrome'da Aç</translation>
+<translation id="5244924493358516288">(Maksimum sınır)</translation>
+<translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="601731541915429022">Okuma Listesine Ekle</translation>
+<translation id="6527303717912515753">Paylaş</translation>
 <translation id="6930009216791986919">Yer İşaretlerine Ekle</translation>
 <translation id="6965382102122355670">Tamam</translation>
+<translation id="712865579676939176">Şurada ara:</translation>
+<translation id="7440631557836890806">Gizli modda ara</translation>
+<translation id="7658239707568436148">İptal</translation>
 <translation id="8258999165172757081">Eklendi</translation>
+<translation id="850600235656508448">Gizli Sekmede Aç</translation>
 </translationbundle>

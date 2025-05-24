@@ -164,7 +164,7 @@ std::string MakeSerializedResponse(
 // Write json node to file in text format.
 bool WriteJSONNode(const base::FilePath& file_path, const base::Value& node) {
   std::string json_text;
-  JSONWriter::WriteWithOptions(node, JSONWriter::Options::OPTIONS_PRETTY_PRINT,
+  JSONWriter::WriteWithOptions(node, JSONWriter::OPTIONS_PRETTY_PRINT,
                                &json_text);
 
   std::string compressed_json_text;

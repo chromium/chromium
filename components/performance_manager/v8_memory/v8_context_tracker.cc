@@ -22,8 +22,6 @@
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker_helpers.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker_internal.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/message.h"
 
@@ -206,82 +204,30 @@ void V8ContextTracker::OnRemoteIframeAttached(
 
   // RemoteFrameTokens are issued by the browser to a renderer, so if we receive
   // an IPC from a renderer using that token, then the corresponding
-  // RenderFrameProxyHost is guaranteed to exist, and the token will resolve to
-  // a RenderFrameHost. Similarly, if the RenderFrameHost exists, then we will
-  // have a representation for it in the graph, as we learn about frames from
-  // the UI thread. The only case where this won't be true is if the frame has
-  // subsequently been torn down (the IPC races with frame death), in which
-  // case it doesn't matter as the corresponding graph nodes are in the process
-  // of being torn down.
+  // RenderFrameProxyHost and FrameNode should exist. If not, either a renderer
+  // is sending bad data, or the frame has subsequently been torn down (the IPC
+  // races with frame death). Since the two cases can't be distinguished, DON'T
+  // report a bad message if the token can't be resolved. DO report a bad
+  // message on other errors, such as when the token is for a frame with a
+  // different parent.
 
-  // The data that bounces between threads, bundled up for convenience.
-  struct Data {
-    mojo::ReportBadMessageCallback bad_message_callback;
-    blink::RemoteFrameToken remote_frame_token;
-    mojom::IframeAttributionDataPtr iframe_attribution_data;
-    base::WeakPtr<FrameNode> frame_node;
-    base::WeakPtr<FrameNode> parent_frame_node;
-  };
-  std::unique_ptr<Data> data(
-      new Data{mojo::GetBadMessageCallback(), remote_frame_token,
-               std::move(iframe_attribution_data), nullptr,
-               parent_frame_node->GetWeakPtr()});
-
-  auto on_pm_seq = base::BindOnce([](std::unique_ptr<Data> data, Graph* graph) {
-    DCHECK(data);
-    DCHECK(graph);
-    DCHECK_ON_GRAPH_SEQUENCE(graph);
-    // Only dispatch if the frame and its parent still exist after the
-    // round-trip through the UI thread. If the frame still exists but now has
-    // no parent, we don't need to record IframeAttribution data for it since
-    // it's now unreachable.
-    //
-    // An example of this is the custom <webview> element used in Chrome UI
-    // (extensions/renderer/resources/guest_view/web_view/web_view.js). This
-    // element has an inner web contents with an opener relationship to the
-    // webview, but no parent-child relationship. However since it is a custom
-    // element implemented on top of <iframe>, the renderer has no way to
-    // distinguish it from a regular iframe. At the moment the contents is
-    // attached it has a transient parent frame, which is reported through
-    // OnRemoteIframeAttached, but the parent frame disappears shortly
-    // afterward.
-    //
-    // TODO(crbug.com/40132061): Write an end-to-end browsertest that covers
-    // this case once all parts of the measure memory API are hooked up.
-    if (data->frame_node && data->parent_frame_node) {
-      auto* frame_node = FrameNodeImpl::FromNode(data->frame_node.get());
-      auto* parent_frame_node =
-          FrameNodeImpl::FromNode(data->parent_frame_node.get());
-      if (auto* tracker = V8ContextTracker::GetFromGraph(graph)) {
-        tracker->OnRemoteIframeAttachedImpl(
-            std::move(data->bad_message_callback), frame_node,
-            parent_frame_node, data->remote_frame_token,
-            std::move(data->iframe_attribution_data));
-      }
-    }
-  });
-
-  // Looks up a RFH on the UI sequence, and posts back to |on_pm_seq|.
-  auto on_ui_thread = base::BindOnce([](decltype(on_pm_seq) on_pm_seq,
-                                        std::unique_ptr<Data> data,
-                                        RenderProcessHostId rph_id) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK(on_pm_seq);
-    DCHECK(data);
-    if (auto* rfh = content::RenderFrameHost::FromPlaceholderToken(
-            rph_id.value(), data->remote_frame_token)) {
-      data->frame_node =
-          PerformanceManager::GetFrameNodeForRenderFrameHost(rfh);
-      PerformanceManager::CallOnGraph(
-          FROM_HERE, base::BindOnce(std::move(on_pm_seq), std::move(data)));
-    }
-  });
-
-  // Posts |on_ui_thread| to the UI sequence.
   auto rph_id = parent_frame_node->process_node()->GetRenderProcessHostId();
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(on_ui_thread), std::move(on_pm_seq),
-                                std::move(data), rph_id));
+  auto* rfh = content::RenderFrameHost::FromPlaceholderToken(
+      rph_id.value(), remote_frame_token);
+  if (!rfh) {
+    return;
+  }
+
+  base::WeakPtr<const FrameNode> weak_frame_node =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(rfh);
+  if (!weak_frame_node) {
+    return;
+  }
+  FrameNodeImpl* frame_node = FrameNodeImpl::FromNode(weak_frame_node.get());
+
+  OnRemoteIframeAttachedImpl(mojo::GetBadMessageCallback(), frame_node,
+                             parent_frame_node, remote_frame_token,
+                             std::move(iframe_attribution_data));
 }
 
 void V8ContextTracker::OnRemoteIframeDetached(
@@ -289,41 +235,7 @@ void V8ContextTracker::OnRemoteIframeDetached(
     FrameNodeImpl* parent_frame_node,
     const blink::RemoteFrameToken& remote_frame_token) {
   DCHECK_ON_GRAPH_SEQUENCE(parent_frame_node->graph());
-
-  // The data that bounces between threads, bundled up for convenience.
-  struct Data {
-    base::WeakPtr<FrameNodeImpl> parent_frame_node;
-    blink::RemoteFrameToken remote_frame_token;
-  };
-  std::unique_ptr<Data> data(
-      new Data{parent_frame_node->GetWeakPtr(), remote_frame_token});
-
-  auto on_pm_seq = base::BindOnce(
-      [](std::unique_ptr<Data> data, Graph* graph) {
-        DCHECK(data);
-        DCHECK(graph);
-        DCHECK_ON_GRAPH_SEQUENCE(graph);
-        // Only dispatch if the tracker and the frame node both still exist.
-        // Our bounce to the UI thread means either or both of these could have
-        // disappeared in the meantime.
-        if (data->parent_frame_node) {
-          if (auto* tracker = V8ContextTracker::GetFromGraph(graph)) {
-            tracker->OnRemoteIframeDetachedImpl(data->parent_frame_node.get(),
-                                                data->remote_frame_token);
-          }
-        }
-      },
-      std::move(data));
-
-  auto on_ui_seq = base::BindOnce(
-      [](decltype(on_pm_seq) on_pm_seq) {
-        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-        DCHECK(on_pm_seq);
-        PerformanceManager::CallOnGraph(FROM_HERE, std::move(on_pm_seq));
-      },
-      std::move(on_pm_seq));
-
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(on_ui_seq));
+  OnRemoteIframeDetachedImpl(parent_frame_node, remote_frame_token);
 }
 
 void V8ContextTracker::OnRemoteIframeAttachedForTesting(
@@ -529,6 +441,10 @@ void V8ContextTracker::OnRemoteIframeDetachedImpl(
     FrameNodeImpl* parent_frame_node,
     const blink::RemoteFrameToken& remote_frame_token) {
   DCHECK_ON_GRAPH_SEQUENCE(parent_frame_node->graph());
+
+  // TODO(https://crbug.com/40132061): This should call ReportBadMessage if the
+  // remote frame still exists but `parent_frame_node` doesn't match it's
+  // parent.
 
   // Look up the RemoteFrameData. This can fail because the notification to
   // clean up RemoteFrameData can race with process death, so ignore the message

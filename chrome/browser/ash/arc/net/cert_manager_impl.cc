@@ -54,6 +54,16 @@ net::ScopedCERTCertificate TranslatePEMToCert(const std::string& cert_pem) {
   return net::x509_util::CreateCERTCertificateFromBytes(cert_der);
 }
 
+// Check the status of delete operation for cert and key, then runs |callback|.
+void DeleteCertAndKeyCallback(arc::CertManagerImpl::DeleteCertCallback callback,
+                              bool status) {
+  if (!status) {
+    NET_LOG(ERROR) << "Failed to delete certificate";
+  }
+  // Run the callback regardless of the certificate and key deletion status.
+  std::move(callback).Run();
+}
+
 }  // namespace
 
 namespace arc {
@@ -128,8 +138,9 @@ std::string CertManagerImpl::ImportUserCert(const std::string& cert_pem,
   return base::HexEncode(sec_item->data, sec_item->len);
 }
 
-void CertManagerImpl::DeleteCertAndKey(const std::string& cert_pem,
-                                       net::NSSCertDatabase* database) {
+void CertManagerImpl::DeleteCertAndKeyAsync(const std::string& cert_pem,
+                                            net::NSSCertDatabase* database,
+                                            DeleteCertCallback callback) {
   if (!database) {
     NET_LOG(ERROR) << "Certificate database is not initialized";
     return;
@@ -140,7 +151,9 @@ void CertManagerImpl::DeleteCertAndKey(const std::string& cert_pem,
     NET_LOG(ERROR) << "Failed to translate PEM to certificate object";
     return;
   }
-  database->DeleteCertAndKey(cert.get());
+  database->DeleteCertAndKeyAsync(
+      std::move(cert),
+      base::BindOnce(&DeleteCertAndKeyCallback, std::move(callback)));
 }
 
 int CertManagerImpl::GetSlotID(net::NSSCertDatabase* database) {
@@ -158,7 +171,7 @@ int CertManagerImpl::GetSlotID(net::NSSCertDatabase* database) {
   return PK11_GetSlotID(private_slot.get());
 }
 
-void CertManagerImpl::ImportPrivateKeyAndCertWithDB(
+void CertManagerImpl::DeleteAndImportPrivateKeyAndCertWithDB(
     const std::string& key_pem,
     const std::string& cert_pem,
     ImportPrivateKeyAndCertCallback callback,
@@ -172,7 +185,18 @@ void CertManagerImpl::ImportPrivateKeyAndCertWithDB(
   // If there is no Chrome restart between (1) and (2), NSS caches are not
   // updated with the result of (1), making (2) fail.
   // Deleting the key from NSS ensures that (2) succeeds even in this case.
-  DeleteCertAndKey(cert_pem, database);
+  DeleteCertAndKeyAsync(
+      cert_pem, database,
+      base::BindOnce(&CertManagerImpl::ImportPrivateKeyAndCertWithDB,
+                     weak_factory_.GetWeakPtr(), key_pem, cert_pem,
+                     std::move(callback), database));
+}
+
+void CertManagerImpl::ImportPrivateKeyAndCertWithDB(
+    const std::string& key_pem,
+    const std::string& cert_pem,
+    ImportPrivateKeyAndCertCallback callback,
+    net::NSSCertDatabase* database) {
   std::string key_id = ImportPrivateKey(key_pem, database);
   if (key_id.empty()) {
     NET_LOG(ERROR) << "Failed to import private key";
@@ -204,13 +228,14 @@ void CertManagerImpl::ImportPrivateKeyAndCert(
     ImportPrivateKeyAndCertCallback callback) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&GetCertDBOnIOThread,
-                     NssServiceFactory::GetForContext(profile_)
-                         ->CreateNSSCertDatabaseGetterForIOThread(),
-                     base::BindPostTaskToCurrentDefault(base::BindOnce(
-                         &CertManagerImpl::ImportPrivateKeyAndCertWithDB,
-                         weak_factory_.GetWeakPtr(), key_pem, cert_pem,
-                         std::move(callback)))));
+      base::BindOnce(
+          &GetCertDBOnIOThread,
+          NssServiceFactory::GetForContext(profile_)
+              ->CreateNSSCertDatabaseGetterForIOThread(),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &CertManagerImpl::DeleteAndImportPrivateKeyAndCertWithDB,
+              weak_factory_.GetWeakPtr(), key_pem, cert_pem,
+              std::move(callback)))));
 }
 
 }  // namespace arc

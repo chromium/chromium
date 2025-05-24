@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -27,8 +28,10 @@
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
+#include "net/base/features.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
@@ -160,8 +163,8 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   // synchronously return |result| on checks by default.
   TestNavigationThrottle* CreateTestNavigationThrottle(
       NavigationThrottle::ThrottleCheckResult result) {
-    TestNavigationThrottle* test_throttle =
-        new TestNavigationThrottle(GetNavigationRequest());
+    TestNavigationThrottle* test_throttle = new TestNavigationThrottle(
+        *GetNavigationRequest()->GetNavigationThrottleRunnerForTesting());
     test_throttle->SetResponseForAllMethods(TestNavigationThrottle::SYNCHRONOUS,
                                             result);
     GetNavigationRequest()->RegisterThrottleForTesting(
@@ -479,8 +482,7 @@ TEST_F(NavigationRequestTest, WillFailRequestSetsSSLInfo) {
 TEST_F(NavigationRequestTest, SharedStorageWritable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kSharedStorageAPI,
-                            blink::features::kSharedStorageAPIM118,
+      /*enabled_features=*/{network::features::kSharedStorageAPI,
                             blink::features::kFencedFrames},
       /*disabled_features=*/{});
 
@@ -530,7 +532,7 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
       static_cast<RenderFrameHostImpl*>(fenced_frame_root)->frame_tree_node();
   FencedFrameConfig new_config = FencedFrameConfig(GURL("about:blank"));
   new_config.AddEffectiveEnabledPermissionForTesting(
-      blink::mojom::PermissionsPolicyFeature::kSharedStorage);
+      network::mojom::PermissionsPolicyFeature::kSharedStorage);
   FencedFrameProperties new_props = FencedFrameProperties(new_config);
   fenced_frame_node->set_fenced_frame_properties(new_props);
   fenced_frame_root->ResetPermissionsPolicy({});
@@ -591,13 +593,11 @@ class GetRenderFrameHostOnFailureNavigationThrottle
 };
 
 class ThrottleTestContentBrowserClient : public ContentBrowserClient {
-  std::vector<std::unique_ptr<NavigationThrottle>> CreateThrottlesForNavigation(
-      NavigationHandle* navigation_handle) override {
-    std::vector<std::unique_ptr<NavigationThrottle>> throttle;
-    throttle.push_back(
+  void CreateThrottlesForNavigation(
+      NavigationThrottleRegistry& registry) override {
+    registry.AddThrottle(
         std::make_unique<GetRenderFrameHostOnFailureNavigationThrottle>(
-            navigation_handle));
-    return throttle;
+            &registry.GetNavigationHandle()));
   }
 };
 
@@ -780,7 +780,7 @@ TEST_F(NavigationRequestTest, RuntimeFeatureStateStorageKey) {
 
     if (disable_sp) {
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
+          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
     }
 
     navigation->ReadyToCommit();
@@ -1160,7 +1160,7 @@ class OriginTrialsControllerDelegateMock
       const base::span<const std::string> header_tokens,
       const base::Time current_time,
       std::optional<ukm::SourceId> source_id) override {
-    NOTREACHED_IN_MIGRATION() << "not used by test";
+    NOTREACHED() << "not used by test";
   }
   bool IsFeaturePersistedForOrigin(const url::Origin& origin,
                                    const url::Origin& partition_origin,
@@ -1227,8 +1227,6 @@ TEST_F(PersistentOriginTrialNavigationRequestTest,
       "SI"
       "6ICJGcm9idWxhdGVQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPersistentOriginTrials);
   blink::ScopedTestOriginTrialPolicy origin_trial_policy_;
 
   const GURL kUrl = GURL("https://example.com");
@@ -1412,19 +1410,6 @@ TEST_F(NavigationRequestResponseBodyTest, PipeClosed) {
       NavigationRequest::From(navigation->GetNavigationHandle())->state());
   EXPECT_TRUE(was_callback_called());
   EXPECT_EQ(std::string(), response_body());
-}
-
-TEST_F(NavigationRequestTest, ViewTransitionForceEnablesPageSwap) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({blink::features::kViewTransitionOnNavigation},
-                                {});
-
-  GURL main_url = GURL("https://main.com");
-  auto main_navigation =
-      NavigationSimulatorImpl::CreateBrowserInitiated(main_url, contents());
-  main_navigation->Start();
-  ASSERT_TRUE(
-      main_navigation->GetNavigationHandle()->ShouldDispatchPageSwapEvent());
 }
 
 }  // namespace content

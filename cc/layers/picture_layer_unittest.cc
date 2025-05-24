@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/completion_event.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -119,8 +120,11 @@ TEST(PictureLayerTest, InvalidateRasterAfterUpdate) {
       FakePictureLayerImpl::Create(host_impl.pending_tree(), 1));
   FakePictureLayerImpl* layer_impl = static_cast<FakePictureLayerImpl*>(
       host_impl.pending_tree()->root_layer());
-  layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
-                          host->GetThreadUnsafeCommitState());
+  {
+    LayerTreeImpl::DiscardableImageMapUpdater updater(host_impl.pending_tree());
+    layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
+                            host->GetThreadUnsafeCommitState());
+  }
 
   EXPECT_EQ(invalidation_bounds,
             layer_impl->GetPendingInvalidation()->bounds());
@@ -213,7 +217,10 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   const auto& unsafe_state = host->GetThreadUnsafeCommitState();
   std::unique_ptr<CommitState> commit_state =
       host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
-  layer->PushPropertiesTo(layer_impl, *commit_state, unsafe_state);
+  {
+    LayerTreeImpl::DiscardableImageMapUpdater updater(host_impl.pending_tree());
+    layer->PushPropertiesTo(layer_impl, *commit_state, unsafe_state);
+  }
   host->CommitComplete(commit_state->source_frame_number,
                        {base::TimeTicks(), base::TimeTicks::Now()});
 
@@ -233,8 +240,11 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
 
   // We should now have invalid contents and should therefore clear the
   // recording source.
-  layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
-                          host->GetThreadUnsafeCommitState());
+  {
+    LayerTreeImpl::DiscardableImageMapUpdater updater(host_impl.pending_tree());
+    layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
+                            host->GetThreadUnsafeCommitState());
+  }
   UpdateDrawProperties(host_impl.pending_tree());
 
   host_impl.ActivateSyncTree();
@@ -242,7 +252,9 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   host_impl.active_tree()->root_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
-  host_impl.active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);
+  host_impl.active_tree()->root_layer()->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false}, render_pass.get(),
+      &data);
   host_impl.active_tree()->root_layer()->DidDraw(nullptr);
 }
 

@@ -27,6 +27,9 @@
     "tasks_api_origin_url": {
       "url": "https://tasks.will-be-overridden.com"
     },
+    "people_api_origin_url": {
+      "url": "https://people.will-be-overridden.com"
+    },
     "embedded_setup_chromeos_url_v2": {
       "url": "https://accounts.example.com/embedded/setup/v2/chromeos"
     },

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -15,12 +16,13 @@
 
 namespace fullscreen_utils {
 
-bool IsInContentFullscreen(Browser* browser) {
-  if (!browser->exclusive_access_manager()) {
+bool IsInContentFullscreen(BrowserWindowInterface* browser_window_interface) {
+  if (!browser_window_interface->GetExclusiveAccessManager()) {
     return false;
   }
-  FullscreenController* controller =
-      browser->exclusive_access_manager()->fullscreen_controller();
+  FullscreenController* const controller =
+      browser_window_interface->GetExclusiveAccessManager()
+          ->fullscreen_controller();
   return controller && (controller->IsWindowFullscreenForTabOrPending() ||
                         controller->IsExtensionFullscreenOrPending());
 }

@@ -40,9 +40,10 @@ using ::testing::ElementsAre;
 class RangeTest : public EditingTestBase {};
 
 TEST_F(RangeTest, extractContentsWithDOMMutationEvent) {
-  if (!RuntimeEnabledFeatures::MutationEventsEnabledByRuntimeFlag()) {
-    // TODO(crbug.com/1446498) Remove this test when MutationEvents are disabled
-    // for good. This is just a test of `DOMSubtreeModified` and ranges.
+  if (!RuntimeEnabledFeatures::MutationEventsEnabled()) {
+    // TODO(crbug.com/40268638) Remove this test when MutationEvents are
+    // disabled for good. This is just a test of `DOMSubtreeModified` and
+    // ranges.
     return;
   }
   GetDocument().body()->setInnerHTML("<span><b>abc</b>def</span>");

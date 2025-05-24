@@ -6,7 +6,7 @@
  * daniel@veillard.com
  */
 
-#include "config.h"
+#include "libxml.h"
 #include <stdio.h>
 #include <libxml/xmlversion.h>
 
@@ -504,11 +504,13 @@ xmlconfInfo(void) {
 }
 
 static int
-xmlconfTest(void) {
-    const char *confxml = "xmlconf/xmlconf.xml";
+xmlconfTest(const char *dir) {
+    char confxml[500];
     xmlDocPtr doc;
     xmlNodePtr cur;
     int ret = 0;
+
+    snprintf(confxml, sizeof(confxml), "%s/xmlconf.xml", dir);
 
     if (!checkTestFile(confxml)) {
         fprintf(stderr, "%s is missing \n", confxml);
@@ -541,11 +543,13 @@ xmlconfTest(void) {
  ************************************************************************/
 
 int
-main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
+main(int argc, char **argv) {
     int ret = 0;
     int old_errors, old_tests, old_leaks;
+    const char *dir = "xmlconf";
+    int i;
 
-    logfile = fopen(LOGFILE, "w");
+    logfile = fopen(LOGFILE, "wb");
     if (logfile == NULL) {
         fprintf(stderr,
 	        "Could not open the log file, running in verbose mode\n");
@@ -553,14 +557,22 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     }
     initializeLibxml2();
 
-    if ((argc >= 2) && (!strcmp(argv[1], "-v")))
-        verbose = 1;
-
+    for (i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-v") == 0) {
+            verbose = 1;
+        } else if (strcmp(argv[i], "-d") == 0 && i + 1 < argc) {
+            i += 1;
+            dir = argv[i];
+        } else {
+            fprintf(stderr, "invalid argument: %s\n", argv[i]);
+            return 1;
+        }
+    }
 
     old_errors = nb_errors;
     old_tests = nb_tests;
     old_leaks = nb_leaks;
-    xmlconfTest();
+    xmlconfTest(dir);
     if ((nb_errors == old_errors) && (nb_leaks == old_leaks))
 	printf("Ran %d tests, no errors\n", nb_tests - old_tests);
     else

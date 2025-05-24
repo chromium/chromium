@@ -35,7 +35,6 @@ class OverlayRequestQueueImpl : public OverlayRequestQueue {
 
    private:
     friend class web::WebStateUserData<Container>;
-    WEB_STATE_USER_DATA_KEY_DECL();
     Container(web::WebState* web_state);
 
     raw_ptr<web::WebState> web_state_ = nullptr;

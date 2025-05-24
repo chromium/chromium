@@ -13,7 +13,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
@@ -27,13 +29,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#else
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace video_conference {
 namespace {
@@ -97,30 +92,14 @@ VideoConferenceManagerClientImpl::VideoConferenceManagerClientImpl()
                                             HandleDeviceUsedWhileDisabled,
                                         base::Unretained(this)));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Bind remote and pass receiver to VideoConferenceManagerAsh.
-  chromeos::LacrosService::Get()->BindVideoConferenceManager(
-      remote_.BindNewPipeAndPassReceiver());
-  // Register the mojo client.
-  remote_->RegisterMojoClient(receiver_.BindNewPipeAndPassRemote(), client_id_,
-                              base::BindOnce([](bool success) {
-                                if (!success) {
-                                  LOG(ERROR)
-                                      << "VideoConferenceManagerClientImpl "
-                                         "RegisterMojoClient did not succeed.";
-                                }
-                              }));
-#else
   // Register the C++ (non-mojo) client.
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->video_conference_manager_ash()
       ->RegisterCppClient(this, client_id_);
-#endif
 }
 
 VideoConferenceManagerClientImpl::~VideoConferenceManagerClientImpl() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // C++ clients are responsible for manually calling |UnregisterClient| on the
   // manager when disconnecting.
   if (crosapi::CrosapiManager::IsInitialized()) {
@@ -129,7 +108,6 @@ VideoConferenceManagerClientImpl::~VideoConferenceManagerClientImpl() {
         ->video_conference_manager_ash()
         ->UnregisterClient(client_id_);
   }
-#endif
 }
 
 void VideoConferenceManagerClientImpl::RemoveMediaApp(
@@ -233,16 +211,11 @@ void VideoConferenceManagerClientImpl::HandleMediaUsageUpdate() {
 void VideoConferenceManagerClientImpl::HandleDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  remote_->NotifyDeviceUsedWhileDisabled(std::move(device), app_name,
-                                         base::DoNothing());
-#else
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->video_conference_manager_ash()
       ->NotifyDeviceUsedWhileDisabled(std::move(device), app_name,
                                       base::DoNothing());
-#endif
 }
 
 void VideoConferenceManagerClientImpl::GetMediaApps(
@@ -327,14 +300,10 @@ void VideoConferenceManagerClientImpl::NotifyManager(
   });
 
   // Send updated media usage state to VcManager.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  remote_->NotifyMediaUsageUpdate(std::move(status), std::move(callback));
-#else
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->video_conference_manager_ash()
       ->NotifyMediaUsageUpdate(std::move(status), std::move(callback));
-#endif
 }
 
 VideoConferencePermissions
@@ -360,14 +329,10 @@ VideoConferenceManagerClientImpl::GetAggregatedPermissions() {
 
 void VideoConferenceManagerClientImpl::SendClientUpdate(
     crosapi::mojom::VideoConferenceClientUpdatePtr update) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  remote_->NotifyClientUpdate(std::move(update));
-#else
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->video_conference_manager_ash()
       ->NotifyClientUpdate(std::move(update));
-#endif
 }
 
 }  // namespace video_conference

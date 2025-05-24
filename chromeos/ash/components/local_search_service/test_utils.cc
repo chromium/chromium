@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
+
 namespace ash::local_search_service {
 
 namespace {

@@ -8,14 +8,15 @@
 #include <utility>
 
 #include "base/functional/function_ref.h"
+#include "base/test/fuzztest_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/attribution_scopes_set.h"
@@ -23,7 +24,6 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -34,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace attribution_reporting {
 namespace {
@@ -83,12 +84,13 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::source_event_id, 0),
               Field(&SourceRegistration::destination_set, destination),
               Field(&SourceRegistration::expiry, base::Days(30)),
-              Field(
-                  &SourceRegistration::trigger_specs,
-                  TriggerSpecs(SourceType::kNavigation,
-                               *EventReportWindows::FromDefaults(
-                                   base::Days(30), SourceType::kNavigation),
-                               MaxEventLevelReports(SourceType::kNavigation))),
+              Field(&SourceRegistration::trigger_data,
+                    TriggerDataSet(SourceType::kNavigation)),
+              Field(&SourceRegistration::event_report_windows,
+                    *EventReportWindows::FromDefaults(base::Days(30),
+                                                      SourceType::kNavigation)),
+              Field(&SourceRegistration::max_event_level_reports,
+                    MaxEventLevelReports(SourceType::kNavigation)),
               Field(&SourceRegistration::aggregatable_report_window,
                     base::Days(30)),
               Field(&SourceRegistration::priority, 0),
@@ -101,7 +103,9 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::aggregatable_debug_reporting_config,
                     SourceAggregatableDebugReportingConfig()),
               Field(&SourceRegistration::attribution_scopes_data, std::nullopt),
-              Field(&SourceRegistration::destination_limit_priority, 0))),
+              Field(&SourceRegistration::destination_limit_priority, 0),
+              Field(&SourceRegistration::aggregatable_named_budget_defs,
+                    AggregatableNamedBudgetDefs()))),
       },
       {
           "source_event_id_valid",
@@ -215,12 +219,9 @@ TEST(SourceRegistrationTest, Parse) {
           "event_report_window_valid",
           R"json({"event_report_window":"86401",
           "destination":"https://d.example"})json",
-          ValueIs(
-              Field(&SourceRegistration::trigger_specs,
-                    TriggerSpecs(SourceType::kEvent,
-                                 *EventReportWindows::FromDefaults(
-                                     base::Seconds(86401), SourceType::kEvent),
-                                 MaxEventLevelReports(SourceType::kEvent)))),
+          ValueIs(Field(&SourceRegistration::event_report_windows,
+                        *EventReportWindows::FromDefaults(base::Seconds(86401),
+                                                          SourceType::kEvent))),
           SourceType::kEvent,
       },
       {
@@ -231,12 +232,9 @@ TEST(SourceRegistrationTest, Parse) {
             },
             "destination":"https://d.example"
           })json",
-          ValueIs(Field(
-              &SourceRegistration::trigger_specs,
-              TriggerSpecs(SourceType::kNavigation,
-                           *EventReportWindows::Create(base::Seconds(0),
-                                                       {base::Seconds(86401)}),
-                           MaxEventLevelReports(SourceType::kNavigation)))),
+          ValueIs(Field(&SourceRegistration::event_report_windows,
+                        *EventReportWindows::Create(base::Seconds(0),
+                                                    {base::Seconds(86401)}))),
       },
       {
           "aggregatable_report_window_valid",
@@ -391,6 +389,9 @@ TEST(SourceRegistrationTest, Parse) {
 
     if (source.has_value()) {
       histograms.ExpectTotalCount(kSourceRegistrationErrorMetric, 0);
+      histograms.ExpectUniqueSample(
+          "Conversions.TriggerDataMatchingRegistration",
+          static_cast<int>(source->trigger_data_matching), 1);
     } else {
       histograms.ExpectUniqueSample(kSourceRegistrationErrorMetric,
                                     source.error(), 1);
@@ -418,7 +419,11 @@ TEST(SourceRegistrationTest, ToJson) {
             "priority": "0",
             "source_event_id": "0",
             "trigger_data_matching": "modulus",
-            "trigger_specs": [],
+            "trigger_data": [],
+            "event_report_windows": {
+              "start_time": 0,
+              "end_times": [2592000]
+            },
             "destination_limit_priority": "0"
           })json",
       },
@@ -436,9 +441,9 @@ TEST(SourceRegistrationTest, ToJson) {
                 r.source_event_id = 7;
                 r.trigger_data_matching = mojom::TriggerDataMatching::kExact;
                 r.event_level_epsilon = EventLevelEpsilon(0);
-                r.trigger_specs =
-                    TriggerSpecs(SourceType::kNavigation, EventReportWindows(),
-                                 MaxEventLevelReports(8));
+                r.trigger_data = TriggerDataSet(SourceType::kNavigation);
+                r.event_report_windows = EventReportWindows();
+                r.max_event_level_reports = MaxEventLevelReports(8);
                 r.aggregatable_debug_reporting_config =
                     *SourceAggregatableDebugReportingConfig::Create(
                         /*budget=*/123,
@@ -457,13 +462,11 @@ TEST(SourceRegistrationTest, ToJson) {
             "debug_key": "3",
             "debug_reporting": true,
             "destination":"https://d.example",
-            "trigger_specs": [{
-              "trigger_data": [0, 1, 2, 3, 4, 5, 6, 7],
-              "event_report_windows": {
-                "start_time": 0,
-                "end_times": [2592000]
-              }
-            }],
+            "trigger_data": [0, 1, 2, 3, 4, 5, 6, 7],
+            "event_report_windows": {
+              "start_time": 0,
+              "end_times": [2592000]
+            },
             "expiry": 5,
             "filter_data": {"b": []},
             "priority": "-6",
@@ -494,9 +497,6 @@ TEST(SourceRegistrationTest, ToJson) {
 }
 
 TEST(SourceRegistrationTest, ParseDestinationLimitPriority) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionSourceDestinationLimit);
-
   const struct {
     const char* desc;
     const char* json;
@@ -552,9 +552,6 @@ TEST(SourceRegistrationTest, ParseDestinationLimitPriority) {
 }
 
 TEST(SourceRegistrationTest, SerializeDestinationLimit) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionSourceDestinationLimit);
-
   const DestinationSet destination = *DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://d.example")});
 
@@ -574,7 +571,11 @@ TEST(SourceRegistrationTest, SerializeDestinationLimit) {
               "priority": "0",
               "source_event_id": "0",
               "trigger_data_matching": "modulus",
-              "trigger_specs": [],
+              "trigger_data": [],
+              "event_report_windows": {
+                "start_time": 0,
+                "end_times": [2592000]
+              },
               "destination_limit_priority": "0"
           })json",
       },
@@ -593,7 +594,11 @@ TEST(SourceRegistrationTest, SerializeDestinationLimit) {
               "priority": "0",
               "source_event_id": "0",
               "trigger_data_matching": "modulus",
-              "trigger_specs": [],
+              "trigger_data": [],
+              "event_report_windows": {
+                "start_time": 0,
+                "end_times": [2592000]
+              },
               "destination_limit_priority": "123"
           })json",
       },
@@ -614,41 +619,29 @@ TEST(SourceRegistrationTest, IsValid) {
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                  r.expiry = base::Days(1) - base::Microseconds(1);
                  r.aggregatable_report_window = r.expiry;
-                 r.trigger_specs =
-                     TriggerSpecs(SourceType::kEvent,
-                                  *EventReportWindows::FromDefaults(
-                                      r.expiry, SourceType::kEvent),
-                                  MaxEventLevelReports(SourceType::kEvent));
+                 r.event_report_windows = *EventReportWindows::FromDefaults(
+                     r.expiry, SourceType::kEvent);
                }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                  r.expiry = base::Days(30) + base::Microseconds(1);
                  r.aggregatable_report_window = r.expiry;
-                 r.trigger_specs =
-                     TriggerSpecs(SourceType::kEvent,
-                                  *EventReportWindows::FromDefaults(
-                                      base::Days(30), SourceType::kEvent),
-                                  MaxEventLevelReports(SourceType::kEvent));
+                 r.event_report_windows = *EventReportWindows::FromDefaults(
+                     base::Days(30), SourceType::kEvent);
                }).IsValid());
 
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                 r.expiry = base::Days(1);
                 r.aggregatable_report_window = r.expiry;
-                r.trigger_specs =
-                    TriggerSpecs(SourceType::kEvent,
-                                 *EventReportWindows::FromDefaults(
-                                     r.expiry, SourceType::kEvent),
-                                 MaxEventLevelReports(SourceType::kEvent));
+                r.event_report_windows = *EventReportWindows::FromDefaults(
+                    r.expiry, SourceType::kEvent);
               }).IsValid());
 
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                 r.expiry = base::Days(30);
                 r.aggregatable_report_window = r.expiry;
-                r.trigger_specs =
-                    TriggerSpecs(SourceType::kEvent,
-                                 *EventReportWindows::FromDefaults(
-                                     r.expiry, SourceType::kEvent),
-                                 MaxEventLevelReports(SourceType::kEvent));
+                r.event_report_windows = *EventReportWindows::FromDefaults(
+                    r.expiry, SourceType::kEvent);
               }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
@@ -656,25 +649,19 @@ TEST(SourceRegistrationTest, IsValid) {
                      base::Hours(1) - base::Microseconds(1);
                }).IsValid());
 
-  EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
-                 r.expiry = base::Days(1);
-                 r.aggregatable_report_window =
-                     r.expiry + base::Microseconds(1);
-                 r.trigger_specs =
-                     TriggerSpecs(SourceType::kEvent,
-                                  *EventReportWindows::FromDefaults(
-                                      r.expiry, SourceType::kEvent),
-                                  MaxEventLevelReports(SourceType::kEvent));
-               }).IsValid());
+  EXPECT_FALSE(
+      SourceRegistrationWith(destination, [](SourceRegistration& r) {
+        r.expiry = base::Days(1);
+        r.aggregatable_report_window = r.expiry + base::Microseconds(1);
+        r.event_report_windows =
+            *EventReportWindows::FromDefaults(r.expiry, SourceType::kEvent);
+      }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                  r.expiry = base::Days(1);
                  r.aggregatable_report_window = r.expiry;
-                 r.trigger_specs = TriggerSpecs(
-                     SourceType::kEvent,
-                     *EventReportWindows::FromDefaults(
-                         r.expiry + base::Microseconds(1), SourceType::kEvent),
-                     MaxEventLevelReports(SourceType::kEvent));
+                 r.event_report_windows = *EventReportWindows::FromDefaults(
+                     r.expiry + base::Microseconds(1), SourceType::kEvent);
                }).IsValid());
 
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
@@ -733,9 +720,6 @@ TEST(SourceRegistrationTest, ParseAggregatableDebugReportingConfig) {
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
-
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
@@ -790,9 +774,6 @@ TEST(SourceRegistrationTest, ParseAttributionScopesConfig) {
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionScopes);
-
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
     SCOPED_TRACE(test_case.desc);
@@ -808,6 +789,130 @@ TEST(SourceRegistrationTest, ParseAttributionScopesConfig) {
     }
   }
 }
+
+TEST(SourceRegistrationTest, ParseAggregatableNamedBudgetDefs) {
+  const struct {
+    const char* desc;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<SourceRegistration, SourceRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          "aggregatable_named_budget_defs_valid",
+          R"json({
+            "named_budgets":{"a":65536},
+            "destination":"https://d.example"
+          })json",
+          ValueIs(Field(
+              &SourceRegistration::aggregatable_named_budget_defs,
+              *AggregatableNamedBudgetDefs::FromBudgetMap({{"a", 65536}}))),
+      },
+      {
+          "no_budgets",
+          R"json({
+            "destination":"https://d.example"
+          })json",
+          ValueIs(Field(&SourceRegistration::aggregatable_named_budget_defs,
+                        *AggregatableNamedBudgetDefs::FromBudgetMap({}))),
+      },
+      {
+          "aggregatable_named_budget_defs_invalid",
+          R"json({
+            "named_budgets":{"a":65537},
+            "destination":"https://d.example"
+          })json",
+          ErrorIs(
+              SourceRegistrationError::kAggregatableNamedBudgetsValueInvalid),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    SCOPED_TRACE(test_case.desc);
+
+    auto source =
+        SourceRegistration::Parse(test_case.json, SourceType::kNavigation);
+    EXPECT_THAT(source, test_case.matches);
+    if (source.has_value()) {
+      histograms.ExpectUniqueSample(
+          "Conversions.NamedBudgetsPerSourceRegistration",
+          source->aggregatable_named_budget_defs.budgets().size(), 1);
+    }
+  }
+}
+
+TEST(SourceRegistrationTest, SerializeAggregatableNamedBudgetDefs) {
+  const DestinationSet destination = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://d.example")});
+  const struct {
+    SourceRegistration input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          SourceRegistration(destination),
+          R"json({
+            "aggregatable_report_window": 2592000,
+            "debug_reporting": false,
+            "destination":"https://d.example",
+            "event_level_epsilon": 14.0,
+            "expiry": 2592000,
+            "max_event_level_reports": 0,
+            "priority": "0",
+            "source_event_id": "0",
+            "trigger_data_matching": "modulus",
+            "trigger_data": [],
+            "event_report_windows": {
+              "start_time": 0,
+              "end_times": [2592000]
+            },
+            "destination_limit_priority": "0"
+          })json",
+      },
+      {
+          SourceRegistrationWith(
+              destination,
+              [](SourceRegistration& r) {
+                r.aggregatable_named_budget_defs =
+                    *AggregatableNamedBudgetDefs::FromBudgetMap({{"a", 65536}});
+              }),
+          R"json({
+            "aggregatable_report_window": 2592000,
+            "debug_reporting": false,
+            "destination":"https://d.example",
+            "event_level_epsilon": 14.0,
+            "expiry": 2592000,
+            "max_event_level_reports": 0,
+            "priority": "0",
+            "source_event_id": "0",
+            "trigger_data_matching": "modulus",
+            "trigger_data": [],
+            "event_report_windows": {
+              "start_time": 0,
+              "end_times": [2592000]
+            },
+            "destination_limit_priority": "0",
+            "named_budgets": {
+              "a": 65536
+            }
+          })json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
+  }
+}
+
+void Parses(base::Value value, SourceType source_type) {
+  std::ignore = SourceRegistration::Parse(std::move(value), source_type);
+}
+
+FUZZ_TEST(SourceRegistrationTest, Parses)
+    .WithDomains(fuzztest::Arbitrary<base::Value>(),
+                 fuzztest::ElementOf({SourceType::kNavigation,
+                                      SourceType::kEvent}));
 
 }  // namespace
 }  // namespace attribution_reporting

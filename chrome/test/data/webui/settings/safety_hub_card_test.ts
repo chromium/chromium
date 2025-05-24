@@ -44,7 +44,7 @@ suite('SafetyHubCard', function() {
     assertTextContent('#subheader', mockData.subheader);
   });
 
-  test('testIcon', async function() {
+  test('testIcon', function() {
     // Check icon for SAFE state.
     testElement.data = getMockDataForState(CardState.SAFE);
     flushTasks();

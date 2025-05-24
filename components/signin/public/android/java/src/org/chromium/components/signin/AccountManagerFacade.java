@@ -12,16 +12,20 @@ import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 import java.util.List;
 
 /** Interface for {@link AccountManagerFacadeImpl}. */
+@NullMarked
 public interface AccountManagerFacade {
     /** A callback for getAccessToken. */
     interface GetAccessTokenCallback {
@@ -35,10 +39,9 @@ public interface AccountManagerFacade {
         /**
          * Invoked on the UI thread if no token is available.
          *
-         * @param isTransientError Indicates if the error is transient (network timeout or
-         *     unavailable, etc) or persistent (bad credentials, permission denied, etc).
+         * @param authError The {@link GoogleServiceAuthError} encountered during token fetch.
          */
-        void onGetTokenFailure(boolean isTransientError);
+        void onGetTokenFailure(GoogleServiceAuthError authError);
     }
 
     // TODO(crbug.com/40201126): consider refactoring this interface to use Promises.
@@ -75,9 +78,24 @@ public interface AccountManagerFacade {
      * <p>Since a different {@link Promise} will be returned every time the accounts get updated,
      * this makes he {@link Promise}t a bad candidate for end users to cache locally unless the end
      * users are awaiting the {@link CoreAccountInfo}s for current list of accounts only.
+     *
+     * @deprecated, use {@link #getAccounts} instead.
+     *     <p>TODO(crbug.com/385309416): Migrate usages to {@link #getAccounts()} and remove.
      */
+    @Deprecated
     @MainThread
     Promise<List<CoreAccountInfo>> getCoreAccountInfos();
+
+    /**
+     * Retrieves corresponding {@link AccountInfo}s for filtered accounts. The {@link Promise} will
+     * be fulfilled once the accounts cache is populated and gaia ids are fetched. If an error
+     * occurs while getting account list, the returned {@link Promise} will wrap an empty list.
+     *
+     * <p>Since a different {@link Promise} will be returned every time the accounts get updated,
+     * this makes the {@link Promise} a bad candidate for end users to cache locally.
+     */
+    @MainThread
+    Promise<List<AccountInfo>> getAccounts();
 
     /**
      * Asynchronously gets OAuth2 access token for the given account and scope. May return a cached
@@ -120,7 +138,20 @@ public interface AccountManagerFacade {
      *     one) is ready.
      */
     @MainThread
+    // TODO(crbug.com/355388109): Remove this method following the migration to
+    // `checkIsSubjectToParentalControls`.
     void checkChildAccountStatus(
+            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener);
+
+    /**
+     * Check whether the account is subject to parental controls.
+     *
+     * @param coreAccountInfo The CoreAccountInfo to check is subject to parental controls.
+     * @param listener The listener is called when the status of the account (whether it is subject
+     *     to parental controls) is ready.
+     */
+    @MainThread
+    void checkIsSubjectToParentalControls(
             CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener);
 
     /**
@@ -131,14 +162,14 @@ public interface AccountManagerFacade {
     Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo);
 
     /**
-     * Creates an intent that will ask the user to add a new account to the device. See
-     * {@link AccountManager#addAccount} for details.
-     * @param callback The callback to get the created intent. Will be invoked on the main
-     *         thread. If there is an issue while creating the intent, callback will receive
-     *         null.
+     * Creates an intent that will ask the user to add a new account to the device. See {@link
+     * AccountManager#addAccount} for details.
+     *
+     * @param callback The callback to get the created intent. Will be invoked on the main thread.
+     *     If there is an issue while creating the intent, callback will receive null.
      */
     @AnyThread
-    void createAddAccountIntent(Callback<Intent> callback);
+    void createAddAccountIntent(Callback<@Nullable Intent> callback);
 
     /**
      * Asks the user to enter a new password for an account, updating the saved credentials for the
@@ -158,9 +189,18 @@ public interface AccountManagerFacade {
      *     knowledge of the account's credentials.
      */
     @AnyThread
-    void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback);
+    void confirmCredentials(
+            Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback);
 
     /** Whether fetching the list of accounts from the device eventually succeeded. */
     // TODO(crbug.com/330304719): Handle this with exceptions rather than a boolean.
     boolean didAccountFetchSucceed();
+
+    /**
+     * Used in live tests to prevent subsequent token requests from going through. After this method
+     * is invoked - all subsequent calls to `getAccessToken` and `invalidateAccessToken` will
+     * immediately fail. Should only be used in live tests.
+     */
+    @MainThread
+    void disallowTokenRequestsForTesting();
 }

@@ -23,6 +23,7 @@ import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -57,7 +58,7 @@ abstract class PartialCustomTabVersionCompat {
     abstract @Px int getScreenWidth();
 
     /** Returns the status bar height */
-    abstract @Px int getStatusbarHeight();
+    abstract @Px int getStatusBarHeight();
 
     /** Returns the bottom navigation bar height */
     abstract @Px int getNavbarHeight();
@@ -96,16 +97,7 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @Px
         int getDisplayWidth() {
-            Insets navbarInsets =
-                    mActivity
-                            .getWindowManager()
-                            .getCurrentWindowMetrics()
-                            .getWindowInsets()
-                            .getInsets(
-                                    WindowInsets.Type.navigationBars()
-                                            | WindowInsets.Type.displayCutout());
-            int navbarWidth = navbarInsets.left + navbarInsets.right;
-            return windowBounds().width() - navbarWidth;
+            return CustomTabDimensionUtils.getDisplayWidthR(mActivity);
         }
 
         @Override
@@ -125,7 +117,7 @@ abstract class PartialCustomTabVersionCompat {
 
         @Override
         @Px
-        int getStatusbarHeight() {
+        int getStatusBarHeight() {
             return mActivity
                     .getWindowManager()
                     .getCurrentWindowMetrics()
@@ -245,10 +237,7 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @Px
         int getDisplayWidth() {
-            Display display = mActivity.getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            return size.x;
+            return CustomTabDimensionUtils.getDisplayWidth(mActivity);
         }
 
         @Override
@@ -266,7 +255,7 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @SuppressWarnings("DiscouragedApi")
         @Px
-        int getStatusbarHeight() {
+        int getStatusBarHeight() {
             int statusBarHeight = 0;
             final int statusBarHeightResourceId =
                     mActivity.getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -301,7 +290,7 @@ abstract class PartialCustomTabVersionCompat {
             // matter) doesn't have the top action bar. So getting the height of |content| is
             // enough.
             View contentFrame = mActivity.findViewById(android.R.id.content);
-            return contentFrame.getHeight() + getStatusbarHeight();
+            return contentFrame.getHeight() + getStatusBarHeight();
         }
 
         private int getAppUsableScreenHeightFromDisplay() {

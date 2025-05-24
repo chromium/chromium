@@ -23,10 +23,6 @@ BASE_FEATURE(kAssistantDebugging,
              "AssistantDebugging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAssistantWaitScheduling,
-             "AssistantWaitScheduling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableDspHotword,
              "EnableDspHotword",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -55,6 +51,10 @@ BASE_FEATURE(kEnableLibAssistantDLC,
 BASE_FEATURE(kEnableAssistantOnboarding,
              "AssistantOnboarding",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableNewEntryPoint,
+             "ChromeOSEnableNewEntryPoint",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(
@@ -91,10 +91,6 @@ bool IsVoiceMatchDisabled() {
   return base::FeatureList::IsEnabled(kDisableVoiceMatch);
 }
 
-bool IsWaitSchedulingEnabled() {
-  return base::FeatureList::IsEnabled(kAssistantWaitScheduling);
-}
-
 bool IsLibAssistantSandboxEnabled() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       sandbox::policy::switches::kNoSandbox);
@@ -106,6 +102,10 @@ bool IsLibAssistantDLCEnabled() {
 
 bool IsOnboardingEnabled() {
   return base::FeatureList::IsEnabled(kEnableAssistantOnboarding);
+}
+
+bool IsNewEntryPointEnabled() {
+  return base::FeatureList::IsEnabled(kEnableNewEntryPoint);
 }
 
 }  // namespace ash::assistant::features

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/default_browser_promo_illustration_left"
+        android:left="0dp"
+        android:right="125dp"/>
+    <item
+        android:drawable="@drawable/chrome_sync_logo"
+        android:left="77dp"
+        android:right="61dp"/>
+    <item
+        android:drawable="@drawable/default_browser_promo_illustration_right"
+        android:left="138dp"
+        android:right="0dp"/>
+</layer-list>

@@ -337,8 +337,13 @@ def GrepForActions(path, actions):
     # exceed Windows' path length limit of 260 characters.
     path = '\\\\?\\' + os.path.abspath(path)
 
-  finder = ActionNameFinder(path,
-                            open(path, encoding='utf-8').read(), action_re)
+  try:
+    content = open(path, encoding='utf-8').read()
+  except UnicodeDecodeError:
+    # If the file is not UTF-8, it's not a Chrome source file, ignore it.
+    return
+
+  finder = ActionNameFinder(path, content, action_re)
   while True:
     try:
       action_name = finder.FindNextAction()
@@ -462,6 +467,8 @@ def WalkDirectory(root_path, actions, extensions, callback):
     extensions = (extensions, )
 
   for path, dirs, files in os.walk(root_path):
+    if 'third_party' in dirs:
+      dirs.remove('third_party')
     if '.svn' in dirs:
       dirs.remove('.svn')
     if '.git' in dirs:

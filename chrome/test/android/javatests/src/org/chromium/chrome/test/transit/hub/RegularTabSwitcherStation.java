@@ -7,10 +7,11 @@ package org.chromium.chrome.test.transit.hub;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+import android.view.View;
 
-import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewSpec;
+import org.hamcrest.Matcher;
+
+import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.R;
@@ -18,13 +19,18 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 
 /** Regular tab switcher pane station. */
 public class RegularTabSwitcherStation extends TabSwitcherStation {
-    public static final ViewSpec EMPTY_STATE_TEXT =
-            viewSpec(withText(R.string.tabswitcher_no_tabs_empty_state));
-    public static final ViewSpec SELECTED_REGULAR_TOGGLE_TAB_BUTTON =
-            viewSpec(REGULAR_TOGGLE_TAB_BUTTON.getViewMatcher(), isSelected());
+    public static final Matcher<View> EMPTY_STATE_TEXT =
+            withText(R.string.tabswitcher_no_tabs_empty_state);
 
     public RegularTabSwitcherStation(boolean regularTabsExist, boolean incognitoTabsExist) {
         super(/* isIncognito= */ false, regularTabsExist, incognitoTabsExist);
+
+        assert regularTabsButtonElement != null;
+        declareEnterCondition(
+                new ViewElementMatchesCondition(regularTabsButtonElement, isSelected()));
+        if (!mRegularTabsExist) {
+            declareView(EMPTY_STATE_TEXT);
+        }
     }
 
     /**
@@ -41,17 +47,6 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
         return PaneId.TAB_SWITCHER;
     }
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-        if (mIncognitoTabsExist) {
-            elements.declareView(SELECTED_REGULAR_TOGGLE_TAB_BUTTON);
-        }
-        if (!mRegularTabsExist) {
-            elements.declareView(EMPTY_STATE_TEXT);
-        }
-    }
-
     /** Open a new tab using the New Tab action button. */
     public RegularNewTabPageStation openNewTab() {
         recheckActiveConditions();
@@ -62,6 +57,11 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
                         .withIsSelectingTabs(1)
                         .build();
 
-        return travelToSync(page, getNewTabButtonViewSpec()::click);
+        return travelToSync(page, newTabButtonElement.getClickTrigger());
+    }
+
+    public ArchiveMessageCardFacility expectArchiveMessageCard() {
+        return enterFacilitySync(
+                new ArchiveMessageCardFacility(/* tabSwitcherStation= */ this), null);
     }
 }

@@ -12,7 +12,6 @@ from typing import List, Optional
 from urllib.parse import urlparse
 
 from common import run_continuous_ffx_command, ssh_run, REPO_ALIAS
-from compatible_utils import parse_host_port
 from ffx_integration import run_symbolizer
 
 WEB_ENGINE_SHELL = 'web-engine-shell'
@@ -81,13 +80,16 @@ class BrowserRunner:
     def _read_devtools_port(self):
         search_regex = r'DevTools listening on (.+)'
 
+        # The ipaddress of the emulator or device is preferred over the address
+        # reported by the devtools, former one is usually more accurate.
         def try_reading_port(log_file) -> int:
             for line in log_file:
                 tokens = re.search(search_regex, line)
                 if tokens:
                     url = urlparse(tokens.group(1))
                     assert url.scheme == 'ws'
-                    return parse_host_port(url.netloc)[1]
+                    assert url.port is not None
+                    return url.port
             return None
 
         with open(self.log_file, encoding='utf-8') as log_file:

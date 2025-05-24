@@ -5,9 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_PREF_NAMES_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_PREF_NAMES_H_
 
-namespace ash {
-namespace phonehub {
-namespace prefs {
+namespace ash::phonehub::prefs {
 
 extern const char kCameraRollAccessStatus[];
 extern const char kNotificationAccessStatus[];
@@ -33,8 +31,6 @@ extern const char kPhoneInfoLastUpdatedTime[];
 extern const char kChromebookPseudonymousId[];
 extern const char kPseudonymousIdRotationDate[];
 
-}  // namespace prefs
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub::prefs
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_PREF_NAMES_H_

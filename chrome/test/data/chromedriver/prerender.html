@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head />
+
+<body>
+  <script>
+    const script = document.createElement('script');
+    script.type = 'speculationrules';
+    script.innerText =
+      `{
+              "prerender": [
+                {"source": "list", "urls": ["/chromedriver/inner.html"]}
+              ]
+            }
+          `;
+    document.head.append(script);
+  </script>
+  <a id="link" href="/chromedriver/inner.html">navigate</a>
+</body>
+
+</html>

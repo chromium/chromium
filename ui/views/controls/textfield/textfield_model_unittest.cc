@@ -12,7 +12,6 @@
 
 #include "base/auto_reset.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -64,8 +63,9 @@ class TextfieldModelTest : public ViewsTestBase,
   const std::vector<std::u16string> GetAllSelectionTexts(
       TextfieldModel* model) const {
     std::vector<std::u16string> selected_texts;
-    for (auto range : model->render_text()->GetAllSelections())
-      selected_texts.push_back(model->GetTextFromRange(range));
+    for (auto range : model->render_text()->GetAllSelections()) {
+      selected_texts.emplace_back(model->GetTextFromRange(range));
+    }
     return selected_texts;
   }
 
@@ -74,8 +74,9 @@ class TextfieldModelTest : public ViewsTestBase,
       std::vector<std::u16string> expected_selected_texts) const {
     std::vector<std::u16string> selected_texts = GetAllSelectionTexts(model);
     EXPECT_EQ(expected_selected_texts.size(), selected_texts.size());
-    for (size_t i = 0; i < selected_texts.size(); ++i)
+    for (size_t i = 0; i < selected_texts.size(); ++i) {
       EXPECT_EQ(expected_selected_texts[i], selected_texts[i]);
+    }
   }
 
   bool composition_text_confirmed_or_cleared_ = false;
@@ -964,9 +965,10 @@ TEST_F(TextfieldModelTest, SelectWordTest_MixScripts) {
       0);
   for (size_t i = 0; i < word_and_cursor.size(); ++i) {
     model.MoveCursor(gfx::LINE_BREAK, gfx::CURSOR_LEFT, gfx::SELECTION_NONE);
-    for (size_t j = 0; j < i; ++j)
+    for (size_t j = 0; j < i; ++j) {
       model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                        gfx::SELECTION_NONE);
+    }
     model.SelectWord();
     SelectWordTestVerifier(model, base::WideToUTF16(word_and_cursor[i].word),
                            word_and_cursor[i].cursor);
@@ -1285,7 +1287,7 @@ TEST_F(TextfieldModelTest, CompositionTextTest) {
   model.SetCompositionText(composition);
   EXPECT_TRUE(model.HasCompositionText());
   EXPECT_TRUE(model.HasSelection());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // |composition.selection| is ignored because SetCompositionText checks
   // if a thick underline exists first.
   EXPECT_EQ(gfx::Range(5, 7), model.render_text()->selection());
@@ -1326,7 +1328,7 @@ TEST_F(TextfieldModelTest, CompositionTextTest) {
   model.SetCompositionText(composition);
   EXPECT_EQ(u"1234567890678", model.text());
   EXPECT_TRUE(model.HasSelection());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(gfx::Range(10, 11), model.render_text()->selection());
   EXPECT_EQ(11U, model.render_text()->cursor_position());
 #else

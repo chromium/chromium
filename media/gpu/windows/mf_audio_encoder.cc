@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/windows/mf_audio_encoder.h"
 
 #include <codecapi.h>
@@ -120,17 +115,23 @@ HRESULT CreateMFEncoder(const IID& iid, void** out_encoder) {
   RETURN_IF_FAILED(MFTEnumEx(MFT_CATEGORY_AUDIO_ENCODER, flags, &input_type,
                              &output_type, &activates, &num_activates));
 
-  if (num_activates < 1)
+  if (num_activates < 1) {
     return ERROR_NOT_FOUND;
+  }
 
-  HRESULT hr = activates[0]->ActivateObject(iid, out_encoder);
+  // SAFETY: `MFTEnumEx` returns the actual size of `activates` buffer via
+  // `num_activates` out param.
+  auto activates_span =
+      UNSAFE_BUFFERS(base::span<IMFActivate*>(activates.get(), num_activates));
+  HRESULT hr = activates_span[0]->ActivateObject(iid, out_encoder);
 
   // According to Windows App Development doc,
   // https://docs.microsoft.com/en-us/windows/win32/api/mfapi/nf-mfapi-mftenumex
   // the caller must release the pointers before CoTaskMemFree function inside
   // base::win::ScopedCoMem.
-  for (UINT32 i = 0; i < num_activates; i++)
-    activates[i]->Release();
+  for (IMFActivate* activate : activates_span) {
+    activate->Release();
+  }
 
   return hr;
 }
@@ -898,12 +899,9 @@ HRESULT MFAudioEncoder::ProcessOutput(EncodedAudioBuffer& encoded_audio) {
   RETURN_IF_FAILED(output_sample_->GetTotalLength(&total_length));
 
   // Copy the data from `output_buffer` into `encoded_data`.
-  BYTE* output_buffer_ptr = nullptr;
-  RETURN_IF_FAILED(output_buffer->Lock(&output_buffer_ptr, 0, 0));
-
-  auto encoded_data =
-      base::HeapArray<uint8_t>::CopiedFrom({output_buffer_ptr, total_length});
-  RETURN_IF_FAILED(output_buffer->Unlock());
+  MediaBufferScopedPointer locked_output_buffer(output_buffer.Get());
+  auto encoded_data = base::HeapArray<uint8_t>::CopiedFrom(
+      locked_output_buffer.as_span().first(total_length));
 
   LONGLONG sample_duration = 0;
   RETURN_IF_FAILED(output_sample_->GetSampleDuration(&sample_duration));

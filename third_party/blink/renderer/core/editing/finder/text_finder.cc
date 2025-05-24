@@ -30,9 +30,10 @@
 
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 
+#include <vector>
+
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_view_client.h"
@@ -161,7 +162,7 @@ static void ScrollToVisible(Range* match) {
 
   Settings* settings = first_node.GetDocument().GetSettings();
   bool smooth_find_enabled =
-      settings ? settings->GetSmoothScrollForFindEnabled() : false;
+      settings && settings->GetSmoothScrollForFindEnabled();
   mojom::blink::ScrollBehavior scroll_behavior =
       smooth_find_enabled ? mojom::blink::ScrollBehavior::kSmooth
                           : mojom::blink::ScrollBehavior::kInstant;
@@ -188,7 +189,7 @@ void TextFinder::InitNewSession(const mojom::blink::FindOptions& options) {
 }
 
 bool TextFinder::Find(int identifier,
-                      const WebString& search_text,
+                      const String& search_text,
                       const mojom::blink::FindOptions& options,
                       bool wrap_within_frame,
                       bool* active_now) {
@@ -197,7 +198,7 @@ bool TextFinder::Find(int identifier,
 }
 
 bool TextFinder::FindInternal(int identifier,
-                              const WebString& search_text,
+                              const String& search_text,
                               const mojom::blink::FindOptions& options,
                               bool wrap_within_frame,
                               bool* active_now,
@@ -456,8 +457,6 @@ void TextFinder::StopFindingAndClearSelection() {
   // Remove all markers for matches found and turn off the highlighting.
   OwnerFrame().GetFrame()->GetDocument()->Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::TextMatch());
-  OwnerFrame().GetFrame()->GetEditor().SetMarkedTextMatchesAreHighlighted(
-      false);
   ClearFindMatchesCache();
   ResetActiveMatch();
 
@@ -498,7 +497,7 @@ void TextFinder::ReportFindInPageResultToAccessibility(int identifier) {
 
 void TextFinder::StartScopingStringMatches(
     int identifier,
-    const WebString& search_text,
+    const String& search_text,
     const mojom::blink::FindOptions& options) {
   CancelPendingScopingEffort();
 
@@ -587,8 +586,6 @@ void TextFinder::DidFindMatch(int identifier,
 void TextFinder::UpdateMatches(int identifier,
                                int found_match_count,
                                bool finished_whole_request) {
-  GetFrame()->GetEditor().SetMarkedTextMatchesAreHighlighted(true);
-
   // Let the frame know how many matches we found during this pass.
   IncreaseMatchCount(identifier, found_match_count);
 
@@ -856,8 +853,7 @@ bool TextFinder::SetMarkerActive(Range* range, bool active) {
 
 void TextFinder::UnmarkAllTextMatches() {
   LocalFrame* frame = OwnerFrame().GetFrame();
-  if (frame && frame->GetPage() &&
-      frame->GetEditor().MarkedTextMatchesAreHighlighted()) {
+  if (frame && frame->GetPage()) {
     frame->GetDocument()->Markers().RemoveMarkersOfTypes(
         DocumentMarker::MarkerTypes::TextMatch());
   }

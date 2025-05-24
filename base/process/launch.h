@@ -19,10 +19,12 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
@@ -41,7 +43,13 @@
 #include "base/android/binder.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
+#endif
+
 namespace base {
+
+enum TerminationStatus : int;
 
 #if BUILDFLAG(IS_POSIX)
 // Some code (e.g. the sandbox) relies on PTHREAD_STACK_MIN
@@ -50,8 +58,8 @@ namespace base {
 // To work around this, use a hardcoded value unless it's already
 // defined as a constant.
 
-// These constants are borrowed from glibc’s (arch)/bits/pthread_stack_min.h.
-#if defined(ARCH_CPU_ARM64)
+// These constants are borrowed from glibc's (arch)/bits/pthread_stack_min.h.
+#if defined(ARCH_CPU_ARM64) || defined(ARCH_CPU_LOONGARCH64)
 #define PTHREAD_STACK_MIN_CONST \
   (__builtin_constant_p(PTHREAD_STACK_MIN) ? PTHREAD_STACK_MIN : 131072)
 #else
@@ -68,7 +76,7 @@ static_assert(__builtin_constant_p(PTHREAD_STACK_MIN_CONST),
 BASE_EXPORT void CheckPThreadStackMinIsSafe();
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
 class MachRendezvousPort;
 using MachPortsForRendezvous = std::map<uint32_t, MachRendezvousPort>;
 #endif
@@ -257,6 +265,7 @@ struct BASE_EXPORT LaunchOptions {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if !BUILDFLAG(IS_IOS_TVOS)
   // Mach ports that will be accessible to the child process. These are not
   // directly inherited across process creation, but they are stored by a Mach
   // IPC server that a child process can communicate with to retrieve them.
@@ -264,8 +273,9 @@ struct BASE_EXPORT LaunchOptions {
   // After calling LaunchProcess(), any rights that were transferred with MOVE
   // dispositions will be consumed, even on failure.
   //
-  // See base/mac/mach_port_rendezvous.h for details.
+  // See base/apple/mach_port_rendezvous.h for details.
   MachPortsForRendezvous mach_ports_for_rendezvous;
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
 
   // Apply a process scheduler policy to enable mitigations against CPU side-
   // channel attacks.
@@ -280,7 +290,11 @@ struct BASE_EXPORT LaunchOptions {
   // code, the responsibility for the child process should be disclaimed so
   // that any TCC requests are not associated with the parent.
   bool disclaim_responsibility = false;
-#endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+
+  // A `ProcessRequirement` that will be used to validate the launched process
+  // before it can retrieve `mach_ports_for_rendezvous`.
+  std::optional<mac::ProcessRequirement> process_requirement;
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_FUCHSIA)
   // If valid, launches the application in that job object.
@@ -436,7 +450,8 @@ BASE_EXPORT bool GetAppOutputAndError(const CommandLine& cl,
 // this is the case the exit code of the application is available in
 // |*exit_code|.
 BASE_EXPORT bool GetAppOutputWithExitCode(const CommandLine& cl,
-                                          std::string* output, int* exit_code);
+                                          std::string* output,
+                                          int* exit_code);
 
 #if BUILDFLAG(IS_WIN)
 // A Windows-specific version of GetAppOutput that takes a command line string
@@ -444,6 +459,45 @@ BASE_EXPORT bool GetAppOutputWithExitCode(const CommandLine& cl,
 // control the command line arguments directly.
 BASE_EXPORT bool GetAppOutput(CommandLine::StringViewType cl,
                               std::string* output);
+
+// A Windows-specific version of `GetAppOutput` that allows the ability to
+// specify:
+// * an optional `output` providing the complete output of `cl`.
+// * an optional `timeout` if `cl` does not complete in time.
+// * an optional `LaunchOptions`.
+// * an optional `FunctionRef`, called multiple times while waiting, with
+//   streaming partial output received since the last call to the `FunctionRef`
+//   from stdout/stderr of the running `cl` process. The implementation of the
+//   `FunctionRef` can log the output, or concatenate the partial outputs over
+//   successive calls to effectively produce the full `output` from the `cl`
+//   process.
+// * an optional `final_status` `TerminationStatus` value on function return.
+//
+// Returns `true` if the application runs and exits. If this is the case the
+// exit code of the application is available in `*exit_code`, and `final_status`
+// will be `TERMINATION_STATUS_NORMAL_TERMINATION`.
+//
+// Returns `false` under the following conditions:
+// * If the application does not exist, `final_status` will be
+// `TERMINATION_STATUS_LAUNCH_FAILED`.
+// * If the application does not terminate within `timeout`, `final_status` will
+// be `TERMINATION_STATUS_STILL_RUNNING`.
+//
+// Note that the expected use cases for this function do not expect `cl` to
+// produce a lot of output. This function will not work optimally with lots of
+// output from the `cl` process, since it waits a second each time between
+// reading the output.
+BASE_EXPORT bool GetAppOutputWithExitCodeAndTimeout(
+    CommandLine::StringViewType cl,
+    bool include_stderr,
+    std::string* output,
+    int* exit_code,
+    TimeDelta timeout = TimeDelta::Max(),
+    const LaunchOptions& options = {},
+    FunctionRef<void(std::string_view)> still_waiting =
+        [](std::string_view partial_output) {},
+    TerminationStatus* final_status = nullptr);
+
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // A POSIX-specific version of GetAppOutput that takes an argv array
 // instead of a CommandLine.  Useful for situations where you need to
@@ -492,7 +546,7 @@ namespace internal {
 // be a friend of ScopedAllowBaseSyncPrimitives because it is in the anonymous
 // namespace.
 class [[maybe_unused, nodiscard]] GetAppOutputScopedAllowBaseSyncPrimitives
-    : public base::ScopedAllowBaseSyncPrimitives{};
+    : public base::ScopedAllowBaseSyncPrimitives {};
 
 }  // namespace internal
 

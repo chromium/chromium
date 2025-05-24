@@ -34,10 +34,17 @@ struct HdrMetadataExtendedRange {
   float desired_headroom;
 };
 
+// Mojo equivalent of gfx::HdrMetadataAgtm. No validation is done on any of
+// these values during deserialization.
+struct HdrMetadataAgtm {
+  array<uint8> payload;
+};
+
 // Mojo equivalent of gfx::HDRMetadata.
 struct HDRMetadata {
   HdrMetadataSmpteSt2086? smpte_st_2086;
   HdrMetadataCta861_3? cta_861_3;
   HdrMetadataNdwl? ndwl;
   HdrMetadataExtendedRange? extended_range;
+  HdrMetadataAgtm? agtm;
 };

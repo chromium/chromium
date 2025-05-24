@@ -87,13 +87,13 @@ std::u16string GetWindowTitle(const FileRequestData& file_request_data) {
         return l10n_util::GetStringFUTF16(
             IDS_FILE_SYSTEM_ACCESS_READ_FILE_PERMISSION_TITLE,
             file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(
-                file_request_data.path));
+                file_request_data.path_info));
       }
     case AccessType::kWrite:
       return l10n_util::GetStringFUTF16(
           IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_TITLE,
           file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(
-              file_request_data.path));
+              file_request_data.path_info));
     case AccessType::kReadWrite:
       if (file_request_data.handle_type == HandleType::kDirectory) {
         return l10n_util::GetStringUTF16(
@@ -102,7 +102,7 @@ std::u16string GetWindowTitle(const FileRequestData& file_request_data) {
         return l10n_util::GetStringFUTF16(
             IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_TITLE,
             file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(
-                file_request_data.path));
+                file_request_data.path_info));
       }
   }
   NOTREACHED();
@@ -139,7 +139,7 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessPermissionDialog(
           {ui::DialogModelLabel::CreateEmphasizedText(origin_identity_name),
            ui::DialogModelLabel::CreateEmphasizedText(
                file_system_access_ui_helper::GetPathForDisplayAsParagraph(
-                   file_request_data.path))}))
+                   file_request_data.path_info))}))
       .AddOkButton(
           std::move(accept_callback),
           ui::DialogModel::Button::Params().SetLabel(

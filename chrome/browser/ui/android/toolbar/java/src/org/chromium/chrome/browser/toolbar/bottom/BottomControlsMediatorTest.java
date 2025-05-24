@@ -24,17 +24,19 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -46,7 +48,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
@@ -59,6 +63,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class BottomControlsMediatorTest {
 
     private static final int DEFAULT_HEIGHT = 80;
+    private static final int DEFAULT_SHADOW_HEIGHT = 10;
     private static final int DEFAULT_INSET = 56;
     private static final Insets NAVIGATION_BAR_INSETS = Insets.of(0, 0, 0, 100);
     private static final Insets STATUS_BAR_INSETS = Insets.of(0, 100, 0, 0);
@@ -68,6 +73,8 @@ public class BottomControlsMediatorTest {
                     .setInsets(WindowInsetsCompat.Type.navigationBars(), NAVIGATION_BAR_INSETS)
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
                     .build();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock BottomControlsStacker mBottomControlsStacker;
     @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -80,10 +87,12 @@ public class BottomControlsMediatorTest {
     @Mock KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock Supplier<Boolean> mReadAloudRestoringSupplier;
     @Mock InsetObserver mInsetObserver;
+    @Mock EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    @Mock EdgeToEdgeManager mEdgeToEdgeManager;
 
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
-    private ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
+    private final ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
+    private final ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl();
 
     private PropertyModel mModel;
@@ -91,11 +100,11 @@ public class BottomControlsMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
         doReturn(SYSTEM_BARS_WINDOW_INSETS).when(mInsetObserver).getLastRawWindowInsets();
         doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
         doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
+        doReturn(mEdgeToEdgeStateProvider).when(mEdgeToEdgeManager).getEdgeToEdgeStateProvider();
         mModel =
                 new PropertyModel.Builder(BottomControlsProperties.ALL_KEYS)
                         .with(BottomControlsProperties.ANDROID_VIEW_VISIBLE, false)
@@ -111,6 +120,7 @@ public class BottomControlsMediatorTest {
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
+                        DEFAULT_SHADOW_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
                         mEdgeToEdgeControllerSupplier,
                         mReadAloudRestoringSupplier);
@@ -127,6 +137,7 @@ public class BottomControlsMediatorTest {
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
+                        DEFAULT_SHADOW_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
                         new ObservableSupplierImpl<>(null),
                         mReadAloudRestoringSupplier);
@@ -148,9 +159,8 @@ public class BottomControlsMediatorTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testEdgeToEdge_ToEdge_bottomChinDisabled() {
-        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(false);
-
         ChangeObserver changeObserver = mMediator.getEdgeToEdgeChangeObserverForTesting();
         changeObserver.onToEdgeChange(
                 DEFAULT_INSET, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
@@ -167,8 +177,9 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mTabObservableSupplier,
                         null,
+                        mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
-                        mLayoutManager,
+                        new ObservableSupplierImpl<>(mLayoutManager),
                         mFullscreenManager);
         BottomControlsMediator plainMediator =
                 new BottomControlsMediator(
@@ -179,6 +190,7 @@ public class BottomControlsMediatorTest {
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
+                        DEFAULT_SHADOW_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
                         new ObservableSupplierImpl<>(liveEdgeToEdgeController),
                         mReadAloudRestoringSupplier);
@@ -188,7 +200,6 @@ public class BottomControlsMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
     public void testEdgeToEdge_ObserverCalled() {
         // Set up a mediator with a live EdgeToEdgeController.
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
@@ -198,8 +209,9 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mTabObservableSupplier,
                         null,
+                        mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
-                        mLayoutManager,
+                        new ObservableSupplierImpl<>(mLayoutManager),
                         mFullscreenManager);
         new BottomControlsMediator(
                 mWindowAndroid,
@@ -209,6 +221,7 @@ public class BottomControlsMediatorTest {
                 mFullscreenManager,
                 mTabObscuringHandler,
                 DEFAULT_HEIGHT,
+                DEFAULT_SHADOW_HEIGHT,
                 mOverlayPanelVisibilitySupplier,
                 new ObservableSupplierImpl<>(liveEdgeToEdgeController),
                 mReadAloudRestoringSupplier);

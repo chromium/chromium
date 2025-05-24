@@ -28,7 +28,7 @@ static base::android::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
     const AutofillSaveIbanUiInfo& ui_info) {
   return Java_AutofillSaveIbanUiInfo_Constructor(
       env, ui_info.accept_text, ui_info.cancel_text, ui_info.description_text,
-      ui_info.iban_label,
+      ui_info.iban_value, ui_info.is_server_save,
       LegalMessageLineAndroid::ConvertToJavaLinkedList(
           ui_info.legal_message_lines),
       ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id),
@@ -65,6 +65,18 @@ void AutofillSaveIbanBottomSheetBridge::RequestShowContent(
       env, java_autofill_save_iban_bottom_sheet_bridge_,
       ConvertUiInfoToJavaObject(env, ui_info));
 }
+
+void AutofillSaveIbanBottomSheetBridge::Hide() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutofillSaveIbanBottomSheetBridge_hide(
+      env, java_autofill_save_iban_bottom_sheet_bridge_);
+}
+
+AutofillSaveIbanBottomSheetBridge::AutofillSaveIbanBottomSheetBridge(
+    base::android::ScopedJavaGlobalRef<jobject>
+        java_autofill_save_iban_bottom_sheet_bridge)
+    : java_autofill_save_iban_bottom_sheet_bridge_(
+          java_autofill_save_iban_bottom_sheet_bridge) {}
 
 void AutofillSaveIbanBottomSheetBridge::OnUiAccepted(
     JNIEnv* env,

@@ -7,6 +7,8 @@
 const char kChromeInterstitialSslPath[] = "/ssl";
 const char kChromeInterstitialCaptivePortalPath[] = "/captiveportal";
 const char kChromeInterstitialSafeBrowsingPath[] = "/safebrowsing";
+const char kChromeInterstitialEnterpriseBlock[] = "/enterprise-block";
+const char kChromeInterstitialEnterpriseWarn[] = "/enterprise-warn";
 
 const char kChromeInterstitialSslUrlQueryKey[] = "url";
 const char kChromeInterstitialSslOverridableQueryKey[] = "overridable";

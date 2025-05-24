@@ -4,10 +4,10 @@ AXWebArea
 ++AXComboBox AXTitle='State'
 ++++AXTextField AXLinkedUIElements=[:6]
 ++AXList
-++++AXStaticText AXValue='Alabama'
-++++AXStaticText AXFocused=1 AXValue='Alaska'
+++++AXMenuItem AXValue='Alabama'
+++++AXMenuItem AXFocused=1 AXValue='Alaska'
 ++AXComboBox AXTitle='State'
 ++++AXTextField AXLinkedUIElements=[:11]
 ++AXList
-++++AXStaticText AXValue='Alabama'
-++++AXStaticText AXValue='Alaska'
+++++AXMenuItem AXValue='Alabama'
+++++AXMenuItem AXValue='Alaska'

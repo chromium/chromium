@@ -13,6 +13,8 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.getExportFlowFinalStepHistogramName;
+
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -30,6 +32,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.components.sync.SyncService;
@@ -94,10 +99,19 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
 
     @Test
     public void testImportDialogOpensCredentialManagerAndShutsDownChrome() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                getExportFlowFinalStepHistogramName(
+                                        PasswordAccessLossWarningType
+                                                .NEW_GMS_CORE_MIGRATION_FAILED),
+                                PasswordAccessLossWarningExportStep.PASSWORD_IMPORT)
+                        .build();
         mCoordinator.showImportInstructionDialog();
         Robolectric.flushForegroundThreadScheduler();
 
         mModalDialogManager.clickPositiveButton();
+
         verify(mPasswordManagerHelper)
                 .launchTheCredentialManager(
                         eq(ManagePasswordsReferrer.ACCESS_LOSS_WARNING),
@@ -108,16 +122,27 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
                         isNull());
         verify(mChromeShutDownRunnable).run();
         assertNull(mModalDialogManager.getShownDialogModel());
+        histogram.assertExpected();
     }
 
     @Test
     public void testCancelImportDialog() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                getExportFlowFinalStepHistogramName(
+                                        PasswordAccessLossWarningType
+                                                .NEW_GMS_CORE_MIGRATION_FAILED),
+                                PasswordAccessLossWarningExportStep.IMPORT_CANCELED)
+                        .build();
         mCoordinator.showImportInstructionDialog();
         Robolectric.flushForegroundThreadScheduler();
 
         mModalDialogManager.clickNegativeButton();
+
         verify(mPasswordManagerHelper, times(0))
                 .launchTheCredentialManager(anyInt(), any(), any(), any(), any(), any());
         assertNull(mModalDialogManager.getShownDialogModel());
+        histogram.assertExpected();
     }
 }

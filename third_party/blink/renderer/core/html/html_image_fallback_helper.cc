@@ -41,10 +41,10 @@ static bool ImageSmallerThanAltImage(const Length& width,
   if (!width.IsFixed() && !height.IsFixed()) {
     return false;
   }
-  if (height.IsFixed() && height.Value() < kPixelsForAltImage) {
+  if (height.IsFixed() && height.Pixels() < kPixelsForAltImage) {
     return true;
   }
-  return width.IsFixed() && width.Value() < kPixelsForAltImage;
+  return width.IsFixed() && width.Pixels() < kPixelsForAltImage;
 }
 
 static bool TreatImageAsReplaced(const Document& document,

@@ -27,13 +27,11 @@
 
 namespace ash {
 
-namespace {
-
 // A login implementation of WidgetDelegate.
 class LoginTestWidgetDelegate : public views::WidgetDelegate {
  public:
   explicit LoginTestWidgetDelegate(views::Widget* widget) : widget_(widget) {
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
     SetFocusTraversesOut(true);
   }
 
@@ -50,8 +48,6 @@ class LoginTestWidgetDelegate : public views::WidgetDelegate {
  private:
   raw_ptr<views::Widget> widget_;
 };
-
-}  // namespace
 
 class LockLayoutManagerTest : public AshTestBase {
  public:

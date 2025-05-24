@@ -4,43 +4,33 @@
 
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 
-#import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader_impl.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 
 std::unique_ptr<KeyedService> BuildFaviconLoader(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<FaviconLoader>(
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(browser_state));
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  return std::make_unique<FaviconLoaderImpl>(
+      IOSChromeLargeIconServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace
 
 // static
-FaviconLoader* IOSChromeFaviconLoaderFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 FaviconLoader* IOSChromeFaviconLoaderFactory::GetForProfileIfExists(
     ProfileIOS* profile) {
-  return static_cast<FaviconLoader*>(
-      GetInstance()->GetServiceForBrowserState(profile, false));
+  return GetInstance()->GetServiceForProfileAs<FaviconLoader>(profile,
+                                                              /*create=*/false);
 }
 
 // static
 FaviconLoader* IOSChromeFaviconLoaderFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<FaviconLoader*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<FaviconLoader>(profile,
+                                                              /*create=*/true);
 }
 
 // static
@@ -56,25 +46,16 @@ IOSChromeFaviconLoaderFactory::GetDefaultFactory() {
 }
 
 IOSChromeFaviconLoaderFactory::IOSChromeFaviconLoaderFactory()
-    : BrowserStateKeyedServiceFactory(
-          "FaviconLoader",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("FaviconLoader",
+                                    ProfileSelection::kRedirectedInIncognito,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(IOSChromeLargeIconServiceFactory::GetInstance());
 }
 
-IOSChromeFaviconLoaderFactory::~IOSChromeFaviconLoaderFactory() {}
+IOSChromeFaviconLoaderFactory::~IOSChromeFaviconLoaderFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSChromeFaviconLoaderFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildFaviconLoader(context);
-}
-
-web::BrowserState* IOSChromeFaviconLoaderFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
-}
-
-bool IOSChromeFaviconLoaderFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }

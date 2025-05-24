@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_KEY_FRAME_REQUEST_PROCESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_KEY_FRAME_REQUEST_PROCESSOR_H_
 
+#include <variant>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -16,12 +17,12 @@ namespace blink {
 // thread-compatible.
 class MODULES_EXPORT KeyFrameRequestProcessor {
  public:
-  // Workaround absl::monostate being banned.
+  // TODO(crbug.com/402412612): Replace NotConfiguredTag with std::monostate.
   struct NotConfiguredTag {};
-  using Configuration = absl::variant<NotConfiguredTag,  // Not configured
-                                      uint64_t,          // Count
-                                      base::TimeDelta    // Duration
-                                      >;
+  using Configuration = std::variant<NotConfiguredTag,  // Not configured
+                                     uint64_t,          // Count
+                                     base::TimeDelta    // Duration
+                                     >;
   using TimeNowCallback = base::OnceCallback<base::TimeTicks()>;
 
   KeyFrameRequestProcessor() = default;

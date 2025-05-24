@@ -1,0 +1,79 @@
+<style include="healthd-internals-shared cr-shared-style md-select">
+  #pageHeader {
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #headerEndContainer {
+    display: flex;
+    gap: 8px;
+    padding-inline-end: 32px;
+    align-items: center;
+  }
+
+  #settingsContainer {
+    display: flex;
+    height: 50px;
+    width: 90%;
+    overflow-x: auto;
+    gap: 48px;
+    margin: 0 32px;
+    align-items: center;
+  }
+
+  .setting-with-label-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #lineChart {
+    display: flex;
+    height: calc(100% - 60px - 50px);
+    width: 100%;
+  }
+</style>
+
+<healthd-internals-chart-category-dialog id="categoryDialog">
+</healthd-internals-chart-category-dialog>
+
+<div class="full-page">
+  <div id="pageHeader">
+    <h1>System Trend</h1>
+    <div id="headerEndContainer">
+      <template is="dom-if" if="[[!isSummaryTableDisplayed]]">
+        <cr-button class="action-button" on-click="toggleChartSummaryTable">
+          Show Details
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[isSummaryTableDisplayed]]">
+        <cr-button class="cancel-button" on-click="toggleChartSummaryTable">
+          Hide Details
+        </cr-button>
+      </template>
+    </div>
+  </div>
+  <div id="settingsContainer">
+    <div class="setting-with-label-container">
+      <label>Category</label>
+      <select id="categorySelector" class="md-select"
+          on-change="onCategoryChanged" value="[[selectedCategory]]">
+        <template is="dom-repeat" items="[[displayedCategories]]">
+          <option value="[[item]]">[[item]]</option>
+        </template>
+      </select>
+    </div>
+    <label><b>Duration: </b>[[displayedDuration]]</label>
+    <label>
+      <b>Time Span: </b>
+      [[displayedStartTime]] ~ [[displayedEndTime]]
+    </label>
+    <template is="dom-if" if="[[isCustomCategory(selectedCategory)]]">
+      <cr-button on-click="openChartCategoryDialog">Choose category</cr-button>
+    </template>
+  </div>
+  <healthd-internals-line-chart id="lineChart">
+  </healthd-internals-line-chart>
+</div>

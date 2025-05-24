@@ -16,10 +16,6 @@
 #include "base/timer/timer.h"
 #include "content/public/browser/navigation_throttle.h"
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace first_party_sets {
 
 class FirstPartySetsPolicyService;
@@ -29,7 +25,7 @@ class FirstPartySetsPolicyService;
 class FirstPartySetsNavigationThrottle : public content::NavigationThrottle {
  public:
   explicit FirstPartySetsNavigationThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       FirstPartySetsPolicyService& service);
   ~FirstPartySetsNavigationThrottle() override;
 
@@ -41,8 +37,7 @@ class FirstPartySetsNavigationThrottle : public content::NavigationThrottle {
   // Only create throttle for the regular profile if FPS initialization has not
   // completed and FPS clearing is enabled and this is the outermost frame
   // navigation; returns nullptr otherwise.
-  static std::unique_ptr<FirstPartySetsNavigationThrottle>
-  MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   base::OneShotTimer& GetTimerForTesting() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

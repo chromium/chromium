@@ -306,7 +306,8 @@ void PnaclTranslationCacheEntry::DispatchNext(int rv) {
       }
       // rv == 0 or we fell through (i.e. we have transferred all the bytes)
       step_ = CLOSE_ENTRY;
-      DCHECK(io_buf_->BytesConsumed() == io_buf_->size());
+      // All data in the buffer should have been consumed.
+      DCHECK_EQ(io_buf_->size(), 0);
       if (is_read_)
         io_buf_->SetOffset(0);
       CloseEntry(0);
@@ -334,7 +335,7 @@ void PnaclTranslationCache::OpComplete(PnaclTranslationCacheEntry* entry) {
 // Construction and cache backend initialization
 PnaclTranslationCache::PnaclTranslationCache() : in_memory_(false) {}
 
-PnaclTranslationCache::~PnaclTranslationCache() {}
+PnaclTranslationCache::~PnaclTranslationCache() = default;
 
 int PnaclTranslationCache::Init(net::CacheType cache_type,
                                 const base::FilePath& cache_dir,

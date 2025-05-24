@@ -34,8 +34,7 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   void SetMemoryMargins(MemoryMargins margins) override;
 
-  void ReportBrowserProcesses(Component component,
-                              const std::vector<Process>& processes) override;
+  void ReportBrowserProcesses(const std::vector<Process>& processes) override;
 
   void SetProcessState(base::ProcessId,
                        resource_manager::ProcessState,

@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
@@ -57,7 +58,8 @@ std::unique_ptr<views::View> CreateOriginPathLabel(
     const base::FilePath& path,
     int text_context,
     bool show_emphasis) {
-  std::u16string formatted_path = GetPathForDisplayAsParagraph(path);
+  std::u16string formatted_path =
+      GetPathForDisplayAsParagraph(content::PathInfo(path));
 
   Profile* profile =
       web_contents

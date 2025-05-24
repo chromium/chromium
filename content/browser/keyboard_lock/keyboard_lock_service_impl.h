@@ -17,8 +17,6 @@
 
 namespace content {
 
-class RenderFrameHost;
-
 class KeyboardLockServiceImpl final
     : public DocumentService<blink::mojom::KeyboardLockService> {
  public:

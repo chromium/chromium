@@ -20,8 +20,10 @@ import './info_svg_element.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
-import {CurrentAttribution, CurrentWallpaper, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import type {CurrentAttribution, CurrentWallpaper, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import {WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -30,7 +32,7 @@ import {getLocalStorageAttribution, getWallpaperAriaLabel, getWallpaperLayoutEnu
 import {getDailyRefreshState, selectGooglePhotosAlbum, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 import {getTemplate} from './wallpaper_selected_element.html.js';
-import {DailyRefreshState} from './wallpaper_state.js';
+import type {DailyRefreshState} from './wallpaper_state.js';
 
 export class WallpaperSelectedElement extends WithPersonalizationStore {
   static get is() {
@@ -69,6 +71,11 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
       imagesByCollectionId_: Object,
 
       photosByAlbumId_: Object,
+
+      actionUrl_: {
+        type: String,
+        computed: 'computeActionUrl_(image_)',
+      },
 
       attribution_: {
         type: Object,
@@ -173,6 +180,7 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
   isGooglePhotosAlbumShared: boolean;
   googlePhotosAlbumId: string|undefined;
   path: string;
+  private actionUrl_: string|null;
   private attribution_: CurrentAttribution|null;
   private image_: CurrentWallpaper|null;
   private imageTitle_: string;
@@ -291,7 +299,7 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
     switch (path) {
       // Hide button when viewing a different collection.
       case Paths.COLLECTION_IMAGES:
-        if (!imagesByCollectionId![collectionId!]) {
+        if (!imagesByCollectionId[collectionId]) {
           return false;
         }
         const imageIsInCollection = imagesByCollectionId[collectionId]?.find(
@@ -501,7 +509,7 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
    * Cache the attribution in local storage when attribution is updated
    * Populate the attribution map in local storage when attribution is updated
    */
-  private async onAttributionChanged_(
+  private onAttributionChanged_(
       newAttribution: CurrentAttribution|null,
       oldAttribution: CurrentAttribution|null) {
     const attributionMap =
@@ -524,6 +532,19 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
    */
   private getContainerClass_(isLoading: boolean, showImage: boolean): string {
     return this.showPlaceholders_(isLoading, showImage) ? 'loading' : '';
+  }
+
+  private computeActionUrl_(image: CurrentWallpaper|null): string|null {
+    if (!image?.actionUrl?.url) {
+      return null;
+    }
+
+    try {
+      return sanitizeInnerHtml(image.actionUrl.url).toString();
+    } catch (e) {
+      console.warn('cannot display learn more link', e);
+      return null;
+    }
   }
 }
 

@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 #include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -176,10 +175,13 @@ size_t GetSizeTAttribute(const AXNode& node, IntAttribute attribute) {
 
 // static
 AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
+#if DCHECK_IS_ON()
   DCHECK(tree);
   DCHECK(table_node);
 
-#if DCHECK_IS_ON()
+  DCHECK(table_node->IsTable());
+  DCHECK(!table_node->IsInvisibleOrIgnored());
+
   // Confidence check, make sure the node is in the tree.
   AXNode* node = table_node;
   while (node && node != tree->root()) {
@@ -187,10 +189,6 @@ AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
   }
   DCHECK_EQ(node, tree->root());
 #endif
-
-  if (!IsTableLike(table_node->GetRole()) || table_node->IsIgnored()) {
-    return nullptr;
-  }
 
   AXTableInfo* info = new AXTableInfo(tree, table_node);
   bool success = info->Update();
@@ -200,9 +198,8 @@ AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
 }
 
 bool AXTableInfo::Update() {
-  if (!table_node_->IsTable()) {
-    return false;
-  }
+  DCHECK(table_node_->IsTable());
+  DCHECK(!table_node_->IsInvisibleOrIgnored());
 
   ClearVectors();
 
@@ -682,19 +679,16 @@ void AXTableInfo::ClearExtraMacNodes() {
     return;
   }
 
-  std::vector<AXNodeID> deleting_node_ids;
-  deleting_node_ids.reserve(extra_mac_nodes.size());
+  std::set<AXNodeID> deleting_node_ids;
   for (AXNode* extra_mac_node : extra_mac_nodes) {
-    deleting_node_ids.push_back(extra_mac_node->id());
+    deleting_node_ids.insert(extra_mac_node->id());
     for (AXTreeObserver& observer : tree_->observers()) {
       observer.OnNodeWillBeDeleted(tree_, extra_mac_node);
     }
   }
 
-  base::flat_set<AXNodeID> deleting_node_ids_unique(
-      std::move(deleting_node_ids));
   for (AXTreeObserver& observer : tree_->observers()) {
-    observer.OnAtomicUpdateStarting(tree_, deleting_node_ids_unique, {});
+    observer.OnAtomicUpdateStarting(tree_, deleting_node_ids, {});
   }
 
   {
@@ -708,7 +702,7 @@ void AXTableInfo::ClearExtraMacNodes() {
 
   }  // tree_update_in_progress.
 
-  for (AXNodeID deleted_id : deleting_node_ids_unique) {
+  for (AXNodeID deleted_id : deleting_node_ids) {
     for (AXTreeObserver& observer : tree_->observers()) {
       observer.OnNodeDeleted(tree_, deleted_id);
     }

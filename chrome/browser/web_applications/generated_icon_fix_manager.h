@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -39,7 +40,11 @@ enum class GeneratedIconFixScheduleDecision {
 
 class GeneratedIconFixManager {
  public:
-  static void DisableAutoRetryForTesting();
+  // Disable the logic that schedules generated icon fixes. Only intended for
+  // use in tests that need to check the app state before these operations are
+  // done.
+  static base::AutoReset<bool> DisableGeneratedIconFixesForTesting();
+  static base::AutoReset<bool> DisableAutoRetryForTesting();
 
   GeneratedIconFixManager();
   ~GeneratedIconFixManager();

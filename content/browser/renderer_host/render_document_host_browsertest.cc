@@ -142,10 +142,12 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest, PopupScriptableNavigate) {
   EXPECT_EQ(url_1, EvalJs(new_contents, "window.location.href;"));
 
   // 3) Navigate the new window same-process.
-  int process_id = new_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int process_id =
+      new_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(new_contents, url_2));
-  EXPECT_EQ(process_id,
-            new_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
+  EXPECT_EQ(
+      process_id,
+      new_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
 
   // The URL is accessible from each side and correctly reflects the current
   // value.

@@ -5,8 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_ADAPTER_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_ADAPTER_MAC_H_
 
-#include <IOKit/IOReturn.h>
-
 #include <memory>
 #include <optional>
 #include <string>

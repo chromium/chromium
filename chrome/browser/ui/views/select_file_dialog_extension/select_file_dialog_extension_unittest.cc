@@ -46,7 +46,7 @@ class TestListener : public ui::SelectFileDialog::Listener {
   TestListener(const TestListener&) = delete;
   TestListener& operator=(const TestListener&) = delete;
 
-  ~TestListener() override {}
+  ~TestListener() override = default;
 
   bool selected() const { return selected_; }
   int file_index() const { return file_index_; }
@@ -72,8 +72,9 @@ class SelfDeletingClient : public ui::SelectFileDialog::Listener {
   }
 
   ~SelfDeletingClient() override {
-    if (dialog_.get())
+    if (dialog_.get()) {
       dialog_->ListenerDestroyed();
+    }
   }
 
   SelectFileDialogExtension* dialog() const { return dialog_.get(); }

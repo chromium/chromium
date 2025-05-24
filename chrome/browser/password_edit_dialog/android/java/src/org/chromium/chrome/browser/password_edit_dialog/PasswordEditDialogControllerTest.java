@@ -58,7 +58,7 @@ public class PasswordEditDialogControllerTest {
 
     @Mock private PasswordEditDialogCoordinator.Delegate mDelegateMock;
 
-    private FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);
+    private final FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);
 
     @Mock private PasswordEditDialogView mDialogViewMock;
 
@@ -66,7 +66,7 @@ public class PasswordEditDialogControllerTest {
     private PropertyModel mModalDialogModel;
 
     private PasswordEditDialogCoordinator mDialogCoordinator;
-    private boolean mIsSignedIn;
+    private final boolean mIsSignedIn;
 
     @Parameters
     public static Collection<Object> data() {

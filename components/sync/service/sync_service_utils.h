@@ -52,14 +52,19 @@ enum class TrustedVaultUserActionTriggerForUMA {
   // TODO(crbug.com/40131571): record this bucket bucket on Android once
   // corresponding UI added.
   kNewTabPageInfobar = 3,
-  // Used on Android only. This dialog is shown when GMSCore returned
-  // kKeyRetrievalRequired error when obtaining passwords.
+  // This dialog is shown on Android and iOS during sign-in or sign-up flows
+  // when there is an error preventing passwords from being fetched from
+  // an account (e.g. need to retrieve trusted vault key for passwords).
   kPasswordManagerErrorMessage = 4,
-  kMaxValue = kPasswordManagerErrorMessage
+  // Used on iOS only, from the account menu.
+  kAccountMenu = 5,
+  // From the Password Manager Settings (currently used only on iOS).
+  kPasswordManagerSettings = 6,
+  kMaxValue = kPasswordManagerSettings
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultUserActionTrigger)
 
-// Returns whether |type| is being uploaded to Google. This is useful for
+// Returns whether `type` is being uploaded to Google. This is useful for
 // features that depend on user consent for uploading data (e.g. history) to
 // Google.
 UploadState GetUploadToGoogleState(const SyncService* sync_service,

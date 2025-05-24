@@ -19,14 +19,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 
+#include <algorithm>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 
 namespace blink {
@@ -39,36 +38,77 @@ enum WhitespaceMode {
       kAllowLeadingWhitespace | kAllowTrailingWhitespace
 };
 
+// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
+// usage.
 bool ParseNumber(const LChar*& ptr,
                  const LChar* end,
                  float& number,
                  WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
+bool ParseNumber(base::span<const LChar>& span,
+                 float& number,
+                 WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
+
+// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
+// usage.
 bool ParseNumber(const UChar*& ptr,
                  const UChar* end,
                  float& number,
                  WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
+bool ParseNumber(base::span<const UChar>& span,
+                 float& number,
+                 WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
+
 bool ParseNumberOptionalNumber(const String& s, float& h, float& v);
 
+// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
+// usage.
 template <typename CharType>
 inline bool SkipOptionalSVGSpaces(const CharType*& ptr, const CharType* end) {
-  while (ptr < end && IsHTMLSpace<CharType>(*ptr))
-    ptr++;
+  while (ptr < end && IsHTMLSpace<CharType>(*ptr)) {
+    UNSAFE_TODO(ptr++);
+  }
   return ptr < end;
 }
 
 template <typename CharType>
+constexpr inline bool SkipOptionalSVGSpaces(base::span<const CharType>& span) {
+  auto iter = std::ranges::find_if(
+      span, [](const CharType c) { return !IsHTMLSpace<CharType>(c); });
+  span = span.subspan(static_cast<size_t>(iter - span.begin()));
+  return !span.empty();
+}
+
+// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
+// usage.
+template <typename CharType>
 inline bool SkipOptionalSVGSpacesOrDelimiter(const CharType*& ptr,
                                              const CharType* end,
                                              char delimiter = ',') {
-  if (ptr < end && !IsHTMLSpace<CharType>(*ptr) && *ptr != delimiter)
+  if (ptr < end && !IsHTMLSpace<CharType>(*ptr) && *ptr != delimiter) {
     return false;
+  }
   if (SkipOptionalSVGSpaces(ptr, end)) {
     if (*ptr == delimiter) {
-      ptr++;
+      UNSAFE_TODO(ptr++);
       SkipOptionalSVGSpaces(ptr, end);
     }
   }
   return ptr < end;
+}
+
+template <typename CharType>
+constexpr inline bool SkipOptionalSVGSpacesOrDelimiter(
+    base::span<const CharType>& span,
+    char delimiter = ',') {
+  if (!span.empty() && !IsHTMLSpace<CharType>(span[0]) &&
+      span[0] != delimiter) {
+    return false;
+  }
+  if (SkipOptionalSVGSpaces(span) && span[0] == delimiter) {
+    span = span.template subspan<1u>();
+    SkipOptionalSVGSpaces(span);
+  }
+  return !span.empty();
 }
 
 }  // namespace blink

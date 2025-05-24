@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "media/base/audio_shifter.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <vector>
 
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
-#include "media/base/audio_shifter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -34,11 +31,7 @@ class AudioShifterTest :
                  kSampleRate,
                  2),
         end2end_latency_(base::Milliseconds(30)),
-        playback_latency_(base::Milliseconds(10)),
-        tag_input_(false),
-        expect_smooth_output_(true),
-        input_sample_n_(0),
-        output_sample_(0) {}
+        playback_latency_(base::Milliseconds(10)) {}
 
   void SetupInput(int size, base::TimeDelta rate) {
     input_size_ = size;
@@ -47,12 +40,16 @@ class AudioShifterTest :
 
   std::unique_ptr<AudioBus> CreateTestInput() {
     std::unique_ptr<AudioBus> input(AudioBus::Create(2, input_size_));
-    for (size_t i = 0; i < input_size_; i++) {
-      input->channel(0)[i] = input->channel(1)[i] = input_sample_n_;
-      input_sample_n_++;
+
+    for (auto channel : input->AllChannels()) {
+      std::ranges::generate(
+          channel, [sample = input_sample_n_]() mutable { return sample++; });
     }
+
+    input_sample_n_ += input_size_;
+
     if (tag_input_) {
-      input->channel(0)[0] = 10000000.0;
+      input->channel_span(0)[0] = 10000000.0;
       tag_input_ = false;
       expect_smooth_output_ = false;
     }
@@ -86,28 +83,27 @@ class AudioShifterTest :
       if (now_ >= time_to_pull_) {
         shifter_.Pull(test_output_.get(), now_ + playback_latency_);
         bool silence = true;
+        auto first_channel = test_output_->channel_span(0);
         for (size_t j = 0;
              j < static_cast<size_t>(test_output_->frames());
              j++) {
-          if (test_output_->channel(0)[j] != 0.0) {
+          if (first_channel[j] != 0.0) {
             silence = false;
-            if (test_output_->channel(0)[j] > 3000000.0) {
+            if (first_channel[j] > 3000000.0) {
               marker_outputs_.push_back(now_ + playback_latency_ +
                                         base::Seconds(j) / kSampleRate);
-             } else {
-               // We don't expect smooth output once we insert a tag,
-               // or in the very beginning.
-               if (expect_smooth_output_ && output_sample_ > 500.0) {
-                 EXPECT_GT(test_output_->channel(0)[j], output_sample_ - 3)
-                     << "j = " << j;
-                 if (test_output_->channel(0)[j] >
-                     output_sample_ + kOutputPacketSize / 2) {
-                   skip_outputs_.push_back(now_ + playback_latency_);
-                 }
-               }
-               output_sample_ = test_output_->channel(0)[j];
-             }
-           }
+            } else {
+              // We don't expect smooth output once we insert a tag,
+              // or in the very beginning.
+              if (expect_smooth_output_ && output_sample_ > 500.0) {
+                EXPECT_GT(first_channel[j], output_sample_ - 3) << "j = " << j;
+                if (first_channel[j] > output_sample_ + kOutputPacketSize / 2) {
+                  skip_outputs_.push_back(now_ + playback_latency_);
+                }
+              }
+              output_sample_ = first_channel[j];
+            }
+          }
         }
         if (silence) {
           silent_outputs_.push_back(now_);
@@ -153,10 +149,10 @@ class AudioShifterTest :
   std::vector<base::TimeTicks> skip_outputs_;
   std::vector<base::TimeTicks> marker_outputs_;
   size_t input_size_;
-  bool tag_input_;
-  bool expect_smooth_output_;
-  size_t input_sample_n_;
-  double output_sample_;
+  bool tag_input_ = false;
+  bool expect_smooth_output_ = true;
+  size_t input_sample_n_ = 0;
+  double output_sample_ = 0;
 };
 
 TEST_P(AudioShifterTest, TestSync) {

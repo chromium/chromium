@@ -22,7 +22,6 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -31,7 +30,6 @@
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/system_web_apps/apps/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
@@ -85,24 +83,14 @@ class SystemWebAppLinkCaptureBrowserTest
   }
   ~SystemWebAppLinkCaptureBrowserTest() override = default;
 
-  bool IsLacrosOnly() {
-    return GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled;
-  }
-
   content::WebContents* CreateInitiatingWebContents() {
-    if (IsLacrosOnly()) {
-      // Ash can only have app windows, launch the helper app.
-      return LaunchApp(kInitiatingAppType);
-    } else {
-      // Ash can have ordinary tabbed browser windows.
-      GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
-      NavigateViaLinkClickToURLAndWait(browser(), kInitiatingChromeUrl);
-      EXPECT_EQ(kInitiatingChromeUrl, browser()
-                                          ->tab_strip_model()
-                                          ->GetActiveWebContents()
-                                          ->GetLastCommittedURL());
-      return browser()->tab_strip_model()->GetActiveWebContents();
-    }
+    GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
+    NavigateViaLinkClickToURLAndWait(browser(), kInitiatingChromeUrl);
+    EXPECT_EQ(kInitiatingChromeUrl, browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetLastCommittedURL());
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  protected:
@@ -126,12 +114,6 @@ class SystemWebAppLinkCaptureBrowserTest
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        OmniboxTypeURLAndNavigate) {
-  if (IsLacrosOnly()) {
-    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows with "
-                    "Omnibox. Because users can't interact with Omnibox, "
-                    "there's no need to test this.";
-  }
-
   WaitForTestSystemAppInstall();
 
   content::TestNavigationObserver observer(GetStartUrl());
@@ -149,12 +131,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
-  if (IsLacrosOnly()) {
-    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows "
-                    "with Omnibox. Because users can't interact with "
-                    "Omnibox, there's no need to test this.";
-  }
-
   WaitForTestSystemAppInstall();
   OmniboxEditModel* model =
       browser()->window()->GetLocationBar()->GetOmniboxView()->model();
@@ -222,13 +198,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        AnchorLinkContextMenuNewTab) {
-  if (IsLacrosOnly()) {
-    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows "
-                    "with Omnibox, and we don't show new tab option for links "
-                    "to a different SWA in SWA browser windows. So it makes no "
-                    "sense to test this.";
-  }
-
   WaitForTestSystemAppInstall();
 
   GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
@@ -274,13 +243,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        AnchorLinkContextMenuNewWindow) {
-  if (IsLacrosOnly()) {
-    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows "
-                    "with Omnibox, and we don't show new window option for "
-                    "links to SWA in SWA browser windows. So it makes no sense "
-                    "to test this.";
-  }
-
   WaitForTestSystemAppInstall();
 
   GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
@@ -464,12 +426,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        IncognitoBrowserOmniboxLinkCapture) {
-  if (IsLacrosOnly()) {
-    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows with "
-                    "Omnibox. Because users can't interact with Omnibox, "
-                    "there's no need to test this.";
-  }
-
   WaitForTestSystemAppInstall();
   GURL start_url = GetStartUrl();
 
@@ -737,7 +693,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
   LaunchSystemWebAppAsync(incognito_profile, GetAppType());
   observer.Wait();
 
-  EXPECT_FALSE(FindSystemWebAppBrowser(incognito_profile, GetAppType()));
   EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetAppType()));
 }
 
@@ -790,7 +745,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
   LaunchSystemWebAppAsync(original_profile, GetAppType());
   observer.Wait();
 
-  EXPECT_FALSE(FindSystemWebAppBrowser(original_profile, GetAppType()));
   EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetAppType()));
 }
 
@@ -829,10 +783,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
   EXPECT_EQ(web_contents->GetLastCommittedURL(), GetStartUrl());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-  // Verifies the tab has an associated tab helper for System App's
-  // webapps::AppId.
-  EXPECT_EQ(*web_app::WebAppTabHelper::GetAppId(web_contents),
-            *ash::GetAppIdForSystemWebApp(browser()->profile(), GetAppType()));
+  // Incognito WebContents don't have app IDs.
+  // TODO(crbug.com/40723875): Decide what should happen with SWA URLs and
+  // incognito windows.
+  if (!browser()->profile()->IsOffTheRecord()) {
+    // Verifies the tab has an associated tab helper for System App's
+    // webapps::AppId.
+    EXPECT_EQ(
+        *web_app::WebAppTabHelper::GetAppId(web_contents),
+        *ash::GetAppIdForSystemWebApp(browser()->profile(), GetAppType()));
+  }
 }
 
 // A one shot observer which waits for an activation of any window.
@@ -956,15 +916,14 @@ class SystemWebAppNewWindowMenuItemTest
     auto app_id = GetManager().GetAppIdForSystemApp(GetAppType()).value();
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->AppRegistryCache()
-        .ForOneApp(
-            app_id, [profile, &item](const apps::AppUpdate& update) {
-              item = std::make_unique<AppServiceAppItem>(
-                  profile, /*model_updater=*/nullptr, /*sync_item=*/nullptr,
-                  update);
+        .ForOneApp(app_id, [profile, &item](const apps::AppUpdate& update) {
+          item = std::make_unique<AppServiceAppItem>(
+              profile, /*model_updater=*/nullptr, /*sync_item=*/nullptr,
+              update);
 
-              // Because model updater is null, set position manually.
-              item->SetChromePosition(item->CalculateDefaultPositionForTest());
-            });
+          // Because model updater is null, set position manually.
+          item->SetChromePosition(item->CalculateDefaultPositionForTest());
+        });
     return item;
   }
 

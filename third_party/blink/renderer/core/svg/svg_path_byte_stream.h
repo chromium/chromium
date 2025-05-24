@@ -23,6 +23,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -54,9 +55,6 @@ class SVGPathByteStream {
 
   DataIterator begin() const { return data_.begin(); }
   DataIterator end() const { return data_.end(); }
-  void Append(const unsigned char* data, wtf_size_t data_size) {
-    data_.Append(data, data_size);
-  }
   void clear() { data_.clear(); }
   void ReserveInitialCapacity(wtf_size_t size) {
     data_.ReserveInitialCapacity(size);
@@ -68,9 +66,10 @@ class SVGPathByteStream {
   bool operator==(const SVGPathByteStream& other) const {
     return data_ == other.data_;
   }
+  unsigned Hash() const { return StringHasher::HashMemory(data_); }
 
  private:
-  SVGPathByteStream(const Data& data) : data_(data) {}
+  explicit SVGPathByteStream(const Data& data) : data_(data) {}
 
   Data data_;
 };

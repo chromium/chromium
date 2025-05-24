@@ -5,10 +5,12 @@
 #ifndef ASH_STYLE_BLURRED_BACKGROUND_SHIELD_H_
 #define ASH_STYLE_BLURRED_BACKGROUND_SHIELD_H_
 
+#include <variant>
+
 #include "ash/ash_export.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/view_observer.h"
@@ -34,7 +36,7 @@ class ASH_EXPORT BlurredBackgroundShield : public views::ViewObserver {
   // cases, the `add_layer_to_region` should be set to false and the background
   // layer will manually be located under the view's layer.
   BlurredBackgroundShield(views::View* host,
-                          absl::variant<SkColor, ui::ColorId> color,
+                          ui::ColorVariant color,
                           float blur_sigma,
                           const gfx::RoundedCornersF& rounded_corners,
                           bool add_layer_to_region = true);
@@ -42,8 +44,7 @@ class ASH_EXPORT BlurredBackgroundShield : public views::ViewObserver {
   BlurredBackgroundShield& operator=(const BlurredBackgroundShield&) = delete;
   ~BlurredBackgroundShield() override;
 
-  void SetColor(SkColor color);
-  void SetColorId(ui::ColorId color_id);
+  void SetColor(ui::ColorVariant color);
 
   // views::ViewObserver:
   void OnViewAddedToWidget(views::View* observed_view) override;
@@ -58,7 +59,7 @@ class ASH_EXPORT BlurredBackgroundShield : public views::ViewObserver {
 
   ui::Layer background_layer_ = ui::Layer(ui::LAYER_SOLID_COLOR);
   const raw_ptr<views::View> host_;
-  absl::variant<SkColor, ui::ColorId> color_;
+  ui::ColorVariant color_;
   const float blur_sigma_;
   // If the background layer should be added to the view's region below.
   const bool add_layer_to_region_;

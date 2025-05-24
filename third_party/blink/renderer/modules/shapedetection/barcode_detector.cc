@@ -12,10 +12,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_detected_barcode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
-#include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_source_util.h"
 #include "third_party/blink/renderer/modules/shapedetection/barcode_detector_statics.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -105,37 +105,37 @@ BarcodeDetector::getSupportedFormats(ScriptState* script_state) {
 }
 
 // static
-String BarcodeDetector::BarcodeFormatToString(
+V8BarcodeFormat::Enum BarcodeDetector::BarcodeFormatToEnum(
     const shape_detection::mojom::BarcodeFormat format) {
   switch (format) {
     case shape_detection::mojom::BarcodeFormat::AZTEC:
-      return "aztec";
+      return V8BarcodeFormat::Enum::kAztec;
     case shape_detection::mojom::BarcodeFormat::CODE_128:
-      return "code_128";
+      return V8BarcodeFormat::Enum::kCode128;
     case shape_detection::mojom::BarcodeFormat::CODE_39:
-      return "code_39";
+      return V8BarcodeFormat::Enum::kCode39;
     case shape_detection::mojom::BarcodeFormat::CODE_93:
-      return "code_93";
+      return V8BarcodeFormat::Enum::kCode93;
     case shape_detection::mojom::BarcodeFormat::CODABAR:
-      return "codabar";
+      return V8BarcodeFormat::Enum::kCodabar;
     case shape_detection::mojom::BarcodeFormat::DATA_MATRIX:
-      return "data_matrix";
+      return V8BarcodeFormat::Enum::kDataMatrix;
     case shape_detection::mojom::BarcodeFormat::EAN_13:
-      return "ean_13";
+      return V8BarcodeFormat::Enum::kEan13;
     case shape_detection::mojom::BarcodeFormat::EAN_8:
-      return "ean_8";
+      return V8BarcodeFormat::Enum::kEan8;
     case shape_detection::mojom::BarcodeFormat::ITF:
-      return "itf";
+      return V8BarcodeFormat::Enum::kItf;
     case shape_detection::mojom::BarcodeFormat::PDF417:
-      return "pdf417";
+      return V8BarcodeFormat::Enum::kPdf417;
     case shape_detection::mojom::BarcodeFormat::QR_CODE:
-      return "qr_code";
+      return V8BarcodeFormat::Enum::kQrCode;
     case shape_detection::mojom::BarcodeFormat::UNKNOWN:
-      return "unknown";
+      return V8BarcodeFormat::Enum::kUnknown;
     case shape_detection::mojom::BarcodeFormat::UPC_A:
-      return "upc_a";
+      return V8BarcodeFormat::Enum::kUpcA;
     case shape_detection::mojom::BarcodeFormat::UPC_E:
-      return "upc_e";
+      return V8BarcodeFormat::Enum::kUpcE;
   }
 }
 
@@ -143,8 +143,8 @@ ScriptPromise<IDLSequence<DetectedBarcode>> BarcodeDetector::detect(
     ScriptState* script_state,
     const V8ImageBitmapSource* image_source,
     ExceptionState& exception_state) {
-  std::optional<SkBitmap> bitmap =
-      GetBitmapFromSource(script_state, image_source, exception_state);
+  std::optional<SkBitmap> bitmap = GetBitmapFromV8ImageBitmapSource(
+      script_state, image_source, exception_state);
   if (!bitmap) {
     return ScriptPromise<IDLSequence<DetectedBarcode>>();
   }
@@ -193,7 +193,7 @@ void BarcodeDetector::OnDetectBarcodes(
     detected_barcode->setBoundingBox(DOMRectReadOnly::Create(
         barcode->bounding_box.x(), barcode->bounding_box.y(),
         barcode->bounding_box.width(), barcode->bounding_box.height()));
-    detected_barcode->setFormat(BarcodeFormatToString(barcode->format));
+    detected_barcode->setFormat(BarcodeFormatToEnum(barcode->format));
     detected_barcode->setCornerPoints(corner_points);
     detected_barcodes.push_back(detected_barcode);
   }
@@ -223,7 +223,7 @@ void BarcodeDetector::OnConnectionError() {
 }
 
 void BarcodeDetector::Trace(Visitor* visitor) const {
-  ShapeDetector::Trace(visitor);
+  ScriptWrappable::Trace(visitor);
   visitor->Trace(service_);
   visitor->Trace(detect_requests_);
 }

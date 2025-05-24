@@ -30,6 +30,7 @@ namespace {
 
 constexpr char kGetContent[] = "android.intent.action.GET_CONTENT";
 constexpr char kOpenDocument[] = "android.intent.action.OPEN_DOCUMENT";
+constexpr char kCreateDocument[] = "android.intent.action.CREATE_DOCUMENT";
 constexpr char kOpenDocumentTree[] = "android.intent.action.OPEN_DOCUMENT_TREE";
 
 std::string IntentActionFromType(SelectFileDialog::Type type,
@@ -41,7 +42,7 @@ std::string IntentActionFromType(SelectFileDialog::Type type,
     case SelectFileDialog::SELECT_OPEN_MULTI_FILE:
       return open_writable ? kOpenDocument : kGetContent;
     case SelectFileDialog::SELECT_SAVEAS_FILE:
-      return kOpenDocument;
+      return kCreateDocument;
     case SelectFileDialog::SELECT_FOLDER:
     case SelectFileDialog::SELECT_UPLOAD_FOLDER:
     case SelectFileDialog::SELECT_EXISTING_FOLDER:
@@ -155,9 +156,23 @@ void SelectFileDialogImpl::SelectFileImpl(
 
   bool accept_multiple_files = SelectFileDialog::SELECT_OPEN_MULTI_FILE == type;
 
+  base::FilePath default_directory;
+  base::FilePath suggested_name;
+  // If default_path ends with a separator, then suggested_name was empty.
+  if (default_path.EndsWithSeparator()) {
+    default_directory = default_path;
+  } else {
+    default_directory = default_path.DirName();
+    suggested_name = default_path.BaseName();
+  }
+  if (!default_directory.IsContentUri()) {
+    default_directory = base::FilePath();
+  }
+
   Java_SelectFileDialog_selectFile(
       env, java_object_, intent_action, accept_types_java, use_media_capture_,
-      accept_multiple_files, owning_window->GetJavaObject());
+      accept_multiple_files, default_directory.value(), suggested_name.value(),
+      owning_window->GetJavaObject());
 }
 
 SelectFileDialogImpl::~SelectFileDialogImpl() {

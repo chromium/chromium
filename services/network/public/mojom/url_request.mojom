@@ -8,51 +8,57 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/accept_ch_frame_observer.mojom";
 import "services/network/public/mojom/attribution.mojom";
-import "services/network/public/mojom/url_loader_network_service_observer.mojom";
+import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
-import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
-import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
+import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/data_pipe_getter.mojom";
+import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/fetch_retry_options.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/source_type.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
-import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/trust_token_access_observer.mojom";
+import "services/network/public/mojom/trust_tokens.mojom";
+import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_bundle_handle.mojom";
-import "services/network/public/mojom/accept_ch_frame_observer.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-// This enums corresponds to net::SourceStream::SourceType.
-enum SourceType {
-  kBrotli,
-  kDeflate,
-  kGzip,
-  kZstd,
-  kNone,
-  kUnknown,
-};
-
 // See documentation at `URLRequest.trusted_params`.
+//
+// For values that have a corresponding value in URLLoaderFactoryParams
+// (e.g., `isolation_info`, `client_security_state`, and `disable_secure_dns`),
+// the values in the TrustedParams are preferred, if set, unless stated
+// otherwise. `isolation_info` cannot be null, so it always takes precedence
+// when TrustedUrlRequestParams are provided.
+//
+// TODO(https://crbug.com/409959475): Make `isolation_info` and
+// `disable_secure_dns` optional, and take precedence over the corresponding
+// URLLoaderFactoryParams value when set, so they behave consistently.
 struct TrustedUrlRequestParams {
   // If non-empty, this value will be used to set the SiteForCookies and
   // NetworkIsolationKey used by the network request.
   IsolationInfo isolation_info;
 
-  // Whether secure DNS should be disabled for the request.
+  // Whether secure DNS should be disabled for the request. The effective value
+  // for the request is the logical or of this field and the corresponding
+  // values in URLLoaderFactoryParams.
   bool disable_secure_dns;
 
   // Whether a navigation is triggered with a user gesture.
@@ -97,6 +103,13 @@ struct TrustedUrlRequestParams {
   pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer;
 
   pending_remote<DevToolsObserver>? devtools_observer;
+
+  // Observer which should be notified when this URLRequest leads to an
+  // access of a device bound session. This include registration or
+  // deferral. If this is set to non-null, the observer passed in
+  // URLLoaderFactoryParams will be ignored.
+  pending_remote<DeviceBoundSessionAccessObserver>?
+      device_bound_session_observer;
 
   // Specifies the security state of the client, for cases when the
   // URLLoaderFactory is shared among multiple clients.
@@ -313,6 +326,12 @@ struct URLRequest {
   // Exposed as Request.integrity in Service Workers
   string fetch_integrity;
 
+  // The set of public keys asserted in `fetch_integrity`, which will be used
+  // to populate an `Accept-Signatures` header.
+  //
+  // https://www.rfc-editor.org/rfc/rfc9421.html#name-the-accept-signature-field
+  array<string> expected_public_keys;
+
   // https://fetch.spec.whatwg.org/#concept-request-destination
   RequestDestination destination;
 
@@ -497,11 +516,35 @@ struct URLRequest {
   NetLogSource? net_log_reference_info;
 
   // The IP address space to which the target endpoint of this request should
-  // belong, or `kUnknown` if there is no such requirement.
-  // If the target endpoint of the network socket does not belong to this
-  // address space, the request is failed with a CORS error.
+  // belong, or `kUnknown` if there is no such requirement. Used to implement
+  // the Private Network Access API. If the target endpoint of the network
+  // socket does not belong to this address space, the request is failed with
+  // a CORS error.
+  //
   // Clients outside the network service must not set this field to a value
   // other than `kUnknown`.
+  //
+  // If the ClientSecurityState::private_network_request_policy for the
+  // request is kPreflightBlock, then the behavior is as follows:
+  //
+  // CorsURLLoader will send requests (both preflights and non-preflights)
+  // with the default value of `kUnknown`. If URLLoader gets a connection to
+  // a private network, it will fail the request with
+  // `ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS` and populate
+  // `URLLoaderCompletionStatus::cors_error_status` with information about the
+  // address space that was returned.
+  //
+  // Then, regardless of whether that was a preflight request or not,
+  // CorsURLLoader will create a new preflight URLLoader with
+  // `target_ip_address_space` set to the value of the connection that was made,
+  // which will let the preflight request through the checks that blocked the
+  // original one (assume a connection on the same network was returned).
+  //
+  // Then CorsURLLoader will check the headers of the preflight, and if they
+  // allow access to the more private network (and, if other CORS permissions
+  // are needed, those pass as well), the actual request will be made, with the
+  // same `target_ip_address_space` value, which will again bypass the checks,
+  // if a connection on the same network is received.
   IPAddressSpace target_ip_address_space;
 
   // The target address space to which a given fetch operation is expected to
@@ -521,18 +564,24 @@ struct URLRequest {
   // ok.
   StorageAccessApiStatus storage_access_api_status;
 
- // Indicates whether web or OS-level Attribution Reporting is supported.
+  // Indicates whether web or OS-level Attribution Reporting is supported.
   AttributionSupport attribution_reporting_support;
 
   // Indicates the value of the request's `Attribution-Reporting-Eligible`
   // header; how this header is interpreted depends on the context in which
   // the request is made.
   AttributionReportingEligibility attribution_reporting_eligibility =
-    AttributionReportingEligibility.kUnset;
+      AttributionReportingEligibility.kUnset;
 
   // When applicable, indicates the token of an Attribution Reporting API
   // eligible navigation request to which the current request is associated.
   mojo_base.mojom.UnguessableToken? attribution_reporting_src_token;
+
+  // When applicable, i.e. `keepalive` is true, indicates a fetch keepalive
+  // request.
+  // Used in UKM logging to identify the lifetime of a fetch keepalive request.
+  // TODO(crbug.com/382527001): Consider merge this field with `keepalive`.
+  mojo_base.mojom.UnguessableToken? keepalive_token;
 
   // Indicates whether this request has been determined to be used for
   // advertising purposes.
@@ -543,6 +592,30 @@ struct URLRequest {
   // TODO(crbug.com/40255884): Remove this flag when we launch
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled = false;
+
+  // If true, disables content decoding (e.g., gzip, brotli) within the network
+  // service for this request. The client becomes responsible for decoding the
+  // response body and setting `decoded_body_length` of
+  // `URLLoaderCompletionStatus`.
+  bool client_side_content_decoding_enabled = false;
+
+  // The socket tag to associate this request with. This is typically set by the
+  // embedder.
+  SocketTag socket_tag;
+
+  // Whether this request is allowed to register new device bound
+  // sessions or process challenges for existing device bound sessions
+  // (e.g. due to an Origin Trial).
+  bool allows_device_bound_session_registration;
+
+  // Permissions Policy of the request.
+  // If it's nullopt then the request's initiator didn't set the permissions
+  // policy. Example: https://crrev.com/c/6295903
+  network.mojom.PermissionsPolicy? permissions_policy;
+
+  // The policies to be used when retrying a fetch. Will only be set on fetch
+  // requests who specified its RetryOptions.
+  network.mojom.FetchRetryOptions? fetch_retry_options;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.
@@ -599,4 +672,13 @@ union DataElement {
   DataElementFile file;
   DataElementDataPipe data_pipe;
   DataElementChunkedDataPipe chunked_data_pipe;
+};
+
+// Typemapped to net::SocketTag.
+struct SocketTag {
+  [EnableIf=is_android]
+  uint32 uid;
+
+  [EnableIf=is_android]
+  int32 tag;
 };

@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace ash::babelorca {
@@ -40,7 +40,7 @@ void FakeTachyonAuthedClient::StartAuthedRequestString(
 }
 
 void FakeTachyonAuthedClient::ExecuteResponseCallback(
-    base::expected<std::string, TachyonRequestError> response) {
+    TachyonResponse response) {
   CHECK(response_cb_);
   std::move(response_cb_).Run(std::move(response));
 }

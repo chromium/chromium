@@ -4,10 +4,13 @@
 
 #include <algorithm>
 #include <string_view>
+#include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/sync_socket.h"
@@ -42,7 +45,6 @@
 #include "sandbox/policy/switches.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -78,7 +80,6 @@ class TestStreamFactory : public audio::FakeStreamFactory {
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
       bool enable_agc,
-      base::ReadOnlySharedMemoryRegion key_press_count_buffer,
       media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback created_callback) override {
     device_id_ = device_id;
@@ -93,8 +94,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
     base::SyncSocket socket1, socket2;
     base::SyncSocket::CreatePair(&socket1, &socket2);
     std::move(created_callback)
-        .Run({std::in_place,
-              base::ReadOnlySharedMemoryRegion::Create(kShMemSize).region,
+        .Run({std::in_place, base::UnsafeSharedMemoryRegion::Create(kShMemSize),
               mojo::PlatformHandle(socket1.Take())},
              false /*initially muted*/, base::UnguessableToken::Create());
   }
@@ -212,36 +212,34 @@ void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
   std::string transcription = result.transcription;
   // The language pack used by the MacOS builder is newer and has punctuation
   // enabled whereas the one used by the Linux builder does not.
-  transcription.erase(
-      std::remove(transcription.begin(), transcription.end(), ','),
-      transcription.end());
+  std::erase(transcription, ',');
   recognition_results_.push_back(std::move(transcription));
   std::move(reply).Run(is_client_requesting_speech_recognition_);
 }
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionStopped() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionError() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SpeechRecognitionServiceTest::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SpeechRecognitionServiceTest::SetUpPrefs() {
   base::FilePath soda_binary_path;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   soda_binary_path =
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(soda::kSodaTestBinaryRelativePath);
+      test_data_dir_.Append(base::FilePath(::soda::kSodaResourcePath))
+          .Append(::soda::kSodaTestBinaryRelativePath);
 #else
   base::FilePath soda_test_binary_path =
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(soda::kSodaTestBinaryRelativePath);
+      test_data_dir_.Append(base::FilePath(::soda::kSodaResourcePath))
+          .Append(::soda::kSodaTestBinaryRelativePath);
   DVLOG(0) << "SODA test path: " << soda_test_binary_path.value().c_str();
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(base::PathExists(soda_test_binary_path));
@@ -254,8 +252,8 @@ void SpeechRecognitionServiceTest::SetUpPrefs() {
                                                 soda_binary_path);
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(soda::kSodaLanguagePackRelativePath));
+      test_data_dir_.Append(base::FilePath(::soda::kSodaResourcePath))
+          .Append(::soda::kSodaLanguagePackRelativePath));
 }
 
 void SpeechRecognitionServiceTest::LaunchService() {
@@ -359,15 +357,15 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
 
   std::string buffer;
   auto audio_file =
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(base::FilePath(soda::kSodaTestAudioRelativePath));
+      test_data_dir_.Append(base::FilePath(::soda::kSodaResourcePath))
+          .Append(base::FilePath(::soda::kSodaTestAudioRelativePath));
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::PathExists(audio_file));
     ASSERT_TRUE(base::ReadFileToString(audio_file, &buffer));
   }
 
-  auto handler = media::WavAudioHandler::Create(buffer);
+  auto handler = media::WavAudioHandler::Create(base::as_byte_span(buffer));
   ASSERT_TRUE(handler.get());
   ASSERT_EQ(handler->GetNumChannels(), kExpectedChannelCount);
 
@@ -415,15 +413,15 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
 
   std::string buffer;
   auto audio_file =
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(base::FilePath(soda::kSodaTestAudioRelativePath));
+      test_data_dir_.Append(base::FilePath(::soda::kSodaResourcePath))
+          .Append(base::FilePath(::soda::kSodaTestAudioRelativePath));
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::PathExists(audio_file));
     ASSERT_TRUE(base::ReadFileToString(audio_file, &buffer));
   }
 
-  auto handler = media::WavAudioHandler::Create(buffer);
+  auto handler = media::WavAudioHandler::Create(base::as_byte_span(buffer));
   ASSERT_TRUE(handler.get());
   ASSERT_EQ(handler->GetNumChannels(), kExpectedChannelCount);
 
@@ -489,7 +487,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
 
   // TODO(crbug.com/40753481): Check implementation / sandbox policy on Mac and
   // Windows.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/381960795): Re-enable test on Linux once bug is fixed.
+#if BUILDFLAG(IS_CHROMEOS)
   // Check that Start begins audio recording.
   // TODO(crbug.com/40166991): Try to mock audio input, maybe with
   // TestStreamFactory::stream_, to test end-to-end.

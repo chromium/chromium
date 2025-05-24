@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_TRANSLATE_INFOBAR_PLACEHOLDER_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_TRANSLATE_INFOBAR_PLACEHOLDER_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 
-#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_cancel_handler.h"
-
 #import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/infobars/model/overlays/translate_overlay_tab_helper.h"
 
 class OverlayRequestQueue;

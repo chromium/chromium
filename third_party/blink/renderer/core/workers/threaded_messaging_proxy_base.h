@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/sequence_checker.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -118,6 +119,7 @@ class CORE_EXPORT ThreadedMessagingProxyBase
       parent_execution_context_task_runners_;
   scoped_refptr<base::SingleThreadTaskRunner> parent_agent_group_task_runner_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<WorkerThread> worker_thread_;
 
   bool asked_to_terminate_ = false;

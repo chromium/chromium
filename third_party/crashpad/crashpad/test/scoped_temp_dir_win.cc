@@ -20,6 +20,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gtest/gtest.h"
@@ -56,7 +57,7 @@ void ScopedTempDir::Rename() {
     }
   }
 
-  CHECK(false) << "Couldn't move to a new unique temp dir";
+  NOTREACHED() << "Couldn't move to a new unique temp dir";
 }
 
 // static
@@ -70,8 +71,7 @@ base::FilePath ScopedTempDir::CreateTemporaryDirectory() {
       return path_to_create;
   }
 
-  CHECK(false) << "Couldn't create a new unique temp dir";
-  return base::FilePath();
+  NOTREACHED() << "Couldn't create a new unique temp dir";
 }
 
 }  // namespace test

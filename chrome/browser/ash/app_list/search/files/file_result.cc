@@ -74,8 +74,7 @@ gfx::Size GetIconSizeForDisplayType(ash::SearchResultDisplayType display_type) {
     case ash::SearchResultDisplayType::kAnswerCard:
     case ash::SearchResultDisplayType::kRecentApps:
     case ash::SearchResultDisplayType::kLast:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::Size();
+      NOTREACHED();
   }
 }
 
@@ -120,7 +119,7 @@ void LogRelevance(ChromeSearchResult::ResultType result_type,
       // TODO(b/260646344): add UMA metric
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -170,7 +169,7 @@ FileResult::FileResult(const std::string& id,
       SetMetricsType(ash::IMAGE_SEARCH);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   SetTitle(GetFileTitle(filepath));

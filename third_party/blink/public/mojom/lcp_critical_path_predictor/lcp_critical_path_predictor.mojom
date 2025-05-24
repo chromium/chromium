@@ -6,23 +6,41 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+struct LcpElement {
+  // LCP ElementLocator information serialized in proto3 binary format.
+  mojo_base.mojom.ByteString? locator;
+  // Indicates if the element is an image element.
+  bool is_image;
+  // Predicted index of `locator` in
+  // LCPCriticalPathPredictorNavigationTimeHint.
+  uint32? predicted_index;
+};
+
 // Interface for LCP Critical Path Predictor from the renderer process.
+// Design doc(Google internal)
+// https://docs.google.com/document/d/1V5PFwVTDonJ1RE52ZI5WGRihn07atHLApnIWsZ3fgfM/
 interface LCPCriticalPathPredictorHost {
-  // `lcp_element_locator` is a LCP ElementLocator information
-  // serialized in proto3 binary format.
-  // `predicted_lcp_index` is predicted index of `lcp_element_locators` in
-  //  LCPCriticalPathPredictorNavigationTimeHint.
-  SetLcpElementLocator(mojo_base.mojom.ByteString lcp_element_locator,
-    uint32? predicted_lcp_index);
+  // Called when an LCP-element candidate is updated. (For each page load,
+  // there can be multiple LCP-element candidates, and the LCP element will be
+  // determined after the page load finishes.
+  OnLcpUpdated(LcpElement lcp_element);
+
+  // Only for testing. Called when LCP timing is predicted or fallbacked when
+  // prediction is failed.
+  // `element_locator` is the LCP element's locator or null when this is
+  // fallbacked.
+  OnLcpTimingPredictedForTesting(mojo_base.mojom.ByteString? element_locator);
 
   // `lcp_influencer_scripts` contain the list of script URLs that affected
   // the LCP element.
   SetLcpInfluencerScriptUrls(array<url.mojom.Url> lcp_influencer_scripts);
 
-  // `origins` contain the list of preconnectable origins that affected the LCP element.
-  SetPreconnectOrigins(array<url.mojom.Url> origins);
+  // `origin` is preconnectable one that affected the LCP element of the image.
+  AddPreconnectOrigin(url.mojom.Origin origin);
 
   // This method is for letting the LCPP know the used web fonts.
   // `font_url` is a web font's URL, which has started to be fetched.
@@ -39,7 +57,9 @@ interface LCPCriticalPathPredictorHost {
   // - and the `subresource_url` scheme is HTTP or HTTPS,
   // Otherwise, the renderer will be killed.
   // 'subresource_load_start' is the duration from navigation start to resource loading start time.
-  NotifyFetchedSubresource(url.mojom.Url subresource_url, mojo_base.mojom.TimeDelta subresource_load_start);
+  // 'request_destination' is the corresponding subresource's destination.
+  NotifyFetchedSubresource(url.mojom.Url subresource_url, mojo_base.mojom.TimeDelta subresource_load_start,
+    network.mojom.RequestDestination request_destination);
 
   // Let the LCPP know the list of resource URLs which are preloaded but actually never used.
   SetUnusedPreloads(array<url.mojom.Url> unused_preloads);
@@ -52,6 +72,11 @@ struct LCPCriticalPathPredictorNavigationTimeHint {
   // See third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.proto
   array<mojo_base.mojom.ByteString> lcp_element_locators;
 
+  // `lcp_element_locators_all` has all type of elements where
+  // the types in `lcp_element_locators` depends
+  // kLCPCriticalPathPredictorRecordedLcpElementTypes flag.
+  array<mojo_base.mojom.ByteString> lcp_element_locators_all;
+
   // Script URLs that influence LCP, learned from past loads.
   array<url.mojom.Url> lcp_influencer_scripts;
 
@@ -59,8 +84,11 @@ struct LCPCriticalPathPredictorNavigationTimeHint {
   array<url.mojom.Url> fetched_fonts;
 
   // Preconnectable origins that affected the LCP element.
-  array<url.mojom.Url> preconnect_origins;
+  array<url.mojom.Origin> preconnect_origins;
 
   // Unused preloaded URLs in the past loads.
   array<url.mojom.Url> unused_preloads;
+
+  // True to enable some debugging operations.
+  bool for_testing;
 };

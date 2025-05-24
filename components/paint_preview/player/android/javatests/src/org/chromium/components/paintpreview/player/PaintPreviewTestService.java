@@ -14,8 +14,8 @@ import org.chromium.components.paintpreview.browser.NativePaintPreviewServicePro
 @JNINamespace("paint_preview")
 public class PaintPreviewTestService implements NativePaintPreviewServiceProvider {
     private static final String TAG = "PPTestService";
-    private long mNativePaintPreviewBaseService;
-    private long mNativePaintPreviewTestService;
+    private final long mNativePaintPreviewBaseService;
+    private final long mNativePaintPreviewTestService;
 
     public PaintPreviewTestService(String path) {
         mNativePaintPreviewTestService = PaintPreviewTestServiceJni.get().getInstance(path);

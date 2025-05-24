@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-3">
+<link href="resources/masonry.css" rel="stylesheet">
+<link rel="match" href="intrinsic-inline-container-size-ref.html">
+<link rel="author" title="Ethan Jimenez" href="mailto:ethavar@microsoft.com">
+<style>
+.masonry {
+    gap: 20px;
+    padding: 20px;
+}
+</style>
+<body>
+  <p>Test that masonry containers are correctly sized when an intrinsic inline size is specified.</p>
+  <div class="masonry" style="width: max-content">
+    <div class="first-track">This is some text</div>
+    <div class="second-track">Some larger words in this sentence</div>
+    <div class="third-track">The cat cannot be separated from milk</div>
+  </div>
+  <div class="masonry" style="width: min-content">
+    <div class="first-track">This is some text</div>
+    <div class="second-track">Some larger words in this sentence</div>
+    <div class="third-track">The cat cannot be separated from milk</div>
+  </div>
+</body>
+</html>

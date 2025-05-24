@@ -105,13 +105,13 @@
 }
 
 - (void)
-enumerateDraggingItemsWithOptions:(NSDraggingItemEnumerationOptions)enumOpts
-                          forView:(NSView*)view
-                          classes:(NSArray*)classArray
-                    searchOptions:(NSDictionary*)searchOptions
-                       usingBlock:(void (^)(NSDraggingItem* draggingItem,
-                                            NSInteger idx,
-                                            BOOL* stop))block {
+    enumerateDraggingItemsWithOptions:(NSDraggingItemEnumerationOptions)enumOpts
+                              forView:(NSView*)view
+                              classes:(NSArray*)classArray
+                        searchOptions:(NSDictionary*)searchOptions
+                           usingBlock:(void (^)(NSDraggingItem* draggingItem,
+                                                NSInteger idx,
+                                                BOOL* stop))block {
 }
 
 - (void)resetSpringLoading {
@@ -215,8 +215,9 @@ class DragDropClientMacTest : public WidgetTest {
 
   void TearDown() override {
     target_ = nullptr;
-    if (widget_)
+    if (widget_) {
       widget_->CloseNow();
+    }
     WidgetTest::TearDown();
   }
 

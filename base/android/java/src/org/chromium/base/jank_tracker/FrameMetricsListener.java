@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * This class receives OnFrameMetricsAvailableListener.onFrameMetricsAvailable() callbacks and
  * records frame durations in a FrameMetricsStore instance.
  */
+@NullMarked
 @RequiresApi(api = VERSION_CODES.N)
 public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
     private class DisplayListenerBackend implements DisplayListener {
@@ -47,10 +49,10 @@ public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
         }
     }
 
-    private DisplayListenerBackend mBackend = new DisplayListenerBackend();
+    private final DisplayListenerBackend mBackend = new DisplayListenerBackend();
 
     private final FrameMetricsStore mFrameMetricsStore;
-    private AtomicBoolean mIsRecording = new AtomicBoolean(false);
+    private final AtomicBoolean mIsRecording = new AtomicBoolean(false);
     // Microseconds between each frame.
     private long mVsyncInterval;
 
@@ -78,7 +80,6 @@ public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
     /**
      * Toggles recording into FrameMetricsStore. When recording is stopped, reports accumulated
      * metrics.
-     * @param isRecording
      */
     public void setIsListenerRecording(boolean isRecording) {
         mIsRecording.set(isRecording);

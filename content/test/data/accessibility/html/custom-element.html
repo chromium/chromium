@@ -1,21 +1,64 @@
-<hr aria-label="Outside custom element">
-<div id="test-contents">
-  <div role="presentation">
-    <span>a</span>
-    <span style="display:none">b</span>
-    <span style="visibility:hidden">c</span>
-  </div>
-</div>
-<hr aria-label="Inside custom element">
-<test-element></test-element>
+<!--
+@BLINK-ALLOW:htmlTag='test*'
+@BLINK-ALLOW:className*
+-->
+<!-- A custom element is role=none by default -->
+<hr aria-label="-- Ignored --">
+<!-- Most global ARIA Properties do not undo the default role=none, even though
+     they would on a non-custom element (see aria-global.html) -->
+<test-element class="no-attributes role-none"></test-element>
+<test-element aria-description="description" class="described role-none"></test-element>
+<test-element aria-label="label" class="labeled role-none"></test-element>
+
+<hr aria-label="-- Main --">
+<test-element role="main" class="has-role-main role-main"></test-element>
+
+<hr aria-label="-- Group --">
+<test-element tabindex="0" class="focusable role-group"></test-element>
+<test-element contenteditable class="editable role-group"></test-element>
+<test-element aria-owns="anything" class="owner role-group"></test-element>
+<test-element aria-CONTROLS="anything" class="controls-upper role-group"></test-element>
+<test-element aria-live="polite" aria-label="cats" aria-describedby="anything"
+              class="group-role-precedence role-group"></test-element>
+<test-element class="element-attribute role-group"></test-element>
+
+<hr aria-label="-- Generic --">
+<!-- A node with aria-live or an ARIA relation is always exposed, undoing
+     role=none on a custom element -->
+<test-element aria-live="polite" class="live role-generic"></test-element>
+<!-- A node with a click handler is always exposed -->
+<test-element onclick="javascript:;" class="clickable role-generic"></test-element>
+<!-- A node using element internals to set ARIA is always exposed -->
+<test-internals class="element-internals role-generic"></test-internals>
+
+<hr aria-label="-- Manual role=none --">
+<test-element role="none" aria-live="polite" class="manual-role-none role-none"></test-element>
+<test-element role="none" onclick="javascript:;" class="manual-role-none-clickable role-none"></test-element>
+<test-element role="none" tabindex="0" class="manual-role-none-tabbable role-group"></test-element>
+
 <script>
   class TestElement extends HTMLElement {
     constructor() {
       super();
 
       const testContents = document.getElementById('test-contents');
-      this.attachShadow({mode: 'open'}).innerHTML = testContents.outerHTML;
+      this.attachShadow({mode: 'open'}).innerHTML = '<div aria-hidden="true"></div>';
     }
   }
   customElements.define('test-element', TestElement);
+
+  document.querySelector('.element-attribute').ariaControlsElements = [ document.body ];
+
+  class TestInternals extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({mode: 'open'}).innerHTML = '<div aria-hidden="true"></div>';
+      this.internals_ = this.attachInternals();
+    }
+  }
+  customElements.define('test-internals', TestInternals);
+  document.querySelector('test-internals').internals_.ariaBusy = 'true';
 </script>
+
+
+

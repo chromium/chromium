@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -81,8 +81,9 @@ void AcknowledgePreExistingNtpExtensions(Profile* profile) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   PrefService* profile_prefs = profile->GetPrefs();
   // Only acknowledge existing extensions once per profile.
-  if (profile_prefs->GetBoolean(kDidAcknowledgeExistingNtpExtensions))
+  if (profile_prefs->GetBoolean(kDidAcknowledgeExistingNtpExtensions)) {
     return;
+  }
 
   profile_prefs->SetBoolean(kDidAcknowledgeExistingNtpExtensions, true);
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
@@ -126,31 +127,37 @@ void MaybeShowExtensionControlledSearchNotification(
   }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(browser->profile());
-  if (!params)
+  if (!params) {
     return;
+  }
 
   auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
       std::move(*params), browser->profile());
-  if (!dialog->ShouldShow())
+  if (!dialog->ShouldShow()) {
     return;
+  }
 
   ShowSettingsOverriddenDialog(std::move(dialog), browser);
 #endif
 }
 
 void MaybeShowExtensionControlledNewTabPage(
-    Browser* browser, content::WebContents* web_contents) {
-  if (!g_ntp_post_install_ui_enabled)
+    Browser* browser,
+    content::WebContents* web_contents) {
+  if (!g_ntp_post_install_ui_enabled) {
     return;
+  }
 
   // Acknowledge existing extensions if necessary.
-  if (g_acknowledge_existing_ntp_extensions)
+  if (g_acknowledge_existing_ntp_extensions) {
     AcknowledgePreExistingNtpExtensions(browser->profile());
+  }
 
   // Jump through a series of hoops to see if the web contents is pointing to
   // an extension-controlled NTP.
@@ -159,30 +166,35 @@ void MaybeShowExtensionControlledNewTabPage(
   // one UI option. In the meantime, extra checks don't hurt.
   content::NavigationEntry* entry =
       web_contents->GetController().GetVisibleEntry();
-  if (!entry)
+  if (!entry) {
     return;
+  }
   GURL active_url = entry->GetURL();
-  if (!active_url.SchemeIs(extensions::kExtensionScheme))
+  if (!active_url.SchemeIs(extensions::kExtensionScheme)) {
     return;  // Not a URL that we care about.
+  }
 
   // See if the current active URL matches a transformed NewTab URL.
   GURL ntp_url(chrome::kChromeUINewTabURL);
   content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(
       &ntp_url, web_contents->GetBrowserContext());
-  if (ntp_url != active_url)
+  if (ntp_url != active_url) {
     return;  // Not being overridden by an extension.
+  }
 
   Profile* const profile = browser->profile();
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetNtpOverriddenParams(profile);
-  if (!params)
+  if (!params) {
     return;
+  }
 
   auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
       std::move(*params), profile);
-  if (!dialog->ShouldShow())
+  if (!dialog->ShouldShow()) {
     return;
+  }
 
   ShowSettingsOverriddenDialog(std::move(dialog), browser);
 }

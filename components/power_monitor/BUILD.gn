@@ -16,7 +16,7 @@ source_set("power_monitor") {
       "power_monitor_device_source_linux.h",
     ]
     deps += [
-      "//components/dbus/thread_linux",
+      "//components/dbus",
       "//dbus",
     ]
   } else {

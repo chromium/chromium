@@ -39,6 +39,7 @@
 #include "chrome/browser/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/certificate_provider/test_certificate_provider_extension_mixin.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -131,7 +132,7 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
     certificate_provider_service->RequestSignatureBySpki(
         TestCertificateProviderExtension::GetCertificateSpki(),
         SSL_SIGN_RSA_PKCS1_SHA256,
-        base::as_bytes(base::make_span(kChallengeData)),
+        base::byte_span_with_nul_from_cstring(kChallengeData),
         challenge_response_account_id_,
         base::BindOnce(&ChallengeResponseFakeUserDataAuthClient::
                            ContinueAuthenticateFactorWithSignature,
@@ -603,7 +604,7 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
   bool ProfileHasNotification(Profile* profile,
                               const std::string& notification_id) {
     NotificationDisplayService* notification_display_service =
-        NotificationDisplayService::GetForProfile(profile);
+        NotificationDisplayServiceFactory::GetForProfile(profile);
     if (!notification_display_service) {
       ADD_FAILURE() << "NotificationDisplayService could not be found.";
       return false;

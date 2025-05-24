@@ -135,7 +135,7 @@ class InformationTextArea : public views::View {
     label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(2, 2, 2, 4)));
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildView(label_.get());
+    AddChildViewRaw(label_.get());
   }
 
   InformationTextArea(const InformationTextArea&) = delete;
@@ -220,16 +220,16 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
   candidate_area_->SetVisible(false);
   preedit_->SetBorderFromPosition(InformationTextArea::BOTTOM);
   if (candidate_window_.orientation() == ui::CandidateWindow::VERTICAL) {
-    AddChildView(preedit_.get());
-    AddChildView(candidate_area_.get());
-    AddChildView(auxiliary_text_.get());
+    AddChildViewRaw(preedit_.get());
+    AddChildViewRaw(candidate_area_.get());
+    AddChildViewRaw(auxiliary_text_.get());
     auxiliary_text_->SetBorderFromPosition(InformationTextArea::TOP);
     candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
   } else {
-    AddChildView(preedit_.get());
-    AddChildView(auxiliary_text_.get());
-    AddChildView(candidate_area_.get());
+    AddChildViewRaw(preedit_.get());
+    AddChildViewRaw(auxiliary_text_.get());
+    AddChildViewRaw(candidate_area_.get());
     auxiliary_text_->SetAlignment(gfx::ALIGN_LEFT);
     auxiliary_text_->SetBorderFromPosition(InformationTextArea::BOTTOM);
     candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -237,7 +237,7 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
   }
 }
 
-CandidateWindowView::~CandidateWindowView() {}
+CandidateWindowView::~CandidateWindowView() = default;
 
 views::Widget* CandidateWindowView::InitWidget() {
   views::Widget* widget = BubbleDialogDelegateView::CreateBubble(this);
@@ -381,8 +381,9 @@ void CandidateWindowView::UpdateCandidates(
     if (!candidate_window_.is_user_selecting() ||
         (selected_candidate_index_in_page_ != new_candidate_index_in_page &&
          new_candidate_index_in_page != -1)) {
-      candidate_views_[new_candidate_index_in_page]->NotifyAccessibilityEvent(
-          ax::mojom::Event::kSelection, false);
+      candidate_views_[new_candidate_index_in_page]
+          ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection,
+                                               false);
     }
   }
 
@@ -415,48 +416,11 @@ void CandidateWindowView::UpdateCandidates(
 void CandidateWindowView::SetCursorAndCompositionBounds(
     const gfx::Rect& cursor_bounds,
     const gfx::Rect& composition_bounds) {
-  if (base::FeatureList::IsEnabled(ash::features::kImeKoreanModeSwitchDebug)) {
-    auto* input_method_manager = ash::input_method::InputMethodManager::Get();
-
-    if (input_method_manager) {
-      const std::string& current_input_method_id =
-          input_method_manager->GetActiveIMEState()
-              ->GetCurrentInputMethod()
-              .id();
-
-      if (ash::extension_ime_util::IsCros1pKorean(current_input_method_id)) {
-        pending_anchor_rect_ = candidate_window_.show_window_at_composition()
-                                   ? composition_bounds
-                                   : cursor_bounds;
-        ash::input_method::GetTextFieldContextualInfo(base::BindOnce(
-            &CandidateWindowView::OnTextFieldContextualInfoAvailable,
-            base::Unretained(this)));
-        return;
-      }
-    }
-  }
-
   if (candidate_window_.show_window_at_composition()) {
     SetAnchorRect(composition_bounds);
   } else {
     SetAnchorRect(cursor_bounds);
   }
-}
-
-void CandidateWindowView::OnTextFieldContextualInfoAvailable(
-    const ash::input_method::TextFieldContextualInfo& info) {
-  if (!base::FeatureList::IsEnabled(ash::features::kImeKoreanModeSwitchDebug)) {
-    return;
-  }
-
-  if (!info.tab_url.DomainIs("docs.google.com")) {
-    SetAnchorRect(pending_anchor_rect_);
-    return;
-  }
-
-  const gfx::Rect& display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  SetAnchorRect(gfx::Rect(80, display_bounds.height() - 60, 0, 0));
 }
 
 void CandidateWindowView::MaybeInitializeCandidateViews(

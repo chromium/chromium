@@ -1,0 +1,14 @@
+<!--
+  Copyright 2025 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+  <style name="Theme.TestAutofillService" parent="Base.Theme.TestAutofillService">
+    <!-- Transparent system bars for edge-to-edge. -->
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+  </style>
+</resources>

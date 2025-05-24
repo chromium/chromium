@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/functional/callback.h"
 #include "base/profiler/unwinder.h"
 #include "build/build_config.h"
 
@@ -21,13 +22,20 @@ namespace base {
 //  * iOS, ARM64 and X86_64,
 //  * macOS
 //  * ChromeOS X86_64 and ARM64
+//  * Android ARM64 (Chrome module)
 class BASE_EXPORT
 #if BUILDFLAG(IS_APPLE)
 API_AVAILABLE(ios(12))
 #endif
     FramePointerUnwinder : public Unwinder {
  public:
-  FramePointerUnwinder();
+  using CanUnwindFromDelegate =
+      RepeatingCallback<bool(const Frame& current_frame)>;
+
+  FramePointerUnwinder(
+      CanUnwindFromDelegate can_unwind_from_delegate = CanUnwindFromDelegate(),
+      bool is_system_unwinder = true);
+  ~FramePointerUnwinder() override;
 
   FramePointerUnwinder(const FramePointerUnwinder&) = delete;
   FramePointerUnwinder& operator=(const FramePointerUnwinder&) = delete;
@@ -38,6 +46,10 @@ API_AVAILABLE(ios(12))
                          RegisterContext* thread_context,
                          uintptr_t stack_top,
                          std::vector<Frame>* stack) override;
+
+ private:
+  CanUnwindFromDelegate can_unwind_from_delegate_;
+  const bool is_system_unwinder_;
 };
 
 }  // namespace base

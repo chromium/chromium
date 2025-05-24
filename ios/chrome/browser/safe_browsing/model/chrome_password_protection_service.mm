@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service.h"
 
+#import <algorithm>
 #import <memory>
 
 #import "base/command_line.h"
@@ -12,7 +13,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -25,10 +25,12 @@
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "components/safe_browsing/core/common/safebrowsing_constants.h"
+#import "components/safe_browsing/core/common/safebrowsing_switches.h"
 #import "components/safe_browsing/core/common/utils.h"
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_request_ios.h"
+#import "components/signin/public/identity_manager/account_managed_status_finder.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/signin_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/protocol/user_event_specifics.pb.h"
@@ -64,6 +66,7 @@ using safe_browsing::ReferrerChain;
 using safe_browsing::RequestOutcome;
 using safe_browsing::ReusedPasswordAccountType;
 using safe_browsing::WarningAction;
+using signin::constants::kNoHostedDomainFound;
 using sync_pb::UserEventSpecifics;
 
 using InteractionResult = sync_pb::GaiaPasswordReuse::
@@ -83,7 +86,7 @@ namespace {
 bool HasArtificialCachedVerdict() {
   std::string phishing_url_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          safe_browsing::kArtificialCachedPhishGuardVerdictFlag);
+          safe_browsing::switches::kArtificialCachedPhishGuardVerdictFlag);
   return !phishing_url_string.empty();
 }
 
@@ -358,8 +361,6 @@ ChromePasswordProtectionService::GetPasswordProtectionWarningTriggerPref(
 LoginReputationClientRequest::UrlDisplayExperiment
 ChromePasswordProtectionService::GetUrlDisplayExperiment() const {
   safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment experiment;
-  experiment.set_simplified_url_display_enabled(
-      base::FeatureList::IsEnabled(safe_browsing::kSimplifiedUrlDisplay));
   // Delayed warnings parameters:
   experiment.set_delayed_warnings_enabled(
       base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings));
@@ -378,11 +379,6 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 }
 
-safe_browsing::ChromeUserPopulation::UserPopulation
-ChromePasswordProtectionService::GetUserPopulationPref() const {
-  return safe_browsing::GetUserPopulationPref(profile_->GetPrefs());
-}
-
 AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
     const std::string& username) const {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
@@ -391,8 +387,8 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
   }
   std::vector<CoreAccountInfo> signed_in_accounts =
       identity_manager->GetAccountsWithRefreshTokens();
-  auto account_iterator = base::ranges::find_if(
-      signed_in_accounts, [username](const auto& account) {
+  auto account_iterator =
+      std::ranges::find_if(signed_in_accounts, [username](const auto& account) {
         return password_manager::AreUsernamesSame(
             account.email,
             /*is_username1_gaia_account=*/true, username,
@@ -403,20 +399,6 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
   }
 
   return identity_manager->FindExtendedAccountInfo(*account_iterator);
-}
-
-LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType
-ChromePasswordProtectionService::GetSyncAccountType() const {
-  const AccountInfo account_info = GetAccountInfo();
-  if (!IsPrimaryAccountSignedIn()) {
-    return PasswordReuseEvent::NOT_SIGNED_IN;
-  }
-
-  // For gmail or googlemail account, the hosted_domain will always be
-  // kNoHostedDomainFound.
-  return account_info.hosted_domain == kNoHostedDomainFound
-             ? PasswordReuseEvent::GMAIL
-             : PasswordReuseEvent::GSUITE;
 }
 
 bool ChromePasswordProtectionService::CanShowInterstitial(
@@ -487,10 +469,16 @@ bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
          !GetAccountInfo().hosted_domain.empty();
 }
 
-bool ChromePasswordProtectionService::IsAccountGmail(
+bool ChromePasswordProtectionService::IsAccountConsumer(
     const std::string& username) const {
-  return GetAccountInfoForUsername(username).hosted_domain ==
-         kNoHostedDomainFound;
+  // Check that `username` is likely an email address because if `username` has
+  // no email domain MayBeEnterpriseUserBasedOnEmail will assume it is a
+  // consumer account.
+  return (username.find("@") != std::string::npos &&
+          !signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+              username)) ||
+         GetAccountInfoForUsername(username).hosted_domain ==
+             kNoHostedDomainFound;
 }
 
 bool ChromePasswordProtectionService::IsInExcludedCountry() {
@@ -657,8 +645,7 @@ void ChromePasswordProtectionService::OnUserAction(
           UserMetricsAction("PasswordProtection.ModalWarning.CloseWarning"));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   RemoveWarningRequestsByWebState(web_state);
 }

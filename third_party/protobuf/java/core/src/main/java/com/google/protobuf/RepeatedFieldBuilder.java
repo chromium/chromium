@@ -1,32 +1,9 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 package com.google.protobuf;
 
@@ -35,7 +12,6 @@ import static com.google.protobuf.Internal.checkNotNull;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.RandomAccess;
 
@@ -68,12 +44,8 @@ public class RepeatedFieldBuilder<
   // Parent to send changes to.
   private GeneratedMessage.BuilderParent parent;
 
-  // List of messages. Never null. It may be immutable, in which case
-  // isMessagesListMutable will be false. See note below.
-  private List<MType> messages;
-
-  // Whether messages is an mutable array that can be modified.
-  private boolean isMessagesListMutable;
+  // List of messages. Never null. It may be immutable.
+  private Internal.ProtobufList<MType> messages;
 
   // List of builders. May be null, in which case, no nested builders were
   // created. If not null, entries represent the builder for that index.
@@ -116,11 +88,22 @@ public class RepeatedFieldBuilder<
   // what is most efficient.
   private MessageOrBuilderExternalList<MType, BType, IType> externalMessageOrBuilderList;
 
+  private static <MsgT extends GeneratedMessage>
+      Internal.ProtobufList<MsgT> passthroughOrCopyToProtobufList(List<MsgT> messages) {
+    if (messages instanceof Internal.ProtobufList) {
+      return (Internal.ProtobufList<MsgT>) messages;
+    }
+    ProtobufArrayList<MsgT> copy =
+        ProtobufArrayList.<MsgT>emptyList().mutableCopyWithCapacity(messages.size());
+    copy.addAll(messages);
+    return copy;
+  }
+
   /**
    * Constructs a new builder with an empty list of messages.
    *
    * @param messages the current list of messages
-   * @param isMessagesListMutable Whether the messages list is mutable
+   * @param isMessagesListMutable Whether the messages list is mutable (unused)
    * @param parent a listener to notify of changes
    * @param isClean whether the builder is initially marked clean
    */
@@ -129,8 +112,7 @@ public class RepeatedFieldBuilder<
       boolean isMessagesListMutable,
       GeneratedMessage.BuilderParent parent,
       boolean isClean) {
-    this.messages = messages;
-    this.isMessagesListMutable = isMessagesListMutable;
+    this.messages = passthroughOrCopyToProtobufList(messages);
     this.parent = parent;
     this.isClean = isClean;
   }
@@ -145,9 +127,8 @@ public class RepeatedFieldBuilder<
    * made.
    */
   private void ensureMutableMessageList() {
-    if (!isMessagesListMutable) {
-      messages = new ArrayList<MType>(messages);
-      isMessagesListMutable = true;
+    if (!messages.isModifiable()) {
+      messages = messages.mutableCopyWithCapacity(messages.size());
     }
   }
 
@@ -277,6 +258,7 @@ public class RepeatedFieldBuilder<
    * @param message the message to set
    * @return the builder
    */
+  @CanIgnoreReturnValue
   public RepeatedFieldBuilder<MType, BType, IType> setMessage(int index, MType message) {
     checkNotNull(message);
     ensureMutableMessageList();
@@ -298,6 +280,7 @@ public class RepeatedFieldBuilder<
    * @param message the message to add
    * @return the builder
    */
+  @CanIgnoreReturnValue
   public RepeatedFieldBuilder<MType, BType, IType> addMessage(MType message) {
     checkNotNull(message);
     ensureMutableMessageList();
@@ -319,6 +302,7 @@ public class RepeatedFieldBuilder<
    * @param message the message to add
    * @return the builder
    */
+  @CanIgnoreReturnValue
   public RepeatedFieldBuilder<MType, BType, IType> addMessage(int index, MType message) {
     checkNotNull(message);
     ensureMutableMessageList();
@@ -338,6 +322,7 @@ public class RepeatedFieldBuilder<
    * @param values the messages to add
    * @return the builder
    */
+  @CanIgnoreReturnValue
   public RepeatedFieldBuilder<MType, BType, IType> addAllMessages(
       Iterable<? extends MType> values) {
     for (final MType value : values) {
@@ -427,8 +412,7 @@ public class RepeatedFieldBuilder<
 
   /** Removes all of the elements from this list. The list will be empty after this call returns. */
   public void clear() {
-    messages = Collections.emptyList();
-    isMessagesListMutable = false;
+    messages = ProtobufArrayList.emptyList();
     if (builders != null) {
       for (SingleFieldBuilder<MType, BType, IType> entry : builders) {
         if (entry != null) {
@@ -451,13 +435,13 @@ public class RepeatedFieldBuilder<
     // invalidations.
     isClean = true;
 
-    if (!isMessagesListMutable && builders == null) {
+    if (!messages.isModifiable() && builders == null) {
       // We still have an immutable list and we never created a builder.
       return messages;
     }
 
     boolean allMessagesInSync = true;
-    if (!isMessagesListMutable) {
+    if (!messages.isModifiable()) {
       // We still have an immutable list. Let's see if any of them are out
       // of sync with their builders.
       for (int i = 0; i < messages.size(); i++) {
@@ -484,8 +468,7 @@ public class RepeatedFieldBuilder<
 
     // We're going to return our list as immutable so we mark that we can
     // no longer update it.
-    messages = Collections.unmodifiableList(messages);
-    isMessagesListMutable = false;
+    messages.makeImmutable();
     return messages;
   }
 

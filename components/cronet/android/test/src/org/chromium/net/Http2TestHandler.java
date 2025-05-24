@@ -45,6 +45,7 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
     public static final String ECHO_STREAM_PATH = "/echostream";
     public static final String ECHO_TRAILERS_PATH = "/echotrailers";
     public static final String SERVE_SIMPLE_BROTLI_RESPONSE = "/simplebrotli";
+    public static final String SERVE_SIMPLE_ZSTD_RESPONSE = "/simplezstd";
     public static final String SERVE_SHARED_BROTLI_RESPONSE = "/sharedbrotli";
     public static final String REPORTING_COLLECTOR_PATH = "/reporting-collector";
     public static final String SUCCESS_WITH_NEL_HEADERS_PATH = "/success-with-nel";
@@ -57,11 +58,11 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
     private static final ByteBuf RESPONSE_BYTES =
             unreleasableBuffer(copiedBuffer("HTTP/2 Test Server", CharsetUtil.UTF_8));
 
-    private HashMap<Integer, RequestResponder> mResponderMap = new HashMap<>();
+    private final HashMap<Integer, RequestResponder> mResponderMap = new HashMap<>();
 
-    private ReportingCollector mReportingCollector;
-    private String mServerUrl;
-    private CountDownLatch mHangingUrlLatch;
+    private final ReportingCollector mReportingCollector;
+    private final String mServerUrl;
+    private final CountDownLatch mHangingUrlLatch;
 
     /** Builder for HTTP/2 test handler. */
     public static final class Builder
@@ -321,6 +322,84 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
         }
     }
 
+    // A RequestResponder that serves a simple zstd-encoded response.
+    private class ServeSimpleZstdResponder extends RequestResponder {
+        @Override
+        void onHeadersRead(
+                ChannelHandlerContext ctx,
+                int streamId,
+                boolean endOfStream,
+                Http2Headers headers) {
+            Http2Headers responseHeaders = new DefaultHttp2Headers().status(OK.codeAsText());
+            // Hexadecimal representation "The quick brown fox jumps over the lazy dog\n" after
+            // being compressed via zstd.
+            byte[] quickfoxCompressed = {
+                (byte) 0x28,
+                (byte) 0xb5,
+                (byte) 0x2f,
+                (byte) 0xfd,
+                (byte) 0x24,
+                (byte) 0x2c,
+                (byte) 0x61,
+                (byte) 0x01,
+                (byte) 0x00,
+                (byte) 0x54,
+                (byte) 0x68,
+                (byte) 0x65,
+                (byte) 0x20,
+                (byte) 0x71,
+                (byte) 0x75,
+                (byte) 0x69,
+                (byte) 0x63,
+                (byte) 0x6b,
+                (byte) 0x20,
+                (byte) 0x62,
+                (byte) 0x72,
+                (byte) 0x6f,
+                (byte) 0x77,
+                (byte) 0x6e,
+                (byte) 0x20,
+                (byte) 0x66,
+                (byte) 0x6f,
+                (byte) 0x78,
+                (byte) 0x20,
+                (byte) 0x6a,
+                (byte) 0x75,
+                (byte) 0x6d,
+                (byte) 0x70,
+                (byte) 0x73,
+                (byte) 0x20,
+                (byte) 0x6f,
+                (byte) 0x76,
+                (byte) 0x65,
+                (byte) 0x72,
+                (byte) 0x20,
+                (byte) 0x74,
+                (byte) 0x68,
+                (byte) 0x65,
+                (byte) 0x20,
+                (byte) 0x6c,
+                (byte) 0x61,
+                (byte) 0x7a,
+                (byte) 0x79,
+                (byte) 0x20,
+                (byte) 0x64,
+                (byte) 0x6f,
+                (byte) 0x67,
+                (byte) 0x0a,
+                (byte) 0xe4,
+                (byte) 0xa7,
+                (byte) 0xbc,
+                (byte) 0x87,
+            };
+            ByteBuf content = copiedBuffer(quickfoxCompressed);
+            responseHeaders.add("content-encoding", "zstd");
+            encoder().writeHeaders(ctx, streamId, responseHeaders, 0, false, ctx.newPromise());
+            encoder().writeData(ctx, streamId, content, 0, true, ctx.newPromise());
+            ctx.flush();
+        }
+    }
+
     // A RequestResponder that serves a shared Brotli-encoded response.
     private class ServeSharedBrotliResponder extends RequestResponder {
         @Override
@@ -428,7 +507,7 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
 
     // A RequestResponder that implements a Reporting collector.
     private class ReportingCollectorResponder extends RequestResponder {
-        private ByteArrayOutputStream mPartialPayload = new ByteArrayOutputStream();
+        private final ByteArrayOutputStream mPartialPayload = new ByteArrayOutputStream();
 
         @Override
         void onHeadersRead(
@@ -583,6 +662,8 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
             responder = new EchoMethodResponder();
         } else if (path.startsWith(SERVE_SIMPLE_BROTLI_RESPONSE)) {
             responder = new ServeSimpleBrotliResponder();
+        } else if (path.startsWith(SERVE_SIMPLE_ZSTD_RESPONSE)) {
+            responder = new ServeSimpleZstdResponder();
         } else if (path.startsWith(SERVE_SHARED_BROTLI_RESPONSE)) {
             responder = new ServeSharedBrotliResponder();
         } else if (path.startsWith(REPORTING_COLLECTOR_PATH)) {

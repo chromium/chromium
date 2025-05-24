@@ -13,8 +13,9 @@ import java.util.List;
 
 /** Java implementation of NotificationPermissionReviewBridge for testing. */
 class FakeNotificationPermissionReviewBridge implements NotificationPermissionReviewBridge.Natives {
-    private HashSet<String> mActiveOriginSet = new HashSet<>();
-    private HashMap<String, NotificationPermissions> mNotificationPermissionMap = new HashMap<>();
+    private final HashSet<String> mActiveOriginSet = new HashSet<>();
+    private final HashMap<String, NotificationPermissions> mNotificationPermissionMap =
+            new HashMap<>();
 
     public void setNotificationPermissionsForReview(
             NotificationPermissions[] notificationPermissionsList) {

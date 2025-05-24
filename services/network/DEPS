@@ -28,6 +28,7 @@ include_rules = [
   "+services/service_manager/public",
   "+third_party/boringssl/src/include",
   "+third_party/boringssl/src/pki",
+  "+third_party/fuzztest",
   "+url",
 ]
 
@@ -35,5 +36,8 @@ specific_include_rules = {
   # Some tests use a real proxy_resolver::ProxyResolverImpl.
   "test_mojo_proxy_resolver_factory\.h": [
     "+services/proxy_resolver/proxy_resolver_factory_impl.h",
+  ],
+  "prefetch_matches_unittest\.cc": [
+    "+third_party/blink/public/common/navigation/preloading_headers.h",
   ],
 }

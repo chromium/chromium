@@ -17,6 +17,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Rational;
 
 import androidx.annotation.IntDef;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -177,26 +177,26 @@ public class CustomTabMinimizationManager
         } catch (NullPointerException e) {
             if (doesExceptionMatch(e, TASK_DISPLAY_AREA_NPE_STR)) {
                 String msg = "NullPointerException";
-                reportException(TASK_DISPLAY_AREA_NPE_STR, msg, e);
+                reportException(msg, e);
             } else {
                 throw e;
             }
         } catch (IllegalStateException e) {
             if (doesExceptionMatch(e, DEVICE_DOES_NOT_SUPPORT_ISE_STR)) {
                 String msg = "Device doesn't support picture-in-picture mode.";
-                reportException(DEVICE_DOES_NOT_SUPPORT_ISE_STR, msg, e);
+                reportException(msg, e);
             } else if (doesExceptionMatch(e, ACTIVITY_DOES_NOT_SUPPORT_ISE_STR)) {
                 String msg =
                         "Current activity does not support picture-in-picture. Activity class: "
                                 + mActivity.getLocalClassName();
-                reportException(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR, msg, e);
+                reportException(msg, e);
             } else {
                 throw e;
             }
         } catch (IllegalArgumentException e) {
             if (doesExceptionMatch(e, ROOT_TASK_IAE_STR)) {
                 String msg = "IllegalArgumentException";
-                reportException(ROOT_TASK_IAE_STR, msg, e);
+                reportException(msg, e);
             } else {
                 throw e;
             }
@@ -235,6 +235,7 @@ public class CustomTabMinimizationManager
     }
 
     @Override
+    @SuppressWarnings("TimeUnitMismatch") // Using seconds; recordTimesHistogram wants milliseconds.
     public void accept(PictureInPictureModeChangedInfo pictureInPictureModeChangedInfo) {
         if (!mMinimized) return;
 
@@ -340,8 +341,11 @@ public class CustomTabMinimizationManager
                     DomDistillerUrlUtils.isDistilledPage(tab.getUrl())
                             ? tab.getOriginalUrl()
                             : tab.getUrl();
-            String host =
-                    UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_CRYPTOGRAPHIC);
+            String host = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(url);
+            if (TextUtils.isEmpty(host)
+                    || host.startsWith(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
+                host = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;
+            }
             String title =
                     ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(host) ? "" : tab.getTitle();
             mModel =
@@ -447,7 +451,7 @@ public class CustomTabMinimizationManager
         return e.getMessage() != null && e.getMessage().contains(subString);
     }
 
-    private void reportException(String key, String msg, Exception e) {
+    private void reportException(String msg, Exception e) {
         String msgWithState =
                 msg + " -- ActivityState: " + mLifecycleDispatcher.getCurrentActivityState();
         Log.e(TAG, msgWithState, e);

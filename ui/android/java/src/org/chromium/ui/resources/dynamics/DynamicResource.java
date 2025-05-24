@@ -5,6 +5,7 @@
 package org.chromium.ui.resources.dynamics;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.resources.Resource;
 
 /**
@@ -13,6 +14,7 @@ import org.chromium.ui.resources.Resource;
  * {@link DynamicResource} is in charge of tracking when it has changed and should actually be
  * returning a copy of itself.
  */
+@NullMarked
 public interface DynamicResource {
     /**
      * Will be called every render frame to notify the resource. The expectation is that this call

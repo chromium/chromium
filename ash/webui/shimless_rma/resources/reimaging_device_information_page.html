@@ -194,7 +194,7 @@
                 <select id="isChassisBranded" class="md-select"
                     on-change="onIsChassisBrandedChange"
                     aria-labelledby="isChassisBrandedLabel"
-                    disabled="[[allButtonsDisabled]]">
+                    disabled="[[isInputDisabled(disableModifyFeatureLevel, allButtonsDisabled)]]">
                   <option value="[[booleanOrDefaultOptions.DEFAULT]]">
                     [[i18n('confirmDeviceInfoDeviceAnswerDefault')]]
                   </option>
@@ -229,7 +229,7 @@
                 <select id="doesMeetRequirements" class="md-select"
                     on-change="onDoesMeetRequirementsChange"
                     aria-labelledby="doesMeetRequirementsLabel"
-                    disabled="[[allButtonsDisabled]]">
+                    disabled="[[isInputDisabled(disableModifyFeatureLevel, allButtonsDisabled)]]">
                   <option value="[[booleanOrDefaultOptions.DEFAULT]]">
                     [[i18n('confirmDeviceInfoDeviceAnswerDefault')]]
                   </option>
@@ -248,7 +248,7 @@
           <div class="input-holder">
             <cr-input id="serialNumber" value="{{serialNumber}}"
                 label="[[i18n('confirmDeviceInfoSerialNumberLabel')]]"
-                disabled="[[allButtonsDisabled]]">
+                disabled="[[isInputDisabled(disableModifySerialNumber, allButtonsDisabled)]]">
             </cr-input>
             <cr-button id="resetSerialNumber"
                 on-click="onResetSerialNumberButtonClicked"
@@ -262,7 +262,7 @@
           <div class="input-holder">
             <cr-input id="dramPartNumber" value="{{dramPartNumber}}"
                 label="[[i18n('confirmDeviceInfoDramPartNumberLabel')]]"
-                disabled="[[allButtonsDisabled]]">
+                disabled="[[isInputDisabled(disableModifyDramPartNumber, allButtonsDisabled)]]">
             </cr-input>
             <cr-button id="resetDramPartNumber"
                 on-click="onResetDramPartNumberButtonClicked"
@@ -279,7 +279,7 @@
           <div class="input-holder">
             <select id="regionSelect" class="md-select"
                 on-change="onSelectedRegionChange" aria-labelledby="regionLabel"
-                disabled="[[allButtonsDisabled]]">
+                disabled="[[isInputDisabled(disableModifyRegion, allButtonsDisabled)]]">
               <template is="dom-repeat" items="[[regions]]" as="region">
                 <option value="[[region]]">
                   [[region]]
@@ -301,7 +301,7 @@
             <select id="customLabelSelect" class="md-select"
                 on-change="onSelectedCustomLabelChange"
                 aria-labelledby="customLabelLabel"
-                disabled="[[allButtonsDisabled]]">
+                disabled="[[isInputDisabled(disableModifyCustomLabel, allButtonsDisabled)]]">
               <template is="dom-repeat" items="[[customLabels]]" as="customLabel">
                 <option value="[[customLabel]]">
                   [[customLabel]]
@@ -331,7 +331,7 @@
         <div class="input-holder input-row">
           <select id="skuSelect" class="md-select"
               on-change="onSelectedSkuChange" aria-labelledby="skuLabel"
-              disabled="[[allButtonsDisabled]]">
+              disabled="[[isInputDisabled(disableModifySku, allButtonsDisabled)]]">
             <template is="dom-repeat" items="[[skus]]" as="sku">
               <option value="[[sku]]">
                 [[sku]]

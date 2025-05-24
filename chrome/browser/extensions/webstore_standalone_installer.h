@@ -23,10 +23,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/webstore_install_result.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class Extension;
+struct InstallApproval;
 class ScopedActiveInstall;
 class WebstoreDataFetcher;
 
@@ -46,7 +50,7 @@ class WebstoreStandaloneInstaller
       public ProfileObserver {
  public:
   // A callback for when the install process completes, successfully or not. If
-  // there was a failure, |success| will be false and |error| may contain a
+  // there was a failure, `success` will be false and `error` may contain a
   // developer-readable error message about why it failed.
   using Callback = base::OnceCallback<void(bool success,
                                            const std::string& error,
@@ -106,7 +110,7 @@ class WebstoreStandaloneInstaller
   // by some calls even when no prompt or other UI is shown). A non-dummy
   // WebContents is required if the prompt returned by CreateInstallPromt()
   // contains a navigable link(s). Returned WebContents should correspond
-  // to |profile| passed into the constructor.
+  // to `profile` passed into the constructor.
   virtual content::WebContents* GetWebContents() const = 0;
 
   // Should return an installation prompt with desired properties or NULL if
@@ -126,7 +130,7 @@ class WebstoreStandaloneInstaller
   virtual std::unique_ptr<ExtensionInstallPrompt> CreateInstallUI();
 
   // Create an approval to pass installation parameters to the CrxInstaller.
-  virtual std::unique_ptr<WebstoreInstaller::Approval> CreateApproval() const;
+  virtual std::unique_ptr<InstallApproval> CreateApproval() const;
 
   // Called once the install prompt has finished.
   virtual void OnInstallPromptDone(
@@ -159,17 +163,8 @@ class WebstoreStandaloneInstaller
   friend class base::RefCountedThreadSafe<WebstoreStandaloneInstaller>;
 
   // Several delegate/client interface implementations follow. The normal flow
-  // (for successful installs) for the item JSON API is:
+  // (for successful installs) with the item snippets API is:
   //
-  // 1. BeginInstall: starts the fetch of data from the webstore.
-  // 2. WebstoreDataFetcher::OnSimpleLoaderComplete: starts the parsing of data
-  //    from the webstore.
-  // 3. OnWebstoreItemJSONAPIResponseParseSuccess: starts the parsing of the
-  //    manifest and fetching of icon data.
-  // 4. OnWebstoreParseSuccess: shows the install UI
-  // 5. InstallUIProceed: initiates the .crx download/install
-  //
-  // For the new item snippets API, the flow is:
   // 1. BeginInstall: starts the fetch of data from the webstore.
   // 2. WebstoreDataFetcher::OnFetchItemSnippetResponseReceived: starts the
   //    parsing of data from the webstore into a FetchItemSnippetResponse
@@ -184,15 +179,9 @@ class WebstoreStandaloneInstaller
 
   // WebstoreDataFetcherDelegate interface implementation.
   void OnWebstoreRequestFailure(const std::string& extension_id) override;
-
-  void OnWebstoreItemJSONAPIResponseParseSuccess(
-      const std::string& extension_id,
-      const base::Value::Dict& webstore_data) override;
-
   void OnFetchItemSnippetParseSuccess(
       const std::string& extension_id,
       FetchItemSnippetResponse item_snippet) override;
-
   void OnWebstoreResponseParseFailure(const std::string& extension_id,
                                       const std::string& error) override;
 

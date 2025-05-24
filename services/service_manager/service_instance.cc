@@ -4,13 +4,13 @@
 
 #include "services/service_manager/service_instance.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -39,15 +39,15 @@ std::set<std::string> GetRequiredCapabilities(
   // Start by looking for requirements specific to the target identity.
   auto it = source_requirements.find(target_service);
   if (it != source_requirements.end()) {
-    base::ranges::copy(it->second,
-                       std::inserter(capabilities, capabilities.begin()));
+    std::ranges::copy(it->second,
+                      std::inserter(capabilities, capabilities.begin()));
   }
 
   // Apply wild card rules too.
   it = source_requirements.find("*");
   if (it != source_requirements.end()) {
-    base::ranges::copy(it->second,
-                       std::inserter(capabilities, capabilities.begin()));
+    std::ranges::copy(it->second,
+                      std::inserter(capabilities, capabilities.begin()));
   }
   return capabilities;
 }
@@ -61,7 +61,7 @@ void ReportBlockedInterface(const Manifest::ServiceName& source_service_name,
   // effectively treat all occurrences of this branch in production code as
   // bugs that must be fixed. This crash allows such bugs to be caught in
   // testing rather than relying on easily overlooked log messages.
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
 #else
   LOG(ERROR)
 #endif
@@ -79,7 +79,7 @@ void ReportBlockedStartService(const std::string& source_service_name,
                                const std::string& target_service_name) {
 #if DCHECK_IS_ON()
   // See the note in ReportBlockedInterface above.
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
 #else
   LOG(ERROR)
 #endif

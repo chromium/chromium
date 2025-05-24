@@ -4,11 +4,15 @@
 
 package org.chromium.components.webapps.bottomsheet;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapps.WebappInstallSource;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -17,6 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
  * This class manages the details associated with binding a {@link PwaBottomSheetController} to user
  * data on a {@link WindowAndroid}.
  */
+@NullMarked
 public class PwaBottomSheetControllerProvider {
     /** The key used to bind the controller to the unowned data host. */
     private static final UnownedUserDataKey<PwaBottomSheetController> KEY =
@@ -28,7 +33,7 @@ public class PwaBottomSheetControllerProvider {
      * @param windowAndroid The window to pull the controller from.
      * @return A shared instance of a {@link PwaBottomSheetController}.
      */
-    public static PwaBottomSheetController from(WindowAndroid windowAndroid) {
+    public static @Nullable PwaBottomSheetController from(WindowAndroid windowAndroid) {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
@@ -40,7 +45,7 @@ public class PwaBottomSheetControllerProvider {
         KEY.detachFromAllHosts(controller);
     }
 
-    private static PwaBottomSheetController fromWebContents(WebContents webContents) {
+    private static @Nullable PwaBottomSheetController fromWebContents(WebContents webContents) {
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) return null;
         return from(window);
@@ -80,7 +85,7 @@ public class PwaBottomSheetControllerProvider {
         if (controller == null) return;
         controller.requestBottomSheetInstaller(
                 nativePwaBottomSheetController,
-                webContents.getTopLevelNativeWindow(),
+                assumeNonNull(webContents.getTopLevelNativeWindow()),
                 webContents,
                 icon,
                 isAdaptiveIcon,

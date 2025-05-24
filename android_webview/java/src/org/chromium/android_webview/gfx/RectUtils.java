@@ -139,8 +139,8 @@ public final class RectUtils {
 
     private static HorizontalSegment sHorizontalSegments[];
     private static VerticalSegment sVerticalSegments[];
-    private static VerticalSegment sVerticalSegment1 = new VerticalSegment();
-    private static VerticalSegment sVerticalSegment2 = new VerticalSegment();
+    private static final VerticalSegment sVerticalSegment1 = new VerticalSegment();
+    private static final VerticalSegment sVerticalSegment2 = new VerticalSegment();
     private static Rect sClippedRects[];
 
     /*

@@ -1,0 +1,63 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{{generated_disclaimer}}
+
+// This needs be be before `apply plugin: ChromiumPlugin` because otherwise we
+// would not have access to it early enough (inside the ResolutionStrategy
+// closure).
+// This map is empty when rolling but is filled by fetch_all_autorolled.py to
+// cache the resolved values of all the '+' versions when we are not trying to
+// roll (e.g. when the main project imports this subproject).
+project.ext.versionCache = [:]
+{{version_overrides}}
+
+apply plugin: ChromiumPlugin
+
+repositories {
+    google()
+    mavenCentral()
+    // <ANDROIDX_REPO>
+}
+
+dependencies {
+    // Use testCompile to have requires_robolectric = true set on targets.
+    testCompileLatest "org.robolectric:robolectric:+"
+
+    compileLatest 'com.google.protobuf:protobuf-javalite:+'
+
+    compileLatest "com.google.guava:guava:+"
+    buildCompileLatest "com.google.guava:guava:+"
+
+    compileLatest 'com.google.android.libraries.identity.googleid:googleid:+'
+    compileLatest 'com.google.android.material:material:+'
+    compileLatest 'com.google.android.play:feature-delivery:+'
+
+    // Play services libraries
+    compileLatest "com.google.android.gms:play-services-auth-api-phone:+"
+    compileLatest "com.google.android.gms:play-services-auth-base:+"
+    compileLatest "com.google.android.gms:play-services-auth-blockstore:+"
+    compileLatest "com.google.android.gms:play-services-auth:+"
+    compileLatest "com.google.android.gms:play-services-base:+"
+    compileLatest "com.google.android.gms:play-services-basement:+"
+    compileLatest "com.google.android.gms:play-services-cast-framework:+"
+    compileLatest "com.google.android.gms:play-services-cast:+"
+    compileLatest "com.google.android.gms:play-services-fido:+"
+    compileLatest "com.google.android.gms:play-services-gcm:+"
+    compileLatest "com.google.android.gms:play-services-identity-credentials:+"
+    compileLatest "com.google.android.gms:play-services-iid:+"
+    compileLatest "com.google.android.gms:play-services-instantapps:+"
+    compileLatest "com.google.android.gms:play-services-location:+"
+    compileLatest "com.google.android.gms:play-services-tasks:+"
+    compileLatest "com.google.android.gms:play-services-vision-common:+"
+    compileLatest "com.google.android.gms:play-services-vision:+"
+}
+
+task setUpRepository(type: BuildConfigGenerator) {
+    pathToBuildGradle 'third_party/android_deps/autorolled'
+    cipdPackagePrefix 'chromium/third_party/android_deps/autorolled'
+    internalTargetVisibility = [ '//third_party/androidx:*', ':*' ]
+    ignoreDEPS true
+    writeBoM true
+}

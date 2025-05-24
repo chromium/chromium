@@ -33,13 +33,18 @@ void RunFaviconCallbackIfNotCanceled(
 ChromeFaviconClient::ChromeFaviconClient(Profile* profile) : profile_(profile) {
 }
 
-ChromeFaviconClient::~ChromeFaviconClient() {
-}
+ChromeFaviconClient::~ChromeFaviconClient() = default;
 
 bool ChromeFaviconClient::IsNativeApplicationURL(const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (url.SchemeIs(extensions::kExtensionScheme))
     return true;
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (url.SchemeIs(chrome::kIsolatedAppScheme)) {
+    return true;
+  }
 #endif
 
   return url.SchemeIs(content::kChromeUIScheme);

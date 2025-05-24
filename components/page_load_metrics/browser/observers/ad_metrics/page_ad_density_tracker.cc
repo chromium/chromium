@@ -443,22 +443,6 @@ PageAdDensityTracker::CalculateDensityWithin(const gfx::Rect& bounding_rect) {
   return result;
 }
 
-bool PageAdDensityTracker::RectId::operator<(const RectId& rhs) const {
-  if (rect_type == rhs.rect_type) {
-    return id < rhs.id;
-  }
-
-  return rect_type < rhs.rect_type;
-}
-
-bool PageAdDensityTracker::RectId::operator==(const RectId& rhs) const {
-  return rect_type == rhs.rect_type && id == rhs.id;
-}
-
-bool PageAdDensityTracker::RectId::operator!=(const RectId& rhs) const {
-  return !(*this == rhs);
-}
-
 bool PageAdDensityTracker::RectEvent::operator<(const RectEvent& rhs) const {
   int lhs_y = is_bottom ? rect.bottom() : rect.y();
   int rhs_y = rhs.is_bottom ? rhs.rect.bottom() : rhs.rect.y();

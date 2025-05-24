@@ -18,8 +18,11 @@ source_set("utils") {
     "//components/feature_engagement/public",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/search",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
+    "//components/sync/base",
+    "//components/sync/service",
     "//skia",
   ]
 }

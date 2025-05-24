@@ -46,6 +46,9 @@ class DummyOutput:
   def GetOutputFilename(self):
     return self.file
 
+  def GetGender(self):
+    return None
+
 
 class FormatRcUnittest(unittest.TestCase):
   @classmethod

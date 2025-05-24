@@ -1,0 +1,58 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "background_collection_configuration.h",
+    "background_collection_configuration.mm",
+    "background_customization_configuration.h",
+    "background_customization_configuration.mm",
+    "home_background_customization_service.h",
+    "home_background_customization_service.mm",
+    "home_background_customization_service_factory.h",
+    "home_background_customization_service_factory.mm",
+    "home_background_customization_service_observer.h",
+    "home_background_customization_service_observer_bridge.h",
+    "home_background_customization_service_observer_bridge.mm",
+    "home_background_image_service.h",
+    "home_background_image_service.mm",
+    "home_background_image_service_factory.h",
+    "home_background_image_service_factory.mm",
+    "ntp_background_service_factory.h",
+    "ntp_background_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/sync/protocol",
+    "//components/themes",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//services/network/public/cpp",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "home_background_image_service_unittest.mm" ]
+
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/application_locale_storage",
+    "//components/search",
+    "//components/themes",
+    "//components/version_info",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp_base",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+}

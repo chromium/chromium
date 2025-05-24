@@ -15,7 +15,8 @@
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/external_use_client.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -45,14 +46,16 @@ namespace viz {
 // SkiaOutputSurfaceImplOnGpu. {Begin,End}Access is called from the GPU thread.
 class ImageContextImpl final : public ExternalUseClient::ImageContext {
  public:
-  ImageContextImpl(const gpu::MailboxHolder& mailbox_holder,
+  ImageContextImpl(const TransferableResource& resource,
+                   bool maybe_concurrent_reads,
+                   bool raw_draw_if_possible,
+                   uint32_t client_id);
+
+  // Used only for creating promise image from RenderPass.
+  ImageContextImpl(const gpu::Mailbox& mailbox,
                    const gfx::Size& size,
                    SharedImageFormat format,
-                   bool maybe_concurrent_reads,
-                   const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-                   sk_sp<SkColorSpace> color_space,
-                   bool is_for_render_pass,
-                   bool raw_draw_if_possible = false);
+                   sk_sp<SkColorSpace> color_space);
 
   ImageContextImpl(const ImageContextImpl&) = delete;
   ImageContextImpl& operator=(const ImageContextImpl&) = delete;
@@ -147,6 +150,11 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   // Graphite backend textures used for fulfilling Graphite promise images.
   // Owned by the shared image representation / scoped access.
   std::vector<skgpu::graphite::BackendTexture> graphite_textures_;
+
+  // Stores whether whether there was a mismatch between the YCbCr info given by
+  // Viz for the promise image and the YCbCr info computed at the time of
+  // fulfilling the promise image.
+  bool graphite_ycbcr_info_mismatch_ = false;
 };
 
 }  // namespace viz

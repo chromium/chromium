@@ -18,7 +18,7 @@ interface TraitsTestService {
   [Sync]
   EchoTransform(Transform t) => (Transform pass);
 
-  [Sync]
+  [EnableIf=use_blink, Sync]
   EchoGpuMemoryBufferHandle(GpuMemoryBufferHandle g)
       => (GpuMemoryBufferHandle pass);
 

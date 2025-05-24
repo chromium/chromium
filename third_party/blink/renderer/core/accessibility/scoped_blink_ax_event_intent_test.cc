@@ -19,7 +19,7 @@ namespace blink {
 using ScopedBlinkAXEventIntentTest = RenderingTest;
 
 TEST_F(ScopedBlinkAXEventIntentTest, SingleIntent) {
-  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
+  AXContext ax_context(GetDocument(), ui::kAXModeDefaultForTests);
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   ASSERT_NE(nullptr, cache);
 
@@ -39,7 +39,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, SingleIntent) {
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, MultipleIdenticalIntents) {
-  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
+  AXContext ax_context(GetDocument(), ui::kAXModeDefaultForTests);
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   ASSERT_NE(nullptr, cache);
 
@@ -64,7 +64,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, MultipleIdenticalIntents) {
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, NestedIndividualIntents) {
-  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
+  AXContext ax_context(GetDocument(), ui::kAXModeDefaultForTests);
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   ASSERT_NE(nullptr, cache);
 
@@ -102,7 +102,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedIndividualIntents) {
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, NestedMultipleIntents) {
-  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
+  AXContext ax_context(GetDocument(), ui::kAXModeDefaultForTests);
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   ASSERT_NE(nullptr, cache);
 
@@ -156,7 +156,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedMultipleIntents) {
 }
 
 TEST_F(ScopedBlinkAXEventIntentTest, NestedIdenticalIntents) {
-  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
+  AXContext ax_context(GetDocument(), ui::kAXModeDefaultForTests);
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   ASSERT_NE(nullptr, cache);
 

@@ -131,7 +131,9 @@ def collect_forward_decls_and_include_headers(idl_types):
         elif idl_type.is_typedef:
             pass
         elif idl_type.is_undefined:
-            pass
+            header_include_headers.add(
+                "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+            )
         elif idl_type.type_definition_object:
             type_def_obj = idl_type.type_definition_object
             if type_def_obj.is_enumeration:

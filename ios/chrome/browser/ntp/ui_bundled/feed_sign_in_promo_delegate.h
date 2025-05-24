@@ -5,19 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_FEED_SIGN_IN_PROMO_DELEGATE_H_
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_FEED_SIGN_IN_PROMO_DELEGATE_H_
 
+// Where the feed sign-in promo comes from.
+typedef NS_ENUM(NSInteger, FeedSignInPromoSource) {
+  // The sign-in command was triggered from the bottom of the feed. A last card
+  // invite the user to sign-in in order to show them more interesting content.
+  FeedSignInCommandSourceBottom,
+  // The sign-in command was triggered from a menu entry, such as "Not
+  // interested in <topic>".
+  // As the user is signed-out, we should first sign the user in to record this
+  // lack of interest.
+  FeedSignInCommandSourceCardMenu,
+};
+
 // Protocol for actions relating to the feed sign-in promo.
 @protocol FeedSignInPromoDelegate
 
-// Shows a sign in promote UI for feed back of card sign-in promo.
-// TODO(crbug.com/40245722): rename it as "showHalfSheetForFeedBoCSignInPromo"
-// since it's not a promo UI but a message to let the user to continue to sign
-// in.
-- (void)showSignInPromoUI;
-
-// Shows a sign in UI for feed bottom sign-in promo.
-// TODO(crbug.com/40245722): rename it as "showSyncPromoUI" since it shows a
-// sync flow.
-- (void)showSignInUI;
+// Shows a sign in UI for this specific source.
+- (void)showSignInUIFromSource:(FeedSignInPromoSource)source;
 
 @end
 

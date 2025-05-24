@@ -27,6 +27,10 @@
 #import "components/sync/service/local_data_description.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_settings_presenter.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
@@ -50,10 +54,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -165,7 +165,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   DCHECK(self.consumer);
 
   // Set up observers.
-  ProfileIOS* profile = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   _bookmarkModelBridge =
       std::make_unique<BookmarkModelBridge>(self, _bookmarkModel.get());
   _syncedBookmarksObserver =
@@ -211,6 +211,13 @@ bool IsABookmarkNodeSectionForIdentifier(
   DCHECK(!_bookmarkPromoController);
 }
 
+- (BOOL)canDismiss {
+  // While sign-in is in progress, the UI should be frozen.
+  // The promo manager is in charge of displaying the activity overlay, but
+  // we’re still in charge of stopping dismiss from occurring.
+  return !_bookmarkPromoController.signinInProgress;
+}
+
 #pragma mark - Initial Model Setup
 
 // Computes the bookmarks table view based on the currently displayed node.
@@ -249,7 +256,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Generate the table view data when the current currently displayed node is the
 // outermost root.
 - (void)generateTableViewDataForRootNode {
-  ProfileIOS* profile = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   bookmarks::ManagedBookmarkService* managedBookmarkService =
       ManagedBookmarkServiceFactory::GetForProfile(profile);
   const BookmarkNode* managedNode = managedBookmarkService->managed_node();
@@ -341,7 +348,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   // show the spinner backgound. Otherwise, check if we need to show the empty
   // background.
   if (self.consumer.isDisplayingBookmarkRoot) {
-    if (_bookmarkModel->HasNoUserCreatedBookmarksOrFolders() &&
+    if (!_bookmarkModel->HasUserCreatedBookmarksOrFolders() &&
         _syncedBookmarksObserver->IsPerformingInitialSync()) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarksHomeBackgroundStyleLoading];
@@ -430,7 +437,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   self.syncService->TriggerLocalDataMigration(
       syncer::DataTypeSet({syncer::BOOKMARKS}));
 
-  ProfileIOS* profile = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   PrefService* prefService = profile->GetPrefs();
   prefService->SetBoolean(prefs::kIosBookmarkUploadSyncLeftBehindCompleted,
                           true);
@@ -500,7 +507,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Instances of this class automatically observe the bookmark model.
 // The bookmark model has loaded.
 - (void)bookmarkModelLoaded {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // The node has changed, but not its children.
@@ -739,23 +746,17 @@ bool IsABookmarkNodeSectionForIdentifier(
           syncer::SyncService::TransportState::PAUSED) {
     return NO;
   }
-  // Do not show for syncing users.
-  // TODO(crbug.com/40066949): Remove this after UNO phase 3. See
-  // ConsentLevel::kSync documentation for more details.
-  if (self.syncService->HasSyncConsent()) {
-    return NO;
-  }
   // Do not show if last syncing account is different from the current one.
   // Note that the "last syncing" account pref is cleared during the migration
   // of syncing users to the signed-in state, but these users should also be
   // covered here, so check the "migrated syncing user" pref too.
   // This implicitly covers the case when SyncDisabled policy is enabled, as
   // kGoogleServicesLastSyncingGaiaId will be empty.
-  ProfileIOS* profile = [self originalBrowserState];
-  const std::string lastSyncingGaiaId =
-      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
-  const std::string migratedGaiaId = profile->GetPrefs()->GetString(
-      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+  ProfileIOS* profile = [self originalProfile];
+  const GaiaId lastSyncingGaiaId(
+      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
+  const GaiaId migratedGaiaId(profile->GetPrefs()->GetString(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn));
   if (self.syncService->GetAccountInfo().gaia != lastSyncingGaiaId &&
       self.syncService->GetAccountInfo().gaia != migratedGaiaId) {
     return NO;
@@ -855,7 +856,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 // The original chrome profile used for services that don't exist in
 // incognito mode. E.g., `_syncService` and `ManagedBookmarkService`.
-- (ProfileIOS*)originalBrowserState {
+- (ProfileIOS*)originalProfile {
   return _browser->GetProfile()->GetOriginalProfile();
 }
 

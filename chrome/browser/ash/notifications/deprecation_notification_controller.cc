@@ -148,8 +148,7 @@ int DeprecationNotificationController::GetSixPackKeyDeprecationMessageId(
     case ui::VKEY_NEXT:
       return IDS_ASH_SHORTCUT_DEPRECATION_ALT_BASED_PAGE_DOWN;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return -1;
+      NOTREACHED();
   }
 }
 

@@ -14,6 +14,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -80,8 +81,12 @@ enum {
 
 struct MEDIA_EXPORT H264SPS {
   H264SPS();
+  H264SPS(const H264SPS&);
   H264SPS& operator=(const H264SPS&);
   H264SPS(H264SPS&&) noexcept;
+  H264SPS& operator=(H264SPS&&) noexcept;
+
+  bool operator==(const H264SPS&) const;
 
   enum H264ProfileIDC {
     kProfileIDCBaseline = 66,
@@ -133,83 +138,83 @@ struct MEDIA_EXPORT H264SPS {
     kDefaultTimeOffsetLength = 24,
   };
 
-  int profile_idc;
-  bool constraint_set0_flag;
-  bool constraint_set1_flag;
-  bool constraint_set2_flag;
-  bool constraint_set3_flag;
-  bool constraint_set4_flag;
-  bool constraint_set5_flag;
-  int level_idc;
-  int seq_parameter_set_id;
+  int profile_idc = 0;
+  bool constraint_set0_flag = false;
+  bool constraint_set1_flag = false;
+  bool constraint_set2_flag = false;
+  bool constraint_set3_flag = false;
+  bool constraint_set4_flag = false;
+  bool constraint_set5_flag = false;
+  int level_idc = 0;
+  int seq_parameter_set_id = 0;
 
-  int chroma_format_idc;
-  bool separate_colour_plane_flag;
-  int bit_depth_luma_minus8;
-  int bit_depth_chroma_minus8;
-  bool qpprime_y_zero_transform_bypass_flag;
+  int chroma_format_idc = 0;
+  bool separate_colour_plane_flag = false;
+  int bit_depth_luma_minus8 = 0;
+  int bit_depth_chroma_minus8 = 0;
+  bool qpprime_y_zero_transform_bypass_flag = false;
 
-  bool seq_scaling_matrix_present_flag;
-  uint8_t scaling_list4x4[6][kH264ScalingList4x4Length];
-  uint8_t scaling_list8x8[6][kH264ScalingList8x8Length];
+  bool seq_scaling_matrix_present_flag = false;
+  uint8_t scaling_list4x4[6][kH264ScalingList4x4Length] = {};
+  uint8_t scaling_list8x8[6][kH264ScalingList8x8Length] = {};
 
-  int log2_max_frame_num_minus4;
-  int pic_order_cnt_type;
-  int log2_max_pic_order_cnt_lsb_minus4;
-  bool delta_pic_order_always_zero_flag;
-  int offset_for_non_ref_pic;
-  int offset_for_top_to_bottom_field;
-  int num_ref_frames_in_pic_order_cnt_cycle;
-  int expected_delta_per_pic_order_cnt_cycle;  // calculated
-  int offset_for_ref_frame[255];
-  int max_num_ref_frames;
-  bool gaps_in_frame_num_value_allowed_flag;
-  int pic_width_in_mbs_minus1;
-  int pic_height_in_map_units_minus1;
-  bool frame_mbs_only_flag;
-  bool mb_adaptive_frame_field_flag;
-  bool direct_8x8_inference_flag;
-  bool frame_cropping_flag;
-  int frame_crop_left_offset;
-  int frame_crop_right_offset;
-  int frame_crop_top_offset;
-  int frame_crop_bottom_offset;
+  int log2_max_frame_num_minus4 = 0;
+  int pic_order_cnt_type = 0;
+  int log2_max_pic_order_cnt_lsb_minus4 = 0;
+  bool delta_pic_order_always_zero_flag = false;
+  int offset_for_non_ref_pic = 0;
+  int offset_for_top_to_bottom_field = 0;
+  int num_ref_frames_in_pic_order_cnt_cycle = 0;
+  int expected_delta_per_pic_order_cnt_cycle = 0;  // calculated
+  int offset_for_ref_frame[255] = {};
+  int max_num_ref_frames = 0;
+  bool gaps_in_frame_num_value_allowed_flag = false;
+  int pic_width_in_mbs_minus1 = 0;
+  int pic_height_in_map_units_minus1 = 0;
+  bool frame_mbs_only_flag = false;
+  bool mb_adaptive_frame_field_flag = false;
+  bool direct_8x8_inference_flag = false;
+  bool frame_cropping_flag = false;
+  int frame_crop_left_offset = 0;
+  int frame_crop_right_offset = 0;
+  int frame_crop_top_offset = 0;
+  int frame_crop_bottom_offset = 0;
 
-  bool vui_parameters_present_flag;
-  int sar_width;   // Set to 0 when not specified.
-  int sar_height;  // Set to 0 when not specified.
-  bool bitstream_restriction_flag;
-  int max_num_reorder_frames;
-  int max_dec_frame_buffering;
-  bool timing_info_present_flag;
-  int num_units_in_tick;
-  int time_scale;
-  bool fixed_frame_rate_flag;
+  bool vui_parameters_present_flag = false;
+  int sar_width = 0;   // Set to 0 when not specified.
+  int sar_height = 0;  // Set to 0 when not specified.
+  bool bitstream_restriction_flag = false;
+  int max_num_reorder_frames = 0;
+  int max_dec_frame_buffering = 0;
+  bool timing_info_present_flag = false;
+  int num_units_in_tick = 0;
+  int time_scale = 0;
+  bool fixed_frame_rate_flag = false;
 
-  bool video_signal_type_present_flag;
-  int video_format;
-  bool video_full_range_flag;
-  bool colour_description_present_flag;
-  int colour_primaries;
-  int transfer_characteristics;
-  int matrix_coefficients;
+  bool video_signal_type_present_flag = false;
+  int video_format = 0;
+  bool video_full_range_flag = false;
+  bool colour_description_present_flag = false;
+  int colour_primaries = 0;
+  int transfer_characteristics = 0;
+  int matrix_coefficients = 0;
 
   // TODO(posciak): actually parse these instead of ParseAndIgnoreHRDParameters.
-  bool nal_hrd_parameters_present_flag;
-  int cpb_cnt_minus1;
-  int bit_rate_scale;
-  int cpb_size_scale;
-  int bit_rate_value_minus1[32];
-  int cpb_size_value_minus1[32];
-  bool cbr_flag[32];
-  int initial_cpb_removal_delay_length_minus_1;
-  int cpb_removal_delay_length_minus1;
-  int dpb_output_delay_length_minus1;
-  int time_offset_length;
+  bool nal_hrd_parameters_present_flag = false;
+  int cpb_cnt_minus1 = 0;
+  int bit_rate_scale = 0;
+  int cpb_size_scale = 0;
+  int bit_rate_value_minus1[32] = {};
+  int cpb_size_value_minus1[32] = {};
+  bool cbr_flag[32] = {};
+  int initial_cpb_removal_delay_length_minus_1 = 0;
+  int cpb_removal_delay_length_minus1 = 0;
+  int dpb_output_delay_length_minus1 = 0;
+  int time_offset_length = 0;
 
-  bool low_delay_hrd_flag;
+  bool low_delay_hrd_flag = false;
 
-  int chroma_array_type;
+  int chroma_array_type = 0;
 
   // Get corresponding SPS |level_idc| and |constraint_set3_flag| value from
   // requested |profile| and |level| (see Spec A.3.1).
@@ -237,62 +242,69 @@ struct MEDIA_EXPORT H264SPS {
 
 struct MEDIA_EXPORT H264PPS {
   H264PPS();
+  H264PPS(const H264PPS&);
+  H264PPS& operator=(const H264PPS&);
   H264PPS(H264PPS&&) noexcept;
+  H264PPS& operator=(H264PPS&&) noexcept;
 
-  int pic_parameter_set_id;
-  int seq_parameter_set_id;
-  bool entropy_coding_mode_flag;
-  bool bottom_field_pic_order_in_frame_present_flag;
-  int num_slice_groups_minus1;
+  bool operator==(const H264PPS&) const;
+
+  int pic_parameter_set_id = 0;
+  int seq_parameter_set_id = 0;
+  bool entropy_coding_mode_flag = false;
+  bool bottom_field_pic_order_in_frame_present_flag = false;
+  int num_slice_groups_minus1 = 0;
   // TODO(posciak): Slice groups not implemented, could be added at some point.
-  int num_ref_idx_l0_default_active_minus1;
-  int num_ref_idx_l1_default_active_minus1;
-  bool weighted_pred_flag;
-  int weighted_bipred_idc;
-  int pic_init_qp_minus26;
-  int pic_init_qs_minus26;
-  int chroma_qp_index_offset;
-  bool deblocking_filter_control_present_flag;
-  bool constrained_intra_pred_flag;
-  bool redundant_pic_cnt_present_flag;
-  bool transform_8x8_mode_flag;
+  int num_ref_idx_l0_default_active_minus1 = 0;
+  int num_ref_idx_l1_default_active_minus1 = 0;
+  bool weighted_pred_flag = false;
+  int weighted_bipred_idc = 0;
+  int pic_init_qp_minus26 = 0;
+  int pic_init_qs_minus26 = 0;
+  int chroma_qp_index_offset = 0;
+  bool deblocking_filter_control_present_flag = false;
+  bool constrained_intra_pred_flag = false;
+  bool redundant_pic_cnt_present_flag = false;
+  bool transform_8x8_mode_flag = false;
 
-  bool pic_scaling_matrix_present_flag;
-  uint8_t scaling_list4x4[6][kH264ScalingList4x4Length];
-  uint8_t scaling_list8x8[6][kH264ScalingList8x8Length];
+  bool pic_scaling_matrix_present_flag = false;
+  uint8_t scaling_list4x4[6][kH264ScalingList4x4Length] = {};
+  uint8_t scaling_list8x8[6][kH264ScalingList8x8Length] = {};
 
-  int second_chroma_qp_index_offset;
+  int second_chroma_qp_index_offset = 0;
 };
 
 struct MEDIA_EXPORT H264ModificationOfPicNum {
-  int modification_of_pic_nums_idc;
+  int modification_of_pic_nums_idc = 0;
   union {
-    int abs_diff_pic_num_minus1;
+    int abs_diff_pic_num_minus1 = 0;
     int long_term_pic_num;
   };
 };
 
 struct MEDIA_EXPORT H264WeightingFactors {
-  bool luma_weight_flag;
-  bool chroma_weight_flag;
-  int luma_weight[32];
-  int luma_offset[32];
-  int chroma_weight[32][2];
-  int chroma_offset[32][2];
+  bool luma_weight_flag = false;
+  bool chroma_weight_flag = false;
+  int luma_weight[32] = {};
+  int luma_offset[32] = {};
+  int chroma_weight[32][2] = {};
+  int chroma_offset[32][2] = {};
 };
 
 struct MEDIA_EXPORT H264DecRefPicMarking {
-  int memory_mgmnt_control_operation;
-  int difference_of_pic_nums_minus1;
-  int long_term_pic_num;
-  int long_term_frame_idx;
-  int max_long_term_frame_idx_plus1;
+  int memory_mgmnt_control_operation = 0;
+  int difference_of_pic_nums_minus1 = 0;
+  int long_term_pic_num = 0;
+  int long_term_frame_idx = 0;
+  int max_long_term_frame_idx_plus1 = 0;
 };
 
 struct MEDIA_EXPORT H264SliceHeader {
   H264SliceHeader();
-  H264SliceHeader(const H264SliceHeader& t);
-  H264SliceHeader& operator=(const H264SliceHeader& t);
+  H264SliceHeader(const H264SliceHeader&);
+  H264SliceHeader& operator=(const H264SliceHeader&);
+  H264SliceHeader(H264SliceHeader&&);
+  H264SliceHeader& operator=(H264SliceHeader&&);
 
   enum { kRefListSize = 32, kRefListModSize = kRefListSize };
 
@@ -310,80 +322,80 @@ struct MEDIA_EXPORT H264SliceHeader {
   bool IsSPSlice() const;
   bool IsSISlice() const;
 
-  bool idr_pic_flag;         // from NAL header
-  int nal_ref_idc;           // from NAL header
+  bool idr_pic_flag = false;  // from NAL header
+  int nal_ref_idc = 0;        // from NAL header
   raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
       nalu_data;             // from NAL header
-  off_t nalu_size;           // from NAL header
-  off_t header_bit_size;     // calculated
+  off_t nalu_size = 0;       // from NAL header
+  off_t header_bit_size = 0;  // calculated
 
-  int first_mb_in_slice;
-  int slice_type;
-  int pic_parameter_set_id;
-  int colour_plane_id;  // TODO(posciak): use this!  http://crbug.com/139878
-  int frame_num;
-  bool field_pic_flag;
-  bool bottom_field_flag;
-  int idr_pic_id;
-  int pic_order_cnt_lsb;
-  int delta_pic_order_cnt_bottom;
-  int delta_pic_order_cnt0;
-  int delta_pic_order_cnt1;
-  int redundant_pic_cnt;
-  bool direct_spatial_mv_pred_flag;
+  int first_mb_in_slice = 0;
+  int slice_type = 0;
+  int pic_parameter_set_id = 0;
+  int colour_plane_id = 0;  // TODO(posciak): use this!  http://crbug.com/139878
+  int frame_num = 0;
+  bool field_pic_flag = false;
+  bool bottom_field_flag = false;
+  int idr_pic_id = 0;
+  int pic_order_cnt_lsb = 0;
+  int delta_pic_order_cnt_bottom = 0;
+  int delta_pic_order_cnt0 = 0;
+  int delta_pic_order_cnt1 = 0;
+  int redundant_pic_cnt = 0;
+  bool direct_spatial_mv_pred_flag = false;
 
-  bool num_ref_idx_active_override_flag;
-  int num_ref_idx_l0_active_minus1;
-  int num_ref_idx_l1_active_minus1;
-  bool ref_pic_list_modification_flag_l0;
-  bool ref_pic_list_modification_flag_l1;
+  bool num_ref_idx_active_override_flag = false;
+  int num_ref_idx_l0_active_minus1 = 0;
+  int num_ref_idx_l1_active_minus1 = 0;
+  bool ref_pic_list_modification_flag_l0 = false;
+  bool ref_pic_list_modification_flag_l1 = false;
   H264ModificationOfPicNum ref_list_l0_modifications[kRefListModSize];
   H264ModificationOfPicNum ref_list_l1_modifications[kRefListModSize];
 
-  int luma_log2_weight_denom;
-  int chroma_log2_weight_denom;
+  int luma_log2_weight_denom = 0;
+  int chroma_log2_weight_denom = 0;
 
-  bool luma_weight_l0_flag;
-  bool chroma_weight_l0_flag;
+  bool luma_weight_l0_flag = false;
+  bool chroma_weight_l0_flag = false;
   H264WeightingFactors pred_weight_table_l0;
 
-  bool luma_weight_l1_flag;
-  bool chroma_weight_l1_flag;
+  bool luma_weight_l1_flag = false;
+  bool chroma_weight_l1_flag = false;
   H264WeightingFactors pred_weight_table_l1;
 
-  bool no_output_of_prior_pics_flag;
-  bool long_term_reference_flag;
+  bool no_output_of_prior_pics_flag = false;
+  bool long_term_reference_flag = false;
 
-  bool adaptive_ref_pic_marking_mode_flag;
+  bool adaptive_ref_pic_marking_mode_flag = false;
   H264DecRefPicMarking ref_pic_marking[kRefListSize];
 
-  int cabac_init_idc;
-  int slice_qp_delta;
-  bool sp_for_switch_flag;
-  int slice_qs_delta;
-  int disable_deblocking_filter_idc;
-  int slice_alpha_c0_offset_div2;
-  int slice_beta_offset_div2;
+  int cabac_init_idc = 0;
+  int slice_qp_delta = 0;
+  bool sp_for_switch_flag = false;
+  int slice_qs_delta = 0;
+  int disable_deblocking_filter_idc = 0;
+  int slice_alpha_c0_offset_div2 = 0;
+  int slice_beta_offset_div2 = 0;
 
   // Calculated.
   // Size in bits of dec_ref_pic_marking() syntax element.
-  size_t dec_ref_pic_marking_bit_size;
-  size_t pic_order_cnt_bit_size;
+  size_t dec_ref_pic_marking_bit_size = 0;
+  size_t pic_order_cnt_bit_size = 0;
 
   // This is when we are using full sample encryption and only the portions
   // needed for DPB management are filled in, the rest will already be known
   // by the accelerator and we will not need to specify it.
-  bool full_sample_encryption;
+  bool full_sample_encryption = false;
   // This is used by some accelerators to handle decoding after slice header
   // parsing.
-  uint32_t full_sample_index;
+  uint32_t full_sample_index = 0;
 };
 
 struct MEDIA_EXPORT H264SEIRecoveryPoint {
-  int recovery_frame_cnt;
-  bool exact_match_flag;
-  bool broken_link_flag;
-  int changing_slice_group_idc;
+  int recovery_frame_cnt = 0;
+  bool exact_match_flag = false;
+  bool broken_link_flag = false;
+  int changing_slice_group_idc = 0;
 };
 
 struct MEDIA_EXPORT H264SEIMasteringDisplayInfo {
@@ -392,40 +404,26 @@ struct MEDIA_EXPORT H264SEIMasteringDisplayInfo {
     kDisplayPrimaryComponents = 2,
   };
 
-  uint16_t display_primaries[kNumDisplayPrimaries][kDisplayPrimaryComponents];
-  uint16_t white_points[2];
-  uint32_t max_luminance;
-  uint32_t min_luminance;
+  uint16_t display_primaries[kNumDisplayPrimaries][kDisplayPrimaryComponents] =
+      {};
+  uint16_t white_points[2] = {};
+  uint32_t max_luminance = 0;
+  uint32_t min_luminance = 0;
 
   gfx::HdrMetadataSmpteSt2086 ToGfx() const;
 };
 
 struct MEDIA_EXPORT H264SEIContentLightLevelInfo {
-  uint16_t max_content_light_level;
-  uint16_t max_picture_average_light_level;
+  uint16_t max_content_light_level = 0;
+  uint16_t max_picture_average_light_level = 0;
 
   gfx::HdrMetadataCta861_3 ToGfx() const;
 };
 
-struct MEDIA_EXPORT H264SEIMessage {
-  H264SEIMessage();
-
-  enum Type {
-    kSEIRecoveryPoint = 6,
-    kSEIMasteringDisplayInfo = 137,
-    kSEIContentLightLevelInfo = 144,
-  };
-
-  int type;
-  int payload_size;
-  union {
-    // Placeholder; in future more supported types will contribute to more
-    // union members here.
-    H264SEIRecoveryPoint recovery_point;
-    H264SEIMasteringDisplayInfo mastering_display_info;
-    H264SEIContentLightLevelInfo content_light_level_info;
-  };
-};
+using H264SEIMessage = std::variant<std::monostate,
+                                    H264SEIRecoveryPoint,
+                                    H264SEIMasteringDisplayInfo,
+                                    H264SEIContentLightLevelInfo>;
 
 struct MEDIA_EXPORT H264SEI {
   H264SEI();

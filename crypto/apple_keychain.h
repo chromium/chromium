@@ -8,17 +8,15 @@
 #include <Security/Security.h>
 
 #include <optional>
+#include <string_view>
+#include <vector>
 
+#include "base/containers/span.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {
-
-#if BUILDFLAG(IS_IOS)
-using AppleSecKeychainItemRef = void*;
-#else
-using AppleSecKeychainItemRef = SecKeychainItemRef;
-#endif
 
 // DEPRECATED: use `AppleKeychainV2` instead.
 // Wraps the KeychainServices API in a very thin layer, to allow it to be
@@ -26,43 +24,37 @@ using AppleSecKeychainItemRef = SecKeychainItemRef;
 
 // See Keychain Services documentation for function documentation, as these call
 // through directly to their Keychain Services equivalents (Foo ->
-// SecKeychainFoo). The only exception is Free, which should be used for
-// anything returned from this class that would normally be freed with
-// CFRelease (to aid in testing).
+// SecKeychainFoo).
 //
-// The underlying API was deprecated as of the macOS 13 SDK.
-// Removal of its use is tracked in https://crbug.com/1348251
 // New code should use AppleKeychainV2.
 class CRYPTO_EXPORT AppleKeychain {
  public:
-  AppleKeychain();
+  // Returns an object suitable for accessing the platform's default type of
+  // keychain.
+  //
+  // On macOS, this will access the default file-based keychain. On
+  // iOS, this will access the application's data protection keychain.
+  static std::unique_ptr<AppleKeychain> DefaultKeychain();
 
   AppleKeychain(const AppleKeychain&) = delete;
   AppleKeychain& operator=(const AppleKeychain&) = delete;
 
   virtual ~AppleKeychain();
 
-  virtual OSStatus FindGenericPassword(UInt32 service_name_length,
-                                       const char* service_name,
-                                       UInt32 account_name_length,
-                                       const char* account_name,
-                                       UInt32* password_length,
-                                       void** password_data,
-                                       AppleSecKeychainItemRef* item) const;
+  // Note that even though OSStatus has a noError value, that can never be
+  // returned in the OSStatus arm of FindGenericPassword() - in that case, the
+  // std::vector<uint8_t> arm is populated instead.
+  virtual base::expected<std::vector<uint8_t>, OSStatus> FindGenericPassword(
+      std::string_view service_name,
+      std::string_view account_name) const = 0;
 
-  virtual OSStatus ItemFreeContent(void* data) const;
+  virtual OSStatus AddGenericPassword(
+      std::string_view service_name,
+      std::string_view account_name,
+      base::span<const uint8_t> password) const = 0;
 
-  virtual OSStatus AddGenericPassword(UInt32 service_name_length,
-                                      const char* service_name,
-                                      UInt32 account_name_length,
-                                      const char* account_name,
-                                      UInt32 password_length,
-                                      const void* password_data,
-                                      AppleSecKeychainItemRef* item) const;
-
-#if BUILDFLAG(IS_MAC)
-  virtual OSStatus ItemDelete(AppleSecKeychainItemRef item) const;
-#endif  // !BUILDFLAG(IS_MAC)
+ protected:
+  AppleKeychain();
 };
 
 #if BUILDFLAG(IS_MAC)
@@ -85,6 +77,9 @@ class CRYPTO_EXPORT ScopedKeychainUserInteractionAllowed {
   ~ScopedKeychainUserInteractionAllowed();
 
  private:
+  // The previous value of whether user interaction was allowed, for
+  // restoration. If this is nullopt, this scoper did not succeed in its
+  // constructor, so it must not attempt to restore the value.
   std::optional<Boolean> was_allowed_;
 };
 

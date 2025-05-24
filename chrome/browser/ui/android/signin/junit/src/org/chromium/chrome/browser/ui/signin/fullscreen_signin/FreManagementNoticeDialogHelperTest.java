@@ -34,6 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -52,8 +53,8 @@ public class FreManagementNoticeDialogHelperTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Context mContext;
 
-    private CoreAccountInfo mCoreAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId("email@domain.com", "gaia-id");
+    private final CoreAccountInfo mCoreAccountInfo =
+            CoreAccountInfo.createFromEmailAndGaiaId("email@domain.com", new GaiaId("gaia-id"));
     private SignInCallback mCallback;
     private boolean mSignInCompleted;
     private boolean mSignInAborted;

@@ -1,6 +1,6 @@
 // WARNING: !DO NOT CHANGE THIS FILE!
 // This file should only be synced from its source by the owner.
-syntax = "proto2";
+syntax = "proto3";
 
 package chrome.on_device_translation;
 
@@ -16,9 +16,11 @@ message TranslateKitLanguagePackage {
   // The first language code of the language pair. This can either be both
   // source or target language.
   optional string language1 = 1;
+
   // The second language code of the language pair. This can either be both
   // source or target language.
   optional string language2 = 2;
+
   // The path of the language package.
   optional string package_path = 3;
 }

@@ -9,6 +9,7 @@
 
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_client_info.h"
+#include "content/public/browser/service_worker_registration_information.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -44,8 +45,10 @@ class ServiceWorkerContextObserver {
   // registration ID |registration_id| and scope |scope|.
   //
   // This happens after OnRegistrationCompleted().
-  virtual void OnRegistrationStored(int64_t registration_id,
-                                    const GURL& scope) {}
+  virtual void OnRegistrationStored(
+      int64_t registration_id,
+      const GURL& scope,
+      const ServiceWorkerRegistrationInformation& service_worker_info) {}
 
   // Called when the service worker with id |version_id| changes status to
   // activated.

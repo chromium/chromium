@@ -58,6 +58,9 @@ executable("${updater_product_full_name}Util") {
     "//chrome/updater:constants_prod",
     "//chrome/updater:external_constants",
     "//chrome/updater/protos:omaha_proto",
+    "//components/crx_file",
     "//components/policy/proto",
+    "//components/update_client",
+    "//components/update_client:in_process_unzipper",
   ]
 }

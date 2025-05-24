@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/mobile_config.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/tflite/features.gni")
@@ -53,7 +53,7 @@ if (is_win) {
   ]
 }
 
-if (is_ios) {
+if (is_ios && target_platform != "tvos") {
   content_app_deps += [ "//content/app/ios/appex:child_process_bridge" ]
 }
 
@@ -90,12 +90,6 @@ source_set("content_main_runner_app") {
            "//third_party/tflite:buildflags",
            "//tools/v8_context_snapshot:buildflags",
          ]
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/startup",
-      "//chromeos/startup:constants",
-    ]
-  }
   if (build_tflite_with_xnnpack) {
     deps += [ "//third_party/cpuinfo" ]
   }

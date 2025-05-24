@@ -52,8 +52,8 @@ OriginAccessEntry::OriginAccessEntry(
     const KURL& url,
     network::mojom::CorsDomainMatchMode match_mode,
     network::mojom::CorsOriginAccessMatchPriority priority)
-    : private_(url.Protocol().Ascii().data(),
-               url.Host().Ascii().data(),
+    : private_(url.Protocol().Ascii(),
+               url.Host().ToString().Ascii(),
                url.Port() ? url.Port() : DefaultPortForProtocol(url.Protocol()),
                match_mode,
                network::mojom::CorsPortMatchMode::kAllowOnlySpecifiedPort,

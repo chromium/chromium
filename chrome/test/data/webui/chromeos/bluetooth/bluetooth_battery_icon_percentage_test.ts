@@ -32,10 +32,10 @@ suite('CrComponentsBluetoothBatteryIconPercentageTest', function() {
   async function setBatteryTypePercentage(
       batteryType: BatteryType, batteryPercentage: number) {
     bluetoothBatteryIconPercentage.device.batteryInfo = {
-      defaultProperties: undefined,
-      leftBudInfo: undefined,
-      rightBudInfo: undefined,
-      caseInfo: undefined,
+      defaultProperties: null,
+      leftBudInfo: null,
+      rightBudInfo: null,
+      caseInfo: null,
     };
 
     if (batteryType === BatteryType.DEFAULT) {

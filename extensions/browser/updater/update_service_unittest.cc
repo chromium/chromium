@@ -50,8 +50,6 @@
 
 namespace {
 
-using UpdateClientEvents = update_client::UpdateClient::Observer::Events;
-
 class FakeUpdateClient : public update_client::UpdateClient {
  public:
   FakeUpdateClient();
@@ -110,7 +108,7 @@ class FakeUpdateClient : public update_client::UpdateClient {
                       CrxStateChangeCallback crx_state_change_callback,
                       bool is_foreground,
                       update_client::Callback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   bool GetCrxUpdateState(
@@ -331,11 +329,6 @@ class FakeExtensionSystem : public MockExtensionSystem {
     }
   }
 
-  bool FinishDelayedInstallationIfReady(const ExtensionId& extension_id,
-                                        bool install_immediately) override {
-    return false;
-  }
-
   AllowlistState GetExtensionAllowlistState(const ExtensionId& extension_id) {
     if (!base::Contains(extension_allowlist_states_, extension_id))
       return ALLOWLIST_UNDEFINED;
@@ -458,10 +451,10 @@ class UpdateServiceTest : public ExtensionsTest {
         base::BindOnce(
             [](bool* done, const update_client::CrxInstaller::Result& result) {
               *done = true;
-              EXPECT_EQ(result.result.category_,
+              EXPECT_EQ(result.result.category,
                         update_client::ErrorCategory::kNone);
-              EXPECT_EQ(result.result.code_, 0);
-              EXPECT_EQ(result.result.extra_, 0);
+              EXPECT_EQ(result.result.code, 0);
+              EXPECT_EQ(result.result.extra, 0);
             },
             &done));
 

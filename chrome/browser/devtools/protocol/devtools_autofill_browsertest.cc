@@ -6,7 +6,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,13 +13,13 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/mock_autofill_manager_observer.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -98,7 +97,7 @@ std::string GetProfileInfoFromAddressField(const AutofillProfile profile,
 class TestAutofillManager : public autofill::BrowserAutofillManager {
  public:
   explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
-      : BrowserAutofillManager(driver, "en-US") {}
+      : BrowserAutofillManager(driver) {}
 
   static TestAutofillManager& GetForRenderFrameHost(
       content::RenderFrameHost* rfh) {
@@ -115,8 +114,8 @@ class TestAutofillManager : public autofill::BrowserAutofillManager {
   const FormStructure* WaitForFormWithNFields(int n) {
     return WaitForMatchingForm(this, base::BindRepeating(
                                          [](int n, const FormStructure& form) {
-                                           return form.active_field_count() ==
-                                                  (size_t)n;
+                                           return form.fields().size() ==
+                                                  static_cast<size_t>(n);
                                          },
                                          n));
   }
@@ -129,11 +128,7 @@ class TestAutofillManager : public autofill::BrowserAutofillManager {
 
 class DevToolsAutofillTest : public DevToolsProtocolTestBase {
  public:
-  DevToolsAutofillTest() {
-    feature_list_.InitWithFeatures(
-        {features::kAutofillTestFormWithTestAddresses},
-        {});
-  }
+  DevToolsAutofillTest() = default;
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
@@ -265,7 +260,6 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_;
   FormGlobalId form_id_ = test::MakeFormGlobalId();
   autofill::TestAutofillManagerInjector<TestAutofillManager>
       autofill_manager_injector_;
@@ -561,8 +555,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
                         base::UTF8ToUTF16(
                             main_frame()->GetDevToolsFrameToken().ToString())));
     EXPECT_THAT(ff,
-                Not(FilledFieldHasAttributeWithValue16(
-                    "value", af->value(autofill::ValueSemantics::kCurrent))));
+                Not(FilledFieldHasAttributeWithValue16("value", af->value())));
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue(
                     "htmlType", std::string(autofill::FormControlTypeToString(
@@ -624,7 +617,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
           autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh));
       driver->AskForValuesToFill(
           form, form.fields()[0].renderer_id(), gfx::Rect(0, 10),
-          ::autofill::mojom::AutofillSuggestionTriggerSource::kUnspecified);
+          ::autofill::mojom::AutofillSuggestionTriggerSource::kUnspecified,
+          std::nullopt);
     }
   });
 

@@ -48,7 +48,6 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   void SetCheckedIconImageColor(SkColor color);
 
   // LabelButton:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::ImageSkia GetImage(ButtonState for_state) const override;
   std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const override;
   std::unique_ptr<ActionViewInterface> GetActionViewInterface() override;
@@ -56,6 +55,9 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
  protected:
   // Bitmask constants for GetIconImageColor.
   enum IconState { CHECKED = 0b1, ENABLED = 0b10 };
+
+  // Button:
+  void UpdateAccessibleCheckedState() override;
 
   // LabelButton:
   void OnThemeChanged() override;

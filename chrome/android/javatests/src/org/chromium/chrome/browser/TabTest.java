@@ -22,7 +22,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -49,11 +49,13 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
@@ -61,19 +63,16 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /** Tests for Tab class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class TabTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -95,7 +94,7 @@ public class TabTest {
 
     @Before
     public void setUp() throws Exception {
-        mTab = sActivityTestRule.getActivity().getActivityTab();
+        mTab = mActivityTestRule.getActivity().getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mTabObserver));
         mOnTitleUpdatedHelper = new CallbackHelper();
         mRootIdForReset = mTab.getRootId();
@@ -122,7 +121,7 @@ public class TabTest {
         assertNotSame(
                 "The tab context's theme should have been updated",
                 mTab.getContentView().getContext().getTheme(),
-                sActivityTestRule.getActivity().getApplication().getTheme());
+                mActivityTestRule.getActivity().getApplication().getTheme());
     }
 
     @Test
@@ -132,16 +131,18 @@ public class TabTest {
         final String oldTitle = "oldTitle";
         final String newTitle = "newTitle";
 
-        sActivityTestRule.loadUrl(
-                "data:text/html;charset=utf-8,<html><head><title>"
-                        + oldTitle
-                        + "</title></head><body/></html>");
+        mActivityTestRule
+                .startOnBlankPage()
+                .loadWebPageProgrammatically(
+                        "data:text/html;charset=utf-8,<html><head><title>"
+                                + oldTitle
+                                + "</title></head><body/></html>");
         assertEquals(
                 "title does not match initial title",
                 oldTitle,
                 ChromeTabUtils.getTitleOnUiThread(mTab));
         int currentCallCount = mOnTitleUpdatedHelper.getCallCount();
-        sActivityTestRule.runJavaScriptCodeInCurrentTab("document.title='" + newTitle + "';");
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("document.title='" + newTitle + "';");
         mOnTitleUpdatedHelper.waitForCallback(currentCallCount);
         assertEquals("title does not update", newTitle, ChromeTabUtils.getTitleOnUiThread(mTab));
     }
@@ -203,7 +204,7 @@ public class TabTest {
     @RequiresRestart(
             "crbug.com/358190587, causes BlankCTATabInitialStateRule state reset to fail flakily.")
     public void testNativePageTabAttachment() {
-        sActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
+        mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
         RecentTabsPageTestUtils.waitForRecentTabsPageLoaded(mTab);
         assertNotNull(mTab.getWebContents());
         assertFalse(mTab.isDetached());
@@ -222,7 +223,7 @@ public class TabTest {
     @Feature({"Tab"})
     public void testFrozenTabAttachment() {
         String url =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
         Tab tab = createSecondFrozenTab(url);
         assertNull(tab.getWebContents());
         assertFalse(tab.isDetached());
@@ -249,6 +250,8 @@ public class TabTest {
         tabState.lastNavigationCommittedTimestampMillis = 748932L;
         tabState.rootId = 5;
         tabState.tabGroupId = new Token(1L, 2L);
+        tabState.tabHasSensitiveContent = true;
+        tabState.isPinned = true;
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -260,10 +263,12 @@ public class TabTest {
                 mTab.getLastNavigationCommittedTimestampMillis());
         assertEquals(tabState.rootId, mTab.getRootId());
         assertEquals(tabState.tabGroupId, mTab.getTabGroupId());
+        assertEquals(tabState.tabHasSensitiveContent, mTab.getTabHasSensitiveContent());
+        assertEquals(tabState.isPinned, mTab.getIsPinned());
     }
 
     @FunctionalInterface
-    private interface TabCreator {
+    private interface TestTabCreator {
         /** Create a new tab with the provided URL. */
         Tab createTab(String url);
     }
@@ -273,9 +278,9 @@ public class TabTest {
     @Feature({"Tab"})
     public void testFreezeAndAppendPendingNavigation_AlreadyFrozen() {
         String firstUrl =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
         String secondUrl =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
         checkFreezingAndAppendingPendingNavigation(
                 this::createSecondFrozenTab, firstUrl, secondUrl, "MyFrozenTitle");
     }
@@ -283,18 +288,30 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
+    public void testFreezeAndAppendPendingNavigation_LazyBackground() {
+        String firstUrl =
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+        String secondUrl =
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
+        checkFreezingAndAppendingPendingNavigation(
+                this::createLazyTab, firstUrl, secondUrl, "MyLazyTitle");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
     public void testFreezeAndAppendPendingNavigation_LiveBackground() {
         String firstUrl =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
         String secondUrl =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
         checkFreezingAndAppendingPendingNavigation(
                 url -> {
-                    Tab tab = sActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
+                    Tab tab = mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
                     ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 TabModel model =
-                                        sActivityTestRule.getActivity().getCurrentTabModel();
+                                        mActivityTestRule.getActivity().getCurrentTabModel();
                                 TabModelUtils.setIndex(model, /* index= */ 0);
                             });
                     return tab;
@@ -310,14 +327,14 @@ public class TabTest {
     public void testFreezeAndAppendPendingNavigation_LiveBackground_NativePage() {
         String firstUrl = UrlConstants.NTP_URL;
         String secondUrl =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
         checkFreezingAndAppendingPendingNavigation(
                 url -> {
-                    Tab tab = sActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
+                    Tab tab = mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
                     ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 TabModel model =
-                                        sActivityTestRule.getActivity().getCurrentTabModel();
+                                        mActivityTestRule.getActivity().getCurrentTabModel();
                                 TabModelUtils.setIndex(model, /* index= */ 0);
                             });
                     assertTrue(tab.isNativePage());
@@ -333,15 +350,15 @@ public class TabTest {
     @Feature({"Tab"})
     public void testFreezeAndAppendPendingNavigation_NullTitle() {
         String firstUrl =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
         String secondUrl =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
         checkFreezingAndAppendingPendingNavigation(
                 this::createSecondFrozenTab, firstUrl, secondUrl, null);
     }
 
     private void checkFreezingAndAppendingPendingNavigation(
-            TabCreator tabCreator,
+            TestTabCreator tabCreator,
             String firstUrl,
             String secondUrl,
             @Nullable String secondTitle) {
@@ -371,13 +388,14 @@ public class TabTest {
 
         assertFalse(bgTab.isLoading());
         assertNull(bgTab.getWebContents());
+        assertNull(bgTab.getPendingLoadParams());
 
         Runnable loadPage =
                 () -> {
                     ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 TabModel model =
-                                        sActivityTestRule.getActivity().getCurrentTabModel();
+                                        mActivityTestRule.getActivity().getCurrentTabModel();
                                 TabModelUtils.setIndex(model, model.indexOf(bgTab));
                             });
                 };
@@ -410,7 +428,7 @@ public class TabTest {
     private void attachOnUiThread(Tab tab) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    WindowAndroid window = sActivityTestRule.getActivity().getWindowAndroid();
+                    WindowAndroid window = mActivityTestRule.getActivity().getWindowAndroid();
                     WebContents webContents = tab.getWebContents();
                     if (webContents != null) webContents.setTopLevelNativeWindow(window);
                     tab.updateAttachment(window, /* tabDelegateFactory= */ null);
@@ -418,18 +436,40 @@ public class TabTest {
     }
 
     private Tab createSecondFrozenTab(String url) {
-        Tab tab = sActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
+        Tab tab = mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState state = TabStateExtractor.from(tab);
-                    sActivityTestRule
+                    mActivityTestRule
                             .getActivity()
                             .getCurrentTabModel()
-                            .closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
-                    return sActivityTestRule
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
+                    return mActivityTestRule
                             .getActivity()
                             .getCurrentTabCreator()
                             .createFrozenTab(state, tab.getId(), /* index= */ 1);
+                });
+    }
+
+    private Tab createLazyTab(String url) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabCreator tabCreator =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getTabCreatorManagerSupplier()
+                                    .get()
+                                    .getTabCreator(/* incognito= */ false);
+                    LoadUrlParams params = new LoadUrlParams(new GURL(url));
+                    return tabCreator.createNewTab(
+                            params,
+                            "Lazy Title",
+                            TabLaunchType.FROM_SYNC_BACKGROUND,
+                            /* parent= */ null,
+                            /* position= */ TabList.INVALID_TAB_INDEX);
                 });
     }
 }

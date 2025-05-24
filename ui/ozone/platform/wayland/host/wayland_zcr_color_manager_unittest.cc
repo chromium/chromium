@@ -32,8 +32,6 @@ using ::testing::Values;
 namespace ui {
 namespace {
 
-constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
-
 base::ScopedFD MakeFD() {
   base::FilePath temp_path;
   EXPECT_TRUE(base::CreateTemporaryFile(&temp_path));
@@ -61,7 +59,10 @@ class WaylandZcrColorManagerTest : public WaylandTest {
 
 }  // namespace
 
-TEST_P(WaylandZcrColorManagerTest, CreateColorManagementOutput) {
+// TODO(crbug.com/375959958): given lacros' sunset, the WaylandZcrColorManager
+// is no longer created. Though, it might make sense to still keep this and
+// enable back when adapting to the WIP upstream protocol.
+TEST_P(WaylandZcrColorManagerTest, DISABLED_CreateColorManagementOutput) {
   // Set default values for the output.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl::TestOutput* output = server->output();
@@ -107,7 +108,10 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementOutput) {
   EXPECT_EQ(*gfx_color_space, gfx::ColorSpace::CreateHDR10());
 }
 
-TEST_P(WaylandZcrColorManagerTest, CreateColorManagementSurface) {
+// TODO(crbug.com/375959958): given lacros' sunset, the WaylandZcrColorManager
+// is no longer created. Though, it might make sense to still keep this and
+// enable back when adapting to the WIP upstream protocol.
+TEST_P(WaylandZcrColorManagerTest, DISABLED_CreateColorManagementSurface) {
   auto* surface = window_.get()->root_surface();
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto params_vector =
@@ -125,9 +129,7 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementSurface) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true,
-                                  /*server_version=*/{});
+                                  /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;
@@ -155,7 +157,10 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementSurface) {
   });
 }
 
-TEST_P(WaylandZcrColorManagerTest, DoNotSetInvaliColorSpace) {
+// TODO(crbug.com/375959958): given lacros' sunset, the WaylandZcrColorManager
+// is no longer created. Though, it might make sense to still keep this and
+// enable back when adapting to the WIP upstream protocol.
+TEST_P(WaylandZcrColorManagerTest, DISABLED_DoNotSetInvaliColorSpace) {
   auto* surface = window_.get()->root_surface();
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto params_vector =
@@ -173,9 +178,7 @@ TEST_P(WaylandZcrColorManagerTest, DoNotSetInvaliColorSpace) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true,
-                                  /*server_version=*/{});
+                                  /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;

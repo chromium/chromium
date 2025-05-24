@@ -25,7 +25,7 @@ class GPUComputePassEncoder : public DawnObject<wgpu::ComputePassEncoder>,
   GPUComputePassEncoder(const GPUComputePassEncoder&) = delete;
   GPUComputePassEncoder& operator=(const GPUComputePassEncoder&) = delete;
 
-  // gpu_compute_pass_encoder.idl
+  // gpu_compute_pass_encoder.idl {{{
   void setBindGroup(uint32_t index,
                     const DawnObject<wgpu::BindGroup>* bindGroup) {
     GetHandle().SetBindGroup(
@@ -69,8 +69,9 @@ class GPUComputePassEncoder : public DawnObject<wgpu::ComputePassEncoder>,
                       uint32_t queryIndex,
                       ExceptionState& exception_state);
   void end() { GetHandle().End(); }
+  // }}} End of WebIDL binding implementation.
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

@@ -230,9 +230,14 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
         base::StringPrintf("No active side panel for windowId: %d", window_id));
   }
 
+  Browser* browser = window_controller->GetBrowser();
+  if (!browser) {
+    return base::unexpected(
+        base::StringPrintf("No browser for windowId: %d", window_id));
+  }
+
   side_panel_util::OpenGlobalExtensionSidePanel(
-      *window_controller->GetBrowser(), /*web_contents=*/nullptr,
-      extension.id());
+      *browser, /*web_contents=*/nullptr, extension.id());
   return true;
 }
 
@@ -243,26 +248,31 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
     std::optional<int> window_id,
     bool include_incognito_information) {
   // First, find the corresponding tab.
-  Browser* browser = nullptr;
+  WindowController* window = nullptr;
   content::WebContents* web_contents = nullptr;
   if (!ExtensionTabUtil::GetTabById(tab_id, context,
-                                    include_incognito_information, &browser,
-                                    nullptr, &web_contents, nullptr)) {
+                                    include_incognito_information, &window,
+                                    &web_contents, nullptr) ||
+      !window) {
     return base::unexpected(
         base::StringPrintf("No tab with tabId: %d", tab_id));
   }
 
-  CHECK(browser);
+  Browser* browser = window->GetBrowser();
+  if (!browser) {
+    return base::unexpected(
+        base::StringPrintf("No browser for tabId: %d", tab_id));
+  }
 
   // If both `tab_id` and `window_id` were provided, ensure the tab is in
-  // the specified window.
-  if (window_id && window_id != ExtensionTabUtil::GetWindowId(browser)) {
+  // the specified window. The window can also be null for prerender tabs
+  // which can't have a side panel.
+  if (window_id && window_id != window->GetWindowId()) {
     return base::unexpected(
         "The specified tab does not belong to the specified window.");
   }
 
-  // Next, determine if we an active side panel (contextual or global) for that
-  // tab.
+  // Verify that an active side panel (contextual or global) exists for the tab.
   api::side_panel::PanelOptions panel_options = GetOptions(extension, tab_id);
   if (!panel_options.path || !panel_options.enabled.has_value() ||
       !(*panel_options.enabled)) {

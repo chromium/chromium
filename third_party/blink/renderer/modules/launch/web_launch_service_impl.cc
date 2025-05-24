@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/launch/web_launch_service_impl.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -69,8 +70,13 @@ void WebLaunchServiceImpl::SetLaunchFiles(
                                           std::move(files));
 }
 
-void WebLaunchServiceImpl::EnqueueLaunchParams(const KURL& launch_url) {
-  DOMWindowLaunchQueue::EnqueueLaunchParams(GetSupplementable(), launch_url);
+void WebLaunchServiceImpl::EnqueueLaunchParams(
+    const KURL& launch_url,
+    base::TimeTicks time_navigation_started_in_browser,
+    bool navigation_started) {
+  DOMWindowLaunchQueue::EnqueueLaunchParams(GetSupplementable(), launch_url,
+                                            time_navigation_started_in_browser,
+                                            navigation_started);
 }
 
 }  // namespace blink

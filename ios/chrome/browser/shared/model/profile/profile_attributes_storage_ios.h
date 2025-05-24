@@ -14,19 +14,43 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
 class PrefRegistrySimple;
 class PrefService;
 class ProfileAttributesIOS;
+class ProfileAttributesStorageObserverIOS;
 
 // This class saves various information about profiles to local preferences.
 class ProfileAttributesStorageIOS {
  public:
-  // Callback that can modify and then return a ProfileAttributesIOS.
+  // Enum controlling the iteration behaviour.
+  enum class IterationResult {
+    kContinue,
+    kTerminate,
+  };
+
+  // Callback that can modify a ProfileAttributesIOS.
   using ProfileAttributesCallback =
-      base::OnceCallback<ProfileAttributesIOS(ProfileAttributesIOS)>;
+      base::OnceCallback<void(ProfileAttributesIOS&)>;
+
+  // Iterator types for the IterateOverProfileAttributes(...) overloads.
+  //
+  // The iterators returning a IterationResult may stop the iteration by
+  // returning IterationResult::kTerminate, the iterators returning void
+  // will always iterate over all items.
+  //
+  // The iterator taking the ProfileAttributesIOS by reference can mutate
+  // the object and the changes (if any) will be reflected in the storage.
+  using Iterator =
+      base::RepeatingCallback<IterationResult(ProfileAttributesIOS&)>;
+  using CompleteIterator = base::RepeatingCallback<void(ProfileAttributesIOS&)>;
+  using ConstIterator =
+      base::RepeatingCallback<IterationResult(const ProfileAttributesIOS&)>;
+  using ConstCompleteIterator =
+      base::RepeatingCallback<void(const ProfileAttributesIOS&)>;
 
   explicit ProfileAttributesStorageIOS(PrefService* prefs);
 
@@ -36,11 +60,9 @@ class ProfileAttributesStorageIOS {
 
   ~ProfileAttributesStorageIOS();
 
-  // Register profile with `name`.
-  void AddProfile(std::string_view name);
-
-  // Remove informations about profile with `name`.
-  void RemoveProfile(std::string_view name);
+  // Register/unregister `observer`.
+  void AddObserver(ProfileAttributesStorageObserverIOS* observer);
+  void RemoveObserver(ProfileAttributesStorageObserverIOS* observer);
 
   // Returns the count of known profiles.
   size_t GetNumberOfProfiles() const;
@@ -48,30 +70,38 @@ class ProfileAttributesStorageIOS {
   // Returns whether a profile with `name` exists.
   bool HasProfileWithName(std::string_view name) const;
 
-  // Retrieves the information for profile at `index`.
-  ProfileAttributesIOS GetAttributesForProfileAtIndex(size_t index) const;
+  // Returns whether the profile is marked for deletion.
+  bool IsProfileMarkedForDeletion(std::string_view profile_name) const;
 
   // Retrieves the information for profile with `name`.
   ProfileAttributesIOS GetAttributesForProfileWithName(
       std::string_view name) const;
 
-  // Convenience method to modify the attributes for a profile at `index`.
-  // The callback is invoked synchronously and can modify the attributes
-  // and the data will be saved to the preferences if changed.
-  void UpdateAttributesForProfileAtIndex(size_t index,
-                                         ProfileAttributesCallback callback);
-
-  // Convenience method to modify the attributes for a profile with `name`.
+  // Modifies the attributes for the profile with `name` (which must exist).
   // The callback is invoked synchronously and can modify the attributes
   // and the data will be saved to the preferences if changed.
   void UpdateAttributesForProfileWithName(std::string_view name,
                                           ProfileAttributesCallback callback);
 
-  // Returns the index of the profile with `name` or std::string::npos if
-  // not found.
-  // TODO(crbug.com/331783685): make private once ChromeAccountManagerService
-  // no longer uses indices to refer to profile to use.
-  size_t GetIndexOfProfileWithName(std::string_view name) const;
+  // Iterates over profiles' attributes, stopping the iteration if `iterator`
+  // return IterationResult::kTerminate. Can mutate the attributes and the
+  // changes will be reflected in the storage.
+  void IterateOverProfileAttributes(Iterator iterator);
+
+  // Adaptor for IterateOverProfileAttributes(...) which accept an iterator
+  // that returns void and which iterate over all values.  Can mutate the
+  // attributes and the changes will be reflected in the storage.
+  void IterateOverProfileAttributes(CompleteIterator iterator);
+
+  // Iterates over profiles' attributes, stopping the iteration if `iterator`
+  // return IterationResult::kTerminate. Can mutate the attributes and the
+  // changes will be reflected in the storage.
+  void IterateOverProfileAttributes(ConstIterator iterator) const;
+
+  // Adaptor for IterateOverProfileAttributes(...) which accept an iterator
+  // that returns void and which iterate over all values.  Can mutate the
+  // attributes and the changes will be reflected in the storage.
+  void IterateOverProfileAttributes(ConstCompleteIterator iterator) const;
 
   // Register the given profile with the given scene.
   void SetProfileNameForSceneID(std::string_view scene_id,
@@ -83,12 +113,24 @@ class ProfileAttributesStorageIOS {
   // Returns the name of the profile associated to the given scene.
   const std::string& GetProfileNameForSceneID(std::string_view scene_id);
 
+  // Returns the name of the profile that's designated as the personal profile,
+  // i.e. the one containing all consumer (non-managed) accounts. The name may
+  // be empty (should only happen very briefly during startup), but otherwise
+  // it's guaranteed that an entry with this name exists.
+  const std::string& GetPersonalProfileName() const;
+
+  // Designates the profile with `profile_name` as the personal profile. A
+  // profile entry with this name must already exist.
+  void SetPersonalProfileName(std::string_view profile_name);
+
   // Register cache related preferences in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
- private:
+ protected:
   raw_ptr<PrefService> prefs_;
-  std::vector<std::string> sorted_keys_;
+
+  base::ObserverList<ProfileAttributesStorageObserverIOS, /*check_empty=*/true>
+      observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_ATTRIBUTES_STORAGE_IOS_H_

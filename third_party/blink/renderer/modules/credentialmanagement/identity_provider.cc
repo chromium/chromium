@@ -6,8 +6,10 @@
 
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_resolve_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_identityprovidertoken_usvstring.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -55,7 +57,7 @@ void OnRequestUserInfo(
       return;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }
@@ -71,7 +73,7 @@ ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
+          network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "The 'identity-credentials-get' feature is not enabled in this "
@@ -80,11 +82,6 @@ ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
   }
 
   DCHECK(provider);
-
-  if (!provider->hasConfigURL()) {
-    resolver->RejectWithTypeError("Missing the provider's configURL.");
-    return promise;
-  }
 
   KURL provider_url(provider->configURL());
   String client_id = provider->clientId();
@@ -224,9 +221,18 @@ void OnResolveTokenRequest(ScriptPromiseResolver<IDLUndefined>* resolver,
 
 ScriptPromise<IDLUndefined> IdentityProvider::resolve(
     ScriptState* script_state,
-    const String& token,
+    const V8UnionIdentityProviderTokenOrUSVString* token_union,
     const IdentityResolveOptions* options) {
   DCHECK(options);
+
+  String token;
+  if (token_union->IsIdentityProviderToken()) {
+    token = token_union->GetAsIdentityProviderToken()->token();
+  } else {
+    CHECK(token_union->IsUSVString());
+    token = token_union->GetAsUSVString();
+  }
+
   String account_id;
   if (options->hasAccountId() && !options->accountId().empty()) {
     account_id = options->accountId();

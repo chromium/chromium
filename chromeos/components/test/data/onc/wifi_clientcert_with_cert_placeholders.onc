@@ -1,0 +1,27 @@
+{
+   "GUID": "{77db0089-0bc8-4358-929c-123xcv}",
+   "Name": "placeholder_test",
+   "Type": "WiFi",
+   "WiFi": {
+      "EAP": {
+         "ClientCertPattern": {
+            "Issuer": {
+               "CommonName": "${DEVICE_SERIAL_NUMBER}",
+               "Locality": "${DEVICE_SERIAL_NUMBER}",
+               "Organization": "${DEVICE_SERIAL_NUMBER}",
+               "OrganizationalUnit": "${DEVICE_SERIAL_NUMBER}"
+            },
+            "Subject": {
+               "CommonName": "${DEVICE_SERIAL_NUMBER}",
+               "Locality": "${DEVICE_SERIAL_NUMBER}",
+               "Organization": "${DEVICE_SERIAL_NUMBER}",
+               "OrganizationalUnit": "${DEVICE_SERIAL_NUMBER}"
+            }
+         },
+         "ClientCertType": "Pattern",
+         "Outer": "EAP-TLS",
+      },
+      "SSID": "OpenWrt",
+      "Security": "WPA-EAP"
+   }
+}

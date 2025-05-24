@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FingerprintBrowserProxy, FingerprintInfo, FingerprintResultType} from 'chrome://os-settings/lazy_load.js';
+import type {FingerprintBrowserProxy, FingerprintInfo, FingerprintResultType} from 'chrome://os-settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -18,7 +18,6 @@ export class TestFingerprintBrowserProxy extends TestBrowserProxy implements
       'getEnrollmentLabel',
       'removeEnrollment',
       'changeEnrollmentLabel',
-      'fakeScanComplete',
     ]);
     this.fingerprintsList_ = [];
   }
@@ -75,9 +74,5 @@ export class TestFingerprintBrowserProxy extends TestBrowserProxy implements
     this.fingerprintsList_[index] = newLabel;
     this.methodCalled('changeEnrollmentLabel', index, newLabel);
     return Promise.resolve(true);
-  }
-
-  fakeScanComplete(): void {
-    chrome.send('fakeScanComplete');
   }
 }

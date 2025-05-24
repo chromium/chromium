@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_UI_AUTOFILL_ADDRESS_EDITOR_CONTROLLER_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 
@@ -84,16 +85,9 @@ class AddressEditorController {
   [[nodiscard]] base::CallbackListSubscription AddIsValidChangedCallback(
       OnIsValidChangeCallbackList::CallbackType callback);
 
-  bool IsValid(const EditorField& field, const std::u16string& value);
+  bool IsValid(const EditorField& field, std::u16string_view value);
 
  private:
-  // Returns whether unsupported countries should be filtered out, which is
-  // true iff the profile is an account address profile.
-  bool should_filter_out_unsupported_countries() const {
-    // Validation is turned on only for account address profiles.
-    return is_validatable_;
-  }
-
   AutofillProfile profile_to_edit_;
 
   const raw_ref<PersonalDataManager> pdm_;

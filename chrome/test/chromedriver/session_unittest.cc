@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/stub_chrome.h"
 #include "chrome/test/chromedriver/chrome/stub_web_view.h"
@@ -35,8 +36,10 @@ void SaveTo(std::string* dest, std::string value) {
 
 class MockChrome : public StubChrome {
  public:
-  MockChrome() : web_view_("1") {}
-  ~MockChrome() override {}
+  MockChrome() : web_view_("1") {
+    web_view_.SetupChildView(std::make_unique<StubWebView>("child"));
+  }
+  ~MockChrome() override = default;
 
   Status GetWebViewById(const std::string& id, WebView** web_view) override {
     if (id == web_view_.GetId()) {
@@ -173,14 +176,15 @@ TEST(Session, OnBidiResponseChan) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", std::string("abc/512") + Session::kChannelSuffix);
+  payload.Set("goog:channel", std::string("abc/512") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
   std::optional<base::Value> data_parsed =
       base::JSONReader::Read(received, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(data_parsed);
   ASSERT_TRUE(data_parsed->is_dict());
-  EXPECT_THAT(data_parsed->GetDict().FindString("channel"), Pointee(Eq("abc")));
+  EXPECT_THAT(data_parsed->GetDict().FindString("goog:channel"),
+              Pointee(Eq("abc")));
   EXPECT_THAT(data_parsed->GetDict().FindString("data"), Pointee(Eq("ok")));
 }
 
@@ -191,14 +195,14 @@ TEST(Session, OnBidiResponseNoChan) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", std::string("/512") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/512") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
   std::optional<base::Value> data_parsed =
       base::JSONReader::Read(received, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(data_parsed);
   ASSERT_TRUE(data_parsed->is_dict());
-  EXPECT_EQ(nullptr, data_parsed->GetDict().FindString("channel"));
+  EXPECT_EQ(nullptr, data_parsed->GetDict().FindString("goog:channel"));
   EXPECT_THAT(data_parsed->GetDict().FindString("data"), Pointee(Eq("ok")));
 }
 
@@ -221,7 +225,7 @@ TEST(Session, OnBidiResponseUnexpectedChannel1) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", "x/512/unexpected");
+  payload.Set("goog:channel", "x/512/unexpected");
   payload.Set("data", "ok");
   EXPECT_TRUE(session.OnBidiResponse(std::move(payload)).IsError());
   EXPECT_EQ("", received);
@@ -234,7 +238,7 @@ TEST(Session, OnBidiResponseUnexpectedChannel2) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", "unexpected");
+  payload.Set("goog:channel", "unexpected");
   payload.Set("data", "ok");
   EXPECT_TRUE(session.OnBidiResponse(std::move(payload)).IsError());
   EXPECT_EQ("", received);
@@ -247,7 +251,7 @@ TEST(Session, OnBidiResponseUnknownConnection) {
   session.AddBidiConnection(136, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", std::string("/5") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/5") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
   // However no connection should actually receive it
@@ -266,7 +270,7 @@ TEST(Session, OnBidiResponseRemovedConnection) {
                             base::BindRepeating([] {}));
   session.RemoveBidiConnection(1);
   base::Value::Dict payload;
-  payload.Set("channel", std::string("/1") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/1") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
   // However no connection should actually receive it
@@ -283,7 +287,7 @@ TEST(Session, OnBidiResponseAfterCloseAllConnections) {
                             base::BindRepeating([] {}));
   session.CloseAllConnections();
   base::Value::Dict payload;
-  payload.Set("channel", std::string("/5") + Session::kNoChannelSuffix);
+  payload.Set("goog:channel", std::string("/5") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
   // However no connection should actually receive it
@@ -304,7 +308,7 @@ TEST(Session, OnBidiResponseCorrectConnection) {
   session.AddBidiConnection(3, base::BindRepeating(&SaveTo, &received3),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", std::string("abc/2") + Session::kChannelSuffix);
+  payload.Set("goog:channel", std::string("abc/2") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
   EXPECT_EQ("", received1);
@@ -313,7 +317,8 @@ TEST(Session, OnBidiResponseCorrectConnection) {
       base::JSONReader::Read(received2, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(data_parsed);
   ASSERT_TRUE(data_parsed->is_dict());
-  EXPECT_THAT(data_parsed->GetDict().FindString("channel"), Pointee(Eq("abc")));
+  EXPECT_THAT(data_parsed->GetDict().FindString("goog:channel"),
+              Pointee(Eq("abc")));
   EXPECT_THAT(data_parsed->GetDict().FindString("data"), Pointee(Eq("ok")));
 }
 
@@ -324,70 +329,13 @@ TEST(Session, OnBidiResponseFormat) {
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   base::Value::Dict payload;
-  payload.Set("channel", std::string("abc/512") + Session::kChannelSuffix);
+  payload.Set("goog:channel", std::string("abc/512") + Session::kChannelSuffix);
   payload.Set("string_field", "some_String");
   payload.Set("integer_field", 1);
   payload.Set("float_field", 1.234);
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
   EXPECT_EQ(
-      "{\"channel\":\"abc\",\"float_field\":1.234,\"integer_field\":1,\"string_"
-      "field\":\"some_String\"}",
+      "{\"float_field\":1.234,\"goog:channel\":\"abc\",\"integer_field\":1,"
+      "\"string_field\":\"some_String\"}",
       received);
-}
-
-TEST(Session, OnBlockingChannelResponseWhileAwaiting) {
-  std::string good_blocking_channels[] = {
-      std::string("x/7") + Session::kChannelSuffix +
-          Session::kBlockingChannelSuffix,
-      std::string("/7") + Session::kNoChannelSuffix +
-          Session::kBlockingChannelSuffix,
-  };
-  for (std::string channel : good_blocking_channels) {
-    std::unique_ptr<Chrome> chrome(new MockChrome());
-    Session session("1", std::move(chrome));
-    session.awaiting_bidi_response = true;
-    session.AddBidiConnection(7, base::BindRepeating([](std::string) {}),
-                              base::BindRepeating([] {}));
-    base::Value::Dict payload;
-    payload.Set("channel", channel);
-    EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
-    EXPECT_FALSE(session.awaiting_bidi_response);
-  }
-}
-
-TEST(Session, OnNonBlockingChannelResponseWhileAwaiting) {
-  std::string good_non_blocking_channels[] = {
-      std::string("x/7") + Session::kChannelSuffix,
-      std::string("/7") + Session::kNoChannelSuffix};
-  for (std::string channel : good_non_blocking_channels) {
-    std::unique_ptr<Chrome> chrome(new MockChrome());
-    Session session("1", std::move(chrome));
-    session.awaiting_bidi_response = true;
-    session.AddBidiConnection(7, base::BindRepeating([](std::string) {}),
-                              base::BindRepeating([] {}));
-    base::Value::Dict payload;
-    payload.Set("channel", channel);
-    EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
-    EXPECT_TRUE(session.awaiting_bidi_response);
-  }
-}
-
-TEST(Session, OnBlockingChannelResponseWhileNotAwaiting) {
-  std::string good_blocking_channels[] = {
-      std::string("x/7") + Session::kChannelSuffix +
-          Session::kBlockingChannelSuffix,
-      std::string("/7") + Session::kNoChannelSuffix +
-          Session::kBlockingChannelSuffix,
-  };
-  for (std::string channel : good_blocking_channels) {
-    std::unique_ptr<Chrome> chrome(new MockChrome());
-    Session session("1", std::move(chrome));
-    session.awaiting_bidi_response = false;
-    session.AddBidiConnection(7, base::BindRepeating([](std::string) {}),
-                              base::BindRepeating([] {}));
-    base::Value::Dict payload;
-    payload.Set("channel", channel);
-    EXPECT_TRUE(session.OnBidiResponse(std::move(payload)).IsError());
-    EXPECT_FALSE(session.awaiting_bidi_response);
-  }
 }

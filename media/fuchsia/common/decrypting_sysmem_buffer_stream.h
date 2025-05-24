@@ -5,12 +5,12 @@
 #ifndef MEDIA_FUCHSIA_COMMON_DECRYPTING_SYSMEM_BUFFER_STREAM_H_
 #define MEDIA_FUCHSIA_COMMON_DECRYPTING_SYSMEM_BUFFER_STREAM_H_
 
-#include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
-
 #include <deque>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decryptor.h"
+#include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
 
 namespace media {
 
@@ -47,12 +47,12 @@ class MEDIA_EXPORT DecryptingSysmemBufferStream : public SysmemBufferStream {
                          scoped_refptr<DecoderBuffer> decrypted_buffer);
 
   PassthroughSysmemBufferStream passthrough_stream_;
-  Decryptor* const decryptor_;
+  const raw_ptr<Decryptor> decryptor_;
   const Decryptor::StreamType stream_type_;
 
   std::unique_ptr<CallbackRegistration> event_cb_registration_;
 
-  Sink* sink_ = nullptr;
+  raw_ptr<Sink> sink_ = nullptr;
   std::deque<scoped_refptr<DecoderBuffer>> buffer_queue_;
   State state_ = State::kIdle;
 

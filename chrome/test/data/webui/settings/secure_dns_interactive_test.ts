@@ -96,7 +96,6 @@ suite('SettingsSecureDnsInteractive', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       showSecureDnsSetting: true,
-      isRevampWayfindingEnabled: false,
     });
   });
 
@@ -227,7 +226,7 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals('', testElement.$.secureDnsInput.value);
   });
 
-  test('SecureDnsDropdownChangeInSecureMode', async function() {
+  test('SecureDnsDropdownChangeInSecureMode', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
       config: resolverList[1]!.value,
@@ -294,7 +293,7 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals('some_input', testElement.$.secureDnsInput.value);
   });
 
-  test('SecureDnsDropdownChangeInAutomaticMode', async function() {
+  test('SecureDnsDropdownChangeInAutomaticMode', function() {
     const secureDnsToggle = getSecureDnsToggle();
 
     testElement.prefs.dns_over_https.templates.value = 'resolver1_template';

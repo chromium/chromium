@@ -10,7 +10,6 @@ import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
@@ -53,15 +52,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
        */
       searchEngines_: Array,
 
-      // Whether we need to set the icon size to large because they are loaded
-      // in the binary or smaller because we get them from the favicon service.
-      isEeaChoiceCountry_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isEeaChoiceCountry');
-        },
-      },
-
       // The selected default search engine.
       defaultSearchEngine_: {
         type: Object,
@@ -82,16 +72,21 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     };
   }
 
-  prefs: Object;
-  private searchEngines_: SearchEngine[];
-  private searchEnginesFilter_: string;
-  private showSearchEngineListDialog_: boolean;
-  private defaultSearchEngine_: SearchEngine|null;
-  private focusConfig_: Map<string, string>|null;
+  declare prefs: Object;
+  declare private searchEngines_: SearchEngine[];
+  declare private searchEnginesFilter_: string;
+  declare private showSearchEngineListDialog_: boolean;
+  declare private defaultSearchEngine_: SearchEngine|null;
+  declare private focusConfig_: Map<string, string>|null;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
-  private useLargeSearchEngineIcons_: boolean;
-  private confirmationToastLabel_: string;
+
+  // Whether we need to set the icon size to large because they are loaded
+  // in the binary or smaller because we get them from the favicon service.
+  private isEeaChoiceCountry_: boolean =
+      loadTimeData.getBoolean('isEeaChoiceCountry');
+
+  declare private confirmationToastLabel_: string;
 
   override ready() {
     super.ready();
@@ -164,7 +159,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   private setFaviconSize_() {
     this.style.setProperty(
-        '--favicon-size', this.useLargeSearchEngineIcons_ ? '24px' : '16px');
+        '--favicon-size', this.isEeaChoiceCountry_ ? '24px' : '16px');
   }
 }
 

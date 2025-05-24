@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Re-entry via upgrade before calling super()
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Re-entry via upgrade after calling super()
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Re-entry via direct constructor call before calling super()
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Re-entry via direct constructor call after calling super()
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.
+

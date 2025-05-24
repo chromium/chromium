@@ -4,9 +4,13 @@
 
 package org.chromium.base.shared_preferences;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.text.TextUtils;
 
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -14,14 +18,18 @@ import java.util.regex.Pattern;
 /**
  * Class that checks if given Strings are valid SharedPreferences keys to use.
  *
- * Checks that:
+ * <p>Checks that:
+ *
+ * <pre>
  * 1. Keys are registered as "in use".
  * 2. The key format is valid, either:
- *   - "Chrome.[Feature].[Key]"
- *   - "Chrome.[Feature].[KeyPrefix].[Suffix]"
- *   - Legacy key prior to this restriction
+ *     - "Chrome.[Feature].[Key]"
+ *     - "Chrome.[Feature].[KeyPrefix].[Suffix]"
+ *     - Legacy key prior to this restriction
+ * </pre>
  */
 @CheckDiscard("Validation is performed in tests and in debug builds.")
+@NullMarked
 class StrictPreferenceKeyChecker implements PreferenceKeyChecker {
     // The dynamic part cannot be empty, but otherwise it is anything that does not contain
     // stars.
@@ -29,12 +37,15 @@ class StrictPreferenceKeyChecker implements PreferenceKeyChecker {
 
     private final PreferenceKeyRegistry mRegistry;
 
-    StrictPreferenceKeyChecker(PreferenceKeyRegistry registry) {
-        mRegistry = registry;
+    StrictPreferenceKeyChecker(@Nullable PreferenceKeyRegistry registry) {
+        // |registry| is non-null when ENABLE_ASSERTS is true, and this class is supposed to be
+        // optimized away when ENABLE_ASSERTS is false. @CheckDiscard ensures this.
+        mRegistry = assumeNonNull(registry);
     }
 
     /**
      * Check that the |key| passed is in use.
+     *
      * @throws RuntimeException if the key is not in use.
      */
     @Override

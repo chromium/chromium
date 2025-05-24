@@ -162,7 +162,8 @@ class MediaClientImpl : public ash::MediaClient,
 
   raw_ptr<ash::MediaController> media_controller_ = nullptr;
 
-  base::flat_map<content::BrowserContext*, ui::MediaKeysListener::Delegate*>
+  base::flat_map<content::BrowserContext*,
+                 raw_ptr<ui::MediaKeysListener::Delegate, CtnExperimental>>
       media_key_delegates_;
 
   // If true then ash will always forward media keys to |this| instead of trying

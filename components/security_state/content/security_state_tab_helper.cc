@@ -27,8 +27,7 @@ security_state::SecurityLevel SecurityStateTabHelper::GetSecurityLevel() {
   if (get_security_level_callback_for_tests_) {
     std::move(get_security_level_callback_for_tests_).Run();
   }
-  return security_state::GetSecurityLevel(*GetVisibleSecurityState(),
-                                          UsedPolicyInstalledCertificate());
+  return security_state::GetSecurityLevel(*GetVisibleSecurityState());
 }
 
 std::unique_ptr<security_state::VisibleSecurityState>
@@ -36,10 +35,6 @@ SecurityStateTabHelper::GetVisibleSecurityState() {
   auto state = security_state::GetVisibleSecurityState(&GetWebContents());
 
   return state;
-}
-
-bool SecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
-  return false;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SecurityStateTabHelper);

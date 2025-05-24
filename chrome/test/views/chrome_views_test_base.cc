@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
@@ -15,14 +15,14 @@
 #include "content/public/test/browser_task_environment.h"
 #include "ui/color/color_provider_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/test/ash_test_helper.h"
 #include "ui/views/test/views_test_helper_aura.h"
 #endif
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<aura::test::AuraTestHelper> MakeTestHelper() {
   return std::make_unique<ash::AshTestHelper>();
 }
@@ -39,7 +39,7 @@ ChromeViewsTestBase::ChromeViewsTestBase()
 ChromeViewsTestBase::~ChromeViewsTestBase() = default;
 
 void ChromeViewsTestBase::SetUp() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   views::ViewsTestHelperAura::SetAuraTestHelperFactory(&MakeTestHelper);
 #endif
 
@@ -64,7 +64,7 @@ void ChromeViewsTestBase::SetUp() {
 }
 
 void ChromeViewsTestBase::TearDown() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   views::ViewsTestHelperAura::SetAuraTestHelperFactory(nullptr);
 #endif
 

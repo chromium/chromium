@@ -1,0 +1,71 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:focusable*
+@WAIT-FOR:Done
+-->
+<!doctype html>
+
+<style>
+.carousel {
+  overflow: auto;
+  columns: 1;
+  height: 200px;
+  /* open-quote and close-quote in scroll-marker content below refer to these quotes */
+  quotes: "<<" ">>";
+
+  scroll-marker-group: after;
+
+  /* Scroll marker group is generated on the .carousel element */
+  &::scroll-marker-group {
+    height: 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* These are div items children within the carousel */
+  & > div {
+    height: 100%;
+    counter-increment: c;
+
+    /* Request a scroll marker for this element by setting non-none content */
+    &::scroll-marker {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 1px solid black;
+    }
+    /* The currently selected scroll marker should be blue */
+    &::scroll-marker:target-current {
+      background: blue;
+    }
+  }
+}
+#one::scroll-marker {
+  content: 'content' / 'alt text name';
+}
+#two::scroll-marker {
+  content: open-quote "content text name" linear-gradient(green, blue) counter(c);
+}
+#three::scroll-marker {
+  content: ''; /* name should be used from the scroll target */
+}
+#four::scroll-marker {
+  content: ''; /* no name */
+}
+</style>
+
+<div class=carousel>
+  <div id=one aria-label="one">One</div>
+  <div id=two aria-label="two">Two</div>
+  <div id=three aria-label="scroll target name">Three</div>
+  <div id=four>Four</div>
+</div>
+
+<script>
+onload = () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.title = 'Done';
+  }));
+};
+</script>

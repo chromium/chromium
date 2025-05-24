@@ -33,6 +33,7 @@ COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppMedia[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppMediaCol[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppDuplex[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppResolution[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPrintQuality[];
 
 // collation values
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCollated[];
@@ -66,6 +67,9 @@ COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppClientPatches[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppClientStringVersion[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppClientType[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppClientVersion[];
+
+// printer attributes
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPrintScaling[];
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

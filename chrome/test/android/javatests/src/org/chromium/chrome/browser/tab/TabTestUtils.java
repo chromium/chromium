@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -210,14 +210,10 @@ public class TabTestUtils {
                 .openNewTab(url, extraHeaders, postData, disposition, isRendererInitiated);
     }
 
-    /** Show {@link org.chromium.chrome.browser.infobar.FrameBustBlockInfoBar}. */
-    public static void showFramebustBlockInfobarForTesting(Tab tab, String url) {
-        getTabWebContentsDelegate(tab).showFramebustBlockInfobarForTesting(url);
-    }
-
     /**
-     * Sets whether the tab is showing an error page.  This is reset whenever the tab finishes a
+     * Sets whether the tab is showing an error page. This is reset whenever the tab finishes a
      * navigation.
+     *
      * @param tab {@link Tab} object.
      * @param isShowingErrorPage Whether the tab shows an error page.
      */
@@ -226,8 +222,16 @@ public class TabTestUtils {
     }
 
     /** Mock Tab interface impl JNI for testing. */
-    public static void mockTabJni(JniMocker jniMocker) {
+    public static void mockTabJni() {
         TabImpl.Natives tabImplJni = Mockito.mock(TabImpl.Natives.class);
-        jniMocker.mock(TabImplJni.TEST_HOOKS, tabImplJni);
+        TabImplJni.setInstanceForTesting(tabImplJni);
+    }
+
+    /**
+     * @param tab {@link Tab} object.
+     * @return {@link @ChildProcessImportance int} object for a given tab.
+     */
+    public static @ChildProcessImportance int getImportance(Tab tab) {
+        return ((TabImpl) tab).getImportance();
     }
 }

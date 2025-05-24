@@ -1,0 +1,18 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary QuotaExceededErrorOptions {
+    double quota;
+    double requested;
+};
+
+[
+    Exposed=*,
+    Serializable,
+    RuntimeEnabled=QuotaExceededErrorUpdate
+] interface QuotaExceededError : DOMException {
+    constructor(optional DOMString message = "", optional QuotaExceededErrorOptions options = {});
+    readonly attribute double? quota;
+    readonly attribute double? requested;
+};

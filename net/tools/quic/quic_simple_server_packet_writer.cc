@@ -49,7 +49,7 @@ std::optional<int> QuicSimpleServerPacketWriter::MessageTooBigErrorCode()
 quic::WriteResult QuicSimpleServerPacketWriter::WritePacket(
     const char* buffer,
     size_t buf_len,
-    const quic::QuicIpAddress& self_address,
+    const quiche::QuicheIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address,
     quic::PerPacketOptions* options,
     const quic::QuicPacketWriterParams& params) {
@@ -96,7 +96,7 @@ bool QuicSimpleServerPacketWriter::SupportsEcn() const {
 }
 
 quic::QuicPacketBuffer QuicSimpleServerPacketWriter::GetNextWriteLocation(
-    const quic::QuicIpAddress& self_address,
+    const quiche::QuicheIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address) {
   return {nullptr, nullptr};
 }

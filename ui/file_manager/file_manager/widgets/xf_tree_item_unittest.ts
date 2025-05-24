@@ -72,7 +72,7 @@ function getTreeItemById(id: string): XfTreeItem {
 /** Helper method to get inner elements from a tree item. */
 function getTreeItemInnerElements(treeItem: XfTreeItem): {
   root: HTMLLIElement,
-  treeRow: HTMLDivElement,
+  treeRow: HTMLElement,
   expandIcon: HTMLSpanElement,
   treeLabel: HTMLSpanElement,
   treeLabelIcon: XfIcon,

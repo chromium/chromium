@@ -20,7 +20,7 @@
 // CrAppControlProtocol lets ScopedSendingEvent tell the embedding
 // NSApplication what to return from -handlingSendEvent.
 
-@protocol CrAppControlProtocol<CrAppProtocol>
+@protocol CrAppControlProtocol <CrAppProtocol>
 - (void)setHandlingSendEvent:(BOOL)handlingSendEvent;
 @end
 

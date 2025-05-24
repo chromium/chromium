@@ -4,9 +4,9 @@
 
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Helper class for implementations of {@link ListObservable}, with some convenience methods for
@@ -14,6 +14,7 @@ import org.chromium.base.ObserverList;
  * @param <P> The parameter type for the payload for partial updates. Use {@link Void} for
  *         implementations that don't support partial updates.
  */
+@NullMarked
 public abstract class ListObservableImpl<P> implements ListObservable<P> {
     private final ObserverList<ListObserver<P>> mObservers = new ObserverList<>();
 

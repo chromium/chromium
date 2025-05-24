@@ -123,15 +123,18 @@ class CONTENT_EXPORT RenderFrameProxyHost
   RenderProcessHost* GetProcess() const { return process_; }
 
   // Initializes the object and creates the `blink::RemoteFrame` in the process
-  // for the `site_instance_group_`. If `batched_proxy_ipc_sender` is not null,
+  // for the `site_instance_group_`. If this proxy is being initialized as part
+  // of a new navigation, `navigation_metrics_token` identifies that navigation
+  // for metrics purposes. If `batched_proxy_ipc_sender` is not null,
   // then the proxy will not be created immediately. It will be batch created
   // later.
   bool InitRenderFrameProxy(
+      const std::optional<base::UnguessableToken>& navigation_metrics_token,
       BatchedProxyIPCSender* batched_proxy_ipc_sender = nullptr);
 
   int GetRoutingID() const { return routing_id_; }
   GlobalRoutingID GetGlobalID() const {
-    return GlobalRoutingID(GetProcess()->GetID(), routing_id_);
+    return GlobalRoutingID(GetProcess()->GetDeprecatedID(), routing_id_);
   }
 
   // Each RenderFrameProxyHost belongs to a SiteInstanceGroup, where it is a
@@ -332,6 +335,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // placeholder for a frame in a different SiteInstanceGroup.
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
 
+  // TODO(crbug.com/388998723): Remove the comment about the side effect
+  // of GetProcess() after the full migration to GetOrCreateProcess().
   // The renderer process this RenderFrameProxyHost is associated with. It is
   // equivalent to the result of site_instance_group_->GetProcess(), but that
   // method has the side effect of creating the process if it doesn't exist.
@@ -358,9 +363,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // TODO(creis): RenderViewHost will eventually go away and be replaced with
   // some form of page context.
   scoped_refptr<RenderViewHostImpl> render_view_host_;
-
-  std::unique_ptr<blink::AssociatedInterfaceProvider>
-      remote_associated_interfaces_;
 
   // Holder of Mojo connection with the Frame service in Blink.
   mojo::AssociatedRemote<blink::mojom::RemoteFrame> remote_frame_;

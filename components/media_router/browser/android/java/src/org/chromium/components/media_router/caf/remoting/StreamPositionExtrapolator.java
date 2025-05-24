@@ -4,11 +4,14 @@
 
 package org.chromium.components.media_router.caf.remoting;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Class for extrapolating current playback position. The class occasionally receives updated
  * playback position information from RemoteMediaClient, and extrapolates the current playback
  * position.
  */
+@NullMarked
 public class StreamPositionExtrapolator {
     private long mDuration;
     private long mLastKnownPosition;

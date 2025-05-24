@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
 
 #include <memory>
@@ -21,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -32,7 +26,6 @@
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -58,10 +51,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/current_channel_logo.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace extensions {
 
@@ -80,9 +74,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                                                        bool in_dev_mode) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIExtensionsHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kExtensionsResources, kExtensionsResourcesSize),
-      IDR_EXTENSIONS_EXTENSIONS_HTML);
+  webui::SetupWebUIDataSource(source, kExtensionsResources,
+                              IDR_EXTENSIONS_EXTENSIONS_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       // Add common strings.
@@ -147,10 +140,11 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
        IDS_EXTENSIONS_SAFETY_CHECK_PRIMARY_LABEL},
       {"safetyCheckExtensionsKeep", IDS_CONFIRM_DOWNLOAD},
       {"stackTrace", IDS_EXTENSIONS_ERROR_STACK_TRACE},
-      // TODO(dpapad): Unify with Settings' IDS_SETTINGS_WEB_STORE.
       {"sidebarDiscoverMore", IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE},
+      {"sidebarDocsPromo", IDS_EXTENSIONS_WHATS_NEW_SIDEBAR_PROMO},
       {"keyboardShortcuts", IDS_EXTENSIONS_SIDEBAR_KEYBOARD_SHORTCUTS},
       {"incognitoInfoWarning", IDS_EXTENSIONS_INCOGNITO_WARNING},
+      {"userScriptInfoWarning", IDS_EXTENSIONS_ALLOW_USER_SCRIPTS_WARNING},
       {"hostPermissionsDescription",
        IDS_EXTENSIONS_HOST_PERMISSIONS_DESCRIPTION},
       {"permissionsLearnMoreLabel",
@@ -181,6 +175,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"itemInspectViewsExtra", IDS_EXTENSIONS_ITEM_INSPECT_VIEWS_EXTRA},
       {"noActiveViews", IDS_EXTENSIONS_ITEM_NO_ACTIVE_VIEWS},
       {"itemAllowIncognito", IDS_EXTENSIONS_ITEM_ALLOW_INCOGNITO},
+      {"itemAllowUserScripts", IDS_EXTENSIONS_ITEM_ALLOW_USER_SCRIPTS},
       {"itemDescriptionLabel", IDS_EXTENSIONS_ITEM_DESCRIPTION},
       {"itemDependencies", IDS_EXTENSIONS_ITEM_DEPENDENCIES},
       {"itemDependentEntry", IDS_EXTENSIONS_DEPENDENT_ENTRY},
@@ -263,6 +258,13 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
        IDS_EXTENSIONS_SAFE_BROWSING_CRX_ALLOWLIST_WARNING_LEARN_MORE},
       {"itemRepair", IDS_EXTENSIONS_REPAIR_CORRUPTED},
       {"itemReload", IDS_EXTENSIONS_RELOAD_TERMINATED},
+      {"itemUpload", IDS_EXTENSIONS_MOVE_TO_ACCOUNT_ICON_TOOLTIP},
+      {"itemUnsupportedDeveloperMode",
+       IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE},
+      {"itemUnsupportedDeveloperModeDetails",
+       IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_DETAILS},
+      {"itemUnsupportedDeveloperModeToast",
+       IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_TOAST},
       {"loadErrorCouldNotLoadManifest",
        IDS_EXTENSIONS_LOAD_ERROR_COULD_NOT_LOAD_MANIFEST},
       {"loadErrorHeading", IDS_EXTENSIONS_LOAD_ERROR_HEADING},
@@ -363,15 +365,17 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
        IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_WARNING_SUBTITLE},
       {"mv2DeprecationUnsupportedExtensionOffText",
        IDS_EXTENSIONS_MV2_DEPRECATION_UNSUPPORTED_EXTENSION_OFF_TEXT},
-      {"shortcutNotSet", IDS_EXTENSIONS_SHORTCUT_NOT_SET},
+      {"setShortcutInSystemSettings",
+       IDS_EXTENSIONS_SET_SHORTCUT_IN_SYSTEM_SETTINGS},
+      {"shortcutNotSet", IDS_SHORTCUT_NOT_SET},
       {"shortcutScopeGlobal", IDS_EXTENSIONS_SHORTCUT_SCOPE_GLOBAL},
       {"shortcutScopeLabel", IDS_EXTENSIONS_SHORTCUT_SCOPE_LABEL},
       {"shortcutScopeInChrome", IDS_EXTENSIONS_SHORTCUT_SCOPE_IN_CHROME},
-      {"shortcutSet", IDS_EXTENSIONS_SHORTCUT_SET},
-      {"shortcutTypeAShortcut", IDS_EXTENSIONS_TYPE_A_SHORTCUT},
-      {"shortcutIncludeStartModifier", IDS_EXTENSIONS_INCLUDE_START_MODIFIER},
-      {"shortcutTooManyModifiers", IDS_EXTENSIONS_TOO_MANY_MODIFIERS},
-      {"shortcutNeedCharacter", IDS_EXTENSIONS_NEED_CHARACTER},
+      {"shortcutSet", IDS_SHORTCUT_SET},
+      {"shortcutTypeAShortcut", IDS_TYPE_A_SHORTCUT},
+      {"shortcutIncludeStartModifier", IDS_SHORTCUT_INCLUDE_START_MODIFIER},
+      {"shortcutTooManyModifiers", IDS_SHORTCUT_TOO_MANY_MODIFIERS},
+      {"shortcutNeedCharacter", IDS_SHORTCUT_NEED_CHARACTER},
       {"subpageArrowRoleDescription", IDS_EXTENSIONS_SUBPAGE_BUTTON},
       {"itemSuspiciousInstallLearnMore",
        IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE_LEARN_MORE},
@@ -392,13 +396,23 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"viewIframe", IDS_EXTENSIONS_VIEW_IFRAME},
       {"viewServiceWorker", IDS_EXTENSIONS_SERVICE_WORKER_BACKGROUND},
       {"safetyCheckKeepExtension", IDS_EXTENSIONS_SC_KEEP_EXT},
+      {"safetyCheckExtensionThreeDotDetails",
+       IDS_EXTENSIONS_SC_THREEDOT_DETAILS},
       {"safetyCheckRemoveAll", IDS_EXTENSIONS_SC_REMOVE_ALL},
+
+// TODO(crbug.com/391777809): Make the message available on desktop android
+// without adding unused strings.
+#if BUILDFLAG(IS_ANDROID)
+      {"safetyHubHeader", IDS_OK /* placeholder to avoid crash */},
+#else
       {"safetyHubHeader", IDS_SETTINGS_SAFETY_HUB},
+#endif  // BUILDFLAG(IS_ANDROID)
+
       {"safetyCheckRemoveButtonA11yLabel",
        IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL},
       {"safetyCheckOptionMenuA11yLabel",
        IDS_EXTENSIONS_SC_OPTION_MENU_A11Y_LABEL},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       {"manageKioskApp", IDS_EXTENSIONS_MANAGE_KIOSK_APP},
       {"kioskAddApp", IDS_EXTENSIONS_KIOSK_ADD_APP},
       {"kioskAddAppHint", IDS_EXTENSIONS_KIOSK_ADD_APP_HINT},
@@ -410,7 +424,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
        IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_LABEL},
       {"kioskDisableBailoutWarningTitle",
        IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_TITLE},
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      {"pendingChangeWarning", IDS_PENDING_CHANGE_WARNING},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -441,10 +456,18 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       base::ASCIIToUTF16(
           google_util::AppendGoogleLocaleParam(
               extension_urls::AppendUtmSource(
-                  GURL(extension_urls::GetWebstoreExtensionsCategoryURL()),
+                  extension_urls::GetWebstoreExtensionsCategoryURL(),
                   extension_urls::kExtensionsSidebarUtmSource),
               g_browser_process->GetApplicationLocale())
               .spec()));
+  source->AddString(
+      "extensionsWhatsNewURL",
+      base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
+                             extension_urls::AppendUtmSource(
+                                 extension_urls::GetDocsWhatsNewURL(),
+                                 extension_urls::kExtensionsSidebarUtmSource),
+                             g_browser_process->GetApplicationLocale())
+                             .spec()));
   source->AddString(
       "hostPermissionsLearnMoreLink",
       extension_permissions_constants::kRuntimeHostPermissionsHelpURL);
@@ -454,10 +477,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                          ::switches::kEnableExtensionActivityLogging));
 
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
-
-  source->AddBoolean(
-      "safetyCheckExtensionsReviewEnabled",
-      base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
 
   source->AddBoolean(kEnableEnhancedSiteControls,
                      base::FeatureList::IsEnabled(
@@ -470,11 +489,16 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
   source->AddBoolean(
-      "safetyCheckShowReviewPanel",
-      base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
-  source->AddBoolean("safetyHubShowReviewPanel",
-                     base::FeatureList::IsEnabled(features::kSafetyHub));
+      "safetyHubThreeDotDetails",
+      base::FeatureList::IsEnabled(features::kSafetyHubThreeDotDetails));
 
+#if BUILDFLAG(IS_ANDROID)
+  source->AddResourcePath("images/product_logo.png",
+                          webui::CurrentChannelLogoResourceId());
+  // TODO(crbug.com/392777363): Clean these up with non-placeholder values.
+  source->AddInteger("MV2ExperimentStage", 0);
+  source->AddBoolean("MV2DeprecationNoticeDismissed", true);
+#else
   // MV2 deprecation.
   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
   MV2ExperimentStage experiment_stage =
@@ -483,17 +507,15 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddBoolean(
       "MV2DeprecationNoticeDismissed",
       mv2_experiment_manager->DidUserAcknowledgeNoticeGlobally());
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   source->AddString(
       "kioskDisableBailoutWarningBody",
       l10n_util::GetStringFUTF16(
           IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_BODY,
           l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME)));
-
-  source->AddBoolean("isLacrosEnabled",
-                     crosapi::browser_util::IsLacrosEnabled());
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return source;
 }
@@ -516,11 +538,7 @@ ExtensionsUIConfig::CreateWebUIController(content::WebUI* web_ui,
   return std::make_unique<ExtensionsUI>(web_ui);
 }
 
-ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
-    : WebUIController(web_ui),
-      webui_load_timer_(web_ui->GetWebContents(),
-                        "Extensions.WebUi.DocumentLoadedInMainFrameTime",
-                        "Extensions.WebUi.LoadCompletedInMainFrame") {
+ExtensionsUI::ExtensionsUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = nullptr;
 
@@ -570,13 +588,6 @@ base::RefCountedMemory* ExtensionsUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   return rb.LoadDataResourceBytesForScale(IDR_EXTENSIONS_FAVICON, scale_factor);
-}
-
-void ExtensionsUI::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(
-      prefs::kExtensionsUIDeveloperMode, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 // Normally volatile data does not belong in loadTimeData, but in this case

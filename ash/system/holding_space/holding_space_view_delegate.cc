@@ -35,10 +35,11 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/vector_icons.h"
@@ -194,8 +195,7 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
   if (action_data.action == ax::mojom::Action::kDoDefault) {
     if (!view->selected())
       SetSelection(view);
-    OpenItemsAndScheduleClose(
-        GetSelection(), holding_space_metrics::EventSource::kHoldingSpaceItem);
+    OpenItemsAndScheduleClose(GetSelection());
     return true;
   }
   // When showing the context menu via accessible action (e.g. Search + M),
@@ -247,8 +247,7 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewGestureEvent(
   // the child bubble which clears selection state.
   if (GetSelection().empty()) {
     SetSelection(view);
-    OpenItemsAndScheduleClose(
-        GetSelection(), holding_space_metrics::EventSource::kHoldingSpaceItem);
+    OpenItemsAndScheduleClose(GetSelection());
     return true;
   }
 
@@ -268,8 +267,7 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewKeyPressed(
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
     if (!view->selected())
       SetSelection(view);
-    OpenItemsAndScheduleClose(
-        GetSelection(), holding_space_metrics::EventSource::kHoldingSpaceItem);
+    OpenItemsAndScheduleClose(GetSelection());
     return true;
   }
   return false;
@@ -358,8 +356,7 @@ void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewMouseReleased(
   // `view` being clicked is already part of the selection.
   if (event.flags() & ui::EF_IS_DOUBLE_CLICK) {
     DCHECK(view->selected());
-    OpenItemsAndScheduleClose(
-        GetSelection(), holding_space_metrics::EventSource::kHoldingSpaceItem);
+    OpenItemsAndScheduleClose(GetSelection());
     return;
   }
 
@@ -399,9 +396,7 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
   // The ENTER key should open all selected holding space items.
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
     if (!GetSelection().empty()) {
-      OpenItemsAndScheduleClose(
-          GetSelection(),
-          holding_space_metrics::EventSource::kHoldingSpaceBubble);
+      OpenItemsAndScheduleClose(GetSelection());
       return true;
     }
   }
@@ -433,7 +428,7 @@ void HoldingSpaceViewDelegate::UpdateTrayVisibility() {
 void HoldingSpaceViewDelegate::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   // In touch mode, gesture events continue to be sent to holding space views
   // after showing the context menu so that it can be aborted if the user
   // initiates a drag sequence. This means both `ui::EventType::kGestureLongTap`
@@ -451,8 +446,9 @@ void HoldingSpaceViewDelegate::ShowContextMenuForViewImpl(
   // In order to determine if the gesture resulting in this context menu being
   // shown was actually the start of a drag sequence, holding space views will
   // have to receive events that would otherwise be consumed by the `MenuHost`.
-  if (source_type == ui::MenuSourceType::MENU_SOURCE_TOUCH)
+  if (source_type == ui::mojom::MenuSourceType::kTouch) {
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
+  }
 
   context_menu_runner_ =
       std::make_unique<views::MenuRunner>(BuildMenuModel(), run_types);
@@ -484,8 +480,7 @@ void HoldingSpaceViewDelegate::WriteDragDataForView(views::View* sender,
   DCHECK_GE(selection.size(), 1u);
 
   holding_space_metrics::RecordItemAction(
-      GetItems(selection), holding_space_metrics::ItemAction::kDrag,
-      holding_space_metrics::EventSource::kHoldingSpaceItem);
+      GetItems(selection), holding_space_metrics::ItemAction::kDrag);
 
   // Drag image.
   gfx::ImageSkia drag_image;
@@ -513,15 +508,10 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
   switch (command_id) {
     case HoldingSpaceCommandId::kCopyImageToClipboard:
       DCHECK_EQ(items.size(), 1u);
-      client->CopyImageToClipboard(
-          *items.front(),
-          holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu,
-          base::DoNothing());
+      client->CopyImageToClipboard(*items.front(), base::DoNothing());
       break;
     case HoldingSpaceCommandId::kPinItem:
-      client->PinItems(
-          items,
-          holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu);
+      client->PinItems(items);
       break;
     case HoldingSpaceCommandId::kRemoveItem: {
       std::vector<base::FilePath> suggested_file_paths;
@@ -535,9 +525,7 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
                 suggested_file_paths.push_back(item->file().file_path);
               }
               holding_space_metrics::RecordItemAction(
-                  {item}, holding_space_metrics::ItemAction::kRemove,
-                  holding_space_metrics::EventSource::
-                      kHoldingSpaceItemContextMenu);
+                  {item}, holding_space_metrics::ItemAction::kRemove);
             }
             return remove;
           },
@@ -550,20 +538,16 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
       DCHECK_EQ(items.size(), 1u);
       client->ShowItemInFolder(
           *items.front(),
-          holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu,
           base::DoNothing());
       break;
     case HoldingSpaceCommandId::kUnpinItem:
-      client->UnpinItems(
-          items,
-          holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu);
+      client->UnpinItems(items);
       break;
     default:
       CHECK(holding_space_util::IsInProgressCommand(command_id));
       for (const HoldingSpaceItem* item : items) {
-        const bool success = holding_space_util::ExecuteInProgressCommand(
-            item, command_id,
-            holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu);
+        const bool success =
+            holding_space_util::ExecuteInProgressCommand(item, command_id);
         CHECK(success);
       }
       break;
@@ -676,11 +660,10 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
         .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER,
         .icon = raw_ref(kFolderIcon)});
 
-    std::string ext = selection.front()->item()->file().file_path.Extension();
     std::string mime_type;
     const bool is_image =
-        !ext.empty() &&
-        net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type) &&
+        net::GetWellKnownMimeTypeFromFile(
+            selection.front()->item()->file().file_path, &mime_type) &&
         net::MatchesMimeType(kMimeTypeImage, mime_type);
 
     if (is_image) {
@@ -816,8 +799,7 @@ void HoldingSpaceViewDelegate::UpdateSelectionUi() {
 }
 
 void HoldingSpaceViewDelegate::OpenItemsAndScheduleClose(
-    const std::vector<const HoldingSpaceItemView*>& views,
-    holding_space_metrics::EventSource event_source) {
+    const std::vector<const HoldingSpaceItemView*>& views) {
   DCHECK_GE(views.size(), 1u);
 
   // This `PostTask()` will result in the destruction of the view delegate if it
@@ -829,10 +811,10 @@ void HoldingSpaceViewDelegate::OpenItemsAndScheduleClose(
             if (weak_ptr)
               weak_ptr->bubble_->tray()->CloseBubble();
           },
-          weak_factory_.GetMutableWeakPtr()));
+          weak_factory_.GetWeakPtr()));
 
-  HoldingSpaceController::Get()->client()->OpenItems(
-      GetItems(views), event_source, base::DoNothing());
+  HoldingSpaceController::Get()->client()->OpenItems(GetItems(views),
+                                                     base::DoNothing());
 }
 
 }  // namespace ash

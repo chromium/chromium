@@ -15,7 +15,7 @@ using content::BrowserThread;
 namespace ash {
 namespace system {
 
-PointerDeviceObserver::PointerDeviceObserver() {}
+PointerDeviceObserver::PointerDeviceObserver() = default;
 
 PointerDeviceObserver::~PointerDeviceObserver() {
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
@@ -91,8 +91,7 @@ void PointerDeviceObserver::OnPointingStickExists(bool exists) {
     observer.PointingStickExists(exists);
 }
 
-PointerDeviceObserver::Observer::~Observer() {
-}
+PointerDeviceObserver::Observer::~Observer() = default;
 
 }  // namespace system
 }  // namespace ash

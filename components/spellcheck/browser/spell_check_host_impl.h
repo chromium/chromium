@@ -45,11 +45,6 @@ class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
   void RequestTextCheck(const std::u16string& text,
                         RequestTextCheckCallback callback) override;
 
-  void CheckSpelling(const std::u16string& word,
-                     CheckSpellingCallback callback) override;
-  void FillSuggestionList(const std::u16string& word,
-                          FillSuggestionListCallback callback) override;
-
 #if BUILDFLAG(IS_WIN)
   void InitializeDictionaries(InitializeDictionariesCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN)

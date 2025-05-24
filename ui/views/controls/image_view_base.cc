@@ -22,7 +22,8 @@ ImageViewBase::ImageViewBase() {
   // information, set it to ignored. This will result in the same tree
   // inclusion/exclusion behavior without unexpected platform-specific
   // side effects related to the role changing.
-  if (GetViewAccessibility().GetCachedName().empty() && tooltip_text_.empty()) {
+  if (GetViewAccessibility().GetCachedName().empty() &&
+      GetTooltipText().empty()) {
     GetViewAccessibility().SetIsIgnored(true);
   }
 }
@@ -67,38 +68,22 @@ ImageViewBase::Alignment ImageViewBase::GetVerticalAlignment() const {
   return vertical_alignment_;
 }
 
-void ImageViewBase::SetTooltipText(const std::u16string& tooltip) {
-  if (tooltip_text_ == tooltip) {
-    return;
-  }
-
-  std::u16string current_tooltip = tooltip_text_;
-  tooltip_text_ = tooltip;
-
+void ImageViewBase::OnTooltipTextChanged(
+    const std::u16string& old_tooltip_text) {
+  View::OnTooltipTextChanged(old_tooltip_text);
   if (GetViewAccessibility().GetCachedName().empty() ||
-      GetViewAccessibility().GetCachedName() == current_tooltip) {
-    GetViewAccessibility().SetName(tooltip);
+      GetViewAccessibility().GetCachedName() == old_tooltip_text) {
+    GetViewAccessibility().SetName(GetTooltipText());
   }
-
-  TooltipTextChanged();
-  OnPropertyChanged(&tooltip_text_, kPropertyEffectsNone);
-}
-
-const std::u16string& ImageViewBase::GetTooltipText() const {
-  return tooltip_text_;
 }
 
 void ImageViewBase::AdjustAccessibleName(std::u16string& new_name,
                                          ax::mojom::NameFrom& name_from) {
   if (new_name.empty()) {
-    new_name = tooltip_text_;
+    new_name = GetTooltipText();
   }
 
   GetViewAccessibility().SetIsIgnored(new_name.empty());
-}
-
-std::u16string ImageViewBase::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_text_;
 }
 
 gfx::Size ImageViewBase::CalculatePreferredSize(
@@ -176,7 +161,6 @@ void ImageViewBase::PreferredSizeChanged() {
 BEGIN_METADATA(ImageViewBase)
 ADD_PROPERTY_METADATA(Alignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(Alignment, VerticalAlignment)
-ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 END_METADATA
 
 }  // namespace views

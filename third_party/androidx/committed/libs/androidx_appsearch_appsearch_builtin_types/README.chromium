@@ -1,0 +1,16 @@
+Name: AppSearch Builtin Types
+Short Name: appsearch-builtin-types
+URL: https://developer.android.com/jetpack/androidx/releases/appsearch#1.2.0-SNAPSHOT
+Version: 1.2.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Contains AppSearch Document classes and builders for a variety of common objects based on http://schema.org. Data interchange with the system, and other apps, as well as structured parameters for semantic intents should use these built-in types as appropriate.
+
+Local Modifications:
+No modifications.

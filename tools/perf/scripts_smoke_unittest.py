@@ -59,6 +59,9 @@ class ScriptsSmokeTest(unittest.TestCase):
       if not os.path.isabs(self.options.browser_executable):
         return
       cmdline.extend(['--browser-executable', self.options.browser_executable])
+    if self.options.chromium_output_dir:
+      cmdline.extend(
+          ['--chromium-output-dir', self.options.chromium_output_dir])
     return_code, stdout = self.RunPerfScript(cmdline)
     if sys.version_info.major == 3:
       self.assertRegex(stdout, r'Available benchmarks .*? are:')
@@ -80,7 +83,7 @@ class ScriptsSmokeTest(unittest.TestCase):
   def testRunRecordWprHelp(self):
     return_code, stdout = self.RunPerfScript('record_wpr')
     self.assertEqual(return_code, 0, stdout)
-    self.assertIn('optional arguments:', stdout)
+    self.assertIn('positional arguments:', stdout)
 
   @decorators.Disabled('chromeos')  # crbug.com/814068
   def testRunRecordWprList(self):
@@ -114,6 +117,8 @@ class ScriptsSmokeTest(unittest.TestCase):
       if not os.path.isabs(self.options.browser_executable):
         return
       cmdline += ' --browser-executable=%s' % self.options.browser_executable
+    if self.options.chromium_output_dir:
+      cmdline += ' --chromium-output-dir=%s' % self.options.chromium_output_dir
     return_code, stdout = self.RunPerfScript(cmdline)
     self.assertEqual(return_code, 0, stdout)
     try:

@@ -5,6 +5,7 @@
 #include "net/dns/resolve_context.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,12 +15,16 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_clock.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "host_resolver_internal_result.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/dns_config.h"
@@ -27,6 +32,8 @@
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver_cache.h"
+#include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
@@ -396,82 +403,118 @@ TEST_F(ResolveContextTest, DohServerAvailabilityNotification) {
   NetworkChangeNotifier::RemoveDNSObserver(&config_observer);
 }
 
-TEST_F(ResolveContextTest, HostCacheInvalidation) {
-  ResolveContext context(nullptr /* url_request_context */,
-                         true /* enable_caching */);
+TEST_F(ResolveContextTest, InvalidateCachesAndPerSessionData) {
+  base::SimpleTestClock clock;
+  base::SimpleTestTickClock tick_clock;
+  ResolveContext context(/*url_request_context=*/nullptr,
+                         /*enable_caching=*/true, clock, tick_clock);
 
-  base::TimeTicks now;
+  NetworkAnonymizationKey anonymization_key;
+
   HostCache::Key key("example.com", DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkAnonymizationKey());
+                     HostResolverSource::ANY, anonymization_key);
   context.host_cache()->Set(
       key,
       HostCache::Entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{},
                        HostCache::Entry::SOURCE_UNKNOWN),
-      now, base::Seconds(10));
-  ASSERT_TRUE(context.host_cache()->Lookup(key, now));
+      tick_clock.NowTicks(), base::Seconds(10));
+  ASSERT_TRUE(context.host_cache()->Lookup(key, tick_clock.NowTicks()));
 
-  DnsConfig config =
-      CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
+  context.host_resolver_cache()->Set(
+      std::make_unique<HostResolverInternalErrorResult>(
+          "domain.test", DnsQueryType::AAAA,
+          tick_clock.NowTicks() + base::Seconds(10),
+          clock.Now() + base::Seconds(10),
+          HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED),
+      anonymization_key, HostResolverSource::DNS, /*secure=*/false);
+  ASSERT_TRUE(
+      context.host_resolver_cache()->Lookup("domain.test", anonymization_key));
+
+  DnsConfig config = CreateDnsConfig(/*num_servers=*/2, /*num_doh_servers=*/2);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
   context.InvalidateCachesAndPerSessionData(session.get(),
-                                            false /* network_change */);
+                                            /*network_change=*/false);
 
-  EXPECT_FALSE(context.host_cache()->Lookup(key, now));
+  EXPECT_FALSE(context.host_cache()->Lookup(key, tick_clock.NowTicks()));
+  EXPECT_FALSE(
+      context.host_resolver_cache()->Lookup("domain.test", anonymization_key));
 
-  // Re-add to the host cache and now add some DoH server status.
+  // Re-add to the caches and now add some DoH server status.
   context.host_cache()->Set(
       key,
       HostCache::Entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{},
                        HostCache::Entry::SOURCE_UNKNOWN),
-      now, base::Seconds(10));
-  context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
+      tick_clock.NowTicks(), base::Seconds(10));
+  context.host_resolver_cache()->Set(
+      std::make_unique<HostResolverInternalErrorResult>(
+          "domain2.test", DnsQueryType::AAAA,
+          tick_clock.NowTicks() + base::Seconds(10),
+          clock.Now() + base::Seconds(10),
+          HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED),
+      anonymization_key, HostResolverSource::DNS, /*secure=*/false);
+  context.RecordServerSuccess(/*server_index=*/0u, /*is_doh_server=*/true,
                               session.get());
-  ASSERT_TRUE(context.host_cache()->Lookup(key, now));
+  ASSERT_TRUE(context.host_cache()->Lookup(key, tick_clock.NowTicks()));
+  ASSERT_TRUE(
+      context.host_resolver_cache()->Lookup("domain2.test", anonymization_key));
   ASSERT_TRUE(context.GetDohServerAvailability(0u, session.get()));
 
   // Invalidate again.
-  DnsConfig config2 =
-      CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
+  DnsConfig config2 = CreateDnsConfig(/*num_servers=*/2, /*num_doh_servers=*/2);
   scoped_refptr<DnsSession> session2 = CreateDnsSession(config2);
   context.InvalidateCachesAndPerSessionData(session2.get(),
-                                            true /* network_change */);
+                                            /*network_change=*/true);
 
-  EXPECT_FALSE(context.host_cache()->Lookup(key, now));
+  EXPECT_FALSE(context.host_cache()->Lookup(key, tick_clock.NowTicks()));
+  EXPECT_FALSE(
+      context.host_resolver_cache()->Lookup("domain2.test", anonymization_key));
   EXPECT_FALSE(context.GetDohServerAvailability(0u, session.get()));
   EXPECT_FALSE(context.GetDohServerAvailability(0u, session2.get()));
 }
 
-TEST_F(ResolveContextTest, HostCacheInvalidation_SameSession) {
-  ResolveContext context(nullptr /* url_request_context */,
-                         true /* enable_caching */);
-  DnsConfig config =
-      CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
+TEST_F(ResolveContextTest, InvalidateCachesAndPerSessionDataSameSession) {
+  base::SimpleTestClock clock;
+  base::SimpleTestTickClock tick_clock;
+  ResolveContext context(/*url_request_context=*/nullptr,
+                         /*enable_caching=*/true, clock, tick_clock);
+  DnsConfig config = CreateDnsConfig(/*num_servers=*/2, /*num_doh_servers=*/2);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
   // Initial invalidation just to set the session.
   context.InvalidateCachesAndPerSessionData(session.get(),
-                                            false /* network_change */);
+                                            /*network_change=*/false);
 
-  // Add to the host cache and add some DoH server status.
-  base::TimeTicks now;
+  // Add to the caches and add some DoH server status.
+  NetworkAnonymizationKey anonymization_key;
   HostCache::Key key("example.com", DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkAnonymizationKey());
+                     HostResolverSource::ANY, anonymization_key);
   context.host_cache()->Set(
       key,
       HostCache::Entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{"example.com"},
                        HostCache::Entry::SOURCE_UNKNOWN),
-      now, base::Seconds(10));
-  context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
+      tick_clock.NowTicks(), base::Seconds(10));
+  context.host_resolver_cache()->Set(
+      std::make_unique<HostResolverInternalErrorResult>(
+          "domain.test", DnsQueryType::AAAA,
+          tick_clock.NowTicks() + base::Seconds(10),
+          clock.Now() + base::Seconds(10),
+          HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED),
+      anonymization_key, HostResolverSource::DNS, /*secure=*/false);
+  context.RecordServerSuccess(/*server_index=*/0u, /*is_doh_server=*/true,
                               session.get());
-  ASSERT_TRUE(context.host_cache()->Lookup(key, now));
+  ASSERT_TRUE(context.host_cache()->Lookup(key, tick_clock.NowTicks()));
+  ASSERT_TRUE(
+      context.host_resolver_cache()->Lookup("domain.test", anonymization_key));
   ASSERT_TRUE(context.GetDohServerAvailability(0u, session.get()));
 
   // Invalidate again with the same session.
   context.InvalidateCachesAndPerSessionData(session.get(),
-                                            false /* network_change */);
+                                            /*network_change=*/false);
 
   // Expect host cache to be invalidated but not the per-session data.
-  EXPECT_FALSE(context.host_cache()->Lookup(key, now));
+  EXPECT_FALSE(context.host_cache()->Lookup(key, tick_clock.NowTicks()));
+  EXPECT_FALSE(
+      context.host_resolver_cache()->Lookup("domain.test", anonymization_key));
   EXPECT_TRUE(context.GetDohServerAvailability(0u, session.get()));
 }
 

@@ -13,6 +13,7 @@
     ],
     "noUncheckedIndexedAccess": false,
     "isolatedModules": true,
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "skipLibCheck": true
   }
 }

@@ -30,6 +30,8 @@ class AccessorySheetField final {
 
   ~AccessorySheetField();
 
+  AccessorySuggestionType suggestion_type() const { return suggestion_type_; }
+
   const std::u16string& display_text() const { return display_text_; }
 
   const std::u16string& text_to_fill() const { return text_to_fill_; }
@@ -51,6 +53,10 @@ class AccessorySheetField final {
 
   AccessorySheetField();
 
+  void set_suggestion_type(AccessorySuggestionType suggestion_type) {
+    suggestion_type_ = suggestion_type;
+  }
+
   void set_display_text(std::u16string display_text) {
     display_text_ = std::move(display_text);
   }
@@ -71,6 +77,7 @@ class AccessorySheetField final {
 
   void set_icon_id(int icon_id) { icon_id_ = icon_id; }
 
+  AccessorySuggestionType suggestion_type_ = AccessorySuggestionType::kMaxValue;
   std::u16string display_text_;
   // The string that would be used to fill in the form, for cases when it is
   // different from |display_text_|. For example: For unmasked credit cards,
@@ -92,6 +99,8 @@ class AccessorySheetField::Builder final {
   Builder(Builder&&) = default;
   Builder& operator=(Builder&&) = default;
   ~Builder();
+
+  Builder&& SetSuggestionType(AccessorySuggestionType suggestion_type) &&;
 
   Builder&& SetDisplayText(std::u16string display_text) &&;
 
@@ -321,6 +330,38 @@ class IbanInfo final {
 
 std::ostream& operator<<(std::ostream& out, const IbanInfo& iban);
 
+// Represents data pertaining to Google Wallet loyalty cards to be shown on the
+// Payments methods tab of manual fallback UI.
+class LoyaltyCardInfo final {
+ public:
+  LoyaltyCardInfo(std::string merchant_name,
+                  GURL program_logo_url,
+                  std::u16string loyalty_card_number);
+
+  LoyaltyCardInfo(const LoyaltyCardInfo&);
+  LoyaltyCardInfo& operator=(const LoyaltyCardInfo&);
+  LoyaltyCardInfo(LoyaltyCardInfo&&);
+  LoyaltyCardInfo& operator=(LoyaltyCardInfo&&);
+
+  ~LoyaltyCardInfo();
+
+  const std::string& merchant_name() const { return merchant_name_; }
+
+  const GURL& program_logo_url() const { return program_logo_url_; }
+
+  const AccessorySheetField& value() const { return value_; }
+
+  bool operator==(const LoyaltyCardInfo&) const = default;
+
+ private:
+  std::string merchant_name_;
+  GURL program_logo_url_;
+  AccessorySheetField value_;
+};
+
+std::ostream& operator<<(std::ostream& out,
+                         const LoyaltyCardInfo& loyalty_card);
+
 // Represents a command below the suggestions, such as "Manage password...".
 class FooterCommand final {
  public:
@@ -469,6 +510,14 @@ class AccessorySheetData final {
     return iban_info_list_;
   }
 
+  void add_loyalty_card_info(LoyaltyCardInfo loyalty_card_info) {
+    loyalty_card_info_list_.emplace_back(std::move(loyalty_card_info));
+  }
+
+  const std::vector<LoyaltyCardInfo>& loyalty_card_info_list() const {
+    return loyalty_card_info_list_;
+  }
+
   void add_footer_command(FooterCommand footer_command) {
     footer_commands_.emplace_back(std::move(footer_command));
   }
@@ -488,6 +537,7 @@ class AccessorySheetData final {
   UserInfoSection user_info_section_;
   std::vector<PromoCodeInfo> promo_code_info_list_;
   std::vector<IbanInfo> iban_info_list_;
+  std::vector<LoyaltyCardInfo> loyalty_card_info_list_;
   std::vector<FooterCommand> footer_commands_;
 };
 
@@ -536,34 +586,41 @@ class AccessorySheetData::Builder final {
       GURL icon_url = GURL()) &;
 
   // Appends a selectable, non-obfuscated field to the last UserInfo object.
-  Builder&& AppendSimpleField(std::u16string text) &&;
-  Builder& AppendSimpleField(std::u16string text) &;
+  Builder&& AppendSimpleField(AccessorySuggestionType suggestion_type,
+                              std::u16string text) &&;
+  Builder& AppendSimpleField(AccessorySuggestionType suggestion_type,
+                             std::u16string text) &;
 
   // Appends a field to the last UserInfo object.
-  Builder&& AppendField(std::u16string display_text,
+  Builder&& AppendField(AccessorySuggestionType suggestion_type,
+                        std::u16string display_text,
                         std::u16string a11y_description,
                         bool is_obfuscated,
                         bool selectable) &&;
-  Builder& AppendField(std::u16string display_text,
+  Builder& AppendField(AccessorySuggestionType suggestion_type,
+                       std::u16string display_text,
                        std::u16string text_to_fill,
                        std::u16string a11y_description,
                        bool is_obfuscated,
                        bool selectable) &;
 
-  Builder&& AppendField(std::u16string display_text,
+  Builder&& AppendField(AccessorySuggestionType suggestion_type,
+                        std::u16string display_text,
                         std::u16string text_to_fill,
                         std::u16string a11y_description,
                         std::string id,
                         bool is_obfuscated,
                         bool selectable) &&;
-  Builder& AppendField(std::u16string display_text,
+  Builder& AppendField(AccessorySuggestionType suggestion_type,
+                       std::u16string display_text,
                        std::u16string text_to_fill,
                        std::u16string a11y_description,
                        std::string id,
                        bool is_obfuscated,
                        bool selectable) &;
 
-  Builder&& AppendField(std::u16string display_text,
+  Builder&& AppendField(AccessorySuggestionType suggestion_type,
+                        std::u16string display_text,
                         std::u16string text_to_fill,
                         std::u16string a11y_description,
                         std::string id,
@@ -595,6 +652,13 @@ class AccessorySheetData::Builder final {
   Builder& AddIbanInfo(std::u16string value,
                        std::u16string text_to_fill,
                        std::string id) &;
+
+  Builder&& AddLoyaltyCardInfo(std::string merchant_name,
+                               GURL program_logo_url,
+                               std::u16string loyalty_card_number) &&;
+  Builder& AddLoyaltyCardInfo(std::string merchant_name,
+                              GURL program_logo_url,
+                              std::u16string loyalty_card_number) &;
 
   // Appends a new footer command to |accessory_sheet_data_|.
   Builder&& AppendFooterCommand(std::u16string display_text,

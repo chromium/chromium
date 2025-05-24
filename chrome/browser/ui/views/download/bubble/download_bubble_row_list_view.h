@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -31,8 +32,7 @@ class DownloadBubbleRowListView : public views::FlexLayoutView,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       int fixed_width,
-      const DownloadBubbleRowListViewInfo& info,
-      bool is_in_partial_view = false);
+      const DownloadBubbleRowListViewInfo& info);
   ~DownloadBubbleRowListView() override;
   DownloadBubbleRowListView(const DownloadBubbleRowListView&) = delete;
   DownloadBubbleRowListView& operator=(const DownloadBubbleRowListView&) =
@@ -65,16 +65,14 @@ class DownloadBubbleRowListView : public views::FlexLayoutView,
   void AddRow(const DownloadBubbleRowViewInfo& row_info);
 
   // Map of download item's ID to child view in the row list.
-  std::map<offline_items_collection::ContentId, DownloadBubbleRowView*>
+  std::map<offline_items_collection::ContentId,
+           raw_ptr<DownloadBubbleRowView, CtnExperimental>>
       rows_by_id_;
 
   base::WeakPtr<Browser> browser_;
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_;
   base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_;
   int fixed_width_ = 0;
-
-  // Used for metrics to study clickjacking potential. False in tests.
-  const bool is_in_partial_view_ = false;
 
   // This is owned by the DownloadBubbleContentsView owning `this`.
   raw_ref<const DownloadBubbleRowListViewInfo> info_;

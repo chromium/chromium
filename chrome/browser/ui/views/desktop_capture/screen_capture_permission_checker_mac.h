@@ -11,7 +11,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker.h"
 
-BASE_DECLARE_FEATURE(kDesktopCapturePermissionChecker);
+// Declared in header file so that it can be used in unit tests.
+BASE_DECLARE_FEATURE(kDesktopCapturePermissionCheckerPreMacos14_4);
 
 class ScreenCapturePermissionCheckerMac
     : public ScreenCapturePermissionChecker {

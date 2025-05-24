@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget.image_tiles;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -12,13 +14,13 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.animation.EmptyAnimationListener;
 import org.chromium.ui.modelutil.ForwardingListObservable;
@@ -29,6 +31,7 @@ import org.chromium.ui.modelutil.RecyclerViewAdapter;
  * The View component of the tiles UI.  This takes the {@link TileListModel} and creates the
  * glue to display it on the screen.
  */
+@NullMarked
 class TileListView {
     private final TileListModel mModel;
     private final RecyclerView mView;
@@ -83,7 +86,7 @@ class TileListView {
     /** Scrolls to the beginning of the list if possible. */
     void scrollToBeginning() {
         if (mView.computeHorizontalScrollOffset() != 0) {
-            mView.getLayoutManager().scrollToPosition(0);
+            assumeNonNull(mView.getLayoutManager()).scrollToPosition(0);
         }
     }
 
@@ -115,11 +118,7 @@ class TileListView {
         }
 
         @Override
-        public void getItemOffsets(
-                @NonNull Rect outRect,
-                @NonNull View view,
-                @NonNull RecyclerView parent,
-                @NonNull State state) {
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
             int position = parent.getChildAdapterPosition(view);
             if (position != 0) outRect.left = mInterCellPadding / 2;
             if (position != mModel.size() - 1) outRect.right = mInterCellPadding / 2;

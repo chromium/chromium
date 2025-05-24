@@ -6,10 +6,10 @@
 
 #include "device/vr/openxr/openxr_view_configuration.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -163,10 +163,10 @@ void OpenXrViewConfiguration::SetProperties(
   uint32_t size = properties.size();
   properties_.clear();
   properties_.reserve(size);
-  base::ranges::transform(properties, std::back_inserter(properties_),
-                          [size](const XrViewConfigurationView& view) {
-                            return OpenXrViewProperties(view, size);
-                          });
+  std::ranges::transform(properties, std::back_inserter(properties_),
+                         [size](const XrViewConfigurationView& view) {
+                           return OpenXrViewProperties(view, size);
+                         });
 }
 
 const std::vector<XrView>& OpenXrViewConfiguration::Views() const {
@@ -196,54 +196,9 @@ bool OpenXrViewConfiguration::CanEnableAntiAliasing() const {
   //
   // To ease the workload on low end devices, we disable anti-aliasing when the
   // max sample count is 1.
-  return base::ranges::all_of(properties_,
-                              [](const OpenXrViewProperties& view) {
-                                return view.MaxSwapchainSampleCount() > 1;
-                              });
-}
-
-OpenXrLayers::OpenXrLayers(XrSpace space,
-                           XrEnvironmentBlendMode blend_mode,
-                           const std::vector<XrCompositionLayerProjectionView>&
-                               primary_projection_views)
-    : space_(space), blend_mode_(blend_mode) {
-  InitializeLayer(primary_projection_views, primary_projection_layer_);
-}
-
-OpenXrLayers::~OpenXrLayers() = default;
-
-void OpenXrLayers::AddSecondaryLayerForType(
-    XrViewConfigurationType type,
-    const std::vector<XrCompositionLayerProjectionView>& projection_views) {
-  secondary_projection_layers_.emplace_back();
-  InitializeLayer(projection_views, secondary_projection_layers_.back());
-  secondary_composition_layers_.push_back(
-      reinterpret_cast<XrCompositionLayerBaseHeader*>(
-          &secondary_projection_layers_.back()));
-
-  secondary_layer_info_.emplace_back();
-  XrSecondaryViewConfigurationLayerInfoMSFT& layer_info =
-      secondary_layer_info_.back();
-  layer_info.type = XR_TYPE_SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT;
-  layer_info.viewConfigurationType = type;
-  layer_info.environmentBlendMode = blend_mode_;
-  layer_info.layerCount = 1;
-  layer_info.layers = &secondary_composition_layers_.back();
-}
-
-void OpenXrLayers::InitializeLayer(
-    const std::vector<XrCompositionLayerProjectionView>& projection_views,
-    XrCompositionLayerProjection& layer) {
-  layer.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION;
-  layer.next = nullptr;
-  layer.layerFlags = 0;
-  layer.space = space_;
-  layer.viewCount = projection_views.size();
-  layer.views = projection_views.data();
-
-  if (blend_mode_ == XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND) {
-    layer.layerFlags |= XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
-  }
+  return std::ranges::all_of(properties_, [](const OpenXrViewProperties& view) {
+    return view.MaxSwapchainSampleCount() > 1;
+  });
 }
 
 }  // namespace device

@@ -23,7 +23,7 @@ TEST_F(TtsManifestTest, TtsEngine) {
       base::StringPrintf(errors::kInvalidTtsBufferSizeRange, 1,
                          media::limits::kMaxSamplesPerPacket);
 
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       Testcase("tts_engine_invalid_voices_1.json", errors::kInvalidTts),
       Testcase("tts_engine_invalid_voices_2.json", errors::kInvalidTtsVoices),
       Testcase("tts_engine_invalid_voices_3.json", errors::kInvalidTtsVoices),
@@ -56,7 +56,7 @@ TEST_F(TtsManifestTest, TtsEngine) {
       Testcase("tts_engine_invalid_buffer_size_4.json",
                errors::kInvalidTtsRequiresSampleRateAndBufferSize),
   };
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 
   LoadAndExpectSuccess("tts_engine_valid_voices.json");
   LoadAndExpectSuccess("tts_engine_valid_sample_rate_buffer_size.json");

@@ -324,9 +324,7 @@ if __name__ == '__main__':
               os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
           'diagnosis'))
   try:
-    import crbug_1001171
-    with crbug_1001171.DumpStateOnLookupError():
-      sys.exit(Main(sys.argv[1:]))
+    sys.exit(Main(sys.argv[1:]))
   except ImportError:
     pass
 

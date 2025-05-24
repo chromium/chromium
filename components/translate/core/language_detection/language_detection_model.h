@@ -15,7 +15,16 @@
 #include "partition_alloc/pointers/raw_ref.h"
 
 namespace translate {
-BASE_DECLARE_FEATURE(kTruncateLanguageDetectionSample);
+
+// Exposed for testing.
+
+// The number of characters to sample and provide as a buffer to the model
+// for determining its language.
+inline constexpr size_t kTextSampleLength = 256;
+
+// The number of samples of |kTextSampleLength| to evaluate the model when
+// determining the language of the page content.
+inline constexpr int kNumTextSamples = 3;
 
 // A language detection model that will use a TFLite model to determine the
 // language of the content of the web page.
@@ -60,12 +69,11 @@ class LanguageDetectionModel {
 
   std::string GetModelVersion() const;
 
- private:
-  // Execute the model on the provided |sampled_str| and return the top language
-  // and the models score/confidence in that prediction.
-  std::pair<std::string, float> DetectTopLanguage(
-      const std::u16string& sampled_str) const;
+  language_detection::LanguageDetectionModel& tflite_model() {
+    return *tflite_model_;
+  }
 
+ private:
   // The tflite classifier that can determine the language of text.
   std::unique_ptr<language_detection::LanguageDetectionModel>
       owned_tflite_model_;

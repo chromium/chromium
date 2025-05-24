@@ -26,9 +26,7 @@ class TestingSigninErrorHandler : public SigninErrorHandler {
   TestingSigninErrorHandler(Browser* browser,
                             bool is_system_profile,
                             content::WebUI* web_ui)
-      : SigninErrorHandler(browser, is_system_profile),
-        browser_modal_dialog_did_close_(false),
-        profile_picker_dialog_did_close_(false) {
+      : SigninErrorHandler(browser, is_system_profile) {
     set_web_ui(web_ui);
   }
 
@@ -41,27 +39,17 @@ class TestingSigninErrorHandler : public SigninErrorHandler {
     SigninErrorHandler::CloseBrowserModalSigninDialog();
   }
 
-  void CloseProfilePickerDialog() override {
-    profile_picker_dialog_did_close_ = true;
-    SigninErrorHandler::CloseProfilePickerDialog();
-  }
-
-  using SigninErrorHandler::HandleSwitchToExistingProfile;
   using SigninErrorHandler::HandleConfirm;
-  using SigninErrorHandler::HandleLearnMore;
   using SigninErrorHandler::HandleInitializedWithSize;
+  using SigninErrorHandler::HandleLearnMore;
+  using SigninErrorHandler::HandleSwitchToExistingProfile;
 
   bool browser_modal_dialog_did_close() {
     return browser_modal_dialog_did_close_;
   }
 
-  bool profile_picker_dialog_did_close() {
-    return profile_picker_dialog_did_close_;
-  }
-
  private:
-  bool browser_modal_dialog_did_close_;
-  bool profile_picker_dialog_did_close_;
+  bool browser_modal_dialog_did_close_ = false;
 };
 
 class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
@@ -170,15 +158,6 @@ TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {
 
   // Confirm simply closes the dialog.
   EXPECT_TRUE(handler()->browser_modal_dialog_did_close());
-}
-
-TEST_F(SigninErrorHandlerTest, InProfilePickerTestConfirm) {
-  CreateHandlerInProfilePicker();
-  base::Value::List args;
-  handler()->HandleConfirm(args);
-
-  // Confirm simply closes the dialog.
-  EXPECT_TRUE(handler()->profile_picker_dialog_did_close());
 }
 
 }  // namespace

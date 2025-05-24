@@ -32,8 +32,7 @@ bool LinuxUiDelegate::ExportWindowHandle(
     base::OnceCallback<void(const std::string&)> callback) {
   // This function should not be called when using a platform that doesn't
   // implement it.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void LinuxUiDelegate::SetTransientWindowForParent(
@@ -41,7 +40,7 @@ void LinuxUiDelegate::SetTransientWindowForParent(
     gfx::AcceleratedWidget transient) {
   // This function should not be called when using a platform that doesn't
   // implement it.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace ui

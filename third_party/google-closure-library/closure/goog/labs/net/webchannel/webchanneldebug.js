@@ -200,6 +200,7 @@ WebChannelDebug.prototype.severe = function(text) {
  * @param {?string} responseText A JSON response to clean.
  * @return {?string} The cleaned response.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 WebChannelDebug.prototype.redactResponse_ = function(responseText) {
   'use strict';

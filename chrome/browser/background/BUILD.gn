@@ -1,0 +1,72 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+source_set("background") {
+  if (!is_android) {
+    sources = [
+      "background_contents.h",
+      "background_contents_service_observer.h",
+      "startup_launch_manager.h",
+    ]
+  }
+
+  if (enable_background_contents) {
+    sources += [
+      "background_contents_service.h",
+      "background_contents_service_factory.h",
+    ]
+  }
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//content/public/browser",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/browser" ]
+  }
+}
+
+source_set("impl") {
+  if (!is_android) {
+    sources = [
+      "background_contents.cc",
+      "startup_launch_manager.cc",
+    ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":background",
+    "//chrome/browser/profiles",
+    "//chrome/browser/task_manager",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  if (!is_android) {
+    sources = [ "startup_launch_manager_unittest.cc" ]
+  }
+
+  if (enable_background_contents) {
+    sources += [ "background_contents_service_unittest.cc" ]
+  }
+
+  deps = [
+    ":background",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//testing/gmock",
+  ]
+}

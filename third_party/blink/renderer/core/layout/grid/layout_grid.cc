@@ -4,17 +4,11 @@
 
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 
-#include "third_party/blink/renderer/core/layout/grid/subgrid_min_max_sizes_cache.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 
 namespace blink {
 
 LayoutGrid::LayoutGrid(Element* element) : LayoutBlock(element) {}
-
-void LayoutGrid::Trace(Visitor* visitor) const {
-  visitor->Trace(cached_subgrid_min_max_sizes_);
-  LayoutBlock::Trace(visitor);
-}
 
 void LayoutGrid::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
   NOT_DESTROYED();
@@ -123,8 +117,7 @@ const MinMaxSizes& LayoutGrid::CachedSubgridMinMaxSizes() const {
 
 void LayoutGrid::SetSubgridMinMaxSizesCache(MinMaxSizes&& min_max_sizes,
                                             const GridLayoutData& layout_data) {
-  cached_subgrid_min_max_sizes_ = MakeGarbageCollected<SubgridMinMaxSizesCache>(
-      std::move(min_max_sizes), layout_data);
+  cached_subgrid_min_max_sizes_.emplace(std::move(min_max_sizes), layout_data);
   SetSubgridMinMaxSizesCacheDirty(false);
 }
 
@@ -225,17 +218,18 @@ Vector<LayoutUnit, 1> LayoutGrid::TrackSizesForComputedStyle(
 
 Vector<LayoutUnit> LayoutGrid::RowPositions() const {
   NOT_DESTROYED();
-  return ComputeExpandedPositions(kForRows);
+  return ComputeExpandedPositions(LayoutData(), kForRows);
 }
 
 Vector<LayoutUnit> LayoutGrid::ColumnPositions() const {
   NOT_DESTROYED();
-  return ComputeExpandedPositions(kForColumns);
+  return ComputeExpandedPositions(LayoutData(), kForColumns);
 }
 
+// static
 Vector<LayoutUnit> LayoutGrid::ComputeTrackSizeRepeaterForRange(
     const GridLayoutTrackCollection& track_collection,
-    wtf_size_t range_index) const {
+    wtf_size_t range_index) {
   const wtf_size_t range_set_count =
       track_collection.RangeSetCount(range_index);
 
@@ -269,10 +263,11 @@ Vector<LayoutUnit> LayoutGrid::ComputeTrackSizeRepeaterForRange(
   return track_sizes;
 }
 
+// static
 Vector<LayoutUnit> LayoutGrid::ComputeExpandedPositions(
-    GridTrackSizingDirection track_direction) const {
+    const GridLayoutData* grid_layout_data,
+    GridTrackSizingDirection track_direction) {
   Vector<LayoutUnit> expanded_positions;
-  const auto* grid_layout_data = LayoutData();
   if (!grid_layout_data)
     return expanded_positions;
 

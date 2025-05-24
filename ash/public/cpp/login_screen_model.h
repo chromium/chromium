@@ -168,11 +168,6 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   virtual void SetPublicSessionShowFullManagementDisclosure(
       bool show_full_management_disclosure) = 0;
 
-  // Called when focus is reported to be leaving a lock screen app window.
-  // Requests focus to be handed off to the next suitable widget.
-  // |reverse|:   Whether the tab order is reversed.
-  virtual void HandleFocusLeavingLockScreenApps(bool reverse) = 0;
-
   // Called when the dialog hosting oobe has changed state. The oobe dialog
   // provides support for any part of login that is implemented in JS/HTML, such
   // as add user or powerwash.

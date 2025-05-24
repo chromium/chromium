@@ -7,7 +7,6 @@
 
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/rgb_tuple_f32.h"
-#include "device/vr/public/mojom/rgba_tuple_f16.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -15,26 +14,6 @@
 #include "ui/gfx/geometry/quaternion.h"
 
 namespace mojo {
-
-template <>
-struct StructTraits<device::mojom::RgbaTupleF16DataView, device::RgbaTupleF16> {
-  static uint16_t red(const device::RgbaTupleF16& rgba) { return rgba.red(); }
-  static uint16_t green(const device::RgbaTupleF16& rgba) {
-    return rgba.green();
-  }
-  static uint16_t blue(const device::RgbaTupleF16& rgba) { return rgba.blue(); }
-  static uint16_t alpha(const device::RgbaTupleF16& rgba) {
-    return rgba.alpha();
-  }
-  static bool Read(device::mojom::RgbaTupleF16DataView data,
-                   device::RgbaTupleF16* out) {
-    out->set_red(data.red());
-    out->set_green(data.green());
-    out->set_blue(data.blue());
-    out->set_alpha(data.alpha());
-    return true;
-  }
-};
 
 template <>
 struct StructTraits<device::mojom::RgbTupleF32DataView, device::RgbTupleF32> {

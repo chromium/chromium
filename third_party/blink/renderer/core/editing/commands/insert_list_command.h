@@ -58,14 +58,26 @@ class CORE_EXPORT InsertListCommand final : public CompositeEditCommand {
                                  const HTMLQualifiedName&,
                                  Range& current_selection,
                                  EditingState*);
-  void UnlistifyParagraph(const VisiblePosition& original_start,
-                          HTMLElement* list_node,
-                          Node* list_child_node,
-                          EditingState*);
-  void ListifyParagraph(const VisiblePosition& original_start,
-                        const HTMLQualifiedName& list_tag,
-                        EditingState*);
-  void MoveParagraphOverPositionIntoEmptyListItem(const VisiblePosition&,
+
+  // If InsertListCommand is run on the same type of list as |list_tag|,
+  // unlistify the list child node. Otherwise, create a new list of type
+  // list_tag.
+  void ToggleSelectedListItem(const VisibleSelection& initial_selection,
+                              HTMLElement* list_node,
+                              Node* list_child_node,
+                              bool switch_list_type,
+                              const HTMLQualifiedName& list_tag,
+                              bool force_create_list,
+                              EditingState*);
+
+  // This function will return the node which we are listifying. This is required
+  // to get |listified_placeholder| in ToggleSelectedListItem function.
+  Node* ListifyParagraph(const VisibleSelection& initial_selection,
+                         const VisiblePosition& original_start,
+                         const HTMLQualifiedName& list_tag,
+                         EditingState*);
+  void MoveParagraphOverPositionIntoEmptyListItem(const VisibleSelection&,
+                                                  const VisiblePosition&,
                                                   HTMLLIElement*,
                                                   EditingState*);
 

@@ -8,8 +8,13 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
+#include "base/containers/fixed_flat_map.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace schema_constants {
@@ -49,18 +54,18 @@ extern const char kFileUrlNavigationAllowed[];
 // appended to the error message displayed in the Chrome Webstore.
 extern const char kBlockedInstallMessage[];
 
-struct AllowedTypesMapEntry {
-  // Name of allowed types of extensions used in schema of extension
-  // management preference.
-  const char* name;
-  // The corresponding Manifest::Type.
-  Manifest::Type manifest_type;
-};
+inline constexpr auto kAllowedTypesMap =
+    base::MakeFixedFlatMap<std::string_view, Manifest::Type>({
+        {"extension", Manifest::TYPE_EXTENSION},
+        {"theme", Manifest::TYPE_THEME},
+        {"user_script", Manifest::TYPE_USER_SCRIPT},
+        {"hosted_app", Manifest::TYPE_HOSTED_APP},
+        {"legacy_packaged_app", Manifest::TYPE_LEGACY_PACKAGED_APP},
+        {"platform_app", Manifest::TYPE_PLATFORM_APP},
+        {"chromeos_system_extension", Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION},
+    });
 
-extern const size_t kAllowedTypesMapSize;
-extern const AllowedTypesMapEntry kAllowedTypesMap[];
-
-// Helper fuction over |kAllowedTypesMap|, returns Manifest::TYPE_UNKNOWN if
+// Helper function over `kAllowedTypesMap`, returns Manifest::TYPE_UNKNOWN if
 // not found.
 Manifest::Type GetManifestType(const std::string& name);
 
